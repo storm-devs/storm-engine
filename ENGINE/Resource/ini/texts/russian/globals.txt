@@ -1,0 +1,71 @@
+QUEST_MESSAGE1 {Колония Эль Каймано окупирована.}
+QUEST_MESSAGE2 {Колония Эль Каймано захвачена.}
+QUEST_MESSAGE3 {Вы уже слишком стары чтобы сопротивляться проклятию Ацтекского золота...}
+QUEST_MESSAGE4 {Вы нашли клад!}
+QUEST_MESSAGE5 {Найджел Блайт атаковал корвет контрабандистов!}
+QUEST_MESSAGE6 {Пропал Найджел Блайт!}
+QUEST_MESSAGE7 {Капитан, Черная Жемчужина на горизонте!}
+QUEST_MESSAGE8 {Отличная работа, вы убили Учителя!}
+QUEST_MESSAGE9 {Вы теперь один на один с этим жестоким миром!}
+QUEST_MESSAGE10 {Пирату без чувства милосердия}
+QUEST_MESSAGE11 {предназначается особая награда!}
+QUEST_MESSAGE12 {К сожалению вы, уже наняли слишком много офицеров! Нанять нового вы сможете только после увольнения кого-либо из офицеров!}
+
+
+Address_Form_Spa {Сеньор}
+Address_Form_Fra {Месье}
+Address_Form_Eng {Сэр}
+Address_Form_Por {Сеньор}
+Address_Form_Hol {Минхер}
+
+Swear_1 {Лопни моя селезенка!}
+Swear_2 {Проклятье!}
+Swear_3 {О мой бог!}
+Swear_4 {Черт тебя дери!}
+Swear_5 {Тысяча чертей!}
+Swear_6 {Якорь мне в корму!}
+Swear_7 {О, силы небесные!}
+Swear_8 {Аргхх!!!}
+Swear_9 {Тысяча акул!}
+Swear_10 {Дьявол!!}
+
+TimeGreeting {Добрый день}
+
+Antigua {Антигуа}
+Barbados {Барбадос}
+Curacao {Кюрасао}
+Dominica {Доминика}
+Grenada {Гренада}
+Guadeloupe {Гваделупа}
+Hispaniola {Испаньола}
+IslaMona {Исла Мона}
+Jamaica {Ямайка}
+MarieGalante {Мария Галанте}
+Martinique {Мартиника}
+Montserrat {Монтсеррат}
+Nevis {Невис}
+PuertoRico {Пуэрто-Рико}
+StEustatius {Сент-Евстафий}
+StKitts {Сент-Киттс}
+StMartin {Сент-Мартин}
+Tortuga {Тортуга}
+LaVega {Ла-Вега}
+SantoDomingo {Санто-Доминго}
+PetitGoave {Петит-Гоав}
+Bridgetown {Бриджтаун}
+SanJuan {Сан-Хуан}
+SantiagoVega {Саньтяго Вега}
+
+
+OFFIC_TYPE_BOATSWAIN {боцман}
+OFFIC_TYPE_CANNONEER {канонир}
+OFFIC_TYPE_QMASTER {старшина-рулевой}
+OFFIC_TYPE_NAVIGATOR {штурман}
+OFFIC_TYPE_FIRSTMATE {первый помощник}
+
+Pirate	{Пират}
+Spain	{Испанец}
+France	{Француз}
+Smuggler	{Контрабандист}
+Holland	{Голландец}
+England	{Англичанин}

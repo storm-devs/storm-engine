@@ -1,0 +1,161 @@
+Как самому делать инсталл аддона
+
+файл setup_addon.ini - базовый, его нельзя переименовывать
+
+секции внутри
+
+[INFO]
+version = 1.05.06xx
+description = Установка аддона "Возвращение Морской Легенды"
+dirTo       = укажите пусть к игре
+CheckDirFile = \RESOURCE\animation\Heads\AN\h_Blaze.an
+
+- в ИНФО все информация о том, что это + CheckDirFile - контроль правильности папки для установки
+
+[MOVE_DIR]
+pathFrom1 = \RESOURCE\Sounds\VOICE\RUSSIAN\
+pathTo1   = \RESOURCE\Sounds\VOICE\
+pathFrom2 = \RESOURCE\Textures\Loading\Russian\
+pathTo2   = \RESOURCE\Textures\Loading\
+
+Это старый .бат файл
+переносим файлы (*.*) из  pathFromХ в pathToХ.
+
+ВАЖНО: Вся нумерация должа начинаться с 1 и не иметь пропусков - это верно для всех секция ИНИ
+
+[UNPACK]
+fileDat1 = data1.slb
+fileDat2 = data2.slb
+
+Что распаковываем (режим "переписать все")
+
+;  секция перечня файлов
+[INI_TO_WORK]
+fileIni1 = setup_addon_base_an.ini
+fileIni2 = setup_addon_base_char.ini
+
+- тут перечислены файлы патча моделей из ПКМ
+
+Любых секций может не быть вообще. (если нужен только патч или распаковщик)
+
+ФОРМАТ СЕКЦИЙ ини-файла из INI_TO_WORK
+
+[INFO]
+version = 1.01
+description = Models to copy: персонажи анимация
+
+- инфа о том, что это делает
+
+[DIRECT_COPY]
+copyFromFile1 = \RESOURCE\animation\Heads\AN\h_Offic_fra.an
+copyToFile1 = \RESOURCE\animation\Heads\AN\h_brin.an
+copyFromFile2 = \RESOURCE\MODELS\Characters\Offic_fra.gm
+copyToFile2 = \RESOURCE\MODELS\Characters\brin.gm
+
+Точное копирование файла copyFromFileХ в файл copyToFileХ
+Если папки назначения нет, создастся сама
+
+[COPY]
+copyPath1 = \RESOURCE\MODELS\Ships\Battleship1\
+copyToPath1 = \RESOURCE\MODELS\Ships\Battleship3\
+copyMask1 = Battleship1
+copyToMask1 = Battleship3
+
+Секция копирования файлов оптом с заменой маски имени
+Для кораблей, локаций, когда нужно кучу файлов переобозвать
+copyPathХ - где источник
+copyToPathХ - куда копируем
+copyMaskХ  - что копируем  (Battleship1*.*)
+copyToMaskХ - во что копируем  (Battleship3*.*)
+
+ВАЖНО: длина масок должна быть ОДИНАКОВОЙ (хотя не обязательно, но очень желательно - потом меньше проблем)
+
+
+[PATCH_FILES]
+patchfile1 = \RESOURCE\MODELS\Characters\brin.gm
+patchString1 = Offic_fra.tga
+patchToString1 = 64Brin01_.tga
+
+
+патч моделей (эмуляция ХЕК-едитора)
+
+в файле patchfileХ находим строку  patchStringХ и меняем ее на  patchToStringХ
+
+ВАЖНО: длина строки должна быть ОДИНАКОВОЙ (без всяких "хотя"!!!)
+
+--------
+ТИПОВАЯ ЗАДАЧА: создать новый персонаж, как клон старого с заменой текстуры.
+
+=========================
+файл setup_addon.ini
+=========================
+[INFO]
+version = 1.05.xx
+description = Установка Нового офицера
+dirTo       = укажите пусть к игре
+CheckDirFile = \RESOURCE\animation\Heads\AN\h_Blaze.an
+
+[UNPACK]
+fileDat1 = brin.slb
+
+;  секция перечня файлов
+[INI_TO_WORK]
+fileIni1 = brin.ini
+
+==== [end] =====
+
+brin.slb - это  .каб архив, в нем запакована текстура брина по правильному пути, те архив содержит файлы
+RESOURCE\Textures\Characters\64Brin01_.tga.tx
+и
+RESOURCE\animation\Heads\h_brin.ani - этот файл (анимация бошки) тоже можно делать патчем, но он 3К, проще в архив включить
+
+
+========================
+файл brin.ini
+========================
+[INFO]
+version = 1.xx
+description = Новый офицер
+
+[DIRECT_COPY]
+copyFromFile1 = \RESOURCE\MODELS\Characters\Offic_fra.gm
+copyToFile1 = \RESOURCE\MODELS\Characters\brin.gm
+copyFromFile2 = \RESOURCE\animation\Heads\AN\h_Offic_fra.an
+copyToFile2 = \RESOURCE\animation\Heads\AN\h_brin.an
+copyFromFile3 = \RESOURCE\MODELS\HEADS\H_Offic_fra.gm
+copyToFile3 = \RESOURCE\MODELS\HEADS\H_brin.gm
+
+[PATCH_FILES]
+patchfile1 = \RESOURCE\MODELS\Characters\brin.gm
+patchString1 = Offic_fra.tga
+patchToString1 = 64Brin01_.tga
+patchfile2 = \RESOURCE\MODELS\HEADS\H_brin.gm
+patchString2 = Offic_fra.tga
+patchToString2 = 64Brin01_.tga
+
+
+==== [end] =====
+
+Что это дает?
+
+файлы
+brin.gm
+h_brin.an
+H_brin.gm
+
+в архив не входят,а это лишний 1 мб на одного НПС
+
+Итого,
+
+инстал имеет файлы:
+
+brin.ini
+brin.slb
+setup_addon.ini
+setup_upd.exe
+
+
+
+
+
+

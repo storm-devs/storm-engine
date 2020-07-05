@@ -1,0 +1,121 @@
+VertexShader GrassExVS
+{
+	decl
+	{
+        stream[0];
+
+        float v0[3];	//Position
+		color v1;		//Params
+		color v2;		//Offset
+		float v3[3];	//Wind direction//float v4[1];	//Vertex alpha		
+    }
+    
+	asm
+	{
+		vs.1.1
+
+		mul r0.xy, v3, c36
+		add r0.w, r0.y, r0.x
+		max r0.w, -r0.w, c40.y
+		mul r2.xw, v1.zyzw, c40.x
+		min r0.w, r0.w, c40.z
+		mov a0.x, r2.x
+		mov r0.y, c[a0.x + 0].z
+		mul r1.w, r0.y, c40.w
+		mad r0.w, r0.w, c39.x, r1.w
+		mul r1.w, r0.w, v2.y
+		mul r0.xy, v3, v3
+		add r0.w, r0.y, r0.x
+		mad r0.xy, v1, c41, c41.zwzw
+		mul r1.w, r1.w, c39.y
+		add r0.w, -r0.w, r0.y
+		mul r0.xy, r0.x, c[a0.x + 0]
+		rsq r0.w, r0.w
+		rcp r0.w, r0.w
+		add r3.w, v2.x, c40.y
+		mov r3.xy, v2
+		//mad r0.w, r0.w, r3.y, v0.y
+		mul r0.w, r0.w, r3.y //
+		mad r0.w, v0.y, c38.w, r0.w //
+		//mad r1.xy, r0, -r3.w, v0.xzzw
+		mul r1.xy, r0, -r3.w //
+		mad r1.xy, v0.xzzw, c38.w, r1.xy //
+		mul r0, r0.w, c33
+		mad r2.xy, v3, r3.y, r1
+		mov r1.xyz, c38
+		mad oD0.xyz, r1, r1.w, c37
+		mad r0, c32, r2.x, r0
+		mov r1.zw, c39
+		mov a0.x, r2.w
+		mad oT0.xy, r3, r1.zwzw, c[a0.x + 16]
+		mad r0, c34, r2.y, r0
+		add oPos, r0, c35
+		mov oD0.w, v3.z
+	}
+}
+
+block GrassEx()
+{
+	technique t0
+	{
+		pass p0
+		{
+			lighting = false;
+			alpharef = 80;
+			cullmode = none;
+
+			AlphaTestEnable = true;
+			AlphaBlendEnable = true;
+			SrcBlend = srcalpha;
+			DestBlend = invsrcalpha;			
+			ColorArg1[0] = diffuse;
+			ColorArg2[0] = texture;
+			ColorOp[0] = modulate2x;
+			ColorOp[1] = disable;
+			AlphaArg1[0] = diffuse;
+			AlphaArg2[0] = texture;
+			AlphaOp[0] = modulate;
+			AlphaOp[1] = disable;
+						
+			
+			VertexShader = "GrassExVS";
+
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}
+
+block GrassEx_dark()
+{
+	technique t0
+	{
+		pass p0
+		{
+			lighting = false;
+			alpharef = 80;
+			cullmode = none;
+
+			AlphaTestEnable = true;
+			AlphaBlendEnable = true;
+			SrcBlend = srcalpha;
+			DestBlend = invsrcalpha;
+			ColorArg1[0] = diffuse;
+			ColorArg2[0] = texture;
+			ColorOp[0] = modulate;
+			ColorOp[1] = disable;
+			AlphaArg1[0] = diffuse;
+			AlphaArg2[0] = texture;
+			AlphaOp[0] = modulate;
+			AlphaOp[1] = disable;
+
+
+			VertexShader = "GrassExVS";
+
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}

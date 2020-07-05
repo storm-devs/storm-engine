@@ -1,0 +1,143 @@
+ПКМ:ВМЛ на 2005г
+Учебник по полезный функциям (мои новые и не только мои :))
+
+string NationShortName(int iNation) - краткое название нации (используется для всего!!! :) - в основном охотники, губеры и тд (т.е. return "eng"; "spa";  и тд)
+
+int ChangeCharacterHunterScore(ref chref, string _huntName, int incr) // увеличение счетчика награды за голову 
+(пример  ChangeCharacterHunterScore(GetMainCharacter(), NationShortName(sti(rMainGroupCharacter.nation)) + "hunter", 5);)
+
+string GetAddress_Form(ref NPChar) - обращение, зависит от нации (сэр и тп)
+
+string NationNameMan(int pNation) - англичанин и тп
+
+string NationNamePeople(int pNation) - французы и тп
+
+string NationNameAblative(int iNation) //творительный падеж - Англией
+
+string NationNameNominative(int iNation) //именительный падеж - Голландия
+
+string NationNameGenitive(int iNation) // родительный падеж - Франции
+
+string GetCityName(string city) // имена городов по аттрибуту char.city - "Порт Рояль"
+
+string GetPortByCityName(string city) // имена портов по городов по аттрибуту char.city - Conceicao_port
+
+string GetIslandByCityName(string city) // имена острова по городу по аттрибуту char.city - Douwesen
+
+string GetCityNameByIsland(string CurIslandId) - по острову даем город (главный город острова с портом)
+
+string NationKingsName(ref NPChar) - имя монарха от нации - return "Его Величиства Якова II Стюарта";
+
+string RandSwear() - восклицание ранд() - return "Карамба! ";
+
+string SelectRumour() - слухи
+
+string SelectCountryRumour(int nation) - слух, зависимый от нации (еще не готово)
+
+string SelectSmugglingLocation() - по острову, в котором счас Гл герой, даем ранд() Бухту (контрабада так работает)
+
+void SetCoastalGuardPursuit() - поставить патруль в море близ гл героя, герой на суше  ( контрабанда, но будут работать и просто так)
+
+void StopCoastalGuardPursuit() - убрать патруль
+
+string SelectSoldierModelByNation(ref rCharacter, string SoldierOrOfficer) - выбираем форму солдат от нации (солдаты ранд(), офицер один) SoldierOrOfficer == "officer" или "soldier"
+
+int ChangeContrabandRelation(ref pchar, int _val) - изменение отношений контрабандистов (нужно по квестам использовать, как ветвление в диалоге)
+
+ref GetFortCharRefByCity(string cityId) //ищем начальника форта города (я из него нацию беру)
+
+SetFantomParam(ref pchar);  - раздача скилов, оружия и жизни (зависит от сложности)
+
+string TimeGreeting() - "Здрасте" от времени суток
+
+string RandPhraseSimple(string Var1, string Var2); - случайная фраза из двух
+
+string LinkRandPhrase (string Var1, string Var2, string Var3) // выбор фразы из трех
+
+string PCharRepPhrase (string Var1, string Var2) // выбор фразы от репутации
+
+void FaceMaker(aref rCharacter) - дать Чару лицо и бошку, зависимо от его модели
+
+void SetModelSailor(ref ChrefSailor) - морячок (модель + бошка)
+
+void SetModelPirate(ref ChrefPirate) - пират (модель + бошка)
+
+void SetCaptanModelByEncType(ref ChrefPirate, string sFantomType) выбор модели капитана зависимо от типа "trade" "war" "pirate"
+
+int GetPrisonerQty() - сколько заключенных счас у гл героя
+
+void SetShipMerchant(ref Char) - полностью экипировать и дать корабль торговца (квест сопровождения)
+
+int RemoveCharacterGoodsSelf(ref _refCharacter,int _Goods,int _Quantity) - удалить товар только у данного НПС
+
+int RemoveCharacterGoods(ref _refCharacter,int _Goods,int _Quantity) - обираем всех офицеров тоже
+
+int GetSquadronGoods(ref _refCharacter,int _Goods) - колво груза на всех кораблях партии - ЯВНЫЙ ЧИТ - учитываются не компаньены (те торговец к примеру - его груз можно продать как контрабанду!!!!! Править не буду :))
+
+int GetSquadronFreeSpace(ref _refCharacter,int _Goods) - свободное место (таже хрень - берем сопровождать торговца, продаем его товар, грузимся в магазине в него, довозим - денег куча - ЯВНЫЙ ЧИТ)
+
+bool GetRemovable(ref _refCharacter)  - наш это перс или квестовый - это как раз то, что не достает методам выше :)
+void SetCharacterRemovable(ref _refCharacter,bool removable) - ставим признак 
+
+int GetCargoGoods(ref _refCharacter,int _Goods) - груз данного перса
+
+int GetMaxItemsWeight(ref _chref) - мах вес, который может поднять перс
+
+float GetItemsWeight(ref _chref) - текущий вес всех предметов
+
+int GetSalaryForShip(ref chref) - предполагаемая зарплата за мес для Чара, включая корабль полностью и офицеров, для гл героя еще и пассажиров
+
+int AddCharacterExpToSkill(ref _chref, string _skill, float _addValue) // Экспа в скил - автоматом растут ранги и перки _chref - character _skill - name ex -"Fencing"  _skill_exp = "Fencing_exp"   _addValue = 100
+
+int GetSummonSkillFromName(ref _refCharacter, string skillName) - заначения скила skillName персанажа refCharacter с учетом вещей +1, офицеров, пенальти на корабль и перегруз
+
+int GetCharacterSkill(ref _refCharacter, string skillName) - тоже самое, но без офицеров, только сам перс
+
+float GetHullPercent(ref _refCharacter) - % целого корпуса (НР - это не проценты!!!! я уже несколько мест правил - баги)
+
+float GetSailPercent(ref _refCharacter) - % целых парусов - а вот это == SP (оно само по себе %)
+
+
+
+AddCharacterGoods - распределит меж всеми кораблями эскадры, что не влезет обрубит (метод только для ГГ, тк грузит не Removable)
+
+AddCharacterGoodsSimple - дать конкретно в этот корабль (без учета эскадры и ремувабле)
+
+SetCharacterGoods - применять НЕЛЬЗЯ
+те затрет все, что было у ГГ до того - работает токо на один корабль
+
+
+RemoveCharacterGoods - забрать товар у всей эскадры. (не ремувабле)
+
+RemoveCharacterGoodsSelf - забрать у конкретного НПС (проверки ремува нет)
+
+int GetCargoFreeSpace(ref _refCharacter) - скоко место свободно (это не в штуках, а в ц.)
+
+int GetCharacterFreeSpace(ref _refCharacter,int _Goods)
+- скоко штук товара влезет
+
+int GetSquadronFreeSpace(ref _refCharacter,int _Goods)
+это уже эскадра в шт. товара (с учетом ремувабле)
+
+int GetSquadronGoods(ref _refCharacter,int _Goods)
+- товар в шт. по эскаде (учет ремувабле)
+
+AddDialogExitQuestFunction
+- но выходу из диалога вызовет функцию, метод накопительный, те в диалоге можно кучу раз взывать, на выходе будет пачка функций последовательно
+
+
+GetConvertStr(worldMap.island, "LocLables.txt") это аналог
+    int    idLngFile = -1;
+    string totalInfo;
+
+    idLngFile = LanguageOpenFile("LocLables.txt");
+    totalInfo = LanguageConvertString(idLngFile, _param);
+    LanguageCloseFile(idLngFile);
+    
+//Запретить или разрешить генерации монстров
+void LAi_LocationDisableMonstersGen(string locationId, bool isDisable);
+
+//Запретить генерацию офицеров в локации, или разрешить после запрещения.
+void LAi_LocationDisableOfficersGen(string locationId, bool isDisable);
+
+

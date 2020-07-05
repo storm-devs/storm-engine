@@ -1,0 +1,200 @@
+block DbgPatchViewZ()
+{
+	technique t0
+	{
+		pass p0
+		{
+			zbias = 3;
+			lighting = false;
+			FogEnable = false;
+			ZEnable = true;
+			ZWriteEnable = false;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = false;
+			ColorArg1[0] = diffuse;
+			ColorArg2[0] = texture;
+			ColorOp[0] = selectArg1;
+    		ColorOp[1] = disable;
+	        AlphaOp[0] = disable;
+
+			Render.Draw
+
+			Restore.States
+
+		}
+	}
+}
+
+block DbgPatchViewNoZ()
+{
+	technique t0
+	{
+		pass p0
+		{
+			zbias = 3;
+			lighting = false;
+			ZEnable = false;
+			ZWriteEnable = false;
+			AlphaTestEnable = true;
+			AlphaBlendEnable = false;
+			SrcBlend = srcalpha;
+			DestBlend = invsrcalpha;
+			ColorArg1[0] = diffuse;
+			ColorArg2[0] = texture;
+			ColorOp[0] = selectArg1;
+			AlphaArg1[0] = diffuse;
+			AlphaOp[0] = SelectArg1;
+    		ColorOp[1] = disable;
+	        AlphaOp[1] = disable;
+
+			Render.Draw
+
+			Restore.States
+
+		}
+	}
+}
+
+block DbgDrawLocators()
+{
+	technique t0
+	{
+		pass p0
+		{
+			lighting = false;
+			FogEnable = false;
+			ZEnable = true;
+			ZWriteEnable = false;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			SrcBlend = srcalpha;
+			DestBlend = invsrcalpha;
+			ColorArg1[0] = diffuse;
+			ColorArg2[0] = tfactor;
+			ColorOp[0] = modulate;
+    		ColorOp[1] = disable;
+			AlphaArg1[0] = diffuse;
+			AlphaArg2[0] = tfactor;
+			AlphaOp[0] = modulate;
+	        AlphaOp[1] = disable;
+
+			Render.Draw
+
+			Restore.States
+
+		}
+	}
+}
+
+block DbgLocationDrawLine()
+{
+	technique t0
+	{
+		pass p0
+		{
+			zbias = 3;
+			lighting = false;
+			FogEnable = false;
+			ZWriteEnable = false;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			SrcBlend = srcalpha;
+			DestBlend = invsrcalpha;
+			ColorArg1[0] = diffuse;
+			ColorOp[0] = selectArg1;
+    		ColorOp[1] = disable;
+			AlphaArg1[0] = diffuse;
+			AlphaOp[0] = selectArg1;
+	        AlphaOp[1] = disable;
+
+			Render.Draw
+
+			Restore.States
+
+		}
+	}
+}
+
+
+block DbgDrawLines()
+{
+	technique t0
+	{
+		pass p0
+		{
+			zbias = 3;
+			lighting = false;
+			FogEnable = false;
+			ZEnable = true;
+			ZWriteEnable = false;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = false;
+			ColorArg1[0] = tfactor;
+			ColorOp[0] = SelectArg1;
+    		ColorOp[1] = disable;
+	        AlphaOp[0] = disable;
+
+			Render.Draw
+
+			Restore.States
+
+		}
+	}
+}
+
+
+block DbgDraw2DTFColor()
+{
+	technique t0
+	{
+		pass p0
+		{
+			lighting = false;
+			FogEnable = false;
+			cullmode = none;
+			ZEnable = false;
+			ZWriteEnable = false;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			ColorArg1[0] = tfactor;
+			ColorOp[0] = SelectArg1;
+    		ColorOp[1] = disable;
+			AlphaArg1[0] = tfactor;
+			AlphaOp[0] = SelectArg1;
+    		AlphaOp[1] = disable;
+
+			Render.Draw
+
+			Restore.States
+
+		}
+	}
+}
+
+block DbgDraw2DTexture()
+{
+	technique t0
+	{
+		pass p0
+		{
+			lighting = false;
+			FogEnable = false;
+			cullmode = none;
+			ZEnable = false;
+			ZWriteEnable = false;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			ColorArg1[0] = texture;
+			ColorOp[0] = SelectArg1;
+    		ColorOp[1] = disable;
+			AlphaArg1[0] = texture;
+			AlphaOp[0] = SelectArg1;
+    		AlphaOp[1] = disable;
+
+			Render.Draw
+
+			Restore.States
+
+		}
+	}
+}

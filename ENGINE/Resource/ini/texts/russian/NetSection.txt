@@ -1,0 +1,17 @@
+Net_ShipDieFromPlayer				{%1 <%2> пустил ко дну %3 <%4>.}
+Net_ShipDieFromCollisionLiveShip	{%1 <%2> протаранил %3 <%4>.}
+Net_ShipDieFromCollisionDeadShip	{%1 <%2> пошел на корм рыбам! Горе такому шкиперу!}
+Net_ShipDieFromCollisionIsland		{%1 <%2> разбился о скалы! Позор такому шкиперу!}
+Net_ShipDieFromLighting				{Господь разгневался на %1 <%2> и покарал его своей десницей!}
+Net_ShipDieFromCriticalHit			{%1 <%2> разнес %3 <%4> в щепки!}
+Net_CriticalHit	 					{%1 <%2> всадил ядро в бочонок с порохом на палубе %3 <%4>!}
+Net_MastFallFromHit					{%1 <%2> сбил мачту %3 <%4>.}
+Net_MastFallFromCollision			{%1 <%2> потерял мачту в результате столкновения.}
+Net_FireActivation					{%1 <%2> поджег %3 <%4>}
+NetFG_ServerIsFull					{Сервер заполнен. Присоединение еще одного игрока невозможно.}
+NetFG_NeedUserPassword				{Введенный пароль не совпадает с хранящимся для этого пользователя паролем на сервере, попробуйте еще раз.}
+NetFG_NeedServerPassword			{Вы ввели неправильный пароль для доступа на сервер, попробуйте еще раз.}
+NetFG_RejectedUnknown				{По неизвестным причинам не удается подключиться к этому серверу.}
+NetFG_Banned						{Вам запретили доступ на этот сервер.}
+NetEG_DeathMatch					{Сражение завершено.\n \n%1 победил!}
+NetEG_Team							{Сражение завершено.\n \n"%1" команда победила!}

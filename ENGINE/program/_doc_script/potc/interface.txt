@@ -1,0 +1,8 @@
+состояние интерфейса :	InterfaceStates
+=======================================
+
+1.  InterfaceStates.Buttons  :
+Пример:	InterfaceStates.Buttons.Load.enable = false;	// Выключение кнопки загрузки в интерфейсе
+							// по умолчанию все кнопки включены
+Для главного меню следующий набор кнопок:
+New, Resume, Save, Load, Credits, Options, Quit

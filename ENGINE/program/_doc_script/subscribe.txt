@@ -1,0 +1,500 @@
+**************************************************
+***     Описание INI файла для интерфейсов     ***
+*****************************************************************************************
+
+	INI-файлы размещаются в директории "RESOURSE\INI\INTERFACES"
+и включают в себя следующие секции:
+
+!!!!!!СЕКЦИЯ!!!!!!
+[MAIN]
+	Здесь описывается список тех компонент интерфейса которые присутствуют в
+данном интерфейсе (Полный список приводится ниже), следующим образом:
+--------------------------------------
+item = тип компоненты, имя компоненты
+--------------------------------------
+	Каждая компонента списка выводится на экране в очередности как сверху в низ
+в описанном списке компонент.
+
+	В конце списка размещен указатель на тот компонент, который станет текущим при старте
+интерфейса.
+---------------------------
+start = имя компоненты
+---------------------------
+
+!!!!!!СЕКЦИЯ!!!!!!
+[имя компоненты]
+	Здесь описаны все параметры компоненты меню.
+
+
+========================================================================
+	СПИСОК КОМПОНЕНТ :
+========================================================================
+BUTTON
+VIDEO
+SCROLLIMAGE
+IMAGECOLLECTION
+STRINGCOLLECTION
+FOURIMAGES
+RECTANGLE
+BOUNDER
+TITLE
+TEXTBUTTON
+SCROLLBAR
+LINECOLLECTION
+STATUSLINE
+CHANGER
+PICTURE
+CONTEXTHELP
+GLOWS
+LRCHANGER
+TWO_PICTURE
+SCROLLER
+QUESTTITLE
+QUESTTEXT
+SLIDEPICTURE
+
+
+========================================================================
+	ОБЩИЕ КОМАНДЫ (СООБЩЕНИЯ) :
+========================================================================
+	// выполнить нодом команду (заданную кодом)
+SendMessage(&GameInterface,"lslll",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", -1, 0, <command code>);
+	// установить статус для нода: можно/нельзя кликать мышью
+SendMessage(&GameInterface,"lslll",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", -1, 1, <clickable status>);
+	// получить статус для нода: можно/нельзя кликать мышью
+int SendMessage(&GameInterface,"lslll",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", -1, 2);
+	// выполнить нодом команду (заданную строкой - названием)
+SendMessage(&GameInterface,"lslls",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", -1, 3, <command name>);
+	// изменить позицию для нода
+SendMessage(&GameInterface,"lsllllll",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", -1, 4, left,top, right,bottom);
+
+
+[SCROLLEDPICTURE]
+// в INI файле весь набор параметров для PICTURE + следующие дополнительные:
+basesize = 1000,1000 // масштаб картинки (в этих единицах задаются координаты в картинке)
+scale1 = 1.0, 1.0 // масштаб по X,Y (1.0 показывается вся картинка целиком)
+scale2 = 0.5, 0.5
+...
+scaleN = 0.1, 0.1
+startscale = 2 // первый включаемый масштаб
+//---------------------------------------
+// в скрипте заполняются следующие поля:
+//---------------------------------------
+GameInterface.<имя элемента>.centerX	позиция для центрирования в картинке
+GameInterface.<имя элемента>.centerY
+//---------------------------------------
+// список встроенных картинок
+GameInterface.<имя элемента>.imagelist.img1 ... imgN	где каждый элемент состоит:
+//---------------------------------------
+GameInterface.<имя элемента>.imagelist.img1.x // позиция встроенной картинки
+GameInterface.<имя элемента>.imagelist.img1.y
+// либо
+GameInterface.<имя элемента>.imagelist.img1.group // имя группы и самой картинки
+GameInterface.<имя элемента>.imagelist.img1.pic
+// либо
+GameInterface.<имя элемента>.imagelist.img1.file // имя файла для картинки
+//-------------------------------------------------
+// для управления используются следующие сообщения
+//-------------------------------------------------
+// весь набор сообщений для PICTURE. + :
+	// установить центрикрование в картинке по следующим координатам (пределы заданы basesize)
+	// заданные числами с плавающей точкой
+SendMessage(&GameInterface,"lslff",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 10, centerX,centerY);
+
+
+
+[CHECKBUTTON]
+exclusiveChoose	= 0					// выбранной может быть только одна кнопка
+textClickable = 0					// клик мыши работает как на тексте, так и на иконке
+font = interface_normal				// шрифт
+fontScale = 1.0						// масштаб шрифта
+normalFontColor = 255,200,200,200	// цвет обычного текста
+selectFontColor = 255,200,200,255	// цвет текста для помеченной как включено кнопки
+disableFontColor = 255,68,68,68		// цвет текста для запрещенной кнопки
+rect_textoffset = 40,0,0,0			// отступы слева,сверху,справа,снизу для текста (относительно позиции контролки)
+lineheight = 16						// вертикальное расстояние между строками
+alignment = center					// выравнивание текста (left,center,right)
+sectioninterval = 12				// дополнительный вертикальный отступ между кнопками (+lineheight=общий отступ)
+iconsize = 32,32					// размер иконки кнопки
+icongroup = ICONS					// имя группы картинок для иконок кнопок
+normalpicture = ship back			// иконка для нормальной (невыделенной) кнопки
+normalpiccolor = 255,128,128,128	// цвет для нормальной иконки
+selectpicture = exit button			// иконка для выделенной (отмеченной) кнопки
+selectpiccolor = 255,128,128,128	// цвет для выделенной кнопки
+disablepicture = black rectangle	// иконка для запрещенной кнопки
+disablepiccolor = 255,128,128,128	// цвет иконки для незапрещенной кнопки
+iconoffset = 0,0					// смещение иконки относительно левой координаты позиции и верхней строки текста (для кнопки)
+individualpos = 0					// у каждой кнопки своя индивидульная позиция (см. параметр posN=)
+//
+pos1 = 0,0								// позиции для кнопок (работают при включенном флаге individualpos)
+...
+posN = 0,0
+//
+section1 = 0,0,text for first button	// описание кнопки: <выделение 0-1>, <запрещение 0-1>, "текст"
+...										// текст является ID для строки
+sectionN = 1,1,#????????????????????	// если текст начинается с #, то текст берется как есть
+//
+Сообщения для элемента:
+	// добавить кнопку
+	SendMessage(&GameInterface,"lslsll",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 0, "текст", selectStatus, disableStatus );
+	// установить новый текст на кнопку
+	SendMessage(&GameInterface,"lslls",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 1, buttonNumber, "текст");
+	// установить выбор на кнопку
+	SendMessage(&GameInterface,"lslll",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 2, buttonNumber, selectStatus );
+	// получить сосотояние кнопки (возвращает 1 - выбрана, 0 - невыбрана)
+	SendMessage(&GameInterface,"lsll",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 3, buttonNumber );
+	// получить выбранную кнопку (для не эксклюзивного выбора выдает номер первой выбранной)
+	SendMessage(&GameInterface,"lsl",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 4 );
+	// запретить/разрешить кнопку
+	SendMessage(&GameInterface,"lslll",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 5, buttonNumber, disableStatus );
+// Поля используемые в скрипте
+	GameInterface.<имя элемента>.state1		// состояние (выбрано/нет) для кнопки с указанным номером (0-off,1-on)
+	...										//
+	GameInterface.<имя элемента>.stateN		//
+// При изменении состояния кнопки высылается event 
+	event( "CheckButtonChange", "sll", имя_нода, номер_кнопки, новое_состояние{0,1} )
+
+
+[TABLE]
+class = TABLE
+fontcell			= interface_normal
+fontcellcolor		= 255,255,255,255
+fontcellscale		= 1.0
+fontcellalignment	= center
+fontcellvalignment	= top
+fonttitle			= interface_normal
+fonttitlecolor		= 255,148,148,148
+fonttitlescale		= 1.2
+fonttitlealignment	= center
+fonttitlevalignment	= top
+backimage			= piclist=PAPIRUS, picname=papirus_store_price, color=(255,128,128,128)
+bordericongroup		= MAIN_ICONS
+borderlefttop		= BORDER_UPLEFT
+borderleftbottom	= BORDER_DOWNLEFT
+borderrighttop		= BORDER_UPRIGHT
+borderrightbottom	= BORDER_DOWNRIGHT
+borderleft			= BORDER_LEFT
+borderright			= BORDER_LEFT
+bordertop			= BORDER_CENTER
+borderbottom		= BORDER_CENTER
+bordervline			= BORDER_LEFT
+borderhline			= BORDER_CENTER
+bordercolor			= 255,128,128,128
+borderwidth			= 4
+vlinewidth			= 4
+hlineheight			= 4
+headerlineheight	= 4
+hlineisbreakable	= 0
+bordercornersize	= 9,9
+rowquantity			= 4
+colquantity			= 4
+rowsheight			= 0,0,0,0
+colswidth			= 60,80,120,60
+cellspacesize		= 4,4
+scroller			= имя контролки скроллера
+fontlist1			= font_name_1 ... // из етого списка можно применять фонты в отдельных ячейках 
+...									  // если поставить в скрипте атрибут .td<n>.fontidx = {0,1,...,N}
+fontlistN			= font_name_N	  // без етого атрибута используется стандартный шрифт
+//Сообщения для элемента:
+	// обновить строки (нужно после изменений из скрипта)
+	SendMessage(&GameInterface,"lsl",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 0 );
+	// получить номер строки на которой находится указатель мыши (-1 - указатель за пределами)
+	int SendMessage(&GameInterface,"lsl",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 1 );
+// Поля заполняемые и используемые в скрипте
+	GameInterface.<имя элемента>.top - индекс первой отображаемой строки
+	GameInterface.<имя элемента>.select - индекс выделенной строки
+	GameInterface.<имя элемента>.hr. - заполнение строки заголовка(отсутствует если нет заголовка) :
+	GameInterface.<имя элемента>.hr.speccolor - argb color для специального выделения строки
+	GameInterface.<имя элемента>.hr.td1. - ячейки строки :
+		...
+	GameInterface.<имя элемента>.hr.td<n>.
+	GameInterface.<имя элемента>.hr.td1.icon. - картинка установленная в ячейку :
+!!!	или GameInterface.<имя элемента>.hr.td1.icon1 ... GameInterface.<имя элемента>.hr.td1.iconN
+	GameInterface.<имя элемента>.hr.td1.icon.group - имя группы
+	GameInterface.<имя элемента>.hr.td1.icon.image - имя самой картинки в группе
+	GameInterface.<имя элемента>.hr.td1.icon.texture - имя файла с текстурой (uv => 0,0 - 1,1)
+	GameInterface.<имя элемента>.hr.td1.icon.uv - UV-coordinates (left,top,right,bottom)
+	GameInterface.<имя элемента>.hr.td1.icon.texturepointer - указатель на класс текстуры (IDirect3DTexture8*)
+	GameInterface.<имя элемента>.hr.td1.icon.width - ширина/высота картинки (необязательный - по умолчанию размер исходной картинки)
+	GameInterface.<имя элемента>.hr.td1.icon.height
+	GameInterface.<имя элемента>.hr.td1.icon.cellsize = 1 - использовать ширину и высоту ячйки для размера иконки
+	GameInterface.<имя элемента>.hr.td1.icon.offset = "0,0" - смещение картинки
+	GameInterface.<имя элемента>.hr.td1.icon.valign = {"top","center","bottom"} - вертикальное выравнивание
+	GameInterface.<имя элемента>.hr.td1.str - строка прописанная в ячейке (можно использовать /n для переноса строки)
+	GameInterface.<имя элемента>.hr.td1.color - цвет шрифта (необязателен - по умолчанию берется из инишника)
+	GameInterface.<имя элемента>.hr.td1.scale - масштаб шрифта (необязателен - по умолчанию берется из инишника)
+	GameInterface.<имя элемента>.hr.td1.align - горизонтальное выравнивание в ячейке ("left","center" or "right")
+	GameInterface.<имя элемента>.hr.td1.valign - вертикальное выравнивание в ячейке ("top","center" or "bottom")
+	GameInterface.<имя элемента>.hr.td1.textoffset = "0,0" - смещение для текста
+	GameInterface.<имя элемента>.hr.td1.textoffsets.s1 ... - вертикальное смещение для каждой строки (не обязательно для всех, номер есть номер строки)
+	GameInterface.<имя элемента>.tr1. - строки (не заголовочные) все параметры как и в заголовке прописываются в td1 ... td<n>
+		...
+	GameInterface.<имя элемента>.tr<n>.
+// присылаемые evnts:
+	Event( "OnTableClick", "sll", node_name, row,col ) - где row&col=1...N (если row=0 - это "шапка");
+	Event( "TableSelectChange", "sll", node_name, row,col );
+
+[SCROLLBAR]
+fontID				= interface_normal
+fontColor			= 255,255,255,255
+fontScale			= 1.0
+fontOffset			= 0,0				// смещение текста относительно середины по горизонтали(всегда выравнивание по центру) и верхней точки по вертикали
+faceColor			= 255,128,128,128	// цвет для картинки
+shadowColor			= 155,0,0,0			// цвет для тени
+group				= ICONS				// группа иконок применяемых в изображении
+pressPictureOffset	= 2,2				// смещение кнопок при нажатии
+shadowOffset		= 3,3				// смещение тени кнопок (без нажатия)
+pressShadowOffset	= 1,1				// смещение тени кнопок при нажатии
+pressDelay			= 20				// задержка на нажатии в милисекундах
+leftPicture			= small left arrow
+rightPicture		= small right arrow
+centerPicture		= scrollbar
+selectCenterPicture	= select scrollbar
+barWidth			= 100				// ширина центральной картинки (без стрелок)
+;sideWidth			= 16				// ширина стрелки (если прописан, то параметр barWidth не используется)
+valueShow			= 0					// выводить на показ внутреннее значение (если использованть его)
+valueMin			= 0					// минимальное значение
+valueMax			= 100				// максимальное значение
+valueStart			= 0					// стартовое значение (если перед инициализацией интерфейса выставить атрибут GameInterface.<nodeName>.str = <n>, то стартовым будет значение из атрибута)
+valueStep			= 1					// шаг увеличения/уменьшения внутреннего значения
+valueStepMultiply	= 10				// множитель шага увеличения/уменьшения значения для быстрого изменения
+//Сообщения для элемента:
+	// установить минимальное значение
+	SendMessage(&GameInterface,"lslf",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 0, 0.0 );
+	// установить максимальное значение
+	SendMessage(&GameInterface,"lslf",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 1, 100.0 );
+	// изменить значение
+	SendMessage(&GameInterface,"lslf",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 2, 10.0 );
+// Поля заполняемые и используемые в скрипте
+	GameInterface.<имя элемента>.str - значение (тип float)
+
+[PICTURE]
+groupName = groupname
+picName = picname
+textureName = texture file name
+videoName = video texture name
+color = 255,128,128,128
+blind = 0
+blindUpTime = 1.5
+blindDownTime = 1.0
+blindMinColor = 255,128,128,128
+blindMaxColor = 255,168,168,168
+//Сообщения для элемента:
+	// Установить картинку на новую позицию
+	SendMessage(&GameInterface,"lslllll",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 0, left,top,right,bottom );
+	// Установить текстурные координаты картинки
+	SendMessage(&GameInterface,"lslffff",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 1, left,top,right,bottom );
+	// Установить новую картинку или видео картинку
+	SendMessage(&GameInterface,"lslls",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 2, bUseVideo, <video or texture file name> );
+	// Установить случайную картинку из директории
+	SendMessage(&GameInterface,"lsls",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 3, <directory name> );
+	// Установить новый цвет
+	SendMessage(&GameInterface,"lsll",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 4, argbColor );
+	// установить/снять мигание
+	SendMessage(&GameInterface,"lsll",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 5, bSetBlind );
+	// установить новую картинку заданную именем группы и именем картинки
+	SendMessage(&GameInterface,"lslss",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 6, groupName, pictureName );
+	// установить новую картинку из указателя на тексуру (IDirect3DTexture8*)
+	SendMessage(&GameInterface,"lsll",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 6, pTexture );
+
+[STRINGCOLLECTION]
+string = string_id,font:interface_normal,pos:{100,100},fc:{255,255,255,255},bc:{0,128,128,128},scale:1.000000,state:{CS}
+// где:
+	// string_id - идентификатор строки в common.ini
+	// font - имя фонта
+	// pos - позиция по x,y
+	// fc - цвет шрифта
+	// bc - цвет фона
+	// scale - масштаб шрифта
+	// state - флаги: L-выравнивание в лево, C-выравнивание по центру, R-выравнивание по правому краю, S-тень
+//Сообщения для элемента:
+	// добавить динамическую строку
+	SendMessage(&GameInterface,"lslsssllllllfl",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 0, str_id, str_text, fontname,
+			 pos.x,pos.y, font_color,back_color, alignment={SCRIPT_ALIGN_RIGHT,SCRIPT_ALIGN_CENTER,SCRIPT_ALIGN_LEFT},
+			 bShadow={true,false}, scale, width );
+			 // если width<=0, то параметр не учитывается, иначе масштаб приводится к тому, что бы строка уместилась в заданной ширине
+	// Сменить строку по номеру (если новаястрока начинается с #, то берется строка как написана - иначе это ID строки)
+	SendMessage( &GameInterface,"lslls",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 1, string_number, string_text );
+	// скопировать строку с одного места на другое (первая строка имеет номер 1)
+	SendMessage( &GameInterface,"lslll",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 2, dst_string_number, src_string_number );
+	// поменять цвет строки
+	SendMessage( &GameInterface,"lslll",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 3, string_number, color );
+
+[RECTANGLE]
+;position		= left,top,right,bottom
+leftColor		= 255,255,255,255
+topColor		= 205,100,50,11
+rightColor		= 255,255,255,255
+bottomColor		= 205,100,50,11
+//Сообщения для элемента:
+	// изменить положение
+	SendMessage( &GameInterface,"lslllll",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 0, left,top,right,bottom );
+	// Сменить цвет прямоугольника и границы
+	SendMessage( &GameInterface,"lslll",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 1, rectangle_color, border_color );
+
+[IMAGECOLLECTION]
+groupName	= имя группы
+picture		= имя картинки (если задается picture = editsection:имя_секции, то данное описание не является описание картинки, но является секцией для редактора - всех последующих картинок до следующей секции или picture = editsection:end)
+...
+picture		= имя картинки
+//Сообщения для элемента:
+	// добавить иконку
+	SendMessage( &GameInterface,"lslslllll",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 0, имя_картинки, цвет_картинки, left,top,right,bottom );
+	// установить текстуру
+	SendMessage( &GameInterface,"lsls",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 1, имя_группы );
+	// удалить все картинки (текстуру оставить)
+	SendMessage( &GameInterface,"lsl",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 2 );
+	// установить цвет картинки
+	SendMessage( &GameInterface,"lslll",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 3, номер_картинки, новый_цвет );
+	// изменить картинку
+	SendMessage( &GameInterface,"lslls",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 4, номер_картинки, имя_картинки );
+
+[FORMATEDTEXT]
+wrapoff				= 0
+syncnodes			= node1,node2,...nodeN
+fontScale			= 1.0
+scrollerName		= nodename
+alignment			= {left,center,right}
+leftoffset			= 0
+upOffset			= 0
+videoName			= animate_texture_name
+backColor			= 0
+backOffset			= 0,0,0,0
+UpEnableTexture		= texture_name
+UpDisableTexture	= texture_name
+UpEnablePos			= 0,0,0,0
+UpEnableUV			= 0.0,0.0,1.0,1.0
+UpDisableUV			= 0.0,0.0,1.0,1.0
+DownEnableTexture	= texture_name
+DownDisableTexture	= texture_name
+DownEnablePos		= 0,0,0,0
+DownEnableUV		= 0.0,0.0,1.0,1.0
+DownDisableUV		= 0.0,0.0,1.0,1.0
+lineSpace			= 30
+color				= 255,128,128,128
+font				= font_name
+string				= stringID or #string
+string				= -/-
+...
+string				= -/-
+//Сообщения для элемента:
+	// добавить текст к форматированному списку и вернуть количество занимаемых строк
+	SendMessage( &GameInterface,"lsle",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 0, &string );
+	// установить текущий выделенный текст в списке (по его номеру)
+	SendMessage( &GameInterface,"lsll",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 1, string_number );
+	// установить текущий выделенный текст в списке (по относительному номеру строки от 0 до 1)
+	SendMessage( &GameInterface,"lslf",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 2, relative_number );
+	// заполнить атрибуты размерами текстов
+	SendMessage( &GameInterface,"lsla",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 3, arOutValueTable );
+	// заполнить аттрибуты Y координатами вершины текста
+	SendMessage( &GameInterface,"lsla",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 4, arOutValueTable );
+	// Центрировать текст вертикально
+	SendMessage( &GameInterface,"lsl",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 5 );
+	// Получить состояние возможности продвижения текста вверх/вниз
+	SendMessage( &GameInterface,"lsll",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 6, {true,false}=>{верх,низ} );
+	// установить строки на заданные позиции
+	SendMessage( &GameInterface,"lsla",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 7, arStringList );
+	// Установить цвет для группы
+	SendMessage( &GameInterface,"lslll",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 8, stringNum, color );
+	// Узнать количество строк которое займет строка (return value)
+	int SendMessage( &GameInterface,"lsle",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 9, &string );
+	// заменить строку под номером
+	SendMessage( &GameInterface,"lslle",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 10, stringNum, &string );
+	// получить номер текущей выделенной строки (return value)
+	int SendMessage( &GameInterface,"lsl",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 11 );
+	// получить вертикальную координату строки (если -1,то ее нет в отображаемом окне);
+	SendMessage( &GameInterface,"lsll",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 12, stringNum );
+	// заморозить контрол (обрабатывать только евент правой кнопки мыши)
+	SendMessage( &GameInterface,"lsll",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 13, isFreezed );
+
+[LINECOLLECTION]
+line = (left,top)-(right,bottom),col:{a,r,g,b}
+//Сообщения для элемента:
+	// сменить цвет для линии с номером или всех строк (если номер = -1)
+	SendMessage( &GameInterface,"lslll",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 0, color, line_num );
+	// добавить динию и вернуть ее номер
+	long SendMessage( &GameInterface,"lsllllll",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 1, color, left,top,right,bottom );
+
+[TEXTBUTTON]
+faceColor				= 255,128,128,128
+faceColorPressed		= 255,128,128,128
+faceColorSelected		= 255,128,128,128
+shadowColor				= 255,0,0,0
+fontColor				= 255,255,255,255
+unselectableFontColor	= 255,128,128,128
+group					= MAIN_ICONS
+;ShadowTexture			= interfaces\shadow.tga
+;ShadowUV				= 0.0,0.0,1.0,1.0
+;shadowScale			= 1.2
+pressPictureOffset		= 2,2
+;shadowOffset			= 0,4
+;pressShadowOffset		= 0,1
+pressDelay				= 20
+font					= interface_button
+strOffset				= 7
+buttonLeft				= left side button
+buttonMiddle			= middle side button
+selectButtonMiddle		= select middle side button
+selectButtonleft		= select left side button
+;midVideo				= button
+backColor				= 0,0,0,0
+class 					= TEXTBUTTON
+//Сообщения для элемента:
+	// поменять текст на кнопке
+	SendMessage( &GameInterface,"lsls",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 0, "new text" ); // если текст начинается с #, то ставится в точности он (иначе это ID строки)
+	// поменять позицию кнопки
+	SendMessage( &GameInterface,"lslllll",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 1, left,top,right,bottom );
+
+[SCROLLIMAGE]
+;centerXoffset = центральная позиция - выделенная картинка
+;centerYoffset = центральная позиция - выделенная картинка
+fMoveDelta			= 35.0
+speedMul			= 3
+imageSize			= 128,128
+fBoundScale			= 1.0
+wDelta				= 4
+blendColor			= 255,128,128,128
+blindDelay			= 400
+LayerQuantity		= 1
+dwNormalColorARGB1	= 255,128,128,128
+dwSelectColorARGB1	= 255,48,48,48
+dwNormalColorARGB2	= 255,128,128,128
+dwSelectColorARGB2	= 255,168,168,168
+borderShowUp		= 1
+border				= ICONS,select border
+UseOneString		= 0
+scale1				= 1.0
+font1				= interface_normal
+dwXOffset1			= 0
+dwYOffset1			= 92
+dwForeColor1		= 255,255,255,155
+dwBackColor1		= 0,0,0,0
+UseTwoString		= 0
+scale2				= 1.0
+font2				= interface_normal
+dwXOffset2			= 0
+dwYOffset2			= 0
+dwForeColor2		= 255,255,255,255
+dwBackColor2		= 0,0,0,0
+//Сообщения для элемента:
+	// разрешить/запретить показ рамки
+	SendMessage( &GameInterface,"lsll",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 0, bBorderShow );
+	// установить новую текущую картинку
+	SendMessage( &GameInterface,"lsll",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 1, nNewSelectIndex );
+	// узнать номер картинки в которой находится курсор мыши (-1 не находится в картинке)
+	int SendMessage( &GameInterface,"lsl",MSG_INTERFACE_MSG_TO_NODE,"имя элемента", 2 );
+
+[PCEDITBOX]
+strFont			= fontname
+fontScale		= 1.0
+disguisestring	= 0
+argbFontColor	= 255,255,255,255
+stringLength	= -1
+stringWidth		= -1
+stringoffset	= 0,0
+stringalign		= left
+
+[SLIDEPICTURE]
+// скрипты
+GameInterface.имя_нода.offset.x - координаты левого верхнего угла в мировых координатах
+GameInterface.имя_нода.offset.y

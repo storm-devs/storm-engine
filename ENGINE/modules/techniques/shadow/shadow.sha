@@ -1,0 +1,82 @@
+block shadow_model()
+{
+	technique t0
+	{
+		pass p0
+		{
+			AlphaTestEnable = false;
+			AlphaBlendEnable = false;
+			fogEnable = false;
+
+			ColorOp[0] = SelectArg1;
+			ColorArg1[0] = TFactor;
+
+			ColorOp[1] = disable;
+
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}
+
+block shadow_draw()
+{
+	technique t0
+	{
+		pass p0
+		{
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			SrcBlend = zero;
+			DestBlend = invsrccolor;
+			FogEnable = false;
+			Lighting = false;
+			ZWriteEnable = false;
+			CullMode = ccw;
+			ZBias = 1;
+		
+			ColorOp[0] = modulate2x;
+			ColorArg1[0] = texture;
+			ColorArg2[0] = tfactor;
+
+			ColorOp[1] = disable;
+
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}
+
+block shadow_smooth()
+{
+	technique t0
+	{
+		pass p0
+		{
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			SrcBlend = one;
+			DestBlend = one;
+			FogEnable = false;
+			Lighting = false;
+			ZEnable = false;
+			CullMode = none;
+		
+			ColorOp[0] = modulate;
+			ColorArg1[0] = texture;
+			ColorArg2[0] = tfactor;
+
+			ColorOp[1] = modulate;
+			ColorArg1[1] = current;
+			ColorArg2[1] = diffuse;
+
+			ColorOp[2] = disable;
+
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}

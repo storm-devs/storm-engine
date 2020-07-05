@@ -1,0 +1,338 @@
+info
+{
+    Универсальный создатель героев адд-она SLiB
+    Скрипт создан ALexusB 09.10.04
+    Путь к файлу \RESOURCE\INI\TEXTS\RUSSIAN\HeroDescribe.txt
+    
+    версия 02.07.06
+
+    hero_qty - количество героев
+    ps_hero_qty - количество псевдо-героев (могут встретиться как квестовые персонажи в игре, в ПГГ беруться строго мужики)
+    heroName_Х        - имя героя
+    heroLastname_Х    - фамилия
+    heroNameGen_ и heroLastnameGen_ - родительный падеж,   heroLastnameDat_  - дательный падеж.
+    heroFace_Х        - номер портрета
+    heroModel_Х       - список моделей через зяпятую без пробелов, может быть меньше, чем полный список, тогда первая возмется
+            (без брони, легкая, средняя, крутая, одежда_1, одежда_2, .. одежда_10)
+    heroType_Х        - тип героя (влияет на стартовые параметры)
+        значения только: Corsair, Merchant, Adventurer
+			или (для русской версии)
+			Корсар,
+			Торговец,
+			Авантюрист
+    heroNation_Х      - стартовая нация героя (нейтральные отношения)
+        значения только: ENGLAND, FRANCE, SPAIN, HOLLAND
+            или (для русской версии)
+			Англия
+            Франция
+            Испания
+            Голландия
+    sex_X             - пол (man, woman, skeleton)
+    animation_X       - анимация (man, woman, towngirl)
+    hero_Х            - краткая биография героя (не более 5-7 строк, что бы помещалось в поле текста)
+    Х - порядковый номер героя в списке
+    
+    Где что:
+    Текстуры портретов \RESOURCE\Textures\INTERFACES\PORTRAITS  (64, 128, 256)
+    Скины              \RESOURCE\Textures\Characters
+    Модели             \RESOURCE\MODELS\Characters
+    Головы             \RESOURCE\MODELS\Heads
+    Анимация головы    \RESOURCE\animation\Heads и \RESOURCE\animation\Heads\AN
+    
+    Обязательно сохраните исходный файл до редактирования. Иначе обновления могут не установится.
+    Перед установкой верните его на место, установите обновление. После чего повторите настройку своего героя (героев).
+    
+    _______________
+               С заботой о Вас, ALexusB
+}
+
+Merchant
+{
+Найти выгодный товар на продажу- только половина успеха. Еще нужно не утопить его по пути к клиенту. И забудьте про это "Пиф-Паф-Ой-Ой-Ой",- риск оправдан только в коммерческих делах.
+}
+Corsair
+{
+Корсар способен выпить все, что течет, утопить все, что плывет, растратить все, что звенит и убить все, что пищит. Подобные деяния не добавляют любви ближних, но иногда здорово продлевают жизнь.
+}
+Adventurer
+{
+Авантюристами не рождаются, ими становятся. Неуемная жажда золота и приключений способна завести представителей этой почтенной профессии в такие дыры, где никакая удача не уравняет со смертью в правах на жизнь. Только отцовский мушкет и 24 калибр.
+}
+
+hero_qty {3}
+ps_hero_qty {11}
+
+heroName_1 {Алекс}
+heroNameGen_1 {Алекса}
+heroNameDat_1 {Алексу}
+
+heroLastname_1 {Блэйд}
+heroLastnameGen_1 {Блэйда}
+heroLastNameDat_1 {Блэйду}
+
+heroFace_1 {1}
+
+heroModel_1 {Devlin,Devlin,Devlin,Devlin,Devlin,Devlin,Devlin}
+
+heroType_1 {Торговец}
+
+heroNation_1 {Голландия}
+
+sex_1 {man}
+animation_1 {man}
+
+hero_1
+{
+Алекс Блэйд - потомственный торговец. Родом из Англии, но долго плавал под голландским торговым флагом. Впрочем, иногда не брезгует скользким путем добывания вожделенных пиастров.
+}
+
+heroName_2 {Джон}
+heroLastname_2   {Сильвер}
+
+heroNameGen_2 {Джона}
+heroLastnameGen_2 {Сильвера}
+
+heroNameDat_2 {Джону}
+heroLastNameDat_2 {Сильверу}
+
+heroFace_2 {22}
+
+heroModel_2  {officer_5,officer_5,officer_5,officer_5,officer_5,officer_5,officer_5}
+
+heroType_2 {Корсар}
+
+heroNation_2 {Англия}
+
+sex_2 {man}
+animation_2 {man}
+
+hero_2
+{
+Известный в этих водах рубака, хотя удача не всегда была на его стороне. О чем говорят полученные в боях увечья. Но шрамы только красят настоящего мужчину! Правда же?
+}
+
+heroName_3 {Франциск}
+heroLastname_3 {Дюбуа}
+
+heroNameGen_3 {Франциска}
+heroLastnameGen_3 {Дюбуа}
+
+heroNameDat_3 {Франциску}
+heroLastNameDat_3 {Дюбуа}
+
+heroFace_3 {24}
+
+heroModel_3 {officer_7,officer_7,officer_7,officer_7,officer_7,officer_7,officer_7}
+
+heroType_3 {Авантюрист}
+
+heroNation_3 {Франция}
+
+sex_3 {man}
+animation_3 {man}
+
+hero_3
+{
+Что дает человеку власть? Деньги и могущество. А что дает человеку возможность все это иметь? Его знания и способности.
+Или способности других людей. Решение чужих проблем - вот основное, что умеет наш герой. Всегда быть в маске судьба его.
+}
+
+heroName_4 {Артур}
+heroLastname_4 {Корнел}
+
+heroNameGen_4 {Артура}
+heroLastnameGen_4 {Корнела}
+
+heroNameDat_4 {Артуру}
+heroLastNameDat_4 {Корнелу}
+
+heroFace_4 {25}
+
+heroModel_4 {officer_8,officer_8,officer_8,officer_8,officer_8,officer_8,officer_8}
+
+heroType_4 {Авантюрист}
+
+heroNation_4 {Англия}
+
+sex_4 {man}
+animation_4 {man}
+
+hero_4
+{
+ПГГ
+}
+
+heroName_5 {Хосе}
+heroLastname_5 {Даско}
+
+heroNameGen_5 {Хосе}
+heroLastnameGen_5 {Даско}
+
+heroNameDat_5 {Хосе}
+heroLastNameDat_5 {Даско}
+
+heroFace_5 {26}
+
+heroModel_5 {officer_9,officer_9,officer_9,officer_9,officer_9,officer_9,officer_9}
+
+heroType_5 {Авантюрист}
+
+heroNation_5 {Испания}
+
+sex_5 {man}
+animation_5 {man}
+
+hero_5
+{
+ПГГ
+}
+
+heroName_6 {Марк}
+heroLastname_6 {Вандерборг}
+
+heroNameGen_6 {Марка}
+heroLastnameGen_6 {Вандерборга}
+
+heroNameDat_6 {Марку}
+heroLastNameDat_6 {Вандерборгу}
+
+heroFace_6 {27}
+
+heroModel_6 {officer_10,officer_10,officer_10,officer_10,officer_10,officer_10,officer_10}
+
+heroType_6 {Авантюрист}
+
+heroNation_6 {Голландия}
+
+sex_6 {man}
+animation_6 {man}
+
+hero_6
+{
+ПГГ
+}
+
+heroName_7 {Сесил}
+heroLastname_7 {Форестер}
+
+heroNameGen_7 {Сесила}
+heroLastnameGen_7 {Форестера}
+
+heroNameDat_7 {Сесилу}
+heroLastNameDat_7 {Форестеру}
+
+heroFace_7 {28}
+
+heroModel_7 {officer_11,officer_11,officer_11,officer_11,officer_11,officer_11,officer_11}
+
+heroType_7 {Авантюрист}
+
+heroNation_7 {Англия}
+
+sex_7 {man}
+animation_7 {man}
+
+hero_7
+{
+ПГГ
+}
+
+heroName_8 {Антуан}
+heroLastname_8 {Ксавье}
+
+heroNameGen_8 {Антуана}
+heroLastnameGen_8 {Ксавье}
+
+heroNameDat_8 {Антуану}
+heroLastNameDat_8 {Ксавье}
+
+heroFace_8 {29}
+
+heroModel_8 {officer_12,officer_12,officer_12,officer_12,officer_12,officer_12,officer_12}
+
+heroType_8 {Авантюрист}
+
+heroNation_8 {Франция}
+
+sex_8 {man}
+animation_8 {man}
+
+hero_8
+{
+ПГГ
+}
+
+heroName_9 {Санчос}
+heroLastname_9 {Эстебан}
+
+heroNameGen_9 {Санчоса}
+heroLastnameGen_9 {Эстебана}
+
+heroNameDat_9 {Санчосу}
+heroLastnameDat_9 {Эстебану}
+
+heroFace_9 {30}
+
+heroModel_9 {officer_13,officer_13,officer_13,officer_13,officer_13,officer_13,officer_13}
+
+heroType_9 {Авантюрист}
+
+heroNation_9 {Испания}
+
+sex_9 {man}
+animation_9 {man}
+
+hero_9
+{
+ПГГ
+}
+
+heroName_10 {Керк}
+heroLastname_10 {Зандер}
+
+heroNameGen_10 {Керка}
+heroLastnameGen_10 {Зандера}
+
+heroNameDat_10 {Керку}
+heroLastnameDat_10 {Зандеру}
+
+heroFace_10 {31}
+
+heroModel_10 {officer_14,officer_14,officer_14,officer_14,officer_14,officer_14,officer_14}
+
+heroType_10 {Авантюрист}
+
+heroNation_10 {Голландия}
+
+sex_10 {man}
+animation_10 {man}
+
+hero_10
+{
+ПГГ
+}
+
+heroName_11 {Альфонсо}
+heroLastname_11 {Савльваторе}
+
+heroNameGen_11 {Альфонсо}
+heroLastnameGen_11 {Савльваторе}
+
+heroNameDat_11 {Альфонсо}
+heroLastnameDat_11 {Савльваторe}
+
+heroFace_11 {32}
+
+heroModel_11 {officer_15,officer_15,officer_15,officer_15,officer_15,officer_15,officer_15}
+
+heroType_11 {Авантюрист}
+
+heroNation_11 {Испания}
+
+sex_11 {man}
+animation_11 {man}
+
+hero_11
+{
+ПГГ
+}

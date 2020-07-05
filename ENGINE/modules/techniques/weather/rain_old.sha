@@ -1,0 +1,31 @@
+block rain()
+{
+	technique t0
+	{
+		pass p0
+		{
+			ZWriteEnable = false;
+			Lighting = false;
+			CullMode = none;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			SrcBlend = srcalpha;
+			DestBlend = one;
+
+			ColorOp[0] = modulate;
+			ColorArg1[0] = diffuse;
+			ColorArg2[0] = tfactor;
+
+			AlphaOp[0] = modulate;
+			AlphaArg1[0] = diffuse;
+			AlphaArg2[0] = tfactor;
+
+			ColorOp[1] = disable;
+
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}
+

@@ -1,0 +1,173 @@
+
+Обязательные функции для обработчика шаблона персонажа:
+
+	//Процессирование шаблона персонажа
+	void LAi_tmpl_<tmpl>_CharacterUpdate(aref chr, float dltTime)
+
+	//Персонаж выполнил команду  go to point
+	void LAi_tmpl_<tmpl>_EndGoToPoint(aref chr)
+	//Персонаж провалил команду  go to point
+	void LAi_tmpl_<tmpl>_FailureGoToPoint(aref chr)
+
+	//Персонаж выполнил команду  run to point
+	void LAi_tmpl_<tmpl>_EndRunToPoint(aref chr)
+	//Персонаж провалил команду  run to point
+	void LAi_tmpl_<tmpl>_FailureRunToPoint(aref chr)
+
+	//Персонаж не может добраться до точки назначения
+	void LAi_tmpl_<tmpl>_BusyPos(aref chr, float x, float y, float z)
+
+	//Персонаж начал перемещение за другим
+	void LAi_tmpl_<tmpl>_FollowGo(aref chr)
+	//Персонаж начал дошёл до другого персонажа
+	void LAi_tmpl_<tmpl>_FollowStay(aref chr)
+	//Персонаж провалил команду  follow character
+	void LAi_tmpl_<tmpl>_FailureFollow(aref chr)
+
+	//Персонаж начал перемещение за другим
+	void LAi_tmpl_<tmpl>_FightGo(aref chr)
+	//Персонаж начал дошёл до другого персонажа
+	void LAi_tmpl_<tmpl>_FightStay(aref chr)
+	//Персонаж провалил команду  Fight
+	void LAi_tmpl_<tmpl>_FailureFight(aref chr)
+	
+	//Можно ли стрелять
+	bool LAi_tmpl_<tmpl>_IsFire(aref chr)
+	//Можно ли использовать оружие
+	bool LAi_tmpl_<tmpl>_IsFight(aref chr)
+
+	//Персонаж выполнил команду  escape
+	void LAi_tmpl_<tmpl>_EndEscape(aref chr)
+	//Персонаж скользит вдоль патча
+	void LAi_tmpl_<tmpl>_EscapeSlide(aref chr)
+	//Персонаж провалил команду  escape
+	void LAi_tmpl_<tmpl>_FailureEscape(aref chr)
+
+	//Персонаж толкается с другими персонажами
+	void LAi_tmpl_<tmpl>_ColThreshold(aref chr)
+
+	//Персонаж закончил проигрывать анимацию
+	void LAi_tmpl_<tmpl>_EndAction(aref chr)
+
+	//Персонажа просят освободить место
+	LAi_tmpl_<tmpl>_FreePos(aref chr, aref who)
+
+
+Типы персонажей:
+
+	горожанин (citizen)			гуляет, разговаривает
+	продавец (merchant)			стоит на месте, разговаривает
+	солдат-охраник (guardian)	стоит на месте
+	солдат-потруль (patrol)
+	солдат-воин (warrior)
+	актёр (actor)				управляемый персонаж
+
+
+
+Обязательные функции для обработчика типа персонажа:
+
+	Процессирование типа персонажа
+	void LAi_type_<type>_CharacterUpdate(aref chr, float dltTime)
+
+	Загрузка персонажа в локацию
+	bool LAi_type_<type>_CharacterLogin(aref chr)
+	Выгрузка персонажа из локацию
+	bool LAi_type_<type>_CharacterLogout(aref chr)
+
+	//Завершение работы темплейта
+	void LAi_type_<type>_TemplateComplite(aref chr)
+
+	//Сообщить о желании завести диалог
+	void LAi_type_<type>_NeedDialog(aref chr, aref by)
+	//Запрос на диалог, если возвратить true то в этот момент можно начать диалог
+	bool LAi_type_<type>_CanDialog(aref chr, aref by)
+	//Начать диалог
+	void LAi_type_<type>_StartDialog(aref chr, aref by)
+	//Закончить диалог
+	void LAi_type_<type>_EndDialog(aref chr, aref by)
+
+	//Персонаж атаковал другого персонажа
+	void LAi_type_<type>_Attack(aref attack, aref enemy, float attackDmg, float hitDmg)
+	//Персонаж атоковал заблокировавшегося персонажа
+	void LAi_type_<type>_Block(aref attack, aref enemy, float attackDmg, float hitDmg)
+	//Персонаж выстрелил
+	void LAi_type_<type>_Fire(aref attack, aref enemy, float kDist, bool isFindedEnemy)
+
+
+Поля персонажа:
+
+	chr_ai				общий раздел данных для интелекта
+		type			тип персонажа, влияет на автоматический выбор шаблонов поведения
+		tmpl			текущий шаблон поведения
+		group			идентификатор группы в которой находиться персонаж
+		hp				текущее количество хитпоинтов
+		hp_max			максимальное количество хитпоинтов
+		hp_dlt			если есть, то задаёт скорость роста хп
+		hp_bottle		если есть то подкачивает хп
+		hp_dlt_bottle	если есть, то задаёт скорость роста хп из бутылочки
+		poison			персонаж отравлен
+		charge			заряженность пистолета
+		chargeprc		если 1, идёт процесс зарядки иначе нет
+		charge_dlt		если есть, то задаёт скорость зарядки пистолета
+		charge_max		максимальная заряженность пистолета, по 1 на ствол
+		accuracy		точность пистолета на конце дистанции дострела
+		dmggunmin		минимальное повреждение от пистолета
+		dmggunmax		максимальное повреждение от пистолета
+		dmgbldmin		минимальное повреждение от сабли
+		dmgbldmax		максимальное повреждение от сабли
+		piercing		вероятность пробивки
+		block			вероятность неблокирования
+		disableDlg		если 1, запретить диалоги с персонажем
+		immortal		если 1, то персонаж неубиваемый
+		hpchecker		значение minhp, выполнять проверку на минимальное hp
+			quest		по достичению порога вызывается квест
+			immortal	если 1, то hp не уменьшается меньше чем minhp
+		reincarnation	при смерти породить фантома, 0 - с текущей моделькой, !0 - с новой
+			group		группа локаторов в которой искать самый дальний локатор
+		fencing			автоматическое назначение скила fencing
+			min			минимальное
+			max			максимальное
+
+	location			идентификатор локации в которой находиться персонаж
+		group			група локаторов для логина
+		locator			локатор на котором появиться
+		stime			время от которого появляться, может не быть
+		etime			время до которого появляться, может не быть
+		church			церковь, которую посещает персонаж в определённое время
+			stime		время от которого появляться
+			etime		время до которого появляться
+			group		група локаторов для логина
+			locator		локатор на котором появиться
+		norebirth		если 1, то персонаж после убийства не возраждается
+		follower		ходячий за главным персонажем перец
+
+
+Поля локации:
+		noFight			если 1, то запрещены драки
+		boarding		если 1, то это локация абордажа
+			nextdeck	идентификатор следующей палубы
+		monsters		если 1, то в этой локации генерируются монстры
+		fantoms			если 1, то в этой локации генерируются фантомы при убийстве особенных персонажей
+
+
+Функции для работы:
+
+	Окончание работы шаблона. После вызова данные текущего шаблона 
+	являются недействительными.
+	
+			void LAi_Character_TemplateComplite(aref chr);
+
+
+	Запрос другим персонажам на освобождение локатора.
+	
+			void LAi_Character_FreeLocator(aref chr, string group, string locator);
+
+
+Группы:
+
+	
+
+
+
+
+

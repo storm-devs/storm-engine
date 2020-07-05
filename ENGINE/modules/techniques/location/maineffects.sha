@@ -1,0 +1,475 @@
+
+block DLightModel()
+{
+	technique t0
+	{
+		pass p0
+		{
+			lighting = true;
+			Render.Draw
+			Restore.States
+		}
+	}
+}
+
+
+block DLightMark()
+{
+	technique t0
+	{
+		pass p0
+		{
+			FogEnable = false;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			ZWriteEnable = true;
+			SrcBlend = srcalpha;
+			DestBlend = one;
+			TextureFactor = 0x50ffffff;
+			ColorArg1[0] = texture;
+			ColorArg2[0] = tfactor;
+			ColorOp[0] = modulate;
+			AlphaArg1[0] = texture;
+			AlphaArg2[0] = tfactor;
+			AlphaOp[0] = modulate;
+			lighting = true;
+			Render.Draw
+			Restore.States
+		}
+	}
+}
+
+
+
+block LighthouseLight()
+{
+	technique t0
+	{
+		pass p0
+		{
+			lighting = false;
+			FogEnable = false;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			ZWriteEnable = false;
+			SrcBlend = srcalpha;
+			DestBlend = one;
+			ColorArg1[0] = texture;
+			ColorOp[0] = SelectArg1;
+			AlphaArg1[0] = texture;
+			AlphaOp[0] = SelectArg1;
+			Render.Draw
+			Restore.States
+		}
+	}
+}
+
+
+block LocationWaterFall()
+{
+	technique t0
+	{
+		pass p0
+		{
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			SrcBlend = srcalpha;
+			DestBlend = invsrcalpha;
+			ZWriteEnable = false;
+
+			ColorArg1[0] = diffuse;
+			ColorArg2[0] = texture;
+			ColorOp[0] = modulate2x;
+			ColorArg1[1] = current;
+			ColorOp[1] = SelectArg1;
+			ColorOp[2] = disable;
+			AlphaArg1[0] = texture;
+			AlphaOp[0] = SelectArg1;
+			AlphaArg1[1] = current;
+			AlphaArg2[1] = texture;
+			AlphaOp[1] = modulate;
+			AlphaOp[2] = disable;
+
+			Render.Draw
+			Restore.States
+		}
+	}
+}
+
+block LocationRiver()
+{
+	technique t0
+	{
+		pass p0
+		{
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			SrcBlend = srcalpha;
+			DestBlend = invsrcalpha;
+			ZWriteEnable = false;
+			TextureFactor = 0x90ffffff;
+			ColorArg1[0] = texture;
+			ColorOp[0] = SelectArg1;
+			ColorArg1[1] = texture;
+			ColorArg2[1] = current;
+			ColorOp[1] = addsigned;
+			
+			//ColorOp[1] = SelectArg1;
+
+			ColorArg1[2] = diffuse;
+			ColorArg2[2] = current;
+			ColorOp[2] = modulate2x;
+			AlphaArg2[0] = tfactor;
+			AlphaOp[0] = SelectArg2;
+			AlphaOp[1] = disable;
+			Render.Draw
+			Restore.States
+		}
+	}
+}
+
+
+block LocationRiverFloor()
+{
+	technique t0
+	{
+		pass p0
+		{
+			ZWriteEnable = false;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = false;
+			Render.Draw
+			Restore.States
+		}
+	}
+}
+
+block LocationRiverFloorBlend()
+{
+	technique t0
+	{
+		pass p0
+		{
+			ZWriteEnable = false;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			SrcBlend = srcalpha;
+			DestBlend = invsrcalpha;
+//			TextureFactor = 0x8fffffff;
+			TextureFactor = 0x8fffffff;
+			ColorArg1[0] = texture;
+			AlphaArg2[0] = tfactor;
+			ColorOp[0] = SelectArg1;
+			AlphaOp[0] = SelectArg2;
+			ColorArg1[1] = texture;
+			ColorArg2[1] = current;
+			ColorOp[1] = addsigned;
+			AlphaOp[1] = disable;
+			ColorArg1[2] = diffuse;
+			ColorArg2[2] = current;
+			ColorOp[2] = modulate2x;
+			Render.Draw
+			Restore.States
+		}
+	}
+}
+
+block LocationFontainFloorBlend()
+{
+	technique t0
+	{
+		pass p0
+		{
+			ZWriteEnable = false;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			SrcBlend = srcalpha;
+			DestBlend = invsrcalpha;
+			TextureFactor = 0x5fffffff;
+			ColorArg1[0] = texture;
+			AlphaArg2[0] = tfactor;
+			ColorOp[0] = SelectArg1;
+			AlphaOp[0] = SelectArg2;
+			ColorArg1[1] = texture;
+			ColorArg2[1] = current;
+			ColorOp[1] = addsigned;
+			AlphaOp[1] = disable;
+			ColorArg1[2] = diffuse;
+			ColorArg2[2] = current;
+			ColorOp[2] = modulate2x;
+			Render.Draw
+			Restore.States
+		}
+	}
+}
+
+block LocationFontain()
+{
+	technique t0
+	{
+		pass p0
+		{
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			SrcBlend = srcalpha;
+			DestBlend = invsrcalpha;
+			ZWriteEnable = false;
+			TextureFactor = 0x60ffffff;
+			ColorArg1[0] = texture;
+			AlphaArg2[0] = tfactor;
+			ColorOp[0] = SelectArg1;
+			AlphaOp[0] = SelectArg2;
+			ColorArg1[1] = texture;
+			ColorArg2[1] = current;
+			ColorOp[1] = addsigned;
+			AlphaOp[1] = disable;
+			ColorArg1[2] = diffuse;
+			ColorArg2[2] = current;
+			ColorOp[2] = modulate2x;
+			Render.Draw
+			Restore.States
+		}
+	}
+}
+
+block LocationWindows()
+{
+	technique t0
+	{
+		pass p0
+		{
+			AlphaArg1[0] = texture;
+			AlphaOp[0] = selectarg1;
+			AlphaOp[1] = disable;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			SrcBlend = srcalpha;
+			DestBlend = invsrcalpha;
+			ZWriteEnable = false;
+			Render.Draw
+			Restore.States
+		}
+	}
+}
+
+block LocationModelBlend()
+{
+	technique t0
+	{
+		pass p0
+		{
+			lighting = false;
+			fogenable = true;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			SrcBlend = srcalpha;
+			DestBlend = invsrcalpha;
+			ZEnable = true;
+			ZWriteEnable = false;
+			ColorArg1[0] = texture;
+			ColorArg2[0] = diffuse;
+			ColorOp[0] = modulate2x;
+			ColorOp[1] = disable;
+			AlphaArg1[0] = texture;
+			AlphaArg2[0] = diffuse;
+			AlphaOp[0] = modulate;
+			AlphaOp[1] = disable;
+			Render.Draw
+			Restore.States
+		}
+	}
+}
+
+block ShootParticles()
+{
+	technique t0
+	{
+		pass p0
+		{
+			lighting = false;
+			fogenable = true;
+			cullmode = none;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			SrcBlend = srcalpha;
+			DestBlend = invsrcalpha;
+			ZEnable = true;
+			ZWriteEnable = false;
+			ColorArg1[0] = texture;
+			ColorArg2[0] = diffuse;
+			ColorOp[0] = modulate;
+			ColorOp[1] = disable;
+			AlphaArg1[0] = texture;
+			AlphaArg2[0] = diffuse;
+			AlphaOp[0] = modulate;
+			AlphaOp[1] = disable;
+			Render.Draw
+			Restore.States
+		}
+	}
+}
+
+block ShootParticlesNoZ()
+{
+	technique t0
+	{
+		pass p0
+		{
+			lighting = false;
+			fogenable = true;
+			cullmode = none;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			SrcBlend = srcalpha;
+			DestBlend = invsrcalpha;
+			ZEnable = false;
+			ZWriteEnable = false;
+			ColorArg1[0] = texture;
+			ColorArg2[0] = diffuse;
+			ColorOp[0] = modulate;
+			ColorOp[1] = disable;
+			AlphaArg1[0] = texture;
+			AlphaArg2[0] = diffuse;
+			AlphaOp[0] = modulate;
+			AlphaOp[1] = disable;
+			Render.Draw
+			Restore.States
+		}
+	}
+}
+
+
+block EnvironmentShader()
+{
+	technique t0
+	{
+		pass p0
+		{
+			Lighting = false;
+
+			ColorArg1[0] = diffuse;
+			ColorArg2[0] = texture;
+			ColorOp[0] = modulate2x;
+			ColorArg2[1] = current;
+			ColorArg1[1] = texture;
+			ColorOp[1] = blendcurrentalpha;
+
+			ColorOp[2] = disable;
+
+			AlphaArg1[0] = texture;
+			AlphaArg2[0] = tfactor;
+			AlphaOp[0] = modulate;
+			AlphaOp[1] = disable;
+
+			texcoordindex[1] = cameraspacereflectionvector;
+			texturetransformflags[1] = count3;
+			localviewer = true;
+			normalizenormals = true;
+
+			AlphaTestEnable = false;
+			AlphaBlendEnable = false;
+
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}
+
+
+block EnvAmmoShader()
+{
+	technique t0
+	{
+		pass p0
+		{
+			Lighting = true;
+
+			ColorArg1[0] = diffuse;
+			ColorArg2[0] = texture;
+			ColorOp[0] = modulate2x;
+			ColorArg2[1] = current;
+			ColorArg1[1] = texture;
+			ColorOp[1] = blendcurrentalpha;
+			ColorOp[2] = disable;
+
+			AlphaArg1[0] = texture;
+			AlphaOp[0] = SelectArg1;
+			AlphaArg1[1] = current;
+			AlphaOp[1] = SelectArg1;
+			AlphaOp[2] = disable;
+
+			texcoordindex[1] = cameraspacereflectionvector;
+			texturetransformflags[1] = count3;
+			localviewer = true;
+			normalizenormals = true;
+
+			AlphaTestEnable = false;
+			AlphaBlendEnable = false;
+
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}
+
+block LocCharacterSplashes()
+{
+	technique t0
+	{
+		pass p0
+		{
+			lighting = false;
+			FogEnable = true;
+			cullmode = none;
+			ZWriteEnable = false;
+			ZEnable = true;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			SrcBlend = srcalpha;
+			DestBlend = invsrcalpha;
+			ColorArg1[0] = texture;
+			ColorArg2[0] = current;
+			ColorOp[0] = modulate;
+			ColorOp[1] = disable;
+			AlphaArg1[0] = texture;
+			AlphaArg2[0] = current;
+			AlphaOp[0] = modulate;
+			AlphaOp[1] = disable;
+			Render.Draw
+			Restore.States
+		}
+	}
+}
+
+block LocVisRays()
+{
+	technique t0
+	{
+		pass p0
+		{
+			lighting = false;
+			FogEnable = true;
+			ZWriteEnable = false;
+			ZEnable = true;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			SrcBlend = srcalpha;
+			DestBlend = one;
+			ColorArg1[0] = texture;
+			ColorArg2[0] = current;
+			ColorOp[0] = selectArg1;
+			ColorArg1[1] = texture;
+			ColorArg2[1] = current;
+			ColorOp[1] = modulate;
+			ColorOp[2] = disable;
+			AlphaArg1[0] = texture;
+			AlphaArg2[0] = current;
+			AlphaOp[0] = selectArg1;
+			AlphaOp[1] = disable;
+			Render.Draw
+			Restore.States
+		}
+	}
+}

@@ -1,0 +1,506 @@
+
+================================================================================================
+Основные поля локации
+================================================================================================
+
+------------------------------------------------------------------------------------------------
+Идентификатор локации:
+------------------------------------------------------------------------------------------------
+	Locations[n].id   уникальный строковой идентификатор, являющийся адресом локации, обязательное поле
+		Locations[n].id = "My town";
+
+------------------------------------------------------------------------------------------------
+Типы:
+------------------------------------------------------------------------------------------------
+
+	Locations[n].type = "тип локации"
+		Locations[n].type = "port";
+
+	Определённые типы:
+		"port" порт
+		"town" город
+		"jungle" джунгли
+		"seashore" верфь
+		"cave" пещера
+		"inca_temple" храм инков
+		"house" дом
+		"tavern" таверна
+		"shop" магазин
+		"residence" резиденция
+		"church" церковь
+		"jail" тюрьма
+
+
+------------------------------------------------------------------------------------------------
+Пути до файлов:
+------------------------------------------------------------------------------------------------
+	Locations[n].filespath.models = Путь до моделек относительно resource\models
+		Locations[n].filespath.models = "locations\my_location";
+
+	Locations[n].filespath.textures = Путь до текстур относительно resource\textures
+		Locations[n].filespath.models = "locations\my_textures";
+
+------------------------------------------------------------------------------------------------
+Модели локации:
+------------------------------------------------------------------------------------------------
+	Locations[n].models.always.(любое уникальное имя) модельки, которые загружаються всегда
+		Locations[n].models.always.m0 = "my_model";
+		Locations[n].models.always.m1 = "my_next_model";
+
+	Locations[n].models.day.(любое уникальное незарезервированное имя) модельки, которые загружаються только днём
+		Locations[n].models.day.m0 = "my_day_model";
+		Locations[n].models.day.m1 = "my_next_day_model";
+
+	Locations[n].models.night.(любое уникальное незарезервированное имя) модельки, которые загружаються только ночью
+		Locations[n].models.night.m0 = "my_night_model";
+		Locations[n].models.night.m1 = "my_next_night_model";
+
+	Locations[n].models.entry.(любое уникальное имя)модельки, которые загружаються в месте высодки игрока
+		Locations[n].models.entry.m0 = "my_entry_model";
+		Locations[n].models.entry.m1 = "my_next_entry_model";
+
+	Locations[n].models.back = "базовая часть имени модельки бэка за окном";
+		Locations[n].models.back = "window_back_";
+
+Инфо:
+	Имя модельки составляется из указанного имени в локации и полученого постфикса от погоды.
+		Пример:
+			Locations[n].models.back = "window_back_";
+			Допустим в погоде указано в InsideBack из Program\Weather\Init\ "d"
+			Результирующее имя будет: window_back_d.gm
+
+
+------------------------------------------------------------------------------------------------
+Патчи:
+------------------------------------------------------------------------------------------------
+	Locations[n].models.day.charactersPatch = "дневной патч для персонажей";
+		Locations[n].models.day.charactersPatch = "day_patch";	//day_patch.ptc
+
+	Locations[n].models.night.charactersPatch = "ночной патч для персонажей";
+		Locations[n].models.night.charactersPatch = "night_patch"; //night_patch.ptc
+		
+
+	Locations[n].models.day.jumpPatch = "дневной патч для прыжков";
+		Locations[n].models.day.jumpPatch = "jump_day_patch"; //"jump_day_patch.gm" with BSP
+
+	Locations[n].models.night.jumpPatch = "ночной патч для прыжков";
+		Locations[n].models.night.jumpPatch = "jump_night_patch"; //"jump_night_patch.gm" with BSP
+
+	Locations[n].models.always.grassPatch = "патч для травы";
+	Locations[n].models.always.grassPatch.texture = "текстура травы в папке Grass"; необязательно
+		Locations[n].models.always.grassPatch = "grass";	//grass.grs
+		Locations[n].models.always.grassPatch.texture = "mygrass"; //Textures\grass\mygrass.tx
+
+
+Инфо:
+	Патч для персонажа - специальная геометрия для опоры и перемещения персонажа (.ptc).
+						 Для создиния ptc, используемого при хождении NPC, из gm 
+						 необходимо воспользоваться утилитой PatchCreator. Полученые ptc
+						 файлы размещать в папке вместе с остальными файлами локации.
+	Патч для прыжков - специальная геометрия для указания мест где при возможности можно попытаться спрыгнуть.
+	Патч для травы - специальная геометрия на которой растёт трава (.grs). Для создания grs из gm
+					 необходимо воспользоваться утилитой GrassGenerator.
+
+	Все патчи при выгрузке должны содержать bsp.
+
+------------------------------------------------------------------------------------------------
+Локаторы
+------------------------------------------------------------------------------------------------
+
+Установить радиус локаторов для группы:
+
+	Locations[n].locators_radius.(имя группы) = радиус;
+		Locations[n].locators_radius.rld = 1.0;
+
+
+	По умолчанию:
+		Locations[n].locators_radius.rld = 1.0;
+		Locations[n].locators_radius.camdetector = 1.0;
+		Locations[n].locators_radius.camera = 0.3;
+		Locations[n].locators_radius.characters = 0.5;
+		Locations[n].locators_radius.goto = 0.5;		
+		Locations[n].locators_radius.sit = 0.5;		
+		Locations[n].locators_radius.item = 0.5;		
+		Locations[n].locators_radius.officers = 0.5;
+		Locations[n].locators_radius.merchant = 1.0;
+		Locations[n].locators_radius.box = 1.0;
+		Locations[n].locators_radius.candles = 0.1;
+		Locations[n].locators_radius.candles_medium = 0.2;
+		Locations[n].locators_radius.chandeliers = 0.5;
+		Locations[n].locators_radius.heaters = 1.0;
+		Locations[n].locators_radius.torchlightes = 0.3;
+		Locations[n].locators_radius.torchlightes_o = 0.3;
+		Locations[n].locators_radius.fonar = 0.4;
+		Locations[n].locators_radius.outside = 2.0;
+		Locations[n].locators_radius.incas_light = 0.8;
+		Locations[n].locators_radius.incas_sky = 1.0;
+		Locations[n].locators_radius.randitem = 1.5;
+		Locations[n].locators_radius.waitress = 1.0;
+		Locations[n].locators_radius.tables = 0.5;
+		Locations[n].locators_radius.barmen = 1.0;
+		Locations[n].locators_radius.lamp = 0.2;
+		Locations[n].locators_radius.blueteleport = 0.2;
+		Locations[n].locators_radius.teleport = 0.2;
+		Locations[n].locators_radius.redteleport = 0.2;
+		Locations[n].locators_radius.greenteleport = 0.2;
+		Locations[n].locators_radius.magsteleport = 0.2;
+
+Установить радиус локатору:
+
+	Locations[n].locators_radius.(имя группы).(имя локатора) = радиус;
+		Locations[n].locators_radius.reload.Falaise_de_fleur_location_03_02 = 3.0;
+
+
+Инфо:
+	Если локатору установить радиус 0.0, то этот локатор обрабатываться не будет, 
+	т.е. его можно так запретить.
+	Если радиус локатора меньше 0, то используеться радиус группы (значение по умолчанию),
+	иначе используеться установленный радиус. Т.е. индивидуальный радиус локатора 
+	замещает радиус группы, если он больше или равен 0.
+
+
+
+------------------------------------------------------------------------------------------------
+Динамическое освещение
+------------------------------------------------------------------------------------------------
+
+	Locations[n].models.day.lights.(имя группы локаторов) = "lightName" назначить на группу локаторов динамические источники типа lightName днём
+		Locations[n].models.day.lights.lamp = "lamp";
+
+	Locations[n].models.night.lights.(имя группы локаторов) = "lightName" назначить на группу локаторов динамические источники типа lightName ночью
+		Locations[n].models.day.lights.lamp = "lamp";
+	
+Инфо:
+	На одну группу локаторов можно назначить один тип источника.
+	Источники описаны в Resource\Ini\lights.ini, имя секции есть имя источника lightName.
+	Если необходимо чтобы источник светил и днём и ночью, его надо прописать в оба раздела.
+
+
+------------------------------------------------------------------------------------------------
+Погодные эффекты
+------------------------------------------------------------------------------------------------
+
+	Locations[n].environment.weather = "false"; нет неба и погодных эффектов
+	Locations[n].environment.weather = "true";  наличие неба и погодных эффектов
+	
+	Locations[n].environment.sea = "false";    нет моря
+	Locations[n].environment.sea = "true";     наличие моря
+
+
+
+================================================================================================
+Инфо:
+================================================================================================
+
+	- в локации обязательно должен быть патч для персонажа
+
+	- патч для персонажа может быть только один
+
+	- локаторы считываются из всех моделек
+
+	- для локаторов рекомендуется заводить отдельную gm
+
+
+================================================================================================
+Дополнительные поля в локации
+================================================================================================
+
+------------------------------------------------------------------------------------------------
+Заблокировать изменение угла камеры по вертикали:
+------------------------------------------------------------------------------------------------
+
+	Locations[n].lockCamAngle = угол_в_радианах;
+		Locations[n].lockCamAngle = 0.4;
+
+Инфо:
+	Если этого поля нет, то камера не блокируется.
+
+------------------------------------------------------------------------------------------------
+Установить жёстко погоду в локации:
+------------------------------------------------------------------------------------------------
+
+	Locations[n].lockWeather = "идентификатор погоды";
+		Locations[n].lockWeather = "my_weather"; //weather id from Program\Weather\Init\
+
+Инфо:
+	Если этого поля нет, то погода не блокируется.
+
+------------------------------------------------------------------------------------------------
+Запретить/разрешить в локации игорку доставать оружие:
+------------------------------------------------------------------------------------------------
+
+	Locations[n].noFight = 0;	//разрешить
+	Locations[n].noFight = 1;	//запретить
+
+Инфо:
+	Если этого поля нет, то считается значение 0.
+
+------------------------------------------------------------------------------------------------
+Запретить/разрешить в локации генерировать монстров:
+------------------------------------------------------------------------------------------------
+
+	Locations[n].monsters = 0;	//не генерить монстров
+	Locations[n].monsters = 1;	//генерить монстров
+
+Инфо:
+	Если этого поля нет, то считается значение 0.
+
+------------------------------------------------------------------------------------------------
+Абордажные локации:
+------------------------------------------------------------------------------------------------
+
+	Locations[n].boarding = "false";  это обячная локация
+	Locations[n].boarding = "true";	  это локация абордажа
+	
+	Locations[n].boarding.nextdeck	идентификатор следующей палубы
+		Locations[n].boarding.nextdeck = "next_deck_id";
+
+Инфо:
+	Если этого поля нет, то считается значение "false".
+	В абардажных локации карта перегрузок не работает.
+
+------------------------------------------------------------------------------------------------
+Картинка при перезагрузке
+------------------------------------------------------------------------------------------------
+
+	Locations[n].image = "имя картинки";
+		Locations[n].image = "loading\my_image";	//loading\my_image.tx
+
+Инфо:
+	Картинка масшнабируется в размер зкрана, поэтому необходимо учесть пропорции.
+
+================================================================================================
+Модификаторы для моделек:
+================================================================================================
+
+	Эти атрибуты можно ставить всем молелькам (в любой группе) кроме патчей.
+	Модификаторы позволяют ставить различные эффекты моделькам.
+
+
+------------------------------------------------------------------------------------------------
+level
+------------------------------------------------------------------------------------------------
+
+	Этот параметр влияет на порядок отрисовки. По умолчанию стоит 10 уровень.
+
+	Locations[n].models..(любое уникальное имя).level = 5...1000
+		Locations[n].models.always.somemodel = "my_model";
+		Locations[n].models.always.somemodel.level = 100;
+		Locations[n].models.day.somemodel = "my_model";
+		Locations[n].models.day.somemodel.level = 100;
+		Locations[n].models.night.somemodel = "my_model";
+		Locations[n].models.night.somemodel.level = 100;
+		Locations[n].models.back = "my_model";
+		Locations[n].models.back.level = 100;
+
+------------------------------------------------------------------------------------------------
+tech
+------------------------------------------------------------------------------------------------
+
+	Указания использования специальной техники рендера.
+	Locations[n].models..(любое уникальное имя).tech = "name"
+		Locations[n].models.always.somemodel = "my_model";
+		Locations[n].models.always.somemodel.tech = "DLightModel";
+
+	Некоторые техники:
+		"DLightModel" динамическое освещение на модельке
+		"LighthouseLight" лучи света с одной текстурой, прозрачность берётся из альфаканала текстуры
+		"LocationWaterFall" две текстуры, цвет берётся с первой, вторая только задаёт прозрачность
+		"LocationWindows" окна
+		"EnvironmentShader" карта окружения
+		"LocVisRays" лучи света с двумя текстурами
+
+Инфо:
+	Техники рендера описаны в MODULES\Techniques.
+	На модельке может быть только одна техника.
+
+
+------------------------------------------------------------------------------------------------
+uvslide
+------------------------------------------------------------------------------------------------
+
+	Этот эфект позволяет непрерывно перемещать текстурные координаты на модельки.
+	Скорость перемещения задаёться как полный оборот в секунду.
+
+	Locations[n].models..(любое уникальное имя).uvslide.u0 = скорость по u для 0 стадии (первая текстура)
+	Locations[n].models..(любое уникальное имя).uvslide.v0 = скорость по v для 0 стадии (первая текстура)
+	Locations[n].models..(любое уникальное имя).uvslide.u1 = скорость по u для 1 стадии (вторая текстура)
+	Locations[n].models..(любое уникальное имя).uvslide.v1 = скорость по v для 1 стадии (вторая текстура)
+
+		Locations[n].models.always.somemodel = "my_model";
+		Locations[n].models.always.somemodel.u0 = 0.5;
+		Locations[n].models.always.somemodel.v0 = 0.1;
+		Locations[n].models.always.somemodel.u1 = 0.01;
+		Locations[n].models.always.somemodel.v1 = 0.07;
+
+------------------------------------------------------------------------------------------------
+rotate
+------------------------------------------------------------------------------------------------
+
+	Завращать модельку вокруг собственной оси (локальный 0).
+	Скорость вращения задаёться в оборотах в секунду.
+
+	Locations[n].models..(любое уникальное имя).rotate.x = скорость вокруг x
+	Locations[n].models..(любое уникальное имя).rotate.y = скорость вокруг y
+	Locations[n].models..(любое уникальное имя).rotate.z = скорость вокруг z
+
+		Locations[n].models.always.somemodel = "my_model";
+		Locations[n].models.always.somemodel.rotate.x = 0.0;
+		Locations[n].models.always.somemodel.rotate.y = 1.0;
+		Locations[n].models.always.somemodel.rotate.z = 0.0;
+
+------------------------------------------------------------------------------------------------
+locator
+------------------------------------------------------------------------------------------------
+
+	Переместить модельку после загрузки в локатор.
+
+	Locations[n].models..(любое уникальное имя).locator.group = группа в которой находиться локатор
+	Locations[n].models..(любое уникальное имя).locator.name = имя локатора
+		
+		Locations[n].models.always.somemodel = "my_model";
+		Locations[n].models.always.somemodel.locator.group = "item";
+		Locations[n].models.always.somemodel.locator.name = "good0";
+
+Инфо:
+	Перед загрузкой данной модели локатор уже должен быть известен.
+
+
+------------------------------------------------------------------------------------------------
+lamps
+------------------------------------------------------------------------------------------------
+
+	Загружаемую модельку занести в список моделек, невидимых для динамических источников.
+	Эти модельки не будут загораживать корону если у них есть BSP.
+
+	Locations[n].models..(любое уникальное имя).lamps = 1;
+		Locations[n].models.always.somemodel = "torchs";
+		Locations[n].models.always.somemodel.lamps = 1;
+
+
+------------------------------------------------------------------------------------------------
+reflection
+------------------------------------------------------------------------------------------------
+
+	На загружаемой модели будет использоваться карта отражений.
+	Значение указывает степень отражения 0 - нет, 1 только отражение
+
+	Locations[n].models..(любое уникальное имя).reflection = 0..1;
+		Locations[n].models.always.somemodel = "torchs";
+		Locations[n].models.always.somemodel.reflection = 0.8;
+		Locations[n].models.always.somemodel.tech = "EnvironmentShader";
+
+Инфо:
+	Этот модификатор можно использовать только с техникой "EnvironmentShader".
+
+
+================================================================================================
+Карта перегрузок:
+================================================================================================
+
+	 Карта перегрузок описывает связи локаций между собой.
+	 Перегрузка возможна только из и в локаторы группы "reload".
+
+------------------------------------------------------------------------------------------------
+Связь выхода с другой локацией
+------------------------------------------------------------------------------------------------
+
+	Locations[n].reload.(любое уникальное имя для локации).name = "Имя локатора с которого перегружаться";
+	Locations[n].reload.(любое уникальное имя для локации).go = "Имя локации в которую перегружаться";
+	Locations[n].reload.(любое уникальное имя для локации).emerge = "Имя локатора на котором появимся";
+		Locations[n].reload.l1.name = "reload1";
+		Locations[n].reload.l1.go = "labirint_3";
+		Locations[n].reload.l1.emerge = "reload30";
+
+------------------------------------------------------------------------------------------------
+Открытие и закрытие локатора на перегрузку
+------------------------------------------------------------------------------------------------
+
+	Locations[n].reload.(любое уникальное имя для локации).disable = 0; запрещена перегрузка
+	Locations[n].reload.(любое уникальное имя для локации).disable = 1; разрешена перегрузка
+
+	Функция для управления:
+	
+	bool chrEnableReloadLocator(string locationID, string reloadLocatorName, bool isEnable);
+
+Инфо:
+	Если этого поля нет, то считается значение 0.
+
+------------------------------------------------------------------------------------------------
+Разрешить или запретить автоматическую перегрузку при попадании в локатор
+------------------------------------------------------------------------------------------------
+
+	Locations[n].reload.(любое уникальное имя для локации).autoreload = 0; запрещена автоматическая перегрузка
+	Locations[n].reload.(любое уникальное имя для локации).autoreload = 1; разрешена автоматическая перегрузка
+		Locations[n].reload.l1.autoreload = 1;
+
+Инфо:
+	Если этого поля нет, то считается значение 0.
+
+================================================================================================
+
+Пример локации:
+
+	//ID
+	Locations[n].id = "Treasure_Alcove";
+	//Type
+	locations[n].type = "inca_temple";
+	//Load image
+	Locations[n].image = "loading\InkasHram.tga";
+	//Models
+	Locations[n].filespath.models = "locations\Incas Temple\Alcove\";
+
+	//Always----------------------------------------------------------
+	Locations[n].models.always.locators = "Alcove_l";
+	Locations[n].models.always.l1 = "alcove";
+	//Rays
+	Locations[n].models.always.l2 = "rays";
+	Locations[n].models.always.l2.level = 100;
+	Locations[n].models.always.l2.tech = "LocVisRays";
+	Locations[n].models.always.l2.uvslide.u1 = -0.02;
+	Locations[n].models.always.l2.uvslide.v1 = -0.02;
+	//Artifact
+	Locations[n].models.always.l3 = "artifact";
+	Locations[n].models.always.l3.locator.name = "artifact";
+	Locations[n].models.always.l3.locator.group = "gm";
+	Locations[n].models.always.l3.rotate.x = 0.0;
+	Locations[n].models.always.l3.rotate.y = 0.777;
+	Locations[n].models.always.l3.rotate.z = 0.0;
+	Locations[n].models.always.l3.tech = "EnvironmentShader";
+	Locations[n].models.always.l3.reflection = 0.4;
+	//Bird
+	Locations[n].models.always.l4 = "Bird";
+	Locations[n].models.always.l4.locator.name = "Bird";
+	Locations[n].models.always.l4.locator.group = "gm";
+	Locations[n].models.always.l4.tech = "EnvironmentShader";
+	Locations[n].models.always.l4.reflection = 0.4;
+	//Blue portal
+	Locations[n].models.always.blue1 = "Blueport";
+	Locations[n].models.always.blue1.level = 100;
+	Locations[n].models.always.blue1.tech = "LocVisRays";
+	Locations[n].models.always.blue1.uvslide.u0 = 0.06;
+	Locations[n].models.always.blue1.uvslide.v0 = 0.00;
+	Locations[n].models.always.blue1.uvslide.u1 = 0.16;
+	Locations[n].models.always.blue1.uvslide.v1 = 0.00;
+
+	//Day----------------------------------------------------------
+	Locations[n].models.day.charactersPatch = "alcove_p";
+	
+	//Night----------------------------------------------------------
+	Locations[n].models.night.charactersPatch = "alcove_p";
+	
+	//Environment----------------------------------------------------------
+	Locations[n].environment.weather = "true";
+	Locations[n].environment.sea = "false";
+	Locations[n].lockWeather = "Alcove";
+	
+	
+	//Reload map----------------------------------------------------------
+	Locations[n].reload.l2.name = "reload1";
+	Locations[n].reload.l2.go = "labirint_3";
+	Locations[n].reload.l2.emerge = "reload30";
+    Locations[n].reload.l2.autoreload = "1";
+    
+	n = n + 1;//increase for next location
+
+

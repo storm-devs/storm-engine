@@ -1,0 +1,64 @@
+ch.DeckDialogNode = "Step_1";  // нода диалога на палубе (выслать шлюпку). Наличие этого аттр гарантирует не смену диалога (те останется квестовый)
+
+ch.AlwaysEnemy        = true; //всегда враг
+ch.Coastal_Captain    = true; // не ругать нации если он враг в море (таможня и квестовые)
+ch.AlwaysFriend        = true; //всегда друг (для отпускания при грабеже)
+
+ch.DontRansackCaptain = true; //квестовые не сдаются
+
+ch.DontHitInStorm     = true; // не ломается в шторм
+
+ch.SaveItemsForDead   = true; // сохранять на трупе вещи
+
+ch.DontClearDead = true;  // не убирать труп через 200с
+
+ch.ShipEnemyDisable  = true; // флаг не обижаться на выстрелы
+ch.RebirthPhantom    = true; // не тереть фантома-многодневку, если он умер, но время его не вышло
+
+ch.SinkTenPercent    = false;  // не тонуть после 10% корпуса
+ch.CheckLicence    = true; // Проверять наличие торговой лицензии при распознании,нужно фортам и сторожевикам
+
+
+//проверка спец аттрибута для гротов и т.д. Там естественно дождя быть не должно.
+if (CheckAttribute(&Locations[iLoc], "environment.weather.rain") && !sti(Locations[iLoc].environment.weather.rain))
+
+типичный юз
+ch.AlwaysEnemy = true; //всегда враг
+ch.DontRansackCaptain = true; - //квестовые не сдаются
+ch.Abordage.Enable = false; // запрет абордажа
+ch.SinkTenPercent = false; - не тонуть при 10%, т.е. не убегать
+ch.ShipTaskLock = true;  - залочить текущий таск
+ch.WatchFort = true;  - видеть форты и уходить при вплытии в зону 1000м к ним.
+ch.AnalizeShips = true;  - анализировать вражеские корабли при выборе таска
+
+pchar.GenQuest.Hunter2Pause = true; // нет озгов, запрет на целый день
+pchar.GenQuest.Enc2Pause = true; // нет случаек в локации, провека разовая, в след лок уже будут
+
+Pchar.GenQuest.HunterScore2Pause =  true; ; //НЗГ не начисляются
+Pchar.GenQuest.ReputationNotChange = true; //репутацию не менять
+
+Locations[FindLocation(sLocation)].DisableEncounters = true; // запрет случаек в конкретной локацц навечно (флаг снять руками)
+
+
+TestRansackCaptain - дает гавриков с картой в таверне 100%
+
+ch.DontCheckFlag = true; // не проверять флаг ГГ
+
+colonies[i].DontSetShipInPort = true; // не ставить корабли в порту этой колонии
+
+characters[iChar].AlwaysSandbankManeuver = true; // эквивалент перку маневр на мелководье, токо врублен всегда для тупых АИ в порту и ЛГ
+
+--------------------------- для типа Citizen ----------------------
+ch.talker = int Variable; // нпс типа citizen при сближении с ГГ на 3м сам начнет диалог с вероятностью, заложенной в Variable - от 1 до 10 (чем больше цифра, тем выше вероятность). Попытка диалога при сближении будет продолжаться до тех пор, пока не удасться.
+--------------------------- для типа Guardian ----------------------
+ch.protector = true;          //при вхождении в радиус 3м начать диалог, без аттрита ниже начнет диалог один раз
+ch.protector.CheckAlways = 1; //начинать диалог всегда, через интервал в 30сек
+--------------------------- для типа Huber ----------------------
+sld.standUp = true;  //при наличие врага в радиусе 15м поменять тип на Warrior без смены группы и встать в ближайший локатор goto.
+--------------------------- для типа Actor ----------------------
+ch.BreakTmplAndFight = true; //если атакован, то прервать темплейт и стать warrior
+ch.BreakTmplAndFightGroup = true; //если атакован, то прервать темплейт, стать самому и всей группе этого нпс warrior
+
+ch.SuperShooter  = true;  // даный НПС будет чаще юзать пистоль (вероятность от сложности, но в разы выше, чем у обычных, близка офам)
+
+

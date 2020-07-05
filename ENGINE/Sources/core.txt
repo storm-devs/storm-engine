@@ -1,0 +1,86 @@
+Core Engine details:
+
+Atom
+	Atom is internal core object, which contain internal engine information for objects, such as 
+	layers assigment, services flag and other. For each entity exist one atom object, connected
+	to this entity. Atoms objects can be accessed  by engine core only. Atom id structure equal
+	to connected entity id structure.
+
+Engine Objects are: Entities, Services and Layers
+
+Core application programming interface -  Core API
+	Core API is a engine core base class. Using pointer on this object, entities can call to engine
+	functions. Core API Pointer - pointer to static engine object, it never changed during the 
+	programm execution.
+
+Entity Constructor:
+	Core setup Core Api Pointer before any of objects in module can be created, but You cannot use
+	Api in object constructor. Used Api from constructor for creating and deleting engine objects
+	can damage engine state save/load mechanism. When the engine core meet call of this type, 
+	exception "api call from constructor" generated and execution halted.
+
+
+Messages and save/load state format specificators:
+
+	'b'	- byte
+	'w' - word
+	'l' - long
+	'u' - dword
+	'f' - float
+	'd' - double
+	'p' - pointer (char *)
+	's' - string (char *)
+	'm' - memory block (dword size, char * memory)
+	'v' - structure (sizeof(struct),struct)
+
+	Examples read:
+	byte	b = m.Byte();
+	word	w = m.Word();
+	long	l = m.Long();
+	dword	u = m.Dword();
+	float	f = m.Float();
+	double	d = m.Double();
+	char *	p = m.Pointer();
+	
+	char s[200];
+	m.String(sizeof(s),s);
+
+	char buffer[1024];
+	m.MemoryBlock(sizeof(buffer),buffer);
+
+	RECT struct;
+	m.Struct(sizeof(struct),&struct);
+
+
+	Examples write:
+	Send_Message("bwlufdp",b,w,l,u,f,d,p);
+	Send_Message("s",s);
+	Send_Message("m",sizeof(buffer),buffer);
+	Send_Message("v",sizeof(struct),struct);
+
+Save state mechanism scheme:
+	
+	1. Create save state file
+	2. Save engine core state (CoreState struct)
+	3. Save classes table: classes count N, class name 0,...,class name N
+	4. Save atoms states: atoms count N, atoms id 0, atom state 0,...,atoms id N, atom state N
+	5. Save layer information: 
+		layers count N,
+		layer index 0, layer name 0, layer_state 0, objects count 0, 
+			object priority 0, object id 0,...,object priority N, object id N
+		,...,
+		layer index N, layer name N, layer_state N, objects count N, 
+			object priority 0, object id 0,...,object priority N, object id N
+	6. Save objects data: object id 0, object state data 0,...,object id N, object state data N
+		(via CreateState() function)
+
+Load state mechanism scheme:
+
+	1. Open state file
+	2. Read core state, check engine version and reload classes table
+	3. Read classes table and compare with currently loaded
+	4. Read atoms states and entities ids, restoration of atom structure and objects
+	5. Read layers information, creation of layers and restoring of layers content
+	6. Uploading objects states (via LoadState() function)
+	
+

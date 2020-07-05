@@ -1,0 +1,65 @@
+block EngineFont()
+{
+	technique t0
+	{
+		pass p0
+		{
+			Lighting = false;
+			FogEnable = false;
+			CullMode = none;
+			ZEnable = false;
+
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			SrcBlend = srcalpha;
+			DestBlend = invsrcalpha;
+
+			ColorArg1[0] = diffuse;
+			ColorOp[0] = SelectArg1;
+			ColorOp[1] = disable;
+
+			AlphaArg1[0] = texture;
+			AlphaArg2[0] = diffuse;
+			AlphaOp[0] = modulate;
+			AlphaOp[1] = disable;
+
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}
+
+block DialogFont()
+{
+	technique t0
+	{
+		pass p0
+		{
+			Lighting = false;
+			FogEnable = false;
+			CullMode = none;
+			ZEnable = false;
+
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			SrcBlend = srcalpha;
+			DestBlend = invsrcalpha;
+
+			ColorArg1[0] = texture;
+			ColorArg2[0] = diffuse;
+			ColorOp[0] = modulate;
+			ColorOp[1] = disable;
+
+			AlphaArg1[0] = texture;
+			AlphaArg2[0] = diffuse;
+			AlphaOp[0] = modulate;
+			AlphaOp[1] = disable;
+
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}
+

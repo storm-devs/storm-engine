@@ -1,0 +1,370 @@
+
+//------------------------------------------------------------------------------------------
+//Scripters ai program interface
+//------------------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------------------
+//Character types
+//------------------------------------------------------------------------------------------
+
+//Установить персонажу тип игрока
+void LAi_SetPlayerType(aref chr);
+
+//Установить персонажу тип офицера
+void LAi_SetOfficerType(aref chr);
+
+//Установить персонажу тип горожанина
+void LAi_SetCitizenType(aref chr);
+//Установить персонажу тип горожанина, без перемещения в группу
+void LAi_SetCitizenTypeNoGroup(aref chr);
+
+//Установить персонажу тип стражника
+void LAi_SetGuardianType(aref chr);
+//Установить персонажу тип стражника, без перемещения в группу
+void LAi_SetGuardianTypeNoGroup(aref chr)
+
+//Установить персонажу тип патруля
+void LAi_SetPatrolType(aref chr);
+//Установить персонажу тип патруля, без перемещения в группу
+void LAi_SetPatrolTypeNoGroup(aref chr);
+
+//Установить персонажу тип война
+void LAi_SetWarriorType(aref chr);
+//Установить персонажу тип война, без перемещения в группу
+void LAi_SetWarriorTypeNoGroup(aref chr);
+//Установить войну командира
+void LAi_warrior_SetCommander(aref chr, aref commander);
+//Разрешить или запретить диалоги для война
+void LAi_warrior_DialogEnable(aref chr, bool isEnable);
+//Сказать войну стоять при отсутствие целей
+void LAi_warrior_SetStay(aref chr, bool isStay);
+
+//Установить персонажу тип уличного торговца
+void LAi_SetMerchantType(aref chr);
+//Установить персонажу тип торговца, без перемещения в группу
+void LAi_SetMerchantTypeNoGroup(aref chr);
+
+//Установить персонажу тип стоячего
+void LAi_SetStayType(aref chr);
+//Установить персонажу тип стоячего, без перемещения в группу
+void LAi_SetStayTypeNoGroup(aref chr);
+
+//Установить персонажу тип сидячего
+void LAi_SetSitType(aref chr);
+//Установить персонажу тип сидячего, без перемещения в группу
+void LAi_SetSitTypeNoGroup(aref chr);
+
+//Установить персонажу тип бармена (only man)
+void LAi_SetBarmanType(aref chr);
+//Установить персонажу тип официантки, без перемещения в группу (only man)
+void LAi_SetBarmanTypeNoGroup(aref chr);
+
+//Установить персонажу тип официантки (only woman)
+void LAi_SetWaitressType(aref chr);
+//Установить персонажу тип официантки, без перемещения в группу (only woman)
+void LAi_SetWaitressTypeNoGroup(aref chr);
+
+//Установить персонажу тип бедника
+void LAi_SetPoorType(aref chr);
+//Установить персонажу тип бедника, без перемещения в группу
+void LAi_SetPoorTypeNoGroup(aref chr);
+
+//Установить персонажу тип губернатора
+void LAi_SetHuberType(aref chr);
+//Установить персонажу тип губернатора, без перемещения в группу
+void LAi_SetHuberTypeNoGroup(aref chr);
+
+//Установить персонажу тип губернатора, ходячего по комнате
+void LAi_SetHuberStayType(aref chr);
+//Установить персонажу тип губернатора, ходячего по комнате, без перемещения в группу
+void LAi_SetHuberStayTypeNoGroup(aref chr);
+//Указать губернатору точку возле карты
+void LAi_SetStayHuberPointMap(aref chr, string group, string locator);
+//Указать губернатору точку возле окна
+void LAi_SetStayHuberPointWindow(aref chr, string group, string locator);
+
+//Установить персонажу тип священика
+void LAi_SetPriestType(aref chr);
+//Установить персонажу тип священика, без перемещения в группу
+void LAi_SetPriestTypeNoGroup(aref chr);
+
+//Установить персонажу тип актёра
+void LAi_SetActorType(aref chr);
+//Установить персонажу тип актёра, без перемещения в группу
+void LAi_SetActorTypeNoGroup(aref chr);
+
+
+//------------------------------------------------------------------------------------------
+//Actor
+//------------------------------------------------------------------------------------------
+//
+// параметр quest:
+//           если "" то никакой реакции по окончанию действия не будет
+//           если "questName" то по окончанию действия сработает указанный квест
+// параметр timeout:
+//           если -1 то задание будет выполняться, пока не выполниться
+//           если >= 0 то по истечении заданного времени просимулируется выполнение задания в секундах
+//
+//
+// команды актёру можно отдавать только когда он загружен в локацию
+//
+//
+//------------------------------------------------------------------------------------------
+
+//Указать актёру стоять, нелочиться
+void LAi_ActorStay(aref chr);
+
+//Указать актёру идти в заданный локатор, лочиться
+void LAi_ActorGoToLocator(aref chr, string group, string locator, string quest, float timeout);
+//Указать актёру бежать в заданный локатор, лочиться
+void LAi_ActorRunToLocator(aref chr, string group, string locator, string quest, float timeout);
+
+//Указать актёру идти в заданную локацию, лочиться
+void LAi_ActorGoToLocation(aref chr, string groupExit, string locatorExit, string locID, string groupEnter, string locatorEnter, string quest, float timeout);
+//Указать актёру бежать в заданную локацию, лочиться
+void LAi_ActorRunToLocation(aref chr, string groupExit, string locatorExit, string locID, string groupEnter, string locatorEnter, string quest, float timeout);
+
+//Указать актёру cледовать за персонажем в пределах локации, лочиться до подхода
+//При первом подходе или истечении времени сработает квест
+void LAi_ActorFollow(aref chr, aref follow, string quest, float timeout);
+
+//Указать актёру cледовать за персонажем по всем локациям, нелочиться
+//При первом подходе или истечении времени сработает квест
+void LAi_ActorFollowEverywhere(aref chr, string quest, float timeout);
+
+//Указать актёру на кого напасть, лочиться
+void LAi_ActorAttack(aref chr, aref enemy, string quest);
+
+//Указать актёру бояться другого персонажа, нелочиться
+void LAi_ActorAfraid(aref chr, aref by, bool canMove);
+
+//Активировать диалог между актёром и другим персонажем с подходом друг к другу, лочиться
+void LAi_ActorDialog(aref chr, aref to, string quest, float timeout, float dlgTime);
+//Активировать диалог между актёром и другим персонажем немедленно, лочиться
+void LAi_ActorDialogNow(aref chr, aref to, string quest, float dlgTime);
+//Активировать диалог с самим собой, лочиться
+void LAi_ActorSelfDialog(aref chr, string quest);
+//Указать актёру стоять и ждать диалог, лочиться
+void LAi_ActorWaitDialog(aref chr, aref by);
+
+//Проиграть анимацию для актёра, по окончанию вызвать квест, лочиться
+//Если анимация зацикленна, то квест вызовется по истечению времени
+void LAi_ActorAnimation(aref chr, string animation, string quest, float timeout);
+
+//Ориентировать актёра на персонажа (одноразово), нелочиться
+void LAi_ActorTurnToCharacter(aref chr, aref to);
+//Ориентировать актёра по локатору, нелочиться
+void LAi_ActorTurnByLocator(aref chr, string group, string locator);
+//Ориентировать актёра на локатор, нелочиться
+void LAi_ActorTurnToLocator(aref chr, string group, string locator);
+
+//Установить анимацию стоячего персонажа, модификатор idle-анимации
+void LAi_ActorSetStayMode(aref chr);
+//Установить анимацию сидячего персонажа, модификатор idle-анимации
+void LAi_ActorSetSitMode(aref chr);
+//Установить анимацию лежачего персонажа
+void LAi_ActorSetLayMode(aref chr);
+
+//Перейти в состояние ожидания новой команды, пользоваться этой функцией не рекомендуется
+void LAi_type_actor_Reset(aref chr)
+
+//------------------------------------------------------------------------------------------
+//Characters control
+//------------------------------------------------------------------------------------------
+
+//Установить время загрузки персонажа
+void LAi_SetLoginTime(aref chr, float start, float end);
+//Удалить время загрузки персонажа
+void LAi_RemoveLoginTime(aref chr);
+//Данный персонаж является верующим, и в определённое время находиться в церкви
+void LAi_SetFanatic(aref chr, string churchID, strung group, string locator, float start, float end);
+//Сделать обычным персонаж
+void LAi_RemoveFanatic(aref chr);
+//Запретить перерождение персонажа после убийства
+void LAi_NoRebirthEnable(aref chr);
+//Разрешить перерождение персонажа после убийства
+void LAi_NoRebirthDisable(aref chr);
+//Разрешить/запретить персонажу загружаться в захваченную локацию
+void LAi_LoginInCaptureTown(aref chr, bool isEnable);
+
+//Установить хитпойнты
+void LAi_SetHP(aref chr, float cur, float max);
+//Установить текущии хитпойнты
+void LAi_SetCurHP(aref chr, float cur);
+//Установить текущии хитпойнты максимальными
+void LAi_SetCurHPMax(aref chr);
+//Скорость изменения хп в секунду
+void LAi_SetDltHealth(aref chr, float healthPerSec);
+//Использовать бутылочку
+void LAi_UseHealthBottle(aref chr, float healthInBottle);
+//Сделать персонажа бессмертным
+void LAi_SetImmortal(aref chr, bool isImmortal);
+//Получить хп персонажа
+float LAi_GetCharacterHP(aref chr);
+//Получить максимальные хп персонажа
+float LAi_GetCharacterMaxHP(aref chr);
+//Получить относительные хп персонажа 0..1
+float LAi_GetCharacterRelHP(aref chr);
+
+//Установить проверяльщик хп, если их становиться меньше чем, вызвать квест
+void LAi_SetCheckMinHP(aref chr, float min, bool immortal, string quest);
+//Удалить проверяльщик хп
+void LAi_RemoveCheckMinHP(aref chr);
+
+//Убить персонажа
+void LAi_KillCharacter(aref chr);
+//Убит ли персонаж
+bool LAi_IsDead(aref chr);
+
+//Получить относительный заряд пистолета
+float LAi_GetCharacterRelCharge(aref chr);
+
+//Запретить диалог с персонажем
+void LAi_CharacterDisableDialog(aref chr);
+//Разрешить диалог с персонажем
+void LAi_CharacterEnableDialog(aref chr);
+
+//Разрешить при смерти порождить фантома
+void LAi_CharacterReincarnation(aref chr, bool isEnable, bool isUseCurModel);
+
+//Скил fencing для персонажа при логине выставляется относительно игрока
+void LAi_SetAdjustFencingSkill(aref chr, float min, float max);
+//Удалить выставлялку скила
+void LAi_DelAdjustFencingSkill(aref chr);
+
+
+//Проиграть звук
+void LAi_CharacterPlaySound(aref chr, string soundname);
+
+//Переключиться в режим боя и обратно
+void LAi_SetFightMode(aref chr, bool isFightMode);
+//Заблокировать текущий режим (!!! сбрасывается при смене шаблона !!!)
+void LAi_LockFightMode(aref chr, bool isLockFightMode);
+
+//------------------------------------------------------------------------------------------
+//Groups
+//------------------------------------------------------------------------------------------
+
+Определённые группы:
+LAI_GROUP_DEFAULT	//Группа по умолчанию
+LAI_GROUP_CITIZEN	//Группа горожан дружественная с охраниками, нейтральная с игроком
+LAI_GROUP_PLAYER	//Группа игрока дружественная с охраниками, нейтральная с горожанами
+LAI_GROUP_GUARDS	//Группа охраников дружественная ко всем определённым групам
+LAI_GROUP_ACTOR		//Группа актёров, нейтральная ко всем определёным группам
+LAI_GROUP_HUBER		//Группа губернатора дружественная с охраниками и горожанам, нейтральная с игроком
+
+
+Отношения групп:
+LAI_GROUP_FRIEND	//Дружественные отношение
+LAI_GROUP_NEITRAL	//Нейтральные отношение
+LAI_GROUP_ENEMY		//Враждебные отношения
+
+
+Радиусы групп:
+//По умолчанию для создаваемой группы, групыы горожан
+LAI_GROUP_DEF_LOOK			//Радиус видимости противника
+LAI_GROUP_DEF_HEAR			//Радиус обязательного обнаружения противника
+LAI_GROUP_DEF_SAY			//Радиус сообщения об обнаруженом противнике согрупникам
+
+//Для группы игрока
+#define LAI_GROUP_PLA_LOOK	//Радиус видимости противника
+#define LAI_GROUP_PLA_HEAR	//Радиус обязательного обнаружения противника
+#define LAI_GROUP_PLA_SAY	//Радиус сообщения об обнаруженом противнике согрупникам
+
+//Для группы стражников
+#define LAI_GROUP_GRD_LOOK	//Радиус видимости противника
+#define LAI_GROUP_GRD_HEAR	//Радиус обязательного обнаружения противника
+#define LAI_GROUP_GRD_SAY	//Радиус сообщения об обнаруженом противнике согрупникам
+
+//Для группы актёров
+#define LAI_GROUP_ACT_LOOK	//Радиус видимости противника
+#define LAI_GROUP_ACT_HEAR	//Радиус обязательного обнаружения противника
+#define LAI_GROUP_ACT_SAY	//Радиус сообщения об обнаруженом противнике согрупникам
+
+//Для группы губернатора
+#define LAI_GROUP_HUB_LOOK	//Радиус видимости противника
+#define LAI_GROUP_HUB_HEAR	//Радиус обязательного обнаружения противника
+#define LAI_GROUP_HUB_SAY	//Радиус сообщения об обнаруженом противнике согрупникам
+
+//Приоритеты групп
+#define LAI_GROUP_PDEFAULT	//Значение преоритета по умолчанию
+#define LAI_GROUP_PPLAYER	//Значение преоритета для игрока
+#define LAI_GROUP_PGUARDS	//Значение преоритета для охраников
+#define LAI_GROUP_PCITIZENS	//Значение преоритета для горожан и им подобных
+
+
+//Регистрация новой группы
+void LAi_group_Register(string groupName);
+
+//Установить для группы радиус видимости
+void LAi_group_SetLookRadius(string groupName, float radius);
+//Установить для группы радиус слышимости
+void LAi_group_SetHearRadius(string groupName, float radius);
+//Установить для группы радиус сообщения
+void LAi_group_SetSayRadius(string groupName, float radius);
+//Установить для группы приоритет
+void LAi_group_SetPriority(string groupName, int priority);
+//Установить уровень тревоги 0..1
+bool LAi_group_SetAlarm(string group1, string group2, float level);
+//Установить скорость убывания тревоги ед/сек
+bool LAi_group_SetAlarmDown(string group1, string group2, float down);
+
+
+//Переместить персонажа в новую группу, если группы нет, то создать с параметрыми по умолчанию
+void LAi_group_MoveCharacter(aref chr, string groupName);
+
+//Установить отношения между группами
+void LAi_group_SetRelation(string group1, string group2, string curRelation);
+//Установить отношения между группами при активации тревоги и после
+void LAi_group_SetAlarmReaction(string group1, string group2, string actRelation, string relRelation)
+//Натравить друг на друга 2 группы
+void LAi_group_FightGroups(string group1, string group2, bool asignGuardianType);
+//Натравить друг на друга 2 группы, с возможной установкой командиров
+void LAi_group_FightGroupsEx(string group1, string group2, bool asignWarriarType, int commander1, int commander2, bool isStay, bool isDialog);
+
+//Получить значение тревоги для игрока
+float LAi_group_GetPlayerAlarm();
+//Активна ли тревога для игрока
+bool LAi_group_IsActivePlayerAlarm();
+
+//Установить квест на убивание группы
+void LAi_group_SetCheck(string groupName, string quest);
+//Убрать квест на убивание группы
+void LAi_group_RemoveCheck(string groupName);
+
+//Разрешить при смерти порождить фантома
+void LAi_CharacterReincarnation(aref chr, bool isEnable, bool isUseCurModel);
+
+//----------------------------------------------------------------------
+//Other
+//----------------------------------------------------------------------
+
+//Найти случайный локатор в заданной группе локаторов
+string LAi_FindRandomLocator(string group);
+//Найти дальний локатор в заданной группе локаторов
+string LAi_FindFarLocator(string group, float x, float y, float z);
+//Найти ближайший свободный локатор
+string LAi_FindNearestFreeLocator(string group, float x, float y, float z);
+
+//Создать фантомного персонажа
+aref LAi_CreateFantomCharacter(string model, string group, string locator);
+//Создать фантомного персонажа
+ref LAi_CreateFantomCharacterEx(string model, string ani, string group, string locator);
+
+//Надёжная задержка квеста для локаций, позволяющая сохраняться
+void LAi_QuestDelay(string quest, float delayTime);
+
+
+
+//Вывести экран в темноту, выполнить квест questFadeOut, вернуть всё обратно, выполнить квест questFadeIn
+void LAi_Fade(string questFadeOut, string questFadeIn);
+
+
+//Запретить сражаться персонажам в заданной локации
+void LAi_LocationFightDisable(ref location, bool isDisable);
+//Разрешить или запретить генерации монстров
+void LAi_LocationMonstersGen(ref location, bool isEnable);
+//Установить время генерации монстров
+void LAi_LocationSetMonstersTime(ref location, float start, float end);
+//Разрешить или запретить генерации фантомов при убийстве в данной локации
+void LAi_LocationFantomsGen(ref location, bool isEnable);

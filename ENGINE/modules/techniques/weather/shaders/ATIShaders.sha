@@ -1,0 +1,112 @@
+VertexShader SeaVS_ATIReflect
+{
+	decl
+	{
+        stream[0];
+
+        float v0[3];	// Position
+        float v1[3];	// Normal
+        float v2[2];	// Tex coord 0
+    }
+	asm
+	{
+		 vs.1.1
+		def c45, 5.0f, 0.5f, 0.04f, 1.0f
+
+		m4x4 r0, v0, c[24 ]
+		mov  oPos, r0
+		 
+		mul r11.z, r0.z, c[1  ].w  
+		expp r11.z, r11.z  
+		rcp r11.z, r11.z  
+		mov oFog.x, r11.z
+
+		mov r4, v1
+		 
+		dp3 r4.w, r4, r4 
+		rsq r4.w, r4.w 
+		mul r4, r4, r4.w 
+
+		sub r1, v0, c[23  ]
+		 
+		dp3 r1.w, r1, r1 
+		rsq r1.w, r1.w 
+		mul r1, r1, r1.w  
+
+		dp3 r3.x, r1, r4
+		add r3.x, r3.x, r3.x
+		mad r2.xyz, r3.xxx, r4, -r1
+		  
+		mul r10,  r4.yzxw,  c[28 + 5].zxyw 
+		mad r10, - c[28 + 5].yzxw,  r4.zxyw, r10 
+		  
+		mul r11,  r4.yzxw,  r10.zxyw 
+		mad r11, - r10.yzxw,  r4.zxyw, r11          
+
+		; Normalize S and T
+		dp3 r10.w, r10, r10
+		rsq r10.w, r10.w
+		mul r10, r10, r10.w
+
+		dp3 r11.w, r11, r11
+		rsq r11.w, r11.w
+		mul r11, r11, r11.w
+
+		; here we compute SxT (if V_SxT is available, then this is unnecessary, of course)
+		mul r9, r10.zxyw, r11.yzxw           ; 2 instruction cross product
+		mad r9, r10.yzxw, r11.zxyw, -r9
+
+		dp3 oT0.x, r10,  c[28 + 8]
+		dp3 oT0.y, r11,  c[28 + 8]
+		dp3 oT0.z, r9,  c[28 + 8]
+
+		dp3 oT1.x, r10,  c[28 + 9]
+		dp3 oT1.y, r11,  c[28 + 9]
+		dp3 oT1.z, r9,   c[28 + 9]
+
+		dp3 oT2.x, r10,  c[28 + 10]
+		dp3 oT2.y, r11,  c[28 + 10]
+		dp3 oT2.z, r9,  c[28 + 10]
+	 
+		mul oT3.xy, v2, c[3].z
+
+		sub r0.z, v0.y, c[3].x
+		mul r0.z, r0.z, c[3].y
+		max oT3.z, r0.z, c[0].x
+	 
+		mov oT4.z, c[2].x
+		mov oT4.xy, v2
+	}
+}
+
+
+PixelShader SeaPS_ATIReflect
+{
+	asm
+	{
+		#include "reflect.h"
+		ps.1.4
+
+		texcrd	r0.rgb, t0			; 1st row of 3x3 basis matrix
+		texcrd	r1.rgb, t1			; 2nd row of 3x3 basis matrix
+		texcrd	r2.rgb, t2			; 3rd row of 3x3 basis matrix
+		texcrd	r3.rgb, t3			; x, y, z
+		texld	r4, t4				; sample normal map
+
+		dp3		r5.r, r0, r4_bx2		; 1st row of matrix multiply
+		dp3		r5.g, r1, r4_bx2		; 3nd row of matrix multiply
+		dp3		r5.b, r2, r4_bx2		; 2nd row of matrix multiply
+
+		mul r5.rgb, r5, c[0].rrr
+
+		mov r1.rgb, r3
+		;add r1.r, r1.r, c2.g
+		;add r1.r, r1.r, r5.r
+		;add r1.g, r1.g, r5.bb
+		
+		phase
+	
+		texld r0, r1
+
+		mov r0.a, r3.b
+}

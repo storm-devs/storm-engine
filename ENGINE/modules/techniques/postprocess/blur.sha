@@ -1,0 +1,53 @@
+PixelShader BlurPS
+{
+  asm
+  {
+    ps.1.1
+    
+			//c1 - цвет тени...
+    def c1, 0.25, 0.25, 0.25, 0.25
+    def c2, 1.0, 1.0, 1.0, 1.0
+
+
+		tex t0	
+		tex t1	
+		tex t2	
+    tex t3  
+    mul r0, t0, c1
+    mad r0, t1, c1, r0
+		mad r0, t2, c1, r0
+    mad r0, t3, c1, r0
+//   mov r0, t2
+  }
+}
+  
+
+
+block PostProcessBlur()
+{
+	technique t0
+	{
+		pass p0
+    {
+			addressu[0] = clamp;
+			addressv[0] = clamp;
+			addressu[1] = clamp;
+			addressv[1] = clamp;
+			addressu[2] = clamp;
+			addressv[2] = clamp;
+			addressu[3] = clamp;
+			addressv[3] = clamp;
+    
+      ZEnable = false;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = false;
+			fogEnable = false;
+
+ 			PixelShader = "BlurPS";
+
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}

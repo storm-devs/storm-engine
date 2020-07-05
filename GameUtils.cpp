@@ -1,0 +1,5 @@
+#include "IslandED.h"
+
+INTERFACE_FUNCTION
+CREATE_CLASS(IslandED)
+

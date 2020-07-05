@@ -1,0 +1,44 @@
+block Geforce2MXSea()
+{
+	technique t0
+	{
+		pass p0
+		{
+			CullMode = none;
+			ColorVertex = true;
+			SpecularEnable = true;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			SrcBlend = one;
+			DestBlend = srcalpha;
+			Lighting = false;
+			LocalViewer = true;
+			NormalizeNormals = false;
+			TexCoordIndex[1] = cameraspacereflectionvector;
+			TextureTransformFlags[1] = count3;
+			TextureFactor = 0x09000000;
+
+			ColorOp[0] = modulate2x;
+			ColorArg1[0] = texture;
+			ColorArg2[0] = diffuse;
+
+			AlphaOp[0] = modulate;
+			AlphaArg1[0] = texture;
+			AlphaArg2[0] = tfactor;
+
+			ColorOp[1] = modulatealpha_addcolor;
+			ColorArg1[1] = current;
+			ColorArg2[1] = texture;
+
+			AlphaOp[1] = SelectArg1;
+			AlphaArg1[1] = diffuse;
+			 
+			ColorOp[2] = disable;
+
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}
+
