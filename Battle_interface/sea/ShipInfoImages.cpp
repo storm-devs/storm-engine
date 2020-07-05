@@ -135,12 +135,12 @@ void ShipInfoImages::CheckAndRecreateBuffers(long nShipQ)
 		INDEX_BUFFER_RELEASE(pRS,m_ibBackProgress);
 
 		// create new buffers
-		m_vbRelation = pRS->CreateVertexBuffer(SPV_FORMAT,nShipQ * 4*sizeof(SII_VERTEX),D3DUSAGE_WRITEONLY);
-		m_ibRelation = pRS->CreateIndexBuffer(nShipQ * 6*sizeof(word));
-		m_vbProgress = pRS->CreateVertexBuffer(SPV_FORMAT,nShipQ*3 * 4*sizeof(SII_VERTEX),D3DUSAGE_WRITEONLY);
-		m_ibProgress = pRS->CreateIndexBuffer(nShipQ*3 * 6*sizeof(word));
-		m_vbBackProgress = pRS->CreateVertexBuffer(SPV_FORMAT,nShipQ * 4*sizeof(SII_VERTEX),D3DUSAGE_WRITEONLY);
-		m_ibBackProgress = pRS->CreateIndexBuffer(nShipQ * 6*sizeof(word));
+		m_vbRelation = pRS->CreateVertexBufferManaged(SPV_FORMAT,nShipQ * 4*sizeof(SII_VERTEX),D3DUSAGE_WRITEONLY);
+		m_ibRelation = pRS->CreateIndexBufferManaged(nShipQ * 6*sizeof(word));
+		m_vbProgress = pRS->CreateVertexBufferManaged(SPV_FORMAT,nShipQ*3 * 4*sizeof(SII_VERTEX),D3DUSAGE_WRITEONLY);
+		m_ibProgress = pRS->CreateIndexBufferManaged(nShipQ*3 * 6*sizeof(word));
+		m_vbBackProgress = pRS->CreateVertexBufferManaged(SPV_FORMAT,nShipQ * 4*sizeof(SII_VERTEX),D3DUSAGE_WRITEONLY);
+		m_ibBackProgress = pRS->CreateIndexBufferManaged(nShipQ * 6*sizeof(word));
 
 		// fill there index buffers
 		long n;

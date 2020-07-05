@@ -67,7 +67,8 @@ void XI_TableLineDescribe::SetData( long nRowIndex, ATTRIBUTES* pLA, bool bHeade
 		m_nHeight = pLA->GetAttributeAsDword("height",m_pTable->m_nNormalLineHeight);
 	} else m_nHeight = m_pTable->m_anRowsHeights[nRowIndex];
 
-	for( long c=0; c<10000; c++ )
+	long c = 0;
+	for( c=0; c<10000; c++ )
 	{
 		sprintf( pcAttrName, "td%d", c+1 );
 		ATTRIBUTES* pA = (pLA ? pLA->GetAttributeClass( pcAttrName ) : 0);
@@ -271,7 +272,7 @@ void XI_TableCellDescribe::LoadImageParam(ImgDescribe* pImg,ATTRIBUTES* pA)
 			pImg->pImage->LoadFromFile( pA->GetAttribute("texture") );
 
 		if( pA->GetAttribute("texturepointer") )
-			pImg->pImage->SetPointerToTexture( (IDirect3DTexture8*)pA->GetAttributeAsDword("texturepointer") );
+			pImg->pImage->SetPointerToTexture( (IDirect3DTexture9*)pA->GetAttributeAsDword("texturepointer") );
 
 		float fL=0.f, fT=0.f, fR=1.f, fB=1.f;
 		if( pA->GetAttribute("uv") )
@@ -632,7 +633,7 @@ void CXI_TABLE::SaveParametersToIni()
 
 	// save rows height
 	sTmp = "";
-	for( n=0; n<m_anRowsHeights; n++ )
+	for( long n=0; n<m_anRowsHeights; n++ )
 	{
 		if( n>0 ) sTmp += ",";
 		sTmp += m_anRowsHeights[n];
@@ -668,7 +669,7 @@ bool CXI_TABLE::GetInternalNameList( array<string>& aStr )
 		sTmp += (n+1);
 		aStr.Add( sTmp );
 	}
-	for( n=0; n<m_nRowQuantity; n++ )
+	for( long n=0; n<m_nRowQuantity; n++ )
 	{
 		sTmp = "row";
 		sTmp += (n+1);
@@ -939,7 +940,7 @@ void CXI_TABLE::UpdateBorders()
 		INDEX_BUF_RELEASE( m_rs, m_idBorderIBuf );
 
 		// индекс буфер
-		m_idBorderIBuf = m_rs->CreateIndexBuffer( q * 6 * sizeof(WORD) );
+		m_idBorderIBuf = m_rs->CreateIndexBufferManaged( q * 6 * sizeof(WORD) );
 		Assert( m_idBorderIBuf != -1 );
 		// заполняем
 		WORD* pT = (WORD*)m_rs->LockIndexBuffer( m_idBorderIBuf );
@@ -955,7 +956,7 @@ void CXI_TABLE::UpdateBorders()
 		m_rs->UnLockIndexBuffer( m_idBorderIBuf );
 
 		// вертекс буфер
-		m_idBorderVBuf = m_rs->CreateVertexBuffer( XI_ONETEX_FVF, q * 4 * sizeof(XI_ONETEX_VERTEX), D3DUSAGE_WRITEONLY );
+		m_idBorderVBuf = m_rs->CreateVertexBufferManaged( XI_ONETEX_FVF, q * 4 * sizeof(XI_ONETEX_VERTEX), D3DUSAGE_WRITEONLY );
 		Assert( m_idBorderVBuf != -1 );
 	}
 

@@ -174,14 +174,15 @@ void Debris::NormalazedModels()
 {
 	float sum = 0.0f;
 	for(long i = 0; i < numModels; i++) sum += mdl[i].prt;
-	for(i = 0; i < numModels; i++) mdl[i].prt /= sum;
+	for(long i = 0; i < numModels; i++) mdl[i].prt /= sum;
 }
 
 MODEL * Debris::SelectModel(float & maxSpd)
 {
 	float rnd = rand()*(1.0f/RAND_MAX);
 	float sum = 0.0f;
-	for(long i = 0; i < numModels - 1; i++)
+	long i = 0;
+	for(i = 0; i < numModels - 1; i++)
 	{
 		sum += mdl[i].prt;
 		if(rnd < sum)

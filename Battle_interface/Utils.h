@@ -103,7 +103,7 @@ public: // functions
 
 	static long GetMaxFromFourLong( long n1, long n2, long n3, long n4 );
 
-	static float GetFromStr_Float(const char* &pcStr, float fDefault);
+	static float GetFromStr_Float(char* &pcStr, float fDefault);
 
 	static void FillTextInfoArray(VDX8RENDER* pRS, ATTRIBUTES* pA, array<BITextInfo>& tia);
 	static void PrintTextInfoArray(array<BITextInfo>& tia);

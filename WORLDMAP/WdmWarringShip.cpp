@@ -59,7 +59,7 @@ void WdmWarringShip::Update(float dltTime)
 			move[numRects].v = mtx.Vx()*30.0f*(0.6f + rand()*(0.4f/RAND_MAX));
 		}
 		//Половина для правого борта
-		for(i = 0; i < sizeof(move)/(2*sizeof(MoveInfo)); i++, numRects++)
+		for(long i = 0; i < sizeof(move)/(2*sizeof(MoveInfo)); i++, numRects++)
 		{
 			rect[numRects].vPos = mtx.Pos() + CVECTOR(0.0f, 2.0f, 0.0f);
 			rect[numRects].vPos += mtx.Vz()*2.5f*(1.0f - rand()*2.0f/RAND_MAX);

@@ -148,7 +148,7 @@ void SeaLocatorShow::Realize(dword Delta_Time)
 	AIHelper::pRS->GetTransform(D3DTS_PROJECTION, prj);
 	mtx.EqMultiply(view, prj);
 
-	D3DVIEWPORT8	vp;
+	D3DVIEWPORT9	vp;
 
 	AIHelper::pRS->GetViewport(&vp);
 	fWidth = vp.Width*0.5f;

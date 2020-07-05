@@ -10,7 +10,6 @@
 #include "steam_api.h"
 #pragma comment (lib, "steam_api.lib")
 
-
 #define CORE_MODULE_WILD_MASK		"*.dll"
 #define CORE_DEFAULT_MODULES_PATH	"Modules\\"
 #define CORE_DEFAULT_ATOMS_SPACE	128
@@ -21,6 +20,7 @@
 extern char ENGINE_INI_FILE_NAME[256];
 extern bool bDebugWindow, bAcceleration;
 extern bool bNetActive;
+extern bool bSteam;
 
 #define RDTSCB(x)	{ _asm rdtsc _asm mov x,eax }
 #define RDTSCE(x)	{ _asm rdtsc _asm sub eax,x _asm mov x,eax }
@@ -32,16 +32,12 @@ extern VMA * _pModuleClassRoot;
 #define SERVICES_REFERENCE_FLAGS	0x1
 
 CREATE_SERVICE(CONTROLS)
-#ifdef _XBOX
-//dword ATTRIBUTES::nMemSize = 0;
-#endif
+
 // this macro incure, that programm control didnt pass via any entity constructor. Each base api function must
 // be protected by this macro on development stage. On release stage this macro changed to empty block
 #define VALIDATE_API_CALLS {if(Constructor_counter) _THROW(api call from constructor);}	// develop version
-//#define VALIDATE_API_CALLS {}	// release version
 
 dword dwNumberScriptCommandsExecuted = 0;
-
 
 typedef struct 
 {
@@ -69,10 +65,10 @@ CORE::CORE()
 	fTimeScale = 1.0f;	
 	bNetActive = false;
 	nSplitScreenshotGrid = 4;
-#ifdef isSteam
+//#ifdef isSteam
 	g_SteamAchievements = NULL;
 	g_SteamDLC = NULL;
-#endif
+//#endif
 }
 
 CORE::~CORE()
@@ -120,98 +116,51 @@ void CORE::ResetCore()
 
 void CORE::CleanUp()
 {
-	//GUARD(CORE::CleanUp)
 	dword n;
-	
+
 	Initialized = false;
 	bEngineIniProcessed = false;
 	
 	Control_Stack.Clear();
-	
-	//Program.Release();
 	
 	if(Atoms_PTR)
 	{
 		for(n=0;n<=CoreState.Atoms_max_orbit;n++) 
 		{
 			if(Atoms_PTR[n] == null) continue;
-			// if(Atoms_PTR[n]->as.Service) continue;
-			
-//			PUSH_CONTROL(Atoms_PTR[n]->atom_id.pointer,Atoms_PTR[n]->atom_id.class_code,CTP_DESTRUCTOR)
-			/*#ifndef EX_OFF
-			try {
-			#endif*/
-				EraseEntity(Atoms_PTR[n]->atom_id);
-			/*#ifndef EX_OFF
-			}
-			catch(...)
-			{
-				TraceCurrent();
-				Memory_Service.Free(Atoms_PTR[n]->atom_id.pointer);
-				if(Atoms_PTR[n]) delete Atoms_PTR[n]; 
-			}
-			#endif*/
+			EraseEntity(Atoms_PTR[n]->atom_id);
 		}
 	}
 
 	ProcessDeleteList();
 
-	//if(Controls) delete Controls; Controls = 0;
 	ReleaseServices();
+	
 	ReleaseLayers();
-	//Program.Release();
+	
 	Compiler.Release();
-	
-	
-
-	
+		
 	if(Atoms_PTR) delete Atoms_PTR; Atoms_PTR = null;
 
-	
 	Services_List.Release();
 	CheckMemoryLeak_Classes();
 	DeleteEntityList.Release();
+	
 	DeleteServicesList.Release();
 	Services_List.Release();
 	DeleteLayerList.Release();
-	//Control_Stack.Clear();
-	if(State_file_name) delete State_file_name; State_file_name = null;
 	
-	//UNGUARD
+	if(State_file_name) delete State_file_name; State_file_name = null;
 }
 
 void CORE::ReleaseServices()
 {
 	GUARD(CORE::ReleaseServices)
-//	SERVICE * service_PTR;
-//	dword class_code;
 
 	FreeServices();
 
-/*	service_PTR = Services_List.GetService(class_code);
-	while(service_PTR)
-	{
-		//PUSH_CONTROL(service_PTR,class_code,CTP_DESTRUCTOR)
-		#ifndef EX_OFF
-		try {
-		#endif
-			delete service_PTR;
-		#ifndef EX_OFF
-		}
-		catch(...)
-		{
-			trace("service release error");
-			TraceCurrent();
-			Memory_Service.Free(service_PTR);
-		}
-		#endif
-		//POP_CONTROL(0)
-
-		service_PTR = Services_List.GetServiceNext(class_code);
-	}*/
 	UNGUARD
 }
-
 
 void __declspec(noinline) __cdecl CORE::InitBase()
 {
@@ -284,14 +233,14 @@ bool CORE::Run()
 			Atoms_PTR[n]->as.Realize_ticks_av = 0;
 		}
 
-/*
+
 	CONTROL_STATE cs;
 
 	if(Controls && Controls->GetControlState("dump",cs))
 	{
 		if(cs.state == CST_ACTIVATED) Memory_Service.DumpMemoryState();
 	}
-*/
+
 		//trace("Allocated Memory: %f kb in %d block(s)",
 	//	(Memory_Service.Allocated_memory_user + Memory_Service.Allocated_memory_system)/1024.0f,Memory_Service.Blocks);
 
@@ -348,10 +297,10 @@ bool CORE::Run()
 	ProcessRunStart(SECTION_ALL);
 	ProcessExecute();						// transfer control to objects via Execute() function
 	ProcessRealize();						// transfer control to objects via Realize() function
-
-#ifdef isSteam
-	SteamAPI_RunCallbacks();
-#endif
+	
+//#ifdef isSteam
+	if(bSteam) SteamAPI_RunCallbacks();
+//#endif
 	
 	if (Controls && bActive) 
 		Controls->Update(Timer.rDelta_Time);
@@ -424,7 +373,7 @@ void CORE::ProcessControls()
 	}
 }
 
-static nOffSearch = 0;
+static int nOffSearch = 0;
 void CORE::ProcessSystemMessage(UINT iMsg,WPARAM wParam,LPARAM lParam)
 {
 	GUARD(CORE::ProcessSystemMessage)
@@ -478,10 +427,6 @@ bool __declspec(noinline) __cdecl CORE::Initialize()
 	gdi_display.Print(CMS_INIT_COMPLETE);
 	Initialized = true;
 
-	//ProcessRootObjectCreation();
-	
-	//ProcessEngineIniFile();
-
 	UNGUARD
 	return true;
 }
@@ -513,10 +458,6 @@ bool CORE::LoadCoreState(CORE_STATE cs)
 	}
 	delete engine_ini;
 
-	// pc/xbox mod - modules loaded on startup only and unloaded when app terminated
-	//Modules_Table.LoadModulesTable();							// creating modules table
-	//if(Modules_Table.GetModulesCount() == 0) _THROW(No modules to Run);
-
 	//LoadClassesTable();											// creating classes table
 	
 	// create atoms space
@@ -539,26 +480,7 @@ void CORE::ProcessRootObjectCreation()
 {
 	GUARD(CORE::ProcessRootObjectCreation)
 
-	//INIFILE * engine_ini;
-	//char string[_MAX_PATH];
-
 	if(Root_flag) return;
-
-	/*engine_ini = File_Service.OpenIniFile(ENGINE_INI_FILE_NAME);
-	if(engine_ini == null) _THROW(no 'engine.ini' file);
-
-	if(!engine_ini->ReadString(0,"root object",string,sizeof(string),0))
-	{
-		delete engine_ini;
-		_THROW(No 'root object' key in engine.ini);
-	}
-	delete engine_ini; 
-
-	gdi_display.Print("Root object: %s",string);
-	if(!CreateEntity(0,string)) _THROW(Cant create Root object);//*/
-	
-
-	//ProcessEngineIniFile();
 
 	Root_flag = true;
 	UNGUARD
@@ -566,7 +488,6 @@ void CORE::ProcessRootObjectCreation()
 
 void CORE::Execute(char * name)
 {
-	//Program.RunProgram(name);
 }
 
 void __declspec(noinline) __cdecl CORE::ProcessEngineIniFile()
@@ -741,7 +662,6 @@ void CORE::ReleaseAtoms()
 		for(n=0;n<=CoreState.Atoms_max_orbit;n++) 
 		{
 			if(Atoms_PTR[n] == null) continue;
-			//if(Atoms_PTR[n]->as.Service) continue; // free services later
 			EraseEntity(Atoms_PTR[n]->atom_id);
 		}
 	}
@@ -756,84 +676,6 @@ void CORE::ReleaseAtoms()
 // called from load state function
 void CORE::RestoreEntity(ENTITY_ID entity_id,ATOM_STATE atom_state)
 {
-	/*
-	GUARD(CORE::RestoreEntity) 
-	CLASS_SEARCH_DATA class_search_data;
-	C_ATOM * atom_PTR;
-	VMODULE_API * mapi_PTR;
-	ENTITY * Entity_PTR;
-	dword class_code;
-	
-	class_code = entity_id.class_code;
-	// access to class informatino
-	if(!Classes_Table.GetStringData(class_code,&class_search_data)) _THROW(invalid class);
-	
-	// xbox
-	if((dword)class_search_data.module_code >= Modules_Table.GetModulesCount())
-	// load module
-	//if(Modules_Table.ModuleReferenceInc(class_search_data.module_code) == 0) 
-	{
-		//trace("cant load libriary  %s : %s",Modules_Table.GetModuleName(class_search_data.module_code),Classes_Table.GetString(class_code));
-		_THROW(invalid module code);
-	}
-
-	// create atom structure
-	atom_PTR = FitAtom(entity_id,atom_state);
-	if(atom_PTR == null) _THROW(cant create atom);
-
-	// clear all layers attribute (object will be added via standart function)
-	ZeroMemory(&atom_PTR->as.Layers_mask,sizeof(atom_PTR->as.Layers_mask));
-
-	// obtain module interface class	
-	mapi_PTR = Modules_Table.GetModuleAPI(class_search_data.module_code);
-	if(mapi_PTR == null) 
-	{
-		trace("invalid module api class  %s : %s",Modules_Table.GetModuleName(class_search_data.module_code),Classes_Table.GetString(class_code));
-		_THROW(invalid module);
-	}
-	
-	// set current entity atom id pointer
-	System_Api.entityID_PTR = &atom_PTR->atom_id;
-	
-	// notify entrance to object constructor
-	// PUSH_CONTROL push control operation code will made on base object (entity) constructor
-
-	// create new class, object constructor would be called
-	Entity_PTR = null;
-	#ifndef EX_OFF
-	try { 
-	#endif	
-		Entity_PTR = (ENTITY*)mapi_PTR->CreateClass(class_search_data.module_class_id,false); 
-	#ifndef EX_OFF
-	}
-	catch(_EXS xobj) 
-	{
-		TraceCurrent();
-		POP_CONTROL(0)
-		System_Api.entityID_PTR = null;
-		throw;
-	}
-	catch(...)
-	{
-		TraceCurrent();
-		POP_CONTROL(0)
-		System_Api.entityID_PTR = null;
-		_THROW(RestoreEntity(Constructor));
-	}
-	#endif
-
-	System_Api.entityID_PTR = null;
-	
-	// Push was made in Entity base class constructor
-	POP_CONTROL(0)
-	
-	if(Entity_PTR == null) THROW;
-
-	// created, but object constructor start self destruct process 
-	if(atom_PTR->as.Deleted) _THROW(self destruct on load);
-	
-	UNGUARD
-	//*/
 }
 
 void CORE::ValidateApiCalls()
@@ -1208,7 +1050,6 @@ void CORE::CheckMemoryLeak_Classes()
 
 dword CORE::Class_Name2Code(char * class_name)
 {
-	//VALIDATE_API_CALLS // no necessary
 	return MakeHashValue(class_name);
 }
 
@@ -2137,7 +1978,7 @@ void * CORE::MakeClass(char * class_name)
 
 
 void CORE::FreeServices()
-{
+{	
 	VMA * pClass;
 	if(_pModuleClassRoot == 0) return;
 	pClass = _pModuleClassRoot;
@@ -2145,11 +1986,21 @@ void CORE::FreeServices()
 	{
 		if(pClass->Service())
 		{
+//			if(stricmp("DX8RENDER",pClass->GetName())==0)
+//			{
+//				continue;
+//			}
+//			trace("clear service %s",pClass->GetName());
 			pClass->Clear();
 		}
 		pClass = pClass->Next();
 	} 
 	while(pClass);
+	
+//	pClass = FindVMA("DX8RENDER");
+//	if(pClass == 0) return;
+//	else pClass->Clear();
+	
 	Controls = 0;
 }
 
@@ -2251,6 +2102,8 @@ void * CORE::CreateService(char * service_name)
 	PUSH_CONTROL(0,0,0)
 	Services_List.Add(class_code,class_code,service_PTR);
 	POP_CONTROL(0)
+	
+//	trace("create service %s",service_name);
 	
 	UNGUARD
 	return service_PTR;
@@ -3403,86 +3256,103 @@ bool CORE::IsNetActive() const
 {
 	return bNetActive;
 }
-#ifdef isSteam
+//#ifdef isSteam
 //Steam achievements && DLC section
+
+bool CORE::isSteamEnabled()
+{
+	return bSteam;
+}
 
 void CORE::InitAchievements()
 {
-	g_SteamAchievements = new CSteamStatsAchievements(ACHIEVEMENTS_NUM);
+	if(bSteam) g_SteamAchievements = new CSteamStatsAchievements(ACHIEVEMENTS_NUM);
 }
 
 void CORE::DeleteAchievements()
 {
-	if (g_SteamAchievements) delete g_SteamAchievements;
+	if (bSteam && g_SteamAchievements) delete g_SteamAchievements;
 }
 
 long CORE::SetAchievementState(const char* ID)
 {
-	return g_SteamAchievements->SetAchievement(ID);
+	if(bSteam) return g_SteamAchievements->SetAchievement(ID);
+	return 0;
 }
 
 long CORE::GetAchievementState(const char* ID)
 {
-	return g_SteamAchievements->GetAchievement(ID);
+	if(bSteam) return g_SteamAchievements->GetAchievement(ID);
+	return 0;
 }
 
 long CORE::SetStatValue(const char* ID, long Value)
 {
-	return g_SteamAchievements->SetStat(ID, Value);
+	if(bSteam) return g_SteamAchievements->SetStat(ID, Value);
+	return 0;
 }
 
 long CORE::GetStatValue(const char* ID)
 {
-	return g_SteamAchievements->GetStat(ID);
+	if(bSteam) return g_SteamAchievements->GetStat(ID);
+	return 0;
 }
 
 long CORE::StoreStats()
 {
-	return g_SteamAchievements->StoreStats();
+	if(bSteam) return g_SteamAchievements->StoreStats();
+	return 0;
 }
 
 bool CORE::ResetStats( bool bAchievementsToo )
 {
-	return g_SteamAchievements->ResetStats( bAchievementsToo );
+	if(bSteam) return g_SteamAchievements->ResetStats( bAchievementsToo );
+	return 0;
 }
 
 bool CORE::ClearAchievement(const char* ID)
 {
-	return g_SteamAchievements->ClearAchievement(ID);
+	if(bSteam) return g_SteamAchievements->ClearAchievement(ID);
+	return 0;
 }
 
 bool CORE::isSteamConnected()
 {
-	return g_SteamAchievements->GetConnected();
+	if(bSteam) return g_SteamAchievements->GetConnected();
+	return 0;
 }
 
 void CORE::InitSteamDLC()
 {
-	g_SteamDLC = new CSteamDLC();
+	if(bSteam) g_SteamDLC = new CSteamDLC();
 }
 
 void CORE::DeleteSteamDLC()
 {
-	if (g_SteamDLC) delete g_SteamDLC;		
+	if (bSteam && g_SteamDLC) delete g_SteamDLC;
 }
 
 bool CORE::isDLCActive( long nDLC )
 {
-	return g_SteamDLC->isDLCInstalled(nDLC);
+	if(bSteam) return g_SteamDLC->isDLCInstalled(nDLC);
+	return 0;
 }
 
 long CORE::getDLCCount()
 {
-	return g_SteamDLC->getDLCCount();
+	if(bSteam) return g_SteamDLC->getDLCCount();
+	return 0;
 }
 
 long CORE::getDLCDataByIndex( long iDLC )
 {
-	return g_SteamDLC->bGetDLCDataByIndex( iDLC );
+	if(bSteam) return g_SteamDLC->bGetDLCDataByIndex( iDLC );
+	return 0;
 }
 
 bool CORE::activateGameOverlayDLC( long nAppId )
 {
-	return g_SteamDLC->activateGameOverlay( nAppId );
+	if(bSteam) return g_SteamDLC->activateGameOverlay( nAppId );
+	return 0;
 }
-#endif
+//#endif

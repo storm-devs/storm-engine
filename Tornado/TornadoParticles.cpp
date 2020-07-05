@@ -16,7 +16,8 @@
 
 TornadoParticles::TornadoParticles(Pillar & _pillar) : pillar(_pillar)
 {
-	for(long i = 0; i < sizeof(groundPrt)/sizeof(GroundParticle); i++)
+	long i = 0;
+	for(i = 0; i < sizeof(groundPrt)/sizeof(GroundParticle); i++)
 	{
 		groundPrt[i].pos = 0.0f;
 		groundPrt[i].size = GetRand(25.0f, 0.3f);
@@ -66,7 +67,8 @@ void TornadoParticles::Update(float dltTime)
 	}
 	//seaLevel -= 0.5f;
 	//Партиклы у земли
-	for(long i = 0; i < sizeof(groundPrt)/sizeof(GroundParticle); i++)
+	long i = 0;
+	for(i = 0; i < sizeof(groundPrt)/sizeof(GroundParticle); i++)
 	{
 		float k = pillarPrt[i].k;
 		//Время жизни частицы
@@ -137,7 +139,8 @@ void TornadoParticles::Draw(VDX8RENDER * rs)
 
 inline void TornadoParticles::DrawParticles(VDX8RENDER * rs, void * prts, long num, long size, long texture, const char * tech)
 {
-	for(long i = 0, n = 0; i < num; i++)
+	long i = 0, n = 0;
+	for(i = 0, n = 0; i < num; i++)
 	{
 		Particle * parts = (Particle *)prts;
 		prts = (char *)prts + size;

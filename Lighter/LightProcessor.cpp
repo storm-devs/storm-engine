@@ -336,9 +336,10 @@ void LightProcessor::SmoothShadows()
 				}
 			}
 			if(numVerts != numV) api->Trace("numVerts(%i) != numV(%i)", numVerts, numV);
-			for(n = 0; n < numVerts; n++)
+			for(long n = 0; n < numVerts; n++)
 			{
-				for(long k = 0; k < numV; k++)
+				long k = 0;
+				for(k = 0; k < numV; k++)
 					if(verts[n].v == ov[k]) break;
 				if(k >= numV) api->Trace("k >= numV");
 			}

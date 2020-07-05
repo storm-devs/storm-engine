@@ -316,7 +316,8 @@ bool WdmShip::CheckPosition(float x, float z, float objRadius)
 	if(z - objRadius < -0.5f*wdmObjects->worldSizeZ) return false;
 	if(z + objRadius > 0.5f*wdmObjects->worldSizeZ) return false;
 	//Корабли
-	for(long i = 0; i < wdmObjects->numShips; i++)
+	long i = 0;
+	for(i = 0; i < wdmObjects->numShips; i++)
 	{
 		if(!wdmObjects->ships[i]->isLive) continue;
 		if(wdmObjects->ships[i]->killMe) continue;

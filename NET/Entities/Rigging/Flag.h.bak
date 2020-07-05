@@ -71,7 +71,6 @@ private:
         WORD vectQuant; // number of segmentes(square) into flags
 
         bool triangle;
-        bool isSpecialFlag;
         CVECTOR spos; // start flags position
         CVECTOR dv; // delta flags start position to along
         CVECTOR dhv,ddhv; // delta from position to flag top&bottom and delta for this value
@@ -99,7 +98,7 @@ private:
         int HostGroup;
         bool bDeleted;
 
-		IDirect3DBaseTexture8 * pTexture;
+		IDirect3DBaseTexture9 * pTexture;
 
 		FLAGDATA() {nod=0;pMatWorld=0;next=0;pTexture=0;}
 		~FLAGDATA() {RELEASE(pTexture);}

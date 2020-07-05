@@ -28,7 +28,8 @@ Pillar::Pillar()
 {
 	srand(GetTickCount());
 	//Секции
-	for(long i = 0; i < TRND_NUMSEC; i++)
+	long i = 0;
+	for(i = 0; i < TRND_NUMSEC; i++)
 	{
 		float kHeight = i/float(TRND_NUMSEC - 1);
 		section[i].radius = GetRaduis(kHeight*TRND_HEIGHT);

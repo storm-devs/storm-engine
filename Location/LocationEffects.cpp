@@ -172,7 +172,8 @@ inline void LocationEffects::DrawParticles(void * prts, long num, long size, lon
 	rs->SetTransform(D3DTS_VIEW,CMatrix());
 	rs->SetTransform(D3DTS_WORLD,CMatrix());
 	rs->TextureSet(0, texture);
-	for(long i = 0, n = 0; i < num; i++)
+	long i = 0, n = 0;
+	for(i = 0, n = 0; i < num; i++)
 	{
 		Particle * parts = (Particle *)prts;
 		prts = (char *)prts + size;
@@ -231,7 +232,8 @@ inline void LocationEffects::DrawParticles(void * prts, long num, long size, lon
 void LocationEffects::CreateSplash(const CVECTOR & pos, float power)
 {
 	//Выберим освободившийся блок
-	for(long i = 0; i < LFX_SPLASHES_NUM; i++) if(chrSplash[i].time < 0.0f) break;
+	long i = 0;
+	for(i = 0; i < LFX_SPLASHES_NUM; i++) if(chrSplash[i].time < 0.0f) break;
 	if(i >= LFX_SPLASHES_NUM) return;
 	if(power < 0.0f) power = 0.0f;
 	if(power > 1.0f) power = 1.0f;
@@ -540,7 +542,8 @@ void LocationEffects::ProcessedShotgun(float dltTime)
 	}else{
 		winDir *= 0.05f;
 	}
-	for(long i = 0, j = 0; i < numSmoke; i++)
+	long i = 0, j = 0;
+	for(i = 0, j = 0; i < numSmoke; i++)
 	{
 		smoke[i].pos += (smoke[i].spd + winDir)*dltTime;
 		float k = dltTime*10.0f;

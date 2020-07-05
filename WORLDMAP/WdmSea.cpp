@@ -46,15 +46,15 @@ WdmSea::WdmSea()
 	ib = -1;
 	vb = -1;
 	for(long i = 0; i < sizeof(wh)/sizeof(WhiteHorses); i++) wh[i].textureIndex = -1;
-	for(i = 0; i < sizeof(aniTextures)/sizeof(long); i++) aniTextures[i] = -1;
+	for(long i = 0; i < sizeof(aniTextures)/sizeof(long); i++) aniTextures[i] = -1;
 	aniFrame = 0.0f;
 	baseTexture = -1;
-	for(i = 0; i < sizeof(whiteHorses)/sizeof(long); i++) whiteHorses[i] = -1;
+	for(long i = 0; i < sizeof(whiteHorses)/sizeof(long); i++) whiteHorses[i] = -1;
 	//Init
 	//Создаём буфер для индексов
-	ib = wdmObjects->rs->CreateIndexBuffer(WDM_SEA_NT*3*2);
+	ib = wdmObjects->rs->CreateIndexBufferManaged(WDM_SEA_NT*3*2);
 	//Создаём буфер для вершин
-	vb = wdmObjects->rs->CreateVertexBuffer(D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1, (WDM_SEA_NV + 4)*sizeof(Vertex), D3DUSAGE_WRITEONLY);
+	vb = wdmObjects->rs->CreateVertexBufferManaged(D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1, (WDM_SEA_NV + 4)*sizeof(Vertex), D3DUSAGE_WRITEONLY);
 	Assert(ib >= 0 && vb >= 0);
 	//Индексы
 	Triangle * triangle = (Triangle *)wdmObjects->rs->LockIndexBuffer(ib);
@@ -120,17 +120,17 @@ WdmSea::WdmSea()
 	//Загружаем текстуры
 	char buf[256];	
 	baseTexture = wdmObjects->rs->TextureCreate("\\WorldMap\\Sea\\sea.tga");
-	for(i = 0; i < sizeof(aniTextures)/sizeof(long); i++)
+	for(long i = 0; i < sizeof(aniTextures)/sizeof(long); i++)
 	{		
 		sprintf(buf, "\\WorldMap\\Sea\\Ani\\wave_%.4i.tga", i);
 		aniTextures[i] = wdmObjects->rs->TextureCreate(buf);
 	}
-	for(i = 0; i < sizeof(whiteHorses)/sizeof(long); i++)
+	for(long i = 0; i < sizeof(whiteHorses)/sizeof(long); i++)
 	{
 		sprintf(buf, "\\WorldMap\\Sea\\WhiteHorses\\wh%.3i.tga", i);
 		whiteHorses[i] = -1;//wdmObjects->rs->TextureCreate(buf);
 	}
-	for(i = 0; i < sizeof(flare)/sizeof(flare[0]); i++)
+	for(long i = 0; i < sizeof(flare)/sizeof(flare[0]); i++)
 	{
 		flare[i].index = -1;
 	}
@@ -149,11 +149,11 @@ WdmSea::~WdmSea()
 	if(flareTexture >= 0) wdmObjects->rs->TextureRelease(flareTexture);
 	ib = -1;
 	vb = -1;
-	for(i = 0; i < sizeof(wh)/sizeof(WhiteHorses); i++) wh[i].textureIndex = -1;
-	for(i = 0; i < sizeof(aniTextures)/sizeof(long); i++) aniTextures[i] = -1;
+	for(long i = 0; i < sizeof(wh)/sizeof(WhiteHorses); i++) wh[i].textureIndex = -1;
+	for(long i = 0; i < sizeof(aniTextures)/sizeof(long); i++) aniTextures[i] = -1;
 	aniFrame = 0.0f;
 	baseTexture = -1;
-	for(i = 0; i < sizeof(whiteHorses)/sizeof(long); i++) whiteHorses[i] = -1;
+	for(long i = 0; i < sizeof(whiteHorses)/sizeof(long); i++) whiteHorses[i] = -1;
 }
 
 void WdmSea::Update(float dltTime)
@@ -232,7 +232,8 @@ void WdmSea::Update(float dltTime)
 		if(rand() & 1)
 		{
 			//Добавляем новый
-			for(long i = 0; i < sizeof(flare)/sizeof(flare[0]); i++)
+			long i = 0;
+			for(i = 0; i < sizeof(flare)/sizeof(flare[0]); i++)
 			{
 				if(flare[i].index < 0) break;
 			}

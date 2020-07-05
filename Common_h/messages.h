@@ -12,13 +12,16 @@
 #define MSG_MODEL_SET_LIGHT_PATH	20503
 #define MSG_MODEL_RELEASE			20504
 #define MSG_MODEL_RESTORE			20505
-#define MSG_MODEL_SET_POSITION		20506
-#define MSG_MODEL_BLEND        		20507
+#define MSG_MODEL_SET_POSITION			20506
+//	SendMessage(ref _model, "lffffffffffff", MSG_MODEL_SET_POSITION, float _x, float _y, float _z,
+//		float _vxx, float _vxy, float _vxz, float _vyx, float _vyy, float _vyz, float _vzx, float _vzy, float _vzz);
+
+#define MSG_MODEL_BLEND        			20507
 #define MSG_MODEL_SET_LIGHT_LMPATH	20508
 #define MSG_MODEL_SET_DIRPATH		20509 // "s" = "texture_path\\"
 #define MSG_MODEL_SET_TECHNIQUE		20510 // "s" = technique
 #define MSG_MODEL_SET_FOG			20511
-#define MSG_MODEL_SET_MAX_VIEW_DIST 20512
+#define MSG_MODEL_SET_MAX_VIEW_DIST	20512
 
 //============================================================================================
 //blade messages
@@ -254,10 +257,11 @@
 #define PS_CREATE_RIC		10008
 #define PS_CREATEX_RIC		10009
 #define PS_PAUSEALL		10010
-#define PS_CREATIONCAPTURE_BEG		10011
-#define PS_CREATIONCAPTURE_END		10012
+#define PS_CREATIONCAPTURE_BEG    10011
+#define PS_CREATIONCAPTURE_END    10012
 #define PS_CLEAR_CAPTURED 10013
 #define PS_VALIDATE_PARTICLE	10014
+
 
 #define LM_SET_GEOMETRY		1500
 #define LM_LOCATE			1501

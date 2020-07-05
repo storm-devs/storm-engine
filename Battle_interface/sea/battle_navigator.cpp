@@ -97,8 +97,9 @@ void BATTLE_NAVIGATOR::Draw()
 	//rs->DrawPrimitive(D3DPT_TRIANGLEFAN,m_idGradBackVBuf,sizeof(BI_COLORONLY_VERTEX),0,1,"battle_only_color");
 
 	// остров
-	rs->SetTextureStageState(0,D3DTSS_ADDRESSU,D3DTADDRESS_CLAMP);
-	rs->SetTextureStageState(0,D3DTSS_ADDRESSV,D3DTADDRESS_CLAMP);
+	rs->SetSamplerState(0,D3DSAMP_ADDRESSU,D3DTADDRESS_CLAMP);
+	rs->SetSamplerState(0,D3DSAMP_ADDRESSU,D3DTADDRESS_CLAMP);
+
 	if(m_idIslandTexture>=0)
 		rs->TextureSet(0,m_idIslandTexture);
 	if(m_pIslandTexture!=NULL)
@@ -110,9 +111,8 @@ void BATTLE_NAVIGATOR::Draw()
 		rs->SetRenderState(D3DRS_TEXTUREFACTOR,m_dwSeaColor);
 		rs->DrawPrimitive(D3DPT_TRIANGLEFAN,m_idMapVBuf,sizeof(BI_ONETEXTURE_VERTEX),0,RADIAL_QUANTITY,"battle_only_tfactor");
 	}
-	rs->SetTextureStageState(0,D3DTSS_ADDRESSU,D3DTADDRESS_WRAP);
-	rs->SetTextureStageState(0,D3DTSS_ADDRESSV,D3DTADDRESS_WRAP);
-
+	rs->SetSamplerState(0,D3DSAMP_ADDRESSU,D3DTADDRESS_WRAP);
+	rs->SetSamplerState(0,D3DSAMP_ADDRESSU,D3DTADDRESS_WRAP);
 	// корабли
 	if(m_nvShips>0)
 		rs->DrawPrimitive(D3DPT_TRIANGLELIST,m_idShipsVBuf,sizeof(BI_COLORONLY_VERTEX),0,m_nvShips/3,"battle_only_color");
@@ -536,15 +536,16 @@ void BATTLE_NAVIGATOR::Init(VDX8RENDER *RenderService,ENTITY* pOwnerEI)
 		sscanf(tmpstr,"%d,%d",&m_SailSize.x,&m_SailSize.y);
 
 	// create buffers
-	m_idEmptyVBuf = rs->CreateVertexBuffer(BI_ONETEX_VERTEX_FORMAT,(4+4+4)*sizeof(BI_ONETEXTURE_VERTEX),D3DUSAGE_WRITEONLY);
-	m_idCourseVBuf = rs->CreateVertexBuffer(BI_ONETEX_VERTEX_FORMAT,(4+4)*sizeof(BI_ONETEXTURE_VERTEX),D3DUSAGE_WRITEONLY);
-	m_idCannonVBuf = rs->CreateVertexBuffer(BI_ONETEX_VERTEX_FORMAT,7*4*sizeof(BI_ONETEXTURE_VERTEX),D3DUSAGE_WRITEONLY);
-	m_idSpeedVBuf = rs->CreateVertexBuffer(BI_ONETEX_VERTEX_FORMAT,7*2*sizeof(BI_ONETEXTURE_VERTEX),D3DUSAGE_WRITEONLY);
-	m_idMapVBuf = rs->CreateVertexBuffer(BI_ONETEX_VERTEX_FORMAT,(RADIAL_QUANTITY+3)*sizeof(BI_ONETEXTURE_VERTEX),D3DUSAGE_WRITEONLY);
-	m_idFireZoneVBuf = rs->CreateVertexBuffer(BI_NOTEX_VERTEX_FORMAT,FIRERANGE_QUANTITY*sizeof(BI_NOTEXTURE_VERTEX),D3DUSAGE_WRITEONLY);
-	m_idShipsVBuf = rs->CreateVertexBuffer(BI_COLORONLY_VERTEX_FORMAT,MAX_ENEMY_SHIP_QUANTITY*3*sizeof(BI_COLORONLY_VERTEX),D3DUSAGE_WRITEONLY);
-	m_idGradBackVBuf = rs->CreateVertexBuffer(BI_COLORONLY_VERTEX_FORMAT,3*sizeof(BI_COLORONLY_VERTEX),D3DUSAGE_WRITEONLY);
-	m_idCurChargeVBuf = rs->CreateVertexBuffer(BI_ONETEX_VERTEX_FORMAT,3*4*sizeof(BI_ONETEXTURE_VERTEX),D3DUSAGE_WRITEONLY);
+	m_idEmptyVBuf = rs->CreateVertexBufferManaged(BI_ONETEX_VERTEX_FORMAT,(4+4+4)*sizeof(BI_ONETEXTURE_VERTEX),D3DUSAGE_WRITEONLY);
+	m_idCourseVBuf = rs->CreateVertexBufferManaged(BI_ONETEX_VERTEX_FORMAT,(4+4)*sizeof(BI_ONETEXTURE_VERTEX),D3DUSAGE_WRITEONLY);
+	m_idCannonVBuf = rs->CreateVertexBufferManaged(BI_ONETEX_VERTEX_FORMAT,7*4*sizeof(BI_ONETEXTURE_VERTEX),D3DUSAGE_WRITEONLY);
+	m_idSpeedVBuf = rs->CreateVertexBufferManaged(BI_ONETEX_VERTEX_FORMAT,7*2*sizeof(BI_ONETEXTURE_VERTEX),D3DUSAGE_WRITEONLY);
+	
+	m_idMapVBuf = rs->CreateVertexBufferManaged(BI_ONETEX_VERTEX_FORMAT,(RADIAL_QUANTITY+3)*sizeof(BI_ONETEXTURE_VERTEX),D3DUSAGE_WRITEONLY);
+	m_idFireZoneVBuf = rs->CreateVertexBufferManaged(BI_NOTEX_VERTEX_FORMAT,FIRERANGE_QUANTITY*sizeof(BI_NOTEXTURE_VERTEX),D3DUSAGE_WRITEONLY);
+	m_idShipsVBuf = rs->CreateVertexBufferManaged(BI_COLORONLY_VERTEX_FORMAT,MAX_ENEMY_SHIP_QUANTITY*3*sizeof(BI_COLORONLY_VERTEX),D3DUSAGE_WRITEONLY);
+	m_idGradBackVBuf = rs->CreateVertexBufferManaged(BI_COLORONLY_VERTEX_FORMAT,3*sizeof(BI_COLORONLY_VERTEX),D3DUSAGE_WRITEONLY);
+	m_idCurChargeVBuf = rs->CreateVertexBufferManaged(BI_ONETEX_VERTEX_FORMAT,3*4*sizeof(BI_ONETEXTURE_VERTEX),D3DUSAGE_WRITEONLY);
 	if(m_idEmptyVBuf==-1 || 
 	   m_idCourseVBuf==-1 ||	
 	   m_idCannonVBuf==-1 || 
@@ -1190,15 +1191,16 @@ void BATTLE_NAVIGATOR::SetIsland()
 		islSize = (xMax-xMin)>(zMax-zMin)?(xMax-xMin):(zMax-zMin);
 		islSize *= 1.1f;
 
-		IDirect3DSurface8 *pRenderTarg=NULL, *pOldRenderTarg=NULL;
+		IDirect3DSurface9 *pRenderTarg=NULL, *pOldRenderTarg=NULL;
 		if( rs->GetRenderTarget(&pOldRenderTarg)==D3D_OK )
-		{
+		{			
 			if( rs->CreateTexture(MAP_TEXTURE_WIDTH,MAP_TEXTURE_HEIGHT,1,D3DUSAGE_RENDERTARGET,D3DFMT_R5G6B5,D3DPOOL_DEFAULT,&m_pIslandTexture) == D3D_OK )
-			{
+			{				
 				// SIMPLE OUT
 				if( rs->GetSurfaceLevel(m_pIslandTexture,0,&pRenderTarg) == D3D_OK )
 				{
-					IDirect3DSurface8 * pStencil;
+					
+					IDirect3DSurface9 * pStencil;
 					rs->GetDepthStencilSurface(&pStencil);
 					if( rs->SetRenderTarget(pRenderTarg,NULL) == D3D_OK )
 					{
@@ -1225,12 +1227,13 @@ void BATTLE_NAVIGATOR::SetIsland()
 						rs->SetTransform(D3DTS_VIEW,(D3DXMATRIX*)&oldmatv);
 						rs->SetTransform(D3DTS_PROJECTION,&oldmatp);
 					}
-					pStencil->Release();
-					pRenderTarg->Release();
+					pStencil->Release();pStencil = NULL;	
 				}
-			}
-			pOldRenderTarg->Release();
+				pRenderTarg->Release();pRenderTarg = NULL;				
+			}			
+			pOldRenderTarg->Release();pOldRenderTarg=NULL;
 		}
+		
 	}
 
 	if(m_pIslandTexture!=NULL) m_bYesIsland = true;
@@ -1321,4 +1324,19 @@ void BATTLE_NAVIGATOR::UpdateWindParam()
 		m_fWindStrength = m_pAWeather->GetAttributeAsFloat("WindSpeed");
 		m_fWindAngle = m_pAWeather->GetAttributeAsFloat("WindAngle");
 	}
+}
+
+void BATTLE_NAVIGATOR::LostRender()
+{
+	if(m_pIslandTexture!=NULL)
+	{	
+		api->Trace("BATTLE_NAVIGATOR::LostRender()");
+		rs->Release(m_pIslandTexture);
+		m_pIslandTexture = NULL;
+	}	
+}
+
+void BATTLE_NAVIGATOR::RestoreRender()
+{
+	rs->CreateTexture(MAP_TEXTURE_WIDTH,MAP_TEXTURE_HEIGHT,1,D3DUSAGE_RENDERTARGET,D3DFMT_R5G6B5,D3DPOOL_DEFAULT,&m_pIslandTexture);
 }

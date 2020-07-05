@@ -44,7 +44,7 @@ bool ILogAndActions::Init()
 	{
 		_THROW("Can`t create render service");
 	}
-	D3DVIEWPORT8 vp;
+	D3DVIEWPORT9 vp;
 	rs->GetViewport(&vp);
 #ifndef _XBOX
 	api->Event("SetWindowSize","lll",vp.Width,vp.Height,false);
@@ -68,7 +68,8 @@ void ILogAndActions::Execute(dword delta_time)
 	// погасим строки
 	float	colDelta = delta_time*m_fBlendSpeed;
 	STRING_DESCR * prev_sd = NULL;
-	for(STRING_DESCR * sd=m_sRoot; sd!=NULL;)
+	STRING_DESCR * sd      = NULL;
+	for(sd=m_sRoot; sd!=NULL;)
 	{
 		if( sd->alpha <= 255.f )
 			if( (sd->alpha-=colDelta)<=0 )
@@ -112,7 +113,8 @@ dword _cdecl ILogAndActions::ProcessMessage(MESSAGE & message)
 			if(stringImmortal)
 			{
 				// найдем последний элемент списка
-				for(STRING_DESCR* last=m_sRoot; last!=null; last=last->next)
+				STRING_DESCR* last = NULL;
+				for(last=m_sRoot; last!=null; last=last->next)
 					if(last->alpha>255.f) break;
 				if(last==null)	SetString(param,true);
 				else

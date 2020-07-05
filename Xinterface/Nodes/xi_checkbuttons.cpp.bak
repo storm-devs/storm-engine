@@ -120,7 +120,8 @@ void CXI_CHECKBUTTONS::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *na
 
 	// зачитаем по очереди все секции
 	char pcKeyName[128];
-	for( long n=0; n<100; n++ )
+	long n = 0;
+	for( n=0; n<100; n++ )
 	{
 		sprintf( pcKeyName, "section%d", n+1 );
 		if( !ReadIniString(ini1,name1, ini2,name2, pcKeyName, param, sizeof(param),"") ) break;
@@ -365,7 +366,8 @@ void CXI_CHECKBUTTONS::CheckMouseClick( const FXYPOINT & pntMouse )
 		{
 			if( pntMouse.x < m_rect.left || pntMouse.x > m_rect.right ) return;
 			long nY = m_rect.top;
-			for( long n=0; n<m_aButton; n++ )
+			long n = 0;
+			for( n=0; n<m_aButton; n++ )
 			{
 				long nHeight = (long)(m_aButton[n]->aStr.Size() * m_fTextLineHeight);
 				if( !m_aButton[n]->bDisable )
@@ -465,7 +467,7 @@ void CXI_CHECKBUTTONS::UpdateTextInfo( long nButtonNum )
 	CXI_UTILS::SplitStringByWidth( sAllText, m_nFontNum, m_fFontScale, nWidth, asOutStr );
 
 	m_aButton[nButtonNum]->aStr.DelAll();
-	for( n=0; n<asOutStr; n++ )
+	for( long n=0; n<asOutStr; n++ )
 	{
 		m_aButton[nButtonNum]->aStr.Add();
 		m_aButton[nButtonNum]->aStr[n].str = asOutStr[n];

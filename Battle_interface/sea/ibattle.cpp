@@ -145,7 +145,6 @@ void BATTLE_INTERFACE::Realize(dword delta_time)
 #endif
 	if(m_bNeedIslandSet)
 	{
-		api->Trace("Island Set");
 		BattleNavigator.SetIsland();
 		m_bNeedIslandSet = false;
 	}
@@ -388,4 +387,15 @@ void BATTLE_INTERFACE::EnableMessageIcons(VDATA * pvdat)
 	}
 
 	m_pMessageIcons->StartData( pAttr, pLeft );*/
+}
+
+void BATTLE_INTERFACE::LostRender()
+{
+	BattleNavigator.LostRender();
+}
+
+void BATTLE_INTERFACE::RestoreRender()
+{
+	m_bNeedIslandSet = true;
+	//BattleNavigator.RestoreRender();
 }

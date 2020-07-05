@@ -62,7 +62,7 @@ void SUNGLOW::SetDevice()
 	else pSky = 0;
 
 	if( idRectBuf==-1 )
-		idRectBuf = pRS->CreateVertexBuffer( SUNGLOWVERTEX_FORMAT, sizeof(SUNGLOWVERTEX)*8, D3DUSAGE_WRITEONLY );
+		idRectBuf = pRS->CreateVertexBufferManaged( SUNGLOWVERTEX_FORMAT, sizeof(SUNGLOWVERTEX)*8, D3DUSAGE_WRITEONLY );
 }
 
 void SUNGLOW::Release()

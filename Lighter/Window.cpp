@@ -83,7 +83,7 @@ bool Window::Init(VDX8RENDER * rs)
 	if(font < 0) font = FONT_DEFAULT;
 	fontHeight = float(rs->CharHeight(font));
 	//Получим текущие размеры vp
-	D3DVIEWPORT8 vp;
+	D3DVIEWPORT9 vp;
 	rs->GetViewport(&vp);
 	sw = float(vp.Width);
 	sh = float(vp.Height);
@@ -165,7 +165,7 @@ void Window::InitList(Lights & ls)
 	strcpy(list[6].name, str);
 	list[6].type = ListElement::t_savelight;
 	for(long i = 0; i < maxSize; i++) ls[i].isMark = false;
-	for(i = 0; i < maxSize; i++)
+	for(long i = 0; i < maxSize; i++)
 	{
 		if(ls[i].isMark) continue;
 		switch(ls[i].type)

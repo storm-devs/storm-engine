@@ -128,6 +128,12 @@ DWORD  FILE_SERVICE::_SetFilePointer(HANDLE hFile,long DistanceToMove,PLONG lpDi
 {
 	return SetFilePointer(hFile,DistanceToMove,lpDistanceToMoveHigh,dwMoveMethod);
 }
+
+long FILE_SERVICE::_GetFilePointer(HANDLE hFile)
+{
+	return SetFilePointer(hFile,0,0,FILE_CURRENT);
+}
+
 BOOL   FILE_SERVICE::_DeleteFile(LPCTSTR lpFileName)
 {
 #ifdef _XBOX

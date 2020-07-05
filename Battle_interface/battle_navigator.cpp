@@ -480,14 +480,14 @@ void BATTLE_NAVIGATOR::Init(VDX8RENDER *RenderService)
 		sscanf(tmpstr,"%d,%d",&m_ChargeSize.x,&m_ChargeSize.y);
 
 	// create buffers
-	m_idEmptyVBuf = rs->CreateVertexBuffer(BI_ONETEX_VERTEX_FORMAT,(4+4+4+4)*sizeof(BI_ONETEXTURE_VERTEX),D3DUSAGE_WRITEONLY);
-	m_idCannonVBuf = rs->CreateVertexBuffer(BI_ONETEX_VERTEX_FORMAT,7*4*sizeof(BI_ONETEXTURE_VERTEX),D3DUSAGE_WRITEONLY);
-	m_idSpeedVBuf = rs->CreateVertexBuffer(BI_ONETEX_VERTEX_FORMAT,7*2*sizeof(BI_ONETEXTURE_VERTEX),D3DUSAGE_WRITEONLY);
-	m_idMapVBuf = rs->CreateVertexBuffer(BI_ONETEX_VERTEX_FORMAT,(RADIAL_QUANTITY+2)*sizeof(BI_ONETEXTURE_VERTEX),D3DUSAGE_WRITEONLY);
-	m_idFireZoneVBuf = rs->CreateVertexBuffer(BI_NOTEX_VERTEX_FORMAT,FIRERANGE_QUANTITY*sizeof(BI_NOTEXTURE_VERTEX),D3DUSAGE_WRITEONLY);
-	m_idShipsVBuf = rs->CreateVertexBuffer(BI_COLORONLY_VERTEX_FORMAT,MAX_ENEMY_SHIP_QUANTITY*3*sizeof(BI_COLORONLY_VERTEX),D3DUSAGE_WRITEONLY);
-	m_idGradBackVBuf = rs->CreateVertexBuffer(BI_COLORONLY_VERTEX_FORMAT,3*sizeof(BI_COLORONLY_VERTEX),D3DUSAGE_WRITEONLY);
-	m_idCurChargeVBuf = rs->CreateVertexBuffer(BI_ONETEX_VERTEX_FORMAT,4*sizeof(BI_ONETEXTURE_VERTEX),D3DUSAGE_WRITEONLY);
+	m_idEmptyVBuf = rs->CreateVertexBufferManaged(BI_ONETEX_VERTEX_FORMAT,(4+4+4+4)*sizeof(BI_ONETEXTURE_VERTEX),D3DUSAGE_WRITEONLY);
+	m_idCannonVBuf = rs->CreateVertexBufferManaged(BI_ONETEX_VERTEX_FORMAT,7*4*sizeof(BI_ONETEXTURE_VERTEX),D3DUSAGE_WRITEONLY);
+	m_idSpeedVBuf = rs->CreateVertexBufferManaged(BI_ONETEX_VERTEX_FORMAT,7*2*sizeof(BI_ONETEXTURE_VERTEX),D3DUSAGE_WRITEONLY);
+	m_idMapVBuf = rs->CreateVertexBufferManaged(BI_ONETEX_VERTEX_FORMAT,(RADIAL_QUANTITY+2)*sizeof(BI_ONETEXTURE_VERTEX),D3DUSAGE_WRITEONLY);
+	m_idFireZoneVBuf = rs->CreateVertexBufferManaged(BI_NOTEX_VERTEX_FORMAT,FIRERANGE_QUANTITY*sizeof(BI_NOTEXTURE_VERTEX),D3DUSAGE_WRITEONLY);
+	m_idShipsVBuf = rs->CreateVertexBufferManaged(BI_COLORONLY_VERTEX_FORMAT,MAX_ENEMY_SHIP_QUANTITY*3*sizeof(BI_COLORONLY_VERTEX),D3DUSAGE_WRITEONLY);
+	m_idGradBackVBuf = rs->CreateVertexBufferManaged(BI_COLORONLY_VERTEX_FORMAT,3*sizeof(BI_COLORONLY_VERTEX),D3DUSAGE_WRITEONLY);
+	m_idCurChargeVBuf = rs->CreateVertexBufferManaged(BI_ONETEX_VERTEX_FORMAT,4*sizeof(BI_ONETEXTURE_VERTEX),D3DUSAGE_WRITEONLY);
 	if(m_idEmptyVBuf==-1 || m_idCannonVBuf==-1 || m_idSpeedVBuf==-1 || m_idMapVBuf==-1 || m_idFireZoneVBuf==-1 || m_idShipsVBuf==-1 || m_idGradBackVBuf==-1 || m_idCurChargeVBuf==-1)
 	{
 		_THROW("Can`t create vertex\index buffer");
@@ -1193,4 +1193,14 @@ void BATTLE_NAVIGATOR::UpdateCurrentCharge()
 
 		rs->UnLockVertexBuffer(m_idCurChargeVBuf);
 	}
+}
+
+void BATTLE_NAVIGATOR::LostRender()
+{
+	TEXTURE_RELEASE(rs,m_pIslandTexture);
+}
+
+void BATTLE_NAVIGATOR::RestoreRender()
+{
+	rs->CreateTexture(MAP_TEXTURE_WIDTH,MAP_TEXTURE_HEIGHT,1,D3DUSAGE_RENDERTARGET,D3DFMT_R5G6B5,D3DPOOL_DEFAULT,&m_pIslandTexture);
 }

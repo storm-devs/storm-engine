@@ -23,6 +23,7 @@ public:
 	virtual HANDLE _CreateFile(LPCTSTR lpFileName,DWORD dwDesiriedAccess = GENERIC_READ,DWORD dwShareMode = FILE_SHARE_READ,DWORD dwCreationDisposition = OPEN_EXISTING)=0;
 	virtual void   _CloseHandle(HANDLE hFile)=0;
 	virtual DWORD  _SetFilePointer(HANDLE hFile,long DistanceToMove,PLONG lpDistanceToMoveHigh,DWORD dwMoveMethod)=0;
+	virtual long   _GetFilePointer(HANDLE hFile)=0;
 	virtual BOOL   _DeleteFile(LPCTSTR lpFileName)=0;
 	virtual BOOL   _WriteFile(HANDLE hFile,LPCVOID lpBuffer,DWORD nNumberOfBytesToWrite,LPDWORD lpNumberOfBytesWritten)=0;
 	virtual BOOL   _ReadFile(HANDLE hFile,LPVOID lpBuffer,DWORD nNumberOfBytesToRead,LPDWORD lpNumberOfBytesRead)=0;

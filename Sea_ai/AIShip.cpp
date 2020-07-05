@@ -231,12 +231,13 @@ void AIShip::CreateShip(ENTITY_ID _eidShip, ATTRIBUTES * _pACharacter, ATTRIBUTE
 {
 	Assert(_pACharacter && _pAShipBase);
 	pAShipBase = _pAShipBase;
-
 	eidShip = _eidShip; Assert(api->ValidateEntity(&eidShip));
 	VAI_OBJBASE * pObj = GetAIObjShipPointer(); Assert(pObj);
+
 	SetACharacter(_pACharacter);
 	pObj->SetACharacter(GetACharacter());
 	pObj->Mount(pAShipBase);
+
 	SHIP_BASE * pShip = (SHIP_BASE *)pObj;
 	if (vInitPos) 
 	{
@@ -244,8 +245,11 @@ void AIShip::CreateShip(ENTITY_ID _eidShip, ATTRIBUTES * _pACharacter, ATTRIBUTE
 		//if (!isMainCharacter()) pObj->SetPos(pObj->GetPos() + CVECTOR(FRAND(100.0f), 0.0f, 40.0f + FRAND(100.0f)));
 		pShip->State.vAng.y = vInitPos->y;
 	}
+	
+	Assert(pAShipBase);
 
-	pCannonController = NEW AIShipCannonController(this); GetCannonController()->Init(pAShipBase);
+	pCannonController = NEW AIShipCannonController(this); 
+	GetCannonController()->Init(pAShipBase);
 	pTaskController = NEW AIShipTaskController(this); GetTaskController()->Init();
 	pMoveController = NEW AIShipMoveController(this); GetMoveController()->Init();
 	pTouchController = NEW AIShipTouchController(this); GetTouchController()->Init();

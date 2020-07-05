@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{ee358990-0c8a-4a3d-b49c-bb22ba18f9a0}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{d21e8961-e536-469f-9ed4-e4aaede505ec}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Rain Folder">
+      <UniqueIdentifier>{d9de95ae-247c-48c0-a927-4f42bad8c2fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SunGlow Folder">
+      <UniqueIdentifier>{17f60c1d-b882-4c47-9dc0-3f3f9141180d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lighting Files">
+      <UniqueIdentifier>{90d79683-faff-46fc-8343-4e8d72271205}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sky Folder">
+      <UniqueIdentifier>{11084efa-fe7a-4a3c-9e3c-a00261848522}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WaterFlare Folder">
+      <UniqueIdentifier>{30998728-189b-4d67-a9a2-b55ca75f5ca8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Astronomy">
+      <UniqueIdentifier>{0dee82d8-8488-461c-89c5-9ea73c554459}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Textures">
+      <UniqueIdentifier>{28677aad-e5cc-44ec-bab2-03a498fba75c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Weather.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Rain.cpp">
+      <Filter>Rain Folder</Filter>
+    </ClCompile>
+    <ClCompile Include="SunGlow.cpp">
+      <Filter>SunGlow Folder</Filter>
+    </ClCompile>
+    <ClCompile Include="Lightning.cpp">
+      <Filter>Lighting Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SKY.cpp">
+      <Filter>Sky Folder</Filter>
+    </ClCompile>
+    <ClCompile Include="WaterFlare.cpp">
+      <Filter>WaterFlare Folder</Filter>
+    </ClCompile>
+    <ClCompile Include="Astronomy.cpp">
+      <Filter>Astronomy</Filter>
+    </ClCompile>
+    <ClCompile Include="Planets.cpp">
+      <Filter>Astronomy</Filter>
+    </ClCompile>
+    <ClCompile Include="Stars.cpp">
+      <Filter>Astronomy</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="typedef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Weather.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common_h\Weather_Base.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Rain.h">
+      <Filter>Rain Folder</Filter>
+    </ClInclude>
+    <ClInclude Include="SunGlow.h">
+      <Filter>SunGlow Folder</Filter>
+    </ClInclude>
+    <ClInclude Include="Lightning.h">
+      <Filter>Lighting Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SKY.h">
+      <Filter>Sky Folder</Filter>
+    </ClInclude>
+    <ClInclude Include="WaterFlare.h">
+      <Filter>WaterFlare Folder</Filter>
+    </ClInclude>
+    <ClInclude Include="Astronomy.h">
+      <Filter>Astronomy</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Engine\REsOURCE\Textures\Weather\Astronomy\Planets\jupiter.tga.tx">
+      <Filter>Textures</Filter>
+    </None>
+    <None Include="..\Engine\REsOURCE\Textures\Weather\Astronomy\Planets\mars.tga.tx">
+      <Filter>Textures</Filter>
+    </None>
+    <None Include="..\Engine\REsOURCE\Textures\Weather\Astronomy\Planets\mercury.tga.tx">
+      <Filter>Textures</Filter>
+    </None>
+    <None Include="..\Engine\REsOURCE\Textures\Weather\Astronomy\Planets\neptune.tga.tx">
+      <Filter>Textures</Filter>
+    </None>
+    <None Include="..\Engine\REsOURCE\Textures\Weather\Astronomy\Planets\saturn.tga.tx">
+      <Filter>Textures</Filter>
+    </None>
+    <None Include="..\Engine\REsOURCE\Textures\Weather\Astronomy\Planets\uranus.tga.tx">
+      <Filter>Textures</Filter>
+    </None>
+    <None Include="..\Engine\REsOURCE\Textures\Weather\Astronomy\Planets\venus.tga.tx">
+      <Filter>Textures</Filter>
+    </None>
+  </ItemGroup>
+</Project>

@@ -49,7 +49,7 @@ void NetWeather::SetCommonStates()
 
 	// setup sun light
 	CVECTOR		vSun, vSunColor, vSunLight;
-	D3DLIGHT8	sun;
+	D3DLIGHT9	sun;
 
 	vSun = CVECTOR(fSunX, fSunY, fSunZ);
 

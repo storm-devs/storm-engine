@@ -312,7 +312,7 @@ void PARTICLES::Realize(dword Delta_Time)
 	}
 
 	//Удаляем умершие системы...
-	for (n = 0; n < CreatedSystems.Size(); n++)
+	for (dword n = 0; n < CreatedSystems.Size(); n++)
 	{
 		if (!CreatedSystems[n].pSystem->GetSystem()->IsAlive())
 		{

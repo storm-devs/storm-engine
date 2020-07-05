@@ -10,7 +10,7 @@ struct KEY_STATE
 	dword value;
 };
 
-class PCINPUT : public INPUT
+class PCINPUT : public CORE_INPUT
 {
 	KEY_STATE KeyState[KEY_CODES_NUM];
 	POINT Mouse_Pos;

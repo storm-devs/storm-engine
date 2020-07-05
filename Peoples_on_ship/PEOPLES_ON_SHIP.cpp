@@ -320,7 +320,7 @@ void PEOPLE_ON_SHIP::AddShipWalk(ENTITY_ID &_shipID, int vCount, VDATA *vArray, 
 	int nElements = gArray->GetElementsNum();
 	long gCouple = 0;
 
-	for (i=0; i<nElements; i++)
+	for (int i=0; i<nElements; i++)
 	{
 		gArray->Get(gCouple, i);
 		long v1, v2;
@@ -341,7 +341,7 @@ void PEOPLE_ON_SHIP::AddShipWalk(ENTITY_ID &_shipID, int vCount, VDATA *vArray, 
 		shipWalk[shipsCount].crewCount = MAX_PEOPLE;
 
 	// initialize crew
-	for (i=0; i<shipWalk[shipsCount].crewCount; i++)
+	for (int i=0; i<shipWalk[shipsCount].crewCount; i++)
 		InitShipMan(shipsCount, i);
 
 	// initialize ship states
@@ -501,7 +501,8 @@ int getRandomByProbs(int _state, bool _allowCrawl)
 	{
 		int rN = rand() % 100;
 		int n = 0;
-		for (int i=0; i<MAN_STATE_COUNT; i++) 
+		int i = 0;
+		for (i=0; i<MAN_STATE_COUNT; i++) 
 		{
 			n += (int) (100.0f * probs[_state][i]);
 			if (rN < n)
@@ -729,12 +730,12 @@ void PEOPLE_ON_SHIP::SetShipState(tShipWalk *_shipWalk, int _newState)
 	if (newShowCount > oldShowCount)
 	{
 		_shipWalk->showCount = newShowCount;
-
+		int vertIndex1=0,vertIndex2=0;
 		// search doors
-		for (int vertIndex1=0; vertIndex1<_shipWalk->vertsCount; vertIndex1++)
+		for (vertIndex1=0; vertIndex1<_shipWalk->vertsCount; vertIndex1++)
 			if (_shipWalk->vertTypes[vertIndex1] == LOCATOR_SPAWN)
 				break;
-		for (int vertIndex2=_shipWalk->vertsCount; vertIndex2>=0; vertIndex2--)
+		for (vertIndex2=_shipWalk->vertsCount; vertIndex2>=0; vertIndex2--)
 			if (_shipWalk->vertTypes[vertIndex2] == LOCATOR_SPAWN)
 				break;
 
@@ -761,7 +762,7 @@ void PEOPLE_ON_SHIP::SetShipState(tShipWalk *_shipWalk, int _newState)
 		}
 
 		//others shall come out from door
-		for (i=_shipWalk->showCount; i < MAX_PEOPLE; i++)
+		for (int i=_shipWalk->showCount; i < MAX_PEOPLE; i++)
 			_shipWalk->crew[i].sourceI = vertIndex;
 	}
 }

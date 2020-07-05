@@ -297,13 +297,15 @@ void WdmClouds::LRender(VDX8RENDER * rs)
 	if(alpha > 1.0f) alpha = 1.0f;
 	alpha *= alpha;
 	//Рисуем видимые
-	for(long i = 0, count = 0; i < sizeof(clouds)/sizeof(Cloud); i++)
+	long i = 0, count = 0;
+	for(i = 0, count = 0; i < sizeof(clouds)/sizeof(Cloud); i++)
 	{
 		//Получаем сферу
 		CVECTOR c;
 		float r = clouds[i].GetBound(c);		
 		//Тестируем на видимость
-		for(long j = 0; j < 4; j++)
+		long j = 0;
+		for(j = 0; j < 4; j++)
 		{
 			PLANE & p = plane[j];
 			float dist = c.x*p.Nx + c.y*p.Ny + c.z*p.Nz - p.D;

@@ -67,7 +67,8 @@ void WdmCloud::Update(float dltTime)
 	Move(dltTime);
 	//¬рем€ дл€ перемещени€ партиклов внутри облака
 	float dlt = dltTime*0.1f;
-	for(long i = 0; i < numRects; i++)
+	long i = 0;
+	for(i = 0; i < numRects; i++)
 	{
 		rect[i].vPos = pos + move[i].pos;
 		rect[i].vPos.y = WdmStormCloudHeight;

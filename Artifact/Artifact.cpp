@@ -63,8 +63,8 @@ bool Artifact::Init()
 		while (api->FindClassNext(&shipID));
 	}
 	texture = renderService->TextureCreate("plasma.tga");
-	iBuffer = renderService->CreateIndexBuffer(6*sizeof(WORD), D3DUSAGE_WRITEONLY);
-	vBuffer = renderService->CreateVertexBuffer(ARTIFACT_FVF,4*sizeof(ARTIFACT_VERTEX), D3DUSAGE_WRITEONLY);
+	iBuffer = renderService->CreateIndexBufferManaged(6*sizeof(WORD), D3DUSAGE_WRITEONLY);
+	vBuffer = renderService->CreateVertexBufferManaged(ARTIFACT_FVF,4*sizeof(ARTIFACT_VERTEX), D3DUSAGE_WRITEONLY);
 
 	
 	WORD *indexes = (WORD *) renderService->LockIndexBuffer(iBuffer); 
@@ -110,7 +110,7 @@ void Artifact::Realize(dword _dTime)
 	float lightK = lightK1 - (lightK1 - lightKOld)*(LIGHT_CHANGE - secTime) / LIGHT_CHANGE;
 	//lightK += randCentered(0.02f);
 
-	D3DLIGHT8 light;
+	D3DLIGHT9 light;
 	light.Type		= D3DLIGHT_POINT;
 	light.Diffuse.r = 0.9f;
 	light.Diffuse.g = 0.8f;

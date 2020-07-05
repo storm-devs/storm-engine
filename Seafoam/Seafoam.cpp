@@ -188,7 +188,7 @@ void SEAFOAM::CreateTracePoints(tShipFoamInfo *_shipFoamInfo)
 		float deltaZ;
 		float kSum = 0.0f;
 
-		for (y = 0; y < TRACE_STEPS_Y; y++, curY -= yStep)
+		for (int y = 0; y < TRACE_STEPS_Y; y++, curY -= yStep)
 		{
 			deltaZ = startZ[y];
 			CVECTOR srcLeft(_shipFoamInfo->hullInfo.boxcenter.x - _shipFoamInfo->hullInfo.boxsize.x / 2.0f, curY, curZ-deltaZ);

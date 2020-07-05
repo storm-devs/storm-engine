@@ -251,7 +251,7 @@ private:
 	long surfaceTex;
 	bool m_bIsGerald;
 	long m_nGeraldTex;
-	IDirect3DTexture8* m_pGeraldTex;
+	IDirect3DTexture9* m_pGeraldTex;
 
 	float m_fHorzGeraldScale;
 	float m_fVertGeraldScale;

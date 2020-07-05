@@ -74,15 +74,15 @@ void AIGroup::AddShip(ENTITY_ID eidShip, ATTRIBUTES * pACharacter, ATTRIBUTES * 
 		vTmpPos = ((iTradeShipsNum - 1) * AIGroup::fDistanceBetweenGroupShips) * CVECTOR(sinf(vInitGroupPos.y), 0.0f, cosf(vInitGroupPos.y));		
 		vShipPos = CVECTOR(vInitGroupPos.x, vInitGroupPos.y, vInitGroupPos.z) - vTmpPos - CVECTOR(0.0f, 0.0f, AIGroup::fDistanceBetweenGroupLines);
 	}
-		
+	
 	//vShipPos = CVECTOR(vInitGroupPos.x, vInitGroupPos.y, vInitGroupPos.z) - (aGroupShips.Size() * (AIGroup::fDistanceBetweenGroupShips + FRAND(50.0f))) * CVECTOR(sinf(vInitGroupPos.y), 0.0f, cosf(vInitGroupPos.y));
 
 	pShip->CreateShip(eidShip, pACharacter, pAShip, &vShipPos);
 	pShip->SetGroupName(GetName());
-
+	
 	AIShip::AIShips.Add(pShip);		// add to global array
 	aGroupShips.Add(pShip);			// add to local group array
-
+	
 	//pACharacter->Dump(pACharacter, 0);
 	Helper.AddCharacter(pACharacter, GetCommanderACharacter());
 
@@ -170,7 +170,7 @@ void AIGroup::Execute(float fDeltaTime)
 
 	for (dword i=0;i<aGroupShips.Size();i++)
 		aGroupShips[i]->Execute(fDeltaTime);
-}
+	}	
 
 void AIGroup::Realize(float fDeltaTime)
 {
@@ -211,8 +211,7 @@ AIGroup * AIGroup::CreateNewGroup(const char * pGroupName)
 {
 	Assert(pGroupName);
 	AIGroup * pAIGroup = NEW AIGroup(pGroupName);
-	AIGroup::AIGroups.Add(pAIGroup);
-
+	AIGroup::AIGroups.Add(pAIGroup);	
 	return pAIGroup;
 }
 

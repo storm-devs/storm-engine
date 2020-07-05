@@ -188,7 +188,7 @@ long ClipByPlane(const GEOS::PLANE &plane, long n)
 	//needs to be clipped
 	float sign[4];
 	long ii,i3,i4;
-  for( i=0; i<n; i++)
+	for(long i=0; i<n; i++)
 	{
 		sign[0] = plane.nrm.x*poly[i].x + plane.nrm.y*poly[i].y + plane.nrm.z*poly[i].z - plane.d;
 		if(sign[0]>0.0 )//outside!

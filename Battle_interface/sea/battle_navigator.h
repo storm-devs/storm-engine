@@ -27,6 +27,9 @@ public:
 	void	DecrementScale() {m_fCurScale-=m_fScaleStep; if(m_fCurScale<m_fMinScale) m_fCurScale=m_fMinScale;}
 	void	IncrementScale() {m_fCurScale+=m_fScaleStep; if(m_fCurScale>m_fMaxScale) m_fCurScale=m_fMaxScale;}
 	void	SetEnoughBalls(bool notEnoughBallFlag) {m_bNotEnoughBallFlag=notEnoughBallFlag;}
+	
+	void 	LostRender();
+	void 	RestoreRender();
 
 protected:
 	void	CalculateTextureRect(FRECT & texRect, long num, long hq, long vq);
@@ -137,7 +140,7 @@ protected:
 	long	m_idChargeTexture; 	// текущий тип заряда пушек
 	long	m_idWindTexture; 	// скорость ветра
 	long	m_idSailTexture; 	// положение парусов/скорость корабля
-	IDirect3DTexture8 * m_pIslandTexture;
+	IDirect3DTexture9 * m_pIslandTexture;
 
 	DWORD	m_dwSeaColor;	// цвет моря на миникарте
 	DWORD	m_dwFireZoneColor; // цвет зоны огня на миникарте

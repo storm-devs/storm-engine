@@ -92,6 +92,9 @@ void Blood::Realize(dword delta_time)
 		pRS->GetRenderState(D3DRS_AMBIENT,&dwAmbient);
 		pRS->SetRenderState(D3DRS_TEXTUREFACTOR,dwAmbient);
 
+		pRS->SetRenderState(D3DRS_DEPTHBIAS, F2DW(-0.0001f));
+		pRS->SetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, F2DW(0.0f));
+
 		pRS->TextureSet(0,texID);
 		CMatrix mtx;
 		mtx.SetIdentity();
@@ -106,6 +109,9 @@ void Blood::Realize(dword delta_time)
 		}
 
 		pRS->SetRenderState(D3DRS_TEXTUREFACTOR,dwOldTF);
+		
+		pRS->SetRenderState( D3DRS_SLOPESCALEDEPTHBIAS, F2DW(0.0f) );
+		pRS->SetRenderState( D3DRS_DEPTHBIAS, F2DW(0.0f) );
 	}
 }
 

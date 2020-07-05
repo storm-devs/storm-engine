@@ -180,7 +180,7 @@ void AnimationImp::Execute(long dltTime)
 	for(long i = 0; i < ANI_MAX_ACTIONS; i++)
 						action[i].Execute(dltTime);
 	//Исполним таймеры
-	for(i = 0; i < ANI_MAX_ACTIONS; i++)
+	for(long i = 0; i < ANI_MAX_ACTIONS; i++)
 						timer[i].Execute(dltTime);
 	//Расчитаем матрицы анимации
 	BuildAnimationMatrices();

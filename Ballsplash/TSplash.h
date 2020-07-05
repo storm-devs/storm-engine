@@ -37,7 +37,7 @@ public:
 	TSplash();
 	virtual ~TSplash();
 
-	void Initialize(INIFILE * _ini, IDirect3DDevice8 *_device, SEA_BASE *sea, VDX8RENDER *_renderer);
+	void Initialize(INIFILE * _ini, IDirect3DDevice9 *_device, SEA_BASE *sea, VDX8RENDER *_renderer);
 	void Release();
 	void Start(const CVECTOR &_pos, const CVECTOR &_dir);
 	bool Process(dword _dTime);
@@ -58,7 +58,7 @@ private:
 
 	static VDX8RENDER *renderer;
 	SEA_BASE *sea;
-	IDirect3DDevice8 *device;
+	IDirect3DDevice9 *device;
 
 	static long vBuffer, iBuffer, texture, texture2, vBuffer2, iBuffer2;
 	static int buffersUsage;

@@ -11,7 +11,7 @@ class SCRSHOTER : public ENTITY
 	{
 		char * fileName;
 		char * dataString;
-		IDirect3DTexture8 * m_pTex;
+		IDirect3DTexture9 * m_pTex;
 		SAVETEXTURES * next;
 	};
 
@@ -23,16 +23,19 @@ public:
     void Execute(dword Delta_Time);
 	void Realize(dword Delta_Time);
     dword _cdecl ProcessMessage(MESSAGE & message);
+	
+	void 	LostRender();
+	void 	RestoreRender();
 
 private:
 	bool MakeScreenShot();
-	IDirect3DTexture8 * FindSaveTexture(char * fileName);
+	IDirect3DTexture9 * FindSaveTexture(char * fileName);
 	char * FindSaveData(char * fileName);
-	IDirect3DTexture8 * AddSaveTexture(char * dirName, char * fileName);
+	IDirect3DTexture9 * AddSaveTexture(char * dirName, char * fileName);
 	void DelSaveTexture(char * fileName);
-	IDirect3DTexture8 * GetTexFromSave(char * fileName, char **pDatStr);
+	IDirect3DTexture9 * GetTexFromSave(char * fileName, char **pDatStr);
 
-	IDirect3DTexture8 * m_pScrShotTex;
+	IDirect3DTexture9 * m_pScrShotTex;
 	SAVETEXTURES * m_list;
 };
 

@@ -21,7 +21,7 @@ public:
 	void LoadFromFile( const char * sFileName );
 	void LoadFromBase( const char * sListName, const char * sPictureName, bool bGetSizeFromSource = false );
 	void LoadAccordingToString( const char * pcImageParam );
-	void SetPointerToTexture( IDirect3DTexture8* pTex );
+	void SetPointerToTexture( IDirect3DTexture9* pTex );
 
 	void Draw();
 	void Draw( long nX, long nY, ImagePointType alignment );
@@ -57,7 +57,7 @@ protected:
 	FXYPOINT m_nLeftTopCutUV;
 
 	long m_nTextureID;
-	IDirect3DTexture8* m_pTexture;
+	IDirect3DTexture9* m_pTexture;
 
 	FXYRECT m_frUV;
 

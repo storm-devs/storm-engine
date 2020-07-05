@@ -19,7 +19,7 @@ void CXI_VIDEORECT::Draw(bool bSelected,dword Delta_Time)
 	{
 		if( api->ValidateEntity(&m_eiVideo) )
 		{
-			IDirect3DTexture8 * pTex = ((xiBaseVideo*)m_eiVideo.pointer)->GetCurrentVideoTexture();
+			IDirect3DTexture9 * pTex = ((xiBaseVideo*)m_eiVideo.pointer)->GetCurrentVideoTexture();
 			if(pTex!=null)
 			{
 				// Create rectangle

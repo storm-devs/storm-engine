@@ -98,7 +98,8 @@ bool XSERVICE::GetTexturePos(long pictureNum, FXYRECT &texRect)
 	if(pictureNum>=0 && pictureNum<m_dwImageQuantity)
 	{
         // find picture group
-        for(int gn=0; gn<m_dwListQuantity; gn++)
+		int gn = 0;
+        for(gn=0; gn<m_dwListQuantity; gn++)
             if(pictureNum>=m_pList[gn].pictureStart && pictureNum<m_pList[gn].pictureStart+m_pList[gn].pictureQuantity)
                 break;
         if(gn<m_dwListQuantity)
@@ -144,7 +145,8 @@ bool XSERVICE::GetTexturePos(int nTextureModify,long pictureNum, FXYRECT &texRec
 	if(pictureNum>=0 && pictureNum<m_dwImageQuantity)
 	{
         // find picture group
-        for(int gn=0; gn<m_dwListQuantity; gn++)
+		int gn = 0;
+        for(gn=0; gn<m_dwListQuantity; gn++)
             if((pictureNum>=m_pList[gn].pictureStart) && (pictureNum<m_pList[gn].pictureStart+m_pList[gn].pictureQuantity))
                 break;
         if(gn<m_dwListQuantity)

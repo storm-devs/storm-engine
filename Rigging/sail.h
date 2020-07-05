@@ -74,7 +74,7 @@ float *WindVect;
     friend SAILONE;
     bool bUse;
 	VDX8RENDER * RenderService;
-    D3DMATERIAL8 mat;
+    D3DMATERIAL9 mat;
     FILETIME ft_old;
     long texl;
 	long m_nEmptyGerbTex;

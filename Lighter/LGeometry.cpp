@@ -108,8 +108,9 @@ void LGeometry::AddObject(const char * name, ENTITY_ID & model)
 //Обработать данные
 bool LGeometry::Process(VDX8RENDER * rs, long numLights)
 {
+	long vb = 0, i = 0;;
 	//Подготовка данных для освещения
-	for(long i = 0; i < numObjects; i++)
+	for(i = 0; i < numObjects; i++)
 	{
 		//Вершины--------------------------------------------------------------------------------
 		//Индекс в конечном файле
@@ -149,14 +150,14 @@ bool LGeometry::Process(VDX8RENDER * rs, long numLights)
 			maxVBuffers += info.nvrtbuffs + 16;
 			vbuffer = (VertexBuffer *)RESIZE(vbuffer, maxVBuffers*sizeof(VertexBuffer));
 		}
-		for(long vb = 0; vb < info.nvrtbuffs; vb++)
+		for(vb = 0; vb < info.nvrtbuffs; vb++)
 		{
 			long vbID = g->GetVertexBuffer(vb);
 			if(vbID < 0) continue;
 			vbuffer[numVBuffers].vbID = vbID;
 			vbuffer[numVBuffers++].start = numVrt;
 			//Получаем вершины			
-			IDirect3DVertexBuffer8 * vbuf = rs->GetVertexBuffer(vbID);
+			IDirect3DVertexBuffer9 * vbuf = rs->GetVertexBuffer(vbID);
 			D3DVERTEXBUFFER_DESC desc;
 			if(!vbuf || vbuf->GetDesc(&desc) != D3D_OK)
 			{
@@ -193,7 +194,7 @@ bool LGeometry::Process(VDX8RENDER * rs, long numLights)
 			}
 			//Копируем
 			byte * pnt = null;
-			if(vbuf->Lock(0, desc.Size, &pnt, 0) != D3D_OK)
+			if(vbuf->Lock(0, desc.Size, (void **)&pnt, 0) != D3D_OK)
 			{
 				api->Trace("Location lighter: vertex buffer no locked, model %s, vbID %i", object[i].nameReal, vbID);
 				return false;
@@ -346,9 +347,10 @@ bool LGeometry::Process(VDX8RENDER * rs, long numLights)
 //Нарисовать нормали
 void LGeometry::DrawNormals(VDX8RENDER * rs)
 {
+	long i = 0, p = 0;
 	if(!drawbuf) drawbuf = NEW CVECTOR[1024];
 	rs->SetRenderState(D3DRS_TEXTUREFACTOR, 0xff00ff00);
-	for(long i = 0, p = 0; i < numVrt; i++)
+	for(i = 0, p = 0; i < numVrt; i++)
 	{
 		drawbuf[p + 0] = vrt[i].p;
 		drawbuf[p + 1] = vrt[i].p + vrt[i].n;

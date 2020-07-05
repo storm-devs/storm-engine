@@ -1049,8 +1049,8 @@ void SAILONE::SetRolling(bool bRoll)
 			oldWindAngl += pp->TURNSTEPANGL;
 			if(ss.eSailType == SAIL_TRAPECIDAL || ss.eSailType == SAIL_TREANGLE || ss.eSailType == SAIL_SPECIAL)
 			{
-				hostNode->loc_mtx.RotateY(pp->TURNSTEPANGL);
-			}
+	        hostNode->loc_mtx.RotateY(pp->TURNSTEPANGL);
+		}
 			else hostNode->loc_mtx.RotateY(-pp->TURNSTEPANGL);						
 	        //hostNode->loc_mtx.RotateY(-pp->TURNSTEPANGL);
 		}

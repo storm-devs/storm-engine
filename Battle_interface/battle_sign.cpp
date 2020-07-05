@@ -298,7 +298,7 @@ void BISignIcon::UpdateBuffers( long nQ )
 	{
 		m_nMaxSquareQ = nMaxSignQ;
 		INDEX_BUFFER_RELEASE( m_pRS, m_nIBufID );
-		m_nIBufID = m_pRS->CreateIndexBuffer( m_nMaxSquareQ * 6 * sizeof(word) );
+		m_nIBufID = m_pRS->CreateIndexBufferManaged( m_nMaxSquareQ * 6 * sizeof(word) );
 		FillIndexBuffer();
 	}
 
@@ -310,7 +310,7 @@ void BISignIcon::UpdateBuffers( long nQ )
 		m_nSignStarSquareQ = nSignStarSquareQ;
 		m_nSignFaceSquareQ = nSignFaceSquareQ;
 		VERTEX_BUFFER_RELEASE( m_pRS, m_nVBufID );
-		m_nVBufID = m_pRS->CreateVertexBuffer( BI_COLOR_VERTEX_FORMAT,
+		m_nVBufID = m_pRS->CreateVertexBufferManaged( BI_COLOR_VERTEX_FORMAT,
 			(m_nBackSquareQ + m_nSignStateSquareQ + m_nSignStarSquareQ + m_nSignFaceSquareQ) * 4 * sizeof(BI_COLOR_VERTEX),
 			D3DUSAGE_WRITEONLY );
 	}

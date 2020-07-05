@@ -398,11 +398,11 @@ void BATTLE_LAND_INTERFACE::SetShowParameters()
 	m_fCurAlarmBlind		= 1.f;
 
 	// Создадим буфера
-	m_idVBufCommandos = rs->CreateVertexBuffer(BI_COLOR_VERTEX_FORMAT,m_nMaxCommandos*4*2*sizeof(BI_COLOR_VERTEX),D3DUSAGE_WRITEONLY);
-	m_idIBufCommandos = rs->CreateIndexBuffer(m_nMaxCommandos*6*2);
-	m_idVBufHealth = rs->CreateVertexBuffer(BI_COLOR_VERTEX_FORMAT,m_nMaxCommandos*(4+7+4*4)*sizeof(BI_COLOR_VERTEX),D3DUSAGE_WRITEONLY);
-	m_idIBufHealth = rs->CreateIndexBuffer(m_nMaxCommandos*12*2);
-	m_idIBufGunShoot = rs->CreateIndexBuffer(m_nMaxCommandos*4*6 * 2);
+	m_idVBufCommandos = rs->CreateVertexBufferMananged(BI_COLOR_VERTEX_FORMAT,m_nMaxCommandos*4*2*sizeof(BI_COLOR_VERTEX),D3DUSAGE_WRITEONLY);
+	m_idIBufCommandos = rs->CreateIndexBufferManaged(m_nMaxCommandos*6*2);
+	m_idVBufHealth = rs->CreateVertexBufferMananged(BI_COLOR_VERTEX_FORMAT,m_nMaxCommandos*(4+7+4*4)*sizeof(BI_COLOR_VERTEX),D3DUSAGE_WRITEONLY);
+	m_idIBufHealth = rs->CreateIndexBufferManaged(m_nMaxCommandos*12*2);
+	m_idIBufGunShoot = rs->CreateIndexBufferManaged(m_nMaxCommandos*4*6 * 2);
 
 	if( m_idVBufCommandos==-1 || m_idIBufCommandos==-1 ||
 		m_idVBufHealth==-1 || m_idIBufHealth==-1 ||

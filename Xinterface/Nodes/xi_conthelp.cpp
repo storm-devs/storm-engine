@@ -207,7 +207,8 @@ void CXI_CONTEXTHELP::ChangeNode(CINODE * pNode)
 
     if(m_pHelpList!=NULL)
     {
-        for(int i=0; i<m_helpQuantity; i++)
+		int i = 0;
+        for(i=0; i<m_helpQuantity; i++)
             if(m_pHelpList[i].pNode==pNode) break;
         if(i<m_helpQuantity)
             m_curHelp = &m_pHelpList[i];

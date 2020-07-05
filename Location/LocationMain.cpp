@@ -24,6 +24,7 @@
 #include "Lizards.h"
 #include "LocationScriptLib.h"
 #include "LocRats.h"
+#include "LocCrabs.h"
 #include "ModelRealizer.h"
 #include "Blood.h"
 
@@ -75,6 +76,7 @@ CREATE_CLASS(CharactersGroups)
 CREATE_CLASS(LocEagle)
 CREATE_CLASS(Lizards)
 CREATE_CLASS(LocRats)
+CREATE_CLASS(LocCrabs)
 CREATE_CLASS(LocModelRealizer)
 CREATE_CLASS(Blood)
 CREATE_CLASS(LocationP)

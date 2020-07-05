@@ -49,6 +49,11 @@ struct shader_t		// pixel/vertex shader structure
 	dword	*pDecl;				// declarations for vertex shader
 	dword	dwDeclSize;
 	dword	dwShaderHandle;		// shader handle
+	
+	D3DVERTEXELEMENT9 			*decl;
+	IDirect3DVertexDeclaration9	*vDecl;
+	IDirect3DVertexShader9 		*vShader;
+	IDirect3DPixelShader9 		*pShader;
 };
 
 struct define_t
@@ -68,7 +73,7 @@ class CTechnique
 {
 protected:
 	VDX8RENDER			* pRS;
-	IDirect3DDevice8	* d3d8;
+	IDirect3DDevice9	* d3d9;
 
 	// shaders
 	dword			dwNumShaders;
@@ -136,6 +141,7 @@ protected:
 	dword		GetCode(char *pStr, SRSPARAM *pParam, dword dwNumParam, dword *pPassCode = 0, bool bCanBeNumber = false);
 	dword		GetSRSIndex(char *pStr);
 	dword		GetSTSSIndex(char *pStr);
+	dword		GetSSSSIndex(char *pStr);
 	dword		GetIndex(char *pStr, SRSPARAM *pParam, dword dwNumParam, bool bCanBeNumber);
 
 	char		*GetToken(char *pToken, char *pResult, bool & bToken);

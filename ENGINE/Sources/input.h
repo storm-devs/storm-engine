@@ -8,11 +8,11 @@
 #endif
 #include "..\..\common_h\d_types.h"
 
-class INPUT 
+class CORE_INPUT 
 {
 public:
-	 INPUT(){};
-	~INPUT(){};
+	 CORE_INPUT(){};
+	~CORE_INPUT(){};
 	long GetKeyState(dword key_code);
 };
 

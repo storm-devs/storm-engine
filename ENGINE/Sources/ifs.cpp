@@ -380,7 +380,7 @@ bool IFS::LoadFile(const char * _file_name)
 	
 	Format(file_data,file_size + 1);
 
-	delete file_data;
+	delete [] file_data;
 
 	return true;
 }
@@ -900,6 +900,7 @@ bool IFS::GetLongNext(SEARCH_DATA * sd, char * section_name, char * key_name, lo
 	}
 	return false;
 }
+
 
 double IFS::GetDouble(SEARCH_DATA * sd, char * section_name, char * key_name)
 {

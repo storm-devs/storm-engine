@@ -69,6 +69,9 @@ private:
 		inline bool IsEnable() { return bEnable; };
 
 	private:
+		IDirect3DVertexDeclaration9	* vDecl;
+		IDirect3DVertexShader9 * sShader;
+	
 		string sCatalog, sTexture;
 		float fRadius, fSize, fHeightFade, fSunFade;
 		float fVisualMagnitude, fTelescopeMagnitude;

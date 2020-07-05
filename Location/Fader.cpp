@@ -77,7 +77,7 @@ bool Fader::Init()
 	//DX8 render
 	rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
 	if(!rs) _THROW("No service: dx8render");
-	D3DVIEWPORT8 vp;
+	D3DVIEWPORT9 vp;
 	rs->GetViewport(&vp);
 	w = float(vp.Width);
 	h = float(vp.Height);
@@ -231,18 +231,18 @@ void Fader::Realize(dword delta_time)
 				{			
 					if(rs->CreateImageSurface(desc.Width, desc.Height, desc.Format, &surface) == D3D_OK)
 					{
-						if(rs->CopyRects(renderTarget, null, 0, surface, null) == D3D_OK)
+						if(rs->GetRenderTargetData(renderTarget, surface) == D3D_OK)
 						{
 							isOk = true;
 						}
 					}
 				}
-				if(!isOk) _CORE_API->Trace("Screen shot for fader not created!");				
+				if(!isOk) _CORE_API->Trace("Fader : Screen shot for fader not created!");				
 			}else{
 				//Копируем шот				
-				if(rs->CopyRects(surface, null, 0, renderTarget, null) != D3D_OK)
+				if(rs->UpdateSurface(surface, null, renderTarget, null) != D3D_OK)
 				{
-					_CORE_API->Trace("Can't copy fader screen shot to render target!");
+					_CORE_API->Trace("Fader : Can't copy fader screen shot to render target!");
 				}				
 			}
 		}

@@ -26,6 +26,11 @@ public:
 	void	DecrementScale() {m_fCurScale-=m_fScaleStep; if(m_fCurScale<m_fMinScale) m_fCurScale=m_fMinScale;}
 	void	IncrementScale() {m_fCurScale+=m_fScaleStep; if(m_fCurScale>m_fMaxScale) m_fCurScale=m_fMaxScale;}
 	void	SetEnoughBalls(bool notEnoughBallFlag) {m_bNotEnoughBallFlag=notEnoughBallFlag;}
+	
+	void 	LostRender();
+	void 	RestoreRender();
+
+
 
 protected:
 	void	CalculateTextureRect(FRECT & texRect, long num, long hq, long vq);

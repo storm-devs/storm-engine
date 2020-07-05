@@ -19,10 +19,10 @@ static struct _TOKENTABLE {const char * token; int cod;} TokenTable[] =
 
 bool IS_DIGIT(char ch);
 long GET_DIGIT(char ch);
-long GetToken(const char* &ps);
+long GetToken(char* &ps);
 static long GetLongFromString(char* &pInStr);
-static void GetSubStringFromString(const char* &pInStr,char* pOutBuf,int bufSize);
-static const char* GetNextString(const char* &pInStr);
+static void GetSubStringFromString(char* &pInStr,char* pOutBuf,int bufSize);
+static char* GetNextString(char* &pInStr);
 static char * GetTitleString(char* buf, char* &ptr, int &slen);
 
 
@@ -37,7 +37,7 @@ static char * GetTitleString(char* buf, char* &ptr, int &slen);
 
 
 
-long GetToken(const char* &ps)
+long GetToken(char* &ps)
 {
 	if(ps==NULL) return TOKEN_INVALID;
 
@@ -45,7 +45,7 @@ long GetToken(const char* &ps)
 	while(*ps==32 || *ps==9) ps++;
 
 	// получаем размер лексемы
-	const char *ptoken = ps;
+	char *ptoken = ps;
 	while(*ps!=0 && (unsigned)*ps>0x20 && *ps!=0x0D && *ps!=0x0A)
 		ps++;
 	size_t tokensize = (long)ps-(long)ptoken;
@@ -107,13 +107,14 @@ static long GetLongFromString(char* &pInStr)
 	}
 	return retVal;
 }
-void GetSubStringFromString(const char* &pInStr,char* pOutBuf,int bufSize)
+void GetSubStringFromString(char* &pInStr,char* pOutBuf,int bufSize)
 {
 	if(bufSize<=0) return;
 	// удаляем предшествующие пробелы
 	while(IS_SPACE(*pInStr)) pInStr++;
 	// перепишем строку в буфер
-	for(int i=0;i<bufSize-1;i++,pInStr++)
+	int i = 0;
+	for(i=0;i<bufSize-1;i++,pInStr++)
 	{
 		if(IS_SPACE(*pInStr)) break;
 		pOutBuf[i] = *pInStr;
@@ -121,7 +122,7 @@ void GetSubStringFromString(const char* &pInStr,char* pOutBuf,int bufSize)
 	pOutBuf[i]=0;
 }
 
-static const char* GetNextString(const char* &pInStr)
+static char* GetNextString(char* &pInStr)
 {
 	if(pInStr==NULL || pInStr[0]==0) return NULL;
 
@@ -129,7 +130,8 @@ static const char* GetNextString(const char* &pInStr)
 	{
 		bool bYesCurierReturn = false;
 		bool bEmptyString = true;
-		for(const char* pstart=pInStr; *pInStr!=0; pInStr++)
+		char* pstart = null;
+		for(pstart=pInStr; *pInStr!=0; pInStr++)
 		{
 			if(IS_SPACE(*pInStr))	bEmptyString=false;
 			if(*pInStr==0x0D) bYesCurierReturn = true;
@@ -151,11 +153,11 @@ static char * GetTitleString(char* buf, char* &ptr, int &slen)
 	while(ptr!=NULL)
 	{
 		// Возмем очередную строку
-		const char* cstr = GetNextString(ptr);
+		char* cstr = GetNextString(ptr);
 		if(ptr!=cstr && cstr!=NULL)
 		{
 			// если полученная строка является заголовком квеста
-			const char *tmpstr = cstr;
+			char *tmpstr = cstr;
 			int tokType = GetToken(tmpstr);
 			if(tokType==TOKEN_QUEST)
 			{
@@ -477,11 +479,11 @@ void QUEST_FILE_READER::SetQuestTextFileName(const char * pcFileName)
 	delete pBuf;
 }
 
-void QUEST_FILE_READER::AddQuestFromBuffer( const char* pcSrcBuffer )
+void QUEST_FILE_READER::AddQuestFromBuffer( char* pcSrcBuffer )
 {
 	if( !pcSrcBuffer ) return;
 
-	const char* pcStr = pcSrcBuffer;
+	char* pcStr = pcSrcBuffer;
 	string sQuestID;
 	string sTextID;
 	string sQuestText;
@@ -499,8 +501,8 @@ void QUEST_FILE_READER::AddQuestFromBuffer( const char* pcSrcBuffer )
 			}
 			break;
 		}
-		const char* pcLine = GetNextString( pcStr );
-		const char* pcToken = pcLine;
+		char* pcLine = GetNextString( pcStr );
+		char* pcToken = pcLine;
 		long nToken = GetToken( pcToken );
 		switch( nToken )
 		{

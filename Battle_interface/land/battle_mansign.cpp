@@ -287,15 +287,21 @@ void BIManSign::MakeControl()
 
 	api->Controls->GetControlState( BI_COMMANDS_CONFIRM, cs );
 	if( cs.state == CST_ACTIVATED )
-		ExecuteCommand( BI_MSG_COMMAND_ACTIVATE );
+	{
+		ExecuteCommand( BI_MSG_COMMAND_ACTIVATE );	
+	}	
 
 	api->Controls->GetControlState(BI_COMMANDS_LEFTSTEP,cs);
 	if(cs.state == CST_ACTIVATED)
+	{
 		ExecuteCommand( BI_MSG_COMMAND_LEFT );
+	}	
 
 	api->Controls->GetControlState( BI_COMMANDS_RIGHTSTEP,cs);
 	if(cs.state == CST_ACTIVATED)
-		ExecuteCommand( BI_MSG_COMMAND_RIGHT );
+	{
+		ExecuteCommand( BI_MSG_COMMAND_RIGHT );	
+	}	
 
 	api->Controls->GetControlState( BI_COMMANDS_UPSTEP,cs);
 	if(cs.state == CST_ACTIVATED)
@@ -307,7 +313,9 @@ void BIManSign::MakeControl()
 
 	api->Controls->GetControlState(BI_COMMANDS_CANCEL,cs);
 	if(cs.state == CST_ACTIVATED)
-		ExecuteCommand( BI_MSG_COMMAND_DEACTIVATE );
+	{	
+		ExecuteCommand( BI_MSG_COMMAND_DEACTIVATE );		
+	}	
 }
 
 void BIManSign::ExecuteCommand( long command )
@@ -320,7 +328,9 @@ void BIManSign::ExecuteCommand( long command )
 			if( nTmp != -1 ) m_nCommandMode = nTmp;
 		}
 		if( m_nCommandMode == 0 )
+		{	
 			SetActive( false );
+		}
 	break;
 
 	case BI_MSG_COMMAND_LEFT:
@@ -414,7 +424,7 @@ void BIManSign::UpdateBuffers( long nShipQ )
 		m_nMaxSquareQ = nMaxSquareQ;
 		INDEX_BUFFER_RELEASE( m_pRS, m_nIBufID );
 		if( m_nMaxSquareQ > 0 )
-			m_nIBufID = m_pRS->CreateIndexBuffer( m_nMaxSquareQ * 6 * sizeof(word) );
+			m_nIBufID = m_pRS->CreateIndexBufferManaged( m_nMaxSquareQ * 6 * sizeof(word) );
 		FillIndexBuffer();
 	}
 
@@ -423,7 +433,7 @@ void BIManSign::UpdateBuffers( long nShipQ )
 		m_nSquareQ = m_nBackSquareQ + m_nManStateSquareQ + m_nGunChargeSquareQ + nManSquareQ + nAlarmSquareQ;
 		long n = 6*4 + 1;
 		VERTEX_BUFFER_RELEASE( m_pRS, m_nVBufID );
-		m_nVBufID = m_pRS->CreateVertexBuffer( BI_COLOR_VERTEX_FORMAT, n * 4 * sizeof(BI_COLOR_VERTEX), D3DUSAGE_WRITEONLY );
+		m_nVBufID = m_pRS->CreateVertexBufferManaged( BI_COLOR_VERTEX_FORMAT, n * 4 * sizeof(BI_COLOR_VERTEX), D3DUSAGE_WRITEONLY );
 	}
 	//FillVertexBuffer();
 }
@@ -590,7 +600,9 @@ long BIManSign::WriteSquareToVBuffWithProgress( BI_COLOR_VERTEX* pv, FRECT& uv, 
 void BIManSign::UpdateCommandList()
 {
 	if( m_pCommandList )
+	{	
 		m_pCommandList->Update( GetCurrentCommandTopLine(), GetCurrentCommandCharacterIndex(), GetCurrentCommandMode() );
+}
 }
 
 long BIManSign::GetCurrentCommandTopLine()

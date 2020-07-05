@@ -163,6 +163,8 @@ private:
 	ENTITY_ID lizards;
 	//Крысы
 	ENTITY_ID rats;
+	//Крабы
+	ENTITY_ID crabs;
 	//Кровь
 	ENTITY_ID blood;
 	

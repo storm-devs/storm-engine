@@ -210,7 +210,7 @@ long BIUtils::GetMaxFromFourLong( long n1, long n2, long n3, long n4 )
 	return n4;
 }
 
-float BIUtils::GetFromStr_Float(const char* &pcStr, float fDefault)
+float BIUtils::GetFromStr_Float(char* &pcStr, float fDefault)
 {
 	if( !pcStr ) return fDefault;
 	long n;
@@ -432,7 +432,7 @@ void BIBorderInfo::Release()
 void BIBorderInfo::Init(VDX8RENDER* rs, ATTRIBUTES *pA)
 {
 	pRS = rs;
-	nVBuf = rs->CreateVertexBuffer( BI_COLOR_VERTEX_FORMAT, 2*5*sizeof(BI_COLOR_VERTEX), D3DUSAGE_WRITEONLY );
+	nVBuf = rs->CreateVertexBufferManaged( BI_COLOR_VERTEX_FORMAT, 2*5*sizeof(BI_COLOR_VERTEX), D3DUSAGE_WRITEONLY );
 	dwColor1 = dwColor2 = ARGB(255,255,255,255);
 	ext_pos.left = 0.f; ext_pos.top = 0.f; ext_pos.right = 1024.f; ext_pos.bottom = 768.f;
 	int_pos1.left = 20.f; int_pos1.top = 20.f; int_pos1.right = 1004.f; int_pos1.bottom = 748.f;

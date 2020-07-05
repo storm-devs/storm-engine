@@ -785,7 +785,8 @@ dword Character::AttributeChanged(ATTRIBUTES * apnt)
 		if(at)
 		{
 			long num = at->GetAttributesNum();
-			for(long i = 0, j = 0; i < num && j < sizeof(actionDead)/sizeof(ActionDead); i++)
+			long i = 0, j = 0;
+			for(i = 0, j = 0; i < num && j < sizeof(actionDead)/sizeof(ActionDead); i++)
 			{
 				const char * iname = at->GetAttribute(i);
 				if(!iname || !iname[0]) continue;
@@ -800,7 +801,8 @@ dword Character::AttributeChanged(ATTRIBUTES * apnt)
 		{
 			curIdleIndex = -1;
 			long num = at->GetAttributesNum();
-			for(long i = 0, j = 0; i < num && j < sizeof(actionIdle)/sizeof(ActionIdle); i++)
+			long i = 0, j = 0;
+			for(i = 0, j = 0; i < num && j < sizeof(actionIdle)/sizeof(ActionIdle); i++)
 			{
 				const char * iname = at->GetAttribute(i);
 				if(!iname || !iname[0]) continue;
@@ -846,7 +848,8 @@ dword Character::AttributeChanged(ATTRIBUTES * apnt)
 		if(at)
 		{
 			long num = at->GetAttributesNum();
-			for(long i = 0, j = 0; i < num && j < sizeof(actionFightDead)/sizeof(ActionDead); i++)
+			long i = 0, j = 0;
+			for(i = 0, j = 0; i < num && j < sizeof(actionFightDead)/sizeof(ActionDead); i++)
 			{
 				const char * iname = at->GetAttribute(i);
 				if(!iname || !iname[0]) continue;
@@ -860,7 +863,8 @@ dword Character::AttributeChanged(ATTRIBUTES * apnt)
 		if(at)
 		{
 			long num = at->GetAttributesNum();
-			for(long i = 0, j = 0; i < num && j < sizeof(actionFightIdle)/sizeof(ActionIdle); i++)
+			long i = 0, j = 0;
+			for(i = 0, j = 0; i < num && j < sizeof(actionFightIdle)/sizeof(ActionIdle); i++)
 			{
 				const char * iname = at->GetAttribute(i);
 				if(!iname || !iname[0]) continue;
@@ -948,7 +952,8 @@ void Character::ReadFightActions(ATTRIBUTES * at, ActionCharacter actions[4], lo
 	if(at)
 	{
 		long num = at->GetAttributesNum();
-		for(long i = 0, j = 0; i < num && j < 4; i++)
+		long i = 0, j = 0;
+		for(i = 0, j = 0; i < num && j < 4; i++)
 		{
 			const char * iname = at->GetAttribute(i);
 			if(!iname || !iname[0]) continue;
@@ -1581,7 +1586,8 @@ void Character::Dead()
 	float _ay = ay;
 	static Supervisor::FindCharacter fnd[MAX_CHARACTERS];
 	static long numChr = 0;
-	for(long i = 0; i < num; i++)
+	long i = 0;
+	for(i = 0; i < num; i++)
 	{
 		ay = _ay + dead[i].ang;
 		if(location->supervisor.FindCharacters(fnd, numChr, this, 2.0f, 0.0f, 0.0f)) dead[i].p *= 0.1f;
@@ -3165,21 +3171,21 @@ void Character::UpdateActionsData()
 	UpdateActionMoveData(fall_water, a);
 	//Смерти
 	for(long i = 0; i < numActionDead; i++) UpdateActionDeadData(actionDead[i], a);
-	for(i = 0; i < numActionFightDead; i++) UpdateActionDeadData(actionFightDead[i], a);
+	for(long i = 0; i < numActionFightDead; i++) UpdateActionDeadData(actionFightDead[i], a);
 	//Бой
 	UpdateActionMoveData(fightwalk, a);
 	UpdateActionMoveData(fightbackwalk, a);
 	UpdateActionMoveData(fightrun, a);
 	UpdateActionMoveData(fightbackrun, a); 
-	for(i = 0; i < numAttackFast; i++) UpdateActionCharacterData(attackFast[i], a);
-	for(i = 0; i < numAttackForce; i++) UpdateActionCharacterData(attackForce[i], a);
-	for(i = 0; i < numAttackRound; i++) UpdateActionCharacterData(attackRound[i], a);
-	for(i = 0; i < numAttackBreak; i++) UpdateActionCharacterData(attackBreak[i], a);
-	for(i = 0; i < numAttackFeint; i++) UpdateActionCharacterData(attackFeint[i], a);
-	for(i = 0; i < numAttackFeint; i++) UpdateActionCharacterData(attackFeintC[i], a);
+	for(long i = 0; i < numAttackFast; i++) UpdateActionCharacterData(attackFast[i], a);
+	for(long i = 0; i < numAttackForce; i++) UpdateActionCharacterData(attackForce[i], a);
+	for(long i = 0; i < numAttackRound; i++) UpdateActionCharacterData(attackRound[i], a);
+	for(long i = 0; i < numAttackBreak; i++) UpdateActionCharacterData(attackBreak[i], a);
+	for(long i = 0; i < numAttackFeint; i++) UpdateActionCharacterData(attackFeint[i], a);
+	for(long i = 0; i < numAttackFeint; i++) UpdateActionCharacterData(attackFeintC[i], a);
 	UpdateActionCharacterData(shot, a);
-	for(i = 0; i < numHits; i++) UpdateActionCharacterData(hit[i], a);
-	for(i = 0; i < numParry; i++) UpdateActionCharacterData(parry[i], a);  //eddy
+	for(long i = 0; i < numHits; i++) UpdateActionCharacterData(hit[i], a);
+	for(long i = 0; i < numParry; i++) UpdateActionCharacterData(parry[i], a);  //eddy
 	UpdateActionCharacterData(hitFeint, a);
 	UpdateActionCharacterData(hitParry, a);
 	UpdateActionCharacterData(hitRound, a);
@@ -3194,9 +3200,9 @@ void Character::UpdateActionsData()
 	UpdateActionCharacterData(actionTurnL, a);
 	UpdateActionCharacterData(actionTurnR, a);
 	//Действия стояния при стоянии
-	for(i = 0; i < numActionIdles; i++) UpdateActionIdleData(actionIdle[i], a);
+	for(long i = 0; i < numActionIdles; i++) UpdateActionIdleData(actionIdle[i], a);
 	//Действия стояния в режиме боя
-	for(i = 0; i < numFightActionIdles; i++) UpdateActionIdleData(actionFightIdle[i], a);
+	for(long i = 0; i < numFightActionIdles; i++) UpdateActionIdleData(actionFightIdle[i], a);
 	noBlendTime = 1.0f;
 	UpdateAnimation();
 }
@@ -3984,7 +3990,8 @@ const char * Character::FindIdleAnimation(float & tblend)
 			{
 				//Расчитываем текущии вероятности и сумарную вероятность
 				float allp = 0.0f;
-				for(long i = 0; i < numActionIdles; i++) allp += actionIdle[i].p;
+				long i = 0;
+				for(i = 0; i < numActionIdles; i++) allp += actionIdle[i].p;
 				//Текущее действие
 				float rnd = rand()*allp/RAND_MAX;
 				//Выбираем из списка то которое будем проигрывать
@@ -4029,7 +4036,8 @@ const char * Character::FindFightIdleAnimation(float & tblend)
 	{
 		//Расчитываем текущии вероятности и сумарную вероятность
 		float allp = 0.0f;
-		for(long i = 0; i < numFightActionIdles; i++) allp += actionFightIdle[i].p;
+		long i = 0; 
+		for(i = 0; i < numFightActionIdles; i++) allp += actionFightIdle[i].p;
 		//Текущее действие
 		float rnd = rand()*allp/RAND_MAX;
 		//Выбираем из списка то которое будем проигрывать
@@ -4104,7 +4112,8 @@ Character * Character::FindDialogCharacter()
 	if(!location->supervisor.FindCharacters(fndCharacter, num, this, 3.0f)) return null;
 	//Выбираем лутшего
 	float minDst;
-	for(long i = 0, j = -1; i < num; i++)
+	long i = 0, j = 0;
+	for(i = 0, j = -1; i < num; i++)
 	{
 		//Персонаж
 		Supervisor::FindCharacter & fc = fndCharacter[i];
@@ -4293,7 +4302,8 @@ Character * Character::FindGunTarget(float & kDist, bool bOnlyEnemyTest)
 	static long num = 0;
 	if(!location->supervisor.FindCharacters(fndCharacter, num, this, CHARACTER_FIGHT_FIREDIST, CHARACTER_FIGHT_FIREANG, 0.4f, 30.0f, false)) return null;
 	float minDst;
-	for(long i = 0, j = -1; i < num; i++)
+	long i = 0, j = 0;
+	for(i = 0, j = -1; i < num; i++)
 	{
 		Supervisor::FindCharacter & fc = fndCharacter[i];
 		if(fc.d2 <= 0.0f || fc.c->radius <= 0.0f) continue;
@@ -4358,6 +4368,7 @@ void Character::FindNearCharacters(MESSAGE & message)
 	if(!n) return;
 	if(n > long(array->GetElementsNum())) array->SetElementsNum(n);
 	char buf[64];
+	long i = 0, nn = 0;
 	for(long i = 0, nn = 0; i < n; i++)
 	{
 		//Информация

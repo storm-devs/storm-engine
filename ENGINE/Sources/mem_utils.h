@@ -1,17 +1,13 @@
 #ifndef _MEM_UTILS_H_
 #define _MEM_UTILS_H_
 
-#ifndef _XBOX
 #include <windows.h>
-#else
-#include <xtl.h>
-#endif
 
 #define DEBUGCLASSES
 
 #define SMALL_BLOCKS_LIMIT	256
 #define MEDIUM_BLOCKS_LIMIT	256
-#define MEDIUM_BLOCK_MSIZE  65536
+#define MEDIUM_BLOCK_MSIZE  	65536
 
 struct MEM_USAGE_INFO_BLOCK
 {

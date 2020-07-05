@@ -1,0 +1,228 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{E4D9495E-57E2-4058-BEAB-8E239038F73A}</ProjectGuid>
+    <SccProjectName>
+    </SccProjectName>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccProvider>
+    </SccProvider>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\Release\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\Debug\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkIncremental>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;PARTICLES_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>.\Release/PARTICLES.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
+      <ObjectFileName>.\Release/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <OutputFile>..\Engine\modules\Particles.dll</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <ProgramDatabaseFile>.\Release/PARTICLES.pdb</ProgramDatabaseFile>
+      <ImportLibrary>.\Release/PARTICLES.lib</ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+    </Link>
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\Release/PARTICLES.tlb</TypeLibraryName>
+      <HeaderFileName>
+      </HeaderFileName>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0419</Culture>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;PARTICLES_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>.\Debug/PARTICLES.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Debug/</AssemblerListingLocation>
+      <ObjectFileName>.\Debug/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug/</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>..\engine\modules\PARTICLES.dll</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>.\Debug/PARTICLES.pdb</ProgramDatabaseFile>
+      <ImportLibrary>.\Debug/PARTICLES.lib</ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\Debug/PARTICLES.tlb</TypeLibraryName>
+      <HeaderFileName>
+      </HeaderFileName>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0419</Culture>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="DataCache\DataCache.cpp" />
+    <ClCompile Include="GeomCache\GeomCache.cpp" />
+    <ClCompile Include="K2Wrapper\particles.cpp" />
+    <ClCompile Include="K2Wrapper\psystem.cpp" />
+    <ClCompile Include="Manager\particlemanager.cpp" />
+    <ClCompile Include="Service\particleservice.cpp" />
+    <ClCompile Include="System\DataDesc\data_desc.cpp" />
+    <ClCompile Include="System\DataSource\DataBool.cpp" />
+    <ClCompile Include="System\DataSource\DataColor.cpp" />
+    <ClCompile Include="System\DataSource\DataFloat.cpp" />
+    <ClCompile Include="System\DataSource\DataGraph.cpp" />
+    <ClCompile Include="System\DataSource\DataPosition.cpp" />
+    <ClCompile Include="System\DataSource\DataSource.cpp" />
+    <ClCompile Include="System\DataSource\DataString.cpp" />
+    <ClCompile Include="System\DataSource\DataUV.cpp" />
+    <ClCompile Include="System\DataSource\FieldList.cpp" />
+    <ClCompile Include="System\Emitters\base.cpp" />
+    <ClCompile Include="System\Emitters\point.cpp" />
+    <ClCompile Include="System\ParticleProcessor\bb_processor.cpp" />
+    <ClCompile Include="System\ParticleProcessor\mdl_processor.cpp" />
+    <ClCompile Include="System\ParticleSystem\particlesystem.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DataCache\DataCache.h" />
+    <ClInclude Include="GeomCache\GeomCache.h" />
+    <ClInclude Include="ICommon\BillBoard.h" />
+    <ClInclude Include="ICommon\ColorVertex.h" />
+    <ClInclude Include="ICommon\EditorTypes.h" />
+    <ClInclude Include="ICommon\GraphTime.h" />
+    <ClInclude Include="ICommon\GraphVertex.h" />
+    <ClInclude Include="ICommon\IEmitter.h" />
+    <ClInclude Include="ICommon\MemFile.h" />
+    <ClInclude Include="ICommon\Names.h" />
+    <ClInclude Include="ICommon\Particle.h" />
+    <ClInclude Include="ICommon\Types.h" />
+    <ClInclude Include="K2Wrapper\particles.h" />
+    <ClInclude Include="K2Wrapper\psystem.h" />
+    <ClInclude Include="Manager\particlemanager.h" />
+    <ClInclude Include="Service\particleservice.h" />
+    <ClInclude Include="System\DataDesc\data_desc.h" />
+    <ClInclude Include="System\DataSource\DataBool.h" />
+    <ClInclude Include="System\DataSource\DataColor.h" />
+    <ClInclude Include="System\DataSource\DataFloat.h" />
+    <ClInclude Include="System\DataSource\DataGraph.h" />
+    <ClInclude Include="System\DataSource\DataPosition.h" />
+    <ClInclude Include="System\DataSource\DataSource.h" />
+    <ClInclude Include="System\DataSource\DataString.h" />
+    <ClInclude Include="System\DataSource\DataUV.h" />
+    <ClInclude Include="System\DataSource\FieldList.h" />
+    <ClInclude Include="System\Emitters\base.h" />
+    <ClInclude Include="System\Emitters\point.h" />
+    <ClInclude Include="System\ParticleProcessor\bb_processor.h" />
+    <ClInclude Include="System\ParticleProcessor\mdl_processor.h" />
+    <ClInclude Include="System\ParticleProcessor\nameparser.h" />
+    <ClInclude Include="System\ParticleProcessor\physic.h" />
+    <ClInclude Include="System\ParticleSystem\particlesystem.h" />
+    <ClInclude Include="..\Common_h\math3D.h" />
+    <ClInclude Include="..\Common_h\particles.h" />
+    <ClInclude Include="..\Common_h\particles\gmx_QSort.h" />
+    <ClInclude Include="..\Common_h\particles\iparticlemanager.h" />
+    <ClInclude Include="..\Common_h\particles\iparticlesservice.h" />
+    <ClInclude Include="..\Common_h\particles\iparticlesystem.h" />
+    <ClInclude Include="..\Common_h\math3d\Box.h" />
+    <ClInclude Include="..\Common_h\math3d\Capsule.h" />
+    <ClInclude Include="..\Common_h\math3d\Color.h" />
+    <ClInclude Include="..\Common_h\math3d\Line.h" />
+    <ClInclude Include="..\Common_h\math3d\Matrix.h" />
+    <ClInclude Include="..\Common_h\math3d\Plane.h" />
+    <ClInclude Include="..\Common_h\math3d\Quaternion.h" />
+    <ClInclude Include="..\Common_h\math3d\Sphere.h" />
+    <ClInclude Include="..\Common_h\math3d\Triangle.h" />
+    <ClInclude Include="..\Common_h\math3d\Vector.h" />
+    <ClInclude Include="..\Common_h\math3d\Vector4.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Engine\Modules\Techniques\Particles\Particles.sha" />
+    <None Include="..\Engine\Modules\Techniques\Particles\PSys.sha" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

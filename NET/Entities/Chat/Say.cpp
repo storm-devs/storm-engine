@@ -43,7 +43,7 @@ void NetSay::Realize(DWORD __DeltaTime)
 	int iLast = aSay.Len();
 	int iFirst = Max(long(0), aSay.Len() - iLines);
 
-	D3DVIEWPORT8 vp8;
+	D3DVIEWPORT9 vp8;
 	Render().GetViewport(&vp8);
 	long y = long(float(vp8.Height) * fStartY) - ((aSay.Len() >= iLines) ? iLines * 16 : aSay.Len() * 16);
 	long x = 20;

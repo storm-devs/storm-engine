@@ -9,6 +9,7 @@ dynamic shadow cpp file
 ******************************************************************************/
 #include "SHADOW.h"
 #include "..\common_h\model.h"
+#include "..\common_h\defines.h"
 
 static unsigned long HEAD_DENSITY = 0xFF606060;
 static unsigned long DENSITY = 0xFF606040;
@@ -21,8 +22,8 @@ CREATE_CLASS(SHADOW)
 static const long vbuff_size = 1024;
 static long ref=0;
 #define TEXTURE_SIZE 128
-IDirect3DTexture8 *shTex = null, *blurTex = null;
-IDirect3DVertexBuffer8 *vbuff;
+IDirect3DTexture9 *shTex = null, *blurTex = null;
+IDirect3DVertexBuffer9 *vbuff;
 
 
 SHADOW::SHADOW()
@@ -93,7 +94,8 @@ bool AddPoly(const CVECTOR *vr, long nverts)
 	if( d0*dl < 0.0f)	return true;
 
 	if(tot_verts + (nverts-2)*3>vbuff_size)	return false;
-	for(long v=0; v<3; v++)
+	long v = 0;
+	for(v=0; v<3; v++)
 	{
 		shadvert[tot_verts].pos = vr[v];
 		float z = (trans.m[0][2]*vr[v].x + trans.m[1][2]*vr[v].y + trans.m[2][2]*vr[v].z + trans.m[3][2]);
@@ -130,7 +132,7 @@ void SHADOW::Realize(dword Delta_Time)
 	HEAD_DENSITY = ((VDATA*)pV->GetArrayElement(0))->GetLong();
 	DENSITY = ((VDATA*)pV->GetArrayElement(1))->GetLong();
 
-	D3DVIEWPORT8 vp;
+	D3DVIEWPORT9 vp;
 	rs->GetViewport(&vp);
 
 	pV = api->Event("EWhr_GetFogDensity");
@@ -146,7 +148,7 @@ void SHADOW::Realize(dword Delta_Time)
 	CVECTOR headPos = objPos;
 	headPos.y += gi.radius;
 
-	D3DLIGHT8 dLight;
+	D3DLIGHT9 dLight;
 	BOOL bOk = false;
 	rs->GetLightEnable(0,&bOk);
 	if(bOk) rs->GetLight(0, &dLight); else return;
@@ -189,8 +191,8 @@ void SHADOW::Realize(dword Delta_Time)
 		cen = headPos + 4.0f*!(hdest - headPos);
 		radius = 8.0f;
 	}
-
-	for(long p=0; p<4; p++)
+	long p = 0;
+	for(p=0; p<4; p++)
 	{
 		float dist = cen.x*planes[p].Nx + cen.y*planes[p].Ny + cen.z*planes[p].Nz - planes[p].D;
 		if(dist>radius)	break;
@@ -261,7 +263,7 @@ void SHADOW::Realize(dword Delta_Time)
 	rs->GetTransform(D3DTS_VIEW, prev_view);
 	rs->GetTransform(D3DTS_PROJECTION, prev_proj);
 
-	IDirect3DSurface8 *backbuff, *zbuff;
+	IDirect3DSurface9 *backbuff, *zbuff;
 	rs->GetRenderTarget( &backbuff );
 	rs->GetDepthStencilSurface( &zbuff );
 	rs->EndScene();
@@ -269,7 +271,7 @@ void SHADOW::Realize(dword Delta_Time)
 	rs->SetTransform(D3DTS_PROJECTION, proj);
 	rs->SetTransform(D3DTS_VIEW, lightmtx);
 
-	IDirect3DSurface8 *texsurf;
+	IDirect3DSurface9 *texsurf;
 	shTex->GetSurfaceLevel( 0, &texsurf );
 	rs->SetRenderTarget( texsurf, 0 );
 	rs->Release(texsurf);
@@ -317,6 +319,10 @@ void SHADOW::Realize(dword Delta_Time)
 	planes[5].D = -pdir | (objPos - 3.5f*pdir);
 
 	rs->SetTexture(0, blurTex);
+	
+	rs->SetRenderState(D3DRS_DEPTHBIAS, F2DW(-0.0001f));
+	rs->SetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, F2DW(0.0f));
+	
 	rs->SetTransform(D3DTS_WORLD, CMatrix());
 
 	float dist = 3.0f*sqrtf(~(cen-camPos));
@@ -325,9 +331,9 @@ void SHADOW::Realize(dword Delta_Time)
 	long shade = long(fabsf(shading*255.0f));
 
 	rs->SetRenderState(D3DRS_TEXTUREFACTOR, (shade<<16)|(shade<<8)|(shade<<0));
-	rs->SetVertexShader(SHADOW_FVF);
-	rs->SetIndices(0,0);
 	rs->SetStreamSource(0, vbuff, sizeof(SHADOW_VERTEX));
+	rs->SetIndices(0,0);
+	rs->SetFVF(SHADOW_FVF);
 
 	tot_verts = 0;
 #ifndef _XBOX
@@ -346,6 +352,10 @@ void SHADOW::Realize(dword Delta_Time)
 		{
 			rs->DrawPrimitive(D3DPT_TRIANGLELIST, 0, tot_verts/3);
 		}while(rs->TechniqueExecuteNext());
+		
+	rs->SetRenderState( D3DRS_SLOPESCALEDEPTHBIAS, F2DW(0.0f) );
+    rs->SetRenderState( D3DRS_DEPTHBIAS, F2DW(0.0f) );
+
 	rs->SetViewport(&vp);
 }
 
@@ -417,7 +427,7 @@ void SHADOW::Smooth()
 	vrt[0].diffuse = vrt[3].diffuse = HEAD_DENSITY;
 	vrt[1].diffuse = vrt[2].diffuse = 0xFFFFFFFF;
 
-	IDirect3DSurface8 *texsurf;
+	IDirect3DSurface9 *texsurf;
 	blurTex->GetSurfaceLevel( 0, &texsurf );
 	rs->SetRenderTarget( texsurf, 0 );
 	rs->Release(texsurf);
@@ -467,9 +477,9 @@ dword _cdecl SHADOW::ProcessMessage(MESSAGE &message)
 
 void SHADOW::LostRender()
 {
-	rs->Release(shTex);
-	rs->Release(blurTex);
-	rs->Release(vbuff);
+	rs->Release(vbuff); 	vbuff 	= NULL;
+	rs->Release(shTex); 	shTex 	= NULL;
+	rs->Release(blurTex);	blurTex = NULL;
 }
 
 void SHADOW::RestoreRender()

@@ -262,7 +262,8 @@ dword _cdecl ROPE::ProcessMessage(MESSAGE & message)
 			gdata[groupQuantity-1].st = nIndx;
 			gdata[groupQuantity-1].sv = nVert;
 			gdata[groupQuantity-1].ropeQuantity = 0;
-			for(int rn=wFirstRope; rn<ropeQuantity; rn++)
+			int rn = 0;
+			for(rn=wFirstRope; rn<ropeQuantity; rn++)
 			{
 				if(rlist[rn]->HostGroup==groupQuantity-1)
 				{
@@ -822,8 +823,8 @@ void ROPE::FirstRun()
 				VERTEX_BUFFER_RELEASE(RenderService,vBuf);
 				INDEX_BUFFER_RELEASE(RenderService,iBuf);
             }
-            vBuf=RenderService->CreateVertexBuffer(ROPEVERTEX_FORMAT,nVert*sizeof(ROPEVERTEX),D3DUSAGE_WRITEONLY);
-            iBuf=RenderService->CreateIndexBuffer(nIndx*2);
+            vBuf=RenderService->CreateVertexBufferManaged(ROPEVERTEX_FORMAT,nVert*sizeof(ROPEVERTEX),D3DUSAGE_WRITEONLY);
+            iBuf=RenderService->CreateIndexBufferManaged(nIndx*2);
 
 			if(vBuf>=0 && iBuf>=0)
 			{
@@ -874,7 +875,8 @@ void ROPE::SetTextureGrid(ROPEDATA *pv)
 void ROPE::SetAdd(int firstNum)
 {
     // set vertex and index buffers
-    for(int rn=firstNum; rn<ropeQuantity; rn++)
+	int rn = 0;
+    for(rn=firstNum; rn<ropeQuantity; rn++)
     {
         // удалить плохие веревки
         while( rlist[rn]->bMatWorld==0 || rlist[rn]->eMatWorld==0 )
@@ -930,16 +932,17 @@ void ROPE::SetAdd(int firstNum)
 void ROPE::DoDelete()
 {
     DWORD oldnVert=nVert;
+	int gn = 0, rn = 0;
 
     // пройтись по удаленным группам и пометить на удаление все принадлежащие им веревки
-    for(int gn=0; gn<groupQuantity; gn++)
+    for(gn=0; gn<groupQuantity; gn++)
         if(gdata[gn].bDeleted)
             for(int idx=0; idx<gdata[gn].ropeQuantity; idx++)
                 rlist[gdata[gn].ropeIdx[idx]]->bDeleted=true;
 
     // удалить удаленные веревки в списке веревок
     int nrn=0;
-    for(int rn=0; rn<ropeQuantity; rn++)
+    for(rn=0; rn<ropeQuantity; rn++)
     {
         if(rlist[rn]->bDeleted)
         {
@@ -1024,9 +1027,9 @@ void ROPE::DoDelete()
 		INDEX_BUFFER_RELEASE(RenderService,iBuf);
 
         if(nVert>0)
-            vBuf=RenderService->CreateVertexBuffer(ROPEVERTEX_FORMAT,nVert*sizeof(ROPEVERTEX),D3DUSAGE_WRITEONLY);
+            vBuf=RenderService->CreateVertexBufferManaged(ROPEVERTEX_FORMAT,nVert*sizeof(ROPEVERTEX),D3DUSAGE_WRITEONLY);
         if(nIndx>0)
-            iBuf=RenderService->CreateIndexBuffer(nIndx*6);
+            iBuf=RenderService->CreateIndexBufferManaged(nIndx*6);
 
         if(nVert>0 && nIndx>0)
         {
@@ -1045,7 +1048,8 @@ bool ROPE::IsAbsentRope(ENTITY_ID &mdl_id, int ropenum)
     bool retVal=true;
 
     // найдем нужную группу
-    for(int gn=0; gn<groupQuantity; gn++)
+	int gn = 0;
+    for(gn=0; gn<groupQuantity; gn++)
         if(gdata[gn].modelEI==mdl_id) break;
 
     // пройдемся по всем веревкам и найдем нужную нам веревку
@@ -1062,7 +1066,8 @@ bool ROPE::IsAbsentRope(ENTITY_ID &mdl_id, int ropenum)
 
 void ROPE::DoDeleteUntie(ENTITY_ID &mdl_id, NODE *rnod, int gNum)
 {
-    for(int gn=0; gn<groupQuantity; gn++)
+	int gn = 0;
+    for(gn=0; gn<groupQuantity; gn++)
         if(gdata[gn].modelEI==mdl_id) break;
 
     if(gn<groupQuantity)

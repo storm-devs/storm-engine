@@ -17,8 +17,8 @@ TIVBufferManager::TIVBufferManager(VDX8RENDER *_renderer, long _vType, long _vSi
 	,ivIndexes(0)
 	,count(0)
 {
-	iBuffer = renderer->CreateIndexBuffer(elementsCount * iCount * sizeof(WORD));
-	vBuffer = renderer->CreateVertexBuffer(vType, elementsCount * vCount * vSize, D3DUSAGE_WRITEONLY);
+	iBuffer = renderer->CreateIndexBufferManaged(elementsCount * iCount * sizeof(WORD));
+	vBuffer = renderer->CreateVertexBufferManaged(vType, elementsCount * vCount * vSize, D3DUSAGE_WRITEONLY);
 	used = NEW bool[elementsCount];
 	ivIndexes = NEW long[elementsCount];
 	for (int i=0; i < elementsCount; ++i)

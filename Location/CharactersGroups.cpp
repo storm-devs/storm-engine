@@ -174,7 +174,8 @@ void CharactersGroups::Execute(dword delta_time)
 			Relation & rl = FindRelation(playerGroup, i);
 			if(rl.curState != rs_enemy) continue;
 			if(playerAlarm < rl.alarm) playerAlarm = rl.alarm;
-			for(long n = 0; n < groups[i]->numChr; n++)
+			long n = 0;
+			for(n = 0; n < groups[i]->numChr; n++)
 			{
 				Character * cg = (Character *)api->GetEntityPointer(&groups[i]->c[n]);
 				if(cg && cg->IsSetBlade()) break;
@@ -234,8 +235,9 @@ void CharactersGroups::FindEnemyFromFindList(Character * chr, Group * grp, long 
 {
 	Character * targets[MAX_CHARACTERS];
 	long numTrg = 0;
+	long i = 0;
 	//По всем найденным персонажем
-	for(long i = 0; i < num; i++)
+	for(i = 0; i < num; i++)
 	{
 		//Группа найденного персонажа
 		long gi = GetCharacterGroup(fnd[i].c);
@@ -344,7 +346,7 @@ bool CharactersGroups::RemoveInvalidTargets(Character * chr, Character * check)
 		Character * c = (Character *)api->GetEntityPointer(&trg.chr);
 		if(c && (trg.time < trg.timemax || trg.timemax < 0.0f))
 		{
-			long gc = GetCharacterGroup(c);
+				long gc = GetCharacterGroup(c);
 			if(!c->IsDead() && gc >= 0)
 			{
 				//Персонаж существует и о нём помнят
@@ -528,7 +530,8 @@ bool CharactersGroups::MsgGetOptimalTarget(MESSAGE & message)
 			if(!nc) continue;			
 			if(!nc->IsSetBlade()) continue;
 			//Соберём количество персонажей воюющих с этим хмырём
-			for(long j = 0, n = 0; j < numChr; j++)
+			long j = 0, n = 0;
+			for(j = 0, n = 0; j < numChr; j++)
 			{
 				if(cEx[j].c == nc || cEx[j].c == c) continue;
 				if(((NPCharacter *)cEx[j].c)->GetAttackedCharacter() == nc) n++;
@@ -632,7 +635,7 @@ void CharactersGroups::MsgAddTarget(MESSAGE & message)
 			Character * c = fnd[i].c;
 			//Если невидим, то пропустим его
 			if(!chr->VisibleTest(c)) continue;
-			//Группа найденного персонажа			
+			//Группа найденного персонажа
 			Relation & r = FindRelation(g1, GetCharacterGroup(c));
 			if(r.curState != rs_friend) continue;
 			AddEnemyTarget(c, enemy);			
@@ -1214,7 +1217,7 @@ void CharactersGroups::DumpRelations()
 	}
 	api->Trace("Groups info:");
 	api->Trace("");
-	for(i = 0; i < numGroups; i++)
+	for(long i = 0; i < numGroups; i++)
 	{
 		api->Trace("name: \"%s\"", groups[i]->name.name);
 		api->Trace("    look: %f", groups[i]->look);

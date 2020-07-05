@@ -70,7 +70,8 @@ bool Lights::Init()
 	while(res)
 	{
 		lName[sizeof(lName) - 1] = 0;
-		for(long i = 0; i < numTypes; i++)
+		long i = 0;
+		for(i = 0; i < numTypes; i++)
 		{
 			if(stricmp(lName, types[i].name) == 0)
 			{
@@ -381,9 +382,11 @@ void Lights::DelAllLights()
 //Добавить переносной источник
 long Lights::AddMovingLight(const char* type, const CVECTOR& pos)
 {
-	for(long idx = 0; idx<1000; idx++)
+	long idx = 0;
+	for(idx = 0; idx<1000; idx++)
 	{
-		for(long n=0; n<aMovingLight; n++)
+		long n = 0;
+		for(n=0; n<aMovingLight; n++)
 			if( aMovingLight[n].id == idx ) break;
 		if( n==aMovingLight.Size() ) break;
 	}

@@ -65,7 +65,7 @@ public:
 private:
 	void ReadUserData(const char * sQuestName,long nRecordIndex);
 
-	void AddQuestFromBuffer( const char* pcSrcBuffer );
+	void AddQuestFromBuffer( char* pcSrcBuffer );
 	void AddToQuestList( string& sQuestID, string& sTextID, string& sQuestText, string& sTextText );
 	long FindQuestByID( const char* pcQuestID );
 	long FindTextByID( long nQuest, const char* pcTextID );

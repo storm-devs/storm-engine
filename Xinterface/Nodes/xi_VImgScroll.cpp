@@ -4,7 +4,7 @@
 
 #define MAXIMAGEQUANTITY 100
 
-IDirect3DTexture8 * GetTexFromEvent(VDATA * vdat);
+IDirect3DTexture9 * GetTexFromEvent(VDATA * vdat);
 
 CXI_VIMAGESCROLL::CXI_VIMAGESCROLL()
 {
@@ -511,7 +511,7 @@ void CXI_VIMAGESCROLL::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *na
 			{
 				m_Image[i].bUseSpecTechnique =  NEW bool[m_nSlotsQnt];
 				m_Image[i].img = NEW long[m_nSlotsQnt];
-				m_Image[i].ptex = NEW IDirect3DTexture8*[m_nSlotsQnt];
+				m_Image[i].ptex = NEW IDirect3DTexture9*[m_nSlotsQnt];
 				m_Image[i].saveName = NEW char*[m_nSlotsQnt];
 				m_Image[i].tex = NEW long[m_nSlotsQnt];
 				if( !m_Image[i].bUseSpecTechnique || !m_Image[i].img ||
@@ -1214,7 +1214,7 @@ void CXI_VIMAGESCROLL::RefreshScroll()
 			if(m_nSlotsQnt>0) {
 				m_Image[i].bUseSpecTechnique =  NEW bool[m_nSlotsQnt];
 				m_Image[i].img = NEW long[m_nSlotsQnt];
-				m_Image[i].ptex = NEW IDirect3DTexture8*[m_nSlotsQnt];
+				m_Image[i].ptex = NEW IDirect3DTexture9*[m_nSlotsQnt];
 				m_Image[i].saveName = NEW char*[m_nSlotsQnt];
 				m_Image[i].tex = NEW long[m_nSlotsQnt];
 				if( !m_Image[i].bUseSpecTechnique || !m_Image[i].img ||
@@ -1298,7 +1298,8 @@ int CXI_VIMAGESCROLL::FindClickedImageNum()
 	int i = 0;
 
 	FXYPOINT fp = ptrOwner->GetMousePoint();
-	for(SCROLLENTITY* pscroll=m_pScroll; pscroll!=null; pscroll = pscroll->next)
+	SCROLLENTITY* pscroll = null;
+	for(pscroll=m_pScroll; pscroll!=null; pscroll = pscroll->next)
 	{
 		float flx = .5f*pscroll->fCurScale*m_ImageSize.x;
 		float frx = pscroll->pCenter.x + flx;
@@ -1336,9 +1337,11 @@ int CXI_VIMAGESCROLL::GetBottomQuantity()
 	for(SCROLLENTITY* pscr=m_pScroll; pscr!=null; pscr=pscr->next) q++;
 
 	int i = m_pScroll->imageNum;
-	for( int n=0; n<q; n++ )
+	int n = 0;
+	for( n=0; n<q; n++ )
 	{
-		for(int j=0; j<m_nSlotsQnt; j++)
+		int j = 0;
+		for(j=0; j<m_nSlotsQnt; j++)
 		{
 			if( m_Image[i].img[j]!=-1 || m_Image[i].saveName[j]!=null ) break;
 		}
@@ -1358,9 +1361,11 @@ int CXI_VIMAGESCROLL::GetTopQuantity()
 	for(SCROLLENTITY* pscr=m_pScroll; pscr!=null; pscr=pscr->next) q++;
 
 	int i = m_pScroll->imageNum;
-	for( int n=0; n<q; n++ )
+	int n = 0;
+	for( n=0; n<q; n++ )
 	{
-		for(int j=0; j<m_nSlotsQnt; j++)
+		int j = 0;
+		for(j=0; j<m_nSlotsQnt; j++)
 		{
 			if( m_Image[i].img[j]!=-1 || m_Image[i].saveName[j]!=null ) break;
 		}
@@ -1381,7 +1386,8 @@ float CXI_VIMAGESCROLL::GetShiftDistance(int shiftIdx)
 	bool bNoFindBottom = true;
 	float fbottom = (float)m_pCenter.y;
 	SCROLLENTITY* pprev = m_pScroll;
-	for(SCROLLENTITY* pscr=m_pScroll; pscr!=null; pscr=pscr->next)
+	SCROLLENTITY* pscr;
+	for(pscr=m_pScroll; pscr!=null; pscr=pscr->next)
 	{
 		if(pscr->pCenter.y >= m_pCenter.y)	pprev = pscr;
 		else if(bNoFindBottom)

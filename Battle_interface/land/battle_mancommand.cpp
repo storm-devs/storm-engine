@@ -69,7 +69,6 @@ long BIManCommandList::CommandAdding()
 		retVal += AddToIconList( texNum, pictureNum, selPictureNum, -1,
 			-1, eventName, -1, null, pA->GetAttribute("note") );
 	}
-
 	return retVal;
 }
 
@@ -91,7 +90,6 @@ long BIManCommandList::UserIconsAdding()
 		char * eventName = pA->GetAttribute("event");
 		retVal += AddToIconList( textureNum, pictureNum, selPictureNum, -1, -1, eventName, i+1, pA->GetAttribute("name"), pA->GetAttribute("note") );
 	}
-
 	return retVal;
 }
 
@@ -116,7 +114,6 @@ long BIManCommandList::AbilityAdding()
 		retVal += AddToIconList( textureNum, pictureNum, selPictureNum, -1,
 			-1, eventName, -1, null, pA->GetAttribute("note") );
 	}
-
 	return retVal;
 }
 

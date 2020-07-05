@@ -58,7 +58,7 @@ void NetCoastFoam::Realize(dword Delta_Time)
 
 	float fDeltaTime = float(Delta_Time) * 0.001f;
 
-	D3DVIEWPORT8 vp;
+	D3DVIEWPORT9 vp;
 	Render().GetViewport(&vp);
 
 	CMatrix mWorld = Render().GetWorld();

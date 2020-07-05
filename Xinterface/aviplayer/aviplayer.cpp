@@ -223,7 +223,7 @@ bool CAviPlayer::PlayMedia(char * fileName)
 
 	D3DSURFACE_DESC d3d8surf_desc;
 
-	IDirect3DSurface8 * pd3dsurf = null;
+	IDirect3DSurface9 * pd3dsurf = null;
 	rs->GetRenderTarget(&pd3dsurf);
 	pd3dsurf->GetDesc(&d3d8surf_desc);
 	pd3dsurf->Release();

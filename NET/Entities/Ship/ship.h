@@ -107,7 +107,7 @@ struct can_fire_t
 	long			iNumHulls; 
 	mast_t			* pMasts;
 	hull_t			* pHulls;
-        array<dword>	        aMastFalls;
+	array<dword>	aMastFalls;
 	array<NetShip*>	aShips;
 	bool			bShip2Strand;
 	bool			bMounted;
@@ -175,7 +175,7 @@ public:
 // inherit functions SHIP_BASE
 	bool			bSetLightAndFog;
 	dword			dwSaveAmbient, dwSaveFogColor;
-	D3DLIGHT8		saveLight;
+	D3DLIGHT9		saveLight;
 
 	virtual void	SetLightAndFog(bool bSetLight);
 	virtual void	RestoreLightAndFog();

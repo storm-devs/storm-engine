@@ -1,7 +1,7 @@
 #include "steam_api.h"
 #include "vmodule_api.h"
 
-#define ACHIEVEMENTS_NUM	73
+#define ACHIEVEMENTS_NUM	71
 
 
 enum EAchievements
@@ -80,8 +80,6 @@ enum EAchievements
 //	ACH_72 = 71,			
 //	ACH_73 = 72,
 	ACH_79 = 79,				
-	ACH_80 = 80,
-	ACH_81 = 81,
 };
 
 struct Achievement_t

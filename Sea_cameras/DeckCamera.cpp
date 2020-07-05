@@ -350,7 +350,8 @@ void DECK_CAMERA::SetStartPos()
 			if(root==NULL) break;
 			GEOS::INFO gi;
 			root->geo->GetInfo(gi);
-			for(int j=0; j<gi.nlabels; j++)
+			int j = 0;
+			for(j=0; j<gi.nlabels; j++)
 			{
 				GEOS::LABEL gl;
 				root->geo->GetLabel(j,gl);

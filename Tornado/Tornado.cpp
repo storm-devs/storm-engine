@@ -62,9 +62,9 @@ bool Tornado::Init()
 	if(!rs) _THROW("No service: dx8render");
 
 	//Создаём буфера для столба
-	ib = rs->CreateIndexBuffer(pillar.GetNumTriangles()*3*sizeof(word));
+	ib = rs->CreateIndexBufferManaged(pillar.GetNumTriangles()*3*sizeof(word));
 	if(ib < 0) return false;
-	vb = rs->CreateVertexBuffer(D3DFVF_XYZ | D3DFVF_DIFFUSE, pillar.GetNumVerteces()*sizeof(Pillar::Vertex), D3DUSAGE_WRITEONLY);
+	vb = rs->CreateVertexBufferManaged(D3DFVF_XYZ | D3DFVF_DIFFUSE, pillar.GetNumVerteces()*sizeof(Pillar::Vertex), D3DUSAGE_WRITEONLY);
 	if(vb < 0) return false;
 	word * ibpnt = (word *)rs->LockIndexBuffer(ib);
 	if(!ibpnt) return false;
@@ -127,7 +127,7 @@ void Tornado::Realize(dword delta_time)
 	rs->TextureSet(0, -1);
 	pillar.FillVertexBuffer(vrt);
 	rs->UnLockVertexBuffer(vb);
-	rs->SetVertexShader(D3DFVF_XYZ | D3DFVF_DIFFUSE);
+	rs->SetFVF(D3DFVF_XYZ | D3DFVF_DIFFUSE);
 	rs->DrawIndexedPrimitiveNoVShader(D3DPT_TRIANGLELIST, vb, sizeof(Pillar::Vertex), ib, 0, pillar.GetNumVerteces(), 0, pillar.GetNumTriangles(), "TornadoPillar");
 	//Системы частиц
 	particles.Draw(rs);

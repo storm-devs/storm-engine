@@ -57,7 +57,8 @@ int CXI_FOURIMAGE::CommandExecute(int wActCode)
 		case ACTION_DEACTIVATE:
 			break;
 		case ACTION_MOUSECLICK:
-			for(int i=0; i<4; i++)
+			int i = 0;
+			for(i=0; i<4; i++)
 				if( m_MousePoint.x >= m_imgRect[i].left && m_MousePoint.x <= m_imgRect[i].right &&
 					m_MousePoint.y >= m_imgRect[i].top  && m_MousePoint.y <= m_imgRect[i].bottom )
 					break;
@@ -127,7 +128,7 @@ void CXI_FOURIMAGE::Draw(bool bSelected,dword Delta_Time)
 		}
 
 		// draw two picture
-		for(i=0; i<4; i++)
+		for(int i=0; i<4; i++)
 		{
 			if(m_twoTexID[i]==-1 || m_twoTexID[i]>=m_nTexturesQuantity) continue;
 			if(m_twoImgID[i]==-1) m_rs->TextureSet(0,m_twoBadTexture);
@@ -405,7 +406,7 @@ void CXI_FOURIMAGE::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *name2
 	}
 
 	// create index & vertex buffers
-    vBuf = m_rs->CreateVertexBuffer(XI_ONETEX_FVF,4*4*2*sizeof(XI_ONETEX_VERTEX),D3DUSAGE_WRITEONLY);
+    vBuf = m_rs->CreateVertexBufferManaged(XI_ONETEX_FVF,4*4*2*sizeof(XI_ONETEX_VERTEX),D3DUSAGE_WRITEONLY);
 }
 
 void CXI_FOURIMAGE::ReleaseAll()

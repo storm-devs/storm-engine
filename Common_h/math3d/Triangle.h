@@ -324,7 +324,8 @@ mathinline Triangle::CoIntersectionResult Triangle::IsCoplanarIntersection(const
 mathinline long Triangle::z_sysClipTriangleEdgePlane(Plane plane, Vector src[8], Vector dst[8], long count)
 {
 	float ds = plane*src[0], de;
-	for(long s = 0, c = 0; s < count; s++, ds = de)
+	long c, s;
+	for(s = 0, c = 0; s < count; s++, ds = de)
 	{
 		//Если в области, добавляем вершину
 		if(ds <= 0.0f) dst[c++] = src[s];		

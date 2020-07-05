@@ -12,6 +12,7 @@
 #include "..\common_h\messages.h"
 #include "..\common_h\model.h"
 #include "..\Common_h\geometry.h"
+#include "..\common_h\defines.h"
 
 
 //============================================================================================
@@ -441,7 +442,7 @@ long Sharks::Shark::GenerateTrack(word * inds, Vertex * vrt, word base, SEA_BASE
 	vrt[7].u = 0.0f; vrt[7].v = 1.0f;
 	vrt[8].u = 0.5f; vrt[8].v = 1.0f;
 	vrt[9].u = 1.0f; vrt[9].v = 1.0f;	
-	for(i = 0; i < 10; i++)
+	for(int i = 0; i < 10; i++)
 	{
 		vrt[i].pos = mdl->mtx*CVECTOR(vrt[i].pos);
 		vrt[i].pos.y = sb->WaveXZ(vrt[i].pos.x, vrt[i].pos.z) + 0.001f;
@@ -497,7 +498,7 @@ bool Sharks::Init()
 	//Установим уровни исполнения
 	_CORE_API->LayerAdd(execute, GetID(), eprt);
 	_CORE_API->LayerAdd(realize, GetID(), rprt);
-	for(i = 0; i < numShakes; i++)
+	for(long i = 0; i < numShakes; i++)
 	{
 		_CORE_API->LayerAdd(execute, shark[i].model, emdl);
 		_CORE_API->LayerAdd(realize, shark[i].model, rmdl);		
@@ -551,7 +552,7 @@ void Sharks::Execute(dword delta_time)
 	//Сбросим состояния
 	for(long i = 0; i < num; i++) shark[i].Reset(camPos.x, camPos.z);
 	//Разчитаем силы
-	for(i = 0; i < num - 1; i++)
+	for(long i = 0; i < num - 1; i++)
 		for(long j = i + 1; j < num; j++) shark[i].Repulsion(shark[j]);
 	//Учитываем корабли
 	ENTITY_ID id;
@@ -567,7 +568,7 @@ void Sharks::Execute(dword delta_time)
 		CVECTOR s = ship->GetBoxSize();
 		float rd2 = (s.x*s.x + s.z*s.z)*3.0f;
 		//Говорим акулам о короблях
-		for(i = 0; i < num; i++) shark[i].ShipApply(shipPos.x, shipPos.z, rd2);
+		for(long i = 0; i < num; i++) shark[i].ShipApply(shipPos.x, shipPos.z, rd2);
 	}
 	//Море
 	SEA_BASE * sb = (SEA_BASE *)_CORE_API->GetEntityPointer(&sea);
@@ -582,7 +583,7 @@ void Sharks::Execute(dword delta_time)
 		_CORE_API->FindClass(&island, "island", 0);
 	}
 	//Расчитываем новые позиции
-	for(i = 0; i < num; i++) shark[i].Coordination(camPos.x, camPos.z, dltTime, sb, ib);
+	for(long i = 0; i < num; i++) shark[i].Coordination(camPos.x, camPos.z, dltTime, sb, ib);
 	//Обрабатываем перископ
 	if(!ib)
 	{
@@ -664,9 +665,13 @@ void Sharks::Realize(dword delta_time)
 	if(num)
 	{
 		rs->TextureSet(0, trackTx);
+		rs->SetRenderState(D3DRS_DEPTHBIAS, F2DW(-0.001f));
+		rs->SetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, F2DW(0.0f));
 		rs->SetTransform(D3DTS_WORLD, CMatrix());
-		rs->SetVertexShader(D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1);
+		rs->SetFVF(D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1);
 		rs->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, num, num, indeces, D3DFMT_INDEX16, vrt, sizeof(Vertex), "SharkTrack");
+		rs->SetRenderState( D3DRS_SLOPESCALEDEPTHBIAS, F2DW(0.0f) );
+		rs->SetRenderState( D3DRS_DEPTHBIAS, F2DW(0.0f) );
 	}
 
 	/*

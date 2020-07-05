@@ -118,7 +118,7 @@ class SEAFOAM_PS : VPARTICLE_SYSTEM
 	long ParticlesNum;
 	PARTICLE * Particle;
 
-	IDirect3DVertexBuffer8 * VBuffer;
+	IDirect3DVertexBuffer9 * VBuffer;
 
 	CVECTOR Camera_EmitterPos;
 	CVECTOR Camera_EmitterPosA;

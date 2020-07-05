@@ -443,7 +443,7 @@ void BIShipIcon::UpdateBuffers( long nShipQ )
 	{
 		m_nMaxSquareQ = nMaxSquareQ;
 		INDEX_BUFFER_RELEASE( m_pRS, m_nIBufID );
-		m_nIBufID = m_pRS->CreateIndexBuffer( m_nMaxSquareQ * 6 * sizeof(word) );
+		m_nIBufID = m_pRS->CreateIndexBufferManaged( m_nMaxSquareQ * 6 * sizeof(word) );
 		FillIndexBuffer();
 	}
 
@@ -455,7 +455,7 @@ void BIShipIcon::UpdateBuffers( long nShipQ )
 		m_nShipClassSquareQ = nShipClassSquareQ;
 		m_nShipSquareQ = nShipSquareQ;
 		VERTEX_BUFFER_RELEASE( m_pRS, m_nVBufID );
-		m_nVBufID = m_pRS->CreateVertexBuffer( BI_COLOR_VERTEX_FORMAT,
+		m_nVBufID = m_pRS->CreateVertexBufferManaged( BI_COLOR_VERTEX_FORMAT,
 			(m_nBackSquareQ + m_nShipStateSquareQ + m_nShipClassSquareQ + m_nShipSquareQ) * 4 * sizeof(BI_COLOR_VERTEX),
 			D3DUSAGE_WRITEONLY );
 	}

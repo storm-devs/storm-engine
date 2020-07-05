@@ -43,8 +43,8 @@ void LocalClient::Flush()
 {
 	Assert(pSocket);
 	if (aPackets.IsEmpty()) return;
-
-	for (long i=0; i<aPackets; i++)
+	long i = 0;
+	for (i=0; i<aPackets; i++)
 	{
 		if (!aPackets[i]->bGarantedDelivery)
 		{

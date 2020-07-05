@@ -22,6 +22,9 @@ public:
 	void Realize(dword delta_time);
     dword _cdecl ProcessMessage(MESSAGE & message);
 	dword AttributeChanged(ATTRIBUTES * pAttr);
+	
+	void LostRender();
+	void RestoreRender();
 
 protected:
 	BATTLE_NAVIGATOR	BattleNavigator; // навигационные иконки

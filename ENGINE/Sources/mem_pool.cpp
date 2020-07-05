@@ -3,11 +3,9 @@
 static const char ER_NOMEM[] = "No memory";
 
 #define DWORDBITS		32
-//#define POOLHEADERSIZE	0//1
 
 BITLEVEL::~BITLEVEL()
 {
-	//if(pBits) delete pBits;
 	if(pBits) free(pBits);
 }
 
@@ -15,7 +13,6 @@ BITLEVEL::BITLEVEL(DWORD _nManagedBits)
 {
 	nManagedBits = _nManagedBits;
 	nDwordsNum = nManagedBits/DWORDBITS + 1;
-	//pBits = (DWORD *) NEW DWORD[nDwordsNum];
 	pBits = (DWORD *) malloc(nDwordsNum * sizeof(DWORD));
 	memset(pBits,0,nDwordsNum*sizeof(DWORD));
 	nTestCounter = 0;
@@ -29,9 +26,6 @@ bool BITLEVEL::SetBit(DWORD nIndex, bool & bDwordFull)
 	DWORD nMask;
 	
 	if(nIndex >= nManagedBits) return false;
-
-
-//	return true;
 
 	nOffset = nIndex/DWORDBITS;
 	nDwordBitIndex = nIndex - nOffset*DWORDBITS;
@@ -52,13 +46,10 @@ void BITLEVEL::ClearBit(DWORD nIndex)
 	DWORD nMask;
 	if(nIndex >= nManagedBits) return;
 
-//	return;
-
 	nOffset = nIndex/DWORDBITS;
 	nDwordBitIndex = nIndex - nOffset*DWORDBITS;
 	nMask = 1;
 	if(nDwordBitIndex) nMask = (nMask<<nDwordBitIndex);
-
 	
 	pBits[nOffset] = pBits[nOffset] & (~nMask);
 }
@@ -70,14 +61,6 @@ bool BITLEVEL::FindFree(DWORD & nIndex)
 	DWORD nV;
 	DWORD nCounter;
 	DWORD nTest;
-
-/*	if(nTestCounter < nManagedBits)
-	{
-		nIndex = nTestCounter;
-		nTestCounter++;
-		return true;
-	} else return false;
-//*/
 	nCounter = 0;
 
 	for(n=0;n<nDwordsNum;n++)
@@ -95,7 +78,6 @@ bool BITLEVEL::FindFree(DWORD & nIndex)
 		{
 			if(nCounter >= nManagedBits) return false;
 			nTest = nV & nMask;
-			//if((nV & nMask) == 0)
 			if(nTest == 0)
 			{
 				nIndex = n * DWORDBITS + i;
@@ -119,7 +101,6 @@ bool BITLEVEL::FindFree(DWORD & nIndex)
 MEMPOOL::~MEMPOOL()
 {
 	DWORD n;
-	//if(pPoolData) delete pPoolData;
 	if(pPoolData) free(pPoolData);
 
 	if(pSTLevel)
@@ -128,7 +109,6 @@ MEMPOOL::~MEMPOOL()
 		{
 			delete pSTLevel[n];
 		}
-		//delete pSTLevel;
 		free(pSTLevel);
 	}
 }
@@ -137,12 +117,10 @@ MEMPOOL::MEMPOOL(DWORD _nBlockSize, DWORD _nBlocksNum)
 {
 	nBlockSize = _nBlockSize;
 	nBlocksNum = _nBlocksNum;
-	//pPoolData = (char *)NEW char[(nBlockSize + POOLHEADERSIZE)* nBlocksNum];
 	pPoolData = (char *)malloc((nBlockSize + POOLHEADERSIZE)* nBlocksNum);
 	if(pPoolData == 0) throw ER_NOMEM;
 
 	nSTLevelsNum = 1;
-	//pSTLevel = (BITLEVEL * *)NEW char[sizeof(BITLEVEL *) * nSTLevelsNum];
 	pSTLevel = (BITLEVEL * *)malloc(sizeof(BITLEVEL *) * nSTLevelsNum);
 	pSTLevel[0] = new BITLEVEL(nBlocksNum);
 	nUsedBlocks = 0;
@@ -159,7 +137,7 @@ void * MEMPOOL::GetMemory()
 		if(nBlockSize == 10)
 		{
 			nBlockSize = 10;
-		}//*/
+		}
 		nMissed++;
 		return 0;
 	}

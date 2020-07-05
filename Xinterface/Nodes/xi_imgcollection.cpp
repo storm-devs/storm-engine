@@ -73,8 +73,8 @@ void CXI_IMGCOLLECTION::AddImage( const char* pcPicName, dword dwColor, XYRECT p
 	nVert = m_aEditInfo.Size() * 4;
 	nIndx = m_aEditInfo.Size() * 6;
 	// Create vertex and index buffers
-	vBuf = m_rs->CreateVertexBuffer( XI_ONETEX_FVF, nVert*sizeof(XI_ONETEX_VERTEX), D3DUSAGE_WRITEONLY );
-	iBuf = m_rs->CreateIndexBuffer( nIndx*2 );
+	vBuf = m_rs->CreateVertexBufferManaged( XI_ONETEX_FVF, nVert*sizeof(XI_ONETEX_VERTEX), D3DUSAGE_WRITEONLY );
+	iBuf = m_rs->CreateIndexBufferManaged( nIndx*2 );
 	nIndx /= 3;
 
 	UpdateBuffers();
@@ -114,8 +114,8 @@ void CXI_IMGCOLLECTION::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *n
 	// Create vertex and index buffers
 	if (nVert && nIndx)
 	{
-		vBuf = m_rs->CreateVertexBuffer(XI_ONETEX_FVF,nVert*sizeof(XI_ONETEX_VERTEX),D3DUSAGE_WRITEONLY);
-		iBuf = m_rs->CreateIndexBuffer(nIndx*2);
+		vBuf = m_rs->CreateVertexBufferManaged(XI_ONETEX_FVF,nVert*sizeof(XI_ONETEX_VERTEX),D3DUSAGE_WRITEONLY);
+		iBuf = m_rs->CreateIndexBufferManaged(nIndx*2);
 		nIndx/=3;
 
 		// Lock vertex and index buffers and get pointers to this

@@ -278,8 +278,8 @@ void CXI_TEXTBUTTON::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *name
 	m_nIndx = 3*2*3; // 3 rectangle * 2 triangle to rectangle * 3 vertex to triangle
 	m_nVert = 4*3 * 2 * 2; // 4 vertex * 3 rectangle * (2=face&shadow) * (2=press&notpress)
 	if(m_idShadowTex>=0)	m_nVert += 8;
-	m_idIBuf = m_rs->CreateIndexBuffer(m_nIndx*2);
-	m_idVBuf = m_rs->CreateVertexBuffer(XI_ONETEX_FVF,m_nVert*sizeof(XI_ONETEX_VERTEX),D3DUSAGE_WRITEONLY);
+	m_idIBuf = m_rs->CreateIndexBufferManaged(m_nIndx*2);
+	m_idVBuf = m_rs->CreateVertexBufferManaged(XI_ONETEX_FVF,m_nVert*sizeof(XI_ONETEX_VERTEX),D3DUSAGE_WRITEONLY);
 
 	// Lock buffers for write
 	XI_ONETEX_VERTEX *pVert = (XI_ONETEX_VERTEX*) m_rs->LockVertexBuffer(m_idVBuf);

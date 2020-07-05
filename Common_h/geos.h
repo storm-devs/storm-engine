@@ -256,6 +256,7 @@ public:
 	virtual ~GEOM_SERVICE(){};
 	virtual GEOS::ID OpenFile(const char *fname) = 0;
 	virtual void ReadFile(GEOS::ID file, void *data, long bytes) = 0;
+	virtual long GetFilePointer(GEOS::ID file) = 0;
 	virtual int FileSize(GEOS::ID file) = 0;
 	virtual void CloseFile(GEOS::ID file) = 0;
 	virtual void *malloc(long bytes) = 0;

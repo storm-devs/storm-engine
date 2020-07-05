@@ -146,7 +146,8 @@ void Location::Realize(dword delta_time)
 	while (fCausticFrame >= 32.0f) fCausticFrame -= 32.0f;
 
 	//Отрисовка локаторов
-	for(long i = 0; i < numLocators; i++)
+	long i = 0;
+	for(i = 0; i < numLocators; i++)
 		if(locators[i]->isVisible) DrawLocators(locators[i]);
 	if(IsDebugView())
 	{
@@ -454,7 +455,8 @@ long Location::LoadStaticModel(const char * modelName, const char * tech, long l
 		g->GetLabel(i, label);
 		if(!label.group_name || !label.group_name[0]) continue;
 		long hash = LocatorArray::CalcHashString(label.group_name);
-		for(long j = 0; j < numLocators; j++)
+		long j = 0;
+		for(j = 0; j < numLocators; j++)
 		{
 			if(locators[j]->CompareGroup(label.group_name, hash)) break;
 		}
@@ -593,6 +595,18 @@ bool Location::MessageEx(const char * name, MESSAGE & message)
 		}
 		return true;
 	}else
+	if(stricmp(name, "AddCrabs") == 0)
+	{
+		_CORE_API->CreateEntity(&crabs, "LocCrabs");
+
+		if(!_CORE_API->Send_Message(crabs, "l", message.Long()))
+		{
+			_CORE_API->DeleteEntity(crabs);
+			return false;
+		}
+		
+		return true;	
+	}else		
 	if(stricmp(name, "AddBlood") == 0)
 	{
 		if( !api->ValidateEntity(&blood) ) {
@@ -780,7 +794,7 @@ void Location::DrawLocators(LocatorArray * la)
 	rs->GetTransform(D3DTS_PROJECTION, prj);
 	mtx.EqMultiply(view, prj);
 	//Получим текущие размеры vp
-	static D3DVIEWPORT8 vp;
+	static D3DVIEWPORT9 vp;
 	rs->GetViewport(&vp);
 	float w = vp.Width*0.5f;
 	float h = vp.Height*0.5f;
@@ -849,7 +863,8 @@ void Location::CreateSphere()
 	CVECTOR light = !CVECTOR(0.0f, 0.0f, 1.0f);
 	float kColor;
 	//Заполняем вершины
-	for(long i = 0, t = 0; i < a2; i++)
+	long i = 0, t = 0;
+	for(i = 0, t = 0; i < a2; i++)
 	{
 		float r1 = sinf(myPI*i/float(a2));
 		float y1 = cosf(myPI*i/float(a2));
@@ -932,7 +947,7 @@ void _cdecl Location::Print(const CVECTOR & pos3D, float rad, long line, float a
 	buf[sizeof(buf) - 1] = 0;
 	//Ищем позицию точки на экране
 	static CMatrix mtx, view, prj;
-	static D3DVIEWPORT8 vp;
+	static D3DVIEWPORT9 vp;
 	MTX_PRJ_VECTOR vrt;
 	rs->GetTransform(D3DTS_VIEW, view);
 	rs->GetTransform(D3DTS_PROJECTION, prj);
@@ -1053,7 +1068,7 @@ void Location::DrawEnemyBars()
 	const float alphaThresholdRelativeDist = 0.8f;
 	//Текущии параметры сцены
 	static CMatrix mtx, view, prj;
-	static D3DVIEWPORT8 vp;
+	static D3DVIEWPORT9 vp;
 	struct SortElement
 	{
 		MTX_PRJ_VECTOR vrt;

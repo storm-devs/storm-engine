@@ -51,7 +51,7 @@ private:
 			ClearCharge();
 			fOurBortFireHeight = 0.0f;
 		};
-		operator == (const char *pStr)
+		string operator == (const char *pStr)
 		{
 			Assert(pStr && pStr[0]);
 			return (stricmp(sName.GetBuffer(),pStr)==0);

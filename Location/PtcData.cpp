@@ -186,7 +186,8 @@ long PtcData::FindNode(const CVECTOR & pos, float & y)
 	{
 		PtcTriangle & trg = triangle[indeces[m.start + i]];
 		//Проверяем поподание в треугольник
-		for(long j = 0; j < 3; j++)
+		long j = 0;
+		for(j = 0; j < 3; j++)
 		{
 			//Вершины ребра
 			CVECTOR & vs = *(CVECTOR *)&vertex[trg.i[j]];
@@ -250,11 +251,13 @@ long PtcData::Move(long curNode, const CVECTOR & to, CVECTOR & pos, long depth)
 	float d = (nd | pos);
 	//Трейс пути
 	long fromNode = -2;	//Откуда пришли
-	for(long loopCounter = 0; loopCounter < 256; loopCounter++)
+	long loopCounter = 0;
+	for(loopCounter = 0; loopCounter < 256; loopCounter++)
 	{
 		//Проверить нахождения точки прибытия на текущем треугольнике
 		word * trg = triangle[curNode].i;
-		for(long j = 0; j < 3; j++)
+		long j = 0;
+		for(j = 0; j < 3; j++)
 		{
 			//Вершины ребра
 			CVECTOR & vs = *(CVECTOR *)&vertex[trg[j]];

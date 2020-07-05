@@ -557,7 +557,8 @@ void CSetupDlg::OnDefaultsettings()
 	// search resolution and set them
 
 	device_t * pD = &Devices[currentdevice];
-	for (DWORD i=0; i<pD->numresolutions; i++) 
+	DWORD i = 0;
+	for (i=0; i<pD->numresolutions; i++) 
 	{
 		res_t * pR = &pD->Resolutions[i];
 		if (pR->width == 800 && pR->height == 600 && pR->bpp == 16)

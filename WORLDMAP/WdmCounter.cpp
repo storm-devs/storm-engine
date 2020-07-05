@@ -54,7 +54,7 @@ WdmCounter::WdmCounter()
 
 	for(long i = 0; i < WMD_NUM_SKYS; i++) skytx[i] = -1;
 	lastSkys[0] = lastSkys[1] = -1;
-	for(i = 0; i < sizeof(skyseq)/sizeof(long); i++) skyseq[i] = -1;
+	for(long i = 0; i < sizeof(skyseq)/sizeof(long); i++) skyseq[i] = -1;
 	skyCounter = 0;
 	dayCounter = -1;
 }
@@ -100,7 +100,7 @@ bool WdmCounter::Init()
 	for(long i = 0; i < WMD_NUM_SKYS; i++) skytx[i] = wdmObjects->rs->TextureCreate(skytex[i]);
 	lastSkys[0] = sky->GetTexture(0);
 	lastSkys[1] = sky->GetTexture(1);
-	for(i = 0; i < sizeof(skyseq)/sizeof(long); i += 2)
+	for(long i = 0; i < sizeof(skyseq)/sizeof(long); i += 2)
 	{
 		skyseq[i + 0] = skytx[(rand() % (WMD_NUM_SKYS/2))*2 + 0];
 		skyseq[i + 1] = skytx[(rand() % (WMD_NUM_SKYS/2))*2 + 1];

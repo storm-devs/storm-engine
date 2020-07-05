@@ -477,7 +477,7 @@ void SHARKS_PS::Realize(dword DeltaTime)
 
 	RenderService->TextureSet(0, TextureID[0]);
 
-	RenderService->SetVertexShader(PARTICLE_FVF);
+	RenderService->SetFVF(PARTICLE_FVF);
 	RenderService->SetStreamSource(0, VBuffer, sizeof(PARTICLE_VERTEX));
 	RenderService->SetIndices(0, 0);
 	

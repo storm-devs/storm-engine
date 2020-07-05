@@ -74,7 +74,7 @@ private:
 	void GetSkyDirStrings(string & sSkyDir, string & sSkyDirNext);
 	void UpdateTimeFactor();
 
-	DWORD GetPixelColor(IDirect3DTexture8* pTex, float fu, float fv);
+	DWORD GetPixelColor(IDirect3DTexture9* pTex, float fu, float fv);
 };
 
 #endif

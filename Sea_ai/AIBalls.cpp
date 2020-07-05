@@ -107,8 +107,8 @@ void AIBalls::FireBallFromCamera()
 void AIBalls::AddBall(ATTRIBUTES * pABall)
 {
 	char *pBallName = pABall->GetAttribute("Type"); Assert(pBallName);
-	
-	for (dword i=0;i<aBallTypes.Size();i++) if (stricmp(aBallTypes[i].sName,pBallName)==0) break;
+	dword i = 0;
+	for (i=0;i<aBallTypes.Size();i++) if (stricmp(aBallTypes[i].sName,pBallName)==0) break;
 	if (i == aBallTypes.Size()) return;
 
 	BALL_PARAMS * pBall = &aBallTypes[i].Balls[aBallTypes[i].Balls.Add()];

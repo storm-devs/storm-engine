@@ -121,7 +121,7 @@ void RAIN::GenerateRain()
 		pRainBlocks[i].fWindSpeedJitter = FRAND(jitter) - jitter / 2.0f;
 	}
 
-	iVertexBuffer = Render().CreateVertexBuffer(D3DRAINVERTEX_FORMAT,dwNumDrops*2*sizeof(RAINVERTEX),D3DUSAGE_WRITEONLY);
+	iVertexBuffer = Render().CreateVertexBufferManaged(D3DRAINVERTEX_FORMAT,dwNumDrops*2*sizeof(RAINVERTEX),D3DUSAGE_WRITEONLY);
 	if (iVertexBuffer<0) return;
 
 	RAINVERTEX * pVertBuf = (RAINVERTEX*)Render().LockVertexBuffer(iVertexBuffer);
@@ -138,8 +138,8 @@ void RAIN::GenerateRain()
 	}
 	Render().UnLockVertexBuffer(iVertexBuffer);
 
-	iIBSeaDrops = Render().CreateIndexBuffer(NUM_SEA_DROPS * 2 * 3 * sizeof(word), D3DUSAGE_WRITEONLY); 
-	iVBSeaDrops = Render().CreateVertexBuffer(D3DSEADROPVERTEX_FORMAT, NUM_SEA_DROPS * 4 * sizeof(SEADROPVERTEX), D3DUSAGE_WRITEONLY); 
+	iIBSeaDrops = Render().CreateIndexBufferManaged(NUM_SEA_DROPS * 2 * 3 * sizeof(word), D3DUSAGE_WRITEONLY); 
+	iVBSeaDrops = Render().CreateVertexBufferManaged(D3DSEADROPVERTEX_FORMAT, NUM_SEA_DROPS * 4 * sizeof(SEADROPVERTEX), D3DUSAGE_WRITEONLY); 
 
 	word * pI = (word *)Render().LockIndexBuffer(iIBSeaDrops);
 	if (pI) 
@@ -345,6 +345,9 @@ void RAIN::RealizeDrops(dword Delta_Time)
 	//Render().SetTexture(0, null);
 	Render().DrawRects(aRects.GetBuffer(), aRects.Size(), "rain_drops", 8, 1);
 
+	Render().SetRenderState(D3DRS_DEPTHBIAS, F2DW(-0.001f));
+	Render().SetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, F2DW(0.0f));
+	
 	// рисуем круги на воде
 	CMatrix IMatrix;
 	IMatrix.SetIdentity();
@@ -412,6 +415,9 @@ void RAIN::RealizeDrops(dword Delta_Time)
 		Render().UnLockVertexBuffer(iVBSeaDrops);
 		Render().DrawBuffer(iVBSeaDrops, sizeof(SEADROPVERTEX), iIBSeaDrops, 0, n * 4, 0, n * 2, "sea_rain_drops");
 	}
+
+	Render().SetRenderState( D3DRS_SLOPESCALEDEPTHBIAS, F2DW(0.0f) );
+    Render().SetRenderState( D3DRS_DEPTHBIAS, F2DW(0.0f) );
 
 	delete pVW;
 }

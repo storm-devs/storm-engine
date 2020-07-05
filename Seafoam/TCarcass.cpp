@@ -22,8 +22,8 @@ TCarcass::TCarcass(int _levelsCount, int _measurePointsCount, 	VDX8RENDER *_rend
 
 
 	uSpeed = 15e-5f;
-	iBuffer = renderer->CreateIndexBuffer(3*2*(MEASURE_POINTS - 1)*(TRACE_STEPS_Z - 1) * sizeof(WORD));
-	vBuffer = renderer->CreateVertexBuffer(CARCASS_VERTEX_FORMAT, MEASURE_POINTS * (TRACE_STEPS_Z+1) * sizeof(tCarcassVertex), D3DUSAGE_WRITEONLY);
+	iBuffer = renderer->CreateIndexBufferManaged(3*2*(MEASURE_POINTS - 1)*(TRACE_STEPS_Z - 1) * sizeof(WORD));
+	vBuffer = renderer->CreateVertexBufferManaged(CARCASS_VERTEX_FORMAT, MEASURE_POINTS * (TRACE_STEPS_Z+1) * sizeof(tCarcassVertex), D3DUSAGE_WRITEONLY);
 }
 
 //--------------------------------------------------------------------

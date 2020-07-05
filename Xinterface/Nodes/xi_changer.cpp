@@ -11,7 +11,7 @@ CXI_CHANGER::CXI_CHANGER()
     m_yOffset = 0.f;
 
 	m_idBackTex = -1;
-    IDirect3DTexture8 *m_pTex = NULL;
+    IDirect3DTexture9 *m_pTex = NULL;
 
 	m_bClickable = true;
 	m_nNodeType = NODETYPE_CHANGER;

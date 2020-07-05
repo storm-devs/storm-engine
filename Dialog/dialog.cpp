@@ -72,7 +72,7 @@ void __declspec(noinline) __cdecl DIALOG::DlgTextDescribe::ChangeText(const char
 	nSelectLine = -1;
 }
 
-void __declspec(noinline) __cdecl DIALOG::DlgTextDescribe::Init(VDX8RENDER* pRS, D3DVIEWPORT8& vp, INIFILE* pIni)
+void __declspec(noinline) __cdecl DIALOG::DlgTextDescribe::Init(VDX8RENDER* pRS, D3DVIEWPORT9& vp, INIFILE* pIni)
 {
 	Assert(pRS);
 	rs = pRS;
@@ -88,7 +88,7 @@ void __declspec(noinline) __cdecl DIALOG::DlgTextDescribe::Init(VDX8RENDER* pRS,
 	nFontID = rs->LoadFont(FName);
 
 	dwColor = ARGB(255,210,227,227);
-	dwColor = pIni ? pIni->GetLong("DIALOG","mainFontColor",dwColor) : dwColor;
+	//dwColor = pIni ? pIni->GetLong("DIALOG","mainFontColor",dwColor) : dwColor;
 	fScale = DIALOG::GetScrHeight( pIni ? pIni->GetFloat("DIALOG","mainFontScale",1.f) : 1.f );
 	nLineInterval = (long)(rs->CharHeight(nFontID) * fScale);
 
@@ -100,7 +100,8 @@ void __declspec(noinline) __cdecl DIALOG::DlgTextDescribe::Init(VDX8RENDER* pRS,
 
 long DIALOG::DlgTextDescribe::GetShowHeight()
 {
-	for(long n=0; n<anPageEndIndex; n++)
+	long n = 0;
+	for(n=0; n<anPageEndIndex; n++)
 		if( nStartIndex<anPageEndIndex[n] )
 			break;
 	if( n < anPageEndIndex ) n = anPageEndIndex[n] - nStartIndex;
@@ -130,7 +131,8 @@ void DIALOG::DlgTextDescribe::Show(long nY)
 
 bool DIALOG::DlgTextDescribe::IsLastPage()
 {
-	for( long n=0; n<anPageEndIndex; n++ )
+	long n = 0;
+	for( n=0; n<anPageEndIndex; n++ )
 		if( anPageEndIndex[n]>nStartIndex ) break;
 	if( n>=anPageEndIndex || anPageEndIndex[n]>=asText ) return true;
 	return false;
@@ -138,7 +140,8 @@ bool DIALOG::DlgTextDescribe::IsLastPage()
 
 void DIALOG::DlgTextDescribe::PrevPage()
 {
-	for( long n=anPageEndIndex.Size()-1; n>=0; n-- )
+	long n = 0;
+	for( n=anPageEndIndex.Size()-1; n>=0; n-- )
 		if( anPageEndIndex[n]<nStartIndex ) break;
 	if( n>=0 ) nStartIndex = anPageEndIndex[n];
 	else nStartIndex = 0;
@@ -146,7 +149,8 @@ void DIALOG::DlgTextDescribe::PrevPage()
 
 void DIALOG::DlgTextDescribe::NextPage()
 {
-	for( long n=0; n<anPageEndIndex; n++ )
+	long n = 0;
+	for( n=0; n<anPageEndIndex; n++ )
 		if( anPageEndIndex[n]>nStartIndex ) break;
 	if( n<anPageEndIndex && anPageEndIndex[n]<asText )
 		nStartIndex = anPageEndIndex[n];
@@ -182,7 +186,7 @@ void __declspec(noinline) __cdecl DIALOG::DlgLinkDescribe::ChangeText(ATTRIBUTES
 	fCursorCurrentTime = 0.f;
 }
 
-void __declspec(noinline) __cdecl DIALOG::DlgLinkDescribe::Init(VDX8RENDER* pRS, D3DVIEWPORT8& vp, INIFILE* pIni)
+void __declspec(noinline) __cdecl DIALOG::DlgLinkDescribe::Init(VDX8RENDER* pRS, D3DVIEWPORT9& vp, INIFILE* pIni)
 {
 	Assert(pRS);
 	rs = pRS;
@@ -199,11 +203,11 @@ void __declspec(noinline) __cdecl DIALOG::DlgLinkDescribe::Init(VDX8RENDER* pRS,
 
 	dwColor = 0xFF808080;
 	dwSelColor = 0xFFFFFFFF;
-	dwColor = pIni ? pIni->GetLong("DIALOG","subFontColor",dwColor) : dwColor;
-	dwSelColor = pIni ? pIni->GetLong("DIALOG","subFontColorSelect",dwSelColor) : dwSelColor;
+//	dwColor = pIni ? pIni->GetLong("DIALOG","subFontColor",dwColor) : dwColor;
+//	dwSelColor = pIni ? pIni->GetLong("DIALOG","subFontColorSelect",dwSelColor) : dwSelColor;
 	fScale = DIALOG::GetScrHeight( pIni ? pIni->GetFloat("DIALOG","subFontScale",1.f) : 1.f );
 	nLineInterval = (long)(rs->CharHeight(nFontID) * fScale * .9f);
-
+	
 	nStartIndex = 0;
 	nShowQuantity = 5;
 	if( pIni ) nShowQuantity = pIni->GetLong("DIALOG","maxlinkslines",nShowQuantity);
@@ -237,7 +241,7 @@ void DIALOG::DlgLinkDescribe::Show(long nY)
 	{
 		rs->ExtPrint( nFontID, (n>=nBeg && n<nEnd)?dwSelColor:dwColor, 0, ALIGN_LEFT,true,fScale,
 			0,0, offset.x,y, "%s", asText[n].GetBuffer() );
-
+			
 		if(nEditLine!=-1 && (n>=nBeg && n<nEnd) && nSelectLine==nEditLine)
 		{
 			if(pDlg) pDlg->bEditMode = true;
@@ -376,9 +380,9 @@ void __declspec(noinline) __cdecl DIALOG::CreateBack()
 	m_nVQntBack = 4 * nSquareQuantity;  // 4 вертекса в одном прямоуголькнике
 
 	if( m_idVBufBack == -1 )
-		m_idVBufBack = RenderService->CreateVertexBuffer( XI_TEX_FVF, m_nVQntBack * sizeof(XI_TEX_VERTEX), D3DUSAGE_WRITEONLY );
+		m_idVBufBack = RenderService->CreateVertexBufferManaged( XI_TEX_FVF, m_nVQntBack * sizeof(XI_TEX_VERTEX), D3DUSAGE_WRITEONLY );
 	if( m_idIBufBack == -1 )
-		m_idIBufBack = RenderService->CreateIndexBuffer( m_nIQntBack * sizeof(WORD) );
+		m_idIBufBack = RenderService->CreateIndexBufferManaged( m_nIQntBack * sizeof(WORD) );
 
 	WORD * pI = (WORD*)RenderService->LockIndexBuffer( m_idIBufBack );
 	if( pI )
@@ -494,9 +498,9 @@ void DIALOG::CreateButtons()
 	m_nVQntButton = 4 * 2;  // 4 вертекса на один прямоугольник
 
 	if( m_idVBufButton == -1 )
-		m_idVBufButton = RenderService->CreateVertexBuffer( XI_TEX_FVF, m_nVQntButton * sizeof(XI_TEX_VERTEX), D3DUSAGE_WRITEONLY );
+		m_idVBufButton = RenderService->CreateVertexBufferManaged( XI_TEX_FVF, m_nVQntButton * sizeof(XI_TEX_VERTEX), D3DUSAGE_WRITEONLY );
 	if( m_idIBufButton == -1 )
-		m_idIBufButton = RenderService->CreateIndexBuffer( m_nIQntButton * sizeof(WORD) );
+		m_idIBufButton = RenderService->CreateIndexBufferManaged( m_nIQntButton * sizeof(WORD) );
 
 	WORD * pI = (WORD*)RenderService->LockIndexBuffer( m_idIBufButton );
 	if( pI )
@@ -600,7 +604,7 @@ void DIALOG::LoadFromIni()
 	if( fpScrSize.y <= 0 ) fpScrSize.y = 600.f;
 	m_nScrBaseWidth = (long)fpScrSize.x;
 	m_nScrBaseHeight = (long)fpScrSize.y;
-	D3DVIEWPORT8 vp;
+	D3DVIEWPORT9 vp;
 	RenderService->GetViewport( &vp );
 	m_frScreenData.right = vp.Width / (fpScrSize.x+fpScrOffset.x);
 	m_frScreenData.bottom = vp.Height / (fpScrSize.y+fpScrOffset.y);
@@ -659,7 +663,8 @@ void DIALOG::LoadFromIni()
 	char FName[MAX_PATH];
 	pIni->ReadString("DIALOG","charnamefont",FName,MAX_PATH,"DIALOG2");
 	m_nCharNameTextFont = RenderService->LoadFont(FName);
-	m_dwCharNameTextColor = pIni->GetLong( "DIALOG","charnamecolor",0xFFFFFFFF);
+	//m_dwCharNameTextColor = pIni->GetLong( "DIALOG","charnamecolor",0xFFFFFFFF);
+	m_dwCharNameTextColor = 0xFFFFFFFF;
 	m_fCharNameTextScale = pIni->GetFloat( "DIALOG","charnamescale",1.f);
 	GetPointFromIni( pIni, "DIALOG", "charnameoffset", m_fpCharNameTextOffset );
 	m_fpCharNameTextOffset.x = GetScrWidth( m_fpCharNameTextOffset.x );

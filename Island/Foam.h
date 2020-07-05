@@ -96,7 +96,7 @@ private:
 
 	dword			dwNumPenasExecuted;
 
-	void ExtractRay (const D3DVIEWPORT8 & viewport, float fCursorX, float fCursorY, CVECTOR & raystart, CVECTOR & rayend);
+	void ExtractRay (const D3DVIEWPORT9 & viewport, float fCursorX, float fCursorY, CVECTOR & raystart, CVECTOR & rayend);
 
 	bool IsClipped(Foam * pF);
 

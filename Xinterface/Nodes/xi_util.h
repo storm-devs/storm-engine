@@ -76,12 +76,12 @@ public:
 	static const char* StringGetTokenID( char*& pcString, char* pcBuffer, long nBufferSize );
 	static const char* StringGetTokenString( char*& pcString, char* pcBuffer, long nBufferSize );
 	static long StringGetTokenCode( const char* pcTokenID );
-	static DWORD StringGetColor( const char* pcARGBString );
+	static DWORD StringGetColor( char* pcARGBString );
 	static void StringDoublicate( const char* pcSrc, char*& pcDst );
-	static void StringTwoLong( const char* pcString, long & nLong1, long & nLong2 );
-	static long StringGetLong( const char*& pcString );
-	static float StringGetFloat( const char*& pcString );
-	static void StringFourFloat( const char* pcString, float& f1, float& f2, float& f3, float& f4 );
+	static void StringTwoLong( char* pcString, long & nLong1, long & nLong2 );
+	static long StringGetLong( char*& pcString );
+	static float StringGetFloat( char*& pcString );
+	static void StringFourFloat( char* pcString, float& f1, float& f2, float& f3, float& f4 );
 	static void StringFillStringArray( const char* pcString, array<string> & asStringsArray );
 	static long SplitStringByWidth( const char* pcText, long nFontID, float fFontScale, long nWidth, array<string>& asOutStr );
 	static InterfaceStringCurTokenType GetCurrentTokenIntoString( const char* pcStr ) {if(!pcStr) return StrTokenType_unknown; if(!pcStr[0]) return StrTokenType_End; if(pcStr[0]==0x20) return StrTokenType_Space; if(pcStr[0]=='\\' && (pcStr[1]=='n' || pcStr[1]=='N')) return StrTokenType_NextLine; return StrTokenType_common;}

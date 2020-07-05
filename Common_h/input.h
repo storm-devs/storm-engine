@@ -8,11 +8,11 @@
 #endif
 #include "..\..\common_h\d_types.h"
 
-class INPUT 
+class CORE_INPUT 
 {
 public:
-	 INPUT(){};
-	virtual ~INPUT(){};
+	 CORE_INPUT(){};
+	virtual ~CORE_INPUT(){};
 	virtual float GetKeyState(dword key_code, dword * value = 0)= 0;
 	virtual void ProcessKeyState(){};
 	virtual void SetKeyState(dword key_code, dword * value){};

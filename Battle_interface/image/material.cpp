@@ -115,7 +115,8 @@ void BIImageMaterial::UpdateImageBuffers( long nStartIdx, long nEndIdx )
 	// get before
 	long nV = 0;
 	long nT = 0;
-	for( long n=0; n<nStartIdx; n++ )
+	long n  = 0;
+	for( n=0; n<nStartIdx; n++ )
 	{
 		nV += m_apImage[n]->GetVertexQuantity();
 		nT += m_apImage[n]->GetTriangleQuantity();
@@ -142,13 +143,13 @@ void BIImageMaterial::RemakeBuffers()
 	if( m_nVertexQuantity != nVQ )
 	{
 		m_pRS->ReleaseVertexBuffer( m_nVBufID );
-		m_nVBufID = m_pRS->CreateVertexBuffer( BI_IMAGE_VERTEX_FORMAT, nVQ*sizeof(BI_IMAGE_VERTEX), D3DUSAGE_WRITEONLY );
+		m_nVBufID = m_pRS->CreateVertexBufferManaged( BI_IMAGE_VERTEX_FORMAT, nVQ*sizeof(BI_IMAGE_VERTEX), D3DUSAGE_WRITEONLY );
 		m_nVertexQuantity = nVQ;
 	}
 	if( m_nTriangleQuantity != nTQ )
 	{
 		m_pRS->ReleaseIndexBuffer( m_nIBufID );
-		m_nIBufID = m_pRS->CreateIndexBuffer( nTQ*3 * sizeof(word) );
+		m_nIBufID = m_pRS->CreateIndexBufferManaged( nTQ*3 * sizeof(word) );
 		m_nTriangleQuantity = nTQ;
 	}
 	UpdateImageBuffers( 0, m_apImage.Size()-1 );
@@ -161,7 +162,8 @@ bool BIImageMaterial::GetOutputRangeByPrioritet(long nBegPrior,long nEndPrior, l
 	if( m_apImage[0]->GetPrioritet() > nEndPrior || m_apImage.LastE()->GetPrioritet() < nBegPrior ) return false;
 
 	nStartIndex = 0;
-	for( long n=0; n<m_apImage; n++ )
+	long n = 0;
+	for( n=0; n<m_apImage; n++ )
 	{
 		if( m_apImage[n]->GetPrioritet() >= nBegPrior )
 			break;
@@ -199,7 +201,8 @@ void BIImageMaterial::InsertImageToList( BIImage* pImg )
 {
 	Assert(pImg);
 	long nPrior = pImg->GetPrioritet();
-	for( long n=0; n<m_apImage; n++ )
+	long n = 0;
+	for( n=0; n<m_apImage; n++ )
 		if( m_apImage[n]->GetPrioritet() > nPrior )
 			break;
 	m_apImage.Insert( n );

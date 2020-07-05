@@ -61,7 +61,8 @@ void Supervisor::Update(float dltTime)
 	//Если нет персонажей, ничего не делаем
 	if(!numCharacters) return;
 	//Перемещаем персонажей
-	for(long i = 0; i < numCharacters; i++)
+	long i = 0;
+	for(i = 0; i < numCharacters; i++)
 	{
 		character[i].c->Move(dltTime);
 		character[i].c->colMove = 0.0f;
@@ -169,9 +170,9 @@ void Supervisor::Update(float dltTime)
 	}
 	character[i].c->numColCharacter = 0;
 	//Вычисления
-	for(i = 0; i < numCharacters; i++) character[i].c->Calculate(dltTime);
+	for(long i = 0; i < numCharacters; i++) character[i].c->Calculate(dltTime);
 	//Коллизия персонажей и установка новых координат
-	for(i = 0; i < numCharacters; i++) character[i].c->Update(dltTime);
+	for(long i = 0; i < numCharacters; i++) character[i].c->Update(dltTime);
 }
 
 void Supervisor::PreUpdate(float dltTime)
@@ -328,9 +329,10 @@ bool Supervisor::FindCharacters(FindCharacter fndCharacter[MAX_CHARACTERS], long
 	}
 	if(isSort)
 	{
-		for(long i = 0; i < numFndCharacters - 1; i++)
+		long i = 0, j = 0, k = 0;;
+		for(i = 0; i < numFndCharacters - 1; i++)
 		{
-			for(long j = i + 1, k = i; j < numFndCharacters; j++)
+			for(j = i + 1, k = i; j < numFndCharacters; j++)
 			{
 				if(fndCharacter[k].d2 > fndCharacter[j].d2) k = j;
 			}
@@ -352,7 +354,8 @@ long Supervisor::FindForvardLocator(LocatorArray * la, const CVECTOR & pos, cons
 	long num = la->Num();
 	CVECTOR lpos;
 	float maxcs;
-	for(long i = 0, l = -1; i < num; i++)
+	long i = 0, l = 0;
+	for(i = 0, l = -1; i < num; i++)
 	{
 		if(!la->GetLocatorPos(i, lpos.x, lpos.y, lpos.z)) continue;
 		if(lookChr)

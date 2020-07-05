@@ -658,8 +658,8 @@ void VANT_BASE::FirstRun()
     {
 		VERTEX_BUFFER_RELEASE(RenderService,vBuf);
 		INDEX_BUFFER_RELEASE(RenderService,iBuf);
-        vBuf = RenderService->CreateVertexBuffer(VANTVERTEX_FORMAT,nVert*sizeof(VANTVERTEX),D3DUSAGE_WRITEONLY);
-        iBuf = RenderService->CreateIndexBuffer(nIndx*6);
+        vBuf = RenderService->CreateVertexBufferManaged(VANTVERTEX_FORMAT,nVert*sizeof(VANTVERTEX),D3DUSAGE_WRITEONLY);
+        iBuf = RenderService->CreateIndexBufferManaged(nIndx*6);
         SetVertexes();
         SetIndex();
     }
@@ -782,8 +782,8 @@ void VANT_BASE::DoDelete()
             vantQuantity=nvn; groupQuantity=ngn;
 			VERTEX_BUFFER_RELEASE(RenderService,vBuf);
 			INDEX_BUFFER_RELEASE(RenderService,iBuf);
-            vBuf=RenderService->CreateVertexBuffer(VANTVERTEX_FORMAT,nVert*sizeof(VANTVERTEX),D3DUSAGE_WRITEONLY);
-            iBuf=RenderService->CreateIndexBuffer(nIndx*6);
+            vBuf=RenderService->CreateVertexBufferManaged(VANTVERTEX_FORMAT,nVert*sizeof(VANTVERTEX),D3DUSAGE_WRITEONLY);
+            iBuf=RenderService->CreateIndexBufferManaged(nIndx*6);
             SetVertexes();
             SetIndex();
         }

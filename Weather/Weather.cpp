@@ -266,7 +266,7 @@ void WEATHER::SetCommonStates()
 	float fSunHeightAngle = GetFloat(whf_sun_height_angle);
 	float fSunAzimuthAngle = GetFloat(whf_sun_azimuth_angle);
 	CVECTOR		vSun, vSunColor, vSunLight;
-	D3DLIGHT8	sun;
+	D3DLIGHT9	sun;
 
 	if( fFloats[whf_time_speed]==0.f )
 	{

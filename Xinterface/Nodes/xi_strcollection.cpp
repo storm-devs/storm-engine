@@ -354,7 +354,8 @@ void CXI_STRCOLLECTION::ChangeStringPos(long num, XYPOINT& pntNewPos)
 CXI_STRCOLLECTION::STRINGDESCR * CXI_STRCOLLECTION::CreateNewDinamicString(char * strID, char * strStr)
 {
 	if(strID==null || strID[0]==0) return null;
-	for(int i=0; i<m_nStr; i++)
+	int i = 0;
+	for(i=0; i<m_nStr; i++)
 	{
 		if(m_pStrDescr[i].strID!=null && stricmp(m_pStrDescr[i].strID,strID)==0)
 			break;

@@ -22,7 +22,7 @@ TSharks::~TSharks()
 			delete sharks[i];
 	}
 
-	for (i=0; i<shipsCount; i++)
+	for (int i=0; i<shipsCount; i++)
 	{
 		if (ships[i])
 			delete ships[i];
@@ -60,8 +60,8 @@ void TSharks::Init()
 		enabled = false;
 		return;
 	}
-
-	for (int i=0; i<sharksCount; i++)
+	int i = 0;
+	for (i=0; i<sharksCount; i++)
 	{
 		sharks[i] = NEW TShark();
 		sharks[i]->TDynamicObject::Initialize(CVECTOR(0.0f, 0.0f, 0.0f), maxDistance);
@@ -135,7 +135,7 @@ void TSharks::Execute(dword _dTime)
 		ships[i]->SetXYZ(ships[i]->ship->GetPos());
 
 	float speedK = ((float) _dTime) / 200.0f;
-	for (i = 0; i<sharksCount; i++)
+	for (int i = 0; i<sharksCount; i++)
 	{
 		sharks[i]->Calculate(attractors, MAX_DYNAMIC_OBJECTS,deflectors, MAX_DYNAMIC_OBJECTS, speedK);
 		sharks[i]->time += _dTime;

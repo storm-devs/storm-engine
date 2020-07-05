@@ -18,6 +18,8 @@ Astronomy::STARS::STARS() : aStars(_FL_, 16384)
 	fFadeTimeStart = -1.f;
 	fFadeTime = 0.2f;
 	m_fTwinklingTime = 0.f;
+	vDecl = 0;
+	sShader = 0;
 }
 
 Astronomy::STARS::~STARS()
@@ -25,7 +27,7 @@ Astronomy::STARS::~STARS()
 	if (iTexture >= 0) Astronomy::pRS->TextureRelease(iTexture);
 	if (iVertexBuffer >= 0) Astronomy::pRS->ReleaseVertexBuffer(iVertexBuffer);
 	if (iVertexBufferColors >= 0) Astronomy::pRS->ReleaseVertexBuffer(iVertexBufferColors);
-	if (dwShader) Astronomy::pRS->DeleteVertexShader(dwShader);
+//	if (sShader) Astronomy::pRS->DeleteVertexShader(sShader);
 }
 
 void Astronomy::STARS::Init(ATTRIBUTES * pAP)
@@ -35,7 +37,7 @@ void Astronomy::STARS::Init(ATTRIBUTES * pAP)
 	if (iTexture >= 0) Astronomy::pRS->TextureRelease(iTexture);
 	if (iVertexBuffer >= 0) Astronomy::pRS->ReleaseVertexBuffer(iVertexBuffer);
 	if (iVertexBufferColors >= 0) Astronomy::pRS->ReleaseVertexBuffer(iVertexBufferColors);
-	if (dwShader) Astronomy::pRS->DeleteVertexShader(dwShader);
+//	if (sShader) Astronomy::pRS->DeleteVertexShader(sShader);
 
 	bEnable = false;
 
@@ -126,19 +128,16 @@ void Astronomy::STARS::Init(ATTRIBUTES * pAP)
 	{
 		dword dwSize;
 		fio->_ReadFile(hFile, &dwSize, sizeof(dwSize), null);
-
-		DWORD decl[] =
+		D3DVERTEXELEMENT9 decl[] =
 		{
-			D3DVSD_STREAM( 0 ),
-				D3DVSD_REG( D3DVSDE_POSITION, D3DVSDT_FLOAT3 ),
-			D3DVSD_STREAM( 1 ),
-				D3DVSD_REG( D3DVSDE_DIFFUSE, D3DVSDT_D3DCOLOR ),
-			D3DVSD_END()
+			{ 0, 0, D3DDECLTYPE_FLOAT3, 	D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0  },
+			{ 1, 0, D3DDECLTYPE_D3DCOLOR, 	D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR,    0  },			
+			D3DDECL_END()
 		};
 
-		Astronomy::pRS->CreateVertexShader( decl, NULL, &dwShader, 0 );
+		Astronomy::pRS->CreateVertexDeclaration(decl, &vDecl);
 
-		iVertexBuffer = Astronomy::pRS->CreateVertexBuffer(0, dwSize * sizeof(CVECTOR), D3DUSAGE_WRITEONLY);
+		iVertexBuffer = Astronomy::pRS->CreateVertexBufferManaged(0, dwSize * sizeof(CVECTOR), D3DUSAGE_WRITEONLY);
 		iVertexBufferColors = Astronomy::pRS->CreateVertexBuffer(0, dwSize * sizeof(dword), D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC);
 
 		CVECTOR * pVPos = (CVECTOR *)Astronomy::pRS->LockVertexBuffer(iVertexBuffer);
@@ -284,9 +283,11 @@ void Astronomy::STARS::Realize(double dDeltaTime, double dHour)
 	mWorld.BuildPosition(vCamPos.x, vCamPos.y, vCamPos.z);
 	Astronomy::pRS->SetTransform(D3DTS_WORLD, mWorld);
 	Astronomy::pRS->TextureSet(0, iTexture);
-	Astronomy::pRS->SetVertexShader(dwShader);
+
+	Astronomy::pRS->SetVertexShader(NULL);	
 	Astronomy::pRS->SetStreamSource(0, Astronomy::pRS->GetVertexBuffer(iVertexBuffer), sizeof(CVECTOR));
 	Astronomy::pRS->SetStreamSource(1, Astronomy::pRS->GetVertexBuffer(iVertexBufferColors), sizeof(dword));
+	Astronomy::pRS->SetVertexDeclaration(vDecl);
 
 	if (Astronomy::pRS->TechniqueExecuteStart("Stars")) do {
 		Astronomy::pRS->DrawPrimitive(D3DPT_POINTLIST, 0, aStars.Size());

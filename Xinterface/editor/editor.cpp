@@ -24,13 +24,13 @@ GIEditor::GIEditor(XINTERFACE* pInterface)
 	m_pNodeList = NEW GIEditorList( this );
 	Assert( m_pNodeList );
 	m_pNodeList->SetPosition( 120,80, 360, 380 );
-	LinkEvent( m_pNodeList->m_pChangeSelected, (GIEditorEvent)ChangeNodeName );
+//ugeen	LinkEvent( m_pNodeList->m_pChangeSelected, (GIEditorEvent)ChangeNodeName );
 
 	m_bSubNameOn = false;
 	m_pSubNameList = NEW GIEditorList( this );
 	Assert( m_pSubNameList );
 	m_pSubNameList->SetPosition( 380,80, 500,380 );
-	LinkEvent( m_pSubNameList->m_pChangeSelected, (GIEditorEvent)ChangeSubNodeName );
+//ugeen	LinkEvent( m_pSubNameList->m_pChangeSelected, (GIEditorEvent)ChangeSubNodeName );
 }
 
 GIEditor::~GIEditor()

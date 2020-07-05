@@ -20,8 +20,8 @@ protected:
 	char *	GetCutString( char * pstr, int nOutWidth, float fScale );
 	bool	DoPreOut();
 
-	IDirect3DSurface8 * m_pSurface;
-	IDirect3DSurface8 * m_pRenderTarget;
+	IDirect3DSurface9 * m_pSurface;
+	IDirect3DSurface9 * m_pRenderTarget;
 
 	/*long	m_idVBuf;
 

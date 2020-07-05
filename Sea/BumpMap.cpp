@@ -106,7 +106,7 @@ bool SEA::CalculateBumpMapsGF3()
 		}
 		else if (dwIdx == dwNumBumps) break;
 
-   		IDirect3DTexture8 * * pBumpMap = &aBumpMaps[aBumpMaps.Add()];
+   		IDirect3DTexture9 * * pBumpMap = &aBumpMaps[aBumpMaps.Add()];
 
 		hr = pRS->CreateTexture( SeaData.dwBumpSize, SeaData.dwBumpSize, SeaData.dwBumpMipLevels, 0, D3DFMT_A1R5G5B5, D3DPOOL_MANAGED, pBumpMap);
 

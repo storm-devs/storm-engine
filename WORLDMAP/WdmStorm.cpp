@@ -86,7 +86,7 @@ WdmStorm::WdmStorm()
 	//Раскидываем облака
 	long x, z;
 	bool globSign = (rand() & 1) != 0;
-	for(i = 0; i < num; i++)
+	for(long i = 0; i < num; i++)
 	{
 		cloud[i] = (WdmCloud *)wdmObjects->wm->AddObject(NEW WdmCloud(), 101);
 		if(cloud[i])
@@ -241,8 +241,8 @@ void WdmStorm::LRender(VDX8RENDER * rs)
 				wdmObjects->DrawCircle(mtr, WDM_STORM_CLOUDRAD, 0x4f000000);
 			}
 	}
-
-	for(long i = 0, count = 0; i < num; i++)
+	long i = 0, count = 0;
+	for(i = 0, count = 0; i < num; i++)
 	{
 		if(cloud[i])
 		{

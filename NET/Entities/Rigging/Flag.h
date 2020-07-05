@@ -99,7 +99,7 @@ private:
         int HostGroup;
         bool bDeleted;
 
-		IDirect3DBaseTexture8 * pTexture;
+		IDirect3DBaseTexture9 * pTexture;
 
 		FLAGDATA() {nod=0;pMatWorld=0;next=0;pTexture=0;}
 		~FLAGDATA() {RELEASE(pTexture);}

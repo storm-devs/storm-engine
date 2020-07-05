@@ -1,7 +1,11 @@
 #ifndef DEFINES_HPP
 #define DEFINES_HPP
 
-#define _WIN32_WINNT 0x0501
+#if defined(_WIN32) && !defined(_CRT_SECURE_NO_WARNINGS)
+#define _CRT_SECURE_NO_WARNINGS
+#endif 
+
+#define _WIN32_WINNT 0x0601
 
 // includes
 #include "math3d.h"
@@ -29,7 +33,7 @@
 	#undef SQR
 #endif
 
-#define isSteam				1 
+//#define isSteam				1 
 
 inline DWORD F2DW( FLOAT f ) { return *((DWORD*)&f); }
 

@@ -35,7 +35,7 @@ bool SHIPPOINTER::Init()
 		_THROW("Can`t create render service");
 	}
 
-	m_idVBuf = rs->CreateVertexBuffer(SPV_FORMAT,4 * sizeof(SPV_VERTEX),D3DUSAGE_WRITEONLY);
+	m_idVBuf = rs->CreateVertexBufferManaged(SPV_FORMAT,4 * sizeof(SPV_VERTEX),D3DUSAGE_WRITEONLY);
 	if(m_idVBuf<0) return false;
 
 	SPV_VERTEX * pv = (SPV_VERTEX*)rs->LockVertexBuffer(m_idVBuf);

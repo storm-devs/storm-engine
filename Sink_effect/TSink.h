@@ -23,7 +23,7 @@ public:
 	TSink();
 	virtual ~TSink();
 
-	void Initialize(INIFILE * _ini, IDirect3DDevice8 *_device, SEA_BASE *sea, VDX8RENDER *_renderer);
+	void Initialize(INIFILE * _ini, IDirect3DDevice9 *_device, SEA_BASE *sea, VDX8RENDER *_renderer);
 	void Release();
 	void Start(const CVECTOR &_pos, float _radius);
 	void Process(dword _dTime);

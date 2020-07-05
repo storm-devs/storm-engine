@@ -108,7 +108,8 @@ CINODE* CINODE::DoAction(int wActCode,bool &bBreakPress,bool bFirstPress)
 	bBreakPress = m_bBreakPress;
 	if(m_bLockStatus) return this;
 
-	for(int i=0; i<COMMAND_QUANTITY; i++)
+	int i = 0;
+	for(i=0; i<COMMAND_QUANTITY; i++)
 		if(pCommandsList[i].code==wActCode) break;
 	if(i==COMMAND_QUANTITY) return this;
 
@@ -252,7 +253,8 @@ char * CINODE::GetSubStr(char * inStr, char * buf, size_t bufSize, char devChar)
 	if(bufSize<=0 || buf==null) return inStr;
 	if(inStr==null) {buf[0]=0; return null;}
 	int curSize=0;
-	for(char* curStr=inStr; *curStr!=0; curStr++)
+	char* curStr = null;
+	for(curStr=inStr; *curStr!=0; curStr++)
 	{
 		if(*curStr==' ' && curSize==0) continue;
 		if(*curStr==devChar || *curStr==0) break;
@@ -395,7 +397,8 @@ dword _cdecl CINODE::MessageProc(long msgcode, MESSAGE & message)
 
 bool CINODE::CheckCommandUsed(int comCode)
 {
-	for(int i=0; i<COMMAND_QUANTITY; i++)
+	int i = 0;
+	for(i=0; i<COMMAND_QUANTITY; i++)
 		if(pCommandsList[i].code==comCode) break;
 	if(i==COMMAND_QUANTITY) return false;
 	return m_pCommands[i].bUse;

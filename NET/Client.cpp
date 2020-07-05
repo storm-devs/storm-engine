@@ -65,8 +65,8 @@ void NetClient::Send(packet * pPacket)
 void NetClient::Flush()
 {
 	if (aPackets.IsEmpty()) return;
-
-	for (long i=0; i<aPackets; i++)
+	long i = 0;
+	for (i=0; i<aPackets; i++)
 	{
 		if (!aPackets[i]->bGarantedDelivery)
 		{

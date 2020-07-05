@@ -441,7 +441,8 @@ public:
 		}
 		const char * pStr = GetBuffer() + Len() - 1;
 		const char * pExt = ext + esize - 1;
-		for(dword c = 0; c < esize; c++)
+		dword c = 0;
+		for(c = 0; c < esize; c++)
 		{
 			char cs = *pStr--;
 			char ce = *pExt--;
@@ -457,7 +458,8 @@ public:
 	inline long LastChar(char c) const 
 	{
 		const char * pStr = GetBuffer();
-		for(long i = Len() - 1; i >= 0; i--) if(pBuffer[i] == c) break;
+		long i = 0;
+		for(i = Len() - 1; i >= 0; i--) if(pBuffer[i] == c) break;
 		return i;
 	}
 	// return relative path = this - relativePath, if can't return this

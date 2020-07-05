@@ -33,7 +33,7 @@ float VAR_DEEP_MUL; // предел изменения коэффициента использования прогиба верев
 float VAR_ROTATE_ANGL; // амплитуда угла качания веревки
     //-------------------------------------
 
-	D3DMATERIAL8 mat;
+	D3DMATERIAL9 mat;
 
     bool bUse;
     bool bFirstRun;

@@ -667,7 +667,6 @@ if( ss.bYesLimitPoint )
 		{
         ss.fDeepZ=0.01f+.01f*(float)rand()/(float)RAND_MAX*sailHeight;
         ss.fDeepH=0.01f+.01f*(float)rand()/(float)RAND_MAX*sailWidth;
-		}
         ss.fDeepVh=0.f;
         ss.fDeepVz=0.f;
         break;
@@ -1049,8 +1048,8 @@ void SAILONE::SetRolling(bool bRoll)
 			oldWindAngl += pp->TURNSTEPANGL;
 			if(ss.eSailType == SAIL_TRAPECIDAL || ss.eSailType == SAIL_TREANGLE || ss.eSailType == SAIL_SPECIAL)
 			{
-				hostNode->loc_mtx.RotateY(pp->TURNSTEPANGL);
-			}
+	        hostNode->loc_mtx.RotateY(pp->TURNSTEPANGL);
+		}
 			else hostNode->loc_mtx.RotateY(-pp->TURNSTEPANGL);						
 	        //hostNode->loc_mtx.RotateY(-pp->TURNSTEPANGL);
 		}
@@ -1895,6 +1894,15 @@ void SAILONE::SetTurnLimits()
 
 	if(minA>=0.f)	m_fMinAngle = minA;
 	if(maxA>=0.f)	m_fMaxAngle = maxA;
+}
+
+float SAILONE::GetDistanceFromPointTo3Point(const CVECTOR& v, const CVECTOR& vB1, const CVECTOR& vB2, const CVECTOR& vB3)
+{
+	CVECTOR vN = !( (vB1-vB2) ^ (vB3-vB2) );
+	float fD = - (vN | vB2);
+
+	float f = v|vN + fD;
+	return f;
 }
 
 void SAILONE::CalculateSailIDCode()

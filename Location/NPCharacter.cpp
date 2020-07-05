@@ -1016,7 +1016,8 @@ void NPCharacter::DoFightAttack(Character * enemy, long enemyCounter, bool wishD
 	if(count == 0 || max <= 0.0f) return;
 	float r = rand()*(max/RAND_MAX);
 	float p = 0.0f;
-	for(long i = 0; i < count; i++)
+	long i = 0;
+	for(i = 0; i < count; i++)
 	{
 		p += attack[i].prb;
 		if(r <= p) break;

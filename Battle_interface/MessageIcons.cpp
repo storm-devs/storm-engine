@@ -83,7 +83,8 @@ void MESSAGE_ICONS::Update(DWORD deltaTime)
 				{
 					ATTRIBUTES * pA = m_pIconsAttr[i]->GetAttributeClass(n);
 					int picNum = pA->GetAttributeAsDword("pic");
-					for(int k=0; k<m_pMsgColumns[i].rowQ; k++)
+					int k = 0;
+					for(k=0; k<m_pMsgColumns[i].rowQ; k++)
 						if(picNum == m_pMsgColumns[i].pRow[k].pic)
 						{
 							m_pMsgColumns[i].pRow[k].bDoBlend = false;
@@ -184,8 +185,8 @@ bool MESSAGE_ICONS::InitData(ENTITY_ID & host_eid, VDX8RENDER * _rs, ATTRIBUTES 
 	m_nHorzTextureSize = pARoot->GetAttributeAsDword("TexHSize",1);
 	m_nVertTextureSize = pARoot->GetAttributeAsDword("TexVSize",1);
 
-	m_vMsgIconBufID = rs->CreateVertexBuffer(BI_COLOR_VERTEX_FORMAT,m_nMsgIconRowQnt*MESSAGE_ICONS_COLUMN_QUANTITY*4*sizeof(BI_COLOR_VERTEX),D3DUSAGE_WRITEONLY);
-	m_iMsgIconBufID = rs->CreateIndexBuffer(m_nMsgIconRowQnt*MESSAGE_ICONS_COLUMN_QUANTITY*6*2);
+	m_vMsgIconBufID = rs->CreateVertexBufferManaged(BI_COLOR_VERTEX_FORMAT,m_nMsgIconRowQnt*MESSAGE_ICONS_COLUMN_QUANTITY*4*sizeof(BI_COLOR_VERTEX),D3DUSAGE_WRITEONLY);
+	m_iMsgIconBufID = rs->CreateIndexBufferManaged(m_nMsgIconRowQnt*MESSAGE_ICONS_COLUMN_QUANTITY*6*2);
 	m_nMsgIconQnt = 0;
 	m_bShowMsgIcon = false;
 
@@ -203,7 +204,7 @@ bool MESSAGE_ICONS::InitData(ENTITY_ID & host_eid, VDX8RENDER * _rs, ATTRIBUTES 
 	BI_COLOR_VERTEX * pVBuf = (BI_COLOR_VERTEX*)rs->LockVertexBuffer(m_vMsgIconBufID);
 	if(pVBuf!=null)
 	{
-		for(i=0; i<m_nMsgIconRowQnt*MESSAGE_ICONS_COLUMN_QUANTITY*4; i++)
+		for(int i=0; i<m_nMsgIconRowQnt*MESSAGE_ICONS_COLUMN_QUANTITY*4; i++)
 		{
 			pVBuf[i].w = 0.5f;
 			pVBuf[i].pos.z = 1.f;
@@ -215,7 +216,7 @@ bool MESSAGE_ICONS::InitData(ENTITY_ID & host_eid, VDX8RENDER * _rs, ATTRIBUTES 
 	WORD * pIBuf = (WORD*)rs->LockIndexBuffer(m_iMsgIconBufID);
 	if(pIBuf!=null)
 	{
-		for(i=0; i<m_nMsgIconRowQnt*MESSAGE_ICONS_COLUMN_QUANTITY; i++)
+		for(int i=0; i<m_nMsgIconRowQnt*MESSAGE_ICONS_COLUMN_QUANTITY; i++)
 		{
 			pIBuf[i*6+0] = i*4+0;
 			pIBuf[i*6+1] = i*4+1;

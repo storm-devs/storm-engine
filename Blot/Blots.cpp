@@ -10,6 +10,7 @@
 
 #include "Blots.h"
 #include "..\common_h\messages.h"
+#include "..\common_h\defines.h"
 #include "..\engine\program\sea_ai\Script_Defines.h"
 
 //============================================================================================
@@ -100,7 +101,8 @@ void Blots::Hit(MESSAGE & message)
 	//Ищем наличие свободного пятна и близость от других
 	CVECTOR lpos;
 	m->mtx.MulToInv(pos, lpos);
-	for(long i = 0, j = -1; i < BLOTS_MAX; i++)
+	long i = 0, j = 0;
+	for(i = 0, j = -1; i < BLOTS_MAX; i++)
 	{
 		if(blot[i].isUsed)
 		{
@@ -167,6 +169,10 @@ void Blots::AddBlot(long i, long rnd, const CVECTOR & lpos, const CVECTOR & dir,
 	useVrt += numClipTriangles*3;
 	Assert(useVrt < sizeof(vrt)/sizeof(Vertex));
 	//Преобразуем треугольники в локальную систему координат корабля
+	
+	rs->SetRenderState(D3DRS_DEPTHBIAS, F2DW(-0001.1f));
+	rs->SetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, F2DW(0.0f));	
+
 	CMatrix mtx(m->mtx);
 	mtx.Transposition();
 	Vertex * v = vrt + blot[i].startIndex;
@@ -195,6 +201,8 @@ void Blots::AddBlot(long i, long rnd, const CVECTOR & lpos, const CVECTOR & dir,
 	{
 		api->Event(SHIP_SET_BLOT, "a", pCharAttributeRoot);
 	}	
+	rs->SetRenderState(D3DRS_DEPTHBIAS, F2DW(0.0f));
+	rs->SetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, F2DW(0.0f));	
 }
 
 void Blots::SetNodesCollision(NODE * n, bool isSet)
@@ -353,7 +361,8 @@ void Blots::Realize(dword delta_time)
 			//-----------------------------------------------
 
 			//Удаляем из массива треугольники
-			for(long j = 0; j < BLOTS_MAX; j++)
+			long j = 0;
+			for(j = 0; j < BLOTS_MAX; j++)
 			{
 				if(!blot[j].isUsed) continue;
 				if(blot[j].startIndex > startIndex) blot[j].startIndex -= numDelVerts;
@@ -374,7 +383,7 @@ void Blots::Realize(dword delta_time)
 				Assert(blot[j].startIndex + blot[j].numTrgs*3 <= useVrt);
 			}
 			Assert(nnn == useVrt);
-			for(n = 0; n < BLOTS_MAX; n++)
+			for(long n = 0; n < BLOTS_MAX; n++)
 			{
 				if(!blot[n].isUsed) continue;
 				Vertex * v1 = vr + n*BLOTS_NTRGS*3;
@@ -412,8 +421,13 @@ void Blots::Realize(dword delta_time)
 			for(long j = 0; j < numVrt; j++) v[j].c = color;
 		}	
 	}
+	rs->SetTransform(D3DTS_WORLD, m->mtx);
+	rs->SetRenderState(D3DRS_DEPTHBIAS, F2DW(-0.0001f));
+	rs->SetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, F2DW(0.0f));
 	//Рисуем
 	if(useVrt > 3) rs->DrawPrimitiveUP(D3DPT_TRIANGLELIST, D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1, useVrt/3, vrt, sizeof(Vertex), "Blot");
+	rs->SetRenderState( D3DRS_SLOPESCALEDEPTHBIAS, F2DW(0.0f) );
+    rs->SetRenderState( D3DRS_DEPTHBIAS, F2DW(0.0f) );
 }
 
 bool Blots::AddPolygon(const CVECTOR * v, long nv)

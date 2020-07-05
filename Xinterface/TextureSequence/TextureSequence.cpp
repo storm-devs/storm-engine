@@ -45,7 +45,7 @@ TextureSequence::~TextureSequence()
 	Release();
 }
 
-IDirect3DTexture8* TextureSequence::Initialize(VDX8RENDER *pRS, const char* cTSfileName, bool bCicled)
+IDirect3DTexture9* TextureSequence::Initialize(VDX8RENDER *pRS, const char* cTSfileName, bool bCicled)
 {
 	m_bCicled = bCicled;
 	if(pRS==null || cTSfileName==null) return null;
@@ -119,12 +119,12 @@ void TextureSequence::ToTextureRender(float blendValue)
 	DWORD newTFactor = ARGB(long(255.f*blendValue),long(255.f*blendValue),long(255.f*blendValue),long(255.f*blendValue));
 
 	// set texture as render target
-	IDirect3DSurface8 *pRenderTarg=NULL, *pOldRenderTarg=NULL;
+	IDirect3DSurface9 *pRenderTarg=NULL, *pOldRenderTarg=NULL;
 	if( m_pRS->GetRenderTarget(&pOldRenderTarg)==S_OK )
 	{
 		if( m_pRS->GetSurfaceLevel(m_pTexture,0,&pRenderTarg) == S_OK )
 		{
-			IDirect3DSurface8 * pStencil;
+			IDirect3DSurface9 * pStencil;
 			m_pRS->GetDepthStencilSurface(&pStencil);
 			if( m_pRS->SetRenderTarget(pRenderTarg,NULL) == S_OK )
 			{
@@ -186,7 +186,11 @@ void TextureSequence::Release()
 
 void TextureSequence::LostRender()
 {
-	m_pRS->Release(m_pTexture);
+	if(m_pTexture!=NULL && m_pRS!=NULL)
+	{
+		m_pRS->Release(m_pTexture);
+		m_pTexture=NULL;
+	}
 }
 
 void TextureSequence::RestoreRender()

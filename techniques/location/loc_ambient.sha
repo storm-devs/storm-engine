@@ -1,0 +1,117 @@
+
+block amb_cave()
+{
+	technique t0
+	{
+		pass p0
+		{
+			!ambient = 0x002c2c30;
+		}
+	}
+}
+
+block inca_temple()
+{
+	technique t0
+	{
+		pass p0
+		{
+			!ambient = 0x0030302c;
+		}
+	}
+}
+
+block amb_house()
+{
+	technique t0
+	{
+		pass p0
+		{
+			!ambient = 0x00303030;
+		}
+	}
+}
+
+block amb_tavern()
+{
+	technique t0
+	{
+		pass p0
+		{
+			!ambient = 0x00302c2c;
+		}
+	}
+}
+
+block amb_shop()
+{
+	technique t0
+	{
+		pass p0
+		{
+			!ambient = 0x00303030;
+		}
+	}
+}
+
+block amb_residence()
+{
+	technique t0
+	{
+		pass p0
+		{
+			!ambient = 0x00858580;
+		}
+	}
+}
+
+block amb_church()
+{
+	technique t0
+	{
+		pass p0
+		{
+			!ambient = 0x00606058;
+		}
+	}
+}
+
+block amb_jail()
+{
+	technique t0
+	{
+		pass p0
+		{
+			!ambient = 0x0020201c;
+		}
+	}
+}
+
+block amb_dungeon()
+{
+	technique t0
+	{
+		pass p0
+		{
+			!ambient = 0x00202030;
+		}
+	}
+}
+
+block amb_other()
+{
+	technique t0
+	{
+		pass p0
+		{
+			!ambient = 0x00303030;
+		}
+	}
+}
+
+
+
+
+
+
+

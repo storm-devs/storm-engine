@@ -151,8 +151,9 @@ DWORD __cdecl _RandomHole2Sail(VS_STACK * pS)
 
 	int holeArraySize = 0;
 	int holeIdx[20];
+	int i = 0;
 	DWORD holeMask = _holeData;
-	for(int i=0; holeMask>0; i++,holeMask>>=1)
+	for(i=0; holeMask>0; i++,holeMask>>=1)
 		if( !(holeMask&1) )
 			holeIdx[holeArraySize++] = i;
 
@@ -207,7 +208,8 @@ DWORD __cdecl _DeleteOneSailHole(VS_STACK * pS)
 	int holeArraySize = 0;
 	int holeIdx[20];
 	DWORD holeMask = _holeData;
-	for(int i=0; holeMask>0; i++,holeMask>>=1)
+	int i = 0;
+	for(i=0; holeMask>0; i++,holeMask>>=1)
 		if(holeMask&1)
 			holeIdx[holeArraySize++] = i;
 

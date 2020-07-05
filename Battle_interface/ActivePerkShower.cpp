@@ -319,8 +319,8 @@ FRECT ActivePerkShower::GetTextureRect(int textIdx, int picIdx)
 
 bool ActivePerkShower::InitCommonBuffers()
 {
-	m_idVBuf = rs->CreateVertexBuffer(BI_ONETEX_VERTEX_FORMAT,m_nShowPlaceQ*4*sizeof(BI_ONETEXTURE_VERTEX),D3DUSAGE_WRITEONLY);
-	m_idIBuf = rs->CreateIndexBuffer(m_nShowPlaceQ*6*2);
+	m_idVBuf = rs->CreateVertexBufferManaged(BI_ONETEX_VERTEX_FORMAT,m_nShowPlaceQ*4*sizeof(BI_ONETEXTURE_VERTEX),D3DUSAGE_WRITEONLY);
+	m_idIBuf = rs->CreateIndexBufferManaged(m_nShowPlaceQ*6*2);
 	if(m_idIBuf==-1 || m_idVBuf==-1) return false;
 
 	int i;

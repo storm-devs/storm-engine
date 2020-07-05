@@ -106,6 +106,7 @@ public:
 	HANDLE _CreateFile(LPCTSTR lpFileName,DWORD dwDesiriedAccess = GENERIC_READ,DWORD dwShareMode = FILE_SHARE_READ,DWORD dwCreationDisposition = OPEN_EXISTING);
 	void   _CloseHandle(HANDLE hFile);
 	DWORD  _SetFilePointer(HANDLE hFile,long DistanceToMove,PLONG lpDistanceToMoveHigh,DWORD dwMoveMethod);
+	long   _GetFilePointer(HANDLE hFile); 
 	BOOL   _DeleteFile(LPCTSTR lpFileName);
 	BOOL   _WriteFile(HANDLE hFile,LPCVOID lpBuffer,DWORD nNumberOfBytesToWrite,LPDWORD lpNumberOfBytesWritten);
 	BOOL   _ReadFile(HANDLE hFile,LPVOID lpBuffer,DWORD nNumberOfBytesToRead,LPDWORD lpNumberOfBytesRead);

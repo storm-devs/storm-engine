@@ -8,7 +8,7 @@
 #ifndef PARTICLES_MANAGER_INTERFACE
 #define PARTICLES_MANAGER_INTERFACE
 
-#include <d3d8.h>
+#include <d3d9.h>
 #include "..\dx8render.h"
 
 class ParticleService;

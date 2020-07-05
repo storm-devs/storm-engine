@@ -82,8 +82,6 @@ Achievement_t g_Achievements[] =
 //	_ACH_ID( ACH_72, "ach_72" ),	
 //	_ACH_ID( ACH_73, "ach_73" ),
 	_ACH_ID( ACH_79, "ach_79" ),		
-	_ACH_ID( ACH_80, "ach_80" ),		
-	_ACH_ID( ACH_81, "ach_81" ),		
 };
 
 Stat_t g_Stats[] =
@@ -162,8 +160,6 @@ Stat_t g_Stats[] =
 //	_STAT_ID(72, STAT_INT, "stat_72"),
 //	_STAT_ID(73, STAT_INT, "stat_73"),
 	_STAT_ID(79, STAT_INT, "stat_79"),
-	_STAT_ID(80, STAT_INT, "stat_80"),
-	_STAT_ID(81, STAT_INT, "stat_81"),
 };
 
 CSteamStatsAchievements::CSteamStatsAchievements(int NumAchievements):			
@@ -460,7 +456,7 @@ long CSteamDLC::getDLCCount()
 	
 	m_DLCcount = (long)SteamApps()->GetDLCCount();
 	
-	trace("DLCcount %d", m_DLCcount );
+//	trace("DLCcount %d", m_DLCcount );
 	
     return m_DLCcount;
 }
@@ -474,7 +470,7 @@ long CSteamDLC::bGetDLCDataByIndex( long iDLC )
 	}
 	m_bInitialized = SteamApps()->BGetDLCDataByIndex( iDLC, &pAppID, &pbAvailable, pchName, 128 );
 	
-	trace("iDLC %d app_id %d isAvailable %d  name %s", iDLC, pAppID, pbAvailable, pchName );
+//	trace("iDLC %d app_id %d isAvailable %d  name %s", iDLC, pAppID, pbAvailable, pchName );
 	
 	if(m_bInitialized) return (long)pAppID;
 	
@@ -489,8 +485,8 @@ bool CSteamDLC::isDLCInstalled( long nDLC )
 		return false;
 	}
 
-	m_bInitialized = (SteamApps()->BIsSubscribedApp(nDLC) && SteamApps()->BIsDlcInstalled(nDLC) );
-	trace("isDLCActive %d", m_bInitialized );
+	m_bInitialized = (SteamApps()->BIsSubscribedApp(nDLC) && SteamApps()->BIsDlcInstalled(nDLC) );	
+//	trace("isDLCActive %d", m_bInitialized );
 	
 	return m_bInitialized;
 }

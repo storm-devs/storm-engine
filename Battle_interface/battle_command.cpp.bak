@@ -60,6 +60,7 @@ void BICommandList::Draw()
 
 void BICommandList::Update( long nTopLine, long nCharacterIndex, long nCommandMode )
 {
+	api->Trace("   BICommandList::Update 0 m_nCurrentCommandMode %d  nCommandMode %d", m_nCurrentCommandMode,nCommandMode);
 	long nOldSelIndex = 0;
 	if( nTopLine == m_LeftTopPoint.y &&
 		nCharacterIndex == m_nCurrentCommandCharacterIndex &&
@@ -84,6 +85,8 @@ void BICommandList::Update( long nTopLine, long nCharacterIndex, long nCommandMo
 		m_nSelectedCommandIndex = nOldSelIndex;
 
 	UpdateShowIcon();
+	
+	api->Trace("   BICommandList::Update 1 m_nCurrentCommandMode %d  nCommandMode %d",m_nCurrentCommandMode, nCommandMode);
 }
 
 long BICommandList::AddTexture( const char* pcTextureName, long nCols, long nRows )
@@ -103,6 +106,7 @@ long BICommandList::ExecuteConfirm()
 	long nTargIndex = 0;
 	string sLocName;
 
+	api->Trace("  ExecuteConfirm() 0   endCode = %d", endCode);
 	if( m_aUsedCommand[m_nSelectedCommandIndex].nCooldownPictureIndex >= 0 &&
 		m_aUsedCommand[m_nSelectedCommandIndex].fCooldownFactor < 1.f ) return -1;
 
@@ -127,8 +131,10 @@ long BICommandList::ExecuteConfirm()
 		m_sCurrentCommandName = "";
 	break;
 	default:
+		api->Trace("BICommandList::ExecuteConfirm()  m_LeftTopPoint.y %d m_nCurrentCommandCharacterIndex %d  endCode %d", m_LeftTopPoint.y,m_nCurrentCommandCharacterIndex, endCode);
 		Update( m_LeftTopPoint.y, m_nCurrentCommandCharacterIndex, endCode );
 	}
+	api->Trace("  ExecuteConfirm() 1   endCode = %d", endCode);
 	return endCode;
 }
 
@@ -144,6 +150,7 @@ long BICommandList::ExecuteLeft()
 		api->Event("evntBattleCommandSound","s","left"); // boal 22.08.06
 		UpdateShowIcon();
 	}
+	api->Trace("BICommandList::ExecuteLeft()");
 	return 0;
 }
 
@@ -159,6 +166,7 @@ long BICommandList::ExecuteRight()
 		api->Event("evntBattleCommandSound","s","right"); // boal 22.08.06
 		UpdateShowIcon();
 	}
+	api->Trace("BICommandList::ExecuteRight()  m_nStartUsedCommandIndex %d m_nSelectedCommandIndex %d m_aUsedCommand.Size() %d",m_nStartUsedCommandIndex,m_nSelectedCommandIndex,(long)m_aUsedCommand.Size());
 	return 0;
 }
 
@@ -295,7 +303,13 @@ long BICommandList::AddToIconList( long nTextureNum, long nNormPictureNum, long 
 	long n;
 	// отсев уже подключенных объектов
 	for(n=0; n<m_aUsedCommand; n++) {
-		if( nCharacterIndex!=-1 && m_aUsedCommand[n].nCharIndex==nCharacterIndex ) return 0;
+	
+		if( nCharacterIndex!=-1 && m_aUsedCommand[n].nCharIndex==nCharacterIndex ) 
+		{
+//			api->Trace("AddToIconList %d  m_aUsedCommand.nCharIndex %d nCharacterIndex %d", n, m_aUsedCommand[n].nCharIndex, nCharacterIndex );
+//			return 0;
+		}	
+		
 		if( pcCommandName && m_aUsedCommand[n].sCommandName==pcCommandName ) return 0;
 		if( pcLocName && m_aUsedCommand[n].sLocName==pcLocName ) return 0;
 		if( nTargetIndex!=-1 && m_aUsedCommand[n].nTargetIndex==nTargetIndex ) return 0;
@@ -320,6 +334,8 @@ long BICommandList::AddToIconList( long nTextureNum, long nNormPictureNum, long 
 		m_aCooldownUpdate[i].fTime = m_aCooldownUpdate[i].fUpdateTime;
 		m_aCooldownUpdate[i].nIconNum = n;
 	}
+	
+	api->Trace("    BICommandList::AddToIconList");
 	return 1;
 }
 
@@ -416,7 +432,11 @@ void BICommandList::UpdateShowIcon()
 {
 	RECT rPos;
 
+//	api->Trace("UpdateShowIcon() 0");
+
 	m_pImgRender->ReleaseAllImages();
+
+//	api->Trace("UpdateShowIcon() 1");
 
 	if( !m_bActive )
 	{
@@ -480,6 +500,7 @@ void BICommandList::UpdateShowIcon()
 		m_pImgRender->CreateImage( BIType_square, m_sUpDownArrowTexture, 0xFF808080,
 			m_frDownArrowUV, rPos );
 	}
+//	api->Trace("UpdateShowIcon() 2");
 }
 
 void BICommandList::SetNote( const char* pcNote, long nX, long nY )

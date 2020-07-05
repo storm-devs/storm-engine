@@ -1,9 +1,16 @@
 #include "sdevice.h"
 #include "stdio.h"
-#include "d3dx8math.h"
+#include "d3dx9math.h"
 #include "..\common_h\matrix.h"
 #include "texture.h"
 #include <io.h>
+#include "gdiplus.h"
+#include <DxErr.h>
+
+#pragma comment (lib, "d3d9.lib")
+#pragma comment (lib, "d3dx9.lib")
+#pragma comment (lib, "Gdiplus.lib")
+#pragma comment (lib, "dxerr.lib")
 
 #define POST_PROCESS_FVF D3DFVF_XYZRHW | D3DFVF_TEX4
 
@@ -17,11 +24,9 @@ public:
 	virtual bool Init();
 };
 
-
 INTERFACE_FUNCTION
 CREATE_SERVICE(DX8RENDER)
 CREATE_SCRIPTLIBRIARY(DX8RENDER_SCRIPT_LIBRIARY)
-
 
 DX8RENDER * DX8RENDER::pRS = null;
 
@@ -116,15 +121,9 @@ char sSplashText[] = {0xbb,0x9a,0x89,0x9a,0x93,0x90,0x8f,0x9a,0x8d,0x8c,0xdf,0xb
 #pragma warning(pop)
 char splashbuffer[256];
 
-#ifndef _XBOX
-	#define TEXTURESDIR		"resource\\textures\\%s.tx"
-	#define VIDEODIR		"Resource\\Videos\\%s"
-#else
-	#define TEXTURESDIR		"resource\\textures\\%s.tx"
-	#define VIDEODIR		"d:\\Resource\\Videos\\%s"
 
-	#include <xgraphics.h>
-#endif
+#define TEXTURESDIR		"resource\\textures\\%s.tx"
+#define VIDEODIR		"Resource\\Videos\\%s"
 
 struct DX8SphVertex
 {
@@ -152,7 +151,6 @@ void CreateSphere()
 
 	CVECTOR light = !CVECTOR(0.0f, 0.0f, 1.0f);
 	float kColor;
-	//¦ряюыэ хь тхЁ°шэv
 	for(long i = 0, t = 0; i < a2; i++)
 	{
 		float r1 = sinf(myPI*i/float(a2));
@@ -193,7 +191,6 @@ void CreateSphere()
 			DX8sphereVertex[t*3 + 5].v.z = r2*z2;
 			CalcKColor(5);
 			DX8sphereVertex[t*3 + 5].c = Color1;
-			//-юсртшыш 2 ЄЁхєуюы№эшър
 			t += 2;
 		}
 	}
@@ -224,7 +221,6 @@ D3DERRORS D3D_ERRORS[] =
 	{	D3DERR_WRONGTEXTUREFORMAT,			"The pixel format of the texture surface is not valid"	},
 	{	E_FAIL,								"An undetermined error occurred inside the Direct3D subsystem"	},
 	{	E_INVALIDARG,						"An invalid parameter was passed to the returning function"	},
-	//{	E_INVALIDCALL,						"The method call is invalid For example, a method's parameter may have an invalid value"	},
 	{	E_OUTOFMEMORY,						"Direct3D could not allocate sufficient memory to complete the call"	},
 	{	S_OK,								"No error occurred"	},
 	{	0,									NULL} 
@@ -270,11 +266,12 @@ __forceinline bool DX8RENDER::ErrorHandler(char * message, HRESULT hres)
 		}
 	}
 	api->Trace(message);
-	api->Trace("Undefined error");
+	api->Trace("Undefined error %d", (int)hres);
 	return true;
 }
 
 const dword DX8RENDER::rectsVBuffer_SizeInRects = 512;
+//const dword DX8RENDER::rectsVBuffer_SizeInRects = 2048;
 
 //################################################################################
 DX8RENDER::DX8RENDER() : 
@@ -292,19 +289,17 @@ DX8RENDER::DX8RENDER() :
 	pPostProcessTexture = NULL;
 	pSmallPostProcessTexture = NULL;
 	pSmallPostProcessTexture2 = NULL;
-	
-	
+		
 	pPostProcessSurface = NULL;
 	pSmallPostProcessSurface = NULL;
 	pSmallPostProcessSurface2 = NULL;
-	
-	
+		
 	pOriginalScreenSurface = NULL;
 	pOriginalDepthSurface = NULL;
 
 	pRS = this;
 	d3d = NULL;
-	d3d8 = NULL;
+	d3d9 = NULL;
 	aniVBuffer = null;
 	numAniVerteces = 0;
 	pVTL = NULL;
@@ -378,7 +373,7 @@ bool  DX8RENDER::Init()
 	for (long i=0; i<MAX_STEXTURES; i++) Textures[i].ref = NULL;
 
 	d3d = NULL;
-	d3d8 = NULL;
+	d3d9 = NULL;
 
 	INIFILE * ini;
 	ini = api->fio->OpenIniFile(api->EngineIniFileName());
@@ -392,11 +387,7 @@ bool  DX8RENDER::Init()
 		texLog = ini->GetLong(0, "texture_log", 0) == 1;
 		bUseLargeBackBuffer = ini->GetLong(0, "UseLargeBackBuffer", 0) != 0;
 
-#ifndef _XBOX
 		bWindow = ini->GetLong(0,"full_screen", 1) == 0;
-#else
-		bWindow = false;
-#endif
 
 		nTextureDegradation = ini->GetLong(0,"texture_degradation",0);
 
@@ -412,7 +403,6 @@ bool  DX8RENDER::Init()
 		if (stricmp(str, "D3DFMT_X8R8G8B8") == 0)	{ screen_bpp = D3DFMT_X8R8G8B8; stencil_format = D3DFMT_D24S8; }
 		if (stricmp(str, "D3DFMT_R5G6B5") == 0)		{ screen_bpp = D3DFMT_R5G6B5;	stencil_format = D3DFMT_D16; }
 
-		//stencil_format = D3DFMT_D24S8;
 	    if(!InitDevice(bWindow, api->GetAppHWND(), screen_size.x, screen_size.y)) return false;
 
 	    pTechnique = NEW CTechnique(this);
@@ -461,7 +451,6 @@ bool  DX8RENDER::Init()
 
 		delete ini;
 
-#ifndef _XBOX
 		if(bWindow)
 		{
 			long xs,ys;
@@ -472,7 +461,6 @@ bool  DX8RENDER::Init()
 			else
 				MoveWindow(api->GetAppHWND(),(xs-screen_size.x)/2, (ys-screen_size.y)/2, screen_size.x,screen_size.y,true);
 		}
-#endif
 
 		CreateSphere();
 		VDATA * pScriptRender = (VDATA *)api->GetScriptVariable("Render");
@@ -485,8 +473,8 @@ bool  DX8RENDER::Init()
 
 	pDropConveyorVBuffer = null;
 	rectsVBuffer = null;
-	d3d8->CreateVertexBuffer(2 * sizeof(CVECTOR), D3DUSAGE_WRITEONLY, D3DFVF_XYZ, D3DPOOL_MANAGED, &pDropConveyorVBuffer);
-	d3d8->CreateVertexBuffer(rectsVBuffer_SizeInRects*6*sizeof(RECT_VERTEX), D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, RS_RECT_VERTEX_FORMAT, D3DPOOL_DEFAULT, &rectsVBuffer);//D3DPOOL_MANAGED
+	d3d9->CreateVertexBuffer(2 * sizeof(CVECTOR), D3DUSAGE_WRITEONLY, D3DFVF_XYZ, D3DPOOL_MANAGED, &pDropConveyorVBuffer, NULL);
+	d3d9->CreateVertexBuffer(rectsVBuffer_SizeInRects*6*sizeof(RECT_VERTEX), D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, RS_RECT_VERTEX_FORMAT, D3DPOOL_DEFAULT, &rectsVBuffer, NULL);//D3DPOOL_MANAGED
 	if(!pDropConveyorVBuffer || !rectsVBuffer)
 	{
 		return false;
@@ -516,9 +504,9 @@ bool  DX8RENDER::Init()
 
 //################################################################################
 DX8RENDER::~DX8RENDER()
-{
-	d3d8->SetRenderTarget( NULL, NULL );
-
+{	
+	d3d9->SetRenderTarget( NULL, NULL );
+	
 	S_RELEASE(pSmallPostProcessSurface2, 0);
 	S_RELEASE(pPostProcessSurface, 1);
 	S_RELEASE(pSmallPostProcessSurface, 2);
@@ -532,10 +520,9 @@ DX8RENDER::~DX8RENDER()
 	
 	S_RELEASE(rectsVBuffer, 8);
 
-
-	if(progressImage) delete progressImage; progressImage = null;
-	if(progressBackImage) delete progressBackImage; progressBackImage = null;
-	if(progressTipsImage) delete progressTipsImage; progressTipsImage = null;
+	if(progressImage) 		delete progressImage; progressImage = null;
+	if(progressBackImage) 	delete progressBackImage; progressBackImage = null;
+	if(progressTipsImage) 	delete progressTipsImage; progressTipsImage = null;
 	for(int i=0; i<nFontQuantity; i++)
 	{
         if(FontList[i].font!=NULL)
@@ -545,113 +532,26 @@ DX8RENDER::~DX8RENDER()
 	}
     nFontQuantity = 0;
     if(fontIniFileName!=NULL) delete fontIniFileName;
-
+	
 	DELETE(DX8sphereVertex);
 	DELETE(pTechnique);
+	
 	ReleaseDevice();
+	
 	api->EngineDisplay(true);
 
 	if (bPreparedCapture)
 	{
 		DELETE_ARRAY(lpbi);
+		api->Trace("ReleaseDC");
 		ReleaseDC(api->GetAppHWND(), hDesktopDC);
+		api->Trace("DeleteDC");
 		DeleteDC(hCaptureDC);
 		DeleteObject(hCaptureBitmap);
 	}
-
-	aCaptureBuffers.DelAllWithPointers();
+	
+	aCaptureBuffers.DelAllWithPointers();	
 }
-
-//################################################################################
-#ifdef _XBOX
-bool getBestVideoMode(IDirect3D8 *d3, D3DPRESENT_PARAMETERS &d3dpp, bool bpp32)
-{
-	memset( &d3dpp, 0, sizeof(d3dpp) );
-
-	bool _1080i = false;
-	bool _720p = false;
-	bool PAL0 = false;
-	bool PAL1 = false;
-	bool NTSC0 = false;
-	bool NTSC1 = false;
-
-	long n_modes = d3->GetAdapterModeCount(D3DADAPTER_DEFAULT);
-	for(long nm=0; nm<n_modes; nm++)
-	{
-		D3DDISPLAYMODE am;
-		d3->EnumAdapterModes(D3DADAPTER_DEFAULT, nm, &am);
-
-		if((bpp32 && am.Format==D3DFMT_LIN_X8R8G8B8) || (!bpp32 && am.Format==D3DFMT_LIN_R5G6B5))
-		{
-			//if(am.Width==1920 && am.Height==1080)	_1080i = true;
-			//if(am.Width==1280 && am.Height==720)	_720p = true;
-			if(am.Width==640 && am.Height==576)	PAL0 = true;
-			if(am.Width==720 && am.Height==576)	PAL1 = true;
-			if(am.Width==640 && am.Height==480)	NTSC0 = true;
-			if(am.Width==720 && am.Height==480)	NTSC1 = true;
-		}
-	}
-
-	if(PAL1)
-	{
-		d3dpp.BackBufferWidth = 720;
-		d3dpp.BackBufferHeight = 576;
-	}
-	else
-		if(PAL0)
-		{
-			d3dpp.BackBufferWidth = 640;
-			d3dpp.BackBufferHeight = 576;
-		}
-		else
-			if(NTSC1)
-			{
-				d3dpp.BackBufferWidth = 720;
-				d3dpp.BackBufferHeight = 480;
-			}
-			else
-				if(NTSC0)
-				{
-					d3dpp.BackBufferWidth = 640;
-					d3dpp.BackBufferHeight = 480;
-				}
-				else return false;
-					/*if(_720p)
-					{
-						d3dpp.BackBufferWidth = 1280;
-						d3dpp.BackBufferHeight = 720;
-					}
-					else
-						if(_1080i)
-						{
-							d3dpp.BackBufferWidth = 1920;
-							d3dpp.BackBufferHeight = 1080;
-						}
-						else
-						{
-							return false;
-						}*/
-
-	if(bpp32)
-	{
-		d3dpp.AutoDepthStencilFormat = D3DFMT_D24S8;
-		d3dpp.BackBufferFormat = D3DFMT_X8R8G8B8;
-	}
-	else
-	{
-		d3dpp.AutoDepthStencilFormat = D3DFMT_D16;
-		d3dpp.BackBufferFormat = D3DFMT_R5G6B5;
-	}
-	d3dpp.BackBufferCount        = 1;
-	d3dpp.EnableAutoDepthStencil = TRUE;
-	d3dpp.SwapEffect             = D3DSWAPEFFECT_DISCARD;
-
-	//d3dpp.BackBufferWidth = 640;
-	//d3dpp.BackBufferHeight = 480;
-
-	return true;
-}
-#endif
 
 bool DX8RENDER::InitDevice(bool windowed, HWND _hwnd, long width, long height)
 {
@@ -665,12 +565,11 @@ bool DX8RENDER::InitDevice(bool windowed, HWND _hwnd, long width, long height)
 	bWindow = windowed;
 
 	hwnd = _hwnd;
-	api->Trace("Initializing DirectX 8");
-	d3d = Direct3DCreate8( D3D_SDK_VERSION );
-	if(d3d==NULL)
+	api->Trace("Initializing DirectX 9");
+	d3d = Direct3DCreate9( D3D_SDK_VERSION );
+	if(d3d == NULL)
 	{
-		//MessageBox(hwnd, "Direct3DCreate8 error", "InitDevice::Direct3DCreate8", MB_OK);
-		api->Trace("Direct3DCreate8 error : InitDevice::Direct3DCreate8");
+		api->Trace("Direct3DCreate9 error : InitDevice::Direct3DCreate9");
 		return false;
 	}
 
@@ -684,7 +583,6 @@ bool DX8RENDER::InitDevice(bool windowed, HWND _hwnd, long width, long height)
 	d3dpp.EnableAutoDepthStencil = TRUE;
 	d3dpp.AutoDepthStencilFormat = stencil_format;
 	
-
 	if(windowed)
 	{
 		D3DDISPLAYMODE d3ddm;
@@ -696,87 +594,46 @@ bool DX8RENDER::InitDevice(bool windowed, HWND _hwnd, long width, long height)
 		if( !bUseLargeBackBuffer )
 			if(d3ddm.Width < (DWORD)width || d3ddm.Height < (DWORD)height) 
 			{
-				d3dpp.BackBufferWidth = d3ddm.Width;
-				d3dpp.BackBufferHeight = d3ddm.Height;
-				width = d3ddm.Width;
-				height = d3ddm.Height;
+				d3dpp.BackBufferWidth 	= d3ddm.Width;
+				d3dpp.BackBufferHeight 	= d3ddm.Height;
+				width 	= d3ddm.Width;
+				height 	= d3ddm.Height;
 			}
 	}
 
-
 	d3dpp.MultiSampleType = D3DMULTISAMPLE_NONE;
-	//d3dpp.MultiSampleType = D3DMULTISAMPLEMODE_4X ;
-	/*dword n;
-	for(n=D3DMULTISAMPLE_16_SAMPLES;n>=D3DMULTISAMPLE_3_SAMPLES;n--)
-	{
-		if(SUCCEEDED(d3d->CheckDeviceMultiSampleType(D3DADAPTER_DEFAULT,D3DDEVTYPE_HAL,
-		d3dpp.BackBufferFormat,false,(D3DMULTISAMPLE_TYPE)n)))
-		{
-			d3dpp.MultiSampleType = (D3DMULTISAMPLE_TYPE)n;
-			break;
-		}
-	}//*/
 
-
-	
 	if (bBackBufferCanLock) d3dpp.Flags = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
 	else d3dpp.Flags = 0;
-	//d3dpp.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
 	d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
-	//d3dpp.SwapEffect = D3DSWAPEFFECT_COPY;
-	//if(windowed) d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;//FLIP;
-	//else d3dpp.SwapEffect = D3DSWAPEFFECT_FLIP;
 	
 	if(!windowed)
 	{
-		d3dpp.FullScreen_PresentationInterval = D3DPRESENT_INTERVAL_ONE;
-		//d3dpp.FullScreen_PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
+		d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
 	}
 	
-	
-#ifndef _XBOX
-	if(d3d->CreateDevice( D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd, D3DCREATE_MIXED_VERTEXPROCESSING, &d3dpp, &d3d8)!=D3D_OK)
+	if(d3d->CreateDevice( D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd, D3DCREATE_MIXED_VERTEXPROCESSING, &d3dpp, &d3d9)!=D3D_OK)
 	{
-		//if(ErrorHandler("InitDevice::CreateDevice", E_FAIL)==true)	return false;
 		if(ErrorHandler("InitDevice::CreateDevice", 
-			d3d->CreateDevice( D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd, D3DCREATE_SOFTWARE_VERTEXPROCESSING, &d3dpp, &d3d8))==true)	return false;
+			d3d->CreateDevice( D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd, D3DCREATE_SOFTWARE_VERTEXPROCESSING, &d3dpp, &d3d9))==true)	return false;
 	}
-#else
-	if(getBestVideoMode(d3d, d3dpp, !(d3dpp.BackBufferFormat == D3DFMT_R5G6B5) ))
-	{
-		d3dpp.AutoDepthStencilFormat = D3DFMT_D24S8;
-		d3d->CreateDevice( 0, D3DDEVTYPE_HAL, NULL, D3DCREATE_HARDWARE_VERTEXPROCESSING, &d3dpp, &d3d8 );
-		width = d3dpp.BackBufferWidth;
-		height = d3dpp.BackBufferHeight;
-	}
-	else
-	{
-		api->Trace("no standard supported video medes found [ 640*480, 720*480, 640*576, 720*576, 1280*720. 1920*1080");
-	}
-#endif
 
-
-
-//Создаем рендерtargetы для POST PROCESS эффектов...
-	d3d8->GetRenderTarget(&pOriginalScreenSurface);
-	d3d8->GetDepthStencilSurface(&pOriginalDepthSurface);
+	//Создаем рендерtargetы для POST PROCESS эффектов...
+	d3d9->GetRenderTarget(0, &pOriginalScreenSurface);
+	d3d9->GetDepthStencilSurface(&pOriginalDepthSurface);
 
 	fSmallWidth = 128;
 	fSmallHeight = 128;
-
-	//if (bPostProcessEnabled)
-	{
-		d3d8->CreateTexture(width, height, 1, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &pPostProcessTexture);
-		d3d8->CreateTexture((int)fSmallWidth, (int)fSmallHeight, 1, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &pSmallPostProcessTexture);
-		d3d8->CreateTexture((int)(fSmallWidth*2.0f), (int)(fSmallHeight*2.0f), 1, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &pSmallPostProcessTexture2);
-	}
+	
+	d3d9->CreateTexture(width, height, 1, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &pPostProcessTexture, NULL);
+	d3d9->CreateTexture((int)fSmallWidth, (int)fSmallHeight, 1, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &pSmallPostProcessTexture, NULL);
+	d3d9->CreateTexture((int)(fSmallWidth*2.0f), (int)(fSmallHeight*2.0f), 1, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &pSmallPostProcessTexture2, NULL);
 
 	if (!pPostProcessTexture || !pSmallPostProcessTexture || !pSmallPostProcessTexture2)
 	{
 		bPostProcessEnabled = false;
 		bPostProcessError = true;
 	}
-
 	
 	if (!bPostProcessError)
 	{
@@ -790,8 +647,6 @@ bool DX8RENDER::InitDevice(bool windowed, HWND _hwnd, long width, long height)
 			bPostProcessError = true;
 		}
 	}
-
-
 
 	if (!bPostProcessError)
 	{
@@ -809,15 +664,6 @@ bool DX8RENDER::InitDevice(bool windowed, HWND _hwnd, long width, long height)
 	OriginalViewPort.MinZ = 0.0f;
 	OriginalViewPort.MaxZ = 1.0f;
 
-
-	//if(ErrorHandler("InitDevice::SetViewport", d3d8->SetViewport(&vprt))==true)	return false;
-
-	//Ставим ее как рендер таргет...
-	//FIX
-	//SetPostProcessTextureAsRenderTarget();
-	//Ставим ее как рендер таргет...
-
-
 	for(long b=0; b<MAX_BUFFERS; b++)
 	{
 		VertexBuffers[b].buff=0;
@@ -825,38 +671,32 @@ bool DX8RENDER::InitDevice(bool windowed, HWND _hwnd, long width, long height)
 	}
 
 	long num_stages;
-#ifndef _XBOX
+
 	num_stages = 8;
-#else
-	num_stages = 4;
-#endif
+
 	for(long s=0; s<num_stages; s++)
 	{
 		//texture operation
-		d3d8->SetTextureStageState(s, D3DTSS_COLORARG1, D3DTA_CURRENT);
-		d3d8->SetTextureStageState(s, D3DTSS_COLORARG2, D3DTA_TEXTURE);
-		d3d8->SetTextureStageState(s, D3DTSS_COLOROP, D3DTOP_DISABLE);
+		d3d9->SetTextureStageState(s, D3DTSS_COLORARG1, D3DTA_CURRENT);
+		d3d9->SetTextureStageState(s, D3DTSS_COLORARG2, D3DTA_TEXTURE);
+		d3d9->SetTextureStageState(s, D3DTSS_COLOROP, D3DTOP_DISABLE);
 
 		//texture coord
-		d3d8->SetTextureStageState(s, D3DTSS_TEXCOORDINDEX, s);
+		d3d9->SetTextureStageState(s, D3DTSS_TEXCOORDINDEX, s);
 
 		//texture filtering
-		d3d8->SetTextureStageState(s, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
-		d3d8->SetTextureStageState(s, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
-		d3d8->SetTextureStageState(s, D3DTSS_MIPFILTER, D3DTEXF_LINEAR);
+		d3d9->SetSamplerState(s, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+		d3d9->SetSamplerState(s, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+		d3d9->SetSamplerState(s, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
 	}
 
 	//set base texture and diffuse+specular lighting
-	d3d8->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_DIFFUSE);
-	d3d8->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_ADDSIGNED);
-
-	//texture op for lightmaps
-	//d3d8->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_ADDSIGNED);
-
+	d3d9->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_DIFFUSE);
+	d3d9->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_ADDSIGNED);
 
 	SetCamera(&CVECTOR(0.0f, 0.0f, 0.0f), &CVECTOR(0.0f, 0.0f, 0.0f), 1.0f);
 
-	D3DLIGHT8 l;
+	D3DLIGHT9 l;
 	ZERO(l);	
 	l.Type = D3DLIGHT_POINT;
 	l.Range = 100.0f;
@@ -864,8 +704,8 @@ bool DX8RENDER::InitDevice(bool windowed, HWND _hwnd, long width, long height)
 
 	for (int i=0; i<8; i++)
 	{
-		d3d8->SetLight(i, &l);
-		d3d8->LightEnable(i,false);
+		d3d9->SetLight(i, &l);
+		d3d9->LightEnable(i,false);
 	}
 
 	func();
@@ -875,22 +715,8 @@ bool DX8RENDER::InitDevice(bool windowed, HWND _hwnd, long width, long height)
 	screen_size.y = height;
 
 	m_fHeightDeformator = (float)(height*4.0f)/(float)(width*3.0f);
-/*#ifdef _XBOX
-	DWORD videoFlags = XGetVideoFlags();
-	if( videoFlags & XC_VIDEO_FLAGS_WIDESCREEN ) {
-		m_fHeightDeformator = (float)(height*16)/(float)(width*9);
-	}
-#endif*/
 
-	d3d8->GetGammaRamp(&DefaultRamp);
-#ifdef _XBOX
-	for (i=0; i<256; i++)
-	{
-		DefaultRamp.red[i] *= 256;
-		DefaultRamp.green[i] *= 256;
-		DefaultRamp.blue[i] *= 256;
-	}
-#endif
+	d3d9->GetGammaRamp(0, &DefaultRamp);
 
 	UNGUARD
 	return true;
@@ -899,9 +725,11 @@ bool DX8RENDER::InitDevice(bool windowed, HWND _hwnd, long width, long height)
 //################################################################################
 bool DX8RENDER::ReleaseDevice()
 {
+	api->Trace("Releasing DirectX 9");
 	if (aniVBuffer) aniVBuffer->Release();
 	aniVBuffer = null;
 	numAniVerteces = 0;
+	
 	for(long b=0; b<MAX_BUFFERS; b++)
 	{
 		if (VertexBuffers[b].buff)	VertexBuffers[b].buff->Release(); VertexBuffers[b].buff = 0;
@@ -910,28 +738,51 @@ bool DX8RENDER::ReleaseDevice()
 
 	bool res = true;
 	for(long t=0; t<MAX_STEXTURES; t++)
+	{	
 		if(Textures[t].ref && Textures[t].loaded && Textures[t].d3dtex)
 		{
 			if (ErrorHandler("Release texture", Textures[t].d3dtex->Release())==false)	res = false;
 			Textures[t].ref = NULL;
 			if( Textures[t].name!=NULL )	delete Textures[t].name;
 		}
+	}	
+		
+	if (d3d9) d3d9->SetGammaRamp(0,D3DSGR_NO_CALIBRATION, &DefaultRamp);
+	
+	HRESULT hr;
+	
+	if (d3d9 != NULL)
+	{
+		hr = d3d9->Release();
+		if (FAILED(hr)) 
+		{
+			api->Trace("Release d3d9   Error: %s error description: %s\n", DXGetErrorString(hr), DXGetErrorDescription(hr));
+		}
+		d3d9 = NULL;
+	}
 
-	if (d3d8) d3d8->SetGammaRamp(D3DSGR_NO_CALIBRATION, &DefaultRamp);
-
-	if (d3d8!=NULL && ErrorHandler("Release d3d8", d3d8->Release())==false)	res = false;
-	d3d8 = NULL;
-	if (d3d!=NULL && ErrorHandler("Release d3d", d3d->Release())==false)	res = false;
-	d3d = NULL;
+	if (d3d != NULL)
+	{
+		hr = d3d->Release();
+		if (FAILED(hr)) 
+		{
+			api->Trace("Release d3d    Error: %s error description: %s\n", DXGetErrorString(hr), DXGetErrorDescription(hr));
+		}
+		d3d = NULL;
+	}
+	
+//	if (d3d9!=NULL && ErrorHandler("Release d3d9", d3d9->Release()) == false)	res = false;
+//	d3d9 = NULL;
+//	if (d3d!=NULL && ErrorHandler("Release d3d", d3d->Release()) == false)	res = false;
+//	d3d = NULL;
+	
 	return res;
 }
-
 
 //################################################################################
 bool DX8RENDER::DX8Clear(long type)
 {
-	if(ErrorHandler("Clear", d3d8->Clear(0L, NULL, type, dwBackColor, 1.0f, 0L))==true)	return false;
-	//if(ErrorHandler("Clear", d3d8->Clear(0L, NULL, type, 0x0, 1.0f, 0L))==true)	return false;
+	if(ErrorHandler("Clear", d3d9->Clear(0L, NULL, type, dwBackColor, 1.0f, 0L))==true)	return false;
 	return true;
 }
 
@@ -941,7 +792,7 @@ bool DX8RENDER::DX8BeginScene()
 	dwNumDrawPrimitive = 0;
 	dwNumLV = 0;
 	dwNumLI = 0;
-	if(ErrorHandler("BeginScene", d3d8->BeginScene())==true)	return false;
+	if(ErrorHandler("BeginScene", d3d9->BeginScene())==true)	return false;
 	return true;
 }
 
@@ -989,7 +840,6 @@ void DX8RENDER::CreateRenderQuad (float fWidth, float fHeight, float fSrcWidth, 
 
 		PostProcessQuad[i].u3 = u + (fTexelU*fBlurSize);
 		PostProcessQuad[i].v3 = v + (fTexelV*fBlurSize);
-
 	}
 
 }
@@ -1002,9 +852,8 @@ void DX8RENDER::BlurGlowTexture ()
 	SetTexture (1, pPostProcessTexture);
 	SetTexture (2, pPostProcessTexture);
 	SetTexture (3, pPostProcessTexture);
-	d3d8->SetRenderTarget( pSmallPostProcessSurface2, NULL );
+	d3d9->SetRenderTarget( 0, pSmallPostProcessSurface2);
 	DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, POST_PROCESS_FVF, 2, PostProcessQuad, sizeof(QuadVertex), "PostProcessBlur");
-
 
 	//предварительное размытие iBlurPasses раз :))))
 	for (int i = 0; i < iBlurPasses; i++)
@@ -1015,7 +864,7 @@ void DX8RENDER::BlurGlowTexture ()
 		SetTexture (1, pSmallPostProcessTexture2);
 		SetTexture (2, pSmallPostProcessTexture2);
 		SetTexture (3, pSmallPostProcessTexture2);
-		d3d8->SetRenderTarget( pSmallPostProcessSurface, NULL );
+		d3d9->SetRenderTarget( 0, pSmallPostProcessSurface );
 		DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, POST_PROCESS_FVF, 2, PostProcessQuad, sizeof(QuadVertex), "PostProcessBlur");
 
 		CreateRenderQuad(fSmallWidth*2.0f, fSmallHeight*2.0f, fSmallWidth, fSmallHeight);
@@ -1024,17 +873,16 @@ void DX8RENDER::BlurGlowTexture ()
 		SetTexture (1, pSmallPostProcessTexture);
 		SetTexture (2, pSmallPostProcessTexture);
 		SetTexture (3, pSmallPostProcessTexture);
-		d3d8->SetRenderTarget( pSmallPostProcessSurface2, NULL );
+		d3d9->SetRenderTarget( 0, pSmallPostProcessSurface2 );
 		DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, POST_PROCESS_FVF, 2, PostProcessQuad, sizeof(QuadVertex), "PostProcessBlur");
 	}
-
 
 	CreateRenderQuad(fSmallWidth, fSmallHeight, fSmallWidth*2.0f, fSmallHeight*2.0f);
 	SetTexture (0, pSmallPostProcessTexture2);
 	SetTexture (1, pSmallPostProcessTexture2);
 	SetTexture (2, pSmallPostProcessTexture2);
 	SetTexture (3, pSmallPostProcessTexture2);
-	d3d8->SetRenderTarget( pSmallPostProcessSurface, NULL );
+	d3d9->SetRenderTarget( 0, pSmallPostProcessSurface );
 	DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, POST_PROCESS_FVF, 2, PostProcessQuad, sizeof(QuadVertex), "PostProcessBlur");
 }
 
@@ -1053,12 +901,8 @@ void DX8RENDER::CopyGlowToScreen ()
 	PostProcessQuad[2].v0 = 1.0f;  PostProcessQuad[2].u0 = 1.0f; 
 	PostProcessQuad[3].v0 = 0.0f;  PostProcessQuad[3].u0 = 1.0f; 
 
-
-
-	d3d8->SetRenderTarget( pOriginalScreenSurface, pOriginalDepthSurface );
-
-
-
+	d3d9->SetRenderTarget( 0, pOriginalScreenSurface );
+	d3d9->SetDepthStencilSurface(pOriginalDepthSurface); 
 
 	if (GlowIntensity < 0) GlowIntensity = 0;
 	if (GlowIntensity > 255) GlowIntensity = 255;
@@ -1090,8 +934,8 @@ void DX8RENDER::CopyPostProcessToScreen()
 	PostProcessQuad[2].v0 = 1.0f;  PostProcessQuad[2].u0 = 1.0f; 
 	PostProcessQuad[3].v0 = 0.0f;  PostProcessQuad[3].u0 = 1.0f; 
 
-	d3d8->SetRenderTarget( pOriginalScreenSurface, pOriginalDepthSurface );
-
+	d3d9->SetRenderTarget( 0, pOriginalScreenSurface );
+	d3d9->SetDepthStencilSurface(pOriginalDepthSurface); 
 
 	//Оригинальный экран рисуем....
 	SetTexture (0, pPostProcessTexture);
@@ -1101,7 +945,8 @@ void DX8RENDER::CopyPostProcessToScreen()
 
 	if (bSeaEffect)
 	{
-		d3d8->SetVertexShader(POST_PROCESS_FVF);
+		d3d9->SetVertexShader(NULL);
+		d3d9->SetFVF(POST_PROCESS_FVF);
 		DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, 32 * 32, 31 * 31 * 2, qi, D3DFMT_INDEX16, qv, sizeof(QuadVertex), "PostProcess");
 	}
 	else
@@ -1110,26 +955,27 @@ void DX8RENDER::CopyPostProcessToScreen()
 	}
 }
 
-void DX8RENDER::ClearPostProcessSurface (IDirect3DSurface8* pSurf)
+void DX8RENDER::ClearPostProcessSurface (IDirect3DSurface9* pSurf)
 {
-	HRESULT hr = d3d8->SetRenderTarget( pSurf, NULL );
-	hr = d3d8->BeginScene();
-	hr = d3d8->Clear(0, NULL, D3DCLEAR_TARGET, 0x0, 0.0f, 0x0);
-	hr = d3d8->EndScene();
+	HRESULT hr = d3d9->SetRenderTarget( 0, pSurf );
+	hr = d3d9->BeginScene();
+	hr = d3d9->Clear(0, NULL, D3DCLEAR_TARGET, 0x0, 0.0f, 0x0);
+	hr = d3d9->EndScene();
 }
 
 void DX8RENDER::SetScreenAsRenderTarget ()
 {
-	HRESULT hr = d3d8->SetRenderTarget( pOriginalScreenSurface, pOriginalDepthSurface );
+	HRESULT hr = d3d9->SetRenderTarget( 0, pOriginalScreenSurface );
+	hr = d3d9->SetDepthStencilSurface(pOriginalDepthSurface); 
 	SetViewport(&OriginalViewPort);
 }
 
 void DX8RENDER::SetPostProcessTextureAsRenderTarget ()
 {
-	HRESULT hr = d3d8->SetRenderTarget( pPostProcessSurface, pOriginalDepthSurface );
+	HRESULT hr = d3d9->SetRenderTarget( 0, pPostProcessSurface);
+	hr = d3d9->SetDepthStencilSurface(pOriginalDepthSurface); 
 	SetViewport(&OriginalViewPort);
 }
-
 
 void DX8RENDER::MakePostProcess()
 {
@@ -1137,9 +983,9 @@ void DX8RENDER::MakePostProcess()
 	if (!bSeaEffect && !bPostProcessEnabled) return;
 	if (!bNeedCopyToScreen) return;
 
-	DWORD dwToken;
-	d3d8->CreateStateBlock(D3DSBT_ALL, &dwToken);
-	d3d8->CaptureStateBlock(dwToken);
+	IDirect3DStateBlock9* sbToken=NULL;
+	d3d9->CreateStateBlock(D3DSBT_ALL, &sbToken);
+	sbToken->Capture();
 
 	bNeedCopyToScreen = false;
 
@@ -1147,8 +993,8 @@ void DX8RENDER::MakePostProcess()
 	BlurGlowTexture();
 	CopyGlowToScreen();
 
-	d3d8->ApplyStateBlock(dwToken);
-	d3d8->DeleteStateBlock(dwToken);
+	sbToken->Apply();
+	sbToken->Release();
 
 	SetScreenAsRenderTarget();
 /*
@@ -1170,7 +1016,8 @@ bool DX8RENDER::DX8EndScene()
 
 	if(bShowFps)
 	{	
-		for(long t=0; t<MAX_STEXTURES; t++) if(Textures[t].ref>0) { dwTotalTexSize += Textures[t].dwSize; dwTotalTexNum++; }
+                long t;
+		for(t=0; t<MAX_STEXTURES; t++) if(Textures[t].ref>0) { dwTotalTexSize += Textures[t].dwSize; dwTotalTexNum++; }
 
 		for(t=0; t<MAX_BUFFERS; t++)
 		{
@@ -1179,94 +1026,239 @@ bool DX8RENDER::DX8EndScene()
 		}
 	}
 
-#ifndef _XBOX
 	if(api->Controls->GetDebugAsyncKeyState(VK_MULTIPLY) < 0)
-#endif
 	{
 		//MEMORYSTATUS ms;
-	//GlobalMemoryStatus(&ms);
-	//trace("Allocate(long size) %d   - FREE( %d )",size,ms.dwAvailPhys);
-	//Print(screen_size.x - 100,150,"%d",api->fio->_GetDiskFreeSpaceEx();
+		//GlobalMemoryStatus(&ms);
+		//trace("Allocate(long size) %d   - FREE( %d )",size,ms.dwAvailPhys);
+		//Print(screen_size.x - 100,150,"%d",api->fio->_GetDiskFreeSpaceEx();
 		bShowFps = 0;
 		CMatrix mView; GetTransform(D3DTS_VIEW, mView); mView.Transposition();
 		Print(0, 0, "Cam: %.3f, %.3f, %.3f", mView.Pos().x, mView.Pos().y, mView.Pos().z);
 		Print(screen_size.x - 100,50,"%d fps",api->EngineFps());
 
-	if(bShowFps)
-	{	
-		MSTATE sms;
-		api->GetMemoryState(&sms);
-		Print(screen_size.x - 100,50,"%d",api->EngineFps());
+		if(bShowFps)
+		{	
+			MSTATE sms;
+			api->GetMemoryState(&sms);
+			Print(screen_size.x - 100,50,"%d",api->EngineFps());
 
-		//Print(80,50,"%d Kb",(ms.dwTotalPhys - ms.dwAvailPhys)/(1024));
+			//Print(80,50,"%d Kb",(ms.dwTotalPhys - ms.dwAvailPhys)/(1024));
 		
-		Print(80,50,"%.3f Mb",(ms.dwTotalPhys - ms.dwAvailPhys)/(1024.f*1024.f));
-		Print(80,80,"%.3f Mb in %d blocks",sms.nMemorySize/(1024.f*1024.f),sms.nBlocksNum);
+			Print(80,50,"%.3f Mb",(ms.dwTotalPhys - ms.dwAvailPhys)/(1024.f*1024.f));
+			Print(80,80,"%.3f Mb in %d blocks",sms.nMemorySize/(1024.f*1024.f),sms.nBlocksNum);
 
 
-		if(bShowExInfo)
-		{
-			Print(80,70,"t: %d, %.3f Mb", dwTotalTexNum, float(dwTotalTexSize) / (1024.0f*1024.0f));
-			Print(80,90,"v: %d, %.3f Mb", dwTotalVB, float(dwTotalVBSize) / (1024.0f*1024.0f));
-			Print(80,110,"i: %d, %.3f Mb", dwTotalIB, float(dwTotalIBSize) / (1024.0f*1024.0f));
-			Print(80,130,"d: %d, lv: %d, li: %d", dwNumDrawPrimitive, dwNumLV, dwNumLI);
-			Print(80,150,"s: %d, %.3f, %.3f",dwSoundBuffersCount, dwSoundBytes / 1024.f, dwSoundBytesCached / 1024.f);
-		}
-	}
-		
-#ifdef _XBOX
-		
-#endif
+			if(bShowExInfo)
+			{
+				Print(80,70,"t: %d, %.3f Mb", dwTotalTexNum, float(dwTotalTexSize) / (1024.0f*1024.0f));
+				Print(80,90,"v: %d, %.3f Mb", dwTotalVB, float(dwTotalVBSize) / (1024.0f*1024.0f));
+				Print(80,110,"i: %d, %.3f Mb", dwTotalIB, float(dwTotalIBSize) / (1024.0f*1024.0f));
+				Print(80,130,"d: %d, lv: %d, li: %d", dwNumDrawPrimitive, dwNumLV, dwNumLI);
+				Print(80,150,"s: %d, %.3f, %.3f",dwSoundBuffersCount, dwSoundBytes / 1024.f, dwSoundBytesCached / 1024.f);
+			}
+		}		
 	}
 
 	// Try to drop video conveyor
 	if (bDropVideoConveyor && pDropConveyorVBuffer)
 	{
 		CVECTOR * pV;
-		pDropConveyorVBuffer->Lock(0, 0, (BYTE**)&pV, 0);
+		pDropConveyorVBuffer->Lock(0, 0, (void**)&pV, 0);
 		for (long i=0; i<2; i++)
 			pV[i] = CVECTOR(1e6f, 1e6f, 1e6f);
 		pDropConveyorVBuffer->Unlock();
-		d3d8->SetStreamSource(0, pDropConveyorVBuffer, sizeof(CVECTOR));
-		d3d8->SetVertexShader(D3DFVF_XYZ);
+                d3d9->SetIndices(0);
+		d3d9->SetStreamSource(0, pDropConveyorVBuffer, 0, sizeof(CVECTOR));
+		d3d9->SetVertexShader(NULL);
+		d3d9->SetFVF(D3DFVF_XYZ);
 		DrawPrimitive(D3DPT_LINELIST, 0, 1);
 	}
 
-	if (ErrorHandler("EndScene", d3d8->EndScene()))	return false;
+	if (ErrorHandler("EndScene", d3d9->EndScene()))	return false;
 	
-#ifndef _XBOX
-	/*if (api->Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0 && api->Controls->GetDebugAsyncKeyState(VK_F6) < 0)
-	{
-		bVideoCapture ^= 1;
-		api->SetDeltaTime((bVideoCapture) ? long(1000.0f / fFixedFPS) : 0);
-		if (!bVideoCapture)
-			SaveCaptureBuffers();
-		Sleep(300);
-	}*/
+	//if (bMakeShoot || GetAsyncKeyState(VK_F8) < 0)  MakeScreenShot();
+	//if (bVideoCapture) 
+	if (GetAsyncKeyState(VK_F8) < 0)	
+	{	
+	//	MakeCapture();
+		GetPng();
+	}	
 
-	// boal if (bMakeShoot || api->Controls->GetDebugAsyncKeyState(VK_F8) < 0)  MakeScreenShot();
-	if (bMakeShoot || GetAsyncKeyState(VK_F8) < 0)  MakeScreenShot();
-#endif
-
-	if (bVideoCapture) MakeCapture();
-
-	HRESULT hRes = d3d8->Present(NULL, NULL, NULL, NULL);
-
-	if (hRes == D3DERR_DEVICELOST)
+	HRESULT hRes = d3d9->Present(NULL, NULL, NULL, NULL);
+	
+	if(hRes == D3DERR_DEVICELOST)
 	{
 		bDeviceLost = true;
 	}
 
-#ifndef _XBOX
 	if(bSafeRendering)
 	{
 		HDC dc = GetDC(hwnd);
 		SetPixel(dc, 0,0,0);
 		ReleaseDC(hwnd, dc);
 	}
-#endif
-
 	return true;
+}
+
+void DX8RENDER::RecoverDevice()
+{
+	HRESULT hr = NULL;
+
+	hr = d3d9->TestCooperativeLevel();
+	
+	switch (hr)
+	{
+		case D3D_OK:
+		return;
+
+		case D3DERR_DEVICENOTRESET:
+			d3d9->EvictManagedResources();
+			LostRender();
+			ResetDevice();
+			bDeviceLost = false;
+			RestoreRender();
+		break;
+
+		case D3DERR_DEVICELOST:
+			// the device cannot be reset yet
+			Sleep (500);
+		break;						
+	}	
+}
+
+void DX8RENDER::LostRender()
+{
+	S_RELEASE(rectsVBuffer, 8);
+	S_RELEASE(pSmallPostProcessTexture, 7);
+	S_RELEASE(pPostProcessTexture, 6);
+	S_RELEASE(pSmallPostProcessTexture2, 5);
+	
+	S_RELEASE(pOriginalDepthSurface, 4);
+	S_RELEASE(pOriginalScreenSurface, 3);
+	S_RELEASE(pSmallPostProcessSurface, 2);
+	S_RELEASE(pPostProcessSurface, 1);
+	S_RELEASE(pSmallPostProcessSurface2, 0);
+}
+
+long DX8RENDER::RestoreRender()
+{
+	d3d9->GetRenderTarget(0, &pOriginalScreenSurface);
+	d3d9->GetDepthStencilSurface(&pOriginalDepthSurface);
+	
+	d3d9->CreateVertexBuffer(rectsVBuffer_SizeInRects*6*sizeof(RECT_VERTEX), D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, RS_RECT_VERTEX_FORMAT, D3DPOOL_DEFAULT, &rectsVBuffer, NULL);
+	
+	d3d9->CreateTexture(screen_size.x, screen_size.y, 1, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &pPostProcessTexture, NULL);
+	d3d9->CreateTexture((int)fSmallWidth, (int)fSmallHeight, 1, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &pSmallPostProcessTexture, NULL);
+	d3d9->CreateTexture((int)(fSmallWidth*2.0f), (int)(fSmallHeight*2.0f), 1, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &pSmallPostProcessTexture2, NULL);
+	
+	if (!pPostProcessTexture || !pSmallPostProcessTexture || !pSmallPostProcessTexture2)
+	{
+		bPostProcessEnabled = false;
+		bPostProcessError = true;
+	}
+	
+	if (!bPostProcessError)
+	{
+		pPostProcessTexture->GetSurfaceLevel(0, &pPostProcessSurface);
+		pSmallPostProcessTexture2->GetSurfaceLevel(0, &pSmallPostProcessSurface2);
+		pSmallPostProcessTexture->GetSurfaceLevel(0, &pSmallPostProcessSurface);
+
+		if (!pPostProcessSurface || !pSmallPostProcessSurface2 || !pSmallPostProcessSurface)
+		{
+			bPostProcessEnabled = false;
+			bPostProcessError = true;
+		}
+	}
+
+	if (!bPostProcessError)
+	{
+		ClearPostProcessSurface(pPostProcessSurface);
+		ClearPostProcessSurface(pSmallPostProcessSurface);
+		ClearPostProcessSurface(pSmallPostProcessSurface2);
+	}
+
+	ClearPostProcessSurface(pOriginalScreenSurface);
+
+	OriginalViewPort.X = 0;
+	OriginalViewPort.Y = 0;
+	OriginalViewPort.Width = screen_size.x;
+	OriginalViewPort.Height = screen_size.y;
+	OriginalViewPort.MinZ = 0.0f;
+	OriginalViewPort.MaxZ = 1.0f;
+
+	long num_stages;
+
+	num_stages = 8;
+
+	for(long s=0; s<num_stages; s++)
+	{
+		//texture operation
+		d3d9->SetTextureStageState(s, D3DTSS_COLORARG1, D3DTA_CURRENT);
+		d3d9->SetTextureStageState(s, D3DTSS_COLORARG2, D3DTA_TEXTURE);
+		d3d9->SetTextureStageState(s, D3DTSS_COLOROP, D3DTOP_DISABLE);
+
+		//texture coord
+		d3d9->SetTextureStageState(s, D3DTSS_TEXCOORDINDEX, s);
+
+		//texture filtering
+		d3d9->SetSamplerState(s, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+		d3d9->SetSamplerState(s, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+		d3d9->SetSamplerState(s, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
+	}
+
+	//set base texture and diffuse+specular lighting
+	d3d9->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_DIFFUSE);
+	d3d9->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_ADDSIGNED);
+/*
+	SetCamera(&CVECTOR(0.0f, 0.0f, 0.0f), &CVECTOR(0.0f, 0.0f, 0.0f), 1.0f);
+*/
+	D3DLIGHT9 l;
+	ZERO(l);	
+	l.Type = D3DLIGHT_POINT;
+	l.Range = 100.0f;
+	l.Attenuation0 = 1.0f;
+
+	for (int i=0; i<8; i++)
+	{
+		d3d9->SetLight(i, &l);
+		d3d9->LightEnable(i,false);
+	}
+
+	func();
+/*
+	d3d9->GetGammaRamp(0, &DefaultRamp);
+*/	
+	
+	for(long b=0; b<MAX_BUFFERS; b++)
+	{
+		if (VertexBuffers[b].size > 0)	
+		{
+			if(ErrorHandler("CreateVertexBuffer::CreateVertexBuffer", d3d9->CreateVertexBuffer(VertexBuffers[b].size, VertexBuffers[b].usage, 
+				VertexBuffers[b].type, D3DPOOL_DEFAULT, &VertexBuffers[b].buff, NULL) ) == true)	
+			{
+				return -1;
+			}	
+		}			
+		if (IndexBuffers[b].ntrgs > 0)	
+		{
+			if(ErrorHandler("CreateIndexBuffer::CreateIndexBuffer", d3d9->CreateIndexBuffer(IndexBuffers[b].ntrgs, IndexBuffers[b].usage, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &IndexBuffers[b].buff, NULL)) == true)	
+			{
+				return -1;
+			}
+		}			
+	}
+
+	ENTITY_ID eid;
+
+	api->SetEntityScanLayer(null);
+	if (api->GetEntity(&eid)) 
+	do 
+	{ 
+		((ENTITY*)eid.pointer)->RestoreRender(); 
+	} while (api->GetEntityNext(&eid));
+	
+	return 0;
 }
 
 //################################################################################
@@ -1319,8 +1311,8 @@ long DX8RENDER::TextureCreate(const char *fname)
 		if (i>=0)
 		{
 			dword dwLen = strlen(fname);
-			
-			for (long j=dwLen-1; j>=0; j--)
+			long j = 0;
+			for (j=dwLen-1; j>=0; j--)
 				if (fname[j] == '\\') break;
 			
 			_fname[0] = 0;
@@ -1345,8 +1337,9 @@ long DX8RENDER::TextureCreate(const char *fname)
 		strupr(_fname);
 
 		unsigned long hf = hash_string(_fname);
+		long t = 0;
 
-		for(long t=0; t<MAX_STEXTURES; t++)
+		for(t=0; t<MAX_STEXTURES; t++)
 			if(Textures[t].ref!=0)
 				if(Textures[t].name)
 				if(Textures[t].hash==hf && stricmp(Textures[t].name,_fname)==0)
@@ -1378,8 +1371,10 @@ bool DX8RENDER::TextureLoad(long t)
 	//Формируем путь до текстуры
 	char fn[_MAX_FNAME];
 	Textures[t].dwSize = 0;
-	//wsprintf(fn,"resource\\textures\\%s.tx",fname);
-	if(Textures[t].name == 0) return false;
+	if(strlen(Textures[t].name) == 0) // empty file name
+	{	
+		return false;
+	}	
 	wsprintf(fn,TEXTURESDIR, Textures[t].name);
 	for(long s = 0, d = 0; fn[d]; s++)
 	{
@@ -1387,14 +1382,12 @@ bool DX8RENDER::TextureLoad(long t)
 		fn[d++] = fn[s];
 	}
 	//Открываем файл
-	//api->fio->SetDrive(XBOXDRIVE_CACHE);
 	HANDLE file = api->fio->_CreateFile(fn);
-	//api->fio->SetDrive();
 	if(file == INVALID_HANDLE_VALUE)
 	{
 		if (bTrace) 
 		{
-			api->Trace("Can't load texture %s",fn);
+			api->Trace("Can't load texture %s",fn );
 		}
 		delete Textures[t].name;
 		Textures[t].name = 0;
@@ -1407,7 +1400,7 @@ bool DX8RENDER::TextureLoad(long t)
 	{
 		if (bTrace) 
 		{
-			api->Trace("Can't load texture %s",fn);
+			api->Trace("Can't load texture %s",fn );
 		}
 		delete Textures[t].name;
 		Textures[t].name = 0;
@@ -1416,7 +1409,8 @@ bool DX8RENDER::TextureLoad(long t)
 	}
 	//Анализируем формат
 	D3DFORMAT d3dFormat = D3DFMT_UNKNOWN;
-	for(long textureFI = 0; textureFI < sizeof(textureFormats)/sizeof(SD_TEXTURE_FORMAT); textureFI++)
+	long textureFI = 0;
+	for(textureFI = 0; textureFI < sizeof(textureFormats)/sizeof(SD_TEXTURE_FORMAT); textureFI++)
 		if(textureFormats[textureFI].txFormat == head.format) break;
 	if(textureFI == sizeof(textureFormats)/sizeof(SD_TEXTURE_FORMAT) || head.flags & TX_FLAGS_PALLETTE)
 	{
@@ -1445,8 +1439,8 @@ bool DX8RENDER::TextureLoad(long t)
 		//Позиция в файле
 		if(seekposition) api->fio->_SetFilePointer(file, seekposition, 0, FILE_CURRENT);
 		//Создаём текстуру
-		IDirect3DTexture8 * tex = null;
-		if(ErrorHandler("CreateTexture", d3d8->CreateTexture(head.width, head.height, head.nmips, 0, d3dFormat, D3DPOOL_MANAGED, &tex))==true || !tex)
+		IDirect3DTexture9 * tex = null;
+		if(ErrorHandler("CreateTexture", d3d9->CreateTexture(head.width, head.height, head.nmips, 0, d3dFormat, D3DPOOL_MANAGED, &tex, NULL))==true || !tex)
 		{
 			if (bTrace) api->Trace("Texture %s is not created (width: %i, height: %i, num mips: %i, format: %s), not loading it.", fn, head.width, head.height, head.nmips, formatTxt);
 			delete Textures[t].name;
@@ -1461,7 +1455,7 @@ bool DX8RENDER::TextureLoad(long t)
 			Textures[t].dwSize += head.mip_size;
 			//Получаем поверхность мипа
 			bool isError = false;
-			IDirect3DSurface8 * surface = null;
+			IDirect3DSurface9 * surface = null;
 			if(ErrorHandler("tex->GetSurfaceLevel", tex->GetSurfaceLevel(m, &surface))==true || !surface)
 			{
 				isError = true;
@@ -1499,8 +1493,8 @@ bool DX8RENDER::TextureLoad(long t)
 			return false;
 		}
 		//Количество мипов
-		D3DCAPS8 devcaps;
-		if(ErrorHandler("d3d8->GetDeviceCaps", d3d8->GetDeviceCaps(&devcaps)))
+		D3DCAPS9 devcaps;
+		if(ErrorHandler("d3d9->GetDeviceCaps", d3d9->GetDeviceCaps(&devcaps)))
 		{
 			if (bTrace) api->Trace("Cube map texture %s is not created (size: %i, num mips: %i, format: %s), not loading it.", fn, head.width, head.nmips, formatTxt);
 			delete Textures[t].name;
@@ -1510,8 +1504,8 @@ bool DX8RENDER::TextureLoad(long t)
 		}
 		if(!(devcaps.TextureCaps & D3DPTEXTURECAPS_MIPCUBEMAP)) head.nmips = 1;
 		//Создаём текстуру
-		IDirect3DCubeTexture8 * tex = null;
-		if(ErrorHandler("d3d8->CreateCubeTexture", d3d8->CreateCubeTexture(head.width, head.nmips, 0, d3dFormat, D3DPOOL_MANAGED, &tex))==true || !tex)
+		IDirect3DCubeTexture9 * tex = null;
+		if(ErrorHandler("d3d9->CreateCubeTexture", d3d9->CreateCubeTexture(head.width, head.nmips, 0, d3dFormat, D3DPOOL_MANAGED, &tex, null))==true || !tex)
 		{
 			if (bTrace) api->Trace("Cube map texture %s is not created (size: %i, num mips: %i, format: %s), not loading it.", fn, head.width, head.nmips, formatTxt);
 			delete Textures[t].name;
@@ -1571,7 +1565,6 @@ bool DX8RENDER::TextureLoad(long t)
 //---------------------------------------------------------------
 //print statistics
 //---------------------------------------------------------------
-//#ifndef _XBOX
 	if(texLog)
 	{
 		char s[256];
@@ -1579,13 +1572,12 @@ bool DX8RENDER::TextureLoad(long t)
 		HANDLE fh = api->fio->_CreateFile("texLoad.txt",GENERIC_WRITE,FILE_SHARE_WRITE,OPEN_ALWAYS);
 		api->fio->_SetFilePointer(fh,0,0,FILE_END);
 		totSize += Textures[t].dwSize;
-		sprintf(s, "%.2f, size: %d, %d * %d, %s\n", totSize/1024.0f/1024.0f, Textures[t].dwSize, head.width, head.height, Textures[t].name);
+		sprintf(s, "%.2f, size: %d, %d * %d, %s   %p\n", totSize/1024.0f/1024.0f, Textures[t].dwSize, head.width, head.height, Textures[t].name, Textures[t].d3dtex);
 		api->fio->_WriteFile(fh,s,strlen(s),0);
 		api->fio->_FlushFileBuffers(fh);
 		api->fio->_CloseHandle(fh);
 		
 	}
-//#endif
 	dwTotalSize += Textures[t].dwSize;
 //---------------------------------------------------------------
 	Textures[t].loaded = true;
@@ -1594,12 +1586,12 @@ bool DX8RENDER::TextureLoad(long t)
 	return true;
 }
 
-IDirect3DBaseTexture8 * DX8RENDER::GetBaseTexture(long iTexture)
+IDirect3DBaseTexture9 * DX8RENDER::GetBaseTexture(long iTexture)
 {
 	return (iTexture >= 0) ? Textures[iTexture].d3dtex : null;
 }
 
-dword DX8RENDER::LoadCubmapSide(HANDLE file, IDirect3DCubeTexture8 * tex, D3DCUBEMAP_FACES face, dword numMips, dword mipSize, dword size, bool isSwizzled)
+dword DX8RENDER::LoadCubmapSide(HANDLE file, IDirect3DCubeTexture9 * tex, D3DCUBEMAP_FACES face, dword numMips, dword mipSize, dword size, bool isSwizzled)
 {
 	dword texsize = 0;
 	//Заполняем уровни
@@ -1609,7 +1601,7 @@ dword DX8RENDER::LoadCubmapSide(HANDLE file, IDirect3DCubeTexture8 * tex, D3DCUB
 		texsize += mipSize;
 		//Получаем поверхность мипа
 		bool isError = false;
-		IDirect3DSurface8 * surface = null;
+		IDirect3DSurface9 * surface = null;
 		if(ErrorHandler("tex->GetCubeMapSurface", tex->GetCubeMapSurface(face, m, &surface))==true || !surface)
 		{
 			isError = true;
@@ -1632,12 +1624,8 @@ dword DX8RENDER::LoadCubmapSide(HANDLE file, IDirect3DCubeTexture8 * tex, D3DCUB
 	return texsize;
 }
 
-bool DX8RENDER::LoadTextureSurface(HANDLE file, IDirect3DSurface8 * suface, dword mipSize, dword width, dword height, bool isSwizzled)
+bool DX8RENDER::LoadTextureSurface(HANDLE file, IDirect3DSurface9 * suface, dword mipSize, dword width, dword height, bool isSwizzled)
 {
-#ifndef _XBOX
-//------------------------------------------------------------------------------------------
-//PC version
-//------------------------------------------------------------------------------------------
 	//Указатель на поверхность
 	D3DLOCKED_RECT lock;
 	if(ErrorHandler("suface->LockRect", suface->LockRect(&lock, NULL, 0L))==true) return false;
@@ -1651,84 +1639,18 @@ bool DX8RENDER::LoadTextureSurface(HANDLE file, IDirect3DSurface8 * suface, dwor
 	//Освобождение поверхности
 	if(ErrorHandler("suface->UnlockRect", suface->UnlockRect())==true) return false;
 	return true;
-//------------------------------------------------------------------------------------------
-#else
-//------------------------------------------------------------------------------------------
-//XBOX version
-//------------------------------------------------------------------------------------------
-	//Буфер для перемешивания текстур
-	void * buffer = null;
-	if(!isSwizzled) buffer = NEW char[mipSize];
-	//Байт на пиксель
-	dword bytesPerPixel = mipSize/(width*height);
-	//Указатель на поверхность
-	D3DLOCKED_RECT lock;
-	if(ErrorHandler("suface->LockRect", suface->LockRect(&lock, NULL, 0L))==true) return false;
-	if(isSwizzled) buffer = lock.pBits;
-	//Зачитывание
-	DWORD readingBytes = 0;
-	if(!api->fio->_ReadFile(file, buffer, mipSize, &readingBytes) || readingBytes != mipSize)
-	{
-		if(ErrorHandler("suface->UnlockRect", suface->UnlockRect())==true) return false;
-		return false;
-	}
-	//Переформатирование
-	if(!isSwizzled) 
-	{
-		byte * notAlignedBuffer = NEW byte[mipSize + 16];
-		byte * alignedBuffer = (byte *)(((dword)notAlignedBuffer + 15) & ~15);
-		XGSwizzleRect(buffer, width*bytesPerPixel, 0, alignedBuffer, width, height, 0, bytesPerPixel);
-		memcpy(lock.pBits, alignedBuffer, mipSize);
-		delete notAlignedBuffer;
-	}
-	//Освобождение поверхности
-	if(ErrorHandler("suface->UnlockRect", suface->UnlockRect())==true) return false;
-	//Освобождение буфера	
-	if(!isSwizzled) delete buffer;
-	return true;
-//------------------------------------------------------------------------------------------
-#endif
 }
-
-
 
 //################################################################################
 bool DX8RENDER::TextureSet(long stage, long texid)
 {
 	if(texid==-1)
 	{
-		if(ErrorHandler("SetTexture", d3d8->SetTexture(stage, NULL))==true)	return false;
+		if(ErrorHandler("SetTexture", d3d9->SetTexture(stage, NULL))==true)	return false;
 		return true;
 	}
 
-/*
-	if(Textures[texid].loaded==false)
-	{
-		int tex2load[MAX_STEXTURES];
-		int t2l=0;
-		for(long t=0; t<MAX_STEXTURES; t++)
-			if(Textures[t].ref>0 && Textures[t].loaded==false)	tex2load[t2l++] = t;
-*/
-		/*/sort textures
-		for(t=0; t<t2l; t++)
-			for(long tt=t; tt<t2l; tt++)
-				if(strcmpi(Textures[tex2load[tt]].name, Textures[tex2load[t]].name)<0)
-				{
-					int ttemp = tex2load[t];
-					tex2load[t] = tex2load[tt];
-					tex2load[tt] = ttemp;
-				}*/
-/*
-		for(t=0; t<t2l; t++)
-		{
-			Textures[tex2load[t]].loaded = true;
-			TextureLoad(tex2load[t]);
-		}
-		//Textures[texid].loaded = true;	TextureLoad(texid);
-	}
-*/
-
-	if(ErrorHandler("SetTexture", d3d8->SetTexture(stage, Textures[texid].d3dtex))==true)	return false;
+	if(ErrorHandler("SetTexture", d3d9->SetTexture(stage, Textures[texid].d3dtex))==true)	return false;
 	return true;
 }
 
@@ -1740,12 +1662,8 @@ bool DX8RENDER::TextureRelease(long texid)
 	if(Textures[texid].ref!=0) return false;
 	if(Textures[texid].name!=NULL)
 	{
-
-//#ifndef _XBOX
 		if(texLog)
 		{
-
-
 			HANDLE fh = api->fio->_CreateFile("texLoad.txt",GENERIC_READ|GENERIC_WRITE,FILE_SHARE_READ,OPEN_ALWAYS);
 			
 			FILE *flstat = fopen("texLoad.txt", "r+b");
@@ -1765,27 +1683,7 @@ bool DX8RENDER::TextureRelease(long texid)
 			delete buf;
 			api->fio->_FlushFileBuffers(fh);
 			api->fio->_CloseHandle(fh);
-
-			/*FILE *flstat = fopen("texLoad.txt", "r+b");
-			totSize -= Textures[texid].dwSize;
-			fseek(flstat, 0, SEEK_END);
-			int bytes = ftell(flstat);
-			char *buf = NEW char[bytes+1];
-			fseek(flstat, 0, SEEK_SET);
-			fread(buf, bytes, sizeof *buf, flstat);
-			buf[bytes] = 0;
-
-			char *str = strstr(buf, Textures[texid].name);
-			if(str!=0)
-			{
-				fseek(flstat, str-buf, SEEK_SET);
-				const char *s = "*";
-				fwrite(s, 1, 1, flstat);
-			}
-			delete buf;
-			fclose(flstat);*/
 		}
-//#endif
 
 		delete Textures[texid].name;
 		Textures[texid].name = NULL;
@@ -1799,7 +1697,6 @@ bool DX8RENDER::TextureRelease(long texid)
 
 	return true;
 }
-
 
 //################################################################################
 bool DX8RENDER::SetCamera(CVECTOR *pos, CVECTOR *ang, float fov)
@@ -1818,38 +1715,31 @@ bool DX8RENDER::SetCamera(CVECTOR *pos, CVECTOR *ang)
 	if(!pos || !ang)
 	{
 		if(!pos && !ang) return true;
-		//if(ErrorHandler("SetCamera::GetTransform", GetTransform(D3DTS_VIEW, mtx))==true) return false;
-		d3d8->GetTransform(D3DTS_VIEW, mtx);
+		d3d9->GetTransform(D3DTS_VIEW, mtx);
 		if(pos)
 		{
-			//mtx.SetInversePosition(pos->x, pos->y, pos->z);
 			Pos = *pos;
 			vWordRelationPos = -Pos;
 		}else{
-			//CVECTOR p;
-			//mtx.MulToInvNorm(mtx.Pos(), p);
 			mtx.BuildMatrix(*ang);
 			mtx.Transposition3X3();
-			//mtx.SetInversePosition(p.x, p.y, p.z);
 			Ang = *ang;
 		}
 	}else{
 		mtx.BuildMatrix(*ang);
 		mtx.Transposition3X3();
-		//mtx.SetInversePosition(pos->x, pos->y, pos->z);
 		Pos = *pos;
 		Ang = *ang;
 		vWordRelationPos = -Pos;
 	}
-	//if(ErrorHandler("SetCamera::SetTransform", SetTransform(D3DTS_VIEW, mtx))==true)	return false;
 
-	d3d8->SetTransform(D3DTS_VIEW, mtx);
+	d3d9->SetTransform(D3DTS_VIEW, mtx);
 	vViewRelationPos = -(mtx * vWordRelationPos);
-	d3d8->GetTransform(D3DTS_WORLD, mtx);
+	d3d9->GetTransform(D3DTS_WORLD, mtx);
 	mtx.Pos() += vWordRelationPos - vOldWordRelationPos;
-	d3d8->SetTransform(D3DTS_WORLD, mtx);
+	d3d9->SetTransform(D3DTS_WORLD, mtx);
 
-	FindPlanes(d3d8);
+	FindPlanes(d3d9);
 	ProcessScriptPosAng(*pos, *ang);
 	return true;
 }
@@ -1858,18 +1748,16 @@ bool DX8RENDER::SetCamera(CVECTOR lookFrom, CVECTOR lookTo, CVECTOR up)
 {
 	CMatrix mtx;
 	if(!mtx.BuildViewMatrix(lookFrom, lookTo, up)) return false;
-	//if(ErrorHandler("SetCamera::SetTransform", SetTransform(D3DTS_VIEW, mtx))==true)	return false;
 	SetTransform(D3DTS_VIEW, mtx);
 	Pos = lookFrom;
 
 	// Вычислим угол камеры
-	//Ang = 0.0f;
 	CVECTOR vNorm = !(lookTo - lookFrom);
 	Ang.y = atan2f(vNorm.x,vNorm.z);
 	Ang.x = atan2f(-vNorm.y,sqrtf(vNorm.x*vNorm.x + vNorm.z*vNorm.z));
 	Ang.z = 0.f;
 
-	FindPlanes(d3d8);
+	FindPlanes(d3d9);
 	ProcessScriptPosAng(lookFrom, Ang);
 	return true;
 }
@@ -1918,9 +1806,9 @@ bool DX8RENDER::SetPerspective(float perspective, float fAspectRatio)
 	mtx._43 = -Q*near_plane;
 	mtx._34 = 1.0f;
 
-	if(ErrorHandler("SetPerspective::SetTransform", d3d8->SetTransform(D3DTS_PROJECTION, &mtx))==true)	return false;
+	if(ErrorHandler("SetPerspective::SetTransform", d3d9->SetTransform(D3DTS_PROJECTION, &mtx))==true)	return false;
 	Fov = perspective;
-	FindPlanes(d3d8);
+	FindPlanes(d3d9);
 	return true;
 }
 
@@ -1932,37 +1820,37 @@ bool DX8RENDER::SetCurrentMatrix(D3DMATRIX *mtx)
 	return true;
 }
 
-bool DX8RENDER::SetMaterial(D3DMATERIAL8 &m)
+bool DX8RENDER::SetMaterial(D3DMATERIAL9 &m)
 {
-	if (ErrorHandler("SetMaterial::SetMaterial", d3d8->SetMaterial(&m))) return false;
+	if (ErrorHandler("SetMaterial::SetMaterial", d3d9->SetMaterial(&m))) return false;
 	return true;
 }
-bool DX8RENDER::SetLight(dword dwIndex, const D3DLIGHT8 * pLight)
+bool DX8RENDER::SetLight(dword dwIndex, const D3DLIGHT9 * pLight)
 {
 	// Set the property information for the first light.
-	D3DLIGHT8 tmpLight = *pLight;
+	D3DLIGHT9 tmpLight = *pLight;
 	tmpLight.Position.x += vWordRelationPos.x;
 	tmpLight.Position.y += vWordRelationPos.y;
 	tmpLight.Position.z += vWordRelationPos.z;
-	if (ErrorHandler("SetLight::SetLight", d3d8->SetLight(dwIndex, &tmpLight))) return false;
+	if (ErrorHandler("SetLight::SetLight", d3d9->SetLight(dwIndex, &tmpLight))) return false;
 	return true;
 }
 
 bool DX8RENDER::LightEnable(dword dwIndex, bool bOn)
 {
-	if (ErrorHandler("LightEnable::LightEnable", d3d8->LightEnable(dwIndex, bOn))) return false;
+	if (ErrorHandler("LightEnable::LightEnable", d3d9->LightEnable(dwIndex, bOn))) return false;
 	return true;
 }
 
 bool DX8RENDER::GetLightEnable(DWORD dwIndex, BOOL * pEnable)
 {
-	if (ErrorHandler("LightEnable::LightEnable", d3d8->GetLightEnable(dwIndex, pEnable))) return false;
+	if (ErrorHandler("LightEnable::LightEnable", d3d9->GetLightEnable(dwIndex, pEnable))) return false;
 	return true;
 }
 
-bool DX8RENDER::GetLight(DWORD dwIndex, D3DLIGHT8 * pLight)
+bool DX8RENDER::GetLight(DWORD dwIndex, D3DLIGHT9 * pLight)
 {
-	if (ErrorHandler("LightEnable::LightEnable", d3d8->GetLight(dwIndex, pLight))) return false;
+	if (ErrorHandler("LightEnable::LightEnable", d3d9->GetLight(dwIndex, pLight))) return false;
 	pLight->Position.x -= vWordRelationPos.x;
 	pLight->Position.y -= vWordRelationPos.y;
 	pLight->Position.z -= vWordRelationPos.z;
@@ -1970,26 +1858,50 @@ bool DX8RENDER::GetLight(DWORD dwIndex, D3DLIGHT8 * pLight)
 }
 
 //################################################################################
-
 long DX8RENDER::CreateVertexBuffer(long type, long size, dword dwUsage)
 {
+	long b = 0;
 	if (size <=0 ) return -1; // fix
-	for(long b=0; b<MAX_BUFFERS; b++)
+	for(b=0; b<MAX_BUFFERS; b++)
 		if(VertexBuffers[b].buff==NULL)	break;
 	if(b==MAX_BUFFERS)	return -1;
 
 	if(ErrorHandler("CreateVertexBuffer::CreateVertexBuffer",
-	d3d8->CreateVertexBuffer(size, dwUsage, 
-		type, D3DPOOL_DEFAULT, &VertexBuffers[b].buff)
+	d3d9->CreateVertexBuffer(size, dwUsage, 
+		type, D3DPOOL_DEFAULT, &VertexBuffers[b].buff, NULL)
 		)==true)	return -1;
 
 	VertexBuffers[b].type = type;
 	VertexBuffers[b].size = size;
+	VertexBuffers[b].usage = dwUsage;
+	VertexBuffers[b].isManaged = false;
 
 	return b;
 }
 
-IDirect3DVertexBuffer8 * DX8RENDER::GetVertexBuffer(long id)
+long DX8RENDER::CreateVertexBufferManaged(long type, long size, dword dwUsage)
+{
+	long b = 0;
+	if (size <=0 ) return -1; // fix
+	for(b=0; b<MAX_BUFFERS; b++)
+		if(VertexBuffers[b].buff==NULL)	break;
+	if(b==MAX_BUFFERS)	return -1;
+
+	if(ErrorHandler("CreateVertexBuffer::CreateVertexBuffer",
+	d3d9->CreateVertexBuffer(size, dwUsage, 
+		type, D3DPOOL_MANAGED, &VertexBuffers[b].buff, NULL)
+		)==true)	return -1;
+
+	VertexBuffers[b].type = type;
+	VertexBuffers[b].size = size;
+	VertexBuffers[b].usage = dwUsage;
+	VertexBuffers[b].isManaged = true;
+
+	return b;
+}
+
+
+IDirect3DVertexBuffer9 * DX8RENDER::GetVertexBuffer(long id)
 {
 	if(id < 0 || id >= MAX_BUFFERS) return null;
 	return VertexBuffers[id].buff;
@@ -2004,17 +1916,40 @@ long DX8RENDER::GetVertexBufferFVF(long id)
 //################################################################################
 long DX8RENDER::CreateIndexBuffer(long size, dword dwUsage)
 {
-	for(long b=0; b<MAX_BUFFERS; b++)
+	long b = 0;
+	for(b=0; b<MAX_BUFFERS; b++)
 		if(IndexBuffers[b].buff==NULL)	break;
 	if(b==MAX_BUFFERS)	return -1;
+	if(size < 1) return -1;
 
-	if(ErrorHandler("CreateIndexBuffer::CreateIndexBuffer",
-	//d3d8->CreateIndexBuffer(size, D3DUSAGE_WRITEONLY, D3DFMT_INDEX16,
-	d3d8->CreateIndexBuffer(size, dwUsage, D3DFMT_INDEX16,
-		D3DPOOL_DEFAULT, &IndexBuffers[b].buff)
-		)==true)	return -1;
-
+	if(ErrorHandler("CreateIndexBuffer::CreateIndexBuffer", d3d9->CreateIndexBuffer(size, dwUsage, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &IndexBuffers[b].buff, NULL)) == true)	
+	{
+		api->Trace("CreateIndexBuffer %d %d", size, dwUsage);
+		return -1;
+	}
 	IndexBuffers[b].ntrgs = size;
+	IndexBuffers[b].usage = dwUsage;
+	IndexBuffers[b].isManaged = false;
+
+	return b;
+}
+
+long DX8RENDER::CreateIndexBufferManaged(long size, dword dwUsage)
+{
+	long b = 0;
+	for(b=0; b<MAX_BUFFERS; b++)
+		if(IndexBuffers[b].buff==NULL)	break;
+	if(b==MAX_BUFFERS)	return -1;
+	if(size < 1) return -1;
+
+	if(ErrorHandler("CreateIndexBuffer::CreateIndexBuffer", d3d9->CreateIndexBuffer(size, dwUsage, D3DFMT_INDEX16, D3DPOOL_MANAGED, &IndexBuffers[b].buff, NULL)) == true)	
+	{
+		api->Trace("CreateIndexBuffer %d %d", size, dwUsage);
+		return -1;
+	}
+	IndexBuffers[b].ntrgs = size;
+	IndexBuffers[b].usage = dwUsage;
+	IndexBuffers[b].isManaged = true;
 
 	return b;
 }
@@ -2025,27 +1960,29 @@ void DX8RENDER::DrawBuffer(long vbuff, long stride, long ibuff, long minv,
 	bool bDraw = true;
 
 	if(vbuff>=0)
+	{
+		d3d9->SetVertexShader(NULL);
 		if(ErrorHandler("DrawBuffer::SetVertexShader",
-			d3d8->SetVertexShader(VertexBuffers[vbuff].type))==true)	return;
-	//else VertexBuffer already set
-
+			d3d9->SetFVF(VertexBuffers[vbuff].type))==true)	return;
+	}
+	
 	if(ErrorHandler("DrawBuffer::SetIndices",
-		d3d8->SetIndices(IndexBuffers[ibuff].buff, minv)
+		d3d9->SetIndices(IndexBuffers[ibuff].buff)
 		)==true)	return;
 
 	if(vbuff>=0)
 		if(ErrorHandler("DrawBuffer::SetStreamSource",
-			d3d8->SetStreamSource(0, VertexBuffers[vbuff].buff, stride)
+			d3d9->SetStreamSource(0, VertexBuffers[vbuff].buff, 0, stride)
 			)==true)	return;
-	//else VertexBuffer already set
 
 	if (cBlockName && cBlockName[0]) bDraw = TechniqueSetParamsAndStart(cBlockName,dwNumParams,1 + &dwNumParams);
 	if (bDraw) do
 	{
 		dwNumDrawPrimitive++;
 		ErrorHandler("DrawBuffer::DrawIndexedPrimitive",
-			d3d8->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 0, numv,  startidx, numtrg));
+			d3d9->DrawIndexedPrimitive( D3DPT_TRIANGLELIST,minv, 0, numv,  startidx, numtrg));
 	} while (cBlockName && cBlockName[0] && TechniqueExecuteNext());
+	
 }
 
 void DX8RENDER::DrawIndexedPrimitiveNoVShader(D3DPRIMITIVETYPE dwPrimitiveType, long iVBuff, long iStride, long iIBuff, long iMinV, 
@@ -2054,13 +1991,13 @@ void DX8RENDER::DrawIndexedPrimitiveNoVShader(D3DPRIMITIVETYPE dwPrimitiveType, 
 	bool bDraw = true;
 
 	if(ErrorHandler("DrawIndexedPrimitiveNoVShader::SetIndices",
-		d3d8->SetIndices(IndexBuffers[iIBuff].buff, iMinV)
+		d3d9->SetIndices(IndexBuffers[iIBuff].buff)
 		)==true)	return;
 
 	if (iVBuff >= 0)
 	{
 		if(ErrorHandler("DrawIndexedPrimitiveNoVShader::SetStreamSource",
-			d3d8->SetStreamSource(0, VertexBuffers[iVBuff].buff, iStride)
+			d3d9->SetStreamSource(0, VertexBuffers[iVBuff].buff, 0, iStride)
 			)==true)	return;
 	}
 
@@ -2069,7 +2006,7 @@ void DX8RENDER::DrawIndexedPrimitiveNoVShader(D3DPRIMITIVETYPE dwPrimitiveType, 
 	{
 		dwNumDrawPrimitive++;
 		ErrorHandler("DrawIndexedPrimitiveNoVShader::DrawIndexedPrimitive",
-			d3d8->DrawIndexedPrimitive( dwPrimitiveType, 0, iNumV,  iStartIdx, iNumTrg));
+			d3d9->DrawIndexedPrimitive( dwPrimitiveType,iMinV, 0, iNumV,  iStartIdx, iNumTrg));
 	} while (cBlockName && TechniqueExecuteNext());
 }
 
@@ -2081,7 +2018,7 @@ void DX8RENDER::DrawIndexedPrimitiveUP(D3DPRIMITIVETYPE dwPrimitiveType, dword d
 	{
 		dwNumDrawPrimitive++;
 		ErrorHandler("DrawIndexedPrimitiveUP::DrawIndexedPrimitiveUP",
-			d3d8->DrawIndexedPrimitiveUP( dwPrimitiveType, dwMinIndex, dwNumVertices, dwPrimitiveCount, pIndexData, IndexDataFormat, pVertexData, dwVertexStride));
+			d3d9->DrawIndexedPrimitiveUP( dwPrimitiveType, dwMinIndex, dwNumVertices, dwPrimitiveCount, pIndexData, IndexDataFormat, pVertexData, dwVertexStride));
 	} while (cBlockName && TechniqueExecuteNext());
 }
 
@@ -2089,15 +2026,16 @@ void DX8RENDER::DrawPrimitiveUP(D3DPRIMITIVETYPE dwPrimitiveType, dword dwVertex
 {
 	bool bDraw = true;
 
+	d3d9->SetVertexShader(NULL);
 	if(ErrorHandler("DrawPrimitiveUP::SetVertexShader",
-		d3d8->SetVertexShader(dwVertexBufferFormat))==true)	return;
+		d3d9->SetFVF(dwVertexBufferFormat))==true)	return;
 
 	if (cBlockName) bDraw = TechniqueSetParamsAndStart(cBlockName,dwNumParams,1 + &dwNumParams);
 	if (bDraw) do
 	{
 		dwNumDrawPrimitive++;
 		ErrorHandler("DrawPrimitiveUP::DrawPrimitiveUP",
-			d3d8->DrawPrimitiveUP( dwPrimitiveType, dwNumPT, pVerts, dwStride));
+			d3d9->DrawPrimitiveUP( dwPrimitiveType, dwNumPT, pVerts, dwStride));
 	} while (cBlockName && TechniqueExecuteNext());
 }
 
@@ -2105,11 +2043,13 @@ void DX8RENDER::DrawPrimitive(D3DPRIMITIVETYPE dwPrimitiveType, long iVBuff, lon
 {
 	bool bDraw = true;
 
+	d3d9->SetVertexShader(NULL);
+
 	if(ErrorHandler("DrawPrimitive::SetVertexShader",
-		d3d8->SetVertexShader(VertexBuffers[iVBuff].type))==true)	return;
+		d3d9->SetFVF(VertexBuffers[iVBuff].type))==true)	return;
 
 	if(ErrorHandler("DrawPrimitive::SetStreamSource",
-		d3d8->SetStreamSource(0, VertexBuffers[iVBuff].buff, iStride)
+		d3d9->SetStreamSource(0, VertexBuffers[iVBuff].buff, 0, iStride)
 		)==true)	return; 
 
 	if (cBlockName) bDraw = TechniqueSetParamsAndStart(cBlockName,dwNumParams,1 + &dwNumParams);
@@ -2117,7 +2057,7 @@ void DX8RENDER::DrawPrimitive(D3DPRIMITIVETYPE dwPrimitiveType, long iVBuff, lon
 	{
 		dwNumDrawPrimitive++;
 		ErrorHandler("DrawPrimitive::DrawPrimitive",
-			d3d8->DrawPrimitive( dwPrimitiveType, iStartV, iNumPT));
+			d3d9->DrawPrimitive( dwPrimitiveType, iStartV, iNumPT));
 	} while (cBlockName && TechniqueExecuteNext());
 }
 
@@ -2136,18 +2076,19 @@ void DX8RENDER::RenderAnimation(long ib, void * src, long numVrts, long minv, lo
 			aniVBuffer = null;
 			numAniVerteces = 0;
 			if(ErrorHandler("RenderAnimation::CreateVertexBuffer",
-				d3d8->CreateVertexBuffer(size, 
+				d3d9->CreateVertexBuffer(size, 
 											D3DUSAGE_WRITEONLY, 
 											type,
 											D3DPOOL_MANAGED, 
-											&aniVBuffer))==true) return;
+											&aniVBuffer, NULL))==true) return;
 			numAniVerteces = numVrts;
 		}
+		
 		//Copy verteces
 		BYTE *ptr;
 	RDTSC_B(_rdtsc);
 		if(ErrorHandler("RenderAnimation::LockVertexBuffer",
-			aniVBuffer->Lock(0, size, &ptr, 0)
+			aniVBuffer->Lock(0, size, (void **)&ptr, 0)
 			)==true) return;
 	dwNumLV++;
 	RDTSC_E(_rdtsc);
@@ -2155,20 +2096,23 @@ void DX8RENDER::RenderAnimation(long ib, void * src, long numVrts, long minv, lo
 		ErrorHandler("RenderAnimation::UnLockVertexBuffer",
 			aniVBuffer->Unlock());
 	}
-	//Render
+	//Render	
 	if(ErrorHandler("RenderAnimation::SetVertexShader",
-		d3d8->SetVertexShader(type))==true)	return;
+		d3d9->SetVertexShader(NULL))==true)	return;	
+	
+	if(ErrorHandler("RenderAnimation::SetFVF",
+		d3d9->SetFVF(type))==true)	return;
 
 	if(ErrorHandler("RenderAnimation::SetIndices",
-		d3d8->SetIndices(IndexBuffers[ib].buff, minv)
+		d3d9->SetIndices(IndexBuffers[ib].buff)
 		)==true)	return;
 
 	if(ErrorHandler("RenderAnimation::SetStreamSource",
-		d3d8->SetStreamSource(0, aniVBuffer, sizeof(FVF_VERTEX))
+		d3d9->SetStreamSource(0, aniVBuffer, 0, sizeof(FVF_VERTEX))
 		)==true)	return;
 
 	ErrorHandler("RenderAnimation::DrawIndexedPrimitive",
-		d3d8->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, numv,  startidx, numtrg));
+		d3d9->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, minv, 0, numv,  startidx, numtrg));
 
 	dwNumDrawPrimitive++;
 }
@@ -2178,7 +2122,7 @@ void * DX8RENDER::LockVertexBuffer(long id, dword dwFlags)
 {
 	BYTE * ptr;
 	VertexBuffers[id].dwNumLocks++;
-	if (ErrorHandler("DX8RENDER::LockVertexBuffer", VertexBuffers[id].buff->Lock(0, VertexBuffers[id].size, &ptr, dwFlags)))	return 0;
+	if (ErrorHandler("DX8RENDER::LockVertexBuffer", VertexBuffers[id].buff->Lock(0, VertexBuffers[id].size, (void **)&ptr, dwFlags)))	return 0;
 	dwNumLV++;
 	return ptr;
 }
@@ -2196,7 +2140,7 @@ void * DX8RENDER::LockIndexBuffer(long id, dword dwFlags)
 	BYTE * ptr = null;
 	IndexBuffers[id].dwNumLocks++;
 	if(ErrorHandler("LockIndexBuffer::LockIndexBuffer",
-		IndexBuffers[id].buff->Lock(0, IndexBuffers[id].ntrgs, &ptr, dwFlags)
+		IndexBuffers[id].buff->Lock(0, IndexBuffers[id].ntrgs, (void **)&ptr, dwFlags)
 		)==true)	return 0;
 	dwNumLI++;
 	return ptr;
@@ -2240,9 +2184,9 @@ void DX8RENDER::SetTransform(long type, D3DMATRIX *mtx)
 		m.MulToInvNorm(-vViewRelationPos,vWordRelationPos);
 		vDeltaWorld -= vWordRelationPos;
 		CMatrix mw;
-		d3d8->GetTransform( D3DTS_WORLD, (D3DMATRIX*)&mw );
+		d3d9->GetTransform( D3DTS_WORLD, (D3DMATRIX*)&mw );
 		mw.Pos() -= vDeltaWorld;
-		d3d8->SetTransform( D3DTS_WORLD, mw );
+		d3d9->SetTransform( D3DTS_WORLD, mw );
 
 		m.Pos() += vViewRelationPos;
 	}
@@ -2251,12 +2195,12 @@ void DX8RENDER::SetTransform(long type, D3DMATRIX *mtx)
 		m.Pos() += vWordRelationPos;
 	}
 
-	d3d8->SetTransform((D3DTRANSFORMSTATETYPE)type, (D3DMATRIX*)&m);
+	d3d9->SetTransform((D3DTRANSFORMSTATETYPE)type, (D3DMATRIX*)&m);
 }
 
 void DX8RENDER::GetTransform(long type, D3DMATRIX *mtx)
 {
-	d3d8->GetTransform((D3DTRANSFORMSTATETYPE)type, mtx);
+	d3d9->GetTransform((D3DTRANSFORMSTATETYPE)type, mtx);
 
 	if( type == D3DTS_VIEW )
 	{
@@ -2274,22 +2218,14 @@ void DX8RENDER::GetTransform(long type, D3DMATRIX *mtx)
 
 bool DX8RENDER::CreateState(ENTITY_STATE_GEN * state_gen)
 {
-	//state_gen->SetState("vm",sizeof(screen_size),screen_size,sizeof(bool),&window);
 	return true;
 }
 
 bool DX8RENDER::LoadState(ENTITY_STATE * state)
 {
 	GUARD(DX8RENDER::Init)
-	//for(long t=0; t<MAX_STEXTURES; t++)	Textures[t].d3dtex = NULL;
-	//d3d = NULL;
-	//d3d8 = NULL;
-	//state->Struct(sizeof(screen_size),(char *)&screen_size);
-	//state->MemoryBlock(sizeof(bool),(char *)&window);
-	//InitDevice(window,api->GetAppHWND(),screen_size.x,screen_size.y);
 	UNGUARD
 	return true;
-	
 }
 
 bool DX8RENDER::ResetDevice()
@@ -2297,15 +2233,55 @@ bool DX8RENDER::ResetDevice()
 	ENTITY_ID eid;
 
 	api->SetEntityScanLayer(null);
-	if (api->GetEntity(&eid)) do { ((ENTITY*)eid.pointer)->LostRender(); } while (api->GetEntityNext(&eid));
+	if (api->GetEntity(&eid)) 
+	do 
+	{ 
+		((ENTITY*)eid.pointer)->LostRender(); 
+	} while (api->GetEntityNext(&eid));
+	
+	for(long b=0; b<MAX_BUFFERS; b++)
+	{
+		if (VertexBuffers[b].buff && VertexBuffers[b].isManaged == false )
+		{		
+			VertexBuffers[b].buff->Release(); 
+			VertexBuffers[b].buff = 0;
+		}
+		else
+		{
+			VertexBuffers[b].size = 0;
+		}		
+		if (IndexBuffers[b].buff && IndexBuffers[b].isManaged == false )
+		{	
+			IndexBuffers[b].buff->Release(); 
+			IndexBuffers[b].buff = 0;
+		}	
+		else
+		{
+			IndexBuffers[b].ntrgs = 0;
+		}			
+	}
+		
+	ZeroMemory( &d3dpp, sizeof(d3dpp) );
+	d3dpp.BackBufferWidth = screen_size.x;
+	d3dpp.BackBufferHeight = screen_size.y;
+	d3dpp.BackBufferFormat = screen_bpp;
+	d3dpp.BackBufferCount = 1;
+	d3dpp.hDeviceWindow = api->GetAppHWND();
+	d3dpp.Windowed = bWindow;
+	d3dpp.EnableAutoDepthStencil = TRUE;
+	d3dpp.AutoDepthStencilFormat = stencil_format;
+	d3dpp.MultiSampleType = D3DMULTISAMPLE_NONE;
+	d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
 
-	HRESULT hr = d3d8->Reset(&d3dpp);
+	if (bBackBufferCanLock) d3dpp.Flags = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
+	else d3dpp.Flags = 0;
+	d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
+	
+	HRESULT hr = d3d9->Reset(&d3dpp);
 	api->Trace("Device try to reset");
 	api->Trace("Device reset %s", (hr == D3D_OK) ? "successfully" : "bad");
 	ErrorHandler("reset", hr);
-
-	api->SetEntityScanLayer(null);
-	if (api->GetEntity(&eid)) do { ((ENTITY*)eid.pointer)->RestoreRender(); } while (api->GetEntityNext(&eid));
+	
 	return true;
 }
 
@@ -2353,17 +2329,21 @@ void DX8RENDER::RunStart()
 			}
 		}
 	}
-
-	switch (d3d8->TestCooperativeLevel())
+	
+	switch (d3d9->TestCooperativeLevel())
 	{
 		case D3DERR_DEVICENOTRESET:
-			if (!ResetDevice()) return;
+			d3d9->EvictManagedResources();
+			LostRender();
+			ResetDevice();
+			Sleep(100);
+			RestoreRender();
 		break;
 		case D3DERR_DEVICELOST: 
 			return;
 		break;
 	}
-
+	
 	bDeviceLost = false;
 
 	bNeedCopyToScreen = true;
@@ -2380,14 +2360,11 @@ void DX8RENDER::RunStart()
 	DX8Clear(D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | ((stencil_format==D3DFMT_D24S8) ? D3DCLEAR_STENCIL : 0));
 	DX8BeginScene();
 
-
 	//------------------------------------------
 	bInsideScene = true;
 
 	// execute default technique for set default render/texture states
 	if (TechniqueExecuteStart("default")) do {} while (TechniqueExecuteNext());
-
-#ifndef _XBOX
 
 	 // boal del_cheat
 	if (api->Controls->GetDebugAsyncKeyState(VK_F11) < 0)
@@ -2397,13 +2374,9 @@ void DX8RENDER::RunStart()
 		pTechnique->DecodeFiles();
 	}
 
-	d3d8->SetRenderState(D3DRS_FILLMODE, (api->Controls->GetDebugAsyncKeyState('F') < 0) ? D3DFILL_WIREFRAME : D3DFILL_SOLID);
-	//d3d8->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID); eddy
+	d3d9->SetRenderState(D3DRS_FILLMODE, (api->Controls->GetDebugAsyncKeyState('F') < 0) ? D3DFILL_WIREFRAME : D3DFILL_SOLID);
 
-#else
-	d3d8->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
-#endif
-PlayToTexture();
+	PlayToTexture();
 }
 
 void DX8RENDER::RunEnd()
@@ -2423,7 +2396,6 @@ void DX8RENDER::RunEnd()
 		}else progressSafeCounter++;
 	}
 }
-
 
 char Buff_4k[4096];
 
@@ -2511,7 +2483,7 @@ long _cdecl DX8RENDER::ExtPrint(long nFontNum,DWORD foreColor, DWORD backColor, 
 
     pFont->StoreFontParameters();
 
-	IDirect3DSurface8 * pRenderTarget;
+	IDirect3DSurface9 * pRenderTarget;
 	GetRenderTarget(&pRenderTarget);
 	D3DSURFACE_DESC dscrSurface;
 	pRenderTarget->GetDesc(&dscrSurface);
@@ -2561,8 +2533,9 @@ long DX8RENDER::LoadFont(char * fontName)
 	}
 	fontName = strupr(sDup);
     unsigned long hashVal = hash_string(fontName);
+	long i = 0;
 
-    for(long i=0; i<nFontQuantity; i++)
+    for(i=0; i<nFontQuantity; i++)
         if( FontList[i].hash==hashVal && stricmp(FontList[i].name,fontName)==0 )
         {
             if( FontList[i].ref>0 )
@@ -2578,7 +2551,7 @@ long DX8RENDER::LoadFont(char * fontName)
     {
         if( (FontList[i].font=NEW FONT) == NULL )
             _THROW("allocate memory error");
-        if( !FontList[i].font->Init(fontName,fontIniFileName,d3d8,this) )
+        if( !FontList[i].font->Init(fontName,fontIniFileName,d3d9,this) )
 		{
 			delete FontList[i].font;
 			api->Trace("Can't init font %s",fontName);
@@ -2630,7 +2603,6 @@ bool DX8RENDER::UnloadFont(long fontID)
         }
         else return false;
     }
-
     return true;
 }
 
@@ -2698,7 +2670,7 @@ bool DX8RENDER::SetFontIniFileName(char * iniName)
 		}
 		if( (FontList[n].font=NEW FONT) == NULL )
 			_THROW("allocate memory error")
-		FontList[n].font->Init( FontList[n].name, fontIniFileName, d3d8, this );
+		FontList[n].font->Init( FontList[n].name, fontIniFileName, d3d9, this );
 		if( FontList[n].ref==0 ) FontList[n].font->TempUnload();
 	}
 
@@ -2707,100 +2679,113 @@ bool DX8RENDER::SetFontIniFileName(char * iniName)
 
 void DX8RENDER::func()
 {
-	d3d8->SetRenderState(D3DRS_DITHERENABLE, TRUE);
-	d3d8->SetRenderState(D3DRS_ALPHATESTENABLE, true );
+	d3d9->SetRenderState(D3DRS_DITHERENABLE, TRUE);
+	d3d9->SetRenderState(D3DRS_ALPHATESTENABLE, true );
 	//----------Z---------
-	d3d8->SetRenderState(D3DRS_ZENABLE, D3DZB_TRUE);
-	d3d8->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
-	d3d8->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
+	d3d9->SetRenderState(D3DRS_ZENABLE, D3DZB_TRUE);
+	d3d9->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+	d3d9->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
 
-	d3d8->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
-	d3d8->SetRenderState(D3DRS_ALPHABLENDENABLE, true );
-	d3d8->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
-	d3d8->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
-	d3d8->SetTextureStageState(0, D3DTSS_MIPFILTER, D3DTEXF_LINEAR);
+	d3d9->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+	d3d9->SetRenderState(D3DRS_ALPHABLENDENABLE, true );
+	d3d9->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+	d3d9->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+	d3d9->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
 
-	d3d8->SetRenderState(D3DRS_FOGTABLEMODE, D3DFOG_EXP);
+	d3d9->SetRenderState(D3DRS_FOGTABLEMODE, D3DFOG_EXP);
 
-	d3d8->SetRenderState(D3DRS_LIGHTING, TRUE);
-	d3d8->SetRenderState(D3DRS_LOCALVIEWER, FALSE); 
-	d3d8->SetRenderState(D3DRS_AMBIENT, 0x505050);
-	d3d8->SetRenderState(D3DRS_AMBIENTMATERIALSOURCE, D3DMCS_COLOR1);
+	d3d9->SetRenderState(D3DRS_LIGHTING, TRUE);
+	d3d9->SetRenderState(D3DRS_LOCALVIEWER, FALSE); 
+	d3d9->SetRenderState(D3DRS_AMBIENT, 0x505050);
+	d3d9->SetRenderState(D3DRS_AMBIENTMATERIALSOURCE, D3DMCS_COLOR1);
 
-	d3d8->SetRenderState(D3DRS_SPECULARENABLE, FALSE);
-	d3d8->SetRenderState(D3DRS_COLORVERTEX, TRUE);
-	d3d8->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-	d3d8->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-	d3d8->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-	d3d8->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
-	d3d8->SetRenderState(D3DRS_ALPHAREF, 0xa0);
-	d3d8->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
+	d3d9->SetRenderState(D3DRS_SPECULARENABLE, FALSE);
+	d3d9->SetRenderState(D3DRS_COLORVERTEX, TRUE);
+	d3d9->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+	d3d9->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+	d3d9->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+	d3d9->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+	d3d9->SetRenderState(D3DRS_ALPHAREF, 0xa0);
+	d3d9->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
 
 	// *****************************************************************88
 	//texture filtering
-	d3d8->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
-	d3d8->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTEXF_ANISOTROPIC);
-	d3d8->SetTextureStageState(0, D3DTSS_MIPFILTER, D3DTEXF_LINEAR);
-	d3d8->SetTextureStageState(0, D3DTSS_MAXANISOTROPY, 3);
+	d3d9->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+	d3d9->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_ANISOTROPIC);
+	d3d9->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
+	d3d9->SetSamplerState(0, D3DSAMP_MAXANISOTROPY, 3);
 	
 	//unchanged texture stage states - both for base and detal texture
-	d3d8->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_DIFFUSE);
-	d3d8->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_TEXTURE);
-	d3d8->SetTextureStageState(1, D3DTSS_COLORARG1, D3DTA_CURRENT);
-	d3d8->SetTextureStageState(1, D3DTSS_COLORARG2, D3DTA_TEXTURE);
-	d3d8->SetTextureStageState(2, D3DTSS_COLORARG1, D3DTA_CURRENT);
-	d3d8->SetTextureStageState(2, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
+	d3d9->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_DIFFUSE);
+	d3d9->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_TEXTURE);
+	d3d9->SetTextureStageState(1, D3DTSS_COLORARG1, D3DTA_CURRENT);
+	d3d9->SetTextureStageState(1, D3DTSS_COLORARG2, D3DTA_TEXTURE);
+	d3d9->SetTextureStageState(2, D3DTSS_COLORARG1, D3DTA_CURRENT);
+	d3d9->SetTextureStageState(2, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
 
-	d3d8->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_DIFFUSE);
-	d3d8->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_TEXTURE);
-	d3d8->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+	d3d9->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_DIFFUSE);
+	d3d9->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_TEXTURE);
+	d3d9->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
 
 	//general
-	d3d8->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
-	d3d8->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-	d3d8->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
-	d3d8->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-	d3d8->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-	d3d8->SetRenderState(D3DRS_ALPHAREF, 0xa0);
-	d3d8->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
+	d3d9->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+	d3d9->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+	d3d9->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+	d3d9->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+	d3d9->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+	d3d9->SetRenderState(D3DRS_ALPHAREF, 0xa0);
+	d3d9->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
 
 	//lighting effects
-	d3d8->SetRenderState(D3DRS_AMBIENT, 0x404040);
-	d3d8->SetRenderState(D3DRS_LIGHTING, FALSE);//TRUE);
-	d3d8->SetRenderState(D3DRS_COLORVERTEX, TRUE);
-	d3d8->SetRenderState(D3DRS_SPECULARENABLE, FALSE);//TRUE);
-
-
+	d3d9->SetRenderState(D3DRS_AMBIENT, 0x404040);
+	d3d9->SetRenderState(D3DRS_LIGHTING, FALSE);//TRUE);
+	d3d9->SetRenderState(D3DRS_COLORVERTEX, TRUE);
+	d3d9->SetRenderState(D3DRS_SPECULARENABLE, FALSE);//TRUE);
 }
 
-HRESULT DX8RENDER::GetViewport(D3DVIEWPORT8 * pViewport)
+HRESULT DX8RENDER::GetViewport(D3DVIEWPORT9 * pViewport)
 {
-	return d3d8->GetViewport(pViewport);
+	return d3d9->GetViewport(pViewport);
 }
 
-HRESULT DX8RENDER::SetViewport(const D3DVIEWPORT8 * pViewport)
+HRESULT DX8RENDER::SetViewport(const D3DVIEWPORT9 * pViewport)
 {
-	return d3d8->SetViewport(pViewport);
+	return d3d9->SetViewport(pViewport);
 }
 
 dword DX8RENDER::SetRenderState(dword State, dword Value)
 {
-	return d3d8->SetRenderState((D3DRENDERSTATETYPE)State,Value);
+	return d3d9->SetRenderState((D3DRENDERSTATETYPE)State,Value);
+}
+
+dword DX8RENDER::SetRenderStateFloat(dword State, double Value)
+{
+	return d3d9->SetRenderState((D3DRENDERSTATETYPE)State,Value);
 }
 
 dword DX8RENDER::GetRenderState(dword State, dword * pValue)
 {
-	return d3d8->GetRenderState((D3DRENDERSTATETYPE)State,pValue);
+	return d3d9->GetRenderState((D3DRENDERSTATETYPE)State,pValue);
 }
 
 dword DX8RENDER::SetTextureStageState(dword Stage,dword Type,dword Value)
 {
-	return d3d8->SetTextureStageState(Stage,(D3DTEXTURESTAGESTATETYPE)Type,Value);
+	return d3d9->SetTextureStageState(Stage,(D3DTEXTURESTAGESTATETYPE)Type,Value);
 }
 
 dword DX8RENDER::GetTextureStageState(dword Stage,dword Type,dword* pValue)
 {
-	return d3d8->GetTextureStageState(Stage,(D3DTEXTURESTAGESTATETYPE)Type,pValue);
+	return d3d9->GetTextureStageState(Stage,(D3DTEXTURESTAGESTATETYPE)Type,pValue);
+}
+
+dword DX8RENDER::SetSamplerState(dword Stage, dword Type, dword Value)
+{
+	return d3d9->SetSamplerState(Stage,(D3DSAMPLERSTATETYPE)Type,Value);
+}
+
+dword DX8RENDER::GetSamplerState(dword Stage, dword Type, dword * pValue)
+{
+	return d3d9->GetSamplerState(Stage,(D3DSAMPLERSTATETYPE)Type,pValue);
 }
 
 void DX8RENDER::GetCamera(CVECTOR& pos, CVECTOR& ang, float& perspective)
@@ -2824,8 +2809,6 @@ typedef struct tagTGA_H{
 	BYTE storage:2;
 }TGA_H;
 
-//WORD Temp[1600*4];
-
 void DX8RENDER::SaveShoot()
 {
 	bMakeShoot = true;
@@ -2843,7 +2826,7 @@ void DX8RENDER::MakeScreenShot()
 	RECT r;
 	D3DLOCKED_RECT lr;
 	POINT p;
-	IDirect3DSurface8 * renderTarget, * surface;
+	IDirect3DSurface9 * renderTarget, * surface;
 
 	bMakeShoot = false;
 	
@@ -2856,23 +2839,23 @@ void DX8RENDER::MakeScreenShot()
 	r.left = 0; r.right = screen_size.x;
 	r.top = 0; r.bottom = screen_size.y;
 	p.x = p.y = 0;
-	renderTarget = null;
-	surface = null;
+	renderTarget = NULL;
+	surface = NULL;
 
 	//Получаем картинку
-	if(FAILED(d3d8->GetRenderTarget(&renderTarget)))
+	if(FAILED(d3d9->GetRenderTarget(0, &renderTarget)))
 	{
 		api->Trace("Falure get render target for make screenshot");
 		return;
 	}
-	if(FAILED(d3d8->CreateImageSurface(screen_size.x, screen_size.y, D3DFMT_X8R8G8B8, &surface)))
+	if(FAILED(d3d9->CreateOffscreenPlainSurface(screen_size.x, screen_size.y, D3DFMT_X8R8G8B8, D3DPOOL_SYSTEMMEM, &surface, NULL)))
 	{
 		renderTarget->Release();
 		api->Trace("Falure create buffer for make screenshot");
 		return;
 	}
 
-	if(FAILED(d3d8->CopyRects(renderTarget, null, 0, surface, null)) || 
+	if(FAILED(d3d9->GetRenderTargetData(renderTarget, surface)) || 
 		FAILED(surface->LockRect(&lr, &r, 0)))
 	{
 		surface->Release();
@@ -2885,7 +2868,7 @@ void DX8RENDER::MakeScreenShot()
 	//Получаем имя файла
 	for(i = 0; i < 10000; i++)
 	{
-		wsprintf(file_name, "Corsairs3_%04d.tga", i);
+		wsprintf(file_name, "CCS_%04d.tga", i);
 		if(_access(file_name, 0) == -1) break;
 	}
 	//Сохраняем картинку
@@ -2916,11 +2899,11 @@ void DX8RENDER::MakeScreenShot()
 
 PLANE * DX8RENDER::GetPlanes()
 {
-	FindPlanes(d3d8);
+	FindPlanes(d3d9);
 	return viewplane;
 }
 
-void DX8RENDER::FindPlanes(IDirect3DDevice8 * d3dDevice)
+void DX8RENDER::FindPlanes(IDirect3DDevice9 * d3dDevice)
 {
 	D3DMATRIX m;
 	CVECTOR v[4];
@@ -2969,14 +2952,14 @@ void DX8RENDER::FindPlanes(IDirect3DDevice8 * d3dDevice)
 
 bool DX8RENDER::TechniqueSetParamsAndStart(const char *cBlockName, dword _dwNumParams, void *pParams)
 {
-	if (!cBlockName) return false;
+	if (!cBlockName || strlen(cBlockName) == 0 ) return false;
 	pTechnique->SetCurrentBlock(cBlockName,_dwNumParams,pParams);
 	return pTechnique->ExecutePassStart();
 }
 
 bool _cdecl DX8RENDER::TechniqueExecuteStart(const char *cBlockName, dword _dwNumParams, ...)
 {
-	if (!cBlockName) return false;
+	if (!cBlockName || strlen(cBlockName) == 0 ) return false;
 	pTechnique->SetCurrentBlock(cBlockName,_dwNumParams,1 + &_dwNumParams);
 	return pTechnique->ExecutePassStart();
 }
@@ -2993,7 +2976,7 @@ void DX8RENDER::DrawRects(RS_RECT *pRSR, dword dwRectsNum, const char *cBlockNam
 	bool		bDraw = true;
 
 	static CMatrix		camMtx, IMatrix;
-	d3d8->GetTransform(D3DTS_VIEW, camMtx);
+	d3d9->GetTransform(D3DTS_VIEW, camMtx);
 
 	fScaleY *= GetHeightDeformator();
 
@@ -3016,8 +2999,8 @@ void DX8RENDER::DrawRects(RS_RECT *pRSR, dword dwRectsNum, const char *cBlockNam
 		dv = 1.0f;
 	}
 
-	d3d8->SetTransform(D3DTS_VIEW,IMatrix);
-	d3d8->SetTransform(D3DTS_WORLD,IMatrix);
+	d3d9->SetTransform(D3DTS_VIEW,IMatrix);
+	d3d9->SetTransform(D3DTS_WORLD,IMatrix);
 
 	for(dword cnt = 0; cnt < dwRectsNum; )
 	{
@@ -3026,7 +3009,7 @@ void DX8RENDER::DrawRects(RS_RECT *pRSR, dword dwRectsNum, const char *cBlockNam
 		if(drawCount > rectsVBuffer_SizeInRects) drawCount = rectsVBuffer_SizeInRects;
 		//Буфер
 		RECT_VERTEX * data = null;
-		if(rectsVBuffer->Lock(0, drawCount*6*sizeof(RECT_VERTEX), (BYTE **)&data, D3DLOCK_DISCARD) != D3D_OK) return;
+		if(rectsVBuffer->Lock(0, drawCount*6*sizeof(RECT_VERTEX), (void **)&data, D3DLOCK_DISCARD) != D3D_OK) return;
 		if(!data) return;
 		//Заполняем буфер
 		for(dword i = 0; i < drawCount; i++)
@@ -3079,7 +3062,10 @@ void DX8RENDER::DrawRects(RS_RECT *pRSR, dword dwRectsNum, const char *cBlockNam
 		}
 		//Рисуем буфер
 		rectsVBuffer->Unlock();
-		ErrorHandler("SetCamera::GetTransform -> SetVertexShader", SetVertexShader(RS_RECT_VERTEX_FORMAT));
+		
+		ErrorHandler("SetCamera::GetTransform -> SetVertexShader", d3d9->SetVertexShader(NULL));
+		ErrorHandler("SetCamera::GetTransform -> SetFVF", d3d9->SetFVF(RS_RECT_VERTEX_FORMAT));
+		
 		if (cBlockName) bDraw = TechniqueSetParamsAndStart(cBlockName,dwNumParams,1 + &dwNumParams);
 		if (bDraw) do
 		{
@@ -3088,7 +3074,7 @@ void DX8RENDER::DrawRects(RS_RECT *pRSR, dword dwRectsNum, const char *cBlockNam
 		} while (cBlockName && TechniqueExecuteNext());
 	}
 
-	d3d8->SetTransform(D3DTS_VIEW, camMtx);
+	d3d9->SetTransform(D3DTS_VIEW, camMtx);
 }
 
 void DX8RENDER::DrawSprites(RS_SPRITE * pRSS, dword dwSpritesNum, const char * cBlockName, dword dwNumParams, ...)
@@ -3105,17 +3091,14 @@ void DX8RENDER::DrawSprites(RS_SPRITE * pRSS, dword dwSpritesNum, const char * c
 		pIndices[i*6 + 3] = WORD(i * 4 + 0); pIndices[i * 6 + 4] = WORD(i * 4 + 2); pIndices[i * 6 + 5] = WORD(i * 4 + 1);
 	}
 
-	SetVertexShader(RS_SPRITE_VERTEX_FORMAT);
+	d3d9->SetVertexShader(NULL);
+	d3d9->SetFVF(RS_SPRITE_VERTEX_FORMAT);
 
 	bool bDraw = true;
 	if (cBlockName) bDraw = TechniqueSetParamsAndStart(cBlockName, dwNumParams, 1 + &dwNumParams);
 	if (bDraw) do
 	{
-#ifndef _XBOX
 		DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, dwSpritesNum * 4, dwSpritesNum * 2, pIndices, D3DFMT_INDEX16, pRSS, sizeof(RS_SPRITE));
-#else
-		DrawPrimitiveUP(D3DPT_QUADLIST, RS_SPRITE_VERTEX_FORMAT, dwSpritesNum, pRSS, sizeof(RS_SPRITE));
-#endif
 	} while (cBlockName && TechniqueExecuteNext());
 	delete pIndices;
 }
@@ -3152,215 +3135,241 @@ void DX8RENDER::DrawLines2D(RS_LINE2D *pRSL2D, dword dwLinesNum, const char *cBl
 
 
 //-----------------------
-HRESULT DX8RENDER::CreateVertexBuffer(UINT Length, DWORD Usage, DWORD FVF, D3DPOOL Pool, IDirect3DVertexBuffer8** ppVertexBuffer)
+HRESULT DX8RENDER::CreateVertexBuffer(UINT Length, DWORD Usage, DWORD FVF, D3DPOOL Pool, IDirect3DVertexBuffer9** ppVertexBuffer)
 {
-	return d3d8->CreateVertexBuffer(Length, Usage, FVF, Pool, ppVertexBuffer);
+	return d3d9->CreateVertexBuffer(Length, Usage, FVF, Pool, ppVertexBuffer, NULL);
 }
 
-HRESULT DX8RENDER::VBLock(IDirect3DVertexBuffer8 * pVB, UINT OffsetToLock,UINT SizeToLock,BYTE** ppbData, DWORD Flags)
+HRESULT DX8RENDER::VBLock(IDirect3DVertexBuffer9 * pVB, UINT OffsetToLock,UINT SizeToLock,BYTE** ppbData, DWORD Flags)
 {
 	dwNumLV++;
-	return pVB->Lock(OffsetToLock, SizeToLock, ppbData, Flags);
+	return pVB->Lock(OffsetToLock, SizeToLock, (void **)ppbData, Flags);
 }
 
-void DX8RENDER::VBUnlock(IDirect3DVertexBuffer8 * pVB)
+void DX8RENDER::VBUnlock(IDirect3DVertexBuffer9 * pVB)
 {
 	pVB->Unlock();
 }
 
-HRESULT DX8RENDER::SetVertexShader(DWORD handle)
+HRESULT DX8RENDER::CreateRenderTarget(UINT Width, UINT Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, DWORD MultisampleQuality, BOOL Lockable, IDirect3DSurface9 **ppSurface)
+{ 
+	return d3d9->CreateRenderTarget(Width, Height, Format, MultiSample, MultisampleQuality, Lockable, ppSurface, NULL);
+}
+
+HRESULT DX8RENDER::StretchRect(IDirect3DSurface9 *pSourceSurface, const RECT  *pSourceRect, IDirect3DSurface9  *pDestSurface, const RECT *pDestRect, D3DTEXTUREFILTERTYPE Filter)
 {
-	return d3d8->SetVertexShader(handle);
+	return d3d9->StretchRect(pSourceSurface, pSourceRect, pDestSurface, pDestRect, Filter);
 }
 
 HRESULT DX8RENDER::SetStreamSource(UINT StreamNumber, void * pStreamData, UINT Stride)
 {
-	return d3d8->SetStreamSource(StreamNumber,(IDirect3DVertexBuffer8*)pStreamData,Stride);
+	return d3d9->SetStreamSource(StreamNumber,(IDirect3DVertexBuffer9*)pStreamData,0, Stride);
 }
 
 HRESULT DX8RENDER::SetIndices(void * pIndexData, UINT BaseVertexIndex)
 {
-	return d3d8->SetIndices((IDirect3DIndexBuffer8*)pIndexData,BaseVertexIndex);
+	return d3d9->SetIndices((IDirect3DIndexBuffer9*)pIndexData);
 }
 
 HRESULT DX8RENDER::DrawPrimitive(D3DPRIMITIVETYPE dwPrimitiveType, UINT StartVertex, UINT PrimitiveCount)
 {
 	dwNumDrawPrimitive++;
-	return d3d8->DrawPrimitive(dwPrimitiveType, StartVertex, PrimitiveCount);
+	return d3d9->DrawPrimitive(dwPrimitiveType, StartVertex, PrimitiveCount);
 }
 
-#ifndef _XBOX
 HRESULT DX8RENDER::Release(IUnknown *pSurface) 
 { 
 	if (pSurface) return pSurface->Release(); 
 	return D3D_OK;
 }
-#else
-HRESULT DX8RENDER::Release(IDirect3DResource8 * pSurface) 
-{ 
-	if (pSurface) return pSurface->Release(); 
-	return D3D_OK;
-}
-#endif
 
-HRESULT DX8RENDER::GetRenderTarget(IDirect3DSurface8** ppRenderTarget)
+HRESULT DX8RENDER::GetRenderTarget(IDirect3DSurface9** ppRenderTarget)
 {
-	return d3d8->GetRenderTarget(ppRenderTarget);
+	return d3d9->GetRenderTarget(0, ppRenderTarget);
 }
 
-HRESULT DX8RENDER::GetDepthStencilSurface( IDirect3DSurface8** ppZStencilSurface )
+HRESULT DX8RENDER::GetDepthStencilSurface( IDirect3DSurface9** ppZStencilSurface )
 {
-	return d3d8->GetDepthStencilSurface(ppZStencilSurface);
+	return d3d9->GetDepthStencilSurface(ppZStencilSurface);
 }
 
-HRESULT DX8RENDER::GetCubeMapSurface( IDirect3DCubeTexture8* ppCubeTexture, D3DCUBEMAP_FACES FaceType, UINT Level, IDirect3DSurface8** ppCubeMapSurface )
+HRESULT DX8RENDER::GetCubeMapSurface( IDirect3DCubeTexture9* ppCubeTexture, D3DCUBEMAP_FACES FaceType, UINT Level, IDirect3DSurface9** ppCubeMapSurface )
 {
 	return ppCubeTexture->GetCubeMapSurface( FaceType, Level, ppCubeMapSurface);
 }
 
-HRESULT DX8RENDER::SetRenderTarget( IDirect3DSurface8* pRenderTarget, IDirect3DSurface8* pNewZStencil )
+HRESULT DX8RENDER::SetRenderTarget( IDirect3DSurface9* pRenderTarget, IDirect3DSurface9* pNewZStencil )
 {
-	return d3d8->SetRenderTarget( pRenderTarget, pNewZStencil );
+	HRESULT hr = d3d9->SetRenderTarget(0, pRenderTarget  );
+	hr = d3d9->SetDepthStencilSurface(pNewZStencil);
+	return hr;
 }
 
 HRESULT DX8RENDER::Clear( DWORD Count, CONST D3DRECT* pRects, DWORD Flags, D3DCOLOR Color, float Z, DWORD Stencil )
 {
-	return d3d8->Clear( Count, pRects, Flags, Color, Z, Stencil );
+	return d3d9->Clear( Count, pRects, Flags, Color, Z, Stencil );
 }
 
 HRESULT DX8RENDER::BeginScene()
 {
-	return d3d8->BeginScene();
+	return d3d9->BeginScene();
 }
 
 HRESULT DX8RENDER::EndScene()
 {
-	return d3d8->EndScene();
+	return d3d9->EndScene();
 }
 
 HRESULT DX8RENDER::SetClipPlane( DWORD Index, CONST float* pPlane )
 {
-	//return d3d8->SetClipPlane( Index, pPlane );
 	return D3D_OK;
 }
 
-HRESULT DX8RENDER::CreateTexture( UINT Width, UINT Height, UINT  Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, IDirect3DTexture8** ppTexture )
+HRESULT DX8RENDER::CreateTexture( UINT Width, UINT Height, UINT  Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, IDirect3DTexture9** ppTexture )
 {
-	return d3d8->CreateTexture( Width, Height, Levels, Usage, Format, Pool, ppTexture );
+	return d3d9->CreateTexture( Width, Height, Levels, Usage, Format, Pool, ppTexture, null );
 }
 
-HRESULT DX8RENDER::CreateCubeTexture( UINT EdgeLength, UINT Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, IDirect3DCubeTexture8** ppCubeTexture )
+HRESULT DX8RENDER::CreateCubeTexture( UINT EdgeLength, UINT Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, IDirect3DCubeTexture9** ppCubeTexture )
 {
-	return d3d8->CreateCubeTexture( EdgeLength, Levels, Usage, Format, Pool, ppCubeTexture );
+	return d3d9->CreateCubeTexture( EdgeLength, Levels, Usage, Format, Pool, ppCubeTexture, null );
 }
 
-HRESULT DX8RENDER::CreateImageSurface( UINT Width, UINT Height, D3DFORMAT Format, IDirect3DSurface8 * * ppSurface)
+HRESULT DX8RENDER::CreateImageSurface( UINT Width, UINT Height, D3DFORMAT Format, IDirect3DSurface9 * * ppSurface)
 {
-	return d3d8->CreateImageSurface( Width, Height, Format, ppSurface);
+	return d3d9->CreateOffscreenPlainSurface( Width, Height, Format, D3DPOOL_SYSTEMMEM, ppSurface, NULL);	
 }
 
-HRESULT DX8RENDER::CreateDepthStencilSurface( UINT Width, UINT Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, IDirect3DSurface8** ppSurface )
+HRESULT DX8RENDER::CreateDepthStencilSurface( UINT Width, UINT Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, IDirect3DSurface9** ppSurface )
 {
-	return d3d8->CreateDepthStencilSurface( Width, Height, Format, MultiSample, ppSurface );
+	return d3d9->CreateDepthStencilSurface( Width, Height, Format, MultiSample,0, 0,  ppSurface, NULL );
 }
 
-HRESULT DX8RENDER::CreateVertexShader(CONST DWORD * pDeclaration, CONST DWORD * pFunction, DWORD * pHandle, DWORD Usage )
+HRESULT DX8RENDER::CreateVertexDeclaration(const D3DVERTEXELEMENT9 *pVertexElements, IDirect3DVertexDeclaration9 **ppDecl)
 {
-	return d3d8->CreateVertexShader( pDeclaration, pFunction, pHandle, Usage );
+	return d3d9->CreateVertexDeclaration(pVertexElements, ppDecl);
 }
 
-HRESULT DX8RENDER::CreatePixelShader(CONST DWORD * pFunction, DWORD * pHandle)
+HRESULT DX8RENDER::SetVertexDeclaration(IDirect3DVertexDeclaration9 *pDecl)
 {
-#ifndef _XBOX
-	return d3d8->CreatePixelShader( pFunction, pHandle );
-#else
-	return d3d8->CreatePixelShader( (D3DPIXELSHADERDEF*)(pFunction /*+ 1*/), pHandle );
-#endif
+	return d3d9->SetVertexDeclaration(pDecl);
 }
 
-HRESULT DX8RENDER::GetVertexShader(DWORD * pHandle)
+HRESULT DX8RENDER::GetVertexShader(IDirect3DVertexShader9 **ppShader)
 {
-	return d3d8->GetVertexShader(pHandle);
+	return d3d9->GetVertexShader(ppShader);
 }
 
-HRESULT DX8RENDER::GetPixelShader(DWORD * pHandle)
+HRESULT DX8RENDER::GetPixelShader(IDirect3DPixelShader9 **ppShader)
 {
-	return d3d8->GetPixelShader(pHandle);
+	return d3d9->GetPixelShader(ppShader);
 }
 
-HRESULT DX8RENDER::SetTexture(DWORD Stage, IDirect3DBaseTexture8* pTexture )
+HRESULT DX8RENDER::CreateVertexShader(CONST DWORD * pFunction, IDirect3DVertexShader9 **ppShader )
 {
-	return d3d8->SetTexture(Stage, pTexture );
+	return d3d9->CreateVertexShader( pFunction, ppShader );
 }
 
-HRESULT DX8RENDER::GetLevelDesc( IDirect3DTexture8* ppTexture, UINT Level, D3DSURFACE_DESC* pDesc )
+HRESULT DX8RENDER::CreatePixelShader(CONST DWORD * pFunction, IDirect3DPixelShader9 **ppShader)
+{
+	return d3d9->CreatePixelShader( pFunction, ppShader );
+}
+
+HRESULT DX8RENDER::DeleteVertexShader( IDirect3DVertexShader9 *pShader )
+{
+	if (pShader) return pShader->Release(); 
+	return D3D_OK;
+}
+
+HRESULT DX8RENDER::DeletePixelShader( IDirect3DPixelShader9 *pShader )
+{
+	if (pShader) return pShader->Release(); 
+	return D3D_OK;
+}
+
+HRESULT DX8RENDER::SetVertexShader(IDirect3DVertexShader9 *pShader)
+{
+	return d3d9->SetVertexShader(pShader);
+}
+
+HRESULT DX8RENDER::SetPixelShader(IDirect3DPixelShader9 *pShader)
+{
+	return d3d9->SetPixelShader(pShader);	
+}
+
+HRESULT DX8RENDER::SetFVF(DWORD handle)
+{
+	return d3d9->SetFVF(handle);
+}
+
+HRESULT DX8RENDER::SetTexture(DWORD Stage, IDirect3DBaseTexture9* pTexture )
+{
+	return d3d9->SetTexture(Stage, pTexture );
+}
+
+HRESULT DX8RENDER::GetLevelDesc( IDirect3DTexture9* ppTexture, UINT Level, D3DSURFACE_DESC* pDesc )
 {
 	return ppTexture->GetLevelDesc( Level, pDesc );
 }
 
-HRESULT DX8RENDER::GetLevelDesc( IDirect3DCubeTexture8* ppCubeTexture, UINT Level, D3DSURFACE_DESC* pDesc )
+HRESULT DX8RENDER::GetLevelDesc( IDirect3DCubeTexture9* ppCubeTexture, UINT Level, D3DSURFACE_DESC* pDesc )
 {
 	return ppCubeTexture->GetLevelDesc( Level, pDesc );
 }
 
-HRESULT DX8RENDER::LockRect( IDirect3DCubeTexture8* ppCubeTexture, D3DCUBEMAP_FACES FaceType, UINT Level, D3DLOCKED_RECT* pLockedRect, CONST RECT* pRect, DWORD Flags )
+HRESULT DX8RENDER::LockRect( IDirect3DCubeTexture9* ppCubeTexture, D3DCUBEMAP_FACES FaceType, UINT Level, D3DLOCKED_RECT* pLockedRect, CONST RECT* pRect, DWORD Flags )
 {
 	return ppCubeTexture->LockRect( FaceType, Level, pLockedRect, pRect, Flags );
 }
 
-HRESULT DX8RENDER::LockRect( IDirect3DTexture8* ppTexture, UINT Level, D3DLOCKED_RECT* pLockedRect, CONST RECT* pRect, DWORD Flags )
+HRESULT DX8RENDER::LockRect( IDirect3DTexture9* ppTexture, UINT Level, D3DLOCKED_RECT* pLockedRect, CONST RECT* pRect, DWORD Flags )
 {
 	return ppTexture->LockRect( Level, pLockedRect, pRect, Flags );
 }
 
-HRESULT DX8RENDER::UnlockRect( IDirect3DCubeTexture8 *pCubeTexture, D3DCUBEMAP_FACES FaceType, UINT Level )
+HRESULT DX8RENDER::UnlockRect( IDirect3DCubeTexture9 *pCubeTexture, D3DCUBEMAP_FACES FaceType, UINT Level )
 {
 	return pCubeTexture->UnlockRect( FaceType, Level );
 }
 
-HRESULT DX8RENDER::UnlockRect( IDirect3DTexture8 *pTexture, UINT Level )
+HRESULT DX8RENDER::UnlockRect( IDirect3DTexture9 *pTexture, UINT Level )
 {
 	return pTexture->UnlockRect( Level );
 }
 
-HRESULT DX8RENDER::GetSurfaceLevel( IDirect3DTexture8* ppTexture, UINT Level, IDirect3DSurface8** ppSurfaceLevel )
+HRESULT DX8RENDER::GetSurfaceLevel( IDirect3DTexture9* ppTexture, UINT Level, IDirect3DSurface9** ppSurfaceLevel )
 {
 	return ppTexture->GetSurfaceLevel( Level, ppSurfaceLevel );
 }
 
-HRESULT DX8RENDER::CopyRects( IDirect3DSurface8* pSourceSurface, CONST RECT* pSourceRectsArray, UINT cRects, IDirect3DSurface8* pDestinationSurface, CONST POINT* pDestPointsArray )
+HRESULT DX8RENDER::CopyRects( IDirect3DSurface9* pSourceSurface, CONST RECT* pSourceRectsArray, UINT cRects, IDirect3DSurface9* pDestinationSurface, CONST RECT* pDestRectsArray )
 {
-	return d3d8->CopyRects( pSourceSurface, pSourceRectsArray, cRects, pDestinationSurface, pDestPointsArray );
+	return d3d9->StretchRect( pSourceSurface, pSourceRectsArray, pDestinationSurface, pDestRectsArray, D3DTEXF_NONE );
 }
 
-HRESULT DX8RENDER::DeletePixelShader( DWORD Handle )
+HRESULT DX8RENDER::GetRenderTargetData( IDirect3DSurface9* pSourceSurface, IDirect3DSurface9* pDestinationSurface )
 {
-	return d3d8->DeletePixelShader( Handle );
+	return d3d9->GetRenderTargetData( pSourceSurface, pDestinationSurface);
 }
 
-HRESULT DX8RENDER::DeleteVertexShader( DWORD Handle )
+HRESULT DX8RENDER::UpdateSurface( IDirect3DSurface9* pSourceSurface, CONST RECT* pSourceRectsArray, IDirect3DSurface9* pDestinationSurface, CONST POINT* pDestPoint )
 {
-	return d3d8->DeleteVertexShader( Handle );
-}
-
-HRESULT DX8RENDER::SetPixelShader( DWORD Handle )
-{
-	return d3d8->SetPixelShader( Handle );
+	return d3d9->UpdateSurface( pSourceSurface, pSourceRectsArray, pDestinationSurface, pDestPoint );	
 }
 
 HRESULT DX8RENDER::SetVertexShaderConstant(DWORD Register, CONST void* pConstantData, DWORD  ConstantCount )
 {
-	return d3d8->SetVertexShaderConstant( Register, pConstantData, ConstantCount );
+	return d3d9->SetVertexShaderConstantF( Register, (float *)pConstantData, ConstantCount );
 }
 
 HRESULT DX8RENDER::SetPixelShaderConstant( DWORD Register, CONST void* pConstantData, DWORD ConstantCount )
 {
-	return d3d8->SetPixelShaderConstant( Register, pConstantData, ConstantCount );
+	return d3d9->SetPixelShaderConstantF( Register, (float *)pConstantData, ConstantCount );
 }
 
-HRESULT DX8RENDER::GetDeviceCaps(D3DCAPS8 * pCaps)
+HRESULT DX8RENDER::GetDeviceCaps(D3DCAPS9 * pCaps)
 {
-	return d3d8->GetDeviceCaps(pCaps);
+	return d3d9->GetDeviceCaps(pCaps);
 }
 
 CVideoTexture* DX8RENDER::GetVideoTexture(char* sVideoName)
@@ -3526,8 +3535,9 @@ HRESULT DX8RENDER::ImageBlt(long TextureID, RECT * pDstRect, RECT * pSrcRect)
 	bool bDraw = TechniqueExecuteStart("texturedialogfon");
 	if (bDraw) do
 	{
-		d3d8->SetVertexShader(D3DFVF_XYZRHW | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2);
-		hRes = d3d8->DrawPrimitiveUP(D3DPT_TRIANGLELIST,2,&v,sizeof(F3DVERTEX));
+		d3d9->SetVertexShader(NULL);
+		d3d9->SetFVF(D3DFVF_XYZRHW | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2);
+		hRes = d3d9->DrawPrimitiveUP(D3DPT_TRIANGLELIST,2,&v,sizeof(F3DVERTEX));
 		dwNumDrawPrimitive++;
 	} while (TechniqueExecuteNext());
 	
@@ -3673,14 +3683,15 @@ void DX8RENDER::ProgressView()
 		float u, v;
 	} v[4];
 	
-	for(long i = 0; i < 4; i++)
+	long i = 0;
+	for(i = 0; i < 4; i++)
 	{
 		v[i].z = 0.5;     			
 		v[i].rhw = 2.0;   		
 		v[i].color = 0xffffffff; 
 	}
 	//Вычисляем прямоугольник в котором будем рисовать
-	D3DVIEWPORT8 vp;	
+	D3DVIEWPORT9 vp;	
 	GetViewport(&vp);
 	
 	v[0].x = 0.0f; v[0].y = 0.0f;
@@ -3749,7 +3760,7 @@ void DX8RENDER::ProgressView()
 	TextureSet(0, progressTexture);
 	DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1, 2, v, sizeof(v[0]), "ProgressTech");
 	EndScene();
-	d3d8->Present(NULL, NULL, NULL, NULL);
+	d3d9->Present(NULL, NULL, NULL, NULL);
 	if(bInsideScene) BeginScene();
 	//Следующий кадр
 	loadFrame++;
@@ -3757,7 +3768,6 @@ void DX8RENDER::ProgressView()
 	//Выходим
 	isInPViewProcess = false;
 }
-
 
 void DX8RENDER::EndProgressView()
 {
@@ -3783,17 +3793,12 @@ void DX8RENDER::SetColorParameters(float fGamma, float fBrightness, float fContr
 		float fRamp = fContrast * 255.0f * 256.0f * powf(float(i / 255.0f), 1.0f / fGamma) + fBrightness * 256.0f;
 		if (fRamp < 0.0f) fRamp = 0.0f;
 		if (fRamp > 65535.0f) fRamp = 65535.0f;
-#ifdef _XBOX
-		ramp.red[i] = BYTE(fRamp / 256.0f);
-		ramp.green[i] = BYTE(fRamp / 256.0f);
-		ramp.blue[i] = BYTE(fRamp / 256.0f);
-#else
+		
 		ramp.red[i] = WORD(fRamp);
 		ramp.green[i] = WORD(fRamp);
 		ramp.blue[i] = WORD(fRamp);
-#endif
 	}
-	d3d8->SetGammaRamp(D3DSGR_NO_CALIBRATION , &ramp);
+	d3d9->SetGammaRamp(0,D3DSGR_NO_CALIBRATION , &ramp);
 }
 
 void DX8RENDER::MakeDrawVector(RS_LINE * pLines, dword dwNumSubLines, const CMatrix & mMatrix, CVECTOR vUp, CVECTOR v1, CVECTOR v2, float fScale, dword dwColor)
@@ -3801,7 +3806,6 @@ void DX8RENDER::MakeDrawVector(RS_LINE * pLines, dword dwNumSubLines, const CMat
 	dword i;
     dword k;
     
-	//for (i=0; i<dwNumSubLines * 2 + 2; i++) pLines[i].dwColor = dwColor;
 	k = dwNumSubLines * 2 + 2; // boal оптимизация, если фор крутит вычисления каждый проход.
 	for (i=0; i<k; i++)
 	{
@@ -3869,29 +3873,29 @@ void DX8RENDER::SetLoadTextureEnable(bool bEnable)
 	bLoadTextureEnabled = bEnable;
 }
 
-IDirect3DBaseTexture8 * DX8RENDER::CreateTextureFromFileInMemory(const char * pFile, dword dwSize)
+IDirect3DBaseTexture9 * DX8RENDER::CreateTextureFromFileInMemory(const char * pFile, dword dwSize)
 {
 	if (!pFile || !dwSize) return null;
 
-	IDirect3DTexture8 * pTexture = null;
+	IDirect3DTexture9 * pTexture = null;
 	TGA_H * pTga = (TGA_H *)pFile;
 	D3DFORMAT d3dFormat = (pTga->bpp == 16) ? D3DFMT_DXT1 : D3DFMT_DXT3;
-	D3DXCreateTextureFromFileInMemoryEx((LPDIRECT3DDEVICE8)GetD3DDevice(), pFile, dwSize, D3DX_DEFAULT, D3DX_DEFAULT, 1, 0, d3dFormat, D3DPOOL_MANAGED, D3DX_DEFAULT, D3DX_DEFAULT, 0, null, null, &pTexture);
+	D3DXCreateTextureFromFileInMemoryEx((LPDIRECT3DDEVICE9)GetD3DDevice(), pFile, dwSize, D3DX_DEFAULT, D3DX_DEFAULT, 1, 0, d3dFormat, D3DPOOL_MANAGED, D3DX_DEFAULT, D3DX_DEFAULT, 0, null, null, &pTexture);
 
 	return pTexture;
 }
 
-IDirect3DVolumeTexture8 * DX8RENDER::CreateVolumeTexture(dword Width, dword Height, dword Depth, dword Levels, dword Usage, D3DFORMAT Format, D3DPOOL Pool)
+IDirect3DVolumeTexture9 * DX8RENDER::CreateVolumeTexture(dword Width, dword Height, dword Depth, dword Levels, dword Usage, D3DFORMAT Format, D3DPOOL Pool)
 {
-	IDirect3DVolumeTexture8 * pVolumeTexture = null;
-	d3d8->CreateVolumeTexture(Width, Height, Depth, Levels, Usage, Format, Pool, &pVolumeTexture);
+	IDirect3DVolumeTexture9 * pVolumeTexture = null;
+	d3d9->CreateVolumeTexture(Width, Height, Depth, Levels, Usage, Format, Pool, &pVolumeTexture, null);
 	return pVolumeTexture;
 }
 
 bool DX8RENDER::PushRenderTarget()
 {
-	IDirect3DSurface8 * pD3DRenderTarget = null, * pD3DDepthSurface = null;
-	D3DVIEWPORT8 vp;
+	IDirect3DSurface9 * pD3DRenderTarget = null, * pD3DDepthSurface = null;
+	D3DVIEWPORT9 vp;
 
 	GetViewport(&vp);
 
@@ -3900,8 +3904,8 @@ bool DX8RENDER::PushRenderTarget()
 	stRenderTarget.Top().pDepthSurface = null;
 	stRenderTarget.Top().ViewPort = vp;
 
-	d3d8->GetRenderTarget(&stRenderTarget.Top().pRenderTarget);
-	d3d8->GetDepthStencilSurface(&stRenderTarget.Top().pDepthSurface);
+	d3d9->GetRenderTarget(0, &stRenderTarget.Top().pRenderTarget);
+	d3d9->GetDepthStencilSurface(&stRenderTarget.Top().pDepthSurface);
 
 	return true;
 }
@@ -3914,9 +3918,9 @@ bool DX8RENDER::PopRenderTarget()
 		return false;
 	}
 
-
-	d3d8->SetRenderTarget(stRenderTarget.Top().pRenderTarget, stRenderTarget.Top().pDepthSurface);
-
+	d3d9->SetRenderTarget(0, stRenderTarget.Top().pRenderTarget);
+	d3d9->SetDepthStencilSurface(stRenderTarget.Top().pDepthSurface);
+	
 	SetViewport(&stRenderTarget.Top().ViewPort);
 
 	RELEASE(stRenderTarget.Top().pRenderTarget);
@@ -3926,9 +3930,9 @@ bool DX8RENDER::PopRenderTarget()
 	return true;
 }
 
-bool DX8RENDER::SetRenderTarget(IDirect3DCubeTexture8 * pRenderTarget, dword FaceType, dword dwLevel, IDirect3DSurface8 * pZStencil)
+bool DX8RENDER::SetRenderTarget(IDirect3DCubeTexture9 * pRenderTarget, dword FaceType, dword dwLevel, IDirect3DSurface9 * pZStencil)
 {
-	IDirect3DSurface8 * pSurface;
+	IDirect3DSurface9 * pSurface;
 	pRenderTarget->GetCubeMapSurface((D3DCUBEMAP_FACES)FaceType, dwLevel, &pSurface);
 	bool bSuccess = D3D_OK == SetRenderTarget(pSurface, pZStencil);
 	Release(pSurface);
@@ -3957,7 +3961,7 @@ const CMatrix & DX8RENDER::GetProjection()
 	return mProjection; 
 }
 
-IDirect3DBaseTexture8* DX8RENDER::GetTextureFromID(long nTextureID)
+IDirect3DBaseTexture9* DX8RENDER::GetTextureFromID(long nTextureID)
 {
 	if( nTextureID<0 ) return null;
 	return Textures[nTextureID].d3dtex;

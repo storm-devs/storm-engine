@@ -1154,3 +1154,35 @@ dword NetSea::AttributeChanged(ATTRIBUTES * pAttribute)
 
 	return 0;
 }
+
+void NetSea::LostRender()
+{
+	if (!bSimpleSea)
+	{
+		Render().Release(pEnvMap);		pEnvMap = NULL;
+		Render().Release(pSunRoadMap);	pSunRoadMap = NULL;
+		Render().Release(pZStencil);	pZStencil = NULL;
+	}
+	else
+	{	
+		Render().Release(pReflection); pReflection = NULL;
+		Render().Release(pReflectionSunroad); pReflectionSunroad = NULL;
+		Render().Release(pReflectionSurfaceDepth); pReflectionSurfaceDepth = NULL;
+	}
+}
+
+void NetSea::RestoreRender()
+{
+	if (!bSimpleSea)
+	{
+		Render().CreateCubeTexture(128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pEnvMap);
+		Render().CreateCubeTexture(128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pSunRoadMap);
+		Render().CreateDepthStencilSurface(128, 128, D3DFMT_D24S8, D3DMULTISAMPLE_NONE, &pZStencil);
+	}
+	else
+	{	
+		Render().CreateTexture(128, 128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pReflection);
+		Render().CreateTexture(128, 128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pReflectionSunroad);
+		Render().CreateDepthStencilSurface(128, 128, D3DFMT_D24S8, D3DMULTISAMPLE_NONE, &pReflectionSurfaceDepth);
+	}
+}

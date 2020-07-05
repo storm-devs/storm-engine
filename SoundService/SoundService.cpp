@@ -26,7 +26,7 @@ void FMOD_ERROR(const char* szFromWhere, FMOD_RESULT result)
 {
 	if (result != FMOD_OK)
 	{
-		char* szTxtError = FMOD_ErrorString(result);
+		char* szTxtError = (char *)FMOD_ErrorString(result);
 		api->Trace("%s error! (%d) %s", szFromWhere, result, szTxtError);
 	}
 }
@@ -124,7 +124,8 @@ bool SoundService::Init()
 		bool bUseMMDevice = pEngineIni->GetLong("Sound", "UseMM", 0) == 1;
 		if (bUseMMDevice)
 	{
-	status = fmod_system->setOutput(FMOD_OUTPUTTYPE_WINMM);
+	//status = fmod_system->setOutput(FMOD_OUTPUTTYPE_WINMM);
+	status = fmod_system->setOutput(FMOD_OUTPUTTYPE_AUTODETECT);
 	FMOD_ERROR("FMOD:setOutput", status);
 	}
 		DELETE(pEngineIni);
@@ -140,7 +141,8 @@ bool SoundService::Init()
 
 
 	FMOD_SPEAKERMODE speaker_mode;
-	status = fmod_system->getSpeakerMode(&speaker_mode);
+	status = fmod_system->getSoftwareFormat(NULL, &speaker_mode, NULL);
+
 	FMOD_ERROR("FMOD:getSpeakerMode", status);
 
 	string TextSpkMode = "RAW";
@@ -158,9 +160,10 @@ bool SoundService::Init()
 	case FMOD_SPEAKERMODE_7POINT1:
 		TextSpkMode = "7:1";
 		break;
-	case FMOD_SPEAKERMODE_PROLOGIC:
-		TextSpkMode = "PROLOGIC";
-		break;
+
+//	case FMOD_SPEAKERMODE_PROLOGIC:
+//		TextSpkMode = "PROLOGIC";
+//		break;
 
 	}
 	api->Trace("FMOD: Speaker mode %s", TextSpkMode.c_str());
@@ -427,7 +430,8 @@ TSD_ID  SoundService::SoundPlay (const char *_name,
 
 			dword dwMode = FMOD_LOOP_OFF;
 			if (_looped) dwMode = FMOD_LOOP_NORMAL;
-			status = fmod_system->createStream(SoundName.c_str(), FMOD_HARDWARE | FMOD_2D | dwMode, 0, &sound);
+//			status = fmod_system->createStream(SoundName.c_str(), FMOD_HARDWARE | FMOD_2D | dwMode, 0, &sound);
+			status = fmod_system->createStream(SoundName.c_str(), FMOD_2D | dwMode, 0, &sound);
 			FMOD_ERROR("FMOD_SOUND:createStream", status);
 			if (status != FMOD_OK)
 			{
@@ -514,7 +518,8 @@ TSD_ID  SoundService::SoundPlay (const char *_name,
 	PlayingSounds[SoundIdx].fSoundVolume = _volume;
 
 	//Начинаем проигрывать звук, правда запауженный...
-	status = fmod_system->playSound(FMOD_CHANNEL_FREE, sound, true, &PlayingSounds[SoundIdx].channel);
+	//status = fmod_system->playSound(FMOD_CHANNEL_FREE, sound, true, &PlayingSounds[SoundIdx].channel);
+	status = fmod_system->playSound(sound, NULL, true, &PlayingSounds[SoundIdx].channel);
 	FMOD_ERROR("FMOD_SOUND:playSound", status);
 
 	if (status != FMOD_OK)
@@ -825,7 +830,7 @@ void SoundService::SoundResume (TSD_ID _id, long _time/* = 0*/)
 	_id--;
 	if (PlayingSounds[_id].bFree)
 	{
-		api->Trace("Can't sound resume %d !!!! Sound is not playig !!!!", _id);
+		api->Trace("Can't sound resume %d !!!! Sound is not playing !!!!", _id);
 		return;
 	}
 	
@@ -855,7 +860,8 @@ void SoundService::SetCameraPosition (const CVECTOR &_cameraPosition)
 	vListenerPos.y = _cameraPosition.y;
 	vListenerPos.z = _cameraPosition.z;
 
-	status = fmod_system->set3DListenerAttributes(0, &vListenerPos, NULL, &vListenerForward, &vListenerTop);
+//	status = fmod_system->set3DListenerAttributes(0, &vListenerPos, NULL, &vListenerForward, &vListenerTop);
+	status = fmod_system->set3DListenerAttributes(0, &vListenerPos, NULL, NULL, NULL);
 	FMOD_ERROR("FMOD:set3DListenerAttributes",status);
 }
 
@@ -874,6 +880,7 @@ void SoundService::SetCameraOrientation (const CVECTOR &_nose, const CVECTOR &_h
 	vListenerTop.z = head.z;
 
 	status = fmod_system->set3DListenerAttributes(0, &vListenerPos, NULL, &vListenerForward, &vListenerTop);
+//	status = fmod_system->set3DListenerAttributes(0, &vListenerPos, NULL, NULL, NULL);
 	FMOD_ERROR("FMOD:set3DListenerAttributes",status);
 }
 
@@ -1261,7 +1268,7 @@ void SoundService::DebugDraw ()
 
 
 	float fTotal;
-	fmod_system->getCPUUsage(NULL, NULL, NULL, &fTotal);
+	fmod_system->getCPUUsage(NULL, NULL, NULL, NULL, &fTotal);
 	int CurrentAlloc, PeakAlloc;
 	FMOD::Memory_GetStats(&CurrentAlloc, &PeakAlloc);
 
@@ -1407,15 +1414,18 @@ int SoundService::GetFromCache (const char* szName, eSoundType _type)
 	}
 
 
-	FMOD_MODE mode =  FMOD_SOFTWARE;
+//	FMOD_MODE mode =  FMOD_SOFTWARE;
+	FMOD_MODE mode;
 	if (_type == PCM_3D)
 	{
-		mode = mode | FMOD_3D | FMOD_3D_LINEARROLLOFF;
+		//mode = mode | FMOD_3D | FMOD_3D_LINEARROLLOFF;
+		mode = FMOD_3D | FMOD_3D_LINEARROLLOFF;
 	}
 
 	if (_type == PCM_STEREO)
 	{
-		mode = mode | FMOD_2D;
+		//mode = mode | FMOD_2D;
+		mode = FMOD_2D;
 	}
 
 
@@ -1449,7 +1459,7 @@ void _cdecl SoundService::DebugPrint3D(const CVECTOR & pos3D, float rad, long li
 	buf[sizeof(buf) - 1] = 0;
 	//Ищем позицию точки на экране
 	static CMatrix mtx, view, prj;
-	static D3DVIEWPORT8 vp;
+	static D3DVIEWPORT9 vp;
 	MTX_PRJ_VECTOR vrt;
 	pRS->GetTransform(D3DTS_VIEW, view);
 	pRS->GetTransform(D3DTS_PROJECTION, prj);

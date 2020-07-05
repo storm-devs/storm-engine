@@ -156,7 +156,7 @@ private:
 	//Picker
 	bool isPikerActive;
 	float pikerWait;
-	IDirect3DTexture8 * pickerTexture;
+	IDirect3DTexture9 * pickerTexture;
 	//Presets
 	long lastPreset;
 	char prsComment[64];

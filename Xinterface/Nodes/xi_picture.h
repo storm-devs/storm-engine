@@ -30,12 +30,12 @@ protected:
 	void	SetNewPicture(bool video, char * sNewTexName);
 	void	SetNewPictureFromDir(char * dirName);
 	void	SetNewPictureByGroup( char* groupName, char* picName );
-	void	SetNewPictureByPointer( IDirect3DBaseTexture8* pTex );
+	void	SetNewPictureByPointer( IDirect3DBaseTexture9* pTex );
 	void	ReleasePicture();
 
 	char* m_pcGroupName;
     long m_idTex;
-	IDirect3DBaseTexture8* m_pD3D8Texture;
+	IDirect3DBaseTexture9* m_pD3D8Texture;
 	CVideoTexture* m_pTex;
 	XI_ONETEX_VERTEX m_v[4];
 

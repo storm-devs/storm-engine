@@ -1,0 +1,1468 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{50ECEE95-0ECC-4EC1-8830-65C13AB337E3}</ProjectGuid>
+    <RootNamespace>PROGRAM</RootNamespace>
+    <SccProjectName>
+    </SccProjectName>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccProvider>
+    </SccProvider>
+    <Keyword>ManagedCProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <CLRSupport>OldSyntax</CLRSupport>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <CLRSupport>OldSyntax</CLRSupport>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28February 2010%29\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28February 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AssemblyDebug>true</AssemblyDebug>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Battle_interface\ActivePerksShow.c" />
+    <ClCompile Include="battle_interface\backgroundtask.c" />
+    <ClCompile Include="Battle_interface\BattleInterface.c" />
+    <ClCompile Include="Battle_interface\fast_reload_table.c" />
+    <ClCompile Include="Battle_interface\ispyglass.c" />
+    <ClCompile Include="Battle_interface\LandInterface.c" />
+    <ClCompile Include="Battle_interface\LogInterface.c" />
+    <ClCompile Include="Battle_interface\reload_tables.c" />
+    <ClCompile Include="Battle_interface\utils.c" />
+    <ClCompile Include="battle_interface\WmInterface.c" />
+    <ClCompile Include="Cannons\Cannons.c" />
+    <ClCompile Include="Cannons\Cannons_init.c" />
+    <ClCompile Include="Characters\characters.c" />
+    <ClCompile Include="Characters\characters_ai.c" />
+    <ClCompile Include="Characters\characters_events.c" />
+    <ClCompile Include="Characters\characters_face.c" />
+    <ClCompile Include="characters\characters_init.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)6.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)6.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Characters\characters_login.c" />
+    <ClCompile Include="Characters\characters_reload_check.c" />
+    <ClCompile Include="Characters\Characters_tables.c" />
+    <ClCompile Include="Characters\CharacterUtilite.c" />
+    <ClCompile Include="Characters\Russian\Characters_names.c" />
+    <ClCompile Include="characters\english\Characters_names.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="characters\french\characters_names.c" />
+    <ClCompile Include="characters\german\characters_names.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="characters\italian\characters_names.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="characters\spanish\characters_names.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="characters\init\Antigua.c" />
+    <ClCompile Include="characters\init\Barbados.c" />
+    <ClCompile Include="characters\init\Curacao.c" />
+    <ClCompile Include="characters\init\Guadeloupe.c" />
+    <ClCompile Include="characters\init\IslaMona.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="characters\init\Jamaica.c" />
+    <ClCompile Include="characters\init\LaVega.c" />
+    <ClCompile Include="characters\init\Martinique.c" />
+    <ClCompile Include="characters\init\Montserrat.c" />
+    <ClCompile Include="characters\init\Nevis.c" />
+    <ClCompile Include="characters\init\Other.c" />
+    <ClCompile Include="characters\init\PetitGoave.c" />
+    <ClCompile Include="characters\init\PuertoRico.c" />
+    <ClCompile Include="characters\init\SantoDomingo.c" />
+    <ClCompile Include="characters\init\StEustatius.c" />
+    <ClCompile Include="characters\init\StKitts.c" />
+    <ClCompile Include="characters\init\StMartin.c" />
+    <ClCompile Include="characters\init\StoryCharacters.c" />
+    <ClCompile Include="characters\init\Tortuga.c" />
+    <ClCompile Include="characters\init\Usurers.c" />
+    <ClCompile Include="Colonies\Colonies.c" />
+    <ClCompile Include="Colonies\Colonies_init.c" />
+    <ClCompile Include="Colonies\colonyupgradesinit.c" />
+    <ClCompile Include="Controls\controls.c" />
+    <ClCompile Include="Controls\init_pc.c" />
+    <ClCompile Include="Controls\init_xbox.c" />
+    <ClCompile Include="dialogs\Russian\_shablon_dialog.c" />
+    <ClCompile Include="dialogs\russian\AL_reef1.c" />
+    <ClCompile Include="dialogs\russian\Alexander_dialog.c" />
+    <ClCompile Include="dialogs\russian\Beltrop_dialog.c" />
+    <ClCompile Include="dialogs\Russian\Citizen_dialog.c" />
+    <ClCompile Include="dialogs\Russian\Duel_dialog.c" />
+    <ClCompile Include="dialogs\Russian\Enc_Companion_dialog.c" />
+    <ClCompile Include="dialogs\Russian\error_dialog.c" />
+    <ClCompile Include="dialogs\Russian\Habitue_dialog.c" />
+    <ClCompile Include="dialogs\Russian\Hovernor_dialog.c" />
+    <ClCompile Include="dialogs\Russian\ItemHolder_dialog.c" />
+    <ClCompile Include="dialogs\russian\LL_citizen_dialog.c" />
+    <ClCompile Include="dialogs\russian\LL_housethief_dialog.c" />
+    <ClCompile Include="dialogs\russian\LL_Ignacio_dialog.c" />
+    <ClCompile Include="dialogs\russian\LL_Master_trader_dialog.c" />
+    <ClCompile Include="dialogs\russian\LL_Misc_dialog.c" />
+    <ClCompile Include="dialogs\russian\LL_PRat_dialog.c" />
+    <ClCompile Include="dialogs\russian\LL_Praymondo_dialog.c" />
+    <ClCompile Include="dialogs\russian\LL_Redwood_dialog.c" />
+    <ClCompile Include="dialogs\russian\Merchant_dialog.c" />
+    <ClCompile Include="dialogs\russian\MiscStoryLineDialogs_dialog.c" />
+    <ClCompile Include="dialogs\Russian\Officer_dialog.c" />
+    <ClCompile Include="dialogs\Russian\Passenger_dialog.c" />
+    <ClCompile Include="dialogs\Russian\Patrol_dialog.c" />
+    <ClCompile Include="dialogs\Russian\Planter_dialog.c" />
+    <ClCompile Include="dialogs\Russian\Priest_dialog.c" />
+    <ClCompile Include="dialogs\Russian\Quest kill character_dialog.c" />
+    <ClCompile Include="dialogs\Russian\Ranger_dialog.c" />
+    <ClCompile Include="dialogs\Russian\RelationAgent_dialog.c" />
+    <ClCompile Include="dialogs\Russian\Shipyarder_dialog.c" />
+    <ClCompile Include="dialogs\russian\SL Advisor_dialog.c" />
+    <ClCompile Include="dialogs\russian\SL Beatrice_dialog.c" />
+    <ClCompile Include="dialogs\russian\SL Blaze_dialog.c" />
+    <ClCompile Include="dialogs\russian\SL Captain_dialog.c" />
+    <ClCompile Include="dialogs\russian\SL map man_dialog.c" />
+    <ClCompile Include="dialogs\russian\SL Pirate Boss_dialog.c" />
+    <ClCompile Include="dialogs\russian\SL Pirate Guard_dialog.c" />
+    <ClCompile Include="dialogs\russian\Smuggler_dialog.c" />
+    <ClCompile Include="dialogs\Russian\Soldier_dialog.c" />
+    <ClCompile Include="dialogs\Russian\Steal soldier dialog.c" />
+    <ClCompile Include="dialogs\russian\StoryFranceHovernor_dialog.c" />
+    <ClCompile Include="dialogs\Russian\TavernOwner_dialog.c" />
+    <ClCompile Include="dialogs\Russian\test_dialog.c" />
+    <ClCompile Include="dialogs\Russian\Trader_dialog.c" />
+    <ClCompile Include="dialogs\Russian\Usurer_dialog.c" />
+    <ClCompile Include="dialogs\Russian\Waitress_dialog.c" />
+    <ClCompile Include="dialogs\russian\Zl_captain_Beatrice_dialog.c" />
+    <ClCompile Include="dialogs\russian\Zl_captain_Blaze_dialog.c" />
+    <ClCompile Include="dialogs\russian\Zl_Citizenaboutwife_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\russian\Zl_Dock_dialog.c" />
+    <ClCompile Include="dialogs\russian\Zl_Planter_Idol_dialog.c" />
+    <ClCompile Include="dialogs\English\_shablon_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\English\Citizen_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\English\Duel_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\English\Enc_Companion_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\English\error_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\English\Habitue_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\English\Hovernor_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\English\Item Trader_dialog.c" />
+    <ClCompile Include="dialogs\English\ItemHolder_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\English\Merchant_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\English\Officer_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\English\Passenger_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\English\Patrol_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\English\Planter_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\English\Priest_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\English\Quest kill character_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\English\Ranger_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\English\RelationAgent_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\English\Shipyarder_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\english\SL Advisor_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\English\SL Beatrice_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\English\SL Blaze_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\english\SL Captain_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\English\SL map man_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\english\SL Pirate Boss_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\english\SL Pirate Guard_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\English\Smuggler_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\English\Soldier_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\English\Steal soldier dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\English\TavernOwner_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\English\test_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\English\Trader_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\English\Usurer_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\English\Waitress_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\french\_shablon_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\french\Citizen_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\french\Duel_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\french\Enc_Companion_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\french\error_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\french\Habitue_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\french\Hovernor_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\french\Item Trader_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\french\ItemHolder_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\french\Merchant_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\french\Officer_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\french\Passenger_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\french\Patrol_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\french\Planter_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\french\Priest_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\french\Quest kill character_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\french\Ranger_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\french\RelationAgent_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\french\Shipyarder_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\french\SL Advisor_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\french\SL Beatrice_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\french\SL Blaze_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\french\SL Captain_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\french\SL map man_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\french\SL Pirate Boss_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\french\SL Pirate Guard_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\french\Smuggler_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\french\Soldier_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\french\Steal soldier dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\french\TavernOwner_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\french\test_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\french\Trader_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\french\Usurer_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\french\Waitress_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\german\_shablon_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\german\Citizen_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\german\Duel_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\german\Enc_Companion_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\german\error_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\german\Habitue_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\german\Hovernor_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\german\Item Trader_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\german\ItemHolder_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\german\Merchant_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\german\Officer_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\german\Passenger_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\german\Patrol_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\german\Planter_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\german\Priest_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\german\Quest kill character_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\german\Ranger_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\german\RelationAgent_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\german\Shipyarder_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\german\SL Advisor_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\german\SL Beatrice_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\german\SL Blaze_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\german\SL Captain_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\german\SL map man_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\german\SL Pirate Boss_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\german\SL Pirate Guard_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\german\Smuggler_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\german\Soldier_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\german\Steal soldier dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\german\TavernOwner_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\german\test_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\german\Trader_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\german\Usurer_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\german\Waitress_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\italian\_shablon_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\italian\Citizen_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\italian\Duel_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\italian\Enc_Companion_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\italian\error_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\italian\Habitue_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\italian\Hovernor_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\italian\Item Trader_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\italian\ItemHolder_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\italian\Merchant_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\italian\Officer_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\italian\Passenger_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\italian\Patrol_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\italian\Planter_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\italian\Priest_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\italian\Quest kill character_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\italian\Ranger_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\italian\RelationAgent_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\italian\Shipyarder_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\italian\SL Advisor_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\italian\SL Beatrice_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\italian\SL Blaze_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\italian\SL Captain_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\italian\SL map man_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\italian\SL Pirate Boss_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\italian\SL Pirate Guard_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\italian\Smuggler_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\italian\Soldier_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\italian\Steal soldier dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\italian\TavernOwner_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\italian\test_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\italian\Trader_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\italian\Usurer_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\italian\Waitress_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\spanish\_shablon_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\spanish\Citizen_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\spanish\Duel_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\spanish\Enc_Companion_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\spanish\error_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\spanish\Habitue_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\spanish\Hovernor_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\spanish\Item Trader_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\spanish\ItemHolder_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\spanish\Merchant_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\spanish\Officer_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\spanish\Passenger_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\spanish\Patrol_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\spanish\Planter_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\spanish\Priest_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\spanish\Quest kill character_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\spanish\Ranger_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\spanish\RelationAgent_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\spanish\Shipyarder_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\spanish\SL Advisor_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\spanish\SL Beatrice_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\spanish\SL Blaze_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\spanish\SL Captain_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\spanish\SL map man_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\spanish\SL Pirate Boss_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\spanish\SL Pirate Guard_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\spanish\Smuggler_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\spanish\Soldier_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\spanish\Steal soldier dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\spanish\TavernOwner_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\spanish\test_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\spanish\Trader_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\spanish\Usurer_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="dialogs\spanish\Waitress_dialog.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="encounters\Encounters.c" />
+    <ClCompile Include="encounters\Encounters_init.c" />
+    <ClCompile Include="encounters\Encounters_map.c" />
+    <ClCompile Include="encounters\Encounters_Quest.c" />
+    <ClCompile Include="Interface\AskForHelp.c" />
+    <ClCompile Include="Interface\BaseInterface.c" />
+    <ClCompile Include="Interface\CareerMoney.c" />
+    <ClCompile Include="Interface\character.c" />
+    <ClCompile Include="Interface\ColonyInfo.c" />
+    <ClCompile Include="Interface\ColonyManagement.c" />
+    <ClCompile Include="interface\disease_alert.c" />
+    <ClCompile Include="Interface\endgame.c" />
+    <ClCompile Include="Interface\FoodInfo.c" />
+    <ClCompile Include="Interface\fortcapture.c" />
+    <ClCompile Include="Interface\game_menu.c" />
+    <ClCompile Include="Interface\hirecrew.c" />
+    <ClCompile Include="Interface\HireOfficer.c" />
+    <ClCompile Include="Interface\interface.c" />
+    <ClCompile Include="Interface\interface_utils.c" />
+    <ClCompile Include="Interface\items.c" />
+    <ClCompile Include="Interface\itemsbox.c" />
+    <ClCompile Include="Interface\itemstrade.c" />
+    <ClCompile Include="Interface\LanguageSelect.c" />
+    <ClCompile Include="Interface\mainmenu.c" />
+    <ClCompile Include="Interface\map.c" />
+    <ClCompile Include="Interface\option_screen.c" />
+    <ClCompile Include="Interface\option_sl.c" />
+    <ClCompile Include="Interface\papermap.c" />
+    <ClCompile Include="Interface\playgame.c" />
+    <ClCompile Include="Interface\QuestBook.c" />
+    <ClCompile Include="interface\quick_save.c" />
+    <ClCompile Include="Interface\ransack_main.c" />
+    <ClCompile Include="Interface\RiotResult.c" />
+    <ClCompile Include="Interface\salary.c" />
+    <ClCompile Include="Interface\save_load.c" />
+    <ClCompile Include="Interface\select_menu.c" />
+    <ClCompile Include="Interface\selectCharacter.c" />
+    <ClCompile Include="Interface\ship.c" />
+    <ClCompile Include="Interface\shipyard.c" />
+    <ClCompile Include="Interface\Speak.c" />
+    <ClCompile Include="Interface\store.c" />
+    <ClCompile Include="Interface\transfer_main.c" />
+    <ClCompile Include="Interface\utilite.c" />
+    <ClCompile Include="Interface\Perks\perks.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Interface\Perks\perks_init.c" />
+    <ClCompile Include="Interface\Utils\IconSelector.c" />
+    <ClCompile Include="Interface\Utils\Interface.c" />
+    <ClCompile Include="Interface\Utils\MessageBox.c" />
+    <ClCompile Include="Islands\islands.c" />
+    <ClCompile Include="Islands\Islands_init.c" />
+    <ClCompile Include="Islands\Islands_loader.c" />
+    <ClCompile Include="Items\initItems.c" />
+    <ClCompile Include="Items\itemLogic.c" />
+    <ClCompile Include="Items\items_utilite.c" />
+    <ClCompile Include="LandEncounters\LandEnc_init.c" />
+    <ClCompile Include="LandEncounters\LandEncounters.c" />
+    <ClCompile Include="LandEncounters\LEnc_login.c" />
+    <ClCompile Include="LandEncounters\LEnc_monsters.c" />
+    <ClCompile Include="Loc_ai\LAi_boarding.c" />
+    <ClCompile Include="Loc_ai\LAi_character.c" />
+    <ClCompile Include="Loc_ai\LAi_defines.c" />
+    <ClCompile Include="Loc_ai\LAi_equip.c" />
+    <ClCompile Include="Loc_ai\LAi_events.c" />
+    <ClCompile Include="Loc_ai\LAi_fightparams.c" />
+    <ClCompile Include="Loc_ai\LAi_groups.c" />
+    <ClCompile Include="Loc_ai\LAi_init.c" />
+    <ClCompile Include="Loc_ai\LAi_location.c" />
+    <ClCompile Include="Loc_ai\LAi_login.c" />
+    <ClCompile Include="Loc_ai\LAi_monsters.c" />
+    <ClCompile Include="Loc_ai\LAi_sounds.c" />
+    <ClCompile Include="Loc_ai\LAi_templates.c" />
+    <ClCompile Include="Loc_ai\LAi_types.c" />
+    <ClCompile Include="Loc_ai\LAi_utilites.c" />
+    <ClCompile Include="Loc_ai\LAi_utils.c" />
+    <ClCompile Include="Loc_ai\templates\LAi_afraid.c" />
+    <ClCompile Include="Loc_ai\templates\LAi_animation.c" />
+    <ClCompile Include="Loc_ai\templates\LAi_dialog.c" />
+    <ClCompile Include="Loc_ai\templates\LAi_fight.c" />
+    <ClCompile Include="Loc_ai\templates\LAi_follow.c" />
+    <ClCompile Include="Loc_ai\templates\LAi_goto.c" />
+    <ClCompile Include="Loc_ai\templates\LAi_player.c" />
+    <ClCompile Include="Loc_ai\templates\LAi_runto.c" />
+    <ClCompile Include="Loc_ai\templates\LAi_stay.c" />
+    <ClCompile Include="Loc_ai\templates\LAi_walk.c" />
+    <ClCompile Include="Loc_ai\types\LAi_actor.c" />
+    <ClCompile Include="Loc_ai\types\LAi_barman.c" />
+    <ClCompile Include="Loc_ai\types\LAi_citizen.c" />
+    <ClCompile Include="loc_ai\types\LAi_dead.c" />
+    <ClCompile Include="Loc_ai\types\LAi_guardian.c" />
+    <ClCompile Include="Loc_ai\types\LAi_huber.c" />
+    <ClCompile Include="Loc_ai\types\LAi_huberstay.c" />
+    <ClCompile Include="Loc_ai\types\LAi_merchant.c" />
+    <ClCompile Include="Loc_ai\types\LAi_monkey.c" />
+    <ClCompile Include="Loc_ai\types\LAi_officer.c" />
+    <ClCompile Include="Loc_ai\types\LAi_patrol.c" />
+    <ClCompile Include="Loc_ai\types\LAi_player.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Loc_ai\types\LAi_poor.c" />
+    <ClCompile Include="Loc_ai\types\LAi_priest.c" />
+    <ClCompile Include="Loc_ai\types\LAi_sit.c" />
+    <ClCompile Include="Loc_ai\types\LAi_stay.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Loc_ai\types\LAi_waitress.c" />
+    <ClCompile Include="Loc_ai\types\LAi_warrior.c" />
+    <ClCompile Include="Locations\locations.c" />
+    <ClCompile Include="Locations\locations_camera.c" />
+    <ClCompile Include="Locations\locations_init.c" />
+    <ClCompile Include="Locations\locations_loader.c" />
+    <ClCompile Include="Locations\locators_test.c" />
+    <ClCompile Include="Locations\particles.c" />
+    <ClCompile Include="Locations\init\Antigua.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Locations\init\Barbados.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Locations\init\boarding.c" />
+    <ClCompile Include="Locations\init\Curacao.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Locations\init\Guadeloupe.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="locations\init\IslaMona.c" />
+    <ClCompile Include="Locations\init\Jamaica.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Locations\init\LaVega.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="locations\init\Margarita.c" />
+    <ClCompile Include="Locations\init\Martinique.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Locations\init\Montserrat.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Locations\init\Nevis.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Locations\init\PetitGoave.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Locations\init\PuertoRico.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Locations\init\QuestLocations.c" />
+    <ClCompile Include="Locations\init\SantoDomingo.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Locations\init\StEustatius.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Locations\init\StKitts.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Locations\init\StMartin.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Locations\init\Tortuga.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Nations\nations.c" />
+    <ClCompile Include="Nations\nations_init.c" />
+    <ClCompile Include="Quests\characters_task.c" />
+    <ClCompile Include="Quests\quests.c" />
+    <ClCompile Include="Quests\quests_abordage.c" />
+    <ClCompile Include="Quests\quests_check.c" />
+    <ClCompile Include="Quests\quests_movie.c" />
+    <ClCompile Include="Quests\quests_reaction.c" />
+    <ClCompile Include="Quests\quests_scenes.c" />
+    <ClCompile Include="Scripts\bountyhunters.c" />
+    <ClCompile Include="scripts\career.c" />
+    <ClCompile Include="scripts\colony.c" />
+    <ClCompile Include="Scripts\ColonyUpgrades.c" />
+    <ClCompile Include="scripts\companions.c" />
+    <ClCompile Include="Scripts\crew.c" />
+    <ClCompile Include="scripts\dialogs.c" />
+    <ClCompile Include="Scripts\duel.c" />
+    <ClCompile Include="Scripts\EuropeanTowns.c" />
+    <ClCompile Include="scripts\fame.c" />
+    <ClCompile Include="scripts\flag.c" />
+    <ClCompile Include="scripts\food.c" />
+    <ClCompile Include="scripts\free_adventure.c" />
+    <ClCompile Include="scripts\gold_convoy.c" />
+    <ClCompile Include="scripts\historyevents.c" />
+    <ClCompile Include="scripts\idioms.c" />
+    <ClCompile Include="scripts\islandships.c" />
+    <ClCompile Include="scripts\officers.c" />
+    <ClCompile Include="scripts\quest_capture_fort.c" />
+    <ClCompile Include="scripts\quest_convoy.c" />
+    <ClCompile Include="scripts\quest_defend_colony.c" />
+    <ClCompile Include="scripts\quest_delivery_item.c" />
+    <ClCompile Include="scripts\quest_delivery_passenger.c" />
+    <ClCompile Include="scripts\quest_delivery_trade.c" />
+    <ClCompile Include="scripts\quest_disease.c" />
+    <ClCompile Include="scripts\quest_kill_character.c" />
+    <ClCompile Include="scripts\quest_shablons.c" />
+    <ClCompile Include="scripts\quest_sink_ship.c" />
+    <ClCompile Include="scripts\quest_steal_item.c" />
+    <ClCompile Include="scripts\rangers.c" />
+    <ClCompile Include="scripts\rumours.c" />
+    <ClCompile Include="scripts\seaspeak.c" />
+    <ClCompile Include="scripts\shipfame.c" />
+    <ClCompile Include="scripts\ShipsUtilites.c" />
+    <ClCompile Include="scripts\shipupgrades.c" />
+    <ClCompile Include="scripts\slaves.c" />
+    <ClCompile Include="scripts\smuggling.c" />
+    <ClCompile Include="scripts\sneaktotown.c" />
+    <ClCompile Include="Scripts\tavern.c" />
+    <ClCompile Include="scripts\time_events.c" />
+    <ClCompile Include="scripts\tutorial.c" />
+    <ClCompile Include="scripts\utils.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="scripts\quests_lines\addon_line.c" />
+    <ClCompile Include="scripts\quests_lines\altman_lines.c" />
+    <ClCompile Include="scripts\quests_lines\lokk_lines.c" />
+    <ClCompile Include="scripts\quests_lines\main_storyline.c" />
+    <ClCompile Include="scripts\quests_lines\starter.c" />
+    <ClCompile Include="scripts\quests_lines\zulus_lines.c" />
+    <ClCompile Include="Sea_ai\AIAbordage.c" />
+    <ClCompile Include="Sea_ai\AIBalls.c" />
+    <ClCompile Include="Sea_ai\AICameras.c" />
+    <ClCompile Include="Sea_ai\AICannon.c" />
+    <ClCompile Include="Sea_ai\AIFantom.c" />
+    <ClCompile Include="Sea_ai\AIFort.c" />
+    <ClCompile Include="Sea_ai\AIGroup.c" />
+    <ClCompile Include="Sea_ai\AIIsland.c" />
+    <ClCompile Include="Sea_ai\AISea.c" />
+    <ClCompile Include="Sea_ai\AISeaGoods.c" />
+    <ClCompile Include="Sea_ai\AIShip.c" />
+    <ClCompile Include="Sea_ai\CoastFoam.c" />
+    <ClCompile Include="Sea_ai\sea.c" />
+    <ClCompile Include="Sea_ai\shipBortFire.c" />
+    <ClCompile Include="Sea_ai\shipDead.c" />
+    <ClCompile Include="Sea_ai\ShipLights.c" />
+    <ClCompile Include="Sea_ai\shipWalk.c" />
+    <ClCompile Include="Sea_ai\telescope.c" />
+    <ClCompile Include="Sea_ai\AITasks\AIAbordage.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Sea_ai\AITasks\AIAttack.c" />
+    <ClCompile Include="Sea_ai\AITasks\AIDefend.c" />
+    <ClCompile Include="Sea_ai\AITasks\AIRunaway.c" />
+    <ClCompile Include="Sea_ai\AITasks\AITasks.c" />
+    <ClCompile Include="Sea_ai\walk\BARQUE_walk.c" />
+    <ClCompile Include="Sea_ai\walk\Battleship_walk.c" />
+    <ClCompile Include="Sea_ai\walk\BLACKPEARL_walk.c" />
+    <ClCompile Include="Sea_ai\walk\Brig_walk.c" />
+    <ClCompile Include="Sea_ai\walk\CARAVEL2_walk.c" />
+    <ClCompile Include="Sea_ai\walk\Caravel_walk.c" />
+    <ClCompile Include="Sea_ai\walk\Corvette_walk.c" />
+    <ClCompile Include="Sea_ai\walk\FLEUT1_walk.c" />
+    <ClCompile Include="Sea_ai\walk\FLEUT2_walk.c" />
+    <ClCompile Include="Sea_ai\walk\Fleut_walk.c" />
+    <ClCompile Include="Sea_ai\walk\FRIGATE2_walk.c" />
+    <ClCompile Include="Sea_ai\walk\Frigate3_walk.c" />
+    <ClCompile Include="Sea_ai\walk\FRIGATE_sat_walk.c" />
+    <ClCompile Include="Sea_ai\walk\Frigate_walk.c" />
+    <ClCompile Include="Sea_ai\walk\GALEON1_walk.c" />
+    <ClCompile Include="Sea_ai\walk\GALEON2_walk.c" />
+    <ClCompile Include="Sea_ai\walk\GALEOTH1_walk.c" />
+    <ClCompile Include="Sea_ai\walk\GALEOTH2_walk.c" />
+    <ClCompile Include="Sea_ai\walk\LUGGER2_walk.c" />
+    <ClCompile Include="Sea_ai\walk\Lugger_walk.c" />
+    <ClCompile Include="Sea_ai\walk\MANOWAR1_walk.c" />
+    <ClCompile Include="Sea_ai\walk\MANOWAR2_walk.c" />
+    <ClCompile Include="Sea_ai\walk\MANOWAR_gub_walk.c" />
+    <ClCompile Include="Sea_ai\walk\Pinnace_walk.c" />
+    <ClCompile Include="Sea_ai\walk\prophecy_walk.c" />
+    <ClCompile Include="Sea_ai\walk\Schooner_walk.c" />
+    <ClCompile Include="Sea_ai\walk\SLOOP2_walk.c" />
+    <ClCompile Include="Sea_ai\walk\Sloop_walk.c" />
+    <ClCompile Include="Sea_ai\walk\Tartane_walk.c" />
+    <ClCompile Include="Sea_ai\walk\XEBEC1_walk.c" />
+    <ClCompile Include="Sea_ai\walk\XEBEC2_walk.c" />
+    <ClCompile Include="Sea_ai\walk\Xebec_walk.c" />
+    <ClCompile Include="Sea_ai\walk\YACHT1_walk.c" />
+    <ClCompile Include="Sea_ai\walk\YACHT2_walk.c" />
+    <ClCompile Include="Sea_ai\walk\Yacht_walk.c" />
+    <ClCompile Include="ships\Sails_Init.c" />
+    <ClCompile Include="Ships\Ships.c" />
+    <ClCompile Include="Ships\Ships_init.c" />
+    <ClCompile Include="Ships\Russian\ships_name.c" />
+    <ClCompile Include="ships\english\ships_name.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="ships\french\ships_name.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="ships\german\ships_name.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="ships\italian\ships_name.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="ships\spanish\ships_name.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Store\initGoods.c" />
+    <ClCompile Include="Store\initStore.c" />
+    <ClCompile Include="Store\store_init.c" />
+    <ClCompile Include="Store\storeName.c" />
+    <ClCompile Include="Store\StoreUtilite.c" />
+    <ClCompile Include="Weather\WhrAstronomy.c" />
+    <ClCompile Include="Weather\WhrInit.c" />
+    <ClCompile Include="Weather\WhrLightning.c" />
+    <ClCompile Include="Weather\WhrRain.c" />
+    <ClCompile Include="Weather\WhrSea.c" />
+    <ClCompile Include="Weather\WhrSky.c" />
+    <ClCompile Include="Weather\WhrSun.c" />
+    <ClCompile Include="Weather\WhrTornado.c" />
+    <ClCompile Include="Weather\WhrUtils.c" />
+    <ClCompile Include="Weather\WhrWeather.c" />
+    <ClCompile Include="Weather\Init\Common.c" />
+    <ClCompile Include="Weather\Init\Day.c" />
+    <ClCompile Include="Weather\Init\DayStorm.c" />
+    <ClCompile Include="Weather\Init\Evening.c" />
+    <ClCompile Include="Weather\Init\Morning.c" />
+    <ClCompile Include="Weather\Init\Night.c" />
+    <ClCompile Include="Weather\Init\Special.c" />
+    <ClCompile Include="worldmap\worldmap.c" />
+    <ClCompile Include="worldmap\worldmap_encgen.c" />
+    <ClCompile Include="worldmap\worldmap_events.c" />
+    <ClCompile Include="worldmap\worldmap_globals.c" />
+    <ClCompile Include="worldmap\worldmap_init.c" />
+    <ClCompile Include="worldmap\worldmap_reload.c" />
+    <ClCompile Include="Net\Net.c" />
+    <ClCompile Include="Net\NetClient.c" />
+    <ClCompile Include="net\NetFile.c" />
+    <ClCompile Include="Net\NetServer.c" />
+    <ClCompile Include="Net\Client\Cameras.c" />
+    <ClCompile Include="net\client\File.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="net\client\Fort.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Net\Client\Island.c" />
+    <ClCompile Include="Net\Client\OnBall.c" />
+    <ClCompile Include="Net\Client\OnChat.c" />
+    <ClCompile Include="Net\Client\OnClient.c" />
+    <ClCompile Include="Net\Client\OnConnect.c" />
+    <ClCompile Include="Net\Client\OnNetMessage.c" />
+    <ClCompile Include="Net\Client\OnPing.c" />
+    <ClCompile Include="Net\Client\OnShip.c" />
+    <ClCompile Include="Net\Client\OnStart.c" />
+    <ClCompile Include="Net\Client\OnWeather.c" />
+    <ClCompile Include="net\client\PlayerInfo.c" />
+    <ClCompile Include="Net\Client\Rigging.c" />
+    <ClCompile Include="net\client\ServerInfo.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Net\Client\ShipLights.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Net\Client\Time.c" />
+    <ClCompile Include="Net\Client\Utils.c" />
+    <ClCompile Include="Net\Client\Weather\Astronomy.c" />
+    <ClCompile Include="Net\Client\Weather\Lightning.c" />
+    <ClCompile Include="Net\Client\Weather\Rain.c" />
+    <ClCompile Include="Net\Client\Weather\Sea.c" />
+    <ClCompile Include="Net\Client\Weather\Sky.c" />
+    <ClCompile Include="Net\Client\Weather\Sun.c" />
+    <ClCompile Include="Net\Client\Weather\Tornado.c" />
+    <ClCompile Include="Net\Client\Weather\Weather.c" />
+    <ClCompile Include="net\server\Buy.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Net\Server\DedicatedServer.c" />
+    <ClCompile Include="net\server\File.c" />
+    <ClCompile Include="net\server\Fort.c" />
+    <ClCompile Include="Net\Server\Island.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Net\Server\LocalServer.c" />
+    <ClCompile Include="Net\Server\OnBall.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Net\Server\OnCamera.c" />
+    <ClCompile Include="Net\Server\OnCommand.c" />
+    <ClCompile Include="Net\Server\OnConnect.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Net\Server\OnNetMessage.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Net\Server\OnPing.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Net\Server\OnSay.c" />
+    <ClCompile Include="Net\Server\OnShip.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Net\Server\OnStart.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Net\Server\Rigging.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="net\server\ServerInfo.c" />
+    <ClCompile Include="Net\Server\Time.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Net\Server\Touch.c" />
+    <ClCompile Include="Net\Server\Utils.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Net\Server\Games\convoy.c" />
+    <ClCompile Include="Net\Server\Games\deathmatch.c" />
+    <ClCompile Include="Net\Server\Games\fort.c" />
+    <ClCompile Include="Net\Server\Games\naval.c" />
+    <ClCompile Include="Net\Server\Weather\Lightning.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Net\Server\Weather\Sea.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Net\Server\Weather\Weather.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="net\Interfaces\Buy.c" />
+    <ClCompile Include="net\Interfaces\Chat.c" />
+    <ClCompile Include="net\Interfaces\ChatString.c" />
+    <ClCompile Include="net\Interfaces\CreateGame.c" />
+    <ClCompile Include="net\interfaces\EndGame.c" />
+    <ClCompile Include="net\Interfaces\FindGame.c" />
+    <ClCompile Include="net\Interfaces\GameState.c" />
+    <ClCompile Include="net\interfaces\Interface.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="net\interfaces\NetMenu.c" />
+    <ClCompile Include="net\interfaces\PlayerSettings.c" />
+    <ClCompile Include="net\Interfaces\TopList.c" />
+    <ClCompile Include="net\interfaces\BattleInterface\BattleInterface.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Net\Common\Cannons.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Net\Common\Goods.c" />
+    <ClCompile Include="Net\Common\Islands.c" />
+    <ClCompile Include="Net\Common\Perks.c" />
+    <ClCompile Include="net\common\Rewards.c" />
+    <ClCompile Include="Net\Common\Ships.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Net\Common\Skills.c" />
+    <ClCompile Include="net\common\Upgrades.c" />
+    <ClCompile Include="BIManager\Base.c" />
+    <ClCompile Include="animals.c" />
+    <ClCompile Include="calendar.c" />
+    <ClCompile Include="CheckDlgLoad.c" />
+    <ClCompile Include="dialog.c" />
+    <ClCompile Include="Dialog_func.c" />
+    <ClCompile Include="gameutils.c" />
+    <ClCompile Include="globals.c" />
+    <ClCompile Include="InitInterface.c" />
+    <ClCompile Include="lcorrect.c" />
+    <ClCompile Include="memtest.c" />
+    <ClCompile Include="particles.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="ps.c" />
+    <ClCompile Include="reload.c" />
+    <ClCompile Include="Rumour_Data.c" />
+    <ClCompile Include="s.c" />
+    <ClCompile Include="seadogs.c" />
+    <ClCompile Include="seadogs_test.c" />
+    <ClCompile Include="situations.c" />
+    <ClCompile Include="sound.c" />
+    <ClCompile Include="StartInterface.c" />
+    <ClCompile Include="teleport.c" />
+    <ClCompile Include="test.c" />
+    <ClCompile Include="test1.c" />
+    <ClCompile Include="test_seg1.c" />
+    <ClCompile Include="test_seg2.c" />
+    <ClCompile Include="tr.c" />
+    <ClCompile Include="utils.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Battle_interface\log_msg.h" />
+    <ClInclude Include="Battle_interface\msg_control.h" />
+    <ClInclude Include="Cannons\Cannons.h" />
+    <ClInclude Include="Characters\characters.h" />
+    <ClInclude Include="encounters\Encounters.h" />
+    <ClInclude Include="Interface\interface.h" />
+    <ClInclude Include="Interface\messages.h" />
+    <ClInclude Include="Items\items.h" />
+    <ClInclude Include="Quests\Quest_Messages.h" />
+    <ClInclude Include="Sea_ai\Script_Defines.h" />
+    <ClInclude Include="Sea_ai\seaPeople.h" />
+    <ClInclude Include="Ships\ships.h" />
+    <ClInclude Include="Store\goods.h" />
+    <ClInclude Include="Store\store.h" />
+    <ClInclude Include="Net\Common.h" />
+    <ClInclude Include="Net\Extern.h" />
+    <ClInclude Include="Net\Net_Defines.h" />
+    <ClInclude Include="net\Interfaces\Interface.h" />
+    <ClInclude Include="BIManager\messages.h" />
+    <ClInclude Include="Events.h" />
+    <ClInclude Include="messages.h" />
+    <ClInclude Include="sail_msg.h" />
+    <ClInclude Include="Sound.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Loc_ai\doc\character_type.txt" />
+    <None Include="Loc_ai\doc\functions.txt" />
+    <None Include="Loc_ai\doc\new_animation.txt" />
+    <None Include="Loc_ai\doc\sounds.txt" />
+    <None Include="Loc_ai\doc\tavern_locators.txt" />
+    <None Include="Net\Net.txt" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -89,7 +89,7 @@ WorldMap::~WorldMap()
 		if(wdmObjects->ships[i] == wdmObjects->playerShip) continue;
 		((WdmEnemyShip *)wdmObjects->ships[i])->SetSaveAttribute(null);
 	}
-	for(i = 0; i < wdmObjects->numStorms; i++)
+	for(long i = 0; i < wdmObjects->numStorms; i++)
 	{
 		wdmObjects->storms[i]->SetSaveAttribute(null);
 	}
@@ -469,7 +469,7 @@ void WorldMap::Realize(dword delta_time)
 	//Удалим объекты если надо
 	if(isKill)
 	{
-		for(i = firstObject; i >= 0; )
+		for(long i = firstObject; i >= 0; )
 			if(object[i].ro->killMe)
 			{			
 				DeleteObject(object[i].ro);
@@ -490,18 +490,18 @@ void WorldMap::Realize(dword delta_time)
 #endif
 		encTime = 0.0f;
 	}
-	
+
 	rs->SetRenderState(D3DRS_FOGENABLE, FALSE);
 	rs->SetRenderState(D3DRS_LIGHTING, FALSE);
-	for(i = firstPrObject; i >= 0; i = object[i].next)
+	for(long i = firstPrObject; i >= 0; i = object[i].next)
 	{
 		if(!object[i].ro->killMe) object[i].ro->PRender(rs);
 	}
-	for(i = firstMrObject; i >= 0; i = object[i].next)
+	for(long i = firstMrObject; i >= 0; i = object[i].next)
 	{
 		if(!object[i].ro->killMe) object[i].ro->MRender(rs);
 	}
-	for(i = firstLrObject; i >= 0; i = object[i].next)
+	for(long i = firstLrObject; i >= 0; i = object[i].next)
 	{
 		if(!object[i].ro->killMe) object[i].ro->LRender(rs);
 	}
@@ -657,7 +657,8 @@ dword WorldMap::AttributeChanged(ATTRIBUTES * apnt)
 		{
 			long cur = long(pa->GetAttributeAsDword("cur"));
 			//Определим индекс энкоунтера
-			for(long enc = 0, i = 0; i < wdmObjects->numShips; i++)
+			long i = 0, enc = 0;
+			for(enc = 0, i = 0; i < wdmObjects->numShips; i++)
 			{
 				if(wdmObjects->ships[i] == wdmObjects->playerShip) continue;
 				if(enc == cur) break;
@@ -681,7 +682,8 @@ dword WorldMap::AttributeChanged(ATTRIBUTES * apnt)
 				if(es->attack)
 				{
 					Assert(es->attack != es);
-					for(long i = 0, j = 0; i < wdmObjects->numShips; i++)
+					long i = 0, j = 0;
+					for(i = 0, j = 0; i < wdmObjects->numShips; i++)
 					{
 						if(wdmObjects->ships[i] == wdmObjects->playerShip) continue;
 						if(wdmObjects->ships[i] == es->attack) break;
@@ -759,8 +761,9 @@ void WorldMap::AddLObject(WdmRenderObject * obj, long level)
 void WorldMap::DeleteObject(WdmRenderObject * obj)
 {
 	if(!obj) return;
+	long i= 0, j = 0;
 	//Проходимся по всем спискам, удаляя запись об объекте
-	for(long i = firstObject, j; i >= 0;)
+	for(i = firstObject, j; i >= 0;)
 	{
 		j = i; i = object[i].next;
 		if(object[j].ro == obj) FreeObject(firstObject, j);
@@ -796,6 +799,7 @@ long WorldMap::GetObject(long & first, long level)
 {
 	Assert(firstFreeObject >= 0);
 	long i = firstFreeObject;
+	long j = 0;
 	firstFreeObject = object[firstFreeObject].next;
 	object[i].ro = null;
 	object[i].level = level;
@@ -805,7 +809,7 @@ long WorldMap::GetObject(long & first, long level)
 	{
 		if(level >= object[first].level)
 		{
-			for(long j = first; object[j].next >= 0 && level >= object[object[j].next].level; j = object[j].next);
+			for(j = first; object[j].next >= 0 && level >= object[object[j].next].level; j = object[j].next);
 			object[i].prev = j;
 			object[i].next = object[j].next;
 			object[j].next = i;
@@ -1103,7 +1107,7 @@ void WorldMap::ReleaseEncounters()
 		((WdmEnemyShip *)wdmObjects->ships[i])->SetSaveAttribute(null);
 		wdmObjects->ships[i]->killMe = true;
 	}
-	for(i = 0; i < wdmObjects->numStorms; i++)
+	for(long i = 0; i < wdmObjects->numStorms; i++)
 	{
 		wdmObjects->storms[i]->SetSaveAttribute(null);
 		wdmObjects->storms[i]->killMe = true;
@@ -1117,7 +1121,8 @@ ATTRIBUTES * WorldMap::GetEncSaveData(const char * type, const char * retName)
 	//Генерим имя атрибута
 	encCounter++;
 	char atrName[64];
-	for(long i = 0; i < 1000000; i++, encCounter++)
+	long i = 0;
+	for(i = 0; i < 1000000; i++, encCounter++)
 	{
 		sprintf(atrName, "enc_%u", encCounter);
 		ATTRIBUTES * a = saveData->FindAClass(saveData, atrName);

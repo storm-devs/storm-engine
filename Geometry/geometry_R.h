@@ -45,6 +45,7 @@ public:
 	GEOS::ID OpenFile(const char *fname);
 	int FileSize(GEOS::ID file);
 	void ReadFile(GEOS::ID file, void *data, long bytes);
+	long GetFilePointer(GEOS::ID file);
 	void CloseFile(GEOS::ID file);
 	void *malloc(long bytes);
 	void free(void *ptr);

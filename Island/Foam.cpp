@@ -30,8 +30,8 @@ CoastFoam::~CoastFoam()
 
 bool CoastFoam::Init()
 {
-	iVBuffer = Render().CreateVertexBuffer(D3DFVF_XYZ|D3DFVF_DIFFUSE|D3DFVF_TEX1|D3DFVF_TEXTUREFORMAT2, sizeof(FoamVertex) * 5000, D3DUSAGE_WRITEONLY);
-	iIBuffer = Render().CreateIndexBuffer(10000 * 2 * 3);
+	iVBuffer = Render().CreateVertexBufferManaged(D3DFVF_XYZ|D3DFVF_DIFFUSE|D3DFVF_TEX1|D3DFVF_TEXTUREFORMAT2, sizeof(FoamVertex) * 5000, D3DUSAGE_WRITEONLY);
+	iIBuffer = Render().CreateIndexBufferManaged(10000 * 2 * 3);
 
 	iCursorTex = Render().TextureCreate("cursor.tga");
 
@@ -47,7 +47,7 @@ void CoastFoam::Execute(dword Delta_Time)
 	float fDeltaTime = float(Delta_Time) * 0.001f;
 }
 
-void CoastFoam::ExtractRay (const D3DVIEWPORT8 & viewport, float fCursorX, float fCursorY, CVECTOR & raystart, CVECTOR & rayend)
+void CoastFoam::ExtractRay (const D3DVIEWPORT9 & viewport, float fCursorX, float fCursorY, CVECTOR & raystart, CVECTOR & rayend)
 {
 	CMatrix matProj = Render().GetProjection();
 	CVECTOR v;
@@ -81,7 +81,7 @@ void CoastFoam::Realize(dword Delta_Time)
 	}
 
 	float fDeltaTime = float(Delta_Time) * 0.001f;
-	D3DVIEWPORT8 vp;
+	D3DVIEWPORT9 vp;
 	Render().GetViewport(&vp);
 
 	CMatrix mWorld; mWorld.SetIdentity(); //Render().GetWorld();

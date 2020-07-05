@@ -145,7 +145,7 @@ void CXI_SCROLLER::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *name2)
 	m_ScrollTexRect = GetIniFloatRect(ini1,name1, ini2,name2, "scrollTexPos", FXYRECT(0.f,0.f,1.f,1.f));
 	m_RollTexRect = GetIniFloatRect(ini1,name1, ini2,name2, "rollTexPos", FXYRECT(0.f,0.f,1.f,1.f));
 
-	m_idVBuf = m_rs->CreateVertexBuffer(XI_ONLYONETEX_FVF,16*sizeof(XI_ONLYONETEX_VERTEX),D3DUSAGE_WRITEONLY);
+	m_idVBuf = m_rs->CreateVertexBufferManaged(XI_ONLYONETEX_FVF,16*sizeof(XI_ONLYONETEX_VERTEX),D3DUSAGE_WRITEONLY);
 	FillVertexBuffer();
 }
 

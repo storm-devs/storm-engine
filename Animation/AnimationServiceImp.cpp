@@ -120,14 +120,17 @@ void AnimationServiceImp::RunStart()
 			}
 		}
 	//Исполним все анимации
-	for(i = 0; i < numAnimations; i++)
+	long dt = 0;
+	for(long i = 0; i < numAnimations; i++)
+	{
 		if(animation[i])
 		{
-			for(long dt = dltTime; dt > ASRV_MAXDLTTIME; dt -= ASRV_MAXDLTTIME)
+			for(dt = dltTime; dt > ASRV_MAXDLTTIME; dt -= ASRV_MAXDLTTIME)
 								animation[i]->Execute(ASRV_MAXDLTTIME);
 			if(dt > 0) animation[i]->Execute(dt);
 			//_CORE_API->Trace("Animation: 0x%.8x Time: %f", animation[i], animation[i]->Player(0).GetPosition());
 		}
+	}
 }
 
 void AnimationServiceImp::RunEnd()
@@ -138,8 +141,9 @@ void AnimationServiceImp::RunEnd()
 //Создать анимацию для модели, удалять через delete
 Animation * AnimationServiceImp::CreateAnimation(const char * animationName)
 {
+	long i = 0;
 	//Ищем анимацию, если нет, то загружаем
-	for(long i = 0; i < numInfos; i++) 
+	for(i = 0; i < numInfos; i++) 
 		if(ainfo[i])
 		{
 			if(ainfo[i][0] == animationName) break;
@@ -290,7 +294,8 @@ long AnimationServiceImp::LoadAnimation(const char * animationName)
 					continue;
 				}
 				//Конец имени
-				for(long p = 1; key[p] && key[p] != '"'; p++);
+				long p = 0;
+				for(p = 1; key[p] && key[p] != '"'; p++);
 				if(!key[p])
 				{
 					_CORE_API->Trace("Incorrect %s <%s> in action [%s] of animation file %s.ani\nNot found closed symbol '\"'\n", ASKW_EVENT, key + 257, path, animationName);
@@ -381,8 +386,10 @@ long AnimationServiceImp::LoadAnimation(const char * animationName)
 	}
 	//Закроем ini файл
 	delete ani;
+
+	long i = 0;
 	//Ищем свободный указатель
-	for(long i = 0; i < numInfos; i++)
+	for(i = 0; i < numInfos; i++)
 					if(!ainfo[i]) break;
 	//Если нет такого, расширем массив
 	if(i == numInfos)
@@ -414,7 +421,8 @@ void AnimationServiceImp::LoadUserData(INIFILE * ani, const char * sectionName, 
 				continue;
 			}
 			//Конец имени
-			for(long p = 1; key[p] && key[p] != '"'; p++);
+			long p = 0;
+			for(p = 1; key[p] && key[p] != '"'; p++);
 			if(!key[p])
 			{
 				if(sectionName)
@@ -498,7 +506,8 @@ bool AnimationServiceImp::LoadAN(const char * fname, AnimationInfo * info)
 			_CORE_API->fio->_CloseHandle(fl);
 			return false;
 		}
-		for(long i = 1; i < header.nJoints; i++)
+		long i = 0;
+		for(i = 1; i < header.nJoints; i++)
 		{
 			Assert(prntIndeces[i] >= 0 || prntIndeces[i] < header.nJoints);
 			Assert(prntIndeces[i] != i);

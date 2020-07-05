@@ -217,7 +217,8 @@ void WdmPlayerShip::LRender(VDX8RENDER * rs)
 bool WdmPlayerShip::ExitFromMap()
 {
 	//»щем селектированные
-	for(long i = 0, finded = -1; i < wdmObjects->numShips; i++)
+	long i = 0, finded = 0;
+	for(i = 0, finded = -1; i < wdmObjects->numShips; i++)
 	{
 		wdmObjects->ships[i]->isSelect = false;
 		if(wdmObjects->ships[i] == this) continue;

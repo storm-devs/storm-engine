@@ -101,7 +101,8 @@ void Lights::PostInit()
 	for(long i = 0; i < numLights; i++)
 	{
 		if(!light[i].group) continue;
-		for(long j = 0; j < numGrp; j++)
+		long j = 0;
+		for(j = 0; j < numGrp; j++)
 			if(stricmp(grp[j], light[i].group) == 0) break;
 		if(j == numGrp) grp[numGrp++] = light[i].group;
 	}
@@ -112,7 +113,7 @@ void Lights::PostInit()
 		light = (Light *)RESIZE(light, maxLights*sizeof(Light));
 	}
 	long num = numLights;
-	for(i = 0; i < numGrp; i++)
+	for(long i = 0; i < numGrp; i++)
 	{
 		memset(&light[numLights], 0, sizeof(light[numLights]));
 		light[numLights].group = NEW char[strlen(grp[i]) + 1];

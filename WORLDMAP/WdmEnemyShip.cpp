@@ -349,7 +349,8 @@ bool WdmEnemyShip::GeneratePosition(float objRadius, float brnDltAng, float & x,
 		{
 			float angle = psay + brnDltAng*(0.5f - ang/31.0f);
 			//Определяем радиус
-			for(long rad = rand() & 7; field[ang] & (1 << rad); rad = rand() & 7);
+			long rad = 0;
+			for(rad = rand() & 7; field[ang] & (1 << rad); rad = rand() & 7);
 			float radius = wdmObjects->enemyshipBrnDistMin + (wdmObjects->enemyshipBrnDistMax - wdmObjects->enemyshipBrnDistMin)*rad/7.0f;
 			//Координаты
 			x = psx + radius*sinf(angle);
@@ -359,6 +360,7 @@ bool WdmEnemyShip::GeneratePosition(float objRadius, float brnDltAng, float & x,
 			field[ang] |= 1 << rad;
 		}
 		//Проверка на возможность продолжения
+		long i = 0;
 		for(i = 0; i < 32 && field[i] == 0xff; i++);
 		if(i == 32) return false;
 	}

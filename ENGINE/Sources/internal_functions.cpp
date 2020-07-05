@@ -9,6 +9,7 @@
 
 extern VAPI * _CORE_API;
 extern CORE Core;
+extern bool bSteam;
 
 //#define _TOFF
 
@@ -528,7 +529,8 @@ DATA * COMPILER::BC_CallIntFunction(DWORD func_code,DATA * & pVResult,DWORD argu
 		break;
 		case FUNC_GET_DLC_ENABLED:
 //#ifdef isSTEAM	
-
+			if(bSteam)
+			{	
 			pV = SStack.Pop();
 			if(pV->GetType() == VAR_INTEGER)
 			{
@@ -543,33 +545,39 @@ DATA * COMPILER::BC_CallIntFunction(DWORD func_code,DATA * & pVResult,DWORD argu
 			pV = SStack.Push();
 			if(TempBool) pV->Set((long)1);
 			else         pV->Set((long)0);
-/*			
-#else
-			pV = SStack.Push();
-			pV->Set((long)0);
-#endif			
-*/
+			}
+		
+//#else
+			else
+			{	
+				pV = SStack.Push();
+				pV->Set((long)0);
+			}
+//#endif			
 			pVResult = pV;
 			return pV;
 		break;
 		case FUNC_GET_DLC_COUNT:
-			pV = SStack.Push();		
-			
+			pV = SStack.Push();					
 //#ifdef isSTEAM			
-
+			if(bSteam)
+			{	
 			TempLong = _CORE_API->getDLCCount();
 			pV->Set(TempLong);
-/*			
-#else			
-			pV->Set((long)0);
-#endif						
-*/
+			}
+//#else			
+			else
+			{	
+				pV->Set((long)0);
+			}	
+//#endif						
 			pVResult = pV;
 			return pV;		
 		break;
 		case FUNC_GET_DLC_DATA:
 //#ifdef isSTEAM	
-
+			if(bSteam)
+			{	
 			pV = SStack.Pop();
 			if(pV->GetType() == VAR_INTEGER)
 			{
@@ -583,18 +591,21 @@ DATA * COMPILER::BC_CallIntFunction(DWORD func_code,DATA * & pVResult,DWORD argu
 			TempLong = _CORE_API->getDLCDataByIndex(TempLong1);	
 			pV = SStack.Push();
 			pV->Set(TempLong);
-/*			
-#else
-			pV = SStack.Push();
-			pV->Set((long)0);
-#endif			
-*/
+			}
+//#else
+			else
+			{
+				pV = SStack.Push();
+				pV->Set((long)0);
+			}
+//#endif			
 			pVResult = pV;
 			return pV;			
 		break;
 		case FUNC_DLC_START_OVERLAY:
 //#ifdef isSTEAM			
-
+			if(bSteam)
+			{		
 			pV = SStack.Pop();
 			if(pV->GetType() == VAR_INTEGER)
 			{
@@ -608,13 +619,15 @@ DATA * COMPILER::BC_CallIntFunction(DWORD func_code,DATA * & pVResult,DWORD argu
 			TempBool = _CORE_API->activateGameOverlayDLC(TempLong1);	
 			pV = SStack.Push();
 			if(TempBool) pV->Set((long)1);
-			else         pV->Set((long)0);
-/*			
-#else
-			pV = SStack.Push();
-			pV->Set((long)0);
-#endif			
-*/
+			else         pV->Set((long)0);			
+			}
+//#else
+			else
+			{	
+				pV = SStack.Push();
+				pV->Set((long)0);
+			}
+//#endif			
 			pVResult = pV;
 			return pV;
 		break;

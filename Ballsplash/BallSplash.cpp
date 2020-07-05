@@ -108,7 +108,7 @@ void BALLSPLASH::Realize(dword _dTime)
 	TSplash::startRender = true;	
 	TSplash::topIndex    = 0;
 	lastProcessed		 = -1;
-	for (i = 0; i < MAX_SPLASHES; ++i)
+	for (int i = 0; i < MAX_SPLASHES; ++i)
 	{
 		if (splashes[i].Process2(_dTime))
 			lastProcessed = i;

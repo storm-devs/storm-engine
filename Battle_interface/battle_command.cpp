@@ -50,12 +50,15 @@ void BICommandList::Draw()
 			}
 		}
 	}
+	
 	if( m_pImgRender )
 		m_pImgRender->Render();
 
 	if( !m_NoteText.IsEmpty() )
+	{	
 		m_pRS->ExtPrint( m_NoteFontID, m_NoteFontColor, 0, ALIGN_CENTER, true, m_NoteFontScale, 0,0,
 			m_NotePos.x, m_NotePos.y, "%s", m_NoteText.GetBuffer() );
+}
 }
 
 void BICommandList::Update( long nTopLine, long nCharacterIndex, long nCommandMode )
@@ -123,11 +126,15 @@ long BICommandList::ExecuteConfirm()
 	{
 	case -1:
 	case 0:
+		{
 		api->Event("BI_LaunchCommand","lsls",m_nCurrentCommandCharacterIndex,m_sCurrentCommandName.GetBuffer(),nTargIndex,sLocName.GetBuffer());
 		m_sCurrentCommandName = "";
+		}	
 	break;
 	default:
+		{
 		Update( m_LeftTopPoint.y, m_nCurrentCommandCharacterIndex, endCode );
+	}
 	}
 	return endCode;
 }
@@ -298,7 +305,7 @@ long BICommandList::AddToIconList( long nTextureNum, long nNormPictureNum, long 
 	
 		if( nCharacterIndex!=-1 && m_aUsedCommand[n].nCharIndex==nCharacterIndex ) 
 		{
-			api->Trace("AddToIconList %d  m_aUsedCommand.nCharIndex %d nCharacterIndex %d", n, m_aUsedCommand[n].nCharIndex, nCharacterIndex );
+//			api->Trace("AddToIconList %d  m_aUsedCommand.nCharIndex %d nCharacterIndex %d", n, m_aUsedCommand[n].nCharIndex, nCharacterIndex );
 //			return 0;
 		}	
 		

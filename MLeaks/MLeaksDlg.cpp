@@ -340,7 +340,8 @@ void CMLeaksDlg::OnCompare()
 			GetTokenWhile(SkipToken(temp_str, " in "), temp_str2, "b");
 			sscanf(temp_str2, "%f", &tmp.fBlocks);
 
-			for (dword i=0; i<dwTmp; i++) if (stricmp(tmp.sFile, Tmp[i].sFile) == 0) break;
+			dword i;
+			for (i=0; i<dwTmp; i++) if (stricmp(tmp.sFile, Tmp[i].sFile) == 0) break;
 
 			if (i == dwTmp)
 			{

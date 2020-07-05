@@ -46,12 +46,12 @@ private:
 
 	long					iVSeaBuffer, iISeaBuffer;
 
-	IDirect3DVolumeTexture8	* pVolumeTexture;
-	IDirect3DCubeTexture8	* pEnvMap, * pSunRoadMap;
-	IDirect3DSurface8		* pZStencil;
+	IDirect3DVolumeTexture9	* pVolumeTexture;
+	IDirect3DCubeTexture9	* pEnvMap, * pSunRoadMap;
+	IDirect3DSurface9		* pZStencil;
 
-	IDirect3DTexture8		* pReflection, * pReflectionSunroad;
-	IDirect3DSurface8		* pReflectionSurfaceDepth;
+	IDirect3DTexture9		* pReflection, * pReflectionSunroad;
+	IDirect3DSurface9		* pReflectionSurfaceDepth;
 
 	bool		bSimpleSea;
 	CMatrix		mTexProjection;

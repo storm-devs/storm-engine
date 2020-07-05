@@ -10,7 +10,8 @@ GEOM_SERVICE_R GSR;
 char texturePath[256];
 
 const long SHIFT_VALUE = 999999999;
-#define AVB_MAX 1024
+//#define AVB_MAX 1024
+#define AVB_MAX 8192
 VGEOMETRY::ANIMATION_VB avb[AVB_MAX];	//!!! temporary
 
 GEOMETRY::GEOMETRY()
@@ -99,12 +100,12 @@ GEOS * GEOMETRY::CreateGeometry(const char * file_name,const char * light_file_n
 #ifndef _XBOX
 	static int first = 0;
 	FILE *fl;
-	if(geoLog)
-	{
+//	if(geoLog)
+//	{
 		vrtSize = 0;
-		if(first==0)	fl = fopen("geoLoad.txt", "w");
-		else	fl = fopen("geoLoad.txt", "aw");
-	}
+//		if(first==0)	fl = fopen("geoLoad.txt", "w");
+//		else	fl = fopen("geoLoad.txt", "aw");
+//	}
 #endif
 
 	GEOS * gp;
@@ -146,8 +147,9 @@ GEOS * GEOMETRY::CreateGeometry(const char * file_name,const char * light_file_n
 		GEOS::INFO gi;
 		gp->GetInfo(gi);
 		first += gi.ntriangles*2*3 + vrtSize;
-		fprintf(fl, "%.2f, trgSize: %d, vrtSize: %d, tex: %d. obj: %d, %s\n", first/1024.0f/1024.0f, gi.ntriangles*2*3, vrtSize, gi.ntextures, gi.nobjects, file_name);
-		fclose(fl);
+		_CORE_API->Trace("%.2f, trgSize: %d, vrtSize: %d, tex: %d. obj: %d, %s\n", first/1024.0f/1024.0f, gi.ntriangles*2*3, vrtSize, gi.ntextures, gi.nobjects, file_name);
+//		fprintf(fl, "%.2f, trgSize: %d, vrtSize: %d, tex: %d. obj: %d, %s\n", first/1024.0f/1024.0f, gi.ntriangles*2*3, vrtSize, gi.ntextures, gi.nobjects, file_name);
+//		fclose(fl);
 	}
 #endif
 
@@ -189,7 +191,13 @@ GEOS::ID GEOM_SERVICE_R::OpenFile(const char *fname)
 	if(fl==INVALID_HANDLE_VALUE)
 		if(strcmpi(&fname[strlen(fname)-4], ".col")==0);//	_CORE_API->Trace("geometry::can't open file %s", fname);
 		else	throw "can't open geometry file";
+	_CORE_API->fio->_SetFilePointer(fl,NULL,NULL,FILE_BEGIN);	
 	return (GEOS::ID)fl;
+}
+
+long GEOM_SERVICE_R::GetFilePointer(GEOS::ID file)
+{
+	return _CORE_API->fio->_GetFilePointer((HANDLE)file);
 }
 
 int GEOM_SERVICE_R::FileSize(GEOS::ID file)
@@ -353,7 +361,7 @@ void GEOM_SERVICE_R::SetMaterial(const GEOS::MATERIAL &mt)
 	RenderService->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
 	RenderService->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);//*/
 
-	D3DMATERIAL8 m;
+	D3DMATERIAL9 m;
 	m.Diffuse.r = m.Diffuse.g = m.Diffuse.b = mt.diffuse;	m.Diffuse.a = 1.0f;
 	m.Ambient.r = m.Ambient.g = m.Ambient.b = m.Ambient.a = 0.0f;
 	m.Specular.r = m.Specular.g = m.Specular.b = mt.specular;	m.Specular.a = 1.0f;
@@ -378,11 +386,12 @@ GEOS::ID GEOM_SERVICE_R::CreateVertexBuffer(long type, long size)
 	long texset[4] = {D3DFVF_TEX1, D3DFVF_TEX2, D3DFVF_TEX3, D3DFVF_TEX4 };
 	long fvf = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE  | D3DFVF_TEXTUREFORMAT2;
 	long FVF = fvf | texset[type&3];
+	long a = 0;
 
 	//animated vertices
 	if(type&4)
 	{
-		for(long a=0; a<AVB_MAX; a++)
+		for(a=0; a<AVB_MAX; a++)
 			if(avb[a].nvertices==0)
 				break;
 		avb[a].buff = NEW char[size];
@@ -393,7 +402,7 @@ GEOS::ID GEOM_SERVICE_R::CreateVertexBuffer(long type, long size)
 	}
 
 	vrtSize += size;
-	return RenderService->CreateVertexBuffer(FVF, size, D3DUSAGE_WRITEONLY);
+	return RenderService->CreateVertexBufferManaged(FVF, size, D3DUSAGE_WRITEONLY);
 }
 
 void * GEOM_SERVICE_R::LockVertexBuffer(GEOS::ID vb)
@@ -426,7 +435,7 @@ GEOS::ID GEOM_SERVICE_R::CreateIndexBuffer(long size)
 {
 	if(RenderService) RenderService->ProgressView();
 	if(size==0)	return INVALID_BUFFER_ID;
-	if(RenderService) return RenderService->CreateIndexBuffer(size);
+	if(RenderService) return RenderService->CreateIndexBufferManaged(size);
 	return INVALID_BUFFER_ID;
 }
 
@@ -483,9 +492,9 @@ void GEOM_SERVICE_R::DrawIndexedPrimitive(long minv, long numv, long vrtsize, lo
 
 		RenderService->SetVertexShaderConstant(0, &mWVP, 4);
 		RenderService->SetVertexShaderConstant(4, &mWorld, 4);
-
-		RenderService->GetRenderState(D3DRS_ZBIAS, &oldZBias);
-		RenderService->SetRenderState(D3DRS_ZBIAS, 1);
+		RenderService->GetRenderState(D3DRS_DEPTHBIAS, &oldZBias);
+		RenderService->SetRenderStateFloat(D3DRS_DEPTHBIAS, -0.0001);	
+		RenderService->SetRenderStateFloat(D3DRS_SLOPESCALEDEPTHBIAS, 0.0);	
 	}
 
 	//draw animation
@@ -493,11 +502,11 @@ void GEOM_SERVICE_R::DrawIndexedPrimitive(long minv, long numv, long vrtsize, lo
 	{
 		VGEOMETRY::ANIMATION_VB *cavb = &avb[CurentVertexBuffer-SHIFT_VALUE];
 
-		IDirect3DVertexBuffer8 *transformed_vb = (IDirect3DVertexBuffer8*)transform_func(cavb->buff, minv, numv, cavb->nvertices);
+		IDirect3DVertexBuffer9 *transformed_vb = (IDirect3DVertexBuffer9*)transform_func(cavb->buff, minv, numv, cavb->nvertices);
 		if (!bCaustic)
 		{
 			RenderService->SetStreamSource(0, transformed_vb, cavb->stride);
-			RenderService->SetVertexShader(cavb->fvf);
+			RenderService->SetFVF(cavb->fvf);
 
 			RenderService->DrawBuffer(-1, cavb->stride,CurentIndexBuffer,minv,numv,startidx, numtrg, technique);
 		}
@@ -513,12 +522,15 @@ void GEOM_SERVICE_R::DrawIndexedPrimitive(long minv, long numv, long vrtsize, lo
 		if (!bCaustic)
 			RenderService->DrawBuffer(CurentVertexBuffer,vrtsize,CurentIndexBuffer,minv,numv,startidx, numtrg, technique);
 		else
+		{
 			RenderService->DrawIndexedPrimitiveNoVShader(D3DPT_TRIANGLELIST, CurentVertexBuffer, vrtsize, CurentIndexBuffer, minv, numv, startidx, numtrg, "vano_caustic");
 	}
-
+	}
 	if (bCaustic)
 	{
-		RenderService->SetRenderState(D3DRS_ZBIAS, oldZBias);
+		RenderService->SetRenderStateFloat(D3DRS_DEPTHBIAS, -0.0001);	
+		RenderService->SetRenderStateFloat(D3DRS_SLOPESCALEDEPTHBIAS, 0.0);	
+		//RenderService->SetRenderState(D3DRS_DEPTHBIAS, oldZBias);
 	}
 }
 

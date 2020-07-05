@@ -612,7 +612,8 @@ Player * Player::FindAttackCharacter()
 	float enemyCos = -1.0f;
 	float cdx = sinf(ay);
 	float cdz = cosf(ay);
-	for(long i = 0, j = -1; i < num; i++)
+	long i = 0, j = 0;
+	for(i = 0, j = -1; i < num; i++)
 	{
 		//Персонаж
 		Supervisor::FindCharacter & fc = fndCharacter[i];
@@ -727,7 +728,8 @@ void Player::FireFromShootgun()
 				ENTITY * e = api->GetEntityPointer(&collide->GetObjectID());
 				if(e && e != this)
 				{
-					for(long n = 0, nm = location->supervisor.numCharacters; n < nm; n++)
+					long n = 0, nm = 0;
+					for(n = 0, nm = location->supervisor.numCharacters; n < nm; n++)
 					{
 						Player * c = (Player *)location->supervisor.character[n].c;
 						if(c->Model() == e)
@@ -735,7 +737,8 @@ void Player::FireFromShootgun()
 							api->Send_Message(effects, "sffffff", "SGBloodParticles", dst.x, dst.y, dst.z, dir.x, dir.y, dir.z);
 							c->impulse -= dir*(1.5f + rand()*(1.0f/RAND_MAX));
 							c->impulse.y += 1.5f + rand()*(1.0f/RAND_MAX);
-							for(long j = 0; j < numChrs; j++)
+							long j = 0;
+							for(j = 0; j < numChrs; j++)
 							{
 								if(chrs[j].chr == c)
 								{
@@ -757,7 +760,7 @@ void Player::FireFromShootgun()
 		}
 	}
 	delete walker;
-	for(i = 0; i < numChrs; i++)
+	for(long i = 0; i < numChrs; i++)
 	{
 		api->Event("Location_CharacterSGFire", "iif", GetID(), chrs[i].chr->GetID(), chrs[i].dmg);
 	}

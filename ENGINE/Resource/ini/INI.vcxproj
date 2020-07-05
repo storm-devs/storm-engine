@@ -1,0 +1,294 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{42EB8C99-8E77-4265-B8CA-6BC5522410FC}</ProjectGuid>
+    <RootNamespace>INI</RootNamespace>
+    <SccProjectName>
+    </SccProjectName>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccProvider>
+    </SccProvider>
+    <Keyword>ManagedCProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <CLRSupport>OldSyntax</CLRSupport>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <CLRSupport>OldSyntax</CLRSupport>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28February 2010%29\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28February 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AssemblyDebug>true</AssemblyDebug>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib">
+      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+    </Reference>
+    <Reference Include="System">
+      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+    </Reference>
+    <Reference Include="System.Data">
+      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Particles\alcove.ini" />
+    <None Include="Particles\artifact.ini" />
+    <None Include="Particles\fort.ini" />
+    <None Include="Particles\particles.ini" />
+    <None Include="Particles\ship_fire.ini" />
+    <None Include="aliases\Greetings_alias.ini" />
+    <None Include="Aliases\max.ini" />
+    <None Include="Aliases\music_alias.ini" />
+    <None Include="Aliases\sound_alias.ini" />
+    <None Include="Interfaces\AskForHelp.ini" />
+    <None Include="Interfaces\CareerMoney.ini" />
+    <None Include="Interfaces\character.ini" />
+    <None Include="Interfaces\ColonyInfo.ini" />
+    <None Include="Interfaces\ColonyManagement.ini" />
+    <None Include="Interfaces\defaultnode.ini" />
+    <None Include="Interfaces\disease_alert.ini" />
+    <None Include="Interfaces\endgame.ini" />
+    <None Include="interfaces\engine_video.ini" />
+    <None Include="Interfaces\FoodInfo.ini" />
+    <None Include="Interfaces\fortcapture.ini" />
+    <None Include="Interfaces\game_menu.ini" />
+    <None Include="interfaces\game_menu_eng.ini" />
+    <None Include="Interfaces\hirecrew.ini" />
+    <None Include="Interfaces\HireOfficer.ini" />
+    <None Include="Interfaces\interfaces.ini" />
+    <None Include="Interfaces\items.ini" />
+    <None Include="Interfaces\itemsbox.ini" />
+    <None Include="Interfaces\itemstrade.ini" />
+    <None Include="Interfaces\LanguageSelect.ini" />
+    <None Include="Interfaces\mainmenu.ini" />
+    <None Include="Interfaces\map.ini" />
+    <None Include="Interfaces\MessageBox.ini" />
+    <None Include="Interfaces\option_screen.ini" />
+    <None Include="Interfaces\PaperMap.ini" />
+    <None Include="Interfaces\perks.ini" />
+    <None Include="Interfaces\pictures.ini" />
+    <None Include="Interfaces\playgame.ini" />
+    <None Include="Interfaces\QuestBook.ini" />
+    <None Include="interfaces\quick_save.ini" />
+    <None Include="Interfaces\ransack_main.ini" />
+    <None Include="Interfaces\RiotResult.ini" />
+    <None Include="Interfaces\salary.ini" />
+    <None Include="Interfaces\save_load.ini" />
+    <None Include="Interfaces\select_menu.ini" />
+    <None Include="Interfaces\selectCharacter.ini" />
+    <None Include="Interfaces\ship.ini" />
+    <None Include="Interfaces\shipyard.ini" />
+    <None Include="Interfaces\Speak.ini" />
+    <None Include="Interfaces\store.ini" />
+    <None Include="Interfaces\TradeBook.ini" />
+    <None Include="Interfaces\Transfer_main.ini" />
+    <None Include="Interfaces\Net\Buy.ini" />
+    <None Include="Interfaces\Net\Chat.ini" />
+    <None Include="interfaces\net\ChatString.ini" />
+    <None Include="Interfaces\Net\CreateGame.ini" />
+    <None Include="interfaces\net\Dedicated.ini" />
+    <None Include="Interfaces\net\EndGame.ini" />
+    <None Include="Interfaces\Net\FindGame.ini" />
+    <None Include="Interfaces\Net\GameState.ini" />
+    <None Include="Interfaces\net\NetMenu.ini" />
+    <None Include="Interfaces\net\PlayerSettings.ini" />
+    <None Include="Interfaces\Net\TopList.ini" />
+    <None Include="Interfaces\Utils\IconsSelector.ini" />
+    <None Include="Interfaces\Utils\MessageBox.ini" />
+    <None Include="Texts\language.ini" />
+    <None Include="Texts\Russian\AbilityDescribe.txt" />
+    <None Include="Texts\Russian\commands_name.txt" />
+    <None Include="Texts\Russian\common.ini" />
+    <None Include="Texts\Russian\ControlsNames.txt" />
+    <None Include="Texts\Russian\dialogsource.txt" />
+    <None Include="Texts\Russian\globals.txt" />
+    <None Include="Texts\Russian\GoodsDescribe.txt" />
+    <None Include="Texts\Russian\HelpSectionTitles.txt" />
+    <None Include="Texts\Russian\interface_strings.txt" />
+    <None Include="Texts\Russian\ItemsDescribe.txt" />
+    <None Include="Texts\Russian\LocLables.txt" />
+    <None Include="texts\russian\NetSection.txt" />
+    <None Include="Texts\Russian\SeaSection.txt" />
+    <None Include="Texts\Russian\ShipEatGood.txt" />
+    <None Include="Texts\Russian\Helpsections\alarm_indicator.txt" />
+    <None Include="Texts\Russian\Helpsections\Dialog_window.txt" />
+    <None Include="Texts\Russian\Helpsections\fast_commands.txt" />
+    <None Include="Texts\Russian\Helpsections\land_command_menu.txt" />
+    <None Include="Texts\Russian\Helpsections\navigator_minimap.txt" />
+    <None Include="Texts\Russian\Helpsections\sea_aim.txt" />
+    <None Include="Texts\Russian\Helpsections\ships_command_menu.txt" />
+    <None Include="Texts\Russian\Helpsections\WorldMap_ClockWeather.txt" />
+    <None Include="Texts\Russian\Helpsections\WorldMap_Compas.txt" />
+    <None Include="Texts\Russian\Questbook\quests_texts.txt" />
+    <None Include="texts\english\AbilityDescribe.txt" />
+    <None Include="texts\english\commands_name.txt" />
+    <None Include="texts\english\common.ini" />
+    <None Include="texts\english\ControlsNames.txt" />
+    <None Include="texts\english\dialogsource.txt" />
+    <None Include="texts\english\globals.txt" />
+    <None Include="texts\english\GoodsDescribe.txt" />
+    <None Include="texts\english\HelpSectionTitles.txt" />
+    <None Include="texts\english\interface_strings.txt" />
+    <None Include="texts\english\ItemsDescribe.txt" />
+    <None Include="texts\english\LocLables.txt" />
+    <None Include="texts\english\NetSection.txt" />
+    <None Include="texts\english\SeaSection.txt" />
+    <None Include="texts\english\ShipEatGood.txt" />
+    <None Include="texts\english\Questbook\quests_texts.txt" />
+    <None Include="texts\french\AbilityDescribe.txt" />
+    <None Include="texts\french\commands_name.txt" />
+    <None Include="texts\french\common.ini" />
+    <None Include="texts\french\ControlsNames.txt" />
+    <None Include="texts\french\dialogsource.txt" />
+    <None Include="texts\french\globals.txt" />
+    <None Include="texts\french\GoodsDescribe.txt" />
+    <None Include="texts\french\HelpSectionTitles.txt" />
+    <None Include="texts\french\interface_strings.txt" />
+    <None Include="texts\french\ItemsDescribe.txt" />
+    <None Include="texts\french\LocLables.txt" />
+    <None Include="texts\french\NetSection.txt" />
+    <None Include="texts\french\SeaSection.txt" />
+    <None Include="texts\french\ShipEatGood.txt" />
+    <None Include="texts\french\Questbook\quests_texts.txt" />
+    <None Include="texts\german\AbilityDescribe.txt" />
+    <None Include="texts\german\commands_name.txt" />
+    <None Include="texts\german\common.ini" />
+    <None Include="texts\german\ControlsNames.txt" />
+    <None Include="texts\german\dialogsource.txt" />
+    <None Include="texts\german\globals.txt" />
+    <None Include="texts\german\GoodsDescribe.txt" />
+    <None Include="texts\german\HelpSectionTitles.txt" />
+    <None Include="texts\german\interface_strings.txt" />
+    <None Include="texts\german\ItemsDescribe.txt" />
+    <None Include="texts\german\LocLables.txt" />
+    <None Include="texts\german\NetSection.txt" />
+    <None Include="texts\german\SeaSection.txt" />
+    <None Include="texts\german\ShipEatGood.txt" />
+    <None Include="texts\german\Questbook\quests_texts.txt" />
+    <None Include="texts\italian\AbilityDescribe.txt" />
+    <None Include="texts\italian\commands_name.txt" />
+    <None Include="texts\italian\common.ini" />
+    <None Include="texts\italian\ControlsNames.txt" />
+    <None Include="texts\italian\dialogsource.txt" />
+    <None Include="texts\italian\globals.txt" />
+    <None Include="texts\italian\GoodsDescribe.txt" />
+    <None Include="texts\italian\HelpSectionTitles.txt" />
+    <None Include="texts\italian\interface_strings.txt" />
+    <None Include="texts\italian\ItemsDescribe.txt" />
+    <None Include="texts\italian\LocLables.txt" />
+    <None Include="texts\italian\NetSection.txt" />
+    <None Include="texts\italian\SeaSection.txt" />
+    <None Include="texts\italian\ShipEatGood.txt" />
+    <None Include="texts\italian\Questbook\quests_texts.txt" />
+    <None Include="texts\spanish\AbilityDescribe.txt" />
+    <None Include="texts\spanish\commands_name.txt" />
+    <None Include="texts\spanish\common.ini" />
+    <None Include="texts\spanish\ControlsNames.txt" />
+    <None Include="texts\spanish\dialogsource.txt" />
+    <None Include="texts\spanish\globals.txt" />
+    <None Include="texts\spanish\GoodsDescribe.txt" />
+    <None Include="texts\spanish\HelpSectionTitles.txt" />
+    <None Include="texts\spanish\interface_strings.txt" />
+    <None Include="texts\spanish\ItemsDescribe.txt" />
+    <None Include="texts\spanish\LocLables.txt" />
+    <None Include="texts\spanish\NetSection.txt" />
+    <None Include="texts\spanish\SeaSection.txt" />
+    <None Include="texts\spanish\ShipEatGood.txt" />
+    <None Include="texts\spanish\Questbook\quests_texts.txt" />
+    <None Include="animals.ini" />
+    <None Include="camera.ini" />
+    <None Include="cannons.ini" />
+    <None Include="dialog.ini" />
+    <None Include="fonts.ini" />
+    <None Include="fonts_rus.ini" />
+    <None Include="fonts_rus.old" />
+    <None Include="geo.ini" />
+    <None Include="helpchooser.ini" />
+    <None Include="lights.ini" />
+    <None Include="loclighter.ini" />
+    <None Include="mast.ini" />
+    <None Include="particles.ini" />
+    <None Include="rigging.ini" />
+    <None Include="shiplights.ini" />
+    <None Include="sound_scheme.ini" />
+    <None Include="telescope.ini" />
+    <None Include="TextureSequence.ini" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

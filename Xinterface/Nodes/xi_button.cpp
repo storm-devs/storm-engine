@@ -70,7 +70,7 @@ void CXI_BUTTON::Draw(bool bSelected,dword Delta_Time)
 		vFace[2].pos.x = (float)m_rect.left;	vFace[2].pos.y = (float)m_rect.bottom;
 		vFace[3].pos.x = (float)m_rect.right;	vFace[3].pos.y = (float)m_rect.bottom;
 
-		for(i=0; i<4; i++)
+		for(int i=0; i<4; i++)
 		{
 			if(nPressedDelay>0)
 			{

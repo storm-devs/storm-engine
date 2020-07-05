@@ -70,7 +70,7 @@ private:
 		NODE		* pNode;
 		bool		bDynamicLight;
 		CVECTOR		vPos, vCurPos;
-		D3DLIGHT8	Light;
+		D3DLIGHT9	Light;
 		float		fCoronaIntensity;
 		float		fCurDistance;
 		float		fCurTime, fTotalTime, fUpTime;

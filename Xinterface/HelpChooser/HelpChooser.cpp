@@ -215,7 +215,7 @@ bool HELPCHOOSER::RunChooser(char * ChooserGroup)
 	texHeight = ini->GetFloat(ChooserGroup,"TextureHeight",512.f);
 
 	// Получим размер поверхности вывода (размер окна)
-	IDirect3DSurface8 * pRenderTarget;
+	IDirect3DSurface9 * pRenderTarget;
 	rs->GetRenderTarget(&pRenderTarget);
 	D3DSURFACE_DESC dscrSurface;
 	pRenderTarget->GetDesc(&dscrSurface);
@@ -286,7 +286,7 @@ bool HELPCHOOSER::RunChooser(char * ChooserGroup)
 #endif
 
 	// Создаем буфер вертексов
-	m_idVBuf = rs->CreateVertexBuffer(HCHOOSER_FVF,18*sizeof(HCHOOSER_VERTEX),D3DUSAGE_WRITEONLY);
+	m_idVBuf = rs->CreateVertexBufferManaged(HCHOOSER_FVF,18*sizeof(HCHOOSER_VERTEX),D3DUSAGE_WRITEONLY);
 	if(m_idVBuf==-1)	api->Trace("WARNING! Can`t create vertex buffer for help chooser");
 	else
 	{
@@ -371,7 +371,8 @@ long HELPCHOOSER::GetRectangleLeft()
 	long	nRectNum = m_nCurRect;
 	while(true)
 	{
-		for(int i=0; i<m_nRectQ; i++)
+		int i = 0;
+		for(i=0; i<m_nRectQ; i++)
 		{
 			if(i==m_nCurRect || m_pRectList[i].top>bottom || m_pRectList[i].bottom<top) continue;
 
@@ -407,7 +408,8 @@ long HELPCHOOSER::GetRectangleRight()
 	long	nRectNum = m_nCurRect;
 	while(true)
 	{
-		for(int i=0; i<m_nRectQ; i++)
+		int i = 0;
+		for(i=0; i<m_nRectQ; i++)
 		{
 			if(i==m_nCurRect || m_pRectList[i].top>bottom || m_pRectList[i].bottom<top) continue;
 
@@ -443,7 +445,8 @@ long HELPCHOOSER::GetRectangleUp()
 	long	nRectNum = m_nCurRect;
 	while(true)
 	{
-		for(int i=0; i<m_nRectQ; i++)
+		int i = 0;
+		for(i=0; i<m_nRectQ; i++)
 		{
 			if(i==m_nCurRect || m_pRectList[i].left>right || m_pRectList[i].right<left) continue;
 
@@ -479,6 +482,7 @@ long HELPCHOOSER::GetRectangleDown()
 	long	nRectNum = m_nCurRect;
 	while(true)
 	{
+		int i = 0;
 		for(int i=0; i<m_nRectQ; i++)
 		{
 			if(i==m_nCurRect || m_pRectList[i].left>right || m_pRectList[i].right<left) continue;

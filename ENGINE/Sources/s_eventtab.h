@@ -42,7 +42,7 @@ class S_EVENTTAB
 public:
 	 S_EVENTTAB();
 	~S_EVENTTAB();
-	//dword GetEventNum(){return Event_num;};
+//	dword GetEventNum(){return Event_num;};
 	void  SetStatus(char * event_name, dword func_code, dword status);
 	dword AddEventHandler(char * event_name, dword func_code, dword func_segment_id,long flag, bool bStatic = false);
 	bool  DelEventHandler(char * event_name, dword func_code);

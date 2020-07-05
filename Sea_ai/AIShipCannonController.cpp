@@ -564,7 +564,7 @@ void AIShipCannonController::Realize(float fDeltaTime)
 bool AIShipCannonController::Init(ATTRIBUTES *_pAShip)
 {
 	pAShip = _pAShip;
-
+	
 	ATTRIBUTES	* pACharacter = GetAIShip()->GetACharacter(); Assert(pACharacter);
 	ATTRIBUTES	* pABorts = pACharacter->FindAClass(pACharacter, "Ship.Cannons.Borts"); Assert(pABorts);
 
@@ -593,7 +593,7 @@ bool AIShipCannonController::Init(ATTRIBUTES *_pAShip)
 		sprintf(str, "%s.damages", (char*)pBort->sName.GetBuffer());
 		pABorts->CreateSubAClass(pABorts, str);
 	}
-
+	
 	return ScanShipForCannons();
 }
 
@@ -619,22 +619,26 @@ bool AIShipCannonController::ScanShipForCannons()
 		for (i=0;i<dword(info.nlabels);i++)
 		{
 			pNode->geo->GetLabel(i,label);
-			for (j=0;j<aShipBorts.Size();j++) if (aShipBorts[j] == label.group_name)
+			for (j=0;j<aShipBorts.Size();j++) 
 			{
-				AICannon * pCannon = &aShipBorts[j].aCannons[aShipBorts[j].aCannons.Add()];
-				memcpy(m,label.m,sizeof(m));
-				aShipBorts[j].fOurBortFireHeight += m.Pos().y;
-				pCannon->Init(GetAIShip(), GetAIShip()->GetShipEID(), label);
-				sprintf(str, "%s.damages", label.group_name);
-				ATTRIBUTES * pADamages = pABorts->FindAClass(pABorts, str);
-				sprintf(str, "c%d", aShipBorts[j].aCannons.Size() - 1);
-				if(pADamages!=NULL)	fDamage = pADamages->GetAttributeAsFloat(str, 0.0f);
-				else 				fDamage = 0.0f;	
-				if(pADamages!=NULL) pADamages->SetAttributeUseFloat(str, fDamage);
-				pCannon->SetDamage(fDamage);
-				if (pCannon->isDamaged()) aShipBorts[j].dwNumDamagedCannons++;
+				if (strcmp(aShipBorts[j].sName.GetBuffer(), label.group_name) == 0)
+				//if (aShipBorts[j] == label.group_name) /// Акелла , блять ну кто так пишет код ??????
+				{
+					AICannon * pCannon = &aShipBorts[j].aCannons[aShipBorts[j].aCannons.Add()];
+					memcpy(m,label.m,sizeof(m));
+					aShipBorts[j].fOurBortFireHeight += m.Pos().y;
+					pCannon->Init(GetAIShip(), GetAIShip()->GetShipEID(), label);			
+					sprintf(str, "%s.damages", label.group_name);
+					ATTRIBUTES * pADamages = pABorts->FindAClass(pABorts, str);
+					sprintf(str, "c%d", aShipBorts[j].aCannons.Size() - 1);
+					if(pADamages!=NULL)	fDamage = pADamages->GetAttributeAsFloat(str, 0.0f);
+					else 				fDamage = 0.0f;	
+					if(pADamages!=NULL) pADamages->SetAttributeUseFloat(str, fDamage);
+					pCannon->SetDamage(fDamage);
+					if (pCannon->isDamaged()) aShipBorts[j].dwNumDamagedCannons++;
 
-				break;
+					break;
+				}
 			}
 		}
 		dwIdx++;

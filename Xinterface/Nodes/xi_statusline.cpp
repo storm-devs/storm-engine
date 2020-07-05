@@ -62,8 +62,8 @@ void CXI_STATUSLINE::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *name
 	m_nVert = 2*4;
 	m_nIndx = 2*6;
 	// Create vertex and index buffers
-    m_vBuf = m_rs->CreateVertexBuffer(XI_ONLYONETEX_FVF,m_nVert*sizeof(XI_ONLYONETEX_VERTEX),D3DUSAGE_WRITEONLY);
-    m_iBuf = m_rs->CreateIndexBuffer(m_nIndx*2);
+    m_vBuf = m_rs->CreateVertexBufferManaged(XI_ONLYONETEX_FVF,m_nVert*sizeof(XI_ONLYONETEX_VERTEX),D3DUSAGE_WRITEONLY);
+    m_iBuf = m_rs->CreateIndexBufferManaged(m_nIndx*2);
 	m_nIndx/=3;
 
 	// Lock vertex and index buffers and get pointers to this

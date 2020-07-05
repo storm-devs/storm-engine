@@ -256,7 +256,8 @@ dword _cdecl NetRope::ProcessMessage(MESSAGE & message)
 			gdata[groupQuantity-1].st = nIndx;
 			gdata[groupQuantity-1].sv = nVert;
 			gdata[groupQuantity-1].ropeQuantity = 0;
-			for(int rn=wFirstRope; rn<ropeQuantity; rn++)
+			int rn = 0;
+			for(rn=wFirstRope; rn<ropeQuantity; rn++)
 			{
 				if(rlist[rn]->HostGroup==groupQuantity-1)
 				{
@@ -899,7 +900,7 @@ void NetRope::SetAdd(int firstNum)
             rlist[rn]->ropeWave=-ROPE_WAVE;
     }
 
-	for(rn=firstNum; rn<ropeQuantity; rn++)
+	for(int rn=firstNum; rn<ropeQuantity; rn++)
 	{
 		if( rlist[rn]->segquant > 100 || rlist[rn]->segquant<0 )
 			rlist[rn]->segquant = rlist[rn]->segquant;
@@ -911,14 +912,16 @@ void NetRope::DoDelete()
     DWORD oldnVert=nVert;
 
     // пройтись по удаленным группам и пометить на удаление все принадлежащие им веревки
-    for(int gn=0; gn<groupQuantity; gn++)
+	int gn = 0;
+    for(gn=0; gn<groupQuantity; gn++)
         if(gdata[gn].bDeleted)
             for(int idx=0; idx<gdata[gn].ropeQuantity; idx++)
                 rlist[gdata[gn].ropeIdx[idx]]->bDeleted=true;
 
     // удалить удаленные веревки в списке веревок
     int nrn=0;
-    for(int rn=0; rn<ropeQuantity; rn++)
+	int rn = 0;
+    for(rn=0; rn<ropeQuantity; rn++)
     {
         if(rlist[rn]->bDeleted)
         {
@@ -1024,7 +1027,8 @@ bool NetRope::IsAbsentRope(ENTITY_ID &mdl_id, int ropenum)
     bool retVal=true;
 
     // найдем нужную группу
-    for(int gn=0; gn<groupQuantity; gn++)
+	int gn = 0;
+    for(gn=0; gn<groupQuantity; gn++)
         if(gdata[gn].modelEI==mdl_id) break;
 
     // пройдемся по всем веревкам и найдем нужную нам веревку
@@ -1041,7 +1045,8 @@ bool NetRope::IsAbsentRope(ENTITY_ID &mdl_id, int ropenum)
 
 void NetRope::DoDeleteUntie(ENTITY_ID &mdl_id, NODE *rnod, int gNum)
 {
-    for(int gn=0; gn<groupQuantity; gn++)
+	int gn = 0;
+    for(gn=0; gn<groupQuantity; gn++)
         if(gdata[gn].modelEI==mdl_id) break;
 
     if(gn<groupQuantity)

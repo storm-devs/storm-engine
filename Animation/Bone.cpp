@@ -13,7 +13,7 @@
 
 #include "..\common_h\vmodule_api.h"
 
-#pragma comment(lib, "d3dx8")
+#pragma comment(lib, "d3dx9")
 
 
 //============================================================================================

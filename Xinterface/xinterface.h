@@ -285,8 +285,8 @@ protected:
 	long	m_ChangeType;		// exchange type
 	float	m_fAngle;
 	long    m_nBlendColor;
-	IDirect3DTexture8* m_pTexture;
-	IDirect3DTexture8* m_pPrevTexture;
+	IDirect3DTexture9* m_pTexture;
+	IDirect3DTexture9* m_pPrevTexture;
 
 	// vertex & index data
     long vBuf,iBuf;

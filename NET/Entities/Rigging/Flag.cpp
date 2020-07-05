@@ -371,8 +371,8 @@ void NetFlag::AddLabel(GEOS::LABEL &gl, NODE *nod, bool isSpecialFlag)
 
     if(isSpecialFlag) 	grNum=atoi(&gl.group_name[5]);	
     else 				grNum=atoi(&gl.group_name[4]);
-
-    for(int fn=0; fn<flagQuantity; fn++)
+    int fn = 0;
+    for(fn=0; fn<flagQuantity; fn++)
         if( flist[fn]!=NULL &&
 			flist[fn]->HostGroup==groupQuantity-1 &&
             flist[fn]->grNum==grNum &&
@@ -490,7 +490,7 @@ void NetFlag::SetAll()
 			flist[fn]->texNum = 0;
 			VDATA * pvdat = api->Event("NetClient_GetRiggingData","sa","GetFlagTexPointer",gdata[flist[fn]->HostGroup].char_attributes);
 			if( pvdat ) {
-				flist[fn]->pTexture = (IDirect3DBaseTexture8*)pvdat->GetLong();
+				flist[fn]->pTexture = (IDirect3DBaseTexture9*)pvdat->GetLong();
 				if( flist[fn]->pTexture ) flist[fn]->pTexture->AddRef();
 			} else
 				flist[fn]->pTexture = 0;
@@ -841,7 +841,7 @@ void NetFlag::SetAdd(int flagNum)
 			flist[fn]->texNum = 0;
 			VDATA * pvdat = api->Event("NetClient_GetRiggingData","sa","GetFlagTexPointer",gdata[flist[fn]->HostGroup].char_attributes);
 			if( pvdat ) {
-				flist[fn]->pTexture = (IDirect3DBaseTexture8*)pvdat->GetLong();
+				flist[fn]->pTexture = (IDirect3DBaseTexture9*)pvdat->GetLong();
 				if( flist[fn]->pTexture ) flist[fn]->pTexture->AddRef();
 			} else
 				flist[fn]->pTexture = 0;
@@ -879,14 +879,16 @@ void NetFlag::SetAdd(int flagNum)
 void NetFlag::MoveOtherHost(ENTITY_ID newm_id,long flagNum,ENTITY_ID oldm_id)
 {
     // найдем старую группу
-    for(int oldgn=0; oldgn<groupQuantity; oldgn++)
+	int oldgn=0;
+    for(oldgn=0; oldgn<groupQuantity; oldgn++)
         if(gdata[oldgn].model_id==oldm_id) break;
     // если нет такой группы, то пустой возврат
     if(oldgn==groupQuantity)
         return;
 
     // найдем новую группу
-    for(int newgn=0; newgn<groupQuantity; newgn++)
+	int newgn=0;
+    for(newgn=0; newgn<groupQuantity; newgn++)
         if(gdata[newgn].model_id==newm_id) break;
     // если нет новой группы, то создаем ее
     if(newgn==groupQuantity)
@@ -909,7 +911,8 @@ void NetFlag::MoveOtherHost(ENTITY_ID newm_id,long flagNum,ENTITY_ID oldm_id)
     }
 
     // найдем нужный нам флаг
-    for(int fn=0; fn<flagQuantity; fn++)
+	int fn = 0;
+    for(fn=0; fn<flagQuantity; fn++)
         if(flist[fn]!=NULL && flist[fn]->grNum==flagNum && flist[fn]->HostGroup==oldgn) break;
     // переназначим его хоз€ина на нового хоз€ина
     if(fn<flagQuantity)

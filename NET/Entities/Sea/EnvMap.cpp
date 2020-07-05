@@ -207,7 +207,7 @@ bool NetSea::SunRoad_Render2()
 	{
 		//if (i == D3DCUBEMAP_FACE_NEGATIVE_Y) continue;
 
-		IDirect3DSurface8 * pReflectionSurface;
+		IDirect3DSurface9 * pReflectionSurface;
 		pReflectionSunroad->GetSurfaceLevel(0, &pReflectionSurface);
 
 		Render().BeginScene();
@@ -305,7 +305,7 @@ bool NetSea::EnvMap_Render2()
 		//if (i == D3DCUBEMAP_FACE_NEGATIVE_Y) continue;
 		//if (i != D3DCUBEMAP_FACE_NEGATIVE_Z) continue;
 
-		IDirect3DSurface8 * pReflectionSurface;
+		IDirect3DSurface9 * pReflectionSurface;
 		pReflection->GetSurfaceLevel(0, &pReflectionSurface);
 
 		Render().BeginScene();

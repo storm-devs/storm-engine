@@ -20,7 +20,7 @@ class CXI_VIMAGESCROLL : public CINODE
 	{
 		bool	*bUseSpecTechnique;
 		long	*tex;
-		IDirect3DTexture8*	*ptex;
+		IDirect3DTexture9*	*ptex;
 		char*	*saveName;
 		long	*img;
 

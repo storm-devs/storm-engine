@@ -433,7 +433,8 @@ void FLAG::AddLabel(GEOS::LABEL &gl, NODE *nod, bool isSpecialFlag, bool isShip)
 	if(isSpecialFlag) 	grNum=atoi(&gl.group_name[5]);	
     else 				grNum=atoi(&gl.group_name[4]);
 
-    for(int fn=0; fn<flagQuantity; fn++)
+	int fn = 0;
+    for(fn=0; fn<flagQuantity; fn++)
         if( flist[fn]!=NULL &&
 			flist[fn]->HostGroup==groupQuantity-1 &&
             flist[fn]->grNum==grNum &&
@@ -623,9 +624,9 @@ void FLAG::FirstRun()
     if(nVert)
     {
         bUse=true;
-        iBuf=RenderService->CreateIndexBuffer(nIndx*2);
+        iBuf=RenderService->CreateIndexBufferManaged(nIndx*2);
         SetTreangle();
-        vBuf=RenderService->CreateVertexBuffer(FLAGLXVERTEX_FORMAT,nVert*sizeof(FLAGLXVERTEX),D3DUSAGE_WRITEONLY);
+        vBuf=RenderService->CreateVertexBufferManaged(FLAGLXVERTEX_FORMAT,nVert*sizeof(FLAGLXVERTEX),D3DUSAGE_WRITEONLY);
         SetTextureCoordinate();
         nIndx/=3;
     }
@@ -708,8 +709,8 @@ void FLAG::DoDelete()
         {
 			VERTEX_BUFFER_RELEASE(RenderService,vBuf);
 			INDEX_BUFFER_RELEASE(RenderService,iBuf);
-            vBuf=RenderService->CreateVertexBuffer(FLAGLXVERTEX_FORMAT,nVert*sizeof(FLAGLXVERTEX),D3DUSAGE_WRITEONLY);
-            iBuf=RenderService->CreateIndexBuffer(nIndx*6);
+            vBuf=RenderService->CreateVertexBufferManaged(FLAGLXVERTEX_FORMAT,nVert*sizeof(FLAGLXVERTEX),D3DUSAGE_WRITEONLY);
+            iBuf=RenderService->CreateIndexBufferManaged(nIndx*6);
 
             flagQuantity=nfn; groupQuantity=ngn;
 
@@ -843,14 +844,15 @@ void FLAG::SetAdd(int flagNum)
 
 void FLAG::MoveOtherHost(ENTITY_ID newm_id,long flagNum,ENTITY_ID oldm_id)
 {
+	int oldgn = 0, newgn = 0;
     // найдем старую группу
-    for(int oldgn=0; oldgn<groupQuantity; oldgn++)
+    for(oldgn=0; oldgn<groupQuantity; oldgn++)
         if(gdata[oldgn].model_id==oldm_id) break;
     // если нет такой группы, то пустой возврат
     if(oldgn==groupQuantity) return;
 
     // найдем новую группу
-    for(int newgn=0; newgn<groupQuantity; newgn++)
+    for(newgn=0; newgn<groupQuantity; newgn++)
         if(gdata[newgn].model_id==newm_id) break;
     // если нет новой группы, то создаем ее
     if(newgn==groupQuantity)
@@ -876,8 +878,9 @@ void FLAG::MoveOtherHost(ENTITY_ID newm_id,long flagNum,ENTITY_ID oldm_id)
 		
     }
 
+	int fn = 0;
     // найдем нужный нам флаг
-    for(int fn=0; fn<flagQuantity; fn++)
+    for(fn=0; fn<flagQuantity; fn++)
         if(flist[fn]!=NULL && flist[fn]->grNum==flagNum && flist[fn]->HostGroup==oldgn) break;
     // переназначим его хоз€ина на нового хоз€ина
     if(fn<flagQuantity)

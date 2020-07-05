@@ -37,8 +37,8 @@ public:
 //--------------------------------------------------------------------------------------------
 private:
 	VDX8RENDER * rs;
-	IDirect3DSurface8 * renderTarget;
-	IDirect3DSurface8 * surface;
+	IDirect3DSurface9 * renderTarget;
+	IDirect3DSurface9 * surface;
 
 	bool isWork;
 	bool haveFrame;

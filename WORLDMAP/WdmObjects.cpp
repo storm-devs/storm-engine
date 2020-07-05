@@ -236,7 +236,8 @@ void WdmObjects::DrawVector(const CVECTOR & start, const CVECTOR & end, dword co
 	float p = 0.9f*len;
 	float r = 0.03f*len;
 
-	for(long i = 0, imax = 8, t = 0; i < imax; i++)
+	long i = 0, imax = 0, t = 0;
+	for(i = 0, imax = 8, t = 0; i < imax; i++)
 	{
 		float y1 = r*sinf(2.0f*WdmObjects_myPI*i/float(imax));
 		float x1 = r*cosf(2.0f*WdmObjects_myPI*i/float(imax));
@@ -362,7 +363,7 @@ void WdmObjects::DrawBox2D(CMatrix & mtx, float l, float w, dword color)
 void WdmObjects::GetVPSize(float & w, float & h)
 {
 	//Получим текущие размеры vp
-	D3DVIEWPORT8 vp;
+	D3DVIEWPORT9 vp;
 	rs->GetViewport(&vp);
 	w = float(vp.Width);
 	h = float(vp.Height);

@@ -120,10 +120,8 @@ void MEM_USAGE_INFO::Unregister(char * pFileName, DWORD nLine, DWORD nMemSize)
 	}
 }
 
-
 void MEM_USAGE_INFO::Allocate(char * pFileName, DWORD nLine, DWORD nMemSize)
 {
-	//nTestBlocks++;
 	Register(pFileName,nLine,nMemSize);
 
 	nTotalBlocks++;
@@ -153,8 +151,6 @@ void MEM_USAGE_INFO::Allocate(char * pFileName, DWORD nLine, DWORD nMemSize)
 	}
 
 	
-
-
 }
 
 void MEM_USAGE_INFO::Resize(char * pFileName, DWORD nLine, DWORD nMemSize, 
@@ -205,7 +201,6 @@ void MEM_USAGE_INFO::Resize(char * pFileName, DWORD nLine, DWORD nMemSize,
 
 void MEM_USAGE_INFO::Free(char * pFileName, DWORD nLine, DWORD nMemSize)
 {
-	//nTestBlocks--;
 	if(nCurrentBlocks == 0)
 	{
 		bool a;
@@ -346,9 +341,6 @@ void MEM_USAGE_INFO::UpdateMemoryProfile(char * pFileName)
 	api->fio->_ReadFile(fh,pTempProfileInfo,nProfileBlocks*sizeof(DWORD),&dwR);
 	api->fio->_CloseHandle(fh);
 
-	//fh = api->fio->_CreateFile(pFileName,GENERIC_READ,FILE_SHARE_READ,OPEN_EXISTING);
-	//if(fh == INVALID_HANDLE_VALUE) return;
-
 	fh = api->fio->_CreateFile(pFileName,GENERIC_WRITE,FILE_SHARE_READ,CREATE_ALWAYS);
 	if(fh == INVALID_HANDLE_VALUE) return;
 
@@ -367,6 +359,7 @@ void MEM_USAGE_INFO::UpdateMemoryProfile(char * pFileName)
 		api->fio->_WriteFile(fh,&nProfileValue,sizeof(nBlockTableSBS[n].nMax),&dwR);
 	}
 	api->fio->_CloseHandle(fh);
+	delete pTempProfileInfo;
 }
 
 #ifdef DEBUGCLASSES
@@ -376,11 +369,6 @@ MEM_ALLOC_ADDRESS::MEM_ALLOC_ADDRESS()
 	pData = 0; 
 	dwRecordsNum = 0;
 	dwBufferSize = 0;
-/*	dwBufferSize = 128;
-	pData = (SOURCE_DESC *)malloc(dwBufferSize * sizeof(SOURCE_DESC));
-	if(!pData) throw "MEM_ALLOC_ADDRESS::MEM_ALLOC_ADDRESS()";
-	memset(pData,0,dwBufferSize * sizeof(SOURCE_DESC));
-*/
 }
 
 MEM_ALLOC_ADDRESS::~MEM_ALLOC_ADDRESS()
@@ -400,7 +388,6 @@ MEM_ALLOC_ADDRESS::~MEM_ALLOC_ADDRESS()
 
 DWORD  MEM_ALLOC_ADDRESS::GetAddress(const char * pFileName, DWORD dwLine)
 {
-	//return 0xffffffff;
 	DWORD n;
 	if(pFileName == 0) return 0xffffffff;
 	for(n=0;n<dwRecordsNum;n++)
@@ -416,8 +403,7 @@ DWORD  MEM_ALLOC_ADDRESS::GetAddress(const char * pFileName, DWORD dwLine)
 		{
 			dwBufferSize = 128;
 			pData = (SOURCE_DESC *)malloc(dwBufferSize * sizeof(SOURCE_DESC));
-			if(!pData) throw "MEM_ALLOC_ADDRESS::::GetAddress";
-			//memset(pData,0,dwBufferSize * sizeof(SOURCE_DESC));
+			if(!pData) throw "MEM_ALLOC_ADDRESS::GetAddress";
 		}
 		else
 		{
@@ -425,7 +411,6 @@ DWORD  MEM_ALLOC_ADDRESS::GetAddress(const char * pFileName, DWORD dwLine)
 			dwBufferSize = dwBufferSize * 2;
 			pData = (SOURCE_DESC *)realloc(pData,dwBufferSize * sizeof(SOURCE_DESC));
 			if(!pData) throw "MEM_ALLOC_ADDRESS::GetAddress";
-			//memset(pData + offset,0,offset);
 		}
 	}
 	pData[dwRecordsNum].dwLine = dwLine;

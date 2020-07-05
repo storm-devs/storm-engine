@@ -49,7 +49,7 @@ private:
 	bool					bLoaded;
 	TGA_H					Header;
 	BYTE					* pRaw;
-	IDirect3DTexture8		* pIslandTexture;
+	IDirect3DTexture9		* pIslandTexture;
 	VDX8RENDER				* pRS;
 
 	dword	GetNearestPointIdx(CVECTOR vSrc);

@@ -466,7 +466,7 @@ void CXI_FORMATEDTEXT::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *na
 	if( m_pVidTex || m_bBackRectangle ) m_bSelectableCursor = true;
 
 	if( m_bSelectableCursor )	m_bSelected = true;
-	m_idVBuf = m_rs->CreateVertexBuffer(XI_ONLYONETEX_FVF,4*4*sizeof(XI_ONLYONETEX_VERTEX),D3DUSAGE_WRITEONLY);
+	m_idVBuf = m_rs->CreateVertexBufferManaged(XI_ONLYONETEX_FVF,4*4*sizeof(XI_ONLYONETEX_VERTEX),D3DUSAGE_WRITEONLY);
 
 	m_rectCursorPosition.left = m_rect.left;
 	m_rectCursorPosition.right = m_rect.right;
@@ -891,7 +891,8 @@ void CXI_FORMATEDTEXT::MakeTagChecking( bool& tagState, dword& tagColor, dword n
 		{
 			char tmp[512];
 			if( q>sizeof(tmp)-1 ) q = sizeof(tmp)-1;
-			for( long n=0; n<q; n++ ) {
+			long n = 0;
+			for( n=0; n<q; n++ ) {
 				tmp[n] = tagBegin[n];
 			}
 			tmp[n] = 0;
@@ -909,7 +910,8 @@ void CXI_FORMATEDTEXT::MakeTagChecking( bool& tagState, dword& tagColor, dword n
 	{
 		char tmp[512];
 		if( q>sizeof(tmp)-1 ) q = sizeof(tmp)-1;
-		for( long n=0; n<q; n++ ) {
+		long n = 0;
+		for( n=0; n<q; n++ ) {
 			tmp[n] = tagBegin[n];
 		}
 		tmp[n] = 0;
@@ -1043,7 +1045,8 @@ dword _cdecl CXI_FORMATEDTEXT::MessageProc(long msgcode, MESSAGE & message)
 			{
 				char * tmpStr = pvdat->GetString();
 				char buf[512];
-				for(int n=0; GetLineNext(m_idFont,tmpStr,buf,sizeof(buf)); n++);
+				int n = 0;
+				for(n=0; GetLineNext(m_idFont,tmpStr,buf,sizeof(buf)); n++);
 				return n;
 			}
 		}
@@ -1327,7 +1330,8 @@ long CXI_FORMATEDTEXT::GetFirstGroupNum()
 
 void CXI_FORMATEDTEXT::SetCurrentGroupNum(long nFirstNum, long nSelectNum)
 {
-	for(STRING_DESCRIBER* pSD=m_listRoot; pSD; pSD=pSD->next)
+	STRING_DESCRIBER* pSD = null;
+	for(pSD=m_listRoot; pSD; pSD=pSD->next)
 		if( pSD->strGroup == nFirstNum )
 			break;
 	if( pSD ) m_listCur = pSD;
@@ -1343,7 +1347,8 @@ void CXI_FORMATEDTEXT::ReplaceString( long nGrpNum, const char * pSrcStr )
 
 	if( m_listCur && m_listCur->strGroup==nGrpNum ) m_listCur = 0;
 
-	for( STRING_DESCRIBER * dscrCur=m_listRoot; dscrCur; dscrCur=dscrCur->next )
+	STRING_DESCRIBER * dscrCur = null;
+	for( dscrCur=m_listRoot; dscrCur; dscrCur=dscrCur->next )
 		if( dscrCur->strGroup == nGrpNum ) break;
 
 	if( !dscrCur ) {

@@ -535,8 +535,8 @@ void SAIL::Realize(dword Delta_Time)
 					} else RenderService->TextureSet( 1, m_nEmptyGerbTex );
 					// Draw hole texture sail
 					dword dwOld;
-					RenderService->GetTextureStageState(2,D3DTSS_ADDRESSU,&dwOld);
-					RenderService->SetTextureStageState(2,D3DTSS_ADDRESSU,D3DTADDRESS_MIRROR);
+					RenderService->GetSamplerState(2,D3DSAMP_ADDRESSU,&dwOld);
+					RenderService->SetSamplerState(2,D3DSAMP_ADDRESSU,D3DTADDRESS_MIRROR);
 					//slist[i]->FillIndex(pt);
 					#ifndef _XBOX
 					WORD* pt=(WORD*)RenderService->LockIndexBuffer(sg.indxBuf,D3DLOCK_DISCARD);
@@ -555,7 +555,7 @@ void SAIL::Realize(dword Delta_Time)
 										slist[i]->ss.sVert, slist[i]->ss.nVert, slist[i]->ss.sholeIndx, slist[i]->ss.nholeIndx);
 					}
 					// Draw normal texture sail
-					RenderService->SetTextureStageState(2,D3DTSS_ADDRESSU,dwOld);
+					RenderService->SetSamplerState(2,D3DSAMP_ADDRESSU,dwOld);
 					if(slist[i]->ss.nnormIndx!=0) {
 						RenderService->DrawBuffer(sg.vertBuf, sizeof(SAILVERTEX), sg.indxBuf,
 										slist[i]->ss.sVert, slist[i]->ss.nVert, slist[i]->ss.sIndx, slist[i]->ss.nnormIndx);
@@ -837,7 +837,8 @@ dword _cdecl SAIL::ProcessMessage(MESSAGE & message)
             ENTITY_ID shipEI = message.EntityID();
             float *pMaxSpeed = (float*)message.Pointer();
             // найдем нужную группу парусов
-            for(int gn=0; gn<groupQuantity; gn++)
+			int gn = 0;
+            for(gn=0; gn<groupQuantity; gn++)
                 if(gdata[gn].shipEI==shipEI) break;
             // запишем по указателю параметра значение дл€ него
             if(pMaxSpeed)
@@ -1094,7 +1095,7 @@ void SAIL::SetAllSails(int groupNum)
     {
         gdata[groupNum].sailIdx = NEW int[gdata[groupNum].sailQuantity];
         int idx=0;
-        for(i=0; i<sailQuantity; i++)
+        for(int i=0; i<sailQuantity; i++)
             if(slist[i]->HostNum==groupNum)
             {
                 gdata[groupNum].sailIdx[idx++]=i;
@@ -1116,7 +1117,7 @@ void SAIL::SetAllSails(int groupNum)
 				char param[256];
 				sprintf(param,"%d",gdata[groupNum].maxHole);
 				pA->SetValue(param);
-				for(i=0;i<(int)pA->GetAttributesNum();i++)
+				for(int i=0;i<(int)pA->GetAttributesNum();i++)
 				{
 					ATTRIBUTES * pAttr = pA->GetAttributeClass(i);
 					if(pAttr!=null) for(int j=0; j<(int)pAttr->GetAttributesNum(); j++)
@@ -1179,8 +1180,8 @@ void SAIL::SetAllSails()
     if( texl == -1 ) texl = RenderService->TextureCreate("ships\\parus_hole.tga");
 	if( m_nEmptyGerbTex == -1 ) m_nEmptyGerbTex = RenderService->TextureCreate("ships\\emptygerald.tga");
 
-    sg.vertBuf = RenderService->CreateVertexBuffer( SAILVERTEX_FORMAT, sg.nVert*sizeof(SAILVERTEX), D3DUSAGE_WRITEONLY );
-    sg.indxBuf = RenderService->CreateIndexBuffer( sg.nIndx*2, D3DUSAGE_DYNAMIC );
+    sg.vertBuf = RenderService->CreateVertexBufferManaged( SAILVERTEX_FORMAT, sg.nVert*sizeof(SAILVERTEX), D3DUSAGE_WRITEONLY);
+    sg.indxBuf = RenderService->CreateIndexBufferManaged( sg.nIndx*2);
 
     SAILVERTEX* pv; pv=(SAILVERTEX*)RenderService->LockVertexBuffer(sg.vertBuf);
     if(pv)
@@ -1540,26 +1541,27 @@ float SAIL::Cannon_Trace(long iBallOwner, const CVECTOR &src,const CVECTOR &dst)
 void SAIL::DoSailToNewHost(ENTITY_ID newModelEI, ENTITY_ID newHostEI, int grNum, NODE *nod, ENTITY_ID oldModelEI)
 {
     if(groupQuantity<1 || sailQuantity<1) return;
-
+	int oldg = 0, sn = 0;
     // найдем старого хоз€ина
-    for(int oldg=0; oldg<groupQuantity; oldg++)
+    for(oldg=0; oldg<groupQuantity; oldg++)
         if(gdata[oldg].modelEI==oldModelEI && !gdata[oldg].bDeleted)  break;
     if(oldg==groupQuantity) return; // нет старой модели - возвращаемс€ ничего не сделав
 
     // найдем парус
-    for(int sn=0; sn<sailQuantity; sn++)
+    for(sn=0; sn<sailQuantity; sn++)
         if( slist[sn]->hostNode==nod &&
             slist[sn]->HostNum==oldg &&
             (grNum==0 || slist[sn]->groupNum==grNum) )  break;
     if(sn==sailQuantity) return; // нет такого паруса - возвращаемс€ без результата
 
     // в старом хоз€ине найдем ссылку на наш парус
-    for(int idx=0; idx<gdata[oldg].sailQuantity; idx++)
+	int idx = 0, gn = 0;
+    for(idx=0; idx<gdata[oldg].sailQuantity; idx++)
         if(gdata[oldg].sailIdx[idx]==sn) break;
     if(idx==gdata[oldg].sailQuantity) return; // нет паруса в группе - возврат без результата
 
     // найдем нового хоз€ина
-    for(int gn=0; gn<groupQuantity; gn++)
+    for(gn=0; gn<groupQuantity; gn++)
         if(gdata[gn].modelEI==newModelEI) break;
     if(gn==groupQuantity) // нет такого хоз€ина - создаем нового
     {
@@ -1584,7 +1586,8 @@ void SAIL::DoSailToNewHost(ENTITY_ID newModelEI, ENTITY_ID newHostEI, int grNum,
     }
 
 	// поищем новый парус в новой группе
-	for(int i=0; i<gdata[gn].sailQuantity; i++)
+	int i = 0;
+	for(i=0; i<gdata[gn].sailQuantity; i++)
 		if(gdata[gn].sailIdx[i]==sn) break;
 
 	if(m_nMastCreatedCharacter>=0 && slist[sn]!=null)
@@ -1740,7 +1743,7 @@ void SAIL::DeleteSailGroup()
     if(sg.nVert>0)
     {
         // создадим новые буферы
-        sg.vertBuf=RenderService->CreateVertexBuffer(SAILVERTEX_FORMAT,sg.nVert*sizeof(SAILVERTEX),D3DUSAGE_WRITEONLY);
+        sg.vertBuf=RenderService->CreateVertexBufferManaged(SAILVERTEX_FORMAT,sg.nVert*sizeof(SAILVERTEX),D3DUSAGE_WRITEONLY);
 
         SAILVERTEX* pv; pv=(SAILVERTEX*)RenderService->LockVertexBuffer(sg.vertBuf);
         if(pv)
@@ -1773,7 +1776,7 @@ void SAIL::SetAddSails(int firstSail)
     // удалим старые буферы
 	VERTEX_BUFFER_RELEASE(RenderService,sg.vertBuf);
     // создадим новые буферы
-    sg.vertBuf=RenderService->CreateVertexBuffer(SAILVERTEX_FORMAT,sg.nVert*sizeof(SAILVERTEX),D3DUSAGE_WRITEONLY);
+    sg.vertBuf=RenderService->CreateVertexBufferManaged(SAILVERTEX_FORMAT,sg.nVert*sizeof(SAILVERTEX),D3DUSAGE_WRITEONLY);
 
     // заполним вертекс буфер и установим текстурные координаты
     SAILVERTEX* pv; pv=(SAILVERTEX*)RenderService->LockVertexBuffer(sg.vertBuf);
@@ -1798,6 +1801,7 @@ void SAIL::DoNoRopeSailToNewHost(ENTITY_ID newModel, ENTITY_ID newHost, ENTITY_I
     if(rb==null) return;
 
     // найдем группу старого хоз€ина
+	int ogn = 0;
     for(int ogn=0; ogn<groupQuantity; ogn++)
         if(gdata[ogn].bYesShip && gdata[ogn].shipEI==oldHost && !gdata[ogn].bDeleted) break;
 	if(ogn==groupQuantity) return;
@@ -1873,7 +1877,7 @@ void _cdecl sailPrint(VDX8RENDER *rs, const CVECTOR & pos3D, float rad, long lin
 	buf[sizeof(buf) - 1] = 0;
 	//»щем позицию точки на экране
 	static CMatrix mtx, view, prj;
-	static D3DVIEWPORT8 vp;
+	static D3DVIEWPORT9 vp;
 	MTX_PRJ_VECTOR vrt;
 	rs->GetTransform(D3DTS_VIEW, view);
 	rs->GetTransform(D3DTS_PROJECTION, prj);
@@ -1926,7 +1930,7 @@ void SAIL::SetSailTextures(long grNum, VDATA* pvd)
 	// основна€ текстура
 	char* pcNormalName = pA->GetAttribute("normalTex");
 	// герб текстуры
-	IDirect3DTexture8* pGeraldTexture = (IDirect3DTexture8*)pA->GetAttributeAsDword("geraldTexPointer",0);
+	IDirect3DTexture9* pGeraldTexture = (IDirect3DTexture9*)pA->GetAttributeAsDword("geraldTexPointer",0);
 	char* pcGeraldName = pA->GetAttribute("geraldTex");
 	//
 	gdata[grNum].dwSailsColor = pA->GetAttributeAsDword("sailscolor",0xFFFFFFFF);
@@ -2014,7 +2018,7 @@ void SAIL::LostRender()
 void SAIL::RestoreRender()
 {
 	if( sg.nVert == 0 ) return;
-	sg.indxBuf = RenderService->CreateIndexBuffer( sg.nIndx*2, D3DUSAGE_DYNAMIC );
+	sg.indxBuf = RenderService->CreateIndexBufferManaged( sg.nIndx*2);
 
 	// Set triangle buffer for sea mirror
 	WORD* pt = (WORD*)RenderService->LockIndexBuffer(sg.indxBuf);

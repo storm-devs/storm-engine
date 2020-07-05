@@ -256,7 +256,7 @@ void SEA_OPERATOR::HandleShipHit()
 	tAction action;
 	action.timeK = 0.3f;
 	action.actionTime = 5000;
-	action.actionMethod = ShowBallAtMyShip;
+	action.actionMethod = &SEA_OPERATOR::ShowBallAtMyShip;
 	actionBuffer.Push(action);	
 }
 
@@ -274,7 +274,7 @@ void SEA_OPERATOR::HandleShipIdle()
 	action.direction.z += startDistance*sinf(startAngle + myShip->GetAng().y);
 	action.direction.x += startDistance*cosf(startAngle + myShip->GetAng().y);
 	
-	action.actionMethod = ShowMyShipFromPoint;
+	action.actionMethod = &SEA_OPERATOR::ShowMyShipFromPoint;
 	actionBuffer.Push(action);	
 }
 
@@ -317,17 +317,17 @@ void SEA_OPERATOR::HandleShipFire (ENTITY_ID &_shipID, char *_bortName, const CV
 	action.attackerShip = ship;
 	action.direction = _direction;
 	action.destination = _destination;
-	action.actionMethod = ShowAttackerBort;
+	action.actionMethod = &SEA_OPERATOR::ShowAttackerBort;
 	actionBuffer.Push(action);	
 
 	action.timeK = 0.7f;
 	action.actionTime = -1;
-	action.actionMethod = ShowFromBall;
+	action.actionMethod = &SEA_OPERATOR::ShowFromBall;
 	actionBuffer.Push(action);	
 
 	action.timeK = 0.15f;
 	action.actionTime = 5000;
-	action.actionMethod = ShowAroundPoint;
+	action.actionMethod = &SEA_OPERATOR::ShowAroundPoint;
 	actionBuffer.Push(action);	
 
 }

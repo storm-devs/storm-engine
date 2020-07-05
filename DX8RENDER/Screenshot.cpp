@@ -1,8 +1,14 @@
 #include <io.h>
 #include <stdio.h>
+#include <windows.h>
+#include <gdiplus.h>
+#include <iostream>
+#include <sstream>
 
 #include "sdevice.h"
 #include "..\common_h\tga.h"
+
+#pragma comment (lib, "Gdiplus.lib")
 
 void DX8RENDER::PrepareCapture()
 {
@@ -24,8 +30,9 @@ void DX8RENDER::SaveCaptureBuffers()
 {
 	dword Written;
 	char cFileName[256];
+	long fi = 0;
 
-	for (long fi=iCaptureFrameIndex; fi<iCaptureFrameIndex + 10000; fi++)
+	for (fi=iCaptureFrameIndex; fi<iCaptureFrameIndex + 10000; fi++)
 	{
 		sprintf(cFileName, "k3cap_%04d.tga", fi);
 		if (_access(cFileName, 0) == -1) break;
@@ -70,4 +77,76 @@ bool DX8RENDER::MakeCapture()
 	dwCaptureBuffersReady++;
 	return true;
 }
+
+int DX8RENDER::GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
+{
+    UINT  num  = 0;          // number of image encoders
+    UINT  size = 0;          // size of the image encoder array in bytes
+
+    Gdiplus::GetImageEncodersSize(&num, &size);
+    if(size == 0)
+        return -1;  // Failure
+
+    Gdiplus::ImageCodecInfo* pImageCodecInfo = (Gdiplus::ImageCodecInfo*)(malloc(size));
+    if(pImageCodecInfo == NULL)
+        return -1;  // Failure
+
+    GetImageEncoders(num, size, pImageCodecInfo);
+
+    for(UINT j = 0; j < num; ++j)
+    {
+        if(wcscmp(pImageCodecInfo[j].MimeType, format) == 0)
+        {
+            *pClsid = pImageCodecInfo[j].Clsid;
+            free(pImageCodecInfo);
+            return j;  // Success
+        }
+    }
+
+    free(pImageCodecInfo);
+    return -1;  // Failure
+}
+
+using namespace std;
+
+void DX8RENDER::GetPngScreenshot()
+{
+	char file_name[256];
+	long i = 0;
+	
+    hDesktopDC = GetDC(api->GetAppHWND());
+	hCaptureDC = CreateCompatibleDC(hDesktopDC);
+	hCaptureBitmap = CreateCompatibleBitmap(hDesktopDC, screen_size.x, screen_size.y);
+	HGDIOBJ old_obj = SelectObject(hCaptureDC, hCaptureBitmap);
+	BitBlt(hCaptureDC, 0, 0, screen_size.x, screen_size.y, hDesktopDC, 0, 0, SRCCOPY);
+
+	Gdiplus::Bitmap bitmap(hCaptureBitmap, NULL);
+    CLSID clsid;
+
+    GetEncoderClsid(L"image/png", &clsid);
+
+	for(i = 0; i < 10000; i++)
+	{
+		wsprintf(file_name, "CCS_%04d.png", i);
+		if(_access(file_name, 0) == -1) break;
+	}
+
+	wstring szPath (file_name, file_name + strlen(file_name));
+        
+    bitmap.Save(szPath.c_str(), &clsid);
+
+	SelectObject(hCaptureDC, old_obj); 
+}
+
+void DX8RENDER::GetPng()
+{
+    Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+    ULONG_PTR gdiplusToken;
+    Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+
+    GetPngScreenshot();
+
+    Gdiplus::GdiplusShutdown(gdiplusToken);
+}
+
 

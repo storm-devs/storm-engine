@@ -148,7 +148,7 @@ void ISLAND::Realize(dword Delta_Time)
 		pRS->SetNearFarPlane((j==0) ? fOldNear : fOldFar * float(j), fOldFar * float(j + 1));
 		pModel->Realize(Delta_Time);
 		pRS->SetRenderState(D3DRS_LIGHTING, true);
-		D3DLIGHT8 lt, ltold; ZERO(lt);
+		D3DLIGHT9 lt, ltold; ZERO(lt);
 		lt.Type = D3DLIGHT_POINT;
 		lt.Diffuse.a = 0.0f;	lt.Diffuse.r = 1.0f;	lt.Diffuse.g = 1.0f;	lt.Diffuse.b = 1.0;
 		lt.Ambient.r  = 1.0f;	lt.Ambient.g  = 1.0f;	lt.Ambient.b  = 1.0f;

@@ -302,7 +302,7 @@ dword _cdecl CXI_PICTURE::MessageProc(long msgcode, MESSAGE & message)
 
 	case 7: // set new picture by pointer to IDirect3DTexture8
 		{
-			IDirect3DBaseTexture8* pTex = (IDirect3DBaseTexture8*)message.Long();
+			IDirect3DBaseTexture9* pTex = (IDirect3DBaseTexture9*)message.Long();
 			SetNewPictureByPointer( pTex );
 		}
 		break;
@@ -388,7 +388,7 @@ void CXI_PICTURE::SetPictureSize(long& nWidth, long& nHeight)
 	ChangePosition( rNewPos );
 }
 
-void CXI_PICTURE::SetNewPictureByPointer( IDirect3DBaseTexture8* pTex )
+void CXI_PICTURE::SetNewPictureByPointer( IDirect3DBaseTexture9* pTex )
 {
 	if( pTex ) pTex->AddRef();
 	ReleasePicture();

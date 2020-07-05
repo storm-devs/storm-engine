@@ -67,8 +67,9 @@ void AnimationTimerImp::Stop()
 	curTime = 0.0f;
 	kTime = 0.0f;
 	value = 1.0f;
+	long i = 0;
 	//Устанавливаем конечные значения и останавливаем анимацию, где просят
-	for(long i = 0; i < ANI_MAX_ACTIONS; i++)
+	for(i = 0; i < ANI_MAX_ACTIONS; i++)
 	{
 		if(playersMask[i >> 5] & (1 << (i & 31)))
 		{

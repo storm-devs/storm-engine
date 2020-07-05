@@ -79,7 +79,7 @@ TSplash::~TSplash()
 }
 
 //--------------------------------------------------------------------
-void TSplash::Initialize(INIFILE * _ini, IDirect3DDevice8 *_device, SEA_BASE *_sea, VDX8RENDER *_renderer)
+void TSplash::Initialize(INIFILE * _ini, IDirect3DDevice9 *_device, SEA_BASE *_sea, VDX8RENDER *_renderer)
 {
 	ambientColor = 0;
 	sea = _sea;
@@ -94,10 +94,10 @@ void TSplash::Initialize(INIFILE * _ini, IDirect3DDevice8 *_device, SEA_BASE *_s
 		iBuffer2 = NEW WORD[VPLANES_COUNT*6];
 		vBuffer2 = NEW GRID_VERTEX[VPLANES_COUNT*4];
 		*/
-		iBuffer = renderer->CreateIndexBuffer(MAX_SPLASHES*TRIANGLES_COUNT*3*sizeof(WORD), D3DUSAGE_WRITEONLY);
-		vBuffer = renderer->CreateVertexBuffer(GRID_FVF, MAX_SPLASHES*GRID_STEPS*GRID_STEPS*sizeof(GRID_VERTEX), D3DUSAGE_WRITEONLY);
-		iBuffer2 = renderer->CreateIndexBuffer(MAX_SPLASHES*VPLANES_COUNT*6*sizeof(WORD), D3DUSAGE_WRITEONLY);
-		vBuffer2 = renderer->CreateVertexBuffer(GRID_FVF2, MAX_SPLASHES*VPLANES_COUNT*4*sizeof(GRID_VERTEX2), D3DUSAGE_WRITEONLY);
+		iBuffer = renderer->CreateIndexBufferManaged(MAX_SPLASHES*TRIANGLES_COUNT*3*sizeof(WORD), D3DUSAGE_WRITEONLY);
+		vBuffer = renderer->CreateVertexBufferManaged(GRID_FVF, MAX_SPLASHES*GRID_STEPS*GRID_STEPS*sizeof(GRID_VERTEX), D3DUSAGE_WRITEONLY);
+		iBuffer2 = renderer->CreateIndexBufferManaged(MAX_SPLASHES*VPLANES_COUNT*6*sizeof(WORD), D3DUSAGE_WRITEONLY);
+		vBuffer2 = renderer->CreateVertexBufferManaged(GRID_FVF2, MAX_SPLASHES*VPLANES_COUNT*4*sizeof(GRID_VERTEX2), D3DUSAGE_WRITEONLY);
 
 		texture = renderer->TextureCreate("explos.tga");
 		texture2 = renderer->TextureCreate("splash.tga");
@@ -124,7 +124,7 @@ void TSplash::Initialize(INIFILE * _ini, IDirect3DDevice8 *_device, SEA_BASE *_s
 		// INDEXES 2
 		startIndex = 0;
 		indexes = /*iBuffer2*/(WORD *) renderer->LockIndexBuffer(iBuffer2); 
-		for (i=0; i<MAX_SPLASHES; i++, startIndex += VPLANES_COUNT*4)
+		for (int i=0; i<MAX_SPLASHES; i++, startIndex += VPLANES_COUNT*4)
 		for (int j=0; j<VPLANES_COUNT; j++)
 		{
 			

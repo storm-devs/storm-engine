@@ -6,7 +6,7 @@
 INTERFACE_FUNCTION
 CREATE_CLASS(MODELR)
 
-IDirect3DVertexBuffer8 *dest_vb;
+IDirect3DVertexBuffer9 *dest_vb;
 
 MODELR::MODELR()
 {
@@ -61,7 +61,7 @@ void *VBTransform(void *vb, long startVrt, long nVerts, long totVerts)
 
 	GEOS::VERTEX0 *dst;
 #ifndef _XBOX
-	dest_vb->Lock(0, 0, (unsigned char**)&dst, D3DLOCK_DISCARD|D3DLOCK_NOSYSLOCK);
+	dest_vb->Lock(0, 0, (void **)&dst, D3DLOCK_DISCARD|D3DLOCK_NOSYSLOCK);
 #else
 	dest_vb->Lock(0, 0, (unsigned char**)&dst, 0);
 #endif
@@ -273,9 +273,10 @@ void MODELR::Realize(dword Delta_Time)
 				VGEOMETRY::ANIMATION_VB gavb = GeometyService->GetAnimationVBDesc(avb);
 				nAniVerts += gavb.nvertices;
 			}
-
 			long fvf = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE  | D3DFVF_TEXTUREFORMAT2| D3DFVF_TEX1;
 			rs->CreateVertexBuffer(sizeof(GEOS::VERTEX0)*nAniVerts, D3DUSAGE_WRITEONLY|D3DUSAGE_DYNAMIC, fvf, D3DPOOL_DEFAULT, &d3dDestVB);
+			
+//			_CORE_API->Trace("nAniVerts : %d", sizeof(GEOS::VERTEX0)*nAniVerts);
 		}
 		dest_vb = d3dDestVB;
 
@@ -541,7 +542,7 @@ bool MODELR::GetCollideTriangle(TRIANGLE &triangle)
 }
 
 //-------------------------------------------------------------------
-CVECTOR cold[8192];
+CVECTOR cold[16384];
 float MODELR::Trace(const CVECTOR &src, const CVECTOR &dst)
 {
 	//collision with skinned geometry
@@ -592,7 +593,7 @@ float MODELR::Trace(const CVECTOR &src, const CVECTOR &dst)
 			}
 
 			idxBuff = NEW unsigned short[nt*3];
-			for(vb=0; vb<gi.nvrtbuffs; vb++)
+			for(long vb=0; vb<gi.nvrtbuffs; vb++)
 			{
 				long avb = root->geo->GetVertexBuffer(vb);
 				VGEOMETRY::ANIMATION_VB gavb = GeometyService->GetAnimationVBDesc(avb);
@@ -745,7 +746,7 @@ void MODELR::FindPlanes(const CMatrix &view, const CMatrix &proj)
 
 void MODELR::LostRender()
 {
-	rs->Release(d3dDestVB);
+	if(d3dDestVB!=0)	d3dDestVB->Release();
 }
 
 void MODELR::RestoreRender()

@@ -1,15 +1,9 @@
 #ifndef _MEMPOOL_H_
 #define _MEMPOOL_H_
 
-#ifndef _XBOX
-	#include <windows.h>
-#else
-	#include <xtl.h>
-#endif
+#include <windows.h>
 
-//#include "..\..\common_h\memop.h"
-
-#define POOLHEADERSIZE	0//1
+#define POOLHEADERSIZE	0
 
 class BITLEVEL
 {

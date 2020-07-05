@@ -18,7 +18,7 @@ TSink::~TSink()
 }
 
 //--------------------------------------------------------------------
-void TSink::Initialize(INIFILE * _ini, IDirect3DDevice8 *_device, SEA_BASE *_sea, VDX8RENDER *_renderer)
+void TSink::Initialize(INIFILE * _ini, IDirect3DDevice9 *_device, SEA_BASE *_sea, VDX8RENDER *_renderer)
 {
 	sea = _sea;
 	renderer = _renderer;
@@ -36,7 +36,7 @@ void TSink::Initialize(INIFILE * _ini, IDirect3DDevice8 *_device, SEA_BASE *_sea
 		ivIndexes[i] = -1;
 	}
 
-	for (i=0; i<MAX_FLOTSAMS; ++i)
+	for (int i=0; i<MAX_FLOTSAMS; ++i)
 	{
 		flotsams[i].Initialize(sea);
 	}
@@ -74,7 +74,7 @@ void TSink::Start(const CVECTOR &_pos, float _radius)
 		//ivIndexes[i] = -1;
 	}
 
-	for (i = 0; i < MAX_FLOTSAMS; i++)
+	for (int i = 0; i < MAX_FLOTSAMS; i++)
 	{
 		flotsamTimes[i] = (long) rand(SINK_TIME);
 	}
@@ -147,7 +147,7 @@ void TSink::Process(dword _dTime)
 	}
 	ivManager->UnlockBuffers();
 
-	for (i = 0; i < MAX_FLOTSAMS; i++)
+	for (int i = 0; i < MAX_FLOTSAMS; i++)
 	{
 		if (flotsamTimes[i] > 0)
 			flotsamTimes[i] -= _dTime;
@@ -186,7 +186,7 @@ void TSink::Realize(dword _dTime)
 			splashes[i].AdditionalRealize(_dTime);
 	}
 
-	for (i = 0; i < MAX_FLOTSAMS; i++)
+	for (int i = 0; i < MAX_FLOTSAMS; i++)
 	{
 		if (flotsams[i].Enabled())
 			flotsams[i].Realize(_dTime);

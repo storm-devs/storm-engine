@@ -399,7 +399,7 @@ void Grass::Realize(dword delta_time)
 	//Параметры источника освещения
 	BOOL isLight = FALSE;
 	rs->GetLightEnable(0, &isLight);
-	D3DLIGHT8 light;
+	D3DLIGHT9 light;
 	if(isLight && rs->GetLight(0, &light))
 	{
 		//Установленный источник
@@ -483,7 +483,7 @@ void Grass::Realize(dword delta_time)
 	PLANE * pln = rs->GetPlanes();	
 	PLANE plane[5];
 	plane[0].Nx = plane[0].Ny = plane[0].Nz = 0.0f;
-	for(i = 0; i < 4; i++)
+	for(long i = 0; i < 4; i++)
 	{
 		plane[i + 1] = pln[i];
 		plane[0].Nx += pln[i].Nx;
@@ -522,8 +522,8 @@ void Grass::Realize(dword delta_time)
 	//Готовим блоки для рендера
 	numPoints = 0;
 	rs->SetTransform(D3DTS_WORLD, CMatrix());
-
-	for(long mx = left, mz; mx <= camx; mx++)
+	long mz, mx;
+	for(mx = left, mz; mx <= camx; mx++)
 	{
 		for(mz = top; mz <= camz; mz++) RenderBlock(pos, plane, numPlanes, mx, mz);
 		for(mz = bottom; mz > camz; mz--) RenderBlock(pos, plane, numPlanes, mx, mz);
@@ -538,7 +538,7 @@ void Grass::Realize(dword delta_time)
 
 	rs->SetRenderState(D3DRS_FOGDENSITY, dwOldFogDensity);
 
-	for(i = 0; i < numCharacters; i++)
+	for(long i = 0; i < numCharacters; i++)
 	{
 		if(characters[i].useCounter > 2)
 		{

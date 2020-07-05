@@ -1,0 +1,18 @@
+"InstallScript"
+{
+
+	// Install scripts on the Gold Master are only necessary for Games for Windows titles.
+	// Otherwise this file doesn't need to be shipped on the GM and the Steam client
+	// will run the install script shipped with your depots at a later point
+	
+	"Run Process"
+	{
+		"VCRedist"
+		{
+			"process 1"		"%INSTALLDIR%\\redist\\vcredist_x86.exe"
+			"command 1"		"/q:a"
+			"Description"	"Microsoft VC Redist Package"
+			"NoCleanUp"		"1"
+		}
+	}
+}

@@ -8,6 +8,7 @@ Comments:
 Import library main file
 ******************************************************************************/
 #include <stdio.h>
+#include "..\common_h\vmodule_api.h"
 #include "geom.h"
 #include "..\\common_h\\memop.h"
 
@@ -119,7 +120,7 @@ GEOM::GEOM(const char *fname, const char *lightname, GEOM_SERVICE &_srv, long fl
 	srv.free(obj);
 
 	//read triangles
-	idx_buff = srv.CreateIndexBuffer(rhead.ntriangles*sizeof RDF_TRIANGLE);
+	idx_buff = srv.CreateIndexBuffer(rhead.ntriangles*sizeof(RDF_TRIANGLE));
 	RDF_TRIANGLE *trg = (RDF_TRIANGLE*)srv.LockIndexBuffer(idx_buff);
 	srv.ReadFile(file, trg, sizeof RDF_TRIANGLE * rhead.ntriangles);
 	srv.UnlockIndexBuffer(idx_buff);
@@ -127,8 +128,8 @@ GEOM::GEOM(const char *fname, const char *lightname, GEOM_SERVICE &_srv, long fl
 	int nvertices = 0;
 	//read vertex buffers
 	RDF_VERTEXBUFF *rvb = (RDF_VERTEXBUFF*)srv.malloc(rhead.nvrtbuffs*sizeof RDF_VERTEXBUFF);
-	srv.ReadFile(file, rvb, rhead.nvrtbuffs*sizeof RDF_VERTEXBUFF);
-	vbuff = (VERTEX_BUFFER*)srv.malloc(rhead.nvrtbuffs*sizeof VERTEX_BUFFER);
+	srv.ReadFile(file, rvb, rhead.nvrtbuffs*sizeof(RDF_VERTEXBUFF));
+	vbuff = (VERTEX_BUFFER*)srv.malloc(rhead.nvrtbuffs*sizeof(VERTEX_BUFFER));
 	for(long v=0; v<rhead.nvrtbuffs; v++)
 	{
 		vbuff[v].type = rvb[v].type;
@@ -146,7 +147,7 @@ GEOM::GEOM(const char *fname, const char *lightname, GEOM_SERVICE &_srv, long fl
 		srv.free(colData);
 		lightname=NULL;
 	}
-	for(v=0; v<rhead.nvrtbuffs; v++)
+	for(long v=0; v<rhead.nvrtbuffs; v++)
 	{
 		RDF_VERTEX0 *vrt = (RDF_VERTEX0*)srv.LockVertexBuffer(vbuff[v].dev_buff);
 		srv.ReadFile(file, vrt, vbuff[v].size);
@@ -165,6 +166,10 @@ GEOM::GEOM(const char *fname, const char *lightname, GEOM_SERVICE &_srv, long fl
 	if(rhead.flags & FLAGS_BSP_PRESENT)
 	{
 		RDF_BSPHEAD bhead;
+		bhead.nnodes  		= 0;
+		bhead.nvertices 	= 0;
+		bhead.ntriangles 	= 0;
+		
 		srv.ReadFile(file, &bhead, sizeof(RDF_BSPHEAD));
 
 		sroot = (BSP_NODE*)srv.malloc(bhead.nnodes*sizeof(BSP_NODE));
@@ -175,7 +180,6 @@ GEOM::GEOM(const char *fname, const char *lightname, GEOM_SERVICE &_srv, long fl
 
 		btrg = (RDF_BSPTRIANGLE*)srv.malloc(bhead.ntriangles*sizeof(RDF_BSPTRIANGLE));
 		srv.ReadFile(file, btrg, bhead.ntriangles*sizeof(RDF_BSPTRIANGLE));
-
 	}
 
 	srv.CloseFile(file);
@@ -244,7 +248,8 @@ void GEOM::Draw(const PLANE *pl, long np, MATERIAL_FUNC mtf) const
 	{
 		if(!(object[o].flags&VISIBLE))	continue;
 		//clip by external planes
-		for(long cp=0; cp<np; cp++)
+		long cp = 0;
+		for(cp=0; cp<np; cp++)
 		{
 			float dist = object[o].center.x*pl[cp].nrm.x + object[o].center.y*pl[cp].nrm.y + object[o].center.z*pl[cp].nrm.z - pl[cp].d;
 			if(dist>object[o].radius)	break;

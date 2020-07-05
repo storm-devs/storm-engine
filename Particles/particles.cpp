@@ -182,7 +182,7 @@ void PARTICLES::Realize(dword Delta_Time)
 	RenderService->SetTransform(D3DTS_VIEW, IMatrix);
 	RenderService->SetTransform(D3DTS_WORLD, IMatrix);
 
-	RenderService->SetVertexShader(PARTICLE_FVF);
+	RenderService->SetFVF(PARTICLE_FVF);
 
 	psStart = ps = Root;
 	while (psStart) 

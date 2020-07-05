@@ -285,7 +285,7 @@ void AIShipTouchController::Save(CSaveLoad * pSL)
 	pSL->SaveFloat(fRaySize);
 	pSL->SaveFloat(fSpeedFactor);
 	pSL->SaveFloat(fRotateFactor);
-	for (i=0; i<5; i++) pSL->SaveVector(vBox[i]);
+	for (dword i=0; i<5; i++) pSL->SaveVector(vBox[i]);
 }
 
 void AIShipTouchController::Load(CSaveLoad * pSL)
@@ -303,5 +303,5 @@ void AIShipTouchController::Load(CSaveLoad * pSL)
 	fRaySize = pSL->LoadFloat();
 	fSpeedFactor = pSL->LoadFloat();
 	fRotateFactor = pSL->LoadFloat();
-	for (i=0; i<5; i++) vBox[i] = pSL->LoadVector();
+	for (dword i=0; i<5; i++) vBox[i] = pSL->LoadVector();
 }

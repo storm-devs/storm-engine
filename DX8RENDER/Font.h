@@ -46,8 +46,8 @@ class FONT
 {
 	VAPI * api;
 	VDX8RENDER * RenderService;
-	IDirect3DDevice8 * Device;
-	IDirect3DVertexBuffer8 * VBuffer;
+	IDirect3DDevice9 * Device;
+	IDirect3DVertexBuffer9 * VBuffer;
     char *techniqueName;
     char *textureName;
 	long  TextureID;
@@ -73,7 +73,7 @@ class FONT
 public:
 	FONT();
 	~FONT();
-	bool Init(char * font_name, char * iniName, IDirect3DDevice8 * _device, VDX8RENDER * _render);
+	bool Init(char * font_name, char * iniName, IDirect3DDevice9 * _device, VDX8RENDER * _render);
     void TempUnload();
     void RepeatInit();
 	void Realize(DWORD DeltaTime);

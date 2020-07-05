@@ -1,0 +1,23 @@
+block ship_reflect()
+{
+	technique t0
+	{
+		pass p0
+		{
+			LocalViewer = false;
+			Ambient = 0x0;
+//			TextureTransformFlags[1] = count3;
+			Lighting = false;
+			ColorOp[1] = add;
+			ColorArg1[1] = texture;
+			ColorArg2[1] = current;
+
+			TexCoordIndex[1] = CameraSpaceNormal;
+
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}
+

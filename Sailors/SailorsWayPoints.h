@@ -5,7 +5,7 @@
 #include "..\common_h\matrix.h"
 
 
-//#include "d3dx8math.h"
+//#include "d3dx9math.h"
 
 const int MAX_POINTS= 100;
 

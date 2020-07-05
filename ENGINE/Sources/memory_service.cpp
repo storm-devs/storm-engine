@@ -7,20 +7,16 @@ extern VAPI * api;
 
 #define CONST_CHECKSUM		0xabcdef00
 #define DBGMEMLINK			0x1b0cdf0
-#ifdef _XBOX
-//#define NOMEMHEADER		
-#endif
+
 extern dword Exceptions_Mask;
 extern CODESOURCE CodeSource;
 
-//#define NOMEMHEADER
-
 #define SBPOOL
+//#define NOMEMHEADER
 
 MEMORY_SERVICE::MEMORY_SERVICE()
 {
 	for(DWORD n=0;n<SBCNUM;n++) SBCounter[n] = 0;
-//	ZeroMemory(&Exe_state,sizeof(Exe_state));
 	Allocated_memory_user	= 0;
 	Allocated_memory_system	= 0;
 	Blocks = 0;
@@ -43,15 +39,11 @@ MEMORY_SERVICE::MEMORY_SERVICE()
 MEMORY_SERVICE::~MEMORY_SERVICE()
 {
 	GlobalFree();
-	
-	//if(bCollectInfo) MemStat.Report();
 }
 
 // current execute state, help to identify who allocate memory
 void MEMORY_SERVICE::SetState(word control_transfer_point, dword class_code)
 {
-//	Exe_state.ctp			= control_transfer_point;
-//	Exe_state.class_code	= class_code;
 }
 
 void * MEMORY_SERVICE::PoolAllocate(long size)
@@ -72,13 +64,12 @@ void * MEMORY_SERVICE::PoolAllocate(long size)
 			}
 		}
 	}
-	return 0;//Allocate(size);
+	return 0;
 }
 
 void * MEMORY_SERVICE::Allocate(long size)
 {
 	char * data_PTR;
-
 
 #ifdef SBPOOL
 	if(bPoolOn)
@@ -97,16 +88,11 @@ void * MEMORY_SERVICE::Allocate(long size)
 	if(size == 0) return null;
 	data_PTR = (char *)malloc(sizeof(MEM_BLOCK) + size);
 	
-/*	if((DWORD)data_PTR == 0x01927648)
-	{
-		data_PTR = data_PTR;
-	}
-*/
 	if(data_PTR == null) 
 	{
 		if(Exceptions_Mask & _X_NO_MEM) _THROW(_X_NO_MEM);
 		return null;
-	}
+	}	
 	
 	if(size < SBCNUM) SBCounter[size]++;
 	
@@ -116,23 +102,15 @@ void * MEMORY_SERVICE::Allocate(long size)
 
 	mb_PTR = (MEM_BLOCK *)data_PTR;
 	mb_PTR->data_size	= size;
-//	mb_PTR->state		= Exe_state;
-//	mb_PTR->reference	= 1;
-//	mb_PTR->sb2 = 0xff;
 
-//	mb_PTR->cs = CodeSource;
-//#ifdef DEBUGCLASSES
 	mb_PTR->address = cMemAddress.GetAddress(CodeSource.pFileName,CodeSource.line);
-//#endif
+
 	mb_PTR->link_L = (char *)Mem_link;
 	mb_PTR->link_R = null;
 	
-//	mb_PTR->check_sum = CONST_CHECKSUM;
-
 	if(Mem_link) Mem_link->link_R = (char *)mb_PTR;
 	Mem_link = mb_PTR;
 
-	
 	Allocated_memory_user	+= size;
 	Allocated_memory_system	+= sizeof(MEM_BLOCK);
 	Blocks++;
@@ -149,7 +127,7 @@ void * MEMORY_SERVICE::Allocate(long size)
 	if((dword)result == DBGMEMLINK)// - 0xff && (dword)DBGMEMLINK <= 0x11bb4b30 + 0xff)// + sizeof(MEM_BLOCK))
 	{
 		result = result;
-	}//*/
+	}
 
 	return 	(void *)((char *)Mem_link + sizeof(MEM_BLOCK));
 }
@@ -160,13 +138,13 @@ DWORD MEMORY_SERVICE::PoolFind(void * block_PTR)
 	for(n=0;n<nMPoolClassesNum;n++)
 	{
 		if(pMPool[n] == 0) continue;
-		if(pMPool[n]->IsInPool(block_PTR)) return pMPool[n]->GetBlockSize();
-		
+		if(pMPool[n]->IsInPool(block_PTR)) return pMPool[n]->GetBlockSize();		
 	}
 	return 0xffffffff;
 }
 
-bool MEMORY_SERVICE::PoolFree(void * block_PTR, DWORD nBlockSize)
+//bool MEMORY_SERVICE::PoolFree(void * block_PTR, DWORD nBlockSize)
+long MEMORY_SERVICE::PoolFree(void * block_PTR, DWORD nBlockSize)
 {
 	DWORD n;
 	if(nBlockSize != 0xffffffff)
@@ -204,8 +182,6 @@ bool MEMORY_SERVICE::PoolFree(void * block_PTR, DWORD nBlockSize)
 
 void MEMORY_SERVICE::Free(void * block_PTR)
 {
-	
-	//GUARD(MEMORY_SERVICE::Free)
 	MEM_BLOCK * mb_PTR;
 	MEM_BLOCK * link_L;
 	MEM_BLOCK * link_R;
@@ -218,13 +194,7 @@ void MEMORY_SERVICE::Free(void * block_PTR)
 #ifdef 	NOMEMHEADER
 	if(block_PTR)
 	{
-	
 			free(block_PTR);
-	/*	}
-		catch(...)
-		{
-			trace("ERROR: FREE() Invalid pointer");
-		}*/
 	}
 	return;
 #endif
@@ -233,7 +203,6 @@ void MEMORY_SERVICE::Free(void * block_PTR)
 	
 	if(block_PTR == 0) 
 	{
-		//trace("Attempt to Free() null pointer"); 
 		return;
 	}
 
@@ -243,15 +212,12 @@ void MEMORY_SERVICE::Free(void * block_PTR)
 
 	if(bCollectInfo) 
 	{
-//#ifdef DEBUGCLASSES
 		DWORD dwLine;
 		char * pFileName;
 
 		pFileName = cMemAddress.GetSource(mb_PTR->address,&dwLine);
 
-		//MemStat.Free(mb_PTR->cs.pFileName,mb_PTR->cs.line,mb_PTR->data_size);
 		MemStat.Free(pFileName,dwLine,mb_PTR->data_size);
-//#endif
 	}
 	
 	link_L = (MEM_BLOCK *)mb_PTR->link_L;
@@ -261,8 +227,6 @@ void MEMORY_SERVICE::Free(void * block_PTR)
 	if(link_R) link_R->link_L = (char *)link_L;
 	
 	if(Mem_link == mb_PTR) Mem_link = link_L;
-
-	
 
 	if(mb_PTR->data_size < SBCNUM) 
 	if(SBCounter[mb_PTR->data_size])
@@ -278,13 +242,10 @@ void MEMORY_SERVICE::Free(void * block_PTR)
 
 	dwTotalMemory = Allocated_memory_system + Allocated_memory_user;
 	dwTotalBlocks = Blocks;
-	
-	//UNGUARD
 }
 
 void * MEMORY_SERVICE::Reallocate(void * block_PTR,long size)
 {
-	//GUARD(MEMORY_SERVICE::Reallocate)
 	long data_size;
 	long size_diff;
 	MEM_BLOCK * old_mb_PTR;
@@ -329,7 +290,6 @@ void * MEMORY_SERVICE::Reallocate(void * block_PTR,long size)
 	return realloc(block_PTR,size);
 #endif
 
-	
 	data_PTR = (char *)((dword)block_PTR - sizeof(MEM_BLOCK));
 	mb_PTR = (MEM_BLOCK *)data_PTR;
 	data_size = mb_PTR->data_size;
@@ -338,15 +298,11 @@ void * MEMORY_SERVICE::Reallocate(void * block_PTR,long size)
 
 	if(bCollectInfo) 
 	{
-		//MemStat.Resize(CodeSource.pFileName,CodeSource.line,size,
-		//	mb_PTR->cs.pFileName,mb_PTR->cs.line,mb_PTR->data_size);
-//#ifdef DEBUGCLASSES
 		DWORD dwLine;
 		char * pFileName;
 		pFileName = cMemAddress.GetSource(mb_PTR->address,&dwLine);
 		MemStat.Resize(CodeSource.pFileName,CodeSource.line,size,
 		pFileName,dwLine,mb_PTR->data_size);
-//#endif
 	}
 	
 	// store information about old block
@@ -355,7 +311,6 @@ void * MEMORY_SERVICE::Reallocate(void * block_PTR,long size)
 	link_L = (MEM_BLOCK *)mb_PTR->link_L;
 	link_R = (MEM_BLOCK *)mb_PTR->link_R;
 	size_diff = size - data_size;
-
 
 	if(mb_PTR->data_size < SBCNUM) 
 	if(SBCounter[mb_PTR->data_size])
@@ -366,10 +321,6 @@ void * MEMORY_SERVICE::Reallocate(void * block_PTR,long size)
 
 	// realloc 
 	data_PTR = (char *)realloc(data_PTR,size + sizeof(MEM_BLOCK));
-	
-
-	
-
 
 	// pointer to reallocated block
 	mb_PTR = (MEM_BLOCK *)data_PTR;
@@ -408,9 +359,6 @@ void * MEMORY_SERVICE::Reallocate(void * block_PTR,long size)
 	mb_PTR->data_size = size;
 	Allocated_memory_user += size_diff;
 
-//	mb_PTR->state = Exe_state;	// update point of memory allocating
-//	mb_PTR->cs = CodeSource;
-
 	dword result;
 	result = (dword)data_PTR + sizeof(MEM_BLOCK);
 	if(Minimal_Pointer > result) Minimal_Pointer = result;
@@ -427,31 +375,28 @@ void * MEMORY_SERVICE::Reallocate(void * block_PTR,long size)
 	dwTotalBlocks = Blocks;
 
 	return (void *)((char *)data_PTR + sizeof(MEM_BLOCK));
-	//UNGUARD
 	return null;
 }
 
 
-bool MEMORY_SERVICE::ValidateBlock(void * block_PTR/*,MEM_EXE_STATE * lpBlockState*/)
+//bool MEMORY_SERVICE::ValidateBlock(void * block_PTR/*,MEM_EXE_STATE * lpBlockState*/)
+long MEMORY_SERVICE::ValidateBlock(void * block_PTR/*,MEM_EXE_STATE * lpBlockState*/)
 {
 #ifdef	NOMEMHEADER
-	return true;
+	return 1;
 #endif
 
 #ifdef SBPOOL
-	if(PoolFind(block_PTR)) return true;
+	if(PoolFind(block_PTR)) return 1;
 #endif
 
 	//return true;
 	MEM_BLOCK * mb_PTR;
 	if((dword)block_PTR < Minimal_Pointer || (dword)block_PTR > Maximal_Pointer || Blocks <= 0) return false;
-	//if(block_PTR == null || Blocks <= 0) return false;
 	mb_PTR = (MEM_BLOCK *)((char *)block_PTR - sizeof(MEM_BLOCK));
-//	if(mb_PTR->check_sum != CONST_CHECKSUM) return false;
-//	if(lpBlockState) memcpy(lpBlockState,&mb_PTR->state,sizeof(MEM_EXE_STATE));
-	return true;
-}
 
+	return 1;
+}
 
 // Free all allocated blocks : destructor or emergency situation
 void MEMORY_SERVICE::GlobalFree() 
@@ -460,7 +405,6 @@ void MEMORY_SERVICE::GlobalFree()
 	for(n=0;n<SBCNUM;n++) SBCounter[n] = 0;
 
 #ifdef SBPOOL
-
 	bPoolOn = false;
 	if(pMPool)
 	{
@@ -480,32 +424,24 @@ void MEMORY_SERVICE::GlobalFree()
 	char * pFileName;
 	BYTE * data = (BYTE *)Mem_link + sizeof(MEM_BLOCK);
 	long dataSize = 0;
+	
+//	trace("GlobalFree()");
+	
 	while(Mem_link) 
 	{
 		try 
 		{
-			
-			//trace("Leak: '%s' line %d, size %d",Mem_link->cs.pFileName,Mem_link->cs.line,Mem_link->data_size);
-//#ifdef DEBUGCLASSES
 			pFileName = cMemAddress.GetSource(Mem_link->address,&dwLine);
 			trace("Leak: '%s' line %d, size %d",pFileName,dwLine,Mem_link->data_size);
-//#endif
 		}
 		catch(...)
 		{
-				dataSize = Mem_link->data_size;
+			dataSize = Mem_link->data_size;
 			if(dataSize > 64) dataSize = 64;
 			try
-			{
-
-				//trace("Leak: 'unknown' line %d, size %d, data:",Mem_link->cs.line,Mem_link->data_size);
-//#ifdef DEBUGCLASSES
+			{		
 				pFileName = cMemAddress.GetSource(Mem_link->address,&dwLine);
 				trace("Leak: '%s' line %d, size %d",pFileName,dwLine,Mem_link->data_size);
-//#else
-//				trace("Leak: file ? line ?, size %d",pFileName,dwLine,Mem_link->data_size);
-//#endif
-
 
 				char buf[512];
 				buf[0] = 0;
@@ -523,7 +459,6 @@ void MEMORY_SERVICE::GlobalFree()
 				if(buf[0]) trace("       %s", buf);
 			}catch(...)
 			{
-				//trace("Leak: 'unknown' line %d, size %d, invalide data pointer: 0x%x",Mem_link->cs.line,Mem_link->data_size, data);
 				trace("Leak: 'unknown' , size %d, invalide data pointer: 0x%x",Mem_link->data_size, data);
 			}
 			
@@ -533,7 +468,6 @@ void MEMORY_SERVICE::GlobalFree()
 	}
 	Minimal_Pointer = null;
 	Maximal_Pointer = null;
-	
 }
 
 dword MEMORY_SERVICE::GetBlockSize(void * block_PTR)
@@ -545,8 +479,6 @@ dword MEMORY_SERVICE::GetBlockSize(void * block_PTR)
 
 	MEM_BLOCK * mb_PTR;
 	if((dword)block_PTR < Minimal_Pointer || (dword)block_PTR > Maximal_Pointer || Blocks <= 0) throw "MEMORY_SERVICE::GetBlockSize : Invalid pointer";
-	//if(block_PTR == null) return 0;	// throw ->
-	//if(Blocks <= 0) return 0; // throw ->
 
 	mb_PTR = (MEM_BLOCK *)((char *)block_PTR - sizeof(MEM_BLOCK));
 	return mb_PTR->data_size;
@@ -578,11 +510,10 @@ void * MEMORY_SERVICE::GetNextPointer()
 
 }
 
-bool MEMORY_SERVICE::GetPointerState(void * block_PTR/*,MEM_EXE_STATE * lpBlockState*/)
+//bool MEMORY_SERVICE::GetPointerState(void * block_PTR/*,MEM_EXE_STATE * lpBlockState*/)
+long MEMORY_SERVICE::GetPointerState(void * block_PTR/*,MEM_EXE_STATE * lpBlockState*/)
 {
-	return false;
-	//if(lpBlockState == null) return false;
-//	return ValidateBlock(block_PTR,lpBlockState);
+	return 0;
 }
 
 void MEMORY_SERVICE::ProcessMemProfile(char * pFileName)
@@ -611,12 +542,8 @@ void MEMORY_SERVICE::ProcessMemProfile(char * pFileName)
 		return;
 	}
 	
-	
-
 	pTempMPool = (MEMPOOL * *)new char[nMPoolClassesNum * sizeof(MEMPOOL *)];
 	
-	//trace("A: %d",nMPoolClassesNum);
-
 	for(n=0;n<nMPoolClassesNum;n++)
 	{
 		api->fio->_ReadFile(fh,&nProfileValue,sizeof(DWORD),&dwR);
@@ -626,7 +553,6 @@ void MEMORY_SERVICE::ProcessMemProfile(char * pFileName)
 			if(pTempMPool) delete pTempMPool;
 			return;
 		}
-		//trace("B: %d",nProfileValue);
 		if(n == 0)
 		{
 			pTempMPool[n] = 0;
@@ -638,9 +564,6 @@ void MEMORY_SERVICE::ProcessMemProfile(char * pFileName)
 			continue;
 		}
 		pTempMPool[n] = new MEMPOOL(n,nProfileValue);
-
-		//trace("C: %d",pTempMPool[n]);
-
 	}
 	api->fio->_CloseHandle(fh);
 
@@ -656,18 +579,12 @@ char * MEMORY_SERVICE::GetFileName(void * pMemory)
 		return "unknown";
 #else
 	MEM_BLOCK * mb_PTR;
-	#ifdef SBPOOL
-		if(PoolFind(pMemory)) return "unknown";
-	#endif
+#ifdef SBPOOL
+	if(PoolFind(pMemory)) return "unknown";
+#endif
 	mb_PTR = (MEM_BLOCK *)((char *)pMemory - sizeof(MEM_BLOCK));
 
-	//#ifdef DEBUGCLASSES	
-		return cMemAddress.GetSource(mb_PTR->address,0);
-	//#endif
-
-	return "unknown";
-	//return mb_PTR->cs.pFileName;
-
+	return cMemAddress.GetSource(mb_PTR->address,0);
 #endif
 }
 
@@ -677,23 +594,19 @@ dword MEMORY_SERVICE::GetFileLineCode(void * pMemory)
 		return 0;
 #else
 	MEM_BLOCK * mb_PTR;
-	#ifdef SBPOOL
+#ifdef SBPOOL
 		if(PoolFind(pMemory)) return 0;
-	#endif
+#endif
 	mb_PTR = (MEM_BLOCK *)((char *)pMemory - sizeof(MEM_BLOCK));
-	//#ifdef DEBUGCLASSES	
-		DWORD dwLine;
-		if(cMemAddress.GetSource(mb_PTR->address,&dwLine))
-		{
-			return dwLine;
-		}
-	//#endif
-	return 0;
-	//return mb_PTR->cs.line;
 
+	DWORD dwLine;
+	if(cMemAddress.GetSource(mb_PTR->address,&dwLine))
+	{
+		return dwLine;
+	}
+	return 0;
 #endif
 }
-
 
 void MEMORY_SERVICE::DumpMemoryState()
 {
@@ -733,14 +646,11 @@ void MEMORY_SERVICE::DumpMemoryState()
 			dwTotalPoolUsedMem/1024.f,dwTotalPoolMem/1024.f);
 	
 		if(dwTotalPoolMem) trace("     : usage %.2f%%   missed %d",dwTotalPoolUsedMem*100.f/dwTotalPoolMem,dwTotalMissed);
-
-
 	}
 #endif
 
 	DWORD dwMemoryTotal;
 	DWORD dwBlocksTotal;
-//	MEM_BLOCK TopList[TOP_NUM];
 
 	MEM_BLOCK * pM;
 	pM = Mem_link;
@@ -790,4 +700,5 @@ void MEMORY_SERVICE::DumpMemoryState()
 	trace("TotalMemory Used: %.3f kb",(dwMemoryTotal + dwBlocksTotal*sizeof(MEM_BLOCK))/1024.f);
 
 	trace("[---- mem state end ----]");//*/
+//#endif	
 }

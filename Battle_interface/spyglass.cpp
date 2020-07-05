@@ -162,9 +162,9 @@ bool ISPYGLASS::SetParameters()
 	else m_idNationsTex = -1;
 
 	// Создадим буферы
-	m_idVBuf = rs->CreateVertexBuffer(ISG_VERTEX_FORMAT,4*(1+1+6) * sizeof(ISG_VERTEX),D3DUSAGE_WRITEONLY); // подложка, 
+	m_idVBuf = rs->CreateVertexBufferManaged(ISG_VERTEX_FORMAT,4*(1+1+6) * sizeof(ISG_VERTEX),D3DUSAGE_WRITEONLY); // подложка, 
 	m_nPrimitiveQuantity = 5;
-	m_idIBuf = rs->CreateIndexBuffer(8 * 6*2); // хотя одновременно рисуется не 8, а только два прямоугольника
+	m_idIBuf = rs->CreateIndexBufferManaged(8 * 6*2); // хотя одновременно рисуется не 8, а только два прямоугольника
 	if(m_idVBuf==-1 || m_idIBuf==-1)
 	{
 		api->Trace("Can`t create vertex or index buffers.");

@@ -485,7 +485,7 @@ bool CSteamDLC::isDLCInstalled( long nDLC )
 		return false;
 	}
 
-	m_bInitialized = (SteamApps()->BIsSubscribedApp(nDLC) && SteamApps()->BIsDlcInstalled(nDLC) );
+	m_bInitialized = (SteamApps()->BIsSubscribedApp(nDLC) && SteamApps()->BIsDlcInstalled(nDLC) );	
 	trace("isDLCActive %d", m_bInitialized );
 	
 	return m_bInitialized;

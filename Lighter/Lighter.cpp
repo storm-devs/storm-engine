@@ -116,7 +116,7 @@ void Lighter::PreparingData()
 	{
 		BOOL isLight = FALSE;
 		rs->GetLightEnable(0, &isLight);
-		D3DLIGHT8 lit;
+		D3DLIGHT9 lit;
 		if(isLight && rs->GetLight(0, &lit))
 		{
 			CVECTOR clr, dir = !CVECTOR(1.0f, 1.0f, 1.0f);

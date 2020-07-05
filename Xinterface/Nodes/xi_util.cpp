@@ -188,7 +188,7 @@ long CXI_UTILS::StringGetTokenCode( const char* pcTokenID )
 	return InterfaceToken_unknown;
 }
 
-DWORD CXI_UTILS::StringGetColor( const char* pcARGBString )
+DWORD CXI_UTILS::StringGetColor( char* pcARGBString )
 {
 	long nA = StringGetLong( pcARGBString );
 	long nR = StringGetLong( pcARGBString );
@@ -209,13 +209,13 @@ void CXI_UTILS::StringDoublicate( const char* pcSrc, char*& pcDst )
 	}
 }
 
-void CXI_UTILS::StringTwoLong( const char* pcString, long & nLong1, long & nLong2 )
+void CXI_UTILS::StringTwoLong( char* pcString, long & nLong1, long & nLong2 )
 {
 	nLong1 = StringGetLong( pcString );
 	nLong2 = StringGetLong( pcString );
 }
 
-long CXI_UTILS::StringGetLong( const char*& pcString )
+long CXI_UTILS::StringGetLong( char*& pcString )
 {
 	if( !pcString ) return 0;
 	long nRetVal = 0;
@@ -231,7 +231,7 @@ long CXI_UTILS::StringGetLong( const char*& pcString )
 	return nRetVal;
 }
 
-float CXI_UTILS::StringGetFloat( const char*& pcString )
+float CXI_UTILS::StringGetFloat( char*& pcString )
 {
 	if( !pcString ) return 0.f;
 	char sTmp[128];
@@ -250,7 +250,7 @@ float CXI_UTILS::StringGetFloat( const char*& pcString )
 	return (float)atof(sTmp);
 }
 
-void CXI_UTILS::StringFourFloat( const char* pcString, float& f1, float& f2, float& f3, float& f4 )
+void CXI_UTILS::StringFourFloat( char* pcString, float& f1, float& f2, float& f3, float& f4 )
 {
 	f1 = StringGetFloat( pcString );
 	f2 = StringGetFloat( pcString );

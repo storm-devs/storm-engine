@@ -153,7 +153,7 @@ void CXI_IMAGE::LoadAccordingToString( const char * pcImageParam )
 	if( m_bThisIsColorRectangle && !bSetColor ) m_bThisIsColorRectangle = false;
 }
 
-void CXI_IMAGE::SetPointerToTexture( IDirect3DTexture8* pTex )
+void CXI_IMAGE::SetPointerToTexture( IDirect3DTexture9* pTex )
 {
 	Unload();
 	if( !pTex ) return;

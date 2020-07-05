@@ -6,17 +6,11 @@
 #include "s_debug.h"
 #include "..\..\common_h\exs.h"
 
-
-//#define REBUILD_CACHDIRRECORD_FORXBOX
-
-
 #define def_width		600
 #define def_height		400
 
-
 #include "steam_api.h"
 #pragma comment (lib, "steam_api.lib")
-
 
 HWND hMain;
 HINSTANCE hInst;
@@ -36,6 +30,7 @@ VFILE_SERVICE * fio = 0;
 bool bBackspaceExit = false;
 bool bDebugWindow = false, bAcceleration = false;
 bool bActive = true;
+bool bSteam = true;
 bool bNetActive = false;
 bool System_Hold = false;
 bool Error_Flag = false;
@@ -44,9 +39,9 @@ CONTROL_STACK Control_Stack;
 CONTROL_BLOCK Control_Block;
 SYSTEM_API System_Api;
 VSYSTEM_API * _VSYSTEM_API;
-#ifndef _XBOX
+
 S_DEBUG CDebug;
-#endif
+
 CODESOURCE CodeSource;
 
 dword Exceptions_Mask;
@@ -57,67 +52,6 @@ LRESULT CALLBACK WndProc(HWND,UINT,WPARAM,LPARAM);
 void ProcessKeys(HWND hwnd,int code,int Press);
 void EmergencyExit();
 int Alert( const char *lpCaption, const char *lpText );
-
-
-#ifdef REBUILD_CACHDIRRECORD_FORXBOX
-
-bool WriteDirs(INIFILE * ini,char * pRootName)
-{
-	char * pSubDirName = 0;
-	char * sDirName = 0;
-	char mask[] = "*.*";
-	if(!ini) return false;
-	if(!pRootName) return false;
-	if(!strcmp(pRootName, "."))	return false;
-	if(!strcmp(pRootName, ".."))	return false;
-
-	sDirName = new char[strlen(pRootName) + strlen(mask) + 2];
-	strcpy(sDirName,pRootName);
-	if(sDirName[strlen(sDirName)-1] != '\\') strcat(sDirName, "\\");
-	// write directory name
-	ini->AddString("makedir","dir",sDirName);
-	strcat(sDirName,mask);
-	
-	
-	
-	// write subdirs
-	WIN32_FIND_DATA findData;
-	HANDLE fh = FindFirstFile(sDirName, &findData);
-	if(fh == INVALID_HANDLE_VALUE) 
-	{
-		if(sDirName) delete sDirName;
-		return false;
-	}
-	
-	
-
-	do
-	{
-		if(findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) 
-		{
-			if(!strcmp(findData.cFileName, "."))	continue;
-			if(!strcmp(findData.cFileName, "..")) continue;
-
-			pSubDirName = new char[strlen(pRootName) + strlen(findData.cFileName) + 2];
-			strcpy(pSubDirName,pRootName);
-			if(pSubDirName[strlen(pSubDirName)-1] != '\\') strcat(pSubDirName, "\\");
-			strcat(pSubDirName,findData.cFileName);
-			WriteDirs(ini,pSubDirName);
-			delete pSubDirName;
-		}
-	} while(FindNextFile(fh,&findData) == TRUE);
-	/*{
-		if(findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) WriteDirs(ini,findData.cFileName);
-		
-	}*/
-
-	FindClose(fh);
-
-	if(sDirName) delete sDirName;
-	return true;
-}
-
-#endif
 
 int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,PSTR szCmdLine,int iCmdShow)
 {
@@ -130,12 +64,13 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,PSTR szCmdLine,in
 	fio = &File_Service;
 	_CORE_API->fio = &File_Service;
 	_VSYSTEM_API = &System_Api;
+/*	
 #ifdef isSteam
 	if ( SteamAPI_RestartAppIfNecessary( 223330 ) )
 	{
 		return EXIT_FAILURE;
 	}
-	
+
 	
 	if ( !SteamAPI_Init() )
 	{
@@ -148,6 +83,7 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,PSTR szCmdLine,in
 		_CORE_API->InitSteamDLC();
 	}
 #endif	
+*/
 	if(szCmdLine) 
 	{
 		if(szCmdLine[0])
@@ -175,24 +111,11 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,PSTR szCmdLine,in
 		//bAcceleration = ini->GetLong(0, "Acceleration", 0) == 1;
 		//bBackspaceExit = ini->GetLong(0, "BackSpaceExit", 0) == 1;
 		bTraceFilesOff = ini->GetLong(0,"tracefilesoff",0) == 1;
+		if(ini->GetLong(0,"Steam",1) != 0) bSteam = true;
+		else bSteam = false;
+		
+		//gdi_display.Print("isSteam %d", bSteam);
 
-#ifdef REBUILD_CACHDIRRECORD_FORXBOX
-		// rebuild directories list for xbox cache
-		char sDirName[MAX_PATH] = "";
-		ini->DeleteSection("makedir");
-		if(ini->ReadString("cache","dir",sDirName,sizeof(sDirName),""))
-		{
-			// write root dir
-			WriteDirs(ini,sDirName);
-			
-			while(ini->ReadStringNext("cache","dir",sDirName,sizeof(sDirName)))
-			{
-				WriteDirs(ini,sDirName);
-			}
-		}
-
-
-#endif
 		bFirstLaunch = ini->GetLong(0,"firstlaunch",1) != 0;
 		if( bFirstLaunch )
 			ini->WriteLong(0,"firstlaunch",0);
@@ -202,6 +125,26 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,PSTR szCmdLine,in
 	Memory_Service.CollectInfo(bValue);
 	Memory_Service.ProcessMemProfile(sMemProfileFileName);
 	
+    if(bSteam) 
+	{	
+		if ( SteamAPI_RestartAppIfNecessary( 223330 ) )
+		{
+			return EXIT_FAILURE;
+		}
+
+	
+		if ( !SteamAPI_Init() )
+		{
+			Alert( "Fatal Error", "Steam must be running to play this game (SteamAPI_Init() failed).\n" );
+			return EXIT_FAILURE;
+		}
+		else
+		{
+			_CORE_API->InitAchievements();
+			_CORE_API->InitSteamDLC();
+		}
+	}
+
 	if( bFirstLaunch )
 	{
 		char InstallLocationExe[MAX_PATH];
@@ -224,8 +167,6 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,PSTR szCmdLine,in
 	//*/
 
 	//Memory_Service.CollectInfo(true);
-
-	//_CORE_API->SetExceptions(_X_NO_MEM|_X_NO_FILE|_X_NO_FILE_READ);
 	_CORE_API->SetExceptions(_X_NO_MEM|_X_NO_FILE_READ);
 	
 	Control_Stack.Init();
@@ -313,7 +254,7 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,PSTR szCmdLine,in
 							gdi_display.Print("See log file for details");
 							Sleep(ERROR_MESSAGE_DELAY);
 						}
-
+						gdi_display.Print("Close");
 						System_Hold = true;
 						SendMessage(hwnd,WM_CLOSE,0,0L);
 					}
@@ -368,7 +309,7 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,PSTR szCmdLine,in
 #ifdef isSteeam	
 	// Shutdown the SteamAPI
 	SteamAPI_Shutdown();
-	_CORE_API->DeleteAchievements();
+	_CORE_API->DeleteAchievements();	
 	_CORE_API->DeleteSteamDLC();
 #endif	
 	Core.ReleaseBase();
@@ -376,7 +317,9 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,PSTR szCmdLine,in
     ClipCursor(0);
 	trace("System exit and cleanup:");
 	trace("Mem state: User memory: %d  MSSystem: %d  Blocks: %d",Memory_Service.Allocated_memory_user,Memory_Service.Allocated_memory_system,Memory_Service.Blocks);
-		
+	
+//	Memory_Service.DumpMemoryState();
+	
 	Memory_Service.GlobalFree();
 		
 	return msg.wParam;
@@ -409,10 +352,14 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT iMsg,WPARAM wParam,LPARAM lParam)
 			bActive = (wActive == WA_CLICKACTIVE || wActive == WA_ACTIVE);
 			Core.AppState(bActive);
 		break;
+		
+		case WM_ACTIVATEAPP: 
+//			gdi_display.Print("Activate app");
+		break;
 
 		case WM_KEYDOWN: 
 			if (bDebugWindow) ProcessKeys(hwnd,(int)wParam,0);	
-		//case WM_ACTIVATE:
+			
 		case WM_KEYUP:
 		case WM_RBUTTONUP:
 		case WM_RBUTTONDOWN:
@@ -424,8 +371,6 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT iMsg,WPARAM wParam,LPARAM lParam)
 		case WM_LBUTTONDBLCLK:
 		case WM_CHAR:
 		case WM_MOUSEMOVE:
-		//case 0x20A:
-			//if(bActive)	Core.ProcessSystemMessage(iMsg,wParam,lParam);
 			if( Core.Controls ) Core.Controls->EngineMessage(iMsg,wParam,lParam);
 		break;
 		case 0x20A:
@@ -436,17 +381,15 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT iMsg,WPARAM wParam,LPARAM lParam)
 			DestroyWindow(hwnd);
 		return 0;
 		case WM_DESTROY:
+			gdi_display.Print("DestroyWindow");
 			Core.Event("DestroyWindow", null);
 			Core.Event("ExitApplication", null);
 			CDebug.Release();
-			/*try { */Core.CleanUp();/* } catch(...) { gdi_display.Print("Cleanup exs");};*/
+			Core.CleanUp();
 			gdi_display.Release();
 			Control_Stack.Release();
 			File_Service.Close();
 			CDebug.CloseDebugWindow();
-			
-			//trace("System exit and cleanup:");
-			//trace("Mem state: User memory: %d  MSSystem: %d  Blocks: %d",Memory_Service.Allocated_memory_user,Memory_Service.Allocated_memory_system,Memory_Service.Blocks);
 			InvalidateRect(0,0,0);
 			PostQuitMessage(0);
 		break;
@@ -457,7 +400,6 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT iMsg,WPARAM wParam,LPARAM lParam)
 				Core.Send_Message(eidNET, "luu", iMsg, wParam, lParam);
 			}
 		break;
-		//return 0;
 	}
 
 	#ifndef EX_OFF

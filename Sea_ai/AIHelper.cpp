@@ -159,7 +159,7 @@ void AIHelper::Print3D(CVECTOR vPos, float dy, float fScale, char * pFormat, ...
 {
 	CMatrix			mtx, view, prj;
 	char			Buff_4k[2048];
-	D3DVIEWPORT8	vp;
+	D3DVIEWPORT9	vp;
 	MTX_PRJ_VECTOR	vrt;
 
 	pRS->GetTransform(D3DTS_VIEW, view);
@@ -194,7 +194,7 @@ void AIHelper::Save(CSaveLoad * pSL)
 	for (dword i=0; i<aCharacters.Size(); i++) pSL->SaveAPointer("character", aCharacters[i]);
 
 	pSL->SaveDword(aMainCharacters.Size());
-	for (i=0; i<aMainCharacters.Size(); i++) pSL->SaveAPointer("character", aMainCharacters[i]);
+	for (dword i=0; i<aMainCharacters.Size(); i++) pSL->SaveAPointer("character", aMainCharacters[i]);
 }
 
 void AIHelper::Load(CSaveLoad * pSL)
@@ -209,5 +209,5 @@ void AIHelper::Load(CSaveLoad * pSL)
 	for (dword i=0; i<dwNum; i++) aCharacters.Add(pSL->LoadAPointer("character"));
 
 	dwNum = pSL->LoadDword();
-	for (i=0; i<dwNum; i++) aMainCharacters.Add(pSL->LoadAPointer("character"));
+	for (dword i=0; i<dwNum; i++) aMainCharacters.Add(pSL->LoadAPointer("character"));
 }

@@ -1,0 +1,56 @@
+block Geforce3Sea()
+{
+	technique t0
+	{
+		pass p0
+		{
+			FogTableMode = none;
+			FogVertexMode = none;
+			CullMode = none;
+			ColorVertex = true;
+			SpecularEnable = false;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			SrcBlend = one;
+			DestBlend = srcalpha;
+			Lighting = false;
+			LocalViewer = false;
+			NormalizeNormals = false;
+
+			VertexShader = "SeaVS_GF3Reflect";
+			PixelShader = "SeaPS_GF3Reflect";
+
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}
+
+block Geforce3SeaSunRoad()
+{
+	technique t0
+	{
+		pass p0
+		{
+			FogEnable = false;
+			CullMode = none;
+			ColorVertex = true;
+			SpecularEnable = false;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			SrcBlend = one;
+			DestBlend = one;
+			Lighting = false;
+			LocalViewer = false;
+			NormalizeNormals = false;
+
+			VertexShader = "SeaVS_GF3Reflect";
+			PixelShader = "SeaPS_GF3ReflectSunRoad";
+
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}

@@ -76,8 +76,10 @@ void WaterRings::Realize(dword _dTime)
 		//check if ring needs to be removed
 		if (rings[i].activeTime > (FADE_IN_TIME+FADE_OUT_TIME))
 			rings[i].active = false;
-		ivManager->GetPointers(rings[i].ivIndex, (WORD **) &iPointer, (void **) &vPointer, &vOffset);
+		if(ivManager->GetPointers(rings[i].ivIndex, (WORD **) &iPointer, (void **) &vPointer, &vOffset))
+		{	
 		UpdateGrid(i, iPointer, vPointer, vOffset);
+		}	
 
 		if (rings[i].active)
 			rings[i].activeTime += _dTime;
@@ -126,14 +128,6 @@ dword _cdecl WaterRings::ProcessMessage(MESSAGE &message)
 			return 0;
 		}
 	}
-	/*
-	switch(message.Long())
-	{
-		case MSG_BLADE_SET:
-			return 0;
-		break;
-	}
-	*/
 
 	return 0;
 }

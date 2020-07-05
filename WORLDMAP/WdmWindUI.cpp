@@ -233,7 +233,7 @@ void WdmWindUI::LRender(VDX8RENDER * rs)
 	tbuf[sizeof(tbuf) - 1] = 0;
 	fw = rs->StringWidth(tbuf, font);		
 	fh = rs->CharHeight(font);
-	rs->Print(font, 0xffffffff, long(cx - fw*0.5f), long(cy + 64.0f + 20.0f- fh*0.5f), tbuf);	
+	rs->Print(font, 0xffffffff, long(cx - fw*0.5f), long(cy + 64.0f + 20.0f- fh*0.5f), tbuf);								
 
 	// национальный флаг
 	float addtu = 0.125;

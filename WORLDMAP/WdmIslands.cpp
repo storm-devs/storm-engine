@@ -91,7 +91,7 @@ WdmIslands::WdmIslands() : labelSort(_FL_, 1024),
 	}
 	//Зачитываем острова
 	string name;
-	for(i = 0; i < ginfo.nlabels; i++)
+	for(long i = 0; i < ginfo.nlabels; i++)
 	{
 		//Получаем информацию
 		baseModel->geo->GetLabel(i, label);
@@ -99,7 +99,8 @@ WdmIslands::WdmIslands() : labelSort(_FL_, 1024),
 		if(!label.name || !label.name[0]) continue;
 		if(stricmp(label.group_name, "islands") != 0) continue;		
 		//Пропускаем, если добавленна
-		for(long j = 0; j < islands; j++)
+		long j = 0;
+		for(j = 0; j < islands; j++)
 		{
 			if(islands[j].modelName == label.name) break;
 		}
@@ -506,7 +507,7 @@ void WdmIslands::LabelsRelease()
 		labelsEntry[i] = -1;
 	}	
 	//Удаляем все шрифты
-	for(i = 0; i < fonts; i++)
+	for(long i = 0; i < fonts; i++)
 	{
 		if(fonts[i].id != FONT_DEFAULT)
 		{
@@ -594,7 +595,7 @@ void WdmIslands::LRender(VDX8RENDER * rs)
 	rs->GetTransform(D3DTS_PROJECTION, prj);
 	mtx.EqMultiply(view, prj);
 	//Получим текущие размеры vp
-	static D3DVIEWPORT8 vp;
+	static D3DVIEWPORT9 vp;
 	rs->GetViewport(&vp);
 	float w = (float)vp.Width;
 	float h = (float)vp.Height;
@@ -637,7 +638,7 @@ void WdmIslands::LRender(VDX8RENDER * rs)
 	//Размещаем метки, чтобы не пересекались по порядку
 	//!!!
 	//Рисуем иконоки и пишем текст
-	for(i = 0; i < labelSort; i++)
+	for(long i = 0; i < labelSort; i++)
 	{
 		//Метка
 		Label & label = labels[labelSort[i]];
@@ -799,7 +800,8 @@ bool WdmIslands::CheckIslandArea(const char * islandName, float x, float z)
 void WdmIslands::GetNearPointToArea(const char * islandName, float & x, float & z)
 {
 	//Ищим область
-	for(long i = 0; i < islands; i++)
+	long i = 0;
+	for(i = 0; i < islands; i++)
 	{
 		if(!islands[i].area) continue;
 		if(islands[i].modelName == islandName)

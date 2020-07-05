@@ -34,7 +34,8 @@ COMMANDDESCR pCommandsList[COMMAND_QUANTITY] =
 
 int FindCommand(const char* comName)
 {
-	for(int i=0; i<COMMAND_QUANTITY; i++)
+	int i = 0;
+	for(i=0; i<COMMAND_QUANTITY; i++)
 		if( !stricmp(comName,pCommandsList[i].sName) ) break;
 	if(i==COMMAND_QUANTITY) return -1;
 	else return i;
@@ -42,7 +43,8 @@ int FindCommand(const char* comName)
 
 int FindCommand(int comID)
 {
-	for(int i=0; i<COMMAND_QUANTITY; i++)
+	int i = 0;
+	for(i=0; i<COMMAND_QUANTITY; i++)
 		if( pCommandsList[i].code==comID ) break;
 	if(i==COMMAND_QUANTITY) return -1;
 	else return i;
@@ -59,10 +61,7 @@ DWORD ColorInterpolate(DWORD sCol,DWORD dCol,float m)
 	r += int((rd-r)*m);
 	g += int((gd-g)*m);
 	b += int((bd-b)*m);
-/*	a = a>ad ? int(a-(a-ad)*m) : int(ad-(ad-a)*m);
-	r = r>rd ? int(r-(r-rd)*m) : int(rd-(rd-r)*m);
-	g = g>gd ? int(g-(g-gd)*m) : int(gd-(gd-g)*m);
-	b = b>bd ? int(b-(b-bd)*m) : int(bd-(bd-b)*m);*/
+
 	return ARGB(a,r,g,b);
 }
 
@@ -78,13 +77,4 @@ void DublicateString( char* &pDstStr, const char* pSrcStr )
 		Assert(pDstStr);
 		strcpy(pDstStr,pSrcStr);
 	}
-	/*
-	if( pSrcStr )
-	{
-		pDstStr = NEW char[strlen(pSrcStr)+1];
-		Assert(pDstStr);
-		strcpy(pDstStr,pSrcStr);
-	} else {
-  		pDstStr = 0;
-	} */
 }

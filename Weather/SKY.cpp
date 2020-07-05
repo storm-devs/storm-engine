@@ -64,11 +64,11 @@ void SKY::CreateFogSphere()
 	iNumAngles = 8;
 	iFogNumVerts = iNumAngles * iNumLevels + 1;
 	FOGVERTEX * pVerts = NEW FOGVERTEX[iFogNumVerts];
-	iFogVertsID = pRS->CreateVertexBuffer(FOGVERTEX_FORMAT,iFogNumVerts * sizeof(SKYVERTEX),D3DUSAGE_WRITEONLY);
+	iFogVertsID = pRS->CreateVertexBufferManaged(FOGVERTEX_FORMAT,iFogNumVerts * sizeof(SKYVERTEX),D3DUSAGE_WRITEONLY);
 	FOGVERTEX * pVertBuf = (FOGVERTEX*)pRS->LockVertexBuffer(iFogVertsID);
 
 	iFogNumTrgs = 3 * (iNumAngles + (iNumLevels - 1) * iNumAngles * 2);
-	iFogIndexID = pRS->CreateIndexBuffer(iFogNumTrgs * 2);
+	iFogIndexID = pRS->CreateIndexBufferManaged(iFogNumTrgs * 2);
 
 	WORD * pTrgs = (WORD*)pRS->LockIndexBuffer(iFogIndexID);
 	for (y=0; y<iNumLevels; y++)
@@ -210,8 +210,8 @@ void SKY::GenerateSky()
 		Verts[i].tu2 = Verts[i].tu;
 		Verts[i].tv2 = Verts[i].tv;
 	}
-	iSkyVertsID = pRS->CreateVertexBuffer(SKYVERTEX_FORMAT, SKY_NUM_VERTEX * sizeof(SKYVERTEX), D3DUSAGE_WRITEONLY);
-	iSkyIndexID = pRS->CreateIndexBuffer(20 * 3 * 2);
+	iSkyVertsID = pRS->CreateVertexBufferManaged(SKYVERTEX_FORMAT, SKY_NUM_VERTEX * sizeof(SKYVERTEX), D3DUSAGE_WRITEONLY);
+	iSkyIndexID = pRS->CreateIndexBufferManaged(20 * 3 * 2);
 	SKYVERTEX * pVertBuf = (SKYVERTEX*)pRS->LockVertexBuffer(iSkyVertsID);
 	if (pVertBuf) memcpy(pVertBuf, &Verts[0], sizeof(Verts));
 	pRS->UnLockVertexBuffer(iSkyVertsID);
@@ -574,8 +574,8 @@ float SKY::CalculateAlphaForSun(const CVECTOR& vSunPos, float fSunSize)
 		// ищем альфу в текстуре
 		if( nTexNum != -1 )
 		{
-			DWORD dwCol1 = GetPixelColor((IDirect3DTexture8*)pRS->GetTextureFromID(TexturesID[nTexNum]), fu,fv);
-			DWORD dwCol2 = GetPixelColor((IDirect3DTexture8*)pRS->GetTextureFromID(TexturesNextID[nTexNum]), fu,fv);
+			DWORD dwCol1 = GetPixelColor((IDirect3DTexture9*)pRS->GetTextureFromID(TexturesID[nTexNum]), fu,fv);
+			DWORD dwCol2 = GetPixelColor((IDirect3DTexture9*)pRS->GetTextureFromID(TexturesNextID[nTexNum]), fu,fv);
 
 			float fK = fTimeFactor - (long)fTimeFactor;
 			float fAlpha = (1.f-fK) * (dwCol1 >> 24) / 255.f + fK * (dwCol2 >> 24) / 255.f;
@@ -587,7 +587,7 @@ float SKY::CalculateAlphaForSun(const CVECTOR& vSunPos, float fSunSize)
 	return 1.f;
 }
 
-DWORD SKY::GetPixelColor(IDirect3DTexture8* pTex, float fu, float fv)
+DWORD SKY::GetPixelColor(IDirect3DTexture9* pTex, float fu, float fv)
 {
 	HRESULT hok;
 	DWORD dwCol = 0xFFFFFFFF;

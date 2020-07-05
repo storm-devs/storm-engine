@@ -27,7 +27,7 @@ public:
     dword _cdecl ProcessMessage(MESSAGE & message);
 
 	void SetShowVideo(bool bShowVideo) {m_bShowVideo=bShowVideo;}
-	IDirect3DTexture8 * GetCurrentVideoTexture() {return pTex;}
+	IDirect3DTexture9 * GetCurrentVideoTexture() {return pTex;}
 
 protected:
 	bool	m_bContinue;
@@ -46,8 +46,8 @@ protected:
 
 	XI_AVIVIDEO_VERTEX v[4];
 
-	IDirect3DSurface8 * pTmpRenderTarget;
-	IDirect3DTexture8 * pTex;
+	IDirect3DSurface9 * pTmpRenderTarget;
+	IDirect3DTexture9 * pTex;
 
 	void ReleaseAll();
 	bool PlayMedia(char * fileName);

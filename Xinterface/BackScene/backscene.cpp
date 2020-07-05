@@ -386,6 +386,7 @@ void InterfaceBackScene::SetCameraPosition( const char* pcLocatorName )
 	FindLocator( pcLocatorName, (CMatrix*)&mtx, &m_vCamPos, 0 );
 	Vector vAddZ;
 	mtx.GetAngles( m_vCamAng.x, m_vCamAng.y, m_vCamAng.z );
+	//api->Trace("InterfaceBackScene::set camera 02  m_vCamAng.x = %f  m_vCamAng.y = %f  m_vCamAng.z = %f",m_vCamAng.x,m_vCamAng.y,m_vCamAng.z);
 	vAddZ = mtx.MulNormal( Vector(0.f,0.f,1.f) );
 	vAddZ *= -0.1f;
 	m_vCamPos.x += vAddZ.x;
@@ -511,7 +512,8 @@ void InterfaceBackScene::CreateMenuList( long nStartIndex, ATTRIBUTES* pAMenu )
 
 void InterfaceBackScene::ChooseNextMenu()
 {
-	for( long n=m_nSelectMenuIndex+1; n<m_aMenuDescr; n++ )
+	long n = 0;
+	for( n=m_nSelectMenuIndex+1; n<m_aMenuDescr; n++ )
 		if( m_aMenuDescr[n]->bSelectable )
 			break;
 	if( n<m_aMenuDescr ) m_nSelectMenuIndex = n;
@@ -519,7 +521,8 @@ void InterfaceBackScene::ChooseNextMenu()
 
 void InterfaceBackScene::ChoosePrevMenu()
 {
-	for( long n=m_nSelectMenuIndex-1; n>=0; n-- )
+	long n = 0;
+	for( n=m_nSelectMenuIndex-1; n>=0; n-- )
 		if( m_aMenuDescr[n]->bSelectable )
 			break;
 	if( n>=0 ) m_nSelectMenuIndex = n;
@@ -664,7 +667,7 @@ void InterfaceBackScene::InitLight( ATTRIBUTES* pAParam )
 void InterfaceBackScene::SetLight()
 {
 	long nFreeLightIndex=0;
-	D3DCAPS8 d3dcaps;	m_pRS->GetDeviceCaps(&d3dcaps);
+	D3DCAPS9 d3dcaps;	m_pRS->GetDeviceCaps(&d3dcaps);
 
 	for( long n=0; n<m_aLights; n++ )
 	{
@@ -984,7 +987,8 @@ void InterfaceBackScene::DrawParticles(void * prts, long num, long size, long te
 	m_pRS->SetTransform(D3DTS_VIEW,CMatrix());
 	m_pRS->SetTransform(D3DTS_WORLD,CMatrix());
 	m_pRS->TextureSet(0, texture);
-	for(long i = 0, n = 0; i < num; i++)
+	long i = 0, n = 0;
+	for(i = 0, n = 0; i < num; i++)
 	{
 		Particle * parts = (Particle *)prts;
 		prts = (char *)prts + size;

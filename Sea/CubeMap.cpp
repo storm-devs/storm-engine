@@ -61,14 +61,14 @@ void SEA::CubeMapRestoreMatrices()
     pRS->SetTransform(D3DTS_PROJECTION, &matProjSave);
 }
 
-IDirect3DSurface8* SEA::CubeGetFace(IDirect3DCubeTexture8 * _pCubeMap, long idx)
+IDirect3DSurface9* SEA::CubeGetFace(IDirect3DCubeTexture9 * _pCubeMap, long idx)
 {
-    IDirect3DSurface8 * pFace;
+    IDirect3DSurface9 * pFace;
     HRESULT hr = pRS->GetCubeMapSurface(_pCubeMap, (D3DCUBEMAP_FACES)idx, 0, &pFace);
 	return pFace;
 }
 
-void SEA::SetRenderTarget(IDirect3DSurface8 * pFace, IDirect3DSurface8 * _pCubeFaceZBuffer)
+void SEA::SetRenderTarget(IDirect3DSurface9 * pFace, IDirect3DSurface9 * _pCubeFaceZBuffer)
 {
     // Get pointer to surface in order to render to it.
     HRESULT	hr = pRS->SetRenderTarget(pFace, _pCubeFaceZBuffer);
@@ -77,7 +77,7 @@ void SEA::SetRenderTarget(IDirect3DSurface8 * pFace, IDirect3DSurface8 * _pCubeF
 // Render scene to reflection cubemap surface
 void SEA::CubeMapCalculateReflectionDynamic()
 {
-	D3DVIEWPORT8 NewViewport;
+	D3DVIEWPORT9 NewViewport;
 	HRESULT hr;
 	dword Colors[6] = {0xd934c8, 0x2FFF1F, 0x0000FF, 0xFF00, 0xb28e11, 0x0};
 	D3DXMATRIX matView, matCamera;
@@ -111,7 +111,7 @@ void SEA::CubeMapCalculateReflectionDynamic()
 		matView._42 = -(matView._12*vCam.x - matView._22*vCam.y + matView._32*vCam.z);
 		matView._43 = -(matView._13*vCam.x - matView._23*vCam.y + matView._33*vCam.z);
 
-		IDirect3DSurface8 * pFace = CubeGetFace(pRenderTargetReflectionCubeMap, i);
+		IDirect3DSurface9 * pFace = CubeGetFace(pRenderTargetReflectionCubeMap, i);
 		SetRenderTarget(pFace, pCubeFaceZBuffer);
 		pFace->Release();
 
@@ -145,7 +145,7 @@ void SEA::CubeMapCalculateReflectionDynamic()
 // Render scene to sunroad cubemap surface
 void SEA::CubeMapCalculateSunroadDynamic()
 {
-	D3DVIEWPORT8 NewViewport;
+	D3DVIEWPORT9 NewViewport;
 	HRESULT hr;
 	dword Colors[6] = {0xd934c8, 0x2FFF1F, 0x0000FF, 0xFF00, 0xb28e11, 0x0};
 	D3DXMATRIX matView, matCamera;
@@ -174,7 +174,7 @@ void SEA::CubeMapCalculateSunroadDynamic()
 		matView._42 = -(matView._12*vCam.x - matView._22*vCam.y + matView._32*vCam.z);
 		matView._43 = -(matView._13*vCam.x - matView._23*vCam.y + matView._33*vCam.z);
 
-		IDirect3DSurface8 * pFace = CubeGetFace(pRenderTargetSunroadCubeMap, i);
+		IDirect3DSurface9 * pFace = CubeGetFace(pRenderTargetSunroadCubeMap, i);
 		SetRenderTarget(pFace, pCubeFaceZBuffer);
 		pFace->Release();
 

@@ -73,7 +73,8 @@ void slAddToCache(LocationFindCacheElement * element, long size, const char * na
 	Assert(name);
 	Assert(name[0]);
 	//»щем €чейку дл€ записи
-	for(long i = 0, j = 0, min = element[i].use; i < size; i++)
+	long i = 0, j = 0, min = 0;
+	for(i = 0, j = 0, min = element[i].use; i < size; i++)
 	{
 		if(element[i].index < 0){ j = i; break; }
 		if(element[i].use < min){ j = i; min = element[i].use; }
@@ -105,7 +106,8 @@ dword slNativeFastFind(VS_STACK * pS, LocationFindCacheElement * cache, long cac
 		return IFUNCRESULT_OK;
 	}
 	//—нижаем значени€ использовани€ в кеше
-	for(long i = 0; i < cacheSize; i++)
+	long i = 0;
+	for(i = 0; i < cacheSize; i++)
 	{
 		cache[i].use--;
 		if(cache[i].use < 0) cache[i].use = 0;
@@ -277,16 +279,17 @@ dword __cdecl slSetAchievement(VS_STACK * pS)
 {
 	VDATA * pStr = (VDATA*)pS->Pop();
 	char * nm = null;
+	long ret = 0;
 	if(!pStr->Get(nm)) return IFUNCRESULT_FAILED;
 	if(nm && nm[0])
 	{
 		VDATA * pReturn = (VDATA*)pS->Push();
 		if (!pReturn) return IFUNCRESULT_FAILED;
-#ifdef isSteam		
-		long ret = _CORE_API->SetAchievementState(nm);
-#else
-		long ret = 0;
-#endif		
+//#ifdef isSteam		
+		if(_CORE_API->isSteamEnabled()) ret = _CORE_API->SetAchievementState(nm);
+//#else
+		else ret = 0;
+//#endif		
 		pReturn->Set(ret);
 		return IFUNCRESULT_OK;
 	}
@@ -297,16 +300,17 @@ dword __cdecl slGetAchievement(VS_STACK * pS)
 {
 	VDATA * pStr = (VDATA*)pS->Pop();
 	char * nm = null;
+	long ret = 0;
 	if(!pStr->Get(nm)) return IFUNCRESULT_FAILED;
 	if(nm && nm[0])
 	{
 		VDATA * pReturn = (VDATA*)pS->Push();
 		if (!pReturn) return IFUNCRESULT_FAILED;
-#ifdef isSteam				
-		long ret = _CORE_API->GetAchievementState(nm);
-#else
-		long ret = 0;
-#endif		
+//#ifdef isSteam				
+		if(_CORE_API->isSteamEnabled()) ret = _CORE_API->GetAchievementState(nm);
+//#else
+		else ret = 0;
+//#endif		
 		pReturn->Set(ret);
 		return IFUNCRESULT_OK;
 	}
@@ -318,6 +322,7 @@ dword __cdecl slSetStat(VS_STACK * pS)
 {
 	VDATA * pInt = (VDATA*)pS->Pop();
 	long val = 0; 
+	long ret = 0;	
 	if(!pInt->Get(val)) return IFUNCRESULT_FAILED;
 	
 	VDATA * pStr = (VDATA*)pS->Pop();
@@ -328,11 +333,11 @@ dword __cdecl slSetStat(VS_STACK * pS)
 	{		
 		VDATA * pReturn = (VDATA*)pS->Push();
 		if (!pReturn) return IFUNCRESULT_FAILED;
-#ifdef isSteam				
-		long ret = _CORE_API->SetStatValue(nm, val);
-#else		
-		long ret = 0;
-#endif
+//#ifdef isSteam				
+		if(_CORE_API->isSteamEnabled()) ret = _CORE_API->SetStatValue(nm, val);
+//#else		
+		else ret = 0;
+//#endif
 		pReturn->Set(ret);
 		return IFUNCRESULT_OK;
 	}
@@ -343,16 +348,17 @@ dword __cdecl slGetStat(VS_STACK * pS)
 {
 	VDATA * pStr = (VDATA*)pS->Pop();
 	char * nm = null;
+	long ret = 0;
 	if(!pStr->Get(nm)) return IFUNCRESULT_FAILED;
 	if(nm && nm[0])
 	{
 		VDATA * pReturn = (VDATA*)pS->Push();
 		if (!pReturn) return IFUNCRESULT_FAILED;
-#ifdef isSteam						
-		long ret = _CORE_API->GetStatValue(nm);
-#else
-		long ret = 0;
-#endif		
+//#ifdef isSteam						
+		if(_CORE_API->isSteamEnabled()) ret = _CORE_API->GetStatValue(nm);
+//#else
+		else ret = 0;
+//#endif		
 		pReturn->Set(ret);
 		return IFUNCRESULT_OK;
 	}
@@ -361,13 +367,14 @@ dword __cdecl slGetStat(VS_STACK * pS)
 
 dword __cdecl slStoreStats(VS_STACK * pS)
 {
+	long ret = 0;
 	VDATA * pReturn = (VDATA*)pS->Push();
 	if (!pReturn) return IFUNCRESULT_FAILED;
-#ifdef isSteam							
-	long ret = _CORE_API->StoreStats();
-#else
-	long ret = 0;
-#endif	
+//#ifdef isSteam							
+	if(_CORE_API->isSteamEnabled()) ret = _CORE_API->StoreStats();
+//#else
+	else ret = 0;
+//#endif	
 	pReturn->Set(ret);
 	return IFUNCRESULT_OK;
 }
@@ -376,16 +383,17 @@ dword __cdecl slClearAchievement(VS_STACK * pS)
 {
 	VDATA * pStr = (VDATA*)pS->Pop();
 	char * nm = null;
+	long ret = 0;
 	if(!pStr->Get(nm)) return IFUNCRESULT_FAILED;
 	if(nm && nm[0])
 	{
 		VDATA * pReturn = (VDATA*)pS->Push();
 		if (!pReturn) return IFUNCRESULT_FAILED;	
-#ifdef isSteam									
-		long ret = _CORE_API->ClearAchievement(nm);
-#else
-		long ret = 0;
-#endif		
+//#ifdef isSteam									
+		if(_CORE_API->isSteamEnabled()) ret = _CORE_API->ClearAchievement(nm);
+//#else
+		else ret = 0;
+//#endif		
 		pReturn->Set(ret);
 		return IFUNCRESULT_OK;
 	}
@@ -396,14 +404,15 @@ dword __cdecl slResetStats(VS_STACK * pS)
 {
 	VDATA * pInt = (VDATA*)pS->Pop();
 	long val = 0; 
+	long ret = 0;
 	if(!pInt->Get(val)) return IFUNCRESULT_FAILED;
 	VDATA * pReturn = (VDATA*)pS->Push();
 	if (!pReturn) return IFUNCRESULT_FAILED;	
-#ifdef isSteam								
-	long ret = _CORE_API->ResetStats(val);
-#else
-	long ret = 0;
-#endif	
+//#ifdef isSteam								
+	if(_CORE_API->isSteamEnabled()) ret = _CORE_API->ResetStats(val);
+//#else
+	else ret = 0;
+//#endif	
 	pReturn->Set(ret);
 	
 	return IFUNCRESULT_OK;

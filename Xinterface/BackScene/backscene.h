@@ -18,8 +18,8 @@ class InterfaceBackScene : public ENTITY
 		bool bUse;
 
 		long indexLight;
-		D3DLIGHT8 lightSource;
-		D3DLIGHT8 lightOldSource;
+		D3DLIGHT9 lightSource;
+		D3DLIGHT9 lightOldSource;
 
 		dword dwFlareColor;
 		float fMinFlareColor;

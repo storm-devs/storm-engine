@@ -103,7 +103,8 @@ bool OctTree::AddVertex(OTNode * node, Vertex * v)
 			node->node[7] = NEW OTNode(CVECTOR(cnt.x, cnt.y, min.z), CVECTOR(max.x, max.y, cnt.z));
 			for(long n = 0; n < node->num; n++)
 			{
-				for(long c = 0; c < 8; c++)
+				long c = 0;
+				for(c = 0; c < 8; c++)
 				{
 					if(AddVertex(node->node[c], node->vrt[n])) break;
 				}
@@ -115,7 +116,8 @@ bool OctTree::AddVertex(OTNode * node, Vertex * v)
 		}
 	}
 	//Добавляем детям
-	for(long c = 0; c < 8; c++)
+	long c = 0;
+	for(c = 0; c < 8; c++)
 	{
 		if(AddVertex(node->node[c], v)) break;
 	}

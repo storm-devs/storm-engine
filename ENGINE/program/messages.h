@@ -69,7 +69,7 @@
 #define MSG_SHIP_GET_SAIL_STATE				50325
 #define MSG_SHIP_SET_HEEL_XZ				50330
 #define MSG_SHIP_CURVES						50400
-#define MSG_SHIP_TEST_MAST_FALL				50401
+#define MSG_SHIP_LIGHTSRESET				50402	// ugeen 25.12.19
 
 //============================================================================================
 //Weather Messages

@@ -55,8 +55,10 @@ void CXI_SLIDEPICTURE::Draw(bool bSelected,dword Delta_Time)
 	{
 		Update(Delta_Time);
 		m_rs->TextureSet(0,m_idTex);
+/* ugeen : изменить!!
 		m_rs->SetTextureStageState(0,D3DTSS_ADDRESSU,D3DTADDRESS_WRAP);
 		m_rs->SetTextureStageState(0,D3DTSS_ADDRESSV,D3DTADDRESS_WRAP);
+*/
 		if(strTechniqueName==null)
 			m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP,XI_ONETEX_FVF,2,m_v,sizeof(XI_ONETEX_VERTEX),"iVideo");
 		else

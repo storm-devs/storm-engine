@@ -75,7 +75,7 @@ bool FONT::MakeLong(char * * pDataPointer, long * result)
 	return false;
 }
 
-bool FONT::Init(char * font_name, char * iniName, IDirect3DDevice8 * _device, VDX8RENDER * _render)
+bool FONT::Init(char * font_name, char * iniName, IDirect3DDevice9 * _device, VDX8RENDER * _render)
 {
 	INIFILE * ini;
 	char key_name[MAX_PATH];
@@ -174,9 +174,9 @@ bool FONT::Init(char * font_name, char * iniName, IDirect3DDevice8 * _device, VD
 	Device = _device;
 	
 	IMAGE_VERTEX * pVertex;
-	Device->CreateVertexBuffer(sizeof(IMAGE_VERTEX)*MAX_SYMBOLS*SYM_VERTEXS,D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY, IMAGE_FVF, D3DPOOL_SYSTEMMEM, &VBuffer);
+	Device->CreateVertexBuffer(sizeof(IMAGE_VERTEX)*MAX_SYMBOLS*SYM_VERTEXS,D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY, IMAGE_FVF, D3DPOOL_SYSTEMMEM, &VBuffer, NULL);
 	if(VBuffer == 0) _THROW(vbuffer error);
-	VBuffer->Lock(0,sizeof(IMAGE_VERTEX)*MAX_SYMBOLS*SYM_VERTEXS,(byte**)&pVertex,0);
+	VBuffer->Lock(0,sizeof(IMAGE_VERTEX)*MAX_SYMBOLS*SYM_VERTEXS,(void**)&pVertex,0);
 	for(n=0;n<MAX_SYMBOLS*SYM_VERTEXS;n++)
 	{
 		pVertex[n].pos.z = 0.5f;
@@ -262,7 +262,7 @@ long FONT::UpdateVertexBuffer(long x, long y, char * data_PTR)
 	
 	s_num = strlen(data_PTR);
 
-	VBuffer->Lock(0,sizeof(IMAGE_VERTEX)*s_num*SYM_VERTEXS,(byte**)&pVertex,0);
+	VBuffer->Lock(0,sizeof(IMAGE_VERTEX)*s_num*SYM_VERTEXS,(void**)&pVertex,0);
 
 	xoffset = 0;
 
@@ -345,9 +345,10 @@ long FONT::Print(long x, long y, char * data_PTR)
 	if (!bDraw) return xoffset;
 
 	RenderService->TextureSet(0,TextureID);
-	Device->SetVertexShader(IMAGE_FVF);
-	Device->SetStreamSource(0,VBuffer,sizeof(IMAGE_VERTEX));
-	Device->SetIndices(0,0);
+	Device->SetVertexShader(NULL);
+	Device->SetFVF(IMAGE_FVF);
+	Device->SetStreamSource(0,VBuffer,0,sizeof(IMAGE_VERTEX));
+	Device->SetIndices(0);
 
 	if(bInverse)
 	{

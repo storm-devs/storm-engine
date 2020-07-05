@@ -30,7 +30,7 @@ public:
     TextureSequence();
     ~TextureSequence();
 
-    IDirect3DTexture8* Initialize(VDX8RENDER *pRS,const char* cTSfileName, bool bCicled);
+    IDirect3DTexture9* Initialize(VDX8RENDER *pRS,const char* cTSfileName, bool bCicled);
     bool FrameUpdate();
 	void Release();
 	void LostRender();

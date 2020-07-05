@@ -180,7 +180,7 @@ void SEA::SFLB_CreateBuffers()
 bool SEA::Init()
 {
 	INIFILE * pEngineIni = fio->OpenIniFile(api->EngineIniFileName());
-	bool bDisableHyperThreading = (pEngineIni) ? pEngineIni->GetLong(null, "HyperThreading", 1) == 0 : false;
+	bool bDisableHyperThreading = (pEngineIni) ? pEngineIni->GetLong(null, "HyperThreading", 0) != 0 : false;
 	bDisableSSE = (pEngineIni) ? pEngineIni->GetLong(null, "DisableSSE", 0) != 0 : false;
 	bIniFoamEnable = (pEngineIni) ? pEngineIni->GetLong("Sea", "FoamEnable", 1) != 0 : false;
     bool bEnableSSE = (pEngineIni) ? pEngineIni->GetLong(null, "EnableSSE", 0) != 0 : false;   //boal
@@ -189,18 +189,20 @@ bool SEA::Init()
     {
         bSSE = true;  //boal
 	}
+//	api->Trace("bDisableHyperThreading: %d  bIniFoamEnable : %d", bDisableHyperThreading, bIniFoamEnable );
 
 	if (bDisableHyperThreading) bHyperThreading = false;
+	else						bHyperThreading = true;
 	if (bDisableSSE) bSSE = false;
 	if (!bIntel) bHyperThreading = false;
     
+	dword dwLogicals, dwCores, dwPhysicals, dwNumThreads;
 	if (bHyperThreading)
 	{
-		dword dwLogicals, dwCores, dwPhysicals;
 		intel.CPUCount(&dwLogicals, &dwCores, &dwPhysicals);
 		api->Trace("Total logical: %d, Total cores: %d, Total physical: %d", dwLogicals, dwCores, dwPhysicals);
 
-		dword dwNumThreads = dwLogicals * dwCores - 1;
+		dwNumThreads = dwLogicals * dwCores - 1;
 	
 		for (dword i=0; i<dwNumThreads; i++)
 		{
@@ -216,6 +218,12 @@ bool SEA::Init()
 		}
 
 		bHyperThreading = dwNumThreads > 0;
+	}
+	else
+	{
+		intel.CPUCount(&dwLogicals, &dwCores, &dwPhysicals);
+		dwNumThreads = dwLogicals * dwCores - 1;
+		api->Trace("Total logical: %d, Total cores: %d, Total physical: %d NumThreads: %d", dwLogicals, dwCores, dwPhysicals, dwNumThreads);		
 	}
 
 	iFoamTexture = Render().TextureCreate("weather\\sea\\pena\\pena.tga");
@@ -306,7 +314,7 @@ bool SEA::Init()
 	
 	EditMode_Update();
 
-	api->Trace("Intel CPU: %s, SSE: %s, HyperThreading: %s", (bIntel) ? "Yes" : "No", (bSSE) ? "On" : "Off", (bHyperThreading) ? "On" : "Off");
+	api->Trace("SEA Init : Intel CPU: %s, SSE: %s, HyperThreading: %s", (bIntel) ? "Yes" : "No", (bSSE) ? "On" : "Off", (bHyperThreading) ? "On" : "Off");
 
 	return true;
 }
@@ -401,7 +409,7 @@ void SEA::BuildVolumeTexture()
 		{
 			D3DSURFACE_DESC		d3dsd;
 			D3DLOCKED_RECT		d3dlr; 
-			IDirect3DTexture8	* * pBumpMap;
+			IDirect3DTexture9	* * pBumpMap;
 			HRESULT				hr;
 
 	  		pBumpMap = &aBumpMaps[aBumpMaps.Add()];
@@ -435,7 +443,7 @@ void SEA::BuildVolumeTexture()
 
 				// simple copy 
 				BYTE * pDstTemp = (BYTE *)d3dlr.pBits;
-				for(y=0; y<d3dsd.Height; y++)
+				for(dword y=0; y<d3dsd.Height; y++)
 				{
 					memcpy(pDstTemp, &pDst[y * d3dsd.Width * dwTexelSize], d3dsd.Width * dwTexelSize);
 					pDstTemp += (dword)d3dlr.Pitch;
@@ -1327,7 +1335,7 @@ void SEA::Realize(dword dwDeltaTime)
 	if (bStop) return;
 
 	float fDeltaTime = float(dwDeltaTime) * 0.001f;
-
+	
 	vMove1 += fDeltaTime * vMoveSpeed1;
 	vMove2 += fDeltaTime * vMoveSpeed2;
 
@@ -1389,7 +1397,7 @@ void SEA::Realize(dword dwDeltaTime)
 
 	if (!pVolumeTexture && aBumpMaps.Size())
 	{
-		IDirect3DSurface8	* pFace;
+		IDirect3DSurface9	* pFace;
 
 		static float fBumpMapFrame = 0.0f;
 		fBumpMapFrame += float(fDeltaTime) * fBumpSpeed * 48.0f;
@@ -1557,10 +1565,10 @@ void SEA::Realize(dword dwDeltaTime)
 			Render().SetVertexShaderConstant(GC_FREE + 8, &mTexProjection, 4);			// Matrix!!
 
 			//Render().SetTexture(0, pVolumeTexture);
-			Render().SetTexture(0, (pVolumeTexture) ? (IDirect3DBaseTexture8*)pVolumeTexture : (IDirect3DBaseTexture8*)pRenderTargetBumpMap);
+			Render().SetTexture(0, (pVolumeTexture) ? (IDirect3DBaseTexture9*)pVolumeTexture : (IDirect3DBaseTexture9*)pRenderTargetBumpMap);
 			Render().SetTexture(1, pReflection);
 			//Render().SetTexture(2, pVolumeTexture);
-			Render().SetTexture(2, (pVolumeTexture) ? (IDirect3DBaseTexture8*)pVolumeTexture : (IDirect3DBaseTexture8*)pRenderTargetBumpMap);
+			Render().SetTexture(2, (pVolumeTexture) ? (IDirect3DBaseTexture9*)pVolumeTexture : (IDirect3DBaseTexture9*)pRenderTargetBumpMap);
 			Render().SetTexture(3, pReflectionSunroad);
 
 			Render().SetTextureStageState(1, D3DTSS_BUMPENVMAT00, F2DW(0.08f));
@@ -1577,28 +1585,29 @@ void SEA::Realize(dword dwDeltaTime)
 		}
 		else
 		{
-			D3DCAPS8 d3dCaps;
+			D3DCAPS9 d3dCaps;
 			Render().GetDeviceCaps(&d3dCaps);
 			dword dwPSVersionLo = LOBYTE(d3dCaps.PixelShaderVersion);
 			dword dwPSVersionHi = HIBYTE(d3dCaps.PixelShaderVersion);
 
 			Render().SetVertexShaderConstant(GC_FREE + 8, &CMatrix(0.0f, 0.0f, PId2), 4);			// Matrix!!
 
-			Render().SetTexture(0, (pVolumeTexture) ? (IDirect3DBaseTexture8*)pVolumeTexture : (IDirect3DBaseTexture8*)pRenderTargetBumpMap);
+			Render().SetTexture(0, (pVolumeTexture) ? (IDirect3DBaseTexture9*)pVolumeTexture : (IDirect3DBaseTexture9*)pRenderTargetBumpMap);
 			Render().SetTexture(3, pEnvMap);
 			Render().DrawIndexedPrimitiveNoVShader(D3DPT_TRIANGLELIST, iVSeaBuffer, sizeof(SeaVertex), iISeaBuffer, 0, iVStart, 0, iTStart, "Sea2");
 
-			if (fFoamK > 0.0f && bFoamEnable && bIniFoamEnable && dwPSVersionHi >= 1 && dwPSVersionLo >= 4)
+			//if (fFoamK > 0.0f && bFoamEnable && bIniFoamEnable && dwPSVersionHi >= 1 && dwPSVersionLo >= 4)
+			if (fFoamK > 0.0f)
 			{
 				//Render sea foam
 				Render().SetPixelShaderConstant(0, &CVECTOR4(fFoamTextureDisturb, 0.0f, 0.0f, 0.0f), 1);
 
 				Render().TextureSet(0, iFoamTexture);
-				Render().SetTexture(4, (pVolumeTexture) ? (IDirect3DBaseTexture8*)pVolumeTexture : (IDirect3DBaseTexture8*)pRenderTargetBumpMap);
+				Render().SetTexture(4, (pVolumeTexture) ? (IDirect3DBaseTexture9*)pVolumeTexture : (IDirect3DBaseTexture9*)pRenderTargetBumpMap);
 				Render().DrawIndexedPrimitiveNoVShader(D3DPT_TRIANGLELIST, iVSeaBuffer, sizeof(SeaVertex), iISeaBuffer, 0, iVStart, 0, iTStart, "Foam_14");
 			}
 
-			Render().SetTexture(0, (pVolumeTexture) ? (IDirect3DBaseTexture8*)pVolumeTexture : (IDirect3DBaseTexture8*)pRenderTargetBumpMap);
+			Render().SetTexture(0, (pVolumeTexture) ? (IDirect3DBaseTexture9*)pVolumeTexture : (IDirect3DBaseTexture9*)pRenderTargetBumpMap);
 			Render().SetTexture(3, pSunRoadMap);
 			Render().DrawIndexedPrimitiveNoVShader(D3DPT_TRIANGLELIST, iVSeaBuffer, sizeof(SeaVertex), iISeaBuffer, 0, iVStart, 0, iTStart, "Sea2_SunRoad");
 		}
@@ -1606,15 +1615,16 @@ void SEA::Realize(dword dwDeltaTime)
 
 	RDTSC_E(dwTotalRDTSC);
 	//Render().Print(50, 300, "Total ticks with rendering %d", /*iVStart, iTStart, */dwTotalRDTSC);
-	/*Render().Print(50, 320, "calc blk%s: %d", (bHT) ? " (HT)" : "", dwBlockRDTSC);
+/*	
+	Render().Print(50, 320, "calc blk%s: %d", (bHT) ? " (HT)" : "", dwBlockRDTSC);
 	Render().Print(50, 340, "Blocks in 1st thread: %d", iB1);
 	for (long i=0; i<aThreadsTest; i++)
 		Render().Print(50, 360 + 20 * i, "Blocks in thread %d: %d", i + 1, aThreadsTest[i]);
-	*/
+*/	
 	//Render().Print(30, 140, "rdtsc = %d", dwBlockRDTSC);
 	//Render().Print(30, 160, "Intel CPU: %s, SSE: %s, HyperThreading: %s", (bIntel) ? "Yes" : "No", (bSSE) ? "On" : "Off", (bHyperThreading) ? "On" : "Off");
 
-	/*D3DVIEWPORT8 vp; Render().GetViewport(&vp);
+	/*D3DVIEWPORT9 vp; Render().GetViewport(&vp);
 	float w = 256;
 	float h = 256;
 	RS_SPRITE spr[4];
@@ -1767,7 +1777,6 @@ void SEA::Realize(dword dwDeltaTime)
 		bUnderSeaStarted = true;
 	}
 
-
 	bStarted = true;
 }
 
@@ -1851,6 +1860,8 @@ dword SEA::AttributeChanged(ATTRIBUTES * pAttribute)
 		if (*pAttribute == "FoamTexDisturb")	{ fFoamTextureDisturb = pAttribute->GetAttributeAsFloat(); return 0; }
 		if (*pAttribute == "FoamEnable")		{ bFoamEnable = pAttribute->GetAttributeAsDword() != 0; return 0; }
 
+//		api->Trace("bFoamEnable : %d", bIniFoamEnable );
+		
 		if (*pAttribute == "SimpleSea")		
 		{ 
 			bSimpleSea = pAttribute->GetAttributeAsDword() != 0; 

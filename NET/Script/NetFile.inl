@@ -169,7 +169,7 @@ struct TextureFile
 	~TextureFile() { if (iTextureNum >= 0) NET_SCRIPT_LIBRIARY::pRS->TextureRelease(iTextureNum); RELEASE(pTexture); }
 
 	long iTextureNum;
-	IDirect3DTexture8 * pTexture;
+	IDirect3DTexture9 * pTexture;
 	string sFilename, sGroupID;
 };
 
@@ -215,7 +215,7 @@ dword _cdecl NFGetTexture(VS_STACK * pS)
 	if (pTF->iTextureNum >= 0)
 	{
 		// if texture created
-		pTF->pTexture = (IDirect3DTexture8*)NET_SCRIPT_LIBRIARY::pRS->GetBaseTexture(pTF->iTextureNum);
+		pTF->pTexture = (IDirect3DTexture9*)NET_SCRIPT_LIBRIARY::pRS->GetBaseTexture(pTF->iTextureNum);
 		((VDATA*)pS->Push())->Set((long)pTF->pTexture);
 	}
 	else
@@ -225,7 +225,7 @@ dword _cdecl NFGetTexture(VS_STACK * pS)
 		dword dwSize;
 		if (fio->LoadFile(sFilename, &pBuffer, &dwSize))
 		{
-			pTF->pTexture = (IDirect3DTexture8*)NET_SCRIPT_LIBRIARY::pRS->CreateTextureFromFileInMemory(pBuffer, dwSize);
+			pTF->pTexture = (IDirect3DTexture9*)NET_SCRIPT_LIBRIARY::pRS->CreateTextureFromFileInMemory(pBuffer, dwSize);
 			((VDATA*)pS->Push())->Set((long)pTF->pTexture);
 
 			/*TGA_H * pTga = (TGA_H*)pBuffer;

@@ -137,7 +137,7 @@ public:
 	long GetLong(SEARCH_DATA * sd, char * section_name, char * key_name);
 	long GetLong(SEARCH_DATA * sd, char * section_name, char * key_name, long def_val);
 	bool GetLongNext(SEARCH_DATA * sd, char * section_name, char * key_name, long * val);
-
+	
 	double GetDouble(SEARCH_DATA * sd, char * section_name, char * key_name);
 	double GetDouble(SEARCH_DATA * sd, char * section_name, char * key_name, double def_val);
 	bool   GetDoubleNext(SEARCH_DATA * sd, char * section_name, char * key_name, double * val);

@@ -1,0 +1,357 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <SccProjectName>
+    </SccProjectName>
+    <SccAuxPath />
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccProvider>
+    </SccProvider>
+    <ProjectGuid>{871E3DB5-5250-2ACE-AF6D-19383C49078B}</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\Debug\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\Release\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_USRDLL;XINTERFACE_EXPORTS;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>.\Debug/XINTERFACE.pch</PrecompiledHeaderOutputFile>
+      <AssemblerOutput>All</AssemblerOutput>
+      <AssemblerListingLocation>.\Debug/</AssemblerListingLocation>
+      <ObjectFileName>.\Debug/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug/</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>..\engine\modules\XINTERFACE.dll</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>.\Debug/XINTERFACE.pdb</ProgramDatabaseFile>
+      <ImportLibrary>.\Debug/XINTERFACE.lib</ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\Debug/XINTERFACE.tlb</TypeLibraryName>
+      <HeaderFileName>
+      </HeaderFileName>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0419</Culture>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <PreprocessorDefinitions>_USRDLL;XINTERFACE_EXPORTS;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>.\Release/XINTERFACE.pch</PrecompiledHeaderOutputFile>
+      <AssemblerOutput>All</AssemblerOutput>
+      <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
+      <ObjectFileName>.\Release/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <OutputFile>..\Engine\modules\XInterface.dll</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>.\Release/XINTERFACE.pdb</ProgramDatabaseFile>
+      <ImportLibrary>.\Release/XINTERFACE.lib</ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+    </Link>
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\Release/XINTERFACE.tlb</TypeLibraryName>
+      <HeaderFileName>
+      </HeaderFileName>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0419</Culture>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\common_h\VideoTexture.h" />
+    <ClInclude Include="aviplayer\aviplayer.h" />
+    <ClInclude Include="STRINGSERVICE\obj_strservice.h" />
+    <ClInclude Include="STRINGSERVICE\strservice.h" />
+    <ClInclude Include="TextureSequence\TextureSequence.h" />
+    <ClInclude Include="SCRSHOTER\scrshoter.h" />
+    <ClInclude Include="helpchooser\HelpChooser.h" />
+    <ClInclude Include="InfoHandler.h" />
+    <ClInclude Include="NODES\all_xinode.h" />
+    <ClInclude Include="base_video.h" />
+    <ClInclude Include="defines.h" />
+    <ClInclude Include="inode.h" />
+    <ClInclude Include="vxservice.h" />
+    <ClInclude Include="xinterface.h" />
+    <ClInclude Include="xservice.h" />
+    <ClInclude Include="nodes\xi_2picture.h" />
+    <ClInclude Include="nodes\xi_border.h" />
+    <ClInclude Include="nodes\xi_bounder.h" />
+    <ClInclude Include="nodes\xi_button.h" />
+    <ClInclude Include="nodes\xi_changer.h" />
+    <ClInclude Include="nodes\xi_checkbuttons.h" />
+    <ClInclude Include="nodes\xi_conthelp.h" />
+    <ClInclude Include="nodes\xi_editbox.h" />
+    <ClInclude Include="nodes\xi_formttext.h" />
+    <ClInclude Include="nodes\xi_fourimg.h" />
+    <ClInclude Include="nodes\xi_glowCursor.h" />
+    <ClInclude Include="nodes\xi_glower.h" />
+    <ClInclude Include="nodes\xi_image.h" />
+    <ClInclude Include="nodes\xi_imgcollection.h" />
+    <ClInclude Include="nodes\xi_keychanger.h" />
+    <ClInclude Include="nodes\xi_linecollection.h" />
+    <ClInclude Include="nodes\xi_lrchanger.h" />
+    <ClInclude Include="nodes\xi_pceditbox.h" />
+    <ClInclude Include="nodes\xi_picture.h" />
+    <ClInclude Include="nodes\xi_questtexts.h" />
+    <ClInclude Include="nodes\xi_questtitles.h" />
+    <ClInclude Include="nodes\xi_rectangle.h" />
+    <ClInclude Include="nodes\xi_scrollbar.h" />
+    <ClInclude Include="nodes\xi_scrolledpic.h" />
+    <ClInclude Include="nodes\xi_scroller.h" />
+    <ClInclude Include="nodes\xi_scrollimage.h" />
+    <ClInclude Include="nodes\xi_scrolltext.h" />
+    <ClInclude Include="nodes\xi_slideLine.h" />
+    <ClInclude Include="nodes\xi_slidepicture.h" />
+    <ClInclude Include="nodes\xi_statusline.h" />
+    <ClInclude Include="nodes\xi_strcollection.h" />
+    <ClInclude Include="nodes\xi_table.h" />
+    <ClInclude Include="nodes\xi_tabsection.h" />
+    <ClInclude Include="nodes\xi_textbutton.h" />
+    <ClInclude Include="nodes\xi_title.h" />
+    <ClInclude Include="nodes\xi_tooltips.h" />
+    <ClInclude Include="nodes\xi_util.h" />
+    <ClInclude Include="nodes\xi_video.h" />
+    <ClInclude Include="nodes\xi_videorect.h" />
+    <ClInclude Include="nodes\xi_VImgScroll.h" />
+    <ClInclude Include="nodes\xi_window.h" />
+    <ClInclude Include="QuestFileReader\QuestFileReader.h" />
+    <ClInclude Include="templates\ctext.h" />
+    <ClInclude Include="templates\TDynArray.h" />
+    <ClInclude Include="editor\defines.h" />
+    <ClInclude Include="editor\editor.h" />
+    <ClInclude Include="editor\font.h" />
+    <ClInclude Include="editor\list.h" />
+    <ClInclude Include="BackScene\backscene.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="aviplayer\aviplayer.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_USRDLL;XINTERFACE_EXPORTS;WIN32;_DEBUG;_WINDOWS;_MBCS</PreprocessorDefinitions>
+      <BasicRuntimeChecks Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">EnableFastChecks</BasicRuntimeChecks>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_USRDLL;XINTERFACE_EXPORTS;WIN32;NDEBUG;_WINDOWS;_MBCS</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="STRINGSERVICE\obj_strservice.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_USRDLL;XINTERFACE_EXPORTS;WIN32;_DEBUG;_WINDOWS;_MBCS</PreprocessorDefinitions>
+      <BasicRuntimeChecks Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">EnableFastChecks</BasicRuntimeChecks>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_USRDLL;XINTERFACE_EXPORTS;WIN32;NDEBUG;_WINDOWS;_MBCS</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="STRINGSERVICE\strservice.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_USRDLL;XINTERFACE_EXPORTS;WIN32;_DEBUG;_WINDOWS;_MBCS</PreprocessorDefinitions>
+      <BasicRuntimeChecks Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">EnableFastChecks</BasicRuntimeChecks>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_USRDLL;XINTERFACE_EXPORTS;WIN32;NDEBUG;_WINDOWS;_MBCS</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="TextureSequence\TextureSequence.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_USRDLL;XINTERFACE_EXPORTS;WIN32;_DEBUG;_WINDOWS;_MBCS</PreprocessorDefinitions>
+      <BasicRuntimeChecks Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">EnableFastChecks</BasicRuntimeChecks>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_USRDLL;XINTERFACE_EXPORTS;WIN32;NDEBUG;_WINDOWS;_MBCS</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="SCRSHOTER\scrshoter.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_USRDLL;XINTERFACE_EXPORTS;WIN32;_DEBUG;_WINDOWS;_MBCS</PreprocessorDefinitions>
+      <BasicRuntimeChecks Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">EnableFastChecks</BasicRuntimeChecks>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_USRDLL;XINTERFACE_EXPORTS;WIN32;NDEBUG;_WINDOWS;_MBCS</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="HelpChooser\HelpChooser.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_USRDLL;XINTERFACE_EXPORTS;WIN32;_DEBUG;_WINDOWS;_MBCS</PreprocessorDefinitions>
+      <BasicRuntimeChecks Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">EnableFastChecks</BasicRuntimeChecks>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_USRDLL;XINTERFACE_EXPORTS;WIN32;NDEBUG;_WINDOWS;_MBCS</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="InfoHandler.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_USRDLL;XINTERFACE_EXPORTS;WIN32;_DEBUG;_WINDOWS;_MBCS</PreprocessorDefinitions>
+      <BasicRuntimeChecks Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">EnableFastChecks</BasicRuntimeChecks>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_USRDLL;XINTERFACE_EXPORTS;WIN32;NDEBUG;_WINDOWS;_MBCS</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="inode.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_USRDLL;XINTERFACE_EXPORTS;WIN32;_DEBUG;_WINDOWS;_MBCS</PreprocessorDefinitions>
+      <BasicRuntimeChecks Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">EnableFastChecks</BasicRuntimeChecks>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_USRDLL;XINTERFACE_EXPORTS;WIN32;NDEBUG;_WINDOWS;_MBCS</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="xinterface.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_USRDLL;XINTERFACE_EXPORTS;WIN32;_DEBUG;_WINDOWS;_MBCS</PreprocessorDefinitions>
+      <BasicRuntimeChecks Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">EnableFastChecks</BasicRuntimeChecks>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_USRDLL;XINTERFACE_EXPORTS;WIN32;NDEBUG;_WINDOWS;_MBCS</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="xiutil.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_USRDLL;XINTERFACE_EXPORTS;WIN32;_DEBUG;_WINDOWS;_MBCS</PreprocessorDefinitions>
+      <BasicRuntimeChecks Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">EnableFastChecks</BasicRuntimeChecks>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_USRDLL;XINTERFACE_EXPORTS;WIN32;NDEBUG;_WINDOWS;_MBCS</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="xservice.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_USRDLL;XINTERFACE_EXPORTS;WIN32;_DEBUG;_WINDOWS;_MBCS</PreprocessorDefinitions>
+      <BasicRuntimeChecks Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">EnableFastChecks</BasicRuntimeChecks>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_USRDLL;XINTERFACE_EXPORTS;WIN32;NDEBUG;_WINDOWS;_MBCS</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="nodes\xi_2picture.cpp" />
+    <ClCompile Include="nodes\xi_border.cpp" />
+    <ClCompile Include="nodes\xi_bounder.cpp" />
+    <ClCompile Include="nodes\xi_button.cpp" />
+    <ClCompile Include="nodes\xi_changer.cpp" />
+    <ClCompile Include="nodes\xi_checkbuttons.cpp" />
+    <ClCompile Include="nodes\xi_conthelp.cpp" />
+    <ClCompile Include="nodes\xi_editbox.cpp" />
+    <ClCompile Include="nodes\xi_formttext.cpp" />
+    <ClCompile Include="nodes\xi_fourimg.cpp" />
+    <ClCompile Include="nodes\xi_glowCursor.cpp" />
+    <ClCompile Include="nodes\xi_glower.cpp" />
+    <ClCompile Include="nodes\xi_image.cpp" />
+    <ClCompile Include="nodes\xi_imgcollection.cpp" />
+    <ClCompile Include="nodes\xi_keychanger.cpp" />
+    <ClCompile Include="nodes\xi_linecollection.cpp" />
+    <ClCompile Include="nodes\xi_lrchanger.cpp" />
+    <ClCompile Include="nodes\xi_pceditbox.cpp" />
+    <ClCompile Include="nodes\xi_picture.cpp" />
+    <ClCompile Include="nodes\xi_questtexts.cpp" />
+    <ClCompile Include="nodes\xi_questtitles.cpp" />
+    <ClCompile Include="nodes\xi_rectangle.cpp" />
+    <ClCompile Include="nodes\xi_scrollbar.cpp" />
+    <ClCompile Include="nodes\xi_scrolledpic.cpp" />
+    <ClCompile Include="nodes\xi_scroller.cpp" />
+    <ClCompile Include="nodes\xi_scrollimage.cpp" />
+    <ClCompile Include="nodes\xi_scrolltext.cpp" />
+    <ClCompile Include="nodes\xi_slideLine.cpp" />
+    <ClCompile Include="nodes\xi_slidepicture.cpp" />
+    <ClCompile Include="nodes\xi_statusline.cpp" />
+    <ClCompile Include="nodes\xi_strcollection.cpp" />
+    <ClCompile Include="nodes\xi_table.cpp" />
+    <ClCompile Include="nodes\xi_tabsection.cpp" />
+    <ClCompile Include="nodes\xi_textbutton.cpp" />
+    <ClCompile Include="nodes\xi_title.cpp" />
+    <ClCompile Include="nodes\xi_tooltips.cpp" />
+    <ClCompile Include="nodes\xi_util.cpp" />
+    <ClCompile Include="nodes\xi_video.cpp" />
+    <ClCompile Include="nodes\xi_videorect.cpp" />
+    <ClCompile Include="nodes\xi_VImgScroll.cpp" />
+    <ClCompile Include="nodes\xi_window.cpp" />
+    <ClCompile Include="QuestFileReader\QuestFileReader.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_USRDLL;XINTERFACE_EXPORTS;WIN32;_DEBUG;_WINDOWS;_MBCS</PreprocessorDefinitions>
+      <BasicRuntimeChecks Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">EnableFastChecks</BasicRuntimeChecks>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_USRDLL;XINTERFACE_EXPORTS;WIN32;NDEBUG;_WINDOWS;_MBCS</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="editor\defines.cpp" />
+    <ClCompile Include="editor\editor.cpp" />
+    <ClCompile Include="editor\font.cpp" />
+    <ClCompile Include="editor\list.cpp" />
+    <ClCompile Include="BackScene\backscene.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Engine\modules\Techniques\Interfaces\battle_interface.sha" />
+    <None Include="..\Engine\modules\Techniques\Interfaces\game_interface.sha" />
+    <None Include="..\Engine\modules\Techniques\Interfaces\InterfaceBackScene.sha" />
+    <None Include="..\Engine\modules\Techniques\Interfaces\TextureSequence.sha" />
+    <None Include="..\Engine\modules\Techniques\Interfaces\videoplayer.sha" />
+    <None Include="subscribe.txt" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

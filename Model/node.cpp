@@ -329,7 +329,8 @@ void NODER::Draw()
 	CVECTOR cnt = glob_mtx*center;
 
 	//visibility check
-	for(long p=0; p<4; p++)
+	long p = 0;
+	for(p=0; p<4; p++)
 	{
 		float dist = cnt.x*ViewPlane[p].nrm.x + cnt.y*ViewPlane[p].nrm.y + cnt.z*ViewPlane[p].nrm.z - ViewPlane[p].d;
 		if(dist>radius)	break;

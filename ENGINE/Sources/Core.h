@@ -356,9 +356,10 @@ public:
 	bool IsNetActive() const;
 
 	bool __declspec(dllexport) __cdecl LoCheck();
-#ifdef isSteam		
+//#ifdef isSteam		
 	CSteamStatsAchievements *	g_SteamAchievements;
-
+	
+	bool isSteamEnabled();
 	void InitAchievements();
 	void DeleteAchievements();
 	long SetAchievementState(const char* ID);
@@ -369,7 +370,7 @@ public:
 	bool isSteamConnected();
 	bool ResetStats( bool bAchievementsToo );
 	bool ClearAchievement( const char* ID );
-
+	
 	CSteamDLC * g_SteamDLC;
 	void InitSteamDLC();
 	void DeleteSteamDLC();
@@ -377,7 +378,7 @@ public:
 	long getDLCCount();
 	long getDLCDataByIndex( long iDLC );
 	bool activateGameOverlayDLC( long nAppId );
-#endif	
+//#endif	
 };
 
 #endif

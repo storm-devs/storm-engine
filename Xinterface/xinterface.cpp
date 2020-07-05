@@ -73,7 +73,8 @@ char * XI_ParseStr(char * inStr, char * buf, size_t bufSize, char devChar=',')
 	if(bufSize<=0 || buf==null) return inStr;
 	if(inStr==null) {buf[0]=0; return null;}
 	int curSize=0;
-	for(char* curStr=inStr; *curStr!=0; curStr++)
+	char *curStr = null;
+	for(curStr=inStr; *curStr!=0; curStr++)
 	{
 		if(*curStr==' ' && curSize==0) continue;
 		if(*curStr==devChar || *curStr==0) break;
@@ -606,8 +607,8 @@ dword XINTERFACE::ProcessMessage(MESSAGE & message)
 		{
 			char param[256];
 			message.String(sizeof(param)-1,param);
-
-			for(int l=0; l<m_nStringQuantity; l++)
+			int l = 0;
+			for(l=0; l<m_nStringQuantity; l++)
 			{
 				if(m_stringes[l].sStringName!=null && stricmp(m_stringes[l].sStringName,param)==0) break;
 			}
@@ -1547,7 +1548,8 @@ void XINTERFACE::DeleteNode(const char *pcNodeName)
 	if( !pcNodeName ) return;
 	// ищем нод по имени
 	CINODE* pPrevNod = 0;
-	for( CINODE* pNod=m_pNodes; pNod; pNod=pNod->m_next ) {
+	CINODE* pNod     = 0;
+	for( pNod=m_pNodes; pNod; pNod=pNod->m_next ) {
 		if( pNod->m_nodeName && stricmp(pNod->m_nodeName,pcNodeName)==0 ) break;
 		pPrevNod=pNod;
 	}
@@ -1792,8 +1794,10 @@ void XINTERFACE::RegistryExitKey( const char* pcKeyName )
 long XINTERFACE::StoreNodeLocksWithOff()
 {
 	long nStoreSlot = m_aLocksArray.Add();
-	for( long nStoreCode=0; nStoreCode<1000; nStoreCode++ ) {
-		for( long n=0; n<m_aLocksArray; n++ )
+	long nStoreCode=0;
+	for( nStoreCode=0; nStoreCode<1000; nStoreCode++ ) {
+		long n = 0;
+		for( n=0; n<m_aLocksArray; n++ )
 			if( m_aLocksArray[n].nSaveCode == nStoreCode ) break;
 		if( n==m_aLocksArray ) break;
 	}
@@ -1810,7 +1814,8 @@ long XINTERFACE::StoreNodeLocksWithOff()
 
 void XINTERFACE::RestoreNodeLocks(long nStoreCode)
 {
-	for( long n=0; n<m_aLocksArray; n++ )
+	long n=0;
+	for( n=0; n<m_aLocksArray; n++ )
 		if( m_aLocksArray[n].nSaveCode == nStoreCode ) break;
 	if( n==m_aLocksArray ) return;
 	for( long i=0; i<m_aLocksArray[n].aNode; i++ ) {
@@ -2528,25 +2533,25 @@ bool __declspec(dllexport) __cdecl XINTERFACE::SFLB_DoSaveFileData(char * saveNa
 
 	ENTITY_ID ei;
 	if( !api->FindClass(&ei,"SCRSHOTER",0) ) return false;
-	IDirect3DTexture8 * ptex = (IDirect3DTexture8*)api->Send_Message(ei,"l",MSG_SCRSHOT_MAKE);
+	IDirect3DTexture9 * ptex = (IDirect3DTexture9*)api->Send_Message(ei,"l",MSG_SCRSHOT_MAKE);
 	if(ptex==null) return false;
 
 	D3DSURFACE_DESC dscr;
 	ptex->GetLevelDesc(0,&dscr);
-	long nAllSize = sizeof(SAVE_DATA_HANDLE) + dscr.Size + slen;
+	long nAllSize = sizeof(SAVE_DATA_HANDLE) + 4* (dscr.Width * dscr.Height)  + slen;
 	char * pdat = NEW char[nAllSize];
 	if(pdat==null)	{ THROW("allocate memory error"); }
 
 	((SAVE_DATA_HANDLE*)pdat)->StringDataSize = slen;
 	if(slen>0) memcpy( &pdat[sizeof(SAVE_DATA_HANDLE)], saveData, slen );
 
-	((SAVE_DATA_HANDLE*)pdat)->SurfaceDataSize = dscr.Size;
-	if(dscr.Size>0)
+	((SAVE_DATA_HANDLE*)pdat)->SurfaceDataSize = 4 * (dscr.Width * dscr.Height);
+	if((dscr.Width * dscr.Height)*4>0)
 	{
 		D3DLOCKED_RECT lockRect;
 		if( ptex->LockRect(0,&lockRect,null,0) == D3D_OK )
 		{
-			memcpy( &pdat[sizeof(SAVE_DATA_HANDLE)+slen], lockRect.pBits, dscr.Size );
+			memcpy( &pdat[sizeof(SAVE_DATA_HANDLE)+slen], lockRect.pBits, 4*(dscr.Width*dscr.Height) );
 			ptex->UnlockRect(0);
 		}
 		else api->Trace("Can`t lock screenshot texture");
@@ -2819,7 +2824,8 @@ void XINTERFACE::AddNodeToList(CINODE * nod,long priority)
 		m_pNodes = nod;
 		return;
 	}
-	for(CINODE* pnod=m_pNodes; pnod->m_next!=null; pnod=pnod->m_next)
+	CINODE* pnod = 0;
+	for(pnod=m_pNodes; pnod->m_next!=null; pnod=pnod->m_next)
 		if(pnod->GetPriority()<=priority && pnod->m_next->GetPriority()>priority) break;
 	nod->m_next = pnod->m_next;
 	pnod->m_next = nod;
@@ -2850,7 +2856,8 @@ void XINTERFACE::ReleaseDinamicPic(char * sPicName)
 	if(sPicName==null) return;
 
 	IMAGE_ENTITY * prevImg = null;
-	for(IMAGE_ENTITY * findImg=m_imgLists; findImg!=null; findImg=findImg->next)
+	IMAGE_ENTITY * findImg = null;
+	for(findImg=m_imgLists; findImg!=null; findImg=findImg->next)
 	{
 		if(findImg->sImageName!=null && stricmp(findImg->sImageName,sPicName)==0)	break;
 		prevImg = findImg;
@@ -3299,7 +3306,8 @@ int XINTERFACE::LoadIsExist()
 		if( SFLB_GetSaveFileData(param, sizeof(datBuf), datBuf) )
 		{
 			int nLen = strlen(datBuf);
-			for(int i=strlen(datBuf); i>=0 && datBuf[i]!='@'; i--);
+			int i = 0;
+			for(i=strlen(datBuf); i>=0 && datBuf[i]!='@'; i--);
 			if(i<0) i=0;
 			if(datBuf[i]=='@') i++;
 			if( stricmp(sCurLngName,&datBuf[i])==0 ) break;
@@ -3345,7 +3353,8 @@ void XINTERFACE::PrecreateDirForFile(const char* pcFullFileName)
 	if( !pcFullFileName ) return;
 	char path[MAX_PATH];
 	_snprintf(path,sizeof(path),"%s",pcFullFileName);
-	for(long n=strlen(pcFullFileName)-1; n>0; n--)
+	long n = 0;
+	for(n=strlen(pcFullFileName)-1; n>0; n--)
 		if( path[n]=='\\' ) {
 			path[n]=0;
 			break;

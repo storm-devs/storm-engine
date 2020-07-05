@@ -98,7 +98,8 @@ void WdmEventWindow::SplitText()
 	long sw = 0;
 	long maxsw = 0;
 	//Ищем и выделяем заголовок
-	for(char * ht = text; *ht; ht++)
+	char *ht;
+	for(ht = text; *ht; ht++)
 		if(*ht == '#') break;
 	if(*ht)
 	{
@@ -167,7 +168,8 @@ void WdmEventWindow::SplitText()
 	{
 		//Смотрим сколько поместится на строке
 		long strW = -spaceW;
-		for(long j = i; j < numTokens && strW <= w; j++)
+		long j = 0;
+		for(j = i; j < numTokens && strW <= w; j++)
 		{
 			token[j].y = long(y);
 			strW += token[j].w + spaceW;
@@ -198,7 +200,7 @@ void WdmEventWindow::SplitText()
 	buttonPosY = long(y);
 	winY = (scrh - winH)*0.5f;
 	y = winY + WDM_EW_UPSPACE;	
-	for(i = 0; i < numTokens; i++) token[i].y += long(y);
+	for(long i = 0; i < numTokens; i++) token[i].y += long(y);
 }
 
 //Установить варианты ответов

@@ -23,7 +23,7 @@ void BIImageRender::Render()
 		for( long n=0; n<m_apMaterial; n++ )
 			m_apMaterial[n]->Render(m_nBeginOutputPrioritet, m_nEndOutputPrioritet);
 
-		for( n=0; n<m_apStrings; n++ )
+		for( long n=0; n<m_apStrings; n++ )
 			((BIString*)m_apStrings[n])->RenderPrioritetRange(m_nBeginOutputPrioritet, m_nEndOutputPrioritet);
 
 	} while( GetNextPrioritetRange() );
@@ -69,7 +69,8 @@ BIImageMaterial* BIImageRender::CreateMaterial( const char* pcTextureName, const
 		pMaterial->SetTexture( pcTextureName );
 		pMaterial->SetTechnique( pcTechniqueName );
 		pMaterial->UpdateFlagOn();
-		for( long n=0; n<m_apMaterial; n++ )
+		long n = 0;
+		for( n=0; n<m_apMaterial; n++ )
 			if( m_apMaterial[n]->GetMinPrioritet() > pMaterial->GetMinPrioritet() )
 				break;
 		m_apMaterial.Insert(n);
@@ -168,7 +169,7 @@ void BIImageRender::CutPrioritetRangeByStrings()
 
 void BIImageRender::SetBaseScreenSize(long nHSize, long nVSize, long nHOffset, long nVOffset)
 {
-	D3DVIEWPORT8 vp;
+	D3DVIEWPORT9 vp;
 	m_pRS->GetViewport( &vp );
 
 	if( vp.Width==nHSize && nHOffset==0 ) {
@@ -209,7 +210,8 @@ bool BIImageRender::GetFirstPrioritetRange()
 bool BIImageRender::GetNextPrioritetRange()
 {
 	m_nBeginOutputPrioritet = ++m_nEndOutputPrioritet;
-	for(long n=0; n<m_apMaterial; n++)
+	long n = 0;
+	for(n=0; n<m_apMaterial; n++)
 	{
 		if( m_apMaterial[n]->GetMaxPrioritet() >= m_nBeginOutputPrioritet )
 		{

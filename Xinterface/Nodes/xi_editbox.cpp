@@ -375,9 +375,9 @@ void CXI_EDITBOX::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *name2)
 	m_nMaxSize = GetIniLong(ini1,name1, ini2,name2, "stringLength", -1);
 
 	// Create buffers
-	m_idVBRect = m_rs->CreateVertexBuffer(XI_NOTEX_FVF,8*sizeof(XI_NOTEX_VERTEX),D3DUSAGE_WRITEONLY);
-	m_idVB = m_rs->CreateVertexBuffer(XI_ONLYONETEX_FVF,sizeof(XI_ONLYONETEX_VERTEX)*m_nAlphaQuantity*4,D3DUSAGE_WRITEONLY);
-	m_idIB = m_rs->CreateIndexBuffer(m_nAlphaQuantity*6*sizeof(WORD));
+	m_idVBRect = m_rs->CreateVertexBufferManaged(XI_NOTEX_FVF,8*sizeof(XI_NOTEX_VERTEX),D3DUSAGE_WRITEONLY);
+	m_idVB = m_rs->CreateVertexBufferManaged(XI_ONLYONETEX_FVF,sizeof(XI_ONLYONETEX_VERTEX)*m_nAlphaQuantity*4,D3DUSAGE_WRITEONLY);
+	m_idIB = m_rs->CreateIndexBufferManaged(m_nAlphaQuantity*6*sizeof(WORD));
 	if( m_idVBRect==-1 || m_idVB==-1 || m_idIB==-1 )
 		_THROW("Can't create buffers");
 

@@ -104,8 +104,8 @@ void CXI_BOUNDER::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *name2)
 	// create index and vertex buffers
 	m_nVert  = 4*4 + m_nHorzLineQuantity*4*2 + m_nVertLineQuantity*4*2;
 	m_nIndx  = 2*4 + 2*m_nHorzLineQuantity*2 + 2*m_nVertLineQuantity*2;
-    m_idVBuf = m_rs->CreateVertexBuffer(XI_ONETEX_FVF,m_nVert*sizeof(XI_ONETEX_VERTEX),D3DUSAGE_WRITEONLY);
-    m_idIBuf = m_rs->CreateIndexBuffer(m_nIndx*3*2);
+    m_idVBuf = m_rs->CreateVertexBufferManaged(XI_ONETEX_FVF,m_nVert*sizeof(XI_ONETEX_VERTEX),D3DUSAGE_WRITEONLY);
+    m_idIBuf = m_rs->CreateIndexBufferManaged(m_nIndx*3*2);
 
 	// Fill buffers
 	XI_ONETEX_VERTEX *pVert = (XI_ONETEX_VERTEX*) m_rs->LockVertexBuffer(m_idVBuf);

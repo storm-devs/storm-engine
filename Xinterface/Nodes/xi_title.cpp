@@ -182,8 +182,8 @@ void CXI_TITLE::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *name2)
 	int rectangleQuantity = 1 + 2 + 2*m_nTiledQuantity;
 	m_nVert = 4*rectangleQuantity;
 	m_nIndx = 6*rectangleQuantity;
-    m_idVBuf = m_rs->CreateVertexBuffer(XI_ONETEX_FVF,m_nVert*sizeof(XI_ONETEX_VERTEX),D3DUSAGE_WRITEONLY);
-    m_idIBuf = m_rs->CreateIndexBuffer(m_nIndx*2);
+    m_idVBuf = m_rs->CreateVertexBufferManaged(XI_ONETEX_FVF,m_nVert*sizeof(XI_ONETEX_VERTEX),D3DUSAGE_WRITEONLY);
+    m_idIBuf = m_rs->CreateIndexBufferManaged(m_nIndx*2);
 	m_nIndx/=3;
 
 	// fill index buffer

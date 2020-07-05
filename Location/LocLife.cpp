@@ -86,6 +86,7 @@ void LocLife::Update(float dltTime)
 	Animation * ani = m->GetAnimation();
 	if(!ani) return;
 	PtcData & ptc = location->GetPtcData();
+	
 	if(node < 0)
 	{
 		IdleProcess(ani, dltTime);
@@ -102,7 +103,7 @@ void LocLife::Update(float dltTime)
 		{
 			StopMove();
 			return;
-		}
+		}		
 		//Ищим направление
 		CVECTOR dir = pos;
 		if(!ptc.FindPathDir(cnode, pos, node, npos, cnode, dir))
@@ -128,8 +129,9 @@ void LocLife::Update(float dltTime)
 		pos.x += sinf(ay)*dltTime*speed*kSpeed;
 		pos.z += cosf(ay)*dltTime*speed*kSpeed;
 		//Логика движения
-		MoveProcess(ani, dltTime);
+		MoveProcess(ani, dltTime);		
 	}
+	
 }
 
 long LocLife::FindPos()
@@ -193,10 +195,11 @@ bool LocLife::IsNearPlayer(float radius)
 	if(location->supervisor.player)
 	{
 		CVECTOR playerPos;
-		location->supervisor.player->GetPosition(playerPos);
+    	location->supervisor.player->GetPosition(playerPos);
 		playerPos -= pos; playerPos.y = 0.0f;
 		if(~playerPos < radius*radius) return true;
 	}
+	
 	return false;
 }
 

@@ -1,0 +1,31 @@
+block Telescope()
+{
+	technique t0
+	{
+		pass p0
+		{
+			FogEnable = false;
+			ZEnable = false;
+			Lighting = false;
+			CullMode = none;
+			SpecularEnable = false;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			SrcBlend = zero;
+			DestBlend = srccolor;
+
+			ColorOp[0] = selectarg1;
+			ColorArg1[0] = texture;
+
+			AlphaOp[0] = disable;
+			AlphaArg1[0] = texture;
+
+			ColorOp[1] = disable;
+
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}
+

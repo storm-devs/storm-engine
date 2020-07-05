@@ -210,7 +210,8 @@ bool ControlTree::AddOutControl( const char* pcOutControlName, bool isActive )
 	if( !pcOutControlName || !pcOutControlName[0] ) return false;
 
 	// ищем контролку в списке
-	for(long n=0; n<m_aOutControlList; n++)
+	long n = 0;
+	for(n=0; n<m_aOutControlList; n++)
 		if( m_aOutControlList[n].sControlName == pcOutControlName )
 			break;
 

@@ -372,7 +372,8 @@ void ModelArray::Relection::Restore(MODEL * model, VDX8RENDER * rs)
 
 void ModelArray::UpdatePath(char * path)
 {
-	for(long i = 0, j = 0; path[i]; i++)
+	long i = 0, j = 0;
+	for(i = 0, j = 0; path[i]; i++)
 	{
 		if(path[i] == '\\')
 		{

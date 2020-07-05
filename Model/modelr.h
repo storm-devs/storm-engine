@@ -4,7 +4,6 @@
 #include "..\common_h\model.h"
 #include "..\common_h\geometry.h"
 #include "..\common_h\dx8render.h"
-#include "..\common_h\dx8render.h"
 
 
 class NODER : public NODE
@@ -63,7 +62,8 @@ public:
 	void SetMaxViewDist(float fDist);
 };
 
-#define MODEL_ANI_MAXBUFFERS	16
+//#define MODEL_ANI_MAXBUFFERS	16
+#define MODEL_ANI_MAXBUFFERS	64
 
 class MODELR : public MODEL
 {
@@ -91,7 +91,7 @@ class MODELR : public MODEL
 	void AniRender();
 	NODE *colideNode;
 	void FindPlanes(const CMatrix &view, const CMatrix &proj);
-	IDirect3DVertexBuffer8 *d3dDestVB;
+	IDirect3DVertexBuffer9 *d3dDestVB;
 
 	unsigned short *idxBuff;
 

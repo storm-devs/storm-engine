@@ -261,6 +261,7 @@ public:
 	void UpdateOffsets(SEGMENT_DESC& Segment, STRINGS_LIST & list, DWORD offset, char * sname = 0);
 	S_TOKEN_TYPE DetectUnknown(DWORD & code);
 
+	void Dump(dword segment_id);
 	void DumpAttributes(ATTRIBUTES * pA, long level);
 
 	bool IsIntFuncVarArgsNum(DWORD code);
