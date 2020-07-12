@@ -55,4 +55,41 @@ protected:
     MASTMOVE mm;
 };
 
+
+class HULL : public ENTITY
+{
+	struct MountData {
+		NODE * pNode;
+		ENTITY_ID shipEI;
+		ENTITY_ID modelEI;
+	} m_mount_param;
+	
+	VDX8RENDER		*RenderService;
+	COLLIDE			*pCollide;
+	NODE*			m_pHullNode;
+    bool            bModel;
+		
+    bool            bUse;	
+    int             wMoveCounter;
+	
+    ENTITY_ID       model_id,oldmodel_id;
+    ENTITY_ID       ship_id;
+	
+public:
+
+	 HULL();
+	~HULL();
+	void            SetDevice();
+	bool            Init();
+	bool            CreateState(ENTITY_STATE_GEN * state_gen);
+	bool            LoadState(ENTITY_STATE * state);
+	dword _cdecl    ProcessMessage(MESSAGE & message);
+	
+    void            Execute(dword Delta_Time);
+	void            Realize(dword Delta_Time);
+	
+protected:
+    void            AllRelease();
+    void _cdecl     Mount( ENTITY_ID modelEI, ENTITY_ID shipEI, NODE* hullNodePointer );
+};
 #endif

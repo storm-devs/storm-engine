@@ -11,6 +11,7 @@
 #include "..\..\common_h\memop.h"
 #include "..\..\common_h\exs.h"
 #include "..\..\common_h\vapi.h"
+#include "..\..\common_h\achievements.h"
 //#include "..\..\common_h\input.h"
 
 #include "common_h.h"
@@ -32,7 +33,10 @@
 
 #include "ZLIB\zlib.h"
 
-#define ENGINE_SCRIPT_VERSION		54128
+#define ENGINE_SCRIPT_VERSION		57853
+//#define ENGINE_SCRIPT_VERSION		54128
+
+
 
 typedef struct {
 	UINT iMsg; WPARAM wParam; LPARAM lParam;
@@ -352,6 +356,28 @@ public:
 	bool IsNetActive() const;
 
 	bool __declspec(dllexport) __cdecl LoCheck();
+#ifdef isSteam		
+	CSteamStatsAchievements *	g_SteamAchievements;
+
+	void InitAchievements();
+	void DeleteAchievements();
+	long SetAchievementState(const char* ID);
+	long GetAchievementState(const char* ID);
+	long SetStatValue(const char* ID, long Value);
+	long GetStatValue(const char* ID);
+	long StoreStats();
+	bool isSteamConnected();
+	bool ResetStats( bool bAchievementsToo );
+	bool ClearAchievement( const char* ID );
+
+	CSteamDLC * g_SteamDLC;
+	void InitSteamDLC();
+	void DeleteSteamDLC();
+	bool isDLCActive( long nDLC ); 
+	long getDLCCount();
+	long getDLCDataByIndex( long iDLC );
+	bool activateGameOverlayDLC( long nAppId );
+#endif	
 };
 
 #endif

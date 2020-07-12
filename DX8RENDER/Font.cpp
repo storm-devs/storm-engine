@@ -87,8 +87,10 @@ bool FONT::Init(char * font_name, char * iniName, IDirect3DDevice8 * _device, VD
 	ini = api->fio->OpenIniFile(iniName);
 	if(ini == 0) return false;
 
-	m_fAspectRatioH = 1.f;
-	m_fAspectRatioV = _render->GetHeightDeformator();
+	m_fAspectRatioH = 1.f;	
+	//m_fAspectRatioV = _render->GetHeightDeformator();
+	m_fAspectRatioV = 1.f;
+
 	if(ini->GetLong(font_name,"AspectHeightConstant",0)==1)
 	{
 		m_fAspectRatioH = 1.f/m_fAspectRatioV;
@@ -106,7 +108,7 @@ bool FONT::Init(char * font_name, char * iniName, IDirect3DDevice8 * _device, VD
 		m_fAspectRatioH *= _fscale;
 		m_fAspectRatioV *= _fscale;
 	}
-
+	
 	Height = ini->GetLong(font_name,"Height",0);
 	Height = (long)(Height*m_fAspectRatioV);
 

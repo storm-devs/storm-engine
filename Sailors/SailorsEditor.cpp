@@ -40,7 +40,7 @@ bool SailorsEditor :: Init()
 	api->LayerCreate("editor_realize", true, false);
 	api->LayerSetFlags("editor_realize", LRFLAG_REALIZE);
 	api->LayerAdd("editor_realize", GetID(), 100000);
-
+	
 	LoadFromIni("SailorsEditor.ini");
 
 	api->CreateEntity(&shipID,"MODELR");
@@ -173,6 +173,6 @@ void SailorsEditor :: LoadFromIni(string fileName)
 	
 	pIni->ReadString("PATH","filename_load",param,sizeof(param)-1); 
 	menu._fileName_load= param;
-
+	
 	delete pIni;
 };

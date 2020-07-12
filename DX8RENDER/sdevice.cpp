@@ -341,11 +341,14 @@ DX8RENDER::DX8RENDER() :
 	progressImage = null;
 	progressImageSize = 0;
 	progressTexture = -1;
+	progressBackImage = null;
+	progressBackImageSize = 0;
 	progressTipsImage = null;
 	progressTipsImageSize = 0;
 	progressTipsTexture = -1;
 	loadFrame = 0;
 	backTexture = -1;
+	back0Texture = -1;
 	progressSafeCounter = 0;
 	isInPViewProcess = false;
 	progressUpdateTime = 0;
@@ -531,6 +534,8 @@ DX8RENDER::~DX8RENDER()
 
 
 	if(progressImage) delete progressImage; progressImage = null;
+	if(progressBackImage) delete progressBackImage; progressBackImage = null;
+	if(progressTipsImage) delete progressTipsImage; progressTipsImage = null;
 	for(int i=0; i<nFontQuantity; i++)
 	{
         if(FontList[i].font!=NULL)
@@ -660,7 +665,7 @@ bool DX8RENDER::InitDevice(bool windowed, HWND _hwnd, long width, long height)
 	bWindow = windowed;
 
 	hwnd = _hwnd;
-	api->Trace("Initializing DirectX 9");
+	api->Trace("Initializing DirectX 8");
 	d3d = Direct3DCreate8( D3D_SDK_VERSION );
 	if(d3d==NULL)
 	{
@@ -869,7 +874,7 @@ bool DX8RENDER::InitDevice(bool windowed, HWND _hwnd, long width, long height)
 	screen_size.x = width;
 	screen_size.y = height;
 
-	m_fHeightDeformator = (float)(height*4)/(float)(width*3);
+	m_fHeightDeformator = (float)(height*4.0f)/(float)(width*3.0f);
 /*#ifdef _XBOX
 	DWORD videoFlags = XGetVideoFlags();
 	if( videoFlags & XC_VIDEO_FLAGS_WIDESCREEN ) {
@@ -3527,9 +3532,7 @@ HRESULT DX8RENDER::ImageBlt(long TextureID, RECT * pDstRect, RECT * pSrcRect)
 	} while (TechniqueExecuteNext());
 	
 	return hRes;
-
 }
-
 
 HRESULT DX8RENDER::ImageBlt(const char * pName, RECT * pDstRect, RECT * pSrcRect)
 {
@@ -3537,6 +3540,7 @@ HRESULT DX8RENDER::ImageBlt(const char * pName, RECT * pDstRect, RECT * pSrcRect
 	TextureID = TextureCreate(pName);
 	HRESULT hRes = ImageBlt(TextureID,pDstRect,pSrcRect);
 	TextureRelease(TextureID);
+	SetProgressBackImage("Loading\\ImgBack.tga");
 	SetProgressImage(pName);
 	return hRes;
 }
@@ -3556,6 +3560,23 @@ void DX8RENDER::SetProgressImage(const char * image)
 		progressImage = new char[progressImageSize];
 	}
 	strcpy(progressImage, image);
+}
+
+void DX8RENDER::SetProgressBackImage(const char * image)
+{
+	if(!image || !image[0])
+	{
+		if(progressBackImageSize > 0 && progressBackImage) progressBackImage[0] = 0;
+		return;
+	}
+	long s = strlen(image) + 1;
+	if(s > progressBackImageSize)
+	{
+		progressBackImageSize = s;
+		if(progressBackImage) delete progressBackImage;
+		progressBackImage = new char[progressBackImageSize];
+	}
+	strcpy(progressBackImage, image);
 }
 
 void DX8RENDER::SetTipsImage(const char * image)
@@ -3597,7 +3618,18 @@ void DX8RENDER::StartProgressView()
 		}
 		progressTexture = t;
 	}else return;
-	//Загружаем фоновую картинку
+    //Загружаем немасштабируемую фоновую картинку
+	if(progressBackImage && progressBackImage[0])
+	{
+		isInPViewProcess = true;
+		if(back0Texture >= 0) TextureRelease(back0Texture);
+		back0Texture = -1;
+		back0Texture = TextureCreate(progressBackImage);		
+		isInPViewProcess = false;
+	}else{
+		back0Texture = -1;
+	}		
+	//Загружаем масштабируемую фоновую картинку
 	if(progressImage && progressImage[0])
 	{
 		isInPViewProcess = true;
@@ -3620,7 +3652,6 @@ void DX8RENDER::StartProgressView()
 	progressUpdateTime = GetTickCount() - 1000;
 }
 
-
 void DX8RENDER::ProgressView()
 {
 	//Получаем текстуру
@@ -3641,15 +3672,17 @@ void DX8RENDER::ProgressView()
 		dword color;
 		float u, v;
 	} v[4];
+	
 	for(long i = 0; i < 4; i++)
 	{
-		v[i].z = 0.5;
-		v[i].rhw = 2.0;
-		v[i].color = 0xffffffff;
+		v[i].z = 0.5;     			
+		v[i].rhw = 2.0;   		
+		v[i].color = 0xffffffff; 
 	}
 	//Вычисляем прямоугольник в котором будем рисовать
 	D3DVIEWPORT8 vp;	
 	GetViewport(&vp);
+	
 	v[0].x = 0.0f; v[0].y = 0.0f;
 	v[1].x = float(vp.Width); v[1].y = 0.0f;
 	v[2].x = 0.0f; v[2].y = float(vp.Height);
@@ -3657,8 +3690,32 @@ void DX8RENDER::ProgressView()
 	v[0].u = 0.0f; v[0].v = 0.0f;
 	v[1].u = 1.0f; v[1].v = 0.0f;
 	v[2].u = 0.0f; v[2].v = 1.0f;
-	v[3].u = 1.0f; v[3].v = 1.0f;
-	api->Trace("viewport width %d height %d", vp.Width, vp.Height);
+	v[3].u = 1.0f; v[3].v = 1.0f;		
+	TextureSet(0, back0Texture);
+	if(back0Texture < 0) for(i = 0; i < 4; i++) v[i].color = 0;
+	if(back0Texture >= 0)
+	{
+		DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1, 2, v, sizeof(v[0]), "ProgressBackTech");
+	}	
+	
+	float dy = 0.0f;
+	float dx = ((float(vp.Width) - (4.0f * float(vp.Height) / 3.0f)) / 2.0f);
+	if(dx < 10.0f) dx = 0.0f;
+	else
+	{
+		dy = 25.0f; 
+		dx = ((float(vp.Width) - (4.0f * (float(vp.Height) - 2.0f * dy) / 3.0f)) / 2.0f);
+	}
+	
+	v[0].x = 0.0f + dx; v[0].y = 0.0f + dy;
+	v[1].x = float(vp.Width) - dx; v[1].y = 0.0f + dy;
+	v[2].x = 0.0f + dx; v[2].y = float(vp.Height) - dy;
+	v[3].x = float(vp.Width) - dx; v[3].y = float(vp.Height) - dy;
+	v[0].u = 0.0f; v[0].v = 0.0f;
+	v[1].u = 1.0f; v[1].v = 0.0f;
+	v[2].u = 0.0f; v[2].v = 1.0f;
+	v[3].u = 1.0f; v[3].v = 1.0f;	
+		
 	TextureSet(0, backTexture);
 	if(backTexture < 0) for(i = 0; i < 4; i++) v[i].color = 0;
 	if(backTexture >= 0 && progressTipsTexture >= 0)
@@ -3670,12 +3727,14 @@ void DX8RENDER::ProgressView()
 	}
 	if(backTexture < 0) for(i = 0; i < 4; i++) v[i].color = 0xffffffff;	
 	//Анимированный объект
-	CVECTOR pos(vp.Width*progressFramesPosX, vp.Height*progressFramesPosY, 0.0f);
-	CVECTOR size(vp.Width*progressFramesWidth, vp.Width*progressFramesHeight*m_fHeightDeformator, 0.0f);
-	v[0].x = pos.x; v[0].y = pos.y;
-	v[1].x = pos.x + size.x + 0.5f; v[1].y = pos.y;
-	v[2].x = pos.x; v[2].y = pos.y + size.y + 0.5f;
-	v[3].x = pos.x + size.x + 0.5f; v[3].y = pos.y + size.y + 0.5f;
+	m_fHeightDeformator = ((float)vp.Height * 4.0f)/((float)vp.Width * 3.0f);
+	//api->Trace(" size_x %f", (vp.Width - dx * 2.0f)*progressFramesWidth);
+	CVECTOR pos((vp.Width - dx * 2.0f)*progressFramesPosX + dx, (vp.Height - dy * 2.0f)*progressFramesPosY + dy, 0.0f);
+	CVECTOR size((vp.Width - dx * 2.0f)*progressFramesWidth, (vp.Height - dy * 2.0f)*progressFramesHeight * 4.0f/3.0f, 0.0f);
+	v[0].x = pos.x; 					v[0].y = pos.y;
+	v[1].x = pos.x + size.x + 0.5f; 	v[1].y = pos.y;
+	v[2].x = pos.x; 					v[2].y = pos.y + size.y + 0.5f;
+	v[3].x = pos.x + size.x + 0.5f; 	v[3].y = pos.y + size.y + 0.5f;
 	//Размер сетки кадров
 	long sizeX = progressFramesCountX;
 	long sizeY = progressFramesCountY;
@@ -3706,9 +3765,12 @@ void DX8RENDER::EndProgressView()
 	progressTexture = -1;
 	if(backTexture >= 0) TextureRelease(backTexture);
 	backTexture = -1;
+	if(back0Texture >= 0) TextureRelease(back0Texture);
+	back0Texture = -1;
 	if(progressTipsTexture >= 0) TextureRelease(progressTipsTexture);
 	progressTipsTexture = -1;
 	if(progressImage && progressImageSize > 0) progressImage[0] = 0;
+	if(progressBackImage && progressBackImageSize > 0) progressBackImage[0] = 0;
 	if(progressTipsImage && progressTipsImageSize > 0) progressTipsImage[0] = 0;
 }
 

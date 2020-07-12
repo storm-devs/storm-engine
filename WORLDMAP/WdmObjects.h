@@ -135,7 +135,12 @@ public:
 	char attrMonth[256];			//Месяц на текущем кадре
 	char attrYear[256];				//Год на текущем кадре
 	bool isNextDayUpdate;			//Пора обновить данные следующего дня
-
+	
+	long nationFlagIndex;			//индекс национального флага
+	
+	char coordinate[128];			// для вывода строки координат
+	char stCoordinate[128];
+	
 	float worldSizeX;				//Размер мира по X
 	float worldSizeZ;				//Размер мира по Z
 

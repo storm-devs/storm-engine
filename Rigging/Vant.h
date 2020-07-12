@@ -18,102 +18,134 @@ struct VANTVERTEX
 	float tu, tv;
 };
 
-class VANT : public ENTITY
+class VANT_BASE : public ENTITY
 {
-    // параметры получаемые из INI-файла //
-    //-------------------------------------
-	int ROPE_QUANT;// количество веревок
-	float ROPE_WIDTH;// толщина веревки
-	float upWidth;// ширина верхнего треугольника
-	float upHeight;// высота верхнего треугольника
-	float treangXl;// координаты текстуры треугольника
-	float treangXr;//
-	float treangYu;//
-	float treangYd;//
-	float balkYu;// координаты текстуры балки
-	float balkYd;//
-	float ropeXl;// координаты текстуры вертикальной веревки
-	float ropeXr;//
-	float vRopeXl;// координаты текстуры горизонтальной веревки xBeg
-	float vRopeXr;//
-	float vRopeHeight;// высота вертикальной веревки
-	float hRopeHeight;// высота горизонтальной веревки
-	float fBalkHeight;// высота балки относительно высоты треугольника
-	float fBalkWidth;//
-	float fVantMaxDist;// квадрат расстояния с которого не видны ванты
-	float ZERO_CMP_VAL;// шаг дискретизации движения ванта
-	float MAXFALL_CMP_VAL;// максимальное изменение положения ванта при котором вант перестает отображаться
-    //-------------------------------------
-    FILETIME ft_old;
 
-    bool bUse;
-    bool bRunFirstTime;
-    bool bYesDeleted;
-    int  wVantLast;
+public:	
+	
 	VDX8RENDER  *RenderService;
-    char* TextureName;
-    long texl;
+	
+	VANT_BASE();
+	virtual ~VANT_BASE();
+	 
+	void 		SetDevice();
+	bool 		Init();
+	void 		Realize(dword Delta_Time);
+	void 		Execute(dword Delta_Time);
+	bool 		CreateState(ENTITY_STATE_GEN * state_gen);
+	bool 		LoadState(ENTITY_STATE * state);
+	dword _cdecl    ProcessMessage(MESSAGE & message);
+	
+	virtual void    LoadIni() = 0;
+	
+protected:	
 
-public:
-	 VANT();
-	~VANT();
-	void SetDevice();
-	bool Init();
-	void Realize(dword Delta_Time);
-	void Execute(dword Delta_Time);
-	bool CreateState(ENTITY_STATE_GEN * state_gen);
-	bool LoadState(ENTITY_STATE * state);
-    dword _cdecl ProcessMessage(MESSAGE & message);
+	// параметры получаемые из INI-файла //
+	//-------------------------------------
+	int   ROPE_QUANT;	// количество веревок
+	float ROPE_WIDTH;	// толщина веревки
+	float upWidth;		// ширина верхнего треугольника
+	float upHeight;		// высота верхнего треугольника
+	float treangXl;		// координаты текстуры треугольника
+	float treangXr;		//
+	float treangYu;		//
+	float treangYd;		//
+	float balkYu;		// координаты текстуры балки
+	float balkYd;		//
+	float ropeXl;		// координаты текстуры вертикальной веревки
+	float ropeXr;		//
+	float vRopeXl;		// координаты текстуры горизонтальной веревки xBeg
+	float vRopeXr;		//
+	float vRopeHeight;	// высота вертикальной веревки
+	float hRopeHeight;	// высота горизонтальной веревки
+	float fBalkHeight;	// высота балки относительно высоты треугольника
+	float fBalkWidth;	//
+	float fVantMaxDist;	// квадрат расстояния с которого не видны ванты
+	float ZERO_CMP_VAL;	// шаг дискретизации движения ванта
+	float MAXFALL_CMP_VAL;	// максимальное изменение положения ванта при котором вант перестает отображаться
+	//-------------------------------------
+	FILETIME ft_old;
+	
+	bool 	bUse;
+	bool 	bRunFirstTime;
+	bool 	bYesDeleted;
+	int  	wVantLast;
+	char* 	TextureName;
+	long 	texl;
+	int     VantId;
 
-private:
-    struct VANTDATA
-    {
-        bool bDeleted;
-        CVECTOR pUp,pLeft,pRight;
-        CMatrix *pUpMatWorld,*pDownMatWorld;
-        DWORD sv,nv, st,nt;
+	struct VANTDATA
+	{
+    	    bool 	bDeleted;
+    	    CVECTOR 	pUp,pLeft,pRight;
+    	    CMatrix    *pUpMatWorld, *pDownMatWorld;
+    	    DWORD       sv,nv,st,nt;
 
-        int vantNum;
-        CVECTOR pos[VANT_EDGE];
+    	    int 	vantNum;
+    	    CVECTOR 	pos[VANT_EDGE];
 
-        CVECTOR pUpOld,pLeftOld, pUpStart,pLeftStart;
-        int HostGroup;
-    };
-    int vantQuantity;
-    VANTDATA **vlist;
+    	    CVECTOR     pUpOld,pLeftOld, pUpStart,pLeftStart;
+    	    int 	HostGroup;
+	};
+	int vantQuantity;
+	VANTDATA **vlist;
 
-    struct GROUPDATA
-    {
-        bool bDeleted;
-        int vantQuantity;
-        int *vantIdx;
-        long sVert,nVert;
-        long sIndx,nIndx;
+	struct GROUPDATA
+	{
+    	    bool 	bDeleted;
+    	    int 	vantQuantity;
+    	    int        *vantIdx;
+    	    long 	sVert,nVert;
+    	    long 	sIndx, nIndx;
 
-        CMatrix *pMatWorld;
-        ENTITY_ID model_id;
-		ENTITY_ID shipEI;
-    };
-    int groupQuantity;
-    GROUPDATA *gdata;
+    	    CMatrix    *pMatWorld;
+    	    ENTITY_ID   model_id;
+	    ENTITY_ID 	shipEI;
+	};
+	int groupQuantity;
+	GROUPDATA *gdata;
 
-    void SetVertexes();
-    void SetIndex();
-    void AddLabel(GEOS::LABEL &lbl, NODE* nod);
-    void SetAll();
-    void SetAdd(int firstNum);
-    void LoadIni();
-    void doMove();
-    bool VectCmp(CVECTOR v1,CVECTOR v2,float minCmpVal);
-    void FirstRun();
-    void DoDelete();
+	void 		SetVertexes();
+	void 		SetIndex();
+	void 		AddLabel(GEOS::LABEL &lbl, NODE* nod);
+	void 		SetAll();
+	void 		SetAdd(int firstNum);
+	void 		doMove();
+	bool 		VectCmp(CVECTOR v1,CVECTOR v2,float minCmpVal);
+	void 		FirstRun();
+	void 		DoDelete();
 
-    VANTVERTEX *vertBuf;
+	VANTVERTEX     *vertBuf;
 
-    long vBuf,iBuf;
-    DWORD nVert,nIndx;
+	long 		vBuf,iBuf;
+	DWORD 		nVert, nIndx;
 };
 
+class VANT : public VANT_BASE
+{
+public:
+	VANT() {};
+	virtual ~VANT() {};
+	
+	virtual void    LoadIni();
+};
 
+class VANTL : public VANT_BASE
+{
+public:
+	VANTL() {};
+	virtual ~VANTL() {};
+	
+	virtual void    LoadIni();
+};
+
+class VANTZ : public VANT_BASE
+{
+public:
+	VANTZ() {};
+	virtual ~VANTZ() {};
+	
+	virtual void    LoadIni();
+};
 
 #endif

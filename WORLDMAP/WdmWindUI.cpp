@@ -39,9 +39,14 @@ WdmWindUI::WdmWindUI()
 	txMorale = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\morale.tga");
 	txMoraleMask = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\morale_mask.tga");
 	txMoraleBar = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\morale_bar.tga");
+	txCoord = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\coord.tga");
+	txNationFlag = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\WorldMapEnsigns.tga");
 	dateFont = -1;
 	morale = 0.0f;
 	food = 0;
+	rum = 0;
+//	strcpy(coordinate, "N -- --' W -- --'");
+//	strcpy(stCoordinate, "Coordinates");
 }
 
 WdmWindUI::~WdmWindUI()
@@ -55,6 +60,8 @@ WdmWindUI::~WdmWindUI()
 	if(txMorale >= 0) wdmObjects->rs->TextureRelease(txMorale);
 	if(txMoraleMask >= 0) wdmObjects->rs->TextureRelease(txMoraleMask);
 	if(txMoraleBar >= 0) wdmObjects->rs->TextureRelease(txMoraleBar);
+	if(txCoord >= 0) wdmObjects->rs->TextureRelease(txCoord);
+	if(txNationFlag >= 0) wdmObjects->rs->TextureRelease(txNationFlag);
 }
 
 //============================================================================================
@@ -71,6 +78,7 @@ void WdmWindUI::SetAttributes(ATTRIBUTES * apnt)
 		//Font
 		char * s = ap->GetAttribute("font");
 		if(s && s[0]) dateFont = wdmObjects->wm->GetRS()->LoadFont(s);
+		strcpy(wdmObjects->stCoordinate, ap->GetAttribute("coordinate"));		
 		ATTRIBUTES * a = ap->FindAClass(ap, "monthnames");
 		if(a)
 		{
@@ -90,15 +98,16 @@ void WdmWindUI::SetAttributes(ATTRIBUTES * apnt)
 				}
 			}
 		}
-	}
+	}	
 }
 
 //Отрисовка
 void WdmWindUI::LRender(VDX8RENDER * rs)
 {
+	VDATA * data;
 	if(wdmObjects->isNextDayUpdate)
 	{
-		VDATA * data = api->Event("WorldMap_GetMoral");
+		data = api->Event("WorldMap_GetMoral");
 		if(data)
 		{
 			morale = data->GetFloat()*0.02f - 1.0f;
@@ -108,10 +117,17 @@ void WdmWindUI::LRender(VDX8RENDER * rs)
 		{
 			food = long(data->GetFloat() + 0.5f);
 		}
+		data = api->Event("WorldMap_GetRum");
+		if(data)
+		{
+			rum = long(data->GetFloat() + 0.5f);
+		}
 		if(morale < -1.0f) morale = -1.0f;
 		if(morale > 1.0f) morale = 1.0f;
 		if(food < 0) food = 0;
-		if(food > 1000000000) morale = 1000000000;
+		if(food > 1000000000) food = 1000000000;
+		if(rum < 0) rum = 0;
+		if(rum > 1000000000) rum = 1000000000;
 	}
 	//Параметры ветра у игрока
 	float x, y, ay;
@@ -192,6 +208,39 @@ void WdmWindUI::LRender(VDX8RENDER * rs)
 	_snprintf(tbuf, sizeof(tbuf) - 1, "%i", food);
 	tbuf[sizeof(tbuf) - 1] = 0;
 	fw = rs->StringWidth(tbuf, font);
-	rs->Print(font, 0xffffffff, long(cx - fw*0.5f), long(cy + 30.0f), tbuf);
+	rs->Print(font, 0xffffffff, long(cx - 24.0f - fw*0.5f), long(cy + 30.0f), tbuf);
+	//Пишем количество рома --> ugeen 29.10.10
+	_snprintf(tbuf, sizeof(tbuf) - 1, "%i", rum);
+	tbuf[sizeof(tbuf) - 1] = 0;
+	fw = rs->StringWidth(tbuf, font);
+	rs->Print(font, 0xffffffff, long(cx + 24.0f - fw*0.5f), long(cy + 30.0f), tbuf);
+		
+	//Рамка с координатами
+	rs->TextureSet(0, txCoord);
+	FillRectCoord(buf, cx - 64.0f, cy + 64.0f, 128.0f, 64.0f);
+	FillRectUV(buf, 0.0f, 0.0f, 1.0f, 1.0f);
+	FillRectColor(buf, 0xffffffff);
+	DrawRects(buf, 1, "WdmDrawMapBlend");
+	
+	// выводим строку с координатами
+	_snprintf(tbuf, sizeof(tbuf) - 1, "%s", wdmObjects->coordinate);
+	tbuf[sizeof(tbuf) - 1] = 0;
+	fw = rs->StringWidth(tbuf, font);		
+	fh = rs->CharHeight(font);
+	rs->Print(font, 0xffffffff, long(cx - fw*0.5f), long(cy + 64.0f + 44.0f- fh*0.5f), tbuf);								
+	
+	_snprintf(tbuf, sizeof(tbuf) - 1, "%s", wdmObjects->stCoordinate);
+	tbuf[sizeof(tbuf) - 1] = 0;
+	fw = rs->StringWidth(tbuf, font);		
+	fh = rs->CharHeight(font);
+	rs->Print(font, 0xffffffff, long(cx - fw*0.5f), long(cy + 64.0f + 20.0f- fh*0.5f), tbuf);	
 
+	// национальный флаг
+	float addtu = 0.125;
+	rs->TextureSet(0, txNationFlag);
+	FillRectCoord(buf, cx - 24.0f, cy + 150.0f, 48.0f, 48.0f);
+	FillRectUV(buf, wdmObjects->nationFlagIndex * addtu, 0.0f, addtu, 1.0f);
+	FillRectColor(buf, 0xffffffff);
+	DrawRects(buf, 1, "WdmDrawMapBlend");
+	// <-- ugeen	
 }

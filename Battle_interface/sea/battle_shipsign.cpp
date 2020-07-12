@@ -675,14 +675,14 @@ float BIShipIcon::GetProgressShipClass(long nShipNum)
 
 void BIShipIcon::GetShipUVFromPictureIndex( long nPicIndex, FRECT& rUV )
 {
-	long ny = nPicIndex / 8;
-	long nx = nPicIndex - ny*8;
-	rUV.left = nx * .125f;
+	long ny = nPicIndex / 16;
+	long nx = nPicIndex - ny*16;
+	rUV.left = nx * .0625f;
 	//rUV.top = ny * .25f;
-	rUV.top = ny * .125f; //boal
-	rUV.right = rUV.left + .125f;
+	rUV.top = ny * .0625f; //boal
+	rUV.right = rUV.left + .0625f;
 	//rUV.bottom = rUV.top + .25f;
-	rUV.bottom = rUV.top + .125f; //boal
+	rUV.bottom = rUV.top + .0625f; //boal
 }
 
 long BIShipIcon::GetShipClass(long nCharIdx)

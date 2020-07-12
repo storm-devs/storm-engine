@@ -28,6 +28,7 @@ Fader::Fader()
 	surface = null;
 	renderTarget = null;
 	textureID = -1;
+	textureBackID = -1;
 	tipsID = -1;
 	eventStart = false;
 	eventEnd = false;
@@ -43,6 +44,7 @@ Fader::~Fader()
 	if(rs)
 	{
 		if(textureID >= 0) rs->TextureRelease(textureID);
+		if(textureBackID >= 0) rs->TextureRelease(textureBackID);
 		if(tipsID >= 0) rs->TextureRelease(tipsID);
 	}
 }
@@ -87,10 +89,11 @@ bool Fader::Init()
 		INIFILE * ini = api->fio->OpenIniFile(api->EngineIniFileName());
 		if(ini)
 		{
-			numberOfTips = ini->GetLong(null, "numoftips", -1);
+			numberOfTips = ini->GetLong(null, "ProgressFrame", 1);
 			delete ini;
-		}else numberOfTips = -1;
-		if(numberOfTips > 9999) numberOfTips = 9999;
+		}else numberOfTips = 1;
+		if(numberOfTips > 1) numberOfTips = 1;
+		if(numberOfTips < 0) numberOfTips = 0;
 	}
 	return true;
 	UNGUARD
@@ -145,28 +148,26 @@ dword _cdecl Fader::ProcessMessage(MESSAGE & message)
 			//Текстура подсказки
 			if(numberOfTips > 0)
 			{
-				sprintf(_name, "tips\\tips_%.4u.tga", rand() % numberOfTips);
+				sprintf(_name, "interfaces\\int_border.tga");
 				tipsID = rs->TextureCreate(_name);
 				rs->SetTipsImage(_name);
 			}
 		}
 		break;
 	case FADER_PICTURE0:
-		if(textureID >= 0 && rs) rs->TextureRelease(textureID);
+		if(textureBackID >= 0 && rs) rs->TextureRelease(textureBackID);
 		message.String(sizeof(_name),_name);
-		textureID = rs->TextureCreate(_name);
+		textureBackID = rs->TextureCreate(_name);
 		if(rs)
 		{
-			rs->SetProgressImage(_name);
+			rs->SetProgressBackImage(_name);
 			//Текстура подсказки
 			if(numberOfTips > 0)
 			{
-				//sprintf(_name, "tips\\tips_%.4u.tga", rand() % numberOfTips);
 				char * pTipsName = rs->GetTipsImage();
 				if(pTipsName)
 				{
 					tipsID = rs->TextureCreate(pTipsName);
-					//rs->SetTipsImage(_name);
 				}
 			}
 		}
@@ -225,7 +226,7 @@ void Fader::Realize(dword delta_time)
 			{
 				//Надо снять шот
 				bool isOk = false;
-				D3DSURFACE_DESC desc;
+				D3DSURFACE_DESC desc;				
 				if(renderTarget->GetDesc(&desc) == D3D_OK)
 				{			
 					if(rs->CreateImageSurface(desc.Width, desc.Height, desc.Format, &surface) == D3D_OK)
@@ -236,13 +237,13 @@ void Fader::Realize(dword delta_time)
 						}
 					}
 				}
-				if(!isOk) _CORE_API->Trace("Screen shot for fader not created!");
+				if(!isOk) _CORE_API->Trace("Screen shot for fader not created!");				
 			}else{
-				//Копируем шот
+				//Копируем шот				
 				if(rs->CopyRects(surface, null, 0, renderTarget, null) != D3D_OK)
 				{
 					_CORE_API->Trace("Can't copy fader screen shot to render target!");
-				}
+				}				
 			}
 		}
 	}
@@ -253,6 +254,7 @@ void Fader::Realize(dword delta_time)
 		dword color;
 		float u, v;
 	} drawbuf[6];
+	
 	if(alpha >= 1.0f)
 	{
 		alpha = 1.0f;
@@ -263,13 +265,35 @@ void Fader::Realize(dword delta_time)
 		}
 	}
 	dword color = (dword((fadeIn ? (1.0f - alpha) : alpha)*255.0f) << 24);
-	if(textureID >= 0)  color |= 0x00ffffff;
+	if(textureBackID >= 0)  color |= 0x00ffffff;
+	
 	drawbuf[0].x = 0.0f; drawbuf[0].y = 0.0f; drawbuf[0].z = 0.5f; drawbuf[0].rhw = 1.0f; drawbuf[0].color = color; drawbuf[0].u = 0.0f; drawbuf[0].v = 0.0f;
 	drawbuf[1].x = w;    drawbuf[1].y = 0.0f; drawbuf[1].z = 0.5f; drawbuf[1].rhw = 1.0f; drawbuf[1].color = color; drawbuf[1].u = 1.0f; drawbuf[1].v = 0.0f;
-	drawbuf[2].x = 0.0f; drawbuf[2].y = h; drawbuf[2].z = 0.5f; drawbuf[2].rhw = 1.0f; drawbuf[2].color = color; drawbuf[2].u = 0.0f; drawbuf[2].v = 1.0f;
-	drawbuf[3].x = 0.0f; drawbuf[3].y = h; drawbuf[3].z = 0.5f; drawbuf[3].rhw = 1.0f; drawbuf[3].color = color; drawbuf[3].u = 0.0f; drawbuf[3].v = 1.0f;
+	drawbuf[2].x = 0.0f; drawbuf[2].y = h;    drawbuf[2].z = 0.5f; drawbuf[2].rhw = 1.0f; drawbuf[2].color = color; drawbuf[2].u = 0.0f; drawbuf[2].v = 1.0f;
+	drawbuf[3].x = 0.0f; drawbuf[3].y = h;    drawbuf[3].z = 0.5f; drawbuf[3].rhw = 1.0f; drawbuf[3].color = color; drawbuf[3].u = 0.0f; drawbuf[3].v = 1.0f;
 	drawbuf[4].x = w;    drawbuf[4].y = 0.0f; drawbuf[4].z = 0.5f; drawbuf[4].rhw = 1.0f; drawbuf[4].color = color; drawbuf[4].u = 1.0f; drawbuf[4].v = 0.0f;
 	drawbuf[5].x = w;    drawbuf[5].y = h;    drawbuf[5].z = 0.5f; drawbuf[5].rhw = 1.0f; drawbuf[5].color = color; drawbuf[5].u = 1.0f; drawbuf[5].v = 1.0f;
+	rs->TextureSet(0, textureBackID);
+	rs->DrawPrimitiveUP(D3DPT_TRIANGLELIST, D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2, 2, drawbuf, sizeof(drawbuf[0]), "Fader");
+		
+	if(textureID >= 0)  	color |= 0x00ffffff;
+	
+	float dy = 0.0f;
+	float dx = ((float(w) - (4.0f * float(h) / 3.0f)) / 2.0f);
+	if(dx < 10.0f) dx = 0.0f;
+	else
+	{
+		dy = 25.0f; 
+		dx = ((float(w) - (4.0f * (float(h) - 2.0f * dy) / 3.0f)) / 2.0f);
+	}
+		
+	drawbuf[0].x = 0.0f + dx; drawbuf[0].y = 0.0f + dy;
+	drawbuf[1].x = w - dx;    drawbuf[1].y = 0.0f + dy;
+	drawbuf[2].x = 0.0f + dx; drawbuf[2].y = h - dy;
+	drawbuf[3].x = 0.0f + dx; drawbuf[3].y = h - dy;
+	drawbuf[4].x = w - dx;    drawbuf[4].y = 0.0f + dy;
+	drawbuf[5].x = w - dx;    drawbuf[5].y = h - dy;
+
 	rs->TextureSet(0, textureID);
 	if(tipsID >= 0)
 	{

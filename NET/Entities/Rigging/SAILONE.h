@@ -106,7 +106,8 @@ enum SAIL_TYPE {
     SAIL_SQUARE,
     SAIL_TRAPECIDAL,
     SAIL_GERBED,
-    SAIL_ROLLING
+    SAIL_ROLLING,
+	SAIL_SPECIAL
 };
 
 struct SAILSTATE {
@@ -118,6 +119,9 @@ struct SAILSTATE {
 
     // точки привязки паруса
 	CVECTOR hardPoints[4];
+
+	bool bYesLimitPoint;
+	CVECTOR LimitPoint;
 
     // номер текстуры
     WORD texNum;
@@ -200,6 +204,7 @@ private:
 	void ChangeHoleDwordCode();
 	DWORD GetMaxHoleCount() { return ss.eSailType==SAIL_TREANGLE?10:12;}
 	void SetHoleState(long nHoleCode);
+	float GetDistanceFromPointTo3Point(const CVECTOR& v, const CVECTOR& vB1, const CVECTOR& vB2, const CVECTOR& vB3);
 
     // Параметры воздействия ветра
     //------------------------------

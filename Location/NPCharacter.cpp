@@ -63,6 +63,7 @@ NPCharacter::NPCharacter()
 	defencePrbBlock = 0.9f;
 	defencePrbParry = 0.1f;
 	isRecoilEnable = true;
+	isStunEnable = true; // ugeen 29.12.10
 	//Стрельба
 	fireCur = 0.0f;
 	isFireEnable = true;
@@ -133,7 +134,10 @@ bool NPCharacter::PostInit()
 	vd = api->Event("NPC_Event_EnableFire", "i", GetID());
 	tmpBool = isFireEnable;
 	if(vd && vd->Get(tmpBool)) isFireEnable = tmpBool != 0;
-	//Пормализация параметров
+	vd = api->Event("NPC_Event_EnableStun", "i", GetID());
+	tmpBool = isStunEnable;
+	if(vd && vd->Get(tmpBool)) isStunEnable = tmpBool != 0;
+	//Нормализация параметров
 	if(attackCur < 0.0f) attackCur = 0.0f;
 	if(attackCur > 1000.0f) attackCur = 1000.0f;
 	if(defenceCur < 0.0f) defenceCur = 0.0f;
@@ -566,6 +570,10 @@ void NPCharacter::UpdateFightCharacter(float dltTime)
 			//CmdStay();
 	}
 
+	VDATA * vd = api->Event("NPC_Event_EnableStun", "i", GetID());
+	long tmpBool = isStunEnable;
+	if(vd && vd->Get(tmpBool)) isStunEnable = tmpBool != 0;
+	
 	float kdst;
 
 	bool bVisTarget = VisibleTest(c);
@@ -820,6 +828,7 @@ void NPCharacter::DoFightActionAnalysisNone(float dltTime, NPCharacter * enemy)
 //		if(!chr->isFight) continue;
 		//Группа воюющего
 		long grp = chrGroup->FindGroupIndex(chr->group);
+		if(grp < 0 || grpIndex < 0) return;
 		//Отношение его группы к нашей
 		if(chrGroup->FindRelation(grpIndex, grp).curState != CharactersGroups::rs_enemy) continue;
 		//Это враг

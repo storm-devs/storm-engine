@@ -202,7 +202,7 @@ void AIShipCannonController::Execute(float fDeltaTime)
 
 			pACurBort->SetAttributeUseFloat("MaxFireDistance", pBort->fMaxFireDistance);
 			pACurBort->SetAttributeUseFloat("ChargeRatio", pBort->fChargePercent);
-			pACurBort->SetAttributeUseFloat("DamageRatio", 1.0f - (float)GetBortIntactCannonsNum(i) / (float)pBort->aCannons.Size());
+			pACurBort->SetAttributeUseFloat("DamageRatio", 1.0f - ((float)GetBortIntactCannonsNum(i) + (float)GetBortDisabledCannonsNum(i)) / (float)pBort->aCannons.Size());
 		}
 	}
 }
@@ -565,11 +565,13 @@ bool AIShipCannonController::Init(ATTRIBUTES *_pAShip)
 {
 	pAShip = _pAShip;
 
-	ATTRIBUTES	* pACharacter = GetAIShip()->GetACharacter();
+	ATTRIBUTES	* pACharacter = GetAIShip()->GetACharacter(); Assert(pACharacter);
 	ATTRIBUTES	* pABorts = pACharacter->FindAClass(pACharacter, "Ship.Cannons.Borts"); Assert(pABorts);
 
 	// init borts from ShipsTypes attributes
-	ATTRIBUTES * pAP = pAShip->FindAClass(pAShip,"Cannons.Borts"); if (!pAP) return false;
+	ATTRIBUTES * pAP = pAShip->FindAClass(pAShip,"Cannons.Borts"); 
+	
+	if (!pAP) return false;
 	dword dwIdx = 0;
 	while(true)
 	{
@@ -603,6 +605,7 @@ bool AIShipCannonController::ScanShipForCannons()
 	GEOS::LABEL	label;
 	GEOS::INFO	info;
 	NODE		*pNode;
+	float       fDamage;
 
 	ATTRIBUTES	* pACharacter = GetAIShip()->GetACharacter();
 	ATTRIBUTES	* pABorts = pACharacter->FindAClass(pACharacter, "Ship.Cannons.Borts"); Assert(pABorts);
@@ -622,12 +625,12 @@ bool AIShipCannonController::ScanShipForCannons()
 				memcpy(m,label.m,sizeof(m));
 				aShipBorts[j].fOurBortFireHeight += m.Pos().y;
 				pCannon->Init(GetAIShip(), GetAIShip()->GetShipEID(), label);
-
 				sprintf(str, "%s.damages", label.group_name);
 				ATTRIBUTES * pADamages = pABorts->FindAClass(pABorts, str);
 				sprintf(str, "c%d", aShipBorts[j].aCannons.Size() - 1);
-				float fDamage = pADamages->GetAttributeAsFloat(str, 0.0f);
-				pADamages->SetAttributeUseFloat(str, fDamage);
+				if(pADamages!=NULL)	fDamage = pADamages->GetAttributeAsFloat(str, 0.0f);
+				else 				fDamage = 0.0f;	
+				if(pADamages!=NULL) pADamages->SetAttributeUseFloat(str, fDamage);
 				pCannon->SetDamage(fDamage);
 				if (pCannon->isDamaged()) aShipBorts[j].dwNumDamagedCannons++;
 
@@ -669,6 +672,14 @@ dword AIShipCannonController::GetBortIntactCannonsNum(dword dwBortIdx)
 	Assert(dwBortIdx != INVALID_BORT_INDEX && dwBortIdx < aShipBorts.Size());
 	dword dwCannons = 0;
 	for (dword j=0; j<aShipBorts[dwBortIdx].aCannons.Size(); j++) if (!aShipBorts[dwBortIdx].aCannons[j].isDamaged()) dwCannons++;
+	return dwCannons;
+}
+
+dword AIShipCannonController::GetBortDisabledCannonsNum(dword dwBortIdx)
+{
+	Assert(dwBortIdx != INVALID_BORT_INDEX && dwBortIdx < aShipBorts.Size());
+	dword dwCannons = 0;
+	for (dword j=0; j<aShipBorts[dwBortIdx].aCannons.Size(); j++) if (aShipBorts[dwBortIdx].aCannons[j].isDisabled()) dwCannons++;
 	return dwCannons;
 }
 
@@ -732,7 +743,7 @@ void AIShipCannonController::CheckCannonsBoom(float fTmpCannonDamage, const CVEC
 			if (pC->isDamaged())
 			{
 				//pBort->dwNumDamagedCannons++;
-				pACurBort->SetAttributeUseFloat("DamageRatio", 1.0f - (float)GetBortIntactCannonsNum(i) / (float)pBort->aCannons.Size());
+				pACurBort->SetAttributeUseFloat("DamageRatio", 1.0f - ((float)GetBortIntactCannonsNum(i) + (float)GetBortDisabledCannonsNum(i)) / (float)pBort->aCannons.Size());
 			}
 		}
 	}
@@ -766,7 +777,7 @@ void AIShipCannonController::ResearchCannons()
 			if (pC->isDamaged())
 			{
 				pBort->dwNumDamagedCannons++;
-				pACurBort->SetAttributeUseFloat("DamageRatio", 1.0f - (float)GetBortIntactCannonsNum(i) / (float)pBort->aCannons.Size());
+				pACurBort->SetAttributeUseFloat("DamageRatio", 1.0f - ((float)GetBortIntactCannonsNum(i) + (float)GetBortDisabledCannonsNum(i)) / (float)pBort->aCannons.Size());
 			}
 		}
 	}

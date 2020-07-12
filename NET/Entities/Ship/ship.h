@@ -14,6 +14,7 @@
 #define RESERVED_STRENGTH	1
 
 #define MAX_KEEL_POINTS		5
+#define TOPMAST_BEGIN		100		// ?????? ????????? ?????? (???? ??
 
 class NetShipCannonController;
 class NetTouch;
@@ -29,6 +30,15 @@ struct mast_t
 	CVECTOR		vSrc, vDst;			// src and dest vectors
 	long		iMastNum;			// mast number
 	bool		bBroken;			// if mast is broken then pNode = 0
+	float		fDamage;
+};
+
+struct hull_t
+{
+	NODE		* pNode;			// node pointer in model
+	CVECTOR		vSrc, vDst;			// src and dest vectors
+	long		iHullNum;			// hull detail number
+	bool		bBroken;			// if hull detail is broken then pNode = 0
 	float		fDamage;
 };
 
@@ -94,8 +104,10 @@ struct can_fire_t
 	CVECTOR			vDeadDir, vCurDeadDir;
 	CVECTOR			vKeelContour[MAX_KEEL_POINTS];
 	long			iNumMasts;
+	long			iNumHulls; 
 	mast_t			* pMasts;
-	array<dword>	aMastFalls;
+	hull_t			* pHulls;
+        array<dword>	        aMastFalls;
 	array<NetShip*>	aShips;
 	bool			bShip2Strand;
 	bool			bMounted;
@@ -123,6 +135,8 @@ struct can_fire_t
 	float		GetImmersion();						//
 	void		CheckShip2Strand(float fDeltaTime);							
 	void		MastFall(mast_t * pM);
+	void 		MastFallChild(mast_t * pM);
+	void		HullFall(hull_t * pM);
 
 	CMatrix		UpdateModelMatrix();
 	
@@ -145,11 +159,13 @@ public:
 
 	float		GetMaxSpeedZ();
 	float		GetMaxSpeedY();
+	float 		GetWindAgainst();
 	long		AddStrength(STRENGTH *strength);
 	bool		DelStrength(long iIdx);
 	
 	BOOL		BuildContour(CVECTOR * vContour, long &iNumVContour);
 	bool		BuildMasts();
+	bool		BuildHulls();
 
 	bool		Move(DWORD DeltaTime, bool bCollision);
 	BOOL		TouchMove(DWORD DeltaTime, TOUCH_PARAMS *pTPOld, TOUCH_PARAMS *pTPNew);

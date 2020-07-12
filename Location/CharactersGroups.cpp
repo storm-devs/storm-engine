@@ -239,7 +239,7 @@ void CharactersGroups::FindEnemyFromFindList(Character * chr, Group * grp, long 
 	{
 		//Группа найденного персонажа
 		long gi = GetCharacterGroup(fnd[i].c);
-		if(gi < 0) continue;
+		if(gi < 0 || grp->index < 0) continue;
 		Relation & r = FindRelation(grp->index, gi);
 		if(r.curState != rs_enemy) continue;
 		//Обнаружен враг, если невидим, то пропустим его
@@ -260,7 +260,7 @@ void CharactersGroups::FindEnemyFromFindList(Character * chr, Group * grp, long 
 			if(!chr->VisibleTest(c)) continue;
 			//Получим группу персонажа
 			long cgrp = GetCharacterGroup(c);
-			if(cgrp < 0) continue;
+			if(cgrp < 0 || grp->index < 0) continue;
 			//Группа найденного персонажа
 			Relation & r = FindRelation(grp->index, cgrp);
 			if(r.curState != rs_friend) continue;
@@ -344,10 +344,10 @@ bool CharactersGroups::RemoveInvalidTargets(Character * chr, Character * check)
 		Character * c = (Character *)api->GetEntityPointer(&trg.chr);
 		if(c && (trg.time < trg.timemax || trg.timemax < 0.0f))
 		{
-			if(!c->IsDead())
+			long gc = GetCharacterGroup(c);
+			if(!c->IsDead() && gc >= 0)
 			{
 				//Персонаж существует и о нём помнят
-				long gc = GetCharacterGroup(c);
 				Relation & r = FindRelation(gi, gc);
 				if(r.curState == rs_enemy)
 				{
@@ -632,7 +632,7 @@ void CharactersGroups::MsgAddTarget(MESSAGE & message)
 			Character * c = fnd[i].c;
 			//Если невидим, то пропустим его
 			if(!chr->VisibleTest(c)) continue;
-			//Группа найденного персонажа
+			//Группа найденного персонажа			
 			Relation & r = FindRelation(g1, GetCharacterGroup(c));
 			if(r.curState != rs_friend) continue;
 			AddEnemyTarget(c, enemy);			

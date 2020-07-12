@@ -63,15 +63,13 @@ END
 //
 // Dialog
 //
-
-IDD_ABOUTBOX DIALOG  0, 0, 235, 82
+IDD_ABOUTBOX DIALOGEX 0, 0, 235, 82
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About Setup"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    ICON            128,IDC_STATIC,104,7,20,20
-    CTEXT           "Настройки v 2.0",IDC_STATIC,86,31,62,8,SS_NOPREFIX
-    CTEXT           "Я тут был (C) 2003",IDC_STATIC,86,46,62,8
+    CTEXT           "Setup Version 2.0",IDC_STATIC,86,31,62,8,SS_NOPREFIX
+    CTEXT           "Copyright (C) 2000",IDC_STATIC,86,46,62,8
     DEFPUSHBUTTON   "OK",IDOK,89,61,50,14,WS_GROUP
 END
 
@@ -79,45 +77,44 @@ IDD_SETUP_DIALOG DIALOGEX 0, 0, 227, 186
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
     WS_SYSMENU
 EXSTYLE WS_EX_APPWINDOW
-CAPTION "Корсары: Возвращение Легенды"
+CAPTION "Seadogs: To Each His Own"
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "Сохранить",IDOK,6,165,50,14
-    PUSHBUTTON      "Выход",IDCANCEL,170,165,50,14
-    LTEXT           "Разрешение",IDC_STATIC,14,35,43,8
-    COMBOBOX        IDC_RESOLUTIONLIST,60,33,70,121,CBS_DROPDOWNLIST | 
+    LTEXT           "Resolution",IDC_STATIC,14,35,34,8
+    GROUPBOX        "Display options",IDC_STATIC,7,5,213,77
+    CONTROL         "Fullscreen mode",IDC_FULLSCREEN,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,14,50,74,10
+    COMBOBOX        IDC_RESOLUTIONLIST,57,33,70,121,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "Настройки видео",IDC_STATIC,7,5,213,77
-    CONTROL         "Полноэкранный режим",IDC_FULLSCREEN,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,14,50,94,10
-    GROUPBOX        "Настройки звука",IDC_STATIC,7,84,213,74
-    CONTROL         "Выключить звук",IDC_SND_MUS_ON,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,27,97,71,10
+    GROUPBOX        "Sound options",IDC_STATIC,7,84,213,74
+    CONTROL         "Sound off",IDC_SND_MUS_ON,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,27,97,47,10
+    LTEXT           "Music volume",IDC_STATIC,12,112,48,9
     CONTROL         "Slider1",IDC_MUSIC_VOL,"msctls_trackbar32",TBS_BOTH | 
-                    TBS_NOTICKS | WS_TABSTOP,90,111,124,12
-    LTEXT           "Громкость музыки",IDC_STATIC,12,112,74,9
+                    TBS_NOTICKS | WS_TABSTOP,68,111,146,12
+    LTEXT           "Effects volume",IDC_STATIC,12,126,48,9
+    DEFPUSHBUTTON   "&Save",IDOK,6,163,50,14
     CONTROL         "Slider1",IDC_SOUND_VOL,"msctls_trackbar32",TBS_BOTH | 
-                    TBS_NOTICKS | WS_TABSTOP,90,125,124,12
-    LTEXT           "Громкость эффектов",IDC_STATIC,12,126,74,9
-    PUSHBUTTON      "По умолчанию",IDC_DEFAULTSETTINGS,113,165,53,14
-    PUSHBUTTON      "Игра",ID_STARTGAME,59,165,50,14
-    LTEXT           "Устройство",IDC_STATIC,14,19,41,8
-    COMBOBOX        IDC_DEVICELIST,60,16,150,137,CBS_DROPDOWN | CBS_SORT | 
+                    TBS_NOTICKS | WS_TABSTOP,68,125,146,12
+    LTEXT           "Device",IDC_STATIC,14,19,24,8
+    COMBOBOX        IDC_DEVICELIST,57,16,157,137,CBS_DROPDOWN | CBS_SORT | 
                     WS_DISABLED | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Slider1",IDC_DIALOG_VOL,"msctls_trackbar32",TBS_BOTH | 
-                    TBS_NOTICKS | WS_TABSTOP,90,139,124,12
-    LTEXT           "Громкость диалогов",IDC_STATIC,12,140,74,9
-    CONTROL         "Безопасный режим",IDC_SAFE_RENDER,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,124,97,83,10
-    LTEXT           "Качество текстур",IDC_STATIC,14,66,60,8
+                    TBS_NOTICKS | WS_TABSTOP,68,139,146,12
+    LTEXT           "Dialogue volume",IDC_STATIC,12,140,57,9
+    CONTROL         "Safe mode",IDC_SAFE_RENDER,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,145,97,50,10
+    LTEXT           "Texture quality :",IDC_STATIC,14,66,51,8
     CONTROL         "Slider1",IDC_TEXTURE_QUALITY,"msctls_trackbar32",
                     TBS_AUTOTICKS | TBS_TOP | TBS_ENABLESELRANGE | 
-                    WS_TABSTOP,79,57,74,22
-    LTEXT           "High",IDC_TEXQUALITY_INFO,160,67,56,8
-    CONTROL         "Постпроцессинг",IDC_GLOW,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,136,35,72,10
+                    WS_TABSTOP,72,57,74,22
+    LTEXT           "High",IDC_TEXQUALITY_INFO,154,67,42,8
+    CONTROL         "Post-Processing",IDC_GLOW,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,136,35,67,10
+    PUSHBUTTON      "Save && &Play",ID_STARTGAME,60,163,50,14
+    PUSHBUTTON      "&Default",IDC_DEFAULTSETTINGS,115,163,50,14
+    PUSHBUTTON      "&Cancel",IDCANCEL,170,163,50,14
 END
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -156,7 +153,6 @@ IDR_MAINFRAME           ICON                    "icon1.ico"
 //
 // String Table
 //
-
 STRINGTABLE 
 BEGIN
     IDS_ABOUTBOX            "&About Setup..."
@@ -165,38 +161,38 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDC_DEVICELIST          "Выберите устройство Direct3D, которое будет использоваться игрой"
-    IDC_RESOLUTIONLIST      "Выберите размер окна/разрешение в полноэкранном режиме"
-    IDC_FULLSCREEN          "Переключатель полноэкранного/оконного режима"
-    IDC_MUSIC_VOL           "Регулирует громкость музыки"
+    IDC_DEVICELIST          "Choose the Direct3D device that will be used by the game"
+    IDC_RESOLUTIONLIST      "Choose the window size/fullscreen resolution"
+    IDC_FULLSCREEN          "Toggles fullscreen/windowed mode"
+    IDC_MUSIC_VOL           "Adjusts the music volume"
 END
 
 STRINGTABLE 
 BEGIN
-    IDC_SOUND_VOL           "Регулирует громкость эффектов"
-    IDC_DIALOG_VOL          "Регулирует громкость диалогов персонажей"
-    IDS_INITERROR           "Для запуска установки нужен DirectX версии 8.0 или выше."
-    IDS_INIMISSED           "Engine.ini или options файл не найден."
-    IDS_OPENFILE            "Выберите директорию куда игра была установлена"
-    IDC_SND_MUS_ON          "Эта опция полностью отключает звук в игре"
-    IDS_TEXQUALITY_LOW      "Плохое"
-    IDC_SAFE_RENDER         "Включение этой опции может помочь при заикании звука в игре"
-    IDS_TEXQUALITY_MEDIUM   "Среднее"
-    IDS_TEXQUALITY_HIGH     "Высокое"
-    IDC_TEXTURE_QUALITY     "Качество текстур в игре. Уменьшите если игра работает медленно"
+    IDC_SOUND_VOL           "Adjusts the effects volume"
+    IDC_DIALOG_VOL          "Adjusts the character dialogue volume"
+    IDS_INITERROR           "Can't initialize directdraw device. Check DirectX installation."
+    IDS_INIMISSED           "Engine.ini or options file missed."
+    IDS_OPENFILE            "Select the folder Pirates Of The Caribbean is installed to"
+    IDC_SND_MUS_ON          "Check this option to turn off the sound completely"
+    IDS_TEXQUALITY_LOW      "Low"
+    IDC_SAFE_RENDER         "Turning this option on if you experience sound skipping"
+    IDS_TEXQUALITY_MEDIUM   "Medium"
+    IDS_TEXQUALITY_HIGH     "High"
+    IDC_TEXTURE_QUALITY     "Adjusts the textures quality. Low quality may improve the game's performance"
 END
 
 STRINGTABLE 
 BEGIN
-    IDOK                    "Сохранить настройки и выйти."
-    IDCANCEL                "Отменить все изменения и выйти."
-    IDC_DEFAULTSETTINGS     "Установить значения по умолчанию."
-    ID_STARTGAME            "Сохранить настройки и запустить игру."
+    IDOK                    "Save all changes and exit."
+    IDCANCEL                "Cancel all changes and exit."
+    IDC_DEFAULTSETTINGS     "Reset settings to default."
+    ID_STARTGAME            "Save preferences and start the game"
 END
 
 STRINGTABLE 
 BEGIN
-    IDC_ARCADE_MODE         "Увеличивает скорость перезарядки пушек, скорость и маневренность всех кораблей"
+    IDC_ARCADE_MODE         "Switch game to arcade mode with fast ships and short cannon reloading time"
 END
 
 #endif    // Russian resources
@@ -333,7 +329,7 @@ IDD_SETUP_DIALOG DIALOGEX 0, 0, 227, 186
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
     WS_SYSMENU
 EXSTYLE WS_EX_APPWINDOW
-CAPTION "Seadogs: Legend is back"
+CAPTION "Seadogs: To Each His Own"
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     LTEXT           "Resolution",IDC_STATIC,14,35,34,8

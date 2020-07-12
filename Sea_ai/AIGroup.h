@@ -18,6 +18,7 @@ private:
 	string				sGroupType;
 	CVECTOR				vInitGroupPos, vMovePoint;
 	bool				bFirstExecute;
+	long				iWarShipsNum, iTradeShipsNum;
 
 	ATTRIBUTES			* pACommander;
 
@@ -28,10 +29,11 @@ public:
 	AIGroup() : aGroupShips(_FL_) {};
 	AIGroup(const char * pGroupName);
 	virtual ~AIGroup();
-
+	
 	// global group container, accessible for AIGroup and SEA_AI.
 		static array<AIGroup*>	AIGroups;
 		static float			fDistanceBetweenGroupShips;
+		static float			fDistanceBetweenGroupLines;
 
 	// static functions
 		static AIGroup	* FindGroup(ATTRIBUTES * pACharacter);

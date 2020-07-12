@@ -490,6 +490,7 @@ void WorldMap::Realize(dword delta_time)
 #endif
 		encTime = 0.0f;
 	}
+	
 	rs->SetRenderState(D3DRS_FOGENABLE, FALSE);
 	rs->SetRenderState(D3DRS_LIGHTING, FALSE);
 	for(i = firstPrObject; i >= 0; i = object[i].next)
@@ -507,6 +508,12 @@ void WorldMap::Realize(dword delta_time)
 	//Обновим ветер
 	wdmObjects->UpdateWind(dltTime);
 	wdmObjects->isNextDayUpdate = false;
+	CVECTOR windDir;
+	float x, z, ay;
+	wdmObjects->playerShip->GetPosition(x, z, ay);
+	float widForce = wdmObjects->GetWind(x, z, windDir);
+	float ang = (float)atan2(windDir.x, windDir.z);
+	api->Event("WorldMap_GetWindParameters", "ff", widForce, ang);
 	//Проверим атрибут обновления энкоунтера
 	if(AttributesPointer)
 	{
@@ -581,7 +588,14 @@ dword _cdecl WorldMap::ProcessMessage(MESSAGE & message)
 			if(!((WdmPlayerShip *)wdmObjects->playerShip)->ExitFromMap()) _CORE_API->Event("ExitFromWorldMap");
 		}else _CORE_API->Event("ExitFromWorldMap");
 		break;
+	case MSG_WORLDMAP_SET_NATION_FLAG:
+		wdmObjects->nationFlagIndex = message.Long();
+		break;		
+	case MSG_WORLDMAP_SET_COORDINATES:	
+		message.String(sizeof(wdmObjects->coordinate), wdmObjects->coordinate);
+		break;
 	}
+	
 	return 0;
 }
 

@@ -159,6 +159,7 @@ private:
 	SAILONE * FindSailFromData(int gn,char* nodeName,char* grName);
 	void	SetSailTextures(long grNum, VDATA* pvd);
 	void	DoRandomsSailsDmg(int chrIdx, int gn, float fDmg);
+	void	GetSailStatus(int chrIdx, int gn);
 
 	// обработка скриптовых запросов
 	dword _cdecl ScriptProcessing(char * name, MESSAGE & message);

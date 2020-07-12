@@ -192,17 +192,37 @@ void ShipLights::AddFlare(VAI_OBJBASE * pObject, bool bLight, MODEL * pModel, co
 	if (str[0] != 'l' && bLight) return;
 
 	// mast found
-	if (str[1] == 'm')
+	if (str[1] == 'm' || str[1] == 'r')
 	{
-		str2[0] = str[2]; str2[1] = '\0';
+		if(str[1] == 'm')
+		{
+			str2[0] = str[2]; str2[1] = '\0';
+		}
+		else
+		{
+			str2[0] = str[2];
+			str2[1] = str[3];
+			str2[2] = str[4];
+			str2[3] = '\0';
+		}	
 		int iMastIndex = atoi(str2);
 
 		sprintf(str2, "mast%d", iMastIndex);
 		// rey found
-		if (str[3] >= 'a' && str[3] <= 'z')
+		if(str[1] == 'm')
 		{
-			sprintf(str2, "rey_%c%d", str[3], iMastIndex);
+			if (str[3] >= 'a' && str[3] <= 'z')
+			{
+				sprintf(str2, "rey_%c%d", str[3], iMastIndex);
+			}
 		}
+		else
+		{
+			if (str[5] >= 'a' && str[5] <= 'z')
+			{
+				sprintf(str2, "rey_%c%d", str[5], iMastIndex);
+			}			
+		}	
 
 		if (!SetLabel(pL, pModel, str2))
 		{

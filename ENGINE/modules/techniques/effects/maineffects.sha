@@ -293,34 +293,54 @@ block ProgressBackTechWithTips()
 	}
 }
 
+
+vertexshader BloodVS
+{
+	decl
+	{
+		stream[0]
+		{
+			float v0[3];// Position
+			float v2[2];// Tex coord 0
+		}
+	}
+	asm
+	{
+		vs.1.0
+
+		mov oPos, v0
+		mov oT0, v2
+	}
+}
+
 block Blood()
 {
 	technique t0
 	{
 		pass p0
 		{
-			zbias = 2;
-			lighting = false;
-			ZEnable = true;
-			ZWriteEnable = false;
+		 	FogEnable = false;
 			AlphaTestEnable = false;
-			AlphaBlendEnable = true;
-			SrcBlend = srcalpha;
-			DestBlend = invsrcalpha;
-			
-			ColorOp[0] = modulate;
-			ColorArg1[0] = tfactor;
-			ColorArg2[0] = texture;
-			AlphaOp[0] = modulate;
-			AlphaArg1[0] = texture;
-			AlphaArg2[0] = diffuse;
-			
-			ColorOp[1] = disable;
-			AlphaOp[1] = disable;
+			CullMode = none;
+			ZEnable = false;
 
+			ColorOp[0] = SelectArg1;
+			ColorArg1[0] = texture;
+
+			AlphaOp[0] = SelectArg1;
+			AlphaArg1[0] = texture;
+		  
+			AddressU[0] = Clamp;
+			AddressV[0] = Clamp;
+			AddressW[0] = Clamp;
+		  
+			ColorWriteEnable = 0x00000007;
+		  
+			VertexShader = "BloodVS";
+			
 			Render.Draw
 			Restore.States
 		}
-	}
+	}	
 }
 

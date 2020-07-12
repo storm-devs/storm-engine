@@ -36,7 +36,7 @@
 #define CHARACTER_FIGHT_GUNFIRE		"Fire"
 
 #define CHARACTER_FIGHT_FIREDIST	25.0f	//метров
-#define CHARACTER_FIGHT_FIREANG		20.0f	//градусов
+#define CHARACTER_FIGHT_FIREANG		10.0f	//градусов
 
 
 #define CHARACTER_DIALOG_ANG		30.0f	//Максимальный угл срабатывания диалога
@@ -491,6 +491,7 @@ Character::Character()
 	fgtCurIndex = fgtSetIndex = -1;
 	isParryState = false;
 	isFeintState = false;
+	isStunEnable = true;
 	//
 	isMove = false;
 	isBack = false;
@@ -2371,14 +2372,14 @@ void Character::ActionEvent(Animation * animation, long playerIndex, const char 
 					isFired = true;
 					float kDist;
 					Character * chr = FindGunTarget(kDist);
-					ENTITY_ID enemy;
-					if(chr)
-					{
-						enemy = chr->GetID();
-						chr->Hit(fgt_hit_fire);
+						ENTITY_ID enemy;
+						if(chr)
+						{
+							enemy = chr->GetID();
+							chr->Hit(fgt_hit_fire);
+						}
+						_CORE_API->Event("Location_CharacterFire", "iifl", GetID(), enemy, kDist, chr != null);
 					}
-					_CORE_API->Event("Location_CharacterFire", "iifl", GetID(), enemy, kDist, chr != null);
-				}
 			}
 		}else
 		if(isJump && PriorityActionIsJump())
@@ -3720,16 +3721,19 @@ void Character::UpdateAnimation()
 					fgtSetIndex = -1;					
 					isFired = false;
 					break;
-				case fgt_hit_attack:	//Реакция попадания удара по персонажу вводящая его в stall
-                    if(stricmp(characterID, "Blaze") == 0) // boal не нашел лучшего, но у нас ГГ всегда имеет это ИД, работать будет
-                    {
-						if (rand() % 100 >= 50) break; // boal не всегда пробиваться в анимацию
-					}
-					_CORE_API->Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF,0);
-					if(!(isSet = SetAction(hit[fgtSetIndex].name, hit[fgtSetIndex].tblend, 0.0f, 1.0f, true)))
+				case fgt_hit_attack:	//Реакция попадания удара по персонажу вводящая его в stall				
+					if(IsPlayer() && !isStunEnable) 
 					{
-						api->Trace("Character animation: not set fight attack hit action: \"%s\"", hit[fgtSetIndex].name);
-					}
+						if (rand() % 100 >= 50) break; // boal не всегда пробиваться в анимацию
+					}					
+					if (isStunEnable)
+					{
+						_CORE_API->Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF,0);
+						if(!(isSet = SetAction(hit[fgtSetIndex].name, hit[fgtSetIndex].tblend, 0.0f, 1.0f, true)))
+						{
+							api->Trace("Character animation: not set fight attack hit action: \"%s\"", hit[fgtSetIndex].name);
+						}
+					}	
 					break;
 				case fgt_blockbreak:	//Реакция попадания удара по персонажу вводящая его в stall
 					_CORE_API->Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF,0);
@@ -3762,12 +3766,19 @@ void Character::UpdateAnimation()
 						api->Trace("Character animation: not set fight round hit action: \"%s\"", hitRound.name);
 					}
 					break;
-				case fgt_hit_fire:		//Реакция от выстрела вводящая его в stall
-					_CORE_API->Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF,0);
-					if(!(isSet = SetAction(hitFire.name, hitFire.tblend, 0.0f, 0.0f, true)))
+				case fgt_hit_fire:		//Реакция от выстрела вводящая его в stall				
+					if(IsPlayer() && !isStunEnable) 
 					{
-						api->Trace("Character animation: not set fight fire hit action: \"%s\"", hitFire.name);
-					}
+						if (rand() % 100 >= 50) break; // boal не всегда пробиваться в анимацию
+					}					
+					if (isStunEnable)
+					{
+						_CORE_API->Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF,0);
+						if(!(isSet = SetAction(hitFire.name, hitFire.tblend, 0.0f, 0.0f, true)))
+						{
+							api->Trace("Character animation: not set fight fire hit action: \"%s\"", hitFire.name);
+						}
+					}	
 					break;
 				case fgt_block:			//Защита саблей		
 					_CORE_API->Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF,0);
@@ -3787,7 +3798,7 @@ void Character::UpdateAnimation()
 					}
 					break;
 				case fgt_blockhit:		//Защита саблей
-                    if(stricmp(characterID, "Blaze") == 0) // boal не нашел лучшего, но у нас ГГ всегда имеет это ИД, работать будет
+                    if(IsPlayer()) 
                     {
 						if (rand() % 100 >= 65) break; // boal не всегда пробиваться в анимацию
 					}
@@ -4274,6 +4285,7 @@ Character * Character::FindGunTarget(float & kDist, bool bOnlyEnemyTest)
 		api->FindClass(&grps, "CharactersGroups", 0);
 		chrGroup = (CharactersGroups *)api->GetEntityPointer(&grps);
 		grp = chrGroup->FindGroupIndex(group);
+		if(grp < 0) return null;
 	}
 
 	//Найдём окружающих персонажей
@@ -4290,6 +4302,7 @@ Character * Character::FindGunTarget(float & kDist, bool bOnlyEnemyTest)
 		if(bOnlyEnemyTest)
 		{
 			long enemygrpIndex = chrGroup->FindGroupIndex(fc.c->group);
+			if(enemygrpIndex < 0) continue;
 			if (chrGroup->FindRelation(enemygrpIndex, grp).curState != CharactersGroups::rs_enemy) continue;
 		}
 		//Ищем дистанцию с поправками

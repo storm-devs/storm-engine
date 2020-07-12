@@ -574,6 +574,7 @@ dword _cdecl CXI_TEXTBUTTON::MessageProc(long msgcode, MESSAGE & message)
 		newPos.top = message.Long();
 		newPos.right = message.Long();
 		newPos.bottom = message.Long();
+		GetAbsoluteRect(newPos,0);
 		ChangePosition(newPos);
 	break;
 	}

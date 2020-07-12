@@ -8,12 +8,12 @@ SOCKADDR_IN		sin;
 char cBuffer[4096];
 void _cdecl Trace(char * data_PTR, ...)
 {
-	/*va_list args;
+	va_list args;
 	va_start(args, data_PTR);
 	_vsnprintf(cBuffer, sizeof(cBuffer) - 4, data_PTR, args);
 	va_end(args);
 
-	printf(cBuffer);*/
+	printf(cBuffer);
 }
 
 int main()

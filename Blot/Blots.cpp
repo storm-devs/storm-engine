@@ -10,6 +10,7 @@
 
 #include "Blots.h"
 #include "..\common_h\messages.h"
+#include "..\engine\program\sea_ai\Script_Defines.h"
 
 //============================================================================================
 
@@ -67,20 +68,20 @@ dword _cdecl Blots::ProcessMessage(MESSAGE & message)
 {
 	switch(message.Long())
 	{
-	case MSG_BLOTS_SETMODEL:
-		model = message.EntityID();
-		pCharAttributeRoot = message.AttributePointer();
-		if(pCharAttributeRoot)
-		{
-			blotsInfo = pCharAttributeRoot->CreateSubAClass(pCharAttributeRoot, "ship.blots");
-			char buf[32];
-			sprintf(buf, "%i", BLOTS_MAX);
-			blotsInfo->SetValue(buf);
-			for(long i = 0; i < BLOTS_MAX; i++) LoadBlot(i);
-		}
+		case MSG_BLOTS_SETMODEL:
+			model = message.EntityID();
+			pCharAttributeRoot = message.AttributePointer();
+			if(pCharAttributeRoot)
+			{
+				blotsInfo = pCharAttributeRoot->CreateSubAClass(pCharAttributeRoot, "ship.blots");
+				char buf[32];
+				sprintf(buf, "%i", BLOTS_MAX);
+				blotsInfo->SetValue(buf);
+				for(long i = 0; i < BLOTS_MAX; i++) LoadBlot(i);
+			}
 		break;
-	case MSG_BLOTS_HIT:
-		Hit(message);
+		case MSG_BLOTS_HIT:
+			Hit(message);
 		break;
 	}
 	return 0;
@@ -190,6 +191,10 @@ void Blots::AddBlot(long i, long rnd, const CVECTOR & lpos, const CVECTOR & dir,
 	}
 	//Записываем состояние
 	SaveBlot(i);
+	if(pCharAttributeRoot)
+	{
+		api->Event(SHIP_SET_BLOT, "a", pCharAttributeRoot);
+	}	
 }
 
 void Blots::SetNodesCollision(NODE * n, bool isSet)
@@ -218,7 +223,16 @@ void Blots::SetNodesCollision(NODE * n, bool isSet)
 				if(name[1] == 'a' || name[1] == 'A')
 					if(name[2] == 't' || name[2] == 'T')
 						if(name[3] == 'h' || name[3] == 'H') n->flags &= ~NODE::CLIP_ENABLE;
-			}
+			}else
+			if(name[0] == 's' || name[0] == 'S')
+			{
+				if(name[1] == 'h' || name[1] == 'H')
+					if(name[2] == 'a' || name[2] == 'A')
+						if(name[3] == 't' || name[3] == 'T')
+							if(name[4] == 't' || name[4] == 'T')
+								if(name[5] == 'e' || name[5] == 'E')
+									if(name[6] == 'r' || name[6] == 'R') n->flags &= ~NODE::CLIP_ENABLE;
+			}			
 		}
 	}else{
 		n->flags &= 0xffffff00;

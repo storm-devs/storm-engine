@@ -6,6 +6,11 @@
 
 #include "..\..\common_h\dx8render.h"
 
+
+#include "steam_api.h"
+#pragma comment (lib, "steam_api.lib")
+
+
 #define CORE_MODULE_WILD_MASK		"*.dll"
 #define CORE_DEFAULT_MODULES_PATH	"Modules\\"
 #define CORE_DEFAULT_ATOMS_SPACE	128
@@ -64,6 +69,10 @@ CORE::CORE()
 	fTimeScale = 1.0f;	
 	bNetActive = false;
 	nSplitScreenshotGrid = 4;
+#ifdef isSteam
+	g_SteamAchievements = NULL;
+	g_SteamDLC = NULL;
+#endif
 }
 
 CORE::~CORE()
@@ -333,12 +342,16 @@ bool CORE::Run()
 	Compiler.ProcessFrame(Timer.GetDeltaTime());
 	Compiler.ProcessEvent("frame");
 
-
+	
 	ProcessStateLoading();
 	
 	ProcessRunStart(SECTION_ALL);
 	ProcessExecute();						// transfer control to objects via Execute() function
 	ProcessRealize();						// transfer control to objects via Realize() function
+
+#ifdef isSteam
+	SteamAPI_RunCallbacks();
+#endif
 	
 	if (Controls && bActive) 
 		Controls->Update(Timer.rDelta_Time);
@@ -3390,3 +3403,86 @@ bool CORE::IsNetActive() const
 {
 	return bNetActive;
 }
+#ifdef isSteam
+//Steam achievements && DLC section
+
+void CORE::InitAchievements()
+{
+	g_SteamAchievements = new CSteamStatsAchievements(ACHIEVEMENTS_NUM);
+}
+
+void CORE::DeleteAchievements()
+{
+	if (g_SteamAchievements) delete g_SteamAchievements;
+}
+
+long CORE::SetAchievementState(const char* ID)
+{
+	return g_SteamAchievements->SetAchievement(ID);
+}
+
+long CORE::GetAchievementState(const char* ID)
+{
+	return g_SteamAchievements->GetAchievement(ID);
+}
+
+long CORE::SetStatValue(const char* ID, long Value)
+{
+	return g_SteamAchievements->SetStat(ID, Value);
+}
+
+long CORE::GetStatValue(const char* ID)
+{
+	return g_SteamAchievements->GetStat(ID);
+}
+
+long CORE::StoreStats()
+{
+	return g_SteamAchievements->StoreStats();
+}
+
+bool CORE::ResetStats( bool bAchievementsToo )
+{
+	return g_SteamAchievements->ResetStats( bAchievementsToo );
+}
+
+bool CORE::ClearAchievement(const char* ID)
+{
+	return g_SteamAchievements->ClearAchievement(ID);
+}
+
+bool CORE::isSteamConnected()
+{
+	return g_SteamAchievements->GetConnected();
+}
+
+void CORE::InitSteamDLC()
+{
+	g_SteamDLC = new CSteamDLC();
+}
+
+void CORE::DeleteSteamDLC()
+{
+	if (g_SteamDLC) delete g_SteamDLC;		
+}
+
+bool CORE::isDLCActive( long nDLC )
+{
+	return g_SteamDLC->isDLCInstalled(nDLC);
+}
+
+long CORE::getDLCCount()
+{
+	return g_SteamDLC->getDLCCount();
+}
+
+long CORE::getDLCDataByIndex( long iDLC )
+{
+	return g_SteamDLC->bGetDLCDataByIndex( iDLC );
+}
+
+bool CORE::activateGameOverlayDLC( long nAppId )
+{
+	return g_SteamDLC->activateGameOverlay( nAppId );
+}
+#endif

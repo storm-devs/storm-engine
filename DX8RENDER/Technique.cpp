@@ -1767,23 +1767,22 @@ void CTechnique::RestoreSavedStates()
 void CTechnique::SetCurrentBlock(const char * name, dword _dwNumParams, void * pParams)
 {
 	if(name && name[0])
-	{
-		
-	strcpy(sCurrentBlockName,name);	_strlwr(sCurrentBlockName);
-	dwHashCode = hash_string(sCurrentBlockName);
-	dwCurNumParams = _dwNumParams;
+	{		
+		strcpy(sCurrentBlockName,name);	_strlwr(sCurrentBlockName);
+		dwHashCode = hash_string(sCurrentBlockName);
+		dwCurNumParams = _dwNumParams;
 
-	if (dwCurNumParams > dwCurParamsMax)
-	{
-		while (dwCurNumParams>dwCurParamsMax) dwCurParamsMax += 10;
-		pCurParams = (dword*)RESIZE(pCurParams, sizeof(dword) * dwCurParamsMax);
-	}
+		if (dwCurNumParams > dwCurParamsMax)
+		{
+			while (dwCurNumParams>dwCurParamsMax) dwCurParamsMax += 10;
+			pCurParams = (dword*)RESIZE(pCurParams, sizeof(dword) * dwCurParamsMax);
+		}
 
-	for (dword i=0; i<_dwNumParams; i++) 
-		pCurParams[i] = ((dword*)pParams)[i];
+		for (dword i=0; i<_dwNumParams; i++) 
+			pCurParams[i] = ((dword*)pParams)[i];
 	}
-	else
-	{
-		api->Trace("ERROR: SetCurrentBlock: unknown technique <%s> first character is <%s> ",name,name[0]);
-	}
+//	else
+//	{
+//		api->Trace("ERROR: SetCurrentBlock: unknown technique <%s> first character is <%s> ",name,name[0]);
+//	}
 }

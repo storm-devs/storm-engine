@@ -71,6 +71,7 @@ private:
         WORD vectQuant; // number of segmentes(square) into flags
 
         bool triangle;
+        bool isSpecialFlag;
         CVECTOR spos; // start flags position
         CVECTOR dv; // delta flags start position to along
         CVECTOR dhv,ddhv; // delta from position to flag top&bottom and delta for this value
@@ -123,7 +124,7 @@ private:
     void SetTextureCoordinate();
     void SetTreangle();
     void DoMove(FLAGDATA* pr,float delta_time);
-    void AddLabel(GEOS::LABEL &gl, NODE *nod);
+    void AddLabel(GEOS::LABEL &gl, NODE *nod, bool isSpecialFlag);
     void SetAll();
     void LoadIni();
     void GroupDelete(ENTITY_ID m_id);

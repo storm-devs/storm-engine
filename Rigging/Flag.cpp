@@ -7,17 +7,19 @@
 
 FLAG::FLAG()
 {
-    bUse=false;
-    RenderService=0;
-    TextureName=0;
-    bFirstRun=true;
-    texl=-1;
-    flist=0; flagQuantity=0;
-    gdata=0; groupQuantity=0;
-    bYesDeleted=false;
-    wFlagLast=0;
-	vBuf = iBuf = -1;
-	nVert = nIndx = 0;
+    bUse			= false;
+    RenderService	= 0;
+    TextureName		= 0;
+    bFirstRun		= true;
+    texl			= -1;
+    flist			= 0; 
+	flagQuantity	= 0;
+    gdata			= 0; 
+	groupQuantity	= 0;
+    bYesDeleted		= false;
+    wFlagLast		= 0;
+	vBuf 			= iBuf 	= -1;
+	nVert 			= nIndx = 0;
 }
 
 FLAG::~FLAG()
@@ -28,7 +30,7 @@ FLAG::~FLAG()
 	VERTEX_BUFFER_RELEASE(RenderService,vBuf);
 	INDEX_BUFFER_RELEASE(RenderService,iBuf);
 
-    while(flagQuantity>0)
+    while(flagQuantity > 0)
 	{
 		flagQuantity--;
         PTR_DELETE(flist[flagQuantity]);
@@ -52,12 +54,12 @@ void FLAG::SetDevice()
 	{
 		_THROW("No service: dx8render");
 	}
-	globalWind.ang.x=0.f;
-	globalWind.ang.y=0.f;
-	globalWind.ang.z=1.f;
-	globalWind.base=1.f;
+	globalWind.ang.x	= 0.f;
+	globalWind.ang.y	= 0.f;
+	globalWind.ang.z	= 1.f;
+	globalWind.base		= 1.f;
     LoadIni();
-    texl=RenderService->TextureCreate(TextureName);
+    texl = RenderService->TextureCreate(TextureName);
 }
 
 bool FLAG::CreateState(ENTITY_STATE_GEN * state_gen)
@@ -142,26 +144,23 @@ dword _cdecl FLAG::ProcessMessage(MESSAGE & message)
 
 	switch (code)
     {
-    //**********************
-    // Start Initialisation
-    //----------------------
-    case MSG_FLAG_INIT:
+		case MSG_FLAG_INIT:
 		{
 			ENTITY_ID eidModel = message.EntityID();
 			long nNation = message.Long();
+			ENTITY_ID eidShip = message.EntityID();
 
 			MODEL *host_mdl;
 			host_mdl=(MODEL*)api->GetEntityPointer(&eidModel);
-			if( host_mdl==0 ) {
+			if( host_mdl==0 ) 
+			{
 				api->Trace("Missing INIT message to FLAG: bad MODEL");
 			}
 
 			if(groupQuantity==0)
 			{
 				gdata = NEW GROUPDATA[1];
-				if(gdata==0)
-					_THROW("Not memory allocation");
-
+				if(gdata==0) _THROW("Not memory allocation");
 				groupQuantity=1;
 			}
 			else
@@ -175,7 +174,10 @@ dword _cdecl FLAG::ProcessMessage(MESSAGE & message)
 			}
 			gdata[groupQuantity-1].model_id = eidModel;
 			gdata[groupQuantity-1].nation = nNation;
-			gdata[groupQuantity-1].bDeleted = false;
+			gdata[groupQuantity-1].bDeleted = false;			
+			gdata[groupQuantity-1].ship_id = eidShip;			
+			gdata[groupQuantity-1].isShip = true;
+			gdata[groupQuantity-1].char_attributes = ((VAI_OBJBASE*)gdata[groupQuantity-1].ship_id.pointer)->GetACharacter();
 
 			NODE* nod;
 			GEOS::INFO gi;
@@ -190,19 +192,86 @@ dword _cdecl FLAG::ProcessMessage(MESSAGE & message)
 				for(i=0; i<gi.nlabels; i++)
 				{
 					nod->geo->GetLabel(i,gl);
-					if(!strncmp(gl.group_name,"flag",4))
-						AddLabel(gl,nod);
+					if(!strncmp(gl.group_name,"sflag",5))	// special flag
+					{
+						AddLabel(gl,nod,1,1);
+					}	
+					else
+					{
+						if(!strncmp(gl.group_name,"flag",4))	// ordinary flag
+						AddLabel(gl,nod,0,1);					
+					}	
 				}
 			}
 			bFirstRun=true;
 		}
         break;
 
-    case MSG_FLAG_DEL_GROUP:
-        GroupDelete(message.EntityID());
+		case MSG_FLAG_INIT_TOWN:
+		{
+			ENTITY_ID eidModel = message.EntityID();
+			long nNation = message.Long();
+
+			MODEL *host_mdl;
+			host_mdl=(MODEL*)api->GetEntityPointer(&eidModel);
+			if( host_mdl==0 ) 
+			{
+				api->Trace("Missing INIT message to FLAG: bad MODEL");
+			}
+
+			if(groupQuantity==0)
+			{
+				gdata = NEW GROUPDATA[1];
+				if(gdata==0) _THROW("Not memory allocation");
+				groupQuantity=1;
+			}
+			else
+			{
+				GROUPDATA *oldgdata=gdata;
+				gdata = NEW GROUPDATA[groupQuantity+1];
+				if(gdata==0)
+					_THROW("Not memory allocation");
+				memcpy(gdata,oldgdata,sizeof(GROUPDATA)*groupQuantity);
+				delete oldgdata; groupQuantity++;
+			}
+			gdata[groupQuantity-1].model_id = eidModel;
+			gdata[groupQuantity-1].nation = nNation;
+			gdata[groupQuantity-1].bDeleted = false;			
+			gdata[groupQuantity-1].isShip = false;
+
+			NODE* nod;
+			GEOS::INFO gi;
+			GEOS::LABEL gl;
+			int i,j;
+			for(j=0;true;j++)
+			{
+				nod=host_mdl->GetNode(j);
+				if(nod==NULL || nod->geo==NULL) break;
+
+				nod->geo->GetInfo(gi);
+				for(i=0; i<gi.nlabels; i++)
+				{
+					nod->geo->GetLabel(i,gl);
+					if(!strncmp(gl.group_name,"sflag",5))	// special flag
+					{
+						AddLabel(gl,nod,1,0);
+					}	
+					else
+					{
+						if(!strncmp(gl.group_name,"flag",4))	// ordinary flag
+						AddLabel(gl,nod,0,0);					
+					}	
+				}
+			}
+			bFirstRun=true;		
+		}
+		break;
+		
+		case MSG_FLAG_DEL_GROUP:
+			GroupDelete(message.EntityID());
         break;
 
-    case MSG_FLAG_TO_NEWHOST: // format "lili" (msg_code,oldmodel_id,groupNum,newmodel_id)
+		case MSG_FLAG_TO_NEWHOST: 
 		{
 			ENTITY_ID oldModelID = message.EntityID();
 			long flagGroupNum = message.Long();
@@ -221,7 +290,7 @@ void FLAG::SetTextureCoordinate()
         int i;
         long sIdx;
         float stu,addtu,dtu;
-        float stv,dtv;
+        float stv,addtv,dtv;
 
         FLAGLXVERTEX* pv=(FLAGLXVERTEX*)RenderService->LockVertexBuffer(vBuf);
         if(pv)
@@ -231,25 +300,26 @@ void FLAG::SetTextureCoordinate()
 				if(flist[fn]==NULL) continue;
                 sIdx=flist[fn]->sv;
                 addtu=1.f/(float)FlagTextureQuantity;
-                stu=addtu*flist[fn]->texNum;
-                stv=0.f;
+				addtv=1.f/(float)FlagTextureQuantityRow;
+                stu=addtu*flist[fn]->texNumC;				
+                stv=addtv*flist[fn]->texNumR; 
                 if(flist[fn]->triangle)
                 {
                     dtu=addtu/(float)(flist[fn]->vectQuant+1);
-                    dtv=.5f/(float)(flist[fn]->vectQuant+1);
+					dtv=0.5f/(float)(flist[fn]->vectQuant+1);
                 }
                 else
                 {
                     dtu=addtu/(float)flist[fn]->vectQuant;
-                    dtv=0.f;
+					dtv=0.f;
                 }
                 for(i=0; i<=flist[fn]->vectQuant; i++)
                 {
                     pv[sIdx].tu=stu;
                     pv[sIdx++].tv=stv;
                     pv[sIdx].tu=stu;
-                    pv[sIdx++].tv=1.f-stv;
-
+					pv[sIdx++].tv=stv+addtv;
+					
                     stu+=dtu;
                     stv+=dtv;
                 }
@@ -352,7 +422,7 @@ void FLAG::DoMove(FLAGDATA *pr,float delta_time)
     }
 }
 
-void FLAG::AddLabel(GEOS::LABEL &gl, NODE *nod)
+void FLAG::AddLabel(GEOS::LABEL &gl, NODE *nod, bool isSpecialFlag, bool isShip)
 {
     FLAGDATA *fd;
     int grNum;
@@ -360,7 +430,8 @@ void FLAG::AddLabel(GEOS::LABEL &gl, NODE *nod)
     // for fail parameters do not set of data
     if( nod==0 ) return;
 
-    grNum=atoi(&gl.group_name[4]);
+	if(isSpecialFlag) 	grNum=atoi(&gl.group_name[5]);	
+    else 				grNum=atoi(&gl.group_name[4]);
 
     for(int fn=0; fn<flagQuantity; fn++)
         if( flist[fn]!=NULL &&
@@ -378,7 +449,9 @@ void FLAG::AddLabel(GEOS::LABEL &gl, NODE *nod)
         if(fd==0)
             _THROW("Not memory allocation");
         PZERO(fd,sizeof(FLAGDATA));
-        fd->triangle=true; // this is Vimpel
+        fd->triangle=true; // this is Vimpel		
+		fd->isSpecialFlag=isSpecialFlag;
+		fd->isShip=isShip;
         fd->pMatWorld=&nod->glob_mtx;
         fd->nod=nod;
         fd->grNum=grNum;
@@ -410,23 +483,21 @@ void FLAG::AddLabel(GEOS::LABEL &gl, NODE *nod)
     cv.x = gl.m[3][0] + nod->loc_mtx.matrix[3];
     cv.y = gl.m[3][1] + nod->loc_mtx.matrix[7];
     cv.z = gl.m[3][2] + nod->loc_mtx.matrix[11];
-    /*cv.x = gl.m[3][0];
-    cv.y = gl.m[3][1];
-    cv.z = gl.m[3][2];*/
+    
     // set flag point
     switch(gl.name[1])
     {
-    case '2': // bottom begin of flag
+    case '2': 	// bottom begin of flag
         fd->dhv = cv;
         break;
-    case '3': // top end of flag (or center of the flag end for triangle flag)
+    case '3': 	// top end of flag (or center of the flag end for triangle flag)
         fd->ddhv = cv;
         break;
-    case '4': // bottom ebd of flag
+    case '4': 	// bottom ebd of flag
         fd->dv = cv;
         fd->triangle=false; // this not Vimpel - that Flag
         break;
-    default: // case 1: top begin of flag
+    default: 	// case 1: top begin of flag
         fd->spos = cv;
     }
 }
@@ -465,7 +536,7 @@ void FLAG::LoadIni()
 {
     GUARD(FLAG::LoadIni());
 	char	section[256];
-    char    param[256];
+	char    param[256];
 
 	INIFILE * ini;
 	WIN32_FIND_DATA	wfd;
@@ -479,11 +550,9 @@ void FLAG::LoadIni()
 	if(!ini) THROW("rigging.ini file not found!");
 
 	sprintf(section,"FLAGS");
-
-    bool texChange=false;
-    int tmp;
+	
 	// load texture parameters
-    ini->ReadString(section,"TextureName",param,sizeof(param)-1,"flagall.tga");
+    ini->ReadString(section,"TextureName",param,sizeof(param)-1,"flagall_ship_b.tga");
     if(TextureName!=0)
     {
         if(strcmp(TextureName,param))
@@ -500,46 +569,12 @@ void FLAG::LoadIni()
         TextureName=NEW char[strlen(param)+1];
         strcpy(TextureName,param);
     }
-
-
-    tmp=FlagTextureQuantity;
-    FlagTextureQuantity=(int)ini->GetLong(section,"TextureCount",1);
-    if(FlagTextureQuantity!=tmp) texChange=true;
-//---
-    tmp=ENGLISH_PENNON_TEX;
-    ENGLISH_PENNON_TEX=(int)ini->GetLong(section,"EnglandPennonTex",0);
-    if(ENGLISH_PENNON_TEX!=tmp) texChange=true;
-//---
-    tmp=SPANISH_PENNON_TEX;
-    SPANISH_PENNON_TEX=(int)ini->GetLong(section,"SpanishPennonTex",0);
-    if(SPANISH_PENNON_TEX!=tmp) texChange=true;
-//---
-    tmp=FRENCH_PENNON_TEX;
-    FRENCH_PENNON_TEX=(int)ini->GetLong(section,"FrenchPennonTex",0);
-    if(FRENCH_PENNON_TEX!=tmp) texChange=true;
-//---
-    tmp=PIRATE_PENNON_TEX;
-    PIRATE_PENNON_TEX=(int)ini->GetLong(section,"PiratePennonTex",0);
-    if(PIRATE_PENNON_TEX!=tmp) texChange=true;
-//---
-    tmp=ENGLISH_FLAG_TEX;
-    ENGLISH_FLAG_TEX=(int)ini->GetLong(section,"EnglishFlagTex",0);
-    if(ENGLISH_FLAG_TEX!=tmp) texChange=true;
-//---
-    tmp=SPANISH_FLAG_TEX;
-    SPANISH_FLAG_TEX=(int)ini->GetLong(section,"SpanishFlagTex",0);
-    if(SPANISH_FLAG_TEX!=tmp) texChange=true;
-//---
-    tmp=FRENCH_FLAG_TEX;
-    FRENCH_FLAG_TEX=(int)ini->GetLong(section,"FrenchFlagTex",0);
-    if(FRENCH_FLAG_TEX!=tmp) texChange=true;
-//---
-    tmp=PIRATE_FLAG_TEX;
-    PIRATE_FLAG_TEX=(int)ini->GetLong(section,"PirateFlagTex",0);
-    if(PIRATE_FLAG_TEX!=tmp) texChange=true;
-
-    SetTextureCoordinate();
-
+	
+    FlagTextureQuantity=(int)ini->GetLong(section,"TextureCountColumn", 4);	
+    FlagTextureQuantityRow=(int)ini->GetLong(section,"TextureCountRow", 8);
+    	
+	SetTextureCoordinate();
+	
     // длина сегмента флага
     FLAGVECTORLEN=ini->GetFloat(section,"fSegLen",0.2f);
 
@@ -574,14 +609,13 @@ void FLAG::LoadIni()
     UNGUARD
 }
 
+
 void FLAG::FirstRun()
 {
-    if(wFlagLast)
-        SetAdd(wFlagLast);
+    if(wFlagLast) SetAdd(wFlagLast);
     else
     {
         SetAll();
-
         ZERO(rootMatrix);
         rootMatrix._11=rootMatrix._22=rootMatrix._33=rootMatrix._44=1.f;
     }
@@ -615,8 +649,8 @@ void FLAG::GroupDelete(ENTITY_ID m_id)
 void FLAG::DoDelete()
 {
     // пройтись по всем удаленным группам и удалить содержащиеся в них флаги
-    int ngn=0;
-    nVert=0; nIndx=0;
+    int ngn = 0;
+    nVert = 0; nIndx = 0;
     for(int gn=0; gn<groupQuantity; gn++)
     {
         int gs=0; // число неудаленных флагов в группе
@@ -638,8 +672,7 @@ void FLAG::DoDelete()
                 gs++;
             }
         // если все флаги удалены из группы, то удалить группу
-        if( gs==0 )
-            continue;
+        if( gs==0 ) continue;
 
         // записать группу на свою позицию
         if(ngn<gn)
@@ -711,6 +744,7 @@ void FLAG::DoDelete()
 
 void FLAG::SetAdd(int flagNum)
 {
+	VDATA * pvdat;
     // set vertex and index buffers
     nIndx*=3;
     for(int fn=flagNum; fn<flagQuantity; fn++)
@@ -753,11 +787,30 @@ void FLAG::SetAdd(int flagNum)
         }
         else
         {
+			long curTexNumC = 0;
+			long curTexNumR = 0;
             // установить номер текстуры
-			VDATA * pvdat = api->Event("GetRiggingData","sll","GetFlagTexNum",flist[fn]->triangle,gdata[flist[fn]->HostGroup].nation);
-            if(pvdat==null)	flist[fn]->texNum = 0;
-			else	flist[fn]->texNum = pvdat->GetLong();
-
+			if(flist[fn]->isShip) // корабль
+			{
+				pvdat = api->Event("GetRiggingData","sllla","GetShipFlagTexNum",flist[fn]->triangle,gdata[flist[fn]->HostGroup].nation, flist[fn]->isSpecialFlag, gdata[flist[fn]->HostGroup].char_attributes);
+			}
+			else
+			{
+				pvdat = api->Event("GetRiggingData","slll","GetTownFlagTexNum",flist[fn]->triangle,gdata[flist[fn]->HostGroup].nation, flist[fn]->isSpecialFlag);
+			}			
+            if(pvdat==null)	
+			{
+				flist[fn]->texNumC = 0;
+				flist[fn]->texNumR = 0;
+			}	
+			else
+			{	
+				pvdat->Get(curTexNumC,0);
+				pvdat->Get(curTexNumR,1);
+				flist[fn]->texNumC = curTexNumC;
+				flist[fn]->texNumR = curTexNumR;
+			}	
+			
             flist[fn]->vectQuant=(int)(len/FLAGVECTORLEN); // число сегментов флага
             if(flist[fn]->vectQuant<MinSegmentQuantity)
                 flist[fn]->vectQuant=MinSegmentQuantity;
@@ -794,8 +847,7 @@ void FLAG::MoveOtherHost(ENTITY_ID newm_id,long flagNum,ENTITY_ID oldm_id)
     for(int oldgn=0; oldgn<groupQuantity; oldgn++)
         if(gdata[oldgn].model_id==oldm_id) break;
     // если нет такой группы, то пустой возврат
-    if(oldgn==groupQuantity)
-        return;
+    if(oldgn==groupQuantity) return;
 
     // найдем новую группу
     for(int newgn=0; newgn<groupQuantity; newgn++)
@@ -815,6 +867,13 @@ void FLAG::MoveOtherHost(ENTITY_ID newm_id,long flagNum,ENTITY_ID oldm_id)
         gdata[newgn].bDeleted = false;
         gdata[newgn].model_id = newm_id;
         gdata[newgn].nation = gdata[oldgn].nation;
+		
+		if(gdata[oldgn].isShip)
+		{
+			gdata[newgn].ship_id = gdata[oldgn].ship_id;
+			gdata[newgn].char_attributes = gdata[oldgn].char_attributes;
+		}	
+		
     }
 
     // найдем нужный нам флаг
@@ -824,3 +883,5 @@ void FLAG::MoveOtherHost(ENTITY_ID newm_id,long flagNum,ENTITY_ID oldm_id)
     if(fn<flagQuantity)
         flist[fn]->HostGroup=newgn;
 }
+
+

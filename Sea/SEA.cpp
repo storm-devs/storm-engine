@@ -180,7 +180,7 @@ void SEA::SFLB_CreateBuffers()
 bool SEA::Init()
 {
 	INIFILE * pEngineIni = fio->OpenIniFile(api->EngineIniFileName());
-	bool bDisableHyperThreading = (pEngineIni) ? pEngineIni->GetLong(null, "HyperThreading", 1) == 0 : false;
+	bool bDisableHyperThreading = (pEngineIni) ? pEngineIni->GetLong(null, "HyperThreading", 0) != 0 : false;
 	bDisableSSE = (pEngineIni) ? pEngineIni->GetLong(null, "DisableSSE", 0) != 0 : false;
 	bIniFoamEnable = (pEngineIni) ? pEngineIni->GetLong("Sea", "FoamEnable", 1) != 0 : false;
     bool bEnableSSE = (pEngineIni) ? pEngineIni->GetLong(null, "EnableSSE", 0) != 0 : false;   //boal
@@ -189,18 +189,20 @@ bool SEA::Init()
     {
         bSSE = true;  //boal
 	}
+	api->Trace("bDisableHyperThreading: %d", bDisableHyperThreading );
 
 	if (bDisableHyperThreading) bHyperThreading = false;
+	else						bHyperThreading = true;
 	if (bDisableSSE) bSSE = false;
 	if (!bIntel) bHyperThreading = false;
     
+	dword dwLogicals, dwCores, dwPhysicals, dwNumThreads;
 	if (bHyperThreading)
 	{
-		dword dwLogicals, dwCores, dwPhysicals;
 		intel.CPUCount(&dwLogicals, &dwCores, &dwPhysicals);
 		api->Trace("Total logical: %d, Total cores: %d, Total physical: %d", dwLogicals, dwCores, dwPhysicals);
 
-		dword dwNumThreads = dwLogicals * dwCores - 1;
+		dwNumThreads = dwLogicals * dwCores - 1;
 	
 		for (dword i=0; i<dwNumThreads; i++)
 		{
@@ -216,6 +218,12 @@ bool SEA::Init()
 		}
 
 		bHyperThreading = dwNumThreads > 0;
+	}
+	else
+	{
+		intel.CPUCount(&dwLogicals, &dwCores, &dwPhysicals);
+		dwNumThreads = dwLogicals * dwCores - 1;
+		api->Trace("Total logical: %d, Total cores: %d, Total physical: %d NumThreads: %d", dwLogicals, dwCores, dwPhysicals, dwNumThreads);		
 	}
 
 	iFoamTexture = Render().TextureCreate("weather\\sea\\pena\\pena.tga");
@@ -1317,7 +1325,7 @@ void SEA::Realize(dword dwDeltaTime)
 			fTempGridStep = fGridStep;
 			fTempLodScale = fLodScale;
 
-			fGridStep = 0.07f;
+			fGridStep = 0.05f;
 			fLodScale = 0.5f;
 		}
 
@@ -1605,14 +1613,16 @@ void SEA::Realize(dword dwDeltaTime)
 	}
 
 	RDTSC_E(dwTotalRDTSC);
-	//Render().Print(50, 300, "Total ticks with rendering %d", /*iVStart, iTStart, */dwTotalRDTSC);
-	/*Render().Print(50, 320, "calc blk%s: %d", (bHT) ? " (HT)" : "", dwBlockRDTSC);
+	
+//	Render().Print(50, 300, "Total ticks with rendering %d  GridStep %f  LODScale %f", /*iVStart, iTStart, */dwTotalRDTSC, fGridStep, fLodScale);
+/*	
+	Render().Print(50, 320, "calc blk%s: %d", (bHT) ? " (HT)" : "", dwBlockRDTSC);
 	Render().Print(50, 340, "Blocks in 1st thread: %d", iB1);
 	for (long i=0; i<aThreadsTest; i++)
 		Render().Print(50, 360 + 20 * i, "Blocks in thread %d: %d", i + 1, aThreadsTest[i]);
-	*/
+*/	
 	//Render().Print(30, 140, "rdtsc = %d", dwBlockRDTSC);
-	//Render().Print(30, 160, "Intel CPU: %s, SSE: %s, HyperThreading: %s", (bIntel) ? "Yes" : "No", (bSSE) ? "On" : "Off", (bHyperThreading) ? "On" : "Off");
+//	Render().Print(30, 160, "Intel CPU: %s, SSE: %s, HyperThreading: %s", (bIntel) ? "Yes" : "No", (bSSE) ? "On" : "Off", (bHyperThreading) ? "On" : "Off");
 
 	/*D3DVIEWPORT8 vp; Render().GetViewport(&vp);
 	float w = 256;

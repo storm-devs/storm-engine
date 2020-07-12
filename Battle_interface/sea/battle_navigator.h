@@ -76,6 +76,7 @@ protected:
 	float	m_fShipSpeed;
 	float	m_fMaxShipSpeed;
 	float	m_fShipSpeedScale;
+	float   m_fShipWindAgainst;
 
 	// координаты острова
 	bool	m_bYesIsland;
@@ -126,15 +127,16 @@ protected:
 	float	m_fCurAnglWindSpeed;
 
 	// текстуры
-	long	m_idCompasTex;	// компас
-	long	m_idSpeedTex;	// скорость корабля и ветер
-	long	m_idCannonTex;	// заряд пушек
-	long	m_idEmptyTex;	// пустое место для скорости и заряда
-	long	m_idIslandTexture; // остров
-	long	m_idWindTex;	// ветер
-	long	m_idChargeTexture; // текущий тип заряда пушек
-	long	m_idWindTexture; // скорость ветра
-	long	m_idSailTexture; // положение парусов/скорость корабля
+	long	m_idCompasTex;		// компас
+	long	m_idSpeedTex;		// скорость корабля и ветер
+	long	m_idCannonTex;		// заряд пушек
+	long	m_idEmptyTex;		// пустое место для скорости и заряда
+	long	m_idIslandTexture; 	// остров
+	long	m_idWindTex;		// ветер
+	long    m_idBestCourseTex;	// указатели наилучшего курса
+	long	m_idChargeTexture; 	// текущий тип заряда пушек
+	long	m_idWindTexture; 	// скорость ветра
+	long	m_idSailTexture; 	// положение парусов/скорость корабля
 	IDirect3DTexture8 * m_pIslandTexture;
 
 	DWORD	m_dwSeaColor;	// цвет моря на миникарте
@@ -146,6 +148,7 @@ protected:
 
 	// буфера
 	long	m_idEmptyVBuf;
+	long    m_idCourseVBuf;
 	long	m_idMapVBuf;
 	//--------------------
 	long	m_idFireZoneVBuf; // бабочка линии огня пушек

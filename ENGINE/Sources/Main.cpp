@@ -6,16 +6,22 @@
 #include "s_debug.h"
 #include "..\..\common_h\exs.h"
 
+
 //#define REBUILD_CACHDIRRECORD_FORXBOX
 
 
 #define def_width		600
 #define def_height		400
 
+
+#include "steam_api.h"
+#pragma comment (lib, "steam_api.lib")
+
+
 HWND hMain;
 HINSTANCE hInst;
 
-char AClass[] = "Age of pirates II";
+char AClass[] = "Corsairs:Cuique suum!";
 
 MEMORY_SERVICE Memory_Service;
 FILE_SERVICE File_Service;
@@ -50,6 +56,7 @@ extern bool bTraceFilesOff;
 LRESULT CALLBACK WndProc(HWND,UINT,WPARAM,LPARAM);
 void ProcessKeys(HWND hwnd,int code,int Press);
 void EmergencyExit();
+int Alert( const char *lpCaption, const char *lpText );
 
 
 #ifdef REBUILD_CACHDIRRECORD_FORXBOX
@@ -123,9 +130,24 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,PSTR szCmdLine,in
 	fio = &File_Service;
 	_CORE_API->fio = &File_Service;
 	_VSYSTEM_API = &System_Api;
-
-
-
+#ifdef isSteam
+	if ( SteamAPI_RestartAppIfNecessary( 223330 ) )
+	{
+		return EXIT_FAILURE;
+	}
+	
+	
+	if ( !SteamAPI_Init() )
+	{
+		Alert( "Fatal Error", "Steam must be running to play this game (SteamAPI_Init() failed).\n" );
+		return EXIT_FAILURE;
+	}
+	else
+	{
+		_CORE_API->InitAchievements();
+		_CORE_API->InitSteamDLC();
+	}
+#endif	
 	if(szCmdLine) 
 	{
 		if(szCmdLine[0])
@@ -343,15 +365,20 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,PSTR szCmdLine,in
 			delete ini;
 		}
 	}
+#ifdef isSteeam	
+	// Shutdown the SteamAPI
+	SteamAPI_Shutdown();
+	_CORE_API->DeleteAchievements();
+	_CORE_API->DeleteSteamDLC();
+#endif	
 	Core.ReleaseBase();
+	
     ClipCursor(0);
 	trace("System exit and cleanup:");
 	trace("Mem state: User memory: %d  MSSystem: %d  Blocks: %d",Memory_Service.Allocated_memory_user,Memory_Service.Allocated_memory_system,Memory_Service.Blocks);
-	
-	
+		
 	Memory_Service.GlobalFree();
-	
-	
+		
 	return msg.wParam;
 }
 
@@ -510,4 +537,9 @@ void EmergencyExit()
 	System_Hold = true;
 	Sleep(ERROR_MESSAGE_DELAY);
 	ExitProcess( 0xFFBADBAD );
+}
+
+int Alert( const char *lpCaption, const char *lpText )
+{
+    return ::MessageBox( NULL, lpText, lpCaption, MB_OK );
 }

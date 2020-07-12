@@ -6,7 +6,7 @@
 
 #define DEFAULT_DISPLAY_STACK_SIZE	12
 
-#define HEADER_TEXT		"Storm Engine 2.8"
+#define HEADER_TEXT		"Storm Engine 2.9"
 #define FONT_NAME		"Courier New"
 #define FONT_SIZE		20
 #define LEFT_OFFSET		10

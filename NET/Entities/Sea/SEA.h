@@ -135,9 +135,6 @@ public:
 	bool EditMode_Update();
 
 	dword AttributeChanged(ATTRIBUTES * pAttribute);
-	
-	void LostRender();
-	void RestoreRender();
 
 	//bool			Init();
 	//void			Realize(dword Delta_Time);

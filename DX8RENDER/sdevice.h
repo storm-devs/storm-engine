@@ -611,6 +611,7 @@ public:
 	dword LoadCubmapSide(HANDLE file, IDirect3DCubeTexture8 * tex, D3DCUBEMAP_FACES face, dword numMips, dword mipSize, dword size, bool isSwizzled);*/
 
 	virtual void SetProgressImage(const char * image);
+	virtual void SetProgressBackImage(const char * image);
 	virtual void SetTipsImage(const char * image);
 	virtual void StartProgressView();
 	virtual void ProgressView();
@@ -622,6 +623,10 @@ public:
 	char * progressImage;
 	long progressImageSize;
 	long backTexture;
+	
+	char * progressBackImage;
+	long progressBackImageSize;
+	long back0Texture;
 	long progressTexture;
 	char * progressTipsImage;
 	long progressTipsImageSize;

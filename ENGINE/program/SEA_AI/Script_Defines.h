@@ -38,6 +38,7 @@
 #define SHIP_TO_STRAND					"Shp2Strand"
 #define SHIP_TO_STRAND_NEXT				"Shp2StrandNext"
 #define SHIP_MAST_DAMAGE				"ShpMastDamage"
+#define SHIP_HULL_DAMAGE				"ShpHullDamage"
 #define SHIP_SAIL_DAMAGE				"ShpSailDamage"
 #define SHIP_HULL_HIT					"Shp_HullHit"
 #define SHIP_SHIP2ISLAND_COLLISION		"Shp_ShipIslColl"
@@ -58,10 +59,13 @@
 #define SHIP_DROP_GOOD					"Shp_DropGoodsToSea"
 #define SHIP_GET_RUNAWAY_POINT			"Shp_GetRunawayPnt"
 #define SHIP_BORT_RELOADED				"Shp_BortReloaded"
+#define SHIP_SET_BLOT					"ShpSetBlot"
 
 #define SHIP_MAST_TOUCH_ISLAND		0
 #define SHIP_MAST_TOUCH_SHIP		1
 #define SHIP_MAST_TOUCH_BALL		2
+
+#define SHIP_HULL_TOUCH_BALL		3
 
 // Fort Section
 #define FORT_NORMAL					0

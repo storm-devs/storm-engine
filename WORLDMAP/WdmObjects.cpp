@@ -48,6 +48,8 @@ WdmObjects::WdmObjects() : models(_FL_)
 	{
 		entryModels[i] = -1;
 	}
+	strcpy(coordinate, "N -- --' W -- --'");
+	strcpy(stCoordinate, "Coordinates");
 }
 
 WdmObjects::~WdmObjects()
@@ -102,6 +104,7 @@ void WdmObjects::Clear()
 	enableSkipEnemy = false;
 	playarInStorm = false;
 	isNextDayUpdate = true;
+	nationFlagIndex = 0;
 	SetWorldSize(2000.0f, 2000.0f);
 }
 

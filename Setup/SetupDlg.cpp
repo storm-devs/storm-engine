@@ -482,9 +482,9 @@ HRESULT WINAPI DDEnumModesCallback(LPDDSURFACEDESC lpDDSD,	LPVOID lpContext)
 	DWORD dwWidth = lpDDSD->dwWidth;
 	DWORD dwHeight = lpDDSD->dwHeight;
 
-	if (lpDDSD->ddpfPixelFormat.dwRGBBitCount >= 32 && dwWidth<=1600 && dwWidth>=800 && dwHeight>=600)
+	if (lpDDSD->ddpfPixelFormat.dwRGBBitCount >= 32 && dwWidth>=800 && dwHeight>=600)
 	{
-		if (fabsf(float(dwWidth) / float(dwHeight) - 4.0f / 3.0f) > 0.01f) return DDENUMRET_OK;
+		//if (fabsf(float(dwWidth) / float(dwHeight) - 4.0f / 3.0f) > 0.01f) return DDENUMRET_OK;
 		res_t * pR = &Device->Resolutions[Device->numresolutions];
 		pR->bpp		= lpDDSD->ddpfPixelFormat.dwRGBBitCount;
 		pR->width	= dwWidth;

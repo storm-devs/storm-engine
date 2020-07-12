@@ -78,6 +78,7 @@ public:
 	inline bool isEmpty() { return bEmpty; }
 	inline bool isReady2Fire() { return (bReady2Fire & (!isDamaged())); }	// CHECK-ME
 	inline bool isDamaged() { return fDamaged >= 1.0f; }
+	inline bool isDisabled() { return fDamaged >= 2.0f; }
 	inline bool isFired() { return bFired; }
 	inline bool isRecharged() { return bRecharged; }
 

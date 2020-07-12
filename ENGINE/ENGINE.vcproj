@@ -158,6 +158,9 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
+				RelativePath=".\Sources\achievements.cpp">
+			</File>
+			<File
 				RelativePath=".\sources\C_atom.cpp">
 			</File>
 			<File
@@ -312,10 +315,10 @@
 				RelativePath=".\sources\ifs.h">
 			</File>
 			<File
-				RelativePath=".\sources\input.h">
+				RelativePath="..\Common_h\input.h">
 			</File>
 			<File
-				RelativePath="..\Common_h\input.h">
+				RelativePath=".\sources\input.h">
 			</File>
 			<File
 				RelativePath=".\sources\internal_functions.h">
@@ -366,10 +369,10 @@
 				RelativePath=".\sources\program.h">
 			</File>
 			<File
-				RelativePath=".\resource.h">
+				RelativePath=".\sources\resource.h">
 			</File>
 			<File
-				RelativePath=".\sources\resource.h">
+				RelativePath=".\resource.h">
 			</File>
 			<File
 				RelativePath=".\sources\s_classtab.h">
@@ -511,6 +514,9 @@
 		<Filter
 			Name="common_h"
 			Filter="">
+			<File
+				RelativePath="..\Common_h\achievements.h">
+			</File>
 			<File
 				RelativePath="..\Common_h\Animation.h">
 			</File>

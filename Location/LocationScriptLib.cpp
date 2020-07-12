@@ -242,7 +242,7 @@ dword __cdecl slNativeExecuteTechnique(VS_STACK * pS)
 	VDATA * pStr = (VDATA*)pS->Pop();
 	char * nm = null;
 	if(!pStr->Get(nm)) return IFUNCRESULT_FAILED;
-	//Исполить технику
+	//Исполнить технику
 	if(nm && nm[0])
 	{
 		VDX8RENDER * rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
@@ -273,6 +273,141 @@ dword __cdecl slNativeSetReloadNextTipsImage(VS_STACK * pS)
 	return IFUNCRESULT_OK;
 }
 
+dword __cdecl slSetAchievement(VS_STACK * pS)
+{
+	VDATA * pStr = (VDATA*)pS->Pop();
+	char * nm = null;
+	if(!pStr->Get(nm)) return IFUNCRESULT_FAILED;
+	if(nm && nm[0])
+	{
+		VDATA * pReturn = (VDATA*)pS->Push();
+		if (!pReturn) return IFUNCRESULT_FAILED;
+#ifdef isSteam		
+		long ret = _CORE_API->SetAchievementState(nm);
+#else
+		long ret = 0;
+#endif		
+		pReturn->Set(ret);
+		return IFUNCRESULT_OK;
+	}
+	return IFUNCRESULT_OK;
+}
+
+dword __cdecl slGetAchievement(VS_STACK * pS)
+{
+	VDATA * pStr = (VDATA*)pS->Pop();
+	char * nm = null;
+	if(!pStr->Get(nm)) return IFUNCRESULT_FAILED;
+	if(nm && nm[0])
+	{
+		VDATA * pReturn = (VDATA*)pS->Push();
+		if (!pReturn) return IFUNCRESULT_FAILED;
+#ifdef isSteam				
+		long ret = _CORE_API->GetAchievementState(nm);
+#else
+		long ret = 0;
+#endif		
+		pReturn->Set(ret);
+		return IFUNCRESULT_OK;
+	}
+	return IFUNCRESULT_OK;
+}
+
+
+dword __cdecl slSetStat(VS_STACK * pS)
+{
+	VDATA * pInt = (VDATA*)pS->Pop();
+	long val = 0; 
+	if(!pInt->Get(val)) return IFUNCRESULT_FAILED;
+	
+	VDATA * pStr = (VDATA*)pS->Pop();
+	char * nm = null;
+	if(!pStr->Get(nm)) 	return IFUNCRESULT_FAILED;
+	
+	if(nm && nm[0])
+	{		
+		VDATA * pReturn = (VDATA*)pS->Push();
+		if (!pReturn) return IFUNCRESULT_FAILED;
+#ifdef isSteam				
+		long ret = _CORE_API->SetStatValue(nm, val);
+#else		
+		long ret = 0;
+#endif
+		pReturn->Set(ret);
+		return IFUNCRESULT_OK;
+	}
+	return IFUNCRESULT_OK;
+}
+
+dword __cdecl slGetStat(VS_STACK * pS)
+{
+	VDATA * pStr = (VDATA*)pS->Pop();
+	char * nm = null;
+	if(!pStr->Get(nm)) return IFUNCRESULT_FAILED;
+	if(nm && nm[0])
+	{
+		VDATA * pReturn = (VDATA*)pS->Push();
+		if (!pReturn) return IFUNCRESULT_FAILED;
+#ifdef isSteam						
+		long ret = _CORE_API->GetStatValue(nm);
+#else
+		long ret = 0;
+#endif		
+		pReturn->Set(ret);
+		return IFUNCRESULT_OK;
+	}
+	return IFUNCRESULT_OK;
+}
+
+dword __cdecl slStoreStats(VS_STACK * pS)
+{
+	VDATA * pReturn = (VDATA*)pS->Push();
+	if (!pReturn) return IFUNCRESULT_FAILED;
+#ifdef isSteam							
+	long ret = _CORE_API->StoreStats();
+#else
+	long ret = 0;
+#endif	
+	pReturn->Set(ret);
+	return IFUNCRESULT_OK;
+}
+
+dword __cdecl slClearAchievement(VS_STACK * pS)
+{
+	VDATA * pStr = (VDATA*)pS->Pop();
+	char * nm = null;
+	if(!pStr->Get(nm)) return IFUNCRESULT_FAILED;
+	if(nm && nm[0])
+	{
+		VDATA * pReturn = (VDATA*)pS->Push();
+		if (!pReturn) return IFUNCRESULT_FAILED;	
+#ifdef isSteam									
+		long ret = _CORE_API->ClearAchievement(nm);
+#else
+		long ret = 0;
+#endif		
+		pReturn->Set(ret);
+		return IFUNCRESULT_OK;
+	}
+	return IFUNCRESULT_OK;
+}
+
+dword __cdecl slResetStats(VS_STACK * pS)
+{
+	VDATA * pInt = (VDATA*)pS->Pop();
+	long val = 0; 
+	if(!pInt->Get(val)) return IFUNCRESULT_FAILED;
+	VDATA * pReturn = (VDATA*)pS->Push();
+	if (!pReturn) return IFUNCRESULT_FAILED;	
+#ifdef isSteam								
+	long ret = _CORE_API->ResetStats(val);
+#else
+	long ret = 0;
+#endif	
+	pReturn->Set(ret);
+	
+	return IFUNCRESULT_OK;
+}
 
 
 //============================================================================================
@@ -349,5 +484,48 @@ bool ScriptLocationLibrary::Init()
 	sIFuncInfo.pFuncAddress = slGetNextLineString;
 	api->SetScriptFunction(&sIFuncInfo);
 
+	sIFuncInfo.nArguments = 1;
+	sIFuncInfo.pFuncName = "SetAchievement";
+	sIFuncInfo.pReturnValueName = "int";
+	sIFuncInfo.pFuncAddress = slSetAchievement;
+	api->SetScriptFunction(&sIFuncInfo);
+	
+	sIFuncInfo.nArguments = 1;
+	sIFuncInfo.pFuncName = "GetAchievement";
+	sIFuncInfo.pReturnValueName = "int";
+	sIFuncInfo.pFuncAddress = slGetAchievement;
+	api->SetScriptFunction(&sIFuncInfo);
+	
+	sIFuncInfo.nArguments = 2;
+	sIFuncInfo.pFuncName = "SetStat";
+	sIFuncInfo.pReturnValueName = "int";
+	sIFuncInfo.pFuncAddress = slSetStat;
+	api->SetScriptFunction(&sIFuncInfo);
+	
+	sIFuncInfo.nArguments = 1;
+	sIFuncInfo.pFuncName = "GetStat";
+	sIFuncInfo.pReturnValueName = "int";
+	sIFuncInfo.pFuncAddress = slGetStat;
+	api->SetScriptFunction(&sIFuncInfo);
+	
+	sIFuncInfo.nArguments = 0;
+	sIFuncInfo.pFuncName = "StoreStats";
+	sIFuncInfo.pReturnValueName = "int";
+	sIFuncInfo.pFuncAddress = slStoreStats;
+	api->SetScriptFunction(&sIFuncInfo);
+	
+	sIFuncInfo.nArguments = 1;
+	sIFuncInfo.pFuncName = "ClearAchievement";
+	sIFuncInfo.pReturnValueName = "int";
+	sIFuncInfo.pFuncAddress = slClearAchievement;
+	api->SetScriptFunction(&sIFuncInfo);
+	
+	sIFuncInfo.nArguments = 1;
+	sIFuncInfo.pFuncName = "ResetStats";
+	sIFuncInfo.pReturnValueName = "int";
+	sIFuncInfo.pFuncAddress = slResetStats;
+	api->SetScriptFunction(&sIFuncInfo);
+
 	return true;
 }
+

@@ -195,8 +195,15 @@ dword _cdecl NetFlag::ProcessMessage(MESSAGE & message)
 				for(i=0; i<gi.nlabels; i++)
 				{
 					nod->geo->GetLabel(i,gl);
-					if(!strncmp(gl.group_name,"flag",4))
-						AddLabel(gl,nod);
+					if(!strncmp(gl.group_name,"sflag",5))	// special flag
+					{
+						AddLabel(gl,nod,1);
+					}	
+					else
+					{
+						if(!strncmp(gl.group_name,"flag",4))	// ordinary flag
+						AddLabel(gl,nod,0);					
+					}
 				}
 			}
 			bFirstRun=true;
@@ -354,7 +361,7 @@ void NetFlag::DoMove(FLAGDATA *pr,float delta_time)
     }
 }
 
-void NetFlag::AddLabel(GEOS::LABEL &gl, NODE *nod)
+void NetFlag::AddLabel(GEOS::LABEL &gl, NODE *nod, bool isSpecialFlag)
 {
     FLAGDATA *fd;
     int grNum;
@@ -362,7 +369,8 @@ void NetFlag::AddLabel(GEOS::LABEL &gl, NODE *nod)
     // for fail parameters do not set of data
     if( nod==0 ) return;
 
-    grNum=atoi(&gl.group_name[4]);
+    if(isSpecialFlag) 	grNum=atoi(&gl.group_name[5]);	
+    else 				grNum=atoi(&gl.group_name[4]);
 
     for(int fn=0; fn<flagQuantity; fn++)
         if( flist[fn]!=NULL &&
@@ -381,6 +389,7 @@ void NetFlag::AddLabel(GEOS::LABEL &gl, NODE *nod)
             _THROW("Not memory allocation");
         PZERO(fd,sizeof(FLAGDATA));
         fd->triangle=true; // this is Vimpel
+        fd->isSpecialFlag=isSpecialFlag;
         fd->pMatWorld=&nod->glob_mtx;
         fd->nod=nod;
         fd->grNum=grNum;

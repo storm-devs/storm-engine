@@ -240,6 +240,8 @@ dword _cdecl ROPE::ProcessMessage(MESSAGE & message)
 						AddLabel(gl,nod, false);
 					if(!strncmp(gl.name,"fal",3))
 						AddLabel(gl,nod, true);
+					if(!strncmp(gl.name,"stay",4))  // ugeen 15.08.16
+						AddLabel(gl,nod, true);	
 				}
 			}
 
@@ -298,6 +300,7 @@ dword _cdecl ROPE::ProcessMessage(MESSAGE & message)
                 {
                     rlist[i]->bDeleted=true;
                     bYesDeleted=true;
+					
                     //rlist[i]->bUse=false;
                     /*ENTITY_ID sailEI;
                     if(_CORE_API->FindClass(&sailEI,"sail",0))
@@ -514,8 +517,24 @@ void ROPE::AddLabel(GEOS::LABEL &lbl,NODE *nod, bool bDontSage)
 
     if(nod==0) return;
 
-	if( bDontSage ) ropeNum = atoi( &lbl.name[4] ); // fal
-	else ropeNum = atoi( &lbl.name[5] ); // rope
+	if( bDontSage ) 
+	{
+			if(!strncmp(lbl.name,"fal",3))
+			{
+				ropeNum = atoi( &lbl.name[4] ); // fal
+			}	
+			if(!strncmp(lbl.name,"stay",4)) 
+			{
+				ropeNum = atoi( &lbl.name[5] ); // stay
+			}			
+	}		
+	else
+	{
+		if(!strncmp(lbl.name,"rope",4)) 
+		{
+			ropeNum = atoi( &lbl.name[5] ); // rope
+		}	
+	}
 	if( ropeNum==0 ) {
 		NODE* pTmpRootNod = nod;
 		while( pTmpRootNod->parent ) pTmpRootNod = pTmpRootNod->parent;
@@ -640,20 +659,39 @@ void ROPE::AddLabel(GEOS::LABEL &lbl,NODE *nod, bool bDontSage)
 					ca=cosf((float)i/(float)ROPE_EDGE*2.f*PI);
 					sa=sinf((float)i/(float)ROPE_EDGE*2.f*PI);
 					// vert & horz
+					if(!strncmp(lbl.name,"stay",4)) 
+					{
+						rd->pos[i].x= STAY_WIDTH/2.f*(sa*chorz + ca*svert*shorz);
+						rd->pos[i].y= STAY_WIDTH/2.f*ca*cvert;
+						rd->pos[i].z= STAY_WIDTH/2.f*(ca*svert*chorz - sa*shorz);
+					}
+					else
+					{
 					rd->pos[i].x= ROPE_WIDTH/2.f*(sa*chorz + ca*svert*shorz);
 					rd->pos[i].y= ROPE_WIDTH/2.f*ca*cvert;
 					rd->pos[i].z= ROPE_WIDTH/2.f*(ca*svert*chorz - sa*shorz);
 				}
 			}
+			}
 			else
 			{
 				for(int i=0; i<ROPE_EDGE; i++)
 				{
-					// vert & horz
-					rd->pos[i].x= ROPE_WIDTH/2.f * sinf((float)i/(float)ROPE_EDGE*2.f*PI);
+					if(!strncmp(lbl.name,"stay",4)) 
+					{
+						// vert & horz
+						rd->pos[i].x= STAY_WIDTH/2.f * sinf((float)i/(float)ROPE_EDGE*2.f*PI);
 					rd->pos[i].y= 0.f;
+						rd->pos[i].z= STAY_WIDTH/2.f * cosf((float)i/(float)ROPE_EDGE*2.f*PI);
+					}
+					else
+					{
+						// vert & horz
+						rd->pos[i].x= ROPE_WIDTH/2.f * sinf((float)i/(float)ROPE_EDGE*2.f*PI);
+						rd->pos[i].y= 0.f;
 					rd->pos[i].z= ROPE_WIDTH/2.f * cosf((float)i/(float)ROPE_EDGE*2.f*PI);
 				}
+			}
 			}
 
 			rd->angDeep=0.f;
@@ -745,6 +783,8 @@ void ROPE::LoadIni()
     ROPE_SEG_LENGTH=ini->GetFloat(section,"fSEG_LENGTH",2.f);
     // толщина веревки
     ROPE_WIDTH=ini->GetFloat(section,"fWIDTH",0.025f);
+	// толщина веревки (штага)
+	STAY_WIDTH=ini->GetFloat(section,"fSTAY_WIDTH",0.12f);
     // длина веревки (треугольника) в точке соединения с парусом относительно общей длинны
     ROPE_END_LENGTH=ini->GetFloat(section,"fEND_LENGTH",0.05f);
     // амплитуда колебания веревки в абсолютных значениях

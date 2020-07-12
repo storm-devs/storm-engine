@@ -36,6 +36,7 @@ float MIN_SIGNIFICANT=0.1f;
 
 INTERFACE_FUNCTION
 CREATE_CLASS(MAST)
+CREATE_CLASS(HULL)
 
 MAST::MAST()
 {
@@ -207,7 +208,11 @@ void _cdecl MAST::Mount( ENTITY_ID modelEI, ENTITY_ID shipEI, NODE* mastNodePoin
     bFlag = api->FindClass(&flagEI,"flag",0);
     ENTITY_ID vantEI; bool bVant;
     bVant = api->FindClass(&vantEI,"vant",0);
-
+	ENTITY_ID vantlEI; bool bVantl;
+    bVantl = api->FindClass(&vantlEI,"vantl",0);
+	ENTITY_ID vantzEI; bool bVantz;
+    bVantz = api->FindClass(&vantzEI,"vantz",0);
+	
 	// найдем аттрибуты
 	VAI_OBJBASE * pVAI = NULL;	pVAI = (VAI_OBJBASE*)api->GetEntityPointer(&shipEI);
 	ATTRIBUTES * pA = NULL;	if(pVAI!=NULL) pA = pVAI->GetACharacter();
@@ -233,6 +238,8 @@ void _cdecl MAST::Mount( ENTITY_ID modelEI, ENTITY_ID shipEI, NODE* mastNodePoin
 
         // пройдем по всем веревкам данной мачты и отключим их
 		if(bVant) api->Send_Message(vantEI, "lip", MSG_VANT_DEL_MAST, modelEI, mastNodePointer);
+		if(bVantl) api->Send_Message(vantlEI, "lip", MSG_VANT_DEL_MAST, modelEI, mastNodePointer);
+		if(bVantz) api->Send_Message(vantzEI, "lip", MSG_VANT_DEL_MAST, modelEI, mastNodePointer);
 		MODEL * mdl = (MODEL*)_CORE_API->GetEntityPointer(&model_id);
 		if(mdl!=NULL)	for(i=0; i<10000; i++)
 		{
@@ -262,6 +269,11 @@ void _cdecl MAST::Mount( ENTITY_ID modelEI, ENTITY_ID shipEI, NODE* mastNodePoin
 					if(bFlag)
 						api->Send_Message(flagEI,"lili",MSG_FLAG_TO_NEWHOST,modelEI,atoi(&gl.group_name[4]),model_id);
 				}
+				else if(!strncmp(gl.group_name,"sflag",5))
+				{
+					if(bFlag)
+						api->Send_Message(flagEI,"lili",MSG_FLAG_TO_NEWHOST,modelEI,atoi(&gl.group_name[5]),model_id);
+				}				
 			}
 			// валим также паруса связанные с данной мачтой
 			if(bSail)
@@ -665,4 +677,194 @@ void MAST::AllRelease()
     // удалить модель
     _CORE_API->DeleteEntity(model_id);
 	m_pMastNode = 0;
+}
+
+
+HULL::HULL()
+{
+	RenderService 	= 0;
+    wMoveCounter	= 0;
+    bUse			= false;
+	m_pHullNode 	= 0;
+
+	m_mount_param.pNode = 0;
+}
+
+HULL::~HULL()
+{
+    AllRelease();
+}
+
+bool HULL::Init()
+{
+	GUARD(HULL::Init())
+
+	SetDevice();
+
+	UNGUARD
+	return true;
+}
+ 
+void HULL::SetDevice()
+{
+	GUARD(HULL::SetDevice())
+
+	RenderService = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
+    if(!RenderService) _THROW("No service: dx8render");
+
+	pCollide = (COLLIDE*)_CORE_API->CreateService("COLL");
+	if (!pCollide) _THROW("No service: collide");
+
+    //LoadIni();
+
+	UNGUARD
+}
+
+bool HULL::CreateState(ENTITY_STATE_GEN * state_gen)
+{
+	GUARD(bool HULL::CreateState(ENTITY_STATE_GEN * state_gen))
+
+	return true;
+	UNGUARD
+}
+
+bool HULL::LoadState(ENTITY_STATE * state)
+{
+	GUARD(bool HULL::LoadState(ENTITY_STATE * state))
+
+	SetDevice();
+
+	UNGUARD
+	return true;
+}
+
+void HULL::Execute(dword Delta_Time)
+{
+    GUARD(void HULL::Execute(dword Delta_Time))
+
+    if(bUse)
+    {        
+		// здесь нужно перечитывать ини-файл, но его нет
+    }
+    else
+    {
+        _CORE_API->DeleteEntity(GetID());
+    }
+    UNGUARD
+}
+
+void HULL::Realize(dword Delta_Time)
+{
+	GUARD(void HULL::Realize(dword Delta_Time))
+
+	if( m_mount_param.pNode ) 
+	{
+		Mount( m_mount_param.modelEI, m_mount_param.shipEI, m_mount_param.pNode );
+		m_mount_param.pNode = 0;
+	}
+
+    MODEL *mdl;
+    if( (mdl=(MODEL*)_CORE_API->GetEntityPointer(&model_id))!=0 )
+    {
+		RenderService->SetRenderState(D3DRS_LIGHTING,true);
+        mdl->Realize(Delta_Time);
+		RenderService->SetRenderState(D3DRS_LIGHTING,false);
+    }
+
+	UNGUARD
+}
+
+dword _cdecl HULL::ProcessMessage(MESSAGE & message)
+{
+	GUARD(dword _cdecl HULL::ProcessMessage(MESSAGE message))
+
+	switch (message.Long())
+	{
+		case MSG_HULL_SETGEOMETRY:
+		{
+			if( !m_mount_param.pNode ) 
+			{
+				m_mount_param.pNode 		= (NODE*)message.Pointer(); // new root node pointer
+				m_mount_param.shipEI 		= message.EntityID(); 		// ship entity
+				m_mount_param.modelEI 		= message.EntityID(); 		// old model entity
+			}
+		}
+        break;
+	}
+
+	UNGUARD
+	return 0;
+}
+
+
+void _cdecl HULL::Mount( ENTITY_ID modelEI, ENTITY_ID shipEI, NODE* hullNodePointer )
+{
+	m_pHullNode = hullNodePointer;
+	if(hullNodePointer == NULL) return;
+		
+    MODEL * oldmdl=(MODEL*)_CORE_API->GetEntityPointer(&modelEI);
+    if(oldmdl == 0) return; // ничего не валим, если нет старой модели
+    oldmodel_id = modelEI;
+    ship_id = shipEI;
+	
+	ENTITY_ID ropeEI; bool bRope;
+    bRope = api->FindClass(&ropeEI,"rope",0);
+	
+	// найдем аттрибуты
+	VAI_OBJBASE * pVAI = NULL;	
+	pVAI = (VAI_OBJBASE*)api->GetEntityPointer(&shipEI);
+	ATTRIBUTES * pA = NULL;	
+	if(pVAI != NULL) pA = pVAI->GetACharacter();
+
+	ATTRIBUTES * pAHulls = NULL; 
+	if(pA != NULL) pAHulls = pA->FindAClass(pA,"Ship.Hulls");
+				
+	float fHullDamage = 0.f;
+	if(pAHulls != NULL)
+		fHullDamage = pAHulls->GetAttributeAsFloat((char*)hullNodePointer->GetName(), 0.f);
+	
+    if(hullNodePointer!=null)
+    {
+        int i,j;
+        // создадим новую модель
+        bModel = true; model_id = hullNodePointer->Unlink2Model();        
+		MODEL * mdl = (MODEL*)_CORE_API->GetEntityPointer(&model_id);
+		
+		if(mdl != NULL)	for(i=0; i<10000; i++)
+		{
+			NODE* nod=mdl->GetNode(i);
+			if(nod == NULL || nod->geo == NULL) break;
+			GEOS::INFO gi; nod->geo->GetInfo(gi);
+			for(j=0; j<gi.nlabels; j++)
+			{
+				GEOS::LABEL gl; nod->geo->GetLabel(j,gl);
+				if(!strncmp(gl.name,"rope",4))
+				{
+					if(bRope)
+						api->Send_Message(ropeEI,"lil",MSG_ROPE_DELETE,modelEI,atoi(&gl.name[5]));
+				}
+				if(!strncmp(gl.name,"fal",3))
+				{
+					if(bRope)
+						api->Send_Message(ropeEI,"lil",MSG_ROPE_DELETE,modelEI,atoi(&gl.name[4])+1000);
+				}				
+			}
+		}
+    }	
+	//bUse = true;
+}
+
+void HULL::AllRelease()
+{
+    ENTITY_ID tmp_id;
+
+	if( m_mount_param.pNode ) 
+	{
+		Mount( m_mount_param.modelEI, m_mount_param.shipEI, m_mount_param.pNode );
+		m_mount_param.pNode = 0;
+	}
+   
+    // удалить модель
+    _CORE_API->DeleteEntity(model_id);
+	m_pHullNode = 0;
 }

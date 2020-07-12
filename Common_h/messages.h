@@ -67,7 +67,10 @@
 #define MSG_SHIP_FLAG_REFRESH				50312   // boal 20.08.06
 #define MSG_SHIP_SAFE_DELETE				50315
 #define MSG_SHIP_GET_SAIL_STATE				50325
+#define MSG_SHIP_SET_HEEL_XZ				50330	// ugeen 29.11.10
 #define MSG_SHIP_CURVES						50400
+#define MSG_SHIP_TEST_MAST_FALL				50401   // ugeen 29.11.17
+#define MSG_SHIP_LIGHTSRESET				50402	// ugeen 25.12.19
 
 //============================================================================================
 //Weather Messages
@@ -112,6 +115,7 @@
 #define MSG_LOCATION_TLPCHRPOSITIONS		30153		//"l" переместить и удалить позиции для востонавления
 #define MSG_LOCATION_CLRCHRPOSITIONS		30154		//"l" удалить позиции для востонавления
 #define MSG_LOCATION_EX_MSG					30155		//"ls" расширенная команда s, ...
+#define MSG_LOCATION_VIEWSTATEBARS          30156       // "ll" отображение состояния противника (HP, энергия)  <-- ugeen 24.05.12
 //Отладочные
 #define MSG_LOCATION_VIEWLGROUP				30180		//"lsffl" показать группу локаторов в виде шариков с коэфициентом скалирования радиуса, дистанции видимости меток, цветом
 #define MSG_LOCATION_HIDELGROUP				30181		//"ls" скрыть группу локаторов
@@ -217,7 +221,10 @@
 #define MSG_WORLDMAP_CREATEENC_RELEASE		31200	//""
 //Запустить выход в море из скрипта
 #define MSG_WORLDMAP_LAUNCH_EXIT_TO_SEA		31130	//""
-
+//Установка флага на карте
+#define MSG_WORLDMAP_SET_NATION_FLAG		31150	//"ll" nation
+//Напечатать строку с координатами
+#define MSG_WORLDMAP_SET_COORDINATES		31151   //"ls" coordinates string
 
 
 //============================================================================================
@@ -267,6 +274,7 @@
 //Sound Service messages
 //============================================================================================
 //Control functions
+#define MSG_SOUND_SET_ENABLED				77016   //"l"		  enabled
 #define MSG_SOUND_SET_CAMERA_POSITION		77001	//"fff"       vector_x, vector_ym, vector_z
 #define MSG_SOUND_SET_CAMERA_ORIENTATION	77002	//"ffffff"    nose_vector_x, nose_vector_ym, nose_vector_z, head_vector_x, head_vector_y, head_vector_z
 #define MSG_SOUND_SET_MASTER_VOLUME			77021	//"fff"       FX, music, speech volumes
@@ -287,8 +295,8 @@
 #define MSG_SOUND_SCHEME_RESET				77013   //""
 #define MSG_SOUND_SCHEME_SET				77014   //"s"         scheme_name
 #define MSG_SOUND_SCHEME_ADD				77015   //"s"		  scheme_name
-
-#define MSG_SOUND_SET_ENABLED				77016   //"l"		  enabled
+//Aliases
+#define MSG_SOUND_ALIAS_ADD					77017   //"s"		  alias_name
 //============================================================================================
 
 //============================================================================================

@@ -553,6 +553,8 @@ protected:
 	ActionCharacter recoil;			//Отскок назад
 	ActionCharacter strafe_l;		//Отскок влево
 	ActionCharacter strafe_r;		//Отскок вправо
+	
+	bool isStunEnable;			    // Разрешен ли стан после удара врагом <-- ugeen 29.12.10
 	//Логическое состояние
 	FightAction fgtCurType;			//Тип текущего действия	
 	long fgtCurIndex;				//Индекс текущего действия

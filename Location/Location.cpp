@@ -44,6 +44,7 @@ Location::Location()
 	for(long i = 0; i < sizeof(message)/sizeof(DmgMessage); i++) message[i].alpha = 0.0f;
 	locationTimeUpdate = 0.0f;
 	enemyBarsCount = 0;
+	bDrawBars = true;
 	bSwimming = true;
 	bCausticEnable = false;
 }
@@ -179,7 +180,7 @@ void Location::Realize(dword delta_time)
 		Print(message[i].p, 10.0f, 0, message[i].alpha, message[i].c, 0.8f, "%.0f", message[i].hit);
 	}
 	//Отрисовка полосок над персонажами
-	DrawEnemyBars();
+	if(bDrawBars) DrawEnemyBars();
 	enemyBarsCount = 0;
 }
 
@@ -396,6 +397,9 @@ dword _cdecl Location::ProcessMessage(MESSAGE & message)
 	case MSG_LOCATION_EX_MSG:
 		message.String(sizeof(name), name); name[sizeof(name) - 1] = 0;
 		return MessageEx(name, message);
+	case MSG_LOCATION_VIEWSTATEBARS:
+		bDrawBars = message.Long() != 0;
+		return 1;
 	}
 	return 0;
 }

@@ -32,6 +32,11 @@
 
 #define MAX_KEEL_POINTS		5
 
+#define MAST_IDENTIFY		"mast"
+#define MAST_FIRST			1
+#define TOPMAST_BEGIN		100		// начало нумерации стеньг (если есть)
+#define HULL_IDENTIFY		"shatter"
+
 class SHIP : public SHIP_BASE {
 protected:
 // struct section
@@ -41,6 +46,15 @@ struct mast_t
 	CVECTOR		vSrc, vDst;			// src and dest vectors
 	long		iMastNum;			// mast number
 	bool		bBroken;			// if mast is broken then pNode = 0
+	float		fDamage;
+};
+
+struct hull_t
+{
+	NODE		* pNode;			// node pointer in model
+	CVECTOR		vSrc, vDst;			// src and dest vectors
+	long		iHullNum;			// hull detail number
+	bool		bBroken;			// if hull detail is broken then pNode = 0
 	float		fDamage;
 };
 
@@ -68,7 +82,7 @@ struct ship_point_t
 // entity_id section
 	ENTITY_ID		model_id, sphere[36];
 	ENTITY_ID		sail_id, rope_id, flag_id, cannon_id,
-					vant_id, touch_id, sea_id, blots_id;
+					vant_id, vantl_id, vantz_id, touch_id, sea_id, blots_id;
 
 	static VDX8RENDER		* pRS;
 	static SEA_BASE			* pSea;
@@ -80,6 +94,7 @@ struct ship_point_t
 	CVECTOR				vSpeed, vSpeedsA;
 	float				fMinusVolume;
 	float				fXOffset, fZOffset;
+	float				fXHeel, fZHeel;
 
 	bool				bModelUpperShip;
 	MODEL				* pModelUpperShip;
@@ -109,7 +124,9 @@ struct ship_point_t
 	CVECTOR			vDeadDir, vCurDeadDir;
 	CVECTOR			vKeelContour[MAX_KEEL_POINTS];
 	long			iNumMasts;
+	long			iNumHulls; 
 	mast_t			* pMasts;
+	hull_t			* pHulls;
 	bool			bShip2Strand;
 	bool			bMounted;
 	bool			bKeelContour;
@@ -132,7 +149,10 @@ struct ship_point_t
 	void		CalculateImmersion();						//
 	void		CheckShip2Strand(float fDeltaTime);							
 	void		MastFall(mast_t * pM);
-
+//	void 		MastFallChild(mast_t * pM);
+	void		TestMastFall(long iMast);
+	void		HullFall(hull_t * pM);
+	
 	CMatrix		UpdateModelMatrix();
 	void		RecalculateWorldOffset();
 	
@@ -153,11 +173,13 @@ public:
 
 	float		GetMaxSpeedZ();
 	float		GetMaxSpeedY();
+	float 		GetWindAgainst();
 	long		AddStrength(STRENGTH *strength);
 	bool		DelStrength(long iIdx);
 	
 	BOOL		BuildContour(CVECTOR *vContour,long &iNumVContour);
-	bool		BuildMasts();
+	bool		BuildMasts(); // создаем мачты
+	bool		BuildHulls();
 
 	BOOL		Move(DWORD DeltaTime, BOOL bCollision);
 	BOOL		TouchMove(DWORD DeltaTime, TOUCH_PARAMS *pTPOld, TOUCH_PARAMS *pTPNew);

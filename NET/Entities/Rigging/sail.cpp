@@ -308,6 +308,8 @@ void NetSail::Execute(dword Delta_Time)
             // сворачивать.разворачивать парус по нужде
             if( slist[i]->sroll && !slist[i]->bFreeSail)
                 slist[i]->DoRollingStep(Delta_Time);
+			if( slist[i]->sroll && !slist[i]->bFreeSail )
+				gdata[slist[i]->HostNum].bFinalSailDo = true;
             // Если поменялась сетка на парусе, то установить новые индексы
             slist[i]->GetGrid(pos,perspect);
             // расчет ветра
@@ -932,6 +934,25 @@ void NetSail::AddSailLabel(GEOS::LABEL &lbl, NODE *nod, bool bSailUp)
             cs->ss.rollingSail=true;
             cs->ss.texNum=2;
             break;
+		case 'x': // special square sail
+            cs->ss.eSailType=SAIL_SPECIAL;
+            cs->ss.rollingSail=true;
+            cs->ss.texNum=2;
+            break;	
+		// --> ugeen 08.11.10	
+		case 'v': // triangle sail
+            cs->ss.eSailType=SAIL_TREANGLE;
+            cs->ss.texNum=1;
+            cs->ss.rollingSail=false;
+			cs->rollType = ROLLTYPE_FAST;
+            break;
+		case 'n': // trapecidal sail
+            cs->ss.eSailType=SAIL_TRAPECIDAL;
+            cs->ss.texNum=2;
+            cs->ss.rollingSail=false;
+			cs->rollType = ROLLTYPE_FAST;
+            break;	
+		// <-- ugeen
         }
 
         cs->ss.turningSail = !strncmp(nod->GetName(),"rey_",4);
@@ -957,6 +978,10 @@ void NetSail::AddSailLabel(GEOS::LABEL &lbl, NODE *nod, bool bSailUp)
         break;
     case '4':
         cs->ss.hardPoints[2]=vtmp;
+	break;
+    case '0':
+        cs->ss.bYesLimitPoint = true;
+        cs->ss.LimitPoint = vtmp;
     }
 }
 
@@ -993,6 +1018,7 @@ void NetSail::SetAllSails(int groupNum)
                     PTR_DELETE(oldslist);
                 }
                 else	{PTR_DELETE(slist);}
+				i--;
             }
         }
 

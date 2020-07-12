@@ -1062,6 +1062,12 @@ float NetShip::GetMaxSpeedZ()
 	return (pAMaxSpeedZ) ? pAMaxSpeedZ->GetAttributeAsFloat() : 0.0f;
 }
 
+float NetShip::GetWindAgainst()
+{
+	ATTRIBUTES * pAWindAgainst = AP()->FindAClass(AP(), "Ship.WindAgainstSpeed");
+	return (pAWindAgainst) ? pAWindAgainst->GetAttributeAsFloat() : 0.0f;
+}
+
 float NetShip::GetMaxSpeedY()
 {
 	ATTRIBUTES * pAMaxSpeedY = AP()->FindAClass(AP(), "Ship.MaxSpeedY");
@@ -1463,6 +1469,24 @@ float NetShip::Cannon_Trace(long iBallOwner, const CVECTOR & vSrc, const CVECTOR
 			MastFall(pM);
 		}
 	}
+
+        // ugeen 2017
+/*
+	for (long i=0; i<iNumHulls; i++) if (!pHulls[i].bBroken)
+	{
+		hull_t * pM = &pHulls[i];
+		float fRes = pM->pNode->Trace(vSrc, vDst);
+		
+		if (fRes <= 1.0f)
+		{
+			CVECTOR v1 = vSrc + fRes * (vDst - vSrc);
+			VDATA * pV = api->Event(SHIP_HULL_DAMAGE, "llffffaas", SHIP_HULL_TOUCH_BALL, pM->iHullNum, v1.x, v1.y, v1.z, pM->fDamage, GetACharacter(), iBallOwner, pM->pNode->GetName());
+			pM->fDamage = Clamp(pV->GetFloat());
+			HullFall(pM);
+		}
+	}
+        // ugeen 2017
+*/
 
 	float fRes = pModel->Trace(vSrc, vDst);
 	if (fRes <= 1.0f)

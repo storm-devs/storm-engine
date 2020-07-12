@@ -204,7 +204,7 @@ void XINTERFACE::SetDevice()
 	{
 		THROW("No service: dx8render");
 	}
-
+	
 	pStringService = (VSTRSERVICE *)api->CreateService("STRSERVICE");
 	if(!pStringService)
 	{
@@ -1108,18 +1108,30 @@ void XINTERFACE::LoadIni()
     GUARD(XINTERFACE::LoadIni());
 	char	section[256];
 
+/*	
 #ifndef _XBOX
 	char * platform = "PC_SCREEN";
 #else
 	char * platform = "XBOX_SCREEN";
 #endif
+*/
+
 	INIFILE * ini;
 	ini = api->fio->OpenIniFile((char*)RESOURCE_FILENAME);
 	if(!ini) THROW("ini file not found!");
-
-	sprintf(section,"COMMON");
-
-	// установить параметры экрана
+	
+	RECT Screen_Rect;
+	GetWindowRect(api->GetAppHWND(),&Screen_Rect);
+	
+	fScale 					= 1.0f;	
+	dwScreenHeight 			= 600;
+	dwScreenWidth 			= (Screen_Rect.right - Screen_Rect.left) * dwScreenHeight/ (Screen_Rect.bottom - Screen_Rect.top);
+	if(dwScreenWidth < 800)  dwScreenWidth = 800;
+	GlobalScreenRect.top 	= 0;
+	GlobalScreenRect.bottom = 600;
+	GlobalScreenRect.left   = (dwScreenWidth - 800)/2;
+	GlobalScreenRect.right  = 800 + GlobalScreenRect.left;
+/*		
 	fScale = ini->GetFloat(platform,"fScale",1.f);
 	if(fScale<MIN_SCALE || fScale>MAX_SCALE) fScale=1.f;
 	dwScreenWidth = ini->GetLong(platform,"wScreenWidth",800);
@@ -1128,7 +1140,8 @@ void XINTERFACE::LoadIni()
 	GlobalScreenRect.top    = ini->GetLong(platform,"wScreenTop",600);
 	GlobalScreenRect.right  = ini->GetLong(platform,"wScreenRight",800);
 	GlobalScreenRect.bottom = ini->GetLong(platform,"wScreenDown",0);
-
+*/
+	sprintf(section,"COMMON");
 	m_fpMouseOutZoneOffset.x = ini->GetFloat(section,"mouseOutZoneWidth",0.f);
 	m_fpMouseOutZoneOffset.y = ini->GetFloat(section,"mouseOutZoneHeight",0.f);
 	m_nMouseLastClickTimeMax = ini->GetLong(section,"mouseDblClickInterval",300);
@@ -1160,10 +1173,10 @@ void XINTERFACE::LoadIni()
 	char param2[sizeof(param)];
 	sscanf(param,"%[^,],%d,size:(%d,%d),pos:(%d,%d)",param2,&m_lMouseSensitive,&MouseSize.x,&MouseSize.y,&m_lXMouse,&m_lYMouse);
 	m_idTex = pRenderService->TextureCreate(param2);
-	RECT Screen_Rect;
-	GetWindowRect(api->GetAppHWND(),&Screen_Rect);
+	
 	lock_x = Screen_Rect.left + (Screen_Rect.right - Screen_Rect.left)/2;
 	lock_y = Screen_Rect.top + (Screen_Rect.bottom - Screen_Rect.top)/2;
+	
 	SetCursorPos(lock_x,lock_y);
 	fXMousePos = float(dwScreenWidth/2);	fYMousePos = float(dwScreenHeight/2);
 	for(int i=0; i<4; i++)

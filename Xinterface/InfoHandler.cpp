@@ -110,7 +110,8 @@ bool InfoHandler::DoPreOut()
 		fScale = AttributesPointer->GetAttributeAsFloat("scale",1.f);
 		nOutOffset = AttributesPointer->GetAttributeAsDword("offset",m_rs->CharHeight(0));
 	}
-	char * picTexureFile = AttributesPointer->GetAttribute("picfilename");
+	char * picTexureFile 		= AttributesPointer->GetAttribute("picfilename");
+	char * picBackTexureFile 	= AttributesPointer->GetAttribute("picbackfilename");
 
 	DWORD TMP_VERTEX_FORMAT = (D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_TEX1|D3DFVF_TEXTUREFORMAT2);
 	struct TMP_VERTEX
@@ -159,12 +160,12 @@ bool InfoHandler::DoPreOut()
 	if( isOK )
 	{
 		// show picture
-		if(picTexureFile!=null)
+		if(picBackTexureFile!=null)
 		{
-			int picID = m_rs->TextureCreate(picTexureFile);
-			if(picID>=0)
+			int picBackID = m_rs->TextureCreate(picBackTexureFile);
+			if(picBackID>=0)
 			{
-				m_rs->TextureSet(0,picID);
+				m_rs->TextureSet(0,picBackID);
 				pV[0].col = pV[1].col = pV[2].col = pV[3].col = 0xFFFFFFFF;
 				pV[0].pos.x = 0.f;					pV[0].pos.y = 0.f;
 				pV[1].pos.x = 0.f;					pV[1].pos.y = (float)desc.Height;
@@ -174,9 +175,48 @@ bool InfoHandler::DoPreOut()
 				pV[1].tu = 0.f;		pV[1].tv = 1.f;
 				pV[2].tu = 1.f;		pV[2].tv = 0.f;
 				pV[3].tu = 1.f;		pV[3].tv = 1.f;
-				m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP,TMP_VERTEX_FORMAT,2,&pV,sizeof(TMP_VERTEX),"iInfoShowerPic");
+				m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP,TMP_VERTEX_FORMAT,2,&pV,sizeof(TMP_VERTEX),"iInfoShowerPic");				
+				m_rs->TextureRelease(picBackID);
+				m_rs->SetProgressBackImage( picBackTexureFile );
+			}
+		}
+		
+		if(picTexureFile!=null)
+		{
+			int picID = m_rs->TextureCreate(picTexureFile);
+			if(picID>=0)
+			{
+				m_rs->TextureSet(0,picID);
+				float dy = 0.0f;
+				float dx = ((float(desc.Width) - (4.0f * float(desc.Height) / 3.0f)) / 2.0f);
+				if(dx < 10.0f) dx = 0.0f;
+				else
+				{
+					dy = 25.0f; 
+					dx = ((float(desc.Width) - (4.0f * (float(desc.Height) - 2.0f * dy) / 3.0f)) / 2.0f);
+				}
+				
+				pV[0].col = pV[1].col = pV[2].col = pV[3].col = 0xFFFFFFFF;
+				pV[0].pos.x = 0.f + dx;					pV[0].pos.y = 0.f + dy;
+				pV[1].pos.x = 0.f + dx;					pV[1].pos.y = (float)desc.Height - dy;
+				pV[2].pos.x = (float)desc.Width - dx;	pV[2].pos.y = 0.f + dy;
+				pV[3].pos.x = (float)desc.Width - dx;	pV[3].pos.y = (float)desc.Height - dy;
+				pV[0].tu = 0.f;		pV[0].tv = 0.f;
+				pV[1].tu = 0.f;		pV[1].tv = 1.f;
+				pV[2].tu = 1.f;		pV[2].tv = 0.f;
+				pV[3].tu = 1.f;		pV[3].tv = 1.f;
+				
+				char _name[MAX_PATH];
+				sprintf(_name, "interfaces\\int_border.tga");
+				int tipsID = m_rs->TextureCreate(_name);
+				if(tipsID) 
+				{
+					m_rs->SetTipsImage(_name);
+					m_rs->TextureSet(1, tipsID);
+				}	
+				
+				m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP,TMP_VERTEX_FORMAT,2,&pV,sizeof(TMP_VERTEX),"iInfoShowerPicWithTips");
 				m_rs->TextureRelease(picID);
-
 				m_rs->SetProgressImage( picTexureFile );
 			}
 		}

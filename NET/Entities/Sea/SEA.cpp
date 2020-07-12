@@ -1154,34 +1154,3 @@ dword NetSea::AttributeChanged(ATTRIBUTES * pAttribute)
 
 	return 0;
 }
-
-void SEA::LostRender()
-{
-	if (!bSimpleSea)
-		Render().Release(pEnvMap);
-		Render().Release(pSunRoadMap);
-		Render().Release(pZStencil);
-	}
-	else
-	{	
-		Render().Release(pReflection);
-		Render().Release(pReflectionSunroad);
-		Render().Release(pReflectionSurfaceDept);
-	}
-}
-
-void SEA::RestoreRender()
-{
-	if (!bSimpleSea)
-	{
-		Render().CreateCubeTexture(128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pEnvMap);
-		Render().CreateCubeTexture(128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pSunRoadMap);
-		Render().CreateDepthStencilSurface(128, 128, D3DFMT_D24S8, D3DMULTISAMPLE_NONE, &pZStencil);
-	}
-	else
-	{	
-		Render().CreateTexture(128, 128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pReflection);
-		Render().CreateTexture(128, 128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pReflectionSunroad);
-		Render().CreateDepthStencilSurface(128, 128, D3DFMT_D24S8, D3DMULTISAMPLE_NONE, &pReflectionSurfaceDepth);
-	}
-}

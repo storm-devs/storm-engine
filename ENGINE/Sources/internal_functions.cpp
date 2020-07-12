@@ -47,6 +47,8 @@ enum FUNCTION_CODE
 	FUNC_TAN,
 	FUNC_ATAN,
 	FUNC_ATAN2,
+	FUNC_ASIN,
+	FUNC_ACOS,
 	FUNC_DELETE_ATTRIBUTE,
 	FUNC_SEGMENT_IS_LOADED,
 	FUNC_GET_ATTRIBUTES_NUM,
@@ -108,8 +110,11 @@ enum FUNCTION_CODE
 	FUNC_TEST_REF,
 	FUNC_SETTIMESCALE,
 	FUNC_CHECKFUNCTION,
-	FUNC_GETENGINEVERSION
-
+	FUNC_GETENGINEVERSION,
+    FUNC_GET_DLC_ENABLED,
+	FUNC_GET_DLC_COUNT,
+	FUNC_GET_DLC_DATA,
+	FUNC_DLC_START_OVERLAY
 };
 
 
@@ -148,6 +153,8 @@ INTFUNCDESC IntFuncTable[]=
 	1,"tan",VAR_FLOAT,
 	1,"atan",VAR_FLOAT,
 	2,"atan2",VAR_FLOAT,
+	1,"asin",VAR_FLOAT,
+	1,"acos",VAR_FLOAT,
 	2,"DeleteAttribute",TVOID,
 	1,"SegmentIsLoaded",VAR_INTEGER,
 	1,"GetAttributesNum",VAR_INTEGER,
@@ -207,7 +214,11 @@ INTFUNCDESC IntFuncTable[]=
 	1,"TestRef",VAR_INTEGER,
 	1,"SetTimeScale",TVOID,
 	1,"CheckFunction",VAR_INTEGER,
-	0,"GetEngineVersion",VAR_INTEGER
+	0,"GetEngineVersion",VAR_INTEGER,
+	1,"GetDLCenabled",VAR_INTEGER,
+	0,"GetDLCCount",VAR_INTEGER,
+	1,"GetDLCData",VAR_INTEGER,
+	1,"DLCStartOverlay",VAR_INTEGER
 };
 /*
 char * FuncNameTable[]=
@@ -245,6 +256,8 @@ char * FuncNameTable[]=
 	"tan",
 	"atan",
 	"atan2",
+	"asin",
+	"acos",
 	"DeleteAttribute",
 	"SegmentIsLoaded",
 	"GetAttributesNum",
@@ -342,6 +355,8 @@ DWORD FuncArguments[]=
 	1,//"tan",
 	1,//"atan",
 	2,//"atan2",
+	1,//"asin"
+	1,//"acos"
 	2,//"DeleteAttribute",
 	1,//"SegmentIsLoaded",
 	1,//"GetAttributesNum",
@@ -477,6 +492,7 @@ DATA * COMPILER::BC_CallIntFunction(DWORD func_code,DATA * & pVResult,DWORD argu
 	long  TempLong1;
 	long  TempLong2;
 	long  TempLong;
+	bool  TempBool;
 	char * pChar;
 	char * pChar2;
 	ENTITY_ID TempEid;
@@ -493,6 +509,7 @@ DATA * COMPILER::BC_CallIntFunction(DWORD func_code,DATA * & pVResult,DWORD argu
 	pEid = 0;
 	TempFloat1 = 0;
 	TempLong1 = 0;
+	TempBool = 0;
 
 	api = _CORE_API;
 
@@ -506,6 +523,98 @@ DATA * COMPILER::BC_CallIntFunction(DWORD func_code,DATA * & pVResult,DWORD argu
 		case FUNC_GETENGINEVERSION:
 			pV = SStack.Push();
 			pV->Set((long)ENGINE_SCRIPT_VERSION);
+			pVResult = pV;
+			return pV;
+		break;
+		case FUNC_GET_DLC_ENABLED:
+//#ifdef isSTEAM	
+
+			pV = SStack.Pop();
+			if(pV->GetType() == VAR_INTEGER)
+			{
+				pV->Get(TempLong1);		
+			}
+			else 
+			{
+				SetError("incorrect argument type");
+				break;
+			}		
+			TempBool = _CORE_API->isDLCActive(TempLong1);
+			pV = SStack.Push();
+			if(TempBool) pV->Set((long)1);
+			else         pV->Set((long)0);
+/*			
+#else
+			pV = SStack.Push();
+			pV->Set((long)0);
+#endif			
+*/
+			pVResult = pV;
+			return pV;
+		break;
+		case FUNC_GET_DLC_COUNT:
+			pV = SStack.Push();		
+			
+//#ifdef isSTEAM			
+
+			TempLong = _CORE_API->getDLCCount();
+			pV->Set(TempLong);
+/*			
+#else			
+			pV->Set((long)0);
+#endif						
+*/
+			pVResult = pV;
+			return pV;		
+		break;
+		case FUNC_GET_DLC_DATA:
+//#ifdef isSTEAM	
+
+			pV = SStack.Pop();
+			if(pV->GetType() == VAR_INTEGER)
+			{
+				pV->Get(TempLong1);		
+			}
+			else 
+			{
+				SetError("incorrect argument type");
+				break;
+			}		
+			TempLong = _CORE_API->getDLCDataByIndex(TempLong1);	
+			pV = SStack.Push();
+			pV->Set(TempLong);
+/*			
+#else
+			pV = SStack.Push();
+			pV->Set((long)0);
+#endif			
+*/
+			pVResult = pV;
+			return pV;			
+		break;
+		case FUNC_DLC_START_OVERLAY:
+//#ifdef isSTEAM			
+
+			pV = SStack.Pop();
+			if(pV->GetType() == VAR_INTEGER)
+			{
+				pV->Get(TempLong1);		
+			}
+			else 
+			{
+				SetError("incorrect argument type");
+				break;
+			}
+			TempBool = _CORE_API->activateGameOverlayDLC(TempLong1);	
+			pV = SStack.Push();
+			if(TempBool) pV->Set((long)1);
+			else         pV->Set((long)0);
+/*			
+#else
+			pV = SStack.Push();
+			pV->Set((long)0);
+#endif			
+*/
 			pVResult = pV;
 			return pV;
 		break;
@@ -1661,8 +1770,7 @@ DATA * COMPILER::BC_CallIntFunction(DWORD func_code,DATA * & pVResult,DWORD argu
 			pV->Set(TempFloat1);
 			pVResult = pV;
 		return pV;
-		case FUNC_ATAN2:
-		
+		case FUNC_ATAN2:		
 			pV2 = SStack.Pop(); if(!pV2){SetError(INVALID_FA);break;};
 			pV = SStack.Pop(); if(!pV){SetError(INVALID_FA);break;};
 			switch(pV->GetType())
@@ -1692,6 +1800,66 @@ DATA * COMPILER::BC_CallIntFunction(DWORD func_code,DATA * & pVResult,DWORD argu
 				return null;
 			}
 		break;
+		case FUNC_ASIN:
+			pV = SStack.Pop(); if(!pV){SetError(INVALID_FA);break;};
+			switch(pV->GetType())
+			{
+				case VAR_INTEGER:
+					pV->Get(TempLong1);
+					if(TempLong1 < -1 || TempLong1 > 1)
+					{
+						SetError("Illegal func 'asin' argument");
+						return null;
+					}
+					TempFloat1 = (float)asinf((float)TempLong1);
+				break;
+				case VAR_FLOAT:
+					pV->Get(TempFloat1);
+					if(TempFloat1 < -1 || TempFloat1 > 1)
+					{
+						SetError("Illegal func 'asin' argument");
+						return null;
+					}
+					TempFloat1 = (float)asin(TempFloat1);
+				break;
+				default:
+					SetError("Invalid func 'asin' argument");
+				return null;
+			}
+			pV = SStack.Push();
+			pV->Set(TempFloat1);
+			pVResult = pV;
+		return pV;
+		case FUNC_ACOS:
+			pV = SStack.Pop(); if(!pV){SetError(INVALID_FA);break;};
+			switch(pV->GetType())
+			{
+				case VAR_INTEGER:
+					pV->Get(TempLong1);
+					if(TempLong1 < -1 || TempLong1 > 1)
+					{
+						SetError("Illegal func 'acos' argument");
+						return null;
+					}
+					TempFloat1 = (float)acosf((float)TempLong1);
+				break;
+				case VAR_FLOAT:
+					pV->Get(TempFloat1);
+					if(TempFloat1 < -1 || TempFloat1 > 1)
+					{
+						SetError("Illegal func 'acos' argument");
+						return null;
+					}
+					TempFloat1 = (float)acos(TempFloat1);
+				break;
+				default:
+					SetError("Invalid func 'acos' argument");
+				return null;			
+			}
+			pV = SStack.Push();
+			pV->Set(TempFloat1);
+			pVResult = pV;
+		return pV;
 		case FUNC_COPYATTRIBUTES:
 			// source
 			pV2 = SStack.Pop(); if(!pV2){SetError(INVALID_FA);break;};

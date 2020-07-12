@@ -2,7 +2,8 @@
 #include "AIFort.h"
 
 array<AIGroup*>	AIGroup::AIGroups(_FL_, 4);
-float AIGroup::fDistanceBetweenGroupShips = 250.0f;
+float AIGroup::fDistanceBetweenGroupShips = 300.0f;
+float AIGroup::fDistanceBetweenGroupLines = 250.0f;
 
 AIGroup::AIGroup(const char * pGroupName) : aGroupShips(_FL_, 4)
 {
@@ -13,6 +14,9 @@ AIGroup::AIGroup(const char * pGroupName) : aGroupShips(_FL_, 4)
 
 	sGroupName = pGroupName;
 	
+	iWarShipsNum 	= 0;
+	iTradeShipsNum 	= 0;
+		
 	dtCheckTask.Setup(FRAND(4.0f), 2.0f, 4.0f);
 }
 
@@ -27,15 +31,51 @@ void AIGroup::AddShip(ENTITY_ID eidShip, ATTRIBUTES * pACharacter, ATTRIBUTES * 
 {
 	ATTRIBUTES * pAMode = pACharacter->FindAClass(pACharacter, "Ship.Mode");
 	AIShip * pShip = null;
+	bool isWarShip = true;
 	if (pAMode)
 	{
-		if (string("war") == pAMode->GetThisAttr()) pShip = NEW AIShipWar();
-		if (string("trade") == pAMode->GetThisAttr()) pShip = NEW AIShipTrade();
-		if (string("boat") == pAMode->GetThisAttr()) pShip = NEW AIShipBoat();
+		if (string("war") 	== pAMode->GetThisAttr()) 
+		{
+			pShip = NEW AIShipWar(); 
+			isWarShip = true;
+			iWarShipsNum++;
+		}	
+		if (string("trade") == pAMode->GetThisAttr())
+		{
+			pShip = NEW AIShipTrade(); 
+			isWarShip = false;
+			iTradeShipsNum++;
+		}	
+		if (string("boat") 	== pAMode->GetThisAttr()) 
+		{
+			pShip = NEW AIShipBoat(); 
+			isWarShip = false;
+			iTradeShipsNum++;
+		}	
 	}
-	if (!pShip) pShip = NEW AIShipWar();
-
-	CVECTOR vShipPos = CVECTOR(vInitGroupPos.x, vInitGroupPos.y, vInitGroupPos.z) - (aGroupShips.Size() * AIGroup::fDistanceBetweenGroupShips) * CVECTOR(sinf(vInitGroupPos.y), 0.0f, cosf(vInitGroupPos.y));
+	if (!pShip) 
+	{	
+		pShip = NEW AIShipWar();
+		isWarShip = true;
+		iWarShipsNum++;
+	}	
+	
+	CVECTOR vShipPos, vTmpPos;
+	
+	//vTmpPos = (aGroupShips.Size() * AIGroup::fDistanceBetweenGroupShips) * CVECTOR(sinf(vInitGroupPos.y), 0.0f, cosf(vInitGroupPos.y));		
+	
+	if(isWarShip) 	// военный
+	{
+		vTmpPos = ((iWarShipsNum - 1) * AIGroup::fDistanceBetweenGroupShips) * CVECTOR(sinf(vInitGroupPos.y), 0.0f, cosf(vInitGroupPos.y));		
+		vShipPos = CVECTOR(vInitGroupPos.x, vInitGroupPos.y, vInitGroupPos.z) - vTmpPos;
+	}
+	else			// торговый
+	{
+		vTmpPos = ((iTradeShipsNum - 1) * AIGroup::fDistanceBetweenGroupShips) * CVECTOR(sinf(vInitGroupPos.y), 0.0f, cosf(vInitGroupPos.y));		
+		vShipPos = CVECTOR(vInitGroupPos.x, vInitGroupPos.y, vInitGroupPos.z) - vTmpPos - CVECTOR(0.0f, 0.0f, AIGroup::fDistanceBetweenGroupLines);
+	}
+		
+	//vShipPos = CVECTOR(vInitGroupPos.x, vInitGroupPos.y, vInitGroupPos.z) - (aGroupShips.Size() * (AIGroup::fDistanceBetweenGroupShips + FRAND(50.0f))) * CVECTOR(sinf(vInitGroupPos.y), 0.0f, cosf(vInitGroupPos.y));
 
 	pShip->CreateShip(eidShip, pACharacter, pAShip, &vShipPos);
 	pShip->SetGroupName(GetName());

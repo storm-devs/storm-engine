@@ -58,6 +58,7 @@ SAILONE::SAILONE()
 
 	surfaceTex = -1;
 	m_bHoleChanged = false;
+	ss.bYesLimitPoint = false;
 
 	m_bIsGerald = false;
 	m_nGeraldTex = -1;
@@ -645,6 +646,9 @@ bool SAILONE::SetSail()
     switch(ss.eSailType)
     {
     case SAIL_TREANGLE:
+if( ss.bYesLimitPoint )
+			ss.fDeepZ = 0.5f * GetDistanceFromPointTo3Point( ss.LimitPoint, ss.hardPoints[0],ss.hardPoints[1],ss.hardPoints[2] );
+		else
         ss.fDeepZ=.04f+.01f*(float)rand()/(float)RAND_MAX*sailHeight;
         ss.fDeepH=ss.fDeepZ;
         if(!ss.turningSail)
@@ -653,14 +657,32 @@ bool SAILONE::SetSail()
             ss.fDeepVh=.0f;
         break;
     case SAIL_TRAPECIDAL:
+		if( ss.bYesLimitPoint )
+		{
+			ss.fDeepZ = GetDistanceFromPointTo3Point( ss.LimitPoint, ss.hardPoints[0],ss.hardPoints[1],ss.hardPoints[2] );
+			ss.fDeepH = sailWidth / (sailWidth+sailHeight+0.01f) * ss.fDeepZ;
+			ss.fDeepZ *= sailHeight / (sailWidth+sailHeight+0.01f);
+		}
+		else
+		{
         ss.fDeepZ=0.01f+.01f*(float)rand()/(float)RAND_MAX*sailHeight;
         ss.fDeepH=0.01f+.01f*(float)rand()/(float)RAND_MAX*sailWidth;
+		}
         ss.fDeepVh=0.f;
         ss.fDeepVz=0.f;
         break;
     default:
+		if( ss.bYesLimitPoint )
+		{
+			ss.fDeepZ = GetDistanceFromPointTo3Point( ss.LimitPoint, ss.hardPoints[0],ss.hardPoints[1],ss.hardPoints[2] );
+			ss.fDeepH = sailWidth / (sailWidth+sailHeight+0.01f) * ss.fDeepZ;
+			ss.fDeepZ *= sailHeight / (sailWidth+sailHeight+0.01f);
+		}
+		else
+		{
         ss.fDeepZ=(.06f+.02f*(float)rand()/(float)RAND_MAX)*sailHeight;
         ss.fDeepH=(.06f+.02f*(float)rand()/(float)RAND_MAX)*sailWidth*.6f;
+		}
         ss.fDeepVh=ss.fDeepZ*.1f;
         ss.fDeepVz=ss.fDeepZ*.1f;
     }
@@ -837,6 +859,10 @@ void SAILONE::GoVWave(SAILVERTEX *pv)
 
     // амплитуда движения паруса под воздействием ветра
     float WindAmplitude=pp->SsailWindDepend*sailHeight*(fWindBase+pp->fWindAdding)/(pp->fWindAdding+1.f)/(float)(SAIL_COL_MAX/2+2);
+	if( ss.bYesLimitPoint )
+	{
+		WindAmplitude = (ss.fDeepH+ss.fDeepZ) * 0.15f;
+	}
 
     // прогиб паруса при недостатке ветра
     float windFlex;
@@ -1021,12 +1047,22 @@ void SAILONE::SetRolling(bool bRoll)
 		if( oldWindAngl<0.f )
 		{
 			oldWindAngl += pp->TURNSTEPANGL;
-	        hostNode->loc_mtx.RotateY(-pp->TURNSTEPANGL);
+			if(ss.eSailType == SAIL_TRAPECIDAL || ss.eSailType == SAIL_TREANGLE || ss.eSailType == SAIL_SPECIAL)
+			{
+				hostNode->loc_mtx.RotateY(pp->TURNSTEPANGL);
+			}
+			else hostNode->loc_mtx.RotateY(-pp->TURNSTEPANGL);						
+	        //hostNode->loc_mtx.RotateY(-pp->TURNSTEPANGL);
 		}
 		else
 		{
 			oldWindAngl -= pp->TURNSTEPANGL;
-	        hostNode->loc_mtx.RotateY(pp->TURNSTEPANGL);
+			if(ss.eSailType == SAIL_TRAPECIDAL || ss.eSailType == SAIL_TREANGLE || ss.eSailType == SAIL_SPECIAL)
+			{
+				hostNode->loc_mtx.RotateY(-pp->TURNSTEPANGL);
+			}
+			else hostNode->loc_mtx.RotateY(pp->TURNSTEPANGL);						
+	        //hostNode->loc_mtx.RotateY(pp->TURNSTEPANGL);
 		}
         hostNode->loc_mtx.SetPosition(locPos);
 	}
@@ -1103,7 +1139,13 @@ void SAILONE::TurnSail(float fTurnStep)
         oldWindAngl+=windAng;
         CVECTOR locPos = hostNode->loc_mtx.Pos();
         hostNode->loc_mtx.SetPosition(0.f,0.f,0.f);
-        hostNode->loc_mtx.RotateY(-windAng);
+// --> ugeen 26.11.10
+		if(ss.eSailType == SAIL_TRAPECIDAL || ss.eSailType == SAIL_TREANGLE || ss.eSailType == SAIL_SPECIAL)
+		{
+			hostNode->loc_mtx.RotateY(windAng);
+		}
+		else hostNode->loc_mtx.RotateY(-windAng);
+		// <-- ugeen
         hostNode->loc_mtx.SetPosition(locPos);
 
         // Get new global matrix
@@ -1498,11 +1540,11 @@ float SAILONE::SSailTrace(CVECTOR &src,CVECTOR &dst,bool bCannonTrace)
 		ChangeHoleDwordCode();
         CalculateMirrorSailIndex(); // новая триангуляция для отражения паруса
 		SetGeometry();
-		if( !pp->gdata[HostNum].bDeleted && pp->gdata[HostNum].bYesShip )
+		if( pp->gdata[HostNum].bDeleted != true && pp->gdata[HostNum].bYesShip )
 		{
 			VAI_OBJBASE * pVai = (VAI_OBJBASE*)api->GetEntityPointer(&pp->gdata[HostNum].shipEI);
 			int charIdx = -1;
-			if(pVai && pVai->GetACharacter())
+			if(pVai!=NULL && pVai->GetACharacter()!=NULL)
 				charIdx = pVai->GetACharacter()->GetAttributeAsDword("index");
 			if(charIdx!=-1)
 				api->Event("DoSailHole","llssllllf", g_iBallOwnerIdx, charIdx,"*",
@@ -1853,6 +1895,15 @@ void SAILONE::SetTurnLimits()
 
 	if(minA>=0.f)	m_fMinAngle = minA;
 	if(maxA>=0.f)	m_fMaxAngle = maxA;
+}
+
+float SAILONE::GetDistanceFromPointTo3Point(const CVECTOR& v, const CVECTOR& vB1, const CVECTOR& vB2, const CVECTOR& vB3)
+{
+	CVECTOR vN = !( (vB1-vB2) ^ (vB3-vB2) );
+	float fD = - (vN | vB2);
+
+	float f = v|vN + fD;
+	return f;
 }
 
 void SAILONE::CalculateSailIDCode()

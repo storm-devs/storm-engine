@@ -1,6 +1,7 @@
 #include "ship.h"
 
 #define MAST_IDENTIFY		"mast"
+#define HULL_IDENTIFY		"shatter"
 #define MAST_FIRST			1
 
 BOOL NetShip::BuildContour(CVECTOR * vContour,long & iNumVContour)
@@ -204,9 +205,76 @@ bool NetShip::BuildMasts()
 				//iIdx--;
 			}
 			else
+			{
 				pAMasts->SetAttributeUseFloat(str,0.0f);
-
+			}				
 			iNumMasts++;
+		}
+		iIdx++;
+	}
+	return true;
+}
+
+bool NetShip::BuildHulls()
+{
+	char str[256];
+
+	MODEL * pEnt = GetModel(); Assert(pEnt);
+
+	// build hull list
+	long iNum,iIdx = 0;
+	while (true)
+	{
+		NODE* pNode = (NODE*)pEnt->GetNode(iIdx);
+		if (!pNode) break;
+		const char *cNodeName = pNode->GetName();	
+		if (strnicmp(cNodeName,HULL_IDENTIFY,strlen(HULL_IDENTIFY)) == 0)
+		{
+			CVECTOR vBSize,vBCenter,vUp,vDown,vTemp;
+			
+			ATTRIBUTES * pAHulls = AP()->FindAClass(AP(),"Ship.Hulls");
+			if (!pAHulls)
+				pAHulls = AP()->CreateSubAClass(AP(), "Ship.Hulls");
+				
+			sscanf((const char*)&cNodeName[strlen(HULL_IDENTIFY)],"%d",&iNum);
+			pHulls = (hull_t*)RESIZE(pHulls,sizeof(hull_t) * (iNumHulls+1));
+
+			hull_t * pM = &pHulls[iNumHulls];
+			pM->iHullNum = iNum;
+			pM->bBroken = false;
+			pM->fDamage = 0.0f;
+			pM->pNode = pNode;		
+			
+			GEOS::INFO ginfo;
+			pNode->geo->GetInfo(ginfo);
+			
+			vBSize		= CVECTOR(ginfo.boxsize.x,ginfo.boxsize.y,ginfo.boxsize.z);
+			vBCenter	= CVECTOR(ginfo.boxcenter.x,ginfo.boxcenter.y,ginfo.boxcenter.z);
+			
+			vUp		= pNode->glob_mtx * (vBCenter + vBSize / 2.0f);
+			vDown	= pNode->glob_mtx * (vBCenter - vBSize / 2.0f);
+
+			vTemp	= (vUp + vDown) / 2.0f;
+			
+			pM->vSrc = CVECTOR(vTemp.x,vDown.y,vTemp.z);
+			pM->vDst = CVECTOR(vTemp.x,vUp.y,vTemp.z);
+			
+			sprintf(str,"%s",pNode->GetName());
+			ATTRIBUTES * pAHull = pAHulls->FindAClass(pAHulls,str);
+			if (pAHull && pAHull->GetAttributeAsFloat()>=1.0f)
+			{
+				pM->fDamage = 1.0f;
+				pM->bBroken = true;
+				ENTITY_ID ent;
+				api->CreateEntity(&ent,"hull");
+				api->Send_Message(ent,"lpii", MSG_HULL_SETGEOMETRY, pNode, GetID(), GetModelEID());
+				api->DeleteEntity(ent);
+				//iIdx--;
+			}
+			else
+				pAHulls->SetAttributeUseFloat(str,0.0f);
+
+			iNumHulls++;
 		}
 		iIdx++;
 	}

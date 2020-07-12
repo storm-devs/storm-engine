@@ -67,7 +67,9 @@
 #define MSG_SHIP_FLAG_REFRESH				50312   // boal 20.08.06
 #define MSG_SHIP_SAFE_DELETE				50315
 #define MSG_SHIP_GET_SAIL_STATE				50325
+#define MSG_SHIP_SET_HEEL_XZ				50330
 #define MSG_SHIP_CURVES						50400
+#define MSG_SHIP_TEST_MAST_FALL				50401
 
 //============================================================================================
 //Weather Messages
@@ -112,6 +114,7 @@
 #define MSG_LOCATION_TLPCHRPOSITIONS		30153		//"l" переместить и удалить позиции для востонавления
 #define MSG_LOCATION_CLRCHRPOSITIONS		30154		//"l" удалить позиции для востонавления
 #define MSG_LOCATION_EX_MSG					30155		//"ls" расширенная команда s, ...
+#define MSG_LOCATION_VIEWSTATEBARS          30156       // "ll" отображение состояния противника (HP, энергия) 
 //Отладочные
 #define MSG_LOCATION_VIEWLGROUP				30180		//"lsffl" показать группу локаторов в виде шариков с коэфициентом скалирования радиуса, дистанции видимости меток, цветом
 #define MSG_LOCATION_HIDELGROUP				30181		//"ls" скрыть группу локаторов

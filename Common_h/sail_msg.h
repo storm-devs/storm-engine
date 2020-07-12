@@ -34,9 +34,10 @@
 //=\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\=
 //=/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/=
     // FLAGS MESSAGES
-#define		MSG_FLAG_INIT		40200 // format "lil" (msg_code, model_id,nation)
-#define     MSG_FLAG_DEL_GROUP  40201 // formar "li" (msg_code,model_id)
-#define     MSG_FLAG_TO_NEWHOST 40210 // format "lili" (msg_code,oldmodel_id,groupNum,newmodel_id)
+#define		MSG_FLAG_INIT		40200 // format "lili" (msg_code, model_id,nation,ship_id)
+#define		MSG_FLAG_INIT_TOWN	40201 // format "lil" (msg_code, model_id,nation)
+#define     MSG_FLAG_DEL_GROUP  40202 // formar "li" (msg_code,model_id)
+#define     MSG_FLAG_TO_NEWHOST 40210 // format "lili" (msg_code,oldmodel_id,groupNum,newmodel_id)		
 //=\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\=
 //=/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/=
     // VANTS MESSAGES

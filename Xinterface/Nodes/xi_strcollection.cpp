@@ -263,6 +263,7 @@ dword _cdecl CXI_STRCOLLECTION::MessageProc(long msgcode, MESSAGE & message)
 			// string pos.x&y, color front&back, alignment, shadow, scale
 			pstr->scrPos.x = message.Long() + m_hostRect.left;	// msg
 			pstr->scrPos.y = message.Long() + m_hostRect.top;	// msg
+			
 			pstr->foreColor = message.Long();	// msg
 			pstr->backColor = message.Long();	// msg
 			switch(message.Long())				// msg
@@ -285,7 +286,7 @@ dword _cdecl CXI_STRCOLLECTION::MessageProc(long msgcode, MESSAGE & message)
 			{
 				int realWidth = m_rs->StringWidth(paramStr,pstr->nFontNum,pstr->fScale);
 				if(realWidth>nWidth)	pstr->fScale *= (float)(nWidth-1)/realWidth;
-			}
+			}			
 		}
 		break;
 	case 1: // изменить строку по номеру

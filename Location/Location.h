@@ -185,6 +185,7 @@ private:
 	EnemyBar enemyBar[32];
 	long enemyBarsCount;
 	long enemyBarsTexture;
+	bool bDrawBars;
 
 	bool bSwimming;
 };

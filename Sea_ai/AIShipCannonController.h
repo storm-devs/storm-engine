@@ -86,6 +86,7 @@ public:
 		CVECTOR GetFirePos(CVECTOR & vFireDir);
 		CVECTOR GetFirePos(CVECTOR & vFireDir, float fDistance);
 		dword	GetBortIntactCannonsNum(dword dwBortIdx);
+		dword   GetBortDisabledCannonsNum(dword dwBortIdx); // ugeen 01.12.10 - пересчет отсутствующих орудий - нужно для орудийного рэндома
 
 	// fire test
 		bool	isCanFirePos(CVECTOR & vFirePos);		// is we can fire to position

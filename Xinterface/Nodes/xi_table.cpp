@@ -503,7 +503,7 @@ int CXI_TABLE::CommandExecute(int wActCode)
 					long nCol = GetColByX( (long)ptrOwner->GetMousePoint().x );
 					if( m_bDoColsSelect ) SelectRow( n, nCol );
 					else SelectRow( n );
-					//api->Event( "OnTableClick", "sll", m_nodeName, m_nSelectIndex, nCol+1 );
+					api->Event( "OnTableClick", "sll", m_nodeName, m_nSelectIndex, nCol+1 );
 				}
 			}
 			break;

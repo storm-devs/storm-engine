@@ -1027,12 +1027,22 @@ void SAILONE::SetRolling(bool bRoll)
 		if( oldWindAngl<0.f )
 		{
 			oldWindAngl += pp->TURNSTEPANGL;
-	        hostNode->loc_mtx.RotateY(-pp->TURNSTEPANGL);
+			if(ss.eSailType == SAIL_TRAPECIDAL || ss.eSailType == SAIL_TREANGLE || ss.eSailType == SAIL_SPECIAL)
+			{
+				hostNode->loc_mtx.RotateY(pp->TURNSTEPANGL);
+			}
+			else hostNode->loc_mtx.RotateY(-pp->TURNSTEPANGL);						
+	        //hostNode->loc_mtx.RotateY(-pp->TURNSTEPANGL);
 		}
 		else
 		{
 			oldWindAngl -= pp->TURNSTEPANGL;
-	        hostNode->loc_mtx.RotateY(pp->TURNSTEPANGL);
+			if(ss.eSailType == SAIL_TRAPECIDAL || ss.eSailType == SAIL_TREANGLE || ss.eSailType == SAIL_SPECIAL)
+			{
+				hostNode->loc_mtx.RotateY(-pp->TURNSTEPANGL);
+			}
+			else hostNode->loc_mtx.RotateY(pp->TURNSTEPANGL);						
+	        //hostNode->loc_mtx.RotateY(pp->TURNSTEPANGL);
 		}
         hostNode->loc_mtx.SetPosition(locPos);
 	}
@@ -1109,7 +1119,13 @@ void SAILONE::TurnSail(float fTurnStep)
         oldWindAngl+=windAng;
         CVECTOR locPos = hostNode->loc_mtx.Pos();
         hostNode->loc_mtx.SetPosition(0.f,0.f,0.f);
-        hostNode->loc_mtx.RotateY(-windAng);
+		// --> ugeen 26.11.10
+		if(ss.eSailType == SAIL_TRAPECIDAL || ss.eSailType == SAIL_TREANGLE || ss.eSailType == SAIL_SPECIAL)
+		{
+			hostNode->loc_mtx.RotateY(windAng);
+		}
+		else hostNode->loc_mtx.RotateY(-windAng);
+		// <-- ugeen
         hostNode->loc_mtx.SetPosition(locPos);
 
         // Get new global matrix

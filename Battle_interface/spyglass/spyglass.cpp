@@ -192,14 +192,14 @@ dword _cdecl ISPYGLASS::ProcessMessage(MESSAGE & message)
 
 	switch( nMsgCode )
 	{
-	case MSG_TELESCOPE_REQUEST:
+		case MSG_TELESCOPE_REQUEST:
 		{
 			long nIsOn = message.Long();
 			TurnOnTelescope(nIsOn!=0);
 		}
-	break;
+		break;
 
-	case MSG_TELESCOPE_SET_TYPE: // "lsfll"
+		case MSG_TELESCOPE_SET_TYPE: // "lsfll"
 		{
 			message.String(sizeof(param),param);
 			float fZoomScale = message.Float();
@@ -208,9 +208,9 @@ dword _cdecl ISPYGLASS::ProcessMessage(MESSAGE & message)
 			ChangeTelescopeType(param,fZoomScale,fActivateTime,fUpdateTime);
 			m_pFortObj = 0;
 		}
-	break;
+		break;
 
-	case MSG_ISG_UPDATE: // "lsslllfflllllllllllss"
+		case MSG_ISG_UPDATE: // "lsslllfflllllllllllss"
 		{
 			char shipname[512],shiptype[512],captainname[1024],facetexture[1024];
 			message.String(sizeof(shipname),shipname); // ship name
@@ -240,9 +240,9 @@ dword _cdecl ISPYGLASS::ProcessMessage(MESSAGE & message)
 				nFencingSkl,nCannonSkl,nAccuracySkl,nNavigationSkl,nBoardingSkl,
 				captainname,facetexture,nShipClass);
 		}
-	break;
+		break;
 
-	case MSG_ISG_SET_SHIPICON: // "sffff"
+		case MSG_ISG_SET_SHIPICON: // "sffff"
 		{
 			char texturename[1024];
 			FRECT frUV;
@@ -253,7 +253,20 @@ dword _cdecl ISPYGLASS::ProcessMessage(MESSAGE & message)
 			frUV.bottom = message.Float();
 			m_ShipImage.ChangeIcon( m_pImgRender, texturename, frUV );
 		}
-	break;
+		break;
+		
+		case MSG_ISG_SET_CHARICON: // "sffff"
+		{
+			char captexturename[1024];
+			FRECT frUV;
+			message.String( sizeof(captexturename), captexturename );
+			frUV.left = message.Float();
+			frUV.top = message.Float();
+			frUV.right = message.Float();
+			frUV.bottom = message.Float();
+			m_CaptainBack.ChangeIcon( m_pImgRender, captexturename, frUV );
+		}
+		break;
 	}
 	return 0;
 }

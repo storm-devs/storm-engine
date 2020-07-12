@@ -54,12 +54,14 @@ BATTLE_NAVIGATOR::BATTLE_NAVIGATOR()
 	m_idIslandTexture = -1;
 	m_idChargeTexture = -1;
 	m_idWindTex = -1;
+	m_idBestCourseTex = -1;
 	m_idWindTexture = -1;
 	m_idSailTexture = -1;
 
 
 	// буферы
 	m_idEmptyVBuf = -1;
+	m_idCourseVBuf = -1;
 	m_idMapVBuf = -1;
 	m_idFireZoneVBuf = -1;
 	m_idCannonVBuf = -1;
@@ -166,6 +168,15 @@ void BATTLE_NAVIGATOR::Draw()
 		rs->DrawPrimitive(D3DPT_TRIANGLESTRIP,m_idEmptyVBuf,sizeof(BI_ONETEXTURE_VERTEX),8,2,"battle_rectangle");
 	}
 
+	// показать курсовые углы
+	if(m_idCourseVBuf!=-1L)
+	{
+		rs->TextureSet(0,m_idBestCourseTex);
+		rs->DrawPrimitive(D3DPT_TRIANGLESTRIP,m_idCourseVBuf,sizeof(BI_ONETEXTURE_VERTEX),0,2,"battle_rectangle");
+		rs->DrawPrimitive(D3DPT_TRIANGLESTRIP,m_idCourseVBuf,sizeof(BI_ONETEXTURE_VERTEX),4,2,"battle_rectangle");
+	}
+	
+	
 	// отпечатать скорость ветра и корабл€
 	rs->ExtPrint(m_speedFont,0xFFFFFFFF,0,ALIGN_CENTER,true,m_fFontScale,0,0,m_xWindSpeed,m_ySpeedShow,"%.1f",m_fWindStrength);
 	rs->ExtPrint(m_speedFont,0xFFFFFFFF,0,ALIGN_CENTER,true,m_fFontScale,0,0,m_xShipSpeed,m_ySpeedShow,"%.1f",m_fShipSpeed);
@@ -204,6 +215,14 @@ void BATTLE_NAVIGATOR::Update()
 		SetRectangleVertexPos(&pV[8],(float)m_XNavigator,(float)m_YNavigator,(float)m_windWidth,(float)m_windHeight,m_fWindAngle-m_fAngle);
 		rs->UnLockVertexBuffer(m_idEmptyVBuf);
 	}
+	pV = (BI_ONETEXTURE_VERTEX *)rs->LockVertexBuffer(m_idCourseVBuf);
+	if(pV!=NULL)
+	{
+		SetRectangleVertexPos(&pV[0],(float)m_XNavigator,(float)m_YNavigator,(float)m_windWidth,(float)m_windHeight,m_fWindAngle - m_fAngle + m_fShipWindAgainst);
+		SetRectangleVertexPos(&pV[4],(float)m_XNavigator,(float)m_YNavigator,(float)m_windWidth,(float)m_windHeight,m_fWindAngle - m_fAngle - m_fShipWindAgainst);
+		rs->UnLockVertexBuffer(m_idCourseVBuf);
+	}	
+	
 	// change cannon charge buffer
 	pV = (BI_ONETEXTURE_VERTEX *)rs->LockVertexBuffer(m_idCannonVBuf);
 	if(pV!=NULL)
@@ -433,6 +452,10 @@ void BATTLE_NAVIGATOR::Init(VDX8RENDER *RenderService,ENTITY* pOwnerEI)
 	tmpstr = BIUtils::GetStringFromAttr(pARoot, "windTexture", null);
 	if(tmpstr==null)	m_idWindTex = -1;
 	else m_idWindTex = rs->TextureCreate(tmpstr);
+	
+	tmpstr = BIUtils::GetStringFromAttr(pARoot, "bestCourseTexture", null);
+	if(tmpstr==null)	m_idBestCourseTex = -1;
+	else m_idBestCourseTex = rs->TextureCreate(tmpstr);
 
 	tmpstr = BIUtils::GetStringFromAttr(pARoot, "chargeTexture", null);
 	if(tmpstr==null)	m_idChargeTexture = -1;
@@ -514,14 +537,23 @@ void BATTLE_NAVIGATOR::Init(VDX8RENDER *RenderService,ENTITY* pOwnerEI)
 
 	// create buffers
 	m_idEmptyVBuf = rs->CreateVertexBuffer(BI_ONETEX_VERTEX_FORMAT,(4+4+4)*sizeof(BI_ONETEXTURE_VERTEX),D3DUSAGE_WRITEONLY);
+	m_idCourseVBuf = rs->CreateVertexBuffer(BI_ONETEX_VERTEX_FORMAT,(4+4)*sizeof(BI_ONETEXTURE_VERTEX),D3DUSAGE_WRITEONLY);
 	m_idCannonVBuf = rs->CreateVertexBuffer(BI_ONETEX_VERTEX_FORMAT,7*4*sizeof(BI_ONETEXTURE_VERTEX),D3DUSAGE_WRITEONLY);
 	m_idSpeedVBuf = rs->CreateVertexBuffer(BI_ONETEX_VERTEX_FORMAT,7*2*sizeof(BI_ONETEXTURE_VERTEX),D3DUSAGE_WRITEONLY);
-	m_idMapVBuf = rs->CreateVertexBuffer(BI_ONETEX_VERTEX_FORMAT,(RADIAL_QUANTITY+2)*sizeof(BI_ONETEXTURE_VERTEX),D3DUSAGE_WRITEONLY);
+	m_idMapVBuf = rs->CreateVertexBuffer(BI_ONETEX_VERTEX_FORMAT,(RADIAL_QUANTITY+3)*sizeof(BI_ONETEXTURE_VERTEX),D3DUSAGE_WRITEONLY);
 	m_idFireZoneVBuf = rs->CreateVertexBuffer(BI_NOTEX_VERTEX_FORMAT,FIRERANGE_QUANTITY*sizeof(BI_NOTEXTURE_VERTEX),D3DUSAGE_WRITEONLY);
 	m_idShipsVBuf = rs->CreateVertexBuffer(BI_COLORONLY_VERTEX_FORMAT,MAX_ENEMY_SHIP_QUANTITY*3*sizeof(BI_COLORONLY_VERTEX),D3DUSAGE_WRITEONLY);
 	m_idGradBackVBuf = rs->CreateVertexBuffer(BI_COLORONLY_VERTEX_FORMAT,3*sizeof(BI_COLORONLY_VERTEX),D3DUSAGE_WRITEONLY);
 	m_idCurChargeVBuf = rs->CreateVertexBuffer(BI_ONETEX_VERTEX_FORMAT,3*4*sizeof(BI_ONETEXTURE_VERTEX),D3DUSAGE_WRITEONLY);
-	if(m_idEmptyVBuf==-1 || m_idCannonVBuf==-1 || m_idSpeedVBuf==-1 || m_idMapVBuf==-1 || m_idFireZoneVBuf==-1 || m_idShipsVBuf==-1 || m_idGradBackVBuf==-1 || m_idCurChargeVBuf==-1)
+	if(m_idEmptyVBuf==-1 || 
+	   m_idCourseVBuf==-1 ||	
+	   m_idCannonVBuf==-1 || 
+	   m_idSpeedVBuf==-1 || 
+	   m_idMapVBuf==-1 || 
+	   m_idFireZoneVBuf==-1 || 
+	   m_idShipsVBuf==-1 || 
+	   m_idGradBackVBuf==-1 || 
+	   m_idCurChargeVBuf==-1)
 	{
 		_THROW("Can`t create vertex\index buffer");
 	}
@@ -542,6 +574,21 @@ void BATTLE_NAVIGATOR::Init(VDX8RENDER *RenderService,ENTITY* pOwnerEI)
 		SetRectangleVertexTex(&pV[8]);
 		rs->UnLockVertexBuffer(m_idEmptyVBuf);
 	}
+	// best course vertices
+	pV = (BI_ONETEXTURE_VERTEX *)rs->LockVertexBuffer(m_idCourseVBuf);
+	if(pV!=NULL)
+	{
+		for(i=0; i<8; i++)
+		{
+			pV[i].w = .5f;
+			pV[i].pos.z = 1.f;		
+		}
+		SetRectangleVertexPos(&pV[0],(float)m_XNavigator,(float)m_YNavigator,(float)m_NavigationWidth,(float)m_NavigationWidth);
+		SetRectangleVertexTex(&pV[0]);
+		SetRectangleVertexTex(&pV[4]);
+		rs->UnLockVertexBuffer(m_idCourseVBuf);
+	}
+	
 	// cannon charge vertexs
 	pV = (BI_ONETEXTURE_VERTEX *)rs->LockVertexBuffer(m_idCannonVBuf);
 	if(pV!=NULL)
@@ -790,6 +837,7 @@ void BATTLE_NAVIGATOR::SetMainCharacterData()
 	else
 		m_fCurAnglShipSpeed = GetBetwinFloat(m_fBegAnglShipSpeed,m_fEndAnglShipSpeed,m_fShipSpeed/m_fMaxShipSpeed);
 	//m_fShipSpeed *= m_fShipSpeedScale;
+	m_fShipWindAgainst = ((SHIP_BASE*)psd->pShip)->GetWindAgainst()/180.f*PI;
 
     // получим значение ветра
 	UpdateWindParam();
@@ -908,6 +956,7 @@ void BATTLE_NAVIGATOR::ReleaseAll()
 	TEXTURE_RELEASE(rs,m_idIslandTexture);
 	TEXTURE_RELEASE(rs,m_idChargeTexture);
 	TEXTURE_RELEASE(rs,m_idWindTex);
+	TEXTURE_RELEASE(rs,m_idBestCourseTex);
 	TEXTURE_RELEASE(rs,m_idWindTexture);
 	TEXTURE_RELEASE(rs,m_idSailTexture);
 
@@ -918,6 +967,7 @@ void BATTLE_NAVIGATOR::ReleaseAll()
 	}
 
 	VERTEX_BUFFER_RELEASE(rs,m_idEmptyVBuf);
+	VERTEX_BUFFER_RELEASE(rs,m_idCourseVBuf);
 	VERTEX_BUFFER_RELEASE(rs,m_idMapVBuf);
 	VERTEX_BUFFER_RELEASE(rs,m_idCannonVBuf);
 	VERTEX_BUFFER_RELEASE(rs,m_idSpeedVBuf);

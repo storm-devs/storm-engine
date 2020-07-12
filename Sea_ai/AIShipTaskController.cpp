@@ -73,6 +73,7 @@ void AIShipTaskController::FindRunAwayPoint()
 		if (!Helper.isEnemy(AIShip::AIShips[i]->GetACharacter(), GetAIShip()->GetACharacter())) continue;
 		CVECTOR vDir = AIShip::AIShips[i]->GetPos() - GetAIShip()->GetPos();
 		float fDistance = sqrtf(~vDir);
+		if (fDistance > 1000.0f) continue;
 		vRAPoint += ((!vDir) * fShipK * Clamp(1.0f - fDistance / 1000.0f));
 		iNumPoints++;
 	}
@@ -104,7 +105,7 @@ void AIShipTaskController::FindRunAwayPoint()
 		ATTRIBUTES * pAWind = GetAIShip()->GetACharacter()->FindAClass(GetAIShip()->GetACharacter(), "SeaAI.WindAngle");
 		if (pAWind) fWindAngle = pAWind->GetAttributeAsFloat();
 		CVECTOR vWindDir = CVECTOR(cosf(fWindAngle), 0.0f, sinf(fWindAngle));
-		//api->Trace("fWindAngle = %.3f", fWindAngle);
+//		api->Trace("fWindAngle = %.3f", fWindAngle);
 
 		vRAPoint = !((-vRAPoint) + (fWindK * vWindDir));
 		// set destination point 
@@ -121,11 +122,12 @@ void AIShipTaskController::FindRunAwayPoint()
 		SetDestinationPoint(vRAPoint);
 	}
 
-	/*if (api->Controls->GetDebugAsyncKeyState('X') < 0)
+	if (api->Controls->GetDebugAsyncKeyState('X') < 0)
 	{
+		api->Trace("iNumPoints = %d", iNumPoints);
 		GetAIShip()->GetShipPointer()->Render().DrawVector(GetAIShip()->GetPos(), GetAIShip()->GetPos() + 20.0f * vRAPoint, 0xFFFFFFFF);
 		GetAIShip()->GetShipPointer()->Render().DrawSphere(GetAIShip()->GetPos() + 50.0f * vRAPoint, 4.0f, 0xFFFFFFFF);
-	}*/
+	}
 }
 
 

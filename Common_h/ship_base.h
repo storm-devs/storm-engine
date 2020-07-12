@@ -61,6 +61,7 @@ public:
 
 	virtual float	GetMaxSpeedZ() = 0;
 	virtual float	GetMaxSpeedY() = 0;
+	virtual float 	GetWindAgainst() = 0;
 
 	virtual void	SetSpeed(float fSpeed) = 0;
 	virtual float	GetSpeed() = 0;

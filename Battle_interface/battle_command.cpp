@@ -295,7 +295,13 @@ long BICommandList::AddToIconList( long nTextureNum, long nNormPictureNum, long 
 	long n;
 	// отсев уже подключенных объектов
 	for(n=0; n<m_aUsedCommand; n++) {
-		if( nCharacterIndex!=-1 && m_aUsedCommand[n].nCharIndex==nCharacterIndex ) return 0;
+	
+		if( nCharacterIndex!=-1 && m_aUsedCommand[n].nCharIndex==nCharacterIndex ) 
+		{
+			api->Trace("AddToIconList %d  m_aUsedCommand.nCharIndex %d nCharacterIndex %d", n, m_aUsedCommand[n].nCharIndex, nCharacterIndex );
+//			return 0;
+		}	
+		
 		if( pcCommandName && m_aUsedCommand[n].sCommandName==pcCommandName ) return 0;
 		if( pcLocName && m_aUsedCommand[n].sLocName==pcLocName ) return 0;
 		if( nTargetIndex!=-1 && m_aUsedCommand[n].nTargetIndex==nTargetIndex ) return 0;

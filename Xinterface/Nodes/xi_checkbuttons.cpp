@@ -34,6 +34,7 @@ void CXI_CHECKBUTTONS::Draw(bool bSelected,dword Delta_Time)
 		dword dwColor = m_dwNormalFontColor;
 		if( m_aButton[n]->bChoose ) dwColor = m_dwSelectFontColor;
 		if( m_aButton[n]->bDisable ) dwColor = m_dwDisableFontColor;
+		if( !m_bSelected) dwColor = m_dwDisableFontColor; // ugeen 2016
 
 		if( m_bIndividualPos && m_aButton[n]->bSetPos ) {
 			fX = m_aButton[n]->pos.x;

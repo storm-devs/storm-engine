@@ -410,7 +410,11 @@ void SAIL::Execute(dword Delta_Time)
 				}
 			}
 
-			float fSP = (float)gdata[i].maxSP;
+			float fSP 	= (float)gdata[i].maxSP;
+			float curSP = (float)gdata[i].maxSP;
+			float fSDmg = 0.0;
+			float fSPow = 0.0;
+			
             if(gdata[i].speed_m<0.001f)
             {
                 gdata[i].shipSpeed=0.f;
@@ -422,8 +426,20 @@ void SAIL::Execute(dword Delta_Time)
                 gdata[i].maxSpeed /= gdata[i].speed_m;
 
 				if( gdata[i].maxHole != 0 )
+				{
 					fSP = (float)gdata[i].maxSP * gdata[i].curHole / gdata[i].maxHole;
+					curSP = 0.0;
+					for(int j=0; j<gdata[i].sailQuantity; j++)
+					{
+						int sn = gdata[i].sailIdx[j];
+						fSPow  = (float)gdata[i].maxSP * (float)slist[sn]->maxSpeed/gdata[i].speed_m;
+						fSDmg += fSPow * slist[sn]->ss.holeCount	/ slist[sn]->GetMaxHoleCount();
+						curSP += fSPow; 	
+					}
+					curSP -= fSDmg;
+				}	
 				if(fSP > gdata[i].maxSP) fSP = (float)gdata[i].maxSP;
+				if(curSP > gdata[i].maxSP) curSP = (float)gdata[i].maxSP;
             }
             gdata[i].boxCenter = (gdata[i].boxCenter + gdata[i].boxSize)*.5f;
             gdata[i].boxSize -= gdata[i].boxCenter;
@@ -436,7 +452,11 @@ void SAIL::Execute(dword Delta_Time)
 				{
 					ATTRIBUTES * pA = pVai->GetACharacter()->GetAttributeClass("Ship");
 					if(pA!=null)
-						pA->SetAttributeUseDword("SP",(long)fSP);
+					{
+//						pA->SetAttributeUseDword("SP",(long)fSP);
+//						pA->SetAttributeUseDword("curSP",(long)curSP);
+						pA->SetAttributeUseDword("SP",(long)curSP);
+					}	
 				}
 			}
         }
@@ -981,6 +1001,25 @@ void SAIL::AddSailLabel(GEOS::LABEL &lbl, NODE *nod, bool bSailUp)
             cs->ss.rollingSail=true;
             cs->ss.texNum=2;
             break;
+		case 'x': // special square sail
+            cs->ss.eSailType=SAIL_SPECIAL;
+            cs->ss.rollingSail=true;
+            cs->ss.texNum=2;
+            break;	
+		// --> ugeen 08.11.10	
+		case 'v': // triangle sail
+            cs->ss.eSailType=SAIL_TREANGLE;
+            cs->ss.texNum=1;
+            cs->ss.rollingSail=false;
+			cs->rollType = ROLLTYPE_FAST;
+            break;
+		case 'n': // trapecidal sail
+            cs->ss.eSailType=SAIL_TRAPECIDAL;
+            cs->ss.texNum=2;
+            cs->ss.rollingSail=false;
+			cs->rollType = ROLLTYPE_FAST;
+            break;	
+		// <-- ugeen		
         }
 
         cs->ss.turningSail = !strncmp(nod->GetName(),"rey_",4);
@@ -1491,7 +1530,7 @@ float SAIL::Cannon_Trace(long iBallOwner, const CVECTOR &src,const CVECTOR &dst)
 			if(pvai!=null) pA=pvai->GetACharacter();
 			long charIdx=-1;
 			if(pA!=null) charIdx = pA->GetAttributeAsDword("index",-1);
-			api->Event(SHIP_SAIL_DAMAGE,"lfff",charIdx, damagePoint.x,damagePoint.y,damagePoint.z);
+			api->Event(SHIP_SAIL_DAMAGE,"llfff",charIdx,iBallOwner, damagePoint.x,damagePoint.y,damagePoint.z);
 		}
 	}
 
@@ -2033,6 +2072,13 @@ dword _cdecl SAIL::ScriptProcessing(char * name, MESSAGE & message)
 		int gn = FindGroupForCharacter(chrIdx);
 		if(gn>=0 && gn<groupQuantity)	DoRandomsSailsDmg(chrIdx,gn,fDmg);
 	}
+	
+	if( stricmp(name,"GetSailStatus")==0 )
+	{
+		long chrIdx = message.Long();
+		int gn = FindGroupForCharacter(chrIdx);
+		if(gn>=0 && gn<groupQuantity)	GetSailStatus(chrIdx,gn);
+	}
 
 	if( stricmp(name,"SailRollSpeed")==0 )
 	{
@@ -2044,6 +2090,20 @@ dword _cdecl SAIL::ScriptProcessing(char * name, MESSAGE & message)
 	}
 
 	return 0;
+}
+
+void SAIL::GetSailStatus(int chrIdx, int gn)
+{
+	if(gn<0 || gn>=groupQuantity) return;
+	
+	for(int i=0; i<gdata[gn].sailQuantity; i++)
+	{	
+		int sn = gdata[gn].sailIdx[i];
+		VDATA * pvd = api->Event("evntGetSailStatus","lslfll",
+			chrIdx,slist[sn]->hostNode->GetName(),slist[sn]->groupNum,
+			(float)slist[sn]->maxSpeed/gdata[gn].speed_m,
+			slist[sn]->ss.holeCount, slist[sn]->GetMaxHoleCount());				
+	}	
 }
 
 void SAIL::DoRandomsSailsDmg(int chrIdx, int gn, float fDmg)

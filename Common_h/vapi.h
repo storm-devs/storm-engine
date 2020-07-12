@@ -1,6 +1,7 @@
 #ifndef _VAPI_H_
 #define _VAPI_H_
 
+#define _WIN32_WINNT 0x0501
 
 #ifndef _XBOX 
 #include <windows.h>
@@ -15,6 +16,8 @@
 #include "vidwalker.h"
 #include "controls.h"
 #include "s_import_func.h"
+
+#define isSteam				1 
 
 class VAPI
 {
@@ -185,6 +188,26 @@ public:
 
 	virtual void _cdecl BTrace(const char * Format,...) = 0;		// Trace with beep
 	virtual bool IsNetActive() const = 0;
+	
+#ifdef isSteam
+	virtual void InitAchievements() = 0;
+	virtual void DeleteAchievements() = 0;
+	virtual long SetAchievementState(const char* ID) = 0;
+	virtual long GetAchievementState(const char* ID) = 0;
+	virtual long SetStatValue(const char* ID, long Value) = 0;
+	virtual long GetStatValue(const char* ID) = 0;
+	virtual long StoreStats() = 0;
+	virtual bool isSteamConnected() = 0;
+	virtual bool ResetStats( bool bAchievementsToo ) = 0;
+	virtual bool ClearAchievement( const char* ID ) = 0;
+	
+	virtual void InitSteamDLC() = 0;
+	virtual void DeleteSteamDLC() = 0;	
+	virtual bool isDLCActive( long nDLC ) = 0; 
+	virtual long getDLCCount() = 0;
+	virtual long getDLCDataByIndex( long iDLC ) = 0;
+	virtual bool activateGameOverlayDLC( long nAppId ) = 0;
+#endif	
 };
 
 

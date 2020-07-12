@@ -55,6 +55,7 @@ private:
 	long deleteMe;
 
 	long textureID;
+	long textureBackID;
 	long tipsID;
 
 public:

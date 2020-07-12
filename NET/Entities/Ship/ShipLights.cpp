@@ -191,16 +191,36 @@ void NetShipLights::AddFlare(VAI_OBJBASE * pObject, bool bLight, MODEL * pModel,
 	if (str[0] != 'l' && bLight) return;
 
 	// mast found
-	if (str[1] == 'm')
+	if (str[1] == 'm' || str[1] == 'r')
+	{
+		if(str[1] == 'm')
 	{
 		str2[0] = str[2]; str2[1] = '\0';
+		}
+		else
+		{
+			str2[0] = str[2];
+			str2[1] = str[3];
+			str2[2] = str[4];
+			str2[3] = '\0';
+		}	
 		int iMastIndex = atoi(str2);
 
 		sprintf(str2, "mast%d", iMastIndex);
 		// rey found
+		if(str[1] == 'm')
+		{
 		if (str[3] >= 'a' && str[3] <= 'z')
 		{
 			sprintf(str2, "rey_%c%d", str[3], iMastIndex);
+		}
+		}
+		else
+		{
+			if (str[5] >= 'a' && str[5] <= 'z')
+			{
+				sprintf(str2, "rey_%c%d", str[5], iMastIndex);
+			}			
 		}
 
 		if (!SetLabel(pL, pModel, str2))
@@ -291,6 +311,7 @@ void NetShipLights::KillMast(VAI_OBJBASE * pObject, NODE * pNode, bool bNow)
 		if (aLights[i].pNode->parent != pNode && aLights[i].pNode != pNode) continue;
 		if (bNow)
 		{
+			aLights[i].pNode = null;
 			aLights[i].bOff = true;
 			aLights[i].bBrokenTimeOff = true;
 			//aLights.ExtractNoShift(i);
@@ -434,7 +455,7 @@ void NetShipLights::Execute(dword dwDeltaTime)
 				L.vCurPos = *(L.pObject->GetMatrix()) * L.vPos;
 		}
 
-		if (!L.bOff && L.fTotalBrokenTime <= 0.0f && pSea && pSea->WaveXZ(L.vCurPos.x, L.vCurPos.x) > L.vCurPos.y)
+		if (!L.bOff && L.bDead && L.fTotalBrokenTime <= 0.0f && pSea && pSea->WaveXZ(L.vCurPos.x, L.vCurPos.x) > L.vCurPos.y)
 		{
 			L.fTotalBrokenTime = RRnd(1.0f, 4.0f);
 			L.fBrokenTime = 0.0f;

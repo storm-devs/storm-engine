@@ -260,6 +260,7 @@ public:
 		virtual HRESULT ImageBlt(long nTextureId, RECT * pDstRect = 0, RECT * pSrcRect = 0)=0;
 
 		virtual void SetProgressImage(const char * image) = 0;
+		virtual void SetProgressBackImage(const char * image) = 0;
 		virtual void SetTipsImage(const char * image) = 0;
 		virtual void StartProgressView() = 0;
 		virtual void ProgressView() = 0;

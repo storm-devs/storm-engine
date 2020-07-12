@@ -27,7 +27,8 @@
 #include "ModelRealizer.h"
 #include "Blood.h"
 
-#define	LOCATION_SCRIPT_VERSION		54128
+#define	LOCATION_SCRIPT_VERSION		57853
+//#define	LOCATION_SCRIPT_VERSION		54128
 
 class LocationP : public ENTITY
 {
