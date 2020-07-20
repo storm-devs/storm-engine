@@ -10,7 +10,7 @@
 #include "..\particlesystem\particlesystem.h"
 #include "physic.h"
 
-//Сколько всего может быть плашек
+//РЎРєРѕР»СЊРєРѕ РІСЃРµРіРѕ РјРѕР¶РµС‚ Р±С‹С‚СЊ РїР»Р°С€РµРє
 #define MAX_BILLBOARDS 4096
 
 
@@ -21,9 +21,9 @@
 #define UV_TY2 1
 
 /* 
-	 Коэфицент лодирования партиклов, чем выше тем меньше нагрузка на Filrate
-   Должен быть > 0 !!!!!!
-	 0.001 нет лодов .. 10000000 супер лоды (все партиклы в 1 пиксель)
+	 РљРѕСЌС„РёС†РµРЅС‚ Р»РѕРґРёСЂРѕРІР°РЅРёСЏ РїР°СЂС‚РёРєР»РѕРІ, С‡РµРј РІС‹С€Рµ С‚РµРј РјРµРЅСЊС€Рµ РЅР°РіСЂСѓР·РєР° РЅР° Filrate
+   Р”РѕР»Р¶РµРЅ Р±С‹С‚СЊ > 0 !!!!!!
+	 0.001 РЅРµС‚ Р»РѕРґРѕРІ .. 10000000 СЃСѓРїРµСЂ Р»РѕРґС‹ (РІСЃРµ РїР°СЂС‚РёРєР»С‹ РІ 1 РїРёРєСЃРµР»СЊ)
 */
 //=============================================================
 #define PLOD 5.0f 
@@ -80,7 +80,7 @@ BillBoardProcessor::~BillBoardProcessor ()
 } 
 
 
-//"Выделить" память для хранения партикла
+//"Р’С‹РґРµР»РёС‚СЊ" РїР°РјСЏС‚СЊ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ РїР°СЂС‚РёРєР»Р°
 BB_ParticleData* BillBoardProcessor::AllocParticle ()
 {
 	for (DWORD n = 0; n < MAX_BILLBOARDS; n++)
@@ -95,7 +95,7 @@ BB_ParticleData* BillBoardProcessor::AllocParticle ()
 	return NULL;
 }
 
-//"Убить" партикл
+//"РЈР±РёС‚СЊ" РїР°СЂС‚РёРєР»
 void BillBoardProcessor::FreeParticle (BB_ParticleData* pItem)
 {
 	for (DWORD n = 0; n < MAX_BILLBOARDS; n++)
@@ -113,7 +113,7 @@ void BillBoardProcessor::AddParticle (ParticleSystem* pSystem, const Vector& vel
 {
 	BB_ParticleData* pData = AllocParticle ();
 
-	//Сработает если партиклов будет > MAX_BILLBOARDS, столько их быть не должно :))))
+	//РЎСЂР°Р±РѕС‚Р°РµС‚ РµСЃР»Рё РїР°СЂС‚РёРєР»РѕРІ Р±СѓРґРµС‚ > MAX_BILLBOARDS, СЃС‚РѕР»СЊРєРѕ РёС… Р±С‹С‚СЊ РЅРµ РґРѕР»Р¶РЅРѕ :))))
 	if (!pData)
 	{
 		*(pActiveCount) = (*(pActiveCount)-1);
@@ -206,7 +206,7 @@ void BillBoardProcessor::AddParticle (ParticleSystem* pSystem, const Vector& vel
 }
 
 
-//Считает физику, треки  и т.д.
+//РЎС‡РёС‚Р°РµС‚ С„РёР·РёРєСѓ, С‚СЂРµРєРё  Рё С‚.Рґ.
 void BillBoardProcessor::Process (float DeltaTime)
 {
 	//DWORD t;
@@ -221,7 +221,7 @@ void BillBoardProcessor::Process (float DeltaTime)
 
 //		_mm_prefetch ((const char *)Particles[n+1], _MM_HINT_T0);
 
-		//Сразу убиваем дохлые...
+		//РЎСЂР°Р·Сѓ СѓР±РёРІР°РµРј РґРѕС…Р»С‹Рµ...
 		if (Time > LifeTime)
 		{
 			*(Particles[n]->ActiveCount) = (*(Particles[n]->ActiveCount)-1);
@@ -278,7 +278,7 @@ void BillBoardProcessor::Process (float DeltaTime)
 	}
 
 
-	//Рождаем партиклы, которые привязанны к нашему партиклу...
+	//Р РѕР¶РґР°РµРј РїР°СЂС‚РёРєР»С‹, РєРѕС‚РѕСЂС‹Рµ РїСЂРёРІСЏР·Р°РЅРЅС‹ Рє РЅР°С€РµРјСѓ РїР°СЂС‚РёРєР»Сѓ...
 
 	for (DWORD n = 0; n < Particles.Size(); n++)
 	{
@@ -299,7 +299,7 @@ void BillBoardProcessor::Process (float DeltaTime)
 	//api->Trace("Time - %d", t);
 }
 
-//Считает расстояние до билбоардов
+//РЎС‡РёС‚Р°РµС‚ СЂР°СЃСЃС‚РѕСЏРЅРёРµ РґРѕ Р±РёР»Р±РѕР°СЂРґРѕРІ
 DWORD BillBoardProcessor::CalcDistanceToCamera ()
 {
 	DWORD VisParticles = 0;
@@ -323,7 +323,7 @@ DWORD BillBoardProcessor::CalcDistanceToCamera ()
 	return VisParticles;
 }
 
-//Функция сравнения при сортировке
+//Р¤СѓРЅРєС†РёСЏ СЃСЂР°РІРЅРµРЅРёСЏ РїСЂРё СЃРѕСЂС‚РёСЂРѕРІРєРµ
 BOOL BillBoardProcessor::CompareFunction (BB_ParticleData* e1, BB_ParticleData* e2)
 {
 	if (e1->CamDistance > e2->CamDistance) return true;
@@ -331,7 +331,7 @@ BOOL BillBoardProcessor::CompareFunction (BB_ParticleData* e1, BB_ParticleData* 
 }
 
 
-//Рисует все плашки...
+//Р РёСЃСѓРµС‚ РІСЃРµ РїР»Р°С€РєРё...
 void BillBoardProcessor::Draw()
 {
 	if (CalcDistanceToCamera() == 0)	return;
@@ -385,7 +385,7 @@ void BillBoardProcessor::Draw()
 		const Vector4& UV_WH1 = pR->Graph_UV->GetValue(FrameIndexLong);
 		const Vector4& UV_WH2 = pR->Graph_UV->GetValue(FrameIndexLong+1);
 
-		//Ограничитель максимального размера партиклов...
+		//РћРіСЂР°РЅРёС‡РёС‚РµР»СЊ РјР°РєСЃРёРјР°Р»СЊРЅРѕРіРѕ СЂР°Р·РјРµСЂР° РїР°СЂС‚РёРєР»РѕРІ...
 		//=============================================================
 		float SizeK = pR->CamDistance / fSize;
 		if (SizeK < PLOD)	fSize = pR->CamDistance / PLOD;

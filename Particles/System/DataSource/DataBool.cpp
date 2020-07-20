@@ -4,7 +4,7 @@
 
 #pragma warning (disable : 4800)
 
-//конструктор/деструктор
+//РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ/РґРµСЃС‚СЂСѓРєС‚РѕСЂ
 DataBool::DataBool ()
 {
 	Value = false;
@@ -14,13 +14,13 @@ DataBool::~DataBool ()
 {
 }
 
-//Получить значение
+//РџРѕР»СѓС‡РёС‚СЊ Р·РЅР°С‡РµРЅРёРµ
 bool DataBool::GetValue ()
 {
 	return Value;
 }
 
-//Установить значение
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р·РЅР°С‡РµРЅРёРµ
 void DataBool::SetValue (bool val)
 {
 	Value = val;

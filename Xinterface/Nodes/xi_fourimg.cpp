@@ -600,7 +600,7 @@ void CXI_FOURIMAGE::ChangePosition( XYRECT &rNewPos )
 		m_imgRect[n].right += nXOffset;
 		m_imgRect[n].bottom += nYOffset;
 
-		// находим является ли позиция правой или нижней
+		// РЅР°С…РѕРґРёРј СЏРІР»СЏРµС‚СЃСЏ Р»Рё РїРѕР·РёС†РёСЏ РїСЂР°РІРѕР№ РёР»Рё РЅРёР¶РЅРµР№
 		long nXLessMore = 0;
 		long nYLessMore = 0;
 		for( long i=0; i<4; i++ ) {

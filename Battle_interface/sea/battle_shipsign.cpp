@@ -98,12 +98,12 @@ void BIShipIcon::Draw()
 	for( long n=0; n<m_nShipQuantity; n++ )
 	{
 		if( m_Ship[n].pASailorQuantity ) {
-			m_pRS->ExtPrint( m_idSailorFont, m_dwSailorFontColor, 0, ALIGN_CENTER, true, m_fSailorFontScale, 0,0,  // boal тень
+			m_pRS->ExtPrint( m_idSailorFont, m_dwSailorFontColor, 0, ALIGN_CENTER, true, m_fSailorFontScale, 0,0,  // boal С‚РµРЅСЊ
 				(long)m_Ship[n].pntPos.x + m_SailorFontOffset.x, (long)m_Ship[n].pntPos.y + m_SailorFontOffset.y,
 				"%d", (long)atof(m_Ship[n].pASailorQuantity->GetThisAttr()) );
 		}
 		if( !m_Ship[n].sShipName.IsEmpty() ) {
-			m_pRS->ExtPrint( m_idShipNameFont, m_dwShipNameFontColor, 0, ALIGN_CENTER, true, m_fShipNameFontScale, 0,0, // boal тень шрифта
+			m_pRS->ExtPrint( m_idShipNameFont, m_dwShipNameFontColor, 0, ALIGN_CENTER, true, m_fShipNameFontScale, 0,0, // boal С‚РµРЅСЊ С€СЂРёС„С‚Р°
 				(long)m_Ship[n].pntPos.x + m_ShipNameFontOffset.x, (long)m_Ship[n].pntPos.y + m_ShipNameFontOffset.y,
 				"%s", m_Ship[n].sShipName.GetBuffer() );
 		}
@@ -361,7 +361,7 @@ void BIShipIcon::ExecuteCommand( CommandType command )
 
 void BIShipIcon::Release()
 {
-	SetActive(false); // отключить контрол
+	SetActive(false); // РѕС‚РєР»СЋС‡РёС‚СЊ РєРѕРЅС‚СЂРѕР»
 
 	DELETE( m_pCommandList );
 	TEXTURE_RELEASE( m_pRS, m_nBackTextureID );
@@ -384,7 +384,7 @@ long BIShipIcon::CalculateShipQuantity()
 	long n;
 	SHIP_DESCRIBE_LIST::SHIP_DESCR * pSD;
 
-	// сброс всех кораблей
+	// СЃР±СЂРѕСЃ РІСЃРµС… РєРѕСЂР°Р±Р»РµР№
 	m_nShipQuantity = 0;
 	for( n=0; n<MAX_SHIP_QUANTITY; n++ )
 	{
@@ -396,7 +396,7 @@ long BIShipIcon::CalculateShipQuantity()
 		m_Ship[n].sShipName = "";
 	}
 
-	// взять корабль главного перса
+	// РІР·СЏС‚СЊ РєРѕСЂР°Р±Р»СЊ РіР»Р°РІРЅРѕРіРѕ РїРµСЂСЃР°
 	pSD = g_ShipList.GetMainCharacterShip();
 	if( pSD )
 	{
@@ -411,10 +411,10 @@ long BIShipIcon::CalculateShipQuantity()
 		m_nShipQuantity++;
 	}
 
-	// берем следующие "свои" корабли
+	// Р±РµСЂРµРј СЃР»РµРґСѓСЋС‰РёРµ "СЃРІРѕРё" РєРѕСЂР°Р±Р»Рё
 	for( pSD=g_ShipList.GetShipRoot(); pSD; pSD=pSD->next )
 	{
-		if( m_Ship[0].nCharacterIndex == pSD->characterIndex ) continue; // главный перс уже занесен в список
+		if( m_Ship[0].nCharacterIndex == pSD->characterIndex ) continue; // РіР»Р°РІРЅС‹Р№ РїРµСЂСЃ СѓР¶Рµ Р·Р°РЅРµСЃРµРЅ РІ СЃРїРёСЃРѕРє
 		if( pSD->isMyShip ) {
 			m_Ship[m_nShipQuantity].nCharacterIndex = pSD->characterIndex;
 			m_Ship[m_nShipQuantity].pASailorQuantity = GetSailorQuantityAttribute( pSD );

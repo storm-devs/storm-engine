@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2008, Valve LLC, All rights reserved. ============
+//========= Copyright Â© 1996-2008, Valve LLC, All rights reserved. ============
 //
 // Purpose: Class to render a HTML page on the screen
 //

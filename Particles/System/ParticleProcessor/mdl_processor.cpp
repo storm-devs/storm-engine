@@ -13,7 +13,7 @@
 
 
 
-//Сколько всего может быть моделей
+//РЎРєРѕР»СЊРєРѕ РІСЃРµРіРѕ РјРѕР¶РµС‚ Р±С‹С‚СЊ РјРѕРґРµР»РµР№
 #define MAX_MODELS 8192
 
 
@@ -68,7 +68,7 @@ void ModelProcessor::AddParticle (ParticleSystem* pSystem, const Vector& velocit
 {
 	MDL_ParticleData* pData = AllocParticle ();
 
-	//Сработает если партиклов будет > MAX_BILLBOARDS, столько их быть не должно :))))
+	//РЎСЂР°Р±РѕС‚Р°РµС‚ РµСЃР»Рё РїР°СЂС‚РёРєР»РѕРІ Р±СѓРґРµС‚ > MAX_BILLBOARDS, СЃС‚РѕР»СЊРєРѕ РёС… Р±С‹С‚СЊ РЅРµ РґРѕР»Р¶РЅРѕ :))))
 	if (!pData)
 	{
 		*(pActiveCount) = (*(pActiveCount)-1);
@@ -166,7 +166,7 @@ void ModelProcessor::AddParticle (ParticleSystem* pSystem, const Vector& velocit
 }
 
 
-//Считает физику, треки  и т.д.
+//РЎС‡РёС‚Р°РµС‚ С„РёР·РёРєСѓ, С‚СЂРµРєРё  Рё С‚.Рґ.
 void ModelProcessor::Process (float DeltaTime)
 {
 	//DWORD t;
@@ -181,7 +181,7 @@ void ModelProcessor::Process (float DeltaTime)
 
 //		_mm_prefetch ((const char *)Particles[n+1], _MM_HINT_T0);
 
-		//Сразу убиваем дохлые...
+		//РЎСЂР°Р·Сѓ СѓР±РёРІР°РµРј РґРѕС…Р»С‹Рµ...
 		if (Time > LifeTime)
 		{
 			*(Particles[n]->ActiveCount) = (*(Particles[n]->ActiveCount)-1);
@@ -248,7 +248,7 @@ void ModelProcessor::Process (float DeltaTime)
 	}
 
 
-	//Рождаем партиклы, которые привязанны к нашему партиклу...
+	//Р РѕР¶РґР°РµРј РїР°СЂС‚РёРєР»С‹, РєРѕС‚РѕСЂС‹Рµ РїСЂРёРІСЏР·Р°РЅРЅС‹ Рє РЅР°С€РµРјСѓ РїР°СЂС‚РёРєР»Сѓ...
 
 	for (DWORD n = 0; n < Particles.Size(); n++)
 	{
@@ -289,7 +289,7 @@ void ModelProcessor::DeleteWithGUID (DWORD dwGUID, DWORD GUIDRange)
 }
 
 
-//Рисует все плашки...
+//Р РёСЃСѓРµС‚ РІСЃРµ РїР»Р°С€РєРё...
 void ModelProcessor::Draw()
 {
 	for (DWORD j = 0; j <  Particles.Size(); j++)

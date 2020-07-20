@@ -32,18 +32,18 @@ WdmClouds::Cloud::~Cloud()
 __forceinline bool WdmClouds::Cloud::Reset(bool isFirstTime)
 {
 	if(count > 0) return false;
-	//Определяем количество
+	//РћРїСЂРµРґРµР»СЏРµРј РєРѕР»РёС‡РµСЃС‚РІРѕ
 	count = long((rand()*(0.5f/RAND_MAX) + 0.5f)*WDMCLOUDSMAX);
 	if(count < 1) count = 1;
-	//Базовая позиция
+	//Р‘Р°Р·РѕРІР°СЏ РїРѕР·РёС†РёСЏ
 	float baseX = (rand()*(1.0f/RAND_MAX) - 0.5f)*wdmObjects->worldSizeX;
 	float baseZ = (rand()*(1.0f/RAND_MAX) - 0.5f)*wdmObjects->worldSizeZ;
-	//Скалирующий фактор
+	//РЎРєР°Р»РёСЂСѓСЋС‰РёР№ С„Р°РєС‚РѕСЂ
 	float scaleX = (rand()*(0.8f/RAND_MAX) + 0.2f);
 	float scaleZ = (rand()*(0.8f/RAND_MAX) + 0.2f);
 	float nrm = 1.0f/sqrtf(scaleX*scaleX + scaleZ*scaleZ);
 	scaleX *= nrm; scaleZ *= nrm;
-	//Определяем стартовые позиции
+	//РћРїСЂРµРґРµР»СЏРµРј СЃС‚Р°СЂС‚РѕРІС‹Рµ РїРѕР·РёС†РёРё
 	for(long i = 0; i < count; i++)
 	{
 		float ang = rand()*(2.0f*PI/RAND_MAX);
@@ -78,7 +78,7 @@ __forceinline bool WdmClouds::Cloud::Reset(bool isFirstTime)
 	return true;
 }
 
-//Расчёты
+//Р Р°СЃС‡С‘С‚С‹
 __forceinline void WdmClouds::Cloud::Update(float dltTime)
 {
 	if(count <= 0) return;
@@ -89,19 +89,19 @@ __forceinline void WdmClouds::Cloud::Update(float dltTime)
 	const float maxWorldX = 0.5f*wdmObjects->worldSizeX;
 	const float minWorldZ = -0.5f*wdmObjects->worldSizeZ;
 	const float maxWorldZ = 0.5f*wdmObjects->worldSizeZ;
-	//Двигаем облака
+	//Р”РІРёРіР°РµРј РѕР±Р»Р°РєР°
 	long outsideCount = 0;
 	for(long i = 0; i < count; i++)
 	{
-		//Партикл
+		//РџР°СЂС‚РёРєР»
 		Cld & cld = cloud[i];
-		//Модифицируем направление
+		//РњРѕРґРёС„РёС†РёСЂСѓРµРј РЅР°РїСЂР°РІР»РµРЅРёРµ
 		if(cld.index >= count) cld.index = 0;
-		CVECTOR dir = cloud[cld.index].pos - cld.pos;	//Направление	
-		float dist = sqrtf(dir.x*dir.x + dir.z*dir.z);	//Получаем дистанцию
+		CVECTOR dir = cloud[cld.index].pos - cld.pos;	//РќР°РїСЂР°РІР»РµРЅРёРµ	
+		float dist = sqrtf(dir.x*dir.x + dir.z*dir.z);	//РџРѕР»СѓС‡Р°РµРј РґРёСЃС‚Р°РЅС†РёСЋ
 		if(dist > minDist)
 		{
-			//Модифицируем альфаканал
+			//РњРѕРґРёС„РёС†РёСЂСѓРµРј Р°Р»СЊС„Р°РєР°РЅР°Р»
 			if(dist < midDist)
 			{
 				cld.alpha += dltTime*0.06f;
@@ -112,7 +112,7 @@ __forceinline void WdmClouds::Cloud::Update(float dltTime)
 				cld.alpha -= dltTime*0.03f;
 				if(cld.alpha < 0.0f) cld.alpha = 0.0f;
 			}
-			//Притягиваемся
+			//РџСЂРёС‚СЏРіРёРІР°РµРјСЃСЏ
 			if(dist > midDist)
 			{			
 				float nrm = 1.0f/dist;
@@ -123,18 +123,18 @@ __forceinline void WdmClouds::Cloud::Update(float dltTime)
 				dir = 0.0f;
 			}
 		}else{
-			//Отталкиваемся
+			//РћС‚С‚Р°Р»РєРёРІР°РµРјСЃСЏ
 			dist = (dist - minDist)/minDist;
 			if(dist < -1.0f) dist = -1.0f;
 			dir *= dist;
 			cld.alpha -= dltTime*0.05f;
 			if(cld.alpha < 0.0f) cld.alpha = 0.0f;
 		}
-		cld.dir += (dir - cld.dir + cld.rdr)*(0.5f/count);	//Подбленжеваем независимо от времени
-		cld.index++;										//На следующем кадре следующий будет действовать
-		//Направление ветра
+		cld.dir += (dir - cld.dir + cld.rdr)*(0.5f/count);	//РџРѕРґР±Р»РµРЅР¶РµРІР°РµРј РЅРµР·Р°РІРёСЃРёРјРѕ РѕС‚ РІСЂРµРјРµРЅРё
+		cld.index++;										//РќР° СЃР»РµРґСѓСЋС‰РµРј РєР°РґСЂРµ СЃР»РµРґСѓСЋС‰РёР№ Р±СѓРґРµС‚ РґРµР№СЃС‚РІРѕРІР°С‚СЊ
+		//РќР°РїСЂР°РІР»РµРЅРёРµ РІРµС‚СЂР°
 		wdmObjects->GetWind(cld.pos.x, cld.pos.z, dir);
-		//Вращение
+		//Р’СЂР°С‰РµРЅРёРµ
 		float arot = cld.dir.z*dir.x - cld.dir.x*dir.z;
 		if(arot < -1.0f) arot = -1.0f;
 		if(arot > 1.0f) arot = 1.0f;
@@ -142,14 +142,14 @@ __forceinline void WdmClouds::Cloud::Update(float dltTime)
 		if(cld.aspd < -1.0f) cld.aspd = -1.0f;
 		if(cld.aspd > 1.0f) cld.aspd = 1.0f;
 		cld.angle += cld.aspd*dltTime*0.2f;
-		//Позиция		
+		//РџРѕР·РёС†РёСЏ		
 		dir += cld.dir*0.5f;
 		cld.pos += dir*(dltTime*10.0f);
 		if(cld.pos.x < minWorldX || cld.pos.x > maxWorldX || cld.pos.z < minWorldZ || cld.pos.z > maxWorldZ)
 		{
 			outsideCount++;
 		}
-		//Учитываем партикл в боундсфере
+		//РЈС‡РёС‚С‹РІР°РµРј РїР°СЂС‚РёРєР» РІ Р±РѕСѓРЅРґСЃС„РµСЂРµ
 		float cldr = cld.size*1.5f;
 		if(i)
 		{
@@ -169,7 +169,7 @@ __forceinline void WdmClouds::Cloud::Update(float dltTime)
 			radius = cldr;
 		}
 	}
-	//Время жизни
+	//Р’СЂРµРјСЏ Р¶РёР·РЅРё
 	if(outsideCount >= count) lifeTime = 0.0f;
 	lifeTime -= dltTime;
 	if(lifeTime > 0.0f)
@@ -191,14 +191,14 @@ __forceinline long WdmClouds::Cloud::FillRects(RS_RECT * rects, long cnt, float 
 	for(long i = 0; i < count; i++)
 	{
 		Cld & c = cloud[i];
-		//Вычисляем альфу
+		//Р’С‹С‡РёСЃР»СЏРµРј Р°Р»СЊС„Сѓ
 		float a = float(byte(c.color >> 24));
 		a *= alpha;
 		a *= 0.1f + c.alpha*0.9f;
 		long la = long(a*galpha);
 		if(la > 0xff) la = 0xff;
 		if(la <= 0) continue;
-		//Заполняем
+		//Р—Р°РїРѕР»РЅСЏРµРј
 		RS_RECT & r = rects[cnt++];
 		r.vPos = c.pos;
 		r.fAngle = c.angle;
@@ -209,7 +209,7 @@ __forceinline long WdmClouds::Cloud::FillRects(RS_RECT * rects, long cnt, float 
 	return cnt;
 }
 
-//Получить центр сферы и радиус
+//РџРѕР»СѓС‡РёС‚СЊ С†РµРЅС‚СЂ СЃС„РµСЂС‹ Рё СЂР°РґРёСѓСЃ
 __forceinline float WdmClouds::Cloud::GetBound(CVECTOR & _center)
 {
 	if(!count)
@@ -221,7 +221,7 @@ __forceinline float WdmClouds::Cloud::GetBound(CVECTOR & _center)
 	return radius;
 }
 
-//Запустить механизм удаления облака если есть пересечение
+//Р—Р°РїСѓСЃС‚РёС‚СЊ РјРµС…Р°РЅРёР·Рј СѓРґР°Р»РµРЅРёСЏ РѕР±Р»Р°РєР° РµСЃР»Рё РµСЃС‚СЊ РїРµСЂРµСЃРµС‡РµРЅРёРµ
 __forceinline void WdmClouds::Cloud::Kill(const Cloud & cld)
 {
 	if(count && cld.count)
@@ -238,12 +238,12 @@ __forceinline void WdmClouds::Cloud::Kill(const Cloud & cld)
 }
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 WdmClouds::WdmClouds()
 {
-	//Выставим позиции и направления группам
+	//Р’С‹СЃС‚Р°РІРёРј РїРѕР·РёС†РёРё Рё РЅР°РїСЂР°РІР»РµРЅРёСЏ РіСЂСѓРїРїР°Рј
 	for(long i = 0; i < sizeof(clouds)/sizeof(Cloud); i++)
 	{
 		clouds[i].Reset(true);
@@ -258,20 +258,20 @@ WdmClouds::~WdmClouds()
 	if(light >= 0) wdmObjects->rs->TextureRelease(light);
 }
 
-//Расчёты
+//Р Р°СЃС‡С‘С‚С‹
 void WdmClouds::Update(float dltTime)
 {
-	//Перезаводим убитые
+	//РџРµСЂРµР·Р°РІРѕРґРёРј СѓР±РёС‚С‹Рµ
 	for(long i = 0; i < sizeof(clouds)/sizeof(Cloud); i++)
 	{
 		if(clouds[i].Reset()) break;
 	}
-	//Обновляем позиции
+	//РћР±РЅРѕРІР»СЏРµРј РїРѕР·РёС†РёРё
 	for(long i = 0; i < sizeof(clouds)/sizeof(Cloud); i++)
 	{
 		clouds[i].Update(dltTime);
 	}
-	//Удаляем сильно пересекающиеся
+	//РЈРґР°Р»СЏРµРј СЃРёР»СЊРЅРѕ РїРµСЂРµСЃРµРєР°СЋС‰РёРµСЃСЏ
 	for(long i = 0; i < sizeof(clouds)/sizeof(Cloud) - 1; i++)
 	{
 		for(long j = i + 1; j < sizeof(clouds)/sizeof(Cloud); j++)
@@ -281,13 +281,13 @@ void WdmClouds::Update(float dltTime)
 	}
 }
 
-//Рисование
+//Р РёСЃРѕРІР°РЅРёРµ
 void WdmClouds::LRender(VDX8RENDER * rs)
 {
 	long cnt = 0;
-	//Получаем фрустум камеры
+	//РџРѕР»СѓС‡Р°РµРј С„СЂСѓСЃС‚СѓРј РєР°РјРµСЂС‹
 	PLANE * plane = rs->GetPlanes();
-	//Определяем глобальную альфу в зависимости от дистанции до камеры
+	//РћРїСЂРµРґРµР»СЏРµРј РіР»РѕР±Р°Р»СЊРЅСѓСЋ Р°Р»СЊС„Сѓ РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ РґРёСЃС‚Р°РЅС†РёРё РґРѕ РєР°РјРµСЂС‹
 	CMatrix view;
 	rs->GetTransform(D3DTS_VIEW, view);
 	CVECTOR camPos;
@@ -296,14 +296,14 @@ void WdmClouds::LRender(VDX8RENDER * rs)
 	if(alpha <= 0.0f) return;
 	if(alpha > 1.0f) alpha = 1.0f;
 	alpha *= alpha;
-	//Рисуем видимые
+	//Р РёСЃСѓРµРј РІРёРґРёРјС‹Рµ
 	long i = 0, count = 0;
 	for(i = 0, count = 0; i < sizeof(clouds)/sizeof(Cloud); i++)
 	{
-		//Получаем сферу
+		//РџРѕР»СѓС‡Р°РµРј СЃС„РµСЂСѓ
 		CVECTOR c;
 		float r = clouds[i].GetBound(c);		
-		//Тестируем на видимость
+		//РўРµСЃС‚РёСЂСѓРµРј РЅР° РІРёРґРёРјРѕСЃС‚СЊ
 		long j = 0;
 		for(j = 0; j < 4; j++)
 		{
@@ -312,7 +312,7 @@ void WdmClouds::LRender(VDX8RENDER * rs)
 			if(dist < -r) break;
 		}
 		if(j < 4) continue;
-		//Добавляем в буфер
+		//Р”РѕР±Р°РІР»СЏРµРј РІ Р±СѓС„РµСЂ
 		count = clouds[i].FillRects(rects, count, alpha);
 
 		cnt++;

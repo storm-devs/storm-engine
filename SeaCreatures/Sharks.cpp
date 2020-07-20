@@ -20,20 +20,20 @@
 //============================================================================================
 
 #define SHARK_PI				3.14159265f
-#define SHARK_REPULSION				80.0f	//Коэфициент расталкивыния акул
-#define SHARK_REPULSION_DIST		90.0f	//Дистанция расталкивыния акул
-#define SHARK_MAX_RSPEED			8.1f	//Максимальная скорость перемещения точки следования
-#define SHARK_PULL_DIST				100.0f	//Дистанция притягивания
-#define SHARK_REPPUL_DIST			10.0f	//Дистанция отталкивания
-#define SHARK_MAX_Y					0.01f	//Верхний потолок плаванья
-#define SHARK_MIN_Y					-20.0f	//Нижний потолок плаванья
-#define SHARK_MAX_TURN				0.2f	//Максимальная скорость поворота
-#define SHARK_KROW_TURN				2.0f	//Коэфициент наклона при повороте max = turn*SHARK_MAX_TURN
-#define SHARK_IMSPD_ACC				0.1f	//Ускорение погружения
-#define SHARK_MAX_IMSPD				1.0f	//Максимальная скорость погружения
-#define SHARK_KAX_IMSPD				0.3f	//Зависимость угла от скорости погружения
-#define SHARK_MAX_SPEED				8.0f	//Максимальная скорость акулы
-#define SHARK_MIN_SPEED				5.0f	//Минимальная скорость акулы
+#define SHARK_REPULSION				80.0f	//РљРѕСЌС„РёС†РёРµРЅС‚ СЂР°СЃС‚Р°Р»РєРёРІС‹РЅРёСЏ Р°РєСѓР»
+#define SHARK_REPULSION_DIST		90.0f	//Р”РёСЃС‚Р°РЅС†РёСЏ СЂР°СЃС‚Р°Р»РєРёРІС‹РЅРёСЏ Р°РєСѓР»
+#define SHARK_MAX_RSPEED			8.1f	//РњР°РєСЃРёРјР°Р»СЊРЅР°СЏ СЃРєРѕСЂРѕСЃС‚СЊ РїРµСЂРµРјРµС‰РµРЅРёСЏ С‚РѕС‡РєРё СЃР»РµРґРѕРІР°РЅРёСЏ
+#define SHARK_PULL_DIST				100.0f	//Р”РёСЃС‚Р°РЅС†РёСЏ РїСЂРёС‚СЏРіРёРІР°РЅРёСЏ
+#define SHARK_REPPUL_DIST			10.0f	//Р”РёСЃС‚Р°РЅС†РёСЏ РѕС‚С‚Р°Р»РєРёРІР°РЅРёСЏ
+#define SHARK_MAX_Y					0.01f	//Р’РµСЂС…РЅРёР№ РїРѕС‚РѕР»РѕРє РїР»Р°РІР°РЅСЊСЏ
+#define SHARK_MIN_Y					-20.0f	//РќРёР¶РЅРёР№ РїРѕС‚РѕР»РѕРє РїР»Р°РІР°РЅСЊСЏ
+#define SHARK_MAX_TURN				0.2f	//РњР°РєСЃРёРјР°Р»СЊРЅР°СЏ СЃРєРѕСЂРѕСЃС‚СЊ РїРѕРІРѕСЂРѕС‚Р°
+#define SHARK_KROW_TURN				2.0f	//РљРѕСЌС„РёС†РёРµРЅС‚ РЅР°РєР»РѕРЅР° РїСЂРё РїРѕРІРѕСЂРѕС‚Рµ max = turn*SHARK_MAX_TURN
+#define SHARK_IMSPD_ACC				0.1f	//РЈСЃРєРѕСЂРµРЅРёРµ РїРѕРіСЂСѓР¶РµРЅРёСЏ
+#define SHARK_MAX_IMSPD				1.0f	//РњР°РєСЃРёРјР°Р»СЊРЅР°СЏ СЃРєРѕСЂРѕСЃС‚СЊ РїРѕРіСЂСѓР¶РµРЅРёСЏ
+#define SHARK_KAX_IMSPD				0.3f	//Р—Р°РІРёСЃРёРјРѕСЃС‚СЊ СѓРіР»Р° РѕС‚ СЃРєРѕСЂРѕСЃС‚Рё РїРѕРіСЂСѓР¶РµРЅРёСЏ
+#define SHARK_MAX_SPEED				8.0f	//РњР°РєСЃРёРјР°Р»СЊРЅР°СЏ СЃРєРѕСЂРѕСЃС‚СЊ Р°РєСѓР»С‹
+#define SHARK_MIN_SPEED				5.0f	//РњРёРЅРёРјР°Р»СЊРЅР°СЏ СЃРєРѕСЂРѕСЃС‚СЊ Р°РєСѓР»С‹
 
 
 //============================================================================================
@@ -81,7 +81,7 @@ Sharks::Shark::~Shark()
 
 bool Sharks::Shark::Init(float vp_x, float vp_z, bool isLoadModel)
 {
-	//Позиция
+	//РџРѕР·РёС†РёСЏ
 	float radius = SHARK_PULL_DIST*(0.4f + rand()*1.6f/RAND_MAX);
 	float ang = SHARK_PI*rand()*(2.0f/RAND_MAX);
 	pos.x = vp_x + radius*cosf(ang);
@@ -90,9 +90,9 @@ bool Sharks::Shark::Init(float vp_x, float vp_z, bool isLoadModel)
 	spos = pos;
 	angs.y = SHARK_PI*rand()*(2.0f/RAND_MAX);
 	if(!isLoadModel) return true;
-	//Загружаем модельку	
+	//Р—Р°РіСЂСѓР¶Р°РµРј РјРѕРґРµР»СЊРєСѓ	
 	if(!_CORE_API->CreateEntity(&model, "modelr")) return false;
-	//Путь для текстур
+	//РџСѓС‚СЊ РґР»СЏ С‚РµРєСЃС‚СѓСЂ
 	VGEOMETRY * gs = (VGEOMETRY *)_CORE_API->CreateService("geometry");
 	if(!gs)
 	{
@@ -114,7 +114,7 @@ bool Sharks::Shark::Init(float vp_x, float vp_z, bool isLoadModel)
 		_CORE_API->DeleteEntity(model);
 		return false;
 	}
-	//Ставим анимацию по умолчанию
+	//РЎС‚Р°РІРёРј Р°РЅРёРјР°С†РёСЋ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 	MODEL * mdl = (MODEL *)_CORE_API->GetEntityPointer(&model);
 	if(!mdl || !mdl->GetAnimation()) return false;
 	mdl->GetAnimation()->SetEvent(ae_end, 0, this);
@@ -130,7 +130,7 @@ inline void Sharks::Shark::Reset(float cam_x, float cam_z)
 {
 	force = 0.0f;
 	fforce = 0.0f;
-	//Если дальше от камеры чем можно, то телепортируемся
+	//Р•СЃР»Рё РґР°Р»СЊС€Рµ РѕС‚ РєР°РјРµСЂС‹ С‡РµРј РјРѕР¶РЅРѕ, С‚Рѕ С‚РµР»РµРїРѕСЂС‚РёСЂСѓРµРјСЃСЏ
 	float dx = cam_x - pos.x;
 	float dz = cam_z - pos.z;
 	const float max = SHARK_PULL_DIST*4.0f;
@@ -181,13 +181,13 @@ inline void Sharks::Shark::ShipApply(float x, float z, float r2)
 
 inline void Sharks::Shark::Coordination(float cam_x, float cam_z, float dltTime, SEA_BASE * sb, ISLAND_BASE * ib)
 {
-	//Получим модельку
+	//РџРѕР»СѓС‡РёРј РјРѕРґРµР»СЊРєСѓ
 	MODEL * mdl = (MODEL *)_CORE_API->GetEntityPointer(&model);
 	if(!mdl) return;
-	//Сила расталкивания
+	//РЎРёР»Р° СЂР°СЃС‚Р°Р»РєРёРІР°РЅРёСЏ
 	float l = ~force;
 	if(l > 1600.0f) force *= 40.0f/sqrtf(l);
-	//Случайная сила
+	//РЎР»СѓС‡Р°Р№РЅР°СЏ СЃРёР»Р°
 	rTime -= dltTime;
 	if(rTime < 0.0f)
 	{
@@ -198,38 +198,38 @@ inline void Sharks::Shark::Coordination(float cam_x, float cam_z, float dltTime,
 		rTime = 1.0f + rand()*10.0f;
 	}
 	force += rForce;
-	//Направление на камеру
+	//РќР°РїСЂР°РІР»РµРЅРёРµ РЅР° РєР°РјРµСЂСѓ
 	float vx = cam_x - pos.x;
 	float vz = cam_z - pos.z;
 	float k = vx*vx + vz*vz;
-	//Если ближе чем, то разгоняем точку
+	//Р•СЃР»Рё Р±Р»РёР¶Рµ С‡РµРј, С‚Рѕ СЂР°Р·РіРѕРЅСЏРµРј С‚РѕС‡РєСѓ
 	if(k < SHARK_REPPUL_DIST*SHARK_REPPUL_DIST)
 	{
 		force.x -= vx*1.0f/SHARK_REPPUL_DIST;
 		force.z -= vz*1.0f/SHARK_REPPUL_DIST;
 	}else{
-		//Притягивание к камере
+		//РџСЂРёС‚СЏРіРёРІР°РЅРёРµ Рє РєР°РјРµСЂРµ
 		vx *= 0.1f; vz *= 0.1f;
 		l = sqrtf(k)*0.1f;
 		if(l > 20.0f*20.0f){ l = 20.0f/l; vx *= l; vz *= l; }
 		force.x += vx;
 		force.z += vz;
 	}	
-	//Перемещение по высоте
+	//РџРµСЂРµРјРµС‰РµРЅРёРµ РїРѕ РІС‹СЃРѕС‚Рµ
 	force.y += 0.4f*(yDir - pos.y);
-	//Шум
+	//РЁСѓРј
 	force.x += (0.5f - (rand() & 15)*1.0f/15.0f)*0.001f;
 	force.y += (0.5f - (rand() & 15)*1.0f/15.0f)*0.001f;
 	force.z += (0.5f - (rand() & 15)*1.0f/15.0f)*0.001f;
-	//Скорость перемещения
+	//РЎРєРѕСЂРѕСЃС‚СЊ РїРµСЂРµРјРµС‰РµРЅРёСЏ
 	vel += accs*force*dltTime;
 	l = ~vel;
 	if(l > SHARK_MAX_RSPEED*SHARK_MAX_RSPEED) vel *= SHARK_MAX_RSPEED/sqrtf(l);	
-	//Позиция
+	//РџРѕР·РёС†РёСЏ
 	pos += vel*dltTime;
 	if(pos.y > 0.1f) pos.y = 0.1f;
 	if(pos.y < -20.0f) pos.y = -20.0f;
-	//Тенденция к высоте плаванья
+	//РўРµРЅРґРµРЅС†РёСЏ Рє РІС‹СЃРѕС‚Рµ РїР»Р°РІР°РЅСЊСЏ
 	dirTime -= dltTime;
 	if(dirTime <= 0.0f)
 	{		
@@ -237,23 +237,23 @@ inline void Sharks::Shark::Coordination(float cam_x, float cam_z, float dltTime,
 		yDir = SHARK_MIN_Y + (SHARK_MAX_Y - SHARK_MIN_Y)*(1.0f - p*p);
 		dirTime = 5.0f + 10.0f*rand()*1.0f/RAND_MAX;
 	}
-	//Рыба
-	//Сила притяжения
+	//Р С‹Р±Р°
+	//РЎРёР»Р° РїСЂРёС‚СЏР¶РµРЅРёСЏ
 	CVECTOR fff = pos - spos;
 	l = ~fff;
 	if(l > 1.0f) fff *= 1.0f/sqrtf(l);
-	//Сила расталкивания
+	//РЎРёР»Р° СЂР°СЃС‚Р°Р»РєРёРІР°РЅРёСЏ
 	l = ~fforce;
 	if(l > 100.0f) fforce *= 10.0f/sqrtf(l);
 	fforce += fff;
-	//Определим коллижен относительно острова
+	//РћРїСЂРµРґРµР»РёРј РєРѕР»Р»РёР¶РµРЅ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РѕСЃС‚СЂРѕРІР°
 	if(ib)
 	{
 		IslandCollision(ib, 32, 5.0f, 100.0f);
 		IslandCollision(ib, 16, 30.0f, 50.0f);
 		IslandCollision(ib, 8, 50.0f, 20.0f);
 	}
-	//Определим направление рыбы относительно точки следования
+	//РћРїСЂРµРґРµР»РёРј РЅР°РїСЂР°РІР»РµРЅРёРµ СЂС‹Р±С‹ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ С‚РѕС‡РєРё СЃР»РµРґРѕРІР°РЅРёСЏ
 	float sx = sinf(angs.y);
 	float sz = cosf(angs.y);
 	vx = fforce.x;
@@ -272,14 +272,14 @@ inline void Sharks::Shark::Coordination(float cam_x, float cam_z, float dltTime,
 	if(turn > SHARK_MAX_TURN) turn = SHARK_MAX_TURN;
 	if(turn < -SHARK_MAX_TURN) turn = -SHARK_MAX_TURN;
 	angs.y += turn*dltTime;
-	//Угол наклона при повороте
+	//РЈРіРѕР» РЅР°РєР»РѕРЅР° РїСЂРё РїРѕРІРѕСЂРѕС‚Рµ
 	angs.z = -turn*SHARK_KROW_TURN;
-	//Скорость
+	//РЎРєРѕСЂРѕСЃС‚СЊ
 	speed += 0.3f*cs*dltTime;
 	speedUp = cs > 0.0f;
 	if(speed > SHARK_MAX_SPEED) speed = SHARK_MAX_SPEED;
 	if(speed < SHARK_MIN_SPEED) speed = SHARK_MIN_SPEED;
-	//Изменение глубины
+	//РР·РјРµРЅРµРЅРёРµ РіР»СѓР±РёРЅС‹
 	if(fforce.y < 0.0f)
 	{
 		if(spos.y > SHARK_MIN_Y)
@@ -293,9 +293,9 @@ inline void Sharks::Shark::Coordination(float cam_x, float cam_z, float dltTime,
 		imspd += SHARK_IMSPD_ACC*dltTime;
 		if(imspd > SHARK_MAX_IMSPD) imspd = SHARK_MAX_IMSPD;
 	}
-	//Угол наклона при погружении
+	//РЈРіРѕР» РЅР°РєР»РѕРЅР° РїСЂРё РїРѕРіСЂСѓР¶РµРЅРёРё
 	angs.x = -imspd*SHARK_KAX_IMSPD;
-	//Новая позиция
+	//РќРѕРІР°СЏ РїРѕР·РёС†РёСЏ
 	Assert(speed >= SHARK_MIN_SPEED);
 	spos.x += speed*sinf(angs.y)*dltTime;
 	spos.y += imspd*dltTime;
@@ -308,7 +308,7 @@ inline void Sharks::Shark::Coordination(float cam_x, float cam_z, float dltTime,
 		if(rpos.y > seaY) rpos.y = seaY;
 	}
 	if(rpos.y > shipY) rpos.y = shipY;
-	//Ограничение наклона от глубины
+	//РћРіСЂР°РЅРёС‡РµРЅРёРµ РЅР°РєР»РѕРЅР° РѕС‚ РіР»СѓР±РёРЅС‹
 	if(rpos.y > -3.0f)
 	{
 		l = rpos.y;
@@ -316,13 +316,13 @@ inline void Sharks::Shark::Coordination(float cam_x, float cam_z, float dltTime,
 		l = 1.0f - (3.0f + l)/3.0f;
 		angs.x *= l*l;
 	}
-	//Анимация
+	//РђРЅРёРјР°С†РёСЏ
 	aniTime -= dltTime;
 	jumpTime -= dltTime;
-	//Трек
+	//РўСЂРµРє
 	vBase += 0.2f*speed*dltTime;
 	if(vBase > 1.0f) vBase -= 1.0f;
-	//Обновление матрицы
+	//РћР±РЅРѕРІР»РµРЅРёРµ РјР°С‚СЂРёС†С‹
 	mdl->mtx.BuildMatrix(angs, rpos);
 	/*
 	if(GetAsyncKeyState('Z') >= 0)
@@ -393,7 +393,7 @@ void Sharks::Shark::Event(Animation * animation, long index, long eventID, Anima
 	}else{
 		if(jumpTime <= 0.0f && spos.y > -0.1f && ~(rnd & 0xf0))
 		{
-			//Выпрыгиваем из воды
+			//Р’С‹РїСЂС‹РіРёРІР°РµРј РёР· РІРѕРґС‹
 			animation->Player(0).SetAction(actJump);
 			jumpTime = 60.0f + rand()*100.0f/RAND_MAX;
 			aniTime = -0.1f;
@@ -407,20 +407,20 @@ void Sharks::Shark::Event(Animation * animation, long index, long eventID, Anima
 
 long Sharks::Shark::GenerateTrack(word * inds, Vertex * vrt, word base, SEA_BASE * sb)
 {
-	//Получим модельку
+	//РџРѕР»СѓС‡РёРј РјРѕРґРµР»СЊРєСѓ
 	MODEL * mdl = (MODEL *)_CORE_API->GetEntityPointer(&model);
 	if(!mdl) return 0;
 	float k = mdl->mtx.Pos().y;
 	if(k <= -1.2f) return 0;
 	if(k > 0.0f) k = 0.0f;
 	k = (1.2f + k)/1.2f;
-	//Параметры плавника
+	//РџР°СЂР°РјРµС‚СЂС‹ РїР»Р°РІРЅРёРєР°
 	float length = 2.0f*3.0f*k;
 	float width = 1.0f*1.5f*k;
-	//Индексы
+	//РРЅРґРµРєСЃС‹
 	Assert(sizeof(indeces)/sizeof(word) == 30);
 	for(long i = 0; i < 30; i++) inds[i] = indeces[i] + base;
-	//Вершины
+	//Р’РµСЂС€РёРЅС‹
 	CVECTOR s(0.0f, 0.0f, 0.75f);
 	vrt[0].pos = s;
 	vrt[7].pos = s + CVECTOR(-width, 0.0f, -length);
@@ -456,7 +456,7 @@ long Sharks::Shark::GenerateTrack(word * inds, Vertex * vrt, word base, SEA_BASE
 }
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 Sharks::Sharks()
@@ -476,26 +476,26 @@ Sharks::~Sharks()
 	if(rs) rs->TextureRelease(trackTx);
 }
 
-//Инициализация
+//РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
 bool Sharks::Init()
 {
 	rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
 	if(!rs) _THROW("No service: dx8render");
 	for(long i = 0; i < numShakes; i++)
 		if(!shark[i].Init(0.0f, 0.0f)) return false;
-	//Лаера исполнения
+	//Р›Р°РµСЂР° РёСЃРїРѕР»РЅРµРЅРёСЏ
 	char execute[64];
 	char realize[64];	
 	const char * attr = AttributesPointer->GetAttribute("execute");
 	if(attr && attr[0]) strcpy(execute, attr); else strcpy(execute, "execute");
 	attr = AttributesPointer->GetAttribute("realize");
 	if(attr && attr[0]) strcpy(realize, attr); else strcpy(realize, "realize");
-	//Уровни исполнения
+	//РЈСЂРѕРІРЅРё РёСЃРїРѕР»РЅРµРЅРёСЏ
 	long emdl = AttributesPointer->GetAttributeAsDword("executeModels", 77);
 	long rmdl = AttributesPointer->GetAttributeAsDword("realizeModels", 77);
 	long eprt = AttributesPointer->GetAttributeAsDword("executeParticles", 77);
 	long rprt = AttributesPointer->GetAttributeAsDword("realizeParticles", 100000);
-	//Установим уровни исполнения
+	//РЈСЃС‚Р°РЅРѕРІРёРј СѓСЂРѕРІРЅРё РёСЃРїРѕР»РЅРµРЅРёСЏ
 	_CORE_API->LayerAdd(execute, GetID(), eprt);
 	_CORE_API->LayerAdd(realize, GetID(), rprt);
 	for(long i = 0; i < numShakes; i++)
@@ -503,9 +503,9 @@ bool Sharks::Init()
 		_CORE_API->LayerAdd(execute, shark[i].model, emdl);
 		_CORE_API->LayerAdd(realize, shark[i].model, rmdl);		
 	}
-	//Загрузим текстуру
+	//Р—Р°РіСЂСѓР·РёРј С‚РµРєСЃС‚СѓСЂСѓ
 	trackTx = rs->TextureCreate("Animals\\SharkTrack.tga");
-	//Анализируем возможность создания перископа
+	//РђРЅР°Р»РёР·РёСЂСѓРµРј РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ СЃРѕР·РґР°РЅРёСЏ РїРµСЂРёСЃРєРѕРїР°
 	VDATA * v = (VDATA *)api->GetScriptVariable("Environment");
 	if(v)
 	{
@@ -541,7 +541,7 @@ bool Sharks::Init()
 	return true;
 }
 
-//Исполнение
+//РСЃРїРѕР»РЅРµРЅРёРµ
 void Sharks::Execute(dword delta_time)
 {
 	CVECTOR a;
@@ -549,28 +549,28 @@ void Sharks::Execute(dword delta_time)
 	rs->GetCamera(camPos, a, a.x);
 	float dltTime = delta_time*0.001f;
 	const long num = numShakes;
-	//Сбросим состояния
+	//РЎР±СЂРѕСЃРёРј СЃРѕСЃС‚РѕСЏРЅРёСЏ
 	for(long i = 0; i < num; i++) shark[i].Reset(camPos.x, camPos.z);
-	//Разчитаем силы
+	//Р Р°Р·С‡РёС‚Р°РµРј СЃРёР»С‹
 	for(long i = 0; i < num - 1; i++)
 		for(long j = i + 1; j < num; j++) shark[i].Repulsion(shark[j]);
-	//Учитываем корабли
+	//РЈС‡РёС‚С‹РІР°РµРј РєРѕСЂР°Р±Р»Рё
 	ENTITY_ID id;
 	bool res = _CORE_API->FindClass(&id, null, shipcode);
 	for(; res; res = _CORE_API->FindClassNext(&id))
 	{
-		//Указатель на объект
+		//РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РѕР±СЉРµРєС‚
 		VAI_OBJBASE * ship = (VAI_OBJBASE *)_CORE_API->GetEntityPointer(&id);
 		if(!ship) break;
-		//Позиция корабля
+		//РџРѕР·РёС†РёСЏ РєРѕСЂР°Р±Р»СЏ
 		CVECTOR shipPos = ship->GetMatrix()->Pos();
-		//Размер корабля
+		//Р Р°Р·РјРµСЂ РєРѕСЂР°Р±Р»СЏ
 		CVECTOR s = ship->GetBoxSize();
 		float rd2 = (s.x*s.x + s.z*s.z)*3.0f;
-		//Говорим акулам о короблях
+		//Р“РѕРІРѕСЂРёРј Р°РєСѓР»Р°Рј Рѕ РєРѕСЂРѕР±Р»СЏС…
 		for(long i = 0; i < num; i++) shark[i].ShipApply(shipPos.x, shipPos.z, rd2);
 	}
-	//Море
+	//РњРѕСЂРµ
 	SEA_BASE * sb = (SEA_BASE *)_CORE_API->GetEntityPointer(&sea);
 	if(!sb)
 	{
@@ -582,9 +582,9 @@ void Sharks::Execute(dword delta_time)
 	{
 		_CORE_API->FindClass(&island, "island", 0);
 	}
-	//Расчитываем новые позиции
+	//Р Р°СЃС‡РёС‚С‹РІР°РµРј РЅРѕРІС‹Рµ РїРѕР·РёС†РёРё
 	for(long i = 0; i < num; i++) shark[i].Coordination(camPos.x, camPos.z, dltTime, sb, ib);
-	//Обрабатываем перископ
+	//РћР±СЂР°Р±Р°С‚С‹РІР°РµРј РїРµСЂРёСЃРєРѕРї
 	if(!ib)
 	{
 		if(periscope.time >= 0.0f)

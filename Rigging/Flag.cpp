@@ -48,7 +48,7 @@ bool FLAG::Init()
  
 void FLAG::SetDevice()
 {
-    // получить сервис рендера
+    // РїРѕР»СѓС‡РёС‚СЊ СЃРµСЂРІРёСЃ СЂРµРЅРґРµСЂР°
 	RenderService = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
 	if(!RenderService)
 	{
@@ -79,7 +79,7 @@ void FLAG::Execute(dword Delta_Time)
     if(bUse)
     {
         //====================================================
-        // Если был изменен ини-файл, то считать инфо из него
+        // Р•СЃР»Рё Р±С‹Р» РёР·РјРµРЅРµРЅ РёРЅРё-С„Р°Р№Р», С‚Рѕ СЃС‡РёС‚Р°С‚СЊ РёРЅС„Рѕ РёР· РЅРµРіРѕ
     	WIN32_FIND_DATA	wfd;
 	    HANDLE h = _CORE_API->fio->_FindFirstFile("resource\\ini\\rigging.ini",&wfd);
     	if (INVALID_HANDLE_VALUE != h) 
@@ -93,7 +93,7 @@ void FLAG::Execute(dword Delta_Time)
             }
 	    }
 
-        // получим значение ветра
+        // РїРѕР»СѓС‡РёРј Р·РЅР°С‡РµРЅРёРµ РІРµС‚СЂР°
         ENTITY_ID ei;
         if( _CORE_API->FindClass(&ei,"weather",0) )
         {
@@ -104,7 +104,7 @@ void FLAG::Execute(dword Delta_Time)
             globalWind.base=wb->GetFloat(whf_wind_speed)/fWindMaxValue;
         }
 
-        // расчет формы флага
+        // СЂР°СЃС‡РµС‚ С„РѕСЂРјС‹ С„Р»Р°РіР°
         vertBuf=(FLAGLXVERTEX*)RenderService->LockVertexBuffer(vBuf);
         if( vertBuf )
         {
@@ -381,12 +381,12 @@ void FLAG::DoMove(FLAGDATA *pr,float delta_time)
         vertBuf[sIdx].pos = cPos + dopVect - dhVect;
 		sIdx++;
 
-        // посчитать новый угол (синусы\косинусы)
+        // РїРѕСЃС‡РёС‚Р°С‚СЊ РЅРѕРІС‹Р№ СѓРіРѕР» (СЃРёРЅСѓСЃС‹\РєРѕСЃРёРЅСѓСЃС‹)
         tmp = sAlfa;
         sAlfa = sAlfa*ca + sa*cAlfa;
         cAlfa = cAlfa*ca - tmp*sa;
 
-        // посчитать новый угол (синусы\косинусы)
+        // РїРѕСЃС‡РёС‚Р°С‚СЊ РЅРѕРІС‹Р№ СѓРіРѕР» (СЃРёРЅСѓСЃС‹\РєРѕСЃРёРЅСѓСЃС‹)
         tmp = sBeta;
         sBeta = sBeta*cb + sb*cBeta;
         cBeta = cBeta*cb - tmp*sb;
@@ -576,34 +576,34 @@ void FLAG::LoadIni()
     	
 	SetTextureCoordinate();
 	
-    // длина сегмента флага
+    // РґР»РёРЅР° СЃРµРіРјРµРЅС‚Р° С„Р»Р°РіР°
     FLAGVECTORLEN=ini->GetFloat(section,"fSegLen",0.2f);
 
-    // Параметры влияния ветра
-    // скорость ветра по вертикали
+    // РџР°СЂР°РјРµС‚СЂС‹ РІР»РёСЏРЅРёСЏ РІРµС‚СЂР°
+    // СЃРєРѕСЂРѕСЃС‚СЊ РІРµС‚СЂР° РїРѕ РІРµСЂС‚РёРєР°Р»Рё
     ALFA_DEPEND=ini->GetFloat(section,"alfa_depend",0.1f);
-    // скорость ветра по горизонтали
+    // СЃРєРѕСЂРѕСЃС‚СЊ РІРµС‚СЂР° РїРѕ РіРѕСЂРёР·РѕРЅС‚Р°Р»Рё
     BETA_DEPEND=ini->GetFloat(section,"beta_depend",0.06f);
-    // максимальное значение случайного изменения угла Alpha
+    // РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ СЃР»СѓС‡Р°Р№РЅРѕРіРѕ РёР·РјРµРЅРµРЅРёСЏ СѓРіР»Р° Alpha
     ALFA_RAND=ini->GetFloat(section,"alpha_rand",0.1f);
-    // максимальное значение случайного изменения угла Beta
+    // РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ СЃР»СѓС‡Р°Р№РЅРѕРіРѕ РёР·РјРµРЅРµРЅРёСЏ СѓРіР»Р° Beta
     BETA_RAND=ini->GetFloat(section,"beta_rand",0.1f);
-    // максимальный угол (для конца флага)
+    // РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№ СѓРіРѕР» (РґР»СЏ РєРѕРЅС†Р° С„Р»Р°РіР°)
     fAlfaMax = ini->GetFloat(section,"fAlfaMax",4.71f);
     fAlfaStep = ini->GetFloat(section,"fAlfaStep",.2f);
-    // максимальный угол (для конца флага)
+    // РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№ СѓРіРѕР» (РґР»СЏ РєРѕРЅС†Р° С„Р»Р°РіР°)
     fBetaMax = ini->GetFloat(section,"fBetaMax",7.85f);
     fBetaStep = ini->GetFloat(section,"fBetaStep",.3f);
-    // Параметры формирования формы флага и колебания его
-    // амплитуда колебания направляющей линии флага
+    // РџР°СЂР°РјРµС‚СЂС‹ С„РѕСЂРјРёСЂРѕРІР°РЅРёСЏ С„РѕСЂРјС‹ С„Р»Р°РіР° Рё РєРѕР»РµР±Р°РЅРёСЏ РµРіРѕ
+    // Р°РјРїР»РёС‚СѓРґР° РєРѕР»РµР±Р°РЅРёСЏ РЅР°РїСЂР°РІР»СЏСЋС‰РµР№ Р»РёРЅРёРё С„Р»Р°РіР°
     fWindAm=ini->GetFloat(section,"fWindAm",0.2f);
-    // амплитуда колебания(вращения) поперечника флага
+    // Р°РјРїР»РёС‚СѓРґР° РєРѕР»РµР±Р°РЅРёСЏ(РІСЂР°С‰РµРЅРёСЏ) РїРѕРїРµСЂРµС‡РЅРёРєР° С„Р»Р°РіР°
     fRotAm=ini->GetFloat(section,"fRotAm",0.2f);
-    // значение опускания флага на каждом шаге от мачты
+    // Р·РЅР°С‡РµРЅРёРµ РѕРїСѓСЃРєР°РЅРёСЏ С„Р»Р°РіР° РЅР° РєР°Р¶РґРѕРј С€Р°РіРµ РѕС‚ РјР°С‡С‚С‹
     DOWNVAL=ini->GetFloat(section,"fDownVal",0.05f);
-    // максимальное значение ветра
+    // РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ РІРµС‚СЂР°
     fWindMaxValue=ini->GetFloat(section,"fWindMaxValue",12.f);
-    // минимальное количество сегментов во флаге
+    // РјРёРЅРёРјР°Р»СЊРЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ СЃРµРіРјРµРЅС‚РѕРІ РІРѕ С„Р»Р°РіРµ
     MinSegmentQuantity=ini->GetLong(section,"MinSegQuantity",4);
 
     delete ini;
@@ -637,11 +637,11 @@ void FLAG::FirstRun()
 
 void FLAG::GroupDelete(ENTITY_ID m_id)
 {
-    // найдем группу соответствующую полученной модели
+    // РЅР°Р№РґРµРј РіСЂСѓРїРїСѓ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰СѓСЋ РїРѕР»СѓС‡РµРЅРЅРѕР№ РјРѕРґРµР»Рё
     for(int gn=0; gn<groupQuantity; gn++)
         if(gdata[gn].model_id==m_id)
         {
-            gdata[gn].bDeleted=true; // пометим ее как удаленную
+            gdata[gn].bDeleted=true; // РїРѕРјРµС‚РёРј РµРµ РєР°Рє СѓРґР°Р»РµРЅРЅСѓСЋ
             bYesDeleted=true;
             break;
         }
@@ -649,16 +649,16 @@ void FLAG::GroupDelete(ENTITY_ID m_id)
 
 void FLAG::DoDelete()
 {
-    // пройтись по всем удаленным группам и удалить содержащиеся в них флаги
+    // РїСЂРѕР№С‚РёСЃСЊ РїРѕ РІСЃРµРј СѓРґР°Р»РµРЅРЅС‹Рј РіСЂСѓРїРїР°Рј Рё СѓРґР°Р»РёС‚СЊ СЃРѕРґРµСЂР¶Р°С‰РёРµСЃСЏ РІ РЅРёС… С„Р»Р°РіРё
     int ngn = 0;
     nVert = 0; nIndx = 0;
     for(int gn=0; gn<groupQuantity; gn++)
     {
-        int gs=0; // число неудаленных флагов в группе
+        int gs=0; // С‡РёСЃР»Рѕ РЅРµСѓРґР°Р»РµРЅРЅС‹С… С„Р»Р°РіРѕРІ РІ РіСЂСѓРїРїРµ
         for(int fn=0; fn<flagQuantity; fn++)
             if(flist[fn]!=NULL && flist[fn]->HostGroup==gn)
             {
-                // если флаг помечен удаленным, то удалить физически
+                // РµСЃР»Рё С„Р»Р°Рі РїРѕРјРµС‡РµРЅ СѓРґР°Р»РµРЅРЅС‹Рј, С‚Рѕ СѓРґР°Р»РёС‚СЊ С„РёР·РёС‡РµСЃРєРё
                 if(gdata[gn].bDeleted || flist[fn]->bDeleted || flist[fn]->nv<=0 || flist[fn]->nt<=0)
                 {
                     flist[fn]->bDeleted=true;
@@ -672,10 +672,10 @@ void FLAG::DoDelete()
                 nIndx += flist[fn]->nt*3;
                 gs++;
             }
-        // если все флаги удалены из группы, то удалить группу
+        // РµСЃР»Рё РІСЃРµ С„Р»Р°РіРё СѓРґР°Р»РµРЅС‹ РёР· РіСЂСѓРїРїС‹, С‚Рѕ СѓРґР°Р»РёС‚СЊ РіСЂСѓРїРїСѓ
         if( gs==0 ) continue;
 
-        // записать группу на свою позицию
+        // Р·Р°РїРёСЃР°С‚СЊ РіСЂСѓРїРїСѓ РЅР° СЃРІРѕСЋ РїРѕР·РёС†РёСЋ
         if(ngn<gn)
             memcpy(&gdata[ngn],&gdata[gn],sizeof(GROUPDATA));
         ngn++;
@@ -758,12 +758,12 @@ void FLAG::SetAdd(int flagNum)
         CVECTOR p1=flist[fn]->dv;
         CVECTOR p2=flist[fn]->dhv;
         CVECTOR p3=flist[fn]->ddhv;
-        flist[fn]->spos=bmpos=(p0+p1)*.5f; // середина начального края флага
-        // вычислить середину конечного края флага
+        flist[fn]->spos=bmpos=(p0+p1)*.5f; // СЃРµСЂРµРґРёРЅР° РЅР°С‡Р°Р»СЊРЅРѕРіРѕ РєСЂР°СЏ С„Р»Р°РіР°
+        // РІС‹С‡РёСЃР»РёС‚СЊ СЃРµСЂРµРґРёРЅСѓ РєРѕРЅРµС‡РЅРѕРіРѕ РєСЂР°СЏ С„Р»Р°РіР°
         if(flist[fn]->triangle)  empos=p2;
         else  empos=(p2+p3)*.5f;
         flist[fn]->dhv=p0-bmpos;
-        len=sqrtf(~(empos-bmpos)); // длина флага
+        len=sqrtf(~(empos-bmpos)); // РґР»РёРЅР° С„Р»Р°РіР°
         if(len<FLAGVECTORLEN)
         {
             delete flist[fn];
@@ -790,8 +790,8 @@ void FLAG::SetAdd(int flagNum)
         {
 			long curTexNumC = 0;
 			long curTexNumR = 0;
-            // установить номер текстуры
-			if(flist[fn]->isShip) // корабль
+            // СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РЅРѕРјРµСЂ С‚РµРєСЃС‚СѓСЂС‹
+			if(flist[fn]->isShip) // РєРѕСЂР°Р±Р»СЊ
 			{
 				pvdat = api->Event("GetRiggingData","sllla","GetShipFlagTexNum",flist[fn]->triangle,gdata[flist[fn]->HostGroup].nation, flist[fn]->isSpecialFlag, gdata[flist[fn]->HostGroup].char_attributes);
 			}
@@ -812,10 +812,10 @@ void FLAG::SetAdd(int flagNum)
 				flist[fn]->texNumR = curTexNumR;
 			}	
 			
-            flist[fn]->vectQuant=(int)(len/FLAGVECTORLEN); // число сегментов флага
+            flist[fn]->vectQuant=(int)(len/FLAGVECTORLEN); // С‡РёСЃР»Рѕ СЃРµРіРјРµРЅС‚РѕРІ С„Р»Р°РіР°
             if(flist[fn]->vectQuant<MinSegmentQuantity)
                 flist[fn]->vectQuant=MinSegmentQuantity;
-            // вычислить приращение флага
+            // РІС‹С‡РёСЃР»РёС‚СЊ РїСЂРёСЂР°С‰РµРЅРёРµ С„Р»Р°РіР°
             flist[fn]->dv=(empos-bmpos)/(float)flist[fn]->vectQuant;
             if(flist[fn]->triangle)
                 flist[fn]->ddhv=(p2-p0-empos+bmpos)/(float)(flist[fn]->vectQuant);
@@ -837,7 +837,7 @@ void FLAG::SetAdd(int flagNum)
             }
         }
     }
-    // удалим старые буферы
+    // СѓРґР°Р»РёРј СЃС‚Р°СЂС‹Рµ Р±СѓС„РµСЂС‹
     VERTEX_BUFFER_RELEASE(RenderService,vBuf);
     INDEX_BUFFER_RELEASE(RenderService,iBuf);
 }
@@ -845,16 +845,16 @@ void FLAG::SetAdd(int flagNum)
 void FLAG::MoveOtherHost(ENTITY_ID newm_id,long flagNum,ENTITY_ID oldm_id)
 {
 	int oldgn = 0, newgn = 0;
-    // найдем старую группу
+    // РЅР°Р№РґРµРј СЃС‚Р°СЂСѓСЋ РіСЂСѓРїРїСѓ
     for(oldgn=0; oldgn<groupQuantity; oldgn++)
         if(gdata[oldgn].model_id==oldm_id) break;
-    // если нет такой группы, то пустой возврат
+    // РµСЃР»Рё РЅРµС‚ С‚Р°РєРѕР№ РіСЂСѓРїРїС‹, С‚Рѕ РїСѓСЃС‚РѕР№ РІРѕР·РІСЂР°С‚
     if(oldgn==groupQuantity) return;
 
-    // найдем новую группу
+    // РЅР°Р№РґРµРј РЅРѕРІСѓСЋ РіСЂСѓРїРїСѓ
     for(newgn=0; newgn<groupQuantity; newgn++)
         if(gdata[newgn].model_id==newm_id) break;
-    // если нет новой группы, то создаем ее
+    // РµСЃР»Рё РЅРµС‚ РЅРѕРІРѕР№ РіСЂСѓРїРїС‹, С‚Рѕ СЃРѕР·РґР°РµРј РµРµ
     if(newgn==groupQuantity)
     {
         GROUPDATA *oldgdata=gdata;
@@ -865,7 +865,7 @@ void FLAG::MoveOtherHost(ENTITY_ID newm_id,long flagNum,ENTITY_ID oldm_id)
         delete oldgdata;
         groupQuantity++;
 
-        // заполним параметры новой группы
+        // Р·Р°РїРѕР»РЅРёРј РїР°СЂР°РјРµС‚СЂС‹ РЅРѕРІРѕР№ РіСЂСѓРїРїС‹
         gdata[newgn].bDeleted = false;
         gdata[newgn].model_id = newm_id;
         gdata[newgn].nation = gdata[oldgn].nation;
@@ -879,10 +879,10 @@ void FLAG::MoveOtherHost(ENTITY_ID newm_id,long flagNum,ENTITY_ID oldm_id)
     }
 
 	int fn = 0;
-    // найдем нужный нам флаг
+    // РЅР°Р№РґРµРј РЅСѓР¶РЅС‹Р№ РЅР°Рј С„Р»Р°Рі
     for(fn=0; fn<flagQuantity; fn++)
         if(flist[fn]!=NULL && flist[fn]->grNum==flagNum && flist[fn]->HostGroup==oldgn) break;
-    // переназначим его хозяина на нового хозяина
+    // РїРµСЂРµРЅР°Р·РЅР°С‡РёРј РµРіРѕ С…РѕР·СЏРёРЅР° РЅР° РЅРѕРІРѕРіРѕ С…РѕР·СЏРёРЅР°
     if(fn<flagQuantity)
         flist[fn]->HostGroup=newgn;
 }

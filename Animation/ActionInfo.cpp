@@ -5,14 +5,14 @@
 //--------------------------------------------------------------------------------------------
 //	ActionInfo
 //--------------------------------------------------------------------------------------------
-//	Информация об одном действие
+//	РРЅС„РѕСЂРјР°С†РёСЏ РѕР± РѕРґРЅРѕРј РґРµР№СЃС‚РІРёРµ
 //============================================================================================
 
 #include "ActionInfo.h"
 #include <stdio.h>
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 ActionInfo::ActionInfo(const char * aname, long startframe, long endframe)
@@ -36,19 +36,19 @@ ActionInfo::~ActionInfo()
 {
 }
 
-//Добавить событие
+//Р”РѕР±Р°РІРёС‚СЊ СЃРѕР±С‹С‚РёРµ
 bool ActionInfo::AddEvent(const char * ename, float frame, ExtAnimationEventType eventType)
 {
 	if(numEvents >= ANI_MAX_EVENTS || ename[0] == 0) return false;
 	Assert(ename);
 	Assert(strlen(ename) < 64);
-	//Расчитаем относительное время
+	//Р Р°СЃС‡РёС‚Р°РµРј РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕРµ РІСЂРµРјСЏ
 	if(frame > float(endFrame)) frame = float(endFrame);
 	float t = float(frame - startFrame);
 	if(t < 0.0f) t = 0.0f;
 	if(t > 0.0f) t /= endFrame - startFrame;
 	if(t > 1.0f) t = 1.0f;
-	//Заполним структуру
+	//Р—Р°РїРѕР»РЅРёРј СЃС‚СЂСѓРєС‚СѓСЂСѓ
 	strcpy(event[numEvents].name, ename);
 	event[numEvents].time = t;
 	event[numEvents].event = eventType;
@@ -57,15 +57,15 @@ bool ActionInfo::AddEvent(const char * ename, float frame, ExtAnimationEventType
 }
 
 //--------------------------------------------------------------------------------------------
-//Работа с действием
+//Р Р°Р±РѕС‚Р° СЃ РґРµР№СЃС‚РІРёРµРј
 //--------------------------------------------------------------------------------------------
-//Сравнить с текущим именем
+//РЎСЂР°РІРЅРёС‚СЊ СЃ С‚РµРєСѓС‰РёРј РёРјРµРЅРµРј
 bool ActionInfo::operator == (const char * actionName)
 {
 	return stricmp(actionName, name) == 0;
 }
 
-//Проверим на выполнимость условия генерации события
+//РџСЂРѕРІРµСЂРёРј РЅР° РІС‹РїРѕР»РЅРёРјРѕСЃС‚СЊ СѓСЃР»РѕРІРёСЏ РіРµРЅРµСЂР°С†РёРё СЃРѕР±С‹С‚РёСЏ
 bool ActionInfo::CheckEvent(long index, float time, bool direction)
 {
 	Assert(index >= 0 && index < numEvents);
@@ -86,7 +86,7 @@ bool ActionInfo::CheckEvent(long index, float time, bool direction)
 	return false;
 }
 
-//Получить имя сообщения
+//РџРѕР»СѓС‡РёС‚СЊ РёРјСЏ СЃРѕРѕР±С‰РµРЅРёСЏ
 const char * ActionInfo::EventName(long index)
 {
 	Assert(index >= 0 && index < numEvents);

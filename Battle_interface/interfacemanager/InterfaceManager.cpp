@@ -109,20 +109,20 @@ void BI_InterfaceManager::DeleteNode(BI_ManagerNodeBase* pNod)
 
 long BI_InterfaceManager::MsgLoadSheet(MESSAGE & message)
 {
-	// удаляем старый интерфейс
+	// СѓРґР°Р»СЏРµРј СЃС‚Р°СЂС‹Р№ РёРЅС‚РµСЂС„РµР№СЃ
 	DELETE( m_pInterfaceSheet );
 
 	char param[512];
 	message.String( sizeof(param), param );
 	if( stricmp(param,"sea")==0 )
-	{ // грузим морской интерфейс
+	{ // РіСЂСѓР·РёРј РјРѕСЂСЃРєРѕР№ РёРЅС‚РµСЂС„РµР№СЃ
 		m_pInterfaceSheet = NEW BI_SeaGroup(this);
 		if( m_pInterfaceSheet ) {
 			m_pInterfaceSheet->Init();
 		}
 	}else
 	if( stricmp(param,"land")==0 )
-	{ // грузим земной интерфейс
+	{ // РіСЂСѓР·РёРј Р·РµРјРЅРѕР№ РёРЅС‚РµСЂС„РµР№СЃ
 	}
 	return 0;
 }

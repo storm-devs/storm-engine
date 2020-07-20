@@ -10,13 +10,13 @@
 extern DWORD GraphRead;
 
 
-//Ëèíåéíàÿ èíòåðïîëÿöèÿ
+//Ð›Ð¸Ð½ÐµÐ¹Ð½Ð°Ñ Ð¸Ð½Ñ‚ÐµÑ€Ð¿Ð¾Ð»ÑÑ†Ð¸Ñ
 __forceinline float Lerp (float val1, float val2, float lerp_k)
 {
 	return (val1 + (val2 - val1) * lerp_k);
 }
 
-//Âçÿòü ñëó÷àéíîå ÷èñëî èç äèàïàçîíà
+//Ð’Ð·ÑÑ‚ÑŒ ÑÐ»ÑƒÑ‡Ð°Ð¹Ð½Ð¾Ðµ Ñ‡Ð¸ÑÐ»Ð¾ Ð¸Ð· Ð´Ð¸Ð°Ð¿Ð°Ð·Ð¾Ð½Ð°
 __forceinline float RandomRange (float Min, float Max)      
 {
 	float Temp;
@@ -33,7 +33,7 @@ __forceinline float RandomRange (float Min, float Max)
 
 
 
-//êîíñòðóêòîð/äåñòðóêòîð
+//ÐºÐ¾Ð½ÑÑ‚Ñ€ÑƒÐºÑ‚Ð¾Ñ€/Ð´ÐµÑÑ‚Ñ€ÑƒÐºÑ‚Ð¾Ñ€
 DataGraph::DataGraph () : MinGraph(_FL_, 128), MaxGraph(_FL_, 128)
 {
 	bRelative = false;
@@ -47,7 +47,7 @@ DataGraph::~DataGraph ()
 }
 
 
-//Óñòàíîâèòü çíà÷åíèÿ...
+//Ð£ÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ...
 void DataGraph::SetValues (const GraphVertex* MinValues, DWORD MinValuesSize, const GraphVertex* MaxValues, DWORD MaxValuesSize)
 {
 	MinGraph.DelAll();
@@ -67,7 +67,7 @@ void DataGraph::SetValues (const GraphVertex* MinValues, DWORD MinValuesSize, co
 	ResetCachedTime ();
 }
 
-//Óñòàíàâëèâàåò "çíà÷åíèå ïî óìîë÷àíèþ"
+//Ð£ÑÑ‚Ð°Ð½Ð°Ð²Ð»Ð¸Ð²Ð°ÐµÑ‚ "Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ Ð¿Ð¾ ÑƒÐ¼Ð¾Ð»Ñ‡Ð°Ð½Ð¸ÑŽ"
 void DataGraph::SetDefaultValue (float MaxValue, float MinValue)
 {
 	MinGraph.DelAll();
@@ -91,25 +91,25 @@ void DataGraph::SetDefaultValue (float MaxValue, float MinValue)
 }
 
 
-//Ïîëó÷èòü êîë-âî â ãðàôèêå ìèíèìóìà
+//ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ ÐºÐ¾Ð»-Ð²Ð¾ Ð² Ð³Ñ€Ð°Ñ„Ð¸ÐºÐµ Ð¼Ð¸Ð½Ð¸Ð¼ÑƒÐ¼Ð°
 DWORD DataGraph::GetMinCount ()
 {
 	return MinGraph.Size();
 }
 
-//Ïîëó÷èòü êîë-âî â ãðàôèêå ìàêñèìóìà
+//ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ ÐºÐ¾Ð»-Ð²Ð¾ Ð² Ð³Ñ€Ð°Ñ„Ð¸ÐºÐµ Ð¼Ð°ÐºÑÐ¸Ð¼ÑƒÐ¼Ð°
 DWORD DataGraph::GetMaxCount ()
 {
 	return MaxGraph.Size();
 }
 
-//Ïîëó÷èòü çíà÷åíèå ïî èíäåêñó èç ãðàôèêà ìèíèìóìà
+//ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ Ð¿Ð¾ Ð¸Ð½Ð´ÐµÐºÑÑƒ Ð¸Ð· Ð³Ñ€Ð°Ñ„Ð¸ÐºÐ° Ð¼Ð¸Ð½Ð¸Ð¼ÑƒÐ¼Ð°
 const GraphVertex& DataGraph::GetMinVertex (DWORD Index)
 {
 	return MinGraph[Index];
 }
 
-//Ïîëó÷èòü çíà÷åíèå ïî èíäåêñó èç ãðàôèêà ìàêñèìóìà
+//ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ Ð¿Ð¾ Ð¸Ð½Ð´ÐµÐºÑÑƒ Ð¸Ð· Ð³Ñ€Ð°Ñ„Ð¸ÐºÐ° Ð¼Ð°ÐºÑÐ¸Ð¼ÑƒÐ¼Ð°
 const GraphVertex& DataGraph::GetMaxVertex (DWORD Index)
 {
 	return MaxGraph[Index];
@@ -195,8 +195,8 @@ void DataGraph::Load (MemFile* File)
 	SetName (AttribueName);
 
 
-	//HACK ! Äëÿ ñîâìåñòèìîñòè ñî ñòàðîé âåðñèåé...
-	//Êîíâåðòèì ïîñëå çàãðóçêè ãðàôèêè â íóæíûé ôîðìàò...
+	//HACK ! Ð”Ð»Ñ ÑÐ¾Ð²Ð¼ÐµÑÑ‚Ð¸Ð¼Ð¾ÑÑ‚Ð¸ ÑÐ¾ ÑÑ‚Ð°Ñ€Ð¾Ð¹ Ð²ÐµÑ€ÑÐ¸ÐµÐ¹...
+	//ÐšÐ¾Ð½Ð²ÐµÑ€Ñ‚Ð¸Ð¼ Ð¿Ð¾ÑÐ»Ðµ Ð·Ð°Ð³Ñ€ÑƒÐ·ÐºÐ¸ Ð³Ñ€Ð°Ñ„Ð¸ÐºÐ¸ Ð² Ð½ÑƒÐ¶Ð½Ñ‹Ð¹ Ñ„Ð¾Ñ€Ð¼Ð°Ñ‚...
 	//if (stricmp (AttribueName, EMISSION_DIR_X) == 0)	ConvertDegToRad ();
 	//if (stricmp (AttribueName, EMISSION_DIR_Y) == 0)	ConvertDegToRad ();
 	//if (stricmp (AttribueName, EMISSION_DIR_Z) == 0)	ConvertDegToRad ();
@@ -206,7 +206,7 @@ void DataGraph::Load (MemFile* File)
 }
 
 
-//Óñòàíîâèòü/ïîëó÷èòü ìîãóò áûòü îòðèöàòåëüíûå çíà÷åíèÿ â ãðàôèêå èëè íåò...
+//Ð£ÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ/Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð¼Ð¾Ð³ÑƒÑ‚ Ð±Ñ‹Ñ‚ÑŒ Ð¾Ñ‚Ñ€Ð¸Ñ†Ð°Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ðµ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ Ð² Ð³Ñ€Ð°Ñ„Ð¸ÐºÐµ Ð¸Ð»Ð¸ Ð½ÐµÑ‚...
 void DataGraph::SetNegative (bool _bNegative)
 {
 	bNegative = _bNegative;
@@ -217,7 +217,7 @@ bool DataGraph::GetNegative ()
 	return bNegative;
 }
 
-//Óñòàíîâèòü/ïîëó÷èòü îòíîñèòåëüíûé ãðàôèê èëè íåò...
+//Ð£ÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ/Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð¾Ñ‚Ð½Ð¾ÑÐ¸Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ð¹ Ð³Ñ€Ð°Ñ„Ð¸Ðº Ð¸Ð»Ð¸ Ð½ÐµÑ‚...
 void DataGraph::SetRelative (bool _bRelative)
 {
 	bRelative = _bRelative;
@@ -277,7 +277,7 @@ float DataGraph::GetMinAtTime (float Time, float LifeTime)
 	{
 		float ToTime = MinGraph[Index+1].Time;
 
-		//Åñëè âðåìÿ â íóæíîì äèàïàçîíå...
+		//Ð•ÑÐ»Ð¸ Ð²Ñ€ÐµÐ¼Ñ Ð² Ð½ÑƒÐ¶Ð½Ð¾Ð¼ Ð´Ð¸Ð°Ð¿Ð°Ð·Ð¾Ð½Ðµ...
 		//if ((Time >= FromTime) && (Time <= ToTime))
 		if (Time <= ToTime)
 		{
@@ -320,7 +320,7 @@ float DataGraph::GetMaxAtTime (float Time, float LifeTime)
 	{
 		float ToTime = MaxGraph[Index+1].Time;
 
-		//Åñëè âðåìÿ â íóæíîì äèàïàçîíå...
+		//Ð•ÑÐ»Ð¸ Ð²Ñ€ÐµÐ¼Ñ Ð² Ð½ÑƒÐ¶Ð½Ð¾Ð¼ Ð´Ð¸Ð°Ð¿Ð°Ð·Ð¾Ð½Ðµ...
 		//if ((Time >= FromTime) && (Time <= ToTime))
 		if (Time <= ToTime)
 		{

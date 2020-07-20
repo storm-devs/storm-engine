@@ -154,9 +154,9 @@ void SeaLocatorShow::Realize(dword Delta_Time)
 	fWidth = vp.Width*0.5f;
 	fHeight = vp.Height*0.5f;
 	view.Transposition();
-	// Рисуем
+	// Р РёСЃСѓРµРј
 
-	//Уберём текстуры	
+	//РЈР±РµСЂС‘Рј С‚РµРєСЃС‚СѓСЂС‹	
 	AIHelper::pRS->TextureSet(0, -1);
 	AIHelper::pRS->TextureSet(1, -1);
 
@@ -210,7 +210,7 @@ void SeaLocatorShow::CreateSphere()
 
 	CVECTOR light = !CVECTOR(0.0f, 0.0f, 1.0f);
 	float kColor;
-	//Заполняем вершины
+	//Р—Р°РїРѕР»РЅСЏРµРј РІРµСЂС€РёРЅС‹
 	for(long i = 0, t = 0; i < a2; i++)
 	{
 		float r1 = sinf(myPI*i/float(a2));
@@ -251,7 +251,7 @@ void SeaLocatorShow::CreateSphere()
 			sphereVertex[t*3 + 5].v.z = r2*z2;
 			CalcKColor(5);
 			sphereVertex[t*3 + 5].c = Color;
-			//Добавили 2 треугольника
+			//Р”РѕР±Р°РІРёР»Рё 2 С‚СЂРµСѓРіРѕР»СЊРЅРёРєР°
 			t += 2;
 		}
 	}

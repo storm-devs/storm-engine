@@ -29,7 +29,7 @@ const char * WdmCounter::skytex[WMD_NUM_SKYS] =
 
 
 //============================================================================================
-// ÓÌÒÚÛËÓ‚‡ÌËÂ, ‰ÂÒÚÛÍÚÛËÓ‚‡ÌËÂ
+//–ö–æ–Ω—Å—Ç—Ä—É–∏—Ä–æ–≤–∞–Ω–∏–µ, –¥–µ—Å—Ç—Ä—É–∫—Ç—É—Ä–∏—Ä–æ–≤–∞–Ω–∏–µ
 //============================================================================================
 
 WdmCounter::WdmCounter()
@@ -108,7 +108,7 @@ bool WdmCounter::Init()
 	return true;
 }
 
-//–‡Ò˜∏Ú˚
+//–†–∞—Å—á—ë—Ç—ã
 void WdmCounter::Update(float dltTime)
 {
 	
@@ -116,7 +116,7 @@ void WdmCounter::Update(float dltTime)
 
 void WdmCounter::LRender(VDX8RENDER * rs)
 {
-	//Ã‡ÚËˆ‡ Í‡ÏÂ˚
+	//–ú–∞—Ç—Ä–∏—Ü–∞ –∫–∞–º–µ—Ä—ã
 	static CMatrix view, prj, oldPrj;
 	rs->GetTransform(D3DTS_VIEW, view);
 	rs->GetTransform(D3DTS_PROJECTION, oldPrj);
@@ -126,7 +126,7 @@ void WdmCounter::LRender(VDX8RENDER * rs)
 	prj.BuildProjectionMatrix(0.1f, 4.0f, 3.0f, 10.0f, 100.0f);
 	rs->SetTransform(D3DTS_PROJECTION, prj);
 	rs->SetTransform(D3DTS_VIEW, CMatrix());
-	//ÕÂ·Ó
+	//–ù–µ–±–æ
 	const long numSkys = sizeof(skyseq)/sizeof(long);
 	if(dayCounter < 0) dayCounter = wdmObjects->wm->day;
 	if(dayCounter != wdmObjects->wm->day)
@@ -156,10 +156,10 @@ void WdmCounter::LRender(VDX8RENDER * rs)
 	rs->TextureSet(1, skyseq[two]);
 	rs->SetRenderState(D3DRS_TEXTUREFACTOR, (long(hr*255.0f) << 24) | 0x00ffffff);
 	sky->LRender(rs);
-	// ÓÔÛÒ
+	//–ö–æ—Ä–ø—É—Å
 	WdmRenderModel::LRender(rs);
-	//÷ËÙ˚
-	//ƒÂÌ¸
+	//–¶–∏—Ñ—Ä—ã
+	//–î–µ–Ω—å
 	long day = wdmObjects->wm->day - 1;
 	long mon = wdmObjects->wm->mon - 1;
 	long days = wdmObjects->wm->month[mon + 1];
@@ -214,7 +214,7 @@ void WdmCounter::LRender(VDX8RENDER * rs)
 		dlt = day < 20 ? 0.0f : 0.25f;
 		DrawNum(rs, d[1], dlt, (low + 1.0f)*0.1f);
 	}
-	//ÃÂÒˇˆ
+	//–ú–µ—Å—è—Ü
 	kMove = 0.0f;
 	if(kNext > 1.0f) kNext = 1.0f;
 	low = mon % 10 + kNext;
@@ -223,7 +223,7 @@ void WdmCounter::LRender(VDX8RENDER * rs)
 	if(mon == 11) kMove = kNext;
 	DrawNum(rs, m[0], 0.75f, ((mon + 1) / 10 + kMove + 7.0f)*0.1f);
 	DrawNum(rs, m[1], dlt, (low + 1.0f)*0.1f);
-	//√Ó‰
+	//–ì–æ–¥
 	kMove = 0.0f;
 	if(mon == 11 && day == 30) kMove = kNext;
 	low = float(year % 10);

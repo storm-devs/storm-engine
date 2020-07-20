@@ -4,7 +4,7 @@
 #include "..\..\common_h\ship_base.h"
 #include "..\..\common_h\net.h"
 
-// определим вертексы
+// РѕРїСЂРµРґРµР»РёРј РІРµСЂС‚РµРєСЃС‹
 #define SPV_FORMAT		(D3DFVF_XYZ|D3DFVF_TEX1|D3DFVF_TEXTUREFORMAT2)
 struct SPV_VERTEX
 {

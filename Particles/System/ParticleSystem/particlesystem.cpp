@@ -3,14 +3,14 @@
 
 
 
-//Глобальный GUID для присваивания эмиттерам
+//Р“Р»РѕР±Р°Р»СЊРЅС‹Р№ GUID РґР»СЏ РїСЂРёСЃРІР°РёРІР°РЅРёСЏ СЌРјРёС‚С‚РµСЂР°Рј
 DWORD EmitterID = 0;
 
 
 
 
 
-//Создание/удаление 
+//РЎРѕР·РґР°РЅРёРµ/СѓРґР°Р»РµРЅРёРµ 
 ParticleSystem::ParticleSystem(ParticleManager* serv) : Emitters(_FL_)
 {
 	AutoDeleted = false;
@@ -31,7 +31,7 @@ bool ParticleSystem::Release ()
 	return false;
 }
 
-//Отработать всем партиклам
+//РћС‚СЂР°Р±РѕС‚Р°С‚СЊ РІСЃРµРј РїР°СЂС‚РёРєР»Р°Рј
 DWORD ParticleSystem::Execute (float DeltaTime)
 {
 	if (AutoDeleted)
@@ -118,7 +118,7 @@ ParticleManager* ParticleSystem::GetMaster ()
 
 
 
-//Перезапустить партикловую систему  
+//РџРµСЂРµР·Р°РїСѓСЃС‚РёС‚СЊ РїР°СЂС‚РёРєР»РѕРІСѓСЋ СЃРёСЃС‚РµРјСѓ  
 void ParticleSystem::Restart (DWORD RandomSeed)
 {
 	srand (RandomSeed);
@@ -130,13 +130,13 @@ void ParticleSystem::Restart (DWORD RandomSeed)
 	PauseEmission (false);
 }
 
-//Запаузить испускание партиклов  
+//Р—Р°РїР°СѓР·РёС‚СЊ РёСЃРїСѓСЃРєР°РЅРёРµ РїР°СЂС‚РёРєР»РѕРІ  
 void ParticleSystem::PauseEmission (bool bPause)
 {
 	EmissionPause = bPause;
 }
 
-//Узнать на паузе эмиссия или нет  
+//РЈР·РЅР°С‚СЊ РЅР° РїР°СѓР·Рµ СЌРјРёСЃСЃРёСЏ РёР»Рё РЅРµС‚  
 bool ParticleSystem::IsEmissionPaused ()
 {
 	return EmissionPause;
@@ -154,19 +154,19 @@ bool ParticleSystem::DeleteIfNeed ()
 }
 
 
-//Установить автоудаляемая система или обычная...  
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р°РІС‚РѕСѓРґР°Р»СЏРµРјР°СЏ СЃРёСЃС‚РµРјР° РёР»Рё РѕР±С‹С‡РЅР°СЏ...  
 void ParticleSystem::AutoDelete (bool Enabled)
 {
 	AutoDeleted = Enabled;
 }
 
-//Узнаять автоудаляемая система или нет  
+//РЈР·РЅР°СЏС‚СЊ Р°РІС‚РѕСѓРґР°Р»СЏРµРјР°СЏ СЃРёСЃС‚РµРјР° РёР»Рё РЅРµС‚  
 bool ParticleSystem::IsAutoDeleted ()
 {
 	return AutoDeleted;
 }
 
-//Установить матрицу трансформации для системы 
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РјР°С‚СЂРёС†Сѓ С‚СЂР°РЅСЃС„РѕСЂРјР°С†РёРё РґР»СЏ СЃРёСЃС‚РµРјС‹ 
 void ParticleSystem::SetTransform (const Matrix& transform)
 {
 	matWorld = transform;

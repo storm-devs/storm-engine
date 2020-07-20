@@ -18,7 +18,7 @@
 
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 WdmCloud::WdmCloud()
@@ -37,7 +37,7 @@ WdmCloud::WdmCloud()
 	constAlpha = 1.0f;
 	lightningWaitTime = 0.0f;
 	curLightning = -1;
-	//Дождик
+	//Р”РѕР¶РґРёРє
 	for(long i = 0; i < sizeof(rain)/sizeof(rain[0]); i++)
 	{
 		rain[i].isLive = false;
@@ -52,7 +52,7 @@ WdmCloud::~WdmCloud()
 	if(lightning >= 0) wdmObjects->rs->TextureRelease(lightning);
 }
 
-//Расчёты
+//Р Р°СЃС‡С‘С‚С‹
 void WdmCloud::Update(float dltTime)
 {
 	const float pi2 = 2.0f*3.14159265358979323846f;
@@ -63,33 +63,33 @@ void WdmCloud::Update(float dltTime)
 		dltTime = 0.0f;
 	}
 
-	//Перемещение облака
+	//РџРµСЂРµРјРµС‰РµРЅРёРµ РѕР±Р»Р°РєР°
 	Move(dltTime);
-	//Время для перемещения партиклов внутри облака
+	//Р’СЂРµРјСЏ РґР»СЏ РїРµСЂРµРјРµС‰РµРЅРёСЏ РїР°СЂС‚РёРєР»РѕРІ РІРЅСѓС‚СЂРё РѕР±Р»Р°РєР°
 	float dlt = dltTime*0.1f;
 	long i = 0;
 	for(i = 0; i < numRects; i++)
 	{
 		rect[i].vPos = pos + move[i].pos;
 		rect[i].vPos.y = WdmStormCloudHeight;
-		//Вращаем партикл
+		//Р’СЂР°С‰Р°РµРј РїР°СЂС‚РёРєР»
 		rect[i].fAngle += move[i].rotSpd*dlt;
 		if(rect[i].fAngle > pi2) rect[i].fAngle -= pi2;
 		if(rect[i].fAngle < -pi2) rect[i].fAngle += pi2;
-		//Определим цвет
+		//РћРїСЂРµРґРµР»РёРј С†РІРµС‚
 		float c = ~move[i].pos*1.8f;
 		if(c > 255.0f) c = 255.0f;
 		if(c < 40.0f) c = 40.0f;
 		c *= constAlpha*globalAlpha;
 		rect[i].dwColor = (long(c) << 24) | (rect[i].dwColor & 0xffffff);
-		//Двигаем партикл
+		//Р”РІРёРіР°РµРј РїР°СЂС‚РёРєР»
 		move[i].dTime += dlt;
 		move[i].pos += move[i].v*dlt;
 	}
 	if(curMove >= numRects) curMove = 0;
-	//Скорость партикла
+	//РЎРєРѕСЂРѕСЃС‚СЊ РїР°СЂС‚РёРєР»Р°
 	i = curMove++;
-	//Центровое воздействие
+	//Р¦РµРЅС‚СЂРѕРІРѕРµ РІРѕР·РґРµР№СЃС‚РІРёРµ
 	dltTime = move[i].dTime;
 	move[i].dTime = 0.0f;
 	float d = ~move[i].pos;
@@ -103,12 +103,12 @@ void WdmCloud::Update(float dltTime)
 		{
 			move[i].v -= (move[i].pos - move[i].cent)*(0.5f*move[i].kSpd*dltTime);
 		}
-		//Затухание скорости
+		//Р—Р°С‚СѓС…Р°РЅРёРµ СЃРєРѕСЂРѕСЃС‚Рё
 		d = 0.01f*dltTime;
 		if(d > 1.0f) d = 1.0f;
 		move[i].v -= move[i].v*d;
 	}
-	//Расталкивающее воздействие
+	//Р Р°СЃС‚Р°Р»РєРёРІР°СЋС‰РµРµ РІРѕР·РґРµР№СЃС‚РІРёРµ
 	long l = i - 1;
 	if(l < 0) l = numRects - 1;
 	CVECTOR v = move[i].pos - move[l].pos;
@@ -121,13 +121,13 @@ void WdmCloud::Update(float dltTime)
 	v.y = 0.0f;
 	d = ~v;
 	if(d > 0.0000001f && d < 40.0f) move[i].v += v*(0.8f*move[i].kSpd*dltTime/d);
-	//Погенерим молнии
+	//РџРѕРіРµРЅРµСЂРёРј РјРѕР»РЅРёРё
 	if(curLightning < 0)
 	{
 		lightningWaitTime += dltTime*0.001f;
 		if(lightningWaitTime > 0.001f + rand()*1.0f/RAND_MAX)
 		{
-			//Пора рожать новую молнию
+			//РџРѕСЂР° СЂРѕР¶Р°С‚СЊ РЅРѕРІСѓСЋ РјРѕР»РЅРёСЋ
 			curLightning = rand() % numRects;
 			lightningTime = 0.3f;
 			lastColor = rect[curLightning].dwColor;
@@ -152,7 +152,7 @@ void WdmCloud::Update(float dltTime)
 			curLightning = -1;
 		}
 	}
-	//Дождик
+	//Р”РѕР¶РґРёРє
 	for(long i = 0; i < sizeof(rain)/sizeof(rain[0]); i++)
 	{
 		Rain & r = rain[i];
@@ -212,13 +212,13 @@ void WdmCloud::LRender(VDX8RENDER * rs)
 
 void WdmCloud::Move(float dltTime)
 {
-	//Перемещение облака
+	//РџРµСЂРµРјРµС‰РµРЅРёРµ РѕР±Р»Р°РєР°
 	pos += dir*dltTime;
 }
 
 long WdmCloud::FillRain(RS_RECT * rainRect, long rcnt)
 {
-	//Рисуем дождь
+	//Р РёСЃСѓРµРј РґРѕР¶РґСЊ
 	for(long i = 0; i < sizeof(rain)/sizeof(rain[0]); i++)
 	{
 		Rain & r = rain[i];
@@ -236,11 +236,11 @@ long WdmCloud::FillRain(RS_RECT * rainRect, long rcnt)
 
 void WdmCloud::Render(VDX8RENDER * rs)
 {
-	//Инверсная матрица камеры
+	//РРЅРІРµСЂСЃРЅР°СЏ РјР°С‚СЂРёС†Р° РєР°РјРµСЂС‹
 	CMatrix view;
 	rs->GetTransform(D3DTS_VIEW, view);
 	view.Transposition();
-	//Рисуем молнии если надо
+	//Р РёСЃСѓРµРј РјРѕР»РЅРёРё РµСЃР»Рё РЅР°РґРѕ
 	Vertex lght[4];
 	rs->TextureSet(0, lightning);
 	dword lightningColor = (byte(globalAlpha*255.0f) << 24) | 0x00ffffff;
@@ -268,10 +268,10 @@ void WdmCloud::Render(VDX8RENDER * rs)
 			r.dwColor = (r.dwColor & ~0x00000400) | ((rand() & 1) ? 0x00000400 : 0);
 		}
 	}
-	//Текстуры
+	//РўРµРєСЃС‚СѓСЂС‹
 	rs->TextureSet(0, texture);
 	rs->TextureSet(1, light);
-	//Константы
+	//РљРѕРЅСЃС‚Р°РЅС‚С‹
 	CMatrix prj;
 	rs->GetTransform(D3DTS_PROJECTION, prj);	
 	rs->SetVertexShaderConstant(0, prj, 4);

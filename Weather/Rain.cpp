@@ -261,7 +261,7 @@ void RAIN::RealizeDrops(dword Delta_Time)
 		{
 			fTest = fTest1;
 
-			//проверим - если это корабль
+			//РїСЂРѕРІРµСЂРёРј - РµСЃР»Рё СЌС‚Рѕ РєРѕСЂР°Р±Р»СЊ
 			ENTITY_ID eid = Collide().GetObjectID();
 			if (eid.class_code == dwShipName)
 			{
@@ -279,7 +279,7 @@ void RAIN::RealizeDrops(dword Delta_Time)
 
 		if (fTest <= 1.0f)
 		{
-			// Добавляем каплю
+			// Р”РѕР±Р°РІР»СЏРµРј РєР°РїР»СЋ
 			drop_t & drop = aDrops[aDrops.Add()];
 			drop.vPos = vSrc + fTest * (vDst - vSrc);
 			drop.fLifeTime = fDropsLifeTime + fDeltaTime;
@@ -348,7 +348,7 @@ void RAIN::RealizeDrops(dword Delta_Time)
 	Render().SetRenderState(D3DRS_DEPTHBIAS, F2DW(-0.001f));
 	Render().SetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, F2DW(0.0f));
 	
-	// рисуем круги на воде
+	// СЂРёСЃСѓРµРј РєСЂСѓРіРё РЅР° РІРѕРґРµ
 	CMatrix IMatrix;
 	IMatrix.SetIdentity();
 	Render().SetWorld(IMatrix);

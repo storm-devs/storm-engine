@@ -249,7 +249,7 @@ void BICommandList::Init()
 		if( pAList->GetAttribute("CommandNoteOffset") )
 			sscanf( pAList->GetAttribute("CommandNoteOffset"), "%d,%d", &m_NoteOffset.x, &m_NoteOffset.y );
 
-		// Устанавливаем значения для стрелок (вверх/вниз)
+		// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј Р·РЅР°С‡РµРЅРёСЏ РґР»СЏ СЃС‚СЂРµР»РѕРє (РІРІРµСЂС…/РІРЅРёР·)
 		m_sUpDownArrowTexture = pAList->GetAttribute("UDArrow_Texture");
 		BIUtils::ReadRectFromAttr(pAList,"UDArrow_UV_Up", m_frUpArrowUV, m_frUpArrowUV);
 		BIUtils::ReadRectFromAttr(pAList,"UDArrow_UV_Down", m_frDownArrowUV, m_frDownArrowUV);
@@ -257,7 +257,7 @@ void BICommandList::Init()
 		BIUtils::ReadPosFromAttr(pAList,"UDArrow_Offset_Up", m_pntUpArrowOffset.x,m_pntUpArrowOffset.y, m_pntUpArrowOffset.x,m_pntUpArrowOffset.y);
 		BIUtils::ReadPosFromAttr(pAList,"UDArrow_Offset_Down", m_pntDownArrowOffset.x,m_pntDownArrowOffset.y, m_pntDownArrowOffset.x,m_pntDownArrowOffset.y);
 
-		// устанавливаем значения для иконки активности меню
+		// СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј Р·РЅР°С‡РµРЅРёСЏ РґР»СЏ РёРєРѕРЅРєРё Р°РєС‚РёРІРЅРѕСЃС‚Рё РјРµРЅСЋ
 		m_sActiveIconTexture = pAList->GetAttribute("ActiveIcon_Texture");
 		BIUtils::ReadPosFromAttr(pAList,"ActiveIcon_Offset", m_pntActiveIconOffset.x,m_pntActiveIconOffset.y, m_pntActiveIconOffset.x,m_pntActiveIconOffset.y);
 		BIUtils::ReadPosFromAttr(pAList,"ActiveIcon_Size", m_pntActiveIconSize.x,m_pntActiveIconSize.y, m_pntActiveIconSize.x,m_pntActiveIconSize.y);
@@ -300,7 +300,7 @@ long BICommandList::AddToIconList( long nTextureNum, long nNormPictureNum, long 
 				   const char* pcNoteName )
 {
 	long n;
-	// отсев уже подключенных объектов
+	// РѕС‚СЃРµРІ СѓР¶Рµ РїРѕРґРєР»СЋС‡РµРЅРЅС‹С… РѕР±СЉРµРєС‚РѕРІ
 	for(n=0; n<m_aUsedCommand; n++) {
 	
 		if( nCharacterIndex!=-1 && m_aUsedCommand[n].nCharIndex==nCharacterIndex ) 
@@ -476,7 +476,7 @@ void BICommandList::UpdateShowIcon()
 		}
 	}
 
-	// добавляем нижние/верхние стрелки для списка команд
+	// РґРѕР±Р°РІР»СЏРµРј РЅРёР¶РЅРёРµ/РІРµСЂС…РЅРёРµ СЃС‚СЂРµР»РєРё РґР»СЏ СЃРїРёСЃРєР° РєРѕРјР°РЅРґ
 	if( m_bUpArrow ) {
 		rPos.left = m_LeftTopPoint.x + m_pntUpArrowOffset.x;
 		rPos.top = m_LeftTopPoint.y + m_pntUpArrowOffset.y;

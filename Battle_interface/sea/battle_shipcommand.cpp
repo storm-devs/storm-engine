@@ -89,11 +89,11 @@ long BIShipCommandList::ShipAdding( bool allLabel, bool bMyShip, bool bEnemy, bo
 	long n;
 	long retVal=0;
 
-	// ñïèñîê êîðàáëåé
+	// ÑÐ¿Ð¸ÑÐ¾Ðº ÐºÐ¾Ñ€Ð°Ð±Ð»ÐµÐ¹
 	SHIP_DESCRIBE_LIST::SHIP_DESCR	*sd = g_ShipList.GetShipRoot();
 	if(sd==null) return 0;
 
-	// äèñòàíöèÿ îòñå÷åíèÿ êîðàáëÿ èç ñïèñêà
+	// Ð´Ð¸ÑÑ‚Ð°Ð½Ñ†Ð¸Ñ Ð¾Ñ‚ÑÐµÑ‡ÐµÐ½Ð¸Ñ ÐºÐ¾Ñ€Ð°Ð±Ð»Ñ Ð¸Ð· ÑÐ¿Ð¸ÑÐºÐ°
 	ATTRIBUTES * pA = GetCurrentCommandAttribute();
 	float sqrRadius = -1.f;
 	if( pA ) sqrRadius = pA->GetAttributeAsFloat("EffectRadius",sqrRadius);
@@ -134,13 +134,13 @@ long BIShipCommandList::ShipAdding( bool allLabel, bool bMyShip, bool bEnemy, bo
 				!bMyShip && bFriend && !sd->isMyShip && sd->relation==BI_RELATION_FRIEND ||
 				!bMyShip && bNeutral && !sd->isMyShip && sd->relation==BI_RELATION_NEUTRAL )
 			{
-				// ïîäõîäèò ïîä ðàññòîÿíèå ?
+				// Ð¿Ð¾Ð´Ñ…Ð¾Ð´Ð¸Ñ‚ Ð¿Ð¾Ð´ Ñ€Ð°ÑÑÑ‚Ð¾ÑÐ½Ð¸Ðµ ?
 				if(!allLabel)
 				{
 					CVECTOR cv=sd->pShip->GetPos();
 					if(SQR(selX-cv.x)+SQR(selZ-cv.z) > sqrRadius)	continue;
 				}
-				// ïðîâåðêà íà äîïóñòèìîñòü êîðàáëÿ èç ñêðèïòà
+				// Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÐ° Ð½Ð° Ð´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼Ð¾ÑÑ‚ÑŒ ÐºÐ¾Ñ€Ð°Ð±Ð»Ñ Ð¸Ð· ÑÐºÑ€Ð¸Ð¿Ñ‚Ð°
 				if( !m_sCurrentCommandName.IsEmpty() )
 				{
 					VDATA * pvdat = api->Event("evntCheckEnableShip","sl",m_sCurrentCommandName.GetBuffer(),sd->characterIndex);
@@ -171,7 +171,7 @@ long BIShipCommandList::FortAdding(bool allLabel, bool bFriend, bool bNeutral, b
 	if( sqrRadius<0.f ) allLabel=true;
 	sqrRadius *= sqrRadius;
 
-	// Îïðåäåëèì êîîðäèíàòû ïðèíèìàþùåãî êîìàíäû êîðàáëÿ
+	// ÐžÐ¿Ñ€ÐµÐ´ÐµÐ»Ð¸Ð¼ ÐºÐ¾Ð¾Ñ€Ð´Ð¸Ð½Ð°Ñ‚Ñ‹ Ð¿Ñ€Ð¸Ð½Ð¸Ð¼Ð°ÑŽÑ‰ÐµÐ³Ð¾ ÐºÐ¾Ð¼Ð°Ð½Ð´Ñ‹ ÐºÐ¾Ñ€Ð°Ð±Ð»Ñ
 	long selectedCharacter = m_nCurrentCommandCharacterIndex;
 	SHIP_DESCRIBE_LIST::SHIP_DESCR	*selShip = g_ShipList.FindShip( selectedCharacter );
 	float selX,selZ;
@@ -221,7 +221,7 @@ long BIShipCommandList::LandAdding(bool allLabel)
 	if( sqrRadius<0.f ) allLabel=true;
 	sqrRadius *= sqrRadius;
 
-	// Îïðåäåëèì êîîðäèíàòû ïðèíèìàþùåãî êîìàíäû êîðàáëÿ
+	// ÐžÐ¿Ñ€ÐµÐ´ÐµÐ»Ð¸Ð¼ ÐºÐ¾Ð¾Ñ€Ð´Ð¸Ð½Ð°Ñ‚Ñ‹ Ð¿Ñ€Ð¸Ð½Ð¸Ð¼Ð°ÑŽÑ‰ÐµÐ³Ð¾ ÐºÐ¾Ð¼Ð°Ð½Ð´Ñ‹ ÐºÐ¾Ñ€Ð°Ð±Ð»Ñ
 	long selectedCharacter = m_nCurrentCommandCharacterIndex;
 	SHIP_DESCRIBE_LIST::SHIP_DESCR	*selShip = g_ShipList.FindShip(selectedCharacter);
 	float selX,selZ;
@@ -262,8 +262,8 @@ long BIShipCommandList::CommandAdding()
 	for(long i=0; i<attrQuant; i++)
 	{
 		ATTRIBUTES * pA = pAttr->GetAttributeClass(i);
-		if(pA==null) continue; // íåò òàêîãî àòðèáóòà
-		if(pA->GetAttributeAsDword("enable",0)==0) continue; // êîìàíäà íåäîñòóïíà
+		if(pA==null) continue; // Ð½ÐµÑ‚ Ñ‚Ð°ÐºÐ¾Ð³Ð¾ Ð°Ñ‚Ñ€Ð¸Ð±ÑƒÑ‚Ð°
+		if(pA->GetAttributeAsDword("enable",0)==0) continue; // ÐºÐ¾Ð¼Ð°Ð½Ð´Ð° Ð½ÐµÐ´Ð¾ÑÑ‚ÑƒÐ¿Ð½Ð°
 		long pictureNum = pA->GetAttributeAsDword("picNum",0);
 		long selPictureNum = pA->GetAttributeAsDword("selPicNum",0);
 		long cooldownPictureNum = pA->GetAttributeAsDword("cooldownPicNum",-1);
@@ -278,10 +278,10 @@ long BIShipCommandList::CommandAdding()
 
 long BIShipCommandList::ChargeAdding()
 {
-	// Îïðåäåëèì êîëè÷åñòâî êàæäîãî çàðÿäà íà áîðòó
+	// ÐžÐ¿Ñ€ÐµÐ´ÐµÐ»Ð¸Ð¼ ÐºÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ð¾ ÐºÐ°Ð¶Ð´Ð¾Ð³Ð¾ Ð·Ð°Ñ€ÑÐ´Ð° Ð½Ð° Ð±Ð¾Ñ€Ñ‚Ñƒ
 	VDATA * tmpDat = api->Event("BI_GetChargeQuantity","l",m_nCurrentCommandCharacterIndex);
 	if(tmpDat==null) return 0;
-	long lIdx=0; // êîëè÷åñòâî òèïîâ çàðÿäà
+	long lIdx=0; // ÐºÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ð¾ Ñ‚Ð¸Ð¿Ð¾Ð² Ð·Ð°Ñ€ÑÐ´Ð°
 	tmpDat->Get(lIdx,0);
 	if(lIdx<=0) return 0;
 
@@ -313,8 +313,8 @@ long BIShipCommandList::UserIconsAdding()
 	for(long i=0; i<attrQuant; i++)
 	{
 		ATTRIBUTES * pA = pAttr->GetAttributeClass(i);
-		if(pA==null) continue; // íåò òàêîãî àòðèáóòà
-		if(pA->GetAttributeAsDword("enable",0)==0) continue; // êîìàíäà íåäîñòóïíà
+		if(pA==null) continue; // Ð½ÐµÑ‚ Ñ‚Ð°ÐºÐ¾Ð³Ð¾ Ð°Ñ‚Ñ€Ð¸Ð±ÑƒÑ‚Ð°
+		if(pA->GetAttributeAsDword("enable",0)==0) continue; // ÐºÐ¾Ð¼Ð°Ð½Ð´Ð° Ð½ÐµÐ´Ð¾ÑÑ‚ÑƒÐ¿Ð½Ð°
 		long pictureNum = pA->GetAttributeAsDword("pic",0);
 		long selPictureNum = pA->GetAttributeAsDword("selpic",0);
 		long textureNum = pA->GetAttributeAsDword("tex",-1);
@@ -335,8 +335,8 @@ long BIShipCommandList::AbilityAdding()
 	for(long i=0; i<attrQuant; i++)
 	{
 		ATTRIBUTES * pA = pAttr->GetAttributeClass(i);
-		if(pA==null) continue; // íåò òàêîãî àòðèáóòà
-		if(pA->GetAttributeAsDword("enable",0)==0) continue; // êîìàíäà íåäîñòóïíà
+		if(pA==null) continue; // Ð½ÐµÑ‚ Ñ‚Ð°ÐºÐ¾Ð³Ð¾ Ð°Ñ‚Ñ€Ð¸Ð±ÑƒÑ‚Ð°
+		if(pA->GetAttributeAsDword("enable",0)==0) continue; // ÐºÐ¾Ð¼Ð°Ð½Ð´Ð° Ð½ÐµÐ´Ð¾ÑÑ‚ÑƒÐ¿Ð½Ð°
 		long pictureNum = pA->GetAttributeAsDword("picNum",0);
 		long selPictureNum = pA->GetAttributeAsDword("selPicNum",0);
 		long textureNum = pA->GetAttributeAsDword("texNum",-1);
@@ -367,14 +367,14 @@ long BIShipCommandList::TownAdding( bool allLabel, bool bDiseased,bool bNotDisea
 	if(pL==null) return 0;
 	long retVal=0;
 
-	// îïðåäåëÿåì ðàäèóñ äåéñòâèÿ êîìàíäû (âñå ÷òî íå âõîäèò â íåãî - íå ïîêàçûâàåòñÿ)
+	// Ð¾Ð¿Ñ€ÐµÐ´ÐµÐ»ÑÐµÐ¼ Ñ€Ð°Ð´Ð¸ÑƒÑ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ñ ÐºÐ¾Ð¼Ð°Ð½Ð´Ñ‹ (Ð²ÑÐµ Ñ‡Ñ‚Ð¾ Ð½Ðµ Ð²Ñ…Ð¾Ð´Ð¸Ñ‚ Ð² Ð½ÐµÐ³Ð¾ - Ð½Ðµ Ð¿Ð¾ÐºÐ°Ð·Ñ‹Ð²Ð°ÐµÑ‚ÑÑ)
 	ATTRIBUTES * pA = GetCurrentCommandAttribute();
 	float sqrRadius = pL->r;
 	if( pA ) sqrRadius = pA->GetAttributeAsFloat("EffectRadius",sqrRadius);
 	if( sqrRadius<0.f ) allLabel=true;
 	sqrRadius *= sqrRadius;
 
-	// Îïðåäåëèì êîîðäèíàòû ïðèíèìàþùåãî êîìàíäû êîðàáëÿ
+	// ÐžÐ¿Ñ€ÐµÐ´ÐµÐ»Ð¸Ð¼ ÐºÐ¾Ð¾Ñ€Ð´Ð¸Ð½Ð°Ñ‚Ñ‹ Ð¿Ñ€Ð¸Ð½Ð¸Ð¼Ð°ÑŽÑ‰ÐµÐ³Ð¾ ÐºÐ¾Ð¼Ð°Ð½Ð´Ñ‹ ÐºÐ¾Ñ€Ð°Ð±Ð»Ñ
 	long selectedCharacter = m_nCurrentCommandCharacterIndex;
 	SHIP_DESCRIBE_LIST::SHIP_DESCR	*selShip = g_ShipList.FindShip(selectedCharacter);
 	float selX,selZ;
@@ -392,8 +392,8 @@ long BIShipCommandList::TownAdding( bool allLabel, bool bDiseased,bool bNotDisea
 
 	do
 	{
-		if( pL->locatorType != ISLAND_LOCATOR_TOWN ) continue; // ïðîâåðêà ïî òèïó - äîëæåí áûòü ãîðîäîì
-		// ïðîâåðêà ïî îòíîøåíèþ (âðàã,íåéòðàë,äðóã)
+		if( pL->locatorType != ISLAND_LOCATOR_TOWN ) continue; // Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÐ° Ð¿Ð¾ Ñ‚Ð¸Ð¿Ñƒ - Ð´Ð¾Ð»Ð¶ÐµÐ½ Ð±Ñ‹Ñ‚ÑŒ Ð³Ð¾Ñ€Ð¾Ð´Ð¾Ð¼
+		// Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÐ° Ð¿Ð¾ Ð¾Ñ‚Ð½Ð¾ÑˆÐµÐ½Ð¸ÑŽ (Ð²Ñ€Ð°Ð³,Ð½ÐµÐ¹Ñ‚Ñ€Ð°Ð»,Ð´Ñ€ÑƒÐ³)
 		if( pL->relation==BI_RELATION_ENEMY && !bEnemy ) continue;
 		if( pL->relation==BI_RELATION_NEUTRAL && !bNeutral ) continue;
 		if( pL->relation==BI_RELATION_FRIEND && !bFriend ) continue;

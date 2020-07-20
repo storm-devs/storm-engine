@@ -199,7 +199,7 @@ void XINTERFACE::SetDevice()
 	g_idInterface = GetID();
 	m_UtilContainer.Init();
 
-    // получить сервис рендера
+    // РїРѕР»СѓС‡РёС‚СЊ СЃРµСЂРІРёСЃ СЂРµРЅРґРµСЂР°
 	pRenderService = (VDX8RENDER *)api->CreateService("dx8render");
 	if(!pRenderService)
 	{
@@ -352,7 +352,7 @@ void XINTERFACE::Realize(dword Delta_Time)
 	CINODE* pOldNode = m_pCurNode;
 	MouseMove();
 	if( pOldNode != m_pCurNode ) {
-		api->Event(ISOUND_EVENT,"l",2); // выбор нового нода
+		api->Event(ISOUND_EVENT,"l",2); // РІС‹Р±РѕСЂ РЅРѕРІРѕРіРѕ РЅРѕРґР°
 	}
 
 	// show dinamic pictures
@@ -1357,7 +1357,7 @@ void XINTERFACE::CreateNode(char *sFileName, char *sNodeType, char *sNodeName, l
 {
 	INIFILE * ini, *ownerIni;
 
-	// уже есть такой нод
+	// СѓР¶Рµ РµСЃС‚СЊ С‚Р°РєРѕР№ РЅРѕРґ
 	if( m_pNodes && m_pNodes->FindNode( sNodeName ) ) return;
 
 	ini = 0;
@@ -1546,25 +1546,25 @@ CINODE* XINTERFACE::NewNode(const char* pcNodType)
 void XINTERFACE::DeleteNode(const char *pcNodeName)
 {
 	if( !pcNodeName ) return;
-	// ищем нод по имени
+	// РёС‰РµРј РЅРѕРґ РїРѕ РёРјРµРЅРё
 	CINODE* pPrevNod = 0;
 	CINODE* pNod     = 0;
 	for( pNod=m_pNodes; pNod; pNod=pNod->m_next ) {
 		if( pNod->m_nodeName && stricmp(pNod->m_nodeName,pcNodeName)==0 ) break;
 		pPrevNod=pNod;
 	}
-	// нашли?
+	// РЅР°С€Р»Рё?
 	if( pNod )
 	{
-		// проверка указателей на ссылку к удаляемому ноду
+		// РїСЂРѕРІРµСЂРєР° СѓРєР°Р·Р°С‚РµР»РµР№ РЅР° СЃСЃС‹Р»РєСѓ Рє СѓРґР°Р»СЏРµРјРѕРјСѓ РЅРѕРґСѓ
 		if( m_pCurNode==pNod ) m_pCurNode=null;
 		if( m_pContHelp==pNod ) m_pContHelp=null;
 		if( m_pGlowCursorNode==pNod ) m_pGlowCursorNode=null;
-		// "вырезаем" найденный нод из списка
+		// "РІС‹СЂРµР·Р°РµРј" РЅР°Р№РґРµРЅРЅС‹Р№ РЅРѕРґ РёР· СЃРїРёСЃРєР°
 		if( pPrevNod ) pPrevNod->m_next = pNod->m_next;
 		else m_pNodes = pNod->m_next;
 		if( m_pEditor ) m_pEditor->DelNode( pNod );
-		// удаляем нод
+		// СѓРґР°Р»СЏРµРј РЅРѕРґ
 		delete pNod;
 	}
 }
@@ -2902,11 +2902,11 @@ long XINTERFACE::PrintIntoWindow(long wl,long wr, long idFont, DWORD dwFCol, DWO
 	// check fontScale
 	if( nWidthForScaleCorrecting>0 && strWidth>nWidthForScaleCorrecting ) {
 		if(nSplit==0)
-		{ // Строку не разбивать, а уменьшить масштаб шрифта
+		{ // РЎС‚СЂРѕРєСѓ РЅРµ СЂР°Р·Р±РёРІР°С‚СЊ, Р° СѓРјРµРЅСЊС€РёС‚СЊ РјР°СЃС€С‚Р°Р± С€СЂРёС„С‚Р°
 			scale *= (float)nWidthForScaleCorrecting/strWidth;
 			strWidth = pRenderService->StringWidth(str, idFont, scale);
 		} else
-		{ // Строку разбить с выдвижением на заданное число
+		{ // РЎС‚СЂРѕРєСѓ СЂР°Р·Р±РёС‚СЊ СЃ РІС‹РґРІРёР¶РµРЅРёРµРј РЅР° Р·Р°РґР°РЅРЅРѕРµ С‡РёСЃР»Рѕ
 			int maxWidth = 0;
 			int nPrev = -1;
 			char strLocTmp[1024];
@@ -2937,14 +2937,14 @@ long XINTERFACE::PrintIntoWindow(long wl,long wr, long idFont, DWORD dwFCol, DWO
 	}
 
 	char * newStr = str;
-	// режем слева
+	// СЂРµР¶РµРј СЃР»РµРІР°
 	while(strLeft<wl && newStr!=null && newStr[0]!=0)
 	{
 		newStr++;
 		strWidth = pRenderService->StringWidth(newStr, idFont, scale);
 		strLeft = strRight - strWidth;
 	}
-	// режем справа
+	// СЂРµР¶РµРј СЃРїСЂР°РІР°
 	if( newStr != null )
 	{
 		strRight = strLeft+strWidth;
@@ -3363,7 +3363,7 @@ void XINTERFACE::PrecreateDirForFile(const char* pcFullFileName)
 		api->fio->_CreateDirectory( path, 0 );
 }
 
-// Контейнер контролек
+// РљРѕРЅС‚РµР№РЅРµСЂ РєРѕРЅС‚СЂРѕР»РµРє
 CONTROLS_CONTAINER::CONTROLS_CONTAINER()
 {
 	pContainers = null;

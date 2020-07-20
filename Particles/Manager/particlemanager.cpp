@@ -67,7 +67,7 @@ VDX8RENDER* ParticleManager::Render ()
 }
 
 
-//Установить текстуру проекта
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ С‚РµРєСЃС‚СѓСЂСѓ РїСЂРѕРµРєС‚Р°
 void ParticleManager::SetProjectTexture (const char* FileName)
 {
 	if (pProjectTexture)
@@ -100,7 +100,7 @@ const char* ParticleManager::GetProjectTextureName ()
 	return TextureName.GetBuffer();
 }
 
-//Открыть проект 
+//РћС‚РєСЂС‹С‚СЊ РїСЂРѕРµРєС‚ 
 bool ParticleManager::OpenProject (const char* FileName)
 {
   CloseProject ();
@@ -120,13 +120,13 @@ bool ParticleManager::OpenProject (const char* FileName)
 
 	static char IniStringBuffer[8192];
 
-	//Устанавливаем текстуру проекта...
+	//РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј С‚РµРєСЃС‚СѓСЂСѓ РїСЂРѕРµРєС‚Р°...
 	IniFile->ReadString("Textures", "MainTexture", IniStringBuffer, 8192, "none");
 	//api->Trace("Manager use texture: %s", IniStringBuffer);
 	SetProjectTexture (IniStringBuffer);
 
 /*
-	//Загружаем модельки в кэш
+	//Р—Р°РіСЂСѓР¶Р°РµРј РјРѕРґРµР»СЊРєРё РІ РєСЌС€
 	for (int n = 0; n < 9999; n++)
 	{
 		string Section;
@@ -140,7 +140,7 @@ bool ParticleManager::OpenProject (const char* FileName)
 	}
 */
 
-	//Загружаем данные 
+	//Р—Р°РіСЂСѓР¶Р°РµРј РґР°РЅРЅС‹Рµ 
 	for (int n = 0; n < 9999; n++)
 	{
 		string Section;
@@ -153,20 +153,20 @@ bool ParticleManager::OpenProject (const char* FileName)
 	delete IniFile;
 
 	//FIX ME !
-	//Если будет асинхронная загрузка это неверно...
+	//Р•СЃР»Рё Р±СѓРґРµС‚ Р°СЃРёРЅС…СЂРѕРЅРЅР°СЏ Р·Р°РіСЂСѓР·РєР° СЌС‚Рѕ РЅРµРІРµСЂРЅРѕ...
 	CreateGeomCache();
 
 	return true;
 }
 
-//Получить имя проекта 
+//РџРѕР»СѓС‡РёС‚СЊ РёРјСЏ РїСЂРѕРµРєС‚Р° 
 const char* ParticleManager::GetProjectFileName ()
 {
 	return ShortProjectName.GetBuffer();
 }
 
 
-//Закрыть проект 
+//Р—Р°РєСЂС‹С‚СЊ РїСЂРѕРµРєС‚ 
 void ParticleManager::CloseProject ()
 {
 	BB_Processor->Clear ();
@@ -188,7 +188,7 @@ void ParticleManager::CloseProject ()
 	pGeomCache->ResetCache();
 }
  
-//Удалить из списка ресурсов (системная)
+//РЈРґР°Р»РёС‚СЊ РёР· СЃРїРёСЃРєР° СЂРµСЃСѓСЂСЃРѕРІ (СЃРёСЃС‚РµРјРЅР°СЏ)
 void ParticleManager::RemoveResource (IParticleSystem* pResource)
 {
 	if (GlobalDelete) return;
@@ -202,7 +202,7 @@ void ParticleManager::RemoveResource (IParticleSystem* pResource)
 	}
 }
 
-//Исполнить партиклы 
+//РСЃРїРѕР»РЅРёС‚СЊ РїР°СЂС‚РёРєР»С‹ 
 void ParticleManager::Execute (float DeltaTime)
 {
 	GraphRead = 0;
@@ -298,21 +298,21 @@ void ParticleManager::Execute (float DeltaTime)
 	DeleteQuery.DelAll();
 }
 
-//Узнать доступна система или нет 
+//РЈР·РЅР°С‚СЊ РґРѕСЃС‚СѓРїРЅР° СЃРёСЃС‚РµРјР° РёР»Рё РЅРµС‚ 
 bool ParticleManager::IsSystemAvailable (const char* FileName)
 {
 	if (pDataCache->GetParticleSystemDataSource (FileName)) return true;
 	return false;
 }
 
-//Получить глобальную текстуру проекта 
+//РџРѕР»СѓС‡РёС‚СЊ РіР»РѕР±Р°Р»СЊРЅСѓСЋ С‚РµРєСЃС‚СѓСЂСѓ РїСЂРѕРµРєС‚Р° 
 long ParticleManager::GetProjectTexture ()
 {
 	return pProjectTexture;
 }
  
  
-//Создать партикловую систему из файла (файл должен быть в проекте!!!!!)
+//РЎРѕР·РґР°С‚СЊ РїР°СЂС‚РёРєР»РѕРІСѓСЋ СЃРёСЃС‚РµРјСѓ РёР· С„Р°Р№Р»Р° (С„Р°Р№Р» РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РІ РїСЂРѕРµРєС‚Рµ!!!!!)
 IParticleSystem* ParticleManager::CreateParticleSystemEx (const char* FileName, const char* File, int Line)
 {
 	DataSource* pDataSource = pDataCache->GetParticleSystemDataSource (FileName);
@@ -363,7 +363,7 @@ ModelProcessor* ParticleManager::GetMDLProcessor ()
 }
 
 
-//Создать пустую партикловую систему, для редактора...
+//РЎРѕР·РґР°С‚СЊ РїСѓСЃС‚СѓСЋ РїР°СЂС‚РёРєР»РѕРІСѓСЋ СЃРёСЃС‚РµРјСѓ, РґР»СЏ СЂРµРґР°РєС‚РѕСЂР°...
 IParticleSystem* ParticleManager::CreateEmptyParticleSystemEx  (const char* FileName, int Line)
 {
 	//NEED WRITE !!!

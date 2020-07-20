@@ -32,8 +32,8 @@ SAILONE::SAILONE()
     ZERO(sailtrope);
     ZERO(SailPnt);
     WindUp=0;
-    wind_incr=1; // после каждого расчета паруса приращение в массиве
-    wind_add=1;  // ветров на 1
+    wind_incr=1; // РїРѕСЃР»Рµ РєР°Р¶РґРѕРіРѕ СЂР°СЃС‡РµС‚Р° РїР°СЂСѓСЃР° РїСЂРёСЂР°С‰РµРЅРёРµ РІ РјР°СЃСЃРёРІРµ
+    wind_add=1;  // РІРµС‚СЂРѕРІ РЅР° 1
     VertIdx=0;
     SumWind=0;
     sroll=0;
@@ -96,10 +96,10 @@ void SAILONE::goWave(SAILVERTEX* pv,DWORD Delta_Time)
         while(wind_incr>=pp->WINDVECTOR_QUANTITY) wind_incr-=pp->WINDVECTOR_QUANTITY;
         while(wind_add>=pp->WINDVECTOR_QUANTITY) wind_add-=pp->WINDVECTOR_QUANTITY;
 
-        // треугольные паруса свернутые на рее
+        // С‚СЂРµСѓРіРѕР»СЊРЅС‹Рµ РїР°СЂСѓСЃР° СЃРІРµСЂРЅСѓС‚С‹Рµ РЅР° СЂРµРµ
         if(bRolling)
             DoTRollSail(pv);
-        // свободно висящие паруса
+        // СЃРІРѕР±РѕРґРЅРѕ РІРёСЃСЏС‰РёРµ РїР°СЂСѓСЃР°
         else if(bFreeSail)
             DoTFreeSail(pv);
         else
@@ -112,18 +112,18 @@ void SAILONE::goWave(SAILVERTEX* pv,DWORD Delta_Time)
         while(wind_incr>=pp->WINDVECTOR_QUANTITY) wind_incr-=pp->WINDVECTOR_QUANTITY;
         while(wind_add>=pp->WINDVECTOR_QUANTITY) wind_add-=pp->WINDVECTOR_QUANTITY;
 
-        // прямоугольные паруса свернутые на рее
+        // РїСЂСЏРјРѕСѓРіРѕР»СЊРЅС‹Рµ РїР°СЂСѓСЃР° СЃРІРµСЂРЅСѓС‚С‹Рµ РЅР° СЂРµРµ
         if(bRolling)
             DoSRollSail(pv);
 
-        // свободно висящие паруса
+        // СЃРІРѕР±РѕРґРЅРѕ РІРёСЃСЏС‰РёРµ РїР°СЂСѓСЃР°
         else if(bFreeSail)
             DoSFreeSail(pv);
 
-        // развевающиеся прямоугольные паруса
+        // СЂР°Р·РІРµРІР°СЋС‰РёРµСЃСЏ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅС‹Рµ РїР°СЂСѓСЃР°
         else
         {
-            // заколебать парусь
+            // Р·Р°РєРѕР»РµР±Р°С‚СЊ РїР°СЂСѓСЃСЊ
             GoVWave(pv);
 
             if((HorzIdx+=wind_add)>=pp->WINDVECTOR_QUANTITY) HorzIdx-=pp->WINDVECTOR_QUANTITY;
@@ -153,7 +153,7 @@ void SAILONE::goWave(SAILVERTEX* pv,DWORD Delta_Time)
         }
     }
 
-    // расчет бокса
+    // СЂР°СЃС‡РµС‚ Р±РѕРєСЃР°
     int pn=20;
     if(ss.eSailType==SAIL_TREANGLE) pn=15;
     ss.boxCenter = ss.boxSize = SailPnt[0];
@@ -170,7 +170,7 @@ void SAILONE::goWave(SAILVERTEX* pv,DWORD Delta_Time)
     ss.boxSize -= ss.boxCenter;
 }
 
-// заполнить индексы
+// Р·Р°РїРѕР»РЅРёС‚СЊ РёРЅРґРµРєСЃС‹
 void SAILONE::FillIndex(WORD* pt)
 {
     int   xIdxNum,yIdxNum;
@@ -406,7 +406,7 @@ void SAILONE::FillIndex(WORD* pt)
     tm.idx=rtm;
 }
 
-// заполнить вертексы для паруса
+// Р·Р°РїРѕР»РЅРёС‚СЊ РІРµСЂС‚РµРєСЃС‹ РґР»СЏ РїР°СЂСѓСЃР°
 void SAILONE::FillVertex(SAILVERTEX *pv)
 {
     WORD ix,iy,idx;
@@ -424,24 +424,24 @@ void SAILONE::FillVertex(SAILVERTEX *pv)
     if( ss.eSailType==SAIL_TREANGLE )
     {
         dStart=(ss.hardPoints[1]-pStart)*tmpRow;
-        // определим центр расхождения нормалей
+        // РѕРїСЂРµРґРµР»РёРј С†РµРЅС‚СЂ СЂР°СЃС…РѕР¶РґРµРЅРёСЏ РЅРѕСЂРјР°Р»РµР№
         dnorm=ss.boundSphere.c - sgeo.normL*ss.boundSphere.r;
-        // перебор сечений вдоль паруса и проход по ним
+        // РїРµСЂРµР±РѕСЂ СЃРµС‡РµРЅРёР№ РІРґРѕР»СЊ РїР°СЂСѓСЃР° Рё РїСЂРѕС…РѕРґ РїРѕ РЅРёРј
         //===============================================================
         for( idx=ix=0; ix<SAIL_ROW_MAX; ix++ )
         {
-            // установим координаты начальной точки и приращения к ним на каждом шаге
+            // СѓСЃС‚Р°РЅРѕРІРёРј РєРѕРѕСЂРґРёРЅР°С‚С‹ РЅР°С‡Р°Р»СЊРЅРѕР№ С‚РѕС‡РєРё Рё РїСЂРёСЂР°С‰РµРЅРёСЏ Рє РЅРёРј РЅР° РєР°Р¶РґРѕРј С€Р°РіРµ
             pcur=pStart;
             dV=dVStart;
 
-            // расчет паруса вдоль линии сечения
+            // СЂР°СЃС‡РµС‚ РїР°СЂСѓСЃР° РІРґРѕР»СЊ Р»РёРЅРёРё СЃРµС‡РµРЅРёСЏ
             //|||||||||||||||||||||||||||||||||||
             for( iy=0; iy<=ix; iy++, idx++ )
             {
-                // Запись координат в буфер вертексов
+                // Р—Р°РїРёСЃСЊ РєРѕРѕСЂРґРёРЅР°С‚ РІ Р±СѓС„РµСЂ РІРµСЂС‚РµРєСЃРѕРІ
                 pv[idx].pos = pcur;
                 pv[idx].norm = !(pcur-dnorm);
-                // Расчет следующей
+                // Р Р°СЃС‡РµС‚ СЃР»РµРґСѓСЋС‰РµР№
                 pcur+=dV;
             }
             pStart+=dStart;
@@ -449,7 +449,7 @@ void SAILONE::FillVertex(SAILVERTEX *pv)
             dVStart+=dVhStart;
         }
 
-        // Жестко установим точки крепления паруса
+        // Р–РµСЃС‚РєРѕ СѓСЃС‚Р°РЅРѕРІРёРј С‚РѕС‡РєРё РєСЂРµРїР»РµРЅРёСЏ РїР°СЂСѓСЃР°
         pv[idx-SAIL_ROW_MAX].pos = ss.hardPoints[1];
         pv[idx-1].pos = ss.hardPoints[2];
     }
@@ -459,23 +459,23 @@ void SAILONE::FillVertex(SAILVERTEX *pv)
         dnorm=ss.boundSphere.c-sgeo.dnormL*ss.boundSphere.r;
 		if(ss.eSailType == SAIL_TRAPECIDAL)
 			dnorm=ss.boundSphere.c-sgeo.normL*ss.boundSphere.r;
-        // перебор сечений вдоль паруса и проход по ним
+        // РїРµСЂРµР±РѕСЂ СЃРµС‡РµРЅРёР№ РІРґРѕР»СЊ РїР°СЂСѓСЃР° Рё РїСЂРѕС…РѕРґ РїРѕ РЅРёРј
         //===============================================================
         for( idx=ix=0; ix<SAIL_COL_MAX; ix++ )
         {
-            // установим координаты начальной точки и приращения к ним на каждом шаге
+            // СѓСЃС‚Р°РЅРѕРІРёРј РєРѕРѕСЂРґРёРЅР°С‚С‹ РЅР°С‡Р°Р»СЊРЅРѕР№ С‚РѕС‡РєРё Рё РїСЂРёСЂР°С‰РµРЅРёСЏ Рє РЅРёРј РЅР° РєР°Р¶РґРѕРј С€Р°РіРµ
             pcur=pStart;
             dV=dVStart;
             ddV=sgeo.ddVv;
             dddV=sgeo.dddVv;
-            // расчет паруса вдоль линии сечения
+            // СЂР°СЃС‡РµС‚ РїР°СЂСѓСЃР° РІРґРѕР»СЊ Р»РёРЅРёРё СЃРµС‡РµРЅРёСЏ
             //|||||||||||||||||||||||||||||||||||
             for( iy=0; iy<SAIL_ROW_MAX; iy++, idx++ )
             {
-                // Запись координат в буфер вертексов
+                // Р—Р°РїРёСЃСЊ РєРѕРѕСЂРґРёРЅР°С‚ РІ Р±СѓС„РµСЂ РІРµСЂС‚РµРєСЃРѕРІ
                 pv[idx].pos = pcur;
                 pv[idx].norm = !(pcur-dnorm);
-                // Расчет следующей
+                // Р Р°СЃС‡РµС‚ СЃР»РµРґСѓСЋС‰РµР№
                 ddV+=dddV;
                 dV+=ddV;
                 pcur+=dV;
@@ -485,7 +485,7 @@ void SAILONE::FillVertex(SAILVERTEX *pv)
             dVStart+=dVhStart;
         }
 
-        // Жестко установим точки крепления паруса
+        // Р–РµСЃС‚РєРѕ СѓСЃС‚Р°РЅРѕРІРёРј С‚РѕС‡РєРё РєСЂРµРїР»РµРЅРёСЏ РїР°СЂСѓСЃР°
         pv[idx-SAIL_ROW_MAX].pos = ss.hardPoints[1];
         pv[SAIL_ROW_MAX-1].pos = ss.hardPoints[2];
         pv[idx-1].pos = ss.hardPoints[3];
@@ -513,7 +513,7 @@ void SAILONE::SetTexGrid(SAILVERTEX *pv)
         break;
     }*/
 
-    // установить координаты текстур для треугольного паруса
+    // СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РєРѕРѕСЂРґРёРЅР°С‚С‹ С‚РµРєСЃС‚СѓСЂ РґР»СЏ С‚СЂРµСѓРіРѕР»СЊРЅРѕРіРѕ РїР°СЂСѓСЃР°
     if( ss.eSailType==SAIL_TREANGLE )
     {
 		kx1 = 1.f/(float)(SAIL_ROW_MAX-1);
@@ -537,7 +537,7 @@ void SAILONE::SetTexGrid(SAILVERTEX *pv)
 			}
         }
     }
-    // установка для прямоугольного паруса
+    // СѓСЃС‚Р°РЅРѕРІРєР° РґР»СЏ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРѕРіРѕ РїР°СЂСѓСЃР°
     else
     {
         kx1 = 1.f/(float)(SAIL_COL_MAX-1);
@@ -588,13 +588,13 @@ bool SAILONE::SetSail()
 {
     int hpq;
 
-    // по умолчанию нет натяжения паруса веревкой
+    // РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ РЅРµС‚ РЅР°С‚СЏР¶РµРЅРёСЏ РїР°СЂСѓСЃР° РІРµСЂРµРІРєРѕР№
     sgeo.dopV=CVECTOR(0.f,0.f,0.f);
 
-    // Установить разрешение поворота и свертывания паруса
-    ss.maxAngle=PI/6.f; // максимальный угол поворота паруса 30 град.
+    // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЂР°Р·СЂРµС€РµРЅРёРµ РїРѕРІРѕСЂРѕС‚Р° Рё СЃРІРµСЂС‚С‹РІР°РЅРёСЏ РїР°СЂСѓСЃР°
+    ss.maxAngle=PI/6.f; // РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№ СѓРіРѕР» РїРѕРІРѕСЂРѕС‚Р° РїР°СЂСѓСЃР° 30 РіСЂР°Рґ.
 
-    // Установить размеры паруса
+    // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЂР°Р·РјРµСЂС‹ РїР°СЂСѓСЃР°
     m_dwRow=SAIL_ROW_MAX;
 
     if( ss.eSailType==SAIL_TREANGLE )
@@ -608,11 +608,11 @@ bool SAILONE::SetSail()
         m_dwCol=SAIL_COL_MAX;
     }
 
-    // установить случайные величины для ветра
+    // СѓСЃС‚Р°РЅРѕРІРёС‚СЊ СЃР»СѓС‡Р°Р№РЅС‹Рµ РІРµР»РёС‡РёРЅС‹ РґР»СЏ РІРµС‚СЂР°
     VertIdx=rand()%pp->WINDVECTOR_QUANTITY;
     HorzIdx=rand()%pp->WINDVECTOR_QUANTITY;
 
-    // расчет ширины и высоты паруса
+    // СЂР°СЃС‡РµС‚ С€РёСЂРёРЅС‹ Рё РІС‹СЃРѕС‚С‹ РїР°СЂСѓСЃР°
     if(ss.eSailType==SAIL_TREANGLE)
     {
         sailWidth=sqrtf(~(ss.hardPoints[2]-ss.hardPoints[0]));
@@ -642,7 +642,7 @@ bool SAILONE::SetSail()
 		}
 	}
 
-    // Установить прогиб в нижней части паруса и выпуклость паруса
+    // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РїСЂРѕРіРёР± РІ РЅРёР¶РЅРµР№ С‡Р°СЃС‚Рё РїР°СЂСѓСЃР° Рё РІС‹РїСѓРєР»РѕСЃС‚СЊ РїР°СЂСѓСЃР°
     switch(ss.eSailType)
     {
     case SAIL_TREANGLE:
@@ -687,7 +687,7 @@ if( ss.bYesLimitPoint )
         ss.fDeepVz=ss.fDeepZ*.1f;
     }
 
-    // Установка размеров буфера индекса и вертекса
+    // РЈСЃС‚Р°РЅРѕРІРєР° СЂР°Р·РјРµСЂРѕРІ Р±СѓС„РµСЂР° РёРЅРґРµРєСЃР° Рё РІРµСЂС‚РµРєСЃР°
     if( ss.eSailType==SAIL_TREANGLE )
     {
         ss.nVert = (SAIL_ROW_MAX*(SAIL_ROW_MAX+1))/2;
@@ -699,7 +699,7 @@ if( ss.bYesLimitPoint )
         ss.nIndx = 2*(SAIL_ROW_MAX-1)*(SAIL_COL_MAX-1)*3;
     }
 
-    // установка дырочных свойств паруса
+    // СѓСЃС‚Р°РЅРѕРІРєР° РґС‹СЂРѕС‡РЅС‹С… СЃРІРѕР№СЃС‚РІ РїР°СЂСѓСЃР°
     ss.holeCount=0;
     for( int i=0; i<hpq; i++ )
     {
@@ -709,14 +709,14 @@ if( ss.bYesLimitPoint )
     }
     CalculateMirrorSailIndex();
 
-    // Установка параметров ветра
+    // РЈСЃС‚Р°РЅРѕРІРєР° РїР°СЂР°РјРµС‚СЂРѕРІ РІРµС‚СЂР°
     WindUp = (rand()&1)==1;
     MaxSumWind=sailHeight*pp->MAXSUMWIND;
     SumWind=MaxSumWind*(float)rand()/(float)RAND_MAX;
 
     oldWindAngl=0.f;
 
-	// установить ограничение на вращение паруса
+	// СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РѕРіСЂР°РЅРёС‡РµРЅРёРµ РЅР° РІСЂР°С‰РµРЅРёРµ РїР°СЂСѓСЃР°
 	m_fMaxAngle = pp->MAXTURNANGL;
 	m_fMinAngle = pp->MAXTURNANGL;
 
@@ -728,7 +728,7 @@ void SAILONE::releaseAll()
 {
 }
 
-// пустить волну на треугольный парус
+// РїСѓСЃС‚РёС‚СЊ РІРѕР»РЅСѓ РЅР° С‚СЂРµСѓРіРѕР»СЊРЅС‹Р№ РїР°СЂСѓСЃ
 void SAILONE::GoTWave(SAILVERTEX *pv)
 {
     int iy,ix,idx;
@@ -745,7 +745,7 @@ void SAILONE::GoTWave(SAILVERTEX *pv)
 
     float WindAmplitude=pp->TsailWindDepend*ss.boundSphere.r*(pp->globalWind.base+.3f)/(float)(SAIL_ROW_MAX-1)/(float)(SAIL_ROW_MAX-1);
 
-    // учесть дырявость паруса в прогибе паруса
+    // СѓС‡РµСЃС‚СЊ РґС‹СЂСЏРІРѕСЃС‚СЊ РїР°СЂСѓСЃР° РІ РїСЂРѕРіРёР±Рµ РїР°СЂСѓСЃР°
     WindAmplitude*=1.f-(float)ss.holeCount*pp->fTHoleFlexDepend;
     CenterFlex*=1.f-(float)ss.holeCount*pp->fTHoleFlexDepend;
 
@@ -777,19 +777,19 @@ void SAILONE::GoTWave(SAILVERTEX *pv)
                 *sailtrope.pPos[1] = pcur;
 
         idx=(ix*(ix+1))/2;
-        // расчет паруса вдоль линии сечения
+        // СЂР°СЃС‡РµС‚ РїР°СЂСѓСЃР° РІРґРѕР»СЊ Р»РёРЅРёРё СЃРµС‡РµРЅРёСЏ
         //|||||||||||||||||||||||||||||||||||
         for( iy=0; iy<=ix; iy++, idx++ )
         {
-            // Запись координат в буфер вертексов
+            // Р—Р°РїРёСЃСЊ РєРѕРѕСЂРґРёРЅР°С‚ РІ Р±СѓС„РµСЂ РІРµСЂС‚РµРєСЃРѕРІ
             pv[idx].pos = pcur;
 
-            // сохранение текущей точки в массиве координат паруса
+            // СЃРѕС…СЂР°РЅРµРЅРёРµ С‚РµРєСѓС‰РµР№ С‚РѕС‡РєРё РІ РјР°СЃСЃРёРІРµ РєРѕРѕСЂРґРёРЅР°С‚ РїР°СЂСѓСЃР°
             if(ix==0 || ix==4 || ix==8 || ix==12 || ix==16)
                 if(iy==0 || iy==4 || iy==8 || iy==12 || iy==16)
                     SailPnt[svNum++]=pcur;
 
-            // Расчет следующей
+            // Р Р°СЃС‡РµС‚ СЃР»РµРґСѓСЋС‰РµР№
             dV+=ddV;
             pcur+=dV;
         }
@@ -857,14 +857,14 @@ void SAILONE::GoVWave(SAILVERTEX *pv)
         wind.x=wind.z*.2f;
     }
 
-    // амплитуда движения паруса под воздействием ветра
+    // Р°РјРїР»РёС‚СѓРґР° РґРІРёР¶РµРЅРёСЏ РїР°СЂСѓСЃР° РїРѕРґ РІРѕР·РґРµР№СЃС‚РІРёРµРј РІРµС‚СЂР°
     float WindAmplitude=pp->SsailWindDepend*sailHeight*(fWindBase+pp->fWindAdding)/(pp->fWindAdding+1.f)/(float)(SAIL_COL_MAX/2+2);
 	if( ss.bYesLimitPoint )
 	{
 		WindAmplitude = (ss.fDeepH+ss.fDeepZ) * 0.15f;
 	}
 
-    // прогиб паруса при недостатке ветра
+    // РїСЂРѕРіРёР± РїР°СЂСѓСЃР° РїСЂРё РЅРµРґРѕСЃС‚Р°С‚РєРµ РІРµС‚СЂР°
     float windFlex;
     if( ss.eSailType==SAIL_TRAPECIDAL )
         windFlex=.2f*(1.f-fWindBase*(1.f+sailWind.z)*.5f);
@@ -890,7 +890,7 @@ void SAILONE::GoVWave(SAILVERTEX *pv)
     else
         SailDownVect.y-=SumWind;
 
-    // Установим точку привязки веревки
+    // РЈСЃС‚Р°РЅРѕРІРёРј С‚РѕС‡РєСѓ РїСЂРёРІСЏР·РєРё РІРµСЂРµРІРєРё
     if(sailtrope.pnttie[0])
         *sailtrope.pPos[0]=StartPoint;
 
@@ -906,32 +906,32 @@ void SAILONE::GoVWave(SAILVERTEX *pv)
 
         CVECTOR WindAdd=(pp->WindVect[VertIdx]*WindAmplitude*(k+1.f/(float)SAIL_COL_MAX))*wind;
 
-        // установим координаты начальной точки и приращения к ним на каждом шаге
+        // СѓСЃС‚Р°РЅРѕРІРёРј РєРѕРѕСЂРґРёРЅР°С‚С‹ РЅР°С‡Р°Р»СЊРЅРѕР№ С‚РѕС‡РєРё Рё РїСЂРёСЂР°С‰РµРЅРёСЏ Рє РЅРёРј РЅР° РєР°Р¶РґРѕРј С€Р°РіРµ
         pcur=StartPoint;
         dV = sgeo.dVv + (float)ix*(dVH+(float)ix*0.5f*ddVH) + WindAdd+SailDownVect;
         ddV = sgeo.ddVv-WindAdd*(2.f-k)/(float)SAIL_ROW_MAX - SailDownVect*2.f/(float)SAIL_ROW_MAX;
 
         idx=ix*SAIL_ROW_MAX;
 
-        // расчет паруса вдоль линии сечения
+        // СЂР°СЃС‡РµС‚ РїР°СЂСѓСЃР° РІРґРѕР»СЊ Р»РёРЅРёРё СЃРµС‡РµРЅРёСЏ
         //|||||||||||||||||||||||||||||||||||
         for( iy=0; iy<SAIL_ROW_MAX; iy++, idx++ )
         {
-            // Запись координат в буфер вертексов
+            // Р—Р°РїРёСЃСЊ РєРѕРѕСЂРґРёРЅР°С‚ РІ Р±СѓС„РµСЂ РІРµСЂС‚РµРєСЃРѕРІ
             pv[idx].pos = pcur;
 
-            // Запись текущей точки в массив точек паруса
+            // Р—Р°РїРёСЃСЊ С‚РµРєСѓС‰РµР№ С‚РѕС‡РєРё РІ РјР°СЃСЃРёРІ С‚РѕС‡РµРє РїР°СЂСѓСЃР°
             if(ix==0 || ix==4 || ix==8 || ix==12)
                 if(iy==0 || iy==4 || iy==8 || iy==12 || iy==16)
                 {
                     SailPnt[svNum++]=pcur;
                 }
 
-            // Расчет следующей
+            // Р Р°СЃС‡РµС‚ СЃР»РµРґСѓСЋС‰РµР№
             dV+=ddV;
             pcur+=dV;
         }
-        // Установим точку привязки веревки
+        // РЈСЃС‚Р°РЅРѕРІРёРј С‚РѕС‡РєСѓ РїСЂРёРІСЏР·РєРё РІРµСЂРµРІРєРё
         if(ix==0 && sailtrope.pnttie[2])
             *sailtrope.pPos[2]=pcur-dV;
 
@@ -967,7 +967,7 @@ void SAILONE::GoVWave(SAILVERTEX *pv)
         }
     }
 
-    // Установим точку привязки веревки
+    // РЈСЃС‚Р°РЅРѕРІРёРј С‚РѕС‡РєСѓ РїСЂРёРІСЏР·РєРё РІРµСЂРµРІРєРё
     if(sailtrope.pnttie[3])
         *sailtrope.pPos[3] = pcur-dV;
 }
@@ -1034,13 +1034,13 @@ void SAILONE::SetGeometry()
 void SAILONE::SetRolling(bool bRoll)
 {
     if( sroll ){
-        if( sroll->rollup==bRoll ) return; // не делать повторно
+        if( sroll->rollup==bRoll ) return; // РЅРµ РґРµР»Р°С‚СЊ РїРѕРІС‚РѕСЂРЅРѕ
     }
     else
-        if( bRoll==bRolling ) return; // не делать повторно
+        if( bRoll==bRolling ) return; // РЅРµ РґРµР»Р°С‚СЊ РїРѕРІС‚РѕСЂРЅРѕ
 
     bRolling=false;
-	if(!bRoll) // сделаем принудительный поворот паруса по ветру
+	if(!bRoll) // СЃРґРµР»Р°РµРј РїСЂРёРЅСѓРґРёС‚РµР»СЊРЅС‹Р№ РїРѕРІРѕСЂРѕС‚ РїР°СЂСѓСЃР° РїРѕ РІРµС‚СЂСѓ
 	{
         CVECTOR locPos = hostNode->loc_mtx.Pos();
         hostNode->loc_mtx.SetPosition(0.f,0.f,0.f);
@@ -1067,7 +1067,7 @@ void SAILONE::SetRolling(bool bRoll)
         hostNode->loc_mtx.SetPosition(locPos);
 	}
 
-    // создаем новый блок сворачивания паруса
+    // СЃРѕР·РґР°РµРј РЅРѕРІС‹Р№ Р±Р»РѕРє СЃРІРѕСЂР°С‡РёРІР°РЅРёСЏ РїР°СЂСѓСЃР°
     if(!sroll){
         sroll=NEW SAILROLLING;
         memcpy(&sroll->oldgeo,&sgeo,sizeof(SAILGEOMETRY));
@@ -1079,22 +1079,22 @@ void SAILONE::SetRolling(bool bRoll)
 
 void SAILONE::DoRollingStep(DWORD Delta_Time)
 {
-    if( !sroll ) return; // нет сворачивания паруса
+    if( !sroll ) return; // РЅРµС‚ СЃРІРѕСЂР°С‡РёРІР°РЅРёСЏ РїР°СЂСѓСЃР°
 
     float delta=sroll->delta;
 
-    // сворачивать парус
+    // СЃРІРѕСЂР°С‡РёРІР°С‚СЊ РїР°СЂСѓСЃ
     if( sroll->rollup )
     {
         delta-=(float)Delta_Time*pp->gdata[HostNum].fRollingSpeed;
         if(delta<0.f) {
-            bRolling=true; // теперь парус считается свернутым до конца
-            memcpy(&sgeo,&sroll->oldgeo,sizeof(SAILGEOMETRY)); // вернем нормальные параметры геометрии
+            bRolling=true; // С‚РµРїРµСЂСЊ РїР°СЂСѓСЃ СЃС‡РёС‚Р°РµС‚СЃСЏ СЃРІРµСЂРЅСѓС‚С‹Рј РґРѕ РєРѕРЅС†Р°
+            memcpy(&sgeo,&sroll->oldgeo,sizeof(SAILGEOMETRY)); // РІРµСЂРЅРµРј РЅРѕСЂРјР°Р»СЊРЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹ РіРµРѕРјРµС‚СЂРёРё
             delete sroll; sroll=0;
-            return; // больше не надо сворачивать парус
+            return; // Р±РѕР»СЊС€Рµ РЅРµ РЅР°РґРѕ СЃРІРѕСЂР°С‡РёРІР°С‚СЊ РїР°СЂСѓСЃ
         }
     }
-    // разворачивать парус
+    // СЂР°Р·РІРѕСЂР°С‡РёРІР°С‚СЊ РїР°СЂСѓСЃ
     else
     {
         delta+=(float)Delta_Time*pp->gdata[HostNum].fRollingSpeed;
@@ -1131,7 +1131,7 @@ void SAILONE::TurnSail(float fTurnStep)
     ENTITY_ID ropeEI;
     windAng-=oldWindAngl;
 
-    // если угол достаточной величины для поворота
+    // РµСЃР»Рё СѓРіРѕР» РґРѕСЃС‚Р°С‚РѕС‡РЅРѕР№ РІРµР»РёС‡РёРЅС‹ РґР»СЏ РїРѕРІРѕСЂРѕС‚Р°
     if( windAng<-pp->WINDANGL_DISCRETE || windAng>pp->WINDANGL_DISCRETE )
     {
 		if( windAng > fTurnStep ) windAng = fTurnStep;
@@ -1442,7 +1442,7 @@ float SAILONE::Trace(const CVECTOR &src,const CVECTOR &dst,bool bCannonTrace)
     {
         bool bYesTrace=false;
         CVECTOR vmed;
-        // сечение по X:
+        // СЃРµС‡РµРЅРёРµ РїРѕ X:
         if(sv.x<minp.x)
             if(dv.x<minp.x) return 2.f;
             else
@@ -1461,7 +1461,7 @@ float SAILONE::Trace(const CVECTOR &src,const CVECTOR &dst,bool bCannonTrace)
                     vmed.z>=minp.z && vmed.z<=maxp.z )
                     bYesTrace=true;
             }
-        // сечение по Z:
+        // СЃРµС‡РµРЅРёРµ РїРѕ Z:
         if(!bYesTrace && sv.z<minp.z)
             if(dv.z<minp.z) return 2.f;
             else
@@ -1480,7 +1480,7 @@ float SAILONE::Trace(const CVECTOR &src,const CVECTOR &dst,bool bCannonTrace)
                     vmed.x>=minp.x && vmed.x<=maxp.x )
                     bYesTrace=true;
             }
-        // сечение по Y:
+        // СЃРµС‡РµРЅРёРµ РїРѕ Y:
         if(!bYesTrace && sv.y<minp.y)
             if(dv.y<minp.y) return 2.f;
             else
@@ -1502,7 +1502,7 @@ float SAILONE::Trace(const CVECTOR &src,const CVECTOR &dst,bool bCannonTrace)
 
 #define XQUANT 3
 #define YQUANT 4
-// Трассировка луча сквозь прямоугольный парус
+// РўСЂР°СЃСЃРёСЂРѕРІРєР° Р»СѓС‡Р° СЃРєРІРѕР·СЊ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅС‹Р№ РїР°СЂСѓСЃ
 float SAILONE::SSailTrace(CVECTOR &src,CVECTOR &dst,bool bCannonTrace)
 {
     float retVal=2.f;
@@ -1538,7 +1538,7 @@ float SAILONE::SSailTrace(CVECTOR &src,CVECTOR &dst,bool bCannonTrace)
     if(DoHole)
     {
 		ChangeHoleDwordCode();
-        CalculateMirrorSailIndex(); // новая триангуляция для отражения паруса
+        CalculateMirrorSailIndex(); // РЅРѕРІР°СЏ С‚СЂРёР°РЅРіСѓР»СЏС†РёСЏ РґР»СЏ РѕС‚СЂР°Р¶РµРЅРёСЏ РїР°СЂСѓСЃР°
 		SetGeometry();
 		if( pp->gdata[HostNum].bDeleted != true && pp->gdata[HostNum].bYesShip )
 		{
@@ -1557,7 +1557,7 @@ float SAILONE::SSailTrace(CVECTOR &src,CVECTOR &dst,bool bCannonTrace)
     return retVal;
 }
 
-// Трассировка луча сквозь треугольный парус
+// РўСЂР°СЃСЃРёСЂРѕРІРєР° Р»СѓС‡Р° СЃРєРІРѕР·СЊ С‚СЂРµСѓРіРѕР»СЊРЅС‹Р№ РїР°СЂСѓСЃ
 float SAILONE::TSailTrace(CVECTOR &src,CVECTOR &dst,bool bCannonTrace)
 {
     float retVal=2.f;
@@ -1568,7 +1568,7 @@ float SAILONE::TSailTrace(CVECTOR &src,CVECTOR &dst,bool bCannonTrace)
     int i,ix,iy;
 
     //================================================
-    // Пройдемся по прямоугольникам паруса (10 шт.)
+    // РџСЂРѕР№РґРµРјСЃСЏ РїРѕ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєР°Рј РїР°СЂСѓСЃР° (10 С€С‚.)
     //================================================
     for(i=0,ix=0; ix<4; ix++)
     {
@@ -1595,7 +1595,7 @@ float SAILONE::TSailTrace(CVECTOR &src,CVECTOR &dst,bool bCannonTrace)
 
     if(DoHole)
     {
-        CalculateMirrorSailIndex(); // новая триангуляция для отражения паруса
+        CalculateMirrorSailIndex(); // РЅРѕРІР°СЏ С‚СЂРёР°РЅРіСѓР»СЏС†РёСЏ РґР»СЏ РѕС‚СЂР°Р¶РµРЅРёСЏ РїР°СЂСѓСЃР°
 		if( pp->gdata[HostNum].bDeleted != true && pp->gdata[HostNum].bYesShip )
 		{
 			VAI_OBJBASE * pVai = (VAI_OBJBASE*)api->GetEntityPointer(&pp->gdata[HostNum].shipEI);
@@ -1615,24 +1615,24 @@ float SAILONE::TSailTrace(CVECTOR &src,CVECTOR &dst,bool bCannonTrace)
 
 void SAILONE::CalculateSailWind()
 {
-    // перевод вектора ветра в систему координат паруса
+    // РїРµСЂРµРІРѕРґ РІРµРєС‚РѕСЂР° РІРµС‚СЂР° РІ СЃРёСЃС‚РµРјСѓ РєРѕРѕСЂРґРёРЅР°С‚ РїР°СЂСѓСЃР°
     pMatWorld->MulToInvNorm(*(CVECTOR*)&pp->globalWind.ang,sailWind);
 
-    // Учесть дырявость паруса
+    // РЈС‡РµСЃС‚СЊ РґС‹СЂСЏРІРѕСЃС‚СЊ РїР°СЂСѓСЃР°
 	curSpeed = GetSailSpeed(ss.holeCount, GetMaxHoleCount(), maxSpeed);
 
     pp->gdata[HostNum].maxSpeed += curSpeed;
 
-    // посчитать тяговую силу паруса
+    // РїРѕСЃС‡РёС‚Р°С‚СЊ С‚СЏРіРѕРІСѓСЋ СЃРёР»Сѓ РїР°СЂСѓСЃР°
     if(bRolling)
         curSpeed=0.f;
     else
     {
-        // Учесть силу ветра
+        // РЈС‡РµСЃС‚СЊ СЃРёР»Сѓ РІРµС‚СЂР°
         //curSpeed*=pp->globalWind.base*1.2f;
 
         float xtmp,ztmp;
-        // Учесть направление ветра
+        // РЈС‡РµСЃС‚СЊ РЅР°РїСЂР°РІР»РµРЅРёРµ РІРµС‚СЂР°
         ztmp=sailWind.z*.5f+.5f;
         if(ztmp>1.f) ztmp=1.f;
         if(sailWind.x<0.f) xtmp=(ztmp-1.f)*sailWind.x;
@@ -1649,7 +1649,7 @@ void SAILONE::CalculateSailWind()
             curSpeed*=pp->ss_min+xtmp*pp->ss_xdep+ztmp*pp->ss_zdep;
         }
 
-        // учесть сворачивание парусов
+        // СѓС‡РµСЃС‚СЊ СЃРІРѕСЂР°С‡РёРІР°РЅРёРµ РїР°СЂСѓСЃРѕРІ
         if(sroll)
             curSpeed *= sroll->delta;
     }
@@ -1662,7 +1662,7 @@ float SAILONE::CheckSailSquar(int i,CVECTOR &va,CVECTOR &vb,CVECTOR &vc,CVECTOR 
     CVECTOR d1=vb-va;
     CVECTOR d2=vc-va;
 
-    // коэффициенты в ур-ии плоскости
+    // РєРѕСЌС„С„РёС†РёРµРЅС‚С‹ РІ СѓСЂ-РёРё РїР»РѕСЃРєРѕСЃС‚Рё
     float fA= d1.y*d2.z - d1.z*d2.y;
     float fB= d1.z*d2.x - d1.x*d2.z;
     float fC= d1.x*d2.y - d1.y*d2.x;
@@ -1679,17 +1679,17 @@ float SAILONE::CheckSailSquar(int i,CVECTOR &va,CVECTOR &vb,CVECTOR &vc,CVECTOR 
     else
         return 2.f;
 
-    // проверка на попадание точки пересечения в треугольник
+    // РїСЂРѕРІРµСЂРєР° РЅР° РїРѕРїР°РґР°РЅРёРµ С‚РѕС‡РєРё РїРµСЂРµСЃРµС‡РµРЅРёСЏ РІ С‚СЂРµСѓРіРѕР»СЊРЅРёРє
     if(retVal<=1.f)
     {
         CVECTOR cv = vsrc + (vdst-vsrc)*retVal;
 		CVECTOR vab = vb-va;
 		CVECTOR vbc = vc-vb;
 		CVECTOR vca = va-vc;
-        float kA,kB,kD; // коэффициенты в ур-ии прямой на плоскости x*kA+y*kB=kD
+        float kA,kB,kD; // РєРѕСЌС„С„РёС†РёРµРЅС‚С‹ РІ СѓСЂ-РёРё РїСЂСЏРјРѕР№ РЅР° РїР»РѕСЃРєРѕСЃС‚Рё x*kA+y*kB=kD
 		float d1,d2;
         //----------------------------------------------
-        // по плоскости XY
+        // РїРѕ РїР»РѕСЃРєРѕСЃС‚Рё XY
             // for ab
         kA=-vab.y; kB=vab.x; kD=va.y*vab.x-va.x*vab.y;
 		d1=kA*cv.x+kB*cv.y; d2=kA*vc.x+kB*vc.y;
@@ -1706,7 +1706,7 @@ float SAILONE::CheckSailSquar(int i,CVECTOR &va,CVECTOR &vb,CVECTOR &vc,CVECTOR 
         if( (d1!=kD) && (d2!=kD) &&
 			( (d1>kD)^(d2>kD) ) )  return 2.f;
         //----------------------------------------------
-        // по плоскости ZY
+        // РїРѕ РїР»РѕСЃРєРѕСЃС‚Рё ZY
             // for ab
         kA=-vab.y; kB=vab.z; kD=va.y*vab.z-va.z*vab.y;
 		d1=kA*cv.z+kB*cv.y; d2=kA*vc.z+kB*vc.y;
@@ -1723,7 +1723,7 @@ float SAILONE::CheckSailSquar(int i,CVECTOR &va,CVECTOR &vb,CVECTOR &vc,CVECTOR 
         if( (d1!=kD) && (d2!=kD) &&
 			( (d1>kD)^(d2>kD) ) )  return 2.f;
         //----------------------------------------------
-        // по плоскости XZ
+        // РїРѕ РїР»РѕСЃРєРѕСЃС‚Рё XZ
             // for ab
         kA=-vab.z; kB=vab.x; kD=va.z*vab.x-va.x*vab.z;
 		d1=kA*cv.x+kB*cv.z; d2=kA*vc.x+kB*vc.z;
@@ -1742,7 +1742,7 @@ float SAILONE::CheckSailSquar(int i,CVECTOR &va,CVECTOR &vb,CVECTOR &vc,CVECTOR 
         //----------------------------------------------
     }
 
-    // проткнем в парусе дырку
+    // РїСЂРѕС‚РєРЅРµРј РІ РїР°СЂСѓСЃРµ РґС‹СЂРєСѓ
     if( retVal<=1.f && !ss.hole[i] && bCannonTrace )
     {
         ss.hole[i]=true;

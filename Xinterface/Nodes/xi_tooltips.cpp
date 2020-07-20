@@ -36,7 +36,7 @@ CXI_ToolTip::~CXI_ToolTip()
 void CXI_ToolTip::Draw()
 {
 	if( m_bDisableDraw ) return;
-	if( m_sText.IsEmpty() ) return; // íåò íè ... ÷åãî
+	if( m_sText.IsEmpty() ) return; // Ð½ÐµÑ‚ Ð½Ð¸ ... Ñ‡ÐµÐ³Ð¾
 
 	if( m_nSquareQ > 0 )
 	{
@@ -246,23 +246,23 @@ void CXI_ToolTip::ReplaceRectangle( long x, long y )
 	if( top > m_rActiveZone.top ) top = m_rActiveZone.top;
 	if( bottom < m_rActiveZone.bottom ) bottom = m_rActiveZone.bottom;
 
-	// ìîæåì ëè ìû âûâåñòè èíôó íèæå êîíòðîëêè
+	// Ð¼Ð¾Ð¶ÐµÐ¼ Ð»Ð¸ Ð¼Ñ‹ Ð²Ñ‹Ð²ÐµÑÑ‚Ð¸ Ð¸Ð½Ñ„Ñƒ Ð½Ð¸Ð¶Ðµ ÐºÐ¾Ð½Ñ‚Ñ€Ð¾Ð»ÐºÐ¸
 	if( m_pntScreenSize.y - bottom >= m_nUseHeight )
 	{
 		m_rPos.top = bottom;
 		m_rPos.bottom = m_rPos.top + m_nUseHeight;
 	} else {
-		if( top >= m_nUseHeight ) // óìåùàåòñÿ ââåðõó
+		if( top >= m_nUseHeight ) // ÑƒÐ¼ÐµÑ‰Ð°ÐµÑ‚ÑÑ Ð²Ð²ÐµÑ€Ñ…Ñƒ
 		{
 			m_rPos.bottom = top;
 			m_rPos.top = m_rPos.bottom - m_nUseHeight;
-		} else { // âñå ðàâíî âíèçó
+		} else { // Ð²ÑÐµ Ñ€Ð°Ð²Ð½Ð¾ Ð²Ð½Ð¸Ð·Ñƒ
 			m_rPos.top = bottom;
 			m_rPos.bottom = m_rPos.top + m_nUseHeight;
 		}
 	}
 
-	// ãîðèçîíòàëüíûå êîîðäèíàòû
+	// Ð³Ð¾Ñ€Ð¸Ð·Ð¾Ð½Ñ‚Ð°Ð»ÑŒÐ½Ñ‹Ðµ ÐºÐ¾Ð¾Ñ€Ð´Ð¸Ð½Ð°Ñ‚Ñ‹
 	m_rPos.right = x + m_nUseWidth + m_nXRectangleOffset;
 	if( m_rPos.right > m_pntScreenSize.x )
 		m_rPos.right = m_pntScreenSize.x;

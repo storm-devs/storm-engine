@@ -374,13 +374,13 @@ dword _cdecl CXI_SCROLLBAR::MessageProc(long msgcode, MESSAGE & message)
 {
 	switch(msgcode)
 	{
-	case 0: // установить минимальное значение
+	case 0: // СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РјРёРЅРёРјР°Р»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ
 		m_fMinValue = message.Float();
 		break;
-	case 1: // установить максимальное значение
+	case 1: // СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ
 		m_fMaxValue = message.Float();
 		break;
-	case 2: // изменить значение
+	case 2: // РёР·РјРµРЅРёС‚СЊ Р·РЅР°С‡РµРЅРёРµ
 		m_fCurValue = message.Float();
 		WriteDataToAttribute();
 		break;

@@ -343,7 +343,7 @@ DIALOG::DIALOG()
 	m_idVBufButton = -1;
 	m_idIBufButton = -1;
 
-	m_dwButtonState = 0; // нет ни одной кнопки
+	m_dwButtonState = 0; // РЅРµС‚ РЅРё РѕРґРЅРѕР№ РєРЅРѕРїРєРё
 
 	m_nCharNameTextFont = -1;
 	m_dwCharNameTextColor = 0xFFFFFFFF;
@@ -376,8 +376,8 @@ DIALOG::~DIALOG()
 void __declspec(noinline) __cdecl DIALOG::CreateBack()
 {
 	long nSquareQuantity = 9 + 3 + 1; // 9-for back, 3-for name & 1-for divider
-	m_nIQntBack = 6 * nSquareQuantity; // 6 индексов в одном прямоугольнике
-	m_nVQntBack = 4 * nSquareQuantity;  // 4 вертекса в одном прямоуголькнике
+	m_nIQntBack = 6 * nSquareQuantity; // 6 РёРЅРґРµРєСЃРѕРІ РІ РѕРґРЅРѕРј РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєРµ
+	m_nVQntBack = 4 * nSquareQuantity;  // 4 РІРµСЂС‚РµРєСЃР° РІ РѕРґРЅРѕРј РїСЂСЏРјРѕСѓРіРѕР»СЊРєРЅРёРєРµ
 
 	if( m_idVBufBack == -1 )
 		m_idVBufBack = RenderService->CreateVertexBufferManaged( XI_TEX_FVF, m_nVQntBack * sizeof(XI_TEX_VERTEX), D3DUSAGE_WRITEONLY );
@@ -399,7 +399,7 @@ void __declspec(noinline) __cdecl DIALOG::CreateBack()
 		RenderService->UnLockIndexBuffer( m_idIBufBack );
 	}
 
-	// создаем размеры
+	// СЃРѕР·РґР°РµРј СЂР°Р·РјРµСЂС‹
 	m_BackParams.m_frBorderInt.left = m_BackParams.m_frBorderExt.left + m_BackParams.frBorderRect.left;
 	m_BackParams.m_frBorderInt.right = m_BackParams.m_frBorderExt.right - m_BackParams.frBorderRect.right;
 	m_BackParams.m_frBorderInt.top = m_BackParams.m_frBorderExt.top + m_BackParams.frBorderRect.top;
@@ -494,8 +494,8 @@ void DIALOG::DrawBack()
 
 void DIALOG::CreateButtons()
 {
-	m_nIQntButton = 6 * 2; // 6 индексов в одном прямоугольнике
-	m_nVQntButton = 4 * 2;  // 4 вертекса на один прямоугольник
+	m_nIQntButton = 6 * 2; // 6 РёРЅРґРµРєСЃРѕРІ РІ РѕРґРЅРѕРј РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєРµ
+	m_nVQntButton = 4 * 2;  // 4 РІРµСЂС‚РµРєСЃР° РЅР° РѕРґРёРЅ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє
 
 	if( m_idVBufButton == -1 )
 		m_idVBufButton = RenderService->CreateVertexBufferManaged( XI_TEX_FVF, m_nVQntButton * sizeof(XI_TEX_VERTEX), D3DUSAGE_WRITEONLY );
@@ -707,19 +707,19 @@ void DIALOG::AddToStringArrayLimitedByWidth(const char* pcSrcText, long nFontID,
 		nPrevIdx = panPageIndices->LastE();
 	while(true) {
 		if( (pcSrcText[nCur]==0x20 && pcSrcText[nCur+1] != 0) || pcSrcText[nCur]==0 ) // space
-		{// boal fix пробел в конце строки
+		{// boal fix РїСЂРѕР±РµР» РІ РєРѕРЅС†Рµ СЃС‚СЂРѕРєРё
 			param[n] = 0;
 			long nW = RenderService->StringWidth(param,nFontID,fScale);
-			if( nW < nLimitWidth && pcSrcText[nCur]!=0 ) { // пока еще не перешли предел по ширине
+			if( nW < nLimitWidth && pcSrcText[nCur]!=0 ) { // РїРѕРєР° РµС‰Рµ РЅРµ РїРµСЂРµС€Р»Рё РїСЂРµРґРµР» РїРѕ С€РёСЂРёРЅРµ
 				param[n++] = 0x20;
 			} else {
 				if( nW>nLimitWidth ) {
 					// find prev space;
 					long nPrev = nCur;
 					while( nPrev>0 && pcSrcText[nPrev-1]!=0x20 ) nPrev--;
-					if( nPrev<=0 ) // нет пробелов
+					if( nPrev<=0 ) // РЅРµС‚ РїСЂРѕР±РµР»РѕРІ
 					{
-						// ищем первый попавший в диапазон набор символов
+						// РёС‰РµРј РїРµСЂРІС‹Р№ РїРѕРїР°РІС€РёР№ РІ РґРёР°РїР°Р·РѕРЅ РЅР°Р±РѕСЂ СЃРёРјРІРѕР»РѕРІ
 						while( n>0 && RenderService->StringWidth(param,nFontID,fScale)>nLimitWidth ) {
 							n--;
 							nCur--;
@@ -794,7 +794,7 @@ bool DIALOG::Init()
 void DIALOG::Realize(dword Delta_Time)
 {
 	RenderService->MakePostProcess();
-	// замедленный выход из паузы
+	// Р·Р°РјРµРґР»РµРЅРЅС‹Р№ РІС‹С…РѕРґ РёР· РїР°СѓР·С‹
 	if( unfadeTime <= UNFADE_TIME )
 	{
 		unfadeTime += (int) api->GetRDeltaTime();
@@ -803,13 +803,13 @@ void DIALOG::Realize(dword Delta_Time)
 		api->SetTimeScale(timeK);
 	}
 
-	// играем спич
+	// РёРіСЂР°РµРј СЃРїРёС‡
 	if( play==0 && soundName[0] && snd ) {
 		curSnd = snd->SoundPlay(soundName, PCM_STEREO,VOLUME_SPEECH);
 		play = 1;
 	}
 
-	// нет аттрибутов диалога - нет дальнейшего разговора
+	// РЅРµС‚ Р°С‚С‚СЂРёР±СѓС‚РѕРІ РґРёР°Р»РѕРіР° - РЅРµС‚ РґР°Р»СЊРЅРµР№С€РµРіРѕ СЂР°Р·РіРѕРІРѕСЂР°
 	if(!AttributesPointer) return;
 
 	if( m_bDlgChanged )
@@ -824,7 +824,7 @@ void DIALOG::Realize(dword Delta_Time)
 	CONTROL_STATE cs1; //boal
 	CONTROL_STATE cs2;
 
-	// прерывание диалога
+	// РїСЂРµСЂС‹РІР°РЅРёРµ РґРёР°Р»РѕРіР°
 	api->Controls->GetControlState("DlgCancel",cs);
 	if(cs.state == CST_ACTIVATED) api->Event("DialogCancel");
 
@@ -851,10 +851,10 @@ void DIALOG::Realize(dword Delta_Time)
 		if(cs.state == CST_ACTIVATED) bDoDown = true;
 	}
 
-	// переходим вверх (к предыдущей строке)
+	// РїРµСЂРµС…РѕРґРёРј РІРІРµСЂС… (Рє РїСЂРµРґС‹РґСѓС‰РµР№ СЃС‚СЂРѕРєРµ)
 	if( bDoUp )
 	{
-		// игрем щелчок нажатой клавиши
+		// РёРіСЂРµРј С‰РµР»С‡РѕРє РЅР°Р¶Р°С‚РѕР№ РєР»Р°РІРёС€Рё
 		if( snd ) snd->SoundPlay(TICK_SOUND, PCM_STEREO,VOLUME_FX);
 
 		if( m_DlgText.IsLastPage() )
@@ -868,10 +868,10 @@ void DIALOG::Realize(dword Delta_Time)
 			}
 		}
 	}
-	// переход вниз - к следующей строке
+	// РїРµСЂРµС…РѕРґ РІРЅРёР· - Рє СЃР»РµРґСѓСЋС‰РµР№ СЃС‚СЂРѕРєРµ
 	if( bDoDown )
 	{
-		// игрем щелчок нажатой клавиши
+		// РёРіСЂРµРј С‰РµР»С‡РѕРє РЅР°Р¶Р°С‚РѕР№ РєР»Р°РІРёС€Рё
 		if( snd ) snd->SoundPlay(TICK_SOUND, PCM_STEREO,VOLUME_FX);
 
 		if( m_DlgText.IsLastPage() )
@@ -884,7 +884,7 @@ void DIALOG::Realize(dword Delta_Time)
 			}
 		}
 	}
-	// страница вверх
+	// СЃС‚СЂР°РЅРёС†Р° РІРІРµСЂС…
 	api->Controls->GetControlState("DlgScrollUp",cs);
 	if( cs.state == CST_ACTIVATED )
 	{
@@ -896,7 +896,7 @@ void DIALOG::Realize(dword Delta_Time)
 			FillButtons();
 		}
 	}
-	// страница вниз
+	// СЃС‚СЂР°РЅРёС†Р° РІРЅРёР·
 	api->Controls->GetControlState("DlgScrollDown",cs);
 	if( cs.state == CST_ACTIVATED )
 	{
@@ -908,7 +908,7 @@ void DIALOG::Realize(dword Delta_Time)
 			FillButtons();
 		}
 	}
-	// действие
+	// РґРµР№СЃС‚РІРёРµ
 	api->Controls->GetControlState("DlgAction",cs);
 	api->Controls->GetControlState("DlgAction2",cs2);
 	api->Controls->GetControlState("DlgAction1",cs1); // boal
@@ -918,10 +918,10 @@ void DIALOG::Realize(dword Delta_Time)
 	}
 	if(cs.state == CST_ACTIVATED || cs2.state == CST_ACTIVATED || cs1.state == CST_ACTIVATED) // boal
 	{
-		// игрем щелчок нажатой клавиши
+		// РёРіСЂРµРј С‰РµР»С‡РѕРє РЅР°Р¶Р°С‚РѕР№ РєР»Р°РІРёС€Рё
 		if( snd ) snd->SoundPlay(TICK_SOUND, PCM_STEREO,VOLUME_FX);
 
-		if( m_DlgText.IsLastPage() ) { // показываем варианты ответа
+		if( m_DlgText.IsLastPage() ) { // РїРѕРєР°Р·С‹РІР°РµРј РІР°СЂРёР°РЅС‚С‹ РѕС‚РІРµС‚Р°
 			ATTRIBUTES * pA = AttributesPointer->GetAttributeClass( "links" );
 			if( pA ) pA = pA->GetAttributeClass( m_DlgLinks.nSelectLine );
 			if( pA )
@@ -937,7 +937,7 @@ void DIALOG::Realize(dword Delta_Time)
 					api->Event("DialogEvent");
 				}
 			}
-		} else { // пока еще показываем текст
+		} else { // РїРѕРєР° РµС‰Рµ РїРѕРєР°Р·С‹РІР°РµРј С‚РµРєСЃС‚
 			m_DlgText.NextPage();
 			UpdateDlgViewport();
 			FillDivider();

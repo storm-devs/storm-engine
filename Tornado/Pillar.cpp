@@ -21,13 +21,13 @@
 #define TRND_KSHAPE			5.0f
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 Pillar::Pillar()
 {
 	srand(GetTickCount());
-	//Секции
+	//РЎРµРєС†РёРё
 	long i = 0;
 	for(i = 0; i < TRND_NUMSEC; i++)
 	{
@@ -40,7 +40,7 @@ Pillar::Pillar()
 		kHeight = 1.0f - (kHeight - 0.5f)*(kHeight - 0.5f)*4.0f;
 		section[i].alpha *= kHeight*kHeight;
 	}
-	//Вектора сегментов
+	//Р’РµРєС‚РѕСЂР° СЃРµРіРјРµРЅС‚РѕРІ
 	for(i = 0; i < TRND_SEGMENTS; i++)
 	{
 		float ang = i*2.0f*TRND_PI/TRND_SEGMENTS;
@@ -115,12 +115,12 @@ void Pillar::FillVertexBuffer(Vertex * buffer)
 
 void Pillar::FillIndexBuffer(word * buffer)
 {
-	//По секциям
+	//РџРѕ СЃРµРєС†РёСЏРј
 	for(long i = 0; i < TRND_NUMSEC - 1; i++)
 	{
 		word base = word(i*TRND_SEGMENTS);
 		word * buf = buffer + base*2*3;
-		//По сегментам
+		//РџРѕ СЃРµРіРјРµРЅС‚Р°Рј
 		for(word j = 0; j < TRND_SEGMENTS; j++)
 		{
 			word j1 = j < (TRND_SEGMENTS - 1) ? j + 1 : 0;

@@ -180,12 +180,12 @@ void CXI_VIMAGESCROLL::Draw(bool bSelected,dword Delta_Time)
 					}
 					else
 					{
-						if(m_idBadPic[n]!=-1 && m_idBadTexture[n]!=-1) // частичное использование текстуры для "плохой" картинки
+						if(m_idBadPic[n]!=-1 && m_idBadTexture[n]!=-1) // С‡Р°СЃС‚РёС‡РЅРѕРµ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ С‚РµРєСЃС‚СѓСЂС‹ РґР»СЏ "РїР»РѕС…РѕР№" РєР°СЂС‚РёРЅРєРё
 						{
 							m_rs->TextureSet(0,m_nGroupTex[m_idBadTexture[n]]);
 							pPictureService->GetTexturePos(m_idBadPic[n],rectTex);
 						}
-						else	// "плохая" картинка на всю текстуру
+						else	// "РїР»РѕС…Р°СЏ" РєР°СЂС‚РёРЅРєР° РЅР° РІСЃСЋ С‚РµРєСЃС‚СѓСЂСѓ
 						{
 							if(m_idBadTexture[n]!=-1)
 							{
@@ -193,7 +193,7 @@ void CXI_VIMAGESCROLL::Draw(bool bSelected,dword Delta_Time)
 								rectTex.left = 0.f;		rectTex.top = 0.f;
 								rectTex.right = 1.f;	rectTex.bottom = 1.f;
 							}
-							else // не показывать несуществующую картинку
+							else // РЅРµ РїРѕРєР°Р·С‹РІР°С‚СЊ РЅРµСЃСѓС‰РµСЃС‚РІСѓСЋС‰СѓСЋ РєР°СЂС‚РёРЅРєСѓ
 							{
 								pScroll = pScroll->next;
 								continue;
@@ -242,7 +242,7 @@ void CXI_VIMAGESCROLL::Draw(bool bSelected,dword Delta_Time)
 				pScroll = pScroll->next;
 			}
 
-			if(n==m_nSlotsQnt-1) // последними показать строки
+			if(n==m_nSlotsQnt-1) // РїРѕСЃР»РµРґРЅРёРјРё РїРѕРєР°Р·Р°С‚СЊ СЃС‚СЂРѕРєРё
 			{
 				// out to screen the strings if that needed
 				for(l=0; l<m_nStringQuantity; l++)
@@ -661,7 +661,7 @@ float CXI_VIMAGESCROLL::ChangeDinamicParameters(float fYDelta)
 			if(curImage<m_nListSize-1)
 				memcpy( &m_Image[curImage], &m_Image[curImage+1], sizeof(IMAGEDESCRIBE)*(m_nListSize-1-curImage) );
 			m_nListSize--;
-			// Передвинем все уже используемые картинки
+			// РџРµСЂРµРґРІРёРЅРµРј РІСЃРµ СѓР¶Рµ РёСЃРїРѕР»СЊР·СѓРµРјС‹Рµ РєР°СЂС‚РёРЅРєРё
 			for(SCROLLENTITY * pSTmp = m_pScroll; pSTmp!=null && pSTmp!=pScroll; pSTmp=pSTmp->next)
 				if(pSTmp->imageNum>curImage)
 					pSTmp->imageNum--;
@@ -708,7 +708,7 @@ float CXI_VIMAGESCROLL::ChangeDinamicParameters(float fYDelta)
 
 		if(bIncrement && bpos>m_rect.bottom-m_nVDelta) // end pass to right
 		{
-			// удалим следующую (неиспользуемую текстуру)
+			// СѓРґР°Р»РёРј СЃР»РµРґСѓСЋС‰СѓСЋ (РЅРµРёСЃРїРѕР»СЊР·СѓРµРјСѓСЋ С‚РµРєСЃС‚СѓСЂСѓ)
 			curImage++; if(curImage>=m_nListSize) curImage = 0;
 			for(n=0; n<m_nSlotsQnt; n++)
 			{
@@ -718,7 +718,7 @@ float CXI_VIMAGESCROLL::ChangeDinamicParameters(float fYDelta)
 					m_Image[curImage].ptex[n] = null;
 				}
 			}
-			// продолжим вывод следующей иконки с центра
+			// РїСЂРѕРґРѕР»Р¶РёРј РІС‹РІРѕРґ СЃР»РµРґСѓСЋС‰РµР№ РёРєРѕРЅРєРё СЃ С†РµРЅС‚СЂР°
 			curImage = m_nCurImage;
 			curYCenter = m_pCenter.y + fYDelta;
 			if(curYCenter>=m_pCenter.y)
@@ -734,7 +734,7 @@ float CXI_VIMAGESCROLL::ChangeDinamicParameters(float fYDelta)
 		}
 		else if(!bIncrement && tpos<m_rect.top+m_nVDelta) // end pass to left is all end
 		{
-			// удалим предыдущую (неиспользуемую текстуру)
+			// СѓРґР°Р»РёРј РїСЂРµРґС‹РґСѓС‰СѓСЋ (РЅРµРёСЃРїРѕР»СЊР·СѓРµРјСѓСЋ С‚РµРєСЃС‚СѓСЂСѓ)
 			curImage--; if(curImage<0) curImage = m_nListSize-1;
 			for(n=0; n<m_nSlotsQnt; n++)
 			{
@@ -958,7 +958,7 @@ void CXI_VIMAGESCROLL::ChangeScroll(int nScrollItemNum)
     ATTRIBUTES * pAttr = _CORE_API->Entity_GetAttributeClass(&g_idInterface,m_nodeName);
     if(pAttr!=NULL)
     {
-		// проверим может весь список надо менять
+		// РїСЂРѕРІРµСЂРёРј РјРѕР¶РµС‚ РІРµСЃСЊ СЃРїРёСЃРѕРє РЅР°РґРѕ РјРµРЅСЏС‚СЊ
 		if( nScrollItemNum==-1 || m_nListSize != long(pAttr->GetAttributeAsDword("NotUsed",0) + pAttr->GetAttributeAsDword("ListSize",0)) )
 		{
 			RefreshScroll();
@@ -1542,7 +1542,7 @@ dword _cdecl CXI_VIMAGESCROLL::MessageProc(long msgcode, MESSAGE & message)
 {
 	switch(msgcode)
 	{
-	case 0: // разрешить/запретить показ рамки
+	case 0: // СЂР°Р·СЂРµС€РёС‚СЊ/Р·Р°РїСЂРµС‚РёС‚СЊ РїРѕРєР°Р· СЂР°РјРєРё
 		m_bShowBorder = message.Long()!=0;
 	break;
 	case 2:
@@ -1563,12 +1563,12 @@ long CXI_VIMAGESCROLL::GetMousePointedPictureNum()
 
 		float curYCenter = m_pScroll ? m_pScroll->pCenter.y : (m_rect.top+m_rect.bottom)/2;
 		long n = 0;
-		if( mp.y < curYCenter ) { // счет на уменьшение номера
+		if( mp.y < curYCenter ) { // СЃС‡РµС‚ РЅР° СѓРјРµРЅСЊС€РµРЅРёРµ РЅРѕРјРµСЂР°
 			float fTop = curYCenter - m_ImageSize.y*0.5f;
 			for( n=0; mp.y<fTop; n-- ) {
 				fTop -= m_nVDelta + m_ImageSize.y;
 			}
-		} else { // счет на увеличение номера
+		} else { // СЃС‡РµС‚ РЅР° СѓРІРµР»РёС‡РµРЅРёРµ РЅРѕРјРµСЂР°
 			float fBottom = curYCenter + m_ImageSize.y*0.5f;
 			for( n=0; mp.y>fBottom; n++ ) {
 				fBottom += m_nVDelta + m_ImageSize.y;

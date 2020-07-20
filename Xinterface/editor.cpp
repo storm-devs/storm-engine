@@ -58,10 +58,10 @@ bool GIEditor::MakeControl()
 
 	bool bMove = false;
 	bool bSize = false;
-	if( GetAsyncKeyState( VK_CONTROL )<0 ) // äâèãàåì
+	if( GetAsyncKeyState( VK_CONTROL )<0 ) // Ð´Ð²Ð¸Ð³Ð°ÐµÐ¼
 	{
 		bMove = true;
-		if( GetAsyncKeyState( VK_SHIFT )<0 ) // ìåíÿåì ðàçìåð
+		if( GetAsyncKeyState( VK_SHIFT )<0 ) // Ð¼ÐµÐ½ÑÐµÐ¼ Ñ€Ð°Ð·Ð¼ÐµÑ€
 		{
 			bMove = false;
 			bSize = true;

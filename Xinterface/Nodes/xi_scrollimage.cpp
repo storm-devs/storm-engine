@@ -182,12 +182,12 @@ void CXI_SCROLLIMAGE::Draw(bool bSelected,dword Delta_Time)
 					}
 					else
 					{
-						if(m_idBadPic[n]!=-1 && m_idBadTexture[n]!=-1) // частичное использование текстуры для "плохой" картинки
+						if(m_idBadPic[n]!=-1 && m_idBadTexture[n]!=-1) // С‡Р°СЃС‚РёС‡РЅРѕРµ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ С‚РµРєСЃС‚СѓСЂС‹ РґР»СЏ "РїР»РѕС…РѕР№" РєР°СЂС‚РёРЅРєРё
 						{
 							m_rs->TextureSet(0,m_nGroupTex[m_idBadTexture[n]]);
 							pPictureService->GetTexturePos(m_idBadPic[n],rectTex);
 						}
-						else	// "плохая" картинка на всю текстуру
+						else	// "РїР»РѕС…Р°СЏ" РєР°СЂС‚РёРЅРєР° РЅР° РІСЃСЋ С‚РµРєСЃС‚СѓСЂСѓ
 						{
 							if(m_idBadTexture[n]!=-1)
 							{
@@ -195,7 +195,7 @@ void CXI_SCROLLIMAGE::Draw(bool bSelected,dword Delta_Time)
 								rectTex.left = 0.f;		rectTex.top = 0.f;
 								rectTex.right = 1.f;	rectTex.bottom = 1.f;
 							}
-							else // не показывать несуществующую картинку
+							else // РЅРµ РїРѕРєР°Р·С‹РІР°С‚СЊ РЅРµСЃСѓС‰РµСЃС‚РІСѓСЋС‰СѓСЋ РєР°СЂС‚РёРЅРєСѓ
 							{
 								pScroll = pScroll->next;
 								continue;
@@ -248,7 +248,7 @@ void CXI_SCROLLIMAGE::Draw(bool bSelected,dword Delta_Time)
 				pScroll = pScroll->next;
 			}
 
-			if(n==m_nSlotsQnt-1) // последними показать строки
+			if(n==m_nSlotsQnt-1) // РїРѕСЃР»РµРґРЅРёРјРё РїРѕРєР°Р·Р°С‚СЊ СЃС‚СЂРѕРєРё
 			{
 				// out to screen the strings if that needed
 				if( m_bUseOneString || m_bUseTwoString )
@@ -675,7 +675,7 @@ float CXI_SCROLLIMAGE::ChangeDinamicParameters(float fXDelta)
 			if(curImage<m_nListSize-1)
 				memcpy( &m_Image[curImage], &m_Image[curImage+1], sizeof(IMAGEDESCRIBE)*(m_nListSize-1-curImage) );
 			m_nListSize--;
-			// Передвинем все уже используемые картинки
+			// РџРµСЂРµРґРІРёРЅРµРј РІСЃРµ СѓР¶Рµ РёСЃРїРѕР»СЊР·СѓРµРјС‹Рµ РєР°СЂС‚РёРЅРєРё
 			for(SCROLLENTITY * pSTmp = m_pScroll; pSTmp!=null && pSTmp!=pScroll; pSTmp=pSTmp->next)
 				if(pSTmp->imageNum>curImage)
 					pSTmp->imageNum--;
@@ -722,11 +722,11 @@ float CXI_SCROLLIMAGE::ChangeDinamicParameters(float fXDelta)
 
 		if(bIncrement && rpos>m_rect.right-m_lDelta) // end pass to right
 		{
-			// удалим следующую (неиспользуемую текстуру)
+			// СѓРґР°Р»РёРј СЃР»РµРґСѓСЋС‰СѓСЋ (РЅРµРёСЃРїРѕР»СЊР·СѓРµРјСѓСЋ С‚РµРєСЃС‚СѓСЂСѓ)
 			curImage++;
 			if(curImage>=m_nListSize) curImage = 0;
 			aDeleteImageIndex[nDeleteImageQuantity++] = curImage;
-			// продолжим вывод следующей иконки с центра
+			// РїСЂРѕРґРѕР»Р¶РёРј РІС‹РІРѕРґ СЃР»РµРґСѓСЋС‰РµР№ РёРєРѕРЅРєРё СЃ С†РµРЅС‚СЂР°
 			curImage = m_nCurImage;
 			curXCenter = m_pCenter.x + fXDelta;
 			if(curXCenter>=m_pCenter.x)
@@ -742,7 +742,7 @@ float CXI_SCROLLIMAGE::ChangeDinamicParameters(float fXDelta)
 		}
 		else if(!bIncrement && lpos<m_rect.left+m_lDelta) // end pass to left is all end
 		{
-			// удалим предыдущую (неиспользуемую текстуру)
+			// СѓРґР°Р»РёРј РїСЂРµРґС‹РґСѓС‰СѓСЋ (РЅРµРёСЃРїРѕР»СЊР·СѓРµРјСѓСЋ С‚РµРєСЃС‚СѓСЂСѓ)
 			curImage--; if(curImage<0) curImage = m_nListSize-1;
 			aDeleteImageIndex[nDeleteImageQuantity++] = curImage;
 			break;
@@ -971,7 +971,7 @@ void CXI_SCROLLIMAGE::ChangeScroll(int nScrollItemNum)
     ATTRIBUTES * pAttr = _CORE_API->Entity_GetAttributeClass(&g_idInterface,m_nodeName);
     if(pAttr!=NULL)
     {
-		// проверим может весь список надо менять
+		// РїСЂРѕРІРµСЂРёРј РјРѕР¶РµС‚ РІРµСЃСЊ СЃРїРёСЃРѕРє РЅР°РґРѕ РјРµРЅСЏС‚СЊ
 		if( nScrollItemNum==-1 || m_nListSize != long(pAttr->GetAttributeAsDword("NotUsed",0) + pAttr->GetAttributeAsDword("ListSize",0)) )
 		{
 			RefreshScroll();
@@ -1568,10 +1568,10 @@ dword _cdecl CXI_SCROLLIMAGE::MessageProc(long msgcode, MESSAGE & message)
 {
 	switch(msgcode)
 	{
-	case 0: // разрешить/запретить показ рамки
+	case 0: // СЂР°Р·СЂРµС€РёС‚СЊ/Р·Р°РїСЂРµС‚РёС‚СЊ РїРѕРєР°Р· СЂР°РјРєРё
 		m_bShowBorder = message.Long()!=0;
 	break;
-	case 1: // установить новую текущую картинку
+	case 1: // СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РЅРѕРІСѓСЋ С‚РµРєСѓС‰СѓСЋ РєР°СЂС‚РёРЅРєСѓ
 		{
 			m_nCurImage = message.Long();
 			if(m_nCurImage>=m_nListSize-m_nNotUsedQuantity) m_nCurImage=m_nListSize-m_nNotUsedQuantity-1;
@@ -1606,12 +1606,12 @@ long CXI_SCROLLIMAGE::GetMousePointedPictureNum()
 
 	float curXCenter = m_pScroll ? m_pScroll->pCenter.x : (m_rect.left+m_rect.right)/2;
 	long n = 0;
-	if( mp.x < curXCenter ) { // счет на уменьшение номера
+	if( mp.x < curXCenter ) { // СЃС‡РµС‚ РЅР° СѓРјРµРЅСЊС€РµРЅРёРµ РЅРѕРјРµСЂР°
 		float fLeft = curXCenter - m_ImageSize.x*0.5f;
 		for( n=0; mp.x<fLeft; n-- ) {
 			fLeft -= m_lDelta + m_ImageSize.x;
 		}
-	} else { // счет на увеличение номера
+	} else { // СЃС‡РµС‚ РЅР° СѓРІРµР»РёС‡РµРЅРёРµ РЅРѕРјРµСЂР°
 		float fRight = curXCenter + m_ImageSize.x*0.5f;
 		for( n=0; mp.x>fRight; n++ ) {
 			fRight += m_lDelta + m_ImageSize.x;

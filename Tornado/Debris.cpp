@@ -13,7 +13,7 @@
 #include "..\common_h\ship_base.h"
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 Debris::Debris(Pillar & _pillar) : pillar(_pillar)
@@ -53,16 +53,16 @@ void Debris::Update(float dltTime)
 {
 	if(numModels == 0) return;
 	if(lastPlayTime > 0.0f) lastPlayTime -= dltTime;
-	//Позиция на воде
-	//Заведение
+	//РџРѕР·РёС†РёСЏ РЅР° РІРѕРґРµ
+	//Р—Р°РІРµРґРµРЅРёРµ
 	if(flyCounter < sizeof(fly)/sizeof(ModelInfo))
 	{
 		if((rand() & 1) == 1)
 		{
-			//Проверим ближние корабли
+			//РџСЂРѕРІРµСЂРёРј Р±Р»РёР¶РЅРёРµ РєРѕСЂР°Р±Р»Рё
 			if(IsShip())
 			{
-				//Надо добавить новую модельку
+				//РќР°РґРѕ РґРѕР±Р°РІРёС‚СЊ РЅРѕРІСѓСЋ РјРѕРґРµР»СЊРєСѓ
 				fly[flyCounter].mdl = SelectModel(fly[flyCounter].maxSpeed);
 				fly[flyCounter].r = rand()*10.0f/RAND_MAX;
 				fly[flyCounter].y = 0.0f + (rand() & 7);
@@ -82,11 +82,11 @@ void Debris::Update(float dltTime)
 			}
 		}
 	}
-	//Полёт
+	//РџРѕР»С‘С‚
 	float h = pillar.GetHeight();
 	for(long i = 0; i < flyCounter; i++)
 	{
-		//Обновляем позицию по высоте
+		//РћР±РЅРѕРІР»СЏРµРј РїРѕР·РёС†РёСЋ РїРѕ РІС‹СЃРѕС‚Рµ
 		fly[i].ay += dltTime*fly[i].maxSpeed;
 		if(fly[i].ay > 20.0f*fly[i].maxSpeed) fly[i].ay = 20.0f*fly[i].maxSpeed;
 		fly[i].y += dltTime*fly[i].ay;
@@ -95,11 +95,11 @@ void Debris::Update(float dltTime)
 			fly[i] = fly[--flyCounter];
 			continue;
 		}
-		//Обновляем радиус
+		//РћР±РЅРѕРІР»СЏРµРј СЂР°РґРёСѓСЃ
 		float k = dltTime*1.0f;
 		if(k > 1.0f) k = 1.0f;
 		fly[i].r += (pillar.GetRaduis(fly[i].y) - fly[i].r)*k;
-		//Обновляем угл
+		//РћР±РЅРѕРІР»СЏРµРј СѓРіР»
 		k = pillar.GetKHeight(fly[i].y) - 0.5f;
 		k = 1.0f - k*k*4.0f;
 		k = dltTime*(3.0f + 5.0f*k);
@@ -111,7 +111,7 @@ void Debris::Update(float dltTime)
 		if(fly[i].ang.x > 2.0f*TRND_PI) fly[i].ang.x -= 2.0f*TRND_PI;
 		fly[i].ang.z += dltTime*3.37f;
 		if(fly[i].ang.z > 2.0f*TRND_PI) fly[i].ang.z -= 2.0f*TRND_PI;
-		//Прозрачность
+		//РџСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ
 		fly[i].alpha = 1.0f;
 		if(fly[i].y < 3.0f) fly[i].alpha *= fly[i].y/3.0f;
 		if(fly[i].y > h*0.5f) fly[i].alpha *= (fly[i].y - h*0.5f)/(h*0.75f - h*0.5f);
@@ -123,7 +123,7 @@ void Debris::Draw(VDX8RENDER * rs)
 {
 	for(long i = 0; i < flyCounter; i++)
 	{
-		//Позиция модельки
+		//РџРѕР·РёС†РёСЏ РјРѕРґРµР»СЊРєРё
 		CVECTOR pos;
 		pos.x = pillar.GetX(fly[i].y) + fly[i].r*sinf(fly[i].a);		
 		pos.y = fly[i].y;
@@ -139,16 +139,16 @@ void Debris::Draw(VDX8RENDER * rs)
 void Debris::AddModel(const char * modelName, float prt, float spd)
 {
 	if(numModels >= sizeof(mdl)/sizeof(MODEL *)) return;
-	//Создаём модельку
+	//РЎРѕР·РґР°С‘Рј РјРѕРґРµР»СЊРєСѓ
 	ENTITY_ID id;
 	if(!_CORE_API->CreateEntity(&id, "modelr")) return;
 	MODEL * m = (MODEL *)_CORE_API->GetEntityPointer(&id);
 	if(!m) return;
-	//Путь для текстур
+	//РџСѓС‚СЊ РґР»СЏ С‚РµРєСЃС‚СѓСЂ
 	VGEOMETRY * gs = (VGEOMETRY *)_CORE_API->CreateService("geometry");
 	if(!gs) return;
 	gs->SetTexturePath("Tornado\\");
-	//Загружаем
+	//Р—Р°РіСЂСѓР¶Р°РµРј
 	try
 	{
 		_CORE_API->Send_Message(id, 
@@ -161,10 +161,10 @@ void Debris::AddModel(const char * modelName, float prt, float spd)
 		return;
 	}	
 	gs->SetTexturePath("");
-	//Настраиваем
+	//РќР°СЃС‚СЂР°РёРІР°РµРј
 	NODE * node = m->GetNode(0);
 	if(node) node->SetTechnique("TornadoDebris");
-	//Сохраняем
+	//РЎРѕС…СЂР°РЅСЏРµРј
 	mdl[numModels].mdl = m;
 	mdl[numModels].prt = prt;
 	mdl[numModels++].maxSpeed = spd;
@@ -204,13 +204,13 @@ bool Debris::IsShip()
 	CVECTOR pos;
 	for(; res; res = _CORE_API->FindClassNext(&id))
 	{
-		//Указатель на объект
+		//РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РѕР±СЉРµРєС‚
 		VAI_OBJBASE * ship = (VAI_OBJBASE *)_CORE_API->GetEntityPointer(&id);
 		if(!ship) break;
-		//Позиция торнадо в системе корабля
+		//РџРѕР·РёС†РёСЏ С‚РѕСЂРЅР°РґРѕ РІ СЃРёСЃС‚РµРјРµ РєРѕСЂР°Р±Р»СЏ
 		Assert(ship->GetMatrix());
 		ship->GetMatrix()->MulToInv(p, pos);
-		//Проверим попадание в бокс
+		//РџСЂРѕРІРµСЂРёРј РїРѕРїР°РґР°РЅРёРµ РІ Р±РѕРєСЃ
 		CVECTOR s = ship->GetBoxSize();
 		if(pos.x < -s.x - 6.0f || pos.x > s.x + 6.0f) continue;
 		if(pos.z < -s.z - 6.0f || pos.z > s.z + 6.0f) continue;

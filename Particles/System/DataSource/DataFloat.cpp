@@ -4,7 +4,7 @@
 
 
 
-//конструктор/деструктор
+//РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ/РґРµСЃС‚СЂСѓРєС‚РѕСЂ
 DataFloat::DataFloat ()
 {
 	Value = 0.0f;
@@ -14,13 +14,13 @@ DataFloat::~DataFloat ()
 {
 }
 
-	//Получить значение
+	//РџРѕР»СѓС‡РёС‚СЊ Р·РЅР°С‡РµРЅРёРµ
 float DataFloat::GetValue ()
 {
 	return Value;
 }
 
-	//Установить значение
+	//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р·РЅР°С‡РµРЅРёРµ
 void DataFloat::SetValue (float val)
 {
 	Value = val;

@@ -869,13 +869,13 @@ void SHIP::MastFall(mast_t * pM)
 		long iNum;
 		sscanf((char*)&str[strlen(MAST_IDENTIFY)],"%d",&iNum);
 		
-		// если мачта  (0..100) -> ломаем стеньгу (если есть)
+		// РµСЃР»Рё РјР°С‡С‚Р°  (0..100) -> Р»РѕРјР°РµРј СЃС‚РµРЅСЊРіСѓ (РµСЃР»Рё РµСЃС‚СЊ)
 		if(iNum < TOPMAST_BEGIN) 
 		{
 			api->Trace("SHIP::MastFall(1) : iNum = %d", iNum);
 			MastFallChild(pM);
 		}	
-		else // если сломана стеньга и мачта состоит из более чем двух компонентов
+		else // РµСЃР»Рё СЃР»РѕРјР°РЅР° СЃС‚РµРЅСЊРіР° Рё РјР°С‡С‚Р° СЃРѕСЃС‚РѕРёС‚ РёР· Р±РѕР»РµРµ С‡РµРј РґРІСѓС… РєРѕРјРїРѕРЅРµРЅС‚РѕРІ
 		{
 			api->Trace("SHIP::MastFall(2) : iNum = %d", iNum);
 		}
@@ -889,7 +889,7 @@ void SHIP::MastFallChild(mast_t * parentMast)
 	const char *cNodeName = parentMast->pNode->GetName();
 	sscanf((const char*)&cNodeName[strlen(MAST_IDENTIFY)],"%d",&iNum);
 	
-	// ищем неломаные стеньги, принадлежащие данной мачте
+	// РёС‰РµРј РЅРµР»РѕРјР°РЅС‹Рµ СЃС‚РµРЅСЊРіРё, РїСЂРёРЅР°РґР»РµР¶Р°С‰РёРµ РґР°РЅРЅРѕР№ РјР°С‡С‚Рµ
 	for (long i = 0; i < iNumMasts; i++) if (!pMasts[i].bBroken)
 	{
 		mast_t * pM = &pMasts[i];
@@ -897,7 +897,7 @@ void SHIP::MastFallChild(mast_t * parentMast)
 		sprintf(cMastNodeName, "%s", pM->pNode->GetName());
 		sscanf((char*)&cMastNodeName[strlen(MAST_IDENTIFY)],"%d",&iChildNum);
 		
-		//нашли стеньгу, относящуюся к даной мачте - ломаем ее
+		//РЅР°С€Р»Рё СЃС‚РµРЅСЊРіСѓ, РѕС‚РЅРѕСЃСЏС‰СѓСЋСЃСЏ Рє РґР°РЅРѕР№ РјР°С‡С‚Рµ - Р»РѕРјР°РµРј РµРµ
 		for(long j = 0; j < 5; j++)
 		{
 			if(iChildNum == iNum * TOPMAST_BEGIN + (j + 1))
@@ -940,11 +940,11 @@ void SHIP::MastFall(mast_t * pM)
 				sprintf(str, "%s", pMast->pNode->GetName());
 				sscanf((char*)&str[strlen(MAST_IDENTIFY)],"%d",&iMastNum);
 				bool bOk = false;
-				if(iNum < TOPMAST_BEGIN) 	// мачта, валим все стеньги
+				if(iNum < TOPMAST_BEGIN) 	// РјР°С‡С‚Р°, РІР°Р»РёРј РІСЃРµ СЃС‚РµРЅСЊРіРё
 				{
 					if( (iMastNum > iNum * TOPMAST_BEGIN && iMastNum < ((iNum + 1) * TOPMAST_BEGIN)) || iMastNum == iNum) bOk = true;
 				}
-				else						// стеньга, валим все что выше
+				else						// СЃС‚РµРЅСЊРіР°, РІР°Р»РёРј РІСЃРµ С‡С‚Рѕ РІС‹С€Рµ
 				{
 					if( ((iMastNum > iNum) && iMastNum < ((iBase + 1) * TOPMAST_BEGIN)) || iMastNum == iNum ) bOk = true;
 				}
@@ -989,11 +989,11 @@ void SHIP::TestMastFall(long iMast)
 		sprintf(str, "%s", pM->pNode->GetName());
 		sscanf((char*)&str[strlen(MAST_IDENTIFY)],"%d",&iMastNum);
 		bool bOk = false;
-		if(iNum < TOPMAST_BEGIN) 	// мачта, валим все стеньги
+		if(iNum < TOPMAST_BEGIN) 	// РјР°С‡С‚Р°, РІР°Р»РёРј РІСЃРµ СЃС‚РµРЅСЊРіРё
 		{
 			if( iMastNum > iNum * TOPMAST_BEGIN  && iMastNum < ((iNum + 1) * TOPMAST_BEGIN)) bOk = true;
 		}
-		else						// стеньга, валим все что выше
+		else						// СЃС‚РµРЅСЊРіР°, РІР°Р»РёРј РІСЃРµ С‡С‚Рѕ РІС‹С€Рµ
 		{
 			if( (iMastNum > iNum) && iMastNum < ((iBase + 1) * TOPMAST_BEGIN) ) bOk = true;
 		}
@@ -1315,19 +1315,19 @@ dword _cdecl SHIP::ProcessMessage(MESSAGE & message)
 			// all system which have particles - must be deleted here
 			aFirePlaces.DelAll();
 		break;
-		// boal 20.08.06 перерисовка флага -->
+		// boal 20.08.06 РїРµСЂРµСЂРёСЃРѕРІРєР° С„Р»Р°РіР° -->
 		case MSG_SHIP_FLAG_REFRESH:
             api->Send_Message(flag_id, "li", MSG_FLAG_DEL_GROUP, GetModelEID());
 			if (api->FindClass(&flag_id,"flag",0))
 				api->Send_Message(flag_id,"lili",MSG_FLAG_INIT,GetModelEID(),GetNation(GetACharacter()),GetID());
 		break;
-		// boal 20.08.06 перерисовка флага <--
-		// ugeen 29.11.10 установка крена корабля по осям X и Z ->
+		// boal 20.08.06 РїРµСЂРµСЂРёСЃРѕРІРєР° С„Р»Р°РіР° <--
+		// ugeen 29.11.10 СѓСЃС‚Р°РЅРѕРІРєР° РєСЂРµРЅР° РєРѕСЂР°Р±Р»СЏ РїРѕ РѕСЃСЏРј X Рё Z ->
 		case MSG_SHIP_SET_HEEL_XZ:
 			fXHeel = message.Float();
 			fZHeel = message.Float();
 		break;
-		// ugeen 29.11.10 <-- установка крена корабля по осям X и Z
+		// ugeen 29.11.10 <-- СѓСЃС‚Р°РЅРѕРІРєР° РєСЂРµРЅР° РєРѕСЂР°Р±Р»СЏ РїРѕ РѕСЃСЏРј X Рё Z
 		case MSG_SHIP_TEST_MAST_FALL:
 //			TestMastFall(message.Long());
 		break;

@@ -19,24 +19,24 @@
 #define LFX_PI				3.141592654f
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 
 LocationEffects::LocationEffects()
 {
-	//Всплеск
+	//Р’СЃРїР»РµСЃРє
 	chrSplashRefCounter = 0;
 	for(long i = 0; i < LFX_SPLASHES_NUM; i++) chrSplash[i].time = -1.0f;
 	splashesTxt = -1;
-	//Мухи
+	//РњСѓС…Рё
 	flys = null;
 	numFlys = 0;
 	maxFlys = 0;
 	fly = null;
 	numFly = 0;
 	flyTex = -1;
-	//Шотган
+	//РЁРѕС‚РіР°РЅ
 	numSmoke = 0;
 	numFlinders = 0;
 	numBlood = 0;
@@ -62,7 +62,7 @@ LocationEffects::~LocationEffects()
 	if(fly) delete fly;
 }
 
-//Инициализация
+//РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
 bool LocationEffects::Init()
 {
 	//DX8 render
@@ -83,7 +83,7 @@ bool LocationEffects::Init()
 	return true;
 }
 
-//Исполнение
+//РСЃРїРѕР»РЅРµРЅРёРµ
 void LocationEffects::Execute(dword delta_time)
 {
 
@@ -97,7 +97,7 @@ void LocationEffects::Realize(dword delta_time)
 	ProcessedShotgun(dltTime);
 }
 
-//Сообщения
+//РЎРѕРѕР±С‰РµРЅРёСЏ
 dword _cdecl LocationEffects::ProcessMessage(MESSAGE & message)
 {
 	char buf[32];
@@ -231,13 +231,13 @@ inline void LocationEffects::DrawParticles(void * prts, long num, long size, lon
 
 void LocationEffects::CreateSplash(const CVECTOR & pos, float power)
 {
-	//Выберим освободившийся блок
+	//Р’С‹Р±РµСЂРёРј РѕСЃРІРѕР±РѕРґРёРІС€РёР№СЃСЏ Р±Р»РѕРє
 	long i = 0;
 	for(i = 0; i < LFX_SPLASHES_NUM; i++) if(chrSplash[i].time < 0.0f) break;
 	if(i >= LFX_SPLASHES_NUM) return;
 	if(power < 0.0f) power = 0.0f;
 	if(power > 1.0f) power = 1.0f;
-	//Инициализируем
+	//РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј
 	ChrSplash & spl = chrSplash[i];
 	spl.time = 0.0f;
 	spl.kTime = 1.4f;
@@ -264,7 +264,7 @@ void LocationEffects::ProcessedChrSplash(float dltTime)
 	for(long i = 0; i < LFX_SPLASHES_NUM; i++)
 	{
 		ChrSplash & spl = chrSplash[i];
-		//Смотрим время жизни
+		//РЎРјРѕС‚СЂРёРј РІСЂРµРјСЏ Р¶РёР·РЅРё
 		if(spl.time < 0.0f) continue;
 		if(spl.time >= 1.0f)
 		{
@@ -272,11 +272,11 @@ void LocationEffects::ProcessedChrSplash(float dltTime)
 			chrSplashRefCounter--;
 			continue;
 		}
-		//Вычисляем альфазначения
+		//Р’С‹С‡РёСЃР»СЏРµРј Р°Р»СЊС„Р°Р·РЅР°С‡РµРЅРёСЏ
 		float aprt = spl.time;
 		if(aprt < 0.1f) aprt *= 10.0f; else if(aprt > 0.5f) aprt = 1.0f - (aprt - 0.5f)/(1.0f - 0.5f); else aprt = 1.0f;
 		aprt = aprt*255.0f*0.2f;
-		//Партиклы
+		//РџР°СЂС‚РёРєР»С‹
 		for(long j = 0; j < LFX_SPLASHES_P_NUM; j++)
 		{
 			spl.prt[j].pos += spl.prt[j].dir*dltTime;
@@ -284,34 +284,34 @@ void LocationEffects::ProcessedChrSplash(float dltTime)
 			spl.prt[j].dir.y -= 9.8f*dltTime;
 			spl.prt[i].angle += spl.prt[i].dAng*dltTime;
 		}
-		//Увеличиваем время жизни
+		//РЈРІРµР»РёС‡РёРІР°РµРј РІСЂРµРјСЏ Р¶РёР·РЅРё
 		spl.time += dltTime*spl.kTime;
-		//Рисуем
+		//Р РёСЃСѓРµРј
 		DrawParticles(spl.prt, LFX_SPLASHES_P_NUM, sizeof(ParticleSplash), splashesTxt, "LocCharacterSplashes");
 	}
 }
 
 //---------------------------------------------------
-//Мухи у фанарей
+//РњСѓС…Рё Сѓ С„Р°РЅР°СЂРµР№
 //---------------------------------------------------
 
 void LocationEffects::AddLampFlys(CVECTOR & pos)
 {
-	//Занимаем массив
+	//Р—Р°РЅРёРјР°РµРј РјР°СЃСЃРёРІ
 	if(numFlys >= maxFlys)
 	{
 		maxFlys += 8;
 		flys = (LampFlys *)RESIZE(flys, maxFlys*sizeof(LampFlys));
 	}
-	//Заполняем параметры
-	//Общие
+	//Р—Р°РїРѕР»РЅСЏРµРј РїР°СЂР°РјРµС‚СЂС‹
+	//РћР±С‰РёРµ
 	flys[numFlys].pos = pos;
 	flys[numFlys].radius = 0.6f;
 	flys[numFlys].start = numFly;
 	flys[numFlys].num = 1 + (rand() & 7);	
 	numFly += flys[numFlys].num;
 	fly = (ParticleFly *)RESIZE(fly, numFly*sizeof(ParticleFly));
-	//Каждой мухи
+	//РљР°Р¶РґРѕР№ РјСѓС…Рё
 	for(long i = 0; i < flys[numFlys].num; i++)
 	{
 		ParticleFly & f = fly[flys[numFlys].start + i];
@@ -341,10 +341,10 @@ void LocationEffects::ProcessedFlys(float dltTime)
 	float dax = dltTime*1.3f;
 	float day = dltTime*1.4f;
 	float da = dltTime*5.6f;
-	//Расчитываем
+	//Р Р°СЃС‡РёС‚С‹РІР°РµРј
 	for(long i = 0; i < numFlys; i++)
 	{
-		//Коэфициент видимости
+		//РљРѕСЌС„РёС†РёРµРЅС‚ РІРёРґРёРјРѕСЃС‚Рё
 		CVECTOR dir = cam - flys[i].pos;
 		float k = ~dir;
 		if(k > 400.0f) continue;
@@ -353,23 +353,23 @@ void LocationEffects::ProcessedFlys(float dltTime)
 		k = k/20.0f;
 		k = 3.0f*(1.0f - k);
 		if(k > 1.0f) k = 1.0f;		
-		//Обновляем мух
+		//РћР±РЅРѕРІР»СЏРµРј РјСѓС…
 		ParticleFly * fl = fly + flys[i].start;
 		for(long j = 0; j < flys[i].num; j++)
 		{
 			ParticleFly & f = fl[j];
-			//Углы
+			//РЈРіР»С‹
 			f.ax += dax*f.kx; f.ay += day*f.ky; f.a += da*f.k;
-			//Радиус
+			//Р Р°РґРёСѓСЃ
 			float r = 1.0f + 0.5f*sinf(f.a) + 0.2f*cosf(f.a*f.k*2.1f);
 			r *= flys[i].radius;
-			//Позиция
+			//РџРѕР·РёС†РёСЏ
 			f.pos.x = flys[i].pos.x + r*sinf(f.ax)*sinf(f.ay);
 			f.pos.y = flys[i].pos.y + r*cosf(f.ax)*cosf(f.ay);
 			f.pos.z = flys[i].pos.z + r*sinf(f.ax)*cosf(f.ay);
-			//Прозрачность
+			//РџСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ
 			f.alpha = k*255.0f;
-			//Цвет
+			//Р¦РІРµС‚
 			CVECTOR tmp = f.pos - flys[i].pos;
 			float dst = sqrtf(~tmp);
 			if(dst > 0.0f) tmp *= 1.0f/dst;
@@ -384,14 +384,14 @@ void LocationEffects::ProcessedFlys(float dltTime)
 			if(cs > 1.0f) cs = 1.0f;
 			f.color = long(cs*255.0f);
 			f.color |= (f.color << 16) | (f.color << 8);
-			//Кадр
+			//РљР°РґСЂ
 			f.frame += dltTime*f.k*25.0f;
 			if(f.frame >= 4.0f) f.frame -= 4.0f;
-			//Угл
+			//РЈРіР»
 			f.angle += dltTime*f.k*3.0f;
 		}
 	}
-	//Рисуем
+	//Р РёСЃСѓРµРј
 	DrawParticles(fly, numFly, sizeof(ParticleFly), flyTex, "LocFly", true, 4);
 }
 

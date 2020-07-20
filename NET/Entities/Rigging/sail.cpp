@@ -25,8 +25,8 @@ float GetSailSpeed(int holeQ,int holeMax,float maxSpeed,float fSailHoleDepend)
 
 NetSail::NetSail()
 {
-    // установка первоначальных значений всех общих данных
-    // переписываемых затем из INI файла
+    // СѓСЃС‚Р°РЅРѕРІРєР° РїРµСЂРІРѕРЅР°С‡Р°Р»СЊРЅС‹С… Р·РЅР°С‡РµРЅРёР№ РІСЃРµС… РѕР±С‰РёС… РґР°РЅРЅС‹С…
+    // РїРµСЂРµРїРёСЃС‹РІР°РµРјС‹С… Р·Р°С‚РµРј РёР· INI С„Р°Р№Р»Р°
     // ---------------------------------------------------
 	// texture names
     texQuantity= 1;
@@ -169,10 +169,10 @@ void NetSail::SetDevice()
 {
     int i;
 
-    // матрица будет единичной
+    // РјР°С‚СЂРёС†Р° Р±СѓРґРµС‚ РµРґРёРЅРёС‡РЅРѕР№
     mtx.SetIdentity();
 
-    // получить сервис рендера
+    // РїРѕР»СѓС‡РёС‚СЊ СЃРµСЂРІРёСЃ СЂРµРЅРґРµСЂР°
 	RenderService = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
 	if(!RenderService)
 	{
@@ -185,7 +185,7 @@ void NetSail::SetDevice()
     {
         WindVect=NEW float[WINDVECTOR_QUANTITY];
         if(WindVect)
-            // расчет таблицы векторов ветра
+            // СЂР°СЃС‡РµС‚ С‚Р°Р±Р»РёС†С‹ РІРµРєС‚РѕСЂРѕРІ РІРµС‚СЂР°
             for( i=0; i<WINDVECTOR_QUANTITY; i++ )
                 WindVect[i]=sinf((float)i/(float)(WINDVECTOR_QUANTITY)*2.f*PI);
         else
@@ -232,7 +232,7 @@ void NetSail::Execute(dword Delta_Time)
     if(bUse)
     {
         //====================================================
-        // Если был изменен ини-файл, то считать инфо из него
+        // Р•СЃР»Рё Р±С‹Р» РёР·РјРµРЅРµРЅ РёРЅРё-С„Р°Р№Р», С‚Рѕ СЃС‡РёС‚Р°С‚СЊ РёРЅС„Рѕ РёР· РЅРµРіРѕ
 	    WIN32_FIND_DATA	wfd;
 	    HANDLE h = _CORE_API->fio->_FindFirstFile("resource\\ini\\rigging.ini",&wfd);
 	    if (INVALID_HANDLE_VALUE != h) 
@@ -244,11 +244,11 @@ void NetSail::Execute(dword Delta_Time)
             {
                 int oldWindQnt=WINDVECTOR_QUANTITY;
                 LoadSailIni();
-                if(oldWindQnt!=WINDVECTOR_QUANTITY) // если изменили размер таблицы ветров
+                if(oldWindQnt!=WINDVECTOR_QUANTITY) // РµСЃР»Рё РёР·РјРµРЅРёР»Рё СЂР°Р·РјРµСЂ С‚Р°Р±Р»РёС†С‹ РІРµС‚СЂРѕРІ
                 {
                     PTR_DELETE(WindVect);
                     WindVect=NEW float[WINDVECTOR_QUANTITY];
-                    if(WindVect) // расчет таблицы векторов ветра
+                    if(WindVect) // СЂР°СЃС‡РµС‚ С‚Р°Р±Р»РёС†С‹ РІРµРєС‚РѕСЂРѕРІ РІРµС‚СЂР°
                         for(i=0; i<WINDVECTOR_QUANTITY; i++ )
                             WindVect[i]=sinf((float)i/(float)(WINDVECTOR_QUANTITY)*2.f*PI);
                     else
@@ -259,7 +259,7 @@ void NetSail::Execute(dword Delta_Time)
                 for(i=0; i<sailQuantity; i++)
                 {
                     slist[i]->MaxSumWind=slist[i]->sailHeight*MAXSUMWIND;
-                    // для нового размера таблици векторов поправим текущие индексы
+                    // РґР»СЏ РЅРѕРІРѕРіРѕ СЂР°Р·РјРµСЂР° С‚Р°Р±Р»РёС†Рё РІРµРєС‚РѕСЂРѕРІ РїРѕРїСЂР°РІРёРј С‚РµРєСѓС‰РёРµ РёРЅРґРµРєСЃС‹
                     while(slist[i]->VertIdx>=WINDVECTOR_QUANTITY)
                         slist[i]->VertIdx-=WINDVECTOR_QUANTITY;
                     while(slist[i]->HorzIdx>=WINDVECTOR_QUANTITY)
@@ -268,7 +268,7 @@ void NetSail::Execute(dword Delta_Time)
             }
 	    }
 
-        // получим значение ветра
+        // РїРѕР»СѓС‡РёРј Р·РЅР°С‡РµРЅРёРµ РІРµС‚СЂР°
 		VDATA * pSVWeather = (VDATA *)api->GetScriptVariable((IsServer()) ? "NSWeather" : "NCWeather"); Assert(pSVWeather);
 		ATTRIBUTES * pAWeather = pSVWeather->GetAClass(); Assert(pAWeather);
 		//ATTRIBUTES * pAWind = pAWeather->FindAClass(pAWeather, "Wind"); Assert(pAWind);
@@ -278,7 +278,7 @@ void NetSail::Execute(dword Delta_Time)
 		globalWind.base = pAWeather->GetAttributeAsFloat("WindSpeed") / WIND_SPEED_MAX;
 		if(globalWind.base>1.f) globalWind.base = 1.f;
 
-        // установить бокс нулевого размера в центр групп и параметры расчета ветра
+        // СѓСЃС‚Р°РЅРѕРІРёС‚СЊ Р±РѕРєСЃ РЅСѓР»РµРІРѕРіРѕ СЂР°Р·РјРµСЂР° РІ С†РµРЅС‚СЂ РіСЂСѓРїРї Рё РїР°СЂР°РјРµС‚СЂС‹ СЂР°СЃС‡РµС‚Р° РІРµС‚СЂР°
         for(i=0; i<groupQuantity; i++)
         {
 			if(gdata[i].bDeleted) continue;
@@ -305,22 +305,22 @@ void NetSail::Execute(dword Delta_Time)
         for(i=0; i<sailQuantity; i++)
         {
 			if(gdata[slist[i]->HostNum].bDeleted) continue;
-            // сворачивать.разворачивать парус по нужде
+            // СЃРІРѕСЂР°С‡РёРІР°С‚СЊ.СЂР°Р·РІРѕСЂР°С‡РёРІР°С‚СЊ РїР°СЂСѓСЃ РїРѕ РЅСѓР¶РґРµ
             if( slist[i]->sroll && !slist[i]->bFreeSail)
                 slist[i]->DoRollingStep(Delta_Time);
 			if( slist[i]->sroll && !slist[i]->bFreeSail )
 				gdata[slist[i]->HostNum].bFinalSailDo = true;
-            // Если поменялась сетка на парусе, то установить новые индексы
+            // Р•СЃР»Рё РїРѕРјРµРЅСЏР»Р°СЃСЊ СЃРµС‚РєР° РЅР° РїР°СЂСѓСЃРµ, С‚Рѕ СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РЅРѕРІС‹Рµ РёРЅРґРµРєСЃС‹
             slist[i]->GetGrid(pos,perspect);
-            // расчет ветра
+            // СЂР°СЃС‡РµС‚ РІРµС‚СЂР°
             slist[i]->CalculateSailWind();
-            // повернуть парус по нужде
+            // РїРѕРІРµСЂРЅСѓС‚СЊ РїР°СЂСѓСЃ РїРѕ РЅСѓР¶РґРµ
             if( slist[i]->ss.turningSail )
                 slist[i]->TurnSail(fMaxTurnAngl);
-            // расчет влияния состояния парусов на скорость корабля (от 0 до 1)
+            // СЂР°СЃС‡РµС‚ РІР»РёСЏРЅРёСЏ СЃРѕСЃС‚РѕСЏРЅРёСЏ РїР°СЂСѓСЃРѕРІ РЅР° СЃРєРѕСЂРѕСЃС‚СЊ РєРѕСЂР°Р±Р»СЏ (РѕС‚ 0 РґРѕ 1)
             gdata[slist[i]->HostNum].speed_c+=slist[i]->curSpeed;
 			gdata[slist[i]->HostNum].curHole+=slist[i]->GetMaxHoleCount() - slist[i]->ss.holeCount;
-			// если сменилась дырявость паруса, то передать состояние в клиенты
+			// РµСЃР»Рё СЃРјРµРЅРёР»Р°СЃСЊ РґС‹СЂСЏРІРѕСЃС‚СЊ РїР°СЂСѓСЃР°, С‚Рѕ РїРµСЂРµРґР°С‚СЊ СЃРѕСЃС‚РѕСЏРЅРёРµ РІ РєР»РёРµРЅС‚С‹
 			if( slist[i]->m_bHoleChanged ) {
 				slist[i]->m_bHoleChanged = false;
 				long wCliendID = ((ENTITY*)gdata[slist[i]->HostNum].shipEI.pointer)->GetNetID();
@@ -336,13 +336,13 @@ void NetSail::Execute(dword Delta_Time)
             for(i=0; i<sailQuantity; i++)
             {
 				if(gdata[slist[i]->HostNum].bDeleted) continue;
-                // заколебать парусь
+                // Р·Р°РєРѕР»РµР±Р°С‚СЊ РїР°СЂСѓСЃСЊ
                 slist[i]->goWave(&pv[slist[i]->ss.sVert],Delta_Time);
-                // установить сворачивание\разворачивание паруса
+                // СѓСЃС‚Р°РЅРѕРІРёС‚СЊ СЃРІРѕСЂР°С‡РёРІР°РЅРёРµ\СЂР°Р·РІРѕСЂР°С‡РёРІР°РЅРёРµ РїР°СЂСѓСЃР°
                 if( gdata[slist[i]->HostNum].bFinalSailDo )
                     if(!slist[i]->ss.rollingSail)
                         slist[i]->SetRolling(gdata[slist[i]->HostNum].bFinalSailUp);
-                // расчет бокса ограничивающего паруса
+                // СЂР°СЃС‡РµС‚ Р±РѕРєСЃР° РѕРіСЂР°РЅРёС‡РёРІР°СЋС‰РµРіРѕ РїР°СЂСѓСЃР°
                 CVECTOR vtmp = slist[i]->ss.boundSphere.rc - slist[i]->ss.boundSphere.r;
                 int itmp = slist[i]->HostNum;
                 if( gdata[itmp].boxCenter.x > vtmp.x ) gdata[itmp].boxCenter.x = vtmp.x;
@@ -358,7 +358,7 @@ void NetSail::Execute(dword Delta_Time)
             RenderService->UnLockVertexBuffer(sg.vertBuf);
         }
 
-        // сброс признака спуска\подъема для всех кораблей и расчет скорости
+        // СЃР±СЂРѕСЃ РїСЂРёР·РЅР°РєР° СЃРїСѓСЃРєР°\РїРѕРґСЉРµРјР° РґР»СЏ РІСЃРµС… РєРѕСЂР°Р±Р»РµР№ Рё СЂР°СЃС‡РµС‚ СЃРєРѕСЂРѕСЃС‚Рё
         for(i=0; i<groupQuantity; i++)
         {
 			if(gdata[i].bDeleted) continue;
@@ -395,7 +395,7 @@ void NetSail::Execute(dword Delta_Time)
 				}
 			}
         }
-        // инициализация параметров трассировки луча
+        // РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РїР°СЂР°РјРµС‚СЂРѕРІ С‚СЂР°СЃСЃРёСЂРѕРІРєРё Р»СѓС‡Р°
         LastTraceGroup=0;
         _asm rdtsc  _asm sub eax,rtime _asm mov rtime,eax
         tm.idx=rtime;
@@ -619,7 +619,7 @@ dword _cdecl NetSail::ProcessMessage(MESSAGE & message)
                 so->sailtrope.pPos[posNum]=pos;
 
                 CVECTOR epos;
-                if(so->ss.turningSail && posNum!=0) // установка только для поворачивающихся парусов
+                if(so->ss.turningSail && posNum!=0) // СѓСЃС‚Р°РЅРѕРІРєР° С‚РѕР»СЊРєРѕ РґР»СЏ РїРѕРІРѕСЂР°С‡РёРІР°СЋС‰РёС…СЃСЏ РїР°СЂСѓСЃРѕРІ
                 if (NetFindClass(IsServer(), &tmpEI, "NetRope"))
                 if(so->sailtrope.rrs[0]==0)
                 {
@@ -688,7 +688,7 @@ dword _cdecl NetSail::ProcessMessage(MESSAGE & message)
         }
     break;
 
-    // получить от парусов скорость перемещения корабля
+    // РїРѕР»СѓС‡РёС‚СЊ РѕС‚ РїР°СЂСѓСЃРѕРІ СЃРєРѕСЂРѕСЃС‚СЊ РїРµСЂРµРјРµС‰РµРЅРёСЏ РєРѕСЂР°Р±Р»СЏ
     case MSG_SAIL_GET_SPEED:
         tmpEI=message.EntityID();
         float *speedPtr; speedPtr=(float*)message.Pointer();
@@ -734,7 +734,7 @@ dword _cdecl NetSail::ProcessMessage(MESSAGE & message)
                         }
                     }
 
-                    // установим выбранный тип положения парусов
+                    // СѓСЃС‚Р°РЅРѕРІРёРј РІС‹Р±СЂР°РЅРЅС‹Р№ С‚РёРї РїРѕР»РѕР¶РµРЅРёСЏ РїР°СЂСѓСЃРѕРІ
                     if(yesChange)
                     {
                         float tmpf=0.f;
@@ -760,7 +760,7 @@ dword _cdecl NetSail::ProcessMessage(MESSAGE & message)
 
             if(i==groupQuantity)
 			{
-                *speedPtr = (maxVal>0.3f) ? m_fMinSpeedVal : 0.f; // нет корабля в парусных группах - скорость 0
+                *speedPtr = (maxVal>0.3f) ? m_fMinSpeedVal : 0.f; // РЅРµС‚ РєРѕСЂР°Р±Р»СЏ РІ РїР°СЂСѓСЃРЅС‹С… РіСЂСѓРїРїР°С… - СЃРєРѕСЂРѕСЃС‚СЊ 0
 			}
         }
     break;
@@ -769,11 +769,11 @@ dword _cdecl NetSail::ProcessMessage(MESSAGE & message)
         {
             ENTITY_ID shipEI = message.EntityID();
             float *pMaxSpeed = (float*)message.Pointer();
-            // найдем нужную группу парусов
+            // РЅР°Р№РґРµРј РЅСѓР¶РЅСѓСЋ РіСЂСѓРїРїСѓ РїР°СЂСѓСЃРѕРІ
 			int gn = 0;
             for(gn=0; gn<groupQuantity; gn++)
                 if(gdata[gn].shipEI==shipEI) break;
-            // запишем по указателю параметра значение для него
+            // Р·Р°РїРёС€РµРј РїРѕ СѓРєР°Р·Р°С‚РµР»СЋ РїР°СЂР°РјРµС‚СЂР° Р·РЅР°С‡РµРЅРёРµ РґР»СЏ РЅРµРіРѕ
             if(pMaxSpeed)
                 if(gn<groupQuantity)
                     *pMaxSpeed = gdata[gn].maxSpeed;
@@ -781,7 +781,7 @@ dword _cdecl NetSail::ProcessMessage(MESSAGE & message)
         }
     break;
 
-    // перебросить парус в другую группу
+    // РїРµСЂРµР±СЂРѕСЃРёС‚СЊ РїР°СЂСѓСЃ РІ РґСЂСѓРіСѓСЋ РіСЂСѓРїРїСѓ
     case MSG_SAIL_TO_NEWHOST:
 		{
 			ENTITY_ID oldModelEI = message.EntityID();
@@ -802,9 +802,9 @@ dword _cdecl NetSail::ProcessMessage(MESSAGE & message)
 		}
     break;
 
-    // удалить группу парусов
+    // СѓРґР°Р»РёС‚СЊ РіСЂСѓРїРїСѓ РїР°СЂСѓСЃРѕРІ
     case MSG_SAIL_DEL_GROUP:
-        tmpEI=message.EntityID(); // получим ENTITY хозяина группы
+        tmpEI=message.EntityID(); // РїРѕР»СѓС‡РёРј ENTITY С…РѕР·СЏРёРЅР° РіСЂСѓРїРїС‹
         for(i=0; i<groupQuantity; i++)
             if(tmpEI==gdata[i].shipEI)
             {
@@ -814,9 +814,9 @@ dword _cdecl NetSail::ProcessMessage(MESSAGE & message)
             }
     break;
 
-    // освоботить от стандартного надувания группу парусов
+    // РѕСЃРІРѕР±РѕС‚РёС‚СЊ РѕС‚ СЃС‚Р°РЅРґР°СЂС‚РЅРѕРіРѕ РЅР°РґСѓРІР°РЅРёСЏ РіСЂСѓРїРїСѓ РїР°СЂСѓСЃРѕРІ
     case MSG_SAIL_FREE_GROUP:
-        tmpEI=message.EntityID(); // ENTITY хозяина группы
+        tmpEI=message.EntityID(); // ENTITY С…РѕР·СЏРёРЅР° РіСЂСѓРїРїС‹
         for(i=0; i<groupQuantity; i++)
             if(tmpEI==gdata[i].shipEI)
             {
@@ -830,7 +830,7 @@ dword _cdecl NetSail::ProcessMessage(MESSAGE & message)
             }
     break;
 
-	// начать/закончить присоединение парусов к падающей мачте
+	// РЅР°С‡Р°С‚СЊ/Р·Р°РєРѕРЅС‡РёС‚СЊ РїСЂРёСЃРѕРµРґРёРЅРµРЅРёРµ РїР°СЂСѓСЃРѕРІ Рє РїР°РґР°СЋС‰РµР№ РјР°С‡С‚Рµ
 	case MSG_SAIL_MAST_PROCESSING:
 		PTR_DELETE(m_sMastName);
 		m_nMastCreatedCharacter = message.Long();
@@ -847,7 +847,7 @@ dword _cdecl NetSail::ProcessMessage(MESSAGE & message)
 		}
 	break;
 
-	// скриптовое сообщение
+	// СЃРєСЂРёРїС‚РѕРІРѕРµ СЃРѕРѕР±С‰РµРЅРёРµ
 	case MSG_SAIL_SCRIPT_PROCESSING:
 		{
 			char param[256];
@@ -874,7 +874,7 @@ void NetSail::AddSailLabel(GEOS::LABEL &lbl, NODE *nod, bool bSailUp)
             break;
         }
 
-    if(i==sailQuantity) // нет такого паруса - надо создавать новый
+    if(i==sailQuantity) // РЅРµС‚ С‚Р°РєРѕРіРѕ РїР°СЂСѓСЃР° - РЅР°РґРѕ СЃРѕР·РґР°РІР°С‚СЊ РЅРѕРІС‹Р№
     {
         // create new sail data and fill that
         if(slist)
@@ -898,7 +898,7 @@ void NetSail::AddSailLabel(GEOS::LABEL &lbl, NODE *nod, bool bSailUp)
 
         cs->mastNum=0;
         cs->rollType = ROLLTYPE_NORMAL;
-        // получим номер мачты к которой привязан парус (0-нет мачты)
+        // РїРѕР»СѓС‡РёРј РЅРѕРјРµСЂ РјР°С‡С‚С‹ Рє РєРѕС‚РѕСЂРѕР№ РїСЂРёРІСЏР·Р°РЅ РїР°СЂСѓСЃ (0-РЅРµС‚ РјР°С‡С‚С‹)
         if( !strncmp(nod->GetName(),"rey",3) )
         {
             if(nod->parent)
@@ -1032,12 +1032,12 @@ void NetSail::SetAllSails(int groupNum)
             {
                 gdata[groupNum].sailIdx[idx++]=i;
             }
-		// Посмотрим наличие дырочек
+		// РџРѕСЃРјРѕС‚СЂРёРј РЅР°Р»РёС‡РёРµ РґС‹СЂРѕС‡РµРє
 		if(gdata[groupNum].bYesShip && !gdata[groupNum].bDeleted)
 		{
 			ATTRIBUTES * pACh = ((VAI_OBJBASE*)gdata[groupNum].shipEI.pointer)->GetACharacter();
 			ATTRIBUTES * pA = null;
-			// Запустим установку текстур на паруса
+			// Р—Р°РїСѓСЃС‚РёРј СѓСЃС‚Р°РЅРѕРІРєСѓ С‚РµРєСЃС‚СѓСЂ РЅР° РїР°СЂСѓСЃР°
 			SetSailTextures( groupNum, api->Event("NetClient_GetSailTextureData", "a", pACh) );
 			if(pACh!=null)
 			{
@@ -1062,7 +1062,7 @@ void NetSail::SetAllSails(int groupNum)
 							{
 								ps->SetAllHole(pASail->GetAttributeAsDword("hd"));
 								/*if( (ps->ss.eSailType==SAIL_TREANGLE?10:12) == (int)ps->ss.holeCount )
-								{ // весь парус подпорчен - нафиг он нужен
+								{ // РІРµСЃСЊ РїР°СЂСѓСЃ РїРѕРґРїРѕСЂС‡РµРЅ - РЅР°С„РёРі РѕРЅ РЅСѓР¶РµРЅ
 									ps->bDeleted = true;
 									bDeleteState = true;
 								}*/
@@ -1100,7 +1100,7 @@ void NetSail::SetAllSails()
 
     for(int i=0; i<sailQuantity; i++)
     {
-        // сформировать параметры буферов вертекса и индекса
+        // СЃС„РѕСЂРјРёСЂРѕРІР°С‚СЊ РїР°СЂР°РјРµС‚СЂС‹ Р±СѓС„РµСЂРѕРІ РІРµСЂС‚РµРєСЃР° Рё РёРЅРґРµРєСЃР°
 		slist[i]->SetTurnLimits();
         slist[i]->ss.sVert=sg.nVert;
         slist[i]->ss.sIndx=sg.nIndx;
@@ -1284,7 +1284,7 @@ float NetSail::Trace(const CVECTOR &src,const CVECTOR &dst)
         {
             bool bYesTrace=false;
             CVECTOR vmed;
-            // сечение по X:
+            // СЃРµС‡РµРЅРёРµ РїРѕ X:
             if(src.x<minp.x)
                 if(dst.x<minp.x) continue;
                 else
@@ -1303,7 +1303,7 @@ float NetSail::Trace(const CVECTOR &src,const CVECTOR &dst)
                         vmed.z>=minp.z && vmed.z<=maxp.z )
                         bYesTrace=true;
                 }
-            // сечение по Z:
+            // СЃРµС‡РµРЅРёРµ РїРѕ Z:
             if(!bYesTrace && src.z<minp.z)
                 if(dst.z<minp.z) continue;
                 else
@@ -1322,7 +1322,7 @@ float NetSail::Trace(const CVECTOR &src,const CVECTOR &dst)
                         vmed.x>=minp.x && vmed.x<=maxp.x )
                         bYesTrace=true;
                 }
-            // сечение по Y:
+            // СЃРµС‡РµРЅРёРµ РїРѕ Y:
             if(!bYesTrace && src.y<minp.y)
                 if(dst.y<minp.y) continue;
                 else
@@ -1339,8 +1339,8 @@ float NetSail::Trace(const CVECTOR &src,const CVECTOR &dst)
 
         LastTraceGroup=i;
         //==============================================
-        // лучь прошел через куб вокруг парусов корабля
-        // начинаем искать парус в который он попал
+        // Р»СѓС‡СЊ РїСЂРѕС€РµР» С‡РµСЂРµР· РєСѓР± РІРѕРєСЂСѓРі РїР°СЂСѓСЃРѕРІ РєРѕСЂР°Р±Р»СЏ
+        // РЅР°С‡РёРЅР°РµРј РёСЃРєР°С‚СЊ РїР°СЂСѓСЃ РІ РєРѕС‚РѕСЂС‹Р№ РѕРЅ РїРѕРїР°Р»
         //==============================================
         float tmp;
 		traceSail=-1;
@@ -1355,7 +1355,7 @@ float NetSail::Trace(const CVECTOR &src,const CVECTOR &dst)
                 else {retVal=tmp; traceSail=gdata[i].sailIdx[j]; break;}
         }
 
-        if(retVal<=1.f) break; // трассируем только по одному кораблю
+        if(retVal<=1.f) break; // С‚СЂР°СЃСЃРёСЂСѓРµРј С‚РѕР»СЊРєРѕ РїРѕ РѕРґРЅРѕРјСѓ РєРѕСЂР°Р±Р»СЋ
     }
 
     return retVal;
@@ -1385,11 +1385,11 @@ void NetSail::FirstRun()
 
     ENTITY_ID ropeEI;
     if(NetFindClass(IsServer(), &ropeEI, "NetRope"))
-    // расчет позиции согласно положения веревок
+    // СЂР°СЃС‡РµС‚ РїРѕР·РёС†РёРё СЃРѕРіР»Р°СЃРЅРѕ РїРѕР»РѕР¶РµРЅРёСЏ РІРµСЂРµРІРѕРє
     for(sn=wFirstIndx; sn<sailQuantity; sn++)
     {
         bool bChange=false;
-        if(slist[sn]->sroll==0 && !slist[sn]->bRolling) // производим перерасчет натяжения веревки если парус не в режиме поднятия
+        if(slist[sn]->sroll==0 && !slist[sn]->bRolling) // РїСЂРѕРёР·РІРѕРґРёРј РїРµСЂРµСЂР°СЃС‡РµС‚ РЅР°С‚СЏР¶РµРЅРёСЏ РІРµСЂРµРІРєРё РµСЃР»Рё РїР°СЂСѓСЃ РЅРµ РІ СЂРµР¶РёРјРµ РїРѕРґРЅСЏС‚РёСЏ
         for(i=0; i<2; i++)
             if(slist[sn]->sailtrope.rrs[i])
             {
@@ -1475,31 +1475,31 @@ void NetSail::DoSailToNewHost(ENTITY_ID newModelEI, ENTITY_ID newHostEI, int grN
 {
     if(groupQuantity<1 || sailQuantity<1) return;
 
-    // найдем старого хозяина
+    // РЅР°Р№РґРµРј СЃС‚Р°СЂРѕРіРѕ С…РѕР·СЏРёРЅР°
 	int oldg = 0;
     for(oldg=0; oldg<groupQuantity; oldg++)
         if(gdata[oldg].modelEI==oldModelEI && !gdata[oldg].bDeleted)  break;
-    if(oldg==groupQuantity) return; // нет старой модели - возвращаемся ничего не сделав
+    if(oldg==groupQuantity) return; // РЅРµС‚ СЃС‚Р°СЂРѕР№ РјРѕРґРµР»Рё - РІРѕР·РІСЂР°С‰Р°РµРјСЃСЏ РЅРёС‡РµРіРѕ РЅРµ СЃРґРµР»Р°РІ
 
-    // найдем парус
+    // РЅР°Р№РґРµРј РїР°СЂСѓСЃ
 	int sn = 0;
     for(sn=0; sn<sailQuantity; sn++)
         if( slist[sn]->hostNode==nod &&
             slist[sn]->HostNum==oldg &&
             (grNum==0 || slist[sn]->groupNum==grNum) )  break;
-    if(sn==sailQuantity) return; // нет такого паруса - возвращаемся без результата
+    if(sn==sailQuantity) return; // РЅРµС‚ С‚Р°РєРѕРіРѕ РїР°СЂСѓСЃР° - РІРѕР·РІСЂР°С‰Р°РµРјСЃСЏ Р±РµР· СЂРµР·СѓР»СЊС‚Р°С‚Р°
 
-    // в старом хозяине найдем ссылку на наш парус
+    // РІ СЃС‚Р°СЂРѕРј С…РѕР·СЏРёРЅРµ РЅР°Р№РґРµРј СЃСЃС‹Р»РєСѓ РЅР° РЅР°С€ РїР°СЂСѓСЃ
 	int idx = 0;
     for(idx=0; idx<gdata[oldg].sailQuantity; idx++)
         if(gdata[oldg].sailIdx[idx]==sn) break;
-    if(idx==gdata[oldg].sailQuantity) return; // нет паруса в группе - возврат без результата
+    if(idx==gdata[oldg].sailQuantity) return; // РЅРµС‚ РїР°СЂСѓСЃР° РІ РіСЂСѓРїРїРµ - РІРѕР·РІСЂР°С‚ Р±РµР· СЂРµР·СѓР»СЊС‚Р°С‚Р°
 
-    // найдем нового хозяина
+    // РЅР°Р№РґРµРј РЅРѕРІРѕРіРѕ С…РѕР·СЏРёРЅР°
 	int gn = 0;
     for(gn=0; gn<groupQuantity; gn++)
         if(gdata[gn].modelEI==newModelEI) break;
-    if(gn==groupQuantity) // нет такого хозяина - создаем нового
+    if(gn==groupQuantity) // РЅРµС‚ С‚Р°РєРѕРіРѕ С…РѕР·СЏРёРЅР° - СЃРѕР·РґР°РµРј РЅРѕРІРѕРіРѕ
     {
 		GROUPDATA *oldgdata=gdata;
         gdata= NEW GROUPDATA[groupQuantity+1];
@@ -1521,7 +1521,7 @@ void NetSail::DoSailToNewHost(ENTITY_ID newModelEI, ENTITY_ID newHostEI, int grN
 		bDeleteState = true;
     }
 
-	// поищем новый парус в новой группе
+	// РїРѕРёС‰РµРј РЅРѕРІС‹Р№ РїР°СЂСѓСЃ РІ РЅРѕРІРѕР№ РіСЂСѓРїРїРµ
 	int i = 0;
 	for(i=0; i<gdata[gn].sailQuantity; i++)
 		if(gdata[gn].sailIdx[i]==sn) break;
@@ -1537,7 +1537,7 @@ void NetSail::DoSailToNewHost(ENTITY_ID newModelEI, ENTITY_ID newHostEI, int grN
 
 	if(i==gdata[gn].sailQuantity)
 	{
-		// добавим найденный парус в новую группу
+		// РґРѕР±Р°РІРёРј РЅР°Р№РґРµРЅРЅС‹Р№ РїР°СЂСѓСЃ РІ РЅРѕРІСѓСЋ РіСЂСѓРїРїСѓ
 		if(gdata[gn].sailQuantity==0)
 		{
 			gdata[gn].sailIdx= NEW int[1];
@@ -1556,9 +1556,9 @@ void NetSail::DoSailToNewHost(ENTITY_ID newModelEI, ENTITY_ID newHostEI, int grN
 	}
 	slist[sn]->HostNum=gn;
 
-    // удалим парус из старой группы
+    // СѓРґР°Р»РёРј РїР°СЂСѓСЃ РёР· СЃС‚Р°СЂРѕР№ РіСЂСѓРїРїС‹
     if(gdata[oldg].sailQuantity==1)
-    // единственный парус убираем вместе с группой
+    // РµРґРёРЅСЃС‚РІРµРЅРЅС‹Р№ РїР°СЂСѓСЃ СѓР±РёСЂР°РµРј РІРјРµСЃС‚Рµ СЃ РіСЂСѓРїРїРѕР№
     {
         PTR_DELETE(gdata[oldg].sailIdx);
 		gdata[oldg].sailQuantity = 0;
@@ -1571,7 +1571,7 @@ void NetSail::DoSailToNewHost(ENTITY_ID newModelEI, ENTITY_ID newHostEI, int grN
     }
 	bDeleteState = true;
 
-    // изменим некоторые значения для нашего паруса
+    // РёР·РјРµРЅРёРј РЅРµРєРѕС‚РѕСЂС‹Рµ Р·РЅР°С‡РµРЅРёСЏ РґР»СЏ РЅР°С€РµРіРѕ РїР°СЂСѓСЃР°
     PTR_DELETE(slist[sn]->sailtrope.rrs[0]);
     PTR_DELETE(slist[sn]->sailtrope.rrs[1]);
     slist[sn]->sailtrope.pnttie[0] = slist[sn]->sailtrope.pnttie[1] =
@@ -1589,7 +1589,7 @@ void NetSail::DeleteSailGroup()
     int old_sailQuantity = sailQuantity;
     int old_groupQuantity = groupQuantity;
 
-    // удалим все паруса из удаленных группы //
+    // СѓРґР°Р»РёРј РІСЃРµ РїР°СЂСѓСЃР° РёР· СѓРґР°Р»РµРЅРЅС‹С… РіСЂСѓРїРїС‹ //
     //---------------------------------------//
     for(sn=0,sailQuantity=0; sn<old_sailQuantity; sn++)
         if(gdata[slist[sn]->HostNum].bDeleted || slist[sn]->bDeleted)	{PTR_DELETE(slist[sn]);}
@@ -1598,7 +1598,7 @@ void NetSail::DeleteSailGroup()
 	if(sailQuantity==0)
 		sailQuantity=0;
 
-	// подсчет числа групп
+	// РїРѕРґСЃС‡РµС‚ С‡РёСЃР»Р° РіСЂСѓРїРї
 	for(gn=0,groupQuantity=0; gn<old_groupQuantity; gn++)
 		if(!gdata[gn].bDeleted) groupQuantity++;
 		else
@@ -1607,7 +1607,7 @@ void NetSail::DeleteSailGroup()
 			gdata[gn].sailQuantity = 0;
 		}
 
-    // новые списки парусов и групп
+    // РЅРѕРІС‹Рµ СЃРїРёСЃРєРё РїР°СЂСѓСЃРѕРІ Рё РіСЂСѓРїРї
     SAILONE **oldslist = slist;
 	GROUPDATA *oldgdata = gdata;
 	if(sailQuantity==0 || groupQuantity==0)
@@ -1629,15 +1629,15 @@ void NetSail::DeleteSailGroup()
 		for( gn=0; gn<old_groupQuantity; gn++ )
 		{
 			PTR_DELETE(oldgdata[gn].sailIdx);
-			// подсчет число парусов в группе
+			// РїРѕРґСЃС‡РµС‚ С‡РёСЃР»Рѕ РїР°СЂСѓСЃРѕРІ РІ РіСЂСѓРїРїРµ
 			int nsn = 0;
 			for( sn=0; sn<old_sailQuantity; sn++ )	if(oldslist[sn]!=null && oldslist[sn]->HostNum==gn) nsn++;
 			if(nsn==0) continue;
-			//  в новом месте создаем запись о группе парусов
+			//  РІ РЅРѕРІРѕРј РјРµСЃС‚Рµ СЃРѕР·РґР°РµРј Р·Р°РїРёСЃСЊ Рѕ РіСЂСѓРїРїРµ РїР°СЂСѓСЃРѕРІ
 			memcpy(&gdata[groupQuantity],&oldgdata[gn],sizeof(GROUPDATA));
 			if( (gdata[groupQuantity].sailIdx=NEW int[nsn]) == null )	{_THROW("allocate memory error");}
 			gdata[groupQuantity].sailQuantity = nsn;
-			// заполняем список парусов для группы и общий
+			// Р·Р°РїРѕР»РЅСЏРµРј СЃРїРёСЃРѕРє РїР°СЂСѓСЃРѕРІ РґР»СЏ РіСЂСѓРїРїС‹ Рё РѕР±С‰РёР№
 			for( sn=0,nsn=0; sn<old_sailQuantity; sn++ )
 				if(oldslist[sn]!=null && oldslist[sn]->HostNum==gn)
 				{
@@ -1646,16 +1646,16 @@ void NetSail::DeleteSailGroup()
 					slist[sailQuantity]->HostNum = groupQuantity;
 					sailQuantity++;
 				}
-			// переход на другую группу
+			// РїРµСЂРµС…РѕРґ РЅР° РґСЂСѓРіСѓСЋ РіСЂСѓРїРїСѓ
 			groupQuantity++;
 		}
 	}
 	VOIDPTR_DELETE(oldgdata);
 	PTR_DELETE(oldslist);
 
-    //подсчет новых параметров буферов вертексов и индексов
-    long vIndx=0; // индекс на вертекс буфер
-    // проход по всем группам и простановка новых ссылок на буфера
+    //РїРѕРґСЃС‡РµС‚ РЅРѕРІС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ Р±СѓС„РµСЂРѕРІ РІРµСЂС‚РµРєСЃРѕРІ Рё РёРЅРґРµРєСЃРѕРІ
+    long vIndx=0; // РёРЅРґРµРєСЃ РЅР° РІРµСЂС‚РµРєСЃ Р±СѓС„РµСЂ
+    // РїСЂРѕС…РѕРґ РїРѕ РІСЃРµРј РіСЂСѓРїРїР°Рј Рё РїСЂРѕСЃС‚Р°РЅРѕРІРєР° РЅРѕРІС‹С… СЃСЃС‹Р»РѕРє РЅР° Р±СѓС„РµСЂР°
     for(gn=0; gn<groupQuantity; gn++)
     {
         for(sn=0; sn<gdata[gn].sailQuantity; sn++)
@@ -1667,11 +1667,11 @@ void NetSail::DeleteSailGroup()
     }
     sg.nVert=vIndx;
 
-    // удалим старые буферы
+    // СѓРґР°Р»РёРј СЃС‚Р°СЂС‹Рµ Р±СѓС„РµСЂС‹
 	VERTEX_BUFFER_RELEASE(RenderService,sg.vertBuf);
     if(sg.nVert>0)
     {
-        // создадим новые буферы
+        // СЃРѕР·РґР°РґРёРј РЅРѕРІС‹Рµ Р±СѓС„РµСЂС‹
         sg.vertBuf=RenderService->CreateVertexBuffer(SAILVERTEX_FORMAT,sg.nVert*sizeof(SAILVERTEX),D3DUSAGE_WRITEONLY);
 
         SAILVERTEX* pv; pv=(SAILVERTEX*)RenderService->LockVertexBuffer(sg.vertBuf);
@@ -1695,19 +1695,19 @@ void NetSail::SetAddSails(int firstSail)
 {
     for(int i=firstSail; i<sailQuantity; i++)
     {
-        // сформировать параметры буферов вертекса и индекса
+        // СЃС„РѕСЂРјРёСЂРѕРІР°С‚СЊ РїР°СЂР°РјРµС‚СЂС‹ Р±СѓС„РµСЂРѕРІ РІРµСЂС‚РµРєСЃР° Рё РёРЅРґРµРєСЃР°
 		slist[i]->SetTurnLimits();
         slist[i]->ss.sVert=sg.nVert;
         slist[i]->ss.sIndx=54;
         sg.nVert+=slist[i]->ss.nVert;
     }
 
-    // удалим старые буферы
+    // СѓРґР°Р»РёРј СЃС‚Р°СЂС‹Рµ Р±СѓС„РµСЂС‹
 	VERTEX_BUFFER_RELEASE(RenderService,sg.vertBuf);
-    // создадим новые буферы
+    // СЃРѕР·РґР°РґРёРј РЅРѕРІС‹Рµ Р±СѓС„РµСЂС‹
     sg.vertBuf=RenderService->CreateVertexBuffer(SAILVERTEX_FORMAT,sg.nVert*sizeof(SAILVERTEX),D3DUSAGE_WRITEONLY);
 
-    // заполним вертекс буфер и установим текстурные координаты
+    // Р·Р°РїРѕР»РЅРёРј РІРµСЂС‚РµРєСЃ Р±СѓС„РµСЂ Рё СѓСЃС‚Р°РЅРѕРІРёРј С‚РµРєСЃС‚СѓСЂРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹
     SAILVERTEX* pv; pv=(SAILVERTEX*)RenderService->LockVertexBuffer(sg.vertBuf);
     if(pv)
     {
@@ -1725,17 +1725,17 @@ void NetSail::SetAddSails(int firstSail)
 void NetSail::DoNoRopeSailToNewHost(ENTITY_ID newModel, ENTITY_ID newHost, ENTITY_ID oldHost)
 {
     ENTITY_ID rope_id;
-    if( !NetFindClass(IsServer(), &rope_id, "NetRope") ) return; // нет веревок нет концерта
+    if( !NetFindClass(IsServer(), &rope_id, "NetRope") ) return; // РЅРµС‚ РІРµСЂРµРІРѕРє РЅРµС‚ РєРѕРЅС†РµСЂС‚Р°
     ROPE_BASE *rb = (ROPE_BASE*)_CORE_API->GetEntityPointer(&rope_id);
     if(rb==null) return;
 
-    // найдем группу старого хозяина
+    // РЅР°Р№РґРµРј РіСЂСѓРїРїСѓ СЃС‚Р°СЂРѕРіРѕ С…РѕР·СЏРёРЅР°
 	int ogn = 0;
     for(int ogn=0; ogn<groupQuantity; ogn++)
         if(gdata[ogn].bYesShip && gdata[ogn].shipEI==oldHost && !gdata[ogn].bDeleted) break;
 	if(ogn==groupQuantity) return;
 
-    // новый root NODE
+    // РЅРѕРІС‹Р№ root NODE
     MODEL *nmdl = (MODEL*)api->GetEntityPointer(&newModel);
     if(nmdl==null) return;
     NODE *nroot = nmdl->GetNode(0);
@@ -1744,7 +1744,7 @@ void NetSail::DoNoRopeSailToNewHost(ENTITY_ID newModel, ENTITY_ID newHost, ENTIT
     MODEL *omdl = (MODEL*)api->GetEntityPointer(&gdata[ogn].modelEI);
     if(omdl==null) return;
 
-    // в найденной группе пройдемся по парусам 
+    // РІ РЅР°Р№РґРµРЅРЅРѕР№ РіСЂСѓРїРїРµ РїСЂРѕР№РґРµРјСЃСЏ РїРѕ РїР°СЂСѓСЃР°Рј 
     for(int si=0; si<gdata[ogn].sailQuantity; si++)
     {
         int sn= gdata[ogn].sailIdx[si];
@@ -1762,12 +1762,12 @@ void NetSail::DoNoRopeSailToNewHost(ENTITY_ID newModel, ENTITY_ID newHost, ENTIT
         for(int i=0; i<gi.nlabels; i++)
         {
             GEOS::LABEL gl; tgeo->GetLabel(i,gl);
-            if(!strncmp(gl.group_name,"sail",4)) // это группа парусов
-                if(atoi(&gl.group_name[5])==slist[sn]->groupNum) // с правильным номером группы
-                    if(!strncmp(gl.name,"rope",4)) // и парус связан с веревкой
+            if(!strncmp(gl.group_name,"sail",4)) // СЌС‚Рѕ РіСЂСѓРїРїР° РїР°СЂСѓСЃРѕРІ
+                if(atoi(&gl.group_name[5])==slist[sn]->groupNum) // СЃ РїСЂР°РІРёР»СЊРЅС‹Рј РЅРѕРјРµСЂРѕРј РіСЂСѓРїРїС‹
+                    if(!strncmp(gl.name,"rope",4)) // Рё РїР°СЂСѓСЃ СЃРІСЏР·Р°РЅ СЃ РІРµСЂРµРІРєРѕР№
                         if( rb->IsAbsentRope(gdata[ogn].modelEI, atoi(&gl.name[5])) )
                         {
-                            // удалим веревки принадлежащие этому парусу
+                            // СѓРґР°Р»РёРј РІРµСЂРµРІРєРё РїСЂРёРЅР°РґР»РµР¶Р°С‰РёРµ СЌС‚РѕРјСѓ РїР°СЂСѓСЃСѓ
                             if( slist[sn]->sailtrope.pnttie[0] ||
                                 slist[sn]->sailtrope.pnttie[1] ||
                                 slist[sn]->sailtrope.pnttie[2] ||
@@ -1777,9 +1777,9 @@ void NetSail::DoNoRopeSailToNewHost(ENTITY_ID newModel, ENTITY_ID newHost, ENTIT
                                                    slist[sn]->hostNode,
                                                    slist[sn]->groupNum );
                             }
-                            // делаем перенос паруса в новую группу
+                            // РґРµР»Р°РµРј РїРµСЂРµРЅРѕСЃ РїР°СЂСѓСЃР° РІ РЅРѕРІСѓСЋ РіСЂСѓРїРїСѓ
                             DoSailToNewHost(newModel,newHost,slist[sn]->groupNum,slist[sn]->hostNode,gdata[ogn].modelEI);
-                            // перенесем этот парус в другой NODE
+                            // РїРµСЂРµРЅРµСЃРµРј СЌС‚РѕС‚ РїР°СЂСѓСЃ РІ РґСЂСѓРіРѕР№ NODE
                             int iMax=4;
                             if(slist[sn]->ss.eSailType==SAIL_TREANGLE) iMax=3;
                             for(int j=0; j<iMax; j++)
@@ -1796,10 +1796,10 @@ void NetSail::DoNoRopeSailToNewHost(ENTITY_ID newModel, ENTITY_ID newHost, ENTIT
 void _cdecl sailPrint(VDX8RENDER *rs, const CVECTOR & pos3D, float rad, long line, const char * format, ...)
 {
 	static char buf[256];
-	//Печатаем в буфер
+	//РџРµС‡Р°С‚Р°РµРј РІ Р±СѓС„РµСЂ
 	long len = _vsnprintf(buf, sizeof(buf) - 1, format, (char *)(&format + 1));
 	buf[sizeof(buf) - 1] = 0;
-	//Ищем позицию точки на экране
+	//РС‰РµРј РїРѕР·РёС†РёСЋ С‚РѕС‡РєРё РЅР° СЌРєСЂР°РЅРµ
 	static CMatrix mtx, view, prj;
 	static D3DVIEWPORT9 vp;
 	MTX_PRJ_VECTOR vrt;
@@ -1813,10 +1813,10 @@ void _cdecl sailPrint(VDX8RENDER *rs, const CVECTOR & pos3D, float rad, long lin
 	if((pos3D | view.Vz()) < d) return;
 	rs->GetViewport(&vp);
 	mtx.Projection((CVECTOR *)&pos3D, &vrt, 1, vp.Width*0.5f, vp.Height*0.5f, sizeof(CVECTOR), sizeof(MTX_PRJ_VECTOR));
-	//Ищем позицию
+	//РС‰РµРј РїРѕР·РёС†РёСЋ
 	long fh = rs->CharHeight(FONT_DEFAULT)/2;
 	vrt.y -= (line + 0.5f)*fh;
-	//Прозрачность	
+	//РџСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ	
 	long color = 0xffffffff;
 	const float kDist = 0.75f;
 	if(dist > kDist*kDist*rad*rad)
@@ -1851,9 +1851,9 @@ void NetSail::SetSailTextures(long grNum, VDATA* pvd)
 
 	gdata[grNum].maxSP = pA->GetAttributeAsDword("MaxSP",gdata[grNum].maxSP);
 
-	// основная текстура
+	// РѕСЃРЅРѕРІРЅР°СЏ С‚РµРєСЃС‚СѓСЂР°
 	char* pcNormalName = pA->GetAttribute("normalTex");
-	// герб текстуры
+	// РіРµСЂР± С‚РµРєСЃС‚СѓСЂС‹
 	IDirect3DTexture9* pGeraldTexture = (IDirect3DTexture9*)pA->GetAttributeAsDword("geraldTexPointer",0);
 	char* pcGeraldName = pA->GetAttribute("geraldTex");
 	//

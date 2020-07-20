@@ -408,7 +408,7 @@ bool  DX8RENDER::Init()
 	    pTechnique = NEW CTechnique(this);
 	    pTechnique->DecodeFiles();
 
-        // получить стартовый ини файл для шрифтов
+        // РїРѕР»СѓС‡РёС‚СЊ СЃС‚Р°СЂС‚РѕРІС‹Р№ РёРЅРё С„Р°Р№Р» РґР»СЏ С€СЂРёС„С‚РѕРІ
         if (!ini->ReadString(0, "startFontIniFile", str, sizeof(str)-1, ""))
 		{
             api->Trace("Not finded 'startFontIniFile' parameter into ENGINE.INI file");
@@ -618,7 +618,7 @@ bool DX8RENDER::InitDevice(bool windowed, HWND _hwnd, long width, long height)
 			d3d->CreateDevice( D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd, D3DCREATE_SOFTWARE_VERTEXPROCESSING, &d3dpp, &d3d9))==true)	return false;
 	}
 
-	//Создаем рендерtargetы для POST PROCESS эффектов...
+	//РЎРѕР·РґР°РµРј СЂРµРЅРґРµСЂtargetС‹ РґР»СЏ POST PROCESS СЌС„С„РµРєС‚РѕРІ...
 	d3d9->GetRenderTarget(0, &pOriginalScreenSurface);
 	d3d9->GetDepthStencilSurface(&pOriginalDepthSurface);
 
@@ -846,7 +846,7 @@ void DX8RENDER::CreateRenderQuad (float fWidth, float fHeight, float fSrcWidth, 
 
 void DX8RENDER::BlurGlowTexture ()
 {
-	//Рендерим все в маленькую текстуру...
+	//Р РµРЅРґРµСЂРёРј РІСЃРµ РІ РјР°Р»РµРЅСЊРєСѓСЋ С‚РµРєСЃС‚СѓСЂСѓ...
 	CreateRenderQuad(fSmallWidth*2.0f, fSmallHeight*2.0f, 1024.0f, 1024.0f);
 	SetTexture (0, pPostProcessTexture);
 	SetTexture (1, pPostProcessTexture);
@@ -855,7 +855,7 @@ void DX8RENDER::BlurGlowTexture ()
 	d3d9->SetRenderTarget( 0, pSmallPostProcessSurface2);
 	DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, POST_PROCESS_FVF, 2, PostProcessQuad, sizeof(QuadVertex), "PostProcessBlur");
 
-	//предварительное размытие iBlurPasses раз :))))
+	//РїСЂРµРґРІР°СЂРёС‚РµР»СЊРЅРѕРµ СЂР°Р·РјС‹С‚РёРµ iBlurPasses СЂР°Р· :))))
 	for (int i = 0; i < iBlurPasses; i++)
 	{
 		CreateRenderQuad(fSmallWidth, fSmallHeight, fSmallWidth*2.0f, fSmallHeight*2.0f);
@@ -890,7 +890,7 @@ void DX8RENDER::CopyGlowToScreen ()
 {
 	FLOAT sx = (FLOAT)screen_size.x;
 	FLOAT sy = (FLOAT)screen_size.y;
-	//Рендерим на экран
+	//Р РµРЅРґРµСЂРёРј РЅР° СЌРєСЂР°РЅ
 	PostProcessQuad[0].vPos = Vector4 (  0, sy, 0.0f, 1.0f );
 	PostProcessQuad[1].vPos = Vector4 (  0,  0, 0.0f, 1.0f );
 	PostProcessQuad[2].vPos = Vector4 ( sx, sy, 0.0f, 1.0f );
@@ -909,7 +909,7 @@ void DX8RENDER::CopyGlowToScreen ()
 	BYTE bGLOW = (BYTE)GlowIntensity;
 	DWORD dwTFactor = (bGLOW << 24) | (bGLOW << 16) | (bGLOW << 8) | bGLOW;
 
-	//GLOW экран рисуем....
+	//GLOW СЌРєСЂР°РЅ СЂРёСЃСѓРµРј....
 	SetRenderState(D3DRS_TEXTUREFACTOR, dwTFactor);
 
 	SetTexture (0, pSmallPostProcessTexture);
@@ -937,7 +937,7 @@ void DX8RENDER::CopyPostProcessToScreen()
 	d3d9->SetRenderTarget( 0, pOriginalScreenSurface );
 	d3d9->SetDepthStencilSurface(pOriginalDepthSurface); 
 
-	//Оригинальный экран рисуем....
+	//РћСЂРёРіРёРЅР°Р»СЊРЅС‹Р№ СЌРєСЂР°РЅ СЂРёСЃСѓРµРј....
 	SetTexture (0, pPostProcessTexture);
 	SetTexture (1, pPostProcessTexture);
 	SetTexture (2, pPostProcessTexture);
@@ -1368,7 +1368,7 @@ long DX8RENDER::TextureCreate(const char *fname)
 bool DX8RENDER::TextureLoad(long t)
 {
 	ProgressView();
-	//Формируем путь до текстуры
+	//Р¤РѕСЂРјРёСЂСѓРµРј РїСѓС‚СЊ РґРѕ С‚РµРєСЃС‚СѓСЂС‹
 	char fn[_MAX_FNAME];
 	Textures[t].dwSize = 0;
 	if(strlen(Textures[t].name) == 0) // empty file name
@@ -1381,7 +1381,7 @@ bool DX8RENDER::TextureLoad(long t)
 		if(d > 0 && fn[d - 1] == '\\' && fn[s] == '\\') continue;
 		fn[d++] = fn[s];
 	}
-	//Открываем файл
+	//РћС‚РєСЂС‹РІР°РµРј С„Р°Р№Р»
 	HANDLE file = api->fio->_CreateFile(fn);
 	if(file == INVALID_HANDLE_VALUE)
 	{
@@ -1393,7 +1393,7 @@ bool DX8RENDER::TextureLoad(long t)
 		Textures[t].name = 0;
 		return false;
 	}
-	//Читаем заголовок
+	//Р§РёС‚Р°РµРј Р·Р°РіРѕР»РѕРІРѕРє
 	TX_FILE_HEADER head;
 	DWORD readingBytes = 0;
 	if(!api->fio->_ReadFile(file, &head, sizeof(head), &readingBytes) || readingBytes != sizeof(head))
@@ -1407,7 +1407,7 @@ bool DX8RENDER::TextureLoad(long t)
 		api->fio->_CloseHandle(file);
 		return false;
 	}
-	//Анализируем формат
+	//РђРЅР°Р»РёР·РёСЂСѓРµРј С„РѕСЂРјР°С‚
 	D3DFORMAT d3dFormat = D3DFMT_UNKNOWN;
 	long textureFI = 0;
 	for(textureFI = 0; textureFI < sizeof(textureFormats)/sizeof(SD_TEXTURE_FORMAT); textureFI++)
@@ -1423,7 +1423,7 @@ bool DX8RENDER::TextureLoad(long t)
 	d3dFormat = textureFormats[textureFI].d3dFormat;
 	bool isSwizzled = textureFormats[textureFI].isSwizzled;
 	const char * formatTxt = textureFormats[textureFI].format;
-	//Пропускаем мипы
+	//РџСЂРѕРїСѓСЃРєР°РµРј РјРёРїС‹
 	dword seekposition = 0;
 	for(long nTD = nTextureDegradation; nTD > 0; nTD--)
 	{
@@ -1432,13 +1432,13 @@ bool DX8RENDER::TextureLoad(long t)
 		head.nmips--;
 		head.width /= 2; head.height /= 2; head.mip_size /= 4;
 	}
-	//Загружаем текстуру
+	//Р—Р°РіСЂСѓР¶Р°РµРј С‚РµРєСЃС‚СѓСЂСѓ
 	if(!(head.flags & TX_FLAGS_CUBEMAP))
 	{
-		//Загрузка обычной текстуры		
-		//Позиция в файле
+		//Р—Р°РіСЂСѓР·РєР° РѕР±С‹С‡РЅРѕР№ С‚РµРєСЃС‚СѓСЂС‹		
+		//РџРѕР·РёС†РёСЏ РІ С„Р°Р№Р»Рµ
 		if(seekposition) api->fio->_SetFilePointer(file, seekposition, 0, FILE_CURRENT);
-		//Создаём текстуру
+		//РЎРѕР·РґР°С‘Рј С‚РµРєСЃС‚СѓСЂСѓ
 		IDirect3DTexture9 * tex = null;
 		if(ErrorHandler("CreateTexture", d3d9->CreateTexture(head.width, head.height, head.nmips, 0, d3dFormat, D3DPOOL_MANAGED, &tex, NULL))==true || !tex)
 		{
@@ -1448,24 +1448,24 @@ bool DX8RENDER::TextureLoad(long t)
 			api->fio->_CloseHandle(file);
 			return false;
 		}
-		//Заполняем уровни
+		//Р—Р°РїРѕР»РЅСЏРµРј СѓСЂРѕРІРЅРё
 		for(long m = 0; m < head.nmips; m++)
 		{
-			//Учитываем размер мипа
+			//РЈС‡РёС‚С‹РІР°РµРј СЂР°Р·РјРµСЂ РјРёРїР°
 			Textures[t].dwSize += head.mip_size;
-			//Получаем поверхность мипа
+			//РџРѕР»СѓС‡Р°РµРј РїРѕРІРµСЂС…РЅРѕСЃС‚СЊ РјРёРїР°
 			bool isError = false;
 			IDirect3DSurface9 * surface = null;
 			if(ErrorHandler("tex->GetSurfaceLevel", tex->GetSurfaceLevel(m, &surface))==true || !surface)
 			{
 				isError = true;
 			}else{			
-				//Зачитываем мип
+				//Р—Р°С‡РёС‚С‹РІР°РµРј РјРёРї
 				isError = !LoadTextureSurface(file, surface, head.mip_size, head.width, head.height, isSwizzled);
 			}
-			//Освобождаем поверхность
+			//РћСЃРІРѕР±РѕР¶РґР°РµРј РїРѕРІРµСЂС…РЅРѕСЃС‚СЊ
 			if(surface) surface->Release();
-			//Если была ошибка, то прерываем загрузку
+			//Р•СЃР»Рё Р±С‹Р»Р° РѕС€РёР±РєР°, С‚Рѕ РїСЂРµСЂС‹РІР°РµРј Р·Р°РіСЂСѓР·РєСѓ
 			if(isError)
 			{
 				if (bTrace) api->Trace("Can't loading mip %i, texture %s is not created (width: %i, height: %i, num mips: %i, format: %s), not loading it.", m, fn, head.width, head.height, head.nmips, formatTxt);
@@ -1475,7 +1475,7 @@ bool DX8RENDER::TextureLoad(long t)
 				tex->Release();
 				return false;
 			}
-			//Пересчитываем размеры для следующего мипа
+			//РџРµСЂРµСЃС‡РёС‚С‹РІР°РµРј СЂР°Р·РјРµСЂС‹ РґР»СЏ СЃР»РµРґСѓСЋС‰РµРіРѕ РјРёРїР°
 			head.width /= 2;
 			head.height /= 2;
 			head.mip_size /= 4;
@@ -1483,7 +1483,7 @@ bool DX8RENDER::TextureLoad(long t)
 		Textures[t].d3dtex = tex;
 		Textures[t].isCubeMap = false;
 	}else{
-		//Загрузка cubemap
+		//Р—Р°РіСЂСѓР·РєР° cubemap
 		if(head.width != head.height)
 		{
 			if (bTrace) api->Trace("Cube map texture can't has not squared sides %s, not loading it.", fn);
@@ -1492,7 +1492,7 @@ bool DX8RENDER::TextureLoad(long t)
 			api->fio->_CloseHandle(file);
 			return false;
 		}
-		//Количество мипов
+		//РљРѕР»РёС‡РµСЃС‚РІРѕ РјРёРїРѕРІ
 		D3DCAPS9 devcaps;
 		if(ErrorHandler("d3d9->GetDeviceCaps", d3d9->GetDeviceCaps(&devcaps)))
 		{
@@ -1503,7 +1503,7 @@ bool DX8RENDER::TextureLoad(long t)
 			return false;		
 		}
 		if(!(devcaps.TextureCaps & D3DPTEXTURECAPS_MIPCUBEMAP)) head.nmips = 1;
-		//Создаём текстуру
+		//РЎРѕР·РґР°С‘Рј С‚РµРєСЃС‚СѓСЂСѓ
 		IDirect3DCubeTexture9 * tex = null;
 		if(ErrorHandler("d3d9->CreateCubeTexture", d3d9->CreateCubeTexture(head.width, head.nmips, 0, d3dFormat, D3DPOOL_MANAGED, &tex, null))==true || !tex)
 		{
@@ -1513,7 +1513,7 @@ bool DX8RENDER::TextureLoad(long t)
 			api->fio->_CloseHandle(file);
 			return false;
 		}		
-		//Загружаем сторны
+		//Р—Р°РіСЂСѓР¶Р°РµРј СЃС‚РѕСЂРЅС‹
 		bool isError = false;
 		if(seekposition) api->fio->_SetFilePointer(file, seekposition, 0, FILE_CURRENT);
 		dword sz = LoadCubmapSide(file, tex, D3DCUBEMAP_FACE_POSITIVE_Z, head.nmips, head.mip_size, head.width, isSwizzled);
@@ -1581,7 +1581,7 @@ bool DX8RENDER::TextureLoad(long t)
 	dwTotalSize += Textures[t].dwSize;
 //---------------------------------------------------------------
 	Textures[t].loaded = true;
-	//Закрываем файл
+	//Р—Р°РєСЂС‹РІР°РµРј С„Р°Р№Р»
 	api->fio->_CloseHandle(file);
 	return true;
 }
@@ -1594,30 +1594,30 @@ IDirect3DBaseTexture9 * DX8RENDER::GetBaseTexture(long iTexture)
 dword DX8RENDER::LoadCubmapSide(HANDLE file, IDirect3DCubeTexture9 * tex, D3DCUBEMAP_FACES face, dword numMips, dword mipSize, dword size, bool isSwizzled)
 {
 	dword texsize = 0;
-	//Заполняем уровни
+	//Р—Р°РїРѕР»РЅСЏРµРј СѓСЂРѕРІРЅРё
 	for(dword m = 0; m < numMips; m++)
 	{
-		//Учитываем размер мипа
+		//РЈС‡РёС‚С‹РІР°РµРј СЂР°Р·РјРµСЂ РјРёРїР°
 		texsize += mipSize;
-		//Получаем поверхность мипа
+		//РџРѕР»СѓС‡Р°РµРј РїРѕРІРµСЂС…РЅРѕСЃС‚СЊ РјРёРїР°
 		bool isError = false;
 		IDirect3DSurface9 * surface = null;
 		if(ErrorHandler("tex->GetCubeMapSurface", tex->GetCubeMapSurface(face, m, &surface))==true || !surface)
 		{
 			isError = true;
 		}else{			
-			//Зачитываем мип
+			//Р—Р°С‡РёС‚С‹РІР°РµРј РјРёРї
 			isError = !LoadTextureSurface(file, surface, mipSize, size, size, isSwizzled);
 		}
-		//Освобождаем поверхность
+		//РћСЃРІРѕР±РѕР¶РґР°РµРј РїРѕРІРµСЂС…РЅРѕСЃС‚СЊ
 		if(surface) surface->Release();
-		//Если была ошибка, то прерываем загрузку
+		//Р•СЃР»Рё Р±С‹Р»Р° РѕС€РёР±РєР°, С‚Рѕ РїСЂРµСЂС‹РІР°РµРј Р·Р°РіСЂСѓР·РєСѓ
 		if(isError)
 		{
 			if (bTrace) api->Trace("Can't loading cubemap mip %i (side: %i), not loading it.", m, face);
 			return 0;
 		}
-		//Пересчитываем размеры для следующего мипа
+		//РџРµСЂРµСЃС‡РёС‚С‹РІР°РµРј СЂР°Р·РјРµСЂС‹ РґР»СЏ СЃР»РµРґСѓСЋС‰РµРіРѕ РјРёРїР°
 		size /= 2;
 		mipSize /= 4;
 	}
@@ -1626,17 +1626,17 @@ dword DX8RENDER::LoadCubmapSide(HANDLE file, IDirect3DCubeTexture9 * tex, D3DCUB
 
 bool DX8RENDER::LoadTextureSurface(HANDLE file, IDirect3DSurface9 * suface, dword mipSize, dword width, dword height, bool isSwizzled)
 {
-	//Указатель на поверхность
+	//РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РїРѕРІРµСЂС…РЅРѕСЃС‚СЊ
 	D3DLOCKED_RECT lock;
 	if(ErrorHandler("suface->LockRect", suface->LockRect(&lock, NULL, 0L))==true) return false;
-	//Зачитывание
+	//Р—Р°С‡РёС‚С‹РІР°РЅРёРµ
 	DWORD readingBytes = 0;
 	if(!api->fio->_ReadFile(file, lock.pBits, mipSize, &readingBytes) || readingBytes != mipSize)
 	{
 		if(ErrorHandler("suface->UnlockRect", suface->UnlockRect())==true) return false;
 		return false;
 	}
-	//Освобождение поверхности
+	//РћСЃРІРѕР±РѕР¶РґРµРЅРёРµ РїРѕРІРµСЂС…РЅРѕСЃС‚Рё
 	if(ErrorHandler("suface->UnlockRect", suface->UnlockRect())==true) return false;
 	return true;
 }
@@ -1751,7 +1751,7 @@ bool DX8RENDER::SetCamera(CVECTOR lookFrom, CVECTOR lookTo, CVECTOR up)
 	SetTransform(D3DTS_VIEW, mtx);
 	Pos = lookFrom;
 
-	// Вычислим угол камеры
+	// Р’С‹С‡РёСЃР»РёРј СѓРіРѕР» РєР°РјРµСЂС‹
 	CVECTOR vNorm = !(lookTo - lookFrom);
 	Ang.y = atan2f(vNorm.x,vNorm.z);
 	Ang.x = atan2f(-vNorm.y,sqrtf(vNorm.x*vNorm.x + vNorm.z*vNorm.z));
@@ -2842,7 +2842,7 @@ void DX8RENDER::MakeScreenShot()
 	renderTarget = NULL;
 	surface = NULL;
 
-	//Получаем картинку
+	//РџРѕР»СѓС‡Р°РµРј РєР°СЂС‚РёРЅРєСѓ
 	if(FAILED(d3d9->GetRenderTarget(0, &renderTarget)))
 	{
 		api->Trace("Falure get render target for make screenshot");
@@ -2865,13 +2865,13 @@ void DX8RENDER::MakeScreenShot()
 	}
 	renderTarget->Release();
 	renderTarget = null;
-	//Получаем имя файла
+	//РџРѕР»СѓС‡Р°РµРј РёРјСЏ С„Р°Р№Р»Р°
 	for(i = 0; i < 10000; i++)
 	{
 		wsprintf(file_name, "CCS_%04d.tga", i);
 		if(_access(file_name, 0) == -1) break;
 	}
-	//Сохраняем картинку
+	//РЎРѕС…СЂР°РЅСЏРµРј РєР°СЂС‚РёРЅРєСѓ
 	Dhdr.width = (unsigned short)screen_size.x; Dhdr.height = (unsigned short)screen_size.y;
 	fh = fio->_CreateFile(file_name,GENERIC_WRITE,FILE_SHARE_READ,CREATE_ALWAYS);
 	if(fh == INVALID_HANDLE_VALUE)
@@ -3004,17 +3004,17 @@ void DX8RENDER::DrawRects(RS_RECT *pRSR, dword dwRectsNum, const char *cBlockNam
 
 	for(dword cnt = 0; cnt < dwRectsNum; )
 	{
-		//Количество рисуемых прямоугольников за раз
+		//РљРѕР»РёС‡РµСЃС‚РІРѕ СЂРёСЃСѓРµРјС‹С… РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєРѕРІ Р·Р° СЂР°Р·
 		dword drawCount = dwRectsNum;
 		if(drawCount > rectsVBuffer_SizeInRects) drawCount = rectsVBuffer_SizeInRects;
-		//Буфер
+		//Р‘СѓС„РµСЂ
 		RECT_VERTEX * data = null;
 		if(rectsVBuffer->Lock(0, drawCount*6*sizeof(RECT_VERTEX), (void **)&data, D3DLOCK_DISCARD) != D3D_OK) return;
 		if(!data) return;
-		//Заполняем буфер
+		//Р—Р°РїРѕР»РЅСЏРµРј Р±СѓС„РµСЂ
 		for(dword i = 0; i < drawCount; i++)
 		{
-			//Локальный массив партикла
+			//Р›РѕРєР°Р»СЊРЅС‹Р№ РјР°СЃСЃРёРІ РїР°СЂС‚РёРєР»Р°
 			RECT_VERTEX * buffer = &data[i*6];
 			RS_RECT & rect = pRSR[cnt++];
 			CVECTOR pos = camMtx*(rect.vPos+vWordRelationPos);
@@ -3034,7 +3034,7 @@ void DX8RENDER::DrawRects(RS_RECT *pRSR, dword dwRectsNum, const char *cBlockNam
 				u2 = u1 + du;
 				v2 = v1 + dv;
 			}
-			//Заполняем буфер для партикла
+			//Р—Р°РїРѕР»РЅСЏРµРј Р±СѓС„РµСЂ РґР»СЏ РїР°СЂС‚РёРєР»Р°
 			buffer[0].pos = pos + CVECTOR(sizex*(-cs - sn), sizey*(sn - cs), 0.0f);
 			buffer[0].color = color;
 			buffer[0].u = u1;
@@ -3060,7 +3060,7 @@ void DX8RENDER::DrawRects(RS_RECT *pRSR, dword dwRectsNum, const char *cBlockNam
 			buffer[5].u = u2;
 			buffer[5].v = v2;
 		}
-		//Рисуем буфер
+		//Р РёСЃСѓРµРј Р±СѓС„РµСЂ
 		rectsVBuffer->Unlock();
 		
 		ErrorHandler("SetCamera::GetTransform -> SetVertexShader", d3d9->SetVertexShader(NULL));
@@ -3616,7 +3616,7 @@ void DX8RENDER::StartProgressView()
 	progressSafeCounter = 0;
 	if(progressTexture < 0)
 	{
-		//Загружаем текстуру
+		//Р—Р°РіСЂСѓР¶Р°РµРј С‚РµРєСЃС‚СѓСЂСѓ
 		loadFrame = 0;
 		isInPViewProcess = true;
 		long t = TextureCreate("Loading\\progress.tga");
@@ -3628,7 +3628,7 @@ void DX8RENDER::StartProgressView()
 		}
 		progressTexture = t;
 	}else return;
-    //Загружаем немасштабируемую фоновую картинку
+    //Р—Р°РіСЂСѓР¶Р°РµРј РЅРµРјР°СЃС€С‚Р°Р±РёСЂСѓРµРјСѓСЋ С„РѕРЅРѕРІСѓСЋ РєР°СЂС‚РёРЅРєСѓ
 	if(progressBackImage && progressBackImage[0])
 	{
 		isInPViewProcess = true;
@@ -3639,7 +3639,7 @@ void DX8RENDER::StartProgressView()
 	}else{
 		back0Texture = -1;
 	}		
-	//Загружаем масштабируемую фоновую картинку
+	//Р—Р°РіСЂСѓР¶Р°РµРј РјР°СЃС€С‚Р°Р±РёСЂСѓРµРјСѓСЋ С„РѕРЅРѕРІСѓСЋ РєР°СЂС‚РёРЅРєСѓ
 	if(progressImage && progressImage[0])
 	{
 		isInPViewProcess = true;
@@ -3650,7 +3650,7 @@ void DX8RENDER::StartProgressView()
 	}else{
 		backTexture = -1;
 	}
-	//Загружаем типсы
+	//Р—Р°РіСЂСѓР¶Р°РµРј С‚РёРїСЃС‹
 	if(progressTipsImage && progressTipsImage[0])
 	{
 		isInPViewProcess = true;
@@ -3664,18 +3664,18 @@ void DX8RENDER::StartProgressView()
 
 void DX8RENDER::ProgressView()
 {
-	//Получаем текстуру
+	//РџРѕР»СѓС‡Р°РµРј С‚РµРєСЃС‚СѓСЂСѓ
  	if(progressTexture < 0) return;
 	if(isInPViewProcess) return;
-	//Анализируем время
+	//РђРЅР°Р»РёР·РёСЂСѓРµРј РІСЂРµРјСЏ
 	dword time = GetTickCount();
 	if(abs((long)(progressUpdateTime - time)) < 50) return;
 	progressUpdateTime = time;
 	isInPViewProcess = true;
 	progressSafeCounter = 0;	
-	//Режим рисования
+	//Р РµР¶РёРј СЂРёСЃРѕРІР°РЅРёСЏ
 	if(!bInsideScene) BeginScene();
-	//Заполняем вершины текстуры
+	//Р—Р°РїРѕР»РЅСЏРµРј РІРµСЂС€РёРЅС‹ С‚РµРєСЃС‚СѓСЂС‹
 	struct LoadVertex
 	{
 		float x, y, z, rhw;
@@ -3690,7 +3690,7 @@ void DX8RENDER::ProgressView()
 		v[i].rhw = 2.0;   		
 		v[i].color = 0xffffffff; 
 	}
-	//Вычисляем прямоугольник в котором будем рисовать
+	//Р’С‹С‡РёСЃР»СЏРµРј РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє РІ РєРѕС‚РѕСЂРѕРј Р±СѓРґРµРј СЂРёСЃРѕРІР°С‚СЊ
 	D3DVIEWPORT9 vp;	
 	GetViewport(&vp);
 	
@@ -3737,7 +3737,7 @@ void DX8RENDER::ProgressView()
 		DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1, 2, v, sizeof(v[0]), "ProgressBackTech");
 	}
 	if(backTexture < 0) for(i = 0; i < 4; i++) v[i].color = 0xffffffff;	
-	//Анимированный объект
+	//РђРЅРёРјРёСЂРѕРІР°РЅРЅС‹Р№ РѕР±СЉРµРєС‚
 	m_fHeightDeformator = ((float)vp.Height * 4.0f)/((float)vp.Width * 3.0f);
 	//api->Trace(" size_x %f", (vp.Width - dx * 2.0f)*progressFramesWidth);
 	CVECTOR pos((vp.Width - dx * 2.0f)*progressFramesPosX + dx, (vp.Height - dy * 2.0f)*progressFramesPosY + dy, 0.0f);
@@ -3746,26 +3746,26 @@ void DX8RENDER::ProgressView()
 	v[1].x = pos.x + size.x + 0.5f; 	v[1].y = pos.y;
 	v[2].x = pos.x; 					v[2].y = pos.y + size.y + 0.5f;
 	v[3].x = pos.x + size.x + 0.5f; 	v[3].y = pos.y + size.y + 0.5f;
-	//Размер сетки кадров
+	//Р Р°Р·РјРµСЂ СЃРµС‚РєРё РєР°РґСЂРѕРІ
 	long sizeX = progressFramesCountX;
 	long sizeY = progressFramesCountY;
-	//Позиция текущего кадра
+	//РџРѕР·РёС†РёСЏ С‚РµРєСѓС‰РµРіРѕ РєР°РґСЂР°
 	long fx = loadFrame % sizeX;
 	long fy = loadFrame / sizeY;
 	v[0].u = fx/float(sizeX); v[0].v = fy/float(sizeY);
 	v[1].u = (fx + 1.0f)/float(sizeX); v[1].v = fy/float(sizeY);
 	v[2].u = fx/float(sizeX); v[2].v = (fy + 1.0f)/float(sizeY);
 	v[3].u = (fx + 1.0f)/float(sizeX); v[3].v = (fy + 1.0f)/float(sizeY);
-	//Рисуем 
+	//Р РёСЃСѓРµРј 
 	TextureSet(0, progressTexture);
 	DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1, 2, v, sizeof(v[0]), "ProgressTech");
 	EndScene();
 	d3d9->Present(NULL, NULL, NULL, NULL);
 	if(bInsideScene) BeginScene();
-	//Следующий кадр
+	//РЎР»РµРґСѓСЋС‰РёР№ РєР°РґСЂ
 	loadFrame++;
 	if(loadFrame >= sizeX*sizeY) loadFrame = 0;
-	//Выходим
+	//Р’С‹С…РѕРґРёРј
 	isInPViewProcess = false;
 }
 
@@ -3806,7 +3806,7 @@ void DX8RENDER::MakeDrawVector(RS_LINE * pLines, dword dwNumSubLines, const CMat
 	dword i;
     dword k;
     
-	k = dwNumSubLines * 2 + 2; // boal оптимизация, если фор крутит вычисления каждый проход.
+	k = dwNumSubLines * 2 + 2; // boal РѕРїС‚РёРјРёР·Р°С†РёСЏ, РµСЃР»Рё С„РѕСЂ РєСЂСѓС‚РёС‚ РІС‹С‡РёСЃР»РµРЅРёСЏ РєР°Р¶РґС‹Р№ РїСЂРѕС…РѕРґ.
 	for (i=0; i<k; i++)
 	{
 		pLines[i].dwColor = dwColor;

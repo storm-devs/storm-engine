@@ -41,10 +41,10 @@ long GetToken(char* &ps)
 {
 	if(ps==NULL) return TOKEN_INVALID;
 
-	// удаляем предшествующие пробелы и символы табуляции
+	// СѓРґР°Р»СЏРµРј РїСЂРµРґС€РµСЃС‚РІСѓСЋС‰РёРµ РїСЂРѕР±РµР»С‹ Рё СЃРёРјРІРѕР»С‹ С‚Р°Р±СѓР»СЏС†РёРё
 	while(*ps==32 || *ps==9) ps++;
 
-	// получаем размер лексемы
+	// РїРѕР»СѓС‡Р°РµРј СЂР°Р·РјРµСЂ Р»РµРєСЃРµРјС‹
 	char *ptoken = ps;
 	while(*ps!=0 && (unsigned)*ps>0x20 && *ps!=0x0D && *ps!=0x0A)
 		ps++;
@@ -55,7 +55,7 @@ long GetToken(char* &ps)
 		if( strncmp(TokenTable[i].token, ptoken, tokensize) == 0 )
 			return TokenTable[i].cod;
 
-	// проверим лексему на соответсвие определенным значениям
+	// РїСЂРѕРІРµСЂРёРј Р»РµРєСЃРµРјСѓ РЅР° СЃРѕРѕС‚РІРµС‚СЃРІРёРµ РѕРїСЂРµРґРµР»РµРЅРЅС‹Рј Р·РЅР°С‡РµРЅРёСЏРј
 	return TOKEN_UNKNOWN;
 }
 
@@ -65,7 +65,7 @@ long GetToken(char* &ps)
 
 
 
-// Функции работы с символами
+// Р¤СѓРЅРєС†РёРё СЂР°Р±РѕС‚С‹ СЃ СЃРёРјРІРѕР»Р°РјРё
 bool IS_SPACE(char ch)
 {
 	if((unsigned)ch<=' ') return true;
@@ -89,12 +89,12 @@ long GET_DIGIT(char ch)
 
 
 
-// Функции работы со строками
+// Р¤СѓРЅРєС†РёРё СЂР°Р±РѕС‚С‹ СЃРѕ СЃС‚СЂРѕРєР°РјРё
 static long GetLongFromString(char* &pInStr)
 {
 	if(pInStr==NULL) return INVALID_LONG;
 
-	// удалим лишние пробелы
+	// СѓРґР°Р»РёРј Р»РёС€РЅРёРµ РїСЂРѕР±РµР»С‹
 	while(*pInStr<=' ') pInStr++;
 	if( !IS_DIGIT(*pInStr) )
 		return INVALID_LONG;
@@ -110,9 +110,9 @@ static long GetLongFromString(char* &pInStr)
 void GetSubStringFromString(char* &pInStr,char* pOutBuf,int bufSize)
 {
 	if(bufSize<=0) return;
-	// удаляем предшествующие пробелы
+	// СѓРґР°Р»СЏРµРј РїСЂРµРґС€РµСЃС‚РІСѓСЋС‰РёРµ РїСЂРѕР±РµР»С‹
 	while(IS_SPACE(*pInStr)) pInStr++;
-	// перепишем строку в буфер
+	// РїРµСЂРµРїРёС€РµРј СЃС‚СЂРѕРєСѓ РІ Р±СѓС„РµСЂ
 	int i = 0;
 	for(i=0;i<bufSize-1;i++,pInStr++)
 	{
@@ -152,19 +152,19 @@ static char * GetTitleString(char* buf, char* &ptr, int &slen)
 	char* startp = ptr;
 	while(ptr!=NULL)
 	{
-		// Возмем очередную строку
+		// Р’РѕР·РјРµРј РѕС‡РµСЂРµРґРЅСѓСЋ СЃС‚СЂРѕРєСѓ
 		char* cstr = GetNextString(ptr);
 		if(ptr!=cstr && cstr!=NULL)
 		{
-			// если полученная строка является заголовком квеста
+			// РµСЃР»Рё РїРѕР»СѓС‡РµРЅРЅР°СЏ СЃС‚СЂРѕРєР° СЏРІР»СЏРµС‚СЃСЏ Р·Р°РіРѕР»РѕРІРєРѕРј РєРІРµСЃС‚Р°
 			char *tmpstr = cstr;
 			int tokType = GetToken(tmpstr);
 			if(tokType==TOKEN_QUEST)
 			{
-				// получим id этого квеста
+				// РїРѕР»СѓС‡РёРј id СЌС‚РѕРіРѕ РєРІРµСЃС‚Р°
 				GetSubStringFromString(tmpstr,buf,256);
 				char * retVal = ptr;
-				// найдем конец заголовка квеста
+				// РЅР°Р№РґРµРј РєРѕРЅРµС† Р·Р°РіРѕР»РѕРІРєР° РєРІРµСЃС‚Р°
 				while(ptr!=NULL)
 				{
 					tmpstr = ptr;
@@ -320,9 +320,9 @@ bool QUEST_FILE_READER::AssembleStringToBuffer(const char* pSrc, long nSrcSize, 
 	{
 		if( pSrc[nSrc]==0 ) break;
 		if( bMakeID ) {
-			// создание ID для текстовой вставки
+			// СЃРѕР·РґР°РЅРёРµ ID РґР»СЏ С‚РµРєСЃС‚РѕРІРѕР№ РІСЃС‚Р°РІРєРё
 			if( pSrc[nSrc]=='>' ) {
-				// завершение ID
+				// Р·Р°РІРµСЂС€РµРЅРёРµ ID
 				insertID[nIns]=0;
 				nDst += AddToBuff(&pBuf[nDst], nBufSize-nDst, GetInsertStringByID(insertID,aUserData) );
 				bMakeID = false;
@@ -331,7 +331,7 @@ bool QUEST_FILE_READER::AssembleStringToBuffer(const char* pSrc, long nSrcSize, 
 				nIns++;
 			}
 		} else {
-			// копирование
+			// РєРѕРїРёСЂРѕРІР°РЅРёРµ
 			if( pSrc[nSrc]=='@' && pSrc[nSrc+1]=='<' ) {
 				nSrc++;
 				bMakeID = true;
@@ -367,7 +367,7 @@ long QUEST_FILE_READER::AddToBuff(const char* pDst, long nDstSize, const char* p
 
 void QUEST_FILE_READER::ReadUserData(const char * sQuestName,long nRecordIndex)
 {
-	if( m_sCurQuestTitle == sQuestName ) return; // уже установлено для этого
+	if( m_sCurQuestTitle == sQuestName ) return; // СѓР¶Рµ СѓСЃС‚Р°РЅРѕРІР»РµРЅРѕ РґР»СЏ СЌС‚РѕРіРѕ
 
 	m_sCurQuestTitle = sQuestName;
 	m_aQuestData.DelAll();
@@ -447,14 +447,14 @@ void QUEST_FILE_READER::SetQuestTextFileName(const char * pcFileName)
 
 	m_aQuestFileName.Add( string(pcFileName) );
 
-	// открываем этот файл
+	// РѕС‚РєСЂС‹РІР°РµРј СЌС‚РѕС‚ С„Р°Р№Р»
 	HANDLE hfile = api->fio->_CreateFile( pcFileName, GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING );
 	if(hfile==INVALID_HANDLE_VALUE)
 	{
 		api->Trace( "WARNING! Can`t open quest log file %s", pcFileName );
 		return;
 	}
-	// его размер
+	// РµРіРѕ СЂР°Р·РјРµСЂ
 	DWORD filesize = api->fio->_GetFileSize( hfile, 0 );
 	if( filesize == 0 )
 	{
@@ -462,10 +462,10 @@ void QUEST_FILE_READER::SetQuestTextFileName(const char * pcFileName)
 		api->fio->_CloseHandle( hfile );
 		return;
 	}
-	// создаем буфер для него
+	// СЃРѕР·РґР°РµРј Р±СѓС„РµСЂ РґР»СЏ РЅРµРіРѕ
 	char* pBuf = NEW char[filesize+1];
 	Assert( pBuf );
-	// читаем в этот буфер из файла
+	// С‡РёС‚Р°РµРј РІ СЌС‚РѕС‚ Р±СѓС„РµСЂ РёР· С„Р°Р№Р»Р°
 	DWORD readsize;
 	if( api->fio->_ReadFile( hfile, pBuf, filesize, &readsize ) == FALSE ||
 		readsize != filesize )
@@ -494,7 +494,7 @@ void QUEST_FILE_READER::AddQuestFromBuffer( char* pcSrcBuffer )
 
 	while( pcStr )
 	{
-		if( !pcStr[0] ) { // проверка на завершение
+		if( !pcStr[0] ) { // РїСЂРѕРІРµСЂРєР° РЅР° Р·Р°РІРµСЂС€РµРЅРёРµ
 			if( nCurToken == TOKEN_QTEXT ) {
 				WriteToString( sTextText, pcPrev, pcStr );
 				AddToQuestList( sQuestID, sTextID, sQuestText, sTextText );
@@ -550,7 +550,7 @@ void QUEST_FILE_READER::WriteToString( string& sDst, const char* pcStart, const 
 	/*while( pcStart[0]!=0 && (*(UCHAR*)pcStart<=0x20) )
 		pcStart++;
 	while( pcEnd>pcStart && (*(UCHAR*)(pcEnd-1)<=0x20) )
-		pcEnd--;   */ // boal нефиг удалать пробелы в начале строки!!!
+		pcEnd--;   */ // boal РЅРµС„РёРі СѓРґР°Р»Р°С‚СЊ РїСЂРѕР±РµР»С‹ РІ РЅР°С‡Р°Р»Рµ СЃС‚СЂРѕРєРё!!!
 
 	char chTmp = *pcEnd;
 	*(char*)pcEnd = 0;

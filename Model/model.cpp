@@ -72,9 +72,9 @@ void *VBTransform(void *vb, long startVrt, long nVerts, long totVerts)
 //if(GetAsyncKeyState('8') < 0)
 //{
 	/*
-		//Коэфициент блендинга
+		//РљРѕСЌС„РёС†РёРµРЅС‚ Р±Р»РµРЅРґРёРЅРіР°
 		static float one = 1.0f;
-		//Позиция
+		//РџРѕР·РёС†РёСЏ
 		_asm
 		{
 			mov eax, src
@@ -129,7 +129,7 @@ vrt_loop:	prefetcht0 [eax]
 			addps  xmm1, xmm2					//0yyy*m.vx + 0zzz*m.vx
 			movss  xmm2, [eax + 28]				//000z
 			addps  xmm0, xmm1					//0xxx*m.vx + m.pos + 0yyy*m.vx + 0zzz*m.vx
-			movups [ebx + 0], xmm0				//Сохраняем позицию
+			movups [ebx + 0], xmm0				//РЎРѕС…СЂР°РЅСЏРµРј РїРѕР·РёС†РёСЋ
 			shufps xmm2, xmm2, 01000000b		//0zzz
 			movss  xmm0, [eax + 20]				//000x
 			movss  xmm1, [eax + 24]				//000y			
@@ -137,17 +137,17 @@ vrt_loop:	prefetcht0 [eax]
 			mov    edx, [eax + 40]				//vrt.tv0
 			shufps xmm0, xmm0, 01000000b		//0xxx			
 			shufps xmm1, xmm1, 01000000b		//0yyy
-			mov    [ebx + 28], ecx				//Сохраняем u
+			mov    [ebx + 28], ecx				//РЎРѕС…СЂР°РЅСЏРµРј u
 			mulps  xmm0, xmm4					//0xxx*m.vx
-			mov    [ebx + 32], edx				//Сохраняем v
+			mov    [ebx + 32], edx				//РЎРѕС…СЂР°РЅСЏРµРј v
 			mulps  xmm1, xmm5					//0yyy*m.vy
 			mulps  xmm2, xmm6					//0zzz*m.vz
 			addps  xmm0, xmm7					//0xxx*m.vx + m.pos
 			addps  xmm1, xmm2					//0yyy*m.vx + 0zzz*m.vx
 			mov    ecx, [eax + 32]				//vrt.color
 			addps  xmm0, xmm1					//0xxx*m.vx + m.pos + 0yyy*m.vx + 0zzz*m.vx
-			movups [ebx + 12], xmm0				//Сохраняем нормаль
-			mov    [ebx + 24], ecx				//Сохраняем color
+			movups [ebx + 12], xmm0				//РЎРѕС…СЂР°РЅСЏРµРј РЅРѕСЂРјР°Р»СЊ
+			mov    [ebx + 24], ecx				//РЎРѕС…СЂР°РЅСЏРµРј color
 			add    eax, 44
 			add    ebx, 36
 			dec    totVerts
@@ -159,13 +159,13 @@ vrt_loop:	prefetcht0 [eax]
 	CMatrix mtx;
 	for(long v=0; v<totVerts; v++)
 	{
-		//Вершина
+		//Р’РµСЂС€РёРЅР°
 		GEOS::AVERTEX0 & vrt = src[v];
 		GEOS::VERTEX0 & dstVrt = dst[v];
-		//Метрицы
+		//РњРµС‚СЂРёС†С‹
 		CMatrix & m1 = bones[vrt.boneid & 0xff];
 		CMatrix & m2 = bones[(vrt.boneid >> 8) & 0xff];
-		//Инверсный коэфициент блендинга
+		//РРЅРІРµСЂСЃРЅС‹Р№ РєРѕСЌС„РёС†РёРµРЅС‚ Р±Р»РµРЅРґРёРЅРіР°
 		float wNeg = 1.0f - vrt.weight;
 		mtx.matrix[0] = -(m1.matrix[0]*vrt.weight + m2.matrix[0]*wNeg);
 		mtx.matrix[1] = m1.matrix[1]*vrt.weight + m2.matrix[1]*wNeg;
@@ -179,11 +179,11 @@ vrt_loop:	prefetcht0 [eax]
 		mtx.matrix[12] = -(m1.matrix[12]*vrt.weight + m2.matrix[12]*wNeg);
 		mtx.matrix[13] = m1.matrix[13]*vrt.weight + m2.matrix[13]*wNeg;
 		mtx.matrix[14] = m1.matrix[14]*vrt.weight + m2.matrix[14]*wNeg;
-		//Позиция
+		//РџРѕР·РёС†РёСЏ
 		((CVECTOR &)dstVrt.pos) = mtx*(CVECTOR &)vrt.pos;
-		//Нормаль
+		//РќРѕСЂРјР°Р»СЊ
 		((CVECTOR &)dstVrt.nrm) = mtx*(CVECTOR &)vrt.nrm;
-		//Остальное
+		//РћСЃС‚Р°Р»СЊРЅРѕРµ
 		dstVrt.color = vrt.color;
 		dstVrt.tu = vrt.tu0;
 		dstVrt.tv = vrt.tv0;

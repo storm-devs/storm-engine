@@ -180,7 +180,7 @@ dword _cdecl CXI_SLIDELINE::MessageProc(long msgcode, MESSAGE & message)
 {
 	switch(msgcode)
 	{
-	case 0: // Установить слайд на новое значение
+	case 0: // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЃР»Р°Р№Рґ РЅР° РЅРѕРІРѕРµ Р·РЅР°С‡РµРЅРёРµ
 		{
 			SetNewValue( (long)(message.Float()*m_nGrateQuantity) );
 		}
@@ -197,7 +197,7 @@ dword _cdecl CXI_SLIDELINE::MessageProc(long msgcode, MESSAGE & message)
 			}
 		}
 		break;
-	case 2: // Установить слайд на конкретное значение
+	case 2: // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЃР»Р°Р№Рґ РЅР° РєРѕРЅРєСЂРµС‚РЅРѕРµ Р·РЅР°С‡РµРЅРёРµ
 		{
 			SetNewValue( message.Long() );
 		}

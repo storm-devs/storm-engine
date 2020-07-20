@@ -186,7 +186,7 @@ void Astronomy::STARS::Init(ATTRIBUTES * pAP)
 			}
 			//api->Trace("Stars: min = %.3f, max = %.3f", fMinMag, fMaxMag);
 
-			// çàïèøåì âñå áóôåðû â ôàéë äëÿ òîãî ÷òî áû â ñëåä ðàç íå ïåðåñ÷èòûâàòü
+			// Ð·Ð°Ð¿Ð¸ÑˆÐµÐ¼ Ð²ÑÐµ Ð±ÑƒÑ„ÐµÑ€Ñ‹ Ð² Ñ„Ð°Ð¹Ð» Ð´Ð»Ñ Ñ‚Ð¾Ð³Ð¾ Ñ‡Ñ‚Ð¾ Ð±Ñ‹ Ð² ÑÐ»ÐµÐ´ Ñ€Ð°Ð· Ð½Ðµ Ð¿ÐµÑ€ÐµÑÑ‡Ð¸Ñ‚Ñ‹Ð²Ð°Ñ‚ÑŒ
 			hOutFile = fio->_CreateFile("resource\\star.dat",GENERIC_WRITE,0,CREATE_ALWAYS);
 			if( INVALID_HANDLE_VALUE != hOutFile )
 			{

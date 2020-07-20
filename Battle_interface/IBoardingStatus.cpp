@@ -53,7 +53,7 @@ void IBoardingStatus::Realize(dword delta_time)
 
 void IBoardingStatus::Create()
 {
-	// Óñòàíîâèòü ïàðàìåòðû äëÿ èêîíêè àêòèâíîãî äåéñòâèÿ
+	// Ð£ÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹ Ð´Ð»Ñ Ð¸ÐºÐ¾Ð½ÐºÐ¸ Ð°ÐºÑ‚Ð¸Ð²Ð½Ð¾Ð³Ð¾ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ñ
 	ATTRIBUTES * pA = api->Entity_GetAttributePointer(&GetID());
 	if(pA!=NULL)
 	{

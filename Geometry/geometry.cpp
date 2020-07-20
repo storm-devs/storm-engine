@@ -290,7 +290,7 @@ void GEOM_SERVICE_R::SetMaterial(const GEOS::MATERIAL &mt)
 	RenderService->SetTextureStageState(2, D3DTSS_COLORARG1, D3DTA_CURRENT);
 	RenderService->SetTextureStageState(2, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
 	
-// блок для ВМЛ -->
+// Р±Р»РѕРє РґР»СЏ Р’РњР› -->
 	//RenderService->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 	
     RenderService->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
@@ -307,7 +307,7 @@ void GEOM_SERVICE_R::SetMaterial(const GEOS::MATERIAL &mt)
 
     RenderService->SetTextureStageState(2, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
     RenderService->SetTextureStageState(2, D3DTSS_ALPHAARG1, D3DTA_CURRENT);
-// блок для ВМЛ <--
+// Р±Р»РѕРє РґР»СЏ Р’РњР› <--
 	/*if(GetAsyncKeyState(0xc0)<0)
 	{
 		//RenderService->TextureSet(0, 0);
@@ -486,7 +486,7 @@ void GEOM_SERVICE_R::DrawIndexedPrimitive(long minv, long numv, long vrtsize, lo
 
 		mWVP.Transposition4x4();
 
-		// константы
+		// РєРѕРЅСЃС‚Р°РЅС‚С‹
 		// 0 - World * View * Projection
 		// 4 - World
 

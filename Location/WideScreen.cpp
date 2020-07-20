@@ -11,7 +11,7 @@
 #include "WideScreen.h"
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 WideScreen::WideScreen()
@@ -25,7 +25,7 @@ WideScreen::~WideScreen()
 
 }
 
-//Инициализация
+//РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
 bool WideScreen::Init()
 {
 	//Layers
@@ -42,21 +42,21 @@ bool WideScreen::Init()
 	return true;
 }
 
-//Сообщения
+//РЎРѕРѕР±С‰РµРЅРёСЏ
 dword _cdecl WideScreen::ProcessMessage(MESSAGE & message)
 {
 	dlt = -1.0f;
 	return 0;
 }
 
-//Работа
+//Р Р°Р±РѕС‚Р°
 void WideScreen::Realize(dword delta_time)
 {
-	//Текущее состояние
+	//РўРµРєСѓС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
 	state += dlt*delta_time*0.001f;
 	if(state < 0.0f){ _CORE_API->DeleteEntity(GetID()); return; }
 	if(state > 1.0f){ state = 1.0f; dlt = 0.0f; }
-	//Рисуем
+	//Р РёСЃСѓРµРј
 	static struct{ float x, y, z, rhw; } buf[12];
 	const float hg = state*h*0.1f;
 	buf[0].x =  0.0f;  buf[0].y =  0.0f;  buf[0].z =  0.5f;  buf[0].rhw =  1.0f;

@@ -17,7 +17,7 @@
 
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 LightProcessor::LightProcessor()
@@ -54,7 +54,7 @@ void LightProcessor::Process()
 		}else shadowTriangle = -1;		
 		if(shadowTriangle == -1)
 		{
-			//Нормализуем результат
+			//РќРѕСЂРјР°Р»РёР·СѓРµРј СЂРµР·СѓР»СЊС‚Р°С‚
 			Vertex * vrt = geometry->vrt;
 			long numVrt = geometry->numVrt;
 			long numLights = lights->Num();
@@ -71,7 +71,7 @@ void LightProcessor::Process()
 					vrt[i].shadow[j].sm = vrt[i].shadow[j].v;
 				}
 			}
-			//Указываем что закончили
+			//РЈРєР°Р·С‹РІР°РµРј С‡С‚Рѕ Р·Р°РєРѕРЅС‡РёР»Рё
 			window->isLockCtrl = false;
 			window->tracePrc = 1.0f;
 			CalcLights();
@@ -83,7 +83,7 @@ void LightProcessor::Process()
 		SmoothShadows();
 		if(smoothVertex == -1)
 		{
-			//Указываем что закончили
+			//РЈРєР°Р·С‹РІР°РµРј С‡С‚Рѕ Р·Р°РєРѕРЅС‡РёР»Рё
 			window->isLockCtrl = false;
 			window->smoothPrc = 1.0f;
 			CalcLights();
@@ -96,7 +96,7 @@ void LightProcessor::Process()
 		BlurLight();
 		if(blurVertex == -1)
 		{
-			//Указываем что закончили
+			//РЈРєР°Р·С‹РІР°РµРј С‡С‚Рѕ Р·Р°РєРѕРЅС‡РёР»Рё
 			window->isLockCtrl = false;
 			window->blurPrc = 1.0f;
 			CalcLights();
@@ -106,12 +106,12 @@ void LightProcessor::Process()
 	}
 	if(window->isTraceShadows)
 	{
-		//Подготавливаем
+		//РџРѕРґРіРѕС‚Р°РІР»РёРІР°РµРј
 		shadowTriangle = 0;
 		window->isTraceShadows = false;
 		window->isLockCtrl = true;
 		window->tracePrc = 0.0f;
-		//Сбрасываем состояние цветов
+		//РЎР±СЂР°СЃС‹РІР°РµРј СЃРѕСЃС‚РѕСЏРЅРёРµ С†РІРµС‚РѕРІ
 		Vertex * vrt = geometry->vrt;
 		long numVrt = geometry->numVrt;
 		long numLights = lights->Num();
@@ -195,7 +195,7 @@ void LightProcessor::UpdateLightsParam()
 				swh.att = 1.0f;
 				break;
 			case Light::t_point:
-				//Косинус угла
+				//РљРѕСЃРёРЅСѓСЃ СѓРіР»Р°
 				nrm = lt.p - v.p;
 				dst = sqrtf(~nrm);
 				if(dst > 0.0f)
@@ -205,7 +205,7 @@ void LightProcessor::UpdateLightsParam()
 				}else cs = 1.0f;
 				if(cs < 0.0f) cs = 0.0f;
 				swh.cs = cs;
-				//Коэфициент затухания
+				//РљРѕСЌС„РёС†РёРµРЅС‚ Р·Р°С‚СѓС…Р°РЅРёСЏ
 				if(dst < lt.range)
 				{
 					att = lt.att0 + dst*lt.att1 + dst*dst*lt.att2;
@@ -222,15 +222,15 @@ void LightProcessor::UpdateLightsParam()
 	}	
 }
 
-//Расчитать затенения
+//Р Р°СЃС‡РёС‚Р°С‚СЊ Р·Р°С‚РµРЅРµРЅРёСЏ
 void LightProcessor::CalcShadows()
 {
-	//Вычисляем затенения
+	//Р’С‹С‡РёСЃР»СЏРµРј Р·Р°С‚РµРЅРµРЅРёСЏ
 	for(long i = 0; i < LIGHTPRC_TRACE_NUM && shadowTriangle < geometry->numTrg; i++, shadowTriangle++) ApplyTriangleShadows(geometry->trg[shadowTriangle]);
 	if(shadowTriangle == geometry->numTrg) shadowTriangle = -1;
 }
 
-//Распределить затенение с треугольника на вершины
+//Р Р°СЃРїСЂРµРґРµР»РёС‚СЊ Р·Р°С‚РµРЅРµРЅРёРµ СЃ С‚СЂРµСѓРіРѕР»СЊРЅРёРєР° РЅР° РІРµСЂС€РёРЅС‹
 void LightProcessor::ApplyTriangleShadows(Triangle & t)
 {
 	Lights & ls = *lights;
@@ -238,20 +238,20 @@ void LightProcessor::ApplyTriangleShadows(Triangle & t)
 	Vertex * vrt = geometry->vrt;
 	for(long i = 0; i < num; i++)
 	{
-		//Нужно ли трейсить
+		//РќСѓР¶РЅРѕ Р»Рё С‚СЂРµР№СЃРёС‚СЊ
 		if(ls[i].type == Light::t_none || ls[i].type == Light::t_amb) continue;
-		//Коэфициент нормирования
+		//РљРѕСЌС„РёС†РёРµРЅС‚ РЅРѕСЂРјРёСЂРѕРІР°РЅРёСЏ
 		vrt[t.i[0]].shadow[i].nrm += t.sq;
 		vrt[t.i[1]].shadow[i].nrm += t.sq;
 		vrt[t.i[2]].shadow[i].nrm += t.sq;
-		//Точка откуда трейсить
+		//РўРѕС‡РєР° РѕС‚РєСѓРґР° С‚СЂРµР№СЃРёС‚СЊ
 		CVECTOR pnt = (vrt[t.i[0]].p + vrt[t.i[1]].p + vrt[t.i[2]].p)/3.0f;
 		pnt += t.n*0.001f;
-		//Определяем затенённость
+		//РћРїСЂРµРґРµР»СЏРµРј Р·Р°С‚РµРЅС‘РЅРЅРѕСЃС‚СЊ
 		switch(ls[i].type)
 		{
 		case Light::t_sun:
-			//Освещение от солнца
+			//РћСЃРІРµС‰РµРЅРёРµ РѕС‚ СЃРѕР»РЅС†Р°
 			if((ls[i].p | t.n) >= 0.0f)
 			{
 				if(geometry->Trace(pnt, pnt + ls[i].p*geometry->radius) > 1.0f)
@@ -263,7 +263,7 @@ void LightProcessor::ApplyTriangleShadows(Triangle & t)
 			}
 			break;
 		case Light::t_sky:
-			//Освещение от неба
+			//РћСЃРІРµС‰РµРЅРёРµ РѕС‚ РЅРµР±Р°
 			if(t.n.y >= 0.0f)
 			{
 				float sky = 0.0;
@@ -281,7 +281,7 @@ void LightProcessor::ApplyTriangleShadows(Triangle & t)
 			}
 			break;
 		case Light::t_point:
-			//Освещение от солнца
+			//РћСЃРІРµС‰РµРЅРёРµ РѕС‚ СЃРѕР»РЅС†Р°
 			if(((ls[i].p - pnt) | t.n) >= 0.0f)
 			{
 				if(geometry->Trace(pnt, ls[i].p) > 1.0f)
@@ -302,7 +302,7 @@ void LightProcessor::ApplyTriangleShadows(Triangle & t)
 
 
 
-//Сгладить затенённость
+//РЎРіР»Р°РґРёС‚СЊ Р·Р°С‚РµРЅС‘РЅРЅРѕСЃС‚СЊ
 void LightProcessor::SmoothShadows()
 {
 	bool lookNorm = window->smoothNorm;
@@ -315,7 +315,7 @@ void LightProcessor::SmoothShadows()
 	for(long i = 0; i < LIGHTPRC_SMOOTH_NUM && smoothVertex < geometry->numVrt; i++, smoothVertex++)
 	{
 		Vertex & v = vrt[smoothVertex];
-		//Ищем окружающие вершины
+		//РС‰РµРј РѕРєСЂСѓР¶Р°СЋС‰РёРµ РІРµСЂС€РёРЅС‹
 		octtree->FindVerts(v.p, smoothRad);
 		OctFndVerts * verts = octtree->verts;
 		long numVerts = octtree->numVerts;
@@ -345,13 +345,13 @@ void LightProcessor::SmoothShadows()
 			}
 		}
 //		Assert(numVerts > 0);
-		//Проходимся по всем источникам
+		//РџСЂРѕС…РѕРґРёРјСЃСЏ РїРѕ РІСЃРµРј РёСЃС‚РѕС‡РЅРёРєР°Рј
 		for(long n = 0; n < num; n++)
 		{
-			//Обнуляем
+			//РћР±РЅСѓР»СЏРµРј
 			double sm = 0.0;
 			double kNorm = 0.0f;
-			//По всем вершинам
+			//РџРѕ РІСЃРµРј РІРµСЂС€РёРЅР°Рј
 			for(long j = 0; j < numVerts; j++)
 			{
 				if(lookNorm && (v.n | verts[j].v->n) <= 0.6f) continue;
@@ -370,7 +370,7 @@ void LightProcessor::SmoothShadows()
 }
 
 
-//Сгладить освещение
+//РЎРіР»Р°РґРёС‚СЊ РѕСЃРІРµС‰РµРЅРёРµ
 void LightProcessor::BlurLight()
 {
 	bool isTrace = window->isTraceBlur;
@@ -385,7 +385,7 @@ void LightProcessor::BlurLight()
 	for(long i = 0; i < LIGHTPRC_BLUR_NUM && blurVertex < numVrt; i++, blurVertex++)
 	{
 		Vertex & v = vrt[blurVertex];
-		//Ищем окружающие вершины
+		//РС‰РµРј РѕРєСЂСѓР¶Р°СЋС‰РёРµ РІРµСЂС€РёРЅС‹
 		octtree->FindVerts(v.p, blurRad);
 		OctFndVerts * verts = octtree->verts;
 		long numVerts = octtree->numVerts;
@@ -396,7 +396,7 @@ void LightProcessor::BlurLight()
 		if(step < 1) step = 1;
 		step = 1;
 		double r = 0.0, g = 0.0, b = 0.0, sum = 0.0;
-		//По всем вершинам
+		//РџРѕ РІСЃРµРј РІРµСЂС€РёРЅР°Рј
 		for(long j = 0; j < numVerts; j += step)
 		{
 			Vertex & vs = *verts[j].v;
@@ -436,7 +436,7 @@ void LightProcessor::BlurLight()
 }
 
 
-//Расчитать освещение
+//Р Р°СЃС‡РёС‚Р°С‚СЊ РѕСЃРІРµС‰РµРЅРёРµ
 void LightProcessor::CalcLights(long lit, bool isCos, bool isAtt, bool isSdw)
 {
 	lights->UpdateLights(lit);
@@ -473,12 +473,12 @@ void LightProcessor::CalcLights(long lit, bool isCos, bool isAtt, bool isSdw)
 				c += shw.c;
 				break;
 			case Light::t_sun:
-				//Косинус угла
+				//РљРѕСЃРёРЅСѓСЃ СѓРіР»Р°
 				if(isCos)
 				{
 					shw.csatt = lt.cosine*shw.cs + (1.0f - lt.cosine);
 				}
-				//Коэфициент затенения
+				//РљРѕСЌС„РёС†РёРµРЅС‚ Р·Р°С‚РµРЅРµРЅРёСЏ
 				if(isSdw)
 				{
 					vl = (v.shadow[i].sm - 0.5)*lt.curct + 0.5;
@@ -489,17 +489,17 @@ void LightProcessor::CalcLights(long lit, bool isCos, bool isAtt, bool isSdw)
 					if(sw > 1.0f) sw = 1.0f;
 					shw.shw = lt.shadow*sw + (1.0f - lt.shadow);
 				}
-				//Результирующий цвет
+				//Р РµР·СѓР»СЊС‚РёСЂСѓСЋС‰РёР№ С†РІРµС‚
 				shw.c = lt.color*(shw.csatt*shw.shw);
 				c += shw.c;
 				break;
 			case Light::t_sky:
-				//Косинус угла
+				//РљРѕСЃРёРЅСѓСЃ СѓРіР»Р°
 				if(isCos)
 				{
 					shw.csatt = lt.cosine*shw.cs + (1.0f - lt.cosine);
 				}
-				//Коэфициент затенения
+				//РљРѕСЌС„РёС†РёРµРЅС‚ Р·Р°С‚РµРЅРµРЅРёСЏ
 				if(isSdw)
 				{
 					vl = (v.shadow[i].sm - 0.5)*lt.curct + 0.5;
@@ -510,12 +510,12 @@ void LightProcessor::CalcLights(long lit, bool isCos, bool isAtt, bool isSdw)
 					if(sw > 1.0f) sw = 1.0f;
 					shw.shw = lt.shadow*sw + (1.0f - lt.shadow);
 				}
-				//Результирующий цвет
+				//Р РµР·СѓР»СЊС‚РёСЂСѓСЋС‰РёР№ С†РІРµС‚
 				shw.c = lt.color*(shw.csatt*shw.shw);
 				c += shw.c;
 				break;
 			case Light::t_point:
-				//Коэфициент затухания
+				//РљРѕСЌС„РёС†РёРµРЅС‚ Р·Р°С‚СѓС…Р°РЅРёСЏ
 				if(isAtt)
 				{
 					if(shw.dst < lt.range)
@@ -524,12 +524,12 @@ void LightProcessor::CalcLights(long lit, bool isCos, bool isAtt, bool isSdw)
 						if(shw.att > 0.0f) shw.att = 1.0f/shw.att; else shw.att = 0.0f;
 					}else shw.att = 0.0f;
 				}
-				//Косинус угла
+				//РљРѕСЃРёРЅСѓСЃ СѓРіР»Р°
 				if(isCos || isAtt)
 				{
 					shw.csatt = (lt.cosine*shw.cs + (1.0f - lt.cosine))*shw.att;
 				}
-				//Коэфициент затенения
+				//РљРѕСЌС„РёС†РёРµРЅС‚ Р·Р°С‚РµРЅРµРЅРёСЏ
 				if(isSdw)
 				{
 					vl = (v.shadow[i].sm - 0.5)*lt.curct + 0.5;
@@ -540,7 +540,7 @@ void LightProcessor::CalcLights(long lit, bool isCos, bool isAtt, bool isSdw)
 					if(sw > 1.0f) sw = 1.0f;
 					shw.shw = lt.shadow*sw + (1.0f - lt.shadow);
 				}
-				//Результирующий цвет
+				//Р РµР·СѓР»СЊС‚РёСЂСѓСЋС‰РёР№ С†РІРµС‚
 				shw.c = lt.color*(shw.csatt*shw.shw);
 				c += shw.c;
 				break;

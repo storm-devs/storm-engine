@@ -439,7 +439,7 @@ void SKY::UpdateTimeFactor()
 	if( (long)fTimeFactor >= (long)aSkyDirArray ) fTimeFactor -= aSkyDirArray.Size();
 	long nNext = (long)fTimeFactor;
 	if( nPrev != nNext ) {
-		// перечитываем текстуры
+		// РїРµСЂРµС‡РёС‚С‹РІР°РµРј С‚РµРєСЃС‚СѓСЂС‹
 
 		char	str[256], *names[SKY_NUM_TEXTURES] = {"sky_fr.tga", "sky_lf.tga", "sky_bk.tga", "sky_rt.tga", "sky_up.tga"};
 
@@ -473,13 +473,13 @@ float SKY::CalculateAlphaForSun(const CVECTOR& vSunPos, float fSunSize)
 
 	if( vLocalSunPos.y < 0.f ) vLocalSunPos.y = 0.f;
 
-	// считаем куда мы попадаем
+	// СЃС‡РёС‚Р°РµРј РєСѓРґР° РјС‹ РїРѕРїР°РґР°РµРј
 	if( fSkySize > 0.f )
 	{
 		long nTexNum = -1;
 		float fu,fv, fk;
 
-		// проверим попадание в верхнюю сторону
+		// РїСЂРѕРІРµСЂРёРј РїРѕРїР°РґР°РЅРёРµ РІ РІРµСЂС…РЅСЋСЋ СЃС‚РѕСЂРѕРЅСѓ
 		if( vLocalSunPos.y > 0.f )
 		{
 			fk = fSkySize / vLocalSunPos.y;
@@ -495,7 +495,7 @@ float SKY::CalculateAlphaForSun(const CVECTOR& vSunPos, float fSunSize)
 			}
 		}
 
-		// проверим попадание в переднюю сторону
+		// РїСЂРѕРІРµСЂРёРј РїРѕРїР°РґР°РЅРёРµ РІ РїРµСЂРµРґРЅСЋСЋ СЃС‚РѕСЂРѕРЅСѓ
 		if( nTexNum == -1 )
 		{
 			if( vLocalSunPos.z < 0.f )
@@ -514,7 +514,7 @@ float SKY::CalculateAlphaForSun(const CVECTOR& vSunPos, float fSunSize)
 			}
 		}
 
-		// проверим попадание в заднюю сторону
+		// РїСЂРѕРІРµСЂРёРј РїРѕРїР°РґР°РЅРёРµ РІ Р·Р°РґРЅСЋСЋ СЃС‚РѕСЂРѕРЅСѓ
 		if( nTexNum == -1 )
 		{
 			if( vLocalSunPos.z > 0.f )
@@ -533,7 +533,7 @@ float SKY::CalculateAlphaForSun(const CVECTOR& vSunPos, float fSunSize)
 			}
 		}
 
-		// проверим попадание в левую сторону
+		// РїСЂРѕРІРµСЂРёРј РїРѕРїР°РґР°РЅРёРµ РІ Р»РµРІСѓСЋ СЃС‚РѕСЂРѕРЅСѓ
 		if( nTexNum == -1 )
 		{
 			if( vLocalSunPos.x > 0.f )
@@ -552,7 +552,7 @@ float SKY::CalculateAlphaForSun(const CVECTOR& vSunPos, float fSunSize)
 			}
 		}
 
-		// проверим попадание в правую сторону
+		// РїСЂРѕРІРµСЂРёРј РїРѕРїР°РґР°РЅРёРµ РІ РїСЂР°РІСѓСЋ СЃС‚РѕСЂРѕРЅСѓ
 		if( nTexNum == -1 )
 		{
 			if( vLocalSunPos.x < 0.f )
@@ -571,7 +571,7 @@ float SKY::CalculateAlphaForSun(const CVECTOR& vSunPos, float fSunSize)
 			}
 		}
 
-		// ищем альфу в текстуре
+		// РёС‰РµРј Р°Р»СЊС„Сѓ РІ С‚РµРєСЃС‚СѓСЂРµ
 		if( nTexNum != -1 )
 		{
 			DWORD dwCol1 = GetPixelColor((IDirect3DTexture9*)pRS->GetTextureFromID(TexturesID[nTexNum]), fu,fv);

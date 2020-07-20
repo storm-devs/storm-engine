@@ -622,7 +622,7 @@ bool AIShipCannonController::ScanShipForCannons()
 			for (j=0;j<aShipBorts.Size();j++) 
 			{
 				if (strcmp(aShipBorts[j].sName.GetBuffer(), label.group_name) == 0)
-				//if (aShipBorts[j] == label.group_name) /// Акелла , блять ну кто так пишет код ??????
+				//if (aShipBorts[j] == label.group_name) /// РђРєРµР»Р»Р° , Р±Р»СЏС‚СЊ РЅСѓ РєС‚Рѕ С‚Р°Рє РїРёС€РµС‚ РєРѕРґ ??????
 				{
 					AICannon * pCannon = &aShipBorts[j].aCannons[aShipBorts[j].aCannons.Add()];
 					memcpy(m,label.m,sizeof(m));
@@ -753,7 +753,7 @@ void AIShipCannonController::CheckCannonsBoom(float fTmpCannonDamage, const CVEC
 	}
 }
 
-// boal 08.08.06 метод пересчета орудий на корабле -->
+// boal 08.08.06 РјРµС‚РѕРґ РїРµСЂРµСЃС‡РµС‚Р° РѕСЂСѓРґРёР№ РЅР° РєРѕСЂР°Р±Р»Рµ -->
 void AIShipCannonController::ResearchCannons()
 {
 	char	str[512];
@@ -769,7 +769,7 @@ void AIShipCannonController::ResearchCannons()
 		sprintf(str, "%s.damages", (char*)pBort->sName.GetBuffer());
 		ATTRIBUTES * pADamages = pABorts->FindAClass(pABorts, str); Assert(pADamages);
 		ATTRIBUTES * pACurBort = pABorts->FindAClass(pABorts, (char*)pBort->sName.GetBuffer()); Assert(pACurBort);
-        pBort->dwNumDamagedCannons = 0;   // нигде не используется, может рудимент?
+        pBort->dwNumDamagedCannons = 0;   // РЅРёРіРґРµ РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ, РјРѕР¶РµС‚ СЂСѓРґРёРјРµРЅС‚?
         
 		for (j=0; j<pBort->aCannons.Size(); j++) 
 		{
@@ -786,7 +786,7 @@ void AIShipCannonController::ResearchCannons()
 		}
 	}
 }
-// boal 08.08.06 метод пересчета орудий на корабле <--
+// boal 08.08.06 РјРµС‚РѕРґ РїРµСЂРµСЃС‡РµС‚Р° РѕСЂСѓРґРёР№ РЅР° РєРѕСЂР°Р±Р»Рµ <--
 
 void AIShipCannonController::Save(CSaveLoad * pSL)
 {

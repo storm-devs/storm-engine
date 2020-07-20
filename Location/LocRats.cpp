@@ -27,43 +27,43 @@ LocRats::~LocRats()
 //============================================================================================
 
 
-//Инициализация
+//РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
 bool LocRats::Init()
 {
-	//Указатель на локацию
+	//РЈРєР°Р·Р°С‚РµР»СЊ РЅР° Р»РѕРєР°С†РёСЋ
 	ENTITY_ID loc;
 	_CORE_API->FindClass(&loc, "location", 0);
 	Location * location = (Location *)_CORE_API->GetEntityPointer(&loc);
 	if(!location) return false;
-	//Исполнение
+	//РСЃРїРѕР»РЅРµРЅРёРµ
 	_CORE_API->LayerCreate("realize", true, false);
 	_CORE_API->LayerSetFlags("realize", LRFLAG_REALIZE);
 	_CORE_API->LayerAdd("realize", GetID(), 100000);
 	return true;
 }
 
-//Сообщения
+//РЎРѕРѕР±С‰РµРЅРёСЏ
 dword _cdecl LocRats::ProcessMessage(MESSAGE & message)
 {
 	long num = message.Long();
 	if(num < 1) num = 1;
 	if(num > sizeof(rat)/sizeof(LocRat)) num = sizeof(rat)/sizeof(LocRat);
-	//Указатель на локацию
+	//РЈРєР°Р·Р°С‚РµР»СЊ РЅР° Р»РѕРєР°С†РёСЋ
 	ENTITY_ID loc;
 	_CORE_API->FindClass(&loc, "location", 0);
 	Location * location = (Location *)_CORE_API->GetEntityPointer(&loc);
 	if(!location) return 0;
-	//Заводим крыс
+	//Р—Р°РІРѕРґРёРј РєСЂС‹СЃ
 	for(long i = 0; i < num; i++) rat[i].Init(location);
 	return 1;
 }
 
-//Исполнение
+//РСЃРїРѕР»РЅРµРЅРёРµ
 void LocRats::Execute(dword delta_time)
 {
 }
 
-//Рисование
+//Р РёСЃРѕРІР°РЅРёРµ
 void LocRats::Realize(dword delta_time)
 {
 	float dltTime = delta_time*0.001f;

@@ -24,7 +24,7 @@ long		iCausticTex[32];
 float		fCausticSpeed = 0.0f;
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 Location::Location()
@@ -73,7 +73,7 @@ Location::~Location()
 }
 
 
-//Инициализация
+//РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
 bool Location::Init()
 {
 	//DX8 render
@@ -101,14 +101,14 @@ bool Location::Init()
 	return true;
 }
 
-//Исполнение
+//РСЃРїРѕР»РЅРµРЅРёРµ
 void Location::Execute(dword delta_time)
 {
 	bSwimming = AttributesPointer->GetAttributeAsDword("swimming", 1) != 0;
 
-	//Обсчёт персонажей
+	//РћР±СЃС‡С‘С‚ РїРµСЂСЃРѕРЅР°Р¶РµР№
 	if(!isDebugView) Update(delta_time);
-	//Обсчёт сообщений
+	//РћР±СЃС‡С‘С‚ СЃРѕРѕР±С‰РµРЅРёР№
 	float dltTime = delta_time*0.001f;
 	for(long i = 0; i < sizeof(message)/sizeof(DmgMessage); i++)
 	{
@@ -116,7 +116,7 @@ void Location::Execute(dword delta_time)
 		message[i].p.y += dltTime*0.2f;
 		message[i].alpha -= dltTime*0.4f;
 	}
-	//Обновление данных для травы
+	//РћР±РЅРѕРІР»РµРЅРёРµ РґР°РЅРЅС‹С… РґР»СЏ С‚СЂР°РІС‹
 	Grass * grs = (Grass *)api->GetEntityPointer(&grass);
 	if(grs)
 	{
@@ -128,7 +128,7 @@ void Location::Execute(dword delta_time)
 		}
 		grs->numCharacters = supervisor.numCharacters;
 	}
-	//Обновление в локации
+	//РћР±РЅРѕРІР»РµРЅРёРµ РІ Р»РѕРєР°С†РёРё
 	locationTimeUpdate += dltTime;
 	if(locationTimeUpdate > 1.0f)
 	{
@@ -145,15 +145,15 @@ void Location::Realize(dword delta_time)
 	
 	while (fCausticFrame >= 32.0f) fCausticFrame -= 32.0f;
 
-	//Отрисовка локаторов
+	//РћС‚СЂРёСЃРѕРІРєР° Р»РѕРєР°С‚РѕСЂРѕРІ
 	long i = 0;
 	for(i = 0; i < numLocators; i++)
 		if(locators[i]->isVisible) DrawLocators(locators[i]);
 	if(IsDebugView())
 	{
-		//Отрисовка патча
+		//РћС‚СЂРёСЃРѕРІРєР° РїР°С‚С‡Р°
 		ptc.DebugDraw(rs, delta_time*0.001f);
-		//Информация о локации
+		//РРЅС„РѕСЂРјР°С†РёСЏ Рѕ Р»РѕРєР°С†РёРё
 		const char * c = null;
 		if(AttributesPointer)
 		{
@@ -169,9 +169,9 @@ void Location::Realize(dword delta_time)
 			}
 		}
 	}
-	//Обсчёт персонажей
+	//РћР±СЃС‡С‘С‚ РїРµСЂСЃРѕРЅР°Р¶РµР№
 	if(isDebugView) Update(delta_time);
-	//Отрисовка сообщений
+	//РћС‚СЂРёСЃРѕРІРєР° СЃРѕРѕР±С‰РµРЅРёР№
 	i = curMessage;
 	for(long c = 0; c < sizeof(message)/sizeof(DmgMessage); c++, i--)
 	{
@@ -180,7 +180,7 @@ void Location::Realize(dword delta_time)
 		//Print(message[i].p, 10.0f, 0, message[i].alpha, message[i].c, 0.8f, "%.0f/%.0f", message[i].hit, message[i].hp);
 		Print(message[i].p, 10.0f, 0, message[i].alpha, message[i].c, 0.8f, "%.0f", message[i].hit);
 	}
-	//Отрисовка полосок над персонажами
+	//РћС‚СЂРёСЃРѕРІРєР° РїРѕР»РѕСЃРѕРє РЅР°Рґ РїРµСЂСЃРѕРЅР°Р¶Р°РјРё
 	if(bDrawBars) DrawEnemyBars();
 	enemyBarsCount = 0;
 }
@@ -193,9 +193,9 @@ void Location::Update(dword delta_time)
 	const float maxDltTime = 0.1f;
 	if(delta_time > max_delta_time) delta_time = max_delta_time;
 	float dltTime = delta_time*0.001f;
-	//Эффекты моделей
+	//Р­С„С„РµРєС‚С‹ РјРѕРґРµР»РµР№
 	model.Update(dltTime);
-	//Персонажи
+	//РџРµСЂСЃРѕРЅР°Р¶Рё
 	if(!isPause)
 	{
 		supervisor.PreUpdate(dltTime);
@@ -205,7 +205,7 @@ void Location::Update(dword delta_time)
 	}else supervisor.Update(0.0f);
 }
 
-//Сообщения
+//РЎРѕРѕР±С‰РµРЅРёСЏ
 dword _cdecl Location::ProcessMessage(MESSAGE & message)
 {
 	long i;
@@ -237,12 +237,12 @@ dword _cdecl Location::ProcessMessage(MESSAGE & message)
 		if(lastLoadStaticModel < 0) return 0;
 		if(!model.IsValidateIndex(lastLoadStaticModel)) return 0;
 		if(!model[lastLoadStaticModel]) return 0;
-		//Ищим группу
+		//РС‰РёРј РіСЂСѓРїРїСѓ
 		message.String(sizeof(name), name);
 		name[sizeof(name) - 1] = 0;
 		la = FindLocatorsGroup(name);
 		if(!la) return 0;
-		//Ищем локатор
+		//РС‰РµРј Р»РѕРєР°С‚РѕСЂ
 		message.String(sizeof(name), name);
 		name[sizeof(name) - 1] = 0;
 		i = la->FindByName(name);
@@ -405,7 +405,7 @@ dword _cdecl Location::ProcessMessage(MESSAGE & message)
 	return 0;
 }
 
-//Найти группу локаторов
+//РќР°Р№С‚Рё РіСЂСѓРїРїСѓ Р»РѕРєР°С‚РѕСЂРѕРІ
 LocatorArray * Location::FindLocatorsGroup(const char * gName)
 {
 	if(!gName || !gName[0]) return null;
@@ -422,7 +422,7 @@ long Location::LoadStaticModel(const char * modelName, const char * tech, long l
 	lights = (Lights *)_CORE_API->GetEntityPointer(&lightsid);
 	long im = model.CreateModel(modelName, tech, level, true, useDynamicLights?GetLights():0);
 	if(im < 0) return -1;
-	//Указатель на геометрию
+	//РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РіРµРѕРјРµС‚СЂРёСЋ
 	MODEL * mdl = model[im];
 	if(!mdl)
 	{
@@ -441,12 +441,12 @@ long Location::LoadStaticModel(const char * modelName, const char * tech, long l
 		model.DeleteModel(im);
 		return -1;
 	}
-	//Добавим модельку в специальные слои
+	//Р”РѕР±Р°РІРёРј РјРѕРґРµР»СЊРєСѓ РІ СЃРїРµС†РёР°Р»СЊРЅС‹Рµ СЃР»РѕРё
 	_CORE_API->LayerAdd("shadow", mdl->GetID(), 10);
 	_CORE_API->LayerAdd("sun_trace", mdl->GetID(), 10);
 	api->LayerAdd("blood", mdl->GetID(), 100);
 	api->LayerAdd("rain_drops", mdl->GetID(), 100);
-	//Зачитываем все локаторы
+	//Р—Р°С‡РёС‚С‹РІР°РµРј РІСЃРµ Р»РѕРєР°С‚РѕСЂС‹
 	GEOS::INFO ginfo;
 	GEOS::LABEL label;
 	g->GetInfo(ginfo);
@@ -498,13 +498,13 @@ long Location::LoadStaticModel(const char * modelName, const char * tech, long l
 
 bool Location::LoadCharacterPatch(const char * ptcName)
 {
-	//Формируем путь до файла
+	//Р¤РѕСЂРјРёСЂСѓРµРј РїСѓС‚СЊ РґРѕ С„Р°Р№Р»Р°
 	char path[512];
 	strcpy(path, "resource\\models\\");
 	strcat(path, model.modelspath);
 	strcat(path, ptcName);
 	strcat(path, ".ptc");
-	//Загружаем патч
+	//Р—Р°РіСЂСѓР¶Р°РµРј РїР°С‚С‡
 	bool result = ptc.Load(path);
 	if(!result) _CORE_API->Trace("Can't loaded patch data file %s.ptc for npc.", ptcName);
 	return result;
@@ -685,7 +685,7 @@ void Location::UpdateLocators()
 	atr = AttributesPointer->FindAClass(AttributesPointer, "locators");
 	if(atr)
 	{
-		//Создаём новые атрибуты
+		//РЎРѕР·РґР°С‘Рј РЅРѕРІС‹Рµ Р°С‚СЂРёР±СѓС‚С‹
 		for(long i = 0; i < numLocators; i++)
 		{
 			char * groupName = locators[i]->GetGroupName();
@@ -758,19 +758,19 @@ void Location::DrawLocators(LocatorArray * la)
 {
 	if(la->kViewRadius > 0.0f)
 	{
-		//Стейты
+		//РЎС‚РµР№С‚С‹
 		if(!sphereNumTrgs) CreateSphere();
 		CMatrix mPos;
-		//Уберём текстуры	
+		//РЈР±РµСЂС‘Рј С‚РµРєСЃС‚СѓСЂС‹	
 		rs->TextureSet(0, -1);
 		rs->TextureSet(1, -1);
-		//Стартуем технику
+		//РЎС‚Р°СЂС‚СѓРµРј С‚РµС…РЅРёРєСѓ
 		bool isSet = rs->TechniqueExecuteStart("DbgDrawLocators");
 		rs->SetRenderState(D3DRS_TEXTUREFACTOR, la->color);
-		//Рисуем
+		//Р РёСЃСѓРµРј
 		for(long i = 0; i < la->Num(); i++)
 		{
-			//Рисуем шарик
+			//Р РёСЃСѓРµРј С€Р°СЂРёРє
 			la->GetLocatorPos(i, mPos);
 			float rad = la->GetLocatorRadius(i)*la->kViewRadius;
 			if(rad <= 0.0f) continue;
@@ -788,12 +788,12 @@ void Location::DrawLocators(LocatorArray * la)
 		}
 		if(isSet) while(rs->TechniqueExecuteNext()){};
 	}
-	//Подписываем
+	//РџРѕРґРїРёСЃС‹РІР°РµРј
 	static CMatrix mtx, view, prj;
 	rs->GetTransform(D3DTS_VIEW, view);
 	rs->GetTransform(D3DTS_PROJECTION, prj);
 	mtx.EqMultiply(view, prj);
-	//Получим текущие размеры vp
+	//РџРѕР»СѓС‡РёРј С‚РµРєСѓС‰РёРµ СЂР°Р·РјРµСЂС‹ vp
 	static D3DVIEWPORT9 vp;
 	rs->GetViewport(&vp);
 	float w = vp.Width*0.5f;
@@ -805,13 +805,13 @@ void Location::DrawLocators(LocatorArray * la)
 	view.Transposition();
 	float d = view.Vz() | view.Pos();
 	float viewDst = la->viewDist*la->viewDist;
-	//Рисуем
+	//Р РёСЃСѓРµРј
 	for(long i = 0; i < la->Num(); i++)
 	{	
 		float lbh = la->GetLocatorRadius(i)*la->kViewRadius;
 		if(lbh <= 0.0f) continue;
 		if(lbh > 1.5f) lbh = 1.5f;
-		//Пишем текст
+		//РџРёС€РµРј С‚РµРєСЃС‚
 		la->GetLocatorPos(i, lvrt.x, lvrt.y, lvrt.z);
 		if((lvrt | view.Vz()) < d) continue;
 		if(~(lvrt - view.Pos()) > viewDst) continue;
@@ -832,16 +832,16 @@ void Location::DrawLine(const CVECTOR & s, dword cs, const CVECTOR & d, dword cd
 	lineVertex[1].v = d;
 	lineVertex[1].c = cd;
 	rs->SetTransform(D3DTS_WORLD, CMatrix());
-	//Уберём текстуры	
+	//РЈР±РµСЂС‘Рј С‚РµРєСЃС‚СѓСЂС‹	
 	rs->TextureSet(0, -1);
 	rs->TextureSet(1, -1);
-	//Установим Z
+	//РЈСЃС‚Р°РЅРѕРІРёРј Z
 	dword oldZState = 1;
 	rs->GetRenderState(D3DRS_ZENABLE, &oldZState);
 	rs->SetRenderState(D3DRS_ZENABLE, useZ);
-	//Рисуем
+	//Р РёСЃСѓРµРј
 	rs->DrawPrimitiveUP(D3DPT_LINELIST, D3DFVF_XYZ | D3DFVF_DIFFUSE, 1, lineVertex, sizeof(SphVertex), "DbgLocationDrawLine");
-	//Востанавливаем
+	//Р’РѕСЃС‚Р°РЅР°РІР»РёРІР°РµРј
 	rs->SetRenderState(D3DRS_ZENABLE, oldZState);
 }
 
@@ -862,7 +862,7 @@ void Location::CreateSphere()
 
 	CVECTOR light = !CVECTOR(0.0f, 0.0f, 1.0f);
 	float kColor;
-	//Заполняем вершины
+	//Р—Р°РїРѕР»РЅСЏРµРј РІРµСЂС€РёРЅС‹
 	long i = 0, t = 0;
 	for(i = 0, t = 0; i < a2; i++)
 	{
@@ -904,7 +904,7 @@ void Location::CreateSphere()
 			sphereVertex[t*3 + 5].v.z = r2*z2;
 			CalcKColor(5);
 			sphereVertex[t*3 + 5].c = Color;
-			//Добавили 2 треугольника
+			//Р”РѕР±Р°РІРёР»Рё 2 С‚СЂРµСѓРіРѕР»СЊРЅРёРєР°
 			t += 2;
 		}
 	}
@@ -937,15 +937,15 @@ bool Location::IsDebugView()
 
 #include <stdio.h>
 
-//Написать текст
+//РќР°РїРёСЃР°С‚СЊ С‚РµРєСЃС‚
 void _cdecl Location::Print(const CVECTOR & pos3D, float rad, long line, float alpha, dword color, float scale, const char * format, ...)
 {
 	static char buf[256];
 	scale *= 2.0f;
-	//Печатаем в буфер
+	//РџРµС‡Р°С‚Р°РµРј РІ Р±СѓС„РµСЂ
 	long len = _vsnprintf(buf, sizeof(buf) - 1, format, (char *)(&format + 1));
 	buf[sizeof(buf) - 1] = 0;
-	//Ищем позицию точки на экране
+	//РС‰РµРј РїРѕР·РёС†РёСЋ С‚РѕС‡РєРё РЅР° СЌРєСЂР°РЅРµ
 	static CMatrix mtx, view, prj;
 	static D3DVIEWPORT9 vp;
 	MTX_PRJ_VECTOR vrt;
@@ -959,10 +959,10 @@ void _cdecl Location::Print(const CVECTOR & pos3D, float rad, long line, float a
 	if((pos3D | view.Vz()) < d) return;
 	rs->GetViewport(&vp);
 	mtx.Projection((CVECTOR *)&pos3D, &vrt, 1, vp.Width*0.5f, vp.Height*0.5f, sizeof(CVECTOR), sizeof(MTX_PRJ_VECTOR));
-	//Ищем позицию
+	//РС‰РµРј РїРѕР·РёС†РёСЋ
 	float fh = rs->CharHeight(FONT_DEFAULT)*0.8f;
 	vrt.y -= (line + 0.5f)*fh*scale;
-	//Прозрачность	
+	//РџСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ	
 	const float kDist = 0.75f;
 	if(alpha < 0.0f) alpha = 0.0f;
 	if(alpha > 1.0f) alpha = 1.0f;
@@ -973,12 +973,12 @@ void _cdecl Location::Print(const CVECTOR & pos3D, float rad, long line, float a
 	}
 	if(alpha <= 0.0f) return;
 	color = (dword(alpha*255.0f) << 24) | (color & 0xffffff);
-	//Печатаем текст
+	//РџРµС‡Р°С‚Р°РµРј С‚РµРєСЃС‚
 	rs->ExtPrint(FONT_DEFAULT, color, 0x00000000, ALIGN_CENTER, 0, scale, 0, 0, long(vrt.x), long(vrt.y), buf);
 }
 
 
-//Добавить сообщение о повреждении
+//Р”РѕР±Р°РІРёС‚СЊ СЃРѕРѕР±С‰РµРЅРёРµ Рѕ РїРѕРІСЂРµР¶РґРµРЅРёРё
 void Location::AddDamageMessage(const CVECTOR & pos3D, float hit, float curhp, float maxhp)
 {
 	curMessage++;
@@ -999,7 +999,7 @@ void Location::AddDamageMessage(const CVECTOR & pos3D, float hit, float curhp, f
 	message[curMessage].c = (long(r*255.0f) << 16) | (long(g*255.0f) << 8) | long(b*255.0f);
 }
 
-//Нарисовать на данном кадре полоски над врагом
+//РќР°СЂРёСЃРѕРІР°С‚СЊ РЅР° РґР°РЅРЅРѕРј РєР°РґСЂРµ РїРѕР»РѕСЃРєРё РЅР°Рґ РІСЂР°РіРѕРј
 void Location::DrawEnemyBars(const CVECTOR & pos, float hp, float energy, float alpha)
 {
 	if(enemyBarsCount >= sizeof(enemyBar)/sizeof(enemyBar[0]))
@@ -1061,12 +1061,12 @@ void Location::TestLocatorsInPatch(MESSAGE & message)
 	}
 }
 
-//Отрисовка полосок над персонажами
+//РћС‚СЂРёСЃРѕРІРєР° РїРѕР»РѕСЃРѕРє РЅР°Рґ РїРµСЂСЃРѕРЅР°Р¶Р°РјРё
 void Location::DrawEnemyBars()
 {
 	const float maxViewDist = 12.0f;
 	const float alphaThresholdRelativeDist = 0.8f;
-	//Текущии параметры сцены
+	//РўРµРєСѓС‰РёРё РїР°СЂР°РјРµС‚СЂС‹ СЃС†РµРЅС‹
 	static CMatrix mtx, view, prj;
 	static D3DVIEWPORT9 vp;
 	struct SortElement
@@ -1083,10 +1083,10 @@ void Location::DrawEnemyBars()
 	mtx.EqMultiply(view, prj);
 	view.Transposition();
 	rs->GetViewport(&vp);
-	//Перебираем все записи
+	//РџРµСЂРµР±РёСЂР°РµРј РІСЃРµ Р·Р°РїРёСЃРё
 	for(long i = 0; i < enemyBarsCount; i++)
 	{
-		//Ищем позицию точки на экране
+		//РС‰РµРј РїРѕР·РёС†РёСЋ С‚РѕС‡РєРё РЅР° СЌРєСЂР°РЅРµ
 		CVECTOR & pos3D = enemyBar[i].p;
 		float dist = ~(pos3D - view.Pos());
 		if(dist >= maxViewDist*maxViewDist) continue;
@@ -1094,7 +1094,7 @@ void Location::DrawEnemyBars()
 		if((pos3D | view.Vz()) < d) continue;
 		MTX_PRJ_VECTOR vrt;
 		mtx.Projection((CVECTOR *)&pos3D, &vrt, 1, vp.Width*0.5f, vp.Height*0.5f, sizeof(CVECTOR), sizeof(MTX_PRJ_VECTOR));
-		//Определяем прозрачность
+		//РћРїСЂРµРґРµР»СЏРµРј РїСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ
 		float k = sqrtf(dist)/maxViewDist;
 		if(k > alphaThresholdRelativeDist)
 		{
@@ -1105,14 +1105,14 @@ void Location::DrawEnemyBars()
 		dword color = long(k*enemyBar[i].alpha);
 		if(!color) continue;
 		color = (color << 24) | 0x007f7f7f;
-		//Добавим в список отрисовка
+		//Р”РѕР±Р°РІРёРј РІ СЃРїРёСЃРѕРє РѕС‚СЂРёСЃРѕРІРєР°
 		sort[sortCount].vrt = vrt;
 		sort[sortCount].color = color;
 		sort[sortCount].hp = enemyBar[i].hp;
 		sort[sortCount].energy = enemyBar[i].energy;
 		selements[sortCount++] = &sort[sortCount];
 	}
-	//Cортировка по дистанции
+	//CРѕСЂС‚РёСЂРѕРІРєР° РїРѕ РґРёСЃС‚Р°РЅС†РёРё
 	for(long i = 0; i < sortCount - 1; i++)
 	{
 		for(long j = i + 1; j < sortCount; j++)
@@ -1125,7 +1125,7 @@ void Location::DrawEnemyBars()
 			}
 		}
 	}
-	//Отрисовка
+	//РћС‚СЂРёСЃРѕРІРєР°
 	for(long i = 0; i < sortCount; i++)
 	{
 		MTX_PRJ_VECTOR & vrt = selements[i]->vrt;
@@ -1139,35 +1139,35 @@ void Location::DrawEnemyBars()
 			width *= k;
 			height *= k;
 		}
-		//Подложка
+		//РџРѕРґР»РѕР¶РєР°
 		bar[0].p.x = vrt.x - width; bar[0].p.y = vrt.y - height; bar[0].u = 0.0f; bar[0].v = 0.0f;
 		bar[1].p.x = vrt.x + width; bar[1].p.y = vrt.y - height; bar[1].u = 1.0f; bar[1].v = 0.0f;
 		bar[2].p.x = vrt.x - width; bar[2].p.y = vrt.y + height; bar[2].u = 0.0f; bar[2].v = 0.5f;
 		bar[3] = bar[2]; bar[4] = bar[1];
 		bar[5].p.x = vrt.x + width; bar[5].p.y = vrt.y + height; bar[5].u = 1.0f; bar[5].v = 0.5f;
-		//Жизнь
+		//Р–РёР·РЅСЊ
 		bar[6].p.x = vrt.x - width; bar[6].p.y = vrt.y - height; bar[6].u = 0.0f; bar[6].v = 0.5f;
 		bar[7].p.x = vrt.x + width; bar[7].p.y = vrt.y - height; bar[7].u = 1.0f; bar[7].v = 0.5f;
 		bar[8].p.x = vrt.x - width; bar[8].p.y = vrt.y; bar[8].u = 0.0f; bar[8].v = 0.75f;
 		bar[9] = bar[8]; bar[10] = bar[7];
 		bar[11].p.x = vrt.x + width; bar[11].p.y = vrt.y; bar[11].u = 1.0f; bar[11].v = 0.75f;
-		//Энергия
+		//Р­РЅРµСЂРіРёСЏ
 		bar[12].p.x = vrt.x - width; bar[12].p.y = vrt.y; bar[12].u = 0.0f; bar[12].v = 0.75f;
 		bar[13].p.x = vrt.x + width; bar[13].p.y = vrt.y; bar[13].u = 1.0f; bar[13].v = 0.75f;
 		bar[14].p.x = vrt.x - width; bar[14].p.y = vrt.y + height; bar[14].u = 0.0f; bar[14].v = 1.0f;
 		bar[15] = bar[14]; bar[16] = bar[13];
 		bar[17].p.x = vrt.x + width; bar[17].p.y = vrt.y + height; bar[17].u = 1.0f; bar[17].v = 1.0f;
-		//Общие поля
+		//РћР±С‰РёРµ РїРѕР»СЏ
 		for(long n = 0; n < sizeof(bar)/sizeof(bar[0]); n++)
 		{
 			bar[n].p.z = vrt.z;
 			bar[n].rhw = vrt.rhw;
 			bar[n].c = color;
 		}
-		//Корректируем полоски
+		//РљРѕСЂСЂРµРєС‚РёСЂСѓРµРј РїРѕР»РѕСЃРєРё
 		CorrectBar(selements[i]->hp, 0.03f, 0.97f, bar + 6);
 		CorrectBar(selements[i]->energy, 0.03f, 0.97f, bar + 12);
-		//Рисуем
+		//Р РёСЃСѓРµРј
 		rs->TextureSet(0, enemyBarsTexture);
 		rs->DrawPrimitiveUP(D3DPT_TRIANGLELIST, D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1, 6, bar, sizeof(bar[0]), "LocationModelBlend");
 	}

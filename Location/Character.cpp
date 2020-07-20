@@ -35,81 +35,81 @@
 #define CHARACTER_FIGHT_GUNHAND		"To hand"
 #define CHARACTER_FIGHT_GUNFIRE		"Fire"
 
-#define CHARACTER_FIGHT_FIREDIST	25.0f	//метров
-#define CHARACTER_FIGHT_FIREANG		10.0f	//градусов
+#define CHARACTER_FIGHT_FIREDIST	25.0f	//РјРµС‚СЂРѕРІ
+#define CHARACTER_FIGHT_FIREANG		10.0f	//РіСЂР°РґСѓСЃРѕРІ
 
 
-#define CHARACTER_DIALOG_ANG		30.0f	//Максимальный угл срабатывания диалога
+#define CHARACTER_DIALOG_ANG		30.0f	//РњР°РєСЃРёРјР°Р»СЊРЅС‹Р№ СѓРіР» СЃСЂР°Р±Р°С‚С‹РІР°РЅРёСЏ РґРёР°Р»РѕРіР°
 
-#define CHARACTER_SEA_NOTRUN		0.2f	//Относительная высота при которой персонаж не может бежать
-#define CHARACTER_SEA_MOVE			0.6f	//Относительная высота при которой начинает сносить персонажа
-#define CHARACTER_SEA_SWIM			0.8f	//Относительная высота при которой персонаж начинает плыть
-
-
-#define CHARACTER_HIDE_DIST			0.5f	//Растояние до камеры при котором гасить персонажа
+#define CHARACTER_SEA_NOTRUN		0.2f	//РћС‚РЅРѕСЃРёС‚РµР»СЊРЅР°СЏ РІС‹СЃРѕС‚Р° РїСЂРё РєРѕС‚РѕСЂРѕР№ РїРµСЂСЃРѕРЅР°Р¶ РЅРµ РјРѕР¶РµС‚ Р±РµР¶Р°С‚СЊ
+#define CHARACTER_SEA_MOVE			0.6f	//РћС‚РЅРѕСЃРёС‚РµР»СЊРЅР°СЏ РІС‹СЃРѕС‚Р° РїСЂРё РєРѕС‚РѕСЂРѕР№ РЅР°С‡РёРЅР°РµС‚ СЃРЅРѕСЃРёС‚СЊ РїРµСЂСЃРѕРЅР°Р¶Р°
+#define CHARACTER_SEA_SWIM			0.8f	//РћС‚РЅРѕСЃРёС‚РµР»СЊРЅР°СЏ РІС‹СЃРѕС‚Р° РїСЂРё РєРѕС‚РѕСЂРѕР№ РїРµСЂСЃРѕРЅР°Р¶ РЅР°С‡РёРЅР°РµС‚ РїР»С‹С‚СЊ
 
 
-#define CHARACTER_JUMPMAXTIME		5.0f	//Максимально допустимое время падения при прыжке
+#define CHARACTER_HIDE_DIST			0.5f	//Р Р°СЃС‚РѕСЏРЅРёРµ РґРѕ РєР°РјРµСЂС‹ РїСЂРё РєРѕС‚РѕСЂРѕРј РіР°СЃРёС‚СЊ РїРµСЂСЃРѕРЅР°Р¶Р°
+
+
+#define CHARACTER_JUMPMAXTIME		5.0f	//РњР°РєСЃРёРјР°Р»СЊРЅРѕ РґРѕРїСѓСЃС‚РёРјРѕРµ РІСЂРµРјСЏ РїР°РґРµРЅРёСЏ РїСЂРё РїСЂС‹Р¶РєРµ
 #define CHARACTER_MAXJUMPPOINTS		(sizeof(jumpTrack)/sizeof(CVECTOR))
 #define CHARACTER_JUMP_TIMESTEP		(CHARACTER_JUMPMAXTIME/CHARACTER_MAXJUMPPOINTS)
 
-//Виды атак
+//Р’РёРґС‹ Р°С‚Р°Рє
 #define FGT_ATTACK_FAST		"fast"
 #define FGT_ATTACK_FORCE	"force"
 #define FGT_ATTACK_ROUND	"round"
 #define FGT_ATTACK_BREAK	"break"
 #define FGT_ATTACK_FEINT	"feint"
-#define FGT_ATTACK_PARRY	"parry"  // для пробоя "hit_parry"  boal
+#define FGT_ATTACK_PARRY	"parry"  // РґР»СЏ РїСЂРѕР±РѕСЏ "hit_parry"  boal
 
-//Таблица возможности смены одного действия другим
+//РўР°Р±Р»РёС†Р° РІРѕР·РјРѕР¶РЅРѕСЃС‚Рё СЃРјРµРЅС‹ РѕРґРЅРѕРіРѕ РґРµР№СЃС‚РІРёСЏ РґСЂСѓРіРёРј
 byte Character::fightTbl[fgt_max][fgt_max] =
 {
 	//Set type
 	//nn afs afr ard abk aft aftc fr hatk hft hpr hrd hfr bk bkh bbr pry rcl stl str  //Current type
-	{ 1, 1,  1,  1,  1,  1,  1,   1, 1,   1,  1,  1,  1,  1, 1,  1,  1,  1,  1,  1 }, //fgt_none Нет никакого боевого действия
-	{ 0, 0,  0,  0,  0,  0,  0,   0, 1,   1,  1,  1,  1,  0, 0,  0,  0,  0,  0,  0 }, //fgt_attack_fast Быстрый удар
-	{ 0, 0,  0,  0,  0,  0,  0,   0, 1,   1,  1,  1,  1,  0, 0,  0,  0,  0,  0,  0 }, //fgt_attack_force Сильный удар
-	{ 0, 0,  0,  0,  0,  0,  0,   0, 1,   1,  1,  1,  1,  0, 0,  0,  0,  0,  0,  0 }, //fgt_attack_round Круговой удар
-	{ 0, 0,  0,  0,  0,  0,  0,   0, 1,   1,  1,  1,  1,  0, 0,  0,  0,  0,  0,  0 }, //fgt_attack_break Пробивающий удар
-	{ 0, 0,  0,  0,  0,  0,  1,   0, 1,   0,  0,  0,  0,  0, 0,  0,  0,  0,  0,  0 }, //fgt_attack_feint Финт - спрециальный обманный удар
-	{ 0, 0,  0,  0,  0,  0,  0,   0, 1,   1,  1,  1,  1,  0, 0,  0,  0,  0,  0,  0 }, //fgt_attack_feintc Продолжение финта в случае контратаки
-	{ 0, 0,  0,  0,  0,  0,  0,   0, 0,   0,  0,  0,  0,  0, 0,  0,  0,  0,  0,  0 }, //fgt_fire Выстрел из пистолета
-	{ 0, 0,  0,  0,  0,  0,  0,   0, 1,   0,  0,  0,  0,  0, 0,  0,  0,  0,  0,  0 }, //fgt_hit_attack Реакция попадания удара по персонажу вводящая его в stall
-	{ 0, 0,  0,  0,  0,  0,  0,   0, 0,   0,  0,  0,  0,  0, 0,  0,  0,  0,  0,  0 }, //fgt_hit_feint Реакция от финта вводящая его в stall
-	{ 0, 0,  0,  0,  0,  0,  0,   0, 0,   0,  0,  0,  0,  0, 0,  0,  0,  0,  0,  0 }, //fgt_hit_parry Реакция от парирования вводящая его в stall
-	{ 0, 0,  0,  0,  0,  0,  0,   0, 0,   0,  0,  0,  0,  0, 0,  0,  0,  0,  0,  0 }, //fgt_hit_round Реакция отталкивание круговым ударом
-	{ 0, 0,  0,  0,  0,  0,  0,   0, 0,   0,  0,  0,  0,  0, 0,  0,  0,  0,  0,  0 }, //fgt_hit_fire Реакция от выстрела вводящая его в stall
-	{ 0, 0,  0,  0,  0,  0,  0,   0, 0,   0,  0,  0,  0,  0, 1,  1,  0,  0,  0,  0 }, //fgt_block Защита саблей
-	{ 0, 0,  0,  0,  0,  0,  0,   0, 0,   0,  0,  0,  0,  0, 1,  1,  0,  0,  0,  0 }, //fgt_blockhit Защита саблей
-	{ 0, 0,  0,  0,  0,  0,  0,   0, 0,   0,  0,  0,  0,  0, 0,  0,  0,  0,  0,  0 }, //fgt_blockbreak Пробивка блока
-	{ 0, 0,  0,  0,  0,  0,  0,   0, 1,   1,  1,  1,  1,  0, 0,  0,  0,  0,  0,  0 }, //fgt_parry Парирование, защитное движение вводящее противника в stall
-	{ 0, 0,  0,  0,  0,  0,  0,   0, 1,   0,  0,  1,  1,  0, 0,  0,  0,  0,  0,  0 }, //fgt_recoil Отскок назад
-	{ 0, 0,  0,  0,  0,  0,  0,   0, 1,   0,  0,  1,  1,  0, 0,  0,  0,  0,  0,  0 }, //fgt_strafe_l Отскок влево
-	{ 0, 0,  0,  0,  0,  0,  0,   0, 1,   0,  0,  1,  1,  0, 0,  0,  0,  0,  0,  0 }, //fgt_strafe_r Отскок право
+	{ 1, 1,  1,  1,  1,  1,  1,   1, 1,   1,  1,  1,  1,  1, 1,  1,  1,  1,  1,  1 }, //fgt_none РќРµС‚ РЅРёРєР°РєРѕРіРѕ Р±РѕРµРІРѕРіРѕ РґРµР№СЃС‚РІРёСЏ
+	{ 0, 0,  0,  0,  0,  0,  0,   0, 1,   1,  1,  1,  1,  0, 0,  0,  0,  0,  0,  0 }, //fgt_attack_fast Р‘С‹СЃС‚СЂС‹Р№ СѓРґР°СЂ
+	{ 0, 0,  0,  0,  0,  0,  0,   0, 1,   1,  1,  1,  1,  0, 0,  0,  0,  0,  0,  0 }, //fgt_attack_force РЎРёР»СЊРЅС‹Р№ СѓРґР°СЂ
+	{ 0, 0,  0,  0,  0,  0,  0,   0, 1,   1,  1,  1,  1,  0, 0,  0,  0,  0,  0,  0 }, //fgt_attack_round РљСЂСѓРіРѕРІРѕР№ СѓРґР°СЂ
+	{ 0, 0,  0,  0,  0,  0,  0,   0, 1,   1,  1,  1,  1,  0, 0,  0,  0,  0,  0,  0 }, //fgt_attack_break РџСЂРѕР±РёРІР°СЋС‰РёР№ СѓРґР°СЂ
+	{ 0, 0,  0,  0,  0,  0,  1,   0, 1,   0,  0,  0,  0,  0, 0,  0,  0,  0,  0,  0 }, //fgt_attack_feint Р¤РёРЅС‚ - СЃРїСЂРµС†РёР°Р»СЊРЅС‹Р№ РѕР±РјР°РЅРЅС‹Р№ СѓРґР°СЂ
+	{ 0, 0,  0,  0,  0,  0,  0,   0, 1,   1,  1,  1,  1,  0, 0,  0,  0,  0,  0,  0 }, //fgt_attack_feintc РџСЂРѕРґРѕР»Р¶РµРЅРёРµ С„РёРЅС‚Р° РІ СЃР»СѓС‡Р°Рµ РєРѕРЅС‚СЂР°С‚Р°РєРё
+	{ 0, 0,  0,  0,  0,  0,  0,   0, 0,   0,  0,  0,  0,  0, 0,  0,  0,  0,  0,  0 }, //fgt_fire Р’С‹СЃС‚СЂРµР» РёР· РїРёСЃС‚РѕР»РµС‚Р°
+	{ 0, 0,  0,  0,  0,  0,  0,   0, 1,   0,  0,  0,  0,  0, 0,  0,  0,  0,  0,  0 }, //fgt_hit_attack Р РµР°РєС†РёСЏ РїРѕРїР°РґР°РЅРёСЏ СѓРґР°СЂР° РїРѕ РїРµСЂСЃРѕРЅР°Р¶Сѓ РІРІРѕРґСЏС‰Р°СЏ РµРіРѕ РІ stall
+	{ 0, 0,  0,  0,  0,  0,  0,   0, 0,   0,  0,  0,  0,  0, 0,  0,  0,  0,  0,  0 }, //fgt_hit_feint Р РµР°РєС†РёСЏ РѕС‚ С„РёРЅС‚Р° РІРІРѕРґСЏС‰Р°СЏ РµРіРѕ РІ stall
+	{ 0, 0,  0,  0,  0,  0,  0,   0, 0,   0,  0,  0,  0,  0, 0,  0,  0,  0,  0,  0 }, //fgt_hit_parry Р РµР°РєС†РёСЏ РѕС‚ РїР°СЂРёСЂРѕРІР°РЅРёСЏ РІРІРѕРґСЏС‰Р°СЏ РµРіРѕ РІ stall
+	{ 0, 0,  0,  0,  0,  0,  0,   0, 0,   0,  0,  0,  0,  0, 0,  0,  0,  0,  0,  0 }, //fgt_hit_round Р РµР°РєС†РёСЏ РѕС‚С‚Р°Р»РєРёРІР°РЅРёРµ РєСЂСѓРіРѕРІС‹Рј СѓРґР°СЂРѕРј
+	{ 0, 0,  0,  0,  0,  0,  0,   0, 0,   0,  0,  0,  0,  0, 0,  0,  0,  0,  0,  0 }, //fgt_hit_fire Р РµР°РєС†РёСЏ РѕС‚ РІС‹СЃС‚СЂРµР»Р° РІРІРѕРґСЏС‰Р°СЏ РµРіРѕ РІ stall
+	{ 0, 0,  0,  0,  0,  0,  0,   0, 0,   0,  0,  0,  0,  0, 1,  1,  0,  0,  0,  0 }, //fgt_block Р—Р°С‰РёС‚Р° СЃР°Р±Р»РµР№
+	{ 0, 0,  0,  0,  0,  0,  0,   0, 0,   0,  0,  0,  0,  0, 1,  1,  0,  0,  0,  0 }, //fgt_blockhit Р—Р°С‰РёС‚Р° СЃР°Р±Р»РµР№
+	{ 0, 0,  0,  0,  0,  0,  0,   0, 0,   0,  0,  0,  0,  0, 0,  0,  0,  0,  0,  0 }, //fgt_blockbreak РџСЂРѕР±РёРІРєР° Р±Р»РѕРєР°
+	{ 0, 0,  0,  0,  0,  0,  0,   0, 1,   1,  1,  1,  1,  0, 0,  0,  0,  0,  0,  0 }, //fgt_parry РџР°СЂРёСЂРѕРІР°РЅРёРµ, Р·Р°С‰РёС‚РЅРѕРµ РґРІРёР¶РµРЅРёРµ РІРІРѕРґСЏС‰РµРµ РїСЂРѕС‚РёРІРЅРёРєР° РІ stall
+	{ 0, 0,  0,  0,  0,  0,  0,   0, 1,   0,  0,  1,  1,  0, 0,  0,  0,  0,  0,  0 }, //fgt_recoil РћС‚СЃРєРѕРє РЅР°Р·Р°Рґ
+	{ 0, 0,  0,  0,  0,  0,  0,   0, 1,   0,  0,  1,  1,  0, 0,  0,  0,  0,  0,  0 }, //fgt_strafe_l РћС‚СЃРєРѕРє РІР»РµРІРѕ
+	{ 0, 0,  0,  0,  0,  0,  0,   0, 1,   0,  0,  1,  1,  0, 0,  0,  0,  0,  0,  0 }, //fgt_strafe_r РћС‚СЃРєРѕРє РїСЂР°РІРѕ
 };
 
 char * Character::fightNamesTbl[fgt_max] = 
 {
-	"fgt_none",				//Нет никакого боевого действия
-	"fgt_attack_fast",		//Быстрый удар
-	"fgt_attack_force",		//Сильный удар
-	"fgt_attack_round",		//Круговой удар
-	"fgt_attack_break",		//Пробивающий удар
-	"fgt_attack_feint",		//Финт - спрециальный обманный удар
-	"fgt_attack_feintc",	//Продолжение финта в случае контратаки
-	"fgt_fire",				//Выстрел из пистолета
-	"fgt_hit_attack",		//Реакция попадания удара по персонажу вводящая его в stall
-	"fgt_hit_feint",		//Реакция от финта вводящая его в stall
-	"fgt_hit_parry",		//Реакция от парирования вводящая его в stall
-	"fgt_hit_round",		//Реакция отталкивание круговым ударом
-	"fgt_hit_fire",			//Реакция от выстрела вводящая его в stall
-	"fgt_block",			//Защита саблей
-	"fgt_blockhit",			//Защита саблей
-	"fgt_blockbreak",		//Пробивка блока
-	"fgt_parry",			//Парирование, защитное движение вводящее противника в stall
-	"fgt_recoil",			//Отскок назад
-	"fgt_strafe_l",			//Отскок влево
-	"fgt_strafe_r",			//Отскок право
+	"fgt_none",				//РќРµС‚ РЅРёРєР°РєРѕРіРѕ Р±РѕРµРІРѕРіРѕ РґРµР№СЃС‚РІРёСЏ
+	"fgt_attack_fast",		//Р‘С‹СЃС‚СЂС‹Р№ СѓРґР°СЂ
+	"fgt_attack_force",		//РЎРёР»СЊРЅС‹Р№ СѓРґР°СЂ
+	"fgt_attack_round",		//РљСЂСѓРіРѕРІРѕР№ СѓРґР°СЂ
+	"fgt_attack_break",		//РџСЂРѕР±РёРІР°СЋС‰РёР№ СѓРґР°СЂ
+	"fgt_attack_feint",		//Р¤РёРЅС‚ - СЃРїСЂРµС†РёР°Р»СЊРЅС‹Р№ РѕР±РјР°РЅРЅС‹Р№ СѓРґР°СЂ
+	"fgt_attack_feintc",	//РџСЂРѕРґРѕР»Р¶РµРЅРёРµ С„РёРЅС‚Р° РІ СЃР»СѓС‡Р°Рµ РєРѕРЅС‚СЂР°С‚Р°РєРё
+	"fgt_fire",				//Р’С‹СЃС‚СЂРµР» РёР· РїРёСЃС‚РѕР»РµС‚Р°
+	"fgt_hit_attack",		//Р РµР°РєС†РёСЏ РїРѕРїР°РґР°РЅРёСЏ СѓРґР°СЂР° РїРѕ РїРµСЂСЃРѕРЅР°Р¶Сѓ РІРІРѕРґСЏС‰Р°СЏ РµРіРѕ РІ stall
+	"fgt_hit_feint",		//Р РµР°РєС†РёСЏ РѕС‚ С„РёРЅС‚Р° РІРІРѕРґСЏС‰Р°СЏ РµРіРѕ РІ stall
+	"fgt_hit_parry",		//Р РµР°РєС†РёСЏ РѕС‚ РїР°СЂРёСЂРѕРІР°РЅРёСЏ РІРІРѕРґСЏС‰Р°СЏ РµРіРѕ РІ stall
+	"fgt_hit_round",		//Р РµР°РєС†РёСЏ РѕС‚С‚Р°Р»РєРёРІР°РЅРёРµ РєСЂСѓРіРѕРІС‹Рј СѓРґР°СЂРѕРј
+	"fgt_hit_fire",			//Р РµР°РєС†РёСЏ РѕС‚ РІС‹СЃС‚СЂРµР»Р° РІРІРѕРґСЏС‰Р°СЏ РµРіРѕ РІ stall
+	"fgt_block",			//Р—Р°С‰РёС‚Р° СЃР°Р±Р»РµР№
+	"fgt_blockhit",			//Р—Р°С‰РёС‚Р° СЃР°Р±Р»РµР№
+	"fgt_blockbreak",		//РџСЂРѕР±РёРІРєР° Р±Р»РѕРєР°
+	"fgt_parry",			//РџР°СЂРёСЂРѕРІР°РЅРёРµ, Р·Р°С‰РёС‚РЅРѕРµ РґРІРёР¶РµРЅРёРµ РІРІРѕРґСЏС‰РµРµ РїСЂРѕС‚РёРІРЅРёРєР° РІ stall
+	"fgt_recoil",			//РћС‚СЃРєРѕРє РЅР°Р·Р°Рґ
+	"fgt_strafe_l",			//РћС‚СЃРєРѕРє РІР»РµРІРѕ
+	"fgt_strafe_r",			//РћС‚СЃРєРѕРє РїСЂР°РІРѕ
 };
 
 
@@ -325,7 +325,7 @@ float Character::RTuner::GetAlpha()
 	return a;
 }
 
-//Принять событие
+//РџСЂРёРЅСЏС‚СЊ СЃРѕР±С‹С‚РёРµ
 void Character::EventListener::Event(Animation * animation, long index, long eventID, AnimationEvent event)
 {
 	if(!animation || index != 0) return;
@@ -334,7 +334,7 @@ void Character::EventListener::Event(Animation * animation, long index, long eve
 	character->ActionEvent(c, animation, index, eventID, event);
 }
 
-//Принять событие
+//РџСЂРёРЅСЏС‚СЊ СЃРѕР±С‹С‚РёРµ
 void Character::EventListener::Event(Animation * animation, long playerIndex, const char * eventName)
 {
 	if(!animation || !eventName || playerIndex != 0) return;
@@ -342,7 +342,7 @@ void Character::EventListener::Event(Animation * animation, long playerIndex, co
 }
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 Character::Character()
@@ -354,7 +354,7 @@ Character::Character()
 	currentNode = -1;
 	tuner.character = this;
 	location = null;
-	//Размеры персонажа
+	//Р Р°Р·РјРµСЂС‹ РїРµСЂСЃРѕРЅР°Р¶Р°
 	radiusNrm = 0.7f;
 	radiusFgt = 1.5f;
 	radius = radiusNrm;
@@ -366,46 +366,46 @@ Character::Character()
 	turnDir = 0.0f;
 	isTurnLock = false;
 	height = 1.8f;
-	//Действия
+	//Р”РµР№СЃС‚РІРёСЏ
 	turnSpeed = 1.0f;
-	//Ходьба вперёд
+	//РҐРѕРґСЊР±Р° РІРїРµСЂС‘Рґ
 	walk.SetName("walk");
-	//Ходьба назад
+	//РҐРѕРґСЊР±Р° РЅР°Р·Р°Рґ
 	backwalk.SetName("back walk");
-	//Бег вперёд
+	//Р‘РµРі РІРїРµСЂС‘Рґ
 	run.SetName("run");
-	//Бег назад
+	//Р‘РµРі РЅР°Р·Р°Рґ
 	backrun.SetName("back run");
-	//Идти вверх по лестнице
+	//РРґС‚Рё РІРІРµСЂС… РїРѕ Р»РµСЃС‚РЅРёС†Рµ
 	stsUp.SetName("stairs up");
-	//Идти вниз по лестнице
+	//РРґС‚Рё РІРЅРёР· РїРѕ Р»РµСЃС‚РЅРёС†Рµ
 	stsDown.SetName("stairs down");
-	//Идти вверх по лестнице назад
+	//РРґС‚Рё РІРІРµСЂС… РїРѕ Р»РµСЃС‚РЅРёС†Рµ РЅР°Р·Р°Рґ
 	stsUpBack.SetName("back stairs up");
-	//Идти вниз по лестнице назад
+	//РРґС‚Рё РІРЅРёР· РїРѕ Р»РµСЃС‚РЅРёС†Рµ РЅР°Р·Р°Рґ
 	stsDownBack.SetName("back stairs down");
-	//Бежать вверх по лестнице
+	//Р‘РµР¶Р°С‚СЊ РІРІРµСЂС… РїРѕ Р»РµСЃС‚РЅРёС†Рµ
 	stsUpRun.SetName("run stairs up");
-	//Бежать вниз по лестнице
+	//Р‘РµР¶Р°С‚СЊ РІРЅРёР· РїРѕ Р»РµСЃС‚РЅРёС†Рµ
 	stsDownRun.SetName("run stairs down");
-	//Бежать вверх по лестнице назад
+	//Р‘РµР¶Р°С‚СЊ РІРІРµСЂС… РїРѕ Р»РµСЃС‚РЅРёС†Рµ РЅР°Р·Р°Рґ
 	stsUpRunBack.SetName("back run stairs up");
-	//Бежать вниз по лестнице назад
+	//Р‘РµР¶Р°С‚СЊ РІРЅРёР· РїРѕ Р»РµСЃС‚РЅРёС†Рµ РЅР°Р·Р°Рґ
 	stsDownRunBack.SetName("back run stairs down");
-	//Плыть
+	//РџР»С‹С‚СЊ
 	swim.SetName("swim");
-	//Спрыгивать
+	//РЎРїСЂС‹РіРёРІР°С‚СЊ
 	jump.SetName("jump");
 	fall.SetName("fall");
 	fall_land.SetName("fall_land");
 	fall_water.SetName("fall_water");
-	//Реакция вне режима боя
+	//Р РµР°РєС†РёСЏ РІРЅРµ СЂРµР¶РёРјР° Р±РѕСЏ
 	nfhit.SetName("HitNoFight");
-	//Действие поворота влево
+	//Р”РµР№СЃС‚РІРёРµ РїРѕРІРѕСЂРѕС‚Р° РІР»РµРІРѕ
 	actionTurnL.SetName("turn left");
-	//Действие поворота вправо
+	//Р”РµР№СЃС‚РІРёРµ РїРѕРІРѕСЂРѕС‚Р° РІРїСЂР°РІРѕ
 	actionTurnR.SetName("turn right");
-	//Действие стояния
+	//Р”РµР№СЃС‚РІРёРµ СЃС‚РѕСЏРЅРёСЏ
 	actionIdle[0].SetName("idle_1");
 	actionIdle[1].SetName("idle_2");
 	actionIdle[2].SetName("idle_3");
@@ -418,8 +418,8 @@ Character::Character()
 	actionIdle[9].SetName("idle_10");
 	actionIdle[10].SetName("idle_11");
 	numActionIdles = 11;
-	//Режим боя
-	//Действие стояния в режиме боя
+	//Р РµР¶РёРј Р±РѕСЏ
+	//Р”РµР№СЃС‚РІРёРµ СЃС‚РѕСЏРЅРёСЏ РІ СЂРµР¶РёРјРµ Р±РѕСЏ
 	actionFightIdle[0].SetName("fight stand_1");
 	actionFightIdle[1].SetName("fight stand_2");
 	actionFightIdle[2].SetName("fight stand_3");
@@ -429,15 +429,15 @@ Character::Character()
 	actionFightIdle[6].SetName("fight stand_7");
 	//actionFightIdle[7].SetName("fight stand_8");
 	numFightActionIdles = 7;
-	//Ходьба вперёд в режиме боя
+	//РҐРѕРґСЊР±Р° РІРїРµСЂС‘Рґ РІ СЂРµР¶РёРјРµ Р±РѕСЏ
 	fightwalk.SetName("fight walk");
-	//Ходьба назад в режиме боя
+	//РҐРѕРґСЊР±Р° РЅР°Р·Р°Рґ РІ СЂРµР¶РёРјРµ Р±РѕСЏ
 	fightbackwalk.SetName("fight back walk");
-	//Бег вперёд в режиме боя
+	//Р‘РµРі РІРїРµСЂС‘Рґ РІ СЂРµР¶РёРјРµ Р±РѕСЏ
 	fightrun.SetName("fight run");
-	//Бег назад в режиме боя
+	//Р‘РµРі РЅР°Р·Р°Рґ РІ СЂРµР¶РёРјРµ Р±РѕСЏ
 	fightbackrun.SetName("fight back run");
-	//Смерть
+	//РЎРјРµСЂС‚СЊ
 	actionDead[0].SetName("death_citizen_1");
 	actionDead[1].SetName("death_citizen_2");
 	numActionDead = 2;
@@ -446,7 +446,7 @@ Character::Character()
 	actionFightDead[2].SetName("death_2");
 	actionFightDead[3].SetName("death_2");
 	numActionFightDead =4;
-	//Атаки блоки финты парирование
+	//РђС‚Р°РєРё Р±Р»РѕРєРё С„РёРЅС‚С‹ РїР°СЂРёСЂРѕРІР°РЅРёРµ
 	char buf[64];
 	for(long i = 0; i < 4; i++)
 	{
@@ -564,19 +564,19 @@ Character::Character()
 
 Character::~Character()
 {
-	// удаляем источник в руке
+	// СѓРґР°Р»СЏРµРј РёСЃС‚РѕС‡РЅРёРє РІ СЂСѓРєРµ
 	if( m_nHandLightID >= 0 && location && !isDeleted )
 		location->GetLights()->DelMovingLight(m_nHandLightID);
 	m_nHandLightID = -1;
 
-	//Удаляемся из групп
+	//РЈРґР°Р»СЏРµРјСЃСЏ РёР· РіСЂСѓРїРї
 	ENTITY_ID grps;
 	_CORE_API->FindClass(&grps, "CharactersGroups", 0);
 	api->Send_Message(grps, "si", "UnloadCharacter", GetID());
 
-	//Анализируем детекторы
+	//РђРЅР°Р»РёР·РёСЂСѓРµРј РґРµС‚РµРєС‚РѕСЂС‹
 //	for(long i = 0; i < numDetectors; i++) detector[i]->Exit(this);
-	//Удаляем детекторы
+	//РЈРґР°Р»СЏРµРј РґРµС‚РµРєС‚РѕСЂС‹
 	for(long i = 0; i < numDetectors; i++) delete detector[i];
 	//
 	if(location && !isDeleted) location->supervisor.DelCharacter(this);
@@ -588,33 +588,33 @@ Character::~Character()
 	if(characterID) delete characterID;
 }
 
-//Инициализация
+//РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
 bool Character::Init()
 {
-	//Указатель на локацию
+	//РЈРєР°Р·Р°С‚РµР»СЊ РЅР° Р»РѕРєР°С†РёСЋ
 	ENTITY_ID loc;
 	_CORE_API->FindClass(&loc, "location", 0);
 	location = (Location *)_CORE_API->GetEntityPointer(&loc);
 	if(!location) return false;
 	_CORE_API->FindClass(&effects, "LocationEffects", 0);
 	soundService = (VSoundService *)api->CreateService("SoundService");
-	//Регестрируем своё попадание в локацию
+	//Р РµРіРµСЃС‚СЂРёСЂСѓРµРј СЃРІРѕС‘ РїРѕРїР°РґР°РЅРёРµ РІ Р»РѕРєР°С†РёСЋ
 	if(location->supervisor.numCharacters >= MAX_CHARACTERS)
 	{
 		api->Trace("Many characters in location");
 		return false;
 	}
 	location->supervisor.AddCharacter(this);
-	//Море
+	//РњРѕСЂРµ
 	_CORE_API->FindClass(&sea, "sea", 0);
-	//Сохраним идентификатор
+	//РЎРѕС…СЂР°РЅРёРј РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ
 	const char * id = null;
 	if(AttributesPointer) id = AttributesPointer->GetAttribute("id");
 	if(!id) id = "<none>";
 	long len = strlen(id) + 1;
 	characterID = NEW char[len];
 	strcpy(characterID, id);
-	//Добавим в группу
+	//Р”РѕР±Р°РІРёРј РІ РіСЂСѓРїРїСѓ
 	ENTITY_ID grps;
 	_CORE_API->FindClass(&grps, "CharactersGroups", 0);
 	api->Send_Message(grps, "sis", "MoveCharacter", GetID(), group);
@@ -623,7 +623,7 @@ bool Character::Init()
 	return PostInit();
 }
 
-//Сообщения
+//РЎРѕРѕР±С‰РµРЅРёСЏ
 dword _cdecl Character::ProcessMessage(MESSAGE & message)
 {
 	if(message.GetCurrentFormatType() == 's')
@@ -737,7 +737,7 @@ dword _cdecl Character::ProcessMessage(MESSAGE & message)
 	return 0;
 }
 
-//Изменение атрибута
+//РР·РјРµРЅРµРЅРёРµ Р°С‚СЂРёР±СѓС‚Р°
 dword Character::AttributeChanged(ATTRIBUTES * apnt)
 {
 	if(deadName || liveValue < 0) return 0;
@@ -761,8 +761,8 @@ dword Character::AttributeChanged(ATTRIBUTES * apnt)
 	}else
 	if(stricmp(apnt->GetThisName(), "actions") == 0 && apnt->GetParent() && !apnt->GetParent()->GetParent())
 	{
-		//Читаем действия перемещения
-		//Простые
+		//Р§РёС‚Р°РµРј РґРµР№СЃС‚РІРёСЏ РїРµСЂРµРјРµС‰РµРЅРёСЏ
+		//РџСЂРѕСЃС‚С‹Рµ
 		walk.ChangeName(apnt->GetAttribute("walk"));
 		backwalk.ChangeName(apnt->GetAttribute("backwalk"));
 		run.ChangeName(apnt->GetAttribute("run"));
@@ -777,10 +777,10 @@ dword Character::AttributeChanged(ATTRIBUTES * apnt)
 		stsDownRunBack.ChangeName(apnt->GetAttribute("stsDownRunBack"));
 		swim.ChangeName(apnt->GetAttribute("swim"));
 		nfhit.ChangeName(apnt->GetAttribute("HitNoFight"));
-		//Читаем действия поворота		
+		//Р§РёС‚Р°РµРј РґРµР№СЃС‚РІРёСЏ РїРѕРІРѕСЂРѕС‚Р°		
 		actionTurnL.ChangeName(apnt->GetAttribute("turnLeft"));
 		actionTurnR.ChangeName(apnt->GetAttribute("turnRight"));		
-		//Читаем действия смерти
+		//Р§РёС‚Р°РµРј РґРµР№СЃС‚РІРёСЏ СЃРјРµСЂС‚Рё
 		ATTRIBUTES * at = apnt->FindAClass(apnt, "dead");
 		if(at)
 		{
@@ -795,7 +795,7 @@ dword Character::AttributeChanged(ATTRIBUTES * apnt)
 			if(j < 1) j = 1;
 			numActionDead = j;
 		}
-		//Читаем действия простого стояния
+		//Р§РёС‚Р°РµРј РґРµР№СЃС‚РІРёСЏ РїСЂРѕСЃС‚РѕРіРѕ СЃС‚РѕСЏРЅРёСЏ
 		at = apnt->FindAClass(apnt, "idle");
 		if(at)
 		{
@@ -811,13 +811,13 @@ dword Character::AttributeChanged(ATTRIBUTES * apnt)
 			if(j < 1) j = 1;
 			numActionIdles = j;
 		}		
-		//Читаем действия в режиме боя
-		//Перемещение
+		//Р§РёС‚Р°РµРј РґРµР№СЃС‚РІРёСЏ РІ СЂРµР¶РёРјРµ Р±РѕСЏ
+		//РџРµСЂРµРјРµС‰РµРЅРёРµ
 		fightwalk.ChangeName(apnt->GetAttribute("fightwalk"));
 		fightbackwalk.ChangeName(apnt->GetAttribute("fightbackwalk"));
 		fightrun.ChangeName(apnt->GetAttribute("fightrun"));
 		fightbackrun.ChangeName(apnt->GetAttribute("fightbackrun"));
-		//Прямые атаки
+		//РџСЂСЏРјС‹Рµ Р°С‚Р°РєРё
 		ReadFightActions(apnt->FindAClass(apnt, "attack_fast"), attackFast, numAttackFast);
 		ReadFightActions(apnt->FindAClass(apnt, "attack_force"), attackForce, numAttackForce);
 		ReadFightActions(apnt->FindAClass(apnt, "attack_round"), attackRound, numAttackRound);
@@ -828,9 +828,9 @@ dword Character::AttributeChanged(ATTRIBUTES * apnt)
 		numAttackFeint = min(fnt1, fnt2);
 		ReadFightActions(apnt->FindAClass(apnt, "hit_attack"), hit, numHits);
 		ReadFightActions(apnt->FindAClass(apnt, "parry"), parry, numParry);
-		//Выстрел
+		//Р’С‹СЃС‚СЂРµР»
 		shot.ChangeName(apnt->GetAttribute("shot"));
-		//Попадания
+		//РџРѕРїР°РґР°РЅРёСЏ
 		hitFeint.ChangeName(apnt->GetAttribute("hit_feint"));
 		hitParry.ChangeName(apnt->GetAttribute("hit_parry"));
 		hitRound.ChangeName(apnt->GetAttribute("hit_round"));
@@ -843,7 +843,7 @@ dword Character::AttributeChanged(ATTRIBUTES * apnt)
 		recoil.ChangeName(apnt->GetAttribute("recoil"));
 		strafe_l.ChangeName(apnt->GetAttribute("strafeleft"));
 		strafe_r.ChangeName(apnt->GetAttribute("straferight"));
-		//Читаем действия смерти
+		//Р§РёС‚Р°РµРј РґРµР№СЃС‚РІРёСЏ СЃРјРµСЂС‚Рё
 		at = apnt->FindAClass(apnt, "fightdead");
 		if(at)
 		{
@@ -858,7 +858,7 @@ dword Character::AttributeChanged(ATTRIBUTES * apnt)
 			if(j < 1) j = 1;
 			numActionFightDead = j;
 		}
-		//Стояния
+		//РЎС‚РѕСЏРЅРёСЏ
 		at = apnt->FindAClass(apnt, "fightidle");
 		if(at)
 		{
@@ -873,9 +873,9 @@ dword Character::AttributeChanged(ATTRIBUTES * apnt)
 			if(j < 1) j = 1;
 			numFightActionIdles = j;
 		}
-		//Обновляем параметры
+		//РћР±РЅРѕРІР»СЏРµРј РїР°СЂР°РјРµС‚СЂС‹
 		UpdateActionsData();
-		//Обновляем проигрываемую анимацию
+		//РћР±РЅРѕРІР»СЏРµРј РїСЂРѕРёРіСЂС‹РІР°РµРјСѓСЋ Р°РЅРёРјР°С†РёСЋ
 		UpdateAnimation();
 	}
 	return 0;
@@ -900,13 +900,13 @@ void Character::SetSignModel()
 	{
 		return;
 	}
-	//Путь до текстур
+	//РџСѓС‚СЊ РґРѕ С‚РµРєСЃС‚СѓСЂ
 	VGEOMETRY * gs = (VGEOMETRY *)_CORE_API->CreateService("geometry");
 	if(gs) gs->SetTexturePath("quest_signs\\");
-	//Путь до модельки
+	//РџСѓС‚СЊ РґРѕ РјРѕРґРµР»СЊРєРё
 	string path = "quest_signs\\";
 	path += signModelName;
-	//Создаём и загружаем модельку
+	//РЎРѕР·РґР°С‘Рј Рё Р·Р°РіСЂСѓР¶Р°РµРј РјРѕРґРµР»СЊРєСѓ
 	if(!_CORE_API->CreateEntity(&sign, "modelr"))
 	{
 		if(gs) gs->SetTexturePath("");
@@ -982,14 +982,14 @@ MODEL * Character::Model()
 	return (MODEL *)_CORE_API->GetEntityPointer(&mdl);
 }
 
-//Переместить модельку в точку x, y, z
+//РџРµСЂРµРјРµСЃС‚РёС‚СЊ РјРѕРґРµР»СЊРєСѓ РІ С‚РѕС‡РєСѓ x, y, z
 bool Character::Teleport(float x, float y, float z)
 {
-	//Модель
+	//РњРѕРґРµР»СЊ
 	isJump = false;
 	MODEL * man = Model();
 	if(!man) return false;
-	//Новые координаты
+	//РќРѕРІС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹
 	man->mtx.SetPosition(x, y, z);
 	curPos = oldPos = grsPos = CVECTOR(x, y, z);
 	vy = 0.0f;
@@ -1000,14 +1000,14 @@ bool Character::Teleport(float x, float y, float z)
 	return true;
 }
 
-//Переместить модельку в точку x, y, z и направить по ay
+//РџРµСЂРµРјРµСЃС‚РёС‚СЊ РјРѕРґРµР»СЊРєСѓ РІ С‚РѕС‡РєСѓ x, y, z Рё РЅР°РїСЂР°РІРёС‚СЊ РїРѕ ay
 bool Character::Teleport(float x, float y, float z, float ay)
 {
-	//Модель
+	//РњРѕРґРµР»СЊ
 	isJump = false;
 	MODEL * man = Model();
 	if(!man) return false;
-	//Новые координаты
+	//РќРѕРІС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹
 	man->mtx.BuildMatrix(0.0f, ay, 0.0f, x, y, z);
 	curPos = oldPos = grsPos = CVECTOR(x, y, z);
 	vy = 0.0f;
@@ -1020,7 +1020,7 @@ bool Character::Teleport(float x, float y, float z, float ay)
 	return true;
 }
 
-//Переместить модельку в локатор
+//РџРµСЂРµРјРµСЃС‚РёС‚СЊ РјРѕРґРµР»СЊРєСѓ РІ Р»РѕРєР°С‚РѕСЂ
 bool Character::Teleport(const char * group, const char * locator)
 {
  if(!group || !group[0] || !locator || !locator[0]) return false;
@@ -1030,23 +1030,23 @@ bool Character::Teleport(const char * group, const char * locator)
  if(li < 0) return false;
  CMatrix mtx;
  if(!la->GetLocatorPos(li, mtx)) return false;
- //Ищем угл поворота по Y
+ //РС‰РµРј СѓРіР» РїРѕРІРѕСЂРѕС‚Р° РїРѕ Y
  double vz = mtx.Vz().z;
  double vx = mtx.Vz().x;
  double l = vx*vx + vz*vz;
  if(l > 0.0000001)
  {
-  //Ищем углы
+  //РС‰РµРј СѓРіР»С‹
   vz = acos(vz/sqrt(l));
  }else vz = l;
  if(vx < 0) vz = -vz;
 
- // смотрим можем ли мы поставить в этот локатор чела
+ // СЃРјРѕС‚СЂРёРј РјРѕР¶РµРј Р»Рё РјС‹ РїРѕСЃС‚Р°РІРёС‚СЊ РІ СЌС‚РѕС‚ Р»РѕРєР°С‚РѕСЂ С‡РµР»Р°
  CVECTOR pos = mtx.Pos();
  if (location->supervisor.CheckPosition(pos.x, pos.y, pos.z, this))
   return Teleport(pos.x, pos.y, pos.z, float(vz)); 
 
- // кто-то стоит рядом, пытаемся найти точку по небольшому радиусу
+ // РєС‚Рѕ-С‚Рѕ СЃС‚РѕРёС‚ СЂСЏРґРѕРј, РїС‹С‚Р°РµРјСЃСЏ РЅР°Р№С‚Рё С‚РѕС‡РєСѓ РїРѕ РЅРµР±РѕР»СЊС€РѕРјСѓ СЂР°РґРёСѓСЃСѓ
  float radius = 1.75f;
  for (long i=0; i<10; i++)
  {
@@ -1054,13 +1054,13 @@ bool Character::Teleport(const char * group, const char * locator)
   float x = radius * sinf(ang);
   float z = radius * cosf(ang);
 
-  // проверяем есть ли тут патч
+  // РїСЂРѕРІРµСЂСЏРµРј РµСЃС‚СЊ Р»Рё С‚СѓС‚ РїР°С‚С‡
   CVECTOR src = CVECTOR(pos.x + x, pos.y + 2.0f, pos.z + z);
   CVECTOR dst = CVECTOR(pos.x + x, pos.y - 2.0f, pos.z + z);
   float k = location->GetPtcData().Trace(src, dst);
-  // если нету патча - то следующая итерация
+  // РµСЃР»Рё РЅРµС‚Сѓ РїР°С‚С‡Р° - С‚Рѕ СЃР»РµРґСѓСЋС‰Р°СЏ РёС‚РµСЂР°С†РёСЏ
   if (k > 1.0f) continue;
-  // если точка свободна - телепортимся туда
+  // РµСЃР»Рё С‚РѕС‡РєР° СЃРІРѕР±РѕРґРЅР° - С‚РµР»РµРїРѕСЂС‚РёРјСЃСЏ С‚СѓРґР°
   CVECTOR pnt = src + (dst - src) * k + CVECTOR(0.0f, 0.01f, 0.0f);
   if (location->supervisor.CheckPosition(pnt.x, pnt.y, pnt.z, this))
    return Teleport(pnt.x, pnt.y, pnt.z, float(vz)); 
@@ -1070,7 +1070,7 @@ bool Character::Teleport(const char * group, const char * locator)
  return Teleport(pos.x, pos.y, pos.z, float(vz)); 
 }
 
-//Установить позиции для загрузки
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РїРѕР·РёС†РёРё РґР»СЏ Р·Р°РіСЂСѓР·РєРё
 void Character::SetSavePosition()
 {
 	if(!AttributesPointer) return;
@@ -1083,7 +1083,7 @@ void Character::SetSavePosition()
 	SetSaveData(at);
 }
 
-//Удалить позиции для загрузки
+//РЈРґР°Р»РёС‚СЊ РїРѕР·РёС†РёРё РґР»СЏ Р·Р°РіСЂСѓР·РєРё
 void Character::DelSavePosition(bool isTeleport)
 {
 	if(!AttributesPointer) return;
@@ -1116,7 +1116,7 @@ void Character::DelSavePosition(bool isTeleport)
 //Character commands
 //============================================================================================
 
-//Пойти
+//РџРѕР№С‚Рё
 void Character::StartMove(bool isBack)
 {
 	if(priorityAction.name) return;
@@ -1124,14 +1124,14 @@ void Character::StartMove(bool isBack)
 	this->isBack = isBack;
 }
 
-//Остановиться
+//РћСЃС‚Р°РЅРѕРІРёС‚СЊСЃСЏ
 void Character::StopMove()
 {
 	if(priorityAction.name) return;
 	isMove = false;
 }
 
-//Направить персонажа по вектору
+//РќР°РїСЂР°РІРёС‚СЊ РїРµСЂСЃРѕРЅР°Р¶Р° РїРѕ РІРµРєС‚РѕСЂСѓ
 void Character::Turn(float dx, float dz)
 {
 	//if(priorityAction.name) return;
@@ -1144,7 +1144,7 @@ void Character::Turn(float dx, float dz)
 	Turn(float(vz));
 }
 
-//Направить персонажа по углу
+//РќР°РїСЂР°РІРёС‚СЊ РїРµСЂСЃРѕРЅР°Р¶Р° РїРѕ СѓРіР»Сѓ
 void Character::Turn(float _ay)
 {	
 	if(isTurnLock) return;
@@ -1159,14 +1159,14 @@ void Character::Turn(float _ay)
 	}
 }
 
-//Установить режим бега
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЂРµР¶РёРј Р±РµРіР°
 void Character::SetRunMode(bool _isRun)
 {
 	if(priorityAction.name) return;
 	isRun = _isRun;
 }
 
-//Устанорвить режим боя
+//РЈСЃС‚Р°РЅРѕСЂРІРёС‚СЊ СЂРµР¶РёРј Р±РѕСЏ
 bool Character::SetFightMode(bool _isFight, bool isPlayAni)
 {
 	UpdateWeapons();
@@ -1218,10 +1218,10 @@ bool Character::SetFightMode(bool _isFight, bool isPlayAni)
 	return old;
 }
 
-//Проверить, можно ли переходить в режим боя
+//РџСЂРѕРІРµСЂРёС‚СЊ, РјРѕР¶РЅРѕ Р»Рё РїРµСЂРµС…РѕРґРёС‚СЊ РІ СЂРµР¶РёРј Р±РѕСЏ
 bool Character::IsFightEnable()
 {
-	//Спросим у скрипта о возможности стрельбы
+	//РЎРїСЂРѕСЃРёРј Сѓ СЃРєСЂРёРїС‚Р° Рѕ РІРѕР·РјРѕР¶РЅРѕСЃС‚Рё СЃС‚СЂРµР»СЊР±С‹
 	VDATA * vd = _CORE_API->Event("Location_CharacterIsFight", "i", GetID());
 	long res = 0;
 	if(vd && vd->Get(res))
@@ -1234,7 +1234,7 @@ bool Character::IsFightEnable()
 	return true;
 }
 
-//В данный момент идёт выбор цели для выстрела (игроком)
+//Р’ РґР°РЅРЅС‹Р№ РјРѕРјРµРЅС‚ РёРґС‘С‚ РІС‹Р±РѕСЂ С†РµР»Рё РґР»СЏ РІС‹СЃС‚СЂРµР»Р° (РёРіСЂРѕРєРѕРј)
 bool Character::IsFireFindTarget()
 {
 	if(!priorityAction.name || !shot.name) return false;
@@ -1242,7 +1242,7 @@ bool Character::IsFireFindTarget()
 	return false;
 }
 
-//Атаковать
+//РђС‚Р°РєРѕРІР°С‚СЊ
 void Character::Attack(Character * enemy, FightAction type)
 {
 	if(priorityAction.name) return;
@@ -1283,16 +1283,16 @@ void Character::Attack(Character * enemy, FightAction type)
 	case fgt_attack_force:
 		aname = FGT_ATTACK_FORCE;
 		ObstacleZone zone[4];
-		// выпад 1
+		// РІС‹РїР°Рґ 1
 		zone[0].use = true; zone[0].x = 0.f; zone[0].z = 1.f; zone[0].dw = 0.001f;
-		// выпад 2
+		// РІС‹РїР°Рґ 2
 		zone[1].use = true; zone[1].x = 0.f; zone[1].z = 1.f; zone[1].dw = 0.001f;
-		// выпад 3
+		// РІС‹РїР°Рґ 3
 		zone[2].use = true; zone[2].x = 0.f; zone[2].z = 1.f; zone[2].dw = 0.001f;
-		// выпад 4
+		// РІС‹РїР°Рґ 4
 		zone[3].use = true; zone[3].x = 0.f; zone[3].z = 1.f; zone[3].dw = 0.001f;
 		fgtSetIndex = GetRandomIndexByObstacle(zone, 4);
-		//если выпад на заступ за патч, то производим быстрый удар, а не выпад
+		//РµСЃР»Рё РІС‹РїР°Рґ РЅР° Р·Р°СЃС‚СѓРї Р·Р° РїР°С‚С‡, С‚Рѕ РїСЂРѕРёР·РІРѕРґРёРј Р±С‹СЃС‚СЂС‹Р№ СѓРґР°СЂ, Р° РЅРµ РІС‹РїР°Рґ
 		if( fgtSetIndex<0 )
 		{
 			type = fgt_attack_fast;
@@ -1354,10 +1354,10 @@ void Character::Attack(Character * enemy, FightAction type)
 	}	
 }
 
-//Блок
+//Р‘Р»РѕРє
 void Character::Block()
 {
-	// boal прервывние всего блоком if(priorityAction.name) return;
+	// boal РїСЂРµСЂРІС‹РІРЅРёРµ РІСЃРµРіРѕ Р±Р»РѕРєРѕРј if(priorityAction.name) return;
 	if(isSwim) return;
 	if(!isFight) return;
 	if(fgtCurType != fgt_blockhit && fgtSetType != fgt_blockhit && fgtCurType != fgt_blockbreak && fgtSetType != fgt_blockbreak)
@@ -1368,7 +1368,7 @@ void Character::Block()
 	}
 }
 
-//Парирование
+//РџР°СЂРёСЂРѕРІР°РЅРёРµ
 void Character::Parry()
 {
 	if(priorityAction.name) return;
@@ -1378,22 +1378,22 @@ void Character::Parry()
 
 	//fgtSetIndex = rand() % numParry;
 	ObstacleZone zone[4];
-	// уход влево
+	// СѓС…РѕРґ РІР»РµРІРѕ
 	zone[0].use = true; zone[0].x = -1.f; zone[0].z = 0.f; zone[0].dw = 0.5f;
-	// уход вправо блок сверху
+	// СѓС…РѕРґ РІРїСЂР°РІРѕ Р±Р»РѕРє СЃРІРµСЂС…Сѓ
 	zone[1].use = true; zone[1].x = 1.f; zone[1].z = 0.f; zone[1].dw = 0.5f;
-	// уход вправо блок снизу
+	// СѓС…РѕРґ РІРїСЂР°РІРѕ Р±Р»РѕРє СЃРЅРёР·Сѓ
 	zone[2].use = true; zone[2].x = 1.f; zone[2].z = 0.f; zone[2].dw = 0.5f;
-	// никаких уходов - на месте
+	// РЅРёРєР°РєРёС… СѓС…РѕРґРѕРІ - РЅР° РјРµСЃС‚Рµ
 	zone[3].use = true; zone[3].x = 0.f; zone[3].z = 0.f; zone[3].dw = 0.5f;
 	fgtSetIndex = GetRandomIndexByObstacle(zone, 4);
-	//api->Trace("Результат выбора: \"%i\"", fgtSetIndex);
+	//api->Trace("Р РµР·СѓР»СЊС‚Р°С‚ РІС‹Р±РѕСЂР°: \"%i\"", fgtSetIndex);
 	if( fgtSetIndex<0 ) fgtSetIndex = 3;
 
 	isTurnLock = false;
 }
 
-//Отскок
+//РћС‚СЃРєРѕРє
 void Character::Recoil()
 {
 	if(priorityAction.name) return;
@@ -1407,7 +1407,7 @@ void Character::Recoil()
 	isTurnLock = false;
 }
 
-//Пыжёк влево
+//РџС‹Р¶С‘Рє РІР»РµРІРѕ
 void Character::StrafeLeft()
 {
 	if(priorityAction.name) return;
@@ -1421,7 +1421,7 @@ void Character::StrafeLeft()
 	//impulse += 15.0f*CVECTOR(-cosf(ay), 0.0f, sinf(ay));
 }
 
-//Пыжёк вправо
+//РџС‹Р¶С‘Рє РІРїСЂР°РІРѕ
 void Character::StrafeRight()
 {
 	if(priorityAction.name) return;
@@ -1435,7 +1435,7 @@ void Character::StrafeRight()
 	//impulse -= 15.0f*CVECTOR(-cosf(ay), 0.0f, sinf(ay));
 }
 
-//Финт
+//Р¤РёРЅС‚
 void Character::Hit(FightAction type)
 {
 	/*
@@ -1536,24 +1536,24 @@ void Character::Hit(FightAction type)
 	if(restBlockBreak) fgtSetType = fgt_blockbreak;
 }
 
-//Выстрел
+//Р’С‹СЃС‚СЂРµР»
 void Character::Fire()
 {
 	if(priorityAction.name) return;
 	if(isSwim) return;
 	if(!IsGunLoad()) return;
 	if(!location->IsSwimming()) return;
-	//Ставим действие стрельбы
+	//РЎС‚Р°РІРёРј РґРµР№СЃС‚РІРёРµ СЃС‚СЂРµР»СЊР±С‹
 	fgtSetType = fgt_fire;
 	fgtSetIndex = 0;
 }
 
-//Проверить, заряжен ли пистолет
+//РџСЂРѕРІРµСЂРёС‚СЊ, Р·Р°СЂСЏР¶РµРЅ Р»Рё РїРёСЃС‚РѕР»РµС‚
 bool Character::IsGunLoad()
 {
 	if(!isGunSet) return false;
 	if(!isFight || liveValue < 0 || deadName) return false;
-	//Спросим у скрипта о возможности стрельбы
+	//РЎРїСЂРѕСЃРёРј Сѓ СЃРєСЂРёРїС‚Р° Рѕ РІРѕР·РјРѕР¶РЅРѕСЃС‚Рё СЃС‚СЂРµР»СЊР±С‹
 	VDATA * vd = _CORE_API->Event("Location_CharacterIsFire", "i", GetID());
 	long res = 0;
 	if(vd && vd->Get(res))
@@ -1568,7 +1568,7 @@ bool Character::IsGunLoad()
 	return true;
 }
 
-//Смерть
+//РЎРјРµСЂС‚СЊ
 void Character::Dead()
 {
 	if(deadName) return;
@@ -1582,7 +1582,7 @@ void Character::Dead()
 	}
 	Assert(num);
 	Assert(dead);
-	//Разбрасываем веса в зависимости от направления
+	//Р Р°Р·Р±СЂР°СЃС‹РІР°РµРј РІРµСЃР° РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ РЅР°РїСЂР°РІР»РµРЅРёСЏ
 	float _ay = ay;
 	static Supervisor::FindCharacter fnd[MAX_CHARACTERS];
 	static long numChr = 0;
@@ -1613,10 +1613,10 @@ void Character::Dead()
 		if(!location->VisibleTest(p, p + CVECTOR(cs, 0.0f, sn))) dead[i].p *= 0.9f;		
 	}
 	ay = _ay;
-	//Сумарный вероятностный отрезок
+	//РЎСѓРјР°СЂРЅС‹Р№ РІРµСЂРѕСЏС‚РЅРѕСЃС‚РЅС‹Р№ РѕС‚СЂРµР·РѕРє
 	float sum = 0.0f;
 	for(i = 0; i < num; i++) sum += dead[i].p;
-	//Выбираем действия
+	//Р’С‹Р±РёСЂР°РµРј РґРµР№СЃС‚РІРёСЏ
 	if(sum > 0.0f)
 	{
 		float p = rand()*sum/RAND_MAX;
@@ -1630,19 +1630,19 @@ void Character::Dead()
 		i = rand() % num;
 	}
 	Assert(i < num);
-	//Ставим действие
+	//РЎС‚Р°РІРёРј РґРµР№СЃС‚РІРёРµ
 	deadName = dead[i].name;
 	api->Event("Event_ChrSnd_Dead", "i", GetID());	
 }
 
-//Заход в локацию
+//Р—Р°С…РѕРґ РІ Р»РѕРєР°С†РёСЋ
 void Character::EntryToLocation()
 {
 	tuner.alpha = 0.0f;
 	liveValue = 1.2f;
 }
 
-//Выход из локации
+//Р’С‹С…РѕРґ РёР· Р»РѕРєР°С†РёРё
 void Character::ExitFromLocation()
 {
 	liveValue = -1.2f;
@@ -1663,13 +1663,13 @@ void Character::StartJump()
 //Character
 //============================================================================================
 
-//Сбросить состояние
+//РЎР±СЂРѕСЃРёС‚СЊ СЃРѕСЃС‚РѕСЏРЅРёРµ
 void Character::Reset()
 {
 	if(fgtCurType == fgt_block && !IsPlayer()) fgtCurType = fgt_none;
 }
 
-//Перемещаем персонажа в желаемую позицию
+//РџРµСЂРµРјРµС‰Р°РµРј РїРµСЂСЃРѕРЅР°Р¶Р° РІ Р¶РµР»Р°РµРјСѓСЋ РїРѕР·РёС†РёСЋ
 void Character::Move(float dltTime)
 {
 	if(lockMove) dltTime = 0.0f;
@@ -1690,9 +1690,9 @@ void Character::Move(float dltTime)
 		}
 	}
 
-	//Снимем выделение
+	//РЎРЅРёРјРµРј РІС‹РґРµР»РµРЅРёРµ
 	if(tuner.selected > 0.0f) tuner.selected -= dltTime*3.0f;
-	//Коэфициент скорости
+	//РљРѕСЌС„РёС†РёРµРЅС‚ СЃРєРѕСЂРѕСЃС‚Рё
 	float k = dltTime*0.5f;
 	if(k > 1.0f) k = 1.0f;
 	if(kSpd < 0.0f) kSpd = 0.0f;
@@ -1709,15 +1709,15 @@ void Character::Move(float dltTime)
 			a->Player(1).SetSpeed(a->Player(1).GetDefSpeed()*k);
 		}
 	}
-	//Текущая позиция
+	//РўРµРєСѓС‰Р°СЏ РїРѕР·РёС†РёСЏ
 	oldPos = curPos;
 	if(!isJump)
 	{
-		//Скорость перемещения
+		//РЎРєРѕСЂРѕСЃС‚СЊ РїРµСЂРµРјРµС‰РµРЅРёСЏ
 		if(bspeed.Update(dltTime)) speed = bspeed.Get();
-		//Скорость вращения
+		//РЎРєРѕСЂРѕСЃС‚СЊ РІСЂР°С‰РµРЅРёСЏ
 		if(bturn.Update(dltTime)) turnspd = bturn.Get();
-		//Перемещение
+		//РџРµСЂРµРјРµС‰РµРЅРёРµ
 		float spd = dltTime*speed*k;
 		CVECTOR moveVec(sinf(ay)*spd, 0.0f, cosf(ay)*spd);
 		curPos += moveVec;
@@ -1786,7 +1786,7 @@ void Character::Move(float dltTime)
 			}
 		}
 		curPos += CVECTOR(cosf(ay), 0.0f, -sinf(ay))*(strafeVel*dltTime*0.9f);
-		//Вращение
+		//Р’СЂР°С‰РµРЅРёРµ
 		if(turnDir > 0.0f)
 		{
 			ay += turnspd*dltTime;
@@ -1823,7 +1823,7 @@ void Character::Move(float dltTime)
 		//location->Print(curPos, 1000.0f, 4, 1.0f, 0xffffffff, 1.0f, "ay = %f, nay = %f, turnDir = %f, turnspd = %f", ay, nay, turnDir, turnspd);
 		kSpd = 1.0f;
 	}else{
-		//Движемся по траектории падения
+		//Р”РІРёР¶РµРјСЃСЏ РїРѕ С‚СЂР°РµРєС‚РѕСЂРёРё РїР°РґРµРЅРёСЏ
 		curJumpFallTime += dltTime;
 		if(isJumpSnd && priorityAction.name)
 		{
@@ -1842,7 +1842,7 @@ void Character::Move(float dltTime)
 		}
 		if(curJumpFallTime < jumpFallTime)
 		{
-			//Ищем ключевые позиции
+			//РС‰РµРј РєР»СЋС‡РµРІС‹Рµ РїРѕР·РёС†РёРё
 			long s = long(curJumpFallTime/CHARACTER_JUMP_TIMESTEP);
 			if(s >= jumpPoints) s = jumpPoints - 1;
 			long e = s + 1;
@@ -1853,7 +1853,7 @@ void Character::Move(float dltTime)
 			if(kBlend > 1.0f) kBlend = 1.0f;
 			curPos = jumpTrack[s] + (jumpTrack[e] - jumpTrack[s])*kBlend;
 		}else{
-			//Закончили прыжок
+			//Р—Р°РєРѕРЅС‡РёР»Рё РїСЂС‹Р¶РѕРє
 			if(isJumpSnd)
 			{
 				PlaySound("jump");
@@ -1869,7 +1869,7 @@ void Character::Move(float dltTime)
 					Animation * a = m->GetAnimation();
 					if(a)
 					{
-						//Продолжим проигрывание
+						//РџСЂРѕРґРѕР»Р¶РёРј РїСЂРѕРёРіСЂС‹РІР°РЅРёРµ
 						a->Player(0).Play();
 					}else priorityAction.SetName(null);
 				}else priorityAction.SetName(null);
@@ -1883,7 +1883,7 @@ void Character::Move(float dltTime)
 			jumpSound = SOUND_INVALID_ID;
 		}
 	}
-	//Ослабим импульс
+	//РћСЃР»Р°Р±РёРј РёРјРїСѓР»СЊСЃ
 	k = dltTime*5.0f;
 	if(k > 1.0f) k = 1.0f;
 	impulse -= impulse*k;
@@ -1891,7 +1891,7 @@ void Character::Move(float dltTime)
 	//!!!
 	//if(api->Controls->GetDebugAsyncKeyState('7') < 0) api->Send_Message(effects, "sffff", "Splashes", curPos.x, curPos.y, curPos.z, 1.0f);
 
-	//Высота волны в данной точке
+	//Р’С‹СЃРѕС‚Р° РІРѕР»РЅС‹ РІ РґР°РЅРЅРѕР№ С‚РѕС‡РєРµ
 	if(swimChange <= 0.0f && location->IsSwimming())
 	{
 		bool old = isSwim;
@@ -1914,11 +1914,11 @@ void Character::Move(float dltTime)
 			}
 			if(seaY > curPos.y + CHARACTER_SEA_MOVE*height)
 			{
-				//Игрока сносит или он плывёт
+				//РРіСЂРѕРєР° СЃРЅРѕСЃРёС‚ РёР»Рё РѕРЅ РїР»С‹РІС‘С‚
 				float dlt = old ? -0.03f : 0.03f;
 				if(seaY > curPos.y + CHARACTER_SEA_SWIM*height + dlt)
 				{
-					//Игрок плывёт
+					//РРіСЂРѕРє РїР»С‹РІС‘С‚
 					seaY -= CHARACTER_SEA_SWIM*height;
 					isSwim = true;
 				}
@@ -1932,10 +1932,10 @@ void Character::Move(float dltTime)
 	}else swimChange -= dltTime;
 }
 
-//Обновить позицию персонажа
+//РћР±РЅРѕРІРёС‚СЊ РїРѕР·РёС†РёСЋ РїРµСЂСЃРѕРЅР°Р¶Р°
 void Character::Update(float dltTime)
 {
-	//Обновление полосок
+	//РћР±РЅРѕРІР»РµРЅРёРµ РїРѕР»РѕСЃРѕРє
 	if(isPlayerEnemy && isFight && !IsDead())
 	{
 		enemyBarsAlpha += dltTime*2.0f;
@@ -1948,7 +1948,7 @@ void Character::Update(float dltTime)
 	{
 		float hp = 0.5f;
 		float energy = 0.5f;
-		//Получим параметры жизни и энергии
+		//РџРѕР»СѓС‡РёРј РїР°СЂР°РјРµС‚СЂС‹ Р¶РёР·РЅРё Рё СЌРЅРµСЂРіРёРё
 		VDATA * retVal = api->Event("NpcEvtHP", "i", GetID());
 		if(retVal)
 		{
@@ -1965,23 +1965,23 @@ void Character::Update(float dltTime)
 				energy = 0.5f;
 			}
 		}
-		//Добавимся в список рисуемых
+		//Р”РѕР±Р°РІРёРјСЃСЏ РІ СЃРїРёСЃРѕРє СЂРёСЃСѓРµРјС‹С…
 		CVECTOR pos = curPos + CVECTOR(0.0f, 2.0f, 0.0f);
 		location->DrawEnemyBars(pos, hp, energy, tuner.GetAlpha()*enemyBarsAlpha);
 	}
 	//
 	if(lockMove) dltTime = 0.0f;
-	//Посчитаем время для работы групп
+	//РџРѕСЃС‡РёС‚Р°РµРј РІСЂРµРјСЏ РґР»СЏ СЂР°Р±РѕС‚С‹ РіСЂСѓРїРї
 	{
 		for(long i = 0; i < numTargets; i++)
 		{
 			grpTargets[i].time += dltTime;
 		}
 	}
-	//Время блендинга анимации
+	//Р’СЂРµРјСЏ Р±Р»РµРЅРґРёРЅРіР° Р°РЅРёРјР°С†РёРё
 	noBlendTime -= dltTime;
 	if(noBlendTime <= 0.0f) noBlendTime = 0.0f;
-	//Блендинг оружия и теней
+	//Р‘Р»РµРЅРґРёРЅРі РѕСЂСѓР¶РёСЏ Рё С‚РµРЅРµР№
 	{
 		float alpha = tuner.GetAlpha()*255.0f;
 		dword blendColor = (dword(alpha) << 24) | 0x00ffffff;
@@ -2002,10 +2002,10 @@ void Character::Update(float dltTime)
 	if(!m) return;
 	if(!isJump)
 	{
-		//Скорость падения
+		//РЎРєРѕСЂРѕСЃС‚СЊ РїР°РґРµРЅРёСЏ
 		vy -= 9.8f*dltTime;
 		curPos.y += vy*dltTime;
-		//Сверяемся с патчем
+		//РЎРІРµСЂСЏРµРјСЃСЏ СЃ РїР°С‚С‡РµРј
 		currentNode = ptc.Move(currentNode, curPos, oldPos);
 		curPos = oldPos;
 		if(ptc.isBearing) vy = 0.0f;
@@ -2030,16 +2030,16 @@ void Character::Update(float dltTime)
 		vy = 0.0f;
 	}
 	//SetSoundPosition(recoilSound);	
-	//Высота волны в данной точке
+	//Р’С‹СЃРѕС‚Р° РІРѕР»РЅС‹ РІ РґР°РЅРЅРѕР№ С‚РѕС‡РєРµ
 	CVECTOR chrPos = curPos;
 	if(isSwim && location->IsSwimming())
 	{
 		vy = 0.0f;
 		chrPos.y = seaY;	
 	}
-	//Ставим матрицу для модельки
+	//РЎС‚Р°РІРёРј РјР°С‚СЂРёС†Сѓ РґР»СЏ РјРѕРґРµР»СЊРєРё
 	m->mtx.BuildMatrix(CVECTOR(0.0f, ay + strafeAngle*3.1415f*0.25f*0.8f, 0.0f), chrPos);// - CVECTOR(0.0f, 0.14f, 0.0f));
-	//Хождение по ступенькам
+	//РҐРѕР¶РґРµРЅРёРµ РїРѕ СЃС‚СѓРїРµРЅСЊРєР°Рј
 	float sn = 0.0f;
 	CVECTOR nodeNorm;
 	ptc.GetNodeNormal(currentNode, nodeNorm);
@@ -2047,7 +2047,7 @@ void Character::Update(float dltTime)
 	if(k > 1.0f) k = 1.0f;	
 	movecs += (nodeNorm.y - movecs)*k;
 	isUp = nodeNorm.x*m->mtx.Vz().x + nodeNorm.z*m->mtx.Vz().z <= 0;
-	//Анимация
+	//РђРЅРёРјР°С†РёСЏ
 	/*
 	if(stricmp(characterID, "Blaze") == 0)
 	{
@@ -2056,9 +2056,9 @@ void Character::Update(float dltTime)
 	}
 	*/
 	UpdateAnimation();
-	//Анализируем детекторы
+	//РђРЅР°Р»РёР·РёСЂСѓРµРј РґРµС‚РµРєС‚РѕСЂС‹
 	for(long i = 0; i < numDetectors; i++) detector[i]->Check(dltTime, this);
-	//Если упали - пишем дебажную строчку
+	//Р•СЃР»Рё СѓРїР°Р»Рё - РїРёС€РµРј РґРµР±Р°Р¶РЅСѓСЋ СЃС‚СЂРѕС‡РєСѓ
 	if(curPos.y < -1000.0f)
 	{
 		//Assert(false);
@@ -2066,7 +2066,7 @@ void Character::Update(float dltTime)
 		curPos.y = -500.0f;
 		vy = 0.0f;
 	}
-	//Появление, удаление
+	//РџРѕСЏРІР»РµРЅРёРµ, СѓРґР°Р»РµРЅРёРµ
 	if(liveValue != 0.0f)
 	{
 		tuner.alpha += liveValue*dltTime;
@@ -2108,7 +2108,7 @@ void Character::Update(float dltTime)
 	k = dltTime*4.0f;
 	if(k > 1.0f) k = 1.0f;
 	grsPos += (curPos - grsPos)*k;
-	//Звук шагов
+	//Р—РІСѓРє С€Р°РіРѕРІ
 	if(soundStep)
 	{
 		PlayStep();
@@ -2130,14 +2130,14 @@ void Character::Update(float dltTime)
 		signMdl->mtx.Pos() = curPos;
 	}
 
-	// источник света у персонажа
+	// РёСЃС‚РѕС‡РЅРёРє СЃРІРµС‚Р° Сѓ РїРµСЂСЃРѕРЅР°Р¶Р°
 	if( m_nHandLightID >= 0 )
 	{
 		location->GetLights()->UpdateMovingLight( m_nHandLightID, GetHandLightPos() );
 	}
 }
 
-//Событие окончания проигрывания анимации действия
+//РЎРѕР±С‹С‚РёРµ РѕРєРѕРЅС‡Р°РЅРёСЏ РїСЂРѕРёРіСЂС‹РІР°РЅРёСЏ Р°РЅРёРјР°С†РёРё РґРµР№СЃС‚РІРёСЏ
 void Character::ActionEvent(const char * actionName, Animation * animation, long index, long eventID, AnimationEvent event)
 {
 	if(index != 0) return;
@@ -2174,7 +2174,7 @@ void Character::ActionEvent(const char * actionName, Animation * animation, long
 			_CORE_API->Send_Message(blade, "l", MSG_BLADE_GUNBELT);
 			if(event == ae_end)
 			{
-				//Закончился выстрел
+				//Р—Р°РєРѕРЅС‡РёР»СЃСЏ РІС‹СЃС‚СЂРµР»
 				priorityAction.SetName(null);
 				animation->Player(0).Pause();
 				animation->Player(0).SetPosition(1.0f);
@@ -2186,7 +2186,7 @@ void Character::ActionEvent(const char * actionName, Animation * animation, long
 		}else
 		if(recoil.name && stricmp(priorityAction.name, recoil.name) == 0)
 		{
-			if(rand() % 10 > 7) recoilLook = true; //в стоянии проиграть дразнилку
+			if(rand() % 10 > 7) recoilLook = true; //РІ СЃС‚РѕСЏРЅРёРё РїСЂРѕРёРіСЂР°С‚СЊ РґСЂР°Р·РЅРёР»РєСѓ
 			priorityAction.SetName(null);
 		}else
 		if(deadName && stricmp(priorityAction.name, deadName) == 0)
@@ -2201,7 +2201,7 @@ void Character::ActionEvent(const char * actionName, Animation * animation, long
 			animation->Player(0).Pause();
 			animation->Player(0).SetPosition(1.0f);
 
-			// проверим куда упали и проиграем анимацию после падения на землю и в воду.
+			// РїСЂРѕРІРµСЂРёРј РєСѓРґР° СѓРїР°Р»Рё Рё РїСЂРѕРёРіСЂР°РµРј Р°РЅРёРјР°С†РёСЋ РїРѕСЃР»Рµ РїР°РґРµРЅРёСЏ РЅР° Р·РµРјР»СЋ Рё РІ РІРѕРґСѓ.
 			SEA_BASE * sb = (SEA_BASE *)api->GetEntityPointer(&sea);
 			if(sb)
 			{
@@ -2433,7 +2433,7 @@ void Character::PlayStep()
 	SEA_BASE * sb = (SEA_BASE *)_CORE_API->GetEntityPointer(&sea);
 	if(sb && location->IsSwimming())
 	{
-		//Проверим высоту моря
+		//РџСЂРѕРІРµСЂРёРј РІС‹СЃРѕС‚Сѓ РјРѕСЂСЏ
 		seaY = sb->WaveXZ(curPos.x, curPos.z, null);
 		if(seaY > curPos.y)
 		{
@@ -2441,7 +2441,7 @@ void Character::PlayStep()
 			return;
 		}
 	}
-	//Идём по земле
+	//РРґС‘Рј РїРѕ Р·РµРјР»Рµ
 
 	if( IsRun() && !isBack ) {
 		if(!soundGrass)
@@ -2578,7 +2578,7 @@ void Character::ReleaseSound(long id)
 
 
 //============================================================================================
-//Инкапсуляция
+//РРЅРєР°РїСЃСѓР»СЏС†РёСЏ
 //============================================================================================
 
 bool Character::zLoadModel(MESSAGE & message)
@@ -2593,13 +2593,13 @@ bool Character::zLoadModel(MESSAGE & message)
 	name[255] = 0;
 	message.String(256, ani);
 	ani[255] = 0;
-	//Путь до текстур
+	//РџСѓС‚СЊ РґРѕ С‚РµРєСЃС‚СѓСЂ
 	VGEOMETRY * gs = (VGEOMETRY *)_CORE_API->CreateService("geometry");
 	if(gs) gs->SetTexturePath("characters\\");
-	//Путь до модельки
+	//РџСѓС‚СЊ РґРѕ РјРѕРґРµР»СЊРєРё
 	strcpy(mpath, "characters\\");
 	strcat(mpath, name);
-	//Создаём и загружаем модельку
+	//РЎРѕР·РґР°С‘Рј Рё Р·Р°РіСЂСѓР¶Р°РµРј РјРѕРґРµР»СЊРєСѓ
 	if(!_CORE_API->CreateEntity(&mdl, "modelr"))
 	{
 		if(gs) gs->SetTexturePath("");
@@ -2680,12 +2680,12 @@ bool Character::zAddDetector(MESSAGE & message)
 	message.String(256, group);
 	group[255] = 0;
 	if(!group[0]) return false;
-	//Проверяем на созданность
+	//РџСЂРѕРІРµСЂСЏРµРј РЅР° СЃРѕР·РґР°РЅРЅРѕСЃС‚СЊ
 	for(long i = 0; i < numDetectors; i++)
 	{
 		if(stricmp(detector[i]->la->GetGroupName(), group) == 0) return false;
 	}
-	//Ищем группу
+	//РС‰РµРј РіСЂСѓРїРїСѓ
 	LocatorArray * la = location->FindLocatorsGroup(group);
 	if(!la) return false;
 	detector[numDetectors++] = NEW Detector(la);
@@ -2768,7 +2768,7 @@ bool Character::zSetBlade(MESSAGE & message)
 bool Character::zSetGun(MESSAGE & message)
 {
 	isGunSet = false;
-	//if(!isBladeSet) return false;  //eddy. пистолет пусть виснет, он не мешает
+	//if(!isBladeSet) return false;  //eddy. РїРёСЃС‚РѕР»РµС‚ РїСѓСЃС‚СЊ РІРёСЃРЅРµС‚, РѕРЅ РЅРµ РјРµС€Р°РµС‚
 	char name[256];
 	message.String(sizeof(name) - 1, name);
 	name[sizeof(name) - 1] = 0;
@@ -2875,10 +2875,10 @@ dword Character::zExMessage(MESSAGE & message)
 	} else
 	if(stricmp(msg, "HandLightOn") == 0)
 	{
-		// удалим старый источник
+		// СѓРґР°Р»РёРј СЃС‚Р°СЂС‹Р№ РёСЃС‚РѕС‡РЅРёРє
 		if( m_nHandLightID >= 0 )
 			location->GetLights()->DelMovingLight(m_nHandLightID);
-		// создадим новый
+		// СЃРѕР·РґР°РґРёРј РЅРѕРІС‹Р№
 		message.String(sizeof(msg),msg);
 		m_nHandLightID = location->GetLights()->AddMovingLight( msg, GetHandLightPos() );
 		return 1;
@@ -2929,12 +2929,12 @@ dword Character::zExMessage(MESSAGE & message)
 		}else
 		if(stricmp(msg, "FindForvardLocator") == 0)
 		{
-			//Имя групы
+			//РРјСЏ РіСЂСѓРїС‹
 			message.String(sizeof(grp), grp);
 			grp[sizeof(grp) - 1] = 0;
-			//Переменная для имени локатора
+			//РџРµСЂРµРјРµРЅРЅР°СЏ РґР»СЏ РёРјРµРЅРё Р»РѕРєР°С‚РѕСЂР°
 			v = message.ScriptVariablePointer();
-			//Ищем локатор
+			//РС‰РµРј Р»РѕРєР°С‚РѕСЂ
 			la = location->FindLocatorsGroup(grp);
 			i =location->supervisor.FindForvardLocator(la, curPos, CVECTOR(sinf(ay), 0.0f, cosf(ay)));
 			if(i < 0)
@@ -2947,10 +2947,10 @@ dword Character::zExMessage(MESSAGE & message)
 		}else
 		if(stricmp(msg, "DistToLocator") == 0)
 		{
-			//Имя групы
+			//РРјСЏ РіСЂСѓРїС‹
 			message.String(sizeof(grp), grp);
 			grp[sizeof(grp) - 1] = 0;
-			//Имя локатора
+			//РРјСЏ Р»РѕРєР°С‚РѕСЂР°
 			message.String(sizeof(msg), msg);
 			msg[sizeof(msg) - 1] = 0;
 			v = message.ScriptVariablePointer();
@@ -3033,7 +3033,7 @@ bool Character::zPlaySound(MESSAGE & message)
 	return PlaySound(name) != SOUND_INVALID_ID;
 }
 
-//Проверка возможности слететь
+//РџСЂРѕРІРµСЂРєР° РІРѕР·РјРѕР¶РЅРѕСЃС‚Рё СЃР»РµС‚РµС‚СЊ
 bool Character::TestJump(CVECTOR pos)
 {	
 	MODEL * jpm = location->JmpPatch();
@@ -3041,14 +3041,14 @@ bool Character::TestJump(CVECTOR pos)
 	CVECTOR src(pos.x, pos.y + 1.0f, pos.z);
 	CVECTOR dst(pos.x, pos.y - 1.0f, pos.z);
 	if(jpm->Trace(src, dst) >= 1.0f) return false;
-	//Проверяем траекторию падения
+	//РџСЂРѕРІРµСЂСЏРµРј С‚СЂР°РµРєС‚РѕСЂРёСЋ РїР°РґРµРЅРёСЏ
 	const float speed = 3.3f;
 	CVECTOR v(speed*sinf(ay), vy, speed*cosf(ay));
 	for(long i = 0; i < CHARACTER_MAXJUMPPOINTS; i++)
 	{
-		//Сохраняем позицию в треке
+		//РЎРѕС…СЂР°РЅСЏРµРј РїРѕР·РёС†РёСЋ РІ С‚СЂРµРєРµ
 		jumpTrack[i] = pos;
-		//Проверяем следующий отрезок 
+		//РџСЂРѕРІРµСЂСЏРµРј СЃР»РµРґСѓСЋС‰РёР№ РѕС‚СЂРµР·РѕРє 
 		CVECTOR dlt = v*CHARACTER_JUMP_TIMESTEP;
 		v.y -= 9.8f*CHARACTER_JUMP_TIMESTEP;
 		CVECTOR src = pos - dlt*0.001f;
@@ -3057,14 +3057,14 @@ bool Character::TestJump(CVECTOR pos)
 		float k = location->GetPtcData().Trace(src, dst);
 		if(k < 1.0f)
 		{
-			//Нашли точку приземления
+			//РќР°С€Р»Рё С‚РѕС‡РєСѓ РїСЂРёР·РµРјР»РµРЅРёСЏ
 			osculationPoint = src + (dst - src)*k + CVECTOR(0.0f, 0.01f, 0.0f);
 			jumpFallTime = (i + k)*CHARACTER_JUMP_TIMESTEP;
 			curJumpFallTime = 0.0f;
 			jumpPoints = i + 1;
 			return true;
 		}
-		//Сохраним новую позицию
+		//РЎРѕС…СЂР°РЅРёРј РЅРѕРІСѓСЋ РїРѕР·РёС†РёСЋ
 		pos += dlt;
 	}
 	return false;
@@ -3072,7 +3072,7 @@ bool Character::TestJump(CVECTOR pos)
 
 bool Character::BuildJump(CVECTOR pos,float fAng)
 {
-	// нет патча для прыгания - нет и прыжков
+	// РЅРµС‚ РїР°С‚С‡Р° РґР»СЏ РїСЂС‹РіР°РЅРёСЏ - РЅРµС‚ Рё РїСЂС‹Р¶РєРѕРІ
 	MODEL * jpm = location->JmpPatch();
 	if( !jpm ) return false;
 
@@ -3082,41 +3082,41 @@ bool Character::BuildJump(CVECTOR pos,float fAng)
 	if( fTrace > 1.0f) return false;
 	pos.y = src.y + (dst.y-src.y)*(fTrace - 0.1f);
 
-	//Проверяем траекторию прыжка
+	//РџСЂРѕРІРµСЂСЏРµРј С‚СЂР°РµРєС‚РѕСЂРёСЋ РїСЂС‹Р¶РєР°
 	const float speed = 3.3f;
-	CVECTOR v(speed*sinf(fAng), speed, speed*cosf(fAng)); // скорость прыжка
-	//Строим трек для прыжка
+	CVECTOR v(speed*sinf(fAng), speed, speed*cosf(fAng)); // СЃРєРѕСЂРѕСЃС‚СЊ РїСЂС‹Р¶РєР°
+	//РЎС‚СЂРѕРёРј С‚СЂРµРє РґР»СЏ РїСЂС‹Р¶РєР°
 	for(long i = 0; i < CHARACTER_MAXJUMPPOINTS; i++)
 	{
-		//Сохраняем позицию в треке
+		//РЎРѕС…СЂР°РЅСЏРµРј РїРѕР·РёС†РёСЋ РІ С‚СЂРµРєРµ
 		jumpTrack[i] = pos;
-		//Проверяем следующий отрезок 
+		//РџСЂРѕРІРµСЂСЏРµРј СЃР»РµРґСѓСЋС‰РёР№ РѕС‚СЂРµР·РѕРє 
 		CVECTOR dlt = v*CHARACTER_JUMP_TIMESTEP;
 		v.y -= 9.8f*CHARACTER_JUMP_TIMESTEP;
 		CVECTOR src = pos - dlt*0.001f;
 		CVECTOR dst = pos + dlt*1.001f;
 		//location->DrawLine(src, 0xff00ff00, dst, 0xff00ff00, false);
-		//если врезаемся в какую нить бню, то не можем прыгать
+		//РµСЃР»Рё РІСЂРµР·Р°РµРјСЃСЏ РІ РєР°РєСѓСЋ РЅРёС‚СЊ Р±РЅСЋ, С‚Рѕ РЅРµ РјРѕР¶РµРј РїСЂС‹РіР°С‚СЊ
 		float k = location->GetPtcData().Trace(src, dst);
 		if(k < 1.0f)
 		{
-			//Нашли точку приземления
+			//РќР°С€Р»Рё С‚РѕС‡РєСѓ РїСЂРёР·РµРјР»РµРЅРёСЏ
 			osculationPoint = src + (dst - src)*k + CVECTOR(0.0f, 0.01f, 0.0f);
 			jumpFallTime = (i + k)*CHARACTER_JUMP_TIMESTEP;
 			curJumpFallTime = 0.0f;
 			jumpPoints = i + 1;
 
-			//Проверим приземление на джамп патч
+			//РџСЂРѕРІРµСЂРёРј РїСЂРёР·РµРјР»РµРЅРёРµ РЅР° РґР¶Р°РјРї РїР°С‚С‡
 			if( jpm ) {
 				dst = src = osculationPoint;
 				src.y += 10.f;
 				dst.y -= 20.f;
 				float fT = jpm->Trace(src,dst);
-				//да мы приземляемся на прыжковый патч
+				//РґР° РјС‹ РїСЂРёР·РµРјР»СЏРµРјСЃСЏ РЅР° РїСЂС‹Р¶РєРѕРІС‹Р№ РїР°С‚С‡
 				if( fT<1.f )
 				{
 					CVECTOR vdlt = src + (dst-src)*fT - osculationPoint;
-					//учитываем поправку если она достаточно велика
+					//СѓС‡РёС‚С‹РІР°РµРј РїРѕРїСЂР°РІРєСѓ РµСЃР»Рё РѕРЅР° РґРѕСЃС‚Р°С‚РѕС‡РЅРѕ РІРµР»РёРєР°
 					if( vdlt.GetLength() > 0.1f )
 					{
 						vdlt *= 1.f / jumpPoints;
@@ -3131,7 +3131,7 @@ bool Character::BuildJump(CVECTOR pos,float fAng)
 			return true;
 		}
 		if( TraceWithObstacle(src,dst) ) return false;
-		//Сохраним новую позицию
+		//РЎРѕС…СЂР°РЅРёРј РЅРѕРІСѓСЋ РїРѕР·РёС†РёСЋ
 		pos += dlt;
 	}
 	return false;
@@ -3149,7 +3149,7 @@ void Character::UpdateActionsData()
 	if(!m) return;
 	Animation * a = m->GetAnimation();
 	if(!a) return;
-	//Действия перемещения
+	//Р”РµР№СЃС‚РІРёСЏ РїРµСЂРµРјРµС‰РµРЅРёСЏ
 	turnSpeed = 2.0f;
 	const char * s = a->GetData("Turn speed");
 	if(s && s[0]) turnSpeed = float(atof(s));
@@ -3169,10 +3169,10 @@ void Character::UpdateActionsData()
 	UpdateActionMoveData(fall, a);
 	UpdateActionMoveData(fall_land, a);
 	UpdateActionMoveData(fall_water, a);
-	//Смерти
+	//РЎРјРµСЂС‚Рё
 	for(long i = 0; i < numActionDead; i++) UpdateActionDeadData(actionDead[i], a);
 	for(long i = 0; i < numActionFightDead; i++) UpdateActionDeadData(actionFightDead[i], a);
-	//Бой
+	//Р‘РѕР№
 	UpdateActionMoveData(fightwalk, a);
 	UpdateActionMoveData(fightbackwalk, a);
 	UpdateActionMoveData(fightrun, a);
@@ -3196,12 +3196,12 @@ void Character::UpdateActionsData()
 	UpdateActionCharacterData(blockaxehit, a);
 	UpdateActionCharacterData(blockbreak, a);
 	UpdateActionCharacterData(recoil, a);
-	//Действия поворота на месте
+	//Р”РµР№СЃС‚РІРёСЏ РїРѕРІРѕСЂРѕС‚Р° РЅР° РјРµСЃС‚Рµ
 	UpdateActionCharacterData(actionTurnL, a);
 	UpdateActionCharacterData(actionTurnR, a);
-	//Действия стояния при стоянии
+	//Р”РµР№СЃС‚РІРёСЏ СЃС‚РѕСЏРЅРёСЏ РїСЂРё СЃС‚РѕСЏРЅРёРё
 	for(long i = 0; i < numActionIdles; i++) UpdateActionIdleData(actionIdle[i], a);
-	//Действия стояния в режиме боя
+	//Р”РµР№СЃС‚РІРёСЏ СЃС‚РѕСЏРЅРёСЏ РІ СЂРµР¶РёРјРµ Р±РѕСЏ
 	for(long i = 0; i < numFightActionIdles; i++) UpdateActionIdleData(actionFightIdle[i], a);
 	noBlendTime = 1.0f;
 	UpdateAnimation();
@@ -3256,7 +3256,7 @@ void Character::UpdateActionIdleData(ActionIdle & ai, Animation * a)
 	s = a->Player(2).GetData("Blend time");
 	if(s && s[0]) ai.tblend = float(atof(s));
 	if(ai.tblend < 0.0f) ai.tblend = 0.0f;
-	//Вероятность
+	//Р’РµСЂРѕСЏС‚РЅРѕСЃС‚СЊ
 	ai.p = 1.0f;
 	s = a->Player(2).GetData("Probability");
 	if(s && s[0]) ai.p = float(atof(s));
@@ -3277,7 +3277,7 @@ void Character::UpdateActionDeadData(ActionDead & ai, Animation * a)
 	s = a->Player(2).GetData("Blend time");
 	if(s && s[0]) ai.tblend = float(atof(s));
 	if(ai.tblend < 0.0f) ai.tblend = 0.0f;
-	//Вероятность
+	//Р’РµСЂРѕСЏС‚РЅРѕСЃС‚СЊ
 	ai.p = 1.0f;
 	s = a->Player(2).GetData("Probability");
 	if(s && s[0]) ai.p = float(atof(s));
@@ -3344,9 +3344,9 @@ bool Character::SetAction(const char * actionName, float tblend, float movespeed
 		}
 		return true;
 	}
-	//Сбросим привязанные вещи
+	//РЎР±СЂРѕСЃРёРј РїСЂРёРІСЏР·Р°РЅРЅС‹Рµ РІРµС‰Рё
 	api->Send_Message(blade, "l", 1003);
-	//Индекс текущего плеера
+	//РРЅРґРµРєСЃ С‚РµРєСѓС‰РµРіРѕ РїР»РµРµСЂР°
 	if(a->Player(0).IsPlaying()) a->CopyPlayerState(0, 1);
 	a->Player(0).SetAction(null);
 	bool res = a->Player(0).SetAction(actionName) && a->Player(0).Play();
@@ -3372,7 +3372,7 @@ void Character::UpdateAnimation()
 	if(priorityAction.name)
 	{
 		curIdleIndex = -1;
-		//Специяльные действия
+		//РЎРїРµС†РёСЏР»СЊРЅС‹Рµ РґРµР№СЃС‚РІРёСЏ
 		if(!isSetPriorityAction)
 		{
 			isSetPriorityAction = true;
@@ -3432,7 +3432,7 @@ void Character::UpdateAnimation()
 					{
 						if(!isBack)
 						{
-							//Простая ходьба
+							//РџСЂРѕСЃС‚Р°СЏ С…РѕРґСЊР±Р°
 							if(curMove != &walk)
 							{
 								curMove = &walk;
@@ -3442,7 +3442,7 @@ void Character::UpdateAnimation()
 								}
 							}
 						}else{
-							//Хотьба назад
+							//РҐРѕС‚СЊР±Р° РЅР°Р·Р°Рґ
 							if(curMove != &backwalk)
 							{
 								curMove = &backwalk;
@@ -3455,7 +3455,7 @@ void Character::UpdateAnimation()
 					}else{
 						if(!isBack)
 						{
-							//Бег
+							//Р‘РµРі
 							if(curMove != &run)
 							{
 								curMove = &run;
@@ -3465,7 +3465,7 @@ void Character::UpdateAnimation()
 								}
 							}
 						}else{
-							//Бег назад
+							//Р‘РµРі РЅР°Р·Р°Рґ
 							if(curMove != &backrun)
 							{
 								curMove = &backrun;
@@ -3481,7 +3481,7 @@ void Character::UpdateAnimation()
 					{
 						if(!isBack)
 						{
-							//Ходьба по лестнице
+							//РҐРѕРґСЊР±Р° РїРѕ Р»РµСЃС‚РЅРёС†Рµ
 							if(isUp)
 							{
 								curMove = &stsUp;
@@ -3497,7 +3497,7 @@ void Character::UpdateAnimation()
 								}
 							}
 						}else{
-							//Хотьба назад по лестнице
+							//РҐРѕС‚СЊР±Р° РЅР°Р·Р°Рґ РїРѕ Р»РµСЃС‚РЅРёС†Рµ
 							if(isUp)
 							{
 								curMove = &stsUpBack;
@@ -3517,7 +3517,7 @@ void Character::UpdateAnimation()
 						Assert(false);
 						if(!isBack)
 						{
-							//Бег по лестнице вперёд
+							//Р‘РµРі РїРѕ Р»РµСЃС‚РЅРёС†Рµ РІРїРµСЂС‘Рґ
 							if(isUp)
 							{
 								curMove = &stsUpRun;
@@ -3533,7 +3533,7 @@ void Character::UpdateAnimation()
 								}
 							}
 						}else{
-							//Бег по лестнице назад
+							//Р‘РµРі РїРѕ Р»РµСЃС‚РЅРёС†Рµ РЅР°Р·Р°Рґ
 							if(isUp)
 							{
 								curMove = &stsUpRunBack;
@@ -3554,12 +3554,12 @@ void Character::UpdateAnimation()
 			}else{
 				float ts;
 				const char * an;
-				//Анимация стояния по умолчанию
+				//РђРЅРёРјР°С†РёСЏ СЃС‚РѕСЏРЅРёСЏ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 				if(!curMove)
 				{
 					if(fabsf(strafeVel) < 0.1f)
 					{
-						//Стояние
+						//РЎС‚РѕСЏРЅРёРµ
 						an = FindIdleAnimation(ts);
 						if(an)
 						{
@@ -3573,7 +3573,7 @@ void Character::UpdateAnimation()
 							if(noBlendTime <= 0.0f) SetAction(null, 0.3f, 0.0f, turnSpeed);
 						}
 					}else{
-						//Шагаем в сторну
+						//РЁР°РіР°РµРј РІ СЃС‚РѕСЂРЅСѓ
 						if(strafeVel < 0.0f)
 						{
 							curIdleIndex = -1;
@@ -3590,7 +3590,7 @@ void Character::UpdateAnimation()
 						}
 					}
 				}else{
-					//Остановиться
+					//РћСЃС‚Р°РЅРѕРІРёС‚СЊСЃСЏ
 					an = FindIdleAnimation(ts);
 					if(an)
 					{
@@ -3608,7 +3608,7 @@ void Character::UpdateAnimation()
 				}
 			}
 		}else{
-			//Режим боя
+			//Р РµР¶РёРј Р±РѕСЏ
 
 			if(fgtSetType == fgt_blockbreak)
 			{
@@ -3644,21 +3644,21 @@ void Character::UpdateAnimation()
 
 				switch(fgtSetType)
 				{
-				case fgt_attack_fast:	//Быстрый удар
+				case fgt_attack_fast:	//Р‘С‹СЃС‚СЂС‹Р№ СѓРґР°СЂ
 					if(!(isSet = SetAction(attackFast[fgtSetIndex].name, attackFast[fgtSetIndex].tblend, 0.0f, 4.0f)))
 					{
 						api->Trace("Character animation: not set fast attack action: \"%s\"", attackFast[fgtSetIndex].name);
 					}else{
 						_CORE_API->Send_Message(blade, "ll", MSG_BLADE_TRACE_ON,0);
 						api->Event("Event_ChrSnd_Attack", "is", GetID(), "fast");
-						// boal перенос в момент удара api->Event("ChrFgtActApply", "is", GetID(), FGT_ATTACK_FAST);
+						// boal РїРµСЂРµРЅРѕСЃ РІ РјРѕРјРµРЅС‚ СѓРґР°СЂР° api->Event("ChrFgtActApply", "is", GetID(), FGT_ATTACK_FAST);
 						camRotWait = camRotMax = 0.3f;
 						impulse += 5.0f*GetEnemyDirForImpulse();
 					}
 					break;
-				case fgt_attack_force:	//Выпад и выпад с рубящим ударом
+				case fgt_attack_force:	//Р’С‹РїР°Рґ Рё РІС‹РїР°Рґ СЃ СЂСѓР±СЏС‰РёРј СѓРґР°СЂРѕРј
 					if(stricmp(pWeaponID, "topor") == 0 && fgtSetIndex == 3)
-					{	//если с топором, то выпад меняем на рубящий удар						
+					{	//РµСЃР»Рё СЃ С‚РѕРїРѕСЂРѕРј, С‚Рѕ РІС‹РїР°Рґ РјРµРЅСЏРµРј РЅР° СЂСѓР±СЏС‰РёР№ СѓРґР°СЂ						
 						fgtSetIndex = rand() % 2; 
 					}
 					if(!(isSet = SetAction(attackForce[fgtSetIndex].name, attackForce[fgtSetIndex].tblend, 0.0f, 4.0f)))
@@ -3667,35 +3667,35 @@ void Character::UpdateAnimation()
 					}else{
 						_CORE_API->Send_Message(blade, "ll", MSG_BLADE_TRACE_ON,0);
 						api->Event("Event_ChrSnd_Attack", "is", GetID(), "force");
-						// boal перенос в момент удара api->Event("ChrFgtActApply", "is", GetID(), FGT_ATTACK_FORCE);
+						// boal РїРµСЂРµРЅРѕСЃ РІ РјРѕРјРµРЅС‚ СѓРґР°СЂР° api->Event("ChrFgtActApply", "is", GetID(), FGT_ATTACK_FORCE);
 						camRotWait = camRotMax = 0.3f;
 						impulse += 2.5f*GetEnemyDirForImpulse();
 					}
 					break;
-				case fgt_attack_round:	//Круговой удар
+				case fgt_attack_round:	//РљСЂСѓРіРѕРІРѕР№ СѓРґР°СЂ
 					if(!(isSet = SetAction(attackRound[fgtSetIndex].name, attackRound[fgtSetIndex].tblend, 0.0f, 4.0f)))
 					{
 						api->Trace("Character animation: not set round attack action: \"%s\"", attackRound[fgtSetIndex].name);
 					}else{
 						_CORE_API->Send_Message(blade, "ll", MSG_BLADE_TRACE_ON,0);
 						api->Event("Event_ChrSnd_Attack", "is", GetID(), "round");
-						// boal перенос в момент удара api->Event("ChrFgtActApply", "is", GetID(), FGT_ATTACK_ROUND);
+						// boal РїРµСЂРµРЅРѕСЃ РІ РјРѕРјРµРЅС‚ СѓРґР°СЂР° api->Event("ChrFgtActApply", "is", GetID(), FGT_ATTACK_ROUND);
 						camRotWait = camRotMax = 0.8f;
 					}
 					break;
-				case fgt_attack_break:	//Пробивающий удар
+				case fgt_attack_break:	//РџСЂРѕР±РёРІР°СЋС‰РёР№ СѓРґР°СЂ
 					if(!(isSet = SetAction(attackBreak[fgtSetIndex].name, attackBreak[fgtSetIndex].tblend, 0.0f, 4.0f)))
 					{
 						api->Trace("Character animation: not set break attack action: \"%s\"", attackBreak[fgtSetIndex].name);
 					}else{
 						_CORE_API->Send_Message(blade, "ll", MSG_BLADE_TRACE_ON,0);
 						api->Event("Event_ChrSnd_Attack", "is", GetID(), "break");
-						// boal перенос в момент удара api->Event("ChrFgtActApply", "is", GetID(), FGT_ATTACK_BREAK);
+						// boal РїРµСЂРµРЅРѕСЃ РІ РјРѕРјРµРЅС‚ СѓРґР°СЂР° api->Event("ChrFgtActApply", "is", GetID(), FGT_ATTACK_BREAK);
 						camRotWait = camRotMax = 0.3f;
 						impulse += 1.0f*GetEnemyDirForImpulse();
 					}
 					break;
-				case fgt_attack_feint:	//Финт - спрециальный обманный удар
+				case fgt_attack_feint:	//Р¤РёРЅС‚ - СЃРїСЂРµС†РёР°Р»СЊРЅС‹Р№ РѕР±РјР°РЅРЅС‹Р№ СѓРґР°СЂ
 					if(!(isSet = SetAction(attackFeint[fgtSetIndex].name, attackFeint[fgtSetIndex].tblend, 0.0f, 4.0f)))
 					{
 						api->Trace("Character animation: not set feint action: \"%s\"", attackFeint[fgtSetIndex].name);
@@ -3706,18 +3706,18 @@ void Character::UpdateAnimation()
 						camRotWait = camRotMax = 0.3f;
 					}
 					break;
-				case fgt_attack_feintc:	//Атакующие продолжение финта
+				case fgt_attack_feintc:	//РђС‚Р°РєСѓСЋС‰РёРµ РїСЂРѕРґРѕР»Р¶РµРЅРёРµ С„РёРЅС‚Р°
 					if(!(isSet = SetAction(attackFeintC[fgtSetIndex].name, attackFeintC[fgtSetIndex].tblend, 0.0f, 4.0f)))
 					{
 						api->Trace("Character animation: not set feint action: \"%s\"", attackFeintC[fgtSetIndex].name);
 					}else{
 						_CORE_API->Send_Message(blade, "ll", MSG_BLADE_TRACE_ON,0);
 						api->Event("Event_ChrSnd_Attack", "is", GetID(), "feintc");
-						api->Event("ChrFgtActApply", "is", GetID(), "feintc"); // boal жрем энергию за успех
+						api->Event("ChrFgtActApply", "is", GetID(), "feintc"); // boal Р¶СЂРµРј СЌРЅРµСЂРіРёСЋ Р·Р° СѓСЃРїРµС…
 						camRotWait = camRotMax = 0.3f;
 					}
 					break;
-				case fgt_fire:			//Выстрел из пистолета
+				case fgt_fire:			//Р’С‹СЃС‚СЂРµР» РёР· РїРёСЃС‚РѕР»РµС‚Р°
 					_CORE_API->Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF,0);
 					priorityAction.SetName(shot.name);
 					priorityAction.tblend = shot.tblend;
@@ -3727,10 +3727,10 @@ void Character::UpdateAnimation()
 					fgtSetIndex = -1;					
 					isFired = false;
 					break;
-				case fgt_hit_attack:	//Реакция попадания удара по персонажу вводящая его в stall				
+				case fgt_hit_attack:	//Р РµР°РєС†РёСЏ РїРѕРїР°РґР°РЅРёСЏ СѓРґР°СЂР° РїРѕ РїРµСЂСЃРѕРЅР°Р¶Сѓ РІРІРѕРґСЏС‰Р°СЏ РµРіРѕ РІ stall				
 					if(IsPlayer() && !isStunEnable) 
 					{
-						if (rand() % 100 >= 50) break; // boal не всегда пробиваться в анимацию
+						if (rand() % 100 >= 50) break; // boal РЅРµ РІСЃРµРіРґР° РїСЂРѕР±РёРІР°С‚СЊСЃСЏ РІ Р°РЅРёРјР°С†РёСЋ
 					}					
 					if (isStunEnable)
 					{
@@ -3741,29 +3741,29 @@ void Character::UpdateAnimation()
 						}
 					}	
 					break;
-				case fgt_blockbreak:	//Реакция попадания удара по персонажу вводящая его в stall
+				case fgt_blockbreak:	//Р РµР°РєС†РёСЏ РїРѕРїР°РґР°РЅРёСЏ СѓРґР°СЂР° РїРѕ РїРµСЂСЃРѕРЅР°Р¶Сѓ РІРІРѕРґСЏС‰Р°СЏ РµРіРѕ РІ stall
 					_CORE_API->Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF,0);
 					if(!(isSet = SetAction(blockbreak.name, blockbreak.tblend, 0.0f, 1.0f, true)))
 					{
 						api->Trace("Character animation: not set fight blockbreak action: \"%s\"", blockbreak.name);
 					}
 					break;
-				case fgt_hit_feint:		//Реакция от финта вводящая его в stall
+				case fgt_hit_feint:		//Р РµР°РєС†РёСЏ РѕС‚ С„РёРЅС‚Р° РІРІРѕРґСЏС‰Р°СЏ РµРіРѕ РІ stall
 					_CORE_API->Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF,0);
 					if(!(isSet = SetAction(hitFeint.name, hitFeint.tblend, 0.0f, 0.0f, true)))
 					{
 						api->Trace("Character animation: not set fight feint hit action: \"%s\"", hitFeint.name);
 					}
 					break;
-				case fgt_hit_parry:		//Реакция от парирования вводящая его в stall
+				case fgt_hit_parry:		//Р РµР°РєС†РёСЏ РѕС‚ РїР°СЂРёСЂРѕРІР°РЅРёСЏ РІРІРѕРґСЏС‰Р°СЏ РµРіРѕ РІ stall
 					_CORE_API->Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF,0);
 					if(!(isSet = SetAction(hitParry.name, hitParry.tblend, 0.0f, 0.0f, true)))
 					{
 						api->Trace("Character animation: not set fight parry hit action: \"%s\"", hitParry.name);
 					}
-					api->Event("ChrFgtActApply", "is", GetID(), "hit_parry"); // boal баг фикс FGT_ATTACK_PARRY);
+					api->Event("ChrFgtActApply", "is", GetID(), "hit_parry"); // boal Р±Р°Рі С„РёРєСЃ FGT_ATTACK_PARRY);
 					break;
-				case fgt_hit_round:		//Реакция отталкивание круговым ударом
+				case fgt_hit_round:		//Р РµР°РєС†РёСЏ РѕС‚С‚Р°Р»РєРёРІР°РЅРёРµ РєСЂСѓРіРѕРІС‹Рј СѓРґР°СЂРѕРј
 					_CORE_API->Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF,0);
 					impulse.x -= 3.0f*sinf(ay);
 					impulse.z -= 3.0f*cosf(ay);
@@ -3772,10 +3772,10 @@ void Character::UpdateAnimation()
 						api->Trace("Character animation: not set fight round hit action: \"%s\"", hitRound.name);
 					}
 					break;
-				case fgt_hit_fire:		//Реакция от выстрела вводящая его в stall				
+				case fgt_hit_fire:		//Р РµР°РєС†РёСЏ РѕС‚ РІС‹СЃС‚СЂРµР»Р° РІРІРѕРґСЏС‰Р°СЏ РµРіРѕ РІ stall				
 					if(IsPlayer() && !isStunEnable) 
 					{
-						if (rand() % 100 >= 50) break; // boal не всегда пробиваться в анимацию
+						if (rand() % 100 >= 50) break; // boal РЅРµ РІСЃРµРіРґР° РїСЂРѕР±РёРІР°С‚СЊСЃСЏ РІ Р°РЅРёРјР°С†РёСЋ
 					}					
 					if (isStunEnable)
 					{
@@ -3786,7 +3786,7 @@ void Character::UpdateAnimation()
 						}
 					}	
 					break;
-				case fgt_block:			//Защита саблей		
+				case fgt_block:			//Р—Р°С‰РёС‚Р° СЃР°Р±Р»РµР№		
 					_CORE_API->Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF,0);
 					if(stricmp(pWeaponID, "topor") == 0)
 					{
@@ -3803,10 +3803,10 @@ void Character::UpdateAnimation()
 						}
 					}
 					break;
-				case fgt_blockhit:		//Защита саблей
+				case fgt_blockhit:		//Р—Р°С‰РёС‚Р° СЃР°Р±Р»РµР№
                     if(IsPlayer()) 
                     {
-						if (rand() % 100 >= 65) break; // boal не всегда пробиваться в анимацию
+						if (rand() % 100 >= 65) break; // boal РЅРµ РІСЃРµРіРґР° РїСЂРѕР±РёРІР°С‚СЊСЃСЏ РІ Р°РЅРёРјР°С†РёСЋ
 					}
 					_CORE_API->Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF,0);
 					if(stricmp(pWeaponID, "topor") == 0)
@@ -3824,25 +3824,25 @@ void Character::UpdateAnimation()
 						}
 					}
 					break;
-				case fgt_parry:			//Парирование, защитное движение вводящее противника в stall
+				case fgt_parry:			//РџР°СЂРёСЂРѕРІР°РЅРёРµ, Р·Р°С‰РёС‚РЅРѕРµ РґРІРёР¶РµРЅРёРµ РІРІРѕРґСЏС‰РµРµ РїСЂРѕС‚РёРІРЅРёРєР° РІ stall
 					_CORE_API->Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF,0);
 					if(!(isSet = SetAction(parry[fgtSetIndex].name, parry[fgtSetIndex].tblend, 0.0f, 5.0f)))
 					{
 						api->Trace("Character animation: not set block(parry) action: \"%s\"", parry[fgtSetIndex].name);
 					}
 					break;
-				case fgt_recoil:		//Отскок назад
+				case fgt_recoil:		//РћС‚СЃРєРѕРє РЅР°Р·Р°Рґ
 					_CORE_API->Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF,0);
 					PlaySound("recoil", true);
 					impulse.x -= 2.0f*sinf(ay);
 					impulse.z -= 2.0f*cosf(ay);
-					priorityAction.SetName(recoil.name); //для проверки окончания анимации
+					priorityAction.SetName(recoil.name); //РґР»СЏ РїСЂРѕРІРµСЂРєРё РѕРєРѕРЅС‡Р°РЅРёСЏ Р°РЅРёРјР°С†РёРё
 					if(!(isSet = SetAction(recoil.name, recoil.tblend, -3.0f, 0.0f)))
 					{
 						api->Trace("Character animation: not set recoil action: \"%s\"", recoil.name);
 					}
 					break;
-				case fgt_strafe_l:		//Отскок влево
+				case fgt_strafe_l:		//РћС‚СЃРєРѕРє РІР»РµРІРѕ
 					_CORE_API->Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF,0);
 					recoilSound = SOUND_INVALID_ID;//PlaySound("recoil", true);
 					impulse += 15.0f*CVECTOR(-cosf(ay), 0.0f, sinf(ay));
@@ -3851,7 +3851,7 @@ void Character::UpdateAnimation()
 						api->Trace("Character animation: not set recoil action: \"%s\"", strafe_l.name);
 					}
 					break;
-				case fgt_strafe_r:		//Отскок влево
+				case fgt_strafe_r:		//РћС‚СЃРєРѕРє РІР»РµРІРѕ
 					_CORE_API->Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF,0);
 					recoilSound = SOUND_INVALID_ID;//PlaySound("recoil", true);
 					impulse -= 15.0f*CVECTOR(-cosf(ay), 0.0f, sinf(ay));
@@ -3879,7 +3879,7 @@ void Character::UpdateAnimation()
 					{
 						if(!isBack)
 						{
-							//Хотьба вперёд
+							//РҐРѕС‚СЊР±Р° РІРїРµСЂС‘Рґ
 							if(curMove != &fightwalk)
 							{
 								curMove = &fightwalk;
@@ -3889,7 +3889,7 @@ void Character::UpdateAnimation()
 								}
 							}
 						}else{
-							//Хотьба назад
+							//РҐРѕС‚СЊР±Р° РЅР°Р·Р°Рґ
 							if(curMove != &fightbackwalk)
 							{
 								curMove = &fightbackwalk;
@@ -3902,7 +3902,7 @@ void Character::UpdateAnimation()
 					}else{
 						if(!isBack)
 						{
-							//Бег вперёд
+							//Р‘РµРі РІРїРµСЂС‘Рґ
 							if(curMove != &fightrun)
 							{
 								curMove = &fightrun;
@@ -3912,7 +3912,7 @@ void Character::UpdateAnimation()
 								}
 							}
 						}else{
-							//Бег назад
+							//Р‘РµРі РЅР°Р·Р°Рґ
 							if(curMove != &fightbackrun)
 							{
 								curMove = &fightbackrun;
@@ -3926,10 +3926,10 @@ void Character::UpdateAnimation()
 				}else{
 					float ts;
 					const char * an;
-					//Анимация стояния по умолчанию
+					//РђРЅРёРјР°С†РёСЏ СЃС‚РѕСЏРЅРёСЏ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 					if(!curMove)
 					{
-						//Стояние
+						//РЎС‚РѕСЏРЅРёРµ
 						an = FindFightIdleAnimation(ts);
 						if(an)
 						{
@@ -3944,7 +3944,7 @@ void Character::UpdateAnimation()
 							curIdleIndex = -1;
 						}
 					}else{
-						//Остановиться
+						//РћСЃС‚Р°РЅРѕРІРёС‚СЊСЃСЏ
 						an = FindFightIdleAnimation(ts);
 						if(an)
 						{
@@ -3969,14 +3969,14 @@ void Character::UpdateAnimation()
 
 const char * Character::FindIdleAnimation(float & tblend)
 {
-	//Пользовательская анимация
+	//РџРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєР°СЏ Р°РЅРёРјР°С†РёСЏ
 	if(userIdle.name)
 	{
 		curIdleIndex = -1;
 		tblend = userIdle.tblend;
 		return userIdle.name;
 	}
-	//Стандартная анимация
+	//РЎС‚Р°РЅРґР°СЂС‚РЅР°СЏ Р°РЅРёРјР°С†РёСЏ
 	if(fabsf(isTurn) <= (curIdleIndex >= 0 ? 0.8f : 0.1f))
 	{
 		if(numActionIdles <= 0)
@@ -3988,13 +3988,13 @@ const char * Character::FindIdleAnimation(float & tblend)
 		{		
 			if(curIdleIndex < 0)
 			{
-				//Расчитываем текущии вероятности и сумарную вероятность
+				//Р Р°СЃС‡РёС‚С‹РІР°РµРј С‚РµРєСѓС‰РёРё РІРµСЂРѕСЏС‚РЅРѕСЃС‚Рё Рё СЃСѓРјР°СЂРЅСѓСЋ РІРµСЂРѕСЏС‚РЅРѕСЃС‚СЊ
 				float allp = 0.0f;
 				long i = 0;
 				for(i = 0; i < numActionIdles; i++) allp += actionIdle[i].p;
-				//Текущее действие
+				//РўРµРєСѓС‰РµРµ РґРµР№СЃС‚РІРёРµ
 				float rnd = rand()*allp/RAND_MAX;
-				//Выбираем из списка то которое будем проигрывать
+				//Р’С‹Р±РёСЂР°РµРј РёР· СЃРїРёСЃРєР° С‚Рѕ РєРѕС‚РѕСЂРѕРµ Р±СѓРґРµРј РїСЂРѕРёРіСЂС‹РІР°С‚СЊ
 				allp = 0.0f;
 				for(i = 0; i < numActionIdles; i++)
 				{
@@ -4010,7 +4010,7 @@ const char * Character::FindIdleAnimation(float & tblend)
 		return actionIdle[curIdleIndex].name;
 	}else{
 		curIdleIndex = -1;
-		//Поворот
+		//РџРѕРІРѕСЂРѕС‚
 		if(isTurn < 0)
 		{
 			tblend = actionTurnL.tblend;
@@ -4025,7 +4025,7 @@ const char * Character::FindIdleAnimation(float & tblend)
 
 const char * Character::FindFightIdleAnimation(float & tblend)
 {
-	//Пользовательская анимация
+	//РџРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєР°СЏ Р°РЅРёРјР°С†РёСЏ
 	if(userIdle.name)
 	{
 		curIdleIndex = -1;
@@ -4034,13 +4034,13 @@ const char * Character::FindFightIdleAnimation(float & tblend)
 	}
 	if(curIdleIndex < 0 || curIdleIndex >= numFightActionIdles)
 	{
-		//Расчитываем текущии вероятности и сумарную вероятность
+		//Р Р°СЃС‡РёС‚С‹РІР°РµРј С‚РµРєСѓС‰РёРё РІРµСЂРѕСЏС‚РЅРѕСЃС‚Рё Рё СЃСѓРјР°СЂРЅСѓСЋ РІРµСЂРѕСЏС‚РЅРѕСЃС‚СЊ
 		float allp = 0.0f;
 		long i = 0; 
 		for(i = 0; i < numFightActionIdles; i++) allp += actionFightIdle[i].p;
-		//Текущее действие
+		//РўРµРєСѓС‰РµРµ РґРµР№СЃС‚РІРёРµ
 		float rnd = rand()*allp/RAND_MAX;
-		//Выбираем из списка то которое будем проигрывать
+		//Р’С‹Р±РёСЂР°РµРј РёР· СЃРїРёСЃРєР° С‚Рѕ РєРѕС‚РѕСЂРѕРµ Р±СѓРґРµРј РїСЂРѕРёРіСЂС‹РІР°С‚СЊ
 		allp = 0.0f;
 		for(i = 0; i < numFightActionIdles; i++)
 		{
@@ -4050,7 +4050,7 @@ const char * Character::FindFightIdleAnimation(float & tblend)
 		if(i >= numFightActionIdles) i = numFightActionIdles - 1;
 		if(recoilLook) 
 		{
-			curIdleIndex = 7; //проиграть дразнилку после отскока
+			curIdleIndex = 7; //РїСЂРѕРёРіСЂР°С‚СЊ РґСЂР°Р·РЅРёР»РєСѓ РїРѕСЃР»Рµ РѕС‚СЃРєРѕРєР°
 			recoilLook = false;
 		}
 		else curIdleIndex = i;
@@ -4059,13 +4059,13 @@ const char * Character::FindFightIdleAnimation(float & tblend)
 	tblend = actionFightIdle[curIdleIndex].tblend;
 	return actionFightIdle[curIdleIndex].name;
 	/*		
-	//Стандартная анимация
+	//РЎС‚Р°РЅРґР°СЂС‚РЅР°СЏ Р°РЅРёРјР°С†РёСЏ
 	if(fabsf(isTurn) <= 0.0001f)
 	{
 		tblend = actionFightIdle[curIdleIndex].tblend;
 		return actionFightIdle[curIdleIndex].name;
 	}else{
-		//Поворот
+		//РџРѕРІРѕСЂРѕС‚
 		if(isTurn < 0)
 		{
 			tblend = actionFightIdle[curIdleIndex].tblend;
@@ -4106,28 +4106,28 @@ float Character::GetAniPlayTime()
 Character * Character::FindDialogCharacter()
 {
 	if(IsFight() || liveValue < 0 || deadName) return null;
-	//Найдём окружающих персонажей
+	//РќР°Р№РґС‘Рј РѕРєСЂСѓР¶Р°СЋС‰РёС… РїРµСЂСЃРѕРЅР°Р¶РµР№
 	static Supervisor::FindCharacter fndCharacter[MAX_CHARACTERS];
 	static long num = 0;
 	if(!location->supervisor.FindCharacters(fndCharacter, num, this, 3.0f)) return null;
-	//Выбираем лутшего
+	//Р’С‹Р±РёСЂР°РµРј Р»СѓС‚С€РµРіРѕ
 	float minDst;
 	long i = 0, j = 0;
 	for(i = 0, j = -1; i < num; i++)
 	{
-		//Персонаж
+		//РџРµСЂСЃРѕРЅР°Р¶
 		Supervisor::FindCharacter & fc = fndCharacter[i];
-		//Если воюем, то не говорим с ним
+		//Р•СЃР»Рё РІРѕСЋРµРј, С‚Рѕ РЅРµ РіРѕРІРѕСЂРёРј СЃ РЅРёРј
 		if(fc.c->IsFight() || fc.c->liveValue < 0 || fc.c->deadName) continue;
-		//Дистанция
+		//Р”РёСЃС‚Р°РЅС†РёСЏ
 		if(fabsf(fc.dy) > 2.0f) continue;
 		float d = sqrtf(fc.d2);
-		//Углы
+		//РЈРіР»С‹
 		static const float testAng = cosf(0.5f*CHARACTER_DIALOG_ANG*(3.1415926535f/180.0f));		
 		float cs = -1.0f;		
 		if(fc.d2 > 0.0f) cs = (fc.dx*sinf(ay) + fc.dz*cosf(ay))/d;
 		if(cs < testAng) continue;
-		//Дистанция с учётом угла
+		//Р”РёСЃС‚Р°РЅС†РёСЏ СЃ СѓС‡С‘С‚РѕРј СѓРіР»Р°
 		d /= cs;
 		if(j >= 0)
 		{
@@ -4171,7 +4171,7 @@ bool Character::SetPriorityAction(const char * action)
 
 inline void Character::CheckAttackHit()
 {
-	//Получим название атаки и реакцию
+	//РџРѕР»СѓС‡РёРј РЅР°Р·РІР°РЅРёРµ Р°С‚Р°РєРё Рё СЂРµР°РєС†РёСЋ
 	bool isBlockBreak = false;
 	const char * aname;
 	FightAction hitReaction;
@@ -4198,7 +4198,7 @@ inline void Character::CheckAttackHit()
 		aname = FGT_ATTACK_FEINT;
 		hitReaction = fgt_hit_feint;
 		break;
-	/*case fgt_attack_feint: //boal для теста добавил и убрал
+	/*case fgt_attack_feint: //boal РґР»СЏ С‚РµСЃС‚Р° РґРѕР±Р°РІРёР» Рё СѓР±СЂР°Р»
 		aname = FGT_ATTACK_FEINT;
 		hitReaction = fgt_hit_feint;
 		break;*/
@@ -4218,17 +4218,17 @@ inline void Character::CheckAttackHit()
 			if(s && s[0]) attackAng = float(atof(s));
 		}
 	}
-	//Найдём окружающих персонажей
+	//РќР°Р№РґС‘Рј РѕРєСЂСѓР¶Р°СЋС‰РёС… РїРµСЂСЃРѕРЅР°Р¶РµР№
 	static Supervisor::FindCharacter fndCharacter[MAX_CHARACTERS];
 	long num = 0;
 	if(!location->supervisor.FindCharacters(fndCharacter, num, this, attackDist, attackAng, 0.1f, 0.0f, false, true)) return;
-	//Перебираем всех врагов
+	//РџРµСЂРµР±РёСЂР°РµРј РІСЃРµС… РІСЂР°РіРѕРІ
 	bool isParry = false;
 	bool isHrrrSound = true;
-	bool isUseEnergy = true; // снять энергию один раз boal
+	bool isUseEnergy = true; // СЃРЅСЏС‚СЊ СЌРЅРµСЂРіРёСЋ РѕРґРёРЅ СЂР°Р· boal
 	for(long i = 0; i < num; i++)
 	{
-		//Персонаж
+		//РџРµСЂСЃРѕРЅР°Р¶
 		Supervisor::FindCharacter & fc = fndCharacter[i];
 		if(fc.c->liveValue < 0 || fc.c->deadName || fc.d2 <= 0.0f) continue;
 
@@ -4239,9 +4239,9 @@ inline void Character::CheckAttackHit()
 		}else
 		if(fc.c->fgtCurType == fgt_attack_feint && fc.c->isFeintState)
 		{
-			// boal был баг, нет сброса анимации, соотв нельзя проиграть ролик атаки  -->
+			// boal Р±С‹Р» Р±Р°Рі, РЅРµС‚ СЃР±СЂРѕСЃР° Р°РЅРёРјР°С†РёРё, СЃРѕРѕС‚РІ РЅРµР»СЊР·СЏ РїСЂРѕРёРіСЂР°С‚СЊ СЂРѕР»РёРє Р°С‚Р°РєРё  -->
 			//fc.c->StopFightAnimation();
-			//StopFightAnimation(); //стопим самого НПС
+			//StopFightAnimation(); //СЃС‚РѕРїРёРј СЃР°РјРѕРіРѕ РќРџРЎ
 			// boal <--
 			fc.c->Attack(this, fgt_attack_feintc);
 			fc.c->UpdateAnimation(); // boal
@@ -4268,9 +4268,9 @@ inline void Character::CheckAttackHit()
 			}
 			fc.c->Hit(hitReaction);
 			_CORE_API->Event("Location_CharacterAttack", "iisl", GetID(), fc.c->GetID(), aname, (long)isBlocked);
-			// boal 12.09.06 отжор энергии по факту удара -->
+			// boal 12.09.06 РѕС‚Р¶РѕСЂ СЌРЅРµСЂРіРёРё РїРѕ С„Р°РєС‚Сѓ СѓРґР°СЂР° -->
 			if (isUseEnergy && fgtCurType != fgt_attack_feintc)
-			{// для fgt_attack_feintc идет отжор в анимации, а тут будет "финт", а он стоит 0
+			{// РґР»СЏ fgt_attack_feintc РёРґРµС‚ РѕС‚Р¶РѕСЂ РІ Р°РЅРёРјР°С†РёРё, Р° С‚СѓС‚ Р±СѓРґРµС‚ "С„РёРЅС‚", Р° РѕРЅ СЃС‚РѕРёС‚ 0
 				api->Event("ChrFgtActApply", "is", GetID(), aname); 
 				isUseEnergy = false;
 			}
@@ -4283,7 +4283,7 @@ inline void Character::CheckAttackHit()
 	}
 }
 
-//Найти персонажа в которого попали из пистолета
+//РќР°Р№С‚Рё РїРµСЂСЃРѕРЅР°Р¶Р° РІ РєРѕС‚РѕСЂРѕРіРѕ РїРѕРїР°Р»Рё РёР· РїРёСЃС‚РѕР»РµС‚Р°
 Character * Character::FindGunTarget(float & kDist, bool bOnlyEnemyTest)
 {
 	ENTITY_ID grps;
@@ -4297,7 +4297,7 @@ Character * Character::FindGunTarget(float & kDist, bool bOnlyEnemyTest)
 		if(grp < 0) return null;
 	}
 
-	//Найдём окружающих персонажей
+	//РќР°Р№РґС‘Рј РѕРєСЂСѓР¶Р°СЋС‰РёС… РїРµСЂСЃРѕРЅР°Р¶РµР№
 	static Supervisor::FindCharacter fndCharacter[MAX_CHARACTERS];
 	static long num = 0;
 	if(!location->supervisor.FindCharacters(fndCharacter, num, this, CHARACTER_FIGHT_FIREDIST, CHARACTER_FIGHT_FIREANG, 0.4f, 30.0f, false)) return null;
@@ -4307,7 +4307,7 @@ Character * Character::FindGunTarget(float & kDist, bool bOnlyEnemyTest)
 	{
 		Supervisor::FindCharacter & fc = fndCharacter[i];
 		if(fc.d2 <= 0.0f || fc.c->radius <= 0.0f) continue;
-		//Определяем видимость
+		//РћРїСЂРµРґРµР»СЏРµРј РІРёРґРёРјРѕСЃС‚СЊ
 		if(!VisibleTest(fc.c)) continue;
 		if(bOnlyEnemyTest)
 		{
@@ -4315,7 +4315,7 @@ Character * Character::FindGunTarget(float & kDist, bool bOnlyEnemyTest)
 			if(enemygrpIndex < 0) continue;
 			if (chrGroup->FindRelation(enemygrpIndex, grp).curState != CharactersGroups::rs_enemy) continue;
 		}
-		//Ищем дистанцию с поправками
+		//РС‰РµРј РґРёСЃС‚Р°РЅС†РёСЋ СЃ РїРѕРїСЂР°РІРєР°РјРё
 		fc.d2 = sqrtf(fc.d2);
 		float cs = (fc.dx*sinf(ay) + fc.dz*cosf(ay))/fc.d2;
 		cs *= cs*cs;
@@ -4355,8 +4355,8 @@ void Character::FindNearCharacters(MESSAGE & message)
 	float planeDist = message.Float();
 	bool visTest = message.Long() != 0;
 	bool isSort = message.Long() != 0;
-	//Ищем персонажей
-	//Найдём окружающих персонажей
+	//РС‰РµРј РїРµСЂСЃРѕРЅР°Р¶РµР№
+	//РќР°Р№РґС‘Рј РѕРєСЂСѓР¶Р°СЋС‰РёС… РїРµСЂСЃРѕРЅР°Р¶РµР№
 	static Supervisor::FindCharacter fndCharacter[MAX_CHARACTERS];
 	static long n = 0;
 	if(!location->supervisor.FindCharacters(fndCharacter, n, this, rad, viewAng, planeDist, ax, isSort))
@@ -4371,17 +4371,17 @@ void Character::FindNearCharacters(MESSAGE & message)
 	long i = 0, nn = 0;
 	for(long i = 0, nn = 0; i < n; i++)
 	{
-		//Информация
+		//РРЅС„РѕСЂРјР°С†РёСЏ
 		Supervisor::FindCharacter & fc = fndCharacter[i];
 		Assert(fc.c);
 		if(!fc.c->AttributesPointer) continue;
-		//Определяем видимость
+		//РћРїСЂРµРґРµР»СЏРµРј РІРёРґРёРјРѕСЃС‚СЊ
 		if(visTest && !VisibleTest(fc.c)) continue;
-		//Обновим колшичество
+		//РћР±РЅРѕРІРёРј РєРѕР»С€РёС‡РµСЃС‚РІРѕ
 		nn++;
-		//Элемент массива
+		//Р­Р»РµРјРµРЅС‚ РјР°СЃСЃРёРІР°
 		VDATA * e = (VDATA *)array->GetArrayElement(i);
-		//Устанавливаем поля
+		//РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РїРѕР»СЏ
 		e->Set("index", fc.c->AttributesPointer->GetAttribute("index"));
 		sprintf(buf, "%f", sqrtf(fc.d2));
 		e->Set("dist", buf);
@@ -4395,7 +4395,7 @@ void Character::FindNearCharacters(MESSAGE & message)
 	num->Set(nn);
 }
 
-//Проверить видимость
+//РџСЂРѕРІРµСЂРёС‚СЊ РІРёРґРёРјРѕСЃС‚СЊ
 bool Character::CharactersVisibleTest(MESSAGE & message)
 {
 	Character * chr = (Character *)_CORE_API->GetEntityPointer(&message.EntityID());
@@ -4403,22 +4403,22 @@ bool Character::CharactersVisibleTest(MESSAGE & message)
 	return VisibleTest(chr);
 }
 
-//Проверка видимости двух персонажей
+//РџСЂРѕРІРµСЂРєР° РІРёРґРёРјРѕСЃС‚Рё РґРІСѓС… РїРµСЂСЃРѕРЅР°Р¶РµР№
 bool Character::VisibleTest(Character * chr)
 {
 	if(!chr) return false;
-	//Тест по оси персонажа
+	//РўРµСЃС‚ РїРѕ РѕСЃРё РїРµСЂСЃРѕРЅР°Р¶Р°
 	if(location->VisibleTest(curPos + CVECTOR(0.0f, height*0.9f, 0.0f), chr->curPos + CVECTOR(0.0f, chr->height*0.97f, 0.0f))) return true;
 	if(location->VisibleTest(curPos + CVECTOR(0.0f, height*0.9f, 0.0f), chr->curPos + CVECTOR(0.0f, chr->height*0.67f, 0.0f))) return true;
 	if(location->VisibleTest(curPos + CVECTOR(0.0f, height*0.9f, 0.0f), chr->curPos + CVECTOR(0.0f, chr->height*0.37f, 0.0f))) return true;
-	//Трейсим лучи смещённые от центра
+	//РўСЂРµР№СЃРёРј Р»СѓС‡Рё СЃРјРµС‰С‘РЅРЅС‹Рµ РѕС‚ С†РµРЅС‚СЂР°
 	if(location->VisibleTest(curPos + CVECTOR(0.0f, height*0.9f, 0.0f), chr->curPos + CVECTOR(0.3f*cosf(chr->ay), chr->height*0.8f, -0.3f*sinf(chr->ay)))) return true;
 	if(location->VisibleTest(curPos + CVECTOR(0.0f, height*0.9f, 0.0f), chr->curPos + CVECTOR(-0.3f*cosf(chr->ay), chr->height*0.8f, 0.3f*sinf(chr->ay)))) return true;
-	//Спрятался...
+	//РЎРїСЂСЏС‚Р°Р»СЃСЏ...
 	return false;
 }
 
-//Обновить состояние оружия
+//РћР±РЅРѕРІРёС‚СЊ СЃРѕСЃС‚РѕСЏРЅРёРµ РѕСЂСѓР¶РёСЏ
 void Character::UpdateWeapons()
 {
 	if(isFightWOWps)
@@ -4430,7 +4430,7 @@ void Character::UpdateWeapons()
 }
 
 
-//Получить направление на противника для подскока при ударе
+//РџРѕР»СѓС‡РёС‚СЊ РЅР°РїСЂР°РІР»РµРЅРёРµ РЅР° РїСЂРѕС‚РёРІРЅРёРєР° РґР»СЏ РїРѕРґСЃРєРѕРєР° РїСЂРё СѓРґР°СЂРµ
 CVECTOR Character::GetEnemyDirForImpulse()
 {
 	Character * chr = (Character *)api->GetEntityPointer(&enemyAttack);
@@ -4450,7 +4450,7 @@ CVECTOR Character::GetEnemyDirForImpulse()
 	return CVECTOR(0.0f);
 }
 
-//Получить постфикс
+//РџРѕР»СѓС‡РёС‚СЊ РїРѕСЃС‚С„РёРєСЃ
 const char * Character::GetValueByPrefix(const char * str, const char * pref)
 {
 	if(!str || !str[0]) return 0;
@@ -4546,7 +4546,7 @@ bool Character::CheckObstacle(float fx,float fz, float fzlen)
 	float fHDist;
 	CVECTOR vsrc,vdst;
 
-	// проверим среднюю точку
+	// РїСЂРѕРІРµСЂРёРј СЃСЂРµРґРЅСЋСЋ С‚РѕС‡РєСѓ
 	vsrc = CVECTOR(xmed,50.f,zmed);
 	vdst = CVECTOR(xmed,-50.f,zmed);
 	fTrace = location->GetPtcData().Trace(vsrc,vdst);
@@ -4554,7 +4554,7 @@ bool Character::CheckObstacle(float fx,float fz, float fzlen)
 	fHDist = vsrc.y + fTrace * (vdst.y-vsrc.y) - curPos.y;
 	if( fHDist*fHDist > 0.25f ) return true;
 
-	// проверим начальную точку
+	// РїСЂРѕРІРµСЂРёРј РЅР°С‡Р°Р»СЊРЅСѓСЋ С‚РѕС‡РєСѓ
 	vsrc = CVECTOR(xbeg,50.f,zbeg);
 	vdst = CVECTOR(xbeg,-50.f,zbeg);
 	fTrace = location->GetPtcData().Trace(vsrc,vdst);
@@ -4562,7 +4562,7 @@ bool Character::CheckObstacle(float fx,float fz, float fzlen)
 	fHDist = vsrc.y + fTrace * (vdst.y-vsrc.y) - curPos.y;
 	if( fHDist*fHDist > 0.25f ) return true;
 
-	// проверим конечную точку
+	// РїСЂРѕРІРµСЂРёРј РєРѕРЅРµС‡РЅСѓСЋ С‚РѕС‡РєСѓ
 	vsrc = CVECTOR(xend,50.f,zend);
 	vdst = CVECTOR(xend,-50.f,zend);
 	fTrace = location->GetPtcData().Trace(vsrc,vdst);
@@ -4577,7 +4577,7 @@ long Character::GetRandomIndexByObstacle(ObstacleZone* pZone, long num)
 {
 	long n,m,i,q;
 
-	// найдем количество используемых зон
+	// РЅР°Р№РґРµРј РєРѕР»РёС‡РµСЃС‚РІРѕ РёСЃРїРѕР»СЊР·СѓРµРјС‹С… Р·РѕРЅ
 	q = 0;
 	for( i=0; i<num; i++ )
 		if( pZone[i].use )
@@ -4585,7 +4585,7 @@ long Character::GetRandomIndexByObstacle(ObstacleZone* pZone, long num)
 
 	while(q>0)
 	{
-		// найдем рандомный номер из еще используемых зон
+		// РЅР°Р№РґРµРј СЂР°РЅРґРѕРјРЅС‹Р№ РЅРѕРјРµСЂ РёР· РµС‰Рµ РёСЃРїРѕР»СЊР·СѓРµРјС‹С… Р·РѕРЅ
 		n = rand() % q;
 		m = 0;
 		for(i=0; i<num; i++)
@@ -4595,14 +4595,14 @@ long Character::GetRandomIndexByObstacle(ObstacleZone* pZone, long num)
 			m++;
 		}
 
-		// ничего тут нет
+		// РЅРёС‡РµРіРѕ С‚СѓС‚ РЅРµС‚
 		if( i==num ) break;
 
-		// проверим зону на наличие препятсвий в ней
+		// РїСЂРѕРІРµСЂРёРј Р·РѕРЅСѓ РЅР° РЅР°Р»РёС‡РёРµ РїСЂРµРїСЏС‚СЃРІРёР№ РІ РЅРµР№
 		if( pZone[i].x==0 && pZone[i].z==0 ) return i;
 		if( !CheckObstacle(pZone[i].x,pZone[i].z, pZone[i].dw) ) return i;
 
-		// отметим зону как неиспользуемую
+		// РѕС‚РјРµС‚РёРј Р·РѕРЅСѓ РєР°Рє РЅРµРёСЃРїРѕР»СЊР·СѓРµРјСѓСЋ
 		pZone[i].use = false;
 		q--;
 	}

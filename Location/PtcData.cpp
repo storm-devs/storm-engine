@@ -13,7 +13,7 @@
 #include "..\common_h\matrix.h"
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 PtcData::PtcData()
@@ -58,13 +58,13 @@ bool PtcData::Load(const char * path)
 	char * buf = null;
 	dword size = 0;
 	middle = 0.0f;
-	//Загружаем данные
+	//Р—Р°РіСЂСѓР¶Р°РµРј РґР°РЅРЅС‹Рµ
 	if(!fio->LoadFile(path, &buf, &size))
 	{
 		api->Trace("Ptc(\"%s\") -> file not found", path);
 		return false;
 	}
-	//Проверяем файл на корректность
+	//РџСЂРѕРІРµСЂСЏРµРј С„Р°Р№Р» РЅР° РєРѕСЂСЂРµРєС‚РЅРѕСЃС‚СЊ
 	if(!buf || size < sizeof(PtcHeader))
 	{
 		api->Trace("Ptc(\"%s\") -> invalide file size", path);
@@ -113,35 +113,35 @@ bool PtcData::Load(const char * path)
 		delete buf;
 		return false;
 	}
-	//Формируем структуры данных
+	//Р¤РѕСЂРјРёСЂСѓРµРј СЃС‚СЂСѓРєС‚СѓСЂС‹ РґР°РЅРЅС‹С…
 	data = buf;
 	SFLB_PotectionLoad();
 	return true;
 }
 
-//Функция защиты
+//Р¤СѓРЅРєС†РёСЏ Р·Р°С‰РёС‚С‹
 #ifndef _XBOX
 void __declspec(dllexport) __cdecl PtcData::SFLB_PotectionLoad()
 #else
 void PtcData::SFLB_PotectionLoad()
 #endif
 {
-	//Данные
+	//Р”Р°РЅРЅС‹Рµ
 	char * buf = (char *)data;
 	PtcHeader & hdr = *(PtcHeader *)buf;
-	//Треугольники
+	//РўСЂРµСѓРіРѕР»СЊРЅРёРєРё
 	dword tsize = sizeof(PtcHeader);
 	triangle = (PtcTriangle *)(buf + tsize);
 	numTriangles = hdr.numTriangles;
-	//Вершины
+	//Р’РµСЂС€РёРЅС‹
 	tsize += hdr.numTriangles*sizeof(PtcTriangle);
 	vertex = (PtcVertex *)(buf + tsize);
 	numVerteces = hdr.numVerteces;
-	//Нормали
+	//РќРѕСЂРјР°Р»Рё
 	tsize += hdr.numVerteces*sizeof(PtcVertex);
 	normal = (PtcNormal *)(buf + tsize);
 	numNormals = hdr.numNormals;
-	//Карта для коллижена
+	//РљР°СЂС‚Р° РґР»СЏ РєРѕР»Р»РёР¶РµРЅР°
 	tsize += hdr.numNormals*sizeof(PtcNormal);
 	map = (PtcMap *)(buf + tsize);
 	l = hdr.mapL;
@@ -152,13 +152,13 @@ void PtcData::SFLB_PotectionLoad()
 	ws = (max.x - min.x)/w;
 	tsize += hdr.mapL*hdr.mapW*sizeof(PtcMap);
 	indeces = (word *)(buf + tsize);
-	//Данные для нахождения путей
+	//Р”Р°РЅРЅС‹Рµ РґР»СЏ РЅР°С…РѕР¶РґРµРЅРёСЏ РїСѓС‚РµР№
 	tsize += hdr.numIndeces*sizeof(word);
 	table = (byte *)(buf + tsize);
 	lineSize = hdr.lineSize;
-	//Материалы
+	//РњР°С‚РµСЂРёР°Р»С‹
 	if(hdr.ver == PTC_VERSION) materials = (PtcMaterials *)(table + lineSize*numTriangles);	
-	//Ищим среднюю точку
+	//РС‰РёРј СЃСЂРµРґРЅСЋСЋ С‚РѕС‡РєСѓ
 	middle = 0.0f;
 	for(long i = 0; i < numVerteces; i++)
 	{
@@ -169,15 +169,15 @@ void PtcData::SFLB_PotectionLoad()
 	if(numVerteces) middle *= 1.0f/numVerteces;
 }
 
-//Определить текущию позицию
+//РћРїСЂРµРґРµР»РёС‚СЊ С‚РµРєСѓС‰РёСЋ РїРѕР·РёС†РёСЋ
 long PtcData::FindNode(const CVECTOR & pos, float & y)
 {
-	//Позиция на карте
+	//РџРѕР·РёС†РёСЏ РЅР° РєР°СЂС‚Рµ
 	long mapX = long((pos.x - min.x)/ws);
 	long mapZ = long((pos.z - min.z)/ls);
 	if(mapX < 0 || mapX >= w) return -1;
 	if(mapZ < 0 || mapZ >= l) return -1;
-	//Перебираем треугольники
+	//РџРµСЂРµР±РёСЂР°РµРј С‚СЂРµСѓРіРѕР»СЊРЅРёРєРё
 	PtcMap & m = map[mapZ*w + mapX];
 	long node = -1;
 	float h = 0.0f;
@@ -185,22 +185,22 @@ long PtcData::FindNode(const CVECTOR & pos, float & y)
 	for(long i = 0; i < m.size; i++)
 	{
 		PtcTriangle & trg = triangle[indeces[m.start + i]];
-		//Проверяем поподание в треугольник
+		//РџСЂРѕРІРµСЂСЏРµРј РїРѕРїРѕРґР°РЅРёРµ РІ С‚СЂРµСѓРіРѕР»СЊРЅРёРє
 		long j = 0;
 		for(j = 0; j < 3; j++)
 		{
-			//Вершины ребра
+			//Р’РµСЂС€РёРЅС‹ СЂРµР±СЂР°
 			CVECTOR & vs = *(CVECTOR *)&vertex[trg.i[j]];
 			CVECTOR & ve = *(CVECTOR *)&vertex[trg.i[j == 2 ? 0 : j + 1]];
-			//Нормаль ребра
+			//РќРѕСЂРјР°Р»СЊ СЂРµР±СЂР°
 			float nx = -(ve.z - vs.z);
 			float nz = (ve.x - vs.x);
-			//Если за пределами треугольника прервать
+			//Р•СЃР»Рё Р·Р° РїСЂРµРґРµР»Р°РјРё С‚СЂРµСѓРіРѕР»СЊРЅРёРєР° РїСЂРµСЂРІР°С‚СЊ
 			if(pos.x*nx + pos.z*nz > vs.x*nx + vs.z*nz) break;
 		}
 		if(j == 3)
 		{
-			//Проверим высоту
+			//РџСЂРѕРІРµСЂРёРј РІС‹СЃРѕС‚Сѓ
 			float d = FindHeight(indeces[m.start + i], pos.x, pos.z);
 			if(dist >= 0.0f)
 			{
@@ -221,18 +221,18 @@ long PtcData::FindNode(const CVECTOR & pos, float & y)
 	return node;
 }
 
-//Двирает pos в to, возвращает новый нод
+//Р”РІРёСЂР°РµС‚ pos РІ to, РІРѕР·РІСЂР°С‰Р°РµС‚ РЅРѕРІС‹Р№ РЅРѕРґ
 long PtcData::Move(long curNode, const CVECTOR & to, CVECTOR & pos, long depth)
 {
 	isSlide = false;
 	isBearing = false;
 	if(curNode < 0) return -1;
 	Assert(curNode < numTriangles);
-	//Направление перемещения в 2D
+	//РќР°РїСЂР°РІР»РµРЅРёРµ РїРµСЂРµРјРµС‰РµРЅРёСЏ РІ 2D
 	CVECTOR dir(to.x - pos.x, 0.0f, to.z - pos.z);
 	CVECTOR ps = pos;
 	long firstNode = curNode;
-	//Длинна пути в 2D
+	//Р”Р»РёРЅРЅР° РїСѓС‚Рё РІ 2D
 	float dst = ~dir;
 	if(dst == 0.0f || depth > 32)
 	{
@@ -246,23 +246,23 @@ long PtcData::Move(long curNode, const CVECTOR & to, CVECTOR & pos, long depth)
 	}
 	dst = sqrtf(dst);
 	dir *= 1.0f/dst;
-	//Вертикальная плоскость, проходящая через отрезок перемещения
+	//Р’РµСЂС‚РёРєР°Р»СЊРЅР°СЏ РїР»РѕСЃРєРѕСЃС‚СЊ, РїСЂРѕС…РѕРґСЏС‰Р°СЏ С‡РµСЂРµР· РѕС‚СЂРµР·РѕРє РїРµСЂРµРјРµС‰РµРЅРёСЏ
 	CVECTOR nd(dir.z, 0.0f, -dir.x);
 	float d = (nd | pos);
-	//Трейс пути
-	long fromNode = -2;	//Откуда пришли
+	//РўСЂРµР№СЃ РїСѓС‚Рё
+	long fromNode = -2;	//РћС‚РєСѓРґР° РїСЂРёС€Р»Рё
 	long loopCounter = 0;
 	for(loopCounter = 0; loopCounter < 256; loopCounter++)
 	{
-		//Проверить нахождения точки прибытия на текущем треугольнике
+		//РџСЂРѕРІРµСЂРёС‚СЊ РЅР°С…РѕР¶РґРµРЅРёСЏ С‚РѕС‡РєРё РїСЂРёР±С‹С‚РёСЏ РЅР° С‚РµРєСѓС‰РµРј С‚СЂРµСѓРіРѕР»СЊРЅРёРєРµ
 		word * trg = triangle[curNode].i;
 		long j = 0;
 		for(j = 0; j < 3; j++)
 		{
-			//Вершины ребра
+			//Р’РµСЂС€РёРЅС‹ СЂРµР±СЂР°
 			CVECTOR & vs = *(CVECTOR *)&vertex[trg[j]];
 			CVECTOR & ve = *(CVECTOR *)&vertex[trg[j == 2 ? 0 : j + 1]];
-			//Нормаль ребра
+			//РќРѕСЂРјР°Р»СЊ СЂРµР±СЂР°
 			float nx = -(ve.z - vs.z);
 			float nz = (ve.x - vs.x);
 			float nl = sqrtf(nx*nx + nz*nz);
@@ -270,14 +270,14 @@ long PtcData::Move(long curNode, const CVECTOR & to, CVECTOR & pos, long depth)
 			if(!nl) continue;
 			nx /= nl; nz /= nl;
 
-			//Если за пределами треугольника прервать
+			//Р•СЃР»Рё Р·Р° РїСЂРµРґРµР»Р°РјРё С‚СЂРµСѓРіРѕР»СЊРЅРёРєР° РїСЂРµСЂРІР°С‚СЊ
 			if(to.x*nx + to.z*nz > vs.x*nx + vs.z*nz) break;
 		}
 		if(j == 3)
 		{
-			//Можно переместиться
+			//РњРѕР¶РЅРѕ РїРµСЂРµРјРµСЃС‚РёС‚СЊСЃСЏ
 			pos = to;
-			//Проверим высоту
+			//РџСЂРѕРІРµСЂРёРј РІС‹СЃРѕС‚Сѓ
 			float h = FindHeight(curNode, pos.x, pos.z);
 			if(pos.y < h)
 			{
@@ -286,36 +286,36 @@ long PtcData::Move(long curNode, const CVECTOR & to, CVECTOR & pos, long depth)
 			}
 			return curNode;
 		}
-		//Найти ребро через которое идём дальше
+		//РќР°Р№С‚Рё СЂРµР±СЂРѕ С‡РµСЂРµР· РєРѕС‚РѕСЂРѕРµ РёРґС‘Рј РґР°Р»СЊС€Рµ
 		short * nb = triangle[curNode].nb;
 		long curEdge = -1;
 		CVECTOR pnt;
 		for(j = 0; j < 3; j++)
 		{
-			//Пропустим направление откуда пришли
+			//РџСЂРѕРїСѓСЃС‚РёРј РЅР°РїСЂР°РІР»РµРЅРёРµ РѕС‚РєСѓРґР° РїСЂРёС€Р»Рё
 			if(nb[j] == fromNode) continue;
-			//Вершины ребра
+			//Р’РµСЂС€РёРЅС‹ СЂРµР±СЂР°
 			CVECTOR & vs = *(CVECTOR *)&vertex[trg[j]];
 			CVECTOR & ve = *(CVECTOR *)&vertex[trg[j == 2 ? 0 : j + 1]];
-			//Дистанции до прямой перемещения
+			//Р”РёСЃС‚Р°РЅС†РёРё РґРѕ РїСЂСЏРјРѕР№ РїРµСЂРµРјРµС‰РµРЅРёСЏ
 			float d1 = (nd | vs) - d;
 			float d2 = (nd | ve) - d;
 			if(d1*d2 > 0.0f) continue;
 			if(d1 - d2 == 0.0f) continue;
-			//Пересерает линию
+			//РџРµСЂРµСЃРµСЂР°РµС‚ Р»РёРЅРёСЋ
 			double k = d1/double(d1 - d2);
 			if(k < 0.0f) k = 0.0f;
 			if(k > 1.0f) k = 1.0f;
-			//Точка пересечения
+			//РўРѕС‡РєР° РїРµСЂРµСЃРµС‡РµРЅРёСЏ
 			CVECTOR p;
 			//k += 0.000000001;
 			p.x = float(vs.x + (ve.x - vs.x)*k);
 			p.y = float(vs.y + (ve.y - vs.y)*k);
 			p.z = float(vs.z + (ve.z - vs.z)*k);
-			//Проверка попадания на путь
+			//РџСЂРѕРІРµСЂРєР° РїРѕРїР°РґР°РЅРёСЏ РЅР° РїСѓС‚СЊ
 			if((d1 = (dir | (p - ps))) < -0.00001f) continue;
 			if((d2 = (dir | (to - p))) < -0.00001f) continue;
-			//Нашли пересечение
+			//РќР°С€Р»Рё РїРµСЂРµСЃРµС‡РµРЅРёРµ
 			if(nb[j] >= 0)
 			{
 				curEdge = j;
@@ -335,32 +335,32 @@ long PtcData::Move(long curNode, const CVECTOR & to, CVECTOR & pos, long depth)
 			Assert(false);
 			for(j = 0; j < 3; j++)
 			{
-				//Пропустим направление откуда пришли
+				//РџСЂРѕРїСѓСЃС‚РёРј РЅР°РїСЂР°РІР»РµРЅРёРµ РѕС‚РєСѓРґР° РїСЂРёС€Р»Рё
 				if(nb[j] == fromNode) continue;
-				//Вершины ребра
+				//Р’РµСЂС€РёРЅС‹ СЂРµР±СЂР°
 				CVECTOR & vs = *(CVECTOR *)&vertex[trg[j]];
 				CVECTOR & ve = *(CVECTOR *)&vertex[trg[j == 2 ? 0 : j + 1]];
-				//Дистанции до прямой перемещения
+				//Р”РёСЃС‚Р°РЅС†РёРё РґРѕ РїСЂСЏРјРѕР№ РїРµСЂРµРјРµС‰РµРЅРёСЏ
 				float d1 = (nd | vs) - d;
 				float d2 = (nd | ve) - d;
 				if(d1*d2 > 0.0f) continue;
 				if(d1 - d2 == 0.0f) continue;
-				//Пересерает линию
+				//РџРµСЂРµСЃРµСЂР°РµС‚ Р»РёРЅРёСЋ
 				double k = d1/double(d1 - d2);
 				if(k < 0.0f) k = 0.0f;
 				if(k > 1.0f) k = 1.0f;
-				//Точка пересечения
+				//РўРѕС‡РєР° РїРµСЂРµСЃРµС‡РµРЅРёСЏ
 				CVECTOR p;
 				//k += 0.000000001;
 				p.x = float(vs.x + (ve.x - vs.x)*k);
 				p.y = float(vs.y + (ve.y - vs.y)*k);
 				p.z = float(vs.z + (ve.z - vs.z)*k);
-				//Проверка попадания на путь
+				//РџСЂРѕРІРµСЂРєР° РїРѕРїР°РґР°РЅРёСЏ РЅР° РїСѓС‚СЊ
 				d1 = dir | (p - ps); 
 				d2 = dir | (to - p);
 				if(d1 < -0.00001f) continue;
 				if(d2 < -0.00001f) continue;
-				//Нашли пересечение
+				//РќР°С€Р»Рё РїРµСЂРµСЃРµС‡РµРЅРёРµ
 				if(nb[j] >= 0)
 				{
 					curEdge = j;
@@ -378,35 +378,35 @@ long PtcData::Move(long curNode, const CVECTOR & to, CVECTOR & pos, long depth)
 
 		if(nb[curEdge] >= 0)
 		{
-			//Переходим на следующий нод и продолжаем движение
+			//РџРµСЂРµС…РѕРґРёРј РЅР° СЃР»РµРґСѓСЋС‰РёР№ РЅРѕРґ Рё РїСЂРѕРґРѕР»Р¶Р°РµРј РґРІРёР¶РµРЅРёРµ
 			//pos = pnt;
 			fromNode = curNode;
 			curNode = nb[curEdge];
 		}else{
-			//Ребро вдоль которого надо скользить
+			//Р РµР±СЂРѕ РІРґРѕР»СЊ РєРѕС‚РѕСЂРѕРіРѕ РЅР°РґРѕ СЃРєРѕР»СЊР·РёС‚СЊ
 			CVECTOR & vs = *(CVECTOR *)&vertex[trg[curEdge]];
 			CVECTOR & ve = *(CVECTOR *)&vertex[trg[curEdge == 2 ? 0 : curEdge + 1]];
-			//Нормаль ребра
+			//РќРѕСЂРјР°Р»СЊ СЂРµР±СЂР°
 			float nx = -(ve.z - vs.z);
 			float nz = (ve.x - vs.x);
-			//Нормализуем
+			//РќРѕСЂРјР°Р»РёР·СѓРµРј
 			float d = nx*nx + nz*nz;
 			if(d == 0.0f)
 			{
-				//Аномальная ситуация
+				//РђРЅРѕРјР°Р»СЊРЅР°СЏ СЃРёС‚СѓР°С†РёСЏ
 				api->Trace("Patch have some problem -> triangle edge by zero length");
-				//Просто залипаем
+				//РџСЂРѕСЃС‚Рѕ Р·Р°Р»РёРїР°РµРј
 				pos = pnt;
 				return curNode;
 			}
 			d = 1.0f/sqrtf(d); nx *= d; nz *= d;
-			//Вектор выхода за пределы треугольника
+			//Р’РµРєС‚РѕСЂ РІС‹С…РѕРґР° Р·Р° РїСЂРµРґРµР»С‹ С‚СЂРµСѓРіРѕР»СЊРЅРёРєР°
 			CVECTOR sld = to - pnt; sld.y = 0.0f;
-			//Дистанция скольжения
+			//Р”РёСЃС‚Р°РЅС†РёСЏ СЃРєРѕР»СЊР¶РµРЅРёСЏ
 			d = nx*sld.x + nz*sld.z;
 			if(d > 0.0f) d += 0.001f;
 			if(d < 0.0f) d -= 0.001f;
-			//Скользим
+			//РЎРєРѕР»СЊР·РёРј
 			CVECTOR newPos(to.x - nx*d, to.y, to.z - nz*d);
 			if(newPos.x == to.x && newPos.z == to.z)
 			{
@@ -443,7 +443,7 @@ long PtcData::Move(long curNode, const CVECTOR & to, CVECTOR & pos, long depth)
 	return -1;
 }
 
-//Получить нормаль к ноду
+//РџРѕР»СѓС‡РёС‚СЊ РЅРѕСЂРјР°Р»СЊ Рє РЅРѕРґСѓ
 void PtcData::GetNodeNormal(long curNode, CVECTOR & n)
 {
 	if(curNode >= 0)
@@ -456,7 +456,7 @@ void PtcData::GetNodeNormal(long curNode, CVECTOR & n)
 	}
 }
 
-//Найти направление пути
+//РќР°Р№С‚Рё РЅР°РїСЂР°РІР»РµРЅРёРµ РїСѓС‚Рё
 bool PtcData::FindPathDir(long curNode, const CVECTOR & cur, long toNode, const CVECTOR & to, long & node, CVECTOR & toPos)
 {
 	numSteps = 0;
@@ -466,64 +466,64 @@ bool PtcData::FindPathDir(long curNode, const CVECTOR & cur, long toNode, const 
 	return false;
 }
 
-//Найти направление пути
+//РќР°Р№С‚Рё РЅР°РїСЂР°РІР»РµРЅРёРµ РїСѓС‚Рё
 bool PtcData::FindPathDir(long step, long curNode, const CVECTOR & cur, long toNode, const CVECTOR & to, long & node, CVECTOR & pos)
 {
 	if(step > numSteps) numSteps = step;
 	Assert(curNode >= 0);
 	Assert(toNode >= 0);
-	//Если дошли, то вернём почку назначения
+	//Р•СЃР»Рё РґРѕС€Р»Рё, С‚Рѕ РІРµСЂРЅС‘Рј РїРѕС‡РєСѓ РЅР°Р·РЅР°С‡РµРЅРёСЏ
 	if(curNode == toNode || step >= PTCDATA_MAXSTEPS)
 	{
 		pos = to;
 		node = toNode;
 		return true;
 	}
-	//Определим в каком направлении двигаться (ребро)
+	//РћРїСЂРµРґРµР»РёРј РІ РєР°РєРѕРј РЅР°РїСЂР°РІР»РµРЅРёРё РґРІРёРіР°С‚СЊСЃСЏ (СЂРµР±СЂРѕ)
 	Assert(curNode < numTriangles);
 	Assert(toNode < numTriangles);
 	byte * line = table + curNode*lineSize;
 	byte v = (line[toNode >> 2] >> ((toNode & 3)*2)) & 3;
 	if(v == 3) return false;
-	//Ребро
+	//Р РµР±СЂРѕ
 	CVECTOR & vs = *(CVECTOR *)&vertex[triangle[curNode].i[v]];
 	CVECTOR & ve = *(CVECTOR *)&vertex[triangle[curNode].i[v + 1 < 3 ? v + 1 : 0]];
-	//Точка на ребре
+	//РўРѕС‡РєР° РЅР° СЂРµР±СЂРµ
 	CVECTOR p = FindEdgePoint(vs, ve, cur, to);
-	//Проанализируем дальнейший путь
+	//РџСЂРѕР°РЅР°Р»РёР·РёСЂСѓРµРј РґР°Р»СЊРЅРµР№С€РёР№ РїСѓС‚СЊ
 	long nb = triangle[curNode].nb[v];
 	if(nb < 0) return false;
 	if(!FindPathDir(step + 1, nb, p, toNode, to, node, pos)) return false;
-	//Уточнёная точка на ребре
+	//РЈС‚РѕС‡РЅС‘РЅР°СЏ С‚РѕС‡РєР° РЅР° СЂРµР±СЂРµ
 	pos = FindEdgePoint(vs, ve, cur, pos);
 	stepPos[step] = pos;
 	node = nb;
 	return true;
 }
 
-//Найти точку на ребре
+//РќР°Р№С‚Рё С‚РѕС‡РєСѓ РЅР° СЂРµР±СЂРµ
 CVECTOR PtcData::FindEdgePoint(const CVECTOR & vs, const CVECTOR & ve, const CVECTOR & cur, const CVECTOR & to)
 {
 	CVECTOR pos;
-	//Нормаль к ребру
+	//РќРѕСЂРјР°Р»СЊ Рє СЂРµР±СЂСѓ
 	CVECTOR edge = ve - vs; edge.y = 0.0f;
 	CVECTOR nrm(edge.z, 0.0f, -edge.x);
 	float nl = ~nrm;
 	if(nl > 0.0f)
 	{
-		//Плоскость
+		//РџР»РѕСЃРєРѕСЃС‚СЊ
 		nrm *= 1.0f/sqrtf(nl);
 		float dist = nrm | vs;
-		//Положение точки назначения
+		//РџРѕР»РѕР¶РµРЅРёРµ С‚РѕС‡РєРё РЅР°Р·РЅР°С‡РµРЅРёСЏ
 		float dTo = (to | nrm) - dist;
 		if(dTo <= 0.0f)
 		{
-			//Точка назначения за ребром
+			//РўРѕС‡РєР° РЅР°Р·РЅР°С‡РµРЅРёСЏ Р·Р° СЂРµР±СЂРѕРј
 			float dCur = (cur | nrm) - dist;
 			if(dCur - dTo == 0.0f) return (vs + ve)*0.5f;			
 			float k = dCur/(dCur - dTo);
 			pos = cur + (to - cur)*k;
-			//Ограничиваем точку перемещения
+			//РћРіСЂР°РЅРёС‡РёРІР°РµРј С‚РѕС‡РєСѓ РїРµСЂРµРјРµС‰РµРЅРёСЏ
 			CVECTOR p = vs + (ve - vs)*0.001f;
 			k = (ve - p) | (pos - p);
 			if(k <= 0.0f) pos = p;
@@ -531,13 +531,13 @@ CVECTOR PtcData::FindEdgePoint(const CVECTOR & vs, const CVECTOR & ve, const CVE
 			k = (vs - p) | (pos - p);
 			if(k <= 0.0f) pos = p;
 		}else{
-			//Точка назначения перед ребром
+			//РўРѕС‡РєР° РЅР°Р·РЅР°С‡РµРЅРёСЏ РїРµСЂРµРґ СЂРµР±СЂРѕРј
 			if(((to - cur) | edge) >= 0.0f)
 			{
-				//Выбираем конечную точку ребра
+				//Р’С‹Р±РёСЂР°РµРј РєРѕРЅРµС‡РЅСѓСЋ С‚РѕС‡РєСѓ СЂРµР±СЂР°
 				pos = vs + (ve - vs)*0.99f;
 			}else{
-				//Выбираем начальную точку ребра
+				//Р’С‹Р±РёСЂР°РµРј РЅР°С‡Р°Р»СЊРЅСѓСЋ С‚РѕС‡РєСѓ СЂРµР±СЂР°
 				pos = vs + (ve - vs)*0.01f;
 			}
 		}
@@ -547,10 +547,10 @@ CVECTOR PtcData::FindEdgePoint(const CVECTOR & vs, const CVECTOR & ve, const CVE
 	return pos;	
 }
 
-//Найти пересечение с патчём
+//РќР°Р№С‚Рё РїРµСЂРµСЃРµС‡РµРЅРёРµ СЃ РїР°С‚С‡С‘Рј
 float PtcData::Trace(const CVECTOR & s, const CVECTOR & d)
 {
-	//Область описывающая отрезок
+	//РћР±Р»Р°СЃС‚СЊ РѕРїРёСЃС‹РІР°СЋС‰Р°СЏ РѕС‚СЂРµР·РѕРє
 	float k = 2.0f;
 	CVECTOR pmin = s;
 	if(pmin.x > d.x) pmin.x = d.x;
@@ -560,12 +560,12 @@ float PtcData::Trace(const CVECTOR & s, const CVECTOR & d)
 	if(pmax.x < d.x) pmax.x = d.x;
 	if(pmax.y < d.y) pmax.y = d.y;
 	if(pmax.z < d.z) pmax.z = d.z;
-	//Координаты на карте
+	//РљРѕРѕСЂРґРёРЅР°С‚С‹ РЅР° РєР°СЂС‚Рµ
 	long mnX = long((pmin.x - min.x)/ws);
 	long mnZ = long((pmin.z - min.z)/ls);
 	long mxX = long((pmax.x - min.x)/ws);
 	long mxZ = long((pmax.z - min.z)/ls);
-	//Проходимся по всем треугольникам в зоне
+	//РџСЂРѕС…РѕРґРёРјСЃСЏ РїРѕ РІСЃРµРј С‚СЂРµСѓРіРѕР»СЊРЅРёРєР°Рј РІ Р·РѕРЅРµ
 	for(long zi = mnZ; zi <= mxZ; zi++)
 	{
 		if(zi < 0 || zi >= l) continue;
@@ -584,29 +584,29 @@ float PtcData::Trace(const CVECTOR & s, const CVECTOR & d)
 	return k;
 }
 
-//Проверить пересечение треугольника с отрезком
+//РџСЂРѕРІРµСЂРёС‚СЊ РїРµСЂРµСЃРµС‡РµРЅРёРµ С‚СЂРµСѓРіРѕР»СЊРЅРёРєР° СЃ РѕС‚СЂРµР·РєРѕРј
 float PtcData::Trace(PtcTriangle & trg, const CVECTOR & s, const CVECTOR & d)
 {
-	//Нормаль к треугольнику
+	//РќРѕСЂРјР°Р»СЊ Рє С‚СЂРµСѓРіРѕР»СЊРЅРёРєСѓ
 	CVECTOR & n = *(CVECTOR *)&normal[trg.n];
-	//Дистанция до треугольника
+	//Р”РёСЃС‚Р°РЅС†РёСЏ РґРѕ С‚СЂРµСѓРіРѕР»СЊРЅРёРєР°
 	float dst = n | *(CVECTOR *)&vertex[trg.i[0]];
-	//Дистанции отрезка до плоскости
+	//Р”РёСЃС‚Р°РЅС†РёРё РѕС‚СЂРµР·РєР° РґРѕ РїР»РѕСЃРєРѕСЃС‚Рё
 	float d1 = (n | s) - dst;
 	float d2 = (n | d) - dst;
-	//Если не пересекаем плоскость, то непопали
+	//Р•СЃР»Рё РЅРµ РїРµСЂРµСЃРµРєР°РµРј РїР»РѕСЃРєРѕСЃС‚СЊ, С‚Рѕ РЅРµРїРѕРїР°Р»Рё
 	if(d1*d2 > 0.0f) return 2.0f;
-	//Точка пересечения луча с плоскостью
+	//РўРѕС‡РєР° РїРµСЂРµСЃРµС‡РµРЅРёСЏ Р»СѓС‡Р° СЃ РїР»РѕСЃРєРѕСЃС‚СЊСЋ
 	float k;
 	if(d1 - d2 != 0.0f) k = d1/(d1 - d2); else k = 0.0f;
 	if(k < 0.0f) k = 0.0f;
 	if(k > 1.0f) k = 1.0f;
 	CVECTOR pnt = s + (d - s)*k;
-	//Вершины
+	//Р’РµСЂС€РёРЅС‹
 	CVECTOR & v0 = *(CVECTOR *)&vertex[trg.i[0]];
 	CVECTOR & v1 = *(CVECTOR *)&vertex[trg.i[1]];
 	CVECTOR & v2 = *(CVECTOR *)&vertex[trg.i[2]];
-	//Проверим нахождение точки в треугольнике
+	//РџСЂРѕРІРµСЂРёРј РЅР°С…РѕР¶РґРµРЅРёРµ С‚РѕС‡РєРё РІ С‚СЂРµСѓРіРѕР»СЊРЅРёРєРµ
 	CVECTOR en;
 	en = (v1 - v0) ^ n;
 	if((en | pnt) - (en | v0) > 0.0f) return 2.0f;
@@ -614,11 +614,11 @@ float PtcData::Trace(PtcTriangle & trg, const CVECTOR & s, const CVECTOR & d)
 	if((en | pnt) - (en | v1) > 0.0f) return 2.0f;
 	en = (v0 - v2) ^ n;
 	if((en | pnt) - (en | v2) > 0.0f) return 2.0f;
-	//Попали
+	//РџРѕРїР°Р»Рё
 	return k;
 }
 
-//Найти силу отталкивающую от краёв
+//РќР°Р№С‚Рё СЃРёР»Сѓ РѕС‚С‚Р°Р»РєРёРІР°СЋС‰СѓСЋ РѕС‚ РєСЂР°С‘РІ
 void PtcData::FindForce(long curNode, CVECTOR & force)
 {
 	force = 0.0f;
@@ -627,25 +627,25 @@ void PtcData::FindForce(long curNode, CVECTOR & force)
 	for(long i = 0; i < 3; i++)
 	{
 		if(nb[i] >= 0) continue;
-		//Нормаль к ребру
+		//РќРѕСЂРјР°Р»СЊ Рє СЂРµР±СЂСѓ
 		long s = triangle[curNode].i[i];
 		long e = triangle[curNode].i[i < 2 ? i + 1 : 0];
-		//Вершины ребра
+		//Р’РµСЂС€РёРЅС‹ СЂРµР±СЂР°
 		CVECTOR & vs = *(CVECTOR *)&vertex[s];
 		CVECTOR & ve = *(CVECTOR *)&vertex[e];
-		//Нормаль ребра
+		//РќРѕСЂРјР°Р»СЊ СЂРµР±СЂР°
 		float nx = (ve.z - vs.z);
 		float nz = -(ve.x - vs.x);
 		float nl = sqrtf(nx*nx + nz*nz);
 		if(!nl) continue;
 		nx /= nl; nz /= nl;
-		//Сила отталкивания
+		//РЎРёР»Р° РѕС‚С‚Р°Р»РєРёРІР°РЅРёСЏ
 		force.x += nx;
 		force.z += nz;
 	}
 }
 
-//Получить материал нода
+//РџРѕР»СѓС‡РёС‚СЊ РјР°С‚РµСЂРёР°Р» РЅРѕРґР°
 const char * PtcData::GetMaterial(long curNode)
 {
 	if(!materials) return null;
@@ -655,7 +655,7 @@ const char * PtcData::GetMaterial(long curNode)
 	return materials->material[mtl];
 }
 
-//Получить треугольники пересекающии данный квадрат
+//РџРѕР»СѓС‡РёС‚СЊ С‚СЂРµСѓРіРѕР»СЊРЅРёРєРё РїРµСЂРµСЃРµРєР°СЋС‰РёРё РґР°РЅРЅС‹Р№ РєРІР°РґСЂР°С‚
 PtcData::Triangle * PtcData::GetTriangles(float x, float z, float sx, float sz, long & num)
 {
 	num = 0;
@@ -683,7 +683,7 @@ PtcData::Triangle * PtcData::GetTriangles(float x, float z, float sx, float sz, 
 	return ctriangle;
 }
 
-//Добавить треугольник в буфер
+//Р”РѕР±Р°РІРёС‚СЊ С‚СЂРµСѓРіРѕР»СЊРЅРёРє РІ Р±СѓС„РµСЂ
 inline void PtcData::AddClTriangle(long i)
 {
 	for(long j = 0; j < numClTriangles; j++)
@@ -710,7 +710,7 @@ inline void PtcData::AddClTriangle(long i)
 	ct.n.z = normal[triangle[i].n].z;
 }
 
-//Вычислить высоту точки на плоскосте треугольника
+//Р’С‹С‡РёСЃР»РёС‚СЊ РІС‹СЃРѕС‚Сѓ С‚РѕС‡РєРё РЅР° РїР»РѕСЃРєРѕСЃС‚Рµ С‚СЂРµСѓРіРѕР»СЊРЅРёРєР°
 inline float PtcData::FindHeight(long trgID, float x, float z)
 {
 	Assert(trgID >= 0 && trgID < numTriangles);
@@ -720,7 +720,7 @@ inline float PtcData::FindHeight(long trgID, float x, float z)
 	return d;
 }
 
-//Отладочная отрисовка
+//РћС‚Р»Р°РґРѕС‡РЅР°СЏ РѕС‚СЂРёСЃРѕРІРєР°
 void PtcData::DebugDraw(VDX8RENDER * rs, float dltTime)
 {
 	if(numTriangles <= 0) return;

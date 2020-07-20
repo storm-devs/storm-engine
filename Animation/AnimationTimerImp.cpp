@@ -5,7 +5,7 @@
 //--------------------------------------------------------------------------------------------
 //	AnimationTimerImp
 //--------------------------------------------------------------------------------------------
-//	Реализация таймера анимации
+//	Р РµР°Р»РёР·Р°С†РёСЏ С‚Р°Р№РјРµСЂР° Р°РЅРёРјР°С†РёРё
 //============================================================================================
 
 #include "AnimationTimerImp.h"
@@ -13,7 +13,7 @@
 
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 AnimationTimerImp::AnimationTimerImp()
@@ -33,7 +33,7 @@ AnimationTimerImp::~AnimationTimerImp()
 {
 }
 
-//Установить анимацию
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р°РЅРёРјР°С†РёСЋ
 void AnimationTimerImp::SetAnimation(AnimationImp * animation)
 {
 	Assert(!ani && animation);
@@ -44,7 +44,7 @@ void AnimationTimerImp::SetAnimation(AnimationImp * animation)
 //AnimationTimer
 //--------------------------------------------------------------------------------------------	
 
-//Запустить таймер (время в миллисекундах)
+//Р—Р°РїСѓСЃС‚РёС‚СЊ С‚Р°Р№РјРµСЂ (РІСЂРµРјСЏ РІ РјРёР»Р»РёСЃРµРєСѓРЅРґР°С…)
 void AnimationTimerImp::Start(float time, float startTime)
 {
 	if(startTime < 0) startTime = 0;
@@ -61,14 +61,14 @@ void AnimationTimerImp::Start(float time, float startTime)
 	Execute(0);
 }
 
-//Остановить таймер
+//РћСЃС‚Р°РЅРѕРІРёС‚СЊ С‚Р°Р№РјРµСЂ
 void AnimationTimerImp::Stop()
 {
 	curTime = 0.0f;
 	kTime = 0.0f;
 	value = 1.0f;
 	long i = 0;
-	//Устанавливаем конечные значения и останавливаем анимацию, где просят
+	//РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РєРѕРЅРµС‡РЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ Рё РѕСЃС‚Р°РЅР°РІР»РёРІР°РµРј Р°РЅРёРјР°С†РёСЋ, РіРґРµ РїСЂРѕСЃСЏС‚
 	for(i = 0; i < ANI_MAX_ACTIONS; i++)
 	{
 		if(playersMask[i >> 5] & (1 << (i & 31)))
@@ -82,7 +82,7 @@ void AnimationTimerImp::Stop()
 			}
 		}
 	}
-	//Отправим событие
+	//РћС‚РїСЂР°РІРёРј СЃРѕР±С‹С‚РёРµ
 	for(i = 0; i < ANI_MAX_ACTIONS; i++)
 	{
 		if(&ani->Timer(i) == this) break;
@@ -91,7 +91,7 @@ void AnimationTimerImp::Stop()
 	ani->AteTimerstop(i);
 }
 
-//Сбросить состояние таймера
+//РЎР±СЂРѕСЃРёС‚СЊ СЃРѕСЃС‚РѕСЏРЅРёРµ С‚Р°Р№РјРµСЂР°
 void AnimationTimerImp::ResetTimer()
 {
 	curTime = 0.0f;
@@ -104,19 +104,19 @@ void AnimationTimerImp::ResetTimer()
 	}
 }
 
-//Узнать, работает ли таймер
+//РЈР·РЅР°С‚СЊ, СЂР°Р±РѕС‚Р°РµС‚ Р»Рё С‚Р°Р№РјРµСЂ
 bool AnimationTimerImp::IsWork()
 {
 	return kTime != 0.0f;
 }
 
-//Получить текущее значение
+//РџРѕР»СѓС‡РёС‚СЊ С‚РµРєСѓС‰РµРµ Р·РЅР°С‡РµРЅРёРµ
 float AnimationTimerImp::GetCurrent() const
 {
 	return value;
 }
 
-//Получить заданное время работы таймера
+//РџРѕР»СѓС‡РёС‚СЊ Р·Р°РґР°РЅРЅРѕРµ РІСЂРµРјСЏ СЂР°Р±РѕС‚С‹ С‚Р°Р№РјРµСЂР°
 float AnimationTimerImp::GetTime() const
 {
 	return (kTime > 0.0f) ? 1.0f/kTime : 0.0f;
@@ -124,13 +124,13 @@ float AnimationTimerImp::GetTime() const
 
 
 
-//Назначить ActionPlayer для блендинга (isInverse == false -> kBlend = [0..1])
+//РќР°Р·РЅР°С‡РёС‚СЊ ActionPlayer РґР»СЏ Р±Р»РµРЅРґРёРЅРіР° (isInverse == false -> kBlend = [0..1])
 void AnimationTimerImp::SetPlayer(long playerIndex, bool isInverse)
 {
 	Assert(playerIndex >= 0 || playerIndex < ANI_MAX_ACTIONS);
-	//Устанавливаем себе
+	//РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј СЃРµР±Рµ
 	playersMask[playerIndex >> 5] |= 1 << (playerIndex & 31);
-	//Установим чего использовать
+	//РЈСЃС‚Р°РЅРѕРІРёРј С‡РµРіРѕ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ
 	if(isInverse)
 	{
 		inverseMask[playerIndex >> 5] |= 1 << (playerIndex & 31);
@@ -143,12 +143,12 @@ void AnimationTimerImp::SetPlayer(long playerIndex, bool isInverse)
 void AnimationTimerImp::ResetPlayer(long playerIndex)
 {
 	Assert(playerIndex >= 0 || playerIndex < ANI_MAX_ACTIONS);
-	//Сбросим флажёк использования
+	//РЎР±СЂРѕСЃРёРј С„Р»Р°Р¶С‘Рє РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ
 	playersMask[playerIndex >> 5] &= ~(1 << (playerIndex & 31));
 	((ActionPlayerImp *)&ani->Player(playerIndex))->TimerBlend() = 1.0f;
 }
 
-//Узнать, используется ли ActionPlayer
+//РЈР·РЅР°С‚СЊ, РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ Р»Рё ActionPlayer
 bool AnimationTimerImp::IsUsedPlayer(long playerIndex, bool * isInverse)
 {
 	Assert(playerIndex >= 0 || playerIndex < ANI_MAX_ACTIONS);
@@ -161,7 +161,7 @@ bool AnimationTimerImp::IsUsedPlayer(long playerIndex, bool * isInverse)
 	return false;
 }
 
-//Получить велечину блендинга для плеера (если не используется то 1.0f)
+//РџРѕР»СѓС‡РёС‚СЊ РІРµР»РµС‡РёРЅСѓ Р±Р»РµРЅРґРёРЅРіР° РґР»СЏ РїР»РµРµСЂР° (РµСЃР»Рё РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ С‚Рѕ 1.0f)
 float AnimationTimerImp::GetPlayerValue(long playerIndex)
 {
 	Assert(playerIndex >= 0 || playerIndex < ANI_MAX_ACTIONS);
@@ -179,16 +179,16 @@ float AnimationTimerImp::GetPlayerValue(long playerIndex)
 //AnimationTimerImp
 //--------------------------------------------------------------------------------------------	
 
-//Исполнить
+//РСЃРїРѕР»РЅРёС‚СЊ
 void AnimationTimerImp::Execute(long dltTime)
 {
 	if(kTime != 0.0f)
 	{
-		//Вычисляем
+		//Р’С‹С‡РёСЃР»СЏРµРј
 		curTime += dltTime*0.001f;
 		value = curTime*kTime;
 		if(value > 1.0f) value = 1.0f;
-		//Расставляем коэфициенты блендинга
+		//Р Р°СЃСЃС‚Р°РІР»СЏРµРј РєРѕСЌС„РёС†РёРµРЅС‚С‹ Р±Р»РµРЅРґРёРЅРіР°
 		for(long i = 0; i < ANI_MAX_ACTIONS; i++)
 		{
 			if(playersMask[i >> 5] & (1 << (i & 31)))
@@ -201,7 +201,7 @@ void AnimationTimerImp::Execute(long dltTime)
 				}
 			}
 		}
-		//Может пора остановиться		
+		//РњРѕР¶РµС‚ РїРѕСЂР° РѕСЃС‚Р°РЅРѕРІРёС‚СЊСЃСЏ		
 		if(value == 1.0f) Stop();
 	}
 }

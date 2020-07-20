@@ -59,11 +59,11 @@ void BIManSign::Draw()
 		UpdateCommandList();
 		m_bMakeVertexFill = true;
 	} else {
-		// проверка измеенения каках либо данных
+		// РїСЂРѕРІРµСЂРєР° РёР·РјРµРµРЅРµРЅРёСЏ РєР°РєР°С… Р»РёР±Рѕ РґР°РЅРЅС‹С…
 		CheckDataChange();
 	}
 
-	// перезаполнение буфера
+	// РїРµСЂРµР·Р°РїРѕР»РЅРµРЅРёРµ Р±СѓС„РµСЂР°
 	if( m_bMakeVertexFill )
 	{
 		FillVertexBuffer();
@@ -382,7 +382,7 @@ long BIManSign::CalculateManQuantity()
 {
 	long n;
 
-	// сброс всех
+	// СЃР±СЂРѕСЃ РІСЃРµС…
 	m_nManQuantity = 0;
 	for( n=0; n<MAX_MAN_QUANTITY; n++ )
 	{

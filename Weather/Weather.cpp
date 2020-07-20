@@ -82,7 +82,7 @@ void WEATHER::Execute(dword Delta_Time)
 	{
 		float fOldTimer = fFloats[whf_time_counter];
 		fFloats[whf_time_counter] += api->GetDeltaTime() * fFloats[whf_time_speed];
-		// смена дня
+		// СЃРјРµРЅР° РґРЅСЏ
 		if( fFloats[whf_time_counter] > 24.f )
 			fFloats[whf_time_counter] -= 24.f;
 
@@ -92,7 +92,7 @@ void WEATHER::Execute(dword Delta_Time)
 		{
 			api->Event("WeatherTimeUpdate","f",fFloats[whf_time_counter]);
 		}
-		// обновление даты в скриптах
+		// РѕР±РЅРѕРІР»РµРЅРёРµ РґР°С‚С‹ РІ СЃРєСЂРёРїС‚Р°С…
 		//if( fFloats[whf_time_counter] fOldTimer
 	}
 }

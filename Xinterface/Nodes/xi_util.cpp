@@ -37,7 +37,7 @@ void CXI_UTILS::Release()
 void CXI_UTILS::FrameUpdate()
 {
 	if( m_bIsKeyPressed && m_bFrameKeyPressedFlag )
-	{ // опроса на этом кадре не было - значит можно все клавиши сбросить (мы вышли из цикла опроса)
+	{ // РѕРїСЂРѕСЃР° РЅР° СЌС‚РѕРј РєР°РґСЂРµ РЅРµ Р±С‹Р»Рѕ - Р·РЅР°С‡РёС‚ РјРѕР¶РЅРѕ РІСЃРµ РєР»Р°РІРёС€Рё СЃР±СЂРѕСЃРёС‚СЊ (РјС‹ РІС‹С€Р»Рё РёР· С†РёРєР»Р° РѕРїСЂРѕСЃР°)
 		for( long n=0; n<UTILS_KEYS_QUANTITY; n++ )
 			if( keys[n].nAsyncKeyCode < 0 ) continue;
 			else keys[n].nPressedState = -1;
@@ -48,7 +48,7 @@ void CXI_UTILS::FrameUpdate()
 
 char CXI_UTILS::GetKeyInput()
 {
-	pThis->m_bFrameKeyPressedFlag = false; // не сбрасывать состояния клавиш пока на каждом кадре происходит опрос
+	pThis->m_bFrameKeyPressedFlag = false; // РЅРµ СЃР±СЂР°СЃС‹РІР°С‚СЊ СЃРѕСЃС‚РѕСЏРЅРёСЏ РєР»Р°РІРёС€ РїРѕРєР° РЅР° РєР°Р¶РґРѕРј РєР°РґСЂРµ РїСЂРѕРёСЃС…РѕРґРёС‚ РѕРїСЂРѕСЃ
 	char cRetVal = 0;
 
 	pThis->m_bIsKeyPressed = false;
@@ -80,7 +80,7 @@ char CXI_UTILS::GetKeyInput()
 				}
 
 				byte pKBState[256];
-				WORD pcTmp[16]; // вообще то нужно только 2 символа (остальные на всякий случай)
+				WORD pcTmp[16]; // РІРѕРѕР±С‰Рµ С‚Рѕ РЅСѓР¶РЅРѕ С‚РѕР»СЊРєРѕ 2 СЃРёРјРІРѕР»Р° (РѕСЃС‚Р°Р»СЊРЅС‹Рµ РЅР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№)
 				GetKeyboardState(pKBState);
 				if( ToAscii( n, MapVirtualKey(n,0), pKBState, pcTmp, 0 ) == 1 )
 				{
@@ -128,14 +128,14 @@ const char* CXI_UTILS::StringGetTokenID( char*& pcString, char* pcBuffer, long n
 			pcString--;
 			continue;
 		}
-		if( cCur < 0x20 ) continue; // пропустим неиспользуемые символы
+		if( cCur < 0x20 ) continue; // РїСЂРѕРїСѓСЃС‚РёРј РЅРµРёСЃРїРѕР»СЊР·СѓРµРјС‹Рµ СЃРёРјРІРѕР»С‹
 		pcBuffer[n++] = cCur;
 	}
-	// уберем последние пробелы
+	// СѓР±РµСЂРµРј РїРѕСЃР»РµРґРЅРёРµ РїСЂРѕР±РµР»С‹
 	while( n>0 && pcBuffer[n-1]<=0x20 ) n--;
 	pcBuffer[n] = 0;
 
-	// избавимся от знака '='
+	// РёР·Р±Р°РІРёРјСЃСЏ РѕС‚ Р·РЅР°РєР° '='
 	while( pcString[0] == '=' ) pcString++;
 
 	if( pcBuffer[0] ) return pcBuffer;
@@ -157,14 +157,14 @@ const char* CXI_UTILS::StringGetTokenString( char*& pcString, char* pcBuffer, lo
 		if( cCur == ',' && nQuote==0 ) break;
 		if( cCur=='(' || cCur=='{' || cCur=='[' ) nQuote++;
 		if( cCur==')' || cCur=='}' || cCur==']' ) nQuote--;
-		if( cCur < 0x20 ) continue; // пропустим неиспользуемые символы
+		if( cCur < 0x20 ) continue; // РїСЂРѕРїСѓСЃС‚РёРј РЅРµРёСЃРїРѕР»СЊР·СѓРµРјС‹Рµ СЃРёРјРІРѕР»С‹
 		pcBuffer[n++] = cCur;
 	}
-	// уберем последние пробелы
+	// СѓР±РµСЂРµРј РїРѕСЃР»РµРґРЅРёРµ РїСЂРѕР±РµР»С‹
 	while( n>0 && pcBuffer[n-1]<=0x20 ) n--;
 	pcBuffer[n] = 0;
 
-	// избавимся от знака ','
+	// РёР·Р±Р°РІРёРјСЃСЏ РѕС‚ Р·РЅР°РєР° ','
 	while( pcString[0] == ',' ) pcString++;
 
 	if( pcBuffer[0] ) return pcBuffer;
@@ -298,7 +298,7 @@ long CXI_UTILS::SplitStringByWidth( const char* pcText, long nFontID, float fFon
 
 		param[nDst] = 0;
 		long nW = rs->StringWidth( param, nFontID, fFontScale );
-		if( nW<nWidth && nToken==StrTokenType_Space ) // пробел но может не последний
+		if( nW<nWidth && nToken==StrTokenType_Space ) // РїСЂРѕР±РµР» РЅРѕ РјРѕР¶РµС‚ РЅРµ РїРѕСЃР»РµРґРЅРёР№
 		{
 			nSrcPrev = nSrc;
 			nDstPrev = nDst;
@@ -307,7 +307,7 @@ long CXI_UTILS::SplitStringByWidth( const char* pcText, long nFontID, float fFon
 			continue;
 		}
 
-		if( nW>nWidth && nDstPrev>0 ) // либо последний пробел, либо просто конец строки
+		if( nW>nWidth && nDstPrev>0 ) // Р»РёР±Рѕ РїРѕСЃР»РµРґРЅРёР№ РїСЂРѕР±РµР», Р»РёР±Рѕ РїСЂРѕСЃС‚Рѕ РєРѕРЅРµС† СЃС‚СЂРѕРєРё
 		{
 			nSrc = nSrcPrev;
 			nDst = nDstPrev;
@@ -315,12 +315,12 @@ long CXI_UTILS::SplitStringByWidth( const char* pcText, long nFontID, float fFon
 		}
 
 		param[nDst] = 0;
-		while( pcSrcStr[nSrc]==0x20 ) // убираем пробелы из строки
+		while( pcSrcStr[nSrc]==0x20 ) // СѓР±РёСЂР°РµРј РїСЂРѕР±РµР»С‹ РёР· СЃС‚СЂРѕРєРё
 			nSrc++;
-		if( GetCurrentTokenIntoString(&pcSrcStr[nSrc]) == StrTokenType_NextLine ) // при переводе строки считаем его
+		if( GetCurrentTokenIntoString(&pcSrcStr[nSrc]) == StrTokenType_NextLine ) // РїСЂРё РїРµСЂРµРІРѕРґРµ СЃС‚СЂРѕРєРё СЃС‡РёС‚Р°РµРј РµРіРѕ
 		{
 			nSrc += 2;
-			while( nDst>0 && param[nDst-1]==0x20 ) // результат строка не должна заканчиваться пробелом
+			while( nDst>0 && param[nDst-1]==0x20 ) // СЂРµР·СѓР»СЊС‚Р°С‚ СЃС‚СЂРѕРєР° РЅРµ РґРѕР»Р¶РЅР° Р·Р°РєР°РЅС‡РёРІР°С‚СЊСЃСЏ РїСЂРѕР±РµР»РѕРј
 				param[--nDst] = 0;
 		}
 
@@ -422,7 +422,7 @@ void CXI_UTILS::PrintTextIntoWindow(VDX8RENDER* pRender,
 	else nL = x;
 	nR = nL + nStrWidth;
 
-	// влезаем в окно -> выводим как обычно
+	// РІР»РµР·Р°РµРј РІ РѕРєРЅРѕ -> РІС‹РІРѕРґРёРј РєР°Рє РѕР±С‹С‡РЅРѕ
 	if( nL >= left && nR <= right ) {
 		pRender->ExtPrint( nFont,dwColor,0,wAlignment,bShadow,fScale, scrWidth,scrHeight, x,y, "%s", pcString );
 		return;
@@ -432,13 +432,13 @@ void CXI_UTILS::PrintTextIntoWindow(VDX8RENDER* pRender,
 	_snprintf(tmpstr,sizeof(tmpstr),"%s",pcString);
 	char* pc = tmpstr;
 
-	// режем левый край
+	// СЂРµР¶РµРј Р»РµРІС‹Р№ РєСЂР°Р№
 	while( pc[0] && nL<left ) {
 		pc++;
 		nL = nR - pRender->StringWidth(pc,nFont,fScale,0);
 	}
 
-	// режем правый край
+	// СЂРµР¶РµРј РїСЂР°РІС‹Р№ РєСЂР°Р№
 	if( nR > right )
 	{
 		long n = strlen(pc);

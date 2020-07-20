@@ -12,7 +12,7 @@
 #include "..\common_h\geometry.h"
 
 //============================================================================================
-//Данные для коллижена
+//Р”Р°РЅРЅС‹Рµ РґР»СЏ РєРѕР»Р»РёР¶РµРЅР°
 //============================================================================================
 
 CVECTOR WdmIsland::centPos;
@@ -25,7 +25,7 @@ bool _cdecl WdmIsland_AddEdges(const GEOS::VERTEX * vrt, long numVrt);
 bool _cdecl WdmIsland_OTest(const GEOS::VERTEX * vrt, long numVrt);
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 WdmIsland::WdmIsland()
@@ -38,52 +38,52 @@ WdmIsland::~WdmIsland()
 	wdmObjects.islands = null;
 }
 
-//Проверить на возможное столкновение
+//РџСЂРѕРІРµСЂРёС‚СЊ РЅР° РІРѕР·РјРѕР¶РЅРѕРµ СЃС‚РѕР»РєРЅРѕРІРµРЅРёРµ
 bool WdmIsland::CollisionTest(CMatrix & mtx, float length, float width, bool heighTest)
 {
 	if(!geo) return false;
 	GEOS::PLANE p[5];
-	//Вектор направления
+	//Р’РµРєС‚РѕСЂ РЅР°РїСЂР°РІР»РµРЅРёСЏ
 	p[0].nrm.x = mtx.Vz().x;
 	p[0].nrm.y = 0.0f;
 	p[0].nrm.z = mtx.Vz().z;
 	float radius = p[0].nrm.x*p[0].nrm.x + p[0].nrm.z*p[0].nrm.z;
-	//Проскочим кривую модель
+	//РџСЂРѕСЃРєРѕС‡РёРј РєСЂРёРІСѓСЋ РјРѕРґРµР»СЊ
 	if(radius < 0.000001f) return false;
-	//Нормаль направления
+	//РќРѕСЂРјР°Р»СЊ РЅР°РїСЂР°РІР»РµРЅРёСЏ
 	radius = 1.0f/sqrtf(radius);
 	p[0].nrm.x *= radius;
 	p[0].nrm.z *= radius;
-	//Остальные нормали
+	//РћСЃС‚Р°Р»СЊРЅС‹Рµ РЅРѕСЂРјР°Р»Рё
 	p[1].nrm.x = -p[0].nrm.x; p[1].nrm.y = 0.0f; p[1].nrm.z = -p[0].nrm.z;
 	p[2].nrm.x = -p[0].nrm.z; p[2].nrm.y = 0.0f; p[2].nrm.z = p[0].nrm.x;
 	p[3].nrm.x = p[0].nrm.z; p[3].nrm.y = 0.0f; p[3].nrm.z = -p[0].nrm.x;
 	p[4].nrm.x = 0.0f; p[4].nrm.y = 1.0f; p[4].nrm.z = 0.0f;
-	//Дистанции до плоскостей
+	//Р”РёСЃС‚Р°РЅС†РёРё РґРѕ РїР»РѕСЃРєРѕСЃС‚РµР№
 	p[0].d = (p[0].nrm.x*length + mtx.Pos().x)*p[0].nrm.x + (p[0].nrm.z*length + mtx.Pos().z)*p[0].nrm.z;
 	p[1].d = (p[1].nrm.x*length + mtx.Pos().x)*p[1].nrm.x + (p[1].nrm.z*length + mtx.Pos().z)*p[1].nrm.z;
 	p[2].d = (p[2].nrm.x*width + mtx.Pos().x)*p[2].nrm.x + (p[2].nrm.z*width + mtx.Pos().z)*p[2].nrm.z;
 	p[3].d = (p[3].nrm.x*width + mtx.Pos().x)*p[3].nrm.x + (p[3].nrm.z*width + mtx.Pos().z)*p[3].nrm.z;
 	p[4].d = 0.2f;
-	//Позиция сферы
+	//РџРѕР·РёС†РёСЏ СЃС„РµСЂС‹
 	GEOS::VERTEX v; v.x = mtx.Pos().x; v.y = mtx.Pos().y; v.z = mtx.Pos().z;
 	curPos = mtx.Pos();
-	//Радиус
+	//Р Р°РґРёСѓСЃ
 	radius = sqrtf(length*length + width*width)*(heighTest ? 2.0f : 1000000.0f);
 	if(radius < 0.000001f) return false;
-	//Ищем попадание полигонов
+	//РС‰РµРј РїРѕРїР°РґР°РЅРёРµ РїРѕР»РёРіРѕРЅРѕРІ
 	numEdges = 0;
 	centPos = 0.0f;
 	checkMode = !heighTest;
 	geo->Clip(p, heighTest ? 5 : 4, v, radius, WdmIsland_AddEdges);
 	if(numEdges) centPos *= 1.0f/numEdges;
-	//Исключим 
+	//РСЃРєР»СЋС‡РёРј 
 	return numEdges != 0;
 }
 
 bool _cdecl WdmIsland_AddEdges(const GEOS::VERTEX * vrt, long numVrt)
 {
-	//Пропустим кривые данные
+	//РџСЂРѕРїСѓСЃС‚РёРј РєСЂРёРІС‹Рµ РґР°РЅРЅС‹Рµ
 	if(numVrt < 3) return true;
 	if(WdmIsland::checkMode)
 	{
@@ -91,23 +91,23 @@ bool _cdecl WdmIsland_AddEdges(const GEOS::VERTEX * vrt, long numVrt)
 		WdmIsland::numEdges = 1;
 		return false;
 	}
-	//Попытаемся определить место положение точки относительно плоскости
+	//РџРѕРїС‹С‚Р°РµРјСЃСЏ РѕРїСЂРµРґРµР»РёС‚СЊ РјРµСЃС‚Рѕ РїРѕР»РѕР¶РµРЅРёРµ С‚РѕС‡РєРё РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РїР»РѕСЃРєРѕСЃС‚Рё
 	CVECTOR v1(vrt[1].x - vrt[0].x, vrt[1].y - vrt[0].y, vrt[1].z - vrt[0].z);
 	CVECTOR v2(vrt[2].x - vrt[1].x, vrt[2].y - vrt[1].y, vrt[2].z - vrt[1].z);
 	CVECTOR v = v1 ^ v2;
 	float d = (v | WdmIsland::curPos) - (v | CVECTOR(vrt[0].x, vrt[0].y, vrt[0].z));
 	if(d < 0) return true;
-	//Добавляем рёбра
+	//Р”РѕР±Р°РІР»СЏРµРј СЂС‘Р±СЂР°
 	WdmIsland::numEdges += numVrt;
 	for(long i = 0; i < numVrt; i++)
 	{
 		WdmIsland::centPos += CVECTOR(vrt[i].x, 0.0f, vrt[i].z);
 	}	
-	//Продолжим
+	//РџСЂРѕРґРѕР»Р¶РёРј
 	return true;
 }
 
-//Проверить наличие в данном месте треугольников
+//РџСЂРѕРІРµСЂРёС‚СЊ РЅР°Р»РёС‡РёРµ РІ РґР°РЅРЅРѕРј РјРµСЃС‚Рµ С‚СЂРµСѓРіРѕР»СЊРЅРёРєРѕРІ
 bool WdmIsland::ObstacleTest(float x, float z, float radius)
 {
 	if(!geo || radius <= 0.0f) return false;

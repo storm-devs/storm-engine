@@ -27,22 +27,22 @@
 
 //#define LOCATIONCAMERA_DEBUG
 
-#define LOCATIONCAMERA_RADIUS			0.5f	//Размер камеры
-#define LOCATIONCAMERA_DISTQUANTUM		0.1f	//Шаг с которым можно перемещать камеру
+#define LOCATIONCAMERA_RADIUS			0.5f	//Р Р°Р·РјРµСЂ РєР°РјРµСЂС‹
+#define LOCATIONCAMERA_DISTQUANTUM		0.1f	//РЁР°Рі СЃ РєРѕС‚РѕСЂС‹Рј РјРѕР¶РЅРѕ РїРµСЂРµРјРµС‰Р°С‚СЊ РєР°РјРµСЂСѓ
 
-#define LOCATIONCAMERA_DISTALPHA_MAX	1.6f	//Дистанция от персонажа при которой надо гасить альфу
-#define LOCATIONCAMERA_DISTALPHA_MIN	0.8f	//Дистанция от персонажа при которой надо гасить альфу
+#define LOCATIONCAMERA_DISTALPHA_MAX	1.6f	//Р”РёСЃС‚Р°РЅС†РёСЏ РѕС‚ РїРµСЂСЃРѕРЅР°Р¶Р° РїСЂРё РєРѕС‚РѕСЂРѕР№ РЅР°РґРѕ РіР°СЃРёС‚СЊ Р°Р»СЊС„Сѓ
+#define LOCATIONCAMERA_DISTALPHA_MIN	0.8f	//Р”РёСЃС‚Р°РЅС†РёСЏ РѕС‚ РїРµСЂСЃРѕРЅР°Р¶Р° РїСЂРё РєРѕС‚РѕСЂРѕР№ РЅР°РґРѕ РіР°СЃРёС‚СЊ Р°Р»СЊС„Сѓ
 
 #define LOCATIONCAMERA_PERSPECTIVE		(1.57f + 1.0f)*0.5f
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 LocationCamera::LocationCamera() :
 	m_aTrackPauses(_FL_)
 {
-	//Параметры камеры
+	//РџР°СЂР°РјРµС‚СЂС‹ РєР°РјРµСЂС‹
 	ax = 0.4f;
 	vAx = 0.0f;
 	axmin = -1.0f;
@@ -52,7 +52,7 @@ LocationCamera::LocationCamera() :
 	radius = 3.0f;
 	rotInertia = 5.0f;
 	radInertia = 7.0f;
-	//Значения камеры
+	//Р—РЅР°С‡РµРЅРёСЏ РєР°РјРµСЂС‹
 	isSleep = false;
 	kMorph = 1.0f;
 	wmode = cwm_follow;
@@ -80,7 +80,7 @@ LocationCamera::~LocationCamera()
 	StoreRestoreDynamicFov(true);
 }
 
-//Инициализация
+//РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
 bool LocationCamera::Init()
 {
 	//DX8 render
@@ -95,10 +95,10 @@ bool LocationCamera::Init()
 	_CORE_API->LayerSetFlags("realize", LRFLAG_REALIZE);
 	_CORE_API->LayerAdd("realize", GetID(), 100000);
 	
-	//Море
+	//РњРѕСЂРµ
 	_CORE_API->FindClass(&sea, "sea", 0);
 	
-	//Попробуем получить локацию
+	//РџРѕРїСЂРѕР±СѓРµРј РїРѕР»СѓС‡РёС‚СЊ Р»РѕРєР°С†РёСЋ
 	_CORE_API->FindClass(&loc, "location", 0);
 
 	rs->SetPerspective(LOCATIONCAMERA_PERSPECTIVE);
@@ -109,7 +109,7 @@ bool LocationCamera::Init()
 	return true;
 }
 
-//Исполнение
+//РСЃРїРѕР»РЅРµРЅРёРµ
 #ifndef LOCATIONCAMERA_DEBUG
 void LocationCamera::Execute(dword delta_time)
 #else
@@ -123,7 +123,7 @@ void LocationCamera::Realize(dword delta_time)
 			return;
 	}
 
-	//Режим камеры
+	//Р РµР¶РёРј РєР°РјРµСЂС‹
 #ifdef _XBOX
 	VDATA * vd = api->Event("EventGetSpecialMode", 0);
 	if(vd)
@@ -138,11 +138,11 @@ void LocationCamera::Realize(dword delta_time)
 	CONTROL_STATE cs;
 	api->Controls->GetControlState("ChrCamSpecMode",cs);
 	isSpecialMode = cs.state == CST_ACTIVE;
-	//Временной отрезок
+	//Р’СЂРµРјРµРЅРЅРѕР№ РѕС‚СЂРµР·РѕРє
 	float dltTime = delta_time*0.001f;
 	if(isSleep) return;
 	if(!Set()) return;
-	//Управление
+	//РЈРїСЂР°РІР»РµРЅРёРµ
 	float oldAx = ax;	
 	_CORE_API->Controls->GetControlState("ChrCamTurnV",cs);
 	dAx = -cs.lValue*0.05f;//*0.005f;
@@ -178,14 +178,14 @@ void LocationCamera::Realize(dword delta_time)
 	character->LockIdle(false);
 	character->LockMove(false);
 	character->LookFromEyes(false);
-	//Исполняем текущий режим
+	//РСЃРїРѕР»РЅСЏРµРј С‚РµРєСѓС‰РёР№ СЂРµР¶РёРј
 	bool isELook = false;
 
 	if(!isLockFPMode)
 	{
 		switch(wmode)
 		{
-		case cwm_follow:	//Следуем за персонажем
+		case cwm_follow:	//РЎР»РµРґСѓРµРј Р·Р° РїРµСЂСЃРѕРЅР°Р¶РµРј
 
 			//*
 			if(!character->IsFight() && !character->IsDialog() && !character->IsDead())
@@ -232,7 +232,7 @@ void LocationCamera::Realize(dword delta_time)
 			}else{
 				if(isSpecialMode)
 				{
-					//Пересчитаем для специального режима велечину изменения угла
+					//РџРµСЂРµСЃС‡РёС‚Р°РµРј РґР»СЏ СЃРїРµС†РёР°Р»СЊРЅРѕРіРѕ СЂРµР¶РёРјР° РІРµР»РµС‡РёРЅСѓ РёР·РјРµРЅРµРЅРёСЏ СѓРіР»Р°
 					_CORE_API->Controls->GetControlState("ChrCamTurnH",cs);
 					dAy = cs.lValue * 0.05f;
 					if(dAy > 1.0f) dAy = 1.0f;
@@ -263,12 +263,12 @@ void LocationCamera::Realize(dword delta_time)
 			}
 #endif
 			break;
-		case cwm_topos:		//Вид из локатора
+		case cwm_topos:		//Р’РёРґ РёР· Р»РѕРєР°С‚РѕСЂР°
 			ExecuteTopos(dltTime);
 			ax = oldAx;
 			vAx = 0.0f;
 			break;
-		case cwm_free:		//Свободно летающая камера
+		case cwm_free:		//РЎРІРѕР±РѕРґРЅРѕ Р»РµС‚Р°СЋС‰Р°СЏ РєР°РјРµСЂР°
 			character->LockMove(true);
 			ExecuteFree(dltTime);
 			break;
@@ -280,7 +280,7 @@ void LocationCamera::Realize(dword delta_time)
 
 	cf.DrawDebug();
 
-	//Морфинг позиций
+	//РњРѕСЂС„РёРЅРі РїРѕР·РёС†РёР№
 	if(kMorph < 1.0f)
 	{
 		if(!isTeleport)
@@ -309,7 +309,7 @@ void LocationCamera::Realize(dword delta_time)
 	rs->SetCamera(realPos, lookTo, vUp);
 
 #ifdef CAMERA_VIEW_TEST_ENABLE
-	//Устанавливаем новою позицию камеры
+	//РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РЅРѕРІРѕСЋ РїРѕР·РёС†РёСЋ РєР°РјРµСЂС‹
 	rs->SetCamera(camPos, lookTo, vUp);
 #endif
 }
@@ -331,7 +331,7 @@ void LocationCamera::Execute(dword delta_time)
 	*/
 }
 
-//Сообщения
+//РЎРѕРѕР±С‰РµРЅРёСЏ
 dword _cdecl LocationCamera::ProcessMessage(MESSAGE & message)
 {
 	switch(message.Long())
@@ -411,22 +411,22 @@ dword _cdecl LocationCamera::ProcessMessage(MESSAGE & message)
 	return 0;
 }
 
-//Изменение атрибута
+//РР·РјРµРЅРµРЅРёРµ Р°С‚СЂРёР±СѓС‚Р°
 dword LocationCamera::AttributeChanged(ATTRIBUTES * apnt)
 {
-	//Зачитывание атрибутов
+	//Р—Р°С‡РёС‚С‹РІР°РЅРёРµ Р°С‚СЂРёР±СѓС‚РѕРІ
 	if(!AttributesPointer) return 0;	
 
 	return 0;
 }
 
-//Подготовить данные
+//РџРѕРґРіРѕС‚РѕРІРёС‚СЊ РґР°РЅРЅС‹Рµ
 bool LocationCamera::Set()
 {
-	//Указатель на персонажа
+	//РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РїРµСЂСЃРѕРЅР°Р¶Р°
 	Character * c = (Character *)_CORE_API->GetEntityPointer(&chr);
 	if(!c) return false;
-	//Характеристики персонажа
+	//РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё РїРµСЂСЃРѕРЅР°Р¶Р°
 	c->GetPosition(pos);
 	chay = c->GetAY();
 	height = c->GetHeight();
@@ -437,7 +437,7 @@ bool LocationCamera::Set()
 	return location != null;
 }
 
-//Изменить режим работы камеры
+//РР·РјРµРЅРёС‚СЊ СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ РєР°РјРµСЂС‹
 void LocationCamera::SetMode(CameraWorkMode wm)
 {
 	if(wmode == wm) return;
@@ -451,11 +451,11 @@ void LocationCamera::SetMode(CameraWorkMode wm)
 
 //============================================================================================
 
-//Исполнение камеры вида из глаз
+//РСЃРїРѕР»РЅРµРЅРёРµ РєР°РјРµСЂС‹ РІРёРґР° РёР· РіР»Р°Р·
 void LocationCamera::ExecuteLook(float dltTime)
 {
 	const float blendSpd = 1.0f;
-	//Определим точку размещения камеры
+	//РћРїСЂРµРґРµР»РёРј С‚РѕС‡РєСѓ СЂР°Р·РјРµС‰РµРЅРёСЏ РєР°РјРµСЂС‹
 	MODEL * mdl = character->Model();
 	if(!mdl) return;
 	NODE * node = mdl->GetNode(0);
@@ -466,14 +466,14 @@ void LocationCamera::ExecuteLook(float dltTime)
 	if(ani && (strIndex = node->geo->FindLabelN(strIndex+1, idCamera)) > -1)
 	{
 		GEOS::LABEL lb;
-		//Матрица локатора
+		//РњР°С‚СЂРёС†Р° Р»РѕРєР°С‚РѕСЂР°
 		node->geo->GetLabel(strIndex, lb);
 		CMatrix mtl;
 		mtl.Vx() = CVECTOR(lb.m[0][0], lb.m[0][1], lb.m[0][2]);
 		mtl.Vy() = CVECTOR(lb.m[1][0], lb.m[1][1], lb.m[1][2]);
 		mtl.Vz() = CVECTOR(lb.m[2][0], lb.m[2][1], lb.m[2][2]);
 		mtl.Pos() = CVECTOR(lb.m[3][0], lb.m[3][1], lb.m[3][2]);		
-		//Матрица кости
+		//РњР°С‚СЂРёС†Р° РєРѕСЃС‚Рё
 		CMatrix ml = mtl*ani->GetAnimationMatrix(lb.bones[0]);		
 		ml.Pos().x *= -1.0f;
 		ml.Vx().x *= -1.0f;
@@ -484,22 +484,22 @@ void LocationCamera::ExecuteLook(float dltTime)
 	}else{
 		camPos = pos + CVECTOR(0.0f, height, 0.0f);
 	}
-	//Определим куда смотрим
+	//РћРїСЂРµРґРµР»РёРј РєСѓРґР° СЃРјРѕС‚СЂРёРј
 	lookTo.x = camPos.x + cosf(ax)*sinf(chay);
 	lookTo.y = camPos.y - sinf(ax);
 	lookTo.z = camPos.z + cosf(ax)*cosf(chay);
 }
 
-//Исполнение камеры наблюдающей из точки
+//РСЃРїРѕР»РЅРµРЅРёРµ РєР°РјРµСЂС‹ РЅР°Р±Р»СЋРґР°СЋС‰РµР№ РёР· С‚РѕС‡РєРё
 void LocationCamera::ExecuteTopos(float dltTime)
 {
-	//Куда смотрим
+	//РљСѓРґР° СЃРјРѕС‚СЂРёРј
 	lookTo = pos + CVECTOR(0.0f, lheight, 0.0f);
-	//Откуда смотрим
+	//РћС‚РєСѓРґР° СЃРјРѕС‚СЂРёРј
 	camPos = fromLook;
 }
 
-//Исполнение свободно летающей камеры
+//РСЃРїРѕР»РЅРµРЅРёРµ СЃРІРѕР±РѕРґРЅРѕ Р»РµС‚Р°СЋС‰РµР№ РєР°РјРµСЂС‹
 void LocationCamera::ExecuteFree(float dltTime)
 {
 	if(LOWORD(GetKeyState(VK_NUMLOCK)) != 0) return;
@@ -525,7 +525,7 @@ void LocationCamera::ExecuteFree(float dltTime)
 	lookTo += camPos;
 }
 
-//Протрейсит луч через локацию
+//РџСЂРѕС‚СЂРµР№СЃРёС‚ Р»СѓС‡ С‡РµСЂРµР· Р»РѕРєР°С†РёСЋ
 float LocationCamera::Trace(const CVECTOR & src, const CVECTOR & dst)
 {
 	if(!location) return 2.0f;
@@ -661,7 +661,7 @@ bool LocationCamera::LoadCameraTrack(const char* pcTrackFile,float fTrackTime)
 	m_bTrackMode = true;
 	m_sCurTrackName = pcTrackFile;
 
-	// установка камеры на начало трека
+	// СѓСЃС‚Р°РЅРѕРІРєР° РєР°РјРµСЂС‹ РЅР° РЅР°С‡Р°Р»Рѕ С‚СЂРµРєР°
 	Vector pos;
 	Quaternion ang;
 	Matrix view;
@@ -730,7 +730,7 @@ float LocationCamera::TrackPauseProcess()
 //		if( m_aTrackPauses[nPause].trackTime <= m_fTrackCurTime ) {
 //		}
 
-/*	if( m_nCurPauseIndex >= 0 ) // счас в паузе
+/*	if( m_nCurPauseIndex >= 0 ) // СЃС‡Р°СЃ РІ РїР°СѓР·Рµ
 	{
 		if( m_fTrackCurTime >= m_aTrackPauses[m_nCurPauseIndex].pauseTime )
 	}*/

@@ -27,10 +27,10 @@ PathTracks::~PathTracks()
 
 //============================================================================================
 
-//Загрузить трек в PathTracks
+//Р—Р°РіСЂСѓР·РёС‚СЊ С‚СЂРµРє РІ PathTracks
 bool PathTracks::Load(const char * fileName)
 {
-	//Загружаем файл в память
+	//Р—Р°РіСЂСѓР¶Р°РµРј С„Р°Р№Р» РІ РїР°РјСЏС‚СЊ
 	Assert(sizeof(AntFileTrackElement) == sizeof(Point));
 
 	if(point) delete point;
@@ -44,7 +44,7 @@ bool PathTracks::Load(const char * fileName)
 		api->Trace("Camera tracks file %s not loaded...", fileName);
 		return false;
 	}
-	//Проверяем заголовок
+	//РџСЂРѕРІРµСЂСЏРµРј Р·Р°РіРѕР»РѕРІРѕРє
 	if(((AntFileHeader *)data)->id != ANTFILE_ID)
 	{
 		api->Trace("Camera tracks file %s is invalidate...", fileName);
@@ -60,14 +60,14 @@ bool PathTracks::Load(const char * fileName)
 	long nPoints = ((AntFileHeader *)data)->framesCount;
 	long nStringSize = ((AntFileHeader *)data)->stringsTableSize;
 	long nBoneCount = ((AntFileHeader *)data)->bonesCount;
-	//Проверяем размеры файла
+	//РџСЂРѕРІРµСЂСЏРµРј СЂР°Р·РјРµСЂС‹ С„Р°Р№Р»Р°
 	if(size < sizeof(AntFileHeader) + sizeof(char)*nStringSize + sizeof(AntFileBone)*nBoneCount + sizeof(AntFileTrackElement)*nPoints)
 	{
 		api->Trace("Camera tracks file %s is invalidate...", fileName);
 		delete data;
 		return false;
 	}
-	//Сохраняем данные
+	//РЎРѕС…СЂР°РЅСЏРµРј РґР°РЅРЅС‹Рµ
 	point = NEW Point[nPoints];
 	Assert( point );
 	memcpy(point, (byte *)data + sizeof(AntFileHeader) + nStringSize + sizeof(AntFileBone)*nBoneCount, sizeof(AntFileTrackElement)*nPoints);
@@ -76,7 +76,7 @@ bool PathTracks::Load(const char * fileName)
 	return true;
 }
 
-//Нарисовать трек
+//РќР°СЂРёСЃРѕРІР°С‚СЊ С‚СЂРµРє
 void PathTracks::Draw(VDX8RENDER* render)
 {
 	/*render.FlushBufferedLines();
@@ -90,7 +90,7 @@ void PathTracks::Draw(VDX8RENDER* render)
 	render.FlushBufferedLines();*/
 }
 
-//Получить точку трека
+//РџРѕР»СѓС‡РёС‚СЊ С‚РѕС‡РєСѓ С‚СЂРµРєР°
 bool PathTracks::GetPoint(float index, Vector & cp, Quaternion & cq)
 {
 	Assert(point);

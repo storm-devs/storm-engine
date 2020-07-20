@@ -138,7 +138,7 @@ void XI_TableCellDescribe::Draw( float fLeft, float fTop )
 	{
 		if( m_aStrings[n].offset.y != NOTUSE_OFFSET ) fY = m_aStrings[n].offset.y;
 		float fNewY = fY + m_pTable->m_rs->CharHeight( m_nFontID ) * m_fScale;
-		if( fNewY >= m_pLine->GetLineHeight() ) break; // больше не влазит в таблицу
+		if( fNewY >= m_pLine->GetLineHeight() ) break; // Р±РѕР»СЊС€Рµ РЅРµ РІР»Р°Р·РёС‚ РІ С‚Р°Р±Р»РёС†Сѓ
 
 		CXI_UTILS::PrintTextIntoWindow( m_pTable->m_rs, m_nFontIndex<0?m_nFontID:m_pTable->m_anFontList[m_nFontIndex],
 			m_dwColor, ALIGN_LEFT, true, m_fScale, m_pTable->m_screenSize.x, m_pTable->m_screenSize.y,
@@ -152,7 +152,7 @@ void XI_TableCellDescribe::Draw( float fLeft, float fTop )
 void XI_TableCellDescribe::SetData( long nColIndex, ATTRIBUTES* pAttr, bool bHeader )
 {
 	if( !pAttr ) {
-		// пустая ячейка
+		// РїСѓСЃС‚Р°СЏ СЏС‡РµР№РєР°
 		m_aStrings.DelAll();
 		m_aImage.DelAll();
 		return;
@@ -165,7 +165,7 @@ void XI_TableCellDescribe::SetData( long nColIndex, ATTRIBUTES* pAttr, bool bHea
 	m_nLeftLineWidth = nColIndex==0 ? m_pTable->m_nBorderWidth : m_pTable->m_nVLineWidth;
 	m_nTopLineHeight = bHeader ? m_pTable->m_nHeaderLineHeight : m_pTable->m_nHLineHeight;
 
-	// читаем картинку
+	// С‡РёС‚Р°РµРј РєР°СЂС‚РёРЅРєСѓ
 	long nIconQuantity = 0;
 	pA = pAttr->GetAttributeClass( "icon" );
 	if( pA )
@@ -187,11 +187,11 @@ void XI_TableCellDescribe::SetData( long nColIndex, ATTRIBUTES* pAttr, bool bHea
 			nIconQuantity++;
 		}
 	}
-	// удалить лишние картинки
+	// СѓРґР°Р»РёС‚СЊ Р»РёС€РЅРёРµ РєР°СЂС‚РёРЅРєРё
 	while( (long)m_aImage > nIconQuantity )
 		m_aImage.DelIndex( nIconQuantity );
 
-	// читаем строку
+	// С‡РёС‚Р°РµРј СЃС‚СЂРѕРєСѓ
 	m_dwColor = pAttr->GetAttributeAsDword( "color", bHeader ? m_pTable->m_dwFontTitleColor : m_pTable->m_dwFontCellColor );
 	m_fScale = pAttr->GetAttributeAsFloat( "scale", bHeader ? m_pTable->m_fFontTitleScale : m_pTable->m_fFontCellScale );
 	m_nFontID = bHeader ? m_pTable->m_nFontTitleID : m_pTable->m_nFontCellID;
@@ -349,13 +349,13 @@ void CXI_TABLE::Draw(bool bSelected,dword Delta_Time)
 {
 	m_bFirstFrame = false;
 
-	// Прорисовка задника
+	// РџСЂРѕСЂРёСЃРѕРІРєР° Р·Р°РґРЅРёРєР°
 	if( m_bBackPresent )
 	{
 		m_BackImg.Draw();
 	}
 
-	// отрисовка спец цвета
+	// РѕС‚СЂРёСЃРѕРІРєР° СЃРїРµС† С†РІРµС‚Р°
 	float fY = (float)m_rect.top;
 	if( m_pHeader )
 	{
@@ -368,17 +368,17 @@ void CXI_TABLE::Draw(bool bSelected,dword Delta_Time)
 		fY += m_anRowsHeights[n+(m_pHeader?1:0)];
 	}
 
-	// отрисовка выделения выбранной строки
+	// РѕС‚СЂРёСЃРѕРІРєР° РІС‹РґРµР»РµРЅРёСЏ РІС‹Р±СЂР°РЅРЅРѕР№ СЃС‚СЂРѕРєРё
 	m_SelectImg.Draw();
 
-	// Прорисовка рамки
+	// РџСЂРѕСЂРёСЃРѕРІРєР° СЂР°РјРєРё
 	if( m_idBorderTexture!=-1 && m_idBorderVBuf!=-1 && m_idBorderIBuf!=-1 )
 	{
 		m_rs->TextureSet( 0, m_idBorderTexture );
 		m_rs->DrawBuffer( m_idBorderVBuf, sizeof(XI_ONETEX_VERTEX), m_idBorderIBuf, 0, m_nBorderSubQ*4, 0, m_nBorderSubQ*2, "iIcon" );
 	}
 
-	// Вывод линий
+	// Р’С‹РІРѕРґ Р»РёРЅРёР№
 	fY = (float)m_rect.top;
 	if( m_pHeader )
 	{
@@ -496,7 +496,7 @@ int CXI_TABLE::CommandExecute(int wActCode)
 			}
 			break;
 		// boal -->
-        case ACTION_MOUSERCLICK :  // просто спозиционировать курсор
+        case ACTION_MOUSERCLICK :  // РїСЂРѕСЃС‚Рѕ СЃРїРѕР·РёС†РёРѕРЅРёСЂРѕРІР°С‚СЊ РєСѓСЂСЃРѕСЂ
         	{
 				long n = GetLineByPoint( ptrOwner->GetMousePoint() );
 				if( n>=0 && n<=m_nLineQuantity-m_nTopIndex-(m_pHeader?0:1) )
@@ -647,10 +647,10 @@ dword _cdecl CXI_TABLE::MessageProc(long msgcode, MESSAGE & message)
 {
 	switch(msgcode)
 	{
-	case 0: // обновить строки в таблице
+	case 0: // РѕР±РЅРѕРІРёС‚СЊ СЃС‚СЂРѕРєРё РІ С‚Р°Р±Р»РёС†Рµ
 		UpdateTableCells();
 	break;
-	case 1: // получить номер строки на которой находится указатель мыши (-1 - указатель за пределами)
+	case 1: // РїРѕР»СѓС‡РёС‚СЊ РЅРѕРјРµСЂ СЃС‚СЂРѕРєРё РЅР° РєРѕС‚РѕСЂРѕР№ РЅР°С…РѕРґРёС‚СЃСЏ СѓРєР°Р·Р°С‚РµР»СЊ РјС‹С€Рё (-1 - СѓРєР°Р·Р°С‚РµР»СЊ Р·Р° РїСЂРµРґРµР»Р°РјРё)
 		return GetLineByPoint( ptrOwner->GetMousePoint() );
 	break;
 	}
@@ -691,7 +691,7 @@ void CXI_TABLE::SetInternalName( string& sName )
 
 void CXI_TABLE::ScrollerChanged( float fRelativeScrollPos )
 {
-	if( m_nLineQuantity <= 1 ) return; // все одно
+	if( m_nLineQuantity <= 1 ) return; // РІСЃРµ РѕРґРЅРѕ
 	long n = (long)( fRelativeScrollPos * (m_nLineQuantity-1) );
 	if( n != m_nSelectIndex )
 	{
@@ -830,8 +830,8 @@ void CXI_TABLE::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *name2)
 	m_bVariableLineHeight = GetIniBool( ini1,name1, ini2,name2, "IsVariableLineHeight", false );
 	m_nNormalLineHeight = GetIniLong( ini1,name1, ini2,name2, "NormalLineHeight", 32 );
 
-	nUsedQ = 0; // жестко заданных строк
-	nCommonWidth = 0; // общая высота этих строк
+	nUsedQ = 0; // Р¶РµСЃС‚РєРѕ Р·Р°РґР°РЅРЅС‹С… СЃС‚СЂРѕРє
+	nCommonWidth = 0; // РѕР±С‰Р°СЏ РІС‹СЃРѕС‚Р° СЌС‚РёС… СЃС‚СЂРѕРє
 	m_anRowsHeights.DelAll();
 	if( ReadIniString( ini1,name1, ini2,name2, "rowsheight", param,sizeof(param), "" ) )
 	{
@@ -856,18 +856,18 @@ void CXI_TABLE::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *name2)
 			if( m_anRowsHeights[n] == 0 )
 				m_anRowsHeights[n] = nH;
 	}
-	// приведем высоту таблицы к общему значению
+	// РїСЂРёРІРµРґРµРј РІС‹СЃРѕС‚Сѓ С‚Р°Р±Р»РёС†С‹ Рє РѕР±С‰РµРјСѓ Р·РЅР°С‡РµРЅРёСЋ
 	m_rect.bottom = m_rect.top + m_nBorderWidth;
 	for( n=0; n<m_anRowsHeights; n++ )
 	{
 		m_rect.bottom += m_anRowsHeights[n];
 	}
 
-	// заполнение колонок
-	nUsedQ = 0; // жестко заданных колонок
-	nCommonWidth = 0; // общая ширина этих колонок
+	// Р·Р°РїРѕР»РЅРµРЅРёРµ РєРѕР»РѕРЅРѕРє
+	nUsedQ = 0; // Р¶РµСЃС‚РєРѕ Р·Р°РґР°РЅРЅС‹С… РєРѕР»РѕРЅРѕРє
+	nCommonWidth = 0; // РѕР±С‰Р°СЏ С€РёСЂРёРЅР° СЌС‚РёС… РєРѕР»РѕРЅРѕРє
 	m_anColsWidth.DelAll();
-	// зачитаем из ИНИ
+	// Р·Р°С‡РёС‚Р°РµРј РёР· РРќР
 	if( ReadIniString( ini1,name1, ini2,name2, "colswidth", param,sizeof(param), "" ) )
 	{
 		char * pcTmp = param;
@@ -876,8 +876,8 @@ void CXI_TABLE::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *name2)
 		{
 			pcTmp = GetSubStr( pcTmp, pcTmpBuf, sizeof(pcTmpBuf) );
 			long nTmp = atol( pcTmpBuf );
-			if( nTmp <= 0 ) nTmp = 0; // ширина 0 - по умолчанию
-			else nUsedQ++; // в другом случае это значение жестко задано
+			if( nTmp <= 0 ) nTmp = 0; // С€РёСЂРёРЅР° 0 - РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
+			else nUsedQ++; // РІ РґСЂСѓРіРѕРј СЃР»СѓС‡Р°Рµ СЌС‚Рѕ Р·РЅР°С‡РµРЅРёРµ Р¶РµСЃС‚РєРѕ Р·Р°РґР°РЅРѕ
 			nCommonWidth += nTmp;
 			m_anColsWidth.Add( nTmp );
 		}
@@ -891,7 +891,7 @@ void CXI_TABLE::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *name2)
 			if( m_anColsWidth[n] == 0 )
 				m_anColsWidth[n] = nW;
 	}
-	// приведем ширину таблицы к общему значению
+	// РїСЂРёРІРµРґРµРј С€РёСЂРёРЅСѓ С‚Р°Р±Р»РёС†С‹ Рє РѕР±С‰РµРјСѓ Р·РЅР°С‡РµРЅРёСЋ
 	m_rect.right = m_rect.left + m_nBorderWidth;
 	for( n=0; n<m_anColsWidth; n++ )
 	{
@@ -913,7 +913,7 @@ void CXI_TABLE::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *name2)
 
 	UpdateBorders();
 
-	// читаем строки таблицы
+	// С‡РёС‚Р°РµРј СЃС‚СЂРѕРєРё С‚Р°Р±Р»РёС†С‹
 	UpdateTableCells();
 	SelectLine( 0 );
 }
@@ -922,27 +922,27 @@ void CXI_TABLE::UpdateBorders()
 {
 	long n, q, r,c, nTop,nLeft;
 
-	// подсчет количества линий в рамке
+	// РїРѕРґСЃС‡РµС‚ РєРѕР»РёС‡РµСЃС‚РІР° Р»РёРЅРёР№ РІ СЂР°РјРєРµ
 	q = 0;
-	if( m_nHeaderLineHeight > 0 && m_nRowQuantity > 0 ) // горизонтальная линия под заголовком
+	if( m_nHeaderLineHeight > 0 && m_nRowQuantity > 0 ) // РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅР°СЏ Р»РёРЅРёСЏ РїРѕРґ Р·Р°РіРѕР»РѕРІРєРѕРј
 		q += 1;
-	if( m_nHLineHeight > 0 && m_nRowQuantity > 2 ) // горизонтальные линии
+	if( m_nHLineHeight > 0 && m_nRowQuantity > 2 ) // РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅС‹Рµ Р»РёРЅРёРё
 		q += m_nRowQuantity-2;
-	if( m_bHLineIsBreakable ) q *= m_nColQuantity; // разрывная линия дробится по количеству колонок
-	if(	m_nVLineWidth > 0 && m_nColQuantity > 1 ) // вертикальные линии
+	if( m_bHLineIsBreakable ) q *= m_nColQuantity; // СЂР°Р·СЂС‹РІРЅР°СЏ Р»РёРЅРёСЏ РґСЂРѕР±РёС‚СЃСЏ РїРѕ РєРѕР»РёС‡РµСЃС‚РІСѓ РєРѕР»РѕРЅРѕРє
+	if(	m_nVLineWidth > 0 && m_nColQuantity > 1 ) // РІРµСЂС‚РёРєР°Р»СЊРЅС‹Рµ Р»РёРЅРёРё
 		q += m_nColQuantity-1;
-	q += 4 + 4; // 4 угла и линии по сторонам
+	q += 4 + 4; // 4 СѓРіР»Р° Рё Р»РёРЅРёРё РїРѕ СЃС‚РѕСЂРѕРЅР°Рј
 
-	if( m_nBorderSubQ != q ) // перестраиваем буферы
+	if( m_nBorderSubQ != q ) // РїРµСЂРµСЃС‚СЂР°РёРІР°РµРј Р±СѓС„РµСЂС‹
 	{
 		m_nBorderSubQ = q;
 		VERTEX_BUF_RELEASE( m_rs, m_idBorderVBuf );
 		INDEX_BUF_RELEASE( m_rs, m_idBorderIBuf );
 
-		// индекс буфер
+		// РёРЅРґРµРєСЃ Р±СѓС„РµСЂ
 		m_idBorderIBuf = m_rs->CreateIndexBufferManaged( q * 6 * sizeof(WORD) );
 		Assert( m_idBorderIBuf != -1 );
-		// заполняем
+		// Р·Р°РїРѕР»РЅСЏРµРј
 		WORD* pT = (WORD*)m_rs->LockIndexBuffer( m_idBorderIBuf );
 		for( n=0; n<q; n++ )
 		{
@@ -955,12 +955,12 @@ void CXI_TABLE::UpdateBorders()
 		}
 		m_rs->UnLockIndexBuffer( m_idBorderIBuf );
 
-		// вертекс буфер
+		// РІРµСЂС‚РµРєСЃ Р±СѓС„РµСЂ
 		m_idBorderVBuf = m_rs->CreateVertexBufferManaged( XI_ONETEX_FVF, q * 4 * sizeof(XI_ONETEX_VERTEX), D3DUSAGE_WRITEONLY );
 		Assert( m_idBorderVBuf != -1 );
 	}
 
-	// заполняем вертекс буфер
+	// Р·Р°РїРѕР»РЅСЏРµРј РІРµСЂС‚РµРєСЃ Р±СѓС„РµСЂ
 	XI_ONETEX_VERTEX* pV = (XI_ONETEX_VERTEX*)m_rs->LockVertexBuffer( m_idBorderVBuf );
 	// horizontal lines
 	nTop = m_rect.top;
@@ -972,7 +972,7 @@ void CXI_TABLE::UpdateBorders()
 		if( q > 0 )
 		{
 			if( m_bHLineIsBreakable )
-			{ // отдельные линии для каждой колонки
+			{ // РѕС‚РґРµР»СЊРЅС‹Рµ Р»РёРЅРёРё РґР»СЏ РєР°Р¶РґРѕР№ РєРѕР»РѕРЅРєРё
 				for( c=0; c<m_nColQuantity; c++ )
 				{
 					WriteSquare( &pV[n], m_nBorderIcon_HLine, m_dwBorderColor,
@@ -980,7 +980,7 @@ void CXI_TABLE::UpdateBorders()
 					nLeft += m_anColsWidth[c];
 					n += 4;
 				}
-			} // одна линия на все колонки
+			} // РѕРґРЅР° Р»РёРЅРёСЏ РЅР° РІСЃРµ РєРѕР»РѕРЅРєРё
 			else
 			{
 				WriteSquare( &pV[n], m_nBorderIcon_HLine, m_dwBorderColor,
@@ -1082,9 +1082,9 @@ void CXI_TABLE::UpdateTableCells()
 
 	long nNewSel = pARoot->GetAttributeAsDword( "select", m_nSelectIndex+1 ) - 1;
 
-	// зачитываем строки из атрибутов
-	m_nTopIndex = pARoot->GetAttributeAsDword( "top", 0 ); // первый индекс зачитываемого аттрибута
-	// сначала проверим наличие заголовка
+	// Р·Р°С‡РёС‚С‹РІР°РµРј СЃС‚СЂРѕРєРё РёР· Р°С‚СЂРёР±СѓС‚РѕРІ
+	m_nTopIndex = pARoot->GetAttributeAsDword( "top", 0 ); // РїРµСЂРІС‹Р№ РёРЅРґРµРєСЃ Р·Р°С‡РёС‚С‹РІР°РµРјРѕРіРѕ Р°С‚С‚СЂРёР±СѓС‚Р°
+	// СЃРЅР°С‡Р°Р»Р° РїСЂРѕРІРµСЂРёРј РЅР°Р»РёС‡РёРµ Р·Р°РіРѕР»РѕРІРєР°
 	ATTRIBUTES* pAttr = pARoot->GetAttributeClass( "hr" );
 	if( pAttr )
 	{
@@ -1095,7 +1095,7 @@ void CXI_TABLE::UpdateTableCells()
 	} else {
 		DELETE( m_pHeader );
 	}
-	// потом
+	// РїРѕС‚РѕРј
 	q = m_bVariableLineHeight ? 1000 : (m_nRowQuantity - (m_pHeader?1:0));
 	for( r=0; (nY<m_rect.bottom)&&(r<q); r++ )
 	{
@@ -1113,14 +1113,14 @@ void CXI_TABLE::UpdateTableCells()
 		pTL->SetData( r+(m_pHeader?1:0), pAttr, false );
 		nY += pTL->GetLineHeight();
 	}
-	// удаляем лишние строки
+	// СѓРґР°Р»СЏРµРј Р»РёС€РЅРёРµ СЃС‚СЂРѕРєРё
 	while( (long)m_aLine.Size() > r )
 	{
 		DELETE( m_aLine[r] );
 		m_aLine.DelIndex( r );
 	}
 
-	// если высота строк переменная, то пересчитаем ее
+	// РµСЃР»Рё РІС‹СЃРѕС‚Р° СЃС‚СЂРѕРє РїРµСЂРµРјРµРЅРЅР°СЏ, С‚Рѕ РїРµСЂРµСЃС‡РёС‚Р°РµРј РµРµ
 	if( m_bVariableLineHeight )
 	{
 		RecalculateLineHeights();
@@ -1234,7 +1234,7 @@ void CXI_TABLE::UpdateSelectImage()
 
 long CXI_TABLE::GetRowTop( long nRow )
 {
-	if( nRow < 0 || nRow >= m_anRowsHeights ) return m_rect.top; // ошибочная ситуация
+	if( nRow < 0 || nRow >= m_anRowsHeights ) return m_rect.top; // РѕС€РёР±РѕС‡РЅР°СЏ СЃРёС‚СѓР°С†РёСЏ
 	long nTop = m_rect.top;
 	for( long n=0; n<nRow; n++ )
 	{
@@ -1245,7 +1245,7 @@ long CXI_TABLE::GetRowTop( long nRow )
 
 long CXI_TABLE::GetColLeft( long nCol )
 {
-	if( nCol<0 || nCol>=m_anColsWidth ) return m_rect.left; // ошибочная ситуация
+	if( nCol<0 || nCol>=m_anColsWidth ) return m_rect.left; // РѕС€РёР±РѕС‡РЅР°СЏ СЃРёС‚СѓР°С†РёСЏ
 	long nLeft = m_rect.left;
 	for( long n=0; n<nCol; n++ )
 	{
@@ -1256,14 +1256,14 @@ long CXI_TABLE::GetColLeft( long nCol )
 
 void CXI_TABLE::SetTopIndexForSelect( long nSelIndex )
 {
-	if( nSelIndex<0 ) return; // ошибочная ситуация
+	if( nSelIndex<0 ) return; // РѕС€РёР±РѕС‡РЅР°СЏ СЃРёС‚СѓР°С†РёСЏ
 
-	if( nSelIndex < m_nTopIndex ) // до вершины - значит ставим выделение наверх
+	if( nSelIndex < m_nTopIndex ) // РґРѕ РІРµСЂС€РёРЅС‹ - Р·РЅР°С‡РёС‚ СЃС‚Р°РІРёРј РІС‹РґРµР»РµРЅРёРµ РЅР°РІРµСЂС…
 	{
 		SetTopIndex( nSelIndex );
 		UpdateTableCells();
 	}
-	else if( nSelIndex >= m_nTopIndex + (long)m_anRowsHeights.Size() - (m_pHeader?1:0) ) // после последней строки - значит ставим выделение вниз
+	else if( nSelIndex >= m_nTopIndex + (long)m_anRowsHeights.Size() - (m_pHeader?1:0) ) // РїРѕСЃР»Рµ РїРѕСЃР»РµРґРЅРµР№ СЃС‚СЂРѕРєРё - Р·РЅР°С‡РёС‚ СЃС‚Р°РІРёРј РІС‹РґРµР»РµРЅРёРµ РІРЅРёР·
 	{
 		nSelIndex = nSelIndex - m_anRowsHeights.Size() + (m_pHeader?1:0) + 1;
 		if( nSelIndex < 0 ) nSelIndex = 0;
@@ -1278,32 +1278,32 @@ void CXI_TABLE::UpdateLineQuantity()
 	ATTRIBUTES* pARoot = api->Entity_GetAttributeClass( &g_idInterface, m_nodeName );
 	if( !pARoot ) return;
 
-	if( !pARoot->GetAttributeClass( "tr1" ) ) return; // нет ни одного
+	if( !pARoot->GetAttributeClass( "tr1" ) ) return; // РЅРµС‚ РЅРё РѕРґРЅРѕРіРѕ
 
 	long nmin = 1;
 	char pcAttrName[64];
 
-	// поиск минимального элемента
+	// РїРѕРёСЃРє РјРёРЅРёРјР°Р»СЊРЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р°
 	while(true)
 	{
 		sprintf( pcAttrName, "tr%d", nmin*2 );
 		if( pARoot->GetAttributeClass( pcAttrName ) )
 			nmin *= 2;
-		else break; // следующий элемент бинарного дерева несуществует
+		else break; // СЃР»РµРґСѓСЋС‰РёР№ СЌР»РµРјРµРЅС‚ Р±РёРЅР°СЂРЅРѕРіРѕ РґРµСЂРµРІР° РЅРµСЃСѓС‰РµСЃС‚РІСѓРµС‚
 	}
 
-	// бинарный поиск между мин и макс индексами
+	// Р±РёРЅР°СЂРЅС‹Р№ РїРѕРёСЃРє РјРµР¶РґСѓ РјРёРЅ Рё РјР°РєСЃ РёРЅРґРµРєСЃР°РјРё
 	long nmax = nmin * 2;
 	while(true)
 	{
 		long n = (nmin + nmax) / 2;
 		if( n == nmin ) break;
 		sprintf( pcAttrName, "tr%d", n );
-		if( pARoot->GetAttributeClass( pcAttrName ) ) // элемент есть - значит старшая половина может иметь конец
+		if( pARoot->GetAttributeClass( pcAttrName ) ) // СЌР»РµРјРµРЅС‚ РµСЃС‚СЊ - Р·РЅР°С‡РёС‚ СЃС‚Р°СЂС€Р°СЏ РїРѕР»РѕРІРёРЅР° РјРѕР¶РµС‚ РёРјРµС‚СЊ РєРѕРЅРµС†
 		{
 			nmin = n;
 		}
-		else // иначе конец где то в первой половине
+		else // РёРЅР°С‡Рµ РєРѕРЅРµС† РіРґРµ С‚Рѕ РІ РїРµСЂРІРѕР№ РїРѕР»РѕРІРёРЅРµ
 		{
 			nmax = n;
 		}
@@ -1334,14 +1334,14 @@ void CXI_TABLE::UpdateScroller()
 
 void CXI_TABLE::RecalculateLineHeights()
 {
-	long nY = m_rect.top; // текущая вершина строки
-	long n = 0; // индекс в массиве высот
+	long nY = m_rect.top; // С‚РµРєСѓС‰Р°СЏ РІРµСЂС€РёРЅР° СЃС‚СЂРѕРєРё
+	long n = 0; // РёРЅРґРµРєСЃ РІ РјР°СЃСЃРёРІРµ РІС‹СЃРѕС‚
 
-	// учет заголовка
+	// СѓС‡РµС‚ Р·Р°РіРѕР»РѕРІРєР°
 	if( m_pHeader )
 		nY += m_anRowsHeights[n++];
 
-	// берем реальные размеры строк
+	// Р±РµСЂРµРј СЂРµР°Р»СЊРЅС‹Рµ СЂР°Р·РјРµСЂС‹ СЃС‚СЂРѕРє
 	for(long i=0; i<m_aLine; i++,n++)
 	{
 		if( n < m_anRowsHeights )
@@ -1351,14 +1351,14 @@ void CXI_TABLE::RecalculateLineHeights()
 		nY += m_aLine[i]->GetLineHeight();
 	}
 
-	// если последняя строка выходит за размеры, то укорачиваем ее по высоте
+	// РµСЃР»Рё РїРѕСЃР»РµРґРЅСЏСЏ СЃС‚СЂРѕРєР° РІС‹С…РѕРґРёС‚ Р·Р° СЂР°Р·РјРµСЂС‹, С‚Рѕ СѓРєРѕСЂР°С‡РёРІР°РµРј РµРµ РїРѕ РІС‹СЃРѕС‚Рµ
 	if( nY>m_rect.bottom && m_aLine.Size()>0 ) {
 		long nLine = m_aLine.Last();
 		m_aLine[nLine]->SetLineHeight( m_aLine[nLine]->GetLineHeight() - (nY - m_rect.bottom) );
 		nY = m_rect.bottom;
 	}
 
-	// недостающие строки ставим в стандартную высоту
+	// РЅРµРґРѕСЃС‚Р°СЋС‰РёРµ СЃС‚СЂРѕРєРё СЃС‚Р°РІРёРј РІ СЃС‚Р°РЅРґР°СЂС‚РЅСѓСЋ РІС‹СЃРѕС‚Сѓ
 	for( ; nY<m_rect.bottom; n++ ) {
 		long nH = m_nNormalLineHeight;
 		if( nY + nH > m_rect.bottom ) nH = m_rect.bottom - nY;
@@ -1367,7 +1367,7 @@ void CXI_TABLE::RecalculateLineHeights()
 		nY += nH;
 	}
 
-	// оставшиеся строки удаляем
+	// РѕСЃС‚Р°РІС€РёРµСЃСЏ СЃС‚СЂРѕРєРё СѓРґР°Р»СЏРµРј
 	while( n < m_anRowsHeights )
 		m_anRowsHeights.DelIndex( n );
 }

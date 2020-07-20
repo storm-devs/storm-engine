@@ -60,7 +60,7 @@ bool SCRSHOTER::Init()
 
 void SCRSHOTER::SetDevice()
 {
-    // получить сервис рендера
+    // РїРѕР»СѓС‡РёС‚СЊ СЃРµСЂРІРёСЃ СЂРµРЅРґРµСЂР°
 	rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
 	if(!rs){_THROW("No service: dx8render")}
 
@@ -88,7 +88,7 @@ bool SCRSHOTER::MakeScreenShot()
 
 	HRESULT hr = D3D_OK;
 
-	// Заставим видео карту отрисовать все незакоченные задания
+	// Р—Р°СЃС‚Р°РІРёРј РІРёРґРµРѕ РєР°СЂС‚Сѓ РѕС‚СЂРёСЃРѕРІР°С‚СЊ РІСЃРµ РЅРµР·Р°РєРѕС‡РµРЅРЅС‹Рµ Р·Р°РґР°РЅРёСЏ
 	hr = rs->EndScene();
 	if(hr!=D3D_OK) {
 		api->Trace("ERROR!!! Can`t EndScene");
@@ -100,42 +100,42 @@ bool SCRSHOTER::MakeScreenShot()
 		return false;
 	}
 
-	// удалим старый скрин шот
+	// СѓРґР°Р»РёРј СЃС‚Р°СЂС‹Р№ СЃРєСЂРёРЅ С€РѕС‚
 	if(m_pScrShotTex!=null && rs!=null) rs->Release(m_pScrShotTex);
 	m_pScrShotTex = null;
 
-	// получим данные о старой поверхности рендера
+	// РїРѕР»СѓС‡РёРј РґР°РЅРЅС‹Рµ Рѕ СЃС‚Р°СЂРѕР№ РїРѕРІРµСЂС…РЅРѕСЃС‚Рё СЂРµРЅРґРµСЂР°
 	D3DSURFACE_DESC desc;
 	
 	IDirect3DSurface9 * pOldRenderTarg = null;
 	if( hr==D3D_OK ) hr = rs->GetRenderTarget(&pOldRenderTarg);
 	if( hr==D3D_OK ) hr = pOldRenderTarg->GetDesc(&desc);
 
-	// получим копию рендер буфера
+	// РїРѕР»СѓС‡РёРј РєРѕРїРёСЋ СЂРµРЅРґРµСЂ Р±СѓС„РµСЂР°
 	IDirect3DSurface9 * pRenderTarg = null;
 	if( hr==D3D_OK ) hr = rs->CreateImageSurface(desc.Width, desc.Height, desc.Format, &pRenderTarg);
 	if( hr==D3D_OK ) hr = rs->GetRenderTargetData(pOldRenderTarg, pRenderTarg);
 	
 	if( pOldRenderTarg!=null ) pOldRenderTarg->Release();
 
-	// создадим новый скрин шот
+	// СЃРѕР·РґР°РґРёРј РЅРѕРІС‹Р№ СЃРєСЂРёРЅ С€РѕС‚
 	//if( hr==D3D_OK) hr = rs->CreateTexture(SS_TEXTURE_WIDTH,SS_TEXTURE_HEIGHT,1,0,D3DFMT_A8R8G8B8,D3DPOOL_SYSTEMMEM,&m_pScrShotTex);	
 	//if( hr==D3D_OK) hr = rs->CreateTexture(SS_TEXTURE_WIDTH,SS_TEXTURE_HEIGHT,1,0,D3DFMT_A8R8G8B8,D3DPOOL_MANAGED,&m_pScrShotTex);	
 	if( hr==D3D_OK) hr = rs->CreateTexture(SS_TEXTURE_WIDTH,SS_TEXTURE_HEIGHT,1,D3DUSAGE_DYNAMIC,D3DFMT_A8R8G8B8,D3DPOOL_DEFAULT,&m_pScrShotTex);	
 
-	// получим буфер для копии поверхности рендеринга
+	// РїРѕР»СѓС‡РёРј Р±СѓС„РµСЂ РґР»СЏ РєРѕРїРёРё РїРѕРІРµСЂС…РЅРѕСЃС‚Рё СЂРµРЅРґРµСЂРёРЅРіР°
 	void * pIn = null;
 	if( hr==D3D_OK ) hr = pRenderTarg->LockRect(&inRect,null,0);
 	if( hr==D3D_OK ) pIn = inRect.pBits;
-	// получим буфер для текстуры
+	// РїРѕР»СѓС‡РёРј Р±СѓС„РµСЂ РґР»СЏ С‚РµРєСЃС‚СѓСЂС‹
 	void * pOut = null;
 	if( hr==D3D_OK ) hr = m_pScrShotTex->LockRect(0,&outRect,null,0);
 	if( hr==D3D_OK ) pOut = outRect.pBits;
 
-	// заполним эту текстуру из копии нашего рендер буфера
+	// Р·Р°РїРѕР»РЅРёРј СЌС‚Сѓ С‚РµРєСЃС‚СѓСЂСѓ РёР· РєРѕРїРёРё РЅР°С€РµРіРѕ СЂРµРЅРґРµСЂ Р±СѓС„РµСЂР°
 	if( hr==D3D_OK )
 	{
-		// Создать набор отступов по ординатам
+		// РЎРѕР·РґР°С‚СЊ РЅР°Р±РѕСЂ РѕС‚СЃС‚СѓРїРѕРІ РїРѕ РѕСЂРґРёРЅР°С‚Р°Рј
 		int * pHorzOff = NEW int[SS_TEXTURE_WIDTH];
 		int * pVertOff = NEW int[SS_TEXTURE_HEIGHT];
 		if(!pHorzOff || !pVertOff) {
@@ -152,10 +152,10 @@ bool SCRSHOTER::MakeScreenShot()
 			nHorzSize = desc.Height * SS_TEXTURE_WIDTH / SS_TEXTURE_HEIGHT;
 			nVertSize = desc.Height;
 		}
-		// Заполним горизонтальные смещения
+		// Р—Р°РїРѕР»РЅРёРј РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅС‹Рµ СЃРјРµС‰РµРЅРёСЏ
 		for(n=0; n<SS_TEXTURE_WIDTH; n++)
 			pHorzOff[n] = (n * desc.Width / SS_TEXTURE_WIDTH) * (inRect.Pitch / desc.Width);
-		// Заполним вертикальные смещения
+		// Р—Р°РїРѕР»РЅРёРј РІРµСЂС‚РёРєР°Р»СЊРЅС‹Рµ СЃРјРµС‰РµРЅРёСЏ
 		for(n=0; n<SS_TEXTURE_HEIGHT; n++)
 			pVertOff[n] = n * desc.Height / SS_TEXTURE_HEIGHT;
 
@@ -174,11 +174,11 @@ bool SCRSHOTER::MakeScreenShot()
 		delete pVertOff;
 	}
 
-	// закрываем открытые буфера
+	// Р·Р°РєСЂС‹РІР°РµРј РѕС‚РєСЂС‹С‚С‹Рµ Р±СѓС„РµСЂР°
 	if(pIn!=null) pRenderTarg->UnlockRect();
 
 #ifdef _XBOX
-	// Делаем перевод в смешанную текстуру
+	// Р”РµР»Р°РµРј РїРµСЂРµРІРѕРґ РІ СЃРјРµС€Р°РЅРЅСѓСЋ С‚РµРєСЃС‚СѓСЂСѓ
 	DWORD dwTmp = outRect.Pitch*SS_TEXTURE_HEIGHT;
 	//DWORD dwPixelSize = XGBytesPerPixelFromFormat( D3DFMT_A8R8G8B8 );
 	if( (pIn=NEW char[dwTmp]) == null ) { _THROW("allocate memory error") }
@@ -189,13 +189,13 @@ bool SCRSHOTER::MakeScreenShot()
 	delete pIn;
 #endif
 
-	// закрываем открытые буфера
+	// Р·Р°РєСЂС‹РІР°РµРј РѕС‚РєСЂС‹С‚С‹Рµ Р±СѓС„РµСЂР°
 	if(pOut!=null) m_pScrShotTex->UnlockRect(0);
 
-	// Удалим ненужную уже копию экрана
+	// РЈРґР°Р»РёРј РЅРµРЅСѓР¶РЅСѓСЋ СѓР¶Рµ РєРѕРїРёСЋ СЌРєСЂР°РЅР°
 	if(pRenderTarg!=null) pRenderTarg->Release();
 
-	// Наложим на шот текстуру с рамкой
+	// РќР°Р»РѕР¶РёРј РЅР° С€РѕС‚ С‚РµРєСЃС‚СѓСЂСѓ СЃ СЂР°РјРєРѕР№
 	int nTextureID = rs->TextureCreate("interfaces\\EmptyBorder.tga");
 	if(nTextureID>=0)
 	{

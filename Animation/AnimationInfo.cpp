@@ -5,13 +5,13 @@
 //--------------------------------------------------------------------------------------------
 //	AnimationInfo
 //--------------------------------------------------------------------------------------------
-//	Здесь хранится информация об анимации, загружаемая 1 раз
+//	Р—РґРµСЃСЊ С…СЂР°РЅРёС‚СЃСЏ РёРЅС„РѕСЂРјР°С†РёСЏ РѕР± Р°РЅРёРјР°С†РёРё, Р·Р°РіСЂСѓР¶Р°РµРјР°СЏ 1 СЂР°Р·
 //============================================================================================
 
 #include "AnimationInfo.h"
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 AnimationInfo::AnimationInfo(const char * animationName)
@@ -38,7 +38,7 @@ AnimationInfo::~AnimationInfo()
 	}
 }
 
-//Создать кости
+//РЎРѕР·РґР°С‚СЊ РєРѕСЃС‚Рё
 void AnimationInfo::CreateBones(long numbones)
 {
 	Assert(bone == null || numBones == 0);
@@ -47,14 +47,14 @@ void AnimationInfo::CreateBones(long numbones)
 	bone = NEW Bone[numBones];
 }
 
-//Создать действие
+//РЎРѕР·РґР°С‚СЊ РґРµР№СЃС‚РІРёРµ
 ActionInfo * AnimationInfo::AddAction(const char * anctionName, long startframe, long endframe)
 {
 	Assert(anctionName);
-	//Ищем повторение
+	//РС‰РµРј РїРѕРІС‚РѕСЂРµРЅРёРµ
 	for(long i = 0; i < numActions; i++)
 		if(action[i][0] == anctionName) return null;
-	//Всё нормально - новое действие
+	//Р’СЃС‘ РЅРѕСЂРјР°Р»СЊРЅРѕ - РЅРѕРІРѕРµ РґРµР№СЃС‚РІРёРµ
 	numActions++;
 	action = (ActionInfo **)RESIZE(action, numActions*4);	
 	action[numActions - 1] = NEW ActionInfo(anctionName, startframe, endframe);
@@ -62,16 +62,16 @@ ActionInfo * AnimationInfo::AddAction(const char * anctionName, long startframe,
 }
 
 //--------------------------------------------------------------------------------------------
-//Работа с анимацией
+//Р Р°Р±РѕС‚Р° СЃ Р°РЅРёРјР°С†РёРµР№
 //--------------------------------------------------------------------------------------------
 
-//Сравнить с текущим именем
+//РЎСЂР°РІРЅРёС‚СЊ СЃ С‚РµРєСѓС‰РёРј РёРјРµРЅРµРј
 bool AnimationInfo::operator == (const char * animationName)
 {
 	return stricmp(animationName, name) == 0;
 }
 
-//Найти действие по имени
+//РќР°Р№С‚Рё РґРµР№СЃС‚РІРёРµ РїРѕ РёРјРµРЅРё
 ActionInfo * AnimationInfo::FindAction(const char * actionName)
 {
 	for(long i = 0; i < numActions; i++)

@@ -13,7 +13,7 @@
 
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 Lighter::Lighter()
@@ -28,10 +28,10 @@ Lighter::~Lighter()
 {
 }
 
-//Инициализация
+//РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
 bool Lighter::Init()
 {
-	//Проверяем, будем ли работать
+	//РџСЂРѕРІРµСЂСЏРµРј, Р±СѓРґРµРј Р»Рё СЂР°Р±РѕС‚Р°С‚СЊ
 	INIFILE * ini = api->fio->OpenIniFile("resource\\ini\\loclighter.ini");
 	if(!ini) return false;
 	long isLoading = ini->GetLong(null, "loading", 0);	
@@ -53,13 +53,13 @@ bool Lighter::Init()
 	_CORE_API->LayerAdd("lighter_realize", GetID(), 1000);
 	//
 	lightProcessor.SetParams(&geometry, &window, &lights, &octTree, rs);
-	//оконная система
+	//РѕРєРѕРЅРЅР°СЏ СЃРёСЃС‚РµРјР°
 	if(!window.Init(rs)) return false;
 
 	return true;
 }
 
-//Исполнение
+//РСЃРїРѕР»РЅРµРЅРёРµ
 void Lighter::Execute(dword delta_time)
 {
 	float dltTime = delta_time*0.001f;
@@ -99,8 +99,8 @@ void Lighter::Execute(dword delta_time)
 
 void Lighter::PreparingData()
 {
-	//Освещение
-	//Рассеяное
+	//РћСЃРІРµС‰РµРЅРёРµ
+	//Р Р°СЃСЃРµСЏРЅРѕРµ
 	dword amb = 0xff404040;
 	rs->GetRenderState(D3DRS_AMBIENT, &amb);
 	CVECTOR clr;
@@ -111,7 +111,7 @@ void Lighter::PreparingData()
 	mx = mx > clr.z ? mx : clr.z;
 	if(mx > 0.0f) clr *= 1.0f/mx; else clr = 1.0f;
 	lights.AddAmbient(clr);
-	//Солнце
+	//РЎРѕР»РЅС†Рµ
 	if(rs)
 	{
 		BOOL isLight = FALSE;
@@ -136,16 +136,16 @@ void Lighter::PreparingData()
 		}
 	}
 	lights.PostInit();
-	//Геометрия
+	//Р“РµРѕРјРµС‚СЂРёСЏ
 	if(!geometry.Process(rs, lights.Num()))
 	{
 		window.isFailedInit = true;
 		return;
 	}
 	octTree.Init(&geometry);
-	//Освещалка
+	//РћСЃРІРµС‰Р°Р»РєР°
 	lightProcessor.UpdateLightsParam();
-	//Интерфейс
+	//РРЅС‚РµСЂС„РµР№СЃ
 	window.InitList(lights);
 	window.isTraceShadows = autoTrace;
 	window.isSmoothShadows = autoSmooth;
@@ -161,7 +161,7 @@ void Lighter::Realize(dword delta_time)
 	window.Draw(delta_time*0.001f);
 }
 
-//Сообщения
+//РЎРѕРѕР±С‰РµРЅРёСЏ
 dword _cdecl Lighter::ProcessMessage(MESSAGE & message)
 {
 	char command[32];
@@ -169,25 +169,25 @@ dword _cdecl Lighter::ProcessMessage(MESSAGE & message)
 	command[31] = 0;
 	if(stricmp(command, "AddModel") == 0)
 	{
-		//Добавляем модельку
+		//Р”РѕР±Р°РІР»СЏРµРј РјРѕРґРµР»СЊРєСѓ
 		MsgAddModel(message);
 		return true;
 	}else
 	if(stricmp(command, "ModelsPath") == 0)
 	{
-		//Добавляем модельку
+		//Р”РѕР±Р°РІР»СЏРµРј РјРѕРґРµР»СЊРєСѓ
 		MsgModelsPath(message);
 		return true;
 	}else
 	if(stricmp(command, "LightPath") == 0)
 	{
-		//Добавляем модельку
+		//Р”РѕР±Р°РІР»СЏРµРј РјРѕРґРµР»СЊРєСѓ
 		MsgLightPath(message);
 		return true;
 	}else
 	if(stricmp(command, "AddLight") == 0)
 	{
-		//Добавляем модельку
+		//Р”РѕР±Р°РІР»СЏРµРј РјРѕРґРµР»СЊРєСѓ
 		MsgAddLight(message);
 		return true;
 	}
@@ -227,25 +227,25 @@ void Lighter::MsgLightPath(MESSAGE & message)
 void Lighter::MsgAddLight(MESSAGE & message)
 {
 	CVECTOR pos, clr;
-	//Позиция
+	//РџРѕР·РёС†РёСЏ
 	pos.x = message.Float();
 	pos.y = message.Float();
 	pos.z = message.Float();
-	//Цвет
+	//Р¦РІРµС‚
 	clr.x = message.Float();
 	clr.y = message.Float();
 	clr.z = message.Float();
-	//Затухание
+	//Р—Р°С‚СѓС…Р°РЅРёРµ
 	float att0 = message.Float();
 	float att1 = message.Float();
 	float att2 = message.Float();
-	//Дистанция
+	//Р”РёСЃС‚Р°РЅС†РёСЏ
 	float range = message.Float();
-	//Имя группы
+	//РРјСЏ РіСЂСѓРїРїС‹
 	char group[512];
 	message.String(511, group);
 	group[511] = 0;
-	//Добавляем источник
+	//Р”РѕР±Р°РІР»СЏРµРј РёСЃС‚РѕС‡РЅРёРє
 	lights.AddPointLight(clr, pos, att0, att1, att2, range, group);
 }
 

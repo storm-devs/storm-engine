@@ -22,7 +22,7 @@ float DESTRUCT_MAST_DEEP=20.f;
 float DEEP_FALL_STEP=3.f;
 int   MAX_MOVE_CICLES=50;
 int   MIN_MOV_COUNTER=5;
-// углы вращения(падения) мачты
+// СѓРіР»С‹ РІСЂР°С‰РµРЅРёСЏ(РїР°РґРµРЅРёСЏ) РјР°С‡С‚С‹
 float MIN_X_DANG=-0.01f;
 float VAR_X_DANG=0.02f;
 float MIN_Z_DANG=0.07f;
@@ -92,7 +92,7 @@ void NetMast::Execute(dword Delta_Time)
     if(bUse)
     {
         //====================================================
-        // Если был изменен ини-файл, то считать инфо из него
+        // Р•СЃР»Рё Р±С‹Р» РёР·РјРµРЅРµРЅ РёРЅРё-С„Р°Р№Р», С‚Рѕ СЃС‡РёС‚Р°С‚СЊ РёРЅС„Рѕ РёР· РЅРµРіРѕ
         WIN32_FIND_DATA	wfd;
 	    HANDLE h = _CORE_API->fio->_FindFirstFile(MAST_INI_FILE,&wfd);
         if (INVALID_HANDLE_VALUE != h)
@@ -178,7 +178,7 @@ void _cdecl NetMast::Mount( ENTITY_ID modelEI, ENTITY_ID shipEI, NODE* mastNodeP
 {
 	if(mastNodePointer==NULL) return;
     MODEL * oldmdl=(MODEL*)_CORE_API->GetEntityPointer(&modelEI);
-    if(oldmdl==0) return; // ничего не валим, если нет старой модели
+    if(oldmdl==0) return; // РЅРёС‡РµРіРѕ РЅРµ РІР°Р»РёРј, РµСЃР»Рё РЅРµС‚ СЃС‚Р°СЂРѕР№ РјРѕРґРµР»Рё
     oldmodel_id=modelEI;
     ship_id=shipEI;
 
@@ -191,7 +191,7 @@ void _cdecl NetMast::Mount( ENTITY_ID modelEI, ENTITY_ID shipEI, NODE* mastNodeP
     ENTITY_ID vantEI; bool bVant;
     bVant = NetFindClass(IsServer(), &vantEI, "NetVant");
 
-	// найдем аттрибуты
+	// РЅР°Р№РґРµРј Р°С‚С‚СЂРёР±СѓС‚С‹
 	VAI_OBJBASE * pVAI = NULL;	pVAI = (VAI_OBJBASE*)api->GetEntityPointer(&shipEI);
 	ATTRIBUTES * pA = NULL;	if(pVAI!=NULL) pA = pVAI->GetACharacter();
 
@@ -211,10 +211,10 @@ void _cdecl NetMast::Mount( ENTITY_ID modelEI, ENTITY_ID shipEI, NODE* mastNodeP
     {
         int i,j;
 
-        // создадим новую модель
+        // СЃРѕР·РґР°РґРёРј РЅРѕРІСѓСЋ РјРѕРґРµР»СЊ
         bModel=true; model_id = mastNodePointer->Unlink2Model();
 
-        // пройдем по всем веревкам данной мачты и отключим их
+        // РїСЂРѕР№РґРµРј РїРѕ РІСЃРµРј РІРµСЂРµРІРєР°Рј РґР°РЅРЅРѕР№ РјР°С‡С‚С‹ Рё РѕС‚РєР»СЋС‡РёРј РёС…
 		if(bVant) api->Send_Message(vantEI, "lip", MSG_VANT_DEL_MAST, modelEI, mastNodePointer);
 		MODEL * mdl = (MODEL*)_CORE_API->GetEntityPointer(&model_id);
 		if(mdl!=NULL)	for(i=0; i<10000; i++)
@@ -241,7 +241,7 @@ void _cdecl NetMast::Mount( ENTITY_ID modelEI, ENTITY_ID shipEI, NODE* mastNodeP
 						api->Send_Message(flagEI,"lili",MSG_FLAG_TO_NEWHOST,modelEI,atoi(&gl.group_name[4]),model_id);
 				}
 			}
-			// валим также паруса связанные с данной мачтой
+			// РІР°Р»РёРј С‚Р°РєР¶Рµ РїР°СЂСѓСЃР° СЃРІСЏР·Р°РЅРЅС‹Рµ СЃ РґР°РЅРЅРѕР№ РјР°С‡С‚РѕР№
 			if(bSail)
 			{
 				_CORE_API->Send_Message(sailEI,"liii",MSG_SAIL_CHECK,shipEI,GetID(),model_id);
@@ -250,7 +250,7 @@ void _cdecl NetMast::Mount( ENTITY_ID modelEI, ENTITY_ID shipEI, NODE* mastNodeP
 		}
 		if(bSail) api->Send_Message(sailEI, "ll", MSG_SAIL_MAST_PROCESSING, -1);
 
-        // установим первоначальные параметры движения мачты
+        // СѓСЃС‚Р°РЅРѕРІРёРј РїРµСЂРІРѕРЅР°С‡Р°Р»СЊРЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹ РґРІРёР¶РµРЅРёСЏ РјР°С‡С‚С‹
         SHIP_BASE *sb; sb=(SHIP_BASE*)_CORE_API->GetEntityPointer(&shipEI);
         if(sb)
         {
@@ -274,7 +274,7 @@ void _cdecl NetMast::Mount( ENTITY_ID modelEI, ENTITY_ID shipEI, NODE* mastNodeP
         mm.mov = mastNodePointer->glob_mtx.Pos();
         mm.dang = CVECTOR(MIN_X_DANG + VAR_X_DANG*(float)rand()/(float)RAND_MAX,
                           0.f, MIN_Z_DANG + VAR_Z_DANG*(float)rand()/(float)RAND_MAX);
-        // найдем ближайший корабль
+        // РЅР°Р№РґРµРј Р±Р»РёР¶Р°Р№С€РёР№ РєРѕСЂР°Р±Р»СЊ
         ENTITY_ID tmpEI;
         float minDist=10000.f;
         SHIP_BASE *minDstShip;
@@ -289,7 +289,7 @@ void _cdecl NetMast::Mount( ENTITY_ID modelEI, ENTITY_ID shipEI, NODE* mastNodeP
                 minDstShip = sb;
             }
         } while(NetFindClassNext(IsServer(), &tmpEI));
-        if(minDist<4000.f) // если ближайший корабль близко к нам, то валим мачту в противоположную сторону
+        if(minDist<4000.f) // РµСЃР»Рё Р±Р»РёР¶Р°Р№С€РёР№ РєРѕСЂР°Р±Р»СЊ Р±Р»РёР·РєРѕ Рє РЅР°Рј, С‚Рѕ РІР°Р»РёРј РјР°С‡С‚Сѓ РІ РїСЂРѕС‚РёРІРѕРїРѕР»РѕР¶РЅСѓСЋ СЃС‚РѕСЂРѕРЅСѓ
         {
             CVECTOR vect;
             mastNodePointer->glob_mtx.MulToInvNorm(minDstShip->State.vPos-mm.mov,vect);
@@ -309,7 +309,7 @@ void _cdecl NetMast::Mount( ENTITY_ID modelEI, ENTITY_ID shipEI, NODE* mastNodeP
         mm.sdang=mm.dang;
 
         GEOS::INFO gi;
-        // установим верхнюю и нижнюю точки мачты
+        // СѓСЃС‚Р°РЅРѕРІРёРј РІРµСЂС…РЅСЋСЋ Рё РЅРёР¶РЅСЋСЋ С‚РѕС‡РєРё РјР°С‡С‚С‹
         mastNodePointer->geo->GetInfo(gi);
         mm.ep=mm.bp = *(CVECTOR*)&gi.boxcenter;
         mm.bp.y-=gi.boxsize.y*.5f;
@@ -319,11 +319,11 @@ void _cdecl NetMast::Mount( ENTITY_ID modelEI, ENTITY_ID shipEI, NODE* mastNodeP
             mm.bp.z-=gi.boxsize.z*.5f;
             mm.ep.z+=gi.boxsize.z*.5f;
         }
-        // проверим начальную точку мачты, и если она посажена в корабль, то
-        // подравнять ее до точки соприкосновения с кораблем
+        // РїСЂРѕРІРµСЂРёРј РЅР°С‡Р°Р»СЊРЅСѓСЋ С‚РѕС‡РєСѓ РјР°С‡С‚С‹, Рё РµСЃР»Рё РѕРЅР° РїРѕСЃР°Р¶РµРЅР° РІ РєРѕСЂР°Р±Р»СЊ, С‚Рѕ
+        // РїРѕРґСЂР°РІРЅСЏС‚СЊ РµРµ РґРѕ С‚РѕС‡РєРё СЃРѕРїСЂРёРєРѕСЃРЅРѕРІРµРЅРёСЏ СЃ РєРѕСЂР°Р±Р»РµРј
         CVECTOR bv = mastNodePointer->glob_mtx*mm.bp;
         CVECTOR ev = mastNodePointer->glob_mtx*mm.ep;
-        // обнулим локальную матрицу
+        // РѕР±РЅСѓР»РёРј Р»РѕРєР°Р»СЊРЅСѓСЋ РјР°С‚СЂРёС†Сѓ
         mastNodePointer->loc_mtx.SetIdentity();
         float tmpTrace = oldmdl->Trace(ev,bv);
         if(tmpTrace<=1.f)
@@ -332,7 +332,7 @@ void _cdecl NetMast::Mount( ENTITY_ID modelEI, ENTITY_ID shipEI, NODE* mastNodeP
             mastNodePointer->glob_mtx.MulToInv(bv,mm.bp);
         }
 
-        // установим левую и правую точки реи
+        // СѓСЃС‚Р°РЅРѕРІРёРј Р»РµРІСѓСЋ Рё РїСЂР°РІСѓСЋ С‚РѕС‡РєРё СЂРµРё
         for(i=0; i<mastNodePointer->nnext; i++)
             if(!strncmp(mastNodePointer->next[i]->GetName(),"rey",3))
             {
@@ -380,49 +380,49 @@ void NetMast::LoadIni()
 
   /*=========================================================================
  =============================================================================
-=======   ЗАГРУЗКА ПАРАМЕТРОВ   ===============================================
+=======   Р—РђР“Р РЈР—РљРђ РџРђР РђРњР•РўР РћР’   ===============================================
 ==============================================================================*/
-    // шаг движения мачты при опускании одного конца в воду
+    // С€Р°Рі РґРІРёР¶РµРЅРёСЏ РјР°С‡С‚С‹ РїСЂРё РѕРїСѓСЃРєР°РЅРёРё РѕРґРЅРѕРіРѕ РєРѕРЅС†Р° РІ РІРѕРґСѓ
     MAST_MOVE_STEP= ini->GetFloat(section,"water_slide_step",MAST_MOVE_STEP);
-    // ускорение шага свободного падения всей мачты вниз
+    // СѓСЃРєРѕСЂРµРЅРёРµ С€Р°РіР° СЃРІРѕР±РѕРґРЅРѕРіРѕ РїР°РґРµРЅРёСЏ РІСЃРµР№ РјР°С‡С‚С‹ РІРЅРёР·
     MAST_FALL_STEP= ini->GetFloat(section,"downfall_acceleration",MAST_FALL_STEP);
-    // максимальный шаг падения мачты вниз
+    // РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№ С€Р°Рі РїР°РґРµРЅРёСЏ РјР°С‡С‚С‹ РІРЅРёР·
     MAST_MAX_FALL_SPEED= ini->GetFloat(section,"downfall_maxspeed",MAST_MAX_FALL_SPEED);
-    // максимальный угол поворота мачты
+    // РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№ СѓРіРѕР» РїРѕРІРѕСЂРѕС‚Р° РјР°С‡С‚С‹
     MAX_FALL_ANGLE= ini->GetFloat(section,"fMaxAngle",MAX_FALL_ANGLE);
-    // шаг поворота мачты вокруг оси Y (при столкновении реи с объектом)
+    // С€Р°Рі РїРѕРІРѕСЂРѕС‚Р° РјР°С‡С‚С‹ РІРѕРєСЂСѓРі РѕСЃРё Y (РїСЂРё СЃС‚РѕР»РєРЅРѕРІРµРЅРёРё СЂРµРё СЃ РѕР±СЉРµРєС‚РѕРј)
     YROTATE_STEP= ini->GetFloat(section,"fYRotateStep",YROTATE_STEP);
-    // высота луча трассировки при коллизии
+    // РІС‹СЃРѕС‚Р° Р»СѓС‡Р° С‚СЂР°СЃСЃРёСЂРѕРІРєРё РїСЂРё РєРѕР»Р»РёР·РёРё
     TRACE_HEIGHT= ini->GetFloat(section,"fTraceHeight",TRACE_HEIGHT);
-    // дополнительная добавка по высоте к точке коллизии для исключения повторной коллизии
+    // РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅР°СЏ РґРѕР±Р°РІРєР° РїРѕ РІС‹СЃРѕС‚Рµ Рє С‚РѕС‡РєРµ РєРѕР»Р»РёР·РёРё РґР»СЏ РёСЃРєР»СЋС‡РµРЅРёСЏ РїРѕРІС‚РѕСЂРЅРѕР№ РєРѕР»Р»РёР·РёРё
     TRACE_ADDING= ini->GetFloat(section,"fTraceHeightAdding",TRACE_ADDING);
-    // шаг сдвига мачты по горизонтали
+    // С€Р°Рі СЃРґРІРёРіР° РјР°С‡С‚С‹ РїРѕ РіРѕСЂРёР·РѕРЅС‚Р°Р»Рё
     TRACE_SLIDING= ini->GetFloat(section,"fTraceSliding",TRACE_SLIDING);
-    // максимальное изменение координат для смены алгоритма сдвига позиции мачты
+    // РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ РёР·РјРµРЅРµРЅРёРµ РєРѕРѕСЂРґРёРЅР°С‚ РґР»СЏ СЃРјРµРЅС‹ Р°Р»РіРѕСЂРёС‚РјР° СЃРґРІРёРіР° РїРѕР·РёС†РёРё РјР°С‡С‚С‹
     MAX_CHANGE_LENGTH= ini->GetFloat(section,"fMaxPosChange",MAX_CHANGE_LENGTH);
-    // максимальное изменение координат при скольжении мачты
+    // РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ РёР·РјРµРЅРµРЅРёРµ РєРѕРѕСЂРґРёРЅР°С‚ РїСЂРё СЃРєРѕР»СЊР¶РµРЅРёРё РјР°С‡С‚С‹
     MAX_SLIDING_LENGHT= ini->GetFloat(section,"fMaxSlideLenght",MAX_SLIDING_LENGHT);
-    // линия коллизии проходит ниже на толщину мачты
+    // Р»РёРЅРёСЏ РєРѕР»Р»РёР·РёРё РїСЂРѕС…РѕРґРёС‚ РЅРёР¶Рµ РЅР° С‚РѕР»С‰РёРЅСѓ РјР°С‡С‚С‹
     MAST_WIDTH= ini->GetFloat(section,"fMastWidth",MAST_WIDTH);
-    // минимальное значение Z в размере NODE для учета его в конечных точках линий трассировки
+    // РјРёРЅРёРјР°Р»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ Z РІ СЂР°Р·РјРµСЂРµ NODE РґР»СЏ СѓС‡РµС‚Р° РµРіРѕ РІ РєРѕРЅРµС‡РЅС‹С… С‚РѕС‡РєР°С… Р»РёРЅРёР№ С‚СЂР°СЃСЃРёСЂРѕРІРєРё
     MINZ_COMPARE= ini->GetFloat(section,"fMinZCompare",MINZ_COMPARE);
-    // глубина с которой мачта отключается
+    // РіР»СѓР±РёРЅР° СЃ РєРѕС‚РѕСЂРѕР№ РјР°С‡С‚Р° РѕС‚РєР»СЋС‡Р°РµС‚СЃСЏ
     DESTRUCT_MAST_DEEP= ini->GetFloat(section,"fMaxDeep",DESTRUCT_MAST_DEEP);
-    // шаг опускания мачты в глубину
+    // С€Р°Рі РѕРїСѓСЃРєР°РЅРёСЏ РјР°С‡С‚С‹ РІ РіР»СѓР±РёРЅСѓ
     DEEP_FALL_STEP= ini->GetFloat(section,"fDeepStep",DEEP_FALL_STEP);
-    // число кадров движения после которого отключается коллизия с объектами
+    // С‡РёСЃР»Рѕ РєР°РґСЂРѕРІ РґРІРёР¶РµРЅРёСЏ РїРѕСЃР»Рµ РєРѕС‚РѕСЂРѕРіРѕ РѕС‚РєР»СЋС‡Р°РµС‚СЃСЏ РєРѕР»Р»РёР·РёСЏ СЃ РѕР±СЉРµРєС‚Р°РјРё
     MAX_MOVE_CICLES= ini->GetLong(section,"maxMoveCicles",MAX_MOVE_CICLES);
-    // число кадров движения после которого включается падение мачты
+    // С‡РёСЃР»Рѕ РєР°РґСЂРѕРІ РґРІРёР¶РµРЅРёСЏ РїРѕСЃР»Рµ РєРѕС‚РѕСЂРѕРіРѕ РІРєР»СЋС‡Р°РµС‚СЃСЏ РїР°РґРµРЅРёРµ РјР°С‡С‚С‹
     MIN_MOV_COUNTER= ini->GetLong(section,"minMoveCicles",MIN_MOV_COUNTER);
-    // минимальный угол вращения мачты по X
+    // РјРёРЅРёРјР°Р»СЊРЅС‹Р№ СѓРіРѕР» РІСЂР°С‰РµРЅРёСЏ РјР°С‡С‚С‹ РїРѕ X
     MIN_X_DANG = ini->GetFloat(section,"fMinXdang",MIN_X_DANG);
-    // предел изменения угла вращения мачты по X
+    // РїСЂРµРґРµР» РёР·РјРµРЅРµРЅРёСЏ СѓРіР»Р° РІСЂР°С‰РµРЅРёСЏ РјР°С‡С‚С‹ РїРѕ X
     VAR_X_DANG = ini->GetFloat(section,"fVarXdang",VAR_X_DANG);
-    // минимальный угол вращения мачты по Z
+    // РјРёРЅРёРјР°Р»СЊРЅС‹Р№ СѓРіРѕР» РІСЂР°С‰РµРЅРёСЏ РјР°С‡С‚С‹ РїРѕ Z
     MIN_Z_DANG = ini->GetFloat(section,"fMinZdang",MIN_Z_DANG);
-    // предел изменения угла вращения мачты по Z
+    // РїСЂРµРґРµР» РёР·РјРµРЅРµРЅРёСЏ СѓРіР»Р° РІСЂР°С‰РµРЅРёСЏ РјР°С‡С‚С‹ РїРѕ Z
     VAR_Z_DANG = ini->GetFloat(section,"fVarZdang",VAR_Z_DANG);
-    // угол положения корабля начиная с которого мачта падает по этому углу
+    // СѓРіРѕР» РїРѕР»РѕР¶РµРЅРёСЏ РєРѕСЂР°Р±Р»СЏ РЅР°С‡РёРЅР°СЏ СЃ РєРѕС‚РѕСЂРѕРіРѕ РјР°С‡С‚Р° РїР°РґР°РµС‚ РїРѕ СЌС‚РѕРјСѓ СѓРіР»Сѓ
     MIN_SIGNIFICANT= ini->GetFloat(section,"fAngSignificant",MIN_SIGNIFICANT);
 
     delete ini;
@@ -436,50 +436,50 @@ void NetMast::doMove(dword DeltaTime)
     float dtime=DELTA_TIME((float)DeltaTime);
     float rtime=DELTA_TIME_ROTATE((float)DeltaTime);
 
-    MODEL* mdl = (MODEL*)api->GetEntityPointer(&model_id); // это модель геометрии мачты
+    MODEL* mdl = (MODEL*)api->GetEntityPointer(&model_id); // СЌС‚Рѕ РјРѕРґРµР»СЊ РіРµРѕРјРµС‚СЂРёРё РјР°С‡С‚С‹
     if(mdl!=0)
     {
-        if(bFallUnderWater) // если мачта уже тонет
+        if(bFallUnderWater) // РµСЃР»Рё РјР°С‡С‚Р° СѓР¶Рµ С‚РѕРЅРµС‚
         {
-			// Дошли до глубины, где уничтожаем мачту
+			// Р”РѕС€Р»Рё РґРѕ РіР»СѓР±РёРЅС‹, РіРґРµ СѓРЅРёС‡С‚РѕР¶Р°РµРј РјР°С‡С‚Сѓ
             if( mdl->mtx.Pos().y < -DESTRUCT_MAST_DEEP )	bUse=false;
-			// Опускаем мачту ниже в пучину моря
+			// РћРїСѓСЃРєР°РµРј РјР°С‡С‚Сѓ РЅРёР¶Рµ РІ РїСѓС‡РёРЅСѓ РјРѕСЂСЏ
             else	mdl->mtx.Move( 0.f, -DEEP_FALL_STEP*dtime, 0.f );
         }
-        else // мачта не тонет... пока падает
+        else // РјР°С‡С‚Р° РЅРµ С‚РѕРЅРµС‚... РїРѕРєР° РїР°РґР°РµС‚
         {
             mm.mov += mm.dmov*dtime;
-			// Если еще не наклонили мачту горизонтально, то продолжаем наклонять
+			// Р•СЃР»Рё РµС‰Рµ РЅРµ РЅР°РєР»РѕРЅРёР»Рё РјР°С‡С‚Сѓ РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅРѕ, С‚Рѕ РїСЂРѕРґРѕР»Р¶Р°РµРј РЅР°РєР»РѕРЅСЏС‚СЊ
             if( mm.ang.z<MAX_FALL_ANGLE && mm.ang.z>-MAX_FALL_ANGLE &&
                 mm.ang.x<MAX_FALL_ANGLE && mm.ang.x>-MAX_FALL_ANGLE )
                 mm.ang += mm.dang*rtime;
 
-			// расчитаем глобальную матрицу для нового положения мачты
+			// СЂР°СЃС‡РёС‚Р°РµРј РіР»РѕР±Р°Р»СЊРЅСѓСЋ РјР°С‚СЂРёС†Сѓ РґР»СЏ РЅРѕРІРѕРіРѕ РїРѕР»РѕР¶РµРЅРёСЏ РјР°С‡С‚С‹
             CMatrix mtx;
             mtx.BuildMatrix(mm.ang);
             mtx.SetPosition(mm.mov);
             mtx=mdl->GetNode(0)->loc_mtx*mtx;
 
-            CVECTOR bp; // координата верхнего конца мачты
-            CVECTOR ep; // координата нижнего конца мачты
-            CVECTOR lp; // координата левой точки реи (суммарная)
-            CVECTOR rp; // координата правой точки реи (суммарная)
-            bool bNextClass = (wMoveCounter <= MAX_MOVE_CICLES); // продожаем коллизию, определенное число раз
-            bool bStopRotate = false; // по умалчанию не останавливаем вращение мачты при падении
+            CVECTOR bp; // РєРѕРѕСЂРґРёРЅР°С‚Р° РІРµСЂС…РЅРµРіРѕ РєРѕРЅС†Р° РјР°С‡С‚С‹
+            CVECTOR ep; // РєРѕРѕСЂРґРёРЅР°С‚Р° РЅРёР¶РЅРµРіРѕ РєРѕРЅС†Р° РјР°С‡С‚С‹
+            CVECTOR lp; // РєРѕРѕСЂРґРёРЅР°С‚Р° Р»РµРІРѕР№ С‚РѕС‡РєРё СЂРµРё (СЃСѓРјРјР°СЂРЅР°СЏ)
+            CVECTOR rp; // РєРѕРѕСЂРґРёРЅР°С‚Р° РїСЂР°РІРѕР№ С‚РѕС‡РєРё СЂРµРё (СЃСѓРјРјР°СЂРЅР°СЏ)
+            bool bNextClass = (wMoveCounter <= MAX_MOVE_CICLES); // РїСЂРѕРґРѕР¶Р°РµРј РєРѕР»Р»РёР·РёСЋ, РѕРїСЂРµРґРµР»РµРЅРЅРѕРµ С‡РёСЃР»Рѕ СЂР°Р·
+            bool bStopRotate = false; // РїРѕ СѓРјР°Р»С‡Р°РЅРёСЋ РЅРµ РѕСЃС‚Р°РЅР°РІР»РёРІР°РµРј РІСЂР°С‰РµРЅРёРµ РјР°С‡С‚С‹ РїСЂРё РїР°РґРµРЅРёРё
             ENTITY_ID modEI,findEI;
             bp = mtx*mm.bp;
             ep = mtx*mm.ep;
             lp = mtx*mm.brey;
             rp = mtx*mm.erey;
-            // изменить скорость падения мачты
-            if(bp.y>0.f && ep.y>0.f && wMoveCounter>MIN_MOV_COUNTER) mm.dmov.y -= MAST_FALL_STEP; // падаем быстрее
-            if(mm.dmov.y < -MAST_MAX_FALL_SPEED) mm.dmov.y = -MAST_MAX_FALL_SPEED; // ограничение по максимальной скорости падения
-            // трассировать будем с приблизительным учетом диаметра мачты
+            // РёР·РјРµРЅРёС‚СЊ СЃРєРѕСЂРѕСЃС‚СЊ РїР°РґРµРЅРёСЏ РјР°С‡С‚С‹
+            if(bp.y>0.f && ep.y>0.f && wMoveCounter>MIN_MOV_COUNTER) mm.dmov.y -= MAST_FALL_STEP; // РїР°РґР°РµРј Р±С‹СЃС‚СЂРµРµ
+            if(mm.dmov.y < -MAST_MAX_FALL_SPEED) mm.dmov.y = -MAST_MAX_FALL_SPEED; // РѕРіСЂР°РЅРёС‡РµРЅРёРµ РїРѕ РјР°РєСЃРёРјР°Р»СЊРЅРѕР№ СЃРєРѕСЂРѕСЃС‚Рё РїР°РґРµРЅРёСЏ
+            // С‚СЂР°СЃСЃРёСЂРѕРІР°С‚СЊ Р±СѓРґРµРј СЃ РїСЂРёР±Р»РёР·РёС‚РµР»СЊРЅС‹Рј СѓС‡РµС‚РѕРј РґРёР°РјРµС‚СЂР° РјР°С‡С‚С‹
             bp.y-=MAST_WIDTH; ep.y-=MAST_WIDTH; lp.y-=MAST_WIDTH; rp.y-=MAST_WIDTH;
             while(bNextClass)
             {
                 bNextClass=false;
-				// коллизим с островом
+				// РєРѕР»Р»РёР·РёРј СЃ РѕСЃС‚СЂРѕРІРѕРј
                 if( NetFindClass(IsServer(), &findEI, "NetIsland") && api->GetEntityPointer(&findEI) != NULL )
 				{
 					modEI = ((ISLAND_BASE*)api->GetEntityPointer(&findEI))->GetModelEID();
@@ -502,7 +502,7 @@ void NetMast::doMove(dword DeltaTime)
                         }
                     }
 				}
-				// коллизим с кораблем
+				// РєРѕР»Р»РёР·РёРј СЃ РєРѕСЂР°Р±Р»РµРј
 				if(NetFindClass(IsServer(), &findEI, "NetShip"))	do
                 {
 					if( api->GetEntityPointer(&findEI)==NULL ) continue;
@@ -553,7 +553,7 @@ int NetMast::GetSlide(ENTITY_ID &mod, CVECTOR &pbeg, CVECTOR &pend, CVECTOR &dp,
 {
     int retVal=0;
 
-    // коллизия реи
+    // РєРѕР»Р»РёР·РёСЏ СЂРµРё
     CVECTOR vl=lrey;
     CVECTOR vr=rrey;
     CVECTOR vcentr=(vl+vr)*.5f;
@@ -570,7 +570,7 @@ int NetMast::GetSlide(ENTITY_ID &mod, CVECTOR &pbeg, CVECTOR &pend, CVECTOR &dp,
         retVal|=SR_YROTATE;
     }
 
-    // коллизия мачты
+    // РєРѕР»Р»РёР·РёСЏ РјР°С‡С‚С‹
     float tmp;
     float hVal=0.f;
     float sVal=0.f;
@@ -624,14 +624,14 @@ void NetMast::AllRelease()
 {
     ENTITY_ID tmp_id;
 
-    // удалить группу парусов
+    // СѓРґР°Р»РёС‚СЊ РіСЂСѓРїРїСѓ РїР°СЂСѓСЃРѕРІ
     if(NetFindClass(IsServer(), &tmp_id, "NetSail"))
         _CORE_API->Send_Message(tmp_id,"li",MSG_SAIL_DEL_GROUP,GetID());
 
-    // удалить группу флагов
+    // СѓРґР°Р»РёС‚СЊ РіСЂСѓРїРїСѓ С„Р»Р°РіРѕРІ
     if(NetFindClass(IsServer(), &tmp_id, "NetFlag"))
         _CORE_API->Send_Message(tmp_id,"li",MSG_FLAG_DEL_GROUP,model_id);
 
-    // удалить модель
+    // СѓРґР°Р»РёС‚СЊ РјРѕРґРµР»СЊ
     _CORE_API->DeleteEntity(model_id);
 }

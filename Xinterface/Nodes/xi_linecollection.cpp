@@ -107,7 +107,7 @@ dword _cdecl CXI_LINECOLLECTION::MessageProc(long msgcode, MESSAGE & message)
 {
 	switch(msgcode)
 	{
-	case 0: // сменить цвет для линии с номером или всех строк (если номер = -1)
+	case 0: // СЃРјРµРЅРёС‚СЊ С†РІРµС‚ РґР»СЏ Р»РёРЅРёРё СЃ РЅРѕРјРµСЂРѕРј РёР»Рё РІСЃРµС… СЃС‚СЂРѕРє (РµСЃР»Рё РЅРѕРјРµСЂ = -1)
 		{
 			dword dwColor = message.Long();
 			long nLineNum = message.Long();
@@ -119,7 +119,7 @@ dword _cdecl CXI_LINECOLLECTION::MessageProc(long msgcode, MESSAGE & message)
 			}
 		}
 		break;
-	case 1: // добавить динию и вернуть ее номер
+	case 1: // РґРѕР±Р°РІРёС‚СЊ РґРёРЅРёСЋ Рё РІРµСЂРЅСѓС‚СЊ РµРµ РЅРѕРјРµСЂ
 		{
 			dword dwColor = message.Long();
 			long nLeft = message.Long();

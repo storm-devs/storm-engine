@@ -5,7 +5,7 @@
 //--------------------------------------------------------------------------------------------
 //	ModelArray
 //--------------------------------------------------------------------------------------------
-//	Хранение информации о моделях
+//	РҐСЂР°РЅРµРЅРёРµ РёРЅС„РѕСЂРјР°С†РёРё Рѕ РјРѕРґРµР»СЏС…
 //============================================================================================
 
 #include "..\common_h\geometry.h"
@@ -15,7 +15,7 @@
 #include "..\common_h\model.h"
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 ModelArray::ModelArray()
@@ -38,14 +38,14 @@ ModelArray::~ModelArray()
 	}
 }
 
-//Создать модель
+//РЎРѕР·РґР°С‚СЊ РјРѕРґРµР»СЊ
 long ModelArray::CreateModel(const char * modelName, const char * technique, long level, bool isVisible, void* pLights)
 {
 	if(!modelName || !modelName[0]) return -1;
-	//Путь для модельки
+	//РџСѓС‚СЊ РґР»СЏ РјРѕРґРµР»СЊРєРё
 	strcpy(resPath, modelspath);
 	strcat(resPath, modelName);
-	//Путь для текстур
+	//РџСѓС‚СЊ РґР»СЏ С‚РµРєСЃС‚СѓСЂ
 	VGEOMETRY * gs = (VGEOMETRY *)_CORE_API->CreateService("geometry");
 	if(!gs)
 	{
@@ -53,13 +53,13 @@ long ModelArray::CreateModel(const char * modelName, const char * technique, lon
 		return -1;
 	}
 	gs->SetTexturePath(texturespath);
-	//Расширяем массивчик
+	//Р Р°СЃС€РёСЂСЏРµРј РјР°СЃСЃРёРІС‡РёРє
 	if(numModels == maxModels)
 	{
 		maxModels += 4;
 		model = (LocationModel *)RESIZE(model, maxModels*sizeof(LocationModel));
 	}
-	//Создаём модельку
+	//РЎРѕР·РґР°С‘Рј РјРѕРґРµР»СЊРєСѓ
 	ENTITY_ID id,idModelRealizer;
 	if(!_CORE_API->CreateEntity(&id, "modelr")) return -1;
 	if(!_CORE_API->CreateEntity(&idModelRealizer, "LocModelRealizer")) {_CORE_API->DeleteEntity(id); return -1;}
@@ -75,7 +75,7 @@ long ModelArray::CreateModel(const char * modelName, const char * technique, lon
 		_CORE_API->DeleteEntity(idModelRealizer);
 		return -1;
 	}
-	//Загружаем
+	//Р—Р°РіСЂСѓР¶Р°РµРј
 	_CORE_API->Send_Message(id, 
 							"ls", 
 							MSG_MODEL_SET_LIGHT_PATH, 
@@ -96,10 +96,10 @@ long ModelArray::CreateModel(const char * modelName, const char * technique, lon
 	}
 	gs->SetTexturePath("");
 
-	//Запоминаем
+	//Р—Р°РїРѕРјРёРЅР°РµРј
 	model[numModels].id = id;
 	model[numModels].modelrealizer = idModelRealizer;
-	//Сохраняем имя модельки
+	//РЎРѕС…СЂР°РЅСЏРµРј РёРјСЏ РјРѕРґРµР»СЊРєРё
 	if(strlen(modelName) < MA_MAX_NAME_LENGTH)
 	{
 		strcpy(model[numModels].name, modelName);
@@ -114,7 +114,7 @@ long ModelArray::CreateModel(const char * modelName, const char * technique, lon
 	model[numModels].reflection = null;
 	model[numModels].flags = 0;
 	model[numModels].isVisible = isVisible;
-	//Устанавливаем технику модельки
+	//РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј С‚РµС…РЅРёРєСѓ РјРѕРґРµР»СЊРєРё
 	/*if(!technique || !technique[0])
 	{
 		technique = "DLightModel";
@@ -128,29 +128,29 @@ long ModelArray::CreateModel(const char * modelName, const char * technique, lon
 			nd->SetTechnique(technique);
 		}
 	}
-	//Возвращаем индекс
+	//Р’РѕР·РІСЂР°С‰Р°РµРј РёРЅРґРµРєСЃ
 	return numModels++;
 }
 
-//Удалить модель
+//РЈРґР°Р»РёС‚СЊ РјРѕРґРµР»СЊ
 void ModelArray::DeleteModel(long modelIndex)
 {
 	Assert(modelIndex >= 0 && modelIndex < numModels);
-	//Удаляем эфекты
+	//РЈРґР°Р»СЏРµРј СЌС„РµРєС‚С‹
 	if(model[modelIndex].slider) delete model[modelIndex].slider;
 	model[modelIndex].slider = null;
 	if(model[modelIndex].rotator) delete model[modelIndex].rotator;
 	model[modelIndex].rotator = null;
 	if(model[modelIndex].reflection) delete model[modelIndex].reflection;
 	model[modelIndex].reflection = null;	
-	//Удаляем модельку
+	//РЈРґР°Р»СЏРµРј РјРѕРґРµР»СЊРєСѓ
 	_CORE_API->DeleteEntity(model[modelIndex].modelrealizer);
 	_CORE_API->DeleteEntity(model[modelIndex].id);
 	numModels--;
 	if(modelIndex != numModels) model[modelIndex] = model[numModels];
 }
 
-//Установить модели анимацию
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РјРѕРґРµР»Рё Р°РЅРёРјР°С†РёСЋ
 bool ModelArray::SetAnimation(long modelIndex, const char * modelAni)
 {
 	Assert(modelIndex >= 0 && modelIndex < numModels);
@@ -160,11 +160,11 @@ bool ModelArray::SetAnimation(long modelIndex, const char * modelAni)
 									modelAni) != 0;
 }
 
-//Найти индекс модели по имени
+//РќР°Р№С‚Рё РёРЅРґРµРєСЃ РјРѕРґРµР»Рё РїРѕ РёРјРµРЅРё
 long ModelArray::FindModel(const char * modelName)
 {
 	if(!modelName) return -1;
-	//Конвертим во внутренние имя
+	//РљРѕРЅРІРµСЂС‚РёРј РІРѕ РІРЅСѓС‚СЂРµРЅРЅРёРµ РёРјСЏ
 	char buf[MA_MAX_NAME_LENGTH];
 	if(strlen(modelName) < MA_MAX_NAME_LENGTH)
 	{
@@ -173,9 +173,9 @@ long ModelArray::FindModel(const char * modelName)
 		memcpy(buf, modelName, MA_MAX_NAME_LENGTH);
 		buf[MA_MAX_NAME_LENGTH - 1] = 0;
 	}
-	//Ищем хэшь значение
+	//РС‰РµРј С…СЌС€СЊ Р·РЅР°С‡РµРЅРёРµ
 	dword hash = CalcHashString(buf);
-	//Ищем модельку
+	//РС‰РµРј РјРѕРґРµР»СЊРєСѓ
 	for(long i = 0; i < numModels; i++)
 	{
 		if(model[i].hash == hash)
@@ -189,13 +189,13 @@ long ModelArray::FindModel(const char * modelName)
 	return -1;
 }
 
-//Количество моделий
+//РљРѕР»РёС‡РµСЃС‚РІРѕ РјРѕРґРµР»РёР№
 long ModelArray::Models()
 {
 	return numModels;
 }
 
-//Получение ID модели по индексу
+//РџРѕР»СѓС‡РµРЅРёРµ ID РјРѕРґРµР»Рё РїРѕ РёРЅРґРµРєСЃСѓ
 ENTITY_ID & ModelArray::ID(long modelIndex)
 {
 	Assert(modelIndex >= 0 && modelIndex < numModels);
@@ -208,14 +208,14 @@ ENTITY_ID & ModelArray::RealizerID(long modelIndex)
 	return model[modelIndex].modelrealizer;
 }
 
-//Получение модели по индексу
+//РџРѕР»СѓС‡РµРЅРёРµ РјРѕРґРµР»Рё РїРѕ РёРЅРґРµРєСЃСѓ
 MODEL * ModelArray::operator [](long modelIndex)
 {
 	Assert(modelIndex >= 0 && modelIndex < numModels);
 	return (MODEL *)_CORE_API->GetEntityPointer(&model[modelIndex].id);
 }
 
-//Получение анимации по индексу
+//РџРѕР»СѓС‡РµРЅРёРµ Р°РЅРёРјР°С†РёРё РїРѕ РёРЅРґРµРєСЃСѓ
 Animation * ModelArray::GetAnimation(long modelIndex)
 {
 	Assert(modelIndex >= 0 && modelIndex < numModels);
@@ -224,7 +224,7 @@ Animation * ModelArray::GetAnimation(long modelIndex)
 	return m->GetAnimation();
 }
 
-//Установить модельке анимацию скольжения uv
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РјРѕРґРµР»СЊРєРµ Р°РЅРёРјР°С†РёСЋ СЃРєРѕР»СЊР¶РµРЅРёСЏ uv
 void ModelArray::SetUVSlide(long modelIndex, float u0, float v0, float u1, float v1)
 {
 	Assert(modelIndex >= 0 && modelIndex < numModels);
@@ -238,7 +238,7 @@ void ModelArray::SetUVSlide(long modelIndex, float u0, float v0, float u1, float
 	if(mdl) mdl->SetRenderTuner(sl); else _CORE_API->Trace("Location: Can't get model pointer for set RenderTuner");
 }
 
-//Установить модельке анимацию вращения
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РјРѕРґРµР»СЊРєРµ Р°РЅРёРјР°С†РёСЋ РІСЂР°С‰РµРЅРёСЏ
 void ModelArray::SetRotation(long modelIndex, float rx, float ry, float rz)
 {
 	Assert(modelIndex >= 0 && modelIndex < numModels);
@@ -248,7 +248,7 @@ void ModelArray::SetRotation(long modelIndex, float rx, float ry, float rz)
 	model[modelIndex].rotator->rz = rz;
 }
 
-//Установить модельке режим генерации матрицы для отражения
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РјРѕРґРµР»СЊРєРµ СЂРµР¶РёРј РіРµРЅРµСЂР°С†РёРё РјР°С‚СЂРёС†С‹ РґР»СЏ РѕС‚СЂР°Р¶РµРЅРёСЏ
 void ModelArray::SetReflection(long modelIndex, float scale)
 {
 	Assert(modelIndex >= 0 && modelIndex < numModels);
@@ -261,7 +261,7 @@ void ModelArray::SetReflection(long modelIndex, float scale)
 	if(mdl) mdl->SetRenderTuner(model[modelIndex].reflection); else _CORE_API->Trace("Location: Can't get model pointer for set RenderTuner");
 }
 
-//Анимировать текстурные координаты
+//РђРЅРёРјРёСЂРѕРІР°С‚СЊ С‚РµРєСЃС‚СѓСЂРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹
 void ModelArray::Update(float dltTime)
 {
 	for(long i = 0; i < numModels; i++)
@@ -386,7 +386,7 @@ void ModelArray::UpdatePath(char * path)
 	if(--j >= 0 && path[j] == '\\') path[j] = 0;
 }
 
-//Проверить видимость 2-х точек
+//РџСЂРѕРІРµСЂРёС‚СЊ РІРёРґРёРјРѕСЃС‚СЊ 2-С… С‚РѕС‡РµРє
 bool ModelArray::VisibleTest(const CVECTOR & p1, const CVECTOR & p2)
 {
 	for(long i = 0; i < numModels; i++)
@@ -400,7 +400,7 @@ bool ModelArray::VisibleTest(const CVECTOR & p1, const CVECTOR & p2)
 	return true;
 }
 
-//Протрейсит луч через локацию
+//РџСЂРѕС‚СЂРµР№СЃРёС‚ Р»СѓС‡ С‡РµСЂРµР· Р»РѕРєР°С†РёСЋ
 float ModelArray::Trace(const CVECTOR & src, const CVECTOR & dst)
 {
 	isHavecTrg = false;

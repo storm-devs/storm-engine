@@ -13,7 +13,7 @@
 #include "LocatorArray.h"
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 Supervisor::Supervisor()
@@ -36,7 +36,7 @@ Supervisor::~Supervisor()
 
 }
 
-//Добавить персонажа в локацию
+//Р”РѕР±Р°РІРёС‚СЊ РїРµСЂСЃРѕРЅР°Р¶Р° РІ Р»РѕРєР°С†РёСЋ
 void Supervisor::AddCharacter(Character * ch)
 {
 	Assert(ch);
@@ -45,7 +45,7 @@ void Supervisor::AddCharacter(Character * ch)
 	character[numCharacters++].lastTime = time;
 }
 
-//Удалить персонажа из локации
+//РЈРґР°Р»РёС‚СЊ РїРµСЂСЃРѕРЅР°Р¶Р° РёР· Р»РѕРєР°С†РёРё
 void Supervisor::DelCharacter(Character * ch)
 {
 	for(long i = 0; i < numCharacters; i++)
@@ -58,9 +58,9 @@ void Supervisor::DelCharacter(Character * ch)
 
 void Supervisor::Update(float dltTime)
 {
-	//Если нет персонажей, ничего не делаем
+	//Р•СЃР»Рё РЅРµС‚ РїРµСЂСЃРѕРЅР°Р¶РµР№, РЅРёС‡РµРіРѕ РЅРµ РґРµР»Р°РµРј
 	if(!numCharacters) return;
-	//Перемещаем персонажей
+	//РџРµСЂРµРјРµС‰Р°РµРј РїРµСЂСЃРѕРЅР°Р¶РµР№
 	long i = 0;
 	for(i = 0; i < numCharacters; i++)
 	{
@@ -68,36 +68,36 @@ void Supervisor::Update(float dltTime)
 		character[i].c->colMove = 0.0f;
 		character[i].c->isCollision = false;
 	}
-	//Вычисляем дистанции, и определяем взаимодействующих персонажей
+	//Р’С‹С‡РёСЃР»СЏРµРј РґРёСЃС‚Р°РЅС†РёРё, Рё РѕРїСЂРµРґРµР»СЏРµРј РІР·Р°РёРјРѕРґРµР№СЃС‚РІСѓСЋС‰РёС… РїРµСЂСЃРѕРЅР°Р¶РµР№
 	long chr = 0;
 	for(i = 0; i < numCharacters - 1; i++)
 	{
-		//Пропустим мёртвых
+		//РџСЂРѕРїСѓСЃС‚РёРј РјС‘СЂС‚РІС‹С…
 		if(character[i].c->liveValue < 0 || character[i].c->deadName) continue;
 		character[i].c->startColCharacter = chr;
 		CVECTOR curPos(character[i].c->curPos);
 		float radius = character[i].c->radius;
 		for(long j = i + 1; j < numCharacters; j++)
 		{
-			//Пропустим мёртвых
+			//РџСЂРѕРїСѓСЃС‚РёРј РјС‘СЂС‚РІС‹С…
 			Character * ci = character[i].c;
 			Character * cj = character[j].c;
 			if(cj->liveValue < 0 || cj->deadName) continue;
-			//Расстояние между персонажами
+			//Р Р°СЃСЃС‚РѕСЏРЅРёРµ РјРµР¶РґСѓ РїРµСЂСЃРѕРЅР°Р¶Р°РјРё
 			float d = ~(curPos - cj->curPos);
-			//Растояние взаимодействия персонажей
+			//Р Р°СЃС‚РѕСЏРЅРёРµ РІР·Р°РёРјРѕРґРµР№СЃС‚РІРёСЏ РїРµСЂСЃРѕРЅР°Р¶РµР№
 			float r = radius + cj->radius;
 			float rr = r*4.0f;
 			if(d > rr*rr) continue;
-			//Сохраняем характера
+			//РЎРѕС…СЂР°РЅСЏРµРј С…Р°СЂР°РєС‚РµСЂР°
 			colchr[chr].c = cj;
 			colchr[chr].d = sqrtf(d);
 			colchr[chr].maxD = rr;
 			chr++;
-			//Проверяем пересечение персонажей по высоте
+			//РџСЂРѕРІРµСЂСЏРµРј РїРµСЂРµСЃРµС‡РµРЅРёРµ РїРµСЂСЃРѕРЅР°Р¶РµР№ РїРѕ РІС‹СЃРѕС‚Рµ
 			if(cj->curPos.y > ci->curPos.y + ci->height) continue;
 			if(ci->curPos.y > cj->curPos.y + cj->height) continue;
-			//Расталкиваем персонажей
+			//Р Р°СЃС‚Р°Р»РєРёРІР°РµРј РїРµСЂСЃРѕРЅР°Р¶РµР№
 			float dx = curPos.x - cj->curPos.x;
 			float dz = curPos.z - cj->curPos.z;
 			d = dx*dx + dz*dz;
@@ -169,38 +169,38 @@ void Supervisor::Update(float dltTime)
 		character[i].c->numColCharacter = chr - character[i].c->startColCharacter;
 	}
 	character[i].c->numColCharacter = 0;
-	//Вычисления
+	//Р’С‹С‡РёСЃР»РµРЅРёСЏ
 	for(long i = 0; i < numCharacters; i++) character[i].c->Calculate(dltTime);
-	//Коллизия персонажей и установка новых координат
+	//РљРѕР»Р»РёР·РёСЏ РїРµСЂСЃРѕРЅР°Р¶РµР№ Рё СѓСЃС‚Р°РЅРѕРІРєР° РЅРѕРІС‹С… РєРѕРѕСЂРґРёРЅР°С‚
 	for(long i = 0; i < numCharacters; i++) character[i].c->Update(dltTime);
 }
 
 void Supervisor::PreUpdate(float dltTime)
 {
-	//Сбрасываем состояние персонажей
+	//РЎР±СЂР°СЃС‹РІР°РµРј СЃРѕСЃС‚РѕСЏРЅРёРµ РїРµСЂСЃРѕРЅР°Р¶РµР№
 	for(long i = 0; i < numCharacters; i++) character[i].c->Reset();
 	_CORE_API->Event("CharactersStateUpdate", "f", dltTime);
 }
 
 void Supervisor::PostUpdate(float dltTime)
 {
-	//Обновление состояния персонажа
+	//РћР±РЅРѕРІР»РµРЅРёРµ СЃРѕСЃС‚РѕСЏРЅРёСЏ РїРµСЂСЃРѕРЅР°Р¶Р°
 	time += dltTime;
 	waveTime += dltTime;
-	//Корректируем время при превышении предела
+	//РљРѕСЂСЂРµРєС‚РёСЂСѓРµРј РІСЂРµРјСЏ РїСЂРё РїСЂРµРІС‹С€РµРЅРёРё РїСЂРµРґРµР»Р°
 	if(time > 10000.0f)
 	{
 		for(long i = 0; i < numCharacters; i++) character[i].lastTime -= time;
 		time -= 10000.0f;
 	}
-	//Если не пришло время обновления, пропустим ход
+	//Р•СЃР»Рё РЅРµ РїСЂРёС€Р»Рѕ РІСЂРµРјСЏ РѕР±РЅРѕРІР»РµРЅРёСЏ, РїСЂРѕРїСѓСЃС‚РёРј С…РѕРґ
 	if(curUpdate >= numCharacters)
 	{
 		if(waveTime < 0.1f) return;
 		waveTime = 0.0f;
 		curUpdate = 0;
 	}
-	//Исполняем текущего персонажа
+	//РСЃРїРѕР»РЅСЏРµРј С‚РµРєСѓС‰РµРіРѕ РїРµСЂСЃРѕРЅР°Р¶Р°
 	if(numCharacters)
 	{
 		for(long i = 0; i < 5; i++)
@@ -217,7 +217,7 @@ void Supervisor::PostUpdate(float dltTime)
 	}	
 }
 
-//Установить позиции для загрузки
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РїРѕР·РёС†РёРё РґР»СЏ Р·Р°РіСЂСѓР·РєРё
 void Supervisor::SetSavePositions()
 {
 	for(long i = 0; i < numCharacters; i++)
@@ -227,7 +227,7 @@ void Supervisor::SetSavePositions()
 	}
 }
 
-//Удалить позиции для загрузки
+//РЈРґР°Р»РёС‚СЊ РїРѕР·РёС†РёРё РґР»СЏ Р·Р°РіСЂСѓР·РєРё
 void Supervisor::DelSavePositions(bool isTeleport)
 {
 	for(long i = 0; i < numCharacters; i++)
@@ -237,7 +237,7 @@ void Supervisor::DelSavePositions(bool isTeleport)
 	}
 }
 
-//Проверить на свободность позицию
+//РџСЂРѕРІРµСЂРёС‚СЊ РЅР° СЃРІРѕР±РѕРґРЅРѕСЃС‚СЊ РїРѕР·РёС†РёСЋ
 bool Supervisor::CheckPosition(float x, float y, float z, Character * c)
 {
 	for(long i = 0; i < numCharacters; i++)
@@ -253,18 +253,18 @@ bool Supervisor::CheckPosition(float x, float y, float z, Character * c)
 	return true;
 }
 
-//Найти по радиусу персонажей
+//РќР°Р№С‚Рё РїРѕ СЂР°РґРёСѓСЃСѓ РїРµСЂСЃРѕРЅР°Р¶РµР№
 bool Supervisor::FindCharacters(FindCharacter fndCharacter[MAX_CHARACTERS], long & numFndCharacters, Character * chr, float radius, float angTest, float nearPlane, float ax, bool isSort, bool lookCenter)
 {
 	numFndCharacters = 0;
 	if(!chr || radius < 0.0f) return false;
-	//Радиус тестирования
+	//Р Р°РґРёСѓСЃ С‚РµСЃС‚РёСЂРѕРІР°РЅРёСЏ
 	radius *= radius;
-	//Позиция персонажа
+	//РџРѕР·РёС†РёСЏ РїРµСЂСЃРѕРЅР°Р¶Р°
 	float x = chr->curPos.x;
 	float y = chr->curPos.y;
 	float z = chr->curPos.z;
-	//Параметры для тестирования в секторе на x_z
+	//РџР°СЂР°РјРµС‚СЂС‹ РґР»СЏ С‚РµСЃС‚РёСЂРѕРІР°РЅРёСЏ РІ СЃРµРєС‚РѕСЂРµ РЅР° x_z
 	CVECTOR N1, N2, N3;
 	float d1, d2, d3;
 	if(angTest > 0.0f)
@@ -278,7 +278,7 @@ bool Supervisor::FindCharacters(FindCharacter fndCharacter[MAX_CHARACTERS], long
 		N3 = m.Vz();
 		d3 = N3 | chr->curPos;
 	}
-	//Параметры для тестирования в секторе по y_dist
+	//РџР°СЂР°РјРµС‚СЂС‹ РґР»СЏ С‚РµСЃС‚РёСЂРѕРІР°РЅРёСЏ РІ СЃРµРєС‚РѕСЂРµ РїРѕ y_dist
 	if(ax > 0.0f)
 	{
 		ax = sinf(0.5f*ax*3.141592654f/180.0f);
@@ -287,30 +287,30 @@ bool Supervisor::FindCharacters(FindCharacter fndCharacter[MAX_CHARACTERS], long
 	if(ax > 1.0f) ax = 1.0f;
 	ax *= ax;
 	float testY = y + chr->height*0.5f;
-	//Просматриваем персонажей
+	//РџСЂРѕСЃРјР°С‚СЂРёРІР°РµРј РїРµСЂСЃРѕРЅР°Р¶РµР№
 	for(long i = 0; i < numCharacters; i++)
 	{
-		//Исключим себя
+		//РСЃРєР»СЋС‡РёРј СЃРµР±СЏ
 		if(character[i].c == chr) continue;
-		//Проверка на убитых
+		//РџСЂРѕРІРµСЂРєР° РЅР° СѓР±РёС‚С‹С…
 		if(character[i].c->liveValue < 0 || character[i].c->deadName) continue;
-		//По дистанции
+		//РџРѕ РґРёСЃС‚Р°РЅС†РёРё
 		float dx = character[i].c->curPos.x - x;
 		float dz = character[i].c->curPos.z - z;
 		float d = dx*dx + dz*dz;
 		if(d > radius) continue;
-		//По высоте
+		//РџРѕ РІС‹СЃРѕС‚Рµ
 		float dy = character[i].c->curPos.y + character[i].c->height - testY;
 		if(dy < 0.0f && dy*dy > d*ax) continue;
 		dy = testY - character[i].c->curPos.y;
 		if(dy < 0.0f && dy*dy > d*ax) continue;		
-		//В плоскости xz
+		//Р’ РїР»РѕСЃРєРѕСЃС‚Рё xz
 		float dist1 = 0.0f;
 		float dist2 = 0.0f;
 		float dist3 = 0.0f;
-		if(angTest > 0.0f && d>1.0f) //eddy. при близком подходе со спины помещать в структуру
+		if(angTest > 0.0f && d>1.0f) //eddy. РїСЂРё Р±Р»РёР·РєРѕРј РїРѕРґС…РѕРґРµ СЃРѕ СЃРїРёРЅС‹ РїРѕРјРµС‰Р°С‚СЊ РІ СЃС‚СЂСѓРєС‚СѓСЂСѓ
 		{
-			//Проверим расположение
+			//РџСЂРѕРІРµСЂРёРј СЂР°СЃРїРѕР»РѕР¶РµРЅРёРµ
 			float rad = !lookCenter ? -character[i].c->radius : 0.0f;
 			dist1 = (N1 | character[i].c->curPos) - d1;
 			if(dist1 < rad) continue;	
@@ -319,7 +319,7 @@ bool Supervisor::FindCharacters(FindCharacter fndCharacter[MAX_CHARACTERS], long
 			dist3 = (N3 | character[i].c->curPos) - d3;
 			if(dist3 < nearPlane) continue;	
 		}
-		//Добавляем
+		//Р”РѕР±Р°РІР»СЏРµРј
 		fndCharacter[numFndCharacters].c = character[i].c;
 		fndCharacter[numFndCharacters].dx = dx;
 		fndCharacter[numFndCharacters].dy = dy;
@@ -347,7 +347,7 @@ bool Supervisor::FindCharacters(FindCharacter fndCharacter[MAX_CHARACTERS], long
 	return numFndCharacters != 0;
 }
 
-//Найти оптимальный локатор для продолжения прогулки персонажа
+//РќР°Р№С‚Рё РѕРїС‚РёРјР°Р»СЊРЅС‹Р№ Р»РѕРєР°С‚РѕСЂ РґР»СЏ РїСЂРѕРґРѕР»Р¶РµРЅРёСЏ РїСЂРѕРіСѓР»РєРё РїРµСЂСЃРѕРЅР°Р¶Р°
 long Supervisor::FindForvardLocator(LocatorArray * la, const CVECTOR & pos, const CVECTOR & norm, bool lookChr)
 {
 	if(!la) return -1;

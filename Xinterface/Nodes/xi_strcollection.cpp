@@ -205,7 +205,7 @@ void CXI_STRCOLLECTION::SaveParametersToIni()
 	char param[2048];
 	for( long n=0; n<m_nStr; n++ )
 	{
-		if( m_pStrDescr[n].strID ) continue; // динамически добавленныя строка
+		if( m_pStrDescr[n].strID ) continue; // РґРёРЅР°РјРёС‡РµСЃРєРё РґРѕР±Р°РІР»РµРЅРЅС‹СЏ СЃС‚СЂРѕРєР°
 
 		char pcState[3];
 		switch( m_pStrDescr[n].wAlignment )
@@ -280,7 +280,7 @@ dword _cdecl CXI_STRCOLLECTION::MessageProc(long msgcode, MESSAGE & message)
 			}
 			pstr->bShadow = message.Long()!=0;	// msg
 			pstr->fScale = message.Float();		// msg
-			// обязательная ширина
+			// РѕР±СЏР·Р°С‚РµР»СЊРЅР°СЏ С€РёСЂРёРЅР°
 			int nWidth = message.Long();		// msg
 			if(nWidth>0)
 			{
@@ -289,7 +289,7 @@ dword _cdecl CXI_STRCOLLECTION::MessageProc(long msgcode, MESSAGE & message)
 			}			
 		}
 		break;
-	case 1: // изменить строку по номеру
+	case 1: // РёР·РјРµРЅРёС‚СЊ СЃС‚СЂРѕРєСѓ РїРѕ РЅРѕРјРµСЂСѓ
 		{
 			long n = message.Long() - 1;
 			char param[512];
@@ -297,7 +297,7 @@ dword _cdecl CXI_STRCOLLECTION::MessageProc(long msgcode, MESSAGE & message)
 			ChangeString(n,param);
 		}
 		break;
-	case 2: // скопировать строку с одного места на другое (первая строка имеет номер 1)
+	case 2: // СЃРєРѕРїРёСЂРѕРІР°С‚СЊ СЃС‚СЂРѕРєСѓ СЃ РѕРґРЅРѕРіРѕ РјРµСЃС‚Р° РЅР° РґСЂСѓРіРѕРµ (РїРµСЂРІР°СЏ СЃС‚СЂРѕРєР° РёРјРµРµС‚ РЅРѕРјРµСЂ 1)
 		{
 			long nDst = message.Long()-1;
 			long nSrc = message.Long()-1;
@@ -313,7 +313,7 @@ dword _cdecl CXI_STRCOLLECTION::MessageProc(long msgcode, MESSAGE & message)
 			}
 		}
 		break;
-	case 3: // поменять цвет строки
+	case 3: // РїРѕРјРµРЅСЏС‚СЊ С†РІРµС‚ СЃС‚СЂРѕРєРё
 		{
 			long nStr = message.Long()-1;
 			dword nColor = message.Long();

@@ -22,29 +22,29 @@ Lizards::~Lizards()
 
 }
 
-//Инициализация
+//РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
 bool Lizards::Init()
 {
-	//Указатель на локацию
+	//РЈРєР°Р·Р°С‚РµР»СЊ РЅР° Р»РѕРєР°С†РёСЋ
 	ENTITY_ID loc;
 	_CORE_API->FindClass(&loc, "location", 0);
 	Location * location = (Location *)_CORE_API->GetEntityPointer(&loc);
 	if(!location) return false;
-	//Заводим ящерец
+	//Р—Р°РІРѕРґРёРј СЏС‰РµСЂРµС†
 	for(long i = 0; i < num; i++) lizard[i].Init(location);
-	//Исполнение
+	//РСЃРїРѕР»РЅРµРЅРёРµ
 	_CORE_API->LayerCreate("realize", true, false);
 	_CORE_API->LayerSetFlags("realize", LRFLAG_REALIZE);
 	_CORE_API->LayerAdd("realize", GetID(), 100000);
 	return true;
 }
 
-//Исполнение
+//РСЃРїРѕР»РЅРµРЅРёРµ
 void Lizards::Execute(dword delta_time)
 {
 }
 
-//Рисование
+//Р РёСЃРѕРІР°РЅРёРµ
 void Lizards::Realize(dword delta_time)
 {
 	float dltTime = delta_time*0.001f;

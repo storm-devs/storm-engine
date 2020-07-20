@@ -17,7 +17,7 @@
 
 
 //============================================================================================
-//Êîíñòðóèðîâàíèå, äåñòðóêòóðèðîâàíèå
+//ÐšÐ¾Ð½ÑÑ‚Ñ€ÑƒÐ¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ, Ð´ÐµÑÑ‚Ñ€ÑƒÐºÑ‚ÑƒÑ€Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ
 //============================================================================================
 
 NoiseCloud::NoiseCloud(Pillar & _pillar) : pillar(_pillar)
@@ -92,9 +92,9 @@ void NoiseCloud::Draw(VDX8RENDER * rs)
 	rs->TextureSet(0, texture);
 	for(long i = 0; i < sizeof(rect)/sizeof(Rect); i++)
 	{
-		//Ðàçìåð
+		//Ð Ð°Ð·Ð¼ÐµÑ€
 		float size = rect[i].size;
-		//Ïîçèöèÿ
+		//ÐŸÐ¾Ð·Ð¸Ñ†Ð¸Ñ
 		float sn = sinf(rect[i].angle);
 		float cs = cosf(rect[i].angle);
 		CVECTOR pos(pillar.X() + rect[i].r*sinf(rect[i].a), pillar.GetHeight(), pillar.Z() + rect[i].r*cosf(rect[i].a));
@@ -110,7 +110,7 @@ void NoiseCloud::Draw(VDX8RENDER * rs)
 		buf[i*6 + 4].u = 0.0f; buf[i*6 + 4].v = 1.0f;
 		buf[i*6 + 5].pos = pos + CVECTOR(size*(cs - sn), 0.0f, size*(-sn - cs));
 		buf[i*6 + 5].u = 1.0f; buf[i*6 + 5].v = 1.0f;
-		//Öâåò
+		//Ð¦Ð²ÐµÑ‚
 		float clr = rect[i].light*200.0f;
 		long color = (long(clr*1.0f) << 16) | (long(clr*0.95f) << 8) | long(clr*0.9f) | (long(rect[i].alpha*galpha*0.4f) << 24);
 		buf[i*6 + 0].color = color;

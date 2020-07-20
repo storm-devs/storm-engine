@@ -12,7 +12,7 @@
 #include "WdmIslands.h"
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 WdmFollowShip::WdmFollowShip()
@@ -28,16 +28,16 @@ WdmFollowShip::~WdmFollowShip()
 
 }
 
-//Установка параметров
+//РЈСЃС‚Р°РЅРѕРІРєР° РїР°СЂР°РјРµС‚СЂРѕРІ
 bool WdmFollowShip::Load(const char * modelName)
 {
 	if(!WdmShip::Load(modelName)) return false;
-	//Ищем позицию
+	//РС‰РµРј РїРѕР·РёС†РёСЋ
 	float x, z, ay = 0.0f;
 	killMe = !GeneratePosition(1.2f*modelRadius, 6.28f, x, z);
 	if(wdmObjects->playerShip)
 	{
-		//Определяем угл
+		//РћРїСЂРµРґРµР»СЏРµРј СѓРіР»
 		double sn = wdmObjects->playerShip->mtx.Pos().x - mtx.Pos().x;
 		double cs = wdmObjects->playerShip->mtx.Pos().z - mtx.Pos().z;
 		double l = sn*sn + cs*cs;
@@ -48,12 +48,12 @@ bool WdmFollowShip::Load(const char * modelName)
 		if(sn < 0.0) cs = -cs;
 		ay = float(cs);
 	}
-	//Ставим кораблик
+	//РЎС‚Р°РІРёРј РєРѕСЂР°Р±Р»РёРє
 	Teleport(x, z, ay);
 	return true;
 }
 
-//Найти силу притягивающую в нужном направлении
+//РќР°Р№С‚Рё СЃРёР»Сѓ РїСЂРёС‚СЏРіРёРІР°СЋС‰СѓСЋ РІ РЅСѓР¶РЅРѕРј РЅР°РїСЂР°РІР»РµРЅРёРё
 void WdmFollowShip::FindMoveForce()
 {
 	CVECTOR dir;
@@ -61,10 +61,10 @@ void WdmFollowShip::FindMoveForce()
 	{		
 		wdmObjects->islands->FindDirection(mtx.Pos(), ((WdmShip *)wdmObjects->playerShip)->mtx.Pos(), dir);
 	}else{
-		//Позиция игрока
+		//РџРѕР·РёС†РёСЏ РёРіСЂРѕРєР°
 		dir.x = ((WdmShip *)wdmObjects->playerShip)->mtx.Pos().x;
 		dir.z = ((WdmShip *)wdmObjects->playerShip)->mtx.Pos().z;
-		//Направление на игрока
+		//РќР°РїСЂР°РІР»РµРЅРёРµ РЅР° РёРіСЂРѕРєР°
 		dir.x -= mtx.Pos().x;
 		dir.z -= mtx.Pos().z;
 		float dl = dir.x*dir.x + dir.z*dir.z;

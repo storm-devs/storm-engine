@@ -55,7 +55,7 @@ void CXI_SLIDEPICTURE::Draw(bool bSelected,dword Delta_Time)
 	{
 		Update(Delta_Time);
 		m_rs->TextureSet(0,m_idTex);
-/* ugeen : èçìåíèòü!!
+/* ugeen : Ð¸Ð·Ð¼ÐµÐ½Ð¸Ñ‚ÑŒ!!
 		m_rs->SetTextureStageState(0,D3DTSS_ADDRESSU,D3DTADDRESS_WRAP);
 		m_rs->SetTextureStageState(0,D3DTSS_ADDRESSV,D3DTADDRESS_WRAP);
 */
@@ -121,7 +121,7 @@ void CXI_SLIDEPICTURE::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *na
 	pSlideSpeedList = NULL;
 
 	bool bUse1Ini = true;
-	// Ðàñ÷åò ðàçìåðà òàáëèöû ñêîðîñòåé
+	// Ð Ð°ÑÑ‡ÐµÑ‚ Ñ€Ð°Ð·Ð¼ÐµÑ€Ð° Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñ‹ ÑÐºÐ¾Ñ€Ð¾ÑÑ‚ÐµÐ¹
 	if( ini1->ReadString(name1,"speed",param,sizeof(param)-1,"") )
 	{
 		do	nSlideListSize++;
@@ -143,7 +143,7 @@ void CXI_SLIDEPICTURE::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *na
 		if(pSlideSpeedList==null)	{_THROW("allocate memory error");}
 	}
 
-	// çàïîëíÿåì òàáëèöó ñêîðîñòåé
+	// Ð·Ð°Ð¿Ð¾Ð»Ð½ÑÐµÐ¼ Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñƒ ÑÐºÐ¾Ñ€Ð¾ÑÑ‚ÐµÐ¹
 	if(bUse1Ini)
 	{
 		ini1->ReadString(name1,"speed",param,sizeof(param)-1,"");
@@ -227,7 +227,7 @@ void CXI_SLIDEPICTURE::Update(dword Delta_Time)
 
 	nLifeTime -= Delta_Time;
 	if(nLifeTime<0)
-	{ // ïåðåõîä íà äðóãóþ ñêîðîñòü
+	{ // Ð¿ÐµÑ€ÐµÑ…Ð¾Ð´ Ð½Ð° Ð´Ñ€ÑƒÐ³ÑƒÑŽ ÑÐºÐ¾Ñ€Ð¾ÑÑ‚ÑŒ
 		nCurSlide++;
 		if(nCurSlide>=nSlideListSize) nCurSlide=0;
 		nLifeTime = pSlideSpeedList[nCurSlide].time;

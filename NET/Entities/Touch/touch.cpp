@@ -92,7 +92,7 @@ void NetTouch::Execute(dword dwCoreDeltaTime)
 		for (i=0; i<aShips.Len(); i++) Touch(i, INVALID_SHIP_IDX, 0, 0, 0.0f, 0.0f);
 	}
 
-	FakeTouch();	// ïðîñòî âûòàëêèâàåì êîðàáëè êîòîðûå âñå òàêè íàõîäÿòñÿ â äðóã äðóãå
+	FakeTouch();	// Ð¿Ñ€Ð¾ÑÑ‚Ð¾ Ð²Ñ‹Ñ‚Ð°Ð»ÐºÐ¸Ð²Ð°ÐµÐ¼ ÐºÐ¾Ñ€Ð°Ð±Ð»Ð¸ ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ðµ Ð²ÑÐµ Ñ‚Ð°ÐºÐ¸ Ð½Ð°Ñ…Ð¾Ð´ÑÑ‚ÑÑ Ð² Ð´Ñ€ÑƒÐ³ Ð´Ñ€ÑƒÐ³Ðµ
 
 	RDTSC_E(dwRdtsc);
 	return;

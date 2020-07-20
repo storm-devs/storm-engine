@@ -3,7 +3,7 @@
 #include "..\..\icommon\memfile.h"
 #include "..\..\..\common_h\vmodule_api.h"
 
-//êîíñòðóêòîð/äåñòðóêòîð
+//ÐºÐ¾Ð½ÑÑ‚Ñ€ÑƒÐºÑ‚Ð¾Ñ€/Ð´ÐµÑÑ‚Ñ€ÑƒÐºÑ‚Ð¾Ñ€
 DataColor::DataColor () : ColorGraph(_FL_, 128), ZeroColor(0xFFFFFFFFL)
 {
 }
@@ -12,10 +12,10 @@ DataColor::~DataColor ()
 {
 }
 
-//Ïîëó÷èòü çíà÷åíèå (Òåêóùåå âðåìÿ, Îáùåå âðåìÿ æèçíè, Êîýôèöåíò ðàíäîìà[0..1])
+//ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ (Ð¢ÐµÐºÑƒÑ‰ÐµÐµ Ð²Ñ€ÐµÐ¼Ñ, ÐžÐ±Ñ‰ÐµÐµ Ð²Ñ€ÐµÐ¼Ñ Ð¶Ð¸Ð·Ð½Ð¸, ÐšÐ¾ÑÑ„Ð¸Ñ†ÐµÐ½Ñ‚ Ñ€Ð°Ð½Ð´Ð¾Ð¼Ð°[0..1])
 Color DataColor::GetValue (float Time, float LifeTime, float K_rand)
 {
-	//Âðåìÿ ó ãðàôèêà öâåòà âñåãäà îòíîñèòåëüíîå...
+	//Ð’Ñ€ÐµÐ¼Ñ Ñƒ Ð³Ñ€Ð°Ñ„Ð¸ÐºÐ° Ñ†Ð²ÐµÑ‚Ð° Ð²ÑÐµÐ³Ð´Ð° Ð¾Ñ‚Ð½Ð¾ÑÐ¸Ñ‚ÐµÐ»ÑŒÐ½Ð¾Ðµ...
 	Time = (Time / LifeTime);
 
 	DWORD Count = ColorGraph.Size();
@@ -25,7 +25,7 @@ Color DataColor::GetValue (float Time, float LifeTime, float K_rand)
 		float FromTime = ColorGraph[n].Time;
 		float ToTime = ColorGraph[n+1].Time;
 
-		//Åñëè âðåìÿ â íóæíîì äèàïàçîíå...
+		//Ð•ÑÐ»Ð¸ Ð²Ñ€ÐµÐ¼Ñ Ð² Ð½ÑƒÐ¶Ð½Ð¾Ð¼ Ð´Ð¸Ð°Ð¿Ð°Ð·Ð¾Ð½Ðµ...
 		if ((Time >= FromTime)	&& (Time <= ToTime))
 		{
 			float SegmentDeltaTime = ColorGraph[n+1].Time - ColorGraph[n].Time;
@@ -53,8 +53,8 @@ Color DataColor::GetValue (float Time, float LifeTime, float K_rand)
 	return ZeroColor;
 }
 
-//Óñòàíàâëèâàåò "çíà÷åíèå ïî óìîë÷àíèþ"
-//äâà èíäåêñà, Min=Max=Value
+//Ð£ÑÑ‚Ð°Ð½Ð°Ð²Ð»Ð¸Ð²Ð°ÐµÑ‚ "Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ Ð¿Ð¾ ÑƒÐ¼Ð¾Ð»Ñ‡Ð°Ð½Ð¸ÑŽ"
+//Ð´Ð²Ð° Ð¸Ð½Ð´ÐµÐºÑÐ°, Min=Max=Value
 void DataColor::SetDefaultValue (const Color& Value)
 {
 	ColorGraph.DelAll();
@@ -73,7 +73,7 @@ void DataColor::SetDefaultValue (const Color& Value)
 
 }
 
-//Óñòàíîâèòü çíà÷åíèÿ
+//Ð£ÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ
 void DataColor::SetValues (const ColorVertex* Values, DWORD Count)
 {
 	ColorGraph.DelAll();
@@ -83,20 +83,20 @@ void DataColor::SetValues (const ColorVertex* Values, DWORD Count)
 	}
 }
 
-//Ïîëó÷èòü êîë-âî çíà÷åíèé
+//ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ ÐºÐ¾Ð»-Ð²Ð¾ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ð¹
 DWORD DataColor::GetValuesCount ()
 {
 	return ColorGraph.Size();
 }
 
 
-//Ïîëó÷èòü ìèí. çíà÷åíèå (ïî èíäåêñó)
+//ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð¼Ð¸Ð½. Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ (Ð¿Ð¾ Ð¸Ð½Ð´ÐµÐºÑÑƒ)
 const Color& DataColor::GetMinValue (DWORD Index)
 {
 	return ColorGraph[Index].MinValue;
 }
 
-//Ïîëó÷èòü ìàêñ. çíà÷åíèå (ïî èíäåêñó)
+//ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð¼Ð°ÐºÑ. Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ (Ð¿Ð¾ Ð¸Ð½Ð´ÐµÐºÑÑƒ)
 const Color& DataColor::GetMaxValue (DWORD Index)
 {
 	return ColorGraph[Index].MaxValue;

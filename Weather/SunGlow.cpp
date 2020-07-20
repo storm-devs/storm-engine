@@ -449,7 +449,7 @@ void SUNGLOW::DrawRect(dword dwColor,const CVECTOR& pos,float fSize,float fAngle
 	SUNGLOWVERTEX * pV = (SUNGLOWVERTEX*)pRS->LockVertexBuffer( idRectBuf );
 	if( pV )
 	{
-		// добавляем первую точку (левый верхний угол)
+		// РґРѕР±Р°РІР»СЏРµРј РїРµСЂРІСѓСЋ С‚РѕС‡РєСѓ (Р»РµРІС‹Р№ РІРµСЂС…РЅРёР№ СѓРіРѕР»)
 		if( vp1.y >= fBClip )
 		{
 			pV[nv].vPos = vp1;
@@ -458,7 +458,7 @@ void SUNGLOW::DrawRect(dword dwColor,const CVECTOR& pos,float fSize,float fAngle
 			nv++;
 		}
 
-		// добавляем точку пересечения с плоскостью отсечения между 1й и 2й точкой
+		// РґРѕР±Р°РІР»СЏРµРј С‚РѕС‡РєСѓ РїРµСЂРµСЃРµС‡РµРЅРёСЏ СЃ РїР»РѕСЃРєРѕСЃС‚СЊСЋ РѕС‚СЃРµС‡РµРЅРёСЏ РјРµР¶РґСѓ 1Р№ Рё 2Р№ С‚РѕС‡РєРѕР№
 		if( (vp1.y >= fBClip) != (vp2.y >= fBClip) )
 		{
 			float fK = vp2.y - vp1.y;
@@ -475,7 +475,7 @@ void SUNGLOW::DrawRect(dword dwColor,const CVECTOR& pos,float fSize,float fAngle
 			}
 		}
 
-		// вторая точка (левый нижний угол)
+		// РІС‚РѕСЂР°СЏ С‚РѕС‡РєР° (Р»РµРІС‹Р№ РЅРёР¶РЅРёР№ СѓРіРѕР»)
 		if( vp2.y >= fBClip )
 		{
 			pV[nv].vPos = vp2;
@@ -484,7 +484,7 @@ void SUNGLOW::DrawRect(dword dwColor,const CVECTOR& pos,float fSize,float fAngle
 			nv++;
 		}
 
-		// добавляем точку пересечения с плоскостью отсечения между 2й и 3й точкой
+		// РґРѕР±Р°РІР»СЏРµРј С‚РѕС‡РєСѓ РїРµСЂРµСЃРµС‡РµРЅРёСЏ СЃ РїР»РѕСЃРєРѕСЃС‚СЊСЋ РѕС‚СЃРµС‡РµРЅРёСЏ РјРµР¶РґСѓ 2Р№ Рё 3Р№ С‚РѕС‡РєРѕР№
 		if( (vp2.y >= fBClip) != (vp3.y >= fBClip) )
 		{
 			float fK = vp3.y - vp2.y;
@@ -501,7 +501,7 @@ void SUNGLOW::DrawRect(dword dwColor,const CVECTOR& pos,float fSize,float fAngle
 			}
 		}
 
-		// третья точка (правый нижний угол)
+		// С‚СЂРµС‚СЊСЏ С‚РѕС‡РєР° (РїСЂР°РІС‹Р№ РЅРёР¶РЅРёР№ СѓРіРѕР»)
 		if( vp3.y >= fBClip )
 		{
 			pV[nv].vPos = vp3;
@@ -510,7 +510,7 @@ void SUNGLOW::DrawRect(dword dwColor,const CVECTOR& pos,float fSize,float fAngle
 			nv++;
 		}
 
-		// добавляем точку пересечения с плоскостью отсечения между 3й и 4й точкой
+		// РґРѕР±Р°РІР»СЏРµРј С‚РѕС‡РєСѓ РїРµСЂРµСЃРµС‡РµРЅРёСЏ СЃ РїР»РѕСЃРєРѕСЃС‚СЊСЋ РѕС‚СЃРµС‡РµРЅРёСЏ РјРµР¶РґСѓ 3Р№ Рё 4Р№ С‚РѕС‡РєРѕР№
 		if( (vp3.y >= fBClip) != (vp4.y >= fBClip) )
 		{
 			float fK = vp4.y - vp3.y;
@@ -527,7 +527,7 @@ void SUNGLOW::DrawRect(dword dwColor,const CVECTOR& pos,float fSize,float fAngle
 			}
 		}
 
-		// четвертая точка (правый верхний угол)
+		// С‡РµС‚РІРµСЂС‚Р°СЏ С‚РѕС‡РєР° (РїСЂР°РІС‹Р№ РІРµСЂС…РЅРёР№ СѓРіРѕР»)
 		if( vp4.y >= fBClip )
 		{
 			pV[nv].vPos = vp4;
@@ -536,7 +536,7 @@ void SUNGLOW::DrawRect(dword dwColor,const CVECTOR& pos,float fSize,float fAngle
 			nv++;
 		}
 
-		// добавляем точку пересечения с плоскостью отсечения между 4й и 1й точкой
+		// РґРѕР±Р°РІР»СЏРµРј С‚РѕС‡РєСѓ РїРµСЂРµСЃРµС‡РµРЅРёСЏ СЃ РїР»РѕСЃРєРѕСЃС‚СЊСЋ РѕС‚СЃРµС‡РµРЅРёСЏ РјРµР¶РґСѓ 4Р№ Рё 1Р№ С‚РѕС‡РєРѕР№
 		if( (vp3.y >= fBClip) != (vp4.y >= fBClip) )
 		{
 			float fK = vp1.y - vp4.y;
@@ -563,7 +563,7 @@ void SUNGLOW::DrawRect(dword dwColor,const CVECTOR& pos,float fSize,float fAngle
 	}
 
 	/*
-	// отладочная информация - прямоугольник из линий показывающий границы выводимого прямоугольника
+	// РѕС‚Р»Р°РґРѕС‡РЅР°СЏ РёРЅС„РѕСЂРјР°С†РёСЏ - РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє РёР· Р»РёРЅРёР№ РїРѕРєР°Р·С‹РІР°СЋС‰РёР№ РіСЂР°РЅРёС†С‹ РІС‹РІРѕРґРёРјРѕРіРѕ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєР°
 	RS_LINE lines[8];
 	for(n=0; n<8; n++) lines[n].dwColor = 0xFFFFFFFF;
 	lines[0].vPos = vp1;	lines[1].vPos = vp2;
@@ -575,7 +575,7 @@ void SUNGLOW::DrawRect(dword dwColor,const CVECTOR& pos,float fSize,float fAngle
 
 float SUNGLOW::GetSunFadeoutFactor(const CVECTOR& vSunPos,float fSunSize)
 {
-	// получим указатель на небо
+	// РїРѕР»СѓС‡РёРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РЅРµР±Рѕ
 	if( !pSky ) {
 		ENTITY_ID ent;
 		if ( api->FindClass(&ent,"SKY",0) )

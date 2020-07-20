@@ -106,7 +106,7 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,PSTR szCmdLine,in
 		ini->ReadString(0,"mem_profile",sMemProfileFileName,sizeof(sMemProfileFileName),"");
 
 		dwMaxFPS = (dword)ini->GetLong(0, "max_fps", 0);
-		//eddy. óáåðåì ÷èòû
+		//eddy. ÑƒÐ±ÐµÑ€ÐµÐ¼ Ñ‡Ð¸Ñ‚Ñ‹
 		//bDebugWindow = ini->GetLong(0, "DebugWindow", 0) == 1;
 		//bAcceleration = ini->GetLong(0, "Acceleration", 0) == 1;
 		//bBackspaceExit = ini->GetLong(0, "BackSpaceExit", 0) == 1;
