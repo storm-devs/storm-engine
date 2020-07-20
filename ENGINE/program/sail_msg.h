@@ -8,19 +8,19 @@
 #define     MSG_SAIL_TO_NEWHOST 40022 // format "liplii" (msg_code, oldModel_id,&node,groupNum, hewHost_id,newModel_id)
 #define     MSG_SAIL_CHECK      40023 // format "liii" (msg_code, ship_id, newHost_id, newModel_id)
 #define     MSG_SAIL_GET_PARAMS 40024 // format "lip" (msg_code, ship_id, &maxSpeed)
-    // получить коэффициент максимальной скорости для корабля
+    // РїРѕР»СѓС‡РёС‚СЊ РєРѕСЌС„С„РёС†РёРµРЅС‚ РјР°РєСЃРёРјР°Р»СЊРЅРѕР№ СЃРєРѕСЂРѕСЃС‚Рё РґР»СЏ РєРѕСЂР°Р±Р»СЏ
 #define     MSG_SAIL_GET_SPEED  40002 // format "lipf" (msg_code, ship_id,&speed, maxSpeed) //speed<-[0.f,1.f], maxSpeed=[0.f,1.f];
-    // поднять/убрать паруса
-//#define     MSG_SAIL_ROLL       40010 // format "lil" (msg_code, ship_id, sailSet) // sailSet=номер или ROLLTYPE_NEXT,ROLLTYPE_PREV
-    // типы парусов по группам сворачивания
+    // РїРѕРґРЅСЏС‚СЊ/СѓР±СЂР°С‚СЊ РїР°СЂСѓСЃР°
+//#define     MSG_SAIL_ROLL       40010 // format "lil" (msg_code, ship_id, sailSet) // sailSet=РЅРѕРјРµСЂ РёР»Рё ROLLTYPE_NEXT,ROLLTYPE_PREV
+    // С‚РёРїС‹ РїР°СЂСѓСЃРѕРІ РїРѕ РіСЂСѓРїРїР°Рј СЃРІРѕСЂР°С‡РёРІР°РЅРёСЏ
 #define ROLLTYPE_NONE       0
 #define ROLLTYPE_NORMAL     1
 #define ROLLTYPE_FAST       2
 //#define ROLLTYPE_NEXT       100
 //#define ROLLTYPE_PREV       101
-    // удалить все паруса одного корабля
+    // СѓРґР°Р»РёС‚СЊ РІСЃРµ РїР°СЂСѓСЃР° РѕРґРЅРѕРіРѕ РєРѕСЂР°Р±Р»СЏ
 #define     MSG_SAIL_DEL_GROUP  40030 // format "li" (msg_code, ship_id)
-    // все паруса объекта освободить от стандартного надувания
+    // РІСЃРµ РїР°СЂСѓСЃР° РѕР±СЉРµРєС‚Р° РѕСЃРІРѕР±РѕРґРёС‚СЊ РѕС‚ СЃС‚Р°РЅРґР°СЂС‚РЅРѕРіРѕ РЅР°РґСѓРІР°РЅРёСЏ
 #define     MSG_SAIL_FREE_GROUP 40032 // format "li" (msg_code, ship_id)
 
 //=\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\=

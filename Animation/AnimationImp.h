@@ -5,7 +5,7 @@
 //--------------------------------------------------------------------------------------------
 //	AnimationImp
 //--------------------------------------------------------------------------------------------
-//	Ðåàëèçàöèÿ èíòåðôåéñà Animation
+//	Ð ÐµÐ°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ñ Ð¸Ð½Ñ‚ÐµÑ€Ñ„ÐµÐ¹ÑÐ° Animation
 //============================================================================================
 
 #ifndef _AnimationManagerImp_H_
@@ -24,47 +24,47 @@ class AnimationServiceImp;
 class AnimationImp : public Animation
 {
 //--------------------------------------------------------------------------------------------
-//Êîíñòðóèðîâàíèå, äåñòðóêòóðèðîâàíèå
+//ÐšÐ¾Ð½ÑÑ‚Ñ€ÑƒÐ¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ, Ð´ÐµÑÑ‚Ñ€ÑƒÐºÑ‚ÑƒÑ€Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ
 //--------------------------------------------------------------------------------------------
 public:
 	AnimationImp(long id, AnimationInfo * animationInfo);
 	virtual ~AnimationImp();
 
-	//Óñòàíîâèòü óêàçàòåëü íà ñåðâèñ àíèìàöèè
+	//Ð£ÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ ÑƒÐºÐ°Ð·Ð°Ñ‚ÐµÐ»ÑŒ Ð½Ð° ÑÐµÑ€Ð²Ð¸Ñ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ð¸
 	static void SetAnimationService(AnimationServiceImp * animationService);
 
 //--------------------------------------------------------------------------------------------
 //Animation
 //--------------------------------------------------------------------------------------------
 public:
-	//Äîñòóïèòüñÿ ê ïðîèãðûâàòåëþ äåéñòâèé
+	//Ð”Ð¾ÑÑ‚ÑƒÐ¿Ð¸Ñ‚ÑŒÑÑ Ðº Ð¿Ñ€Ð¾Ð¸Ð³Ñ€Ñ‹Ð²Ð°Ñ‚ÐµÐ»ÑŽ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ð¹
 	virtual ActionPlayer & Player(long index);
-	//Äîñòóïèòüñÿ ê òàéìåðó àíèìàöèè
+	//Ð”Ð¾ÑÑ‚ÑƒÐ¿Ð¸Ñ‚ÑŒÑÑ Ðº Ñ‚Ð°Ð¹Ð¼ÐµÑ€Ñƒ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ð¸
 	virtual AnimationTimer & Timer(long index);
-	//Ñîáûòèÿ
-	//Óñòàíîâèòü âíóòðåííèå ñîáûòèå
+	//Ð¡Ð¾Ð±Ñ‹Ñ‚Ð¸Ñ
+	//Ð£ÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð²Ð½ÑƒÑ‚Ñ€ÐµÐ½Ð½Ð¸Ðµ ÑÐ¾Ð±Ñ‹Ñ‚Ð¸Ðµ
 	virtual long SetEvent(AnimationEvent event, long index, AnimationEventListener * ael);
-	//Óäàëèòü âíóòðåííèå ñîáûòèå
+	//Ð£Ð´Ð°Ð»Ð¸Ñ‚ÑŒ Ð²Ð½ÑƒÑ‚Ñ€ÐµÐ½Ð½Ð¸Ðµ ÑÐ¾Ð±Ñ‹Ñ‚Ð¸Ðµ
 	virtual void DelEvent(long eventID);
-	//Óñòàíîâèòü îáðàáîò÷èê âíåøíåãî ñîáûòèÿ
+	//Ð£ÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð¾Ð±Ñ€Ð°Ð±Ð¾Ñ‚Ñ‡Ð¸Ðº Ð²Ð½ÐµÑˆÐ½ÐµÐ³Ð¾ ÑÐ¾Ð±Ñ‹Ñ‚Ð¸Ñ
 	virtual void SetEventListener(AnimationEventListener * ael);
-	//Äîñòóï ê êîñòÿì
-	//Ïîëó÷èòü êîëè÷åñòâî êîñòåé â ñêåëåòå
+	//Ð”Ð¾ÑÑ‚ÑƒÐ¿ Ðº ÐºÐ¾ÑÑ‚ÑÐ¼
+	//ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ ÐºÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ð¾ ÐºÐ¾ÑÑ‚ÐµÐ¹ Ð² ÑÐºÐµÐ»ÐµÑ‚Ðµ
 	virtual long GetNumBones() const;
-	//Ïîëó÷èòü ìàòðèöó àíèìàöèè äëÿ êîñòè
+	//ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð¼Ð°Ñ‚Ñ€Ð¸Ñ†Ñƒ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ð¸ Ð´Ð»Ñ ÐºÐ¾ÑÑ‚Ð¸
 	virtual CMatrix & GetAnimationMatrix(long iBone) const;
-	//Ðàçíîå
-	//Ïîëó÷èòü ïîëüçîâàòåëüñêèå äàííûå äëÿ àíèìàöèè
+	//Ð Ð°Ð·Ð½Ð¾Ðµ
+	//ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»ÑŒÑÐºÐ¸Ðµ Ð´Ð°Ð½Ð½Ñ‹Ðµ Ð´Ð»Ñ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ð¸
 	virtual const char * GetData(const char * dataName) const;
-	//Êîïèðîâàòü ñîñòîÿíèå îäíîãî ïëååðà â äðóãîé
+	//ÐšÐ¾Ð¿Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ Ð¾Ð´Ð½Ð¾Ð³Ð¾ Ð¿Ð»ÐµÐµÑ€Ð° Ð² Ð´Ñ€ÑƒÐ³Ð¾Ð¹
 	virtual void CopyPlayerState(long indexSrc, long indexDst, bool copyTimerState = false);
-	//Ïîëó÷èòü ñêîðîñòü èñïîëíåíèÿ àíèìàöèè
+	//ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ ÑÐºÐ¾Ñ€Ð¾ÑÑ‚ÑŒ Ð¸ÑÐ¿Ð¾Ð»Ð½ÐµÐ½Ð¸Ñ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ð¸
 	virtual float GetFPS();
-	//Óñòàíîâèòü ðåæèìû áëåíäèíãà
-	//Àâòîìàòè÷åñêàÿ íîðìàëèçàöèÿ êîýôèöèåíòîâ áëåíäèíãà
+	//Ð£ÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ñ€ÐµÐ¶Ð¸Ð¼Ñ‹ Ð±Ð»ÐµÐ½Ð´Ð¸Ð½Ð³Ð°
+	//ÐÐ²Ñ‚Ð¾Ð¼Ð°Ñ‚Ð¸Ñ‡ÐµÑÐºÐ°Ñ Ð½Ð¾Ñ€Ð¼Ð°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ñ ÐºÐ¾ÑÑ„Ð¸Ñ†Ð¸ÐµÐ½Ñ‚Ð¾Ð² Ð±Ð»ÐµÐ½Ð´Ð¸Ð½Ð³Ð°
 	virtual bool SetAutoNormalize(bool isNormalize = true);
 	virtual bool GetAutoNormalize();
-	//Ðàçðåøèòü èñïîëüçîâàíèå ïîëüçîâàòåëüñêèõ êîýôèöèåíòîâ áëåíäèíãà â ActionPlayer
+	//Ð Ð°Ð·Ñ€ÐµÑˆÐ¸Ñ‚ÑŒ Ð¸ÑÐ¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ð½Ð¸Ðµ Ð¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»ÑŒÑÐºÐ¸Ñ… ÐºÐ¾ÑÑ„Ð¸Ñ†Ð¸ÐµÐ½Ñ‚Ð¾Ð² Ð±Ð»ÐµÐ½Ð´Ð¸Ð½Ð³Ð° Ð² ActionPlayer
 	virtual bool UserBlend(bool isBlend = true);
 	virtual bool IsUserBlend();
 
@@ -72,71 +72,71 @@ public:
 //AnimationImp
 //--------------------------------------------------------------------------------------------
 public:
-	//Ïîëó÷èòü thisID
+	//ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ thisID
 	long GetThisID();
-	//Ïîëó÷èòü óêàçàòåëü íà AnimationInfo
+	//ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ ÑƒÐºÐ°Ð·Ð°Ñ‚ÐµÐ»ÑŒ Ð½Ð° AnimationInfo
 	AnimationInfo * GetAnimationInfo();
-	//Íàéòè äåéñòâèå ïî èìåíè
+	//ÐÐ°Ð¹Ñ‚Ð¸ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ðµ Ð¿Ð¾ Ð¸Ð¼ÐµÐ½Ð¸
 	ActionInfo * GetActionInfo(const char * actionName);
-	//Ñäåëàòü øàã ïî âðåìåíè
+	//Ð¡Ð´ÐµÐ»Ð°Ñ‚ÑŒ ÑˆÐ°Ð³ Ð¿Ð¾ Ð²Ñ€ÐµÐ¼ÐµÐ½Ð¸
 	void Execute(long dltTime);
-	//Ðàñ÷èòàòü ìàòðèöû àíèìàöèè
+	//Ð Ð°ÑÑ‡Ð¸Ñ‚Ð°Ñ‚ÑŒ Ð¼Ð°Ñ‚Ñ€Ð¸Ñ†Ñ‹ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ð¸
 	void BuildAnimationMatrices();
-	//Ïîëó÷èòü óêàçàòåëü íà ñðâèñ àíèìàöèè
+	//ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ ÑƒÐºÐ°Ð·Ð°Ñ‚ÐµÐ»ÑŒ Ð½Ð° ÑÑ€Ð²Ð¸Ñ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ð¸
 	static AnimationServiceImp * GetAniService();
-	//Ñîáûòèÿ AnimationPlayer
-	//Ïëååðó óñòàíîâèëè íîâîå äåéñòâèå
+	//Ð¡Ð¾Ð±Ñ‹Ñ‚Ð¸Ñ AnimationPlayer
+	//ÐŸÐ»ÐµÐµÑ€Ñƒ ÑƒÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ð»Ð¸ Ð½Ð¾Ð²Ð¾Ðµ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ðµ
 	void ApeSetnewaction(long index);
-	//Âêëþ÷åíî ïðîèãðûâàíèå äåéñòâèÿ
+	//Ð’ÐºÐ»ÑŽÑ‡ÐµÐ½Ð¾ Ð¿Ñ€Ð¾Ð¸Ð³Ñ€Ñ‹Ð²Ð°Ð½Ð¸Ðµ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ñ
 	void ApePlay(long index);
-	//Ïðèîñòàíîâëåííî ïðîèãðûâàíèå äåéñòâèÿ
+	//ÐŸÑ€Ð¸Ð¾ÑÑ‚Ð°Ð½Ð¾Ð²Ð»ÐµÐ½Ð½Ð¾ Ð¿Ñ€Ð¾Ð¸Ð³Ñ€Ñ‹Ð²Ð°Ð½Ð¸Ðµ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ñ
 	void ApePauseOn(long index);
-	//Ïðîäîëæåíî ïðîèãðûâàíèå äåéñòâèÿ
+	//ÐŸÑ€Ð¾Ð´Ð¾Ð»Ð¶ÐµÐ½Ð¾ Ð¿Ñ€Ð¾Ð¸Ð³Ñ€Ñ‹Ð²Ð°Ð½Ð¸Ðµ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ñ
 	void ApePauseOff(long index);
-	//Îñòàíîâèòü ïðîèãðûâàíèå äåéñòâèÿ
+	//ÐžÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð¿Ñ€Ð¾Ð¸Ð³Ñ€Ñ‹Ð²Ð°Ð½Ð¸Ðµ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ñ
 	void ApeStop(long index);
-	//Cîáûòèå ãåíåðèòü íà êàæäîì êàäðå
+	//CÐ¾Ð±Ñ‹Ñ‚Ð¸Ðµ Ð³ÐµÐ½ÐµÑ€Ð¸Ñ‚ÑŒ Ð½Ð° ÐºÐ°Ð¶Ð´Ð¾Ð¼ ÐºÐ°Ð´Ñ€Ðµ
 	void ApeAlways(long index);
-	//Ïðè íà÷àëå äåéñòâèÿ
+	//ÐŸÑ€Ð¸ Ð½Ð°Ñ‡Ð°Ð»Ðµ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ñ
 	void ApeStart(long index);
-	//Ïðè îêîí÷íèè äåéñòâèÿ
+	//ÐŸÑ€Ð¸ Ð¾ÐºÐ¾Ð½Ñ‡Ð½Ð¸Ð¸ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ñ
 	void ApeEnd(long index);
-	//Ïðè èçìåíåíèè íàïðàâëåíèÿ ïðîèãðûâàíèÿ (pingpong)
+	//ÐŸÑ€Ð¸ Ð¸Ð·Ð¼ÐµÐ½ÐµÐ½Ð¸Ð¸ Ð½Ð°Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ñ Ð¿Ñ€Ð¾Ð¸Ð³Ñ€Ñ‹Ð²Ð°Ð½Ð¸Ñ (pingpong)
 	void ApeChange(long index);
-	//Òàéìåð çàêîí÷èë ðàáîòó èëè áûë îñòàíîâëåí
+	//Ð¢Ð°Ð¹Ð¼ÐµÑ€ Ð·Ð°ÐºÐ¾Ð½Ñ‡Ð¸Ð» Ñ€Ð°Ð±Ð¾Ñ‚Ñƒ Ð¸Ð»Ð¸ Ð±Ñ‹Ð» Ð¾ÑÑ‚Ð°Ð½Ð¾Ð²Ð»ÐµÐ½
 	void AteTimerstop(long index);
 
-	//Âíåøíèå ñîáûòèå
+	//Ð’Ð½ÐµÑˆÐ½Ð¸Ðµ ÑÐ¾Ð±Ñ‹Ñ‚Ð¸Ðµ
 	void AteExtern(long plIndex, const char * evt);
 
 private:
-	//Ðàçîñëàòü ñîáûòèÿ
+	//Ð Ð°Ð·Ð¾ÑÐ»Ð°Ñ‚ÑŒ ÑÐ¾Ð±Ñ‹Ñ‚Ð¸Ñ
 	void SendEvent(AnimationEvent event, long index);
 
 
 //--------------------------------------------------------------------------------------------
-//Èíêàïñóëÿöèÿ
+//Ð˜Ð½ÐºÐ°Ð¿ÑÑƒÐ»ÑÑ†Ð¸Ñ
 //--------------------------------------------------------------------------------------------
 private:
-	//Ñîáñòâåííûé èäåíòèôèêàòîð
+	//Ð¡Ð¾Ð±ÑÑ‚Ð²ÐµÐ½Ð½Ñ‹Ð¹ Ð¸Ð´ÐµÐ½Ñ‚Ð¸Ñ„Ð¸ÐºÐ°Ñ‚Ð¾Ñ€
 	long thisID;
-	//Óêàçàòåëü íà àíèìàöèþ
+	//Ð£ÐºÐ°Ð·Ð°Ñ‚ÐµÐ»ÑŒ Ð½Ð° Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸ÑŽ
 	AnimationInfo * aniInfo;
-	//Àíèìàöèè
+	//ÐÐ½Ð¸Ð¼Ð°Ñ†Ð¸Ð¸
 	ActionPlayerImp action[ANI_MAX_ACTIONS];
-	//Òàéìåðû
+	//Ð¢Ð°Ð¹Ð¼ÐµÑ€Ñ‹
 	AnimationTimerImp timer[ANI_MAX_ACTIONS];
-	//Àâòîíîðìàëèçàöèÿ
+	//ÐÐ²Ñ‚Ð¾Ð½Ð¾Ñ€Ð¼Ð°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ñ
 	bool isAutoNormalize;
-	//Ïîëüçîâàòåëüñêèé áëåíäèíã
+	//ÐŸÐ¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»ÑŒÑÐºÐ¸Ð¹ Ð±Ð»ÐµÐ½Ð´Ð¸Ð½Ð³
 	bool isUserBlend;
-	//Ìàòðèöû ñêåëåòà
+	//ÐœÐ°Ñ‚Ñ€Ð¸Ñ†Ñ‹ ÑÐºÐµÐ»ÐµÑ‚Ð°
 	CMatrix * matrix;
-	//Ïîäïèñ÷èêè íà âíóòðåííèè ñîáûòèÿ
+	//ÐŸÐ¾Ð´Ð¿Ð¸ÑÑ‡Ð¸ÐºÐ¸ Ð½Ð° Ð²Ð½ÑƒÑ‚Ñ€ÐµÐ½Ð½Ð¸Ð¸ ÑÐ¾Ð±Ñ‹Ñ‚Ð¸Ñ
 	AnimationEventListener * ae_listeners[ae_numevents][ANIIMP_MAXLISTENERS];
-	//Ïîäïèñ÷èêè íà âíåøíèå ñîáûòèÿ
+	//ÐŸÐ¾Ð´Ð¿Ð¸ÑÑ‡Ð¸ÐºÐ¸ Ð½Ð° Ð²Ð½ÐµÑˆÐ½Ð¸Ðµ ÑÐ¾Ð±Ñ‹Ñ‚Ð¸Ñ
 	AnimationEventListener * ae_listenersExt;
-	//Óêàçàòåëü íà ñåðâèñ àíèìàöèè
+	//Ð£ÐºÐ°Ð·Ð°Ñ‚ÐµÐ»ÑŒ Ð½Ð° ÑÐµÑ€Ð²Ð¸Ñ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ð¸
 	static AnimationServiceImp * aniService;
 };
 
@@ -144,7 +144,7 @@ private:
 //inline
 //============================================================================================
 
-//Óñòàíîâèòü óêàçàòåëü íà ñåðâèñ àíèìàöèè
+//Ð£ÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ ÑƒÐºÐ°Ð·Ð°Ñ‚ÐµÐ»ÑŒ Ð½Ð° ÑÐµÑ€Ð²Ð¸Ñ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ð¸
 inline void AnimationImp::SetAnimationService(AnimationServiceImp * animationService)
 {
 	Assert(aniService == null);
@@ -155,86 +155,86 @@ inline void AnimationImp::SetAnimationService(AnimationServiceImp * animationSer
 //AnimationImp
 //--------------------------------------------------------------------------------------------
 
-//Ïîëó÷èòü thisID
+//ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ thisID
 inline long AnimationImp::GetThisID()
 {
 	return thisID;
 }
 
-//Ïîëó÷èòü óêàçàòåëü íà AnimationInfo
+//ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ ÑƒÐºÐ°Ð·Ð°Ñ‚ÐµÐ»ÑŒ Ð½Ð° AnimationInfo
 inline AnimationInfo * AnimationImp::GetAnimationInfo()
 {
 	return aniInfo;
 }
 
-//Íàéòè äåéñòâèå ïî èìåíè
+//ÐÐ°Ð¹Ñ‚Ð¸ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ðµ Ð¿Ð¾ Ð¸Ð¼ÐµÐ½Ð¸
 inline ActionInfo * AnimationImp::GetActionInfo(const char * actionName)
 {
 	return aniInfo->FindAction(actionName);
 }
 
-//Ïîëó÷èòü óêàçàòåëü íà ñðâèñ àíèìàöèè
+//ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ ÑƒÐºÐ°Ð·Ð°Ñ‚ÐµÐ»ÑŒ Ð½Ð° ÑÑ€Ð²Ð¸Ñ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ð¸
 inline AnimationServiceImp * AnimationImp::GetAniService()
 {
 	return aniService;
 }
 
-//Ñîáûòèÿ AnimationPlayer
-//Ïëååðó óñòàíîâèëè íîâîå äåéñòâèå
+//Ð¡Ð¾Ð±Ñ‹Ñ‚Ð¸Ñ AnimationPlayer
+//ÐŸÐ»ÐµÐµÑ€Ñƒ ÑƒÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ð»Ð¸ Ð½Ð¾Ð²Ð¾Ðµ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ðµ
 inline void AnimationImp::ApeSetnewaction(long index)
 {
 	SendEvent(ae_setnewaction, index);
 }
 
-//Âêëþ÷åíî ïðîèãðûâàíèå äåéñòâèÿ
+//Ð’ÐºÐ»ÑŽÑ‡ÐµÐ½Ð¾ Ð¿Ñ€Ð¾Ð¸Ð³Ñ€Ñ‹Ð²Ð°Ð½Ð¸Ðµ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ñ
 inline void AnimationImp::ApePlay(long index)
 {
 	SendEvent(ae_play, index);
 }
 
-//Ïðèîñòàíîâëåííî ïðîèãðûâàíèå äåéñòâèÿ
+//ÐŸÑ€Ð¸Ð¾ÑÑ‚Ð°Ð½Ð¾Ð²Ð»ÐµÐ½Ð½Ð¾ Ð¿Ñ€Ð¾Ð¸Ð³Ñ€Ñ‹Ð²Ð°Ð½Ð¸Ðµ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ñ
 inline void AnimationImp::ApePauseOn(long index)
 {
 	SendEvent(ae_pauseon, index);
 }
 
-//Ïðîäîëæåíî ïðîèãðûâàíèå äåéñòâèÿ
+//ÐŸÑ€Ð¾Ð´Ð¾Ð»Ð¶ÐµÐ½Ð¾ Ð¿Ñ€Ð¾Ð¸Ð³Ñ€Ñ‹Ð²Ð°Ð½Ð¸Ðµ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ñ
 inline void AnimationImp::ApePauseOff(long index)
 {
 	SendEvent(ae_pauseoff, index);
 }
 
-//Îñòàíîâèòü ïðîèãðûâàíèå äåéñòâèÿ
+//ÐžÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð¿Ñ€Ð¾Ð¸Ð³Ñ€Ñ‹Ð²Ð°Ð½Ð¸Ðµ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ñ
 inline void AnimationImp::ApeStop(long index)
 {
 	SendEvent(ae_stop, index);
 }
 
-//Ïðè íà÷àëå äåéñòâèÿ
+//ÐŸÑ€Ð¸ Ð½Ð°Ñ‡Ð°Ð»Ðµ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ñ
 inline void AnimationImp::ApeStart(long index)
 {
 	SendEvent(ae_start, index);
 }
 
-//Ïðè îêîí÷íèè äåéñòâèÿ
+//ÐŸÑ€Ð¸ Ð¾ÐºÐ¾Ð½Ñ‡Ð½Ð¸Ð¸ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ñ
 inline void AnimationImp::ApeEnd(long index)
 {
 	SendEvent(ae_end, index);
 }
 
-//Ïðè èçìåíåíèè íàïðàâëåíèÿ ïðîèãðûâàíèÿ (pingpong)
+//ÐŸÑ€Ð¸ Ð¸Ð·Ð¼ÐµÐ½ÐµÐ½Ð¸Ð¸ Ð½Ð°Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ñ Ð¿Ñ€Ð¾Ð¸Ð³Ñ€Ñ‹Ð²Ð°Ð½Ð¸Ñ (pingpong)
 inline void AnimationImp::ApeChange(long index)
 {
 	SendEvent(ae_change, index);
 }
 
-//Òàéìåð çàêîí÷èë ðàáîòó èëè áûë îñòàíîâëåí
+//Ð¢Ð°Ð¹Ð¼ÐµÑ€ Ð·Ð°ÐºÐ¾Ð½Ñ‡Ð¸Ð» Ñ€Ð°Ð±Ð¾Ñ‚Ñƒ Ð¸Ð»Ð¸ Ð±Ñ‹Ð» Ð¾ÑÑ‚Ð°Ð½Ð¾Ð²Ð»ÐµÐ½
 inline void AnimationImp::AteTimerstop(long index)
 {
 	SendEvent(ae_timerstop, index);
 }
 
-//Âíåøíèå ñîáûòèå
+//Ð’Ð½ÐµÑˆÐ½Ð¸Ðµ ÑÐ¾Ð±Ñ‹Ñ‚Ð¸Ðµ
 inline void AnimationImp::AteExtern(long plIndex, const char * evt)
 {
 	if(ae_listenersExt) ae_listenersExt->Event(this, plIndex, evt);

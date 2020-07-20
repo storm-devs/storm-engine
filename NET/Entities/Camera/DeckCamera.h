@@ -21,7 +21,7 @@ class NetDeckCamera : public NetCommonCamera
 
 	VERTEX tri[4];
 
-    // параметры загружаемые из INI-файла //
+    // РїР°СЂР°РјРµС‚СЂС‹ Р·Р°РіСЂСѓР¶Р°РµРјС‹Рµ РёР· INI-С„Р°Р№Р»Р° //
     //--------------------------------------
 	float	fSensivityDistance, fSensivityHeightAngle, fSensivityAzimuthAngle;
 	float	fRockingX, fRockingZ;

@@ -46,8 +46,8 @@ protected:
     int             GetSlide(ENTITY_ID &mod, CVECTOR &pbeg, CVECTOR &pend, CVECTOR &dp, CVECTOR &lrey, CVECTOR &rrey, float &angl);
     struct MASTMOVE
     {
-        CVECTOR bp,ep; // координаты мачты
-        CVECTOR brey,erey; // координаты реи
+        CVECTOR bp,ep; // РєРѕРѕСЂРґРёРЅР°С‚С‹ РјР°С‡С‚С‹
+        CVECTOR brey,erey; // РєРѕРѕСЂРґРёРЅР°С‚С‹ СЂРµРё
 
         CVECTOR ang,dang,sdang;
         CVECTOR mov,dmov,sdmov;

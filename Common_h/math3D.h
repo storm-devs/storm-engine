@@ -24,7 +24,7 @@
 #include "Math3D\Capsule.h"
 
 
-///Быстрое приведение числа с плавающей точкой к целому с отбрасыванием дробной части
+///Р‘С‹СЃС‚СЂРѕРµ РїСЂРёРІРµРґРµРЅРёРµ С‡РёСЃР»Р° СЃ РїР»Р°РІР°СЋС‰РµР№ С‚РѕС‡РєРѕР№ Рє С†РµР»РѕРјСѓ СЃ РѕС‚Р±СЂР°СЃС‹РІР°РЅРёРµРј РґСЂРѕР±РЅРѕР№ С‡Р°СЃС‚Рё
 mathinline long fftol(float f)
 {
 	long l;
@@ -40,7 +40,7 @@ mathinline long fftol(float f)
 	return l;
 }
 
-///Быстрое приведение числа с плавающей точкой к целому с округлением к ближайшему
+///Р‘С‹СЃС‚СЂРѕРµ РїСЂРёРІРµРґРµРЅРёРµ С‡РёСЃР»Р° СЃ РїР»Р°РІР°СЋС‰РµР№ С‚РѕС‡РєРѕР№ Рє С†РµР»РѕРјСѓ СЃ РѕРєСЂСѓРіР»РµРЅРёРµРј Рє Р±Р»РёР¶Р°Р№С€РµРјСѓ
 mathinline long fftoi(float f)
 {
 	long l;
@@ -87,25 +87,25 @@ mathinline float & ffabs(float & f)
 	return f;
 }
 
-//Возвести в квадрат
+//Р’РѕР·РІРµСЃС‚Рё РІ РєРІР°РґСЂР°С‚
 mathinline float sqrf(float f)
 {
 	return f*f;
 }
 
-//Случайное число
+//РЎР»СѓС‡Р°Р№РЅРѕРµ С‡РёСЃР»Рѕ
 mathinline float Rnd(float max = 1.0f)
 {
 	return rand()*(max*(1.0f/RAND_MAX));
 }
 
-//Случайное число
+//РЎР»СѓС‡Р°Р№РЅРѕРµ С‡РёСЃР»Рѕ
 mathinline float RRnd(float min, float max)
 {
 	return min + rand()*((max - min)*(1.0f/RAND_MAX));
 }
 
-//Ограничить float
+//РћРіСЂР°РЅРёС‡РёС‚СЊ float
 mathinline float Clampf(float v, float min = 0.0f, float max = 1.0f)
 {
 	if(v < min) v = min;
@@ -113,7 +113,7 @@ mathinline float Clampf(float v, float min = 0.0f, float max = 1.0f)
 	return v;
 }
 
-//Ограничить float
+//РћРіСЂР°РЅРёС‡РёС‚СЊ float
 mathinline float Clampfr(float & v, float min = 0.0f, float max = 1.0f)
 {
 	if(v < min) v = min;
@@ -122,7 +122,7 @@ mathinline float Clampfr(float & v, float min = 0.0f, float max = 1.0f)
 }
 
 
-//Привести угол к диапазону 0..2PI
+//РџСЂРёРІРµСЃС‚Рё СѓРіРѕР» Рє РґРёР°РїР°Р·РѕРЅСѓ 0..2PI
 mathinline float NormAngle2PI(float angle)
 {
 	static const float pi = 3.14159265358979323846f;
@@ -130,7 +130,7 @@ mathinline float NormAngle2PI(float angle)
 	return (angle/(2.0f*pi) - long(angle/(2.0f*pi)))*2.0f*pi;
 }
 
-//Привести угол к диапазону -PI..PI
+//РџСЂРёРІРµСЃС‚Рё СѓРіРѕР» Рє РґРёР°РїР°Р·РѕРЅСѓ -PI..PI
 mathinline float NormAnglePI(float angle)
 {
 	static const float pi = 3.14159265358979323846f;
@@ -138,7 +138,7 @@ mathinline float NormAnglePI(float angle)
 	return (angle/(2.0f*pi) - long(angle/(2.0f*pi)))*2.0f*pi - pi;
 }
 
-//Посчитать acos с ограничением диапазона
+//РџРѕСЃС‡РёС‚Р°С‚СЊ acos СЃ РѕРіСЂР°РЅРёС‡РµРЅРёРµРј РґРёР°РїР°Р·РѕРЅР°
 mathinline float safeACos(float ang)
 {
 	double d = (double)ang;
@@ -148,7 +148,7 @@ mathinline float safeACos(float ang)
 	return (float)d;
 }
 
-//Посчитать asin с ограничением диапазона
+//РџРѕСЃС‡РёС‚Р°С‚СЊ asin СЃ РѕРіСЂР°РЅРёС‡РµРЅРёРµРј РґРёР°РїР°Р·РѕРЅР°
 mathinline float safeASin(float ang)
 {
 	double d = (double)ang;

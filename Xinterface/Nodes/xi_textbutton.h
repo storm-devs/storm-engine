@@ -42,19 +42,19 @@ protected:
     CVideoTexture *m_pTex;
 	XI_ONETEX_VERTEX m_v[8];
 
-	DWORD   m_dwShadowColor;	// цвет тени
-	DWORD   m_dwFaceColor;		// цвет ненажатой клавиши
-	DWORD   m_dwPressedFaceColor; // цвет активной клавиши
-	DWORD	m_dwFontColor;		// цвет шрифта
-	DWORD	m_dwUnselFontColor;	// цвет шрифта для недоступной клавиши
+	DWORD   m_dwShadowColor;	// С†РІРµС‚ С‚РµРЅРё
+	DWORD   m_dwFaceColor;		// С†РІРµС‚ РЅРµРЅР°Р¶Р°С‚РѕР№ РєР»Р°РІРёС€Рё
+	DWORD   m_dwPressedFaceColor; // С†РІРµС‚ Р°РєС‚РёРІРЅРѕР№ РєР»Р°РІРёС€Рё
+	DWORD	m_dwFontColor;		// С†РІРµС‚ С€СЂРёС„С‚Р°
+	DWORD	m_dwUnselFontColor;	// С†РІРµС‚ С€СЂРёС„С‚Р° РґР»СЏ РЅРµРґРѕСЃС‚СѓРїРЅРѕР№ РєР»Р°РІРёС€Рё
 	float	m_fFontScale;
 
-	float   m_fXShadow;			// смещение по X для тени нормальной клавиши
-	float   m_fYShadow;			// смещение по Y для тени нормальной клавиши
-	float   m_fXShadowPress;	// смещение по X для тени нажатой клавиши
-	float   m_fYShadowPress;	// смещение по Y для тени нажатой клавиши
-	float   m_fXDeltaPress;		// смещение по X при нажатии кнопки
-	float   m_fYDeltaPress;		// смещение по Y при нажатии кнопки
+	float   m_fXShadow;			// СЃРјРµС‰РµРЅРёРµ РїРѕ X РґР»СЏ С‚РµРЅРё РЅРѕСЂРјР°Р»СЊРЅРѕР№ РєР»Р°РІРёС€Рё
+	float   m_fYShadow;			// СЃРјРµС‰РµРЅРёРµ РїРѕ Y РґР»СЏ С‚РµРЅРё РЅРѕСЂРјР°Р»СЊРЅРѕР№ РєР»Р°РІРёС€Рё
+	float   m_fXShadowPress;	// СЃРјРµС‰РµРЅРёРµ РїРѕ X РґР»СЏ С‚РµРЅРё РЅР°Р¶Р°С‚РѕР№ РєР»Р°РІРёС€Рё
+	float   m_fYShadowPress;	// СЃРјРµС‰РµРЅРёРµ РїРѕ Y РґР»СЏ С‚РµРЅРё РЅР°Р¶Р°С‚РѕР№ РєР»Р°РІРёС€Рё
+	float   m_fXDeltaPress;		// СЃРјРµС‰РµРЅРёРµ РїРѕ X РїСЂРё РЅР°Р¶Р°С‚РёРё РєРЅРѕРїРєРё
+	float   m_fYDeltaPress;		// СЃРјРµС‰РµРЅРёРµ РїРѕ Y РїСЂРё РЅР°Р¶Р°С‚РёРё РєРЅРѕРїРєРё
 
 	int		m_nPressedDelay;
 	int     m_nMaxDelay;

@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2008, Valve LLC, All rights reserved. ============
+//========= Copyright Â© 1996-2008, Valve LLC, All rights reserved. ============
 //
 // Purpose: Shared definitions for the communication between the server/client
 //

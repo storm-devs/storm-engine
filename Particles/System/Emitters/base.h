@@ -19,12 +19,12 @@ class BaseEmitter : public IEmitter
 
 	struct structParticleType
 	{
-		bool Visible;										//Видим или нет
-		ParticleType Type;							// Тип партикла
-		float Remain;										// Сколько осталось незапущенных с прошлого кадра
-		DWORD ActiveCount;							// Количество активных партиклов данного типа
-		DWORD MaxParticlesCount;				// Максимальное кол-во партиклов этого типа
-		DataGraph* EmissionRate;				// График задающий скорость испускания партиклов
+		bool Visible;										//Р’РёРґРёРј РёР»Рё РЅРµС‚
+		ParticleType Type;							// РўРёРї РїР°СЂС‚РёРєР»Р°
+		float Remain;										// РЎРєРѕР»СЊРєРѕ РѕСЃС‚Р°Р»РѕСЃСЊ РЅРµР·Р°РїСѓС‰РµРЅРЅС‹С… СЃ РїСЂРѕС€Р»РѕРіРѕ РєР°РґСЂР°
+		DWORD ActiveCount;							// РљРѕР»РёС‡РµСЃС‚РІРѕ Р°РєС‚РёРІРЅС‹С… РїР°СЂС‚РёРєР»РѕРІ РґР°РЅРЅРѕРіРѕ С‚РёРїР°
+		DWORD MaxParticlesCount;				// РњР°РєСЃРёРјР°Р»СЊРЅРѕРµ РєРѕР»-РІРѕ РїР°СЂС‚РёРєР»РѕРІ СЌС‚РѕРіРѕ С‚РёРїР°
+		DataGraph* EmissionRate;				// Р“СЂР°С„РёРє Р·Р°РґР°СЋС‰РёР№ СЃРєРѕСЂРѕСЃС‚СЊ РёСЃРїСѓСЃРєР°РЅРёСЏ РїР°СЂС‚РёРєР»РѕРІ
 
 		FieldList* pFields;
 
@@ -82,20 +82,20 @@ protected:
 
 public:
  
-	// Конструктор / деструктор
+	// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ / РґРµСЃС‚СЂСѓРєС‚РѕСЂ
   BaseEmitter(ParticleSystem* pSystem);
   virtual ~BaseEmitter();
   
-	//Получить позицию для рождения новых партиклов  
+	//РџРѕР»СѓС‡РёС‚СЊ РїРѕР·РёС†РёСЋ РґР»СЏ СЂРѕР¶РґРµРЅРёСЏ РЅРѕРІС‹С… РїР°СЂС‚РёРєР»РѕРІ  
 	virtual Vector GetNewParticlePosition (float DeltaTime) = 0;
   
 
-	//Родить новые партиклы 
+	//Р РѕРґРёС‚СЊ РЅРѕРІС‹Рµ РїР°СЂС‚РёРєР»С‹ 
 	void BornParticles (float DeltaTime);
- 	//Исполнить
+ 	//РСЃРїРѕР»РЅРёС‚СЊ
   virtual void Execute (float DeltaTime);
 
-	//Присоединиться к источнику данных
+	//РџСЂРёСЃРѕРµРґРёРЅРёС‚СЊСЃСЏ Рє РёСЃС‚РѕС‡РЅРёРєСѓ РґР°РЅРЅС‹С…
 	virtual void AttachToDataSource (DataSource::EmitterDesc* pEmitter);
 
 
@@ -130,8 +130,8 @@ public:
 
 	virtual const char* GetName ();
 
-	//Если флаг в true емиттер не будет самостоятельно испускать партиклы
-	//так, как он привязан
+	//Р•СЃР»Рё С„Р»Р°Рі РІ true РµРјРёС‚С‚РµСЂ РЅРµ Р±СѓРґРµС‚ СЃР°РјРѕСЃС‚РѕСЏС‚РµР»СЊРЅРѕ РёСЃРїСѓСЃРєР°С‚СЊ РїР°СЂС‚РёРєР»С‹
+	//С‚Р°Рє, РєР°Рє РѕРЅ РїСЂРёРІСЏР·Р°РЅ
 	virtual void SetAttachedFlag (bool Flag);
 	virtual bool IsAttached ();
 
@@ -150,7 +150,7 @@ public:
 	virtual bool SetEnable (bool bVisible);
 	virtual bool GetEnable ();
 
-	//-1 если не нашли, иначе индекс
+	//-1 РµСЃР»Рё РЅРµ РЅР°С€Р»Рё, РёРЅР°С‡Рµ РёРЅРґРµРєСЃ
 	virtual int GetParticleTypeIndex (FieldList* pFields);
 	virtual bool SetParticleTypeEnable (bool bVisible, DWORD Index);
 	virtual bool GetParticleTypeEnable (DWORD Index);

@@ -3,11 +3,11 @@
 
 #include "..\defines.h"
 
-// тип локации - места высадки
+// С‚РёРї Р»РѕРєР°С†РёРё - РјРµСЃС‚Р° РІС‹СЃР°РґРєРё
 #define ISLAND_LOCATOR_LAND		1
 #define ISLAND_LOCATOR_FORT		2
 #define ISLAND_LOCATOR_TOWN		3
-// тип поиска локаторов
+// С‚РёРї РїРѕРёСЃРєР° Р»РѕРєР°С‚РѕСЂРѕРІ
 #define ISLAND_FIND_LOCATOR		1
 #define ISLAND_FIND_LAND		2
 #define ISLAND_FIND_FORT		3

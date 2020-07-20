@@ -47,15 +47,15 @@ class WdmCloud : public WdmRenderObject
 	};
 
 //--------------------------------------------------------------------------------------------
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //--------------------------------------------------------------------------------------------
 public:
 	WdmCloud();
 	virtual ~WdmCloud();
 
-	//Расчёты
+	//Р Р°СЃС‡С‘С‚С‹
 	virtual void Update(float dltTime);
-	//Отрисовка
+	//РћС‚СЂРёСЃРѕРІРєР°
 	virtual void PRender(VDX8RENDER * rs);
 	virtual void LRender(VDX8RENDER * rs);
 
@@ -63,13 +63,13 @@ public:
 
 	long FillRain(RS_RECT * rainRect, long rcnt);
 
-	CVECTOR pos;		//Позиция облака
-	CVECTOR dir;		//Направление перемещения облака
-	float globalAlpha;	//Текущая прозрачность
-	float constAlpha;	//Текущая прозрачность
+	CVECTOR pos;		//РџРѕР·РёС†РёСЏ РѕР±Р»Р°РєР°
+	CVECTOR dir;		//РќР°РїСЂР°РІР»РµРЅРёРµ РїРµСЂРµРјРµС‰РµРЅРёСЏ РѕР±Р»Р°РєР°
+	float globalAlpha;	//РўРµРєСѓС‰Р°СЏ РїСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ
+	float constAlpha;	//РўРµРєСѓС‰Р°СЏ РїСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ
 
 //--------------------------------------------------------------------------------------------
-//Инкапсуляция
+//РРЅРєР°РїСЃСѓР»СЏС†РёСЏ
 //--------------------------------------------------------------------------------------------
 protected:
 	virtual void BuildCloud(long n);
@@ -81,7 +81,7 @@ protected:
 	long numRects;
 	MoveInfo move[8];
 
-	//Параметры молнии
+	//РџР°СЂР°РјРµС‚СЂС‹ РјРѕР»РЅРёРё
 	long curLightning;
 	float lightningWaitTime;
 	float lightningTime;
@@ -89,7 +89,7 @@ protected:
 	long lastColor;
 	long lightningColor;
 
-	//Дождик
+	//Р”РѕР¶РґРёРє
 	Rain rain[48];
 	float rainBurnTime;
 

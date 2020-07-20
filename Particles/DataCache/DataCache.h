@@ -29,20 +29,20 @@ class DataCache
 
 public:
 
-//Конструктор/деструктор
+//РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ/РґРµСЃС‚СЂСѓРєС‚РѕСЂ
 	DataCache (IParticleManager* pManager);
 	~DataCache ();
 
-//Положить в кэш данные для системы
+//РџРѕР»РѕР¶РёС‚СЊ РІ РєСЌС€ РґР°РЅРЅС‹Рµ РґР»СЏ СЃРёСЃС‚РµРјС‹
 	void CacheSystem (const char* FileName);
 
-//Сбросить кэш
+//РЎР±СЂРѕСЃРёС‚СЊ РєСЌС€
 	void ResetCache ();
 
-//Получить указатель на данные для системы партиклов
+//РџРѕР»СѓС‡РёС‚СЊ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РґР°РЅРЅС‹Рµ РґР»СЏ СЃРёСЃС‚РµРјС‹ РїР°СЂС‚РёРєР»РѕРІ
 	DataSource* GetParticleSystemDataSource (const char* FileName);
 
-//Проверить указатель на валидность
+//РџСЂРѕРІРµСЂРёС‚СЊ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РІР°Р»РёРґРЅРѕСЃС‚СЊ
 	bool ValidatePointer (DataSource* pData);
 
 	DWORD GetCachedCount ();

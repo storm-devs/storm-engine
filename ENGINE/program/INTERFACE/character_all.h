@@ -1,9 +1,9 @@
-// общие методы
+// РѕР±С‰РёРµ РјРµС‚РѕРґС‹
 int nCurScrollNum;
 ref xi_refCharacter;
 
 string CurTable, CurRow;
-int iSelected; // курсор в таблице
+int iSelected; // РєСѓСЂСЃРѕСЂ РІ С‚Р°Р±Р»РёС†Рµ
 
 void FillCharactersScroll()
 {
@@ -171,7 +171,7 @@ void FillCharactersScroll()
 		PsgAttrName = "id"+(i+1);
 		_curCharIdx = GetPassenger(pchar, i);
 
-		if (_curCharIdx!=-1 && !CheckAttribute(&characters[_curCharIdx], "isfree")) // нужно ставить isfree для офицеров, чтоб два раза не попадали.
+		if (_curCharIdx!=-1 && !CheckAttribute(&characters[_curCharIdx], "isfree")) // РЅСѓР¶РЅРѕ СЃС‚Р°РІРёС‚СЊ isfree РґР»СЏ РѕС„РёС†РµСЂРѕРІ, С‡С‚РѕР± РґРІР° СЂР°Р·Р° РЅРµ РїРѕРїР°РґР°Р»Рё.
 		{
 			makearef(pRef2,GameInterface.CHARACTERS_SCROLL.(attributeName));
 			GameInterface.CHARACTERS_SCROLL.(attributeName).character = _curCharIdx;

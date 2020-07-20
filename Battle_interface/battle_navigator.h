@@ -54,17 +54,17 @@ protected:
 protected:
 	DWORD	m_dwBackGradColor1;
 	DWORD	m_dwBackGradColor2;
-	// параметры видимого горизонта
-	float	m_fMapRadius;	// радиус миникарты на экране
-	float	m_fTextureRad;	// радиус миникарты в текстуре
-	float	m_fWorldRad;	// радиус миникарты в мировых координатах
-	float	m_fCurScale;	// масштаб миникарты
-	float	m_fMinScale;	// минимальный масштаб карты
-	float	m_fMaxScale;	// максимальный масштаб карты
-	float	m_fScaleStep;	// шаг изменения масштаба
-	float	m_fShipShowRad;	// радиус показываемого корабля
+	// РїР°СЂР°РјРµС‚СЂС‹ РІРёРґРёРјРѕРіРѕ РіРѕСЂРёР·РѕРЅС‚Р°
+	float	m_fMapRadius;	// СЂР°РґРёСѓСЃ РјРёРЅРёРєР°СЂС‚С‹ РЅР° СЌРєСЂР°РЅРµ
+	float	m_fTextureRad;	// СЂР°РґРёСѓСЃ РјРёРЅРёРєР°СЂС‚С‹ РІ С‚РµРєСЃС‚СѓСЂРµ
+	float	m_fWorldRad;	// СЂР°РґРёСѓСЃ РјРёРЅРёРєР°СЂС‚С‹ РІ РјРёСЂРѕРІС‹С… РєРѕРѕСЂРґРёРЅР°С‚Р°С…
+	float	m_fCurScale;	// РјР°СЃС€С‚Р°Р± РјРёРЅРёРєР°СЂС‚С‹
+	float	m_fMinScale;	// РјРёРЅРёРјР°Р»СЊРЅС‹Р№ РјР°СЃС€С‚Р°Р± РєР°СЂС‚С‹
+	float	m_fMaxScale;	// РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№ РјР°СЃС€С‚Р°Р± РєР°СЂС‚С‹
+	float	m_fScaleStep;	// С€Р°Рі РёР·РјРµРЅРµРЅРёСЏ РјР°СЃС€С‚Р°Р±Р°
+	float	m_fShipShowRad;	// СЂР°РґРёСѓСЃ РїРѕРєР°Р·С‹РІР°РµРјРѕРіРѕ РєРѕСЂР°Р±Р»СЏ
 
-	// параметры навигационного окна
+	// РїР°СЂР°РјРµС‚СЂС‹ РЅР°РІРёРіР°С†РёРѕРЅРЅРѕРіРѕ РѕРєРЅР°
 	long	m_NavigationWidth;
 	long	m_NavigationHeight;
 	long	m_XNavigator;
@@ -74,14 +74,14 @@ protected:
 	POINT	m_ChargeBackOffset;
 	POINT	m_ChargeBackSize;
 
-	// координаты нашего корабля
+	// РєРѕРѕСЂРґРёРЅР°С‚С‹ РЅР°С€РµРіРѕ РєРѕСЂР°Р±Р»СЏ
 	float	m_fXPos;
 	float	m_fYPos;
 	float	m_fAngle;
 	float	m_fShipSpeed;
 	float	m_fMaxShipSpeed;
 
-	// координаты острова
+	// РєРѕРѕСЂРґРёРЅР°С‚С‹ РѕСЃС‚СЂРѕРІР°
 	bool	m_bYesIsland;
 	float	m_fXIsland;
 	float	m_fYIsland;
@@ -89,14 +89,14 @@ protected:
 	float   m_fIslandHeight;
 	float	m_fIslandRadius;
 
-	// ветер
+	// РІРµС‚РµСЂ
 	float	m_fWindAngle;
 	float	m_fWindStrength;
 	float	m_fWindMaxStrength;
 	long	m_windWidth;
 	long	m_windHeight;
 
-	// параметры заряда пушек
+	// РїР°СЂР°РјРµС‚СЂС‹ Р·Р°СЂСЏРґР° РїСѓС€РµРє
 	DWORD	m_dwChargeCannon;
 	DWORD	m_dwReadyCannon;
 	DWORD	m_dwDamagedCannon;
@@ -121,7 +121,7 @@ protected:
 	float	m_fCurAnglBackDamage;
 	float	m_fEndAnglBackCharge;
 
-	// параметры скорости корабля и ветра
+	// РїР°СЂР°РјРµС‚СЂС‹ СЃРєРѕСЂРѕСЃС‚Рё РєРѕСЂР°Р±Р»СЏ Рё РІРµС‚СЂР°
 	float	m_fBegAnglShipSpeed;
 	float	m_fEndAnglShipSpeed;
 	float	m_fCurAnglShipSpeed;
@@ -129,28 +129,28 @@ protected:
 	float	m_fEndAnglWindSpeed;
 	float	m_fCurAnglWindSpeed;
 
-	// текстуры
-	long	m_idCompasTex;	// компас
-	long	m_idSpeedTex;	// скорость корабля и ветер
-	long	m_idCannonTex;	// заряд пушек
-	long	m_idEmptyTex;	// пустое место для скорости и заряда
-	long	m_idIslandTexture; // остров
-	long	m_idWindTex;	// ветер
-	long	m_idChargeTexture; // текущий тип заряда пушек
+	// С‚РµРєСЃС‚СѓСЂС‹
+	long	m_idCompasTex;	// РєРѕРјРїР°СЃ
+	long	m_idSpeedTex;	// СЃРєРѕСЂРѕСЃС‚СЊ РєРѕСЂР°Р±Р»СЏ Рё РІРµС‚РµСЂ
+	long	m_idCannonTex;	// Р·Р°СЂСЏРґ РїСѓС€РµРє
+	long	m_idEmptyTex;	// РїСѓСЃС‚РѕРµ РјРµСЃС‚Рѕ РґР»СЏ СЃРєРѕСЂРѕСЃС‚Рё Рё Р·Р°СЂСЏРґР°
+	long	m_idIslandTexture; // РѕСЃС‚СЂРѕРІ
+	long	m_idWindTex;	// РІРµС‚РµСЂ
+	long	m_idChargeTexture; // С‚РµРєСѓС‰РёР№ С‚РёРї Р·Р°СЂСЏРґР° РїСѓС€РµРє
 	IDirect3DTexture8 * m_pIslandTexture;
 
-	DWORD	m_dwSeaColor;	// цвет моря на миникарте
-	DWORD	m_dwFireZoneColor; // цвет зоны огня на миникарте
-	DWORD	m_dwEnemyShipColor; // цвет вражеских кораблей
-	DWORD	m_dwFrendShipColor; // цвет своих кораблей
-	DWORD	m_dwNeutralShipColor; // цвет своих кораблей
-	DWORD	m_dwDeadShipColor;	// цвет тонущего корабля
+	DWORD	m_dwSeaColor;	// С†РІРµС‚ РјРѕСЂСЏ РЅР° РјРёРЅРёРєР°СЂС‚Рµ
+	DWORD	m_dwFireZoneColor; // С†РІРµС‚ Р·РѕРЅС‹ РѕРіРЅСЏ РЅР° РјРёРЅРёРєР°СЂС‚Рµ
+	DWORD	m_dwEnemyShipColor; // С†РІРµС‚ РІСЂР°Р¶РµСЃРєРёС… РєРѕСЂР°Р±Р»РµР№
+	DWORD	m_dwFrendShipColor; // С†РІРµС‚ СЃРІРѕРёС… РєРѕСЂР°Р±Р»РµР№
+	DWORD	m_dwNeutralShipColor; // С†РІРµС‚ СЃРІРѕРёС… РєРѕСЂР°Р±Р»РµР№
+	DWORD	m_dwDeadShipColor;	// С†РІРµС‚ С‚РѕРЅСѓС‰РµРіРѕ РєРѕСЂР°Р±Р»СЏ
 
-	// буфера
+	// Р±СѓС„РµСЂР°
 	long	m_idEmptyVBuf;
 	long	m_idMapVBuf;
 	//--------------------
-	long	m_idFireZoneVBuf; // бабочка линии огня пушек
+	long	m_idFireZoneVBuf; // Р±Р°Р±РѕС‡РєР° Р»РёРЅРёРё РѕРіРЅСЏ РїСѓС€РµРє
 	//--------------------
 	long	m_idCannonVBuf;
 	long	m_nvCannonCharge;
@@ -167,7 +167,7 @@ protected:
 	//--------------------
 	long	m_idCurChargeVBuf;
 
-	// шрифты и надписи
+	// С€СЂРёС„С‚С‹ Рё РЅР°РґРїРёСЃРё
 	long	m_speedFont;
 	long	m_ySpeedShow;
 	long	m_xShipSpeed;
@@ -175,7 +175,7 @@ protected:
 
 	WEATHER_BASE *m_wb;
 
-	// иконка текущего типа заряда пушек
+	// РёРєРѕРЅРєР° С‚РµРєСѓС‰РµРіРѕ С‚РёРїР° Р·Р°СЂСЏРґР° РїСѓС€РµРє
 	POINT	m_ChargeGreed;
 	POINT	m_ChargePos;
 	POINT	m_ChargeSize;

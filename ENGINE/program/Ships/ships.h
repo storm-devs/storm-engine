@@ -55,4 +55,4 @@ object  ShipsTypes[SHIP_TYPES_QUANTITY_WITH_FORT];  // RealShips
 object	SailsColors[SAILS_COLOR_QUANTITY];
 
 
-ref GetShipByType(int iType) { return &ShipsTypes[iType]; }  // пользовать GetRealShip
+ref GetShipByType(int iType) { return &ShipsTypes[iType]; }  // РїРѕР»СЊР·РѕРІР°С‚СЊ GetRealShip

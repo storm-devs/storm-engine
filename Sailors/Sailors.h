@@ -55,22 +55,22 @@ public:
 	ENTITY_ID modelID;
 	MODEL * model;
 
-	CVECTOR pos, ang; //Текущее положение
+	CVECTOR pos, ang; //РўРµРєСѓС‰РµРµ РїРѕР»РѕР¶РµРЅРёРµ
 	CVECTOR ptTo, angTo, dir; 
 
-	CVECTOR spos; //Обход друг друга
-//	float sang;   //Обход друг друга
+	CVECTOR spos; //РћР±С…РѕРґ РґСЂСѓРі РґСЂСѓРіР°
+//	float sang;   //РћР±С…РѕРґ РґСЂСѓРі РґСЂСѓРіР°
 
 	float dieTime;
 	bool  inWater;
 	float jumpSpeedX, jumpSpeedY;
 
-	Path path; //Текущий путь
+	Path path; //РўРµРєСѓС‰РёР№ РїСѓС‚СЊ
 
-	ManMode mode, lastMode; //Режим
+	ManMode mode, lastMode; //Р РµР¶РёРј
 	int newWayPoint,lastWayPoint,targetWayPoint,lastTargetPoint;
 
-	ManMoveTo moveTo; //Тип текущей точки
+	ManMoveTo moveTo; //РўРёРї С‚РµРєСѓС‰РµР№ С‚РѕС‡РєРё
 
 	float manSpeed;
 	float rotSpeed;
@@ -107,16 +107,16 @@ public:
 
 	SHIP_BASE *ship;
 	MODEL *shipModel;
-	int crewCount; //Количество человек
+	int crewCount; //РљРѕР»РёС‡РµСЃС‚РІРѕ С‡РµР»РѕРІРµРє
 
 	bool bHide;
 
 	ENTITY_ID shipID;
 
-	SailorsPoints sailorsPoints; //Точки
+	SailorsPoints sailorsPoints; //РўРѕС‡РєРё
 
 	void ReloadCannons(int bort);
-	ShipState shipState; //Состояние корабля
+	ShipState shipState; //РЎРѕСЃС‚РѕСЏРЅРёРµ РєРѕСЂР°Р±Р»СЏ
 
 	array <ShipMan> shipMan;
 	void CreateNewMan(SailorsPoints &sailorsPoints);

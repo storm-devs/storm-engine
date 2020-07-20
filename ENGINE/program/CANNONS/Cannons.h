@@ -26,7 +26,7 @@ object  Cannon[CANNON_TYPES_QUANTITY];
 
 ref GetCannonByType(int iCannonType) 
 { 
-	if (iCannonType == CANNON_TYPE_NONECANNON) return &NullCharacter; // fix для тартант boal
+	if (iCannonType == CANNON_TYPE_NONECANNON) return &NullCharacter; // fix РґР»СЏ С‚Р°СЂС‚Р°РЅС‚ boal
 	return &Cannon[iCannonType]; 
 }
 

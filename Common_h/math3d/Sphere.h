@@ -14,7 +14,7 @@
 #include "Vector4.h"
 
 
-///Класс представления шара в 3D пространстве
+///РљР»Р°СЃСЃ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЏ С€Р°СЂР° РІ 3D РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРµ
 class Sphere
 {
 public:
@@ -26,63 +26,63 @@ public:
 			{
 				struct
 				{
-					///Позиция по X
+					///РџРѕР·РёС†РёСЏ РїРѕ X
 					float x;
-					///Позиция по Y
+					///РџРѕР·РёС†РёСЏ РїРѕ Y
 					float y;
-					///Позиция по Z
+					///РџРѕР·РёС†РёСЏ РїРѕ Z
 					float z;
 				};
 				union
 				{
 					struct
 					{
-						///Позиция
+						///РџРѕР·РёС†РёСЏ
 						Vector p;
 					};
 					struct
 					{
-						///Позиция
+						///РџРѕР·РёС†РёСЏ
 						Vector pos;
 					};
 				};
 			};
 			union
 			{
-				///Радиус
+				///Р Р°РґРёСѓСЃ
 				float r;
-				///Радиус
+				///Р Р°РґРёСѓСЃ
 				float radius;
 			};
 		};
 		struct
 		{
-			///Представление в виде Vector4
+			///РџСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ РІ РІРёРґРµ Vector4
 			Vector4 v4;
 		};
 	};
 
 
 //-----------------------------------------------------------
-//Утилитные
+//РЈС‚РёР»РёС‚РЅС‹Рµ
 //-----------------------------------------------------------
 public:
-	//Точка в сфере
+	//РўРѕС‡РєР° РІ СЃС„РµСЂРµ
 	bool Intersection(const Vector & p);
-	//Проверить пересечение отрезка и сферы
+	//РџСЂРѕРІРµСЂРёС‚СЊ РїРµСЂРµСЃРµС‡РµРЅРёРµ РѕС‚СЂРµР·РєР° Рё СЃС„РµСЂС‹
 	bool Intersection(const Vector & src, const Vector & dst);
-	//Проверить пересечение луча и сферы
+	//РџСЂРѕРІРµСЂРёС‚СЊ РїРµСЂРµСЃРµС‡РµРЅРёРµ Р»СѓС‡Р° Рё СЃС„РµСЂС‹
 	bool Intersection(const Vector & orig, const Vector & normdir, float * res);
-	//Проверить пересечение сферы и сферы
+	//РџСЂРѕРІРµСЂРёС‚СЊ РїРµСЂРµСЃРµС‡РµРЅРёРµ СЃС„РµСЂС‹ Рё СЃС„РµСЂС‹
 	bool Intersection(const Sphere & sph);
 	
-	//Установить сферу в точку с 0 радиусом
+	//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЃС„РµСЂСѓ РІ С‚РѕС‡РєСѓ СЃ 0 СЂР°РґРёСѓСЃРѕРј
 	void Reset(const Vector & p);
-	//Включить в описывающую сферу точку
+	//Р’РєР»СЋС‡РёС‚СЊ РІ РѕРїРёСЃС‹РІР°СЋС‰СѓСЋ СЃС„РµСЂСѓ С‚РѕС‡РєСѓ
 	void AddPoint(const Vector & p);
 
 
-	//Проверить пересечение луча и сферы
+	//РџСЂРѕРІРµСЂРёС‚СЊ РїРµСЂРµСЃРµС‡РµРЅРёРµ Р»СѓС‡Р° Рё СЃС„РµСЂС‹
 	static bool Intersection(const Vector & orig, const Vector & normdir, const Vector & pos, float r, float * res);
 
 };
@@ -90,16 +90,16 @@ public:
 
 
 //===========================================================
-//Утилитные
+//РЈС‚РёР»РёС‚РЅС‹Рµ
 //===========================================================
 
-//Точка в сфере
+//РўРѕС‡РєР° РІ СЃС„РµСЂРµ
 mathinline bool Sphere::Intersection(const Vector & p)
 {
 	return ~(pos - p) <= radius*radius;
 }
 
-//Проверить пересечение отрезка и сферы
+//РџСЂРѕРІРµСЂРёС‚СЊ РїРµСЂРµСЃРµС‡РµРЅРёРµ РѕС‚СЂРµР·РєР° Рё СЃС„РµСЂС‹
 mathinline bool Sphere::Intersection(const Vector & src, const Vector & dst)
 {
 	Vector dir = dst - src;
@@ -123,45 +123,45 @@ mathinline bool Sphere::Intersection(const Vector & src, const Vector & dst)
 	return ~(pos - src) <= radius*radius;
 }
 
-//Проверить пересечение луча и сферы
+//РџСЂРѕРІРµСЂРёС‚СЊ РїРµСЂРµСЃРµС‡РµРЅРёРµ Р»СѓС‡Р° Рё СЃС„РµСЂС‹
 mathinline bool Sphere::Intersection(const Vector & orig, const Vector & normdir, float * res)
 {
 	return Intersection(orig, normdir, pos, r, res);
 }
 
-//Проверить пересечение сферы и сферы
+//РџСЂРѕРІРµСЂРёС‚СЊ РїРµСЂРµСЃРµС‡РµРЅРёРµ СЃС„РµСЂС‹ Рё СЃС„РµСЂС‹
 mathinline bool Sphere::Intersection(const Sphere & sph)
 {
 	return (~(p - sph.p) <= (r + sph.r)*(r + sph.r));
 }
 
-//Установить сферу в точку с 0 радиусом
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЃС„РµСЂСѓ РІ С‚РѕС‡РєСѓ СЃ 0 СЂР°РґРёСѓСЃРѕРј
 mathinline void Sphere::Reset(const Vector & p)
 {
 	pos = p;
 	r = 0.0f;
 }
 
-//Включить в описывающую сферу точку
+//Р’РєР»СЋС‡РёС‚СЊ РІ РѕРїРёСЃС‹РІР°СЋС‰СѓСЋ СЃС„РµСЂСѓ С‚РѕС‡РєСѓ
 mathinline void Sphere::AddPoint(const Vector & p)
 {
-	//Вектор из точки к центру
+	//Р’РµРєС‚РѕСЂ РёР· С‚РѕС‡РєРё Рє С†РµРЅС‚СЂСѓ
 	float dx = pos.x - p.x;
 	float dy = pos.y - p.y;
 	float dz = pos.z - p.z;
 	float len = dx*dx + dy*dy + dz*dz;
 	if(len <= r*r) return;
 	len = sqrtf(len);
-	//Новый радиус
+	//РќРѕРІС‹Р№ СЂР°РґРёСѓСЃ
 	r = (len + r)*0.5f;
-	//Новая позиция
+	//РќРѕРІР°СЏ РїРѕР·РёС†РёСЏ
 	len = r/len;
 	pos.x = p.x + dx*len;
 	pos.y = p.y + dy*len;
 	pos.z = p.z + dz*len;
 }
 
-//Проверить пересечение луча и сферы
+//РџСЂРѕРІРµСЂРёС‚СЊ РїРµСЂРµСЃРµС‡РµРЅРёРµ Р»СѓС‡Р° Рё СЃС„РµСЂС‹
 mathinline bool Sphere::Intersection(const Vector & orig, const Vector & normdir, const Vector & pos, float r, float * res)
 {
 	Vector toCenter = pos - orig;

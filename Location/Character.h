@@ -26,9 +26,9 @@ class Supervisor;
 class VSoundService;
 
 
-#define CHARACTER_ATTACK_DIST		2.4f	//Максимальная дистанция срабатывания атаки (м)
-#define CHARACTER_ATTACK_ANG		60.0f	//Максимальный угл срабатывания атаки (градусы)
-#define CHARACTER_BLOCK_ANG			50.0f	//Максимальный угл срабатывания блока (градусы)
+#define CHARACTER_ATTACK_DIST		2.4f	//РњР°РєСЃРёРјР°Р»СЊРЅР°СЏ РґРёСЃС‚Р°РЅС†РёСЏ СЃСЂР°Р±Р°С‚С‹РІР°РЅРёСЏ Р°С‚Р°РєРё (Рј)
+#define CHARACTER_ATTACK_ANG		60.0f	//РњР°РєСЃРёРјР°Р»СЊРЅС‹Р№ СѓРіР» СЃСЂР°Р±Р°С‚С‹РІР°РЅРёСЏ Р°С‚Р°РєРё (РіСЂР°РґСѓСЃС‹)
+#define CHARACTER_BLOCK_ANG			50.0f	//РњР°РєСЃРёРјР°Р»СЊРЅС‹Р№ СѓРіР» СЃСЂР°Р±Р°С‚С‹РІР°РЅРёСЏ Р±Р»РѕРєР° (РіСЂР°РґСѓСЃС‹)
 #define CHARACTER_MAX_JMP_STEPS		50
 
 class Character : public ENTITY  
@@ -45,38 +45,38 @@ class Character : public ENTITY
 		void SetName(const char * _name);
 		void ChangeName(const char * _name);
 
-		char * name;	//Название действия
-		float tblend;	//Время блендинга начала действия
+		char * name;	//РќР°Р·РІР°РЅРёРµ РґРµР№СЃС‚РІРёСЏ
+		float tblend;	//Р’СЂРµРјСЏ Р±Р»РµРЅРґРёРЅРіР° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ
 	};
 
-	//Действие перемещения
+	//Р”РµР№СЃС‚РІРёРµ РїРµСЂРµРјРµС‰РµРЅРёСЏ
 	struct ActionMove : public ActionCharacter
 	{
 		ActionMove();
-		float speed;	//Скорость перемещения для данного действия м/сек
-		float turnspd;	//Скорость поворота рад/сек		
+		float speed;	//РЎРєРѕСЂРѕСЃС‚СЊ РїРµСЂРµРјРµС‰РµРЅРёСЏ РґР»СЏ РґР°РЅРЅРѕРіРѕ РґРµР№СЃС‚РІРёСЏ Рј/СЃРµРє
+		float turnspd;	//РЎРєРѕСЂРѕСЃС‚СЊ РїРѕРІРѕСЂРѕС‚Р° СЂР°Рґ/СЃРµРє		
 	};
 
-	//Действие бездействия
+	//Р”РµР№СЃС‚РІРёРµ Р±РµР·РґРµР№СЃС‚РІРёСЏ
 	struct ActionIdle : public ActionCharacter
 	{
 		ActionIdle();
-		float p;		//Общая вероятность выбора этого действия
+		float p;		//РћР±С‰Р°СЏ РІРµСЂРѕСЏС‚РЅРѕСЃС‚СЊ РІС‹Р±РѕСЂР° СЌС‚РѕРіРѕ РґРµР№СЃС‚РІРёСЏ
 	};
 
-	//Действия боя
+	//Р”РµР№СЃС‚РІРёСЏ Р±РѕСЏ
 	
-	//Атака
+	//РђС‚Р°РєР°
 	struct ActionFightAttack : ActionCharacter
 	{
-		float hitTime;	//Время срабатывания удара
+		float hitTime;	//Р’СЂРµРјСЏ СЃСЂР°Р±Р°С‚С‹РІР°РЅРёСЏ СѓРґР°СЂР°
 	};
 
-	//Действие смерти
+	//Р”РµР№СЃС‚РІРёРµ СЃРјРµСЂС‚Рё
 	struct ActionDead : public ActionIdle
 	{
 		ActionDead();
-		float ang;			//Направление падения
+		float ang;			//РќР°РїСЂР°РІР»РµРЅРёРµ РїР°РґРµРЅРёСЏ
 	};
 
 	struct Blender
@@ -127,9 +127,9 @@ class Character : public ENTITY
 	{
 	public:
 		Character * character;
-		//Принять событие
+		//РџСЂРёРЅСЏС‚СЊ СЃРѕР±С‹С‚РёРµ
 		virtual void Event(Animation * animation, long index, long eventID, AnimationEvent event);
-		//Принять событие
+		//РџСЂРёРЅСЏС‚СЊ СЃРѕР±С‹С‚РёРµ
 		virtual void Event(Animation * animation, long playerIndex, const char * eventName);
 	};
 
@@ -146,41 +146,41 @@ class Character : public ENTITY
 protected:
 	enum FightAction
 	{
-		fgt_none = 0,		//Нет никакого боевого действия
-		fgt_attack_fast,	//Быстрый удар
-		fgt_attack_force,	//Сильный удар
-		fgt_attack_round,	//Круговой удар
-		fgt_attack_break,	//Пробивающий удар
-		fgt_attack_feint,	//Финт - спрециальный обманный удар
-		fgt_attack_feintc,	//Продолжение финта в случае контратаки
-		fgt_fire,			//Выстрел из пистолета
-		fgt_hit_attack,		//Реакция попадания удара по персонажу вводящая его в stall
-		fgt_hit_feint,		//Реакция от финта вводящая его в stall
-		fgt_hit_parry,		//Реакция от парирования вводящая его в stall
-		fgt_hit_round,		//Реакция отталкивание круговым ударом
-		fgt_hit_fire,		//Реакция от выстрела вводящая его в stall
-		fgt_block,			//Защита саблей
-		fgt_blockhit,		//Защита саблей
-		fgt_blockbreak,		//Пробивка блока
-		fgt_parry,			//Парирование, защитное движение вводящее противника в stall
-		fgt_recoil,			//Отскок назад
-		fgt_strafe_l,		//Отскок влево
-		fgt_strafe_r,		//Отскок право
+		fgt_none = 0,		//РќРµС‚ РЅРёРєР°РєРѕРіРѕ Р±РѕРµРІРѕРіРѕ РґРµР№СЃС‚РІРёСЏ
+		fgt_attack_fast,	//Р‘С‹СЃС‚СЂС‹Р№ СѓРґР°СЂ
+		fgt_attack_force,	//РЎРёР»СЊРЅС‹Р№ СѓРґР°СЂ
+		fgt_attack_round,	//РљСЂСѓРіРѕРІРѕР№ СѓРґР°СЂ
+		fgt_attack_break,	//РџСЂРѕР±РёРІР°СЋС‰РёР№ СѓРґР°СЂ
+		fgt_attack_feint,	//Р¤РёРЅС‚ - СЃРїСЂРµС†РёР°Р»СЊРЅС‹Р№ РѕР±РјР°РЅРЅС‹Р№ СѓРґР°СЂ
+		fgt_attack_feintc,	//РџСЂРѕРґРѕР»Р¶РµРЅРёРµ С„РёРЅС‚Р° РІ СЃР»СѓС‡Р°Рµ РєРѕРЅС‚СЂР°С‚Р°РєРё
+		fgt_fire,			//Р’С‹СЃС‚СЂРµР» РёР· РїРёСЃС‚РѕР»РµС‚Р°
+		fgt_hit_attack,		//Р РµР°РєС†РёСЏ РїРѕРїР°РґР°РЅРёСЏ СѓРґР°СЂР° РїРѕ РїРµСЂСЃРѕРЅР°Р¶Сѓ РІРІРѕРґСЏС‰Р°СЏ РµРіРѕ РІ stall
+		fgt_hit_feint,		//Р РµР°РєС†РёСЏ РѕС‚ С„РёРЅС‚Р° РІРІРѕРґСЏС‰Р°СЏ РµРіРѕ РІ stall
+		fgt_hit_parry,		//Р РµР°РєС†РёСЏ РѕС‚ РїР°СЂРёСЂРѕРІР°РЅРёСЏ РІРІРѕРґСЏС‰Р°СЏ РµРіРѕ РІ stall
+		fgt_hit_round,		//Р РµР°РєС†РёСЏ РѕС‚С‚Р°Р»РєРёРІР°РЅРёРµ РєСЂСѓРіРѕРІС‹Рј СѓРґР°СЂРѕРј
+		fgt_hit_fire,		//Р РµР°РєС†РёСЏ РѕС‚ РІС‹СЃС‚СЂРµР»Р° РІРІРѕРґСЏС‰Р°СЏ РµРіРѕ РІ stall
+		fgt_block,			//Р—Р°С‰РёС‚Р° СЃР°Р±Р»РµР№
+		fgt_blockhit,		//Р—Р°С‰РёС‚Р° СЃР°Р±Р»РµР№
+		fgt_blockbreak,		//РџСЂРѕР±РёРІРєР° Р±Р»РѕРєР°
+		fgt_parry,			//РџР°СЂРёСЂРѕРІР°РЅРёРµ, Р·Р°С‰РёС‚РЅРѕРµ РґРІРёР¶РµРЅРёРµ РІРІРѕРґСЏС‰РµРµ РїСЂРѕС‚РёРІРЅРёРєР° РІ stall
+		fgt_recoil,			//РћС‚СЃРєРѕРє РЅР°Р·Р°Рґ
+		fgt_strafe_l,		//РћС‚СЃРєРѕРє РІР»РµРІРѕ
+		fgt_strafe_r,		//РћС‚СЃРєРѕРє РїСЂР°РІРѕ
 		fgt_max,
 	};
 
 //--------------------------------------------------------------------------------------------
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //--------------------------------------------------------------------------------------------
 public:
 	Character();
 	virtual ~Character();
 
-	//Инициализация
+	//РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
 	bool Init();
-	//Сообщения
+	//РЎРѕРѕР±С‰РµРЅРёСЏ
 	dword _cdecl ProcessMessage(MESSAGE & message);
-	//Изменение атрибута
+	//РР·РјРµРЅРµРЅРёРµ Р°С‚СЂРёР±СѓС‚Р°
 	dword AttributeChanged(ATTRIBUTES * apnt);
 	void SetSignModel();
 	void SetSignTechnique();
@@ -195,23 +195,23 @@ public:
 //Character model
 //--------------------------------------------------------------------------------------------
 public:
-	//Получить модельку персонажа
+	//РџРѕР»СѓС‡РёС‚СЊ РјРѕРґРµР»СЊРєСѓ РїРµСЂСЃРѕРЅР°Р¶Р°
 	MODEL * Model();
 	
-	//Переместить модельку в точку x, y, z
+	//РџРµСЂРµРјРµСЃС‚РёС‚СЊ РјРѕРґРµР»СЊРєСѓ РІ С‚РѕС‡РєСѓ x, y, z
 	bool Teleport(float x, float y, float z);
-	//Переместить модельку в точку x, y, z и направить по ay
+	//РџРµСЂРµРјРµСЃС‚РёС‚СЊ РјРѕРґРµР»СЊРєСѓ РІ С‚РѕС‡РєСѓ x, y, z Рё РЅР°РїСЂР°РІРёС‚СЊ РїРѕ ay
 	bool Teleport(float x, float y, float z, float ay);
-	//Переместить модельку в локатор
+	//РџРµСЂРµРјРµСЃС‚РёС‚СЊ РјРѕРґРµР»СЊРєСѓ РІ Р»РѕРєР°С‚РѕСЂ
 	bool Teleport(const char * group, const char * locator);
 
-	//Установить позиции для загрузки
+	//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РїРѕР·РёС†РёРё РґР»СЏ Р·Р°РіСЂСѓР·РєРё
 	void SetSavePosition();
-	//Удалить позиции для загрузки
+	//РЈРґР°Р»РёС‚СЊ РїРѕР·РёС†РёРё РґР»СЏ Р·Р°РіСЂСѓР·РєРё
 	void DelSavePosition(bool isTeleport);
-	//Сохранить параметры
+	//РЎРѕС…СЂР°РЅРёС‚СЊ РїР°СЂР°РјРµС‚СЂС‹
 	virtual void SetSaveData(ATTRIBUTES * sdata){};
-	//Востанавить параметры
+	//Р’РѕСЃС‚Р°РЅР°РІРёС‚СЊ РїР°СЂР°РјРµС‚СЂС‹
 	virtual void GetSaveData(ATTRIBUTES * sdata){};
 	void StopFightAnimation(); // boal
 
@@ -228,90 +228,90 @@ protected:
 //Character commands
 //--------------------------------------------------------------------------------------------
 public:
-	//Пойти
+	//РџРѕР№С‚Рё
 	void StartMove(bool isBack = false);
-	//Остановиться
+	//РћСЃС‚Р°РЅРѕРІРёС‚СЊСЃСЏ
 	void StopMove();
-	//Направить персонажа по вектору
+	//РќР°РїСЂР°РІРёС‚СЊ РїРµСЂСЃРѕРЅР°Р¶Р° РїРѕ РІРµРєС‚РѕСЂСѓ
 	void Turn(float dx, float dz);
-	//Направить персонажа по углу
+	//РќР°РїСЂР°РІРёС‚СЊ РїРµСЂСЃРѕРЅР°Р¶Р° РїРѕ СѓРіР»Сѓ
 	void Turn(float _ay);
-	//Узнать направление
+	//РЈР·РЅР°С‚СЊ РЅР°РїСЂР°РІР»РµРЅРёРµ
 	float GetAY();
-	//Установить режим бега
+	//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЂРµР¶РёРј Р±РµРіР°
 	void SetRunMode(bool _isRun = true);
-	//Двигаемся ли
+	//Р”РІРёРіР°РµРјСЃСЏ Р»Рё
 	bool IsMove();
-	//Узнать режим бега
+	//РЈР·РЅР°С‚СЊ СЂРµР¶РёРј Р±РµРіР°
 	bool IsRun();
-	//Плывём ли
+	//РџР»С‹РІС‘Рј Р»Рё
 	bool IsSwim();
-	//Установить режим боя
+	//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЂРµР¶РёРј Р±РѕСЏ
 	bool SetFightMode(bool _isFight, bool isPlayAni = true);
-	//Проверить, можно ли переходить в режим боя
+	//РџСЂРѕРІРµСЂРёС‚СЊ, РјРѕР¶РЅРѕ Р»Рё РїРµСЂРµС…РѕРґРёС‚СЊ РІ СЂРµР¶РёРј Р±РѕСЏ
 	bool IsFightEnable();
-	//Узнать режим боя
+	//РЈР·РЅР°С‚СЊ СЂРµР¶РёРј Р±РѕСЏ
 	bool IsFight();
-	//В данный момент идёт выбор цели для выстрела (игроком)
+	//Р’ РґР°РЅРЅС‹Р№ РјРѕРјРµРЅС‚ РёРґС‘С‚ РІС‹Р±РѕСЂ С†РµР»Рё РґР»СЏ РІС‹СЃС‚СЂРµР»Р° (РёРіСЂРѕРєРѕРј)
 	bool IsFireFindTarget();
-	//В диаалоге
+	//Р’ РґРёР°Р°Р»РѕРіРµ
 	bool IsDialog();
-	//Получить высоту персонажа
+	//РџРѕР»СѓС‡РёС‚СЊ РІС‹СЃРѕС‚Сѓ РїРµСЂСЃРѕРЅР°Р¶Р°
 	float GetHeight();
-	//Получить позицию персонажа
+	//РџРѕР»СѓС‡РёС‚СЊ РїРѕР·РёС†РёСЋ РїРµСЂСЃРѕРЅР°Р¶Р°
 	void GetPosition(CVECTOR & pos);
-	//Получить позицию персонажа
+	//РџРѕР»СѓС‡РёС‚СЊ РїРѕР·РёС†РёСЋ РїРµСЂСЃРѕРЅР°Р¶Р°
 	void GetGrassPosition(CVECTOR & pos, CVECTOR & gpos);
-	//Установить флажёк хождения по траве
+	//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ С„Р»Р°Р¶С‘Рє С…РѕР¶РґРµРЅРёСЏ РїРѕ С‚СЂР°РІРµ
 	void SetGrassSound();
-	//Получить максимальный радиус персонажа
+	//РџРѕР»СѓС‡РёС‚СЊ РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№ СЂР°РґРёСѓСЃ РїРµСЂСЃРѕРЅР°Р¶Р°
 	float GetRadius();
-	//Атаковать
+	//РђС‚Р°РєРѕРІР°С‚СЊ
 	void Attack(Character * enemy, FightAction type);
-	//Блок
+	//Р‘Р»РѕРє
 	void Block();
-	//Парирование
+	//РџР°СЂРёСЂРѕРІР°РЅРёРµ
 	void Parry();
-	//Отскок
+	//РћС‚СЃРєРѕРє
 	void Recoil();
-	//Пыжёк влево
+	//РџС‹Р¶С‘Рє РІР»РµРІРѕ
 	void StrafeLeft();
-	//Пыжёк вправо
+	//РџС‹Р¶С‘Рє РІРїСЂР°РІРѕ
 	void StrafeRight();
-	//Попадание
+	//РџРѕРїР°РґР°РЅРёРµ
 	void Hit(FightAction type);
-	//Выстрел
+	//Р’С‹СЃС‚СЂРµР»
 	void Fire();
-	//Проверить, заряжен ли пистолет
+	//РџСЂРѕРІРµСЂРёС‚СЊ, Р·Р°СЂСЏР¶РµРЅ Р»Рё РїРёСЃС‚РѕР»РµС‚
 	bool IsGunLoad();
-	//Смерть
+	//РЎРјРµСЂС‚СЊ
 	void Dead();
-	//Заход в локацию
+	//Р—Р°С…РѕРґ РІ Р»РѕРєР°С†РёСЋ
 	void EntryToLocation();
-	//Выход из локации
+	//Р’С‹С…РѕРґ РёР· Р»РѕРєР°С†РёРё
 	void ExitFromLocation();
-	//Может уже умер
+	//РњРѕР¶РµС‚ СѓР¶Рµ СѓРјРµСЂ
 	bool IsDead();
-	//прыжок
+	//РїСЂС‹Р¶РѕРє
 	void StartJump();
 
-	//Есть ли оружие
+	//Р•СЃС‚СЊ Р»Рё РѕСЂСѓР¶РёРµ
 	bool IsSetBlade();
 
-	//Установить прозрачность персонажу
+	//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РїСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ РїРµСЂСЃРѕРЅР°Р¶Сѓ
 	void SetCameraAlpha(float alpha);
-	//Заблокировать выбор idle анимации
+	//Р—Р°Р±Р»РѕРєРёСЂРѕРІР°С‚СЊ РІС‹Р±РѕСЂ idle Р°РЅРёРјР°С†РёРё
 	void LockIdle(bool isLock);
-	//Выделить персонажа
+	//Р’С‹РґРµР»РёС‚СЊ РїРµСЂСЃРѕРЅР°Р¶Р°
 	void Select();
 
-	//Заблокировать перемещения персонажа
+	//Р—Р°Р±Р»РѕРєРёСЂРѕРІР°С‚СЊ РїРµСЂРµРјРµС‰РµРЅРёСЏ РїРµСЂСЃРѕРЅР°Р¶Р°
 	void LockMove(bool isLock);	
-	//Заблокировать вращение персонажа за камерой
+	//Р—Р°Р±Р»РѕРєРёСЂРѕРІР°С‚СЊ РІСЂР°С‰РµРЅРёРµ РїРµСЂСЃРѕРЅР°Р¶Р° Р·Р° РєР°РјРµСЂРѕР№
 	void LockRotate(bool isLock);
-	//Отросительная скорость поворота камеры
+	//РћС‚СЂРѕСЃРёС‚РµР»СЊРЅР°СЏ СЃРєРѕСЂРѕСЃС‚СЊ РїРѕРІРѕСЂРѕС‚Р° РєР°РјРµСЂС‹
 	float CameraTurnSpeed();
-	//Просмотр из глаз
+	//РџСЂРѕСЃРјРѕС‚СЂ РёР· РіР»Р°Р·
 	void LookFromEyes(bool isLook);
 
 
@@ -322,20 +322,20 @@ public:
 //Character
 //--------------------------------------------------------------------------------------------
 public:
-	//Сбросить состояние
+	//РЎР±СЂРѕСЃРёС‚СЊ СЃРѕСЃС‚РѕСЏРЅРёРµ
 	virtual void Reset();
-	//Перемещаем персонажа в желаемую позицию
+	//РџРµСЂРµРјРµС‰Р°РµРј РїРµСЂСЃРѕРЅР°Р¶Р° РІ Р¶РµР»Р°РµРјСѓСЋ РїРѕР·РёС†РёСЋ
 	virtual void Move(float dltTime);
-	//Провести дополнительные расчёты
+	//РџСЂРѕРІРµСЃС‚Рё РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ СЂР°СЃС‡С‘С‚С‹
 	virtual void Calculate(float dltTime){};
-	//Обновить позицию персонажа
+	//РћР±РЅРѕРІРёС‚СЊ РїРѕР·РёС†РёСЋ РїРµСЂСЃРѕРЅР°Р¶Р°
 	virtual void Update(float dltTime);
 	
-	//Событие окончания проигрывания анимации действия
+	//РЎРѕР±С‹С‚РёРµ РѕРєРѕРЅС‡Р°РЅРёСЏ РїСЂРѕРёРіСЂС‹РІР°РЅРёСЏ Р°РЅРёРјР°С†РёРё РґРµР№СЃС‚РІРёСЏ
 	virtual void ActionEvent(const char * actionName, Animation * animation, long index, long eventID, AnimationEvent event);
 	virtual void ActionEvent(Animation * animation, long playerIndex, const char * eventName);
 
-	//Персонаж атакует, проанализировать кому наносить демедж
+	//РџРµСЂСЃРѕРЅР°Р¶ Р°С‚Р°РєСѓРµС‚, РїСЂРѕР°РЅР°Р»РёР·РёСЂРѕРІР°С‚СЊ РєРѕРјСѓ РЅР°РЅРѕСЃРёС‚СЊ РґРµРјРµРґР¶
 	//virtual void CharacterNowIsAttacked(){};
 
 	long PlaySound(const char * soundName, bool isLoop = false, bool isCached = false);
@@ -346,7 +346,7 @@ public:
 	virtual bool IsPlayer() {return false;}
 
 protected:
-	//Найти персонажа для диалога
+	//РќР°Р№С‚Рё РїРµСЂСЃРѕРЅР°Р¶Р° РґР»СЏ РґРёР°Р»РѕРіР°
 	Character * FindDialogCharacter();
 
 	long startColCharacter;
@@ -355,7 +355,7 @@ protected:
 	CVECTOR slideDir;
 
 //--------------------------------------------------------------------------------------------
-//Инкапсуляция
+//РРЅРєР°РїСЃСѓР»СЏС†РёСЏ
 //--------------------------------------------------------------------------------------------
 private:
 	bool zLoadModel(MESSAGE & message);
@@ -388,243 +388,243 @@ private:
 	float GetCurrentPlayerPos();
 	float GetAniPlayTime();
 	bool SetPriorityAction(const char * action);
-	//Проверить другого персонажа на поражение нами
+	//РџСЂРѕРІРµСЂРёС‚СЊ РґСЂСѓРіРѕРіРѕ РїРµСЂСЃРѕРЅР°Р¶Р° РЅР° РїРѕСЂР°Р¶РµРЅРёРµ РЅР°РјРё
 	void CheckAttackHit();
-	//Обновить состояние оружия
+	//РћР±РЅРѕРІРёС‚СЊ СЃРѕСЃС‚РѕСЏРЅРёРµ РѕСЂСѓР¶РёСЏ
 	void UpdateWeapons();
-	//Получить направление на противника для подскока при ударе
+	//РџРѕР»СѓС‡РёС‚СЊ РЅР°РїСЂР°РІР»РµРЅРёРµ РЅР° РїСЂРѕС‚РёРІРЅРёРєР° РґР»СЏ РїРѕРґСЃРєРѕРєР° РїСЂРё СѓРґР°СЂРµ
 	CVECTOR GetEnemyDirForImpulse();
 
 	bool PriorityActionIsJump();
 
 protected:
-	//Найти персонажа в которого попали из пистолета kDist = 1..0
+	//РќР°Р№С‚Рё РїРµСЂСЃРѕРЅР°Р¶Р° РІ РєРѕС‚РѕСЂРѕРіРѕ РїРѕРїР°Р»Рё РёР· РїРёСЃС‚РѕР»РµС‚Р° kDist = 1..0
 	Character * FindGunTarget(float & kDist, bool bOnlyEnemyTest = false);
-	//Найти персонажей "eeffffll"
+	//РќР°Р№С‚Рё РїРµСЂСЃРѕРЅР°Р¶РµР№ "eeffffll"
 	void FindNearCharacters(MESSAGE & message);
-	//Проверить видимость
+	//РџСЂРѕРІРµСЂРёС‚СЊ РІРёРґРёРјРѕСЃС‚СЊ
 	bool CharactersVisibleTest(MESSAGE & message);
 public:
-	//Проверка видимости двух персонажей
+	//РџСЂРѕРІРµСЂРєР° РІРёРґРёРјРѕСЃС‚Рё РґРІСѓС… РїРµСЂСЃРѕРЅР°Р¶РµР№
 	bool VisibleTest(Character * chr);
-	//Получить постфикс
+	//РџРѕР»СѓС‡РёС‚СЊ РїРѕСЃС‚С„РёРєСЃ
 	static const char * GetValueByPrefix(const char * str, const char * pref);
 
 protected:
-	//Локация в которой находится персонаж
+	//Р›РѕРєР°С†РёСЏ РІ РєРѕС‚РѕСЂРѕР№ РЅР°С…РѕРґРёС‚СЃСЏ РїРµСЂСЃРѕРЅР°Р¶
 	Location * location;
 	//
 	VSoundService * soundService;
-	//Размеры персонажа
+	//Р Р°Р·РјРµСЂС‹ РїРµСЂСЃРѕРЅР°Р¶Р°
 	float radius, radiusNrm, radiusFgt;
-	//Текущая и предыдущая позиции
+	//РўРµРєСѓС‰Р°СЏ Рё РїСЂРµРґС‹РґСѓС‰Р°СЏ РїРѕР·РёС†РёРё
 	CVECTOR curPos, oldPos, colMove, grsPos, impulse;
 	float strafeMove;
 	float seaY;
 
-	long currentNode;	//Текущий нод
+	long currentNode;	//РўРµРєСѓС‰РёР№ РЅРѕРґ
 
-	float speed;		//Текущая скорость перемещения
-	float turnspd;		//Скорость поворота
-	Blender bspeed;		//Блендер линейной скорости
-	Blender bturn;		//Блендер скорости поворота
-	float ay;			//Направление персонажа	
-	float nay;			//Желаемое направление
-	float turnDir;		//Направление поворота +1..0..-1
-	float vy;			//Скорость падения	
-	float height;		//Высота персонажа
+	float speed;		//РўРµРєСѓС‰Р°СЏ СЃРєРѕСЂРѕСЃС‚СЊ РїРµСЂРµРјРµС‰РµРЅРёСЏ
+	float turnspd;		//РЎРєРѕСЂРѕСЃС‚СЊ РїРѕРІРѕСЂРѕС‚Р°
+	Blender bspeed;		//Р‘Р»РµРЅРґРµСЂ Р»РёРЅРµР№РЅРѕР№ СЃРєРѕСЂРѕСЃС‚Рё
+	Blender bturn;		//Р‘Р»РµРЅРґРµСЂ СЃРєРѕСЂРѕСЃС‚Рё РїРѕРІРѕСЂРѕС‚Р°
+	float ay;			//РќР°РїСЂР°РІР»РµРЅРёРµ РїРµСЂСЃРѕРЅР°Р¶Р°	
+	float nay;			//Р–РµР»Р°РµРјРѕРµ РЅР°РїСЂР°РІР»РµРЅРёРµ
+	float turnDir;		//РќР°РїСЂР°РІР»РµРЅРёРµ РїРѕРІРѕСЂРѕС‚Р° +1..0..-1
+	float vy;			//РЎРєРѕСЂРѕСЃС‚СЊ РїР°РґРµРЅРёСЏ	
+	float height;		//Р’С‹СЃРѕС‚Р° РїРµСЂСЃРѕРЅР°Р¶Р°
 
-	float turnSpeed;	//Скорость поворота в радианах
+	float turnSpeed;	//РЎРєРѕСЂРѕСЃС‚СЊ РїРѕРІРѕСЂРѕС‚Р° РІ СЂР°РґРёР°РЅР°С…
 
-	//Параметры персонажа
-	float chclass;		//Класс персонажа 0..1, определяющий поведение
-	float fatigue;		//Усталость 0..1
-	float kSpd;			//Желаемый коэфициент скорости
-	float kSpdCur;		//Текущий коэфициент скорости
-	float kSpdDlt;		//Разброс по скорости у разных персонажей
-	bool isMove;		//Стоим или движемся
-	bool isBack;		//Идём назад
-	bool isRun;			//Установлен ли режим бега
-	bool isRunDisable;	//Запрещен ли режим бега
-	bool isFight;		//Режим боя
-	bool lockFightMode;	//Заблокировать режим боя
-	bool isSwim;		//Плывём
-	bool isJump;		//Спрыгиваем
-	bool isJumpSnd;		//Надо проиграть звук прыжка
-	bool isEnableJump;	//Разрешино ли спрыгивание
-	bool isUp;			//Направление градиента перемещения
-	bool isCollision;	//Был коллижен с другим персонажем
-	bool isTurnLock;	//Блокирование управления поворотом
-	bool lockMove;		//Запретить перемещения
-	bool lockRotate;	//Запретить вращения
-	bool isDialog;		//Персонаж в диалоге
-	bool isFightWOWps;	//Разрешить переходить в режим боя без оружия
-	bool isActiveState;	//Если true то персонаж активен
-	bool recoilLook;	//Для срабатывания дразнилки после отскока
-	float swimChange;	//Время отклика на изменение режима
-	float isTurn;		//Поворачиваемся	
-	bool isNFHit;		//Попали вне режима боя
-	float movecs;		//Косинус угла наклона плоскости
-	const char * deadName;//Имя действия смерти
-	long jumpSound;		//Звук развивающейся одежды при прыжке
-	long recoilSound;	//Звук шарканья
+	//РџР°СЂР°РјРµС‚СЂС‹ РїРµСЂСЃРѕРЅР°Р¶Р°
+	float chclass;		//РљР»Р°СЃСЃ РїРµСЂСЃРѕРЅР°Р¶Р° 0..1, РѕРїСЂРµРґРµР»СЏСЋС‰РёР№ РїРѕРІРµРґРµРЅРёРµ
+	float fatigue;		//РЈСЃС‚Р°Р»РѕСЃС‚СЊ 0..1
+	float kSpd;			//Р–РµР»Р°РµРјС‹Р№ РєРѕСЌС„РёС†РёРµРЅС‚ СЃРєРѕСЂРѕСЃС‚Рё
+	float kSpdCur;		//РўРµРєСѓС‰РёР№ РєРѕСЌС„РёС†РёРµРЅС‚ СЃРєРѕСЂРѕСЃС‚Рё
+	float kSpdDlt;		//Р Р°Р·Р±СЂРѕСЃ РїРѕ СЃРєРѕСЂРѕСЃС‚Рё Сѓ СЂР°Р·РЅС‹С… РїРµСЂСЃРѕРЅР°Р¶РµР№
+	bool isMove;		//РЎС‚РѕРёРј РёР»Рё РґРІРёР¶РµРјСЃСЏ
+	bool isBack;		//РРґС‘Рј РЅР°Р·Р°Рґ
+	bool isRun;			//РЈСЃС‚Р°РЅРѕРІР»РµРЅ Р»Рё СЂРµР¶РёРј Р±РµРіР°
+	bool isRunDisable;	//Р—Р°РїСЂРµС‰РµРЅ Р»Рё СЂРµР¶РёРј Р±РµРіР°
+	bool isFight;		//Р РµР¶РёРј Р±РѕСЏ
+	bool lockFightMode;	//Р—Р°Р±Р»РѕРєРёСЂРѕРІР°С‚СЊ СЂРµР¶РёРј Р±РѕСЏ
+	bool isSwim;		//РџР»С‹РІС‘Рј
+	bool isJump;		//РЎРїСЂС‹РіРёРІР°РµРј
+	bool isJumpSnd;		//РќР°РґРѕ РїСЂРѕРёРіСЂР°С‚СЊ Р·РІСѓРє РїСЂС‹Р¶РєР°
+	bool isEnableJump;	//Р Р°Р·СЂРµС€РёРЅРѕ Р»Рё СЃРїСЂС‹РіРёРІР°РЅРёРµ
+	bool isUp;			//РќР°РїСЂР°РІР»РµРЅРёРµ РіСЂР°РґРёРµРЅС‚Р° РїРµСЂРµРјРµС‰РµРЅРёСЏ
+	bool isCollision;	//Р‘С‹Р» РєРѕР»Р»РёР¶РµРЅ СЃ РґСЂСѓРіРёРј РїРµСЂСЃРѕРЅР°Р¶РµРј
+	bool isTurnLock;	//Р‘Р»РѕРєРёСЂРѕРІР°РЅРёРµ СѓРїСЂР°РІР»РµРЅРёСЏ РїРѕРІРѕСЂРѕС‚РѕРј
+	bool lockMove;		//Р—Р°РїСЂРµС‚РёС‚СЊ РїРµСЂРµРјРµС‰РµРЅРёСЏ
+	bool lockRotate;	//Р—Р°РїСЂРµС‚РёС‚СЊ РІСЂР°С‰РµРЅРёСЏ
+	bool isDialog;		//РџРµСЂСЃРѕРЅР°Р¶ РІ РґРёР°Р»РѕРіРµ
+	bool isFightWOWps;	//Р Р°Р·СЂРµС€РёС‚СЊ РїРµСЂРµС…РѕРґРёС‚СЊ РІ СЂРµР¶РёРј Р±РѕСЏ Р±РµР· РѕСЂСѓР¶РёСЏ
+	bool isActiveState;	//Р•СЃР»Рё true С‚Рѕ РїРµСЂСЃРѕРЅР°Р¶ Р°РєС‚РёРІРµРЅ
+	bool recoilLook;	//Р”Р»СЏ СЃСЂР°Р±Р°С‚С‹РІР°РЅРёСЏ РґСЂР°Р·РЅРёР»РєРё РїРѕСЃР»Рµ РѕС‚СЃРєРѕРєР°
+	float swimChange;	//Р’СЂРµРјСЏ РѕС‚РєР»РёРєР° РЅР° РёР·РјРµРЅРµРЅРёРµ СЂРµР¶РёРјР°
+	float isTurn;		//РџРѕРІРѕСЂР°С‡РёРІР°РµРјСЃСЏ	
+	bool isNFHit;		//РџРѕРїР°Р»Рё РІРЅРµ СЂРµР¶РёРјР° Р±РѕСЏ
+	float movecs;		//РљРѕСЃРёРЅСѓСЃ СѓРіР»Р° РЅР°РєР»РѕРЅР° РїР»РѕСЃРєРѕСЃС‚Рё
+	const char * deadName;//РРјСЏ РґРµР№СЃС‚РІРёСЏ СЃРјРµСЂС‚Рё
+	long jumpSound;		//Р—РІСѓРє СЂР°Р·РІРёРІР°СЋС‰РµР№СЃСЏ РѕРґРµР¶РґС‹ РїСЂРё РїСЂС‹Р¶РєРµ
+	long recoilSound;	//Р—РІСѓРє С€Р°СЂРєР°РЅСЊСЏ
 
 	float noBlendTime;	
 
 	bool isLookFromEyes;
 
-	ActionMove * curMove;		//Текущее действие перемещения
+	ActionMove * curMove;		//РўРµРєСѓС‰РµРµ РґРµР№СЃС‚РІРёРµ РїРµСЂРµРјРµС‰РµРЅРёСЏ
 
-	ActionMove walk;			//Ходьба вперёд
-	ActionMove backwalk;		//Ходьба назад
-	ActionMove run;				//Бег вперёд
-	ActionMove backrun;			//Бег назад
-	ActionMove stsUp;			//Идти вверх по лестнице
-	ActionMove stsDown;			//Идти вниз по лестнице
-	ActionMove stsUpBack;		//Идти вверх по лестнице назад
-	ActionMove stsDownBack;		//Идти вниз по лестнице назад
-	ActionMove stsUpRun;		//Бежать вверх по лестнице
-	ActionMove stsDownRun;		//Бежать вниз по лестнице
-	ActionMove stsUpRunBack;	//Бежать вверх по лестнице назад
-	ActionMove stsDownRunBack;	//Бежать вниз по лестнице назад
-	ActionMove swim;			//Плыть
-	ActionMove fall;			//Спрыгивание
-	ActionMove fall_land;		//Спрыгивание, вставание на земле
-	ActionMove fall_water;		//Спрыгивание, всплытие в воде
-	ActionMove jump;			//Прыгание
+	ActionMove walk;			//РҐРѕРґСЊР±Р° РІРїРµСЂС‘Рґ
+	ActionMove backwalk;		//РҐРѕРґСЊР±Р° РЅР°Р·Р°Рґ
+	ActionMove run;				//Р‘РµРі РІРїРµСЂС‘Рґ
+	ActionMove backrun;			//Р‘РµРі РЅР°Р·Р°Рґ
+	ActionMove stsUp;			//РРґС‚Рё РІРІРµСЂС… РїРѕ Р»РµСЃС‚РЅРёС†Рµ
+	ActionMove stsDown;			//РРґС‚Рё РІРЅРёР· РїРѕ Р»РµСЃС‚РЅРёС†Рµ
+	ActionMove stsUpBack;		//РРґС‚Рё РІРІРµСЂС… РїРѕ Р»РµСЃС‚РЅРёС†Рµ РЅР°Р·Р°Рґ
+	ActionMove stsDownBack;		//РРґС‚Рё РІРЅРёР· РїРѕ Р»РµСЃС‚РЅРёС†Рµ РЅР°Р·Р°Рґ
+	ActionMove stsUpRun;		//Р‘РµР¶Р°С‚СЊ РІРІРµСЂС… РїРѕ Р»РµСЃС‚РЅРёС†Рµ
+	ActionMove stsDownRun;		//Р‘РµР¶Р°С‚СЊ РІРЅРёР· РїРѕ Р»РµСЃС‚РЅРёС†Рµ
+	ActionMove stsUpRunBack;	//Р‘РµР¶Р°С‚СЊ РІРІРµСЂС… РїРѕ Р»РµСЃС‚РЅРёС†Рµ РЅР°Р·Р°Рґ
+	ActionMove stsDownRunBack;	//Р‘РµР¶Р°С‚СЊ РІРЅРёР· РїРѕ Р»РµСЃС‚РЅРёС†Рµ РЅР°Р·Р°Рґ
+	ActionMove swim;			//РџР»С‹С‚СЊ
+	ActionMove fall;			//РЎРїСЂС‹РіРёРІР°РЅРёРµ
+	ActionMove fall_land;		//РЎРїСЂС‹РіРёРІР°РЅРёРµ, РІСЃС‚Р°РІР°РЅРёРµ РЅР° Р·РµРјР»Рµ
+	ActionMove fall_water;		//РЎРїСЂС‹РіРёРІР°РЅРёРµ, РІСЃРїР»С‹С‚РёРµ РІ РІРѕРґРµ
+	ActionMove jump;			//РџСЂС‹РіР°РЅРёРµ
 	
 	
 	
-	ActionIdle nfhit;			//Реакция вне режима боя
+	ActionIdle nfhit;			//Р РµР°РєС†РёСЏ РІРЅРµ СЂРµР¶РёРјР° Р±РѕСЏ
 
 
-	//Idle действия
+	//Idle РґРµР№СЃС‚РІРёСЏ
 	long curIdleIndex;
 	ActionIdle actionIdle[32];
 	long numActionIdles;
 	ActionIdle actionFightIdle[32];
 	long numFightActionIdles;
 
-	//Смерть
+	//РЎРјРµСЂС‚СЊ
 	ActionDead actionDead[8];
 	long numActionDead;
 	ActionDead actionFightDead[8];
 	long numActionFightDead;
 
-	ActionCharacter actionTurnL;//Действие поворота влево
-	ActionCharacter actionTurnR;//Действие поворота вправо
-	ActionCharacter userIdle;	//Действие установленное из вне
+	ActionCharacter actionTurnL;//Р”РµР№СЃС‚РІРёРµ РїРѕРІРѕСЂРѕС‚Р° РІР»РµРІРѕ
+	ActionCharacter actionTurnR;//Р”РµР№СЃС‚РІРёРµ РїРѕРІРѕСЂРѕС‚Р° РІРїСЂР°РІРѕ
+	ActionCharacter userIdle;	//Р”РµР№СЃС‚РІРёРµ СѓСЃС‚Р°РЅРѕРІР»РµРЅРЅРѕРµ РёР· РІРЅРµ
 
-	//Бой
-	//Обычные перемещения
-	ActionMove fightwalk;		//Ходьба вперёд в режиме боя
-	ActionMove fightbackwalk;	//Ходьба назад в режиме боя
-	ActionMove fightrun;		//Бег вперёд в режиме боя
-	ActionMove fightbackrun;	//Бег назад в режиме боя
-	//Атаки
-	ActionCharacter attackFast[4];	//Быстрые атаки
-	long numAttackFast;				//Количество быстрых атак
-	ActionCharacter attackForce[4];	//Силовые атаки
-	long numAttackForce;			//Количество силовых атак
-	ActionCharacter attackRound[4];	//Круговая атака
-	long numAttackRound;			//Количество круговых атак
-	ActionCharacter attackBreak[4];	//Провивающие атаки
-	long numAttackBreak;			//Количество пробивающих атак
-	ActionCharacter attackFeint[4];	//Финт
-	ActionCharacter attackFeintC[4];//Атакующие продолжение финта
-	long numAttackFeint;			//Количество финтов
-	ActionCharacter parry[4];	    //Парирование  eddy
-	long numParry;					//Количество парирований
-	//Дистанционные атаки
-	ActionCharacter shot;			//Выстрел из пистолета
-	//Реакции
-	ActionCharacter hit[4];			//Попадание по персонажу
-	long numHits;					//Количество вариантов попаданий
-	ActionCharacter hitFeint;		//Реакция на финт
-	ActionCharacter hitParry;		//Реакция на парирование
-	ActionCharacter hitRound;		//Реакция отталкивание круговым ударом
-	ActionCharacter hitFire;		//Реакция на выстрел
-	//Защита
-	ActionCharacter block;			//Блок
-	ActionCharacter blockaxe;		//Блок топором
-	ActionCharacter blockhit;		//Попадание по персонажу в блоке
-	ActionCharacter blockaxehit;	//Попадание по персонажу в блоке с топором
-	ActionCharacter blockbreak;		//Пробивание блока
-	ActionCharacter recoil;			//Отскок назад
-	ActionCharacter strafe_l;		//Отскок влево
-	ActionCharacter strafe_r;		//Отскок вправо
+	//Р‘РѕР№
+	//РћР±С‹С‡РЅС‹Рµ РїРµСЂРµРјРµС‰РµРЅРёСЏ
+	ActionMove fightwalk;		//РҐРѕРґСЊР±Р° РІРїРµСЂС‘Рґ РІ СЂРµР¶РёРјРµ Р±РѕСЏ
+	ActionMove fightbackwalk;	//РҐРѕРґСЊР±Р° РЅР°Р·Р°Рґ РІ СЂРµР¶РёРјРµ Р±РѕСЏ
+	ActionMove fightrun;		//Р‘РµРі РІРїРµСЂС‘Рґ РІ СЂРµР¶РёРјРµ Р±РѕСЏ
+	ActionMove fightbackrun;	//Р‘РµРі РЅР°Р·Р°Рґ РІ СЂРµР¶РёРјРµ Р±РѕСЏ
+	//РђС‚Р°РєРё
+	ActionCharacter attackFast[4];	//Р‘С‹СЃС‚СЂС‹Рµ Р°С‚Р°РєРё
+	long numAttackFast;				//РљРѕР»РёС‡РµСЃС‚РІРѕ Р±С‹СЃС‚СЂС‹С… Р°С‚Р°Рє
+	ActionCharacter attackForce[4];	//РЎРёР»РѕРІС‹Рµ Р°С‚Р°РєРё
+	long numAttackForce;			//РљРѕР»РёС‡РµСЃС‚РІРѕ СЃРёР»РѕРІС‹С… Р°С‚Р°Рє
+	ActionCharacter attackRound[4];	//РљСЂСѓРіРѕРІР°СЏ Р°С‚Р°РєР°
+	long numAttackRound;			//РљРѕР»РёС‡РµСЃС‚РІРѕ РєСЂСѓРіРѕРІС‹С… Р°С‚Р°Рє
+	ActionCharacter attackBreak[4];	//РџСЂРѕРІРёРІР°СЋС‰РёРµ Р°С‚Р°РєРё
+	long numAttackBreak;			//РљРѕР»РёС‡РµСЃС‚РІРѕ РїСЂРѕР±РёРІР°СЋС‰РёС… Р°С‚Р°Рє
+	ActionCharacter attackFeint[4];	//Р¤РёРЅС‚
+	ActionCharacter attackFeintC[4];//РђС‚Р°РєСѓСЋС‰РёРµ РїСЂРѕРґРѕР»Р¶РµРЅРёРµ С„РёРЅС‚Р°
+	long numAttackFeint;			//РљРѕР»РёС‡РµСЃС‚РІРѕ С„РёРЅС‚РѕРІ
+	ActionCharacter parry[4];	    //РџР°СЂРёСЂРѕРІР°РЅРёРµ  eddy
+	long numParry;					//РљРѕР»РёС‡РµСЃС‚РІРѕ РїР°СЂРёСЂРѕРІР°РЅРёР№
+	//Р”РёСЃС‚Р°РЅС†РёРѕРЅРЅС‹Рµ Р°С‚Р°РєРё
+	ActionCharacter shot;			//Р’С‹СЃС‚СЂРµР» РёР· РїРёСЃС‚РѕР»РµС‚Р°
+	//Р РµР°РєС†РёРё
+	ActionCharacter hit[4];			//РџРѕРїР°РґР°РЅРёРµ РїРѕ РїРµСЂСЃРѕРЅР°Р¶Сѓ
+	long numHits;					//РљРѕР»РёС‡РµСЃС‚РІРѕ РІР°СЂРёР°РЅС‚РѕРІ РїРѕРїР°РґР°РЅРёР№
+	ActionCharacter hitFeint;		//Р РµР°РєС†РёСЏ РЅР° С„РёРЅС‚
+	ActionCharacter hitParry;		//Р РµР°РєС†РёСЏ РЅР° РїР°СЂРёСЂРѕРІР°РЅРёРµ
+	ActionCharacter hitRound;		//Р РµР°РєС†РёСЏ РѕС‚С‚Р°Р»РєРёРІР°РЅРёРµ РєСЂСѓРіРѕРІС‹Рј СѓРґР°СЂРѕРј
+	ActionCharacter hitFire;		//Р РµР°РєС†РёСЏ РЅР° РІС‹СЃС‚СЂРµР»
+	//Р—Р°С‰РёС‚Р°
+	ActionCharacter block;			//Р‘Р»РѕРє
+	ActionCharacter blockaxe;		//Р‘Р»РѕРє С‚РѕРїРѕСЂРѕРј
+	ActionCharacter blockhit;		//РџРѕРїР°РґР°РЅРёРµ РїРѕ РїРµСЂСЃРѕРЅР°Р¶Сѓ РІ Р±Р»РѕРєРµ
+	ActionCharacter blockaxehit;	//РџРѕРїР°РґР°РЅРёРµ РїРѕ РїРµСЂСЃРѕРЅР°Р¶Сѓ РІ Р±Р»РѕРєРµ СЃ С‚РѕРїРѕСЂРѕРј
+	ActionCharacter blockbreak;		//РџСЂРѕР±РёРІР°РЅРёРµ Р±Р»РѕРєР°
+	ActionCharacter recoil;			//РћС‚СЃРєРѕРє РЅР°Р·Р°Рґ
+	ActionCharacter strafe_l;		//РћС‚СЃРєРѕРє РІР»РµРІРѕ
+	ActionCharacter strafe_r;		//РћС‚СЃРєРѕРє РІРїСЂР°РІРѕ
 	
-	bool isStunEnable;			    // Разрешен ли стан после удара врагом <-- ugeen 29.12.10
-	//Логическое состояние
-	FightAction fgtCurType;			//Тип текущего действия	
-	long fgtCurIndex;				//Индекс текущего действия
-	FightAction fgtSetType;			//Тип установленного действия
-	long fgtSetIndex;				//Индекс установленного действия
-	bool isParryState;				//Состояние парироваиня
-	bool isFeintState;				//Состояние парироваиня
-	bool isFired;					//Произведён ли выстрел
+	bool isStunEnable;			    // Р Р°Р·СЂРµС€РµРЅ Р»Рё СЃС‚Р°РЅ РїРѕСЃР»Рµ СѓРґР°СЂР° РІСЂР°РіРѕРј <-- ugeen 29.12.10
+	//Р›РѕРіРёС‡РµСЃРєРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
+	FightAction fgtCurType;			//РўРёРї С‚РµРєСѓС‰РµРіРѕ РґРµР№СЃС‚РІРёСЏ	
+	long fgtCurIndex;				//РРЅРґРµРєСЃ С‚РµРєСѓС‰РµРіРѕ РґРµР№СЃС‚РІРёСЏ
+	FightAction fgtSetType;			//РўРёРї СѓСЃС‚Р°РЅРѕРІР»РµРЅРЅРѕРіРѕ РґРµР№СЃС‚РІРёСЏ
+	long fgtSetIndex;				//РРЅРґРµРєСЃ СѓСЃС‚Р°РЅРѕРІР»РµРЅРЅРѕРіРѕ РґРµР№СЃС‚РІРёСЏ
+	bool isParryState;				//РЎРѕСЃС‚РѕСЏРЅРёРµ РїР°СЂРёСЂРѕРІР°РёРЅСЏ
+	bool isFeintState;				//РЎРѕСЃС‚РѕСЏРЅРёРµ РїР°СЂРёСЂРѕРІР°РёРЅСЏ
+	bool isFired;					//РџСЂРѕРёР·РІРµРґС‘РЅ Р»Рё РІС‹СЃС‚СЂРµР»
 	bool isLockIdleForCamera;		//
-	float recoilWait;				//Задержка после прыжка
-	float strafeWait;				//Задержка после стрейфа
-	float camRotWait;				//Текущий коэфициент задержки поворота
-	float camRotMax;				//Максимальное время поворота
-	float strafeAngle;				//Угол стрейфа
-	float strafeVel;				//Стрейф на месте
-	ENTITY_ID enemyAttack;			//На кого ориентируемся во время атаки
+	float recoilWait;				//Р—Р°РґРµСЂР¶РєР° РїРѕСЃР»Рµ РїСЂС‹Р¶РєР°
+	float strafeWait;				//Р—Р°РґРµСЂР¶РєР° РїРѕСЃР»Рµ СЃС‚СЂРµР№С„Р°
+	float camRotWait;				//РўРµРєСѓС‰РёР№ РєРѕСЌС„РёС†РёРµРЅС‚ Р·Р°РґРµСЂР¶РєРё РїРѕРІРѕСЂРѕС‚Р°
+	float camRotMax;				//РњР°РєСЃРёРјР°Р»СЊРЅРѕРµ РІСЂРµРјСЏ РїРѕРІРѕСЂРѕС‚Р°
+	float strafeAngle;				//РЈРіРѕР» СЃС‚СЂРµР№С„Р°
+	float strafeVel;				//РЎС‚СЂРµР№С„ РЅР° РјРµСЃС‚Рµ
+	ENTITY_ID enemyAttack;			//РќР° РєРѕРіРѕ РѕСЂРёРµРЅС‚РёСЂСѓРµРјСЃСЏ РІРѕ РІСЂРµРјСЏ Р°С‚Р°РєРё
 
-	//Таблица возможности смены одного действия другим
+	//РўР°Р±Р»РёС†Р° РІРѕР·РјРѕР¶РЅРѕСЃС‚Рё СЃРјРµРЅС‹ РѕРґРЅРѕРіРѕ РґРµР№СЃС‚РІРёСЏ РґСЂСѓРіРёРј
 	static byte fightTbl[fgt_max][fgt_max];
 	static char * fightNamesTbl[fgt_max];
 
-	//Действие, которое необходимо проигрывать
+	//Р”РµР№СЃС‚РІРёРµ, РєРѕС‚РѕСЂРѕРµ РЅРµРѕР±С…РѕРґРёРјРѕ РїСЂРѕРёРіСЂС‹РІР°С‚СЊ
 	ActionCharacter priorityAction;
 	float priorityActionMoveSpd;
 	float priorityActionRotSpd;
 	bool isResetAutoAction;
 	bool isSetPriorityAction;
 
-	//Детекторы
+	//Р”РµС‚РµРєС‚РѕСЂС‹
 	Detector * detector[64];
 	long numDetectors;
 
 
-	//Моделька персонажа
+	//РњРѕРґРµР»СЊРєР° РїРµСЂСЃРѕРЅР°Р¶Р°
 	ENTITY_ID mdl;
-	//Тень
+	//РўРµРЅСЊ
 	ENTITY_ID shadow;
-	//Сабля
+	//РЎР°Р±Р»СЏ
 	ENTITY_ID blade;
 	bool isBladeSet;
 	bool isGunSet;
-	//Море
+	//РњРѕСЂРµ
 	ENTITY_ID sea;
 
 	ENTITY_ID effects;
-	//Моделька привязанного знака
+	//РњРѕРґРµР»СЊРєР° РїСЂРёРІСЏР·Р°РЅРЅРѕРіРѕ Р·РЅР°РєР°
 	ENTITY_ID sign;
 	string signName;
 	string signTechniqueName;
 
 
-	//Круги на воде
+	//РљСЂСѓРіРё РЅР° РІРѕРґРµ
 	ENTITY_ID waterrings;
 	float stepsRate;
 
-	//Если установлен, то не удаляться из supervisor
+	//Р•СЃР»Рё СѓСЃС‚Р°РЅРѕРІР»РµРЅ, С‚Рѕ РЅРµ СѓРґР°Р»СЏС‚СЊСЃСЏ РёР· supervisor
 	bool isDeleted;
 
-	//Пол персонажа
+	//РџРѕР» РїРµСЂСЃРѕРЅР°Р¶Р°
 	bool isMale;
-	//Звук шага
+	//Р—РІСѓРє С€Р°РіР°
 	bool soundStep;
-	//Звук шуршания в траве
+	//Р—РІСѓРє С€СѓСЂС€Р°РЅРёСЏ РІ С‚СЂР°РІРµ
 	bool soundGrass;
 
-	//Динамическое появление и удаление
+	//Р”РёРЅР°РјРёС‡РµСЃРєРѕРµ РїРѕСЏРІР»РµРЅРёРµ Рё СѓРґР°Р»РµРЅРёРµ
 	RTuner tuner;
-	float liveValue;	//>0 появляеться, <0 изчезает, 0 неизменяеться
+	float liveValue;	//>0 РїРѕСЏРІР»СЏРµС‚СЊСЃСЏ, <0 РёР·С‡РµР·Р°РµС‚, 0 РЅРµРёР·РјРµРЅСЏРµС‚СЊСЃСЏ
 
-	//События анимации
+	//РЎРѕР±С‹С‚РёСЏ Р°РЅРёРјР°С†РёРё
 	EventListener eventListener;
 
 	float ayStack[16];
@@ -636,7 +636,7 @@ protected:
 	float curJumpFallTime;
 	long jumpPoints;
 
-	char * characterID;	//ID персонажа
+	char * characterID;	//ID РїРµСЂСЃРѕРЅР°Р¶Р°
 
 	//
 	long m_nHandLightID;
@@ -651,18 +651,18 @@ public:
 	bool isPlayerEnemy;
 	float enemyBarsAlpha;
 
-	//Информация для групп
+	//РРЅС„РѕСЂРјР°С†РёСЏ РґР»СЏ РіСЂСѓРїРї
 	struct GrpTarget
 	{
-		ENTITY_ID chr;		//Идентификатор цели
-		float time;			//Время потери цели из виду
-		float timemax;		//Максимальное время удержания цели
+		ENTITY_ID chr;		//РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ С†РµР»Рё
+		float time;			//Р’СЂРµРјСЏ РїРѕС‚РµСЂРё С†РµР»Рё РёР· РІРёРґСѓ
+		float timemax;		//РњР°РєСЃРёРјР°Р»СЊРЅРѕРµ РІСЂРµРјСЏ СѓРґРµСЂР¶Р°РЅРёСЏ С†РµР»Рё
 	};
 
-	GrpTarget grpTargets[32];	//Список целей
-	long numTargets;			//Количество целей
-	long groupID;				//Индекс группы для ускорения поиска
-	char group[128];			//Имя текущей группы
+	GrpTarget grpTargets[32];	//РЎРїРёСЃРѕРє С†РµР»РµР№
+	long numTargets;			//РљРѕР»РёС‡РµСЃС‚РІРѕ С†РµР»РµР№
+	long groupID;				//РРЅРґРµРєСЃ РіСЂСѓРїРїС‹ РґР»СЏ СѓСЃРєРѕСЂРµРЅРёСЏ РїРѕРёСЃРєР°
+	char group[128];			//РРјСЏ С‚РµРєСѓС‰РµР№ РіСЂСѓРїРїС‹
 };
 
 inline void Character::AlreadyDelete()
@@ -670,69 +670,69 @@ inline void Character::AlreadyDelete()
 	isDeleted = true;
 }
 
-//Узнать направление
+//РЈР·РЅР°С‚СЊ РЅР°РїСЂР°РІР»РµРЅРёРµ
 inline float Character::GetAY()
 {
 	return ay;
 }
 
-//Узнать режим бега
+//РЈР·РЅР°С‚СЊ СЂРµР¶РёРј Р±РµРіР°
 inline bool Character::IsRun()
 {
 	return isRun && !isRunDisable;
 }
 
-//Плывём ли
+//РџР»С‹РІС‘Рј Р»Рё
 inline bool Character::IsSwim()
 {
 	return isSwim;
 }
 
-//Узнать режим боя
+//РЈР·РЅР°С‚СЊ СЂРµР¶РёРј Р±РѕСЏ
 inline bool Character::IsFight()
 {
 	return isFight;
 }
 
-//В диаалоге
+//Р’ РґРёР°Р°Р»РѕРіРµ
 inline bool Character::IsDialog()
 {
 	return isDialog;
 }
 
-//Получить высоту персонажа
+//РџРѕР»СѓС‡РёС‚СЊ РІС‹СЃРѕС‚Сѓ РїРµСЂСЃРѕРЅР°Р¶Р°
 inline float Character::GetHeight()
 {
 	return height;
 }
 
-//Получить позицию персонажа
+//РџРѕР»СѓС‡РёС‚СЊ РїРѕР·РёС†РёСЋ РїРµСЂСЃРѕРЅР°Р¶Р°
 inline void Character::GetPosition(CVECTOR & pos)
 {
 	pos = curPos;
 	if(isSwim) pos.y = seaY;
 }
 
-//Получить позицию персонажа
+//РџРѕР»СѓС‡РёС‚СЊ РїРѕР·РёС†РёСЋ РїРµСЂСЃРѕРЅР°Р¶Р°
 inline void Character::GetGrassPosition(CVECTOR & pos, CVECTOR & gpos)
 {
 	pos = curPos;
 	gpos = grsPos;
 }
 
-//Установить флажёк хождения по траве
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ С„Р»Р°Р¶С‘Рє С…РѕР¶РґРµРЅРёСЏ РїРѕ С‚СЂР°РІРµ
 inline void Character::SetGrassSound()
 {
 	soundGrass = true;
 }
 
-//Получить максимальный радиус персонажа
+//РџРѕР»СѓС‡РёС‚СЊ РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№ СЂР°РґРёСѓСЃ РїРµСЂСЃРѕРЅР°Р¶Р°
 inline float Character::GetRadius()
 {
 	return radius;
 }
 
-//Установить прозрачность персонажу
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РїСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ РїРµСЂСЃРѕРЅР°Р¶Сѓ
 inline void Character::SetCameraAlpha(float alpha)
 {
 	if(alpha < 0.0f) alpha = 0.0f;
@@ -740,37 +740,37 @@ inline void Character::SetCameraAlpha(float alpha)
 	tuner.camAlpha = alpha;
 }
 
-//Двигаемся ли
+//Р”РІРёРіР°РµРјСЃСЏ Р»Рё
 inline bool Character::IsMove()
 {
 	return isMove;
 }
 
-//Заблокировать выбор idle анимации
+//Р—Р°Р±Р»РѕРєРёСЂРѕРІР°С‚СЊ РІС‹Р±РѕСЂ idle Р°РЅРёРјР°С†РёРё
 inline void Character::LockIdle(bool isLock)
 {
 	isLockIdleForCamera = isLock;
 }
 
-//Выделить персонажа
+//Р’С‹РґРµР»РёС‚СЊ РїРµСЂСЃРѕРЅР°Р¶Р°
 inline void Character::Select()
 {
 	tuner.selected = 1.0f;
 }
 
-//Заблокировать перемещения персонажа
+//Р—Р°Р±Р»РѕРєРёСЂРѕРІР°С‚СЊ РїРµСЂРµРјРµС‰РµРЅРёСЏ РїРµСЂСЃРѕРЅР°Р¶Р°
 inline void Character::LockMove(bool isLock)
 {
 	lockMove = isLock;
 }
 
-//Заблокировать вращение персонажа за камерой
+//Р—Р°Р±Р»РѕРєРёСЂРѕРІР°С‚СЊ РІСЂР°С‰РµРЅРёРµ РїРµСЂСЃРѕРЅР°Р¶Р° Р·Р° РєР°РјРµСЂРѕР№
 inline void Character::LockRotate(bool isLock)
 {
 	lockRotate = isLock;
 }
 
-//Отросительная скорость поворота камеры
+//РћС‚СЂРѕСЃРёС‚РµР»СЊРЅР°СЏ СЃРєРѕСЂРѕСЃС‚СЊ РїРѕРІРѕСЂРѕС‚Р° РєР°РјРµСЂС‹
 inline float Character::CameraTurnSpeed()
 {
 	if(camRotWait <= 0.0f || camRotMax <= 0.0f) return 1.0f;
@@ -779,19 +779,19 @@ inline float Character::CameraTurnSpeed()
 	return powf(1.0f - k, 1.8f);
 }
 
-//Просмотр из глаз
+//РџСЂРѕСЃРјРѕС‚СЂ РёР· РіР»Р°Р·
 inline void Character::LookFromEyes(bool isLook)
 {
 	isLookFromEyes = isLook;
 }
 
-//Может уже умер
+//РњРѕР¶РµС‚ СѓР¶Рµ СѓРјРµСЂ
 inline bool Character::IsDead()
 {
 	return (liveValue < 0 || deadName);
 }
 
-//Есть ли оружие
+//Р•СЃС‚СЊ Р»Рё РѕСЂСѓР¶РёРµ
 inline bool Character::IsSetBlade()
 {
 	return isBladeSet | isFightWOWps;

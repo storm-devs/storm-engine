@@ -3,11 +3,11 @@
 
 #include "..\inode.h"
 
-#define PICE_TYPE_STRING		0 // описатель строки
-#define PICE_TYPE_FONTCHANGE	1 // описатель нового фонта
-#define PICE_TYPE_COLORCHANGE	2 // описатель нового цвета
-#define PICE_TYPE_NEXTLINE		3 // описатель перевода строки
-#define PICE_TYPE_NEXTTABLINE	4 // описатель перевода строки с красной строки
+#define PICE_TYPE_STRING		0 // РѕРїРёСЃР°С‚РµР»СЊ СЃС‚СЂРѕРєРё
+#define PICE_TYPE_FONTCHANGE	1 // РѕРїРёСЃР°С‚РµР»СЊ РЅРѕРІРѕРіРѕ С„РѕРЅС‚Р°
+#define PICE_TYPE_COLORCHANGE	2 // РѕРїРёСЃР°С‚РµР»СЊ РЅРѕРІРѕРіРѕ С†РІРµС‚Р°
+#define PICE_TYPE_NEXTLINE		3 // РѕРїРёСЃР°С‚РµР»СЊ РїРµСЂРµРІРѕРґР° СЃС‚СЂРѕРєРё
+#define PICE_TYPE_NEXTTABLINE	4 // РѕРїРёСЃР°С‚РµР»СЊ РїРµСЂРµРІРѕРґР° СЃС‚СЂРѕРєРё СЃ РєСЂР°СЃРЅРѕР№ СЃС‚СЂРѕРєРё
 
 struct STRING_PICE
 {
@@ -50,11 +50,11 @@ protected:
     void    TextUpShift();
 
 protected:
-    CINODE *m_pScroller; // ссылка на скроллер (!!! обязан быть прописан перед этим)
-    long    m_nMaxStringes; // число строк в выводимом окне
+    CINODE *m_pScroller; // СЃСЃС‹Р»РєР° РЅР° СЃРєСЂРѕР»Р»РµСЂ (!!! РѕР±СЏР·Р°РЅ Р±С‹С‚СЊ РїСЂРѕРїРёСЃР°РЅ РїРµСЂРµРґ СЌС‚РёРј)
+    long    m_nMaxStringes; // С‡РёСЃР»Рѕ СЃС‚СЂРѕРє РІ РІС‹РІРѕРґРёРјРѕРј РѕРєРЅРµ
 
-	DWORD   m_dwFontColor; // текущий цвет
-	long    m_idFont; // текущий шрифт
+	DWORD   m_dwFontColor; // С‚РµРєСѓС‰РёР№ С†РІРµС‚
+	long    m_idFont; // С‚РµРєСѓС‰РёР№ С€СЂРёС„С‚
 
 	char   *m_pText;
 	long    m_nPiceQuantity;

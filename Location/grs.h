@@ -5,7 +5,7 @@
 //--------------------------------------------------------------------------------------------
 //	grs
 //--------------------------------------------------------------------------------------------
-//	Формат файла grs
+//	Р¤РѕСЂРјР°С‚ С„Р°Р№Р»Р° grs
 //============================================================================================
 
 
@@ -29,39 +29,39 @@
 #define GRASS_VER	'00.1'
 
 
-#define GRASS_BLK_DST	1.0f							//Размер блока
-#define GRASS_CNT_MIN	16								//Минимальное количество травинок в блоке
-#define GRASS_CNT_DLT	8								//Разброс в количестве травинок
-#define GRASS_STEP		(GRASS_BLK_DST/GRASS_BLK_SIZE)	//Шаг сетки травы
-#define GRASS_BLK_POW	5								//Степень размера блока 2^N
-#define GRASS_BLK_SIZE	(1 << GRASS_BLK_POW)			//Размер сетки блока M = 2^N
-#define GRASS_BLK_MASK	(GRASS_BLK_SIZE - 1)			//Маска размера блока
+#define GRASS_BLK_DST	1.0f							//Р Р°Р·РјРµСЂ Р±Р»РѕРєР°
+#define GRASS_CNT_MIN	16								//РњРёРЅРёРјР°Р»СЊРЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ С‚СЂР°РІРёРЅРѕРє РІ Р±Р»РѕРєРµ
+#define GRASS_CNT_DLT	8								//Р Р°Р·Р±СЂРѕСЃ РІ РєРѕР»РёС‡РµСЃС‚РІРµ С‚СЂР°РІРёРЅРѕРє
+#define GRASS_STEP		(GRASS_BLK_DST/GRASS_BLK_SIZE)	//РЁР°Рі СЃРµС‚РєРё С‚СЂР°РІС‹
+#define GRASS_BLK_POW	5								//РЎС‚РµРїРµРЅСЊ СЂР°Р·РјРµСЂР° Р±Р»РѕРєР° 2^N
+#define GRASS_BLK_SIZE	(1 << GRASS_BLK_POW)			//Р Р°Р·РјРµСЂ СЃРµС‚РєРё Р±Р»РѕРєР° M = 2^N
+#define GRASS_BLK_MASK	(GRASS_BLK_SIZE - 1)			//РњР°СЃРєР° СЂР°Р·РјРµСЂР° Р±Р»РѕРєР°
 
 
 struct GRSHeader
 {
-	unsigned long id;		//Идентификатор
-	unsigned long ver;		//Версия
-	long miniX, miniZ;		//Размеры миникарты
-	float startX, startZ;	//Позиция карты
-	long numElements;		//Количество элементов (травинок)
+	unsigned long id;		//РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ
+	unsigned long ver;		//Р’РµСЂСЃРёСЏ
+	long miniX, miniZ;		//Р Р°Р·РјРµСЂС‹ РјРёРЅРёРєР°СЂС‚С‹
+	float startX, startZ;	//РџРѕР·РёС†РёСЏ РєР°СЂС‚С‹
+	long numElements;		//РљРѕР»РёС‡РµСЃС‚РІРѕ СЌР»РµРјРµРЅС‚РѕРІ (С‚СЂР°РІРёРЅРѕРє)
 };
 
 struct GRSMiniMapElement
 {
-	long start;			//Начало блока
-	long num[4];		//Количество травы в блоке
-	float minHeight;	//Минимальная высота в блока
-	float maxHeight;	//Максимальная высота в блока
+	long start;			//РќР°С‡Р°Р»Рѕ Р±Р»РѕРєР°
+	long num[4];		//РљРѕР»РёС‡РµСЃС‚РІРѕ С‚СЂР°РІС‹ РІ Р±Р»РѕРєРµ
+	float minHeight;	//РњРёРЅРёРјР°Р»СЊРЅР°СЏ РІС‹СЃРѕС‚Р° РІ Р±Р»РѕРєР°
+	float maxHeight;	//РњР°РєСЃРёРјР°Р»СЊРЅР°СЏ РІС‹СЃРѕС‚Р° РІ Р±Р»РѕРєР°
 };
 
 struct GRSMapElement
 {
-	unsigned char x, z;			//Позиция травинки в блоке
-	unsigned char w : 4, h : 4;	//Ширина и высота
-	unsigned char frame : 4;	//Кадр
-	unsigned char ang : 4;		//Угл поворота
-	float y;					//Высота в мировых координатах
+	unsigned char x, z;			//РџРѕР·РёС†РёСЏ С‚СЂР°РІРёРЅРєРё РІ Р±Р»РѕРєРµ
+	unsigned char w : 4, h : 4;	//РЁРёСЂРёРЅР° Рё РІС‹СЃРѕС‚Р°
+	unsigned char frame : 4;	//РљР°РґСЂ
+	unsigned char ang : 4;		//РЈРіР» РїРѕРІРѕСЂРѕС‚Р°
+	float y;					//Р’С‹СЃРѕС‚Р° РІ РјРёСЂРѕРІС‹С… РєРѕРѕСЂРґРёРЅР°С‚Р°С…
 };
 
 

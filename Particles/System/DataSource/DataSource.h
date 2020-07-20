@@ -27,13 +27,13 @@ class MemFile;
 
 class IParticleManager;
 
-//Источник данных для партиклов...
+//РСЃС‚РѕС‡РЅРёРє РґР°РЅРЅС‹С… РґР»СЏ РїР°СЂС‚РёРєР»РѕРІ...
 class DataSource
 {
 
 public:
 
-	//Описание партикла (используеться при создании системы)
+	//РћРїРёСЃР°РЅРёРµ РїР°СЂС‚РёРєР»Р° (РёСЃРїРѕР»СЊР·СѓРµС‚СЊСЃСЏ РїСЂРё СЃРѕР·РґР°РЅРёРё СЃРёСЃС‚РµРјС‹)
 	struct ParticleDesc
 	{
 		ParticleType Type;
@@ -45,7 +45,7 @@ public:
 		}
 	};
 
-	//Описание эмиттера (используеться при создании системы)
+	//РћРїРёСЃР°РЅРёРµ СЌРјРёС‚С‚РµСЂР° (РёСЃРїРѕР»СЊР·СѓРµС‚СЊСЃСЏ РїСЂРё СЃРѕР·РґР°РЅРёРё СЃРёСЃС‚РµРјС‹)
 	struct EmitterDesc
 	{
 		EmitterType Type;
@@ -61,13 +61,13 @@ public:
 private:
 	array<EmitterDesc> Emitters;
 
-	//Загрузить точечный эмиттер
+	//Р—Р°РіСЂСѓР·РёС‚СЊ С‚РѕС‡РµС‡РЅС‹Р№ СЌРјРёС‚С‚РµСЂ
 	void CreatePointEmitter (MemFile* pMemFile);
 	
-	//Загрузить BillBoard партикл
+	//Р—Р°РіСЂСѓР·РёС‚СЊ BillBoard РїР°СЂС‚РёРєР»
 	void CreateBillBoardParticle (array<ParticleDesc> &Particles, MemFile* pMemFile);
 
-	//Загрузить Model партикл
+	//Р—Р°РіСЂСѓР·РёС‚СЊ Model РїР°СЂС‚РёРєР»
 	void CreateModelParticle (array<ParticleDesc> &Particles, MemFile* pMemFile);
 
 
@@ -90,13 +90,13 @@ public:
  
 	void Destroy ();
 
-	//---------- Создание/удаление --------------------
+	//---------- РЎРѕР·РґР°РЅРёРµ/СѓРґР°Р»РµРЅРёРµ --------------------
 	DataSource (IParticleManager* Master);
 	bool Release ();
 
 
 // ========================= Load & Save =======================================
-	//Сохранить/восстановить из файла
+	//РЎРѕС…СЂР°РЅРёС‚СЊ/РІРѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ РёР· С„Р°Р№Р»Р°
 	virtual void Write (MemFile* pMemFile);
 	virtual void Load (MemFile* pMemFile);
 

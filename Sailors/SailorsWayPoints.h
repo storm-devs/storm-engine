@@ -30,10 +30,10 @@ enum PointType { PT_TYPE_NORMAL, PT_TYPE_CANNON_L,
 #define COLOR_SELECTED         0xFFFFFFFF;
 //-----------------------------------------------------------------------------------------------
 struct Path{
-  byte  length;                                            // Длина цепочки (кол-во элементов)
-  float   min;                                             // Значение пути
-  byte  point[MAX_POINTS];                                 // Последовательность обхода
-  int currentPointPosition;								   // Текущее положение в пути
+  byte  length;                                            // Р”Р»РёРЅР° С†РµРїРѕС‡РєРё (РєРѕР»-РІРѕ СЌР»РµРјРµРЅС‚РѕРІ)
+  float   min;                                             // Р—РЅР°С‡РµРЅРёРµ РїСѓС‚Рё
+  byte  point[MAX_POINTS];                                 // РџРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РѕР±С…РѕРґР°
+  int currentPointPosition;								   // РўРµРєСѓС‰РµРµ РїРѕР»РѕР¶РµРЅРёРµ РІ РїСѓС‚Рё
 
   Path(){
 	length= 0;
@@ -77,7 +77,7 @@ struct Point{
 	bool  disabled;
 	bool  cannonReloaded;
 
-	int climbPosition; //Если на мачте более одного человека
+	int climbPosition; //Р•СЃР»Рё РЅР° РјР°С‡С‚Рµ Р±РѕР»РµРµ РѕРґРЅРѕРіРѕ С‡РµР»РѕРІРµРєР°
 
 	Point(){
 
@@ -119,10 +119,10 @@ struct Points
 class SailorsPoints
 {
 private:
-	bool  PointsPassed[MAX_POINTS];            //tmp отметка пройденных точек(для поиска пути)
-	float matrix[MAX_POINTS][MAX_POINTS];		// Матрица для быстрого поиска пути
+	bool  PointsPassed[MAX_POINTS];            //tmp РѕС‚РјРµС‚РєР° РїСЂРѕР№РґРµРЅРЅС‹С… С‚РѕС‡РµРє(РґР»СЏ РїРѕРёСЃРєР° РїСѓС‚Рё)
+	float matrix[MAX_POINTS][MAX_POINTS];		// РњР°С‚СЂРёС†Р° РґР»СЏ Р±С‹СЃС‚СЂРѕРіРѕ РїРѕРёСЃРєР° РїСѓС‚Рё
 
-	Path getPath(int src, int dst, int l);   // Поиск пути
+	Path getPath(int src, int dst, int l);   // РџРѕРёСЃРє РїСѓС‚Рё
 
 public:
 	Points points;
@@ -132,10 +132,10 @@ public:
 	void Draw_(VDX8RENDER * rs, bool pointmode);
 	void DrawLinks(VDX8RENDER * rs);
 
-    Path findPath(Path &path, int from, int to); // Посчитать путь
+    Path findPath(Path &path, int from, int to); // РџРѕСЃС‡РёС‚Р°С‚СЊ РїСѓС‚СЊ
    
 
-	void UpdateLinks(); //Обновить матрицу поиска пути
+	void UpdateLinks(); //РћР±РЅРѕРІРёС‚СЊ РјР°С‚СЂРёС†Сѓ РїРѕРёСЃРєР° РїСѓС‚Рё
 
 	int WriteToFile(string fileName);
 	int ReadFromFile(string fileName);

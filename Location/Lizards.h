@@ -26,11 +26,11 @@ public:
 	Lizards();
 	virtual ~Lizards();
 
-	//Инициализация
+	//РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
 	bool Init();
-	//Исполнение
+	//РСЃРїРѕР»РЅРµРЅРёРµ
 	void Execute(dword delta_time);
-	//Рисование
+	//Р РёСЃРѕРІР°РЅРёРµ
 	void Realize(dword delta_time);
 
 

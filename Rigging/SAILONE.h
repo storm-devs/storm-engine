@@ -32,7 +32,7 @@ struct SAILVERTEX
 	float tu3, tv3;
 };
 
-// параметры для триангуляции паруса
+// РїР°СЂР°РјРµС‚СЂС‹ РґР»СЏ С‚СЂРёР°РЅРіСѓР»СЏС†РёРё РїР°СЂСѓСЃР°
 #define SAIL_FAR_IDX 7
 const struct {WORD row,col; float len;} farGrid[SAIL_FAR_IDX]=
 {
@@ -48,19 +48,19 @@ const struct {WORD row,col; float len;} farGrid[SAIL_FAR_IDX]=
 
 struct WIND
 {
-    float base; // амплитуда колебаний ветра от 0 до 1.0
+    float base; // Р°РјРїР»РёС‚СѓРґР° РєРѕР»РµР±Р°РЅРёР№ РІРµС‚СЂР° РѕС‚ 0 РґРѕ 1.0
     struct {float x,y,z;} ang;
 };
 
 struct SPHERE
 {
     CVECTOR c;
-    CVECTOR rc; // центр в мировых координатах
+    CVECTOR rc; // С†РµРЅС‚СЂ РІ РјРёСЂРѕРІС‹С… РєРѕРѕСЂРґРёРЅР°С‚Р°С…
     float r;
 };
 
 #define TEXTUREMAXCOUNTER 3
-// таблица текстур
+// С‚Р°Р±Р»РёС†Р° С‚РµРєСЃС‚СѓСЂ
 struct TEXTURESLIST {
     int  texCount;
     int  uses[TEXTUREMAXCOUNTER];
@@ -88,14 +88,14 @@ struct SAILGEOMETRY {
 struct SAILROLLING {
     SAILGEOMETRY oldgeo; // final value of geometry parameters
     float delta;
-    bool rollup; // парус сворачивается (ложь-разворачивается)
+    bool rollup; // РїР°СЂСѓСЃ СЃРІРѕСЂР°С‡РёРІР°РµС‚СЃСЏ (Р»РѕР¶СЊ-СЂР°Р·РІРѕСЂР°С‡РёРІР°РµС‚СЃСЏ)
 };
 
 struct ROTATEROPEDSAIL
 {
     int ropenum;
-    float r1,r2; // радиус до конца веревки и начала другой точки
-    CVECTOR b; // координата x,y,z для расчета натяжения веревкой по Z
+    float r1,r2; // СЂР°РґРёСѓСЃ РґРѕ РєРѕРЅС†Р° РІРµСЂРµРІРєРё Рё РЅР°С‡Р°Р»Р° РґСЂСѓРіРѕР№ С‚РѕС‡РєРё
+    CVECTOR b; // РєРѕРѕСЂРґРёРЅР°С‚Р° x,y,z РґР»СЏ СЂР°СЃС‡РµС‚Р° РЅР°С‚СЏР¶РµРЅРёСЏ РІРµСЂРµРІРєРѕР№ РїРѕ Z
     int tiePoint;
 };
 struct SAILTIEROPE {
@@ -116,30 +116,30 @@ enum SAIL_TYPE {
 struct SAILSTATE {
     DWORD holeCount;
     bool hole[12];
-    WORD shi,sni,Nh,Nn; // Стартовый индекс и число индексов в дырявом\нормальном отражении паруса
+    WORD shi,sni,Nh,Nn; // РЎС‚Р°СЂС‚РѕРІС‹Р№ РёРЅРґРµРєСЃ Рё С‡РёСЃР»Рѕ РёРЅРґРµРєСЃРѕРІ РІ РґС‹СЂСЏРІРѕРј\РЅРѕСЂРјР°Р»СЊРЅРѕРј РѕС‚СЂР°Р¶РµРЅРёРё РїР°СЂСѓСЃР°
 
 	SAIL_TYPE eSailType;
 
-    // точки привязки паруса
+    // С‚РѕС‡РєРё РїСЂРёРІСЏР·РєРё РїР°СЂСѓСЃР°
 	CVECTOR hardPoints[4];
 
 	bool bYesLimitPoint;
 	CVECTOR LimitPoint;
 
-    // номер текстуры
+    // РЅРѕРјРµСЂ С‚РµРєСЃС‚СѓСЂС‹
     WORD texNum;
 
-    //----Параметры составляющие форму паруса----
-    float fDeepZ; // абсолютная выпуклость паруса по вертикали
-    float fDeepH; // абсолютная выпуклость паруса по горизонтали
-    float fDeepVz; // прогиб нижнего края паруса по нормали
-    float fDeepVh; // прогиб нижнего края паруса по высоте
+    //----РџР°СЂР°РјРµС‚СЂС‹ СЃРѕСЃС‚Р°РІР»СЏСЋС‰РёРµ С„РѕСЂРјСѓ РїР°СЂСѓСЃР°----
+    float fDeepZ; // Р°Р±СЃРѕР»СЋС‚РЅР°СЏ РІС‹РїСѓРєР»РѕСЃС‚СЊ РїР°СЂСѓСЃР° РїРѕ РІРµСЂС‚РёРєР°Р»Рё
+    float fDeepH; // Р°Р±СЃРѕР»СЋС‚РЅР°СЏ РІС‹РїСѓРєР»РѕСЃС‚СЊ РїР°СЂСѓСЃР° РїРѕ РіРѕСЂРёР·РѕРЅС‚Р°Р»Рё
+    float fDeepVz; // РїСЂРѕРіРёР± РЅРёР¶РЅРµРіРѕ РєСЂР°СЏ РїР°СЂСѓСЃР° РїРѕ РЅРѕСЂРјР°Р»Рё
+    float fDeepVh; // РїСЂРѕРіРёР± РЅРёР¶РЅРµРіРѕ РєСЂР°СЏ РїР°СЂСѓСЃР° РїРѕ РІС‹СЃРѕС‚Рµ
 
     DWORD sVert,nVert;
     DWORD sIndx,nIndx;
     DWORD sholeIndx,nnormIndx,nholeIndx;
 
-    // шар ограничивающий парус
+    // С€Р°СЂ РѕРіСЂР°РЅРёС‡РёРІР°СЋС‰РёР№ РїР°СЂСѓСЃ
     SPHERE boundSphere;
     CVECTOR boxCenter;
     CVECTOR boxSize;
@@ -167,15 +167,15 @@ public:
     SAILSTATE ss;
 	SAILTIME tm;
 
-    void FillIndex(WORD *pt); // заполнение массива треугольников
+    void FillIndex(WORD *pt); // Р·Р°РїРѕР»РЅРµРЅРёРµ РјР°СЃСЃРёРІР° С‚СЂРµСѓРіРѕР»СЊРЅРёРєРѕРІ
 	void ClearVertex(SAILVERTEX *pv,DWORD maxIdx);
     void goWave(SAILVERTEX *pv,DWORD Delta_Time);
-	void FillVertex(SAILVERTEX *pv); // заполнение массива вертексов
-	void SetTexGrid(SAILVERTEX *pv); // установка координат в текстуре
-    void SetGeometry(); // установка параметров для создания геометрии паруса
-    void SetRolling(bool bRoll); // установить сворачивание-разворачивание паруса
-    void DoRollingStep(DWORD Delta_Time); // выполняем шаг сворачивания-разворачивания паруса
-    void TurnSail(float fTurnStep); // повернуть парус вокруг оси OY
+	void FillVertex(SAILVERTEX *pv); // Р·Р°РїРѕР»РЅРµРЅРёРµ РјР°СЃСЃРёРІР° РІРµСЂС‚РµРєСЃРѕРІ
+	void SetTexGrid(SAILVERTEX *pv); // СѓСЃС‚Р°РЅРѕРІРєР° РєРѕРѕСЂРґРёРЅР°С‚ РІ С‚РµРєСЃС‚СѓСЂРµ
+    void SetGeometry(); // СѓСЃС‚Р°РЅРѕРІРєР° РїР°СЂР°РјРµС‚СЂРѕРІ РґР»СЏ СЃРѕР·РґР°РЅРёСЏ РіРµРѕРјРµС‚СЂРёРё РїР°СЂСѓСЃР°
+    void SetRolling(bool bRoll); // СѓСЃС‚Р°РЅРѕРІРёС‚СЊ СЃРІРѕСЂР°С‡РёРІР°РЅРёРµ-СЂР°Р·РІРѕСЂР°С‡РёРІР°РЅРёРµ РїР°СЂСѓСЃР°
+    void DoRollingStep(DWORD Delta_Time); // РІС‹РїРѕР»РЅСЏРµРј С€Р°Рі СЃРІРѕСЂР°С‡РёРІР°РЅРёСЏ-СЂР°Р·РІРѕСЂР°С‡РёРІР°РЅРёСЏ РїР°СЂСѓСЃР°
+    void TurnSail(float fTurnStep); // РїРѕРІРµСЂРЅСѓС‚СЊ РїР°СЂСѓСЃ РІРѕРєСЂСѓРі РѕСЃРё OY
     void CalculateMirrorSailIndex();
     bool GetGrid(CVECTOR &pos,float perspect);
     float Trace(const CVECTOR &src,const CVECTOR &dst,bool bCannonTrace);
@@ -183,7 +183,7 @@ public:
     float TSailTrace(CVECTOR &src,CVECTOR &dst,bool bCannonTrace);
     float CheckSailSquar(int i,CVECTOR &va,CVECTOR &vb,CVECTOR &vc,CVECTOR &vsrc, CVECTOR &vdst, bool bCannonTrace);
 	void SetAllHole(DWORD holeData);
-    // число вертексов по вертикали и горизонтали
+    // С‡РёСЃР»Рѕ РІРµСЂС‚РµРєСЃРѕРІ РїРѕ РІРµСЂС‚РёРєР°Р»Рё Рё РіРѕСЂРёР·РѕРЅС‚Р°Р»Рё
 	DWORD m_dwRow, m_dwCol;
     float sailWidth,sailHeight;
 
@@ -203,47 +203,47 @@ private:
 
 	float GetDistanceFromPointTo3Point(const CVECTOR& v, const CVECTOR& vB1, const CVECTOR& vB2, const CVECTOR& vB3);
 
-    // Параметры воздействия ветра
+    // РџР°СЂР°РјРµС‚СЂС‹ РІРѕР·РґРµР№СЃС‚РІРёСЏ РІРµС‚СЂР°
     //------------------------------
-    int VertIdx;  // индекс в массиве векторов ветра
+    int VertIdx;  // РёРЅРґРµРєСЃ РІ РјР°СЃСЃРёРІРµ РІРµРєС‚РѕСЂРѕРІ РІРµС‚СЂР°
     int HorzIdx;
-    bool WindUp; // подъем паруса вверх от ветра
+    bool WindUp; // РїРѕРґСЉРµРј РїР°СЂСѓСЃР° РІРІРµСЂС… РѕС‚ РІРµС‚СЂР°
     float SumWind,MaxSumWind;
-    bool bFreeSail; // свободно развивающиеся паруса - при падении или отрыве
+    bool bFreeSail; // СЃРІРѕР±РѕРґРЅРѕ СЂР°Р·РІРёРІР°СЋС‰РёРµСЃСЏ РїР°СЂСѓСЃР° - РїСЂРё РїР°РґРµРЅРёРё РёР»Рё РѕС‚СЂС‹РІРµ
 
     CVECTOR SailPnt[20];
 
     //------------------------------------
-    // Сворачивание.разворачивание паруса
-    int rollType; // тип сворачивания паруса
-    SAILROLLING *sroll; // структура на момент свертывания/развертывания паруса
-    bool bRolling; // парус свернут в рулет на рее
+    // РЎРІРѕСЂР°С‡РёРІР°РЅРёРµ.СЂР°Р·РІРѕСЂР°С‡РёРІР°РЅРёРµ РїР°СЂСѓСЃР°
+    int rollType; // С‚РёРї СЃРІРѕСЂР°С‡РёРІР°РЅРёСЏ РїР°СЂСѓСЃР°
+    SAILROLLING *sroll; // СЃС‚СЂСѓРєС‚СѓСЂР° РЅР° РјРѕРјРµРЅС‚ СЃРІРµСЂС‚С‹РІР°РЅРёСЏ/СЂР°Р·РІРµСЂС‚С‹РІР°РЅРёСЏ РїР°СЂСѓСЃР°
+    bool bRolling; // РїР°СЂСѓСЃ СЃРІРµСЂРЅСѓС‚ РІ СЂСѓР»РµС‚ РЅР° СЂРµРµ
 
     SAIL* pp;
     //------------------------------------
-    // параметры определения положения в списке парусов
-    int groupNum;   // номер группы парусов в данном узле
-    int mastNum;    // номер мачты
-    NODE *hostNode; // хозяин узла
-    CMatrix *pMatWorld; // матрица этого узла
+    // РїР°СЂР°РјРµС‚СЂС‹ РѕРїСЂРµРґРµР»РµРЅРёСЏ РїРѕР»РѕР¶РµРЅРёСЏ РІ СЃРїРёСЃРєРµ РїР°СЂСѓСЃРѕРІ
+    int groupNum;   // РЅРѕРјРµСЂ РіСЂСѓРїРїС‹ РїР°СЂСѓСЃРѕРІ РІ РґР°РЅРЅРѕРј СѓР·Р»Рµ
+    int mastNum;    // РЅРѕРјРµСЂ РјР°С‡С‚С‹
+    NODE *hostNode; // С…РѕР·СЏРёРЅ СѓР·Р»Р°
+    CMatrix *pMatWorld; // РјР°С‚СЂРёС†Р° СЌС‚РѕРіРѕ СѓР·Р»Р°
 
     SAILTIEROPE sailtrope;
     float oldWindAngl;
 
-    // физика влияния на скорость корабля
-    float maxSpeed; // Максимальная скорость даваемая парусом
-    float curSpeed; // Текущая скорость
+    // С„РёР·РёРєР° РІР»РёСЏРЅРёСЏ РЅР° СЃРєРѕСЂРѕСЃС‚СЊ РєРѕСЂР°Р±Р»СЏ
+    float maxSpeed; // РњР°РєСЃРёРјР°Р»СЊРЅР°СЏ СЃРєРѕСЂРѕСЃС‚СЊ РґР°РІР°РµРјР°СЏ РїР°СЂСѓСЃРѕРј
+    float curSpeed; // РўРµРєСѓС‰Р°СЏ СЃРєРѕСЂРѕСЃС‚СЊ
 
-    // ветер
+    // РІРµС‚РµСЂ
     CVECTOR sailWind;
     void CalculateSailWind();
 
     int wind_incr,wind_add;
 
-    int HostNum; // номер группы парусов (корабля)
+    int HostNum; // РЅРѕРјРµСЂ РіСЂСѓРїРїС‹ РїР°СЂСѓСЃРѕРІ (РєРѕСЂР°Р±Р»СЏ)
 	bool bDeleted;
 
-	// Параметры ограничивающие поворот паруса
+	// РџР°СЂР°РјРµС‚СЂС‹ РѕРіСЂР°РЅРёС‡РёРІР°СЋС‰РёРµ РїРѕРІРѕСЂРѕС‚ РїР°СЂСѓСЃР°
 	CVECTOR	m_vMastTrace[2];
 	float m_fMaxAngle;
 	float m_fMinAngle;

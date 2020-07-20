@@ -14,7 +14,7 @@
 #include "Vector4.h"
 
 
-///Класс представления цвета (float)
+///РљР»Р°СЃСЃ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЏ С†РІРµС‚Р° (float)
 class Color
 {
 public:
@@ -27,204 +27,204 @@ public:
 			{
 				struct
 				{
-					///Красный
+					///РљСЂР°СЃРЅС‹Р№
 					float r;
-					///Зелёный
+					///Р—РµР»С‘РЅС‹Р№
 					float g;
-					///Синий
+					///РЎРёРЅРёР№
 					float b;
 				};
 				union
 				{
 					struct
 					{
-						///rgb в векторе
+						///rgb РІ РІРµРєС‚РѕСЂРµ
 						Vector c;
 					};
 					struct
 					{
-						///rgb в векторе
+						///rgb РІ РІРµРєС‚РѕСЂРµ
 						Vector color;
 					};
 				};
 			};
 			union
 			{
-				///Прозрачность
+				///РџСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ
 				float a;
-				///Прозрачность
+				///РџСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ
 				float alpha;
 			};
 		};
 		struct
 		{
-			///Представление в виде Vector4
+			///РџСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ РІ РІРёРґРµ Vector4
 			Vector4 v4;
 		};
 	};
 
 
 //-----------------------------------------------------------
-//Конструкторы
+//РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂС‹
 //-----------------------------------------------------------
 public:
-	///Пустой конструктор
+	///РџСѓСЃС‚РѕР№ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
 	Color();
-	///Заполнить числом rgb
+	///Р—Р°РїРѕР»РЅРёС‚СЊ С‡РёСЃР»РѕРј rgb
 	Color(float rgb, float a = 1.0f);
-	///Заполнить все компоненты
+	///Р—Р°РїРѕР»РЅРёС‚СЊ РІСЃРµ РєРѕРјРїРѕРЅРµРЅС‚С‹
 	Color(float r, float g, float b, float a = 1.0f);
-	///Заполнить все компоненты
+	///Р—Р°РїРѕР»РЅРёС‚СЊ РІСЃРµ РєРѕРјРїРѕРЅРµРЅС‚С‹
 	Color(const float f[3], float a = 1.0f);
-	///Заполнить все компоненты
+	///Р—Р°РїРѕР»РЅРёС‚СЊ РІСЃРµ РєРѕРјРїРѕРЅРµРЅС‚С‹
 	Color(const Vector & v, float a = 1.0f);
-	///Заполнить все компоненты
+	///Р—Р°РїРѕР»РЅРёС‚СЊ РІСЃРµ РєРѕРјРїРѕРЅРµРЅС‚С‹
 	Color(const Vector4 & v);
-	///Распоковать
+	///Р Р°СЃРїРѕРєРѕРІР°С‚СЊ
 	Color(unsigned long c);
-	///Распоковать
+	///Р Р°СЃРїРѕРєРѕРІР°С‚СЊ
 	Color(long c);
-	///Конструктор копирования
+	///РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РєРѕРїРёСЂРѕРІР°РЅРёСЏ
 	Color(const Color & c);
 
 //-----------------------------------------------------------
-//Операторы
+//РћРїРµСЂР°С‚РѕСЂС‹
 //-----------------------------------------------------------
 public:
-	///Получить интенсивность rgb
+	///РџРѕР»СѓС‡РёС‚СЊ РёРЅС‚РµРЅСЃРёРІРЅРѕСЃС‚СЊ rgb
 	float operator ~ () const;
-	///Вернуть цвет с ограниченными компанентами 0..1
+	///Р’РµСЂРЅСѓС‚СЊ С†РІРµС‚ СЃ РѕРіСЂР°РЅРёС‡РµРЅРЅС‹РјРё РєРѕРјРїР°РЅРµРЅС‚Р°РјРё 0..1
 	Color operator ! () const;
 
-	///Получить отрицательный цвет
+	///РџРѕР»СѓС‡РёС‚СЊ РѕС‚СЂРёС†Р°С‚РµР»СЊРЅС‹Р№ С†РІРµС‚
 	Color operator - () const;
 
-	///Присвоить rgb
+	///РџСЂРёСЃРІРѕРёС‚СЊ rgb
 	Color & operator = (float f);
-	///Распаковать и присвоить
+	///Р Р°СЃРїР°РєРѕРІР°С‚СЊ Рё РїСЂРёСЃРІРѕРёС‚СЊ
 	Color & operator = (unsigned long c);
-	///Присвоить rgb
+	///РџСЂРёСЃРІРѕРёС‚СЊ rgb
 	Color & operator = (const Vector & v);
-	///Присвоить
+	///РџСЂРёСЃРІРѕРёС‚СЊ
 	Color & operator = (const Vector4 & v);
-	///Присвоить
+	///РџСЂРёСЃРІРѕРёС‚СЊ
 	Color & operator = (const Color & c);
-	///Покомпонентное сложение с присваиванием rgb
+	///РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СЃР»РѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј rgb
 	Color & operator += (float f);
-	///Распаковать и сложить
+	///Р Р°СЃРїР°РєРѕРІР°С‚СЊ Рё СЃР»РѕР¶РёС‚СЊ
 	Color & operator += (unsigned long c);
-	///Покомпонентное сложение с присваиванием rgb
+	///РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СЃР»РѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј rgb
 	Color & operator += (const Vector & v);
-	///Покомпонентное сложение с присваиванием
+	///РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СЃР»РѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 	Color & operator += (const Vector4 & v);
-	///Покомпонентное сложение с присваиванием
+	///РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СЃР»РѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 	Color & operator += (const Color & c);
-	///Покомпонентное вычитание с присваиванием rgb
+	///РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РІС‹С‡РёС‚Р°РЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј rgb
 	Color & operator -= (float f);
-	///Распаковать и вычесть
+	///Р Р°СЃРїР°РєРѕРІР°С‚СЊ Рё РІС‹С‡РµСЃС‚СЊ
 	Color & operator -= (unsigned long c);
-	///Покомпонентное вычитание с присваиванием rgb
+	///РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РІС‹С‡РёС‚Р°РЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј rgb
 	Color & operator -= (const Vector & v);
-	///Покомпонентное вычитание с присваиванием
+	///РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РІС‹С‡РёС‚Р°РЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 	Color & operator -= (const Vector4 & v);
-	///Покомпонентное вычитание с присваиванием
+	///РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РІС‹С‡РёС‚Р°РЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 	Color & operator -= (const Color & c);
-	///Покомпонентное умножение с присваиванием rgb
+	///РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СѓРјРЅРѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј rgb
 	Color & operator *= (float f);
-	///Распаковать и умножить
+	///Р Р°СЃРїР°РєРѕРІР°С‚СЊ Рё СѓРјРЅРѕР¶РёС‚СЊ
 	Color & operator *= (unsigned long c);
-	///Покомпонентное умножение с присваиванием rgb
+	///РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СѓРјРЅРѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј rgb
 	Color & operator *= (const Vector & v);
-	///Покомпонентное умножение с присваиванием
+	///РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СѓРјРЅРѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 	Color & operator *= (const Vector4 & v);
-	///Покомпонентное умножение с присваиванием
+	///РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СѓРјРЅРѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 	Color & operator *= (const Color & c);
-	///Покомпонентное деление с присваиванием rgb
+	///РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РґРµР»РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј rgb
 	Color & operator /= (float f);
-	///Распаковать и разделить
+	///Р Р°СЃРїР°РєРѕРІР°С‚СЊ Рё СЂР°Р·РґРµР»РёС‚СЊ
 	Color & operator /= (unsigned long c);
-	///Покомпонентное деление с присваиванием rgb
+	///РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РґРµР»РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј rgb
 	Color & operator /= (const Vector & v);
-	///Покомпонентное деление с присваиванием
+	///РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РґРµР»РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 	Color & operator /= (const Vector4 & v);
-	///Покомпонентное деление с присваиванием
+	///РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РґРµР»РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 	Color & operator /= (const Color & c);
 	
-	///Скалярное перемножение rgb, результат копируется во все компоненты
+	///РЎРєР°Р»СЏСЂРЅРѕРµ РїРµСЂРµРјРЅРѕР¶РµРЅРёРµ rgb, СЂРµР·СѓР»СЊС‚Р°С‚ РєРѕРїРёСЂСѓРµС‚СЃСЏ РІРѕ РІСЃРµ РєРѕРјРїРѕРЅРµРЅС‚С‹
 	Color & operator |= (const Color & c);
 
-	///Получить упакованный цвет в long
+	///РџРѕР»СѓС‡РёС‚СЊ СѓРїР°РєРѕРІР°РЅРЅС‹Р№ С†РІРµС‚ РІ long
 	operator dword () const;
 
 //-----------------------------------------------------------
-//Преобразование
+//РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ
 //-----------------------------------------------------------
 public:
-	///Ограничить диапазоном 0..1
+	///РћРіСЂР°РЅРёС‡РёС‚СЊ РґРёР°РїР°Р·РѕРЅРѕРј 0..1
 	void Clamp();
-	///Ограничить диапазоном
+	///РћРіСЂР°РЅРёС‡РёС‚СЊ РґРёР°РїР°Р·РѕРЅРѕРј
 	void Clamp(float min, float max);
 
-	///Сохранить минимальные компаненты
+	///РЎРѕС…СЂР°РЅРёС‚СЊ РјРёРЅРёРјР°Р»СЊРЅС‹Рµ РєРѕРјРїР°РЅРµРЅС‚С‹
 	void Min(const Color & c);
-	///Сохранить максимальные компаненты
+	///РЎРѕС…СЂР°РЅРёС‚СЊ РјР°РєСЃРёРјР°Р»СЊРЅС‹Рµ РєРѕРјРїР°РЅРµРЅС‚С‹
 	void Max(const Color & c);
 
-	///Яркость -1..1
+	///РЇСЂРєРѕСЃС‚СЊ -1..1
 	void Brightness(float br);
-	///Гамма -1..1
+	///Р“Р°РјРјР° -1..1
 	void Gamma(float gm);
-	///Контраст -1..1
+	///РљРѕРЅС‚СЂР°СЃС‚ -1..1
 	void Contrast(float cn);
-	//Изменить сумарно яркость, гамму и контраст
+	//РР·РјРµРЅРёС‚СЊ СЃСѓРјР°СЂРЅРѕ СЏСЂРєРѕСЃС‚СЊ, РіР°РјРјСѓ Рё РєРѕРЅС‚СЂР°СЃС‚
 	void Processed(float br, float gm, float cn);
 
-	///Изменить насыщенность
-	//...когда понадобиться - сделаю
+	///РР·РјРµРЅРёС‚СЊ РЅР°СЃС‹С‰РµРЅРЅРѕСЃС‚СЊ
+	//...РєРѕРіРґР° РїРѕРЅР°РґРѕР±РёС‚СЊСЃСЏ - СЃРґРµР»Р°СЋ
 
 //-----------------------------------------------------------
-//Утилитные
+//РЈС‚РёР»РёС‚РЅС‹Рµ
 //-----------------------------------------------------------
 public:
-	//Получить интенсивность
+	//РџРѕР»СѓС‡РёС‚СЊ РёРЅС‚РµРЅСЃРёРІРЅРѕСЃС‚СЊ
 	float GetIntensity() const;
-	//Нормализовать rgb
+	//РќРѕСЂРјР°Р»РёР·РѕРІР°С‚СЊ rgb
 	Color & Normalize();
 
-	///Получить цветовую дистанцию между цветами
+	///РџРѕР»СѓС‡РёС‚СЊ С†РІРµС‚РѕРІСѓСЋ РґРёСЃС‚Р°РЅС†РёСЋ РјРµР¶РґСѓ С†РІРµС‚Р°РјРё
 	float GetDistance(const Color & c) const;
-	///Получить цветовую дистанцию между цветами в квадрате
+	///РџРѕР»СѓС‡РёС‚СЊ С†РІРµС‚РѕРІСѓСЋ РґРёСЃС‚Р°РЅС†РёСЋ РјРµР¶РґСѓ С†РІРµС‚Р°РјРё РІ РєРІР°РґСЂР°С‚Рµ
 	float GetDistanceSqr(const Color & c) const;
 
-	///Расчитать линейно интерполированное значение
+	///Р Р°СЃС‡РёС‚Р°С‚СЊ Р»РёРЅРµР№РЅРѕ РёРЅС‚РµСЂРїРѕР»РёСЂРѕРІР°РЅРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ
 	Color & Lerp(const Color & c1, const Color & c2, float kBlend);
-	///Расчитать линейно интерполированное значение
+	///Р Р°СЃС‡РёС‚Р°С‚СЊ Р»РёРЅРµР№РЅРѕ РёРЅС‚РµСЂРїРѕР»РёСЂРѕРІР°РЅРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ
 	Color & LerpA(const Color & c1, const Color & c2, float kBlend);
-	//Умножить цвет на число
+	//РЈРјРЅРѕР¶РёС‚СЊ С†РІРµС‚ РЅР° С‡РёСЃР»Рѕ
 	Color & MulColor(float k);
-	//Умножить альфу на число
+	//РЈРјРЅРѕР¶РёС‚СЊ Р°Р»СЊС„Сѓ РЅР° С‡РёСЃР»Рѕ
 	Color & MulAlpha(float k);
 
-	///Поменять местами r,b
+	///РџРѕРјРµРЅСЏС‚СЊ РјРµСЃС‚Р°РјРё r,b
 	Color & SwapRB();
 
-	//Получить запакованный цвет в dword
+	//РџРѕР»СѓС‡РёС‚СЊ Р·Р°РїР°РєРѕРІР°РЅРЅС‹Р№ С†РІРµС‚ РІ dword
 	unsigned long GetDword() const;
 
 
-	//Преобразование A8R8G8B8 в R5G6B5
+	//РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ A8R8G8B8 РІ R5G6B5
 	static unsigned short Make565(unsigned long color);
-	//Преобразование A8R8G8B8 в X1R5G5B5
+	//РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ A8R8G8B8 РІ X1R5G5B5
 	static unsigned short Make555(unsigned long color);
-	//Преобразование A8R8G8B8 в A1R5G5B5
+	//РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ A8R8G8B8 РІ A1R5G5B5
 	static unsigned short Make1555(unsigned long color);
-	//Преобразование A8R8G8B8 в A1R5G5B5
+	//РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ A8R8G8B8 РІ A1R5G5B5
 	static unsigned short Make4444(unsigned long color);
 
 
 };
 
-///Целочисленное представление цвета
+///Р¦РµР»РѕС‡РёСЃР»РµРЅРЅРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ С†РІРµС‚Р°
 class DColor
 {
 public:
@@ -233,43 +233,43 @@ public:
 	{
 		struct
 		{
-			///Синий
+			///РЎРёРЅРёР№
 			unsigned char b;
-			///Зелённый
+			///Р—РµР»С‘РЅРЅС‹Р№
 			unsigned char g;
-			///Красный
+			///РљСЂР°СЃРЅС‹Р№
 			unsigned char r;
-			///Прозрачность
+			///РџСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ
 			unsigned char a;
 		};
 		union
 		{
-			///Упакованный цвет
+			///РЈРїР°РєРѕРІР°РЅРЅС‹Р№ С†РІРµС‚
 			unsigned long c;
-			///Упакованный цвет
+			///РЈРїР°РєРѕРІР°РЅРЅС‹Р№ С†РІРµС‚
 			unsigned long color;
 		};
 	};
 
 //-----------------------------------------------------------
-//Операторы
+//РћРїРµСЂР°С‚РѕСЂС‹
 //-----------------------------------------------------------
 public:
-	///Присвоить
+	///РџСЂРёСЃРІРѕРёС‚СЊ
 	DColor & operator = (unsigned long color);
-	///Присвоить
+	///РџСЂРёСЃРІРѕРёС‚СЊ
 	DColor & operator = (long color);
 
-	//Получить long
+	//РџРѕР»СѓС‡РёС‚СЊ long
 	operator dword () const;
 };
 	
 
 //===========================================================
-//Конструкторы
+//РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂС‹
 //===========================================================
 
-//Пустой конструктор
+//РџСѓСЃС‚РѕР№ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
 mathinline Color::Color()
 {
 	r = 0.0f;
@@ -278,7 +278,7 @@ mathinline Color::Color()
 	a = 1.0f;
 }
 
-//Заполнить числом rgb
+//Р—Р°РїРѕР»РЅРёС‚СЊ С‡РёСЃР»РѕРј rgb
 mathinline Color::Color(float rgb, float a)
 {
 	r = rgb;
@@ -287,7 +287,7 @@ mathinline Color::Color(float rgb, float a)
 	this->a = a;
 }
 
-//Заполнить все компоненты
+//Р—Р°РїРѕР»РЅРёС‚СЊ РІСЃРµ РєРѕРјРїРѕРЅРµРЅС‚С‹
 mathinline Color::Color(float r, float g, float b, float a)
 {
 	this->r = r;
@@ -296,7 +296,7 @@ mathinline Color::Color(float r, float g, float b, float a)
 	this->a = a;
 }
 
-//Заполнить все компоненты
+//Р—Р°РїРѕР»РЅРёС‚СЊ РІСЃРµ РєРѕРјРїРѕРЅРµРЅС‚С‹
 mathinline Color::Color(const float f[3], float a)
 {
 	r = f[0];
@@ -305,7 +305,7 @@ mathinline Color::Color(const float f[3], float a)
 	this->a = a;
 }
 
-//Заполнить все компоненты
+//Р—Р°РїРѕР»РЅРёС‚СЊ РІСЃРµ РєРѕРјРїРѕРЅРµРЅС‚С‹
 mathinline Color::Color(const Vector & v, float a)
 {
 	r = v.x;
@@ -314,7 +314,7 @@ mathinline Color::Color(const Vector & v, float a)
 	this->a = a;
 }
 
-//Заполнить все компоненты
+//Р—Р°РїРѕР»РЅРёС‚СЊ РІСЃРµ РєРѕРјРїРѕРЅРµРЅС‚С‹
 mathinline Color::Color(const Vector4 & v)
 {
 	r = v.x;
@@ -323,19 +323,19 @@ mathinline Color::Color(const Vector4 & v)
 	a = v.w;
 }
 
-//Распоковать
+//Р Р°СЃРїРѕРєРѕРІР°С‚СЊ
 mathinline Color::Color(unsigned long c)
 {
 	*this = c;
 }
 
-///Распоковать
+///Р Р°СЃРїРѕРєРѕРІР°С‚СЊ
 mathinline Color::Color(long c)
 {
 	*this = (dword)c;
 }
 
-//Конструктор копирования
+//РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РєРѕРїРёСЂРѕРІР°РЅРёСЏ
 mathinline Color::Color(const Color & c)
 {
 	r = c.r;
@@ -346,16 +346,16 @@ mathinline Color::Color(const Color & c)
 
 
 //===========================================================
-//Операторы
+//РћРїРµСЂР°С‚РѕСЂС‹
 //===========================================================
 
-//Получить интенсивность rgb
+//РџРѕР»СѓС‡РёС‚СЊ РёРЅС‚РµРЅСЃРёРІРЅРѕСЃС‚СЊ rgb
 mathinline float Color::operator ~ () const
 {
 	return GetIntensity();
 }
 
-//Вернуть цвет с ограниченными компанентами 0..1
+//Р’РµСЂРЅСѓС‚СЊ С†РІРµС‚ СЃ РѕРіСЂР°РЅРёС‡РµРЅРЅС‹РјРё РєРѕРјРїР°РЅРµРЅС‚Р°РјРё 0..1
 mathinline Color Color::operator ! () const
 {
 	Color c(*this);
@@ -363,7 +363,7 @@ mathinline Color Color::operator ! () const
 	return c;
 }
 
-//Получить отрицательный цвет
+//РџРѕР»СѓС‡РёС‚СЊ РѕС‚СЂРёС†Р°С‚РµР»СЊРЅС‹Р№ С†РІРµС‚
 mathinline Color Color::operator - () const
 {
 	Color c(*this);
@@ -374,7 +374,7 @@ mathinline Color Color::operator - () const
 	return c;
 }
 
-//Присвоить rgb
+//РџСЂРёСЃРІРѕРёС‚СЊ rgb
 mathinline Color & Color::operator = (float f)
 {
 	r = f;
@@ -384,7 +384,7 @@ mathinline Color & Color::operator = (float f)
 	return *this;
 }
 
-//Присвоить rgb
+//РџСЂРёСЃРІРѕРёС‚СЊ rgb
 mathinline Color & Color::operator = (const Vector & v)
 {
 	r = v.x;
@@ -394,7 +394,7 @@ mathinline Color & Color::operator = (const Vector & v)
 	return *this;
 }
 
-//Присвоить
+//РџСЂРёСЃРІРѕРёС‚СЊ
 mathinline Color & Color::operator = (const Vector4 & v)
 {
 	r = v.x;
@@ -404,7 +404,7 @@ mathinline Color & Color::operator = (const Vector4 & v)
 	return *this;
 }
 
-//Распаковать и присвоить
+//Р Р°СЃРїР°РєРѕРІР°С‚СЊ Рё РїСЂРёСЃРІРѕРёС‚СЊ
 mathinline Color & Color::operator = (unsigned long c)
 {
 	r = ((unsigned char)(c >> 16))*(1.0f/255.0f);
@@ -414,7 +414,7 @@ mathinline Color & Color::operator = (unsigned long c)
 	return *this;
 }
 
-//Присвоить
+//РџСЂРёСЃРІРѕРёС‚СЊ
 mathinline Color & Color::operator = (const Color & c)
 {
 	r = c.r;
@@ -424,7 +424,7 @@ mathinline Color & Color::operator = (const Color & c)
 	return *this;
 }
 
-//Покомпонентное сложение с присваиванием rgb
+//РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СЃР»РѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј rgb
 mathinline Color & Color::operator += (float f)
 {
 	r += f;
@@ -433,7 +433,7 @@ mathinline Color & Color::operator += (float f)
 	return *this;
 }
 
-//Распаковать и сложить
+//Р Р°СЃРїР°РєРѕРІР°С‚СЊ Рё СЃР»РѕР¶РёС‚СЊ
 mathinline Color & Color::operator += (unsigned long c)
 {
 	Color clr(c);
@@ -441,7 +441,7 @@ mathinline Color & Color::operator += (unsigned long c)
 	return *this;
 }
 
-//Покомпонентное сложение с присваиванием rgb
+//РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СЃР»РѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј rgb
 mathinline Color & Color::operator += (const Vector & v)
 {
 	r += v.x;
@@ -450,7 +450,7 @@ mathinline Color & Color::operator += (const Vector & v)
 	return *this;
 }
 
-//Покомпонентное сложение с присваиванием
+//РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СЃР»РѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 mathinline Color & Color::operator += (const Vector4 & v)
 {
 	r += v.x;
@@ -460,7 +460,7 @@ mathinline Color & Color::operator += (const Vector4 & v)
 	return *this;
 }
 
-//Покомпонентное сложение с присваиванием
+//РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СЃР»РѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 mathinline Color & Color::operator += (const Color & c)
 {
 	r += c.r;
@@ -470,7 +470,7 @@ mathinline Color & Color::operator += (const Color & c)
 	return *this;
 }
 
-//Покомпонентное вычитание с присваиванием rgb
+//РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РІС‹С‡РёС‚Р°РЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј rgb
 mathinline Color & Color::operator -= (float f)
 {
 	r -= f;
@@ -479,7 +479,7 @@ mathinline Color & Color::operator -= (float f)
 	return *this;
 }
 
-///Распаковать и вычесть
+///Р Р°СЃРїР°РєРѕРІР°С‚СЊ Рё РІС‹С‡РµСЃС‚СЊ
 mathinline Color & Color::operator -= (unsigned long c)
 {
 	Color clr(c);
@@ -487,7 +487,7 @@ mathinline Color & Color::operator -= (unsigned long c)
 	return *this;
 }
 
-//Покомпонентное вычитание с присваиванием rgb
+//РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РІС‹С‡РёС‚Р°РЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј rgb
 mathinline Color & Color::operator -= (const Vector & v)
 {
 	r -= v.x;
@@ -496,7 +496,7 @@ mathinline Color & Color::operator -= (const Vector & v)
 	return *this;
 }
 
-//Покомпонентное вычитание с присваиванием
+//РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РІС‹С‡РёС‚Р°РЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 mathinline Color & Color::operator -= (const Vector4 & v)
 {
 	r -= v.x;
@@ -506,7 +506,7 @@ mathinline Color & Color::operator -= (const Vector4 & v)
 	return *this;
 }
 
-//Покомпонентное вычитание с присваиванием
+//РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РІС‹С‡РёС‚Р°РЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 mathinline Color & Color::operator -= (const Color & c)
 {
 	r -= c.r;
@@ -516,7 +516,7 @@ mathinline Color & Color::operator -= (const Color & c)
 	return *this;
 }
 
-//Покомпонентное умножение с присваиванием rgb
+//РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СѓРјРЅРѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј rgb
 mathinline Color & Color::operator *= (float f)
 {
 	r *= f;
@@ -525,7 +525,7 @@ mathinline Color & Color::operator *= (float f)
 	return *this;
 }
 
-///Распаковать и умножить
+///Р Р°СЃРїР°РєРѕРІР°С‚СЊ Рё СѓРјРЅРѕР¶РёС‚СЊ
 mathinline Color & Color::operator *= (unsigned long c)
 {
 	Color clr(c);
@@ -533,7 +533,7 @@ mathinline Color & Color::operator *= (unsigned long c)
 	return *this;
 }
 
-//Покомпонентное умножение с присваиванием rgb
+//РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СѓРјРЅРѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј rgb
 mathinline Color & Color::operator *= (const Vector & v)
 {
 	r *= v.x;
@@ -542,7 +542,7 @@ mathinline Color & Color::operator *= (const Vector & v)
 	return *this;
 }
 
-//Покомпонентное умножение с присваиванием
+//РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СѓРјРЅРѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 mathinline Color & Color::operator *= (const Vector4 & v)
 {
 	r *= v.x;
@@ -552,7 +552,7 @@ mathinline Color & Color::operator *= (const Vector4 & v)
 	return *this;
 }
 
-//Покомпонентное умножение с присваиванием
+//РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СѓРјРЅРѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 mathinline Color & Color::operator *= (const Color & c)
 {
 	r *= c.r;
@@ -562,7 +562,7 @@ mathinline Color & Color::operator *= (const Color & c)
 	return *this;
 }
 
-//Покомпонентное деление с присваиванием rgb
+//РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РґРµР»РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј rgb
 mathinline Color & Color::operator /= (float f)
 {
 	f = 1.0f/f;
@@ -572,7 +572,7 @@ mathinline Color & Color::operator /= (float f)
 	return *this;
 }
 
-//Распаковать и разделить
+//Р Р°СЃРїР°РєРѕРІР°С‚СЊ Рё СЂР°Р·РґРµР»РёС‚СЊ
 mathinline Color & Color::operator /= (unsigned long c)
 {
 	Color clr(c);
@@ -580,7 +580,7 @@ mathinline Color & Color::operator /= (unsigned long c)
 	return *this;
 }
 
-//Покомпонентное деление с присваиванием rgb
+//РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РґРµР»РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј rgb
 mathinline Color & Color::operator /= (const Vector & v)
 {
 	r /= v.x;
@@ -589,7 +589,7 @@ mathinline Color & Color::operator /= (const Vector & v)
 	return *this;
 }
 
-//Покомпонентное деление с присваиванием
+//РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РґРµР»РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 mathinline Color & Color::operator /= (const Vector4 & v)
 {
 	r /= v.x;
@@ -599,7 +599,7 @@ mathinline Color & Color::operator /= (const Vector4 & v)
 	return *this;
 }
 
-//Покомпонентное деление с присваиванием
+//РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РґРµР»РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 mathinline Color & Color::operator /= (const Color & c)
 {
 	r /= c.r;
@@ -610,14 +610,14 @@ mathinline Color & Color::operator /= (const Color & c)
 }
 
 
-//Скалярное перемножение rgb, результат копируется во все компоненты
+//РЎРєР°Р»СЏСЂРЅРѕРµ РїРµСЂРµРјРЅРѕР¶РµРЅРёРµ rgb, СЂРµР·СѓР»СЊС‚Р°С‚ РєРѕРїРёСЂСѓРµС‚СЃСЏ РІРѕ РІСЃРµ РєРѕРјРїРѕРЅРµРЅС‚С‹
 mathinline Color & Color::operator |= (const Color & c)
 {
 	r = g= b = a = r*c.r + g*c.g + b*c.b;
 	return *this;
 }
 
-//Получить упакованный цвет в long
+//РџРѕР»СѓС‡РёС‚СЊ СѓРїР°РєРѕРІР°РЅРЅС‹Р№ С†РІРµС‚ РІ long
 mathinline Color::operator dword () const
 {
 	Color c(*this);
@@ -627,7 +627,7 @@ mathinline Color::operator dword () const
 
 
 /*!\relates Color
-Покомпонентное сложение с присваиванием rgb
+РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СЃР»РѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј rgb
 */
 mathinline Color operator + (const Color & c, float f)
 {
@@ -637,7 +637,7 @@ mathinline Color operator + (const Color & c, float f)
 }
 
 /*!\relates Color
-Покомпонентное сложение с присваиванием rgb
+РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СЃР»РѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј rgb
 */
 mathinline Color operator + (float f, const Color & c)
 {
@@ -647,7 +647,7 @@ mathinline Color operator + (float f, const Color & c)
 }
 
 /*!\relates Color
-Распаковать и сложить
+Р Р°СЃРїР°РєРѕРІР°С‚СЊ Рё СЃР»РѕР¶РёС‚СЊ
 */
 mathinline Color operator + (const Color & c, unsigned long cl)
 {
@@ -657,7 +657,7 @@ mathinline Color operator + (const Color & c, unsigned long cl)
 }
 
 /*!\relates Color
-Распаковать и сложить
+Р Р°СЃРїР°РєРѕРІР°С‚СЊ Рё СЃР»РѕР¶РёС‚СЊ
 */
 mathinline Color operator + (unsigned long cl, const Color & c)
 {
@@ -667,7 +667,7 @@ mathinline Color operator + (unsigned long cl, const Color & c)
 }
 
 /*!\relates Color
-Покомпонентное сложение с присваиванием rgb
+РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СЃР»РѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј rgb
 */
 mathinline Color operator + (const Color & c, const Vector & v)
 {
@@ -677,7 +677,7 @@ mathinline Color operator + (const Color & c, const Vector & v)
 }
 
 /*!\relates Color
-Покомпонентное сложение с присваиванием rgb
+РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СЃР»РѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј rgb
 */
 mathinline Color operator + (const Vector & v, const Color & c)
 {
@@ -687,7 +687,7 @@ mathinline Color operator + (const Vector & v, const Color & c)
 }
 
 /*!\relates Color
-Покомпонентное сложение с присваиванием
+РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СЃР»РѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 */
 mathinline Color operator + (const Color & c, const Vector4 & v)
 {
@@ -697,7 +697,7 @@ mathinline Color operator + (const Color & c, const Vector4 & v)
 }
 
 /*!\relates Color
-Покомпонентное сложение с присваиванием
+РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СЃР»РѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 */
 mathinline Color operator + (const Vector4 & v, const Color & c)
 {
@@ -707,7 +707,7 @@ mathinline Color operator + (const Vector4 & v, const Color & c)
 }
 
 /*!\relates Color
-Покомпонентное сложение с присваиванием
+РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СЃР»РѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 */
 mathinline Color operator + (const Color & c1, const Color & c2)
 {
@@ -717,7 +717,7 @@ mathinline Color operator + (const Color & c1, const Color & c2)
 }
 
 /*!\relates Color
-Покомпонентное вычитание с присваиванием rgb
+РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РІС‹С‡РёС‚Р°РЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј rgb
 */
 mathinline Color operator - (const Color & c, float f)
 {
@@ -727,7 +727,7 @@ mathinline Color operator - (const Color & c, float f)
 }
 
 /*!\relates Color
-Покомпонентное вычитание с присваиванием rgb
+РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РІС‹С‡РёС‚Р°РЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј rgb
 */
 mathinline Color operator - (float f, const Color & c)
 {
@@ -737,7 +737,7 @@ mathinline Color operator - (float f, const Color & c)
 }
 
 /*!\relates Color
-Распаковать и вычесть
+Р Р°СЃРїР°РєРѕРІР°С‚СЊ Рё РІС‹С‡РµСЃС‚СЊ
 */
 mathinline Color operator - (const Color & c, unsigned long cl)
 {
@@ -747,7 +747,7 @@ mathinline Color operator - (const Color & c, unsigned long cl)
 }
 
 /*!\relates Color
-Распаковать и вычесть
+Р Р°СЃРїР°РєРѕРІР°С‚СЊ Рё РІС‹С‡РµСЃС‚СЊ
 */
 mathinline Color operator - (unsigned long cl, const Color & c)
 {
@@ -757,7 +757,7 @@ mathinline Color operator - (unsigned long cl, const Color & c)
 }
 
 /*!\relates Color
-Покомпонентное вычитание с присваиванием rgb
+РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РІС‹С‡РёС‚Р°РЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј rgb
 */
 mathinline Color operator - (const Color & c, const Vector & v)
 {
@@ -767,7 +767,7 @@ mathinline Color operator - (const Color & c, const Vector & v)
 }
 
 /*!\relates Color
-Покомпонентное вычитание с присваиванием rgb
+РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РІС‹С‡РёС‚Р°РЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј rgb
 */
 mathinline Color operator - (const Vector & v, const Color & c)
 {
@@ -777,7 +777,7 @@ mathinline Color operator - (const Vector & v, const Color & c)
 }
 
 /*!\relates Color
-Покомпонентное вычитание с присваиванием
+РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РІС‹С‡РёС‚Р°РЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 */
 mathinline Color operator - (const Color & c, const Vector4 & v)
 {
@@ -787,7 +787,7 @@ mathinline Color operator - (const Color & c, const Vector4 & v)
 }
 
 /*!\relates Color
-Покомпонентное вычитание с присваиванием
+РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РІС‹С‡РёС‚Р°РЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 */
 mathinline Color operator - (const Vector4 & v, const Color & c)
 {
@@ -797,7 +797,7 @@ mathinline Color operator - (const Vector4 & v, const Color & c)
 }
 
 /*!\relates Color
-Покомпонентное вычитание с присваиванием
+РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РІС‹С‡РёС‚Р°РЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 */
 mathinline Color operator - (const Color & c1, const Color & c2)
 {
@@ -807,7 +807,7 @@ mathinline Color operator - (const Color & c1, const Color & c2)
 }
 
 /*!\relates Color
-Покомпонентное умножение с присваиванием rgb
+РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СѓРјРЅРѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј rgb
 */
 mathinline Color operator * (const Color & c, float f)
 {
@@ -817,7 +817,7 @@ mathinline Color operator * (const Color & c, float f)
 }
 
 /*!\relates Color
-Покомпонентное умножение с присваиванием rgb
+РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СѓРјРЅРѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј rgb
 */
 mathinline Color operator * (float f, const Color & c)
 {
@@ -827,7 +827,7 @@ mathinline Color operator * (float f, const Color & c)
 }
 
 /*!\relates Color
-Распаковать и умножить
+Р Р°СЃРїР°РєРѕРІР°С‚СЊ Рё СѓРјРЅРѕР¶РёС‚СЊ
 */
 mathinline Color operator * (const Color & c, unsigned long cl)
 {
@@ -837,7 +837,7 @@ mathinline Color operator * (const Color & c, unsigned long cl)
 }
 
 /*!\relates Color
-Распаковать и умножить
+Р Р°СЃРїР°РєРѕРІР°С‚СЊ Рё СѓРјРЅРѕР¶РёС‚СЊ
 */
 mathinline Color operator * (unsigned long cl, const Color & c)
 {
@@ -847,7 +847,7 @@ mathinline Color operator * (unsigned long cl, const Color & c)
 }
 
 /*!\relates Color
-Покомпонентное умножение с присваиванием rgb
+РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СѓРјРЅРѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј rgb
 */
 mathinline Color operator * (const Color & c, const Vector & v)
 {
@@ -857,7 +857,7 @@ mathinline Color operator * (const Color & c, const Vector & v)
 }
 
 /*!\relates Color
-Покомпонентное умножение с присваиванием rgb
+РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СѓРјРЅРѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј rgb
 */
 mathinline Color operator * (const Vector & v, const Color & c)
 {
@@ -867,7 +867,7 @@ mathinline Color operator * (const Vector & v, const Color & c)
 }
 
 /*!\relates Color
-Покомпонентное умножение с присваиванием
+РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СѓРјРЅРѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 */
 mathinline Color operator * (const Color & c, const Vector4 & v)
 {
@@ -877,7 +877,7 @@ mathinline Color operator * (const Color & c, const Vector4 & v)
 }
 
 /*!\relates Color
-Покомпонентное умножение с присваиванием
+РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СѓРјРЅРѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 */
 mathinline Color operator * (const Vector4 & v, const Color & c)
 {
@@ -887,7 +887,7 @@ mathinline Color operator * (const Vector4 & v, const Color & c)
 }
 
 /*!\relates Color
-Покомпонентное умножение с присваиванием
+РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СѓРјРЅРѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 */
 mathinline Color operator * (const Color & c1, const Color & c2)
 {
@@ -897,7 +897,7 @@ mathinline Color operator * (const Color & c1, const Color & c2)
 }
 
 /*!\relates Color
-Покомпонентное деление с присваиванием rgb
+РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РґРµР»РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј rgb
 */
 mathinline Color operator / (const Color & c, float f)
 {
@@ -907,7 +907,7 @@ mathinline Color operator / (const Color & c, float f)
 }
 
 /*!\relates Color
-Покомпонентное деление с присваиванием rgb
+РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РґРµР»РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј rgb
 */
 mathinline Color operator / (float f, const Color & c)
 {
@@ -918,7 +918,7 @@ mathinline Color operator / (float f, const Color & c)
 
 
 /*!\relates Color
-Распаковать и разделить
+Р Р°СЃРїР°РєРѕРІР°С‚СЊ Рё СЂР°Р·РґРµР»РёС‚СЊ
 */
 mathinline Color operator / (const Color & c, unsigned long cl)
 {
@@ -928,7 +928,7 @@ mathinline Color operator / (const Color & c, unsigned long cl)
 }
 
 /*!\relates Color
-Распаковать и разделить
+Р Р°СЃРїР°РєРѕРІР°С‚СЊ Рё СЂР°Р·РґРµР»РёС‚СЊ
 */
 mathinline Color operator / (unsigned long cl, const Color & c)
 {
@@ -938,7 +938,7 @@ mathinline Color operator / (unsigned long cl, const Color & c)
 }
 
 /*!\relates Color
-Покомпонентное деление с присваиванием rgb
+РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РґРµР»РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј rgb
 */
 mathinline Color operator / (const Color & c, const Vector & v)
 {
@@ -948,7 +948,7 @@ mathinline Color operator / (const Color & c, const Vector & v)
 }
 
 /*!\relates Color
-Покомпонентное деление с присваиванием rgb
+РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РґРµР»РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј rgb
 */
 mathinline Color operator / (const Vector & v, const Color & c)
 {
@@ -958,7 +958,7 @@ mathinline Color operator / (const Vector & v, const Color & c)
 }
 
 /*!\relates Color
-Покомпонентное деление с присваиванием
+РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РґРµР»РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 */
 mathinline Color operator / (const Color & c, const Vector4 & v)
 {
@@ -968,7 +968,7 @@ mathinline Color operator / (const Color & c, const Vector4 & v)
 }
 
 /*!\relates Color
-Покомпонентное деление с присваиванием
+РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РґРµР»РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 */
 mathinline Color operator / (const Vector4 & v, const Color & c)
 {
@@ -978,7 +978,7 @@ mathinline Color operator / (const Vector4 & v, const Color & c)
 }
 
 /*!\relates Color
-Покомпонентное деление с присваиванием
+РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РґРµР»РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 */
 mathinline Color operator / (const Color & c1, const Color & c2)
 {
@@ -988,7 +988,7 @@ mathinline Color operator / (const Color & c1, const Color & c2)
 }
 
 /*!\relates Color
-Скалярное перемножение rgb, результат копируется во все компоненты
+РЎРєР°Р»СЏСЂРЅРѕРµ РїРµСЂРµРјРЅРѕР¶РµРЅРёРµ rgb, СЂРµР·СѓР»СЊС‚Р°С‚ РєРѕРїРёСЂСѓРµС‚СЃСЏ РІРѕ РІСЃРµ РєРѕРјРїРѕРЅРµРЅС‚С‹
 */
 mathinline Color operator | (const Color & c1, const Color & c2)
 {
@@ -999,10 +999,10 @@ mathinline Color operator | (const Color & c1, const Color & c2)
 
 
 //===========================================================
-//Преобразование
+//РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ
 //===========================================================
 
-//Ограничить диапазоном 0..1
+//РћРіСЂР°РЅРёС‡РёС‚СЊ РґРёР°РїР°Р·РѕРЅРѕРј 0..1
 mathinline void Color::Clamp()
 {
 	if(r < 0.0f) r = 0.0f;
@@ -1015,7 +1015,7 @@ mathinline void Color::Clamp()
 	if(a > 1.0f) a = 1.0f;
 }
 
-//Ограничить диапазоном
+//РћРіСЂР°РЅРёС‡РёС‚СЊ РґРёР°РїР°Р·РѕРЅРѕРј
 mathinline void Color::Clamp(float min, float max)
 {
 	if(r < min) r = min;
@@ -1028,7 +1028,7 @@ mathinline void Color::Clamp(float min, float max)
 	if(a > max) a = max;
 }
 
-//Сохранить минимальные компаненты
+//РЎРѕС…СЂР°РЅРёС‚СЊ РјРёРЅРёРјР°Р»СЊРЅС‹Рµ РєРѕРјРїР°РЅРµРЅС‚С‹
 mathinline void Color::Min(const Color & c)
 {
 	if(r > c.r) r = c.r;
@@ -1037,7 +1037,7 @@ mathinline void Color::Min(const Color & c)
 	if(a > c.a) a = c.a;
 }
 
-//Сохранить максимальные компаненты
+//РЎРѕС…СЂР°РЅРёС‚СЊ РјР°РєСЃРёРјР°Р»СЊРЅС‹Рµ РєРѕРјРїР°РЅРµРЅС‚С‹
 mathinline void Color::Max(const Color & c)
 {
 	if(r < c.r) r = c.r;
@@ -1046,7 +1046,7 @@ mathinline void Color::Max(const Color & c)
 	if(a < c.a) a = c.a;
 }
 
-//Яркость -1..1
+//РЇСЂРєРѕСЃС‚СЊ -1..1
 mathinline void Color::Brightness(float br)
 {
 	if(br > 1.0f) br = 1.0f;
@@ -1055,7 +1055,7 @@ mathinline void Color::Brightness(float br)
 	Clamp();
 }
 
-//Гамма -1..1
+//Р“Р°РјРјР° -1..1
 mathinline void Color::Gamma(float gm)
 {
 	Clamp();
@@ -1077,7 +1077,7 @@ mathinline void Color::Gamma(float gm)
 	}
 }
 
-//Контраст -1..1
+//РљРѕРЅС‚СЂР°СЃС‚ -1..1
 mathinline void Color::Contrast(float cn)
 {
 	if(cn > 1.0f) cn = 1.0f;
@@ -1090,7 +1090,7 @@ mathinline void Color::Contrast(float cn)
 
 }
 
-//Изменить сумарно яркость, гамму и контраст
+//РР·РјРµРЅРёС‚СЊ СЃСѓРјР°СЂРЅРѕ СЏСЂРєРѕСЃС‚СЊ, РіР°РјРјСѓ Рё РєРѕРЅС‚СЂР°СЃС‚
 mathinline void Color::Processed(float br, float gm, float cn)
 {
 	Contrast(cn);
@@ -1100,16 +1100,16 @@ mathinline void Color::Processed(float br, float gm, float cn)
 
 
 //===========================================================
-//Утилитные
+//РЈС‚РёР»РёС‚РЅС‹Рµ
 //===========================================================
 
-//Получить интенсивность
+//РџРѕР»СѓС‡РёС‚СЊ РёРЅС‚РµРЅСЃРёРІРЅРѕСЃС‚СЊ
 mathinline float Color::GetIntensity() const
 {
 	return r*0.299f + g*0.587f + b*0.114f;
 }
 
-//Нормализовать rgb
+//РќРѕСЂРјР°Р»РёР·РѕРІР°С‚СЊ rgb
 mathinline Color & Color::Normalize()
 {
 	float min = r;
@@ -1134,13 +1134,13 @@ mathinline Color & Color::Normalize()
 	return *this;
 }
 
-//Получить цветовую дистанцию между цветами
+//РџРѕР»СѓС‡РёС‚СЊ С†РІРµС‚РѕРІСѓСЋ РґРёСЃС‚Р°РЅС†РёСЋ РјРµР¶РґСѓ С†РІРµС‚Р°РјРё
 mathinline float Color::GetDistance(const Color & c) const
 {
 	return sqrtf(GetDistanceSqr(c));
 }
 
-//Получить цветовую дистанцию между цветами в квадрате
+//РџРѕР»СѓС‡РёС‚СЊ С†РІРµС‚РѕРІСѓСЋ РґРёСЃС‚Р°РЅС†РёСЋ РјРµР¶РґСѓ С†РІРµС‚Р°РјРё РІ РєРІР°РґСЂР°С‚Рµ
 mathinline float Color::GetDistanceSqr(const Color & c) const
 {
 	float dr = (r - c.r)*0.299f;
@@ -1149,7 +1149,7 @@ mathinline float Color::GetDistanceSqr(const Color & c) const
 	return dr*dr + dg*dg + db*db;
 }
 
-//Расчитать линейно интерполированное значение
+//Р Р°СЃС‡РёС‚Р°С‚СЊ Р»РёРЅРµР№РЅРѕ РёРЅС‚РµСЂРїРѕР»РёСЂРѕРІР°РЅРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ
 mathinline Color & Color::Lerp(const Color & c1, const Color & c2, float kBlend)
 {
 	r = c1.r + (c2.r - c1.r)*kBlend;
@@ -1158,7 +1158,7 @@ mathinline Color & Color::Lerp(const Color & c1, const Color & c2, float kBlend)
 	return *this;
 }
 
-//Расчитать линейно интерполированное значение
+//Р Р°СЃС‡РёС‚Р°С‚СЊ Р»РёРЅРµР№РЅРѕ РёРЅС‚РµСЂРїРѕР»РёСЂРѕРІР°РЅРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ
 mathinline Color & Color::LerpA(const Color & c1, const Color & c2, float kBlend)
 {
 	r = c1.r + (c2.r - c1.r)*kBlend;
@@ -1168,7 +1168,7 @@ mathinline Color & Color::LerpA(const Color & c1, const Color & c2, float kBlend
 	return *this;
 }
 
-//Умножить цвет на число
+//РЈРјРЅРѕР¶РёС‚СЊ С†РІРµС‚ РЅР° С‡РёСЃР»Рѕ
 mathinline Color & Color::MulColor(float k)
 {
 	r *= k;
@@ -1177,14 +1177,14 @@ mathinline Color & Color::MulColor(float k)
 	return *this;
 }
 
-//Умножить альфу на число
+//РЈРјРЅРѕР¶РёС‚СЊ Р°Р»СЊС„Сѓ РЅР° С‡РёСЃР»Рѕ
 mathinline Color & Color::MulAlpha(float k)
 {
 	a *= k;
 	return *this;
 }
 
-//Поменять местами r,b
+//РџРѕРјРµРЅСЏС‚СЊ РјРµСЃС‚Р°РјРё r,b
 mathinline Color & Color::SwapRB()
 {
 	float t = r;
@@ -1193,7 +1193,7 @@ mathinline Color & Color::SwapRB()
 	return *this;
 }
 
-//Получить запакованный цвет в dword
+//РџРѕР»СѓС‡РёС‚СЊ Р·Р°РїР°РєРѕРІР°РЅРЅС‹Р№ С†РІРµС‚ РІ dword
 mathinline unsigned long Color::GetDword() const
 {
 	long l;
@@ -1230,7 +1230,7 @@ mathinline unsigned long Color::GetDword() const
 	return color.c;
 }
 
-//Преобразование A8R8G8B8 в R5G6B5
+//РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ A8R8G8B8 РІ R5G6B5
 mathinline unsigned short Color::Make565(unsigned long color)
 {
 	//   11111000 11111100 11111000
@@ -1241,7 +1241,7 @@ mathinline unsigned short Color::Make565(unsigned long color)
 	return (unsigned short)(r | g | b);
 }
 
-//Преобразование A8R8G8B8 в X1R5G5B5
+//РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ A8R8G8B8 РІ X1R5G5B5
 mathinline unsigned short Color::Make555(unsigned long color)
 {
 	//   11111000 11111000 11111000
@@ -1252,7 +1252,7 @@ mathinline unsigned short Color::Make555(unsigned long color)
 	return (unsigned short)(r | g | b);
 }
 
-//Преобразование A8R8G8B8 в A1R5G5B5
+//РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ A8R8G8B8 РІ A1R5G5B5
 mathinline unsigned short Color::Make1555(unsigned long color)
 {
 	//   11111000 11111000 11111000
@@ -1264,7 +1264,7 @@ mathinline unsigned short Color::Make1555(unsigned long color)
 	return (unsigned short)(r | g | b | a);
 }
 
-//Преобразование A8R8G8B8 в A1R5G5B5
+//РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ A8R8G8B8 РІ A1R5G5B5
 mathinline unsigned short Color::Make4444(unsigned long color)
 {
 	//  11110000 11111000 11111000 11111000
@@ -1280,21 +1280,21 @@ mathinline unsigned short Color::Make4444(unsigned long color)
 //DColor
 //===========================================================
 
-//Присвоить
+//РџСЂРёСЃРІРѕРёС‚СЊ
 mathinline DColor & DColor::operator = (unsigned long color)
 {
 	c = color;
 	return *this;
 }
 
-//Присвоить
+//РџСЂРёСЃРІРѕРёС‚СЊ
 mathinline DColor & DColor::operator = (long color)
 {
 	c = (unsigned long)color;
 	return *this;
 }
 
-//Получить long
+//РџРѕР»СѓС‡РёС‚СЊ long
 mathinline DColor::operator dword () const
 {
 	return long(c);

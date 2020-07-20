@@ -86,7 +86,7 @@ public:
 		CVECTOR GetFirePos(CVECTOR & vFireDir);
 		CVECTOR GetFirePos(CVECTOR & vFireDir, float fDistance);
 		dword	GetBortIntactCannonsNum(dword dwBortIdx);
-		dword   GetBortDisabledCannonsNum(dword dwBortIdx); // ugeen 01.12.10 - пересчет отсутствующих орудий - нужно для орудийного рэндома
+		dword   GetBortDisabledCannonsNum(dword dwBortIdx); // ugeen 01.12.10 - РїРµСЂРµСЃС‡РµС‚ РѕС‚СЃСѓС‚СЃС‚РІСѓСЋС‰РёС… РѕСЂСѓРґРёР№ - РЅСѓР¶РЅРѕ РґР»СЏ РѕСЂСѓРґРёР№РЅРѕРіРѕ СЂСЌРЅРґРѕРјР°
 
 	// fire test
 		bool	isCanFirePos(CVECTOR & vFirePos);		// is we can fire to position
@@ -108,7 +108,7 @@ public:
 
 	// Cannon boom check
 		void	CheckCannonsBoom(float fTmpCannonDamage, const CVECTOR & vPnt);
-        void	ResearchCannons(); // boal 08.08.06 метод пересчета орудий на корабле
+        void	ResearchCannons(); // boal 08.08.06 РјРµС‚РѕРґ РїРµСЂРµСЃС‡РµС‚Р° РѕСЂСѓРґРёР№ РЅР° РєРѕСЂР°Р±Р»Рµ
         
 	// execute/realize section
 		void Execute(float fDeltaTime);

@@ -172,7 +172,7 @@
 #define AI_MESSAGE_SEALOAD							51043
 #define AI_MESSAGE_FORT_SET_LIGHTS					51044
 #define AI_MESSAGE_FORT_UNSET_LIGHTS				51045
-#define AI_MESSAGE_RESEARCH_CANNONS					51050  // boal 08.08.06 метод пересчета орудий на корабле SendMessage(&AISea, "la", AI_MESSAGE_RESEARCH_CANNONS, aCharacter)
+#define AI_MESSAGE_RESEARCH_CANNONS					51050  // boal 08.08.06 РјРµС‚РѕРґ РїРµСЂРµСЃС‡РµС‚Р° РѕСЂСѓРґРёР№ РЅР° РєРѕСЂР°Р±Р»Рµ SendMessage(&AISea, "la", AI_MESSAGE_RESEARCH_CANNONS, aCharacter)
 
 // cameras
 #define AI_CAMERAS_ADD_CAMERA					55000

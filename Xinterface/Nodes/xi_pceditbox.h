@@ -42,7 +42,7 @@ protected:
 	long	m_nMaxSize;			// max character quantity
 	long	m_nMaxWidth;		// max string width
 
-	long	m_nFirstShowCharacterIndex; // первый символ для вывода строки
+	long	m_nFirstShowCharacterIndex; // РїРµСЂРІС‹Р№ СЃРёРјРІРѕР» РґР»СЏ РІС‹РІРѕРґР° СЃС‚СЂРѕРєРё
 
 	CXI_IMAGE * m_pLeftImage;
 	CXI_IMAGE * m_pRightImage;

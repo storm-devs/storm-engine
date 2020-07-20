@@ -34,7 +34,7 @@
 
 #define MAST_IDENTIFY		"mast"
 #define MAST_FIRST			1
-#define TOPMAST_BEGIN		100		// начало нумерации стеньг (если есть)
+#define TOPMAST_BEGIN		100		// РЅР°С‡Р°Р»Рѕ РЅСѓРјРµСЂР°С†РёРё СЃС‚РµРЅСЊРі (РµСЃР»Рё РµСЃС‚СЊ)
 #define HULL_IDENTIFY		"shatter"
 
 class SHIP : public SHIP_BASE {
@@ -178,7 +178,7 @@ public:
 	bool		DelStrength(long iIdx);
 	
 	BOOL		BuildContour(CVECTOR *vContour,long &iNumVContour);
-	bool		BuildMasts(); // создаем мачты
+	bool		BuildMasts(); // СЃРѕР·РґР°РµРј РјР°С‡С‚С‹
 	bool		BuildHulls();
 
 	BOOL		Move(DWORD DeltaTime, BOOL bCollision);

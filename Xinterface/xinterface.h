@@ -36,7 +36,7 @@ protected:
 	char *	m_strDefHelpTextureFile;
 	FXYRECT	m_frectDefHelpTextureUV;
 
-    // параметры получаемые из INI-файла //
+    // РїР°СЂР°РјРµС‚СЂС‹ РїРѕР»СѓС‡Р°РµРјС‹Рµ РёР· INI-С„Р°Р№Р»Р° //
     //-------------------------------------
 	float   fScale;
 	XYRECT  GlobalScreenRect;

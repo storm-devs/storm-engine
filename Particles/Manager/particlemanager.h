@@ -26,7 +26,7 @@ class ParticleSystem;
 class DataSource;
 
 
-//Менеджер партикловых систем
+//РњРµРЅРµРґР¶РµСЂ РїР°СЂС‚РёРєР»РѕРІС‹С… СЃРёСЃС‚РµРј
 class ParticleManager : public IParticleManager
 {
 	struct CacheReloadedInfo
@@ -46,10 +46,10 @@ class ParticleManager : public IParticleManager
 
 	array<SystemDesc> Systems;
 
-	//Процессор для партиклов моделей
+	//РџСЂРѕС†РµСЃСЃРѕСЂ РґР»СЏ РїР°СЂС‚РёРєР»РѕРІ РјРѕРґРµР»РµР№
 	ModelProcessor* MDL_Processor;
 
-	//Процессор для партиклов плашек
+	//РџСЂРѕС†РµСЃСЃРѕСЂ РґР»СЏ РїР°СЂС‚РёРєР»РѕРІ РїР»Р°С€РµРє
 	BillBoardProcessor* BB_Processor; 
 
 	long pProjectTexture;
@@ -60,7 +60,7 @@ class ParticleManager : public IParticleManager
 	string ShortProjectName;
 	string TextureName;
 
-	//Сервис который родил систему
+	//РЎРµСЂРІРёСЃ РєРѕС‚РѕСЂС‹Р№ СЂРѕРґРёР» СЃРёСЃС‚РµРјСѓ
 	ParticleService* pService;
 
   VDX8RENDER* pRS;
@@ -93,41 +93,41 @@ protected:
 
 public:
 
-//Создание/удаление 
+//РЎРѕР·РґР°РЅРёРµ/СѓРґР°Р»РµРЅРёРµ 
  ParticleManager (ParticleService* service);
  virtual bool Release ();
 
-//Получить указатель на Render/FileService 
+//РџРѕР»СѓС‡РёС‚СЊ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° Render/FileService 
  virtual VDX8RENDER* Render ();
 
-//Открыть проект 
+//РћС‚РєСЂС‹С‚СЊ РїСЂРѕРµРєС‚ 
  virtual bool OpenProject (const char* FileName);
-//Закрыть проект 
+//Р—Р°РєСЂС‹С‚СЊ РїСЂРѕРµРєС‚ 
  virtual void CloseProject ();
  
-//Удалить из списка ресурсов (системная)
+//РЈРґР°Р»РёС‚СЊ РёР· СЃРїРёСЃРєР° СЂРµСЃСѓСЂСЃРѕРІ (СЃРёСЃС‚РµРјРЅР°СЏ)
  virtual void RemoveResource (IParticleSystem* pResource);
 
-//Исполнить партиклы 
+//РСЃРїРѕР»РЅРёС‚СЊ РїР°СЂС‚РёРєР»С‹ 
  virtual void Execute (float DeltaTime);
 
-//Узнать доступна система или нет 
+//РЈР·РЅР°С‚СЊ РґРѕСЃС‚СѓРїРЅР° СЃРёСЃС‚РµРјР° РёР»Рё РЅРµС‚ 
  virtual bool IsSystemAvailable (const char* FileName);
 
-//Получить глобальную текстуру проекта 
+//РџРѕР»СѓС‡РёС‚СЊ РіР»РѕР±Р°Р»СЊРЅСѓСЋ С‚РµРєСЃС‚СѓСЂСѓ РїСЂРѕРµРєС‚Р° 
  virtual long GetProjectTexture ();
-//Установить текстуру проекта
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ С‚РµРєСЃС‚СѓСЂСѓ РїСЂРѕРµРєС‚Р°
  virtual void SetProjectTexture (const char* FileName = NULL);
  
  
 
-//Получить имя проекта 
+//РџРѕР»СѓС‡РёС‚СЊ РёРјСЏ РїСЂРѕРµРєС‚Р° 
  virtual const char* GetProjectFileName ();
  
- //Создать партикловую систему из файла (файл должен быть в проекте!!!!!)
+ //РЎРѕР·РґР°С‚СЊ РїР°СЂС‚РёРєР»РѕРІСѓСЋ СЃРёСЃС‚РµРјСѓ РёР· С„Р°Р№Р»Р° (С„Р°Р№Р» РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РІ РїСЂРѕРµРєС‚Рµ!!!!!)
  virtual IParticleSystem* CreateParticleSystemEx (const char* FileName, const char* File, int Line);
 
- //Создать пустую партикловую систему, для редактора...
+ //РЎРѕР·РґР°С‚СЊ РїСѓСЃС‚СѓСЋ РїР°СЂС‚РёРєР»РѕРІСѓСЋ СЃРёСЃС‚РµРјСѓ, РґР»СЏ СЂРµРґР°РєС‚РѕСЂР°...
  virtual IParticleSystem* CreateEmptyParticleSystemEx  (const char* FileName, int Line);
 
  BillBoardProcessor * GetBBProcessor ();

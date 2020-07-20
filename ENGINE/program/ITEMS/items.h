@@ -20,10 +20,10 @@
 #define SPYGLASS_ITEM_TYPE		"spyglass"
 #define PATENT_ITEM_TYPE        "patent"
 #define CIRASS_ITEM_TYPE		"cirass"
-#define MAPS_ITEM_TYPE		    "maps"//Добавлена новая группа
+#define MAPS_ITEM_TYPE		    "maps"//Р”РѕР±Р°РІР»РµРЅР° РЅРѕРІР°СЏ РіСЂСѓРїРїР°
 
 // indexes for items` array
-#define ITEMS_QUANTITY			  201  // не забываем менять номер
+#define ITEMS_QUANTITY			  201  // РЅРµ Р·Р°Р±С‹РІР°РµРј РјРµРЅСЏС‚СЊ РЅРѕРјРµСЂ
 #define MAX_BUTTONS               64
 #define RANDITEMS_QUANTITY    	  45
 #define BUTTON_ACTIVATION_TIME	  1000

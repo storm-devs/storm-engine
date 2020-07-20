@@ -48,7 +48,7 @@ class WindField
 
 public:
 
-	//Конструирование поля на заданной области
+	//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ РїРѕР»СЏ РЅР° Р·Р°РґР°РЅРЅРѕР№ РѕР±Р»Р°СЃС‚Рё
 	WindField()
 	{
 		float minX = 0.0f, minZ = 0.0f, maxX = 1.0f, maxZ = 1.0f;
@@ -76,7 +76,7 @@ public:
 		dir[7].x = -1.0f; dir[7].y = 0.0f; dir[7].i = 0; dir[7].j = -1;
 	}
 
-	//Инициализация
+	//РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
 	void Init(float minX, float minZ, float maxX, float maxZ)
 	{
 		baseX = minX;
@@ -86,7 +86,7 @@ public:
 		Reinit();
 	}
 
-	//Переинициализация
+	//РџРµСЂРµРёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
 	void Reinit()
 	{
 		updateTime = 0.0f;
@@ -113,7 +113,7 @@ public:
 		}
 	}
 
-	//Сделать шаг вычислений
+	//РЎРґРµР»Р°С‚СЊ С€Р°Рі РІС‹С‡РёСЃР»РµРЅРёР№
 	__forceinline void Step(float dltTime)
 	{
 		switch(step)
@@ -134,13 +134,13 @@ public:
 		updateTime += dltTime;
 	}
 
-	//Получить ветер в заданной точке
+	//РџРѕР»СѓС‡РёС‚СЊ РІРµС‚РµСЂ РІ Р·Р°РґР°РЅРЅРѕР№ С‚РѕС‡РєРµ
 	__forceinline void GetWind(float x, float z, float & wx, float & wz)
 	{
-		//Получаем координаты в системе поля
+		//РџРѕР»СѓС‡Р°РµРј РєРѕРѕСЂРґРёРЅР°С‚С‹ РІ СЃРёСЃС‚РµРјРµ РїРѕР»СЏ
 		x = (x - baseX)*kX + 1.0f;
 		z = (z - baseZ)*kZ + 1.0f;
-		//Параметры для выборки из кадра
+		//РџР°СЂР°РјРµС‚СЂС‹ РґР»СЏ РІС‹Р±РѕСЂРєРё РёР· РєР°РґСЂР°
 		long fx1 = long(x);
 		long fx2 = fx1 + 1;
 		long fz1 = long(z);		
@@ -155,18 +155,18 @@ public:
 		if(fz1 >= WindFieldSize) fz1 = WindFieldSize - 1;
 		if(fz2 < 0) fz2 = 0;
 		if(fz2 >= WindFieldSize) fz2 = WindFieldSize - 1;
-		//Получаем следующий кадр
+		//РџРѕР»СѓС‡Р°РµРј СЃР»РµРґСѓСЋС‰РёР№ РєР°РґСЂ
 		long nextWind = curWind + 1;
 		if(nextWind > 2) nextWind = 0;
-		//Коэфициент блендинга между кадрами
+		//РљРѕСЌС„РёС†РёРµРЅС‚ Р±Р»РµРЅРґРёРЅРіР° РјРµР¶РґСѓ РєР°РґСЂР°РјРё
 		float k = updateTime*(1.0f/WindFieldUpdateTime);
 		if(k > 1.0f) k = 1.0f;
-		//Делаем выборку в первом кадре
+		//Р”РµР»Р°РµРј РІС‹Р±РѕСЂРєСѓ РІ РїРµСЂРІРѕРј РєР°РґСЂРµ
 		Wind tmp1, tmp2, res;
 		tmp1.Lerp(wind[curWind][fz1][fx1], wind[curWind][fz1][fx2], kx);
 		tmp2.Lerp(wind[curWind][fz2][fx1], wind[curWind][fz2][fx2], kx);
 		res.Lerp(tmp1, tmp2, kz);
-		//Делаем выборку в втором кадре и получаем результат
+		//Р”РµР»Р°РµРј РІС‹Р±РѕСЂРєСѓ РІ РІС‚РѕСЂРѕРј РєР°РґСЂРµ Рё РїРѕР»СѓС‡Р°РµРј СЂРµР·СѓР»СЊС‚Р°С‚
 		tmp1.Lerp(wind[nextWind][fz1][fx1], wind[nextWind][fz1][fx2], kx);
 		tmp2.Lerp(wind[nextWind][fz2][fx1], wind[nextWind][fz2][fx2], kx);
 		tmp2.Lerp(tmp1, tmp2, kz);
@@ -213,7 +213,7 @@ private:
 
 	void SubStep2()
 	{
-		//Переносим массив
+		//РџРµСЂРµРЅРѕСЃРёРј РјР°СЃСЃРёРІ
 		memcpy(tmp, field, sizeof(tmp));
 		curLine = 1;
 		step = cs_lines;
@@ -221,12 +221,12 @@ private:
 
 	void SubStep3()
 	{
-		//Количество линий, которое необходимо просчитать
+		//РљРѕР»РёС‡РµСЃС‚РІРѕ Р»РёРЅРёР№, РєРѕС‚РѕСЂРѕРµ РЅРµРѕР±С…РѕРґРёРјРѕ РїСЂРѕСЃС‡РёС‚Р°С‚СЊ
 		long needLines = long(updateTime*(float(WindFieldSize)/WindFieldUpdateTime) + 0.99f - curLine);
 		if(needLines < 1) needLines = 1;
 		for(; needLines > 0; needLines--)
 		{
-			//Считаем по линиям
+			//РЎС‡РёС‚Р°РµРј РїРѕ Р»РёРЅРёСЏРј
 			long i = curLine++;
 			if(curLine >= WindFieldSize)
 			{

@@ -124,7 +124,7 @@ protected:
 	};
 	array<AniModelDescr*> m_apAniModel;
 
-	// муха - перелетная птица!
+	// РјСѓС…Р° - РїРµСЂРµР»РµС‚РЅР°СЏ РїС‚РёС†Р°!
 	struct Particle
 	{
 		CVECTOR pos;

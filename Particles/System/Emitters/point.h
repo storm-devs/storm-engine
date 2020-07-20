@@ -10,12 +10,12 @@ class PointEmitter : public BaseEmitter
 protected:
 
  
-//Получить позицию для рождения новых партиклов  
+//РџРѕР»СѓС‡РёС‚СЊ РїРѕР·РёС†РёСЋ РґР»СЏ СЂРѕР¶РґРµРЅРёСЏ РЅРѕРІС‹С… РїР°СЂС‚РёРєР»РѕРІ  
   virtual Vector GetNewParticlePosition (float DeltaTime);
 
 public:
  
-	// Конструктор / деструктор
+	// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ / РґРµСЃС‚СЂСѓРєС‚РѕСЂ
   PointEmitter(ParticleSystem* pSystem);
   virtual ~PointEmitter();
   

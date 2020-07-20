@@ -28,19 +28,19 @@ public:
 
   struct FieldDesc
   {
-		//При конвертации используеться этот флажок
+		//РџСЂРё РєРѕРЅРІРµСЂС‚Р°С†РёРё РёСЃРїРѕР»СЊР·СѓРµС‚СЊСЃСЏ СЌС‚РѕС‚ С„Р»Р°Р¶РѕРє
 		bool MarkForDelete;
 
-		//Хэш имени
+		//РҐСЌС€ РёРјРµРЅРё
 		DWORD HashValue;
 
-		//Тип
+		//РўРёРї
     FieldType Type;
 
-		//Имя
+		//РРјСЏ
     string Name;
 
-		//Указатель
+		//РЈРєР°Р·Р°С‚РµР»СЊ
     void* pPointer;
   };
   
@@ -51,7 +51,7 @@ private:
 	void DeleteFieldData (const FieldList::FieldDesc& pData);
 
 
-	//=================== создание пустых аттрибутов
+	//=================== СЃРѕР·РґР°РЅРёРµ РїСѓСЃС‚С‹С… Р°С‚С‚СЂРёР±СѓС‚РѕРІ
 	void CreateEmptyBoolField (const char* Name, bool def_value);
 	void CreateEmptyFloatField (const char* Name, float def_value);
 	void CreateEmptyGraphField (const char* Name, float def_value_min, float def_value_max);
@@ -61,7 +61,7 @@ private:
 	void CreateEmptyColorField (const char* Name, DWORD def_value);
 
 
-	//=================== Прогрузка аттрибутов из файла
+	//=================== РџСЂРѕРіСЂСѓР·РєР° Р°С‚С‚СЂРёР±СѓС‚РѕРІ РёР· С„Р°Р№Р»Р°
 	void CreateBoolField (MemFile* pMemFile);
 	void CreateFloatField (MemFile* pMemFile);
 	void CreateGraphField (MemFile* pMemFile);
@@ -81,7 +81,7 @@ public:
 	void DelAll ();
 
   
-//Сохранить/загрузить...
+//РЎРѕС…СЂР°РЅРёС‚СЊ/Р·Р°РіСЂСѓР·РёС‚СЊ...
 	void Load (MemFile* File);
   void Write (MemFile* File);
 
@@ -111,8 +111,8 @@ public:
 
 
 
-//Конвертация ГАРАНТИРУЕТ, что в данном DataSource будут нужные поля
-//и не будет лишнего мусора...
+//РљРѕРЅРІРµСЂС‚Р°С†РёСЏ Р“РђР РђРќРўРР РЈР•Рў, С‡С‚Рѕ РІ РґР°РЅРЅРѕРј DataSource Р±СѓРґСѓС‚ РЅСѓР¶РЅС‹Рµ РїРѕР»СЏ
+//Рё РЅРµ Р±СѓРґРµС‚ Р»РёС€РЅРµРіРѕ РјСѓСЃРѕСЂР°...
 	void Convert (DataDescripion* pDataDescriptor);
 
 

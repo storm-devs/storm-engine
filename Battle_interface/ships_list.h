@@ -13,7 +13,7 @@ public:
 		bool	isDead;
 		long	relation;
 		long	characterIndex;
-		ATTRIBUTES * pAttr; // атрибуты корабля
+		ATTRIBUTES * pAttr; // Р°С‚СЂРёР±СѓС‚С‹ РєРѕСЂР°Р±Р»СЏ
 		long	maxHP;
 		long	maxSP;
 		long	maxCrew;
