@@ -19,9 +19,9 @@ public:
 	LocEagle();
 	virtual ~LocEagle();
 
-	//Инициализация
+	//РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
 	bool Init();
-	//Исполнение
+	//РСЃРїРѕР»РЅРµРЅРёРµ
 	void Execute(dword delta_time);
 
 

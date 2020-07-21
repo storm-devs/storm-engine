@@ -12,7 +12,7 @@
 #include "WorldMap.h"
 
 //============================================================================================
-//Êîíñòðóèðîâàíèå, äåñòðóêòóðèðîâàíèå
+//ÐšÐ¾Ð½ÑÑ‚Ñ€ÑƒÐ¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ, Ð´ÐµÑÑ‚Ñ€ÑƒÐºÑ‚ÑƒÑ€Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ
 //============================================================================================
 
 WdmDateLabel::WdmDateLabel()
@@ -46,7 +46,7 @@ WdmDateLabel::~WdmDateLabel()
 
 //============================================================================================
 
-//Ñ÷èòàòü èìÿ ôîíòà
+//Ð¡Ñ‡Ð¸Ñ‚Ð°Ñ‚ÑŒ Ð¸Ð¼Ñ Ñ„Ð¾Ð½Ñ‚Ð°
 void WdmDateLabel::SetAttributes(ATTRIBUTES * apnt)
 {
 	if(!apnt) return;
@@ -80,14 +80,14 @@ void WdmDateLabel::SetAttributes(ATTRIBUTES * apnt)
 
 //============================================================================================
 
-//Îòðèñîâêà
+//ÐžÑ‚Ñ€Ð¸ÑÐ¾Ð²ÐºÐ°
 void WdmDateLabel::LRender(VDX8RENDER * rs)
 {
 	float w, h;
 	wdmObjects->GetVPSize(w, h);
-	//Áóôåð äëÿ ðèñîâàíèÿ ïëàøåê
+	//Ð‘ÑƒÑ„ÐµÑ€ Ð´Ð»Ñ Ñ€Ð¸ÑÐ¾Ð²Ð°Ð½Ð¸Ñ Ð¿Ð»Ð°ÑˆÐµÐº
 	Vertex buf[(3*2)*2];
-	//Ïëàøêà ñ íàäïèñüþ Map
+	//ÐŸÐ»Ð°ÑˆÐºÐ° Ñ Ð½Ð°Ð´Ð¿Ð¸ÑÑŒÑŽ Map
 	rs->TextureSet(0, txTextBar);
 	FillRectCoord(buf, (w - 1024)*0.5f, 3, 1024, 64.0f);
 	FillRectUV(buf, 0.0f, 0.0f, 1.0f, 1.0f);
@@ -95,7 +95,7 @@ void WdmDateLabel::LRender(VDX8RENDER * rs)
 	//DrawRects(buf, 1, "WdmDrawMapBlend");
 
 	
-	//Ïîäëîæêà ñ íåáîì
+	//ÐŸÐ¾Ð´Ð»Ð¾Ð¶ÐºÐ° Ñ Ð½ÐµÐ±Ð¾Ð¼
 	float kDef = rs->GetHeightDeformator();
 	float cw = 128.0f;
 	float ch = 64.0f*kDef;
@@ -112,7 +112,7 @@ void WdmDateLabel::LRender(VDX8RENDER * rs)
 	rs->TextureSet(0, txSkyClockFrame);
 	FillRectUV(buf, 0.0f, 0.0f, 1.0f, 1.0f);
 	DrawRects(buf, 1, "WdmInterfaceDrawBlend");
-	//Ïèøåì äàòó
+	//ÐŸÐ¸ÑˆÐµÐ¼ Ð´Ð°Ñ‚Ñƒ
 	long font = dateFont >= 0 ? dateFont : FONT_DEFAULT;
 	long fh = rs->CharHeight(font);
 	float fy = ch - fh*2;

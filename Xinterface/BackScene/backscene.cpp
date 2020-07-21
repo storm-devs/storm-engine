@@ -126,7 +126,7 @@ InterfaceBackScene::InterfaceBackScene() :
 
 	m_nFlareTexture = -1;
 
-	//Мухи
+	//РњСѓС…Рё
 	flys = null;
 	numFlys = 0;
 	maxFlys = 0;
@@ -218,7 +218,7 @@ void InterfaceBackScene::Execute(dword Delta_Time)
 	m_pRS->SetCamera( &m_vCamPos, &m_vCamAng, m_fCamPerspective );
 
 	if( nOldMenuIndex != m_nSelectMenuIndex )
-		api->Event(ISOUND_EVENT,"l",2); // выбор нового нода
+		api->Event(ISOUND_EVENT,"l",2); // РІС‹Р±РѕСЂ РЅРѕРІРѕРіРѕ РЅРѕРґР°
 
 /*	for( long n=0; n<m_apAniModel; n++ )
 	{
@@ -233,13 +233,13 @@ void InterfaceBackScene::Realize(dword Delta_Time)
 
 	ProcessedFlys( Delta_Time*.001f );
 
-	// отрисовка модели
+	// РѕС‚СЂРёСЃРѕРІРєР° РјРѕРґРµР»Рё
 	if( m_pModel )
 	{
 		SetLight();
 		m_pRS->SetRenderState(D3DRS_LIGHTING, true);
 		m_pModel->Realize(Delta_Time);
-		for( n=0; n<m_aLights; n++ ) // показать все фонари
+		for( n=0; n<m_aLights; n++ ) // РїРѕРєР°Р·Р°С‚СЊ РІСЃРµ С„РѕРЅР°СЂРё
 			if( m_aLights[n]->pModel )
 			{
 				m_aLights[n]->pModel->Realize(Delta_Time);
@@ -260,7 +260,7 @@ void InterfaceBackScene::Realize(dword Delta_Time)
 		RestoreLight();
 	}
 
-	// отрисовка пунктов меню
+	// РѕС‚СЂРёСЃРѕРІРєР° РїСѓРЅРєС‚РѕРІ РјРµРЅСЋ
 	for( n=0; n<m_aMenuDescr; n++ )
 	{
 		if( n==m_nSelectMenuIndex && m_aMenuDescr[n]->pActive )
@@ -675,7 +675,7 @@ void InterfaceBackScene::SetLight()
 			BOOL bTmp;
 			for( ; nFreeLightIndex<(long)d3dcaps.MaxActiveLights; nFreeLightIndex++ )
 				if( m_pRS->GetLightEnable(nFreeLightIndex,&bTmp) && bTmp==false ) break;
-			if( nFreeLightIndex<(long)d3dcaps.MaxActiveLights ) { // нашли свободный источник
+			if( nFreeLightIndex<(long)d3dcaps.MaxActiveLights ) { // РЅР°С€Р»Рё СЃРІРѕР±РѕРґРЅС‹Р№ РёСЃС‚РѕС‡РЅРёРє
 				m_aLights[n]->indexLight = nFreeLightIndex;
 				m_pRS->GetLight( nFreeLightIndex, &m_aLights[n]->lightOldSource );
 				m_pRS->LightEnable(nFreeLightIndex,true);
@@ -714,7 +714,7 @@ void InterfaceBackScene::FlareShow(long idx)
 
 	/*	float d = dx*dx + dy*dy + dz*dz;
 
-	//Дистанция
+	//Р”РёСЃС‚Р°РЅС†РёСЏ
 	float dist = sqrtf(d);
 	d = dist / m_fFlareRange;
 	if(d > 1.0f) d = 1.0f;
@@ -722,22 +722,22 @@ void InterfaceBackScene::FlareShow(long idx)
 	if(d < 0.3f) alpha *= 0.2f + 0.8f*d/0.3f;
 	if(d > 0.4f){ alpha *= 1.0f - (d - 0.4f)/0.6f; alpha *= alpha; }
 	alpha *= 255.f;//ls.corona*255.0f;
-	//Коэфициент отклонения
+	//РљРѕСЌС„РёС†РёРµРЅС‚ РѕС‚РєР»РѕРЅРµРЅРёСЏ
 	d = 0.f;//ls.i*0.4f;
 	if(d < -0.1f) d = -0.1f;
 	if(d > 0.1f) d = 0.1f;
 	d += 1.0f;
-	//Текущий размер
+	//РўРµРєСѓС‰РёР№ СЂР°Р·РјРµСЂ
 	float size = d*m_fFlareSize;
-	//Прозрачность
+	//РџСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ
 	alpha *= d;
 	if(alpha < 0.0f) alpha = 0.0f;
 	if(alpha > 255.0f) alpha = 255.0f;
-	//Позиция
+	//РџРѕР·РёС†РёСЏ
 	pos = camMtx * m_vFlarePos;
-	//Цвет
+	//Р¦РІРµС‚
 	dword c = dword(alpha); c |= (c << 24) | (c << 16) | (c << 8);*/
-	//Угол поворота
+	//РЈРіРѕР» РїРѕРІРѕСЂРѕС‚Р°
 	float cs, sn;
 	float _cs = (dx*camMtx.Vx().z + dz*camMtx.Vz().z);
 	float _sn = (dx*camMtx.Vz().z - dz*camMtx.Vx().z);
@@ -753,7 +753,7 @@ void InterfaceBackScene::FlareShow(long idx)
 		sn = 0.0f;
 	}
 
-	//Позиция
+	//РџРѕР·РёС†РёСЏ
 	pos = m_vFlarePos;
 
 	dword c = m_aLights[idx]->dwFlareColor;
@@ -878,25 +878,25 @@ void InterfaceBackScene::InitStaticModel( ATTRIBUTES* pAParam )
 }
 
 //---------------------------------------------------
-//Мухи у фанарей
+//РњСѓС…Рё Сѓ С„Р°РЅР°СЂРµР№
 //---------------------------------------------------
 void InterfaceBackScene::AddLampFlys(CVECTOR & pos)
 {
-	//Занимаем массив
+	//Р—Р°РЅРёРјР°РµРј РјР°СЃСЃРёРІ
 	if(numFlys >= maxFlys)
 	{
 		maxFlys += 8;
 		flys = (LampFlys *)RESIZE(flys, maxFlys*sizeof(LampFlys));
 	}
-	//Заполняем параметры
-	//Общие
+	//Р—Р°РїРѕР»РЅСЏРµРј РїР°СЂР°РјРµС‚СЂС‹
+	//РћР±С‰РёРµ
 	flys[numFlys].pos = pos;
 	flys[numFlys].radius = 0.2f;//0.6f;
 	flys[numFlys].start = numFly;
 	flys[numFlys].num = 4 + (rand() & 4);//1 + (rand() & 7);
 	numFly += flys[numFlys].num;
 	fly = (ParticleFly *)RESIZE(fly, numFly*sizeof(ParticleFly));
-	//Каждой мухи
+	//РљР°Р¶РґРѕР№ РјСѓС…Рё
 	for(long i = 0; i < flys[numFlys].num; i++)
 	{
 		ParticleFly & f = fly[flys[numFlys].start + i];
@@ -926,10 +926,10 @@ void InterfaceBackScene::ProcessedFlys(float dltTime)
 	float dax = dltTime*1.3f;
 	float day = dltTime*1.4f;
 	float da = dltTime*5.6f;
-	//Расчитываем
+	//Р Р°СЃС‡РёС‚С‹РІР°РµРј
 	for(long i = 0; i < numFlys; i++)
 	{
-		//Коэфициент видимости
+		//РљРѕСЌС„РёС†РёРµРЅС‚ РІРёРґРёРјРѕСЃС‚Рё
 		CVECTOR dir = cam - flys[i].pos;
 		float k = ~dir;
 		if(k > 400.0f) continue;
@@ -938,23 +938,23 @@ void InterfaceBackScene::ProcessedFlys(float dltTime)
 		k = k/20.0f;
 		k = 3.0f*(1.0f - k);
 		if(k > 1.0f) k = 1.0f;		
-		//Обновляем мух
+		//РћР±РЅРѕРІР»СЏРµРј РјСѓС…
 		ParticleFly * fl = fly + flys[i].start;
 		for(long j = 0; j < flys[i].num; j++)
 		{
 			ParticleFly & f = fl[j];
-			//Углы
+			//РЈРіР»С‹
 			f.ax += dax*f.kx; f.ay += day*f.ky; f.a += da*f.k;
-			//Радиус
+			//Р Р°РґРёСѓСЃ
 			float r = 1.0f + 0.5f*sinf(f.a) + 0.2f*cosf(f.a*f.k*2.1f);
 			r *= flys[i].radius;
-			//Позиция
+			//РџРѕР·РёС†РёСЏ
 			f.pos.x = flys[i].pos.x + r*sinf(f.ax)*sinf(f.ay);
 			f.pos.y = flys[i].pos.y + r*cosf(f.ax)*cosf(f.ay);
 			f.pos.z = flys[i].pos.z + r*sinf(f.ax)*cosf(f.ay);
-			//Прозрачность
+			//РџСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ
 			f.alpha = k*255.0f;
-			//Цвет
+			//Р¦РІРµС‚
 			CVECTOR tmp = f.pos - flys[i].pos;
 			float dst = sqrtf(~tmp);
 			if(dst > 0.0f) tmp *= 1.0f/dst;
@@ -969,14 +969,14 @@ void InterfaceBackScene::ProcessedFlys(float dltTime)
 			if(cs > 1.0f) cs = 1.0f;
 			f.color = long(cs*255.0f);
 			f.color |= (f.color << 16) | (f.color << 8);
-			//Кадр
+			//РљР°РґСЂ
 			f.frame += dltTime*f.k*25.0f;
 			if(f.frame >= 4.0f) f.frame -= 4.0f;
-			//Угл
+			//РЈРіР»
 			f.angle += dltTime*f.k*3.0f;
 		}
 	}
-	//Рисуем
+	//Р РёСЃСѓРµРј
 	DrawParticles(fly, numFly, sizeof(ParticleFly), flyTex, "LocFly", true, 4);
 }
 

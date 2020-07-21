@@ -22,8 +22,8 @@ public:
 	dword AttributeChanged(ATTRIBUTES * pAttr);
 
 protected:
-	//BATTLE_COMMAND		CommandMenu; // иконки команд и целеуказаний в боевом меню
-	BATTLE_NAVIGATOR	BattleNavigator; // навигационные иконки
+	//BATTLE_COMMAND		CommandMenu; // РёРєРѕРЅРєРё РєРѕРјР°РЅРґ Рё С†РµР»РµСѓРєР°Р·Р°РЅРёР№ РІ Р±РѕРµРІРѕРј РјРµРЅСЋ
+	BATTLE_NAVIGATOR	BattleNavigator; // РЅР°РІРёРіР°С†РёРѕРЅРЅС‹Рµ РёРєРѕРЅРєРё
 	MESSAGE_ICONS *		m_pMessageIcons;
 	BIShipIcon*			m_pShipIcon;
 	bool	m_bShowCommandMenu;

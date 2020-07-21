@@ -44,7 +44,7 @@ BATTLE_NAVIGATOR::BATTLE_NAVIGATOR()
 	m_fCurScale = 1.f;
 	m_bYesIsland = false;
 
-	// текстуры
+	// С‚РµРєСЃС‚СѓСЂС‹
 	m_idCompasTex = -1;
 	m_idSpeedTex = -1;
 	m_idCannonTex = -1;
@@ -54,7 +54,7 @@ BATTLE_NAVIGATOR::BATTLE_NAVIGATOR()
 	m_idWindTex = -1;
 	m_idChargeBackTexture = -1;
 
-	// буферы
+	// Р±СѓС„РµСЂС‹
 	m_idEmptyVBuf = -1;
 	m_idMapVBuf = -1;
 	m_idFireZoneVBuf = -1;
@@ -86,10 +86,10 @@ void BATTLE_NAVIGATOR::Draw()
 	CMatrix matw;
 	rs->SetTransform(D3DTS_WORLD,(D3DXMATRIX*)&matw);
 
-	// градиентная подложка
+	// РіСЂР°РґРёРµРЅС‚РЅР°СЏ РїРѕРґР»РѕР¶РєР°
 	//rs->DrawPrimitive(D3DPT_TRIANGLEFAN,m_idGradBackVBuf,sizeof(BI_COLORONLY_VERTEX),0,1,"battle_only_color");
 
-	// остров
+	// РѕСЃС‚СЂРѕРІ
 	rs->SetTextureStageState(0,D3DTSS_ADDRESSU,D3DTADDRESS_CLAMP);
 	rs->SetTextureStageState(0,D3DTSS_ADDRESSV,D3DTADDRESS_CLAMP);
 	if(m_idIslandTexture>=0)
@@ -106,32 +106,32 @@ void BATTLE_NAVIGATOR::Draw()
 	rs->SetTextureStageState(0,D3DTSS_ADDRESSU,D3DTADDRESS_WRAP);
 	rs->SetTextureStageState(0,D3DTSS_ADDRESSV,D3DTADDRESS_WRAP);
 
-	// корабли
+	// РєРѕСЂР°Р±Р»Рё
 	if(m_nvShips>0)
 		rs->DrawPrimitive(D3DPT_TRIANGLELIST,m_idShipsVBuf,sizeof(BI_COLORONLY_VERTEX),0,m_nvShips/3,"battle_only_color");
 
-	// бабочка зоны поражения пушек
+	// Р±Р°Р±РѕС‡РєР° Р·РѕРЅС‹ РїРѕСЂР°Р¶РµРЅРёСЏ РїСѓС€РµРє
 	if(m_idFireZoneVBuf!=-1L)
 	{
 		rs->SetRenderState(D3DRS_TEXTUREFACTOR,m_dwFireZoneColor);
 		rs->DrawPrimitive(D3DPT_TRIANGLEFAN,m_idFireZoneVBuf,sizeof(BI_NOTEXTURE_VERTEX),0,FIRERANGE_QUANTITY-2,"battle_only_tfactor");
 	}
 
-	// компас и подложка
+	// РєРѕРјРїР°СЃ Рё РїРѕРґР»РѕР¶РєР°
 	if(m_idEmptyVBuf!=-1L)
 	{
-		// подложка под миникарту
+		// РїРѕРґР»РѕР¶РєР° РїРѕРґ РјРёРЅРёРєР°СЂС‚Сѓ
 		rs->TextureSet(0,m_idEmptyTex);
 		rs->DrawPrimitive(D3DPT_TRIANGLESTRIP,m_idEmptyVBuf,sizeof(BI_ONETEXTURE_VERTEX),0,2,"battle_rectangle");
-		// подложка под заряд и скорость
+		// РїРѕРґР»РѕР¶РєР° РїРѕРґ Р·Р°СЂСЏРґ Рё СЃРєРѕСЂРѕСЃС‚СЊ
 		rs->TextureSet(0,m_idChargeBackTexture);
 		rs->DrawPrimitive(D3DPT_TRIANGLESTRIP,m_idEmptyVBuf,sizeof(BI_ONETEXTURE_VERTEX),4,2,"battle_rectangle");
-		// компас
+		// РєРѕРјРїР°СЃ
 		rs->TextureSet(0,m_idCompasTex);
 		rs->DrawPrimitive(D3DPT_TRIANGLESTRIP,m_idEmptyVBuf,sizeof(BI_ONETEXTURE_VERTEX),8,2,"battle_rectangle");
 	}
 
-	// показатель заряда пушек
+	// РїРѕРєР°Р·Р°С‚РµР»СЊ Р·Р°СЂСЏРґР° РїСѓС€РµРє
 	rs->TextureSet(0,m_idCannonTex);
 	n = 0;
 	if(m_nvCannonCharge>0)
@@ -152,23 +152,23 @@ void BATTLE_NAVIGATOR::Draw()
 		rs->DrawPrimitive(D3DPT_TRIANGLEFAN,m_idCannonVBuf,sizeof(BI_ONETEXTURE_VERTEX),n,m_nvCannonDamage,"battle_tf_rectangle");
 	}
 
-	// показатель скорости
+	// РїРѕРєР°Р·Р°С‚РµР»СЊ СЃРєРѕСЂРѕСЃС‚Рё
 	/*rs->TextureSet(0,m_idSpeedTex);
 	if(m_nvSpeed>0)
 		rs->DrawPrimitive(D3DPT_TRIANGLEFAN,m_idSpeedVBuf,sizeof(BI_ONETEXTURE_VERTEX),0,m_nvSpeed,"battle_rectangle");*/
 
-	// показать стрелку направления ветра
+	// РїРѕРєР°Р·Р°С‚СЊ СЃС‚СЂРµР»РєСѓ РЅР°РїСЂР°РІР»РµРЅРёСЏ РІРµС‚СЂР°
 	if(m_idEmptyVBuf!=-1L)
 	{
 		rs->TextureSet(0,m_idWindTex);
 		rs->DrawPrimitive(D3DPT_TRIANGLESTRIP,m_idEmptyVBuf,sizeof(BI_ONETEXTURE_VERTEX),12,2,"battle_rectangle");
 	}
 
-	// отпечатать скорость ветра и корабля
+	// РѕС‚РїРµС‡Р°С‚Р°С‚СЊ СЃРєРѕСЂРѕСЃС‚СЊ РІРµС‚СЂР° Рё РєРѕСЂР°Р±Р»СЏ
 	rs->ExtPrint(m_speedFont,0xFFFFFFFF,0,ALIGN_CENTER,true,m_fFontScale,0,0,m_xWindSpeed,m_ySpeedShow,"%.1f",m_fWindStrength);
 	rs->ExtPrint(m_speedFont,0xFFFFFFFF,0,ALIGN_CENTER,true,m_fFontScale,0,0,m_xShipSpeed,m_ySpeedShow,"%.1f",m_fShipSpeed);
 
-	// показать текущий заряд
+	// РїРѕРєР°Р·Р°С‚СЊ С‚РµРєСѓС‰РёР№ Р·Р°СЂСЏРґ
 	if(m_curCharge>=0)
 	{
 		rs->TextureSet(0,m_idChargeTexture);
@@ -354,9 +354,9 @@ void BATTLE_NAVIGATOR::Init(VDX8RENDER *RenderService)
 	m_dwReadyCannon = ARGB(255,0,255,0);
 	m_dwDamagedCannon = ARGB(255,64,64,64);
 
-	// максимальная скорость ветра
+	// РјР°РєСЃРёРјР°Р»СЊРЅР°СЏ СЃРєРѕСЂРѕСЃС‚СЊ РІРµС‚СЂР°
 	m_fWindMaxStrength = api->Entity_GetAttributeAsFloat(&idBattleInterface,"MaxWind",30.f);
-	// и корабля
+	// Рё РєРѕСЂР°Р±Р»СЏ
 	m_fMaxShipSpeed = api->Entity_GetAttributeAsFloat(&idBattleInterface,"MaxShipSpeed",20.f);
 
 	ATTRIBUTES * pARoot = api->Entity_GetAttributeClass(&idBattleInterface,"navigation");
@@ -369,7 +369,7 @@ void BATTLE_NAVIGATOR::Init(VDX8RENDER *RenderService)
 	m_XNavigator = GetLongFromAttr(pARoot, "rightPos", 640) - m_NavigationWidth/2;
 	m_YNavigator = GetLongFromAttr(pARoot, "topPos", 0) + m_NavigationHeight/2;
 
-	// радиус видимости на миникарте
+	// СЂР°РґРёСѓСЃ РІРёРґРёРјРѕСЃС‚Рё РЅР° РјРёРЅРёРєР°СЂС‚Рµ
 	m_fWorldRad = GetFloatFromAttr(pARoot, "horizontRadius", 400.f);
 	m_fMinScale = GetFloatFromAttr(pARoot, "minScale", .01f);
 	m_fMaxScale = GetFloatFromAttr(pARoot, "maxScale", 2.f);
@@ -379,25 +379,25 @@ void BATTLE_NAVIGATOR::Init(VDX8RENDER *RenderService)
 	m_windWidth = GetLongFromAttr(pARoot, "windWidth", 20);
 	m_windHeight = GetLongFromAttr(pARoot, "windHeight", 158);
 
-	// цвет заряженных пушек
+	// С†РІРµС‚ Р·Р°СЂСЏР¶РµРЅРЅС‹С… РїСѓС€РµРє
 	m_dwReadyCannon = GetLongFromAttr(pARoot, "argbReadyCannonColor", m_dwReadyCannon);
-	// цвет заряжающихся пушек
+	// С†РІРµС‚ Р·Р°СЂСЏР¶Р°СЋС‰РёС…СЃСЏ РїСѓС€РµРє
 	m_dwChargeCannon = GetLongFromAttr(pARoot, "argbChargeCannonColor", m_dwChargeCannon);
-	// цвет поврежденных пушек
+	// С†РІРµС‚ РїРѕРІСЂРµР¶РґРµРЅРЅС‹С… РїСѓС€РµРє
 	m_dwDamagedCannon = GetLongFromAttr(pARoot, "argbDamageCannonColor", m_dwDamagedCannon);
-	// цвет моря
+	// С†РІРµС‚ РјРѕСЂСЏ
 	m_dwSeaColor = GetLongFromAttr(pARoot, "argbSeaColor", ARGB(255,255,255,255));
-	// цвет зоны обстрела пушек
+	// С†РІРµС‚ Р·РѕРЅС‹ РѕР±СЃС‚СЂРµР»Р° РїСѓС€РµРє
 	m_dwFireZoneColor = GetLongFromAttr(pARoot, "argbFireZoneColor", ARGB(255,255,255,255));
-	// цвет вражеского корабля
+	// С†РІРµС‚ РІСЂР°Р¶РµСЃРєРѕРіРѕ РєРѕСЂР°Р±Р»СЏ
 	m_dwEnemyShipColor = GetLongFromAttr(pARoot, "argbEnemyShipColor", ARGB(255,255,255,255));
-	// цвет своего корабля
+	// С†РІРµС‚ СЃРІРѕРµРіРѕ РєРѕСЂР°Р±Р»СЏ
 	m_dwFrendShipColor = GetLongFromAttr(pARoot, "argbFrendShipColor", ARGB(255,255,255,255));
-	// цвет нейтрального корабля
+	// С†РІРµС‚ РЅРµР№С‚СЂР°Р»СЊРЅРѕРіРѕ РєРѕСЂР°Р±Р»СЏ
 	m_dwNeutralShipColor = GetLongFromAttr(pARoot, "argbNeutralShipColor", ARGB(255,255,255,255));
-	// цвет тонущего корабля
+	// С†РІРµС‚ С‚РѕРЅСѓС‰РµРіРѕ РєРѕСЂР°Р±Р»СЏ
 	m_dwDeadShipColor = GetLongFromAttr(pARoot, "argbDeadShipColor", ARGB(255,255,255,255));
-	// цвет градиента бэка
+	// С†РІРµС‚ РіСЂР°РґРёРµРЅС‚Р° Р±СЌРєР°
 	m_dwBackGradColor1 = GetLongFromAttr(pARoot, "argbBackMaxColor", ARGB(255,0,0,128));
 	m_dwBackGradColor2 = GetLongFromAttr(pARoot, "argbBackMinColor", ARGB(55,0,0,128));
 
@@ -457,14 +457,14 @@ void BATTLE_NAVIGATOR::Init(VDX8RENDER *RenderService)
 	m_fBegAnglWindSpeed = (float)GetLongFromAttr(pARoot,"windSpeedBegAngle",0)/180.f*PI;
 	m_fCurAnglWindSpeed = m_fEndAnglWindSpeed = (float)GetLongFromAttr(pARoot,"windSpeedEndAngle",0)/180.f*PI;
 
-	// подложка под тип зарядов и скорость
+	// РїРѕРґР»РѕР¶РєР° РїРѕРґ С‚РёРї Р·Р°СЂСЏРґРѕРІ Рё СЃРєРѕСЂРѕСЃС‚СЊ
 	m_ChargeBackSize.x = GetLongFromAttr( pARoot, "chargeback_width", 128 );
 	m_ChargeBackSize.y = GetLongFromAttr( pARoot, "chargeback_height", 64 );
 	m_ChargeBackOffset.x = m_XNavigator + GetLongFromAttr( pARoot, "chargeback_xoffset", 0 );
 	m_ChargeBackOffset.y = m_YNavigator + m_NavigationHeight/2 + m_ChargeBackSize.y/2 +
 		GetLongFromAttr( pARoot, "chargeback_yoffset", 4 );
 
-	// текущий тип заряда
+	// С‚РµРєСѓС‰РёР№ С‚РёРї Р·Р°СЂСЏРґР°
 	m_ChargeGreed.x = 1; m_ChargeGreed.y = 1;
 	if( (tmpstr=GetStringFromAttr(pARoot,"chargeTextureGreed",null))!=null )
 		sscanf(tmpstr,"%d,%d",&m_ChargeGreed.x,&m_ChargeGreed.y);
@@ -547,7 +547,7 @@ void BATTLE_NAVIGATOR::Init(VDX8RENDER *RenderService)
 		SetCircleVertexTex(pV);
 		rs->UnLockVertexBuffer(m_idMapVBuf);
 	}
-	// зона поражения пушками
+	// Р·РѕРЅР° РїРѕСЂР°Р¶РµРЅРёСЏ РїСѓС€РєР°РјРё
 	BI_NOTEXTURE_VERTEX *pv = (BI_NOTEXTURE_VERTEX*)rs->LockVertexBuffer(m_idFireZoneVBuf);
 	if(pv!=NULL)
 	{
@@ -559,7 +559,7 @@ void BATTLE_NAVIGATOR::Init(VDX8RENDER *RenderService)
 		}
 		rs->UnLockVertexBuffer(m_idFireZoneVBuf);
 	}
-	// корабли на карте
+	// РєРѕСЂР°Р±Р»Рё РЅР° РєР°СЂС‚Рµ
 	BI_COLORONLY_VERTEX * pcv = (BI_COLORONLY_VERTEX*)rs->LockVertexBuffer(m_idShipsVBuf);
 	if(pcv!=NULL)
 	{
@@ -571,7 +571,7 @@ void BATTLE_NAVIGATOR::Init(VDX8RENDER *RenderService)
 		rs->UnLockVertexBuffer(m_idShipsVBuf);
 	}
 
-	// треугольный градиент для подложки
+	// С‚СЂРµСѓРіРѕР»СЊРЅС‹Р№ РіСЂР°РґРёРµРЅС‚ РґР»СЏ РїРѕРґР»РѕР¶РєРё
 	pcv = (BI_COLORONLY_VERTEX*)rs->LockVertexBuffer(m_idGradBackVBuf);
 	if(pcv!=NULL)
 	{
@@ -598,7 +598,7 @@ void BATTLE_NAVIGATOR::Init(VDX8RENDER *RenderService)
 		rs->UnLockVertexBuffer(m_idGradBackVBuf);
 	}
 
-	// Текущий тип заряда
+	// РўРµРєСѓС‰РёР№ С‚РёРї Р·Р°СЂСЏРґР°
 	pV = (BI_ONETEXTURE_VERTEX *)rs->LockVertexBuffer(m_idCurChargeVBuf);
 	if(pV!=NULL)
 	{
@@ -754,7 +754,7 @@ void BATTLE_NAVIGATOR::SetMainCharacterData()
 	else
 		m_fCurAnglShipSpeed = GetBetwinFloat(m_fBegAnglShipSpeed,m_fEndAnglShipSpeed,m_fShipSpeed/m_fMaxShipSpeed);
 
-    // получим значение ветра
+    // РїРѕР»СѓС‡РёРј Р·РЅР°С‡РµРЅРёРµ РІРµС‚СЂР°
     ENTITY_ID ei;
     if( _CORE_API->FindClass(&ei,"weather",0) )
     {
@@ -823,16 +823,16 @@ void BATTLE_NAVIGATOR::SetAnotherShip()
 	// Fill ships buffer
 	for(SHIP_DESCRIBE_LIST::SHIP_DESCR *psd=g_ShipList.GetShipRoot(); psd!=NULL; psd=psd->next)
 	{
-		// не рисовать корабль основного героя
+		// РЅРµ СЂРёСЃРѕРІР°С‚СЊ РєРѕСЂР°Р±Р»СЊ РѕСЃРЅРѕРІРЅРѕРіРѕ РіРµСЂРѕСЏ
 		if(psd == pMainCharacter) continue;
-		// определить координаты корабля и если они за пределами карты, то не рисовать корабль
+		// РѕРїСЂРµРґРµР»РёС‚СЊ РєРѕРѕСЂРґРёРЅР°С‚С‹ РєРѕСЂР°Р±Р»СЏ Рё РµСЃР»Рё РѕРЅРё Р·Р° РїСЂРµРґРµР»Р°РјРё РєР°СЂС‚С‹, С‚Рѕ РЅРµ СЂРёСЃРѕРІР°С‚СЊ РєРѕСЂР°Р±Р»СЊ
 		float fX = (psd->pShip->GetPos().x-m_fXPos)*m_fMapRadius/(m_fWorldRad*m_fCurScale);
 		float fY = (psd->pShip->GetPos().z-m_fYPos)*m_fMapRadius/(m_fWorldRad*m_fCurScale);
 		if(fX*fX+fY*fY>fSqrMapRad) continue;
 		float tmp=fX*cosf(m_fAngle)-fY*sinf(m_fAngle);
 		fY=m_YNavigator-(fY*cosf(m_fAngle)+fX*sinf(m_fAngle))*m_fAspectRatio;
 		fX=tmp+m_XNavigator;
-		// определить цвет отображаемого корабля
+		// РѕРїСЂРµРґРµР»РёС‚СЊ С†РІРµС‚ РѕС‚РѕР±СЂР°Р¶Р°РµРјРѕРіРѕ РєРѕСЂР°Р±Р»СЏ
 		DWORD dwColor = 0xFFFFFFFF;
 		switch(psd->relation)
 		{
@@ -848,9 +848,9 @@ void BATTLE_NAVIGATOR::SetAnotherShip()
 		}
 		if(psd->isDead)
 			dwColor = m_dwDeadShipColor;
-		// определить угол корабля
+		// РѕРїСЂРµРґРµР»РёС‚СЊ СѓРіРѕР» РєРѕСЂР°Р±Р»СЏ
 		float fAngle = psd->pShip->GetAng().y-m_fAngle;
-		// заполнить буфер
+		// Р·Р°РїРѕР»РЅРёС‚СЊ Р±СѓС„РµСЂ
 		pv[idx].col = pv[idx+1].col = pv[idx+2].col = dwColor;
 		pv[idx+0].pos.x = fX+m_fShipShowRad*sinf(fAngle);			pv[idx+0].pos.y = fY-m_fShipShowRad*cosf(fAngle)*m_fAspectRatio;
 		pv[idx+1].pos.x = fX+m_fShipShowRad*sinf(fAngle-PI*.9f);	pv[idx+1].pos.y = fY-m_fShipShowRad*cosf(fAngle-PI*.8f)*m_fAspectRatio;
@@ -866,7 +866,7 @@ void BATTLE_NAVIGATOR::ReleaseAll()
 	m_wb = NULL;
 	m_bYesIsland = false;
 
-	// текстуры
+	// С‚РµРєСЃС‚СѓСЂС‹
 	TEXTURE_RELEASE(rs,m_idCompasTex);
 	TEXTURE_RELEASE(rs,m_idSpeedTex);
 	TEXTURE_RELEASE(rs,m_idCannonTex);

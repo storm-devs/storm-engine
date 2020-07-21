@@ -27,7 +27,7 @@ void ISLAND_DESCRIBER::SetIsland(ATTRIBUTES * pAIsland)
 	if(pAIsland==NULL) return;
 	m_bYesIsland = true;
 	m_pIslandAttributes = pAIsland;
-	// создать список локаторов
+	// СЃРѕР·РґР°С‚СЊ СЃРїРёСЃРѕРє Р»РѕРєР°С‚РѕСЂРѕРІ
 	ATTRIBUTES * pA = pAIsland->GetAttributeClass("reload");
 	if(pA==NULL) return;
 	if( (m_nLocators=pA->GetAttributesNum()) == 0 ) return;
@@ -35,7 +35,7 @@ void ISLAND_DESCRIBER::SetIsland(ATTRIBUTES * pAIsland)
 	{
 		_THROW("Can`t allocate memory");
 	}
-	// пройтись по всем локаторам
+	// РїСЂРѕР№С‚РёСЃСЊ РїРѕ РІСЃРµРј Р»РѕРєР°С‚РѕСЂР°Рј
 	ATTRIBUTES * pATmp;
 	for(int i=0; i<m_nLocators; i++)
 	{
@@ -178,7 +178,7 @@ ISLAND_DESCRIBER::LOCATOR_DESCR * ISLAND_DESCRIBER::FindLocator(LOCATOR_DESCR * 
 			}
 		break;
 	}
-	// ничего не нашли
+	// РЅРёС‡РµРіРѕ РЅРµ РЅР°С€Р»Рё
 	m_lastFindIdx+=nMax;
 	return NULL;
 }

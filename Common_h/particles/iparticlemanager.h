@@ -22,7 +22,7 @@ class IParticleSystem;
 
 #define CreateParticleSystem(name) CreateParticleSystemEx(name, __FILE__, __LINE__)
 
-//Менеджер партикловых систем
+//РњРµРЅРµРґР¶РµСЂ РїР°СЂС‚РёРєР»РѕРІС‹С… СЃРёСЃС‚РµРј
 class IParticleManager
 {
 
@@ -33,55 +33,55 @@ protected:
 
 public:
 
-//Создание/удаление 
+//РЎРѕР·РґР°РЅРёРµ/СѓРґР°Р»РµРЅРёРµ 
 	IParticleManager (ParticleService* service) {};
 	virtual bool Release () = 0;
 
-//Получить указатель на Render/FileService 
+//РџРѕР»СѓС‡РёС‚СЊ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° Render/FileService 
 	virtual VDX8RENDER* Render () = 0;
 
-//Открыть проект 
+//РћС‚РєСЂС‹С‚СЊ РїСЂРѕРµРєС‚ 
 	virtual bool OpenProject (const char* FileName) = 0;
-//Закрыть проект 
+//Р—Р°РєСЂС‹С‚СЊ РїСЂРѕРµРєС‚ 
 	virtual void CloseProject () = 0;
  
-//Удалить из списка ресурсов (системная)
+//РЈРґР°Р»РёС‚СЊ РёР· СЃРїРёСЃРєР° СЂРµСЃСѓСЂСЃРѕРІ (СЃРёСЃС‚РµРјРЅР°СЏ)
 	virtual void RemoveResource (IParticleSystem* pResource) = 0;
 
-//Исполнить партиклы 
+//РСЃРїРѕР»РЅРёС‚СЊ РїР°СЂС‚РёРєР»С‹ 
 	virtual void Execute (float DeltaTime) = 0;
 
-//Узнать доступна система или нет 
+//РЈР·РЅР°С‚СЊ РґРѕСЃС‚СѓРїРЅР° СЃРёСЃС‚РµРјР° РёР»Рё РЅРµС‚ 
 	virtual bool IsSystemAvailable (const char* FileName) = 0;
 
-//Получить глобальную текстуру проекта 
+//РџРѕР»СѓС‡РёС‚СЊ РіР»РѕР±Р°Р»СЊРЅСѓСЋ С‚РµРєСЃС‚СѓСЂСѓ РїСЂРѕРµРєС‚Р° 
 	virtual long GetProjectTexture () = 0;
 	
-	//Установить текстуру проекта
+	//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ С‚РµРєСЃС‚СѓСЂСѓ РїСЂРѕРµРєС‚Р°
 	virtual void SetProjectTexture (const char* FileName = NULL) = 0;
 
 
  
 
 
-//Получить имя проекта 
+//РџРѕР»СѓС‡РёС‚СЊ РёРјСЏ РїСЂРѕРµРєС‚Р° 
  virtual const char* GetProjectFileName () = 0;
  
 
- //Создать пустую партикловую систему, для редактора...
+ //РЎРѕР·РґР°С‚СЊ РїСѓСЃС‚СѓСЋ РїР°СЂС‚РёРєР»РѕРІСѓСЋ СЃРёСЃС‚РµРјСѓ, РґР»СЏ СЂРµРґР°РєС‚РѕСЂР°...
  virtual IParticleSystem* CreateEmptyParticleSystemEx  (const char* FileName, int Line) = 0;
 
 
-//Создать партикловую систему из файла (файл должен быть в проекте!!!!!)
+//РЎРѕР·РґР°С‚СЊ РїР°СЂС‚РёРєР»РѕРІСѓСЋ СЃРёСЃС‚РµРјСѓ РёР· С„Р°Р№Р»Р° (С„Р°Р№Р» РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РІ РїСЂРѕРµРєС‚Рµ!!!!!)
  virtual IParticleSystem* CreateParticleSystemEx (const char* FileName, const char* File, int Line) = 0;
 
 
- //Проверить "валиден" ли указатель на систему партиклов, вдруг она уже удалилась
+ //РџСЂРѕРІРµСЂРёС‚СЊ "РІР°Р»РёРґРµРЅ" Р»Рё СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃРёСЃС‚РµРјСѓ РїР°СЂС‚РёРєР»РѕРІ, РІРґСЂСѓРі РѕРЅР° СѓР¶Рµ СѓРґР°Р»РёР»Р°СЃСЊ
  virtual bool ValidateSystem (IParticleSystem* pSystem) = 0;
 
 
- //Проверить ли загрузились асинхронно все партиклы и готов ли менеджер
- //к созданию сисстем
+ //РџСЂРѕРІРµСЂРёС‚СЊ Р»Рё Р·Р°РіСЂСѓР·РёР»РёСЃСЊ Р°СЃРёРЅС…СЂРѕРЅРЅРѕ РІСЃРµ РїР°СЂС‚РёРєР»С‹ Рё РіРѕС‚РѕРІ Р»Рё РјРµРЅРµРґР¶РµСЂ
+ //Рє СЃРѕР·РґР°РЅРёСЋ СЃРёСЃСЃС‚РµРј
  virtual bool ReadyForUse () = 0;
 
 

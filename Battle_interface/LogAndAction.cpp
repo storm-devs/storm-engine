@@ -65,7 +65,7 @@ void ILogAndActions::Execute(dword delta_time)
 	if(cs.state == CST_ACTIVATED)
 		api->Event("BI_FastCommand","s",m_sActionName);
 
-	// ïîãàñèì ñòðîêè
+	// Ð¿Ð¾Ð³Ð°ÑÐ¸Ð¼ ÑÑ‚Ñ€Ð¾ÐºÐ¸
 	float	colDelta = delta_time*m_fBlendSpeed;
 	STRING_DESCR * prev_sd = NULL;
 	STRING_DESCR * sd      = NULL;
@@ -87,7 +87,7 @@ void ILogAndActions::Execute(dword delta_time)
 		sd = sd->next;
 	}
 
-	// ïîäîäâèíóòü ñòðîêè íà ñâîáîäíûå ïîçèöèè
+	// Ð¿Ð¾Ð´Ð¾Ð´Ð²Ð¸Ð½ÑƒÑ‚ÑŒ ÑÑ‚Ñ€Ð¾ÐºÐ¸ Ð½Ð° ÑÐ²Ð¾Ð±Ð¾Ð´Ð½Ñ‹Ðµ Ð¿Ð¾Ð·Ð¸Ñ†Ð¸Ð¸
 	float delta = delta_time*m_fShiftSpeed;
 	float top = 0.f;
 	for(sd=m_sRoot; sd!=null; sd=sd->next)
@@ -112,7 +112,7 @@ dword _cdecl ILogAndActions::ProcessMessage(MESSAGE & message)
 			message.String(sizeof(param)-1,param);
 			if(stringImmortal)
 			{
-				// íàéäåì ïîñëåäíèé ýëåìåíò ñïèñêà
+				// Ð½Ð°Ð¹Ð´ÐµÐ¼ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½Ð¸Ð¹ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚ ÑÐ¿Ð¸ÑÐºÐ°
 				STRING_DESCR* last = NULL;
 				for(last=m_sRoot; last!=null; last=last->next)
 					if(last->alpha>255.f) break;
@@ -208,7 +208,7 @@ void ILogAndActions::Realize(dword delta_time)
 			} else if( m_nTimeCounter < 2500 ) {
 				nA = (long)(255.f * (2500-m_nTimeCounter)/500.f);
 			}
-			rs->ExtPrint( m_fontID, ARGB(nA,255,255,255),0, ALIGN_CENTER, false, 3.9f, 800,600, 400,300, "ÂÅÐÑÈß ÄËß ÏÐÅÑÑÛ" );
+			rs->ExtPrint( m_fontID, ARGB(nA,255,255,255),0, ALIGN_CENTER, false, 3.9f, 800,600, 400,300, "Ð’Ð•Ð Ð¡Ð˜Ð¯ Ð”Ð›Ð¯ ÐŸÐ Ð•Ð¡Ð¡Ð«" );
 		}
 	#endif
 	if(api->Controls->GetDebugAsyncKeyState('K')<0) return;
@@ -267,7 +267,7 @@ void ILogAndActions::Create(bool bFastComShow, bool bLogStringShow)
 	m_bShowActiveCommand = bFastComShow;
 	m_bShowLogStrings = bLogStringShow;
 
-	// Óñòàíîâèòü ïàðàìåòðû äëÿ èêîíêè àêòèâíîãî äåéñòâèÿ
+	// Ð£ÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹ Ð´Ð»Ñ Ð¸ÐºÐ¾Ð½ÐºÐ¸ Ð°ÐºÑ‚Ð¸Ð²Ð½Ð¾Ð³Ð¾ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ñ
 	ATTRIBUTES * pA = api->Entity_GetAttributeClass(&g_ILogAndActions,"ActiveActions");
 	if(pA!=NULL)
 	{
@@ -292,7 +292,7 @@ void ILogAndActions::Create(bool bFastComShow, bool bLogStringShow)
 		m_nIconLeft = 0;
 		m_nIconUp = 0;
 	}
-	// ïîñòðîèòü ïðÿìîóãîëüíèê äëÿ îòðèñîâêè àêòèâíîãî äåéñòâèÿ
+	// Ð¿Ð¾ÑÑ‚Ñ€Ð¾Ð¸Ñ‚ÑŒ Ð¿Ñ€ÑÐ¼Ð¾ÑƒÐ³Ð¾Ð»ÑŒÐ½Ð¸Ðº Ð´Ð»Ñ Ð¾Ñ‚Ñ€Ð¸ÑÐ¾Ð²ÐºÐ¸ Ð°ÐºÑ‚Ð¸Ð²Ð½Ð¾Ð³Ð¾ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ñ
 	m_IconVertex[0].w = m_IconVertex[1].w = m_IconVertex[2].w = m_IconVertex[3].w = .5f;
 	m_IconVertex[0].pos.z = m_IconVertex[1].pos.z = m_IconVertex[2].pos.z = m_IconVertex[3].pos.z = 1.f;
 	m_IconVertex[0].pos.x = m_IconVertex[1].pos.x = (float)m_nIconLeft;
@@ -304,7 +304,7 @@ void ILogAndActions::Create(bool bFastComShow, bool bLogStringShow)
 	m_IconVertex[0].tv = m_IconVertex[2].tv = 0.f;
 	m_IconVertex[1].tv = m_IconVertex[3].tv = 1.f/(float)m_vertDiv;
 
-	// óñòàíîâèòü ïàðàìåòðû äëÿ ñòðîê ïðîøåäøèõ äåéñòâèé
+	// ÑƒÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹ Ð´Ð»Ñ ÑÑ‚Ñ€Ð¾Ðº Ð¿Ñ€Ð¾ÑˆÐµÐ´ÑˆÐ¸Ñ… Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ð¹
 	pA = _CORE_API->Entity_GetAttributeClass(&g_ILogAndActions,"Log");
 	if(pA!=NULL)
 	{
@@ -343,10 +343,10 @@ void ILogAndActions::ActionChange(bool bFastComShow, bool bLogStringShow)
 
 	m_bThatRealAction = false;
 
-	// Óäàëèì ñòàðûå ïàðàìåòðû
+	// Ð£Ð´Ð°Ð»Ð¸Ð¼ ÑÑ‚Ð°Ñ€Ñ‹Ðµ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹
 	TEXTURE_RELEASE(rs,m_idIconTexture);
 
-	// Óñòàíîâèòü ïàðàìåòðû äëÿ èêîíêè àêòèâíîãî äåéñòâèÿ
+	// Ð£ÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹ Ð´Ð»Ñ Ð¸ÐºÐ¾Ð½ÐºÐ¸ Ð°ÐºÑ‚Ð¸Ð²Ð½Ð¾Ð³Ð¾ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ñ
 	ATTRIBUTES * pA = _CORE_API->Entity_GetAttributeClass(&g_ILogAndActions,"ActiveActions");
 	if(pA!=NULL)
 	{
@@ -371,7 +371,7 @@ void ILogAndActions::ActionChange(bool bFastComShow, bool bLogStringShow)
 		m_nIconLeft = 0;
 		m_nIconUp = 0;
 	}
-	// ïîñòðîèòü ïðÿìîóãîëüíèê äëÿ îòðèñîâêè àêòèâíîãî äåéñòâèÿ
+	// Ð¿Ð¾ÑÑ‚Ñ€Ð¾Ð¸Ñ‚ÑŒ Ð¿Ñ€ÑÐ¼Ð¾ÑƒÐ³Ð¾Ð»ÑŒÐ½Ð¸Ðº Ð´Ð»Ñ Ð¾Ñ‚Ñ€Ð¸ÑÐ¾Ð²ÐºÐ¸ Ð°ÐºÑ‚Ð¸Ð²Ð½Ð¾Ð³Ð¾ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ñ
 	m_IconVertex[0].w = m_IconVertex[1].w = m_IconVertex[2].w = m_IconVertex[3].w = .5f;
 	m_IconVertex[0].pos.z = m_IconVertex[1].pos.z = m_IconVertex[2].pos.z = m_IconVertex[3].pos.z = 1.f;
 	m_IconVertex[0].pos.x = m_IconVertex[1].pos.x = (float)m_nIconLeft;
@@ -405,39 +405,39 @@ void ILogAndActions::SetString(char * str, bool immortal)
 {
 	if(str==NULL) return;
 
-	// íàéäåì ïîñëåäíèé ýëåìåíò ñïèñêà
+	// Ð½Ð°Ð¹Ð´ÐµÐ¼ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½Ð¸Ð¹ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚ ÑÐ¿Ð¸ÑÐºÐ°
 	STRING_DESCR * last = m_sRoot;
 	if(last!=NULL)
 		while(last->next!=NULL) last = last->next;
 
-	// Âîçõâðàò åñëè òàêàÿ ñòðîêà óæå åñòü è îíà ïîñëåäíÿÿ
+	// Ð’Ð¾Ð·Ñ…Ð²Ñ€Ð°Ñ‚ ÐµÑÐ»Ð¸ Ñ‚Ð°ÐºÐ°Ñ ÑÑ‚Ñ€Ð¾ÐºÐ° ÑƒÐ¶Ðµ ÐµÑÑ‚ÑŒ Ð¸ Ð¾Ð½Ð° Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÑÑ
 	if(last!=null && last->str!=null && stricmp(last->str,str)==0 ) return;
 
-	// ñîçäàòü íîâûé äåñêðèïòîð ñòðîêè
+	// ÑÐ¾Ð·Ð´Ð°Ñ‚ÑŒ Ð½Ð¾Ð²Ñ‹Ð¹ Ð´ÐµÑÐºÑ€Ð¸Ð¿Ñ‚Ð¾Ñ€ ÑÑ‚Ñ€Ð¾ÐºÐ¸
 	STRING_DESCR * newDescr = NEW STRING_DESCR;
 	if(newDescr==NULL)
 	{
 		_THROW("Allocate memory error");
 	}
-	// îí áóäåò ïîñëåäíèì â ñïèñêå
+	// Ð¾Ð½ Ð±ÑƒÐ´ÐµÑ‚ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½Ð¸Ð¼ Ð² ÑÐ¿Ð¸ÑÐºÐµ
 	newDescr->next = NULL;
-	// çàíåñåì â íåãî çàäàííóþ ñòðîêó
+	// Ð·Ð°Ð½ÐµÑÐµÐ¼ Ð² Ð½ÐµÐ³Ð¾ Ð·Ð°Ð´Ð°Ð½Ð½ÑƒÑŽ ÑÑ‚Ñ€Ð¾ÐºÑƒ
 	if( (newDescr->str=NEW char[strlen(str)+1]) == NULL )
 	{
 		_THROW("Allocate memory error");
 	}
 	strcpy(newDescr->str,str);
-	// Ïîñòàâèì ìàêñèìàëüíóþ âèäèìîñòü
+	// ÐŸÐ¾ÑÑ‚Ð°Ð²Ð¸Ð¼ Ð¼Ð°ÐºÑÐ¸Ð¼Ð°Ð»ÑŒÐ½ÑƒÑŽ Ð²Ð¸Ð´Ð¸Ð¼Ð¾ÑÑ‚ÑŒ
 	if(immortal)	newDescr->alpha = 10000.f;
 	else	newDescr->alpha = 255.f;
 
-	// åñëè ñïèñîê ïóñòîé, òî ñòàâèì íàøó ñòðîêó êàê êîðíåâóþ
+	// ÐµÑÐ»Ð¸ ÑÐ¿Ð¸ÑÐ¾Ðº Ð¿ÑƒÑÑ‚Ð¾Ð¹, Ñ‚Ð¾ ÑÑ‚Ð°Ð²Ð¸Ð¼ Ð½Ð°ÑˆÑƒ ÑÑ‚Ñ€Ð¾ÐºÑƒ ÐºÐ°Ðº ÐºÐ¾Ñ€Ð½ÐµÐ²ÑƒÑŽ
 	if(last==NULL)
 	{
 		newDescr->offset = (float)m_nStringBegin;
 		m_sRoot = newDescr;
 	}
-	// èíà÷å äîïèñûâàåì åå â êîíåö ñïèñêà
+	// Ð¸Ð½Ð°Ñ‡Ðµ Ð´Ð¾Ð¿Ð¸ÑÑ‹Ð²Ð°ÐµÐ¼ ÐµÐµ Ð² ÐºÐ¾Ð½ÐµÑ† ÑÐ¿Ð¸ÑÐºÐ°
 	else
 	{
 		newDescr->offset = last->offset+m_nStringOffset;

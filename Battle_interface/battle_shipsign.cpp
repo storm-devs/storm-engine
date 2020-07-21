@@ -362,7 +362,7 @@ long BIShipIcon::CalculateShipQuantity()
 	long n;
 	SHIP_DESCRIBE_LIST::SHIP_DESCR * pSD;
 
-	// сброс всех кораблей
+	// СЃР±СЂРѕСЃ РІСЃРµС… РєРѕСЂР°Р±Р»РµР№
 	m_nShipQuantity = 0;
 	for( n=0; n<MAX_SHIP_QUANTITY; n++ )
 	{
@@ -373,7 +373,7 @@ long BIShipIcon::CalculateShipQuantity()
 		m_Ship[n].nMaxSP = 100;
 	}
 
-	// взять корабль главного перса
+	// РІР·СЏС‚СЊ РєРѕСЂР°Р±Р»СЊ РіР»Р°РІРЅРѕРіРѕ РїРµСЂСЃР°
 	pSD = g_ShipList.GetMainCharacterShip();
 	if( !pSD ) return 0;
 	m_Ship[0].nCharacterIndex = pSD->characterIndex;
@@ -383,10 +383,10 @@ long BIShipIcon::CalculateShipQuantity()
 	m_Ship[0].nMaxSP = pSD->maxSP;
 	m_nShipQuantity++;
 
-	// берем следующие "свои" корабли
+	// Р±РµСЂРµРј СЃР»РµРґСѓСЋС‰РёРµ "СЃРІРѕРё" РєРѕСЂР°Р±Р»Рё
 	for( pSD=g_ShipList.GetShipRoot(); pSD; pSD=pSD->next )
 	{
-		if( m_Ship[0].nCharacterIndex == pSD->characterIndex ) continue; // главный перс уже занесен в список
+		if( m_Ship[0].nCharacterIndex == pSD->characterIndex ) continue; // РіР»Р°РІРЅС‹Р№ РїРµСЂСЃ СѓР¶Рµ Р·Р°РЅРµСЃРµРЅ РІ СЃРїРёСЃРѕРє
 		if( pSD->isMyShip ) {
 			m_Ship[m_nShipQuantity].nCharacterIndex = pSD->characterIndex;
 			m_Ship[m_nShipQuantity].pASailorQuantity = GetSailorQuantityAttribute( pSD );

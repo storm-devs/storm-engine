@@ -16,7 +16,7 @@
 #define WDM_MODEL_TECHA	"WdmModelDrawStdA"
 
 //============================================================================================
-//Êîíñòðóèðîâàíèå, äåñòðóêòóðèðîâàíèå
+//ÐšÐ¾Ð½ÑÑ‚Ñ€ÑƒÐ¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ, Ð´ÐµÑÑ‚Ñ€ÑƒÐºÑ‚ÑƒÑ€Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ
 //============================================================================================
 
 WdmRenderModel::WdmRenderModel()
@@ -109,7 +109,7 @@ void WdmRenderModel::Render(VDX8RENDER * rs)
 	float a = alpha*255.0f;
 	if(wdmObjects->isDebug && a < 80.0f) a = 80.0f;
 	if(a < 1.0f) return;
-	//Ðèññóåì
+	//Ð Ð¸ÑÑÑƒÐµÐ¼
 	if(a >= 255.0f)
 	{
 		a = 255.0f;
@@ -118,7 +118,7 @@ void WdmRenderModel::Render(VDX8RENDER * rs)
 		wdmObjects->gs->SetTechnique(techa);
 		rs->SetRenderState(D3DRS_TEXTUREFACTOR, (long(a) << 24) | 0xffffff);
 	}
-	//Ïðîâåðèì íà âèäèìîñòü
+	//ÐŸÑ€Ð¾Ð²ÐµÑ€Ð¸Ð¼ Ð½Ð° Ð²Ð¸Ð´Ð¸Ð¼Ð¾ÑÑ‚ÑŒ
 	PLANE * plane = rs->GetPlanes();
 	static CMatrix mtx;
 	rs->GetTransform(D3DTS_WORLD, mtx);

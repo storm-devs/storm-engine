@@ -16,14 +16,14 @@
 
 //============================================================================================
 
-#define GRASS_BLK_LOD	0.8f							//Степень при kLod - меньше, лоды переключаються ближе
-#define GRASS_MAX_DIST	50.0f							//Максимальная дистанция видимости
-#define GRASS_MIN_DIST	10.0f							//Минимальная дистанция непереключения лодов
-#define GRASS_MAX_W		1.0f							//Наибольшая ширина
-#define GRASS_MAX_H		0.2f							//Наибольшая высота
-#define GRASS_VEIW		((long)(m_fMaxVisibleDist/GRASS_BLK_DST/GRASS_BLK_DST + 0.5f) + 1)	//Дальность видимости в блоках
-#define GRASS_FRM_W		4								//Количество кадров по ширене M = 2^N
-#define GRASS_FRM_H		4								//Количество кадров по высоте M = 2^N
+#define GRASS_BLK_LOD	0.8f							//РЎС‚РµРїРµРЅСЊ РїСЂРё kLod - РјРµРЅСЊС€Рµ, Р»РѕРґС‹ РїРµСЂРµРєР»СЋС‡Р°СЋС‚СЊСЃСЏ Р±Р»РёР¶Рµ
+#define GRASS_MAX_DIST	50.0f							//РњР°РєСЃРёРјР°Р»СЊРЅР°СЏ РґРёСЃС‚Р°РЅС†РёСЏ РІРёРґРёРјРѕСЃС‚Рё
+#define GRASS_MIN_DIST	10.0f							//РњРёРЅРёРјР°Р»СЊРЅР°СЏ РґРёСЃС‚Р°РЅС†РёСЏ РЅРµРїРµСЂРµРєР»СЋС‡РµРЅРёСЏ Р»РѕРґРѕРІ
+#define GRASS_MAX_W		1.0f							//РќР°РёР±РѕР»СЊС€Р°СЏ С€РёСЂРёРЅР°
+#define GRASS_MAX_H		0.2f							//РќР°РёР±РѕР»СЊС€Р°СЏ РІС‹СЃРѕС‚Р°
+#define GRASS_VEIW		((long)(m_fMaxVisibleDist/GRASS_BLK_DST/GRASS_BLK_DST + 0.5f) + 1)	//Р”Р°Р»СЊРЅРѕСЃС‚СЊ РІРёРґРёРјРѕСЃС‚Рё РІ Р±Р»РѕРєР°С…
+#define GRASS_FRM_W		4								//РљРѕР»РёС‡РµСЃС‚РІРѕ РєР°РґСЂРѕРІ РїРѕ С€РёСЂРµРЅРµ M = 2^N
+#define GRASS_FRM_H		4								//РљРѕР»РёС‡РµСЃС‚РІРѕ РєР°РґСЂРѕРІ РїРѕ РІС‹СЃРѕС‚Рµ M = 2^N
 #define GRASS_TEX_W		(1.0f/GRASS_FRM_W)
 #define GRASS_TEX_H		(1.0f/GRASS_FRM_H)
 #define GRASS_TEX_DELTA	(1.0f/256.0f)
@@ -32,7 +32,7 @@
 #define GRASS_DEFTEXTURE	"Grass\\grass.tga"
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 Grass::Grass()
@@ -90,7 +90,7 @@ Grass::~Grass()
 }
 
 
-//Инициализация
+//РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
 bool Grass::Init()
 {
 	//Layers
@@ -101,22 +101,22 @@ bool Grass::Init()
 	_CORE_API->LayerSetRealize("realize", true);
 	_CORE_API->LayerAdd("realize", GetID(), 1000);
 
-    // boal выбор шайдера -->
+    // boal РІС‹Р±РѕСЂ С€Р°Р№РґРµСЂР° -->
     isGrassLightsOn = 1;
     VDATA * param = _CORE_API->Event("GOpt_isGrassLightsOn", 0);
 	if (param)
 	{
   		param->Get(isGrassLightsOn);
 	}
-	// boal выбор шайдера <--
+	// boal РІС‹Р±РѕСЂ С€Р°Р№РґРµСЂР° <--
 	
 	//DX8 render
 	rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
 	if(!rs) _THROW("No service: dx8render");
-	//Буфер для динамических данных
+	//Р‘СѓС„РµСЂ РґР»СЏ РґРёРЅР°РјРёС‡РµСЃРєРёС… РґР°РЅРЅС‹С…
 	vb = rs->CreateVertexBuffer(0, GRASS_MAX_POINTS*4*sizeof(Vertex), D3DUSAGE_DYNAMIC);
 	if(vb < 0) return false;
-	//Индексы, адресующие вершины
+	//РРЅРґРµРєСЃС‹, Р°РґСЂРµСЃСѓСЋС‰РёРµ РІРµСЂС€РёРЅС‹
 	ib = rs->CreateIndexBuffer(GRASS_MAX_POINTS*6*sizeof(word));
 	if(ib < 0) return false;
 	word * index = (word *)rs->LockIndexBuffer(ib);
@@ -131,16 +131,16 @@ bool Grass::Init()
 		index[5] = word(point + 3);
 	}
 	rs->UnLockIndexBuffer(ib);
-	//Константы
+	//РљРѕРЅСЃС‚Р°РЅС‚С‹
 	static const float pi2 = 2.0f*3.141592653f;
 	for(long i = 0; i < 16; i++)
 	{
-		//Таблица углов
+		//РўР°Р±Р»РёС†Р° СѓРіР»РѕРІ
 		consts[i].x = sinf(i*pi2/16.0f);
 		consts[i].y = cosf(i*pi2/16.0f);
 		consts[i].z = 0.0f;
 		consts[i].w = 1.0f;
-		//Таблица uv
+		//РўР°Р±Р»РёС†Р° uv
 		consts[i + 16].x = (i & 3)*(1.0f/4.0f);
 		consts[i + 16].y = ((i >> 2) & 3)*(1.0f/4.0f);
 		consts[i + 16].z = 0.0f;
@@ -153,20 +153,20 @@ bool Grass::Init()
 	return true;
 }
 
-//Загрузить данные для травы из подготовленного файла
+//Р—Р°РіСЂСѓР·РёС‚СЊ РґР°РЅРЅС‹Рµ РґР»СЏ С‚СЂР°РІС‹ РёР· РїРѕРґРіРѕС‚РѕРІР»РµРЅРЅРѕРіРѕ С„Р°Р№Р»Р°
 bool Grass::LoadData(const char * patchName)
 {
-	//Текстура травы
+	//РўРµРєСЃС‚СѓСЂР° С‚СЂР°РІС‹
 	texture = rs->TextureCreate(textureName);
-	//Уталим старое
+	//РЈС‚Р°Р»РёРј СЃС‚Р°СЂРѕРµ
 	if(miniMap) delete miniMap; miniMap = null;
 	if(block) delete block; block = null;	
-	//Загружаем файл с данными
+	//Р—Р°РіСЂСѓР¶Р°РµРј С„Р°Р№Р» СЃ РґР°РЅРЅС‹РјРё
 	byte * load = null;
 	dword size = 0;
 	if(!_CORE_API->fio->LoadFile(patchName, (char**)&load, &size)) return false;
 	try{
-		//Проверим данные
+		//РџСЂРѕРІРµСЂРёРј РґР°РЅРЅС‹Рµ
 		if(size < sizeof(GRSHeader)) throw "invalide file size";
 		GRSHeader & hdr = *(GRSHeader *)load;
 		if(hdr.id != GRASS_ID) throw "invalide file id";
@@ -175,18 +175,18 @@ bool Grass::LoadData(const char * patchName)
 		long elements = hdr.numElements;	
 		if(size != sizeof(GRSHeader) + minisize*sizeof(GRSMiniMapElement) + elements*sizeof(GRSMapElement)) throw "incorrect file data -> file size";
 		if(hdr.miniX <= 0 || hdr.miniX > 100000 || hdr.miniZ <= 0 || hdr.miniZ > 100000) throw "incorrect file data -> miniX, miniZ";
-		//Создаём миникарту
+		//РЎРѕР·РґР°С‘Рј РјРёРЅРёРєР°СЂС‚Сѓ
 		miniMap = NEW GRSMiniMapElement[minisize];
 		memcpy(miniMap, load + sizeof(GRSHeader), minisize*sizeof(GRSMiniMapElement));
 		miniX = hdr.miniX;
 		miniZ = hdr.miniZ;
-		//Последняя проверка
+		//РџРѕСЃР»РµРґРЅСЏСЏ РїСЂРѕРІРµСЂРєР°
 		for(long i = 0, pnt = 0; i < minisize; i++)
 		{
 			if(pnt != miniMap[i].start)  throw "incorrect file data -> minimap";
 			pnt += miniMap[i].num[0];
 		}
-		//Создаём блоки
+		//РЎРѕР·РґР°С‘Рј Р±Р»РѕРєРё
 		byte translate[16];
 		for(long i = 0; i < 16; i++)
 		{
@@ -209,7 +209,7 @@ bool Grass::LoadData(const char * patchName)
 		startX = hdr.startX;
 		startZ = hdr.startZ;
 		numElements = elements;
-		//Корректируем позицию травинок из локальной в мировую
+		//РљРѕСЂСЂРµРєС‚РёСЂСѓРµРј РїРѕР·РёС†РёСЋ С‚СЂР°РІРёРЅРѕРє РёР· Р»РѕРєР°Р»СЊРЅРѕР№ РІ РјРёСЂРѕРІСѓСЋ
 		for(long z = 0; z < miniZ; z++)
 		{
 			GRSMiniMapElement * line = &miniMap[z*miniX];
@@ -236,7 +236,7 @@ bool Grass::LoadData(const char * patchName)
 	return true;
 }
 
-//Установить текстуру
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ С‚РµРєСЃС‚СѓСЂСѓ
 void Grass::SetTexture(const char * texName)
 {
 	if(!texName || !texName[0] || strlen(texName) > 63)
@@ -247,7 +247,7 @@ void Grass::SetTexture(const char * texName)
 	}
 }
 
-//Работа
+//Р Р°Р±РѕС‚Р°
 void Grass::Execute(dword delta_time)
 {
 	if(initForce < 20)
@@ -266,7 +266,7 @@ void Grass::Execute(dword delta_time)
 		quality = rq_full;
 	}
 	if(quality == rq_off) return;
-	//Параметры верта
+	//РџР°СЂР°РјРµС‚СЂС‹ РІРµСЂС‚Р°
 	param = _CORE_API->Event("EWhr_GetWindAngle", 0);
 	if(param)
 	{
@@ -303,7 +303,7 @@ void Grass::Execute(dword delta_time)
 		if(winForce < 0.0f) winForce = 0.0f;
 		if(winForce > 1.0f) winForce = 1.0f;
 	}
-	//Фазы
+	//Р¤Р°Р·С‹
 	float dltTime = delta_time*0.001f;	
 	if(dltTime > 0.05f) dltTime = 0.05f;
 	phase[0] += dltTime*(0.3f + powf(winForce, 10.0f)*0.0f);
@@ -315,7 +315,7 @@ void Grass::Execute(dword delta_time)
 	phase[6] += dltTime*0.057f;
 	const float pi2 = 2.0f*3.141592653f;
 	for(long i = 0; i < sizeof(phase)/sizeof(phase[0]); i++) if(phase[i] > pi2*256.0f) phase[i] -= pi2*256.0f;
-	//Коэфициенты для расчёта отклонений
+	//РљРѕСЌС„РёС†РёРµРЅС‚С‹ РґР»СЏ СЂР°СЃС‡С‘С‚Р° РѕС‚РєР»РѕРЅРµРЅРёР№
 	cosPh1 = 0.4f + 0.15f*cosf(phase[1]);
 	sinPh2 = 0.51f + 0.09f*sinf(phase[2]);
 	sinPh5 = 0.1f*sinf(phase[5]);
@@ -331,17 +331,17 @@ void Grass::Realize(dword delta_time)
 {
 	if(quality == rq_off) return;
 	rs->SetTransform(D3DTS_WORLD, CMatrix());
-	//Уберём текстуры	
+	//РЈР±РµСЂС‘Рј С‚РµРєСЃС‚СѓСЂС‹	
 	rs->TextureSet(0, -1);
 	rs->TextureSet(1, -1);
-	//Стейты
+	//РЎС‚РµР№С‚С‹
 	rs->SetRenderState(D3DRS_ZENABLE, false);
 	rs->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 	rs->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
 	rs->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 	rs->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	rs->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-	//Туман
+	//РўСѓРјР°РЅ
 	dword dwOldFogDensity;
 	rs->GetRenderState(D3DRS_FOGDENSITY, &dwOldFogDensity);
 	ENTITY_ID eidIsland;
@@ -352,7 +352,7 @@ void Grass::Realize(dword delta_time)
 		if( pA ) fIslandFogDensity = pA->GetAttributeAsFloat("FogDensity", 0.0f);
 		rs->SetRenderState(D3DRS_FOGDENSITY, F2DW(fIslandFogDensity));
 	}
-	//Настроим стадии
+	//РќР°СЃС‚СЂРѕРёРј СЃС‚Р°РґРёРё
 	dword cop, carg1, cop1, aop, aarg1;
 	rs->GetTextureStageState(0, D3DTSS_COLOROP, &cop);
 	rs->GetTextureStageState(1, D3DTSS_COLOROP, &cop1);
@@ -376,13 +376,13 @@ void Grass::Realize(dword delta_time)
 	lineVertex[0].c = 0xff009f00;
 	lineVertex[1].c = 0xff00ffff;
 
-	//Востановим стадии
+	//Р’РѕСЃС‚Р°РЅРѕРІРёРј СЃС‚Р°РґРёРё
 	rs->SetTextureStageState(0, D3DTSS_COLOROP, cop);
 	rs->SetTextureStageState(0, D3DTSS_COLORARG1, carg1);
 	rs->SetTextureStageState(1, D3DTSS_COLOROP, cop1);
 	rs->SetTextureStageState(0, D3DTSS_ALPHAOP, aop);
 	rs->SetTextureStageState(0, D3DTSS_ALPHAARG1, aarg1);
-	//Востановим стейты
+	//Р’РѕСЃС‚Р°РЅРѕРІРёРј СЃС‚РµР№С‚С‹
 	rs->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
 	rs->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 	rs->SetRenderState(D3DRS_ZENABLE, TRUE);
@@ -394,22 +394,22 @@ void Grass::Realize(dword delta_time)
 
 	//if(api->Controls->GetDebugAsyncKeyState('H') < 0) return;
 
-	//Если нет карты, то нет и рисования
+	//Р•СЃР»Рё РЅРµС‚ РєР°СЂС‚С‹, С‚Рѕ РЅРµС‚ Рё СЂРёСЃРѕРІР°РЅРёСЏ
 	if(!block) return;	
-	//Параметры источника освещения
+	//РџР°СЂР°РјРµС‚СЂС‹ РёСЃС‚РѕС‡РЅРёРєР° РѕСЃРІРµС‰РµРЅРёСЏ
 	BOOL isLight = FALSE;
 	rs->GetLightEnable(0, &isLight);
 	D3DLIGHT9 light;
 	if(isLight && rs->GetLight(0, &light))
 	{
-		//Установленный источник
-		//Направление
+		//РЈСЃС‚Р°РЅРѕРІР»РµРЅРЅС‹Р№ РёСЃС‚РѕС‡РЅРёРє
+		//РќР°РїСЂР°РІР»РµРЅРёРµ
 		lDir.x = light.Direction.x;
 		lDir.y = 0.0f;
 		lDir.z = light.Direction.z;
 		float len = ~lDir;
 		if(len > 0.0f) lDir *= 1.0f/sqrtf(len); else lDir = !CVECTOR(0.9f, 0.0f, 0.5f);
-		//Цвет направления
+		//Р¦РІРµС‚ РЅР°РїСЂР°РІР»РµРЅРёСЏ
 		lColor.z = light.Diffuse.r;
 		lColor.y = light.Diffuse.g;
 		lColor.x = light.Diffuse.b;
@@ -422,7 +422,7 @@ void Grass::Realize(dword delta_time)
 		lColor.x = powf(lColor.x, 0.2f);
 		lColor.y = powf(lColor.y, 0.2f);
 		lColor.z = powf(lColor.z, 0.2f);
-		//Рассеяный свет
+		//Р Р°СЃСЃРµСЏРЅС‹Р№ СЃРІРµС‚
 		dword aclr;
 		if(rs->GetRenderState(D3DRS_AMBIENT, &aclr) != D3D_OK) aclr = 0xffffffff;
 		aColor.z = byte(aclr >> 16)*1.0f/255.0f;
@@ -435,8 +435,8 @@ void Grass::Realize(dword delta_time)
 		aColor = y*0.7f + aColor*0.3f;
 		aColor *= 0.8f;
 	}else{
-		//Источник по умолчанию
-		//Рассеяный свет
+		//РСЃС‚РѕС‡РЅРёРє РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
+		//Р Р°СЃСЃРµСЏРЅС‹Р№ СЃРІРµС‚
 		dword aclr;
 		if(rs->GetRenderState(D3DRS_AMBIENT, &aclr) != D3D_OK) aclr = 0xffffffff;
 		aColor.z = byte(aclr >> 16)*1.0f/255.0f;
@@ -445,25 +445,25 @@ void Grass::Realize(dword delta_time)
 		if(aColor.x > 1.0f) aColor.x = 1.0f;
 		if(aColor.y > 1.0f) aColor.y = 1.0f;
 		if(aColor.z > 1.0f) aColor.z = 1.0f;
-		//Направление
+		//РќР°РїСЂР°РІР»РµРЅРёРµ
 		lDir = !CVECTOR(0.9f, 0.0f, 0.5f);
-		//Цвет направления
+		//Р¦РІРµС‚ РЅР°РїСЂР°РІР»РµРЅРёСЏ
 		lColor = 0.3f;
 	}
-	//Пересчитаем параметры углов
+	//РџРµСЂРµСЃС‡РёС‚Р°РµРј РїР°СЂР°РјРµС‚СЂС‹ СѓРіР»РѕРІ
 	for(long i = 0; i < 16; i++)
 	{
 		consts[i].z = fabsf(-consts[i].y*lDir.x + consts[i].x*lDir.z);
 		if(consts[i].z < 0.0f) consts[i].z = 0.0f;
 		if(consts[i].z > 1.0f) consts[i].z = 1.0f;
 	}
-	//Матрица
+	//РњР°С‚СЂРёС†Р°
 	CMatrix view, prj;
 	rs->GetTransform(D3DTS_VIEW, view);
 	rs->GetTransform(D3DTS_PROJECTION, prj);
 	CMatrix & cmtx = (CMatrix &)consts[32];
 	cmtx.EqMultiply(view, prj);
-	//Параметры источника
+	//РџР°СЂР°РјРµС‚СЂС‹ РёСЃС‚РѕС‡РЅРёРєР°
 	consts[36].x = lDir.x;
 	consts[36].y = lDir.z;
 	consts[37].x = aColor.x;
@@ -475,11 +475,11 @@ void Grass::Realize(dword delta_time)
 	consts[38].z = lColor.z;
 	consts[38].w = m_fDataScale; // 1.f;
 	consts[39].y = kLitWF;
-	//Позиция камеры
+	//РџРѕР·РёС†РёСЏ РєР°РјРµСЂС‹
 	CVECTOR pos, ang;
 	float prs;
 	rs->GetCamera(pos, ang, prs);
-	//Планы отсечения
+	//РџР»Р°РЅС‹ РѕС‚СЃРµС‡РµРЅРёСЏ
 	PLANE * pln = rs->GetPlanes();	
 	PLANE plane[5];
 	plane[0].Nx = plane[0].Ny = plane[0].Nz = 0.0f;
@@ -495,19 +495,19 @@ void Grass::Realize(dword delta_time)
 	plane[0].Nz *= 0.25f;
 	plane[0].D = pos.x*plane[0].Nx + pos.y*plane[0].Ny + pos.z*plane[0].Nz;
 	long numPlanes = 5;
-	//Ставим текстуру
+	//РЎС‚Р°РІРёРј С‚РµРєСЃС‚СѓСЂСѓ
 	rs->TextureSet(0, texture);
 	rs->TextureSet(1, texture);
-	//Ставим константы
+	//РЎС‚Р°РІРёРј РєРѕРЅСЃС‚Р°РЅС‚С‹
 	rs->SetVertexShaderConstant(0, consts, sizeof(consts)/sizeof(VSConstant));
 	//rs->SetVertexShaderConstant(0, consts, 40);
-	//Позиция камеры на карте
+	//РџРѕР·РёС†РёСЏ РєР°РјРµСЂС‹ РЅР° РєР°СЂС‚Рµ
 	long camx = long((pos.x/m_fDataScale - startX)/GRASS_BLK_DST);
 	long camz = long((pos.z/m_fDataScale - startZ)/GRASS_BLK_DST);
-	//Квадрат, охватывающий зону видимости на карте
+	//РљРІР°РґСЂР°С‚, РѕС…РІР°С‚С‹РІР°СЋС‰РёР№ Р·РѕРЅСѓ РІРёРґРёРјРѕСЃС‚Рё РЅР° РєР°СЂС‚Рµ
 	long left = camx - GRASS_VEIW, right = camx + GRASS_VEIW;
 	long top = camz - GRASS_VEIW, bottom = camz + GRASS_VEIW;
-	//Клипуем размерами карты
+	//РљР»РёРїСѓРµРј СЂР°Р·РјРµСЂР°РјРё РєР°СЂС‚С‹
 	if(right < 0 || left >= miniX) return;
 	if(bottom < 0 || top >= miniZ) return;
 	if(left < 0) left = 0;
@@ -519,7 +519,7 @@ void Grass::Realize(dword delta_time)
 	if(camx >= miniX) camx = miniX - 1;
 	if(camz < 0) camz = 0;
 	if(camz >= miniZ) camz = miniZ - 1;
-	//Готовим блоки для рендера
+	//Р“РѕС‚РѕРІРёРј Р±Р»РѕРєРё РґР»СЏ СЂРµРЅРґРµСЂР°
 	numPoints = 0;
 	rs->SetTransform(D3DTS_WORLD, CMatrix());
 	long mz, mx;
@@ -533,7 +533,7 @@ void Grass::Realize(dword delta_time)
 		for(mz = top; mz <= camz; mz++) RenderBlock(pos, plane, numPlanes, mx, mz);
 		for(mz = bottom; mz > camz; mz--) RenderBlock(pos, plane, numPlanes, mx, mz);
 	}
-	//Рисуем буфер
+	//Р РёСЃСѓРµРј Р±СѓС„РµСЂ
 	DrawBuffer();
 
 	rs->SetRenderState(D3DRS_FOGDENSITY, dwOldFogDensity);
@@ -577,26 +577,26 @@ dword _cdecl Grass::ProcessMessage(MESSAGE &message)
 	return 0;
 }
 
-//Отрисовать блок с координатами на миникарте
+//РћС‚СЂРёСЃРѕРІР°С‚СЊ Р±Р»РѕРє СЃ РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё РЅР° РјРёРЅРёРєР°СЂС‚Рµ
 __forceinline void Grass::RenderBlock(const CVECTOR & camPos, PLANE * plane, long numPlanes, long mx, long mz)
 {
-	//Рисуем буфер, если переполнен
+	//Р РёСЃСѓРµРј Р±СѓС„РµСЂ, РµСЃР»Рё РїРµСЂРµРїРѕР»РЅРµРЅ
 	if(numPoints >= GRASS_MAX_POINTS - (GRASS_CNT_MIN + GRASS_CNT_DLT)*3)
 	{
 		DrawBuffer();
 	}
 	CVECTOR min, max;
-	//Блок, который рисуем
+	//Р‘Р»РѕРє, РєРѕС‚РѕСЂС‹Р№ СЂРёСЃСѓРµРј
 	GRSMiniMapElement & mm = miniMap[mz*miniX + mx];
-	//Проверяем наличие блока
+	//РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ Р±Р»РѕРєР°
 	if(mm.num[0] == 0) return;
-	//Дистанция от центра кластера (бокса) до камеры в 2D
+	//Р”РёСЃС‚Р°РЅС†РёСЏ РѕС‚ С†РµРЅС‚СЂР° РєР»Р°СЃС‚РµСЂР° (Р±РѕРєСЃР°) РґРѕ РєР°РјРµСЂС‹ РІ 2D
 	float cx = m_fDataScale * (startX + (mx + 0.5f)*GRASS_BLK_DST);
 	float cz = m_fDataScale * (startZ + (mz + 0.5f)*GRASS_BLK_DST);
 	float dist = (cx - camPos.x)*(cx - camPos.x) + (cz - camPos.z)*(cz - camPos.z);
-	//Ограничение по дальности
+	//РћРіСЂР°РЅРёС‡РµРЅРёРµ РїРѕ РґР°Р»СЊРЅРѕСЃС‚Рё
 	if(dist >= m_fMaxVisibleDist*m_fMaxVisibleDist) return;
-	//Определение видимости
+	//РћРїСЂРµРґРµР»РµРЅРёРµ РІРёРґРёРјРѕСЃС‚Рё
 	min.x = cx - 0.5f*GRASS_BLK_DST*m_fDataScale - 2.0f*m_fMaxWidth;
 	min.y = mm.minHeight*m_fDataScale;
 	min.z = cz - 0.5f*GRASS_BLK_DST*m_fDataScale - 2.0f*m_fMaxWidth;
@@ -604,29 +604,29 @@ __forceinline void Grass::RenderBlock(const CVECTOR & camPos, PLANE * plane, lon
 	max.y = mm.maxHeight*m_fDataScale;
 	max.z = cz + 0.5f*GRASS_BLK_DST*m_fDataScale + 2.0f*m_fMaxWidth;
 	if(!VisibleTest(plane, numPlanes, min, max)) return;
-	//Определение лода
+	//РћРїСЂРµРґРµР»РµРЅРёРµ Р»РѕРґР°
 	float kLod = (sqrtf(dist) - m_fMinVisibleDist)/(m_fMaxVisibleDist - m_fMinVisibleDist);
 	//if(kLod < 0.0f) kLod = 0.0f;
 	if(kLod < m_fMinGrassLod) kLod = m_fMinGrassLod;
-	//Определим персонажей попадающих в текущий блок
+	//РћРїСЂРµРґРµР»РёРј РїРµСЂСЃРѕРЅР°Р¶РµР№ РїРѕРїР°РґР°СЋС‰РёС… РІ С‚РµРєСѓС‰РёР№ Р±Р»РѕРє
 	numBlockChr = 0;
 	for(long i = 0; i < numCharacters; i++)
 	{
-		//Пропостим сильно выпадающих персонажей
+		//РџСЂРѕРїРѕСЃС‚РёРј СЃРёР»СЊРЅРѕ РІС‹РїР°РґР°СЋС‰РёС… РїРµСЂСЃРѕРЅР°Р¶РµР№
 		if(characters[i].pos.x + 0.9f < min.x) continue;
 		if(characters[i].pos.x - 0.9f > max.x) continue;
 		if(characters[i].pos.y + 0.9f < min.y) continue;
 		if(characters[i].pos.y - 0.9f > max.y) continue;
 		if(characters[i].pos.z + 0.9f < min.z) continue;
 		if(characters[i].pos.z - 0.9f > max.z) continue;
-		//Добавляем индекс
+		//Р”РѕР±Р°РІР»СЏРµРј РёРЅРґРµРєСЃ
 		blockChrs[numBlockChr++] = i;
 	}
-	//Рендер блока
+	//Р РµРЅРґРµСЂ Р±Р»РѕРєР°
 	RenderBlock(mm, kLod);
 }
 
-//Проверка на видимость бокса
+//РџСЂРѕРІРµСЂРєР° РЅР° РІРёРґРёРјРѕСЃС‚СЊ Р±РѕРєСЃР°
 inline bool Grass::VisibleTest(const PLANE * plane, long numPlanes, const CVECTOR & min, const CVECTOR & max)
 {
 	for(long i = 0; i < numPlanes; i++)
@@ -651,20 +651,20 @@ inline bool Grass::VisibleTest(const PLANE * plane, long numPlanes, const CVECTO
 	return true;
 }
 
-//Нарисовать блок
+//РќР°СЂРёСЃРѕРІР°С‚СЊ Р±Р»РѕРє
 inline void Grass::RenderBlock(GRSMiniMapElement & mme, float kLod)
 {
-	//Защитимся от себя
+	//Р—Р°С‰РёС‚РёРјСЃСЏ РѕС‚ СЃРµР±СЏ
 	if(!vbuffer)
 	{
 		vbuffer = (Vertex *)rs->LockVertexBuffer(vb);
 		if(!vbuffer) return;
 	}
-	//Позиция в массиве вершин
+	//РџРѕР·РёС†РёСЏ РІ РјР°СЃСЃРёРІРµ РІРµСЂС€РёРЅ
 	Vertex * v = vbuffer + numPoints*4;
-	//Блоки
+	//Р‘Р»РѕРєРё
 	GRSMapElementEx * b = block + mme.start;
-	//Определяем параметры лода
+	//РћРїСЂРµРґРµР»СЏРµРј РїР°СЂР°РјРµС‚СЂС‹ Р»РѕРґР°
 	kLod = kLod*3.9999f;
 	long lod = long(kLod);
 	if(lod < quality) lod = quality;
@@ -672,12 +672,12 @@ inline void Grass::RenderBlock(GRSMiniMapElement & mme, float kLod)
 	float kBlend = 1.0f - (kLod - lod);
 	if(kBlend > 1.0f) kBlend = 1.0f;
 	if(kBlend < 0.0f) kBlend = 0.0f;
-	//Количество травинок всего
+	//РљРѕР»РёС‡РµСЃС‚РІРѕ С‚СЂР°РІРёРЅРѕРє РІСЃРµРіРѕ
 	long num = mme.num[lod];
 	Assert(num <= GRASS_CNT_MIN + GRASS_CNT_DLT);
-	//Количество рисуемое без лодирования
+	//РљРѕР»РёС‡РµСЃС‚РІРѕ СЂРёСЃСѓРµРјРѕРµ Р±РµР· Р»РѕРґРёСЂРѕРІР°РЅРёСЏ
 	long lodNum = lod < 3 ? mme.num[lod + 1] : 0;
-	//Ветренное дополнение
+	//Р’РµС‚СЂРµРЅРЅРѕРµ РґРѕРїРѕР»РЅРµРЅРёРµ
 	float wAddX, wAddZ, kwDirX, kwDirZ;
 	if(quality <= rq_middle)
 	{
@@ -689,22 +689,22 @@ inline void Grass::RenderBlock(GRSMiniMapElement & mme, float kLod)
 		wAddX = 0.01f*winForce + 0.1f*winForce*winForce + 2.0f*winF10;
 		if(wAddX > 1.0f) wAddX = 1.0f;
 	}
-	//Цикл по травинкам
+	//Р¦РёРєР» РїРѕ С‚СЂР°РІРёРЅРєР°Рј
 	float alpha;
 	for(long i = 0; i < num; i++)
 	{		
-		//Альфа
+		//РђР»СЊС„Р°
 		if(i < lodNum){ alpha = 1.0f; }else{ alpha = kBlend; }
-		//Колыхание травы
+		//РљРѕР»С‹С…Р°РЅРёРµ С‚СЂР°РІС‹
 		float winx = sinf(b[i].x*cosPh1 + b[i].z*0.06f + phase[0]);
 		float winz = cosf(b[i].x*0.11f + b[i].z*sinPh2 + phase[0]);
 		if(quality <= rq_middle)
 		{
-			//Позиция
+			//РџРѕР·РёС†РёСЏ
 			float x = b[i].x;
 			float y = b[i].y;
 			float z = b[i].z;
-			//Волны ветра
+			//Р’РѕР»РЅС‹ РІРµС‚СЂР°
 			float dx = winDir.x*x*0.5f + phase[3];
 			float dz = winDir.z*z*0.5f + phase[4];
 			float k1 = sinf(dx + dz);
@@ -712,11 +712,11 @@ inline void Grass::RenderBlock(GRSMiniMapElement & mme, float kLod)
 			float k2 = cosf(winDir.z*x*(a1 + sinPh6) - winDir.x*z*a1);
 			float kamp = powf(k1*k2*0.5f + 0.5f, winPow) + winF10 + winForce*0.7f;
 			if(kamp > 1.0f) kamp = 1.0f;
-			//Результирующий вектор смещения
+			//Р РµР·СѓР»СЊС‚РёСЂСѓСЋС‰РёР№ РІРµРєС‚РѕСЂ СЃРјРµС‰РµРЅРёСЏ
 			kamp *= kAmpWF;
 			winx = (0.9f*winx + kwDirX)*kamp + wAddX;
 			winz = (0.9f*winz + kwDirZ)*kamp + wAddZ;
-			//Учтём персонажей
+			//РЈС‡С‚С‘Рј РїРµСЂСЃРѕРЅР°Р¶РµР№
 			for(long chr = 0; chr < numBlockChr; chr++)
 			{
 				CharacterPos & cp = characters[blockChrs[chr]];
@@ -727,7 +727,7 @@ inline void Grass::RenderBlock(GRSMiniMapElement & mme, float kLod)
 					float dst = pldx*pldx + pldz*pldz;
 					if(dst < 0.8f*0.8f && dst > 0.0f)
 					{
-						//Воздействуем
+						//Р’РѕР·РґРµР№СЃС‚РІСѓРµРј
 						if(dst > 0.0f)
 						{
 							dst = sqrtf(dst);
@@ -757,9 +757,9 @@ inline void Grass::RenderBlock(GRSMiniMapElement & mme, float kLod)
 			winx *= wAddX;
 			winz *= wAddX;
 		}
-		//Исходные данные
+		//РСЃС…РѕРґРЅС‹Рµ РґР°РЅРЅС‹Рµ
 		GRSMapElementEx & el = b[i];
-		//Координаты
+		//РљРѕРѕСЂРґРёРЅР°С‚С‹
 		v[0].x = el.x; v[0].y = el.y; v[0].z = el.z;
 		v[0].data = el.data;
 		v[0].offset = 0x00000000;
@@ -789,7 +789,7 @@ inline void Grass::RenderBlock(GRSMiniMapElement & mme, float kLod)
 	}
 }
 
-//Нарисовать содержимое буфера
+//РќР°СЂРёСЃРѕРІР°С‚СЊ СЃРѕРґРµСЂР¶РёРјРѕРµ Р±СѓС„РµСЂР°
 __forceinline void Grass::DrawBuffer()
 {
 	if(vbuffer)
@@ -797,7 +797,7 @@ __forceinline void Grass::DrawBuffer()
 		rs->UnLockVertexBuffer(vb);
 		vbuffer = null;
 	}
-	// boal выбор шайдера -->
+	// boal РІС‹Р±РѕСЂ С€Р°Р№РґРµСЂР° -->
 	if (isGrassLightsOn == 1)
 	{
 		rs->DrawBuffer(vb, sizeof(Vertex), ib, 0, numPoints*4, 0, numPoints*2, "GrassEx");
@@ -806,7 +806,7 @@ __forceinline void Grass::DrawBuffer()
 	{
 		rs->DrawBuffer(vb, sizeof(Vertex), ib, 0, numPoints*4, 0, numPoints*2, "GrassEx_dark");
 	}
-	// boal выбор шайдера <--
+	// boal РІС‹Р±РѕСЂ С€Р°Р№РґРµСЂР° <--
 	numPoints = 0;
 }
 

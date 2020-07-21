@@ -13,7 +13,7 @@
 #include "WdmPlayerShip.h"
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 WdmWindUI::WdmWindUI()
@@ -68,7 +68,7 @@ WdmWindUI::~WdmWindUI()
 
 //============================================================================================
 
-//Считать имя фонта
+//РЎС‡РёС‚Р°С‚СЊ РёРјСЏ С„РѕРЅС‚Р°
 void WdmWindUI::SetAttributes(ATTRIBUTES * apnt)
 {
 	if(!apnt) return;
@@ -101,7 +101,7 @@ void WdmWindUI::SetAttributes(ATTRIBUTES * apnt)
 	}	
 }
 
-//Отрисовка
+//РћС‚СЂРёСЃРѕРІРєР°
 void WdmWindUI::LRender(VDX8RENDER * rs)
 {
 	VDATA * data;
@@ -129,22 +129,22 @@ void WdmWindUI::LRender(VDX8RENDER * rs)
 		if(rum < 0) rum = 0;
 		if(rum > 1000000000) rum = 1000000000;
 	}
-	//Параметры ветра у игрока
+	//РџР°СЂР°РјРµС‚СЂС‹ РІРµС‚СЂР° Сѓ РёРіСЂРѕРєР°
 	float x, y, ay;
 	wdmObjects->playerShip->GetPosition(x, y, ay);
 	CVECTOR windDir;
 	float widForce = wdmObjects->GetWind(x, y, windDir);
 	float ang = (float)atan2(windDir.x, windDir.z);
-	//Параметры экрана
+	//РџР°СЂР°РјРµС‚СЂС‹ СЌРєСЂР°РЅР°
 	float w, h;
 	wdmObjects->GetVPSize(w, h);
 	float kDef = rs->GetHeightDeformator();
-	//Центр штуки
+	//Р¦РµРЅС‚СЂ С€С‚СѓРєРё
 	float cx = (w - 128.0f - 16.0f) + 64.0f;
 	float cy = (-40.0f) + 128.0f;
-	//Буфер для рисования плашек
+	//Р‘СѓС„РµСЂ РґР»СЏ СЂРёСЃРѕРІР°РЅРёСЏ РїР»Р°С€РµРє
 	Vertex buf[(3*2)*2];
-	//Небо
+	//РќРµР±Рѕ
 	rs->TextureSet(0, txSky);
 	rs->TextureSet(1, txSkyMask);
 	FillRectCoord(buf, cx - 64.0f, cy - 64.0f, 128.0f, 128.0f);
@@ -152,13 +152,13 @@ void WdmWindUI::LRender(VDX8RENDER * rs)
 	FillRectUV1(buf, 0.0f, 0.0f, 1.0f, 1.0f);
 	FillRectColor(buf, 0x80ffffff);
 	DrawRects(buf, 1, "WdmInterfaceDrawSky");
-	//Направление ветра
+	//РќР°РїСЂР°РІР»РµРЅРёРµ РІРµС‚СЂР°
 	rs->TextureSet(0, txWindPointer);
 	FillRectCoord(buf, cx - 16.0f, cy - 64.0f, 32.0f, 128.0f, ang);
 	FillRectUV(buf, 0.0f, 0.0f, 1.0f, 1.0f);
 	FillRectColor(buf, 0xffffffff);
 	DrawRects(buf, 1, "WdmDrawMapBlend");
-	//Сила ветра
+	//РЎРёР»Р° РІРµС‚СЂР°
 	rs->TextureSet(0, txBar);
 	rs->TextureSet(1, txBarMask);
 	FillRectCoord(buf, cx - 64.0f, cy, 128.0f, 128.0f);
@@ -174,13 +174,13 @@ void WdmWindUI::LRender(VDX8RENDER * rs)
 	}
 	FillRectColor(buf, 0xffffffff);
 	DrawRects(buf, 1, "WdmInterfaceDrawSky");
-	//Рамка
+	//Р Р°РјРєР°
 	rs->TextureSet(0, txBack);
 	FillRectCoord(buf, cx - 64.0f, cy - 128.0f, 128.0f, 256.0f);
 	FillRectUV(buf, 0.0f, 0.0f, 1.0f, 1.0f);
 	FillRectColor(buf, 0xffffffff);
 	DrawRects(buf, 1, "WdmDrawMapBlend");
-	//Пишем дату
+	//РџРёС€РµРј РґР°С‚Сѓ
 	char tbuf[128];
 	_snprintf(tbuf, sizeof(tbuf) - 1, "%i %s %i", wdmObjects->wm->day, month[wdmObjects->wm->mon - 1], wdmObjects->wm->year);
 	tbuf[sizeof(tbuf) - 1] = 0;
@@ -188,9 +188,9 @@ void WdmWindUI::LRender(VDX8RENDER * rs)
 	long fw = rs->StringWidth(tbuf, font);
 	long fh = rs->CharHeight(font);
 	rs->Print(font, 0xffffffff, long(cx - fw*0.5f), long(cy + 98.0f - fh*0.5f), tbuf);	
-	//Центр
+	//Р¦РµРЅС‚СЂ
 	cy += 128.0f + 32.0f;
-	//Рисуем моральную бару
+	//Р РёСЃСѓРµРј РјРѕСЂР°Р»СЊРЅСѓСЋ Р±Р°СЂСѓ
 	rs->TextureSet(0, txMoraleBar);
 	rs->TextureSet(1, txMoraleMask);
 	FillRectCoord(buf, cx - 64.0f, cy - 32.0f, 128.0f, 64.0f);
@@ -198,31 +198,31 @@ void WdmWindUI::LRender(VDX8RENDER * rs)
 	FillRectUV1(buf, 0.0f, 0.0f, 1.0f, 1.0f);
 	FillRectColor(buf, 0xffffffff);
 	DrawRects(buf, 1, "WdmInterfaceDrawSky");
-	//Рисуем моральную плашку
+	//Р РёСЃСѓРµРј РјРѕСЂР°Р»СЊРЅСѓСЋ РїР»Р°С€РєСѓ
 	rs->TextureSet(0, txMorale);
 	FillRectCoord(buf, cx - 64.0f, cy - 32.0f, 128.0f, 64.0f);
 	FillRectUV(buf, 0.0f, 0.0f, 1.0f, 1.0f);
 	FillRectColor(buf, 0xffffffff);
 	DrawRects(buf, 1, "WdmDrawMapBlend");
-	//Пишем количество припасов
+	//РџРёС€РµРј РєРѕР»РёС‡РµСЃС‚РІРѕ РїСЂРёРїР°СЃРѕРІ
 	_snprintf(tbuf, sizeof(tbuf) - 1, "%i", food);
 	tbuf[sizeof(tbuf) - 1] = 0;
 	fw = rs->StringWidth(tbuf, font);
 	rs->Print(font, 0xffffffff, long(cx - 24.0f - fw*0.5f), long(cy + 30.0f), tbuf);
-	//Пишем количество рома --> ugeen 29.10.10
+	//РџРёС€РµРј РєРѕР»РёС‡РµСЃС‚РІРѕ СЂРѕРјР° --> ugeen 29.10.10
 	_snprintf(tbuf, sizeof(tbuf) - 1, "%i", rum);
 	tbuf[sizeof(tbuf) - 1] = 0;
 	fw = rs->StringWidth(tbuf, font);
 	rs->Print(font, 0xffffffff, long(cx + 24.0f - fw*0.5f), long(cy + 30.0f), tbuf);
 		
-	//Рамка с координатами
+	//Р Р°РјРєР° СЃ РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё
 	rs->TextureSet(0, txCoord);
 	FillRectCoord(buf, cx - 64.0f, cy + 64.0f, 128.0f, 64.0f);
 	FillRectUV(buf, 0.0f, 0.0f, 1.0f, 1.0f);
 	FillRectColor(buf, 0xffffffff);
 	DrawRects(buf, 1, "WdmDrawMapBlend");
 	
-	// выводим строку с координатами
+	// РІС‹РІРѕРґРёРј СЃС‚СЂРѕРєСѓ СЃ РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё
 	_snprintf(tbuf, sizeof(tbuf) - 1, "%s", wdmObjects->coordinate);
 	tbuf[sizeof(tbuf) - 1] = 0;
 	fw = rs->StringWidth(tbuf, font);		
@@ -235,7 +235,7 @@ void WdmWindUI::LRender(VDX8RENDER * rs)
 	fh = rs->CharHeight(font);
 	rs->Print(font, 0xffffffff, long(cx - fw*0.5f), long(cy + 64.0f + 20.0f- fh*0.5f), tbuf);								
 
-	// национальный флаг
+	// РЅР°С†РёРѕРЅР°Р»СЊРЅС‹Р№ С„Р»Р°Рі
 	float addtu = 0.125;
 	rs->TextureSet(0, txNationFlag);
 	FillRectCoord(buf, cx - 24.0f, cy + 150.0f, 48.0f, 48.0f);

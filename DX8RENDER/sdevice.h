@@ -317,11 +317,11 @@ public:
 		virtual long StringWidth(char * string, long nFontNum=0, float fScale=1.f, long scrWidth=0);
 		virtual long CharWidth(char ch, long nFontNum=0, float fScale=1.f, long scrWidth=0);
 		virtual long CharHeight(long fontID);
-		virtual long LoadFont(char * fontName); // возвращает номер\идентификатор шрифта или -1 в случае ошибки
-		virtual bool UnloadFont(char * fontName); // возвращает истину если шрифт остался в использовании
-		virtual bool UnloadFont(long fontID); // возвращает истину если шрифт остался в использовании
-		virtual bool SetCurFont(char * fontName); // возвращает истину если установили данный шрифт
-		virtual bool SetCurFont(long fontID); // возвращает истину если установили данный шрифт
+		virtual long LoadFont(char * fontName); // РІРѕР·РІСЂР°С‰Р°РµС‚ РЅРѕРјРµСЂ\РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ С€СЂРёС„С‚Р° РёР»Рё -1 РІ СЃР»СѓС‡Р°Рµ РѕС€РёР±РєРё
+		virtual bool UnloadFont(char * fontName); // РІРѕР·РІСЂР°С‰Р°РµС‚ РёСЃС‚РёРЅСѓ РµСЃР»Рё С€СЂРёС„С‚ РѕСЃС‚Р°Р»СЃСЏ РІ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРё
+		virtual bool UnloadFont(long fontID); // РІРѕР·РІСЂР°С‰Р°РµС‚ РёСЃС‚РёРЅСѓ РµСЃР»Рё С€СЂРёС„С‚ РѕСЃС‚Р°Р»СЃСЏ РІ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРё
+		virtual bool SetCurFont(char * fontName); // РІРѕР·РІСЂР°С‰Р°РµС‚ РёСЃС‚РёРЅСѓ РµСЃР»Рё СѓСЃС‚Р°РЅРѕРІРёР»Рё РґР°РЅРЅС‹Р№ С€СЂРёС„С‚
+		virtual bool SetCurFont(long fontID); // РІРѕР·РІСЂР°С‰Р°РµС‚ РёСЃС‚РёРЅСѓ РµСЃР»Рё СѓСЃС‚Р°РЅРѕРІРёР»Рё РґР°РЅРЅС‹Р№ С€СЂРёС„С‚
 		virtual long GetCurFont();
 		virtual char * GetFontIniFileName();
 		virtual bool SetFontIniFileName(char * iniName);

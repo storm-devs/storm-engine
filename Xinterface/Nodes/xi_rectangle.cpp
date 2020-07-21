@@ -150,7 +150,7 @@ dword _cdecl CXI_RECTANGLE::MessageProc(long msgcode, MESSAGE & message)
 {
 	switch(msgcode)
 	{
-	case 0: // Сменить позицию прямоугольника
+	case 0: // РЎРјРµРЅРёС‚СЊ РїРѕР·РёС†РёСЋ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєР°
 		{
 			XYRECT newRect;
 			newRect.left = message.Long();
@@ -160,7 +160,7 @@ dword _cdecl CXI_RECTANGLE::MessageProc(long msgcode, MESSAGE & message)
 			ChangePosition( newRect );
 		}
 		break;
-	case 1: // Сменить цвет прямоугольника и границы
+	case 1: // РЎРјРµРЅРёС‚СЊ С†РІРµС‚ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєР° Рё РіСЂР°РЅРёС†С‹
 		{
 			m_dwTopColor = m_dwBottomColor = ARGB(255,255,255,255);
 			m_dwLeftColor = m_dwRightColor = message.Long();

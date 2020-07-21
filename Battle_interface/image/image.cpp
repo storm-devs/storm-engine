@@ -25,7 +25,7 @@ void BIImage::FillBuffers( BI_IMAGE_VERTEX* pV, word* pT, long& nV, long& nT )
 
 	// index buffer
 	if( m_eType == BIType_square ) {
-		for( n=2; n<m_aRelPos; n++ ) // квадратик делается по принципу Triangle Strip
+		for( n=2; n<m_aRelPos; n++ ) // РєРІР°РґСЂР°С‚РёРє РґРµР»Р°РµС‚СЃСЏ РїРѕ РїСЂРёРЅС†РёРїСѓ Triangle Strip
 		{
 			pT[ni++] = (word)(nv + n-2);
 			pT[ni++] = (word)(nv + n-1);
@@ -33,7 +33,7 @@ void BIImage::FillBuffers( BI_IMAGE_VERTEX* pV, word* pT, long& nV, long& nT )
 		}
 		nT += n-2;
 	}
-	else if( m_eType == BIType_clocksquare ) { // квадратные "часы" делаются по принципу Triangle Fan
+	else if( m_eType == BIType_clocksquare ) { // РєРІР°РґСЂР°С‚РЅС‹Рµ "С‡Р°СЃС‹" РґРµР»Р°СЋС‚СЃСЏ РїРѕ РїСЂРёРЅС†РёРїСѓ Triangle Fan
 		for( n=2; n<m_aRelPos; n++ )
 		{
 			pT[ni++] = (word)(nv);
@@ -116,16 +116,16 @@ void BIImage::CutClock( float fBegin, float fEnd, float fFactor )
 	FPOINT fp;
 	fp.x = 0.5f;		fp.y = 0.5f;			m_aRelPos.Add( fp );
 	float fEndAng = fBegin + (fEnd-fBegin) * fFactor;
-	// первая/начальная точка на часах
+	// РїРµСЂРІР°СЏ/РЅР°С‡Р°Р»СЊРЅР°СЏ С‚РѕС‡РєР° РЅР° С‡Р°СЃР°С…
 	m_aRelPos.Add( GetClockPoint( fBegin, fp ) );
-	// следующие углы
+	// СЃР»РµРґСѓСЋС‰РёРµ СѓРіР»С‹
 	if( fBegin < fEndAng )
 		for( float fAng=GetNextClockCorner(fBegin); fAng<fEndAng; fAng=GetNextClockCorner(fAng) )
 			m_aRelPos.Add( GetClockPoint( fAng, fp ) );
 	else if( fBegin > fEndAng )
 		for( float fAng=GetPrevClockCorner(fBegin); fAng>fEndAng; fAng=GetPrevClockCorner(fAng) )
 			m_aRelPos.Add( GetClockPoint( fAng, fp ) );
-	// последняя/конечная точка на часах
+	// РїРѕСЃР»РµРґРЅСЏСЏ/РєРѕРЅРµС‡РЅР°СЏ С‚РѕС‡РєР° РЅР° С‡Р°СЃР°С…
 	m_aRelPos.Add( GetClockPoint( fEndAng, fp ) );
 	m_nVertexQuantity = m_aRelPos.Size();
 	m_nTriangleQuantity = m_nVertexQuantity - 2;

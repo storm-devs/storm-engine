@@ -8,7 +8,7 @@
 #define GUIDSTEP 256
 
 
-//Типы для эмитеров
+//РўРёРїС‹ РґР»СЏ СЌРјРёС‚РµСЂРѕРІ
 enum EmitterType
 {
 	POINT_EMITTER = 0,
@@ -17,7 +17,7 @@ enum EmitterType
 };
 
 
-//Типы для партиклов
+//РўРёРїС‹ РґР»СЏ РїР°СЂС‚РёРєР»РѕРІ
 enum ParticleType
 {
 	BILLBOARD_PARTICLE = 1,
@@ -26,7 +26,7 @@ enum ParticleType
 	UNKNOWN_PARTICLE = 0x7fffffff
 };
 
-//Типы полей
+//РўРёРїС‹ РїРѕР»РµР№
 enum FieldType
 {
 	FIELD_UNKNOWN = 0,

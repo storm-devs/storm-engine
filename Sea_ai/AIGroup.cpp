@@ -64,12 +64,12 @@ void AIGroup::AddShip(ENTITY_ID eidShip, ATTRIBUTES * pACharacter, ATTRIBUTES * 
 	
 	//vTmpPos = (aGroupShips.Size() * AIGroup::fDistanceBetweenGroupShips) * CVECTOR(sinf(vInitGroupPos.y), 0.0f, cosf(vInitGroupPos.y));		
 	
-	if(isWarShip) 	// военный
+	if(isWarShip) 	// РІРѕРµРЅРЅС‹Р№
 	{
 		vTmpPos = ((iWarShipsNum - 1) * AIGroup::fDistanceBetweenGroupShips) * CVECTOR(sinf(vInitGroupPos.y), 0.0f, cosf(vInitGroupPos.y));		
 		vShipPos = CVECTOR(vInitGroupPos.x, vInitGroupPos.y, vInitGroupPos.z) - vTmpPos;
 	}
-	else			// торговый
+	else			// С‚РѕСЂРіРѕРІС‹Р№
 	{
 		vTmpPos = ((iTradeShipsNum - 1) * AIGroup::fDistanceBetweenGroupShips) * CVECTOR(sinf(vInitGroupPos.y), 0.0f, cosf(vInitGroupPos.y));		
 		vShipPos = CVECTOR(vInitGroupPos.x, vInitGroupPos.y, vInitGroupPos.z) - vTmpPos - CVECTOR(0.0f, 0.0f, AIGroup::fDistanceBetweenGroupLines);

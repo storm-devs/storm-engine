@@ -3,7 +3,7 @@
 #include "..\..\..\common_h\vmodule_api.h"
 
 
-//конструктор/деструктор
+//РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ/РґРµСЃС‚СЂСѓРєС‚РѕСЂ
 DataString::DataString ()
 {
 }
@@ -12,13 +12,13 @@ DataString::~DataString ()
 {
 }
 
-//Получить значение
+//РџРѕР»СѓС‡РёС‚СЊ Р·РЅР°С‡РµРЅРёРµ
 const char* DataString::GetValue ()
 {
 	return Value.GetBuffer();
 }
 
-//Установить значение
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р·РЅР°С‡РµРЅРёРµ
 void DataString::SetValue (const char* val)
 {
 	Value = val;

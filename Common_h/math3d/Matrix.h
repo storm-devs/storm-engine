@@ -21,14 +21,14 @@ struct D3DXMATRIX;
 /*!
 <PRE>
 
-Линейное представление        В виде двухмерного массива
+Р›РёРЅРµР№РЅРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ        Р’ РІРёРґРµ РґРІСѓС…РјРµСЂРЅРѕРіРѕ РјР°СЃСЃРёРІР°
                                 vx     vy     vz    pos
     0  4  8 12                [0][0] [1][0] [2][0] [3][0]    x
     1  5  9 13                [0][1] [1][1] [2][1] [3][1]    y
     2  6 10 14                [0][2] [1][2] [2][2] [3][2]    z
     3  7 11 15                [0][3] [1][3] [2][3] [3][3]    w
 */
-///Класс матрицы для преобразований в 3D.
+///РљР»Р°СЃСЃ РјР°С‚СЂРёС†С‹ РґР»СЏ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёР№ РІ 3D.
 //============================================================================================
 
 class Matrix
@@ -36,270 +36,270 @@ class Matrix
 public:
 	union
 	{
-		///Линейный массив
+		///Р›РёРЅРµР№РЅС‹Р№ РјР°СЃСЃРёРІ
 		float matrix[16];
-		///Двумерный массив
+		///Р”РІСѓРјРµСЂРЅС‹Р№ РјР°СЃСЃРёРІ
 		float m[4][4];
 		struct
 		{
-			///Направление по X
+			///РќР°РїСЂР°РІР»РµРЅРёРµ РїРѕ X
 			Vector vx;
-			///Весовое значение по X
+			///Р’РµСЃРѕРІРѕРµ Р·РЅР°С‡РµРЅРёРµ РїРѕ X
 			float wx;
-			///Направление по Y
+			///РќР°РїСЂР°РІР»РµРЅРёРµ РїРѕ Y
 			Vector vy;
-			///Весовое значение по Y
+			///Р’РµСЃРѕРІРѕРµ Р·РЅР°С‡РµРЅРёРµ РїРѕ Y
 			float wy;
-			///Направление по Z
+			///РќР°РїСЂР°РІР»РµРЅРёРµ РїРѕ Z
 			Vector vz;
-			///Весовое значение по Z
+			///Р’РµСЃРѕРІРѕРµ Р·РЅР°С‡РµРЅРёРµ РїРѕ Z
 			float wz;
-			///Позиция
+			///РџРѕР·РёС†РёСЏ
 			Vector pos;
-			//Добавляемое весовое значение
+			//Р”РѕР±Р°РІР»СЏРµРјРѕРµ РІРµСЃРѕРІРѕРµ Р·РЅР°С‡РµРЅРёРµ
 			float w;
 		};
 	};
 
 //-----------------------------------------------------------
-//Конструкторы
+//РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂС‹
 //-----------------------------------------------------------
 public:
-	///Сконструировать единичную матрицу
+	///РЎРєРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°С‚СЊ РµРґРёРЅРёС‡РЅСѓСЋ РјР°С‚СЂРёС†Сѓ
 	Matrix();
-	///Сконструировать матрицу без заполнения
+	///РЎРєРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°С‚СЊ РјР°С‚СЂРёС†Сѓ Р±РµР· Р·Р°РїРѕР»РЅРµРЅРёСЏ
 	Matrix(bool empty);
-	///Сконструировать матрицу по углам с позицией
+	///РЎРєРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°С‚СЊ РјР°С‚СЂРёС†Сѓ РїРѕ СѓРіР»Р°Рј СЃ РїРѕР·РёС†РёРµР№
 	Matrix(float angX, float angY, float angZ, float x, float y, float z);
-	///Сконструировать матрицу по углам
+	///РЎРєРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°С‚СЊ РјР°С‚СЂРёС†Сѓ РїРѕ СѓРіР»Р°Рј
 	Matrix(float angX, float angY, float angZ);
-	///Сконструировать матрицу по углам с позицией
+	///РЎРєРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°С‚СЊ РјР°С‚СЂРёС†Сѓ РїРѕ СѓРіР»Р°Рј СЃ РїРѕР·РёС†РёРµР№
 	Matrix(const Vector & ang, const Vector & pos);
-	///Сконструировать матрицу по углам
+	///РЎРєРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°С‚СЊ РјР°С‚СЂРёС†Сѓ РїРѕ СѓРіР»Р°Рј
 	Matrix(const Vector & ang);
-	///Сконструировать копию матрицы
+	///РЎРєРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°С‚СЊ РєРѕРїРёСЋ РјР°С‚СЂРёС†С‹
 	Matrix(const Matrix & matrix);
-	///Сконструировать результат перемножения матриц this = m1*m2
+	///РЎРєРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°С‚СЊ СЂРµР·СѓР»СЊС‚Р°С‚ РїРµСЂРµРјРЅРѕР¶РµРЅРёСЏ РјР°С‚СЂРёС† this = m1*m2
 	Matrix(const Matrix & m1, const Matrix & m2);
 
 //-----------------------------------------------------------
-//Операторы
+//РћРїРµСЂР°С‚РѕСЂС‹
 //-----------------------------------------------------------
 public:
-	//Присвоить матрице другую матрицу
+	//РџСЂРёСЃРІРѕРёС‚СЊ РјР°С‚СЂРёС†Рµ РґСЂСѓРіСѓСЋ РјР°С‚СЂРёС†Сѓ
 	Matrix & operator = (const Matrix & mtx);
-	//Присвоить позиции матрицы число
+	//РџСЂРёСЃРІРѕРёС‚СЊ РїРѕР·РёС†РёРё РјР°С‚СЂРёС†С‹ С‡РёСЃР»Рѕ
 	Matrix & operator = (float f);
-	//Присвоить позиции матрицы число
+	//РџСЂРёСЃРІРѕРёС‚СЊ РїРѕР·РёС†РёРё РјР°С‚СЂРёС†С‹ С‡РёСЃР»Рѕ
 	Matrix & operator = (double d);
-	//Присвоить позиции матрицы вектор
+	//РџСЂРёСЃРІРѕРёС‚СЊ РїРѕР·РёС†РёРё РјР°С‚СЂРёС†С‹ РІРµРєС‚РѕСЂ
 	Matrix & operator = (const Vector & v);
 
-	//Перемножить матрицы
+	//РџРµСЂРµРјРЅРѕР¶РёС‚СЊ РјР°С‚СЂРёС†С‹
 	Matrix & operator *= (const Matrix & mtx);
 
 	
 //-----------------------------------------------------------
-//Заполнение матрицы
+//Р—Р°РїРѕР»РЅРµРЅРёРµ РјР°С‚СЂРёС†С‹
 //-----------------------------------------------------------
 public:
-	///Установить единичную матрицу
+	///РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РµРґРёРЅРёС‡РЅСѓСЋ РјР°С‚СЂРёС†Сѓ
 	Matrix & SetIdentity();
 
-	///Установить матрицу
+	///РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РјР°С‚СЂРёС†Сѓ
 	Matrix & Set(const Matrix & matrix);
 	
-	///Посчитать матрицу M = rotZ*rotX*rotY*Pos
+	///РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ M = rotZ*rotX*rotY*Pos
 	Matrix & Build(float angX, float angY, float angZ, float x, float y, float z);
-	///Посчитать матрицу M = rotZ*rotX*rotY
+	///РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ M = rotZ*rotX*rotY
 	Matrix & Build(float angX, float angY, float angZ);
-	///Посчитать матрицу M = rotZ*rotX*rotY*Pos
+	///РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ M = rotZ*rotX*rotY*Pos
 	Matrix & Build(const Vector & ang, const Vector & pos);
-	///Посчитать матрицу M = rotZ*rotX*rotY
+	///РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ M = rotZ*rotX*rotY
 	Matrix & Build(const Vector & ang);
 
-	///Посчитать матрицу M = rotX*rotY*rotZ*Pos
+	///РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ M = rotX*rotY*rotZ*Pos
 	Matrix & BuildXYZ(float angX, float angY, float angZ, float x, float y, float z);
 
-	///Посчитать матрицу поворота вокруг X
+	///РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ РїРѕРІРѕСЂРѕС‚Р° РІРѕРєСЂСѓРі X
 	Matrix & BuildRotateX(float ang);
-	///Посчитать матрицу поворота вокруг Y
+	///РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ РїРѕРІРѕСЂРѕС‚Р° РІРѕРєСЂСѓРі Y
 	Matrix & BuildRotateY(float ang);
-	///Посчитать матрицу поворота вокруг Z
+	///РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ РїРѕРІРѕСЂРѕС‚Р° РІРѕРєСЂСѓРі Z
 	Matrix & BuildRotateZ(float ang);
-	///Посчитать матрицу позиции
+	///РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ РїРѕР·РёС†РёРё
 	Matrix & BuildPosition(float x, float y, float z);
-	///Посчитать матрицу позиции
+	///РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ РїРѕР·РёС†РёРё
 	Matrix & BuildPosition(const Vector & pos);
 
-	///Посчитать матрицу масштабирования
+	///РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРёСЏ
 	Matrix & BuildScale(float scale);
-	///Посчитать матрицу масштабирования
+	///РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРёСЏ
 	Matrix & BuildScale(float scaleX, float scaleY, float scaleZ);
-	///Посчитать матрицу масштабирования
+	///РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРёСЏ
 	Matrix & BuildScale(const Vector & scale);
 
-	///Посчитать матрицу проекции
+	///РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ РїСЂРѕРµРєС†РёРё
 	Matrix & BuildProjection(float viewAngle, float vpWidth, float vpHeight, float zNear, float zFar);
-	///Посчитать матрицу камеры
+	///РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ РєР°РјРµСЂС‹
 	bool BuildView(Vector lookFrom, Vector lookTo, Vector upVector);
-	///Посчитать матрицу ориентации объекта имея направление по z и направление вверх
+	///РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ РѕСЂРёРµРЅС‚Р°С†РёРё РѕР±СЉРµРєС‚Р° РёРјРµСЏ РЅР°РїСЂР°РІР»РµРЅРёРµ РїРѕ z Рё РЅР°РїСЂР°РІР»РµРЅРёРµ РІРІРµСЂС…
 	bool BuildOrient(Vector zAxisDirection, Vector upVector);
-	///Посчитать матрицу объекта имея позицию точку куда направлен объект и направление вверх
+	///РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ РѕР±СЉРµРєС‚Р° РёРјРµСЏ РїРѕР·РёС†РёСЋ С‚РѕС‡РєСѓ РєСѓРґР° РЅР°РїСЂР°РІР»РµРЅ РѕР±СЉРµРєС‚ Рё РЅР°РїСЂР°РІР»РµРЅРёРµ РІРІРµСЂС…
 	bool BuildOriented(Vector position, Vector lookTo, Vector upVector);
-	///Посчитать матрицу для отзеркаливания геометрии
+	///РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ РґР»СЏ РѕС‚Р·РµСЂРєР°Р»РёРІР°РЅРёСЏ РіРµРѕРјРµС‚СЂРёРё
 	Matrix & BuildMirror(float Nx, float Ny, float Nz, float D);
-	///Посчитать ортоганальную матрицу проекции
+	///РџРѕСЃС‡РёС‚Р°С‚СЊ РѕСЂС‚РѕРіР°РЅР°Р»СЊРЅСѓСЋ РјР°С‚СЂРёС†Сѓ РїСЂРѕРµРєС†РёРё
 	Matrix & BuildOrtoProjection(float vpWidth, float vpHeight, float zNear, float zFar);
-	//Посчитать матрицу проекции для тени
+	//РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ РїСЂРѕРµРєС†РёРё РґР»СЏ С‚РµРЅРё
 	Matrix & BuildShadowProjection(float viewAngle, float vpWidth, float vpHeight, float zNear, float zFar);
 
 //-----------------------------------------------------------
-//Преобразование матрицы
+//РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ РјР°С‚СЂРёС†С‹
 //-----------------------------------------------------------
 public:
-	///Повернуть вокруг X
+	///РџРѕРІРµСЂРЅСѓС‚СЊ РІРѕРєСЂСѓРі X
 	Matrix & RotateX(float ang);
-	///Повернуть вокруг Y
+	///РџРѕРІРµСЂРЅСѓС‚СЊ РІРѕРєСЂСѓРі Y
 	Matrix & RotateY(float ang);
-	///Повернуть вокруг Z
+	///РџРѕРІРµСЂРЅСѓС‚СЊ РІРѕРєСЂСѓРі Z
 	Matrix & RotateZ(float ang);
-	///Повернуть вокруг ZXY
+	///РџРѕРІРµСЂРЅСѓС‚СЊ РІРѕРєСЂСѓРі ZXY
 	Matrix & Rotate(float angX, float angY, float angZ);
-	///Повернуть вокруг ZXY
+	///РџРѕРІРµСЂРЅСѓС‚СЊ РІРѕРєСЂСѓРі ZXY
 	Matrix & Rotate(const Vector & ang);
 	
-	///Переместить
+	///РџРµСЂРµРјРµСЃС‚РёС‚СЊ
 	Matrix & Move(float dX, float dY, float dZ);
-	///Переместить
+	///РџРµСЂРµРјРµСЃС‚РёС‚СЊ
 	Matrix & Move(const Vector & pos);
 
-	///Отмасштабировать
+	///РћС‚РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°С‚СЊ
 	Matrix & Scale(float scale);
-	///Отмасштабировать матрицу поворота
+	///РћС‚РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°С‚СЊ РјР°С‚СЂРёС†Сѓ РїРѕРІРѕСЂРѕС‚Р°
 	Matrix & Scale3x3(float scale);
-	///Отмасштабировать
+	///РћС‚РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°С‚СЊ
 	Matrix & Scale(float scaleX, float scaleY, float scaleZ);
-	///Отмасштабировать матрицу поворота
+	///РћС‚РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°С‚СЊ РјР°С‚СЂРёС†Сѓ РїРѕРІРѕСЂРѕС‚Р°
 	Matrix & Scale3x3(float scaleX, float scaleY, float scaleZ);
-	///Отмасштабировать
+	///РћС‚РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°С‚СЊ
 	Matrix & Scale(const Vector & scale);
-	///Отмасштабировать матрицу поворота
+	///РћС‚РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°С‚СЊ РјР°С‚СЂРёС†Сѓ РїРѕРІРѕСЂРѕС‚Р°
 	Matrix & Scale3x3(const Vector & scale);
 	
-	///Расчёт обратной матрицы
+	///Р Р°СЃС‡С‘С‚ РѕР±СЂР°С‚РЅРѕР№ РјР°С‚СЂРёС†С‹
 	Matrix & Inverse();
-	///Расчёт обратной матрицы из другой
+	///Р Р°СЃС‡С‘С‚ РѕР±СЂР°С‚РЅРѕР№ РјР°С‚СЂРёС†С‹ РёР· РґСЂСѓРіРѕР№
 	Matrix & Inverse(const Matrix & mtx);
-	///Расчёт масштабированной обратной матрицы
+	///Р Р°СЃС‡С‘С‚ РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРЅРѕР№ РѕР±СЂР°С‚РЅРѕР№ РјР°С‚СЂРёС†С‹
 	Matrix & InverseWhithScale();
-	///Транспанирование матрицы
+	///РўСЂР°РЅСЃРїР°РЅРёСЂРѕРІР°РЅРёРµ РјР°С‚СЂРёС†С‹
 	Matrix & Transposition();
-	///Транспанирование элементов поворота
+	///РўСЂР°РЅСЃРїР°РЅРёСЂРѕРІР°РЅРёРµ СЌР»РµРјРµРЅС‚РѕРІ РїРѕРІРѕСЂРѕС‚Р°
 	Matrix & Transposition3X3();
 
 
 
 //-----------------------------------------------------------
-//Утилитные
+//РЈС‚РёР»РёС‚РЅС‹Рµ
 //-----------------------------------------------------------
 public:
-	///Считать только вращение
+	///РЎС‡РёС‚Р°С‚СЊ С‚РѕР»СЊРєРѕ РІСЂР°С‰РµРЅРёРµ
 	Matrix & SetRotate(const Matrix & mtr);
-	///Перемножить матрицы и результат поместить в текущую
+	///РџРµСЂРµРјРЅРѕР¶РёС‚СЊ РјР°С‚СЂРёС†С‹ Рё СЂРµР·СѓР»СЊС‚Р°С‚ РїРѕРјРµСЃС‚РёС‚СЊ РІ С‚РµРєСѓС‰СѓСЋ
 	Matrix & EqMultiply(const Matrix & m1, const Matrix & m2);
-	///Перемножить матрицы и результат поместить в текущую m1 != this && m2 != this
+	///РџРµСЂРµРјРЅРѕР¶РёС‚СЊ РјР°С‚СЂРёС†С‹ Рё СЂРµР·СѓР»СЊС‚Р°С‚ РїРѕРјРµСЃС‚РёС‚СЊ РІ С‚РµРєСѓС‰СѓСЋ m1 != this && m2 != this
 	Matrix & EqMultiplyFast(const Matrix & m1, const Matrix & m2);
 
-	///Умножить вершину на матрицу
+	///РЈРјРЅРѕР¶РёС‚СЊ РІРµСЂС€РёРЅСѓ РЅР° РјР°С‚СЂРёС†Сѓ
 	Vector MulVertex(const Vector & v) const;
-	///Умножить нормаль на матрицу
+	///РЈРјРЅРѕР¶РёС‚СЊ РЅРѕСЂРјР°Р»СЊ РЅР° РјР°С‚СЂРёС†Сѓ
 	Vector MulNormal(const Vector & v) const;
-	///Умножить вершину на инверстую матрицу
+	///РЈРјРЅРѕР¶РёС‚СЊ РІРµСЂС€РёРЅСѓ РЅР° РёРЅРІРµСЂСЃС‚СѓСЋ РјР°С‚СЂРёС†Сѓ
 	Vector MulVertexByInverse(const Vector & v) const;
-	///Умножить нормаль на инверстую матрицу
+	///РЈРјРЅРѕР¶РёС‚СЊ РЅРѕСЂРјР°Р»СЊ РЅР° РёРЅРІРµСЂСЃС‚СѓСЋ РјР°С‚СЂРёС†Сѓ
 	Vector MulNormalByInverse(const Vector & v) const;
 
-	///Получить позицию камеры из матрицы камеры
+	///РџРѕР»СѓС‡РёС‚СЊ РїРѕР·РёС†РёСЋ РєР°РјРµСЂС‹ РёР· РјР°С‚СЂРёС†С‹ РєР°РјРµСЂС‹
 	Vector GetCamPos() const;
-	///Единичная матрица или нет
+	///Р•РґРёРЅРёС‡РЅР°СЏ РјР°С‚СЂРёС†Р° РёР»Рё РЅРµС‚
 	bool IsIdentity() const;
-	///Скалирования матрица или нет
+	///РЎРєР°Р»РёСЂРѕРІР°РЅРёСЏ РјР°С‚СЂРёС†Р° РёР»Рё РЅРµС‚
 	bool IsScale() const;
 
-	///Споецировать вершину (для матрицы проекции)
+	///РЎРїРѕРµС†РёСЂРѕРІР°С‚СЊ РІРµСЂС€РёРЅСѓ (РґР»СЏ РјР°С‚СЂРёС†С‹ РїСЂРѕРµРєС†РёРё)
 	Vector4 Projection(Vector vertex, float vphWidth05 = 1.0f, float vphHeight05 = 1.0f) const;
-	///Споецировать массив вершин (для матрицы проекции)
+	///РЎРїРѕРµС†РёСЂРѕРІР°С‚СЊ РјР°СЃСЃРёРІ РІРµСЂС€РёРЅ (РґР»СЏ РјР°С‚СЂРёС†С‹ РїСЂРѕРµРєС†РёРё)
 	void Projection(Vector4 * dstArray, Vector * srcArray, long num, float vphWidth05 = 1.0f, float vphHeight05 = 1.0f, long srcSize = sizeof(Vector), long dstSize = sizeof(Vector4)) const;
 
-	//Получить углы из нескалированной матрицы поворота
+	//РџРѕР»СѓС‡РёС‚СЊ СѓРіР»С‹ РёР· РЅРµСЃРєР°Р»РёСЂРѕРІР°РЅРЅРѕР№ РјР°С‚СЂРёС†С‹ РїРѕРІРѕСЂРѕС‚Р°
 	void GetAngles(float & ax, float & ay, float & az);
-	//Получить углы из нескалированной матрицы поворота
+	//РџРѕР»СѓС‡РёС‚СЊ СѓРіР»С‹ РёР· РЅРµСЃРєР°Р»РёСЂРѕРІР°РЅРЅРѕР№ РјР°С‚СЂРёС†С‹ РїРѕРІРѕСЂРѕС‚Р°
 	void GetAngles(Vector & ang);
 	
-	///Доступиться до элементов матрицы через скобки
+	///Р”РѕСЃС‚СѓРїРёС‚СЊСЃСЏ РґРѕ СЌР»РµРјРµРЅС‚РѕРІ РјР°С‚СЂРёС†С‹ С‡РµСЂРµР· СЃРєРѕР±РєРё
 	float & operator () (long i, long j);
 
-	///Получить указатель на матрицу D3D
+	///РџРѕР»СѓС‡РёС‚СЊ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РјР°С‚СЂРёС†Сѓ D3D
 	operator D3DXMATRIX * () const;
 
-	///Получить вектор для расчёта X компоненты
+	///РџРѕР»СѓС‡РёС‚СЊ РІРµРєС‚РѕСЂ РґР»СЏ СЂР°СЃС‡С‘С‚Р° X РєРѕРјРїРѕРЅРµРЅС‚С‹
 	Vector4 GetVectorX() const;
-	///Получить вектор для расчёта Y компоненты
+	///РџРѕР»СѓС‡РёС‚СЊ РІРµРєС‚РѕСЂ РґР»СЏ СЂР°СЃС‡С‘С‚Р° Y РєРѕРјРїРѕРЅРµРЅС‚С‹
 	Vector4 GetVectorY() const;
-	///Получить вектор для расчёта Z компоненты
+	///РџРѕР»СѓС‡РёС‚СЊ РІРµРєС‚РѕСЂ РґР»СЏ СЂР°СЃС‡С‘С‚Р° Z РєРѕРјРїРѕРЅРµРЅС‚С‹
 	Vector4 GetVectorZ() const;
-	///Получить вектор для расчёта W компоненты
+	///РџРѕР»СѓС‡РёС‚СЊ РІРµРєС‚РѕСЂ РґР»СЏ СЂР°СЃС‡С‘С‚Р° W РєРѕРјРїРѕРЅРµРЅС‚С‹
 	Vector4 GetVectorW() const;
 };
 
 
 //===========================================================
-//Конструкторы
+//РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂС‹
 //===========================================================
 
-//Сконструировать единичную матрицу
+//РЎРєРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°С‚СЊ РµРґРёРЅРёС‡РЅСѓСЋ РјР°С‚СЂРёС†Сѓ
 mathinline Matrix::Matrix()
 {
 	SetIdentity();
 }
 
-///Сконструировать матрицу без заполнения
+///РЎРєРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°С‚СЊ РјР°С‚СЂРёС†Сѓ Р±РµР· Р·Р°РїРѕР»РЅРµРЅРёСЏ
 mathinline Matrix::Matrix(bool empty)
 {
 }
 
-//Сконструировать матрицу по углам с позицией
+//РЎРєРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°С‚СЊ РјР°С‚СЂРёС†Сѓ РїРѕ СѓРіР»Р°Рј СЃ РїРѕР·РёС†РёРµР№
 mathinline Matrix::Matrix(float angX, float angY, float angZ, float x, float y, float z)
 {
 	Build(angX, angY, angZ, x, y, z);
 }
 
-//Сконструировать матрицу по углам
+//РЎРєРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°С‚СЊ РјР°С‚СЂРёС†Сѓ РїРѕ СѓРіР»Р°Рј
 mathinline Matrix::Matrix(float angX, float angY, float angZ)
 {
 	Build(angX, angY, angZ);
 }
 
-//Сконструировать матрицу по углам с позицией
+//РЎРєРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°С‚СЊ РјР°С‚СЂРёС†Сѓ РїРѕ СѓРіР»Р°Рј СЃ РїРѕР·РёС†РёРµР№
 mathinline Matrix::Matrix(const Vector & ang, const Vector & pos)
 {
 	Build(ang, pos);
 }
 
-//Сконструировать матрицу по углам
+//РЎРєРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°С‚СЊ РјР°С‚СЂРёС†Сѓ РїРѕ СѓРіР»Р°Рј
 mathinline Matrix::Matrix(const Vector & ang)
 {
 	Build(ang);
 }
 
-//Сконструировать копию матрицы
+//РЎРєРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°С‚СЊ РєРѕРїРёСЋ РјР°С‚СЂРёС†С‹
 mathinline Matrix::Matrix(const Matrix & matrix)
 {
 	Set(matrix);
 }
 
-//Сконструировать результат перемножения матриц this = m1*m2
+//РЎРєРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°С‚СЊ СЂРµР·СѓР»СЊС‚Р°С‚ РїРµСЂРµРјРЅРѕР¶РµРЅРёСЏ РјР°С‚СЂРёС† this = m1*m2
 mathinline Matrix::Matrix(const Matrix & m1, const Matrix & m2)
 {
 	EqMultiply(m1, m2);
@@ -307,38 +307,38 @@ mathinline Matrix::Matrix(const Matrix & m1, const Matrix & m2)
 
 
 //===========================================================
-//Операторы
+//РћРїРµСЂР°С‚РѕСЂС‹
 //===========================================================
 
-//Присвоить матрице другую матрицу
+//РџСЂРёСЃРІРѕРёС‚СЊ РјР°С‚СЂРёС†Рµ РґСЂСѓРіСѓСЋ РјР°С‚СЂРёС†Сѓ
 mathinline Matrix & Matrix::operator = (const Matrix & mtx)
 {
 	Set(mtx);
 	return *this;
 }
 
-//Присвоить позиции матрицы число
+//РџСЂРёСЃРІРѕРёС‚СЊ РїРѕР·РёС†РёРё РјР°С‚СЂРёС†С‹ С‡РёСЃР»Рѕ
 mathinline Matrix & Matrix::operator = (float f)
 {
 	pos = f;
 	return *this;
 }
 
-//Присвоить позиции матрицы число
+//РџСЂРёСЃРІРѕРёС‚СЊ РїРѕР·РёС†РёРё РјР°С‚СЂРёС†С‹ С‡РёСЃР»Рѕ
 mathinline Matrix & Matrix::operator = (double d)
 {
 	pos = d;
 	return *this;
 }
 
-//Присвоить позиции матрицы вектор
+//РџСЂРёСЃРІРѕРёС‚СЊ РїРѕР·РёС†РёРё РјР°С‚СЂРёС†С‹ РІРµРєС‚РѕСЂ
 mathinline Matrix & Matrix::operator = (const Vector & v)
 {
 	pos = v;
 	return *this;
 }
 
-//Перемножить матрицы
+//РџРµСЂРµРјРЅРѕР¶РёС‚СЊ РјР°С‚СЂРёС†С‹
 mathinline Matrix & Matrix::operator *= (const Matrix & mtx)
 {
 	EqMultiply(*this, mtx);
@@ -346,7 +346,7 @@ mathinline Matrix & Matrix::operator *= (const Matrix & mtx)
 }
 
 /*!\relates Matrix
-Перемножить матрицы
+РџРµСЂРµРјРЅРѕР¶РёС‚СЊ РјР°С‚СЂРёС†С‹
 */
 mathinline Matrix operator * (const Matrix & m1, const Matrix & m2)
 {
@@ -356,7 +356,7 @@ mathinline Matrix operator * (const Matrix & m1, const Matrix & m2)
 }
 
 /*!\relates Matrix
-Умножить вектор на матрицу
+РЈРјРЅРѕР¶РёС‚СЊ РІРµРєС‚РѕСЂ РЅР° РјР°С‚СЂРёС†Сѓ
 */
 mathinline Vector operator * (const Matrix & mtx, const Vector & v)
 {
@@ -364,7 +364,7 @@ mathinline Vector operator * (const Matrix & mtx, const Vector & v)
 }
 
 /*!\relates Matrix
-Умножить вектор на матрицу
+РЈРјРЅРѕР¶РёС‚СЊ РІРµРєС‚РѕСЂ РЅР° РјР°С‚СЂРёС†Сѓ
 */
 mathinline Vector operator * (const Vector & v, const Matrix & mtx)
 {
@@ -372,10 +372,10 @@ mathinline Vector operator * (const Vector & v, const Matrix & mtx)
 }
 	
 //===========================================================
-//Заполнение матрицы
+//Р—Р°РїРѕР»РЅРµРЅРёРµ РјР°С‚СЂРёС†С‹
 //===========================================================
 
-//Установить единичную матрицу
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РµРґРёРЅРёС‡РЅСѓСЋ РјР°С‚СЂРёС†Сѓ
 mathinline Matrix & Matrix::SetIdentity()
 {
 	_asm
@@ -403,7 +403,7 @@ mathinline Matrix & Matrix::SetIdentity()
 	return *this;
 }
 
-//Установить матрицу
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РјР°С‚СЂРёС†Сѓ
 mathinline Matrix & Matrix::Set(const Matrix & matrix)
 {
 	_asm
@@ -446,17 +446,17 @@ mathinline Matrix & Matrix::Set(const Matrix & matrix)
 	return *this;
 }
 
-//Посчитать матрицу M = rotZ*rotX*rotY*Pos
+//РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ M = rotZ*rotX*rotY*Pos
 mathinline Matrix & Matrix::Build(float angX, float angY, float angZ, float x, float y, float z)
 {
-	//Синусы и косинусы углов поворота
+	//РЎРёРЅСѓСЃС‹ Рё РєРѕСЃРёРЅСѓСЃС‹ СѓРіР»РѕРІ РїРѕРІРѕСЂРѕС‚Р°
 	float sinAx = sinf(angX);
 	float cosAx = cosf(angX);
 	float sinAy = sinf(angY);
 	float cosAy = cosf(angY);
 	float sinAz = sinf(angZ);
 	float cosAz = cosf(angZ);	
-	//Создаём матрицу с порядком вращений rz*rx*ry
+	//РЎРѕР·РґР°С‘Рј РјР°С‚СЂРёС†Сѓ СЃ РїРѕСЂСЏРґРєРѕРј РІСЂР°С‰РµРЅРёР№ rz*rx*ry
 	m[0][0] = cosAz*cosAy + sinAz*sinAx*sinAy;		//vx.x
 	m[0][1] = sinAz*cosAx;							//vx.y
 	m[0][2] = cosAz*-sinAy + sinAz*sinAx*cosAy;		//vx.z
@@ -476,21 +476,21 @@ mathinline Matrix & Matrix::Build(float angX, float angY, float angZ, float x, f
 	return *this;
 }
 
-//Посчитать матрицу M = rotZ*rotX*rotY
+//РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ M = rotZ*rotX*rotY
 mathinline Matrix & Matrix::Build(float angX, float angY, float angZ)
 {
 	Build(angX, angY, angZ, 0.0f, 0.0f, 0.0f);
 	return *this;
 }
 
-//Посчитать матрицу M = rotZ*rotX*rotY*Pos
+//РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ M = rotZ*rotX*rotY*Pos
 mathinline Matrix & Matrix::Build(const Vector & ang, const Vector & pos)
 {
 	Build(ang.x, ang.y, ang.z, pos.x, pos.y, pos.z);
 	return *this;
 }
 
-//Посчитать матрицу M = rotZ*rotX*rotY
+//РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ M = rotZ*rotX*rotY
 mathinline Matrix & Matrix::Build(const Vector & ang)
 {
 	Build(ang.x, ang.y, ang.z, 0.0f, 0.0f, 0.0f);
@@ -498,17 +498,17 @@ mathinline Matrix & Matrix::Build(const Vector & ang)
 }
 
 
-//Посчитать матрицу M = rotX*rotY*rotZ*Pos
+//РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ M = rotX*rotY*rotZ*Pos
 mathinline Matrix & Matrix::BuildXYZ(float angX, float angY, float angZ, float x, float y, float z)
 {
-	//Синусы и косинусы углов поворота
+	//РЎРёРЅСѓСЃС‹ Рё РєРѕСЃРёРЅСѓСЃС‹ СѓРіР»РѕРІ РїРѕРІРѕСЂРѕС‚Р°
 	float sinAx = sinf(angX);
 	float cosAx = cosf(angX);
 	float sinAy = sinf(angY);
 	float cosAy = cosf(angY);
 	float sinAz = sinf(angZ);
 	float cosAz = cosf(angZ);
-	//Создаём матрицу с порядком вращений rx*ry*rz
+	//РЎРѕР·РґР°С‘Рј РјР°С‚СЂРёС†Сѓ СЃ РїРѕСЂСЏРґРєРѕРј РІСЂР°С‰РµРЅРёР№ rx*ry*rz
 	m[0][0] = cosAy*cosAz;
 	m[0][1] = cosAy*sinAz;
 	m[0][2] = -sinAy;
@@ -528,7 +528,7 @@ mathinline Matrix & Matrix::BuildXYZ(float angX, float angY, float angZ, float x
 	return *this;
 }
 
-//Посчитать матрицу поворота вокруг X
+//РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ РїРѕРІРѕСЂРѕС‚Р° РІРѕРєСЂСѓРі X
 mathinline Matrix & Matrix::BuildRotateX(float ang)
 {
 	SetIdentity();
@@ -539,7 +539,7 @@ mathinline Matrix & Matrix::BuildRotateX(float ang)
 	return *this;
 }
 
-//Посчитать матрицу поворота вокруг Y
+//РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ РїРѕРІРѕСЂРѕС‚Р° РІРѕРєСЂСѓРі Y
 mathinline Matrix & Matrix::BuildRotateY(float ang)
 {
 	SetIdentity();
@@ -550,7 +550,7 @@ mathinline Matrix & Matrix::BuildRotateY(float ang)
 	return *this;
 }
 
-//Посчитать матрицу поворота вокруг Z
+//РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ РїРѕРІРѕСЂРѕС‚Р° РІРѕРєСЂСѓРі Z
 mathinline Matrix & Matrix::BuildRotateZ(float ang)
 {
 	SetIdentity();
@@ -561,7 +561,7 @@ mathinline Matrix & Matrix::BuildRotateZ(float ang)
 	return *this;
 }
 
-//Посчитать матрицу позиции
+//РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ РїРѕР·РёС†РёРё
 mathinline Matrix & Matrix::BuildPosition(float x, float y, float z)
 {
 	SetIdentity();
@@ -571,14 +571,14 @@ mathinline Matrix & Matrix::BuildPosition(float x, float y, float z)
 	return *this;
 }
 
-//Посчитать матрицу позиции
+//РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ РїРѕР·РёС†РёРё
 mathinline Matrix & Matrix::BuildPosition(const Vector & pos)
 {
 	BuildPosition(pos.x, pos.y, pos.z);
 	return *this;
 }
 
-//Посчитать матрицу масштабирования
+//РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРёСЏ
 mathinline Matrix & Matrix::BuildScale(float scale)
 {
 	SetIdentity();
@@ -588,7 +588,7 @@ mathinline Matrix & Matrix::BuildScale(float scale)
 	return *this;
 }
 
-//Посчитать матрицу масштабирования
+//РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРёСЏ
 mathinline Matrix & Matrix::BuildScale(float scaleX, float scaleY, float scaleZ)
 {
 	SetIdentity();
@@ -598,7 +598,7 @@ mathinline Matrix & Matrix::BuildScale(float scaleX, float scaleY, float scaleZ)
 	return *this;
 }
 
-//Посчитать матрицу масштабирования
+//РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРёСЏ
 mathinline Matrix & Matrix::BuildScale(const Vector & scale)
 {
 	BuildScale(scale.x, scale.y, scale.z);
@@ -606,10 +606,10 @@ mathinline Matrix & Matrix::BuildScale(const Vector & scale)
 }
 
 
-//Посчитать матрицу проекции
+//РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ РїСЂРѕРµРєС†РёРё
 mathinline Matrix & Matrix::BuildProjection(float viewAngle, float vpWidth, float vpHeight, float zNear, float zFar)
 {
-	//Обнулим массив
+	//РћР±РЅСѓР»РёРј РјР°СЃСЃРёРІ
 	_asm
 	{
 		mov		eax, this
@@ -632,7 +632,7 @@ mathinline Matrix & Matrix::BuildProjection(float viewAngle, float vpWidth, floa
 		mov		[eax + 14*4], ebx
 		mov		[eax + 15*4], edx
 	}
-	//Заполняем матрицу
+	//Р—Р°РїРѕР»РЅСЏРµРј РјР°С‚СЂРёС†Сѓ
 	double Q = double(zFar)/double(zFar - zNear);
 	m[0][0] = float(1.0/tan(viewAngle*0.5));
 	m[1][1] = float(1.0/tan((vpHeight/vpWidth)*viewAngle*0.5));
@@ -642,10 +642,10 @@ mathinline Matrix & Matrix::BuildProjection(float viewAngle, float vpWidth, floa
 	return *this;
 }
 
-///Посчитать ортоганальную матрицу проекции
+///РџРѕСЃС‡РёС‚Р°С‚СЊ РѕСЂС‚РѕРіР°РЅР°Р»СЊРЅСѓСЋ РјР°С‚СЂРёС†Сѓ РїСЂРѕРµРєС†РёРё
 mathinline Matrix & Matrix::BuildOrtoProjection(float vpWidth, float vpHeight, float zNear, float zFar)
 {
-	//Обнулим массив
+	//РћР±РЅСѓР»РёРј РјР°СЃСЃРёРІ
 	_asm
 	{
 		mov		eax, this
@@ -668,7 +668,7 @@ mathinline Matrix & Matrix::BuildOrtoProjection(float vpWidth, float vpHeight, f
 			mov		[eax + 14*4], ebx
 			mov		[eax + 15*4], edx
 	}
-	//Заполняем матрицу
+	//Р—Р°РїРѕР»РЅСЏРµРј РјР°С‚СЂРёС†Сѓ
 	double Q = 1.0/double(zFar - zNear);
 	m[0][0] = 2.0f/vpWidth;
 	m[1][1] = 2.0f/vpHeight;
@@ -677,10 +677,10 @@ mathinline Matrix & Matrix::BuildOrtoProjection(float vpWidth, float vpHeight, f
 	m[3][3] = 1.0f;
 }
 
-//Посчитать матрицу проекции для тени
+//РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ РїСЂРѕРµРєС†РёРё РґР»СЏ С‚РµРЅРё
 mathinline Matrix & Matrix::BuildShadowProjection(float viewAngle, float vpWidth, float vpHeight, float zNear, float zFar)
 {
-	//Обнулим массив
+	//РћР±РЅСѓР»РёРј РјР°СЃСЃРёРІ
 	_asm
 	{
 		mov		eax, this
@@ -703,7 +703,7 @@ mathinline Matrix & Matrix::BuildShadowProjection(float viewAngle, float vpWidth
 			mov		[eax + 14*4], ebx
 			mov		[eax + 15*4], edx
 	}
-	//Заполняем матрицу
+	//Р—Р°РїРѕР»РЅСЏРµРј РјР°С‚СЂРёС†Сѓ
 	double Q = 1.0/double(zFar - zNear);
 	m[0][0] = float(1.0/tan(viewAngle*0.5));
 	m[1][1] = float(1.0/tan((vpHeight/vpWidth)*viewAngle*0.5));
@@ -713,27 +713,27 @@ mathinline Matrix & Matrix::BuildShadowProjection(float viewAngle, float vpWidth
 	return *this;
 }
 
-//Посчитать матрицу камеры
+//РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ РєР°РјРµСЂС‹
 mathinline bool Matrix::BuildView(Vector lookFrom, Vector lookTo, Vector upVector)
 {
 	SetIdentity();
-	//Нормализуем вектор смотрения
+	//РќРѕСЂРјР°Р»РёР·СѓРµРј РІРµРєС‚РѕСЂ СЃРјРѕС‚СЂРµРЅРёСЏ
 	lookTo -= lookFrom;
 	if(lookTo.Normalize() == 0.0f)
 	{
-		//Ставим позицию для неповёрнутой матрици
+		//РЎС‚Р°РІРёРј РїРѕР·РёС†РёСЋ РґР»СЏ РЅРµРїРѕРІС‘СЂРЅСѓС‚РѕР№ РјР°С‚СЂРёС†Рё
 		pos = -lookFrom;
 		return false;
 	}
-	//Направляем вектор вверх в нужном направлении
+	//РќР°РїСЂР°РІР»СЏРµРј РІРµРєС‚РѕСЂ РІРІРµСЂС… РІ РЅСѓР¶РЅРѕРј РЅР°РїСЂР°РІР»РµРЅРёРё
 	upVector -= lookTo*(lookTo | upVector);
-	//Нормализуем вертор направленный вверх
+	//РќРѕСЂРјР°Р»РёР·СѓРµРј РІРµСЂС‚РѕСЂ РЅР°РїСЂР°РІР»РµРЅРЅС‹Р№ РІРІРµСЂС…
 	if(upVector.Normalize() == 0.0f) upVector.y = 1.0f;
-	//Ищем третий вектор базиса
+	//РС‰РµРј С‚СЂРµС‚РёР№ РІРµРєС‚РѕСЂ Р±Р°Р·РёСЃР°
 	Vector v = upVector ^ lookTo;
 	if(v.Normalize() != 0.0f)
 	{
-		//Ставим матрицу поворота
+		//РЎС‚Р°РІРёРј РјР°С‚СЂРёС†Сѓ РїРѕРІРѕСЂРѕС‚Р°
 		m[0][0] = v.x;
 		m[1][0] = v.y;
 		m[2][0] = v.z;
@@ -744,20 +744,20 @@ mathinline bool Matrix::BuildView(Vector lookFrom, Vector lookTo, Vector upVecto
 		m[1][2] = lookTo.y;
 		m[2][2] = lookTo.z;	
 	}else{
-		//Ставим позицию для неповёрнутой матрици
+		//РЎС‚Р°РІРёРј РїРѕР·РёС†РёСЋ РґР»СЏ РЅРµРїРѕРІС‘СЂРЅСѓС‚РѕР№ РјР°С‚СЂРёС†Рё
 		pos = -lookFrom;
 		return false;
 	}
-	//Ставим позицию
+	//РЎС‚Р°РІРёРј РїРѕР·РёС†РёСЋ
 	//pos = -MulNormalByInverse(lookFrom);
 	pos = -MulNormal(lookFrom);
 	return true;
 }
 
-//Посчитать матрицу ориентации объекта имея направление по z и направление вверх
+//РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ РѕСЂРёРµРЅС‚Р°С†РёРё РѕР±СЉРµРєС‚Р° РёРјРµСЏ РЅР°РїСЂР°РІР»РµРЅРёРµ РїРѕ z Рё РЅР°РїСЂР°РІР»РµРЅРёРµ РІРІРµСЂС…
 mathinline bool Matrix::BuildOrient(Vector zAxisDirection, Vector upVector)
 {
-	//Нормализуем вектор направления z
+	//РќРѕСЂРјР°Р»РёР·СѓРµРј РІРµРєС‚РѕСЂ РЅР°РїСЂР°РІР»РµРЅРёСЏ z
 	if(zAxisDirection.Normalize() < 1e-37f || upVector.Normalize() < 1e-37f)
 	{
 		vx = Vector(1.0f, 0.0f , 0.0f);
@@ -765,7 +765,7 @@ mathinline bool Matrix::BuildOrient(Vector zAxisDirection, Vector upVector)
 		vz = Vector(0.0f, 0.0f , 1.0f);
 		return false;
 	}
-	//Считаем
+	//РЎС‡РёС‚Р°РµРј
 	vx = zAxisDirection ^ upVector;
 	if(vx.Normalize() == 0.0f)
 	{
@@ -779,12 +779,12 @@ mathinline bool Matrix::BuildOrient(Vector zAxisDirection, Vector upVector)
 	return true;
 }
 
-//Посчитать матрицу объекта имея позицию точку куда направлен объект и направление вверх
+//РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ РѕР±СЉРµРєС‚Р° РёРјРµСЏ РїРѕР·РёС†РёСЋ С‚РѕС‡РєСѓ РєСѓРґР° РЅР°РїСЂР°РІР»РµРЅ РѕР±СЉРµРєС‚ Рё РЅР°РїСЂР°РІР»РµРЅРёРµ РІРІРµСЂС…
 mathinline bool Matrix::BuildOriented(Vector position, Vector lookTo, Vector upVector)
 {
-	//Направление
+	//РќР°РїСЂР°РІР»РµРЅРёРµ
 	lookTo -= position;
-	//Нормализуем вектор направления z
+	//РќРѕСЂРјР°Р»РёР·СѓРµРј РІРµРєС‚РѕСЂ РЅР°РїСЂР°РІР»РµРЅРёСЏ z
 	if(lookTo.Normalize() == 0.0f || upVector.Normalize() == 0.0f)
 	{
 		vx = Vector(1.0f, 0.0f , 0.0f); wx = 0.0f;
@@ -793,7 +793,7 @@ mathinline bool Matrix::BuildOriented(Vector position, Vector lookTo, Vector upV
 		pos = position; w = 1.0f;
 		return false;
 	}
-	//Считаем
+	//РЎС‡РёС‚Р°РµРј
 	vx = lookTo ^ upVector; wx = 0.0f;
 	if(vx.Normalize() == 0.0f)
 	{
@@ -809,7 +809,7 @@ mathinline bool Matrix::BuildOriented(Vector position, Vector lookTo, Vector upV
 	return true;
 }
 
-//Посчитать матрицу для отзеркаливания геометрии
+//РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ РґР»СЏ РѕС‚Р·РµСЂРєР°Р»РёРІР°РЅРёСЏ РіРµРѕРјРµС‚СЂРёРё
 mathinline Matrix & Matrix::BuildMirror(float Nx, float Ny, float Nz, float D)
 {
 	m[0][0] = -Nx*2.0f*Nx + 1.0f;
@@ -832,10 +832,10 @@ mathinline Matrix & Matrix::BuildMirror(float Nx, float Ny, float Nz, float D)
 }
 
 //-----------------------------------------------------------
-//Преобразование матрицы
+//РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ РјР°С‚СЂРёС†С‹
 //-----------------------------------------------------------
 
-//Повернуть вокруг X
+//РџРѕРІРµСЂРЅСѓС‚СЊ РІРѕРєСЂСѓРі X
 mathinline Matrix & Matrix::RotateX(float ang)
 {
 	Matrix m;
@@ -844,7 +844,7 @@ mathinline Matrix & Matrix::RotateX(float ang)
 	return *this;
 }
 
-//Повернуть вокруг Y
+//РџРѕРІРµСЂРЅСѓС‚СЊ РІРѕРєСЂСѓРі Y
 mathinline Matrix & Matrix::RotateY(float ang)
 {
 	Matrix m;
@@ -853,7 +853,7 @@ mathinline Matrix & Matrix::RotateY(float ang)
 	return *this;
 }
 
-//Повернуть вокруг Z
+//РџРѕРІРµСЂРЅСѓС‚СЊ РІРѕРєСЂСѓРі Z
 mathinline Matrix & Matrix::RotateZ(float ang)
 {
 	Matrix m;
@@ -862,7 +862,7 @@ mathinline Matrix & Matrix::RotateZ(float ang)
 	return *this;
 }
 
-//Повернуть вокруг ZXY
+//РџРѕРІРµСЂРЅСѓС‚СЊ РІРѕРєСЂСѓРі ZXY
 mathinline Matrix & Matrix::Rotate(float angX, float angY, float angZ)
 {
 	Matrix m;
@@ -871,7 +871,7 @@ mathinline Matrix & Matrix::Rotate(float angX, float angY, float angZ)
 	return *this;
 }
 
-//Повернуть вокруг ZXY
+//РџРѕРІРµСЂРЅСѓС‚СЊ РІРѕРєСЂСѓРі ZXY
 mathinline Matrix & Matrix::Rotate(const Vector & ang)
 {
 	Matrix m;
@@ -880,7 +880,7 @@ mathinline Matrix & Matrix::Rotate(const Vector & ang)
 	return *this;
 }
 
-//Переместить
+//РџРµСЂРµРјРµСЃС‚РёС‚СЊ
 mathinline Matrix & Matrix::Move(float dX, float dY, float dZ)
 {
 	pos.x += dX;
@@ -889,7 +889,7 @@ mathinline Matrix & Matrix::Move(float dX, float dY, float dZ)
 	return *this;
 }
 
-//Переместить
+//РџРµСЂРµРјРµСЃС‚РёС‚СЊ
 mathinline Matrix & Matrix::Move(const Vector & pos)
 {
 	this->pos.x += pos.x;
@@ -898,21 +898,21 @@ mathinline Matrix & Matrix::Move(const Vector & pos)
 	return *this;
 }
 
-//Отмасштабировать
+//РћС‚РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°С‚СЊ
 mathinline Matrix & Matrix::Scale(float scale)
 {
 	Scale(scale, scale, scale);
 	return *this;
 }
 
-//Отмасштабировать матрицу поворота
+//РћС‚РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°С‚СЊ РјР°С‚СЂРёС†Сѓ РїРѕРІРѕСЂРѕС‚Р°
 mathinline Matrix & Matrix::Scale3x3(float scale)
 {
 	Scale3x3(scale, scale, scale);
 	return *this;
 }
 
-//Отмасштабировать
+//РћС‚РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°С‚СЊ
 mathinline Matrix & Matrix::Scale(float scaleX, float scaleY, float scaleZ)
 {
 	m[0][0] *= scaleX;
@@ -930,7 +930,7 @@ mathinline Matrix & Matrix::Scale(float scaleX, float scaleY, float scaleZ)
 	return *this;
 }
 
-//Отмасштабировать матрицу поворота
+//РћС‚РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°С‚СЊ РјР°С‚СЂРёС†Сѓ РїРѕРІРѕСЂРѕС‚Р°
 mathinline Matrix & Matrix::Scale3x3(float scaleX, float scaleY, float scaleZ)
 {
 	m[0][0] *= scaleX;
@@ -945,14 +945,14 @@ mathinline Matrix & Matrix::Scale3x3(float scaleX, float scaleY, float scaleZ)
 	return *this;
 }
 
-//Отмасштабировать
+//РћС‚РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°С‚СЊ
 mathinline Matrix & Matrix::Scale(const Vector & scale)
 {
 	Scale(scale.x, scale.y, scale.z);
 	return *this;
 }
 
-//Отмасштабировать поворота
+//РћС‚РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°С‚СЊ РїРѕРІРѕСЂРѕС‚Р°
 mathinline Matrix & Matrix::Scale3x3(const Vector & scale)
 {
 	Scale3x3(scale.x, scale.y, scale.z);
@@ -960,7 +960,7 @@ mathinline Matrix & Matrix::Scale3x3(const Vector & scale)
 }
 
 
-//Расчёт обратной матрицы
+//Р Р°СЃС‡С‘С‚ РѕР±СЂР°С‚РЅРѕР№ РјР°С‚СЂРёС†С‹
 mathinline Matrix & Matrix::Inverse()
 {
 	pos = Vector(-(pos | vx), -(pos | vy), -(pos | vz));
@@ -968,7 +968,7 @@ mathinline Matrix & Matrix::Inverse()
 	return *this;
 }
 
-///Расчёт обратной матрицы из другой
+///Р Р°СЃС‡С‘С‚ РѕР±СЂР°С‚РЅРѕР№ РјР°С‚СЂРёС†С‹ РёР· РґСЂСѓРіРѕР№
 mathinline Matrix & Matrix::Inverse(const Matrix & mtx)
 {
 	pos = Vector(-(mtx.pos | mtx.vx), -(mtx.pos | mtx.vy), -(mtx.pos | mtx.vz));
@@ -998,10 +998,10 @@ mathinline Matrix & Matrix::Inverse(const Matrix & mtx)
 	return *this;
 }
 
-///Расчёт масштабированной обратной матрицы
+///Р Р°СЃС‡С‘С‚ РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРЅРѕР№ РѕР±СЂР°С‚РЅРѕР№ РјР°С‚СЂРёС†С‹
 mathinline Matrix & Matrix::InverseWhithScale()
 {
-	//Матрица поворота
+	//РњР°С‚СЂРёС†Р° РїРѕРІРѕСЂРѕС‚Р°
 	double mtmp[3][3];
 	mtmp[0][0] = m[1][1]*m[2][2] - m[1][2]*m[2][1];
 	mtmp[0][1] = m[0][2]*m[2][1] - m[0][1]*m[2][2];
@@ -1028,12 +1028,12 @@ mathinline Matrix & Matrix::InverseWhithScale()
 	}else{
 		for(long i = 0; i < 16; i++) matrix[i] = 0.0f;
 	}
-	//Позиция
+	//РџРѕР·РёС†РёСЏ
 	pos = -(MulNormal(pos));
 	return *this;
 }
 
-//Транспанирование матрицы
+//РўСЂР°РЅСЃРїР°РЅРёСЂРѕРІР°РЅРёРµ РјР°С‚СЂРёС†С‹
 mathinline Matrix & Matrix::Transposition()
 {
 	_asm
@@ -1067,7 +1067,7 @@ mathinline Matrix & Matrix::Transposition()
 	return *this;
 }
 
-//Транспанирование элементов поворота
+//РўСЂР°РЅСЃРїР°РЅРёСЂРѕРІР°РЅРёРµ СЌР»РµРјРµРЅС‚РѕРІ РїРѕРІРѕСЂРѕС‚Р°
 mathinline Matrix & Matrix::Transposition3X3()
 {
 	_asm
@@ -1093,10 +1093,10 @@ mathinline Matrix & Matrix::Transposition3X3()
 
 
 //-----------------------------------------------------------
-//Утилитные
+//РЈС‚РёР»РёС‚РЅС‹Рµ
 //-----------------------------------------------------------
 
-//Считать только вращение
+//РЎС‡РёС‚Р°С‚СЊ С‚РѕР»СЊРєРѕ РІСЂР°С‰РµРЅРёРµ
 mathinline Matrix & Matrix::SetRotate(const Matrix & mtx)
 {
 	_asm
@@ -1126,7 +1126,7 @@ mathinline Matrix & Matrix::SetRotate(const Matrix & mtx)
 }
 
 
-//Перемножить матрицы и результат поместить в текущую
+//РџРµСЂРµРјРЅРѕР¶РёС‚СЊ РјР°С‚СЂРёС†С‹ Рё СЂРµР·СѓР»СЊС‚Р°С‚ РїРѕРјРµСЃС‚РёС‚СЊ РІ С‚РµРєСѓС‰СѓСЋ
 mathinline Matrix & Matrix::EqMultiply(const Matrix & m1, const Matrix & m2)
 {
 	Matrix m;
@@ -1135,7 +1135,7 @@ mathinline Matrix & Matrix::EqMultiply(const Matrix & m1, const Matrix & m2)
 	return *this;
 }
 	
-//Перемножить матрицы и результат поместить в текущую m1 != this && m2 != this
+//РџРµСЂРµРјРЅРѕР¶РёС‚СЊ РјР°С‚СЂРёС†С‹ Рё СЂРµР·СѓР»СЊС‚Р°С‚ РїРѕРјРµСЃС‚РёС‚СЊ РІ С‚РµРєСѓС‰СѓСЋ m1 != this && m2 != this
 mathinline Matrix & Matrix::EqMultiplyFast(const Matrix & m1, const Matrix & m2)
 {
 	m[0][0] = m2.m[0][0]*m1.m[0][0] + m2.m[1][0]*m1.m[0][1] + m2.m[2][0]*m1.m[0][2] + m2.m[3][0]*m1.m[0][3];
@@ -1158,7 +1158,7 @@ mathinline Matrix & Matrix::EqMultiplyFast(const Matrix & m1, const Matrix & m2)
 }
 
 
-//Умножить вершину на матрицу
+//РЈРјРЅРѕР¶РёС‚СЊ РІРµСЂС€РёРЅСѓ РЅР° РјР°С‚СЂРёС†Сѓ
 mathinline Vector Matrix::MulVertex(const Vector & v) const
 {
 	Vector tv;
@@ -1168,7 +1168,7 @@ mathinline Vector Matrix::MulVertex(const Vector & v) const
 	return tv;
 }
 
-//Умножить нормаль на матрицу
+//РЈРјРЅРѕР¶РёС‚СЊ РЅРѕСЂРјР°Р»СЊ РЅР° РјР°С‚СЂРёС†Сѓ
 mathinline Vector Matrix::MulNormal(const Vector & v) const
 {
 	Vector tv;
@@ -1178,7 +1178,7 @@ mathinline Vector Matrix::MulNormal(const Vector & v) const
 	return tv;
 }
 
-//Умножить вершину на инверстую матрицу
+//РЈРјРЅРѕР¶РёС‚СЊ РІРµСЂС€РёРЅСѓ РЅР° РёРЅРІРµСЂСЃС‚СѓСЋ РјР°С‚СЂРёС†Сѓ
 mathinline Vector Matrix::MulVertexByInverse(const Vector & v) const
 {
 	Vector tv;
@@ -1188,7 +1188,7 @@ mathinline Vector Matrix::MulVertexByInverse(const Vector & v) const
 	return tv;
 }
 
-//Умножить нормаль на инверстую матрицу
+//РЈРјРЅРѕР¶РёС‚СЊ РЅРѕСЂРјР°Р»СЊ РЅР° РёРЅРІРµСЂСЃС‚СѓСЋ РјР°С‚СЂРёС†Сѓ
 mathinline Vector Matrix::MulNormalByInverse(const Vector & v) const
 {
 	Vector tv;
@@ -1198,13 +1198,13 @@ mathinline Vector Matrix::MulNormalByInverse(const Vector & v) const
 	return tv;
 }
 
-///Получить позицию камеры из матрицы камеры
+///РџРѕР»СѓС‡РёС‚СЊ РїРѕР·РёС†РёСЋ РєР°РјРµСЂС‹ РёР· РјР°С‚СЂРёС†С‹ РєР°РјРµСЂС‹
 mathinline Vector Matrix::GetCamPos() const
 {
 	return -MulNormalByInverse(pos);
 }
 
-//Единичная матрица или нет
+//Р•РґРёРЅРёС‡РЅР°СЏ РјР°С‚СЂРёС†Р° РёР»Рё РЅРµС‚
 mathinline bool Matrix::IsIdentity() const
 {
 	const float eps = 1e-4f;
@@ -1227,7 +1227,7 @@ mathinline bool Matrix::IsIdentity() const
 	return true;
 }
 
-//Скалирования матрица или нет
+//РЎРєР°Р»РёСЂРѕРІР°РЅРёСЏ РјР°С‚СЂРёС†Р° РёР»Рё РЅРµС‚
 mathinline bool Matrix::IsScale() const
 {
 	const float eps = 1e-4f;
@@ -1238,18 +1238,18 @@ mathinline bool Matrix::IsScale() const
 	return false;
 }
 
-//Споецировать вершину (для матрицы проекции)
+//РЎРїРѕРµС†РёСЂРѕРІР°С‚СЊ РІРµСЂС€РёРЅСѓ (РґР»СЏ РјР°С‚СЂРёС†С‹ РїСЂРѕРµРєС†РёРё)
 mathinline Vector4 Matrix::Projection(Vector vertex, float vphWidth05, float vphHeight05) const
 {
 	Vector4 res;
-	//Преобразуем вершину
+	//РџСЂРµРѕР±СЂР°Р·СѓРµРј РІРµСЂС€РёРЅСѓ
 	res.x = m[0][0]*vertex.x + m[1][0]*vertex.y + m[2][0]*vertex.z + m[3][0];
 	res.y = m[0][1]*vertex.x + m[1][1]*vertex.y + m[2][1]*vertex.z + m[3][1];
 	res.z = m[0][2]*vertex.x + m[1][2]*vertex.y + m[2][2]*vertex.z + m[3][2];
 	res.w = m[0][3]*vertex.x + m[1][3]*vertex.y + m[2][3]*vertex.z + m[3][3];
-	//Коэфициент нормализации
+	//РљРѕСЌС„РёС†РёРµРЅС‚ РЅРѕСЂРјР°Р»РёР·Р°С†РёРё
 	float w = 1.0f/res.w;
-	//Нормализуем
+	//РќРѕСЂРјР°Р»РёР·СѓРµРј
 	res.x = (1.0f + res.x*w)*vphWidth05;
 	res.y = (1.0f - res.y*w)*vphHeight05;
 	res.z *= w;
@@ -1257,30 +1257,30 @@ mathinline Vector4 Matrix::Projection(Vector vertex, float vphWidth05, float vph
 	return res;
 }
 
-//Споецировать массив вершин (для матрицы проекции)
+//РЎРїРѕРµС†РёСЂРѕРІР°С‚СЊ РјР°СЃСЃРёРІ РІРµСЂС€РёРЅ (РґР»СЏ РјР°С‚СЂРёС†С‹ РїСЂРѕРµРєС†РёРё)
 mathinline void Matrix::Projection(Vector4 * dstArray, Vector * srcArray, long num, float vphWidth05, float vphHeight05, long srcSize, long dstSize) const
 {
 	for(; num > 0; num--)
 	{
-		//Преобразуем вершину
+		//РџСЂРµРѕР±СЂР°Р·СѓРµРј РІРµСЂС€РёРЅСѓ
 		dstArray->x = m[0][0]*srcArray->x + m[1][0]*srcArray->y + m[2][0]*srcArray->z + m[3][0];
 		dstArray->y = m[0][1]*srcArray->x + m[1][1]*srcArray->y + m[2][1]*srcArray->z + m[3][1];
 		dstArray->z = m[0][2]*srcArray->x + m[1][2]*srcArray->y + m[2][2]*srcArray->z + m[3][2];
 		dstArray->w = m[0][3]*srcArray->x + m[1][3]*srcArray->y + m[2][3]*srcArray->z + m[3][3];
-		//Коэфициент нормализации
+		//РљРѕСЌС„РёС†РёРµРЅС‚ РЅРѕСЂРјР°Р»РёР·Р°С†РёРё
 		float w = 1.0f/dstArray->w;
-		//Нормализуем
+		//РќРѕСЂРјР°Р»РёР·СѓРµРј
 		dstArray->x = (1.0f + dstArray->x*w)*vphWidth05;
 		dstArray->y = (1.0f - dstArray->y*w)*vphHeight05;
 		dstArray->z *= w;
 		dstArray->w = w;
-		//Указатели на следующие вершины
+		//РЈРєР°Р·Р°С‚РµР»Рё РЅР° СЃР»РµРґСѓСЋС‰РёРµ РІРµСЂС€РёРЅС‹
 		srcArray = (Vector *)((char *)srcArray + srcSize);
 		dstArray = (Vector4 *)((char *)dstArray + dstSize);
 	}
 }
 
-//Получить углы из нескалированной матрицы поворота
+//РџРѕР»СѓС‡РёС‚СЊ СѓРіР»С‹ РёР· РЅРµСЃРєР°Р»РёСЂРѕРІР°РЅРЅРѕР№ РјР°С‚СЂРёС†С‹ РїРѕРІРѕСЂРѕС‚Р°
 mathinline void Matrix::GetAngles(float & ax, float & ay, float & az)
 {	
 	if(vz.y < 1.0f)
@@ -1303,43 +1303,43 @@ mathinline void Matrix::GetAngles(float & ax, float & ay, float & az)
 	}
 }
 
-//Получить углы из нескалированной матрицы поворота
+//РџРѕР»СѓС‡РёС‚СЊ СѓРіР»С‹ РёР· РЅРµСЃРєР°Р»РёСЂРѕРІР°РЅРЅРѕР№ РјР°С‚СЂРёС†С‹ РїРѕРІРѕСЂРѕС‚Р°
 mathinline void Matrix::GetAngles(Vector & ang)
 {
 	GetAngles(ang.x, ang.y, ang.z);
 }
 
-//Доступиться до элементов матрицы через скобки
+//Р”РѕСЃС‚СѓРїРёС‚СЊСЃСЏ РґРѕ СЌР»РµРјРµРЅС‚РѕРІ РјР°С‚СЂРёС†С‹ С‡РµСЂРµР· СЃРєРѕР±РєРё
 mathinline float & Matrix::operator () (long i, long j)
 {
 	return m[i][j];
 }
 
-//Получить указатель на матрицу D3D
+//РџРѕР»СѓС‡РёС‚СЊ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РјР°С‚СЂРёС†Сѓ D3D
 mathinline Matrix::operator D3DXMATRIX * () const
 {
 	return ((D3DXMATRIX*)matrix);
 }
 
-//Получить вектор для расчёта X компоненты
+//РџРѕР»СѓС‡РёС‚СЊ РІРµРєС‚РѕСЂ РґР»СЏ СЂР°СЃС‡С‘С‚Р° X РєРѕРјРїРѕРЅРµРЅС‚С‹
 mathinline Vector4 Matrix::GetVectorX() const
 {
 	return Vector4(m[0][0], m[1][0], m[2][0], m[3][0]);
 }
 
-//Получить вектор для расчёта Y компоненты
+//РџРѕР»СѓС‡РёС‚СЊ РІРµРєС‚РѕСЂ РґР»СЏ СЂР°СЃС‡С‘С‚Р° Y РєРѕРјРїРѕРЅРµРЅС‚С‹
 mathinline Vector4 Matrix::GetVectorY() const
 {
 	return Vector4(m[0][1], m[1][1], m[2][1], m[3][1]);
 }
 
-//Получить вектор для расчёта Z компоненты
+//РџРѕР»СѓС‡РёС‚СЊ РІРµРєС‚РѕСЂ РґР»СЏ СЂР°СЃС‡С‘С‚Р° Z РєРѕРјРїРѕРЅРµРЅС‚С‹
 mathinline Vector4 Matrix::GetVectorZ() const
 {
 	return Vector4(m[0][2], m[1][2], m[2][2], m[3][2]);
 }
 
-//Получить вектор для расчёта W компоненты
+//РџРѕР»СѓС‡РёС‚СЊ РІРµРєС‚РѕСЂ РґР»СЏ СЂР°СЃС‡С‘С‚Р° W РєРѕРјРїРѕРЅРµРЅС‚С‹
 mathinline Vector4 Matrix::GetVectorW() const
 {
 	return Vector4(m[0][3], m[1][3], m[2][3], m[3][3]);

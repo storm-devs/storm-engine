@@ -288,11 +288,11 @@ long BIShipCommandList::ShipAdding( bool allLabel, bool bMyShip, bool bEnemy, bo
 {
 	long retVal=0;
 
-	// список кораблей
+	// СЃРїРёСЃРѕРє РєРѕСЂР°Р±Р»РµР№
 	SHIP_DESCRIBE_LIST::SHIP_DESCR	*sd = g_ShipList.GetShipRoot();
 	if(sd==null) return 0;
 
-	// дистанция отсечения корабля из списка
+	// РґРёСЃС‚Р°РЅС†РёСЏ РѕС‚СЃРµС‡РµРЅРёСЏ РєРѕСЂР°Р±Р»СЏ РёР· СЃРїРёСЃРєР°
 	float sqrRadius = -1.f;
 	if( m_pARoot && !m_sCurrentCommandName.IsEmpty() )
 	{
@@ -300,7 +300,7 @@ long BIShipCommandList::ShipAdding( bool allLabel, bool bMyShip, bool bEnemy, bo
 		if( pA ) pA = pA->GetAttributeClass( m_sCurrentCommandName );
 		if( pA ) sqrRadius = pA->GetAttributeAsFloat("EffectRadius", -1.f);
 	}
-	// отрицательная дистанция не ограничивает дальность до корабля
+	// РѕС‚СЂРёС†Р°С‚РµР»СЊРЅР°СЏ РґРёСЃС‚Р°РЅС†РёСЏ РЅРµ РѕРіСЂР°РЅРёС‡РёРІР°РµС‚ РґР°Р»СЊРЅРѕСЃС‚СЊ РґРѕ РєРѕСЂР°Р±Р»СЏ
 	allLabel = sqrRadius<0.f;
 
 	sqrRadius *= sqrRadius;
@@ -334,13 +334,13 @@ long BIShipCommandList::ShipAdding( bool allLabel, bool bMyShip, bool bEnemy, bo
 				!bMyShip && bFriend && !sd->isMyShip && sd->relation==BI_RELATION_FRIEND ||
 				!bMyShip && bNeutral && !sd->isMyShip && sd->relation==BI_RELATION_NEUTRAL )
 			{
-				// подходит под расстояние ?
+				// РїРѕРґС…РѕРґРёС‚ РїРѕРґ СЂР°СЃСЃС‚РѕСЏРЅРёРµ ?
 				if(!allLabel)
 				{
 					CVECTOR cv=sd->pShip->GetPos();
 					if(SQR(selX-cv.x)+SQR(selZ-cv.z) > sqrRadius)	continue;
 				}
-				// проверка на допустимость корабля из скрипта
+				// РїСЂРѕРІРµСЂРєР° РЅР° РґРѕРїСѓСЃС‚РёРјРѕСЃС‚СЊ РєРѕСЂР°Р±Р»СЏ РёР· СЃРєСЂРёРїС‚Р°
 				if( !m_sCurrentCommandName.IsEmpty() )
 				{
 					VDATA * pvdat = api->Event("evntCheckEnableShip","sl",m_sCurrentCommandName.GetBuffer(),sd->characterIndex);
@@ -370,7 +370,7 @@ long BIShipCommandList::FortAdding(bool allLabel, bool bFriend, bool bNeutral, b
 	allLabel = sqrRadius<0.f;
 	sqrRadius *= sqrRadius;
 
-	// Определим координаты принимающего команды корабля
+	// РћРїСЂРµРґРµР»РёРј РєРѕРѕСЂРґРёРЅР°С‚С‹ РїСЂРёРЅРёРјР°СЋС‰РµРіРѕ РєРѕРјР°РЅРґС‹ РєРѕСЂР°Р±Р»СЏ
 	long selectedCharacter = m_nCurrentCommandCharacterIndex;
 	SHIP_DESCRIBE_LIST::SHIP_DESCR	*selShip = g_ShipList.FindShip( selectedCharacter );
 	float selX,selZ;
@@ -423,7 +423,7 @@ long BIShipCommandList::LandAdding(bool allLabel)
 	allLabel = sqrRadius<0.f;
 	sqrRadius *= sqrRadius;
 
-	// Определим координаты принимающего команды корабля
+	// РћРїСЂРµРґРµР»РёРј РєРѕРѕСЂРґРёРЅР°С‚С‹ РїСЂРёРЅРёРјР°СЋС‰РµРіРѕ РєРѕРјР°РЅРґС‹ РєРѕСЂР°Р±Р»СЏ
 	long selectedCharacter = -1;
 	SHIP_DESCRIBE_LIST::SHIP_DESCR	*selShip = g_ShipList.FindShip(selectedCharacter);
 	float selX,selZ;
@@ -464,8 +464,8 @@ long BIShipCommandList::CommandAdding()
 	for(long i=0; i<attrQuant; i++)
 	{
 		ATTRIBUTES * pA = pAttr->GetAttributeClass(i);
-		if(pA==null) continue; // нет такого атрибута
-		if(pA->GetAttributeAsDword("enable",0)==0) continue; // команда недоступна
+		if(pA==null) continue; // РЅРµС‚ С‚Р°РєРѕРіРѕ Р°С‚СЂРёР±СѓС‚Р°
+		if(pA->GetAttributeAsDword("enable",0)==0) continue; // РєРѕРјР°РЅРґР° РЅРµРґРѕСЃС‚СѓРїРЅР°
 		long pictureNum = pA->GetAttributeAsDword("picNum",0);
 		long selPictureNum = pA->GetAttributeAsDword("selPicNum",0);
 		long texNum = pA->GetAttributeAsDword("texNum",m_nCommandTextureNum);
@@ -479,10 +479,10 @@ long BIShipCommandList::CommandAdding()
 
 long BIShipCommandList::ChargeAdding()
 {
-	// Определим количество каждого заряда на борту
+	// РћРїСЂРµРґРµР»РёРј РєРѕР»РёС‡РµСЃС‚РІРѕ РєР°Р¶РґРѕРіРѕ Р·Р°СЂСЏРґР° РЅР° Р±РѕСЂС‚Сѓ
 	VDATA * tmpDat = api->Event("BI_GetChargeQuantity","l",m_nCurrentCommandCharacterIndex);
 	if(tmpDat==null) return 0;
-	long lIdx=0; // количество типов заряда
+	long lIdx=0; // РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РёРїРѕРІ Р·Р°СЂСЏРґР°
 	tmpDat->Get(lIdx,0);
 	if(lIdx<=0) return 0;
 
@@ -514,8 +514,8 @@ long BIShipCommandList::UserIconsAdding()
 	for(long i=0; i<attrQuant; i++)
 	{
 		ATTRIBUTES * pA = pAttr->GetAttributeClass(i);
-		if(pA==null) continue; // нет такого атрибута
-		if(pA->GetAttributeAsDword("enable",0)==0) continue; // команда недоступна
+		if(pA==null) continue; // РЅРµС‚ С‚Р°РєРѕРіРѕ Р°С‚СЂРёР±СѓС‚Р°
+		if(pA->GetAttributeAsDword("enable",0)==0) continue; // РєРѕРјР°РЅРґР° РЅРµРґРѕСЃС‚СѓРїРЅР°
 		long pictureNum = pA->GetAttributeAsDword("pic",0);
 		long selPictureNum = pA->GetAttributeAsDword("selpic",0);
 		long textureNum = pA->GetAttributeAsDword("tex",-1);
@@ -536,8 +536,8 @@ long BIShipCommandList::AbilityAdding()
 	for(long i=0; i<attrQuant; i++)
 	{
 		ATTRIBUTES * pA = pAttr->GetAttributeClass(i);
-		if(pA==null) continue; // нет такого атрибута
-		if(pA->GetAttributeAsDword("enable",0)==0) continue; // команда недоступна
+		if(pA==null) continue; // РЅРµС‚ С‚Р°РєРѕРіРѕ Р°С‚СЂРёР±СѓС‚Р°
+		if(pA->GetAttributeAsDword("enable",0)==0) continue; // РєРѕРјР°РЅРґР° РЅРµРґРѕСЃС‚СѓРїРЅР°
 		long pictureNum = pA->GetAttributeAsDword("picNum",0);
 		long selPictureNum = pA->GetAttributeAsDword("selPicNum",0);
 		long textureNum = pA->GetAttributeAsDword("texNum",-1);

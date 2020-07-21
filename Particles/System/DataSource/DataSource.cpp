@@ -77,7 +77,7 @@ BEGIN_DATA_DESC(ModelParticleDesc)
 END_DATA_DESC(ModelParticleDesc)
 
 
-//---------- Создание/удаление --------------------
+//---------- РЎРѕР·РґР°РЅРёРµ/СѓРґР°Р»РµРЅРёРµ --------------------
 DataSource::DataSource (IParticleManager* Master) : Emitters(_FL_)
 {
 }
@@ -95,7 +95,7 @@ bool DataSource::Release ()
 
 
 // ========================= Load & Save =======================================
-	//Сохранить/восстановить из файла
+	//РЎРѕС…СЂР°РЅРёС‚СЊ/РІРѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ РёР· С„Р°Р№Р»Р°
 void DataSource::Write (MemFile* pMemFile)
 {
 	pMemFile->Write(HEADER, 4);
@@ -120,7 +120,7 @@ void DataSource::Write (MemFile* pMemFile)
 
 void DataSource::Load (MemFile* pMemFile)
 {
-	//Проверяем ID
+	//РџСЂРѕРІРµСЂСЏРµРј ID
 	char Id[5];
 	Id[4] = 0;
 	pMemFile->Read(Id, 4);
@@ -130,7 +130,7 @@ void DataSource::Load (MemFile* pMemFile)
 		return;
 	}
 
-	//Проверяем Версию
+	//РџСЂРѕРІРµСЂСЏРµРј Р’РµСЂСЃРёСЋ
 	char Ver[5];
 	Ver[4] = 0;
 	pMemFile->Read(Ver, 4);
@@ -140,7 +140,7 @@ void DataSource::Load (MemFile* pMemFile)
           api->Trace ("Particles: Warning !!! Incorrect file version %s, must be %s", Ver, VERSION);
 */          
 
-	//Кол-во эмиттеров...
+	//РљРѕР»-РІРѕ СЌРјРёС‚С‚РµСЂРѕРІ...
 	DWORD EmiterCount = 0;
 	pMemFile->ReadType(EmiterCount);
 
@@ -207,7 +207,7 @@ void DataSource::CreatePointEmitter (MemFile* pMemFile)
 	} // For all particles
 }
 
-//Создает BillBoard парикл
+//РЎРѕР·РґР°РµС‚ BillBoard РїР°СЂРёРєР»
 void DataSource::CreateBillBoardParticle (array<ParticleDesc> &Particles, MemFile* pMemFile)
 {
 	ParticleDesc *pDesc = &Particles[Particles.Add()];
@@ -216,7 +216,7 @@ void DataSource::CreateBillBoardParticle (array<ParticleDesc> &Particles, MemFil
 	pDesc->Fields.Convert(&BillboardParticleDesc);
 }
 
-//Создает Model парикл
+//РЎРѕР·РґР°РµС‚ Model РїР°СЂРёРєР»
 void DataSource::CreateModelParticle (array<ParticleDesc> &Particles, MemFile* pMemFile)
 {
 	ParticleDesc *pDesc = &Particles[Particles.Add()];

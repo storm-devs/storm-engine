@@ -14,17 +14,17 @@
 #include "WdmRenderModel.h"
 
 
-//#define WDM_SHIP_MODELL			6.0f		//Половина длинны коробля
-//#define WDM_SHIP_MODELW			1.9f		//Половина ширины коробля
+//#define WDM_SHIP_MODELL			6.0f		//РџРѕР»РѕРІРёРЅР° РґР»РёРЅРЅС‹ РєРѕСЂРѕР±Р»СЏ
+//#define WDM_SHIP_MODELW			1.9f		//РџРѕР»РѕРІРёРЅР° С€РёСЂРёРЅС‹ РєРѕСЂРѕР±Р»СЏ
 //#define WDM_SHIP_RADIUS2		(WDM_SHIP_MODELL*WDM_SHIP_MODELL + WDM_SHIP_MODELW*WDM_SHIP_MODELW)
 
-#define WDM_SHIP_SPEED			7.5f		//Скорость корабля
-#define WDM_SHIP_TSPEED			1.0f		//Скорость поворота
-#define WDM_SHIP_INER_ST		2.5f		//Инерция разгонаT
-#define WDM_SHIP_INER_BR		1.25f		//Инерция торможения
+#define WDM_SHIP_SPEED			7.5f		//РЎРєРѕСЂРѕСЃС‚СЊ РєРѕСЂР°Р±Р»СЏ
+#define WDM_SHIP_TSPEED			1.0f		//РЎРєРѕСЂРѕСЃС‚СЊ РїРѕРІРѕСЂРѕС‚Р°
+#define WDM_SHIP_INER_ST		2.5f		//РРЅРµСЂС†РёСЏ СЂР°Р·РіРѕРЅР°T
+#define WDM_SHIP_INER_BR		1.25f		//РРЅРµСЂС†РёСЏ С‚РѕСЂРјРѕР¶РµРЅРёСЏ
 
-#define WDM_SHIP_MAX_SPEED		20.0f		//Максимальная скорость корабля
-#define WDM_SHIP_MAX_TURNSPD	0.65f		//Максимальная скорость поворота
+#define WDM_SHIP_MAX_SPEED		20.0f		//РњР°РєСЃРёРјР°Р»СЊРЅР°СЏ СЃРєРѕСЂРѕСЃС‚СЊ РєРѕСЂР°Р±Р»СЏ
+#define WDM_SHIP_MAX_TURNSPD	0.65f		//РњР°РєСЃРёРјР°Р»СЊРЅР°СЏ СЃРєРѕСЂРѕСЃС‚СЊ РїРѕРІРѕСЂРѕС‚Р°
 
 
 class WdmShip : public WdmRenderModel  
@@ -43,7 +43,7 @@ class WdmShip : public WdmRenderModel
 	};
 
 //--------------------------------------------------------------------------------------------
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //--------------------------------------------------------------------------------------------
 public:
 	WdmShip();
@@ -54,18 +54,18 @@ public:
 	void SetMaxSpeed(float k);
 
 	virtual bool Load(const char * modelName);
-	//Расчёты
+	//Р Р°СЃС‡С‘С‚С‹
 	virtual void Update(float dltTime);
 	virtual void LRender(VDX8RENDER * rs);
 
-	//true если свободно
+	//true РµСЃР»Рё СЃРІРѕР±РѕРґРЅРѕ
 	static bool CheckPosition(float x, float z, float objRadius);
 
 	bool isLive;
 	bool isSelect;
 
 //--------------------------------------------------------------------------------------------
-//Инкапсуляция
+//РРЅРєР°РїСЃСѓР»СЏС†РёСЏ
 //--------------------------------------------------------------------------------------------
 protected:
 	void ShipUpdate(float dltTime);
@@ -73,9 +73,9 @@ protected:
 	virtual void Collide(){};
 
 public:
-	//Размеры модельки относительно 0
-	float modelL05;			//Половина длинны модельки относительно 0
-	float modelW05;			//Половина ширины модельки относительно 0
+	//Р Р°Р·РјРµСЂС‹ РјРѕРґРµР»СЊРєРё РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ 0
+	float modelL05;			//РџРѕР»РѕРІРёРЅР° РґР»РёРЅРЅС‹ РјРѕРґРµР»СЊРєРё РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ 0
+	float modelW05;			//РџРѕР»РѕРІРёРЅР° С€РёСЂРёРЅС‹ РјРѕРґРµР»СЊРєРё РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ 0
 	float modelRadius;		//sqrtf(shipModelL*shipModelL + shipModelW*shipModelW)
 	float modelRadius2;		//shipModelL*shipModelL + shipModelW*shipModelW
 

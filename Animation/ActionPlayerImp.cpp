@@ -13,7 +13,7 @@
 #include "AnimationServiceImp.h"
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 ActionPlayerImp::ActionPlayerImp()
@@ -38,7 +38,7 @@ ActionPlayerImp::~ActionPlayerImp()
 
 }
 
-//Установить указатель на менеджер анимации
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РјРµРЅРµРґР¶РµСЂ Р°РЅРёРјР°С†РёРё
 void ActionPlayerImp::SetAnimation(AnimationImp * animation, long index)
 {
 	Assert(!ani);
@@ -50,7 +50,7 @@ void ActionPlayerImp::SetAnimation(AnimationImp * animation, long index)
 //ActionPlayer
 //--------------------------------------------------------------------------------------------
 
-//Установить текущие действие
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ С‚РµРєСѓС‰РёРµ РґРµР№СЃС‚РІРёРµ
 bool ActionPlayerImp::SetAction(const char * actionName)
 {
 	if(actionName && action && stricmp(action->GetName(), actionName) == null) return true;
@@ -70,15 +70,15 @@ bool ActionPlayerImp::SetAction(const char * actionName)
 		ani->ApeSetnewaction(playerIndex);
 		return false;
 	}
-	//Зачитываем параметры
+	//Р—Р°С‡РёС‚С‹РІР°РµРј РїР°СЂР°РјРµС‚СЂС‹
 	if(action->startFrame != action->endFrame) speed = 0.001f*ani->GetFPS()/(action->endFrame - action->startFrame);
 		else speed = 0.0f;
 	kspeed = action->kRate;
 	anitype = action->type;
 	isLoop = action->isLoop;
-	//Выставляем позицию
+	//Р’С‹СЃС‚Р°РІР»СЏРµРј РїРѕР·РёС†РёСЋ
 	ResetPosition();
-	//Сообщаем об изменении
+	//РЎРѕРѕР±С‰Р°РµРј РѕР± РёР·РјРµРЅРµРЅРёРё
 	ani->ApeSetnewaction(playerIndex);
 	return true;
 }
@@ -89,7 +89,7 @@ const char * ActionPlayerImp::GetAction() const
 	return null;
 }
 
-//Управление проигрыванием
+//РЈРїСЂР°РІР»РµРЅРёРµ РїСЂРѕРёРіСЂС‹РІР°РЅРёРµРј
 bool ActionPlayerImp::Play()
 {
 	if(!action) return false;
@@ -141,7 +141,7 @@ bool ActionPlayerImp::IsPause() const
 	return isPause;
 }
 
-//Автоостановка при завершении работы таймера
+//РђРІС‚РѕРѕСЃС‚Р°РЅРѕРІРєР° РїСЂРё Р·Р°РІРµСЂС€РµРЅРёРё СЂР°Р±РѕС‚С‹ С‚Р°Р№РјРµСЂР°
 bool ActionPlayerImp::SetAutoStop(bool isStop)
 {
 	bool old = isAutostop;
@@ -154,7 +154,7 @@ bool ActionPlayerImp::IsAutoStop() const
 	return isAutostop;
 }
 
-//Текущая позиция проигрывания
+//РўРµРєСѓС‰Р°СЏ РїРѕР·РёС†РёСЏ РїСЂРѕРёРіСЂС‹РІР°РЅРёСЏ
 float ActionPlayerImp::SetPosition(float position)
 {
 	float pos = this->position;
@@ -169,7 +169,7 @@ float ActionPlayerImp::GetPosition() const
 	return position;
 }
 
-//Тип проигрования
+//РўРёРї РїСЂРѕРёРіСЂРѕРІР°РЅРёСЏ
 void ActionPlayerImp::SetType(AnimationType atype)
 {
 	anitype = atype;
@@ -180,7 +180,7 @@ AnimationType ActionPlayerImp::GetType() const
 	return anitype;
 }
 
-//Коэфициент скорости проигрывания
+//РљРѕСЌС„РёС†РёРµРЅС‚ СЃРєРѕСЂРѕСЃС‚Рё РїСЂРѕРёРіСЂС‹РІР°РЅРёСЏ
 float ActionPlayerImp::SetSpeed(float kSpeed)
 {
 	if(kSpeed < 0.0f) kSpeed = 0.0f;
@@ -201,14 +201,14 @@ float ActionPlayerImp::GetDefSpeed() const
 	return 0.0f;
 }
 
-//Получить длительность действия в миллисекундах
+//РџРѕР»СѓС‡РёС‚СЊ РґР»РёС‚РµР»СЊРЅРѕСЃС‚СЊ РґРµР№СЃС‚РІРёСЏ РІ РјРёР»Р»РёСЃРµРєСѓРЅРґР°С…
 long ActionPlayerImp::GetFrames() const
 {
 	if(action) return action->GetFrames();
 	return 0;
 }
 
-//Установить коэфициент блендинга 0..1
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РєРѕСЌС„РёС†РёРµРЅС‚ Р±Р»РµРЅРґРёРЅРіР° 0..1
 void ActionPlayerImp::SetBlend(float k)
 {
 	if(k < 0.0f) k = 0.0f;
@@ -216,13 +216,13 @@ void ActionPlayerImp::SetBlend(float k)
 	kBlend = k;
 }
 
-//Получить коэфициент блендинга 0..1
+//РџРѕР»СѓС‡РёС‚СЊ РєРѕСЌС„РёС†РёРµРЅС‚ Р±Р»РµРЅРґРёРЅРіР° 0..1
 float ActionPlayerImp::GetBlend()
 {
 	return kBlend;
 }
 
-//Получить пользовательские данные для этого действия
+//РџРѕР»СѓС‡РёС‚СЊ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРёРµ РґР°РЅРЅС‹Рµ РґР»СЏ СЌС‚РѕРіРѕ РґРµР№СЃС‚РІРёСЏ
 const char * ActionPlayerImp::GetData(const char * dataName) const
 {
 	if(!action) return null;
@@ -233,7 +233,7 @@ const char * ActionPlayerImp::GetData(const char * dataName) const
 //AnimationImp
 //--------------------------------------------------------------------------------------------
 
-//Сделать шаг по времени
+//РЎРґРµР»Р°С‚СЊ С€Р°Рі РїРѕ РІСЂРµРјРµРЅРё
 void ActionPlayerImp::Execute(long dltTime)
 {
 	kBlendTimer = 1.0f;
@@ -252,7 +252,7 @@ void ActionPlayerImp::Execute(long dltTime)
 	if(isPlay) CheckEvents(); else ResetPosition();
 }
 
-//Установить позицию в самое начало	
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РїРѕР·РёС†РёСЋ РІ СЃР°РјРѕРµ РЅР°С‡Р°Р»Рѕ	
 void ActionPlayerImp::ResetPosition()
 {
 	position = 0.0f;
@@ -265,51 +265,51 @@ void ActionPlayerImp::ResetPosition()
 	ResetEventsMask();
 }
 
-//Получить текущее время
+//РџРѕР»СѓС‡РёС‚СЊ С‚РµРєСѓС‰РµРµ РІСЂРµРјСЏ
 float ActionPlayerImp::GetCurrentFrame()
 {
 	if(!action) return 0;
 	return action->startFrame + position*(action->endFrame - action->startFrame);
 }
 
-//Копировать состояние другого плеера
+//РљРѕРїРёСЂРѕРІР°С‚СЊ СЃРѕСЃС‚РѕСЏРЅРёРµ РґСЂСѓРіРѕРіРѕ РїР»РµРµСЂР°
 void ActionPlayerImp::CopyState(ActionPlayerImp & from)
 {
-	//Информация о текущем действие
+	//РРЅС„РѕСЂРјР°С†РёСЏ Рѕ С‚РµРєСѓС‰РµРј РґРµР№СЃС‚РІРёРµ
 	action = from.action;
-	//Тип проигрывания анимации
+	//РўРёРї РїСЂРѕРёРіСЂС‹РІР°РЅРёСЏ Р°РЅРёРјР°С†РёРё
 	anitype = from.anitype;
-	//Проигрывание
+	//РџСЂРѕРёРіСЂС‹РІР°РЅРёРµ
 	isPlay = from.isPlay;
 	isPause = from.isPause;
-	//Автостоп
+	//РђРІС‚РѕСЃС‚РѕРї
 	isAutostop = from.isAutostop;
-	//Позиция проигрывания
+	//РџРѕР·РёС†РёСЏ РїСЂРѕРёРіСЂС‹РІР°РЅРёСЏ
 	position = from.position;
-	//Направление движения true - нормальноеб иначе обратное
+	//РќР°РїСЂР°РІР»РµРЅРёРµ РґРІРёР¶РµРЅРёСЏ true - РЅРѕСЂРјР°Р»СЊРЅРѕРµР± РёРЅР°С‡Рµ РѕР±СЂР°С‚РЅРѕРµ
 	dir = from.dir;
-	//Скорость проигрывания
+	//РЎРєРѕСЂРѕСЃС‚СЊ РїСЂРѕРёРіСЂС‹РІР°РЅРёСЏ
 	speed = from.speed;
-	//Коэфициент скорости проигрывания
+	//РљРѕСЌС„РёС†РёРµРЅС‚ СЃРєРѕСЂРѕСЃС‚Рё РїСЂРѕРёРіСЂС‹РІР°РЅРёСЏ
 	kspeed = from.kspeed;
-	//Проигрывать зацикленно
+	//РџСЂРѕРёРіСЂС‹РІР°С‚СЊ Р·Р°С†РёРєР»РµРЅРЅРѕ
 	isLoop = from.isLoop;
-	//Маска для свершившихся событий
+	//РњР°СЃРєР° РґР»СЏ СЃРІРµСЂС€РёРІС€РёС…СЃСЏ СЃРѕР±С‹С‚РёР№
 	for(long i = 0; i < ACTIONPLAYEREVENTFLAGS; i++)
 						eventsMask[i] = from.eventsMask[i];
-	//Коэфициент блендинга
+	//РљРѕСЌС„РёС†РёРµРЅС‚ Р±Р»РµРЅРґРёРЅРіР°
 	kBlend = from.kBlend;
-	//Скалирующий коэфициент блендинга для таймера
+	//РЎРєР°Р»РёСЂСѓСЋС‰РёР№ РєРѕСЌС„РёС†РёРµРЅС‚ Р±Р»РµРЅРґРёРЅРіР° РґР»СЏ С‚Р°Р№РјРµСЂР°
 	kBlendTimer = from.kBlendTimer;
 }
 
 
 
 //--------------------------------------------------------------------------------------------
-//Инкапсуляция
+//РРЅРєР°РїСЃСѓР»СЏС†РёСЏ
 //--------------------------------------------------------------------------------------------
 
-//Передвижение позиции
+//РџРµСЂРµРґРІРёР¶РµРЅРёРµ РїРѕР·РёС†РёРё
 void ActionPlayerImp::MoveNormal(float dlt)
 {
 	position += dlt;
@@ -344,24 +344,24 @@ void ActionPlayerImp::MovePingpong(float dlt)
 {
 	if(dir)
 	{
-		//Прямое движение
+		//РџСЂСЏРјРѕРµ РґРІРёР¶РµРЅРёРµ
 		position += dlt;
 		if(position >= 1.0f)
 		{
-			//Сменим направление
+			//РЎРјРµРЅРёРј РЅР°РїСЂР°РІР»РµРЅРёРµ
 			position = 1.0f - (position - float(long(position)));
 			dir = false;
 			ani->ApeChange(playerIndex);
 		}
 	}else{
-		//Обратное движение
+		//РћР±СЂР°С‚РЅРѕРµ РґРІРёР¶РµРЅРёРµ
 		position -= dlt;
 		if(position < 0.0f)
 		{			
 			ani->ApeEnd(playerIndex);
 			if(isLoop)
 			{
-				//Сменим направление
+				//РЎРјРµРЅРёРј РЅР°РїСЂР°РІР»РµРЅРёРµ
 				ResetEventsMask();
 				position = -(position - long(position));
 				dir = true;
@@ -375,18 +375,18 @@ void ActionPlayerImp::MoveRPingpong(float dlt)
 {
 	if(!dir)
 	{
-		//Обратное движение
+		//РћР±СЂР°С‚РЅРѕРµ РґРІРёР¶РµРЅРёРµ
 		position -= dlt;
 		if(position < 0.0f)
 		{
 			ResetEventsMask();
-			//Сменим направление
+			//РЎРјРµРЅРёРј РЅР°РїСЂР°РІР»РµРЅРёРµ
 			position = -(position - long(position));
 			dir = true;
 			ani->ApeChange(playerIndex);
 		}
 	}else{
-		//Прямое движение
+		//РџСЂСЏРјРѕРµ РґРІРёР¶РµРЅРёРµ
 		position += dlt;
 		if(position >= 1.0f)
 		{
@@ -394,7 +394,7 @@ void ActionPlayerImp::MoveRPingpong(float dlt)
 			if(isLoop)
 			{
 				ResetEventsMask();
-				//Сменим направление
+				//РЎРјРµРЅРёРј РЅР°РїСЂР°РІР»РµРЅРёРµ
 				position = 1.0f - (position - float(long(position)));
 				dir = false;
 				ani->ApeStart(playerIndex);
@@ -403,7 +403,7 @@ void ActionPlayerImp::MoveRPingpong(float dlt)
 	}
 }
 
-//Проверить события и если надо инициировать
+//РџСЂРѕРІРµСЂРёС‚СЊ СЃРѕР±С‹С‚РёСЏ Рё РµСЃР»Рё РЅР°РґРѕ РёРЅРёС†РёРёСЂРѕРІР°С‚СЊ
 void ActionPlayerImp::CheckEvents()
 {
 	if(!action) return;
@@ -415,13 +415,13 @@ void ActionPlayerImp::CheckEvents()
 		if(action->CheckEvent(i, position, dir))
 		{
 			eventsMask[i >> 5] |= mask;
-			//Шлём пользовательское событие
+			//РЁР»С‘Рј РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРѕРµ СЃРѕР±С‹С‚РёРµ
 			ani->AteExtern(playerIndex, action->EventName(i));
 		}
 	}
 }
 
-//Сброс флажков произошедших событий
+//РЎР±СЂРѕСЃ С„Р»Р°Р¶РєРѕРІ РїСЂРѕРёР·РѕС€РµРґС€РёС… СЃРѕР±С‹С‚РёР№
 void ActionPlayerImp::ResetEventsMask()
 {
 	for(long i = 0; i < ACTIONPLAYEREVENTFLAGS; i++) eventsMask[i] = 0;

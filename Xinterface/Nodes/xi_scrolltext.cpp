@@ -83,7 +83,7 @@ void CXI_SCROLLTEXT::SetText(char *newText)
 			_THROW("allocate memory error")
 		strcpy(m_pText,newText);
 
-		// получить все части из текста
+		// РїРѕР»СѓС‡РёС‚СЊ РІСЃРµ С‡Р°СЃС‚Рё РёР· С‚РµРєСЃС‚Р°
 		char *pCh = m_pText;
 		m_idFont = FONT_DEFAULT;
 		m_dwFontColor = ARGB(255,255,255,255);
@@ -95,7 +95,7 @@ void CXI_SCROLLTEXT::SetText(char *newText)
 		{
 			if(*pCh=='^')
 			{
-				// поместить уже заполненный текст в отдельный кусок
+				// РїРѕРјРµСЃС‚РёС‚СЊ СѓР¶Рµ Р·Р°РїРѕР»РЅРµРЅРЅС‹Р№ С‚РµРєСЃС‚ РІ РѕС‚РґРµР»СЊРЅС‹Р№ РєСѓСЃРѕРє
 				if(nBeg!=nEnd)
 					startWidth = FillPices(m_pText,nBeg,nEnd-nBeg,idx,spl, startWidth);
 
@@ -181,7 +181,7 @@ long CXI_SCROLLTEXT::FillPices(char *pt, size_t beg, size_t size, long &idx, STR
 	long showWidth = m_rect.right-m_rect.left - wid;
 	if(showWidth<0) showWidth = m_rect.right-m_rect.left;
 
-	pt[size] = 0; // обозначим конец строки
+	pt[size] = 0; // РѕР±РѕР·РЅР°С‡РёРј РєРѕРЅРµС† СЃС‚СЂРѕРєРё
 	while(1)
 	{
 		char *pstr = &pt[beg];

@@ -58,7 +58,7 @@ bool GetNextIdFromList(char* &sptr, char* bufQuestID,size_t nSizeBufQuestID, cha
 		sstart++; idSize--;
 		int n;
 		if( sstart[0]<'0' || sstart[0]>'9' )
-		{ // не дата
+		{ // РЅРµ РґР°С‚Р°
 			n=0;
 			while(sstart[0] && sstart[0]!='@')
 			{
@@ -72,7 +72,7 @@ bool GetNextIdFromList(char* &sptr, char* bufQuestID,size_t nSizeBufQuestID, cha
 			bufQuestID[0] = '\0';
 		}
 
-		// дата
+		// РґР°С‚Р°
 		n=0;
 		while(sstart[0] && sstart[0]!='@')
 		{
@@ -142,7 +142,7 @@ bool CXI_QUESTTEXTS::GetLineNext(int fontNum,char* &pInStr,char* buf,int bufSize
 	SubRightWord( buf, fontNum, m_rect.right-m_rect.left, m_rs );
 	pInStr = pStart+strlen(buf);
 
-	// удалим начальные пробелы
+	// СѓРґР°Р»РёРј РЅР°С‡Р°Р»СЊРЅС‹Рµ РїСЂРѕР±РµР»С‹
 	while(*pInStr!=0 && (unsigned)*pInStr<=' ') pInStr++;
 
 	return true;
@@ -175,7 +175,7 @@ void CXI_QUESTTEXTS::Draw(bool bSelected,dword Delta_Time)
 	int i=0;
 	for(STRING_DESCRIBER* sd=m_listCur;sd!=NULL && i<m_allStrings;sd=sd->next,i++)
 	{
-		// отобразить строки
+		// РѕС‚РѕР±СЂР°Р·РёС‚СЊ СЃС‚СЂРѕРєРё
 		DWORD curColor = sd->complete ? m_dwCompleteColor : m_dwNonCompleteColor;
 		if(sd->lineStr!=NULL && sd->lineStr[0]!=0)
 			m_rs->ExtPrint( m_idFont,curColor,0,ALIGN_LEFT,true,1.f,m_screenSize.x,m_screenSize.y,
@@ -269,7 +269,7 @@ void CXI_QUESTTEXTS::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *name
 	m_vertOffset = GetIniLong(ini1,name1, ini2,name2, "lineSpace", 30);
 	if(m_vertOffset==0) m_vertOffset=10;
 
-	// подсчет количества выводимых строк на экране
+	// РїРѕРґСЃС‡РµС‚ РєРѕР»РёС‡РµСЃС‚РІР° РІС‹РІРѕРґРёРјС‹С… СЃС‚СЂРѕРє РЅР° СЌРєСЂР°РЅРµ
 	m_allStrings = (m_rect.bottom-m_rect.top)/m_vertOffset;
 
 	// get colors
@@ -289,7 +289,7 @@ void CXI_QUESTTEXTS::StartQuestShow(ATTRIBUTES * pA,int qn)
 	if(qn<0) qn=0;
 	if(qn>=aq) qn=aq-1;
 
-	// удалим старые строки
+	// СѓРґР°Р»РёРј СЃС‚Р°СЂС‹Рµ СЃС‚СЂРѕРєРё
 	while(m_listRoot!=NULL)
 	{
 		m_listCur = m_listRoot;
@@ -319,12 +319,12 @@ void CXI_QUESTTEXTS::StartQuestShow(ATTRIBUTES * pA,int qn)
 			if(m_listCur!=NULL)
 				m_listCur = m_listCur->Add("",cFlag);
 
-			// весь набор строк для одной записи
+			// РІРµСЃСЊ РЅР°Р±РѕСЂ СЃС‚СЂРѕРє РґР»СЏ РѕРґРЅРѕР№ Р·Р°РїРёСЃРё
 			asStringList.DelAll();
 			GetStringListForQuestRecord( asStringList, pAttr->GetThisAttr(), pAttr->GetAttribute("UserData") );
 			for( long i=0; i<asStringList; i++ )
 			{
-				// разложим полученную строку на строки влезающие в область вывода
+				// СЂР°Р·Р»РѕР¶РёРј РїРѕР»СѓС‡РµРЅРЅСѓСЋ СЃС‚СЂРѕРєСѓ РЅР° СЃС‚СЂРѕРєРё РІР»РµР·Р°СЋС‰РёРµ РІ РѕР±Р»Р°СЃС‚СЊ РІС‹РІРѕРґР°
 				char* pcStrPtr = (char*)asStringList[i].GetBuffer();
 				char newStr[512];
 				while( GetLineNext(m_idFont,pcStrPtr,newStr,sizeof(newStr)) )
@@ -370,7 +370,7 @@ dword _cdecl CXI_QUESTTEXTS::MessageProc(long msgcode, MESSAGE & message)
 {
 	switch(msgcode)
 	{
-	case 0: // установить верхнюю строку показа в определенный номер
+	case 0: // СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РІРµСЂС…РЅСЋСЋ СЃС‚СЂРѕРєСѓ РїРѕРєР°Р·Р° РІ РѕРїСЂРµРґРµР»РµРЅРЅС‹Р№ РЅРѕРјРµСЂ
 		{
 			long topStrNum = message.Long();
 			if(m_listRoot==null || m_nAllTextStrings<=0) return 0;
@@ -383,7 +383,7 @@ dword _cdecl CXI_QUESTTEXTS::MessageProc(long msgcode, MESSAGE & message)
 		}
 		break;
 
-	case 1: // установить верхнюю строку показа на относительный номер
+	case 1: // СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РІРµСЂС…РЅСЋСЋ СЃС‚СЂРѕРєСѓ РїРѕРєР°Р·Р° РЅР° РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅС‹Р№ РЅРѕРјРµСЂ
 		{
 			ScrollerChanged( message.Float() );
 			return 0;

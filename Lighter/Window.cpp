@@ -12,7 +12,7 @@
 #include "Lights.h"
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 
@@ -82,7 +82,7 @@ bool Window::Init(VDX8RENDER * rs)
 	font = rs->LoadFont("Lighter");
 	if(font < 0) font = FONT_DEFAULT;
 	fontHeight = float(rs->CharHeight(font));
-	//Получим текущие размеры vp
+	//РџРѕР»СѓС‡РёРј С‚РµРєСѓС‰РёРµ СЂР°Р·РјРµСЂС‹ vp
 	D3DVIEWPORT9 vp;
 	rs->GetViewport(&vp);
 	sw = float(vp.Width);
@@ -98,7 +98,7 @@ bool Window::Init(VDX8RENDER * rs)
 	frmColor = 0xff00a0a0;
 	textColor = 0xffffff8f;
 	selColor = 0x00c0c000;
-	//Текстура для пикера
+	//РўРµРєСЃС‚СѓСЂР° РґР»СЏ РїРёРєРµСЂР°
 	if(rs->CreateTexture(256, 256, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pickerTexture) == D3D_OK && pickerTexture)
 	{
 		D3DLOCKED_RECT lockedRect;
@@ -274,7 +274,7 @@ void Window::Draw(float dltTime)
 {
 	float x, y;
 	if(pikerWait > 0.0f) pikerWait -= dltTime;
-	//Окно сообщения о загрузке
+	//РћРєРЅРѕ СЃРѕРѕР±С‰РµРЅРёСЏ Рѕ Р·Р°РіСЂСѓР·РєРµ
 	if(isFailedInit)
 	{
 		if(isVisible)
@@ -331,7 +331,7 @@ void Window::Draw(float dltTime)
 			}
 		}
 	}
-	//Рисуем интерфейс
+	//Р РёСЃСѓРµРј РёРЅС‚РµСЂС„РµР№СЃ
 	if(!isVisible) return;
 	if(GetAsyncKeyState(VK_CONTROL) < 0)
 	{
@@ -393,7 +393,7 @@ void Window::Draw(float dltTime)
 			isOldMouseState = isMouseDown;
 		}else isOldMouseState = isMouseDown;
 	}else isActiveMouseState = false;
-	//Обновим позицию курсора
+	//РћР±РЅРѕРІРёРј РїРѕР·РёС†РёСЋ РєСѓСЂСЃРѕСЂР°
 	CONTROL_STATE cs;
 	_CORE_API->Controls->GetControlState("Turn H",cs);
 	cursx += cs.lValue*3.0f;
@@ -403,9 +403,9 @@ void Window::Draw(float dltTime)
 	cursy += cs.lValue*3.0f;
 	if(cursy < 0.0f) cursy = 0.0f;
 	if(cursy > sh - 5.0f) cursy = sh - 5.0f;
-	//Подложка
+	//РџРѕРґР»РѕР¶РєР°
 	DrawLRect(winx, winy, winx + winw, winy + winh + (selected >= 0 ? list[selected].h : 0), bkgColor, frmColor);
-	//Кнопка закрывашка
+	//РљРЅРѕРїРєР° Р·Р°РєСЂС‹РІР°С€РєР°
 	float clsx = winx + winw - 20.0f;
 	float clsy = winy + 5.0f;
 	float clsw = 15.0f;
@@ -421,7 +421,7 @@ void Window::Draw(float dltTime)
 	DrawLRect(clsx, clsy, clsx + clsw, clsy + clsh, c, frmColor);
 	DrawLine(clsx + 2.0f, clsy + 2.0f, clsx + clsw - 1.0f, clsy + clsh - 1.0f, cl);
 	DrawLine(clsx + clsw - 2.0f, clsy + 2.0f, clsx + 1.0f, clsy + clsh - 1.0f, cl);
-	//Заголовок списка
+	//Р—Р°РіРѕР»РѕРІРѕРє СЃРїРёСЃРєР°
 	float lstx = winx + 5.0f;
 	float lsty = winy + 5.0f;
 	float lstw = 240.0f;
@@ -452,7 +452,7 @@ void Window::Draw(float dltTime)
 	//DrawLine(lstbx + 6.0f, lsty + 6.0f, lstbx + lstbw - 6.0f, lsty + 6.0f, cl);
 	//DrawLine(lstbx + 6.0f, lsty + 6.0f, lstbx + lstbw/2 + 1, lsty + lsth - 6.0f, cl);
 	//DrawLine(lstbx + lstbw - 6.0f, lsty + 6.0f, lstbx + lstbw/2 - 1, lsty + lsth - 6.0f, cl);
-	//Контролсы
+	//РљРѕРЅС‚СЂРѕР»СЃС‹
 	long prs;
 	if(selected >= 0)
 	{
@@ -541,7 +541,7 @@ void Window::Draw(float dltTime)
 			break;
 		}
 	}
-	//Список
+	//РЎРїРёСЃРѕРє
 	if(isList)
 	{
 		long numLines = 16;
@@ -580,14 +580,14 @@ void Window::Draw(float dltTime)
 		DrawLine(lstbx + lstbw*0.5f, lsty + lsth - 6.0f, lstbx + 6.0f, lsty + lsth - lstbw + 6.0f, cl);
 		DrawLine(lstbx + lstbw*0.5f, lsty + lsth - 6.0f, lstbx + lstbw - 6.0f, lsty + lsth - lstbw + 6.0f, cl);
 		DrawLine(lstbx + 6.0f, lsty + lsth - lstbw + 6.0f, lstbx + lstbw - 4.0f, lsty + lsth - lstbw + 6.0f, cl);
-		//Цикл отрисовки
+		//Р¦РёРєР» РѕС‚СЂРёСЃРѕРІРєРё
 		if(listPos > numElements - numLines/2) listPos = float(numElements - numLines/2);
 		if(listPos < 0.0f) listPos = 0.0f;
 		long str = long(listPos);
 		long sel = -1;
 		if(cursx >= lstx && cursx < lstx + lstw && cursy >= lsty && cursy < lsty + lsth)
 		{
-			//Ищем выделенную область
+			//РС‰РµРј РІС‹РґРµР»РµРЅРЅСѓСЋ РѕР±Р»Р°СЃС‚СЊ
 			sel = long((cursy - lsty)/lstbw);
 			if(sel < 0) sel = 0;
 			if(sel >= numLines) sel = numLines;
@@ -615,7 +615,7 @@ void Window::Draw(float dltTime)
 			isList = false;
 		}
 	}
-	//Рисуем курсор
+	//Р РёСЃСѓРµРј РєСѓСЂСЃРѕСЂ
 	DrawCursor();
 }
 
@@ -706,16 +706,16 @@ bool Window::Slider(long id, float y, const char * text, float & value, float mi
 	float v = (value - min)/(max - min);
 	if(v < 0.0f) v = 0.0f;
 	if(v > 1.0f) v = 1.0f;
-	//Текст
+	//РўРµРєСЃС‚
 	float x = winx + 5.0f;
 	Print(textColor, x, x, y, 0.5f, false, text);
-	//Полоска
+	//РџРѕР»РѕСЃРєР°
 	x += 40.0f;
 	y += 1.0f;
 	DrawLRect(x, winy + y, x + sldLen, winy + y + 5.0f, 0, frmColor);
 	float szx = isSmallSlider ? 3.0f : 8.0f;
 	float szy = isSmallSlider ? 3.0f : 5.0f;
-	//Движёк
+	//Р”РІРёР¶С‘Рє
 	dword c = 0xcc000000;
 	float oldv = v;
 	if(!isPikerActive && !isList)
@@ -760,9 +760,9 @@ bool Window::Slider(long id, float y, const char * text, float & value, float mi
 bool Window::ColorPicker(long id, float y, CVECTOR & ref, float st, CVECTOR & res)
 {
 	bool isChange = false;
-	//Расчитываем цвет
+	//Р Р°СЃС‡РёС‚С‹РІР°РµРј С†РІРµС‚
 	UpdateColors();
-	//Рисуем прямоугольник
+	//Р РёСЃСѓРµРј РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє
 	float x = winx + 60.0f + sldLen;
 	float w = 50.0f;
 	float h = 50.0f;
@@ -775,12 +775,12 @@ bool Window::ColorPicker(long id, float y, CVECTOR & ref, float st, CVECTOR & re
 	knrm = 255.0f/knrm;
 	dword color = (dword(res.x*knrm) << 16) | (dword(res.y*knrm) << 8) | (dword(res.z*knrm) << 0);
 	DrawLRect(x, winy + y, x + w, winy + y + h, 0xff000000 | color, frmColor);
-	//Рисуем пикер
+	//Р РёСЃСѓРµРј РїРёРєРµСЂ
 	if(isPikerActive)
 	{
-		//Фон
+		//Р¤РѕРЅ
 		DrawLRect(x - 257.0f - 6.0f, winy + y, x - 1.0f, winy + y + 256.0f + 6.0f, 0xff000000, 0);
-		//Цветовой квадрат
+		//Р¦РІРµС‚РѕРІРѕР№ РєРІР°РґСЂР°С‚
 		float x1 = x - 256.0f - 4.0f;
 		float y1 = winy + y + 3.0f;
 		float x2 = x - 4.0f;
@@ -860,7 +860,7 @@ void Window::Checker(float x, float y, const char * text, bool & res)
 	dword c = selColor;
 	float s = 10.0f;
 	float h = 20.0f;
-	//Проверим на изменение
+	//РџСЂРѕРІРµСЂРёРј РЅР° РёР·РјРµРЅРµРЅРёРµ
 	if(cursx >= winx + x && cursx <= winx + x + s)
 	{
 		if(cursy >= winy + y + h*0.5f - s*0.5f && cursy <= winy + y + h*0.5f + s*0.5f)
@@ -962,7 +962,7 @@ long Window::SelPreset()
 	{
 		if(lastPreset != ins)
 		{
-			//Подгружаем имя
+			//РџРѕРґРіСЂСѓР¶Р°РµРј РёРјСЏ
 			INIFILE * ini = api->fio->OpenIniFile("resource\\ini\\loclighter.ini");
 			if(ini)
 			{
@@ -983,7 +983,7 @@ long Window::SelPreset()
 void Window::SavePreset(long prs)
 {
 	if(prs < 0) return;
-	//Проверяем, будем ли работать
+	//РџСЂРѕРІРµСЂСЏРµРј, Р±СѓРґРµРј Р»Рё СЂР°Р±РѕС‚Р°С‚СЊ
 	INIFILE * ini = api->fio->OpenIniFile("resource\\ini\\loclighter.ini");
 	if(!ini) return;
 	char sect[32];
@@ -1045,7 +1045,7 @@ void Window::SavePreset(long prs)
 void Window::LoadPreset(long prs)
 {
 	if(prs < 0) return;
-	//Проверяем, будем ли работать
+	//РџСЂРѕРІРµСЂСЏРµРј, Р±СѓРґРµРј Р»Рё СЂР°Р±РѕС‚Р°С‚СЊ
 	INIFILE * ini = api->fio->OpenIniFile("resource\\ini\\loclighter.ini");
 	if(!ini) return;
 	char sect[32];

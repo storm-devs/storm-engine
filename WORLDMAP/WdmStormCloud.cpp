@@ -19,7 +19,7 @@
 WdmStormCloud::RainVertex WdmStormCloud::rain[4096];
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 WdmStormCloud::WdmStormCloud()
@@ -41,9 +41,9 @@ WdmStormCloud::~WdmStormCloud()
 
 void WdmStormCloud::BuildCloud(long n)
 {
-	//Создаём облако
+	//РЎРѕР·РґР°С‘Рј РѕР±Р»Р°РєРѕ
 	WdmCloud::BuildCloud(n);
-	//Заполняем цвета
+	//Р—Р°РїРѕР»РЅСЏРµРј С†РІРµС‚Р°
 	FillRects();
 }
 
@@ -51,7 +51,7 @@ void WdmStormCloud::FillRects()
 {
 	for(long i = 0; i < numRects; i++)
 	{
-		//Цвет
+		//Р¦РІРµС‚
 		float r = (WDM_STORMCLOUD_COLOR >> 16) & 0xff;
 		float g = (WDM_STORMCLOUD_COLOR >> 8) & 0xff;
 		float b = (WDM_STORMCLOUD_COLOR >> 0) & 0xff;
@@ -65,7 +65,7 @@ void WdmStormCloud::FillRects()
 		if(b < 0.0f) b = 0.0f;
 		if(b > 255.0f) b = 255.0f;
 		rect[i].dwColor = 0xff000000 | (long(r) << 16) | (long(g) << 8) | (long(b) << 0);
-		//Координаты дождя
+		//РљРѕРѕСЂРґРёРЅР°С‚С‹ РґРѕР¶РґСЏ
 		for(long j = 0; j < 256; j++)
 		{
 			float ang = rand()*2.0f*3.141592653f/RAND_MAX;
@@ -77,17 +77,17 @@ void WdmStormCloud::FillRects()
 	}
 }
 
-//Расчёты
+//Р Р°СЃС‡С‘С‚С‹
 void WdmStormCloud::Update(float dltTime)
 {
 	WdmCloud::Update(dltTime);
-	//Погенерим молнии
+	//РџРѕРіРµРЅРµСЂРёРј РјРѕР»РЅРёРё
 	if(curLightning < 0)
 	{
 		lightningWaitTime += dltTime*0.001f;
 		if(lightningWaitTime > 0.001f + rand()*1.0f/RAND_MAX)
 		{
-			//Пора рожать новую молнию
+			//РџРѕСЂР° СЂРѕР¶Р°С‚СЊ РЅРѕРІСѓСЋ РјРѕР»РЅРёСЋ
 			curLightning = rand() % numRects;
 			lightningTime = 0.3f;
 			lastColor = rect[curLightning].dwColor;
@@ -112,14 +112,14 @@ void WdmStormCloud::Update(float dltTime)
 			curLightning = -1;
 		}
 	}
-	//Дождик
+	//Р”РѕР¶РґРёРє
 	curU += 1.0f*dltTime;
 	curV += 0.1f*dltTime;
 	if(curU > 1.0f) curU -= 1.0f;
 	if(curV > 1.0f) curV -= 1.0f;
 }
 
-//Отрисовка
+//РћС‚СЂРёСЃРѕРІРєР°
 void WdmStormCloud::PRender(VDX8RENDER * rs)
 {
 	LRender(rs);
@@ -128,12 +128,12 @@ void WdmStormCloud::PRender(VDX8RENDER * rs)
 void WdmStormCloud::LRender(VDX8RENDER * rs)
 {
 	
-	//Рисуем подложку на море
+	//Р РёСЃСѓРµРј РїРѕРґР»РѕР¶РєСѓ РЅР° РјРѕСЂРµ
 
-	//Рисуем молнию
+	//Р РёСЃСѓРµРј РјРѕР»РЅРёСЋ
 
 	/*
-	//Рисуем дождик
+	//Р РёСЃСѓРµРј РґРѕР¶РґРёРє
 	for(long i = 0; i < numRects; i++)
 	{
 		for(long j = 0; j < 256; j++)
@@ -171,6 +171,6 @@ void WdmStormCloud::LRender(VDX8RENDER * rs)
 	rs->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
 	rs->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
 	//*/
-	//Рисуем облако
+	//Р РёСЃСѓРµРј РѕР±Р»Р°РєРѕ
 	WdmCloud::LRender(rs);
 }

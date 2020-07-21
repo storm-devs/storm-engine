@@ -13,13 +13,13 @@
 
 //============================================================================================
 
-#define WDM_ENEMYSHIP_BRNSPD			(1.0f/3.0f)	//Время появления 1/sec
-#define WDM_ENEMYSHIP_DELSPD			(1.0f/2.0f)	//Время удаления 1/sec
-#define WDM_ENEMYSHIP_MINTIME			60.0f		//Минимальное время жизни в sec
-#define WDM_ENEMYSHIP_MAXTIME			180.0f		//Максимальное время жизни в sec
+#define WDM_ENEMYSHIP_BRNSPD			(1.0f/3.0f)	//Р’СЂРµРјСЏ РїРѕСЏРІР»РµРЅРёСЏ 1/sec
+#define WDM_ENEMYSHIP_DELSPD			(1.0f/2.0f)	//Р’СЂРµРјСЏ СѓРґР°Р»РµРЅРёСЏ 1/sec
+#define WDM_ENEMYSHIP_MINTIME			60.0f		//РњРёРЅРёРјР°Р»СЊРЅРѕРµ РІСЂРµРјСЏ Р¶РёР·РЅРё РІ sec
+#define WDM_ENEMYSHIP_MAXTIME			180.0f		//РњР°РєСЃРёРјР°Р»СЊРЅРѕРµ РІСЂРµРјСЏ Р¶РёР·РЅРё РІ sec
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 WdmEnemyShip::WdmEnemyShip()
@@ -39,7 +39,7 @@ WdmEnemyShip::WdmEnemyShip()
 	alpha = 0.0f;
 	type = -1;
 	attack = null;
-	//Время жизни
+	//Р’СЂРµРјСЏ Р¶РёР·РЅРё
 	liveTime = WDM_ENEMYSHIP_MINTIME + rand()*((WDM_ENEMYSHIP_MAXTIME - WDM_ENEMYSHIP_MINTIME)/RAND_MAX);
 	shipType = wdmest_unknow;
 	canSkip = false;
@@ -56,41 +56,41 @@ WdmEnemyShip::~WdmEnemyShip()
 	}*/
 }
 
-//Расчёты
+//Р Р°СЃС‡С‘С‚С‹
 void WdmEnemyShip::Update(float dltTime)
 {
 	if(!wdmObjects->playerShip) return;
-	//Перемещение
+	//РџРµСЂРµРјРµС‰РµРЅРёРµ
 	Move(dltTime);
-	//Расстояние от нас до игрока
+	//Р Р°СЃСЃС‚РѕСЏРЅРёРµ РѕС‚ РЅР°СЃ РґРѕ РёРіСЂРѕРєР°
 	float dx = wdmObjects->playerShip->mtx.Pos().x - mtx.Pos().x;
 	float dz = wdmObjects->playerShip->mtx.Pos().z - mtx.Pos().z;
 	float d = sqrtf(dx*dx + dz*dz);
-	//Видимость
-	//От удалённости от игрока
+	//Р’РёРґРёРјРѕСЃС‚СЊ
+	//РћС‚ СѓРґР°Р»С‘РЅРЅРѕСЃС‚Рё РѕС‚ РёРіСЂРѕРєР°
 	alpha = 1.0f - (d - wdmObjects->enemyshipViewDistMin)/(wdmObjects->enemyshipViewDistMax - wdmObjects->enemyshipViewDistMin);
-	//От времени появления
+	//РћС‚ РІСЂРµРјРµРЅРё РїРѕСЏРІР»РµРЅРёСЏ
 	brnAlpha += WDM_ENEMYSHIP_BRNSPD*dltTime;
 	if(brnAlpha > 1.0f) brnAlpha = 1.0f;
 	alpha *= brnAlpha;
-	//От времени удаления
+	//РћС‚ РІСЂРµРјРµРЅРё СѓРґР°Р»РµРЅРёСЏ
 	alpha *= slowingAlfa;//deleteAlpha;
 	if(alpha < 0.0f) alpha = 0.0f;
 	if(alpha > 1.0f) alpha = 1.0f;
-	//Проверка завершения жизни
+	//РџСЂРѕРІРµСЂРєР° Р·Р°РІРµСЂС€РµРЅРёСЏ Р¶РёР·РЅРё
 	if(isEnableKill)
 	{
 		if(deleteAlpha >= 1.0f)
 		{
-			//Проверка на удалённость
+			//РџСЂРѕРІРµСЂРєР° РЅР° СѓРґР°Р»С‘РЅРЅРѕСЃС‚СЊ
 			if(d > wdmObjects->enemyshipDistKill) deleteAlpha = 0.999999f;
-			//Проверка времени жизни
+			//РџСЂРѕРІРµСЂРєР° РІСЂРµРјРµРЅРё Р¶РёР·РЅРё
 			liveTime -= dltTime;
 			if(liveTime < 0.0f) deleteAlpha = 0.999999f;
-			//Внешняя проверка
+			//Р’РЅРµС€РЅСЏСЏ РїСЂРѕРІРµСЂРєР°
 			if(KillTest()) deleteAlpha = 0.999999f;
 		}else{
-			//Процесс удаления
+			//РџСЂРѕС†РµСЃСЃ СѓРґР°Р»РµРЅРёСЏ
 			deleteAlpha -= WDM_ENEMYSHIP_DELSPD*dltTime;
 			slowingAlfa = deleteAlpha;
 			if(deleteAlpha < 0.0f)
@@ -117,7 +117,7 @@ void WdmEnemyShip::Update(float dltTime)
 	}
 	//
 	WdmShip::Update(dltTime);
-	//Обновление параметров
+	//РћР±РЅРѕРІР»РµРЅРёРµ РїР°СЂР°РјРµС‚СЂРѕРІ
 	UpdateSaveData();
 }
 
@@ -137,14 +137,14 @@ void WdmEnemyShip::LRender(VDX8RENDER * rs)
 	WdmShip::LRender(rs);
 }
 
-//Найти силу притягивающую в нужном направлении
+//РќР°Р№С‚Рё СЃРёР»Сѓ РїСЂРёС‚СЏРіРёРІР°СЋС‰СѓСЋ РІ РЅСѓР¶РЅРѕРј РЅР°РїСЂР°РІР»РµРЅРёРё
 void WdmEnemyShip::FindMoveForce()
 {
 	mx = 0.0f;
 	mz = 0.0f;
 }
 
-//Найти силу отталкивающую от островов
+//РќР°Р№С‚Рё СЃРёР»Сѓ РѕС‚С‚Р°Р»РєРёРІР°СЋС‰СѓСЋ РѕС‚ РѕСЃС‚СЂРѕРІРѕРІ
 void WdmEnemyShip::FindIslandForce()
 {
 	CVECTOR reaction;
@@ -159,7 +159,7 @@ void WdmEnemyShip::FindIslandForce()
 	}
 }
 
-//Найти силу отталкивающую от кораблей
+//РќР°Р№С‚Рё СЃРёР»Сѓ РѕС‚С‚Р°Р»РєРёРІР°СЋС‰СѓСЋ РѕС‚ РєРѕСЂР°Р±Р»РµР№
 void WdmEnemyShip::FindShipsForce()
 {
 	sx = 0.0f;
@@ -170,10 +170,10 @@ void WdmEnemyShip::FindShipsForce()
 		if(!s[i]) continue;
 		if(s[i] == this) continue;
 		if(s[i] == wdmObjects->playerShip && !isLookOnPlayer) continue;
-		//Вертор от него до нас
+		//Р’РµСЂС‚РѕСЂ РѕС‚ РЅРµРіРѕ РґРѕ РЅР°СЃ
 		float fx = mtx.Pos().x - s[i]->mtx.Pos().x;
 		float fz = mtx.Pos().z - s[i]->mtx.Pos().z;
-		//Дистанция
+		//Р”РёСЃС‚Р°РЅС†РёСЏ
 		float fl = fx*fx + fz*fz - 25.0f*25.0f;
 		if( fl > 25.0f*25.0f ) continue;
 		if(fl < 0.1f) fl = 0.1f;
@@ -182,7 +182,7 @@ void WdmEnemyShip::FindShipsForce()
 		fz *= fl;
 		sx += fx;
 		sz += fz;
-		//Отклонение
+		//РћС‚РєР»РѕРЅРµРЅРёРµ
 		fl = fx*fx + fz*fz;
 		fx *= s[i]->mtx.Vz().x;
 		fz *= s[i]->mtx.Vz().z;
@@ -198,36 +198,36 @@ void WdmEnemyShip::FindShipsForce()
 	}
 }
 
-//Все расчёты то перемещению вместе
+//Р’СЃРµ СЂР°СЃС‡С‘С‚С‹ С‚Рѕ РїРµСЂРµРјРµС‰РµРЅРёСЋ РІРјРµСЃС‚Рµ
 void WdmEnemyShip::Move(float dltTime)
 {
-	//Вычисляем реакцию поворота
-	//Куда плыть
+	//Р’С‹С‡РёСЃР»СЏРµРј СЂРµР°РєС†РёСЋ РїРѕРІРѕСЂРѕС‚Р°
+	//РљСѓРґР° РїР»С‹С‚СЊ
 	FindMoveForce();
-	//Отталкивание от островов
+	//РћС‚С‚Р°Р»РєРёРІР°РЅРёРµ РѕС‚ РѕСЃС‚СЂРѕРІРѕРІ
 	FindIslandForce();
-	//Отталкивание от кораблей
+	//РћС‚С‚Р°Р»РєРёРІР°РЅРёРµ РѕС‚ РєРѕСЂР°Р±Р»РµР№
 	FindShipsForce();
-	//Результирующее
+	//Р РµР·СѓР»СЊС‚РёСЂСѓСЋС‰РµРµ
 	dx = 1.0f*mx + 1.5f*ix + 1.1f*sx;
 	dz = 1.0f*mz + 1.5f*iz + 1.1f*sz;
 	float dl = dx*dx + dz*dz;
-	//Наше направление
+	//РќР°С€Рµ РЅР°РїСЂР°РІР»РµРЅРёРµ
 	float vx = mtx.Vz().x;
 	float vz = mtx.Vz().z;
 	float vl = vx*vx + vz*vz;
-	//Синус угла между этой парой векторов
+	//РЎРёРЅСѓСЃ СѓРіР»Р° РјРµР¶РґСѓ СЌС‚РѕР№ РїР°СЂРѕР№ РІРµРєС‚РѕСЂРѕРІ
 	float sn = vz*dx - vx*dz;
 	if(dl*vl > 0.0f) sn /= sqrtf(dl*vl);
-	//Если игрок сзади, то вырабатываем поворот на полную катушку
+	//Р•СЃР»Рё РёРіСЂРѕРє СЃР·Р°РґРё, С‚Рѕ РІС‹СЂР°Р±Р°С‚С‹РІР°РµРј РїРѕРІРѕСЂРѕС‚ РЅР° РїРѕР»РЅСѓСЋ РєР°С‚СѓС€РєСѓ
 	float cs = vx*dx + vz*dz;
 	if(cs < 0.0f)
 	{
 		if(sn < 0.0f) sn = -1; else sn = 1.0f;
 	}
-	//Реакция поворота
+	//Р РµР°РєС†РёСЏ РїРѕРІРѕСЂРѕС‚Р°
 	turnspd += 2.0f*WDM_SHIP_TSPEED*sn*dltTime;
-	//Управление скоростью
+	//РЈРїСЂР°РІР»РµРЅРёРµ СЃРєРѕСЂРѕСЃС‚СЊСЋ
 	if(cs >= 0.0f)
 	{
 		speed += kMaxSpeed*WDM_SHIP_INER_ST*WDM_SHIP_SPEED*dltTime;
@@ -242,13 +242,13 @@ void WdmEnemyShip::Move(float dltTime)
 	turnspd *= slowingAlfa;
 }
 
-//Проверка на завершение
+//РџСЂРѕРІРµСЂРєР° РЅР° Р·Р°РІРµСЂС€РµРЅРёРµ
 bool WdmEnemyShip::KillTest()
 {
 	return !isLive;
 }
 
-//Обновление сохраняемых данных
+//РћР±РЅРѕРІР»РµРЅРёРµ СЃРѕС…СЂР°РЅСЏРµРјС‹С… РґР°РЅРЅС‹С…
 void WdmEnemyShip::UpdateSaveData()
 {
 	if(!saveAttribute) return;
@@ -329,37 +329,37 @@ void WdmEnemyShip::DeleteUpdate()
 	}
 }
 
-//Найти позицию для корабля относительно игрока
+//РќР°Р№С‚Рё РїРѕР·РёС†РёСЋ РґР»СЏ РєРѕСЂР°Р±Р»СЏ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РёРіСЂРѕРєР°
 bool WdmEnemyShip::GeneratePosition(float objRadius, float brnDltAng, float & x, float & z)
 {
-	//Позиция игрока
+	//РџРѕР·РёС†РёСЏ РёРіСЂРѕРєР°
 	if(!wdmObjects->playerShip) return false;
 	float psx = wdmObjects->playerShip->mtx.Pos().x;
 	float psz = wdmObjects->playerShip->mtx.Pos().z;
 	float psay = ((WdmEnemyShip *)wdmObjects->playerShip)->ay;
-	//Поля возможных вариантов
+	//РџРѕР»СЏ РІРѕР·РјРѕР¶РЅС‹С… РІР°СЂРёР°РЅС‚РѕРІ
 	byte field[32];
 	for(long i = 0; i < 32; i++) field[i] = 0;
-	//Попытки расстановок
+	//РџРѕРїС‹С‚РєРё СЂР°СЃСЃС‚Р°РЅРѕРІРѕРє
 	while(true)
 	{
-		//Определим угл
+		//РћРїСЂРµРґРµР»РёРј СѓРіР»
 		long ang = rand() & 31;
 		if(field[ang] != 0xff)
 		{
 			float angle = psay + brnDltAng*(0.5f - ang/31.0f);
-			//Определяем радиус
+			//РћРїСЂРµРґРµР»СЏРµРј СЂР°РґРёСѓСЃ
 			long rad = 0;
 			for(rad = rand() & 7; field[ang] & (1 << rad); rad = rand() & 7);
 			float radius = wdmObjects->enemyshipBrnDistMin + (wdmObjects->enemyshipBrnDistMax - wdmObjects->enemyshipBrnDistMin)*rad/7.0f;
-			//Координаты
+			//РљРѕРѕСЂРґРёРЅР°С‚С‹
 			x = psx + radius*sinf(angle);
 			z = psz + radius*cosf(angle);
-			//Проверим на возможность установки в найденное место
+			//РџСЂРѕРІРµСЂРёРј РЅР° РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ СѓСЃС‚Р°РЅРѕРІРєРё РІ РЅР°Р№РґРµРЅРЅРѕРµ РјРµСЃС‚Рѕ
 			if(CheckPosition(x, z, objRadius)) break;
 			field[ang] |= 1 << rad;
 		}
-		//Проверка на возможность продолжения
+		//РџСЂРѕРІРµСЂРєР° РЅР° РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РїСЂРѕРґРѕР»Р¶РµРЅРёСЏ
 		long i = 0;
 		for(i = 0; i < 32 && field[i] == 0xff; i++);
 		if(i == 32) return false;
@@ -367,14 +367,14 @@ bool WdmEnemyShip::GeneratePosition(float objRadius, float brnDltAng, float & x,
 	return true;
 }
 
-//Установить время жизни
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РІСЂРµРјСЏ Р¶РёР·РЅРё
 void WdmEnemyShip::SetLiveTime(float time)
 {
 	if(time < 1.0f) time = 1.0f;
 	liveTime = time;
 }
 
-//Получить имя атрибута
+//РџРѕР»СѓС‡РёС‚СЊ РёРјСЏ Р°С‚СЂРёР±СѓС‚Р°
 const char * WdmEnemyShip::GetAttributeName()
 {
 	static char * empty = "";

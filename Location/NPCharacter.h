@@ -19,14 +19,14 @@ protected:
 	enum NPCTask
 	{
 		npct_unknow = 0,
-		npct_none,				//Нет задачи, персонаж контролируется извне
-		npct_stay,				//Стоять на месте
-		npct_gotopoint,			//Идти в точку
-		npct_runtopoint,		//Бежать в точку
-		npct_followcharacter,	//Идти за перcонажем
-		npct_fight,				//Сражаться с другим персонажем
-		npct_escape,			//Уходить от персонажа
-		npct_dead,				//Смерть персонажа
+		npct_none,				//РќРµС‚ Р·Р°РґР°С‡Рё, РїРµСЂСЃРѕРЅР°Р¶ РєРѕРЅС‚СЂРѕР»РёСЂСѓРµС‚СЃСЏ РёР·РІРЅРµ
+		npct_stay,				//РЎС‚РѕСЏС‚СЊ РЅР° РјРµСЃС‚Рµ
+		npct_gotopoint,			//РРґС‚Рё РІ С‚РѕС‡РєСѓ
+		npct_runtopoint,		//Р‘РµР¶Р°С‚СЊ РІ С‚РѕС‡РєСѓ
+		npct_followcharacter,	//РРґС‚Рё Р·Р° РїРµСЂcРѕРЅР°Р¶РµРј
+		npct_fight,				//РЎСЂР°Р¶Р°С‚СЊСЃСЏ СЃ РґСЂСѓРіРёРј РїРµСЂСЃРѕРЅР°Р¶РµРј
+		npct_escape,			//РЈС…РѕРґРёС‚СЊ РѕС‚ РїРµСЂСЃРѕРЅР°Р¶Р°
+		npct_dead,				//РЎРјРµСЂС‚СЊ РїРµСЂСЃРѕРЅР°Р¶Р°
 		npct_max
 	};
 
@@ -49,14 +49,14 @@ protected:
 
 	struct EnemyState
 	{
-		NPCharacter * chr;	//Указатель на врага
-		float look;			//Направление врага к нам (cos)
-		float dir;			//Расположение врага относительно нас (cos)
-		float state;		//Коэфициент состояния врага
+		NPCharacter * chr;	//РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РІСЂР°РіР°
+		float look;			//РќР°РїСЂР°РІР»РµРЅРёРµ РІСЂР°РіР° Рє РЅР°Рј (cos)
+		float dir;			//Р Р°СЃРїРѕР»РѕР¶РµРЅРёРµ РІСЂР°РіР° РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РЅР°СЃ (cos)
+		float state;		//РљРѕСЌС„РёС†РёРµРЅС‚ СЃРѕСЃС‚РѕСЏРЅРёСЏ РІСЂР°РіР°
 	};
 
 //--------------------------------------------------------------------------------------------
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //--------------------------------------------------------------------------------------------
 public:
 	NPCharacter();
@@ -72,14 +72,14 @@ public:
 //
 //--------------------------------------------------------------------------------------------
 public:
-	//Получить атакуещего персонажа
+	//РџРѕР»СѓС‡РёС‚СЊ Р°С‚Р°РєСѓРµС‰РµРіРѕ РїРµСЂСЃРѕРЅР°Р¶Р°
 	Character * GetAttackedCharacter();
 
 //--------------------------------------------------------------------------------------------
-//Задачи
+//Р—Р°РґР°С‡Рё
 //--------------------------------------------------------------------------------------------
 
-	//Установить новую задачу
+	//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РЅРѕРІСѓСЋ Р·Р°РґР°С‡Сѓ
 	bool SetNewTask(NPCTask tsk, MESSAGE & message);
 	
 	bool InitFollowChartacter(ENTITY_ID & eid);
@@ -87,104 +87,104 @@ public:
 
 
 //--------------------------------------------------------------------------------------------
-//Исполнение задач
+//РСЃРїРѕР»РЅРµРЅРёРµ Р·Р°РґР°С‡
 //--------------------------------------------------------------------------------------------
 protected:
-	//Выполнение задачи следования за персонажем
+	//Р’С‹РїРѕР»РЅРµРЅРёРµ Р·Р°РґР°С‡Рё СЃР»РµРґРѕРІР°РЅРёСЏ Р·Р° РїРµСЂСЃРѕРЅР°Р¶РµРј
 	void UpdateFollowCharacter(float dltTime);
-	//Выполнение задачи убегания
+	//Р’С‹РїРѕР»РЅРµРЅРёРµ Р·Р°РґР°С‡Рё СѓР±РµРіР°РЅРёСЏ
 	void UpdateEscapeCharacter(float dltTime);
-	//Выполнение задачи следования за персонажем
+	//Р’С‹РїРѕР»РЅРµРЅРёРµ Р·Р°РґР°С‡Рё СЃР»РµРґРѕРІР°РЅРёСЏ Р·Р° РїРµСЂСЃРѕРЅР°Р¶РµРј
 	void UpdateFightCharacter(float dltTime);
 
-	//Бой
-	//Поведение в бою
+	//Р‘РѕР№
+	//РџРѕРІРµРґРµРЅРёРµ РІ Р±РѕСЋ
 	void DoFightAction(float dltTime, NPCharacter * enemy);
-	//Поведение в бою - idle
+	//РџРѕРІРµРґРµРЅРёРµ РІ Р±РѕСЋ - idle
 	void DoFightActionAnalysisNone(float dltTime, NPCharacter * enemy);
-	//Поведение в бою - attack
+	//РџРѕРІРµРґРµРЅРёРµ РІ Р±РѕСЋ - attack
 	void DoFightAttack(Character * enemy, long enemyCounter, bool wishDefence);
-	//Поведение в бою - block, parry
+	//РџРѕРІРµРґРµРЅРёРµ РІ Р±РѕСЋ - block, parry
 	void DoFightBlock(bool needParry = false);
 
-	//Получить энергию
+	//РџРѕР»СѓС‡РёС‚СЊ СЌРЅРµСЂРіРёСЋ
 	float GetEnergy();
-	//Получить энергию для действия
+	//РџРѕР»СѓС‡РёС‚СЊ СЌРЅРµСЂРіРёСЋ РґР»СЏ РґРµР№СЃС‚РІРёСЏ
 	float GetActEnergy(const char * act);
 
-	//События
+	//РЎРѕР±С‹С‚РёСЏ
 
-	//Невозможно дальнейшее выполнение команды
+	//РќРµРІРѕР·РјРѕР¶РЅРѕ РґР°Р»СЊРЅРµР№С€РµРµ РІС‹РїРѕР»РЅРµРЅРёРµ РєРѕРјР°РЅРґС‹
 	virtual void FailureCommand();
-	//Персонаж прибыл в точку
+	//РџРµСЂСЃРѕРЅР°Р¶ РїСЂРёР±С‹Р» РІ С‚РѕС‡РєСѓ
 	virtual void EndGotoCommand();
-	//Персонаж удалился от точки на необходимый радиус
+	//РџРµСЂСЃРѕРЅР°Р¶ СѓРґР°Р»РёР»СЃСЏ РѕС‚ С‚РѕС‡РєРё РЅР° РЅРµРѕР±С…РѕРґРёРјС‹Р№ СЂР°РґРёСѓСЃ
 	virtual void EndEscapeCommand();
-	//С персонажем слишком часто коллизяться
+	//РЎ РїРµСЂСЃРѕРЅР°Р¶РµРј СЃР»РёС€РєРѕРј С‡Р°СЃС‚Рѕ РєРѕР»Р»РёР·СЏС‚СЊСЃСЏ
 	virtual void CollisionThreshold();
 	
 	virtual void HitChild(bool isInBlock);
 
-	//Сохранить задачу в стеке
+	//РЎРѕС…СЂР°РЅРёС‚СЊ Р·Р°РґР°С‡Сѓ РІ СЃС‚РµРєРµ
 	bool PushTask();
-	//Востоновить задачу из стека
+	//Р’РѕСЃС‚РѕРЅРѕРІРёС‚СЊ Р·Р°РґР°С‡Сѓ РёР· СЃС‚РµРєР°
 	bool PopTask();
 
 
 //--------------------------------------------------------------------------------------------
-//Инкапсуляция
+//РРЅРєР°РїСЃСѓР»СЏС†РёСЏ
 //--------------------------------------------------------------------------------------------
 private:
-	//Невозможно дальнейшее выполнение команды
+	//РќРµРІРѕР·РјРѕР¶РЅРѕ РґР°Р»СЊРЅРµР№С€РµРµ РІС‹РїРѕР»РЅРµРЅРёРµ РєРѕРјР°РЅРґС‹
 	void FailureCommand(NPCTask task);
-	//Принятие решений
+	//РџСЂРёРЅСЏС‚РёРµ СЂРµС€РµРЅРёР№
 	void FightTick();
-	//Получить тип задачи по имени
+	//РџРѕР»СѓС‡РёС‚СЊ С‚РёРї Р·Р°РґР°С‡Рё РїРѕ РёРјРµРЅРё
 	static NPCTask GetTaskID(const char * taskName);
-	//Получить имя задачи по типу
+	//РџРѕР»СѓС‡РёС‚СЊ РёРјСЏ Р·Р°РґР°С‡Рё РїРѕ С‚РёРїСѓ
 	static const char * GetTaskName(NPCTask t);
-	//Проверить событие
+	//РџСЂРѕРІРµСЂРёС‚СЊ СЃРѕР±С‹С‚РёРµ
 	static bool PrTest(float probability, float & testTime);
 	static bool PrTest(float probability);
 
 protected:
-	Task task;			//Задача, которую надо исполнять
-	NPCTask lastSetTask;//Последняя установленная задача
+	Task task;			//Р—Р°РґР°С‡Р°, РєРѕС‚РѕСЂСѓСЋ РЅР°РґРѕ РёСЃРїРѕР»РЅСЏС‚СЊ
+	NPCTask lastSetTask;//РџРѕСЃР»РµРґРЅСЏСЏ СѓСЃС‚Р°РЅРѕРІР»РµРЅРЅР°СЏ Р·Р°РґР°С‡Р°
 private:
-	Task taskstack[16];	//Стек задач
-	long stackPointer;	//Указатель стека
+	Task taskstack[16];	//РЎС‚РµРє Р·Р°РґР°С‡
+	long stackPointer;	//РЈРєР°Р·Р°С‚РµР»СЊ СЃС‚РµРєР°
 
-	//Объект групп
+	//РћР±СЉРµРєС‚ РіСЂСѓРїРї
 	ENTITY_ID charactersGroups;
 
-	//Система боя
-	float fightLevel;	//Уровень поведения в бою 0..1
+	//РЎРёСЃС‚РµРјР° Р±РѕСЏ
+	float fightLevel;	//РЈСЂРѕРІРµРЅСЊ РїРѕРІРµРґРµРЅРёСЏ РІ Р±РѕСЋ 0..1
 	
-	//Атаки
-	float attackCur;			//Скорость нарастания вероятности атаки, в попугаях
-	float attackPrbFast;		//Вероятность fgt_attack_fast
-	float attackPrbForce;		//Вероятность fgt_attack_force
-	float attackPrbRound;		//Вероятность fgt_attack_round
-	float attackPrbBreak;		//Вероятность fgt_attack_break
-	float attackPrbFeint;		//Вероятность fgt_attack_feint
+	//РђС‚Р°РєРё
+	float attackCur;			//РЎРєРѕСЂРѕСЃС‚СЊ РЅР°СЂР°СЃС‚Р°РЅРёСЏ РІРµСЂРѕСЏС‚РЅРѕСЃС‚Рё Р°С‚Р°РєРё, РІ РїРѕРїСѓРіР°СЏС…
+	float attackPrbFast;		//Р’РµСЂРѕСЏС‚РЅРѕСЃС‚СЊ fgt_attack_fast
+	float attackPrbForce;		//Р’РµСЂРѕСЏС‚РЅРѕСЃС‚СЊ fgt_attack_force
+	float attackPrbRound;		//Р’РµСЂРѕСЏС‚РЅРѕСЃС‚СЊ fgt_attack_round
+	float attackPrbBreak;		//Р’РµСЂРѕСЏС‚РЅРѕСЃС‚СЊ fgt_attack_break
+	float attackPrbFeint;		//Р’РµСЂРѕСЏС‚РЅРѕСЃС‚СЊ fgt_attack_feint
 	
-	//Защита
-	float defenceCur;			//Скорость нарастания вероятности блока, в попугаях
-	float blockTime;			//Время блока
-	float defencePrbBlock;		//Вероятность fgt_block
-	float defencePrbParry;		//Вероятность fgt_parry
-	bool isRecoilEnable;		//Разрешён ли отскок
+	//Р—Р°С‰РёС‚Р°
+	float defenceCur;			//РЎРєРѕСЂРѕСЃС‚СЊ РЅР°СЂР°СЃС‚Р°РЅРёСЏ РІРµСЂРѕСЏС‚РЅРѕСЃС‚Рё Р±Р»РѕРєР°, РІ РїРѕРїСѓРіР°СЏС…
+	float blockTime;			//Р’СЂРµРјСЏ Р±Р»РѕРєР°
+	float defencePrbBlock;		//Р’РµСЂРѕСЏС‚РЅРѕСЃС‚СЊ fgt_block
+	float defencePrbParry;		//Р’РµСЂРѕСЏС‚РЅРѕСЃС‚СЊ fgt_parry
+	bool isRecoilEnable;		//Р Р°Р·СЂРµС€С‘РЅ Р»Рё РѕС‚СЃРєРѕРє
 
-	//Стрельба
-	float fireCur;				//Скорость нарастания вероятности выстрела, в попугаях
-	bool isFireEnable;			//Разрешён ли выстрел
+	//РЎС‚СЂРµР»СЊР±Р°
+	float fireCur;				//РЎРєРѕСЂРѕСЃС‚СЊ РЅР°СЂР°СЃС‚Р°РЅРёСЏ РІРµСЂРѕСЏС‚РЅРѕСЃС‚Рё РІС‹СЃС‚СЂРµР»Р°, РІ РїРѕРїСѓРіР°СЏС…
+	bool isFireEnable;			//Р Р°Р·СЂРµС€С‘РЅ Р»Рё РІС‹СЃС‚СЂРµР»
 
-	float fightTick;			//Время до следующего тика принятия решений
-	bool wantToAttack;			//Желание атаковать
-	bool wantToDefence;			//Желание защитится
-	bool wantToFire;			//Желание выстрелить
+	float fightTick;			//Р’СЂРµРјСЏ РґРѕ СЃР»РµРґСѓСЋС‰РµРіРѕ С‚РёРєР° РїСЂРёРЅСЏС‚РёСЏ СЂРµС€РµРЅРёР№
+	bool wantToAttack;			//Р–РµР»Р°РЅРёРµ Р°С‚Р°РєРѕРІР°С‚СЊ
+	bool wantToDefence;			//Р–РµР»Р°РЅРёРµ Р·Р°С‰РёС‚РёС‚СЃСЏ
+	bool wantToFire;			//Р–РµР»Р°РЅРёРµ РІС‹СЃС‚СЂРµР»РёС‚СЊ
 
-	//Текущее состояние противника
+	//РўРµРєСѓС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ РїСЂРѕС‚РёРІРЅРёРєР°
 	bool isFgtChanged;
 	FightAction enemyFgtType;
 
@@ -197,14 +197,14 @@ private:
 	void SetEscapeTask(Character * c);
 };
 
-//Получить атакуещего персонажа
+//РџРѕР»СѓС‡РёС‚СЊ Р°С‚Р°РєСѓРµС‰РµРіРѕ РїРµСЂСЃРѕРЅР°Р¶Р°
 inline Character * NPCharacter::GetAttackedCharacter()
 {
 	if(task.task != npct_fight) return null;
 	return (Character *)api->GetEntityPointer(&task.target);
 }
 
-//Проверить событие
+//РџСЂРѕРІРµСЂРёС‚СЊ СЃРѕР±С‹С‚РёРµ
 inline bool NPCharacter::PrTest(float probability, float & testTime)
 {
 	if(testTime < 1.0f/5.0f) return false;
@@ -214,7 +214,7 @@ inline bool NPCharacter::PrTest(float probability, float & testTime)
 	return r < probability;
 }
 
-//Проверить событие
+//РџСЂРѕРІРµСЂРёС‚СЊ СЃРѕР±С‹С‚РёРµ
 inline bool NPCharacter::PrTest(float probability)
 {
 	float r = rand()*(1.0f/RAND_MAX);

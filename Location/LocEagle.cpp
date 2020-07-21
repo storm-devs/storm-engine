@@ -32,23 +32,23 @@ LocEagle::~LocEagle()
 }
 
 
-//Èíèöèàëèçàöèÿ
+//Ð˜Ð½Ð¸Ñ†Ð¸Ð°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ñ
 bool LocEagle::Init()
 {
-	//Òî÷êà, âîêðóã êîòîðîé ëåòàåì
+	//Ð¢Ð¾Ñ‡ÐºÐ°, Ð²Ð¾ÐºÑ€ÑƒÐ³ ÐºÐ¾Ñ‚Ð¾Ñ€Ð¾Ð¹ Ð»ÐµÑ‚Ð°ÐµÐ¼
 	ENTITY_ID loc;
 	_CORE_API->FindClass(&loc, "location", 0);
 	Location * location = (Location *)_CORE_API->GetEntityPointer(&loc);
 	if(!location) return false;
 	cnt = location->GetPtcData().middle + CVECTOR(0.0f, 30.0f, 0.0f);
-	//Ïóòü äëÿ òåêñòóð
+	//ÐŸÑƒÑ‚ÑŒ Ð´Ð»Ñ Ñ‚ÐµÐºÑÑ‚ÑƒÑ€
 	VGEOMETRY * gs = (VGEOMETRY *)_CORE_API->CreateService("geometry");
 	if(!gs)
 	{
 		_CORE_API->Trace("Can't create geometry service!");
 		return false;
 	}
-	//Ìîäåëüêà
+	//ÐœÐ¾Ð´ÐµÐ»ÑŒÐºÐ°
 	if(!api->CreateEntity(&mdl, "modelr")) return false;
 	_CORE_API->LayerAdd("realize", mdl, 20);
 	gs->SetTexturePath("Animals\\");
@@ -58,29 +58,29 @@ bool LocEagle::Init()
 		return false;
 	}
 	gs->SetTexturePath("");
-	//Àíèìàöèÿ
+	//ÐÐ½Ð¸Ð¼Ð°Ñ†Ð¸Ñ
 	if(!api->Send_Message(mdl, "ls", MSG_MODEL_LOAD_ANI, "eagle")) return false;
-	//Çàïóñêàåì ïðîèãðûâàíèå àíèìàöèè
+	//Ð—Ð°Ð¿ÑƒÑÐºÐ°ÐµÐ¼ Ð¿Ñ€Ð¾Ð¸Ð³Ñ€Ñ‹Ð²Ð°Ð½Ð¸Ðµ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ð¸
 	MODEL * m = (MODEL *)_CORE_API->GetEntityPointer(&mdl);
 	if(!m) return false;
 	Animation * ani = m->GetAnimation();
 	if(!ani) return false;
 	if(!ani->Player(0).SetAction("flight")) return false;
 	if(!ani->Player(0).Play()) return false;
-	//Âêëþ÷àåì â ñïèñîê èñïîëíåíèÿ
+	//Ð’ÐºÐ»ÑŽÑ‡Ð°ÐµÐ¼ Ð² ÑÐ¿Ð¸ÑÐ¾Ðº Ð¸ÑÐ¿Ð¾Ð»Ð½ÐµÐ½Ð¸Ñ
 	_CORE_API->LayerCreate("execute", true, false);
 	_CORE_API->LayerSetFlags("execute", LRFLAG_EXECUTE);
 	_CORE_API->LayerAdd("execute", GetID(), 10);
 	return true;	
 }
 
-//Èñïîëíåíèå
+//Ð˜ÑÐ¿Ð¾Ð»Ð½ÐµÐ½Ð¸Ðµ
 void LocEagle::Execute(dword delta_time)
 {
-	//Ìîäåëüêà
+	//ÐœÐ¾Ð´ÐµÐ»ÑŒÐºÐ°
 	MODEL * m = (MODEL *)_CORE_API->GetEntityPointer(&mdl);
 	if(!m) return;
-	//Îáíîâëÿåì ïîçèöèþ
+	//ÐžÐ±Ð½Ð¾Ð²Ð»ÑÐµÐ¼ Ð¿Ð¾Ð·Ð¸Ñ†Ð¸ÑŽ
 	float dltTime = delta_time*0.001f;
 	time += kTime*dltTime;
 	if(time >= 1.0f)
@@ -95,11 +95,11 @@ void LocEagle::Execute(dword delta_time)
 	{
 		if(rand() & 3)
 		{
-			//Áûñòðî
+			//Ð‘Ñ‹ÑÑ‚Ñ€Ð¾
 			timeAy = 10.0f + rand()*(10.0f/RAND_MAX);
 			kAy = 1.0f;
 		}else{
-			//Ìåäëåííî
+			//ÐœÐµÐ´Ð»ÐµÐ½Ð½Ð¾
 			timeAy = 1.0f + rand()*(2.0f/RAND_MAX);
 			kAy = 0.4f;
 			time = 0.0f;
@@ -109,7 +109,7 @@ void LocEagle::Execute(dword delta_time)
 	}
 	ay += dltTime*kAy*0.1f/kRad;
 	y += dltY*kTime*dltTime;
-	//Óñòàíàâëèâàåì ïîçèöèþ
+	//Ð£ÑÑ‚Ð°Ð½Ð°Ð²Ð»Ð¸Ð²Ð°ÐµÐ¼ Ð¿Ð¾Ð·Ð¸Ñ†Ð¸ÑŽ
 	m->mtx.BuildMatrix(0.0f, ay + 1.57f, 0.0f);
 	m->mtx.Pos().x = cnt.x + kRad*20.0f*sinf(ay);
 	m->mtx.Pos().y = cnt.y + y;

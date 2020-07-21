@@ -56,19 +56,19 @@ class Location : public ENTITY
 
 
 //--------------------------------------------------------------------------------------------
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //--------------------------------------------------------------------------------------------
 public:
 	Location();
 	virtual ~Location();
 
 
-	//Инициализация
+	//РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
 	bool Init();
-	//Исполнение
+	//РСЃРїРѕР»РЅРµРЅРёРµ
 	void Execute(dword delta_time);
 	void Realize(dword delta_time);
-	//Сообщения
+	//РЎРѕРѕР±С‰РµРЅРёСЏ
 	dword _cdecl ProcessMessage(MESSAGE & message);
 
 	
@@ -76,18 +76,18 @@ public:
 //Location
 //--------------------------------------------------------------------------------------------
 public:
-	//Найти группу локаторов
+	//РќР°Р№С‚Рё РіСЂСѓРїРїСѓ Р»РѕРєР°С‚РѕСЂРѕРІ
 	LocatorArray * FindLocatorsGroup(const char * gName);
 
-	//Получить патч для персонажа
+	//РџРѕР»СѓС‡РёС‚СЊ РїР°С‚С‡ РґР»СЏ РїРµСЂСЃРѕРЅР°Р¶Р°
 	PtcData & GetPtcData();
-	//Получить модельку патча для прыжков
+	//РџРѕР»СѓС‡РёС‚СЊ РјРѕРґРµР»СЊРєСѓ РїР°С‚С‡Р° РґР»СЏ РїСЂС‹Р¶РєРѕРІ
 	MODEL * JmpPatch();
 
-	//Проверить видимость 2-х точек
+	//РџСЂРѕРІРµСЂРёС‚СЊ РІРёРґРёРјРѕСЃС‚СЊ 2-С… С‚РѕС‡РµРє
 	bool VisibleTest(const CVECTOR & p1, const CVECTOR & p2);
 
-	//Протрейсит луч через локацию
+	//РџСЂРѕС‚СЂРµР№СЃРёС‚ Р»СѓС‡ С‡РµСЂРµР· Р»РѕРєР°С†РёСЋ
 	float Trace(const CVECTOR & src, const CVECTOR & dst);
 	bool GetCollideTriangle(TRIANGLE & trg);
 	void Clip(PLANE * p, long numPlanes, CVECTOR & cnt, float rad, bool (* fnc)(const CVECTOR * vtx, long num));
@@ -96,7 +96,7 @@ public:
 
 	VDX8RENDER * GetRS();
 	void DrawLine(const CVECTOR & s, dword cs, const CVECTOR & d, dword cd, bool useZ = true);
-	//Написать текст
+	//РќР°РїРёСЃР°С‚СЊ С‚РµРєСЃС‚
 	void _cdecl Print(const CVECTOR & pos3D, float rad, long line, float alpha, dword color, float scale, const char * format, ...);
 
 	bool IsDebugView();
@@ -106,17 +106,17 @@ public:
 
 	bool IsSwimming();
 
-	//Добавить сообщение о повреждении
+	//Р”РѕР±Р°РІРёС‚СЊ СЃРѕРѕР±С‰РµРЅРёРµ Рѕ РїРѕРІСЂРµР¶РґРµРЅРёРё
 	void AddDamageMessage(const CVECTOR & pos3D, float hit, float curhp, float maxhp);
-	//Нарисовать на данном кадре полоски над врагом
+	//РќР°СЂРёСЃРѕРІР°С‚СЊ РЅР° РґР°РЅРЅРѕРј РєР°РґСЂРµ РїРѕР»РѕСЃРєРё РЅР°Рґ РІСЂР°РіРѕРј
 	void DrawEnemyBars(const CVECTOR & pos, float hp, float energy, float alpha);
 
 public:
-	//Объект управляющий расталкиванием персонажей
+	//РћР±СЉРµРєС‚ СѓРїСЂР°РІР»СЏСЋС‰РёР№ СЂР°СЃС‚Р°Р»РєРёРІР°РЅРёРµРј РїРµСЂСЃРѕРЅР°Р¶РµР№
 	Supervisor supervisor;
 
 //--------------------------------------------------------------------------------------------
-//Инкапсуляция
+//РРЅРєР°РїСЃСѓР»СЏС†РёСЏ
 //--------------------------------------------------------------------------------------------
 private:
 	void Update(dword delta_time);
@@ -130,7 +130,7 @@ private:
 	void DrawLocators(LocatorArray * la);
 	void CreateSphere();
 	void TestLocatorsInPatch(MESSAGE & message);
-	//Отрисовка полосок над персонажами
+	//РћС‚СЂРёСЃРѕРІРєР° РїРѕР»РѕСЃРѕРє РЅР°Рґ РїРµСЂСЃРѕРЅР°Р¶Р°РјРё
 	void DrawEnemyBars();
 	void DrawBar(const MTX_PRJ_VECTOR & vrt, dword color, float hp, float energy);
 	void CorrectBar(float v, float start, float end, BarVertex * vrt);
@@ -142,7 +142,7 @@ private:
 
 	long lastLoadStaticModel;
 	
-	//Все локаторы
+	//Р’СЃРµ Р»РѕРєР°С‚РѕСЂС‹
 	LocatorArray ** locators;
 	long numLocators;
 	long maxLocators;
@@ -152,24 +152,24 @@ private:
 
 	VDX8RENDER * rs;
 	
-	//Все модельки
+	//Р’СЃРµ РјРѕРґРµР»СЊРєРё
 	ModelArray model;
 
-	//Трава
+	//РўСЂР°РІР°
 	ENTITY_ID grass;
-	//Орёл
+	//РћСЂС‘Р»
 	ENTITY_ID eagle;
-	//Ящерецы
+	//РЇС‰РµСЂРµС†С‹
 	ENTITY_ID lizards;
-	//Крысы
+	//РљСЂС‹СЃС‹
 	ENTITY_ID rats;
-	//Крабы
+	//РљСЂР°Р±С‹
 	ENTITY_ID crabs;
-	//Кровь
+	//РљСЂРѕРІСЊ
 	ENTITY_ID blood;
 	
 	ENTITY_ID lightsid;
-	Lights * lights;	//Указатель для текущего кадра
+	Lights * lights;	//РЈРєР°Р·Р°С‚РµР»СЊ РґР»СЏ С‚РµРєСѓС‰РµРіРѕ РєР°РґСЂР°
 
 	ENTITY_ID loceffectsid;
 
@@ -192,13 +192,13 @@ private:
 	bool bSwimming;
 };
 
-//Получить патч для персонажа
+//РџРѕР»СѓС‡РёС‚СЊ РїР°С‚С‡ РґР»СЏ РїРµСЂСЃРѕРЅР°Р¶Р°
 inline PtcData & Location::GetPtcData()
 {
 	return ptc;
 }
 
-//Получить модельку патча для прыжков
+//РџРѕР»СѓС‡РёС‚СЊ РјРѕРґРµР»СЊРєСѓ РїР°С‚С‡Р° РґР»СЏ РїСЂС‹Р¶РєРѕРІ
 inline MODEL * Location::JmpPatch()
 {
 	if(patchJump < 0) return null;
@@ -210,7 +210,7 @@ inline VDX8RENDER * Location::GetRS()
 	return rs;
 }
 
-//Проверить видимость 2-х точек
+//РџСЂРѕРІРµСЂРёС‚СЊ РІРёРґРёРјРѕСЃС‚СЊ 2-С… С‚РѕС‡РµРє
 inline bool Location::VisibleTest(const CVECTOR & p1, const CVECTOR & p2)
 {
 	return model.VisibleTest(p1, p2);
@@ -221,7 +221,7 @@ inline Lights * Location::GetLights()
 	return lights;
 }
 
-//Протрейсит луч через локацию
+//РџСЂРѕС‚СЂРµР№СЃРёС‚ Р»СѓС‡ С‡РµСЂРµР· Р»РѕРєР°С†РёСЋ
 inline float Location::Trace(const CVECTOR & src, const CVECTOR & dst)
 {
 	return model.Trace(src, dst);

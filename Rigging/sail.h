@@ -15,7 +15,7 @@ struct SAILGROUP {
 
 class SAIL : public SAIL_BASE
 {
-    // параметры загружаемые из INI-файла //
+    // РїР°СЂР°РјРµС‚СЂС‹ Р·Р°РіСЂСѓР¶Р°РµРјС‹Рµ РёР· INI-С„Р°Р№Р»Р° //
     //--------------------------------------
 //float sailDownStep;
 float SsailWindDepend;
@@ -64,9 +64,9 @@ long GROUP_UPDATE_TIME;
 WORD SailQuantity;
 WORD SailCurNum;
 
-float m_fMinSpeedVal; // минимальная скорость даваемая парусами
+float m_fMinSpeedVal; // РјРёРЅРёРјР°Р»СЊРЅР°СЏ СЃРєРѕСЂРѕСЃС‚СЊ РґР°РІР°РµРјР°СЏ РїР°СЂСѓСЃР°РјРё
 
-// описание ветра
+// РѕРїРёСЃР°РЅРёРµ РІРµС‚СЂР°
 WIND globalWind;
 float *WindVect;
     //------------------------------------------
@@ -110,10 +110,10 @@ public:
 
 private:
     SAILTIME tm;
-    // список всех парусов
+    // СЃРїРёСЃРѕРє РІСЃРµС… РїР°СЂСѓСЃРѕРІ
     int sailQuantity;
     SAILONE* *slist;
-    // список всех групп парусов
+    // СЃРїРёСЃРѕРє РІСЃРµС… РіСЂСѓРїРї РїР°СЂСѓСЃРѕРІ
     int groupQuantity;
     struct GROUPDATA
     {
@@ -123,23 +123,23 @@ private:
         ENTITY_ID modelEI;
         int   sailQuantity;
         int*  sailIdx;
-        // ограничительный гробик
+        // РѕРіСЂР°РЅРёС‡РёС‚РµР»СЊРЅС‹Р№ РіСЂРѕР±РёРє
         CVECTOR boxCenter,boxSize;
         float boxRadius;
-        // Влияние на скорость корабля
+        // Р’Р»РёСЏРЅРёРµ РЅР° СЃРєРѕСЂРѕСЃС‚СЊ РєРѕСЂР°Р±Р»СЏ
         float shipSpeed;
         float maxSpeed;
-        float speed_c,speed_m; // реальная и максимальная скорость даваемая парусами
+        float speed_c,speed_m; // СЂРµР°Р»СЊРЅР°СЏ Рё РјР°РєСЃРёРјР°Р»СЊРЅР°СЏ СЃРєРѕСЂРѕСЃС‚СЊ РґР°РІР°РµРјР°СЏ РїР°СЂСѓСЃР°РјРё
 		int   maxHole,curHole;
 		int maxSP;
-        // спуск\подъем парусов
+        // СЃРїСѓСЃРє\РїРѕРґСЉРµРј РїР°СЂСѓСЃРѕРІ
         int   curSailSet;
         bool  bFinalSailUp;
         bool  bFinalSailDo;
 		bool  bFinalSailDoOld;
         float fSpeedMul;
 		float fRollingSpeed;
-		// цвет парусов
+		// С†РІРµС‚ РїР°СЂСѓСЃРѕРІ
 		dword dwSailsColor;
     };
     GROUPDATA* gdata;
@@ -161,7 +161,7 @@ private:
 	void	DoRandomsSailsDmg(int chrIdx, int gn, float fDmg);
 	void	GetSailStatus(int chrIdx, int gn);
 
-	// обработка скриптовых запросов
+	// РѕР±СЂР°Р±РѕС‚РєР° СЃРєСЂРёРїС‚РѕРІС‹С… Р·Р°РїСЂРѕСЃРѕРІ
 	dword _cdecl ScriptProcessing(char * name, MESSAGE & message);
 
     bool bFirstRun;

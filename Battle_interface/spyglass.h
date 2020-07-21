@@ -28,13 +28,13 @@ protected:
 	FRECT	*m_frNationUV;
 
 	// text parameters
-	long	m_idFontOne;		// фонт для имени и типа корабля
-	float	m_fFontOneScale;	// масштаб фонта имени и типа корабля
-	float	m_fShipNameScale;	// масштаб для имени с учетом длинны слова
-	float	m_fShipTypeScale;	// масштаб для типа с учетом длинны слова
-	float	m_fStringMaxWidth;	// размер поля под надпись о типе и имени корабля
-	long	m_idFontTwo;		// фонт для цифровых данных
-	float	m_fFontTwoScale;	// масштаб фонта цифровых данных
+	long	m_idFontOne;		// С„РѕРЅС‚ РґР»СЏ РёРјРµРЅРё Рё С‚РёРїР° РєРѕСЂР°Р±Р»СЏ
+	float	m_fFontOneScale;	// РјР°СЃС€С‚Р°Р± С„РѕРЅС‚Р° РёРјРµРЅРё Рё С‚РёРїР° РєРѕСЂР°Р±Р»СЏ
+	float	m_fShipNameScale;	// РјР°СЃС€С‚Р°Р± РґР»СЏ РёРјРµРЅРё СЃ СѓС‡РµС‚РѕРј РґР»РёРЅРЅС‹ СЃР»РѕРІР°
+	float	m_fShipTypeScale;	// РјР°СЃС€С‚Р°Р± РґР»СЏ С‚РёРїР° СЃ СѓС‡РµС‚РѕРј РґР»РёРЅРЅС‹ СЃР»РѕРІР°
+	float	m_fStringMaxWidth;	// СЂР°Р·РјРµСЂ РїРѕР»СЏ РїРѕРґ РЅР°РґРїРёСЃСЊ Рѕ С‚РёРїРµ Рё РёРјРµРЅРё РєРѕСЂР°Р±Р»СЏ
+	long	m_idFontTwo;		// С„РѕРЅС‚ РґР»СЏ С†РёС„СЂРѕРІС‹С… РґР°РЅРЅС‹С…
+	float	m_fFontTwoScale;	// РјР°СЃС€С‚Р°Р± С„РѕРЅС‚Р° С†РёС„СЂРѕРІС‹С… РґР°РЅРЅС‹С…
 
 	char *	m_sShipName;
 	char *	m_sShipType;

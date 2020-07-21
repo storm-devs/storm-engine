@@ -16,7 +16,7 @@
 #define LIGHTS_TECHNIQ	"Coronas"
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 Lights::Lights() :
@@ -51,14 +51,14 @@ Lights::~Lights()
 	if(lights) delete lights;
 }
 
-//Инициализация
+//РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
 bool Lights::Init()
 {
 	//DX8 render
 	rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
 	if(!rs) _THROW("No service: dx8render");
 	collide = (COLLIDE *)_CORE_API->CreateService("COLL");
-	//Зачитаем параметры
+	//Р—Р°С‡РёС‚Р°РµРј РїР°СЂР°РјРµС‚СЂС‹
 	INIFILE * ini = _CORE_API->fio->OpenIniFile("RESOURCE\\Ini\\lights.ini");
 	if(!ini)
 	{
@@ -81,18 +81,18 @@ bool Lights::Init()
 		}
 		if(i == numTypes)
 		{
-			//Добавляем новый источник
+			//Р”РѕР±Р°РІР»СЏРµРј РЅРѕРІС‹Р№ РёСЃС‚РѕС‡РЅРёРє
 			if(numTypes >= maxTypes)
 			{
 				maxTypes += 16;
 				types = (LightType *)RESIZE(types, maxTypes*sizeof(LightType));
 			}
-			//Обнулим
+			//РћР±РЅСѓР»РёРј
 			memset(&types[numTypes], 0, sizeof(types[numTypes]));
-			//Сохраняем имя
+			//РЎРѕС…СЂР°РЅСЏРµРј РёРјСЏ
 			types[numTypes].name = NEW char[strlen(lName) + 1];
 			strcpy(types[numTypes].name, lName);
-			//Зачитываем параметры			
+			//Р—Р°С‡РёС‚С‹РІР°РµРј РїР°СЂР°РјРµС‚СЂС‹			
 			types[numTypes].color.b = ini->GetFloat(lName, "b", 1.0f);			
 			types[numTypes].color.g = ini->GetFloat(lName, "g", 1.0f);
 			types[numTypes].color.r = ini->GetFloat(lName, "r", 1.0f);
@@ -141,7 +141,7 @@ bool Lights::Init()
 		_CORE_API->Trace("Location lights not inited -> 0 light types");
 		return false;
 	}
-	//Начнём исполняться
+	//РќР°С‡РЅС‘Рј РёСЃРїРѕР»РЅСЏС‚СЊСЃСЏ
 	_CORE_API->LayerCreate("execute", true, false);
 	_CORE_API->LayerSetFlags("execute", LRFLAG_EXECUTE);
 	_CORE_API->LayerAdd("execute", GetID(), 10);
@@ -151,7 +151,7 @@ bool Lights::Init()
 	return true;
 }
 
-//Исполнение
+//РСЃРїРѕР»РЅРµРЅРёРµ
 void Lights::Execute(dword delta_time)
 {
 #ifndef _XBOX
@@ -164,19 +164,19 @@ void Lights::Execute(dword delta_time)
 #endif
 	for(long i = 0; i < numLights; i++)
 	{
-		//Смотрим что есть
+		//РЎРјРѕС‚СЂРёРј С‡С‚Рѕ РµСЃС‚СЊ
 		LightType & l = types[lights[i].type];
 		if(l.flicker == 0.0f && l.flickerSlow == 0.0f) continue;
-		//Обновляем состояние
+		//РћР±РЅРѕРІР»СЏРµРј СЃРѕСЃС‚РѕСЏРЅРёРµ
 		Light & ls = lights[i];
-		//Частые мерцания
+		//Р§Р°СЃС‚С‹Рµ РјРµСЂС†Р°РЅРёСЏ
 		ls.time += delta_time*0.001f;
 		if(ls.time > l.p)
 		{
 			ls.time -= l.p;
 			ls.itens = (1.0f - rand()*2.0f/RAND_MAX)*l.flicker;
 		}
-		//Плавные мерцания
+		//РџР»Р°РІРЅС‹Рµ РјРµСЂС†Р°РЅРёСЏ
 		ls.timeSlow += delta_time*0.001f;
 		float k = ls.timeSlow*l.freqSlow;
 		if(k < 0.0f) k = 0.0f;
@@ -197,10 +197,10 @@ void Lights::Execute(dword delta_time)
 	}
 }
 
-//Рисование корон
+//Р РёСЃРѕРІР°РЅРёРµ РєРѕСЂРѕРЅ
 void Lights::Realize(dword delta_time)
 {
-	//Позиция камеры
+	//РџРѕР·РёС†РёСЏ РєР°РјРµСЂС‹
 	CVECTOR pos, ang;
 	rs->GetCamera(pos, ang, ang.x);
 	CMatrix camMtx;
@@ -210,21 +210,21 @@ void Lights::Realize(dword delta_time)
 	float camPDist = -(pos.x*camMtx.Vx().z + pos.y*camMtx.Vy().z + pos.z*camMtx.Vz().z);
 	for(long i = 0, n = 0; i < numLights; i++)
 	{
-		//Источник
+		//РСЃС‚РѕС‡РЅРёРє
 		Light & ls = lights[i];
 		LightType & l = types[ls.type];
 		if(l.corona < 0) continue;
-		//Поподание в передний план
+		//РџРѕРїРѕРґР°РЅРёРµ РІ РїРµСЂРµРґРЅРёР№ РїР»Р°РЅ
 		float dist = ls.pos.x*camMtx.Vx().z + ls.pos.y*camMtx.Vy().z + ls.pos.z*camMtx.Vz().z + camPDist;
 		if(dist < -2.0f*l.coronaSize) continue;
-		//Дистанция
+		//Р”РёСЃС‚Р°РЅС†РёСЏ
 		float dx = ls.pos.x - pos.x;
 		float dy = ls.pos.y - pos.y;
 		float dz = ls.pos.z - pos.z;
 		float d = dx*dx + dy*dy + dz*dz;
 		bool isVisible = d < l.coronaRange2;
 		if(!isVisible) continue;
-		//Видимость
+		//Р’РёРґРёРјРѕСЃС‚СЊ
 		VIDWALKER * walker = _CORE_API->LayerGetWalker("sun_trace");
 		if(walker && collide)
 		{
@@ -235,7 +235,7 @@ void Lights::Realize(dword delta_time)
 		ls.corona += isVisible ? 0.008f*delta_time : -0.008f*delta_time;
 		if(ls.corona <= 0.0f){ ls.corona = 0.0f; continue; }
 		if(ls.corona > 1.0f) ls.corona = 1.0f;
-		//Дистанция
+		//Р”РёСЃС‚Р°РЅС†РёСЏ
 		dist = sqrtf(d);
 		d = dist*l.invCoronaRange;
 		if(d > 1.0f) d = 1.0f;
@@ -243,22 +243,22 @@ void Lights::Realize(dword delta_time)
 		if(d < 0.3f) alpha *= 0.2f + 0.8f*d/0.3f;
 		if(d > 0.4f){ alpha *= 1.0f - (d - 0.4f)/0.6f; alpha *= alpha; }
 		alpha *= ls.corona*255.0f;
-		//Коэфициент отклонения
+		//РљРѕСЌС„РёС†РёРµРЅС‚ РѕС‚РєР»РѕРЅРµРЅРёСЏ
 		d = ls.i*0.4f;
 		if(d < -0.1f) d = -0.1f;
 		if(d > 0.1f) d = 0.1f;
 		d += 1.0f;
-		//Текущий размер
+		//РўРµРєСѓС‰РёР№ СЂР°Р·РјРµСЂ
 		float size = d*l.coronaSize;
-		//Прозрачность
+		//РџСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ
 		alpha *= d;
 		if(alpha < 0.0f) alpha = 0.0f;
 		if(alpha > 255.0f) alpha = 255.0f;
-		//Позиция
+		//РџРѕР·РёС†РёСЏ
 		CVECTOR pos = camMtx*CVECTOR(ls.pos.x, ls.pos.y, ls.pos.z);
-		//Цвет
+		//Р¦РІРµС‚
 		dword c = dword(alpha); c |= (c << 24) | (c << 16) | (c << 8);
-		//Угол поворота
+		//РЈРіРѕР» РїРѕРІРѕСЂРѕС‚Р°
 		float cs, sn;
 		if(dist > 0.0f)
 		{
@@ -279,7 +279,7 @@ void Lights::Realize(dword delta_time)
 			cs = 1.0f;
 			sn = 0.0f;
 		}
-		//Заполняем
+		//Р—Р°РїРѕР»РЅСЏРµРј
 		buf[n*6 + 0].pos = pos + CVECTOR(size*(-cs + sn), size*(sn + cs), 0.0f);
 		buf[n*6 + 0].color = c;
 		buf[n*6 + 0].u = 0.0f;
@@ -312,7 +312,7 @@ void Lights::Realize(dword delta_time)
 	rs->SetTransform(D3DTS_VIEW, camMtx);
 }
 
-//Найти индекс источника
+//РќР°Р№С‚Рё РёРЅРґРµРєСЃ РёСЃС‚РѕС‡РЅРёРєР°
 long Lights::FindLight(const char * name)
 {
 	if(!name || !name[0]) return -1;
@@ -321,7 +321,7 @@ long Lights::FindLight(const char * name)
 	return -1;
 }
 
-//Добавить источник в локацию
+//Р”РѕР±Р°РІРёС‚СЊ РёСЃС‚РѕС‡РЅРёРє РІ Р»РѕРєР°С†РёСЋ
 void Lights::AddLight(long index, const CVECTOR & pos)
 {
 	if(index == -1) return;
@@ -343,7 +343,7 @@ void Lights::AddLight(long index, const CVECTOR & pos)
 	lights[numLights].type = index;
 
 #ifndef _XBOX
-	//Отправим сообщение лайтеру
+	//РћС‚РїСЂР°РІРёРј СЃРѕРѕР±С‰РµРЅРёРµ Р»Р°Р№С‚РµСЂСѓ
 	ENTITY_ID eid;
 	if(api->FindClass(&eid, null, lighter_code))
 	{
@@ -365,7 +365,7 @@ void Lights::AddLight(long index, const CVECTOR & pos)
 	numLights++;
 }
 
-//Добавить модельку фонарей
+//Р”РѕР±Р°РІРёС‚СЊ РјРѕРґРµР»СЊРєСѓ С„РѕРЅР°СЂРµР№
 bool Lights::AddLampModel(const ENTITY_ID & lampModel)
 {
 	if(numLampModels >= sizeof(lampModels)/sizeof(ENTITY_ID)) return false;
@@ -379,7 +379,7 @@ void Lights::DelAllLights()
 	numLights = 0;
 }
 
-//Добавить переносной источник
+//Р”РѕР±Р°РІРёС‚СЊ РїРµСЂРµРЅРѕСЃРЅРѕР№ РёСЃС‚РѕС‡РЅРёРє
 long Lights::AddMovingLight(const char* type, const CVECTOR& pos)
 {
 	long idx = 0;
@@ -402,7 +402,7 @@ long Lights::AddMovingLight(const char* type, const CVECTOR& pos)
 	return idx;
 }
 
-//Поставить переносной источник в новую позицию
+//РџРѕСЃС‚Р°РІРёС‚СЊ РїРµСЂРµРЅРѕСЃРЅРѕР№ РёСЃС‚РѕС‡РЅРёРє РІ РЅРѕРІСѓСЋ РїРѕР·РёС†РёСЋ
 void Lights::UpdateMovingLight(long id, const CVECTOR& pos)
 {
 	for(long n=0; n<aMovingLight; n++)
@@ -415,7 +415,7 @@ void Lights::UpdateMovingLight(long id, const CVECTOR& pos)
 		}
 }
 
-//Удалить переносной источник
+//РЈРґР°Р»РёС‚СЊ РїРµСЂРµРЅРѕСЃРЅРѕР№ РёСЃС‚РѕС‡РЅРёРє
 void Lights::DelMovingLight(long id)
 {
 	for(long n=0; n<aMovingLight; n++)
@@ -429,7 +429,7 @@ void Lights::DelMovingLight(long id)
 		}
 }
 
-//Установить для персонажа источники освещения
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РґР»СЏ РїРµСЂСЃРѕРЅР°Р¶Р° РёСЃС‚РѕС‡РЅРёРєРё РѕСЃРІРµС‰РµРЅРёСЏ
 void Lights::SetCharacterLights(const CVECTOR & pos)
 {
 	long i,n;
@@ -446,14 +446,14 @@ void Lights::SetCharacterLights(const CVECTOR & pos)
 	for(n = 0; n < aLightsSort && num < 8; n++)
 	{
 		i = aLightsSort[n];
-		//Смотрим дистанцию
+		//РЎРјРѕС‚СЂРёРј РґРёСЃС‚Р°РЅС†РёСЋ
 		float dx = (pos.x - lights[i].pos.x);
 		float dy = (pos.y - lights[i].pos.y);
 		float dz = (pos.z - lights[i].pos.z);
 		float dst = dx*dx + dy*dy + dz*dz + 2.0f;
 		float rng = types[lights[i].type].dxLight.Range;
 		if(dst > rng*rng) continue;
-		//Устанавливаем источник
+		//РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РёСЃС‚РѕС‡РЅРёРє
 		LightType & l = types[lights[i].type];
 		l.dxLight.Diffuse = lights[i].color;
 		l.dxLight.Position = lights[i].pos;
@@ -467,7 +467,7 @@ void Lights::SetCharacterLights(const CVECTOR & pos)
 	for(; num<8; num++) {lt[num].light = -1; lt[num].set = false;}
 }
 
-//Запретить установленные для персонажа источники освещения
+//Р—Р°РїСЂРµС‚РёС‚СЊ СѓСЃС‚Р°РЅРѕРІР»РµРЅРЅС‹Рµ РґР»СЏ РїРµСЂСЃРѕРЅР°Р¶Р° РёСЃС‚РѕС‡РЅРёРєРё РѕСЃРІРµС‰РµРЅРёСЏ
 void Lights::DelCharacterLights()
 {
 	for(long i = 1; i < 8; i++)
@@ -478,7 +478,7 @@ void Lights::DelCharacterLights()
 	}
 }
 
-//Установить те же источники что и для последнего расчета
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ С‚Рµ Р¶Рµ РёСЃС‚РѕС‡РЅРёРєРё С‡С‚Рѕ Рё РґР»СЏ РїРѕСЃР»РµРґРЅРµРіРѕ СЂР°СЃС‡РµС‚Р°
 void Lights::SetCharacterLights()
 {
 	for(long n = 1; n < 8; n++)
@@ -487,7 +487,7 @@ void Lights::SetCharacterLights()
 		if( lt[n].light < 0 ) continue;
 
 		long i = lt[n].light;
-		//Устанавливаем источник
+		//РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РёСЃС‚РѕС‡РЅРёРє
 		LightType & l = types[lights[i].type];
 		l.dxLight.Diffuse = lights[i].color;
 		l.dxLight.Position = lights[i].pos;
@@ -498,14 +498,14 @@ void Lights::SetCharacterLights()
 	}
 }
 
-//Обновить типы источников
+//РћР±РЅРѕРІРёС‚СЊ С‚РёРїС‹ РёСЃС‚РѕС‡РЅРёРєРѕРІ
 void Lights::UpdateLightTypes(long i)
 {
 	INIFILE * ini = _CORE_API->fio->OpenIniFile("RESOURCE\\Ini\\lights.ini");
 	if(!ini) return;
-	//Имя источника
+	//РРјСЏ РёСЃС‚РѕС‡РЅРёРєР°
 	char * lName = types[i].name;
-	//Зачитываем параметры			
+	//Р—Р°С‡РёС‚С‹РІР°РµРј РїР°СЂР°РјРµС‚СЂС‹			
 	types[i].color.b = ini->GetFloat(lName, "b", 1.0f);			
 	types[i].color.g = ini->GetFloat(lName, "g", 1.0f);
 	types[i].color.r = ini->GetFloat(lName, "r", 1.0f);

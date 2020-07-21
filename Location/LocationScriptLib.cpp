@@ -72,7 +72,7 @@ void slAddToCache(LocationFindCacheElement * element, long size, const char * na
 {
 	Assert(name);
 	Assert(name[0]);
-	//Ищем ячейку для записи
+	//РС‰РµРј СЏС‡РµР№РєСѓ РґР»СЏ Р·Р°РїРёСЃРё
 	long i = 0, j = 0, min = 0;
 	for(i = 0, j = 0, min = element[i].use; i < size; i++)
 	{
@@ -87,17 +87,17 @@ void slAddToCache(LocationFindCacheElement * element, long size, const char * na
 
 dword slNativeFastFind(VS_STACK * pS, LocationFindCacheElement * cache, long cacheSize)
 {
-	//Получить строки
+	//РџРѕР»СѓС‡РёС‚СЊ СЃС‚СЂРѕРєРё
 	VDATA * pStr = (VDATA*)pS->Pop();
 	char * nm = null;
 	if(!pStr->Get(nm)) return IFUNCRESULT_FAILED;
 	if(nm) charactersFindBuf.Set(nm); else charactersFindBuf.Set("");
-	//Массив персонажей
+	//РњР°СЃСЃРёРІ РїРµСЂСЃРѕРЅР°Р¶РµР№
 	VDATA * pArray = (VDATA*)pS->Pop();
 	if (!pArray) return IFUNCRESULT_FAILED;
 	pArray = (VDATA*)pArray->GetReference();
 	if(!pArray) return IFUNCRESULT_FAILED;
-	//Возвращаемое значение
+	//Р’РѕР·РІСЂР°С‰Р°РµРјРѕРµ Р·РЅР°С‡РµРЅРёРµ
 	VDATA * pReturn = (VDATA*)pS->Push();
 	if (!pReturn) return IFUNCRESULT_FAILED;
 	if(!charactersFindBuf.name[0])
@@ -105,20 +105,20 @@ dword slNativeFastFind(VS_STACK * pS, LocationFindCacheElement * cache, long cac
 		pReturn->Set(-1L);
 		return IFUNCRESULT_OK;
 	}
-	//Снижаем значения использования в кеше
+	//РЎРЅРёР¶Р°РµРј Р·РЅР°С‡РµРЅРёСЏ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ РІ РєРµС€Рµ
 	long i = 0;
 	for(i = 0; i < cacheSize; i++)
 	{
 		cache[i].use--;
 		if(cache[i].use < 0) cache[i].use = 0;
 	}
-	//Смотрим в кеше
+	//РЎРјРѕС‚СЂРёРј РІ РєРµС€Рµ
 	bool res;
 	for(i = 0; i < cacheSize; i++)
 	{
 		if(cache[i].index < 0) continue;
 		if(!cache[i].Cmp(charactersFindBuf)) continue;
-		//Проверяем на правильность кешь-значения
+		//РџСЂРѕРІРµСЂСЏРµРј РЅР° РїСЂР°РІРёР»СЊРЅРѕСЃС‚СЊ РєРµС€СЊ-Р·РЅР°С‡РµРЅРёСЏ
 		if(dword(cache[i].index) >= pArray->GetElementsNum())
 		{
 			cache[i].index = -1;
@@ -132,13 +132,13 @@ dword slNativeFastFind(VS_STACK * pS, LocationFindCacheElement * cache, long cac
 		}
 		if(res)
 		{
-			//Нашли в кеше, возвращаем
+			//РќР°С€Р»Рё РІ РєРµС€Рµ, РІРѕР·РІСЂР°С‰Р°РµРј
 			cache[i].use++;
 			pReturn->Set(cache[i].index);
 			return IFUNCRESULT_OK;
 		}
 	}
-	//Придётся искать по массиву
+	//РџСЂРёРґС‘С‚СЃСЏ РёСЃРєР°С‚СЊ РїРѕ РјР°СЃСЃРёРІСѓ
 	long num = pArray->GetElementsNum();
 	for(i = 0; i < num; i++)
 	{
@@ -170,10 +170,10 @@ dword __cdecl slNativeFindLocation(VS_STACK * pS)
 
 dword __cdecl slNativeFindLaodLocation(VS_STACK * pS)
 {
-	//Возвращаемое значение
+	//Р’РѕР·РІСЂР°С‰Р°РµРјРѕРµ Р·РЅР°С‡РµРЅРёРµ
 	VDATA * pReturn = (VDATA*)pS->Push();
 	if (!pReturn) return IFUNCRESULT_FAILED;
-	//Ищим локацию
+	//РС‰РёРј Р»РѕРєР°С†РёСЋ
 	ENTITY_ID loc;
 	if(!api->FindClass(&loc, "Location", 0))
 	{
@@ -193,11 +193,11 @@ dword __cdecl slNativeFindLaodLocation(VS_STACK * pS)
 
 dword __cdecl slNativeSetReloadBackImage(VS_STACK * pS)
 {
-	//Получить строки
+	//РџРѕР»СѓС‡РёС‚СЊ СЃС‚СЂРѕРєРё
 	VDATA * pStr = (VDATA*)pS->Pop();
 	char * nm = null;
 	if(!pStr->Get(nm)) return IFUNCRESULT_FAILED;
-	//Устанавливаем картинку
+	//РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РєР°СЂС‚РёРЅРєСѓ
 	VDX8RENDER * rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
 	if(rs)
 	{
@@ -229,7 +229,7 @@ dword __cdecl slNativeReloadProgressEnd(VS_STACK * pS)
 
 dword __cdecl slNativeSleep(VS_STACK * pS)
 {
-	//Получить строки
+	//РџРѕР»СѓС‡РёС‚СЊ СЃС‚СЂРѕРєРё
 	VDATA * pInt = (VDATA*)pS->Pop();
 	long delay = 1;
 	if(!pInt || !pInt->Get(delay)) return IFUNCRESULT_FAILED;
@@ -240,11 +240,11 @@ dword __cdecl slNativeSleep(VS_STACK * pS)
 
 dword __cdecl slNativeExecuteTechnique(VS_STACK * pS)
 {
-	//Получить строку
+	//РџРѕР»СѓС‡РёС‚СЊ СЃС‚СЂРѕРєСѓ
 	VDATA * pStr = (VDATA*)pS->Pop();
 	char * nm = null;
 	if(!pStr->Get(nm)) return IFUNCRESULT_FAILED;
-	//Исполнить технику
+	//РСЃРїРѕР»РЅРёС‚СЊ С‚РµС…РЅРёРєСѓ
 	if(nm && nm[0])
 	{
 		VDX8RENDER * rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
@@ -257,7 +257,7 @@ dword __cdecl slNativeExecuteTechnique(VS_STACK * pS)
 
 dword __cdecl slGetNextLineString(VS_STACK * pS)
 {
-	//Возвращаемое значение
+	//Р’РѕР·РІСЂР°С‰Р°РµРјРѕРµ Р·РЅР°С‡РµРЅРёРµ
 	VDATA * pReturn = (VDATA*)pS->Push();
 	if(!pReturn) return IFUNCRESULT_FAILED;
 	pReturn->Set("\r\n");

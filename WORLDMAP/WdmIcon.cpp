@@ -13,7 +13,7 @@
 #include "WdmEnemyShip.h"
 
 //============================================================================================
-//Êîíñòðóèðîâàíèå, äåñòðóêòóðèðîâàíèå
+//ÐšÐ¾Ð½ÑÑ‚Ñ€ÑƒÐ¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ, Ð´ÐµÑÑ‚Ñ€ÑƒÐºÑ‚ÑƒÑ€Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ
 //============================================================================================
 
 WdmIcon::WdmIcon()
@@ -32,7 +32,7 @@ WdmIcon::~WdmIcon()
 	if(texture >= 0) wdmObjects->rs->TextureRelease(texture);
 }
 
-//Ðàñ÷¸òû
+//Ð Ð°ÑÑ‡Ñ‘Ñ‚Ñ‹
 void WdmIcon::Update(float dltTime)
 {
 	if(lastShip != wdmObjects->enemyShip)
@@ -83,7 +83,7 @@ void WdmIcon::Update(float dltTime)
 		skipAlpha -= 2.0f*dltTime;
 		if(skipAlpha < 0.0f) skipAlpha = 0.0f;
 	}
-	//Îïðåäåëÿåì ïîïàäàíèå â øòîðì
+	//ÐžÐ¿Ñ€ÐµÐ´ÐµÐ»ÑÐµÐ¼ Ð¿Ð¾Ð¿Ð°Ð´Ð°Ð½Ð¸Ðµ Ð² ÑˆÑ‚Ð¾Ñ€Ð¼
 	if(wdmObjects->playarInStorm)
 	{
 		stormAlpha += 2.0f*dltTime;
@@ -94,7 +94,7 @@ void WdmIcon::Update(float dltTime)
 	}
 }
 
-//Îòðèñîâêà
+//ÐžÑ‚Ñ€Ð¸ÑÐ¾Ð²ÐºÐ°
 void WdmIcon::LRender(VDX8RENDER * rs)
 {
 	return;
@@ -102,7 +102,7 @@ void WdmIcon::LRender(VDX8RENDER * rs)
 	rs->TextureSet(0, texture);
 	float w, h;
 	wdmObjects->GetVPSize(w, h);
-	//Èêîíêà â âåðõíåì óãëó
+	//Ð˜ÐºÐ¾Ð½ÐºÐ° Ð² Ð²ÐµÑ€Ñ…Ð½ÐµÐ¼ ÑƒÐ³Ð»Ñƒ
 	float kDef = rs->GetHeightDeformator();
 #ifndef _XBOX
 	FillRectCoord(vrt, 8.0f, 8.0f, 64.0f, 64.0f*kDef);
@@ -125,7 +125,7 @@ void WdmIcon::LRender(VDX8RENDER * rs)
 		FillRectColor(vrt, (alpha << 24) | 0xffffff);
 		DrawRects(vrt, 1, "WdmDrawIcon");
 	}
-	//Èêîíêà â íèæíåì óãëó
+	//Ð˜ÐºÐ¾Ð½ÐºÐ° Ð² Ð½Ð¸Ð¶Ð½ÐµÐ¼ ÑƒÐ³Ð»Ñƒ
 	if(islandAlpha > 0.0f)
 	{
 #ifndef _XBOX
@@ -139,7 +139,7 @@ void WdmIcon::LRender(VDX8RENDER * rs)
 		FillRectColor(vrt, (long(islandAlpha*255.0f) << 24) | 0xffffff);
 		DrawRects(vrt, 1, "WdmDrawIcon");
 	}
-	//Èêîíêà ñêèïàíüÿ ýíêîóíòåðà
+	//Ð˜ÐºÐ¾Ð½ÐºÐ° ÑÐºÐ¸Ð¿Ð°Ð½ÑŒÑ ÑÐ½ÐºÐ¾ÑƒÐ½Ñ‚ÐµÑ€Ð°
 	if(skipAlpha > 0.0f)
 	{
 #ifndef _XBOX
@@ -152,7 +152,7 @@ void WdmIcon::LRender(VDX8RENDER * rs)
 		FillRectColor(vrt, (long(skipAlpha*255.0f) << 24) | 0xffffff);
 		DrawRects(vrt, 1, "WdmDrawIcon");
 	}
-	//Èêîíêà øòîðìà
+	//Ð˜ÐºÐ¾Ð½ÐºÐ° ÑˆÑ‚Ð¾Ñ€Ð¼Ð°
 	if(stormAlpha > 0.0f)
 	{
 		float move = 0.0f, m;

@@ -149,7 +149,7 @@ void CXI_IMAGE::LoadAccordingToString( const char * pcImageParam )
 		}
 	}
 
-	// если небыло установки цвета и картинок, то не считаем это как цветной прямоугольник
+	// РµСЃР»Рё РЅРµР±С‹Р»Рѕ СѓСЃС‚Р°РЅРѕРІРєРё С†РІРµС‚Р° Рё РєР°СЂС‚РёРЅРѕРє, С‚Рѕ РЅРµ СЃС‡РёС‚Р°РµРј СЌС‚Рѕ РєР°Рє С†РІРµС‚РЅРѕР№ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє
 	if( m_bThisIsColorRectangle && !bSetColor ) m_bThisIsColorRectangle = false;
 }
 

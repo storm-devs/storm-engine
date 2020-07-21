@@ -11,7 +11,7 @@
 #include "WdmWarringShip.h"
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 WdmWarringShip::WdmWarringShip()
@@ -28,23 +28,23 @@ WdmWarringShip::~WdmWarringShip()
 	if(texture >= 0) wdmObjects->rs->TextureRelease(texture);
 }
 
-//Расчёты
+//Р Р°СЃС‡С‘С‚С‹
 void WdmWarringShip::Update(float dltTime)
 {
 	WdmEnemyShip::Update(dltTime);
-	//Удружим противнику :)
+	//РЈРґСЂСѓР¶РёРј РїСЂРѕС‚РёРІРЅРёРєСѓ :)
 	if(attack)
 	{
 		if(!isLive) attack->isLive = false;
 		if(killMe) attack->killMe = true;
 	}
-	//Дым
-	//Рожаем если надо
+	//Р”С‹Рј
+	//Р РѕР¶Р°РµРј РµСЃР»Рё РЅР°РґРѕ
 	brnTime += dltTime;
 	if(!numRects && rand()*(20.0f/RAND_MAX) < brnTime - 5.0f)
 	{
 		brnTime = 0.0f;
-		//Половина для левого борта
+		//РџРѕР»РѕРІРёРЅР° РґР»СЏ Р»РµРІРѕРіРѕ Р±РѕСЂС‚Р°
 		for(long i = 0; i < sizeof(move)/(2*sizeof(MoveInfo)); i++, numRects++)
 		{
 			rect[numRects].vPos = mtx.Pos() + CVECTOR(0.0f, 2.0f, 0.0f);
@@ -58,7 +58,7 @@ void WdmWarringShip::Update(float dltTime)
 			move[numRects].kTime = 1.0f/(2.0f + rand()*2.0f/RAND_MAX);
 			move[numRects].v = mtx.Vx()*30.0f*(0.6f + rand()*(0.4f/RAND_MAX));
 		}
-		//Половина для правого борта
+		//РџРѕР»РѕРІРёРЅР° РґР»СЏ РїСЂР°РІРѕРіРѕ Р±РѕСЂС‚Р°
 		for(long i = 0; i < sizeof(move)/(2*sizeof(MoveInfo)); i++, numRects++)
 		{
 			rect[numRects].vPos = mtx.Pos() + CVECTOR(0.0f, 2.0f, 0.0f);
@@ -73,14 +73,14 @@ void WdmWarringShip::Update(float dltTime)
 			move[numRects].v = mtx.Vx()*-30.0f*(0.6f + rand()*(0.4f/RAND_MAX));
 		}
 	}
-	//Двигаем
+	//Р”РІРёРіР°РµРј
 	for(long i = 0; i < numRects; i++)
 	{
 		MoveInfo & mi = move[i];
 		mi.time += mi.kTime*dltTime;
 		if(mi.time >= 1.0f)
 		{
-			//Убиваем партикл
+			//РЈР±РёРІР°РµРј РїР°СЂС‚РёРєР»
 			numRects--;
 			for(long j = i; j < numRects; j++)
 			{
@@ -102,11 +102,11 @@ void WdmWarringShip::Update(float dltTime)
 	}
 }
 
-//Отрисовка
+//РћС‚СЂРёСЃРѕРІРєР°
 void WdmWarringShip::LRender(VDX8RENDER * rs)
 {
 	WdmEnemyShip::LRender(rs);
-	//Дым
+	//Р”С‹Рј
 	if(isWMRender && numRects > 0)
 	{
 		rs->TextureSet(0, texture);

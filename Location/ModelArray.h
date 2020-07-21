@@ -5,7 +5,7 @@
 //--------------------------------------------------------------------------------------------
 //	ModelArray
 //--------------------------------------------------------------------------------------------
-//	Õğàíåíèå èíôîğìàöèè î ìîäåëÿõ
+//	Ğ¥Ñ€Ğ°Ğ½ĞµĞ½Ğ¸Ğµ Ğ¸Ğ½Ñ„Ğ¾Ñ€Ğ¼Ğ°Ñ†Ğ¸Ğ¸ Ğ¾ Ğ¼Ğ¾Ğ´ĞµĞ»ÑÑ…
 //============================================================================================
 
 #ifndef _ModelArray_H_
@@ -49,9 +49,9 @@ class ModelArray
 
 	struct LocationModel
 	{
-		ENTITY_ID modelrealizer;		//Îòğèñîâùèê ìîäåëè
-		ENTITY_ID id;					//Ìîäåëü
-		dword hash;						//Õıøü çíà÷åíèå äëÿ áûñòğîãî ïîèñêà
+		ENTITY_ID modelrealizer;		//ĞÑ‚Ñ€Ğ¸ÑĞ¾Ğ²Ñ‰Ğ¸Ğº Ğ¼Ğ¾Ğ´ĞµĞ»Ğ¸
+		ENTITY_ID id;					//ĞœĞ¾Ğ´ĞµĞ»ÑŒ
+		dword hash;						//Ğ¥ÑÑˆÑŒ Ğ·Ğ½Ğ°Ñ‡ĞµĞ½Ğ¸Ğµ Ğ´Ğ»Ñ Ğ±Ñ‹ÑÑ‚Ñ€Ğ¾Ğ³Ğ¾ Ğ¿Ğ¾Ğ¸ÑĞºĞ°
 		union
 		{
 			dword flags;
@@ -64,49 +64,49 @@ class ModelArray
 		UVSlider * slider;
 		Rotator * rotator;
 		Relection * reflection;
-		char name[MA_MAX_NAME_LENGTH];	//Èìÿ ìîäåëè
+		char name[MA_MAX_NAME_LENGTH];	//Ğ˜Ğ¼Ñ Ğ¼Ğ¾Ğ´ĞµĞ»Ğ¸
 	};
 
 //--------------------------------------------------------------------------------------------
-//Êîíñòğóèğîâàíèå, äåñòğóêòóğèğîâàíèå
+//ĞšĞ¾Ğ½ÑÑ‚Ñ€ÑƒĞ¸Ñ€Ğ¾Ğ²Ğ°Ğ½Ğ¸Ğµ, Ğ´ĞµÑÑ‚Ñ€ÑƒĞºÑ‚ÑƒÑ€Ğ¸Ñ€Ğ¾Ğ²Ğ°Ğ½Ğ¸Ğµ
 //--------------------------------------------------------------------------------------------
 public:
 	ModelArray();
 	virtual ~ModelArray();
 	
-	//Ñîçäàòü ìîäåëü
+	//Ğ¡Ğ¾Ğ·Ğ´Ğ°Ñ‚ÑŒ Ğ¼Ğ¾Ğ´ĞµĞ»ÑŒ
 	long CreateModel(const char * modelName, const char * technique, long level, bool isVisible = true, void* pLights=0);
-	//Óäàëèòü ìîäåëü
+	//Ğ£Ğ´Ğ°Ğ»Ğ¸Ñ‚ÑŒ Ğ¼Ğ¾Ğ´ĞµĞ»ÑŒ
 	void DeleteModel(long modelIndex);
-	//Óñòàíîâèòü ìîäåëè àíèìàöèş
+	//Ğ£ÑÑ‚Ğ°Ğ½Ğ¾Ğ²Ğ¸Ñ‚ÑŒ Ğ¼Ğ¾Ğ´ĞµĞ»Ğ¸ Ğ°Ğ½Ğ¸Ğ¼Ğ°Ñ†Ğ¸Ñ
 	bool SetAnimation(long modelIndex, const char * modelAni);
-	//Íàéòè èíäåêñ ìîäåëè ïî èìåíè
+	//ĞĞ°Ğ¹Ñ‚Ğ¸ Ğ¸Ğ½Ğ´ĞµĞºÑ Ğ¼Ğ¾Ğ´ĞµĞ»Ğ¸ Ğ¿Ğ¾ Ğ¸Ğ¼ĞµĞ½Ğ¸
 	long FindModel(const char * modelName);
 
-	//Ïğîâåğèòü íà ïğàâèëüíîñòü èíäåêñ
+	//ĞŸÑ€Ğ¾Ğ²ĞµÑ€Ğ¸Ñ‚ÑŒ Ğ½Ğ° Ğ¿Ñ€Ğ°Ğ²Ğ¸Ğ»ÑŒĞ½Ğ¾ÑÑ‚ÑŒ Ğ¸Ğ½Ğ´ĞµĞºÑ
 	bool IsValidateIndex(long index);
-	//Ïîëó÷èòü íàçâàíèå ìîäåëè
+	//ĞŸĞ¾Ğ»ÑƒÑ‡Ğ¸Ñ‚ÑŒ Ğ½Ğ°Ğ·Ğ²Ğ°Ğ½Ğ¸Ğµ Ğ¼Ğ¾Ğ´ĞµĞ»Ğ¸
 	const char * GetModelName(long index);
 
-	//Êîëè÷åñòâî ìîäåëèé
+	//ĞšĞ¾Ğ»Ğ¸Ñ‡ĞµÑÑ‚Ğ²Ğ¾ Ğ¼Ğ¾Ğ´ĞµĞ»Ğ¸Ğ¹
 	long Models();
-	//Ïîëó÷åíèå ID ìîäåëè ïî èíäåêñó
+	//ĞŸĞ¾Ğ»ÑƒÑ‡ĞµĞ½Ğ¸Ğµ ID Ğ¼Ğ¾Ğ´ĞµĞ»Ğ¸ Ğ¿Ğ¾ Ğ¸Ğ½Ğ´ĞµĞºÑÑƒ
 	ENTITY_ID & ID(long modelIndex);
-	//Ïîëó÷åíèå ìîäåëè ïî èíäåêñó
+	//ĞŸĞ¾Ğ»ÑƒÑ‡ĞµĞ½Ğ¸Ğµ Ğ¼Ğ¾Ğ´ĞµĞ»Ğ¸ Ğ¿Ğ¾ Ğ¸Ğ½Ğ´ĞµĞºÑÑƒ
 	MODEL * operator [](long modelIndex);
-	//Ïîëó÷åíèå àíèìàöèè ïî èíäåêñó
+	//ĞŸĞ¾Ğ»ÑƒÑ‡ĞµĞ½Ğ¸Ğµ Ğ°Ğ½Ğ¸Ğ¼Ğ°Ñ†Ğ¸Ğ¸ Ğ¿Ğ¾ Ğ¸Ğ½Ğ´ĞµĞºÑÑƒ
 	Animation * GetAnimation(long modelIndex);
-	//Ïîëó÷åíèå ID îòğèñîâùèêà ïî èíäåêñó
+	//ĞŸĞ¾Ğ»ÑƒÑ‡ĞµĞ½Ğ¸Ğµ ID Ğ¾Ñ‚Ñ€Ğ¸ÑĞ¾Ğ²Ñ‰Ğ¸ĞºĞ° Ğ¿Ğ¾ Ğ¸Ğ½Ğ´ĞµĞºÑÑƒ
 	ENTITY_ID & RealizerID(long modelIndex);
 
-	//Óñòàíîâèòü ìîäåëüêå àíèìàöèş ñêîëüæåíèÿ uv
+	//Ğ£ÑÑ‚Ğ°Ğ½Ğ¾Ğ²Ğ¸Ñ‚ÑŒ Ğ¼Ğ¾Ğ´ĞµĞ»ÑŒĞºĞµ Ğ°Ğ½Ğ¸Ğ¼Ğ°Ñ†Ğ¸Ñ ÑĞºĞ¾Ğ»ÑŒĞ¶ĞµĞ½Ğ¸Ñ uv
 	void SetUVSlide(long modelIndex, float u0, float v0, float u1, float v1);
-	//Óñòàíîâèòü ìîäåëüêå àíèìàöèş âğàùåíèÿ
+	//Ğ£ÑÑ‚Ğ°Ğ½Ğ¾Ğ²Ğ¸Ñ‚ÑŒ Ğ¼Ğ¾Ğ´ĞµĞ»ÑŒĞºĞµ Ğ°Ğ½Ğ¸Ğ¼Ğ°Ñ†Ğ¸Ñ Ğ²Ñ€Ğ°Ñ‰ĞµĞ½Ğ¸Ñ
 	void SetRotation(long modelIndex, float rx, float ry, float rz);
-	//Óñòàíîâèòü ìîäåëüêå ğåæèì ãåíåğàöèè ìàòğèöû äëÿ îòğàæåíèÿ
+	//Ğ£ÑÑ‚Ğ°Ğ½Ğ¾Ğ²Ğ¸Ñ‚ÑŒ Ğ¼Ğ¾Ğ´ĞµĞ»ÑŒĞºĞµ Ñ€ĞµĞ¶Ğ¸Ğ¼ Ğ³ĞµĞ½ĞµÑ€Ğ°Ñ†Ğ¸Ğ¸ Ğ¼Ğ°Ñ‚Ñ€Ğ¸Ñ†Ñ‹ Ğ´Ğ»Ñ Ğ¾Ñ‚Ñ€Ğ°Ğ¶ĞµĞ½Ğ¸Ñ
 	void SetReflection(long modelIndex, float scale);
 
-	//Àíèìèğîâàòü
+	//ĞĞ½Ğ¸Ğ¼Ğ¸Ñ€Ğ¾Ğ²Ğ°Ñ‚ÑŒ
 	void Update(float dltTime);
 
 	void UpdateModelsPath();
@@ -114,21 +114,21 @@ public:
 	void UpdateLightPath();
 	void UpdateShadowPath();
 
-	//Ïğîâåğèòü âèäèìîñòü 2-õ òî÷åê
+	//ĞŸÑ€Ğ¾Ğ²ĞµÑ€Ğ¸Ñ‚ÑŒ Ğ²Ğ¸Ğ´Ğ¸Ğ¼Ğ¾ÑÑ‚ÑŒ 2-Ñ… Ñ‚Ğ¾Ñ‡ĞµĞº
 	bool VisibleTest(const CVECTOR & p1, const CVECTOR & p2);
-	//Ïğîòğåéñèò ëó÷ ÷åğåç ëîêàöèş
+	//ĞŸÑ€Ğ¾Ñ‚Ñ€ĞµĞ¹ÑĞ¸Ñ‚ Ğ»ÑƒÑ‡ Ñ‡ĞµÑ€ĞµĞ· Ğ»Ğ¾ĞºĞ°Ñ†Ğ¸Ñ
 	float Trace(const CVECTOR & src, const CVECTOR & dst);
 	bool GetCollideTriangle(TRIANGLE & trg);
 	void Clip(PLANE * p, long numPlanes, CVECTOR & cnt, float rad, bool (* fnc)(const CVECTOR * vtx, long num));
 
 //--------------------------------------------------------------------------------------------
-//Èíêàïñóëÿöèÿ
+//Ğ˜Ğ½ĞºĞ°Ğ¿ÑÑƒĞ»ÑÑ†Ğ¸Ñ
 //--------------------------------------------------------------------------------------------
 private:
 	dword CalcHashString(const char * str);
 	static void UpdatePath(char * path);
 private:
-	//Ìîäåëè ëîêàöèè
+	//ĞœĞ¾Ğ´ĞµĞ»Ğ¸ Ğ»Ğ¾ĞºĞ°Ñ†Ğ¸Ğ¸
 	LocationModel * model;
 	long numModels;
 	long maxModels;
@@ -143,13 +143,13 @@ public:
 	char resPath[512];
 };
 
-//Ïğîâåğèòü íà ïğàâèëüíîñòü èíäåêñ
+//ĞŸÑ€Ğ¾Ğ²ĞµÑ€Ğ¸Ñ‚ÑŒ Ğ½Ğ° Ğ¿Ñ€Ğ°Ğ²Ğ¸Ğ»ÑŒĞ½Ğ¾ÑÑ‚ÑŒ Ğ¸Ğ½Ğ´ĞµĞºÑ
 inline bool ModelArray::IsValidateIndex(long index)
 {
 	return index >= 0 && index < numModels;
 }
 
-//Ïîëó÷èòü íàçâàíèå ìîäåëè
+//ĞŸĞ¾Ğ»ÑƒÑ‡Ğ¸Ñ‚ÑŒ Ğ½Ğ°Ğ·Ğ²Ğ°Ğ½Ğ¸Ğµ Ğ¼Ğ¾Ğ´ĞµĞ»Ğ¸
 inline const char * ModelArray::GetModelName(long index)
 {
 	if(index >= 0 && index < numModels) return model[index].name;

@@ -232,7 +232,7 @@ dword _cdecl CXI_PICTURE::MessageProc(long msgcode, MESSAGE & message)
 {
 	switch(msgcode)
 	{
-	case 0: // Установить картинку на новую позицию
+	case 0: // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РєР°СЂС‚РёРЅРєСѓ РЅР° РЅРѕРІСѓСЋ РїРѕР·РёС†РёСЋ
 		{
 			m_rect.left = message.Long();	m_rect.top = message.Long();
 			m_rect.right = message.Long();	m_rect.bottom = message.Long();
@@ -240,7 +240,7 @@ dword _cdecl CXI_PICTURE::MessageProc(long msgcode, MESSAGE & message)
 		}
 		break;
 
-	case 1:	// Установить текстурные координаты картинки
+	case 1:	// РЈСЃС‚Р°РЅРѕРІРёС‚СЊ С‚РµРєСЃС‚СѓСЂРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹ РєР°СЂС‚РёРЅРєРё
 		{
 			FXYRECT texRect;
 			texRect.left = message.Float();	texRect.right = message.Float();
@@ -249,7 +249,7 @@ dword _cdecl CXI_PICTURE::MessageProc(long msgcode, MESSAGE & message)
 		}
 		break;
 
-	case 2: // Установить новую картинку или видео картинку
+	case 2: // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РЅРѕРІСѓСЋ РєР°СЂС‚РёРЅРєСѓ РёР»Рё РІРёРґРµРѕ РєР°СЂС‚РёРЅРєСѓ
 		{
 			bool bVideo = message.Long()!=0;
 			char param[256];
@@ -258,7 +258,7 @@ dword _cdecl CXI_PICTURE::MessageProc(long msgcode, MESSAGE & message)
 		}
 		break;
 
-	case 3:	// Установить случайную картинку из директории
+	case 3:	// РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЃР»СѓС‡Р°Р№РЅСѓСЋ РєР°СЂС‚РёРЅРєСѓ РёР· РґРёСЂРµРєС‚РѕСЂРёРё
 		{
 			char param[256];
 			message.String(sizeof(param)-1,param);
@@ -266,14 +266,14 @@ dword _cdecl CXI_PICTURE::MessageProc(long msgcode, MESSAGE & message)
 		}
 		break;
 
-	case 4: // Установить новый цвет
+	case 4: // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РЅРѕРІС‹Р№ С†РІРµС‚
 		{
 			DWORD color = message.Long();
 			for(int i=0; i<4; i++) m_v[i].color = color;
 		}
 		break;
 
-	case 5: // установить/снять мигание
+	case 5: // СѓСЃС‚Р°РЅРѕРІРёС‚СЊ/СЃРЅСЏС‚СЊ РјРёРіР°РЅРёРµ
 		{
 			bool bBlind = message.Long() != 0;
 			if( m_bMakeBlind != bBlind )
@@ -363,10 +363,10 @@ void CXI_PICTURE::SetPictureSize(long& nWidth, long& nHeight)
 		return;
 	}
 
-	if( nWidth <= 0 ) { // найдем реальную ширину
+	if( nWidth <= 0 ) { // РЅР°Р№РґРµРј СЂРµР°Р»СЊРЅСѓСЋ С€РёСЂРёРЅСѓ
 		nWidth = 128;
 	}
-	if( nHeight <= 0 ) { // найдем реальную высоту
+	if( nHeight <= 0 ) { // РЅР°Р№РґРµРј СЂРµР°Р»СЊРЅСѓСЋ РІС‹СЃРѕС‚Сѓ
 		nHeight = 128;
 	}
 

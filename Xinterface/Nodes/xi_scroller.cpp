@@ -93,15 +93,15 @@ int CXI_SCROLLER::CommandExecute(int wActCode)
 				m_upButtonPos.top<=m_curMousePos.y && m_downButtonPos.bottom>=m_curMousePos.y )
 			{
 				if( m_upButtonPos.bottom>=m_curMousePos.y )
-				{ // верхняя кнопка
+				{ // РІРµСЂС…РЅСЏСЏ РєРЅРѕРїРєР°
 					UpPress();
 					break;
 				} else if( m_downButtonPos.top<=m_curMousePos.y )
-				{ // нижняя кнопка
+				{ // РЅРёР¶РЅСЏСЏ РєРЅРѕРїРєР°
 					DownPress();
 					break;
 				} else
-				{ // середина
+				{ // СЃРµСЂРµРґРёРЅР°
 					CONTROL_STATE cs;
 					api->Controls->GetControlState("ILClick",cs);
 					if(cs.state==CST_ACTIVATED) m_bDragRoll = true;

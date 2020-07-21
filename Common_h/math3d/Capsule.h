@@ -9,18 +9,18 @@
 
 #pragma pack(push, 1)
 
-//Вертикально расположенная капсула, находящеяся в 0
+//Р’РµСЂС‚РёРєР°Р»СЊРЅРѕ СЂР°СЃРїРѕР»РѕР¶РµРЅРЅР°СЏ РєР°РїСЃСѓР»Р°, РЅР°С…РѕРґСЏС‰РµСЏСЃСЏ РІ 0
 class Capsule
 {
 public:
 	Capsule();
 	Capsule(float s, float r);
 
-	//Установить радиус сфер и цилиндра
+	//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЂР°РґРёСѓСЃ СЃС„РµСЂ Рё С†РёР»РёРЅРґСЂР°
 	void SetRadius(float r);
-	//Установить растояние между сферами
+	//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЂР°СЃС‚РѕСЏРЅРёРµ РјРµР¶РґСѓ СЃС„РµСЂР°РјРё
 	void SetSize(float s);
-	//Получить параметры выталкивания из треугольника
+	//РџРѕР»СѓС‡РёС‚СЊ РїР°СЂР°РјРµС‚СЂС‹ РІС‹С‚Р°Р»РєРёРІР°РЅРёСЏ РёР· С‚СЂРµСѓРіРѕР»СЊРЅРёРєР°
 	bool Extraction(const Triangle & t, Vector & extPoint, Vector & extVector);
 
 protected:
@@ -37,13 +37,13 @@ mathinline Capsule::Capsule(float s, float r)
 	SetRadius(r);
 };
 
-//Установить радиус сфер и цилиндра
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЂР°РґРёСѓСЃ СЃС„РµСЂ Рё С†РёР»РёРЅРґСЂР°
 mathinline void Capsule::SetRadius(float r)
 {
 	radius = r;
 }
 
-//Установить растояние между сферами
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЂР°СЃС‚РѕСЏРЅРёРµ РјРµР¶РґСѓ СЃС„РµСЂР°РјРё
 mathinline void Capsule::SetSize(float s)
 {
 	size05 = s*0.5f;
@@ -51,24 +51,24 @@ mathinline void Capsule::SetSize(float s)
 	down = Vector(0.0f, -size05, 0.0f);
 }
 
-//Получить параметры выталкивания из треугольника
+//РџРѕР»СѓС‡РёС‚СЊ РїР°СЂР°РјРµС‚СЂС‹ РІС‹С‚Р°Р»РєРёРІР°РЅРёСЏ РёР· С‚СЂРµСѓРіРѕР»СЊРЅРёРєР°
 mathinline bool Capsule::Extraction(const Triangle & t, Vector & extPoint, Vector & extVector)
 {
-	//Определим пересечение с плоскостью
+	//РћРїСЂРµРґРµР»РёРј РїРµСЂРµСЃРµС‡РµРЅРёРµ СЃ РїР»РѕСЃРєРѕСЃС‚СЊСЋ
 	Plane plane = t.GetPlane();
 	if(plane.d > 0.0f)
 	{
-		//Центр капсулы позади плоскости
+		//Р¦РµРЅС‚СЂ РєР°РїСЃСѓР»С‹ РїРѕР·Р°РґРё РїР»РѕСЃРєРѕСЃС‚Рё
 		return false;
 	}
 	float dUp = plane.n.y*size05 - plane.d;
 	float dDown = plane.n.y*-size05 - plane.d;
 	if(dUp >= radius && dDown >= radius)
 	{
-		//Капсула не пересекается с плоскостью
+		//РљР°РїСЃСѓР»Р° РЅРµ РїРµСЂРµСЃРµРєР°РµС‚СЃСЏ СЃ РїР»РѕСЃРєРѕСЃС‚СЊСЋ
 		return false;
 	}
-	//Определим самую нижнию точку пересечения
+	//РћРїСЂРµРґРµР»РёРј СЃР°РјСѓСЋ РЅРёР¶РЅРёСЋ С‚РѕС‡РєСѓ РїРµСЂРµСЃРµС‡РµРЅРёСЏ
 	Vector pointOnPlane;
 	const Vector * nearest;
 	float k;
@@ -84,46 +84,46 @@ mathinline bool Capsule::Extraction(const Triangle & t, Vector & extPoint, Vecto
 		nearest = &down;
 		k = 1.0f - dDown;
 	}
-	//Ищим ближайшую точку в треугольнике
+	//РС‰РёРј Р±Р»РёР¶Р°Р№С€СѓСЋ С‚РѕС‡РєСѓ РІ С‚СЂРµСѓРіРѕР»СЊРЅРёРєРµ
 	if(t.FindClosestPoint(plane.n, pointOnPlane))
 	{
-		//Точка пересечения лежит внутри треугольника
+		//РўРѕС‡РєР° РїРµСЂРµСЃРµС‡РµРЅРёСЏ Р»РµР¶РёС‚ РІРЅСѓС‚СЂРё С‚СЂРµСѓРіРѕР»СЊРЅРёРєР°
 		extVector = plane.n*k;
 		extPoint = pointOnPlane - extVector;
 		return true;
 	}
-	//Смещаем точку на максимальную глубину + 1
+	//РЎРјРµС‰Р°РµРј С‚РѕС‡РєСѓ РЅР° РјР°РєСЃРёРјР°Р»СЊРЅСѓСЋ РіР»СѓР±РёРЅСѓ + 1
 	static const float safeDist = 1.0f;
 	Vector RayOrigin = pointOnPlane - plane.n*(k + safeDist);
-	//Пускаем луч из найденой точки в направлении капсулы и ищем пересечение
-	//Для начала решаем задачу для бесконечного вертикального цилиндра в 0
-	//Направление на цилиндр
+	//РџСѓСЃРєР°РµРј Р»СѓС‡ РёР· РЅР°Р№РґРµРЅРѕР№ С‚РѕС‡РєРё РІ РЅР°РїСЂР°РІР»РµРЅРёРё РєР°РїСЃСѓР»С‹ Рё РёС‰РµРј РїРµСЂРµСЃРµС‡РµРЅРёРµ
+	//Р”Р»СЏ РЅР°С‡Р°Р»Р° СЂРµС€Р°РµРј Р·Р°РґР°С‡Сѓ РґР»СЏ Р±РµСЃРєРѕРЅРµС‡РЅРѕРіРѕ РІРµСЂС‚РёРєР°Р»СЊРЅРѕРіРѕ С†РёР»РёРЅРґСЂР° РІ 0
+	//РќР°РїСЂР°РІР»РµРЅРёРµ РЅР° С†РёР»РёРЅРґСЂ
 	Vector dir2D = plane.n.Get2D();
 	double in2D = ~dir2D;
 	if(in2D > 1e-20f)
 	{
-		//Нормализуем;
+		//РќРѕСЂРјР°Р»РёР·СѓРµРј;
 		dir2D *= (in2D = 1.0f/sqrt(in2D));
-		//Луч наклонный
+		//Р›СѓС‡ РЅР°РєР»РѕРЅРЅС‹Р№
 		float distToOrtoPlane = -(RayOrigin | dir2D);
 		float distToEdge2 = radius*radius - (RayOrigin.GetLength2D2() - distToOrtoPlane*distToOrtoPlane);
 		if(distToEdge2 <= 0.0f)
 		{
-			//Капсула не пересекается с треугольником
+			//РљР°РїСЃСѓР»Р° РЅРµ РїРµСЂРµСЃРµРєР°РµС‚СЃСЏ СЃ С‚СЂРµСѓРіРѕР»СЊРЅРёРєРѕРј
 			return false;
 		}
 		float distToCylinder = distToOrtoPlane - sqrtf(distToEdge2);
 		if(distToCylinder <= 0.0f)
 		{
-			//Капсула не пересекается с треугольником
+			//РљР°РїСЃСѓР»Р° РЅРµ РїРµСЂРµСЃРµРєР°РµС‚СЃСЏ СЃ С‚СЂРµСѓРіРѕР»СЊРЅРёРєРѕРј
 			return false;
 		}
-		//Зная расстояние до цилиндра найдём высоту пересечения
+		//Р—РЅР°СЏ СЂР°СЃСЃС‚РѕСЏРЅРёРµ РґРѕ С†РёР»РёРЅРґСЂР° РЅР°Р№РґС‘Рј РІС‹СЃРѕС‚Сѓ РїРµСЂРµСЃРµС‡РµРЅРёСЏ
 		float y = float(plane.n.y*in2D*distToCylinder);
-		//Определимся с попаданием
+		//РћРїСЂРµРґРµР»РёРјСЃСЏ СЃ РїРѕРїР°РґР°РЅРёРµРј
 		if(RayOrigin.y + y > size05)
 		{
-			//Тестим с верхней сферой
+			//РўРµСЃС‚РёРј СЃ РІРµСЂС…РЅРµР№ СЃС„РµСЂРѕР№
 			float dist;
 			if(Sphere::Intersection(RayOrigin, plane.n, up, radius, &dist))
 			{
@@ -134,7 +134,7 @@ mathinline bool Capsule::Extraction(const Triangle & t, Vector & extPoint, Vecto
 		}else
 		if(RayOrigin.y + y < -size05)
 		{
-			//Тестим с нижней сферой
+			//РўРµСЃС‚РёРј СЃ РЅРёР¶РЅРµР№ СЃС„РµСЂРѕР№
 			float dist;
 			if(Sphere::Intersection(RayOrigin, plane.n, down, radius, &dist))
 			{
@@ -143,16 +143,16 @@ mathinline bool Capsule::Extraction(const Triangle & t, Vector & extPoint, Vecto
 				return false;
 			}
 		}else{		
-			//Пересеклись с цилиндром
+			//РџРµСЂРµСЃРµРєР»РёСЃСЊ СЃ С†РёР»РёРЅРґСЂРѕРј
 			k = k + safeDist - sqrtf(distToCylinder*distToCylinder + y*y);
 			if(k < 0.0f)
 			{
-				//Капсула не пересекается с треугольником
+				//РљР°РїСЃСѓР»Р° РЅРµ РїРµСЂРµСЃРµРєР°РµС‚СЃСЏ СЃ С‚СЂРµСѓРіРѕР»СЊРЅРёРєРѕРј
 				return false;
 			}
 		}
 	}else{
-		//Луч вертикальный
+		//Р›СѓС‡ РІРµСЂС‚РёРєР°Р»СЊРЅС‹Р№
 		float dist;
 		if(Sphere::Intersection(RayOrigin, plane.n, *nearest, radius, &dist))
 		{

@@ -33,8 +33,8 @@ protected:
 protected:
 	// log stings parameters
 	//-----------------------
-	long	m_nWindowWidth; // ðàçìåð îêíà ïî X
-	long	m_nWindowHeight; // ðàçìåð îêíà ïî Y
+	long	m_nWindowWidth; // Ñ€Ð°Ð·Ð¼ÐµÑ€ Ð¾ÐºÐ½Ð° Ð¿Ð¾ X
+	long	m_nWindowHeight; // Ñ€Ð°Ð·Ð¼ÐµÑ€ Ð¾ÐºÐ½Ð° Ð¿Ð¾ Y
 	long	m_nWindowLeft;
 	long	m_nWindowRight;
 	long	m_nWindowUp;
@@ -50,8 +50,8 @@ protected:
 	// Action parameters
 	//-------------------
 	bool	m_bThatRealAction;
-	long	m_nIconWidth; // ðàçìåð èêîíêè ïî X
-	long	m_nIconHeight; // ðàçìåð èêîíêè ïî Y
+	long	m_nIconWidth; // Ñ€Ð°Ð·Ð¼ÐµÑ€ Ð¸ÐºÐ¾Ð½ÐºÐ¸ Ð¿Ð¾ X
+	long	m_nIconHeight; // Ñ€Ð°Ð·Ð¼ÐµÑ€ Ð¸ÐºÐ¾Ð½ÐºÐ¸ Ð¿Ð¾ Y
 	long	m_nIconLeft;
 	long	m_nIconUp;
 	long	m_idIconTexture;

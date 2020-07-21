@@ -16,30 +16,30 @@
 //============================================================================================
 
 //Goto
-#define NPC_STOP_GOTODIST	0.3f	//Дистанция в метрах, при которой считается что персонаж дошол до точки
+#define NPC_STOP_GOTODIST	0.3f	//Р”РёСЃС‚Р°РЅС†РёСЏ РІ РјРµС‚СЂР°С…, РїСЂРё РєРѕС‚РѕСЂРѕР№ СЃС‡РёС‚Р°РµС‚СЃСЏ С‡С‚Рѕ РїРµСЂСЃРѕРЅР°Р¶ РґРѕС€РѕР» РґРѕ С‚РѕС‡РєРё
 
 //Follow
-#define NPC_STOP_DIST_NPC	1.5f	//Дистанция до персонажа, при которой надо остановиться и постоять
-#define NPC_START_DIST_NPC	2.5f	//Дистанция до персонажа, при которой надо начать движение
-#define NPC_RUN_DIST_NPC	10.0f	//Дистанция до персонажа, при которой надо бежать
-#define NPC_WALK_DIST_NPC	4.0f	//Дистанция до персонажа, при которой бег переходит в ходьбу
+#define NPC_STOP_DIST_NPC	1.5f	//Р”РёСЃС‚Р°РЅС†РёСЏ РґРѕ РїРµСЂСЃРѕРЅР°Р¶Р°, РїСЂРё РєРѕС‚РѕСЂРѕР№ РЅР°РґРѕ РѕСЃС‚Р°РЅРѕРІРёС‚СЊСЃСЏ Рё РїРѕСЃС‚РѕСЏС‚СЊ
+#define NPC_START_DIST_NPC	2.5f	//Р”РёСЃС‚Р°РЅС†РёСЏ РґРѕ РїРµСЂСЃРѕРЅР°Р¶Р°, РїСЂРё РєРѕС‚РѕСЂРѕР№ РЅР°РґРѕ РЅР°С‡Р°С‚СЊ РґРІРёР¶РµРЅРёРµ
+#define NPC_RUN_DIST_NPC	10.0f	//Р”РёСЃС‚Р°РЅС†РёСЏ РґРѕ РїРµСЂСЃРѕРЅР°Р¶Р°, РїСЂРё РєРѕС‚РѕСЂРѕР№ РЅР°РґРѕ Р±РµР¶Р°С‚СЊ
+#define NPC_WALK_DIST_NPC	4.0f	//Р”РёСЃС‚Р°РЅС†РёСЏ РґРѕ РїРµСЂСЃРѕРЅР°Р¶Р°, РїСЂРё РєРѕС‚РѕСЂРѕР№ Р±РµРі РїРµСЂРµС…РѕРґРёС‚ РІ С…РѕРґСЊР±Сѓ
 
 //Escape
-#define NPC_STOP_ESCAPE		20.0f	//Дистанция на которой заканчивать убигание
+#define NPC_STOP_ESCAPE		20.0f	//Р”РёСЃС‚Р°РЅС†РёСЏ РЅР° РєРѕС‚РѕСЂРѕР№ Р·Р°РєР°РЅС‡РёРІР°С‚СЊ СѓР±РёРіР°РЅРёРµ
 
 
 //Fight
-#define NPC_FIGHT_STOP_DIST	2.0f	//Дистанция до персонажа, при которой надо остановиться
-#define NPC_FIGHT_GO_DIST	2.4f	//Дистанция до персонажа, при которой надо начать движение к цели
-#define NPC_FIGHT_RUN_DIST	4.0f	//Дистанция до персонажа, при которой переходить в режим бега
-#define NPC_FIGHT_WALK_DIST	2.5f	//Дистанция до персонажа, при которой переходить в режим ходьбы
-#define NPC_FIGHT_FIRE_DIST	25.0f	//Дистанция до персонажа, при которой можно стрелять
+#define NPC_FIGHT_STOP_DIST	2.0f	//Р”РёСЃС‚Р°РЅС†РёСЏ РґРѕ РїРµСЂСЃРѕРЅР°Р¶Р°, РїСЂРё РєРѕС‚РѕСЂРѕР№ РЅР°РґРѕ РѕСЃС‚Р°РЅРѕРІРёС‚СЊСЃСЏ
+#define NPC_FIGHT_GO_DIST	2.4f	//Р”РёСЃС‚Р°РЅС†РёСЏ РґРѕ РїРµСЂСЃРѕРЅР°Р¶Р°, РїСЂРё РєРѕС‚РѕСЂРѕР№ РЅР°РґРѕ РЅР°С‡Р°С‚СЊ РґРІРёР¶РµРЅРёРµ Рє С†РµР»Рё
+#define NPC_FIGHT_RUN_DIST	4.0f	//Р”РёСЃС‚Р°РЅС†РёСЏ РґРѕ РїРµСЂСЃРѕРЅР°Р¶Р°, РїСЂРё РєРѕС‚РѕСЂРѕР№ РїРµСЂРµС…РѕРґРёС‚СЊ РІ СЂРµР¶РёРј Р±РµРіР°
+#define NPC_FIGHT_WALK_DIST	2.5f	//Р”РёСЃС‚Р°РЅС†РёСЏ РґРѕ РїРµСЂСЃРѕРЅР°Р¶Р°, РїСЂРё РєРѕС‚РѕСЂРѕР№ РїРµСЂРµС…РѕРґРёС‚СЊ РІ СЂРµР¶РёРј С…РѕРґСЊР±С‹
+#define NPC_FIGHT_FIRE_DIST	25.0f	//Р”РёСЃС‚Р°РЅС†РёСЏ РґРѕ РїРµСЂСЃРѕРЅР°Р¶Р°, РїСЂРё РєРѕС‚РѕСЂРѕР№ РјРѕР¶РЅРѕ СЃС‚СЂРµР»СЏС‚СЊ
 
 
 
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 NPCharacter::NPCharacter()
@@ -48,26 +48,26 @@ NPCharacter::NPCharacter()
 	task.task = npct_stay;
 	lastSetTask = npct_unknow;
 	CmdStay();
-	//Система боя
+	//РЎРёСЃС‚РµРјР° Р±РѕСЏ
 	fightLevel = 0.0f;
-	//Атаки
+	//РђС‚Р°РєРё
 	attackCur = 0.5f;// k3 fix 0.05f;
 	attackPrbFast = 0.2f;
 	attackPrbForce = 0.5f;
 	attackPrbRound = 0.1f;
 	attackPrbBreak = 0.1f;
 	attackPrbFeint = 0.1f;
-	//Защита
+	//Р—Р°С‰РёС‚Р°
 	defenceCur = 0.05f;
 	blockTime = 0.0f;
 	defencePrbBlock = 0.9f;
 	defencePrbParry = 0.1f;
 	isRecoilEnable = true;
 	isStunEnable = true; // ugeen 29.12.10
-	//Стрельба
+	//РЎС‚СЂРµР»СЊР±Р°
 	fireCur = 0.0f;
 	isFireEnable = true;
-	//Текущее состояние противника
+	//РўРµРєСѓС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ РїСЂРѕС‚РёРІРЅРёРєР°
 	enemyFgtType = fgt_none;
 	isFgtChanged = false;
 	fightTick = 0.0f;
@@ -95,7 +95,7 @@ bool NPCharacter::PostInit()
 	float tmp;
 	long tmpBool;
 	VDATA * vd;
-	//Параметры аттаки
+	//РџР°СЂР°РјРµС‚СЂС‹ Р°С‚С‚Р°РєРё
 	vd = api->Event("NPC_Event_GetAttackActive", "i", GetID());
 	tmp = attackCur;
 	if(vd && vd->Get(tmp)) attackCur = tmp;
@@ -114,7 +114,7 @@ bool NPCharacter::PostInit()
 	vd = api->Event("NPC_Event_GetAttackWeightFeint", "i", GetID());
 	tmp = attackPrbFeint;
 	if(vd && vd->Get(tmp)) attackPrbFeint = tmp;
-	//Прараметры защиты
+	//РџСЂР°СЂР°РјРµС‚СЂС‹ Р·Р°С‰РёС‚С‹
 	vd = api->Event("NPC_Event_GetDefenceActive", "i", GetID());
 	tmp = defenceCur;
 	if(vd && vd->Get(tmp)) defenceCur = tmp;
@@ -127,7 +127,7 @@ bool NPCharacter::PostInit()
 	vd = api->Event("NPC_Event_EnableRecoil", "i", GetID());
 	tmpBool = isRecoilEnable;
 	if(vd && vd->Get(tmpBool)) isRecoilEnable = tmpBool != 0;
-	//Параметры стрельбы
+	//РџР°СЂР°РјРµС‚СЂС‹ СЃС‚СЂРµР»СЊР±С‹
 	vd = api->Event("NPC_Event_GetFireActive", "i", GetID());
 	tmp = fireCur;
 	if(vd && vd->Get(tmp)) fireCur = tmp;
@@ -137,7 +137,7 @@ bool NPCharacter::PostInit()
 	vd = api->Event("NPC_Event_EnableStun", "i", GetID());
 	tmpBool = isStunEnable;
 	if(vd && vd->Get(tmpBool)) isStunEnable = tmpBool != 0;
-	//Нормализация параметров
+	//РќРѕСЂРјР°Р»РёР·Р°С†РёСЏ РїР°СЂР°РјРµС‚СЂРѕРІ
 	if(attackCur < 0.0f) attackCur = 0.0f;
 	if(attackCur > 1000.0f) attackCur = 1000.0f;
 	if(defenceCur < 0.0f) defenceCur = 0.0f;
@@ -190,10 +190,10 @@ dword NPCharacter::ChlProcessMessage(long messageID, MESSAGE & message)
 	return 0;
 }
 
-//Перемещаем персонажа в желаемую позицию
+//РџРµСЂРµРјРµС‰Р°РµРј РїРµСЂСЃРѕРЅР°Р¶Р° РІ Р¶РµР»Р°РµРјСѓСЋ РїРѕР·РёС†РёСЋ
 void NPCharacter::Move(float dltTime)
 {
-	//Процесируем задачу
+	//РџСЂРѕС†РµСЃРёСЂСѓРµРј Р·Р°РґР°С‡Сѓ
 	switch(task.task)
 	{
 	case npct_none:
@@ -214,7 +214,7 @@ void NPCharacter::Move(float dltTime)
 	AICharacter::Move(dltTime);
 }
 
-//Обновить позицию персонажа
+//РћР±РЅРѕРІРёС‚СЊ РїРѕР·РёС†РёСЋ РїРµСЂСЃРѕРЅР°Р¶Р°
 void NPCharacter::Update(float dltTime)
 {
 	bMusketer = AttributesPointer->GetAttributeAsDword("isMusketer", 0) != 0;
@@ -250,7 +250,7 @@ void NPCharacter::Update(float dltTime)
 		break;
 	};
 	AICharacter::Update(dltTime);
-	//Напишем отладочную информацию
+	//РќР°РїРёС€РµРј РѕС‚Р»Р°РґРѕС‡РЅСѓСЋ РёРЅС„РѕСЂРјР°С†РёСЋ
 	if(location->IsDebugView())
 	{
 		bool isDebugEx = location->IsExDebugView();
@@ -315,7 +315,7 @@ void NPCharacter::Update(float dltTime)
 }
 
 //============================================================================================
-//Задачи
+//Р—Р°РґР°С‡Рё
 //============================================================================================
 
 
@@ -355,7 +355,7 @@ void NPCharacter::SetEscapeTask(Character * c)
 	task.to.z = vPos.z - fMusketerDistance * 0.8f;*/
 }
 
-//Установить новую задачу
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РЅРѕРІСѓСЋ Р·Р°РґР°С‡Сѓ
 bool NPCharacter::SetNewTask(NPCTask tsk, MESSAGE & message)
 {
 	if (bMusketerNoMove)
@@ -436,13 +436,13 @@ bool NPCharacter::InitFightChartacter(ENTITY_ID & eid)
 
 
 //============================================================================================
-//Исполнение задач
+//РСЃРїРѕР»РЅРµРЅРёРµ Р·Р°РґР°С‡
 //============================================================================================
 
-//Исполнение задачи следования за персонажем
+//РСЃРїРѕР»РЅРµРЅРёРµ Р·Р°РґР°С‡Рё СЃР»РµРґРѕРІР°РЅРёСЏ Р·Р° РїРµСЂСЃРѕРЅР°Р¶РµРј
 void NPCharacter::UpdateFollowCharacter(float dltTime)
 {
-	//Цель
+	//Р¦РµР»СЊ
 	NPCharacter * c = (NPCharacter *)_CORE_API->GetEntityPointer(&task.target);
 	if(!c || c->deadName != null || c->liveValue < 0)
 	{
@@ -452,7 +452,7 @@ void NPCharacter::UpdateFollowCharacter(float dltTime)
 		FailureCommand(tsk);
 		return;
 	}
-	//Проверим растояние до цели
+	//РџСЂРѕРІРµСЂРёРј СЂР°СЃС‚РѕСЏРЅРёРµ РґРѕ С†РµР»Рё
 	float dst = ~(c->curPos - curPos);
 	if(task.isFollowInit == 0)
 	{
@@ -475,10 +475,10 @@ void NPCharacter::UpdateFollowCharacter(float dltTime)
 	SetExCharacter(c);
 }
 
-//Выполнение задачи убегания
+//Р’С‹РїРѕР»РЅРµРЅРёРµ Р·Р°РґР°С‡Рё СѓР±РµРіР°РЅРёСЏ
 void NPCharacter::UpdateEscapeCharacter(float dltTime)
 {
-	//Персонаж от которого убегаем
+	//РџРµСЂСЃРѕРЅР°Р¶ РѕС‚ РєРѕС‚РѕСЂРѕРіРѕ СѓР±РµРіР°РµРј
 	NPCharacter * c = (NPCharacter *)_CORE_API->GetEntityPointer(&task.target);
 	if(!c || c->deadName != null || c->liveValue < 0)
 	{
@@ -488,7 +488,7 @@ void NPCharacter::UpdateEscapeCharacter(float dltTime)
 		FailureCommand(tsk);
 		return;
 	}
-	//Уходим по радиальной линии
+	//РЈС…РѕРґРёРј РїРѕ СЂР°РґРёР°Р»СЊРЅРѕР№ Р»РёРЅРёРё
 	float fDist = (bMusketer) ? fMusketerDistance * 0.7f : NPC_STOP_ESCAPE;
 	CmdEscape(c->curPos.x, c->curPos.y, c->curPos.z, fDist);
 	if(isSlide)
@@ -501,13 +501,13 @@ void NPCharacter::UpdateEscapeCharacter(float dltTime)
 	}
 }
 
-//Исполнение задачи боя
+//РСЃРїРѕР»РЅРµРЅРёРµ Р·Р°РґР°С‡Рё Р±РѕСЏ
 void NPCharacter::UpdateFightCharacter(float dltTime)
 {
 	//fMusketerTime -= dltTime;
 
 	SetFightMode(true);
-	//Цель
+	//Р¦РµР»СЊ
 	NPCharacter * c = (NPCharacter *)_CORE_API->GetEntityPointer(&task.target);
 	if(!c || c->deadName != null || c->liveValue < 0 || c == this)
 	{
@@ -517,16 +517,16 @@ void NPCharacter::UpdateFightCharacter(float dltTime)
 		FailureCommand(tsk);
 		return;
 	}
-	//Решаем что будем делать
+	//Р РµС€Р°РµРј С‡С‚Рѕ Р±СѓРґРµРј РґРµР»Р°С‚СЊ
 	fightTick -= dltTime;
 	if(fightTick <= 0.0f)
 	{
 		fightTick = 0.2f; // k3 fix 0.5f;
 		FightTick();
 	}
-	//Проверим растояние до цели
+	//РџСЂРѕРІРµСЂРёРј СЂР°СЃС‚РѕСЏРЅРёРµ РґРѕ С†РµР»Рё
 	float dst = ~(c->curPos - curPos);
-	//Переход в режим боя
+	//РџРµСЂРµС…РѕРґ РІ СЂРµР¶РёРј Р±РѕСЏ
 	if(dst > NPC_FIGHT_RUN_DIST*NPC_FIGHT_RUN_DIST)
 	{
 		SetRunMode(true);
@@ -540,7 +540,7 @@ void NPCharacter::UpdateFightCharacter(float dltTime)
 		task.isFollowInit = 1;
 		if(dst < NPC_STOP_DIST_NPC*NPC_STOP_DIST_NPC) EndGotoCommand();
 	}
-	//Навигация
+	//РќР°РІРёРіР°С†РёСЏ
 	bool isProcessWait = false;
 
 	bool bCurrentActionIsFire = false;
@@ -580,15 +580,15 @@ void NPCharacter::UpdateFightCharacter(float dltTime)
 	bool bFarTarget = dst > NPC_FIGHT_FIRE_DIST * NPC_FIGHT_FIRE_DIST;
 	Character * target = FindGunTarget(kdst, true);
 
-	if (bVisTarget && !bFarTarget) // если таргет видимый, то пытаемся застрелить его
+	if (bVisTarget && !bFarTarget) // РµСЃР»Рё С‚Р°СЂРіРµС‚ РІРёРґРёРјС‹Р№, С‚Рѕ РїС‹С‚Р°РµРјСЃСЏ Р·Р°СЃС‚СЂРµР»РёС‚СЊ РµРіРѕ
 		bTryAnyTarget = false;
 
-	// Раз в 5 секунд проверяем, можем ли выстрелить, если нет, то смещаемся по кругу от таргета
+	// Р Р°Р· РІ 5 СЃРµРєСѓРЅРґ РїСЂРѕРІРµСЂСЏРµРј, РјРѕР¶РµРј Р»Рё РІС‹СЃС‚СЂРµР»РёС‚СЊ, РµСЃР»Рё РЅРµС‚, С‚Рѕ СЃРјРµС‰Р°РµРјСЃСЏ РїРѕ РєСЂСѓРіСѓ РѕС‚ С‚Р°СЂРіРµС‚Р°
 	if (bMusketer && bTryFire && fMusketerCheckFireTime <= 0.0f)
 	{
 		fMusketerCheckFireTime = 6.0f;
 
-		// если главную цель не видно и нету других видимых целей - то пытаемся обойти
+		// РµСЃР»Рё РіР»Р°РІРЅСѓСЋ С†РµР»СЊ РЅРµ РІРёРґРЅРѕ Рё РЅРµС‚Сѓ РґСЂСѓРіРёС… РІРёРґРёРјС‹С… С†РµР»РµР№ - С‚Рѕ РїС‹С‚Р°РµРјСЃСЏ РѕР±РѕР№С‚Рё
 		if (!bVisTarget && !target)
 		{
 			bTryFire = false;
@@ -617,7 +617,7 @@ void NPCharacter::UpdateFightCharacter(float dltTime)
 				if (CmdGotoPoint(task.to.x, task.to.y, task.to.z, NPC_STOP_GOTODIST*2.0f)) break;
 			}
 		}
-		else // если таргет есть, но лругой - то будем пытаться выстрелить внего
+		else // РµСЃР»Рё С‚Р°СЂРіРµС‚ РµСЃС‚СЊ, РЅРѕ Р»СЂСѓРіРѕР№ - С‚Рѕ Р±СѓРґРµРј РїС‹С‚Р°С‚СЊСЃСЏ РІС‹СЃС‚СЂРµР»РёС‚СЊ РІРЅРµРіРѕ
 		{
 			bTryAnyTarget = true;
 		}
@@ -631,23 +631,23 @@ void NPCharacter::UpdateFightCharacter(float dltTime)
 			float fDistTo = (bMusketer && !bMusketerNoMove) ? fMusketerDistance * 0.7f : NPC_FIGHT_GO_DIST;
 			if(dst > fDist * fDist)
 			{
-				//Надо подойти ближе
+				//РќР°РґРѕ РїРѕРґРѕР№С‚Рё Р±Р»РёР¶Рµ
 				CmdGotoPoint(c->curPos.x, c->curPos.y, c->curPos.z, fDistTo, c->currentNode, false);
 				_CORE_API->Event("Location_CharacterFightGo", "si", GetTaskName(npct_followcharacter), GetID());
 			}//else{
-				//Воюем
+				//Р’РѕСЋРµРј
 			//}
 		}//else
 		//{
-			//Уточним место положения цели
+			//РЈС‚РѕС‡РЅРёРј РјРµСЃС‚Рѕ РїРѕР»РѕР¶РµРЅРёСЏ С†РµР»Рё
 			//CmdGotoPoint(c->curPos.x, c->curPos.y, c->curPos.z, NPC_FIGHT_STOP_DIST, c->currentNode, false);
-			//Проверим возможность выстрела
+			//РџСЂРѕРІРµСЂРёРј РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РІС‹СЃС‚СЂРµР»Р°
 
 			double dx = c->curPos.x - curPos.x;
 			double dz = c->curPos.z - curPos.z;
 			double l = dx*dx + dz*dz;
 
-			// аытаемся отбежать
+			// Р°С‹С‚Р°РµРјСЃСЏ РѕС‚Р±РµР¶Р°С‚СЊ
 			/*if (bMusketer && fMusketerTime <= 0.0f && fMusketerDistance >= 0.0f && sqrt(l) < fMusketerDistance * 0.6f)
 			{
 				bTryFire = false;
@@ -670,7 +670,7 @@ void NPCharacter::UpdateFightCharacter(float dltTime)
 							if(dx < 0) ang = -ang;
 							if(dx*sinf(ay) + dz*cosf(ay) > 0.65f)
 							{
-								//Определяем текущую цель
+								//РћРїСЂРµРґРµР»СЏРµРј С‚РµРєСѓС‰СѓСЋ С†РµР»СЊ
 								float _ay = ay;
 								ay = ang;
 								float kdst;
@@ -742,16 +742,16 @@ void NPCharacter::UpdateFightCharacter(float dltTime)
 //============================================================================================
 
 
-//Поведение в бою
+//РџРѕРІРµРґРµРЅРёРµ РІ Р±РѕСЋ
 void NPCharacter::DoFightAction(float dltTime, NPCharacter * enemy)
 {
-	//Анализируем смену действий противника
+	//РђРЅР°Р»РёР·РёСЂСѓРµРј СЃРјРµРЅСѓ РґРµР№СЃС‚РІРёР№ РїСЂРѕС‚РёРІРЅРёРєР°
 	if(enemy->fgtCurType != enemyFgtType)
 	{
 		enemyFgtType = enemy->fgtCurType;
 		isFgtChanged = true;
 	}	
-	//Смотрим на текущее действие
+	//РЎРјРѕС‚СЂРёРј РЅР° С‚РµРєСѓС‰РµРµ РґРµР№СЃС‚РІРёРµ
 	if(blockTime > 0.0f)
 	{
 		Block();
@@ -761,55 +761,55 @@ void NPCharacter::DoFightAction(float dltTime, NPCharacter * enemy)
 	switch(fgtCurType)
 	{
 	case fgt_none:
-		//Свободны
+		//РЎРІРѕР±РѕРґРЅС‹
 		DoFightActionAnalysisNone(dltTime, enemy);
 		break;
 	}
-	//Симулируем заторможенность поворотов
+	//РЎРёРјСѓР»РёСЂСѓРµРј Р·Р°С‚РѕСЂРјРѕР¶РµРЅРЅРѕСЃС‚СЊ РїРѕРІРѕСЂРѕС‚РѕРІ
 	Turn(enemy->curPos.x - curPos.x, enemy->curPos.z - curPos.z);
 	isFgtChanged = false;
 }
 
-//Поведение в бою - idle
+//РџРѕРІРµРґРµРЅРёРµ РІ Р±РѕСЋ - idle
 void NPCharacter::DoFightActionAnalysisNone(float dltTime, NPCharacter * enemy)
 {	
 	if(!enemy) return;
-	//Смотрим на свои желания
+	//РЎРјРѕС‚СЂРёРј РЅР° СЃРІРѕРё Р¶РµР»Р°РЅРёСЏ
 	bool wishAttact = wantToAttack;
 	bool wishDefence = wantToDefence;
-	//Если ничего не желаем - экономим ресурсы и ничего больше не делаем
+	//Р•СЃР»Рё РЅРёС‡РµРіРѕ РЅРµ Р¶РµР»Р°РµРј - СЌРєРѕРЅРѕРјРёРј СЂРµСЃСѓСЂСЃС‹ Рё РЅРёС‡РµРіРѕ Р±РѕР»СЊС€Рµ РЅРµ РґРµР»Р°РµРј
 	if(!(wishAttact | wishDefence)) return;
-	//Получаем режим выбора цели для атаки
+	//РџРѕР»СѓС‡Р°РµРј СЂРµР¶РёРј РІС‹Р±РѕСЂР° С†РµР»Рё РґР»СЏ Р°С‚Р°РєРё
 	long isAdaptive = true;
 	VDATA * vd = api->Event("NPC_Event_AdaptiveTargetSelect", "i", GetID());
 	if(vd) vd->Get(isAdaptive);
-	//Коректируем с учётом наличия групп
+	//РљРѕСЂРµРєС‚РёСЂСѓРµРј СЃ СѓС‡С‘С‚РѕРј РЅР°Р»РёС‡РёСЏ РіСЂСѓРїРї
 	CharactersGroups * chrGroup = (CharactersGroups *)api->GetEntityPointer(&charactersGroups);
 	if(!chrGroup) isAdaptive = false;
-	//Если хотим бить и режим не адаптивный, то просто бьём
+	//Р•СЃР»Рё С…РѕС‚РёРј Р±РёС‚СЊ Рё СЂРµР¶РёРј РЅРµ Р°РґР°РїС‚РёРІРЅС‹Р№, С‚Рѕ РїСЂРѕСЃС‚Рѕ Р±СЊС‘Рј
 	if(wishAttact && !isAdaptive)
 	{
 		DoFightAttack(enemy, 1, false);
 		return;
 	}
-	//Собираем всех окружающих
+	//РЎРѕР±РёСЂР°РµРј РІСЃРµС… РѕРєСЂСѓР¶Р°СЋС‰РёС…
 	static Supervisor::FindCharacter fndCharacter[MAX_CHARACTERS];
 	static long num = 0;
 	if(!location->supervisor.FindCharacters(fndCharacter, num, this, CHARACTER_ATTACK_DIST, 0.0f, 0.01f, 0.0f, false)) return;
 	if(!num) return;
-	//Наша группа
+	//РќР°С€Р° РіСЂСѓРїРїР°
 	long grpIndex = chrGroup->FindGroupIndex(group);
-	//Таблица врагов
+	//РўР°Р±Р»РёС†Р° РІСЂР°РіРѕРІ
 	static EnemyState enemies[MAX_CHARACTERS];
 	long enemyCounter = 0;
-	//Наше направление
+	//РќР°С€Рµ РЅР°РїСЂР°РІР»РµРЅРёРµ
 	CVECTOR dir(sinf(ay), 0.0f, cosf(ay));
-	//Вычисляем врагов
+	//Р’С‹С‡РёСЃР»СЏРµРј РІСЂР°РіРѕРІ
 	bool isFreeBack = isRecoilEnable;
 	static const float backAng = -cosf(45.0f*(3.1415926535f/180.0f));
 	for(long i = 0; i < num; i++)
 	{
-		//Персонаж
+		//РџРµСЂСЃРѕРЅР°Р¶
 		Supervisor::FindCharacter & fc = fndCharacter[i];
 		NPCharacter * chr = (NPCharacter *)fc.c;
 		if(chr->liveValue < 0 || chr->deadName || fc.d2 <= 0.0f || chr == this) continue;
@@ -826,14 +826,14 @@ void NPCharacter::DoFightActionAnalysisNone(float dltTime, NPCharacter * enemy)
 			}
 		}
 //		if(!chr->isFight) continue;
-		//Группа воюющего
+		//Р“СЂСѓРїРїР° РІРѕСЋСЋС‰РµРіРѕ
 		long grp = chrGroup->FindGroupIndex(chr->group);
 		if(grp < 0 || grpIndex < 0) return;
-		//Отношение его группы к нашей
+		//РћС‚РЅРѕС€РµРЅРёРµ РµРіРѕ РіСЂСѓРїРїС‹ Рє РЅР°С€РµР№
 		if(chrGroup->FindRelation(grpIndex, grp).curState != CharactersGroups::rs_enemy) continue;
-		//Это враг
+		//Р­С‚Рѕ РІСЂР°Рі
 		enemies[enemyCounter].chr = chr;
-		//Куда смотрит враг и расположение относительно нас
+		//РљСѓРґР° СЃРјРѕС‚СЂРёС‚ РІСЂР°Рі Рё СЂР°СЃРїРѕР»РѕР¶РµРЅРёРµ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РЅР°СЃ
 		if(fc.d2 > 0.0f)
 		{			
 			enemies[enemyCounter].look = -(sinf(chr->ay)*fc.dx + cosf(chr->ay)*fc.dz)/fc.d2;
@@ -842,7 +842,7 @@ void NPCharacter::DoFightActionAnalysisNone(float dltTime, NPCharacter * enemy)
 			enemies[enemyCounter].look = 0.0f;
 			enemies[enemyCounter].dir = 0.0f;
 		}
-		//Если надо, то анализируем цель
+		//Р•СЃР»Рё РЅР°РґРѕ, С‚Рѕ Р°РЅР°Р»РёР·РёСЂСѓРµРј С†РµР»СЊ
 		if(wishAttact)
 		{
 			float hp = 1.0f;
@@ -859,9 +859,9 @@ void NPCharacter::DoFightActionAnalysisNone(float dltTime, NPCharacter * enemy)
 		}
 		enemyCounter++;
 	}
-	//Если никого вредоносного нет - ничего не делаем
+	//Р•СЃР»Рё РЅРёРєРѕРіРѕ РІСЂРµРґРѕРЅРѕСЃРЅРѕРіРѕ РЅРµС‚ - РЅРёС‡РµРіРѕ РЅРµ РґРµР»Р°РµРј
 	if(!enemyCounter) return;
-	//Если атакуем, то выбираем подходящую цель для атаки
+	//Р•СЃР»Рё Р°С‚Р°РєСѓРµРј, С‚Рѕ РІС‹Р±РёСЂР°РµРј РїРѕРґС…РѕРґСЏС‰СѓСЋ С†РµР»СЊ РґР»СЏ Р°С‚Р°РєРё
 	if(wishAttact)
 	{
 		float kSel;
@@ -889,7 +889,7 @@ void NPCharacter::DoFightActionAnalysisNone(float dltTime, NPCharacter * enemy)
 		return;
 	}
 	if(!wishDefence) return;
-	//Решаем нужно ли защищатся
+	//Р РµС€Р°РµРј РЅСѓР¶РЅРѕ Р»Рё Р·Р°С‰РёС‰Р°С‚СЃСЏ
 	bool isBreakAttack = false;
 	long attacked = 0;
 	static const float attackAng = cosf(0.5f*CHARACTER_ATTACK_ANG*(3.1415926535f/180.0f));
@@ -905,7 +905,7 @@ void NPCharacter::DoFightActionAnalysisNone(float dltTime, NPCharacter * enemy)
 			}
 		}
 	}
-	//Проверим полную возможность отскока
+	//РџСЂРѕРІРµСЂРёРј РїРѕР»РЅСѓСЋ РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РѕС‚СЃРєРѕРєР°
 	CVECTOR p = curPos;
 	if(location->GetPtcData().Move(currentNode, curPos + dir*2.0f, p) >= 0)
 	{
@@ -915,20 +915,20 @@ void NPCharacter::DoFightActionAnalysisNone(float dltTime, NPCharacter * enemy)
 			isFreeBack = false;
 		}
 	}
-	//Если бьющих нет, то отскочим или оценим нашу тупость сделать блок
+	//Р•СЃР»Рё Р±СЊСЋС‰РёС… РЅРµС‚, С‚Рѕ РѕС‚СЃРєРѕС‡РёРј РёР»Рё РѕС†РµРЅРёРј РЅР°С€Сѓ С‚СѓРїРѕСЃС‚СЊ СЃРґРµР»Р°С‚СЊ Р±Р»РѕРє
 	if(!attacked)
 	{
 		return;
 	}
-	//Оценим вероятность того, что пропустим удар
+	//РћС†РµРЅРёРј РІРµСЂРѕСЏС‚РЅРѕСЃС‚СЊ С‚РѕРіРѕ, С‡С‚Рѕ РїСЂРѕРїСѓСЃС‚РёРј СѓРґР°СЂ
 	if(!wantToDefence)
 	{
 		return;
 	}
-	//Если удар пробивающий
+	//Р•СЃР»Рё СѓРґР°СЂ РїСЂРѕР±РёРІР°СЋС‰РёР№
 	if(isBreakAttack)
 	{
-		//Вероятность распознания пробивающей атаки
+		//Р’РµСЂРѕСЏС‚РЅРѕСЃС‚СЊ СЂР°СЃРїРѕР·РЅР°РЅРёСЏ РїСЂРѕР±РёРІР°СЋС‰РµР№ Р°С‚Р°РєРё
 		float prbDetect = fightLevel*fightLevel*0.9f;
 		if(PrTest(prbDetect))
 		{
@@ -936,7 +936,7 @@ void NPCharacter::DoFightActionAnalysisNone(float dltTime, NPCharacter * enemy)
 			{
 				DoFightBlock(true);
 			}else{
-				//Есть выбор - парирование или отскок
+				//Р•СЃС‚СЊ РІС‹Р±РѕСЂ - РїР°СЂРёСЂРѕРІР°РЅРёРµ РёР»Рё РѕС‚СЃРєРѕРє
 				if(PrTest(0.4f + enemyCounter*(0.1f + fightLevel*0.1f)))
 				{
 					Recoil();
@@ -947,7 +947,7 @@ void NPCharacter::DoFightActionAnalysisNone(float dltTime, NPCharacter * enemy)
 			return;
 		}
 	}
-	//Решаем как защититься
+	//Р РµС€Р°РµРј РєР°Рє Р·Р°С‰РёС‚РёС‚СЊСЃСЏ
 	if(isFreeBack)
 	{
 		float reciolPrb = attacked*attacked*0.1f*(fightLevel + 0.3f);
@@ -961,13 +961,13 @@ void NPCharacter::DoFightActionAnalysisNone(float dltTime, NPCharacter * enemy)
 	DoFightBlock();
 }
 
-//Поведение в бою - attack
+//РџРѕРІРµРґРµРЅРёРµ РІ Р±РѕСЋ - attack
 void NPCharacter::DoFightAttack(Character * enemy, long enemyCounter, bool wishDefence)
 {
 	wantToAttack = false;
-	//enemy - кого бить
-	//enemyCounter - количество активных врагов
-	//wishDefence - в момент атаки было желание защищаться
+	//enemy - РєРѕРіРѕ Р±РёС‚СЊ
+	//enemyCounter - РєРѕР»РёС‡РµСЃС‚РІРѕ Р°РєС‚РёРІРЅС‹С… РІСЂР°РіРѕРІ
+	//wishDefence - РІ РјРѕРјРµРЅС‚ Р°С‚Р°РєРё Р±С‹Р»Рѕ Р¶РµР»Р°РЅРёРµ Р·Р°С‰РёС‰Р°С‚СЊСЃСЏ
 	struct AttackAction
 	{
 		float prb;
@@ -1026,7 +1026,7 @@ void NPCharacter::DoFightAttack(Character * enemy, long enemyCounter, bool wishD
 	Attack(enemy, attack[i].action);
 }
 
-//Поведение в бою - block, parry
+//РџРѕРІРµРґРµРЅРёРµ РІ Р±РѕСЋ - block, parry
 void NPCharacter::DoFightBlock(bool needParry)
 {
 	wantToDefence = false;
@@ -1061,7 +1061,7 @@ void NPCharacter::DoFightBlock(bool needParry)
 	}
 }
 
-//Получить энергию
+//РџРѕР»СѓС‡РёС‚СЊ СЌРЅРµСЂРіРёСЋ
 float NPCharacter::GetEnergy()
 {
 	float energy = 1.0f;
@@ -1072,7 +1072,7 @@ float NPCharacter::GetEnergy()
 	return energy;
 }
 
-//Получить энергию для действия
+//РџРѕР»СѓС‡РёС‚СЊ СЌРЅРµСЂРіРёСЋ РґР»СЏ РґРµР№СЃС‚РІРёСЏ
 float NPCharacter::GetActEnergy(const char * act)
 {
 	VDATA * vd = api->Event("NPC_Event_GetActionEnergy", "is", GetID(), act);
@@ -1093,13 +1093,13 @@ void NPCharacter::HitChild(bool isInBlock)
 
 
 
-//Невозможно дальнейшее выполнение команды
+//РќРµРІРѕР·РјРѕР¶РЅРѕ РґР°Р»СЊРЅРµР№С€РµРµ РІС‹РїРѕР»РЅРµРЅРёРµ РєРѕРјР°РЅРґС‹
 void NPCharacter::FailureCommand()
 {
 	FailureCommand(task.task);
 }
 
-//Персонаж прибыл в точку
+//РџРµСЂСЃРѕРЅР°Р¶ РїСЂРёР±С‹Р» РІ С‚РѕС‡РєСѓ
 void NPCharacter::EndGotoCommand()
 {
 	switch(task.task)
@@ -1127,7 +1127,7 @@ void NPCharacter::EndGotoCommand()
 	}
 }
 
-//Персонаж удалился от точки на необходимый радиус
+//РџРµСЂСЃРѕРЅР°Р¶ СѓРґР°Р»РёР»СЃСЏ РѕС‚ С‚РѕС‡РєРё РЅР° РЅРµРѕР±С…РѕРґРёРјС‹Р№ СЂР°РґРёСѓСЃ
 void NPCharacter::EndEscapeCommand()
 {
 	task.task = npct_stay;
@@ -1136,13 +1136,13 @@ void NPCharacter::EndEscapeCommand()
 	_CORE_API->Event("Location_CharacterEndTask", "si", GetTaskName(npct_escape), GetID());
 }
 
-//С персонажем слишком часто коллизяться
+//РЎ РїРµСЂСЃРѕРЅР°Р¶РµРј СЃР»РёС€РєРѕРј С‡Р°СЃС‚Рѕ РєРѕР»Р»РёР·СЏС‚СЊСЃСЏ
 void NPCharacter::CollisionThreshold()
 {
 	_CORE_API->Event("Location_CharacterColThreshold", "si", GetTaskName(task.task), GetID());
 }
 
-//Сохранить задачу в стеке
+//РЎРѕС…СЂР°РЅРёС‚СЊ Р·Р°РґР°С‡Сѓ РІ СЃС‚РµРєРµ
 bool NPCharacter::PushTask()
 {
 	if(stackPointer >= sizeof(taskstack)/sizeof(Task)) return false;
@@ -1152,7 +1152,7 @@ bool NPCharacter::PushTask()
 	return true;
 }
 
-//Востоновить задачу из стека
+//Р’РѕСЃС‚РѕРЅРѕРІРёС‚СЊ Р·Р°РґР°С‡Сѓ РёР· СЃС‚РµРєР°
 bool NPCharacter::PopTask()
 {
 	if(stackPointer <= 0) return false;
@@ -1188,16 +1188,16 @@ bool NPCharacter::PopTask()
 
 
 //============================================================================================
-//Инкапсуляция
+//РРЅРєР°РїСЃСѓР»СЏС†РёСЏ
 //============================================================================================
 
-//Невозможно дальнейшее выполнение команды
+//РќРµРІРѕР·РјРѕР¶РЅРѕ РґР°Р»СЊРЅРµР№С€РµРµ РІС‹РїРѕР»РЅРµРЅРёРµ РєРѕРјР°РЅРґС‹
 void NPCharacter::FailureCommand(NPCTask task)
 {
 	_CORE_API->Event("Location_CharacterTaskFailure", "si", GetTaskName(task), GetID());
 }
 
-//Получить тип задачи по имени
+//РџРѕР»СѓС‡РёС‚СЊ С‚РёРї Р·Р°РґР°С‡Рё РїРѕ РёРјРµРЅРё
 NPCharacter::NPCTask NPCharacter::GetTaskID(const char * taskName)
 {
 	if(!taskName || !taskName[0]) return npct_unknow;
@@ -1209,32 +1209,32 @@ NPCharacter::NPCTask NPCharacter::GetTaskID(const char * taskName)
 	return npct_unknow;
 }
 
-//Получить имя задачи по типу
+//РџРѕР»СѓС‡РёС‚СЊ РёРјСЏ Р·Р°РґР°С‡Рё РїРѕ С‚РёРїСѓ
 const char * NPCharacter::GetTaskName(NPCTask t)
 {
 	switch(t)
 	{
-	case npct_none:				//Нет задачи, персонаж контролируется извне
+	case npct_none:				//РќРµС‚ Р·Р°РґР°С‡Рё, РїРµСЂСЃРѕРЅР°Р¶ РєРѕРЅС‚СЂРѕР»РёСЂСѓРµС‚СЃСЏ РёР·РІРЅРµ
 		return "None";
-	case npct_stay:				//Стоять на месте
+	case npct_stay:				//РЎС‚РѕСЏС‚СЊ РЅР° РјРµСЃС‚Рµ
 		return "Stay";
-	case npct_gotopoint:		//Идти в точку
+	case npct_gotopoint:		//РРґС‚Рё РІ С‚РѕС‡РєСѓ
 		return "Goto point";
-	case npct_runtopoint:		//Бежать в точку
+	case npct_runtopoint:		//Р‘РµР¶Р°С‚СЊ РІ С‚РѕС‡РєСѓ
 		return "Runto point";
-	case npct_followcharacter:	//Идти за перcонажем
+	case npct_followcharacter:	//РРґС‚Рё Р·Р° РїРµСЂcРѕРЅР°Р¶РµРј
 		return "Follow character";
-	case npct_fight:			//Сражаться с другим персонажем
+	case npct_fight:			//РЎСЂР°Р¶Р°С‚СЊСЃСЏ СЃ РґСЂСѓРіРёРј РїРµСЂСЃРѕРЅР°Р¶РµРј
 		return "Fight";
-	case npct_escape:			//Уходить от персонажа
+	case npct_escape:			//РЈС…РѕРґРёС‚СЊ РѕС‚ РїРµСЂСЃРѕРЅР°Р¶Р°
 		return "Escape";
-	case npct_dead:				//Смерть персонажа
+	case npct_dead:				//РЎРјРµСЂС‚СЊ РїРµСЂСЃРѕРЅР°Р¶Р°
 		return "Dead";
 	};
 	return "Unknow task";
 }
 
-//Принятие решений
+//РџСЂРёРЅСЏС‚РёРµ СЂРµС€РµРЅРёР№
 void NPCharacter::FightTick()
 {
 	wantToFire = PrTest(fireCur);

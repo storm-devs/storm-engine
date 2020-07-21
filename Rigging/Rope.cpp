@@ -34,7 +34,7 @@ ROPE::ROPE()
 
 ROPE::~ROPE()
 {
-	// очистка и удаление списка веревок
+	// РѕС‡РёСЃС‚РєР° Рё СѓРґР°Р»РµРЅРёРµ СЃРїРёСЃРєР° РІРµСЂРµРІРѕРє
 	if(rlist)
 	{
 		for(int i=0; i<ropeQuantity; i++)
@@ -42,7 +42,7 @@ ROPE::~ROPE()
 		PTR_DELETE(rlist);
 		ropeQuantity = 0;
 	}
-	// очистка и удаление списка групп
+	// РѕС‡РёСЃС‚РєР° Рё СѓРґР°Р»РµРЅРёРµ СЃРїРёСЃРєР° РіСЂСѓРїРї
 	if(gdata)
 	{
 		for(int i=0; i<groupQuantity; i++)
@@ -50,7 +50,7 @@ ROPE::~ROPE()
 		PTR_DELETE(gdata);
 		groupQuantity = 0;
 	}
-	// удаление текстур
+	// СѓРґР°Р»РµРЅРёРµ С‚РµРєСЃС‚СѓСЂ
 	TEXTURE_RELEASE(RenderService,texl);
 	PTR_DELETE(TextureName);
 
@@ -69,7 +69,7 @@ bool ROPE::Init()
  
 void ROPE::SetDevice()
 {
-    // получить сервис рендера
+    // РїРѕР»СѓС‡РёС‚СЊ СЃРµСЂРІРёСЃ СЂРµРЅРґРµСЂР°
 	RenderService = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
 	if(!RenderService)
 	{
@@ -154,7 +154,7 @@ void ROPE::Realize(dword Delta_Time)
             if (bDraw)
 				for(int i=0; i<groupQuantity; i++)
 					if(!gdata[i].bDeleted && gdata[i].nt!=0 && nVert!=0)
-						if((~(gdata[i].pMatWorld->Pos()-cp))*pr<fMaxRopeDist) // если расстояние до корабля не больше максимального
+						if((~(gdata[i].pMatWorld->Pos()-cp))*pr<fMaxRopeDist) // РµСЃР»Рё СЂР°СЃСЃС‚РѕСЏРЅРёРµ РґРѕ РєРѕСЂР°Р±Р»СЏ РЅРµ Р±РѕР»СЊС€Рµ РјР°РєСЃРёРјР°Р»СЊРЅРѕРіРѕ
 						{
 							((SHIP_BASE*)gdata[i].shipEI.pointer)->SetLightAndFog(true);
 							RenderService->SetTransform(D3DTS_WORLD,(D3DXMATRIX*)gdata[i].pMatWorld);
@@ -245,7 +245,7 @@ dword _cdecl ROPE::ProcessMessage(MESSAGE & message)
 				}
 			}
 
-			// небыло никаких новых веревок
+			// РЅРµР±С‹Р»Рѕ РЅРёРєР°РєРёС… РЅРѕРІС‹С… РІРµСЂРµРІРѕРє
 			if(wFirstRope == ropeQuantity)
 			{
 				groupQuantity--;
@@ -290,7 +290,7 @@ dword _cdecl ROPE::ProcessMessage(MESSAGE & message)
 		}
         break;
 
-    // удаление веревки из отображения и расчета
+    // СѓРґР°Р»РµРЅРёРµ РІРµСЂРµРІРєРё РёР· РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ Рё СЂР°СЃС‡РµС‚Р°
     case MSG_ROPE_DELETE:
         {
             tmp_id = message.EntityID();
@@ -305,7 +305,7 @@ dword _cdecl ROPE::ProcessMessage(MESSAGE & message)
                     //rlist[i]->bUse=false;
                     /*ENTITY_ID sailEI;
                     if(_CORE_API->FindClass(&sailEI,"sail",0))
-                        if(rlist[i]->btie || rlist[i]->etie) // отвяжем парус от веревки
+                        if(rlist[i]->btie || rlist[i]->etie) // РѕС‚РІСЏР¶РµРј РїР°СЂСѓСЃ РѕС‚ РІРµСЂРµРІРєРё
                             _CORE_API->Send_Message(sailEI,"ll",MSG_SAIL_ROPE_UNTIE,rope_number);*/
                     break;
                 }
@@ -406,7 +406,7 @@ void ROPE::SetVertexes()
 
 void ROPE::SetVertexes(ROPEDATA *pr,float dtime)
 {
-    // установить параметры формы веревки
+    // СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РїР°СЂР°РјРµС‚СЂС‹ С„РѕСЂРјС‹ РІРµСЂРµРІРєРё
     float deepVal;
     pr->segnum=0;
     deepVal=pr->ropeWave*(MIN_DEEP_MUL+VAR_DEEP_MUL*sinf(pr->angDeep));
@@ -424,7 +424,7 @@ void ROPE::SetVertexes(ROPEDATA *pr,float dtime)
     // Get end point into Ship coordinate
     gdata[pr->HostGroup].pMatWorld->MulToInv(*pr->eMatWorld*pr->pEnd,cve);
 
-    // Установить первую и последнюю точки веревки
+    // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РїРµСЂРІСѓСЋ Рё РїРѕСЃР»РµРґРЅСЋСЋ С‚РѕС‡РєРё РІРµСЂРµРІРєРё
     vertBuf[vertnum].pos=cvb;
     vertBuf[vertnum+pr->nv-1].pos=cve;
 
@@ -439,7 +439,7 @@ void ROPE::SetVertexes(ROPEDATA *pr,float dtime)
         CVECTOR cv = cvb;
 		if( pr->bMakeWave ) cv += deepV*(float)(segn*(pr->segquant-segn));
 
-        // установить новые координаты в текущем сечении
+        // СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РЅРѕРІС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹ РІ С‚РµРєСѓС‰РµРј СЃРµС‡РµРЅРёРё
         for( int i=0; i<ROPE_EDGE; i++ )
             vertBuf[vertnum+i].pos = cv + pr->pos[i];
 
@@ -459,7 +459,7 @@ void ROPE::DoMove(ROPEDATA *pr)
         // Get end point into Ship coordinate
         gdata[pr->HostGroup].pMatWorld->MulToInv(*pr->eMatWorld*pr->pEnd,cve);
 
-        // Установить первую и последнюю точки веревки
+        // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РїРµСЂРІСѓСЋ Рё РїРѕСЃР»РµРґРЅСЋСЋ С‚РѕС‡РєРё РІРµСЂРµРІРєРё
         vertBuf[vertnum].pos=cvb;
         vertBuf[vertnum+pr->nv-1].pos=cve;
 
@@ -474,7 +474,7 @@ void ROPE::DoMove(ROPEDATA *pr)
             CVECTOR dc = (cve - cvb - pr->cv)/(float)pr->segquant;
             for(int j=0; j<=pr->segquant; j++)
             {
-                // установить новые координаты в текущем сечении
+                // СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РЅРѕРІС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹ РІ С‚РµРєСѓС‰РµРј СЃРµС‡РµРЅРёРё
                 for( int i=0; i<ROPE_EDGE; i++ )
                     vertBuf[vertnum++].pos=cvb+pr->pos[i];
                 cvb+=dc;
@@ -485,13 +485,13 @@ void ROPE::DoMove(ROPEDATA *pr)
         }
         else
         {
-            // базовый номер вертексов текущего сечения
+            // Р±Р°Р·РѕРІС‹Р№ РЅРѕРјРµСЂ РІРµСЂС‚РµРєСЃРѕРІ С‚РµРєСѓС‰РµРіРѕ СЃРµС‡РµРЅРёСЏ
             vertnum+=pr->segnum*ROPE_EDGE+1;
 
             cvb += (cve - cvb - pr->cv)*((float)pr->segnum/(float)pr->segquant);
             cvb += pr->vDeep*((float)(pr->segnum*(pr->segquant - pr->segnum))*4.f/(float)(pr->segquant*pr->segquant));
 
-            // установить новые координаты в текущем сечении
+            // СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РЅРѕРІС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹ РІ С‚РµРєСѓС‰РµРј СЃРµС‡РµРЅРёРё
             for( int i=0; i<ROPE_EDGE; i++ )
                 vertBuf[vertnum+i].pos=cvb+pr->pos[i];
 
@@ -546,9 +546,9 @@ void ROPE::AddLabel(GEOS::LABEL &lbl,NODE *nod, bool bDontSage)
 
     for(rn=0; rn<ropeQuantity; rn++)
         if(rlist[rn]->ropeNum==ropeNum && rlist[rn]->HostGroup==groupQuantity-1) break;
-    if(rn==ropeQuantity) // добавляем новую веревку
+    if(rn==ropeQuantity) // РґРѕР±Р°РІР»СЏРµРј РЅРѕРІСѓСЋ РІРµСЂРµРІРєСѓ
     {
-        // изменим список веревок
+        // РёР·РјРµРЅРёРј СЃРїРёСЃРѕРє РІРµСЂРµРІРѕРє
         if(rlist==0)
         {
             rlist=NEW ROPEDATA*[1];
@@ -583,7 +583,7 @@ void ROPE::AddLabel(GEOS::LABEL &lbl,NODE *nod, bool bDontSage)
         rd->pBeg.z=lbl.m[3][2];
         rd->bMatWorld=&nod->glob_mtx; // get host matrix
         rd->bgnum=grNum;
-        // привязка к парусу
+        // РїСЂРёРІСЏР·РєР° Рє РїР°СЂСѓСЃСѓ
         if( grNum>=0 ) // begin tip of rope - tie with sail
         {
             rd->pBeg.x += nod->glob_mtx.matrix[3];
@@ -598,7 +598,7 @@ void ROPE::AddLabel(GEOS::LABEL &lbl,NODE *nod, bool bDontSage)
         rd->pEnd.z=lbl.m[3][2];
         rd->eMatWorld=&nod->glob_mtx; // get host matrix
         rd->egnum=grNum;
-        // привязка к парусу
+        // РїСЂРёРІСЏР·РєР° Рє РїР°СЂСѓСЃСѓ
         if( grNum>=0 ) // begin tip of rope - tie with sail
         {
             rd->pEnd.x += nod->glob_mtx.matrix[3];
@@ -724,24 +724,24 @@ void ROPE::AddLabel(GEOS::LABEL &lbl,NODE *nod, bool bDontSage)
 	}
 }
 
-// получить конечную точку веревки в координатах начальной точки
+// РїРѕР»СѓС‡РёС‚СЊ РєРѕРЅРµС‡РЅСѓСЋ С‚РѕС‡РєСѓ РІРµСЂРµРІРєРё РІ РєРѕРѕСЂРґРёРЅР°С‚Р°С… РЅР°С‡Р°Р»СЊРЅРѕР№ С‚РѕС‡РєРё
 void ROPE::GetEndPoint(CVECTOR* cv,int ropenum,ENTITY_ID &mdl_id)
 {
     int rn;
 
-    if(cv==0) // плохой указатель на вектор
+    if(cv==0) // РїР»РѕС…РѕР№ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РІРµРєС‚РѕСЂ
         return;
 
-    // выяснить какой конец веревки нам надо получить
+    // РІС‹СЏСЃРЅРёС‚СЊ РєР°РєРѕР№ РєРѕРЅРµС† РІРµСЂРµРІРєРё РЅР°Рј РЅР°РґРѕ РїРѕР»СѓС‡РёС‚СЊ
     bool bGetEnd=false;
     if(ropenum<0) ropenum=-ropenum;
     else bGetEnd=true;
 
-    // найти веревку с данным номером
+    // РЅР°Р№С‚Рё РІРµСЂРµРІРєСѓ СЃ РґР°РЅРЅС‹Рј РЅРѕРјРµСЂРѕРј
     for(rn=0; rn<ropeQuantity; rn++)
         if(rlist[rn]->ropeNum == ropenum && gdata[rlist[rn]->HostGroup].modelEI==mdl_id) break;
 
-    if(rn==ropeQuantity) // нет такой веревки
+    if(rn==ropeQuantity) // РЅРµС‚ С‚Р°РєРѕР№ РІРµСЂРµРІРєРё
         return;
 
     if(bGetEnd)
@@ -762,7 +762,7 @@ void ROPE::LoadIni()
 
 	sprintf(section,"ROPES");
 
-    // имя текстуры
+    // РёРјСЏ С‚РµРєСЃС‚СѓСЂС‹
     ini->ReadString(section,"TextureName",param,sizeof(param)-1,"sail_rope.tga");
     if(texl!=-1)
     {
@@ -780,31 +780,31 @@ void ROPE::LoadIni()
         TextureName=NEW char[strlen(param)+1];
         strcpy(TextureName,param);
     }
-    // длина одного сегмента веревки
+    // РґР»РёРЅР° РѕРґРЅРѕРіРѕ СЃРµРіРјРµРЅС‚Р° РІРµСЂРµРІРєРё
     ROPE_SEG_LENGTH=ini->GetFloat(section,"fSEG_LENGTH",2.f);
-    // толщина веревки
+    // С‚РѕР»С‰РёРЅР° РІРµСЂРµРІРєРё
     ROPE_WIDTH=ini->GetFloat(section,"fWIDTH",0.025f);
-	// толщина веревки (штага)
+	// С‚РѕР»С‰РёРЅР° РІРµСЂРµРІРєРё (С€С‚Р°РіР°)
 	STAY_WIDTH=ini->GetFloat(section,"fSTAY_WIDTH",0.12f);
-    // длина веревки (треугольника) в точке соединения с парусом относительно общей длинны
+    // РґР»РёРЅР° РІРµСЂРµРІРєРё (С‚СЂРµСѓРіРѕР»СЊРЅРёРєР°) РІ С‚РѕС‡РєРµ СЃРѕРµРґРёРЅРµРЅРёСЏ СЃ РїР°СЂСѓСЃРѕРј РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РѕР±С‰РµР№ РґР»РёРЅРЅС‹
     ROPE_END_LENGTH=ini->GetFloat(section,"fEND_LENGTH",0.05f);
-    // амплитуда колебания веревки в абсолютных значениях
+    // Р°РјРїР»РёС‚СѓРґР° РєРѕР»РµР±Р°РЅРёСЏ РІРµСЂРµРІРєРё РІ Р°Р±СЃРѕР»СЋС‚РЅС‹С… Р·РЅР°С‡РµРЅРёСЏС…
     ROPE_WAVE=ini->GetFloat(section,"fWAVE",0.1f);
-    // максимальное изменение координаты при котором происходит перерасчет всей веревки
+    // РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ РёР·РјРµРЅРµРЅРёРµ РєРѕРѕСЂРґРёРЅР°С‚С‹ РїСЂРё РєРѕС‚РѕСЂРѕРј РїСЂРѕРёСЃС…РѕРґРёС‚ РїРµСЂРµСЂР°СЃС‡РµС‚ РІСЃРµР№ РІРµСЂРµРІРєРё
     MaxCh=ini->GetFloat(section,"fMaxCh",.1f);
-    // длина веревки на которую ложится текстура
+    // РґР»РёРЅР° РІРµСЂРµРІРєРё РЅР° РєРѕС‚РѕСЂСѓСЋ Р»РѕР¶РёС‚СЃСЏ С‚РµРєСЃС‚СѓСЂР°
     ROPE_TEX_LEN=ini->GetFloat(section,"fTexHeight",.5f);
-	// максимальное растояние с кототрого видны веревки
+	// РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ СЂР°СЃС‚РѕСЏРЅРёРµ СЃ РєРѕС‚РѕС‚СЂРѕРіРѕ РІРёРґРЅС‹ РІРµСЂРµРІРєРё
 	fMaxRopeDist=ini->GetFloat(section,"fMaxDist",5000.f);
-    // скорость изменения глубины прогиба веревки
+    // СЃРєРѕСЂРѕСЃС‚СЊ РёР·РјРµРЅРµРЅРёСЏ РіР»СѓР±РёРЅС‹ РїСЂРѕРіРёР±Р° РІРµСЂРµРІРєРё
     DEEP_CHANGE_SPEED= ini->GetFloat(section,"fDeepChangeSpeed",0.15f);
-    // скорость качания веревки
+    // СЃРєРѕСЂРѕСЃС‚СЊ РєР°С‡Р°РЅРёСЏ РІРµСЂРµРІРєРё
     ROTATE_SPEED= ini->GetFloat(section,"fRotateSpeed",0.08f);
-    // минимальное значение коэффициента использования прогиба веревки
+    // РјРёРЅРёРјР°Р»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ РєРѕСЌС„С„РёС†РёРµРЅС‚Р° РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ РїСЂРѕРіРёР±Р° РІРµСЂРµРІРєРё
     MIN_DEEP_MUL= ini->GetFloat(section,"fMinDeepMul",1.f);
-    // предел изменения коэффициента использования прогиба веревки
+    // РїСЂРµРґРµР» РёР·РјРµРЅРµРЅРёСЏ РєРѕСЌС„С„РёС†РёРµРЅС‚Р° РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ РїСЂРѕРіРёР±Р° РІРµСЂРµРІРєРё
     VAR_DEEP_MUL= ini->GetFloat(section,"fVarDeepMul",.7f);
-    // амплитуда угла качания веревки
+    // Р°РјРїР»РёС‚СѓРґР° СѓРіР»Р° РєР°С‡Р°РЅРёСЏ РІРµСЂРµРІРєРё
     VAR_ROTATE_ANGL= ini->GetFloat(section,"fRotateAng",.1f);
 
     delete ini;
@@ -918,7 +918,7 @@ void ROPE::SetAdd(int firstNum)
 	int rn = 0;
     for(rn=firstNum; rn<ropeQuantity; rn++)
     {
-        // удалить плохие веревки
+        // СѓРґР°Р»РёС‚СЊ РїР»РѕС…РёРµ РІРµСЂРµРІРєРё
         while( rlist[rn]->bMatWorld==0 || rlist[rn]->eMatWorld==0 )
         {
 			long gn = rlist[rn]->HostGroup;
@@ -974,19 +974,19 @@ void ROPE::DoDelete()
     DWORD oldnVert=nVert;
 	int gn = 0, rn = 0;
 
-    // пройтись по удаленным группам и пометить на удаление все принадлежащие им веревки
+    // РїСЂРѕР№С‚РёСЃСЊ РїРѕ СѓРґР°Р»РµРЅРЅС‹Рј РіСЂСѓРїРїР°Рј Рё РїРѕРјРµС‚РёС‚СЊ РЅР° СѓРґР°Р»РµРЅРёРµ РІСЃРµ РїСЂРёРЅР°РґР»РµР¶Р°С‰РёРµ РёРј РІРµСЂРµРІРєРё
     for(gn=0; gn<groupQuantity; gn++)
         if(gdata[gn].bDeleted)
             for(int idx=0; idx<gdata[gn].ropeQuantity; idx++)
                 rlist[gdata[gn].ropeIdx[idx]]->bDeleted=true;
 
-    // удалить удаленные веревки в списке веревок
+    // СѓРґР°Р»РёС‚СЊ СѓРґР°Р»РµРЅРЅС‹Рµ РІРµСЂРµРІРєРё РІ СЃРїРёСЃРєРµ РІРµСЂРµРІРѕРє
     int nrn=0;
     for(rn=0; rn<ropeQuantity; rn++)
     {
         if(rlist[rn]->bDeleted)
         {
-            // удалить веревку
+            // СѓРґР°Р»РёС‚СЊ РІРµСЂРµРІРєСѓ
             delete rlist[rn];
             continue;
         }
@@ -997,12 +997,12 @@ void ROPE::DoDelete()
     }
     ropeQuantity=nrn;
 
-    // переделаем список групп
+    // РїРµСЂРµРґРµР»Р°РµРј СЃРїРёСЃРѕРє РіСЂСѓРїРї
     int ngn=0;
     nIndx=0; nVert=0;
     for(gn=0; gn<groupQuantity; gn++)
     {
-        // если группа удалена, то пропускаем ее
+        // РµСЃР»Рё РіСЂСѓРїРїР° СѓРґР°Р»РµРЅР°, С‚Рѕ РїСЂРѕРїСѓСЃРєР°РµРј РµРµ
         if(gdata[gn].bDeleted)
         {
             if(gdata[gn].ropeIdx)
@@ -1010,13 +1010,13 @@ void ROPE::DoDelete()
             continue;
         }
 
-        // подправим индексы на вертекс и индекс буферы
+        // РїРѕРґРїСЂР°РІРёРј РёРЅРґРµРєСЃС‹ РЅР° РІРµСЂС‚РµРєСЃ Рё РёРЅРґРµРєСЃ Р±СѓС„РµСЂС‹
         gdata[gn].st=nIndx;
         gdata[gn].sv=nVert;
         gdata[gn].nt=0;
         gdata[gn].nv=0;
 
-        // для всех веревок принадлежащих этой группе исправим номер хозяина
+        // РґР»СЏ РІСЃРµС… РІРµСЂРµРІРѕРє РїСЂРёРЅР°РґР»РµР¶Р°С‰РёС… СЌС‚РѕР№ РіСЂСѓРїРїРµ РёСЃРїСЂР°РІРёРј РЅРѕРјРµСЂ С…РѕР·СЏРёРЅР°
         int rq=0;
         for(rn=0; rn<ropeQuantity; rn++)
             if(rlist[rn]->HostGroup==gn)
@@ -1031,7 +1031,7 @@ void ROPE::DoDelete()
                 nIndx += rlist[rn]->nt*3;
             }
 
-        // если группа стала пустой, то удаляем ее физически
+        // РµСЃР»Рё РіСЂСѓРїРїР° СЃС‚Р°Р»Р° РїСѓСЃС‚РѕР№, С‚Рѕ СѓРґР°Р»СЏРµРј РµРµ С„РёР·РёС‡РµСЃРєРё
         if(rq==0)
         {
             if(gdata[gn].ropeIdx)
@@ -1039,7 +1039,7 @@ void ROPE::DoDelete()
             continue;
         }
 
-        // если изменился список веревок в хозяине, то изменим его
+        // РµСЃР»Рё РёР·РјРµРЅРёР»СЃСЏ СЃРїРёСЃРѕРє РІРµСЂРµРІРѕРє РІ С…РѕР·СЏРёРЅРµ, С‚Рѕ РёР·РјРµРЅРёРј РµРіРѕ
         if(rq<gdata[gn].ropeQuantity)
         {
             int *oldropeIdx = gdata[gn].ropeIdx;
@@ -1059,7 +1059,7 @@ void ROPE::DoDelete()
     }
     groupQuantity=ngn;
 
-    // изменим размер вертекс и индекс буферов
+    // РёР·РјРµРЅРёРј СЂР°Р·РјРµСЂ РІРµСЂС‚РµРєСЃ Рё РёРЅРґРµРєСЃ Р±СѓС„РµСЂРѕРІ
     nIndx/=3;
     if(oldnVert!=nVert)
     {
@@ -1087,12 +1087,12 @@ bool ROPE::IsAbsentRope(ENTITY_ID &mdl_id, int ropenum)
 {
     bool retVal=true;
 
-    // найдем нужную группу
+    // РЅР°Р№РґРµРј РЅСѓР¶РЅСѓСЋ РіСЂСѓРїРїСѓ
 	int gn = 0;
     for(gn=0; gn<groupQuantity; gn++)
         if(gdata[gn].modelEI==mdl_id) break;
 
-    // пройдемся по всем веревкам и найдем нужную нам веревку
+    // РїСЂРѕР№РґРµРјСЃСЏ РїРѕ РІСЃРµРј РІРµСЂРµРІРєР°Рј Рё РЅР°Р№РґРµРј РЅСѓР¶РЅСѓСЋ РЅР°Рј РІРµСЂРµРІРєСѓ
     int rn=ropeQuantity;
     if(gn<groupQuantity)
         for(rn=0; rn<ropeQuantity; rn++)

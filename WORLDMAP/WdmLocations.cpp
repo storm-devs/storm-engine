@@ -14,7 +14,7 @@
 
 //============================================================================================
 
-//Прозрачность в зависимости от высоты
+//РџСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ РІС‹СЃРѕС‚С‹
 float WdmLocations::heightAlpha = 1.0f;
 
 //============================================================================================
@@ -143,7 +143,7 @@ float WdmLocations::Label::Alpha()
 bool WdmLocations::Label::Update(float dltTime, WdmLocations * loc)
 {	
 	bool isChanged = false;
-	//Изменяем параметры основной плашки
+	//РР·РјРµРЅСЏРµРј РїР°СЂР°РјРµС‚СЂС‹ РѕСЃРЅРѕРІРЅРѕР№ РїР»Р°С€РєРё
 	if(isVisible)
 	{
 		alpha += dltTime*1.0f;
@@ -156,33 +156,33 @@ bool WdmLocations::Label::Update(float dltTime, WdmLocations * loc)
 		t[0].alpha -= dltTime*1.0f;
 		if(t[0].alpha > 0.0f) isChanged = true; else t[0].alpha = 0.0f;
 	}
-	//Изменяем параметры дополнительной плашки
+	//РР·РјРµРЅСЏРµРј РїР°СЂР°РјРµС‚СЂС‹ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕР№ РїР»Р°С€РєРё
 	t[1].alpha -= dltTime*1.0f;
 	if(t[1].alpha > 0.0f) isChanged = true; else t[1].alpha = 0.0f;
-	//Пересчитаем позиции иконки и текста
+	//РџРµСЂРµСЃС‡РёС‚Р°РµРј РїРѕР·РёС†РёРё РёРєРѕРЅРєРё Рё С‚РµРєСЃС‚Р°
 	VDX8RENDER * rs = wdmObjects.wm->GetRS();
-	//Размеры иконки
+	//Р Р°Р·РјРµСЂС‹ РёРєРѕРЅРєРё
 	float iw = loc->iconWidth;
 	float ih = loc->iconHeight;
 	if(t[0].icon < 0 && t[1].icon < 0)
 	{
 		iw = 0.0f; ih = 0.0f;
 	}
-	//Размеры строки
+	//Р Р°Р·РјРµСЂС‹ СЃС‚СЂРѕРєРё
 	float strw = float(rs->StringWidth(text, font));
 	float strh = float(rs->CharHeight(font));
-	//Отступ между иконкой и текстом
+	//РћС‚СЃС‚СѓРї РјРµР¶РґСѓ РёРєРѕРЅРєРѕР№ Рё С‚РµРєСЃС‚РѕРј
 	const float tab = 3.0f;
-	//Общая длинна и высота
+	//РћР±С‰Р°СЏ РґР»РёРЅРЅР° Рё РІС‹СЃРѕС‚Р°
 	w = iw + tab + strw;
 	h = ih > strh ? ih : strh;
-	//Позиция иконки
+	//РџРѕР·РёС†РёСЏ РёРєРѕРЅРєРё
 	ix = 0.0f;
 	iy = (h - ih)*0.5f;
-	//Позиция строки
+	//РџРѕР·РёС†РёСЏ СЃС‚СЂРѕРєРё
 	sx = w - strw;
 	sy = (h - strh)*0.5f;
-	//Вернём результат, были ли изменения
+	//Р’РµСЂРЅС‘Рј СЂРµР·СѓР»СЊС‚Р°С‚, Р±С‹Р»Рё Р»Рё РёР·РјРµРЅРµРЅРёСЏ
 	return isChanged;
 }
 
@@ -237,7 +237,7 @@ void WdmLocations::IslandInfo::Update(float dltTime, WdmLocations * loc)
 }
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 WdmLocations::WdmLocations()
@@ -267,11 +267,11 @@ WdmLocations::~WdmLocations()
 	if(iconTexture >= 0) wdmObjects.rs->TextureRelease(iconTexture);
 }
 
-//Зачитать данные об островах и локациях
+//Р—Р°С‡РёС‚Р°С‚СЊ РґР°РЅРЅС‹Рµ РѕР± РѕСЃС‚СЂРѕРІР°С… Рё Р»РѕРєР°С†РёСЏС…
 void WdmLocations::SetIslandsData(ATTRIBUTES * apnt)
 {
 	VDX8RENDER * rs = wdmObjects.wm->GetRS();
-	//Общее
+	//РћР±С‰РµРµ
 	char * f = apnt->GetAttribute("fontIslands");
 	if(!f) f = "normal";
 	labelFontIslands = rs->LoadFont(f);
@@ -281,7 +281,7 @@ void WdmLocations::SetIslandsData(ATTRIBUTES * apnt)
 	labelPivotX = apnt->GetAttributeAsFloat("labelPivotX", 0.5f);
 	labelPivotY = apnt->GetAttributeAsFloat("labelPivotY", 0.5f);
 	heightViewLabel = apnt->GetAttributeAsFloat("heightViewLabel", heightViewLabel);
-	//Параметры иконок
+	//РџР°СЂР°РјРµС‚СЂС‹ РёРєРѕРЅРѕРє
 	ATTRIBUTES * ap = apnt->FindAClass(apnt, "icon");
 	if(ap)
 	{
@@ -294,24 +294,24 @@ void WdmLocations::SetIslandsData(ATTRIBUTES * apnt)
 		f = ap->GetAttribute("texture");
 		if(f) strcpy(iconTextureName, f);
 	}
-	//Грузим текстуру
+	//Р“СЂСѓР·РёРј С‚РµРєСЃС‚СѓСЂСѓ
 	char itPath[128];
 	strcpy(itPath, "\\WorldMap\\Interfaces\\");
 	strcat(itPath, f);
 	iconTexture = rs->TextureCreate(itPath);
-	//Найти раздел с островами
+	//РќР°Р№С‚Рё СЂР°Р·РґРµР» СЃ РѕСЃС‚СЂРѕРІР°РјРё
 	ap = apnt->FindAClass(apnt, "islands");
 	if(!ap) return;
-	//Удаляем старое
+	//РЈРґР°Р»СЏРµРј СЃС‚Р°СЂРѕРµ
 	Release();
-	//Зачитываем значения атрибутов
+	//Р—Р°С‡РёС‚С‹РІР°РµРј Р·РЅР°С‡РµРЅРёСЏ Р°С‚СЂРёР±СѓС‚РѕРІ
 	numIslands = ap->GetAttributesNum();
 	if(numIslands <= 0) return;
 	islandsInfo = NEW IslandInfo[numIslands];
 	for(long i = 0; i < numIslands; i++)
 	{
 		islandsInfo[i].isNeedUpdate = true;
-		//Остров
+		//РћСЃС‚СЂРѕРІ
 		ATTRIBUTES * aIsland = ap->GetAttributeClass(i);
 		islandsInfo[i].SetName(aIsland->GetThisName());
 		ATTRIBUTES * a = aIsland->FindAClass(aIsland, "position");
@@ -329,14 +329,14 @@ void WdmLocations::SetIslandsData(ATTRIBUTES * apnt)
 			if(islandsInfo[i].kRadius > 0.99f) islandsInfo[i].kRadius = 0.99f;
 		}
 		InitLabel(islandsInfo[i].label[0], aIsland->FindAClass(aIsland, "label"), true, true);
-		//Локации на острове
+		//Р›РѕРєР°С†РёРё РЅР° РѕСЃС‚СЂРѕРІРµ
 		a = aIsland->FindAClass(aIsland, "locations");
 		if(a)
 		{
 			for(long j = 0; j < long(a->GetAttributesNum()) && j < WDM_LOCATIONS_MAXLOC; j++)
 			{
 				ATTRIBUTES * loc = a->GetAttributeClass(j);
-				//Позиция города
+				//РџРѕР·РёС†РёСЏ РіРѕСЂРѕРґР°
 				ATTRIBUTES * pos = loc->FindAClass(loc, "position");
 				if(pos)
 				{
@@ -348,7 +348,7 @@ void WdmLocations::SetIslandsData(ATTRIBUTES * apnt)
 					bool isVisible = str ? (stricmp(str, "true") == 0) : false;
 					str = loc->GetAttribute("move");
 					bool isDebugMove = str ? (stricmp(str, "true") == 0) : false;
-					//Создаём локацию
+					//РЎРѕР·РґР°С‘Рј Р»РѕРєР°С†РёСЋ
 					if(islandsInfo[i].locations[j].SetModel(loc->GetAttribute("modelName"))
 						|| islandsInfo[i].locations[j].SetModel("def_location"))
 					{
@@ -356,7 +356,7 @@ void WdmLocations::SetIslandsData(ATTRIBUTES * apnt)
 						islandsInfo[i].locations[j].isVisible = isVisible;
 						islandsInfo[i].locations[j].isDebugMove = isDebugMove;
 						islandsInfo[i].locations[j].ay = ay;
-						//Инициализируем метку
+						//РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј РјРµС‚РєСѓ
 						InitLabel(islandsInfo[i].label[j + 1], loc->FindAClass(loc, "label"), false, true);
 					}
 				}
@@ -367,24 +367,24 @@ void WdmLocations::SetIslandsData(ATTRIBUTES * apnt)
 	Update(0);
 }
 
-//Изменение значения атрибутов видимости
+//РР·РјРµРЅРµРЅРёРµ Р·РЅР°С‡РµРЅРёСЏ Р°С‚СЂРёР±СѓС‚РѕРІ РІРёРґРёРјРѕСЃС‚Рё
 void WdmLocations::AttributeChanged(ATTRIBUTES * apnt)
 {
 	char * s;
-	//Общее
+	//РћР±С‰РµРµ
 	s = apnt->GetAttribute("debug");
 	wdmObjects.isDebug = s && (stricmp(s, "true") == 0);
-	//Найти раздел с островами
+	//РќР°Р№С‚Рё СЂР°Р·РґРµР» СЃ РѕСЃС‚СЂРѕРІР°РјРё
 	ATTRIBUTES * ap = apnt->FindAClass(apnt, "islands");
 	if(!ap) return;
-	//Зачитываем значения атрибутов
+	//Р—Р°С‡РёС‚С‹РІР°РµРј Р·РЅР°С‡РµРЅРёСЏ Р°С‚СЂРёР±СѓС‚РѕРІ
 	long n = ap->GetAttributesNum();
 	if(n > numIslands) n = numIslands;
 	if(n <= 0) return;
 	for(long i = 0; i < n; i++)
 	{
 		islandsInfo[i].isNeedUpdate = true;
-		//Остров
+		//РћСЃС‚СЂРѕРІ
 		ATTRIBUTES * aIsland = ap->GetAttributeClass(i);
 		InitLabel(islandsInfo[i].label[0], aIsland->FindAClass(aIsland, "label"), true);
 		ATTRIBUTES * a = aIsland->FindAClass(aIsland, "locations");
@@ -393,7 +393,7 @@ void WdmLocations::AttributeChanged(ATTRIBUTES * apnt)
 			for(long j = 0; j < long(a->GetAttributesNum()) && j < WDM_LOCATIONS_MAXLOC; j++)
 			{
 				ATTRIBUTES * loc = a->GetAttributeClass(j);
-				//Позиция города
+				//РџРѕР·РёС†РёСЏ РіРѕСЂРѕРґР°
 				ATTRIBUTES * pos = loc->FindAClass(loc, "position");
 				if(pos)
 				{
@@ -448,9 +448,9 @@ void WdmLocations::InitLabel(Label & label, ATTRIBUTES * apnt, bool isIsl, bool 
 void WdmLocations::UpdateLabelPriority(IslandInfo & ii)
 {
 	ii.numLabels = 0;
-	//Если размер острова крив не учитываем его
+	//Р•СЃР»Рё СЂР°Р·РјРµСЂ РѕСЃС‚СЂРѕРІР° РєСЂРёРІ РЅРµ СѓС‡РёС‚С‹РІР°РµРј РµРіРѕ
 	if(ii.radius2 < 0.0001f) return;
-	//Считаем радиусы до локаций от центра острова
+	//РЎС‡РёС‚Р°РµРј СЂР°РґРёСѓСЃС‹ РґРѕ Р»РѕРєР°С†РёР№ РѕС‚ С†РµРЅС‚СЂР° РѕСЃС‚СЂРѕРІР°
 	float rad[WDM_LOCATIONS_MAXLOC];	
 	for(long i = 0; i < WDM_LOCATIONS_MAXLOC; i++)
 	{
@@ -461,10 +461,10 @@ void WdmLocations::UpdateLabelPriority(IslandInfo & ii)
 			rad[i] = dx*dx + dz*dz;
 		}else rad[i] = -1.0f;
 	}
-	//Добавляем в список метки
-	//Острова
+	//Р”РѕР±Р°РІР»СЏРµРј РІ СЃРїРёСЃРѕРє РјРµС‚РєРё
+	//РћСЃС‚СЂРѕРІР°
 	if(ii.label[0].IsHave()) ii.labelPrt[ii.numLabels++] = 0;
-	//Локаций
+	//Р›РѕРєР°С†РёР№
 	for(i = 0; i < WDM_LOCATIONS_MAXLOC; i++)
 	{
 		float maxRad;
@@ -488,7 +488,7 @@ void WdmLocations::UpdateLabelPriority(IslandInfo & ii)
 		}
 		if(k >= 0)
 		{	
-			//Пропишем индекс метки, если метка нормальная
+			//РџСЂРѕРїРёС€РµРј РёРЅРґРµРєСЃ РјРµС‚РєРё, РµСЃР»Рё РјРµС‚РєР° РЅРѕСЂРјР°Р»СЊРЅР°СЏ
 			if(ii.label[k + 1].IsHave()) ii.labelPrt[ii.numLabels++] = k + 1;
 			rad[k] = -1;
 		}else break;
@@ -496,14 +496,14 @@ void WdmLocations::UpdateLabelPriority(IslandInfo & ii)
 }
 
 
-//Расчёты
+//Р Р°СЃС‡С‘С‚С‹
 void WdmLocations::Update(float dltTime)
 {
 	if(!wdmObjects.playerShip) return;
-	//Позиция корабля игрока
+	//РџРѕР·РёС†РёСЏ РєРѕСЂР°Р±Р»СЏ РёРіСЂРѕРєР°
 	float sx = ((WdmRenderModel *)wdmObjects.playerShip)->mtx.Pos().x;
 	float sz = ((WdmRenderModel *)wdmObjects.playerShip)->mtx.Pos().z;
-	//Смотрим попадание корабля персонажа в зону островов
+	//РЎРјРѕС‚СЂРёРј РїРѕРїР°РґР°РЅРёРµ РєРѕСЂР°Р±Р»СЏ РїРµСЂСЃРѕРЅР°Р¶Р° РІ Р·РѕРЅСѓ РѕСЃС‚СЂРѕРІРѕРІ
 	for(long i = 0; i < numIslands; i++)
 	{
 		float dx = islandsInfo[i].x - sx;
@@ -595,10 +595,10 @@ void WdmLocations::Update(float dltTime)
 	}
 }
 
-//Отрисовка
+//РћС‚СЂРёСЃРѕРІРєР°
 void WdmLocations::LRender(VDX8RENDER * rs)
 {
-	//Если отладочный режим, то рисуем отладочную информацию
+	//Р•СЃР»Рё РѕС‚Р»Р°РґРѕС‡РЅС‹Р№ СЂРµР¶РёРј, С‚Рѕ СЂРёСЃСѓРµРј РѕС‚Р»Р°РґРѕС‡РЅСѓСЋ РёРЅС„РѕСЂРјР°С†РёСЋ
 	if(islandsInfo && wdmObjects.isDebug)
 	{
 		for(long i = 0; i < numIslands; i++)
@@ -607,57 +607,57 @@ void WdmLocations::LRender(VDX8RENDER * rs)
 			wdmObjects.DrawCircle(CVECTOR(islandsInfo[i].x, 0.1f, islandsInfo[i].z), sqrtf(islandsInfo[i].radius2)*islandsInfo[i].kRadius, 0x4f00ff00);
 		}
 	}
-	//Рисуем метки
+	//Р РёСЃСѓРµРј РјРµС‚РєРё
 	DrawLabels(rs);
 }
 
 void WdmLocations::DrawLabels(VDX8RENDER * rs)
 {
-	//Получим текущую матрицу преобразования
+	//РџРѕР»СѓС‡РёРј С‚РµРєСѓС‰СѓСЋ РјР°С‚СЂРёС†Сѓ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ
 	static CMatrix mtx, view, prj;
 	rs->GetTransform(D3DTS_VIEW, view);
 	rs->GetTransform(D3DTS_PROJECTION, prj);
 	mtx.EqMultiply(view, prj);
-	//Получим текущие размеры vp
+	//РџРѕР»СѓС‡РёРј С‚РµРєСѓС‰РёРµ СЂР°Р·РјРµСЂС‹ vp
 	static D3DVIEWPORT8 vp;
 	rs->GetViewport(&vp);
 	float w = vp.Width*0.5f;
 	float h = vp.Height*0.5f;
-	//Буфера для проецирования
+	//Р‘СѓС„РµСЂР° РґР»СЏ РїСЂРѕРµС†РёСЂРѕРІР°РЅРёСЏ
 	static CVECTOR lvrt[WDM_LOCATIONS_MAXLOC + 1];
 	static struct Vrt : public MTX_PRJ_VECTOR
 	{
 		long label;
 	} vrt[WDM_LOCATIONS_MAXLOC + 1];
-	//Буфер для раздвирания меток
-	//Прямоугольник, описывающий 
+	//Р‘СѓС„РµСЂ РґР»СЏ СЂР°Р·РґРІРёСЂР°РЅРёСЏ РјРµС‚РѕРє
+	//РџСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє, РѕРїРёСЃС‹РІР°СЋС‰РёР№ 
 	static struct
 	{
 		float l, t, r, b;
 	} lbr[WDM_LOCATIONS_MAXLOC + 1];
-	//Рисуем метки
+	//Р РёСЃСѓРµРј РјРµС‚РєРё
 	for(long i = 0; i < numIslands; i++)
 	{
 		IslandInfo & island = islandsInfo[i];
-		//Пропустим кривые острова
+		//РџСЂРѕРїСѓСЃС‚РёРј РєСЂРёРІС‹Рµ РѕСЃС‚СЂРѕРІР°
 		if(island.radius2 < 0.0001f) continue;
 		if(island.numLabels <= 0) continue;
-		//Находим экранные координаты меток
+		//РќР°С…РѕРґРёРј СЌРєСЂР°РЅРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹ РјРµС‚РѕРє
 		for(long j = 0; j < island.numLabels; j++)
 		{
 			long k = island.labelPrt[j];
 			if(k > 0)
 			{
-				//Метка локации
+				//РњРµС‚РєР° Р»РѕРєР°С†РёРё
 				lvrt[j] = island.locations[k - 1].model->mtx.Pos();
 			}else{
-				//Метка острова
+				//РњРµС‚РєР° РѕСЃС‚СЂРѕРІР°
 				lvrt[j] = CVECTOR(island.x, 0.0f, island.z);
 			}
 			vrt[j].label = k;			
 		}
 		mtx.Projection(lvrt, vrt, island.numLabels, w, h, sizeof(CVECTOR), sizeof(vrt[0]));
-		//Размещаем метки, чтобы не пересекались по приоритету
+		//Р Р°Р·РјРµС‰Р°РµРј РјРµС‚РєРё, С‡С‚РѕР±С‹ РЅРµ РїРµСЂРµСЃРµРєР°Р»РёСЃСЊ РїРѕ РїСЂРёРѕСЂРёС‚РµС‚Сѓ
 		long numRects = 0;
 		if(island.label[vrt[0].label].IsVisible())
 		{
@@ -670,23 +670,23 @@ void WdmLocations::DrawLabels(VDX8RENDER * rs)
 		for(j = 1; j < island.numLabels; j++)
 		{
 			if(!island.label[vrt[j].label].IsVisible()) continue;
-			//Прямоугольник текущей метки
+			//РџСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє С‚РµРєСѓС‰РµР№ РјРµС‚РєРё
 			float l = vrt[j].x - island.label[vrt[j].label].x*island.label[vrt[j].label].w;
 			float t = vrt[j].y - island.label[vrt[j].label].y*island.label[vrt[j].label].h;
 			float r = l + island.label[vrt[j].label].w;
 			float b = t + island.label[vrt[j].label].h;
-			//Направление перемещение
+			//РќР°РїСЂР°РІР»РµРЅРёРµ РїРµСЂРµРјРµС‰РµРЅРёРµ
 			long dx = 0;
 			long dy = 0;
-			//Ищем пересечения с добавленными
+			//РС‰РµРј РїРµСЂРµСЃРµС‡РµРЅРёСЏ СЃ РґРѕР±Р°РІР»РµРЅРЅС‹РјРё
 			for(long k = 0; k < numRects; k++)
 			{
-				//Пропустим если нет пересечения
+				//РџСЂРѕРїСѓСЃС‚РёРј РµСЃР»Рё РЅРµС‚ РїРµСЂРµСЃРµС‡РµРЅРёСЏ
 				if(l >= lbr[k].r) continue;
 				if(r <= lbr[k].l) continue;
 				if(t >= lbr[k].b) continue;
 				if(b <= lbr[k].t) continue;
-				//Определим направлеине перемещения
+				//РћРїСЂРµРґРµР»РёРј РЅР°РїСЂР°РІР»РµРёРЅРµ РїРµСЂРµРјРµС‰РµРЅРёСЏ
 				float ddx = 0.0f;
 				float ddy = 0.0f;
 				if(dx == 0) dx = ((lbr[k].r + lbr[k].l) < (r + l)) ? 1 : -1;
@@ -704,14 +704,14 @@ void WdmLocations::DrawLabels(VDX8RENDER * rs)
 					vrt[j].y += ddy;
 				}
 			}
-			//Заносим в список прямоугольник
+			//Р—Р°РЅРѕСЃРёРј РІ СЃРїРёСЃРѕРє РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє
 			lbr[numRects].l = l;
 			lbr[numRects].t = t;
 			lbr[numRects].r = r;
 			lbr[numRects].b = b;
 			numRects++;
 		}
-		//Рисуем иконоки и пишем текст
+		//Р РёСЃСѓРµРј РёРєРѕРЅРѕРєРё Рё РїРёС€РµРј С‚РµРєСЃС‚
 		float ktu = 0.0f;
 		float ktv = 0.0f;
 		for(j = 0; j < island.numLabels; j++)
@@ -720,10 +720,10 @@ void WdmLocations::DrawLabels(VDX8RENDER * rs)
 			if(!label.IsVisible()) continue;
 			float x = vrt[island.numLabels - j - 1].x - label.x*label.w;
 			float y = vrt[island.numLabels - j - 1].y - label.y*label.h;
-			//Иконки
+			//РРєРѕРЅРєРё
 			DrawIcon(rs, x, y, label);
 			dword color = (dword(label.Alpha()) << 24) | 0xffffff;
-			//Текст
+			//РўРµРєСЃС‚
 			rs->Print(label.font, color, long(x + label.sx), long(y + label.sy), label.text);
 		}
 	}
@@ -734,7 +734,7 @@ void WdmLocations::DrawLabels(VDX8RENDER * rs)
 	//rs->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
 }
 
-//Найти реакцию от островов для корабля
+//РќР°Р№С‚Рё СЂРµР°РєС†РёСЋ РѕС‚ РѕСЃС‚СЂРѕРІРѕРІ РґР»СЏ РєРѕСЂР°Р±Р»СЏ
 void WdmLocations::FindReaction(float x, float z, float & rx, float & rz)
 {
 	rx = 0.0f;
@@ -759,10 +759,10 @@ void WdmLocations::FindReaction(float x, float z, float & rx, float & rz)
 	}
 }
 
-//Найти ближайший остров
+//РќР°Р№С‚Рё Р±Р»РёР¶Р°Р№С€РёР№ РѕСЃС‚СЂРѕРІ
 bool WdmLocations::FindGoodIsland(float shipX, float shipZ, float & x, float & z, float & r, bool testInZone, bool retPivot)
 {
-	//Ищем самый удалённый остров
+	//РС‰РµРј СЃР°РјС‹Р№ СѓРґР°Р»С‘РЅРЅС‹Р№ РѕСЃС‚СЂРѕРІ
 	if(numIslands <= 0) return false;
 	float dst;
 	for(long i = 0, j = -1; i < numIslands; i++)
@@ -798,7 +798,7 @@ bool WdmLocations::FindGoodIsland(float shipX, float shipZ, float & x, float & z
 
 void WdmLocations::DrawIcon(VDX8RENDER * rs, float x, float y, Label & label)
 {
-	//Буфер для рисования треугольников
+	//Р‘СѓС„РµСЂ РґР»СЏ СЂРёСЃРѕРІР°РЅРёСЏ С‚СЂРµСѓРіРѕР»СЊРЅРёРєРѕРІ
 	static struct
 	{
 		float x, y, z, rhw;
@@ -807,13 +807,13 @@ void WdmLocations::DrawIcon(VDX8RENDER * rs, float x, float y, Label & label)
 	} drawbuf[6];
 	dword color;
 	if(label.t[0].icon < 0 && label.t[1].icon < 0) return;
-	//Настраиваем режим рендеринга
+	//РќР°СЃС‚СЂР°РёРІР°РµРј СЂРµР¶РёРј СЂРµРЅРґРµСЂРёРЅРіР°
 	//Texture
 	rs->TextureSet(0, iconTexture);
-	//Текстурные координаты
+	//РўРµРєСЃС‚СѓСЂРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹
 	float ktu = 1.0f/iconFrames;
 	float ktv = 1.0f/iconNum;
-	//Заполняем треугольники
+	//Р—Р°РїРѕР»РЅСЏРµРј С‚СЂРµСѓРіРѕР»СЊРЅРёРєРё
 	//1
 	drawbuf[0].x = x + label.ix;
 	drawbuf[0].y = y + label.iy;
@@ -835,11 +835,11 @@ void WdmLocations::DrawIcon(VDX8RENDER * rs, float x, float y, Label & label)
 	drawbuf[3].y = y + iconHeight;
 	drawbuf[3].z = 0.0f; drawbuf[3].rhw = 0.5f;
 	drawbuf[3].tu = long(curFrame + 1)*ktu - 1.0f/256.0f;
-	//Прозрачность
+	//РџСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ
 	Assert(label.alpha >= 0.0f && label.alpha <= 1.0f);
 	Assert(label.t[0].alpha >= 0.0f && label.t[0].alpha <= 1.0f);
 	Assert(label.t[1].alpha >= 0.0f && label.t[1].alpha <= 1.0f);
-	//Рисуем содержимое массива
+	//Р РёСЃСѓРµРј СЃРѕРґРµСЂР¶РёРјРѕРµ РјР°СЃСЃРёРІР°
 	if(label.t[1].icon >= 0 && label.t[1].alpha > 0.0f)
 	{
 		color = (dword(label.Alpha()*label.t[1].alpha) << 24) | 0xffffff;

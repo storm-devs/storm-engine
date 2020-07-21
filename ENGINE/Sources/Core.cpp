@@ -536,7 +536,7 @@ void __declspec(noinline) __cdecl CORE::ProcessEngineIniFile()
 		//if(!Program.RunProgram(String)) _THROW(fail to run program);
 		if(!Compiler.CreateProgram(String)) _THROW(fail to create program);
 		if(!Compiler.Run()) _THROW(fail to run program);
-		// Òåñò âåðñèè ñêðèïòà
+		// Ð¢ÐµÑÑ‚ Ð²ÐµÑ€ÑÐ¸Ð¸ ÑÐºÑ€Ð¸Ð¿Ñ‚Ð°
 		long iScriptVersion = 0xFFFFFFFF;
 		VDATA * pVScriptVersion = (VDATA *)api->GetScriptVariable("iScriptVersion");
 		if (pVScriptVersion) pVScriptVersion->Get(iScriptVersion);

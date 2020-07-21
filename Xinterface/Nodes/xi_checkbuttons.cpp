@@ -25,12 +25,12 @@ void CXI_CHECKBUTTONS::Draw(bool bSelected,dword Delta_Time)
 {
 	float fX,fY;
 
-	// Напечатать строки
+	// РќР°РїРµС‡Р°С‚Р°С‚СЊ СЃС‚СЂРѕРєРё
 	fX = (float)m_rect.left;
 	fY = (float)m_rect.top;
 	for( long n=0; n<m_aButton; n++ )
 	{
-		// определяем цвет строки
+		// РѕРїСЂРµРґРµР»СЏРµРј С†РІРµС‚ СЃС‚СЂРѕРєРё
 		dword dwColor = m_dwNormalFontColor;
 		if( m_aButton[n]->bChoose ) dwColor = m_dwSelectFontColor;
 		if( m_aButton[n]->bDisable ) dwColor = m_dwDisableFontColor;
@@ -48,7 +48,7 @@ void CXI_CHECKBUTTONS::Draw(bool bSelected,dword Delta_Time)
 			m_aButton[n]->pImg->Draw();
 		}
 
-		// выведем все строки
+		// РІС‹РІРµРґРµРј РІСЃРµ СЃС‚СЂРѕРєРё
 		for( long i=0; i<m_aButton[n]->aStr; i++ )
 		{
 			m_rs->ExtPrint( m_nFontNum, dwColor, 0,ALIGN_LEFT,true,m_fFontScale, m_screenSize.x,m_screenSize.y,
@@ -57,7 +57,7 @@ void CXI_CHECKBUTTONS::Draw(bool bSelected,dword Delta_Time)
 			fY += m_fTextLineHeight;
 		}
 
-		// отступ между секциями (одной кнопки от другой)
+		// РѕС‚СЃС‚СѓРї РјРµР¶РґСѓ СЃРµРєС†РёСЏРјРё (РѕРґРЅРѕР№ РєРЅРѕРїРєРё РѕС‚ РґСЂСѓРіРѕР№)
 		fY += m_fTextSectionInterval;
 	}
 }
@@ -73,10 +73,10 @@ void CXI_CHECKBUTTONS::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *na
 	char param[2048];
 	XYPOINT tmpLPnt;
 
-	// Выбор только одного элемента или нет
+	// Р’С‹Р±РѕСЂ С‚РѕР»СЊРєРѕ РѕРґРЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р° РёР»Рё РЅРµС‚
 	m_bExclusiveChoose = GetIniBool( ini1,name1, ini2,name2, "exclusiveChoose", true );
 
-	// Выбор активности текста на клик мыши
+	// Р’С‹Р±РѕСЂ Р°РєС‚РёРІРЅРѕСЃС‚Рё С‚РµРєСЃС‚Р° РЅР° РєР»РёРє РјС‹С€Рё
 	m_bClickIntoTextActive = GetIniBool( ini1,name1, ini2,name2, "textClickable", false );
 
 	// get font number
@@ -119,7 +119,7 @@ void CXI_CHECKBUTTONS::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *na
 
 	m_bIndividualPos = GetIniBool( ini1,name1, ini2,name2, "individualpos", false );
 
-	// зачитаем по очереди все секции
+	// Р·Р°С‡РёС‚Р°РµРј РїРѕ РѕС‡РµСЂРµРґРё РІСЃРµ СЃРµРєС†РёРё
 	char pcKeyName[128];
 	long n = 0;
 	for( n=0; n<100; n++ )
@@ -156,8 +156,8 @@ void CXI_CHECKBUTTONS::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *na
 	{
 		for( n=0; n<m_aButton; n++ )
 			if( m_aButton[n]->bChoose ) break;
-		if( n == m_aButton ) // ни ондного не установлено
-			SetButtonOn(0); // по умолчанию первый вариант
+		if( n == m_aButton ) // РЅРё РѕРЅРґРЅРѕРіРѕ РЅРµ СѓСЃС‚Р°РЅРѕРІР»РµРЅРѕ
+			SetButtonOn(0); // РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ РїРµСЂРІС‹Р№ РІР°СЂРёР°РЅС‚
 	}
 	for( n=0; n<m_aButton; n++ )
 		WriteToAttributeButtonState( n );
@@ -240,7 +240,7 @@ dword _cdecl CXI_CHECKBUTTONS::MessageProc(long msgcode, MESSAGE & message)
 {
 	switch(msgcode)
 	{
-	case 0: // добавить кнопку
+	case 0: // РґРѕР±Р°РІРёС‚СЊ РєРЅРѕРїРєСѓ
 		{
 			char param[1024];
 			message.String( sizeof(param), param );
@@ -251,7 +251,7 @@ dword _cdecl CXI_CHECKBUTTONS::MessageProc(long msgcode, MESSAGE & message)
 		}
 	break;
 
-	case 1: // установить новый текст на кнопку
+	case 1: // СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РЅРѕРІС‹Р№ С‚РµРєСЃС‚ РЅР° РєРЅРѕРїРєСѓ
 		{
 			long nButtonNum = message.Long()-1;
 			char param[1024];
@@ -261,7 +261,7 @@ dword _cdecl CXI_CHECKBUTTONS::MessageProc(long msgcode, MESSAGE & message)
 		}
 	break;
 
-	case 2: // установить выбор на кнопку
+	case 2: // СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РІС‹Р±РѕСЂ РЅР° РєРЅРѕРїРєСѓ
 		{
 			long nButtonNum = message.Long()-1;
 			bool bChoose = (message.Long() != 0);
@@ -269,7 +269,7 @@ dword _cdecl CXI_CHECKBUTTONS::MessageProc(long msgcode, MESSAGE & message)
 		}
 	break;
 
-	case 3: // получить сосотояние кнопки
+	case 3: // РїРѕР»СѓС‡РёС‚СЊ СЃРѕСЃРѕС‚РѕСЏРЅРёРµ РєРЅРѕРїРєРё
 		{
 			long nButtonNum = message.Long()-1;
 			if( nButtonNum<0 || nButtonNum>=m_aButton ) return 0;
@@ -277,7 +277,7 @@ dword _cdecl CXI_CHECKBUTTONS::MessageProc(long msgcode, MESSAGE & message)
 		}
 	break;
 
-	case 4: // получить выбранную кнопку (для не эксклюзивного выбора выдает номер первой выбранной)
+	case 4: // РїРѕР»СѓС‡РёС‚СЊ РІС‹Р±СЂР°РЅРЅСѓСЋ РєРЅРѕРїРєСѓ (РґР»СЏ РЅРµ СЌРєСЃРєР»СЋР·РёРІРЅРѕРіРѕ РІС‹Р±РѕСЂР° РІС‹РґР°РµС‚ РЅРѕРјРµСЂ РїРµСЂРІРѕР№ РІС‹Р±СЂР°РЅРЅРѕР№)
 		{
 			for( long n=0; n<m_aButton; n++ )
 				if( m_aButton[n]->bChoose )
@@ -285,7 +285,7 @@ dword _cdecl CXI_CHECKBUTTONS::MessageProc(long msgcode, MESSAGE & message)
 		}
 	break;
 
-	case 5: // запретить/разрешить кнопку
+	case 5: // Р·Р°РїСЂРµС‚РёС‚СЊ/СЂР°Р·СЂРµС€РёС‚СЊ РєРЅРѕРїРєСѓ
 		{
 			long nButtonNum = message.Long()-1;
 			bool bDisable = (message.Long() != 0);
@@ -434,13 +434,13 @@ void CXI_CHECKBUTTONS::SetAllButtonsToOff()
 
 void CXI_CHECKBUTTONS::SetCheckToButton( long nButtonNum, bool bCheck )
 {
-	if( nButtonNum<0 || nButtonNum>=m_aButton ) return; // нет такой кнопки
-	if( m_aButton[nButtonNum]->bChoose == bCheck ) return; // уже установлено это состояние
+	if( nButtonNum<0 || nButtonNum>=m_aButton ) return; // РЅРµС‚ С‚Р°РєРѕР№ РєРЅРѕРїРєРё
+	if( m_aButton[nButtonNum]->bChoose == bCheck ) return; // СѓР¶Рµ СѓСЃС‚Р°РЅРѕРІР»РµРЅРѕ СЌС‚Рѕ СЃРѕСЃС‚РѕСЏРЅРёРµ
 
 	if( m_bExclusiveChoose )
 	{
 		if( bCheck ) SetAllButtonsToOff();
-		else return; // не можем снять флаг со всех кнопок
+		else return; // РЅРµ РјРѕР¶РµРј СЃРЅСЏС‚СЊ С„Р»Р°Рі СЃРѕ РІСЃРµС… РєРЅРѕРїРѕРє
 	}
 
 	if( bCheck ) SetButtonOn( nButtonNum );
@@ -457,7 +457,7 @@ void CXI_CHECKBUTTONS::UpdateAllTextInfo()
 
 void CXI_CHECKBUTTONS::UpdateTextInfo( long nButtonNum )
 {
-	// получим полный текст
+	// РїРѕР»СѓС‡РёРј РїРѕР»РЅС‹Р№ С‚РµРєСЃС‚
 	string sAllText;
 	for( long n=0; n<m_aButton[nButtonNum]->aStr; n++ )
 		sAllText += m_aButton[nButtonNum]->aStr[n].str;

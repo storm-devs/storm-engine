@@ -17,7 +17,7 @@
 #include "..\common_h\messages.h"
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 Player::Player()
@@ -59,7 +59,7 @@ void Player::Reset()
 	NPCharacter::Reset();
 }
 
-//Перемещаем персонажа в желаемую позицию
+//РџРµСЂРµРјРµС‰Р°РµРј РїРµСЂСЃРѕРЅР°Р¶Р° РІ Р¶РµР»Р°РµРјСѓСЋ РїРѕР·РёС†РёСЋ
 void Player::Move(float dltTime)
 {
 #ifndef _XBOX
@@ -303,7 +303,7 @@ void Player::Update(float dltTime)
 	NPCharacter::Update(dltTime);
 	activatedDialog = aDialog;
 	api->Send_Message(baterfl, "lff", MSG_ANIMALS_BUTTERFLIES_XYZ, curPos.x, curPos.z);
-	//Перебираем персонажей в поисках врагов к игроку
+	//РџРµСЂРµР±РёСЂР°РµРј РїРµСЂСЃРѕРЅР°Р¶РµР№ РІ РїРѕРёСЃРєР°С… РІСЂР°РіРѕРІ Рє РёРіСЂРѕРєСѓ
 	ENTITY_ID eid;
 	if(api->FindClass(&eid, null, chrGroups))
 	{
@@ -318,14 +318,14 @@ void Player::Update(float dltTime)
 	}
 }
 
-//Сохранить параметры
+//РЎРѕС…СЂР°РЅРёС‚СЊ РїР°СЂР°РјРµС‚СЂС‹
 void Player::SetSaveData(ATTRIBUTES * sdata)
 {
 	if(!sdata) return;
 	sdata->SetAttributeUseDword("isFight", isFight);	
 }
 
-//Востанавить параметры
+//Р’РѕСЃС‚Р°РЅР°РІРёС‚СЊ РїР°СЂР°РјРµС‚СЂС‹
 void Player::GetSaveData(ATTRIBUTES * sdata)
 {
 	if(!sdata) return;
@@ -355,7 +355,7 @@ void Player::Rotate(float dltTime)
 			if(_CORE_API->Controls->GetControlState("ChrTurnV2",cs)) dz += cs.fValue*0.067f;
 			if(dx*dx + dz*dz > 0.1f)
 			{
-				//Повернём вектор относительно камеры
+				//РџРѕРІРµСЂРЅС‘Рј РІРµРєС‚РѕСЂ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РєР°РјРµСЂС‹
 				CMatrix mtx;
 				location->GetRS()->GetTransform(D3DTS_VIEW, mtx);
 				mtx.Transposition3X3();
@@ -438,7 +438,7 @@ void Player::StrafeWhenMove(float dltTime)
 	strafeMove = 0.0f;
 
 //----------------------------------------------------------------------------------------
-//Если надо выключить стрейфы - раскомментарь return
+//Р•СЃР»Рё РЅР°РґРѕ РІС‹РєР»СЋС‡РёС‚СЊ СЃС‚СЂРµР№С„С‹ - СЂР°СЃРєРѕРјРјРµРЅС‚Р°СЂСЊ return
 //stopstrafe
 //----------------------------------------------------------------------------------------
 
@@ -597,14 +597,14 @@ bool Player::IsChangeFightMode()
 }
 
 
-//Найти атакующего противника
+//РќР°Р№С‚Рё Р°С‚Р°РєСѓСЋС‰РµРіРѕ РїСЂРѕС‚РёРІРЅРёРєР°
 Player * Player::FindAttackCharacter()
 {
-	//Найдём окружающих персонажей
+	//РќР°Р№РґС‘Рј РѕРєСЂСѓР¶Р°СЋС‰РёС… РїРµСЂСЃРѕРЅР°Р¶РµР№
 	static Supervisor::FindCharacter fndCharacter[MAX_CHARACTERS];
 	static long num = 0;
 	if(!location->supervisor.FindCharacters(fndCharacter, num, this, CHARACTER_ATTACK_DIST*1.1f)) return null;
-	//Выбираем лутшего
+	//Р’С‹Р±РёСЂР°РµРј Р»СѓС‚С€РµРіРѕ
 	float minDst;
 	long task = -1;
 	bool isFgt = false;
@@ -615,15 +615,15 @@ Player * Player::FindAttackCharacter()
 	long i = 0, j = 0;
 	for(i = 0, j = -1; i < num; i++)
 	{
-		//Персонаж
+		//РџРµСЂСЃРѕРЅР°Р¶
 		Supervisor::FindCharacter & fc = fndCharacter[i];
-		//Невоюющих не смотрим
+		//РќРµРІРѕСЋСЋС‰РёС… РЅРµ СЃРјРѕС‚СЂРёРј
 		//if(!fc.c->IsFight()) continue;
 		Player * chr = (Player *)fc.c;
 		if(chr == this) continue;
-		//Мёртвых пропускаем
+		//РњС‘СЂС‚РІС‹С… РїСЂРѕРїСѓСЃРєР°РµРј
 		if(chr->liveValue < 0 || chr->deadName) continue;
-		//Отсеиваем неинтересных
+		//РћС‚СЃРµРёРІР°РµРј РЅРµРёРЅС‚РµСЂРµСЃРЅС‹С…
 		if(isEnemy)
 		{
 			if(chr->task.task != npct_fight || 
@@ -648,7 +648,7 @@ Player * Player::FindAttackCharacter()
 			}
 			*/
 		}
-		//Невражеских пропускаем
+		//РќРµРІСЂР°Р¶РµСЃРєРёС… РїСЂРѕРїСѓСЃРєР°РµРј
 		if(!isEnemy)
 		{
 			ENTITY_ID eid;
@@ -657,7 +657,7 @@ Player * Player::FindAttackCharacter()
 				if(!api->Send_Message(eid, "sii", "IsEnemy", GetID(), chr->GetID())) continue;
 			}
 		}
-		//Этот гад на нас лезет
+		//Р­С‚РѕС‚ РіР°Рґ РЅР° РЅР°СЃ Р»РµР·РµС‚
 		if(j >= 0)
 		{
 			float cs = -1.0f;
@@ -688,7 +688,7 @@ void Player::FireFromShootgun()
 	{
 		api->Send_Message(peid, "lsllll", MSG_SOUND_PLAY, "OBJECTS\\sgboom.wav", 4, false, false, false);
 	}
-	//Получим позицию откуда стрелять
+	//РџРѕР»СѓС‡РёРј РїРѕР·РёС†РёСЋ РѕС‚РєСѓРґР° СЃС‚СЂРµР»СЏС‚СЊ
 	float dx = sinf(ay);
 	float dz = cosf(ay);
 	CMatrix mtx;
@@ -713,7 +713,7 @@ void Player::FireFromShootgun()
 	long numChrs = 0;
 	for(long i = 0; i < 6; i++)
 	{
-		//Получим позицию куда попадёт картечина
+		//РџРѕР»СѓС‡РёРј РїРѕР·РёС†РёСЋ РєСѓРґР° РїРѕРїР°РґС‘С‚ РєР°СЂС‚РµС‡РёРЅР°
 		float r = rand()*3.0f/RAND_MAX;
 		float a = rand()*6.283185307f/(RAND_MAX + 1);
 		CVECTOR dst = mtx*CVECTOR(r*sinf(a), r*cosf(a), 25.0f);
@@ -724,7 +724,7 @@ void Player::FireFromShootgun()
 			{
 				CVECTOR dir = !(src - dst);
 				dst = src + (dst - src)*dist;
-				//Куда то попали
+				//РљСѓРґР° С‚Рѕ РїРѕРїР°Р»Рё
 				ENTITY * e = api->GetEntityPointer(&collide->GetObjectID());
 				if(e && e != this)
 				{

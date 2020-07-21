@@ -27,9 +27,9 @@ public:
 	void RestoreRender();
 
 protected:
-	BATTLE_NAVIGATOR	BattleNavigator; // навигационные иконки
+	BATTLE_NAVIGATOR	BattleNavigator; // РЅР°РІРёРіР°С†РёРѕРЅРЅС‹Рµ РёРєРѕРЅРєРё
 	//MESSAGE_ICONS *		m_pMessageIcons;
-	BIShipIcon*			m_pShipIcon; // иконки команд и целеуказаний в боевом меню
+	BIShipIcon*			m_pShipIcon; // РёРєРѕРЅРєРё РєРѕРјР°РЅРґ Рё С†РµР»РµСѓРєР°Р·Р°РЅРёР№ РІ Р±РѕРµРІРѕРј РјРµРЅСЋ
 	bool	m_bShowCommandMenu;
 	bool	m_bShowBattleNavigator;
 	bool	m_bYesShowAll;

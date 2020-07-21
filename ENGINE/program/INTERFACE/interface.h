@@ -2,13 +2,13 @@
 
 #define INTERFACE_STORE					0
 #define INTERFACE_SHIPYARD				1
-#define INTERFACE_CHARACTER				2  // просмотр НПС и выбор специал
+#define INTERFACE_CHARACTER				2  // РїСЂРѕСЃРјРѕС‚СЂ РќРџРЎ Рё РІС‹Р±РѕСЂ СЃРїРµС†РёР°Р»
 #define INTERFACE_MAINMENU				3
 #define INTERFACE_HIRECREW				4
-#define INTERFACE_RANSACK_MAIN			5 // более не при делах, но где-то идут проверки на определение, вызов  INTERFACE_TRANSFER_MAIN по сути, но с поправкой на море и абордаж
+#define INTERFACE_RANSACK_MAIN			5 // Р±РѕР»РµРµ РЅРµ РїСЂРё РґРµР»Р°С…, РЅРѕ РіРґРµ-С‚Рѕ РёРґСѓС‚ РїСЂРѕРІРµСЂРєРё РЅР° РѕРїСЂРµРґРµР»РµРЅРёРµ, РІС‹Р·РѕРІ  INTERFACE_TRANSFER_MAIN РїРѕ СЃСѓС‚Рё, РЅРѕ СЃ РїРѕРїСЂР°РІРєРѕР№ РЅР° РјРѕСЂРµ Рё Р°Р±РѕСЂРґР°Р¶
 #define INTERFACE_TRANSFER_MAIN			6
 #define INTERFACE_ITEMS					7
-#define INTERFACE_CHARACTER_SELECT		8  // начало игры
+#define INTERFACE_CHARACTER_SELECT		8  // РЅР°С‡Р°Р»Рѕ РёРіСЂС‹
 #define INTERFACE_QUESTBOOK				9
 #define INTERFACE_SAVELOAD				10
 #define INTERFACE_FORTCAPTURE			11
@@ -19,7 +19,7 @@
 #define INTERFACE_SALARY				16
 #define INTERFACE_PS_HERO	     		17  //boal
 #define INTERFACE_NATIONRELATION				18
-#define INTERFACE_FOR_TEST  			19  // для тестов
+#define INTERFACE_FOR_TEST  			19  // РґР»СЏ С‚РµСЃС‚РѕРІ
 #define INTERFACE_MAP					20
 #define INTERFACE_CANNONS 				21
 #define INTERFACE_TRADEBOOK				22
@@ -73,7 +73,7 @@
 #define RC_INTERFACE_SHIPSTATE_EXIT				45023
 #define RC_INTERFACE_SHIPSTATE_OK				45024
 #define RC_INTERFACE_SHIPYARD_EXIT				45025
-#define RC_INTERFACE_RANSACK_MAIN_EXIT			45026 // нужно, используется в сиадог.с
+#define RC_INTERFACE_RANSACK_MAIN_EXIT			45026 // РЅСѓР¶РЅРѕ, РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РІ СЃРёР°РґРѕРі.СЃ
 //#define RC_INTERFACE_TRANSFER_MAIN_EXIT			45027
 //#define RC_INTERFACE_TRANSFER_MAIN_RETURN		45028
 //#define RC_INTERFACE_TRANSFER_START_GOODS		45029
@@ -136,9 +136,9 @@ object	LanguageObject;
 object  Interfaces[INTERFACE_QUANTITY];
 
 
-// состояние интерфейса
+// СЃРѕСЃС‚РѕСЏРЅРёРµ РёРЅС‚РµСЂС„РµР№СЃР°
 object InterfaceStates;
-//профиль игрока
+//РїСЂРѕС„РёР»СЊ РёРіСЂРѕРєР°
 object PlayerProfile;
 
 extern void InitBaseInterfaces();

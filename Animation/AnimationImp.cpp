@@ -5,7 +5,7 @@
 //--------------------------------------------------------------------------------------------
 //	AnimationImp
 //--------------------------------------------------------------------------------------------
-//	Реализация интерфейса Animation
+//	Р РµР°Р»РёР·Р°С†РёСЏ РёРЅС‚РµСЂС„РµР№СЃР° Animation
 //============================================================================================
 
 #include "AnimationImp.h"
@@ -14,11 +14,11 @@
 //============================================================================================
 
 
-//Указатель на сервис анимации
+//РЈРєР°Р·Р°С‚РµР»СЊ РЅР° СЃРµСЂРІРёСЃ Р°РЅРёРјР°С†РёРё
 AnimationServiceImp * AnimationImp::aniService = null;
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 AnimationImp::AnimationImp(long id, AnimationInfo * animationInfo)
@@ -35,9 +35,9 @@ AnimationImp::AnimationImp(long id, AnimationInfo * animationInfo)
 	matrix = NEW CMatrix[aniInfo->NumBones()];
 	memset(ae_listeners, 0, sizeof(ae_listeners));
 	ae_listenersExt = null;
-	//Автонормализация
+	//РђРІС‚РѕРЅРѕСЂРјР°Р»РёР·Р°С†РёСЏ
 	isAutoNormalize = true;
-	//Пользовательский блендинг
+	//РџРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРёР№ Р±Р»РµРЅРґРёРЅРі
 	isUserBlend = true;
 }
 
@@ -52,22 +52,22 @@ AnimationImp::~AnimationImp()
 //Animation
 //--------------------------------------------------------------------------------------------
 
-//Доступиться к проигрывателю действий
+//Р”РѕСЃС‚СѓРїРёС‚СЊСЃСЏ Рє РїСЂРѕРёРіСЂС‹РІР°С‚РµР»СЋ РґРµР№СЃС‚РІРёР№
 ActionPlayer & AnimationImp::Player(long index)
 {
 	Assert(index >= 0 && index < ANI_MAX_ACTIONS);
 	return action[index];
 }
 
-//Доступиться к таймеру анимации
+//Р”РѕСЃС‚СѓРїРёС‚СЊСЃСЏ Рє С‚Р°Р№РјРµСЂСѓ Р°РЅРёРјР°С†РёРё
 AnimationTimer & AnimationImp::Timer(long index)
 {
 	Assert(index >= 0 && index < ANI_MAX_ACTIONS);
 	return timer[index];
 }
 
-//События
-//Установить внутренние событие
+//РЎРѕР±С‹С‚РёСЏ
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РІРЅСѓС‚СЂРµРЅРЅРёРµ СЃРѕР±С‹С‚РёРµ
 long AnimationImp::SetEvent(AnimationEvent event, long index, AnimationEventListener * ael)
 {
 	Assert(event < ae_numevents);
@@ -81,7 +81,7 @@ long AnimationImp::SetEvent(AnimationEvent event, long index, AnimationEventList
 	return -1;
 }
 
-//Удалить внутренние событие
+//РЈРґР°Р»РёС‚СЊ РІРЅСѓС‚СЂРµРЅРЅРёРµ СЃРѕР±С‹С‚РёРµ
 void AnimationImp::DelEvent(long eventID)
 {
 	if(eventID < 0) return;
@@ -93,32 +93,32 @@ void AnimationImp::DelEvent(long eventID)
 	ae_listeners[event][lindex] = null;
 }
 
-//Установить обработчик внешнего события
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РѕР±СЂР°Р±РѕС‚С‡РёРє РІРЅРµС€РЅРµРіРѕ СЃРѕР±С‹С‚РёСЏ
 void AnimationImp::SetEventListener(AnimationEventListener * ael)
 {
 	ae_listenersExt = ael;
 }
 
-//Получить количество костей в скелете
+//РџРѕР»СѓС‡РёС‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ РєРѕСЃС‚РµР№ РІ СЃРєРµР»РµС‚Рµ
 long AnimationImp::GetNumBones() const
 {
 	return aniInfo->NumBones();
 }
 
-//Получить матрицу анимации для кости
+//РџРѕР»СѓС‡РёС‚СЊ РјР°С‚СЂРёС†Сѓ Р°РЅРёРјР°С†РёРё РґР»СЏ РєРѕСЃС‚Рё
 CMatrix & AnimationImp::GetAnimationMatrix(long iBone) const
 {
 	Assert(iBone >= 0 && iBone < aniInfo->NumBones());
 	return matrix[iBone];
 }
 
-//Получить пользовательские данные для анимации
+//РџРѕР»СѓС‡РёС‚СЊ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРёРµ РґР°РЅРЅС‹Рµ РґР»СЏ Р°РЅРёРјР°С†РёРё
 const char * AnimationImp::GetData(const char * dataName) const
 {
 	return aniInfo->GetUserData().GetData(dataName);
 }
 
-//Копировать состояние одного плеера в другой
+//РљРѕРїРёСЂРѕРІР°С‚СЊ СЃРѕСЃС‚РѕСЏРЅРёРµ РѕРґРЅРѕРіРѕ РїР»РµРµСЂР° РІ РґСЂСѓРіРѕР№
 void AnimationImp::CopyPlayerState(long indexSrc, long indexDst, bool copyTimerState)
 {
 	Assert(indexSrc >= 0 && indexSrc < ANI_MAX_ACTIONS);
@@ -135,14 +135,14 @@ void AnimationImp::CopyPlayerState(long indexSrc, long indexDst, bool copyTimerS
 	}
 }
 
-//Получить скорость исполнения анимации
+//РџРѕР»СѓС‡РёС‚СЊ СЃРєРѕСЂРѕСЃС‚СЊ РёСЃРїРѕР»РЅРµРЅРёСЏ Р°РЅРёРјР°С†РёРё
 float AnimationImp::GetFPS()
 {
 	return aniInfo->GetFPS();
 }
 
-//Установить режимы блендинга
-//Автоматическая нормализация коэфициентов блендинга
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЂРµР¶РёРјС‹ Р±Р»РµРЅРґРёРЅРіР°
+//РђРІС‚РѕРјР°С‚РёС‡РµСЃРєР°СЏ РЅРѕСЂРјР°Р»РёР·Р°С†РёСЏ РєРѕСЌС„РёС†РёРµРЅС‚РѕРІ Р±Р»РµРЅРґРёРЅРіР°
 bool AnimationImp::SetAutoNormalize(bool isNormalize)
 {
 	bool b = isAutoNormalize;
@@ -155,7 +155,7 @@ bool AnimationImp::GetAutoNormalize()
 	return isAutoNormalize;
 }
 
-//Разрешить использование пользовательских коэфициентов блендинга в ActionPlayer
+//Р Р°Р·СЂРµС€РёС‚СЊ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРёС… РєРѕСЌС„РёС†РёРµРЅС‚РѕРІ Р±Р»РµРЅРґРёРЅРіР° РІ ActionPlayer
 bool AnimationImp::UserBlend(bool isBlend)
 {
 	bool b = isUserBlend;
@@ -173,25 +173,25 @@ bool AnimationImp::IsUserBlend()
 //AnimationImp
 //--------------------------------------------------------------------------------------------
 
-//Сделать шаг по времени
+//РЎРґРµР»Р°С‚СЊ С€Р°Рі РїРѕ РІСЂРµРјРµРЅРё
 void AnimationImp::Execute(long dltTime)
 {
-	//Исполним animation
+	//РСЃРїРѕР»РЅРёРј animation
 	for(long i = 0; i < ANI_MAX_ACTIONS; i++)
 						action[i].Execute(dltTime);
-	//Исполним таймеры
+	//РСЃРїРѕР»РЅРёРј С‚Р°Р№РјРµСЂС‹
 	for(long i = 0; i < ANI_MAX_ACTIONS; i++)
 						timer[i].Execute(dltTime);
-	//Расчитаем матрицы анимации
+	//Р Р°СЃС‡РёС‚Р°РµРј РјР°С‚СЂРёС†С‹ Р°РЅРёРјР°С†РёРё
 	BuildAnimationMatrices();
 }
 			
-//Расчитать матрицы анимации
+//Р Р°СЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†С‹ Р°РЅРёРјР°С†РёРё
 void AnimationImp::BuildAnimationMatrices()
 {
 	long nFrames = aniInfo->GetAniNumFrames();
 	long nbones = aniInfo->NumBones();
-	//Посмотрим сколько плееров играет, считаем текущии коэфициенты блендинга
+	//РџРѕСЃРјРѕС‚СЂРёРј СЃРєРѕР»СЊРєРѕ РїР»РµРµСЂРѕРІ РёРіСЂР°РµС‚, СЃС‡РёС‚Р°РµРј С‚РµРєСѓС‰РёРё РєРѕСЌС„РёС†РёРµРЅС‚С‹ Р±Р»РµРЅРґРёРЅРіР°
 	long plCnt = 0;
 	float normBlend = 0.0f;
 	for(long i = 0; i < ANI_MAX_ACTIONS; i++)
@@ -204,7 +204,7 @@ void AnimationImp::BuildAnimationMatrices()
 		}
 	if(!plCnt) return;
 
-	//Автонормализация
+	//РђРІС‚РѕРЅРѕСЂРјР°Р»РёР·Р°С†РёСЏ
 	if(normBlend != 0.0f)
 		if(plCnt > 1)
 		{
@@ -320,8 +320,8 @@ void AnimationImp::BuildAnimationMatrices()
 	}
 }
 
-//События
-//Разослать события
+//РЎРѕР±С‹С‚РёСЏ
+//Р Р°Р·РѕСЃР»Р°С‚СЊ СЃРѕР±С‹С‚РёСЏ
 void AnimationImp::SendEvent(AnimationEvent event, long index)
 {
 	for(long i = 0; i < ANIIMP_MAXLISTENERS; i++)

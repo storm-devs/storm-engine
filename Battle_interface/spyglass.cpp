@@ -2,14 +2,14 @@
 #include "spyglass.h"
 #include "..\engine\program\battle_interface\msg_control.h"
 
-// äëÿ áûñòðîé çàïèñè îïðåäåëèì:
+// Ð´Ð»Ñ Ð±Ñ‹ÑÑ‚Ñ€Ð¾Ð¹ Ð·Ð°Ð¿Ð¸ÑÐ¸ Ð¾Ð¿Ñ€ÐµÐ´ÐµÐ»Ð¸Ð¼:
 #define ITEXTURE_RELEASE(rs,id)	if(rs!=NULL && id!=-1) {rs->TextureRelease(id); id=-1;}
 #define IFONT_RELEASE(rs,id)	if(rs!=NULL && id!=-1) {rs->UnloadFont(id); id=-1;}
 #define IPTR_DELETE(ptr)	if(ptr!=NULL) {delete ptr; ptr=NULL;}
 #define IVERTEXBUFFER_RELEASE(rs,id)	if(rs!=NULL && id!=-1) {rs->ReleaseVertexBuffer(id); id=-1;}
 #define IINDEXBUFFER_RELEASE(rs,id)	if(rs!=NULL && id!=-1) {rs->ReleaseIndexBuffer(id); id=-1;}
 
-// îïðåäåëèì âåðòåêñû
+// Ð¾Ð¿Ñ€ÐµÐ´ÐµÐ»Ð¸Ð¼ Ð²ÐµÑ€Ñ‚ÐµÐºÑÑ‹
 #define ISG_VERTEX_FORMAT		(D3DFVF_XYZRHW|D3DFVF_TEX1|D3DFVF_TEXTUREFORMAT2)
 struct ISG_VERTEX
 {
@@ -144,13 +144,13 @@ bool ISPYGLASS::SetParameters()
 	}
 	ATTRIBUTES * pA;
 
-	// Ñêîðîñòü ôýéäà
+	// Ð¡ÐºÐ¾Ñ€Ð¾ÑÑ‚ÑŒ Ñ„ÑÐ¹Ð´Ð°
 	m_fFadeSpeed = pAttr->GetAttributeAsFloat("FadeTime");
 	if(m_fFadeSpeed>0.001f) m_fFadeSpeed = 1.f / m_fFadeSpeed;
 	else m_fFadeSpeed = -1.f;
 	m_fCurAlpha = 255.f;
 
-	// Ñîçäàäèì òåêñòóðû
+	// Ð¡Ð¾Ð·Ð´Ð°Ð´Ð¸Ð¼ Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ñ‹
 	char * texName = pAttr->GetAttribute("BackTextureName");
 	if(texName!=NULL)	m_idBackTex = rs->TextureCreate(texName);
 	else m_idBackTex = -1;
@@ -161,17 +161,17 @@ bool ISPYGLASS::SetParameters()
 	if(texName!=NULL)	m_idNationsTex = rs->TextureCreate(texName);
 	else m_idNationsTex = -1;
 
-	// Ñîçäàäèì áóôåðû
-	m_idVBuf = rs->CreateVertexBufferManaged(ISG_VERTEX_FORMAT,4*(1+1+6) * sizeof(ISG_VERTEX),D3DUSAGE_WRITEONLY); // ïîäëîæêà, 
+	// Ð¡Ð¾Ð·Ð´Ð°Ð´Ð¸Ð¼ Ð±ÑƒÑ„ÐµÑ€Ñ‹
+	m_idVBuf = rs->CreateVertexBufferManaged(ISG_VERTEX_FORMAT,4*(1+1+6) * sizeof(ISG_VERTEX),D3DUSAGE_WRITEONLY); // Ð¿Ð¾Ð´Ð»Ð¾Ð¶ÐºÐ°, 
 	m_nPrimitiveQuantity = 5;
-	m_idIBuf = rs->CreateIndexBufferManaged(8 * 6*2); // õîòÿ îäíîâðåìåííî ðèñóåòñÿ íå 8, à òîëüêî äâà ïðÿìîóãîëüíèêà
+	m_idIBuf = rs->CreateIndexBufferManaged(8 * 6*2); // Ñ…Ð¾Ñ‚Ñ Ð¾Ð´Ð½Ð¾Ð²Ñ€ÐµÐ¼ÐµÐ½Ð½Ð¾ Ñ€Ð¸ÑÑƒÐµÑ‚ÑÑ Ð½Ðµ 8, Ð° Ñ‚Ð¾Ð»ÑŒÐºÐ¾ Ð´Ð²Ð° Ð¿Ñ€ÑÐ¼Ð¾ÑƒÐ³Ð¾Ð»ÑŒÐ½Ð¸ÐºÐ°
 	if(m_idVBuf==-1 || m_idIBuf==-1)
 	{
 		api->Trace("Can`t create vertex or index buffers.");
 		return false;
 	}
 
-	// ïîçèöèÿ ïîäëîæêè
+	// Ð¿Ð¾Ð·Ð¸Ñ†Ð¸Ñ Ð¿Ð¾Ð´Ð»Ð¾Ð¶ÐºÐ¸
 	FRECT gfr;
 	if( !GetFRectFromAttribute ( pAttr->GetAttributeClass("globalpos"), gfr ) )
 	{
@@ -179,7 +179,7 @@ bool ISPYGLASS::SetParameters()
 		return false;
 	}
 
-	// ðàçìåð èêîíîê
+	// Ñ€Ð°Ð·Ð¼ÐµÑ€ Ð¸ÐºÐ¾Ð½Ð¾Ðº
 	FPOINT fpIconSize;
 	pA = pAttr->GetAttributeClass("iconsize");
 	if(pA!=NULL)
@@ -193,7 +193,7 @@ bool ISPYGLASS::SetParameters()
 		return false;
 	}
 
-	// ïîçèöèÿ ïðîðèñîâêè òåêñòà
+	// Ð¿Ð¾Ð·Ð¸Ñ†Ð¸Ñ Ð¿Ñ€Ð¾Ñ€Ð¸ÑÐ¾Ð²ÐºÐ¸ Ñ‚ÐµÐºÑÑ‚Ð°
 	pA = pAttr->GetAttributeClass("ShipText");
 	if(pA!=NULL)
 	{
@@ -209,7 +209,7 @@ bool ISPYGLASS::SetParameters()
 		return false;
 	}
 
-	// ïîçèöèè äëÿ âûâîäà äàííûõ
+	// Ð¿Ð¾Ð·Ð¸Ñ†Ð¸Ð¸ Ð´Ð»Ñ Ð²Ñ‹Ð²Ð¾Ð´Ð° Ð´Ð°Ð½Ð½Ñ‹Ñ…
 	pA = pAttr->GetAttributeClass("DigitData");
 	if(pA!=NULL)
 	{
@@ -228,7 +228,7 @@ bool ISPYGLASS::SetParameters()
 		return false;
 	}
 
-	// ïîçèöèè äëÿ èêîíîê
+	// Ð¿Ð¾Ð·Ð¸Ñ†Ð¸Ð¸ Ð´Ð»Ñ Ð¸ÐºÐ¾Ð½Ð¾Ðº
 	long	nTopIcon;
 	long	nIconPos[7];
 	pA = pAttr->GetAttributeClass("Icons");
@@ -249,10 +249,10 @@ bool ISPYGLASS::SetParameters()
 		return false;
 	}
 
-	// Ðàçìåð îáëàñòè ïîä òåêñò
+	// Ð Ð°Ð·Ð¼ÐµÑ€ Ð¾Ð±Ð»Ð°ÑÑ‚Ð¸ Ð¿Ð¾Ð´ Ñ‚ÐµÐºÑÑ‚
 	m_fStringMaxWidth = float(nIconPos[1] - m_nLeftTextShipData) - 4;
 
-	// çàïîëíèì èíäåêñ áóôåð
+	// Ð·Ð°Ð¿Ð¾Ð»Ð½Ð¸Ð¼ Ð¸Ð½Ð´ÐµÐºÑ Ð±ÑƒÑ„ÐµÑ€
 	WORD *pibuf = (WORD*)rs->LockIndexBuffer(m_idIBuf);
 	if(pibuf==NULL) return false;
 	for(i=0; i<8; i++)
@@ -266,7 +266,7 @@ bool ISPYGLASS::SetParameters()
 	}
 	rs->UnLockIndexBuffer(m_idIBuf);
 
-	// òåêñòóðà èêîíîê
+	// Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ð° Ð¸ÐºÐ¾Ð½Ð¾Ðº
 	pA = pAttr->GetAttributeClass("IconsTexture");
 	if(pA!=NULL)
 	{
@@ -351,16 +351,16 @@ void ISPYGLASS::Realize(dword delta_time)
 		DWORD dwcolor = 0xFFFFFFFF;
 		if(m_fCurAlpha<256.9f) dwcolor = (((DWORD)m_fCurAlpha)<<24) | 0x00FFFFFF;
 		rs->SetRenderState(D3DRS_TEXTUREFACTOR,dwcolor);
-		// ïîäëîæêà
+		// Ð¿Ð¾Ð´Ð»Ð¾Ð¶ÐºÐ°
 		rs->TextureSet(0,m_idBackTex);
 		rs->DrawBuffer(m_idVBuf, sizeof(ISG_VERTEX), m_idIBuf, 0,4, 0,2, "spyglass_interface");
-		// íàöèè
+		// Ð½Ð°Ñ†Ð¸Ð¸
 		if(m_nShipNation>=0)
 		{
 			rs->TextureSet(0,m_idNationsTex);
 			rs->DrawBuffer(m_idVBuf, sizeof(ISG_VERTEX), m_idIBuf, 4,4, 0,2, "spyglass_interface");
 		}
-		// èêîíêè
+		// Ð¸ÐºÐ¾Ð½ÐºÐ¸
 		rs->TextureSet(0,m_idIconTex);
 		if(m_nShipHull!=-1) //1
 		{
@@ -392,7 +392,7 @@ void ISPYGLASS::Realize(dword delta_time)
 		{
 			rs->DrawBuffer(m_idVBuf, sizeof(ISG_VERTEX), m_idIBuf, 32, 4, 0,2, "spyglass_interface");
 		}
-		// òåêñòû
+		// Ñ‚ÐµÐºÑÑ‚Ñ‹
 		if(m_sShipName!=NULL) rs->ExtPrint (m_idFontOne, dwcolor,0, ALIGN_LEFT,true,m_fShipNameScale, 0,0, m_nLeftTextShipData,m_nTopTextShipName,"%s",m_sShipName);
 		if(m_sShipType!=NULL) rs->ExtPrint (m_idFontOne, dwcolor,0, ALIGN_LEFT,true,m_fShipTypeScale, 0,0, m_nLeftTextShipData,m_nTopTextShipType,"%s",m_sShipType);
 		if(m_nShipHull!=-1) rs->ExtPrint (m_idFontTwo, dwcolor,0, ALIGN_LEFT,true,m_fFontTwoScale, 0,0, m_nLeftTextPos[0],m_nTopDigitData,"%d%%",m_nShipHull);

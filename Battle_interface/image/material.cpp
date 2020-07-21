@@ -74,7 +74,7 @@ void BIImageMaterial::DeleteImage( const BIImage* pImg )
 
 void BIImageMaterial::SetTexture( const char* pcTextureName )
 {
-	if( pcTextureName == m_sTextureName ) return; // óæå ñòîèò ýòà òåêñòóðà
+	if( pcTextureName == m_sTextureName ) return; // ÑƒÐ¶Ðµ ÑÑ‚Ð¾Ð¸Ñ‚ ÑÑ‚Ð° Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ð°
 	m_sTextureName = pcTextureName;
 	TEXTURE_RELEASE( m_pRS, m_nTextureID );
 	m_nTextureID = m_pRS->TextureCreate( pcTextureName );

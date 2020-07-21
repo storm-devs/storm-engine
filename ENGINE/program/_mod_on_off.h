@@ -1,70 +1,70 @@
 // BOAL 07.09.03  Mods on_off mode
-// здесь и далее ник boal - это разработческий ник ALexusB
+// Р·РґРµСЃСЊ Рё РґР°Р»РµРµ РЅРёРє boal - СЌС‚Рѕ СЂР°Р·СЂР°Р±РѕС‚С‡РµСЃРєРёР№ РЅРёРє ALexusB
 
-#define VERSION_NUMBER1       "Корсары: Возвращение Легенды  "
+#define VERSION_NUMBER1       "РљРѕСЂСЃР°СЂС‹: Р’РѕР·РІСЂР°С‰РµРЅРёРµ Р›РµРіРµРЅРґС‹  "
 #define VERSION_NUMBER2       "ver. 1.1.8.0608"
 #define VERSION_NUMBER3       "Seaward.Ru" // ALexusB&Co
 
-#define VERSION_NUM      80608  // текущий номер
-#define VERSION_NUM_PRE  80608  // последний совместмый
+#define VERSION_NUM      80608  // С‚РµРєСѓС‰РёР№ РЅРѕРјРµСЂ
+#define VERSION_NUM_PRE  80608  // РїРѕСЃР»РµРґРЅРёР№ СЃРѕРІРјРµСЃС‚РјС‹Р№
 
-//Сайт: http://seadogs.4fans.org
+//РЎР°Р№С‚: http://seadogs.4fans.org
 #define VERSION_WWW     "http://www.seaward.ru"
 
 // Show special message for test game statment
 #define MOD_BETTATESTMODE			"On"  // On -DEV version; Test - TST ver; Off - relize
 
-// гловальная строковая переменная
+// РіР»РѕРІР°Р»СЊРЅР°СЏ СЃС‚СЂРѕРєРѕРІР°СЏ РїРµСЂРµРјРµРЅРЅР°СЏ
 string sGlobalTemp;
 
-// quest.c bool    bQuestCheckProcessFreeze = false; // заморозка квестов
+// quest.c bool    bQuestCheckProcessFreeze = false; // Р·Р°РјРѕСЂРѕР·РєР° РєРІРµСЃС‚РѕРІ
 
-// запрет всех случаек на суше (офицеры и клады тоже)
+// Р·Р°РїСЂРµС‚ РІСЃРµС… СЃР»СѓС‡Р°РµРє РЅР° СЃСѓС€Рµ (РѕС„РёС†РµСЂС‹ Рё РєР»Р°РґС‹ С‚РѕР¶Рµ)
 bool    bDisableLandEncounters = false;
-// запрет жать ф2
+// Р·Р°РїСЂРµС‚ Р¶Р°С‚СЊ С„2
 bool    bDisableCharacterMenu  = false;
-// флаг - игрок читер
-bool    bPlayerIsCheater =  false;  // на перспективу, патчем
-// режим супер читов
+// С„Р»Р°Рі - РёРіСЂРѕРє С‡РёС‚РµСЂ
+bool    bPlayerIsCheater =  false;  // РЅР° РїРµСЂСЃРїРµРєС‚РёРІСѓ, РїР°С‚С‡РµРј
+// СЂРµР¶РёРј СЃСѓРїРµСЂ С‡РёС‚РѕРІ
 bool    bBettaTestMode = false;
-// показывать quest_reaction Log
+// РїРѕРєР°Р·С‹РІР°С‚СЊ quest_reaction Log
 bool    bQuestLogShow  = false;
-// показывать инфу по балансу
+// РїРѕРєР°Р·С‹РІР°С‚СЊ РёРЅС„Сѓ РїРѕ Р±Р°Р»Р°РЅСЃСѓ
 bool    bExpLogShow    = false;
-// всегда сдаются капитаны - отладка
+// РІСЃРµРіРґР° СЃРґР°СЋС‚СЃСЏ РєР°РїРёС‚Р°РЅС‹ - РѕС‚Р»Р°РґРєР°
 bool    TestRansackCaptain = false;
-// показ локаторов
+// РїРѕРєР°Р· Р»РѕРєР°С‚РѕСЂРѕРІ
 bool    bLocatorShow  = false;
-// Не жрать, нет крыс
+// РќРµ Р¶СЂР°С‚СЊ, РЅРµС‚ РєСЂС‹СЃ
 bool    bNoEatNoRats  = false;
-// Живой мир на паузе: губер не переезжает от времени, нации не объявляют войну и мир, эскадры не берут город себе, город нельзя взять себе (даже с патентом)
+// Р–РёРІРѕР№ РјРёСЂ РЅР° РїР°СѓР·Рµ: РіСѓР±РµСЂ РЅРµ РїРµСЂРµРµР·Р¶Р°РµС‚ РѕС‚ РІСЂРµРјРµРЅРё, РЅР°С†РёРё РЅРµ РѕР±СЉСЏРІР»СЏСЋС‚ РІРѕР№РЅСѓ Рё РјРёСЂ, СЌСЃРєР°РґСЂС‹ РЅРµ Р±РµСЂСѓС‚ РіРѕСЂРѕРґ СЃРµР±Рµ, РіРѕСЂРѕРґ РЅРµР»СЊР·СЏ РІР·СЏС‚СЊ СЃРµР±Рµ (РґР°Р¶Рµ СЃ РїР°С‚РµРЅС‚РѕРј)
 bool    bWorldAlivePause      = true;
-// пауза метро
+// РїР°СѓР·Р° РјРµС‚СЂРѕ
 bool bPauseContrabandMetro = false;
-// лог для ПГГ
+// Р»РѕРі РґР»СЏ РџР“Р“
 bool bPGGLogShow = false;
-// флаг генерации монстров
+// С„Р»Р°Рі РіРµРЅРµСЂР°С†РёРё РјРѕРЅСЃС‚СЂРѕРІ
 bool bMonstersGen = false;
-// флаг генерации сухопутных энкаунтеров
+// С„Р»Р°Рі РіРµРЅРµСЂР°С†РёРё СЃСѓС…РѕРїСѓС‚РЅС‹С… СЌРЅРєР°СѓРЅС‚РµСЂРѕРІ
 bool bLandEncountersGen = true;
-// флаг "в сундуке"
+// С„Р»Р°Рі "РІ СЃСѓРЅРґСѓРєРµ"
 bool bMainCharacterInBox = false;
 
-// Генератор фантомов - альтернатива
-bool    bNewFantomGenerator       = true;  // резерв "новый фехт"
-bool    bRechargePistolOnLine  = true;  // пистолеты перезаряжаются без сабли
-// упрощение невозможного
-bool    bNewCodeOn                = false;  // упрощение абордажа
-// нет сайвов, токо в церкви есть
+// Р“РµРЅРµСЂР°С‚РѕСЂ С„Р°РЅС‚РѕРјРѕРІ - Р°Р»СЊС‚РµСЂРЅР°С‚РёРІР°
+bool    bNewFantomGenerator       = true;  // СЂРµР·РµСЂРІ "РЅРѕРІС‹Р№ С„РµС…С‚"
+bool    bRechargePistolOnLine  = true;  // РїРёСЃС‚РѕР»РµС‚С‹ РїРµСЂРµР·Р°СЂСЏР¶Р°СЋС‚СЃСЏ Р±РµР· СЃР°Р±Р»Рё
+// СѓРїСЂРѕС‰РµРЅРёРµ РЅРµРІРѕР·РјРѕР¶РЅРѕРіРѕ
+bool    bNewCodeOn                = false;  // СѓРїСЂРѕС‰РµРЅРёРµ Р°Р±РѕСЂРґР°Р¶Р°
+// РЅРµС‚ СЃР°Р№РІРѕРІ, С‚РѕРєРѕ РІ С†РµСЂРєРІРё РµСЃС‚СЊ
 bool    bHardcoreGame             = false;
-// платный сайв-лоад
+// РїР»Р°С‚РЅС‹Р№ СЃР°Р№РІ-Р»РѕР°Рґ
 //bool    bPayForSaveLoad           = true;
 
 ///////////////////////////////////////////////////
 //          complexity
 //  Next Level rate
-int MOD_EXP_RATE           = 10; // это база... + (сложность)
-//int Level_Complexity       = 5; // by default только настройка
+int MOD_EXP_RATE           = 10; // СЌС‚Рѕ Р±Р°Р·Р°... + (СЃР»РѕР¶РЅРѕСЃС‚СЊ)
+//int Level_Complexity       = 5; // by default С‚РѕР»СЊРєРѕ РЅР°СЃС‚СЂРѕР№РєР°
 //  complexity of fantom skill
 int MOD_SKILL_ENEMY_RATE   = 5; // 1- easy; 2; 3; 4;  5-medium; 6; 7; 8; 9;  10 - hard (please, do not set more 10 or less 1 it mays crash game
 
@@ -77,39 +77,39 @@ int MOD_SKILL_ENEMY_RATE   = 5; // 1- easy; 2; 3; 4;  5-medium; 6; 7; 8; 9;  10 
 
 #define InstantRepairRATE        65.0
 
-// дистанция до корабля для разговора
+// РґРёСЃС‚Р°РЅС†РёСЏ РґРѕ РєРѕСЂР°Р±Р»СЏ РґР»СЏ СЂР°Р·РіРѕРІРѕСЂР°
 #define DistanceToShipTalk        300.0
 
 //#define ShipyardMoneyInit        190000.0
 //#define ShipyardMoneyMax         900000.0
 //#define ShipyardMoneyAdd         2000
 
-// boal 23.01.2004 доработка 091004 сколь угодно героев -->
+// boal 23.01.2004 РґРѕСЂР°Р±РѕС‚РєР° 091004 СЃРєРѕР»СЊ СѓРіРѕРґРЅРѕ РіРµСЂРѕРµРІ -->
 int    startHeroType = 1;
 //int    heroFaceId    = 1;
 // boal 23.01.2004 <--
 
-int ItemDeadStartCount = 0; // заполняется в itemInit порог для заполения трупов (оптимизация)
+int ItemDeadStartCount = 0; // Р·Р°РїРѕР»РЅСЏРµС‚СЃСЏ РІ itemInit РїРѕСЂРѕРі РґР»СЏ Р·Р°РїРѕР»РµРЅРёСЏ С‚СЂСѓРїРѕРІ (РѕРїС‚РёРјРёР·Р°С†РёСЏ)
 
 #define STARTGAME_YEAR       1665
 #define STARTGAME_MONTH      1
 #define STARTGAME_DAY        1
 
-// пасхалка Кукурузина
-#define FUNY_SHIP_NAME    "Кукурузина"
+// РїР°СЃС…Р°Р»РєР° РљСѓРєСѓСЂСѓР·РёРЅР°
+#define FUNY_SHIP_NAME    "РљСѓРєСѓСЂСѓР·РёРЅР°"
 
 int TimeScaleCounter = 0;
-// запрет перехода
+// Р·Р°РїСЂРµС‚ РїРµСЂРµС…РѕРґР°
 bool chrDisableReloadToLocation = false;
-// для видения форта в АИ шипов
+// РґР»СЏ РІРёРґРµРЅРёСЏ С„РѕСЂС‚Р° РІ РђР С€РёРїРѕРІ
 bool bIsFortAtIsland = false;
 float fFort_x, fFort_z;
 int iFortNation, iFortCommander;
-//начало и конец предметов для локаторов item
+//РЅР°С‡Р°Р»Рѕ Рё РєРѕРЅРµС† РїСЂРµРґРјРµС‚РѕРІ РґР»СЏ Р»РѕРєР°С‚РѕСЂРѕРІ item
 int ItemsForLocators_start, ItemsForLocators_end;
 
-int iScriptVersion = 74632; //движок проверяет эту переменную, должна равной #define ENGINE_SCRIPT_VERSION в core.h
-//==> проверка скриптами движка на наличие метода. если он есть, то возможное несоответствие движка и
-//==> скриптов отсечет сам двиг, если нет - вылет. 74632 - адонный номер.
+int iScriptVersion = 74632; //РґРІРёР¶РѕРє РїСЂРѕРІРµСЂСЏРµС‚ СЌС‚Сѓ РїРµСЂРµРјРµРЅРЅСѓСЋ, РґРѕР»Р¶РЅР° СЂР°РІРЅРѕР№ #define ENGINE_SCRIPT_VERSION РІ core.h
+//==> РїСЂРѕРІРµСЂРєР° СЃРєСЂРёРїС‚Р°РјРё РґРІРёР¶РєР° РЅР° РЅР°Р»РёС‡РёРµ РјРµС‚РѕРґР°. РµСЃР»Рё РѕРЅ РµСЃС‚СЊ, С‚Рѕ РІРѕР·РјРѕР¶РЅРѕРµ РЅРµСЃРѕРѕС‚РІРµС‚СЃС‚РІРёРµ РґРІРёР¶РєР° Рё
+//==> СЃРєСЂРёРїС‚РѕРІ РѕС‚СЃРµС‡РµС‚ СЃР°Рј РґРІРёРі, РµСЃР»Рё РЅРµС‚ - РІС‹Р»РµС‚. 74632 - Р°РґРѕРЅРЅС‹Р№ РЅРѕРјРµСЂ.
 GetEngineVersion();
 /////////////////////////////

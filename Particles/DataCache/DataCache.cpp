@@ -4,7 +4,7 @@
 
 bool ReadingAlreadyComplete;
 
-//Конструктор/деструктор
+//РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ/РґРµСЃС‚СЂСѓРєС‚РѕСЂ
 DataCache::DataCache (IParticleManager* pManager) : Cache(_FL_)
 {
 	Master = pManager;
@@ -15,7 +15,7 @@ DataCache::~DataCache ()
 	ResetCache ();
 }
 
-//Положить в кэш данные для системы
+//РџРѕР»РѕР¶РёС‚СЊ РІ РєСЌС€ РґР°РЅРЅС‹Рµ РґР»СЏ СЃРёСЃС‚РµРјС‹
 void DataCache::CacheSystem (const char* FileName)
 {
 	string NameWithExt = FileName;
@@ -39,7 +39,7 @@ void DataCache::CacheSystem (const char* FileName)
 	BYTE* pMemBuffer = NEW BYTE[FileSize];
 	api->fio->_ReadFile(pSysFile, pMemBuffer, FileSize, 0);
 
-	//Создаем данные из файла...
+	//РЎРѕР·РґР°РµРј РґР°РЅРЅС‹Рµ РёР· С„Р°Р№Р»Р°...
 	CreateDataSource (pMemBuffer, FileSize, LongFileName);
 
 
@@ -48,7 +48,7 @@ void DataCache::CacheSystem (const char* FileName)
 	api->fio->_CloseHandle(pSysFile);
 }
 
-//Сбросить кэш
+//РЎР±СЂРѕСЃРёС‚СЊ РєСЌС€
 void DataCache::ResetCache ()
 {
 	for (int n = 0; n < Cache; n++)
@@ -59,7 +59,7 @@ void DataCache::ResetCache ()
 	Cache.DelAll();
 }
 
-//Получить указатель на данные для системы партиклов
+//РџРѕР»СѓС‡РёС‚СЊ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РґР°РЅРЅС‹Рµ РґР»СЏ СЃРёСЃС‚РµРјС‹ РїР°СЂС‚РёРєР»РѕРІ
 DataSource* DataCache::GetParticleSystemDataSource (const char* FileName)
 {
 	string NameWithExt = FileName;
@@ -74,7 +74,7 @@ DataSource* DataCache::GetParticleSystemDataSource (const char* FileName)
 	return NULL;
 }
 
-//Проверить указатель на валидность
+//РџСЂРѕРІРµСЂРёС‚СЊ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РІР°Р»РёРґРЅРѕСЃС‚СЊ
 bool DataCache::ValidatePointer (DataSource* pData)
 {
 	for (int n = 0; n < Cache; n++)

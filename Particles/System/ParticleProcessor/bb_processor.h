@@ -40,7 +40,7 @@ class BillBoardProcessor
 	};
 
 	VDX8RENDER* pRS;
-	//Буферы для рендера билбордов
+	//Р‘СѓС„РµСЂС‹ РґР»СЏ СЂРµРЅРґРµСЂР° Р±РёР»Р±РѕСЂРґРѕРІ
 	long pVBuffer;
 	long pIBuffer;
 
@@ -63,10 +63,10 @@ class BillBoardProcessor
 	GMXQSort<BB_ParticleData*> ParticleSorter;
 
 
-	//Считает расстояние до билбоардов
+	//РЎС‡РёС‚Р°РµС‚ СЂР°СЃСЃС‚РѕСЏРЅРёРµ РґРѕ Р±РёР»Р±РѕР°СЂРґРѕРІ
 	DWORD CalcDistanceToCamera ();
 
-	//Функция сравнения при сортировке
+	//Р¤СѓРЅРєС†РёСЏ СЃСЂР°РІРЅРµРЅРёСЏ РїСЂРё СЃРѕСЂС‚РёСЂРѕРІРєРµ
 	static BOOL CompareFunction (BB_ParticleData* e1, BB_ParticleData* e2);
 
 

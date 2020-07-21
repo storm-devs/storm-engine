@@ -98,8 +98,8 @@ protected:
 	char *   m_sBorderGroupName;	//
 	long	 m_texBorder;			// select border texture identificator
 	long	 m_nBorderPicture;		// select border picture identificator
-	long	 *m_idBadTexture;		// текстура картинки для замены несуществующих
-	long	 *m_idBadPic;			// картинка для замены несуществующих
+	long	 *m_idBadTexture;		// С‚РµРєСЃС‚СѓСЂР° РєР°СЂС‚РёРЅРєРё РґР»СЏ Р·Р°РјРµРЅС‹ РЅРµСЃСѓС‰РµСЃС‚РІСѓСЋС‰РёС…
+	long	 *m_idBadPic;			// РєР°СЂС‚РёРЅРєР° РґР»СЏ Р·Р°РјРµРЅС‹ РЅРµСЃСѓС‰РµСЃС‚РІСѓСЋС‰РёС…
 
 	char *	 m_sSpecTechniqueName;
 	DWORD	 m_dwSpecTechniqueARGB;

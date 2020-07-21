@@ -29,7 +29,7 @@ OctTree::OTNode::~OTNode()
 }
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 OctTree::OctTree()
@@ -48,7 +48,7 @@ OctTree::~OctTree()
 	if(verts) delete verts;
 }
 
-//Инициализировать дерево
+//РРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°С‚СЊ РґРµСЂРµРІРѕ
 void OctTree::Init(LGeometry * g)
 {	
 	vrt = g->vrt;
@@ -87,11 +87,11 @@ bool OctTree::AddVertex(OTNode * node, Vertex * v)
 	{
 		if(node->num < LLOT_MAX)
 		{
-			//Добавляем в текущий нод
+			//Р”РѕР±Р°РІР»СЏРµРј РІ С‚РµРєСѓС‰РёР№ РЅРѕРґ
 			node->vrt[node->num++] = v;
 			return true;
 		}else{
-			//Переполнение, надо распределять по детям
+			//РџРµСЂРµРїРѕР»РЅРµРЅРёРµ, РЅР°РґРѕ СЂР°СЃРїСЂРµРґРµР»СЏС‚СЊ РїРѕ РґРµС‚СЏРј
 			CVECTOR cnt = (node->min + node->max)*0.5f;
 			node->node[0] = NEW OTNode(CVECTOR(min.x, min.y, min.z), CVECTOR(cnt.x, cnt.y, cnt.z));
 			node->node[1] = NEW OTNode(CVECTOR(min.x, min.y, cnt.z), CVECTOR(cnt.x, cnt.y, max.z));
@@ -115,7 +115,7 @@ bool OctTree::AddVertex(OTNode * node, Vertex * v)
 			node->num = 0;
 		}
 	}
-	//Добавляем детям
+	//Р”РѕР±Р°РІР»СЏРµРј РґРµС‚СЏРј
 	long c = 0;
 	for(c = 0; c < 8; c++)
 	{
@@ -125,7 +125,7 @@ bool OctTree::AddVertex(OTNode * node, Vertex * v)
 	return true;
 }
 
-//Оптимизация дерева
+//РћРїС‚РёРјРёР·Р°С†РёСЏ РґРµСЂРµРІР°
 void OctTree::Optimize(OTNode * node)
 {
 	if(!node->vrt)
@@ -145,7 +145,7 @@ void OctTree::Optimize(OTNode * node)
 	}
 }
 
-//Найти вершины в заданном радиусе
+//РќР°Р№С‚Рё РІРµСЂС€РёРЅС‹ РІ Р·Р°РґР°РЅРЅРѕРј СЂР°РґРёСѓСЃРµ
 void OctTree::FindVerts(CVECTOR & pos, float r)
 {
 	numVerts = 0;
@@ -157,21 +157,21 @@ void OctTree::FindVerts(CVECTOR & pos, float r)
 	if(root) FindVerts(root);
 }
 
-//Поиск
+//РџРѕРёСЃРє
 void OctTree::FindVerts(OTNode * node)
 {
 	CVECTOR & min = node->min;
 	CVECTOR & max = node->max;
-	//Предворительная проверка
+	//РџСЂРµРґРІРѕСЂРёС‚РµР»СЊРЅР°СЏ РїСЂРѕРІРµСЂРєР°
 	if(vertsPosMin.x > max.x) return;
 	if(vertsPosMax.x < min.x) return;
 	if(vertsPosMin.y > max.y) return;
 	if(vertsPosMax.y < min.y) return;
 	if(vertsPosMin.z > max.z) return;
 	if(vertsPosMax.z < min.z) return;
-	//Уточнёная проверка
+	//РЈС‚РѕС‡РЅС‘РЅР°СЏ РїСЂРѕРІРµСЂРєР°
 
-	//Если нет своего масива отправим к детям
+	//Р•СЃР»Рё РЅРµС‚ СЃРІРѕРµРіРѕ РјР°СЃРёРІР° РѕС‚РїСЂР°РІРёРј Рє РґРµС‚СЏРј
 	if(node->vrt == null)
 	{
 		for(long i = 0; i < 8; i++) if(node->node[i]) FindVerts(node->node[i]);

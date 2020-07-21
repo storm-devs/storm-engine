@@ -67,12 +67,12 @@ void CXI_TWOPICTURE::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *name
 
 	m_bMouseInsideIndifferent = (0!=GetIniLong( ini1,name1, ini2,name2, "MouseInsideIndifferent", 1 ));
 
-	// координатные смещения
+	// РєРѕРѕСЂРґРёРЅР°С‚РЅС‹Рµ СЃРјРµС‰РµРЅРёСЏ
 	m_ShadowOffset = GetIniFloatPoint(ini1,name1, ini2,name2, "offsetShadow", FXYPOINT(4.0,4.0));
 	m_PressShadowOffset = GetIniFloatPoint(ini1,name1, ini2,name2, "offsetPressShad", FXYPOINT(4.0,4.0));
 	m_PressOffset = GetIniFloatPoint(ini1,name1, ini2,name2, "offsetPress", FXYPOINT(4.0,4.0));
 
-	// текстуры
+	// С‚РµРєСЃС‚СѓСЂС‹
 	if( ReadIniString(ini1,name1, ini2,name2, "oneTexName", param, sizeof(param),"") )
 		m_idOneTex = m_rs->TextureCreate(param);
 	else	m_idOneTex = -1;
@@ -81,12 +81,12 @@ void CXI_TWOPICTURE::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *name
 		m_idTwoTex = m_rs->TextureCreate(param);
 	else	m_idTwoTex = -1;
 
-	// получим используемые цвета
+	// РїРѕР»СѓС‡РёРј РёСЃРїРѕР»СЊР·СѓРµРјС‹Рµ С†РІРµС‚Р°
 	m_dwSelectColor = GetIniARGB(ini1,name1, ini2,name2, "argbSelectCol", ARGB(255,128,128,128));
 	m_dwDarkColor = GetIniARGB(ini1,name1, ini2,name2, "argbDisableCol", ARGB(255,48,48,48));
 	m_dwShadowColor = GetIniARGB(ini1,name1, ini2,name2, "argbShadowCol", ARGB(255,48,48,48));
 
-	// текстурные координаты
+	// С‚РµРєСЃС‚СѓСЂРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹
 	FXYRECT texRect = GetIniFloatRect(ini1,name1, ini2,name2, "texPos", FXYRECT(0.f,0.f,1.f,1.f));
 
 	// Create rectangle
@@ -197,7 +197,7 @@ void CXI_TWOPICTURE::MouseThis(float fX, float fY)
 		( fX <= (m_leftPicCenter.x + m_picSize.x/2) ) &&
 		( fY >= (m_leftPicCenter.y - m_picSize.y/2) ) &&
 		( fY <= (m_leftPicCenter.y + m_picSize.y/2) )  )
-	// указатель мыши над левой картинкой
+	// СѓРєР°Р·Р°С‚РµР»СЊ РјС‹С€Рё РЅР°Рґ Р»РµРІРѕР№ РєР°СЂС‚РёРЅРєРѕР№
 	{
 		if(!m_bLeftSelect)
 		{
@@ -211,7 +211,7 @@ void CXI_TWOPICTURE::MouseThis(float fX, float fY)
 		( fX <= (m_rightPicCenter.x + m_picSize.x/2) ) &&
 		( fY >= (m_rightPicCenter.y - m_picSize.y/2) ) &&
 		( fY <= (m_rightPicCenter.y + m_picSize.y/2) )  )
-	// указатель мыши над правой картинкой
+	// СѓРєР°Р·Р°С‚РµР»СЊ РјС‹С€Рё РЅР°Рґ РїСЂР°РІРѕР№ РєР°СЂС‚РёРЅРєРѕР№
 	{
 		if(m_bLeftSelect)
 		{

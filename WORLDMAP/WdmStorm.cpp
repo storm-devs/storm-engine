@@ -16,23 +16,23 @@
 
 //============================================================================================
 
-#define WDM_STORM_LIVETIME_MIN	60.0f	//Минимальное время жизни шторма (сек)
-#define WDM_STORM_LIVETIME_MAX	120.0f	//Максимальное время жизни шторма (сек)
+#define WDM_STORM_LIVETIME_MIN	60.0f	//РњРёРЅРёРјР°Р»СЊРЅРѕРµ РІСЂРµРјСЏ Р¶РёР·РЅРё С€С‚РѕСЂРјР° (СЃРµРє)
+#define WDM_STORM_LIVETIME_MAX	120.0f	//РњР°РєСЃРёРјР°Р»СЊРЅРѕРµ РІСЂРµРјСЏ Р¶РёР·РЅРё С€С‚РѕСЂРјР° (СЃРµРє)
 
-#define WDM_STORM_ALPHA_BRN		0.1f	//Скорость появления в секунду (с 0 до 1)
-#define WDM_STORM_ALPHA_KL		0.3f	//Скорость умирания в секунду (с 1 до 0)
+#define WDM_STORM_ALPHA_BRN		0.1f	//РЎРєРѕСЂРѕСЃС‚СЊ РїРѕСЏРІР»РµРЅРёСЏ РІ СЃРµРєСѓРЅРґСѓ (СЃ 0 РґРѕ 1)
+#define WDM_STORM_ALPHA_KL		0.3f	//РЎРєРѕСЂРѕСЃС‚СЊ СѓРјРёСЂР°РЅРёСЏ РІ СЃРµРєСѓРЅРґСѓ (СЃ 1 РґРѕ 0)
 
-#define WDM_STORM_DIR_DIS		0.6f	//Разброс направлений (сложение ортоганальных векторов, 1.0f = pi/2)
-#define WDM_STORM_DIR_SPD_MIN	5.0f	//Минимальная скорость перемещений
-#define WDM_STORM_DIR_SPD_MAX	8.0f	//Максимальная скорость перемещений
-#define WDM_STORM_DIR_CHTIME	0.03f	//1/time_in_sec время изменения направления тучи с текущего на корабль
+#define WDM_STORM_DIR_DIS		0.6f	//Р Р°Р·Р±СЂРѕСЃ РЅР°РїСЂР°РІР»РµРЅРёР№ (СЃР»РѕР¶РµРЅРёРµ РѕСЂС‚РѕРіР°РЅР°Р»СЊРЅС‹С… РІРµРєС‚РѕСЂРѕРІ, 1.0f = pi/2)
+#define WDM_STORM_DIR_SPD_MIN	5.0f	//РњРёРЅРёРјР°Р»СЊРЅР°СЏ СЃРєРѕСЂРѕСЃС‚СЊ РїРµСЂРµРјРµС‰РµРЅРёР№
+#define WDM_STORM_DIR_SPD_MAX	8.0f	//РњР°РєСЃРёРјР°Р»СЊРЅР°СЏ СЃРєРѕСЂРѕСЃС‚СЊ РїРµСЂРµРјРµС‰РµРЅРёР№
+#define WDM_STORM_DIR_CHTIME	0.03f	//1/time_in_sec РІСЂРµРјСЏ РёР·РјРµРЅРµРЅРёСЏ РЅР°РїСЂР°РІР»РµРЅРёСЏ С‚СѓС‡Рё СЃ С‚РµРєСѓС‰РµРіРѕ РЅР° РєРѕСЂР°Р±Р»СЊ
 
-#define WDM_STORM_CLDRADIUS		30.0f	//Радиус разброса облаков в шторме
+#define WDM_STORM_CLDRADIUS		30.0f	//Р Р°РґРёСѓСЃ СЂР°Р·Р±СЂРѕСЃР° РѕР±Р»Р°РєРѕРІ РІ С€С‚РѕСЂРјРµ
 
-#define WDM_STORM_CLOUDRAD		20.0f	//Размер облака для активизации
+#define WDM_STORM_CLOUDRAD		20.0f	//Р Р°Р·РјРµСЂ РѕР±Р»Р°РєР° РґР»СЏ Р°РєС‚РёРІРёР·Р°С†РёРё
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 char WdmStorm::cloudPosName[16];
@@ -44,46 +44,46 @@ WdmStorm::WdmStorm()
 	strcpy(cloudPosName, "cloudPos  ");
 	strcpy(rotSpdName, "rotSpd ");
 	saveAttribute = null;
-	//Позиция шторма, направление перемещения время жизни
+	//РџРѕР·РёС†РёСЏ С€С‚РѕСЂРјР°, РЅР°РїСЂР°РІР»РµРЅРёРµ РїРµСЂРµРјРµС‰РµРЅРёСЏ РІСЂРµРјСЏ Р¶РёР·РЅРё
 	isActiveTime = 2.0f;
-	//Угл относительно корабля
+	//РЈРіР» РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РєРѕСЂР°Р±Р»СЏ
 	float ang = rand()*2.0f*3.141592653589793f/(RAND_MAX + 1);
-	//Радиус до корабля
+	//Р Р°РґРёСѓСЃ РґРѕ РєРѕСЂР°Р±Р»СЏ
 	float r = wdmObjects->stormBrnDistMin + rand()*(wdmObjects->stormBrnDistMax - wdmObjects->stormBrnDistMin)/RAND_MAX;
-	//Позиция
+	//РџРѕР·РёС†РёСЏ
 	pos = CVECTOR(((WdmRenderModel *)wdmObjects->playerShip)->mtx.Pos().x + r*sinf(ang), 30.0f, ((WdmRenderModel *)wdmObjects->playerShip)->mtx.Pos().z + r*cosf(ang));
-	//Направление перемещения
-	//Направление на корабль
+	//РќР°РїСЂР°РІР»РµРЅРёРµ РїРµСЂРµРјРµС‰РµРЅРёСЏ
+	//РќР°РїСЂР°РІР»РµРЅРёРµ РЅР° РєРѕСЂР°Р±Р»СЊ
 	dir = ((WdmRenderModel *)wdmObjects->playerShip)->mtx.Pos() - pos; dir.y = 0.0f;
 	r = sqrtf(~dir);
 	if(r > 0.0f) dir /= r;
-	//Произвольное отклонение от курса
+	//РџСЂРѕРёР·РІРѕР»СЊРЅРѕРµ РѕС‚РєР»РѕРЅРµРЅРёРµ РѕС‚ РєСѓСЂСЃР°
 	r = WDM_STORM_DIR_DIS*(1.0f - rand()*2.0f/RAND_MAX);
 	ang = dir.x;
 	dir.x -= r*dir.z;
 	dir.z += r*ang;
-	//Направление движения корабля
+	//РќР°РїСЂР°РІР»РµРЅРёРµ РґРІРёР¶РµРЅРёСЏ РєРѕСЂР°Р±Р»СЏ
 	r = rand()*0.1f*WDM_STORM_DIR_DIS/RAND_MAX;
 	dir.x += ((WdmRenderModel *)wdmObjects->playerShip)->mtx.Vz().x*r;
 	dir.z += ((WdmRenderModel *)wdmObjects->playerShip)->mtx.Vz().z*r;
-	//Нормализуем
+	//РќРѕСЂРјР°Р»РёР·СѓРµРј
 	r = sqrtf(~dir);
 	if(r > 0.0f) dir /= r;
-	//Зададим скорость
+	//Р—Р°РґР°РґРёРј СЃРєРѕСЂРѕСЃС‚СЊ
 	speed = WDM_STORM_DIR_SPD_MIN + rand()*(WDM_STORM_DIR_SPD_MAX - WDM_STORM_DIR_SPD_MIN)/RAND_MAX;
-	//Время жизни
+	//Р’СЂРµРјСЏ Р¶РёР·РЅРё
 	liveTime = WDM_STORM_LIVETIME_MIN + rand()*(WDM_STORM_LIVETIME_MAX - WDM_STORM_LIVETIME_MIN)/RAND_MAX;
 	liveAlpha = 0.0f;
 	isBrn = true;
 	isKl = false;
-	//Создаём облака
-	//Количество облаков
+	//РЎРѕР·РґР°С‘Рј РѕР±Р»Р°РєР°
+	//РљРѕР»РёС‡РµСЃС‚РІРѕ РѕР±Р»Р°РєРѕРІ
 	//num = 3 + (rand() & 3);
 	num = 6;
-	//Битовое поле расположения облаков
+	//Р‘РёС‚РѕРІРѕРµ РїРѕР»Рµ СЂР°СЃРїРѕР»РѕР¶РµРЅРёСЏ РѕР±Р»Р°РєРѕРІ
 	byte w[8];
 	for(long i = 0; i < 8; i++) w[i] = 0;
-	//Раскидываем облака
+	//Р Р°СЃРєРёРґС‹РІР°РµРј РѕР±Р»Р°РєР°
 	long x, z;
 	bool globSign = (rand() & 1) != 0;
 	for(long i = 0; i < num; i++)
@@ -101,7 +101,7 @@ WdmStorm::WdmStorm()
 			cloudPos[i].x = 2.0f*WDM_STORM_CLDRADIUS*(0.5f - x/7.0f);
 			cloudPos[i].y = 5.0f*(0.5f - rand()*1.0f/RAND_MAX);
 			cloudPos[i].z = 2.0f*WDM_STORM_CLDRADIUS*(0.5f - z/7.0f);
-			//Скорость вращения
+			//РЎРєРѕСЂРѕСЃС‚СЊ РІСЂР°С‰РµРЅРёСЏ
 			rotSpd[i] = 0.8f*(cloudPos[i].x*cloudPos[i].x + cloudPos[i].z*cloudPos[i].z)/(WDM_STORM_CLDRADIUS*WDM_STORM_CLDRADIUS);
 			if(rotSpd[i] > 1.0f) rotSpd[i] = 1.0f;
 			rotSpd[i] = 0.1f + 1.0f - rotSpd[i];
@@ -110,7 +110,7 @@ WdmStorm::WdmStorm()
 			rotSpd[i] *= 1.0f;
 		}
 	}
-	//Отметимся в objects
+	//РћС‚РјРµС‚РёРјСЃСЏ РІ objects
 	wdmObjects->AddStorm(this);
 	rainTexture = wdmObjects->rs->TextureCreate("\\WorldMap\\rain.tga");
 }
@@ -123,15 +123,15 @@ WdmStorm::~WdmStorm()
 	{
 		wdmObjects->wm->DeleteObject(cloud[i]);
 	}
-	//Отметимся в objects
+	//РћС‚РјРµС‚РёРјСЃСЏ РІ objects
 	wdmObjects->DelStorm(this);
 }
 
 bool WdmStorm::CheckIntersection(float x, float z, float r)
 {
-	//Дистанция пересечения
+	//Р”РёСЃС‚Р°РЅС†РёСЏ РїРµСЂРµСЃРµС‡РµРЅРёСЏ
 	r = (r + WDM_STORM_CLOUDRAD)*(r + WDM_STORM_CLOUDRAD);
-	//Проходимся по всем облакам
+	//РџСЂРѕС…РѕРґРёРјСЃСЏ РїРѕ РІСЃРµРј РѕР±Р»Р°РєР°Рј
 	for(long i = 0; i < num; i++)
 		if(cloud[i])
 		{
@@ -143,16 +143,16 @@ bool WdmStorm::CheckIntersection(float x, float z, float r)
 	return false;
 }
 
-//Расчёты
+//Р Р°СЃС‡С‘С‚С‹
 void WdmStorm::Update(float dltTime)
 {
 	if(isActiveTime >= 0.0f) isActiveTime -= dltTime;
-	//Вектор направления к кораблю
+	//Р’РµРєС‚РѕСЂ РЅР°РїСЂР°РІР»РµРЅРёСЏ Рє РєРѕСЂР°Р±Р»СЋ
 	CVECTOR v;// = ((WdmRenderModel *)wdmObjects->playerShip)->mtx.Pos() - pos; v.y = 0.0f;
 	wdmObjects->GetWind(pos.x,pos.z,v);
 	float r = sqrtf(~v);
-	//Немного подтягиваем направление к направлению корабля
-	//Новый вектор направления
+	//РќРµРјРЅРѕРіРѕ РїРѕРґС‚СЏРіРёРІР°РµРј РЅР°РїСЂР°РІР»РµРЅРёРµ Рє РЅР°РїСЂР°РІР»РµРЅРёСЋ РєРѕСЂР°Р±Р»СЏ
+	//РќРѕРІС‹Р№ РІРµРєС‚РѕСЂ РЅР°РїСЂР°РІР»РµРЅРёСЏ
 	float x = v.x;
 	float z = v.z;
 	if(r > 0.0f){ x /= r; z /= r; }
@@ -160,33 +160,33 @@ void WdmStorm::Update(float dltTime)
 	z += 0.1f*((WdmRenderModel *)wdmObjects->playerShip)->mtx.Vz().z;
 	float k = x*x + z*z;
 	if(k > 0.0f){ k = 1.0f/sqrtf(k); x *= k; z *= k; }*/
-	//Коэфициент блендинга векторов
+	//РљРѕСЌС„РёС†РёРµРЅС‚ Р±Р»РµРЅРґРёРЅРіР° РІРµРєС‚РѕСЂРѕРІ
 	float k = dltTime*WDM_STORM_DIR_CHTIME;
 	if(k > 1.0f) k = 1.0f;
-	//Ищем новое направление
+	//РС‰РµРј РЅРѕРІРѕРµ РЅР°РїСЂР°РІР»РµРЅРёРµ
 	dir.x += (x - dir.x)*k;
 	dir.z += (z - dir.z)*k;
-	//Нормаплизуем
+	//РќРѕСЂРјР°РїР»РёР·СѓРµРј
 	k = dir.x*dir.x + dir.z*dir.z;
 	if(k > 0.0f){ k = 1.0f/sqrtf(k); dir.x *= k; dir.z *= k; }
-	//Перемещаем
+	//РџРµСЂРµРјРµС‰Р°РµРј
 	pos += dir*dltTime*speed;
 	isKl |= (pos.x < -wdmObjects->worldSizeX*1.4f || pos.x > wdmObjects->worldSizeX*1.4f);
 	isKl |= (pos.z < -wdmObjects->worldSizeZ*1.4f || pos.z > wdmObjects->worldSizeZ*1.4f);
-	//Альфа от удалённости камеры
+	//РђР»СЊС„Р° РѕС‚ СѓРґР°Р»С‘РЅРЅРѕСЃС‚Рё РєР°РјРµСЂС‹
 	float alpha = (wdmObjects->camera->realHeight - pos.y - 10.0f)*0.01f;
 	if(alpha < 0.0f) alpha = 0.0f;
 	if(alpha > 1.0f) alpha = 1.0f;
-	//Альфа от удалённости от корабля	
+	//РђР»СЊС„Р° РѕС‚ СѓРґР°Р»С‘РЅРЅРѕСЃС‚Рё РѕС‚ РєРѕСЂР°Р±Р»СЏ	
 	if(r < wdmObjects->stormViewDistMin) r = wdmObjects->stormViewDistMin;
 	if(r > wdmObjects->stormViewDistMax) r = wdmObjects->stormViewDistMax;
 	alpha *= 1.0f - (r - wdmObjects->stormViewDistMin)/(wdmObjects->stormViewDistMax - wdmObjects->stormViewDistMin);
-	//Альфа жизни
+	//РђР»СЊС„Р° Р¶РёР·РЅРё
 	alpha *= liveAlpha;
-	//Обрежим лишнее
+	//РћР±СЂРµР¶РёРј Р»РёС€РЅРµРµ
 	if(alpha < 0.0f) alpha = 0.0f;
 	if(alpha > 1.0f) alpha = 1.0f;
-	//Жизнь
+	//Р–РёР·РЅСЊ
 	liveTime -= dltTime;
 	isKl |= (r >= wdmObjects->stormDistKill) | (liveTime <= 0.0f);
 	isBrn &= !isKl;
@@ -206,20 +206,20 @@ void WdmStorm::Update(float dltTime)
 		{
 			liveAlpha = 0.0f;
 			isKl = false;
-			killMe = true;	//Удаляем себя
+			killMe = true;	//РЈРґР°Р»СЏРµРј СЃРµР±СЏ
 		}
 	}
-	//Устанавливаем облакам позиции
+	//РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РѕР±Р»Р°РєР°Рј РїРѕР·РёС†РёРё
 	for(long i = 0; i < num; i++)
 		if(cloud[i])
 		{
-			//Повернём облако вокруг центра
+			//РџРѕРІРµСЂРЅС‘Рј РѕР±Р»Р°РєРѕ РІРѕРєСЂСѓРі С†РµРЅС‚СЂР°
 			float rotAng = rotSpd[i]*dltTime;
 			CMatrix m(0.0f, rotAng, 0.0f);
 			cloudPos[i] = m*CVECTOR(cloudPos[i]);
-			//Установим альфу
+			//РЈСЃС‚Р°РЅРѕРІРёРј Р°Р»СЊС„Сѓ
 			cloud[i]->globalAlpha = alpha;
-			//Установим позицию
+			//РЈСЃС‚Р°РЅРѕРІРёРј РїРѕР·РёС†РёСЋ
 			cloud[i]->pos = pos + cloudPos[i];
 		}
 	UpdateSaveData();
@@ -256,7 +256,7 @@ void WdmStorm::LRender(VDX8RENDER * rs)
 	}
 }
 
-//Установка параметров
+//РЈСЃС‚Р°РЅРѕРІРєР° РїР°СЂР°РјРµС‚СЂРѕРІ
 void WdmStorm::SetSaveAttribute(ATTRIBUTES * save)
 {
 	saveAttribute = save;
@@ -304,7 +304,7 @@ void WdmStorm::DeleteUpdate()
 	}
 }
 
-//Обновление сохраняемых данных
+//РћР±РЅРѕРІР»РµРЅРёРµ СЃРѕС…СЂР°РЅСЏРµРјС‹С… РґР°РЅРЅС‹С…
 void WdmStorm::UpdateSaveData()
 {
 	if(!saveAttribute) return;

@@ -6,7 +6,7 @@
 #include "SoundService.h"
 
 
-//для debug
+//РґР»СЏ debug
 #include "..\common_h\dx8render.h"
 #include "DebugEntity.h"
 VDX8RENDER* pRS = NULL;
@@ -106,7 +106,7 @@ bool SoundService::Init()
 		api->Trace("Using FMOD %08x", FMOD_VERSION);
 	}
 
-	//32 звука мы слышим
+	//32 Р·РІСѓРєР° РјС‹ СЃР»С‹С€РёРј
 	status = fmod_system->setSoftwareChannels(32);
 	FMOD_ERROR("FMOD:setSoftwareChannels", status);
 
@@ -116,7 +116,7 @@ bool SoundService::Init()
 	//status = fmod_system->setSpeakerMode(FMOD_SPEAKERMODE_STEREO);
 	//FMOD_ERROR("FMOD:setSpeakerMode", status);
 
-	//всего MAX_SOUNDS_SLOTS можно звуков завести
+	//РІСЃРµРіРѕ MAX_SOUNDS_SLOTS РјРѕР¶РЅРѕ Р·РІСѓРєРѕРІ Р·Р°РІРµСЃС‚Рё
 
 	INIFILE * pEngineIni = fio->OpenIniFile(api->EngineIniFileName());
 	if (pEngineIni)
@@ -185,7 +185,7 @@ bool SoundService::Init()
 void  SoundService::RunEnd()
 {
 	CreateEntityIfNeed();
-	//Внутреннее обновление FMOD
+	//Р’РЅСѓС‚СЂРµРЅРЅРµРµ РѕР±РЅРѕРІР»РµРЅРёРµ FMOD
 	status = fmod_system->update();
 	FMOD_ERROR("FMOD:update",status);
 }
@@ -269,12 +269,12 @@ void  SoundService::RunStart()
 
 
 	
-	//Освобождаем звуки которые проигрались...
+	//РћСЃРІРѕР±РѕР¶РґР°РµРј Р·РІСѓРєРё РєРѕС‚РѕСЂС‹Рµ РїСЂРѕРёРіСЂР°Р»РёСЃСЊ...
 	for (int i = 0; i < MAX_SOUNDS_SLOTS; i++)
 	{
 		if (PlayingSounds[i].bFree) continue;
 
-		//Если просто на паузе стоит, трогать его не надо...
+		//Р•СЃР»Рё РїСЂРѕСЃС‚Рѕ РЅР° РїР°СѓР·Рµ СЃС‚РѕРёС‚, С‚СЂРѕРіР°С‚СЊ РµРіРѕ РЅРµ РЅР°РґРѕ...
 
 		bool paused;
 		status = PlayingSounds[i].channel->getPaused(&paused);
@@ -393,11 +393,11 @@ TSD_ID  SoundService::SoundPlay (const char *_name,
 	// aliases don`t contain `\`
 	if (!strchr(_name, '\\')) 
 	{
-		//Пробуем найти в алиасах
+		//РџСЂРѕР±СѓРµРј РЅР°Р№С‚Рё РІ Р°Р»РёР°СЃР°С…
 		int AliasIdx = GetAliasIndexByName (_name);
 		if (AliasIdx >= 0 && Aliases[AliasIdx].SoundFiles.Size() > 0)
 		{
-			//Играем из алиаса звук...
+			//РРіСЂР°РµРј РёР· Р°Р»РёР°СЃР° Р·РІСѓРє...
 			FileName = GetRandomName(&Aliases[AliasIdx]);
 			//api->Trace("Play sound from alias %s", FileName.c_str());
 
@@ -422,7 +422,7 @@ TSD_ID  SoundService::SoundPlay (const char *_name,
 	int SoundIdx = 0;
 	if (_type == MP3_STEREO)
 	{
-		//Стримленые играем сразу, без кеширования и всегда в 0 слоте....
+		//РЎС‚СЂРёРјР»РµРЅС‹Рµ РёРіСЂР°РµРј СЃСЂР°Р·Сѓ, Р±РµР· РєРµС€РёСЂРѕРІР°РЅРёСЏ Рё РІСЃРµРіРґР° РІ 0 СЃР»РѕС‚Рµ....
 
 
 		try
@@ -489,7 +489,7 @@ TSD_ID  SoundService::SoundPlay (const char *_name,
 
 	} else
 	{
-		//Для всех остальных звуков берем из кеша
+		//Р”Р»СЏ РІСЃРµС… РѕСЃС‚Р°Р»СЊРЅС‹С… Р·РІСѓРєРѕРІ Р±РµСЂРµРј РёР· РєРµС€Р°
 		int CacheIdx = GetFromCache(SoundName.c_str(), _type);
 		if (CacheIdx < 0)
 		{
@@ -517,7 +517,7 @@ TSD_ID  SoundService::SoundPlay (const char *_name,
 
 	PlayingSounds[SoundIdx].fSoundVolume = _volume;
 
-	//Начинаем проигрывать звук, правда запауженный...
+	//РќР°С‡РёРЅР°РµРј РїСЂРѕРёРіСЂС‹РІР°С‚СЊ Р·РІСѓРє, РїСЂР°РІРґР° Р·Р°РїР°СѓР¶РµРЅРЅС‹Р№...
 	//status = fmod_system->playSound(FMOD_CHANNEL_FREE, sound, true, &PlayingSounds[SoundIdx].channel);
 	status = fmod_system->playSound(sound, NULL, true, &PlayingSounds[SoundIdx].channel);
 	FMOD_ERROR("FMOD_SOUND:playSound", status);
@@ -543,15 +543,15 @@ TSD_ID  SoundService::SoundPlay (const char *_name,
 	if (_prior > 255) _prior = 255;
 
 
-	//Приоритетность ставим....
+	//РџСЂРёРѕСЂРёС‚РµС‚РЅРѕСЃС‚СЊ СЃС‚Р°РІРёРј....
 	PlayingSounds[SoundIdx].channel->setPriority(_prior);
 
 
 
-	//3D каналу параметры настраиваем...
+	//3D РєР°РЅР°Р»Сѓ РїР°СЂР°РјРµС‚СЂС‹ РЅР°СЃС‚СЂР°РёРІР°РµРј...
 	if (_type == PCM_3D)
 	{
-		//Если надо ставим параметры по дефолту...
+		//Р•СЃР»Рё РЅР°РґРѕ СЃС‚Р°РІРёРј РїР°СЂР°РјРµС‚СЂС‹ РїРѕ РґРµС„РѕР»С‚Сѓ...
 		if (_minDistance < 0.0f) _minDistance = 0.0f;
 		if (_maxDistance < 0.0f) _maxDistance = 0.0f;
 		//FMOD_Sound_Set3DMinMaxDistance(PlayingSounds[SoundIdx].sound, _minDistance * DISTANCEFACTOR, _maxDistance * DISTANCEFACTOR);
@@ -598,13 +598,13 @@ TSD_ID  SoundService::SoundPlay (const char *_name,
 	PlayingSounds[SoundIdx].sound_type = _type;
 
 
-	//На OGG убираем все EAX эффекты...
+	//РќР° OGG СѓР±РёСЂР°РµРј РІСЃРµ EAX СЌС„С„РµРєС‚С‹...
 	//if (SoundIdx == 0)
 	//{
 	//}
 
 
-	//Если не просто кеширование.... то снимаем с паузы...
+	//Р•СЃР»Рё РЅРµ РїСЂРѕСЃС‚Рѕ РєРµС€РёСЂРѕРІР°РЅРёРµ.... С‚Рѕ СЃРЅРёРјР°РµРј СЃ РїР°СѓР·С‹...
 	if (!_simpleCache)
 	{
 		status = PlayingSounds[SoundIdx].channel->setPaused(false);
@@ -618,7 +618,7 @@ TSD_ID  SoundService::SoundPlay (const char *_name,
 	PlayingSounds[SoundIdx].bFree = false;
 
 
-	//Лупинг задаем..
+	//Р›СѓРїРёРЅРі Р·Р°РґР°РµРј..
 	if (_looped)
 	{
 		status = PlayingSounds[SoundIdx].channel->setMode(FMOD_LOOP_NORMAL);
@@ -634,7 +634,7 @@ TSD_ID  SoundService::SoundPlay (const char *_name,
 
 
 
-	//---------- пробегаем по всем звукам ищем с таким же channel --------------
+	//---------- РїСЂРѕР±РµРіР°РµРј РїРѕ РІСЃРµРј Р·РІСѓРєР°Рј РёС‰РµРј СЃ С‚Р°РєРёРј Р¶Рµ channel --------------
 
 	for (dword j = 0; j < MAX_SOUNDS_SLOTS; j++)
 	{
@@ -642,15 +642,15 @@ TSD_ID  SoundService::SoundPlay (const char *_name,
 		
 		if (PlayingSounds[j].channel == PlayingSounds[SoundIdx].channel)
 		{
-			//Помечаем, что выкинулся звук....
-			//что бы его не стопить....
+			//РџРѕРјРµС‡Р°РµРј, С‡С‚Рѕ РІС‹РєРёРЅСѓР»СЃСЏ Р·РІСѓРє....
+			//С‡С‚Рѕ Р±С‹ РµРіРѕ РЅРµ СЃС‚РѕРїРёС‚СЊ....
 			PlayingSounds[j].bFree = true;
 		}
 	}
 //
 
 
-	//Возвращаем ID звука...
+	//Р’РѕР·РІСЂР°С‰Р°РµРј ID Р·РІСѓРєР°...
 	return SoundID;
 }
 
@@ -979,7 +979,7 @@ void SoundService::SoundStop (TSD_ID _id, long _time)
     
 	if (_id == 0)
 	{
-		//--------- удаляем все звуки нах. -----------------------------------------
+		//--------- СѓРґР°Р»СЏРµРј РІСЃРµ Р·РІСѓРєРё РЅР°С…. -----------------------------------------
 
 		int start = 0;
 		if (_time > 0)
@@ -1057,13 +1057,13 @@ void SoundService::SoundStop (TSD_ID _id, long _time)
 			OGG_sound[1] = NULL;
 		}
 
-		//--------- удаляем все звуки нах. -----------------------------------------
+		//--------- СѓРґР°Р»СЏРµРј РІСЃРµ Р·РІСѓРєРё РЅР°С…. -----------------------------------------
 		return;
 	}
 
 	_id--;
 
-	//Удаляем выбранный........................
+	//РЈРґР°Р»СЏРµРј РІС‹Р±СЂР°РЅРЅС‹Р№........................
 
 	if (PlayingSounds[_id].bFree) return;
 
@@ -1334,15 +1334,15 @@ void SoundService::DebugDraw ()
 
 		if (PlayingSounds[i].sound_type == PCM_3D)
 		{
-			//0xFFFFFF00 играет но не слышно
-			//0xFFFF0000 не играет, отклипировался
-			//0xFF00FF00 играет
+			//0xFFFFFF00 РёРіСЂР°РµС‚ РЅРѕ РЅРµ СЃР»С‹С€РЅРѕ
+			//0xFFFF0000 РЅРµ РёРіСЂР°РµС‚, РѕС‚РєР»РёРїРёСЂРѕРІР°Р»СЃСЏ
+			//0xFF00FF00 РёРіСЂР°РµС‚
 
 			Color drawColor = Color(0xFFFF0000L);
 
 			if (!bVirtual)
 			{
-				//морфируем между желтым audib 0 и зеленыи audib 1 цветами
+				//РјРѕСЂС„РёСЂСѓРµРј РјРµР¶РґСѓ Р¶РµР»С‚С‹Рј audib 0 Рё Р·РµР»РµРЅС‹Рё audib 1 С†РІРµС‚Р°РјРё
 				Color Zero = Color(0xFFFFFF00L);
 				Color Full = Color(0xFF00FF00L);
 				drawColor.Lerp(Zero, Full, audib);
@@ -1449,15 +1449,15 @@ int SoundService::GetFromCache (const char* szName, eSoundType _type)
 }
 
 
-//Написать текст
+//РќР°РїРёСЃР°С‚СЊ С‚РµРєСЃС‚
 void _cdecl SoundService::DebugPrint3D(const CVECTOR & pos3D, float rad, long line, float alpha, dword color, float scale, const char * format, ...)
 {
 
 	static char buf[256];
-	//Печатаем в буфер
+	//РџРµС‡Р°С‚Р°РµРј РІ Р±СѓС„РµСЂ
 	long len = _vsnprintf(buf, sizeof(buf) - 1, format, (char *)(&format + 1));
 	buf[sizeof(buf) - 1] = 0;
-	//Ищем позицию точки на экране
+	//РС‰РµРј РїРѕР·РёС†РёСЋ С‚РѕС‡РєРё РЅР° СЌРєСЂР°РЅРµ
 	static CMatrix mtx, view, prj;
 	static D3DVIEWPORT9 vp;
 	MTX_PRJ_VECTOR vrt;
@@ -1471,10 +1471,10 @@ void _cdecl SoundService::DebugPrint3D(const CVECTOR & pos3D, float rad, long li
 	if((pos3D | view.Vz()) < d) return;
 	pRS->GetViewport(&vp);
 	mtx.Projection((CVECTOR *)&pos3D, &vrt, 1, vp.Width*0.5f, vp.Height*0.5f, sizeof(CVECTOR), sizeof(MTX_PRJ_VECTOR));
-	//Ищем позицию
+	//РС‰РµРј РїРѕР·РёС†РёСЋ
 	long fh = pRS->CharHeight(FONT_DEFAULT)/2;
 	vrt.y -= (line + 0.5f)*fh;
-	//Прозрачность	
+	//РџСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ	
 	const float kDist = 0.75f;
 	if(alpha < 0.0f) alpha = 0.0f;
 	if(alpha > 1.0f) alpha = 1.0f;
@@ -1485,7 +1485,7 @@ void _cdecl SoundService::DebugPrint3D(const CVECTOR & pos3D, float rad, long li
 	}
 	if(alpha <= 0.0f) return;
 	color = (dword(alpha*255.0f) << 24) | (color & 0xffffff);
-	//Печатаем текст
+	//РџРµС‡Р°С‚Р°РµРј С‚РµРєСЃС‚
 	pRS->ExtPrint(FONT_DEFAULT, color, 0x00000000, ALIGN_CENTER, 0, scale, 0, 0, long(vrt.x), long(vrt.y), buf);
 }
 

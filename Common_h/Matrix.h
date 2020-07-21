@@ -35,21 +35,21 @@ public:
 		float m[4][4];
 		struct
 		{
-			///Направление по X
+			///РќР°РїСЂР°РІР»РµРЅРёРµ РїРѕ X
 			CVECTOR vx;
-			///Весовое значение по X
+			///Р’РµСЃРѕРІРѕРµ Р·РЅР°С‡РµРЅРёРµ РїРѕ X
 			float wx;
-			///Направление по Y
+			///РќР°РїСЂР°РІР»РµРЅРёРµ РїРѕ Y
 			CVECTOR vy;
-			///Весовое значение по Y
+			///Р’РµСЃРѕРІРѕРµ Р·РЅР°С‡РµРЅРёРµ РїРѕ Y
 			float wy;
-			///Направление по Z
+			///РќР°РїСЂР°РІР»РµРЅРёРµ РїРѕ Z
 			CVECTOR vz;
-			///Весовое значение по Z
+			///Р’РµСЃРѕРІРѕРµ Р·РЅР°С‡РµРЅРёРµ РїРѕ Z
 			float wz;
-			///Позиция
+			///РџРѕР·РёС†РёСЏ
 			CVECTOR pos;
-			//Добавляемое весовое значение
+			//Р”РѕР±Р°РІР»СЏРµРјРѕРµ РІРµСЃРѕРІРѕРµ Р·РЅР°С‡РµРЅРёРµ
 			float w;
 		};
 	};
@@ -90,11 +90,11 @@ public:
 	//Build position matrix
 	void BuildPosition(float x, float y, float z);
 	
-	///Посчитать матрицу масштабирования
+	///РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРёСЏ
 	CMatrix & BuildScale(float scale);
-	//Посчитать матрицу масштабирования
+	//РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРёСЏ
 	CMatrix & BuildScale(float scaleX, float scaleY, float scaleZ);
-	///Посчитать матрицу масштабирования
+	///РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРёСЏ
 	CMatrix & BuildScale(const CVECTOR & scale);
 
 	//Equal
@@ -138,10 +138,10 @@ public:
 //-----------------------------------------------------------
 	
 	//Access to axis vectors
-	CVECTOR & Vx() const;		//Вектор по X (ссылка)
-	CVECTOR & Vy() const;		//Вектор по Y (ссылка)
-	CVECTOR & Vz() const;		//Вектор по Z (ссылка)
-	CVECTOR & Pos() const;	//Позиция (ссылка)
+	CVECTOR & Vx() const;		//Р’РµРєС‚РѕСЂ РїРѕ X (СЃСЃС‹Р»РєР°)
+	CVECTOR & Vy() const;		//Р’РµРєС‚РѕСЂ РїРѕ Y (СЃСЃС‹Р»РєР°)
+	CVECTOR & Vz() const;		//Р’РµРєС‚РѕСЂ РїРѕ Z (СЃСЃС‹Р»РєР°)
+	CVECTOR & Pos() const;	//РџРѕР·РёС†РёСЏ (СЃСЃС‹Р»РєР°)
 	
 	//Access to matrix element
 	float & operator () (long i, long j);
@@ -252,7 +252,7 @@ __forceinline void CMatrix::BuildMatrix(float angX, float angY, float angZ, floa
 	register float sinAz = sinf(angZ);
 	register float cosAz = cosf(angZ);
 	
-	//Создаём матрицу с порядком вращений rz*rx*ry
+	//РЎРѕР·РґР°С‘Рј РјР°С‚СЂРёС†Сѓ СЃ РїРѕСЂСЏРґРєРѕРј РІСЂР°С‰РµРЅРёР№ rz*rx*ry
 	m[0][0] = cosAz*cosAy + sinAz*sinAx*sinAy;
 	m[1][0] = -sinAz*cosAy + cosAz*sinAx*sinAy;
 	m[2][0] = cosAx*sinAy;
@@ -699,29 +699,29 @@ __forceinline void CMatrix::Projection(CVECTOR * srcArray, MTX_PRJ_VECTOR * dstA
 __forceinline bool CMatrix::BuildViewMatrix(CVECTOR lookFrom, CVECTOR lookTo, CVECTOR upVector)
 {
 	SetIdentity();
-	//Нормализуем вектор смотрения
+	//РќРѕСЂРјР°Р»РёР·СѓРµРј РІРµРєС‚РѕСЂ СЃРјРѕС‚СЂРµРЅРёСЏ
 	lookTo -= lookFrom;
 	float l = ~lookTo;
 	if(l == 0.0f)
 	{
-		//Ставим позицию для неповёрнутой матрици
+		//РЎС‚Р°РІРёРј РїРѕР·РёС†РёСЋ РґР»СЏ РЅРµРїРѕРІС‘СЂРЅСѓС‚РѕР№ РјР°С‚СЂРёС†Рё
 		Pos() = -lookFrom;
 		return false;
 	}
 	lookTo *= 1.0f/sqrtf(l);
-	//Направляем вектор вверх в нужном направлении
+	//РќР°РїСЂР°РІР»СЏРµРј РІРµРєС‚РѕСЂ РІРІРµСЂС… РІ РЅСѓР¶РЅРѕРј РЅР°РїСЂР°РІР»РµРЅРёРё
 	upVector -= lookTo*(lookTo | upVector);
-	//Нормализуем вертор направленный вверх
+	//РќРѕСЂРјР°Р»РёР·СѓРµРј РІРµСЂС‚РѕСЂ РЅР°РїСЂР°РІР»РµРЅРЅС‹Р№ РІРІРµСЂС…
 	l = ~upVector;
 	if(l == 0.0f) upVector.y = 1.0f;
 		else upVector *= 1.0f/sqrtf(l);
-	//Ищем третий вектор базиса
+	//РС‰РµРј С‚СЂРµС‚РёР№ РІРµРєС‚РѕСЂ Р±Р°Р·РёСЃР°
 	CVECTOR v = upVector ^ lookTo;
 	l = ~v;
 	if(l != 0.0f)
 	{
 		v *= (1.0f/sqrtf(l));
-		//Ставим матрицу поворота
+		//РЎС‚Р°РІРёРј РјР°С‚СЂРёС†Сѓ РїРѕРІРѕСЂРѕС‚Р°
 		Vx() = upVector;
 		Vy() = lookTo;
 		Vz() = v;
@@ -737,13 +737,13 @@ __forceinline bool CMatrix::BuildViewMatrix(CVECTOR lookFrom, CVECTOR lookTo, CV
 		m[2][2] = lookTo.z;
 	
 	}
-	//Ставим позицию
+	//РЎС‚Р°РІРёРј РїРѕР·РёС†РёСЋ
 	SetInversePosition(lookFrom.x, lookFrom.y, lookFrom.z);
 	return true;
 }
 
 //Mirror
-//Формирование матрицы отражение по плану
+//Р¤РѕСЂРјРёСЂРѕРІР°РЅРёРµ РјР°С‚СЂРёС†С‹ РѕС‚СЂР°Р¶РµРЅРёРµ РїРѕ РїР»Р°РЅСѓ
 __forceinline void CMatrix::BuildMirrorMatrix(float Nx, float Ny, float Nz, float D)
 {
 	m[0][0] = -Nx*2.0f*Nx + 1.0f;
@@ -784,7 +784,7 @@ __forceinline CMatrix & CMatrix::BuildScale(float scale)
 	return *this;
 }
 
-//Посчитать матрицу масштабирования
+//РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРёСЏ
 __forceinline CMatrix & CMatrix::BuildScale(float scaleX, float scaleY, float scaleZ)
 {
 	SetIdentity();
@@ -794,7 +794,7 @@ __forceinline CMatrix & CMatrix::BuildScale(float scaleX, float scaleY, float sc
 	return *this;
 }
 
-//Посчитать матрицу масштабирования
+//РџРѕСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†Сѓ РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРёСЏ
 __forceinline CMatrix & CMatrix::BuildScale(const CVECTOR & scale)
 {
 	BuildScale(scale.x, scale.y, scale.z);

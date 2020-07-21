@@ -217,7 +217,7 @@ void ActivePerkShower::AddIconToList(ATTRIBUTES * pAItemDescr)
 	for(int i=0; i<m_nIShowQ; i++)
 	{
 		if(texNum==m_pIconsList[i].m_nPicTexIdx && picNum==m_pIconsList[i].m_nPicNum)
-			return; // óæå åñòü òàêàÿ àáèëèòè
+			return; // ÑƒÐ¶Ðµ ÐµÑÑ‚ÑŒ Ñ‚Ð°ÐºÐ°Ñ Ð°Ð±Ð¸Ð»Ð¸Ñ‚Ð¸
 	}
 
 	m_nIShowQ++;

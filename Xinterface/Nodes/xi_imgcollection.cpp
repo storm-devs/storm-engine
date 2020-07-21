@@ -65,7 +65,7 @@ void CXI_IMGCOLLECTION::AddImage( const char* pcPicName, dword dwColor, XYRECT p
 	m_aEditInfo[n].nBottom = pos.bottom;
 	m_aEditInfo[n].bNative = false;
 
-	// перекраиваем индекс и вертекс буферы
+	// РїРµСЂРµРєСЂР°РёРІР°РµРј РёРЅРґРµРєСЃ Рё РІРµСЂС‚РµРєСЃ Р±СѓС„РµСЂС‹
 	VERTEX_BUF_RELEASE(m_rs,vBuf);
 	INDEX_BUF_RELEASE(m_rs,iBuf);
 
@@ -271,7 +271,7 @@ bool CXI_IMGCOLLECTION::IsClick(int buttonID,long xPos,long yPos)
 
 void CXI_IMGCOLLECTION::ChangePosition( XYRECT &rNewPos )
 {
-	//if( m_aSections.Size() == 0 ) return; // пустая коллекция - создана из скрипта
+	//if( m_aSections.Size() == 0 ) return; // РїСѓСЃС‚Р°СЏ РєРѕР»Р»РµРєС†РёСЏ - СЃРѕР·РґР°РЅР° РёР· СЃРєСЂРёРїС‚Р°
 	long n = 0;
 	long q = m_aEditInfo.Size();
 
@@ -358,14 +358,14 @@ dword _cdecl CXI_IMGCOLLECTION::MessageProc(long msgcode, MESSAGE & message)
 {
 	switch(msgcode)
 	{
-	case 0: // добавить иконку
+	case 0: // РґРѕР±Р°РІРёС‚СЊ РёРєРѕРЅРєСѓ
 		{
 			char param[256];
-			// имя картинки
+			// РёРјСЏ РєР°СЂС‚РёРЅРєРё
 			message.String( sizeof(param)-1, param );
-			// цвет картинки
+			// С†РІРµС‚ РєР°СЂС‚РёРЅРєРё
 			long dwColor = message.Long();
-			// позиция картинки
+			// РїРѕР·РёС†РёСЏ РєР°СЂС‚РёРЅРєРё
 			XYRECT pos;
 			pos.left = message.Long();	pos.top = message.Long();
 			pos.right = message.Long();	pos.bottom = message.Long();
@@ -375,7 +375,7 @@ dword _cdecl CXI_IMGCOLLECTION::MessageProc(long msgcode, MESSAGE & message)
 		}
 		break;
 
-	case 1: // установить текстуру
+	case 1: // СѓСЃС‚Р°РЅРѕРІРёС‚СЊ С‚РµРєСЃС‚СѓСЂСѓ
 		{
 			char param[256];
 			message.String( sizeof(param)-1, param );
@@ -385,7 +385,7 @@ dword _cdecl CXI_IMGCOLLECTION::MessageProc(long msgcode, MESSAGE & message)
 				PTR_DELETE(sGroupName);
 				PICTURE_TEXTURE_RELEASE(pPictureService,sGroupName,texl);
 
-				// имя группы
+				// РёРјСЏ РіСЂСѓРїРїС‹
 				sGroupName = NEW char[strlen(param)+1];
 				strcpy(sGroupName,param);
 				texl = pPictureService->GetTextureID(sGroupName);
@@ -393,7 +393,7 @@ dword _cdecl CXI_IMGCOLLECTION::MessageProc(long msgcode, MESSAGE & message)
 		}
 		break;
 
-	case 2: // удалить все картинки (текстуру оставить)
+	case 2: // СѓРґР°Р»РёС‚СЊ РІСЃРµ РєР°СЂС‚РёРЅРєРё (С‚РµРєСЃС‚СѓСЂСѓ РѕСЃС‚Р°РІРёС‚СЊ)
 		{
 			m_aSections.DelAll();
 			m_aEditInfo.DelAll();
@@ -402,7 +402,7 @@ dword _cdecl CXI_IMGCOLLECTION::MessageProc(long msgcode, MESSAGE & message)
 		}
 		break;
 
-	case 3: // установить цвет картинки
+	case 3: // СѓСЃС‚Р°РЅРѕРІРёС‚СЊ С†РІРµС‚ РєР°СЂС‚РёРЅРєРё
 		{
 			long nImgNum = message.Long();
 			dword dwColor = message.Long();
@@ -414,7 +414,7 @@ dword _cdecl CXI_IMGCOLLECTION::MessageProc(long msgcode, MESSAGE & message)
 		}
 		break;
 
-	case 4: // изменить картинку
+	case 4: // РёР·РјРµРЅРёС‚СЊ РєР°СЂС‚РёРЅРєСѓ
 		{
 			long nImgNum = message.Long();
 			char param[256];

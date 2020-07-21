@@ -22,17 +22,17 @@ class DataUV
 
 public:
 
-//конструктор/деструктор
+//РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ/РґРµСЃС‚СЂСѓРєС‚РѕСЂ
 	DataUV ();
 	virtual ~DataUV ();
 
-	//Получить значение   [ x,y = UV1; z,w = UV2 ]
+	//РџРѕР»СѓС‡РёС‚СЊ Р·РЅР°С‡РµРЅРёРµ   [ x,y = UV1; z,w = UV2 ]
 	const Vector4 &GetValue (DWORD FrameNum);
 
-	//Установить значения
+	//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р·РЅР°С‡РµРЅРёСЏ
 	void SetValues (const Vector4* _Frames, DWORD FramesCount);
 
-	//Получить кол-во кадров
+	//РџРѕР»СѓС‡РёС‚СЊ РєРѕР»-РІРѕ РєР°РґСЂРѕРІ
 	DWORD GetFrameCount ();
 
 

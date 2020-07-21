@@ -11,7 +11,7 @@
 #include "TornadoParticles.h"
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 TornadoParticles::TornadoParticles(Pillar & _pillar) : pillar(_pillar)
@@ -55,7 +55,7 @@ void TornadoParticles::SetSea()
 
 void TornadoParticles::Update(float dltTime)
 {
-	//Получим точку уровня моря
+	//РџРѕР»СѓС‡РёРј С‚РѕС‡РєСѓ СѓСЂРѕРІРЅСЏ РјРѕСЂСЏ
 	float seaLevel = 0.0f;
 	if(txtGroundPrts >= 0 || txtPillarPrts >= 0)
 	{
@@ -66,12 +66,12 @@ void TornadoParticles::Update(float dltTime)
 		}
 	}
 	//seaLevel -= 0.5f;
-	//Партиклы у земли
+	//РџР°СЂС‚РёРєР»С‹ Сѓ Р·РµРјР»Рё
 	long i = 0;
 	for(i = 0; i < sizeof(groundPrt)/sizeof(GroundParticle); i++)
 	{
 		float k = pillarPrt[i].k;
-		//Время жизни частицы
+		//Р’СЂРµРјСЏ Р¶РёР·РЅРё С‡Р°СЃС‚РёС†С‹
 		groundPrt[i].dt += dltTime*0.3f;
 		groundPrt[i].t += k*dltTime*groundPrt[i].dt;
 		if(groundPrt[i].t > 1.0f)
@@ -80,20 +80,20 @@ void TornadoParticles::Update(float dltTime)
 			groundPrt[i].dt = 0.0f;
 		}
 		float t = groundPrt[i].t;
-		if (t == 0) continue; //eddy. вылет по assert нам не нужен
+		if (t == 0) continue; //eddy. РІС‹Р»РµС‚ РїРѕ assert РЅР°Рј РЅРµ РЅСѓР¶РµРЅ
 		//Assert(t);
-		//Вражение вокруг оси столба
+		//Р’СЂР°Р¶РµРЅРёРµ РІРѕРєСЂСѓРі РѕСЃРё СЃС‚РѕР»Р±Р°
 		groundPrt[i].a += k*dltTime*(0.5f + 5.0f*t);
 		if(groundPrt[i].a > TRND_PI*2.0f) groundPrt[i].a -= TRND_PI*2.0f;
-		//Позиция
+		//РџРѕР·РёС†РёСЏ
 		float r = groundPrt[i].r*((1.0f - t)*(1.0f - t)*0.7f + 0.3f);
 		groundPrt[i].pos.y = seaLevel + 30.0f*powf(t, groundPrt[i].p);
 		groundPrt[i].pos.x = pillar.GetX(groundPrt[i].pos.y) + r*sinf(groundPrt[i].a);
 		groundPrt[i].pos.z = pillar.GetZ(groundPrt[i].pos.y) + r*cosf(groundPrt[i].a);
-		//Вращение вокруг себя
+		//Р’СЂР°С‰РµРЅРёРµ РІРѕРєСЂСѓРі СЃРµР±СЏ
 		groundPrt[i].angle += k*dltTime*(0.1f + 5.0f*t*t);
 		if(groundPrt[i].angle > TRND_PI*2.0f) groundPrt[i].angle -= TRND_PI*2.0f;
-		//Прозрачность
+		//РџСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ
 		groundPrt[i].alpha = 1.0f;
 		if(t < 0.2f) groundPrt[i].alpha = t/0.2f;
 		if(t > 0.5f) groundPrt[i].alpha = 1.0f - (t - 0.5f)/0.5f;
@@ -102,7 +102,7 @@ void TornadoParticles::Update(float dltTime)
 		groundPrt[i].alpha *= k;
 		//if(groundPrt[i].pos.y > 3.0f) groundPrt[i].alpha *= 1.0f - (groundPrt[i].pos.y - 3.0f)/(30.0f - 3.0f);
 	}
-	//Партиклы столба
+	//РџР°СЂС‚РёРєР»С‹ СЃС‚РѕР»Р±Р°
 	for(i = 0; i < sizeof(pillarPrt)/sizeof(PillarParticle); i++)
 	{
 		float kh = pillar.GetKHeight(pillarPrt[i].pos.y);

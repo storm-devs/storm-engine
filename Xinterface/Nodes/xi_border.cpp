@@ -67,10 +67,10 @@ bool CXI_BORDER::IsClick(int buttonID,long xPos,long yPos)
 void CXI_BORDER::ChangePosition( XYRECT &rNewPos )
 {
 	m_rect = rNewPos;
-	// смещаем картинку задника
+	// СЃРјРµС‰Р°РµРј РєР°СЂС‚РёРЅРєСѓ Р·Р°РґРЅРёРєР°
 	if( m_pBackImage )
 		m_pBackImage->SetPosition( m_rect );
-	// смещаем картинку заголовка
+	// СЃРјРµС‰Р°РµРј РєР°СЂС‚РёРЅРєСѓ Р·Р°РіРѕР»РѕРІРєР°
 	if( m_pCaptionImage && m_nCaptionHeight>0 ) {
 		XYRECT rCapRect = m_rCapRect;
 		rCapRect.top += m_rect.top;
@@ -358,7 +358,7 @@ dword _cdecl CXI_BORDER::MessageProc(long msgcode, MESSAGE & message)
 {
 	switch(msgcode)
 	{
-		case 0: // Сменить позицию кнопки
+		case 0: // РЎРјРµРЅРёС‚СЊ РїРѕР·РёС†РёСЋ РєРЅРѕРїРєРё
 			m_dwColor = message.Long();
 			FillVertexBuffers();
 		break;

@@ -335,7 +335,7 @@ dword _cdecl SEA_AI::ProcessMessage(MESSAGE & message)
 			pAIShip->GetCannonController()->CheckCannonsBoom(fTmpCannonDamage, CVECTOR(x, y, z));
 		}
 		break;
-		// boal 08.08.06 метод пересчета орудий на корабле -->
+		// boal 08.08.06 РјРµС‚РѕРґ РїРµСЂРµСЃС‡РµС‚Р° РѕСЂСѓРґРёР№ РЅР° РєРѕСЂР°Р±Р»Рµ -->
 		case AI_MESSAGE_RESEARCH_CANNONS:
 		{
 			ATTRIBUTES * pACharacter = message.AttributePointer();
@@ -344,7 +344,7 @@ dword _cdecl SEA_AI::ProcessMessage(MESSAGE & message)
 			pAIShip->GetCannonController()->ResearchCannons();
 		}
 		break;
-		// boal 08.08.06 метод пересчета орудий на корабле <--
+		// boal 08.08.06 РјРµС‚РѕРґ РїРµСЂРµСЃС‡РµС‚Р° РѕСЂСѓРґРёР№ РЅР° РєРѕСЂР°Р±Р»Рµ <--
 		case AI_MESSAGE_SEASAVE:
 		{
 			char str[256];

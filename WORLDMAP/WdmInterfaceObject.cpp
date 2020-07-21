@@ -17,7 +17,7 @@
 char WdmInterfaceObject::stringBuffer[1024];
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 WdmInterfaceObject::WdmInterfaceObject()
@@ -30,13 +30,13 @@ WdmInterfaceObject::~WdmInterfaceObject()
 
 }
 
-//Заполнить 6 вершин координатами прямоугольника
+//Р—Р°РїРѕР»РЅРёС‚СЊ 6 РІРµСЂС€РёРЅ РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєР°
 void WdmInterfaceObject::FillRectCoord(Vertex * vrt, float x, float y, float w, float h, float ang)
 {
 	if(!vrt) return;
 	if(ang == 0.0f)
 	{
-		//Без поворота
+		//Р‘РµР· РїРѕРІРѕСЂРѕС‚Р°
 		vrt[0].x = x;
 		vrt[0].y = y;
 		vrt[0].z = 0.0f; vrt[0].rhw = 0.5f;
@@ -56,7 +56,7 @@ void WdmInterfaceObject::FillRectCoord(Vertex * vrt, float x, float y, float w, 
 		vrt[5].y = y + h;
 		vrt[5].z = 0.0f; vrt[5].rhw = 0.5f;
 	}else{
-		//С поворотом
+		//РЎ РїРѕРІРѕСЂРѕС‚РѕРј
 		float sn = -0.5f*sinf(ang);
 		float cs = -0.5f*cosf(ang);
 		float dwx = cs*w;
@@ -85,7 +85,7 @@ void WdmInterfaceObject::FillRectCoord(Vertex * vrt, float x, float y, float w, 
 	}
 }
 
-//Заполнить 6 вершин текстурными координатами прямоугольника
+//Р—Р°РїРѕР»РЅРёС‚СЊ 6 РІРµСЂС€РёРЅ С‚РµРєСЃС‚СѓСЂРЅС‹РјРё РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєР°
 void WdmInterfaceObject::FillRectUV(Vertex * vrt, float tu, float tv, float tw, float th, float ang)
 {
 	if(!vrt) return;
@@ -104,7 +104,7 @@ void WdmInterfaceObject::FillRectUV(Vertex * vrt, float tu, float tv, float tw, 
 		vrt[5].tu = tu;
 		vrt[5].tv = tv + th;
 	}else{
-		//С поворотом
+		//РЎ РїРѕРІРѕСЂРѕС‚РѕРј
 		float sn = 0.5f*sinf(ang);
 		float cs = 0.5f*cosf(ang);
 		float dwu = cs*tw;
@@ -127,7 +127,7 @@ void WdmInterfaceObject::FillRectUV(Vertex * vrt, float tu, float tv, float tw, 
 	}
 }
 
-//Заполнить 6 вершин текстурными координатами прямоугольника
+//Р—Р°РїРѕР»РЅРёС‚СЊ 6 РІРµСЂС€РёРЅ С‚РµРєСЃС‚СѓСЂРЅС‹РјРё РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєР°
 void WdmInterfaceObject::FillRectUV1(Vertex * vrt, float tu, float tv, float tw, float th, float ang)
 {
 	if(!vrt) return;
@@ -146,7 +146,7 @@ void WdmInterfaceObject::FillRectUV1(Vertex * vrt, float tu, float tv, float tw,
 		vrt[5].tu1 = tu;
 		vrt[5].tv1 = tv + th;
 	}else{
-		//С поворотом
+		//РЎ РїРѕРІРѕСЂРѕС‚РѕРј
 		float sn = 0.5f*sinf(ang);
 		float cs = 0.5f*cosf(ang);
 		float dwu = cs*tw;
@@ -169,7 +169,7 @@ void WdmInterfaceObject::FillRectUV1(Vertex * vrt, float tu, float tv, float tw,
 	}
 }
 
-//Заполнить 6 вершин цветом
+//Р—Р°РїРѕР»РЅРёС‚СЊ 6 РІРµСЂС€РёРЅ С†РІРµС‚РѕРј
 void WdmInterfaceObject::FillRectColor(Vertex * vrt, dword color)
 {
 	if(!vrt) return;
@@ -181,13 +181,13 @@ void WdmInterfaceObject::FillRectColor(Vertex * vrt, dword color)
 	vrt[5].color = color;
 }
 
-//Нарисовать буффер прямоугольников
+//РќР°СЂРёСЃРѕРІР°С‚СЊ Р±СѓС„С„РµСЂ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєРѕРІ
 void WdmInterfaceObject::DrawRects(Vertex * vrt, long numRects, char * techName)
 {
 	wdmObjects->rs->DrawPrimitiveUP(D3DPT_TRIANGLELIST, D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX2, numRects*2, vrt, sizeof(Vertex), techName);
 }
 
-//Заполнить 18 вершин скалирующегося прямоугольника
+//Р—Р°РїРѕР»РЅРёС‚СЊ 18 РІРµСЂС€РёРЅ СЃРєР°Р»РёСЂСѓСЋС‰РµРіРѕСЃСЏ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєР°
 void WdmInterfaceObject::FillSRectCoord(Vertex * vrt, float x, float y, float w, float h, float ws)
 {
 	FillRectCoord(vrt, x, y, ws, h);
@@ -195,7 +195,7 @@ void WdmInterfaceObject::FillSRectCoord(Vertex * vrt, float x, float y, float w,
 	FillRectCoord(vrt + 12, x + w - ws, y, ws, h);
 }
 
-//Заполнить 18 вершин текстурными координатами скалирующегося прямоугольника
+//Р—Р°РїРѕР»РЅРёС‚СЊ 18 РІРµСЂС€РёРЅ С‚РµРєСЃС‚СѓСЂРЅС‹РјРё РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё СЃРєР°Р»РёСЂСѓСЋС‰РµРіРѕСЃСЏ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєР°
 void WdmInterfaceObject::FillSRectUV(Vertex * vrt, float tu, float tv, float tw, float th, float ts)
 {
 	FillRectUV(vrt, tu, tv, ts, th);
@@ -203,7 +203,7 @@ void WdmInterfaceObject::FillSRectUV(Vertex * vrt, float tu, float tv, float tw,
 	FillRectUV(vrt + 12, tu + tw - ts, tv, ts, th);
 }
 
-//Заполнить 18 вершин цветом скалирующегося прямоугольника
+//Р—Р°РїРѕР»РЅРёС‚СЊ 18 РІРµСЂС€РёРЅ С†РІРµС‚РѕРј СЃРєР°Р»РёСЂСѓСЋС‰РµРіРѕСЃСЏ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєР°
 void WdmInterfaceObject::FillSRectColor(Vertex * vrt, dword color)
 {
 	FillRectColor(vrt, color);
@@ -212,7 +212,7 @@ void WdmInterfaceObject::FillSRectColor(Vertex * vrt, dword color)
 }
 
 
-//Вывести текст в заданную полоску по горизонтали и в заданной высоте
+//Р’С‹РІРµСЃС‚Рё С‚РµРєСЃС‚ РІ Р·Р°РґР°РЅРЅСѓСЋ РїРѕР»РѕСЃРєСѓ РїРѕ РіРѕСЂРёР·РѕРЅС‚Р°Р»Рё Рё РІ Р·Р°РґР°РЅРЅРѕР№ РІС‹СЃРѕС‚Рµ
 void WdmInterfaceObject::Print(long font, long color, float xleft, float xright, float y, const char * format, ...)
 {
 	_vsnprintf(stringBuffer, sizeof(stringBuffer), format, ((char *)&format + sizeof(char *)));

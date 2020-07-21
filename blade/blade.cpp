@@ -163,20 +163,20 @@ bool BLADE::BLADE_INFO::LoadBladeModel(MESSAGE &message)
 {
 	api->DeleteEntity(eid);
 
-	//Èìÿ ìîäåëüêè
+	//Ð˜Ð¼Ñ Ð¼Ð¾Ð´ÐµÐ»ÑŒÐºÐ¸
 	char mdlName[200];
 	message.String(sizeof(mdlName), mdlName);
 	mdlName[sizeof(mdlName) - 1] = 0;
 	if(strlen(mdlName) > 0)
 	{
-		//Ïóòü äî ìîäåëüêè
+		//ÐŸÑƒÑ‚ÑŒ Ð´Ð¾ Ð¼Ð¾Ð´ÐµÐ»ÑŒÐºÐ¸
 		char path[256];
 		strcpy(path, "Ammo\\");
 		strcat(path, mdlName);
-		//Ïóòü äî òåêñòóð
+		//ÐŸÑƒÑ‚ÑŒ Ð´Ð¾ Ñ‚ÐµÐºÑÑ‚ÑƒÑ€
 		VGEOMETRY * gs = (VGEOMETRY *)_CORE_API->CreateService("geometry");
 		if(gs) gs->SetTexturePath("Ammo\\");
-		//Ñîçäà¸ì ìîäåëüêó
+		//Ð¡Ð¾Ð·Ð´Ð°Ñ‘Ð¼ Ð¼Ð¾Ð´ÐµÐ»ÑŒÐºÑƒ
 		api->CreateEntity(&eid, "modelr");
 		if(!api->Send_Message(eid, "ls", MSG_MODEL_LOAD_GEO, path))
 		{
@@ -185,7 +185,7 @@ bool BLADE::BLADE_INFO::LoadBladeModel(MESSAGE &message)
 			return false;
 		}
 		if(gs) gs->SetTexturePath("");
-		//Ïàðàìåòðû ñëåäà
+		//ÐŸÐ°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹ ÑÐ»ÐµÐ´Ð°
 		defLifeTime = message.Float();
 		color[0] = message.Long();
 		color[1] = message.Long();
@@ -330,20 +330,20 @@ bool BLADE::LoadGunModel(MESSAGE &message)
 {
 	_CORE_API->DeleteEntity(gun);
 	man = message.EntityID();
-	//Èìÿ ìîäåëüêè
+	//Ð˜Ð¼Ñ Ð¼Ð¾Ð´ÐµÐ»ÑŒÐºÐ¸
 	char mdlName[200];
 	message.String(sizeof(mdlName), mdlName);
 	mdlName[sizeof(mdlName) - 1] = 0;
 	if(strlen(mdlName) > 0)
 	{
-		//Ïóòü äî ìîäåëüêè
+		//ÐŸÑƒÑ‚ÑŒ Ð´Ð¾ Ð¼Ð¾Ð´ÐµÐ»ÑŒÐºÐ¸
 		char path[256];
 		strcpy(path, "Ammo\\");
 		strcat(path, mdlName);
-		//Ïóòü äî òåêñòóð
+		//ÐŸÑƒÑ‚ÑŒ Ð´Ð¾ Ñ‚ÐµÐºÑÑ‚ÑƒÑ€
 		VGEOMETRY * gs = (VGEOMETRY *)_CORE_API->CreateService("geometry");
 		if(gs) gs->SetTexturePath("Ammo\\");
-		//Ñîçäà¸ì ìîäåëüêó
+		//Ð¡Ð¾Ð·Ð´Ð°Ñ‘Ð¼ Ð¼Ð¾Ð´ÐµÐ»ÑŒÐºÑƒ
 		_CORE_API->CreateEntity(&gun, "modelr");
 		if(!_CORE_API->Send_Message(gun, "ls", MSG_MODEL_LOAD_GEO, path))
 		{
@@ -367,7 +367,7 @@ void BLADE::GunFire()
 	long sti;
 
 	MODEL *obj = (MODEL*)_CORE_API->GetEntityPointer(&gun);
-	if( obj==0 ) // íåò ïèñòîëåòà - ïîñìîòðèì íà ñàáëþ-ïèñòîëåò
+	if( obj==0 ) // Ð½ÐµÑ‚ Ð¿Ð¸ÑÑ‚Ð¾Ð»ÐµÑ‚Ð° - Ð¿Ð¾ÑÐ¼Ð¾Ñ‚Ñ€Ð¸Ð¼ Ð½Ð° ÑÐ°Ð±Ð»ÑŽ-Ð¿Ð¸ÑÑ‚Ð¾Ð»ÐµÑ‚
 		obj = (MODEL*)api->GetEntityPointer(&blade[1].eid);
 
 	if(obj!=0)
@@ -627,14 +627,14 @@ bool BLADE::TIEITEM_INFO::LoadItemModel(const char* mdlName, const char* locName
 	Assert(locatorName);
 	strcpy(locatorName,locName);
 
-	//Ïóòü äî ìîäåëüêè
+	//ÐŸÑƒÑ‚ÑŒ Ð´Ð¾ Ð¼Ð¾Ð´ÐµÐ»ÑŒÐºÐ¸
 	char path[256];
 	strcpy(path, "Ammo\\");
 	strcat(path, mdlName);
-	//Ïóòü äî òåêñòóð
+	//ÐŸÑƒÑ‚ÑŒ Ð´Ð¾ Ñ‚ÐµÐºÑÑ‚ÑƒÑ€
 	VGEOMETRY * gs = (VGEOMETRY *)api->CreateService("geometry");
 	if(gs) gs->SetTexturePath("Ammo\\");
-	//Ñîçäà¸ì ìîäåëüêó
+	//Ð¡Ð¾Ð·Ð´Ð°Ñ‘Ð¼ Ð¼Ð¾Ð´ÐµÐ»ÑŒÐºÑƒ
 	api->CreateEntity(&eid, "modelr");
 	if(!api->Send_Message(eid, "ls", MSG_MODEL_LOAD_GEO, path))
 	{

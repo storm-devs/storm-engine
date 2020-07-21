@@ -31,7 +31,7 @@ dword _cdecl BackgroundShipTask::ProcessMessage(MESSAGE & message)
 	long nCode = message.Long();
 	switch( nCode )
 	{
-	case 0: // инициализация "llla": msg_code, char_index, task_day, Environment.date
+	case 0: // РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ "llla": msg_code, char_index, task_day, Environment.date
 		{
 			m_nCharacterIndex = message.Long();
 			long nTaskDay = message.Long();
@@ -42,7 +42,7 @@ dword _cdecl BackgroundShipTask::ProcessMessage(MESSAGE & message)
 		}
 	break;
 
-	case 1: // Перечитывание параметров "la": msg_code, Environment.date
+	case 1: // РџРµСЂРµС‡РёС‚С‹РІР°РЅРёРµ РїР°СЂР°РјРµС‚СЂРѕРІ "la": msg_code, Environment.date
 		{
 			ReadParametersFromAttributes();
 			m_pDateAttribute = message.AttributePointer();
@@ -50,7 +50,7 @@ dword _cdecl BackgroundShipTask::ProcessMessage(MESSAGE & message)
 		}
 	break;
 
-	case 2: // Досрочное завершения задания "l": msg_code
+	case 2: // Р”РѕСЃСЂРѕС‡РЅРѕРµ Р·Р°РІРµСЂС€РµРЅРёСЏ Р·Р°РґР°РЅРёСЏ "l": msg_code
 		{
 			m_bGoToNextData = false;
 		}
@@ -66,32 +66,32 @@ dword BackgroundShipTask::AttributeChanged(ATTRIBUTES * pAttr)
 
 void BackgroundShipTask::Update()
 {
-	// нет задачи - нечего выполнять
+	// РЅРµС‚ Р·Р°РґР°С‡Рё - РЅРµС‡РµРіРѕ РІС‹РїРѕР»РЅСЏС‚СЊ
 	if( !m_bTaskPresent ) return;
 
-	// получаем текущую дату и время
+	// РїРѕР»СѓС‡Р°РµРј С‚РµРєСѓС‰СѓСЋ РґР°С‚Сѓ Рё РІСЂРµРјСЏ
 	UpdateCurrentDate();
 
-	// время на выполнение задания вышло
+	// РІСЂРµРјСЏ РЅР° РІС‹РїРѕР»РЅРµРЅРёРµ Р·Р°РґР°РЅРёСЏ РІС‹С€Р»Рѕ
 	if( m_CurrentDate >= m_EndDate )
 	{
-		if( CheckBattleResult() ) // последняя проверка ()
-		{ // успех
+		if( CheckBattleResult() ) // РїРѕСЃР»РµРґРЅСЏСЏ РїСЂРѕРІРµСЂРєР° ()
+		{ // СѓСЃРїРµС…
 			api->Event( "evCompanionTaskSuccess", "l", m_nCharacterIndex );
 		}
 		else
-		{ // проигрыш
+		{ // РїСЂРѕРёРіСЂС‹С€
 			api->Event( "evCompanionTaskFault", "l", m_nCharacterIndex );
 		}
 		ResetTask();
 		return;
 	}
 
-	// пришло время очередной проверки на бой
+	// РїСЂРёС€Р»Рѕ РІСЂРµРјСЏ РѕС‡РµСЂРµРґРЅРѕР№ РїСЂРѕРІРµСЂРєРё РЅР° Р±РѕР№
 	if( m_CurrentDate >= m_RecalculateDate )
 	{
-		if( CheckBattleResult() ) // последняя проверка ()
-		{ // успех
+		if( CheckBattleResult() ) // РїРѕСЃР»РµРґРЅСЏСЏ РїСЂРѕРІРµСЂРєР° ()
+		{ // СѓСЃРїРµС…
 			api->Event( "evCompanionTaskSuccess", "l", m_nCharacterIndex );
 			if( m_bGoToNextData )
 				SetNextCheckingTime();
@@ -99,7 +99,7 @@ void BackgroundShipTask::Update()
 				ResetTask();
 		}
 		else
-		{ // проигрыш
+		{ // РїСЂРѕРёРіСЂС‹С€
 			api->Event( "evCompanionTaskFault", "l", m_nCharacterIndex );
 			ResetTask();
 		}
@@ -123,7 +123,7 @@ bool BackgroundShipTask::CheckBattleResult()
 	VDATA* pVDat = api->Event( "evCheckBattleResult", "l", m_nCharacterIndex );
 	long n = 0;
 	if( pVDat ) n = pVDat->GetLong();
-	return (n!=0); // успех битвы
+	return (n!=0); // СѓСЃРїРµС… Р±РёС‚РІС‹
 }
 
 void BackgroundShipTask::ResetTask()
@@ -144,7 +144,7 @@ void BackgroundShipTask::SetStartTiming( long nDayQuantity )
 
 void BackgroundShipTask::SetNextCheckingTime()
 {
-	// следующая проверка будет через 10 дней
+	// СЃР»РµРґСѓСЋС‰Р°СЏ РїСЂРѕРІРµСЂРєР° Р±СѓРґРµС‚ С‡РµСЂРµР· 10 РґРЅРµР№
 	m_RecalculateDate.AddDay( 10 );
 }
 

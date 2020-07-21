@@ -40,8 +40,8 @@ protected:
 	long	m_twoImgID[4];		// image id for two image
 	long	m_oneTexID[4];		// texture id for one image
 	long	m_twoTexID[4];		// texture id for two image
-	long	m_oneBadTexture;	// текстура для картики заменяющей первую "плохую"
-	long	m_twoBadTexture;	// текстура для картики заменяющей вторую "плохую"
+	long	m_oneBadTexture;	// С‚РµРєСЃС‚СѓСЂР° РґР»СЏ РєР°СЂС‚РёРєРё Р·Р°РјРµРЅСЏСЋС‰РµР№ РїРµСЂРІСѓСЋ "РїР»РѕС…СѓСЋ"
+	long	m_twoBadTexture;	// С‚РµРєСЃС‚СѓСЂР° РґР»СЏ РєР°СЂС‚РёРєРё Р·Р°РјРµРЅСЏСЋС‰РµР№ РІС‚РѕСЂСѓСЋ "РїР»РѕС…СѓСЋ"
 
 	// select parameters
 	bool	m_bShowBorder;			// do show border

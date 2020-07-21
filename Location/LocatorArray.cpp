@@ -11,7 +11,7 @@
 #include "LocatorArray.h"
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 LocatorArray::LocatorArray(const char * groupName)
@@ -43,10 +43,10 @@ LocatorArray::~LocatorArray()
 }
 
 //============================================================================================
-//Работа с массивом
+//Р Р°Р±РѕС‚Р° СЃ РјР°СЃСЃРёРІРѕРј
 //============================================================================================
 
-//Добавить локатор
+//Р”РѕР±Р°РІРёС‚СЊ Р»РѕРєР°С‚РѕСЂ
 void LocatorArray::AddLocator(CMatrix & mtx, const char * name)
 {
 	locator = (LocatorInfro *)RESIZE(locator, (numLocators + 1)*sizeof(LocatorInfro));
@@ -65,14 +65,14 @@ void LocatorArray::AddLocator(CMatrix & mtx, const char * name)
 	numLocators++;
 }
 
-//Изменить матрицу локатора
+//РР·РјРµРЅРёС‚СЊ РјР°С‚СЂРёС†Сѓ Р»РѕРєР°С‚РѕСЂР°
 void LocatorArray::SetNewMatrix(long locIndex, CMatrix & mtx)
 {
 	if(locIndex < 0 || locIndex >= numLocators) return;
 	locator[locIndex].mtx = mtx;
 }
 
-//Найти ближайший локатор
+//РќР°Р№С‚Рё Р±Р»РёР¶Р°Р№С€РёР№ Р»РѕРєР°С‚РѕСЂ
 float LocatorArray::FindNearesLocator(float x, float y, float z, long * locIndex)
 {
 	if(locIndex) *locIndex = -1;
@@ -90,7 +90,7 @@ float LocatorArray::FindNearesLocator(float x, float y, float z, long * locIndex
 	return dist;
 }
 
-//Найти ближайший локатор по цилиндру
+//РќР°Р№С‚Рё Р±Р»РёР¶Р°Р№С€РёР№ Р»РѕРєР°С‚РѕСЂ РїРѕ С†РёР»РёРЅРґСЂСѓ
 long LocatorArray::FindNearesLocatorCl(float x, float y, float z, float height2, float & dist)
 {
 	long locIndex = -1;
@@ -121,7 +121,7 @@ long LocatorArray::FindNearesLocatorCl(float x, float y, float z, float height2,
 	return locIndex;
 }
 
-//Найти локатор по имени
+//РќР°Р№С‚Рё Р»РѕРєР°С‚РѕСЂ РїРѕ РёРјРµРЅРё
 long LocatorArray::FindByName(const char * locName)
 {
 	if(!locName) return -1;
@@ -158,7 +158,7 @@ long LocatorArray::CalcHashString(const char * str)
   return long(hval);
 }
 
-//Сравнить имена групп
+//РЎСЂР°РІРЅРёС‚СЊ РёРјРµРЅР° РіСЂСѓРїРї
 bool LocatorArray::CompareGroup(const char * groupName, long ghash)
 {
 	if(hash != ghash) return false;

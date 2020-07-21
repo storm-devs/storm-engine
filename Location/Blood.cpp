@@ -4,10 +4,10 @@
 #include "Location.h"
 #include "Character.h"
 
-#define BLOOD_RADIUS		1.f		// размер пятна крови
-#define BLOOD_LIVE_TIME		5.5f	// сек
-#define BLOOD_BLENDOUT_TIME	5.f		// сек
-#define BLOOD_RANDOM_DIST	0.8f	// разброс крови вокруг в метрах
+#define BLOOD_RADIUS		1.f		// СЂР°Р·РјРµСЂ РїСЏС‚РЅР° РєСЂРѕРІРё
+#define BLOOD_LIVE_TIME		5.5f	// СЃРµРє
+#define BLOOD_BLENDOUT_TIME	5.f		// СЃРµРє
+#define BLOOD_RANDOM_DIST	0.8f	// СЂР°Р·Р±СЂРѕСЃ РєСЂРѕРІРё РІРѕРєСЂСѓРі РІ РјРµС‚СЂР°С…
 
 Blood::ClipTriangle Blood::clipT[MAX_CLIPPING_TRIANGLES];
 long Blood::nClipTQ;
@@ -28,7 +28,7 @@ Blood::~Blood()
 }
 
 
-//Инициализация
+//РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
 bool Blood::Init()
 {
 	pRS = (VDX8RENDER *)api->CreateService("dx8render");
@@ -43,7 +43,7 @@ bool Blood::Init()
 }
 
 
-//Работа
+//Р Р°Р±РѕС‚Р°
 void Blood::Execute(dword delta_time)
 {
 	if( nUsedTQ < ON_LIVETIME_BLOOD_TRIANGLES ) return;
@@ -55,7 +55,7 @@ void Blood::Execute(dword delta_time)
 		if( aBlood[n].fLiveTime <= 0.f )
 		{
 			if( aBlood[n].nStartIdx == nStartT )
-			{ // удаляем кровь
+			{ // СѓРґР°Р»СЏРµРј РєСЂРѕРІСЊ
 				nStartT += aBlood[n].nIdxQ;
 				nUsedTQ -= aBlood[n].nIdxQ;
 				if( nStartT >= MAX_BLOOD_TRIANGLES )
@@ -168,12 +168,12 @@ void Blood::AddBlood(const CVECTOR& pos)
 		cpos.y = src.y + (dst.y-src.y)*fTrace;
 
 	long nThisBloodQ = CheckBloodQuantityInRadius(cpos,BLOOD_RADIUS,4);
-	if( nThisBloodQ>=4 ) { // уже много крови в этом месте
+	if( nThisBloodQ>=4 ) { // СѓР¶Рµ РјРЅРѕРіРѕ РєСЂРѕРІРё РІ СЌС‚РѕРј РјРµСЃС‚Рµ
 		delete walker;
 		return;
 	}
 	if( nThisBloodQ>0 ) {
-		// разброс крови случайно, если уже есть тут кровь
+		// СЂР°Р·Р±СЂРѕСЃ РєСЂРѕРІРё СЃР»СѓС‡Р°Р№РЅРѕ, РµСЃР»Рё СѓР¶Рµ РµСЃС‚СЊ С‚СѓС‚ РєСЂРѕРІСЊ
 		cpos.x += FRAND(BLOOD_RANDOM_DIST*2.f) - BLOOD_RANDOM_DIST;
 		cpos.z += FRAND(BLOOD_RANDOM_DIST*2.f) - BLOOD_RANDOM_DIST;
 
@@ -184,7 +184,7 @@ void Blood::AddBlood(const CVECTOR& pos)
 			cpos.y = src.y + (dst.y-src.y)*fTrace;
 	}
 
-	//Описываюищй ящик
+	//РћРїРёСЃС‹РІР°СЋРёС‰Р№ СЏС‰РёРє
 	static PLANE p[6];
 	p[0].Nx = 0.0f; p[0].Ny = 1.0f; p[0].Nz = 0.0f; p[0].D = (cpos.y + BLOOD_RADIUS);
 	p[1].Nx = 0.0f; p[1].Ny = -1.0f; p[1].Nz = 0.0f; p[1].D = -(cpos.y - BLOOD_RADIUS);
@@ -193,7 +193,7 @@ void Blood::AddBlood(const CVECTOR& pos)
 	p[4].Nx = 1.0f; p[4].Ny = 0.0f; p[4].Nz = 0.0f; p[4].D = (cpos.x + BLOOD_RADIUS);
 	p[5].Nx = -1.0f; p[5].Ny = 0.0f; p[5].Nz = 0.0f; p[5].D = -(cpos.x - BLOOD_RADIUS);
 
-	// бегаем по лееру
+	// Р±РµРіР°РµРј РїРѕ Р»РµРµСЂСѓ
 	for(ENTITY_ID *pEID=walker->GetID(); pEID; pEID=walker->GetIDNext())
 	{
 		MODEL * m = (MODEL *)api->GetEntityPointer(pEID);
@@ -203,7 +203,7 @@ void Blood::AddBlood(const CVECTOR& pos)
 	}
 	delete walker;
 
-	// бегаем по массиву моделек
+	// Р±РµРіР°РµРј РїРѕ РјР°СЃСЃРёРІСѓ РјРѕРґРµР»РµРє
 	for(long n=0; n<aModels; n++)
 	{
 		MODEL * m = (MODEL *)api->GetEntityPointer(&aModels[n]);
@@ -226,7 +226,7 @@ void Blood::BuildBloodDataByCollision(const CVECTOR& cpos)
 	curBlood.nIdxQ = nClipTQ;
 	curBlood.cpos = cpos;
 
-	// ищем свободное место для треугольников
+	// РёС‰РµРј СЃРІРѕР±РѕРґРЅРѕРµ РјРµСЃС‚Рѕ РґР»СЏ С‚СЂРµСѓРіРѕР»СЊРЅРёРєРѕРІ
 	if( nClipTQ + nUsedTQ <= MAX_BLOOD_TRIANGLES )
 	{
 		curBlood.nStartIdx = nStartT + nUsedTQ;
@@ -240,7 +240,7 @@ void Blood::BuildBloodDataByCollision(const CVECTOR& cpos)
 	nUsedTQ += nClipTQ;
 	aBlood.Add(curBlood);
 
-	// заполняем буффер
+	// Р·Р°РїРѕР»РЅСЏРµРј Р±СѓС„С„РµСЂ
 	float fU0,fV0;
 	switch(rand()%8)
 	{

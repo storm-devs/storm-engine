@@ -13,7 +13,7 @@
 
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 LGeometry::LGeometry()
@@ -55,19 +55,19 @@ LGeometry::~LGeometry()
 	if(drawbuf) delete drawbuf;
 }
 
-//Установить путь до моделек
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РїСѓС‚СЊ РґРѕ РјРѕРґРµР»РµРє
 void LGeometry::SetModelsPath(const char * mPath)
 {
 	strcpy(modelsPath, mPath);
 }
 
-//Установить путь для текущей погоды
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РїСѓС‚СЊ РґР»СЏ С‚РµРєСѓС‰РµР№ РїРѕРіРѕРґС‹
 void LGeometry::SetLightPath(const char * lPath)
 {
 	strcpy(lightPath, lPath);
 }
 
-//Добавить объект
+//Р”РѕР±Р°РІРёС‚СЊ РѕР±СЉРµРєС‚
 void LGeometry::AddObject(const char * name, ENTITY_ID & model)
 {
 	if(numObjects >= maxObjects)
@@ -105,17 +105,17 @@ void LGeometry::AddObject(const char * name, ENTITY_ID & model)
 }
 
 
-//Обработать данные
+//РћР±СЂР°Р±РѕС‚Р°С‚СЊ РґР°РЅРЅС‹Рµ
 bool LGeometry::Process(VDX8RENDER * rs, long numLights)
 {
 	long vb = 0, i = 0;;
-	//Подготовка данных для освещения
+	//РџРѕРґРіРѕС‚РѕРІРєР° РґР°РЅРЅС‹С… РґР»СЏ РѕСЃРІРµС‰РµРЅРёСЏ
 	for(i = 0; i < numObjects; i++)
 	{
-		//Вершины--------------------------------------------------------------------------------
-		//Индекс в конечном файле
+		//Р’РµСЂС€РёРЅС‹--------------------------------------------------------------------------------
+		//РРЅРґРµРєСЃ РІ РєРѕРЅРµС‡РЅРѕРј С„Р°Р№Р»Рµ
 		long cindex = 0;
-		//Проверочка
+		//РџСЂРѕРІРµСЂРѕС‡РєР°
 		if(object[i].m != (MODEL *)api->GetEntityPointer(&object[i].model))
 		{
 			api->Trace("Location lighter: lost model!!!");
@@ -126,9 +126,9 @@ bool LGeometry::Process(VDX8RENDER * rs, long numLights)
 			api->Trace("Location lighter: incorrent model %s (nodes above 1)", object[i].nameReal);
 			return false;
 		}
-		//Пересчитать матрицы
+		//РџРµСЂРµСЃС‡РёС‚Р°С‚СЊ РјР°С‚СЂРёС†С‹
 		object[i].m->Update();
-		//Получаем геометрию		
+		//РџРѕР»СѓС‡Р°РµРј РіРµРѕРјРµС‚СЂРёСЋ		
 		NODE * node = object[i].m->GetNode(0);
 		GEOS * g = node->geo;
 		if(!g)
@@ -136,7 +136,7 @@ bool LGeometry::Process(VDX8RENDER * rs, long numLights)
 			api->Trace("Location lighter: incorrent model %s (node not include geos)", object[i].nameReal);
 			return false;
 		}
-		//Информация о геометрии
+		//РРЅС„РѕСЂРјР°С†РёСЏ Рѕ РіРµРѕРјРµС‚СЂРёРё
 		GEOS::INFO info;
 		g->GetInfo(info);
 		if(info.nvrtbuffs <= 0)
@@ -156,7 +156,7 @@ bool LGeometry::Process(VDX8RENDER * rs, long numLights)
 			if(vbID < 0) continue;
 			vbuffer[numVBuffers].vbID = vbID;
 			vbuffer[numVBuffers++].start = numVrt;
-			//Получаем вершины			
+			//РџРѕР»СѓС‡Р°РµРј РІРµСЂС€РёРЅС‹			
 			IDirect3DVertexBuffer9 * vbuf = rs->GetVertexBuffer(vbID);
 			D3DVERTEXBUFFER_DESC desc;
 			if(!vbuf || vbuf->GetDesc(&desc) != D3D_OK)
@@ -164,7 +164,7 @@ bool LGeometry::Process(VDX8RENDER * rs, long numLights)
 				api->Trace("Location lighter: vertex buffer error, model %s, vbID %i", object[i].nameReal, vbID);
 				return false;
 			}
-			//Анализируем тип
+			//РђРЅР°Р»РёР·РёСЂСѓРµРј С‚РёРї
 			bool isEnabledType = true;
 			isEnabledType &= ((desc.FVF & D3DFVF_POSITION_MASK) == D3DFVF_XYZ);
 			isEnabledType &= ((desc.FVF & D3DFVF_NORMAL) != 0);
@@ -175,24 +175,24 @@ bool LGeometry::Process(VDX8RENDER * rs, long numLights)
 				api->Trace("Location lighter: incorrect fvf of vertex buffer, model %s, vbID %i", object[i].nameReal, vbID);
 				return false;
 			}
-			//Размер вершины
+			//Р Р°Р·РјРµСЂ РІРµСЂС€РёРЅС‹
 			long stride = 6*sizeof(float) + sizeof(dword);
 			stride += ((desc.FVF & D3DFVF_TEXCOUNT_MASK) >> D3DFVF_TEXCOUNT_SHIFT)*2*sizeof(float);
 			if(desc.FVF & D3DFVF_SPECULAR) stride += sizeof(dword);
-			//Количество вершин
+			//РљРѕР»РёС‡РµСЃС‚РІРѕ РІРµСЂС€РёРЅ
 			long num = desc.Size/stride;
 			if(num <= 0)
 			{
 				api->Trace("Location lighter: incorrect number of verteces in vertex buffer, model %s, vbID %i", object[i].nameReal, vbID);
 				return false;
 			}
-			//Резервируем место
+			//Р РµР·РµСЂРІРёСЂСѓРµРј РјРµСЃС‚Рѕ
 			if(numVrt + num > maxVrt)
 			{
 				maxVrt = numVrt + num + 64;
 				vrt = (Vertex *)RESIZE(vrt, maxVrt*sizeof(Vertex));
 			}
-			//Копируем
+			//РљРѕРїРёСЂСѓРµРј
 			byte * pnt = null;
 			if(vbuf->Lock(0, desc.Size, (void **)&pnt, 0) != D3D_OK)
 			{
@@ -235,7 +235,7 @@ bool LGeometry::Process(VDX8RENDER * rs, long numLights)
 			vbuf->Unlock();
 		}
 		object[i].lBufSize = cindex;
-		//Треугольники--------------------------------------------------------------------------------
+		//РўСЂРµСѓРіРѕР»СЊРЅРёРєРё--------------------------------------------------------------------------------
 		long ibID = g->GetIndexBuffer();
 		word * idx = (word *)rs->LockIndexBuffer(ibID);
 		if(!idx)
@@ -247,7 +247,7 @@ bool LGeometry::Process(VDX8RENDER * rs, long numLights)
 		for(long n = 0; n < info.nobjects; n++)
 		{
 			g->GetObj(n, obj);
-			//Ищем вертексбуфер
+			//РС‰РµРј РІРµСЂС‚РµРєСЃР±СѓС„РµСЂ
 			for(vb = 0; vb < numVBuffers; vb++)
 				if(vbuffer[vb].vbID == long(obj.vertex_buff)) break;
 			if(vb >= numVBuffers)
@@ -256,11 +256,11 @@ bool LGeometry::Process(VDX8RENDER * rs, long numLights)
 				return false;
 			}
 			vb = vbuffer[vb].start + obj.start_vertex;
-			//Читаем треугольники
+			//Р§РёС‚Р°РµРј С‚СЂРµСѓРіРѕР»СЊРЅРёРєРё
 			word * triangles = idx + obj.striangle*3;
 			for(long t = 0; t < obj.ntriangles; t++)
 			{
-				//Относительные индексы
+				//РћС‚РЅРѕСЃРёС‚РµР»СЊРЅС‹Рµ РёРЅРґРµРєСЃС‹
 				long i1 = triangles[t*3 + 0];
 				long i2 = triangles[t*3 + 1];
 				long i3 = triangles[t*3 + 2];
@@ -269,21 +269,21 @@ bool LGeometry::Process(VDX8RENDER * rs, long numLights)
 					api->Trace("Location lighter: model %s have incorrect vertex index, (obj: %i, trg: %i)", object[i].nameReal, n, t);
 					return false;
 				}
-				//Абсолютные индексы
+				//РђР±СЃРѕР»СЋС‚РЅС‹Рµ РёРЅРґРµРєСЃС‹
 				i1 += vb; i2 += vb; i3 += vb;
-				//Нормаль к треугольнику
+				//РќРѕСЂРјР°Р»СЊ Рє С‚СЂРµСѓРіРѕР»СЊРЅРёРєСѓ
 				Assert(i1 >= 0 && i1 < numVrt);
 				Assert(i2 >= 0 && i2 < numVrt);
 				Assert(i3 >= 0 && i3 < numVrt);
 				CVECTOR nrm = ((vrt[i2].p - vrt[i1].p) ^ (vrt[i3].p - vrt[i1].p));
 				float sq = sqrtf(~nrm);
-				//Пропустим пустой треугольник
+				//РџСЂРѕРїСѓСЃС‚РёРј РїСѓСЃС‚РѕР№ С‚СЂРµСѓРіРѕР»СЊРЅРёРє
 				if(sq <= 0.0f)
 				{
 					api->Trace("Location lighter: model %s have zero triangle, (obj: %i, trg: %i)", object[i].nameReal, n, t);
 					continue;
 				}
-				//Добавим треугольник
+				//Р”РѕР±Р°РІРёРј С‚СЂРµСѓРіРѕР»СЊРЅРёРє
 				if(numTrg >= maxTrg)
 				{
 					maxTrg += 256;
@@ -344,7 +344,7 @@ bool LGeometry::Process(VDX8RENDER * rs, long numLights)
 	return true;
 }
 
-//Нарисовать нормали
+//РќР°СЂРёСЃРѕРІР°С‚СЊ РЅРѕСЂРјР°Р»Рё
 void LGeometry::DrawNormals(VDX8RENDER * rs)
 {
 	long i = 0, p = 0;
@@ -367,7 +367,7 @@ void LGeometry::DrawNormals(VDX8RENDER * rs)
 	}
 }
 
-//Обновить цвета в буферах
+//РћР±РЅРѕРІРёС‚СЊ С†РІРµС‚Р° РІ Р±СѓС„РµСЂР°С…
 void LGeometry::UpdateColors(VDX8RENDER * rs)
 {
 	long lockedVB = -1;
@@ -399,7 +399,7 @@ void LGeometry::UpdateColors(VDX8RENDER * rs)
 	if(lockedVB >= 0) rs->UnLockVertexBuffer(lockedVB);
 }
 
-//Протрейсить луч
+//РџСЂРѕС‚СЂРµР№СЃРёС‚СЊ Р»СѓС‡
 float LGeometry::Trace(CVECTOR & src, CVECTOR & dst)
 {
 	for(long i = 0; i < numObjects; i++)
@@ -410,21 +410,21 @@ float LGeometry::Trace(CVECTOR & src, CVECTOR & dst)
 	return 2.0f;
 }
 
-//Сохранить освещение
+//РЎРѕС…СЂР°РЅРёС‚СЊ РѕСЃРІРµС‰РµРЅРёРµ
 bool LGeometry::Save()
 {
-	//Сохраняем текущий путь
+	//РЎРѕС…СЂР°РЅСЏРµРј С‚РµРєСѓС‰РёР№ РїСѓС‚СЊ
 	char * oldPath = NEW char[4096];
 	::GetCurrentDirectory(4096, oldPath);
 	char * dir = NEW char[4096];
-	//Сохраняем объекты
+	//РЎРѕС…СЂР°РЅСЏРµРј РѕР±СЉРµРєС‚С‹
 	bool result = true;
 	long bufSize = 16384;
 	dword * buf = NEW dword[bufSize];
 	for(long i = 0, pnt = 0; i < numObjects; i++)
 	{	
 		if(object[i].lBufSize <= 0) continue;
-		//Создаём путь
+		//РЎРѕР·РґР°С‘Рј РїСѓС‚СЊ
 		::SetCurrentDirectory(oldPath);
 		bool isCont = false;
 		for(long c = 0, p = 0; true; c++, p++)

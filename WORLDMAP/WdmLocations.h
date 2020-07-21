@@ -29,7 +29,7 @@ class WdmLocations : public WdmRenderObject
 		bool Update(float dltTime);
 		
 		//
-		WdmRenderModel * model;		//Моделька локации
+		WdmRenderModel * model;		//РњРѕРґРµР»СЊРєР° Р»РѕРєР°С†РёРё
 		float ay;
 		bool isVisible;
 		float alpha;
@@ -50,27 +50,27 @@ class WdmLocations : public WdmRenderObject
 		float Alpha();
 		//Work
 		bool Update(float dltTime, WdmLocations * loc);
-		//Строка
+		//РЎС‚СЂРѕРєР°
 		char * text;
-		//Текущая прозрачность всей метки
+		//РўРµРєСѓС‰Р°СЏ РїСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ РІСЃРµР№ РјРµС‚РєРё
 		float alpha;
 		//Pivot
 		float x, y;
-		//Размеры
+		//Р Р°Р·РјРµСЂС‹
 		float w, h;
-		//Позиция иконки
+		//РџРѕР·РёС†РёСЏ РёРєРѕРЅРєРё
 		float ix, iy;
-		//Позиция строки
+		//РџРѕР·РёС†РёСЏ СЃС‚СЂРѕРєРё
 		float sx, sy;
-		//Иконки
+		//РРєРѕРЅРєРё
 		struct Params
 		{
-			//Номер иконки
+			//РќРѕРјРµСЂ РёРєРѕРЅРєРё
 			long icon;
-			//Прозрачность иконки
+			//РџСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ РёРєРѕРЅРєРё
 			float alpha;
 		} t[2];
-		//Видимость
+		//Р’РёРґРёРјРѕСЃС‚СЊ
 		bool isVisible, isIsland;
 		long font;
 	};
@@ -84,18 +84,18 @@ class WdmLocations : public WdmRenderObject
 		void SetName(char * n);
 		void Update(float dltTime, WdmLocations * loc);
 		//
-		float x, y, z;				//Позиция
+		float x, y, z;				//РџРѕР·РёС†РёСЏ
 		float rx, rz;				//Pivot
-		float radius2;				//Размер
-		float kRadius;				//Коэфициент радиуса отталкивания
-		char * name;				//Имя атрибута для острова
-		bool inside;				//Корабль игрока внутри или вне зоны острова
-		//Локации на острове
+		float radius2;				//Р Р°Р·РјРµСЂ
+		float kRadius;				//РљРѕСЌС„РёС†РёРµРЅС‚ СЂР°РґРёСѓСЃР° РѕС‚С‚Р°Р»РєРёРІР°РЅРёСЏ
+		char * name;				//РРјСЏ Р°С‚СЂРёР±СѓС‚Р° РґР»СЏ РѕСЃС‚СЂРѕРІР°
+		bool inside;				//РљРѕСЂР°Р±Р»СЊ РёРіСЂРѕРєР° РІРЅСѓС‚СЂРё РёР»Рё РІРЅРµ Р·РѕРЅС‹ РѕСЃС‚СЂРѕРІР°
+		//Р›РѕРєР°С†РёРё РЅР° РѕСЃС‚СЂРѕРІРµ
 		Location locations[WDM_LOCATIONS_MAXLOC];
 		bool isNeedUpdate;
-		//Текстовые метки этого острова
+		//РўРµРєСЃС‚РѕРІС‹Рµ РјРµС‚РєРё СЌС‚РѕРіРѕ РѕСЃС‚СЂРѕРІР°
 		Label label[WDM_LOCATIONS_MAXLOC + 1];
-		//Описатели приоритетов для меток
+		//РћРїРёСЃР°С‚РµР»Рё РїСЂРёРѕСЂРёС‚РµС‚РѕРІ РґР»СЏ РјРµС‚РѕРє
 		long labelPrt[WDM_LOCATIONS_MAXLOC + 1];
 		long numLabels;
 	};
@@ -104,33 +104,33 @@ class WdmLocations : public WdmRenderObject
 
 
 //--------------------------------------------------------------------------------------------
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //--------------------------------------------------------------------------------------------
 public:
 	WdmLocations();
 	virtual ~WdmLocations();
 
-	//Зачитать данные об островах и локациях
+	//Р—Р°С‡РёС‚Р°С‚СЊ РґР°РЅРЅС‹Рµ РѕР± РѕСЃС‚СЂРѕРІР°С… Рё Р»РѕРєР°С†РёСЏС…
 	void SetIslandsData(ATTRIBUTES * apnt);
 
 
 
-	//Изменение значения атрибутов видимости
+	//РР·РјРµРЅРµРЅРёРµ Р·РЅР°С‡РµРЅРёСЏ Р°С‚СЂРёР±СѓС‚РѕРІ РІРёРґРёРјРѕСЃС‚Рё
 	void AttributeChanged(ATTRIBUTES * apnt);
 
-	//Расчёты
+	//Р Р°СЃС‡С‘С‚С‹
 	virtual void Update(float dltTime);
-	//Отрисовка
+	//РћС‚СЂРёСЃРѕРІРєР°
 	virtual void LRender(VDX8RENDER * rs);
 
-	//Найти реакцию от островов для корабля
+	//РќР°Р№С‚Рё СЂРµР°РєС†РёСЋ РѕС‚ РѕСЃС‚СЂРѕРІРѕРІ РґР»СЏ РєРѕСЂР°Р±Р»СЏ
 	void FindReaction(float x, float z, float & rx, float & rz);
 
-	//Найти ближайший остров
+	//РќР°Р№С‚Рё Р±Р»РёР¶Р°Р№С€РёР№ РѕСЃС‚СЂРѕРІ
 	bool FindGoodIsland(float shipX, float shipZ, float & x, float & z, float & r, bool testInZone = false, bool retPivot = false);
 
 //--------------------------------------------------------------------------------------------
-//Инкапсуляция
+//РРЅРєР°РїСЃСѓР»СЏС†РёСЏ
 //--------------------------------------------------------------------------------------------
 private:
 	void InitLabel(Label & label, ATTRIBUTES * apnt, bool isIsl, bool isSet = false);
@@ -156,7 +156,7 @@ public:
 	long iconNum, iconFrames;
 	float iconFps;
 	char iconTextureName[128];
-	//Прозрачность в зависимости от высоты
+	//РџСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ РІС‹СЃРѕС‚С‹
 	static float heightAlpha;
 };
 

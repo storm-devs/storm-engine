@@ -558,7 +558,7 @@ long SEA::VisCode(const CVECTOR & vP)
 	*/
 
 	
-	//Max - так точность значительно выше, блоки не должны пропадать иногда в далеке
+	//Max - С‚Р°Рє С‚РѕС‡РЅРѕСЃС‚СЊ Р·РЅР°С‡РёС‚РµР»СЊРЅРѕ РІС‹С€Рµ, Р±Р»РѕРєРё РЅРµ РґРѕР»Р¶РЅС‹ РїСЂРѕРїР°РґР°С‚СЊ РёРЅРѕРіРґР° РІ РґР°Р»РµРєРµ
 	PLANE * p = &pFrustumPlanes[0];
 	if(p->Nx*vP.x + p->Ny*vP.y + p->Nz*vP.z < p->D) vc |= 0x01;
 	p = &pFrustumPlanes[1];
@@ -1643,7 +1643,7 @@ void SEA::Realize(dword dwDeltaTime)
 		CVECTOR d2(54.0f, 10.0f, 54.0f);
 		if (!bUnderSeaStarted)
 		{
-			// делаем кучку планктона первый раз
+			// РґРµР»Р°РµРј РєСѓС‡РєСѓ РїР»Р°РЅРєС‚РѕРЅР° РїРµСЂРІС‹Р№ СЂР°Р·
 			aSeaTrash.Empty();
 			for (long i=0; i<1000; i++)
 			{
@@ -1655,7 +1655,7 @@ void SEA::Realize(dword dwDeltaTime)
 				st.fTime = float(i) * 0.02f;
 			}
 
-			// делаем кучку световых столбов первый раз
+			// РґРµР»Р°РµРј РєСѓС‡РєСѓ СЃРІРµС‚РѕРІС‹С… СЃС‚РѕР»Р±РѕРІ РїРµСЂРІС‹Р№ СЂР°Р·
 			aSeaLights.Empty();
 			for (long i=0; i<50; i++)
 			{
@@ -1667,7 +1667,7 @@ void SEA::Realize(dword dwDeltaTime)
 			}
 		}
 
-		// добавляем 1 плактонинку каждую секунду
+		// РґРѕР±Р°РІР»СЏРµРј 1 РїР»Р°РєС‚РѕРЅРёРЅРєСѓ РєР°Р¶РґСѓСЋ СЃРµРєСѓРЅРґСѓ
 		fLastTrashTime += fDeltaTime;
 		while (fLastTrashTime >= 0.03f)
 		{
@@ -1681,7 +1681,7 @@ void SEA::Realize(dword dwDeltaTime)
 			st.fSize = RRnd(0.01f, 0.05f);
 		}
 
-		// Уничтожаем старые плактонинки
+		// РЈРЅРёС‡С‚РѕР¶Р°РµРј СЃС‚Р°СЂС‹Рµ РїР»Р°РєС‚РѕРЅРёРЅРєРё
 		for (long i=0; i<aSeaTrash.Len(); i++)
 		{
 			aSeaTrash[i].fTime -= fDeltaTime;
@@ -1693,7 +1693,7 @@ void SEA::Realize(dword dwDeltaTime)
 			}
 			aSeaTrash[i].vPos += aSeaTrash[i].vSpeed * fDeltaTime;
 		}
-		// Рисуем планктон
+		// Р РёСЃСѓРµРј РїР»Р°РЅРєС‚РѕРЅ
 		aTrashRects.Empty();
 		for (long i=0; i<aSeaTrash.Len(); i++)
 		{
@@ -1718,10 +1718,10 @@ void SEA::Realize(dword dwDeltaTime)
 			Render().DrawRects(&aTrashRects[0], aTrashRects.Size(), "seatrash", 2, 2);
 		}
 
-		// Рисуем стаи рыб
+		// Р РёСЃСѓРµРј СЃС‚Р°Рё СЂС‹Р±
 
-		// Рисуем световые столбы
-		// добавляем 1 световой столб каждую секунду
+		// Р РёСЃСѓРµРј СЃРІРµС‚РѕРІС‹Рµ СЃС‚РѕР»Р±С‹
+		// РґРѕР±Р°РІР»СЏРµРј 1 СЃРІРµС‚РѕРІРѕР№ СЃС‚РѕР»Р± РєР°Р¶РґСѓСЋ СЃРµРєСѓРЅРґСѓ
 		fLastLightTime += fDeltaTime;
 		while (fLastLightTime >= 1.0f)
 		{
@@ -1734,7 +1734,7 @@ void SEA::Realize(dword dwDeltaTime)
 			sl.fTime = 50.0f;
 		}
 
-		// Уничтожаем старые световые столбики
+		// РЈРЅРёС‡С‚РѕР¶Р°РµРј СЃС‚Р°СЂС‹Рµ СЃРІРµС‚РѕРІС‹Рµ СЃС‚РѕР»Р±РёРєРё
 		for (long i=0; i<aSeaLights.Len(); i++)
 		{
 			aSeaLights[i].fTime -= fDeltaTime;
@@ -1749,7 +1749,7 @@ void SEA::Realize(dword dwDeltaTime)
 		
 		float fAlphaK = (vCamPos.y < 0.0f) ? Max(0.0f, 1.0f + vCamPos.y / 30.0f) : 1.0f;
 
-		// Рисуем световые столбики
+		// Р РёСЃСѓРµРј СЃРІРµС‚РѕРІС‹Рµ СЃС‚РѕР»Р±РёРєРё
 		aLightsRects.Empty();
 		for (long i=0; i<aSeaLights.Len(); i++)
 		{

@@ -14,7 +14,7 @@
 #define WDM_CAMERASTDCTRL_MAXDLT	400
 
 //============================================================================================
-//Êîíñòðóèðîâàíèå, äåñòðóêòóðèðîâàíèå
+//ÐšÐ¾Ð½ÑÑ‚Ñ€ÑƒÐ¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ, Ð´ÐµÑÑ‚Ñ€ÑƒÐºÑ‚ÑƒÑ€Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ
 //============================================================================================
 
 WdmCameraStdCtrl::WdmCameraStdCtrl()
@@ -32,15 +32,15 @@ WdmCameraStdCtrl::~WdmCameraStdCtrl()
 
 void WdmCameraStdCtrl::CtrlProcess(float dltTime)
 {	
-	//Ñâîáîäíà ëè êàìåðà
+	//Ð¡Ð²Ð¾Ð±Ð¾Ð´Ð½Ð° Ð»Ð¸ ÐºÐ°Ð¼ÐµÑ€Ð°
 	isFree = GetCurFreeMode();
-	//Îðèåíòàöèÿ
+	//ÐžÑ€Ð¸ÐµÐ½Ñ‚Ð°Ñ†Ð¸Ñ
 	CONTROL_STATE cs;
 	_CORE_API->Controls->GetControlState("WMapTurnH",cs);
 	float dx = cs.lValue*4.0f;
 	_CORE_API->Controls->GetControlState("WMapTurnV",cs);
 	float dy = cs.lValue*4.0f;
-	//Ðàñ÷¸òû	
+	//Ð Ð°ÑÑ‡Ñ‘Ñ‚Ñ‹	
 	float k = (isFree ? 10.0f : 5.0f)*dltTime;
 	if(k > 1.0f) k = 1.0f;
 	if(dx > WDM_CAMERASTDCTRL_MAXDLT) dx = WDM_CAMERASTDCTRL_MAXDLT;

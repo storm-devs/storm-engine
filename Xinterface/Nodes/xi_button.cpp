@@ -145,7 +145,7 @@ void CXI_BUTTON::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *name2)
 	// (dark)
 	m_dwDarkColor = GetIniARGB(ini1,name1, ini2,name2, "darkColor", 0xFFFFFFFF);
 
-	// скорость мигания
+	// СЃРєРѕСЂРѕСЃС‚СЊ РјРёРіР°РЅРёСЏ
 	m_fBlindSpeed = GetIniFloat(ini1,name1, ini2,name2, "blindTimeSec",-1.f);
 	if(m_fBlindSpeed<=0.f) m_fBlindSpeed = 1.f;
 	else m_fBlindSpeed = .001f/m_fBlindSpeed;
@@ -270,7 +270,7 @@ dword _cdecl CXI_BUTTON::MessageProc(long msgcode, MESSAGE & message)
 {
 	switch(msgcode)
 	{
-	case 0: // Сменить позицию кнопки
+	case 0: // РЎРјРµРЅРёС‚СЊ РїРѕР·РёС†РёСЋ РєРЅРѕРїРєРё
 		m_rect.left = message.Long();
 		m_rect.top = message.Long();
 		m_rect.right = message.Long();
@@ -278,14 +278,14 @@ dword _cdecl CXI_BUTTON::MessageProc(long msgcode, MESSAGE & message)
 		GetAbsoluteRect(m_rect,message.Long());
 	break;
 
-	case 1: // Сменить текстурные координаты
+	case 1: // РЎРјРµРЅРёС‚СЊ С‚РµРєСЃС‚СѓСЂРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹
 		m_tRect.left = message.Float();
 		m_tRect.top = message.Float();
 		m_tRect.right = message.Float();
 		m_tRect.bottom = message.Float();
 	break;
 
-	case 2: // Сменить картинку
+	case 2: // РЎРјРµРЅРёС‚СЊ РєР°СЂС‚РёРЅРєСѓ
 		{
 			char param[256];
 			int paramLen;

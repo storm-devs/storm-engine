@@ -44,15 +44,15 @@ dword _cdecl PARTICLES::ProcessMessage(MESSAGE & message)
 
 	switch (code)
 	{
-	//Поставить все партиклы на паузу 
-	// новые не пауженные рождаются...
+	//РџРѕСЃС‚Р°РІРёС‚СЊ РІСЃРµ РїР°СЂС‚РёРєР»С‹ РЅР° РїР°СѓР·Сѓ 
+	// РЅРѕРІС‹Рµ РЅРµ РїР°СѓР¶РµРЅРЅС‹Рµ СЂРѕР¶РґР°СЋС‚СЃСЏ...
 	case PS_PAUSEALL:
 		{
 			PauseAllActive (message.Long() != 0);
 			break;
 		}
 		
-	//Удалить конкретную систему
+	//РЈРґР°Р»РёС‚СЊ РєРѕРЅРєСЂРµС‚РЅСѓСЋ СЃРёСЃС‚РµРјСѓ
 	case PS_DELETE:
 		{
 			DeleteSystem (message.Long());
@@ -79,13 +79,13 @@ dword _cdecl PARTICLES::ProcessMessage(MESSAGE & message)
 
 		
 
-	//Удалить все
+	//РЈРґР°Р»РёС‚СЊ РІСЃРµ
 	case PS_CLEARALL:
 		{
 			DeleteAll ();
 			break;
 		}
-	//создать систему (string имя, float x,y,z позиция, float rx, ry, rz вращение, float life_time время жизни)
+	//СЃРѕР·РґР°С‚СЊ СЃРёСЃС‚РµРјСѓ (string РёРјСЏ, float x,y,z РїРѕР·РёС†РёСЏ, float rx, ry, rz РІСЂР°С‰РµРЅРёРµ, float life_time РІСЂРµРјСЏ Р¶РёР·РЅРё)
 	case PS_CREATE_RIC:
 		{
 			message.String(sizeof(ps_name),ps_name);
@@ -114,7 +114,7 @@ dword _cdecl PARTICLES::ProcessMessage(MESSAGE & message)
 			break;
 		}
 
-	//создать систему
+	//СЃРѕР·РґР°С‚СЊ СЃРёСЃС‚РµРјСѓ
 	case PS_CREATE:
 		{
 			message.String(sizeof(ps_name),ps_name);
@@ -138,7 +138,7 @@ dword _cdecl PARTICLES::ProcessMessage(MESSAGE & message)
 
 			break;
 		}
-	//создать систему
+	//СЃРѕР·РґР°С‚СЊ СЃРёСЃС‚РµРјСѓ
 	case PS_CREATEX:
 		{
 			message.String(sizeof(ps_name),ps_name);
@@ -296,8 +296,8 @@ void PARTICLES::Realize(dword Delta_Time)
 	pManager->Execute(fDeltaTime);
 
 
-	//Если время, ставим эмитирование на паузу
-	// когда все партиклы умрут система удалиться сама...
+	//Р•СЃР»Рё РІСЂРµРјСЏ, СЃС‚Р°РІРёРј СЌРјРёС‚РёСЂРѕРІР°РЅРёРµ РЅР° РїР°СѓР·Сѓ
+	// РєРѕРіРґР° РІСЃРµ РїР°СЂС‚РёРєР»С‹ СѓРјСЂСѓС‚ СЃРёСЃС‚РµРјР° СѓРґР°Р»РёС‚СЊСЃСЏ СЃР°РјР°...
 	for (dword n = 0; n < CreatedSystems.Size(); n++)
 	{
 		CreatedSystems[n].PassedTime +=	Delta_Time;
@@ -311,7 +311,7 @@ void PARTICLES::Realize(dword Delta_Time)
 		}
 	}
 
-	//Удаляем умершие системы...
+	//РЈРґР°Р»СЏРµРј СѓРјРµСЂС€РёРµ СЃРёСЃС‚РµРјС‹...
 	for (dword n = 0; n < CreatedSystems.Size(); n++)
 	{
 		if (!CreatedSystems[n].pSystem->GetSystem()->IsAlive())

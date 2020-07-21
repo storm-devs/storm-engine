@@ -67,7 +67,7 @@ void BATTLE_LAND_INTERFACE::Execute(dword delta_time)
 {
 	if(m_nCommandos>0)
 	{
-		// мигание индикатора тревоги
+		// РјРёРіР°РЅРёРµ РёРЅРґРёРєР°С‚РѕСЂР° С‚СЂРµРІРѕРіРё
 		if(m_bAlarmUp)	m_fCurAlarmBlind += m_fAlarmBlindUpSpeed*delta_time;
 		else m_fCurAlarmBlind -= m_fAlarmBlindDownSpeed*delta_time;
 		if(m_fCurAlarmBlind<0.f) {m_fCurAlarmBlind = 0.f; m_bAlarmUp = true;}
@@ -345,7 +345,7 @@ void BATTLE_LAND_INTERFACE::SetShowParameters()
 	long lc,tc,wc,hc,dc;
 	long lh,th,wh,hh, tgun,hgun;
 
-	// Данные для иконок себя и офицеров
+	// Р”Р°РЅРЅС‹Рµ РґР»СЏ РёРєРѕРЅРѕРє СЃРµР±СЏ Рё РѕС„РёС†РµСЂРѕРІ
 	shadowW = GetLongFromA(pA,"shadowW",8);
 	shadowH = GetLongFromA(pA,"shadowH",8);
 	shadowTOP = GetLongFromA(pA,"shadowTOP",8);
@@ -355,7 +355,7 @@ void BATTLE_LAND_INTERFACE::SetShowParameters()
 	tc = GetLongFromA(pA,"topPosCom",408);
 	dc = m_dist = wc + GetLongFromA(pA,"distCom",8);
 
-	// данные для иконок здоровья и заряда пистолетов
+	// РґР°РЅРЅС‹Рµ РґР»СЏ РёРєРѕРЅРѕРє Р·РґРѕСЂРѕРІСЊСЏ Рё Р·Р°СЂСЏРґР° РїРёСЃС‚РѕР»РµС‚РѕРІ
 	wh = m_width = GetLongFromA(pA,"widthHealth",64);
 	hh = GetLongFromA(pA,"heightHealth",8);
 	lh = m_left = lc + (wc-wh)/2;
@@ -364,12 +364,12 @@ void BATTLE_LAND_INTERFACE::SetShowParameters()
 	hgun = GetLongFromA(pA,"GunShootHeight",16);
 	tgun = th - hgun - GetLongFromA(pA,"GunShootSpace",2);
 
-	// Данные о количестве выводимой информации
+	// Р”Р°РЅРЅС‹Рµ Рѕ РєРѕР»РёС‡РµСЃС‚РІРµ РІС‹РІРѕРґРёРјРѕР№ РёРЅС„РѕСЂРјР°С†РёРё
 	m_bEnableCommand = true;
 	m_bShowCommandos = GetLongFromA(pA,"DoShowCommandos",true)!=0;
 	m_nMaxCommandos = GetLongFromA(pA,"CommandosQuantity",4);
 
-	// получим текстуры
+	// РїРѕР»СѓС‡РёРј С‚РµРєСЃС‚СѓСЂС‹
 	m_idShadowTexture = GetTextureFromA(rs,pA,"shadowTexture");
 	m_idIconTexture[0] = GetTextureFromA(rs,pA,"iconTexture0");
 	m_idIconTexture[1] = GetTextureFromA(rs,pA,"iconTexture1");
@@ -378,13 +378,13 @@ void BATTLE_LAND_INTERFACE::SetShowParameters()
 	m_idStateTexture = GetTextureFromA(rs,pA,"stateTexture");
 	m_idGunChargeTexture = GetTextureFromA(rs,pA,"gunChargeTexture");
 
-	// количество иконок в текстуре по вертикали и горизонтали
+	// РєРѕР»РёС‡РµСЃС‚РІРѕ РёРєРѕРЅРѕРє РІ С‚РµРєСЃС‚СѓСЂРµ РїРѕ РІРµСЂС‚РёРєР°Р»Рё Рё РіРѕСЂРёР·РѕРЅС‚Р°Р»Рё
 	m_nHQ = GetLongFromA(pA,"iconHorzQuantity",1);
 	m_nVQ = GetLongFromA(pA,"iconVertQuantity",1);
 	if(m_nHQ==0) m_nHQ=1;
 	if(m_nVQ==0) m_nVQ=1;
 
-	// Мигание иконки тревоги
+	// РњРёРіР°РЅРёРµ РёРєРѕРЅРєРё С‚СЂРµРІРѕРіРё
 	m_argbAlarmLightColor	= GetLongFromA(pA,"AlarmColorLight",0xFFFFFFFF);
 	m_argbAlarmDarkColor	= GetLongFromA(pA,"AlarmColorDark",0xFF808080);
 	m_argbPoisonLightColor	= GetLongFromA(pA,"PoisonColorLight",0xFFFFFFFF);
@@ -397,7 +397,7 @@ void BATTLE_LAND_INTERFACE::SetShowParameters()
 	else m_fAlarmBlindDownSpeed = .001f/m_fAlarmBlindDownSpeed;
 	m_fCurAlarmBlind		= 1.f;
 
-	// Создадим буфера
+	// РЎРѕР·РґР°РґРёРј Р±СѓС„РµСЂР°
 	m_idVBufCommandos = rs->CreateVertexBufferMananged(BI_COLOR_VERTEX_FORMAT,m_nMaxCommandos*4*2*sizeof(BI_COLOR_VERTEX),D3DUSAGE_WRITEONLY);
 	m_idIBufCommandos = rs->CreateIndexBufferManaged(m_nMaxCommandos*6*2);
 	m_idVBufHealth = rs->CreateVertexBufferMananged(BI_COLOR_VERTEX_FORMAT,m_nMaxCommandos*(4+7+4*4)*sizeof(BI_COLOR_VERTEX),D3DUSAGE_WRITEONLY);
@@ -411,7 +411,7 @@ void BATTLE_LAND_INTERFACE::SetShowParameters()
 		THROW("Can`t create vertex buffer");
 	}
 
-	// Заполним индекс буферы стандартными значениями
+	// Р—Р°РїРѕР»РЅРёРј РёРЅРґРµРєСЃ Р±СѓС„РµСЂС‹ СЃС‚Р°РЅРґР°СЂС‚РЅС‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё
 	WORD *pICBuf = (WORD*)rs->LockIndexBuffer(m_idIBufCommandos);
 	WORD *pIHBuf = (WORD*)rs->LockIndexBuffer(m_idIBufHealth);
 	WORD *pIGunBuf = (WORD*)rs->LockIndexBuffer(m_idIBufGunShoot);
@@ -460,7 +460,7 @@ void BATTLE_LAND_INTERFACE::SetShowParameters()
 	rs->UnLockIndexBuffer(m_idIBufHealth);
 	rs->UnLockIndexBuffer(m_idIBufGunShoot);
 
-	// Заполним вертекс буфера константными значениями
+	// Р—Р°РїРѕР»РЅРёРј РІРµСЂС‚РµРєСЃ Р±СѓС„РµСЂР° РєРѕРЅСЃС‚Р°РЅС‚РЅС‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё
 	BI_COLOR_VERTEX *pVCBuf = (BI_COLOR_VERTEX*)rs->LockVertexBuffer(m_idVBufCommandos);
 	BI_COLOR_VERTEX *pVHBuf = (BI_COLOR_VERTEX*)rs->LockVertexBuffer(m_idVBufHealth);
 	if(pVCBuf==NULL || pVHBuf==NULL)
@@ -469,7 +469,7 @@ void BATTLE_LAND_INTERFACE::SetShowParameters()
 	}
 	for(i=0;i<m_nMaxCommandos;i++)
 	{
-		// подложка с тенью
+		// РїРѕРґР»РѕР¶РєР° СЃ С‚РµРЅСЊСЋ
 		idx = (m_nMaxCommandos+i)*4;
 		for(j=0;j<4;j++)
 		{
@@ -480,7 +480,7 @@ void BATTLE_LAND_INTERFACE::SetShowParameters()
 		SetRectanglePos(&pVCBuf[idx], float(lc + i*dc - shadowW), (float)(th - shadowTOP), float(lc + i*dc + wc + shadowW), float(tc + hc + shadowH));
 		SetRectangleTexture(&pVCBuf[idx],0.f,0.f,1.f,1.f);
 
-		// иконки действующих персонажей
+		// РёРєРѕРЅРєРё РґРµР№СЃС‚РІСѓСЋС‰РёС… РїРµСЂСЃРѕРЅР°Р¶РµР№
 		idx = i*4;
 		for(j=0;j<4;j++)
 		{
@@ -490,7 +490,7 @@ void BATTLE_LAND_INTERFACE::SetShowParameters()
 		}
 		SetRectanglePos(&pVCBuf[idx],float(lc + i*dc),(float)tc,float(lc + i*dc + wc),float(tc + hc));
 
-		// подложки под показатели жизни и заряда
+		// РїРѕРґР»РѕР¶РєРё РїРѕРґ РїРѕРєР°Р·Р°С‚РµР»Рё Р¶РёР·РЅРё Рё Р·Р°СЂСЏРґР°
 		idx = i*4;
 		for(j=0;j<4;j++)
 		{
@@ -501,7 +501,7 @@ void BATTLE_LAND_INTERFACE::SetShowParameters()
 		SetRectanglePos(&pVHBuf[idx],float(lh + i*dc),(float)th,float(lh + i*dc + wh),float(th + hh));
 		SetRectangleTexture(&pVHBuf[idx],0.f,.5f,1.f,1.f);
 
-		// показатели жизни и заряда
+		// РїРѕРєР°Р·Р°С‚РµР»Рё Р¶РёР·РЅРё Рё Р·Р°СЂСЏРґР°
 		idx = m_nMaxCommandos*4+i*7;
 		for(j=0;j<7;j++)
 		{
@@ -519,7 +519,7 @@ void BATTLE_LAND_INTERFACE::SetShowParameters()
 		pVHBuf[idx+2].tv =	pVHBuf[idx+6].tv =						.5f;
 	}
 
-	// показатели числа оставшихся зарядов
+	// РїРѕРєР°Р·Р°С‚РµР»Рё С‡РёСЃР»Р° РѕСЃС‚Р°РІС€РёС…СЃСЏ Р·Р°СЂСЏРґРѕРІ
 	idx = m_nMaxCommandos*(4+7);
 	for(i=0;i<4*m_nMaxCommandos;i++)
 	{

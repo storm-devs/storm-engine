@@ -5,12 +5,12 @@
 
 ///
 /// ================================================================
-/// Poisition - Позиция в которой находиться партикл
-/// Velocity - Текущая скорость
-/// Forces - силы действующие на партикл
-/// UMass - fabsf(Массы)
-/// Drag - сопротивление среды (0 нет сопротивления .. 1 полная остановка)
-/// TimeScale - скалирование времени...
+/// Poisition - РџРѕР·РёС†РёСЏ РІ РєРѕС‚РѕСЂРѕР№ РЅР°С…РѕРґРёС‚СЊСЃСЏ РїР°СЂС‚РёРєР»
+/// Velocity - РўРµРєСѓС‰Р°СЏ СЃРєРѕСЂРѕСЃС‚СЊ
+/// Forces - СЃРёР»С‹ РґРµР№СЃС‚РІСѓСЋС‰РёРµ РЅР° РїР°СЂС‚РёРєР»
+/// UMass - fabsf(РњР°СЃСЃС‹)
+/// Drag - СЃРѕРїСЂРѕС‚РёРІР»РµРЅРёРµ СЃСЂРµРґС‹ (0 РЅРµС‚ СЃРѕРїСЂРѕС‚РёРІР»РµРЅРёСЏ .. 1 РїРѕР»РЅР°СЏ РѕСЃС‚Р°РЅРѕРІРєР°)
+/// TimeScale - СЃРєР°Р»РёСЂРѕРІР°РЅРёРµ РІСЂРµРјРµРЅРё...
 __forceinline void SolvePhysic (Vector& Position, Vector& Velocity, const Vector& Forces, float UMass, float Drag, float TimeScale)
 {
 /*
@@ -26,7 +26,7 @@ __forceinline void SolvePhysic (Vector& Position, Vector& Velocity, const Vector
 	Position += ((Velocity * Drag) * TimeScale);
 }
 
-/// Добавить к текущим силам силу гравитации...
+/// Р”РѕР±Р°РІРёС‚СЊ Рє С‚РµРєСѓС‰РёРј СЃРёР»Р°Рј СЃРёР»Сѓ РіСЂР°РІРёС‚Р°С†РёРё...
 __forceinline void AddGravityForce (Vector& Forces, float Mass, float GravK)
 {
 	GravK *= 0.01f;

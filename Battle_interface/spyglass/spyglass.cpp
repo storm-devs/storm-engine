@@ -110,7 +110,7 @@ bool ISPYGLASS::Init()
 
 	// captain text data
 	m_TextCaptainName.LoadFromAttr(rs, GetAttr("captext.capname"), "?", 210, 640);
-	m_TextCaptainFencing.LoadFromAttr(rs, GetAttr("captext.fencing"), "", 210, 640); // boal çàìåíèë ? íà ïóñòî
+	m_TextCaptainFencing.LoadFromAttr(rs, GetAttr("captext.fencing"), "", 210, 640); // boal Ð·Ð°Ð¼ÐµÐ½Ð¸Ð» ? Ð½Ð° Ð¿ÑƒÑÑ‚Ð¾
 	m_TextCaptainCannon.LoadFromAttr(rs, GetAttr("captext.cannon"), "", 210, 640);
 	m_TextCaptainAccuracy.LoadFromAttr(rs, GetAttr("captext.accuracy"), "", 210, 640);
 	m_TextCaptainNavigation.LoadFromAttr(rs, GetAttr("captext.navigation"), "", 210, 640);
@@ -477,9 +477,9 @@ void ISPYGLASS::UpdateCamera()
 	if( !m_Camera.bIsActive ) {
 		m_Camera.fCurActivateTime += fTime;
 		if( m_Camera.fCurActivateTime >= m_Camera.fActivateTime ) {
-			m_Camera.fCurActivateTime = 0.f; // ñ÷åò÷èê íà íîëü
-			if( m_Camera.bIsGrow ) m_Camera.bIsActive = true; // òåïåðü ìû ðàáîòàåì ïî ïîëíîé
-			m_Camera.bIsGrow = !m_Camera.bIsGrow; // ñðàçó ãîòîâû
+			m_Camera.fCurActivateTime = 0.f; // ÑÑ‡ÐµÑ‚Ñ‡Ð¸Ðº Ð½Ð° Ð½Ð¾Ð»ÑŒ
+			if( m_Camera.bIsGrow ) m_Camera.bIsActive = true; // Ñ‚ÐµÐ¿ÐµÑ€ÑŒ Ð¼Ñ‹ Ñ€Ð°Ð±Ð¾Ñ‚Ð°ÐµÐ¼ Ð¿Ð¾ Ð¿Ð¾Ð»Ð½Ð¾Ð¹
+			m_Camera.bIsGrow = !m_Camera.bIsGrow; // ÑÑ€Ð°Ð·Ñƒ Ð³Ð¾Ñ‚Ð¾Ð²Ñ‹
 		}
 	}
 
@@ -509,7 +509,7 @@ void ISPYGLASS::ChangeTargetData(const char* pcShipName, const char* pcShipType,
 	m_txtShipName.sText = pcShipName;
 	m_txtShipType.sText = pcShipType;
 
-	// boal äèñòàíöèÿ äî -->
+	// boal Ð´Ð¸ÑÑ‚Ð°Ð½Ñ†Ð¸Ñ Ð´Ð¾ -->
 	if( fSailTo >= 0.f ) {
 		_snprintf(param,sizeof(param),"%.1f",fSailTo);
 		m_txtSailTo.sText = param;
@@ -527,10 +527,10 @@ void ISPYGLASS::ChangeTargetData(const char* pcShipName, const char* pcShipType,
 	if( nCurCannons>=0 && nMaxCannons>=0 ) {
 		_snprintf(param,sizeof(param),"%d/%d",nCurCannons,nMaxCannons);
 		m_txtCannons.sText = param;
-		if( m_Cannon.pImage ) m_Cannon.pImage->CutSide(0.f,0.f,0.f,0.f); // ïîêàæåì boal
+		if( m_Cannon.pImage ) m_Cannon.pImage->CutSide(0.f,0.f,0.f,0.f); // Ð¿Ð¾ÐºÐ°Ð¶ÐµÐ¼ boal
 	} else {
 		m_txtCannons.sText = "";
-		if( m_Cannon.pImage )  m_Cannon.pImage->CutSide(0.f,1.f,0.f,0.f);   // ïðÿ÷åì boal
+		if( m_Cannon.pImage )  m_Cannon.pImage->CutSide(0.f,1.f,0.f,0.f);   // Ð¿Ñ€ÑÑ‡ÐµÐ¼ boal
 	}
 
 	if( nShipClass>0 )
@@ -570,13 +570,13 @@ void ISPYGLASS::ChangeTargetData(const char* pcShipName, const char* pcShipType,
 	if( nCharge>=0 && nCharge<m_aChargeUV ) {
 		if( m_Charge.pImage )
 		{
-            m_Charge.pImage->CutSide(0.f,0.f,0.f,0.f); // ïîêàæåì boal
+            m_Charge.pImage->CutSide(0.f,0.f,0.f,0.f); // Ð¿Ð¾ÐºÐ°Ð¶ÐµÐ¼ boal
 			m_Charge.pImage->SetUV(m_aChargeUV[nCharge]);
 		}
 	}
 	else
 	{
-	    if( m_Charge.pImage )  m_Charge.pImage->CutSide(0.f,1.f,0.f,0.f);   // ïðÿ÷åì boal
+	    if( m_Charge.pImage )  m_Charge.pImage->CutSide(0.f,1.f,0.f,0.f);   // Ð¿Ñ€ÑÑ‡ÐµÐ¼ boal
 	}
 
 	if( nSailState>=0 && nSailState<m_aSailUV ) {
@@ -596,7 +596,7 @@ void ISPYGLASS::ChangeTargetData(const char* pcShipName, const char* pcShipType,
 		frUV.top = 0.f; frUV.bottom = 1.f;
 		m_CaptainFace.ChangeIcon(m_pImgRender,param,frUV);
 	}
-	// boal äàëåå ïðàâëþ èêîíêè ñêèëîâ, ÷òîá ñêðûâàëèñü/ïîêàçûâàëèñü
+	// boal Ð´Ð°Ð»ÐµÐµ Ð¿Ñ€Ð°Ð²Ð»ÑŽ Ð¸ÐºÐ¾Ð½ÐºÐ¸ ÑÐºÐ¸Ð»Ð¾Ð², Ñ‡Ñ‚Ð¾Ð± ÑÐºÑ€Ñ‹Ð²Ð°Ð»Ð¸ÑÑŒ/Ð¿Ð¾ÐºÐ°Ð·Ñ‹Ð²Ð°Ð»Ð¸ÑÑŒ
 	if( nFencing>=0 ) {
 		_snprintf(param,sizeof(param),"%d",nFencing);
 		m_TextCaptainFencing.sText = param;

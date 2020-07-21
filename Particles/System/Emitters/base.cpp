@@ -15,7 +15,7 @@
 
 
 
-// Êîíñòðóêòîð / äåñòðóêòîð
+// ÐšÐ¾Ð½ÑÑ‚Ñ€ÑƒÐºÑ‚Ð¾Ñ€ / Ð´ÐµÑÑ‚Ñ€ÑƒÐºÑ‚Ð¾Ñ€
 BaseEmitter::BaseEmitter(ParticleSystem* pSystem) : ParticleTypes(_FL_)
 {
 	pEmitter = NULL;
@@ -40,7 +40,7 @@ BaseEmitter::~BaseEmitter()
 	Stoped = true;
 }
 
-//Ðîäèòü íîâûå ïàðòèêëû 
+//Ð Ð¾Ð´Ð¸Ñ‚ÑŒ Ð½Ð¾Ð²Ñ‹Ðµ Ð¿Ð°Ñ€Ñ‚Ð¸ÐºÐ»Ñ‹ 
 void BaseEmitter::BornParticles (float DeltaTime)
 {
 	float SavedTime = ElapsedTime;
@@ -61,7 +61,7 @@ void BaseEmitter::BornParticles (float DeltaTime)
 		float DeltaTimeDiv = DeltaTime / INTERPOLATION_STEPS;
 		IncreaseTime (DeltaTimeDiv);
 
-		// Åñëè çàïàóçèëñÿ ýìèòòåð äîñðî÷íûé âûõîä
+		// Ð•ÑÐ»Ð¸ Ð·Ð°Ð¿Ð°ÑƒÐ·Ð¸Ð»ÑÑ ÑÐ¼Ð¸Ñ‚Ñ‚ÐµÑ€ Ð´Ð¾ÑÑ€Ð¾Ñ‡Ð½Ñ‹Ð¹ Ð²Ñ‹Ñ…Ð¾Ð´
 		if (Stoped)
 		{
 			ElapsedTime = SavedTime;
@@ -117,7 +117,7 @@ void BaseEmitter::BornParticles (float DeltaTime)
 }
   
 
-//Èñïîëíèòü
+//Ð˜ÑÐ¿Ð¾Ð»Ð½Ð¸Ñ‚ÑŒ
 void BaseEmitter::Execute (float DeltaTime)
 {
 	
@@ -139,7 +139,7 @@ void BaseEmitter::Execute (float DeltaTime)
 */
 }
 
-//Ïðèñîåäèíèòüñÿ ê èñòî÷íèêó äàííûõ
+//ÐŸÑ€Ð¸ÑÐ¾ÐµÐ´Ð¸Ð½Ð¸Ñ‚ÑŒÑÑ Ðº Ð¸ÑÑ‚Ð¾Ñ‡Ð½Ð¸ÐºÑƒ Ð´Ð°Ð½Ð½Ñ‹Ñ…
 void BaseEmitter::AttachToDataSource (DataSource::EmitterDesc* pEmitter)
 {
 	this->pEmitter = pEmitter;
@@ -237,7 +237,7 @@ void BaseEmitter::GetEmissionDirection (Matrix &matWorld)
 
 void BaseEmitter::Restart ()
 {
-	//Óäàëÿåì ñâîè ïàðòèêëû...
+	//Ð£Ð´Ð°Ð»ÑÐµÐ¼ ÑÐ²Ð¾Ð¸ Ð¿Ð°Ñ€Ñ‚Ð¸ÐºÐ»Ñ‹...
 	GetManager()->GetBBProcessor()->DeleteWithGUID(Unique_GUID);
 	GetManager()->GetMDLProcessor()->DeleteWithGUID(Unique_GUID);
 	Stoped = false;

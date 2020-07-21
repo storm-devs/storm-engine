@@ -13,15 +13,15 @@
 
 //============================================================================================
 
-#define WDM_SHIP_MAXDTIME		0.1f		//Наибольший допустимый временной отрезок для расчётов
-#define WDM_SHIP_CLAMPDTIME		0.5f		//Наибольший допустимый временной отрезок в Update
+#define WDM_SHIP_MAXDTIME		0.1f		//РќР°РёР±РѕР»СЊС€РёР№ РґРѕРїСѓСЃС‚РёРјС‹Р№ РІСЂРµРјРµРЅРЅРѕР№ РѕС‚СЂРµР·РѕРє РґР»СЏ СЂР°СЃС‡С‘С‚РѕРІ
+#define WDM_SHIP_CLAMPDTIME		0.5f		//РќР°РёР±РѕР»СЊС€РёР№ РґРѕРїСѓСЃС‚РёРјС‹Р№ РІСЂРµРјРµРЅРЅРѕР№ РѕС‚СЂРµР·РѕРє РІ Update
 
 //============================================================================================
 
 #define WDM_SHIP_WMSZ	(sizeof(lines)/sizeof(Line))
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 WdmShip::WdmShip()
@@ -107,35 +107,35 @@ void WdmShip::Update(float dltTime)
 	if(dltTime > 0.0f) ShipUpdate(dltTime);
 }
 
-//Расчёты
+//Р Р°СЃС‡С‘С‚С‹
 void WdmShip::ShipUpdate(float dltTime)
 {
 	const float pi2 = 3.14159265f*2.0f;
-	//Сбросим флажёк для рендера
+	//РЎР±СЂРѕСЃРёРј С„Р»Р°Р¶С‘Рє РґР»СЏ СЂРµРЅРґРµСЂР°
 	isWMRender = false;
-	//Сохраним предыдущую позицию
+	//РЎРѕС…СЂР°РЅРёРј РїСЂРµРґС‹РґСѓС‰СѓСЋ РїРѕР·РёС†РёСЋ
 	float oay = ay;	
 	CVECTOR opos = mtx.Pos();
-	//Ограничем скорости
+	//РћРіСЂР°РЅРёС‡РµРј СЃРєРѕСЂРѕСЃС‚Рё
 	if(speed > WDM_SHIP_MAX_SPEED*kMaxSpeed) speed = WDM_SHIP_MAX_SPEED*kMaxSpeed;
 	if(speed < -0.4f*WDM_SHIP_MAX_SPEED*kMaxSpeed) speed = -0.4f*WDM_SHIP_MAX_SPEED*kMaxSpeed;
 	if(turnspd > WDM_SHIP_MAX_TURNSPD) turnspd = WDM_SHIP_MAX_TURNSPD;
 	if(turnspd < -WDM_SHIP_MAX_TURNSPD) turnspd = -WDM_SHIP_MAX_TURNSPD;
-	//Покачаем
+	//РџРѕРєР°С‡Р°РµРј
 	ax += dltAx*dltTime;
 	az += dltAz*dltTime;
-	//Поворачиваем
+	//РџРѕРІРѕСЂР°С‡РёРІР°РµРј
 	ay += turnspd*dltTime;
-	//Ограничем углы
+	//РћРіСЂР°РЅРёС‡РµРј СѓРіР»С‹
 	if(ax > pi2) ax -= pi2; if(ax < -pi2) ax += pi2;
 	if(ay > pi2) ay -= pi2; if(ay < -pi2) ay += pi2;
 	if(az > pi2) az -= pi2; if(az < -pi2) az += pi2;
-	//Коэфициент зависимости скорости от ветра
+	//РљРѕСЌС„РёС†РёРµРЅС‚ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё СЃРєРѕСЂРѕСЃС‚Рё РѕС‚ РІРµС‚СЂР°
 	CVECTOR windDir = 0.0f;
 	float kWind = wdmObjects->GetWind(mtx.Pos().x, mtx.Pos().z, windDir);
 	kWind *= (sinf(ay)*windDir.x + cosf(ay)*windDir.z)*0.5f + 0.5f;
 	kWind = wdmObjects->shipSpeedOppositeWind + (wdmObjects->shipSpeedOverWind - wdmObjects->shipSpeedOppositeWind)*kWind;
-	//Найдём новую позицию
+	//РќР°Р№РґС‘Рј РЅРѕРІСѓСЋ РїРѕР·РёС†РёСЋ
 	CVECTOR pos = mtx.Pos();
 	float dltMove = speed*kWind*dltTime;
 	pos += mtx.Vz()*dltMove + rspeed*dltTime;
@@ -148,9 +148,9 @@ void WdmShip::ShipUpdate(float dltTime)
 	speed -= k*speed;
 	rspeed -= k*rspeed;
 	slope += (turnspd*speed*(0.5f/WDM_SHIP_MAX_SPEED) - slope)*k;
-	//Пересчитаем матрицу
+	//РџРµСЂРµСЃС‡РёС‚Р°РµРј РјР°С‚СЂРёС†Сѓ
 	mtx.BuildMatrix(0.1f*sinf(ax), ay, 0.1f*sinf(az) + slope, pos.x, 0.0f, pos.z);
-	//Коллижен с землёй
+	//РљРѕР»Р»РёР¶РµРЅ СЃ Р·РµРјР»С‘Р№
 	if(wdmObjects->islands)
 	{
 		if(wdmObjects->islands->CollisionTest(mtx, modelL05, modelW05))
@@ -172,7 +172,7 @@ void WdmShip::ShipUpdate(float dltTime)
 				opos += moveDir*dltTime;
 			}
 			ay = oay;
-			//Посчитаем реакцию на столкновение
+			//РџРѕСЃС‡РёС‚Р°РµРј СЂРµР°РєС†РёСЋ РЅР° СЃС‚РѕР»РєРЅРѕРІРµРЅРёРµ
 			pos = wdmObjects->islands->centPos - pos;
 			k = ~pos;
 			if(k)
@@ -191,10 +191,10 @@ void WdmShip::ShipUpdate(float dltTime)
 				mtx.MulToInvNorm(CVECTOR(pos), pos);
 				turnspd = -1.5f*2.0f*pos.x*pos.z*(pos.z > 0.0f ? 2.0f : 1.0f);
 				
-				//Ограничем скорость отдачи
+				//РћРіСЂР°РЅРёС‡РµРј СЃРєРѕСЂРѕСЃС‚СЊ РѕС‚РґР°С‡Рё
 				if(k > 25.0f) rspeed *= 5.0f/k;
 			}
-			//Вернём на предыдущую позицию кораблик
+			//Р’РµСЂРЅС‘Рј РЅР° РїСЂРµРґС‹РґСѓС‰СѓСЋ РїРѕР·РёС†РёСЋ РєРѕСЂР°Р±Р»РёРє
 			mtx.BuildMatrix(0.1f*sinf(ax), oay, 0.1f*sinf(az) + slope, opos.x, 0.0f, opos.z);
 			speed = 0.0f;
 			Collide();
@@ -203,12 +203,12 @@ void WdmShip::ShipUpdate(float dltTime)
 			collisionCounter = 0;
 		}
 	}
-	//Ограничем координаты
+	//РћРіСЂР°РЅРёС‡РµРј РєРѕРѕСЂРґРёРЅР°С‚С‹
 	if(mtx.Pos().x < -0.5f*wdmObjects->worldSizeX) mtx.Pos().x = -0.5f*wdmObjects->worldSizeX;
 	if(mtx.Pos().x > 0.5f*wdmObjects->worldSizeX) mtx.Pos().x = 0.5f*wdmObjects->worldSizeX;
 	if(mtx.Pos().z < -0.5f*wdmObjects->worldSizeZ) mtx.Pos().z = -0.5f*wdmObjects->worldSizeZ;
 	if(mtx.Pos().z > 0.5f*wdmObjects->worldSizeZ) mtx.Pos().z = 0.5f*wdmObjects->worldSizeZ;
-	//Обновим след
+	//РћР±РЅРѕРІРёРј СЃР»РµРґ
 	UpdateWaterMark(dltTime);
 }
 
@@ -217,11 +217,11 @@ void WdmShip::LRender(VDX8RENDER * rs)
 	if(wmtexture >= 0 && isWMRender)
 	{
 		isWMRender = false;
-		//Рисуем след
+		//Р РёСЃСѓРµРј СЃР»РµРґ
 		float al = alpha*255.0f;
 		if(al < 0.0f) al = 0.0f;
 		if(al > 255.0f) al = 255.0f;
-		//Вершины
+		//Р’РµСЂС€РёРЅС‹
 		static Vertex vrt[WDM_SHIP_WMSZ*2 + 1];
 		float y = 0.01f;
 		dword color = (dword(al) << 16) | (dword(al) << 8) | (dword(al) << 0) | 0xff000000;
@@ -254,7 +254,7 @@ void WdmShip::LRender(VDX8RENDER * rs)
 			vrt[i*2 + 2].tu = 1.0f;
 			vrt[i*2 + 2].tv = baseV + (i + 1)*(1.0f/WDM_SHIP_WMSZ);
 		}
-		//Отрисовываем стрипом
+		//РћС‚СЂРёСЃРѕРІС‹РІР°РµРј СЃС‚СЂРёРїРѕРј
 		//Textures
 		rs->TextureSet(0, wmtexture);
 		//Transform
@@ -264,7 +264,7 @@ void WdmShip::LRender(VDX8RENDER * rs)
 		rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1, WDM_SHIP_WMSZ*2 - 1, vrt, sizeof(Vertex), "WdmShipWaterTrack");
 	}else{
 		isWMRender = true;
-		//Рисуем модельку
+		//Р РёСЃСѓРµРј РјРѕРґРµР»СЊРєСѓ
 		WdmRenderModel::LRender(rs);
 	}
 	//wdmObjects->DrawVector(rs, mtx.Pos(), mtx.Pos() + rspeed, 0xff00ff00);
@@ -307,15 +307,15 @@ void WdmShip::UpdateWaterMark(float dltTime)
 }
 
 
-//true если свободно
+//true РµСЃР»Рё СЃРІРѕР±РѕРґРЅРѕ
 bool WdmShip::CheckPosition(float x, float z, float objRadius)
 {
-	//Мир
+	//РњРёСЂ
 	if(x - objRadius < -0.5f*wdmObjects->worldSizeX) return false;
 	if(x + objRadius > 0.5f*wdmObjects->worldSizeX) return false;
 	if(z - objRadius < -0.5f*wdmObjects->worldSizeZ) return false;
 	if(z + objRadius > 0.5f*wdmObjects->worldSizeZ) return false;
-	//Корабли
+	//РљРѕСЂР°Р±Р»Рё
 	long i = 0;
 	for(i = 0; i < wdmObjects->numShips; i++)
 	{
@@ -325,7 +325,7 @@ bool WdmShip::CheckPosition(float x, float z, float objRadius)
 		float dz = wdmObjects->ships[i]->mtx.Pos().z - z;
 		if(dx*dx + dz*dz < wdmObjects->ships[i]->modelRadius2) return false;
 	}
-	//Острова
+	//РћСЃС‚СЂРѕРІР°
 	if(i >= wdmObjects->numShips)
 	{
 		if(wdmObjects->islands)

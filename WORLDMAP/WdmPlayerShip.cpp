@@ -16,7 +16,7 @@
 #include "WorldMap.h"
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 WdmPlayerShip::WdmPlayerShip()
@@ -36,12 +36,12 @@ WdmPlayerShip::~WdmPlayerShip()
 
 void WdmPlayerShip::PushOutFromIsland()
 {
-	//Если не в острове то и не выталкиваемся
+	//Р•СЃР»Рё РЅРµ РІ РѕСЃС‚СЂРѕРІРµ С‚Рѕ Рё РЅРµ РІС‹С‚Р°Р»РєРёРІР°РµРјСЃСЏ
 	if(!wdmObjects->islands->CollisionTest(mtx, modelL05, modelW05, false))
 	{
 		return;
 	}
-	//Крутим по спирали вокруг точки
+	//РљСЂСѓС‚РёРј РїРѕ СЃРїРёСЂР°Р»Рё РІРѕРєСЂСѓРі С‚РѕС‡РєРё
 	float ang = 0.0f, angStep = PI*0.1f;
 	float areaRad = 0.1f*0.707f*sqrtf(wdmObjects->worldSizeX*wdmObjects->worldSizeX + wdmObjects->worldSizeZ*wdmObjects->worldSizeZ);
 	float x = mtx.Pos().x;
@@ -58,7 +58,7 @@ void WdmPlayerShip::PushOutFromIsland()
 			return;
 		}
 	}
-	//Неполучилось, попробуем случайно подвигать
+	//РќРµРїРѕР»СѓС‡РёР»РѕСЃСЊ, РїРѕРїСЂРѕР±СѓРµРј СЃР»СѓС‡Р°Р№РЅРѕ РїРѕРґРІРёРіР°С‚СЊ
 	for(long i = 0; i < 256; i++)
 	{
 		float _x = x + areaRad*rand()*1.0f/RAND_MAX;
@@ -78,15 +78,15 @@ void WdmPlayerShip::SetActionRadius(float radius)
 	actionRadius = radius;
 }
 
-//Расчёты
+//Р Р°СЃС‡С‘С‚С‹
 void WdmPlayerShip::Update(float dltTime)
 {
 	WdmShip::Update(dltTime);
 	Move(dltTime);
-	//Тестируем попадание в нашу область энкоунтеров
+	//РўРµСЃС‚РёСЂСѓРµРј РїРѕРїР°РґР°РЅРёРµ РІ РЅР°С€Сѓ РѕР±Р»Р°СЃС‚СЊ СЌРЅРєРѕСѓРЅС‚РµСЂРѕРІ
 	if(stormEventTime > 0.0f) stormEventTime -= dltTime;
 	if(wdmObjects->isPause) return;
-	//Шторм
+	//РЁС‚РѕСЂРј
 	long i = TestInStorm();
 	if(i >= 0)
 	{		
@@ -97,11 +97,11 @@ void WdmPlayerShip::Update(float dltTime)
 		}
 	}
 	wdmObjects->playarInStorm = (i == -2);
-	//Корабли
+	//РљРѕСЂР°Р±Р»Рё
 	wdmObjects->enableSkipEnemy = false;
 	for(i = 0; i < wdmObjects->numShips; i++)
 	{
-		//Пропустим ненужных
+		//РџСЂРѕРїСѓСЃС‚РёРј РЅРµРЅСѓР¶РЅС‹С…
 		WdmEnemyShip * es = ((WdmEnemyShip *)wdmObjects->ships[i]);
 		if((WdmShip *)es == this || !es->isLive || es->killMe)
 		{
@@ -112,16 +112,16 @@ void WdmPlayerShip::Update(float dltTime)
 			}
 			continue;
 		}
-		//Дистанция до кораблика
+		//Р”РёСЃС‚Р°РЅС†РёСЏ РґРѕ РєРѕСЂР°Р±Р»РёРєР°
 		float r = ~(es->mtx.Pos() - mtx.Pos());
-		//Определим радиус тестирования
+		//РћРїСЂРµРґРµР»РёРј СЂР°РґРёСѓСЃ С‚РµСЃС‚РёСЂРѕРІР°РЅРёСЏ
 		if(es->isEnemy)
 		{
 			if(r < actionRadius*actionRadius*6.0f)
 			{
 				if(r < actionRadius*actionRadius)
 				{
-					//Догнали
+					//Р”РѕРіРЅР°Р»Рё
 					//((WdmEnemyShip *)wdmObjects->ships[i])->isLive = false;
 					wdmObjects->ships[i]->isSelect = true;
 					if(es->attack) es->attack->isSelect = true;
@@ -175,13 +175,13 @@ void WdmPlayerShip::Update(float dltTime)
 
 	long nOldIslandVal = wdmObjects->wm->AttributesPointer->GetAttributeAsDword("encounter_island",0);
 	long nOldEncounterType = wdmObjects->wm->AttributesPointer->GetAttributeAsDword("encounter_type",0);
-	// отметим попадание в остров
+	// РѕС‚РјРµС‚РёРј РїРѕРїР°РґР°РЅРёРµ РІ РѕСЃС‚СЂРѕРІ
 	if( wdmObjects->curIsland ) {
 		wdmObjects->wm->AttributesPointer->SetAttributeUseDword("encounter_island",1);
 	} else {
 		wdmObjects->wm->AttributesPointer->SetAttributeUseDword("encounter_island",0);
 	}
-	// отметим попадание в енкаунтер
+	// РѕС‚РјРµС‚РёРј РїРѕРїР°РґР°РЅРёРµ РІ РµРЅРєР°СѓРЅС‚РµСЂ
 	if( wdmObjects->enemyShip ) {
 		switch(wdmObjects->enemyShip->shipType)
 		{
@@ -192,7 +192,7 @@ void WdmPlayerShip::Update(float dltTime)
 		default: wdmObjects->wm->AttributesPointer->SetAttributeUseDword("encounter_type",-1);
 		}
 	} else {
-		// отметим попадание в шторм
+		// РѕС‚РјРµС‚РёРј РїРѕРїР°РґР°РЅРёРµ РІ С€С‚РѕСЂРј
 		if( wdmObjects->playarInStorm ) {
 			wdmObjects->wm->AttributesPointer->SetAttributeUseDword("encounter_type",4);
 		} else {
@@ -216,7 +216,7 @@ void WdmPlayerShip::LRender(VDX8RENDER * rs)
 
 bool WdmPlayerShip::ExitFromMap()
 {
-	//Ищем селектированные
+	//РС‰РµРј СЃРµР»РµРєС‚РёСЂРѕРІР°РЅРЅС‹Рµ
 	long i = 0, finded = 0;
 	for(i = 0, finded = -1; i < wdmObjects->numShips; i++)
 	{
@@ -291,17 +291,17 @@ long WdmPlayerShip::TestInStorm()
 	return -1;
 }
 
-//Переместить кораблик
+//РџРµСЂРµРјРµСЃС‚РёС‚СЊ РєРѕСЂР°Р±Р»РёРє
 void WdmPlayerShip::Move(float dltTime)
 {
 	CONTROL_STATE cs;
-	//Вперёд
+	//Р’РїРµСЂС‘Рґ
 	_CORE_API->Controls->GetControlState("WMapShipSailUp", cs);
 	if(cs.state == CST_ACTIVE || cs.state == CST_ACTIVATED) goForward = true;
 	_CORE_API->Controls->GetControlState("WMapShipSailUp1", cs);
 	if(cs.state == CST_ACTIVE || cs.state == CST_ACTIVATED) goForward = true;
 	if(goForward) speed += WDM_SHIP_INER_ST*WDM_SHIP_MAX_SPEED*dltTime*0.5f;
-	//Назад
+	//РќР°Р·Р°Рґ
 	bool isBack = false;
 	_CORE_API->Controls->GetControlState("WMapShipSailDown", cs);
 	if(cs.state == CST_ACTIVE) isBack = true;
@@ -317,7 +317,7 @@ void WdmPlayerShip::Move(float dltTime)
 		}
 	}
 	_CORE_API->Controls->GetControlState("WMapShipSailDown", cs);
-	//Повороты
+	//РџРѕРІРѕСЂРѕС‚С‹
 	bool isTurn = false;
 	_CORE_API->Controls->GetControlState("WMapShipTurnLeft", cs);
 	if(cs.state == CST_ACTIVE) isTurn = true;

@@ -22,7 +22,7 @@ public:
 	dword AttributeChanged(ATTRIBUTES * pAttr);
 
 protected:
-	WMShipIcon* m_pShipIcon; // иконки команд и целеуказаний в боевом меню
+	WMShipIcon* m_pShipIcon; // РёРєРѕРЅРєРё РєРѕРјР°РЅРґ Рё С†РµР»РµСѓРєР°Р·Р°РЅРёР№ РІ Р±РѕРµРІРѕРј РјРµРЅСЋ
 	WMShipCommandList* m_pCommandList;
 	bool m_bVisible;
 	long m_nCommandListVerticalOffset;

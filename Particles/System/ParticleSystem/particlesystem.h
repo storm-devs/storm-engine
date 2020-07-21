@@ -26,10 +26,10 @@ class ParticleSystem : public IParticleSystem
 
 	array<EmitterDesc> Emitters;
 
-	//Автоудаляемая система или обычная
+	//РђРІС‚РѕСѓРґР°Р»СЏРµРјР°СЏ СЃРёСЃС‚РµРјР° РёР»Рё РѕР±С‹С‡РЅР°СЏ
 	bool AutoDeleted;  
 	
-	// Не рождать новые партиклы !!!
+	// РќРµ СЂРѕР¶РґР°С‚СЊ РЅРѕРІС‹Рµ РїР°СЂС‚РёРєР»С‹ !!!
 	bool EmissionPause;		
 
 	bool DeleteIfNeed ();
@@ -54,30 +54,30 @@ protected:
 
 public:
 
-//Создание/удаление 
+//РЎРѕР·РґР°РЅРёРµ/СѓРґР°Р»РµРЅРёРµ 
 	ParticleSystem(ParticleManager* serv);
 	virtual bool Release ();
 
-//Отработать всем партиклам
+//РћС‚СЂР°Р±РѕС‚Р°С‚СЊ РІСЃРµРј РїР°СЂС‚РёРєР»Р°Рј
   virtual DWORD Execute (float DeltaTime);
 
 
-//Перезапустить партикловую систему  
+//РџРµСЂРµР·Р°РїСѓСЃС‚РёС‚СЊ РїР°СЂС‚РёРєР»РѕРІСѓСЋ СЃРёСЃС‚РµРјСѓ  
   virtual void Restart (DWORD RandomSeed);
   
-//Запаузить испускание партиклов  
+//Р—Р°РїР°СѓР·РёС‚СЊ РёСЃРїСѓСЃРєР°РЅРёРµ РїР°СЂС‚РёРєР»РѕРІ  
   virtual void PauseEmission (bool bPause);
 
 	virtual void Stop ();
-//Узнать на паузе эмиссия или нет  
+//РЈР·РЅР°С‚СЊ РЅР° РїР°СѓР·Рµ СЌРјРёСЃСЃРёСЏ РёР»Рё РЅРµС‚  
   virtual bool IsEmissionPaused ();
 
 
-//Установить автоудаляемая система или обычная...  
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р°РІС‚РѕСѓРґР°Р»СЏРµРјР°СЏ СЃРёСЃС‚РµРјР° РёР»Рё РѕР±С‹С‡РЅР°СЏ...  
   virtual void AutoDelete (bool Enabled);
-//Узнаять автоудаляемая система или нет  
+//РЈР·РЅР°СЏС‚СЊ Р°РІС‚РѕСѓРґР°Р»СЏРµРјР°СЏ СЃРёСЃС‚РµРјР° РёР»Рё РЅРµС‚  
 	virtual bool IsAutoDeleted ();
-//Установить матрицу трансформации для системы 
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РјР°С‚СЂРёС†Сѓ С‚СЂР°РЅСЃС„РѕСЂРјР°С†РёРё РґР»СЏ СЃРёСЃС‚РµРјС‹ 
 	virtual void SetTransform (const Matrix& transform);
 	virtual void GetTransform (Matrix& _matWorld);
 

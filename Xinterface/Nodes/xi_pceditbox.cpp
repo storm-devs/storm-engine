@@ -265,7 +265,7 @@ void CXI_PCEDITBOX::UpdateString( string & str )
 				if( pKeys[n].bSystem ) {
 					switch( pKeys[n].ucVKey )
 					{
-						// ñèìâîëû óïðàâëåíèÿ
+						// ÑÐ¸Ð¼Ð²Ð¾Ð»Ñ‹ ÑƒÐ¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ñ
 					case VK_BACK:
 						if( m_nEditPos>0 ) {
 							m_nEditPos--;
@@ -285,7 +285,7 @@ void CXI_PCEDITBOX::UpdateString( string & str )
 			{
 				switch( chr )
 				{
-					// ñèìâîëû óïðàâëåíèÿ
+					// ÑÐ¸Ð¼Ð²Ð¾Ð»Ñ‹ ÑƒÐ¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ñ
 				case SpecSymbol_back:
 					if( m_nEditPos>0 ) {
 						m_nEditPos--;
@@ -301,7 +301,7 @@ void CXI_PCEDITBOX::UpdateString( string & str )
 				case SpecSymbol_left: if( m_nEditPos > 0 ) m_nEditPos--; break;
 				case SpecSymbol_right: if( m_nEditPos < (long)str.Len() ) m_nEditPos++; break;
 
-					// ïðîïóñêàåì íåíóæíûå ñèìâîëû
+					// Ð¿Ñ€Ð¾Ð¿ÑƒÑÐºÐ°ÐµÐ¼ Ð½ÐµÐ½ÑƒÐ¶Ð½Ñ‹Ðµ ÑÐ¸Ð¼Ð²Ð¾Ð»Ñ‹
 				case SpecSymbol_up:
 				case SpecSymbol_down:
 				case SpecSymbol_tab:
@@ -309,7 +309,7 @@ void CXI_PCEDITBOX::UpdateString( string & str )
 				case SpecSymbol_escape:
 					break;
 
-					// à ýòî òî ÷òî ìû ââîäèì
+					// Ð° ÑÑ‚Ð¾ Ñ‚Ð¾ Ñ‡Ñ‚Ð¾ Ð¼Ñ‹ Ð²Ð²Ð¾Ð´Ð¸Ð¼
 				default:
 					InsertSymbol( str, chr );
 				}
@@ -318,7 +318,7 @@ void CXI_PCEDITBOX::UpdateString( string & str )
 
 			if( m_bDisguiseString ) DisguiseString( str );
 
-			// îïðåäåëåíèå ïåðâîãî âûâîäèìîãî ñèìâîëà
+			// Ð¾Ð¿Ñ€ÐµÐ´ÐµÐ»ÐµÐ½Ð¸Ðµ Ð¿ÐµÑ€Ð²Ð¾Ð³Ð¾ Ð²Ñ‹Ð²Ð¾Ð´Ð¸Ð¼Ð¾Ð³Ð¾ ÑÐ¸Ð¼Ð²Ð¾Ð»Ð°
 			char param[2048];
 			param[sizeof(param)-1] = 0;
 			_snprintf( param,sizeof(param)-1, "%s",str.GetBuffer() );
@@ -373,9 +373,9 @@ void CXI_PCEDITBOX::InsertSymbol( string & str, char chr )
 	char chrInsert[2];
 	chrInsert[0] = chr;
 	chrInsert[1] = 0;
-	// ïðîâåðêà íà ìàêñèìàëüíîå ÷èñëî ñèìâîëîâ
+	// Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÐ° Ð½Ð° Ð¼Ð°ÐºÑÐ¸Ð¼Ð°Ð»ÑŒÐ½Ð¾Ðµ Ñ‡Ð¸ÑÐ»Ð¾ ÑÐ¸Ð¼Ð²Ð¾Ð»Ð¾Ð²
 	if( m_nMaxSize >= 0 && (long)str.Len() >= m_nMaxSize ) return;
-	// ïðîâåðêà íà ìàêñèìàëüíóþ øèðèíó ñòðîêè
+	// Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÐ° Ð½Ð° Ð¼Ð°ÐºÑÐ¸Ð¼Ð°Ð»ÑŒÐ½ÑƒÑŽ ÑˆÐ¸Ñ€Ð¸Ð½Ñƒ ÑÑ‚Ñ€Ð¾ÐºÐ¸
 	if( m_nMaxWidth >= 0 )
 	{
 		string strResult = str;

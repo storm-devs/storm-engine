@@ -14,7 +14,7 @@ InfoHandler::~InfoHandler()
 
 bool InfoHandler::Init()
 {
-    // получить сервис рендера
+    // РїРѕР»СѓС‡РёС‚СЊ СЃРµСЂРІРёСЃ СЂРµРЅРґРµСЂР°
 	m_rs = (VDX8RENDER *)api->CreateService("dx8render");
 	if(!m_rs)
 	{
@@ -71,7 +71,7 @@ void InfoHandler::Realize(dword delta_time)
 {
 	if(m_pSurface==null || m_pRenderTarget==null) return;
 	m_rs->MakePostProcess();
-	// поддерживаем постоЯнный экран)
+	// РїРѕРґРґРµСЂР¶РёРІР°РµРј РїРѕСЃС‚РѕРЇРЅРЅС‹Р№ СЌРєСЂР°РЅ)
 	if(m_rs->UpdateSurface(m_pSurface, null, m_pRenderTarget, null) != D3D_OK)
 	{
 		api->Trace("InfoHandler : Can't copy fader screen shot to render target!");
@@ -134,7 +134,7 @@ bool InfoHandler::DoPreOut()
 	if(inStrStart)
 	{
 		ntmp = m_rs->StringWidth(inStrStart,0,fScale);
-		nOutWidth = (int)(sqrtf(4.f*ntmp*nOutOffset)+.9f); // ширина записи приблизительно больше высоты в четыре раза
+		nOutWidth = (int)(sqrtf(4.f*ntmp*nOutOffset)+.9f); // С€РёСЂРёРЅР° Р·Р°РїРёСЃРё РїСЂРёР±Р»РёР·РёС‚РµР»СЊРЅРѕ Р±РѕР»СЊС€Рµ РІС‹СЃРѕС‚С‹ РІ С‡РµС‚С‹СЂРµ СЂР°Р·Р°
 		if(nOutWidth>(int)desc.Width) nOutWidth = desc.Width;
 		nInsideRectWidth = nOutWidth + nBorderWidth*2;
 		if(nInsideRectWidth>(int)desc.Width) nInsideRectWidth = desc.Width;
@@ -266,7 +266,7 @@ char * InfoHandler::GetCutString( char * pstr, int nOutWidth, float fScale )
 	bool spaceWait = false;
 	char param[1024];
 
-	// удаляем первые переходы на новую строку
+	// СѓРґР°Р»СЏРµРј РїРµСЂРІС‹Рµ РїРµСЂРµС…РѕРґС‹ РЅР° РЅРѕРІСѓСЋ СЃС‚СЂРѕРєСѓ
 	while(pstr && (*pstr==0x0A || *pstr==0x0D || *pstr==32) )	pstr++;
 
 	char * oldps = null;

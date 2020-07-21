@@ -12,7 +12,7 @@
 #include "..\common_h\messages.h"
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 long Fader::numberOfTips = 0;
@@ -49,11 +49,11 @@ Fader::~Fader()
 	}
 }
 
-//Инициализация
+//РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
 bool Fader::Init()
 {
 	GUARD(Fader::Init())
-	//Проверим что единственные
+	//РџСЂРѕРІРµСЂРёРј С‡С‚Рѕ РµРґРёРЅСЃС‚РІРµРЅРЅС‹Рµ
 	ENTITY_ID eid;
 	if(_CORE_API->FindClass(&eid, "Fader", 0))
 	{
@@ -83,7 +83,7 @@ bool Fader::Init()
 	h = float(vp.Height);
 	if(w <= 0 || h <= 0) return false;
 	if(rs->GetRenderTarget(&renderTarget) != D3D_OK) return false;
-	//Зачитаем количество типсов, если надо
+	//Р—Р°С‡РёС‚Р°РµРј РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РёРїСЃРѕРІ, РµСЃР»Рё РЅР°РґРѕ
 	if(!numberOfTips)
 	{
 		INIFILE * ini = api->fio->OpenIniFile(api->EngineIniFileName());
@@ -99,13 +99,13 @@ bool Fader::Init()
 	UNGUARD
 }
 
-//Сообщения
+//РЎРѕРѕР±С‰РµРЅРёСЏ
 dword _cdecl Fader::ProcessMessage(MESSAGE & message)
 {
 	char _name[MAX_PATH];
 	switch(message.Long())
 	{
-	case FADER_OUT:	//Запустить затемнение экрана
+	case FADER_OUT:	//Р—Р°РїСѓСЃС‚РёС‚СЊ Р·Р°С‚РµРјРЅРµРЅРёРµ СЌРєСЂР°РЅР°
 		alpha = 0.0f;
 		fadeSpeed = message.Float();
 		if(fadeSpeed > 0.0f) fadeSpeed = 1.0f/fadeSpeed; else fadeSpeed = 0.0f;
@@ -118,7 +118,7 @@ dword _cdecl Fader::ProcessMessage(MESSAGE & message)
 		eventStart = false;
 		eventEnd = false;
 		break;
-	case FADER_IN:	//Запустить проявление экрана
+	case FADER_IN:	//Р—Р°РїСѓСЃС‚РёС‚СЊ РїСЂРѕСЏРІР»РµРЅРёРµ СЌРєСЂР°РЅР°
 		alpha = 0.0f;
 		fadeSpeed = message.Float();
 		if(fadeSpeed < 0.00001f) fadeSpeed = 0.00001f;
@@ -145,7 +145,7 @@ dword _cdecl Fader::ProcessMessage(MESSAGE & message)
 		if(rs)
 		{
 			rs->SetProgressImage(_name);
-			//Текстура подсказки
+			//РўРµРєСЃС‚СѓСЂР° РїРѕРґСЃРєР°Р·РєРё
 			if(numberOfTips > 0)
 			{
 				sprintf(_name, "interfaces\\int_border.tga");
@@ -161,7 +161,7 @@ dword _cdecl Fader::ProcessMessage(MESSAGE & message)
 		if(rs)
 		{
 			rs->SetProgressBackImage(_name);
-			//Текстура подсказки
+			//РўРµРєСЃС‚СѓСЂР° РїРѕРґСЃРєР°Р·РєРё
 			if(numberOfTips > 0)
 			{
 				char * pTipsName = rs->GetTipsImage();
@@ -176,7 +176,7 @@ dword _cdecl Fader::ProcessMessage(MESSAGE & message)
 	return 0;
 }
 
-//Работа
+//Р Р°Р±РѕС‚Р°
 void Fader::Execute(dword delta_time)
 {
 	//api->Trace("fader frame");
@@ -217,14 +217,14 @@ void Fader::Realize(dword delta_time)
 {
 	if(!isWork) return;
 	if(isStart) eventStart = true;	
-	//Снятие и рисование стартового кадра
+	//РЎРЅСЏС‚РёРµ Рё СЂРёСЃРѕРІР°РЅРёРµ СЃС‚Р°СЂС‚РѕРІРѕРіРѕ РєР°РґСЂР°
 	if(!endFade)
 	{
 		if(haveFrame)
 		{
 			if(isStart)
 			{
-				//Надо снять шот
+				//РќР°РґРѕ СЃРЅСЏС‚СЊ С€РѕС‚
 				bool isOk = false;
 				D3DSURFACE_DESC desc;				
 				if(renderTarget->GetDesc(&desc) == D3D_OK)
@@ -239,7 +239,7 @@ void Fader::Realize(dword delta_time)
 				}
 				if(!isOk) _CORE_API->Trace("Fader : Screen shot for fader not created!");				
 			}else{
-				//Копируем шот				
+				//РљРѕРїРёСЂСѓРµРј С€РѕС‚				
 				if(rs->UpdateSurface(surface, null, renderTarget, null) != D3D_OK)
 				{
 					_CORE_API->Trace("Fader : Can't copy fader screen shot to render target!");
@@ -247,7 +247,7 @@ void Fader::Realize(dword delta_time)
 			}
 		}
 	}
-	//Рисование затеняющего прямоугольника
+	//Р РёСЃРѕРІР°РЅРёРµ Р·Р°С‚РµРЅСЏСЋС‰РµРіРѕ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєР°
 	static struct
 	{
 		float x, y, z, rhw;
@@ -302,7 +302,7 @@ void Fader::Realize(dword delta_time)
 	}else{
 		rs->DrawPrimitiveUP(D3DPT_TRIANGLELIST, D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2, 2, drawbuf, sizeof(drawbuf[0]), "Fader");
 	}
-	//Увеличение alpha
+	//РЈРІРµР»РёС‡РµРЅРёРµ alpha
 	if(!endFade)
 	{
 		if(fadeSpeed > 0.0f) alpha += delta_time*0.001f*fadeSpeed; else alpha = 1.0f;

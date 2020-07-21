@@ -61,10 +61,10 @@ protected:
 	IMAGELISTDESCR  *m_pList;
 	PICTUREDESCR	*m_pImage;
 
-	// Масштабные коэффициенты
+	// РњР°СЃС€С‚Р°Р±РЅС‹Рµ РєРѕСЌС„С„РёС†РёРµРЅС‚С‹
 	float	m_fWScale;
 	float	m_fHScale;
-	// параметры ошибки при масштабировании
+	// РїР°СЂР°РјРµС‚СЂС‹ РѕС€РёР±РєРё РїСЂРё РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРёРё
 	float	m_fWAdd;
 	float	m_fHAdd;
 };

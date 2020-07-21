@@ -30,7 +30,7 @@ HELPCHOOSER::~HELPCHOOSER()
 
 void HELPCHOOSER::SetDevice()
 {
-    // ïîëó÷èòü ñåðâèñ ðåíäåðà
+    // Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ ÑÐµÑ€Ð²Ð¸Ñ Ñ€ÐµÐ½Ð´ÐµÑ€Ð°
 	rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
 	if(!rs){_THROW("No service: dx8render")}
 }
@@ -210,11 +210,11 @@ bool HELPCHOOSER::RunChooser(char * ChooserGroup)
 		return false;
 	}
 
-	// ïîëó÷èì ðàçìåð òåêñòóð
+	// Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ð¼ Ñ€Ð°Ð·Ð¼ÐµÑ€ Ñ‚ÐµÐºÑÑ‚ÑƒÑ€
 	texWidth = ini->GetFloat(ChooserGroup,"TextureWidth",512.f);
 	texHeight = ini->GetFloat(ChooserGroup,"TextureHeight",512.f);
 
-	// Ïîëó÷èì ðàçìåð ïîâåðõíîñòè âûâîäà (ðàçìåð îêíà)
+	// ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ð¼ Ñ€Ð°Ð·Ð¼ÐµÑ€ Ð¿Ð¾Ð²ÐµÑ€Ñ…Ð½Ð¾ÑÑ‚Ð¸ Ð²Ñ‹Ð²Ð¾Ð´Ð° (Ñ€Ð°Ð·Ð¼ÐµÑ€ Ð¾ÐºÐ½Ð°)
 	IDirect3DSurface9 * pRenderTarget;
 	rs->GetRenderTarget(&pRenderTarget);
 	D3DSURFACE_DESC dscrSurface;
@@ -223,27 +223,27 @@ bool HELPCHOOSER::RunChooser(char * ChooserGroup)
 	m_fScreenHeight = (float)dscrSurface.Height;
 	pRenderTarget->Release();
 
-	// òåêñòóðà âûáðàííîé êàðòèíêè
+	// Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ð° Ð²Ñ‹Ð±Ñ€Ð°Ð½Ð½Ð¾Ð¹ ÐºÐ°Ñ€Ñ‚Ð¸Ð½ÐºÐ¸
 	if( ini->ReadString(ChooserGroup,"FrontTexture",param,sizeof(param)-1,"") )
 		m_idPicTexture = rs->TextureCreate(param);
 
-	// òåêñòóðà íåâûáðàííîé(ôîíîâîé) êàðòèíêè
+	// Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ð° Ð½ÐµÐ²Ñ‹Ð±Ñ€Ð°Ð½Ð½Ð¾Ð¹(Ñ„Ð¾Ð½Ð¾Ð²Ð¾Ð¹) ÐºÐ°Ñ€Ñ‚Ð¸Ð½ÐºÐ¸
 	if( ini->ReadString(ChooserGroup,"BackTexture",param,sizeof(param)-1,"") )
 		m_idBackTexture = rs->TextureCreate(param);
 
-	// ïîäñ÷åò ÷èñëà ïðÿìîóãîëüíèêîâ äëÿ âûáîðà ïîìîùè
+	// Ð¿Ð¾Ð´ÑÑ‡ÐµÑ‚ Ñ‡Ð¸ÑÐ»Ð° Ð¿Ñ€ÑÐ¼Ð¾ÑƒÐ³Ð¾Ð»ÑŒÐ½Ð¸ÐºÐ¾Ð² Ð´Ð»Ñ Ð²Ñ‹Ð±Ð¾Ñ€Ð° Ð¿Ð¾Ð¼Ð¾Ñ‰Ð¸
 	m_nRectQ = 0;
 	if( ini->ReadString(ChooserGroup,"rect",param,sizeof(param)-1,"") )
 		do	m_nRectQ++;
 		while( ini->ReadStringNext(ChooserGroup,"rect",param,sizeof(param)-1) );
-	// ñîçäàåì ìàññèâ êîîðäèíàò ïðÿìîóãîëüíèêîâ âûáîðà
+	// ÑÐ¾Ð·Ð´Ð°ÐµÐ¼ Ð¼Ð°ÑÑÐ¸Ð² ÐºÐ¾Ð¾Ñ€Ð´Ð¸Ð½Ð°Ñ‚ Ð¿Ñ€ÑÐ¼Ð¾ÑƒÐ³Ð¾Ð»ÑŒÐ½Ð¸ÐºÐ¾Ð² Ð²Ñ‹Ð±Ð¾Ñ€Ð°
 	if(m_nRectQ>0)
 	{
 		m_pRectList = NEW FRECT[m_nRectQ];
 		m_psRectName = NEW char*[m_nRectQ];
 		if(m_pRectList==null || m_psRectName==null)	{THROW("Allocate memory error");}
 	}
-	// çàïîëíÿåì âñå ïðÿìîóãîëüíèêè
+	// Ð·Ð°Ð¿Ð¾Ð»Ð½ÑÐµÐ¼ Ð²ÑÐµ Ð¿Ñ€ÑÐ¼Ð¾ÑƒÐ³Ð¾Ð»ÑŒÐ½Ð¸ÐºÐ¸
 	ini->ReadString(ChooserGroup,"rect",param,sizeof(param)-1,"");
 	for(i=0; i<m_nRectQ; i++)
 	{
@@ -273,7 +273,7 @@ bool HELPCHOOSER::RunChooser(char * ChooserGroup)
 		ini->ReadStringNext(ChooserGroup,"rect",param,sizeof(param)-1);
 	}
 
-	// óñòàíîâèì ìûøü
+	// ÑƒÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ð¼ Ð¼Ñ‹ÑˆÑŒ
 	m_fCurMouseX = 0.f;		m_fCurMouseY = 0.f;
 	m_nMouseWidth = ini->GetLong("COMMON","mouseWidth",32);
 	m_nMouseHeight = ini->GetLong("COMMON","mouseHeight",32);
@@ -285,7 +285,7 @@ bool HELPCHOOSER::RunChooser(char * ChooserGroup)
 			m_idMouseTexture = rs->TextureCreate(param);
 #endif
 
-	// Ñîçäàåì áóôåð âåðòåêñîâ
+	// Ð¡Ð¾Ð·Ð´Ð°ÐµÐ¼ Ð±ÑƒÑ„ÐµÑ€ Ð²ÐµÑ€Ñ‚ÐµÐºÑÐ¾Ð²
 	m_idVBuf = rs->CreateVertexBufferManaged(HCHOOSER_FVF,18*sizeof(HCHOOSER_VERTEX),D3DUSAGE_WRITEONLY);
 	if(m_idVBuf==-1)	api->Trace("WARNING! Can`t create vertex buffer for help chooser");
 	else

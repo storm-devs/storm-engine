@@ -50,7 +50,7 @@ protected: // data
 	class EventListener : public AnimationEventListener
 	{
 	public:
-		//Принять событие
+		//РџСЂРёРЅСЏС‚СЊ СЃРѕР±С‹С‚РёРµ
 		virtual void Event(Animation * animation, long playerIndex, const char * eventName);
 
 		ItemEntity* item;

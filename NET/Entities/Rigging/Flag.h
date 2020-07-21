@@ -13,9 +13,9 @@ struct FLAGLXVERTEX
 
 class NetFlag : public ENTITY
 {
-    // параметры получаемые из INI-файла //
+    // РїР°СЂР°РјРµС‚СЂС‹ РїРѕР»СѓС‡Р°РµРјС‹Рµ РёР· INI-С„Р°Р№Р»Р° //
     //-------------------------------------
-// номера текстур
+// РЅРѕРјРµСЂР° С‚РµРєСЃС‚СѓСЂ
 int ENGLISH_PENNON_TEX;
 int SPANISH_PENNON_TEX;
 int FRENCH_PENNON_TEX;
@@ -25,17 +25,17 @@ int SPANISH_FLAG_TEX;
 int FRENCH_FLAG_TEX;
 int PIRATE_FLAG_TEX;
 
-float FLAGVECTORLEN; // длина сегмента флага
-float ALFA_DEPEND; // скорость изменения угла колебания
-float BETA_DEPEND; // скорость изменения угла вращения
-float ALFA_RAND; // максимальное значение случайного изменения угла Alpha
-float BETA_RAND; // максимальное значение случайного изменения угла Beta
-float fWindAm; // Амплитуда колебания флага
-float fRotAm; // Амплитуда вращения флага
-float DOWNVAL; // значение декремента по Y
-float fAlfaMax; // максимальный угол (для конца флага)
+float FLAGVECTORLEN; // РґР»РёРЅР° СЃРµРіРјРµРЅС‚Р° С„Р»Р°РіР°
+float ALFA_DEPEND; // СЃРєРѕСЂРѕСЃС‚СЊ РёР·РјРµРЅРµРЅРёСЏ СѓРіР»Р° РєРѕР»РµР±Р°РЅРёСЏ
+float BETA_DEPEND; // СЃРєРѕСЂРѕСЃС‚СЊ РёР·РјРµРЅРµРЅРёСЏ СѓРіР»Р° РІСЂР°С‰РµРЅРёСЏ
+float ALFA_RAND; // РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ СЃР»СѓС‡Р°Р№РЅРѕРіРѕ РёР·РјРµРЅРµРЅРёСЏ СѓРіР»Р° Alpha
+float BETA_RAND; // РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ СЃР»СѓС‡Р°Р№РЅРѕРіРѕ РёР·РјРµРЅРµРЅРёСЏ СѓРіР»Р° Beta
+float fWindAm; // РђРјРїР»РёС‚СѓРґР° РєРѕР»РµР±Р°РЅРёСЏ С„Р»Р°РіР°
+float fRotAm; // РђРјРїР»РёС‚СѓРґР° РІСЂР°С‰РµРЅРёСЏ С„Р»Р°РіР°
+float DOWNVAL; // Р·РЅР°С‡РµРЅРёРµ РґРµРєСЂРµРјРµРЅС‚Р° РїРѕ Y
+float fAlfaMax; // РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№ СѓРіРѕР» (РґР»СЏ РєРѕРЅС†Р° С„Р»Р°РіР°)
 float fAlfaStep;
-float fBetaMax; // максимальный угол (для конца флага)
+float fBetaMax; // РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№ СѓРіРѕР» (РґР»СЏ РєРѕРЅС†Р° С„Р»Р°РіР°)
 float fBetaStep;
 int   FlagTextureQuantity;
 float fWindMaxValue;
@@ -49,7 +49,7 @@ int   MinSegmentQuantity;
     long texl;
     struct WIND
     {
-        float base; // амплитуда колебаний ветра от 0 до 1.0
+        float base; // Р°РјРїР»РёС‚СѓРґР° РєРѕР»РµР±Р°РЅРёР№ РІРµС‚СЂР° РѕС‚ 0 РґРѕ 1.0
         struct {float x,y,z;} ang;
     };
     WIND globalWind;

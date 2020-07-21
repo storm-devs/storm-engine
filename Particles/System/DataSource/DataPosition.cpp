@@ -3,7 +3,7 @@
 #include "..\..\..\common_h\vmodule_api.h"
 
 
-//конструктор/деструктор
+//РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ/РґРµСЃС‚СЂСѓРєС‚РѕСЂ
 DataPosition::DataPosition ()
 {
 	Value = Vector(0, 0, 0);
@@ -13,13 +13,13 @@ DataPosition::~DataPosition ()
 {
 }
 
-//Получить значение (Текущее время, Коэфицент рандома[0..1])
+//РџРѕР»СѓС‡РёС‚СЊ Р·РЅР°С‡РµРЅРёРµ (РўРµРєСѓС‰РµРµ РІСЂРµРјСЏ, РљРѕСЌС„РёС†РµРЅС‚ СЂР°РЅРґРѕРјР°[0..1])
 const Vector& DataPosition::GetValue ()
 {
 	return Value;
 }
 
-//Установить значение
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р·РЅР°С‡РµРЅРёРµ
 void DataPosition::SetValue (const Vector& val)
 {
 	Value = val;

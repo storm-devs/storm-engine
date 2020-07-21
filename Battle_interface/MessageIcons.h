@@ -21,36 +21,36 @@ public:
 	bool InitData(ENTITY_ID & host_eid, VDX8RENDER * _rs, ATTRIBUTES * pARoot);
 
 protected:
-	// иконки сообщений
+	// РёРєРѕРЅРєРё СЃРѕРѕР±С‰РµРЅРёР№
 	bool	m_bShowMsgIcon;
 	long	m_vMsgIconBufID;
 	long	m_iMsgIconBufID;
 	long	m_nMsgIconWidth;
 	long	m_nMsgIconHeight;
-	long	m_nMsgIconDist;		// Дистанция между иконками
-	long	m_nBottomY;			// Координаты нижнего края иконок
+	long	m_nMsgIconDist;		// Р”РёСЃС‚Р°РЅС†РёСЏ РјРµР¶РґСѓ РёРєРѕРЅРєР°РјРё
+	long	m_nBottomY;			// РљРѕРѕСЂРґРёРЅР°С‚С‹ РЅРёР¶РЅРµРіРѕ РєСЂР°СЏ РёРєРѕРЅРѕРє
 	long	m_nMsgIconQnt;
 	long	m_nMsgIconRowQnt;
 
-	// текстура
+	// С‚РµРєСЃС‚СѓСЂР°
 	long	m_idMsgIconsTexture;
-	long	m_nHorzTextureSize; // размер в иконках
-	long	m_nVertTextureSize; // размер в иконках
+	long	m_nHorzTextureSize; // СЂР°Р·РјРµСЂ РІ РёРєРѕРЅРєР°С…
+	long	m_nVertTextureSize; // СЂР°Р·РјРµСЂ РІ РёРєРѕРЅРєР°С…
 
 
 	ATTRIBUTES * m_pIconsAttr[MESSAGE_ICONS_COLUMN_QUANTITY];
 
-	float	m_fNormalStateTime; // Время высвечивания иконки, sec
-	float	m_fBlendTime;		// Время исчезания иконки, sec
-	float	m_fFallSpeed;		// Скорость падения иконки на свободное место, pix/sec
-	float	m_fBlindTimeUp;		// Время на повышение цвета при мигании, sec
-	float	m_fBlindTimeDown;	// Время на понижение цвета при мигании, sec
-	float	m_fCurBlindTime;	// Текущее время для мигания
-	bool	m_bBlindDirectUp;	// Этап повышения цвета для мигания
+	float	m_fNormalStateTime; // Р’СЂРµРјСЏ РІС‹СЃРІРµС‡РёРІР°РЅРёСЏ РёРєРѕРЅРєРё, sec
+	float	m_fBlendTime;		// Р’СЂРµРјСЏ РёСЃС‡РµР·Р°РЅРёСЏ РёРєРѕРЅРєРё, sec
+	float	m_fFallSpeed;		// РЎРєРѕСЂРѕСЃС‚СЊ РїР°РґРµРЅРёСЏ РёРєРѕРЅРєРё РЅР° СЃРІРѕР±РѕРґРЅРѕРµ РјРµСЃС‚Рѕ, pix/sec
+	float	m_fBlindTimeUp;		// Р’СЂРµРјСЏ РЅР° РїРѕРІС‹С€РµРЅРёРµ С†РІРµС‚Р° РїСЂРё РјРёРіР°РЅРёРё, sec
+	float	m_fBlindTimeDown;	// Р’СЂРµРјСЏ РЅР° РїРѕРЅРёР¶РµРЅРёРµ С†РІРµС‚Р° РїСЂРё РјРёРіР°РЅРёРё, sec
+	float	m_fCurBlindTime;	// РўРµРєСѓС‰РµРµ РІСЂРµРјСЏ РґР»СЏ РјРёРіР°РЅРёСЏ
+	bool	m_bBlindDirectUp;	// Р­С‚Р°Рї РїРѕРІС‹С€РµРЅРёСЏ С†РІРµС‚Р° РґР»СЏ РјРёРіР°РЅРёСЏ
 
-	DWORD	m_dwHighBlindColor;	// Цвет мигания максимальный
-	DWORD	m_dwLowBlindColor;	// Цвет мигания минимальный
-	DWORD	m_dwNormalColor;	// Нормальный цвет
+	DWORD	m_dwHighBlindColor;	// Р¦РІРµС‚ РјРёРіР°РЅРёСЏ РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№
+	DWORD	m_dwLowBlindColor;	// Р¦РІРµС‚ РјРёРіР°РЅРёСЏ РјРёРЅРёРјР°Р»СЊРЅС‹Р№
+	DWORD	m_dwNormalColor;	// РќРѕСЂРјР°Р»СЊРЅС‹Р№ С†РІРµС‚
 
 	struct COLUMN_DESCRIBER
 	{

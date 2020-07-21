@@ -1187,7 +1187,7 @@ INT_PTR CALLBACK VarChangeDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
 
 			if (!CDebug.SourceView->SetVariableOnChange(str, true))
 			{
-				MessageBox(hwndDlg, "Не найдена переменная", "Ошибка", MB_OK);
+				MessageBox(hwndDlg, "РќРµ РЅР°Р№РґРµРЅР° РїРµСЂРµРјРµРЅРЅР°СЏ", "РћС€РёР±РєР°", MB_OK);
 				return false;
 			}
 

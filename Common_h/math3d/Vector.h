@@ -13,7 +13,7 @@
 #pragma pack(push, 1)
 
 
-///Класс представления вектора в 3D пространстве
+///РљР»Р°СЃСЃ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЏ РІРµРєС‚РѕСЂР° РІ 3D РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРµ
 class Vector
 {
 public:
@@ -21,193 +21,193 @@ public:
 	{
 		struct
 		{
-			///Компонента по X
+			///РљРѕРјРїРѕРЅРµРЅС‚Р° РїРѕ X
 			float x;
-			///Компонента по Y
+			///РљРѕРјРїРѕРЅРµРЅС‚Р° РїРѕ Y
 			float y;
-			///Компонента по Z
+			///РљРѕРјРїРѕРЅРµРЅС‚Р° РїРѕ Z
 			float z;
 		};
-		///Представление в виде массива
+		///РџСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ РІ РІРёРґРµ РјР°СЃСЃРёРІР°
 		float v[3];
 	};
 
 //-----------------------------------------------------------
-//Конструкторы
+//РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂС‹
 //-----------------------------------------------------------
 public:
-	///Пустой конструктор
+	///РџСѓСЃС‚РѕР№ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
 	Vector();
-	///Заполнить числом
+	///Р—Р°РїРѕР»РЅРёС‚СЊ С‡РёСЃР»РѕРј
 	Vector(float f);
-	///Заполнить числом
+	///Р—Р°РїРѕР»РЅРёС‚СЊ С‡РёСЃР»РѕРј
 	Vector(double d);
-	///Заполнить все компоненты
+	///Р—Р°РїРѕР»РЅРёС‚СЊ РІСЃРµ РєРѕРјРїРѕРЅРµРЅС‚С‹
 	Vector(float x, float y, float z);
-	///Заполнить все компоненты
+	///Р—Р°РїРѕР»РЅРёС‚СЊ РІСЃРµ РєРѕРјРїРѕРЅРµРЅС‚С‹
 	Vector(const float f[3]);
-	///Заполнить все компоненты
+	///Р—Р°РїРѕР»РЅРёС‚СЊ РІСЃРµ РєРѕРјРїРѕРЅРµРЅС‚С‹
 	Vector(const double d[3]);
-	///Конструктор копирования
+	///РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РєРѕРїРёСЂРѕРІР°РЅРёСЏ
 	Vector(const Vector & v);
 	
 //-----------------------------------------------------------
-//Операторы
+//РћРїРµСЂР°С‚РѕСЂС‹
 //-----------------------------------------------------------
 public:
-	///Найти квадрат длинны вектора
+	///РќР°Р№С‚Рё РєРІР°РґСЂР°С‚ РґР»РёРЅРЅС‹ РІРµРєС‚РѕСЂР°
 	float operator ~ () const;
-	///Вернуть нормализованный вектор
+	///Р’РµСЂРЅСѓС‚СЊ РЅРѕСЂРјР°Р»РёР·РѕРІР°РЅРЅС‹Р№ РІРµРєС‚РѕСЂ
 	Vector operator ! () const;
 
-	///Получить отрицательный вектор
+	///РџРѕР»СѓС‡РёС‚СЊ РѕС‚СЂРёС†Р°С‚РµР»СЊРЅС‹Р№ РІРµРєС‚РѕСЂ
 	Vector operator - () const;
 
-	///Присвоить
+	///РџСЂРёСЃРІРѕРёС‚СЊ
 	Vector & operator = (float f);
-	///Присвоить
+	///РџСЂРёСЃРІРѕРёС‚СЊ
 	Vector & operator = (double d);
-	///Присвоить
+	///РџСЂРёСЃРІРѕРёС‚СЊ
 	Vector & operator = (const Vector & v);
-	///Покомпонентное сложение с присваиванием
+	///РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СЃР»РѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 	Vector & operator += (float f);
-	///Покомпонентное сложение с присваиванием
+	///РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СЃР»РѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 	Vector & operator += (double d);
-	///Покомпонентное сложение с присваиванием
+	///РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СЃР»РѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 	Vector & operator += (const Vector & v);
-	///Покомпонентное вычитание с присваиванием
+	///РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РІС‹С‡РёС‚Р°РЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 	Vector & operator -= (float f);
-	///Покомпонентное вычитание с присваиванием
+	///РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РІС‹С‡РёС‚Р°РЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 	Vector & operator -= (double d);
-	///Покомпонентное вычитание с присваиванием
+	///РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РІС‹С‡РёС‚Р°РЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 	Vector & operator -= (const Vector & v);
-	///Покомпонентное умножение с присваиванием
+	///РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СѓРјРЅРѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 	Vector & operator *= (float f);
-	///Покомпонентное умножение с присваиванием
+	///РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СѓРјРЅРѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 	Vector & operator *= (double d);
-	///Покомпонентное умножение с присваиванием
+	///РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СѓРјРЅРѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 	Vector & operator *= (const Vector & v);
-	///Покомпонентное деление с присваиванием
+	///РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РґРµР»РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 	Vector & operator /= (float f);
-	///Покомпонентное деление с присваиванием
+	///РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РґРµР»РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 	Vector & operator /= (double d);
-	///Покомпонентное деление с присваиванием
+	///РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РґРµР»РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 	Vector & operator /= (const Vector & v);
 	
-	///Скалярное перемножение, результат копируется во все компоненты
+	///РЎРєР°Р»СЏСЂРЅРѕРµ РїРµСЂРµРјРЅРѕР¶РµРЅРёРµ, СЂРµР·СѓР»СЊС‚Р°С‚ РєРѕРїРёСЂСѓРµС‚СЃСЏ РІРѕ РІСЃРµ РєРѕРјРїРѕРЅРµРЅС‚С‹
 	Vector & operator |= (const Vector & v);
-	///Векторное перемножение
+	///Р’РµРєС‚РѕСЂРЅРѕРµ РїРµСЂРµРјРЅРѕР¶РµРЅРёРµ
 	Vector & operator ^= (const Vector & v);
 
 //-----------------------------------------------------------
-//Преобразование
+//РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ
 //-----------------------------------------------------------
 public:
-	///Нормализовать вектор, и вернуть его бывшую длинну
+	///РќРѕСЂРјР°Р»РёР·РѕРІР°С‚СЊ РІРµРєС‚РѕСЂ, Рё РІРµСЂРЅСѓС‚СЊ РµРіРѕ Р±С‹РІС€СѓСЋ РґР»РёРЅРЅСѓ
 	float Normalize();
-	///Спроецировать на плоскость XZ и нормализовать
+	///РЎРїСЂРѕРµС†РёСЂРѕРІР°С‚СЊ РЅР° РїР»РѕСЃРєРѕСЃС‚СЊ XZ Рё РЅРѕСЂРјР°Р»РёР·РѕРІР°С‚СЊ
 	float Normalize2D();
 
-	///Ограничить длинну вектора, и вернуть текущую длинну
+	///РћРіСЂР°РЅРёС‡РёС‚СЊ РґР»РёРЅРЅСѓ РІРµРєС‚РѕСЂР°, Рё РІРµСЂРЅСѓС‚СЊ С‚РµРєСѓС‰СѓСЋ РґР»РёРЅРЅСѓ
 	float ClampLength(float clampValue);
 	
-	///Ограничить компоненту X диапазоном
+	///РћРіСЂР°РЅРёС‡РёС‚СЊ РєРѕРјРїРѕРЅРµРЅС‚Сѓ X РґРёР°РїР°Р·РѕРЅРѕРј
 	Vector & ClampX(float min, float max);
-	///Ограничить компоненту Y диапазоном
+	///РћРіСЂР°РЅРёС‡РёС‚СЊ РєРѕРјРїРѕРЅРµРЅС‚Сѓ Y РґРёР°РїР°Р·РѕРЅРѕРј
 	Vector & ClampY(float min, float max);
-	///Ограничить компоненту Z диапазоном
+	///РћРіСЂР°РЅРёС‡РёС‚СЊ РєРѕРјРїРѕРЅРµРЅС‚Сѓ Z РґРёР°РїР°Р·РѕРЅРѕРј
 	Vector & ClampZ(float min, float max);
-	///Ограничить компоненты диапазоном
+	///РћРіСЂР°РЅРёС‡РёС‚СЊ РєРѕРјРїРѕРЅРµРЅС‚С‹ РґРёР°РїР°Р·РѕРЅРѕРј
 	Vector & Clamp(float min, float max);
 
-	///Сохранить в векторе минимальные компаненты
+	///РЎРѕС…СЂР°РЅРёС‚СЊ РІ РІРµРєС‚РѕСЂРµ РјРёРЅРёРјР°Р»СЊРЅС‹Рµ РєРѕРјРїР°РЅРµРЅС‚С‹
 	Vector & Min(const Vector & v);
-	///Сохранить в векторе максимальные компаненты
+	///РЎРѕС…СЂР°РЅРёС‚СЊ РІ РІРµРєС‚РѕСЂРµ РјР°РєСЃРёРјР°Р»СЊРЅС‹Рµ РєРѕРјРїР°РЅРµРЅС‚С‹
 	Vector & Max(const Vector & v);
 
 
 //-----------------------------------------------------------
-//Утилитные
+//РЈС‚РёР»РёС‚РЅС‹Рµ
 //-----------------------------------------------------------
 public:
-	///Установить новые значения
+	///РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РЅРѕРІС‹Рµ Р·РЅР°С‡РµРЅРёСЏ
 	Vector & Set(float x, float y, float z);
-	///Установить новые значения
+	///РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РЅРѕРІС‹Рµ Р·РЅР°С‡РµРЅРёСЏ
 	Vector & Set(const Vector & v);
 
-	///Получить угол между векторами
+	///РџРѕР»СѓС‡РёС‚СЊ СѓРіРѕР» РјРµР¶РґСѓ РІРµРєС‚РѕСЂР°РјРё
 	float GetAngle(const Vector & v) const;
-	///Получить знаковый угол между векторами в плоскости XZ
+	///РџРѕР»СѓС‡РёС‚СЊ Р·РЅР°РєРѕРІС‹Р№ СѓРіРѕР» РјРµР¶РґСѓ РІРµРєС‚РѕСЂР°РјРё РІ РїР»РѕСЃРєРѕСЃС‚Рё XZ
 	float GetAngle2D(const Vector & v) const;
-	///Получить угол поворота вектора вокруг оси Y
+	///РџРѕР»СѓС‡РёС‚СЊ СѓРіРѕР» РїРѕРІРѕСЂРѕС‚Р° РІРµРєС‚РѕСЂР° РІРѕРєСЂСѓРі РѕСЃРё Y
 	float GetAY(float defAngle = 0.0f) const;
 	
-	///Получить синус между 2D векторами в плоскости XZ
+	///РџРѕР»СѓС‡РёС‚СЊ СЃРёРЅСѓСЃ РјРµР¶РґСѓ 2D РІРµРєС‚РѕСЂР°РјРё РІ РїР»РѕСЃРєРѕСЃС‚Рё XZ
 	float Sin2D(const Vector & v) const;
-	///Получить косинус между 2D векторами в плоскости XZ
+	///РџРѕР»СѓС‡РёС‚СЊ РєРѕСЃРёРЅСѓСЃ РјРµР¶РґСѓ 2D РІРµРєС‚РѕСЂР°РјРё РІ РїР»РѕСЃРєРѕСЃС‚Рё XZ
 	float Cos2D(const Vector & v) const;
-	///Получить векторное произведение векторов в плоскости XZ
+	///РџРѕР»СѓС‡РёС‚СЊ РІРµРєС‚РѕСЂРЅРѕРµ РїСЂРѕРёР·РІРµРґРµРЅРёРµ РІРµРєС‚РѕСЂРѕРІ РІ РїР»РѕСЃРєРѕСЃС‚Рё XZ
 	float Cross2D(const Vector & v) const;
 
-	///Получить вектор в плоскости XZ
+	///РџРѕР»СѓС‡РёС‚СЊ РІРµРєС‚РѕСЂ РІ РїР»РѕСЃРєРѕСЃС‚Рё XZ
 	Vector Get2D() const;
-	///Получить вектор в плоскости XZ
+	///РџРѕР»СѓС‡РёС‚СЊ РІРµРєС‚РѕСЂ РІ РїР»РѕСЃРєРѕСЃС‚Рё XZ
 	Vector Get2D(float y) const;
-	///Сформировать вектор в плоскости XZ по углу
+	///РЎС„РѕСЂРјРёСЂРѕРІР°С‚СЊ РІРµРєС‚РѕСЂ РІ РїР»РѕСЃРєРѕСЃС‚Рё XZ РїРѕ СѓРіР»Сѓ
 	Vector & Make2D(float ay);
 
 
-	///Получить длинну вектора
+	///РџРѕР»СѓС‡РёС‚СЊ РґР»РёРЅРЅСѓ РІРµРєС‚РѕСЂР°
 	float GetLength() const;
-	///Получить длинну вектора в 2D
+	///РџРѕР»СѓС‡РёС‚СЊ РґР»РёРЅРЅСѓ РІРµРєС‚РѕСЂР° РІ 2D
 	float GetLength2D() const;
-	///Получить квадрат длинны вектора в 2D
+	///РџРѕР»СѓС‡РёС‚СЊ РєРІР°РґСЂР°С‚ РґР»РёРЅРЅС‹ РІРµРєС‚РѕСЂР° РІ 2D
 	float GetLength2D2() const;
 	
-	///Повернуть вектор в плоскости XZ на угол
+	///РџРѕРІРµСЂРЅСѓС‚СЊ РІРµРєС‚РѕСЂ РІ РїР»РѕСЃРєРѕСЃС‚Рё XZ РЅР° СѓРіРѕР»
 	Vector & Rotate(float angle);
-	///Повернуть вектор в плоскости XZ на угол заданный cos, sin
+	///РџРѕРІРµСЂРЅСѓС‚СЊ РІРµРєС‚РѕСЂ РІ РїР»РѕСЃРєРѕСЃС‚Рё XZ РЅР° СѓРіРѕР» Р·Р°РґР°РЅРЅС‹Р№ cos, sin
 	Vector & Rotate(float vcos, float vsin);
-	///Повернуть вектор по часовой стрелке в плоскости XZ на угол PI/2
+	///РџРѕРІРµСЂРЅСѓС‚СЊ РІРµРєС‚РѕСЂ РїРѕ С‡Р°СЃРѕРІРѕР№ СЃС‚СЂРµР»РєРµ РІ РїР»РѕСЃРєРѕСЃС‚Рё XZ РЅР° СѓРіРѕР» PI/2
 	Vector & Rotate_PI2_CW();
-	///Повернуть вектор против часовой стрелке в плоскости XZ на угол PI/2
+	///РџРѕРІРµСЂРЅСѓС‚СЊ РІРµРєС‚РѕСЂ РїСЂРѕС‚РёРІ С‡Р°СЃРѕРІРѕР№ СЃС‚СЂРµР»РєРµ РІ РїР»РѕСЃРєРѕСЃС‚Рё XZ РЅР° СѓРіРѕР» PI/2
 	Vector & Rotate_PI2_CCW();
 
-	///Расчитать линейно интерполированное значение
+	///Р Р°СЃС‡РёС‚Р°С‚СЊ Р»РёРЅРµР№РЅРѕ РёРЅС‚РµСЂРїРѕР»РёСЂРѕРІР°РЅРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ
 	Vector & Lerp(const Vector & v1, const Vector & v2, float kBlend);
 
-	///Расчитать отражённый вектор
+	///Р Р°СЃС‡РёС‚Р°С‚СЊ РѕС‚СЂР°Р¶С‘РЅРЅС‹Р№ РІРµРєС‚РѕСЂ
 	Vector & Reflection(const Vector & normal);
 
-	///Заполнить единичным вектором со случайным направлением
+	///Р—Р°РїРѕР»РЅРёС‚СЊ РµРґРёРЅРёС‡РЅС‹Рј РІРµРєС‚РѕСЂРѕРј СЃРѕ СЃР»СѓС‡Р°Р№РЅС‹Рј РЅР°РїСЂР°РІР»РµРЅРёРµРј
 	Vector & Rand();
-	///Заполнить единичным вектором со случайным направлением в XZ
+	///Р—Р°РїРѕР»РЅРёС‚СЊ РµРґРёРЅРёС‡РЅС‹Рј РІРµРєС‚РѕСЂРѕРј СЃРѕ СЃР»СѓС‡Р°Р№РЅС‹Рј РЅР°РїСЂР°РІР»РµРЅРёРµРј РІ XZ
 	Vector & Rand2D();
-	///Заполнить случайными значениями в заданном ABB
+	///Р—Р°РїРѕР»РЅРёС‚СЊ СЃР»СѓС‡Р°Р№РЅС‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё РІ Р·Р°РґР°РЅРЅРѕРј ABB
 	Vector & Rand(const Vector & min, const Vector & max);
-	///Заполнить случайными значениями в заданной сфере
+	///Р—Р°РїРѕР»РЅРёС‚СЊ СЃР»СѓС‡Р°Р№РЅС‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё РІ Р·Р°РґР°РЅРЅРѕР№ СЃС„РµСЂРµ
 	Vector & Rand(const Vector & pos, float radius);
 
-	//Переместить текущий вектор к заданной точке на заданный шаг
+	//РџРµСЂРµРјРµСЃС‚РёС‚СЊ С‚РµРєСѓС‰РёР№ РІРµРєС‚РѕСЂ Рє Р·Р°РґР°РЅРЅРѕР№ С‚РѕС‡РєРµ РЅР° Р·Р°РґР°РЅРЅС‹Р№ С€Р°Рі
 	bool MoveByStep(const Vector & to, float step);
-	//Переместить текущий вектор к заданной точке на заданный шаг в 2D
+	//РџРµСЂРµРјРµСЃС‚РёС‚СЊ С‚РµРєСѓС‰РёР№ РІРµРєС‚РѕСЂ Рє Р·Р°РґР°РЅРЅРѕР№ С‚РѕС‡РєРµ РЅР° Р·Р°РґР°РЅРЅС‹Р№ С€Р°Рі РІ 2D
 	bool MoveByStep2D(const Vector & to, float step);
 
-	//Точка находиться в ящике
+	//РўРѕС‡РєР° РЅР°С…РѕРґРёС‚СЊСЃСЏ РІ СЏС‰РёРєРµ
 	bool InBox(const Vector & min, const Vector & max) const;
-	//Точка находиться в шаре
+	//РўРѕС‡РєР° РЅР°С…РѕРґРёС‚СЊСЃСЏ РІ С€Р°СЂРµ
 	bool InSphere(const Vector & pos, float rad) const;
 };
 
 
 //===========================================================
-//Конструкторы
+//РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂС‹
 //===========================================================
 
-//Пустой конструктор
+//РџСѓСЃС‚РѕР№ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
 mathinline Vector::Vector(){}
 
-//Заполнить числом
+//Р—Р°РїРѕР»РЅРёС‚СЊ С‡РёСЃР»РѕРј
 mathinline Vector::Vector(float f)
 {
 	x = f;
@@ -215,7 +215,7 @@ mathinline Vector::Vector(float f)
 	z = f;
 }
 
-//Заполнить числом
+//Р—Р°РїРѕР»РЅРёС‚СЊ С‡РёСЃР»РѕРј
 mathinline Vector::Vector(double d)
 {
 	x = float(d);
@@ -223,7 +223,7 @@ mathinline Vector::Vector(double d)
 	z = float(d);
 }
 
-//Заполнить все компоненты
+//Р—Р°РїРѕР»РЅРёС‚СЊ РІСЃРµ РєРѕРјРїРѕРЅРµРЅС‚С‹
 mathinline Vector::Vector(float x, float y, float z)
 {
 	this->x = x;
@@ -231,7 +231,7 @@ mathinline Vector::Vector(float x, float y, float z)
 	this->z = z;
 }
 
-//Заполнить все компоненты
+//Р—Р°РїРѕР»РЅРёС‚СЊ РІСЃРµ РєРѕРјРїРѕРЅРµРЅС‚С‹
 mathinline Vector::Vector(const float f[3])
 {
 	x = f[0];
@@ -239,7 +239,7 @@ mathinline Vector::Vector(const float f[3])
 	z = f[2];
 }
 
-//Заполнить все компоненты
+//Р—Р°РїРѕР»РЅРёС‚СЊ РІСЃРµ РєРѕРјРїРѕРЅРµРЅС‚С‹
 mathinline Vector::Vector(const double d[3])
 {
 	x = float(d[0]);
@@ -247,7 +247,7 @@ mathinline Vector::Vector(const double d[3])
 	z = float(d[2]);
 }
 
-//Конструктор копирования
+//РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РєРѕРїРёСЂРѕРІР°РЅРёСЏ
 mathinline Vector::Vector(const Vector & v)
 {
 	x = v.x;
@@ -257,16 +257,16 @@ mathinline Vector::Vector(const Vector & v)
 
 
 //===========================================================
-//Операторы
+//РћРїРµСЂР°С‚РѕСЂС‹
 //===========================================================
 
-//Найти квадрат длинны вектора
+//РќР°Р№С‚Рё РєРІР°РґСЂР°С‚ РґР»РёРЅРЅС‹ РІРµРєС‚РѕСЂР°
 mathinline float Vector::operator ~ () const
 {
 	return x*x + y*y + z*z;
 }
 
-//Вернуть нормализованный вектор
+//Р’РµСЂРЅСѓС‚СЊ РЅРѕСЂРјР°Р»РёР·РѕРІР°РЅРЅС‹Р№ РІРµРєС‚РѕСЂ
 mathinline Vector Vector::operator ! () const
 {
 	Vector v(*this);
@@ -284,7 +284,7 @@ mathinline Vector Vector::operator - () const
 	return v;
 }
 
-//Присвоить
+//РџСЂРёСЃРІРѕРёС‚СЊ
 mathinline Vector & Vector::operator = (float f)
 {
 	x = f;
@@ -293,7 +293,7 @@ mathinline Vector & Vector::operator = (float f)
 	return *this;
 }
 
-//Присвоить
+//РџСЂРёСЃРІРѕРёС‚СЊ
 mathinline Vector & Vector::operator = (double d)
 {
 	x = float(d);
@@ -302,7 +302,7 @@ mathinline Vector & Vector::operator = (double d)
 	return *this;
 }
 
-//Присвоить
+//РџСЂРёСЃРІРѕРёС‚СЊ
 mathinline Vector & Vector::operator = (const Vector & v)
 {
 	x = v.x;
@@ -311,7 +311,7 @@ mathinline Vector & Vector::operator = (const Vector & v)
 	return *this;
 }
 
-//Покомпонентное сложение с присваиванием
+//РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СЃР»РѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 mathinline Vector & Vector::operator += (float f)
 {
 	x += f;
@@ -320,7 +320,7 @@ mathinline Vector & Vector::operator += (float f)
 	return *this;
 }
 
-//Покомпонентное сложение с присваиванием
+//РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СЃР»РѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 mathinline Vector & Vector::operator += (double d)
 {
 	x += float(d);
@@ -329,7 +329,7 @@ mathinline Vector & Vector::operator += (double d)
 	return *this;
 }
 
-//Покомпонентное сложение с присваиванием
+//РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СЃР»РѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 mathinline Vector & Vector::operator += (const Vector & v)
 {
 	x += v.x;
@@ -338,7 +338,7 @@ mathinline Vector & Vector::operator += (const Vector & v)
 	return *this;
 }
 
-//Покомпонентное вычитание с присваиванием
+//РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РІС‹С‡РёС‚Р°РЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 mathinline Vector & Vector::operator -= (float f)
 {
 	x -= f;
@@ -347,7 +347,7 @@ mathinline Vector & Vector::operator -= (float f)
 	return *this;
 }
 
-//Покомпонентное вычитание с присваиванием
+//РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РІС‹С‡РёС‚Р°РЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 mathinline Vector & Vector::operator -= (double d)
 {
 	x -= float(d);
@@ -356,7 +356,7 @@ mathinline Vector & Vector::operator -= (double d)
 	return *this;
 }
 
-//Покомпонентное вычитание с присваиванием
+//РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РІС‹С‡РёС‚Р°РЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 mathinline Vector & Vector::operator -= (const Vector & v)
 {
 	x -= v.x;
@@ -365,7 +365,7 @@ mathinline Vector & Vector::operator -= (const Vector & v)
 	return *this;
 }
 
-//Покомпонентное умножение с присваиванием
+//РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СѓРјРЅРѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 mathinline Vector & Vector::operator *= (float f)
 {
 	x *= f;
@@ -374,7 +374,7 @@ mathinline Vector & Vector::operator *= (float f)
 	return *this;
 }
 
-//Покомпонентное умножение с присваиванием
+//РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СѓРјРЅРѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 mathinline Vector & Vector::operator *= (double d)
 {
 	x *= float(d);
@@ -383,7 +383,7 @@ mathinline Vector & Vector::operator *= (double d)
 	return *this;
 }
 
-//Покомпонентное умножение с присваиванием
+//РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ СѓРјРЅРѕР¶РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 mathinline Vector & Vector::operator *= (const Vector & v)
 {
 	x *= v.x;
@@ -392,7 +392,7 @@ mathinline Vector & Vector::operator *= (const Vector & v)
 	return *this;
 }
 
-//Покомпонентное деление с присваиванием
+//РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РґРµР»РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 mathinline Vector & Vector::operator /= (float f)
 {
 	double d = 1.0/f;
@@ -402,7 +402,7 @@ mathinline Vector & Vector::operator /= (float f)
 	return *this;
 }
 
-//Покомпонентное деление с присваиванием
+//РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РґРµР»РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 mathinline Vector & Vector::operator /= (double d)
 {
 	d = 1.0/d;
@@ -412,7 +412,7 @@ mathinline Vector & Vector::operator /= (double d)
 	return *this;
 }
 
-//Покомпонентное деление с присваиванием
+//РџРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РґРµР»РµРЅРёРµ СЃ РїСЂРёСЃРІР°РёРІР°РЅРёРµРј
 mathinline Vector & Vector::operator /= (const Vector & v)
 {
 	x /= v.x;
@@ -422,14 +422,14 @@ mathinline Vector & Vector::operator /= (const Vector & v)
 }
 
 
-//Скалярное перемножение, результат копируется во все компоненты
+//РЎРєР°Р»СЏСЂРЅРѕРµ РїРµСЂРµРјРЅРѕР¶РµРЅРёРµ, СЂРµР·СѓР»СЊС‚Р°С‚ РєРѕРїРёСЂСѓРµС‚СЃСЏ РІРѕ РІСЃРµ РєРѕРјРїРѕРЅРµРЅС‚С‹
 mathinline Vector & Vector::operator |= (const Vector & v)
 {
 	x = y = z = v.x*x + v.y*y + v.z*z;
 	return *this;
 }
 
-//Векторное перемножение
+//Р’РµРєС‚РѕСЂРЅРѕРµ РїРµСЂРµРјРЅРѕР¶РµРЅРёРµ
 mathinline Vector & Vector::operator ^= (const Vector & v)
 {
 	float tx = y * v.z - z * v.y;
@@ -442,7 +442,7 @@ mathinline Vector & Vector::operator ^= (const Vector & v)
 }
 
 /*!\relates Vector
-Сложить
+РЎР»РѕР¶РёС‚СЊ
 */
 mathinline Vector operator + (const Vector & v, float f)
 {
@@ -452,7 +452,7 @@ mathinline Vector operator + (const Vector & v, float f)
 }
 
 /*!\relates Vector
-Сложить
+РЎР»РѕР¶РёС‚СЊ
 */
 mathinline Vector operator + (float f, const Vector & v)
 {
@@ -462,7 +462,7 @@ mathinline Vector operator + (float f, const Vector & v)
 }
 
 /*!\relates Vector
-Сложить
+РЎР»РѕР¶РёС‚СЊ
 */
 mathinline Vector operator + (const Vector & v, double d)
 {
@@ -472,7 +472,7 @@ mathinline Vector operator + (const Vector & v, double d)
 }
 
 /*!\relates Vector
-Сложить
+РЎР»РѕР¶РёС‚СЊ
 */
 mathinline Vector operator + (double d, const Vector & v)
 {
@@ -482,7 +482,7 @@ mathinline Vector operator + (double d, const Vector & v)
 }
 
 /*!\relates Vector
-Сложить
+РЎР»РѕР¶РёС‚СЊ
 */
 mathinline Vector operator + (const Vector & v1, const Vector & v2)
 {
@@ -492,7 +492,7 @@ mathinline Vector operator + (const Vector & v1, const Vector & v2)
 }
 
 /*!\relates Vector
-Вычесть
+Р’С‹С‡РµСЃС‚СЊ
 */
 mathinline Vector operator - (const Vector & v, float f)
 {
@@ -502,7 +502,7 @@ mathinline Vector operator - (const Vector & v, float f)
 }
 
 /*!\relates Vector
-Вычесть
+Р’С‹С‡РµСЃС‚СЊ
 */
 mathinline Vector operator - (float f, const Vector & v)
 {
@@ -512,7 +512,7 @@ mathinline Vector operator - (float f, const Vector & v)
 }
 
 /*!\relates Vector
-Вычесть
+Р’С‹С‡РµСЃС‚СЊ
 */
 mathinline Vector operator - (const Vector & v, double d)
 {
@@ -522,7 +522,7 @@ mathinline Vector operator - (const Vector & v, double d)
 }
 
 /*!\relates Vector
-Вычесть
+Р’С‹С‡РµСЃС‚СЊ
 */
 mathinline Vector operator - (double d, const Vector & v)
 {
@@ -532,7 +532,7 @@ mathinline Vector operator - (double d, const Vector & v)
 }
 
 /*!\relates Vector
-Вычесть
+Р’С‹С‡РµСЃС‚СЊ
 */
 mathinline Vector operator - (const Vector & v1, const Vector & v2)
 {
@@ -542,7 +542,7 @@ mathinline Vector operator - (const Vector & v1, const Vector & v2)
 }
 
 /*!\relates Vector
-Умножить
+РЈРјРЅРѕР¶РёС‚СЊ
 */
 mathinline Vector operator * (const Vector & v, float f)
 {
@@ -552,7 +552,7 @@ mathinline Vector operator * (const Vector & v, float f)
 }
 
 /*!\relates Vector
-Умножить
+РЈРјРЅРѕР¶РёС‚СЊ
 */
 mathinline Vector operator * (float f, const Vector & v)
 {
@@ -562,7 +562,7 @@ mathinline Vector operator * (float f, const Vector & v)
 }
 
 /*!\relates Vector
-Умножить
+РЈРјРЅРѕР¶РёС‚СЊ
 */
 mathinline Vector operator * (const Vector & v, double d)
 {
@@ -572,7 +572,7 @@ mathinline Vector operator * (const Vector & v, double d)
 }
 
 /*!\relates Vector
-Умножить
+РЈРјРЅРѕР¶РёС‚СЊ
 */
 mathinline Vector operator * (double d, const Vector & v)
 {
@@ -582,7 +582,7 @@ mathinline Vector operator * (double d, const Vector & v)
 }
 
 /*!\relates Vector
-Умножить
+РЈРјРЅРѕР¶РёС‚СЊ
 */
 mathinline Vector operator * (const Vector & v1, const Vector & v2)
 {
@@ -592,7 +592,7 @@ mathinline Vector operator * (const Vector & v1, const Vector & v2)
 }
 
 /*!\relates Vector
-Разделить
+Р Р°Р·РґРµР»РёС‚СЊ
 */
 mathinline Vector operator / (const Vector & v, float f)
 {
@@ -602,7 +602,7 @@ mathinline Vector operator / (const Vector & v, float f)
 }
 
 /*!\relates Vector
-Разделить
+Р Р°Р·РґРµР»РёС‚СЊ
 */
 mathinline Vector operator / (float f, const Vector & v)
 {
@@ -612,7 +612,7 @@ mathinline Vector operator / (float f, const Vector & v)
 }
 
 /*!\relates Vector
-Разделить
+Р Р°Р·РґРµР»РёС‚СЊ
 */
 mathinline Vector operator / (const Vector & v, double d)
 {
@@ -622,7 +622,7 @@ mathinline Vector operator / (const Vector & v, double d)
 }
 
 /*!\relates Vector
-Разделить
+Р Р°Р·РґРµР»РёС‚СЊ
 */
 mathinline Vector operator / (double d, const Vector & v)
 {
@@ -632,7 +632,7 @@ mathinline Vector operator / (double d, const Vector & v)
 }
 
 /*!\relates Vector
-Разделить
+Р Р°Р·РґРµР»РёС‚СЊ
 */
 mathinline Vector operator / (const Vector & v1, const Vector & v2)
 {
@@ -642,7 +642,7 @@ mathinline Vector operator / (const Vector & v1, const Vector & v2)
 }
 
 /*!\relates Vector
-Скалярное перемножение
+РЎРєР°Р»СЏСЂРЅРѕРµ РїРµСЂРµРјРЅРѕР¶РµРЅРёРµ
 */
 mathinline float operator | (const Vector & v1, const Vector & v2)
 {	
@@ -650,7 +650,7 @@ mathinline float operator | (const Vector & v1, const Vector & v2)
 }
 
 /*!\relates Vector
-Векторное перемножение
+Р’РµРєС‚РѕСЂРЅРѕРµ РїРµСЂРµРјРЅРѕР¶РµРЅРёРµ
 */
 mathinline Vector operator ^ (const Vector & v1, const Vector & v2)
 {
@@ -662,7 +662,7 @@ mathinline Vector operator ^ (const Vector & v1, const Vector & v2)
 }
 
 /*!\relates Vector
-Сравнить покомпонентно
+РЎСЂР°РІРЅРёС‚СЊ РїРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕ
 */
 mathinline bool operator > (const Vector & v1, const Vector & v2)
 {
@@ -671,7 +671,7 @@ mathinline bool operator > (const Vector & v1, const Vector & v2)
 }
 
 /*!\relates Vector
-Сравнить покомпонентно
+РЎСЂР°РІРЅРёС‚СЊ РїРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕ
 */
 mathinline bool operator >= (const Vector & v1, const Vector & v2)
 {
@@ -680,7 +680,7 @@ mathinline bool operator >= (const Vector & v1, const Vector & v2)
 }
 
 /*!\relates Vector
-Сравнить покомпонентно
+РЎСЂР°РІРЅРёС‚СЊ РїРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕ
 */
 mathinline bool operator < (const Vector & v1, const Vector & v2)
 {
@@ -689,7 +689,7 @@ mathinline bool operator < (const Vector & v1, const Vector & v2)
 }
 
 /*!\relates Vector
-Сравнить покомпонентно
+РЎСЂР°РІРЅРёС‚СЊ РїРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕ
 */
 mathinline bool operator <= (const Vector & v1, const Vector & v2)
 {
@@ -698,7 +698,7 @@ mathinline bool operator <= (const Vector & v1, const Vector & v2)
 }
 
 /*!\relates Vector
-Сравнить покомпонентно
+РЎСЂР°РІРЅРёС‚СЊ РїРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕ
 */
 mathinline bool operator == (const Vector & v1, const Vector & v2)
 {
@@ -707,7 +707,7 @@ mathinline bool operator == (const Vector & v1, const Vector & v2)
 }
 
 /*!\relates Vector
-Сравнить покомпонентно
+РЎСЂР°РІРЅРёС‚СЊ РїРѕРєРѕРјРїРѕРЅРµРЅС‚РЅРѕ
 */
 mathinline bool operator != (const Vector & v1, const Vector & v2)
 {	
@@ -715,10 +715,10 @@ mathinline bool operator != (const Vector & v1, const Vector & v2)
 }
 
 //===========================================================
-//Преобразование
+//РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ
 //===========================================================
 
-//Нормализовать вектор, и вернуть его бывшую длинну
+//РќРѕСЂРјР°Р»РёР·РѕРІР°С‚СЊ РІРµРєС‚РѕСЂ, Рё РІРµСЂРЅСѓС‚СЊ РµРіРѕ Р±С‹РІС€СѓСЋ РґР»РёРЅРЅСѓ
 mathinline float Vector::Normalize()
 {
 	double len = sqrt(double(x)*double(x) + double(y)*double(y) + double(z)*double(z));
@@ -732,7 +732,7 @@ mathinline float Vector::Normalize()
 	return float(len);
 }
 
-//Спроецировать на плоскость XZ и нормализовать
+//РЎРїСЂРѕРµС†РёСЂРѕРІР°С‚СЊ РЅР° РїР»РѕСЃРєРѕСЃС‚СЊ XZ Рё РЅРѕСЂРјР°Р»РёР·РѕРІР°С‚СЊ
 mathinline float Vector::Normalize2D()
 {
 	y = 0.0f;
@@ -746,7 +746,7 @@ mathinline float Vector::Normalize2D()
 	return float(len);
 }
 
-//Ограничить длинну вектора, и вернуть текущую длинну
+//РћРіСЂР°РЅРёС‡РёС‚СЊ РґР»РёРЅРЅСѓ РІРµРєС‚РѕСЂР°, Рё РІРµСЂРЅСѓС‚СЊ С‚РµРєСѓС‰СѓСЋ РґР»РёРЅРЅСѓ
 mathinline float Vector::ClampLength(float clampValue)
 {
 	if(clampValue <= 0.0f)
@@ -766,7 +766,7 @@ mathinline float Vector::ClampLength(float clampValue)
 	return float(len);
 }
 
-//Ограничить компоненту X диапазоном
+//РћРіСЂР°РЅРёС‡РёС‚СЊ РєРѕРјРїРѕРЅРµРЅС‚Сѓ X РґРёР°РїР°Р·РѕРЅРѕРј
 mathinline Vector & Vector::ClampX(float min, float max)
 {
 	if(x < min) x = min;
@@ -774,7 +774,7 @@ mathinline Vector & Vector::ClampX(float min, float max)
 	return *this;
 }
 
-//Ограничить компоненту Y диапазоном
+//РћРіСЂР°РЅРёС‡РёС‚СЊ РєРѕРјРїРѕРЅРµРЅС‚Сѓ Y РґРёР°РїР°Р·РѕРЅРѕРј
 mathinline Vector & Vector::ClampY(float min, float max)
 {
 	if(y < min) y = min;
@@ -782,7 +782,7 @@ mathinline Vector & Vector::ClampY(float min, float max)
 	return *this;
 }
 
-//Ограничить компоненту Z диапазоном
+//РћРіСЂР°РЅРёС‡РёС‚СЊ РєРѕРјРїРѕРЅРµРЅС‚Сѓ Z РґРёР°РїР°Р·РѕРЅРѕРј
 mathinline Vector & Vector::ClampZ(float min, float max)
 {
 	if(z < min) z = min;
@@ -790,7 +790,7 @@ mathinline Vector & Vector::ClampZ(float min, float max)
 	return *this;
 }
 
-//Ограничить компоненты диапазоном
+//РћРіСЂР°РЅРёС‡РёС‚СЊ РєРѕРјРїРѕРЅРµРЅС‚С‹ РґРёР°РїР°Р·РѕРЅРѕРј
 mathinline Vector & Vector::Clamp(float min, float max)
 {
 	if(x < min) x = min;
@@ -802,7 +802,7 @@ mathinline Vector & Vector::Clamp(float min, float max)
 	return *this;
 }
 
-//Сохранить в векторе минимальные компаненты
+//РЎРѕС…СЂР°РЅРёС‚СЊ РІ РІРµРєС‚РѕСЂРµ РјРёРЅРёРјР°Р»СЊРЅС‹Рµ РєРѕРјРїР°РЅРµРЅС‚С‹
 mathinline Vector & Vector::Min(const Vector & v)
 {
 	if(x > v.x) x = v.x;
@@ -811,7 +811,7 @@ mathinline Vector & Vector::Min(const Vector & v)
 	return *this;
 }
 
-//Сохранить в векторе максимальные компаненты
+//РЎРѕС…СЂР°РЅРёС‚СЊ РІ РІРµРєС‚РѕСЂРµ РјР°РєСЃРёРјР°Р»СЊРЅС‹Рµ РєРѕРјРїР°РЅРµРЅС‚С‹
 mathinline Vector & Vector::Max(const Vector & v)
 {
 	if(x < v.x) x = v.x;
@@ -822,10 +822,10 @@ mathinline Vector & Vector::Max(const Vector & v)
 
 
 //===========================================================
-//Утилитные
+//РЈС‚РёР»РёС‚РЅС‹Рµ
 //===========================================================
 
-//Установить новые значения
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РЅРѕРІС‹Рµ Р·РЅР°С‡РµРЅРёСЏ
 mathinline Vector & Vector::Set(float x, float y, float z)
 {
 	this->x = x;
@@ -834,7 +834,7 @@ mathinline Vector & Vector::Set(float x, float y, float z)
 	return *this;
 }
 
-//Установить новые значения
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РЅРѕРІС‹Рµ Р·РЅР°С‡РµРЅРёСЏ
 mathinline Vector & Vector::Set(const Vector & v)
 {
 	x = v.x;
@@ -843,7 +843,7 @@ mathinline Vector & Vector::Set(const Vector & v)
 	return *this;
 }
 
-//Получить угол между векторами
+//РџРѕР»СѓС‡РёС‚СЊ СѓРіРѕР» РјРµР¶РґСѓ РІРµРєС‚РѕСЂР°РјРё
 mathinline float Vector::GetAngle(const Vector & v) const
 {
 	double len = double(x)*double(x) + double(y)*double(y) + double(z)*double(z);
@@ -855,7 +855,7 @@ mathinline float Vector::GetAngle(const Vector & v) const
 	return float(acos(cs));
 }
 
-///Получить знаковый угол между векторами в плоскости XZ
+///РџРѕР»СѓС‡РёС‚СЊ Р·РЅР°РєРѕРІС‹Р№ СѓРіРѕР» РјРµР¶РґСѓ РІРµРєС‚РѕСЂР°РјРё РІ РїР»РѕСЃРєРѕСЃС‚Рё XZ
 mathinline float Vector::GetAngle2D(const Vector & v) const
 {
 	double len = double(x)*double(x) + double(z)*double(z);
@@ -869,7 +869,7 @@ mathinline float Vector::GetAngle2D(const Vector & v) const
 	return float(len);
 }
 
-//Получить угол поворота вектора вокруг оси Y
+//РџРѕР»СѓС‡РёС‚СЊ СѓРіРѕР» РїРѕРІРѕСЂРѕС‚Р° РІРµРєС‚РѕСЂР° РІРѕРєСЂСѓРі РѕСЃРё Y
 mathinline float Vector::GetAY(float defAngle) const
 {
 	double len = double(x)*double(x) + double(z)*double(z);
@@ -884,7 +884,7 @@ mathinline float Vector::GetAY(float defAngle) const
 	return float(len);
 }
 
-//Получить синус между 2D векторами в плоскости XZ
+//РџРѕР»СѓС‡РёС‚СЊ СЃРёРЅСѓСЃ РјРµР¶РґСѓ 2D РІРµРєС‚РѕСЂР°РјРё РІ РїР»РѕСЃРєРѕСЃС‚Рё XZ
 mathinline float Vector::Sin2D(const Vector & v) const
 {
 	double len = double(x)*double(x) + double(z)*double(z);
@@ -894,7 +894,7 @@ mathinline float Vector::Sin2D(const Vector & v) const
 	return float(len);
 }
 
-//Получить косинус между 2D векторами в плоскости XZ
+//РџРѕР»СѓС‡РёС‚СЊ РєРѕСЃРёРЅСѓСЃ РјРµР¶РґСѓ 2D РІРµРєС‚РѕСЂР°РјРё РІ РїР»РѕСЃРєРѕСЃС‚Рё XZ
 mathinline float Vector::Cos2D(const Vector & v) const
 {
 	double len = double(x)*double(x) + double(z)*double(z);
@@ -904,25 +904,25 @@ mathinline float Vector::Cos2D(const Vector & v) const
 	return float(len);
 }
 
-//Получить векторное произведение векторов в плоскости XZ
+//РџРѕР»СѓС‡РёС‚СЊ РІРµРєС‚РѕСЂРЅРѕРµ РїСЂРѕРёР·РІРµРґРµРЅРёРµ РІРµРєС‚РѕСЂРѕРІ РІ РїР»РѕСЃРєРѕСЃС‚Рё XZ
 mathinline float Vector::Cross2D(const Vector & v) const
 {
 	return z*v.x - x*v.z;
 }
 
-//Получить вектор в плоскости XZ
+//РџРѕР»СѓС‡РёС‚СЊ РІРµРєС‚РѕСЂ РІ РїР»РѕСЃРєРѕСЃС‚Рё XZ
 mathinline Vector Vector::Get2D() const
 {
 	return Vector(x, 0.0f, z);
 }
 
-///Получить вектор в плоскости XZ
+///РџРѕР»СѓС‡РёС‚СЊ РІРµРєС‚РѕСЂ РІ РїР»РѕСЃРєРѕСЃС‚Рё XZ
 mathinline Vector Vector::Get2D(float y) const
 {
 	return Vector(x, y, z);
 }
 
-//Сформировать вектор в плоскости XZ по угло
+//РЎС„РѕСЂРјРёСЂРѕРІР°С‚СЊ РІРµРєС‚РѕСЂ РІ РїР»РѕСЃРєРѕСЃС‚Рё XZ РїРѕ СѓРіР»Рѕ
 mathinline Vector & Vector::Make2D(float ay)
 {
 	x = sinf(ay);
@@ -931,31 +931,31 @@ mathinline Vector & Vector::Make2D(float ay)
 	return *this;
 }
 
-//Получить длинну вектора
+//РџРѕР»СѓС‡РёС‚СЊ РґР»РёРЅРЅСѓ РІРµРєС‚РѕСЂР°
 mathinline float Vector::GetLength() const
 {
 	return float(sqrt(double(x)*double(x) + double(y)*double(y) + double(z)*double(z)));
 }
 
-//Получить длинну вектора в 2D
+//РџРѕР»СѓС‡РёС‚СЊ РґР»РёРЅРЅСѓ РІРµРєС‚РѕСЂР° РІ 2D
 mathinline float Vector::GetLength2D() const
 {
 	return float(sqrt(double(x)*double(x) + double(z)*double(z)));
 }
 
-///Получить квадрат длинны вектора в 2D
+///РџРѕР»СѓС‡РёС‚СЊ РєРІР°РґСЂР°С‚ РґР»РёРЅРЅС‹ РІРµРєС‚РѕСЂР° РІ 2D
 mathinline float Vector::GetLength2D2() const
 {
 	return x*x + z*z;
 }
 
-//Повернуть вектор в плоскости XZ на угол
+//РџРѕРІРµСЂРЅСѓС‚СЊ РІРµРєС‚РѕСЂ РІ РїР»РѕСЃРєРѕСЃС‚Рё XZ РЅР° СѓРіРѕР»
 mathinline Vector & Vector::Rotate(float angle)
 {
 	return Rotate(cosf(angle), sinf(angle));
 }
 
-//Повернуть вектор в плоскости XZ на угол заданный cos, sin
+//РџРѕРІРµСЂРЅСѓС‚СЊ РІРµРєС‚РѕСЂ РІ РїР»РѕСЃРєРѕСЃС‚Рё XZ РЅР° СѓРіРѕР» Р·Р°РґР°РЅРЅС‹Р№ cos, sin
 mathinline Vector & Vector::Rotate(float vcos, float vsin)
 {
 	float tx = x*vcos + z*vsin;
@@ -964,7 +964,7 @@ mathinline Vector & Vector::Rotate(float vcos, float vsin)
 	return *this;
 }
 
-//Повернуть вектор по часовой стрелке в плоскости XZ на угол PI/2
+//РџРѕРІРµСЂРЅСѓС‚СЊ РІРµРєС‚РѕСЂ РїРѕ С‡Р°СЃРѕРІРѕР№ СЃС‚СЂРµР»РєРµ РІ РїР»РѕСЃРєРѕСЃС‚Рё XZ РЅР° СѓРіРѕР» PI/2
 mathinline Vector & Vector::Rotate_PI2_CW()
 {
 	float t = x;
@@ -973,7 +973,7 @@ mathinline Vector & Vector::Rotate_PI2_CW()
 	return *this;
 }
 
-//Повернуть вектор против часовой стрелке в плоскости XZ на угол PI/2
+//РџРѕРІРµСЂРЅСѓС‚СЊ РІРµРєС‚РѕСЂ РїСЂРѕС‚РёРІ С‡Р°СЃРѕРІРѕР№ СЃС‚СЂРµР»РєРµ РІ РїР»РѕСЃРєРѕСЃС‚Рё XZ РЅР° СѓРіРѕР» PI/2
 mathinline Vector & Vector::Rotate_PI2_CCW()
 {
 	float t = x;
@@ -982,7 +982,7 @@ mathinline Vector & Vector::Rotate_PI2_CCW()
 	return *this;
 }
 
-//Расчитать линейноинтерпалированное значение
+//Р Р°СЃС‡РёС‚Р°С‚СЊ Р»РёРЅРµР№РЅРѕРёРЅС‚РµСЂРїР°Р»РёСЂРѕРІР°РЅРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ
 mathinline Vector & Vector::Lerp(const Vector & v1, const Vector & v2, float kBlend)
 {
 	x = v1.x + (v2.x - v1.x)*kBlend;
@@ -991,7 +991,7 @@ mathinline Vector & Vector::Lerp(const Vector & v1, const Vector & v2, float kBl
 	return *this;
 }
 
-//Расчитать отражённый вектор
+//Р Р°СЃС‡РёС‚Р°С‚СЊ РѕС‚СЂР°Р¶С‘РЅРЅС‹Р№ РІРµРєС‚РѕСЂ
 mathinline Vector & Vector::Reflection(const Vector & normal)
 {
 	float k = -2.0f*(x*normal.x + y*normal.y + z*normal.z);
@@ -1001,7 +1001,7 @@ mathinline Vector & Vector::Reflection(const Vector & normal)
 	return *this;
 }
 
-//Заполнить единичным вектором со случайным направлением
+//Р—Р°РїРѕР»РЅРёС‚СЊ РµРґРёРЅРёС‡РЅС‹Рј РІРµРєС‚РѕСЂРѕРј СЃРѕ СЃР»СѓС‡Р°Р№РЅС‹Рј РЅР°РїСЂР°РІР»РµРЅРёРµРј
 mathinline Vector & Vector::Rand()
 {
 	Make2D(rand()*((2.0f*3.141592654f)/RAND_MAX));
@@ -1009,13 +1009,13 @@ mathinline Vector & Vector::Rand()
 	return Rotate(rand()*((2.0f*3.141592654f)/RAND_MAX));
 }
 
-//Заполнить единичным вектором со случайным направлением в XZ
+//Р—Р°РїРѕР»РЅРёС‚СЊ РµРґРёРЅРёС‡РЅС‹Рј РІРµРєС‚РѕСЂРѕРј СЃРѕ СЃР»СѓС‡Р°Р№РЅС‹Рј РЅР°РїСЂР°РІР»РµРЅРёРµРј РІ XZ
 mathinline Vector & Vector::Rand2D()
 {
 	return Make2D(rand()*((2.0f*3.141592654f)/RAND_MAX));
 }
 
-///Заполнить случайными значениями в заданном ABB
+///Р—Р°РїРѕР»РЅРёС‚СЊ СЃР»СѓС‡Р°Р№РЅС‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё РІ Р·Р°РґР°РЅРЅРѕРј ABB
 mathinline Vector & Vector::Rand(const Vector & min, const Vector & max)
 {
 	x = min.x + rand()*((max.x - min.x)*(1.0f/RAND_MAX));
@@ -1024,7 +1024,7 @@ mathinline Vector & Vector::Rand(const Vector & min, const Vector & max)
 	return *this;
 }
 
-///Заполнить случайными значениями в заданной сфере
+///Р—Р°РїРѕР»РЅРёС‚СЊ СЃР»СѓС‡Р°Р№РЅС‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё РІ Р·Р°РґР°РЅРЅРѕР№ СЃС„РµСЂРµ
 mathinline Vector & Vector::Rand(const Vector & pos, float radius)
 {
 	Rand();
@@ -1032,11 +1032,11 @@ mathinline Vector & Vector::Rand(const Vector & pos, float radius)
 	return *this;
 }
 
-//Переместить текущий вектор к заданной точке на заданный шаг
+//РџРµСЂРµРјРµСЃС‚РёС‚СЊ С‚РµРєСѓС‰РёР№ РІРµРєС‚РѕСЂ Рє Р·Р°РґР°РЅРЅРѕР№ С‚РѕС‡РєРµ РЅР° Р·Р°РґР°РЅРЅС‹Р№ С€Р°Рі
 mathinline bool Vector::MoveByStep(const Vector & to, float step)
 {
 	if(step <= 0.0f) return false;
-	//Дистанция до точки
+	//Р”РёСЃС‚Р°РЅС†РёСЏ РґРѕ С‚РѕС‡РєРё
 	float dx = to.x - x;
 	float dy = to.y - y;
 	float dz = to.z - z;
@@ -1049,7 +1049,7 @@ mathinline bool Vector::MoveByStep(const Vector & to, float step)
 		return false;
 	}
 	dist = sqrtf(dist);
-	//Движение к точке
+	//Р”РІРёР¶РµРЅРёРµ Рє С‚РѕС‡РєРµ
 	if(step >= dist)
 	{
 		x = to.x;
@@ -1064,11 +1064,11 @@ mathinline bool Vector::MoveByStep(const Vector & to, float step)
 	return true;
 }
 
-//Переместить текущий вектор к заданной точке на заданный шаг в 2D
+//РџРµСЂРµРјРµСЃС‚РёС‚СЊ С‚РµРєСѓС‰РёР№ РІРµРєС‚РѕСЂ Рє Р·Р°РґР°РЅРЅРѕР№ С‚РѕС‡РєРµ РЅР° Р·Р°РґР°РЅРЅС‹Р№ С€Р°Рі РІ 2D
 mathinline bool Vector::MoveByStep2D(const Vector & to, float step)
 {
 	if(step <= 0.0f) return false;
-	//Дистанция до точки
+	//Р”РёСЃС‚Р°РЅС†РёСЏ РґРѕ С‚РѕС‡РєРё
 	float dx = to.x - x;
 	float dz = to.z - z;
 	float dist = dx*dx + dz*dz;
@@ -1079,7 +1079,7 @@ mathinline bool Vector::MoveByStep2D(const Vector & to, float step)
 		return false;
 	}
 	dist = sqrtf(dist);
-	//Движение к точке
+	//Р”РІРёР¶РµРЅРёРµ Рє С‚РѕС‡РєРµ
 	if(step >= dist)
 	{
 		x = to.x;
@@ -1092,7 +1092,7 @@ mathinline bool Vector::MoveByStep2D(const Vector & to, float step)
 	return true;
 }
 
-//Точка находиться в ящике
+//РўРѕС‡РєР° РЅР°С…РѕРґРёС‚СЊСЃСЏ РІ СЏС‰РёРєРµ
 mathinline bool Vector::InBox(const Vector & min, const Vector & max) const
 {
 	if(y < min.y || y > max.y) return false;
@@ -1101,7 +1101,7 @@ mathinline bool Vector::InBox(const Vector & min, const Vector & max) const
 	return true;
 }
 
-//Точка находиться в шаре
+//РўРѕС‡РєР° РЅР°С…РѕРґРёС‚СЊСЃСЏ РІ С€Р°СЂРµ
 mathinline bool Vector::InSphere(const Vector & pos, float rad) const
 {
 	double d = (x - pos.x)*(x - pos.x);

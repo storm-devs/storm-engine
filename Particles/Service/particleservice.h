@@ -30,14 +30,14 @@ class ParticleService : public IParticleService
 
 public:
 
-//Конструктор / деструктор
+//РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ / РґРµСЃС‚СЂСѓРєС‚РѕСЂ
 	ParticleService ();
 	virtual ~ParticleService ();
 
 
 	virtual bool Init ();
 
-//Создать менеджер партиклов
+//РЎРѕР·РґР°С‚СЊ РјРµРЅРµРґР¶РµСЂ РїР°СЂС‚РёРєР»РѕРІ
 	virtual IParticleManager* CreateManagerEx (const char* ProjectName, const char* File, int Line);
 
 	virtual void RemoveManagerFromList (IParticleManager* pManager);

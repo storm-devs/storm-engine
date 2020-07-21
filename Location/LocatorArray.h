@@ -26,61 +26,61 @@ class LocatorArray
 		float radius;
 	};
 //--------------------------------------------------------------------------------------------
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //--------------------------------------------------------------------------------------------
 public:
 	LocatorArray(const char * groupName);
 	virtual ~LocatorArray();
 
 //--------------------------------------------------------------------------------------------
-//Работа с массивом
+//Р Р°Р±РѕС‚Р° СЃ РјР°СЃСЃРёРІРѕРј
 //--------------------------------------------------------------------------------------------
 public:
-	//Добавить локатор
+	//Р”РѕР±Р°РІРёС‚СЊ Р»РѕРєР°С‚РѕСЂ
 	void AddLocator(CMatrix & mtx, const char * name = null);
-	//Изменить матрицу локатора
+	//РР·РјРµРЅРёС‚СЊ РјР°С‚СЂРёС†Сѓ Р»РѕРєР°С‚РѕСЂР°
 	void SetNewMatrix(long locIndex, CMatrix & mtx);
-	//Найти ближайший локатор по шарику
+	//РќР°Р№С‚Рё Р±Р»РёР¶Р°Р№С€РёР№ Р»РѕРєР°С‚РѕСЂ РїРѕ С€Р°СЂРёРєСѓ
 	float FindNearesLocator(float x, float y, float z, long * locIndex = null);
-	//Найти ближайший локатор по цилиндру
+	//РќР°Р№С‚Рё Р±Р»РёР¶Р°Р№С€РёР№ Р»РѕРєР°С‚РѕСЂ РїРѕ С†РёР»РёРЅРґСЂСѓ
 	long FindNearesLocatorCl(float x, float y, float z, float height2, float & dist);
-	//Найти локатор по имени
+	//РќР°Р№С‚Рё Р»РѕРєР°С‚РѕСЂ РїРѕ РёРјРµРЅРё
 	long FindByName(const char * locName);
-	//Получить имя локатора
+	//РџРѕР»СѓС‡РёС‚СЊ РёРјСЏ Р»РѕРєР°С‚РѕСЂР°
 	const char * LocatorName(long locIndex);
-	//Получить координаты локатора
+	//РџРѕР»СѓС‡РёС‚СЊ РєРѕРѕСЂРґРёРЅР°С‚С‹ Р»РѕРєР°С‚РѕСЂР°
 	bool GetLocatorPos(long locIndex, float & x, float & y, float & z);
-	//Получить матрицу локатора
+	//РџРѕР»СѓС‡РёС‚СЊ РјР°С‚СЂРёС†Сѓ Р»РѕРєР°С‚РѕСЂР°
 	bool GetLocatorPos(long locIndex, CMatrix & mtx);
-	//Проверить индекс на правильность
+	//РџСЂРѕРІРµСЂРёС‚СЊ РёРЅРґРµРєСЃ РЅР° РїСЂР°РІРёР»СЊРЅРѕСЃС‚СЊ
 	bool IsValidateIndex(long locIndex);
-	//Количество локаторов
+	//РљРѕР»РёС‡РµСЃС‚РІРѕ Р»РѕРєР°С‚РѕСЂРѕРІ
 	long Num();
-	//Имя локатора
+	//РРјСЏ Р»РѕРєР°С‚РѕСЂР°
 	char * Name(long locIndex);
-	//Сравнить имена груп
+	//РЎСЂР°РІРЅРёС‚СЊ РёРјРµРЅР° РіСЂСѓРї
 	bool CompareGroup(const char * groupName, long ghash);
-	//Получить имя группы
+	//РџРѕР»СѓС‡РёС‚СЊ РёРјСЏ РіСЂСѓРїРїС‹
 	char * GetGroupName();
 
-	//Установить локатору радиус
+	//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р»РѕРєР°С‚РѕСЂСѓ СЂР°РґРёСѓСЃ
 	void SetLocatorRadius(long locIndex, float radius);
-	//Получить радиус локатора
+	//РџРѕР»СѓС‡РёС‚СЊ СЂР°РґРёСѓСЃ Р»РѕРєР°С‚РѕСЂР°
 	float GetLocatorRadius(long locIndex);
 
 //--------------------------------------------------------------------------------------------
-//Инкапсуляция
+//РРЅРєР°РїСЃСѓР»СЏС†РёСЏ
 //--------------------------------------------------------------------------------------------
 public:
 	static long CalcHashString(const char * str);
 private:
-	//Имя группы
+	//РРјСЏ РіСЂСѓРїРїС‹
 	char * group;
 	long hash;
-	//Локаторы
+	//Р›РѕРєР°С‚РѕСЂС‹
 	LocatorInfro * locator;
 	long numLocators;
-	//Имена локаторов
+	//РРјРµРЅР° Р»РѕРєР°С‚РѕСЂРѕРІ
 	char * locatorNames;
 	long bytesInLNArray;
 
@@ -92,7 +92,7 @@ public:
 	float viewDist;
 };
 
-//Получить имя локатора
+//РџРѕР»СѓС‡РёС‚СЊ РёРјСЏ Р»РѕРєР°С‚РѕСЂР°
 inline const char * LocatorArray::LocatorName(long locIndex)
 {
 	if(locIndex < 0 || locIndex >= numLocators) return null;
@@ -100,7 +100,7 @@ inline const char * LocatorArray::LocatorName(long locIndex)
 	return locatorNames + locator[locIndex].name;
 }
 
-//Получить координаты локатора
+//РџРѕР»СѓС‡РёС‚СЊ РєРѕРѕСЂРґРёРЅР°С‚С‹ Р»РѕРєР°С‚РѕСЂР°
 inline bool LocatorArray::GetLocatorPos(long locIndex, float & x, float & y, float & z)
 {
 	if(locIndex < 0 || locIndex >= numLocators) return false;
@@ -110,7 +110,7 @@ inline bool LocatorArray::GetLocatorPos(long locIndex, float & x, float & y, flo
 	return true;
 }
 
-//Получить матрицу локатора
+//РџРѕР»СѓС‡РёС‚СЊ РјР°С‚СЂРёС†Сѓ Р»РѕРєР°С‚РѕСЂР°
 inline bool LocatorArray::GetLocatorPos(long locIndex, CMatrix & mtx)
 {
 	if(locIndex < 0 || locIndex >= numLocators) return false;
@@ -118,39 +118,39 @@ inline bool LocatorArray::GetLocatorPos(long locIndex, CMatrix & mtx)
 	return true;
 }
 
-//Проверить индекс на правильность
+//РџСЂРѕРІРµСЂРёС‚СЊ РёРЅРґРµРєСЃ РЅР° РїСЂР°РІРёР»СЊРЅРѕСЃС‚СЊ
 inline bool LocatorArray::IsValidateIndex(long locIndex)
 {
 	return (locIndex < 0 || locIndex >= numLocators);
 }
 
-//Количество локаторов
+//РљРѕР»РёС‡РµСЃС‚РІРѕ Р»РѕРєР°С‚РѕСЂРѕРІ
 inline long LocatorArray::Num()
 {
 	return numLocators;
 }
 
-//Имя локатора
+//РРјСЏ Р»РѕРєР°С‚РѕСЂР°
 inline char * LocatorArray::Name(long locIndex)
 {
 	Assert(locIndex >= 0 && locIndex < numLocators);
 	return locatorNames + locator[locIndex].name;
 }
 
-//Получить имя группы
+//РџРѕР»СѓС‡РёС‚СЊ РёРјСЏ РіСЂСѓРїРїС‹
 inline char * LocatorArray::GetGroupName()
 {
 	return group;
 }
 
-//Установить локатору радиус
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р»РѕРєР°С‚РѕСЂСѓ СЂР°РґРёСѓСЃ
 inline void LocatorArray::SetLocatorRadius(long locIndex, float radius)
 {
 	Assert(locIndex >= 0 && locIndex < numLocators);
 	locator[locIndex].radius = radius;
 }
 
-//Получить радиус локатора
+//РџРѕР»СѓС‡РёС‚СЊ СЂР°РґРёСѓСЃ Р»РѕРєР°С‚РѕСЂР°
 inline float LocatorArray::GetLocatorRadius(long locIndex)
 {
 	Assert(locIndex >= 0 && locIndex < numLocators);

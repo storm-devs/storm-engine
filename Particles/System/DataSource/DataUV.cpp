@@ -3,7 +3,7 @@
 #include "..\..\..\common_h\vmodule_api.h"
 
 
-//конструктор/деструктор
+//РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ/РґРµСЃС‚СЂСѓРєС‚РѕСЂ
 DataUV::DataUV () : Frames(_FL_)
 {
 }
@@ -12,7 +12,7 @@ DataUV::~DataUV ()
 {
 }
 
-	//Получить значение   [ x,y = UV1; z,w = UV2 ]
+	//РџРѕР»СѓС‡РёС‚СЊ Р·РЅР°С‡РµРЅРёРµ   [ x,y = UV1; z,w = UV2 ]
 const Vector4 &DataUV::GetValue (DWORD FrameNum)
 {
 	DWORD TotalFrames = Frames.Size();
@@ -20,7 +20,7 @@ const Vector4 &DataUV::GetValue (DWORD FrameNum)
 	return Frames[FrameNum];
 }
 
-	//Установить значения
+	//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р·РЅР°С‡РµРЅРёСЏ
 void DataUV::SetValues (const Vector4* _Frames, DWORD FramesCount)
 {
 	Frames.DelAll();
@@ -31,7 +31,7 @@ void DataUV::SetValues (const Vector4* _Frames, DWORD FramesCount)
 	}
 }
 
-	//Получить кол-во кадров
+	//РџРѕР»СѓС‡РёС‚СЊ РєРѕР»-РІРѕ РєР°РґСЂРѕРІ
 DWORD DataUV::GetFrameCount ()
 {
 	return Frames.Size();

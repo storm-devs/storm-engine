@@ -819,7 +819,7 @@ bool IFS::ReadString(SEARCH_DATA * sd, char * section_name, char * key_name, cha
 	}
 
 	write_size = strlen(char_PTR) + 1;
-	//if(write_size > buffer_size) _THROW(buffer size too small); // boal çàêîìåí÷åíî ïî íàâîäêå İääè, íå äàâàëî ãğóçèòü íîâóş àíè
+	//if(write_size > buffer_size) _THROW(buffer size too small); // boal Ğ·Ğ°ĞºĞ¾Ğ¼ĞµĞ½Ñ‡ĞµĞ½Ğ¾ Ğ¿Ğ¾ Ğ½Ğ°Ğ²Ğ¾Ğ´ĞºĞµ Ğ­Ğ´Ğ´Ğ¸, Ğ½Ğµ Ğ´Ğ°Ğ²Ğ°Ğ»Ğ¾ Ğ³Ñ€ÑƒĞ·Ğ¸Ñ‚ÑŒ Ğ½Ğ¾Ğ²ÑƒÑ Ğ°Ğ½Ğ¸
 
 	strcpy(buffer,node->GetValue());
 	return true;

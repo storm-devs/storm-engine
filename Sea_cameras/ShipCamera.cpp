@@ -128,28 +128,28 @@ void SHIP_CAMERA::Move(float fDeltaTime)
 	boxSize.x += boxSize.y;
 	boxSize.z += boxSize.y;
 	float maxRad = boxSize.z*2.0f;
-	//Полуоси эллипсоида по которому движеться камера
+	//РџРѕР»СѓРѕСЃРё СЌР»Р»РёРїСЃРѕРёРґР° РїРѕ РєРѕС‚РѕСЂРѕРјСѓ РґРІРёР¶РµС‚СЊСЃСЏ РєР°РјРµСЂР°
 	float a = boxSize.x*1.2f + fDistance*(maxRad - boxSize.x*1.2f);			//x
 	float b = boxSize.y*1.5f + fDistance*(70.0f - boxSize.y*1.5f);			//y
 	float c = boxSize.z*1.2f + fDistance*(maxRad - boxSize.z*1.2f);			//z
-	//Найдём позицию камеры на эллипсоиде
+	//РќР°Р№РґС‘Рј РїРѕР·РёС†РёСЋ РєР°РјРµСЂС‹ РЅР° СЌР»Р»РёРїСЃРѕРёРґРµ
 	vCenter.y += 0.5f*boxSize.y;
 	CVECTOR vPos;
 	if(vAng.x <= 0.0f)
 	{
-		//Выше 0 ездием по эллипсоиду
+		//Р’С‹С€Рµ 0 РµР·РґРёРµРј РїРѕ СЌР»Р»РёРїСЃРѕРёРґСѓ
 		vPos.x = a*cosf(-vAng.x)*sinf(vAng.y);
 		vPos.y = b*sinf(-vAng.x);
 		vPos.z = c*cosf(-vAng.x)*cosf(vAng.y);
 	}else{
-		//Ниже 0 ездием по эллиптическому цилиндру
+		//РќРёР¶Рµ 0 РµР·РґРёРµРј РїРѕ СЌР»Р»РёРїС‚РёС‡РµСЃРєРѕРјСѓ С†РёР»РёРЅРґСЂСѓ
 		vPos.x = a*sinf(vAng.y);
 		vPos.y = 0.0f;//b*sinf(-vAng.x);
 		vPos.z = c*cosf(vAng.y);
 	}
 	vPos = CMatrix(CVECTOR(0.0f, fModelAy, 0.0f), vCenter)*vPos;
 	if(vAng.x > 0.0f) vCenter.y += boxSize.z*vAng.x*6.0f;
-	//Ограничим высоту с низу
+	//РћРіСЂР°РЅРёС‡РёРј РІС‹СЃРѕС‚Сѓ СЃ РЅРёР·Сѓ
 	float fWaveY = pSea->WaveXZ(vPos.x,vPos.z);
 	if(vPos.y - fWaveY < fMinHeightOnSea) vPos.y = fWaveY + fMinHeightOnSea;
 	float oldPosY = vPos.y;
@@ -206,23 +206,23 @@ void SHIP_CAMERA::ShipsCollision(CVECTOR & pos)
 	CVECTOR p;
 	for(; res; res = _CORE_API->FindClassNext(&id))
 	{
-		//Указатель на объект
+		//РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РѕР±СЉРµРєС‚
 		VAI_OBJBASE * ship = (VAI_OBJBASE *)_CORE_API->GetEntityPointer(&id);
 		if(!ship) break;
 		if(ship == GetAIObj()) continue;
-		//Позиция камеры в системе корабля
+		//РџРѕР·РёС†РёСЏ РєР°РјРµСЂС‹ РІ СЃРёСЃС‚РµРјРµ РєРѕСЂР°Р±Р»СЏ
 		Assert(ship->GetMatrix());
 		ship->GetMatrix()->MulToInv(pos, p);
-		//Проверим попадание в бокс
+		//РџСЂРѕРІРµСЂРёРј РїРѕРїР°РґР°РЅРёРµ РІ Р±РѕРєСЃ
 		CVECTOR s = ship->GetBoxSize()*CVECTOR(SCMR_BOXSCALE_X*0.5f, SCMR_BOXSCALE_Y*0.5f, SCMR_BOXSCALE_Z*0.5f);
 		if(s.x <= 0.0f || s.y <= 0.0f || s.z <= 0.0f) continue;
-		//Строим эллипсоид
+		//РЎС‚СЂРѕРёРј СЌР»Р»РёРїСЃРѕРёРґ
 		float a = s.z + s.y;						//z
 		float b = s.x + s.y;						//x
 		float k1 = s.z/a;
 		float k2 = s.x/b;
 		float c = s.y/sqrtf(1.0f - k1*k1 - k2*k2);	//y
-		//Ишем высоту
+		//РС€РµРј РІС‹СЃРѕС‚Сѓ
 		k1 = p.z/a;
 		k2 = p.x/b;
 		float h = (1.0f - k1*k1 - k2*k2);

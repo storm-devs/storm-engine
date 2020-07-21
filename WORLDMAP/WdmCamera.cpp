@@ -20,7 +20,7 @@
 #define WdmCamera_myPI 3.1415926535897932384626433832795f
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 WdmCamera::WdmCamera()
@@ -99,11 +99,11 @@ void WdmCamera::Move(float dltTime, VDX8RENDER * rs)
 	float moveudspd = 50.0f*MoveUpDown(dltTime);
 	float rotspd = 1.0f*RotLeftRight(dltTime);
 	float zoomspd = 30.0f*ZoomInOut(dltTime);
-	//Точка на высоте 0 в которую смотрим относительно текущий позиции камеры
+	//РўРѕС‡РєР° РЅР° РІС‹СЃРѕС‚Рµ 0 РІ РєРѕС‚РѕСЂСѓСЋ СЃРјРѕС‚СЂРёРј РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ С‚РµРєСѓС‰РёР№ РїРѕР·РёС†РёРё РєР°РјРµСЂС‹
 	float cx = sn*pos.y*csX/snX;
 	float cz = cs*pos.y*csX/snX;
 	float r = sqrtf(cx*cx + cz*cz);
-	//Перемещение свободной камеры
+	//РџРµСЂРµРјРµС‰РµРЅРёРµ СЃРІРѕР±РѕРґРЅРѕР№ РєР°РјРµСЂС‹
 	if(CurrentFreeMode() && isInit)
 	{
 		pos.x += moveudspd*sn - movelrspd*cs;
@@ -117,11 +117,11 @@ void WdmCamera::Move(float dltTime, VDX8RENDER * rs)
 		pos.z = wdmObjects->playerShip->mtx.Pos().z - cz;
 		isInit = true;
 	}
-	//Вращение камеры
+	//Р’СЂР°С‰РµРЅРёРµ РєР°РјРµСЂС‹
 	this->ang.y += rotspd;
 	pos.x = pos.x + cx - r*sinf(ang.y);
 	pos.z = pos.z + cz - r*cosf(ang.y);
-	//Масштабирование
+	//РњР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРёРµ
 	pos.x += zoomspd*sn*csX;
 	pos.y -= zoomspd*snX;
 	pos.z += zoomspd*cs*csX;
@@ -139,9 +139,9 @@ void WdmCamera::Move(float dltTime, VDX8RENDER * rs)
 		pos.x -= r*sn;
 		pos.z -= r*cs;
 	}
-	//Ограничем перемещение камеры
+	//РћРіСЂР°РЅРёС‡РµРј РїРµСЂРµРјРµС‰РµРЅРёРµ РєР°РјРµСЂС‹
 	CheckRange();
-	//Устанавливаем новою позицию камеры
+	//РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РЅРѕРІРѕСЋ РїРѕР·РёС†РёСЋ РєР°РјРµСЂС‹
 	float height;
 	k = dltTime*2000.0f;
 	if(!GetHightHeight(height))
@@ -173,16 +173,16 @@ void WdmCamera::CheckRange()
 	float sn = sinf(ang.y);
 	float csX = cosf(ang.x);
 	float snX = sinf(ang.x);
-	//Точка, в которую смотрим
+	//РўРѕС‡РєР°, РІ РєРѕС‚РѕСЂСѓСЋ СЃРјРѕС‚СЂРёРј
 	float cx = pos.x + sn*pos.y*csX/snX;
 	float cz = pos.z + cs*pos.y*csX/snX;
 	float ccx = cx, ccz = cz;
-	//Ограничиваем координату
+	//РћРіСЂР°РЅРёС‡РёРІР°РµРј РєРѕРѕСЂРґРёРЅР°С‚Сѓ
 	//if(cx < -0.5f*WDM_WORLD_SIZE_X) cx = -0.5f*WDM_WORLD_SIZE_X;
 	//if(cx > 0.5f*WDM_WORLD_SIZE_X) cx = 0.5f*WDM_WORLD_SIZE_X;
 	//if(cz < -0.5f*WDM_WORLD_SIZE_Z) cz = -0.5f*WDM_WORLD_SIZE_Z;
 	//if(cz > 0.5f*WDM_WORLD_SIZE_Z) cz = 0.5f*WDM_WORLD_SIZE_Z;
-	//Просчитываем смещение
+	//РџСЂРѕСЃС‡РёС‚С‹РІР°РµРј СЃРјРµС‰РµРЅРёРµ
 	pos.x += cx - ccx;
 	pos.z += cz - ccz;
 }

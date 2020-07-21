@@ -19,15 +19,15 @@ class IEmitter
 
 public:
  
-	// Конструктор / деструктор
+	// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ / РґРµСЃС‚СЂСѓРєС‚РѕСЂ
   IEmitter() {};
   virtual ~IEmitter() {};
   
   
-	//Родить партиклы, используеться при движении привязанного эмиттера
+	//Р РѕРґРёС‚СЊ РїР°СЂС‚РёРєР»С‹, РёСЃРїРѕР»СЊР·СѓРµС‚СЊСЃСЏ РїСЂРё РґРІРёР¶РµРЅРёРё РїСЂРёРІСЏР·Р°РЅРЅРѕРіРѕ СЌРјРёС‚С‚РµСЂР°
 	virtual void BornParticles (float DeltaTime) = 0;
 
-	//Исполнить
+	//РСЃРїРѕР»РЅРёС‚СЊ
 	virtual void Execute (float DeltaTime) = 0;
 
 	virtual void Restart () = 0;
@@ -42,12 +42,12 @@ public:
 
 	virtual const char* GetName () = 0;
 
-	//Если флаг в true емиттер не будет самостоятельно испускать партиклы
-	//так, как он привязан
+	//Р•СЃР»Рё С„Р»Р°Рі РІ true РµРјРёС‚С‚РµСЂ РЅРµ Р±СѓРґРµС‚ СЃР°РјРѕСЃС‚РѕСЏС‚РµР»СЊРЅРѕ РёСЃРїСѓСЃРєР°С‚СЊ РїР°СЂС‚РёРєР»С‹
+	//С‚Р°Рє, РєР°Рє РѕРЅ РїСЂРёРІСЏР·Р°РЅ
 	virtual void SetAttachedFlag (bool Flag) = 0;
 	virtual bool IsAttached () = 0;
 
-	//Запомнить/восстановить тек.время эмиттера
+	//Р—Р°РїРѕРјРЅРёС‚СЊ/РІРѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ С‚РµРє.РІСЂРµРјСЏ СЌРјРёС‚С‚РµСЂР°
 	virtual float GetTime () = 0;
 	virtual void SetTime (float Time) = 0;
 
@@ -63,7 +63,7 @@ public:
 	virtual bool SetEnable (bool bVisible) = 0;
 	virtual bool GetEnable () = 0;
 
-	//-1 если не нашли, иначе индекс
+	//-1 РµСЃР»Рё РЅРµ РЅР°С€Р»Рё, РёРЅР°С‡Рµ РёРЅРґРµРєСЃ
 	virtual int GetParticleTypeIndex (FieldList* pFields) = 0;
 	virtual bool SetParticleTypeEnable (bool bVisible, DWORD Index) = 0;
 	virtual bool GetParticleTypeEnable (DWORD Index) = 0;

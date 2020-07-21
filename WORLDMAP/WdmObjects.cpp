@@ -17,7 +17,7 @@
 WdmObjects * wdmObjects = null;
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 WdmObjects::WdmObjects() : models(_FL_)
@@ -90,17 +90,17 @@ void WdmObjects::Clear()
 	isPause = false;
 	shipSpeedOppositeWind = 0.8f;
 	shipSpeedOverWind = 1.2f;
-	enemyshipViewDistMin = 20.0f;		//Растояние на котором корабль начинает исчезать
-	enemyshipViewDistMax = 50.0f;		//Растояние на котором исчезает полностью корабль
-	enemyshipDistKill = 100.0f;			//Расстояние на котором убиваем корабль
-	enemyshipBrnDistMin = 40.0f;		//Минимальное растояние при котором рожается корабль
-	enemyshipBrnDistMax = 70.0f;		//Максимальное растояние при котором рожается корабль
-	stormViewDistMin = 120.0f;			//Растояние на котором шторм начинает исчезать
-	stormViewDistMax = 160.0f;			//Растояние на котором шторм исчезает полностью
-	stormDistKill = 200.0f;				//Расстояние на котором убиваем шторм
-	stormBrnDistMin = 70.0f;			//Минимальное растояние на котором рожается шторм
-	stormBrnDistMax = 160.0f;			//Максимальное растояние на котором рожается шторм
-	stormZone = 50.0f;					//Общий радиус действия шторма
+	enemyshipViewDistMin = 20.0f;		//Р Р°СЃС‚РѕСЏРЅРёРµ РЅР° РєРѕС‚РѕСЂРѕРј РєРѕСЂР°Р±Р»СЊ РЅР°С‡РёРЅР°РµС‚ РёСЃС‡РµР·Р°С‚СЊ
+	enemyshipViewDistMax = 50.0f;		//Р Р°СЃС‚РѕСЏРЅРёРµ РЅР° РєРѕС‚РѕСЂРѕРј РёСЃС‡РµР·Р°РµС‚ РїРѕР»РЅРѕСЃС‚СЊСЋ РєРѕСЂР°Р±Р»СЊ
+	enemyshipDistKill = 100.0f;			//Р Р°СЃСЃС‚РѕСЏРЅРёРµ РЅР° РєРѕС‚РѕСЂРѕРј СѓР±РёРІР°РµРј РєРѕСЂР°Р±Р»СЊ
+	enemyshipBrnDistMin = 40.0f;		//РњРёРЅРёРјР°Р»СЊРЅРѕРµ СЂР°СЃС‚РѕСЏРЅРёРµ РїСЂРё РєРѕС‚РѕСЂРѕРј СЂРѕР¶Р°РµС‚СЃСЏ РєРѕСЂР°Р±Р»СЊ
+	enemyshipBrnDistMax = 70.0f;		//РњР°РєСЃРёРјР°Р»СЊРЅРѕРµ СЂР°СЃС‚РѕСЏРЅРёРµ РїСЂРё РєРѕС‚РѕСЂРѕРј СЂРѕР¶Р°РµС‚СЃСЏ РєРѕСЂР°Р±Р»СЊ
+	stormViewDistMin = 120.0f;			//Р Р°СЃС‚РѕСЏРЅРёРµ РЅР° РєРѕС‚РѕСЂРѕРј С€С‚РѕСЂРј РЅР°С‡РёРЅР°РµС‚ РёСЃС‡РµР·Р°С‚СЊ
+	stormViewDistMax = 160.0f;			//Р Р°СЃС‚РѕСЏРЅРёРµ РЅР° РєРѕС‚РѕСЂРѕРј С€С‚РѕСЂРј РёСЃС‡РµР·Р°РµС‚ РїРѕР»РЅРѕСЃС‚СЊСЋ
+	stormDistKill = 200.0f;				//Р Р°СЃСЃС‚РѕСЏРЅРёРµ РЅР° РєРѕС‚РѕСЂРѕРј СѓР±РёРІР°РµРј С€С‚РѕСЂРј
+	stormBrnDistMin = 70.0f;			//РњРёРЅРёРјР°Р»СЊРЅРѕРµ СЂР°СЃС‚РѕСЏРЅРёРµ РЅР° РєРѕС‚РѕСЂРѕРј СЂРѕР¶Р°РµС‚СЃСЏ С€С‚РѕСЂРј
+	stormBrnDistMax = 160.0f;			//РњР°РєСЃРёРјР°Р»СЊРЅРѕРµ СЂР°СЃС‚РѕСЏРЅРёРµ РЅР° РєРѕС‚РѕСЂРѕРј СЂРѕР¶Р°РµС‚СЃСЏ С€С‚РѕСЂРј
+	stormZone = 50.0f;					//РћР±С‰РёР№ СЂР°РґРёСѓСЃ РґРµР№СЃС‚РІРёСЏ С€С‚РѕСЂРјР°
 	enableSkipEnemy = false;
 	playarInStorm = false;
 	isNextDayUpdate = true;
@@ -154,11 +154,11 @@ void WdmObjects::DelStorm(WdmStorm * storm)
 	_asm int 3;
 }
 
-//Создать геометрию
+//РЎРѕР·РґР°С‚СЊ РіРµРѕРјРµС‚СЂРёСЋ
 GEOS * WdmObjects::CreateGeometry(const char * path)
 {
 	if(!path || !path[0] || !gs) return null;
-	//Ищим среди добавленных
+	//РС‰РёРј СЃСЂРµРґРё РґРѕР±Р°РІР»РµРЅРЅС‹С…
 	dword hash = CalcHash(path);
 	long i = hash & (sizeof(entryModels)/sizeof(entryModels[0]) - 1);
 	for(i = entryModels[i]; i >= 0; i = models[i].next)
@@ -171,13 +171,13 @@ GEOS * WdmObjects::CreateGeometry(const char * path)
 			}
 		}
 	}
-	//Загружаем геометрию
+	//Р—Р°РіСЂСѓР¶Р°РµРј РіРµРѕРјРµС‚СЂРёСЋ
 	modelPath = "WorldMap\\";
 	modelPath += path;
 	gs->SetTexturePath("WorldMap\\Geometry\\");
 	GEOS * geo = gs->CreateGeometry(modelPath, "", 0);
 	gs->SetTexturePath("");
-	//Добавляем в таблицу
+	//Р”РѕР±Р°РІР»СЏРµРј РІ С‚Р°Р±Р»РёС†Сѓ
 	Model & m = models[models.Add()];
 	m.path = path;
 	m.hash = hash;
@@ -243,7 +243,7 @@ void WdmObjects::DrawVector(const CVECTOR & start, const CVECTOR & end, dword co
 		float x1 = r*cosf(2.0f*WdmObjects_myPI*i/float(imax));
 		float y2 = r*sinf(2.0f*WdmObjects_myPI*(i + 1)/float(imax));
 		float x2 = r*cosf(2.0f*WdmObjects_myPI*(i + 1)/float(imax));
-		//Добавляем треугольники 1 линии
+		//Р”РѕР±Р°РІР»СЏРµРј С‚СЂРµСѓРіРѕР»СЊРЅРёРєРё 1 Р»РёРЅРёРё
 		//0,0,0
 		vertex[t*3 + 0].v.x = 0.0f;
 		vertex[t*3 + 0].v.y = 0.0f;
@@ -359,17 +359,17 @@ void WdmObjects::DrawBox2D(CMatrix & mtx, float l, float w, dword color)
 	rs->DrawPrimitiveUP(D3DPT_LINELIST, D3DFVF_XYZ | D3DFVF_DIFFUSE, 4, vertex, sizeof(vertex[0]), "WdmDebugDraw");
 }
 
-//Получить размеры vp
+//РџРѕР»СѓС‡РёС‚СЊ СЂР°Р·РјРµСЂС‹ vp
 void WdmObjects::GetVPSize(float & w, float & h)
 {
-	//Получим текущие размеры vp
+	//РџРѕР»СѓС‡РёРј С‚РµРєСѓС‰РёРµ СЂР°Р·РјРµСЂС‹ vp
 	D3DVIEWPORT9 vp;
 	rs->GetViewport(&vp);
 	w = float(vp.Width);
 	h = float(vp.Height);
 }
 
-//Получить направление и силу ветра
+//РџРѕР»СѓС‡РёС‚СЊ РЅР°РїСЂР°РІР»РµРЅРёРµ Рё СЃРёР»Сѓ РІРµС‚СЂР°
 float WdmObjects::GetWind(float x, float z, CVECTOR & dir)
 {
 	windField.GetWind(x, z, dir.x, dir.z);
@@ -388,7 +388,7 @@ float WdmObjects::GetWind(float x, float z, CVECTOR & dir)
 	return len;
 }
 
-//Обновить состояние ветра
+//РћР±РЅРѕРІРёС‚СЊ СЃРѕСЃС‚РѕСЏРЅРёРµ РІРµС‚СЂР°
 void WdmObjects::UpdateWind(float dltTime)
 {
 	dltTime = dltTime / 2.0;
@@ -411,7 +411,7 @@ void WdmObjects::UpdateWind(float dltTime)
 
 }
 
-//Получить строку сохранение
+//РџРѕР»СѓС‡РёС‚СЊ СЃС‚СЂРѕРєСѓ СЃРѕС…СЂР°РЅРµРЅРёРµ
 const char * WdmObjects::GetWindSaveString(string & windData)
 {
 	windData = "v02_";
@@ -428,7 +428,7 @@ const char * WdmObjects::GetWindSaveString(string & windData)
 	return windData;
 }
 
-//Установить строку сохранение
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЃС‚СЂРѕРєСѓ СЃРѕС…СЂР°РЅРµРЅРёРµ
 void WdmObjects::SetWindSaveString(const char * str)
 {
 	if(!str)
@@ -466,7 +466,7 @@ void WdmObjects::SetWindSaveString(const char * str)
 	}
 }
 
-//Добавить float в cтроку
+//Р”РѕР±Р°РІРёС‚СЊ float РІ cС‚СЂРѕРєСѓ
 void WdmObjects::AddDataToString(string & str, byte d)
 {
 	char hex[] = "0123456789ABCDEF";
@@ -474,7 +474,7 @@ void WdmObjects::AddDataToString(string & str, byte d)
 	str += hex[(d >> 0) & 0xf];
 }
 
-//Получить float из строки
+//РџРѕР»СѓС‡РёС‚СЊ float РёР· СЃС‚СЂРѕРєРё
 long WdmObjects::GetDataFromString(const char * & cur)
 {
 	dword tmp = 0;

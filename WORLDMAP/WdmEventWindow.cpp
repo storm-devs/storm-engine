@@ -12,18 +12,18 @@
 #include "WorldMap.h"
 
 
-#define WDM_EW_WIDTHDIVHEIGHT	400.0f/200.0f	//Желаемое отношение сторон окна
-#define WDM_EW_SCRSPACE			10.0f			//Отступы окна от экрана
-#define WDM_EW_WSPACE			10.0f			//Отступы текста от окна по горизонтали
-#define WDM_EW_UPSPACE			10.0f			//Отступы текста от верха окна
-#define WDM_EW_DOWNSPACE		60.0f			//Отступ низа окна от текста
-#define WDM_EW_MINW				100.0f			//Минимальная ширина окна
-#define WDM_EW_BSW				30				//Ширина не скалируемого поля у кнопки
-#define WDM_EW_BTSW				0.2f			//Ширина не скалируемого поля у кнопки на текстуре
-#define WDM_EW_BUTTONH			36				//Высота кнопки
+#define WDM_EW_WIDTHDIVHEIGHT	400.0f/200.0f	//Р–РµР»Р°РµРјРѕРµ РѕС‚РЅРѕС€РµРЅРёРµ СЃС‚РѕСЂРѕРЅ РѕРєРЅР°
+#define WDM_EW_SCRSPACE			10.0f			//РћС‚СЃС‚СѓРїС‹ РѕРєРЅР° РѕС‚ СЌРєСЂР°РЅР°
+#define WDM_EW_WSPACE			10.0f			//РћС‚СЃС‚СѓРїС‹ С‚РµРєСЃС‚Р° РѕС‚ РѕРєРЅР° РїРѕ РіРѕСЂРёР·РѕРЅС‚Р°Р»Рё
+#define WDM_EW_UPSPACE			10.0f			//РћС‚СЃС‚СѓРїС‹ С‚РµРєСЃС‚Р° РѕС‚ РІРµСЂС…Р° РѕРєРЅР°
+#define WDM_EW_DOWNSPACE		60.0f			//РћС‚СЃС‚СѓРї РЅРёР·Р° РѕРєРЅР° РѕС‚ С‚РµРєСЃС‚Р°
+#define WDM_EW_MINW				100.0f			//РњРёРЅРёРјР°Р»СЊРЅР°СЏ С€РёСЂРёРЅР° РѕРєРЅР°
+#define WDM_EW_BSW				30				//РЁРёСЂРёРЅР° РЅРµ СЃРєР°Р»РёСЂСѓРµРјРѕРіРѕ РїРѕР»СЏ Сѓ РєРЅРѕРїРєРё
+#define WDM_EW_BTSW				0.2f			//РЁРёСЂРёРЅР° РЅРµ СЃРєР°Р»РёСЂСѓРµРјРѕРіРѕ РїРѕР»СЏ Сѓ РєРЅРѕРїРєРё РЅР° С‚РµРєСЃС‚СѓСЂРµ
+#define WDM_EW_BUTTONH			36				//Р’С‹СЃРѕС‚Р° РєРЅРѕРїРєРё
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 WdmEventWindow::WdmEventWindow()
@@ -42,7 +42,7 @@ WdmEventWindow::WdmEventWindow()
 	textureButton = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\button.tga");
 	buttonPosY = 0;
 	SetAnswers("Yes", 0);
-	//Читаем атрибуты
+	//Р§РёС‚Р°РµРј Р°С‚СЂРёР±СѓС‚С‹
 	if(wdmObjects->wm->AttributesPointer)
 	{
 		ATTRIBUTES * at = wdmObjects->wm->AttributesPointer->FindAClass(wdmObjects->wm->AttributesPointer, "eventWindow");
@@ -97,7 +97,7 @@ void WdmEventWindow::SplitText()
 	numTokens = 0;	
 	long sw = 0;
 	long maxsw = 0;
-	//Ищем и выделяем заголовок
+	//РС‰РµРј Рё РІС‹РґРµР»СЏРµРј Р·Р°РіРѕР»РѕРІРѕРє
 	char *ht;
 	for(ht = text; *ht; ht++)
 		if(*ht == '#') break;
@@ -110,7 +110,7 @@ void WdmEventWindow::SplitText()
 		headerWidth = 0;
 		ht = text;
 	}
-	//Ищем токены
+	//РС‰РµРј С‚РѕРєРµРЅС‹
 	for(char * tk = null, * t = ht; true; t++)
 	{
 		if(*t != ' ' && *t)
@@ -121,7 +121,7 @@ void WdmEventWindow::SplitText()
 			if(tk)
 			{
 				*t = 0;
-				//Добавляем токен
+				//Р”РѕР±Р°РІР»СЏРµРј С‚РѕРєРµРЅ
 				if(numTokens >= maxTokens)
 				{
 					maxTokens += 64;
@@ -146,7 +146,7 @@ void WdmEventWindow::SplitText()
 	maxsw += 2*spaceW;
 	sw += numTokens*spaceW;
 	long fontH = rs->CharHeight(textFont);
-	//Предпологаемая ширина окна
+	//РџСЂРµРґРїРѕР»РѕРіР°РµРјР°СЏ С€РёСЂРёРЅР° РѕРєРЅР°
 	float w = sqrtf(float(sw*fontH))*WDM_EW_WIDTHDIVHEIGHT;
 	if(w < float(maxsw)) w = float(maxsw);
 	if(w < WDM_EW_MINW) w = WDM_EW_MINW;
@@ -161,12 +161,12 @@ void WdmEventWindow::SplitText()
 	if(w > scrw) w = scrw;
 	winX = (scrw - w)*0.5f;
 	winW = w;
-	//Расчитываем координаты окна
+	//Р Р°СЃС‡РёС‚С‹РІР°РµРј РєРѕРѕСЂРґРёРЅР°С‚С‹ РѕРєРЅР°
 	w -= 2*WDM_EW_WSPACE;
 	float y = headerWidth ? rs->CharHeight(headerFont) + 2 : 0.0f;
 	for(long i = 0; i < numTokens;)
 	{
-		//Смотрим сколько поместится на строке
+		//РЎРјРѕС‚СЂРёРј СЃРєРѕР»СЊРєРѕ РїРѕРјРµСЃС‚РёС‚СЃСЏ РЅР° СЃС‚СЂРѕРєРµ
 		long strW = -spaceW;
 		long j = 0;
 		for(j = i; j < numTokens && strW <= w; j++)
@@ -174,19 +174,19 @@ void WdmEventWindow::SplitText()
 			token[j].y = long(y);
 			strW += token[j].w + spaceW;
 		}
-		//Количество токенов
+		//РљРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕРєРµРЅРѕРІ
 		j -= i;
-		//Если надо выкидываем последний
+		//Р•СЃР»Рё РЅР°РґРѕ РІС‹РєРёРґС‹РІР°РµРј РїРѕСЃР»РµРґРЅРёР№
 		if(strW > w && j > 1)
 		{
 			j--;
 			strW -= token[i + j].w + spaceW;
 		}
-		//Расстояние между строками
+		//Р Р°СЃСЃС‚РѕСЏРЅРёРµ РјРµР¶РґСѓ СЃС‚СЂРѕРєР°РјРё
 		float sp = (w - (strW - spaceW*(j - 1)));
 		if(j > 1) sp /= j - 1;
 		if(i + j >= numTokens) sp = float(spaceW);
-		//Раставляем координаты
+		//Р Р°СЃС‚Р°РІР»СЏРµРј РєРѕРѕСЂРґРёРЅР°С‚С‹
 		float x = winX + WDM_EW_WSPACE;
 		for(long k = 0; k < j; k++)
 		{
@@ -203,7 +203,7 @@ void WdmEventWindow::SplitText()
 	for(long i = 0; i < numTokens; i++) token[i].y += long(y);
 }
 
-//Установить варианты ответов
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РІР°СЂРёР°РЅС‚С‹ РѕС‚РІРµС‚РѕРІ
 void WdmEventWindow::SetAnswers(const char * _yes, const char * _no)
 {
 	selButton = 0;
@@ -238,7 +238,7 @@ void WdmEventWindow::SetAnswers(const char * _yes, const char * _no)
 	}
 }
 
-//Расчёты
+//Р Р°СЃС‡С‘С‚С‹
 void WdmEventWindow::Update(float dltTime)
 {
 	static long wait = 0;
@@ -276,18 +276,18 @@ void WdmEventWindow::Update(float dltTime)
 	}
 }
 
-//Отрисовка
+//РћС‚СЂРёСЃРѕРІРєР°
 void WdmEventWindow::LRender(VDX8RENDER * rs)
 {
 	if(!text || !text[0]) return;
 	Vertex buf[(3*2)*3];
-	//Плашка с надписью
+	//РџР»Р°С€РєР° СЃ РЅР°РґРїРёСЃСЊСЋ
 	rs->TextureSet(0, textureBkg);
 	FillRectCoord(buf, winX - 32, winY - 2, winW + 70, winH + 22);
 	FillRectUV(buf, 0.0f, 0.0f, 1.0f, 1.0f - 1.0f/64.0f);
 	FillRectColor(buf, 0xdfffffff);
 	DrawRects(buf, 1, "WdmDrawMapBlend");
-	//Кнопки
+	//РљРЅРѕРїРєРё
 	long bsize = yesWidth > noWidth ? yesWidth : noWidth;
 	long bw, btab;
 	if(yesWidth && noWidth)
@@ -325,12 +325,12 @@ void WdmEventWindow::LRender(VDX8RENDER * rs)
 		DrawRects(buf, 3);
 		Print(buttonFont, 0xffffffff, bnox, float(bnox + bsize), btY, no);
 	}
-	//Текст
+	//РўРµРєСЃС‚
 	if(headerWidth) rs->Print(headerFont, 0xffffffff, long(winX + (winW - headerWidth)*0.5f), long(winY + WDM_EW_UPSPACE), text);
 	for(long i = 0; i < numTokens; i++) 
 		rs->Print(textFont, 0xffffffff, token[i].x, token[i].y, token[i].string);
 	
-	//Подгонка размеров окна
+	//РџРѕРґРіРѕРЅРєР° СЂР°Р·РјРµСЂРѕРІ РѕРєРЅР°
 	//rs->Print(textFont, 0xffffffff, long(winX), long(winY), "HHHHHHH");
 	//rs->Print(textFont, 0xffffffff, long(winX + winW), long(winY), "HHHHHHH");
 	//rs->Print(textFont, 0xffffffff, long(winX), long(winY + winH), "HHHHHHHHHHHHHHHHHHHHHH");

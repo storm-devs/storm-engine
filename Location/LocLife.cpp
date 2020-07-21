@@ -40,7 +40,7 @@ bool LocLife::Init(Location * loc)
 	Assert(loc);
 	if(!api->CreateEntity(&model, "modelr")) return false;
 	_CORE_API->LayerAdd("realize", model, 20);
-	//Путь для текстур
+	//РџСѓС‚СЊ РґР»СЏ С‚РµРєСЃС‚СѓСЂ
 	VGEOMETRY * gs = (VGEOMETRY *)_CORE_API->CreateService("geometry");
 	if(!gs)
 	{
@@ -54,14 +54,14 @@ bool LocLife::Init(Location * loc)
 		return false;
 	}
 	gs->SetTexturePath("");
-	//Анимация
+	//РђРЅРёРјР°С†РёСЏ
 	if(!api->Send_Message(model, "ls", MSG_MODEL_LOAD_ANI, GetAniName())) return false;
-	//Определям место положения
+	//РћРїСЂРµРґРµР»СЏРј РјРµСЃС‚Рѕ РїРѕР»РѕР¶РµРЅРёСЏ
 	location = loc;
 	if(FindRandomPos(pos) < 0){ location = null; return false; }
 	FindPos();
 	ay = rand()*(6.28f/RAND_MAX);
-	//Анимация
+	//РђРЅРёРјР°С†РёСЏ
 	MODEL * m = (MODEL *)_CORE_API->GetEntityPointer(&model);
 	if(!m){ location = null; return false; }
 	NODE * node = m->GetNode(0);
@@ -80,7 +80,7 @@ void LocLife::Update(float dltTime)
 		location->DrawLine(pos, 0xff00ffff, pos + CVECTOR(0.0f, 1.0f, 0.0f), 0xff00ffff);
 		location->DrawLine(pos, 0xff00ff00, pos + CVECTOR(sinf(ay), 0.0f, cosf(ay))*0.5f, 0xff00ff00);
 	}
-	//Информация о модели и локации
+	//РРЅС„РѕСЂРјР°С†РёСЏ Рѕ РјРѕРґРµР»Рё Рё Р»РѕРєР°С†РёРё
 	MODEL * m = (MODEL *)_CORE_API->GetEntityPointer(&model);
 	if(!m) return;
 	Animation * ani = m->GetAnimation();
@@ -91,7 +91,7 @@ void LocLife::Update(float dltTime)
 	{
 		IdleProcess(ani, dltTime);
 	}else{
-		//Перемещиемся
+		//РџРµСЂРµРјРµС‰РёРµРјСЃСЏ
 		long cnode = FindPos();
 		if(cnode < 0)
 		{
@@ -104,7 +104,7 @@ void LocLife::Update(float dltTime)
 			StopMove();
 			return;
 		}		
-		//Ищим направление
+		//РС‰РёРј РЅР°РїСЂР°РІР»РµРЅРёРµ
 		CVECTOR dir = pos;
 		if(!ptc.FindPathDir(cnode, pos, node, npos, cnode, dir))
 		{
@@ -125,10 +125,10 @@ void LocLife::Update(float dltTime)
 		vz = acos(vz/sqrt(l));
 		if(vx < 0) vz = -vz;
 		ay = float(vz);
-		//Двигаем
+		//Р”РІРёРіР°РµРј
 		pos.x += sinf(ay)*dltTime*speed*kSpeed;
 		pos.z += cosf(ay)*dltTime*speed*kSpeed;
-		//Логика движения
+		//Р›РѕРіРёРєР° РґРІРёР¶РµРЅРёСЏ
 		MoveProcess(ani, dltTime);		
 	}
 	
@@ -139,9 +139,9 @@ long LocLife::FindPos()
 	MODEL * m = (MODEL *)_CORE_API->GetEntityPointer(&model);
 	if(!m) return -1;
 	PtcData & ptc = location->GetPtcData();
-	//Направление
+	//РќР°РїСЂР°РІР»РµРЅРёРµ
 	CVECTOR dir(sinf(ay), 0.0f, cosf(ay));
-	//Высоты
+	//Р’С‹СЃРѕС‚С‹
 	float yf, yc, yb;
 	long curnode = ptc.FindNode(pos, yc);
 	if(curnode < 0)
@@ -169,10 +169,10 @@ long LocLife::FindPos()
 
 void LocLife::StartMove()
 {
-	//Модель
+	//РњРѕРґРµР»СЊ
 	MODEL * m = (MODEL *)_CORE_API->GetEntityPointer(&model);
 	if(!m) return;
-	//Запускаем проигрывание анимации
+	//Р—Р°РїСѓСЃРєР°РµРј РїСЂРѕРёРіСЂС‹РІР°РЅРёРµ Р°РЅРёРјР°С†РёРё
 	Animation * ani = m->GetAnimation();
 	if(!ani) return;
 	node = FindRandomPos(npos);
@@ -184,7 +184,7 @@ void LocLife::StopMove()
 	node = -1;
 	MODEL * m = (MODEL *)_CORE_API->GetEntityPointer(&model);
 	if(!m) return;
-	//Запускаем проигрывание анимации
+	//Р—Р°РїСѓСЃРєР°РµРј РїСЂРѕРёРіСЂС‹РІР°РЅРёРµ Р°РЅРёРјР°С†РёРё
 	Animation * ani = m->GetAnimation();
 	if(!ani) return;
 	IsStopMove(ani);	

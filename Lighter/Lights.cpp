@@ -11,7 +11,7 @@
 #include "Lights.h"
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 Lights::Lights()
@@ -95,7 +95,7 @@ void Lights::SetDefLightParam(long i)
 
 void Lights::PostInit()
 {
-	//Соберём все существующие группы
+	//РЎРѕР±РµСЂС‘Рј РІСЃРµ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёРµ РіСЂСѓРїРїС‹
 	char ** grp = NEW char * [numLights + 1];
 	long numGrp = 0;
 	for(long i = 0; i < numLights; i++)
@@ -106,7 +106,7 @@ void Lights::PostInit()
 			if(stricmp(grp[j], light[i].group) == 0) break;
 		if(j == numGrp) grp[numGrp++] = light[i].group;
 	}
-	//Добавляем груповые источники освещения
+	//Р”РѕР±Р°РІР»СЏРµРј РіСЂСѓРїРѕРІС‹Рµ РёСЃС‚РѕС‡РЅРёРєРё РѕСЃРІРµС‰РµРЅРёСЏ
 	if(numLights + numGrp > maxLights)
 	{
 		maxLights += numGrp + 4;
@@ -120,7 +120,7 @@ void Lights::PostInit()
 		strcpy(light[numLights].group, grp[i]);
 		light[numLights].type = Light::t_group;
 		light[numLights].isOn = true;
-		//Собираем параметры
+		//РЎРѕР±РёСЂР°РµРј РїР°СЂР°РјРµС‚СЂС‹
 		float nrm = 0.0f;
 		for(long j = 0; j < numLights; j++)
 		{

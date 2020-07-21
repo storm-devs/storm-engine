@@ -60,8 +60,8 @@ long BIManCommandList::CommandAdding()
 	for(long i=0; i<attrQuant; i++)
 	{
 		ATTRIBUTES * pA = pAttr->GetAttributeClass(i);
-		if(pA==null) continue; // нет такого атрибута
-		if(pA->GetAttributeAsDword("enable",0)==0) continue; // команда недоступна
+		if(pA==null) continue; // РЅРµС‚ С‚Р°РєРѕРіРѕ Р°С‚СЂРёР±СѓС‚Р°
+		if(pA->GetAttributeAsDword("enable",0)==0) continue; // РєРѕРјР°РЅРґР° РЅРµРґРѕСЃС‚СѓРїРЅР°
 		long pictureNum = pA->GetAttributeAsDword("picNum",0);
 		long selPictureNum = pA->GetAttributeAsDword("selPicNum",0);
 		long texNum = pA->GetAttributeAsDword("texNum",-1);
@@ -82,8 +82,8 @@ long BIManCommandList::UserIconsAdding()
 	for(long i=0; i<attrQuant; i++)
 	{
 		ATTRIBUTES * pA = pAttr->GetAttributeClass(i);
-		if(pA==null) continue; // нет такого атрибута
-		if(pA->GetAttributeAsDword("enable",0)==0) continue; // команда недоступна
+		if(pA==null) continue; // РЅРµС‚ С‚Р°РєРѕРіРѕ Р°С‚СЂРёР±СѓС‚Р°
+		if(pA->GetAttributeAsDword("enable",0)==0) continue; // РєРѕРјР°РЅРґР° РЅРµРґРѕСЃС‚СѓРїРЅР°
 		long pictureNum = pA->GetAttributeAsDword("pic",0);
 		long selPictureNum = pA->GetAttributeAsDword("selpic",0);
 		long textureNum = pA->GetAttributeAsDword("tex",-1);
@@ -104,8 +104,8 @@ long BIManCommandList::AbilityAdding()
 	for(long i=0; i<attrQuant; i++)
 	{
 		ATTRIBUTES * pA = pAttr->GetAttributeClass(i);
-		if(pA==null) continue; // нет такого атрибута
-		if(pA->GetAttributeAsDword("enable",0)==0) continue; // команда недоступна
+		if(pA==null) continue; // РЅРµС‚ С‚Р°РєРѕРіРѕ Р°С‚СЂРёР±СѓС‚Р°
+		if(pA->GetAttributeAsDword("enable",0)==0) continue; // РєРѕРјР°РЅРґР° РЅРµРґРѕСЃС‚СѓРїРЅР°
 		long pictureNum = pA->GetAttributeAsDword("picNum",0);
 		long selPictureNum = pA->GetAttributeAsDword("selPicNum",0);
 		long textureNum = pA->GetAttributeAsDword("texNum",-1);

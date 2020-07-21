@@ -6,16 +6,16 @@
 #define MORALE_NORMAL   50
 #define MORALE_MIN      0
 #define MORALE_TABLE_SIZE	10
-#define MORALET_TREACHEROUS	0	//Ужасная
-#define MORALET_AWFUL		1	//Отвратительная
-#define MORALET_LOW			2	//Плохая
-#define MORALET_POOR		3	//Низкая
-#define MORALET_NORMAL		4	//Средняя
-#define MORALET_ELATED		5	//Приподнятая
-#define MORALET_GOOD		6	//Хорошая
-#define MORALET_HIGH		7	//Высокая
-#define MORALET_EXCELLENT	8	//Отличная
-#define MORALET_HEROIC		9	//Героическая
+#define MORALET_TREACHEROUS	0	//РЈР¶Р°СЃРЅР°СЏ
+#define MORALET_AWFUL		1	//РћС‚РІСЂР°С‚РёС‚РµР»СЊРЅР°СЏ
+#define MORALET_LOW			2	//РџР»РѕС…Р°СЏ
+#define MORALET_POOR		3	//РќРёР·РєР°СЏ
+#define MORALET_NORMAL		4	//РЎСЂРµРґРЅСЏСЏ
+#define MORALET_ELATED		5	//РџСЂРёРїРѕРґРЅСЏС‚Р°СЏ
+#define MORALET_GOOD		6	//РҐРѕСЂРѕС€Р°СЏ
+#define MORALET_HIGH		7	//Р’С‹СЃРѕРєР°СЏ
+#define MORALET_EXCELLENT	8	//РћС‚Р»РёС‡РЅР°СЏ
+#define MORALET_HEROIC		9	//Р“РµСЂРѕРёС‡РµСЃРєР°СЏ
 string  MoraleTable[MORALE_TABLE_SIZE];
 string  LoyalityTable[MORALE_TABLE_SIZE];
 
@@ -31,16 +31,16 @@ string  LoyalityTable[MORALE_TABLE_SIZE];
 
 // boal -->
 #define SKILL_MAX           100
-#define SKILL_MAX_TOTAL	    100 // делитель для скила для формул
+#define SKILL_MAX_TOTAL	    100 // РґРµР»РёС‚РµР»СЊ РґР»СЏ СЃРєРёР»Р° РґР»СЏ С„РѕСЂРјСѓР»
 #define SPECIAL_MAX         10
 #define SKILL_TO_OLD        10.0
-// личные
+// Р»РёС‡РЅС‹Рµ
 #define SKILL_F_LIGHT		"FencingLight"  //1
 #define SKILL_FENCING		"Fencing"
 #define SKILL_F_HEAVY		"FencingHeavy"
 #define SKILL_PISTOL		"Pistol" // boal
 #define SKILL_FORTUNE	    "Fortune"     //5
-// корабельные
+// РєРѕСЂР°Р±РµР»СЊРЅС‹Рµ
 #define SKILL_LEADERSHIP	"Leadership"    //6
 #define SKILL_COMMERCE		"Commerce"
 #define SKILL_ACCURACY		"Accuracy"
@@ -51,7 +51,7 @@ string  LoyalityTable[MORALE_TABLE_SIZE];
 #define SKILL_DEFENCE		"Defence"
 #define SKILL_SNEAK		    "Sneak"   //14
 
-// атрибуты
+// Р°С‚СЂРёР±СѓС‚С‹
 #define SPECIAL_S	"Strength"   //15
 #define SPECIAL_P	"Perception"
 #define SPECIAL_E	"Endurance"

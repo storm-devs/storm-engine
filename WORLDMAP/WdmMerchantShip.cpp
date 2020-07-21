@@ -12,7 +12,7 @@
 #include "WdmIslands.h"
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 WdmMerchantShip::WdmMerchantShip()
@@ -27,11 +27,11 @@ WdmMerchantShip::~WdmMerchantShip()
 {
 }
 
-//Установка параметров
+//РЈСЃС‚Р°РЅРѕРІРєР° РїР°СЂР°РјРµС‚СЂРѕРІ
 bool WdmMerchantShip::Load(const char * modelName)
 {
 	if(!WdmShip::Load(modelName)) return false;
-	//Позиция
+	//РџРѕР·РёС†РёСЏ
 	float x, z;
 	killMe = !GeneratePosition(1.2f*modelRadius, 2.0f, x, z);
 	Teleport(x, z, 0.0f);
@@ -50,7 +50,7 @@ void WdmMerchantShip::Goto(float x, float z, float rad)
 	gotoPos.y = 0.0f;
 	gotoPos.z = z;
 	gotoRad = rad;
-	//Определим направление
+	//РћРїСЂРµРґРµР»РёРј РЅР°РїСЂР°РІР»РµРЅРёРµ
 	if(isEnableSetDir)
 	{
 		double sn = x - mtx.Pos().x;
@@ -65,7 +65,7 @@ void WdmMerchantShip::Goto(float x, float z, float rad)
 	}
 }
 
-//Найти силу притягивающую в нужном направлении
+//РќР°Р№С‚Рё СЃРёР»Сѓ РїСЂРёС‚СЏРіРёРІР°СЋС‰СѓСЋ РІ РЅСѓР¶РЅРѕРј РЅР°РїСЂР°РІР»РµРЅРёРё
 void WdmMerchantShip::FindMoveForce()
 {
 	isEnableSetDir = false;
@@ -90,7 +90,7 @@ void WdmMerchantShip::FindMoveForce()
 	mz = dir.z;
 }
 
-//Проверка на завершение
+//РџСЂРѕРІРµСЂРєР° РЅР° Р·Р°РІРµСЂС€РµРЅРёРµ
 bool WdmMerchantShip::KillTest()
 {
 	float dx = gotoPos.x - mtx.Pos().x;
@@ -99,7 +99,7 @@ bool WdmMerchantShip::KillTest()
 	return dl <= gotoRad*gotoRad;
 }
 
-//Обновление сохраняемых данных
+//РћР±РЅРѕРІР»РµРЅРёРµ СЃРѕС…СЂР°РЅСЏРµРјС‹С… РґР°РЅРЅС‹С…
 void WdmMerchantShip::UpdateSaveData()
 {
 	if(!saveAttribute) return;
@@ -110,7 +110,7 @@ void WdmMerchantShip::UpdateSaveData()
 	saveAttribute->SetAttributeUseDword("isEnableSetDir", isEnableSetDir);
 }
 
-//Установка параметров
+//РЈСЃС‚Р°РЅРѕРІРєР° РїР°СЂР°РјРµС‚СЂРѕРІ
 void WdmMerchantShip::SetSaveAttribute(ATTRIBUTES * save)
 {
 	if(save)

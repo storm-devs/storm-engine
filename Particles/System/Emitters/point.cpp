@@ -1,6 +1,6 @@
 #include "point.h"
 
-// Конструктор / деструктор
+// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ / РґРµСЃС‚СЂСѓРєС‚РѕСЂ
 PointEmitter::PointEmitter(ParticleSystem* pSystem) : BaseEmitter(pSystem)
 {
 }
@@ -10,10 +10,10 @@ PointEmitter::~PointEmitter()
 }
 
  
-//Получить позицию для рождения новых партиклов  
+//РџРѕР»СѓС‡РёС‚СЊ РїРѕР·РёС†РёСЋ РґР»СЏ СЂРѕР¶РґРµРЅРёСЏ РЅРѕРІС‹С… РїР°СЂС‚РёРєР»РѕРІ  
 Vector PointEmitter::GetNewParticlePosition (float DeltaTime)
 {
-	//TODO : Надо рождать на начальной позиции трэка...
+	//TODO : РќР°РґРѕ СЂРѕР¶РґР°С‚СЊ РЅР° РЅР°С‡Р°Р»СЊРЅРѕР№ РїРѕР·РёС†РёРё С‚СЂСЌРєР°...
 	return Vector (0.0f);
 }
 

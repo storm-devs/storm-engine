@@ -120,10 +120,10 @@ public:
 	virtual short GetDebugAsyncKeyState(int vk){return GetAsyncKeyState(vk);}
 	virtual short GetDebugKeyState(int vk){return GetKeyState(vk);}
 
-	// Команда управления от ENGINE
+	// РљРѕРјР°РЅРґР° СѓРїСЂР°РІР»РµРЅРёСЏ РѕС‚ ENGINE
 	virtual void EngineMessage(UINT iMsg,WPARAM wParam,LPARAM lParam) {}
 
-	// Получить буфер нажатык клавиш за кадр (с учетом языка)
+	// РџРѕР»СѓС‡РёС‚СЊ Р±СѓС„РµСЂ РЅР°Р¶Р°С‚С‹Рє РєР»Р°РІРёС€ Р·Р° РєР°РґСЂ (СЃ СѓС‡РµС‚РѕРј СЏР·С‹РєР°)
 	virtual long GetKeyBufferLength() {return 0;}
 	virtual const KeyDescr* GetKeyBuffer() {return null;}
 	virtual void ClearKeyBuffer() {}

@@ -125,10 +125,10 @@ bool GIEditor::ProcessControl()
 
 	bool bMove = 0;
 	bool bSize = false;
-	if( api->Controls->GetDebugAsyncKeyState( VK_CONTROL )<0 ) // äâèãàåì
+	if( api->Controls->GetDebugAsyncKeyState( VK_CONTROL )<0 ) // Ð´Ð²Ð¸Ð³Ð°ÐµÐ¼
 	{
 		bMove = true;
-		if( api->Controls->GetDebugAsyncKeyState( VK_SHIFT )<0 ) // ìåíÿåì ðàçìåð
+		if( api->Controls->GetDebugAsyncKeyState( VK_SHIFT )<0 ) // Ð¼ÐµÐ½ÑÐµÐ¼ Ñ€Ð°Ð·Ð¼ÐµÑ€
 		{
 			bMove = false;
 			bSize = true;
@@ -238,7 +238,7 @@ void GIEditor::DelNode(CINODE* pNode)
 void GIEditor::DrawSizeBox()
 {
 	if( !m_pEditableNode ) return;
-	if( api->Controls->GetDebugAsyncKeyState( VK_CONTROL )<0 ) // ïîêàçûâàåì
+	if( api->Controls->GetDebugAsyncKeyState( VK_CONTROL )<0 ) // Ð¿Ð¾ÐºÐ°Ð·Ñ‹Ð²Ð°ÐµÐ¼
 	{
 		RS_LINE rsl[8];
 		for( long n=0; n<8; n++ )

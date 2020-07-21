@@ -4,7 +4,7 @@
 #include "lights.h"
 
 //============================================================================================
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //============================================================================================
 
 extern float	fCausticScale, fCausticDelta, fFogDensity, fCausticDistance;
@@ -23,7 +23,7 @@ LocModelRealizer::~LocModelRealizer()
 {
 }
 
-//Инициализация
+//РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
 bool LocModelRealizer::Init()
 {
 	rs = (VDX8RENDER*)api->CreateService("dx8render");
@@ -31,7 +31,7 @@ bool LocModelRealizer::Init()
 	return true;
 }
 
-//Исполнение
+//РСЃРїРѕР»РЅРµРЅРёРµ
 void LocModelRealizer::Execute(dword delta_time)
 {
 }
@@ -61,7 +61,7 @@ void LocModelRealizer::Realize(dword delta_time)
 
 		if (bCausticEnable)
 		{
-			// константы
+			// РєРѕРЅСЃС‚Р°РЅС‚С‹
 			// 10 - (caustic scale, caustic frame, 0, 0)
 			// 11 - diffuse
 			// 12 - (fog density, fog_start, 0, 0)
@@ -78,7 +78,7 @@ void LocModelRealizer::Realize(dword delta_time)
 			Render().TextureSet(1, iCausticTex[long(fCausticFrame) % 32]);
 			Render().TextureSet(2, iCausticTex[(long(fCausticFrame) + 1) % 32]);
 
-			// рисуем каустики
+			// СЂРёСЃСѓРµРј РєР°СѓСЃС‚РёРєРё
 			Geometry().SetCausticMode(true);
 			pE->Realize(0);
 			Geometry().SetCausticMode(false);
@@ -86,7 +86,7 @@ void LocModelRealizer::Realize(dword delta_time)
 	}
 }
 
-//Сообщения
+//РЎРѕРѕР±С‰РµРЅРёСЏ
 dword _cdecl LocModelRealizer::ProcessMessage(MESSAGE & message)
 {
 	switch(message.Long())

@@ -79,10 +79,10 @@ public:
 	short GetDebugKeyState(int vk){return (m_bIsOffDebugKeys?0:GetKeyState(vk));}
 	bool m_bIsOffDebugKeys;
 
-	// Команда управления от ENGINE
+	// РљРѕРјР°РЅРґР° СѓРїСЂР°РІР»РµРЅРёСЏ РѕС‚ ENGINE
 	void EngineMessage(UINT iMsg,WPARAM wParam,LPARAM lParam);
 
-	// Получить буфер нажатык клавиш за кадр (с учетом языка)
+	// РџРѕР»СѓС‡РёС‚СЊ Р±СѓС„РµСЂ РЅР°Р¶Р°С‚С‹Рє РєР»Р°РІРёС€ Р·Р° РєР°РґСЂ (СЃ СѓС‡РµС‚РѕРј СЏР·С‹РєР°)
 	virtual long GetKeyBufferLength();
 	virtual const KeyDescr* GetKeyBuffer();
 	virtual void ClearKeyBuffer();

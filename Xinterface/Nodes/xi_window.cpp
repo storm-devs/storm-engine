@@ -28,7 +28,7 @@ void CXI_WINDOW::ChangePosition( XYRECT &rNewPos )
 	if( m_rect.bottom - m_rect.top != rNewPos.bottom - rNewPos.top )
 		rNewPos.bottom += rNewPos.top + m_rect.bottom - m_rect.top;
 	if( rNewPos.top == m_rect.top &&
-		rNewPos.left == m_rect.left ) return; // нечего менять - та же позиция
+		rNewPos.left == m_rect.left ) return; // РЅРµС‡РµРіРѕ РјРµРЅСЏС‚СЊ - С‚Р° Р¶Рµ РїРѕР·РёС†РёСЏ
 	long nXAdd = rNewPos.left - m_rect.left;
 	long nYAdd = rNewPos.top - m_rect.top;
 	m_rect = rNewPos;
@@ -78,7 +78,7 @@ void CXI_WINDOW::SetShow( bool bShow )
 	if( !bShow && m_bActive ) SetActive( false );
 	m_bShow = bShow;
 
-	// проход по всем нодам и включить/выключить их
+	// РїСЂРѕС…РѕРґ РїРѕ РІСЃРµРј РЅРѕРґР°Рј Рё РІРєР»СЋС‡РёС‚СЊ/РІС‹РєР»СЋС‡РёС‚СЊ РёС…
 	for( long n=0; n<m_aNodeNameList; n++ )
 	{
 		CINODE * pNod = ptrOwner->FindNode( m_aNodeNameList[n], 0 );
@@ -95,7 +95,7 @@ void CXI_WINDOW::SetActive( bool bActive )
 	if( m_bActive == bActive ) return;
 	m_bActive = bActive;
 
-	// проход по всем нодам и залочить/разлочить их
+	// РїСЂРѕС…РѕРґ РїРѕ РІСЃРµРј РЅРѕРґР°Рј Рё Р·Р°Р»РѕС‡РёС‚СЊ/СЂР°Р·Р»РѕС‡РёС‚СЊ РёС…
 	for( long n=0; n<m_aNodeNameList; n++ )
 	{
 		CINODE * pNod = ptrOwner->FindNode( m_aNodeNameList[n], 0 );

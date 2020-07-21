@@ -50,7 +50,7 @@ void CXI_SCROLLEDPICTURE::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char 
 		FXYPOINT fpTemp;
 		fpTemp.x = fpTemp.y = 2.f;
 		fpTemp = GetIniFloatPoint( ini1,name1, ini2,name2, keyName, fpTemp );
-		if( fpTemp.x > 1.f || fpTemp.y > 1.f ) break; // не зачитали или ошибка
+		if( fpTemp.x > 1.f || fpTemp.y > 1.f ) break; // РЅРµ Р·Р°С‡РёС‚Р°Р»Рё РёР»Рё РѕС€РёР±РєР°
 		m_aScale.Add( fpTemp );
 	}
 
@@ -154,7 +154,7 @@ dword _cdecl CXI_SCROLLEDPICTURE::MessageProc(long msgcode, MESSAGE & message)
 {
 	switch(msgcode)
 	{
-	case 10: // Установить новый центр
+	case 10: // РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РЅРѕРІС‹Р№ С†РµРЅС‚СЂ
 		{
 			float fx = message.Float();
 			float fy = message.Float();

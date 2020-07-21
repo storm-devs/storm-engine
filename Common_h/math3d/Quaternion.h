@@ -19,7 +19,7 @@ struct D3DXQUATERNION;
 //============================================================================================
 
 
-///Класс представления кватерниона
+///РљР»Р°СЃСЃ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЏ РєРІР°С‚РµСЂРЅРёРѕРЅР°
 class Quaternion
 {
 public:
@@ -27,106 +27,106 @@ public:
 	{
 		struct
 		{
-			///Векторная компонента по X
+			///Р’РµРєС‚РѕСЂРЅР°СЏ РєРѕРјРїРѕРЅРµРЅС‚Р° РїРѕ X
 			float x;
-			///Векторная компонента по Y
+			///Р’РµРєС‚РѕСЂРЅР°СЏ РєРѕРјРїРѕРЅРµРЅС‚Р° РїРѕ Y
 			float y;
-			///Векторная компонента по Z
+			///Р’РµРєС‚РѕСЂРЅР°СЏ РєРѕРјРїРѕРЅРµРЅС‚Р° РїРѕ Z
 			float z;
-			///Скалярная компонента
+			///РЎРєР°Р»СЏСЂРЅР°СЏ РєРѕРјРїРѕРЅРµРЅС‚Р°
 			float w;
 		};
-		///Представление в виде массива
+		///РџСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ РІ РІРёРґРµ РјР°СЃСЃРёРІР°
 		float q[4];
 	};
 
 //-----------------------------------------------------------
-//Конструкторы
+//РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂС‹
 //-----------------------------------------------------------
 public:
-	///Установить единичный кватернион
+	///РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РµРґРёРЅРёС‡РЅС‹Р№ РєРІР°С‚РµСЂРЅРёРѕРЅ
 	Quaternion();
-	///По углам поворота
+	///РџРѕ СѓРіР»Р°Рј РїРѕРІРѕСЂРѕС‚Р°
 	Quaternion(float ax, float ay, float az);
-	///По углам поворота
+	///РџРѕ СѓРіР»Р°Рј РїРѕРІРѕСЂРѕС‚Р°
 	Quaternion(const Vector & ang);
-	///По компонентам
+	///РџРѕ РєРѕРјРїРѕРЅРµРЅС‚Р°Рј
 	Quaternion(float qx, float qy, float qz, float qw);
-	///Из матрицы
+	///РР· РјР°С‚СЂРёС†С‹
 	Quaternion(const Matrix & mtx);
 
 //-----------------------------------------------------------
-//Операторы
+//РћРїРµСЂР°С‚РѕСЂС‹
 //-----------------------------------------------------------
 public:
-	///Отрицание
+	///РћС‚СЂРёС†Р°РЅРёРµ
 	Quaternion & operator - ();
-	///Приравнять
+	///РџСЂРёСЂР°РІРЅСЏС‚СЊ
 	Quaternion & operator = (const Quaternion & q);
-	///Сложить
+	///РЎР»РѕР¶РёС‚СЊ
 	Quaternion & operator += (const Quaternion & q);
-	///Сложить
+	///РЎР»РѕР¶РёС‚СЊ
 	Quaternion & operator += (float f);
-	///Вычесть
+	///Р’С‹С‡РµСЃС‚СЊ
 	Quaternion & operator -= (const Quaternion & q);
-	///Вычесть
+	///Р’С‹С‡РµСЃС‚СЊ
 	Quaternion & operator -= (float f);
-	///Умножить
+	///РЈРјРЅРѕР¶РёС‚СЊ
 	Quaternion & operator *= (float f);
-	///Умножить
+	///РЈРјРЅРѕР¶РёС‚СЊ
 	Quaternion & operator *= (const Quaternion & q);
-	///Разделить
+	///Р Р°Р·РґРµР»РёС‚СЊ
 	Quaternion & operator /= (float f);
 
 //-----------------------------------------------------------
-//Заполнение
+//Р—Р°РїРѕР»РЅРµРЅРёРµ
 //-----------------------------------------------------------
 public:
-	///Установить единичный кватернион
+	///РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РµРґРёРЅРёС‡РЅС‹Р№ РєРІР°С‚РµСЂРЅРёРѕРЅ
 	void SetIdentity();
-	///Сконструировать по углам поворота
+	///РЎРєРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°С‚СЊ РїРѕ СѓРіР»Р°Рј РїРѕРІРѕСЂРѕС‚Р°
 	void Set(float ax, float ay, float az);
-	///Сконструировать по углам поворота
+	///РЎРєРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°С‚СЊ РїРѕ СѓРіР»Р°Рј РїРѕРІРѕСЂРѕС‚Р°
 	void Set(const Vector & ang);
-	///Сконструировать по компонентам
+	///РЎРєРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°С‚СЊ РїРѕ РєРѕРјРїРѕРЅРµРЅС‚Р°Рј
 	void Set(float qx, float qy, float qz, float qw);
-	///Сконструировать из матрицы
+	///РЎРєРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°С‚СЊ РёР· РјР°С‚СЂРёС†С‹
 	void Set(const Matrix & mtx);
 
 
 //-----------------------------------------------------------
-//Преобразование
+//РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ
 //-----------------------------------------------------------
 public:
-	///Нормализовать
+	///РќРѕСЂРјР°Р»РёР·РѕРІР°С‚СЊ
 	Quaternion & Normalize();
-	///Получить компланарный кватернион
+	///РџРѕР»СѓС‡РёС‚СЊ РєРѕРјРїР»Р°РЅР°СЂРЅС‹Р№ РєРІР°С‚РµСЂРЅРёРѕРЅ
 	Quaternion & Conjugate();
-	///Инвертировать кватернион
+	///РРЅРІРµСЂС‚РёСЂРѕРІР°С‚СЊ РєРІР°С‚РµСЂРЅРёРѕРЅ
 	Quaternion & Inverse();
 
-	///Сферическая линейная интерполяция
+	///РЎС„РµСЂРёС‡РµСЃРєР°СЏ Р»РёРЅРµР№РЅР°СЏ РёРЅС‚РµСЂРїРѕР»СЏС†РёСЏ
 	Quaternion & SLerp(const Quaternion & q1, const Quaternion & q2, float kBlend);
 
 //-----------------------------------------------------------
-//Утилитные
+//РЈС‚РёР»РёС‚РЅС‹Рµ
 //-----------------------------------------------------------
 public:
-	///Получить из кватерниона матрицу
+	///РџРѕР»СѓС‡РёС‚СЊ РёР· РєРІР°С‚РµСЂРЅРёРѕРЅР° РјР°С‚СЂРёС†Сѓ
 	void GetMatrix(Matrix & mtx) const;
-	///Получить длинну кватерниона
+	///РџРѕР»СѓС‡РёС‚СЊ РґР»РёРЅРЅСѓ РєРІР°С‚РµСЂРЅРёРѕРЅР°
 	float GetLength() const;
-	///Получить квадрат длинны кватерниона
+	///РџРѕР»СѓС‡РёС‚СЊ РєРІР°РґСЂР°С‚ РґР»РёРЅРЅС‹ РєРІР°С‚РµСЂРЅРёРѕРЅР°
 	float GetLengthSqr() const;
 
 };
 
 
 //===========================================================
-//Конструкторы
+//РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂС‹
 //===========================================================
 
-//Установить единичный кватернион
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РµРґРёРЅРёС‡РЅС‹Р№ РєРІР°С‚РµСЂРЅРёРѕРЅ
 mathinline Quaternion::Quaternion()
 {
 	x = 0.0f;
@@ -135,25 +135,25 @@ mathinline Quaternion::Quaternion()
 	w = 1.0f;
 }
 
-//По углам поворота
+//РџРѕ СѓРіР»Р°Рј РїРѕРІРѕСЂРѕС‚Р°
 mathinline Quaternion::Quaternion(float ax, float ay, float az)
 {
 	Set(ax, ay, az);
 }
 
-//По углам поворота
+//РџРѕ СѓРіР»Р°Рј РїРѕРІРѕСЂРѕС‚Р°
 mathinline Quaternion::Quaternion(const Vector & ang)
 {
 	Set(ang);
 }
 
-//По компонентам
+//РџРѕ РєРѕРјРїРѕРЅРµРЅС‚Р°Рј
 mathinline Quaternion::Quaternion(float qx, float qy, float qz, float qw)
 {
 	Set(qx, qy, qz, qw);
 }
 
-//Из матрицы
+//РР· РјР°С‚СЂРёС†С‹
 mathinline Quaternion::Quaternion(const Matrix & mtx)
 {
 	Set(mtx);
@@ -161,10 +161,10 @@ mathinline Quaternion::Quaternion(const Matrix & mtx)
 
 
 //===========================================================
-//Операторы
+//РћРїРµСЂР°С‚РѕСЂС‹
 //===========================================================
 
-//Отрицание
+//РћС‚СЂРёС†Р°РЅРёРµ
 mathinline Quaternion & Quaternion::operator - ()
 {
 	x = -x;
@@ -174,7 +174,7 @@ mathinline Quaternion & Quaternion::operator - ()
 	return *this;
 }
 
-//Приравнять
+//РџСЂРёСЂР°РІРЅСЏС‚СЊ
 mathinline Quaternion & Quaternion::operator = (const Quaternion & q)
 {
 	x = q.x;
@@ -184,7 +184,7 @@ mathinline Quaternion & Quaternion::operator = (const Quaternion & q)
 	return *this;
 }
 
-//Сложить
+//РЎР»РѕР¶РёС‚СЊ
 mathinline Quaternion & Quaternion::operator += (const Quaternion & q)
 {
 	x += q.x;
@@ -194,7 +194,7 @@ mathinline Quaternion & Quaternion::operator += (const Quaternion & q)
 	return *this;
 }
 
-//Сложить
+//РЎР»РѕР¶РёС‚СЊ
 mathinline Quaternion & Quaternion::operator += (float f)
 {
 	x += f;
@@ -204,7 +204,7 @@ mathinline Quaternion & Quaternion::operator += (float f)
 	return *this;
 }
 
-//Вычесть
+//Р’С‹С‡РµСЃС‚СЊ
 mathinline Quaternion & Quaternion::operator -= (const Quaternion & q)
 {
 	x -= q.x;
@@ -214,7 +214,7 @@ mathinline Quaternion & Quaternion::operator -= (const Quaternion & q)
 	return *this;
 }
 
-//Вычесть
+//Р’С‹С‡РµСЃС‚СЊ
 mathinline Quaternion & Quaternion::operator -= (float f)
 {
 	x -= f;
@@ -224,7 +224,7 @@ mathinline Quaternion & Quaternion::operator -= (float f)
 	return *this;
 }
 
-//Умножить
+//РЈРјРЅРѕР¶РёС‚СЊ
 mathinline Quaternion & Quaternion::operator *= (float f)
 {
 	x *= f;
@@ -234,7 +234,7 @@ mathinline Quaternion & Quaternion::operator *= (float f)
 	return *this;
 }
 
-//Умножить
+//РЈРјРЅРѕР¶РёС‚СЊ
 mathinline Quaternion & Quaternion::operator *= (const Quaternion & q)
 {
 	float a = (w + x)*(q.w + q.x);
@@ -252,7 +252,7 @@ mathinline Quaternion & Quaternion::operator *= (const Quaternion & q)
 	return *this;
 }
 
-//Разделить
+//Р Р°Р·РґРµР»РёС‚СЊ
 mathinline Quaternion & Quaternion::operator /= (float f)
 {
 	double k = 1.0/f;
@@ -264,7 +264,7 @@ mathinline Quaternion & Quaternion::operator /= (float f)
 }
 
 /*!\relates Quaternion
-Сложить
+РЎР»РѕР¶РёС‚СЊ
 */
 mathinline Quaternion operator + (float f, const Quaternion & q)
 {
@@ -274,7 +274,7 @@ mathinline Quaternion operator + (float f, const Quaternion & q)
 }
 
 /*!\relates Quaternion
-Сложить
+РЎР»РѕР¶РёС‚СЊ
 */
 mathinline Quaternion operator + (const Quaternion & q, float f)
 {
@@ -284,7 +284,7 @@ mathinline Quaternion operator + (const Quaternion & q, float f)
 }
 
 /*!\relates Quaternion
-Сложить
+РЎР»РѕР¶РёС‚СЊ
 */
 mathinline Quaternion operator + (const Quaternion & q1, const Quaternion & q2)
 {
@@ -294,7 +294,7 @@ mathinline Quaternion operator + (const Quaternion & q1, const Quaternion & q2)
 }
 
 /*!\relates Quaternion
-Вычесть
+Р’С‹С‡РµСЃС‚СЊ
 */
 mathinline Quaternion operator - (float f, const Quaternion & q)
 {
@@ -304,7 +304,7 @@ mathinline Quaternion operator - (float f, const Quaternion & q)
 }
 
 /*!\relates Quaternion
-Вычесть
+Р’С‹С‡РµСЃС‚СЊ
 */
 mathinline Quaternion operator - (const Quaternion & q, float f)
 {
@@ -314,7 +314,7 @@ mathinline Quaternion operator - (const Quaternion & q, float f)
 }
 
 /*!\relates Quaternion
-Вычесть
+Р’С‹С‡РµСЃС‚СЊ
 */
 mathinline Quaternion operator - (const Quaternion & q1, const Quaternion & q2)
 {
@@ -324,7 +324,7 @@ mathinline Quaternion operator - (const Quaternion & q1, const Quaternion & q2)
 }
 
 /*!\relates Quaternion
-Умножить
+РЈРјРЅРѕР¶РёС‚СЊ
 */
 mathinline Quaternion operator * (float f, const Quaternion & q)
 {
@@ -334,7 +334,7 @@ mathinline Quaternion operator * (float f, const Quaternion & q)
 }
 
 /*!\relates Quaternion
-Умножить
+РЈРјРЅРѕР¶РёС‚СЊ
 */
 mathinline Quaternion operator * (const Quaternion & q, float f)
 {
@@ -344,7 +344,7 @@ mathinline Quaternion operator * (const Quaternion & q, float f)
 }
 
 /*!\relates Quaternion
-Умножить
+РЈРјРЅРѕР¶РёС‚СЊ
 */
 mathinline Quaternion operator * (const Quaternion & q1, const Quaternion & q2)
 {
@@ -354,7 +354,7 @@ mathinline Quaternion operator * (const Quaternion & q1, const Quaternion & q2)
 }
 
 /*!\relates Quaternion
-Разделить
+Р Р°Р·РґРµР»РёС‚СЊ
 */
 mathinline Quaternion operator / (const Quaternion & q, float f)
 {
@@ -364,10 +364,10 @@ mathinline Quaternion operator / (const Quaternion & q, float f)
 }
 
 //===========================================================
-//Заполнение
+//Р—Р°РїРѕР»РЅРµРЅРёРµ
 //===========================================================
 
-//Установить единичный кватернион
+//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РµРґРёРЅРёС‡РЅС‹Р№ РєРІР°С‚РµСЂРЅРёРѕРЅ
 mathinline void Quaternion::SetIdentity()
 {
 	x = 0.0f;
@@ -376,19 +376,19 @@ mathinline void Quaternion::SetIdentity()
 	w = 1.0f;
 }
 
-//Сконструировать по углам поворота
+//РЎРєРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°С‚СЊ РїРѕ СѓРіР»Р°Рј РїРѕРІРѕСЂРѕС‚Р°
 mathinline void Quaternion::Set(float ax, float ay, float az)
 {
 	Set(Matrix(ax, ay, az));
 }
 
-//Сконструировать по углам поворота
+//РЎРєРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°С‚СЊ РїРѕ СѓРіР»Р°Рј РїРѕРІРѕСЂРѕС‚Р°
 mathinline void Quaternion::Set(const Vector & ang)
 {
 	Set(ang.x, ang.y, ang.z);
 }
 
-///Сконструировать по компонентам
+///РЎРєРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°С‚СЊ РїРѕ РєРѕРјРїРѕРЅРµРЅС‚Р°Рј
 mathinline void Quaternion::Set(float qx, float qy, float qz, float qw)
 {
 	x = qx;
@@ -397,7 +397,7 @@ mathinline void Quaternion::Set(float qx, float qy, float qz, float qw)
 	w = qw;	
 }
 
-//Сконструировать из матрицы
+//РЎРєРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°С‚СЊ РёР· РјР°С‚СЂРёС†С‹
 mathinline void Quaternion::Set(const Matrix & mtx)
 {
 	float tr = mtx.m[0][0] + mtx.m[1][1] + mtx.m[2][2];
@@ -444,10 +444,10 @@ mathinline void Quaternion::Set(const Matrix & mtx)
 }
 
 //===========================================================
-//Преобразование
+//РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ
 //===========================================================
 
-//Нормализовать
+//РќРѕСЂРјР°Р»РёР·РѕРІР°С‚СЊ
 mathinline Quaternion & Quaternion::Normalize()
 {
 	double len = double(x)*double(x) + double(y)*double(y) + double(z)*double(z) + double(w)*double(w);
@@ -460,7 +460,7 @@ mathinline Quaternion & Quaternion::Normalize()
 	return *this;
 }
 
-//Получить компланарный кватернион
+//РџРѕР»СѓС‡РёС‚СЊ РєРѕРјРїР»Р°РЅР°СЂРЅС‹Р№ РєРІР°С‚РµСЂРЅРёРѕРЅ
 mathinline Quaternion & Quaternion::Conjugate()
 {
 	x = -x;
@@ -469,7 +469,7 @@ mathinline Quaternion & Quaternion::Conjugate()
 	return *this;
 }
 
-//Инвертировать кватернион
+//РРЅРІРµСЂС‚РёСЂРѕРІР°С‚СЊ РєРІР°С‚РµСЂРЅРёРѕРЅ
 mathinline Quaternion & Quaternion::Inverse()
 {
 	Conjugate();
@@ -477,20 +477,20 @@ mathinline Quaternion & Quaternion::Inverse()
 	return *this;
 }
 
-//Сферическая линейная интерполяция
+//РЎС„РµСЂРёС‡РµСЃРєР°СЏ Р»РёРЅРµР№РЅР°СЏ РёРЅС‚РµСЂРїРѕР»СЏС†РёСЏ
 mathinline Quaternion & Quaternion::SLerp(const Quaternion & q1, const Quaternion & q2, float kBlend)
 {
-	//Угол между кватернионами
+	//РЈРіРѕР» РјРµР¶РґСѓ РєРІР°С‚РµСЂРЅРёРѕРЅР°РјРё
 	double cosomega = q1.x*q2.x + q1.y*q2.y + q1.z*q2.z + q1.w*q2.w;
 	double k = 1.0f;
-	//Ближайшее направление
+	//Р‘Р»РёР¶Р°Р№С€РµРµ РЅР°РїСЂР°РІР»РµРЅРёРµ
 	if(cosomega < 0.0f)
 	{
 		cosomega = -cosomega;
 		k = -1.0f;
 	}
 	if(cosomega > 1.0) cosomega = 1.0;
-	//Коэфициенты интерполяции
+	//РљРѕСЌС„РёС†РёРµРЅС‚С‹ РёРЅС‚РµСЂРїРѕР»СЏС†РёРё
 	double k0, k1;
 	if(1.0 - cosomega > 0.1)
 	{
@@ -505,7 +505,7 @@ mathinline Quaternion & Quaternion::SLerp(const Quaternion & q1, const Quaternio
 		k1 = kBlend;
 	}
 	k0 *= k;
-	//Интерполируем	
+	//РРЅС‚РµСЂРїРѕР»РёСЂСѓРµРј	
 	x = float(q1.x*k0 + q2.x*k1);
 	y = float(q1.y*k0 + q2.y*k1);
 	z = float(q1.z*k0 + q2.z*k1);
@@ -514,10 +514,10 @@ mathinline Quaternion & Quaternion::SLerp(const Quaternion & q1, const Quaternio
 }
 
 //===========================================================
-//Утилитные
+//РЈС‚РёР»РёС‚РЅС‹Рµ
 //===========================================================
 
-//Получить из кватерниона матрицу
+//РџРѕР»СѓС‡РёС‚СЊ РёР· РєРІР°С‚РµСЂРЅРёРѕРЅР° РјР°С‚СЂРёС†Сѓ
 mathinline void Quaternion::GetMatrix(Matrix & mtx) const
 {
 	float xx = x*x*2.0f, xy = x*y*2.0f, xz = x*z*2.0f;
@@ -542,13 +542,13 @@ mathinline void Quaternion::GetMatrix(Matrix & mtx) const
 	mtx.m[3][3] = 1.0f;
 }
 
-//Получить длинну кватерниона
+//РџРѕР»СѓС‡РёС‚СЊ РґР»РёРЅРЅСѓ РєРІР°С‚РµСЂРЅРёРѕРЅР°
 mathinline float Quaternion::GetLength() const
 {
 	return sqrtf(x*x + y*y + z*z + w*w);
 }
 
-//Получить квадрат длинны кватерниона
+//РџРѕР»СѓС‡РёС‚СЊ РєРІР°РґСЂР°С‚ РґР»РёРЅРЅС‹ РєРІР°С‚РµСЂРЅРёРѕРЅР°
 mathinline float Quaternion::GetLengthSqr() const
 {
 	return x*x + y*y + z*z + w*w;

@@ -38,7 +38,7 @@ bool CXI_QUESTTITLE::GetLineNext(int fontNum,char* &pInStr,char* buf,int bufSize
 	SubRightWord(buf,fontNum,needWidth,m_rs);
 	pInStr = pStart+strlen(buf);
 
-	// удалим начальные пробелы
+	// СѓРґР°Р»РёРј РЅР°С‡Р°Р»СЊРЅС‹Рµ РїСЂРѕР±РµР»С‹
 	while(*pInStr!=0 && (unsigned)*pInStr<=' ') pInStr++;
 
 	return true;
@@ -80,7 +80,7 @@ void CXI_QUESTTITLE::Draw(bool bSelected,dword Delta_Time)
 	int lineNum = 0;
 	for(i=0; i<m_stringQuantity && lineNum<m_allStrings; i++)
 	{
-		// отобразить выделение
+		// РѕС‚РѕР±СЂР°Р·РёС‚СЊ РІС‹РґРµР»РµРЅРёРµ
 		if(bSelected && i==m_curIdx)
 		{
 			XI_NOTEX_VERTEX selV[4];
@@ -96,7 +96,7 @@ void CXI_QUESTTITLE::Draw(bool bSelected,dword Delta_Time)
 			m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP,XI_NOTEX_FVF,2,selV,sizeof(XI_NOTEX_VERTEX),"iRectangle");
 		}
 
-		// отобразить иконку выполнения
+		// РѕС‚РѕР±СЂР°Р·РёС‚СЊ РёРєРѕРЅРєСѓ РІС‹РїРѕР»РЅРµРЅРёСЏ
 		XI_ONLYONETEX_VERTEX v[4];
 		v[0].pos.z = v[1].pos.z = v[2].pos.z = v[3].pos.z = 1.f;
 		v[0].pos.x = v[1].pos.x = (float)m_rect.right-m_iconWidth;
@@ -120,7 +120,7 @@ void CXI_QUESTTITLE::Draw(bool bSelected,dword Delta_Time)
 		m_rs->TextureSet(0,m_texId);
 		m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP,XI_ONLYONETEX_FVF,2,v,sizeof(XI_ONLYONETEX_VERTEX),"iDinamicPictures");
 
-		// отобразить строки
+		// РѕС‚РѕР±СЂР°Р·РёС‚СЊ СЃС‚СЂРѕРєРё
 		DWORD curColor = m_strList[i].complete ? m_dwCompleteColor : m_dwNonCompleteColor;
 		if( m_strList[i].dwSpecColor!=0 ) curColor = m_strList[i].dwSpecColor;
 		for(j=0;j<m_strList[i].lineQuantity;j++)
@@ -233,7 +233,7 @@ void CXI_QUESTTITLE::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *name
 	m_vertOffset = GetIniLong(ini1,name1, ini2,name2, "lineSpace", 30);
 	if(m_vertOffset==0) m_vertOffset=10;
 
-	// подсчет количества выводимых строк на экране
+	// РїРѕРґСЃС‡РµС‚ РєРѕР»РёС‡РµСЃС‚РІР° РІС‹РІРѕРґРёРјС‹С… СЃС‚СЂРѕРє РЅР° СЌРєСЂР°РЅРµ
 	m_allStrings = (m_rect.bottom-m_rect.top)/m_vertOffset;
 
 	// get golors
@@ -284,7 +284,7 @@ void CXI_QUESTTITLE::SetNewTopQuest(ATTRIBUTES * pA,int topNum)
 {
 	int i;
 	m_nCommonQuantity = 0;
-	// удалим старые строки
+	// СѓРґР°Р»РёРј СЃС‚Р°СЂС‹Рµ СЃС‚СЂРѕРєРё
 	if(m_strList!=NULL)
 	{
 		for(i=0;i<m_stringQuantity;i++)
@@ -292,7 +292,7 @@ void CXI_QUESTTITLE::SetNewTopQuest(ATTRIBUTES * pA,int topNum)
 				PTR_DELETE(m_strList[i].name[j]);
 		PTR_DELETE(m_strList);
 		m_stringQuantity = 0;
-	} // boal перенес наверх, иначе не трется, если квестов нет, а были уже
+	} // boal РїРµСЂРµРЅРµСЃ РЅР°РІРµСЂС…, РёРЅР°С‡Рµ РЅРµ С‚СЂРµС‚СЃСЏ, РµСЃР»Рё РєРІРµСЃС‚РѕРІ РЅРµС‚, Р° Р±С‹Р»Рё СѓР¶Рµ
 	
 	if(pA==NULL) return;
 	long aq = pA->GetAttributesNum();
@@ -310,19 +310,19 @@ void CXI_QUESTTITLE::SetNewTopQuest(ATTRIBUTES * pA,int topNum)
 	{
 		//ptrOwner->QuestFileReader()->InitQuestsQuery();
 
-		// расчет количества выводимых строк
+		// СЂР°СЃС‡РµС‚ РєРѕР»РёС‡РµСЃС‚РІР° РІС‹РІРѕРґРёРјС‹С… СЃС‚СЂРѕРє
 		m_stringQuantity = aq-topNum;
 		if(m_stringQuantity>m_allStrings)
 			m_stringQuantity=m_allStrings;
 		if(m_curIdx>=m_stringQuantity) m_curIdx=m_stringQuantity-1;
 
-		// создание массива строк
+		// СЃРѕР·РґР°РЅРёРµ РјР°СЃСЃРёРІР° СЃС‚СЂРѕРє
 		if(m_stringQuantity<=0) return;
 		if( (m_strList=NEW STRING_DESCRIBER[m_stringQuantity]) == NULL )
 		{
 			_THROW("allocate memory error");
 		}
-		// и заполнение этих строк
+		// Рё Р·Р°РїРѕР»РЅРµРЅРёРµ СЌС‚РёС… СЃС‚СЂРѕРє
 		int lineNum = 0;
 		for(i=0; i<m_stringQuantity; i++)
 		{

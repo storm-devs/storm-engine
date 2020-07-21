@@ -24,8 +24,8 @@ void ControlTree::ControlChild::Process(float fDeltaTime,ControlTree* pControlTr
 {
 	long n;
 
-	// нет базовой контролки - всегда считаем активной
-	// сразу переходим к дочерним веткам
+	// РЅРµС‚ Р±Р°Р·РѕРІРѕР№ РєРѕРЅС‚СЂРѕР»РєРё - РІСЃРµРіРґР° СЃС‡РёС‚Р°РµРј Р°РєС‚РёРІРЅРѕР№
+	// СЃСЂР°Р·Сѓ РїРµСЂРµС…РѕРґРёРј Рє РґРѕС‡РµСЂРЅРёРј РІРµС‚РєР°Рј
 	if( sControlName.IsEmpty() ) {
 		bActive = true;
 		for(n=0; n<aChild; n++)
@@ -36,7 +36,7 @@ void ControlTree::ControlChild::Process(float fDeltaTime,ControlTree* pControlTr
 	CONTROL_STATE cs;
 	api->Controls->GetControlState((char*)sControlName.GetBuffer(),cs);
 
-	// если узел уже активизирован, то считаем таймаут
+	// РµСЃР»Рё СѓР·РµР» СѓР¶Рµ Р°РєС‚РёРІРёР·РёСЂРѕРІР°РЅ, С‚Рѕ СЃС‡РёС‚Р°РµРј С‚Р°Р№РјР°СѓС‚
 	if( bActive )
 	{
 		if( fCurTime <= fTimeOut )
@@ -45,18 +45,18 @@ void ControlTree::ControlChild::Process(float fDeltaTime,ControlTree* pControlTr
 		}
 		/*else
 		{
-		    bActive = false;    // boal чтоб снималось
+		    bActive = false;    // boal С‡С‚РѕР± СЃРЅРёРјР°Р»РѕСЃСЊ
 		} */
 	}
 	else
-	//if (!bActive)   // boal если уже нет
-	// если контролка не активизировалась, то проверяем ее на активизацию
+	//if (!bActive)   // boal РµСЃР»Рё СѓР¶Рµ РЅРµС‚
+	// РµСЃР»Рё РєРѕРЅС‚СЂРѕР»РєР° РЅРµ Р°РєС‚РёРІРёР·РёСЂРѕРІР°Р»Р°СЃСЊ, С‚Рѕ РїСЂРѕРІРµСЂСЏРµРј РµРµ РЅР° Р°РєС‚РёРІРёР·Р°С†РёСЋ
 	{
-		// ничего не нажато - уходим
+		// РЅРёС‡РµРіРѕ РЅРµ РЅР°Р¶Р°С‚Рѕ - СѓС…РѕРґРёРј
 		if( cs.state==CST_INACTIVATED || cs.state==CST_INACTIVE )
 			return;
 
-		// было первое нажатие нажатие - активизируем и ставим таймаут на начало
+		// Р±С‹Р»Рѕ РїРµСЂРІРѕРµ РЅР°Р¶Р°С‚РёРµ РЅР°Р¶Р°С‚РёРµ - Р°РєС‚РёРІРёР·РёСЂСѓРµРј Рё СЃС‚Р°РІРёРј С‚Р°Р№РјР°СѓС‚ РЅР° РЅР°С‡Р°Р»Рѕ
 		bActive = true;
 		bWaitReleaseControl = false;
 		fCurTime = 0.f;
@@ -69,20 +69,20 @@ void ControlTree::ControlChild::Process(float fDeltaTime,ControlTree* pControlTr
 		pControlTree->ControlInAction( sControlName, nLayer );
 	}
 
-	// таймаут прошел - включаем выходную контролку
+	// С‚Р°Р№РјР°СѓС‚ РїСЂРѕС€РµР» - РІРєР»СЋС‡Р°РµРј РІС‹С…РѕРґРЅСѓСЋ РєРѕРЅС‚СЂРѕР»РєСѓ
 	if( (!bWaitReleaseControl) && fCurTime>=fTimeOut ) {
 		bActive = pControlTree->AddOutControl( sOutControlName, cs.state==CST_ACTIVATED || cs.state==CST_ACTIVE );
 		return;
 	}
 
-	// переходим к дочерним веткам
+	// РїРµСЂРµС…РѕРґРёРј Рє РґРѕС‡РµСЂРЅРёРј РІРµС‚РєР°Рј
 	bool bChildActive = false;
 	for(n=0; n<aChild; n++)
 	{
 		aChild[n].Process( fDeltaTime, pControlTree );
 		if( aChild[n].bActive ) bChildActive = true;
 	}
-	// как только активизируется потомок, то текущая ветка не может выдавать контрол по таймауту
+	// РєР°Рє С‚РѕР»СЊРєРѕ Р°РєС‚РёРІРёР·РёСЂСѓРµС‚СЃСЏ РїРѕС‚РѕРјРѕРє, С‚Рѕ С‚РµРєСѓС‰Р°СЏ РІРµС‚РєР° РЅРµ РјРѕР¶РµС‚ РІС‹РґР°РІР°С‚СЊ РєРѕРЅС‚СЂРѕР» РїРѕ С‚Р°Р№РјР°СѓС‚Сѓ
 	if( bChildActive ) bWaitReleaseControl = true;
 
 	if( bWaitReleaseControl && !bChildActive ) {
@@ -128,8 +128,8 @@ void ControlTree::Process()
 {
 	long n;
 
-	// все контролы которые деактивировались становятся неактивными
-	// а все акивированные активными
+	// РІСЃРµ РєРѕРЅС‚СЂРѕР»С‹ РєРѕС‚РѕСЂС‹Рµ РґРµР°РєС‚РёРІРёСЂРѕРІР°Р»РёСЃСЊ СЃС‚Р°РЅРѕРІСЏС‚СЃСЏ РЅРµР°РєС‚РёРІРЅС‹РјРё
+	// Р° РІСЃРµ Р°РєРёРІРёСЂРѕРІР°РЅРЅС‹Рµ Р°РєС‚РёРІРЅС‹РјРё
 	for(n=0; n<m_aOutControlList; n++)
 	{
 		if( m_aOutControlList[n].state == CST_INACTIVATED )
@@ -138,10 +138,10 @@ void ControlTree::Process()
 			m_aOutControlList[n].state = CST_ACTIVE;
 	}
 
-	// работаем с деревом
+	// СЂР°Р±РѕС‚Р°РµРј СЃ РґРµСЂРµРІРѕРј
 	m_RootControl.Process(api->GetDeltaTime()*0.001f, this);
 
-	// удалим деактивированные контролы
+	// СѓРґР°Р»РёРј РґРµР°РєС‚РёРІРёСЂРѕРІР°РЅРЅС‹Рµ РєРѕРЅС‚СЂРѕР»С‹
 	for(n=0; n<m_aOutControlList; n++)
 	{
 		if( m_aOutControlList[n].state == CST_INACTIVE ) {
@@ -209,13 +209,13 @@ bool ControlTree::AddOutControl( const char* pcOutControlName, bool isActive )
 {
 	if( !pcOutControlName || !pcOutControlName[0] ) return false;
 
-	// ищем контролку в списке
+	// РёС‰РµРј РєРѕРЅС‚СЂРѕР»РєСѓ РІ СЃРїРёСЃРєРµ
 	long n = 0;
 	for(n=0; n<m_aOutControlList; n++)
 		if( m_aOutControlList[n].sControlName == pcOutControlName )
 			break;
 
-	// не было такой контролки - добавляем с предыдущим состоянием = ненажата
+	// РЅРµ Р±С‹Р»Рѕ С‚Р°РєРѕР№ РєРѕРЅС‚СЂРѕР»РєРё - РґРѕР±Р°РІР»СЏРµРј СЃ РїСЂРµРґС‹РґСѓС‰РёРј СЃРѕСЃС‚РѕСЏРЅРёРµРј = РЅРµРЅР°Р¶Р°С‚Р°
 	if( n>=m_aOutControlList ) {
 		n = m_aOutControlList.Add();
 		m_aOutControlList[n].sControlName = pcOutControlName;
@@ -223,7 +223,7 @@ bool ControlTree::AddOutControl( const char* pcOutControlName, bool isActive )
 		isActive = true;
 	}
 
-	// нажата контролка
+	// РЅР°Р¶Р°С‚Р° РєРѕРЅС‚СЂРѕР»РєР°
 	CONTROL_STATE_TYPE cs_prev = m_aOutControlList[n].state;
 	if( isActive ) {
 		if( cs_prev==CST_INACTIVE || cs_prev==CST_INACTIVATED ) {

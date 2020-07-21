@@ -55,21 +55,21 @@ class Grass : public ENTITY
 
 	struct AngleInfo
 	{
-		float dx, dz;			//Направление
-		float cs;				//Косинус угла между направлением и источником
+		float dx, dz;			//РќР°РїСЂР°РІР»РµРЅРёРµ
+		float cs;				//РљРѕСЃРёРЅСѓСЃ СѓРіР»Р° РјРµР¶РґСѓ РЅР°РїСЂР°РІР»РµРЅРёРµРј Рё РёСЃС‚РѕС‡РЅРёРєРѕРј
 	};
 
 	struct GRSMapElementEx
 	{
-		float x, y, z;			//Позиция травинки в мире
+		float x, y, z;			//РџРѕР·РёС†РёСЏ С‚СЂР°РІРёРЅРєРё РІ РјРёСЂРµ
 		union
 		{
 			struct
 			{				
-				byte frame;		//Кадр
-				byte h;			//Высота
-				byte w;			//Ширина
-				byte ang;		//Угол поворота
+				byte frame;		//РљР°РґСЂ
+				byte h;			//Р’С‹СЃРѕС‚Р°
+				byte w;			//РЁРёСЂРёРЅР°
+				byte ang;		//РЈРіРѕР» РїРѕРІРѕСЂРѕС‚Р°
 			};
 			dword data;
 		};
@@ -87,87 +87,87 @@ class Grass : public ENTITY
 public:
 	struct CharacterPos
 	{
-		CVECTOR pos;			//Текущая позиция
-		CVECTOR lastPos;		//Инерционная позиция
-		Character * chr;		//Указатель на персонажа
-		long useCounter;		//Счётчик влияний на траву
+		CVECTOR pos;			//РўРµРєСѓС‰Р°СЏ РїРѕР·РёС†РёСЏ
+		CVECTOR lastPos;		//РРЅРµСЂС†РёРѕРЅРЅР°СЏ РїРѕР·РёС†РёСЏ
+		Character * chr;		//РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РїРµСЂСЃРѕРЅР°Р¶Р°
+		long useCounter;		//РЎС‡С‘С‚С‡РёРє РІР»РёСЏРЅРёР№ РЅР° С‚СЂР°РІСѓ
 	};
 
 //--------------------------------------------------------------------------------------------
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //--------------------------------------------------------------------------------------------
 public:
 	Grass();
 	virtual ~Grass();
 
-	//Инициализация
+	//РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
 	bool Init();
-	//Работа
+	//Р Р°Р±РѕС‚Р°
 	void Execute(dword delta_time);
 	void Realize(dword delta_time);
 	//
 	dword _cdecl ProcessMessage(MESSAGE &message);
 	
-	//Загрузить данные для травы
+	//Р—Р°РіСЂСѓР·РёС‚СЊ РґР°РЅРЅС‹Рµ РґР»СЏ С‚СЂР°РІС‹
 	bool LoadData(const char * patchName);
-	//Установить текстуру
+	//РЈСЃС‚Р°РЅРѕРІРёС‚СЊ С‚РµРєСЃС‚СѓСЂСѓ
 	void SetTexture(const char * texName);
 
 	CharacterPos characters[MAX_CHARACTERS];
 	long numCharacters;
 
 //--------------------------------------------------------------------------------------------
-//Инкапсуляция
+//РРЅРєР°РїСЃСѓР»СЏС†РёСЏ
 //--------------------------------------------------------------------------------------------
 private:
-	//Рендер блока
+	//Р РµРЅРґРµСЂ Р±Р»РѕРєР°
 	void RenderBlock(const CVECTOR & camPos, PLANE * plane, long numPlanes, long mx, long mz);
-	//Проверка на видимость бокса
+	//РџСЂРѕРІРµСЂРєР° РЅР° РІРёРґРёРјРѕСЃС‚СЊ Р±РѕРєСЃР°
 	bool VisibleTest(const PLANE * plane, long numPlanes, const CVECTOR & min, const CVECTOR & max);
-	//Рендер блока
+	//Р РµРЅРґРµСЂ Р±Р»РѕРєР°
 	void RenderBlock(GRSMiniMapElement & mme, float kLod);
-	//Нарисовать содержимое буфера
+	//РќР°СЂРёСЃРѕРІР°С‚СЊ СЃРѕРґРµСЂР¶РёРјРѕРµ Р±СѓС„РµСЂР°
 	void DrawBuffer();
-	//Получить цвет
+	//РџРѕР»СѓС‡РёС‚СЊ С†РІРµС‚
 	static long GetColor(CVECTOR color);
 
 private:
-	//Сервис рендера
+	//РЎРµСЂРІРёСЃ СЂРµРЅРґРµСЂР°
 	VDX8RENDER * rs;
-	//Буфера
+	//Р‘СѓС„РµСЂР°
 	long vb, ib;
 	long numPoints;
-	//Текстура
+	//РўРµРєСЃС‚СѓСЂР°
 	long texture;
 
-	//Миникарта
+	//РњРёРЅРёРєР°СЂС‚Р°
 	GRSMiniMapElement * miniMap;
-	//Размеры миникарты
+	//Р Р°Р·РјРµСЂС‹ РјРёРЅРёРєР°СЂС‚С‹
 	long miniX, miniZ;
-	//Начальная позиция карты
+	//РќР°С‡Р°Р»СЊРЅР°СЏ РїРѕР·РёС†РёСЏ РєР°СЂС‚С‹
 	float startX, startZ;
-	//Блоки с высотами
+	//Р‘Р»РѕРєРё СЃ РІС‹СЃРѕС‚Р°РјРё
 	GRSMapElementEx * block;
 	long numElements;
-	//Текущие параметры для поворотов травы
+	//РўРµРєСѓС‰РёРµ РїР°СЂР°РјРµС‚СЂС‹ РґР»СЏ РїРѕРІРѕСЂРѕС‚РѕРІ С‚СЂР°РІС‹
 	AngleInfo angInfo[16];
-	//Текущие фазы качания
+	//РўРµРєСѓС‰РёРµ С„Р°Р·С‹ РєР°С‡Р°РЅРёСЏ
 	float phase[7];
-	//Параметры текущего источника освещения
-	CVECTOR lDir;		//Направление источника
-	CVECTOR lColor;		//Цвет источника
-	CVECTOR aColor;		//Цвет расеяного освещения
+	//РџР°СЂР°РјРµС‚СЂС‹ С‚РµРєСѓС‰РµРіРѕ РёСЃС‚РѕС‡РЅРёРєР° РѕСЃРІРµС‰РµРЅРёСЏ
+	CVECTOR lDir;		//РќР°РїСЂР°РІР»РµРЅРёРµ РёСЃС‚РѕС‡РЅРёРєР°
+	CVECTOR lColor;		//Р¦РІРµС‚ РёСЃС‚РѕС‡РЅРёРєР°
+	CVECTOR aColor;		//Р¦РІРµС‚ СЂР°СЃРµСЏРЅРѕРіРѕ РѕСЃРІРµС‰РµРЅРёСЏ
 
-	long blockChrs[32];	//Индексы персонажей обрабатываемых блоком
-	long numBlockChr;	//Количество персонажей обрабатываемых блоком
+	long blockChrs[32];	//РРЅРґРµРєСЃС‹ РїРµСЂСЃРѕРЅР°Р¶РµР№ РѕР±СЂР°Р±Р°С‚С‹РІР°РµРјС‹С… Р±Р»РѕРєРѕРј
+	long numBlockChr;	//РљРѕР»РёС‡РµСЃС‚РІРѕ РїРµСЂСЃРѕРЅР°Р¶РµР№ РѕР±СЂР°Р±Р°С‚С‹РІР°РµРјС‹С… Р±Р»РѕРєРѕРј
 
-	float lodSelect;	//Коэфициент дальности выбора лода (kLod = kLod^lodSelect)
-	float winForce;		//Коэфициент скорости ветра 0..1
-	CVECTOR winDir;		//Нормализованное напрвавление ветра
+	float lodSelect;	//РљРѕСЌС„РёС†РёРµРЅС‚ РґР°Р»СЊРЅРѕСЃС‚Рё РІС‹Р±РѕСЂР° Р»РѕРґР° (kLod = kLod^lodSelect)
+	float winForce;		//РљРѕСЌС„РёС†РёРµРЅС‚ СЃРєРѕСЂРѕСЃС‚Рё РІРµС‚СЂР° 0..1
+	CVECTOR winDir;		//РќРѕСЂРјР°Р»РёР·РѕРІР°РЅРЅРѕРµ РЅР°РїСЂРІР°РІР»РµРЅРёРµ РІРµС‚СЂР°
 	
-	Vertex * vbuffer;	//Залоченый буфер	
+	Vertex * vbuffer;	//Р—Р°Р»РѕС‡РµРЅС‹Р№ Р±СѓС„РµСЂ	
 
-	RenderQuality quality;	//Качество отрисовки
+	RenderQuality quality;	//РљР°С‡РµСЃС‚РІРѕ РѕС‚СЂРёСЃРѕРІРєРё
 
 	float cosPh1, sinPh2, sinPh5, sinPh6, winPow, winF10, kAmpWF, kDirWF, kLitWF;
 	float windAng;
@@ -184,7 +184,7 @@ private:
 	float m_fMaxVisibleDist;
 	float m_fMinGrassLod;
 	
-	// boal параметры травы
+	// boal РїР°СЂР°РјРµС‚СЂС‹ С‚СЂР°РІС‹
 	long isGrassLightsOn;
 };
 

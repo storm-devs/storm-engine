@@ -176,7 +176,7 @@ void STRSERVICE::SetLanguage(const char* sLanguage)
 		return;
 	}
 
-	// Уже установлен этот язык
+	// РЈР¶Рµ СѓСЃС‚Р°РЅРѕРІР»РµРЅ СЌС‚РѕС‚ СЏР·С‹Рє
 	if( m_sLanguage!=null && stricmp(sLanguage,m_sLanguage)==0 ) return;
 
 	// initialize ini file
@@ -187,18 +187,18 @@ void STRSERVICE::SetLanguage(const char* sLanguage)
 		return;
 	}
 
-	// установим новое имя для языка
+	// СѓСЃС‚Р°РЅРѕРІРёРј РЅРѕРІРѕРµ РёРјСЏ РґР»СЏ СЏР·С‹РєР°
 	DELETE(m_sLanguage);
 	if( (m_sLanguage=NEW char[strlen(sLanguage)+1]) == null ) {THROW("Allocate memory error");}
 	strcpy(m_sLanguage,sLanguage);
 
 	while(true)
 	{
-		// удалим старые данные
+		// СѓРґР°Р»РёРј СЃС‚Р°СЂС‹Рµ РґР°РЅРЅС‹Рµ
 		DELETE(m_sIniFileName);
 		DELETE(m_sLanguageDir);
 
-		// получим директорию для текстовых файлов данного языка
+		// РїРѕР»СѓС‡РёРј РґРёСЂРµРєС‚РѕСЂРёСЋ РґР»СЏ С‚РµРєСЃС‚РѕРІС‹С… С„Р°Р№Р»РѕРІ РґР°РЅРЅРѕРіРѕ СЏР·С‹РєР°
 		if( ini->ReadString("DIRECTORY",m_sLanguage,param,sizeof(param)-1,"") )
 		{
 			if( (m_sLanguageDir=NEW char[strlen(param)+1]) == null )
@@ -207,7 +207,7 @@ void STRSERVICE::SetLanguage(const char* sLanguage)
 		}
 		else	api->Trace("WARNING! Not found directory record for language %s",sLanguage);
 
-		// получим имя ини файла со строками общего использования для этого языка
+		// РїРѕР»СѓС‡РёРј РёРјСЏ РёРЅРё С„Р°Р№Р»Р° СЃРѕ СЃС‚СЂРѕРєР°РјРё РѕР±С‰РµРіРѕ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ РґР»СЏ СЌС‚РѕРіРѕ СЏР·С‹РєР°
 		if( ini->ReadString("COMMON","strings",param,sizeof(param)-1,"") )
 		{
 			if( (m_sIniFileName=NEW char[strlen(param)+1]) == null )
@@ -218,7 +218,7 @@ void STRSERVICE::SetLanguage(const char* sLanguage)
 
 		if(m_sLanguageDir!=null && m_sIniFileName!=null) break;
 
-		// сравним текущий язык с дефолтовым
+		// СЃСЂР°РІРЅРёРј С‚РµРєСѓС‰РёР№ СЏР·С‹Рє СЃ РґРµС„РѕР»С‚РѕРІС‹Рј
 		if( ini->ReadString("COMMON","defaultLanguage",param,sizeof(param)-1,"") )
 		{
 			if(stricmp(m_sLanguage,param)==0) break;
@@ -333,7 +333,7 @@ void STRSERVICE::SetLanguage(const char* sLanguage)
 
 
 	//=======================================================================
-	// Перечитаем пользовательские файлы
+	// РџРµСЂРµС‡РёС‚Р°РµРј РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРёРµ С„Р°Р№Р»С‹
 	//=======================================================================
 	UsersStringBlock * pOldURoot = m_pUsersBlocks;
 	UsersStringBlock * pUTmp = null;
@@ -383,7 +383,7 @@ void STRSERVICE::SetLanguage(const char* sLanguage)
 			}
 		}
 	}
-	// Удалим старые пользовательские файлы
+	// РЈРґР°Р»РёРј СЃС‚Р°СЂС‹Рµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРёРµ С„Р°Р№Р»С‹
 	UsersStringBlock * pNewURoot = m_pUsersBlocks;
 	m_pUsersBlocks = pOldURoot;
 	while(m_pUsersBlocks)
@@ -695,7 +695,7 @@ bool STRSERVICE::GetNextUsersString(char *src,long &idx,char* *strName,char* *st
 	} while( (tmpStr=strchr(nameEnd+2,'\n')) < dataBeg );
 	idx = dataEnd-src+2;
 
-	// избавимся от пробелов слева
+	// РёР·Р±Р°РІРёРјСЃСЏ РѕС‚ РїСЂРѕР±РµР»РѕРІ СЃР»РµРІР°
 	while(nameBeg<=nameEnd)
 	{
 		if(*nameBeg==0x0A)	{nameBeg++; continue;}
@@ -705,7 +705,7 @@ bool STRSERVICE::GetNextUsersString(char *src,long &idx,char* *strName,char* *st
 		break;
 	}
 	if(nameEnd-nameBeg<=1) nameEnd = dataBeg-2;
-	// избавимся от пробелов справа
+	// РёР·Р±Р°РІРёРјСЃСЏ РѕС‚ РїСЂРѕР±РµР»РѕРІ СЃРїСЂР°РІР°
 	while(nameBeg<nameEnd)
 	{
 		if(*nameBeg==0x0A)	{nameBeg++; continue;}
@@ -718,7 +718,7 @@ bool STRSERVICE::GetNextUsersString(char *src,long &idx,char* *strName,char* *st
 		if(*nameEnd==' ') {nameEnd--; continue;}
 		break;
 	}
-	// избавимся от пробелов слева и справа в данных
+	// РёР·Р±Р°РІРёРјСЃСЏ РѕС‚ РїСЂРѕР±РµР»РѕРІ СЃР»РµРІР° Рё СЃРїСЂР°РІР° РІ РґР°РЅРЅС‹С…
 	while(dataBeg<dataEnd)
 	{
 		if(*dataEnd=='\t')	{dataEnd--; continue;}
@@ -753,10 +753,10 @@ bool STRSERVICE::GetNextUsersString(char *src,long &idx,char* *strName,char* *st
 //===============================================================
 // SCRIPT LIBS SECTION
 //===============================================================
-// ОПИСАНИЕ ФУНКЦИЙ :
+// РћРџРРЎРђРќРР• Р¤РЈРќРљР¦РР™ :
 //==============================================================
 
-	// Получить текущий язык
+	// РџРѕР»СѓС‡РёС‚СЊ С‚РµРєСѓС‰РёР№ СЏР·С‹Рє
 DWORD __cdecl _Language_GetLanguage(VS_STACK * pS)
 {
 	char * strLangName = g_StringServicePointer->GetLanguage();
@@ -767,13 +767,13 @@ DWORD __cdecl _Language_GetLanguage(VS_STACK * pS)
 	return IFUNCRESULT_OK;
 }
 
-	// Открыть языковый файл
+	// РћС‚РєСЂС‹С‚СЊ СЏР·С‹РєРѕРІС‹Р№ С„Р°Р№Р»
 DWORD __cdecl _Language_OpenFile(VS_STACK * pS)
 {
 	VDATA * pLngFileName = (VDATA*)pS->Pop();	if (!pLngFileName) return IFUNCRESULT_FAILED;
 	char * strLngFileName=0;	pLngFileName->Get(strLngFileName);
 
-		// получим ID для заданного файла
+		// РїРѕР»СѓС‡РёРј ID РґР»СЏ Р·Р°РґР°РЅРЅРѕРіРѕ С„Р°Р№Р»Р°
 	long nLngFileID = g_StringServicePointer->OpenUsersStringFile(strLngFileName);
 
 	VDATA * pVR = (VDATA*)pS->Push(); if (!pVR) return IFUNCRESULT_FAILED;
@@ -782,7 +782,7 @@ DWORD __cdecl _Language_OpenFile(VS_STACK * pS)
 	return IFUNCRESULT_OK;
 }
 
-	// Закрыть языковый файл
+	// Р—Р°РєСЂС‹С‚СЊ СЏР·С‹РєРѕРІС‹Р№ С„Р°Р№Р»
 DWORD __cdecl _Language_CloseFile(VS_STACK * pS)
 {
 	VDATA * pLngFileID = (VDATA*)pS->Pop();	if (!pLngFileID) return IFUNCRESULT_FAILED;
@@ -793,7 +793,7 @@ DWORD __cdecl _Language_CloseFile(VS_STACK * pS)
 	return IFUNCRESULT_OK;
 }
 
-	// Интерпретировать строку используя языковый файл
+	// РРЅС‚РµСЂРїСЂРµС‚РёСЂРѕРІР°С‚СЊ СЃС‚СЂРѕРєСѓ РёСЃРїРѕР»СЊР·СѓСЏ СЏР·С‹РєРѕРІС‹Р№ С„Р°Р№Р»
 DWORD __cdecl _Language_ConvertString(VS_STACK * pS)
 {
 	VDATA * pInStr = (VDATA*)pS->Pop();	if (!pInStr) return IFUNCRESULT_FAILED;
@@ -811,7 +811,7 @@ DWORD __cdecl _Language_ConvertString(VS_STACK * pS)
 	return IFUNCRESULT_OK;
 }
 
-	// Интерпретировать строку используя общий языковый файл
+	// РРЅС‚РµСЂРїСЂРµС‚РёСЂРѕРІР°С‚СЊ СЃС‚СЂРѕРєСѓ РёСЃРїРѕР»СЊР·СѓСЏ РѕР±С‰РёР№ СЏР·С‹РєРѕРІС‹Р№ С„Р°Р№Р»
 DWORD __cdecl _XI_ConvertString(VS_STACK * pS)
 {
 	VDATA * pInStr = (VDATA*)pS->Pop();	if (!pInStr) return IFUNCRESULT_FAILED;
@@ -826,7 +826,7 @@ DWORD __cdecl _XI_ConvertString(VS_STACK * pS)
 	return IFUNCRESULT_OK;
 }
 
-	// Установить язык
+	// РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЏР·С‹Рє
 DWORD __cdecl _Language_SetLanguage(VS_STACK * pS)
 {
 	VDATA * pLngName = (VDATA*)pS->Pop();	if (!pLngName) return IFUNCRESULT_FAILED;
@@ -837,7 +837,7 @@ DWORD __cdecl _Language_SetLanguage(VS_STACK * pS)
 	return IFUNCRESULT_OK;
 }
 
-	// Получить ID Глобального языкового файла
+	// РџРѕР»СѓС‡РёС‚СЊ ID Р“Р»РѕР±Р°Р»СЊРЅРѕРіРѕ СЏР·С‹РєРѕРІРѕРіРѕ С„Р°Р№Р»Р°
 DWORD __cdecl _GlobalLngFileID(VS_STACK * pS)
 {
 	VDATA * pVR = (VDATA*)pS->Push(); if (!pVR) return IFUNCRESULT_FAILED;
@@ -846,7 +846,7 @@ DWORD __cdecl _GlobalLngFileID(VS_STACK * pS)
 	return IFUNCRESULT_OK;
 }
 
-	// Получить ID Глобального языкового файла
+	// РџРѕР»СѓС‡РёС‚СЊ ID Р“Р»РѕР±Р°Р»СЊРЅРѕРіРѕ СЏР·С‹РєРѕРІРѕРіРѕ С„Р°Р№Р»Р°
 DWORD __cdecl _LanguageGetFaderPic(VS_STACK * pS)
 {
 	VDATA * pPicName = (VDATA*)pS->Pop();	if (!pPicName) return IFUNCRESULT_FAILED;
@@ -880,7 +880,7 @@ DWORD __cdecl _LanguageGetFaderPic(VS_STACK * pS)
 }
 
 
-// Установить цветокоррекцию для игры
+// РЈСЃС‚Р°РЅРѕРІРёС‚СЊ С†РІРµС‚РѕРєРѕСЂСЂРµРєС†РёСЋ РґР»СЏ РёРіСЂС‹
 DWORD __cdecl _SetColorCorrection(VS_STACK * pS)
 {
 	VDATA * pBright = (VDATA*)pS->Pop();	if (!pBright) return IFUNCRESULT_FAILED;
@@ -899,7 +899,7 @@ DWORD __cdecl _SetColorCorrection(VS_STACK * pS)
 	return IFUNCRESULT_OK;
 }
 
-// Установить чувствительность мыши
+// РЈСЃС‚Р°РЅРѕРІРёС‚СЊ С‡СѓРІСЃС‚РІРёС‚РµР»СЊРЅРѕСЃС‚СЊ РјС‹С€Рё
 DWORD __cdecl _SetMouseSensitivity(VS_STACK * pS)
 {
 	VDATA * pYSens = (VDATA*)pS->Pop();	if (!pYSens) return IFUNCRESULT_FAILED;
@@ -917,7 +917,7 @@ DWORD __cdecl _SetMouseSensitivity(VS_STACK * pS)
 	return IFUNCRESULT_OK;
 }
 
-// Установить инвертность на клавишу
+// РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РёРЅРІРµСЂС‚РЅРѕСЃС‚СЊ РЅР° РєР»Р°РІРёС€Сѓ
 DWORD __cdecl _ControlMakeInvert(VS_STACK * pS)
 {
 	VDATA * pControlFlag = (VDATA*)pS->Pop();	if (!pControlFlag) return IFUNCRESULT_FAILED;

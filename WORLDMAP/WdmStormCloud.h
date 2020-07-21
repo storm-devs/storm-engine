@@ -22,28 +22,28 @@ class WdmStormCloud : public WdmCloud
 	};
 
 //--------------------------------------------------------------------------------------------
-//Конструирование, деструктурирование
+//РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ, РґРµСЃС‚СЂСѓРєС‚СѓСЂРёСЂРѕРІР°РЅРёРµ
 //--------------------------------------------------------------------------------------------
 public:
 	WdmStormCloud();
 	virtual ~WdmStormCloud();
 
-	//Расчёты
+	//Р Р°СЃС‡С‘С‚С‹
 	virtual void Update(float dltTime);
 
-	//Отрисовка
+	//РћС‚СЂРёСЃРѕРІРєР°
 	virtual void PRender(VDX8RENDER * rs);
 	virtual void LRender(VDX8RENDER * rs);
 
 //--------------------------------------------------------------------------------------------
-//Инкапсуляция
+//РРЅРєР°РїСЃСѓР»СЏС†РёСЏ
 //--------------------------------------------------------------------------------------------
 private:
 	virtual void BuildCloud(long n);
 	void FillRects();
 
 
-	//Параметры молнии
+	//РџР°СЂР°РјРµС‚СЂС‹ РјРѕР»РЅРёРё
 	long curLightning;
 	float lightningWaitTime;
 	float lightningTime;
@@ -51,11 +51,11 @@ private:
 	long lastColor;
 	long lightningColor;
 
-	//Дождик
+	//Р”РѕР¶РґРёРє
 	long rainTexture;
 	float curU, curV;
-	CVECTOR rainpos[2048];			//Позиция на партикле
-	static RainVertex rain[4096];	//Текущий массив для отрисовки
+	CVECTOR rainpos[2048];			//РџРѕР·РёС†РёСЏ РЅР° РїР°СЂС‚РёРєР»Рµ
+	static RainVertex rain[4096];	//РўРµРєСѓС‰РёР№ РјР°СЃСЃРёРІ РґР»СЏ РѕС‚СЂРёСЃРѕРІРєРё
 };
 
 #endif

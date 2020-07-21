@@ -82,17 +82,17 @@ void BackgroundDataDescriber::AddMinutes( long nQuantity )
 {
 	min += nQuantity;
 	long nAddHours = 0;
-	// проверка на время больше часа
+	// РїСЂРѕРІРµСЂРєР° РЅР° РІСЂРµРјСЏ Р±РѕР»СЊС€Рµ С‡Р°СЃР°
 	if( min >= 60 ) {
 		nAddHours = min / 60;
 		min -= nAddHours * 60;
 	}
-	// и на откат назад
+	// Рё РЅР° РѕС‚РєР°С‚ РЅР°Р·Р°Рґ
 	if( min < 0 ) {
 		nAddHours = (min-59) / 60;
 		min -= nAddHours * 60;
 	}
-	// полученные на смещение часы присоединяем к имеющимся
+	// РїРѕР»СѓС‡РµРЅРЅС‹Рµ РЅР° СЃРјРµС‰РµРЅРёРµ С‡Р°СЃС‹ РїСЂРёСЃРѕРµРґРёРЅСЏРµРј Рє РёРјРµСЋС‰РёРјСЃСЏ
 	if( nAddHours != 0 )
 		AddHour( nAddHours );
 }
@@ -101,17 +101,17 @@ void BackgroundDataDescriber::AddHour( long nQuantity )
 {
 	hour += nQuantity;
 	long nAddDays = 0;
-	// проверка на время больше суток
+	// РїСЂРѕРІРµСЂРєР° РЅР° РІСЂРµРјСЏ Р±РѕР»СЊС€Рµ СЃСѓС‚РѕРє
 	if( hour >= 24 ) {
 		nAddDays = hour / 24;
 		hour -= nAddDays * 24;
 	}
-	// и на откат назад
+	// Рё РЅР° РѕС‚РєР°С‚ РЅР°Р·Р°Рґ
 	if( hour < 0 ) {
 		nAddDays = (hour-23) / 24;
 		hour -= nAddDays * 24;
 	}
-	// полученные на смещение часы присоединяем к имеющимся
+	// РїРѕР»СѓС‡РµРЅРЅС‹Рµ РЅР° СЃРјРµС‰РµРЅРёРµ С‡Р°СЃС‹ РїСЂРёСЃРѕРµРґРёРЅСЏРµРј Рє РёРјРµСЋС‰РёРјСЃСЏ
 	if( nAddDays != 0 )
 		AddDay( nAddDays );
 }
@@ -120,8 +120,8 @@ void BackgroundDataDescriber::AddDay( long nQuantity )
 {
 	day += nQuantity;
 	if( day > 0 )
-	{ // дней вперед
-		// проверка на день больше месяца
+	{ // РґРЅРµР№ РІРїРµСЂРµРґ
+		// РїСЂРѕРІРµСЂРєР° РЅР° РґРµРЅСЊ Р±РѕР»СЊС€Рµ РјРµСЃСЏС†Р°
 		while( true )
 		{
 			bool bRightDay = true;
@@ -134,10 +134,10 @@ void BackgroundDataDescriber::AddDay( long nQuantity )
 			//----------------------------------------------------
 			case 2: // 28/29 day (february with normal/leap year)
 				if( (year%4) == 0 ) {
-					// високосный год
+					// РІРёСЃРѕРєРѕСЃРЅС‹Р№ РіРѕРґ
 					if( day > 29 ) { day -= 29; bRightDay = false; }
 				} else {
-					// не високосный год
+					// РЅРµ РІРёСЃРѕРєРѕСЃРЅС‹Р№ РіРѕРґ
 					if( day > 28 ) { day -= 28; bRightDay = false; }
 				}
 			break;
@@ -190,10 +190,10 @@ void BackgroundDataDescriber::AddDay( long nQuantity )
 		}
 	}
 	else
-	{ // дней назад
+	{ // РґРЅРµР№ РЅР°Р·Р°Рґ
 		while( day < 1 )
 		{
-			AddMonth( -1 ); // проматываем месяц назад
+			AddMonth( -1 ); // РїСЂРѕРјР°С‚С‹РІР°РµРј РјРµСЃСЏС† РЅР°Р·Р°Рґ
 			switch( month )
 			{
 			case 1: day += 31; break;

@@ -1,7 +1,7 @@
 #include "GeomCache.h"
 
 
-//Конструктор/деструктор
+//РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ/РґРµСЃС‚СЂСѓРєС‚РѕСЂ
 GeomCache::GeomCache () : Cache(_FL_)
 {
 	pGS = (VGEOMETRY *)api->CreateService("geometry");
@@ -13,7 +13,7 @@ GeomCache::~GeomCache ()
 	ResetCache ();
 }
 
-//Положить модель в кэш
+//РџРѕР»РѕР¶РёС‚СЊ РјРѕРґРµР»СЊ РІ РєСЌС€
 void GeomCache::CacheModel (const char* FileName)
 {
 	if (GetModel(FileName)) return;
@@ -27,7 +27,7 @@ void GeomCache::CacheModel (const char* FileName)
 	Cache.Add(CacheEntry);
 }
 
-//Сбросить кэш
+//РЎР±СЂРѕСЃРёС‚СЊ РєСЌС€
 void GeomCache::ResetCache ()
 {
 	for (int n = 0; n < Cache; n++)
@@ -38,7 +38,7 @@ void GeomCache::ResetCache ()
 	Cache.DelAll();
 }
 
-//Взять модель из кэша
+//Р’Р·СЏС‚СЊ РјРѕРґРµР»СЊ РёР· РєСЌС€Р°
 GEOS* GeomCache::GetModel (const char* FileName)
 {
 	for (int n = 0; n < Cache; n++)
@@ -49,7 +49,7 @@ GEOS* GeomCache::GetModel (const char* FileName)
 	return NULL;
 }
 
-//Проверить существует ли такая модель в кэше
+//РџСЂРѕРІРµСЂРёС‚СЊ СЃСѓС‰РµСЃС‚РІСѓРµС‚ Р»Рё С‚Р°РєР°СЏ РјРѕРґРµР»СЊ РІ РєСЌС€Рµ
 bool GeomCache::ValidatePointer (GEOS* pModel)
 {
 	for (int n = 0; n < Cache; n++)

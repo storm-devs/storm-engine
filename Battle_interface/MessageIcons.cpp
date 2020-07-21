@@ -28,7 +28,7 @@ void MESSAGE_ICONS::Update(DWORD deltaTime)
 		BI_COLOR_VERTEX *pVBuf = (BI_COLOR_VERTEX*)rs->LockVertexBuffer(m_vMsgIconBufID);
 		if(!pVBuf) return;
 
-		// Расчет цвета мигания
+		// Р Р°СЃС‡РµС‚ С†РІРµС‚Р° РјРёРіР°РЅРёСЏ
 		DWORD blindColor = m_dwNormalColor;
 		if(m_bBlindDirectUp)	blindColor = BIUtils::GetIntervalColor(m_dwHighBlindColor, m_dwLowBlindColor, m_fCurBlindTime/m_fBlindTimeUp);
 		else	blindColor = BIUtils::GetIntervalColor(m_dwLowBlindColor, m_dwHighBlindColor, m_fCurBlindTime/m_fBlindTimeDown);
@@ -39,10 +39,10 @@ void MESSAGE_ICONS::Update(DWORD deltaTime)
 
 		for(i=0; i<MESSAGE_ICONS_COLUMN_QUANTITY; i++)
 		{
-			// действия над иконками
+			// РґРµР№СЃС‚РІРёСЏ РЅР°Рґ РёРєРѕРЅРєР°РјРё
 			for(j=0; j<m_pMsgColumns[i].rowQ; j++)
 			{
-				// Проведем проверку на удаление иконок
+				// РџСЂРѕРІРµРґРµРј РїСЂРѕРІРµСЂРєСѓ РЅР° СѓРґР°Р»РµРЅРёРµ РёРєРѕРЅРѕРє
 				if( m_pMsgColumns[i].pRow[j].bDoBlend )
 				{
 					if( (m_pMsgColumns[i].pRow[j].curTime -= deltaTime*.001f) <= 0.f )
@@ -54,7 +54,7 @@ void MESSAGE_ICONS::Update(DWORD deltaTime)
 					}
 					m_pMsgColumns[i].pRow[j].color = BIUtils::GetIntervalColor(ARGB(0,128,128,128), ARGB(255,128,128,128), m_pMsgColumns[i].pRow[j].curTime/m_fBlendTime);
 				}
-				// осадка иконок вниз
+				// РѕСЃР°РґРєР° РёРєРѕРЅРѕРє РІРЅРёР·
 				float fBottonLimit = (float)m_nBottomY;
 				if(j>0)	fBottonLimit = m_pMsgColumns[i].pRow[j-1].bottom - m_nMsgIconHeight - m_nMsgIconDist;
 				if( m_pMsgColumns[i].pRow[j].bottom < fBottonLimit )
@@ -65,10 +65,10 @@ void MESSAGE_ICONS::Update(DWORD deltaTime)
 				}
 			}
 
-			// пометим иконки
+			// РїРѕРјРµС‚РёРј РёРєРѕРЅРєРё
 			if(m_pIconsAttr[i])
 			{
-				// пометим все иконки как удаляемые
+				// РїРѕРјРµС‚РёРј РІСЃРµ РёРєРѕРЅРєРё РєР°Рє СѓРґР°Р»СЏРµРјС‹Рµ
 				for(n=0; n<m_pMsgColumns[i].rowQ; n++)
 				{
 					if( !m_pMsgColumns[i].pRow[n].bDoBlend )
@@ -77,7 +77,7 @@ void MESSAGE_ICONS::Update(DWORD deltaTime)
 						m_pMsgColumns[i].pRow[n].curTime = m_fBlendTime;
 					}
 				}
-				// пройдемся по иконкам
+				// РїСЂРѕР№РґРµРјСЃСЏ РїРѕ РёРєРѕРЅРєР°Рј
 				q = m_pIconsAttr[i]->GetAttributesNum();
 				for(n=0; n<q; n++)
 				{
@@ -102,7 +102,7 @@ void MESSAGE_ICONS::Update(DWORD deltaTime)
 				}
 			}
 
-			// выведем иконки в буфер
+			// РІС‹РІРµРґРµРј РёРєРѕРЅРєРё РІ Р±СѓС„РµСЂ
 			FRECT frectTmp;
 			for(j=0; j<m_pMsgColumns[i].rowQ; j++)
 			{
@@ -125,7 +125,7 @@ void MESSAGE_ICONS::Update(DWORD deltaTime)
 
 void MESSAGE_ICONS::Draw()
 {
-	// показать сообщения
+	// РїРѕРєР°Р·Р°С‚СЊ СЃРѕРѕР±С‰РµРЅРёСЏ
 	if( m_bShowMsgIcon && m_nMsgIconQnt>0 && m_idMsgIconsTexture>=0 )
 	{
 		rs->TextureSet(0,m_idMsgIconsTexture);

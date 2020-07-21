@@ -553,7 +553,7 @@ dword _cdecl CXI_TEXTBUTTON::MessageProc(long msgcode, MESSAGE & message)
 {
 	switch(msgcode)
 	{
-	case 0: // поменять текст на кнопке
+	case 0: // РїРѕРјРµРЅСЏС‚СЊ С‚РµРєСЃС‚ РЅР° РєРЅРѕРїРєРµ
 		{
 			char param[256];
 			message.String(sizeof(param)-1,param);
@@ -568,7 +568,7 @@ dword _cdecl CXI_TEXTBUTTON::MessageProc(long msgcode, MESSAGE & message)
 			}
 		}
 	break;
-	case 1: // поменять позицию кнопки
+	case 1: // РїРѕРјРµРЅСЏС‚СЊ РїРѕР·РёС†РёСЋ РєРЅРѕРїРєРё
 		XYRECT newPos;
 		newPos.left = message.Long();
 		newPos.top = message.Long();

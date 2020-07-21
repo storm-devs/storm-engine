@@ -327,7 +327,7 @@ bool FINDDIALOGNODES::Init()
 			api->fio->_CloseHandle(hfile);
 			fileBuf[filesize] = 0;
 
-			// теперь есть буфер - начнем его анализировать
+			// С‚РµРїРµСЂСЊ РµСЃС‚СЊ Р±СѓС„РµСЂ - РЅР°С‡РЅРµРј РµРіРѕ Р°РЅР°Р»РёР·РёСЂРѕРІР°С‚СЊ
 			char * pStr = fileBuf;
 			char param[1024];
 

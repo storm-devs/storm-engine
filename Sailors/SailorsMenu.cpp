@@ -174,7 +174,7 @@ void Menu :: ChangeControl1(int key, SailorsPoints &sailorsPoints) //Change peop
 			Update(sailorsPoints);
 			return;
 		};
-			//Îñâîáîäèòü çàíÿòûå òî÷êè
+			//ÐžÑÐ²Ð¾Ð±Ð¾Ð´Ð¸Ñ‚ÑŒ Ð·Ð°Ð½ÑÑ‚Ñ‹Ðµ Ñ‚Ð¾Ñ‡ÐºÐ¸
 		if (sailrs->shipWalk[0].shipMan[0].mode== MAN_CLIMB_UP)
 		sailrs->shipWalk[0].sailorsPoints.points.point[
 			sailrs->shipWalk[0].shipMan[0].targetWayPoint

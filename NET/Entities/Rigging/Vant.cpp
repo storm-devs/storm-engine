@@ -48,7 +48,7 @@ bool NetVant::Init()
  
 void NetVant::SetDevice()
 {
-    // получить сервис рендера
+    // РїРѕР»СѓС‡РёС‚СЊ СЃРµСЂРІРёСЃ СЂРµРЅРґРµСЂР°
 	RenderService = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
 	if(!RenderService)
 	{
@@ -78,7 +78,7 @@ void NetVant::Execute(dword Delta_Time)
     if(bUse)
     {
         //====================================================
-        // Если был изменен ини-файл, то считать инфо из него
+        // Р•СЃР»Рё Р±С‹Р» РёР·РјРµРЅРµРЅ РёРЅРё-С„Р°Р№Р», С‚Рѕ СЃС‡РёС‚Р°С‚СЊ РёРЅС„Рѕ РёР· РЅРµРіРѕ
         WIN32_FIND_DATA	wfd;
 	    HANDLE h = _CORE_API->fio->_FindFirstFile("resource\\ini\\rigging.ini",&wfd);
         if (INVALID_HANDLE_VALUE != h) 
@@ -184,7 +184,7 @@ dword _cdecl NetVant::ProcessMessage(MESSAGE & message)
 				}
 			}
 
-			if(vantQuantity==oldvantQuantity) // не было вантов - удаляем всю группу
+			if(vantQuantity==oldvantQuantity) // РЅРµ Р±С‹Р»Рѕ РІР°РЅС‚РѕРІ - СѓРґР°Р»СЏРµРј РІСЃСЋ РіСЂСѓРїРїСѓ
 			{
 				if(groupQuantity==1)
 				{
@@ -371,7 +371,7 @@ void NetVant::SetVertexes()
             pv[iv+6].tu=ropeXr; pv[iv+6].tv=ftmp;
             iv+=7;
 
-            // установить точки балки
+            // СѓСЃС‚Р°РЅРѕРІРёС‚СЊ С‚РѕС‡РєРё Р±Р°Р»РєРё
             CVECTOR tvec= uPos - horzDirect*(upWidth*.5f) + vertDirect*upHeight;
             pv[iv].pos = tvec - vertDirect*upHeight*fBalkHeight;
             pv[iv+1].pos = tvec + vlist[vn]->pos[0]*fBalkWidth;
@@ -448,7 +448,7 @@ void NetVant::AddLabel(GEOS::LABEL &lbl,NODE *nod)
         }
     if(vn==vantQuantity)
     {
-        //создаем новый вант
+        //СЃРѕР·РґР°РµРј РЅРѕРІС‹Р№ РІР°РЅС‚
         vd= NEW VANTDATA;
         if(vd==0)
             _THROW("Not memory allocate");
@@ -570,7 +570,7 @@ void NetVant::LoadIni()
 
 	sprintf(section,"VANTS");
 
-    // имя текстуры
+    // РёРјСЏ С‚РµРєСЃС‚СѓСЂС‹
     ini->ReadString(section,"TextureName",param,sizeof(param)-1,"vant.tga");
     if(texl!=-1)
     {
@@ -588,41 +588,41 @@ void NetVant::LoadIni()
         TextureName=NEW char[strlen(param)+1];
         strcpy(TextureName,param);
     }
-    // толщина веревки
+    // С‚РѕР»С‰РёРЅР° РІРµСЂРµРІРєРё
     ROPE_WIDTH=ini->GetFloat(section,"fWidth",0.1f);
-    // количество веревок
+    // РєРѕР»РёС‡РµСЃС‚РІРѕ РІРµСЂРµРІРѕРє
     ROPE_QUANT=(int)ini->GetLong(section,"fRopeQuant",5);
     if(ROPE_QUANT<2) ROPE_QUANT=2;
-    // координаты текстуры горизонтальной веревки xBeg
+    // РєРѕРѕСЂРґРёРЅР°С‚С‹ С‚РµРєСЃС‚СѓСЂС‹ РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅРѕР№ РІРµСЂРµРІРєРё xBeg
     ropeXl=ini->GetFloat(section,"fHRopeXbeg",0.5f);
     ropeXr=ini->GetFloat(section,"fHRopeXend",1.f);
-    // координаты текстуры треугольника
+    // РєРѕРѕСЂРґРёРЅР°С‚С‹ С‚РµРєСЃС‚СѓСЂС‹ С‚СЂРµСѓРіРѕР»СЊРЅРёРєР°
     treangXl=ini->GetFloat(section,"fTreangXbeg",0.f);
     treangXr=ini->GetFloat(section,"fTreangXend",0.5f);
     treangYu=ini->GetFloat(section,"fTreangYbeg",0.f);
     treangYd=ini->GetFloat(section,"fTreangYend",1.f);
-    // координаты текстуры балки
+    // РєРѕРѕСЂРґРёРЅР°С‚С‹ С‚РµРєСЃС‚СѓСЂС‹ Р±Р°Р»РєРё
     balkYu=ini->GetFloat(section,"fBalkYbeg",0.6f);
     balkYd=ini->GetFloat(section,"fBalkYend",1.f);
-    // координаты текстуры вертикальной веревки
+    // РєРѕРѕСЂРґРёРЅР°С‚С‹ С‚РµРєСЃС‚СѓСЂС‹ РІРµСЂС‚РёРєР°Р»СЊРЅРѕР№ РІРµСЂРµРІРєРё
     vRopeXl=ini->GetFloat(section,"fVRopeXbeg",0.f);
     vRopeXr=ini->GetFloat(section,"fVRopeXend",0.1f);
-    // ширина верхнего треугольника
+    // С€РёСЂРёРЅР° РІРµСЂС…РЅРµРіРѕ С‚СЂРµСѓРіРѕР»СЊРЅРёРєР°
     upWidth=ini->GetFloat(section,"fTreangWidth",1.f);
-    // высота верхнего треугольника
+    // РІС‹СЃРѕС‚Р° РІРµСЂС…РЅРµРіРѕ С‚СЂРµСѓРіРѕР»СЊРЅРёРєР°
     upHeight=ini->GetFloat(section,"fTreangHeight",1.f);
-    // высота вертикальной веревки
+    // РІС‹СЃРѕС‚Р° РІРµСЂС‚РёРєР°Р»СЊРЅРѕР№ РІРµСЂРµРІРєРё
     vRopeHeight=ini->GetFloat(section,"fVRopeHeight",1.f);
-    // высота горизонтальной веревки
+    // РІС‹СЃРѕС‚Р° РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅРѕР№ РІРµСЂРµРІРєРё
     hRopeHeight=ini->GetFloat(section,"fHRopeHeight",1.f);
-    // высота балки относительно высоты треугольника
+    // РІС‹СЃРѕС‚Р° Р±Р°Р»РєРё РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РІС‹СЃРѕС‚С‹ С‚СЂРµСѓРіРѕР»СЊРЅРёРєР°
     fBalkHeight=ini->GetFloat(section,"fBalkHeight",0.1f);
     fBalkWidth=ini->GetFloat(section,"fBalkWidth",1.2f);
-	// квадрат расстояния с которого не видны ванты
+	// РєРІР°РґСЂР°С‚ СЂР°СЃСЃС‚РѕСЏРЅРёСЏ СЃ РєРѕС‚РѕСЂРѕРіРѕ РЅРµ РІРёРґРЅС‹ РІР°РЅС‚С‹
     fVantMaxDist=ini->GetFloat(section,"fVantMaxDist",10000.f);
-    // шаг дискретизации движения ванта
+    // С€Р°Рі РґРёСЃРєСЂРµС‚РёР·Р°С†РёРё РґРІРёР¶РµРЅРёСЏ РІР°РЅС‚Р°
     ZERO_CMP_VAL=ini->GetFloat(section,"fDiscrValue",0.01f);
-    // максимальное изменение положения ванта при котором вант перестает отображаться
+    // РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ РёР·РјРµРЅРµРЅРёРµ РїРѕР»РѕР¶РµРЅРёСЏ РІР°РЅС‚Р° РїСЂРё РєРѕС‚РѕСЂРѕРј РІР°РЅС‚ РїРµСЂРµСЃС‚Р°РµС‚ РѕС‚РѕР±СЂР°Р¶Р°С‚СЊСЃСЏ
     MAXFALL_CMP_VAL=ini->GetFloat(section,"fDisapearValue",5.f);
 
     delete ini;
@@ -649,7 +649,7 @@ void NetVant::doMove()
             if( !VectCmp(lPos, vlist[vn]->pLeftStart, MAXFALL_CMP_VAL) ||
                 !VectCmp(uPos, vlist[vn]->pUpStart, MAXFALL_CMP_VAL) )
             {
-                vlist[vn]->bDeleted=true; // установим признак удаления ванта
+                vlist[vn]->bDeleted=true; // СѓСЃС‚Р°РЅРѕРІРёРј РїСЂРёР·РЅР°Рє СѓРґР°Р»РµРЅРёСЏ РІР°РЅС‚Р°
                 bYesDeleted=true;
             }
 
@@ -675,7 +675,7 @@ void NetVant::doMove()
                 pv[iv+6].pos = rPos;
                 iv+=7;
 
-                // установить точки балки
+                // СѓСЃС‚Р°РЅРѕРІРёС‚СЊ С‚РѕС‡РєРё Р±Р°Р»РєРё
                 CVECTOR tvec= uPos - htmp + vertDirect*upHeight;
                 pv[iv].pos = uPos - htmp + vtmp;
                 pv[iv+1].pos = tvec + vlist[vn]->pos[0]*fBalkWidth;
@@ -800,13 +800,13 @@ void NetVant::SetAdd(int firstNum)
 
 void NetVant::DoDelete()
 {
-    // для всех удаленных групп удалим принадлежащие им ванты
+    // РґР»СЏ РІСЃРµС… СѓРґР°Р»РµРЅРЅС‹С… РіСЂСѓРїРї СѓРґР°Р»РёРј РїСЂРёРЅР°РґР»РµР¶Р°С‰РёРµ РёРј РІР°РЅС‚С‹
     int ngn=0;
     int nvn=0;
     nVert=0; nIndx=0;
     for(int gn=0; gn<groupQuantity; gn++)
     {
-        int gs=0; // размер группы
+        int gs=0; // СЂР°Р·РјРµСЂ РіСЂСѓРїРїС‹
         gdata[gn].sVert = nVert;
         gdata[gn].sIndx = nIndx;
         gdata[gn].nVert = 0;
@@ -830,11 +830,11 @@ void NetVant::DoDelete()
 
             gdata[gn].vantIdx[gs++] = nvn;
 
-            // поставим вант на нужное местов списке
+            // РїРѕСЃС‚Р°РІРёРј РІР°РЅС‚ РЅР° РЅСѓР¶РЅРѕРµ РјРµСЃС‚РѕРІ СЃРїРёСЃРєРµ
             vlist[nvn++]=vlist[vn];
         }
 
-        // если группа пустая, то удалим ее
+        // РµСЃР»Рё РіСЂСѓРїРїР° РїСѓСЃС‚Р°СЏ, С‚Рѕ СѓРґР°Р»РёРј РµРµ
         if(gs==0)
         {
             if(gdata[gn].vantIdx)
@@ -843,14 +843,14 @@ void NetVant::DoDelete()
         }
 
         gdata[gn].vantQuantity=gs;
-        // поставим группу на нужное место в списке
+        // РїРѕСЃС‚Р°РІРёРј РіСЂСѓРїРїСѓ РЅР° РЅСѓР¶РЅРѕРµ РјРµСЃС‚Рѕ РІ СЃРїРёСЃРєРµ
         if(ngn<gn)
             memcpy(&gdata[ngn],&gdata[gn],sizeof(GROUPDATA));
         ngn++;
     }
 
     nIndx/=3;
-    // если нет больше вант, то уберем их все
+    // РµСЃР»Рё РЅРµС‚ Р±РѕР»СЊС€Рµ РІР°РЅС‚, С‚Рѕ СѓР±РµСЂРµРј РёС… РІСЃРµ
     if(ngn==0 || nvn==0)
     {
         vantQuantity = groupQuantity = 0;
