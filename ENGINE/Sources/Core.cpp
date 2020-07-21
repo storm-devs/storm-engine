@@ -461,7 +461,7 @@ bool CORE::LoadCoreState(CORE_STATE cs)
 	//LoadClassesTable();											// creating classes table
 	
 	// create atoms space
-	if(!CreateAtomsTable(cs.Atoms_space)) THROW;
+	if(!CreateAtomsTable(cs.Atoms_space)) SE_THROW;
 
 	DeleteServicesList.Init(sizeof(CODE_AND_POINTER),8);
 	DeleteEntityList.Init(sizeof(ENTITY_ID),2);
@@ -527,7 +527,7 @@ void __declspec(noinline) __cdecl CORE::ProcessEngineIniFile()
 	}
 #else
 	if(!Controls) Controls = (CONTROLS *)MakeClass("xbox_controls");
-	if(!Controls) THROW("no xbox_controls");
+	if(!Controls) SE_THROW("no xbox_controls");
 #endif
 
 	res = engine_ini->ReadString(0,"run",String,sizeof(String),"");
@@ -810,7 +810,7 @@ bool CORE::CreateEntity(ENTITY_ID * id_PTR, char * class_name, ATTRIBUTES * attr
 	catch(_EXS xobj) 
 	{
 		TraceCurrent();
-		if(!Constructor_counter) THROW;
+		if(!Constructor_counter) SE_THROW;
 		Constructor_counter--;
 		POP_CONTROL(0)
 		System_Api.entityID_PTR = null;
@@ -819,7 +819,7 @@ bool CORE::CreateEntity(ENTITY_ID * id_PTR, char * class_name, ATTRIBUTES * attr
 	catch(...)
 	{
 		TraceCurrent();
-		if(!Constructor_counter) THROW;
+		if(!Constructor_counter) SE_THROW;
 		Constructor_counter--;
 		POP_CONTROL(0)
 		System_Api.entityID_PTR = null;
@@ -827,7 +827,7 @@ bool CORE::CreateEntity(ENTITY_ID * id_PTR, char * class_name, ATTRIBUTES * attr
 	}
 	#endif
 
-	if(!Constructor_counter) THROW;
+	if(!Constructor_counter) SE_THROW;
 	Constructor_counter--;
 	System_Api.entityID_PTR = null;
 	
@@ -926,7 +926,7 @@ C_ATOM * CORE::CreateAtom(dword class_code)
 	GUARD(CORE::CreateAtom)
 	dword n;
 
-	if(Atoms_PTR == null ) THROW;
+	if(Atoms_PTR == null ) SE_THROW;
 
 	if(CoreState.Atoms_number >= CoreState.Atoms_space)
 	{
@@ -943,7 +943,7 @@ C_ATOM * CORE::CreateAtom(dword class_code)
 		if(Atoms_PTR[n] != null) continue;
 
 		Atoms_PTR[n] = NEW C_ATOM;
-		if(Atoms_PTR[n] == null) THROW;
+		if(Atoms_PTR[n] == null) SE_THROW;
 
 		if(CoreState.Atoms_max_orbit < n) CoreState.Atoms_max_orbit = n;
 
@@ -970,12 +970,12 @@ C_ATOM * CORE::CreateAtom(dword class_code)
 C_ATOM * CORE::FitAtom(ENTITY_ID entity_id, ATOM_STATE atom_state)
 {
 	GUARD(CORE::FitAtom)
-	if(Atoms_PTR == null ) THROW;
-	if(entity_id.atom_position > CoreState.Atoms_max_orbit) THROW;
-	if(Atoms_PTR[entity_id.atom_position] != null) THROW;
+	if(Atoms_PTR == null ) SE_THROW;
+	if(entity_id.atom_position > CoreState.Atoms_max_orbit) SE_THROW;
+	if(Atoms_PTR[entity_id.atom_position] != null) SE_THROW;
 
 	Atoms_PTR[entity_id.atom_position] = NEW C_ATOM;
-	if(Atoms_PTR[entity_id.atom_position] == null) THROW;
+	if(Atoms_PTR[entity_id.atom_position] == null) SE_THROW;
 	Atoms_PTR[entity_id.atom_position]->as = atom_state;
 	Atoms_PTR[entity_id.atom_position]->atom_id = entity_id;
 	Atoms_PTR[entity_id.atom_position]->atom_id.pointer = null;
@@ -990,8 +990,8 @@ bool CORE::DeleteAtom(C_ATOM * atom_PTR)
 	dword ap;
 	if(Atoms_PTR == null || atom_PTR == null) return false;
 	ap = atom_PTR->atom_id.atom_position;
-	if(ap >= CoreState.Atoms_space) THROW;
-	if(Atoms_PTR[ap] != atom_PTR) THROW;
+	if(ap >= CoreState.Atoms_space) SE_THROW;
+	if(Atoms_PTR[ap] != atom_PTR) SE_THROW;
 	delete Atoms_PTR[ap];
 	Atoms_PTR[ap] = null;
 	CoreState.Atoms_number--;
@@ -1060,7 +1060,7 @@ bool CORE::FindClass(ENTITY_ID * id_PTR,char * class_name,dword class_code)
 	dword n;
 	dword hash;
 	
-	if(Atoms_PTR == null ) THROW;
+	if(Atoms_PTR == null ) SE_THROW;
 	if(class_name != null) hash = MakeHashValue(class_name); 
 	else hash = class_code;
 
@@ -1126,7 +1126,7 @@ bool CORE::GetEntity(ENTITY_ID * id_PTR)
 {
 	GUARD(CORE::GetEntity)
 	VALIDATE_API_CALLS // no necessary
-	if(Atoms_PTR == null) THROW;
+	if(Atoms_PTR == null) SE_THROW;
 	if(id_PTR == null) return false;
 
 	// scan all entities
@@ -1171,7 +1171,7 @@ bool CORE::GetEntityNext(ENTITY_ID * id_PTR)
 {
 	GUARD(CORE::GetEntityNext)
 	VALIDATE_API_CALLS // no necessary
-	if(Atoms_PTR == null ) THROW;
+	if(Atoms_PTR == null ) SE_THROW;
 	if(id_PTR == null) return false;
 
 	if(Scan_Layer_Code == INVALID_LAYER_CODE)
@@ -1466,10 +1466,10 @@ bool CORE::Convert_Pointer2ID(void * _entity_pointer,ENTITY_ID * id_PTR)
 	ENTITY_ID eid;
 	entity_PTR = (ENTITY *)_entity_pointer;
 	eid = entity_PTR->GetID();
-	if(Atoms_PTR == null ) THROW;
-	if(eid.atom_position > CoreState.Atoms_max_orbit) THROW;
-	if(Atoms_PTR[eid.atom_position] == null) THROW;
-	if(Atoms_PTR[eid.atom_position]->atom_id.pointer != _entity_pointer) THROW;
+	if(Atoms_PTR == null ) SE_THROW;
+	if(eid.atom_position > CoreState.Atoms_max_orbit) SE_THROW;
+	if(Atoms_PTR[eid.atom_position] == null) SE_THROW;
+	if(Atoms_PTR[eid.atom_position]->atom_id.pointer != _entity_pointer) SE_THROW;
 	if(id_PTR != null) memcpy(id_PTR,&Atoms_PTR[eid.atom_position]->atom_id,sizeof(ENTITY_ID));
 	UNGUARD
 	return true;
@@ -2473,7 +2473,7 @@ bool CORE::SaveState(char * file_name)
 /*	for(n=0;n<Classes_Table.GetStringsCount();n++)
 	{
 		char_PTR = Classes_Table.GetString(n);
-		if(char_PTR == null) THROW;
+		if(char_PTR == null) SE_THROW;
 		esg.SetState("s",char_PTR);
 	}
 */
@@ -2484,8 +2484,8 @@ bool CORE::SaveState(char * file_name)
 	// write objects id and atoms states
 	for(n=0;n<CoreState.Atoms_number;n++)
 	{
-		if(n == 0) { if(!GetEntity(&id)) THROW;	} 
-		else  { if(!GetEntityNext(&id)) THROW;	}
+		if(n == 0) { if(!GetEntity(&id)) SE_THROW;	} 
+		else  { if(!GetEntityNext(&id)) SE_THROW;	}
 		esg.SetState("m",sizeof(id),&id);
 		esg.SetState("m",sizeof(Atoms_PTR[id.atom_position]->as),&Atoms_PTR[id.atom_position]->as);
 		esg.CloseState();
@@ -2507,7 +2507,7 @@ bool CORE::SaveState(char * file_name)
 		{
 			if(n == 0) { id_PTR = CommonLayers.Layer_Table[i]->GetID(&Priority);	}
 			else { id_PTR = CommonLayers.Layer_Table[i]->GetNextID(&Priority);	}
-			if(id_PTR == null) THROW;
+			if(id_PTR == null) SE_THROW;
 			// save object priority and id
 			esg.SetState("um",Priority,sizeof(ENTITY_ID),id_PTR);
 		}
@@ -2526,14 +2526,14 @@ bool CORE::SaveState(char * file_name)
 	{
 		if(i == 0) service_PTR = Services_List.GetService(&class_code);
 		else service_PTR = Services_List.GetNextService(&class_code);
-		if(service_PTR == null) THROW;
+		if(service_PTR == null) SE_THROW;
 		esg.SetState("u",class_code);
 	}
 	for(i=0;i<Services_List.GetCount();i++)
 	{
 		if(i == 0) service_PTR = Services_List.GetService(&class_code);
 		else service_PTR = Services_List.GetNextService(&class_code);
-		if(service_PTR == null) THROW;
+		if(service_PTR == null) SE_THROW;
 		esg.SetState("uu",class_code,Services_List.GetRef(service_PTR));
 		service_PTR->CreateState(&esg);
 
@@ -2545,12 +2545,12 @@ bool CORE::SaveState(char * file_name)
 	// write objects id and objects data
 	for(n=0;n<CoreState.Atoms_number;n++)
 	{
-		if(n == 0) { if(!GetEntity(&id)) THROW;	} 
-		else { if(!GetEntityNext(&id)) THROW;	}
+		if(n == 0) { if(!GetEntity(&id)) SE_THROW;	} 
+		else { if(!GetEntityNext(&id)) SE_THROW;	}
 		// save objects id
 		esg.SetState("m",sizeof(id),&id);
 		entity_PTR = GetEntityPointer(&id);
-		if(entity_PTR == null) THROW;
+		if(entity_PTR == null) SE_THROW;
 		// transfer control to entity, for saving objects data
 		PUSH_CONTROL(entity_PTR,id.class_code,CTP_CREATESTATE)
 		entity_PTR->CreateState(&esg);
@@ -2582,7 +2582,7 @@ bool CORE::InitiateStateLoading(char * file_name)
 	if(State_file_name) delete State_file_name;
 
 	State_file_name = (char *)NEW char[strlen(file_name) + 1];
-	if(State_file_name == null) THROW;
+	if(State_file_name == null) SE_THROW;
 	strcpy(State_file_name,file_name);
 	POP_CONTROL(0)
 	UNGUARD
@@ -2652,7 +2652,7 @@ void CORE::ProcessStateLoading()
 	nPackedSize = fio->_GetFileSize(pfh,0);
 	if(nPackedSize == INVALID_FILE_SIZE) { fio->_CloseHandle(pfh); return;}
 	pDestination = (char *)malloc(nPackedSize);
-	if(pDestination == 0) THROW;
+	if(pDestination == 0) SE_THROW;
 	fio->_ReadFile(pfh,pDestination,nPackedSize,&dwR);
 	fio->_CloseHandle(pfh);
 	
@@ -2665,9 +2665,9 @@ void CORE::ProcessStateLoading()
 		{
 			fio->_WriteFile(pfh,pUnpacked,nUnpackedSize,&dwR);
 			fio->_CloseHandle(pfh);
-		} else THROW;
+		} else SE_THROW;
 		free(pUnpacked);
-	} else THROW;
+	} else SE_THROW;
 	free(pDestination);
 
 	// open state file
@@ -2702,7 +2702,7 @@ void CORE::ProcessStateLoading()
 	if(cs.engine_version != CoreState.engine_version) _THROW(incorrect state file);
 	
 	// validate space size 
-	if(cs.Atoms_max_orbit >= cs.Atoms_space) THROW;
+	if(cs.Atoms_max_orbit >= cs.Atoms_space) SE_THROW;
 	
 	// reset core state and load new
 	LoadCoreState(cs);
@@ -2721,7 +2721,7 @@ void CORE::ProcessStateLoading()
 	{
 		// get pointer to loaded class name
 		char_PTR = Classes_Table.GetString(n);
-		if(char_PTR == null) THROW;
+		if(char_PTR == null) SE_THROW;
 		// set buffer size
 		v_Buff.Size(strlen(char_PTR) + 1);
 		// read save class name
@@ -2787,7 +2787,7 @@ void CORE::ProcessStateLoading()
 		es.MemoryBlock(sizeof(entity_id),(char *)&entity_id);
 		// obtain entity pointer
 		entity_PTR = GetEntityPointer(&entity_id);
-		if(entity_PTR == null) THROW;
+		if(entity_PTR == null) SE_THROW;
 		#ifndef EX_OFF
 		try { 
 		#endif

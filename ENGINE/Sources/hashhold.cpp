@@ -33,10 +33,10 @@ bool HASHHOLD::Init(DWORD _dwHashTableSize)
 	Release();
 	dwHashTableSize = _dwHashTableSize;
 	pHashTable = (DWORD **)NEW char[dwHashTableSize * sizeof(DWORD*)];
-	if(!pHashTable) THROW;
+	if(!pHashTable) SE_THROW;
 	memset(pHashTable,0,dwHashTableSize * sizeof(DWORD*));
 	pLineSize = (DWORD *)NEW char[dwHashTableSize * sizeof(DWORD)];
-	if(!pLineSize) THROW;
+	if(!pLineSize) SE_THROW;
 	memset(pLineSize,0,dwHashTableSize * sizeof(DWORD));
 	return true;
 }

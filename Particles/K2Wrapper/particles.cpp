@@ -110,7 +110,7 @@ dword _cdecl PARTICLES::ProcessMessage(MESSAGE & message)
 		}
 	case PS_CREATEX_RIC:
 		{
-			THROW ("Unsupported particle manager command !!!");
+			SE_THROW ("Unsupported particle manager command !!!");
 			break;
 		}
 
@@ -180,12 +180,12 @@ dword _cdecl PARTICLES::ProcessMessage(MESSAGE & message)
 		}
 	case PS_ADDTRACKPOINT:
 		{
-			THROW ("Unsupported particle manager command !!!");
+			SE_THROW ("Unsupported particle manager command !!!");
 			break;
 		}
 	case PS_USESURFACE:
 		{
-			THROW ("Unsupported particle manager command !!!");
+			SE_THROW ("Unsupported particle manager command !!!");
 			break;
 		}
 	case PS_VALIDATE_PARTICLE:

@@ -58,10 +58,10 @@ bool MODULES_TABLE::SetModulesPath(char * _name)
 
 
 	Paths_Table = (char **)NEW char[sizeof(char *)];
-	if(Paths_Table == null) THROW;
+	if(Paths_Table == null) SE_THROW;
 
 	Paths_Table[0] = (char *)NEW char[strlen(_name) + 1];
-	if(Paths_Table[0] == null) THROW;
+	if(Paths_Table[0] == null) SE_THROW;
 	strcpy(Paths_Table[0],_name);
 	Paths_Count = 1;
 	UNGUARD
@@ -74,10 +74,10 @@ bool MODULES_TABLE::AddModulesPath(char * _name)
 	if(Paths_Table == null) return SetModulesPath(_name);
 	if(_name == null) return false;
 	Paths_Table = (char **)RESIZE(Paths_Table,(Paths_Count + 1)*sizeof(char *));
-	if(Paths_Table == null) THROW;
+	if(Paths_Table == null) SE_THROW;
 
 	Paths_Table[Paths_Count] = (char *)NEW char[strlen(_name) + 1];
-	if(Paths_Table[Paths_Count] == null) THROW;
+	if(Paths_Table[Paths_Count] == null) SE_THROW;
 	strcpy(Paths_Table[Paths_Count],_name);
 	Paths_Count++;
 	UNGUARD

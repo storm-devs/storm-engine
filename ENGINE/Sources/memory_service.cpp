@@ -277,7 +277,7 @@ void * MEMORY_SERVICE::Reallocate(void * block_PTR,long size)
 			void * pTemp;
 			pTemp = PoolAllocate(size);
 			if(pTemp == 0) pTemp = Allocate(size);
-			if(pTemp == 0) THROW("no mem");
+			if(pTemp == 0) SE_THROW("no mem");
 			if((DWORD)size > nBlockSize) memcpy(pTemp,block_PTR,nBlockSize);
 			else memcpy(pTemp,block_PTR,size);
 			PoolFree(block_PTR,nBlockSize);

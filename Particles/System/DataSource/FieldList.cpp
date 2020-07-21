@@ -576,7 +576,7 @@ void FieldList::Convert (DataDescripion* pDataDescriptor)
 				CreateEmptyStringField(NeedFieldName, "###");
 				break;
 			default:
-				THROW ("Unknown Field type !!!");
+				SE_THROW ("Unknown Field type !!!");
 			}
 		}
 	}

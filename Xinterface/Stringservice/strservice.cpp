@@ -189,7 +189,7 @@ void STRSERVICE::SetLanguage(const char* sLanguage)
 
 	// установим новое имя для языка
 	DELETE(m_sLanguage);
-	if( (m_sLanguage=NEW char[strlen(sLanguage)+1]) == null ) {THROW("Allocate memory error");}
+	if( (m_sLanguage=NEW char[strlen(sLanguage)+1]) == null ) {SE_THROW("Allocate memory error");}
 	strcpy(m_sLanguage,sLanguage);
 
 	while(true)

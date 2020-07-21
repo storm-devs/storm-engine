@@ -314,7 +314,7 @@ INIFILE * FILE_SERVICE::OpenIniFile(const char * file_name)
 			OpenFiles[n]->IncReference();
 
 			inifile_T = NEW INIFILE_T(OpenFiles[n]);
-			if(inifile_T == null) THROW;
+			if(inifile_T == null) SE_THROW;
 //			POP_CONTROL(0)
 			return inifile_T;
 		}
@@ -325,7 +325,7 @@ INIFILE * FILE_SERVICE::OpenIniFile(const char * file_name)
 		if(OpenFiles[n] != null) continue;
 
 		OpenFiles[n] = NEW IFS(this);
-		if(OpenFiles[n] == null) THROW;//(FILE_SERVICE::OpenIniFile : no mem A);
+		if(OpenFiles[n] == null) SE_THROW;//(FILE_SERVICE::OpenIniFile : no mem A);
 		if(!OpenFiles[n]->LoadFile(file_name)) 
 		{
 			delete OpenFiles[n];
@@ -337,12 +337,12 @@ INIFILE * FILE_SERVICE::OpenIniFile(const char * file_name)
 //		POP_CONTROL(0)
 		// INIFILE_T object belonged to entity and must be deleted by entity
 		//OpenFiles[n]->inifile_T = new INIFILE_T(OpenFiles[n]);	
-		//if(OpenFiles[n]->inifile_T == null) THROW;
+		//if(OpenFiles[n]->inifile_T == null) SE_THROW;
 		//return OpenFiles[n]->inifile_T;
 
 
 		inifile_T = NEW INIFILE_T(OpenFiles[n]);
-		if(inifile_T == null) THROW;
+		if(inifile_T == null) SE_THROW;
 		return inifile_T;
 	}
 //	POP_CONTROL(0)

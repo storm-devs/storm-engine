@@ -586,7 +586,7 @@ bool DX8RENDER::InitDevice(bool windowed, HWND _hwnd, long width, long height)
 	if(windowed)
 	{
 		D3DDISPLAYMODE d3ddm;
-		if(FAILED(d3d->GetAdapterDisplayMode(D3DADAPTER_DEFAULT,&d3ddm))) THROW;
+		if(FAILED(d3d->GetAdapterDisplayMode(D3DADAPTER_DEFAULT,&d3ddm))) SE_THROW;
 		d3dpp.BackBufferFormat = d3ddm.Format;
 		if(d3dpp.BackBufferFormat == D3DFMT_R5G6B5) d3dpp.AutoDepthStencilFormat = D3DFMT_D16;
 		else d3dpp.AutoDepthStencilFormat = D3DFMT_D24S8;

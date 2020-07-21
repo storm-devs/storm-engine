@@ -375,7 +375,7 @@ CXI_STRCOLLECTION::STRINGDESCR * CXI_STRCOLLECTION::CreateNewDinamicString(char 
 		FONT_RELEASE(m_rs,m_pStrDescr[i].nFontNum);
 		PTR_DELETE(m_pStrDescr[i].strStr);
 		m_pStrDescr[i].strStr = NEW char[strlen(strStr)+1];
-		if(m_pStrDescr[i].strStr==null)	{THROW("allocate memory error");}
+		if(m_pStrDescr[i].strStr==null)	{SE_THROW("allocate memory error");}
 		strcpy(m_pStrDescr[i].strStr,strStr);
 		return &m_pStrDescr[i];
 	}
@@ -383,7 +383,7 @@ CXI_STRCOLLECTION::STRINGDESCR * CXI_STRCOLLECTION::CreateNewDinamicString(char 
 	STRINGDESCR * pOld = m_pStrDescr;
 	m_nStr++;
 	m_pStrDescr = NEW STRINGDESCR[m_nStr];
-	if( m_pStrDescr == null )	{THROW("allocate memory error");}
+	if( m_pStrDescr == null )	{SE_THROW("allocate memory error");}
 	if( pOld && i )	memcpy(m_pStrDescr,pOld,sizeof(STRINGDESCR)*i);
 	if( pOld ) delete pOld;
 	ZeroMemory( &m_pStrDescr[i], sizeof(STRINGDESCR) );
@@ -391,7 +391,7 @@ CXI_STRCOLLECTION::STRINGDESCR * CXI_STRCOLLECTION::CreateNewDinamicString(char 
 	m_pStrDescr[i].strID = NEW char[strlen(strID)+1];
 	m_pStrDescr[i].strStr = NEW char[strlen(strStr)+1];
 	if( m_pStrDescr[i].strID==null || m_pStrDescr[i].strStr==null )
-	{	THROW("allocate memory error");}
+	{	SE_THROW("allocate memory error");}
 	strcpy( m_pStrDescr[i].strID, strID );
 	strcpy( m_pStrDescr[i].strStr, strStr );
 	return &m_pStrDescr[i];

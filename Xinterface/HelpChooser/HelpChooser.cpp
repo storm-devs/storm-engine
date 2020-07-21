@@ -241,7 +241,7 @@ bool HELPCHOOSER::RunChooser(char * ChooserGroup)
 	{
 		m_pRectList = NEW FRECT[m_nRectQ];
 		m_psRectName = NEW char*[m_nRectQ];
-		if(m_pRectList==null || m_psRectName==null)	{THROW("Allocate memory error");}
+		if(m_pRectList==null || m_psRectName==null)	{SE_THROW("Allocate memory error");}
 	}
 	// заполняем все прямоугольники
 	ini->ReadString(ChooserGroup,"rect",param,sizeof(param)-1,"");

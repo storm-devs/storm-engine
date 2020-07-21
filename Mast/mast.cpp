@@ -408,7 +408,7 @@ void MAST::LoadIni()
 		_CORE_API->fio->_FindClose(h);
 	}
 	ini = _CORE_API->fio->OpenIniFile((char*)MAST_INI_FILE);
-	if(!ini) THROW("mast.ini file not found!");
+	if(!ini) SE_THROW("mast.ini file not found!");
 
 	sprintf(section,"MAST");
 

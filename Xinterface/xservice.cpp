@@ -218,7 +218,7 @@ void XSERVICE::LoadAllPicturesInfo()
 	if (INVALID_HANDLE_VALUE != h)
 		_CORE_API->fio->_FindClose(h);
 	ini = _CORE_API->fio->OpenIniFile((char*)LISTS_INIFILE);
-	if(!ini) THROW("ini file not found!");
+	if(!ini) SE_THROW("ini file not found!");
 
 	m_dwListQuantity=0;
 	m_dwImageQuantity=0;

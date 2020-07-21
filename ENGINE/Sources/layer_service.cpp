@@ -43,10 +43,10 @@ void LAYER_SERVICE::Fit(dword index, char * layer_name, LAYER_STATE ls)
 	GUARD(LAYER_SERVICE::FitLayer)
 	if(layer_name == null) _THROW(zero name);
 	if(index > lss.Layer_max_index) _THROW(invalid index);
-	if(Layer_Table[index] != null) THROW;
+	if(Layer_Table[index] != null) SE_THROW;
 
 	Layer_Table[index] = NEW LAYER(layer_name,ls.Ordered,ls.System,ls.System_flags);
-	if(Layer_Table[index] == null) THROW;
+	if(Layer_Table[index] == null) SE_THROW;
 	Layer_Table[index]->ls = ls;
 	UNGUARD
 }
@@ -75,7 +75,7 @@ bool LAYER_SERVICE::Create(char * layer_name, bool ordered, bool fail_if_exist)
 		}
 
 		Layer_Table[n] = NEW LAYER(layer_name,ordered,0,0);
-		if(Layer_Table[n] == null) THROW;
+		if(Layer_Table[n] == null) SE_THROW;
 		if(lss.Layer_max_index < n) lss.Layer_max_index = n;
 		lss.Layers_number++;
 		return true;
@@ -107,7 +107,7 @@ void LAYER_SERVICE::Erase(dword index)
 	// delete layer object
 	delete Layer_Table[index];
 	Layer_Table[index] = null;
-	if(lss.Layers_number > 0) lss.Layers_number--; else THROW;
+	if(lss.Layers_number > 0) lss.Layers_number--; else SE_THROW;
 	if(index == lss.Layer_max_index)
 	for(index = lss.Layer_max_index;index>0;index--)
 	{
@@ -180,7 +180,7 @@ bool LAYER_SERVICE::Add(char * layer_name, ENTITY_ID eid, dword priority)
 	Atoms_PTR[eid.atom_position]->SetLayerAttribute(index);
 */
 	// add object to layer list
-	if(!Layer_Table[index]->Add(eid,priority)) THROW;
+	if(!Layer_Table[index]->Add(eid,priority)) SE_THROW;
 	
 	UNGUARD
 	return true;
@@ -258,7 +258,7 @@ LAYER * LAYER_SERVICE::GetLayer(dword index)
 bool LAYER_SERVICE::Add(dword index, ENTITY_ID eid, dword priority)
 {
 	if(Layer_Table[index] == 0) _THROW(invalid layer index);
-	if(!Layer_Table[index]->Add(eid,priority)) THROW;
+	if(!Layer_Table[index]->Add(eid,priority)) SE_THROW;
 	return true;
 }
 

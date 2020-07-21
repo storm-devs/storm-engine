@@ -26,9 +26,9 @@ void ENTITY_STATE_GEN_R::Init(VFILE_SERVICE * _fio,HANDLE _file_handle)
 {
 	GUARD(ENTITY_STATE_GEN_R::Init)
 	fio = _fio;
-	if(fio == null) THROW;
+	if(fio == null) SE_THROW;
 	file_handle = _file_handle;
-	if(file_handle == INVALID_HANDLE_VALUE) THROW;
+	if(file_handle == INVALID_HANDLE_VALUE) SE_THROW;
 	UNGUARD
 }
 
@@ -44,25 +44,25 @@ void ENTITY_STATE_GEN_R::CloseState()
 	// write signature
 	sizeofstruct = strlen(Signature);
 	fio->_WriteFile(file_handle,Signature,sizeofstruct,&dwR);
-	if(dwR != sizeofstruct) THROW;
+	if(dwR != sizeofstruct) SE_THROW;
 
 	// write size of format string
 	if(Format_string == null) sizeofstruct = 0;
 	else sizeofstruct = strlen(Format_string) + 1;
 	fio->_WriteFile(file_handle,&sizeofstruct,sizeof(sizeofstruct),&dwR);
-	if(dwR != sizeof(sizeofstruct)) THROW;
+	if(dwR != sizeof(sizeofstruct)) SE_THROW;
 	
 	// write format string
 	fio->_WriteFile(file_handle,Format_string,sizeofstruct,&dwR);
-	if(dwR != sizeofstruct) THROW;
+	if(dwR != sizeofstruct) SE_THROW;
 
 	// write data size
 	fio->_WriteFile(file_handle,&Data_size,sizeof(Data_size),&dwR);
-	if(dwR != sizeof(Data_size)) THROW;
+	if(dwR != sizeof(Data_size)) SE_THROW;
 
 	// write data
 	fio->_WriteFile(file_handle,Buffer,Data_size,&dwR);
-	if(dwR != Data_size) THROW;
+	if(dwR != Data_size) SE_THROW;
 
 	// reset buffer pointer and format string
 	Data_size = 0;
@@ -80,7 +80,7 @@ void ENTITY_STATE_GEN_R::VerifyFreeSpace(dword add_data_size)
 	if((Data_size + add_data_size) >= Buffer_size) 
 	{
 		Buffer = (char *)RESIZE(Buffer,Buffer_size*2);
-		if(Buffer == null) THROW;
+		if(Buffer == null) SE_THROW;
 		Buffer_size = Buffer_size*2;
 	}
 	UNGUARD
@@ -110,12 +110,12 @@ void _cdecl ENTITY_STATE_GEN_R::SetState(char * Format,...)
 	{
 
 		Format_string = (char *)NEW char[strlen(Format)+1];
-		if(Format_string == null) THROW;
+		if(Format_string == null) SE_THROW;
 		strcpy(Format_string,Format);
 	} else
 	{
 		Format_string = (char *)RESIZE(Format_string,strlen(Format_string) + strlen(Format) + 1);
-		if(Format_string == null) THROW;
+		if(Format_string == null) SE_THROW;
 		strcat(Format_string,Format);
 	}
 
@@ -124,7 +124,7 @@ void _cdecl ENTITY_STATE_GEN_R::SetState(char * Format,...)
 	{
 
 		Buffer = (char *)NEW char[INITIAL_BUFFER_SIZE];
-		if(Buffer == null) THROW;
+		if(Buffer == null) SE_THROW;
 		Buffer_size = INITIAL_BUFFER_SIZE;
 	}
 
@@ -202,9 +202,9 @@ void ENTITY_STATE_R::Init(VFILE_SERVICE * _fio,HANDLE _file_handle)
 	//dword dwR;
 	GUARD(ENTITY_STATE_R::Init)
 	fio = _fio;
-	if(fio == null) THROW;
+	if(fio == null) SE_THROW;
 	file_handle = _file_handle;
-	if(file_handle == INVALID_HANDLE_VALUE) THROW;
+	if(file_handle == INVALID_HANDLE_VALUE) SE_THROW;
 
 	UNGUARD
 }
@@ -223,26 +223,26 @@ void ENTITY_STATE_R::LoadStateBlock()
 	// read block signature
 	sizeofstruct = strlen(Signature);
 	fio->_ReadFile(file_handle,Signature_Buff,sizeofstruct,&dwR);
-	if(dwR != sizeofstruct) THROW;
+	if(dwR != sizeofstruct) SE_THROW;
 	if(memcmp(Signature,Signature_Buff,strlen(Signature)) != 0) _THROW(invalid signature);
 
 	// read size of format string
 	fio->_ReadFile(file_handle,&format_size,sizeof(format_size),&dwR);
-	if(dwR != sizeof(format_size)) THROW;
+	if(dwR != sizeof(format_size)) SE_THROW;
 	if(format_size == 0) _THROW(empty block);
 
 	// allocate mem for format string
 
 	Format_string = (char *)NEW char[format_size];
-	if(!Format_string) THROW;
+	if(!Format_string) SE_THROW;
 
 	// read format string
 	fio->_ReadFile(file_handle,Format_string,format_size,&dwR);
-	if(dwR != format_size) THROW;
+	if(dwR != format_size) SE_THROW;
 
 	// read data size
 	fio->_ReadFile(file_handle,&Data_size,sizeof(Data_size),&dwR);
-	if(dwR != sizeof(Buffer_size)) THROW;
+	if(dwR != sizeof(Buffer_size)) SE_THROW;
 
 	// allocate or resize mem for data
 	if(Buffer == null)
@@ -250,14 +250,14 @@ void ENTITY_STATE_R::LoadStateBlock()
 		Buffer_size = Data_size;
 
 		Buffer = (char *)NEW char[Buffer_size];
-		if(!Buffer) THROW;
+		if(!Buffer) SE_THROW;
 	}
 	else
 	{
 		if(Buffer_size < Data_size)
 		{
 			Buffer = (char *)RESIZE(Buffer,Data_size);
-			if(!Buffer) THROW;
+			if(!Buffer) SE_THROW;
 			Buffer_size = Data_size;
 		}
 	}
@@ -265,7 +265,7 @@ void ENTITY_STATE_R::LoadStateBlock()
 
 	// read data
 	fio->_ReadFile(file_handle,Buffer,Data_size,&dwR);
-	if(dwR != Data_size) THROW;
+	if(dwR != Data_size) SE_THROW;
 
 	UNGUARD
 }

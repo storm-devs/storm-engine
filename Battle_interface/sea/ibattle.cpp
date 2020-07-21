@@ -207,7 +207,7 @@ void BATTLE_INTERFACE::LoadIniFile()
 	/*DELETE( m_pMessageIcons );
 	m_pMessageIcons = NEW MESSAGE_ICONS;
 	if(m_pMessageIcons==NULL) {
-		THROW("allocate memory error");
+		SE_THROW("allocate memory error");
 	}
 	if(m_pMessageIcons)	m_pMessageIcons->InitData(GetID(),rs,pA);*/
 

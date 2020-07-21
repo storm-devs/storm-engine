@@ -20,7 +20,7 @@ public:
 	{
 		if(!Ptr) Ptr = (char*)NEW char[_size];
 		else Ptr = (char*)RESIZE(Ptr,_size);
-		if(!Ptr) THROW; 
+		if(!Ptr) SE_THROW; 
 		dwSize = _size; };
 };
 

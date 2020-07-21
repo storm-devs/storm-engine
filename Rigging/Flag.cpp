@@ -548,7 +548,7 @@ void FLAG::LoadIni()
 		_CORE_API->fio->_FindClose(h);
 	}
 	ini = _CORE_API->fio->OpenIniFile("resource\\ini\\rigging.ini");
-	if(!ini) THROW("rigging.ini file not found!");
+	if(!ini) SE_THROW("rigging.ini file not found!");
 
 	sprintf(section,"FLAGS");
 	

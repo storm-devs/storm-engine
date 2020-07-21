@@ -225,7 +225,7 @@ void CXI_SLIDELINE::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *name2
 		m_idTexPointer = m_rs->TextureCreate(param);
 
 	m_idVBuf = m_rs->CreateVertexBufferManaged(XI_ONLYONETEX_FVF,8*sizeof(XI_ONLYONETEX_VERTEX),D3DUSAGE_WRITEONLY);
-	if(m_idVBuf==-1) THROW("can not create the vertex buffers");
+	if(m_idVBuf==-1) SE_THROW("can not create the vertex buffers");
 
 	m_nPointerWidth = GetIniLong(ini1,name1, ini2,name2, "pointerWidth", 8);
 	m_nPointerHeight = GetIniLong(ini1,name1, ini2,name2, "pointerHeight", m_rect.bottom-m_rect.top);

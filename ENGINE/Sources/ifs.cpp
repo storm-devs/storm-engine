@@ -39,7 +39,7 @@ void KEY_NODE::SetName(char * name)
 	name_size = strlen(name) + 1;
 
 	key_name = NEW char[name_size];
-	if(key_name == 0) THROW;
+	if(key_name == 0) SE_THROW;
 	strcpy(key_name,name);
 }
 
@@ -50,7 +50,7 @@ void KEY_NODE::SetValue(char * value)
 	val_size = strlen(value) + 1;
 
 	key_val = NEW char[val_size];
-	if(key_val == 0) THROW;
+	if(key_val == 0) SE_THROW;
 	strcpy(key_val,value);
 }
 
@@ -167,7 +167,7 @@ void SECTION::SetName(char * name)
 	{
 
 		Name = NEW char[strlen(name)+1];
-		if(Name == 0) THROW;
+		if(Name == 0) SE_THROW;
 		strcpy(Name,name);
 	}
 }
@@ -556,17 +556,17 @@ bool IFS::FlushFile()
 		{
 			// write section name -----------------------------------------------------------------
 			buff[0] = SECTION_A; fs->_WriteFile(fh,buff,1,&dwR);
-			if(dwR != 1) { THROW;}
+			if(dwR != 1) { SE_THROW;}
 
 			write_size = strlen(section_node->GetName());
 			fs->_WriteFile(fh,section_node->GetName(),write_size,&dwR);
-			if(dwR != write_size) { THROW;}
+			if(dwR != write_size) { SE_THROW;}
 
 			buff[0] = SECTION_B; fs->_WriteFile(fh,buff,1,&dwR);
-			if(dwR != 1) { THROW;}
+			if(dwR != 1) { SE_THROW;}
 
 			buff[0] = INI_LINEFEED[0]; buff[1] = INI_LINEFEED[1]; fs->_WriteFile(fh,buff,2,&dwR);
-			if(dwR != 2) { THROW;}
+			if(dwR != 2) { SE_THROW;}
 
 		}
 		
@@ -579,9 +579,9 @@ bool IFS::FlushFile()
 				// write commented line ---------------------------------------------------------------
 				write_size = strlen(node->GetName());
 				fs->_WriteFile(fh,node->GetName(),write_size,&dwR);
-				if(dwR != write_size) { THROW;}
+				if(dwR != write_size) { SE_THROW;}
 				buff[0] = INI_LINEFEED[0]; buff[1] = INI_LINEFEED[1]; fs->_WriteFile(fh,buff,2,&dwR);
-				if(dwR != 2) { THROW;}
+				if(dwR != 2) { SE_THROW;}
 
 			}
 			else
@@ -590,22 +590,22 @@ bool IFS::FlushFile()
 				// write key -------------------------------------------------------------------------
 				write_size = strlen(node->GetName());
 				fs->_WriteFile(fh,node->GetName(),write_size,&dwR);
-				if(dwR != write_size) { THROW;}
+				if(dwR != write_size) { SE_THROW;}
 				if(node->GetValue() != 0)
 				{
 					fs->_WriteFile(fh,&INI_VOIDSYMS[0],1,&dwR);
-					if(dwR != 1) { THROW;}
+					if(dwR != 1) { SE_THROW;}
 					buff[0] = INI_EQUAL; fs->_WriteFile(fh,buff,1,&dwR);
-					if(dwR != 1) { THROW;}
+					if(dwR != 1) { SE_THROW;}
 					fs->_WriteFile(fh,&INI_VOIDSYMS[0],1,&dwR);
-					if(dwR != 1) { THROW;}
+					if(dwR != 1) { SE_THROW;}
 					write_size = strlen(node->GetValue());
 					fs->_WriteFile(fh,node->GetValue(),write_size,&dwR);
-					if(dwR != write_size) { THROW;}
+					if(dwR != write_size) { SE_THROW;}
 
 				}
 				buff[0] = INI_LINEFEED[0]; buff[1] = INI_LINEFEED[1]; fs->_WriteFile(fh,buff,2,&dwR);
-				if(dwR != 2) { THROW;}
+				if(dwR != 2) { SE_THROW;}
 
 			}
 			else throw "invalid key flag";
@@ -614,7 +614,7 @@ bool IFS::FlushFile()
 		section_node = section_node->GetRightNode();
 
 		buff[0] = INI_LINEFEED[0]; buff[1] = INI_LINEFEED[1]; fs->_WriteFile(fh,buff,2,&dwR);
-		if(dwR != 2) { THROW;}
+		if(dwR != 2) { SE_THROW;}
 	}
 
 
