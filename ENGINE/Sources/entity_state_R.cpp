@@ -105,7 +105,7 @@ void _cdecl ENTITY_STATE_GEN_R::SetState(char * Format,...)
 	dword sizeofstruct;
 
 	// upload or append format string
-	if(!Format) _THROW(empty format string);
+	if(!Format) SE_THROW_MSG(empty format string);
 	if(Format_string == null)
 	{
 
@@ -172,7 +172,7 @@ void _cdecl ENTITY_STATE_GEN_R::SetState(char * Format,...)
 				Data_size += sizeofstruct;
 				args += ((sizeofstruct + sizeof(int) - 1) & ~(sizeof(int) - 1));
 			break;
-			default: _THROW(invalid format string specificator);
+			default: SE_THROW_MSG(invalid format string specificator);
 			break;
 
 		}
@@ -224,12 +224,12 @@ void ENTITY_STATE_R::LoadStateBlock()
 	sizeofstruct = strlen(Signature);
 	fio->_ReadFile(file_handle,Signature_Buff,sizeofstruct,&dwR);
 	if(dwR != sizeofstruct) SE_THROW;
-	if(memcmp(Signature,Signature_Buff,strlen(Signature)) != 0) _THROW(invalid signature);
+	if(memcmp(Signature,Signature_Buff,strlen(Signature)) != 0) SE_THROW_MSG(invalid signature);
 
 	// read size of format string
 	fio->_ReadFile(file_handle,&format_size,sizeof(format_size),&dwR);
 	if(dwR != sizeof(format_size)) SE_THROW;
-	if(format_size == 0) _THROW(empty block);
+	if(format_size == 0) SE_THROW_MSG(empty block);
 
 	// allocate mem for format string
 
@@ -280,15 +280,15 @@ void ENTITY_STATE_R::ValidateFormat(char c)
 		Format_index = 0;
 	}
 	if(Format_string == null) LoadStateBlock();
-	if(Format_string == null) _THROW(no state data);
-	if(Format_string[Format_index] != c) _THROW(incorrect state data);
+	if(Format_string == null) SE_THROW_MSG(no state data);
+	if(Format_string[Format_index] != c) SE_THROW_MSG(incorrect state data);
 	Format_index++;
 	UNGUARD
 }
 
-//#define RETURN_DATA(t) {Data_index += sizeof(t);if(Data_index > Data_size) _THROW(no data);return (*(t *)(Buffer[Data_index - sizeof(t)]));}
-#define RETURN_DATA(t) {Data_PTR += sizeof(t);if(Data_PTR > (Buffer + Data_size)) _THROW(no data); return (*(t *)(Data_PTR - sizeof(t)));}
-//#define RETURN_DATA2(c,t) {ValidateFormat(#@c);Data_index += sizeof(t);if(Data_index > Data_size) _THROW(no data);return (*(t *)(Buffer[Data_index - sizeof(t)]));}
+//#define RETURN_DATA(t) {Data_index += sizeof(t);if(Data_index > Data_size) SE_THROW_MSG(no data);return (*(t *)(Buffer[Data_index - sizeof(t)]));}
+#define RETURN_DATA(t) {Data_PTR += sizeof(t);if(Data_PTR > (Buffer + Data_size)) SE_THROW_MSG(no data); return (*(t *)(Data_PTR - sizeof(t)));}
+//#define RETURN_DATA2(c,t) {ValidateFormat(#@c);Data_index += sizeof(t);if(Data_index > Data_size) SE_THROW_MSG(no data);return (*(t *)(Buffer[Data_index - sizeof(t)]));}
 byte ENTITY_STATE_R::Byte()
 {
 	ValidateFormat('b');
@@ -296,7 +296,7 @@ byte ENTITY_STATE_R::Byte()
 	
 	//RETURN_DATA2(b,byte);
 	/*Data_index += sizeof(byte); 
-	if(Data_index > Data_size) _THROW(no data);	
+	if(Data_index > Data_size) SE_THROW_MSG(no data);	
 	return (*(byte *)(Buffer[Data_index - sizeof(byte)]));*/
 }
 
@@ -340,13 +340,13 @@ void ENTITY_STATE_R::String(dword dest_buffer_size, char * buffer)
 {
 	GUARD(ENTITY_STATE_R::String)
 	dword size;
-	if(buffer == null) _THROW(invalid buffer);
+	if(buffer == null) SE_THROW_MSG(invalid buffer);
 	ValidateFormat('s');
 	Data_PTR += sizeof(dword); 
-	if(Data_PTR > (Buffer + Data_size)) _THROW(no data);	
+	if(Data_PTR > (Buffer + Data_size)) SE_THROW_MSG(no data);	
 	size = (*(dword *)(Data_PTR - sizeof(dword)));
 	Data_PTR += size; 
-	if(size > dest_buffer_size) _THROW(insufficient string buffer);
+	if(size > dest_buffer_size) SE_THROW_MSG(insufficient string buffer);
 	memcpy(buffer,(char *)(Data_PTR - size),size);
 	UNGUARD
 }
@@ -355,14 +355,14 @@ void ENTITY_STATE_R::MemoryBlock(dword memsize, char * buffer)
 {
 	GUARD(ENTITY_STATE_R::MemoryBlock)
 	dword size;
-	if(buffer == null) _THROW(invalid buffer);
+	if(buffer == null) SE_THROW_MSG(invalid buffer);
 	ValidateFormat('m');
 	Data_PTR += sizeof(dword); 
-	if(Data_PTR > (Buffer + Data_size)) _THROW(no data);	
+	if(Data_PTR > (Buffer + Data_size)) SE_THROW_MSG(no data);	
 	size = (*(dword *)(Data_PTR - sizeof(dword)));
-	if(size != memsize) _THROW(invalid buffer size);
+	if(size != memsize) SE_THROW_MSG(invalid buffer size);
 	Data_PTR += size; 
-	if(Data_PTR > (Buffer + Data_size)) _THROW(no data);
+	if(Data_PTR > (Buffer + Data_size)) SE_THROW_MSG(no data);
 	memcpy(buffer,(char *)(Data_PTR - size),size);
 	UNGUARD
 }
@@ -371,14 +371,14 @@ void ENTITY_STATE_R::Struct(dword memsize, char * buffer)
 {
 	GUARD(ENTITY_STATE_R::Struct)
 	dword size;
-	if(buffer == null) _THROW(invalid buffer);
+	if(buffer == null) SE_THROW_MSG(invalid buffer);
 	ValidateFormat('v');
 	Data_PTR += sizeof(dword); 
-	if(Data_PTR > (Buffer + Data_size)) _THROW(no data);	
+	if(Data_PTR > (Buffer + Data_size)) SE_THROW_MSG(no data);	
 	size = (*(dword *)(Data_PTR - sizeof(dword)));
-	if(size != memsize) _THROW(invalid structure size);
+	if(size != memsize) SE_THROW_MSG(invalid structure size);
 	Data_PTR += size; 
-	if(Data_PTR > (Buffer + Data_size)) _THROW(no data);
+	if(Data_PTR > (Buffer + Data_size)) SE_THROW_MSG(no data);
 	memcpy(buffer,(char *)(Data_PTR - size),size);
 	UNGUARD
 

@@ -110,7 +110,7 @@ void CXI_CONTEXTHELP::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *nam
 	if(m_helpQuantity>0)
 	{
 		if( (m_pHelpList=NEW HELPENTITY[m_helpQuantity]) == null )
-			_THROW("allocate memory error")
+			SE_THROW_MSG("allocate memory error")
 		ZeroMemory(m_pHelpList,sizeof(HELPENTITY)*m_helpQuantity);
 		ini1->ReadString(name1,"helpstr",param,sizeof(param)-1,"");
 		char nodeName[sizeof(param)], stringName[sizeof(param)];
@@ -120,7 +120,7 @@ void CXI_CONTEXTHELP::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *nam
 			if(nodeName[0]!=0)
 			{
 				if( (m_pHelpList[i].nodeName=NEW char[strlen(nodeName)+1]) == null )
-					_THROW("allocate memory error")
+					SE_THROW_MSG("allocate memory error")
 				strcpy(m_pHelpList[i].nodeName,nodeName);
 				m_pHelpList[i].idHelpString = pStringService->GetStringNum(stringName);
 			}
@@ -230,7 +230,7 @@ void CXI_CONTEXTHELP::SetTempHelp(const char * pStr)
     if(pStr[0]=='#')
     { // получим непосредственно строку помощи
         if( (m_sTempString=NEW char[strlen(pStr)]) == NULL )
-            _THROW("allocate memory error")
+            SE_THROW_MSG("allocate memory error")
         strcpy(m_sTempString,&pStr[1]);
 		nCurStrWidth = m_rs->StringWidth(m_sTempString,m_idFont,m_fMaxScale,m_screenSize.x);
     }

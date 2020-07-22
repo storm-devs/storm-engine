@@ -43,7 +43,7 @@ void TFishSchools::Init()
 
 	renderService = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
 	if(!renderService)	
-		_THROW("!FishSchools: No service 'dx8render'");
+		SE_THROW_MSG("!FishSchools: No service 'dx8render'");
 
 	_CORE_API->FindClass(&seaID, "sea", 0);
 	sea = (SEA_BASE*) _CORE_API->GetEntityPointer(&seaID);

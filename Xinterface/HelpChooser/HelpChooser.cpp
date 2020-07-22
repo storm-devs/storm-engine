@@ -32,7 +32,7 @@ void HELPCHOOSER::SetDevice()
 {
     // получить сервис рендера
 	rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
-	if(!rs){_THROW("No service: dx8render")}
+	if(!rs){SE_THROW_MSG("No service: dx8render")}
 }
 
 bool HELPCHOOSER::Init()
@@ -257,7 +257,7 @@ bool HELPCHOOSER::RunChooser(char * ChooserGroup)
 		if(j>0)
 		{
 			m_psRectName[i] = NEW char[j+2];
-			if(m_psRectName[i]==null) {_THROW("Allocate memory error");}
+			if(m_psRectName[i]==null) {SE_THROW_MSG("Allocate memory error");}
 			strcpy(m_psRectName[i],param2);
 		}
 

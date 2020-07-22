@@ -47,7 +47,7 @@ void NetFlag::SetDevice()
 	RenderService = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
 	if(!RenderService)
 	{
-		_THROW("No service: dx8render");
+		SE_THROW_MSG("No service: dx8render");
 	}
 	globalWind.ang.x=0.f;
 	globalWind.ang.y=0.f;
@@ -163,7 +163,7 @@ dword _cdecl NetFlag::ProcessMessage(MESSAGE & message)
 			{
 				gdata = NEW GROUPDATA[1];
 				if(gdata==0)
-					_THROW("Not memory allocation");
+					SE_THROW_MSG("Not memory allocation");
 
 				groupQuantity=1;
 			}
@@ -172,7 +172,7 @@ dword _cdecl NetFlag::ProcessMessage(MESSAGE & message)
 				GROUPDATA *oldgdata=gdata;
 				gdata = NEW GROUPDATA[groupQuantity+1];
 				if(gdata==0)
-					_THROW("Not memory allocation");
+					SE_THROW_MSG("Not memory allocation");
 				memcpy(gdata,oldgdata,sizeof(GROUPDATA)*groupQuantity);
 				delete oldgdata; groupQuantity++;
 			}
@@ -386,7 +386,7 @@ void NetFlag::AddLabel(GEOS::LABEL &gl, NODE *nod, bool isSpecialFlag)
         // create new flag
         fd = NEW FLAGDATA;
         if(fd==0)
-            _THROW("Not memory allocation");
+            SE_THROW_MSG("Not memory allocation");
         PZERO(fd,sizeof(FLAGDATA));
         fd->triangle=true; // this is Vimpel
         fd->isSpecialFlag=isSpecialFlag;
@@ -402,7 +402,7 @@ void NetFlag::AddLabel(GEOS::LABEL &gl, NODE *nod, bool isSpecialFlag)
         {
             flist= NEW FLAGDATA*[1];
             if(flist==0)
-                _THROW("Not memory allocation");
+                SE_THROW_MSG("Not memory allocation");
             flagQuantity=1;
         }
         else
@@ -410,7 +410,7 @@ void NetFlag::AddLabel(GEOS::LABEL &gl, NODE *nod, bool isSpecialFlag)
             FLAGDATA **oldflist=flist;
             flist = NEW FLAGDATA*[flagQuantity+1];
             if(flist==0)
-                _THROW("Not memory allocation");
+                SE_THROW_MSG("Not memory allocation");
             memcpy(flist,oldflist,sizeof(FLAGDATA*)*flagQuantity);
             delete oldflist; flagQuantity++;
         }
@@ -896,7 +896,7 @@ void NetFlag::MoveOtherHost(ENTITY_ID newm_id,long flagNum,ENTITY_ID oldm_id)
         GROUPDATA *oldgdata=gdata;
         gdata = NEW GROUPDATA[groupQuantity+1];
         if(gdata==0)
-            _THROW("Not memory allocation");
+            SE_THROW_MSG("Not memory allocation");
         memcpy(gdata,oldgdata,sizeof(GROUPDATA)*groupQuantity);
         delete oldgdata;
         groupQuantity++;

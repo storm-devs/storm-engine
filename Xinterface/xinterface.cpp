@@ -3495,13 +3495,13 @@ void CONTROLS_CONTAINER::AddContainer( char * container )
 
 	pCont = pContainers;
 	pContainers = NEW CONTEINER_DESCR;
-	if(!pContainers) _THROW("allocate memory error");
+	if(!pContainers) SE_THROW_MSG("allocate memory error");
 	pContainers->fMaxVal = 1.f;
 	pContainers->pControls = null;
 	pContainers->next = pCont;
 
 	pContainers->resultName = NEW char[strlen(container)+1];
-	if(!pContainers->resultName) _THROW("allocate memory error");
+	if(!pContainers->resultName) SE_THROW_MSG("allocate memory error");
 	strcpy(pContainers->resultName,container);
 }
 
@@ -3522,12 +3522,12 @@ void CONTROLS_CONTAINER::AddControlsToContainer( char * container, char * contro
 
 	pCtrl = pCont->pControls;
 	pCont->pControls = NEW CONTEINER_DESCR::CONTROL_DESCR;
-	if(!pCont->pControls) _THROW("allocate memory error");
+	if(!pCont->pControls) SE_THROW_MSG("allocate memory error");
 
 	pCont->pControls->fValLimit = fValLimit;
 	pCont->pControls->next = pCtrl;
 	pCont->pControls->controlName = NEW char[strlen(controlName)+1];
-	if(!pCont->pControls->controlName) _THROW("allocate memory error");
+	if(!pCont->pControls->controlName) SE_THROW_MSG("allocate memory error");
 	strcpy( pCont->pControls->controlName, controlName );
 }
 

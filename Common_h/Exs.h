@@ -33,12 +33,12 @@ public:
 	dword xtype;
 };
 
-#ifdef _THROW
-#undef _THROW
+#ifdef SE_THROW_MSG
+#undef SE_THROW_MSG
 #endif
 
 #define SE_THROW			{ _VSYSTEM_API->SetX();_VSYSTEM_API->Trace(URE_MESSAGE);_VSYSTEM_API->Trace("%s line %d",__FILE__,__LINE__); throw _EXS(FATAL,"URE"); }
-#define _THROW(b)		{ _VSYSTEM_API->SetX();_VSYSTEM_API->Trace(URE_MESSAGE);_VSYSTEM_API->Trace("%s line %d",__FILE__,__LINE__);_VSYSTEM_API->Trace(TEXT(#b)); throw _EXS(FATAL,TEXT(#b));}
+#define SE_THROW_MSG(b)		{ _VSYSTEM_API->SetX();_VSYSTEM_API->Trace(URE_MESSAGE);_VSYSTEM_API->Trace("%s line %d",__FILE__,__LINE__);_VSYSTEM_API->Trace(TEXT(#b)); throw _EXS(FATAL,TEXT(#b));}
 #define __THROW(a,b)	{ _VSYSTEM_API->SetXNF();_VSYSTEM_API->Trace(URE_MESSAGE);_VSYSTEM_API->Trace("%s line %d",__FILE__,__LINE__);_VSYSTEM_API->Trace(TEXT(#b)); throw _EXS(a,TEXT(#b)); }
 
 #ifdef EX_OFF

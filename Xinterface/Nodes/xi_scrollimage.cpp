@@ -364,7 +364,7 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *nam
 		if( !m_dwCurColor || !m_dwNormalColor ||
 			!m_dwSelectColor || !m_pPicOffset ||
 			!m_idBadTexture || !m_idBadPic ) {
-			_THROW("allocate memory error");
+			SE_THROW_MSG("allocate memory error");
 		}
 	}
 
@@ -423,7 +423,7 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *nam
 		{
 			if( (m_sSpecTechniqueName=NEW char[strlen(sTechnique)+1])==NULL )
 			{
-				_THROW("Allocate memory error");
+				SE_THROW_MSG("Allocate memory error");
 			}
 			strcpy(m_sSpecTechniqueName,sTechnique);
 		}
@@ -455,7 +455,7 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *nam
 				m_sGroupName = NEW char*[m_nGroupQuantity];
 				if( m_nGroupTex==NULL || m_sGroupName==NULL )
 				{
-					_THROW("allocate memory error");
+					SE_THROW_MSG("allocate memory error");
 				}
 				for(i=0;i<m_nGroupQuantity;i++)
 				{
@@ -464,7 +464,7 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *nam
 					m_sGroupName[i] = NEW char[strlen(stmp)+1];
 					if(m_sGroupName[i]==NULL)
 					{
-						_THROW("allocate memory error");
+						SE_THROW_MSG("allocate memory error");
 					}
 					strcpy(m_sGroupName[i],stmp);
 					m_nGroupTex[i] = pPictureService->GetTextureID(m_sGroupName[i]);
@@ -519,7 +519,7 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *nam
 					!m_Image[i].ptex || !m_Image[i].saveName ||
 					!m_Image[i].tex )
 				{
-					_THROW("allocate memory error");
+					SE_THROW_MSG("allocate memory error");
 				}
 				for(n=0; n<m_nSlotsQnt; n++)
 				{
@@ -547,7 +547,7 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *nam
 					{
 						m_Image[i].string1 = NEW char[strlen(sStringName)];
 						if(m_Image[i].string1==NULL)
-							_THROW("allocate memory error")
+							SE_THROW_MSG("allocate memory error")
 						strcpy(m_Image[i].string1,&(sStringName[1]));
 					}
 					else
@@ -562,7 +562,7 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *nam
 					{
 						m_Image[i].string2 = NEW char[strlen(sStringName)];
 						if(m_Image[i].string2==NULL)
-							_THROW("allocate memory error")
+							SE_THROW_MSG("allocate memory error")
 						strcpy(m_Image[i].string2,&(sStringName[1]));
 					}
 					else
@@ -578,7 +578,7 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *nam
 					if(tmpStr!=null)
 					{
 						if( (m_Image[i].saveName[n]=NEW char[strlen(tmpStr)+1])==0 )
-							{_THROW("allocate memory error");}
+							{SE_THROW_MSG("allocate memory error");}
 						strcpy(m_Image[i].saveName[n],tmpStr);
 					}
 					sprintf(param,"tex%d",n+1);
@@ -600,7 +600,7 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *nam
 	{
 		tmpstr = GetSubStr(param, param1, sizeof(param1));
 		if( (m_sBorderGroupName = NEW char[strlen(param1)+1])==null )
-			_THROW("allocate memory error")
+			SE_THROW_MSG("allocate memory error")
 		strcpy(m_sBorderGroupName,param1);
 		m_texBorder = pPictureService->GetTextureID(m_sBorderGroupName);
 		m_nBorderPicture = pPictureService->GetImageNum(m_sBorderGroupName,tmpstr);
@@ -644,7 +644,7 @@ float CXI_SCROLLIMAGE::ChangeDinamicParameters(float fXDelta)
 		{
 			pScroll = NEW SCROLLENTITY;
 			if(pScroll==NULL)
-				_THROW("allocate memory error")
+				SE_THROW_MSG("allocate memory error")
 
 			if(pPrevScroll==NULL)
 				m_pScroll = pScroll;
@@ -1009,7 +1009,7 @@ void CXI_SCROLLIMAGE::ChangeScroll(int nScrollItemNum)
 					{
 						m_Image[i].string1 = NEW char[strlen(sStringName)];
 						if(m_Image[i].string1==NULL)
-							_THROW("allocate memory error")
+							SE_THROW_MSG("allocate memory error")
 						strcpy(m_Image[i].string1,&(sStringName[1]));
 					}
 					else
@@ -1024,7 +1024,7 @@ void CXI_SCROLLIMAGE::ChangeScroll(int nScrollItemNum)
 					{
 						m_Image[i].string2 = NEW char[strlen(sStringName)];
 						if(m_Image[i].string2==NULL)
-							_THROW("allocate memory error")
+							SE_THROW_MSG("allocate memory error")
 						strcpy(m_Image[i].string2,&(sStringName[1]));
 					}
 					else
@@ -1040,7 +1040,7 @@ void CXI_SCROLLIMAGE::ChangeScroll(int nScrollItemNum)
 					if(tmpStr!=null)
 					{
 						if( (m_Image[i].saveName[n]=NEW char[strlen(tmpStr)+1])==0 )
-							{_THROW("allocate memory error");}
+							{SE_THROW_MSG("allocate memory error");}
 						strcpy(m_Image[i].saveName[n],tmpStr);
 					}
 					sprintf(param,"tex%d",n+1);
@@ -1079,7 +1079,7 @@ void CXI_SCROLLIMAGE::DeleteImage(int imgNum)
 
 	IMAGEDESCRIBE * pOldImgs = m_Image;
 	m_Image = NEW IMAGEDESCRIBE[m_nListSize];
-	if(m_Image==NULL)	{_THROW("memory allocate error")}
+	if(m_Image==NULL)	{SE_THROW_MSG("memory allocate error")}
 	if(imgNum>0)
 		memcpy(m_Image,pOldImgs,imgNum*sizeof(IMAGEDESCRIBE));
 	if(imgNum<m_nListSize)
@@ -1146,7 +1146,7 @@ void CXI_SCROLLIMAGE::RefreshScroll()
 		{
 			if( (m_sSpecTechniqueName=NEW char[strlen(sTechnique)+1])==NULL )
 			{
-				_THROW("Allocate memory error");
+				SE_THROW_MSG("Allocate memory error");
 			}
 			strcpy(m_sSpecTechniqueName,sTechnique);
 		}
@@ -1178,7 +1178,7 @@ void CXI_SCROLLIMAGE::RefreshScroll()
 				m_sGroupName = NEW char*[m_nGroupQuantity];
 				if( m_nGroupTex==NULL || m_sGroupName==NULL )
 				{
-					_THROW("allocate memory error");
+					SE_THROW_MSG("allocate memory error");
 				}
 				for(i=0;i<m_nGroupQuantity;i++)
 				{
@@ -1187,7 +1187,7 @@ void CXI_SCROLLIMAGE::RefreshScroll()
 					m_sGroupName[i] = NEW char[strlen(stmp)+1];
 					if(m_sGroupName[i]==NULL)
 					{
-						_THROW("allocate memory error");
+						SE_THROW_MSG("allocate memory error");
 					}
 					strcpy(m_sGroupName[i],stmp);
 					m_nGroupTex[i] = pPictureService->GetTextureID(m_sGroupName[i]);
@@ -1241,7 +1241,7 @@ void CXI_SCROLLIMAGE::RefreshScroll()
 					!m_Image[i].ptex || !m_Image[i].saveName ||
 					!m_Image[i].tex )
 				{
-					_THROW("allocate memory error");
+					SE_THROW_MSG("allocate memory error");
 				}
 				for(n=0; n<m_nSlotsQnt; n++)
 				{
@@ -1269,7 +1269,7 @@ void CXI_SCROLLIMAGE::RefreshScroll()
 					{
 						m_Image[i].string1 = NEW char[strlen(sStringName)];
 						if(m_Image[i].string1==NULL)
-							_THROW("allocate memory error")
+							SE_THROW_MSG("allocate memory error")
 						strcpy(m_Image[i].string1,&(sStringName[1]));
 					}
 					else
@@ -1284,7 +1284,7 @@ void CXI_SCROLLIMAGE::RefreshScroll()
 					{
 						m_Image[i].string2 = NEW char[strlen(sStringName)];
 						if(m_Image[i].string2==NULL)
-							_THROW("allocate memory error")
+							SE_THROW_MSG("allocate memory error")
 						strcpy(m_Image[i].string2,&(sStringName[1]));
 					}
 					else
@@ -1300,7 +1300,7 @@ void CXI_SCROLLIMAGE::RefreshScroll()
 					if(tmpStr!=null)
 					{
 						if( (m_Image[i].saveName[n]=NEW char[strlen(tmpStr)+1])==0 )
-							{_THROW("allocate memory error");}
+							{SE_THROW_MSG("allocate memory error");}
 						strcpy(m_Image[i].saveName[n],tmpStr);
 					}
 					sprintf(param,"tex%d",n+1);
@@ -1477,7 +1477,7 @@ void CXI_SCROLLIMAGE::UpdateTexturesGroup()
 			m_nGroupTex = NEW long[m_nGroupQuantity];
 			m_sGroupName = NEW char*[m_nGroupQuantity];
 			if( m_nGroupTex==NULL || m_sGroupName==NULL ) {
-				_THROW("allocate memory error");
+				SE_THROW_MSG("allocate memory error");
 			}
 			for(i=0;i<m_nGroupQuantity;i++)
 			{
@@ -1501,7 +1501,7 @@ void CXI_SCROLLIMAGE::UpdateTexturesGroup()
 				{
 					m_sGroupName[i] = NEW char[strlen(stmp)+1];
 					if(m_sGroupName[i]==NULL) {
-						_THROW("allocate memory error");
+						SE_THROW_MSG("allocate memory error");
 					}
 					strcpy(m_sGroupName[i],stmp);
 					m_nGroupTex[i] = pPictureService->GetTextureID(m_sGroupName[i]);

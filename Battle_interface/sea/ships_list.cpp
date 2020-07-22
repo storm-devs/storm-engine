@@ -33,7 +33,7 @@ void TMP_LONG_STACK::Push(long data)
 		}
 		long *pold = ldat;
 		ldat = NEW long[datsize+sizeIncr];
-		if(ldat==null)	{_THROW("allocate memory error");}
+		if(ldat==null)	{SE_THROW_MSG("allocate memory error");}
 		if(pold!=null)
 		{
 			memcpy(ldat,pold,sizeof(long)*datsize);
@@ -150,7 +150,7 @@ void SHIP_DESCRIBE_LIST::Add(long mainChrIndex, long chIdx, ATTRIBUTES * pChAttr
 	SHIP_DESCR * pr = NEW SHIP_DESCR;
 	if(pr==NULL)
 	{
-		_THROW("Can`t allocate memory");
+		SE_THROW_MSG("Can`t allocate memory");
 	}
 	pr->characterIndex = chIdx;
 	pr->maxCrew = pShipAttr->GetAttributeAsDword("MaxCrew");

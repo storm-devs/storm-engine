@@ -59,7 +59,7 @@ bool Tornado::Init()
 
 	//DX8 render
 	rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
-	if(!rs) _THROW("No service: dx8render");
+	if(!rs) SE_THROW_MSG("No service: dx8render");
 
 	//Создаём буфера для столба
 	ib = rs->CreateIndexBufferManaged(pillar.GetNumTriangles()*3*sizeof(word));

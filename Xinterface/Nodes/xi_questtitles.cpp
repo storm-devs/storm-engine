@@ -255,7 +255,7 @@ void CXI_QUESTTITLE::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *name
 	{
 		m_iconGroupName = NEW char[strlen(param)+1];
 		if(m_iconGroupName==null)
-			{_THROW("allocate memory error");}
+			{SE_THROW_MSG("allocate memory error");}
 		strcpy(m_iconGroupName,param);
 	}
 	else	m_iconGroupName = null;
@@ -320,7 +320,7 @@ void CXI_QUESTTITLE::SetNewTopQuest(ATTRIBUTES * pA,int topNum)
 		if(m_stringQuantity<=0) return;
 		if( (m_strList=NEW STRING_DESCRIBER[m_stringQuantity]) == NULL )
 		{
-			_THROW("allocate memory error");
+			SE_THROW_MSG("allocate memory error");
 		}
 		// и заполнение этих строк
 		int lineNum = 0;

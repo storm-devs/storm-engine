@@ -39,7 +39,7 @@ bool Artifact::Init()
 		return false;
 
 	renderService = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
-	if(!renderService)	_THROW("No service: dx8render");
+	if(!renderService)	SE_THROW_MSG("No service: dx8render");
 
 	//particles
 	INIFILE *psIni = _CORE_API->fio->OpenIniFile("resource\\ini\\particles\\artifact.ini");

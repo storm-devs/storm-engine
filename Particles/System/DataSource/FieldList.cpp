@@ -75,7 +75,7 @@ void FieldList::Load (MemFile* File)
 			}
 			default:
 			{
-				_THROW ("Particles: Unknown field type !!!!");
+				SE_THROW_MSG ("Particles: Unknown field type !!!!");
 			}
 		}	//switch
 	} // for all fileds
@@ -636,7 +636,7 @@ void FieldList::DeleteFieldData (const FieldList::FieldDesc& pData)
 		}
 	default:
 		{
-			_THROW ("Particles: Try delete unknown field type !!!!");
+			SE_THROW_MSG ("Particles: Try delete unknown field type !!!!");
 		}
 	}	//switch
 }
@@ -698,7 +698,7 @@ void FieldList::Write (MemFile* File)
 				}
 			default:
 				{
-					_THROW ("Particles: Unknown field type !!!!");
+					SE_THROW_MSG ("Particles: Unknown field type !!!!");
 				}
 		}	//switch
 	} // loop

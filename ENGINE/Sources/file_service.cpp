@@ -117,7 +117,7 @@ HANDLE FILE_SERVICE::_CreateFile(LPCTSTR lpFileName,DWORD dwDesiriedAccess,DWORD
 		//*/
 	}
 #endif
-	//if(fh == INVALID_HANDLE_VALUE) if(Exceptions_Mask & _X_NO_FILE) _THROW(_X_NO_FILE);
+	//if(fh == INVALID_HANDLE_VALUE) if(Exceptions_Mask & _X_NO_FILE) SE_THROW_MSG(_X_NO_FILE);
 	return fh;
 }
 void   FILE_SERVICE::_CloseHandle(HANDLE hFile)
@@ -155,7 +155,7 @@ BOOL   FILE_SERVICE::_WriteFile(HANDLE hFile,LPCVOID lpBuffer,DWORD nNumberOfByt
 	dword dwR;
 	bRes = WriteFile(hFile,lpBuffer,nNumberOfBytesToWrite,&dwR,0);
 	if(lpNumberOfBytesWritten != 0) *lpNumberOfBytesWritten = dwR;
-//	if(dwR != nNumberOfBytesToWrite) if(Exceptions_Mask & _X_NO_FILE_WRITE) _THROW(_X_NO_FILE_WRITE);
+//	if(dwR != nNumberOfBytesToWrite) if(Exceptions_Mask & _X_NO_FILE_WRITE) SE_THROW_MSG(_X_NO_FILE_WRITE);
 	return bRes;
 }
 BOOL   FILE_SERVICE::_ReadFile(HANDLE hFile,LPVOID lpBuffer,DWORD nNumberOfBytesToRead,LPDWORD lpNumberOfBytesRead)
@@ -164,7 +164,7 @@ BOOL   FILE_SERVICE::_ReadFile(HANDLE hFile,LPVOID lpBuffer,DWORD nNumberOfBytes
 	dword dwR;
 	bRes = ReadFile(hFile,lpBuffer,nNumberOfBytesToRead,&dwR,0);
 	if(lpNumberOfBytesRead != 0) *lpNumberOfBytesRead = dwR;
-//	if(dwR != nNumberOfBytesToRead) if(Exceptions_Mask & _X_NO_FILE_READ) _THROW(_X_NO_FILE_READ);
+//	if(dwR != nNumberOfBytesToRead) if(Exceptions_Mask & _X_NO_FILE_READ) SE_THROW_MSG(_X_NO_FILE_READ);
 	return bRes;
 }
 HANDLE FILE_SERVICE::_FindFirstFile(LPCTSTR lpFileName,LPWIN32_FIND_DATA lpFindFileData)
@@ -358,7 +358,7 @@ void FILE_SERVICE::RefDec(INIFILE * ini_obj)
 	{
 		if(OpenFiles[n] != ini_obj) continue;
 		//OpenFiles[n]->SearchData = &OpenFiles[n]->Search;
-		if(OpenFiles[n]->GetReference() == 0) _THROW(Reference error);
+		if(OpenFiles[n]->GetReference() == 0) SE_THROW_MSG(Reference error);
 		OpenFiles[n]->DecReference();
 		if(OpenFiles[n]->GetReference() == 0) 
 		{
@@ -367,7 +367,7 @@ void FILE_SERVICE::RefDec(INIFILE * ini_obj)
 		}
 		return;
 	}
-	_THROW(bad inifile object);
+	SE_THROW_MSG(bad inifile object);
 	UNGUARD
 }
 

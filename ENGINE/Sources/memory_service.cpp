@@ -90,7 +90,7 @@ void * MEMORY_SERVICE::Allocate(long size)
 	
 	if(data_PTR == null) 
 	{
-		if(Exceptions_Mask & _X_NO_MEM) _THROW(_X_NO_MEM);
+		if(Exceptions_Mask & _X_NO_MEM) SE_THROW_MSG(_X_NO_MEM);
 		return null;
 	}	
 	
@@ -341,7 +341,7 @@ void * MEMORY_SERVICE::Reallocate(void * block_PTR,long size)
 		dwTotalBlocks = Blocks;
 
 		trace("cant resize  old : %d    new : %d   header : %d",data_size,size,sizeof(MEM_BLOCK));
-		if(Exceptions_Mask & _X_NO_MEM) _THROW(_X_NO_MEM);
+		if(Exceptions_Mask & _X_NO_MEM) SE_THROW_MSG(_X_NO_MEM);
 
 		return null;
 	}

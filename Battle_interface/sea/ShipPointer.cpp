@@ -32,7 +32,7 @@ bool SHIPPOINTER::Init()
 {
 	if( (rs=(VDX8RENDER *)api->CreateService("dx8render")) == NULL )
 	{
-		_THROW("Can`t create render service");
+		SE_THROW_MSG("Can`t create render service");
 	}
 
 	m_idVBuf = rs->CreateVertexBufferManaged(SPV_FORMAT,4 * sizeof(SPV_VERTEX),D3DUSAGE_WRITEONLY);

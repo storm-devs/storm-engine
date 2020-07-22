@@ -167,7 +167,7 @@ void CXI_BUTTON::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *name2)
 		m_idTex = pPictureService->GetTextureID(param);
 		m_sGroupName = NEW char[strlen(param)+1];
 		if(m_sGroupName==null)
-			_THROW("allocate memory error")
+			SE_THROW_MSG("allocate memory error")
 		strcpy(m_sGroupName,param);
 
 		// get button picture name
@@ -300,7 +300,7 @@ dword _cdecl CXI_BUTTON::MessageProc(long msgcode, MESSAGE & message)
 				PTR_DELETE(m_sGroupName);
 				m_sGroupName = NEW char[paramLen+1];
 				if(m_sGroupName==NULL)
-					_THROW("allocate memory error")
+					SE_THROW_MSG("allocate memory error")
 				strcpy(m_sGroupName,param);
 				m_idTex = pPictureService->GetTextureID(m_sGroupName);
 			}

@@ -231,7 +231,7 @@ void XSERVICE::LoadAllPicturesInfo()
 	{
 		m_pList = NEW IMAGELISTDESCR[m_dwListQuantity];
 		if(m_pList==NULL)
-			_THROW("memory allocate error")
+			SE_THROW_MSG("memory allocate error")
 	}
 
 	// fill lists
@@ -263,7 +263,7 @@ void XSERVICE::LoadAllPicturesInfo()
 			PICTUREDESCR *oldpImage = m_pImage;
 			m_pImage = NEW PICTUREDESCR[m_dwImageQuantity + m_pList[i].pictureQuantity];
 			if(m_pImage==NULL)
-				_THROW("allocate memory error")
+				SE_THROW_MSG("allocate memory error")
 			if(oldpImage!=NULL)
 			{
 				memcpy(m_pImage,oldpImage,m_dwImageQuantity*sizeof(PICTUREDESCR));

@@ -44,7 +44,7 @@ DATA * S_STACK::Push(DATA * pdataclass)
 	{
 		Data_num = Data_num;
 	}
-	if(Data_num > STACK_BUFFER_LIMIT) _THROW(stack overflaw);
+	if(Data_num > STACK_BUFFER_LIMIT) SE_THROW_MSG(stack overflaw);
 	if(Data_num >= Buffer_size)
 	{
 		offset = Buffer_size;
@@ -73,7 +73,7 @@ DATA * S_STACK::Push(DATA * pdataclass)
 DATA * S_STACK::Pop()
 {
 	Assert(Data_num);
-	if(Data_num == 0) _THROW(stack 'pop' error);
+	if(Data_num == 0) SE_THROW_MSG(stack 'pop' error);
 	Data_num--;
 	//return &pStackData[Data_num];
 
@@ -90,7 +90,7 @@ DATA * S_STACK::Read(DWORD offset,DWORD index)
 {
 	if(offset + index >= Data_num) 
 	{
-		_THROW(stack 'read' error);
+		SE_THROW_MSG(stack 'read' error);
 	}
 	//return &pStackData[offset + index];
 	return pStackData[offset + index];
@@ -98,7 +98,7 @@ DATA * S_STACK::Read(DWORD offset,DWORD index)
 
 DATA * S_STACK::Read()
 {
-	if(Data_num <= 0) _THROW(stack 'read' error);
+	if(Data_num <= 0) SE_THROW_MSG(stack 'read' error);
 	//return &pStackData[Data_num - 1];
 	return pStackData[Data_num - 1];
 }

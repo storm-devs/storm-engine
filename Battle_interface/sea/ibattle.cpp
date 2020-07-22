@@ -78,7 +78,7 @@ bool BATTLE_INTERFACE::Init()
 {
 	if( (rs=(VDX8RENDER *)_CORE_API->CreateService("dx8render")) == NULL )
 	{
-		_THROW("Can`t create render service");
+		SE_THROW_MSG("Can`t create render service");
 	}
 
 	LoadIniFile();

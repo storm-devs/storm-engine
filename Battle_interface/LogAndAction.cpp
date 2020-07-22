@@ -42,7 +42,7 @@ bool ILogAndActions::Init()
 {
 	if( (rs=(VDX8RENDER *)_CORE_API->CreateService("dx8render")) == NULL )
 	{
-		_THROW("Can`t create render service");
+		SE_THROW_MSG("Can`t create render service");
 	}
 	D3DVIEWPORT9 vp;
 	rs->GetViewport(&vp);
@@ -123,7 +123,7 @@ dword _cdecl ILogAndActions::ProcessMessage(MESSAGE & message)
 					if(param[0]!=0)
 					{
 						if( (last->str=NEW char[strlen(param)+1]) == null )
-							{ _THROW("allocate memory error"); }
+							{ SE_THROW_MSG("allocate memory error"); }
 						strcpy(last->str,param);
 					}
 					else
@@ -417,14 +417,14 @@ void ILogAndActions::SetString(char * str, bool immortal)
 	STRING_DESCR * newDescr = NEW STRING_DESCR;
 	if(newDescr==NULL)
 	{
-		_THROW("Allocate memory error");
+		SE_THROW_MSG("Allocate memory error");
 	}
 	// он будет последним в списке
 	newDescr->next = NULL;
 	// занесем в него заданную строку
 	if( (newDescr->str=NEW char[strlen(str)+1]) == NULL )
 	{
-		_THROW("Allocate memory error");
+		SE_THROW_MSG("Allocate memory error");
 	}
 	strcpy(newDescr->str,str);
 	// Поставим максимальную видимость

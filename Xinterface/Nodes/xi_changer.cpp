@@ -89,7 +89,7 @@ void CXI_CHANGER::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *name2)
     {
         m_pPlace = NEW XYRECT[m_nPlaceQuantity];
         if(m_pPlace==NULL)
-            _THROW("Allocate memory error")
+            SE_THROW_MSG("Allocate memory error")
         ZeroMemory(m_pPlace,sizeof(XYRECT)*m_nPlaceQuantity);
     }
 

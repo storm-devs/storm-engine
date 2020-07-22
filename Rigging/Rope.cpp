@@ -73,7 +73,7 @@ void ROPE::SetDevice()
 	RenderService = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
 	if(!RenderService)
 	{
-		_THROW("No service: dx8render");
+		SE_THROW_MSG("No service: dx8render");
 	}
 
     LoadIni();
@@ -204,7 +204,7 @@ dword _cdecl ROPE::ProcessMessage(MESSAGE & message)
 				gdata = NEW GROUPDATA[groupQuantity+1];
 				if(gdata==NULL)
 				{
-					_THROW("allocate memory error");
+					SE_THROW_MSG("allocate memory error");
 				}
 				memcpy(gdata,oldgdata,sizeof(GROUPDATA)*groupQuantity);
 				delete oldgdata; groupQuantity++;
@@ -214,7 +214,7 @@ dword _cdecl ROPE::ProcessMessage(MESSAGE & message)
 				gdata = NEW GROUPDATA[1]; groupQuantity=1;
 				if(gdata==NULL)
 				{
-					_THROW("allocate memory error");
+					SE_THROW_MSG("allocate memory error");
 				}
 			}
 
@@ -281,7 +281,7 @@ dword _cdecl ROPE::ProcessMessage(MESSAGE & message)
 			gdata[groupQuantity-1].ropeIdx = NEW int[gdata[groupQuantity-1].ropeQuantity];
 			if( gdata[groupQuantity-1].ropeIdx==NULL )
 			{
-				_THROW("allocate memory error");
+				SE_THROW_MSG("allocate memory error");
 			}
 			int idx=0;
 			for(rn=wFirstRope; rn<ropeQuantity; rn++)
@@ -930,7 +930,7 @@ void ROPE::SetAdd(int firstNum)
 			api->Trace("Bad rope data for rope: (model=%s) (rope num = %d) (begin group=%d, end group=%d)",
 				pcModlName,rlist[rn]->ropeNum, rlist[rn]->bgnum, rlist[rn]->egnum);
 			api->Trace("Begin pointer = %d? end pointer = %d",rlist[rn]->bMatWorld,rlist[rn]->eMatWorld);
-            //_THROW("Rope error: Not label");
+            //SE_THROW_MSG("Rope error: Not label");
             delete rlist[rn];
             ropeQuantity--;
             if(ropeQuantity)

@@ -168,7 +168,7 @@ void CXI_SCROLLBAR::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *name2
 	{
 		m_sGroupName = NEW char[strlen(param)+1];
 		if(m_sGroupName==null)
-			_THROW("allocate memory error")
+			SE_THROW_MSG("allocate memory error")
 		strcpy(m_sGroupName,param);
 		m_idTex = pPictureService->GetTextureID(param);
 	}
@@ -197,7 +197,7 @@ void CXI_SCROLLBAR::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *name2
 	XI_ONETEX_VERTEX *pVert = (XI_ONETEX_VERTEX*) m_rs->LockVertexBuffer(m_idVBuf);
 	WORD *pIndx = (WORD*) m_rs->LockIndexBuffer(m_idIBuf);
 	if(pVert==NULL || pIndx==NULL)
-		_THROW("can not create the index&vertex buffers")
+		SE_THROW_MSG("can not create the index&vertex buffers")
 
 	// fill triangles buffer
 	int i=0;

@@ -11,7 +11,7 @@ CXI_ToolTip::CXI_ToolTip( VXSERVICE* pPicService, VSTRSERVICE* pStrService, XYPO
 	m_pntScreenSize = pntScrSize;
 
 	m_rs = XINTERFACE::GetRenderService();
-	if( !m_rs ) {_THROW("No service: dx8render");};
+	if( !m_rs ) {SE_THROW_MSG("No service: dx8render");};
 
 	m_nTextureID = -1;
 	m_pV = 0;

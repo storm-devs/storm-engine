@@ -205,7 +205,7 @@ void CXI_UTILS::StringDoublicate( const char* pcSrc, char*& pcDst )
 	{
 		pcDst = NEW char[strlen(pcSrc)+1];
 		if( pcDst ) strcpy( pcDst, pcSrc );
-		else _THROW("allocate memory error");
+		else SE_THROW_MSG("allocate memory error");
 	}
 }
 

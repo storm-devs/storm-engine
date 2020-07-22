@@ -230,7 +230,7 @@ void CXI_TEXTBUTTON::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *name
 		m_idTex = pPictureService->GetTextureID(param);
 		m_sGroupName = NEW char[strlen(param)+1];
 		if(m_sGroupName==NULL)
-			_THROW("allocate memory error")
+			SE_THROW_MSG("allocate memory error")
 		strcpy(m_sGroupName,param);
 	}
 
@@ -285,7 +285,7 @@ void CXI_TEXTBUTTON::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *name
 	XI_ONETEX_VERTEX *pVert = (XI_ONETEX_VERTEX*) m_rs->LockVertexBuffer(m_idVBuf);
 	WORD *pIndx = (WORD*) m_rs->LockIndexBuffer(m_idIBuf);
 	if(pVert==NULL || pIndx==NULL)
-		_THROW("can not create the index&vertex buffers")
+		SE_THROW_MSG("can not create the index&vertex buffers")
 
 	// fill triangles buffer
 	int i=0;
@@ -561,7 +561,7 @@ dword _cdecl CXI_TEXTBUTTON::MessageProc(long msgcode, MESSAGE & message)
 			PTR_DELETE(m_sString); m_idString = -1;
 			if( param[0] == '#' ) {
 				if( (m_sString=NEW char[strlen(param)]) == null )
-				{ _THROW("allocate memory error"); }
+				{ SE_THROW_MSG("allocate memory error"); }
 				strcpy(m_sString,&param[1]);
 			} else {
 				m_idString = pStringService->GetStringNum( param );

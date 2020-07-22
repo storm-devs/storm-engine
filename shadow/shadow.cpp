@@ -48,12 +48,12 @@ bool SHADOW::Init()
 	GUARD(SHADOW::SHADOW())
 
 	col = (COLLIDE *)_CORE_API->CreateService("coll");
-	if(col==null)	_THROW("No service: COLLIDE");
+	if(col==null)	SE_THROW_MSG("No service: COLLIDE");
 
 	_CORE_API->LayerAdd("realize",GetID(),900);
 
 	rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
-	if(!rs)	_THROW("No service: dx8render");
+	if(!rs)	SE_THROW_MSG("No service: dx8render");
 	
 	if(ref==0)
 	{

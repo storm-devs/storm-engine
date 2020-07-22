@@ -41,8 +41,8 @@ bool LAYER_SERVICE::Verify(char * layer_name)
 void LAYER_SERVICE::Fit(dword index, char * layer_name, LAYER_STATE ls)
 {
 	GUARD(LAYER_SERVICE::FitLayer)
-	if(layer_name == null) _THROW(zero name);
-	if(index > lss.Layer_max_index) _THROW(invalid index);
+	if(layer_name == null) SE_THROW_MSG(zero name);
+	if(index > lss.Layer_max_index) SE_THROW_MSG(invalid index);
 	if(Layer_Table[index] != null) SE_THROW;
 
 	Layer_Table[index] = NEW LAYER(layer_name,ls.Ordered,ls.System,ls.System_flags);
@@ -207,7 +207,7 @@ void LAYER_SERVICE::SetSleep(char * layer_name,dword sleep_time_ms)
 
 void LAYER_SERVICE::CheckAutoExceptions()
 {
-	if(!(Exceptions_Mask & _X_NO_LAYER)) _THROW(no layer);
+	if(!(Exceptions_Mask & _X_NO_LAYER)) SE_THROW_MSG(no layer);
 }
 
 // delete layers, previously marked as deleted
@@ -257,7 +257,7 @@ LAYER * LAYER_SERVICE::GetLayer(dword index)
 
 bool LAYER_SERVICE::Add(dword index, ENTITY_ID eid, dword priority)
 {
-	if(Layer_Table[index] == 0) _THROW(invalid layer index);
+	if(Layer_Table[index] == 0) SE_THROW_MSG(invalid layer index);
 	if(!Layer_Table[index]->Add(eid,priority)) SE_THROW;
 	return true;
 }

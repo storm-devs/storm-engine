@@ -33,7 +33,7 @@ void ISLAND_DESCRIBER::SetIsland(ATTRIBUTES * pAIsland)
 	if( (m_nLocators=pA->GetAttributesNum()) == 0 ) return;
 	if( (m_pLocators=NEW LOCATOR_DESCR[m_nLocators])==NULL )
 	{
-		_THROW("Can`t allocate memory");
+		SE_THROW_MSG("Can`t allocate memory");
 	}
 	// пройтись по всем локаторам
 	ATTRIBUTES * pATmp;

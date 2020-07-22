@@ -137,7 +137,7 @@ void CXI_TITLE::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *name2)
 	{
 		m_sGroupName = NEW char[strlen(param)+1];
 		if(m_sGroupName==NULL)
-			_THROW("allocate memory error")
+			SE_THROW_MSG("allocate memory error")
 		strcpy(m_sGroupName,param);
 		m_idTex = pPictureService->GetTextureID(m_sGroupName);
 	}
@@ -189,7 +189,7 @@ void CXI_TITLE::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *name2)
 	// fill index buffer
 	WORD* pIndex = (WORD*)m_rs->LockIndexBuffer(m_idIBuf);
 	if(pIndex==NULL)
-		_THROW("index buffer not create")
+		SE_THROW_MSG("index buffer not create")
 	for(i=0; i<rectangleQuantity; i++)
 	{
 		pIndex[i*6+0] = i*4;
@@ -204,7 +204,7 @@ void CXI_TITLE::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *name2)
 	// fill vertex buffer
 	XI_ONETEX_VERTEX* pVert = (XI_ONETEX_VERTEX*)m_rs->LockVertexBuffer(m_idVBuf);
 	if(pVert==NULL)
-		_THROW("vertex buffer not create")
+		SE_THROW_MSG("vertex buffer not create")
 	for(i=0; i<m_nVert; i++)
 	{
 		pVert[i].color = imgColor;

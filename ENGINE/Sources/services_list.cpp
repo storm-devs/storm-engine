@@ -231,7 +231,7 @@ dword SERVICES_LIST::GetRef(SERVICE * sp)
 {
 	SERVICE_NODE * node_PTR;
 	node_PTR = FindNode(sp);
-	if(node_PTR == null) _THROW(no service);
+	if(node_PTR == null) SE_THROW_MSG(no service);
 	return node_PTR->reference;
 }
 
@@ -239,6 +239,6 @@ void SERVICES_LIST::SetRef(SERVICE * sp, dword ref)
 {
 	SERVICE_NODE * node_PTR;
 	node_PTR = FindNode(sp);
-	if(node_PTR == null) _THROW(no service);
+	if(node_PTR == null) SE_THROW_MSG(no service);
 	node_PTR->reference = ref;
 }

@@ -415,7 +415,7 @@ bool  DX8RENDER::Init()
 			sprintf(str, "resource\\ini\\fonts.ini");
 		}
         if ((fontIniFileName = NEW char[strlen(str) + 1]) == null)
-            _THROW("allocate memory error");
+            SE_THROW_MSG("allocate memory error");
         strcpy(fontIniFileName,str);
 		// get start font quantity
 		if (!ini->ReadString(0, "font", str, sizeof(str)-1, ""))
@@ -1354,7 +1354,7 @@ long DX8RENDER::TextureCreate(const char *fname)
 		Textures[t].hash = hf;
 
 		if( (Textures[t].name=NEW char[strlen(_fname)+1]) == NULL )
-			_THROW("allocate memory error");
+			SE_THROW_MSG("allocate memory error");
 		strcpy(Textures[t].name,_fname);
 		Textures[t].isCubeMap = false;
 		Textures[t].loaded = false;	
@@ -2550,7 +2550,7 @@ long DX8RENDER::LoadFont(char * fontName)
     if(nFontQuantity<MAX_FONTS)
     {
         if( (FontList[i].font=NEW FONT) == NULL )
-            _THROW("allocate memory error");
+            SE_THROW_MSG("allocate memory error");
         if( !FontList[i].font->Init(fontName,fontIniFileName,d3d9,this) )
 		{
 			delete FontList[i].font;
@@ -2560,12 +2560,12 @@ long DX8RENDER::LoadFont(char * fontName)
         FontList[i].hash = hashVal;
         FontList[i].ref = 1;
 		if( (FontList[i].name=NEW char[strlen(fontName)+1])==NULL )
-			_THROW("allocate memory error");
+			SE_THROW_MSG("allocate memory error");
 		strcpy(FontList[i].name,fontName);
         nFontQuantity++;
     }
     else
-        _THROW("maximal font quantity exceeded")
+        SE_THROW_MSG("maximal font quantity exceeded")
     return i;
 }
 
@@ -2659,7 +2659,7 @@ bool DX8RENDER::SetFontIniFileName(char * iniName)
     else
     {
         if( (fontIniFileName=NEW char[strlen(iniName)+1]) == NULL )
-            _THROW("allocate memory error")
+            SE_THROW_MSG("allocate memory error")
         strcpy(fontIniFileName,iniName);
     }
 
@@ -2669,7 +2669,7 @@ bool DX8RENDER::SetFontIniFileName(char * iniName)
 			delete FontList[n].font;
 		}
 		if( (FontList[n].font=NEW FONT) == NULL )
-			_THROW("allocate memory error")
+			SE_THROW_MSG("allocate memory error")
 		FontList[n].font->Init( FontList[n].name, fontIniFileName, d3d9, this );
 		if( FontList[n].ref==0 ) FontList[n].font->TempUnload();
 	}
@@ -3402,7 +3402,7 @@ CVideoTexture* DX8RENDER::GetVideoTexture(char* sVideoName)
 	pVTLcur = NEW VideoTextureEntity;
 	if(pVTLcur==null)
 	{
-		_THROW("memory allocate error")
+		SE_THROW_MSG("memory allocate error")
 	}
 	pVTLcur->next = pVTL;
 	pVTLcur->VideoTexture = 0;
@@ -3410,7 +3410,7 @@ CVideoTexture* DX8RENDER::GetVideoTexture(char* sVideoName)
 	pVTLcur->ref = 1;
 	if( (pVTLcur->name=NEW char[strlen(sVideoName)+1]) == null )
 	{
-		_THROW("memory allocate error")
+		SE_THROW_MSG("memory allocate error")
 	}
 	strcpy(pVTLcur->name,sVideoName);
 	ENTITY_ID ei;

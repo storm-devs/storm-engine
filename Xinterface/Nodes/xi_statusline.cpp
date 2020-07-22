@@ -128,7 +128,7 @@ void CXI_STATUSLINE::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *name
         pVBuf[7].pos.x = scrRect2.right;   pVBuf[7].pos.y = scrRect2.bottom; pVBuf[7].tu = texRect2.right;   pVBuf[7].tv = texRect2.bottom;
 	}
     else
-        _THROW("Can't vertex or index buffer create");
+        SE_THROW_MSG("Can't vertex or index buffer create");
 
 	if(pVBuf!=null) m_rs->UnLockVertexBuffer(m_vBuf);
 	if(pIBuf!=null) m_rs->UnLockIndexBuffer(m_iBuf);

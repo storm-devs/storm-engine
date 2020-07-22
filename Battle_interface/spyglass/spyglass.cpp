@@ -81,7 +81,7 @@ ISPYGLASS::~ISPYGLASS()
 bool ISPYGLASS::Init()
 {
 	if( (rs=(VDX8RENDER *)api->CreateService("dx8render")) == null ) {
-		_THROW("Can`t create render service");
+		SE_THROW_MSG("Can`t create render service");
 	}
 
 	m_pImgRender = NEW BIImageRender( rs );

@@ -62,7 +62,7 @@ void SCRSHOTER::SetDevice()
 {
     // получить сервис рендера
 	rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
-	if(!rs){_THROW("No service: dx8render")}
+	if(!rs){SE_THROW_MSG("No service: dx8render")}
 
 }
 
@@ -139,7 +139,7 @@ bool SCRSHOTER::MakeScreenShot()
 		int * pHorzOff = NEW int[SS_TEXTURE_WIDTH];
 		int * pVertOff = NEW int[SS_TEXTURE_HEIGHT];
 		if(!pHorzOff || !pVertOff) {
-			_THROW("allocate memory error");
+			SE_THROW_MSG("allocate memory error");
 		}
 		int nHorzSize, nVertSize;
 		if( (float)desc.Width/desc.Height < (float)SS_TEXTURE_WIDTH/SS_TEXTURE_HEIGHT )
@@ -181,7 +181,7 @@ bool SCRSHOTER::MakeScreenShot()
 	// Делаем перевод в смешанную текстуру
 	DWORD dwTmp = outRect.Pitch*SS_TEXTURE_HEIGHT;
 	//DWORD dwPixelSize = XGBytesPerPixelFromFormat( D3DFMT_A8R8G8B8 );
-	if( (pIn=NEW char[dwTmp]) == null ) { _THROW("allocate memory error") }
+	if( (pIn=NEW char[dwTmp]) == null ) { SE_THROW_MSG("allocate memory error") }
 	memcpy(pIn,outRect.pBits,dwTmp);
     XGSwizzleRect( pIn, 0, NULL, outRect.pBits,
 				   SS_TEXTURE_WIDTH, SS_TEXTURE_HEIGHT,
@@ -326,12 +326,12 @@ IDirect3DTexture9 * SCRSHOTER::AddSaveTexture(char * dirName, char * fileName)
 	if(rval) return rval;
 	if(stricmp(fileName,"newsave")==0) return m_pScrShotTex;
 	SAVETEXTURES * ps = NEW SAVETEXTURES;
-	if(ps==null)	{_THROW("Allocate memory error");}
+	if(ps==null)	{SE_THROW_MSG("Allocate memory error");}
 	ps->dataString = null;
 	ps->next = m_list;
 	m_list = ps;
 	m_list->fileName = NEW char[strlen(fileName)+1];
-	if(m_list->fileName==null)	{_THROW("Allocate memory error");}
+	if(m_list->fileName==null)	{SE_THROW_MSG("Allocate memory error");}
 	strcpy(m_list->fileName,fileName);
 	char param[1024];
 	if(dirName==null || dirName[0] == 0)	sprintf(param,"%s",fileName);
@@ -393,7 +393,7 @@ IDirect3DTexture9 * SCRSHOTER::GetTexFromSave(char * fileName, char **pDatStr)
 		{
 			int strLen = startIdx-sizeof(SAVE_DATA_HANDLE);
 			*pDatStr = NEW char[strLen+1];
-			if(!*pDatStr) {_THROW("allocate memory error");}
+			if(!*pDatStr) {SE_THROW_MSG("allocate memory error");}
 			strncpy(*pDatStr, &pdat[sizeof(SAVE_DATA_HANDLE)], strLen);
 			(*pDatStr)[strLen] = 0;
 		}

@@ -13,7 +13,7 @@ void SYSTEM_API::Push(void * pointer, dword class_code)
 void SYSTEM_API::Pop(void * pointer)
 {
 	return;
-/*	if(Control_Stack.ScanClassCTPInv(idbase.class_code,CTP_DESTRUCTOR)) _THROW('delete this' not allowed);
+/*	if(Control_Stack.ScanClassCTPInv(idbase.class_code,CTP_DESTRUCTOR)) SE_THROW_MSG('delete this' not allowed);
 	POP_CONTROL(0);
 	Memory_Service.Lock(idbase.pointer);	// protect memory from being freed by FreeMem func
 	Core.MarkEntityAsDeleted(idbase.pointer);		// assign entity for deleting*/

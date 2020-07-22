@@ -80,7 +80,7 @@ void CXI_SCROLLTEXT::SetText(char *newText)
 	if(newText!=NULL)
 	{
 		if( (m_pText=NEW char[strlen(newText)+1]) == NULL )
-			_THROW("allocate memory error")
+			SE_THROW_MSG("allocate memory error")
 		strcpy(m_pText,newText);
 
 		// получить все части из текста

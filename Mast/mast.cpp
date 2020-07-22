@@ -68,10 +68,10 @@ void MAST::SetDevice()
 	GUARD(MAST::SetDevice())
 
 	RenderService = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
-    if(!RenderService) _THROW("No service: dx8render");
+    if(!RenderService) SE_THROW_MSG("No service: dx8render");
 
 	pCollide = (COLLIDE*)_CORE_API->CreateService("COLL");
-	if (!pCollide) _THROW("No service: collide");
+	if (!pCollide) SE_THROW_MSG("No service: collide");
 
     LoadIni();
 
@@ -710,10 +710,10 @@ void HULL::SetDevice()
 	GUARD(HULL::SetDevice())
 
 	RenderService = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
-    if(!RenderService) _THROW("No service: dx8render");
+    if(!RenderService) SE_THROW_MSG("No service: dx8render");
 
 	pCollide = (COLLIDE*)_CORE_API->CreateService("COLL");
-	if (!pCollide) _THROW("No service: collide");
+	if (!pCollide) SE_THROW_MSG("No service: collide");
 
     //LoadIni();
 
