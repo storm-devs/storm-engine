@@ -90,8 +90,8 @@ void LAYER_SERVICE::Erase(dword index)
 	GUARD(LAYER_SERVICE::EraseLayer)
 	LAYER * l_PTR;
 
-	if(index < 0 || index > lss.Layer_max_index) {__THROW(NON_FATAL,ghost layer);}
-	l_PTR = Layer_Table[index]; if(l_PTR == null) {__THROW(NON_FATAL,ghost layer);}
+	if(index < 0 || index > lss.Layer_max_index) {SE_THROW_SEVERITY_MSG(NON_FATAL,ghost layer);}
+	l_PTR = Layer_Table[index]; if(l_PTR == null) {SE_THROW_SEVERITY_MSG(NON_FATAL,ghost layer);}
 
 /*  transfer this block to core
 	if(Scan_Layer_Code == index) Scan_Layer_Code = INVALID_LAYER_CODE;
@@ -128,7 +128,7 @@ void LAYER_SERVICE::Delete(char * layer_name)
 	index = GetIndex(layer_name);	
 	if(index == INVALID_LAYER_CODE)
 	{
-		__THROW(NON_FATAL,attempt to delete non existing layer);
+		SE_THROW_SEVERITY_MSG(NON_FATAL,attempt to delete non existing layer);
 	}
 	Layer_Table[index]->ls.Deleted = true;
 	ToClean = true;

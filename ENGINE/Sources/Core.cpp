@@ -2677,7 +2677,7 @@ void CORE::ProcessStateLoading()
 	if(fh == INVALID_HANDLE_VALUE)
 	{
 		trace(State_file_name);
-		__THROW(NON_FATAL,cant open state file);
+		SE_THROW_SEVERITY_MSG(NON_FATAL,cant open state file);
 	}
 
 	//Program.LoadState(fh);
