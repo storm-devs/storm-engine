@@ -7,7 +7,6 @@ typedef unsigned char byte;
 
 #define null 0
 
-#define _F				__FILE__
 #define _L				__LINE__
 #define _FL_			__FILE__, __LINE__
 #define _FL				__FILE__, __LINE__

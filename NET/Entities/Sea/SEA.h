@@ -136,6 +136,9 @@ public:
 
 	dword AttributeChanged(ATTRIBUTES * pAttribute);
 
+	void LostRender() override;
+	void RestoreRender() override;
+
 	//bool			Init();
 	//void			Realize(dword Delta_Time);
 	//void			Execute(dword Delta_Time);

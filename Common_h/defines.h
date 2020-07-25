@@ -5,8 +5,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 #endif 
 
-#define _WIN32_WINNT 0x0601
-
 // includes
 #include "math3d.h"
 

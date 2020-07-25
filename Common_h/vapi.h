@@ -1,8 +1,6 @@
 #ifndef _VAPI_H_
 #define _VAPI_H_
 
-#define _WIN32_WINNT 0x0601
-
 #ifndef _XBOX 
 #include <windows.h>
 #else
