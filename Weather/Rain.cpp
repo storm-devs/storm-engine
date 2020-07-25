@@ -77,7 +77,7 @@ void RAIN::GenerateRain()
 	dword	i;
 
 	ENTITY_ID	ent;
-	if (!api->FindClass(&ent,"Weather",0)) _THROW("No found WEATHER entity!");
+	if (!api->FindClass(&ent,"Weather",0)) SE_THROW_MSG("No found WEATHER entity!");
 	pWeather = (WEATHER_BASE*)api->GetEntityPointer(&ent); Assert(pWeather);
 
 	Release();

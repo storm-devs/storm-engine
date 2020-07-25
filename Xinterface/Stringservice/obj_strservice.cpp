@@ -14,7 +14,7 @@ OBJ_STRSERVICE::~OBJ_STRSERVICE()
 bool OBJ_STRSERVICE::Init()
 {
 	m_pStrService = (VSTRSERVICE *)_CORE_API->CreateService("STRSERVICE");
-	if(!m_pStrService)	{_THROW("No service: strservice")}
+	if(!m_pStrService)	{SE_THROW_MSG("No service: strservice")}
 
 	return true;
 }

@@ -56,7 +56,7 @@ bool Lights::Init()
 {
 	//DX8 render
 	rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
-	if(!rs) _THROW("No service: dx8render");
+	if(!rs) SE_THROW_MSG("No service: dx8render");
 	collide = (COLLIDE *)_CORE_API->CreateService("COLL");
 	//Зачитаем параметры
 	INIFILE * ini = _CORE_API->fio->OpenIniFile("RESOURCE\\Ini\\lights.ini");

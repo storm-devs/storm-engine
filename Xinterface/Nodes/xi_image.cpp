@@ -10,7 +10,7 @@
 CXI_IMAGE::CXI_IMAGE()
 {
 	m_rs = XINTERFACE::GetRenderService();
-	if( !m_rs ) {_THROW("No service: dx8render");};
+	if( !m_rs ) {SE_THROW_MSG("No service: dx8render");};
 
 	m_bDisableDraw = false;
 
@@ -55,7 +55,7 @@ void CXI_IMAGE::LoadFromBase( const char * sListName, const char * sPictureName,
 	if( sListName )
 	{
 		m_pcPictureListName = NEW char[strlen(sListName)+1];
-		if( !m_pcPictureListName ) {_THROW("allocate memory error");}
+		if( !m_pcPictureListName ) {SE_THROW_MSG("allocate memory error");}
 		strcpy( m_pcPictureListName, sListName );
 	}
 	m_nTextureID = XINTERFACE::GetPictureService()->GetTextureID( m_pcPictureListName );

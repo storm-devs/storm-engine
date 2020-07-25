@@ -69,7 +69,7 @@ void ParticleSystem::CreateFromDataSource (DataSource* pDataSource)
 				pEmitter = CreatePointEmitter (pEmitterDecription);
 				break;
 			default:
-				_THROW ("Particles: Unknown emitter type !!!!");
+				SE_THROW_MSG ("Particles: Unknown emitter type !!!!");
 		}
 
 		//Assert (pEmitter);

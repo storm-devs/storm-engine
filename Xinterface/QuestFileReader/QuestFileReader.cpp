@@ -248,7 +248,7 @@ bool QUEST_FILE_READER::InitQuestsQuery()
 			}
 
 			if( m_pFileBuf == null ) {
-				_THROW("allocate memory error");
+				SE_THROW_MSG("allocate memory error");
 			}
 
 			DWORD readsize;

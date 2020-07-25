@@ -303,7 +303,7 @@ void CXI_FOURIMAGE::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *name2
 			m_sGroupName = NEW char*[m_nTexturesQuantity];
 			if(m_sGroupName==NULL || m_nTextureId==NULL)
 			{
-				_THROW("Allocate memory error");
+				SE_THROW_MSG("Allocate memory error");
 			}
 			for(i=0; i<m_nTexturesQuantity; i++)
 			{
@@ -313,7 +313,7 @@ void CXI_FOURIMAGE::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *name2
 				{
 					if( (m_sGroupName[i]=NEW char[strlen(stmp)+1])==NULL )
 					{
-						_THROW("Allocate memory error");
+						SE_THROW_MSG("Allocate memory error");
 					}
 					strcpy(m_sGroupName[i],stmp);
 				}
@@ -339,7 +339,7 @@ void CXI_FOURIMAGE::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *name2
 				if(tmps!=NULL && *tmps=='#')
 				{
 					if( (m_pOneStr[i]=NEW char[strlen(tmps)]) == NULL )
-						_THROW("allocate memory error");
+						SE_THROW_MSG("allocate memory error");
 					strcpy(m_pOneStr[i],&tmps[1]);
 					m_oneStr[i] = -1L;
 				}
@@ -352,7 +352,7 @@ void CXI_FOURIMAGE::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *name2
 				if(tmps!=NULL && *tmps=='#')
 				{
 					if( (m_pTwoStr[i]=NEW char[strlen(tmps)]) == NULL )
-						_THROW("allocate memory error");
+						SE_THROW_MSG("allocate memory error");
 					strcpy(m_pTwoStr[i],&tmps[1]);
 					m_twoStr[i] = -1L;
 				}
@@ -392,7 +392,7 @@ void CXI_FOURIMAGE::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *name2
 	{
 		tmpstr = GetSubStr(param, param1, sizeof(param1));
 		if( (m_sBorderGroupName = NEW char[strlen(param1)+1])==null )
-			_THROW("allocate memory error")
+			SE_THROW_MSG("allocate memory error")
 		strcpy(m_sBorderGroupName,param1);
 		m_texBorder = pPictureService->GetTextureID(m_sBorderGroupName);
 		m_nBorderPicture = pPictureService->GetImageNum(m_sBorderGroupName,tmpstr);
@@ -680,7 +680,7 @@ void CXI_FOURIMAGE::ChangeItem(int nItemNum)
 				if(sptr!=NULL && *sptr=='#')
 					if( (m_pOneStr[i]=NEW char[strlen(sptr)]) == NULL )
 					{
-						_THROW("allocate memory error")
+						SE_THROW_MSG("allocate memory error")
 					}
 					else	strcpy(m_pOneStr[i],&sptr[1]);
 				else	m_oneStr[i] = pStringService->GetStringNum(sptr);
@@ -689,7 +689,7 @@ void CXI_FOURIMAGE::ChangeItem(int nItemNum)
 				if(sptr!=NULL && *sptr=='#')
 					if( (m_pTwoStr[i]=NEW char[strlen(sptr)]) == NULL )
 					{
-						_THROW("allocate memory error")
+						SE_THROW_MSG("allocate memory error")
 					}
 					else	strcpy(m_pTwoStr[i],&sptr[1]);
 				else	m_twoStr[i] = pStringService->GetStringNum(sptr);

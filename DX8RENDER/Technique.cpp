@@ -703,7 +703,7 @@ dword CTechnique::GetSRSIndex(char *pStr)
 	dword dwNumParam = sizeof(RenderStates) / sizeof(STSS);
 	for (dword i=0;i<dwNumParam;i++) if (stricmp(pStr,RenderStates[i].cName)==0) return i;
 	api->Trace("ERROR: SetRenderState: unknown parameter type <%s> in <%s> file, technique <%s>",pStr,sCurrentFileName,sCurrentBlockName);
-	//THROW;
+	//SE_THROW;
 	return INVALID_SRS_INDEX;
 }
 
@@ -712,7 +712,7 @@ dword CTechnique::GetSTSSIndex(char *pStr)
 	dword dwNumParam = sizeof(TexturesStageStates) / sizeof(STSS);
 	for (dword i=0;i<dwNumParam;i++) if (stricmp(pStr,TexturesStageStates[i].cName)==0) return i;
 	api->Trace("ERROR: SetTextureStageState: unknown parameter type <%s> in <%s> file, technique <%s>",pStr,sCurrentFileName,sCurrentBlockName);
-	//THROW;
+	//SE_THROW;
 	return INVALID_STSS_INDEX;
 }
 
@@ -728,7 +728,7 @@ dword CTechnique::GetIndex(char *pStr, SRSPARAM *pParam, dword dwNumParam, bool 
 {
 	for (dword i=0;i<dwNumParam;i++) if (stricmp(pStr,pParam[i].cName)==0) return i;
 	if (!bCanBeNumber) api->Trace("ERROR: Unknown parameter type <%s> in <%s> file, technique <%s>",pStr,sCurrentFileName,sCurrentBlockName);
-	//THROW;
+	//SE_THROW;
 	return INVALID_INDEX;
 }
 
@@ -965,7 +965,7 @@ dword CTechnique::ProcessPass(char * pFile, dword dwSize, char **pStr)
 				if (dwCode==0xFFFFFFFF)	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 				{
 					// maybe world0-world256
-					if (0==(pTemp = SkipToken(*pStr,WORLD_TRANSFORM_CHECK))) THROW("transform. error!");
+					if (0==(pTemp = SkipToken(*pStr,WORLD_TRANSFORM_CHECK))) SE_THROW("transform. error!");
 					sscanf(pTemp,"%d",&dwCode);
 					dwCode = (DWORD)D3DTS_WORLDMATRIX(dwCode);
 				}
@@ -1635,7 +1635,7 @@ dword CTechnique::GetPassParameter(dword dwParam, dword dwFlags)
 {
 	if (dwFlags&FLAGS_CODE_IN_PARAM) 
 	{
-		if (dwParam>=dwCurNumParams) THROW("Technique: Exceeded parameter numbers!");
+		if (dwParam>=dwCurNumParams) SE_THROW("Technique: Exceeded parameter numbers!");
 		return pCurParams[dwParam];
 	}
 

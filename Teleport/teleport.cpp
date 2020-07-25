@@ -68,7 +68,7 @@ TMPTELEPORT::~TMPTELEPORT()
 bool TMPTELEPORT::Init()
 {
 	rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
-	if(!rs)	_THROW("No service: dx8render");
+	if(!rs)	SE_THROW_MSG("No service: dx8render");
 
 	m_leftPos = 20;
 	m_topPos = 80;
@@ -200,7 +200,7 @@ void TMPTELEPORT::SetShowData(ATTRIBUTES * pA)
 	if(m_nStrQuantity==0) return;
 	if((m_descrArray=NEW TELEPORT_DESCR[m_nStrQuantity])==NULL)
 	{
-		_THROW("Allocate memory error");
+		SE_THROW_MSG("Allocate memory error");
 	}
 
 	for(int i=0;i<m_nStrQuantity;i++)
@@ -211,7 +211,7 @@ void TMPTELEPORT::SetShowData(ATTRIBUTES * pA)
 		if(tmpStr==NULL) continue;
 		if( (m_descrArray[i].name=NEW char[strlen(tmpStr)+1]) == NULL )
 		{
-			_THROW("Allocate memory error");
+			SE_THROW_MSG("Allocate memory error");
 		}
 		strcpy(m_descrArray[i].name,tmpStr);
 	}

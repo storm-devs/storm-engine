@@ -50,9 +50,9 @@ bool CharacterAnimationKipper::Init()
 		}
 	}
 	rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
-	if(!rs) _THROW("No service: dx8render");
+	if(!rs) SE_THROW_MSG("No service: dx8render");
 	AnimationService * asr = (AnimationService *)_CORE_API->CreateService("AnimationServiceImp");
-	if(!asr) _THROW("Anumation service not created!");
+	if(!asr) SE_THROW_MSG("Anumation service not created!");
 	aniMan = asr->CreateAnimation("man");
 	aniWoman = asr->CreateAnimation("towngirl");
 	//LockTexture("dialog\dialog.tga");

@@ -111,7 +111,7 @@ void CXI_BOUNDER::LoadIni(INIFILE *ini1,char *name1, INIFILE *ini2,char *name2)
 	XI_ONETEX_VERTEX *pVert = (XI_ONETEX_VERTEX*) m_rs->LockVertexBuffer(m_idVBuf);
 	WORD *pIndx = (WORD*) m_rs->LockIndexBuffer(m_idIBuf);
 	if(pVert==NULL || pIndx==NULL)
-		_THROW("can not create the index&vertex buffers")
+		SE_THROW_MSG("can not create the index&vertex buffers")
 
 	for(i=0; i<m_nVert; i++)
 	{
@@ -296,7 +296,7 @@ void CXI_BOUNDER::ChangePosition( XYRECT &rNewPos )
 	XI_ONETEX_VERTEX *pVert = (XI_ONETEX_VERTEX*) m_rs->LockVertexBuffer(m_idVBuf);
 
 	if( pVert == NULL )
-		_THROW("can not create the index&vertex buffers")
+		SE_THROW_MSG("can not create the index&vertex buffers")
 
 	long i;
 

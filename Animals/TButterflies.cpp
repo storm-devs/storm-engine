@@ -48,11 +48,11 @@ void TButterflies::Init()
 
 	renderService = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
 	if(!renderService)	
-		_THROW("!Butterflies: No service 'dx8render'");
+		SE_THROW_MSG("!Butterflies: No service 'dx8render'");
 
 	collide = (COLLIDE *)_CORE_API->CreateService("coll");
 	if (!collide)	
-		_THROW("!Butterflies: No service COLLIDE");
+		SE_THROW_MSG("!Butterflies: No service COLLIDE");
 
 	walker = _CORE_API->LayerGetWalker("shadow");
 

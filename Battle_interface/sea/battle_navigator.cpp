@@ -556,7 +556,7 @@ void BATTLE_NAVIGATOR::Init(VDX8RENDER *RenderService,ENTITY* pOwnerEI)
 	   m_idGradBackVBuf==-1 || 
 	   m_idCurChargeVBuf==-1)
 	{
-		_THROW("Can`t create vertex\index buffer");
+		SE_THROW_MSG("Can`t create vertex\index buffer");
 	}
 	m_nvShips = 0;
 

@@ -41,10 +41,10 @@ void WATERFLARE::SetDevice()
 	GUARD(void WATERFLARE::SetDevice())
 
 	RS = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
-	if (!RS) _THROW("No service: dx8render");
+	if (!RS) SE_THROW_MSG("No service: dx8render");
 
 	ENTITY_ID	ent;
-	if (!_CORE_API->FindClass(&ent,"Weather",0)) _THROW("No found WEATHER entity!");
+	if (!_CORE_API->FindClass(&ent,"Weather",0)) SE_THROW_MSG("No found WEATHER entity!");
 	pWeather = (WEATHER_BASE*)_CORE_API->GetEntityPointer(&ent);
 
 	UNGUARD

@@ -112,7 +112,7 @@ bool Grass::Init()
 	
 	//DX8 render
 	rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
-	if(!rs) _THROW("No service: dx8render");
+	if(!rs) SE_THROW_MSG("No service: dx8render");
 	//Буфер для динамических данных
 	vb = rs->CreateVertexBuffer(0, GRASS_MAX_POINTS*4*sizeof(Vertex), D3DUSAGE_DYNAMIC);
 	if(vb < 0) return false;

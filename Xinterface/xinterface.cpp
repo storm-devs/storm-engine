@@ -203,13 +203,13 @@ void XINTERFACE::SetDevice()
 	pRenderService = (VDX8RENDER *)api->CreateService("dx8render");
 	if(!pRenderService)
 	{
-		THROW("No service: dx8render");
+		SE_THROW("No service: dx8render");
 	}
 	
 	pStringService = (VSTRSERVICE *)api->CreateService("STRSERVICE");
 	if(!pStringService)
 	{
-		THROW("No service: strservice");
+		SE_THROW("No service: strservice");
 	}
 
 	// Load common parameters
@@ -219,14 +219,14 @@ void XINTERFACE::SetDevice()
 	pPictureService = NEW XSERVICE;
 	if(pPictureService==NULL)
 	{
-		THROW("Not memory allocate");
+		SE_THROW("Not memory allocate");
 	}
 	pPictureService->Init(pRenderService,dwScreenWidth,dwScreenHeight);
 
 	pQuestService = NEW QUEST_FILE_READER;
 	if(pQuestService==NULL)
 	{
-		THROW("Not memory allocate");
+		SE_THROW("Not memory allocate");
 	}
 	VDATA * pvd = api->Event("GetQuestTextFileName","");
 	if(pvd!=NULL)
@@ -585,16 +585,16 @@ dword XINTERFACE::ProcessMessage(MESSAGE & message)
 			long nCommand = message.Long();
 			//
             EVENT_ENTITY * pEvent = NEW EVENT_ENTITY;
-            if(pEvent==NULL)	THROW("allocate memory error");
+            if(pEvent==NULL)	SE_THROW("allocate memory error");
             pEvent->next = m_pEvents;
             m_pEvents = pEvent;
 			//
             pEvent->sEventName = NEW char[strlen(param)+1];
-            if(pEvent->sEventName==NULL)	THROW("allocate memory error");
+            if(pEvent->sEventName==NULL)	SE_THROW("allocate memory error");
             strcpy(pEvent->sEventName,param);
 			//
 			pEvent->sNodeName = NEW char[strlen(nodeName)+1];
-			if(pEvent->sNodeName==NULL)	THROW("allocate memory error");
+			if(pEvent->sNodeName==NULL)	SE_THROW("allocate memory error");
 			strcpy(pEvent->sNodeName,nodeName);
 			//
 			if( nCommand>=0 && nCommand<COMMAND_QUANTITY )
@@ -616,10 +616,10 @@ dword XINTERFACE::ProcessMessage(MESSAGE & message)
 			{
 				m_nStringQuantity++;
 				m_stringes = (STRING_ENTITY*)RESIZE(m_stringes,m_nStringQuantity*sizeof(STRING_ENTITY));
-				if(m_stringes==NULL)	THROW("allocate memory error");
+				if(m_stringes==NULL)	SE_THROW("allocate memory error");
 
 				m_stringes[l].sStringName = NEW char[strlen(param)+1];
-				if(m_stringes[l].sStringName == NULL)	THROW("allocate memory error");
+				if(m_stringes[l].sStringName == NULL)	SE_THROW("allocate memory error");
 				strcpy(m_stringes[l].sStringName,param);
 			}
 			else
@@ -1119,7 +1119,7 @@ void XINTERFACE::LoadIni()
 
 	INIFILE * ini;
 	ini = api->fio->OpenIniFile((char*)RESOURCE_FILENAME);
-	if(!ini) THROW("ini file not found!");
+	if(!ini) SE_THROW("ini file not found!");
 	
 	RECT Screen_Rect;
 	GetWindowRect(api->GetAppHWND(),&Screen_Rect);
@@ -1410,7 +1410,7 @@ void __declspec(dllexport) __cdecl XINTERFACE::SFLB_CreateNode(INIFILE* pOwnerIn
 		XYPOINT xypScreenSize;
 		xypScreenSize.x = dwScreenWidth; xypScreenSize.y = dwScreenHeight;
 		pNewNod->m_nodeName = NEW char[strlen(sNodeName)+1];
-		if( !pNewNod->m_nodeName )	THROW("allocate memory error");
+		if( !pNewNod->m_nodeName )	SE_THROW("allocate memory error");
 		strcpy( pNewNod->m_nodeName, sNodeName );
 		if( !pNewNod->Init( pUserIni,sNodeName, pOwnerIni,sNodeType, pRenderService,GlobalRect,xypScreenSize ) )
 		{
@@ -1463,7 +1463,7 @@ void __declspec(dllexport) __cdecl XINTERFACE::SFLB_CreateNode(INIFILE* pOwnerIn
 
 					CINODE::COMMAND_REDIRECT *pHead = NEW CINODE::COMMAND_REDIRECT;
 					ZeroMemory(pHead,sizeof(CINODE::COMMAND_REDIRECT));
-					if( pHead==NULL )	THROW("allocate memory error");
+					if( pHead==NULL )	SE_THROW("allocate memory error");
 					pHead->next = pNewNod->m_pCommands[nComNum].pNextControl;
 					pNewNod->m_pCommands[nComNum].pNextControl = pHead;
 					DublicateString( pHead->sControlName, sSubNodName );
@@ -2484,10 +2484,10 @@ dword XINTERFACE::AttributeChanged(ATTRIBUTES *patr)
 		if(pImList==NULL)
 		{
 			pImList = NEW IMAGE_ENTITY;
-			if(pImList==NULL)	{THROW("Allocation memory error");}
+			if(pImList==NULL)	{SE_THROW("Allocation memory error");}
 			ZeroMemory(pImList,sizeof(IMAGE_ENTITY));
 			if( (pImList->sImageName=NEW char[strlen(sImageName)+1]) == NULL )
-				{THROW("Allocate memory error");}
+				{SE_THROW("Allocate memory error");}
 			strcpy(pImList->sImageName,sImageName);
 			// insert that into images list
 			pImList->next = m_imgLists;
@@ -2501,7 +2501,7 @@ dword XINTERFACE::AttributeChanged(ATTRIBUTES *patr)
 			if(patr->GetThisAttr()!=NULL)
 			{
 				if( (pImList->sPicture=NEW char[strlen(patr->GetThisAttr())+1]) == NULL )
-					{THROW("Allocate memory error");}
+					{SE_THROW("Allocate memory error");}
 				strcpy(pImList->sPicture,patr->GetThisAttr());
 			}
 			if(pImList->sImageListName==NULL) return 0;
@@ -2515,7 +2515,7 @@ dword XINTERFACE::AttributeChanged(ATTRIBUTES *patr)
 			if(patr->GetThisAttr()!=NULL)
 			{
 				if( (pImList->sImageListName=NEW char[strlen(patr->GetThisAttr())+1]) == NULL )
-					{THROW("Allocate memory error");}
+					{SE_THROW("Allocate memory error");}
 				strcpy(pImList->sImageListName,patr->GetThisAttr());
 			}
 			pImList->idTexture = pPictureService->GetTextureID(pImList->sImageListName);
@@ -2540,7 +2540,7 @@ bool __declspec(dllexport) __cdecl XINTERFACE::SFLB_DoSaveFileData(char * saveNa
 	ptex->GetLevelDesc(0,&dscr);
 	long nAllSize = sizeof(SAVE_DATA_HANDLE) + 4* (dscr.Width * dscr.Height)  + slen;
 	char * pdat = NEW char[nAllSize];
-	if(pdat==null)	{ THROW("allocate memory error"); }
+	if(pdat==null)	{ SE_THROW("allocate memory error"); }
 
 	((SAVE_DATA_HANDLE*)pdat)->StringDataSize = slen;
 	if(slen>0) memcpy( &pdat[sizeof(SAVE_DATA_HANDLE)], saveData, slen );
@@ -3495,13 +3495,13 @@ void CONTROLS_CONTAINER::AddContainer( char * container )
 
 	pCont = pContainers;
 	pContainers = NEW CONTEINER_DESCR;
-	if(!pContainers) _THROW("allocate memory error");
+	if(!pContainers) SE_THROW_MSG("allocate memory error");
 	pContainers->fMaxVal = 1.f;
 	pContainers->pControls = null;
 	pContainers->next = pCont;
 
 	pContainers->resultName = NEW char[strlen(container)+1];
-	if(!pContainers->resultName) _THROW("allocate memory error");
+	if(!pContainers->resultName) SE_THROW_MSG("allocate memory error");
 	strcpy(pContainers->resultName,container);
 }
 
@@ -3522,12 +3522,12 @@ void CONTROLS_CONTAINER::AddControlsToContainer( char * container, char * contro
 
 	pCtrl = pCont->pControls;
 	pCont->pControls = NEW CONTEINER_DESCR::CONTROL_DESCR;
-	if(!pCont->pControls) _THROW("allocate memory error");
+	if(!pCont->pControls) SE_THROW_MSG("allocate memory error");
 
 	pCont->pControls->fValLimit = fValLimit;
 	pCont->pControls->next = pCtrl;
 	pCont->pControls->controlName = NEW char[strlen(controlName)+1];
-	if(!pCont->pControls->controlName) _THROW("allocate memory error");
+	if(!pCont->pControls->controlName) SE_THROW_MSG("allocate memory error");
 	strcpy( pCont->pControls->controlName, controlName );
 }
 

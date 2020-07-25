@@ -55,7 +55,7 @@ bool CONTROL_STACK::Pop(CONTROL_BLOCK * cb_PTR)
 	CONTROL_BLOCK * b_PTR;
 	if(used_blocks == 0)
 	{
-		_THROW(invalid pop);
+		SE_THROW_MSG(invalid pop);
 	}
 	if(Data_PTR == null) return false;
 	used_blocks--;

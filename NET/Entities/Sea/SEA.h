@@ -5,7 +5,7 @@
 #define NEW_SEA_HPP
 
 #include "..\..\common.h"
-
+#include "..\..\..\common_h\sea_base.h"
 #include "..\..\..\engine\modules\techniques\weather\shaders\reflect.h"
 #include "..\..\..\common_h\Light.h"
 
@@ -135,6 +135,9 @@ public:
 	bool EditMode_Update();
 
 	dword AttributeChanged(ATTRIBUTES * pAttribute);
+
+	void LostRender() override;
+	void RestoreRender() override;
 
 	//bool			Init();
 	//void			Realize(dword Delta_Time);

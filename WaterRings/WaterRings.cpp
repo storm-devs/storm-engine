@@ -35,7 +35,7 @@ bool WaterRings::Init()
 	sea = (SEA_BASE*) _CORE_API->GetEntityPointer(&seaID);
 
 	renderService = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
-	if(!renderService)	_THROW("No service: dx8render");
+	if(!renderService)	SE_THROW_MSG("No service: dx8render");
 
 	ivManager = NEW TIVBufferManager(renderService 
 									,RING_FVF

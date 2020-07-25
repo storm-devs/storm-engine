@@ -10,7 +10,7 @@ CXI_QUESTTEXTS::STRING_DESCRIBER::STRING_DESCRIBER(char* ls)
 	{
 		if( (lineStr=NEW char[sdStrSize+1]) == NULL )
 		{
-			_THROW("allocate memory error");
+			SE_THROW_MSG("allocate memory error");
 		}
 		strcpy(lineStr,ls);
 	}
@@ -25,7 +25,7 @@ CXI_QUESTTEXTS::STRING_DESCRIBER* CXI_QUESTTEXTS::STRING_DESCRIBER::Add(char* ls
 	STRING_DESCRIBER* newSD = NEW STRING_DESCRIBER(ls);
 	if(newSD==NULL)
 	{
-		_THROW("allocate memory error");
+		SE_THROW_MSG("allocate memory error");
 	}
 
 	newSD->complete = complete;
@@ -333,7 +333,7 @@ void CXI_QUESTTEXTS::StartQuestShow(ATTRIBUTES * pA,int qn)
 					{
 						if( (m_listCur=m_listRoot=NEW STRING_DESCRIBER(newStr)) == NULL )
 						{
-							_THROW("allocate memory error");
+							SE_THROW_MSG("allocate memory error");
 						}
 						m_listCur->complete = cFlag;
 					}

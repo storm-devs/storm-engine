@@ -186,7 +186,7 @@ void WEATHER::CleanUP()
 		fio->_FindClose(h);
 	}
 	ini = fio->OpenIniFile(WHT_INI_FILE);
-	if(!ini) _THROW("weather.ini file not found!");
+	if(!ini) SE_THROW_MSG("weather.ini file not found!");
 
 	//iHour = ini->GetLong(0,"iCurHour",0);
 	iHour = AttributesPointer->GetAttributeAsdword("Hour",0);
@@ -310,7 +310,7 @@ void WEATHER::SetCommonStates()
 	iHour = hour;
 	
 	INIFILE *ini = fio->OpenIniFile(WHT_INI_FILE);
-	if(!ini) _THROW("weather.ini file not found!");
+	if(!ini) SE_THROW_MSG("weather.ini file not found!");
 	ini->WriteLong(0,"iCurHour",iHour);
 	delete ini;
 

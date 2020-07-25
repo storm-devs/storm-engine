@@ -160,7 +160,7 @@ void DataSource::Load (MemFile* pMemFile)
 
 			default:
 			{
-				_THROW ("Particles: Unknown emitter type !");
+				SE_THROW_MSG ("Particles: Unknown emitter type !");
 				return;
 			}
 		} // switch
@@ -201,7 +201,7 @@ void DataSource::CreatePointEmitter (MemFile* pMemFile)
 			}
 			default:
 			{
-				_THROW ("Particles: Unknown particle type !!!!");
+				SE_THROW_MSG ("Particles: Unknown particle type !!!!");
 			}
 		} // SWITCH
 	} // For all particles

@@ -41,10 +41,10 @@ bool MODELR::Init()
 	GUARD(MODELR::Init)
 
 	rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
-	if(!rs)	_THROW("No service: dx8render");
+	if(!rs)	SE_THROW_MSG("No service: dx8render");
 
 	GeometyService = (VGEOMETRY *)_CORE_API->CreateService("geometry");
-	if(!GeometyService) _THROW("No service: geometry");
+	if(!GeometyService) SE_THROW_MSG("No service: geometry");
 
 	UNGUARD
 	return true;

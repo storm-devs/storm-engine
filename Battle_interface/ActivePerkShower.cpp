@@ -27,7 +27,7 @@ bool ActivePerkShower::Init()
 {
 	if( (rs=(VDX8RENDER *)_CORE_API->CreateService("dx8render")) == NULL )
 	{
-		_THROW("Can`t create render service");
+		SE_THROW_MSG("Can`t create render service");
 	}
 
 	if( AttributesPointer==null ) return false;
@@ -91,7 +91,7 @@ bool ActivePerkShower::CreateTextures(ATTRIBUTES * pATextureRoot)
 
 	m_pTexDescr = NEW _TEXTURE_DESCR[q];
 	if(m_pTexDescr==null)
-	{	THROW("allocate memory error");
+	{	SE_THROW("allocate memory error");
 	}
 
 	for(int i=0; i<q; i++)
@@ -163,7 +163,7 @@ bool ActivePerkShower::CreateShowPlaces(ATTRIBUTES * pAPlacesRoot)
 	m_nShowPlaceQ = nHorzQ*nVertQ;
 	m_pShowPlaces = NEW _SHOW_PLACE[m_nShowPlaceQ];
 	if(m_pShowPlaces==null)
-	{	THROW("allocate memory error");
+	{	SE_THROW("allocate memory error");
 	}
 
 	for(int ih=0; ih<nHorzQ; ih++)
@@ -190,7 +190,7 @@ bool ActivePerkShower::InitIconsList(ATTRIBUTES * pAIconsRoot)
 	if(m_nIShowQ==0) return true;
 	m_pIconsList = NEW _PICTURE_DESCR[q];
 	if(m_pIconsList==null)
-	{	THROW("allocate memory error");
+	{	SE_THROW("allocate memory error");
 	}
 	for(int i=0; i<q; i++)
 	{
@@ -231,7 +231,7 @@ void ActivePerkShower::AddIconToList(ATTRIBUTES * pAItemDescr)
 		}
 		delete old_pIconsList;
 	}
-	if(m_pIconsList==null)	{THROW("allocate memory error");}
+	if(m_pIconsList==null)	{SE_THROW("allocate memory error");}
 	m_pIconsList[m_nIShowQ-1].m_nPicTexIdx = texNum;
 	m_pIconsList[m_nIShowQ-1].m_nPicNum = picNum;
 

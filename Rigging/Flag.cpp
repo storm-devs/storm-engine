@@ -52,7 +52,7 @@ void FLAG::SetDevice()
 	RenderService = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
 	if(!RenderService)
 	{
-		_THROW("No service: dx8render");
+		SE_THROW_MSG("No service: dx8render");
 	}
 	globalWind.ang.x	= 0.f;
 	globalWind.ang.y	= 0.f;
@@ -160,7 +160,7 @@ dword _cdecl FLAG::ProcessMessage(MESSAGE & message)
 			if(groupQuantity==0)
 			{
 				gdata = NEW GROUPDATA[1];
-				if(gdata==0) _THROW("Not memory allocation");
+				if(gdata==0) SE_THROW_MSG("Not memory allocation");
 				groupQuantity=1;
 			}
 			else
@@ -168,7 +168,7 @@ dword _cdecl FLAG::ProcessMessage(MESSAGE & message)
 				GROUPDATA *oldgdata=gdata;
 				gdata = NEW GROUPDATA[groupQuantity+1];
 				if(gdata==0)
-					_THROW("Not memory allocation");
+					SE_THROW_MSG("Not memory allocation");
 				memcpy(gdata,oldgdata,sizeof(GROUPDATA)*groupQuantity);
 				delete oldgdata; groupQuantity++;
 			}
@@ -222,7 +222,7 @@ dword _cdecl FLAG::ProcessMessage(MESSAGE & message)
 			if(groupQuantity==0)
 			{
 				gdata = NEW GROUPDATA[1];
-				if(gdata==0) _THROW("Not memory allocation");
+				if(gdata==0) SE_THROW_MSG("Not memory allocation");
 				groupQuantity=1;
 			}
 			else
@@ -230,7 +230,7 @@ dword _cdecl FLAG::ProcessMessage(MESSAGE & message)
 				GROUPDATA *oldgdata=gdata;
 				gdata = NEW GROUPDATA[groupQuantity+1];
 				if(gdata==0)
-					_THROW("Not memory allocation");
+					SE_THROW_MSG("Not memory allocation");
 				memcpy(gdata,oldgdata,sizeof(GROUPDATA)*groupQuantity);
 				delete oldgdata; groupQuantity++;
 			}
@@ -448,7 +448,7 @@ void FLAG::AddLabel(GEOS::LABEL &gl, NODE *nod, bool isSpecialFlag, bool isShip)
         // create new flag
         fd = NEW FLAGDATA;
         if(fd==0)
-            _THROW("Not memory allocation");
+            SE_THROW_MSG("Not memory allocation");
         PZERO(fd,sizeof(FLAGDATA));
         fd->triangle=true; // this is Vimpel		
 		fd->isSpecialFlag=isSpecialFlag;
@@ -465,7 +465,7 @@ void FLAG::AddLabel(GEOS::LABEL &gl, NODE *nod, bool isSpecialFlag, bool isShip)
         {
             flist= NEW FLAGDATA*[1];
             if(flist==0)
-                _THROW("Not memory allocation");
+                SE_THROW_MSG("Not memory allocation");
             flagQuantity=1;
         }
         else
@@ -473,7 +473,7 @@ void FLAG::AddLabel(GEOS::LABEL &gl, NODE *nod, bool isSpecialFlag, bool isShip)
             FLAGDATA **oldflist=flist;
             flist = NEW FLAGDATA*[flagQuantity+1];
             if(flist==0)
-                _THROW("Not memory allocation");
+                SE_THROW_MSG("Not memory allocation");
             memcpy(flist,oldflist,sizeof(FLAGDATA*)*flagQuantity);
             delete oldflist; flagQuantity++;
         }
@@ -548,7 +548,7 @@ void FLAG::LoadIni()
 		_CORE_API->fio->_FindClose(h);
 	}
 	ini = _CORE_API->fio->OpenIniFile("resource\\ini\\rigging.ini");
-	if(!ini) THROW("rigging.ini file not found!");
+	if(!ini) SE_THROW("rigging.ini file not found!");
 
 	sprintf(section,"FLAGS");
 	
@@ -860,7 +860,7 @@ void FLAG::MoveOtherHost(ENTITY_ID newm_id,long flagNum,ENTITY_ID oldm_id)
         GROUPDATA *oldgdata=gdata;
         gdata = NEW GROUPDATA[groupQuantity+1];
         if(gdata==0)
-            _THROW("Not memory allocation");
+            SE_THROW_MSG("Not memory allocation");
         memcpy(gdata,oldgdata,sizeof(GROUPDATA)*groupQuantity);
         delete oldgdata;
         groupQuantity++;

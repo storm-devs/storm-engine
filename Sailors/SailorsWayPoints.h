@@ -4,6 +4,7 @@
 #include "..\common_h\templates\array.h"
 #include "..\common_h\matrix.h"
 
+#include <cmath>
 
 //#include "d3dx9math.h"
 

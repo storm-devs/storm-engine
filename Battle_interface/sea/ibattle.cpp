@@ -78,7 +78,7 @@ bool BATTLE_INTERFACE::Init()
 {
 	if( (rs=(VDX8RENDER *)_CORE_API->CreateService("dx8render")) == NULL )
 	{
-		_THROW("Can`t create render service");
+		SE_THROW_MSG("Can`t create render service");
 	}
 
 	LoadIniFile();
@@ -207,7 +207,7 @@ void BATTLE_INTERFACE::LoadIniFile()
 	/*DELETE( m_pMessageIcons );
 	m_pMessageIcons = NEW MESSAGE_ICONS;
 	if(m_pMessageIcons==NULL) {
-		THROW("allocate memory error");
+		SE_THROW("allocate memory error");
 	}
 	if(m_pMessageIcons)	m_pMessageIcons->InitData(GetID(),rs,pA);*/
 

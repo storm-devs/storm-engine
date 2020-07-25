@@ -459,7 +459,7 @@ bool ISLAND::CreateShadowMap(char * pDir, char * pName)
 	
 	ENTITY_ID		ent;
 	WEATHER_BASE	* pWeather;
-	if (!api->FindClass(&ent, "Weather",0)) _THROW("No found WEATHER entity!");
+	if (!api->FindClass(&ent, "Weather",0)) SE_THROW_MSG("No found WEATHER entity!");
 	pWeather = (WEATHER_BASE*)api->GetEntityPointer(&ent); Assert(pWeather);
 
 	sDir.Format("resource\\foam\\%s\\%s\\", pDir, AttributesPointer->GetAttribute("LightingPath")); sDir.CheckPath();

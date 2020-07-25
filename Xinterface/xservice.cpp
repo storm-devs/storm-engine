@@ -218,7 +218,7 @@ void XSERVICE::LoadAllPicturesInfo()
 	if (INVALID_HANDLE_VALUE != h)
 		_CORE_API->fio->_FindClose(h);
 	ini = _CORE_API->fio->OpenIniFile((char*)LISTS_INIFILE);
-	if(!ini) THROW("ini file not found!");
+	if(!ini) SE_THROW("ini file not found!");
 
 	m_dwListQuantity=0;
 	m_dwImageQuantity=0;
@@ -231,7 +231,7 @@ void XSERVICE::LoadAllPicturesInfo()
 	{
 		m_pList = NEW IMAGELISTDESCR[m_dwListQuantity];
 		if(m_pList==NULL)
-			_THROW("memory allocate error")
+			SE_THROW_MSG("memory allocate error")
 	}
 
 	// fill lists
@@ -263,7 +263,7 @@ void XSERVICE::LoadAllPicturesInfo()
 			PICTUREDESCR *oldpImage = m_pImage;
 			m_pImage = NEW PICTUREDESCR[m_dwImageQuantity + m_pList[i].pictureQuantity];
 			if(m_pImage==NULL)
-				_THROW("allocate memory error")
+				SE_THROW_MSG("allocate memory error")
 			if(oldpImage!=NULL)
 			{
 				memcpy(m_pImage,oldpImage,m_dwImageQuantity*sizeof(PICTUREDESCR));

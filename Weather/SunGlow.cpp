@@ -55,7 +55,7 @@ void SUNGLOW::SetDevice()
 	pRS = (VDX8RENDER *)_CORE_API->CreateService("dx8render"); Assert(pRS);
 	pCollide = (COLLIDE*)_CORE_API->CreateService("COLL"); Assert(pCollide);
 
-	if (!api->FindClass(&ent,"Weather",0)) _THROW("No found WEATHER entity!");
+	if (!api->FindClass(&ent,"Weather",0)) SE_THROW_MSG("No found WEATHER entity!");
 	pWeather = (WEATHER_BASE*)_CORE_API->GetEntityPointer(&ent); Assert(pWeather);
 
 	if ( api->FindClass(&ent,"SKY",0) ) pSky = (SKY*)api->GetEntityPointer(&ent);

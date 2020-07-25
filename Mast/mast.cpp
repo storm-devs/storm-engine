@@ -68,10 +68,10 @@ void MAST::SetDevice()
 	GUARD(MAST::SetDevice())
 
 	RenderService = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
-    if(!RenderService) _THROW("No service: dx8render");
+    if(!RenderService) SE_THROW_MSG("No service: dx8render");
 
 	pCollide = (COLLIDE*)_CORE_API->CreateService("COLL");
-	if (!pCollide) _THROW("No service: collide");
+	if (!pCollide) SE_THROW_MSG("No service: collide");
 
     LoadIni();
 
@@ -408,7 +408,7 @@ void MAST::LoadIni()
 		_CORE_API->fio->_FindClose(h);
 	}
 	ini = _CORE_API->fio->OpenIniFile((char*)MAST_INI_FILE);
-	if(!ini) THROW("mast.ini file not found!");
+	if(!ini) SE_THROW("mast.ini file not found!");
 
 	sprintf(section,"MAST");
 
@@ -710,10 +710,10 @@ void HULL::SetDevice()
 	GUARD(HULL::SetDevice())
 
 	RenderService = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
-    if(!RenderService) _THROW("No service: dx8render");
+    if(!RenderService) SE_THROW_MSG("No service: dx8render");
 
 	pCollide = (COLLIDE*)_CORE_API->CreateService("COLL");
-	if (!pCollide) _THROW("No service: collide");
+	if (!pCollide) SE_THROW_MSG("No service: collide");
 
     //LoadIni();
 

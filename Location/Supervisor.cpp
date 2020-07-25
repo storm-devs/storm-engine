@@ -40,7 +40,7 @@ Supervisor::~Supervisor()
 void Supervisor::AddCharacter(Character * ch)
 {
 	Assert(ch);
-	if(numCharacters >= MAX_CHARACTERS) _THROW("Number of characters amount to criticle value, don't create new character");
+	if(numCharacters >= MAX_CHARACTERS) SE_THROW_MSG("Number of characters amount to criticle value, don't create new character");
 	character[numCharacters].c = ch;
 	character[numCharacters++].lastTime = time;
 }
