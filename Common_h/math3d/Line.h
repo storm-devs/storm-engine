@@ -82,6 +82,12 @@ public:
 	///Заполнить векторами
 	Line(const Vector & start, const Vector & end);
 
+	Line(const Line& rhs)
+	{
+	    p1 = rhs.p1;
+        p2 = rhs.p2;
+	};
+
 
 //-----------------------------------------------------------
 //Утилитные

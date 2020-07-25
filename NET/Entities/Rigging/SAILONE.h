@@ -79,6 +79,8 @@ struct SAILGEOMETRY {
             CVECTOR dopV; // Vector for rope tie;
         };
     };
+
+	SAILGEOMETRY(){}
 };
 
 #define SAILROLLSTEPS 40 // steps counter of sail rolling
