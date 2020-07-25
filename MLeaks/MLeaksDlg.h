@@ -11,9 +11,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // CMLeaksDlg dialog
 
-#include "..\common_h\templates\array.h"
-#include "..\common_h\templates\string.h"
-
 struct tmp_t
 {
 	char		sFile[512];

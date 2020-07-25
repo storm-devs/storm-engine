@@ -2,6 +2,8 @@
 #include "..\common_h\ship_base.h"
 #include "..\common_h\rands.h"
 
+#include <cmath>
+
 #pragma warning (disable : 4244)
 
 //--------------------------------------------------------------------

@@ -5,7 +5,7 @@
 #define NEW_SEA_HPP
 
 #include "..\..\common.h"
-
+#include "..\..\..\common_h\sea_base.h"
 #include "..\..\..\engine\modules\techniques\weather\shaders\reflect.h"
 #include "..\..\..\common_h\Light.h"
 
