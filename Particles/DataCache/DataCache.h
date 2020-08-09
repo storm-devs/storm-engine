@@ -9,47 +9,42 @@ class IParticleManager;
 
 class DataCache
 {
-	IParticleManager* Master;
+    IParticleManager *Master;
 
-	struct LoadedDataSource
-	{
-		string FileName;
-		DataSource* pData;
+    struct LoadedDataSource
+    {
+        string FileName;
+        DataSource *pData;
 
-		LoadedDataSource ()
-		{
-			pData = NULL;
-		}
-	};
-	
-	array<LoadedDataSource> Cache;
-	
-	void CreateDataSource (void* pBuffer, DWORD BufferSize, const char* SourceFileName);
+        LoadedDataSource()
+        {
+            pData = NULL;
+        }
+    };
 
+    array<LoadedDataSource> Cache;
 
-public:
+    void CreateDataSource(void *pBuffer, DWORD BufferSize, const char *SourceFileName);
 
-//Конструктор/деструктор
-	DataCache (IParticleManager* pManager);
-	~DataCache ();
+  public:
+    //Конструктор/деструктор
+    DataCache(IParticleManager *pManager);
+    ~DataCache();
 
-//Положить в кэш данные для системы
-	void CacheSystem (const char* FileName);
+    //Положить в кэш данные для системы
+    void CacheSystem(const char *FileName);
 
-//Сбросить кэш
-	void ResetCache ();
+    //Сбросить кэш
+    void ResetCache();
 
-//Получить указатель на данные для системы партиклов
-	DataSource* GetParticleSystemDataSource (const char* FileName);
+    //Получить указатель на данные для системы партиклов
+    DataSource *GetParticleSystemDataSource(const char *FileName);
 
-//Проверить указатель на валидность
-	bool ValidatePointer (DataSource* pData);
+    //Проверить указатель на валидность
+    bool ValidatePointer(DataSource *pData);
 
-	DWORD GetCachedCount ();
-	const char* GetCachedNameByIndex (DWORD Index);
-
-
+    DWORD GetCachedCount();
+    const char *GetCachedNameByIndex(DWORD Index);
 };
-
 
 #endif

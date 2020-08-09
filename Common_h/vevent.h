@@ -5,10 +5,10 @@
 
 class VEVENT : public SERVICE
 {
-public:
-	VEVENT(){};
-	virtual ~VEVENT(){};
-	virtual dword _cdecl Event(char * name, char * format,...)= 0;
+  public:
+    VEVENT(){};
+    virtual ~VEVENT(){};
+    virtual dword _cdecl Event(char *name, char *format, ...) = 0;
 };
 
 #endif

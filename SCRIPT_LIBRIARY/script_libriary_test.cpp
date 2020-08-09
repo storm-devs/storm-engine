@@ -2,11 +2,11 @@
 #include "vano_files.h"
 
 INTERFACE_FUNCTION
-CREATE_SCRIPTLIBRIARY(SCRIPT_LIBRIARY_TEST)	
+CREATE_SCRIPTLIBRIARY(SCRIPT_LIBRIARY_TEST)
 
 bool SCRIPT_LIBRIARY_TEST::Init()
 {
-	Vano_Init();
+    Vano_Init();
 
-	return true;
+    return true;
 };

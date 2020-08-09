@@ -3,10 +3,9 @@
 #include "..\common_h\object.h"
 
 class SAIL_BASE : public COLLISION_OBJECT
-	{
-	public:
-	virtual ENTITY_ID GetShipID() = 0;
-	};
-
+{
+  public:
+    virtual ENTITY_ID GetShipID() = 0;
+};
 
 #endif

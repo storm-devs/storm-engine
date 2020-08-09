@@ -15,32 +15,33 @@ InterfaceEditor::~InterfaceEditor()
 
 bool InterfaceEditor::Init()
 {
-	m_pRender = (VDX8RENDER*)api->CreateService( "DX8Render" );
-	Assert( m_pRender );
-	EdUtils::m_pRender = m_pRender;
+    m_pRender = (VDX8RENDER *)api->CreateService("DX8Render");
+    Assert(m_pRender);
+    EdUtils::m_pRender = m_pRender;
 
-	ENTITY_ID eid;
-	if( !api->CreateEntity( &eid, "XINTERFACE" ) )
-	{
-		api->Trace( "Warning! Can`t create interface entity!" );
-		return false;
-	}
-	m_pInterface = (XINTERFACE*)eid.pointer;
+    ENTITY_ID eid;
+    if (!api->CreateEntity(&eid, "XINTERFACE"))
+    {
+        api->Trace("Warning! Can`t create interface entity!");
+        return false;
+    }
+    m_pInterface = (XINTERFACE *)eid.pointer;
 
-	m_pManager = NEW EditorManager;
-	Assert( m_pManager );
-	m_pManager->Init();
+    m_pManager = NEW EditorManager;
+    Assert(m_pManager);
+    m_pManager->Init();
 
-	return true;
+    return true;
 }
 
-dword _cdecl InterfaceEditor::ProcessMessage( MESSAGE& message )
+dword _cdecl InterfaceEditor::ProcessMessage(MESSAGE &message)
 {
-	return 0;
+    return 0;
 }
 
-void InterfaceEditor::Realize( dword dwDeltaTime )
+void InterfaceEditor::Realize(dword dwDeltaTime)
 {
-	float fDeltaTime = dwDeltaTime * 0.001f;
-	if( m_pManager ) m_pManager->Execute( fDeltaTime );
+    float fDeltaTime = dwDeltaTime * 0.001f;
+    if (m_pManager)
+        m_pManager->Execute(fDeltaTime);
 }

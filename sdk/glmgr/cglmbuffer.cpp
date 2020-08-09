@@ -4,9 +4,9 @@
 //
 //===============================================================================
 
-#include "glmgr.h"
-#include "glmdisplay.h"
 #include "cglmbuffer.h"
+#include "glmdisplay.h"
+#include "glmgr.h"
 
 //    void BindBufferARB(enum target, uint buffer);
 //    void DeleteBuffersARB(sizei n, const uint *buffers);
@@ -26,7 +26,7 @@
 //    void GetBufferParameterivARB(enum target, enum pname, int *params);
 //    void GetBufferPointervARB(enum target, enum pname, void **params);
 //
-//New Tokens
+// New Tokens
 //
 //    Accepted by the <target> parameters of BindBufferARB, BufferDataARB,
 //    BufferSubDataARB, MapBufferARB, UnmapBufferARB,
@@ -91,272 +91,291 @@
 //        PIXEL_PACK_BUFFER_ARB                        0x88EB
 //        PIXEL_UNPACK_BUFFER_ARB                      0x88EC
 
+// gl_bufmode: zero means we mark all vertex/index buffers static
 
-	// gl_bufmode: zero means we mark all vertex/index buffers static
+// non zero means buffers are initially marked static..
+// ->but can shift to dynamic upon first 'discard' (orphaning)
 
-	// non zero means buffers are initially marked static..
-	// ->but can shift to dynamic upon first 'discard' (orphaning)
-
-//ConVar	gl_bufmode( "gl_bufmode", "1" );
+// ConVar	gl_bufmode( "gl_bufmode", "1" );
 int gl_bufmode = 1;
 
-CGLMBuffer::CGLMBuffer( GLMContext *ctx, EGLMBufferType type, uint size, uint options )
+CGLMBuffer::CGLMBuffer(GLMContext *ctx, EGLMBufferType type, uint size, uint options)
 {
-	m_ctx = ctx;
-	m_type = type;
-	switch(m_type)
-	{
-		case	kGLMVertexBuffer:		m_buffGLTarget = GL_ARRAY_BUFFER_ARB; break;
-		case	kGLMIndexBuffer:		m_buffGLTarget = GL_ELEMENT_ARRAY_BUFFER_ARB; break;
-		case	kGLMUniformBuffer:		m_buffGLTarget = GL_UNIFORM_BUFFER_EXT; break;
-		case	kGLMPixelBuffer:		m_buffGLTarget = GL_PIXEL_UNPACK_BUFFER_ARB; break;
-		
-		default:	//Assert(!"Unknown buffer type" );
-		break;
-	}
-	m_size = size;
-	m_bound = false;
-	m_mapped = false;
-	m_lastMappedAddress = NULL;
+    m_ctx = ctx;
+    m_type = type;
+    switch (m_type)
+    {
+    case kGLMVertexBuffer:
+        m_buffGLTarget = GL_ARRAY_BUFFER_ARB;
+        break;
+    case kGLMIndexBuffer:
+        m_buffGLTarget = GL_ELEMENT_ARRAY_BUFFER_ARB;
+        break;
+    case kGLMUniformBuffer:
+        m_buffGLTarget = GL_UNIFORM_BUFFER_EXT;
+        break;
+    case kGLMPixelBuffer:
+        m_buffGLTarget = GL_PIXEL_UNPACK_BUFFER_ARB;
+        break;
 
-	m_enableAsyncMap = false;
-	m_enableExplicitFlush = false;
-	m_dirtyMinOffset = m_dirtyMaxOffset = 0;								// adjust/grow on lock, clear on unlock
+    default: // Assert(!"Unknown buffer type" );
+        break;
+    }
+    m_size = size;
+    m_bound = false;
+    m_mapped = false;
+    m_lastMappedAddress = NULL;
 
-	m_ctx->CheckCurrent();
-	m_revision = rand();
+    m_enableAsyncMap = false;
+    m_enableExplicitFlush = false;
+    m_dirtyMinOffset = m_dirtyMaxOffset = 0; // adjust/grow on lock, clear on unlock
 
-	// make a decision about pseudo mode
-	// this looked like it didn't help much or was actually slower, so leave it available but only as opt-in.
-	// a more clever implementation would be able to select pseudo buf storage for small batches only..
-	m_pseudo = false;	// (m_type==kGLMIndexBuffer) && (CommandLine()->FindParm("-gl_enable_pseudobufs"));	
-	if (m_pseudo)
-	{
-		m_name		= 0;		
-		m_pseudoBuf	= (char*)malloc( size );
-		
-		m_ctx->BindBufferToCtx( m_type, NULL );		// exit with no buffer bound
-	}
-	else
-	{
-		glGenBuffersARB( 1, &m_name );
-		GLMCheckError();
+    m_ctx->CheckCurrent();
+    m_revision = rand();
 
-		m_ctx->BindBufferToCtx( m_type, this );	// causes glBindBufferARB
+    // make a decision about pseudo mode
+    // this looked like it didn't help much or was actually slower, so leave it available but only as opt-in.
+    // a more clever implementation would be able to select pseudo buf storage for small batches only..
+    m_pseudo = false; // (m_type==kGLMIndexBuffer) && (CommandLine()->FindParm("-gl_enable_pseudobufs"));
+    if (m_pseudo)
+    {
+        m_name = 0;
+        m_pseudoBuf = (char *)malloc(size);
 
-		// buffers start out static, but if they get orphaned and gl_bufmode is non zero,
-		// then they will get flipped to dynamic.
-		
-		GLenum hint = GL_STATIC_DRAW_ARB;
-		switch(m_type)
-		{
-			case	kGLMVertexBuffer:		hint = (options & GLMBufferOptionDynamic) ? GL_DYNAMIC_DRAW_ARB : GL_STATIC_DRAW_ARB; break;
-			case	kGLMIndexBuffer:		hint = (options & GLMBufferOptionDynamic) ? GL_DYNAMIC_DRAW_ARB : GL_STATIC_DRAW_ARB; break;
-			case	kGLMUniformBuffer:		hint = GL_DYNAMIC_DRAW_ARB; break;	// "fwiw" - shrug
-			case	kGLMPixelBuffer:		hint = (options & GLMBufferOptionDynamic) ? GL_DYNAMIC_DRAW_ARB : GL_STATIC_DRAW_ARB; break;
-			
-			default:	//Assert(!"Unknown buffer type" );
-			break;
-		}
+        m_ctx->BindBufferToCtx(m_type, NULL); // exit with no buffer bound
+    }
+    else
+    {
+        glGenBuffersARB(1, &m_name);
+        GLMCheckError();
 
-		glBufferDataARB( m_buffGLTarget, m_size, NULL, hint );	// may ultimately need more hints to set the usage correctly (esp for streaming)
+        m_ctx->BindBufferToCtx(m_type, this); // causes glBindBufferARB
 
-		this->SetModes( false, true, true );
+        // buffers start out static, but if they get orphaned and gl_bufmode is non zero,
+        // then they will get flipped to dynamic.
 
-		m_ctx->BindBufferToCtx( m_type, NULL );	// unbind me
-	}
+        GLenum hint = GL_STATIC_DRAW_ARB;
+        switch (m_type)
+        {
+        case kGLMVertexBuffer:
+            hint = (options & GLMBufferOptionDynamic) ? GL_DYNAMIC_DRAW_ARB : GL_STATIC_DRAW_ARB;
+            break;
+        case kGLMIndexBuffer:
+            hint = (options & GLMBufferOptionDynamic) ? GL_DYNAMIC_DRAW_ARB : GL_STATIC_DRAW_ARB;
+            break;
+        case kGLMUniformBuffer:
+            hint = GL_DYNAMIC_DRAW_ARB;
+            break; // "fwiw" - shrug
+        case kGLMPixelBuffer:
+            hint = (options & GLMBufferOptionDynamic) ? GL_DYNAMIC_DRAW_ARB : GL_STATIC_DRAW_ARB;
+            break;
+
+        default: // Assert(!"Unknown buffer type" );
+            break;
+        }
+
+        glBufferDataARB(m_buffGLTarget, m_size, NULL,
+                        hint); // may ultimately need more hints to set the usage correctly (esp for streaming)
+
+        this->SetModes(false, true, true);
+
+        m_ctx->BindBufferToCtx(m_type, NULL); // unbind me
+    }
 }
 
-CGLMBuffer::~CGLMBuffer( )
+CGLMBuffer::~CGLMBuffer()
 {
-	m_ctx->CheckCurrent();
-	
-	if (m_pseudo)
-	{
-		free (m_pseudoBuf);
-		m_pseudoBuf = NULL;
-	}
-	else
-	{
-		glDeleteBuffersARB( 1, &m_name );
-		GLMCheckError();
-	}
-	
-	m_ctx = NULL;
-	m_name = 0;
-	m_bound = 0;
-	
-	m_lastMappedAddress = NULL;
+    m_ctx->CheckCurrent();
+
+    if (m_pseudo)
+    {
+        free(m_pseudoBuf);
+        m_pseudoBuf = NULL;
+    }
+    else
+    {
+        glDeleteBuffersARB(1, &m_name);
+        GLMCheckError();
+    }
+
+    m_ctx = NULL;
+    m_name = 0;
+    m_bound = 0;
+
+    m_lastMappedAddress = NULL;
 }
 
-void	CGLMBuffer::SetModes			( bool asyncMap, bool explicitFlush, bool force )
+void CGLMBuffer::SetModes(bool asyncMap, bool explicitFlush, bool force)
 {
-	// assumes buffer is bound. called by constructor and by Lock.
+    // assumes buffer is bound. called by constructor and by Lock.
 
-	if (m_pseudo)
-	{
-		// ignore it...
-	}
-	else
-	{
-		if (force || (m_enableAsyncMap != asyncMap) )
-		{
-			// note the sense of the parameter, it's TRUE if you *want* serialization, so for async you turn it to false.
-			glBufferParameteriAPPLE( this->m_buffGLTarget, GL_BUFFER_SERIALIZED_MODIFY_APPLE, asyncMap==false );
-			m_enableAsyncMap = asyncMap;
-		}
+    if (m_pseudo)
+    {
+        // ignore it...
+    }
+    else
+    {
+        if (force || (m_enableAsyncMap != asyncMap))
+        {
+            // note the sense of the parameter, it's TRUE if you *want* serialization, so for async you turn it to
+            // false.
+            glBufferParameteriAPPLE(this->m_buffGLTarget, GL_BUFFER_SERIALIZED_MODIFY_APPLE, asyncMap == false);
+            m_enableAsyncMap = asyncMap;
+        }
 
-		if (force || (m_enableExplicitFlush != explicitFlush) )
-		{
-			// note the sense of the parameter, it's TRUE if you *want* auto-flush-on-unmap, so for explicit-flush, you turn it to false.
-			glBufferParameteriAPPLE( this->m_buffGLTarget, GL_BUFFER_FLUSHING_UNMAP_APPLE, explicitFlush==false );
-			m_enableExplicitFlush = explicitFlush;
-		}
-	}
+        if (force || (m_enableExplicitFlush != explicitFlush))
+        {
+            // note the sense of the parameter, it's TRUE if you *want* auto-flush-on-unmap, so for explicit-flush, you
+            // turn it to false.
+            glBufferParameteriAPPLE(this->m_buffGLTarget, GL_BUFFER_FLUSHING_UNMAP_APPLE, explicitFlush == false);
+            m_enableExplicitFlush = explicitFlush;
+        }
+    }
 }
 
-void	CGLMBuffer::FlushRange			( uint offset, uint size )
+void CGLMBuffer::FlushRange(uint offset, uint size)
 {
-	if (m_pseudo)
-	{
-		// nothing to do
-	}
-	else
-	{
-		// assumes buffer is bound.
-		glFlushMappedBufferRangeAPPLE(this->m_buffGLTarget, (GLintptr)offset, (GLsizeiptr)size);
-	}
-}
-	
-//ConVar	gl_buffer_alignment_quantum		( "gl_buffer_alignment_quantum", "32" );		// the alignment we use pre-SLGU
-//ConVar	gl_buffer_alignment_quantum_slgu( "gl_buffer_alignment_quantum_slgu", "2" );	// alignment used post-SLGU
-
-int	gl_buffer_alignment_quantum			= 32;
-int gl_buffer_alignment_quantum_slgu	= 2;
-
-void	CGLMBuffer::Lock( GLMBuffLockParams *params, char **addressOut )
-{
-	char	*resultPtr = NULL;
-	
-	//Assert( !m_mapped);
-	
-	m_ctx->CheckCurrent();
-	GLMCheckError();
-
-	if (params->m_offset >= m_size)
-		Debugger();
-	
-	if (params->m_offset + params->m_size > m_size)
-		Debugger();
-
-	// bind (yes, even for pseudo - this binds name 0)
-	m_ctx->BindBufferToCtx( this->m_type, this );
-	
-	if (m_pseudo)
-	{
-		// discard is a no-op
-
-		// async map modes are a no-op
-
-		// latch last mapped address (silly..)
-		m_lastMappedAddress = (float*)m_pseudoBuf;
-
-		// calc lock address
-		resultPtr = m_pseudoBuf + params->m_offset;
-		
-		// dirty range is a no-op
-	}
-	else
-	{
-		// perform discard if requested
-		if (params->m_discard)
-		{
-			// observe gl_bufmode on any orphan event.
-			// if orphaned and bufmode is nonzero, flip it to dynamic.
-			GLenum hint = gl_bufmode /*.GetInt()*/ ? GL_DYNAMIC_DRAW_ARB : GL_STATIC_DRAW_ARB;
-			glBufferDataARB( m_buffGLTarget, m_size, NULL, hint );
-			
-			m_lastMappedAddress = NULL;
-			
-			m_revision++;	// revision grows on orphan event
-		}
-
-		// adjust async map option appropriately, leave explicit flush unchanged
-		this->SetModes( params->m_nonblocking, m_enableExplicitFlush );
-
-		// map
-		char *mapPtr = (char*)glMapBufferARB( this->m_buffGLTarget, GL_READ_WRITE_ARB );
-		
-		if (!mapPtr)
-		{
-			Debugger();
-		}
-		
-		if (m_lastMappedAddress)
-		{
-			// just check if it moved
-			//Assert (m_lastMappedAddress == (float*)mapPtr);
-		}
-
-		m_lastMappedAddress = (float*)mapPtr;
-
-		// calculate offset location
-		resultPtr = mapPtr + params->m_offset;
-
-		// adjust dirty range
-		if (m_dirtyMinOffset != m_dirtyMaxOffset)
-		{
-			// grow range
-			m_dirtyMinOffset = std::min( m_dirtyMinOffset, params->m_offset );
-			m_dirtyMaxOffset = std::min( m_dirtyMaxOffset, params->m_offset+params->m_size );
-		}
-		else
-		{
-			// set range
-			m_dirtyMinOffset = params->m_offset;
-			m_dirtyMaxOffset = params->m_offset+params->m_size;
-		}
-
-		// pad and clamp dirty range to choice of boundary
-		uint quantum = (m_ctx->Caps().m_hasPerfPackage1) ? gl_buffer_alignment_quantum_slgu /*.GetInt()*/ : gl_buffer_alignment_quantum /*.GetInt()*/ ;
-		uint quantum_mask = quantum - 1;
-
-		m_dirtyMinOffset = m_dirtyMinOffset & (~quantum_mask);
-		m_dirtyMaxOffset = (m_dirtyMaxOffset + quantum_mask) & (~quantum_mask);
-		m_dirtyMaxOffset = std::min( m_dirtyMaxOffset, m_size );
-	}
-
-	m_mapped = true;
-	
-	*addressOut = resultPtr;
+    if (m_pseudo)
+    {
+        // nothing to do
+    }
+    else
+    {
+        // assumes buffer is bound.
+        glFlushMappedBufferRangeAPPLE(this->m_buffGLTarget, (GLintptr)offset, (GLsizeiptr)size);
+    }
 }
 
-void	CGLMBuffer::Unlock( void )
+// ConVar	gl_buffer_alignment_quantum		( "gl_buffer_alignment_quantum", "32" );		// the alignment we use
+// pre-SLGU ConVar	gl_buffer_alignment_quantum_slgu( "gl_buffer_alignment_quantum_slgu", "2" );	// alignment used
+// post-SLGU
+
+int gl_buffer_alignment_quantum = 32;
+int gl_buffer_alignment_quantum_slgu = 2;
+
+void CGLMBuffer::Lock(GLMBuffLockParams *params, char **addressOut)
 {
-	m_ctx->CheckCurrent();
+    char *resultPtr = NULL;
 
-	//Assert (m_mapped);
+    // Assert( !m_mapped);
 
-	if (m_pseudo)
-	{
-		// nothing to do actually
-	}
-	else
-	{
-		m_ctx->BindBufferToCtx( this->m_type, this );
+    m_ctx->CheckCurrent();
+    GLMCheckError();
 
-		// time to do explicit flush
-		if (m_enableExplicitFlush)
-		{
-			this->FlushRange( m_dirtyMinOffset, m_dirtyMaxOffset - m_dirtyMinOffset );
-		}
-		
-		// clear dirty range no matter what
-		m_dirtyMinOffset = m_dirtyMaxOffset = 0;								// adjust/grow on lock, clear on unlock
+    if (params->m_offset >= m_size)
+        Debugger();
 
-		glUnmapBuffer( this->m_buffGLTarget );
-		
-	}
+    if (params->m_offset + params->m_size > m_size)
+        Debugger();
 
-	m_mapped = false;
+    // bind (yes, even for pseudo - this binds name 0)
+    m_ctx->BindBufferToCtx(this->m_type, this);
+
+    if (m_pseudo)
+    {
+        // discard is a no-op
+
+        // async map modes are a no-op
+
+        // latch last mapped address (silly..)
+        m_lastMappedAddress = (float *)m_pseudoBuf;
+
+        // calc lock address
+        resultPtr = m_pseudoBuf + params->m_offset;
+
+        // dirty range is a no-op
+    }
+    else
+    {
+        // perform discard if requested
+        if (params->m_discard)
+        {
+            // observe gl_bufmode on any orphan event.
+            // if orphaned and bufmode is nonzero, flip it to dynamic.
+            GLenum hint = gl_bufmode /*.GetInt()*/ ? GL_DYNAMIC_DRAW_ARB : GL_STATIC_DRAW_ARB;
+            glBufferDataARB(m_buffGLTarget, m_size, NULL, hint);
+
+            m_lastMappedAddress = NULL;
+
+            m_revision++; // revision grows on orphan event
+        }
+
+        // adjust async map option appropriately, leave explicit flush unchanged
+        this->SetModes(params->m_nonblocking, m_enableExplicitFlush);
+
+        // map
+        char *mapPtr = (char *)glMapBufferARB(this->m_buffGLTarget, GL_READ_WRITE_ARB);
+
+        if (!mapPtr)
+        {
+            Debugger();
+        }
+
+        if (m_lastMappedAddress)
+        {
+            // just check if it moved
+            // Assert (m_lastMappedAddress == (float*)mapPtr);
+        }
+
+        m_lastMappedAddress = (float *)mapPtr;
+
+        // calculate offset location
+        resultPtr = mapPtr + params->m_offset;
+
+        // adjust dirty range
+        if (m_dirtyMinOffset != m_dirtyMaxOffset)
+        {
+            // grow range
+            m_dirtyMinOffset = std::min(m_dirtyMinOffset, params->m_offset);
+            m_dirtyMaxOffset = std::min(m_dirtyMaxOffset, params->m_offset + params->m_size);
+        }
+        else
+        {
+            // set range
+            m_dirtyMinOffset = params->m_offset;
+            m_dirtyMaxOffset = params->m_offset + params->m_size;
+        }
+
+        // pad and clamp dirty range to choice of boundary
+        uint quantum = (m_ctx->Caps().m_hasPerfPackage1) ? gl_buffer_alignment_quantum_slgu /*.GetInt()*/
+                                                         : gl_buffer_alignment_quantum /*.GetInt()*/;
+        uint quantum_mask = quantum - 1;
+
+        m_dirtyMinOffset = m_dirtyMinOffset & (~quantum_mask);
+        m_dirtyMaxOffset = (m_dirtyMaxOffset + quantum_mask) & (~quantum_mask);
+        m_dirtyMaxOffset = std::min(m_dirtyMaxOffset, m_size);
+    }
+
+    m_mapped = true;
+
+    *addressOut = resultPtr;
+}
+
+void CGLMBuffer::Unlock(void)
+{
+    m_ctx->CheckCurrent();
+
+    // Assert (m_mapped);
+
+    if (m_pseudo)
+    {
+        // nothing to do actually
+    }
+    else
+    {
+        m_ctx->BindBufferToCtx(this->m_type, this);
+
+        // time to do explicit flush
+        if (m_enableExplicitFlush)
+        {
+            this->FlushRange(m_dirtyMinOffset, m_dirtyMaxOffset - m_dirtyMinOffset);
+        }
+
+        // clear dirty range no matter what
+        m_dirtyMinOffset = m_dirtyMaxOffset = 0; // adjust/grow on lock, clear on unlock
+
+        glUnmapBuffer(this->m_buffGLTarget);
+    }
+
+    m_mapped = false;
 }

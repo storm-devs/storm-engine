@@ -1,8 +1,8 @@
 #ifndef _GI_EDITOR_H
 #define _GI_EDITOR_H
 
-#include "..\inode.h"
 #include "..\..\common_h\dx8render.h"
+#include "..\inode.h"
 #include "defines.h"
 
 class XINTERFACE;
@@ -11,43 +11,43 @@ class GIEditorList;
 
 class GIEditor : public GIEditorObject
 {
-public:
-	GIEditor(XINTERFACE* pInterface);
-	~GIEditor();
+  public:
+    GIEditor(XINTERFACE *pInterface);
+    ~GIEditor();
 
-	void Release();
+    void Release();
 
-	void Render();
-	bool ProcessControl();
+    void Render();
+    bool ProcessControl();
 
-	bool IsShowMode();
-	void MakeShowMode(bool bShow);
+    bool IsShowMode();
+    void MakeShowMode(bool bShow);
 
-	void SetEditNode(CINODE* pNode);
+    void SetEditNode(CINODE *pNode);
 
-	void ReCreate();
-	void AddNode(CINODE* pNode);
-	void DelNode(CINODE* pNode);
+    void ReCreate();
+    void AddNode(CINODE *pNode);
+    void DelNode(CINODE *pNode);
 
-	void DrawSizeBox();
+    void DrawSizeBox();
 
-protected:
-	bool m_bShowMode;
-	CINODE* m_pEditableNode;
-	float m_fLastKeyPressTime;
+  protected:
+    bool m_bShowMode;
+    CINODE *m_pEditableNode;
+    float m_fLastKeyPressTime;
 
-	CXI_IMAGE* m_pImageBack;
+    CXI_IMAGE *m_pImageBack;
 
-	GIEditorList* m_pNodeList;
-	bool m_bSubNameOn;
-	GIEditorList* m_pSubNameList;
+    GIEditorList *m_pNodeList;
+    bool m_bSubNameOn;
+    GIEditorList *m_pSubNameList;
 
-public:
-	VDX8RENDER* m_pRS;
-	XINTERFACE* m_pGIOwner;
+  public:
+    VDX8RENDER *m_pRS;
+    XINTERFACE *m_pGIOwner;
 
-	void _cdecl ChangeNodeName();
-	void _cdecl ChangeSubNodeName();
+    void _cdecl ChangeNodeName();
+    void _cdecl ChangeSubNodeName();
 };
 
 #endif

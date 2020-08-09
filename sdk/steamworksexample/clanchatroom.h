@@ -7,36 +7,34 @@
 #ifndef CLANCHATROOM_H
 #define CLANCHATROOM_H
 
-#include "SpaceWar.h"
 #include "GameEngine.h"
-#include "StatsAndAchievements.h"
+#include "SpaceWar.h"
 #include "SpaceWarClient.h"
-
+#include "StatsAndAchievements.h"
 
 class ISteamUser;
 
 class CClanChatRoom
 {
-public:
-	// Constructor
-	CClanChatRoom( IGameEngine *pGameEngine );
+  public:
+    // Constructor
+    CClanChatRoom(IGameEngine *pGameEngine);
 
-	// Run a frame
-	void RunFrame();
+    // Run a frame
+    void RunFrame();
 
-	// shows / refreshes chat
-	void Show();
+    // shows / refreshes chat
+    void Show();
 
-private:
-	// Engine
-	IGameEngine *m_pGameEngine;
-	
-	// Called when SteamFriends()->JoinClanChatRoom() returns asynchronously
-	void OnJoinChatRoom( JoinClanChatRoomCompletionResult_t *pResult, bool bIOFailure );
-	CCallResult<CClanChatRoom, JoinClanChatRoomCompletionResult_t> m_SteamCallResultJoinChatRoom;
+  private:
+    // Engine
+    IGameEngine *m_pGameEngine;
 
-	CSteamID m_steamIDChat;
+    // Called when SteamFriends()->JoinClanChatRoom() returns asynchronously
+    void OnJoinChatRoom(JoinClanChatRoomCompletionResult_t *pResult, bool bIOFailure);
+    CCallResult<CClanChatRoom, JoinClanChatRoomCompletionResult_t> m_SteamCallResultJoinChatRoom;
 
+    CSteamID m_steamIDChat;
 };
 
 #endif // CLANCHATROOM_H

@@ -1,8 +1,8 @@
+#include "flag.h"
 #include "rope.h"
 #include "sail.h"
-#include "flag.h"
-#include "vant.h"
 #include "script_func.h"
+#include "vant.h"
 
 INTERFACE_FUNCTION
 CREATE_CLASS(SAIL)

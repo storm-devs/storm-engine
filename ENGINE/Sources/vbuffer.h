@@ -11,17 +11,30 @@
 
 class VBUFFER
 {
-	dword dwSize;
-public:
-	char * Ptr;
-	 VBUFFER() {dwSize = 0; Ptr = null;}
-	~VBUFFER() {if(Ptr) delete Ptr;}
-	void Size(dword _size)
-	{
-		if(!Ptr) Ptr = (char*)NEW char[_size];
-		else Ptr = (char*)RESIZE(Ptr,_size);
-		if(!Ptr) SE_THROW; 
-		dwSize = _size; };
+    dword dwSize;
+
+  public:
+    char *Ptr;
+    VBUFFER()
+    {
+        dwSize = 0;
+        Ptr = null;
+    }
+    ~VBUFFER()
+    {
+        if (Ptr)
+            delete Ptr;
+    }
+    void Size(dword _size)
+    {
+        if (!Ptr)
+            Ptr = (char *)NEW char[_size];
+        else
+            Ptr = (char *)RESIZE(Ptr, _size);
+        if (!Ptr)
+            SE_THROW;
+        dwSize = _size;
+    };
 };
 
 #endif

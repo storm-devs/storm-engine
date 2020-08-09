@@ -8,20 +8,19 @@
 #ifndef SPACEWARCLIENT_H
 #define SPACEWARCLIENT_H
 
-
 #include "GameEngine.h"
-#include "SpaceWar.h"
 #include "Messages.h"
-#include "StarField.h"
-#include "Sun.h"
-#include "Ship.h"
-#include "StatsAndAchievements.h"
 #include "RemoteStorage.h"
+#include "Ship.h"
+#include "SpaceWar.h"
+#include "StarField.h"
+#include "StatsAndAchievements.h"
+#include "Sun.h"
 #include "musicplayer.h"
 
 // Forward class declaration
 class CConnectingMenu;
-class CMainMenu; 
+class CMainMenu;
 class CQuitMenu;
 class CSpaceWarServer;
 class CServerBrowser;
@@ -45,59 +44,60 @@ class CRemotePlayList;
 // Enum for various client connection states
 enum EClientConnectionState
 {
-	k_EClientNotConnected,							// Initial state, not connected to a server
-	k_EClientConnectedPendingAuthentication,		// We've established communication with the server, but it hasn't authed us yet
-	k_EClientConnectedAndAuthenticated,				// Final phase, server has authed us, we are actually able to play on it
+    k_EClientNotConnected,                   // Initial state, not connected to a server
+    k_EClientConnectedPendingAuthentication, // We've established communication with the server, but it hasn't authed us
+                                             // yet
+    k_EClientConnectedAndAuthenticated,      // Final phase, server has authed us, we are actually able to play on it
 };
 
 // a game server as shown in the find servers menu
 struct ServerBrowserMenuData_t
 {
-	EClientGameState m_eStateToTransitionTo;
-	CSteamID m_steamIDGameServer;
+    EClientGameState m_eStateToTransitionTo;
+    CSteamID m_steamIDGameServer;
 };
 
 // a lobby as shown in the find lobbies menu
 struct LobbyBrowserMenuItem_t
 {
-	CSteamID m_steamIDLobby;
-	EClientGameState m_eStateToTransitionTo;
+    CSteamID m_steamIDLobby;
+    EClientGameState m_eStateToTransitionTo;
 };
 
 // a user as shown in the lobby screen
 struct LobbyMenuItem_t
 {
-	enum ELobbyMenuItemCommand
-	{
-		k_ELobbyMenuItemUser,
-		k_ELobbyMenuItemStartGame,
-		k_ELobbyMenuItemToggleReadState,
-		k_ELobbyMenuItemLeaveLobby,
-		k_ELobbyMenuItemInviteToLobby
-	};
+    enum ELobbyMenuItemCommand
+    {
+        k_ELobbyMenuItemUser,
+        k_ELobbyMenuItemStartGame,
+        k_ELobbyMenuItemToggleReadState,
+        k_ELobbyMenuItemLeaveLobby,
+        k_ELobbyMenuItemInviteToLobby
+    };
 
-	CSteamID m_steamIDUser;		// the user who this is in the lobby
-	ELobbyMenuItemCommand m_eCommand;
-	CSteamID m_steamIDLobby;	// set if k_ELobbyMenuItemInviteToLobby	
+    CSteamID m_steamIDUser; // the user who this is in the lobby
+    ELobbyMenuItemCommand m_eCommand;
+    CSteamID m_steamIDLobby; // set if k_ELobbyMenuItemInviteToLobby
 };
 
 // a leaderboard item
 struct LeaderboardMenuItem_t
 {
-	bool m_bBack;
-	bool m_bNextLeaderboard;
+    bool m_bBack;
+    bool m_bNextLeaderboard;
 };
 
 // a friends list item
 struct FriendsListMenuItem_t
 {
-	CSteamID m_steamIDFriend;
+    CSteamID m_steamIDFriend;
 };
 
 // a Remote Play session list item
 struct RemotePlayListMenuItem_t
 {
-	uint32 m_unSessionID;
+    uint32 m_unSessionID;
 };
 
 #define MAX_WORKSHOP_ITEMS 16
@@ -105,387 +105,394 @@ struct RemotePlayListMenuItem_t
 // a Steam Workshop item
 class CWorkshopItem : public CVectorEntity
 {
-public:
+  public:
+    CWorkshopItem(IGameEngine *pGameEngine, uint32 uCollisionRadius) : CVectorEntity(pGameEngine, uCollisionRadius)
+    {
+        memset(&m_ItemDetails, 0, sizeof(m_ItemDetails));
+    }
 
-	CWorkshopItem( IGameEngine *pGameEngine, uint32 uCollisionRadius ) : CVectorEntity( pGameEngine, uCollisionRadius )
-	{
-		memset( &m_ItemDetails, 0, sizeof(m_ItemDetails) );
-	}
-	
-	void OnUGCDetailsResult(SteamUGCRequestUGCDetailsResult_t *pCallback, bool bIOFailure)
-	{
-		m_ItemDetails = pCallback->m_details;
-	}
+    void OnUGCDetailsResult(SteamUGCRequestUGCDetailsResult_t *pCallback, bool bIOFailure)
+    {
+        m_ItemDetails = pCallback->m_details;
+    }
 
-	SteamUGCDetails_t m_ItemDetails; // meta data
-	CCallResult<CWorkshopItem, SteamUGCRequestUGCDetailsResult_t> m_SteamCallResultUGCDetails;
+    SteamUGCDetails_t m_ItemDetails; // meta data
+    CCallResult<CWorkshopItem, SteamUGCRequestUGCDetailsResult_t> m_SteamCallResultUGCDetails;
 };
 
 struct PurchaseableItem_t
 {
-	SteamItemDef_t m_nItemDefID;
-	uint64 m_ulPrice;
+    SteamItemDef_t m_nItemDefID;
+    uint64 m_ulPrice;
 };
 
-
-class CSpaceWarClient 
+class CSpaceWarClient
 {
-public:
-	//Constructor
-	CSpaceWarClient( IGameEngine *pEngine );
+  public:
+    // Constructor
+    CSpaceWarClient(IGameEngine *pEngine);
+
+    // Shared init for all constructors
+    void Init(IGameEngine *pGameEngine);
+
+    // Destructor
+    ~CSpaceWarClient();
+
+    // Run a game frame
+    void RunFrame();
+
+    // Checks for any incoming network data, then dispatches it
+    void ReceiveNetworkData();
+
+    // Connect to a server at a given IP address or game server steamID
+    void InitiateServerConnection(CSteamID steamIDGameServer);
+    void InitiateServerConnection(uint32 unServerAddress, const int32 nPort);
+
+    // Send data to a client at the given ship index
+    bool BSendServerData(const void *pData, uint32 nSizeOfData);
+
+    // Menu callback handler (handles a bunch of menus that just change state with no extra data)
+    void OnMenuSelection(EClientGameState eState)
+    {
+        SetGameState(eState);
+    }
+
+    // Menu callback handler (handles server browser selections with extra data)
+    void OnMenuSelection(ServerBrowserMenuData_t selection)
+    {
+        if (selection.m_eStateToTransitionTo == k_EClientGameConnecting)
+        {
+            InitiateServerConnection(selection.m_steamIDGameServer);
+        }
+        else
+        {
+            SetGameState(selection.m_eStateToTransitionTo);
+        }
+    }
+
+    void OnMenuSelection(LobbyBrowserMenuItem_t selection)
+    {
+        // start joining the lobby
+        if (selection.m_eStateToTransitionTo == k_EClientJoiningLobby)
+        {
+            SteamAPICall_t hSteamAPICall = SteamMatchmaking()->JoinLobby(selection.m_steamIDLobby);
+            // set the function to call when this API completes
+            m_SteamCallResultLobbyEntered.Set(hSteamAPICall, this, &CSpaceWarClient::OnLobbyEntered);
+        }
 
-	// Shared init for all constructors
-	void Init( IGameEngine *pGameEngine );
+        SetGameState(selection.m_eStateToTransitionTo);
+    }
+
+    void OnMenuSelection(LobbyMenuItem_t selection);
+    void OnMenuSelection(LeaderboardMenuItem_t selection);
+    void OnMenuSelection(FriendsListMenuItem_t selection);
+    void OnMenuSelection(RemotePlayListMenuItem_t selection);
+    void OnMenuSelection(ERemoteStorageSyncMenuCommand selection);
 
-	// Destructor
-	~CSpaceWarClient();
+    void OnMenuSelection(MusicPlayerMenuItem_t selection)
+    {
+        m_pMusicPlayer->OnMenuSelection(selection);
+    }
 
-	// Run a game frame
-	void RunFrame();
+    // Set game state
+    void SetGameState(EClientGameState eState);
+    EClientGameState GetGameState()
+    {
+        return m_eGameState;
+    }
 
-	// Checks for any incoming network data, then dispatches it
-	void ReceiveNetworkData();
+    // set failure text
+    void SetConnectionFailureText(const char *pchErrorText);
 
-	// Connect to a server at a given IP address or game server steamID
-	void InitiateServerConnection( CSteamID steamIDGameServer );
-	void InitiateServerConnection( uint32 unServerAddress, const int32 nPort );
+    // Were we the winner?
+    bool BLocalPlayerWonLastGame();
 
-	// Send data to a client at the given ship index
-	bool BSendServerData( const void *pData, uint32 nSizeOfData );
+    // Get the steam id for the local user at this client
+    CSteamID GetLocalSteamID()
+    {
+        return m_SteamIDLocalUser;
+    }
 
-	// Menu callback handler (handles a bunch of menus that just change state with no extra data)
-	void OnMenuSelection( EClientGameState eState ) { SetGameState( eState ); }
+    // Get the local players name
+    const char *GetLocalPlayerName()
+    {
+        return SteamFriends()->GetFriendPersonaName(m_SteamIDLocalUser);
+    }
 
-	// Menu callback handler (handles server browser selections with extra data)
-	void OnMenuSelection( ServerBrowserMenuData_t selection ) 
-	{ 
-		if ( selection.m_eStateToTransitionTo == k_EClientGameConnecting )
-		{
-			InitiateServerConnection( selection.m_steamIDGameServer );
-		}
-		else
-		{
-			SetGameState( selection.m_eStateToTransitionTo ); 
-		}
-	}
+    // Scale screen size to "real" size
+    float PixelsToFeet(float flPixels);
 
-	void OnMenuSelection( LobbyBrowserMenuItem_t selection )
-	{
-		// start joining the lobby
-		if ( selection.m_eStateToTransitionTo == k_EClientJoiningLobby )
-		{
-			SteamAPICall_t hSteamAPICall = SteamMatchmaking()->JoinLobby( selection.m_steamIDLobby );
-			// set the function to call when this API completes
-			m_SteamCallResultLobbyEntered.Set( hSteamAPICall, this, &CSpaceWarClient::OnLobbyEntered );
-		}
+    // Get a Steam-supplied image
+    HGAMETEXTURE GetSteamImageAsTexture(int iImage);
 
-		SetGameState( selection.m_eStateToTransitionTo );
-	}
+    void RetrieveEncryptedAppTicket();
 
-	void OnMenuSelection( LobbyMenuItem_t selection );
-	void OnMenuSelection( LeaderboardMenuItem_t selection );
-	void OnMenuSelection( FriendsListMenuItem_t selection );
-	void OnMenuSelection( RemotePlayListMenuItem_t selection );
-	void OnMenuSelection( ERemoteStorageSyncMenuCommand selection );
+    void ExecCommandLineConnect(const char *pchServerAddress, const char *pchLobbyID);
 
-	void OnMenuSelection( MusicPlayerMenuItem_t selection ) { m_pMusicPlayer->OnMenuSelection( selection ); }
+  private:
+    // Receive a response from the server for a connection attempt
+    void OnReceiveServerInfo(CSteamID steamIDGameServer, bool bVACSecure, const char *pchServerName);
 
-	// Set game state
-	void SetGameState( EClientGameState eState );
-	EClientGameState GetGameState() { return m_eGameState; }
+    // Receive a response from the server for a connection attempt
+    void OnReceiveServerAuthenticationResponse(bool bSuccess, uint32 uPlayerPosition);
 
-	// set failure text
-	void SetConnectionFailureText( const char *pchErrorText );
+    // Receive a state update from the server
+    void OnReceiveServerUpdate(ServerSpaceWarUpdateData_t *pUpdateData);
 
-	// Were we the winner?
-	bool BLocalPlayerWonLastGame();
+    // Handle the server exiting
+    void OnReceiveServerExiting();
 
-	// Get the steam id for the local user at this client
-	CSteamID GetLocalSteamID() { return m_SteamIDLocalUser; }
+    // Disconnects from a server (telling it so) if we are connected
+    void DisconnectFromServer();
 
-	// Get the local players name
-	const char* GetLocalPlayerName() 
-	{ 
-		return SteamFriends()->GetFriendPersonaName( m_SteamIDLocalUser ); 
-	}
+    // game state changes
+    void OnGameStateChanged(EClientGameState eGameStateNew);
 
-	// Scale screen size to "real" size
-	float PixelsToFeet( float flPixels );
+    // Draw the HUD text (should do this after drawing all the objects)
+    void DrawHUDText();
 
-	// Get a Steam-supplied image
-	HGAMETEXTURE GetSteamImageAsTexture( int iImage );
+    // Draw instructions for how to play the game
+    void DrawInstructions();
 
-	void RetrieveEncryptedAppTicket();
+    // Draw text telling the players who won (or that their was a draw)
+    void DrawWinnerDrawOrWaitingText();
 
-	void ExecCommandLineConnect( const char *pchServerAddress, const char *pchLobbyID );
+    // Draw text telling the user that the connection attempt has failed
+    void DrawConnectionFailureText();
 
-private:
+    // Draw connect to server text
+    void DrawConnectToServerText();
 
-	// Receive a response from the server for a connection attempt
-	void OnReceiveServerInfo( CSteamID steamIDGameServer, bool bVACSecure, const char *pchServerName );
+    // Draw text telling the user a connection attempt is in progress
+    void DrawConnectionAttemptText();
 
-	// Receive a response from the server for a connection attempt
-	void OnReceiveServerAuthenticationResponse( bool bSuccess, uint32 uPlayerPosition );
+    // Updates what we show to friends about what we're doing and how to connect
+    void UpdateRichPresenceConnectionInfo();
 
-	// Receive a state update from the server
-	void OnReceiveServerUpdate( ServerSpaceWarUpdateData_t *pUpdateData );
+    // Draw description for all subscribed workshop items
+    void DrawWorkshopItems();
 
-	// Handle the server exiting
-	void OnReceiveServerExiting();
+    // load subscribed workshop items
+    void LoadWorkshopItems();
 
-	// Disconnects from a server (telling it so) if we are connected
-	void DisconnectFromServer();
+    // Set appropriate rich presence keys for a player who is currently in-game and
+    // return the value that should go in steam_display
+    const char *SetInGameRichPresence() const;
 
-	// game state changes
-	void OnGameStateChanged( EClientGameState eGameStateNew );
+    // load a workshop item from file
+    bool LoadWorkshopItem(PublishedFileId_t workshopItemID);
+    CWorkshopItem *LoadWorkshopItemFromFile(const char *pszFileName);
 
-	// Draw the HUD text (should do this after drawing all the objects)
-	void DrawHUDText();
+    // ask the inventory service for things to purchase
+    void LoadItemsWithPrices();
 
-	// Draw instructions for how to play the game
-	void DrawInstructions();
+    // draw the in-game store
+    void DrawInGameStore();
 
-	// Draw text telling the players who won (or that their was a draw)
-	void DrawWinnerDrawOrWaitingText();
+    // Server we are connected to
+    CSpaceWarServer *m_pServer;
 
-	// Draw text telling the user that the connection attempt has failed
-	void DrawConnectionFailureText();
+    // SteamID for the local user on this client
+    CSteamID m_SteamIDLocalUser;
 
-	// Draw connect to server text
-	void DrawConnectToServerText();
+    // Our ship position in the array below
+    uint32 m_uPlayerShipIndex;
 
-	// Draw text telling the user a connection attempt is in progress
-	void DrawConnectionAttemptText();
+    // List of steamIDs for each player
+    CSteamID m_rgSteamIDPlayers[MAX_PLAYERS_PER_SERVER];
 
-	// Updates what we show to friends about what we're doing and how to connect
-	void UpdateRichPresenceConnectionInfo();
+    // Ships for players, doubles as a way to check for open slots (pointer is NULL meaning open)
+    CShip *m_rgpShips[MAX_PLAYERS_PER_SERVER];
 
-	// Draw description for all subscribed workshop items
-	void DrawWorkshopItems();
+    // Player scores
+    uint32 m_rguPlayerScores[MAX_PLAYERS_PER_SERVER];
 
-	// load subscribed workshop items
-	void LoadWorkshopItems();
+    // Who just won the game? Should be set if we go into the k_EGameWinner state
+    uint32 m_uPlayerWhoWonGame;
 
-	// Set appropriate rich presence keys for a player who is currently in-game and
-	// return the value that should go in steam_display
-	const char *SetInGameRichPresence() const;
+    // Current game state
+    EClientGameState m_eGameState;
 
-	// load a workshop item from file
-	bool LoadWorkshopItem( PublishedFileId_t workshopItemID );
-	CWorkshopItem *LoadWorkshopItemFromFile( const char *pszFileName );
+    // true if we only just transitioned state
+    bool m_bTransitionedGameState;
 
-	// ask the inventory service for things to purchase
-	void LoadItemsWithPrices();
+    // Font handle for drawing the HUD text
+    HGAMEFONT m_hHUDFont;
 
-	// draw the in-game store
-	void DrawInGameStore();
+    // Font handle for drawing the instructions text
+    HGAMEFONT m_hInstructionsFont;
 
-	// Server we are connected to
-	CSpaceWarServer *m_pServer;
+    // Font handle for drawing the in-game store
+    HGAMEFONT m_hInGameStoreFont;
 
-	// SteamID for the local user on this client
-	CSteamID m_SteamIDLocalUser;
+    // Time the last state transition occurred (so we can count-down round restarts)
+    uint64 m_ulStateTransitionTime;
 
-	// Our ship position in the array below
-	uint32 m_uPlayerShipIndex;
+    // Time we started our last connection attempt
+    uint64 m_ulLastConnectionAttemptRetryTime;
 
-	// List of steamIDs for each player
-	CSteamID m_rgSteamIDPlayers[MAX_PLAYERS_PER_SERVER];
+    // Time we last got data from the server
+    uint64 m_ulLastNetworkDataReceivedTime;
 
-	// Ships for players, doubles as a way to check for open slots (pointer is NULL meaning open)
-	CShip *m_rgpShips[MAX_PLAYERS_PER_SERVER];
+    // Time when we sent our ping
+    uint64 m_ulPingSentTime;
 
-	// Player scores
-	uint32 m_rguPlayerScores[MAX_PLAYERS_PER_SERVER];
+    // Text to display if we are in an error state
+    char m_rgchErrorText[256];
 
-	// Who just won the game? Should be set if we go into the k_EGameWinner state
-	uint32 m_uPlayerWhoWonGame;
+    // Server address data
+    CSteamID m_steamIDGameServer;
+    uint32 m_unServerIP;
+    uint16 m_usServerPort;
+    HAuthTicket m_hAuthTicket;
 
-	// Current game state
-	EClientGameState m_eGameState;
+    // keep track of if we opened the overlay for a gamewebcallback
+    bool m_bSentWebOpen;
 
-	// true if we only just transitioned state
-	bool m_bTransitionedGameState;
+    // simple class to marshal callbacks from pinging a game server
+    class CGameServerPing : public ISteamMatchmakingPingResponse
+    {
+      public:
+        CGameServerPing()
+        {
+            m_hGameServerQuery = HSERVERQUERY_INVALID;
+            m_pSpaceWarsClient = NULL;
+        }
 
-	// Font handle for drawing the HUD text
-	HGAMEFONT m_hHUDFont;
+        void RetrieveSteamIDFromGameServer(CSpaceWarClient *pSpaceWarClient, uint32 unIP, uint16 unPort)
+        {
+            m_pSpaceWarsClient = pSpaceWarClient;
+            m_hGameServerQuery = SteamMatchmakingServers()->PingServer(unIP, unPort, this);
+        }
 
-	// Font handle for drawing the instructions text
-	HGAMEFONT m_hInstructionsFont;
+        void CancelPing()
+        {
+            m_hGameServerQuery = HSERVERQUERY_INVALID;
+        }
 
-	// Font handle for drawing the in-game store
-	HGAMEFONT m_hInGameStoreFont;
+        // Server has responded successfully and has updated data
+        virtual void ServerResponded(gameserveritem_t &server)
+        {
+            if (m_hGameServerQuery != HSERVERQUERY_INVALID && server.m_steamID.IsValid())
+            {
+                m_pSpaceWarsClient->InitiateServerConnection(server.m_steamID);
+            }
 
-	// Time the last state transition occurred (so we can count-down round restarts)
-	uint64 m_ulStateTransitionTime;
+            m_hGameServerQuery = HSERVERQUERY_INVALID;
+        }
 
-	// Time we started our last connection attempt
-	uint64 m_ulLastConnectionAttemptRetryTime;
+        // Server failed to respond to the ping request
+        virtual void ServerFailedToRespond()
+        {
+            m_hGameServerQuery = HSERVERQUERY_INVALID;
+        }
 
-	// Time we last got data from the server
-	uint64 m_ulLastNetworkDataReceivedTime;
+      private:
+        HServerQuery m_hGameServerQuery; // we're ping a game server, so we can convert IP:Port to a steamID
+        CSpaceWarClient *m_pSpaceWarsClient;
+    };
+    CGameServerPing m_GameServerPing;
 
-	// Time when we sent our ping
-	uint64 m_ulPingSentTime;
+    // Track whether we are connected to a server (and what specific state that connection is in)
+    EClientConnectionState m_eConnectedStatus;
 
-	// Text to display if we are in an error state
-	char m_rgchErrorText[256];
+    // Star field instance
+    CStarField *m_pStarField;
 
-	// Server address data
-	CSteamID m_steamIDGameServer;
-	uint32 m_unServerIP;
-	uint16 m_usServerPort;
-	HAuthTicket m_hAuthTicket;
+    // Sun instance
+    CSun *m_pSun;
 
-	// keep track of if we opened the overlay for a gamewebcallback
-	bool m_bSentWebOpen;
+    // Steam Workshop items
+    CWorkshopItem *m_rgpWorkshopItems[MAX_WORKSHOP_ITEMS];
+    int m_nNumWorkshopItems; // items in m_rgpWorkshopItems
 
-	// simple class to marshal callbacks from pinging a game server
-	class CGameServerPing : public ISteamMatchmakingPingResponse
-	{
-	public:
-		CGameServerPing()
-		{
-			m_hGameServerQuery = HSERVERQUERY_INVALID;
-			m_pSpaceWarsClient = NULL;
-		}
+    // Main menu instance
+    CMainMenu *m_pMainMenu;
 
-		void RetrieveSteamIDFromGameServer( CSpaceWarClient *pSpaceWarClient, uint32 unIP, uint16 unPort )
-		{
-			m_pSpaceWarsClient = pSpaceWarClient;
-			m_hGameServerQuery = SteamMatchmakingServers()->PingServer( unIP, unPort, this );
-		}
+    // Connecting menu instance
+    CConnectingMenu *m_pConnectingMenu;
 
-		void CancelPing()
-		{
-			m_hGameServerQuery = HSERVERQUERY_INVALID;
-		}
+    // Pause menu instance
+    CQuitMenu *m_pQuitMenu;
 
-		// Server has responded successfully and has updated data
-		virtual void ServerResponded( gameserveritem_t &server )
-		{
-			if ( m_hGameServerQuery != HSERVERQUERY_INVALID && server.m_steamID.IsValid() )
-			{
-				m_pSpaceWarsClient->InitiateServerConnection( server.m_steamID );
-			}
+    // pointer to game engine instance we are running under
+    IGameEngine *m_pGameEngine;
 
-			m_hGameServerQuery = HSERVERQUERY_INVALID;
-		}
+    // track which steam image indexes we have textures for, and what handle that texture has
+    std::map<int, HGAMETEXTURE> m_MapSteamImagesToTextures;
 
-		// Server failed to respond to the ping request
-		virtual void ServerFailedToRespond()
-		{
-			m_hGameServerQuery = HSERVERQUERY_INVALID;
-		}
+    CStatsAndAchievements *m_pStatsAndAchievements;
 
-	private:
-		HServerQuery m_hGameServerQuery;	// we're ping a game server, so we can convert IP:Port to a steamID
-		CSpaceWarClient *m_pSpaceWarsClient;
-	};
-	CGameServerPing m_GameServerPing;
-	
+    CLeaderboards *m_pLeaderboards;
+    CFriendsList *m_pFriendsList;
+    CMusicPlayer *m_pMusicPlayer;
+    CClanChatRoom *m_pClanChatRoom;
+    CServerBrowser *m_pServerBrowser;
+    CRemotePlayList *m_pRemotePlayList;
+    CRemoteStorage *m_pRemoteStorage;
 
-	// Track whether we are connected to a server (and what specific state that connection is in)
-	EClientConnectionState m_eConnectedStatus;
+    // lobby handling
+    // the name of the lobby we're connected to
+    CSteamID m_steamIDLobby;
+    // callback for when we're creating a new lobby
+    void OnLobbyCreated(LobbyCreated_t *pCallback, bool bIOFailure);
+    CCallResult<CSpaceWarClient, LobbyCreated_t> m_SteamCallResultLobbyCreated;
 
-	// Star field instance
-	CStarField *m_pStarField;
+    // callback for when we've joined a lobby
+    void OnLobbyEntered(LobbyEnter_t *pCallback, bool bIOFailure);
+    CCallResult<CSpaceWarClient, LobbyEnter_t> m_SteamCallResultLobbyEntered;
 
-	// Sun instance
-	CSun *m_pSun;
+    // callback for when the lobby game server has started
+    STEAM_CALLBACK(CSpaceWarClient, OnLobbyGameCreated, LobbyGameCreated_t);
+    STEAM_CALLBACK(CSpaceWarClient, OnGameJoinRequested, GameRichPresenceJoinRequested_t);
+    STEAM_CALLBACK(CSpaceWarClient, OnAvatarImageLoaded, AvatarImageLoaded_t);
+    STEAM_CALLBACK(CSpaceWarClient, OnNewUrlLaunchParameters, NewUrlLaunchParameters_t);
 
-	// Steam Workshop items
-	CWorkshopItem *m_rgpWorkshopItems[ MAX_WORKSHOP_ITEMS ];
-	int m_nNumWorkshopItems; // items in m_rgpWorkshopItems
+    // callbacks for Steam connection state
+    STEAM_CALLBACK(CSpaceWarClient, OnSteamServersConnected, SteamServersConnected_t);
+    STEAM_CALLBACK(CSpaceWarClient, OnSteamServersDisconnected, SteamServersDisconnected_t);
+    STEAM_CALLBACK(CSpaceWarClient, OnSteamServerConnectFailure, SteamServerConnectFailure_t);
+    STEAM_CALLBACK(CSpaceWarClient, OnGameOverlayActivated, GameOverlayActivated_t);
 
-	// Main menu instance
-	CMainMenu *m_pMainMenu;
+    // callback when getting the results of a web call
+    STEAM_CALLBACK(CSpaceWarClient, OnGameWebCallback, GameWebCallback_t);
 
-	// Connecting menu instance
-	CConnectingMenu *m_pConnectingMenu;
+    // callback when new Workshop item was installed
+    STEAM_CALLBACK(CSpaceWarClient, OnWorkshopItemInstalled, ItemInstalled_t);
 
-	// Pause menu instance
-	CQuitMenu *m_pQuitMenu;
+    // callback when we ask the Inventory Service for prices
+    void OnRequestPricesResult(SteamInventoryRequestPricesResult_t *pParam, bool bIOFailure);
+    CCallResult<CSpaceWarClient, SteamInventoryRequestPricesResult_t> m_SteamCallResultRequestPrices;
+    char m_rgchCurrency[4];
+    std::vector<PurchaseableItem_t> m_vecPurchaseableItems;
 
-	// pointer to game engine instance we are running under
-	IGameEngine *m_pGameEngine;
+    // lobby browser menu
+    CLobbyBrowser *m_pLobbyBrowser;
 
-	// track which steam image indexes we have textures for, and what handle that texture has
-	std::map<int, HGAMETEXTURE> m_MapSteamImagesToTextures;
+    // local lobby display
+    CLobby *m_pLobby;
 
-	CStatsAndAchievements *m_pStatsAndAchievements;
+    // p2p game auth manager
+    CP2PAuthedGame *m_pP2PAuthedGame;
 
-	CLeaderboards *m_pLeaderboards;
-	CFriendsList *m_pFriendsList;
-	CMusicPlayer *m_pMusicPlayer;
-	CClanChatRoom *m_pClanChatRoom;
-	CServerBrowser *m_pServerBrowser;
-	CRemotePlayList *m_pRemotePlayList;
-	CRemoteStorage *m_pRemoteStorage;
+    // p2p voice chat
+    CVoiceChat *m_pVoiceChat;
 
+    // html page viewer
+    CHTMLSurface *m_pHTMLSurface;
 
-	// lobby handling
-	// the name of the lobby we're connected to
-	CSteamID m_steamIDLobby;
-	// callback for when we're creating a new lobby
-	void OnLobbyCreated( LobbyCreated_t *pCallback, bool bIOFailure );
-	CCallResult<CSpaceWarClient, LobbyCreated_t> m_SteamCallResultLobbyCreated;
+    // connection handler
+    STEAM_CALLBACK(CSpaceWarClient, OnP2PSessionConnectFail, P2PSessionConnectFail_t);
 
-	// callback for when we've joined a lobby
-	void OnLobbyEntered( LobbyEnter_t *pCallback, bool bIOFailure );
-	CCallResult<CSpaceWarClient, LobbyEnter_t> m_SteamCallResultLobbyEntered;
+    // ipc failure handler
+    STEAM_CALLBACK(CSpaceWarClient, OnIPCFailure, IPCFailure_t);
 
-	// callback for when the lobby game server has started
-	STEAM_CALLBACK( CSpaceWarClient, OnLobbyGameCreated, LobbyGameCreated_t );
-	STEAM_CALLBACK( CSpaceWarClient, OnGameJoinRequested, GameRichPresenceJoinRequested_t );
-	STEAM_CALLBACK( CSpaceWarClient, OnAvatarImageLoaded, AvatarImageLoaded_t );
-	STEAM_CALLBACK( CSpaceWarClient, OnNewUrlLaunchParameters, NewUrlLaunchParameters_t );
+    // Steam wants to shut down, Game for Windows applications should shutdown too
+    STEAM_CALLBACK(CSpaceWarClient, OnSteamShutdown, SteamShutdown_t);
 
-	// callbacks for Steam connection state
-	STEAM_CALLBACK( CSpaceWarClient, OnSteamServersConnected, SteamServersConnected_t );
-	STEAM_CALLBACK( CSpaceWarClient, OnSteamServersDisconnected, SteamServersDisconnected_t );
-	STEAM_CALLBACK( CSpaceWarClient, OnSteamServerConnectFailure, SteamServerConnectFailure_t );
-	STEAM_CALLBACK( CSpaceWarClient, OnGameOverlayActivated, GameOverlayActivated_t );
-	
-	// callback when getting the results of a web call
-	STEAM_CALLBACK( CSpaceWarClient, OnGameWebCallback, GameWebCallback_t );
-
-	// callback when new Workshop item was installed
-	STEAM_CALLBACK(CSpaceWarClient, OnWorkshopItemInstalled, ItemInstalled_t);
-
-	// callback when we ask the Inventory Service for prices
-	void OnRequestPricesResult( SteamInventoryRequestPricesResult_t *pParam, bool bIOFailure );
-	CCallResult<CSpaceWarClient, SteamInventoryRequestPricesResult_t> m_SteamCallResultRequestPrices;
-	char m_rgchCurrency[4];
-	std::vector<PurchaseableItem_t> m_vecPurchaseableItems;
-
-	// lobby browser menu
-	CLobbyBrowser *m_pLobbyBrowser;
-
-	// local lobby display
-	CLobby *m_pLobby;
-	
-	// p2p game auth manager
-	CP2PAuthedGame *m_pP2PAuthedGame;
-	
-	// p2p voice chat 
-	CVoiceChat *m_pVoiceChat;
-
-	// html page viewer
-	CHTMLSurface *m_pHTMLSurface;
-
-	// connection handler
-	STEAM_CALLBACK( CSpaceWarClient, OnP2PSessionConnectFail, P2PSessionConnectFail_t );
-
-	// ipc failure handler
-	STEAM_CALLBACK( CSpaceWarClient, OnIPCFailure, IPCFailure_t );
-
-	// Steam wants to shut down, Game for Windows applications should shutdown too
-	STEAM_CALLBACK( CSpaceWarClient, OnSteamShutdown, SteamShutdown_t );
-
-	// Called when SteamUser()->RequestEncryptedAppTicket() returns asynchronously
-	void OnRequestEncryptedAppTicket( EncryptedAppTicketResponse_t *pEncryptedAppTicketResponse, bool bIOFailure );
-	CCallResult< CSpaceWarClient, EncryptedAppTicketResponse_t > m_SteamCallResultEncryptedAppTicket;
+    // Called when SteamUser()->RequestEncryptedAppTicket() returns asynchronously
+    void OnRequestEncryptedAppTicket(EncryptedAppTicketResponse_t *pEncryptedAppTicketResponse, bool bIOFailure);
+    CCallResult<CSpaceWarClient, EncryptedAppTicketResponse_t> m_SteamCallResultEncryptedAppTicket;
 };
 
 // Must define this stuff before BaseMenu.h as it depends on calling back into us through these accessors

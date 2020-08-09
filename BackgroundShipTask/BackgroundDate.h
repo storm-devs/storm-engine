@@ -5,33 +5,33 @@ class ATTRIBUTES;
 
 class BackgroundDataDescriber
 {
-public:
-	long year;
-	long month;
-	long day;
+  public:
+    long year;
+    long month;
+    long day;
 
-	long hour;
-	long min;
+    long hour;
+    long min;
 
-	BackgroundDataDescriber();
-	BackgroundDataDescriber( const BackgroundDataDescriber& dd );
-	~BackgroundDataDescriber();
+    BackgroundDataDescriber();
+    BackgroundDataDescriber(const BackgroundDataDescriber &dd);
+    ~BackgroundDataDescriber();
 
-	const BackgroundDataDescriber& operator = ( const BackgroundDataDescriber& dd );
-	bool operator == ( const BackgroundDataDescriber& dd );
-	bool operator < ( const BackgroundDataDescriber& dd );
-	bool operator <= ( const BackgroundDataDescriber& dd );
-	bool operator > ( const BackgroundDataDescriber& dd );
-	bool operator >= ( const BackgroundDataDescriber& dd );
+    const BackgroundDataDescriber &operator=(const BackgroundDataDescriber &dd);
+    bool operator==(const BackgroundDataDescriber &dd);
+    bool operator<(const BackgroundDataDescriber &dd);
+    bool operator<=(const BackgroundDataDescriber &dd);
+    bool operator>(const BackgroundDataDescriber &dd);
+    bool operator>=(const BackgroundDataDescriber &dd);
 
-	void AddMinutes( long nQuantity );
-	void AddHour( long nQuantity );
-	void AddDay( long nQuantity );
-	void AddMonth( long nQuantity );
-	void AddYears( long nQuantity );
+    void AddMinutes(long nQuantity);
+    void AddHour(long nQuantity);
+    void AddDay(long nQuantity);
+    void AddMonth(long nQuantity);
+    void AddYears(long nQuantity);
 
-	void WriteDataToAttributeClass( ATTRIBUTES* pA );
-	void ReadDataFromAttributeClass( ATTRIBUTES* pA );
+    void WriteDataToAttributeClass(ATTRIBUTES *pA);
+    void ReadDataFromAttributeClass(ATTRIBUTES *pA);
 };
 
 #endif

@@ -1,136 +1,170 @@
 #ifndef _ISLAND_H_
 #define _ISLAND_H_
 
-#include "..\..\common.h"
 #include "..\..\..\sea_ai\AIFlowGraph.h"
+#include "..\..\common.h"
 
 class MapZipper
 {
-private: 
-	dword	dwSizeX;
-	dword	dwDX;
-	dword	dwBlockSize, dwBlockShift;
-	dword	dwShiftNumBlocksX;
-	dword	dwNumRealBlocks;
+  private:
+    dword dwSizeX;
+    dword dwDX;
+    dword dwBlockSize, dwBlockShift;
+    dword dwShiftNumBlocksX;
+    dword dwNumRealBlocks;
 
-	word	* pWordTable;
-	byte	* pRealData;
-public:
-	MapZipper();
-	~MapZipper(); 
+    word *pWordTable;
+    byte *pRealData;
 
-	dword	GetSizeX() { return dwSizeX; };
+  public:
+    MapZipper();
+    ~MapZipper();
 
-	void	UnInit();
-	void	DoZip(byte * pSrc, dword dwSizeX);
-	byte	Get(dword dwX, dword dwY);
+    dword GetSizeX()
+    {
+        return dwSizeX;
+    };
 
-	bool	Save(string sFileName);
-	bool	Load(string sFileName);
+    void UnInit();
+    void DoZip(byte *pSrc, dword dwSizeX);
+    byte Get(dword dwX, dword dwY);
 
-	bool	isLoaded() { return pRealData != null; }
+    bool Save(string sFileName);
+    bool Load(string sFileName);
+
+    bool isLoaded()
+    {
+        return pRealData != null;
+    }
 };
 
 class NetIsland : public ISLAND_BASE
 {
-private:
-	string				sIslandName;
-	array<ENTITY_ID>	aSpheres;
-	array<ENTITY_ID>	aForts;
-	AIFlowGraph			AIPath;
+  private:
+    string sIslandName;
+    array<ENTITY_ID> aSpheres;
+    array<ENTITY_ID> aForts;
+    AIFlowGraph AIPath;
 
-	FRECT				rIsland;
-	bool				bForeignModels;
-	bool				bDrawReflections;
-	float				fStepDX, fStepDZ, fStep1divDX, fStep1divDZ;
-	float				fShadowMapSize, fShadowMapStep;
-	CVECTOR				vBoxSize, vBoxCenter, vRealBoxSize;
-	dword				iDMapSize, iDMapSizeShift;
-	ENTITY_ID			model_id, seabed_id;
+    FRECT rIsland;
+    bool bForeignModels;
+    bool bDrawReflections;
+    float fStepDX, fStepDZ, fStep1divDX, fStep1divDZ;
+    float fShadowMapSize, fShadowMapStep;
+    CVECTOR vBoxSize, vBoxCenter, vRealBoxSize;
+    dword iDMapSize, iDMapSizeShift;
+    ENTITY_ID model_id, seabed_id;
 
-	bool				bFirstRealize;
+    bool bFirstRealize;
 
-	float				fCurrentImmersion;
+    float fCurrentImmersion;
 
-	char				cModelsDir[256], cModelsID[256], cFoamDir[256];
-	
-	float				fDepthHeight[256];
+    char cModelsDir[256], cModelsID[256], cFoamDir[256];
 
-	MapZipper			mzShadow, mzDepth;
+    float fDepthHeight[256];
 
-	byte				* pDepthMap;
-	byte				* pShadowMap;
+    MapZipper mzShadow, mzDepth;
 
-	VDX8RENDER			* pRS;
-	VGEOMETRY			* pGS;
-	COLLIDE				* pCollide;
-	VIDWALKER			* pIslandTraceWalker;
+    byte *pDepthMap;
+    byte *pShadowMap;
 
-	CMatrix				mIslandOld, mSeaBedOld;
-	float				fImmersionDepth, fImmersionDistance;
+    VDX8RENDER *pRS;
+    VGEOMETRY *pGS;
+    COLLIDE *pCollide;
+    VIDWALKER *pIslandTraceWalker;
 
-	void	Blur8(byte * * pBuffer, dword dwSize);
-	bool	SaveTga8(char * fname, byte * pBuffer, dword dwSizeX, dword dwSizeY);
+    CMatrix mIslandOld, mSeaBedOld;
+    float fImmersionDepth, fImmersionDistance;
 
-	// shadow map section
+    void Blur8(byte **pBuffer, dword dwSize);
+    bool SaveTga8(char *fname, byte *pBuffer, dword dwSizeX, dword dwSizeY);
 
-	// depth map section
-	bool	CreateHeightMap(char * pDir, char * pName);
-	bool	ActivateCamomileTrace(CVECTOR & vSrc);
-	inline float	GetDepthCheck(DWORD iX, DWORD iZ);
-	inline float	GetDepthNoCheck(DWORD iX, DWORD iZ);
+    // shadow map section
 
-	bool	Mount(char *fname, char * fdir, ENTITY_ID *eID);
-	void	Uninit();
+    // depth map section
+    bool CreateHeightMap(char *pDir, char *pName);
+    bool ActivateCamomileTrace(CVECTOR &vSrc);
+    inline float GetDepthCheck(DWORD iX, DWORD iZ);
+    inline float GetDepthNoCheck(DWORD iX, DWORD iZ);
 
-	void	CalcBoxParameters(CVECTOR & vBoxCenter, CVECTOR & vBoxSize);
+    bool Mount(char *fname, char *fdir, ENTITY_ID *eID);
+    void Uninit();
 
-	void	CreateDirectories(char * pDir);
+    void CalcBoxParameters(CVECTOR &vBoxCenter, CVECTOR &vBoxSize);
 
-	void	SetName(char * pIslandName) { sIslandName = pIslandName; };
-	char	* GetName() { return (char*)sIslandName.GetBuffer(); };
+    void CreateDirectories(char *pDir);
 
-	void	AddLocationModel(ENTITY_ID & eid, char * pIDStr, char * pStr);
+    void SetName(char *pIslandName)
+    {
+        sIslandName = pIslandName;
+    };
+    char *GetName()
+    {
+        return (char *)sIslandName.GetBuffer();
+    };
 
-	// debug
-	void	DoZapSuperGenerator();
-	void	DoZapSuperGeneratorInnerDecodeFiles(char * sub_dir, char * mask);
-	bool	DoZapSuperGeneratorDecodeFile(char * sname);
+    void AddLocationModel(ENTITY_ID &eid, char *pIDStr, char *pStr);
 
-public:
-	 NetIsland();
-	~NetIsland();
-	bool			Init();
-	void			Realize(dword Delta_Time);
-	dword _cdecl	ProcessMessage(MESSAGE & message);
+    // debug
+    void DoZapSuperGenerator();
+    void DoZapSuperGeneratorInnerDecodeFiles(char *sub_dir, char *mask);
+    bool DoZapSuperGeneratorDecodeFile(char *sname);
 
-	void			Move();
-	void			SetDevice();
+  public:
+    NetIsland();
+    ~NetIsland();
+    bool Init();
+    void Realize(dword Delta_Time);
+    dword _cdecl ProcessMessage(MESSAGE &message);
 
-// inherit functions COLLISION_OBJECT
-	float		Trace(const CVECTOR &src, const CVECTOR &dst);
-	bool		Clip(const PLANE *planes, long nplanes, const CVECTOR &center, float radius, ADD_POLYGON_FUNC addpoly) { return false; };
+    void Move();
+    void SetDevice();
 
-	const char	*GetCollideMaterialName() { return 0; };
-	bool		GetCollideTriangle(TRIANGLE &triangle) { return false; };
+    // inherit functions COLLISION_OBJECT
+    float Trace(const CVECTOR &src, const CVECTOR &dst);
+    bool Clip(const PLANE *planes, long nplanes, const CVECTOR &center, float radius, ADD_POLYGON_FUNC addpoly)
+    {
+        return false;
+    };
 
-// inherit functions CANNON_TRACE_BASE
-    float		Cannon_Trace(long iBallOwner, const CVECTOR &src, const CVECTOR &dst);
+    const char *GetCollideMaterialName()
+    {
+        return 0;
+    };
+    bool GetCollideTriangle(TRIANGLE &triangle)
+    {
+        return false;
+    };
 
-// inherit functions ISLAND_BASE
-	bool		GetMovePoint(CVECTOR & vSrc, CVECTOR & vDst, CVECTOR & vRes);
+    // inherit functions CANNON_TRACE_BASE
+    float Cannon_Trace(long iBallOwner, const CVECTOR &src, const CVECTOR &dst);
 
-	ENTITY_ID	GetModelEID() { return model_id; };
-	ENTITY_ID	GetSeabedEID() { return seabed_id; };
+    // inherit functions ISLAND_BASE
+    bool GetMovePoint(CVECTOR &vSrc, CVECTOR &vDst, CVECTOR &vRes);
 
-	bool		Check2DBoxDepth(CVECTOR vPos, CVECTOR vSize, float fAngY, float fMinDepth);
-	bool		GetDepth(float x, float z, float * fRes = 0);
-	bool		GetDepthFast(float x, float z, float * fRes = 0);
-	bool		GetDepth(FRECT * pRect, float * fMinH, float * fMaxH);
+    ENTITY_ID GetModelEID()
+    {
+        return model_id;
+    };
+    ENTITY_ID GetSeabedEID()
+    {
+        return seabed_id;
+    };
 
-	bool		GetShadow(float x, float z, float * fRes = 0) { return false; };
+    bool Check2DBoxDepth(CVECTOR vPos, CVECTOR vSize, float fAngY, float fMinDepth);
+    bool GetDepth(float x, float z, float *fRes = 0);
+    bool GetDepthFast(float x, float z, float *fRes = 0);
+    bool GetDepth(FRECT *pRect, float *fMinH, float *fMaxH);
 
-	float		GetCurrentImmersion() { return fCurrentImmersion; };
+    bool GetShadow(float x, float z, float *fRes = 0)
+    {
+        return false;
+    };
+
+    float GetCurrentImmersion()
+    {
+        return fCurrentImmersion;
+    };
 };
 
 #endif

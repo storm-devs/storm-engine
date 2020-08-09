@@ -1,107 +1,90 @@
 #ifndef _PARTICLE_DATA_GRAPH_H_
 #define _PARTICLE_DATA_GRAPH_H_
 
-#include <string.h>
-#include <stdarg.h>
-#include <stdio.h>
 #include "../../../common_h/exs.h"
 #include "../../../common_h/templates.h"
 #include "..\..\icommon\memfile.h"
+#include <stdarg.h>
+#include <stdio.h>
+#include <string.h>
 
 #include "..\..\icommon\GraphVertex.h"
 
-
 class DataGraph
 {
-  string Name;
+    string Name;
 
+    //С какого времени последний раз забирали значение
+    float MaxCachedTime;
+    float MinCachedTime;
+    //Какой был индекс у этого времени
+    DWORD MaxCachedIndex;
+    DWORD MinCachedIndex;
 
-//С какого времени последний раз забирали значение
-	float MaxCachedTime;
-	float MinCachedTime;
-//Какой был индекс у этого времени
-	DWORD MaxCachedIndex;
-	DWORD MinCachedIndex;
+    array<GraphVertex> MinGraph;
+    array<GraphVertex> MaxGraph;
 
-	array<GraphVertex> MinGraph;
-	array<GraphVertex> MaxGraph;
+    void ResetCachedTime();
 
+    float GetMinAtTime(float Time, float LifeTime);
+    float GetMaxAtTime(float Time, float LifeTime);
 
-	void ResetCachedTime ();
+    bool bRelative;
+    bool bNegative;
 
-	float GetMinAtTime (float Time, float LifeTime);
-	float GetMaxAtTime (float Time, float LifeTime);
+  public:
+    //конструктор/деструктор
+    DataGraph();
+    virtual ~DataGraph();
 
+    //Установить/получить могут быть отрицательные значения в графике или нет...
+    void SetNegative(bool _bNegative);
+    bool GetNegative();
 
-	bool bRelative;
-	bool bNegative;
-	
+    //Установить/получить относительный график или нет...
+    void SetRelative(bool _bRelative);
+    bool GetRelative();
 
-public:
+    //Получить значение (Текущее время, Коэфицент рандома[0..1])
+    float GetValue(float Time, float LifeTime, float K_rand);
+    float GetRandomValue(float Time, float LifeTime);
 
-//конструктор/деструктор
-	DataGraph ();
-	virtual ~DataGraph ();
+    //Установить значения...
+    void SetValues(const GraphVertex *MinValues, DWORD MinValuesSize, const GraphVertex *MaxValues,
+                   DWORD MaxValuesSize);
 
+    //Устанавливает "значение по умолчанию"
+    void SetDefaultValue(float MaxValue, float MinValue);
 
-	//Установить/получить могут быть отрицательные значения в графике или нет...
-	void SetNegative (bool _bNegative);
-	bool GetNegative ();
+    //Получить кол-во в графике минимума
+    DWORD GetMinCount();
 
-	//Установить/получить относительный график или нет...
-	void SetRelative (bool _bRelative);
-	bool GetRelative ();
+    //Получить кол-во в графике максимума
+    DWORD GetMaxCount();
 
+    //Получить значение по индексу из графика минимума
+    const GraphVertex &GetMinVertex(DWORD Index);
 
-//Получить значение (Текущее время, Коэфицент рандома[0..1])
-	float GetValue (float Time, float LifeTime, float K_rand);
-	float GetRandomValue (float Time, float LifeTime);
+    //Получить значение по индексу из графика максимума
+    const GraphVertex &GetMaxVertex(DWORD Index);
 
+    void Load(MemFile *File);
+    void Write(MemFile *File);
 
-//Установить значения...
-	void SetValues (const GraphVertex* MinValues, DWORD MinValuesSize, const GraphVertex* MaxValues, DWORD MaxValuesSize);
+    void SetName(const char *szName);
+    const char *GetName();
 
-	//Устанавливает "значение по умолчанию"
-	void SetDefaultValue (float MaxValue, float MinValue);
+    float GetMaxTime();
 
-
-//Получить кол-во в графике минимума
-	DWORD GetMinCount ();
-
-//Получить кол-во в графике максимума
-	DWORD GetMaxCount ();
-
-//Получить значение по индексу из графика минимума
-	const GraphVertex& GetMinVertex (DWORD Index);
-
-//Получить значение по индексу из графика максимума
-	const GraphVertex& GetMaxVertex (DWORD Index);
-
-
-	void Load (MemFile* File);
-	void Write (MemFile* File);
-	
-	void SetName (const char* szName);
-	const char* GetName ();
-
-
-	float GetMaxTime ();
-
-
-	void ConvertRadToDeg ();
-	void ConvertDegToRad ();
-	void MultiplyBy (float Val);
-	void Clamp (float MinValue, float MaxValue);
-	void Reverse ();  //Graphs = 1.0f - Graph
-	void NormalToPercent ();
-	void PercentToNormal ();
-	void NormalToAlpha ();
-	void AlphaToNormal ();
-
-
-
-
+    void ConvertRadToDeg();
+    void ConvertDegToRad();
+    void MultiplyBy(float Val);
+    void Clamp(float MinValue, float MaxValue);
+    void Reverse(); // Graphs = 1.0f - Graph
+    void NormalToPercent();
+    void PercentToNormal();
+    void NormalToAlpha();
+    void AlphaToNormal();
 };
-
 
 #endif

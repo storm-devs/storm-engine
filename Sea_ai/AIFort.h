@@ -15,190 +15,289 @@ class AIGroup;
 
 class AIFort : public VAI_OBJBASE
 {
-public:
-	class AI_FORT : public VAI_INNEROBJ
-	{
-	private:
-		class TmpVAI_OBJBASE : public VAI_OBJBASE
-		{
-		public:
-			TmpVAI_OBJBASE()
-			{
-				mTmp.SetIdentity();
-			}
+  public:
+    class AI_FORT : public VAI_INNEROBJ
+    {
+      private:
+        class TmpVAI_OBJBASE : public VAI_OBJBASE
+        {
+          public:
+            TmpVAI_OBJBASE()
+            {
+                mTmp.SetIdentity();
+            }
 
-			CMatrix mTmp;
-			AI_FORT * pFort;
+            CMatrix mTmp;
+            AI_FORT *pFort;
 
-			virtual CMatrix * GetMatrix() { return &GetModel()->mtx; };
+            virtual CMatrix *GetMatrix()
+            {
+                return &GetModel()->mtx;
+            };
 
-			virtual MODEL *		GetModel() { return pFort->GetModel(); };
-			virtual ENTITY_ID	GetModelEID() { return pFort->GetModelEID(); };
+            virtual MODEL *GetModel()
+            {
+                return pFort->GetModel();
+            };
+            virtual ENTITY_ID GetModelEID()
+            {
+                return pFort->GetModelEID();
+            };
 
-			virtual void Save(CSaveLoad * pSL) {};
-			virtual void Load(CSaveLoad * pSL) {};	
-			virtual void Fire(const CVECTOR & vPos)	{};
+            virtual void Save(CSaveLoad *pSL){};
+            virtual void Load(CSaveLoad *pSL){};
+            virtual void Fire(const CVECTOR &vPos){};
 
-			virtual float Cannon_Trace(long iBallOwner, const CVECTOR &src, const CVECTOR &dst) { return 2.0f; };
-			virtual float Trace(const CVECTOR & vSrc, const CVECTOR & vDst) { return 2.0f; };
-			virtual bool Clip(const PLANE * planes, long nplanes, const CVECTOR & vCenter, float radius, ADD_POLYGON_FUNC addpoly) { return false; };
-			virtual const char * GetCollideMaterialName() { return null; };
-			virtual bool GetCollideTriangle(TRIANGLE & triangle) { return false; };
-		};
+            virtual float Cannon_Trace(long iBallOwner, const CVECTOR &src, const CVECTOR &dst)
+            {
+                return 2.0f;
+            };
+            virtual float Trace(const CVECTOR &vSrc, const CVECTOR &vDst)
+            {
+                return 2.0f;
+            };
+            virtual bool Clip(const PLANE *planes, long nplanes, const CVECTOR &vCenter, float radius,
+                              ADD_POLYGON_FUNC addpoly)
+            {
+                return false;
+            };
+            virtual const char *GetCollideMaterialName()
+            {
+                return null;
+            };
+            virtual bool GetCollideTriangle(TRIANGLE &triangle)
+            {
+                return false;
+            };
+        };
 
-		ENTITY_ID			eidModel;
-		ENTITY_ID			eidBlot;
-					
+        ENTITY_ID eidModel;
+        ENTITY_ID eidBlot;
 
-	public:
-		CMatrix				mOldMatrix;
-		CVECTOR				vPos;
-		ATTRIBUTES			* pFortLabelAP;
-		TmpVAI_OBJBASE		tmpObject;
+      public:
+        CMatrix mOldMatrix;
+        CVECTOR vPos;
+        ATTRIBUTES *pFortLabelAP;
+        TmpVAI_OBJBASE tmpObject;
 
-		array<AICannon>		aCannons;			// fort cannons container
-		array<AICannon>		aCulverins;			// fort culverins container
-		array<AICannon>		aMortars;			// fort mortars container
+        array<AICannon> aCannons;   // fort cannons container
+        array<AICannon> aCulverins; // fort culverins container
+        array<AICannon> aMortars;   // fort mortars container
 
-		dword				dwCannonType, dwCulverinType, dwMortarType;
+        dword dwCannonType, dwCulverinType, dwMortarType;
 
-		MODEL *		GetModel() { Assert(api->ValidateEntity(&GetModelEID())); return (MODEL*)api->GetEntityPointer(&GetModelEID()); }
-		void		SetModelEID(ENTITY_ID _eidModel) { eidModel = _eidModel; } 
-		ENTITY_ID	GetModelEID() { return eidModel; } 
-		void		SetBlotEID(ENTITY_ID _eidBlot) { eidBlot = _eidBlot; } 
-		ENTITY_ID	GetBlotEID() { return eidBlot; } 
-		dword		GetAllCannonsNum() const { return aCannons.Size() + aCulverins.Size() + aMortars.Size(); }
-		dword		GetCannonType(dword dwCannonIndex) 
-		{ 
-			if (dwCannonIndex < aCannons.Size()) return dwCannonType;
-			if (dwCannonIndex < aCannons.Size() + aCulverins.Size()) return dwCulverinType;
-			return dwMortarType;
-		} 
-		dword		GetDamagedCannonsNum() 
-		{
-			dword i, dwDamagedNum = 0;
+        MODEL *GetModel()
+        {
+            Assert(api->ValidateEntity(&GetModelEID()));
+            return (MODEL *)api->GetEntityPointer(&GetModelEID());
+        }
+        void SetModelEID(ENTITY_ID _eidModel)
+        {
+            eidModel = _eidModel;
+        }
+        ENTITY_ID GetModelEID()
+        {
+            return eidModel;
+        }
+        void SetBlotEID(ENTITY_ID _eidBlot)
+        {
+            eidBlot = _eidBlot;
+        }
+        ENTITY_ID GetBlotEID()
+        {
+            return eidBlot;
+        }
+        dword GetAllCannonsNum() const
+        {
+            return aCannons.Size() + aCulverins.Size() + aMortars.Size();
+        }
+        dword GetCannonType(dword dwCannonIndex)
+        {
+            if (dwCannonIndex < aCannons.Size())
+                return dwCannonType;
+            if (dwCannonIndex < aCannons.Size() + aCulverins.Size())
+                return dwCulverinType;
+            return dwMortarType;
+        }
+        dword GetDamagedCannonsNum()
+        {
+            dword i, dwDamagedNum = 0;
 
-			for (i=0; i<aCannons.Size(); i++) if (aCannons[i].isDamaged()) dwDamagedNum++;
-			for (i=0; i<aCulverins.Size(); i++) if (aCulverins[i].isDamaged()) dwDamagedNum++;
-			for (i=0; i<aMortars.Size(); i++) if (aMortars[i].isDamaged()) dwDamagedNum++;
-			
-			return dwDamagedNum;
-		}
+            for (i = 0; i < aCannons.Size(); i++)
+                if (aCannons[i].isDamaged())
+                    dwDamagedNum++;
+            for (i = 0; i < aCulverins.Size(); i++)
+                if (aCulverins[i].isDamaged())
+                    dwDamagedNum++;
+            for (i = 0; i < aMortars.Size(); i++)
+                if (aMortars[i].isDamaged())
+                    dwDamagedNum++;
 
-		bool		isNormalMode()
-		{
-			ATTRIBUTES * pAFM = GetACharacter()->FindAClass(GetACharacter(),"Fort.Mode");
-			if (pAFM) return (pAFM->GetAttributeAsDword() == FORT_NORMAL);
-			return false;
-		}
+            return dwDamagedNum;
+        }
 
-		AICannon	* GetCannon(dword dwCannonIndex)
-		{
-			if (dwCannonIndex < aCannons.Size()) return &aCannons[dwCannonIndex];
-			if (dwCannonIndex < aCannons.Size() + aCulverins.Size()) return &aCulverins[dwCannonIndex - aCannons.Size()];
-			return &aMortars[dwCannonIndex - (aCannons.Size() + aCulverins.Size())];
-		}
+        bool isNormalMode()
+        {
+            ATTRIBUTES *pAFM = GetACharacter()->FindAClass(GetACharacter(), "Fort.Mode");
+            if (pAFM)
+                return (pAFM->GetAttributeAsDword() == FORT_NORMAL);
+            return false;
+        }
 
-		AI_FORT(ATTRIBUTES * _pFortLabelAP) : aMortars(_FL_), aCannons(_FL_, 32), aCulverins(_FL_, 32)
-		{
-			SetObjType(AIOBJ_FORT);
+        AICannon *GetCannon(dword dwCannonIndex)
+        {
+            if (dwCannonIndex < aCannons.Size())
+                return &aCannons[dwCannonIndex];
+            if (dwCannonIndex < aCannons.Size() + aCulverins.Size())
+                return &aCulverins[dwCannonIndex - aCannons.Size()];
+            return &aMortars[dwCannonIndex - (aCannons.Size() + aCulverins.Size())];
+        }
 
-			tmpObject.pFort = this;
+        AI_FORT(ATTRIBUTES *_pFortLabelAP) : aMortars(_FL_), aCannons(_FL_, 32), aCulverins(_FL_, 32)
+        {
+            SetObjType(AIOBJ_FORT);
 
-			pFortLabelAP = _pFortLabelAP;
+            tmpObject.pFort = this;
 
-			vPos.x = pFortLabelAP->GetAttributeAsFloat("x");
-			vPos.y = 0.0f;//pFortLabelAP->GetAttributeAsFloat("y");
-			vPos.z = pFortLabelAP->GetAttributeAsFloat("z");
-		}
+            pFortLabelAP = _pFortLabelAP;
 
-		virtual CVECTOR		GetPos() const { return vPos; };
-		virtual CVECTOR		GetAttackPoint(VAI_INNEROBJ *);
-		virtual CVECTOR		GetFollowPoint(VAI_INNEROBJ *) { return 0.0f; };
-		virtual CVECTOR		GetAbordagePoint(VAI_INNEROBJ *) { return 0.0f; };
+            vPos.x = pFortLabelAP->GetAttributeAsFloat("x");
+            vPos.y = 0.0f; // pFortLabelAP->GetAttributeAsFloat("y");
+            vPos.z = pFortLabelAP->GetAttributeAsFloat("z");
+        }
 
-		virtual float		GetMaxFireDistance() { return 0.0f; };
-		virtual float		GetMinFireDistance() { return 0.0f; };
+        virtual CVECTOR GetPos() const
+        {
+            return vPos;
+        };
+        virtual CVECTOR GetAttackPoint(VAI_INNEROBJ *);
+        virtual CVECTOR GetFollowPoint(VAI_INNEROBJ *)
+        {
+            return 0.0f;
+        };
+        virtual CVECTOR GetAbordagePoint(VAI_INNEROBJ *)
+        {
+            return 0.0f;
+        };
 
-		void Save(CSaveLoad * pSL);
-		void Load(CSaveLoad * pSL, ENTITY_ID eid);
-	};
+        virtual float GetMaxFireDistance()
+        {
+            return 0.0f;
+        };
+        virtual float GetMinFireDistance()
+        {
+            return 0.0f;
+        };
 
-	dword		GetNumForts() { return aForts.Size(); }
-	AI_FORT		* FindFort(ATTRIBUTES * pACharacter);
-	AI_FORT		* GetFort(dword k)
-	{
-		Assert(k < aForts.Size());
-		return aForts[k];
-	}
-private:
-	CMatrix					mtxFort;
+        void Save(CSaveLoad *pSL);
+        void Load(CSaveLoad *pSL, ENTITY_ID eid);
+    };
 
-	DTimer					dtFiredTimer;
-	AI_FORT					* pLastTraceFort;
-	array<AI_FORT*>			aForts;				// fort container
+    dword GetNumForts()
+    {
+        return aForts.Size();
+    }
+    AI_FORT *FindFort(ATTRIBUTES *pACharacter);
+    AI_FORT *GetFort(dword k)
+    {
+        Assert(k < aForts.Size());
+        return aForts[k];
+    }
 
-	float	fMinCannonDamageDistance;
+  private:
+    CMatrix mtxFort;
 
-	// Ships lights 
-	IShipLights			* pShipsLights;
+    DTimer dtFiredTimer;
+    AI_FORT *pLastTraceFort;
+    array<AI_FORT *> aForts; // fort container
 
-	void	AddFortHit(long iCharacterIndex, CVECTOR & vHitPos);
-	float	GetSpeedV0(dword dwFortIndex);
-	bool	ScanFortForCannons(AI_FORT * pFort, char * pModelsDir, char * pLocatorsName);
-	bool	AddFort(ATTRIBUTES * pIslandAP, ATTRIBUTES * pFortAP, ATTRIBUTES * pFortCharacter, ENTITY_ID eidModel, ENTITY_ID eidBlot);
-	AI_FORT * FindFort(ENTITY_ID eidModel);
+    float fMinCannonDamageDistance;
 
-public:
-	static AIFort			* pAIFort;
+    // Ships lights
+    IShipLights *pShipsLights;
 
-	AIFort();
-	~AIFort();
+    void AddFortHit(long iCharacterIndex, CVECTOR &vHitPos);
+    float GetSpeedV0(dword dwFortIndex);
+    bool ScanFortForCannons(AI_FORT *pFort, char *pModelsDir, char *pLocatorsName);
+    bool AddFort(ATTRIBUTES *pIslandAP, ATTRIBUTES *pFortAP, ATTRIBUTES *pFortCharacter, ENTITY_ID eidModel,
+                 ENTITY_ID eidBlot);
+    AI_FORT *FindFort(ENTITY_ID eidModel);
 
-	// AI section
-		bool		isAttack(AIGroup * pGroup);
-		bool		isDead();		// is group dead?
-		float		GetPower();
+  public:
+    static AIFort *pAIFort;
 
-	// inherit functions ENTITY
-		bool Init();
-		void SetDevice();
+    AIFort();
+    ~AIFort();
 
-		void Realize(dword Delta_Time);
-		void Execute(dword Delta_Time);
-		
-		bool CreateState(ENTITY_STATE_GEN * state_gen);
-		bool LoadState(ENTITY_STATE * state);
-		
-		dword _cdecl ProcessMessage(MESSAGE & message);
+    // AI section
+    bool isAttack(AIGroup *pGroup);
+    bool isDead(); // is group dead?
+    float GetPower();
 
-		dword AttributeChanged(ATTRIBUTES * pAttribute);
+    // inherit functions ENTITY
+    bool Init();
+    void SetDevice();
 
-	// inherit functions COLLISION_OBJECT
-		virtual float Trace(const CVECTOR & vSrc, const CVECTOR & vDst);
-		virtual bool Clip(const PLANE * planes, long nplanes, const CVECTOR & vCenter, float radius, ADD_POLYGON_FUNC addpoly) { return false; };
+    void Realize(dword Delta_Time);
+    void Execute(dword Delta_Time);
 
-		virtual const char * GetCollideMaterialName() { return null; };
-		virtual bool GetCollideTriangle(TRIANGLE & triangle) { return false; };
+    bool CreateState(ENTITY_STATE_GEN *state_gen);
+    bool LoadState(ENTITY_STATE *state);
 
-	// inherit functions CANNON_TRACE_BASE
-		float		Cannon_Trace(long iBallOwner, const CVECTOR & vSrc, const CVECTOR & vDst);
+    dword _cdecl ProcessMessage(MESSAGE &message);
 
-	// inherit functions VAI_OBJBASE
-		ATTRIBUTES	* GetACharacter();
+    dword AttributeChanged(ATTRIBUTES *pAttribute);
 
-		CMatrix		* GetMatrix() { return &mtxFort; };
-		MODEL		* GetModel() { return null; };
-		ENTITY_ID	GetModelEID() { ENTITY_ID eid; return eid; };
-		CVECTOR		GetPos() { return CVECTOR(0.0f,0.0f,0.0f); };
-		CVECTOR		GetAng() { return CVECTOR(0.0f,0.0f,0.0f); };
+    // inherit functions COLLISION_OBJECT
+    virtual float Trace(const CVECTOR &vSrc, const CVECTOR &vDst);
+    virtual bool Clip(const PLANE *planes, long nplanes, const CVECTOR &vCenter, float radius, ADD_POLYGON_FUNC addpoly)
+    {
+        return false;
+    };
 
-		bool		Mount(ATTRIBUTES * pAttribute);
+    virtual const char *GetCollideMaterialName()
+    {
+        return null;
+    };
+    virtual bool GetCollideTriangle(TRIANGLE &triangle)
+    {
+        return false;
+    };
 
-		void Save(CSaveLoad * pSL);
-		void Load(CSaveLoad * pSL);
+    // inherit functions CANNON_TRACE_BASE
+    float Cannon_Trace(long iBallOwner, const CVECTOR &vSrc, const CVECTOR &vDst);
 
-		void Fire(const CVECTOR & vPos);
+    // inherit functions VAI_OBJBASE
+    ATTRIBUTES *GetACharacter();
+
+    CMatrix *GetMatrix()
+    {
+        return &mtxFort;
+    };
+    MODEL *GetModel()
+    {
+        return null;
+    };
+    ENTITY_ID GetModelEID()
+    {
+        ENTITY_ID eid;
+        return eid;
+    };
+    CVECTOR GetPos()
+    {
+        return CVECTOR(0.0f, 0.0f, 0.0f);
+    };
+    CVECTOR GetAng()
+    {
+        return CVECTOR(0.0f, 0.0f, 0.0f);
+    };
+
+    bool Mount(ATTRIBUTES *pAttribute);
+
+    void Save(CSaveLoad *pSL);
+    void Load(CSaveLoad *pSL);
+
+    void Fire(const CVECTOR &vPos);
 };
 
 #endif

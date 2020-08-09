@@ -5,83 +5,85 @@
 
 #define DEBUGCLASSES
 
-#define SMALL_BLOCKS_LIMIT	256
-#define MEDIUM_BLOCKS_LIMIT	256
-#define MEDIUM_BLOCK_MSIZE  	65536
+#define SMALL_BLOCKS_LIMIT 256
+#define MEDIUM_BLOCKS_LIMIT 256
+#define MEDIUM_BLOCK_MSIZE 65536
 
 struct MEM_USAGE_INFO_BLOCK
 {
-	char * pFileName;
-	DWORD  nLine;
-	DWORD  nCurrentAllocated;
-	DWORD  nCurrentBlocks;
-	DWORD  nMaxAllocated;
-	DWORD  nMaxBlocks;
+    char *pFileName;
+    DWORD nLine;
+    DWORD nCurrentAllocated;
+    DWORD nCurrentBlocks;
+    DWORD nMaxAllocated;
+    DWORD nMaxBlocks;
 
-
-	DWORD  nTotalAllocated;
-	DWORD  nTotalBlocks;
+    DWORD nTotalAllocated;
+    DWORD nTotalBlocks;
 };
 
 struct SBSUNIT
 {
-	DWORD nCurrent;
-	DWORD nMax;
-	DWORD nB2TRatio;
+    DWORD nCurrent;
+    DWORD nMax;
+    DWORD nB2TRatio;
 };
 
 class MEM_USAGE_INFO
 {
-	MEM_USAGE_INFO_BLOCK * pMemBL;
-	DWORD nMemBLNum;
-public:
-	DWORD nTotalAllocated;
-	DWORD nCurrentAllocated;
-	DWORD nMaxSimAllocated;
-	DWORD nTotalBlocks;
-	DWORD nCurrentBlocks;
-	DWORD nMaxSimBlocks;
+    MEM_USAGE_INFO_BLOCK *pMemBL;
+    DWORD nMemBLNum;
 
-	DWORD nTestBlocks;
+  public:
+    DWORD nTotalAllocated;
+    DWORD nCurrentAllocated;
+    DWORD nMaxSimAllocated;
+    DWORD nTotalBlocks;
+    DWORD nCurrentBlocks;
+    DWORD nMaxSimBlocks;
 
-	SBSUNIT nBlockTableSBS[SMALL_BLOCKS_LIMIT];
-	SBSUNIT nBlockTableMBS[MEDIUM_BLOCKS_LIMIT];
+    DWORD nTestBlocks;
 
-	DWORD nTimePeriod;
-	DWORD nTimeCounter;
+    SBSUNIT nBlockTableSBS[SMALL_BLOCKS_LIMIT];
+    SBSUNIT nBlockTableMBS[MEDIUM_BLOCKS_LIMIT];
 
-	 MEM_USAGE_INFO();
-	~MEM_USAGE_INFO();
-	void Allocate(char * pFileName, DWORD nLine, DWORD nMemSize);
-	void Resize(char * pFileName, DWORD nLine, DWORD nMemSize, 
-		char * pOldFileName, DWORD nOldLine, DWORD nOldMemSize);
-	void Free(char * pFileName, DWORD nLine, DWORD nMemSize);
-	void Report();
-	void Register(char * pFileName, DWORD nLine, DWORD nMemSize);
-	void Unregister(char * pFileName, DWORD nLine, DWORD nMemSize);
+    DWORD nTimePeriod;
+    DWORD nTimeCounter;
 
-	void ProcessTime(DWORD time);
-	void UpdateMemoryProfile(char * pFileName);
+    MEM_USAGE_INFO();
+    ~MEM_USAGE_INFO();
+    void Allocate(char *pFileName, DWORD nLine, DWORD nMemSize);
+    void Resize(char *pFileName, DWORD nLine, DWORD nMemSize, char *pOldFileName, DWORD nOldLine, DWORD nOldMemSize);
+    void Free(char *pFileName, DWORD nLine, DWORD nMemSize);
+    void Report();
+    void Register(char *pFileName, DWORD nLine, DWORD nMemSize);
+    void Unregister(char *pFileName, DWORD nLine, DWORD nMemSize);
 
+    void ProcessTime(DWORD time);
+    void UpdateMemoryProfile(char *pFileName);
 };
 
 class MEM_ALLOC_ADDRESS
 {
-public:
-	struct SOURCE_DESC
-	{
-		SOURCE_DESC(){pFileName = 0; dwLine = 0;};
-		char * pFileName;
-		DWORD dwLine;
-	};
-	SOURCE_DESC * pData;
-	DWORD dwRecordsNum;
-	DWORD dwBufferSize;
+  public:
+    struct SOURCE_DESC
+    {
+        SOURCE_DESC()
+        {
+            pFileName = 0;
+            dwLine = 0;
+        };
+        char *pFileName;
+        DWORD dwLine;
+    };
+    SOURCE_DESC *pData;
+    DWORD dwRecordsNum;
+    DWORD dwBufferSize;
 
-	MEM_ALLOC_ADDRESS();
-	~MEM_ALLOC_ADDRESS();
-	DWORD  GetAddress(const char * pFileName, DWORD dwLine);
-	char * GetSource(DWORD dwAddress, DWORD * dwLine);
+    MEM_ALLOC_ADDRESS();
+    ~MEM_ALLOC_ADDRESS();
+    DWORD GetAddress(const char *pFileName, DWORD dwLine);
+    char *GetSource(DWORD dwAddress, DWORD *dwLine);
 };
 
 #endif

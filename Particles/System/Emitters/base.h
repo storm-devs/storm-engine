@@ -5,163 +5,139 @@
 #include "..\..\icommon\iemitter.h"
 #include "..\..\icommon\particle.h"
 #include "..\..\icommon\types.h"
+#include "..\datadesc\data_desc.h"
 #include "..\datasource\datasource.h"
 #include "..\particlesystem\particlesystem.h"
-#include "..\datadesc\data_desc.h"
 
 class DataGraph;
 
 class BaseEmitter : public IEmitter
 {
 
+    struct structParticleType
+    {
+        bool Visible;      //Видим или нет
+        ParticleType Type; // Тип партикла
+        float Remain;      // Сколько осталось незапущенных с прошлого кадра
+        DWORD ActiveCount; // Количество активных партиклов данного типа
+        DWORD MaxParticlesCount; // Максимальное кол-во партиклов этого типа
+        DataGraph *EmissionRate; // График задающий скорость испускания партиклов
 
+        FieldList *pFields;
 
+        structParticleType()
+        {
+            ActiveCount = 0;
+            Remain = 0.0f;
+            EmissionRate = NULL;
+            pFields = NULL;
+            Type = UNKNOWN_PARTICLE;
+        }
+    };
 
-	struct structParticleType
-	{
-		bool Visible;										//Видим или нет
-		ParticleType Type;							// Тип партикла
-		float Remain;										// Сколько осталось незапущенных с прошлого кадра
-		DWORD ActiveCount;							// Количество активных партиклов данного типа
-		DWORD MaxParticlesCount;				// Максимальное кол-во партиклов этого типа
-		DataGraph* EmissionRate;				// График задающий скорость испускания партиклов
+    array<structParticleType> ParticleTypes;
 
-		FieldList* pFields;
+    DataSource::EmitterDesc *pEmitter;
+    FieldList *pFields;
+    bool IsAttachedFlag;
 
+    Vector Position;
+    EmitterType Type;
+    float LifeTime;
+    float ElapsedTime;
+    DataGraph *EmissionDirX;
+    DataGraph *EmissionDirY;
+    DataGraph *EmissionDirZ;
 
-		structParticleType ()
-		{
-			ActiveCount = 0;
-			Remain = 0.0f;
-			EmissionRate = NULL;
-			pFields = NULL;
-			Type = UNKNOWN_PARTICLE;
-		}
+    bool Looped;
+    bool Stoped;
+    bool Visible;
 
-		
-	};
+    DWORD Unique_GUID;
 
-	array<structParticleType> ParticleTypes;
+    Matrix matWorldTransform;
+    bool OldMatrixNotInitialized;
+    Matrix matWorldTransformOld;
+    Matrix matWorldTransformNew;
 
+    void BlendMatrix(Matrix &result, const Matrix &mat1, const Matrix &mat2, float BlendK);
 
-	DataSource::EmitterDesc* pEmitter;
-	FieldList* pFields;
-	bool IsAttachedFlag;
+    void IncreaseTime(float DeltaTime);
 
+  protected:
+    string Name;
+    ParticleSystem *pMaster;
 
-	Vector Position;
-	EmitterType Type;
-	float LifeTime;
-	float ElapsedTime;
-	DataGraph* EmissionDirX;
-	DataGraph* EmissionDirY;
-	DataGraph* EmissionDirZ;
+  public:
+    // Конструктор / деструктор
+    BaseEmitter(ParticleSystem *pSystem);
+    virtual ~BaseEmitter();
 
-	bool Looped;
-	bool Stoped;
-	bool Visible;
+    //Получить позицию для рождения новых партиклов
+    virtual Vector GetNewParticlePosition(float DeltaTime) = 0;
 
-	DWORD Unique_GUID;
+    //Родить новые партиклы
+    void BornParticles(float DeltaTime);
+    //Исполнить
+    virtual void Execute(float DeltaTime);
 
-	Matrix matWorldTransform;
-	bool OldMatrixNotInitialized;
-	Matrix matWorldTransformOld;
-	Matrix matWorldTransformNew;
+    //Присоединиться к источнику данных
+    virtual void AttachToDataSource(DataSource::EmitterDesc *pEmitter);
 
-	void BlendMatrix (Matrix& result, const Matrix& mat1, const Matrix& mat2, float BlendK);
+    virtual void CreateBillBoardParticle(FieldList &Fields);
+    virtual void CreateModelParticle(FieldList &Fields);
 
+    ParticleSystem *GetMaster();
+    ParticleManager *GetManager();
+    void GetEmissionDirection(Matrix &matWorld);
 
-	void IncreaseTime (float DeltaTime);
+    virtual void SetGUID(DWORD GUID)
+    {
+        Unique_GUID = GUID;
+    }
 
-protected:
-  
-	string Name;
-	ParticleSystem* pMaster;
+    virtual DWORD GetGUID()
+    {
+        return Unique_GUID;
+    }
 
-  
+    virtual void Restart();
 
-public:
- 
-	// Конструктор / деструктор
-  BaseEmitter(ParticleSystem* pSystem);
-  virtual ~BaseEmitter();
-  
-	//Получить позицию для рождения новых партиклов  
-	virtual Vector GetNewParticlePosition (float DeltaTime) = 0;
-  
+    virtual DWORD GetParticleCount();
+    virtual bool IsStoped();
 
-	//Родить новые партиклы 
-	void BornParticles (float DeltaTime);
- 	//Исполнить
-  virtual void Execute (float DeltaTime);
+    virtual void SetTransform(const Matrix &matWorld);
+    virtual void Teleport(const Matrix &matWorld);
 
-	//Присоединиться к источнику данных
-	virtual void AttachToDataSource (DataSource::EmitterDesc* pEmitter);
+    virtual const char *GetName();
 
+    //Если флаг в true емиттер не будет самостоятельно испускать партиклы
+    //так, как он привязан
+    virtual void SetAttachedFlag(bool Flag);
+    virtual bool IsAttached();
 
+    virtual float GetTime();
+    virtual void SetTime(float Time);
 
-	virtual void CreateBillBoardParticle (FieldList &Fields);
-	virtual void CreateModelParticle (FieldList &Fields);
+    virtual DWORD GetParticleTypesCount();
+    virtual FieldList *GetParticleTypeDataByIndex(DWORD Index);
+    virtual ParticleType GetParticleTypeByIndex(DWORD Index);
 
+    virtual FieldList *GetData();
 
-	ParticleSystem* GetMaster ();
-	ParticleManager* GetManager ();
-	void GetEmissionDirection (Matrix &matWorld);
+    virtual bool SetEnable(bool bVisible);
+    virtual bool GetEnable();
 
+    //-1 если не нашли, иначе индекс
+    virtual int GetParticleTypeIndex(FieldList *pFields);
+    virtual bool SetParticleTypeEnable(bool bVisible, DWORD Index);
+    virtual bool GetParticleTypeEnable(DWORD Index);
 
-	virtual void SetGUID (DWORD GUID)
-	{
-		Unique_GUID = GUID;
-	}
+    virtual void Editor_UpdateCachedData();
 
-	virtual DWORD GetGUID ()
-	{
-		return Unique_GUID;
-	}
+    virtual void SetName(const char *Name);
 
-	virtual void Restart ();
-
-
-	virtual DWORD GetParticleCount ();
-	virtual bool IsStoped ();
-
-	virtual void SetTransform (const Matrix& matWorld);
-	virtual void Teleport (const Matrix &matWorld);
-
-	virtual const char* GetName ();
-
-	//Если флаг в true емиттер не будет самостоятельно испускать партиклы
-	//так, как он привязан
-	virtual void SetAttachedFlag (bool Flag);
-	virtual bool IsAttached ();
-
-	virtual float GetTime ();
-	virtual void SetTime (float Time);
-
-
-	virtual DWORD GetParticleTypesCount ();
-	virtual FieldList* GetParticleTypeDataByIndex (DWORD Index);
-	virtual ParticleType GetParticleTypeByIndex  (DWORD Index);
-
-
-	virtual FieldList* GetData ();
-
-
-	virtual bool SetEnable (bool bVisible);
-	virtual bool GetEnable ();
-
-	//-1 если не нашли, иначе индекс
-	virtual int GetParticleTypeIndex (FieldList* pFields);
-	virtual bool SetParticleTypeEnable (bool bVisible, DWORD Index);
-	virtual bool GetParticleTypeEnable (DWORD Index);
-
-
-	virtual void Editor_UpdateCachedData ();
-
-	virtual void SetName (const char* Name);
-
-	virtual void Stop ();
-
+    virtual void Stop();
 };
 
 #endif

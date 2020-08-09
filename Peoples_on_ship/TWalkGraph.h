@@ -5,23 +5,23 @@
 ///////////////////////////////////////////////////////////////////
 // CLASS DEFINITION
 ///////////////////////////////////////////////////////////////////
-class TWalkGraph  
+class TWalkGraph
 {
-public:
-	TWalkGraph();
-	virtual ~TWalkGraph();
+  public:
+    TWalkGraph();
+    virtual ~TWalkGraph();
 
-	void AddPair(long v1, long v2, long t1, long t2);
-	void Clear();
-	bool TestPair(long v1, long v2);
-	int  FindRandomLinkedWithType(int sourceI, int t);
-	int  FindRandomLinkedWithoutType(int sourceI, int t);
-	int  FindRandomLinkedAnyType(int sourceI);
-	int  FindRandomWithType(int t);
+    void AddPair(long v1, long v2, long t1, long t2);
+    void Clear();
+    bool TestPair(long v1, long v2);
+    int FindRandomLinkedWithType(int sourceI, int t);
+    int FindRandomLinkedWithoutType(int sourceI, int t);
+    int FindRandomLinkedAnyType(int sourceI);
+    int FindRandomWithType(int t);
 
-private:
-	long pairs[MAX_PAIRS][4];
-	int pairsCount;
+  private:
+    long pairs[MAX_PAIRS][4];
+    int pairsCount;
 };
 
 #endif

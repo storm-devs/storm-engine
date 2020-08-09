@@ -8,24 +8,24 @@
 #ifndef CONNECTINGMENU_H
 #define CONNECTINGMENU_H
 
-#include <string>
-#include <vector>
+#include "BaseMenu.h"
 #include "GameEngine.h"
 #include "SpaceWar.h"
-#include "BaseMenu.h"
 #include "SpaceWarClient.h"
+#include <string>
+#include <vector>
 
 class CConnectingMenu : public CBaseMenu<EClientGameState>
 {
-public:
-	// Constructor
-	CConnectingMenu( IGameEngine *pGameEngine );
+  public:
+    // Constructor
+    CConnectingMenu(IGameEngine *pGameEngine);
 
-	void Reset();
-	void OnConnectFailure();
+    void Reset();
+    void OnConnectFailure();
 
-private:
-	bool m_bInitialLogonFailed;
+  private:
+    bool m_bInitialLogonFailed;
 };
 
 #endif // CONNECTINGMENU_H

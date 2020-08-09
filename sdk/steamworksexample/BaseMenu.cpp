@@ -5,9 +5,8 @@
 // $NoKeywords: $
 //=============================================================================
 
-
-#include "stdafx.h"
 #include "BaseMenu.h"
+#include "stdafx.h"
 
 // Static data
 HGAMEFONT g_hMenuFont = 0;

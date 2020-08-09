@@ -5,17 +5,16 @@
 // $NoKeywords: $
 //=============================================================================
 
-
-#include "stdafx.h"
 #include "QuitMenu.h"
 #include "SpaceWar.h"
+#include "stdafx.h"
 
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
-CQuitMenu::CQuitMenu( IGameEngine *pGameEngine ) : CBaseMenu<EClientGameState>( pGameEngine )
+CQuitMenu::CQuitMenu(IGameEngine *pGameEngine) : CBaseMenu<EClientGameState>(pGameEngine)
 {
-	AddMenuItem( MenuItem_t( "Resume Game", k_EClientGameActive ) );
-	AddMenuItem( MenuItem_t( "Exit To Menu", k_EClientGameMenu ) );
-	AddMenuItem( MenuItem_t( "Exit To Desktop", k_EClientGameExiting ) );
+    AddMenuItem(MenuItem_t("Resume Game", k_EClientGameActive));
+    AddMenuItem(MenuItem_t("Exit To Menu", k_EClientGameMenu));
+    AddMenuItem(MenuItem_t("Exit To Desktop", k_EClientGameExiting));
 }

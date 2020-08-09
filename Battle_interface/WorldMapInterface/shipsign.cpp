@@ -1,9 +1,8 @@
 #include "shipsign.h"
-#include "shipcommand.h"
 #include "..\utils.h"
+#include "shipcommand.h"
 
-WMShipIcon::WMShipIcon( ENTITY_ID& BIEntityID, VDX8RENDER* pRS ) :
-	BISignIcon(BIEntityID, pRS)
+WMShipIcon::WMShipIcon(ENTITY_ID &BIEntityID, VDX8RENDER *pRS) : BISignIcon(BIEntityID, pRS)
 {
 }
 
@@ -11,35 +10,39 @@ WMShipIcon::~WMShipIcon()
 {
 }
 
-void WMShipIcon::ExecuteCommand( CommandType command )
+void WMShipIcon::ExecuteCommand(CommandType command)
 {
 }
 
 long WMShipIcon::CalculateSignQuantity()
 {
-	long n;
-	char param[256];
+    long n;
+    char param[256];
 
-	if( m_pAData ) {
-		for(n=0; n<MAX_SIGN_QUANTITY; n++)
-		{
-			_snprintf(param,sizeof(param),"sign%d",n+1);
-			ATTRIBUTES* pA = m_pAData->GetAttributeClass(param);
-			if( pA ) {
-				m_Sign[n].bUse = true;
-				m_Sign[n].fLeftState = pA->GetAttributeAsFloat("leftprogress",0.f);
-				m_Sign[n].fRightState = pA->GetAttributeAsFloat("rightprogress",0.f);
-				m_Sign[n].fStarProgress = pA->GetAttributeAsFloat("starprogress",0.f);
-				FULLRECT(m_Sign[n].rFaceUV);
-				BIUtils::ReadRectFromAttr( pA, "faceuv", m_Sign[n].rFaceUV, m_Sign[n].rFaceUV );
-				m_Sign[n].sText = pA->GetAttribute("text");
-			} else {
-				m_Sign[n].bUse = false;
-			}
-		}
-	}
+    if (m_pAData)
+    {
+        for (n = 0; n < MAX_SIGN_QUANTITY; n++)
+        {
+            _snprintf(param, sizeof(param), "sign%d", n + 1);
+            ATTRIBUTES *pA = m_pAData->GetAttributeClass(param);
+            if (pA)
+            {
+                m_Sign[n].bUse = true;
+                m_Sign[n].fLeftState = pA->GetAttributeAsFloat("leftprogress", 0.f);
+                m_Sign[n].fRightState = pA->GetAttributeAsFloat("rightprogress", 0.f);
+                m_Sign[n].fStarProgress = pA->GetAttributeAsFloat("starprogress", 0.f);
+                FULLRECT(m_Sign[n].rFaceUV);
+                BIUtils::ReadRectFromAttr(pA, "faceuv", m_Sign[n].rFaceUV, m_Sign[n].rFaceUV);
+                m_Sign[n].sText = pA->GetAttribute("text");
+            }
+            else
+            {
+                m_Sign[n].bUse = false;
+            }
+        }
+    }
 
-	return BISignIcon::CalculateSignQuantity();
+    return BISignIcon::CalculateSignQuantity();
 }
 
 void WMShipIcon::UpdateChildrens()

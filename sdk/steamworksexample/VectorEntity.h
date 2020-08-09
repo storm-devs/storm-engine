@@ -1,6 +1,6 @@
 //========= Copyright © 1996-2008, Valve LLC, All rights reserved. ============
 //
-// Purpose: Base class for representation objects in the game which are drawn as 
+// Purpose: Base class for representation objects in the game which are drawn as
 //			vector art (ie, a series of lines)
 //
 // $NoKeywords: $
@@ -14,8 +14,8 @@
 
 struct VectorEntityVertex_t
 {
-	float x, y;
-	DWORD color;
+    float x, y;
+    DWORD color;
 };
 
 #define DEFAULT_MAXIMUM_VELOCITY 450.0f
@@ -24,135 +24,190 @@ struct VectorEntityVertex_t
 
 class CVectorEntity
 {
-public:
-	// Constructor
-	CVectorEntity( IGameEngine *pGameEngine, uint32 uCollisionRadius );
-	
-	// Destructor
-	virtual ~CVectorEntity();
+  public:
+    // Constructor
+    CVectorEntity(IGameEngine *pGameEngine, uint32 uCollisionRadius);
 
-	// Run a frame
-	virtual void RunFrame();
+    // Destructor
+    virtual ~CVectorEntity();
 
-	// Render the sun field
-	virtual void Render();
+    // Run a frame
+    virtual void RunFrame();
 
-	// Render with an explicit color
-	virtual void Render(DWORD overrideColor);
+    // Render the sun field
+    virtual void Render();
 
-	// Check if the entity is colliding with another given entity
-	bool BCollidesWith( CVectorEntity * pTarget );
+    // Render with an explicit color
+    virtual void Render(DWORD overrideColor);
 
-	// Get the rotation value that is to be applied next frame
-	float GetRotationDeltaNextFrame() { return m_flRotationDeltaNextFrame; }
+    // Check if the entity is colliding with another given entity
+    bool BCollidesWith(CVectorEntity *pTarget);
 
-	// Get the rotation value that was applied last frame
-	float GetRotationDeltaLastFrame() { return m_flRotationDeltaLastFrame; }
+    // Get the rotation value that is to be applied next frame
+    float GetRotationDeltaNextFrame()
+    {
+        return m_flRotationDeltaNextFrame;
+    }
 
-	// Get the cumulative rotation for this entity
-	float GetAccumulatedRotation() { return m_flAccumulatedRotation; }
+    // Get the rotation value that was applied last frame
+    float GetRotationDeltaLastFrame()
+    {
+        return m_flRotationDeltaLastFrame;
+    }
 
-	// Get the acceleration to be applied next frame
-	float GetXAcceleration() { return m_flXAccel; }
-	float GetYAcceleration() { return m_flYAccel; }
+    // Get the cumulative rotation for this entity
+    float GetAccumulatedRotation()
+    {
+        return m_flAccumulatedRotation;
+    }
 
-	// Get the acceleration applied last frame
-	float GetXAccelerationLastFrame() { return m_flXAccelLastFrame; }
-	float GetYAccelerationLastFrame() { return m_flYAccelLastFrame; }
+    // Get the acceleration to be applied next frame
+    float GetXAcceleration()
+    {
+        return m_flXAccel;
+    }
+    float GetYAcceleration()
+    {
+        return m_flYAccel;
+    }
 
-	// Get the current velocity
-	float GetXVelocity() { return m_flXVelocity; }
-	float GetYVelocity() { return m_flYVelocity; }
+    // Get the acceleration applied last frame
+    float GetXAccelerationLastFrame()
+    {
+        return m_flXAccelLastFrame;
+    }
+    float GetYAccelerationLastFrame()
+    {
+        return m_flYAccelLastFrame;
+    }
 
-	// Get the current position of the object
-	float GetXPos() { return m_flXPos; }
-	float GetYPos() { return m_flYPos; }
+    // Get the current velocity
+    float GetXVelocity()
+    {
+        return m_flXVelocity;
+    }
+    float GetYVelocity()
+    {
+        return m_flYVelocity;
+    }
 
-	// Get the distance traveled each frame
-	float GetDistanceTraveledLastFrame();
-	
-	// Add a line to the entity
-	void AddLine(float xPos0, float yPos0, float xPos1, float yPos1, DWORD dwColor);
+    // Get the current position of the object
+    float GetXPos()
+    {
+        return m_flXPos;
+    }
+    float GetYPos()
+    {
+        return m_flYPos;
+    }
 
-	// Clear all lines in the entity
-	void ClearVertexes();
+    // Get the distance traveled each frame
+    float GetDistanceTraveledLastFrame();
 
-	// Set the objects current position
-	void SetPosition(float xPos, float yPos);
+    // Add a line to the entity
+    void AddLine(float xPos0, float yPos0, float xPos1, float yPos1, DWORD dwColor);
 
-	// Set the velocity of the entity (normally you should just set acceleration and this will be computed)
-	void SetVelocity(float xVelocity, float yVelocity) { m_flXVelocity = xVelocity; m_flYVelocity = yVelocity; }
+    // Clear all lines in the entity
+    void ClearVertexes();
 
-protected:
+    // Set the objects current position
+    void SetPosition(float xPos, float yPos);
 
-	// Set the rotation to be applied next frame
-	void SetRotationDeltaNextFrame( float flRotationInRadians );
+    // Set the velocity of the entity (normally you should just set acceleration and this will be computed)
+    void SetVelocity(float xVelocity, float yVelocity)
+    {
+        m_flXVelocity = xVelocity;
+        m_flYVelocity = yVelocity;
+    }
 
-	// Set the acceleration to be applied next frame
-	void SetAcceleration( float xAccel, float yAccel );
-	// Set the cumulative rotation for this entity (overriding any existing value)
-	void SetAccumulatedRotation( float flRotation ) { m_flAccumulatedRotation = flRotation; }
-	
-	// Reset velocity of the entity
-	void ResetVelocity() { m_flXVelocity = 0; m_flYVelocity = 0; }
+  protected:
+    // Set the rotation to be applied next frame
+    void SetRotationDeltaNextFrame(float flRotationInRadians);
 
-	// Get the collision radius for the entity
-	uint32 GetCollisionRadius() { return m_uCollisionRadius; }
+    // Set the acceleration to be applied next frame
+    void SetAcceleration(float xAccel, float yAccel);
+    // Set the cumulative rotation for this entity (overriding any existing value)
+    void SetAccumulatedRotation(float flRotation)
+    {
+        m_flAccumulatedRotation = flRotation;
+    }
 
-	// Enable/Disable collision detection for this entity
-	void SetCollisionDetectionDisabled( bool bDisabled ) { m_bDisableCollisions = bDisabled; }
+    // Reset velocity of the entity
+    void ResetVelocity()
+    {
+        m_flXVelocity = 0;
+        m_flYVelocity = 0;
+    }
 
-	// Check whether collision detection has been disabled for the entity
-	bool BCollisionDetectionDisabled() { return m_bDisableCollisions; }
+    // Get the collision radius for the entity
+    uint32 GetCollisionRadius()
+    {
+        return m_uCollisionRadius;
+    }
 
-	// Set a maximum velocity other than the default
-	void SetMaximumVelocity( float flMaximumVelocity ) { m_flMaximumVelocity = flMaximumVelocity; }
+    // Enable/Disable collision detection for this entity
+    void SetCollisionDetectionDisabled(bool bDisabled)
+    {
+        m_bDisableCollisions = bDisabled;
+    }
 
-protected:
-	// Game engine instance we are running under
-	IGameEngine *m_pGameEngine;
+    // Check whether collision detection has been disabled for the entity
+    bool BCollisionDetectionDisabled()
+    {
+        return m_bDisableCollisions;
+    }
 
-private:
-	// Vector of points (always built 2 at a time so it's actually lines)
-	std::vector< VectorEntityVertex_t > m_VecVertexes;
+    // Set a maximum velocity other than the default
+    void SetMaximumVelocity(float flMaximumVelocity)
+    {
+        m_flMaximumVelocity = flMaximumVelocity;
+    }
 
-	// Previous position
-	float m_flXPosLastFrame;
-	float m_flYPosLastFrame;
+  protected:
+    // Game engine instance we are running under
+    IGameEngine *m_pGameEngine;
 
-	// current position (position is at the center of the object)
-	float m_flXPos;
-	float m_flYPos;
+  private:
+    // Vector of points (always built 2 at a time so it's actually lines)
+    std::vector<VectorEntityVertex_t> m_VecVertexes;
 
-	// maximum velocity the object can have in either x/y 
-	float m_flMaximumVelocity;
+    // Previous position
+    float m_flXPosLastFrame;
+    float m_flYPosLastFrame;
 
-	// acceleration to be applied next frame
-	float m_flXAccel;
-	float m_flYAccel;
+    // current position (position is at the center of the object)
+    float m_flXPos;
+    float m_flYPos;
 
-	// acceleration applied last frame
-	float m_flXAccelLastFrame;
-	float m_flYAccelLastFrame;
+    // maximum velocity the object can have in either x/y
+    float m_flMaximumVelocity;
 
-	// current velocity (affected by acceleration changes)
-	float m_flXVelocity;
-	float m_flYVelocity;
+    // acceleration to be applied next frame
+    float m_flXAccel;
+    float m_flYAccel;
 
-	// rotation to apply this frame (in radians)
-	float m_flRotationDeltaNextFrame;
+    // acceleration applied last frame
+    float m_flXAccelLastFrame;
+    float m_flYAccelLastFrame;
 
-	// rotation which was applied last frame
-	float m_flRotationDeltaLastFrame;
+    // current velocity (affected by acceleration changes)
+    float m_flXVelocity;
+    float m_flYVelocity;
 
-	// total cumulative rotation that has been applied to this entity
-	float m_flAccumulatedRotation;
+    // rotation to apply this frame (in radians)
+    float m_flRotationDeltaNextFrame;
 
-	// radius to use for collisions, this is applied from the center of the object out
-	uint32 m_uCollisionRadius;
+    // rotation which was applied last frame
+    float m_flRotationDeltaLastFrame;
 
-	// bool to disable collision detection for this object
-	bool m_bDisableCollisions;
+    // total cumulative rotation that has been applied to this entity
+    float m_flAccumulatedRotation;
+
+    // radius to use for collisions, this is applied from the center of the object out
+    uint32 m_uCollisionRadius;
+
+    // bool to disable collision detection for this object
+    bool m_bDisableCollisions;
 };
 
 #endif // VECTORENTITY_H

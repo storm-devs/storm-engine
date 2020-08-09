@@ -1,9 +1,9 @@
 #ifndef _XI_UTILS_CONTAINER_H
 #define _XI_UTILS_CONTAINER_H
 
-#define UTILS_KEYS_QUANTITY	256
+#define UTILS_KEYS_QUANTITY 256
 
-#define UTILS_KEYS_DELAY_FOR_REPEAT	800
+#define UTILS_KEYS_DELAY_FOR_REPEAT 800
 
 #include "..\..\common_h\templates\array.h"
 #include "..\..\common_h\templates\string.h"
@@ -11,100 +11,112 @@
 
 enum InterfaceStringCurTokenType
 {
-	StrTokenType_End,
-	StrTokenType_Space,
-	StrTokenType_NextLine,
+    StrTokenType_End,
+    StrTokenType_Space,
+    StrTokenType_NextLine,
 
-	StrTokenType_common = 0xFFFFFFFE,
-	StrTokenType_unknown = 0xFFFFFFFF
+    StrTokenType_common = 0xFFFFFFFE,
+    StrTokenType_unknown = 0xFFFFFFFF
 };
 
 enum InterfaceSpecSymbolsCode
 {
-	SpecSymbol_left=1,
-	SpecSymbol_right,
-	SpecSymbol_up,
-	SpecSymbol_down,
-	SpecSymbol_back,
-	SpecSymbol_delete,
-	SpecSymbol_home,
-	SpecSymbol_end,
-	SpecSymbol_tab,
-	SpecSymbol_return,
-	SpecSymbol_escape
+    SpecSymbol_left = 1,
+    SpecSymbol_right,
+    SpecSymbol_up,
+    SpecSymbol_down,
+    SpecSymbol_back,
+    SpecSymbol_delete,
+    SpecSymbol_home,
+    SpecSymbol_end,
+    SpecSymbol_tab,
+    SpecSymbol_return,
+    SpecSymbol_escape
 };
 
 enum InterfaceTokenCode
 {
-	InterfaceToken_color,
-	InterfaceToken_file,
-	InterfaceToken_picture_list,
-	InterfaceToken_picture_name,
-	InterfaceToken_picture_cut_uv,
-	InterfaceToken_size,
-	InterfaceToken_rectUV,
-	InterfaceToken_pos,
-	InterfaceToken_text,
-	InterfaceToken_width,
-	InterfaceToken_class,
+    InterfaceToken_color,
+    InterfaceToken_file,
+    InterfaceToken_picture_list,
+    InterfaceToken_picture_name,
+    InterfaceToken_picture_cut_uv,
+    InterfaceToken_size,
+    InterfaceToken_rectUV,
+    InterfaceToken_pos,
+    InterfaceToken_text,
+    InterfaceToken_width,
+    InterfaceToken_class,
 
-	InterfaceToken_unknown = 0xFFFFFFFF
+    InterfaceToken_unknown = 0xFFFFFFFF
 };
 
 class CXI_UTILS
 {
-	struct KeyDescribe
-	{
-		int nAsyncKeyCode;
-		long nPressedState;
-	};
+    struct KeyDescribe
+    {
+        int nAsyncKeyCode;
+        long nPressedState;
+    };
 
-public:
-	CXI_UTILS();
-	~CXI_UTILS();
+  public:
+    CXI_UTILS();
+    ~CXI_UTILS();
 
-	void Init();
-	void Release();
+    void Init();
+    void Release();
 
-	void FrameUpdate();
+    void FrameUpdate();
 
-	// key input
-	static char GetKeyInput();
+    // key input
+    static char GetKeyInput();
 
-	// string processing
-	static void StringLeftClamp( char*& pcString );
-	static const char* StringGetTokenID( char*& pcString, char* pcBuffer, long nBufferSize );
-	static const char* StringGetTokenString( char*& pcString, char* pcBuffer, long nBufferSize );
-	static long StringGetTokenCode( const char* pcTokenID );
-	static DWORD StringGetColor( char* pcARGBString );
-	static void StringDoublicate( const char* pcSrc, char*& pcDst );
-	static void StringTwoLong( char* pcString, long & nLong1, long & nLong2 );
-	static long StringGetLong( char*& pcString );
-	static float StringGetFloat( char*& pcString );
-	static void StringFourFloat( char* pcString, float& f1, float& f2, float& f3, float& f4 );
-	static void StringFillStringArray( const char* pcString, array<string> & asStringsArray );
-	static long SplitStringByWidth( const char* pcText, long nFontID, float fFontScale, long nWidth, array<string>& asOutStr );
-	static InterfaceStringCurTokenType GetCurrentTokenIntoString( const char* pcStr ) {if(!pcStr) return StrTokenType_unknown; if(!pcStr[0]) return StrTokenType_End; if(pcStr[0]==0x20) return StrTokenType_Space; if(pcStr[0]=='\\' && (pcStr[1]=='n' || pcStr[1]=='N')) return StrTokenType_NextLine; return StrTokenType_common;}
+    // string processing
+    static void StringLeftClamp(char *&pcString);
+    static const char *StringGetTokenID(char *&pcString, char *pcBuffer, long nBufferSize);
+    static const char *StringGetTokenString(char *&pcString, char *pcBuffer, long nBufferSize);
+    static long StringGetTokenCode(const char *pcTokenID);
+    static DWORD StringGetColor(char *pcARGBString);
+    static void StringDoublicate(const char *pcSrc, char *&pcDst);
+    static void StringTwoLong(char *pcString, long &nLong1, long &nLong2);
+    static long StringGetLong(char *&pcString);
+    static float StringGetFloat(char *&pcString);
+    static void StringFourFloat(char *pcString, float &f1, float &f2, float &f3, float &f4);
+    static void StringFillStringArray(const char *pcString, array<string> &asStringsArray);
+    static long SplitStringByWidth(const char *pcText, long nFontID, float fFontScale, long nWidth,
+                                   array<string> &asOutStr);
+    static InterfaceStringCurTokenType GetCurrentTokenIntoString(const char *pcStr)
+    {
+        if (!pcStr)
+            return StrTokenType_unknown;
+        if (!pcStr[0])
+            return StrTokenType_End;
+        if (pcStr[0] == 0x20)
+            return StrTokenType_Space;
+        if (pcStr[0] == '\\' && (pcStr[1] == 'n' || pcStr[1] == 'N'))
+            return StrTokenType_NextLine;
+        return StrTokenType_common;
+    }
 
-	// attribute functions
-	static float GetByStrNumFromAttribute_Float( ATTRIBUTES* pA, const char* pStr, long num, float fDefValue );
+    // attribute functions
+    static float GetByStrNumFromAttribute_Float(ATTRIBUTES *pA, const char *pStr, long num, float fDefValue);
 
-	// vertex processing
-	static void WriteSquareToVertexBuffer( XI_ONETEX_VERTEX *pv, dword color, FXYRECT& uv, XYRECT& rect );
-	static void WriteSquareToVertexBuffer( XI_ONETEX_VERTEX *pv, dword color, FXYRECT& uv, long left,long top,long right,long bottom );
+    // vertex processing
+    static void WriteSquareToVertexBuffer(XI_ONETEX_VERTEX *pv, dword color, FXYRECT &uv, XYRECT &rect);
+    static void WriteSquareToVertexBuffer(XI_ONETEX_VERTEX *pv, dword color, FXYRECT &uv, long left, long top,
+                                          long right, long bottom);
 
-	static void PrintTextIntoWindow(VDX8RENDER* pRender,
-		long nFont, dword dwColor, long wAlignment, bool bShadow, float fScale,
-		long scrWidth, long scrHeight, long x, long y,
-		const char* pcString, long left,long top, long width,long height);
+    static void PrintTextIntoWindow(VDX8RENDER *pRender, long nFont, dword dwColor, long wAlignment, bool bShadow,
+                                    float fScale, long scrWidth, long scrHeight, long x, long y, const char *pcString,
+                                    long left, long top, long width, long height);
 
-protected:
-	static CXI_UTILS * pThis;
+  protected:
+    static CXI_UTILS *pThis;
 
-	bool m_bIsKeyPressed;
-	bool m_bFrameKeyPressedFlag;
-	bool m_bLang2;
-	KeyDescribe keys[UTILS_KEYS_QUANTITY];
+    bool m_bIsKeyPressed;
+    bool m_bFrameKeyPressedFlag;
+    bool m_bLang2;
+    KeyDescribe keys[UTILS_KEYS_QUANTITY];
 };
 
 #endif

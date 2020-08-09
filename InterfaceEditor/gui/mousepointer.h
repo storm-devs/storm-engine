@@ -5,17 +5,16 @@
 
 class EdMousePointer
 {
-public:
-	EdMousePointer();
-	~EdMousePointer();
+  public:
+    EdMousePointer();
+    ~EdMousePointer();
 
-protected:
+  protected:
+  public:
+    EdPoint m_pntPos;
 
-public:
-	EdPoint m_pntPos;
-
-	long m_idTexture;
-	EdPoint m_pntSize;
+    long m_idTexture;
+    EdPoint m_pntSize;
 };
 
 #endif

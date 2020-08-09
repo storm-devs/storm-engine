@@ -5,19 +5,19 @@
 
 class HASHHOLD
 {
-	DWORD * * pHashTable;
-	DWORD * pLineSize;
-	DWORD dwHashTableSize;
-public:
-	 HASHHOLD();
-	~HASHHOLD();
+    DWORD **pHashTable;
+    DWORD *pLineSize;
+    DWORD dwHashTableSize;
 
-	void  Release();
-	bool  Init(DWORD dwHashTableSize);
-	bool  Add(DWORD dwHashValue, DWORD dwHoldValue);
-	DWORD GetCodesNum(DWORD dwHashValue,DWORD * & pHashLine);
-	DWORD MakeHash(const char * string, bool bCaseIndependent = false);
-	
+  public:
+    HASHHOLD();
+    ~HASHHOLD();
+
+    void Release();
+    bool Init(DWORD dwHashTableSize);
+    bool Add(DWORD dwHashValue, DWORD dwHoldValue);
+    DWORD GetCodesNum(DWORD dwHashValue, DWORD *&pHashLine);
+    DWORD MakeHash(const char *string, bool bCaseIndependent = false);
 };
 
 #endif

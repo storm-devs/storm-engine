@@ -7,23 +7,23 @@
 #include <xtl.h>
 #endif
 
-
-#include "token.h"
 #include "data.h"
 #include "stack.h"
+#include "token.h"
 
 class INTERNAL_FUNCTIONS
 {
-	VSTACK * pStack;
-	TOKEN *  pToken;
-public:
-	 INTERNAL_FUNCTIONS();
-	~INTERNAL_FUNCTIONS();
+    VSTACK *pStack;
+    TOKEN *pToken;
 
-	void SetStackAndToken(VSTACK * pStack, TOKEN *  pToken);
-	DATA * CallIntFunction(char * func_name);
-	DATA * CallIntFunction(DWORD func_code);
-	DWORD  GetIntFunctionCode(char * func_name);
+  public:
+    INTERNAL_FUNCTIONS();
+    ~INTERNAL_FUNCTIONS();
+
+    void SetStackAndToken(VSTACK *pStack, TOKEN *pToken);
+    DATA *CallIntFunction(char *func_name);
+    DATA *CallIntFunction(DWORD func_code);
+    DWORD GetIntFunctionCode(char *func_name);
 };
 
 #endif

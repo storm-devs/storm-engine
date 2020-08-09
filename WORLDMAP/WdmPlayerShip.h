@@ -5,7 +5,7 @@
 //--------------------------------------------------------------------------------------------
 //	WdmPlayerShip
 //--------------------------------------------------------------------------------------------
-//	
+//
 //============================================================================================
 
 #ifndef _WdmPlayerShip_H_
@@ -13,51 +13,50 @@
 
 #include "WdmShip.h"
 
-class WdmPlayerShip : public WdmShip  
+class WdmPlayerShip : public WdmShip
 {
-//--------------------------------------------------------------------------------------------
-//Конструирование, деструктурирование
-//--------------------------------------------------------------------------------------------
-public:
-	WdmPlayerShip();
-	virtual ~WdmPlayerShip();
+    //--------------------------------------------------------------------------------------------
+    //Конструирование, деструктурирование
+    //--------------------------------------------------------------------------------------------
+  public:
+    WdmPlayerShip();
+    virtual ~WdmPlayerShip();
 
-	void PushOutFromIsland();
+    void PushOutFromIsland();
 
-	void SetActionRadius(float radius);
+    void SetActionRadius(float radius);
 
-	//Расчёты
-	virtual void Update(float dltTime);
-	virtual void LRender(VDX8RENDER * rs);
+    //Расчёты
+    virtual void Update(float dltTime);
+    virtual void LRender(VDX8RENDER *rs);
 
-	//Проверка при выходе из карты
-	bool ExitFromMap();
-	//Проверка на нахождении кораблика в шторме
-	long TestInStorm();
+    //Проверка при выходе из карты
+    bool ExitFromMap();
+    //Проверка на нахождении кораблика в шторме
+    long TestInStorm();
 
-	float GetAy();
+    float GetAy();
 
-	bool canSkip;
+    bool canSkip;
 
-protected:
-	//Переместить кораблик
-	virtual void Move(float dltTime);
+  protected:
+    //Переместить кораблик
+    virtual void Move(float dltTime);
 
-	virtual void Collide();
+    virtual void Collide();
 
-//--------------------------------------------------------------------------------------------
-//Инкапсуляция
-//--------------------------------------------------------------------------------------------
-private:
-	bool goForward;
-	float actionRadius;	
-	float stormEventTime;
+    //--------------------------------------------------------------------------------------------
+    //Инкапсуляция
+    //--------------------------------------------------------------------------------------------
+  private:
+    bool goForward;
+    float actionRadius;
+    float stormEventTime;
 };
 
 inline float WdmPlayerShip::GetAy()
 {
-	return ay;
+    return ay;
 }
 
 #endif
-

@@ -4,124 +4,139 @@
 #include "..\..\common.h"
 #include "..\Cannons\Cannon.h"
 
-#define INVALID_BORT_INDEX		0xFFFFFFFF
+#define INVALID_BORT_INDEX 0xFFFFFFFF
 
 class NetShip;
 class NetCannon;
 // ============================================================================
 // master class AIShipCannonController
-// Contain base virtual functions 
+// Contain base virtual functions
 // ============================================================================
 class NetShipCannonController : public NET_BASE
 {
-private:
-	NetShip			* pShip;
-	ATTRIBUTES		* pABaseShip;
+  private:
+    NetShip *pShip;
+    ATTRIBUTES *pABaseShip;
 
-	bool			bReload;						// we must start reload at next frame
-	bool			bNotEnoughBalls;				// if we haven't enough balls
-	bool			bTempFlag;
+    bool bReload;         // we must start reload at next frame
+    bool bNotEnoughBalls; // if we haven't enough balls
+    bool bTempFlag;
 
-	RS_RECT			rs;
+    RS_RECT rs;
 
-private:
-	struct AISHIP_BORT
-	{
-		string				sName;						// bort name(for compare with label name)
-		float				fFireZone;					// bort fire angle
-		float				fFireAngMin, fFireAngMax;	// bort height fire angle
-		float				fFireDir;					// bort fire direction
-		float				fOurBortFireHeight;			// bort fire height
-		float				fChargePercent;				// Recharge percent
-		float				fCosFireZone;
+  private:
+    struct AISHIP_BORT
+    {
+        string sName;                   // bort name(for compare with label name)
+        float fFireZone;                // bort fire angle
+        float fFireAngMin, fFireAngMax; // bort height fire angle
+        float fFireDir;                 // bort fire direction
+        float fOurBortFireHeight;       // bort fire height
+        float fChargePercent;           // Recharge percent
+        float fCosFireZone;
 
-		dword				dwNumDamagedCannons;
+        dword dwNumDamagedCannons;
 
-		// each frame parameters
-		float				fSpeedV0;				// current fire speed
-		float				fMaxFireDistance;		// maximum fire distance
-		//CVECTOR				vAngleVectors[2];		// fire cone (2d(x,z))
-		CVECTOR				vDirection;
+        // each frame parameters
+        float fSpeedV0;         // current fire speed
+        float fMaxFireDistance; // maximum fire distance
+        // CVECTOR				vAngleVectors[2];		// fire cone (2d(x,z))
+        CVECTOR vDirection;
 
-		array<NetCannon>	aCannons;				// cannons container for this bort 
+        array<NetCannon> aCannons; // cannons container for this bort
 
-		void ClearCharge() { fChargePercent = 0.0f; };
-		bool isCharged() { return fChargePercent >= 1.0f; };
-		bool isBortDamaged() { return dwNumDamagedCannons == aCannons.Size(); }
-		AISHIP_BORT() : aCannons(_FL_, 8), sName(8)
-		{
-			ClearCharge();
-			fOurBortFireHeight = 0.0f;
-		};
-		string operator == (const char *pStr)
-		{
-			Assert(pStr && pStr[0]);
-			return (stricmp(sName.GetBuffer(),pStr)==0);
-		}
-	};
+        void ClearCharge()
+        {
+            fChargePercent = 0.0f;
+        };
+        bool isCharged()
+        {
+            return fChargePercent >= 1.0f;
+        };
+        bool isBortDamaged()
+        {
+            return dwNumDamagedCannons == aCannons.Size();
+        }
+        AISHIP_BORT() : aCannons(_FL_, 8), sName(8)
+        {
+            ClearCharge();
+            fOurBortFireHeight = 0.0f;
+        };
+        string operator==(const char *pStr)
+        {
+            Assert(pStr && pStr[0]);
+            return (stricmp(sName.GetBuffer(), pStr) == 0);
+        }
+    };
 
-	// borts container
-		array<AISHIP_BORT>	aShipBorts;
+    // borts container
+    array<AISHIP_BORT> aShipBorts;
 
-	// update borts parameters
-		bool	UpdateParameters();			
+    // update borts parameters
+    bool UpdateParameters();
 
-		bool	ScanShipForCannons();
+    bool ScanShipForCannons();
 
-		bool	Fire2Position(dword dwBort, CVECTOR & vFirePos, float fFireHeight);
-	
-		float	GetSpeedV0();
+    bool Fire2Position(dword dwBort, CVECTOR &vFirePos, float fFireHeight);
 
-public:
-		dword	GetCannonsNum();
+    float GetSpeedV0();
 
-		float	GetFireDistance(bool bMaxFireDistance);
+  public:
+    dword GetCannonsNum();
 
-	// bort section
-		float	GetBortHeightAngle(long iBortIndex);
-		bool	isCanFireBort(dword dwBort, CVECTOR & vFirePos, float * pfZapasDistance = null);
-		dword	GetFirstFireBort(CVECTOR & vFirePos, float * pfZapasDistance = null);
-		bool	isHaveEnoughtBallsForBort(dword dwBortIdx);
-		dword	GetNextFireBort(dword dwPrevBort, CVECTOR & vFirePos, float * pfZapasDistance = null);
-		CVECTOR	GetBortDirection(dword dwBort);
-		dword	GetBestFireBortOnlyDistance(CVECTOR vFirePos, float fZapasDistance);
-		CVECTOR GetFirePos(CVECTOR & vFireDir);
-		CVECTOR GetFirePos(CVECTOR & vFireDir, float fDistance);
-		dword	GetBortIntactCannonsNum(dword dwBortIdx);
+    float GetFireDistance(bool bMaxFireDistance);
 
-	// fire test
-		bool	isCanFirePos(CVECTOR & vFirePos);		// is we can fire to position
-		//bool	isCanFire(AIShip * pEnemy);				// is we can fire to enemy ship	
-		bool	isCanFire(CVECTOR & vCamDir);			// is we can fire to camera direction
+    // bort section
+    float GetBortHeightAngle(long iBortIndex);
+    bool isCanFireBort(dword dwBort, CVECTOR &vFirePos, float *pfZapasDistance = null);
+    dword GetFirstFireBort(CVECTOR &vFirePos, float *pfZapasDistance = null);
+    bool isHaveEnoughtBallsForBort(dword dwBortIdx);
+    dword GetNextFireBort(dword dwPrevBort, CVECTOR &vFirePos, float *pfZapasDistance = null);
+    CVECTOR GetBortDirection(dword dwBort);
+    dword GetBestFireBortOnlyDistance(CVECTOR vFirePos, float fZapasDistance);
+    CVECTOR GetFirePos(CVECTOR &vFireDir);
+    CVECTOR GetFirePos(CVECTOR &vFireDir, float fDistance);
+    dword GetBortIntactCannonsNum(dword dwBortIdx);
 
-	// fire section
-		bool	Fire(CVECTOR & vFirePos);							// fire to position
-		//bool	Fire(AIShip * pEnemy);								// fire to ship
-		bool	Fire(CVECTOR & vFireCamPos, CVECTOR & vFireDir);	// manual fire
+    // fire test
+    bool isCanFirePos(CVECTOR &vFirePos); // is we can fire to position
+    // bool	isCanFire(AIShip * pEnemy);				// is we can fire to enemy ship
+    bool isCanFire(CVECTOR &vCamDir); // is we can fire to camera direction
 
-	// reload section
-		void	Unload();							// unload cannons 
-		void	Reload();							// set flag to reload
+    // fire section
+    bool Fire(CVECTOR &vFirePos); // fire to position
+    // bool	Fire(AIShip * pEnemy);								// fire to ship
+    bool Fire(CVECTOR &vFireCamPos, CVECTOR &vFireDir); // manual fire
 
-	// Cannon boom check
-		//void	CheckCannonsBoom(float fTmpCannonDamage, const CVECTOR & vPnt);
+    // reload section
+    void Unload(); // unload cannons
+    void Reload(); // set flag to reload
 
-	// execute/realize section
-		void	Execute(float fDeltaTime);
-		void	Realize(float fDeltaTime);
+    // Cannon boom check
+    // void	CheckCannonsBoom(float fTmpCannonDamage, const CVECTOR & vPnt);
 
-	// init section
-		bool	Init(ATTRIBUTES * _pABaseShip);
+    // execute/realize section
+    void Execute(float fDeltaTime);
+    void Realize(float fDeltaTime);
 
-		void	SetShip(NetShip * _pShip) { this->pShip = _pShip; }
-		NetShip	* GetShip() { return pShip; }
+    // init section
+    bool Init(ATTRIBUTES *_pABaseShip);
 
-	// default constructor/destructor
-		NetShipCannonController(NetShip *);
-		~NetShipCannonController();
+    void SetShip(NetShip *_pShip)
+    {
+        this->pShip = _pShip;
+    }
+    NetShip *GetShip()
+    {
+        return pShip;
+    }
 
-	static float fMaxCannonDamageDistance;
-	static float fMaxCannonDamageRadiusPoint;
+    // default constructor/destructor
+    NetShipCannonController(NetShip *);
+    ~NetShipCannonController();
+
+    static float fMaxCannonDamageDistance;
+    static float fMaxCannonDamageRadiusPoint;
 };
 
 #endif

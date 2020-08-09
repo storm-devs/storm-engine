@@ -1,70 +1,67 @@
 #include "DataBool.h"
-#include "..\..\icommon\memfile.h"
 #include "..\..\..\common_h\vmodule_api.h"
+#include "..\..\icommon\memfile.h"
 
-#pragma warning (disable : 4800)
+#pragma warning(disable : 4800)
 
 //конструктор/деструктор
-DataBool::DataBool ()
+DataBool::DataBool()
 {
-	Value = false;
+    Value = false;
 }
 
-DataBool::~DataBool ()
+DataBool::~DataBool()
 {
 }
 
 //Получить значение
-bool DataBool::GetValue ()
+bool DataBool::GetValue()
 {
-	return Value;
+    return Value;
 }
 
 //Установить значение
-void DataBool::SetValue (bool val)
+void DataBool::SetValue(bool val)
 {
-	Value = val;
+    Value = val;
 }
 
-void DataBool::Load (MemFile* File)
+void DataBool::Load(MemFile *File)
 {
-	DWORD dwValue = 0;
-	File->ReadType(dwValue);
-	SetValue (dwValue);
+    DWORD dwValue = 0;
+    File->ReadType(dwValue);
+    SetValue(dwValue);
 
-	static char AttribueName[128];
-	DWORD NameLength = 0;
-	File->ReadType(NameLength);
-	Assert (NameLength < 128);
-	File->Read(AttribueName, NameLength);
+    static char AttribueName[128];
+    DWORD NameLength = 0;
+    File->ReadType(NameLength);
+    Assert(NameLength < 128);
+    File->Read(AttribueName, NameLength);
 
-	SetName (AttribueName);
+    SetName(AttribueName);
 }
 
-
-void DataBool::SetName (const char* szName)
+void DataBool::SetName(const char *szName)
 {
-	//api->Trace("DataBool::SetName - '%s'", szName);
-	Name = szName;
+    // api->Trace("DataBool::SetName - '%s'", szName);
+    Name = szName;
 }
 
-const char* DataBool::GetName ()
+const char *DataBool::GetName()
 {
-	return Name.GetBuffer();
+    return Name.GetBuffer();
 }
 
-void DataBool::Write (MemFile* File)
+void DataBool::Write(MemFile *File)
 {
-	DWORD dwValue = GetValue();
-	File->WriteType(dwValue);
+    DWORD dwValue = GetValue();
+    File->WriteType(dwValue);
 
-
-	//save name
-	DWORD NameLength = Name.Len();
-	DWORD NameLengthPlusZero = NameLength+1;
-	File->WriteType(NameLengthPlusZero);
-	Assert (NameLength < 128);
-	File->Write(Name.GetBuffer(), NameLength);
-	File->WriteZeroByte();
+    // save name
+    DWORD NameLength = Name.Len();
+    DWORD NameLengthPlusZero = NameLength + 1;
+    File->WriteType(NameLengthPlusZero);
+    Assert(NameLength < 128);
+    File->Write(Name.GetBuffer(), NameLength);
+    File->WriteZeroByte();
 }
-

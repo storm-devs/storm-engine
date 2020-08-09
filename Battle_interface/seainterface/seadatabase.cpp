@@ -1,14 +1,12 @@
 #include "seadatabase.h"
 
-BISeaDatabase::BISeaDatabase() :
-	m_aImage(_FL),
-	m_aImgGroup(_FL)
+BISeaDatabase::BISeaDatabase() : m_aImage(_FL), m_aImgGroup(_FL)
 {
 }
 
 BISeaDatabase::~BISeaDatabase()
 {
-	Release();
+    Release();
 }
 
 void BISeaDatabase::Initialization()

@@ -5,23 +5,23 @@
 
 class Net : public ENTITY
 {
-public:
-	Net();
-	~Net();
+  public:
+    Net();
+    ~Net();
 
-	bool Init();
+    bool Init();
 
-	void Execute(dword dwDeltaTime);
-	void Realize(dword dwDeltaTime);
+    void Execute(dword dwDeltaTime);
+    void Realize(dword dwDeltaTime);
 
-	dword _cdecl ProcessMessage(MESSAGE & message);
-	dword AttributeChanged(ATTRIBUTES * pA);
+    dword _cdecl ProcessMessage(MESSAGE &message);
+    dword AttributeChanged(ATTRIBUTES *pA);
 
-private:
-	WSADATA WSAData;
+  private:
+    WSADATA WSAData;
 
-	bool WSAStartup(dword dwVerHi, dword dwVerLo);
-	bool WSACleanup();
+    bool WSAStartup(dword dwVerHi, dword dwVerLo);
+    bool WSACleanup();
 };
 
 #endif

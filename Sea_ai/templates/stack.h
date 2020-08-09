@@ -3,33 +3,41 @@
 
 #include "tcommon.h"
 
-template<class _Ty, class _A = allocator<_Ty> > class stack
+template <class _Ty, class _A = allocator<_Ty>> class stack
 {
-	_A	_Al;
-public:
-	stack(dword _dwAdd = 16) : _Al(_dwAdd)
-	{
-	}
+    _A _Al;
 
-	virtual ~stack() 
-	{
-	}
+  public:
+    stack(dword _dwAdd = 16) : _Al(_dwAdd)
+    {
+    }
 
-	inline _Ty & Top()
-	{
-		return (_Ty&)_Al.pElements[Size()-1];
-	}
+    virtual ~stack()
+    {
+    }
 
-	void Push(_Ty Item)
-	{
-		_Al.Reserve(Size() + 1);
-		(_Ty&)_Al.pElements[Size()] = Item;
-		_Al.IncSize(); 
-	}
+    inline _Ty &Top()
+    {
+        return (_Ty &)_Al.pElements[Size() - 1];
+    }
 
-	inline void Pop()	{ if (Size()) _Al.DecSize(); };
-	
-	inline dword Size()	{ return _Al.Size(); } 
+    void Push(_Ty Item)
+    {
+        _Al.Reserve(Size() + 1);
+        (_Ty &)_Al.pElements[Size()] = Item;
+        _Al.IncSize();
+    }
+
+    inline void Pop()
+    {
+        if (Size())
+            _Al.DecSize();
+    };
+
+    inline dword Size()
+    {
+        return _Al.Size();
+    }
 };
 
 #endif

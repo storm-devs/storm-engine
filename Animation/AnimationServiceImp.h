@@ -21,51 +21,49 @@ class AnimationImp;
 
 class AnimationServiceImp : public AnimationService
 {
-//--------------------------------------------------------------------------------------------
-//Конструирование, деструктурирование
-//--------------------------------------------------------------------------------------------
-public:
-	AnimationServiceImp();
-	virtual ~AnimationServiceImp();
-	
-	//Место исполнения
-	virtual dword RunSection();
-	//Функции исполнения
-	virtual void RunStart();
-	virtual void RunEnd();
-	//Создать анимацию для модели, удалять через delete
-	virtual Animation * CreateAnimation(const char * animationName);
+    //--------------------------------------------------------------------------------------------
+    //Конструирование, деструктурирование
+    //--------------------------------------------------------------------------------------------
+  public:
+    AnimationServiceImp();
+    virtual ~AnimationServiceImp();
 
-//--------------------------------------------------------------------------------------------
-//Функции для Animation
-//--------------------------------------------------------------------------------------------	
-	//Удалить анимацию (вызывается из деструктора)
-	void DeleteAnimation(AnimationImp * ani);
-	//Событие
-	void Event(const char * eventName);
+    //Место исполнения
+    virtual dword RunSection();
+    //Функции исполнения
+    virtual void RunStart();
+    virtual void RunEnd();
+    //Создать анимацию для модели, удалять через delete
+    virtual Animation *CreateAnimation(const char *animationName);
 
-//--------------------------------------------------------------------------------------------
-//Инкапсуляция
-//--------------------------------------------------------------------------------------------
-private:
-	//Загрузить анимацию
-	long LoadAnimation(const char * animationName);
-	//Загрузить из текущей секции пользовательские данные
-	void LoadUserData(INIFILE * ani, const char * sectionName, UserData & data, const char * animationName);
-	//Загрузить AN
-	bool LoadAN(const char * fname, AnimationInfo * info);
+    //--------------------------------------------------------------------------------------------
+    //Функции для Animation
+    //--------------------------------------------------------------------------------------------
+    //Удалить анимацию (вызывается из деструктора)
+    void DeleteAnimation(AnimationImp *ani);
+    //Событие
+    void Event(const char *eventName);
 
-	
-	AnimationInfo ** ainfo;
-	long numInfos;
+    //--------------------------------------------------------------------------------------------
+    //Инкапсуляция
+    //--------------------------------------------------------------------------------------------
+  private:
+    //Загрузить анимацию
+    long LoadAnimation(const char *animationName);
+    //Загрузить из текущей секции пользовательские данные
+    void LoadUserData(INIFILE *ani, const char *sectionName, UserData &data, const char *animationName);
+    //Загрузить AN
+    bool LoadAN(const char *fname, AnimationInfo *info);
 
-	AnimationImp ** animation;
-	long numAnimations;
+    AnimationInfo **ainfo;
+    long numInfos;
 
-	static char key[1024];
+    AnimationImp **animation;
+    long numAnimations;
+
+    static char key[1024];
 };
 
 //============================================================================================
 
 #endif
-

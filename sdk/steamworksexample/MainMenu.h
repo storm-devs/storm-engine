@@ -8,23 +8,23 @@
 #ifndef MAINMENU_H
 #define MAINMENU_H
 
-#include <string>
-#include <vector>
+#include "BaseMenu.h"
 #include "GameEngine.h"
 #include "SpaceWar.h"
-#include "BaseMenu.h"
 #include "SpaceWarClient.h"
+#include <string>
+#include <vector>
 
 class CMainMenu : public CBaseMenu<EClientGameState>
 {
-public:
-	// Constructor
-	CMainMenu( IGameEngine *pGameEngine );
+  public:
+    // Constructor
+    CMainMenu(IGameEngine *pGameEngine);
 
-	void SetupMenu();
+    void SetupMenu();
 
-private:
-	STEAM_CALLBACK( CMainMenu, OnParentalSettingsChanged, SteamParentalSettingsChanged_t );
+  private:
+    STEAM_CALLBACK(CMainMenu, OnParentalSettingsChanged, SteamParentalSettingsChanged_t);
 };
 
 #endif // MAINMENU_H

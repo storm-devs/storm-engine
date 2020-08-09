@@ -3,63 +3,62 @@
 
 #include "..\..\common.h"
 
-#define D3DRAINVERTEX_FORMAT		(D3DFVF_XYZ|D3DFVF_DIFFUSE)
+#define D3DRAINVERTEX_FORMAT (D3DFVF_XYZ | D3DFVF_DIFFUSE)
 
 typedef struct
 {
-	CVECTOR		vPos;
-	DWORD		dwColor;
+    CVECTOR vPos;
+    DWORD dwColor;
 } RAINVERTEX;
 
 typedef struct
 {
-	float		fWindFlaw,fWindSpeedJitter;
-	DWORD		dwTime;
-	CVECTOR		vPos;
-	CVECTOR		vAng;
+    float fWindFlaw, fWindSpeedJitter;
+    DWORD dwTime;
+    CVECTOR vPos;
+    CVECTOR vAng;
 } rainblock_t;
 
 class NetRain : public ENTITY
 {
-private:
-	ATTRIBUTES * pAWeather;
-	dword		dwRainMaxBlend, dwRainColor, dwRainR, dwRainG, dwRainB;
-	float		fDropLength, fRainWindSpeed, fRainSpeed, fWindPower, fWindAngle,
-				fRainJitter, fRainWindSpeedJitter;
-	
-	bool		bRainbowEnable;
-	long		iRainbowTex;
-	string		sRainbowTexture;
+  private:
+    ATTRIBUTES *pAWeather;
+    dword dwRainMaxBlend, dwRainColor, dwRainR, dwRainG, dwRainB;
+    float fDropLength, fRainWindSpeed, fRainSpeed, fWindPower, fWindAngle, fRainJitter, fRainWindSpeedJitter;
 
-	dword		dwRainTimeBlend;
-	dword		dwNumRainBlocks;
-	rainblock_t	*pRainBlocks;
+    bool bRainbowEnable;
+    long iRainbowTex;
+    string sRainbowTexture;
 
-	CVECTOR		vCamPos,vCamAng;
+    dword dwRainTimeBlend;
+    dword dwNumRainBlocks;
+    rainblock_t *pRainBlocks;
 
-	float		fRainHeight,fRainRadius;
-	dword		dwNumDrops;
-	VDX8RENDER	* pRS;
+    CVECTOR vCamPos, vCamAng;
 
-	long		iVertexBuffer;
+    float fRainHeight, fRainRadius;
+    dword dwNumDrops;
+    VDX8RENDER *pRS;
 
-	void	GenerateRandomDrop(CVECTOR *vPos);
-	void	GenerateRain();
-	void	InitialSomeBlockParameters(long iIdx);
-	void	Release();
+    long iVertexBuffer;
 
-public:
-	NetRain();
-	~NetRain();
+    void GenerateRandomDrop(CVECTOR *vPos);
+    void GenerateRain();
+    void InitialSomeBlockParameters(long iIdx);
+    void Release();
 
-	void	SetDevice();
-	bool	Init();
-	void	Realize(dword Delta_Time);
-	void	Execute(dword Delta_Time);
-	bool	CreateState(ENTITY_STATE_GEN * state_gen);
-	bool	LoadState(ENTITY_STATE * state);
-	void	ProcessMessage(dword iMsg,dword wParam,dword lParam);
-	dword	AttributeChanged(ATTRIBUTES * pAttribute);
+  public:
+    NetRain();
+    ~NetRain();
+
+    void SetDevice();
+    bool Init();
+    void Realize(dword Delta_Time);
+    void Execute(dword Delta_Time);
+    bool CreateState(ENTITY_STATE_GEN *state_gen);
+    bool LoadState(ENTITY_STATE *state);
+    void ProcessMessage(dword iMsg, dword wParam, dword lParam);
+    dword AttributeChanged(ATTRIBUTES *pAttribute);
 };
 
 #endif

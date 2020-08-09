@@ -1,6 +1,6 @@
 //========= Copyright © 1996-2008 Valve LLC, All rights reserved. ============
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================
@@ -12,8 +12,8 @@
 #include "stdafx.h"
 #include <stdio.h>
 #ifdef WIN32
-#include <varargs.h>
 #include <tchar.h>
+#include <varargs.h>
 #endif
 
 // TODO: reference any additional headers you need in STDAFX.H

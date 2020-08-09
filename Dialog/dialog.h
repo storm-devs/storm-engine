@@ -3,228 +3,276 @@
 
 #if defined(_WIN32) && !defined(_CRT_SECURE_NO_WARNINGS)
 #define _CRT_SECURE_NO_WARNINGS
-#endif 
+#endif
 
+#include "..\common_h\dx8render.h"
 #include "..\common_h\matrix.h"
 #include "..\common_h\vmodule_api.h"
-#include "..\common_h\dx8render.h"
 
-#include "..\common_h\templates\string.h"
 #include "..\common_h\templates\array.h"
+#include "..\common_h\templates\string.h"
 
-#define MAX_LINES				 5
-#define SCROLL_LINE_TIME		 100
-#define TILED_LINE_HEIGHT		 26
+#define MAX_LINES 5
+#define SCROLL_LINE_TIME 100
+#define TILED_LINE_HEIGHT 26
 #define SBL 6
-#define TICK_SOUND				 "interface\\ok.wav"
+#define TICK_SOUND "interface\\ok.wav"
 
-#define XI_TEX_FVF	(D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_TEX1|D3DFVF_TEXTUREFORMAT2)
+#define XI_TEX_FVF (D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2)
 struct XI_TEX_VERTEX
 {
-	CVECTOR pos;
-	float rhw;
-	DWORD color;
-	float u,v;
+    CVECTOR pos;
+    float rhw;
+    DWORD color;
+    float u, v;
 };
 
-#define BUTTON_STATE_UPENABLE	1
-#define BUTTON_STATE_DOWNENABLE	2
-#define BUTTON_STATE_UPLIGHT	4
-#define BUTTON_STATE_DOWNLIGHT	8
+#define BUTTON_STATE_UPENABLE 1
+#define BUTTON_STATE_DOWNENABLE 2
+#define BUTTON_STATE_UPLIGHT 4
+#define BUTTON_STATE_DOWNLIGHT 8
 
 class VSoundService;
 
 class DIALOG : public ENTITY
 {
-	static VDX8RENDER * RenderService;
-public:
-	 DIALOG();
-	~DIALOG();
-	
-	bool Init();
-	void Realize(dword Delta_Time);
-	dword AttributeChanged(ATTRIBUTES * pA);
-	dword _cdecl ProcessMessage(MESSAGE & message);
+    static VDX8RENDER *RenderService;
 
-	static void AddToStringArrayLimitedByWidth(const char* pcSrcText, long nFontID,float fScale,long nLimitWidth, array<string> & asOutTextList, array<long>* panPageIndices, long nPageSize);
+  public:
+    DIALOG();
+    ~DIALOG();
 
-private:
-	void EmergencyExit();
+    bool Init();
+    void Realize(dword Delta_Time);
+    dword AttributeChanged(ATTRIBUTES *pA);
+    dword _cdecl ProcessMessage(MESSAGE &message);
 
-	// Nikita data
-	string m_sTalkPersName;
+    static void AddToStringArrayLimitedByWidth(const char *pcSrcText, long nFontID, float fScale, long nLimitWidth,
+                                               array<string> &asOutTextList, array<long> *panPageIndices,
+                                               long nPageSize);
 
-	struct TextDescribe
-	{
-		VDX8RENDER* rs;
-		POINT offset;
-		long nWindowWidth;
-		long nFontID;
-		dword dwColor;
-		dword dwSelColor;
-		float fScale;
-		long nLineInterval;
-		array<string> asText;
-		long nStartIndex;
-		long nShowQuantity;
-		long nSelectLine;
+  private:
+    void EmergencyExit();
 
-		TextDescribe() : asText(_FL) {rs=0; nFontID=-1;}
-		virtual ~TextDescribe() {Release();}
-		virtual void Release() {if( rs && nFontID>=0 ) rs->UnloadFont(nFontID); nFontID = -1; asText.DelAll();}
-	};
+    // Nikita data
+    string m_sTalkPersName;
 
-	bool m_bDlgChanged;
-	void UpdateDlgTexts();
-	void UpdateDlgViewport();
+    struct TextDescribe
+    {
+        VDX8RENDER *rs;
+        POINT offset;
+        long nWindowWidth;
+        long nFontID;
+        dword dwColor;
+        dword dwSelColor;
+        float fScale;
+        long nLineInterval;
+        array<string> asText;
+        long nStartIndex;
+        long nShowQuantity;
+        long nSelectLine;
 
-	struct DlgTextDescribe : public TextDescribe
-	{
-		float fScrollTime;
-		array<long> anPageEndIndex;
+        TextDescribe() : asText(_FL)
+        {
+            rs = 0;
+            nFontID = -1;
+        }
+        virtual ~TextDescribe()
+        {
+            Release();
+        }
+        virtual void Release()
+        {
+            if (rs && nFontID >= 0)
+                rs->UnloadFont(nFontID);
+            nFontID = -1;
+            asText.DelAll();
+        }
+    };
 
-		DlgTextDescribe() : TextDescribe(),anPageEndIndex(_FL) {}
-		virtual ~DlgTextDescribe() {Release();}
-		virtual void Release() {TextDescribe::Release();}
-		void __declspec(dllexport) __cdecl ChangeText(const char* pcText);
-		void __declspec(dllexport) __cdecl Init(VDX8RENDER* pRS, D3DVIEWPORT9& vp, INIFILE* pIni);
-		long GetShowHeight();
-		void Show(long nY);
-		bool IsLastPage();
-		void PrevPage();
-		void NextPage();
-	};
-	DlgTextDescribe m_DlgText;
+    bool m_bDlgChanged;
+    void UpdateDlgTexts();
+    void UpdateDlgViewport();
 
-	struct DlgLinkDescribe : public TextDescribe
-	{
-		array<long> anLineEndIndex;
+    struct DlgTextDescribe : public TextDescribe
+    {
+        float fScrollTime;
+        array<long> anPageEndIndex;
 
-		long nEditLine;
-		long nEditVarIndex;
-		long nEditCharIndex;
-		float fCursorCurrentTime,fCursorVisibleTime, fCursorInvisibleTime;
-		DIALOG* pDlg;
+        DlgTextDescribe() : TextDescribe(), anPageEndIndex(_FL)
+        {
+        }
+        virtual ~DlgTextDescribe()
+        {
+            Release();
+        }
+        virtual void Release()
+        {
+            TextDescribe::Release();
+        }
+        void __declspec(dllexport) __cdecl ChangeText(const char *pcText);
+        void __declspec(dllexport) __cdecl Init(VDX8RENDER *pRS, D3DVIEWPORT9 &vp, INIFILE *pIni);
+        long GetShowHeight();
+        void Show(long nY);
+        bool IsLastPage();
+        void PrevPage();
+        void NextPage();
+    };
+    DlgTextDescribe m_DlgText;
 
-		DlgLinkDescribe() : TextDescribe(),anLineEndIndex(_FL) {pDlg=0;}
-		virtual ~DlgLinkDescribe() {Release();}
-		virtual void Release() {TextDescribe::Release();}
-		void __declspec(dllexport) __cdecl ChangeText(ATTRIBUTES* pALinks);
-		void __declspec(dllexport) __cdecl Init(VDX8RENDER* pRS, D3DVIEWPORT9& vp, INIFILE* pIni);
-		long GetShowHeight();
-		void Show(long nY);
-		void __declspec(dllexport) __cdecl ShowEditMode(long nX, long nY, long nTextIdx);
-		void SetDlg(DIALOG* _pDlg) {pDlg=_pDlg;}
-	};
-	DlgLinkDescribe m_DlgLinks;
+    struct DlgLinkDescribe : public TextDescribe
+    {
+        array<long> anLineEndIndex;
 
-	struct BackParameters
-	{
-		long m_idBackTex;
+        long nEditLine;
+        long nEditVarIndex;
+        long nEditCharIndex;
+        float fCursorCurrentTime, fCursorVisibleTime, fCursorInvisibleTime;
+        DIALOG *pDlg;
 
-		FRECT m_frLeftTopUV;
-		FRECT m_frRightTopUV;
-		FRECT m_frLeftBottomUV;
-		FRECT m_frRightBottomUV;
-		FRECT m_frLeftUV;
-		FRECT m_frRightUV;
-		FRECT m_frTopUV;
-		FRECT m_frBottomUV;
-		FRECT m_frCenterUV;
-		FRECT m_frDividerUV;
+        DlgLinkDescribe() : TextDescribe(), anLineEndIndex(_FL)
+        {
+            pDlg = 0;
+        }
+        virtual ~DlgLinkDescribe()
+        {
+            Release();
+        }
+        virtual void Release()
+        {
+            TextDescribe::Release();
+        }
+        void __declspec(dllexport) __cdecl ChangeText(ATTRIBUTES *pALinks);
+        void __declspec(dllexport) __cdecl Init(VDX8RENDER *pRS, D3DVIEWPORT9 &vp, INIFILE *pIni);
+        long GetShowHeight();
+        void Show(long nY);
+        void __declspec(dllexport) __cdecl ShowEditMode(long nX, long nY, long nTextIdx);
+        void SetDlg(DIALOG *_pDlg)
+        {
+            pDlg = _pDlg;
+        }
+    };
+    DlgLinkDescribe m_DlgLinks;
 
-		FRECT m_frBorderExt;
-		FRECT m_frBorderInt;
-		FRECT frBorderRect;
+    struct BackParameters
+    {
+        long m_idBackTex;
 
-		FRECT frCharacterNameRectLeftUV;
-		FRECT frCharacterNameRectRightUV;
-		FRECT frCharacterNameRectCenterUV;
-		FPOINT fpCharacterNameOffset;
-		float fCharacterNameRectHeight;
-		float fCharacterNameRectLeftWidth;
-		float fCharacterNameRectCenterWidth;
-		float fCharacterNameRectRightWidth;
+        FRECT m_frLeftTopUV;
+        FRECT m_frRightTopUV;
+        FRECT m_frLeftBottomUV;
+        FRECT m_frRightBottomUV;
+        FRECT m_frLeftUV;
+        FRECT m_frRightUV;
+        FRECT m_frTopUV;
+        FRECT m_frBottomUV;
+        FRECT m_frCenterUV;
+        FRECT m_frDividerUV;
 
-		bool bShowDivider;
-		float nDividerHeight;
-		float nDividerOffsetX;
-		long nDividerOffsetY;
-	};
-	BackParameters m_BackParams;
-	long m_idVBufBack;
-	long m_idIBufBack;
-	long m_nVQntBack;
-	long m_nIQntBack;
+        FRECT m_frBorderExt;
+        FRECT m_frBorderInt;
+        FRECT frBorderRect;
 
-	struct ButtonParameters
-	{
-		long m_idTexture;
+        FRECT frCharacterNameRectLeftUV;
+        FRECT frCharacterNameRectRightUV;
+        FRECT frCharacterNameRectCenterUV;
+        FPOINT fpCharacterNameOffset;
+        float fCharacterNameRectHeight;
+        float fCharacterNameRectLeftWidth;
+        float fCharacterNameRectCenterWidth;
+        float fCharacterNameRectRightWidth;
 
-		FRECT frUpNormalButtonUV;
-		FRECT frDownNormalButtonUV;
-		FRECT frUpLightButtonUV;
-		FRECT frDownLightButtonUV;
+        bool bShowDivider;
+        float nDividerHeight;
+        float nDividerOffsetX;
+        long nDividerOffsetY;
+    };
+    BackParameters m_BackParams;
+    long m_idVBufBack;
+    long m_idIBufBack;
+    long m_nVQntBack;
+    long m_nIQntBack;
 
-		FPOINT fpButtonSize;
+    struct ButtonParameters
+    {
+        long m_idTexture;
 
-		float fRightOffset;
-		float fTopOffset;
-		float fBottomOffset;
-	};
-	ButtonParameters m_ButtonParams;
-	long m_idVBufButton;
-	long m_idIBufButton;
-	long m_nVQntButton;
-	long m_nIQntButton;
-	dword m_dwButtonState;
+        FRECT frUpNormalButtonUV;
+        FRECT frDownNormalButtonUV;
+        FRECT frUpLightButtonUV;
+        FRECT frDownLightButtonUV;
 
-	long m_nCharNameTextFont;
-	dword m_dwCharNameTextColor;
-	float m_fCharNameTextScale;
-	FPOINT m_fpCharNameTextOffset;
+        FPOINT fpButtonSize;
 
-	long m_nScrBaseWidth;
-	long m_nScrBaseHeight;
-	static FRECT m_frScreenData;
+        float fRightOffset;
+        float fTopOffset;
+        float fBottomOffset;
+    };
+    ButtonParameters m_ButtonParams;
+    long m_idVBufButton;
+    long m_idIBufButton;
+    long m_nVQntButton;
+    long m_nIQntButton;
+    dword m_dwButtonState;
 
-	static float GetScrX( float fX ) {return fX*m_frScreenData.right + m_frScreenData.left;}
-	static float GetScrY( float fY ) {return fY*m_frScreenData.bottom + m_frScreenData.top;}
-	static float GetScrWidth( float fX ) {return fX*m_frScreenData.right;}
-	static float GetScrHeight( float fY ) {return fY*m_frScreenData.bottom;}
+    long m_nCharNameTextFont;
+    dword m_dwCharNameTextColor;
+    float m_fCharNameTextScale;
+    FPOINT m_fpCharNameTextOffset;
 
-	void __declspec(dllexport) __cdecl CreateBack();
-	void FillBack();
-	void FillDivider();
-	void DrawBack();
+    long m_nScrBaseWidth;
+    long m_nScrBaseHeight;
+    static FRECT m_frScreenData;
 
-	void CreateButtons();
-	void FillButtons();
-	void DrawButtons();
+    static float GetScrX(float fX)
+    {
+        return fX * m_frScreenData.right + m_frScreenData.left;
+    }
+    static float GetScrY(float fY)
+    {
+        return fY * m_frScreenData.bottom + m_frScreenData.top;
+    }
+    static float GetScrWidth(float fX)
+    {
+        return fX * m_frScreenData.right;
+    }
+    static float GetScrHeight(float fY)
+    {
+        return fY * m_frScreenData.bottom;
+    }
 
-	void LoadFromIni();
+    void __declspec(dllexport) __cdecl CreateBack();
+    void FillBack();
+    void FillDivider();
+    void DrawBack();
 
-	static void GetRectFromIni( INIFILE* ini, const char* pcSection, const char* pcKey, FRECT& frect );
-	static void GetPointFromIni( INIFILE* ini, const char* pcSection, const char* pcKey, FPOINT& fpoint );
+    void CreateButtons();
+    void FillButtons();
+    void DrawButtons();
 
-	VSoundService *snd;
-	ENTITY_ID charId, persId;
-	ENTITY_ID charMdl, persMdl;
-	D3DVIEWPORT9 textViewport;
+    void LoadFromIni();
 
-	long curSnd;
-	char soundName[256];
-	char charDefSnd[256];
+    static void GetRectFromIni(INIFILE *ini, const char *pcSection, const char *pcKey, FRECT &frect);
+    static void GetPointFromIni(INIFILE *ini, const char *pcSection, const char *pcKey, FPOINT &fpoint);
 
-	bool forceEmergencyClose;
-	char selectedLinkName[1024];
+    VSoundService *snd;
+    ENTITY_ID charId, persId;
+    ENTITY_ID charMdl, persMdl;
+    D3DVIEWPORT9 textViewport;
 
-	int  unfadeTime;
+    long curSnd;
+    char soundName[256];
+    char charDefSnd[256];
 
-	long play;
-	bool start;
+    bool forceEmergencyClose;
+    char selectedLinkName[1024];
 
-	bool bEditMode;
+    int unfadeTime;
+
+    long play;
+    bool start;
+
+    bool bEditMode;
 };
 
 #endif

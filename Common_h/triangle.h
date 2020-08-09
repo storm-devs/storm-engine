@@ -5,6 +5,6 @@
 
 struct TRIANGLE
 {
-	CVECTOR vrt[3];
+    CVECTOR vrt[3];
 };
 #endif

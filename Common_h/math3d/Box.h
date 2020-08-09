@@ -14,49 +14,42 @@
 ///Класс представления ориентированного по осям ящика
 class Box
 {
-public:
-	union
-	{
-		struct
-		{
-			///Позиция центра
-			Vector p;
-		};
-		struct
-		{
-			///Позиция центра
-			Vector pos;
-		};
-		struct
-		{
-			///Позиция центра
-			Vector c;
-		};
-		struct
-		{
-			///Позиция центра
-			Vector center;
-		};
-	};
-	union
-	{
-		struct
-		{
-			///Размер
-			Vector s;
-		};
-		struct
-		{
-			///Размер
-			Vector size;
-		};
-	};
-
-
+  public:
+    union {
+        struct
+        {
+            ///Позиция центра
+            Vector p;
+        };
+        struct
+        {
+            ///Позиция центра
+            Vector pos;
+        };
+        struct
+        {
+            ///Позиция центра
+            Vector c;
+        };
+        struct
+        {
+            ///Позиция центра
+            Vector center;
+        };
+    };
+    union {
+        struct
+        {
+            ///Размер
+            Vector s;
+        };
+        struct
+        {
+            ///Размер
+            Vector size;
+        };
+    };
 };
-
-
-
 
 #pragma pack(pop)
 

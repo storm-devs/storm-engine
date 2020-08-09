@@ -9,6 +9,6 @@
 
 #include <stdio.h>
 
-void  _cdecl trace(char * data_PTR,...);
+void _cdecl trace(char *data_PTR, ...);
 
 #endif

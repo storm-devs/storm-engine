@@ -1,44 +1,35 @@
 #ifndef _PARTICLE_DATA_FLOAT_H_
 #define _PARTICLE_DATA_FLOAT_H_
 
-
-#include <string.h>
-#include <stdarg.h>
-#include <stdio.h>
 #include "../../../common_h/exs.h"
 #include "../../../common_h/templates.h"
 #include "..\..\icommon\memfile.h"
-
-
+#include <stdarg.h>
+#include <stdio.h>
+#include <string.h>
 
 class DataFloat
 {
-  string Name;
+    string Name;
 
+    float Value;
 
-	float Value;
+  public:
+    //конструктор/деструктор
+    DataFloat();
+    virtual ~DataFloat();
 
-public:
+    //Получить значение
+    float GetValue();
 
-//конструктор/деструктор
-	DataFloat ();
-	virtual ~DataFloat ();
+    //Установить значение
+    void SetValue(float val);
 
-	//Получить значение
-	float GetValue ();
+    void Load(MemFile *File);
+    void Write(MemFile *File);
 
-	//Установить значение
-	void SetValue (float val);
-
-
-	void Load (MemFile* File);
-	void Write (MemFile* File);
-
-
-	void SetName (const char* szName);
-	const char* GetName ();
-
+    void SetName(const char *szName);
+    const char *GetName();
 };
-
 
 #endif

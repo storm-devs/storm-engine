@@ -1,18 +1,18 @@
 #include "node.h"
 
-EdNode::EdNode( EditorManager* pOwner )
+EdNode::EdNode(EditorManager *pOwner)
 {
 }
 
 EdNode::~EdNode()
 {
-	Release();
+    Release();
 }
 
 void EdNode::Release()
 {
 }
 
-void EdNode::Execute( float fDeltaTime )
+void EdNode::Execute(float fDeltaTime)
 {
 }

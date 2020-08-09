@@ -15,13 +15,12 @@
 
 class CSun : public CSpaceWarEntity
 {
-public:
-	// Constructor
-	CSun( IGameEngine *pGameEngine );
+  public:
+    // Constructor
+    CSun(IGameEngine *pGameEngine);
 
-	// Run a frame
-	void RunFrame();
-
+    // Run a frame
+    void RunFrame();
 };
 
 #endif // SUN_H
