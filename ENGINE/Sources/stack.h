@@ -7,15 +7,16 @@
 
 class VSTACK
 {
-	DATA * * pBlock;
-	long Block_Num;
-	long Block_Size;
-public:
-	 VSTACK();
-	~VSTACK();
-	void Push(DATA * block);
-	bool Pop(DATA * * pblock);
-	bool Read(DATA * * pblock);
-	void Release();
+    DATA **pBlock;
+    long Block_Num;
+    long Block_Size;
+
+  public:
+    VSTACK();
+    ~VSTACK();
+    void Push(DATA *block);
+    bool Pop(DATA **pblock);
+    bool Read(DATA **pblock);
+    void Release();
 };
 #endif

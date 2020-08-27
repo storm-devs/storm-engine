@@ -1,46 +1,42 @@
 #ifndef _GEOMETRY_CACHE_
 #define _GEOMETRY_CACHE_
 
-#include "..\..\common_h\vapi.h"
 #include "..\..\common_h\geometry.h"
 #include "..\..\common_h\geos.h"
 #include "..\..\common_h\templates.h"
-
+#include "..\..\common_h\vapi.h"
 
 class IGMXScene;
 
 class GeomCache
 {
-	
-	VGEOMETRY* pGS;
 
-	struct CachedGeometry
-	{
-		GEOS* pGeom;
-		string FileName;
-	};
+    VGEOMETRY *pGS;
 
-	array<CachedGeometry> Cache;
+    struct CachedGeometry
+    {
+        GEOS *pGeom;
+        string FileName;
+    };
 
-public:
+    array<CachedGeometry> Cache;
 
-//Конструктор/деструктор
-	GeomCache ();
-	~GeomCache ();
+  public:
+    //Конструктор/деструктор
+    GeomCache();
+    ~GeomCache();
 
-//Положить модель в кэш
-	void CacheModel (const char* FileName);
+    //Положить модель в кэш
+    void CacheModel(const char *FileName);
 
-//Сбросить кэш
-	void ResetCache ();
+    //Сбросить кэш
+    void ResetCache();
 
-//Взять модель из кэша
-	GEOS* GetModel (const char* FileName);
+    //Взять модель из кэша
+    GEOS *GetModel(const char *FileName);
 
-//Проверить существует ли такая модель в кэше
-	bool ValidatePointer (GEOS* pModel);
-
+    //Проверить существует ли такая модель в кэше
+    bool ValidatePointer(GEOS *pModel);
 };
-
 
 #endif

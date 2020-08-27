@@ -8,27 +8,27 @@ class CXI_IMAGE;
 
 class GIEditor
 {
-public:
-	GIEditor(XINTERFACE* pInterface);
-	~GIEditor();
+  public:
+    GIEditor(XINTERFACE *pInterface);
+    ~GIEditor();
 
-	void Release();
+    void Release();
 
-	void Render();
-	bool MakeControl();
+    void Render();
+    bool MakeControl();
 
-	bool IsShowMode();
-	void MakeShowMode(bool bShow);
+    bool IsShowMode();
+    void MakeShowMode(bool bShow);
 
-	void SetEditNode(CINODE* pNode);
+    void SetEditNode(CINODE *pNode);
 
-protected:
-	XINTERFACE* m_pGIOwner;
-	bool m_bShowMode;
-	CINODE* m_pEditableNode;
-	float m_fLastKeyPressTime;
+  protected:
+    XINTERFACE *m_pGIOwner;
+    bool m_bShowMode;
+    CINODE *m_pEditableNode;
+    float m_fLastKeyPressTime;
 
-	CXI_IMAGE* m_pImageBack;
+    CXI_IMAGE *m_pImageBack;
 };
 
 #endif

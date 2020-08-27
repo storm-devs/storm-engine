@@ -8,37 +8,37 @@
 //	Експорт классов для Storm engine v2.0
 //============================================================================================
 
-#include "Location.h"
+#include "Blood.h"
 #include "Character.h"
-#include "Player.h"
-#include "LocationCamera.h"
-#include "NPCharacter.h"
+#include "CharacterAnimationKipper.h"
+#include "CharactersGroups.h"
 #include "Fader.h"
 #include "Grass.h"
 #include "Lights.h"
-#include "WideScreen.h"
-#include "CharacterAnimationKipper.h"
-#include "LocationEffects.h"
-#include "CharactersGroups.h"
-#include "LocEagle.h"
 #include "Lizards.h"
-#include "LocationScriptLib.h"
-#include "LocRats.h"
 #include "LocCrabs.h"
+#include "LocEagle.h"
+#include "LocRats.h"
+#include "Location.h"
+#include "LocationCamera.h"
+#include "LocationEffects.h"
+#include "LocationScriptLib.h"
 #include "ModelRealizer.h"
-#include "Blood.h"
+#include "NPCharacter.h"
+#include "Player.h"
+#include "WideScreen.h"
 
-#define	LOCATION_SCRIPT_VERSION		57853
+#define LOCATION_SCRIPT_VERSION 57853
 //#define	LOCATION_SCRIPT_VERSION		54128
 
 class LocationP : public ENTITY
 {
-public:
-	LocationP();
-	~LocationP();
+  public:
+    LocationP();
+    ~LocationP();
 
-	bool Init();
-	void Execute(dword dwDeltaTime);
+    bool Init();
+    void Execute(dword dwDeltaTime);
 };
 
 LocationP::LocationP()
@@ -51,12 +51,13 @@ LocationP::~LocationP()
 
 bool LocationP::Init()
 {
-	return true;
+    return true;
 }
 
 void LocationP::Execute(dword dwDeltaTime)
 {
-	if (dwDeltaTime != LOCATION_SCRIPT_VERSION) throw;
+    if (dwDeltaTime != LOCATION_SCRIPT_VERSION)
+        throw;
 }
 
 //============================================================================================

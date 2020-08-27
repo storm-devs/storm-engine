@@ -6,18 +6,18 @@
 // $NoKeywords: $
 //=============================================================================
 
-#include "stdafx.h"
 #include "SpaceWarEntity.h"
+#include "stdafx.h"
 #include "stdlib.h"
 #include <math.h>
 
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
-CSpaceWarEntity::CSpaceWarEntity( IGameEngine *pGameEngine, uint32 uCollisionRadius, bool bAffectedByGravity ) 
-	: CVectorEntity( pGameEngine, uCollisionRadius )
+CSpaceWarEntity::CSpaceWarEntity(IGameEngine *pGameEngine, uint32 uCollisionRadius, bool bAffectedByGravity)
+    : CVectorEntity(pGameEngine, uCollisionRadius)
 {
-	m_bAffectedByGravity = bAffectedByGravity;
+    m_bAffectedByGravity = bAffectedByGravity;
 }
 
 //-----------------------------------------------------------------------------
@@ -26,28 +26,28 @@ CSpaceWarEntity::CSpaceWarEntity( IGameEngine *pGameEngine, uint32 uCollisionRad
 void CSpaceWarEntity::RunFrame()
 {
 
-	if ( m_bAffectedByGravity )
-	{
-		float xAccel = GetXAcceleration();
-		float yAccel = GetYAcceleration();
+    if (m_bAffectedByGravity)
+    {
+        float xAccel = GetXAcceleration();
+        float yAccel = GetYAcceleration();
 
-		// Ships are also affected by the suns gravity, compute that here, sun is always at the center of the screen
-		float xPosSun = (float)m_pGameEngine->GetViewportWidth()/2;
-		float yPosSun = (float)m_pGameEngine->GetViewportHeight()/2;
+        // Ships are also affected by the suns gravity, compute that here, sun is always at the center of the screen
+        float xPosSun = (float)m_pGameEngine->GetViewportWidth() / 2;
+        float yPosSun = (float)m_pGameEngine->GetViewportHeight() / 2;
 
-		float distanceToSun = (float)sqrt( pow( xPosSun - GetXPos(), 2 ) + pow( yPosSun - GetYPos(), 2 ) );
-		float distancePower = (float)pow( distanceToSun, 2.0f ); // gravity power falls off exponentially
-		float factor = MIN( 5200000.0f / distancePower, 150.0f ); // arbitrary value for power of gravity
+        float distanceToSun = (float)sqrt(pow(xPosSun - GetXPos(), 2) + pow(yPosSun - GetYPos(), 2));
+        float distancePower = (float)pow(distanceToSun, 2.0f);  // gravity power falls off exponentially
+        float factor = MIN(5200000.0f / distancePower, 150.0f); // arbitrary value for power of gravity
 
-		float xDirection = (GetXPos() - xPosSun)/distanceToSun;
-		float yDirection = (GetYPos() - yPosSun)/distanceToSun;
+        float xDirection = (GetXPos() - xPosSun) / distanceToSun;
+        float yDirection = (GetYPos() - yPosSun) / distanceToSun;
 
-		xAccel -= factor * xDirection;
-		yAccel -= factor * yDirection;
+        xAccel -= factor * xDirection;
+        yAccel -= factor * yDirection;
 
-		// Set updated acceleration
-		SetAcceleration( xAccel, yAccel );
-	}
+        // Set updated acceleration
+        SetAcceleration(xAccel, yAccel);
+    }
 
-	CVectorEntity::RunFrame();
+    CVectorEntity::RunFrame();
 }

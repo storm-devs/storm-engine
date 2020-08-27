@@ -6,7 +6,7 @@ EditorManager::EditorManager()
 
 EditorManager::~EditorManager()
 {
-	Release();
+    Release();
 }
 
 void EditorManager::Release()
@@ -17,6 +17,6 @@ void EditorManager::Init()
 {
 }
 
-void EditorManager::Execute( float fDeltaTime )
+void EditorManager::Execute(float fDeltaTime)
 {
 }

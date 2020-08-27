@@ -6,233 +6,248 @@
 #include "FirePlace.h"
 #include "ShipLights.h"
 
-#define DELTA_TIME(x)			((x) * 0.001f)
-#define DELTA_TIME_ROTATE(x)	((x) * 1.0f / 10.0f)
+#define DELTA_TIME(x) ((x)*0.001f)
+#define DELTA_TIME_ROTATE(x) ((x)*1.0f / 10.0f)
 
-#define MAX_STRENGTH		16
-#define STRENGTH_MAIN		0
-#define RESERVED_STRENGTH	1
+#define MAX_STRENGTH 16
+#define STRENGTH_MAIN 0
+#define RESERVED_STRENGTH 1
 
-#define MAX_KEEL_POINTS		5
-#define TOPMAST_BEGIN		100		// ?????? ????????? ?????? (???? ??
+#define MAX_KEEL_POINTS 5
+#define TOPMAST_BEGIN 100 // ?????? ????????? ?????? (???? ??
 
 class NetShipCannonController;
 class NetTouch;
 class NetCannon;
 class NetShip : public SHIP_BASE
 {
-protected:
+  protected:
+    // struct section
+    struct mast_t
+    {
+        NODE *pNode;        // node pointer in model
+        CVECTOR vSrc, vDst; // src and dest vectors
+        long iMastNum;      // mast number
+        bool bBroken;       // if mast is broken then pNode = 0
+        float fDamage;
+    };
 
-// struct section
-struct mast_t
-{
-	NODE		* pNode;				// node pointer in model
-	CVECTOR		vSrc, vDst;			// src and dest vectors
-	long		iMastNum;			// mast number
-	bool		bBroken;			// if mast is broken then pNode = 0
-	float		fDamage;
-};
+    struct hull_t
+    {
+        NODE *pNode;        // node pointer in model
+        CVECTOR vSrc, vDst; // src and dest vectors
+        long iHullNum;      // hull detail number
+        bool bBroken;       // if hull detail is broken then pNode = 0
+        float fDamage;
+    };
 
-struct hull_t
-{
-	NODE		* pNode;			// node pointer in model
-	CVECTOR		vSrc, vDst;			// src and dest vectors
-	long		iHullNum;			// hull detail number
-	bool		bBroken;			// if hull detail is broken then pNode = 0
-	float		fDamage;
-};
+    struct ship_point_t
+    {
+        float fSpeed;
+        float fGravity; // acceleration
+        float fExpulsiveForce;
+        float fY;
+        bool bUnderWater;
+    };
 
-struct ship_point_t
-{
-	float	fSpeed;
-	float	fGravity;			// acceleration
-	float	fExpulsiveForce;
-	float	fY;
-	bool	bUnderWater;
-};
+    struct ship_curve_t
+    {
+        Curve5 curve;
+        long iTime;
+        CVECTOR vTime[5];
+    };
 
-struct ship_curve_t
-{
-	Curve5	curve;
-	long	iTime;
-	CVECTOR	vTime[5];
-};
+    struct can_fire_t
+    {
+        NetShip *pShip;
+        NetCannon *pFortCannon;
+        float fDistance;
 
-struct can_fire_t
-{
-	NetShip		* pShip;
-	NetCannon	* pFortCannon;
-	float		fDistance;
+        bool operator<(can_fire_t &other)
+        {
+            return fDistance < other.fDistance;
+        };
+    };
 
-	bool operator < (can_fire_t & other) { return fDistance < other.fDistance; };
-};
+    long iLastMsgServerTime;
+    ship_curve_t curvePosition;
+    ship_curve_t curveSpeed;
 
-	long			iLastMsgServerTime;
-	ship_curve_t	curvePosition;
-	ship_curve_t	curveSpeed;
+    // init parameters
+    string sShipName;
+    long iShipPriority;
 
-// init parameters
-	string			sShipName;
-	long			iShipPriority;
+    NetTouch *pNetTouch;
 
-	NetTouch		* pNetTouch;
+    // entity_id section
+    ENTITY_ID model_id, sphere[36];
+    ENTITY_ID sail_id, rope_id, flag_id, cannon_id, vant_id, touch_id, sea_id, blots_id;
 
-// entity_id section
-	ENTITY_ID		model_id, sphere[36];
-	ENTITY_ID		sail_id, rope_id, flag_id, cannon_id,
-					vant_id, touch_id, sea_id, blots_id;
+    static SEA_BASE *pSea;
+    static ISLAND_BASE *pIsland;
 
-	static SEA_BASE			* pSea;
-	static ISLAND_BASE		* pIsland;
+    // Ships lights static
+    IShipLights *pShipsLights;
 
-// Ships lights static
-	IShipLights			* pShipsLights;
+    // Fire places
+    array<FirePlace> aFirePlaces;
 
-// Fire places 
-	array<FirePlace>	aFirePlaces;
+    // temporary used
+    ship_point_t ShipPoints[16][16];
 
-// temporary used
-	ship_point_t	ShipPoints[16][16];
+    // executed parameters
+    CVECTOR vSpeedAccel;
+    ship_t SP;
+    CVECTOR vPos, vAng;
+    float fSailState;
+    float fWaterLine;
+    bool bDead, bVisible;
+    CVECTOR vDeadDir, vCurDeadDir;
+    CVECTOR vKeelContour[MAX_KEEL_POINTS];
+    long iNumMasts;
+    long iNumHulls;
+    mast_t *pMasts;
+    hull_t *pHulls;
+    array<dword> aMastFalls;
+    array<NetShip *> aShips;
+    bool bShip2Strand;
+    bool bMounted;
+    bool bKeelContour;
+    CVECTOR vOldAng, vOldPos;
+    bool bServerShip;
 
-// executed parameters
-	CVECTOR			vSpeedAccel;
-	ship_t			SP;
-	CVECTOR			vPos, vAng;
-	float			fSailState;
-	float			fWaterLine;
-	bool			bDead, bVisible;
-	CVECTOR			vDeadDir, vCurDeadDir;
-	CVECTOR			vKeelContour[MAX_KEEL_POINTS];
-	long			iNumMasts;
-	long			iNumHulls; 
-	mast_t			* pMasts;
-	hull_t			* pHulls;
-	array<dword>	aMastFalls;
-	array<NetShip*>	aShips;
-	bool			bShip2Strand;
-	bool			bMounted;
-	bool			bKeelContour;
-	CVECTOR			vOldAng, vOldPos;
-	bool			bServerShip;
+    float fRockingY, fRockingAZ, fRockingFactor;
 
-	float			fRockingY, fRockingAZ, fRockingFactor;
+    // fast turn perk parameters
+    bool bPerkTurnActive;
+    float fInitialPerkAngle, fResultPerkAngle;
 
-	// fast turn perk parameters
-	bool			bPerkTurnActive;
-	float			fInitialPerkAngle, fResultPerkAngle;
+    STRENGTH Strength[MAX_STRENGTH];
 
-	STRENGTH		Strength[MAX_STRENGTH];
+    DTimer dtMastTrace, dtUpdateParameters;
 
-	DTimer			dtMastTrace, dtUpdateParameters;
+    // cannons
+    NetShipCannonController *pCannonController;
 
-	// cannons
-	NetShipCannonController * pCannonController;
+    // executed functions
+    CVECTOR ShipRocking(float dtime); //
+    bool ApplyStrength(float dtime, bool bCollision);
+    bool CalculateNewSpeedVector(CVECTOR *Speed, CVECTOR *Rotate);
+    float GetImmersion(); //
+    void CheckShip2Strand(float fDeltaTime);
+    void MastFall(mast_t *pM);
+    void MastFallChild(mast_t *pM);
+    void HullFall(hull_t *pM);
 
-// executed functions
-	CVECTOR		ShipRocking(float dtime);				// 
-	bool		ApplyStrength(float dtime, bool bCollision);
-	bool		CalculateNewSpeedVector(CVECTOR *Speed, CVECTOR *Rotate);
-	float		GetImmersion();						//
-	void		CheckShip2Strand(float fDeltaTime);							
-	void		MastFall(mast_t * pM);
-	void 		MastFallChild(mast_t * pM);
-	void		HullFall(hull_t * pM);
+    CMatrix UpdateModelMatrix();
 
-	CMatrix		UpdateModelMatrix();
-	
-	void		UpdateCurves(long iMsgServerTime, const CVECTOR & vPos, const CVECTOR & vSpeed);
+    void UpdateCurves(long iMsgServerTime, const CVECTOR &vPos, const CVECTOR &vSpeed);
 
-// init section
-	void		ScanShipForFirePlaces();
-	void		LoadPositionFromAttributes();
-	bool		IsCanPlace(CVECTOR & vNewPos);
-	bool		LoadShipParameters();
-	void		CalcRealBoxSize();
+    // init section
+    void ScanShipForFirePlaces();
+    void LoadPositionFromAttributes();
+    bool IsCanPlace(CVECTOR &vNewPos);
+    bool LoadShipParameters();
+    void CalcRealBoxSize();
 
-	void		SetDead();
-	bool		isVisible() { return bVisible; };
+    void SetDead();
+    bool isVisible()
+    {
+        return bVisible;
+    };
 
-public:
+  public:
+    virtual ~NetShip();
+    NetShip();
 
-	virtual ~NetShip();
-	NetShip();
+    float GetMaxSpeedZ();
+    float GetMaxSpeedY();
+    float GetWindAgainst();
+    long AddStrength(STRENGTH *strength);
+    bool DelStrength(long iIdx);
 
-	float		GetMaxSpeedZ();
-	float		GetMaxSpeedY();
-	float 		GetWindAgainst();
-	long		AddStrength(STRENGTH *strength);
-	bool		DelStrength(long iIdx);
-	
-	BOOL		BuildContour(CVECTOR * vContour, long &iNumVContour);
-	bool		BuildMasts();
-	bool		BuildHulls();
+    BOOL BuildContour(CVECTOR *vContour, long &iNumVContour);
+    bool BuildMasts();
+    bool BuildHulls();
 
-	bool		Move(DWORD DeltaTime, bool bCollision);
-	BOOL		TouchMove(DWORD DeltaTime, TOUCH_PARAMS *pTPOld, TOUCH_PARAMS *pTPNew);
+    bool Move(DWORD DeltaTime, bool bCollision);
+    BOOL TouchMove(DWORD DeltaTime, TOUCH_PARAMS *pTPOld, TOUCH_PARAMS *pTPNew);
 
-	void		LoadServices();
+    void LoadServices();
 
-// inherit functions SHIP_BASE
-	bool			bSetLightAndFog;
-	dword			dwSaveAmbient, dwSaveFogColor;
-	D3DLIGHT9		saveLight;
+    // inherit functions SHIP_BASE
+    bool bSetLightAndFog;
+    dword dwSaveAmbient, dwSaveFogColor;
+    D3DLIGHT9 saveLight;
 
-	virtual void	SetLightAndFog(bool bSetLight);
-	virtual void	RestoreLightAndFog();
-	
-	virtual void	SetSpeed(float fSpeed);
-	virtual float	GetSpeed();
+    virtual void SetLightAndFog(bool bSetLight);
+    virtual void RestoreLightAndFog();
 
-	virtual void	SetRotate(float fRotSpeed);
-	virtual float	GetRotate();
+    virtual void SetSpeed(float fSpeed);
+    virtual float GetSpeed();
 
-	virtual float	GetBrakingDistance(float * pfTime = 0);
-	virtual float	GetRotationAngle(float * pfTime = 0);
+    virtual void SetRotate(float fRotSpeed);
+    virtual float GetRotate();
 
-	virtual float 	GetCurrentSpeed();
+    virtual float GetBrakingDistance(float *pfTime = 0);
+    virtual float GetRotationAngle(float *pfTime = 0);
 
-	virtual void	SetLights();
-	virtual void	UnSetLights();
-	virtual void	Fire(const CVECTOR & vPos);
+    virtual float GetCurrentSpeed();
 
-	virtual void	SetFixedSpeed(bool bSetFixed, float fFixedSpeed) {};
+    virtual void SetLights();
+    virtual void UnSetLights();
+    virtual void Fire(const CVECTOR &vPos);
 
-// inherit functions COLLISION_OBJECT
-	virtual float Trace(const CVECTOR &src, const CVECTOR &dst);
-	virtual bool Clip(const PLANE *planes, long nplanes, const CVECTOR &center, float radius, ADD_POLYGON_FUNC addpoly) { return false; };
+    virtual void SetFixedSpeed(bool bSetFixed, float fFixedSpeed){};
 
-	virtual const char * GetCollideMaterialName() { return 0; };
-	virtual bool GetCollideTriangle(TRIANGLE &triangle) { return false; };
+    // inherit functions COLLISION_OBJECT
+    virtual float Trace(const CVECTOR &src, const CVECTOR &dst);
+    virtual bool Clip(const PLANE *planes, long nplanes, const CVECTOR &center, float radius, ADD_POLYGON_FUNC addpoly)
+    {
+        return false;
+    };
 
-// inherit functions CANNON_TRACE_BASE
-    float	Cannon_Trace(long iBallOwner, const CVECTOR &src, const CVECTOR &dst);
+    virtual const char *GetCollideMaterialName()
+    {
+        return 0;
+    };
+    virtual bool GetCollideTriangle(TRIANGLE &triangle)
+    {
+        return false;
+    };
 
-	ATTRIBUTES *	AP();
+    // inherit functions CANNON_TRACE_BASE
+    float Cannon_Trace(long iBallOwner, const CVECTOR &src, const CVECTOR &dst);
 
-// inherit functions VAI_OBJBASE
-	CMatrix *	GetMatrix();
-	void		SetMatrix(CMatrix & mtx);
-	MODEL *		GetModel();
-	ENTITY_ID	GetModelEID();
-	CVECTOR		GetPos();
-	CVECTOR		GetAng();
-	CVECTOR		GetBoxSize();
+    ATTRIBUTES *AP();
 
-	void		SetPos(CVECTOR & vNewPos);
+    // inherit functions VAI_OBJBASE
+    CMatrix *GetMatrix();
+    void SetMatrix(CMatrix &mtx);
+    MODEL *GetModel();
+    ENTITY_ID GetModelEID();
+    CVECTOR GetPos();
+    CVECTOR GetAng();
+    CVECTOR GetBoxSize();
 
-	bool		Mount();
+    void SetPos(CVECTOR &vNewPos);
 
-	bool		isDead() { return bDead; };
+    bool Mount();
 
-// inherit functions ENTITY
-	bool	Init();
-	void	Realize(dword Delta_Time);
-	void	Execute(dword Delta_Time);
-	dword _cdecl ProcessMessage(MESSAGE & message);
-	dword	AttributeChanged(ATTRIBUTES * pAttribute);
+    bool isDead()
+    {
+        return bDead;
+    };
 
-	void Save(CSaveLoad * pSL) {};
-	void Load(CSaveLoad * pSL) {};	
+    // inherit functions ENTITY
+    bool Init();
+    void Realize(dword Delta_Time);
+    void Execute(dword Delta_Time);
+    dword _cdecl ProcessMessage(MESSAGE &message);
+    dword AttributeChanged(ATTRIBUTES *pAttribute);
+
+    void Save(CSaveLoad *pSL){};
+    void Load(CSaveLoad *pSL){};
 };
 
 #endif

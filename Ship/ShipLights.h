@@ -1,145 +1,148 @@
 #ifndef SHIPLIGHTS_HPP
 #define SHIPLIGHTS_HPP
 
-#include "..\common_h\dx8render.h"
 #include "..\common_h\ShipLights.h"
+#include "..\common_h\dx8render.h"
 #include "..\common_h\sea_base.h"
 
-#include "..\common_h\templates\string.h"
 #include "..\common_h\templates\array.h"
 #include "..\common_h\templates\dtimer.h"
+#include "..\common_h\templates\string.h"
 
 class ShipLights : public IShipLights
 {
-private:
-	struct Color
-	{
-		float	r, g, b, a;
+  private:
+    struct Color
+    {
+        float r, g, b, a;
 
-		friend Color operator * (const Color & c, float fValue)
-		{
-			Color cc;
-			
-			cc.r = c.r * fValue;
-			cc.g = c.g * fValue;
-			cc.b = c.b * fValue;
-			cc.a = c.a;
+        friend Color operator*(const Color &c, float fValue)
+        {
+            Color cc;
 
-			return cc;
-		}
+            cc.r = c.r * fValue;
+            cc.g = c.g * fValue;
+            cc.b = c.b * fValue;
+            cc.a = c.a;
 
-		void Normalize()
-		{
-			r = Clamp(r);
-			g = Clamp(g);
-			b = Clamp(b);
-			a = Clamp(a);
-		}
+            return cc;
+        }
 
-		Color & operator *= (float fValue)
-		{
-			r *= fValue;
-			g *= fValue;
-			b *= fValue;
+        void Normalize()
+        {
+            r = Clamp(r);
+            g = Clamp(g);
+            b = Clamp(b);
+            a = Clamp(a);
+        }
 
-			return *this;
-		}
-	};
+        Color &operator*=(float fValue)
+        {
+            r *= fValue;
+            g *= fValue;
+            b *= fValue;
 
-	struct LightType
-	{
-		string	sLightType;
-		Color	cLightColor;
-		Color	cCoronaColor;
-		float	fRange;
-		float	fAttenuation0, fAttenuation1, fAttenuation2;
-		float	fFlicker, fFreq, fFlickerSlow, fFreqSlow;
-		float	fLifeTime, fUpTime;
-		float	fCoronaRange, fCoronaSize;
-		float	fSunRoadFlareFadeDistance;
-	};
+            return *this;
+        }
+    };
 
-	struct Oscillator
-	{
-		float fStep;		
-		float fAmp;			
-		float fOneDivAmp;	
-		float fNewValue;
-		float fOldValue;
-		float fK;
-	};
+    struct LightType
+    {
+        string sLightType;
+        Color cLightColor;
+        Color cCoronaColor;
+        float fRange;
+        float fAttenuation0, fAttenuation1, fAttenuation2;
+        float fFlicker, fFreq, fFlickerSlow, fFreqSlow;
+        float fLifeTime, fUpTime;
+        float fCoronaRange, fCoronaSize;
+        float fSunRoadFlareFadeDistance;
+    };
 
-	struct ShipLight
-	{
-		VAI_OBJBASE	* pObject;
-		NODE		* pNode;
-		bool		bDynamicLight;
-		CVECTOR		vPos, vCurPos;
-		D3DLIGHT9	Light;
-		float		fCoronaIntensity;
-		float		fCurDistance;
-		float		fCurTime, fTotalTime, fUpTime;
-		float		fFlareAlpha, fFlareAlphaMax;
-		Oscillator	Osc[2];
-		bool		bCoronaOnly;
-		bool		bVisible;
-		float		fTotalBrokenTime, fBrokenTime;
-		bool		bOff, bBrokenTimeOff;
-		bool		bDead;
-		LightType	* pLT;
-	};
+    struct Oscillator
+    {
+        float fStep;
+        float fAmp;
+        float fOneDivAmp;
+        float fNewValue;
+        float fOldValue;
+        float fK;
+    };
 
-	struct SelectedLight
-	{
-		float	fDistance;
-		dword	dwIndex;
+    struct ShipLight
+    {
+        VAI_OBJBASE *pObject;
+        NODE *pNode;
+        bool bDynamicLight;
+        CVECTOR vPos, vCurPos;
+        D3DLIGHT9 Light;
+        float fCoronaIntensity;
+        float fCurDistance;
+        float fCurTime, fTotalTime, fUpTime;
+        float fFlareAlpha, fFlareAlphaMax;
+        Oscillator Osc[2];
+        bool bCoronaOnly;
+        bool bVisible;
+        float fTotalBrokenTime, fBrokenTime;
+        bool bOff, bBrokenTimeOff;
+        bool bDead;
+        LightType *pLT;
+    };
 
-		bool operator < (const SelectedLight & other) const { return fDistance < other.fDistance; };
-	};
+    struct SelectedLight
+    {
+        float fDistance;
+        dword dwIndex;
 
-	array<ShipLight>		aLights;
-	array<SelectedLight>	aSelectedLights;
-	array<LightType>		aLightTypes;
-	long					iMinLight, iMaxLight;
-	dword					dwMaxD3DLights;
-	bool					bLoadLights;
-	bool					bReflection;
-	float					fSunRoadFlareSize;
+        bool operator<(const SelectedLight &other) const
+        {
+            return fDistance < other.fDistance;
+        };
+    };
 
-	long					iCoronaTex, iFlareSunRoadTex;
-	string					sCoronaTechnique;
-	dword					dwCoronaSubTexX, dwCoronaSubTexY;
+    array<ShipLight> aLights;
+    array<SelectedLight> aSelectedLights;
+    array<LightType> aLightTypes;
+    long iMinLight, iMaxLight;
+    dword dwMaxD3DLights;
+    bool bLoadLights;
+    bool bReflection;
+    float fSunRoadFlareSize;
 
-	SEA_BASE				* pSea;
+    long iCoronaTex, iFlareSunRoadTex;
+    string sCoronaTechnique;
+    dword dwCoronaSubTexX, dwCoronaSubTexY;
 
-	bool LoadLights();
-	LightType * FindLightType(string sLightType);
-	float GetAttributeAsFloat(ATTRIBUTES * pA, const char * pName, float fDefault);
-	void AddFlare(VAI_OBJBASE * pObject, bool bLight, MODEL * pModel, const GEOS::LABEL & label);
-	bool SetLabel(ShipLight * pL, MODEL * pModel, const char * pStr);
+    SEA_BASE *pSea;
 
-public:
-	static VDX8RENDER * pRS;
-	static COLLIDE * pCollide;
+    bool LoadLights();
+    LightType *FindLightType(string sLightType);
+    float GetAttributeAsFloat(ATTRIBUTES *pA, const char *pName, float fDefault);
+    void AddFlare(VAI_OBJBASE *pObject, bool bLight, MODEL *pModel, const GEOS::LABEL &label);
+    bool SetLabel(ShipLight *pL, MODEL *pModel, const char *pStr);
 
-	ShipLights();
-	virtual ~ShipLights();
+  public:
+    static VDX8RENDER *pRS;
+    static COLLIDE *pCollide;
 
-	virtual void Release(VAI_OBJBASE * pObject);
+    ShipLights();
+    virtual ~ShipLights();
 
-	virtual void AddLights(VAI_OBJBASE * pObject, MODEL * pModel, bool bLights, bool bFlares);
-	virtual void SetLightsOff(VAI_OBJBASE * pObject, float fTime, bool bLights, bool bFlares, bool bNow);
-	virtual void KillMast(VAI_OBJBASE * pObject, NODE * pNode, bool bNow);
-	virtual void AddDynamicLights(VAI_OBJBASE * pObject, const CVECTOR & vPos);
-	virtual void SetLights(VAI_OBJBASE * pObject);
-	virtual void UnSetLights(VAI_OBJBASE * pObject);
+    virtual void Release(VAI_OBJBASE *pObject);
 
-	virtual void SetDead(VAI_OBJBASE * pObject);
+    virtual void AddLights(VAI_OBJBASE *pObject, MODEL *pModel, bool bLights, bool bFlares);
+    virtual void SetLightsOff(VAI_OBJBASE *pObject, float fTime, bool bLights, bool bFlares, bool bNow);
+    virtual void KillMast(VAI_OBJBASE *pObject, NODE *pNode, bool bNow);
+    virtual void AddDynamicLights(VAI_OBJBASE *pObject, const CVECTOR &vPos);
+    virtual void SetLights(VAI_OBJBASE *pObject);
+    virtual void UnSetLights(VAI_OBJBASE *pObject);
 
-	bool Init();
-	void Execute(dword dwDeltaTime);
-	void Realize(dword dwDeltaTime);
-	dword _cdecl ProcessMessage(MESSAGE & message);
+    virtual void SetDead(VAI_OBJBASE *pObject);
+
+    bool Init();
+    void Execute(dword dwDeltaTime);
+    void Realize(dword dwDeltaTime);
+    dword _cdecl ProcessMessage(MESSAGE &message);
 };
 
 #endif

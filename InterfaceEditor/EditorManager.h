@@ -3,16 +3,16 @@
 
 class EditorManager
 {
-public:
-	EditorManager();
-	~EditorManager();
+  public:
+    EditorManager();
+    ~EditorManager();
 
-	void Release();
-	void Init();
+    void Release();
+    void Init();
 
-	void Execute( float fDeltaTime );
+    void Execute(float fDeltaTime);
 
-protected:
+  protected:
 };
 
 #endif

@@ -1,42 +1,38 @@
 #include "data_desc.h"
 
-
-	 
-DataDescripion::DataDescripion ()
+DataDescripion::DataDescripion()
 {
-	ItemsCount = 0;
+    ItemsCount = 0;
 }
 
-DataDescripion::~DataDescripion ()
+DataDescripion::~DataDescripion()
 {
-}
- 
-void DataDescripion::AddField (FieldType Type, const char* Name)
-{
-	Assert (ItemsCount < MAX_DESC_COUNT);
-	Fields[ItemsCount].Type = Type;
-	Fields[ItemsCount].Name = Name;
-	ItemsCount++;
-}
- 
-const char* DataDescripion::GetFieldName (DWORD Index)
-{
-	return Fields[Index].Name;
 }
 
-FieldType DataDescripion::GetFieldType (DWORD Index)
+void DataDescripion::AddField(FieldType Type, const char *Name)
 {
-	return Fields[Index].Type;
+    Assert(ItemsCount < MAX_DESC_COUNT);
+    Fields[ItemsCount].Type = Type;
+    Fields[ItemsCount].Name = Name;
+    ItemsCount++;
 }
 
-
-int DataDescripion::GetFieldCount ()
+const char *DataDescripion::GetFieldName(DWORD Index)
 {
-  return ItemsCount;
+    return Fields[Index].Name;
 }
 
-void DataDescripion::Clear ()
+FieldType DataDescripion::GetFieldType(DWORD Index)
 {
-	ItemsCount = 0;
+    return Fields[Index].Type;
 }
 
+int DataDescripion::GetFieldCount()
+{
+    return ItemsCount;
+}
+
+void DataDescripion::Clear()
+{
+    ItemsCount = 0;
+}

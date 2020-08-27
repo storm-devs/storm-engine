@@ -2,229 +2,253 @@
 #ifndef TEMPLATE_HASH_TABLE_HPP
 #define TEMPLATE_HASH_TABLE_HPP
 
-#include "tcommon.h"
 #include "array.h"
+#include "tcommon.h"
 
-template< class _Ty > class htable
+template <class _Ty> class htable
 {
-private:
-	struct subelem
-	{
-		char	* pStr;
-		dword	dwHashFullValue;
-		_Ty		_T;
-	};
+  private:
+    struct subelem
+    {
+        char *pStr;
+        dword dwHashFullValue;
+        _Ty _T;
+    };
 
-	struct elem
-	{
-		array<subelem>	aSubElements;
+    struct elem
+    {
+        array<subelem> aSubElements;
 
-		elem(const char * pFileName, long iFileLine) : aSubElements(pFileName, iFileLine, 2) {}
-	};
+        elem(const char *pFileName, long iFileLine) : aSubElements(pFileName, iFileLine, 2)
+        {
+        }
+    };
 
-	_Ty				_TBadFind;
-	elem			* pElements;
-	dword			dwMask;
-	dword			dwSize;
-	const char		* pFileName;
-	long			iFileLine;
+    _Ty _TBadFind;
+    elem *pElements;
+    dword dwMask;
+    dword dwSize;
+    const char *pFileName;
+    long iFileLine;
 
-public:
-	htable(const char * pFileName, long iFileLine, dword _dwSize = 64)
-	{
-		this->dwSize = _dwSize;
-		this->dwMask = dwSize - 1;
-		this->pElements = null;
-		this->pFileName = pFileName;
-		this->iFileLine = iFileLine;
+  public:
+    htable(const char *pFileName, long iFileLine, dword _dwSize = 64)
+    {
+        this->dwSize = _dwSize;
+        this->dwMask = dwSize - 1;
+        this->pElements = null;
+        this->pFileName = pFileName;
+        this->iFileLine = iFileLine;
 
-		Reset();
-	}
+        Reset();
+    }
 
-	~htable() 
-	{ 
-		DelAll();
-	}
+    ~htable()
+    {
+        DelAll();
+    }
 
-	// DelAll and delete all pointers (can be compile if (_Ty) is pointer)
-	void DelAllWithPointers()
-	{
-		if (pElements)
-		{
-			for (dword i=0; i<dwSize; i++)
-			{
-				elem * pE = &pElements[i];
-				for (dword j=0; j<pE->aSubElements.Size(); j++)
-				{
-					DELETE(pE->aSubElements[j]._T);
-					DELETE(pE->aSubElements[j].pStr);
-				}
-				pE->aSubElements.DelAll();
+    // DelAll and delete all pointers (can be compile if (_Ty) is pointer)
+    void DelAllWithPointers()
+    {
+        if (pElements)
+        {
+            for (dword i = 0; i < dwSize; i++)
+            {
+                elem *pE = &pElements[i];
+                for (dword j = 0; j < pE->aSubElements.Size(); j++)
+                {
+                    DELETE(pE->aSubElements[j]._T);
+                    DELETE(pE->aSubElements[j].pStr);
+                }
+                pE->aSubElements.DelAll();
 
-				pElements[i].~elem();
-			}
-			//DELETE_ARRAY(pElements);
-			DELETE(pElements);
-		}
+                pElements[i].~elem();
+            }
+            // DELETE_ARRAY(pElements);
+            DELETE(pElements);
+        }
 
-		DELETE(_TBadFind);
-	}
+        DELETE(_TBadFind);
+    }
 
-	void Reset()
-	{
-		DelAll();
-		
-		//pElements = NEW elem[dwSize]; 
-		pElements = (elem*)resize(pElements, sizeof(elem) * dwSize, (char*)pFileName, iFileLine); 
-		
-		if (pElements) for (dword i=0; i<dwSize; i++)
-		{
-			new('a', &pElements[i]) elem(pFileName, iFileLine);
-			pElements[i].aSubElements.SetFileLine(pFileName, iFileLine);
-		}
-	}
+    void Reset()
+    {
+        DelAll();
 
-	void DelAll()
-	{
-		if (!pElements) return;
+        // pElements = NEW elem[dwSize];
+        pElements = (elem *)resize(pElements, sizeof(elem) * dwSize, (char *)pFileName, iFileLine);
 
-		for (dword i=0; i<dwSize; i++)
-		{
-			elem * pE = &pElements[i];
-			for (dword j=0; j<pE->aSubElements.Size(); j++)
-			{
-				DELETE(pE->aSubElements[j].pStr);
-			}
-			pE->aSubElements.DelAll();
+        if (pElements)
+            for (dword i = 0; i < dwSize; i++)
+            {
+                new ('a', &pElements[i]) elem(pFileName, iFileLine);
+                pElements[i].aSubElements.SetFileLine(pFileName, iFileLine);
+            }
+    }
 
-			pElements[i].~elem();
-		}
-		//DELETE_ARRAY(pElements);
-		DELETE(pElements);
-	}
+    void DelAll()
+    {
+        if (!pElements)
+            return;
 
-	void SetBadFind(_Ty _T)
-	{
-		_TBadFind = _T;
-	}
+        for (dword i = 0; i < dwSize; i++)
+        {
+            elem *pE = &pElements[i];
+            for (dword j = 0; j < pE->aSubElements.Size(); j++)
+            {
+                DELETE(pE->aSubElements[j].pStr);
+            }
+            pE->aSubElements.DelAll();
 
-	dword Add(const char * pStr, const _Ty & _T)
-	{
-		Assert(pStr);
-		dword dwHash = string::HashNoCase(pStr);
-		elem * pE = &pElements[dwHash & dwMask];
-		
-		subelem htse;
-		COPY_STRING(htse.pStr, pStr);
-		htse._T = _T;
-		htse.dwHashFullValue = string::HashNoCase(pStr);
+            pElements[i].~elem();
+        }
+        // DELETE_ARRAY(pElements);
+        DELETE(pElements);
+    }
 
-		pE->aSubElements.Add(htse);
-		return pE->aSubElements.Size();
-	}
+    void SetBadFind(_Ty _T)
+    {
+        _TBadFind = _T;
+    }
 
-	bool Find(dword dwHashFullValue, const char * pStr, _Ty & _T) const
-	{
-		Assert(pStr && pElements);
-		const elem & pE = pElements[dwHashFullValue & dwMask];
-		for (dword i=0; i<pE.aSubElements.Size(); i++) 
-		{
-			const subelem & pSE = pE.aSubElements[i];
-			if (dwHashFullValue != pSE.dwHashFullValue) continue;
-			if (stricmp(pSE.pStr , pStr) == 0) 
-			{
-				_T = pSE._T;
-				return true;
-			}
-		}
-		return false;
-	}
+    dword Add(const char *pStr, const _Ty &_T)
+    {
+        Assert(pStr);
+        dword dwHash = string::HashNoCase(pStr);
+        elem *pE = &pElements[dwHash & dwMask];
 
-	bool Find(const char * pStr, _Ty & _T) const
-	{
-		Assert(pStr && pElements);
-		dword dwHash = string::HashNoCase(pStr);
-		return Find(dwHash, pStr, _T);
-	}
+        subelem htse;
+        COPY_STRING(htse.pStr, pStr);
+        htse._T = _T;
+        htse.dwHashFullValue = string::HashNoCase(pStr);
 
-	__forceinline const _Ty & Get(const char * pStr) const
-	{
-		Assert(pStr && pElements);
-		dword dwHashFullValue = string::HashNoCase(pStr);
-		elem & pE = pElements[dwHashFullValue & dwMask];
-		for (dword i=0; i<pE.aSubElements.Size(); i++) 
-		{
-			subelem & pSE = pE.aSubElements[i];
-			if (dwHashFullValue != pSE.dwHashFullValue) continue;
-			if (stricmp(pSE.pStr , pStr) == 0) return pSE._T;
-		}
-		return _TBadFind;
-	}
+        pE->aSubElements.Add(htse);
+        return pE->aSubElements.Size();
+    }
 
-	_Ty & operator [] (const char * pStr) { return (_Ty&)Get(pStr); }
-	const _Ty & operator [] (const char * pStr) const { return Get(pStr); }
+    bool Find(dword dwHashFullValue, const char *pStr, _Ty &_T) const
+    {
+        Assert(pStr && pElements);
+        const elem &pE = pElements[dwHashFullValue & dwMask];
+        for (dword i = 0; i < pE.aSubElements.Size(); i++)
+        {
+            const subelem &pSE = pE.aSubElements[i];
+            if (dwHashFullValue != pSE.dwHashFullValue)
+                continue;
+            if (stricmp(pSE.pStr, pStr) == 0)
+            {
+                _T = pSE._T;
+                return true;
+            }
+        }
+        return false;
+    }
 
-	bool Del(const char * pStr)
-	{
-		Assert(pStr && pElements);
-		dword dwHashFullValue = string::HashNoCase(pStr);
+    bool Find(const char *pStr, _Ty &_T) const
+    {
+        Assert(pStr && pElements);
+        dword dwHash = string::HashNoCase(pStr);
+        return Find(dwHash, pStr, _T);
+    }
 
-		elem & pE = pElements[dwHashFullValue & dwMask];
-		for (dword i=0; i<pE.aSubElements.Size(); i++) 
-		{
-			subelem & pSE = pE.aSubElements[i];
-			if (dwHashFullValue != pSE.dwHashFullValue) continue;
-			if (stricmp(pSE.pStr , pStr) == 0) 
-			{
-				DELETE(pSE.pStr);
-				pE.aSubElements.ExtractNoShift(i);
-				return true;
-			}
-		}
-		return false;
-	}
+    __forceinline const _Ty &Get(const char *pStr) const
+    {
+        Assert(pStr && pElements);
+        dword dwHashFullValue = string::HashNoCase(pStr);
+        elem &pE = pElements[dwHashFullValue & dwMask];
+        for (dword i = 0; i < pE.aSubElements.Size(); i++)
+        {
+            subelem &pSE = pE.aSubElements[i];
+            if (dwHashFullValue != pSE.dwHashFullValue)
+                continue;
+            if (stricmp(pSE.pStr, pStr) == 0)
+                return pSE._T;
+        }
+        return _TBadFind;
+    }
 
-public:
-	class iterator
-	{
-	public:
-		iterator(htable<_Ty> & _hTable) :
-			hTable(_hTable)	{}
+    _Ty &operator[](const char *pStr)
+    {
+        return (_Ty &)Get(pStr);
+    }
+    const _Ty &operator[](const char *pStr) const
+    {
+        return Get(pStr);
+    }
 
-		inline void Begin() { iIndex = 0; iSubIndex = -1; Next(); }
-		inline bool IsDone() { return iIndex >= (long)hTable.dwSize; }
-		inline void Next() 
-		{
-			while (!IsDone())
-			{
-				iSubIndex++;
-				if (iSubIndex >= hTable.pElements[iIndex].aSubElements)
-				{
-					iIndex++;
-					iSubIndex = -1;
-					continue;
-				}
-				break;
-			}
-		}
+    bool Del(const char *pStr)
+    {
+        Assert(pStr && pElements);
+        dword dwHashFullValue = string::HashNoCase(pStr);
 
-		inline const char * GetName()
-		{
-			if (IsDone()) return null;
-			return hTable.pElements[iIndex].aSubElements[iSubIndex].pStr;
-		}
+        elem &pE = pElements[dwHashFullValue & dwMask];
+        for (dword i = 0; i < pE.aSubElements.Size(); i++)
+        {
+            subelem &pSE = pE.aSubElements[i];
+            if (dwHashFullValue != pSE.dwHashFullValue)
+                continue;
+            if (stricmp(pSE.pStr, pStr) == 0)
+            {
+                DELETE(pSE.pStr);
+                pE.aSubElements.ExtractNoShift(i);
+                return true;
+            }
+        }
+        return false;
+    }
 
-		inline _Ty & Get()
-		{
-			if (IsDone()) return hTable._TBadFind;
-			return hTable.pElements[iIndex].aSubElements[iSubIndex]._T;
-		}
+  public:
+    class iterator
+    {
+      public:
+        iterator(htable<_Ty> &_hTable) : hTable(_hTable)
+        {
+        }
 
-	private:
-		int iIndex, iSubIndex;
-		htable<_Ty> & hTable;
-	};
+        inline void Begin()
+        {
+            iIndex = 0;
+            iSubIndex = -1;
+            Next();
+        }
+        inline bool IsDone()
+        {
+            return iIndex >= (long)hTable.dwSize;
+        }
+        inline void Next()
+        {
+            while (!IsDone())
+            {
+                iSubIndex++;
+                if (iSubIndex >= hTable.pElements[iIndex].aSubElements)
+                {
+                    iIndex++;
+                    iSubIndex = -1;
+                    continue;
+                }
+                break;
+            }
+        }
 
+        inline const char *GetName()
+        {
+            if (IsDone())
+                return null;
+            return hTable.pElements[iIndex].aSubElements[iSubIndex].pStr;
+        }
+
+        inline _Ty &Get()
+        {
+            if (IsDone())
+                return hTable._TBadFind;
+            return hTable.pElements[iIndex].aSubElements[iSubIndex]._T;
+        }
+
+      private:
+        int iIndex, iSubIndex;
+        htable<_Ty> &hTable;
+    };
 };
 
 #endif

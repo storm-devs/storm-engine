@@ -5,23 +5,23 @@
 
 struct Server
 {
-	dword	dwIP;
-	word	wPort;
-	byte	byVersion;
+    dword dwIP;
+    word wPort;
+    byte byVersion;
 
-	dword	dwLastServerTime;
+    dword dwLastServerTime;
 };
 
 class Client
 {
-public:
-	Client();
-	~Client();
+  public:
+    Client();
+    ~Client();
 
-	dword			dwIP;
-	word			wPort;
-	array<Server>	aServers;
-	dword			dwLastClientTime;
+    dword dwIP;
+    word wPort;
+    array<Server> aServers;
+    dword dwLastClientTime;
 };
 
 #endif

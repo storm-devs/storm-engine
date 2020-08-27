@@ -6,65 +6,100 @@
 
 class NetCommonCamera : public ENTITY
 {
-private:
-	bool			bActive;
-	bool			bOn;
-	float			fPerspective;
+  private:
+    bool bActive;
+    bool bOn;
+    float fPerspective;
 
-	ENTITY_ID		eidObject;
-	word			wNetID;
+    ENTITY_ID eidObject;
+    word wNetID;
 
-public:
-	NetShip * GetShip()
-	{
-		ENTITY_ID eidTemp;
-		// get entity id from loaded ships
-		if (api->FindClass(&eidTemp, "NetShip", 0)) do
-		{
-			NetShip * pE = (NetShip*)api->GetEntityPointer(&eidTemp);
-			if (pE->IsClient() && pE->GetNetID() == wNetID) return pE;
-		} while (api->FindClassNext(&eidTemp));
-		return null;
-	}
+  public:
+    NetShip *GetShip()
+    {
+        ENTITY_ID eidTemp;
+        // get entity id from loaded ships
+        if (api->FindClass(&eidTemp, "NetShip", 0))
+            do
+            {
+                NetShip *pE = (NetShip *)api->GetEntityPointer(&eidTemp);
+                if (pE->IsClient() && pE->GetNetID() == wNetID)
+                    return pE;
+            } while (api->FindClassNext(&eidTemp));
+        return null;
+    }
 
-	bool FindShip()
-	{
-		ENTITY_ID eidTemp;
-		// get entity id from loaded ships
-		if (api->FindClass(&eidTemp, "NetShip", 0)) do
-		{
-			NetShip * pE = (NetShip*)api->GetEntityPointer(&eidTemp);
-			if (pE->IsClient() && pE->GetNetID() == wNetID)
-			{
-				SetEID(&((VAI_OBJBASE*)pE)->GetModelEID());
-				return true;
-			}
-		} while (api->FindClassNext(&eidTemp));
-		return false;
-	}
+    bool FindShip()
+    {
+        ENTITY_ID eidTemp;
+        // get entity id from loaded ships
+        if (api->FindClass(&eidTemp, "NetShip", 0))
+            do
+            {
+                NetShip *pE = (NetShip *)api->GetEntityPointer(&eidTemp);
+                if (pE->IsClient() && pE->GetNetID() == wNetID)
+                {
+                    SetEID(&((VAI_OBJBASE *)pE)->GetModelEID());
+                    return true;
+                }
+            } while (api->FindClassNext(&eidTemp));
+        return false;
+    }
 
-	MODEL *GetModelPointer()
-	{
-		Assert(api->ValidateEntity(&eidObject));
-		Assert(eidObject.pointer);
-		return (MODEL*)eidObject.pointer;
-	}
-	void		SetEID(ENTITY_ID *pEID) { eidObject = *pEID; };
-	ENTITY_ID	GetEID() { return eidObject; };
-	
-	virtual void SetNetID(word wNetID){ this->wNetID = wNetID; };
+    MODEL *GetModelPointer()
+    {
+        Assert(api->ValidateEntity(&eidObject));
+        Assert(eidObject.pointer);
+        return (MODEL *)eidObject.pointer;
+    }
+    void SetEID(ENTITY_ID *pEID)
+    {
+        eidObject = *pEID;
+    };
+    ENTITY_ID GetEID()
+    {
+        return eidObject;
+    };
 
-	void	SetPerspective(float _fPerspective) { fPerspective = _fPerspective; };
-	float	GetPerspective() { return fPerspective; };
+    virtual void SetNetID(word wNetID)
+    {
+        this->wNetID = wNetID;
+    };
 
-	void SetOn(bool bOnOff) { bOn = bOnOff; };
-	void SetActive(bool bNewActive) { bActive = bNewActive; };
+    void SetPerspective(float _fPerspective)
+    {
+        fPerspective = _fPerspective;
+    };
+    float GetPerspective()
+    {
+        return fPerspective;
+    };
 
-	bool isOn() { return bOn; };
-	bool isActive() { return bActive; };
+    void SetOn(bool bOnOff)
+    {
+        bOn = bOnOff;
+    };
+    void SetActive(bool bNewActive)
+    {
+        bActive = bNewActive;
+    };
 
-	NetCommonCamera() { bOn = false; bActive = false; fPerspective = 1.285f; };
-	virtual ~NetCommonCamera() {};
+    bool isOn()
+    {
+        return bOn;
+    };
+    bool isActive()
+    {
+        return bActive;
+    };
+
+    NetCommonCamera()
+    {
+        bOn = false;
+        bActive = false;
+        fPerspective = 1.285f;
+    };
+    virtual ~NetCommonCamera(){};
 };
 
 #endif

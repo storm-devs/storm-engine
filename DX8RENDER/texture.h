@@ -1,10 +1,9 @@
 //================================================================
-//Texture file .tx
+// Texture file .tx
 //================================================================
 
 #ifndef __TEXTURE_H__
 #define __TEXTURE_H__
-
 
 //================================================================
 //
@@ -28,73 +27,68 @@
 //
 //================================================================
 
-//Flags
-#define TX_FLAGS_NONE		0
-#define TX_FLAGS_PALLETTE	1
-#define TX_FLAGS_CUBEMAP	2
+// Flags
+#define TX_FLAGS_NONE 0
+#define TX_FLAGS_PALLETTE 1
+#define TX_FLAGS_CUBEMAP 2
 
-
-//Formats
+// Formats
 enum TX_FORMAT
-{    
-	TXF_A8R8G8B8			= 21,
-	TXF_X8R8G8B8			= 22,
-	TXF_R5G6B5				= 23,  
-	TXF_A1R5G5B5			= 25,
-	TXF_A4R4G4B4			= 26,
-	TXF_P8					= 41,
-	TXF_L8					= 50,
-	TXF_V8U8				= 60,
-	TXF_L6V5U5				= 61,
-	TXF_DXT1				= '1TXD',
-	TXF_DXT2				= '2TXD',
-	TXF_DXT3				= '3TXD',
-	TXF_DXT4				= '4TXD',
-	TXF_DXT5				= '5TXD',
+{
+    TXF_A8R8G8B8 = 21,
+    TXF_X8R8G8B8 = 22,
+    TXF_R5G6B5 = 23,
+    TXF_A1R5G5B5 = 25,
+    TXF_A4R4G4B4 = 26,
+    TXF_P8 = 41,
+    TXF_L8 = 50,
+    TXF_V8U8 = 60,
+    TXF_L6V5U5 = 61,
+    TXF_DXT1 = '1TXD',
+    TXF_DXT2 = '2TXD',
+    TXF_DXT3 = '3TXD',
+    TXF_DXT4 = '4TXD',
+    TXF_DXT5 = '5TXD',
 };
-
-
 
 #pragma pack(push, 1)
 
-//File header
+// File header
 struct TX_FILE_HEADER
 {
-	long flags;				//info flags
-	long width, height;		//texture size
-	long nmips;				//number mip levels
-	TX_FORMAT format;		//texture format
-	long mip_size;			//size of mip 0 (width*height*pixel_size)
+    long flags;         // info flags
+    long width, height; // texture size
+    long nmips;         // number mip levels
+    TX_FORMAT format;   // texture format
+    long mip_size;      // size of mip 0 (width*height*pixel_size)
 };
 
-//Pallette color
+// Pallette color
 struct TX_PALETTE_COLOR
 {
-    BYTE r; 
-    BYTE g; 
-    BYTE b; 
-    BYTE f; 
+    BYTE r;
+    BYTE g;
+    BYTE b;
+    BYTE f;
 };
 
-//Texture pallete
+// Texture pallete
 struct TX_PALETTE
 {
-	TX_PALETTE_COLOR color[256];
+    TX_PALETTE_COLOR color[256];
 };
 
 #pragma pack(pop)
 
-//Info
-//Pallette size
-#define TX_PALETTE_SIZE		sizeof(TX_PALETTE)
-//Start pointer into pallette
-#define TX_PNT_PALETTE			sizeof(TX_FILE_HEADER)
-//Start pointer into first mip level
-//without pallette
-#define TX_PNT_FMIP_WO_PAL		TX_PNT_PALETTE
-//with pallette
-#define TX_PNT_FMIP_W_PAL		(TX_PNT_PALETTE + TX_PALETTE_SIZE)
-
-
+// Info
+// Pallette size
+#define TX_PALETTE_SIZE sizeof(TX_PALETTE)
+// Start pointer into pallette
+#define TX_PNT_PALETTE sizeof(TX_FILE_HEADER)
+// Start pointer into first mip level
+// without pallette
+#define TX_PNT_FMIP_WO_PAL TX_PNT_PALETTE
+// with pallette
+#define TX_PNT_FMIP_W_PAL (TX_PNT_PALETTE + TX_PALETTE_SIZE)
 
 #endif

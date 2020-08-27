@@ -1,15 +1,15 @@
 #ifndef _TSEAGULLS_H_
 #define _TSEAGULLS_H_
 
-#include "..\common_h\object.h"
-#include "..\common_h\matrix.h"
-#include "..\common_h\animation.h"
-#include "..\common_h\messages.h"
-#include "..\common_h\geos.h"
-#include "..\common_h\geometry.h"
-#include "..\common_h\dx8render.h"
-#include "..\common_h\model.h"
 #include "..\SoundService\VSoundService.h"
+#include "..\common_h\animation.h"
+#include "..\common_h\dx8render.h"
+#include "..\common_h\geometry.h"
+#include "..\common_h\geos.h"
+#include "..\common_h\matrix.h"
+#include "..\common_h\messages.h"
+#include "..\common_h\model.h"
+#include "..\common_h\object.h"
 #include "AnimalsDefines.h"
 
 ///////////////////////////////////////////////////////////////////
@@ -17,16 +17,16 @@
 ///////////////////////////////////////////////////////////////////
 struct tSeagull
 {
-	CVECTOR center;
-	float radius;
-	float va;
-	float height;
-	float deltaA;
-	float a;
+    CVECTOR center;
+    float radius;
+    float va;
+    float height;
+    float deltaA;
+    float a;
 
-	long circleTime;
-	long circleTimePassed;
-	long screamTime;
+    long circleTime;
+    long circleTimePassed;
+    long screamTime;
 };
 
 ///////////////////////////////////////////////////////////////////
@@ -34,42 +34,45 @@ struct tSeagull
 ///////////////////////////////////////////////////////////////////
 class TSeagulls
 {
-public:
-	TSeagulls();
-	virtual ~TSeagulls();
+  public:
+    TSeagulls();
+    virtual ~TSeagulls();
 
-	dword ProcessMessage(long _code, MESSAGE & message);
-	void Init();
-	void Add(float _x, float _y, float _z);
-	void Realize(dword _dTime);
-	void Execute(dword _dTime);
-	void SetStartY (float _startY) {startY = _startY;}
+    dword ProcessMessage(long _code, MESSAGE &message);
+    void Init();
+    void Add(float _x, float _y, float _z);
+    void Realize(dword _dTime);
+    void Execute(dword _dTime);
+    void SetStartY(float _startY)
+    {
+        startY = _startY;
+    }
 
-private:
-	void LoadSettings();
-	void Frighten();
+  private:
+    void LoadSettings();
+    void Frighten();
 
-	ENTITY_ID  seagullModel;
-	tSeagull seagulls[SEAGULL_COUNT];
-	VDX8RENDER *renderService;
-	VSoundService *soundService;
-	bool enabled;
-	long count;
-	float maxDistance;
-	float maxRadius;
-	float maxAngleSpeed;
-	float maxHeight;
-	long countAdd;
-	long maxCircleTime;
-	long farChoiceChance;
-	long relaxTime;
-	bool frightened;
-	long frightenTime;
-	long screamTime;
-	char screamFilename[256];
+    ENTITY_ID seagullModel;
+    tSeagull seagulls[SEAGULL_COUNT];
+    VDX8RENDER *renderService;
+    VSoundService *soundService;
+    bool enabled;
+    long count;
+    float maxDistance;
+    float maxRadius;
+    float maxAngleSpeed;
+    float maxHeight;
+    long countAdd;
+    long maxCircleTime;
+    long farChoiceChance;
+    long relaxTime;
+    bool frightened;
+    long frightenTime;
+    long screamTime;
+    char screamFilename[256];
 
-	CVECTOR cameraPos, cameraAng;
-	float startY;
+    CVECTOR cameraPos, cameraAng;
+    float startY;
 };
 
 #endif // !defined

@@ -1,9 +1,9 @@
 #include "BaseNode.h"
 
-BI_BaseNode::BI_BaseNode( BI_ManagerBase* pManager )
+BI_BaseNode::BI_BaseNode(BI_ManagerBase *pManager)
 {
-	Assert(pManager);
-	m_pManager = pManager;
+    Assert(pManager);
+    m_pManager = pManager;
 }
 
 BI_BaseNode::~BI_BaseNode()

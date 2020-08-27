@@ -5,106 +5,108 @@
 
 class Astronomy : public ENTITY
 {
-public:
-	static VDX8RENDER * pRS;
-	static VGEOMETRY * pGS;
+  public:
+    static VDX8RENDER *pRS;
+    static VGEOMETRY *pGS;
 
-	Astronomy();
-	~Astronomy();
+    Astronomy();
+    ~Astronomy();
 
-	bool	Init();
-	void	SetDevice();
-	void	Realize(dword Delta_Time);
-	dword	AttributeChanged(ATTRIBUTES * pAttribute);
-	ATTRIBUTES * GetRoot(ATTRIBUTES * pA);
+    bool Init();
+    void SetDevice();
+    void Realize(dword Delta_Time);
+    dword AttributeChanged(ATTRIBUTES *pAttribute);
+    ATTRIBUTES *GetRoot(ATTRIBUTES *pA);
 
-private:
-	class PLANETS
-	{
-	public:
-		struct Planet
-		{
-			GEOS	* pGeo;
-			CVECTOR vPos;
-			long	iTexture;
-			float	fDistance, fRealDistance;
-			float	fSpeed;
-			float	fInclination;
-			float	fDiameter;
-			float	fScale, fFakeScale, fAngle;
-			float	fMagMax, fMagMin;
-		};
+  private:
+    class PLANETS
+    {
+      public:
+        struct Planet
+        {
+            GEOS *pGeo;
+            CVECTOR vPos;
+            long iTexture;
+            float fDistance, fRealDistance;
+            float fSpeed;
+            float fInclination;
+            float fDiameter;
+            float fScale, fFakeScale, fAngle;
+            float fMagMax, fMagMin;
+        };
 
-		array<Planet>	aPlanets;
-		float			fPlanetScale;
+        array<Planet> aPlanets;
+        float fPlanetScale;
 
-		float fPlanetFade;
-		float fFadeTimeStart;
-		float fFadeTime;
+        float fPlanetFade;
+        float fFadeTimeStart;
+        float fFadeTime;
 
-		PLANETS();
-		~PLANETS();
+        PLANETS();
+        ~PLANETS();
 
-		void ReleasePlanets();
+        void ReleasePlanets();
 
-		void Init(ATTRIBUTES * pAP);
-		void Execute(double dDeltaTime, double dHour);
-		void Realize(double dDeltaTime, double dHour);
-		void TimeUpdate(ATTRIBUTES * pAP);
-	};
+        void Init(ATTRIBUTES *pAP);
+        void Execute(double dDeltaTime, double dHour);
+        void Realize(double dDeltaTime, double dHour);
+        void TimeUpdate(ATTRIBUTES *pAP);
+    };
 
-	class STARS
-	{
-	public:
-		STARS();
-		~STARS();
+    class STARS
+    {
+      public:
+        STARS();
+        ~STARS();
 
-		void Init(ATTRIBUTES * pAP);
-		void Execute(double dDeltaTime, double dHour);
-		void Realize(double dDeltaTime, double dHour);
+        void Init(ATTRIBUTES *pAP);
+        void Execute(double dDeltaTime, double dHour);
+        void Realize(double dDeltaTime, double dHour);
 
-		dword AttributeChanged(ATTRIBUTES * pAttribute);
-		void TimeUpdate(ATTRIBUTES * pAP);
+        dword AttributeChanged(ATTRIBUTES *pAttribute);
+        void TimeUpdate(ATTRIBUTES *pAP);
 
-		inline bool IsEnable() { return bEnable; };
+        inline bool IsEnable()
+        {
+            return bEnable;
+        };
 
-	private:
-		IDirect3DVertexDeclaration9	* vDecl;
-		IDirect3DVertexShader9 * sShader;
-	
-		string sCatalog, sTexture;
-		float fRadius, fSize, fHeightFade, fSunFade;
-		float fVisualMagnitude, fTelescopeMagnitude;
-		long iTexture;
-		bool bEnable;
-		long iVertexBuffer, iVertexBufferColors;
-		dword dwShader;
-		float fPrevFov;
+      private:
+        IDirect3DVertexDeclaration9 *vDecl;
+        IDirect3DVertexShader9 *sShader;
 
-		struct Star
-		{
-			float fRA;
-			float fDec;
-			float fMag;
-			char cSpectr[2];
-			dword dwColor;
-			float fAlpha;
-			CVECTOR vPos;
-		};
+        string sCatalog, sTexture;
+        float fRadius, fSize, fHeightFade, fSunFade;
+        float fVisualMagnitude, fTelescopeMagnitude;
+        long iTexture;
+        bool bEnable;
+        long iVertexBuffer, iVertexBufferColors;
+        dword dwShader;
+        float fPrevFov;
 
-		dword Spectr[256];
-		array<Star> aStars;
+        struct Star
+        {
+            float fRA;
+            float fDec;
+            float fMag;
+            char cSpectr[2];
+            dword dwColor;
+            float fAlpha;
+            CVECTOR vPos;
+        };
 
-		float fFadeValue;
-		float fFadeTimeStart;
-		float fFadeTime;
-		float m_fTwinklingTime;
-	};
+        dword Spectr[256];
+        array<Star> aStars;
 
-	double dHour, dTimeScale;
-	STARS Stars;
-	PLANETS Planets;
+        float fFadeValue;
+        float fFadeTimeStart;
+        float fFadeTime;
+        float m_fTwinklingTime;
+    };
 
+    double dHour, dTimeScale;
+    STARS Stars;
+    PLANETS Planets;
 };
 
 #endif

@@ -8,14 +8,14 @@ class EditorManager;
 
 class EdNode
 {
-public:
-	EdNode( EditorManager* pOwner );
-	virtual ~EdNode();
+  public:
+    EdNode(EditorManager *pOwner);
+    virtual ~EdNode();
 
-	virtual void Release();
-	virtual void Execute( float fDeltaTime );
+    virtual void Release();
+    virtual void Execute(float fDeltaTime);
 
-protected:
+  protected:
 };
 
 #endif

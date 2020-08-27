@@ -1,12 +1,9 @@
 #include "DebugEntity.h"
 #include "SoundService.h"
 
-
-
-
 SoundVisualisationEntity::SoundVisualisationEntity()
 {
-	pSound = NULL;
+    pSound = NULL;
 }
 
 SoundVisualisationEntity::~SoundVisualisationEntity()
@@ -15,27 +12,28 @@ SoundVisualisationEntity::~SoundVisualisationEntity()
 
 bool SoundVisualisationEntity::Init()
 {
-	return true;
+    return true;
 }
 
 void SoundVisualisationEntity::Realize(dword _dTime)
 {
-	if (!pSound) return;
-	pSound->DebugDraw();
+    if (!pSound)
+        return;
+    pSound->DebugDraw();
 }
 
 void SoundVisualisationEntity::Execute(dword _dTime)
 {
 }
 
-void SoundVisualisationEntity::SetMasterSoundService (SoundService* pSoundService)
+void SoundVisualisationEntity::SetMasterSoundService(SoundService *pSoundService)
 {
-	pSound = pSoundService;
+    pSound = pSoundService;
 }
 
 void SoundVisualisationEntity::Wakeup()
 {
-	api->LayerCreate("sound_debug_realize", true , false);
-	api->LayerSetRealize("sound_debug_realize", true);
-	api->LayerAdd("sound_debug_realize", GetID(), -1);
+    api->LayerCreate("sound_debug_realize", true, false);
+    api->LayerSetRealize("sound_debug_realize", true);
+    api->LayerAdd("sound_debug_realize", GetID(), -1);
 }

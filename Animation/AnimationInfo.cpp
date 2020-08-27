@@ -14,51 +14,54 @@
 //Конструирование, деструктурирование
 //============================================================================================
 
-AnimationInfo::AnimationInfo(const char * animationName)
+AnimationInfo::AnimationInfo(const char *animationName)
 {
-	Assert(strlen(animationName) < 64);
-	strcpy(name, animationName);
-	bone = null;
-	numBones = 0;
-	action = null;
-	numActions = 0;
-	refCounter = 0;
-	downtime = 0;
-	fps = 15.0f;
+    Assert(strlen(animationName) < 64);
+    strcpy(name, animationName);
+    bone = null;
+    numBones = 0;
+    action = null;
+    numActions = 0;
+    refCounter = 0;
+    downtime = 0;
+    fps = 15.0f;
 }
 
 AnimationInfo::~AnimationInfo()
 {
-	if(bone) delete [] bone;
-	if(action)
-	{
-		for(long i = 0; i < numActions; i++)
-				if(action[i]) delete action[i];
-		delete action;
-	}
+    if (bone)
+        delete[] bone;
+    if (action)
+    {
+        for (long i = 0; i < numActions; i++)
+            if (action[i])
+                delete action[i];
+        delete action;
+    }
 }
 
 //Создать кости
 void AnimationInfo::CreateBones(long numbones)
 {
-	Assert(bone == null || numBones == 0);
-	Assert(numbones > 0 && numbones <= 256);
-	numBones = numbones;
-	bone = NEW Bone[numBones];
+    Assert(bone == null || numBones == 0);
+    Assert(numbones > 0 && numbones <= 256);
+    numBones = numbones;
+    bone = NEW Bone[numBones];
 }
 
 //Создать действие
-ActionInfo * AnimationInfo::AddAction(const char * anctionName, long startframe, long endframe)
+ActionInfo *AnimationInfo::AddAction(const char *anctionName, long startframe, long endframe)
 {
-	Assert(anctionName);
-	//Ищем повторение
-	for(long i = 0; i < numActions; i++)
-		if(action[i][0] == anctionName) return null;
-	//Всё нормально - новое действие
-	numActions++;
-	action = (ActionInfo **)RESIZE(action, numActions*4);	
-	action[numActions - 1] = NEW ActionInfo(anctionName, startframe, endframe);
-	return action[numActions - 1];
+    Assert(anctionName);
+    //Ищем повторение
+    for (long i = 0; i < numActions; i++)
+        if (action[i][0] == anctionName)
+            return null;
+    //Всё нормально - новое действие
+    numActions++;
+    action = (ActionInfo **)RESIZE(action, numActions * 4);
+    action[numActions - 1] = NEW ActionInfo(anctionName, startframe, endframe);
+    return action[numActions - 1];
 }
 
 //--------------------------------------------------------------------------------------------
@@ -66,16 +69,16 @@ ActionInfo * AnimationInfo::AddAction(const char * anctionName, long startframe,
 //--------------------------------------------------------------------------------------------
 
 //Сравнить с текущим именем
-bool AnimationInfo::operator == (const char * animationName)
+bool AnimationInfo::operator==(const char *animationName)
 {
-	return stricmp(animationName, name) == 0;
+    return stricmp(animationName, name) == 0;
 }
 
 //Найти действие по имени
-ActionInfo * AnimationInfo::FindAction(const char * actionName)
+ActionInfo *AnimationInfo::FindAction(const char *actionName)
 {
-	for(long i = 0; i < numActions; i++)
-		if(action[i][0] == actionName) return action[i];
-	return null;
+    for (long i = 0; i < numActions; i++)
+        if (action[i][0] == actionName)
+            return action[i];
+    return null;
 }
-

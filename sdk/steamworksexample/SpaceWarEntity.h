@@ -14,18 +14,21 @@
 
 class CSpaceWarEntity : public CVectorEntity
 {
-public:
-	// Constructor
-	CSpaceWarEntity( IGameEngine *pGameEngine, uint32 uCollisionRadius, bool bAffectedByGravity );
+  public:
+    // Constructor
+    CSpaceWarEntity(IGameEngine *pGameEngine, uint32 uCollisionRadius, bool bAffectedByGravity);
 
-	// Destructor
-	virtual ~CSpaceWarEntity() { return; }
+    // Destructor
+    virtual ~CSpaceWarEntity()
+    {
+        return;
+    }
 
-	// Run Frame
-	void RunFrame();
+    // Run Frame
+    void RunFrame();
 
-private:
-	bool m_bAffectedByGravity;
+  private:
+    bool m_bAffectedByGravity;
 };
 
 #endif // SPACEWARENTITY_H

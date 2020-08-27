@@ -1,65 +1,68 @@
 #ifndef K2SERVER_HPP
 #define K2SERVER_HPP
 
-#include "Common.h"
 #include "CRC.h"
+#include "Common.h"
 
 class NetServer : public ENTITY
 {
-public:
-	NetServer();
-	~NetServer();
+  public:
+    NetServer();
+    ~NetServer();
 
-	void Execute(float fDeltaTime);
-	void Realize(float fDeltaTime);
-	void ReceiveMessage(SOCKET s, dword lParam);
-	dword AttributeChanged(ATTRIBUTES * pA);
+    void Execute(float fDeltaTime);
+    void Realize(float fDeltaTime);
+    void ReceiveMessage(SOCKET s, dword lParam);
+    dword AttributeChanged(ATTRIBUTES *pA);
 
-public:
-	static NetServer * pServer;
-	static VDX8RENDER * pRS;
-	static float fDeltaTime;	// current delta time
-	static float fGravity;
-	
-	bool AddClient(word wClientID, dword dwIP, word wPort);
-	bool DelClient(word wClientID);
+  public:
+    static NetServer *pServer;
+    static VDX8RENDER *pRS;
+    static float fDeltaTime; // current delta time
+    static float fGravity;
 
-	// return current game time
-	dword GetTime();
-	// add packet to queue
-	void AddPacket(word wDestination, NMSend & nmSend, bool bGarantedDelivery = false);
-	void AddPacketAllExcept(word wDestination, NMSend & nmSend, bool bGarantedDelivery = false);
-	void AddPacketDirect(dword dwIP, word wPort, NMSend & nmSend);
-	void SendMasterServerMessage(const char * pAddress, word wPort, NMSend & nmSend);
+    bool AddClient(word wClientID, dword dwIP, word wPort);
+    bool DelClient(word wClientID);
 
-	void ClearPacketsQueue();
+    // return current game time
+    dword GetTime();
+    // add packet to queue
+    void AddPacket(word wDestination, NMSend &nmSend, bool bGarantedDelivery = false);
+    void AddPacketAllExcept(word wDestination, NMSend &nmSend, bool bGarantedDelivery = false);
+    void AddPacketDirect(dword dwIP, word wPort, NMSend &nmSend);
+    void SendMasterServerMessage(const char *pAddress, word wPort, NMSend &nmSend);
 
-	void GarantedDeliveryCallback(word wClient, word wGarantedIndex);
+    void ClearPacketsQueue();
 
-private:
-	CRC16 crc16;
-	dword dwServerTime;
-	word wServerPort;
-	dword dwMaxFPS;
+    void GarantedDeliveryCallback(word wClient, word wGarantedIndex);
 
-	SOCKET s;
-	SOCKADDR_IN sin;
-	bool bStarted;
-	bool bDedicated;
-	
-	dword dwTotalBytesSend, dwTotalBytesRecv;
-	dword dwTotalPacketsSend, dwTotalPacketsRecv; 
-	float fPacketsSendPerSecond, fBytesSendPerSecond, fLastPSpS, fLastTBSpS, fStatTime;
+  private:
+    CRC16 crc16;
+    dword dwServerTime;
+    word wServerPort;
+    dword dwMaxFPS;
 
-	// server side clients
-	array<LocalClient*> aClients;
+    SOCKET s;
+    SOCKADDR_IN sin;
+    bool bStarted;
+    bool bDedicated;
 
-	bool Start();
-	bool Stop();
+    dword dwTotalBytesSend, dwTotalBytesRecv;
+    dword dwTotalPacketsSend, dwTotalPacketsRecv;
+    float fPacketsSendPerSecond, fBytesSendPerSecond, fLastPSpS, fLastTBSpS, fStatTime;
 
-	// request for connect from client
-	LocalClient * FindClient(word wClientID);
-	bool IsDedicated() { return bDedicated; }
+    // server side clients
+    array<LocalClient *> aClients;
+
+    bool Start();
+    bool Stop();
+
+    // request for connect from client
+    LocalClient *FindClient(word wClientID);
+    bool IsDedicated()
+    {
+        return bDedicated;
+    }
 };
 
 #endif

@@ -11,13 +11,12 @@
 
 class VIDWALKER
 {
-public:
-	virtual ~VIDWALKER(){};
-	virtual ENTITY_ID * GetID()= 0;
-	virtual ENTITY_ID * GetIDNext()= 0;
-	virtual void Invalidate()= 0;
-	virtual bool Validate()= 0;
-	
+  public:
+    virtual ~VIDWALKER(){};
+    virtual ENTITY_ID *GetID() = 0;
+    virtual ENTITY_ID *GetIDNext() = 0;
+    virtual void Invalidate() = 0;
+    virtual bool Validate() = 0;
 };
 
 #endif

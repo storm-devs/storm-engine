@@ -3,24 +3,23 @@
 
 #include "strings_list.h"
 
-#define INVALID_CLASS_CODE			INVALID_ORDINAL_NUMBER
+#define INVALID_CLASS_CODE INVALID_ORDINAL_NUMBER
 
-typedef struct 
+typedef struct
 {
-	long  module_code;
-	long  module_class_id;
-	dword real_class_id;
+    long module_code;
+    long module_class_id;
+    dword real_class_id;
 } CLASS_SEARCH_DATA;
 
 class CLASSES_TABLE : public STRINGS_LIST
 {
-public:
-	CLASSES_TABLE(){};
-	~CLASSES_TABLE(){};
-	dword GetClassCode(char * class_name);
-	dword GetModuleCode(dword class_code);
-	dword GetClassModuleID(dword class_code);
-	CLASS_SEARCH_DATA GetClassData(dword class_code);
-
+  public:
+    CLASSES_TABLE(){};
+    ~CLASSES_TABLE(){};
+    dword GetClassCode(char *class_name);
+    dword GetModuleCode(dword class_code);
+    dword GetClassModuleID(dword class_code);
+    CLASS_SEARCH_DATA GetClassData(dword class_code);
 };
 #endif

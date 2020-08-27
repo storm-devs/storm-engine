@@ -1,63 +1,63 @@
 #ifndef IN_GAME_UTILS_ISLAND_ED_HPP
 #define IN_GAME_UTILS_ISLAND_ED_HPP
 
-#include "..\common_h\vmodule_api.h"
-#include "..\common_h\dx8render.h"
+#include "..\Sea_AI\AIFlowGraph.h"
 #include "..\common_h\defines.h"
-#include "..\common_h\tga.h"
+#include "..\common_h\dx8render.h"
 #include "..\common_h\templates\array.h"
 #include "..\common_h\templates\string.h"
-#include "..\Sea_AI\AIFlowGraph.h"
+#include "..\common_h\tga.h"
+#include "..\common_h\vmodule_api.h"
 
-#define INVALID_POINT_INDEX		0xFFFFFFFF
+#define INVALID_POINT_INDEX 0xFFFFFFFF
 
 struct spoint
 {
-	CVECTOR			vPos;
-	dword			dwIdx;
+    CVECTOR vPos;
+    dword dwIdx;
 };
 
 class IslandED : public ENTITY
 {
-public:
-	IslandED();
-	~IslandED();
+  public:
+    IslandED();
+    ~IslandED();
 
-	bool	Init();
-	void	Execute(dword dwDeltaTime);
-	void	Realize(dword dwDeltaTime);
+    bool Init();
+    void Execute(dword dwDeltaTime);
+    void Realize(dword dwDeltaTime);
 
-private:
-	AIFlowGraph::Path		* pPath;
-	AIFlowGraph				Graph;
+  private:
+    AIFlowGraph::Path *pPath;
+    AIFlowGraph Graph;
 
-	array<spoint>			aPoints;
-	bool					bCursorVisible,bCanDoPoint,bCanDoGraf;
-	bool					bPathFirstPnt,bCanDoPath;
+    array<spoint> aPoints;
+    bool bCursorVisible, bCanDoPoint, bCanDoGraf;
+    bool bPathFirstPnt, bCanDoPath;
 
-	INIFILE					* pIni;
+    INIFILE *pIni;
 
-	bool					bFirstExecute;
-	bool					bTrace;
-	CVECTOR					pTrace1,pTrace2;
-	CVECTOR					vBoxCenter,vBoxSize;
+    bool bFirstExecute;
+    bool bTrace;
+    CVECTOR pTrace1, pTrace2;
+    CVECTOR vBoxCenter, vBoxSize;
 
-	dword					dwFirstPointIdx;
-	RECT					SR;
-	float					fCenterX,fCenterY,fX,fY,fScale;
-	long					iLockX,iLockY;
-	bool					bLoaded;
-	TGA_H					Header;
-	BYTE					* pRaw;
-	IDirect3DTexture8		* pIslandTexture;
-	VDX8RENDER				* pRS;
+    dword dwFirstPointIdx;
+    RECT SR;
+    float fCenterX, fCenterY, fX, fY, fScale;
+    long iLockX, iLockY;
+    bool bLoaded;
+    TGA_H Header;
+    BYTE *pRaw;
+    IDirect3DTexture8 *pIslandTexture;
+    VDX8RENDER *pRS;
 
-	dword	GetNearestPointIdx(CVECTOR vSrc);
-	float	Trace(spoint *p1, spoint *p2);
-	bool	CheckIslandPoint(CVECTOR & vPos);
-	void	OpenNewFile();
-	CVECTOR GetScreenPos(CVECTOR & vRealPos);
-	CVECTOR GetRealPos(CVECTOR & vScrPos);
+    dword GetNearestPointIdx(CVECTOR vSrc);
+    float Trace(spoint *p1, spoint *p2);
+    bool CheckIslandPoint(CVECTOR &vPos);
+    void OpenNewFile();
+    CVECTOR GetScreenPos(CVECTOR &vRealPos);
+    CVECTOR GetRealPos(CVECTOR &vScrPos);
 };
 
 #endif

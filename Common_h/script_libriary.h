@@ -12,10 +12,13 @@
 
 class SCRIPT_LIBRIARY
 {
-public:
-	SCRIPT_LIBRIARY(){};
-	virtual ~SCRIPT_LIBRIARY(){};
-	virtual bool Init(){return false;};
+  public:
+    SCRIPT_LIBRIARY(){};
+    virtual ~SCRIPT_LIBRIARY(){};
+    virtual bool Init()
+    {
+        return false;
+    };
 };
 
 #endif

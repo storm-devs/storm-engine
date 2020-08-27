@@ -9,19 +9,19 @@ class EditorManager;
 
 class InterfaceEditor : public ENTITY
 {
-public:
-	InterfaceEditor();
-	~InterfaceEditor();
+  public:
+    InterfaceEditor();
+    ~InterfaceEditor();
 
-	virtual bool Init();
-	virtual dword _cdecl ProcessMessage( MESSAGE& message );
-	virtual void Realize( dword dwDeltaTime );
+    virtual bool Init();
+    virtual dword _cdecl ProcessMessage(MESSAGE &message);
+    virtual void Realize(dword dwDeltaTime);
 
-protected:
-	VDX8RENDER* m_pRender;
-	XINTERFACE* m_pInterface;
+  protected:
+    VDX8RENDER *m_pRender;
+    XINTERFACE *m_pInterface;
 
-	EditorManager* m_pManager;
+    EditorManager *m_pManager;
 };
 
 #endif

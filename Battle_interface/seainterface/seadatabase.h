@@ -1,48 +1,50 @@
 #ifndef BI_SEADATABASE_H
 #define BI_SEADATABASE_H
 
-#include "defines.h"
 #include "..\image\defines.h"
+#include "defines.h"
 
 class BISeaDatabase
 {
-public:
-	struct ShipDescr
-	{
-		long nCharacter;
-		long nShipType;
-		long nShipImage;
-		bool bShowCommand;
-	};
-	struct LigaDescr
-	{
-		array<ShipDescr> aShip;
-		LigaDescr() : aShip(_FL) {}
-	};
+  public:
+    struct ShipDescr
+    {
+        long nCharacter;
+        long nShipType;
+        long nShipImage;
+        bool bShowCommand;
+    };
+    struct LigaDescr
+    {
+        array<ShipDescr> aShip;
+        LigaDescr() : aShip(_FL)
+        {
+        }
+    };
 
-	struct ImgDescr
-	{
-		FRECT uv;
-		long nImgGroup;
-	};
-	struct ImgGroupDescr
-	{
-		string sFile;
-	};
+    struct ImgDescr
+    {
+        FRECT uv;
+        long nImgGroup;
+    };
+    struct ImgGroupDescr
+    {
+        string sFile;
+    };
 
-public:
-	BISeaDatabase();
-	~BISeaDatabase();
+  public:
+    BISeaDatabase();
+    ~BISeaDatabase();
 
-	void Initialization();
+    void Initialization();
 
-protected:
-	void Release();
+  protected:
+    void Release();
 
-	LigaDescr m_Liga;
+    LigaDescr m_Liga;
 
-	array<ImgGroupDescr> m_aImgGroup;
-	array<ImgDescr> m_aImage;
+    array<ImgGroupDescr> m_aImgGroup;
+    array<ImgDescr> m_aImage;
 };
 
 #endif

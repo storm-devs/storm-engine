@@ -5,11 +5,10 @@
 
 class STATS
 {
-public:
-	 STATS(){};
-	~STATS(){};
-	void DumpMemState();
-
+  public:
+    STATS(){};
+    ~STATS(){};
+    void DumpMemState();
 };
 
 #endif

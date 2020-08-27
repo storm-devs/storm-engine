@@ -1,19 +1,18 @@
 #include "shipcommand.h"
-#include "shipsign.h"
 #include "..\image\image.h"
+#include "shipsign.h"
 
-BIShipCommand::BIShipCommand( BIShipSign* pSign ) :
-	m_apComImage(_FL)
+BIShipCommand::BIShipCommand(BIShipSign *pSign) : m_apComImage(_FL)
 {
-	m_pShipSign = pSign;
+    m_pShipSign = pSign;
 }
 
 BIShipCommand::~BIShipCommand()
 {
-	Release();
+    Release();
 }
 
 void BIShipCommand::Release()
 {
-	m_apComImage.DelAllWithPointers();
+    m_apComImage.DelAllWithPointers();
 }

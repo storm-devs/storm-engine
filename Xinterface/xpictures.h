@@ -5,13 +5,13 @@
 
 class CXPICTURES
 {
-public:
-	CXPICTURES();
-	~CXPICTURES();
+  public:
+    CXPICTURES();
+    ~CXPICTURES();
 
-	void	SetPictures(ATTRIBUTES * pAttributes);
-	void	ChangePicture(char * sAttributeName,char * sNewImageName);
-	void    ReleaseAllPictures();
+    void SetPictures(ATTRIBUTES *pAttributes);
+    void ChangePicture(char *sAttributeName, char *sNewImageName);
+    void ReleaseAllPictures();
 };
 
 #endif

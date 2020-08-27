@@ -1,7 +1,7 @@
 #ifndef _PARTICLES_MESSAGES_H_
 #define _PARTICLES_MESSAGES_H_
 /*
-											// Args:
+                                            // Args:
 #define	_BM_SET_EMITTERPOS				0	// CVECTOR
 #define	_BM_LOADSETTINGS				1	// char * file_name, char * section_name
 
@@ -19,7 +19,5 @@
 */
 
 //----------------------------------------------------------------------------------
-
-
 
 #endif

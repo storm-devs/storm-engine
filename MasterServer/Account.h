@@ -3,11 +3,11 @@
 
 class Account
 {
-public:
-	Account();
-	~Account();
+  public:
+    Account();
+    ~Account();
 
-private:
+  private:
 };
 
 #endif

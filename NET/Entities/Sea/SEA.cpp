@@ -1,1188 +1,1358 @@
-#include <xmmintrin.h>
 #include <emmintrin.h>
+#include <xmmintrin.h>
 
 #include "Sea.h"
 
-#define NUM_VERTEXS		65500
-#define NUM_INDICES		165000
+#define NUM_VERTEXS 65500
+#define NUM_INDICES 165000
 
-#define FRAMES		64
-#define XWIDTH		128
-#define YWIDTH		128
+#define FRAMES 64
+#define XWIDTH 128
+#define YWIDTH 128
 
-#define GC_CONSTANT             0 	// Global constants = {0.0, 1.0, 0.5, 0.0000152590218967 = (0.5 / 32767.5)}
-#define GC_CONSTANT2            1 	// Global constants 2 = {2.0, -1.0, 0.00036621652552071 = (12 / 32767.5), fog}
-#define GC_ANIMATION			2 	// Animation frames(0.0-1.0) for 4 stages = {stage0, stage1, stage2, stage3}
-#define GC_SHADOW_CONST1	    3  
-#define GC_SHADOW_CONST2		7 
-#define GC_LIGHT4               11 	//
-#define GC_LIGHT3               13 
-#define GC_LIGHT2               15
-#define GC_LIGHT1               17 
-#define GC_LIGHT0               19 
-#define GC_MATERIAL             21 	// 
-#define GC_CAMERA_POS           23 	// Local Camera position = {x, y, z, 0.0}
-#define GC_MTX_WVP              24	// c[0] = mWorld * mView * mProjection
+#define GC_CONSTANT 0  // Global constants = {0.0, 1.0, 0.5, 0.0000152590218967 = (0.5 / 32767.5)}
+#define GC_CONSTANT2 1 // Global constants 2 = {2.0, -1.0, 0.00036621652552071 = (12 / 32767.5), fog}
+#define GC_ANIMATION 2 // Animation frames(0.0-1.0) for 4 stages = {stage0, stage1, stage2, stage3}
+#define GC_SHADOW_CONST1 3
+#define GC_SHADOW_CONST2 7
+#define GC_LIGHT4 11 //
+#define GC_LIGHT3 13
+#define GC_LIGHT2 15
+#define GC_LIGHT1 17
+#define GC_LIGHT0 19
+#define GC_MATERIAL 21   //
+#define GC_CAMERA_POS 23 // Local Camera position = {x, y, z, 0.0}
+#define GC_MTX_WVP 24    // c[0] = mWorld * mView * mProjection
 
-#define GC_FREE					28
+#define GC_FREE 28
 
-NetSea::NetSea() : 
-	aBlocks(_FL_, 128),
-	aBumps(_FL_),
-	aNormals(_FL_)
+NetSea::NetSea() : aBlocks(_FL_, 128), aBumps(_FL_), aNormals(_FL_)
 {
-	dwMaxDim = 65536 * 2;
-	dwMinDim = 128;
+    dwMaxDim = 65536 * 2;
+    dwMinDim = 128;
 
-	fMaxSeaHeight = 20.0f;
-	fGridStep = 0.06f;
-	fLodScale = 0.4f;
+    fMaxSeaHeight = 20.0f;
+    fGridStep = 0.06f;
+    fLodScale = 0.4f;
 
-	fAmp1 = 20.0f;
-	fFrame1 = 0.0f;
-	fAnimSpeed1 = 0.0f;
-	vMove1 = 0.0f;
-	fScale1 = 0.4f;
+    fAmp1 = 20.0f;
+    fFrame1 = 0.0f;
+    fAnimSpeed1 = 0.0f;
+    vMove1 = 0.0f;
+    fScale1 = 0.4f;
 
-	fAmp2 = 1.0f;
-	fFrame2 = 10.0f;
-	fAnimSpeed2 = 0.0f;
-	vMove2 = 0.0f;
-	fScale2 = 2.0f;
+    fAmp2 = 1.0f;
+    fFrame2 = 10.0f;
+    fAnimSpeed2 = 0.0f;
+    vMove2 = 0.0f;
+    fScale2 = 2.0f;
 
-	bSimpleSea = false;
+    bSimpleSea = false;
 
-	fPosShift = 2.0f;
+    fPosShift = 2.0f;
 
-	fCurrentDeltaTime = 0.0f;
+    fCurrentDeltaTime = 0.0f;
 
-	fFogSeaDensity = 0.0f;
-	fFogStartDistance = 0.0f;
-	vFogColor = 0.0f;
-	bFogEnable = false;
+    fFogSeaDensity = 0.0f;
+    fFogStartDistance = 0.0f;
+    vFogColor = 0.0f;
+    bFogEnable = false;
 
-	pSeaFrame1 = NEW float[XWIDTH * YWIDTH];
-	pSeaFrame2 = NEW float[XWIDTH * YWIDTH];
-	pSeaNormalsFrame1 = NEW float[2 * XWIDTH * YWIDTH];
-	pSeaNormalsFrame2 = NEW float[2 * XWIDTH * YWIDTH];
+    pSeaFrame1 = NEW float[XWIDTH * YWIDTH];
+    pSeaFrame2 = NEW float[XWIDTH * YWIDTH];
+    pSeaNormalsFrame1 = NEW float[2 * XWIDTH * YWIDTH];
+    pSeaNormalsFrame2 = NEW float[2 * XWIDTH * YWIDTH];
 
-	iVSeaBuffer = -1;
-	iISeaBuffer = -1;
+    iVSeaBuffer = -1;
+    iISeaBuffer = -1;
 
-	iLastServerTime = 0;
-	iLastClientTime = 0;
+    iLastServerTime = 0;
+    iLastClientTime = 0;
 
-	pReflection = null;
-	pReflectionSunroad = null;
-	pEnvMap = null;
-	pSunRoadMap = null;
-	pZStencil = null;
-	pReflectionSurfaceDepth = null;
-	pVolumeTexture = null;
+    pReflection = null;
+    pReflectionSunroad = null;
+    pEnvMap = null;
+    pSunRoadMap = null;
+    pZStencil = null;
+    pReflectionSurfaceDepth = null;
+    pVolumeTexture = null;
 }
 
 NetSea::~NetSea()
 {
-	Render().Release(pReflection);
-	Render().Release(pReflectionSunroad);
-	Render().Release(pEnvMap);
-	Render().Release(pSunRoadMap);
-	Render().Release(pZStencil);
-	Render().Release(pReflectionSurfaceDepth);
-	Render().Release(pVolumeTexture);
+    Render().Release(pReflection);
+    Render().Release(pReflectionSunroad);
+    Render().Release(pEnvMap);
+    Render().Release(pSunRoadMap);
+    Render().Release(pZStencil);
+    Render().Release(pReflectionSurfaceDepth);
+    Render().Release(pVolumeTexture);
 
-	if (iVSeaBuffer >= 0) Render().ReleaseVertexBuffer(iVSeaBuffer); iVSeaBuffer = -1;
-	if (iISeaBuffer >= 0) Render().ReleaseIndexBuffer(iISeaBuffer); iISeaBuffer = -1;
+    if (iVSeaBuffer >= 0)
+        Render().ReleaseVertexBuffer(iVSeaBuffer);
+    iVSeaBuffer = -1;
+    if (iISeaBuffer >= 0)
+        Render().ReleaseIndexBuffer(iISeaBuffer);
+    iISeaBuffer = -1;
 
-	DELETE(pIndices);
+    DELETE(pIndices);
 
-	dword i;
-	for (i=0; i<aBumps(); i++) DELETE(aBumps[i]);
-	for (i=0; i<aNormals(); i++) DELETE(aNormals[i]);
+    dword i;
+    for (i = 0; i < aBumps(); i++)
+        DELETE(aBumps[i]);
+    for (i = 0; i < aNormals(); i++)
+        DELETE(aNormals[i]);
 
-	DELETE(pSeaFrame1);
-	DELETE(pSeaFrame2);
-	DELETE(pSeaNormalsFrame1);
-	DELETE(pSeaNormalsFrame2);
+    DELETE(pSeaFrame1);
+    DELETE(pSeaFrame2);
+    DELETE(pSeaNormalsFrame1);
+    DELETE(pSeaNormalsFrame2);
 }
 
 bool NetSea::Init()
 {
-	bSimpleSea = AttributesPointer->GetAttributeAsDword("SimpleSea", 0);
+    bSimpleSea = AttributesPointer->GetAttributeAsDword("SimpleSea", 0);
 
-	iVSeaBuffer = Render().CreateVertexBuffer(0, NUM_VERTEXS * sizeof(SeaVertex), D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC);
-	iISeaBuffer = Render().CreateIndexBuffer(NUM_INDICES * 3 * sizeof(word), D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC);
+    iVSeaBuffer =
+        Render().CreateVertexBuffer(0, NUM_VERTEXS * sizeof(SeaVertex), D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC);
+    iISeaBuffer = Render().CreateIndexBuffer(NUM_INDICES * 3 * sizeof(word), D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC);
 
-	pIndices = NEW dword[NUM_VERTEXS];
+    pIndices = NEW dword[NUM_VERTEXS];
 
-	pVolumeTexture = Render().CreateVolumeTexture(XWIDTH, YWIDTH, FRAMES, 4, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED);
-	/*pAnimTexture = Render().CreateAnimationTexture(pVolumeTexture, _FL_);
-	pAnimTexture->SetAnimSpeed(20.0f);*/
-	
-	if (!bSimpleSea)
-	{
-		Render().CreateCubeTexture(128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pEnvMap);
-		Render().CreateCubeTexture(128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pSunRoadMap);
-		Render().CreateDepthStencilSurface(128, 128, D3DFMT_D24S8, D3DMULTISAMPLE_NONE, &pZStencil);
-	}
-	else
-	{
-		Render().CreateTexture(128, 128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pReflection);
-		Render().CreateTexture(128, 128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pReflectionSunroad);
-		Render().CreateDepthStencilSurface(128, 128, D3DFMT_D24S8, D3DMULTISAMPLE_NONE, &pReflectionSurfaceDepth);
-	}
+    pVolumeTexture = Render().CreateVolumeTexture(XWIDTH, YWIDTH, FRAMES, 4, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED);
+    /*pAnimTexture = Render().CreateAnimationTexture(pVolumeTexture, _FL_);
+    pAnimTexture->SetAnimSpeed(20.0f);*/
 
-	byte bMin = 0xFF;
-	byte bMax = 0;
+    if (!bSimpleSea)
+    {
+        Render().CreateCubeTexture(128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pEnvMap);
+        Render().CreateCubeTexture(128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pSunRoadMap);
+        Render().CreateDepthStencilSurface(128, 128, D3DFMT_D24S8, D3DMULTISAMPLE_NONE, &pZStencil);
+    }
+    else
+    {
+        Render().CreateTexture(128, 128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pReflection);
+        Render().CreateTexture(128, 128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pReflectionSunroad);
+        Render().CreateDepthStencilSurface(128, 128, D3DFMT_D24S8, D3DMULTISAMPLE_NONE, &pReflectionSurfaceDepth);
+    }
 
-	array<byte*> aTmpBumps(_FL_);
+    byte bMin = 0xFF;
+    byte bMax = 0;
 
-	dword i;
+    array<byte *> aTmpBumps(_FL_);
 
-	for (i=0; i<FRAMES; i++)
-	{
-		char str[256];
-		char * pFBuffer = null;
-		dword dwSize;
-		sprintf(str, "resource\\sea\\sea%.4d.tga", i);
-		//sprintf(str, "resource\\sea\\sea0000.tga", i);
-		fio->LoadFile(str, &pFBuffer, &dwSize);
-		if (!pFBuffer) 
-		{
-			api->Trace("Sea: Can't load %s", str);
-			return false;
-		}
+    dword i;
 
-		char * pFB = pFBuffer + sizeof(TGA_H);
+    for (i = 0; i < FRAMES; i++)
+    {
+        char str[256];
+        char *pFBuffer = null;
+        dword dwSize;
+        sprintf(str, "resource\\sea\\sea%.4d.tga", i);
+        // sprintf(str, "resource\\sea\\sea0000.tga", i);
+        fio->LoadFile(str, &pFBuffer, &dwSize);
+        if (!pFBuffer)
+        {
+            api->Trace("Sea: Can't load %s", str);
+            return false;
+        }
 
-		byte * pBuffer = NEW byte[XWIDTH * YWIDTH];
-		aTmpBumps.Add(pBuffer);
-		
-		for (dword y=0; y<YWIDTH; y++)
-			for (dword x=0; x<XWIDTH; x++)
-			{
-				byte bB = (*pFB);
-				//bB = byte(float(bB - 79.0f) * 255.0f / (139.0f - 79.0f));
-				if (bB < bMin) bMin = bB;
-				if (bB > bMax) bMax = bB;
-				pBuffer[x + y * XWIDTH] = bB & 0xFF;
-				pFB += sizeof(dword);
-			}
+        char *pFB = pFBuffer + sizeof(TGA_H);
 
-		DELETE(pFBuffer);
-	}
+        byte *pBuffer = NEW byte[XWIDTH * YWIDTH];
+        aTmpBumps.Add(pBuffer);
 
-	for (i=0; i<FRAMES; i++)
-	{
-		byte * pBuffer = NEW byte[XWIDTH * YWIDTH];
-		aBumps.Add(pBuffer);
+        for (dword y = 0; y < YWIDTH; y++)
+            for (dword x = 0; x < XWIDTH; x++)
+            {
+                byte bB = (*pFB);
+                // bB = byte(float(bB - 79.0f) * 255.0f / (139.0f - 79.0f));
+                if (bB < bMin)
+                    bMin = bB;
+                if (bB > bMax)
+                    bMax = bB;
+                pBuffer[x + y * XWIDTH] = bB & 0xFF;
+                pFB += sizeof(dword);
+            }
 
-		for (dword y=0; y<YWIDTH; y++)
-			for (dword x=0; x<XWIDTH; x++)
-			{
-				dword dwAddress = x + y * YWIDTH;
-				float b1, b2, b3, b4, b5; // -2 -1 0 1 2
+        DELETE(pFBuffer);
+    }
 
-				b1 = 0.08f * float(aTmpBumps[(i - 2) & (FRAMES - 1)][dwAddress]);
-				b2 = 0.17f * float(aTmpBumps[(i - 1) & (FRAMES - 1)][dwAddress]);
-				b3 = 0.50f * float(aTmpBumps[(i - 0) & (FRAMES - 1)][dwAddress]);
-				b4 = 0.17f * float(aTmpBumps[(i + 1) & (FRAMES - 1)][dwAddress]);
-				b5 = 0.08f * float(aTmpBumps[(i + 2) & (FRAMES - 1)][dwAddress]);
+    for (i = 0; i < FRAMES; i++)
+    {
+        byte *pBuffer = NEW byte[XWIDTH * YWIDTH];
+        aBumps.Add(pBuffer);
 
-				//pBuffer[dwAddress] = byte(b1 + b2 + b3 + b4 + b5);
-				pBuffer[dwAddress] = aTmpBumps[(i - 0) & (FRAMES - 1)][dwAddress];
-			}
+        for (dword y = 0; y < YWIDTH; y++)
+            for (dword x = 0; x < XWIDTH; x++)
+            {
+                dword dwAddress = x + y * YWIDTH;
+                float b1, b2, b3, b4, b5; // -2 -1 0 1 2
 
-		/*char str[256];
-		sprintf(str, "%.4d", i);
-		HANDLE hFile = fio->_CreateFile(str, GENERIC_WRITE, FILE_SHARE_READ, CREATE_ALWAYS);
-		if (INVALID_HANDLE_VALUE != hFile)
-		{
-			fio->_WriteFile(hFile, pBuffer, sizeof(byte) * 256 * 256, null);
-			fio->_CloseHandle(hFile);
-		}*/
-	}
+                b1 = 0.08f * float(aTmpBumps[(i - 2) & (FRAMES - 1)][dwAddress]);
+                b2 = 0.17f * float(aTmpBumps[(i - 1) & (FRAMES - 1)][dwAddress]);
+                b3 = 0.50f * float(aTmpBumps[(i - 0) & (FRAMES - 1)][dwAddress]);
+                b4 = 0.17f * float(aTmpBumps[(i + 1) & (FRAMES - 1)][dwAddress]);
+                b5 = 0.08f * float(aTmpBumps[(i + 2) & (FRAMES - 1)][dwAddress]);
 
-	for (i=0; i<aTmpBumps(); i++) DELETE(aTmpBumps[i]);
+                // pBuffer[dwAddress] = byte(b1 + b2 + b3 + b4 + b5);
+                pBuffer[dwAddress] = aTmpBumps[(i - 0) & (FRAMES - 1)][dwAddress];
+            }
 
-	BuildVolumeTexture();
+        /*char str[256];
+        sprintf(str, "%.4d", i);
+        HANDLE hFile = fio->_CreateFile(str, GENERIC_WRITE, FILE_SHARE_READ, CREATE_ALWAYS);
+        if (INVALID_HANDLE_VALUE != hFile)
+        {
+            fio->_WriteFile(hFile, pBuffer, sizeof(byte) * 256 * 256, null);
+            fio->_CloseHandle(hFile);
+        }*/
+    }
 
-	EditMode_Update();
+    for (i = 0; i < aTmpBumps(); i++)
+        DELETE(aTmpBumps[i]);
 
-	return true;
+    BuildVolumeTexture();
+
+    EditMode_Update();
+
+    return true;
 }
 
 void NetSea::BuildVolumeTexture()
 {
-	array<CVECTOR*> aVectors(_FL_);
-	dword i, j;
-	aNormals.DelAllWithPointers();
+    array<CVECTOR *> aVectors(_FL_);
+    dword i, j;
+    aNormals.DelAllWithPointers();
 
-	D3DLOCKED_BOX	box[4];
-	
-	for (i=0; i<4; i++)
-		pVolumeTexture->LockBox(i, &box[i], 0, 0);
+    D3DLOCKED_BOX box[4];
 
-	// build normals
-	for (i=0; i<FRAMES; i++)
-	{
-		dword * pBuffer = NEW dword[XWIDTH * YWIDTH];
-		aNormals.Add(pBuffer);
+    for (i = 0; i < 4; i++)
+        pVolumeTexture->LockBox(i, &box[i], 0, 0);
 
-		CVECTOR * pVectors = NEW CVECTOR[XWIDTH * YWIDTH];
-		aVectors.Add(pVectors);
+    // build normals
+    for (i = 0; i < FRAMES; i++)
+    {
+        dword *pBuffer = NEW dword[XWIDTH * YWIDTH];
+        aNormals.Add(pBuffer);
 
-		for (dword y=0; y<YWIDTH; y++)
-			for (dword x=0; x<XWIDTH; x++)
-			{
-#define GET_MASSIVE(dx,dy)	(float(pMassive[((x+dx)&(XWIDTH-1)) + ((y+dy)&(XWIDTH-1)) * XWIDTH] & 0xFF) / 255.0f)
-				byte * pMassive = aBumps[i];
-	
-				float fCenter	= GET_MASSIVE(0, 0);
+        CVECTOR *pVectors = NEW CVECTOR[XWIDTH * YWIDTH];
+        aVectors.Add(pVectors);
 
-				float fLeft		= GET_MASSIVE(-1, 0) - fCenter; 
-				float fRight	= GET_MASSIVE(1, 0) - fCenter; 
-				float fTop		= GET_MASSIVE(0, -1) - fCenter; 
-				float fBottom	= GET_MASSIVE(0, 1) - fCenter; 
+        for (dword y = 0; y < YWIDTH; y++)
+            for (dword x = 0; x < XWIDTH; x++)
+            {
+#define GET_MASSIVE(dx, dy)                                                                                            \
+    (float(pMassive[((x + dx) & (XWIDTH - 1)) + ((y + dy) & (XWIDTH - 1)) * XWIDTH] & 0xFF) / 255.0f)
+                byte *pMassive = aBumps[i];
 
-				CVECTOR vRes, vRes1, d0, d1, d2, d3, d4, d5, d6, d7;
+                float fCenter = GET_MASSIVE(0, 0);
 
-				dword dwNums = 0;
-				if (fLeft < 0.0f) dwNums++;
-				if (fRight < 0.0f) dwNums++;
-				if (fTop < 0.0f) dwNums++;
-				if (fBottom < 0.0f) dwNums++;
+                float fLeft = GET_MASSIVE(-1, 0) - fCenter;
+                float fRight = GET_MASSIVE(1, 0) - fCenter;
+                float fTop = GET_MASSIVE(0, -1) - fCenter;
+                float fBottom = GET_MASSIVE(0, 1) - fCenter;
 
-				float d = 1.0f;
-				d0 = CVECTOR(-1.f, d * fLeft, 0.f);
-				d1 = CVECTOR(0.f, d * fTop, -1.f);
-				d2 = CVECTOR(1.f, d * fRight, 0.f);
-				d3 = CVECTOR(0.f, d * fBottom, 1.f);
+                CVECTOR vRes, vRes1, d0, d1, d2, d3, d4, d5, d6, d7;
 
-				//res = !((d0^d1) + (d2^d3)); 
+                dword dwNums = 0;
+                if (fLeft < 0.0f)
+                    dwNums++;
+                if (fRight < 0.0f)
+                    dwNums++;
+                if (fTop < 0.0f)
+                    dwNums++;
+                if (fBottom < 0.0f)
+                    dwNums++;
 
-				CVECTOR v1 = (d1^d0);
-				CVECTOR v2 = (d3^d2);
-				CVECTOR v3 = (d0^d3);
-				CVECTOR v4 = (d2^d1);
+                float d = 1.0f;
+                d0 = CVECTOR(-1.f, d * fLeft, 0.f);
+                d1 = CVECTOR(0.f, d * fTop, -1.f);
+                d2 = CVECTOR(1.f, d * fRight, 0.f);
+                d3 = CVECTOR(0.f, d * fBottom, 1.f);
 
-				vRes = vRes1 = !((d1^d0) + (d3^d2) + (d0^d3) + (d2^d1)); 
-				if (bSimpleSea)
-				{
-					vRes1 = !(vRes * CVECTOR(100.0f, 1.0f, 100.0f));
-				}
-				//CVECTOR vRes1 = !(vRes * CVECTOR(100.0f, 1.0f, 100.0f));
-				dword dwRes = MAKELONG(short(vRes.x * 32767.5f), short(vRes.z * 32767.5f));
+                // res = !((d0^d1) + (d2^d3));
 
-				aNormals[i][x + y * XWIDTH] = dwRes;
-				aVectors[i][x + y * XWIDTH] = vRes1;
+                CVECTOR v1 = (d1 ^ d0);
+                CVECTOR v2 = (d3 ^ d2);
+                CVECTOR v3 = (d0 ^ d3);
+                CVECTOR v4 = (d2 ^ d1);
 
-				long red	= fftol((vRes1.x * 0.5f + 0.5f) * 255.0f);		// FIX-ME no ftol
-				long green	= fftol((vRes1.y * 0.5f + 0.5f) * 255.0f);		// FIX-ME no ftol
-				long blue	= fftol((vRes1.z * 0.5f + 0.5f) * 255.0f);		// FIX-ME no ftol
+                vRes = vRes1 = !((d1 ^ d0) + (d3 ^ d2) + (d0 ^ d3) + (d2 ^ d1));
+                if (bSimpleSea)
+                {
+                    vRes1 = !(vRes * CVECTOR(100.0f, 1.0f, 100.0f));
+                }
+                // CVECTOR vRes1 = !(vRes * CVECTOR(100.0f, 1.0f, 100.0f));
+                dword dwRes = MAKELONG(short(vRes.x * 32767.5f), short(vRes.z * 32767.5f));
 
-				if (bSimpleSea)
-					*(dword*)&(((char*)box[0].pBits)[i * box[0].SlicePitch + y * box[0].RowPitch + x * 4]) = ARGB(0x80, blue, blue, red);
-				else
-					*(dword*)&(((char*)box[0].pBits)[i * box[0].SlicePitch + y * box[0].RowPitch + x * 4]) = ARGB(0x80, blue, green, red);
-			}
-	}
+                aNormals[i][x + y * XWIDTH] = dwRes;
+                aVectors[i][x + y * XWIDTH] = vRes1;
 
-	for (j=1; j<4; j++)
-	{
-		CVECTOR * pVectors = NEW CVECTOR[(XWIDTH >> j) * (YWIDTH >> j)];
+                long red = fftol((vRes1.x * 0.5f + 0.5f) * 255.0f);   // FIX-ME no ftol
+                long green = fftol((vRes1.y * 0.5f + 0.5f) * 255.0f); // FIX-ME no ftol
+                long blue = fftol((vRes1.z * 0.5f + 0.5f) * 255.0f);  // FIX-ME no ftol
 
-		for (i=0; i<FRAMES >> j; i++)
-		{
-			// calculate current pVectors
-			for (dword y=0; y<YWIDTH >> j; y++)
-				for (dword x=0; x<XWIDTH >> j; x++)
-				{
-					long iNumVectors = 0;
-					CVECTOR vVec = 0.0f;
-					dword dwW = 1 << j;
-					for (dword k = i * dwW; k < (i + 1) * dwW; k++)
-					{
-						for (dword yy = y * dwW; yy < (y + 1) * dwW; yy++)
-							for (dword xx = x * dwW; xx < (x + 1) * dwW; xx++)
-							{	
-								iNumVectors++;
-								vVec += aVectors[k][xx + yy * XWIDTH];
-							}
-					}
-					pVectors[x + y * (XWIDTH >> j)] = vVec / float(iNumVectors);
-				}
+                if (bSimpleSea)
+                    *(dword *)&(((char *)box[0].pBits)[i * box[0].SlicePitch + y * box[0].RowPitch + x * 4]) =
+                        ARGB(0x80, blue, blue, red);
+                else
+                    *(dword *)&(((char *)box[0].pBits)[i * box[0].SlicePitch + y * box[0].RowPitch + x * 4]) =
+                        ARGB(0x80, blue, green, red);
+            }
+    }
 
-			//
-			for (dword y=0; y<YWIDTH >> j; y++)
-				for (dword x=0; x<XWIDTH >> j; x++)
-				{
-					long red	= fftol((pVectors[x + y * (XWIDTH >> j)].x * 0.5f + 0.5f) * 255.0f);		// FIX-ME no ftol
-					long green	= fftol((pVectors[x + y * (XWIDTH >> j)].y * 0.5f + 0.5f) * 255.0f);		// FIX-ME no ftol
-					long blue	= fftol((pVectors[x + y * (XWIDTH >> j)].z * 0.5f + 0.5f) * 255.0f);		// FIX-ME no ftol
+    for (j = 1; j < 4; j++)
+    {
+        CVECTOR *pVectors = NEW CVECTOR[(XWIDTH >> j) * (YWIDTH >> j)];
 
-					if (bSimpleSea)
-						*(dword*)&(((char*)box[j].pBits)[i * box[j].SlicePitch + y * box[j].RowPitch + x * 4]) = ARGB(0x80, blue, blue, red);
-					else
-						*(dword*)&(((char*)box[j].pBits)[i * box[j].SlicePitch + y * box[j].RowPitch + x * 4]) = ARGB(0x80, blue, green, red);
-				}
-		}
-		DELETE(pVectors);
-	}
+        for (i = 0; i<FRAMES> > j; i++)
+        {
+            // calculate current pVectors
+            for (dword y = 0; y<YWIDTH> > j; y++)
+                for (dword x = 0; x<XWIDTH> > j; x++)
+                {
+                    long iNumVectors = 0;
+                    CVECTOR vVec = 0.0f;
+                    dword dwW = 1 << j;
+                    for (dword k = i * dwW; k < (i + 1) * dwW; k++)
+                    {
+                        for (dword yy = y * dwW; yy < (y + 1) * dwW; yy++)
+                            for (dword xx = x * dwW; xx < (x + 1) * dwW; xx++)
+                            {
+                                iNumVectors++;
+                                vVec += aVectors[k][xx + yy * XWIDTH];
+                            }
+                    }
+                    pVectors[x + y * (XWIDTH >> j)] = vVec / float(iNumVectors);
+                }
 
-	for (i=0; i<4; i++)
-		pVolumeTexture->UnlockBox(i);
+            //
+            for (dword y = 0; y<YWIDTH> > j; y++)
+                for (dword x = 0; x<XWIDTH> > j; x++)
+                {
+                    long red = fftol((pVectors[x + y * (XWIDTH >> j)].x * 0.5f + 0.5f) * 255.0f);   // FIX-ME no ftol
+                    long green = fftol((pVectors[x + y * (XWIDTH >> j)].y * 0.5f + 0.5f) * 255.0f); // FIX-ME no ftol
+                    long blue = fftol((pVectors[x + y * (XWIDTH >> j)].z * 0.5f + 0.5f) * 255.0f);  // FIX-ME no ftol
 
-	aVectors.DelAllWithPointers();
+                    if (bSimpleSea)
+                        *(dword *)&(((char *)box[j].pBits)[i * box[j].SlicePitch + y * box[j].RowPitch + x * 4]) =
+                            ARGB(0x80, blue, blue, red);
+                    else
+                        *(dword *)&(((char *)box[j].pBits)[i * box[j].SlicePitch + y * box[j].RowPitch + x * 4]) =
+                            ARGB(0x80, blue, green, red);
+                }
+        }
+        DELETE(pVectors);
+    }
+
+    for (i = 0; i < 4; i++)
+        pVolumeTexture->UnlockBox(i);
+
+    aVectors.DelAllWithPointers();
 }
 
 bool NetSea::EditMode_Update()
 {
-	//return true;
-	v4SeaColor = CVECTOR4(10.0f / 255.0f, 55.0f / 255.0f, 100.0f / 255.0f, 1.0f);
-	v4SkyColor = CVECTOR4(1.0f, 1.0f, 1.0f, 1.0f);
+    // return true;
+    v4SeaColor = CVECTOR4(10.0f / 255.0f, 55.0f / 255.0f, 100.0f / 255.0f, 1.0f);
+    v4SkyColor = CVECTOR4(1.0f, 1.0f, 1.0f, 1.0f);
 
-	float fReflection = 0.8f;
-	float fTransparency = 0.7f;
-	float fFrenel = 0.75f;
-	float fAttenuation = 0.9f;
-	v4SeaParameters = CVECTOR4(fAttenuation, fReflection, fTransparency, 0.0f);
+    float fReflection = 0.8f;
+    float fTransparency = 0.7f;
+    float fFrenel = 0.75f;
+    float fAttenuation = 0.9f;
+    v4SeaParameters = CVECTOR4(fAttenuation, fReflection, fTransparency, 0.0f);
 
-	fAmp1 = _fAmp1 = 8.0f;
-	fAnimSpeed1 = 6.0f;
-	fScale1 = 0.5f;
-	vMoveSpeed1 = CVECTOR(5.0f, 0.0f, 0.0f);
+    fAmp1 = _fAmp1 = 8.0f;
+    fAnimSpeed1 = 6.0f;
+    fScale1 = 0.5f;
+    vMoveSpeed1 = CVECTOR(5.0f, 0.0f, 0.0f);
 
-	fAmp2 = _fAmp2 = 1.0f;
-	fAnimSpeed2 = 3.0f;
-	fScale2 = 2.0f;
-	vMoveSpeed2 = CVECTOR(0.0f, 0.0f, 0.2f);
+    fAmp2 = _fAmp2 = 1.0f;
+    fAnimSpeed2 = 3.0f;
+    fScale2 = 2.0f;
+    vMoveSpeed2 = CVECTOR(0.0f, 0.0f, 0.2f);
 
-	fBumpScale = 0.1f;
-	fBumpSpeed = 1.0f;
-	fGridStep = 0.07f;
-	fLodScale = 0.5f;
+    fBumpScale = 0.1f;
+    fBumpSpeed = 1.0f;
+    fGridStep = 0.07f;
+    fLodScale = 0.5f;
 
-	fPosShift = 1.2f;
-	
-	Execute(0);
+    fPosShift = 1.2f;
 
-	return true;
+    Execute(0);
+
+    return true;
 }
 
-long NetSea::VisCode(const CVECTOR & vP)
+long NetSea::VisCode(const CVECTOR &vP)
 {
-	long vc = 0;
+    long vc = 0;
 
-	CVECTOR v = vP - vCamPos;
+    CVECTOR v = vP - vCamPos;
 
-	CVECTOR vp1 = CVECTOR(pFrustumPlanes[0].Nx, pFrustumPlanes[0].Ny, pFrustumPlanes[0].Nz);
-	CVECTOR vp2 = CVECTOR(pFrustumPlanes[1].Nx, pFrustumPlanes[1].Ny, pFrustumPlanes[1].Nz);
-	CVECTOR vp3 = CVECTOR(pFrustumPlanes[2].Nx, pFrustumPlanes[2].Ny, pFrustumPlanes[2].Nz);
-	CVECTOR vp4 = CVECTOR(pFrustumPlanes[3].Nx, pFrustumPlanes[3].Ny, pFrustumPlanes[3].Nz);
+    CVECTOR vp1 = CVECTOR(pFrustumPlanes[0].Nx, pFrustumPlanes[0].Ny, pFrustumPlanes[0].Nz);
+    CVECTOR vp2 = CVECTOR(pFrustumPlanes[1].Nx, pFrustumPlanes[1].Ny, pFrustumPlanes[1].Nz);
+    CVECTOR vp3 = CVECTOR(pFrustumPlanes[2].Nx, pFrustumPlanes[2].Ny, pFrustumPlanes[2].Nz);
+    CVECTOR vp4 = CVECTOR(pFrustumPlanes[3].Nx, pFrustumPlanes[3].Ny, pFrustumPlanes[3].Nz);
 
-	//if((v | pFrustumPlanes[0].n) < 0 ) vc |= 0x10;
-	if ((v | vp1) < 0 ) vc |= 0x01;
-	if ((v | vp2) < 0 ) vc |= 0x02;
-	if ((v | vp3) < 0 ) vc |= 0x04;
-	if ((v | vp4) < 0 ) vc |= 0x08;
+    // if((v | pFrustumPlanes[0].n) < 0 ) vc |= 0x10;
+    if ((v | vp1) < 0)
+        vc |= 0x01;
+    if ((v | vp2) < 0)
+        vc |= 0x02;
+    if ((v | vp3) < 0)
+        vc |= 0x04;
+    if ((v | vp4) < 0)
+        vc |= 0x08;
 
-	return vc;
+    return vc;
 }
 
-bool NetSea::isVisibleBBox(const CVECTOR & vCenter, const CVECTOR & v1, const CVECTOR & v2)
+bool NetSea::isVisibleBBox(const CVECTOR &vCenter, const CVECTOR &v1, const CVECTOR &v2)
 {
-	/*CVECTOR vc = vCenter - vCamPos;
-	CVECTOR vp1 = v1 - vCamPos;
-	CVECTOR vp2 = v2 - vCamPos;
-	float fR2 = sqrtf(Sqr((vp1.x - vp2.x) * 0.5f) + Sqr((vp1.z - vp2.z)) * 0.5f);*/
+    /*CVECTOR vc = vCenter - vCamPos;
+    CVECTOR vp1 = v1 - vCamPos;
+    CVECTOR vp2 = v2 - vCamPos;
+    float fR2 = sqrtf(Sqr((vp1.x - vp2.x) * 0.5f) + Sqr((vp1.z - vp2.z)) * 0.5f);*/
 
-	// if sphere not visible - return
-//	for (dword i=0; i<dwNumFrustumPlanes; i++)
-//		if ((pFrustumPlanes[i].n | vc) - pFrustumPlanes[i].d < -fR2) return false;
+    // if sphere not visible - return
+    //	for (dword i=0; i<dwNumFrustumPlanes; i++)
+    //		if ((pFrustumPlanes[i].n | vc) - pFrustumPlanes[i].d < -fR2) return false;
 
-	// check box visible
-	long vc = 0xFF;
-	vc &= VisCode(CVECTOR(v1.x, v1.y, v1.z)); if (vc == 0) return true;
-	vc &= VisCode(CVECTOR(v1.x, v2.y, v1.z)); 
-	vc &= VisCode(CVECTOR(v2.x, v1.y, v1.z)); 
-	vc &= VisCode(CVECTOR(v2.x, v2.y, v1.z)); if (vc == 0) return true;
-	vc &= VisCode(CVECTOR(v1.x, v1.y, v2.z)); 
-	vc &= VisCode(CVECTOR(v1.x, v2.y, v2.z)); 
-	vc &= VisCode(CVECTOR(v2.x, v1.y, v2.z)); 
-	vc &= VisCode(CVECTOR(v2.x, v2.y, v2.z)); 
+    // check box visible
+    long vc = 0xFF;
+    vc &= VisCode(CVECTOR(v1.x, v1.y, v1.z));
+    if (vc == 0)
+        return true;
+    vc &= VisCode(CVECTOR(v1.x, v2.y, v1.z));
+    vc &= VisCode(CVECTOR(v2.x, v1.y, v1.z));
+    vc &= VisCode(CVECTOR(v2.x, v2.y, v1.z));
+    if (vc == 0)
+        return true;
+    vc &= VisCode(CVECTOR(v1.x, v1.y, v2.z));
+    vc &= VisCode(CVECTOR(v1.x, v2.y, v2.z));
+    vc &= VisCode(CVECTOR(v2.x, v1.y, v2.z));
+    vc &= VisCode(CVECTOR(v2.x, v2.y, v2.z));
 
-	return vc == 0;
+    return vc == 0;
 }
 
-inline float NetSea::CalcLod(const float & x, const float & y, const float & z)
+inline float NetSea::CalcLod(const float &x, const float &y, const float &z)
 {
-	return Sqr(x - vCamPos.x) + Sqr((y - vCamPos.y)) + Sqr(z - vCamPos.z);
+    return Sqr(x - vCamPos.x) + Sqr((y - vCamPos.y)) + Sqr(z - vCamPos.z);
 }
 
-void NetSea::CalculateLOD(const CVECTOR & v1, const CVECTOR & v2, long & iMaxLOD, long & iMinLOD)
+void NetSea::CalculateLOD(const CVECTOR &v1, const CVECTOR &v2, long &iMaxLOD, long &iMinLOD)
 {
-	float	fCur, fMax, fMin;
+    float fCur, fMax, fMin;
 
-	fCur = CalcLod(v1.x, vSeaCenterPos.y, v1.z); fMax = fCur;
-	fCur = CalcLod(v2.x, vSeaCenterPos.y, v1.z); if (fCur > fMax) fMax = fCur;
-	fCur = CalcLod(v1.x, vSeaCenterPos.y, v2.z); if (fCur > fMax) fMax = fCur;
-	fCur = CalcLod(v2.x, vSeaCenterPos.y, v2.z); if (fCur > fMax) fMax = fCur;
+    fCur = CalcLod(v1.x, vSeaCenterPos.y, v1.z);
+    fMax = fCur;
+    fCur = CalcLod(v2.x, vSeaCenterPos.y, v1.z);
+    if (fCur > fMax)
+        fMax = fCur;
+    fCur = CalcLod(v1.x, vSeaCenterPos.y, v2.z);
+    if (fCur > fMax)
+        fMax = fCur;
+    fCur = CalcLod(v2.x, vSeaCenterPos.y, v2.z);
+    if (fCur > fMax)
+        fMax = fCur;
 
-	if (vCamPos.x < v1.x)
-	{
-		if (vCamPos.z < v1.z)
-			fMin = CalcLod(v1.x, vSeaCenterPos.y, v1.z);
-		else
-		if (vCamPos.z > v2.z)
-			fMin = CalcLod(v1.x, vSeaCenterPos.y, v2.z);
-		else
-			fMin = CalcLod(v1.x, vSeaCenterPos.y, vCamPos.z);
-	}
-	else
-	if (vCamPos.x > v2.x)
-	{
-		if (vCamPos.z < v1.z)
-			fMin = CalcLod(v2.x, vSeaCenterPos.y, v1.z);
-		else
-		if (vCamPos.z > v2.z)
-			fMin = CalcLod(v2.x, vSeaCenterPos.y, v2.z);
-		else
-			fMin = CalcLod(v2.x, vSeaCenterPos.y, vCamPos.z);
-	}
-	else
-	{
-		if (vCamPos.z < v1.z)
-			fMin = CalcLod(vCamPos.x, vSeaCenterPos.y, v1.z);
-		else
-		if (vCamPos.z > v2.z)
-			fMin = CalcLod(vCamPos.x, vSeaCenterPos.y, v2.z);
-		else
-			fMin = CalcLod(vCamPos.x, vSeaCenterPos.y, vCamPos.z);
-	}
+    if (vCamPos.x < v1.x)
+    {
+        if (vCamPos.z < v1.z)
+            fMin = CalcLod(v1.x, vSeaCenterPos.y, v1.z);
+        else if (vCamPos.z > v2.z)
+            fMin = CalcLod(v1.x, vSeaCenterPos.y, v2.z);
+        else
+            fMin = CalcLod(v1.x, vSeaCenterPos.y, vCamPos.z);
+    }
+    else if (vCamPos.x > v2.x)
+    {
+        if (vCamPos.z < v1.z)
+            fMin = CalcLod(v2.x, vSeaCenterPos.y, v1.z);
+        else if (vCamPos.z > v2.z)
+            fMin = CalcLod(v2.x, vSeaCenterPos.y, v2.z);
+        else
+            fMin = CalcLod(v2.x, vSeaCenterPos.y, vCamPos.z);
+    }
+    else
+    {
+        if (vCamPos.z < v1.z)
+            fMin = CalcLod(vCamPos.x, vSeaCenterPos.y, v1.z);
+        else if (vCamPos.z > v2.z)
+            fMin = CalcLod(vCamPos.x, vSeaCenterPos.y, v2.z);
+        else
+            fMin = CalcLod(vCamPos.x, vSeaCenterPos.y, vCamPos.z);
+    }
 
-	iMaxLOD = int(0.5f * logf(fLodScale * fMax) / logf(2)); 
-	if (iMaxLOD < 4) iMaxLOD = 4;
-	iMinLOD = int(0.5f * logf(fLodScale * fMin) / logf(2)); 
-	if (iMinLOD < 4) iMinLOD = 4;
+    iMaxLOD = int(0.5f * logf(fLodScale * fMax) / logf(2));
+    if (iMaxLOD < 4)
+        iMaxLOD = 4;
+    iMinLOD = int(0.5f * logf(fLodScale * fMin) / logf(2));
+    if (iMinLOD < 4)
+        iMinLOD = 4;
 }
 
 void NetSea::AddBlock(long iTX, long iTY, long iSize, long iLOD)
 {
-	SeaBlock * pB = &aBlocks[aBlocks.Add()];
+    SeaBlock *pB = &aBlocks[aBlocks.Add()];
 
-	pB->iTX = iTX;		
-	pB->iTY = iTY;
-	pB->iSize = iSize;
-	pB->iLOD = iLOD;
+    pB->iTX = iTX;
+    pB->iTY = iTY;
+    pB->iSize = iSize;
+    pB->iLOD = iLOD;
 
-	pB->bInProgress = false;
-	pB->bDone = false;
+    pB->bInProgress = false;
+    pB->bDone = false;
 
-	pB->iSize0 = iSize >> iLOD;
+    pB->iSize0 = iSize >> iLOD;
 }
 
 void NetSea::BuildTree(long iTX, long iTY, long iLev)
 {
-	long	iMaxLOD, iMinLOD;
-	long	iSize = long(dwMaxDim >> iLev);
-	float	fGSize = fGridStep * iSize;
+    long iMaxLOD, iMinLOD;
+    long iSize = long(dwMaxDim >> iLev);
+    float fGSize = fGridStep * iSize;
 
-	CVECTOR v1 = vSeaCenterPos + CVECTOR(iTX * fGSize, -fMaxSeaHeight / 2.0f, iTY * fGSize);
-	CVECTOR v2 = v1 + CVECTOR(fGSize, fMaxSeaHeight, fGSize);
+    CVECTOR v1 = vSeaCenterPos + CVECTOR(iTX * fGSize, -fMaxSeaHeight / 2.0f, iTY * fGSize);
+    CVECTOR v2 = v1 + CVECTOR(fGSize, fMaxSeaHeight, fGSize);
 
-	if (!isVisibleBBox(vSeaCenterPos, v1, v2)) return;
+    if (!isVisibleBBox(vSeaCenterPos, v1, v2))
+        return;
 
-	CalculateLOD(v1, v2, iMaxLOD, iMinLOD);
+    CalculateLOD(v1, v2, iMaxLOD, iMinLOD);
 
-	if (iSize <= long(dwMinDim) || iMaxLOD - iMinLOD <= 1)
-	{
-		AddBlock(iTX, iTY, iSize, iMinLOD);
-		return;
-	}
+    if (iSize <= long(dwMinDim) || iMaxLOD - iMinLOD <= 1)
+    {
+        AddBlock(iTX, iTY, iSize, iMinLOD);
+        return;
+    }
 
-	iTX *= 2; 
-	iTY *= 2; 
-	iLev++;
+    iTX *= 2;
+    iTY *= 2;
+    iLev++;
 
-	BuildTree(iTX    , iTY    , iLev);
-	BuildTree(iTX + 1, iTY    , iLev);
-	BuildTree(iTX    , iTY + 1, iLev);
-	BuildTree(iTX + 1, iTY + 1, iLev);
+    BuildTree(iTX, iTY, iLev);
+    BuildTree(iTX + 1, iTY, iLev);
+    BuildTree(iTX, iTY + 1, iLev);
+    BuildTree(iTX + 1, iTY + 1, iLev);
 }
 
 void NetSea::SetBlock(dword dwBlockIndex)
 {
-	SeaBlock * pB = &aBlocks[dwBlockIndex];
+    SeaBlock *pB = &aBlocks[dwBlockIndex];
 
-	float	cx, cz, fStep = fGridStep * float(1 << pB->iLOD);
-	float	fSize = fGridStep * pB->iSize;
-	long	x, y, size0 = pB->iSize >> pB->iLOD;
+    float cx, cz, fStep = fGridStep * float(1 << pB->iLOD);
+    float fSize = fGridStep * pB->iSize;
+    long x, y, size0 = pB->iSize >> pB->iLOD;
 
-	SeaVertex * pV = &pVSea[iVStart];
+    SeaVertex *pV = &pVSea[iVStart];
 
-	pB->iVStart = iVStart;
-	pB->iTStart = iTStart;
-	pB->iIStart = iIStart;
-	
-	float x1 = float(pB->iTX * pB->iSize) * fGridStep;
-	float y1 = float(pB->iTY * pB->iSize) * fGridStep;
-	float x2 = x1 + float(size0) * fStep;
-	float y2 = y1 + float(size0) * fStep;
+    pB->iVStart = iVStart;
+    pB->iTStart = iTStart;
+    pB->iIStart = iIStart;
 
-	pB->iX1 = fftoi(x1 / fGridStep); 
-	pB->iX2 = fftoi(x2 / fGridStep); 
-	pB->iY1 = fftoi(y1 / fGridStep); 
-	pB->iY2 = fftoi(y2 / fGridStep); 
+    float x1 = float(pB->iTX * pB->iSize) * fGridStep;
+    float y1 = float(pB->iTY * pB->iSize) * fGridStep;
+    float x2 = x1 + float(size0) * fStep;
+    float y2 = y1 + float(size0) * fStep;
 
-	x1 += vSeaCenterPos.x;	x2 += vSeaCenterPos.x;
-	y1 += vSeaCenterPos.z;	y2 += vSeaCenterPos.z;
+    pB->iX1 = fftoi(x1 / fGridStep);
+    pB->iX2 = fftoi(x2 / fGridStep);
+    pB->iY1 = fftoi(y1 / fGridStep);
+    pB->iY2 = fftoi(y2 / fGridStep);
 
-	// analyse 
-	//if (!(GetAsyncKeyState('5')<0))
-	{
-		long	i, j;
-		for (i=0; i<long(dwBlockIndex); i++) //if (i == 6)
-		{
-			SeaBlock * pB2 = &aBlocks[i];
+    x1 += vSeaCenterPos.x;
+    x2 += vSeaCenterPos.x;
+    y1 += vSeaCenterPos.z;
+    y2 += vSeaCenterPos.z;
 
-			// Test Up & Down
-			bool bTestedUp = pB->iY1 == pB2->iY2;
-			bool bTestedDown = pB->iY2 == pB2->iY1;
+    // analyse
+    // if (!(GetAsyncKeyState('5')<0))
+    {
+        long i, j;
+        for (i = 0; i < long(dwBlockIndex); i++) // if (i == 6)
+        {
+            SeaBlock *pB2 = &aBlocks[i];
 
-			//if (!(GetAsyncKeyState('5')<0))
-			if (bTestedUp || bTestedDown)
-			{
-				long iAddSrc = pB2->iIStart + ((bTestedUp) ? (pB2->iSize0 + 1) * pB2->iSize0 : 0);
-				long iAddDst = pB->iIStart + ((bTestedUp) ? 0 : (pB->iSize0 + 1) * pB->iSize0);
+            // Test Up & Down
+            bool bTestedUp = pB->iY1 == pB2->iY2;
+            bool bTestedDown = pB->iY2 == pB2->iY1;
 
-				if ((pB->iX1 >= pB2->iX1 && pB->iX2 <= pB2->iX2) || (pB->iX1 <= pB2->iX1 && pB->iX2 >= pB2->iX2))
-				{
-					long iMinX = Max(pB->iX1, pB2->iX1);
-					long iMaxX = Min(pB->iX2, pB2->iX2);
-					
-					long iStartDstX = pB->iSize0 * (iMinX - pB->iX1) / (pB->iX2 - pB->iX1);
-					long iStartSrcX = pB2->iSize0 * (iMinX - pB2->iX1) / (pB2->iX2 - pB2->iX1);
+            // if (!(GetAsyncKeyState('5')<0))
+            if (bTestedUp || bTestedDown)
+            {
+                long iAddSrc = pB2->iIStart + ((bTestedUp) ? (pB2->iSize0 + 1) * pB2->iSize0 : 0);
+                long iAddDst = pB->iIStart + ((bTestedUp) ? 0 : (pB->iSize0 + 1) * pB->iSize0);
 
-					long iEndDstX = pB->iSize0 * (iMaxX - pB->iX1) / (pB->iX2 - pB->iX1);
-					long iEndSrcX = pB2->iSize0 * (iMaxX - pB2->iX1) / (pB2->iX2 - pB2->iX1);
+                if ((pB->iX1 >= pB2->iX1 && pB->iX2 <= pB2->iX2) || (pB->iX1 <= pB2->iX1 && pB->iX2 >= pB2->iX2))
+                {
+                    long iMinX = Max(pB->iX1, pB2->iX1);
+                    long iMaxX = Min(pB->iX2, pB2->iX2);
 
-					if (pB->iLOD == pB2->iLOD)
-						for (j=iStartDstX; j<=iEndDstX; j++) 
-							pIndices[iAddDst + j] = pIndices[iAddSrc + iStartSrcX + (j - iStartDstX)];
-					else
-						for (j=iStartDstX; j<=iEndDstX; j++) 
-							pIndices[iAddDst + j] = pIndices[iAddSrc + iStartSrcX + (j - iStartDstX) / 2];
+                    long iStartDstX = pB->iSize0 * (iMinX - pB->iX1) / (pB->iX2 - pB->iX1);
+                    long iStartSrcX = pB2->iSize0 * (iMinX - pB2->iX1) / (pB2->iX2 - pB2->iX1);
 
-					continue;
-				}
-			}
+                    long iEndDstX = pB->iSize0 * (iMaxX - pB->iX1) / (pB->iX2 - pB->iX1);
+                    long iEndSrcX = pB2->iSize0 * (iMaxX - pB2->iX1) / (pB2->iX2 - pB2->iX1);
 
-			// Test Left & Right
-			bool bTestedLeft = pB->iX1 == pB2->iX2;
-			bool bTestedRight = pB->iX2 == pB2->iX1;
-			//if ((GetAsyncKeyState('6')<0))
-			if (bTestedLeft || bTestedRight)
-			{
-				long iAddSrc = pB2->iIStart + ((bTestedLeft) ? (pB2->iSize0) : 0);
-				long iAddDst = pB->iIStart + ((bTestedLeft) ? 0 : (pB->iSize0));
+                    if (pB->iLOD == pB2->iLOD)
+                        for (j = iStartDstX; j <= iEndDstX; j++)
+                            pIndices[iAddDst + j] = pIndices[iAddSrc + iStartSrcX + (j - iStartDstX)];
+                    else
+                        for (j = iStartDstX; j <= iEndDstX; j++)
+                            pIndices[iAddDst + j] = pIndices[iAddSrc + iStartSrcX + (j - iStartDstX) / 2];
 
-				if ((pB->iY1 >= pB2->iY1 && pB->iY2 <= pB2->iY2) || (pB->iY1 <= pB2->iY1 && pB->iY2 >= pB2->iY2))
-				{
-					long iMinY = Max(pB->iY1, pB2->iY1);
-					long iMaxY = Min(pB->iY2, pB2->iY2);
-					
-					long iStartDstY = pB->iSize0 * (iMinY - pB->iY1) / (pB->iY2 - pB->iY1);
-					long iStartSrcY = pB2->iSize0 * (iMinY - pB2->iY1) / (pB2->iY2 - pB2->iY1);
+                    continue;
+                }
+            }
 
-					long iEndDstY = pB->iSize0 * (iMaxY - pB->iY1) / (pB->iY2 - pB->iY1);
-					long iEndSrcY = pB2->iSize0 * (iMaxY - pB2->iY1) / (pB2->iY2 - pB2->iY1);
+            // Test Left & Right
+            bool bTestedLeft = pB->iX1 == pB2->iX2;
+            bool bTestedRight = pB->iX2 == pB2->iX1;
+            // if ((GetAsyncKeyState('6')<0))
+            if (bTestedLeft || bTestedRight)
+            {
+                long iAddSrc = pB2->iIStart + ((bTestedLeft) ? (pB2->iSize0) : 0);
+                long iAddDst = pB->iIStart + ((bTestedLeft) ? 0 : (pB->iSize0));
 
-					if (pB->iLOD == pB2->iLOD)
-						for (j=iStartDstY; j<=iEndDstY; j++) 
-							pIndices[iAddDst + j * (pB->iSize0 + 1)] = pIndices[iAddSrc + (iStartSrcY + j - iStartDstY) * (pB2->iSize0 + 1)];
-					else
-						for (j=iStartDstY; j<=iEndDstY; j++) 
-							pIndices[iAddDst + j * (pB->iSize0 + 1)] = pIndices[iAddSrc + (iStartSrcY + (j - iStartDstY) / 2) * (pB2->iSize0 + 1)];
+                if ((pB->iY1 >= pB2->iY1 && pB->iY2 <= pB2->iY2) || (pB->iY1 <= pB2->iY1 && pB->iY2 >= pB2->iY2))
+                {
+                    long iMinY = Max(pB->iY1, pB2->iY1);
+                    long iMaxY = Min(pB->iY2, pB2->iY2);
 
-					continue;
-				}
-			}
-		}
-	}
+                    long iStartDstY = pB->iSize0 * (iMinY - pB->iY1) / (pB->iY2 - pB->iY1);
+                    long iStartSrcY = pB2->iSize0 * (iMinY - pB2->iY1) / (pB2->iY2 - pB2->iY1);
 
-	CVECTOR vNormal, vTmp;
+                    long iEndDstY = pB->iSize0 * (iMaxY - pB->iY1) / (pB->iY2 - pB->iY1);
+                    long iEndSrcY = pB2->iSize0 * (iMaxY - pB2->iY1) / (pB2->iY2 - pB2->iY1);
 
-	// calculate
-	for (cz = y1, y=0; y<=size0; y++, cz+=fStep)
-	{
-		for (cx = x1, x=0; x<=size0; x++, cx+=fStep)
-		{
-			if ((x==0 || y==0 || x==size0 || y==size0) && pIndices[iIStart] != dword(-1))
-			{
-				iIStart++;
-				continue;
-			}
-			/**/
-			vTmp.y = WaveXZ(cx, cz, &vNormal);
-			vTmp.x = cx - vNormal.x * fPosShift * 3.0f;
-			vTmp.z = cz - vNormal.z * fPosShift * 3.0f;
+                    if (pB->iLOD == pB2->iLOD)
+                        for (j = iStartDstY; j <= iEndDstY; j++)
+                            pIndices[iAddDst + j * (pB->iSize0 + 1)] =
+                                pIndices[iAddSrc + (iStartSrcY + j - iStartDstY) * (pB2->iSize0 + 1)];
+                    else
+                        for (j = iStartDstY; j <= iEndDstY; j++)
+                            pIndices[iAddDst + j * (pB->iSize0 + 1)] =
+                                pIndices[iAddSrc + (iStartSrcY + (j - iStartDstY) / 2) * (pB2->iSize0 + 1)];
 
-			pV->vPos = vTmp;
-			pV->vNormal = vNormal;
+                    continue;
+                }
+            }
+        }
+    }
 
-			pV->tu = (cx - vNormal.x * 5.3f) * fBumpScale;
-			pV->tv = (cz - vNormal.x * 5.3f) * fBumpScale;
+    CVECTOR vNormal, vTmp;
 
-			pIndices[iIStart++] = dword(iVStart);
-			iVStart++;
-			pV++;
-		}
-	}
+    // calculate
+    for (cz = y1, y = 0; y <= size0; y++, cz += fStep)
+    {
+        for (cx = x1, x = 0; x <= size0; x++, cx += fStep)
+        {
+            if ((x == 0 || y == 0 || x == size0 || y == size0) && pIndices[iIStart] != dword(-1))
+            {
+                iIStart++;
+                continue;
+            }
+            /**/
+            vTmp.y = WaveXZ(cx, cz, &vNormal);
+            vTmp.x = cx - vNormal.x * fPosShift * 3.0f;
+            vTmp.z = cz - vNormal.z * fPosShift * 3.0f;
 
-	long yy, dyy = size0 + 1;
-	for(y=0, yy = 0; y<size0; y++, yy += dyy)
-		for(x=0; x<size0; x++) 
-		{
-			// first triangle
-			*pTriangles++ = (word)pIndices[pB->iIStart + dword(x + yy + dyy + 1)];
-			*pTriangles++ = (word)pIndices[pB->iIStart + dword(x + yy + 1)];
-			*pTriangles++ = (word)pIndices[pB->iIStart + dword(x + yy)];
-			// second triangle
-			*pTriangles++ = (word)pIndices[pB->iIStart + dword(x + yy + dyy)];
-			*pTriangles++ = (word)pIndices[pB->iIStart + dword(x + yy + dyy + 1)];
-			*pTriangles++ = (word)pIndices[pB->iIStart + dword(x + yy)];
-			
-			iTStart += 2;
-		}
+            pV->vPos = vTmp;
+            pV->vNormal = vNormal;
+
+            pV->tu = (cx - vNormal.x * 5.3f) * fBumpScale;
+            pV->tv = (cz - vNormal.x * 5.3f) * fBumpScale;
+
+            pIndices[iIStart++] = dword(iVStart);
+            iVStart++;
+            pV++;
+        }
+    }
+
+    long yy, dyy = size0 + 1;
+    for (y = 0, yy = 0; y < size0; y++, yy += dyy)
+        for (x = 0; x < size0; x++)
+        {
+            // first triangle
+            *pTriangles++ = (word)pIndices[pB->iIStart + dword(x + yy + dyy + 1)];
+            *pTriangles++ = (word)pIndices[pB->iIStart + dword(x + yy + 1)];
+            *pTriangles++ = (word)pIndices[pB->iIStart + dword(x + yy)];
+            // second triangle
+            *pTriangles++ = (word)pIndices[pB->iIStart + dword(x + yy + dyy)];
+            *pTriangles++ = (word)pIndices[pB->iIStart + dword(x + yy + dyy + 1)];
+            *pTriangles++ = (word)pIndices[pB->iIStart + dword(x + yy)];
+
+            iTStart += 2;
+        }
 }
 
 inline void PrefetchNTA(dword dwAddress)
 {
-	_asm
-	{
+    _asm
+    {
 		mov	eax, dwAddress
 		and esi, ~15d
-		//add esi, 128d
+      // add esi, 128d
 		prefetchnta [esi]
-	}
+    }
 }
 
-float __fastcall NetSea::WaveXZ(float x, float z, CVECTOR * pNormal)
+float __fastcall NetSea::WaveXZ(float x, float z, CVECTOR *pNormal)
 {
-	long iX11, iX12, iX21, iX22, iY11, iY12, iY21, iY22;
+    long iX11, iX12, iX21, iX22, iY11, iY12, iY21, iY22;
 
-	/*float fDistance = Sqr(x - vCamPos.x) + Sqr(z - vCamPos.z);
-	if (fDistance > 900.0f * 900.0f)
-	{
-		if (pNormal) *pNormal = CVECTOR(0.0f, 1.0f, 0.0f);
-		return 0.0f;
-	}*/
+    /*float fDistance = Sqr(x - vCamPos.x) + Sqr(z - vCamPos.z);
+    if (fDistance > 900.0f * 900.0f)
+    {
+        if (pNormal) *pNormal = CVECTOR(0.0f, 1.0f, 0.0f);
+        return 0.0f;
+    }*/
 
-	float x1 = (x + vMove1.x) * fScale1;
-	float z1 = (z + vMove1.z) * fScale1;
-	iX11 = ffloor(x1 + 0.0f), iX12 = iX11 + 1; iY11 = ffloor(z1 + 0.0f), iY12 = iY11 + 1; 
-	float fX1 = (x1 - iX11);
-	float fZ1 = (z1 - iY11);
-	iX11 &= (XWIDTH-1); iX12 &= (XWIDTH-1); iY11 &= (XWIDTH-1); iY12 &= (XWIDTH-1);
+    float x1 = (x + vMove1.x) * fScale1;
+    float z1 = (z + vMove1.z) * fScale1;
+    iX11 = ffloor(x1 + 0.0f), iX12 = iX11 + 1;
+    iY11 = ffloor(z1 + 0.0f), iY12 = iY11 + 1;
+    float fX1 = (x1 - iX11);
+    float fZ1 = (z1 - iY11);
+    iX11 &= (XWIDTH - 1);
+    iX12 &= (XWIDTH - 1);
+    iY11 &= (XWIDTH - 1);
+    iY12 &= (XWIDTH - 1);
 
-	float x2 = (x + vMove2.x) * fScale2;
-	float z2 = (z + vMove2.z) * fScale2;
-	iX21 = ffloor(x2 + 0.0f), iX22 = iX21 + 1; iY21 = ffloor(z2 + 0.0f), iY22 = iY21 + 1; 
-	float fX2 = (x2 - iX21);
-	float fZ2 = (z2 - iY21);
-	iX21 &= (XWIDTH-1); iX22 &= (XWIDTH-1); iY21 &= (XWIDTH-1); iY22 &= (XWIDTH-1);
+    float x2 = (x + vMove2.x) * fScale2;
+    float z2 = (z + vMove2.z) * fScale2;
+    iX21 = ffloor(x2 + 0.0f), iX22 = iX21 + 1;
+    iY21 = ffloor(z2 + 0.0f), iY22 = iY21 + 1;
+    float fX2 = (x2 - iX21);
+    float fZ2 = (z2 - iY21);
+    iX21 &= (XWIDTH - 1);
+    iX22 &= (XWIDTH - 1);
+    iY21 &= (XWIDTH - 1);
+    iY22 &= (XWIDTH - 1);
 
-	float a1, a2, a3, a4;
+    float a1, a2, a3, a4;
 
-	a1 = pSeaFrame1[iX11 + iY11 * XWIDTH]; a2 = pSeaFrame1[iX12 + iY11 * XWIDTH];
-	a3 = pSeaFrame1[iX11 + iY12 * XWIDTH]; a4 = pSeaFrame1[iX12 + iY12 * XWIDTH];
-	float fRes = fAmp1 * (a1 + fX1 * (a2 - a1) + fZ1 * (a3 - a1) + fX1 * fZ1 * (a4 + a1 - a2 - a3));
+    a1 = pSeaFrame1[iX11 + iY11 * XWIDTH];
+    a2 = pSeaFrame1[iX12 + iY11 * XWIDTH];
+    a3 = pSeaFrame1[iX11 + iY12 * XWIDTH];
+    a4 = pSeaFrame1[iX12 + iY12 * XWIDTH];
+    float fRes = fAmp1 * (a1 + fX1 * (a2 - a1) + fZ1 * (a3 - a1) + fX1 * fZ1 * (a4 + a1 - a2 - a3));
 
-	a1 = pSeaFrame2[iX21 + iY21 * XWIDTH]; a2 = pSeaFrame2[iX22 + iY21 * XWIDTH];
-	a3 = pSeaFrame2[iX21 + iY22 * XWIDTH]; a4 = pSeaFrame2[iX22 + iY22 * XWIDTH];
-	fRes += fAmp2 * (a1 + fX2 * (a2 - a1) + fZ2 * (a3 - a1) + fX2 * fZ2 * (a4 + a1 - a2 - a3));
+    a1 = pSeaFrame2[iX21 + iY21 * XWIDTH];
+    a2 = pSeaFrame2[iX22 + iY21 * XWIDTH];
+    a3 = pSeaFrame2[iX21 + iY22 * XWIDTH];
+    a4 = pSeaFrame2[iX22 + iY22 * XWIDTH];
+    fRes += fAmp2 * (a1 + fX2 * (a2 - a1) + fZ2 * (a3 - a1) + fX2 * fZ2 * (a4 + a1 - a2 - a3));
 
-	float nx1, nx2, nx3, nx4, nz1, nz2, nz3, nz4;
+    float nx1, nx2, nx3, nx4, nz1, nz2, nz3, nz4;
 
-	nx1 = pSeaNormalsFrame1[2 * (iX11 + iY11 * XWIDTH) + 0]; nz1 = pSeaNormalsFrame1[2 * (iX11 + iY11 * XWIDTH) + 1];
-	nx2 = pSeaNormalsFrame1[2 * (iX12 + iY11 * XWIDTH) + 0]; nz2 = pSeaNormalsFrame1[2 * (iX12 + iY11 * XWIDTH) + 1];
-	nx3 = pSeaNormalsFrame1[2 * (iX11 + iY12 * XWIDTH) + 0]; nz3 = pSeaNormalsFrame1[2 * (iX11 + iY12 * XWIDTH) + 1];
-	nx4 = pSeaNormalsFrame1[2 * (iX12 + iY12 * XWIDTH) + 0]; nz4 = pSeaNormalsFrame1[2 * (iX12 + iY12 * XWIDTH) + 1];
+    nx1 = pSeaNormalsFrame1[2 * (iX11 + iY11 * XWIDTH) + 0];
+    nz1 = pSeaNormalsFrame1[2 * (iX11 + iY11 * XWIDTH) + 1];
+    nx2 = pSeaNormalsFrame1[2 * (iX12 + iY11 * XWIDTH) + 0];
+    nz2 = pSeaNormalsFrame1[2 * (iX12 + iY11 * XWIDTH) + 1];
+    nx3 = pSeaNormalsFrame1[2 * (iX11 + iY12 * XWIDTH) + 0];
+    nz3 = pSeaNormalsFrame1[2 * (iX11 + iY12 * XWIDTH) + 1];
+    nx4 = pSeaNormalsFrame1[2 * (iX12 + iY12 * XWIDTH) + 0];
+    nz4 = pSeaNormalsFrame1[2 * (iX12 + iY12 * XWIDTH) + 1];
 
-	float nX1 = (nx1 + fX1 * (nx2 - nx1) + fZ1 * (nx3 - nx1) + fX1 * fZ1 * (nx4 + nx1 - nx2 - nx3));
-	float nZ1 = (nz1 + fX1 * (nz2 - nz1) + fZ1 * (nz3 - nz1) + fX1 * fZ1 * (nz4 + nz1 - nz2 - nz3));
+    float nX1 = (nx1 + fX1 * (nx2 - nx1) + fZ1 * (nx3 - nx1) + fX1 * fZ1 * (nx4 + nx1 - nx2 - nx3));
+    float nZ1 = (nz1 + fX1 * (nz2 - nz1) + fZ1 * (nz3 - nz1) + fX1 * fZ1 * (nz4 + nz1 - nz2 - nz3));
 
-	nx1 = pSeaNormalsFrame2[2 * (iX21 + iY21 * XWIDTH) + 0]; nz1 = pSeaNormalsFrame2[2 * (iX21 + iY21 * XWIDTH) + 1];
-	nx2 = pSeaNormalsFrame2[2 * (iX22 + iY21 * XWIDTH) + 0]; nz2 = pSeaNormalsFrame2[2 * (iX22 + iY21 * XWIDTH) + 1];
-	nx3 = pSeaNormalsFrame2[2 * (iX21 + iY22 * XWIDTH) + 0]; nz3 = pSeaNormalsFrame2[2 * (iX21 + iY22 * XWIDTH) + 1];
-	nx4 = pSeaNormalsFrame2[2 * (iX22 + iY22 * XWIDTH) + 0]; nz4 = pSeaNormalsFrame2[2 * (iX22 + iY22 * XWIDTH) + 1];
+    nx1 = pSeaNormalsFrame2[2 * (iX21 + iY21 * XWIDTH) + 0];
+    nz1 = pSeaNormalsFrame2[2 * (iX21 + iY21 * XWIDTH) + 1];
+    nx2 = pSeaNormalsFrame2[2 * (iX22 + iY21 * XWIDTH) + 0];
+    nz2 = pSeaNormalsFrame2[2 * (iX22 + iY21 * XWIDTH) + 1];
+    nx3 = pSeaNormalsFrame2[2 * (iX21 + iY22 * XWIDTH) + 0];
+    nz3 = pSeaNormalsFrame2[2 * (iX21 + iY22 * XWIDTH) + 1];
+    nx4 = pSeaNormalsFrame2[2 * (iX22 + iY22 * XWIDTH) + 0];
+    nz4 = pSeaNormalsFrame2[2 * (iX22 + iY22 * XWIDTH) + 1];
 
-	float nX2 = (nx1 + fX2 * (nx2 - nx1) + fZ2 * (nx3 - nx1) + fX2 * fZ2 * (nx4 + nx1 - nx2 - nx3));
-	float nZ2 = (nz1 + fX2 * (nz2 - nz1) + fZ2 * (nz3 - nz1) + fX2 * fZ2 * (nz4 + nz1 - nz2 - nz3));
-	//float nX2 = 0.0f;
-	//float nZ2 = 0.0f;
+    float nX2 = (nx1 + fX2 * (nx2 - nx1) + fZ2 * (nx3 - nx1) + fX2 * fZ2 * (nx4 + nx1 - nx2 - nx3));
+    float nZ2 = (nz1 + fX2 * (nz2 - nz1) + fZ2 * (nz3 - nz1) + fX2 * fZ2 * (nz4 + nz1 - nz2 - nz3));
+    // float nX2 = 0.0f;
+    // float nZ2 = 0.0f;
 
-	/*float fDistance = sqrt_ss(Sqr(x - vCamPos.x) + Sqr(fRes - vCamPos.y) + Sqr(z - vCamPos.z));
-	{
-		float distance_mul = 1.0f - fDistance / 1900.0f;
-		if (distance_mul < 0.0f) distance_mul = 0.0f;
+    /*float fDistance = sqrt_ss(Sqr(x - vCamPos.x) + Sqr(fRes - vCamPos.y) + Sqr(z - vCamPos.z));
+    {
+        float distance_mul = 1.0f - fDistance / 1900.0f;
+        if (distance_mul < 0.0f) distance_mul = 0.0f;
 
-		fRes *= distance_mul;
+        fRes *= distance_mul;
 
-		nX1 *= distance_mul;
-		nZ1 *= distance_mul;
+        nX1 *= distance_mul;
+        nZ1 *= distance_mul;
 
-		nX2 *= distance_mul;
-		nZ2 *= distance_mul;
-	}*/
+        nX2 *= distance_mul;
+        nZ2 *= distance_mul;
+    }*/
 
-	if (pNormal)
-	{
-		/*pNormal->x = 0.0f;
-		pNormal->y = 1.0f;
-		pNormal->z = 0.0f;*/
-		float nY1 = sqrtf(1.0f - (Sqr(nX1) + Sqr(nZ1)));
-		float nY2 = sqrtf(1.0f - (Sqr(nX2) + Sqr(nZ2)));
+    if (pNormal)
+    {
+        /*pNormal->x = 0.0f;
+        pNormal->y = 1.0f;
+        pNormal->z = 0.0f;*/
+        float nY1 = sqrtf(1.0f - (Sqr(nX1) + Sqr(nZ1)));
+        float nY2 = sqrtf(1.0f - (Sqr(nX2) + Sqr(nZ2)));
 
-		CVECTOR vNormal;
+        CVECTOR vNormal;
 
-		vNormal.x = fScale1 * fAmp1 * nX1 + fScale2 * fAmp2 * nX2;
-		vNormal.z = fScale1 * fAmp1 * nZ1 + fScale2 * fAmp2 * nZ2;
-		vNormal.y = nY1 + nY2;
+        vNormal.x = fScale1 * fAmp1 * nX1 + fScale2 * fAmp2 * nX2;
+        vNormal.z = fScale1 * fAmp1 * nZ1 + fScale2 * fAmp2 * nZ2;
+        vNormal.y = nY1 + nY2;
 
-		//vNormal.x += 2.0f * vNormal.x;
-		//vNormal.z += 2.0f * vNormal.z;
-		vNormal = !vNormal;
+        // vNormal.x += 2.0f * vNormal.x;
+        // vNormal.z += 2.0f * vNormal.z;
+        vNormal = !vNormal;
 
-		*pNormal = vNormal;
-	}
+        *pNormal = vNormal;
+    }
 
-	return fRes;
+    return fRes;
 }
 
-void NetSea::WaveXZBlock(SeaBlock * pB)
+void NetSea::WaveXZBlock(SeaBlock *pB)
 {
-	//return;
-	if (!pB) return;
+    // return;
+    if (!pB)
+        return;
 
-	CVECTOR	vTmp, vNormal;
-	float	cx, cz, fStep = fGridStep * float(1 << pB->iLOD);
-	float	fSize = fGridStep * pB->iSize;
-	long	x, y, size0 = pB->iSize >> pB->iLOD;
+    CVECTOR vTmp, vNormal;
+    float cx, cz, fStep = fGridStep * float(1 << pB->iLOD);
+    float fSize = fGridStep * pB->iSize;
+    long x, y, size0 = pB->iSize >> pB->iLOD;
 
-	float x1 = float(pB->iTX * pB->iSize) * fGridStep;
-	float y1 = float(pB->iTY * pB->iSize) * fGridStep;
-	float x2 = x1 + float(size0) * fStep;
-	float y2 = y1 + float(size0) * fStep;
+    float x1 = float(pB->iTX * pB->iSize) * fGridStep;
+    float y1 = float(pB->iTY * pB->iSize) * fGridStep;
+    float x2 = x1 + float(size0) * fStep;
+    float y2 = y1 + float(size0) * fStep;
 
-	x1 += vSeaCenterPos.x;	x2 += vSeaCenterPos.x;
-	y1 += vSeaCenterPos.z;	y2 += vSeaCenterPos.z;
+    x1 += vSeaCenterPos.x;
+    x2 += vSeaCenterPos.x;
+    y1 += vSeaCenterPos.z;
+    y2 += vSeaCenterPos.z;
 
-	long iIStart1 = pB->iIStart; 
+    long iIStart1 = pB->iIStart;
 
-	for (cz = y1, y=0; y<=size0; y++, cz += fStep)
-	{
-		for (cx = x1, x=0; x<=size0; x++, cx += fStep)
-		{
-			if ((x==0 || y==0 || x==size0 || y==size0) && pIndices[iIStart1] == dword(-1))
-			{
-				iIStart1++;
-				continue;
-			}
+    for (cz = y1, y = 0; y <= size0; y++, cz += fStep)
+    {
+        for (cx = x1, x = 0; x <= size0; x++, cx += fStep)
+        {
+            if ((x == 0 || y == 0 || x == size0 || y == size0) && pIndices[iIStart1] == dword(-1))
+            {
+                iIStart1++;
+                continue;
+            }
 
-			SeaVertex * pV = &pVSea[pIndices[iIStart1]];
+            SeaVertex *pV = &pVSea[pIndices[iIStart1]];
 
-			vTmp.y = WaveXZ(cx, cz, &vNormal);
-			vTmp.x = cx - vNormal.x * fPosShift * 3.0f;
-			vTmp.z = cz - vNormal.z * fPosShift * 3.0f;
+            vTmp.y = WaveXZ(cx, cz, &vNormal);
+            vTmp.x = cx - vNormal.x * fPosShift * 3.0f;
+            vTmp.z = cz - vNormal.z * fPosShift * 3.0f;
 
-			pV->vPos = vTmp;
-			pV->vNormal = vNormal;
+            pV->vPos = vTmp;
+            pV->vNormal = vNormal;
 
-			pV->tu = (cx - vNormal.x * 5.3f) * 0.08f;
-			pV->tv = (cz - vNormal.x * 5.3f) * 0.08f;
+            pV->tu = (cx - vNormal.x * 5.3f) * 0.08f;
+            pV->tv = (cz - vNormal.x * 5.3f) * 0.08f;
 
-			pIndices[iIStart1++] = dword(-1);//word(iVStart);
-			//iVStart++;
-		}
-	}
+            pIndices[iIStart1++] = dword(-1); // word(iVStart);
+            // iVStart++;
+        }
+    }
 
-	pB->bDone = true;
+    pB->bDone = true;
 }
 
-NetSea::SeaBlock * NetSea::GetUndoneBlock()
+NetSea::SeaBlock *NetSea::GetUndoneBlock()
 {
-	SeaBlock * pB = null;
-	for (long i=0; i<aBlocks; i++) if (!aBlocks[i].bInProgress)
-	{
-		pB = &aBlocks[i];
-		pB->bInProgress = true;
-		return pB;
-	}
-	return pB;
+    SeaBlock *pB = null;
+    for (long i = 0; i < aBlocks; i++)
+        if (!aBlocks[i].bInProgress)
+        {
+            pB = &aBlocks[i];
+            pB->bInProgress = true;
+            return pB;
+        }
+    return pB;
 }
 
-void NetSea::CalculateNormalMap(float fFrame, float fAmplitude, float * pfOut, array<dword*> & aFrames)
+void NetSea::CalculateNormalMap(float fFrame, float fAmplitude, float *pfOut, array<dword *> &aFrames)
 {
-	long iFrame1 = fftol(fFrame) % aFrames.Len();
-	long iFrame2 = (iFrame1 + 1) % aFrames.Len();
+    long iFrame1 = fftol(fFrame) % aFrames.Len();
+    long iFrame2 = (iFrame1 + 1) % aFrames.Len();
 
-	float fDelta = fFrame - iFrame1;
+    float fDelta = fFrame - iFrame1;
 
-	dword * pB1 = aFrames[iFrame1];
-	dword * pB2 = aFrames[iFrame2];
+    dword *pB1 = aFrames[iFrame1];
+    dword *pB2 = aFrames[iFrame2];
 
-	for (long y=0; y<YWIDTH; y++)
-		for (long x=0; x<XWIDTH; x++)
-		{
-			dword dw1 = pB1[x + y * XWIDTH];
-			dword dw2 = pB2[x + y * XWIDTH];
-			float nx1 = float(short(dw1)) / 32767.5f;
-			float nx2 = float(short(dw2)) / 32767.5f;
-			float nz1 = float(short(dw1 >> 0x10)) / 32767.5f;
-			float nz2 = float(short(dw2 >> 0x10)) / 32767.5f;
+    for (long y = 0; y < YWIDTH; y++)
+        for (long x = 0; x < XWIDTH; x++)
+        {
+            dword dw1 = pB1[x + y * XWIDTH];
+            dword dw2 = pB2[x + y * XWIDTH];
+            float nx1 = float(short(dw1)) / 32767.5f;
+            float nx2 = float(short(dw2)) / 32767.5f;
+            float nz1 = float(short(dw1 >> 0x10)) / 32767.5f;
+            float nz2 = float(short(dw2 >> 0x10)) / 32767.5f;
 
-			pfOut[2 * (x + y * XWIDTH) + 0] = (nx1 + (nx2 - nx1) * fDelta);
-			pfOut[2 * (x + y * XWIDTH) + 1] = (nz1 + (nz2 - nz1) * fDelta);
-		}
+            pfOut[2 * (x + y * XWIDTH) + 0] = (nx1 + (nx2 - nx1) * fDelta);
+            pfOut[2 * (x + y * XWIDTH) + 1] = (nz1 + (nz2 - nz1) * fDelta);
+        }
 }
 
-void NetSea::CalculateHeightMap(float fFrame, float fAmplitude, float * pfOut, array<byte*> & aFrames)
+void NetSea::CalculateHeightMap(float fFrame, float fAmplitude, float *pfOut, array<byte *> &aFrames)
 {
-	long iFrame1 = fftol(fFrame) % aFrames.Len();
-	long iFrame2 = (iFrame1 + 1) % aFrames.Len();
+    long iFrame1 = fftol(fFrame) % aFrames.Len();
+    long iFrame2 = (iFrame1 + 1) % aFrames.Len();
 
-	float fDelta = fFrame - iFrame1;
+    float fDelta = fFrame - iFrame1;
 
-	byte * pB1 = aFrames[iFrame1];
-	byte * pB2 = aFrames[iFrame2];
+    byte *pB1 = aFrames[iFrame1];
+    byte *pB2 = aFrames[iFrame2];
 
-	for (long y=0; y<YWIDTH; y++)
-		for (long x=0; x<XWIDTH; x++)
-		{
-			float f1 = pB1[x + y * XWIDTH];
-			float f2 = pB2[x + y * XWIDTH];
+    for (long y = 0; y < YWIDTH; y++)
+        for (long x = 0; x < XWIDTH; x++)
+        {
+            float f1 = pB1[x + y * XWIDTH];
+            float f2 = pB2[x + y * XWIDTH];
 
-			pfOut[x + y * XWIDTH] = fAmplitude * (f1 + (f2 - f1) * fDelta);
-		}
+            pfOut[x + y * XWIDTH] = fAmplitude * (f1 + (f2 - f1) * fDelta);
+        }
 }
 
 void NetSea::Execute(dword __dwDeltaTime)
 {
-	dword dwDeltaTime = 0;
-	double dbTime = 0.0;
+    dword dwDeltaTime = 0;
+    double dbTime = 0.0;
 
-	if (IsServer())
-	{
-		VDATA * pVServerTime = (VDATA*)api->GetScriptVariable("iServerTime"); Assert(pVServerTime);
-		long iDeltaTime = Max(long(0), pVServerTime->GetLong() - iLastServerTime);
-		iLastServerTime = pVServerTime->GetLong();
+    if (IsServer())
+    {
+        VDATA *pVServerTime = (VDATA *)api->GetScriptVariable("iServerTime");
+        Assert(pVServerTime);
+        long iDeltaTime = Max(long(0), pVServerTime->GetLong() - iLastServerTime);
+        iLastServerTime = pVServerTime->GetLong();
 
-		dwDeltaTime = dword(iDeltaTime);//__DeltaTime;
-		dbTime = double(iLastServerTime) * 0.001;
-	}
-	else
-	{
-		VDATA * pVClientTime = (VDATA*)api->GetScriptVariable("iClientTime"); Assert(pVClientTime);
-		long iDeltaTime = Max(long(0), pVClientTime->GetLong() - iLastClientTime);
-		iLastClientTime = pVClientTime->GetLong();
-		dwDeltaTime = dword(iDeltaTime);
-		dbTime = double(iLastClientTime) * 0.001;
-	}
+        dwDeltaTime = dword(iDeltaTime); //__DeltaTime;
+        dbTime = double(iLastServerTime) * 0.001;
+    }
+    else
+    {
+        VDATA *pVClientTime = (VDATA *)api->GetScriptVariable("iClientTime");
+        Assert(pVClientTime);
+        long iDeltaTime = Max(long(0), pVClientTime->GetLong() - iLastClientTime);
+        iLastClientTime = pVClientTime->GetLong();
+        dwDeltaTime = dword(iDeltaTime);
+        dbTime = double(iLastClientTime) * 0.001;
+    }
 
-	fCurrentDeltaTime = float(dwDeltaTime) * 0.001f;
+    fCurrentDeltaTime = float(dwDeltaTime) * 0.001f;
 
-	vMove1 = float(dbTime) * vMoveSpeed1;
-	vMove2 = float(dbTime) * vMoveSpeed2;
+    vMove1 = float(dbTime) * vMoveSpeed1;
+    vMove2 = float(dbTime) * vMoveSpeed2;
 
-	fFrame1 = float(dbTime * fAnimSpeed1 - double(long((dbTime * fAnimSpeed1) / FRAMES) * FRAMES));
-	fFrame2 = float(dbTime * fAnimSpeed2 - double(long((dbTime * fAnimSpeed2) / FRAMES) * FRAMES));
+    fFrame1 = float(dbTime * fAnimSpeed1 - double(long((dbTime * fAnimSpeed1) / FRAMES) * FRAMES));
+    fFrame2 = float(dbTime * fAnimSpeed2 - double(long((dbTime * fAnimSpeed2) / FRAMES) * FRAMES));
 }
 
 void NetSea::Realize(dword __dwDeltaTime)
 {
 
-	//fFrame1 += fDeltaTime * fAnimSpeed1;
-	//fFrame2 +=  fDeltaTime * fAnimSpeed2;
-	//while (fFrame1 >= FRAMES) fFrame1 -= FRAMES;
-	//while (fFrame2 >= FRAMES) fFrame2 -= FRAMES;
+    // fFrame1 += fDeltaTime * fAnimSpeed1;
+    // fFrame2 +=  fDeltaTime * fAnimSpeed2;
+    // while (fFrame1 >= FRAMES) fFrame1 -= FRAMES;
+    // while (fFrame2 >= FRAMES) fFrame2 -= FRAMES;
 
-	CalculateHeightMap(fFrame1, 1.0f / 255.0f, pSeaFrame1, aBumps);
-	CalculateNormalMap(fFrame1, 1.0f / 255.0f, pSeaNormalsFrame1, aNormals);
+    CalculateHeightMap(fFrame1, 1.0f / 255.0f, pSeaFrame1, aBumps);
+    CalculateNormalMap(fFrame1, 1.0f / 255.0f, pSeaNormalsFrame1, aNormals);
 
-	CalculateHeightMap(fFrame2, 1.0f / 255.0f, pSeaFrame2, aBumps);
-	CalculateNormalMap(fFrame2, 1.0f / 255.0f, pSeaNormalsFrame2, aNormals);
+    CalculateHeightMap(fFrame2, 1.0f / 255.0f, pSeaFrame2, aBumps);
+    CalculateNormalMap(fFrame2, 1.0f / 255.0f, pSeaNormalsFrame2, aNormals);
 
-	if (IsServer()) return;
+    if (IsServer())
+        return;
 
-	//pSeaParameters->SetTexture(0, pAnimTexture);
+    // pSeaParameters->SetTexture(0, pAnimTexture);
 
-	dword dwTotalRDTSC;
-	RDTSC_B(dwTotalRDTSC);
-	
-	CMatrix mView, mIView;
-	Render().GetTransform(D3DTS_VIEW, mView);
-	mIView = mView; mIView.Transposition();
+    dword dwTotalRDTSC;
+    RDTSC_B(dwTotalRDTSC);
 
-	vCamPos = mIView.Pos();
+    CMatrix mView, mIView;
+    Render().GetTransform(D3DTS_VIEW, mView);
+    mIView = mView;
+    mIView.Transposition();
 
-	if (bSimpleSea)
-	{
-		EnvMap_Render2();
-		SunRoad_Render2();
-	}
-	else
-	{
-		EnvMap_Render();
-		SunRoad_Render();
-	}
+    vCamPos = mIView.Pos();
 
-	pFrustumPlanes = Render().GetPlanes();
+    if (bSimpleSea)
+    {
+        EnvMap_Render2();
+        SunRoad_Render2();
+    }
+    else
+    {
+        EnvMap_Render();
+        SunRoad_Render();
+    }
 
-	float fBlockSize = 256.0f * fGridStep;
-	long iNumBlocks = (long)dwMaxDim / (256 * 2);
-	vSeaCenterPos = CVECTOR(fBlockSize * (long(vCamPos.x / fBlockSize) - iNumBlocks), fMaxSeaHeight * 0.5f, fBlockSize * (long(vCamPos.z / fBlockSize) - iNumBlocks) );
+    pFrustumPlanes = Render().GetPlanes();
 
-	iB1 = 0;
-	iB2 = 0;
+    float fBlockSize = 256.0f * fGridStep;
+    long iNumBlocks = (long)dwMaxDim / (256 * 2);
+    vSeaCenterPos = CVECTOR(fBlockSize * (long(vCamPos.x / fBlockSize) - iNumBlocks), fMaxSeaHeight * 0.5f,
+                            fBlockSize * (long(vCamPos.z / fBlockSize) - iNumBlocks));
 
-	iVStart = 0;
-	iTStart = 0;
-	iIStart = 0;
+    iB1 = 0;
+    iB2 = 0;
 
-	memset(pIndices, 0xFF, NUM_VERTEXS * sizeof(pIndices[0]));
+    iVStart = 0;
+    iTStart = 0;
+    iIStart = 0;
 
-	dword dwX;
-	RDTSC_B(dwX);
-	//SetEvent(hEventCalcMaps);
-	RDTSC_E(dwX);
-	//api->Trace("dwX = %d", dwX);
+    memset(pIndices, 0xFF, NUM_VERTEXS * sizeof(pIndices[0]));
 
-	aBlocks.Empty();
-	BuildTree(0, 0, 0);
-	aBlocks.QSort(SeaBlock::QSort);
+    dword dwX;
+    RDTSC_B(dwX);
+    // SetEvent(hEventCalcMaps);
+    RDTSC_E(dwX);
+    // api->Trace("dwX = %d", dwX);
 
-	dword	i;
-	long	iNumVPoints = 0;
-	for (i=0; i<aBlocks(); i++) 
-	{
-		iNumVPoints += aBlocks[i].iSize0 * aBlocks[i].iSize0;
-		if (iNumVPoints >= NUM_VERTEXS)
-		{
-			aBlocks.DelRange(i, aBlocks.Last());
-			break;
-		}
-	}
+    aBlocks.Empty();
+    BuildTree(0, 0, 0);
+    aBlocks.QSort(SeaBlock::QSort);
 
-	pVSea = (SeaVertex*)Render().LockVertexBuffer(iVSeaBuffer, D3DLOCK_DISCARD | D3DLOCK_NOSYSLOCK);
-	pTriangles = (word*)Render().LockIndexBuffer(iISeaBuffer, D3DLOCK_DISCARD | D3DLOCK_NOSYSLOCK);
+    dword i;
+    long iNumVPoints = 0;
+    for (i = 0; i < aBlocks(); i++)
+    {
+        iNumVPoints += aBlocks[i].iSize0 * aBlocks[i].iSize0;
+        if (iNumVPoints >= NUM_VERTEXS)
+        {
+            aBlocks.DelRange(i, aBlocks.Last());
+            break;
+        }
+    }
 
-	for (i=0; i<aBlocks(); i++) SetBlock(i);
+    pVSea = (SeaVertex *)Render().LockVertexBuffer(iVSeaBuffer, D3DLOCK_DISCARD | D3DLOCK_NOSYSLOCK);
+    pTriangles = (word *)Render().LockIndexBuffer(iISeaBuffer, D3DLOCK_DISCARD | D3DLOCK_NOSYSLOCK);
 
-	Render().UnLockVertexBuffer(iVSeaBuffer);
-	Render().UnLockIndexBuffer(iISeaBuffer);
+    for (i = 0; i < aBlocks(); i++)
+        SetBlock(i);
 
-	if (iVStart && iTStart)
-	{
-		CMatrix mWorldView, mWorldViewProj;
+    Render().UnLockVertexBuffer(iVSeaBuffer);
+    Render().UnLockIndexBuffer(iISeaBuffer);
 
-		CMatrix mView = Render().GetView();
-		CMatrix mWorld; mWorld.SetIdentity();// = Render().GetWorld();
-		CMatrix mProjection = Render().GetProjection();
+    if (iVStart && iTStart)
+    {
+        CMatrix mWorldView, mWorldViewProj;
 
-		mWorldView.EqMultiply(mWorld, mView);
-		mWorldViewProj.EqMultiply(mWorldView, mProjection);
+        CMatrix mView = Render().GetView();
+        CMatrix mWorld;
+        mWorld.SetIdentity(); // = Render().GetWorld();
+        CMatrix mProjection = Render().GetProjection();
 
-		mWorldViewProj.Transposition4x4();
+        mWorldView.EqMultiply(mWorld, mView);
+        mWorldViewProj.EqMultiply(mWorldView, mProjection);
 
-		static float fTmp = 0.0f;
-		fTmp += fCurrentDeltaTime * fBumpSpeed;
-		while (fTmp >= 1.0f) fTmp -= 1.0f;
+        mWorldViewProj.Transposition4x4();
 
-		Render().SetVertexShaderConstant(GC_CONSTANT, &CVECTOR4(0.0f, 1.0f, 0.5f, -0.04f), 1);
-		Render().SetVertexShaderConstant(GC_CONSTANT2, &CVECTOR4(2.0f, -1.0f, 0.00036621652552071f, (bFogEnable) ? fFogSeaDensity : 0.0f), 1);
-		Render().SetVertexShaderConstant(GC_ANIMATION, &CVECTOR4(fTmp, fTmp, fTmp, fTmp), 1);
-		Render().SetVertexShaderConstant(GC_CAMERA_POS, &CVECTOR4(vCamPos.x, vCamPos.y, vCamPos.z, 1.0f), 1);
-		Render().SetVertexShaderConstant(GC_MTX_WVP, &mWorldViewProj, 4);
+        static float fTmp = 0.0f;
+        fTmp += fCurrentDeltaTime * fBumpSpeed;
+        while (fTmp >= 1.0f)
+            fTmp -= 1.0f;
 
-		Render().SetVertexShaderConstant(GC_FREE, &v4SeaParameters, 1);
-		Render().SetVertexShaderConstant(GC_FREE + 1, &v4SeaColor, 1);
-		Render().SetVertexShaderConstant(GC_FREE + 2, &v4SkyColor, 1);
+        Render().SetVertexShaderConstant(GC_CONSTANT, &CVECTOR4(0.0f, 1.0f, 0.5f, -0.04f), 1);
+        Render().SetVertexShaderConstant(
+            GC_CONSTANT2, &CVECTOR4(2.0f, -1.0f, 0.00036621652552071f, (bFogEnable) ? fFogSeaDensity : 0.0f), 1);
+        Render().SetVertexShaderConstant(GC_ANIMATION, &CVECTOR4(fTmp, fTmp, fTmp, fTmp), 1);
+        Render().SetVertexShaderConstant(GC_CAMERA_POS, &CVECTOR4(vCamPos.x, vCamPos.y, vCamPos.z, 1.0f), 1);
+        Render().SetVertexShaderConstant(GC_MTX_WVP, &mWorldViewProj, 4);
 
-		Render().SetVertexShaderConstant(GC_FREE + 5, &CVECTOR4(1.0f, 0.0f, 0.0f, 1.0f), 1);
-		Render().SetVertexShaderConstant(GC_FREE + 6, &CVECTOR4(fFrenel, 1.0f, 0.5f, 1.0f), 1);		// Frenel K, Frenel Max
-		Render().SetVertexShaderConstant(GC_FREE + 7, &CVECTOR4(1.0f, 0.0f, 0.0f, 1.0f), 1);
+        Render().SetVertexShaderConstant(GC_FREE, &v4SeaParameters, 1);
+        Render().SetVertexShaderConstant(GC_FREE + 1, &v4SeaColor, 1);
+        Render().SetVertexShaderConstant(GC_FREE + 2, &v4SkyColor, 1);
 
-		CVECTOR vTmp = !CVECTOR(0.0f, 1.0f, 0.0f);
-		Render().SetVertexShaderConstant(GC_FREE + 30, &CVECTOR4(vTmp.x, vTmp.y, vTmp.z, 1.0f), 1);
+        Render().SetVertexShaderConstant(GC_FREE + 5, &CVECTOR4(1.0f, 0.0f, 0.0f, 1.0f), 1);
+        Render().SetVertexShaderConstant(GC_FREE + 6, &CVECTOR4(fFrenel, 1.0f, 0.5f, 1.0f), 1); // Frenel K, Frenel Max
+        Render().SetVertexShaderConstant(GC_FREE + 7, &CVECTOR4(1.0f, 0.0f, 0.0f, 1.0f), 1);
 
-		if (bSimpleSea)
-		{
-			Render().SetVertexShaderConstant(GC_FREE + 8, &mTexProjection, 4);			// Matrix!!
+        CVECTOR vTmp = !CVECTOR(0.0f, 1.0f, 0.0f);
+        Render().SetVertexShaderConstant(GC_FREE + 30, &CVECTOR4(vTmp.x, vTmp.y, vTmp.z, 1.0f), 1);
 
-			Render().SetTexture(0, pVolumeTexture);
-			Render().SetTexture(1, pReflection);
-			Render().SetTexture(2, pVolumeTexture);
-			Render().SetTexture(3, pReflectionSunroad);
+        if (bSimpleSea)
+        {
+            Render().SetVertexShaderConstant(GC_FREE + 8, &mTexProjection, 4); // Matrix!!
 
-			Render().SetTextureStageState(1, D3DTSS_BUMPENVMAT00, F2DW(0.08f));
-			Render().SetTextureStageState(1, D3DTSS_BUMPENVMAT10, F2DW(0.0f));
-			Render().SetTextureStageState(1, D3DTSS_BUMPENVMAT01, F2DW(0.0f));
-			Render().SetTextureStageState(1, D3DTSS_BUMPENVMAT11, F2DW(0.08f));
+            Render().SetTexture(0, pVolumeTexture);
+            Render().SetTexture(1, pReflection);
+            Render().SetTexture(2, pVolumeTexture);
+            Render().SetTexture(3, pReflectionSunroad);
 
-			Render().SetTextureStageState(3, D3DTSS_BUMPENVMAT00, F2DW(0.05f));
-			Render().SetTextureStageState(3, D3DTSS_BUMPENVMAT10, F2DW(0.0f));
-			Render().SetTextureStageState(3, D3DTSS_BUMPENVMAT01, F2DW(0.0f));
-			Render().SetTextureStageState(3, D3DTSS_BUMPENVMAT11, F2DW(0.05f));
+            Render().SetTextureStageState(1, D3DTSS_BUMPENVMAT00, F2DW(0.08f));
+            Render().SetTextureStageState(1, D3DTSS_BUMPENVMAT10, F2DW(0.0f));
+            Render().SetTextureStageState(1, D3DTSS_BUMPENVMAT01, F2DW(0.0f));
+            Render().SetTextureStageState(1, D3DTSS_BUMPENVMAT11, F2DW(0.08f));
 
-			Render().DrawIndexedPrimitiveNoVShader(D3DPT_TRIANGLELIST, iVSeaBuffer, sizeof(SeaVertex), iISeaBuffer, 0, iVStart, 0, iTStart, "Sea3");
-		}
-		else
-		{
-			Render().SetVertexShaderConstant(GC_FREE + 8, &CMatrix(0.0f, 0.0f, PId2), 4);			// Matrix!!
+            Render().SetTextureStageState(3, D3DTSS_BUMPENVMAT00, F2DW(0.05f));
+            Render().SetTextureStageState(3, D3DTSS_BUMPENVMAT10, F2DW(0.0f));
+            Render().SetTextureStageState(3, D3DTSS_BUMPENVMAT01, F2DW(0.0f));
+            Render().SetTextureStageState(3, D3DTSS_BUMPENVMAT11, F2DW(0.05f));
 
-			Render().SetTexture(0, pVolumeTexture);
-			Render().SetTexture(3, pEnvMap);
+            Render().DrawIndexedPrimitiveNoVShader(D3DPT_TRIANGLELIST, iVSeaBuffer, sizeof(SeaVertex), iISeaBuffer, 0,
+                                                   iVStart, 0, iTStart, "Sea3");
+        }
+        else
+        {
+            Render().SetVertexShaderConstant(GC_FREE + 8, &CMatrix(0.0f, 0.0f, PId2), 4); // Matrix!!
 
-			Render().DrawIndexedPrimitiveNoVShader(D3DPT_TRIANGLELIST, iVSeaBuffer, sizeof(SeaVertex), iISeaBuffer, 0, iVStart, 0, iTStart, "Sea2");
+            Render().SetTexture(0, pVolumeTexture);
+            Render().SetTexture(3, pEnvMap);
 
-			Render().SetTexture(3, pSunRoadMap);
-			Render().DrawIndexedPrimitiveNoVShader(D3DPT_TRIANGLELIST, iVSeaBuffer, sizeof(SeaVertex), iISeaBuffer, 0, iVStart, 0, iTStart, "Sea2_SunRoad");
-		}
-	}
+            Render().DrawIndexedPrimitiveNoVShader(D3DPT_TRIANGLELIST, iVSeaBuffer, sizeof(SeaVertex), iISeaBuffer, 0,
+                                                   iVStart, 0, iTStart, "Sea2");
 
-	RDTSC_E(dwTotalRDTSC);
-	//Render().Print(50, 300, 0xFFFFFFFF, "%d, %d, %d", iVStart, iTStart, dwTotalRDTSC);
+            Render().SetTexture(3, pSunRoadMap);
+            Render().DrawIndexedPrimitiveNoVShader(D3DPT_TRIANGLELIST, iVSeaBuffer, sizeof(SeaVertex), iISeaBuffer, 0,
+                                                   iVStart, 0, iTStart, "Sea2_SunRoad");
+        }
+    }
+
+    RDTSC_E(dwTotalRDTSC);
+    // Render().Print(50, 300, 0xFFFFFFFF, "%d, %d, %d", iVStart, iTStart, dwTotalRDTSC);
 }
 
-float NetSea::Trace(const CVECTOR & vSrc, const CVECTOR & vDst)
+float NetSea::Trace(const CVECTOR &vSrc, const CVECTOR &vDst)
 {
-	long iNumTests = 5;
-	float fRes = 2.0f;
-	float fDV = 1.0f / float(iNumTests - 1);
+    long iNumTests = 5;
+    float fRes = 2.0f;
+    float fDV = 1.0f / float(iNumTests - 1);
 
-	if (vSrc.y > fMaxSeaHeight && vDst.y > fMaxSeaHeight) return 2.0f;
+    if (vSrc.y > fMaxSeaHeight && vDst.y > fMaxSeaHeight)
+        return 2.0f;
 
-	for (long i=0; i<iNumTests; i++)
-	{
-		CVECTOR vTemp = vSrc + float(i) * fDV * (vDst - vSrc);
-		float fWaveY = WaveXZ(vTemp.x, vTemp.z, null);
+    for (long i = 0; i < iNumTests; i++)
+    {
+        CVECTOR vTemp = vSrc + float(i) * fDV * (vDst - vSrc);
+        float fWaveY = WaveXZ(vTemp.x, vTemp.z, null);
 
-		if (fWaveY > vTemp.y) return float(i) * fDV;
-	}
+        if (fWaveY > vTemp.y)
+            return float(i) * fDV;
+    }
 
-	return 2.0f;
+    return 2.0f;
 }
 
-float NetSea::Cannon_Trace(long iBallOwner, const CVECTOR & vSrc, const CVECTOR & vDst) 
-{ 
-	Assert(IsServer());
-	float fRes = Trace(vSrc, vDst);
-	
-	if (fRes <= 1.0f)
-	{
-		CVECTOR vTemp = vSrc + fRes * (vDst - vSrc);
-		float fTmpY = WaveXZ(vTemp.x, vTemp.z, null);
-		api->Event("NetServer_OnBallWaterHit", "lfff", iBallOwner, vTemp.x, fTmpY, vTemp.z);
-	}
-
-	return fRes; 
-}
-
-dword NetSea::AttributeChanged(ATTRIBUTES * pAttribute)
+float NetSea::Cannon_Trace(long iBallOwner, const CVECTOR &vSrc, const CVECTOR &vDst)
 {
-	ATTRIBUTES * pParent = pAttribute->GetParent();
-	ATTRIBUTES * pParent2 = (pParent) ? pParent->GetParent() : null;
+    Assert(IsServer());
+    float fRes = Trace(vSrc, vDst);
 
-	char * sName = pAttribute->GetThisName();
-	char * sValue = pAttribute->GetThisAttr();
+    if (fRes <= 1.0f)
+    {
+        CVECTOR vTemp = vSrc + fRes * (vDst - vSrc);
+        float fTmpY = WaveXZ(vTemp.x, vTemp.z, null);
+        api->Event("NetServer_OnBallWaterHit", "lfff", iBallOwner, vTemp.x, fTmpY, vTemp.z);
+    }
 
-	if (*pParent == "isDone")
-	{
-		Realize(0);
-	}
+    return fRes;
+}
 
-	if (*pParent == "Sea2")
-	{
-		if (*pAttribute == "WaterColor")	{ v4SeaColor = COLOR2VECTOR4(pAttribute->GetAttributeAsDword()); return 0; }
-		if (*pAttribute == "SkyColor")		{ v4SkyColor = COLOR2VECTOR4(pAttribute->GetAttributeAsDword()); return 0; }
-		
-		if (*pAttribute == "Amp1")			{ _fAmp1 = pAttribute->GetAttributeAsFloat(); return 0; }
-		if (*pAttribute == "AnimSpeed1")	{ fAnimSpeed1 = pAttribute->GetAttributeAsFloat(); return 0; }
- 		if (*pAttribute == "Scale1")		{ fScale1 = pAttribute->GetAttributeAsFloat(); return 0; }
-		if (*pAttribute == "MoveSpeed1")	{ sscanf(pAttribute->GetThisAttr(), "%f, %f, %f", &vMoveSpeed1.x, &vMoveSpeed1.y, &vMoveSpeed1.z); return 0; }
+dword NetSea::AttributeChanged(ATTRIBUTES *pAttribute)
+{
+    ATTRIBUTES *pParent = pAttribute->GetParent();
+    ATTRIBUTES *pParent2 = (pParent) ? pParent->GetParent() : null;
 
-		if (*pAttribute == "Amp2")			{ _fAmp2 = pAttribute->GetAttributeAsFloat(); return 0; }
-		if (*pAttribute == "AnimSpeed2")	{ fAnimSpeed2 = pAttribute->GetAttributeAsFloat(); return 0; }
-		if (*pAttribute == "Scale2")		{ fScale2 = pAttribute->GetAttributeAsFloat(); return 0; }
-		if (*pAttribute == "MoveSpeed2")	{ sscanf(pAttribute->GetThisAttr(), "%f, %f, %f", &vMoveSpeed2.x, &vMoveSpeed2.y, &vMoveSpeed2.z); return 0; }
+    char *sName = pAttribute->GetThisName();
+    char *sValue = pAttribute->GetThisAttr();
 
-		if (*pAttribute == "PosShift")		{ fPosShift = pAttribute->GetAttributeAsFloat(); return 0; }
+    if (*pParent == "isDone")
+    {
+        Realize(0);
+    }
 
-		if (*pAttribute == "BumpScale")		{ fBumpScale = pAttribute->GetAttributeAsFloat(); return 0; }
-		if (*pAttribute == "BumpSpeed")		{ fBumpSpeed = pAttribute->GetAttributeAsFloat(); return 0; }
-		if (*pAttribute == "LodScale")		{ fLodScale = pAttribute->GetAttributeAsFloat(); return 0; }
-		if (*pAttribute == "GridStep")		{ fGridStep = pAttribute->GetAttributeAsFloat(); return 0; }
+    if (*pParent == "Sea2")
+    {
+        if (*pAttribute == "WaterColor")
+        {
+            v4SeaColor = COLOR2VECTOR4(pAttribute->GetAttributeAsDword());
+            return 0;
+        }
+        if (*pAttribute == "SkyColor")
+        {
+            v4SkyColor = COLOR2VECTOR4(pAttribute->GetAttributeAsDword());
+            return 0;
+        }
 
-		if (*pAttribute == "Reflection")	{ v4SeaParameters.y = pAttribute->GetAttributeAsFloat(); return 0; }
-		if (*pAttribute == "Transparency")	{ v4SeaParameters.z = pAttribute->GetAttributeAsFloat(); return 0; }
-		if (*pAttribute == "Attenuation")	{ v4SeaParameters.x = pAttribute->GetAttributeAsFloat(); return 0; }
+        if (*pAttribute == "Amp1")
+        {
+            _fAmp1 = pAttribute->GetAttributeAsFloat();
+            return 0;
+        }
+        if (*pAttribute == "AnimSpeed1")
+        {
+            fAnimSpeed1 = pAttribute->GetAttributeAsFloat();
+            return 0;
+        }
+        if (*pAttribute == "Scale1")
+        {
+            fScale1 = pAttribute->GetAttributeAsFloat();
+            return 0;
+        }
+        if (*pAttribute == "MoveSpeed1")
+        {
+            sscanf(pAttribute->GetThisAttr(), "%f, %f, %f", &vMoveSpeed1.x, &vMoveSpeed1.y, &vMoveSpeed1.z);
+            return 0;
+        }
 
-		if (*pAttribute == "Frenel")		{ fFrenel = pAttribute->GetAttributeAsFloat(); return 0; }
-		return 0;
-	}
+        if (*pAttribute == "Amp2")
+        {
+            _fAmp2 = pAttribute->GetAttributeAsFloat();
+            return 0;
+        }
+        if (*pAttribute == "AnimSpeed2")
+        {
+            fAnimSpeed2 = pAttribute->GetAttributeAsFloat();
+            return 0;
+        }
+        if (*pAttribute == "Scale2")
+        {
+            fScale2 = pAttribute->GetAttributeAsFloat();
+            return 0;
+        }
+        if (*pAttribute == "MoveSpeed2")
+        {
+            sscanf(pAttribute->GetThisAttr(), "%f, %f, %f", &vMoveSpeed2.x, &vMoveSpeed2.y, &vMoveSpeed2.z);
+            return 0;
+        }
 
-	if (*pParent == "fog")
-	{
-		if (*pAttribute == "Enable")	{ bFogEnable = pAttribute->GetAttributeAsDword()!=0; return 0; }
-		if (*pAttribute == "Start")		{ fFogStartDistance = pAttribute->GetAttributeAsFloat(); return 0; }
-		if (*pAttribute == "Color")		{ vFogColor = (1.0f / 255.0f) * COLOR2VECTOR(pAttribute->GetAttributeAsDword()); return 0; }
-		if (*pAttribute == "SeaDensity"){ fFogSeaDensity = pAttribute->GetAttributeAsFloat(); return 0; }
-		return 0;
-	}
+        if (*pAttribute == "PosShift")
+        {
+            fPosShift = pAttribute->GetAttributeAsFloat();
+            return 0;
+        }
 
-	if (*pAttribute == "MaxSeaHeight")
-	{
-		fMaxSeaHeight = AttributesPointer->GetAttributeAsFloat("MaxSeaHeight", 50.0f);
+        if (*pAttribute == "BumpScale")
+        {
+            fBumpScale = pAttribute->GetAttributeAsFloat();
+            return 0;
+        }
+        if (*pAttribute == "BumpSpeed")
+        {
+            fBumpSpeed = pAttribute->GetAttributeAsFloat();
+            return 0;
+        }
+        if (*pAttribute == "LodScale")
+        {
+            fLodScale = pAttribute->GetAttributeAsFloat();
+            return 0;
+        }
+        if (*pAttribute == "GridStep")
+        {
+            fGridStep = pAttribute->GetAttributeAsFloat();
+            return 0;
+        }
 
-		float fScale = (fMaxSeaHeight >= _fAmp1 + _fAmp2) ? 1.0f : fMaxSeaHeight / (_fAmp1 + _fAmp2);
+        if (*pAttribute == "Reflection")
+        {
+            v4SeaParameters.y = pAttribute->GetAttributeAsFloat();
+            return 0;
+        }
+        if (*pAttribute == "Transparency")
+        {
+            v4SeaParameters.z = pAttribute->GetAttributeAsFloat();
+            return 0;
+        }
+        if (*pAttribute == "Attenuation")
+        {
+            v4SeaParameters.x = pAttribute->GetAttributeAsFloat();
+            return 0;
+        }
 
-		fAmp1 = _fAmp1 * fScale;
-		fAmp2 = _fAmp2 * fScale;
-	}
+        if (*pAttribute == "Frenel")
+        {
+            fFrenel = pAttribute->GetAttributeAsFloat();
+            return 0;
+        }
+        return 0;
+    }
 
-	return 0;
+    if (*pParent == "fog")
+    {
+        if (*pAttribute == "Enable")
+        {
+            bFogEnable = pAttribute->GetAttributeAsDword() != 0;
+            return 0;
+        }
+        if (*pAttribute == "Start")
+        {
+            fFogStartDistance = pAttribute->GetAttributeAsFloat();
+            return 0;
+        }
+        if (*pAttribute == "Color")
+        {
+            vFogColor = (1.0f / 255.0f) * COLOR2VECTOR(pAttribute->GetAttributeAsDword());
+            return 0;
+        }
+        if (*pAttribute == "SeaDensity")
+        {
+            fFogSeaDensity = pAttribute->GetAttributeAsFloat();
+            return 0;
+        }
+        return 0;
+    }
+
+    if (*pAttribute == "MaxSeaHeight")
+    {
+        fMaxSeaHeight = AttributesPointer->GetAttributeAsFloat("MaxSeaHeight", 50.0f);
+
+        float fScale = (fMaxSeaHeight >= _fAmp1 + _fAmp2) ? 1.0f : fMaxSeaHeight / (_fAmp1 + _fAmp2);
+
+        fAmp1 = _fAmp1 * fScale;
+        fAmp2 = _fAmp2 * fScale;
+    }
+
+    return 0;
 }
 
 void NetSea::LostRender()
 {
-	if (!bSimpleSea)
-	{
-		Render().Release(pEnvMap);		pEnvMap = NULL;
-		Render().Release(pSunRoadMap);	pSunRoadMap = NULL;
-		Render().Release(pZStencil);	pZStencil = NULL;
-	}
-	else
-	{	
-		Render().Release(pReflection); pReflection = NULL;
-		Render().Release(pReflectionSunroad); pReflectionSunroad = NULL;
-		Render().Release(pReflectionSurfaceDepth); pReflectionSurfaceDepth = NULL;
-	}
+    if (!bSimpleSea)
+    {
+        Render().Release(pEnvMap);
+        pEnvMap = NULL;
+        Render().Release(pSunRoadMap);
+        pSunRoadMap = NULL;
+        Render().Release(pZStencil);
+        pZStencil = NULL;
+    }
+    else
+    {
+        Render().Release(pReflection);
+        pReflection = NULL;
+        Render().Release(pReflectionSunroad);
+        pReflectionSunroad = NULL;
+        Render().Release(pReflectionSurfaceDepth);
+        pReflectionSurfaceDepth = NULL;
+    }
 }
 
 void NetSea::RestoreRender()
 {
-	if (!bSimpleSea)
-	{
-		Render().CreateCubeTexture(128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pEnvMap);
-		Render().CreateCubeTexture(128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pSunRoadMap);
-		Render().CreateDepthStencilSurface(128, 128, D3DFMT_D24S8, D3DMULTISAMPLE_NONE, &pZStencil);
-	}
-	else
-	{	
-		Render().CreateTexture(128, 128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pReflection);
-		Render().CreateTexture(128, 128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pReflectionSunroad);
-		Render().CreateDepthStencilSurface(128, 128, D3DFMT_D24S8, D3DMULTISAMPLE_NONE, &pReflectionSurfaceDepth);
-	}
+    if (!bSimpleSea)
+    {
+        Render().CreateCubeTexture(128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pEnvMap);
+        Render().CreateCubeTexture(128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pSunRoadMap);
+        Render().CreateDepthStencilSurface(128, 128, D3DFMT_D24S8, D3DMULTISAMPLE_NONE, &pZStencil);
+    }
+    else
+    {
+        Render().CreateTexture(128, 128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pReflection);
+        Render().CreateTexture(128, 128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pReflectionSunroad);
+        Render().CreateDepthStencilSurface(128, 128, D3DFMT_D24S8, D3DMULTISAMPLE_NONE, &pReflectionSurfaceDepth);
+    }
 }

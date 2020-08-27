@@ -1,5 +1,4 @@
 #include "THashDataMap.h"
 
-//long hashPop = 0;
-//long hashPr = 0;
-
+// long hashPop = 0;
+// long hashPr = 0;

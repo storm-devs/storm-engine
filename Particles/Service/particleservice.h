@@ -15,39 +15,34 @@ class ParticleManager;
 
 class ParticleService : public IParticleService
 {
-	IParticleManager* pDefaultManager;
+    IParticleManager *pDefaultManager;
 
-	struct CreatedManager
-	{
-		ParticleManager* pManager;
-		string FileName;
-		int Line;
-	};
+    struct CreatedManager
+    {
+        ParticleManager *pManager;
+        string FileName;
+        int Line;
+    };
 
+    bool sysDelete;
+    array<CreatedManager> CreatedManagers;
 
-	bool sysDelete;
-	array<CreatedManager> CreatedManagers;
+  public:
+    //Конструктор / деструктор
+    ParticleService();
+    virtual ~ParticleService();
 
-public:
+    virtual bool Init();
 
-//Конструктор / деструктор
-	ParticleService ();
-	virtual ~ParticleService ();
+    //Создать менеджер партиклов
+    virtual IParticleManager *CreateManagerEx(const char *ProjectName, const char *File, int Line);
 
+    virtual void RemoveManagerFromList(IParticleManager *pManager);
 
-	virtual bool Init ();
+    virtual DWORD GetManagersCount();
+    virtual IParticleManager *GetManagerByIndex(DWORD Index);
 
-//Создать менеджер партиклов
-	virtual IParticleManager* CreateManagerEx (const char* ProjectName, const char* File, int Line);
-
-	virtual void RemoveManagerFromList (IParticleManager* pManager);
-
-	virtual DWORD GetManagersCount ();
-	virtual IParticleManager* GetManagerByIndex (DWORD Index);
-
-	virtual IParticleManager* DefManager ();
-
+    virtual IParticleManager *DefManager();
 };
-
 
 #endif

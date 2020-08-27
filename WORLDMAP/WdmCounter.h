@@ -1,11 +1,11 @@
 //============================================================================================
 //	Spirenkov Maxim aka Sp-Max Shaman, 2001
 //--------------------------------------------------------------------------------------------
-//	
+//
 //--------------------------------------------------------------------------------------------
 //	WdmCounter
 //--------------------------------------------------------------------------------------------
-//	
+//
 //============================================================================================
 
 #ifndef _WdmCounter_H_
@@ -13,51 +13,46 @@
 
 #include "WdmRenderModel.h"
 
+#define WMD_NUM_SKYS 8
 
-#define WMD_NUM_SKYS	8
-
-
-class WdmCounter : public WdmRenderModel  
+class WdmCounter : public WdmRenderModel
 {
-//--------------------------------------------------------------------------------------------
-//Конструирование, деструктурирование
-//--------------------------------------------------------------------------------------------
-public:
-	WdmCounter();
-	virtual ~WdmCounter();
+    //--------------------------------------------------------------------------------------------
+    //Конструирование, деструктурирование
+    //--------------------------------------------------------------------------------------------
+  public:
+    WdmCounter();
+    virtual ~WdmCounter();
 
-	bool Init();
+    bool Init();
 
-	//Расчёты
-	void Update(float dltTime);
+    //Расчёты
+    void Update(float dltTime);
 
-	void PRender(VDX8RENDER * rs){};
-	void MRender(VDX8RENDER * rs){};
-	void LRender(VDX8RENDER * rs);
+    void PRender(VDX8RENDER *rs){};
+    void MRender(VDX8RENDER *rs){};
+    void LRender(VDX8RENDER *rs);
 
+    //--------------------------------------------------------------------------------------------
+    //Инкапсуляция
+    //--------------------------------------------------------------------------------------------
+  private:
+    bool LoadModel(WdmRenderModel *&pnt, const char *name, const char *tech);
+    void DrawNum(VDX8RENDER *rs, WdmRenderModel *m, float u, float v);
 
-//--------------------------------------------------------------------------------------------
-//Инкапсуляция
-//--------------------------------------------------------------------------------------------
-private:
-	bool LoadModel(WdmRenderModel * & pnt, const char * name, const char * tech);
-	void DrawNum(VDX8RENDER * rs, WdmRenderModel * m, float u, float v);
+  private:
+    WdmRenderModel *sky;
+    WdmRenderModel *d[2];
+    WdmRenderModel *m[2];
+    WdmRenderModel *y[4];
 
+    long skytx[WMD_NUM_SKYS];
+    long lastSkys[2];
+    long skyseq[8];
+    long dayCounter;
+    long skyCounter;
 
-private:
-	WdmRenderModel * sky;
-	WdmRenderModel * d[2];
-	WdmRenderModel * m[2];
-	WdmRenderModel * y[4];
-
-	long skytx[WMD_NUM_SKYS];
-	long lastSkys[2];
-	long skyseq[8];
-	long dayCounter;
-	long skyCounter;
-
-	static const char * skytex[WMD_NUM_SKYS];
+    static const char *skytex[WMD_NUM_SKYS];
 };
 
 #endif
-

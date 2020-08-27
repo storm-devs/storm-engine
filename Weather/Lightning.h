@@ -1,66 +1,66 @@
 #ifndef LIGHTNING_HPP
 #define LIGHTNING_HPP
 
-#include "Typedef.h"
 #include "..\common_h\Weather_base.h"
+#include "Typedef.h"
 
-#define MAX_LIGHTNING_TEXTURES		2
+#define MAX_LIGHTNING_TEXTURES 2
 
 class LIGHTNING : public ENTITY
 {
-	struct flash_t
-	{
-		char	sTechnique[128];
-		float	fSize;
-		float	fTime;
-	};
-	
-	struct lightning_t
-	{
-		// script parameters
-		dword		dwSubTexture;
-		dword		dwFlickerTime;
-		float		fTime;
-		float		fSize, fScaleX, fScaleY;
-		CVECTOR		vPos;
-		
-		// inner parameters
-		float		fAlpha;
-		float		fPower;
+    struct flash_t
+    {
+        char sTechnique[128];
+        float fSize;
+        float fTime;
+    };
 
-		char		sTechnique[128];
-		
-		flash_t		Flash;
-	};
+    struct lightning_t
+    {
+        // script parameters
+        dword dwSubTexture;
+        dword dwFlickerTime;
+        float fTime;
+        float fSize, fScaleX, fScaleY;
+        CVECTOR vPos;
 
-	array<lightning_t>	aLightnings;
+        // inner parameters
+        float fAlpha;
+        float fPower;
 
-	dword			dwSubTexX, dwSubTexY;
-	long			iLightningTexture, iFlashTexture;
+        char sTechnique[128];
 
-	float			fKDist;
-	long			iFlickerTime;
+        flash_t Flash;
+    };
 
-	WEATHER_BASE	* pWeather;
-	VDX8RENDER		* pRS;
-	COLLIDE			* pCollide;
-	VIDWALKER		* pVWSunTrace;
+    array<lightning_t> aLightnings;
 
-	void			Release();
-	void			CalcFlashPower(lightning_t * pL);
+    dword dwSubTexX, dwSubTexY;
+    long iLightningTexture, iFlashTexture;
 
-public:
-	LIGHTNING();
-	~LIGHTNING();
+    float fKDist;
+    long iFlickerTime;
 
-	void	SetDevice();
-	bool	Init();
-	void	Realize(dword Delta_Time);
-	void	Execute(dword Delta_Time);
-	bool	CreateState(ENTITY_STATE_GEN * state_gen);
-	bool	LoadState(ENTITY_STATE * state);
-	dword	_cdecl ProcessMessage(MESSAGE & message);
-	dword	AttributeChanged(ATTRIBUTES * pAttributeChanged);
+    WEATHER_BASE *pWeather;
+    VDX8RENDER *pRS;
+    COLLIDE *pCollide;
+    VIDWALKER *pVWSunTrace;
+
+    void Release();
+    void CalcFlashPower(lightning_t *pL);
+
+  public:
+    LIGHTNING();
+    ~LIGHTNING();
+
+    void SetDevice();
+    bool Init();
+    void Realize(dword Delta_Time);
+    void Execute(dword Delta_Time);
+    bool CreateState(ENTITY_STATE_GEN *state_gen);
+    bool LoadState(ENTITY_STATE *state);
+    dword _cdecl ProcessMessage(MESSAGE &message);
+    dword AttributeChanged(ATTRIBUTES *pAttributeChanged);
 };
 
 #endif

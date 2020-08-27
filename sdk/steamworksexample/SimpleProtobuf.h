@@ -11,10 +11,9 @@
 #pragma once
 
 #include "steam/steamtypes.h"
+#include <string.h>
 #include <string>
 #include <vector>
-#include <string.h>
-
 
 //
 // This file contains some quick-and-dirty helpers that can encode and
@@ -106,85 +105,98 @@
 // to handle both cases can lead to invalid parse results.
 //
 
-
 // Encoding functions
 //
 // Note: C++ type promotion rules will automatically handle smaller integer types
 
-void ProtobufWriteField_Integer( std::string& strProtobuf, uint32 uFieldNumber, uint64 ulVarIntData );
-void ProtobufWriteField_SInteger( std::string& strProtobuf, uint32 uFieldNumber, int64 lSwizzleVarIntData );
-void ProtobufWriteField_Fixed64( std::string& strProtobuf, uint32 uFieldNumber, uint64 ulFixed64Data );
-void ProtobufWriteField_Fixed64( std::string& strProtobuf, uint32 uFieldNumber, double flFixed64Data );
-void ProtobufWriteField_Fixed32( std::string& strProtobuf, uint32 uFieldNumber, uint32 ulFixed32Data );
-void ProtobufWriteField_Fixed32( std::string& strProtobuf, uint32 uFieldNumber, float flFixed32Data );
-void ProtobufWriteField_String( std::string& strProtobuf, uint32 uFieldNumber, const char *pchData, size_t cchData );
-void ProtobufWriteField_String( std::string& strProtobuf, uint32 uFieldNumber, const char *pchData );
-void ProtobufWriteField_String( std::string& strProtobuf, uint32 uFieldNumber, const std::string &strData );
+void ProtobufWriteField_Integer(std::string &strProtobuf, uint32 uFieldNumber, uint64 ulVarIntData);
+void ProtobufWriteField_SInteger(std::string &strProtobuf, uint32 uFieldNumber, int64 lSwizzleVarIntData);
+void ProtobufWriteField_Fixed64(std::string &strProtobuf, uint32 uFieldNumber, uint64 ulFixed64Data);
+void ProtobufWriteField_Fixed64(std::string &strProtobuf, uint32 uFieldNumber, double flFixed64Data);
+void ProtobufWriteField_Fixed32(std::string &strProtobuf, uint32 uFieldNumber, uint32 ulFixed32Data);
+void ProtobufWriteField_Fixed32(std::string &strProtobuf, uint32 uFieldNumber, float flFixed32Data);
+void ProtobufWriteField_String(std::string &strProtobuf, uint32 uFieldNumber, const char *pchData, size_t cchData);
+void ProtobufWriteField_String(std::string &strProtobuf, uint32 uFieldNumber, const char *pchData);
+void ProtobufWriteField_String(std::string &strProtobuf, uint32 uFieldNumber, const std::string &strData);
 
 // Decoding functions, high-level (not optimized for speed)
 //
 
-bool ProtobufExtractField_Integer( const std::string & strProtobuf, uint32 uFieldNumber, uint64 &ulData );
-bool ProtobufExtractField_Integer( const std::string & strProtobuf, uint32 uFieldNumber, int64 &lData );
-bool ProtobufExtractField_Integer( const std::string & strProtobuf, uint32 uFieldNumber, uint32 &uData );
-bool ProtobufExtractField_Integer( const std::string & strProtobuf, uint32 uFieldNumber, int32 &iData );
-bool ProtobufExtractField_Integer( const std::string & strProtobuf, uint32 uFieldNumber, bool &bData );
-bool ProtobufExtractField_SInteger( const std::string & strProtobuf, uint32 uFieldNumber, int64 &lData );
-bool ProtobufExtractField_SInteger( const std::string & strProtobuf, uint32 uFieldNumber, int32 &lData );
-bool ProtobufExtractField_Fixed64( const std::string & strProtobuf, uint32 uFieldNumber, uint64 &ulData );
-bool ProtobufExtractField_Fixed64( const std::string & strProtobuf, uint32 uFieldNumber, int64 &lData );
-bool ProtobufExtractField_Fixed64( const std::string & strProtobuf, uint32 uFieldNumber, double &flData );
-bool ProtobufExtractField_Fixed32( const std::string & strProtobuf, uint32 uFieldNumber, uint32 &uData );
-bool ProtobufExtractField_Fixed32( const std::string & strProtobuf, uint32 uFieldNumber, int32 &iData );
-bool ProtobufExtractField_Fixed32( const std::string & strProtobuf, uint32 uFieldNumber, float &flData );
-bool ProtobufExtractField_String( const std::string & strProtobuf, uint32 uFieldNumber, std::string &strData );
+bool ProtobufExtractField_Integer(const std::string &strProtobuf, uint32 uFieldNumber, uint64 &ulData);
+bool ProtobufExtractField_Integer(const std::string &strProtobuf, uint32 uFieldNumber, int64 &lData);
+bool ProtobufExtractField_Integer(const std::string &strProtobuf, uint32 uFieldNumber, uint32 &uData);
+bool ProtobufExtractField_Integer(const std::string &strProtobuf, uint32 uFieldNumber, int32 &iData);
+bool ProtobufExtractField_Integer(const std::string &strProtobuf, uint32 uFieldNumber, bool &bData);
+bool ProtobufExtractField_SInteger(const std::string &strProtobuf, uint32 uFieldNumber, int64 &lData);
+bool ProtobufExtractField_SInteger(const std::string &strProtobuf, uint32 uFieldNumber, int32 &lData);
+bool ProtobufExtractField_Fixed64(const std::string &strProtobuf, uint32 uFieldNumber, uint64 &ulData);
+bool ProtobufExtractField_Fixed64(const std::string &strProtobuf, uint32 uFieldNumber, int64 &lData);
+bool ProtobufExtractField_Fixed64(const std::string &strProtobuf, uint32 uFieldNumber, double &flData);
+bool ProtobufExtractField_Fixed32(const std::string &strProtobuf, uint32 uFieldNumber, uint32 &uData);
+bool ProtobufExtractField_Fixed32(const std::string &strProtobuf, uint32 uFieldNumber, int32 &iData);
+bool ProtobufExtractField_Fixed32(const std::string &strProtobuf, uint32 uFieldNumber, float &flData);
+bool ProtobufExtractField_String(const std::string &strProtobuf, uint32 uFieldNumber, std::string &strData);
 
 // Decoding functions, low-level (see example usage and important NOTE in comments above)
 //
 
-bool ProtobufReadFieldTag( const char * &pParsePosition, const char *pParseEnd, uint32 &uFieldTag );
-bool ProtobufSkipFieldValue( const char * &pParsePosition, const char *pParseEnd, uint32 uFieldTag );
-bool ProtobufReadInteger( const char * &pParsePosition, const char *pParseEnd, uint64 &ulVarInt );
-bool ProtobufReadInteger( const char * &pParsePosition, const char *pParseEnd, int64 &lVarInt );
-bool ProtobufReadInteger( const char * &pParsePosition, const char *pParseEnd, uint32 &uVarInt );
-bool ProtobufReadInteger( const char * &pParsePosition, const char *pParseEnd, int32 &nVarInt );
-bool ProtobufReadInteger( const char * &pParsePosition, const char *pParseEnd, bool &bVarInt );
-bool ProtobufReadSInteger( const char * &pParsePosition, const char *pParseEnd, int64 &lVarInt );
-bool ProtobufReadSInteger( const char * &pParsePosition, const char *pParseEnd, int32 &nVarInt );
-bool ProtobufReadFixed64( const char * &pParsePosition, const char *pParseEnd, int64 &lValue );
-bool ProtobufReadFixed64( const char * &pParsePosition, const char *pParseEnd, uint64 &ulValue );
-bool ProtobufReadFixed64( const char * &pParsePosition, const char *pParseEnd, double &flValue );
-bool ProtobufReadFixed32( const char * &pParsePosition, const char *pParseEnd, int32 &nValue );
-bool ProtobufReadFixed32( const char * &pParsePosition, const char *pParseEnd, uint32 &uValue );
-bool ProtobufReadFixed32( const char * &pParsePosition, const char *pParseEnd, float &flValue );
-bool ProtobufReadString( const char * &pParsePosition, const char *pParseEnd, std::string &strValue );
-bool ProtobufReadStringAlias( const char * &pParsePosition, const char *pParseEnd, const char * &pStringDataStart, const char * &pStringDataEnd );
+bool ProtobufReadFieldTag(const char *&pParsePosition, const char *pParseEnd, uint32 &uFieldTag);
+bool ProtobufSkipFieldValue(const char *&pParsePosition, const char *pParseEnd, uint32 uFieldTag);
+bool ProtobufReadInteger(const char *&pParsePosition, const char *pParseEnd, uint64 &ulVarInt);
+bool ProtobufReadInteger(const char *&pParsePosition, const char *pParseEnd, int64 &lVarInt);
+bool ProtobufReadInteger(const char *&pParsePosition, const char *pParseEnd, uint32 &uVarInt);
+bool ProtobufReadInteger(const char *&pParsePosition, const char *pParseEnd, int32 &nVarInt);
+bool ProtobufReadInteger(const char *&pParsePosition, const char *pParseEnd, bool &bVarInt);
+bool ProtobufReadSInteger(const char *&pParsePosition, const char *pParseEnd, int64 &lVarInt);
+bool ProtobufReadSInteger(const char *&pParsePosition, const char *pParseEnd, int32 &nVarInt);
+bool ProtobufReadFixed64(const char *&pParsePosition, const char *pParseEnd, int64 &lValue);
+bool ProtobufReadFixed64(const char *&pParsePosition, const char *pParseEnd, uint64 &ulValue);
+bool ProtobufReadFixed64(const char *&pParsePosition, const char *pParseEnd, double &flValue);
+bool ProtobufReadFixed32(const char *&pParsePosition, const char *pParseEnd, int32 &nValue);
+bool ProtobufReadFixed32(const char *&pParsePosition, const char *pParseEnd, uint32 &uValue);
+bool ProtobufReadFixed32(const char *&pParsePosition, const char *pParseEnd, float &flValue);
+bool ProtobufReadString(const char *&pParsePosition, const char *pParseEnd, std::string &strValue);
+bool ProtobufReadStringAlias(const char *&pParsePosition, const char *pParseEnd, const char *&pStringDataStart,
+                             const char *&pStringDataEnd);
 
-bool ProtobufReadRepeatedInteger( const char * &pParsePosition, const char *pParseEnd, uint32 uFieldTag, std::vector<uint64> &vec );
-bool ProtobufReadRepeatedInteger( const char * &pParsePosition, const char *pParseEnd, uint32 uFieldTag, std::vector<int64> &vec );
-bool ProtobufReadRepeatedInteger( const char * &pParsePosition, const char *pParseEnd, uint32 uFieldTag, std::vector<uint32> &vec );
-bool ProtobufReadRepeatedInteger( const char * &pParsePosition, const char *pParseEnd, uint32 uFieldTag, std::vector<int32> &vec );
-bool ProtobufReadRepeatedInteger( const char * &pParsePosition, const char *pParseEnd, uint32 uFieldTag, std::vector<bool> &vec );
-bool ProtobufReadRepeatedSInteger( const char * &pParsePosition, const char *pParseEnd, uint32 uFieldTag, std::vector<int64> &vec );
-bool ProtobufReadRepeatedSInteger( const char * &pParsePosition, const char *pParseEnd, uint32 uFieldTag, std::vector<int32> &vec );
-bool ProtobufReadRepeatedFixed64( const char * &pParsePosition, const char *pParseEnd, uint32 uFieldTag, std::vector<int64> &vec );
-bool ProtobufReadRepeatedFixed64( const char * &pParsePosition, const char *pParseEnd, uint32 uFieldTag, std::vector<uint64> &vec );
-bool ProtobufReadRepeatedFixed64( const char * &pParsePosition, const char *pParseEnd, uint32 uFieldTag, std::vector<double> &vec );
-bool ProtobufReadRepeatedFixed32( const char * &pParsePosition, const char *pParseEnd, uint32 uFieldTag, std::vector<int32> &vec );
-bool ProtobufReadRepeatedFixed32( const char * &pParsePosition, const char *pParseEnd, uint32 uFieldTag, std::vector<uint32> &vec );
-bool ProtobufReadRepeatedFixed32( const char * &pParsePosition, const char *pParseEnd, uint32 uFieldTag, std::vector<float> &vec );
-bool ProtobufReadRepeatedString( const char * &pParsePosition, const char *pParseEnd, uint32 uFieldTag, std::vector<std::string> &vec );
+bool ProtobufReadRepeatedInteger(const char *&pParsePosition, const char *pParseEnd, uint32 uFieldTag,
+                                 std::vector<uint64> &vec);
+bool ProtobufReadRepeatedInteger(const char *&pParsePosition, const char *pParseEnd, uint32 uFieldTag,
+                                 std::vector<int64> &vec);
+bool ProtobufReadRepeatedInteger(const char *&pParsePosition, const char *pParseEnd, uint32 uFieldTag,
+                                 std::vector<uint32> &vec);
+bool ProtobufReadRepeatedInteger(const char *&pParsePosition, const char *pParseEnd, uint32 uFieldTag,
+                                 std::vector<int32> &vec);
+bool ProtobufReadRepeatedInteger(const char *&pParsePosition, const char *pParseEnd, uint32 uFieldTag,
+                                 std::vector<bool> &vec);
+bool ProtobufReadRepeatedSInteger(const char *&pParsePosition, const char *pParseEnd, uint32 uFieldTag,
+                                  std::vector<int64> &vec);
+bool ProtobufReadRepeatedSInteger(const char *&pParsePosition, const char *pParseEnd, uint32 uFieldTag,
+                                  std::vector<int32> &vec);
+bool ProtobufReadRepeatedFixed64(const char *&pParsePosition, const char *pParseEnd, uint32 uFieldTag,
+                                 std::vector<int64> &vec);
+bool ProtobufReadRepeatedFixed64(const char *&pParsePosition, const char *pParseEnd, uint32 uFieldTag,
+                                 std::vector<uint64> &vec);
+bool ProtobufReadRepeatedFixed64(const char *&pParsePosition, const char *pParseEnd, uint32 uFieldTag,
+                                 std::vector<double> &vec);
+bool ProtobufReadRepeatedFixed32(const char *&pParsePosition, const char *pParseEnd, uint32 uFieldTag,
+                                 std::vector<int32> &vec);
+bool ProtobufReadRepeatedFixed32(const char *&pParsePosition, const char *pParseEnd, uint32 uFieldTag,
+                                 std::vector<uint32> &vec);
+bool ProtobufReadRepeatedFixed32(const char *&pParsePosition, const char *pParseEnd, uint32 uFieldTag,
+                                 std::vector<float> &vec);
+bool ProtobufReadRepeatedString(const char *&pParsePosition, const char *pParseEnd, uint32 uFieldTag,
+                                std::vector<std::string> &vec);
 
-#define PROTOBUF_FIELDTAG_INTEGER( Field )  ( (uint64)( Field ) << 3 )
-#define PROTOBUF_FIELDTAG_SINTEGER( Field ) ( (uint64)( Field ) << 3 )
-#define PROTOBUF_FIELDTAG_FIXED64( Field )  ( (uint64)( Field ) << 3 | (uint64)1 )
-#define PROTOBUF_FIELDTAG_STRING( Field )   ( (uint64)( Field ) << 3 | (uint64)2 )
-#define PROTOBUF_FIELDTAG_FIXED32( Field )  ( (uint64)( Field ) << 3 | (uint64)5 )
+#define PROTOBUF_FIELDTAG_INTEGER(Field) ((uint64)(Field) << 3)
+#define PROTOBUF_FIELDTAG_SINTEGER(Field) ((uint64)(Field) << 3)
+#define PROTOBUF_FIELDTAG_FIXED64(Field) ((uint64)(Field) << 3 | (uint64)1)
+#define PROTOBUF_FIELDTAG_STRING(Field) ((uint64)(Field) << 3 | (uint64)2)
+#define PROTOBUF_FIELDTAG_FIXED32(Field) ((uint64)(Field) << 3 | (uint64)5)
 
 #define PROTOBUF_FIELDTAG_REPEATED_INTEGER PROTOBUF_FIELDTAG_STRING
 #define PROTOBUF_FIELDTAG_REPEATED_SINTEGER PROTOBUF_FIELDTAG_STRING
 #define PROTOBUF_FIELDTAG_REPEATED_FIXED32 PROTOBUF_FIELDTAG_STRING
 #define PROTOBUF_FIELDTAG_REPEATED_FIXED64 PROTOBUF_FIELDTAG_STRING
-
 
 #endif

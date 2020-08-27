@@ -5,20 +5,20 @@
 
 class BIManCommandList : public BICommandList
 {
-public:
-	BIManCommandList( ENTITY_ID& eid, ATTRIBUTES* pA, VDX8RENDER* rs );
-	virtual ~BIManCommandList();
+  public:
+    BIManCommandList(ENTITY_ID &eid, ATTRIBUTES *pA, VDX8RENDER *rs);
+    virtual ~BIManCommandList();
 
-	virtual void FillIcons();
-	virtual void Init();
+    virtual void FillIcons();
+    virtual void Init();
 
-protected:
-	void Release();
+  protected:
+    void Release();
 
-	long CommandAdding();
-	long UserIconsAdding();
-	long AbilityAdding();
-	long AddCancelIcon();
+    long CommandAdding();
+    long UserIconsAdding();
+    long AbilityAdding();
+    long AddCancelIcon();
 };
 
 #endif

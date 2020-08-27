@@ -5,5 +5,3 @@
 INTERFACE_FUNCTION
 CREATE_CLASS(Sailors)
 CREATE_CLASS(SailorsEditor)
-
-

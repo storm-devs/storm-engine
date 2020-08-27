@@ -8,39 +8,38 @@
 #ifndef STARFIELD_H
 #define STARFIELD_H
 
-#include <vector>
 #include "GameEngine.h"
+#include <vector>
 
 #define STARFIELD_STAR_COUNT 600
 
 struct StarVertex_t
 {
-	float x, y;
-	DWORD color;
+    float x, y;
+    DWORD color;
 };
 
 class CStarField
 {
-public:
-	// Constructor
-	CStarField( IGameEngine *pGameEngine );
+  public:
+    // Constructor
+    CStarField(IGameEngine *pGameEngine);
 
-	// Render the star field
-	void Render();
+    // Render the star field
+    void Render();
 
-private:
-	
-	void Init();
-	
-private:
-	int m_nWidth;
-	int m_nHeight;
+  private:
+    void Init();
 
-	// Game engine instance we are running under
-	IGameEngine *m_pGameEngine;
+  private:
+    int m_nWidth;
+    int m_nHeight;
 
-	// Vector for starfield data
-	std::vector<StarVertex_t> m_VecStars;
+    // Game engine instance we are running under
+    IGameEngine *m_pGameEngine;
+
+    // Vector for starfield data
+    std::vector<StarVertex_t> m_VecStars;
 };
 
 #endif // STARFIELD_H
