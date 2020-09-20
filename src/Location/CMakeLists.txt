@@ -1,0 +1,74 @@
+cmake_minimum_required(VERSION 3.18)
+
+project(location)
+
+add_library(location MODULE 
+	AICharacter.cpp
+	AICharacter.h
+	Blood.cpp
+	Blood.h
+	CameraFollow.cpp
+	CameraFollow.h
+	CameraTracksFile.h
+	Character.cpp
+	Character.cpy
+	Character.h
+	CharacterAnimationKipper.cpp
+	CharacterAnimationKipper.h
+	CharactersGroups.cpp
+	CharactersGroups.h
+	Fader.cpp
+	Fader.h
+	Grass.cpp
+	Grass.h
+	Lights.cpp
+	Lights.h
+	Lizard.cpp
+	Lizard.h
+	Lizards.cpp
+	Lizards.h
+	LocCrab.cpp
+	LocCrab.h
+	LocCrabs.cpp
+	LocCrabs.h
+	LocEagle.cpp
+	LocEagle.h
+	LocLife.cpp
+	LocLife.h
+	LocRat.cpp
+	LocRat.h
+	LocRats.cpp
+	LocRats.h
+	Location.cpp
+	Location.h
+	LocationCamera.cpp
+	LocationCamera.h
+	LocationEffects.cpp
+	LocationEffects.h
+	LocationMain.cpp
+	LocationScriptLib.cpp
+	LocationScriptLib.h
+	LocatorArray.cpp
+	LocatorArray.h
+	ModelArray.cpp
+	ModelArray.h
+	ModelRealizer.cpp
+	ModelRealizer.h
+	NPCharacter.cpp
+	NPCharacter.h
+	PathTracks.cpp
+	PathTracks.h
+	Player.cpp
+	Player.h
+	PtcData.cpp
+	PtcData.h
+	Supervisor.cpp
+	Supervisor.h
+	WideScreen.cpp
+	WideScreen.h
+	grs.h
+	ptc.h
+)
+target_include_directories(location PRIVATE common_h)
+target_include_directories(location PRIVATE SoundService)
+target_include_directories(location PRIVATE extern/directx/include)

@@ -1,0 +1,19 @@
+cmake_minimum_required(VERSION 3.18)
+
+project(seafoam)
+
+add_library(seafoam MODULE 
+	Seafoam.H
+	Seafoam.cpp
+	SeafoamDefines.cpp
+	SeafoamDefines.h
+	TCarcass.cpp
+	TCarcass.h
+	TIVBufferManager.cpp
+	TIVBufferManager.h
+	seafoam_ps.cpp
+	seafoam_ps.h
+)
+target_include_directories(seafoam PRIVATE common_h)
+target_include_directories(seafoam PRIVATE SoundService)
+target_include_directories(seafoam PRIVATE extern/directx/include)
