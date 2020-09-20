@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.18)
 
-project(gameutils)
+project(geometry)
 
-add_library(gameutils MODULE 
+add_library(geometry MODULE 
 	geometry_R.h
 	geometry.h
 	geometry.cpp
@@ -11,6 +11,6 @@ add_library(gameutils MODULE
 	collide.cpp
 	Rdf.h
 )
-target_include_directories(gameutils PRIVATE common_h)
-target_include_directories(gameutils PRIVATE SoundService)
-target_include_directories(gameutils PRIVATE extern/directx/include)
+target_include_directories(geometry PRIVATE common_h)
+target_include_directories(geometry PRIVATE SoundService)
+target_include_directories(geometry PRIVATE extern/directx/include)
