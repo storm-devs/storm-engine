@@ -63,3 +63,4 @@ ipch/
 *.VC.VC.opendb
 
 
+build/
