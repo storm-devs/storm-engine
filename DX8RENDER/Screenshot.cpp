@@ -1,9 +1,10 @@
+#include <windows.h>
+
 #include <gdiplus.h>
 #include <io.h>
 #include <iostream>
 #include <sstream>
 #include <stdio.h>
-#include <windows.h>
 
 #include "..\common_h\tga.h"
 #include "sdevice.h"

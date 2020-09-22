@@ -1,6 +1,8 @@
 #ifndef _VSTRING_CODEC_H_
 #define _VSTRING_CODEC_H_
 
+#include <windows.h>
+
 class VSTRING_CODEC
 {
   public:

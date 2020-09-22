@@ -1,6 +1,10 @@
 #ifndef _CONTROLS_H_
 #define _CONTROLS_H_
 
+#include "d_types.h"
+
+#include <windows.h>
+
 #define INVALID_CONTROL_CODE 0xffffffff
 #define UNASSIGNED_CONTROL 0xffffffff
 

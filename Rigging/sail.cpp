@@ -393,7 +393,9 @@ void SAIL::Execute(dword Delta_Time)
 
         CVECTOR pos, ang;
         float perspect;
-        _asm rdtsc _asm mov rtime, eax RenderService->GetCamera(pos, ang, perspect);
+        _asm rdtsc;
+        _asm mov rtime, eax;
+        RenderService->GetCamera(pos, ang, perspect);
         CMatrix tmpMtx;
         tmpMtx.BuildMatrix(ang);
         CVECTOR vCamDirect = tmpMtx * CVECTOR(0, 0, 1.f);
@@ -525,7 +527,10 @@ void SAIL::Execute(dword Delta_Time)
         }
         // инициализация параметров трассировки луча
         LastTraceGroup = 0;
-        _asm rdtsc _asm sub eax, rtime _asm mov rtime, eax tm.idx = rtime;
+        _asm rdtsc;
+        _asm sub eax, rtime;
+        _asm mov rtime, eax;
+        tm.idx = rtime;
     }
 }
 
@@ -537,7 +542,9 @@ void SAIL::Realize(dword Delta_Time)
     {
         DWORD tm_draw;
 
-        _asm rdtsc _asm mov tm_draw, eax bool bDraw = RenderService->TechniqueExecuteStart("ShipSail");
+        _asm rdtsc;
+        _asm mov tm_draw, eax;
+        bool bDraw = RenderService->TechniqueExecuteStart("ShipSail");
         if (!bDraw)
             return;
         RenderService->SetMaterial(mat);

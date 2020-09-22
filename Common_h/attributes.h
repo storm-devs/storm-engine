@@ -1,6 +1,7 @@
 #ifndef _ATTRIBUTES_H_
 #define _ATTRIBUTES_H_
 
+#include "d_types.h"
 #include "memop.h"
 #include "vstring_codec.h"
 #include <stdio.h>

@@ -1,6 +1,7 @@
 #ifndef SAVE_LOAD_HPP
 #define SAVE_LOAD_HPP
 
+#include "../templates/string.h"
 #include "..\character.h"
 
 class CSaveLoad

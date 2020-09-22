@@ -26,6 +26,7 @@
 #define INVALID_TEXTURE_ID 0xFFFFFFFF
 #define INVALID_RS_ID 0xFFFFFFFF
 
+class CVideoTexture;
 typedef dword RS_ID;
 
 struct FVF_VERTEX

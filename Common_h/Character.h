@@ -2,6 +2,7 @@
 #define CHARACTER_WORK_HPP
 
 #include "Attributes.h"
+#include "exs.h"
 
 inline char *GetFirstName(ATTRIBUTES *pACharacter)
 {

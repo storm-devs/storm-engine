@@ -6,7 +6,6 @@
 #include "..\common_h\matrix.h"
 #include "..\common_h\sd2_h\cannontrace.h"
 #include "..\common_h\vmodule_api.h"
-#include "blast.h"
 
 typedef struct
 {

@@ -9,6 +9,7 @@
 
 #pragma pack(push, 1)
 
+#include "Matrix.h"
 #include "Plane.h"
 #include "Vector.h"
 

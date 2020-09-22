@@ -1,9 +1,10 @@
 // MLeaksDlg.cpp : implementation file
 //
 
-#include "MLeaksDlg.h"
-#include "MLeaks.h"
 #include "stdafx.h"
+
+#include "MLeaks.h"
+#include "MLeaksDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

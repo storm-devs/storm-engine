@@ -8,6 +8,8 @@
 // includes
 #include "math3d.h"
 
+#include <windows.h>
+
 // Constants
 
 #define PI 3.14159265358979323846f
