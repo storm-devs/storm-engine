@@ -1,8 +1,9 @@
 // SetupDlg.cpp : implementation file
 //
-#include "SetupDlg.h"
-#include "Setup.h"
 #include "stdafx.h"
+
+#include "Setup.h"
+#include "SetupDlg.h"
 
 #include ".\setupdlg.h"
 #include <ddraw.h>

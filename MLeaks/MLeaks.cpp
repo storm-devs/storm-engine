@@ -1,9 +1,10 @@
 // MLeaks.cpp : Defines the class behaviors for the application.
 //
 
+#include "stdafx.h"
+
 #include "MLeaks.h"
 #include "MLeaksDlg.h"
-#include "stdafx.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

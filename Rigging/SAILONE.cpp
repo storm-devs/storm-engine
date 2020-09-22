@@ -189,7 +189,9 @@ void SAILONE::FillIndex(WORD *pt)
     int xIdx[5], yIdx[5];
     int tmpx, tmpy;
 
-    _asm rdtsc _asm mov rtm, eax switch (m_dwCol)
+    _asm rdtsc;
+    _asm mov rtm, eax;
+    switch (m_dwCol)
     {
     case 13:
         xIdx[0] = 0;
@@ -450,7 +452,10 @@ void SAILONE::FillIndex(WORD *pt)
         ss.nnormIndx = (noholeStart - ss.sIndx) / 3;
     }
 
-    _asm rdtsc _asm sub eax, rtm _asm mov rtm, eax tm.idx = rtm;
+    _asm rdtsc;
+    _asm sub eax, rtm;
+    _asm mov rtm, eax;
+    tm.idx = rtm;
 }
 
 // заполнить вертексы для паруса

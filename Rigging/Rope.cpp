@@ -127,7 +127,10 @@ void ROPE::Execute(dword Delta_Time)
         }
     }
 
-    _asm rdtsc _asm sub eax, rtm _asm mov rtm, eax execute_tm = rtm;
+    _asm rdtsc;
+    _asm sub eax, rtm;
+    _asm mov rtm, eax;
+    execute_tm = rtm;
 }
 
 void ROPE::Realize(dword Delta_Time)
@@ -136,7 +139,9 @@ void ROPE::Realize(dword Delta_Time)
     {
         DWORD rtm;
 
-        _asm rdtsc _asm mov rtm, eax if (Delta_Time == 0)
+        _asm rdtsc;
+        _asm mov rtm, eax;
+        if (Delta_Time == 0)
         {
             // draw mirror rope
         }
@@ -170,7 +175,10 @@ void ROPE::Realize(dword Delta_Time)
                 {
                 };
 
-            _asm rdtsc _asm sub eax, rtm _asm mov rtm, eax realize_tm = rtm;
+            _asm rdtsc;
+            _asm sub eax, rtm;
+            _asm mov rtm, eax;
+            realize_tm = rtm;
             // RenderService->Print(0,10,"exec=%d, real=%d",execute_tm,realize_tm);
             /*if(api->Controls->GetDebugAsyncKeyState('M')<0)
                 for(int i=0; i<ropeQuantity; i++)

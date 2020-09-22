@@ -387,7 +387,8 @@ CVECTOR AIShipCannonController::GetFirePos(CVECTOR &vFireDir)
     {
         return CVECTOR(1e5f, 0.0f, 1e5f);
 
-        _asm int 3 bTempFlag = true;
+        _asm int 3;
+        bTempFlag = true;
         dwBort = GetFirstFireBort(vTempFirePos);
         Assert(dwBort != INVALID_BORT_INDEX);
     }

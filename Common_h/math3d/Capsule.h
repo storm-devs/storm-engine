@@ -8,6 +8,8 @@
 #define _Capsule_h_
 
 #pragma pack(push, 1)
+#include "Sphere.h"
+#include "Triangle.h"
 
 //Вертикально расположенная капсула, находящеяся в 0
 class Capsule
