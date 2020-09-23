@@ -1,5 +1,9 @@
 BasedOnStyle: Microsoft
 
+# To apply code style please run:
+# clang-format -i **/*.cpp **/*.h
+
+# To dump Microsoft style options run:
 # clang-format -style=microsoft -dump-config > .clang-format
 # ---
 # Language:        Cpp
