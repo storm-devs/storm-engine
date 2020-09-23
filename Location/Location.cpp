@@ -63,6 +63,7 @@ Location::~Location()
 #endif
     _CORE_API->DeleteEntity(lizards);
     _CORE_API->DeleteEntity(rats);
+    _CORE_API->DeleteEntity(crabs);
     _CORE_API->DeleteEntity(eagle);
     _CORE_API->DeleteEntity(grass);
     _CORE_API->DeleteEntity(lightsid);
