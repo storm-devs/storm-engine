@@ -69,7 +69,6 @@ typedef unsigned __int64 uint64;
 #include "steam/isteammatchmaking.h"
 #include "steam/isteamremotestorage.h"
 #include "steam/isteamuserstats.h"
-#include "steam/steam_api.h"
 #include "steam/steam_gameserver.h"
 
 #elif defined(POSIX)
@@ -215,6 +214,19 @@ template <size_t maxLenInChars> void sprintf_safe(OUT_Z_ARRAY char (&pDest)[maxL
 #endif
     pDest[maxLenInChars - 1] = '\0';
     va_end(params);
+}
+
+inline void strncpy_safe(char *pDest, char const *pSrc, size_t maxLen)
+{
+    size_t nCount = maxLen;
+    char *pstrDest = pDest;
+    const char *pstrSource = pSrc;
+
+    while (0 < nCount && 0 != (*pstrDest++ = *pstrSource++))
+        nCount--;
+
+    if (maxLen > 0)
+        pstrDest[-1] = 0;
 }
 
 #ifdef STEAM_CEG

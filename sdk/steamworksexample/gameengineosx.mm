@@ -331,6 +331,7 @@ bool CGameEngineGL::BInitializeGraphics()
 	
 	GLint swapInt = 1;
 	[[m_view openGLContext] setValues:&swapInt forParameter:NSOpenGLCPSwapInterval];
+	[[m_view openGLContext] makeCurrentContext];
 
 	[m_window setContentView:m_view];
 	

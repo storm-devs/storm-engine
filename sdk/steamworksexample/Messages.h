@@ -1,4 +1,4 @@
-//========= Copyright Â© 1996-2008, Valve LLC, All rights reserved. ============
+//========= Copyright © 1996-2008, Valve LLC, All rights reserved. ============
 //
 // Purpose: Defines the wire protocol for the game
 //
@@ -30,7 +30,6 @@ enum EMessage
     k_EMsgClientBeginAuthentication = k_EMsgClientBegin + 2,
     k_EMsgClientSendLocalUpdate = k_EMsgClientBegin + 3,
     k_EMsgClientLeavingServer = k_EMsgClientBegin + 4,
-    k_EMsgClientPing = k_EMsgClientBegin + 5,
 
     // P2P authentication messages
     k_EMsgP2PBegin = 600,
@@ -38,11 +37,21 @@ enum EMessage
 
     // voice chat messages
     k_EMsgVoiceChatBegin = 700,
-    k_EMsgVoiceChatPing = k_EMsgVoiceChatBegin + 1, // just a keep alive message
+    // k_EMsgVoiceChatPing = k_EMsgVoiceChatBegin+1,	// deprecated keep alive message
     k_EMsgVoiceChatData = k_EMsgVoiceChatBegin + 2, // voice data from another player
 
     // force 32-bit size enum so the wire protocol doesn't get outgrown later
     k_EForceDWORD = 0x7fffffff,
+};
+
+// enums for use in
+enum EDisconnectReason
+{
+    k_EDRClientDisconnect = ESteamNetConnectionEnd::k_ESteamNetConnectionEnd_App_Min + 1,
+    k_EDRServerClosed = ESteamNetConnectionEnd::k_ESteamNetConnectionEnd_App_Min + 2,
+    k_EDRServerReject = ESteamNetConnectionEnd::k_ESteamNetConnectionEnd_App_Min + 3,
+    k_EDRServerFull = ESteamNetConnectionEnd::k_ESteamNetConnectionEnd_App_Min + 4,
+    k_EDRClientKicked = ESteamNetConnectionEnd::k_ESteamNetConnectionEnd_App_Min + 5
 };
 
 // Msg from the server to the client which is sent right after communications are established
@@ -77,7 +86,7 @@ struct MsgServerSendInfo_t
 
     void SetServerName(const char *pchName)
     {
-        strncpy(m_rgchServerName, pchName, sizeof(m_rgchServerName));
+        strncpy_safe(m_rgchServerName, pchName, sizeof(m_rgchServerName));
     }
     const char *GetServerName()
     {
@@ -156,21 +165,6 @@ struct MsgServerUpdateWorld_t
 struct MsgServerExiting_t
 {
     MsgServerExiting_t() : m_dwMessageType(LittleDWord(k_EMsgServerExiting))
-    {
-    }
-    DWORD GetMessageType()
-    {
-        return LittleDWord(m_dwMessageType);
-    }
-
-  private:
-    const DWORD m_dwMessageType;
-};
-
-// Msg from server to clients when it is exiting
-struct MsgServerPingResponse_t
-{
-    MsgServerPingResponse_t() : m_dwMessageType(LittleDWord(k_EMsgServerPingResponse))
     {
     }
     DWORD GetMessageType()
@@ -283,22 +277,9 @@ struct MsgClientLeavingServer_t
     const DWORD m_dwMessageType;
 };
 
-// server ping
-struct MsgClientPing_t
-{
-    MsgClientPing_t() : m_dwMessageType(LittleDWord(k_EMsgClientPing))
-    {
-    }
-    DWORD GetMessageType()
-    {
-        return LittleDWord(m_dwMessageType);
-    }
-
-  private:
-    const DWORD m_dwMessageType;
-};
-
-// Msg from client to server when trying to connect
+// Message sent from one peer to another, so peers authenticate directly with each other.
+// (In this example, the server is responsible for relaying the messages, but peers
+// are directly authenticating each other.)
 struct MsgP2PSendingTicket_t
 {
     MsgP2PSendingTicket_t() : m_dwMessageType(LittleDWord(k_EMsgP2PSendingTicket))
@@ -309,25 +290,26 @@ struct MsgP2PSendingTicket_t
         return LittleDWord(m_dwMessageType);
     }
 
-    void SetToken(const char *pchToken, uint32 unLen)
+    void SetToken(const void *pToken, uint32 unLen)
     {
         m_uTokenLen = LittleDWord(unLen);
-        memcpy(m_rgchToken, pchToken, MIN(unLen, sizeof(m_rgchToken)));
+        memcpy(m_rgchToken, pToken, MIN(unLen, sizeof(m_rgchToken)));
     }
-    uint32 GetTokenLen()
+    uint32 GetTokenLen() const
     {
         return LittleDWord(m_uTokenLen);
     }
-    const char *GetTokenPtr()
+    const char *GetTokenPtr() const
     {
         return m_rgchToken;
     }
 
+    // Sender or receiver (depending on context)
     void SetSteamID(uint64 ulSteamID)
     {
         m_ulSteamID = LittleQWord(ulSteamID);
     }
-    uint64 GetSteamID()
+    uint64 GetSteamID() const
     {
         return LittleQWord(m_ulSteamID);
     }
@@ -339,22 +321,7 @@ struct MsgP2PSendingTicket_t
     uint64 m_ulSteamID;
 };
 
-// voice chat ping
-struct MsgVoiceChatPing_t
-{
-    MsgVoiceChatPing_t() : m_dwMessageType(LittleDWord(k_EMsgVoiceChatPing))
-    {
-    }
-    DWORD GetMessageType() const
-    {
-        return LittleDWord(m_dwMessageType);
-    }
-
-  private:
-    const DWORD m_dwMessageType;
-};
-
-// voice chat data
+// voice chat data.  This is relayed through the server
 struct MsgVoiceChatData_t
 {
     MsgVoiceChatData_t() : m_dwMessageType(LittleDWord(k_EMsgVoiceChatData))
@@ -374,9 +341,19 @@ struct MsgVoiceChatData_t
         return LittleDWord(m_uDataLength);
     }
 
+    void SetSteamID(CSteamID steamID)
+    {
+        from_steamID = steamID;
+    }
+    CSteamID GetSteamID() const
+    {
+        return from_steamID;
+    }
+
   private:
     const DWORD m_dwMessageType;
     uint32 m_uDataLength;
+    CSteamID from_steamID;
 };
 
 #pragma pack(pop)

@@ -51,6 +51,9 @@
 		50E77DF61362190C000FC072 /* mathlite.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50E77DE91362190C000FC072 /* mathlite.cpp */; };
 		50E77DF813621991000FC072 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50E77DF713621991000FC072 /* IOKit.framework */; };
 		840B387019BB91C50084B9F1 /* htmlsurface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 840B386E19BB91C50084B9F1 /* htmlsurface.cpp */; };
+		A4B5A0FD24906974000E9151 /* RemotePlay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B5A0FC24906974000E9151 /* RemotePlay.cpp */; };
+		A4B5A101249069C9000E9151 /* remotestoragesync.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B5A0FF249069C9000E9151 /* remotestoragesync.cpp */; };
+		A4B5A10424906A0E000E9151 /* SimpleProtobuf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4B5A10324906A0E000E9151 /* SimpleProtobuf.cpp */; };
 		BA60B6B81A82EDD200F4AC4F /* Friends.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA60B6B41A82EDD200F4AC4F /* Friends.cpp */; };
 		BA60B6B91A82EDD200F4AC4F /* Inventory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BA60B6B61A82EDD200F4AC4F /* Inventory.cpp */; };
 		F803305119087F9200344590 /* musicplayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F803305019087F9200344590 /* musicplayer.cpp */; };
@@ -160,6 +163,12 @@
 		50E77DF713621991000FC072 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		840B386E19BB91C50084B9F1 /* htmlsurface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = htmlsurface.cpp; sourceTree = "<group>"; };
 		840B386F19BB91C50084B9F1 /* htmlsurface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = htmlsurface.h; sourceTree = "<group>"; };
+		A4B5A0FC24906974000E9151 /* RemotePlay.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RemotePlay.cpp; sourceTree = "<group>"; };
+		A4B5A0FE2490698A000E9151 /* RemotePlay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RemotePlay.h; sourceTree = "<group>"; };
+		A4B5A0FF249069C9000E9151 /* remotestoragesync.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = remotestoragesync.cpp; sourceTree = "<group>"; };
+		A4B5A100249069C9000E9151 /* remotestoragesync.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = remotestoragesync.h; sourceTree = "<group>"; };
+		A4B5A10224906A0E000E9151 /* SimpleProtobuf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleProtobuf.h; sourceTree = "<group>"; };
+		A4B5A10324906A0E000E9151 /* SimpleProtobuf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SimpleProtobuf.cpp; sourceTree = "<group>"; };
 		BA60B6B41A82EDD200F4AC4F /* Friends.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Friends.cpp; sourceTree = "<group>"; };
 		BA60B6B51A82EDD200F4AC4F /* Friends.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Friends.h; sourceTree = "<group>"; };
 		BA60B6B61A82EDD200F4AC4F /* Inventory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Inventory.cpp; sourceTree = "<group>"; };
@@ -228,6 +237,9 @@
 				503C6CE71268F49F00B66E3B /* Main.cpp */,
 				503C6CE81268F49F00B66E3B /* MainMenu.cpp */,
 				F803305019087F9200344590 /* musicplayer.cpp */,
+				A4B5A0FC24906974000E9151 /* RemotePlay.cpp */,
+				A4B5A0FF249069C9000E9151 /* remotestoragesync.cpp */,
+				A4B5A10324906A0E000E9151 /* SimpleProtobuf.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -297,6 +309,9 @@
 				503C6CE91268F49F00B66E3B /* MainMenu.h */,
 				503C6CEA1268F49F00B66E3B /* Messages.h */,
 				F803304F19087DA600344590 /* musicplayer.h */,
+				A4B5A0FE2490698A000E9151 /* RemotePlay.h */,
+				A4B5A100249069C9000E9151 /* remotestoragesync.h */,
+				A4B5A10224906A0E000E9151 /* SimpleProtobuf.h */,
 			);
 			name = Headers;
 			sourceTree = "<group>";
@@ -403,6 +418,7 @@
 				503C6D131268F49F00B66E3B /* glstringosx.mm in Sources */,
 				503C6D141268F49F00B66E3B /* Leaderboards.cpp in Sources */,
 				503C6D151268F49F00B66E3B /* Lobby.cpp in Sources */,
+				A4B5A0FD24906974000E9151 /* RemotePlay.cpp in Sources */,
 				503C6D161268F49F00B66E3B /* Main.cpp in Sources */,
 				503C6D171268F49F00B66E3B /* MainMenu.cpp in Sources */,
 				503C6D191268F49F00B66E3B /* p2pauth.cpp in Sources */,
@@ -426,12 +442,14 @@
 				BA60B6B91A82EDD200F4AC4F /* Inventory.cpp in Sources */,
 				50E77DEE1362190C000FC072 /* cglmquery.cpp in Sources */,
 				50E77DEF1362190C000FC072 /* cglmtex.cpp in Sources */,
+				A4B5A10424906A0E000E9151 /* SimpleProtobuf.cpp in Sources */,
 				50E77DF01362190C000FC072 /* dx9asmtogl2.cpp in Sources */,
 				50E77DF11362190C000FC072 /* dxabstract.cpp in Sources */,
 				50E77DF21362190C000FC072 /* glmgr.cpp in Sources */,
 				50E77DF31362190C000FC072 /* glmgrbasics.cpp in Sources */,
 				50E77DF41362190C000FC072 /* glmgrcocoa.mm in Sources */,
 				50E77DF51362190C000FC072 /* glmgrext.cpp in Sources */,
+				A4B5A101249069C9000E9151 /* remotestoragesync.cpp in Sources */,
 				BA60B6B81A82EDD200F4AC4F /* Friends.cpp in Sources */,
 				50E77DF61362190C000FC072 /* mathlite.cpp in Sources */,
 				50D642871461EF3200A5739B /* clanchatroom.cpp in Sources */,
@@ -455,10 +473,11 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				ONLY_ACTIVE_ARCH = NO;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CODE_SIGN_FLAGS = "--deep";
 				PREBINDING = NO;
-				SDKROOT = macosx10.9;
+				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = ../public;
 			};
 			name = Debug;
@@ -475,10 +494,11 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				ONLY_ACTIVE_ARCH = NO;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CODE_SIGN_FLAGS = "--deep";
 				PREBINDING = NO;
-				SDKROOT = macosx10.9;
+				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = ../public;
 			};
 			name = Release;
@@ -504,9 +524,9 @@
 					"\"$(SRCROOT)/../lib/osx/release\"",
 					../redistributable_bin/osx/,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = steamworksexample;
-				SDKROOT = macosx10.9;
+				SDKROOT = macosx;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -533,9 +553,9 @@
 					"\"$(SRCROOT)/../lib/osx/release\"",
 					../redistributable_bin/osx/,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = steamworksexample;
-				SDKROOT = macosx10.9;
+				SDKROOT = macosx;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

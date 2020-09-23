@@ -1,4 +1,4 @@
-//========= Copyright Â© 1996-2008, Valve LLC, All rights reserved. ============
+//========= Copyright © 1996-2008, Valve LLC, All rights reserved. ============
 //
 // Purpose: Main class for the space war game server
 //
@@ -64,6 +64,11 @@ CSpaceWarServer::CSpaceWarServer(IGameEngine *pGameEngine)
         // Coming soon: Logging into authenticated, persistent game server account
         SteamGameServer()->LogOnAnonymous();
 
+        // Initialize the peer to peer connection process.  This is not required, but we do it
+        // because we cannot accept connections until this initialization completes, and so we
+        // want to start it as soon as possible.
+        SteamNetworkingUtils()->InitRelayNetworkAccess();
+
 // We want to actively update the master server with our presence so players can
 // find us via the steam matchmaking/server browser interfaces
 #ifdef USE_GS_AUTH_API
@@ -102,6 +107,12 @@ CSpaceWarServer::CSpaceWarServer(IGameEngine *pGameEngine)
 
     // Initialize ships
     ResetPlayerShips();
+
+    // create the listen socket for listening for players connecting
+    m_hListenSocket = SteamGameServerNetworkingSockets()->CreateListenSocketP2P(0, 0, nullptr);
+
+    // create the poll group
+    m_hNetPollGroup = SteamGameServerNetworkingSockets()->CreatePollGroup();
 }
 
 //-----------------------------------------------------------------------------
@@ -129,6 +140,9 @@ CSpaceWarServer::~CSpaceWarServer()
         }
     }
 
+    SteamGameServerNetworkingSockets()->CloseListenSocket(m_hListenSocket);
+    SteamGameServerNetworkingSockets()->DestroyPollGroup(m_hNetPollGroup);
+
     // Disconnect from the steam servers
     SteamGameServer()->LogOff();
 
@@ -137,31 +151,66 @@ CSpaceWarServer::~CSpaceWarServer()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: Handle clients connecting
+// Purpose: Handle any connection status change
 //-----------------------------------------------------------------------------
-void CSpaceWarServer::OnP2PSessionRequest(P2PSessionRequest_t *pCallback)
+void CSpaceWarServer::OnNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t *pCallback)
 {
-    // we'll accept a connection from anyone
-    SteamGameServerNetworking()->AcceptP2PSessionWithUser(pCallback->m_steamIDRemote);
-}
+    /// Connection handle
+    HSteamNetConnection m_hConn = pCallback->m_hConn;
 
-//-----------------------------------------------------------------------------
-// Purpose: Handle clients disconnecting
-//-----------------------------------------------------------------------------
-void CSpaceWarServer::OnP2PSessionConnectFail(P2PSessionConnectFail_t *pCallback)
-{
-    // socket has closed, kick the user associated with it
-    for (uint32 i = 0; i < MAX_PLAYERS_PER_SERVER; ++i)
+    /// Full connection info
+    SteamNetConnectionInfo_t m_info = pCallback->m_info;
+
+    /// Previous state.  (Current state is in m_info.m_eState)
+    ESteamNetworkingConnectionState m_eOldState = pCallback->m_eOldState;
+
+    // Parse information to know what was changed
+
+    // Check if a client has connected
+    if (m_info.m_hListenSocket && m_eOldState == k_ESteamNetworkingConnectionState_None &&
+        m_info.m_eState == k_ESteamNetworkingConnectionState_Connecting)
     {
-        // If there is no ship, skip
-        if (!m_rgClientData[i].m_bActive)
-            continue;
-
-        if (m_rgClientData[i].m_SteamIDUser == pCallback->m_steamIDRemote)
+        // Handle connecting a client
+        // We always accept connectiosn from clients, without even checking for room on the server,
+        // since we reserve that for  the authentication phase of the connection which comes next.
+        // In production code you probably ned to remember the connection and not let it hang
+        // around indefinitely
+        EResult res = SteamGameServerNetworkingSockets()->AcceptConnection(m_hConn);
+        for (uint32 i = 0; i < MAX_PLAYERS_PER_SERVER; ++i)
         {
-            OutputDebugString("Disconnected dropped user\n");
-            RemovePlayerFromServer(i);
-            break;
+            if (!m_rgClientData[i].m_bActive && !m_rgPendingClientData[i].m_hConn)
+            {
+                m_rgPendingClientData[i].m_hConn = m_hConn;
+                // add the user to the poll group
+                SteamGameServerNetworkingSockets()->SetConnectionPollGroup(m_hConn, m_hNetPollGroup);
+                break;
+            }
+        }
+        if (res != k_EResultOK)
+        {
+            char msg[256];
+            sprintf(msg, "AcceptConnection returned %d", res);
+            OutputDebugString("Connection failed: Invalid Param");
+        }
+    }
+    // Check if a client has disconnected
+    else if ((m_eOldState == k_ESteamNetworkingConnectionState_Connecting ||
+              m_eOldState == k_ESteamNetworkingConnectionState_Connected) &&
+             m_info.m_eState == k_ESteamNetworkingConnectionState_ClosedByPeer)
+    {
+        // Handle disconnecting a client
+        for (uint32 i = 0; i < MAX_PLAYERS_PER_SERVER; ++i)
+        {
+            // If there is no ship, skip
+            if (!m_rgClientData[i].m_bActive)
+                continue;
+
+            if (m_rgClientData[i].m_SteamIDUser == m_info.m_identityRemote.GetSteamID()) // pCallback->m_steamIDRemote)
+            {
+                OutputDebugString("Disconnected dropped user\n");
+                RemovePlayerFromServer(i, EDisconnectReason::k_EDRClientDisconnect);
+                break;
+            }
         }
     }
 }
@@ -175,8 +224,9 @@ bool CSpaceWarServer::BSendDataToClient(uint32 uShipIndex, char *pData, uint32 n
     if (uShipIndex >= MAX_PLAYERS_PER_SERVER)
         return false;
 
-    if (!SteamGameServerNetworking()->SendP2PPacket(m_rgClientData[uShipIndex].m_SteamIDUser, pData, nSizeOfData,
-                                                    k_EP2PSendUnreliable))
+    int64 messageOut;
+    if (!SteamGameServerNetworkingSockets()->SendMessageToConnection(
+            m_rgClientData[uShipIndex].m_hConn, pData, nSizeOfData, k_nSteamNetworkingSend_Unreliable, &messageOut))
     {
         OutputDebugString("Failed sending data to a client\n");
         return false;
@@ -193,10 +243,12 @@ bool CSpaceWarServer::BSendDataToPendingClient(uint32 uShipIndex, char *pData, u
     if (uShipIndex >= MAX_PLAYERS_PER_SERVER)
         return false;
 
-    if (!SteamGameServerNetworking()->SendP2PPacket(m_rgPendingClientData[uShipIndex].m_SteamIDUser, pData, nSizeOfData,
-                                                    k_EP2PSendReliable))
+    int64 messageOut;
+    if (!SteamGameServerNetworkingSockets()->SendMessageToConnection(m_rgPendingClientData[uShipIndex].m_hConn, pData,
+                                                                     nSizeOfData, k_nSteamNetworkingSend_Unreliable,
+                                                                     &messageOut))
     {
-        OutputDebugString("Failed sending data to a pending client\n");
+        OutputDebugString("Failed sending data to a client\n");
         return false;
     }
     return true;
@@ -205,12 +257,13 @@ bool CSpaceWarServer::BSendDataToPendingClient(uint32 uShipIndex, char *pData, u
 //-----------------------------------------------------------------------------
 // Purpose: Handle a new client connecting
 //-----------------------------------------------------------------------------
-void CSpaceWarServer::OnClientBeginAuthentication(CSteamID steamIDClient, void *pToken, uint32 uTokenLen)
+void CSpaceWarServer::OnClientBeginAuthentication(CSteamID steamIDClient, HSteamNetConnection connectionID,
+                                                  void *pToken, uint32 uTokenLen)
 {
     // First, check this isn't a duplicate and we already have a user logged on from the same steamid
     for (uint32 i = 0; i < MAX_PLAYERS_PER_SERVER; ++i)
     {
-        if (m_rgClientData[i].m_SteamIDUser == steamIDClient)
+        if (m_rgClientData[i].m_hConn == connectionID)
         {
             // We already logged them on... (should maybe tell them again incase they don't know?)
             return;
@@ -231,8 +284,8 @@ void CSpaceWarServer::OnClientBeginAuthentication(CSteamID steamIDClient, void *
     // We are full (or will be if the pending players auth), deny new login
     if (nPendingOrActivePlayerCount >= MAX_PLAYERS_PER_SERVER)
     {
-        MsgServerFailAuthentication_t msg;
-        SteamGameServerNetworking()->SendP2PPacket(steamIDClient, &msg, sizeof(msg), k_EP2PSendReliable);
+        SteamGameServerNetworkingSockets()->CloseConnection(connectionID, EDisconnectReason::k_EDRServerFull,
+                                                            "Server full", false);
     }
 
     // If we get here there is room, add the player as pending
@@ -243,21 +296,24 @@ void CSpaceWarServer::OnClientBeginAuthentication(CSteamID steamIDClient, void *
             m_rgPendingClientData[i].m_ulTickCountLastData = m_pGameEngine->GetGameTickCount();
 #ifdef USE_GS_AUTH_API
             // authenticate the user with the Steam back-end servers
-            if (k_EBeginAuthSessionResultOK != SteamGameServer()->BeginAuthSession(pToken, uTokenLen, steamIDClient))
+            EBeginAuthSessionResult res = SteamGameServer()->BeginAuthSession(pToken, uTokenLen, steamIDClient);
+            if (res != k_EBeginAuthSessionResultOK)
             {
-                MsgServerFailAuthentication_t msg;
-                SteamGameServerNetworking()->SendP2PPacket(steamIDClient, &msg, sizeof(msg), k_EP2PSendReliable);
+                SteamGameServerNetworkingSockets()->CloseConnection(connectionID, k_EDRServerReject,
+                                                                    "BeginAuthSession failed", false);
                 break;
             }
 
             m_rgPendingClientData[i].m_SteamIDUser = steamIDClient;
             m_rgPendingClientData[i].m_bActive = true;
+            m_rgPendingClientData[i].m_hConn = connectionID;
             break;
 #else
             m_rgPendingClientData[i].m_bActive = true;
             // we need to tell the server our Steam id in the non-auth case, so we stashed it in the login message, pull
             // it back out
             m_rgPendingClientData[i].m_SteamIDUser = *(CSteamID *)pToken;
+            m_rgPendingClientData[i].m_connection = connectionID;
             // You would typically do your own authentication method here and later call OnAuthCompleted
             // In this sample we just automatically auth anyone who connects
             OnAuthCompleted(true, i);
@@ -266,7 +322,6 @@ void CSpaceWarServer::OnClientBeginAuthentication(CSteamID steamIDClient, void *
         }
     }
 }
-
 //-----------------------------------------------------------------------------
 // Purpose: A new client that connected has had their authentication processed
 //-----------------------------------------------------------------------------
@@ -286,8 +341,10 @@ void CSpaceWarServer::OnAuthCompleted(bool bAuthSuccessful, uint32 iPendingAuthI
 #endif
         // Send a deny for the client, and zero out the pending data
         MsgServerFailAuthentication_t msg;
-        SteamGameServerNetworking()->SendP2PPacket(m_rgPendingClientData[iPendingAuthIndex].m_SteamIDUser, &msg,
-                                                   sizeof(msg), k_EP2PSendReliable);
+        int64 outMessage;
+        SteamGameServerNetworkingSockets()->SendMessageToConnection(m_rgPendingClientData[iPendingAuthIndex].m_hConn,
+                                                                    &msg, sizeof(msg), k_nSteamNetworkingSend_Reliable,
+                                                                    &outMessage);
         memset(&m_rgPendingClientData[iPendingAuthIndex], 0, sizeof(ClientConnectionData_t));
         return;
     }
@@ -411,7 +468,7 @@ void CSpaceWarServer::AddPlayerShip(uint32 uShipPosition)
 //-----------------------------------------------------------------------------
 // Purpose: Removes a player at the given position
 //-----------------------------------------------------------------------------
-void CSpaceWarServer::RemovePlayerFromServer(uint32 uShipPosition)
+void CSpaceWarServer::RemovePlayerFromServer(uint32 uShipPosition, EDisconnectReason reason)
 {
     if (uShipPosition >= MAX_PLAYERS_PER_SERVER)
     {
@@ -429,6 +486,9 @@ void CSpaceWarServer::RemovePlayerFromServer(uint32 uShipPosition)
     delete m_rgpShips[uShipPosition];
     m_rgpShips[uShipPosition] = NULL;
     m_rguPlayerScores[uShipPosition] = 0;
+
+    // close the hNet connection
+    SteamGameServerNetworkingSockets()->CloseConnection(m_rgClientData[uShipPosition].m_hConn, reason, nullptr, false);
 
 #ifdef USE_GS_AUTH_API
     // Tell the GS the user is leaving the server
@@ -479,29 +539,24 @@ void CSpaceWarServer::SetGameState(EServerGameState eState)
 //-----------------------------------------------------------------------------
 void CSpaceWarServer::ReceiveNetworkData()
 {
-    char *pchRecvBuf = NULL;
-    uint32 cubMsgSize;
-    CSteamID steamIDRemote;
-    while (SteamGameServerNetworking()->IsP2PPacketAvailable(&cubMsgSize))
+    SteamNetworkingMessage_t *msgs[128];
+    int numMessages = SteamGameServerNetworkingSockets()->ReceiveMessagesOnPollGroup(m_hNetPollGroup, msgs, 128);
+    for (int idxMsg = 0; idxMsg < numMessages; idxMsg++)
     {
-        // free any previous receive buffer
-        if (pchRecvBuf)
-            free(pchRecvBuf);
+        SteamNetworkingMessage_t *message = msgs[idxMsg];
+        CSteamID steamIDRemote = message->m_identityPeer.GetSteamID();
+        HSteamNetConnection connection = message->m_conn;
 
-        // alloc a new receive buffer of the right size
-        pchRecvBuf = (char *)malloc(cubMsgSize);
-
-        // see if there is any data waiting on the socket
-        if (!SteamGameServerNetworking()->ReadP2PPacket(pchRecvBuf, cubMsgSize, &cubMsgSize, &steamIDRemote))
-            break;
-
-        if (cubMsgSize < sizeof(DWORD))
+        if (message->GetSize() < sizeof(DWORD))
         {
             OutputDebugString("Got garbage on server socket, too short\n");
+            message->Release();
+            message = nullptr;
             continue;
         }
 
-        EMessage eMsg = (EMessage)LittleDWord(*(DWORD *)pchRecvBuf);
+        EMessage eMsg = (EMessage)LittleDWord(*(DWORD *)message->GetData());
+
         switch (eMsg)
         {
         case k_EMsgClientInitiateConnection: {
@@ -514,28 +569,33 @@ void CSpaceWarServer::ReceiveNetworkData()
             msg.SetSecure(SteamGameServer()->BSecure());
 #endif
             msg.SetServerName(m_sServerName.c_str());
-            SteamGameServerNetworking()->SendP2PPacket(steamIDRemote, &msg, sizeof(MsgServerSendInfo_t),
-                                                       k_EP2PSendReliable);
+            int64 messageOut;
+            SteamGameServerNetworkingSockets()->SendMessageToConnection(connection, &msg, sizeof(MsgServerSendInfo_t),
+                                                                        k_nSteamNetworkingSend_Reliable, &messageOut);
         }
         break;
         case k_EMsgClientBeginAuthentication: {
-            if (cubMsgSize != sizeof(MsgClientBeginAuthentication_t))
+            if (message->GetSize() != sizeof(MsgClientBeginAuthentication_t))
             {
                 OutputDebugString("Bad connection attempt msg\n");
+                message->Release();
+                message = nullptr;
                 continue;
             }
-            MsgClientBeginAuthentication_t *pMsg = (MsgClientBeginAuthentication_t *)pchRecvBuf;
+            MsgClientBeginAuthentication_t *pMsg = (MsgClientBeginAuthentication_t *)message->GetData();
 #ifdef USE_GS_AUTH_API
-            OnClientBeginAuthentication(steamIDRemote, (void *)pMsg->GetTokenPtr(), pMsg->GetTokenLen());
+            OnClientBeginAuthentication(steamIDRemote, connection, (void *)pMsg->GetTokenPtr(), pMsg->GetTokenLen());
 #else
-            OnClientBeginAuthentication(steamIDRemote, 0);
+            OnClientBeginAuthentication(connection, 0);
 #endif
         }
         break;
         case k_EMsgClientSendLocalUpdate: {
-            if (cubMsgSize != sizeof(MsgClientSendLocalUpdate_t))
+            if (message->GetSize() != sizeof(MsgClientSendLocalUpdate_t))
             {
                 OutputDebugString("Bad client update msg\n");
+                message->Release();
+                message = nullptr;
                 continue;
             }
 
@@ -543,10 +603,10 @@ void CSpaceWarServer::ReceiveNetworkData()
             bool bFound = false;
             for (uint32 i = 0; i < MAX_PLAYERS_PER_SERVER; ++i)
             {
-                if (m_rgClientData[i].m_SteamIDUser == steamIDRemote)
+                if (m_rgClientData[i].m_hConn == connection)
                 {
                     bFound = true;
-                    MsgClientSendLocalUpdate_t *pMsg = (MsgClientSendLocalUpdate_t *)pchRecvBuf;
+                    MsgClientSendLocalUpdate_t *pMsg = (MsgClientSendLocalUpdate_t *)message->GetData();
                     OnReceiveClientUpdateData(i, pMsg->AccessUpdateData());
                     break;
                 }
@@ -555,16 +615,12 @@ void CSpaceWarServer::ReceiveNetworkData()
                 OutputDebugString("Got a client data update, but couldn't find a matching client\n");
         }
         break;
-        case k_EMsgClientPing: {
-            // send back a response
-            MsgServerPingResponse_t msg;
-            SteamGameServerNetworking()->SendP2PPacket(steamIDRemote, &msg, sizeof(msg), k_EP2PSendUnreliable);
-        }
-        break;
         case k_EMsgClientLeavingServer: {
-            if (cubMsgSize != sizeof(MsgClientLeavingServer_t))
+            if (message->GetSize() != sizeof(MsgClientLeavingServer_t))
             {
                 OutputDebugString("Bad leaving server msg\n");
+                message->Release();
+                message = nullptr;
                 continue;
             }
             // Find the connection that should exist for this users address
@@ -574,7 +630,7 @@ void CSpaceWarServer::ReceiveNetworkData()
                 if (m_rgClientData[i].m_SteamIDUser == steamIDRemote)
                 {
                     bFound = true;
-                    RemovePlayerFromServer(i);
+                    RemovePlayerFromServer(i, EDisconnectReason::k_EDRClientDisconnect);
                     break;
                 }
 
@@ -593,16 +649,53 @@ void CSpaceWarServer::ReceiveNetworkData()
             if (!bFound)
                 OutputDebugString("Got a client leaving server msg, but couldn't find a matching client\n");
         }
+
+        case k_EMsgVoiceChatData: {
+            // Received voice chat messages, broadcast to all other players
+            MsgVoiceChatData_t *pMsg = (MsgVoiceChatData_t *)message->GetData();
+            pMsg->SetSteamID(message->m_identityPeer.GetSteamID()); // Make sure sender steam ID is set.
+            SendMessageToAll(connection, pMsg, message->GetSize());
+            break;
+        }
+        case k_EMsgP2PSendingTicket: {
+            // Received a P2P auth ticket, forward it to the intended recipient
+            MsgP2PSendingTicket_t msgP2PSendingTicket;
+            memcpy(&msgP2PSendingTicket, message->GetData(), sizeof(MsgP2PSendingTicket_t));
+            CSteamID toSteamID = msgP2PSendingTicket.GetSteamID();
+
+            HSteamNetConnection toHConn = 0;
+            for (int j = 0; j < MAX_PLAYERS_PER_SERVER; j++)
+            {
+                if (toSteamID == m_rgClientData[j].m_SteamIDUser)
+                {
+
+                    // Mutate the message, replacing the destination SteamID with the sender's SteamID
+                    msgP2PSendingTicket.SetSteamID(message->m_identityPeer.GetSteamID64());
+
+                    SteamNetworkingSockets()->SendMessageToConnection(m_rgClientData[j].m_hConn, &msgP2PSendingTicket,
+                                                                      sizeof(msgP2PSendingTicket),
+                                                                      k_nSteamNetworkingSend_Reliable, nullptr);
+                    break;
+                }
+            }
+
+            if (toHConn == 0)
+            {
+                OutputDebugString("msgP2PSendingTicket received with no valid target to send to.");
+            }
+        }
+        break;
+
         default:
             char rgch[128];
             sprintf_safe(rgch, "Invalid message %x\n", eMsg);
             rgch[sizeof(rgch) - 1] = 0;
             OutputDebugString(rgch);
         }
-    }
 
-    if (pchRecvBuf)
-        free(pchRecvBuf);
+        message->Release();
+        message = nullptr;
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -627,7 +720,7 @@ void CSpaceWarServer::RunFrame()
         if (m_pGameEngine->GetGameTickCount() - m_rgClientData[i].m_ulTickCountLastData > SERVER_TIMEOUT_MILLISECONDS)
         {
             OutputDebugString("Timing out player connection\n");
-            RemovePlayerFromServer(i);
+            RemovePlayerFromServer(i, EDisconnectReason::k_EDRClientKicked);
         }
         else
         {
@@ -732,6 +825,18 @@ void CSpaceWarServer::SendUpdateDataToAllClients()
             continue;
 
         BSendDataToClient(i, (char *)&msg, sizeof(msg));
+    }
+}
+
+void CSpaceWarServer::SendMessageToAll(HSteamNetConnection hConnIgnore, const void *pubData, uint32 cubData)
+{
+    for (int i = 0; i < MAX_PLAYERS_PER_SERVER; i++)
+    {
+        if (m_rgClientData[i].m_hConn != k_HSteamNetConnection_Invalid && m_rgClientData[i].m_hConn != hConnIgnore)
+        {
+            SteamNetworkingSockets()->SendMessageToConnection(m_rgClientData[i].m_hConn, pubData, cubData,
+                                                              k_nSteamNetworkingSend_UnreliableNoDelay, nullptr);
+        }
     }
 }
 
@@ -1017,10 +1122,12 @@ void CSpaceWarServer::KickPlayerOffServer(CSteamID steamID)
         if (m_rgClientData[i].m_SteamIDUser == steamID)
         {
             OutputDebugString("Kicking player\n");
-            RemovePlayerFromServer(i);
+            RemovePlayerFromServer(i, EDisconnectReason::k_EDRClientKicked);
             // send him a kick message
             MsgServerFailAuthentication_t msg;
-            SteamGameServerNetworking()->SendP2PPacket(steamID, &msg, sizeof(msg), k_EP2PSendReliable);
+            int64 outMessage;
+            SteamGameServerNetworkingSockets()->SendMessageToConnection(m_rgClientData[i].m_hConn, &msg, sizeof(msg),
+                                                                        k_nSteamNetworkingSend_Reliable, &outMessage);
         }
         else
         {

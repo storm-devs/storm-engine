@@ -31,28 +31,6 @@
 #define STEAM_INPUT_MIN_ANALOG_ACTION_DATA -1.0f
 #define STEAM_INPUT_MAX_ANALOG_ACTION_DATA 1.0f
 
-enum EInputSource
-{
-    k_EInputSource_None,
-    k_EInputSource_LeftTrackpad,
-    k_EInputSource_RightTrackpad,
-    k_EInputSource_Joystick,
-    k_EInputSource_ABXY,
-    k_EInputSource_Switch,
-    k_EInputSource_LeftTrigger,
-    k_EInputSource_RightTrigger,
-    k_EInputSource_LeftBumper,
-    k_EInputSource_RightBumper,
-    k_EInputSource_Gyro,
-    k_EInputSource_CenterTrackpad, // PS4
-    k_EInputSource_RightJoystick,  // Traditional Controllers
-    k_EInputSource_DPad,           // Traditional Controllers
-    k_EInputSource_Key,            // Keyboards with scan codes - Unused
-    k_EInputSource_Mouse,          // Traditional mouse - Unused
-    k_EInputSource_LeftGyro,       // Secondary Gyro - Switch - Unused
-    k_EInputSource_Count
-};
-
 enum EInputSourceMode
 {
     k_EInputSourceMode_None,

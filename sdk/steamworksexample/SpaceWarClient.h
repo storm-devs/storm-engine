@@ -17,6 +17,8 @@
 #include "StatsAndAchievements.h"
 #include "Sun.h"
 #include "musicplayer.h"
+#include "steam/isteamnetworkingsockets.h"
+#include "steam/isteamnetworkingutils.h"
 
 // Forward class declaration
 class CConnectingMenu;
@@ -141,6 +143,9 @@ class CSpaceWarClient
     // Run a game frame
     void RunFrame();
 
+    // Service calls that need to happen less frequently than every frame (e.g. every second)
+    void RunOccasionally();
+
     // Checks for any incoming network data, then dispatches it
     void ReceiveNetworkData();
 
@@ -235,6 +240,9 @@ class CSpaceWarClient
 
     // Receive a response from the server for a connection attempt
     void OnReceiveServerAuthenticationResponse(bool bSuccess, uint32 uPlayerPosition);
+
+    // Recieved a response that the server is full
+    void OnReceiveServerFullResponse();
 
     // Receive a state update from the server
     void OnReceiveServerUpdate(ServerSpaceWarUpdateData_t *pUpdateData);
@@ -345,6 +353,7 @@ class CSpaceWarClient
     uint32 m_unServerIP;
     uint16 m_usServerPort;
     HAuthTicket m_hAuthTicket;
+    HSteamNetConnection m_hConnServer;
 
     // keep track of if we opened the overlay for a gamewebcallback
     bool m_bSentWebOpen;
@@ -460,6 +469,20 @@ class CSpaceWarClient
     // callback when new Workshop item was installed
     STEAM_CALLBACK(CSpaceWarClient, OnWorkshopItemInstalled, ItemInstalled_t);
 
+    // Steam China support. duration control callback can be posted asynchronously, but we also
+    // call it directly.
+    STEAM_CALLBACK(CSpaceWarClient, OnDurationControl, DurationControl_t);
+
+    // callresult callback, handles io failure
+    void OnDurationControlCallResult(DurationControl_t *pParam, bool bIOFailure)
+    {
+        if (!bIOFailure)
+        {
+            OnDurationControl(pParam);
+        }
+    }
+    CCallResult<CSpaceWarClient, DurationControl_t> m_SteamCallResultDurationControl;
+
     // callback when we ask the Inventory Service for prices
     void OnRequestPricesResult(SteamInventoryRequestPricesResult_t *pParam, bool bIOFailure);
     CCallResult<CSpaceWarClient, SteamInventoryRequestPricesResult_t> m_SteamCallResultRequestPrices;
@@ -481,8 +504,8 @@ class CSpaceWarClient
     // html page viewer
     CHTMLSurface *m_pHTMLSurface;
 
-    // connection handler
-    STEAM_CALLBACK(CSpaceWarClient, OnP2PSessionConnectFail, P2PSessionConnectFail_t);
+    // Called when we get new connections, or the state of a connection changes
+    STEAM_CALLBACK(CSpaceWarClient, OnNetConnectionStatusChanged, SteamNetConnectionStatusChangedCallback_t);
 
     // ipc failure handler
     STEAM_CALLBACK(CSpaceWarClient, OnIPCFailure, IPCFailure_t);

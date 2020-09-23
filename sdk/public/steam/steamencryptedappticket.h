@@ -1,4 +1,4 @@
-//========= Copyright Â© 1996-2010, Valve LLC, All rights reserved. ============
+//========= Copyright © 1996-2010, Valve LLC, All rights reserved. ============
 //
 // Purpose: utilities to decode/decrypt a ticket from the
 // ISteamUser::RequestEncryptedAppTicket, ISteamUser::GetEncryptedAppTicket API
@@ -32,8 +32,15 @@ S_API bool SteamEncryptedAppTicket_BUserOwnsAppInTicket(uint8 *rgubTicketDecrypt
 
 S_API bool SteamEncryptedAppTicket_BUserIsVacBanned(uint8 *rgubTicketDecrypted, uint32 cubTicketDecrypted);
 
+S_API bool SteamEncryptedAppTicket_BGetAppDefinedValue(uint8 *rgubTicketDecrypted, uint32 cubTicketDecrypted,
+                                                       uint32 *pValue);
+
 S_API const uint8 *SteamEncryptedAppTicket_GetUserVariableData(uint8 *rgubTicketDecrypted, uint32 cubTicketDecrypted,
                                                                uint32 *pcubUserData);
 
 S_API bool SteamEncryptedAppTicket_BIsTicketSigned(uint8 *rgubTicketDecrypted, uint32 cubTicketDecrypted,
                                                    const uint8 *pubRSAKey, uint32 cubRSAKey);
+
+S_API bool SteamEncryptedAppTicket_BIsLicenseBorrowed(uint8 *rgubTicketDecrypted, uint32 cubTicketDecrypted);
+
+S_API bool SteamEncryptedAppTicket_BIsLicenseTemporary(uint8 *rgubTicketDecrypted, uint32 cubTicketDecrypted);

@@ -13,13 +13,7 @@
 
 #include <string.h>
 
-// Internal functions used by the utility CCallback objects to receive callbacks
-S_API void S_CALLTYPE SteamAPI_RegisterCallback(class CCallbackBase *pCallback, int iCallback);
-S_API void S_CALLTYPE SteamAPI_UnregisterCallback(class CCallbackBase *pCallback);
-// Internal functions used by the utility CCallResult objects to receive async call results
-S_API void S_CALLTYPE SteamAPI_RegisterCallResult(class CCallbackBase *pCallback, SteamAPICall_t hAPICall);
-S_API void S_CALLTYPE SteamAPI_UnregisterCallResult(class CCallbackBase *pCallback, SteamAPICall_t hAPICall);
-
+// Internal functions used to locate/create interfaces
 S_API HSteamPipe S_CALLTYPE SteamAPI_GetHSteamPipe();
 S_API HSteamUser S_CALLTYPE SteamAPI_GetHSteamUser();
 S_API HSteamPipe S_CALLTYPE SteamGameServer_GetHSteamPipe();
@@ -28,6 +22,44 @@ S_API void *S_CALLTYPE SteamInternal_ContextInit(void *pContextInitData);
 S_API void *S_CALLTYPE SteamInternal_CreateInterface(const char *ver);
 S_API void *S_CALLTYPE SteamInternal_FindOrCreateUserInterface(HSteamUser hSteamUser, const char *pszVersion);
 S_API void *S_CALLTYPE SteamInternal_FindOrCreateGameServerInterface(HSteamUser hSteamUser, const char *pszVersion);
+
+// Macro used to define a type-safe accessor that will always return the version
+// of the interface of the *header file* you are compiling with!  We also bounce
+// through a safety function that checks for interfaces being created or destroyed.
+//
+// SteamInternal_ContextInit takes a base pointer for the equivalent of
+// struct { void (*pFn)(void* pCtx); uintptr_t counter; void *ptr; }
+// Do not change layout or add non-pointer aligned data!
+#define STEAM_DEFINE_INTERFACE_ACCESSOR(type, name, expr, kind, version)                                               \
+    inline void S_CALLTYPE SteamInternal_Init_##name(type *p)                                                          \
+    {                                                                                                                  \
+        *p = (type)(expr);                                                                                             \
+    }                                                                                                                  \
+    STEAM_CLANG_ATTR("interface_accessor_kind:" kind ";interface_accessor_version:" version ";")                       \
+    inline type name()                                                                                                 \
+    {                                                                                                                  \
+        static void *s_CallbackCounterAndContext[3] = {(void *)&SteamInternal_Init_##name, 0, 0};                      \
+        return *(type *)SteamInternal_ContextInit(s_CallbackCounterAndContext);                                        \
+    }
+
+#define STEAM_DEFINE_USER_INTERFACE_ACCESSOR(type, name, version)                                                      \
+    STEAM_DEFINE_INTERFACE_ACCESSOR(                                                                                   \
+        type, name, SteamInternal_FindOrCreateUserInterface(SteamAPI_GetHSteamUser(), version), "user", version)
+#define STEAM_DEFINE_GAMESERVER_INTERFACE_ACCESSOR(type, name, version)                                                \
+    STEAM_DEFINE_INTERFACE_ACCESSOR(                                                                                   \
+        type, name, SteamInternal_FindOrCreateGameServerInterface(SteamGameServer_GetHSteamUser(), version),           \
+        "gameserver", version)
+
+//
+// Internal stuff used for the standard, higher-level callback mechanism
+//
+
+// Internal functions used by the utility CCallback objects to receive callbacks
+S_API void S_CALLTYPE SteamAPI_RegisterCallback(class CCallbackBase *pCallback, int iCallback);
+S_API void S_CALLTYPE SteamAPI_UnregisterCallback(class CCallbackBase *pCallback);
+// Internal functions used by the utility CCallResult objects to receive async call results
+S_API void S_CALLTYPE SteamAPI_RegisterCallResult(class CCallbackBase *pCallback, SteamAPICall_t hAPICall);
+S_API void S_CALLTYPE SteamAPI_UnregisterCallResult(class CCallbackBase *pCallback, SteamAPICall_t hAPICall);
 
 // disable this warning; this pattern need for steam callback registration
 #ifdef _MSVC_VER
@@ -70,6 +102,8 @@ S_API void *S_CALLTYPE SteamInternal_FindOrCreateGameServerInterface(HSteamUser 
 #define _STEAM_CALLBACK_GS(_, thisclass, func, param, var)                                                             \
     CCallback<thisclass, param, true> var;                                                                             \
     void func(param *pParam)
+
+#ifndef API_GEN
 
 template <class T, class P> inline CCallResult<T, P>::CCallResult()
 {
@@ -162,10 +196,29 @@ template <class T, class P, bool bGameserver> inline void CCallback<T, P, bGames
     (m_pObj->*m_Func)((P *)pvParam);
 }
 
-//-----------------------------------------------------------------------------
-// Macros to define steam callback structures.  Used internally for debugging
-//-----------------------------------------------------------------------------
+#endif // #ifndef API_GEN
 
+// structure that contains client callback data
+// see callbacks documentation for more details
+#if defined(VALVE_CALLBACK_PACK_SMALL)
+#pragma pack(push, 4)
+#elif defined(VALVE_CALLBACK_PACK_LARGE)
+#pragma pack(push, 8)
+#else
+#error steam_api_common.h should define VALVE_CALLBACK_PACK_xxx
+#endif
+
+/// Internal structure used in manual callback dispatch
+struct CallbackMsg_t
+{
+    HSteamUser m_hSteamUser; // Specific user to whom this callback applies.
+    int m_iCallback;         // Callback identifier.  (Corresponds to the k_iCallback enum in the callback structure.)
+    uint8 *m_pubParam;       // Points to the callback structure
+    int m_cubParam;          // Size of the data pointed to by m_pubParam
+};
+#pragma pack(pop)
+
+// Macros to define steam callback structures.  Used internally for debugging
 #ifdef STEAM_CALLBACK_INSPECTION_ENABLED
 #include "../../clientdll/steam_api_callback_inspection.h"
 #else
@@ -212,7 +265,6 @@ class ISteamParentalSettings;
 class ISteamGameSearch;
 class ISteamInput;
 class ISteamParties;
-class ISteamTV;
 class ISteamRemotePlay;
 
 //-----------------------------------------------------------------------------
@@ -459,42 +511,14 @@ enum
 {
     k_iSteamRemotePlayCallbacks = 5700
 };
-
-// Macro used to define a type-safe accessor that will always return the version
-// of the interface of the *header file* you are compiling with!  We also bounce
-// through a safety function that checks for interfaces being created or destroyed.
-#ifndef STEAM_API_EXPORTS
-// SteamInternal_ContextInit takes a base pointer for the equivalent of
-// struct { void (*pFn)(void* pCtx); uintp counter; CSteamAPIContext ctx; }
-// Do not change layout of 2 + sizeof... or add non-pointer aligned data!
-// NOTE: declaring "static CSteamAPIConext" creates a large function
-// which queries the initialization status of the object. We know that
-// it is pointer-aligned and fully memset with zeros, so just alias a
-// static buffer of the appropriate size and call it a CSteamAPIContext.
-#define STEAM_DEFINE_INTERFACE_ACCESSOR(type, name, expr)                                                              \
-    inline void S_CALLTYPE SteamInternal_Init_##name(type *p)                                                          \
-    {                                                                                                                  \
-        *p = (type)(expr);                                                                                             \
-    }                                                                                                                  \
-    inline type name()                                                                                                 \
-    {                                                                                                                  \
-        static void *s_CallbackCounterAndContext[3] = {(void *)&SteamInternal_Init_##name, 0, 0};                      \
-        return *(type *)SteamInternal_ContextInit(s_CallbackCounterAndContext);                                        \
-    }
-
-#else
-// Stub when we're compiling steam_api.dll itself.  These are inline
-// functions defined when the header is included.  not functions exported
-// by the lib!
-#define STEAM_DEFINE_INTERFACE_ACCESSOR(type, name, expr)
-#endif
-
-#define STEAM_DEFINE_USER_INTERFACE_ACCESSOR(type, name, version)                                                      \
-    STEAM_DEFINE_INTERFACE_ACCESSOR(type, name,                                                                        \
-                                    SteamInternal_FindOrCreateUserInterface(SteamAPI_GetHSteamUser(), version))
-#define STEAM_DEFINE_GAMESERVER_INTERFACE_ACCESSOR(type, name, version)                                                \
-    STEAM_DEFINE_INTERFACE_ACCESSOR(                                                                                   \
-        type, name, SteamInternal_FindOrCreateGameServerInterface(SteamGameServer_GetHSteamUser(), version))
+enum
+{
+    k_iClientCompatCallbacks = 5800
+};
+enum
+{
+    k_iSteamChatCallbacks = 5900
+};
 
 #ifdef _MSVC_VER
 #pragma warning(pop)
@@ -602,10 +626,6 @@ class CSteamAPIContext
     {
         return m_pSteamVideo;
     }
-    ISteamTV *SteamTV() const
-    {
-        return m_pSteamTV;
-    }
     ISteamParentalSettings *SteamParentalSettings() const
     {
         return m_pSteamParentalSettings;
@@ -637,7 +657,6 @@ class CSteamAPIContext
     ISteamHTMLSurface *m_pSteamHTMLSurface;
     ISteamInventory *m_pSteamInventory;
     ISteamVideo *m_pSteamVideo;
-    ISteamTV *m_pSteamTV;
     ISteamParentalSettings *m_pSteamParentalSettings;
     ISteamInput *m_pSteamInput;
 };

@@ -122,6 +122,10 @@ enum ESNetSocketConnectionType
 //-----------------------------------------------------------------------------
 // Purpose: Functions for making connections and sending data between clients,
 //			traversing NAT's where possible
+//
+// NOTE: This interface is deprecated and may be removed in a future release of
+///      the Steamworks SDK.  Please see ISteamNetworkingSockets and
+///      ISteamNetworkingMessages
 //-----------------------------------------------------------------------------
 class ISteamNetworking
 {
@@ -135,6 +139,9 @@ class ISteamNetworking
     // Both interface styles can send both reliable and unreliable messages.
     //
     // Automatically establishes NAT-traversing or Relay server connections
+    //
+    // These APIs are deprecated, and may be removed in a future version of the Steamworks
+    // SDK.  See ISteamNetworkingMessages.
 
     // Sends a P2P packet to the specified user
     // UDP-like, unreliable and a max packet size of 1200 bytes
@@ -185,6 +192,10 @@ class ISteamNetworking
     // or to existing connections that need to automatically reconnect after this value is set.
     //
     // P2P packet relay is allowed by default
+    //
+    // NOTE: This function is deprecated and may be removed in a future version of the SDK.  For
+    // security purposes, we may decide to relay the traffic to certain peers, even if you pass false
+    // to this function, to prevent revealing the client's IP address top another peer.
     virtual bool AllowP2PPacketRelay(bool bAllow) = 0;
 
     ////////////////////////////////////////////////////////////////////////////////////////////
@@ -201,6 +212,9 @@ class ISteamNetworking
     //
     // Both methods can send both reliable and unreliable methods.
     //
+    // These APIs are deprecated, and may be removed in a future version of the Steamworks
+    // SDK.  See ISteamNetworkingSockets.
+    //
     ////////////////////////////////////////////////////////////////////////////////////////////
 
     // creates a socket and listens others to connect
@@ -212,7 +226,7 @@ class ISteamNetworking
     // unPort is the port to use
     //		pass in 0 if you don't want users to be able to connect via IP/Port, but expect to be always peer-to-peer
     //connections only
-    virtual SNetListenSocket_t CreateListenSocket(int nVirtualP2PPort, uint32 nIP, uint16 nPort,
+    virtual SNetListenSocket_t CreateListenSocket(int nVirtualP2PPort, SteamIPAddress_t nIP, uint16 nPort,
                                                   bool bAllowUseOfPacketRelay) = 0;
 
     // creates a socket and begin connection to a remote destination
@@ -221,7 +235,7 @@ class ISteamNetworking
     // on failure or timeout will trigger a SocketStatusCallback_t callback with a failure code in m_eSNetSocketState
     virtual SNetSocket_t CreateP2PConnectionSocket(CSteamID steamIDTarget, int nVirtualPort, int nTimeoutSec,
                                                    bool bAllowUseOfPacketRelay) = 0;
-    virtual SNetSocket_t CreateConnectionSocket(uint32 nIP, uint16 nPort, int nTimeoutSec) = 0;
+    virtual SNetSocket_t CreateConnectionSocket(SteamIPAddress_t nIP, uint16 nPort, int nTimeoutSec) = 0;
 
     // disconnects the connection to the socket, if any, and invalidates the handle
     // any unread data on the socket will be thrown away
@@ -265,12 +279,12 @@ class ISteamNetworking
                               SNetSocket_t *phSocket) = 0;
 
     // returns information about the specified socket, filling out the contents of the pointers
-    virtual bool GetSocketInfo(SNetSocket_t hSocket, CSteamID *pSteamIDRemote, int *peSocketStatus, uint32 *punIPRemote,
-                               uint16 *punPortRemote) = 0;
+    virtual bool GetSocketInfo(SNetSocket_t hSocket, CSteamID *pSteamIDRemote, int *peSocketStatus,
+                               SteamIPAddress_t *punIPRemote, uint16 *punPortRemote) = 0;
 
     // returns which local port the listen socket is bound to
     // *pnIP and *pnPort will be 0 if the socket is set to listen for P2P connections only
-    virtual bool GetListenSocketInfo(SNetListenSocket_t hListenSocket, uint32 *pnIP, uint16 *pnPort) = 0;
+    virtual bool GetListenSocketInfo(SNetListenSocket_t hListenSocket, SteamIPAddress_t *pnIP, uint16 *pnPort) = 0;
 
     // returns true to describe how the socket ended up connecting
     virtual ESNetSocketConnectionType GetSocketConnectionType(SNetSocket_t hSocket) = 0;
@@ -278,7 +292,7 @@ class ISteamNetworking
     // max packet size, in bytes
     virtual int GetMaxPacketSize(SNetSocket_t hSocket) = 0;
 };
-#define STEAMNETWORKING_INTERFACE_VERSION "SteamNetworking005"
+#define STEAMNETWORKING_INTERFACE_VERSION "SteamNetworking006"
 
 // Global interface accessor
 inline ISteamNetworking *SteamNetworking();

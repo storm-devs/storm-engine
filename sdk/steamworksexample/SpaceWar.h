@@ -1,4 +1,4 @@
-//========= Copyright Â© 1996-2008, Valve LLC, All rights reserved. ============
+//========= Copyright © 1996-2008, Valve LLC, All rights reserved. ============
 //
 // Purpose: Shared definitions for the communication between the server/client
 //
@@ -563,7 +563,7 @@ struct ClientSpaceWarUpdateData_t
 {
     void SetPlayerName(const char *pchName)
     {
-        strncpy(m_rgchPlayerName, pchName, sizeof(m_rgchPlayerName));
+        strncpy_safe(m_rgchPlayerName, pchName, sizeof(m_rgchPlayerName));
     }
     const char *GetPlayerName()
     {

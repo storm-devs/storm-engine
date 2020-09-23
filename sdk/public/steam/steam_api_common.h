@@ -83,6 +83,9 @@ extern "C" typedef uint32 (*SteamAPI_CheckCallbackRegistered_t)(int iCallbackNum
 //
 //	Callbacks and call-results are queued automatically and are only
 //	delivered/executed when your application calls SteamAPI_RunCallbacks().
+//
+//  Note that there is an alternative, lower level callback dispatch mechanism.
+//  See SteamAPI_ManualDispatch_Init
 //----------------------------------------------------------------------------------------------------------------------------------------------------------//
 
 // Dispatch all queued Steamworks callbacks.
@@ -171,6 +174,7 @@ template <int sizeof_P> class CCallbackImpl : protected CCallbackBase
     }
 
   protected:
+    friend class CCallbackMgr;
     virtual void Run(void *pvParam) = 0;
     virtual void Run(void *pvParam, bool /*bIOFailure*/, SteamAPICall_t /*hSteamAPICall*/)
     {

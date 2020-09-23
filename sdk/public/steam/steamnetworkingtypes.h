@@ -10,6 +10,7 @@
 #pragma once
 #endif
 
+#include <stdint.h>
 #include <string.h>
 
 //----------------------------------------
@@ -21,7 +22,6 @@
 #endif
 #define STEAMNETWORKINGSOCKETS_STEAMCLIENT
 #define STEAMNETWORKINGSOCKETS_ENABLE_SDR
-#define STEAMNETWORKINGSOCKETS_ENABLE_P2P
 #include "steam_api_common.h"
 //
 //----------------------------------------
@@ -40,14 +40,29 @@ struct SteamDatagramGameCoordinatorServerLogin;
 struct SteamNetConnectionStatusChangedCallback_t;
 struct SteamNetAuthenticationStatus_t;
 struct SteamRelayNetworkStatus_t;
+struct SteamNetworkingMessagesSessionRequest_t;
+struct SteamNetworkingMessagesSessionFailed_t;
+
+typedef void (*FnSteamNetConnectionStatusChanged)(SteamNetConnectionStatusChangedCallback_t *);
+typedef void (*FnSteamNetAuthenticationStatusChanged)(SteamNetAuthenticationStatus_t *);
+typedef void (*FnSteamRelayNetworkStatusChanged)(SteamRelayNetworkStatus_t *);
+typedef void (*FnSteamNetworkingMessagesSessionRequest)(SteamNetworkingMessagesSessionRequest_t *);
+typedef void (*FnSteamNetworkingMessagesSessionFailed)(SteamNetworkingMessagesSessionFailed_t *);
 
 /// Handle used to identify a connection to a remote host.
 typedef uint32 HSteamNetConnection;
 const HSteamNetConnection k_HSteamNetConnection_Invalid = 0;
 
-/// Handle used to identify a "listen socket".
+/// Handle used to identify a "listen socket".  Unlike traditional
+/// Berkeley sockets, a listen socket and a connection are two
+/// different abstractions.
 typedef uint32 HSteamListenSocket;
 const HSteamListenSocket k_HSteamListenSocket_Invalid = 0;
+
+/// Handle used to identify a poll group, used to query many
+/// connections at once efficiently.
+typedef uint32 HSteamNetPollGroup;
+const HSteamNetPollGroup k_HSteamNetPollGroup_Invalid = 0;
 
 /// Max length of diagnostic error message
 const int k_cchMaxSteamNetworkingErrMsg = 1024;
@@ -64,7 +79,7 @@ typedef uint32 SteamNetworkingPOPID;
 /// microseconds.  This is guaranteed to increase over time during the lifetime
 /// of a process, but not globally across runs.  You don't need to worry about
 /// the value wrapping around.  Note that the underlying clock might not actually have
-/// microsecond *resolution*.
+/// microsecond resolution.
 typedef int64 SteamNetworkingMicroseconds;
 
 /// Describe the status of a particular network resource
@@ -182,6 +197,8 @@ struct SteamNetworkingIPAddr
     /// form according to RFC5952.  If you include the port, IPv6 will be surrounded by
     /// brackets, e.g. [::1:2]:80.  Your buffer should be at least k_cchMaxString bytes
     /// to avoid truncation
+    ///
+    /// See also SteamNetworkingIdentityRender
     inline void ToString(char *buf, size_t cbBuf, bool bWithPort) const;
 
     /// Parse an IP address and optional port.  If a port is not present, it is set to 0.
@@ -190,13 +207,15 @@ struct SteamNetworkingIPAddr
 
     union {
         uint8 m_ipv6[16];
-        struct // IPv4 "mapped address" (rfc4038 section 4.2)
+#ifndef API_GEN // API generator doesn't understand this.  The bindings will just use the accessors
+        struct  // IPv4 "mapped address" (rfc4038 section 4.2)
         {
             uint64 m_8zeros;
             uint16 m_0000;
             uint16 m_ffff;
             uint8 m_ip[4]; // NOTE: As bytes, i.e. network byte order
         } m_ipv4;
+#endif
     };
     uint16 m_port; // Host byte order
 
@@ -204,7 +223,11 @@ struct SteamNetworkingIPAddr
     bool operator==(const SteamNetworkingIPAddr &x) const;
 };
 
-/// An abstract way to represent the identity of a network host
+/// An abstract way to represent the identity of a network host.  All identities can
+/// be represented as simple string.  Furthermore, this string representation is actually
+/// used on the wire in several places, even though it is less efficient, in order to
+/// facilitate forward compatibility.  (Old client code can handle an identity type that
+/// it doesn't understand.)
 struct SteamNetworkingIdentity
 {
     /// Type of identity.
@@ -244,9 +267,15 @@ struct SteamNetworkingIdentity
     /// or any other time you need to encode the identity as a string.  It has a
     /// URL-like format (type:<type-data>).  Your buffer should be at least
     /// k_cchMaxString bytes big to avoid truncation.
+    ///
+    /// See also SteamNetworkingIPAddrRender
     void ToString(char *buf, size_t cbBuf) const;
 
-    /// Parse back a string that was generated using ToString
+    /// Parse back a string that was generated using ToString.  If we don't understand the
+    /// string, but it looks "reasonable" (it matches the pattern type:<type-data> and doesn't
+    /// have any funky characters, etc), then we will return true, and the type is set to
+    /// k_ESteamNetworkingIdentityType_UnknownType.  false will only be returned if the string
+    /// looks invalid.
     bool ParseString(const char *pszStr);
 
     // Max sizes
@@ -458,7 +487,7 @@ enum ESteamNetConnectionEnd
     // on our end
     k_ESteamNetConnectionEnd_Local_HostedServerPrimaryRelay = 3003,
 
-    // We're not able to get the network config.  This is
+    // We're not able to get the SDR network config.  This is
     // *almost* always a local issue, since the network config
     // comes from the CDN, which is pretty darn reliable.
     k_ESteamNetConnectionEnd_Local_NetworkConfig = 3004,
@@ -466,6 +495,14 @@ enum ESteamNetConnectionEnd
     // Steam rejected our request because we don't have rights
     // to do this.
     k_ESteamNetConnectionEnd_Local_Rights = 3005,
+
+    // ICE P2P rendezvous failed because we were not able to
+    // determine our "public" address (e.g. reflexive address via STUN)
+    //
+    // If relay fallback is available (it always is on Steam), then
+    // this is only used internally and will not be returned as a high
+    // level failure.
+    k_ESteamNetConnectionEnd_Local_P2P_ICE_NoPublicAddresses = 3006,
 
     k_ESteamNetConnectionEnd_Local_Max = 3999,
 
@@ -509,6 +546,15 @@ enum ESteamNetConnectionEnd
     // (Probably the code you are running is too old.)
     k_ESteamNetConnectionEnd_Remote_BadProtocolVersion = 4006,
 
+    // NAT punch failed failed because we never received any public
+    // addresses from the remote host.  (But we did receive some
+    // signals form them.)
+    //
+    // If relay fallback is available (it always is on Steam), then
+    // this is only used internally and will not be returned as a high
+    // level failure.
+    k_ESteamNetConnectionEnd_Remote_P2P_ICE_NoPublicAddresses = 4007,
+
     k_ESteamNetConnectionEnd_Remote_Max = 4999,
 
     // 5xxx: Connection failed for some other reason.
@@ -540,6 +586,36 @@ enum ESteamNetConnectionEnd
     // active with which to talk back to a client.  (It's the client's
     // job to open and maintain those sessions.)
     k_ESteamNetConnectionEnd_Misc_NoRelaySessionsToClient = 5006,
+
+    // While trying to initiate a connection, we never received
+    // *any* communication from the peer.
+    // k_ESteamNetConnectionEnd_Misc_ServerNeverReplied = 5007,
+
+    // P2P rendezvous failed in a way that we don't have more specific
+    // information
+    k_ESteamNetConnectionEnd_Misc_P2P_Rendezvous = 5008,
+
+    // NAT punch failed, probably due to NAT/firewall configuration.
+    //
+    // If relay fallback is available (it always is on Steam), then
+    // this is only used internally and will not be returned as a high
+    // level failure.
+    k_ESteamNetConnectionEnd_Misc_P2P_NAT_Firewall = 5009,
+
+    // Our peer replied that it has no record of the connection.
+    // This should not happen ordinarily, but can happen in a few
+    // exception cases:
+    //
+    // - This is an old connection, and the peer has already cleaned
+    //   up and forgotten about it.  (Perhaps it timed out and they
+    //   closed it and were not able to communicate this to us.)
+    // - A bug or internal protocol error has caused us to try to
+    //   talk to the peer about the connection before we received
+    //   confirmation that the peer has accepted the connection.
+    // - The peer thinks that we have closed the connection for some
+    //   reason (perhaps a bug), and believes that is it is
+    //   acknowledging our closure.
+    k_ESteamNetConnectionEnd_Misc_PeerSentNoConnection = 5010,
 
     k_ESteamNetConnectionEnd_Misc_Max = 5999,
 
@@ -592,9 +668,10 @@ struct SteamNetConnectionInfo_t
     /// have some details specific to the issue.
     char m_szEndDebug[k_cchSteamNetworkingMaxConnectionCloseReason];
 
-    /// Debug description.  This includes the connection handle,
-    /// connection type (and peer information), and the app name.
-    /// This string is used in various internal logging messages
+    /// Debug description.  This includes the internal connection ID,
+    /// connection type (and peer information), and any name
+    /// given to the connection by the app.  This string is used in various
+    /// internal logging messages.
     char m_szConnectionDescription[k_cchSteamNetworkingMaxConnectionDescription];
 
     /// Internal stuff, room to change API easily
@@ -637,7 +714,7 @@ struct SteamNetworkingQuickConnectionStatus
     /// but has now been scheduled for re-transmission.  Thus, it's possible to
     /// observe m_cbPendingReliable increasing between two checks, even if no
     /// calls were made to send reliable data between the checks.  Data that is
-    /// awaiting the nagle delay will appear in these numbers.
+    /// awaiting the Nagle delay will appear in these numbers.
     int m_cbPendingUnreliable;
     int m_cbPendingReliable;
 
@@ -685,7 +762,7 @@ struct SteamNetworkingQuickConnectionStatus
 /// and our peer might, too.
 const int k_cbMaxSteamNetworkingSocketsMessageSizeSend = 512 * 1024;
 
-/// A message that has been received
+/// A message that has been received.
 struct SteamNetworkingMessage_t
 {
 
@@ -693,15 +770,20 @@ struct SteamNetworkingMessage_t
     void *m_pData;
 
     /// Size of the payload.
-    uint32 m_cbSize;
+    int m_cbSize;
 
-    /// The connection this came from.  (Not used when using the ISteamMessages interface)
+    /// For messages received on connections: what connection did this come from?
+    /// For outgoing messages: what connection to send it to?
+    /// Not used when using the ISteamNetworkingMessages interface
     HSteamNetConnection m_conn;
 
-    /// Who sent this to us?
-    SteamNetworkingIdentity m_sender;
+    /// For inbound messages: Who sent this to us?
+    /// For outbound messages on connections: not used.
+    /// For outbound messages on the ad-hoc ISteamNetworkingMessages interface: who should we send this to?
+    SteamNetworkingIdentity m_identityPeer;
 
-    /// The user data associated with the connection.
+    /// For messages received on connections, this is the user data
+    /// associated with the connection.
     ///
     /// This is *usually* the same as calling GetConnection() and then
     /// fetching the user data associated with that connection, but for
@@ -714,12 +796,16 @@ struct SteamNetworkingMessage_t
     /// - This is an inline call, so it's *much* faster.
     /// - You might have closed the connection, so fetching the user data
     ///   would not be possible.
+    ///
+    /// Not used when sending messages,
     int64 m_nConnUserData;
 
-    /// Local timestamps when it was received
+    /// Local timestamp when the message was received
+    /// Not used for outbound messages.
     SteamNetworkingMicroseconds m_usecTimeReceived;
 
-    /// Message number assigned by the sender
+    /// Message number assigned by the sender.
+    /// This is not used for outbound messages
     int64 m_nMessageNumber;
 
     /// Function used to free up m_pData.  This mechanism exists so that
@@ -730,25 +816,33 @@ struct SteamNetworkingMessage_t
     /// free( pMsg->m_pData );
     void (*m_pfnFreeData)(SteamNetworkingMessage_t *pMsg);
 
-    /// Function to used to decrement reference count and, if it's zero, release
-    /// the message.  You should not normally need to access this directly.
-    /// (Use Release(), and don't set this.)
+    /// Function to used to decrement the internal reference count and, if
+    /// it's zero, release the message.  You should not set this function pointer,
+    /// or need to access this directly!  Use the Release() function instead!
     void (*m_pfnRelease)(SteamNetworkingMessage_t *pMsg);
 
-    /// The channel number the message was received on.
-    /// (Not used for messages received on "connections")
+    /// When using ISteamNetworkingMessages, the channel number the message was received on
+    /// (Not used for messages sent or received on "connections")
     int m_nChannel;
 
-    /// Pad to multiple of 8 bytes
-    int m___nPadDummy;
+    /// Bitmask of k_nSteamNetworkingSend_xxx flags.
+    /// For received messages, only the k_nSteamNetworkingSend_Reliable bit is valid.
+    /// For outbound messages, all bits are relevant
+    int m_nFlags;
 
-#ifdef __cplusplus
+    /// Arbitrary user data that you can use when sending messages using
+    /// ISteamNetworkingUtils::AllocateMessage and ISteamNetworkingSockets::SendMessage.
+    /// (The callback you set in m_pfnFreeData might use this field.)
+    ///
+    /// Not used for received messages.
+    int64 m_nUserData;
 
     /// You MUST call this when you're done with the object,
     /// to free up memory, etc.
     inline void Release();
 
     // For code compatibility, some accessors
+#ifndef API_GEN
     inline uint32 GetSize() const
     {
         return m_cbSize;
@@ -778,6 +872,16 @@ struct SteamNetworkingMessage_t
         return m_nMessageNumber;
     }
 #endif
+  protected:
+    // Declare destructor protected.  You should never need to declare a message
+    // object on the stack or create one yourself.
+    // - You will receive a pointer to a message object when you receive messages (e.g.
+    // ISteamNetworkingSockets::ReceiveMessagesOnConnection)
+    // - You can allocate a message object for efficient sending using ISteamNetworkingUtils::AllocateMessage
+    // - Call Release() to free the object
+    inline ~SteamNetworkingMessage_t()
+    {
+    }
 };
 
 //
@@ -836,7 +940,7 @@ const int k_nSteamNetworkingSend_NoDelay = 4;
 // - there is a sufficiently large number of messages queued up already such that the current message
 //   will not be placed on the wire in the next ~200ms or so.
 //
-// if a message is dropped for these reasons, k_EResultIgnored will be returned.
+// If a message is dropped for these reasons, k_EResultIgnored will be returned.
 const int k_nSteamNetworkingSend_UnreliableNoDelay =
     k_nSteamNetworkingSend_Unreliable | k_nSteamNetworkingSend_NoDelay | k_nSteamNetworkingSend_NoNagle;
 
@@ -855,6 +959,42 @@ const int k_nSteamNetworkingSend_Reliable = 8;
 //
 // Migration note: This is equivalent to k_EP2PSendReliable
 const int k_nSteamNetworkingSend_ReliableNoNagle = k_nSteamNetworkingSend_Reliable | k_nSteamNetworkingSend_NoNagle;
+
+// By default, message sending is queued, and the work of encryption and talking to
+// the operating system sockets, etc is done on a service thread.  This is usually a
+// a performance win when messages are sent from the "main thread".  However, if this
+// flag is set, and data is ready to be sent immediately (either from this message
+// or earlier queued data), then that work will be done in the current thread, before
+// the current call returns.  If data is not ready to be sent (due to rate limiting
+// or Nagle), then this flag has no effect.
+//
+// This is an advanced flag used to control performance at a very low level.  For
+// most applications running on modern hardware with more than one CPU core, doing
+// the work of sending on a service thread will yield the best performance.  Only
+// use this flag if you have a really good reason and understand what you are doing.
+// Otherwise you will probably just make performance worse.
+const int k_nSteamNetworkingSend_UseCurrentThread = 16;
+
+// When sending a message using ISteamNetworkingMessages, automatically re-establish
+// a broken session, without returning k_EResultNoConnection.  Without this flag,
+// if you attempt to send a message, and the session was proactively closed by the
+// peer, or an error occurred that disrupted communications, then you must close the
+// session using ISteamNetworkingMessages::CloseSessionWithUser before attempting to
+// send another message.  (Or you can simply add this flag and retry.)  In this way,
+// the disruption cannot go unnoticed, and a more clear order of events can be
+// ascertained. This is especially important when reliable messages are used, since
+// if the connection is disrupted, some of those messages will not have been delivered,
+// and it is in general not possible to know which.  Although a
+// SteamNetworkingMessagesSessionFailed_t callback will be posted when an error occurs
+// to notify you that a failure has happened, callbacks are asynchronous, so it is not
+// possible to tell exactly when it happened.  And because the primary purpose of
+// ISteamNetworkingMessages is to be like UDP, there is no notification when a peer closes
+// the session.
+//
+// If you are not using any reliable messages (e.g. you are using ISteamNetworkingMessages
+// exactly as a transport replacement for UDP-style datagrams only), you may not need to
+// know when an underlying connection fails, and so you may not need this notification.
+const int k_nSteamNetworkingSend_AutoRestartBrokenSession = 32;
 
 //
 // Ping location / measurement
@@ -928,8 +1068,7 @@ enum ESteamNetworkingConfigDataType
     k_ESteamNetworkingConfig_Int64 = 2,
     k_ESteamNetworkingConfig_Float = 3,
     k_ESteamNetworkingConfig_String = 4,
-    k_ESteamNetworkingConfig_FunctionPtr = 5, // NOTE: When setting	callbacks, you should put the pointer into a
-                                              // variable and pass a pointer to that variable.
+    k_ESteamNetworkingConfig_Ptr = 5,
 
     k_ESteamNetworkingConfigDataType__Force32Bit = 0x7fffffff
 };
@@ -996,6 +1135,9 @@ enum ESteamNetworkingConfigValue
     /// we don't know our identity or can't get a cert.  On the server, it means that
     /// we won't automatically reject a connection due to a failure to authenticate.
     /// (You can examine the incoming connection and decide whether to accept it.)
+    ///
+    /// This is a dev configuration value, and you should not let users modify it in
+    /// production.
     k_ESteamNetworkingConfig_IP_AllowWithoutAuth = 23,
 
     /// [connection int32] Do not send UDP packets with a payload of
@@ -1006,6 +1148,225 @@ enum ESteamNetworkingConfigValue
     /// [connection int32] (read only) Maximum message size you can send that
     /// will not fragment, based on k_ESteamNetworkingConfig_MTU_PacketSize
     k_ESteamNetworkingConfig_MTU_DataSize = 33,
+
+    /// [connection int32] Allow unencrypted (and unauthenticated) communication.
+    /// 0: Not allowed (the default)
+    /// 1: Allowed, but prefer encrypted
+    /// 2: Allowed, and preferred
+    /// 3: Required.  (Fail the connection if the peer requires encryption.)
+    ///
+    /// This is a dev configuration value, since its purpose is to disable encryption.
+    /// You should not let users modify it in production.  (But note that it requires
+    /// the peer to also modify their value in order for encryption to be disabled.)
+    k_ESteamNetworkingConfig_Unencrypted = 34,
+
+    /// [global int32] 0 or 1.  Some variables are "dev" variables.  They are useful
+    /// for debugging, but should not be adjusted in production.  When this flag is false (the default),
+    /// such variables will not be enumerated by the ISteamnetworkingUtils::GetFirstConfigValue
+    /// ISteamNetworkingUtils::GetConfigValueInfo functions.  The idea here is that you
+    /// can use those functions to provide a generic mechanism to set any configuration
+    /// value from a console or configuration file, looking up the variable by name.  Depending
+    /// on your game, modifying other configuration values may also have negative effects, and
+    /// you may wish to further lock down which variables are allowed to be modified by the user.
+    /// (Maybe no variables!)  Or maybe you use a whitelist or blacklist approach.
+    ///
+    /// (This flag is itself a dev variable.)
+    k_ESteamNetworkingConfig_EnumerateDevVars = 35,
+
+    /// [connection int32] Set this to 1 on outbound connections and listen sockets,
+    /// to enable "symmetric connect mode", which is useful in the following
+    /// common peer-to-peer use case:
+    ///
+    /// - The two peers are "equal" to each other.  (Neither is clearly the "client"
+    ///   or "server".)
+    /// - Either peer may initiate the connection, and indeed they may do this
+    ///   at the same time
+    /// - The peers only desire a single connection to each other, and if both
+    ///   peers initiate connections simultaneously, a protocol is needed for them
+    ///   to resolve the conflict, so that we end up with a single connection.
+    ///
+    /// This use case is both common, and involves subtle race conditions and tricky
+    /// pitfalls, which is why the API has support for dealing with it.
+    ///
+    /// If an incoming connection arrives on a listen socket or via custom signaling,
+    /// and the application has not attempted to make a matching outbound connection
+    /// in symmetric mode, then the incoming connection can be accepted as usual.
+    /// A "matching" connection means that the relevant endpoint information matches.
+    /// (At the time this comment is being written, this is only supported for P2P
+    /// connections, which means that the peer identities must match, and the virtual
+    /// port must match.  At a later time, symmetric mode may be supported for other
+    /// connection types.)
+    ///
+    /// If connections are initiated by both peers simultaneously, race conditions
+    /// can arise, but fortunately, most of them are handled internally and do not
+    /// require any special awareness from the application.  However, there
+    /// is one important case that application code must be aware of:
+    /// If application code attempts an outbound connection using a ConnectXxx
+    /// function in symmetric mode, and a matching incoming connection is already
+    /// waiting on a listen socket, then instead of forming a new connection,
+    /// the ConnectXxx call will accept the existing incoming connection, and return
+    /// a connection handle to this accepted connection.
+    /// IMPORTANT: in this case, a SteamNetConnectionStatusChangedCallback_t
+    /// has probably *already* been posted to the queue for the incoming connection!
+    /// (Once callbacks are posted to the queue, they are not modified.)  It doesn't
+    /// matter if the callback has not been consumed by the app.  Thus, application
+    /// code that makes use of symmetric connections must be aware that, when processing a
+    /// SteamNetConnectionStatusChangedCallback_t for an incoming connection, the
+    /// m_hConn may refer to a new connection that the app has has not
+    /// seen before (the usual case), but it may also refer to a connection that
+    /// has already been accepted implicitly through a call to Connect()!  In this
+    /// case, AcceptConnection() will return k_EResultDuplicateRequest.
+    ///
+    /// Only one symmetric connection to a given peer (on a given virtual port)
+    /// may exist at any given time.  If client code attempts to create a connection,
+    /// and a (live) connection already exists on the local host, then either the
+    /// existing connection will be accepted as described above, or the attempt
+    /// to create a new connection will fail.  Furthermore, linger mode functionality
+    /// is not supported on symmetric connections.
+    ///
+    /// A more complicated race condition can arise if both peers initiate a connection
+    /// at roughly the same time.  In this situation, each peer will receive an incoming
+    /// connection from the other peer, when the application code has already initiated
+    /// an outgoing connection to that peer.  The peers must resolve this conflict and
+    /// decide who is going to act as the "server" and who will act as the "client".
+    /// Typically the application does not need to be aware of this case as it is handled
+    /// internally.  On both sides, the will observe their outbound connection being
+    /// "accepted", although one of them one have been converted internally to act
+    /// as the "server".
+    ///
+    /// In general, symmetric mode should be all-or-nothing: do not mix symmetric
+    /// connections with a non-symmetric connection that it might possible "match"
+    /// with.  If you use symmetric mode on any connections, then both peers should
+    /// use it on all connections, and the corresponding listen socket, if any.  The
+    /// behaviour when symmetric and ordinary connections are mixed is not defined by
+    /// this API, and you should not rely on it.  (This advice only applies when connections
+    /// might possibly "match".  For example, it's OK to use all symmetric mode
+    /// connections on one virtual port, and all ordinary, non-symmetric connections
+    /// on a different virtual port, as there is no potential for ambiguity.)
+    ///
+    /// When using the feature, you should set it in the following situations on
+    /// applicable objects:
+    ///
+    /// - When creating an outbound connection using ConnectXxx function
+    /// - When creating a listen socket.  (Note that this will automatically cause
+    ///   any accepted connections to inherit the flag.)
+    /// - When using custom signaling, before accepting an incoming connection.
+    ///
+    /// Setting the flag on listen socket and accepted connections will enable the
+    /// API to automatically deal with duplicate incoming connections, even if the
+    /// local host has not made any outbound requests.  (In general, such duplicate
+    /// requests from a peer are ignored internally and will not be visible to the
+    /// application code.  The previous connection must be closed or resolved first.)
+    k_ESteamNetworkingConfig_SymmetricConnect = 37,
+
+    /// [connection int32] For connection types that use "virtual ports", this can be used
+    /// to assign a local virtual port.  For incoming connections, this will always be the
+    /// virtual port of the listen socket (or the port requested by the remote host if custom
+    /// signaling is used and the connection is accepted), and cannot be changed.  For
+    /// connections initiated locally, the local virtual port will default to the same as the
+    /// requested remote virtual port, if you do not specify a different option when creating
+    /// the connection.  The local port is only relevant for symmetric connections, when
+    /// determining if two connections "match."  In this case, if you need the local and remote
+    /// port to differ, you can set this value.
+    ///
+    /// You can also read back this value on listen sockets.
+    ///
+    /// This value should not be read or written in any other context.
+    k_ESteamNetworkingConfig_LocalVirtualPort = 38,
+
+    //
+    // Callbacks
+    //
+
+    // On Steam, you may use the default Steam callback dispatch mechanism.  If you prefer
+    // to not use this dispatch mechanism (or you are not running with Steam), or you want
+    // to associate specific functions with specific listen sockets or connections, you can
+    // register them as configuration values.
+    //
+    // Note also that ISteamNetworkingUtils has some helpers to set these globally.
+
+    /// [connection FnSteamNetConnectionStatusChanged] Callback that will be invoked
+    /// when the state of a connection changes.
+    ///
+    /// IMPORTANT: callbacks are dispatched to the handler that is in effect at the time
+    /// the event occurs, which might be in another thread.  For example, immediately after
+    /// creating a listen socket, you may receive an incoming connection.  And then immediately
+    /// after this, the remote host may close the connection.  All of this could happen
+    /// before the function to create the listen socket has returned.  For this reason,
+    /// callbacks usually must be in effect at the time of object creation.  This means
+    /// you should set them when you are creating the listen socket or connection, or have
+    /// them in effect so they will be inherited at the time of object creation.
+    ///
+    /// For example:
+    ///
+    /// exterm void MyStatusChangedFunc( SteamNetConnectionStatusChangedCallback_t *info );
+    /// SteamNetworkingConfigValue_t opt; opt.SetPtr( k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged,
+    /// MyStatusChangedFunc ); SteamNetworkingIPAddr localAddress; localAddress.Clear(); HSteamListenSocket hListenSock
+    /// = SteamNetworkingSockets()->CreateListenSocketIP( localAddress, 1, &opt );
+    ///
+    /// When accepting an incoming connection, there is no atomic way to switch the
+    /// callback.  However, if the connection is DOA, AcceptConnection() will fail, and
+    /// you can fetch the state of the connection at that time.
+    ///
+    /// If all connections and listen sockets can use the same callback, the simplest
+    /// method is to set it globally before you create any listen sockets or connections.
+    k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged = 201,
+
+    /// [global FnSteamNetAuthenticationStatusChanged] Callback that will be invoked
+    /// when our auth state changes.  If you use this, install the callback before creating
+    /// any connections or listen sockets, and don't change it.
+    /// See: ISteamNetworkingUtils::SetGlobalCallback_SteamNetAuthenticationStatusChanged
+    k_ESteamNetworkingConfig_Callback_AuthStatusChanged = 202,
+
+    /// [global FnSteamRelayNetworkStatusChanged] Callback that will be invoked
+    /// when our auth state changes.  If you use this, install the callback before creating
+    /// any connections or listen sockets, and don't change it.
+    /// See: ISteamNetworkingUtils::SetGlobalCallback_SteamRelayNetworkStatusChanged
+    k_ESteamNetworkingConfig_Callback_RelayNetworkStatusChanged = 203,
+
+    /// [global FnSteamNetworkingMessagesSessionRequest] Callback that will be invoked
+    /// when a peer wants to initiate a SteamNetworkingMessagesSessionRequest.
+    /// See: ISteamNetworkingUtils::SetGlobalCallback_MessagesSessionRequest
+    k_ESteamNetworkingConfig_Callback_MessagesSessionRequest = 204,
+
+    /// [global FnSteamNetworkingMessagesSessionFailed] Callback that will be invoked
+    /// when a session you have initiated, or accepted either fails to connect, or loses
+    /// connection in some unexpected way.
+    /// See: ISteamNetworkingUtils::SetGlobalCallback_MessagesSessionFailed
+    k_ESteamNetworkingConfig_Callback_MessagesSessionFailed = 205,
+
+    //
+    // P2P settings
+    //
+
+    //	/// [listen socket int32] When you create a P2P listen socket, we will automatically
+    //	/// open up a UDP port to listen for LAN connections.  LAN connections can be made
+    //	/// without any signaling: both sides can be disconnected from the Internet.
+    //	///
+    //	/// This value can be set to zero to disable the feature.
+    //	k_ESteamNetworkingConfig_P2P_Discovery_Server_LocalPort = 101,
+    //
+    //	/// [connection int32] P2P connections can perform broadcasts looking for the peer
+    //	/// on the LAN.
+    //	k_ESteamNetworkingConfig_P2P_Discovery_Client_RemotePort = 102,
+
+    /// [connection string] Comma-separated list of STUN servers that can be used
+    /// for NAT piercing.  If you set this to an empty string, NAT piercing will
+    /// not be attempted.  Also if "public" candidates are not allowed for
+    /// P2P_Transport_ICE_Enable, then this is ignored.
+    k_ESteamNetworkingConfig_P2P_STUN_ServerList = 103,
+
+    /// [connection int32] What types of ICE candidates to share with the peer.
+    /// See k_nSteamNetworkingConfig_P2P_Transport_ICE_Enable_xxx values
+    k_ESteamNetworkingConfig_P2P_Transport_ICE_Enable = 104,
+
+    /// [connection int32] When selecting P2P transport, add various
+    /// penalties to the scores for selected transports.  (Route selection
+    /// scores are on a scale of milliseconds.  The score begins with the
+    /// route ping time and is then adjusted.)
+    k_ESteamNetworkingConfig_P2P_Transport_ICE_Penalty = 105,
+    k_ESteamNetworkingConfig_P2P_Transport_SDR_Penalty = 106,
+    // k_ESteamNetworkingConfig_P2P_Transport_LANBeacon_Penalty = 107,
 
     //
     // Settings for SDR relayed connections
@@ -1049,18 +1410,104 @@ enum ESteamNetworkingConfigValue
     /// this set (maybe just one).  Comma-separated list.
     k_ESteamNetworkingConfig_SDRClient_ForceProxyAddr = 31,
 
+    /// [global string] For debugging.  Force ping times to clusters to be the specified
+    /// values.  A comma separated list of <cluster>=<ms> values.  E.g. "sto=32,iad=100"
+    ///
+    /// This is a dev configuration value, you probably should not let users modify it
+    /// in production.
+    k_ESteamNetworkingConfig_SDRClient_FakeClusterPing = 36,
+
     //
-    // Log levels for debuging information.  A higher priority
-    // (lower numeric value) will cause more stuff to be printed.
+    // Log levels for debugging information of various subsystems.
+    // Higher numeric values will cause more stuff to be printed.
+    // See ISteamNetworkingUtils::SetDebugOutputFunction for more
+    // information
+    //
+    // The default for all values is k_ESteamNetworkingSocketsDebugOutputType_Warning.
     //
     k_ESteamNetworkingConfig_LogLevel_AckRTT = 13, // [connection int32] RTT calculations for inline pings and replies
-    k_ESteamNetworkingConfig_LogLevel_PacketDecode = 14,  // [connection int32] log SNP packets send
+    k_ESteamNetworkingConfig_LogLevel_PacketDecode = 14,  // [connection int32] log SNP packets send/recv
     k_ESteamNetworkingConfig_LogLevel_Message = 15,       // [connection int32] log each message send/recv
     k_ESteamNetworkingConfig_LogLevel_PacketGaps = 16,    // [connection int32] dropped packets
     k_ESteamNetworkingConfig_LogLevel_P2PRendezvous = 17, // [connection int32] P2P rendezvous messages
     k_ESteamNetworkingConfig_LogLevel_SDRRelayPings = 18, // [global int32] Ping relays
 
     k_ESteamNetworkingConfigValue__Force32Bit = 0x7fffffff
+};
+
+// Bitmask of types to share
+const int k_nSteamNetworkingConfig_P2P_Transport_ICE_Enable_Default = -1; // Special value - use user defaults
+const int k_nSteamNetworkingConfig_P2P_Transport_ICE_Enable_Disable =
+    0; // Do not do any ICE work at all or share any IP addresses with peer
+const int k_nSteamNetworkingConfig_P2P_Transport_ICE_Enable_Relay = 1; // Relayed connection via TURN server.
+const int k_nSteamNetworkingConfig_P2P_Transport_ICE_Enable_Private =
+    2; // host addresses that appear to be link-local or RFC1918 addresses
+const int k_nSteamNetworkingConfig_P2P_Transport_ICE_Enable_Public =
+    4; // STUN reflexive addresses, or host address that isn't a "private" address
+const int k_nSteamNetworkingConfig_P2P_Transport_ICE_Enable_All = 0x7fffffff;
+
+/// In a few places we need to set configuration options on listen sockets and connections, and
+/// have them take effect *before* the listen socket or connection really starts doing anything.
+/// Creating the object and then setting the options "immediately" after creation doesn't work
+/// completely, because network packets could be received between the time the object is created and
+/// when the options are applied.  To set options at creation time in a reliable way, they must be
+/// passed to the creation function.  This structure is used to pass those options.
+///
+/// For the meaning of these fields, see ISteamNetworkingUtils::SetConfigValue.  Basically
+/// when the object is created, we just iterate over the list of options and call
+/// ISteamNetworkingUtils::SetConfigValueStruct, where the scope arguments are supplied by the
+/// object being created.
+struct SteamNetworkingConfigValue_t
+{
+    /// Which option is being set
+    ESteamNetworkingConfigValue m_eValue;
+
+    /// Which field below did you fill in?
+    ESteamNetworkingConfigDataType m_eDataType;
+
+    /// Option value
+    union {
+        int32_t m_int32;
+        int64_t m_int64;
+        float m_float;
+        const char *m_string; // Points to your '\0'-terminated buffer
+        void *m_ptr;
+    } m_val;
+
+    //
+    // Shortcut helpers to set the type and value in a single call
+    //
+    inline void SetInt32(ESteamNetworkingConfigValue eVal, int32_t data)
+    {
+        m_eValue = eVal;
+        m_eDataType = k_ESteamNetworkingConfig_Int32;
+        m_val.m_int32 = data;
+    }
+    inline void SetInt64(ESteamNetworkingConfigValue eVal, int64_t data)
+    {
+        m_eValue = eVal;
+        m_eDataType = k_ESteamNetworkingConfig_Int64;
+        m_val.m_int64 = data;
+    }
+    inline void SetFloat(ESteamNetworkingConfigValue eVal, float data)
+    {
+        m_eValue = eVal;
+        m_eDataType = k_ESteamNetworkingConfig_Float;
+        m_val.m_float = data;
+    }
+    inline void SetPtr(ESteamNetworkingConfigValue eVal, void *data)
+    {
+        m_eValue = eVal;
+        m_eDataType = k_ESteamNetworkingConfig_Ptr;
+        m_val.m_ptr = data;
+    }
+    inline void SetString(ESteamNetworkingConfigValue eVal,
+                          const char *data) // WARNING - Just saves your pointer.  Does NOT make a copy of the string
+    {
+        m_eValue = eVal;
+        m_eDataType = k_ESteamNetworkingConfig_Ptr;
+        m_val.m_string = data;
+    }
 };
 
 /// Return value of ISteamNetworkintgUtils::GetConfigValue
@@ -1131,6 +1578,8 @@ inline SteamNetworkingPOPID CalculateSteamNetworkingPOPIDFromString(const char *
 }
 
 /// Unpack integer to string representation, including terminating '\0'
+///
+/// See also SteamNetworkingPOPIDRender
 template <int N> inline void GetSteamNetworkingLocationPOPStringFromID(SteamNetworkingPOPID id, char (&szCode)[N])
 {
     static_assert(N >= 5, "Fixed-size buffer not big enough to hold SDR POP ID");
@@ -1144,9 +1593,26 @@ template <int N> inline void GetSteamNetworkingLocationPOPStringFromID(SteamNetw
 /// The POPID "dev" is used in non-production environments for testing.
 const SteamNetworkingPOPID k_SteamDatagramPOPID_dev = ((uint32)'d' << 16U) | ((uint32)'e' << 8U) | (uint32)'v';
 
+/// Utility class for printing a SteamNetworkingPOPID.
+struct SteamNetworkingPOPIDRender
+{
+    SteamNetworkingPOPIDRender(SteamNetworkingPOPID x)
+    {
+        GetSteamNetworkingLocationPOPStringFromID(x, buf);
+    }
+    inline const char *c_str() const
+    {
+        return buf;
+    }
+
+  private:
+    char buf[8];
+};
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Internal stuff
+#ifndef API_GEN
 
 // For code compatibility
 typedef SteamNetworkingMessage_t ISteamNetworkingMessage;
@@ -1295,31 +1761,32 @@ inline void SteamNetworkingMessage_t::Release()
 }
 
 #if defined(STEAMNETWORKINGSOCKETS_STATIC_LINK) || !defined(STEAMNETWORKINGSOCKETS_STEAMCLIENT)
-STEAMNETWORKINGSOCKETS_INTERFACE void SteamAPI_SteamNetworkingIPAddr_ToString(const SteamNetworkingIPAddr *pAddr,
-                                                                              char *buf, size_t cbBuf, bool bWithPort);
-STEAMNETWORKINGSOCKETS_INTERFACE bool SteamAPI_SteamNetworkingIPAddr_ParseString(SteamNetworkingIPAddr *pAddr,
-                                                                                 const char *pszStr);
-STEAMNETWORKINGSOCKETS_INTERFACE void SteamAPI_SteamNetworkingIdentity_ToString(const SteamNetworkingIdentity &identity,
-                                                                                char *buf, size_t cbBuf);
-STEAMNETWORKINGSOCKETS_INTERFACE bool SteamAPI_SteamNetworkingIdentity_ParseString(SteamNetworkingIdentity *pIdentity,
-                                                                                   size_t sizeofIdentity,
-                                                                                   const char *pszStr);
+STEAMNETWORKINGSOCKETS_INTERFACE void SteamNetworkingIPAddr_ToString(const SteamNetworkingIPAddr *pAddr, char *buf,
+                                                                     size_t cbBuf, bool bWithPort);
+STEAMNETWORKINGSOCKETS_INTERFACE bool SteamNetworkingIPAddr_ParseString(SteamNetworkingIPAddr *pAddr,
+                                                                        const char *pszStr);
+STEAMNETWORKINGSOCKETS_INTERFACE void SteamNetworkingIdentity_ToString(const SteamNetworkingIdentity *pIdentity,
+                                                                       char *buf, size_t cbBuf);
+STEAMNETWORKINGSOCKETS_INTERFACE bool SteamNetworkingIdentity_ParseString(SteamNetworkingIdentity *pIdentity,
+                                                                          size_t sizeofIdentity, const char *pszStr);
 inline void SteamNetworkingIPAddr::ToString(char *buf, size_t cbBuf, bool bWithPort) const
 {
-    SteamAPI_SteamNetworkingIPAddr_ToString(this, buf, cbBuf, bWithPort);
+    SteamNetworkingIPAddr_ToString(this, buf, cbBuf, bWithPort);
 }
 inline bool SteamNetworkingIPAddr::ParseString(const char *pszStr)
 {
-    return SteamAPI_SteamNetworkingIPAddr_ParseString(this, pszStr);
+    return SteamNetworkingIPAddr_ParseString(this, pszStr);
 }
 inline void SteamNetworkingIdentity::ToString(char *buf, size_t cbBuf) const
 {
-    SteamAPI_SteamNetworkingIdentity_ToString(*this, buf, cbBuf);
+    SteamNetworkingIdentity_ToString(this, buf, cbBuf);
 }
 inline bool SteamNetworkingIdentity::ParseString(const char *pszStr)
 {
-    return SteamAPI_SteamNetworkingIdentity_ParseString(this, sizeof(*this), pszStr);
+    return SteamNetworkingIdentity_ParseString(this, sizeof(*this), pszStr);
 }
 #endif
+
+#endif // #ifndef API_GEN
 
 #endif // #ifndef STEAMNETWORKINGTYPES

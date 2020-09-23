@@ -1,4 +1,4 @@
-//========= Copyright Â© 1996-2008, Valve LLC, All rights reserved. ============
+//========= Copyright © 1996-2008, Valve LLC, All rights reserved. ============
 //
 // Purpose: Class for tracking stats and achievements
 //
@@ -40,7 +40,7 @@ class CStatsAndAchievements
     // Constructor
     CStatsAndAchievements(IGameEngine *pGameEngine);
 
-    // Run a frame
+    // Run a frame. Does not need to run at full frame rate.
     void RunFrame();
 
     // Display the stats and achievements

@@ -1,4 +1,4 @@
-//====== Copyright Â© 1996-2014 Valve Corporation, All rights reserved. =======
+//====== Copyright © 1996-2014 Valve Corporation, All rights reserved. =======
 //
 // Purpose: interface to Steam Inventory
 //
@@ -370,16 +370,28 @@ class ISteamInventory
     virtual bool RemoveProperty(SteamInventoryUpdateHandle_t handle, SteamItemInstanceID_t nItemID,
                                 const char *pchPropertyName) = 0;
     // Accessor methods to set properties on items
+
+    STEAM_FLAT_NAME(SetPropertyString)
     virtual bool SetProperty(SteamInventoryUpdateHandle_t handle, SteamItemInstanceID_t nItemID,
                              const char *pchPropertyName, const char *pchPropertyValue) = 0;
+
+    STEAM_FLAT_NAME(SetPropertyBool)
     virtual bool SetProperty(SteamInventoryUpdateHandle_t handle, SteamItemInstanceID_t nItemID,
                              const char *pchPropertyName, bool bValue) = 0;
+
+    STEAM_FLAT_NAME(SetPropertyInt64)
     virtual bool SetProperty(SteamInventoryUpdateHandle_t handle, SteamItemInstanceID_t nItemID,
                              const char *pchPropertyName, int64 nValue) = 0;
+
+    STEAM_FLAT_NAME(SetPropertyFloat)
     virtual bool SetProperty(SteamInventoryUpdateHandle_t handle, SteamItemInstanceID_t nItemID,
                              const char *pchPropertyName, float flValue) = 0;
+
     // Submit the update request by handle
     virtual bool SubmitUpdateProperties(SteamInventoryUpdateHandle_t handle, SteamInventoryResult_t *pResultHandle) = 0;
+
+    STEAM_METHOD_DESC(Look up the given token and return a pseudo - Inventory item.)
+    virtual bool InspectItem(SteamInventoryResult_t *pResultHandle, const char *pchItemToken) = 0;
 };
 
 #define STEAMINVENTORY_INTERFACE_VERSION "STEAMINVENTORY_INTERFACE_V003"

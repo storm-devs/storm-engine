@@ -72,7 +72,8 @@ CStatsAndAchievements::CStatsAndAchievements(IGameEngine *pGameEngine)
 #pragma warning(pop)
 
 //-----------------------------------------------------------------------------
-// Purpose: Run a frame for the CStatsAndAchievements
+// Purpose: Run a frame for the CStatsAndAchievements. does not need to run at
+// full frame rate.
 //-----------------------------------------------------------------------------
 void CStatsAndAchievements::RunFrame()
 {

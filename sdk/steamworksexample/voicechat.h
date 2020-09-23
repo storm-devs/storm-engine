@@ -1,4 +1,4 @@
-//========= Copyright Â© 1996-2010, Valve LLC, All rights reserved. ============
+//========= Copyright © 1996-2010, Valve LLC, All rights reserved. ============
 //
 // Purpose: Class for P2P voice chat
 //
@@ -11,12 +11,11 @@
 #include "GameEngine.h"
 #include "Messages.h"
 #include "SpaceWar.h"
+#include "steam/isteamnetworkingsockets.h"
 
 typedef struct VoiceChatConnection_s
 {
-    EP2PSessionError eLastError; // ErrorNone means we have a session
     uint64 ulLastReceiveVoiceTime;
-    uint64 ulLastSentTime;
     HGAMEVOICECHANNEL hVoiceChannel; // engine voice channel for this player
     bool bActive;
 } VoiceChatConnection_t;
@@ -38,15 +37,11 @@ class CVoiceChat
 
     // chat engine
     void RunFrame();
-    bool HandleMessage(CSteamID fromSteamID, EMessage eMsg, const void *pMessage);
-    void SendMessageToAll(const void *pubData, uint32 cubData);
+    void HandleVoiceChatData(const void *pMessage);
+
+    HSteamNetConnection m_hConnServer;
 
   private:
-    STEAM_CALLBACK(CVoiceChat, OnP2PSessionRequest, P2PSessionRequest_t, m_CallbackP2PSessionRequest);
-    STEAM_CALLBACK(CVoiceChat, OnP2PSessionConnectFail, P2PSessionConnectFail_t, m_CallbackP2PSessionConnectFail);
-
-    void CheckConnections();
-
     // Pointer to engine instance (so we can play sound)
     IGameEngine *m_pGameEngine;
 

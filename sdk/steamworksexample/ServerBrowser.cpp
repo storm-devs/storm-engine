@@ -1,4 +1,4 @@
-//========= Copyright Â© 1996-2008, Valve LLC, All rights reserved. ============
+//========= Copyright © 1996-2008, Valve LLC, All rights reserved. ============
 //
 // Purpose: Class for handling finding servers, getting their details, and displaying
 // them inside the game
@@ -18,15 +18,15 @@ CGameServer::CGameServer(gameserveritem_t *pGameServerItem)
     m_unIPAddress = pGameServerItem->m_NetAdr.GetIP();
     m_nConnectionPort = pGameServerItem->m_NetAdr.GetConnectionPort();
     m_nPing = pGameServerItem->m_nPing;
-    strncpy(m_szMap, pGameServerItem->m_szMap, ARRAYSIZE(m_szMap));
-    strncpy(m_szGameDescription, pGameServerItem->m_szGameDescription, ARRAYSIZE(m_szGameDescription));
+    strncpy_safe(m_szMap, pGameServerItem->m_szMap, ARRAYSIZE(m_szMap));
+    strncpy_safe(m_szGameDescription, pGameServerItem->m_szGameDescription, ARRAYSIZE(m_szGameDescription));
     m_nPlayers = pGameServerItem->m_nPlayers;
     m_nMaxPlayers = pGameServerItem->m_nMaxPlayers;
     m_nBotPlayers = pGameServerItem->m_nBotPlayers;
     m_bPassword = pGameServerItem->m_bPassword;
     m_bSecure = pGameServerItem->m_bSecure;
     m_nServerVersion = pGameServerItem->m_nServerVersion;
-    strncpy(m_szServerName, pGameServerItem->GetName(), ARRAYSIZE(m_szServerName));
+    strncpy_safe(m_szServerName, pGameServerItem->GetName(), ARRAYSIZE(m_szServerName));
     sprintf_safe(m_szServerString, "%s (%i/%i) at %s ping(%d)", pGameServerItem->GetName(), pGameServerItem->m_nPlayers,
                  pGameServerItem->m_nMaxPlayers, pGameServerItem->m_NetAdr.GetConnectionAddressString(),
                  pGameServerItem->m_nPing);
@@ -99,14 +99,14 @@ void CServerBrowser::RefreshInternetServers()
     MatchMakingKeyValuePair_t pFilters[2];
     MatchMakingKeyValuePair_t *pFilter = pFilters;
 
-    strncpy(pFilters[0].m_szKey, "gamedir", sizeof(pFilters[0].m_szKey));
-    strncpy(pFilters[0].m_szValue, "spacewar", sizeof(pFilters[0].m_szValue));
+    strncpy_safe(pFilters[0].m_szKey, "gamedir", sizeof(pFilters[0].m_szKey));
+    strncpy_safe(pFilters[0].m_szValue, "spacewar", sizeof(pFilters[0].m_szValue));
 
-    strncpy(pFilters[1].m_szKey, "secure", sizeof(pFilters[1].m_szKey));
-    strncpy(pFilters[1].m_szValue, "1", sizeof(pFilters[1].m_szValue));
+    strncpy_safe(pFilters[1].m_szKey, "secure", sizeof(pFilters[1].m_szKey));
+    strncpy_safe(pFilters[1].m_szValue, "1", sizeof(pFilters[1].m_szValue));
 
-    // strncpy( pFilters[ 2 ].m_szKey, "gametype", sizeof(pFilters[ 1 ].m_szValue) );
-    // strncpy( pFilters[ 2 ].m_szValue, "dm", sizeof(pFilters[ 1 ].m_szValue) );
+    // strncpy_safe( pFilters[ 2 ].m_szKey, "gametype", sizeof(pFilters[ 1 ].m_szValue) );
+    // strncpy_safe( pFilters[ 2 ].m_szValue, "dm", sizeof(pFilters[ 1 ].m_szValue) );
 
     // bugbug jmccaskey - passing just the appid without filters results in getting all servers rather than
     // servers filtered by appid alone.  So, we'll use the filters to filter the results better.

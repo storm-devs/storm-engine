@@ -43,49 +43,6 @@ enum ESteamControllerPad
 };
 #endif
 
-enum EControllerSource
-{
-    k_EControllerSource_None,
-    k_EControllerSource_LeftTrackpad,
-    k_EControllerSource_RightTrackpad,
-    k_EControllerSource_Joystick,
-    k_EControllerSource_ABXY,
-    k_EControllerSource_Switch,
-    k_EControllerSource_LeftTrigger,
-    k_EControllerSource_RightTrigger,
-    k_EControllerSource_LeftBumper,
-    k_EControllerSource_RightBumper,
-    k_EControllerSource_Gyro,
-    k_EControllerSource_CenterTrackpad, // PS4
-    k_EControllerSource_RightJoystick,  // Traditional Controllers
-    k_EControllerSource_DPad,           // Traditional Controllers
-    k_EControllerSource_Key,            // Keyboards with scan codes - Unused
-    k_EControllerSource_Mouse,          // Traditional mouse - Unused
-    k_EControllerSource_LeftGyro,       // Secondary Gyro - Switch - Unused
-    k_EControllerSource_Count
-};
-
-enum EControllerSourceMode
-{
-    k_EControllerSourceMode_None,
-    k_EControllerSourceMode_Dpad,
-    k_EControllerSourceMode_Buttons,
-    k_EControllerSourceMode_FourButtons,
-    k_EControllerSourceMode_AbsoluteMouse,
-    k_EControllerSourceMode_RelativeMouse,
-    k_EControllerSourceMode_JoystickMove,
-    k_EControllerSourceMode_JoystickMouse,
-    k_EControllerSourceMode_JoystickCamera,
-    k_EControllerSourceMode_ScrollWheel,
-    k_EControllerSourceMode_Trigger,
-    k_EControllerSourceMode_TouchMenu,
-    k_EControllerSourceMode_MouseJoystick,
-    k_EControllerSourceMode_MouseRegion,
-    k_EControllerSourceMode_RadialMenu,
-    k_EControllerSourceMode_SingleButton,
-    k_EControllerSourceMode_Switches
-};
-
 // Note: Please do not use action origins as a way to identify controller types. There is no
 // guarantee that they will be added in a contiguous manner - use GetInputTypeForHandle instead
 // Versions of Steam that add new controller types in the future will extend this enum if you're

@@ -1,4 +1,4 @@
-//========= Copyright Â© 1996-2010, Valve LLC, All rights reserved. ============
+//========= Copyright © 1996-2010, Valve LLC, All rights reserved. ============
 //
 // Purpose:Class for P2P voice chat
 //
@@ -9,8 +9,6 @@
 #include "stdafx.h"
 
 CVoiceChat::CVoiceChat(IGameEngine *pGameEngine)
-    : m_CallbackP2PSessionRequest(this, &CVoiceChat::OnP2PSessionRequest),
-      m_CallbackP2PSessionConnectFail(this, &CVoiceChat::OnP2PSessionConnectFail)
 {
     m_pGameEngine = pGameEngine;
     m_bIsActive = false;
@@ -21,37 +19,6 @@ CVoiceChat::CVoiceChat(IGameEngine *pGameEngine)
 CVoiceChat::~CVoiceChat()
 {
     m_pGameEngine = NULL;
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: another user has sent us a packet - do we accept?
-//-----------------------------------------------------------------------------
-void CVoiceChat::OnP2PSessionRequest(P2PSessionRequest_t *pP2PSessionRequest)
-{
-    std::map<uint64, VoiceChatConnection_t>::iterator iter;
-    iter = m_MapConnections.find(pP2PSessionRequest->m_steamIDRemote.ConvertToUint64());
-    if (iter != m_MapConnections.end())
-    {
-        // we play with this user
-        iter->second.eLastError = k_EP2PSessionErrorNone; // our connection is now working
-
-        // the packet itself will come through when you call SteamNetworking()->ReadP2PPacket()
-        SteamNetworking()->AcceptP2PSessionWithUser(pP2PSessionRequest->m_steamIDRemote);
-    }
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: we send a packet to another user but it failed
-//-----------------------------------------------------------------------------
-void CVoiceChat::OnP2PSessionConnectFail(P2PSessionConnectFail_t *pP2PSessionConnectFail)
-{
-    std::map<uint64, VoiceChatConnection_t>::iterator iter;
-    iter = m_MapConnections.find(pP2PSessionConnectFail->m_steamIDRemote.ConvertToUint64());
-    if (iter != m_MapConnections.end())
-    {
-        // connection to that user failed
-        iter->second.eLastError = (EP2PSessionError)pP2PSessionConnectFail->m_eP2PSessionError;
-    }
 }
 
 //-----------------------------------------------------------------------------
@@ -77,11 +44,14 @@ void CVoiceChat::RunFrame()
 
             if (res == k_EVoiceResultOK && nBytesWritten > 0)
             {
-                // assemble message
+                // assemble message.  note that we don't fill in the SteamID
+                // here.  The server will know who sent
                 msg.SetDataLength(nBytesWritten);
                 memcpy(buffer, &msg, sizeof(msg));
 
-                SendMessageToAll(buffer, sizeof(msg) + nBytesWritten);
+                // Send a message to the server with the data, server will broadcast this data on to all other clients.
+                SteamNetworkingSockets()->SendMessageToConnection(m_hConnServer, buffer, sizeof(msg) + nBytesWritten,
+                                                                  k_nSteamNetworkingSend_UnreliableNoDelay, nullptr);
 
                 m_ulLastTimeTalked = m_pGameEngine->GetGameTickCount();
 
@@ -104,55 +74,45 @@ void CVoiceChat::RunFrame()
                 }
             }
         }
-
-        CheckConnections();
     }
 }
 
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-bool CVoiceChat::HandleMessage(CSteamID fromSteamID, EMessage eMsg, const void *pMessage)
+void CVoiceChat::HandleVoiceChatData(const void *pMessage)
 {
-    if (eMsg != k_EMsgVoiceChatPing && eMsg != k_EMsgVoiceChatData)
-        return false; // we don't handle these messages
+    const MsgVoiceChatData_t *pMsgVoiceData = (const MsgVoiceChatData_t *)pMessage;
+    CSteamID fromSteamID = pMsgVoiceData->GetSteamID();
 
     std::map<uint64, VoiceChatConnection_t>::iterator iter;
     iter = m_MapConnections.find(fromSteamID.ConvertToUint64());
-    if (iter != m_MapConnections.end())
+    if (iter == m_MapConnections.end())
+        return;
+
+    VoiceChatConnection_t &chatClient = iter->second;
+    chatClient.ulLastReceiveVoiceTime = m_pGameEngine->GetGameTickCount();
+
+    // Uncompress the voice data, buffer holds up to 1 second of data
+    uint8 pbUncompressedVoice[VOICE_OUTPUT_SAMPLE_RATE * BYTES_PER_SAMPLE];
+    uint32 numUncompressedBytes = 0;
+    const uint8 *pVoiceData = (const uint8 *)pMessage;
+    pVoiceData += sizeof(MsgVoiceChatData_t);
+
+    EVoiceResult res =
+        SteamUser()->DecompressVoice(pVoiceData, pMsgVoiceData->GetDataLength(), pbUncompressedVoice,
+                                     sizeof(pbUncompressedVoice), &numUncompressedBytes, VOICE_OUTPUT_SAMPLE_RATE);
+
+    if (res == k_EVoiceResultOK && numUncompressedBytes > 0)
     {
-        VoiceChatConnection_t &chatClient = iter->second;
-        chatClient.eLastError = k_EP2PSessionErrorNone; // our connection is working
-
-        if (eMsg == k_EMsgVoiceChatData)
+        // play it again Sam
+        if (chatClient.hVoiceChannel == 0)
         {
-            const MsgVoiceChatData_t *pMsgVoiceData = (const MsgVoiceChatData_t *)pMessage;
-            chatClient.ulLastReceiveVoiceTime = m_pGameEngine->GetGameTickCount();
-
-            // Uncompress the voice data, buffer holds up to 1 second of data
-            uint8 pbUncompressedVoice[VOICE_OUTPUT_SAMPLE_RATE * BYTES_PER_SAMPLE];
-            uint32 numUncompressedBytes = 0;
-            const uint8 *pVoiceData = (const uint8 *)pMessage;
-            pVoiceData += sizeof(MsgVoiceChatData_t);
-
-            EVoiceResult res = SteamUser()->DecompressVoice(pVoiceData, pMsgVoiceData->GetDataLength(),
-                                                            pbUncompressedVoice, sizeof(pbUncompressedVoice),
-                                                            &numUncompressedBytes, VOICE_OUTPUT_SAMPLE_RATE);
-
-            if (res == k_EVoiceResultOK && numUncompressedBytes > 0)
-            {
-                // play it again Sam
-                if (chatClient.hVoiceChannel == 0)
-                {
-                    chatClient.hVoiceChannel = m_pGameEngine->HCreateVoiceChannel();
-                }
-
-                m_pGameEngine->AddVoiceData(chatClient.hVoiceChannel, pbUncompressedVoice, numUncompressedBytes);
-            }
+            chatClient.hVoiceChannel = m_pGameEngine->HCreateVoiceChannel();
         }
-    }
 
-    return true;
+        m_pGameEngine->AddVoiceData(chatClient.hVoiceChannel, pbUncompressedVoice, numUncompressedBytes);
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -192,9 +152,7 @@ void CVoiceChat::MarkPlayerAsActive(CSteamID steamID)
     OutputDebugString( szText ); */
 
     VoiceChatConnection_t session;
-    session.eLastError = k_EP2PSessionErrorTimeout;
     session.ulLastReceiveVoiceTime = 0;
-    session.ulLastSentTime = 0;
     session.hVoiceChannel = 0;
     session.bActive = true;
 
@@ -221,13 +179,10 @@ bool CVoiceChat::IsPlayerTalking(CSteamID steamID)
         iter = m_MapConnections.find(steamID.ConvertToUint64());
         if (iter != m_MapConnections.end())
         {
-            if (iter->second.eLastError == k_EP2PSessionErrorNone)
+            if ((iter->second.ulLastReceiveVoiceTime + 250) > m_pGameEngine->GetGameTickCount())
             {
-                if ((iter->second.ulLastReceiveVoiceTime + 250) > m_pGameEngine->GetGameTickCount())
-                {
-                    // user talked less then 250msec ago, assume still active
-                    return true;
-                }
+                // user talked less then 250msec ago, assume still active
+                return true;
             }
         }
     }
@@ -267,7 +222,6 @@ void CVoiceChat::StopVoiceChat()
         {
             CSteamID steamID(iter->first);
             m_pGameEngine->DestroyVoiceChannel(iter->second.hVoiceChannel);
-            SteamNetworking()->CloseP2PSessionWithUser(steamID);
         }
 
         m_MapConnections.clear();
@@ -281,66 +235,5 @@ void CVoiceChat::StopVoiceChat()
         SteamUser()->StopVoiceRecording();
 
         m_bIsActive = false;
-    }
-}
-
-//-----------------------------------------------------------------------------
-// Purpose:
-//-----------------------------------------------------------------------------
-void CVoiceChat::CheckConnections()
-{
-    const uint64 ulTimeNow = m_pGameEngine->GetGameTickCount();
-    const uint64 ulTimeoutLimit = 10 * 1000; // 10 seconds
-    //
-    std::map<uint64, VoiceChatConnection_t>::iterator iter;
-    for (iter = m_MapConnections.begin(); iter != m_MapConnections.end(); ++iter)
-    {
-        if (iter->second.bActive)
-        {
-            const EP2PSessionError eLastError = iter->second.eLastError;
-            CSteamID steamID(iter->first);
-
-            if (eLastError == k_EP2PSessionErrorNone || eLastError == k_EP2PSessionErrorTimeout)
-            {
-                if (iter->second.ulLastSentTime + ulTimeoutLimit < ulTimeNow)
-                {
-                    // time for a ping
-                    MsgVoiceChatPing_t msg;
-                    SteamNetworking()->SendP2PPacket(steamID, &msg, sizeof(msg), k_EP2PSendUnreliable);
-                    iter->second.ulLastSentTime = ulTimeNow;
-                }
-            }
-        }
-        else
-        {
-            // found inactive connection, destroy
-            CSteamID steamID(iter->first);
-            SteamNetworking()->CloseP2PSessionWithUser(steamID);
-            m_pGameEngine->DestroyVoiceChannel(iter->second.hVoiceChannel);
-
-            m_MapConnections.erase(iter);
-            break; // break since the iterator became bad
-        }
-    }
-}
-
-//-----------------------------------------------------------------------------
-// Purpose:
-//-----------------------------------------------------------------------------
-void CVoiceChat::SendMessageToAll(const void *pubData, uint32 cubData)
-{
-    const uint64 ulTimeNow = m_pGameEngine->GetGameTickCount();
-    //
-    std::map<uint64, VoiceChatConnection_t>::iterator iter;
-    for (iter = m_MapConnections.begin(); iter != m_MapConnections.end(); ++iter)
-    {
-        const EP2PSessionError eLastError = iter->second.eLastError;
-        CSteamID steamID(iter->first);
-
-        if (eLastError == k_EP2PSessionErrorNone)
-        {
-            SteamNetworking()->SendP2PPacket(steamID, pubData, cubData, k_EP2PSendUnreliableNoDelay);
-            iter->second.ulLastSentTime = ulTimeNow;
-        }
     }
 }

@@ -1,12 +1,74 @@
 ================================================================
 
-Copyright © 1996-2019, Valve Corporation, All rights reserved.
+Copyright © 1996-2020, Valve Corporation, All rights reserved.
 
 ================================================================
 
 
 Welcome to the Steamworks SDK.  For documentation please see our partner 
 website at: http://partner.steamgames.com
+
+
+----------------------------------------------------------------
+v1.50 29th August 2020
+----------------------------------------------------------------
+* Added ISteamUtils::InitFilterText() and ISteamUtils::FilterText() which allow a game to filter content and user-generated text to comply with China legal requirements, and reduce profanity and slurs based on user settings.
+* Added ISteamNetworkingMessages, a new non-connection-oriented API, similar to UDP.  This interface is intended to make it easy to port existing UDP code while taking advantage of the features provided by ISteamNetworkingSockets, especially Steam Datagram Relay (SDR).
+* Added poll groups to ISteamNetworkingSockets.  Poll groups are a way to receive messages from many different connections at a time.
+* ISteamNetworkingSockets::ReceiveMessagesOnListenSocket has been removed.  (Use poll groups instead.)
+* Added symmetric connect mode to ISteamNetworkingSockets.  This can be used to solve the coordination problem of establishing a single connection between two peers, when both peers may initiating the connection at the same time and neither peer is the “server” or “client”.
+* ISteamNetworking is deprecated and may be removed in a future version of the SDK.  Please use ISteamNetworkingSockets or ISteamNetworkingMessages instead.
+
+
+----------------------------------------------------------------
+v1.49 12th June 2020
+----------------------------------------------------------------
+* Added ISteamApps::BIsTimedTrial() which allows a game to check if user only has limited playtime
+* Added ISteamFriends::RegisterProtocolInOverlayBrowser() which will enable dispatching callbacks when the overlay web browser navigates to a registered custom protocol, such as “mygame://<callback data>”
+* Added ISteamuserStats::GetAchievementProgressLimits() which lets the game query at run-time the progress-based achievement’s bounds as set by the developers in the Steamworks application settings
+* Added tool to demonstrate processing the steam.signatures file that comes in the steam client package.
+
+
+----------------------------------------------------------------
+v1.48a 26th March 2020
+----------------------------------------------------------------
+
+macOS
+* Fixed notarization issues caused by missing code signature of libsdkencryptedappticket.dylib
+
+
+----------------------------------------------------------------
+v1.48 12th February 2020
+----------------------------------------------------------------
+
+ISteamNetworkingSockets
+* Added the concept of a "poll group", which is a way to receive messages from many connections at once, efficiently.
+* ReceiveMessagesOnListenSocket was deleted.  To get the same functionality, create a poll group, and then add connections to this poll group when accepting the connection.
+
+Flat interface redesign
+* Fixed many missing interfaces and types.
+* All versions of overloaded functions are now available, using distinct names.
+* There are now simple, global versioned functions to fetch the interfaces.  No more need to mess with HSteamPipes or HSteamUsers directly.
+* The json file now has much more detailed information and several errors have been fixed.
+* steam_api_interop.cs has been removed and will no longer be supported.
+* There is a new manual dispatch API for callbacks, which works similarly to a windows event loop.  This is a replacement for the existing callback registeration and dispatch mechanisms, which which are nice in C++ but awkward to use outside of C++.
+
+
+----------------------------------------------------------------
+v1.47 3rd December 2019
+----------------------------------------------------------------
+
+macOS
+* Updated steamcmd binaries to be 64-bit
+
+ISteamNetworkingSockets
+* Added API to set configuration options atomically, at time of creation of the listen socket or connection
+* Added API to send multiple messages efficiently, without copying the message payload
+* Added API for relayed P2P connections where signaling/rendezvous goes through your own custom backend instead of the Steam servers
+
+ISteamRemotePlay
+* Added a function to invite friends to play via Remote Play Together
+
 
 ----------------------------------------------------------------
 v1.46 26th July 2019

@@ -1,4 +1,4 @@
-//========= Copyright Â© 1996-2008, Valve LLC, All rights reserved. ============
+//========= Copyright © 1996-2008, Valve LLC, All rights reserved. ============
 //
 // Purpose: Main class for the space war game server
 //
@@ -11,9 +11,12 @@
 #include <string>
 
 #include "GameEngine.h"
+#include "Messages.h"
 #include "Ship.h"
 #include "SpaceWar.h"
 #include "Sun.h"
+#include "steam/isteamnetworkingsockets.h"
+#include "steam/steamclientpublic.h"
 
 // Forward declaration
 class CSpaceWarClient;
@@ -23,6 +26,7 @@ struct ClientConnectionData_t
     bool m_bActive;               // Is this slot in use? Or is it available for new connections?
     CSteamID m_SteamIDUser;       // What is the steamid of the player?
     uint64 m_ulTickCountLastData; // What was the last time we got data from the player?
+    HSteamNetConnection m_hConn;  // The handle for the connection to the player
 };
 
 class CSpaceWarServer
@@ -90,8 +94,8 @@ class CSpaceWarServer
     STEAM_GAMESERVER_CALLBACK(CSpaceWarServer, OnValidateAuthTicketResponse, ValidateAuthTicketResponse_t);
 
     // client connection state
-    STEAM_GAMESERVER_CALLBACK(CSpaceWarServer, OnP2PSessionRequest, P2PSessionRequest_t);
-    STEAM_GAMESERVER_CALLBACK(CSpaceWarServer, OnP2PSessionConnectFail, P2PSessionConnectFail_t);
+    // All connection changes are handled through this callback
+    STEAM_GAMESERVER_CALLBACK(CSpaceWarServer, OnNetConnectionStatusChanged, SteamNetConnectionStatusChangedCallback_t);
 
     // Function to tell Steam about our servers details
     void SendUpdatedServerDetailsToSteam();
@@ -105,9 +109,8 @@ class CSpaceWarServer
     // Send data to a client at the given pending index
     bool BSendDataToPendingClient(uint32 uShipIndex, char *pData, uint32 nSizeOfData);
 
-    // Connect a client, will send a success/failure response to the client
-    void OnClientBeginAuthentication(CSteamID steamIDClient, void *pToken, uint32 uTokenLen);
-
+    void OnClientBeginAuthentication(CSteamID steamIDClient, HSteamNetConnection connectionID, void *pToken,
+                                     uint32 uTokenLen);
     // Handles authentication completing for a client
     void OnAuthCompleted(bool bAuthSuccess, uint32 iPendingAuthIndex);
 
@@ -115,10 +118,13 @@ class CSpaceWarServer
     void AddPlayerShip(uint32 uShipPosition);
 
     // Removes a player from the server
-    void RemovePlayerFromServer(uint32 uShipPosition);
+    void RemovePlayerFromServer(uint32 uShipPosition, EDisconnectReason reason);
 
     // Send world update to all clients
     void SendUpdateDataToAllClients();
+
+    // Send the same message to all clients, except the ignored connection if any
+    void SendMessageToAll(HSteamNetConnection hConnIgnore, const void *pubData, uint32 cubData);
 
     // Track whether our server is connected to Steam ok (meaning we can restrict who plays based on
     // ownership and VAC bans, etc...)
@@ -159,6 +165,12 @@ class CSpaceWarServer
 
     // Vector to keep track of client connections which are pending auth
     ClientConnectionData_t m_rgPendingClientData[MAX_PLAYERS_PER_SERVER];
+
+    // Socket to listen for new connections on
+    HSteamListenSocket m_hListenSocket;
+
+    // Poll group used to receive messages from all clients at once
+    HSteamNetPollGroup m_hNetPollGroup;
 };
 
 #endif // SPACEWARSERVER_H

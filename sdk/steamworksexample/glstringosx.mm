@@ -115,39 +115,48 @@
 // generates the texture without drawing texture to current context
 - (void) genTexture
 {
-	NSImage * image;
-	NSBitmapImageRep * bitmap;
-	
 	NSSize previousSize = texSize;
-	
-	image = [[NSImage alloc] initWithSize:border.size];
-	
-	[image lockFocus];
-	[[NSGraphicsContext currentContext] setShouldAntialias:YES];
-	
-	[textColor set]; 
+
+	NSBitmapImageRep *bitmap = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:NULL
+																	   pixelsWide:border.size.width
+																	   pixelsHigh:border.size.height
+																	bitsPerSample:8
+																  samplesPerPixel:4
+																		 hasAlpha:YES
+																		 isPlanar:NO
+																   colorSpaceName:NSCalibratedRGBColorSpace
+																	  bytesPerRow:border.size.width * 4
+																	 bitsPerPixel:0];
+
+	[textColor set];
 
 	float x = 0.0f;
 	float y = (border.size.height - [string size].height)/2;
-	
+
 	if ( flags & TEXTPOS_CENTER )
 		x = (border.size.width - [string size].width)/2;
 	else if ( flags & TEXTPOS_RIGHT )
 		x = border.size.width - [string size].width;
-	
+
+	[NSGraphicsContext saveGraphicsState];
+	NSGraphicsContext *context = [NSGraphicsContext graphicsContextWithBitmapImageRep:bitmap];
+	[context setShouldAntialias:YES];
+	[NSGraphicsContext setCurrentContext:context];
+
 	[string drawAtPoint:NSMakePoint(x, y)]; // draw at offset position
-	bitmap = [[NSBitmapImageRep alloc] initWithFocusedViewRect:NSMakeRect (0.0f, 0.0f, border.size.width, border.size.height)];
-	[image unlockFocus];
+
+	[NSGraphicsContext restoreGraphicsState];
+
 	texSize.width = [bitmap pixelsWide];
 	texSize.height = [bitmap pixelsHigh];
-	
-	if ( (cgl_ctx = CGLGetCurrentContext () ) ) 
+
+	if ( (cgl_ctx = CGLGetCurrentContext () ) )
 	{ // if we successfully retrieve a current context (required)
 		glPushAttrib(GL_TEXTURE_BIT);
 		if (0 == texName) glGenTextures (1, &texName);
 		glBindTexture (GL_TEXTURE_RECTANGLE_EXT, texName);
 		if (NSEqualSizes(previousSize, texSize)) {
-			glTexSubImage2D(GL_TEXTURE_RECTANGLE_EXT,0,0,0,texSize.width,texSize.height,[bitmap hasAlpha] ? GL_RGBA : GL_RGB,GL_UNSIGNED_BYTE,[bitmap bitmapData]);
+			glTexSubImage2D(GL_TEXTURE_RECTANGLE_EXT, 0, 0, 0, texSize.width, texSize.height, [bitmap hasAlpha] ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, [bitmap bitmapData]);
 		} else {
 			glTexParameteri(GL_TEXTURE_RECTANGLE_EXT, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_RECTANGLE_EXT, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -161,8 +170,7 @@
 	
 	}
 	[bitmap release];
-	[image release];
-	
+
 	requiresUpdate = NO;
 }
 

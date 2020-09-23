@@ -434,6 +434,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\RemotePlay.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\RemoteStorage.cpp"
 					>
 				</File>
@@ -557,6 +561,10 @@
 				</File>
 				<File
 					RelativePath=".\QuitMenu.h"
+					>
+				</File>
+				<File
+					RelativePath=".\RemotePlay.h"
 					>
 				</File>
 				<File
