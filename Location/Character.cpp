@@ -4935,7 +4935,7 @@ void Character::FindNearCharacters(MESSAGE &message)
         array->SetElementsNum(n);
     char buf[64];
     long i = 0, nn = 0;
-    for (long i = 0, nn = 0; i < n; i++)
+    for (i = 0, nn = 0; i < n; i++)
     {
         //Информация
         Supervisor::FindCharacter &fc = fndCharacter[i];

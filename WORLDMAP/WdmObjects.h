@@ -139,6 +139,8 @@ class WdmObjects
     char coordinate[128]; // для вывода строки координат
     char stCoordinate[128];
 
+    float resizeRatio; // для ресайза интерфейсов
+
     float worldSizeX; //Размер мира по X
     float worldSizeZ; //Размер мира по Z
 

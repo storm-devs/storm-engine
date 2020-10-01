@@ -43,6 +43,7 @@ class WdmWindUI : public WdmInterfaceObject
     char month[12][128];
     long txCoord;
     long txNationFlag;
+    float resizeRatio;
 };
 
 #endif

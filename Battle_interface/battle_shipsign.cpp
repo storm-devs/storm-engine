@@ -197,7 +197,9 @@ void BIShipIcon::Init(ATTRIBUTES *pRoot, ATTRIBUTES *pA)
             m_idSailorFont = m_pRS->LoadFont(pcTmp);
         m_dwSailorFontColor = pA->GetAttributeAsDword("sailorfontcolor", m_dwSailorFontColor);
         m_fSailorFontScale = pA->GetAttributeAsFloat("sailorfontscale", m_fSailorFontScale);
-
+        pcTmp = pA->GetAttribute("sailorfontoffset");
+        if (pcTmp)
+            sscanf(pcTmp, "%f,%f", &m_SailorFontOffset.x, &m_SailorFontOffset.y);
         pcTmp = pA->GetAttribute("backtexturename");
         if (pcTmp)
             m_nBackTextureID = m_pRS->TextureCreate(pcTmp);

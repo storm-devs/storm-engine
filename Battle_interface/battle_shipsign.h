@@ -117,7 +117,7 @@ class BIShipIcon
     long m_idSailorFont;
     dword m_dwSailorFontColor;
     float m_fSailorFontScale;
-    POINT m_SailorFontOffset;
+    FPOINT m_SailorFontOffset;
 
     bool m_bMakeUpdate;
     bool m_bActive;

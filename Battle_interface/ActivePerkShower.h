@@ -47,6 +47,7 @@ class ActivePerkShower : public ENTITY
     typedef FRECT _SHOW_PLACE;
     _SHOW_PLACE *m_pShowPlaces;
     bool CreateShowPlaces(ATTRIBUTES *pAPlacesRoot);
+    void RefreshShowPlaces(ATTRIBUTES *pAPlacesRoot);
 
     int m_nIShowQ;
     struct _PICTURE_DESCR

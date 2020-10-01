@@ -6,11 +6,18 @@
 #include "system_log.h"
 #include <windows.h>
 
+#include <crtdbg.h>
+#include <dbghelp.h>
+#include <stdio.h>
+#include <tchar.h>
+
 #define def_width 600
 #define def_height 400
 
 #include "steam_api.h"
 #pragma comment(lib, "steam_api.lib")
+
+#pragma comment(lib, "dbghelp.lib")
 
 HWND hMain;
 HINSTANCE hInst;
@@ -52,6 +59,7 @@ LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 void ProcessKeys(HWND hwnd, int code, int Press);
 void EmergencyExit();
 int Alert(const char *lpCaption, const char *lpText);
+void CreateMiniDump(EXCEPTION_POINTERS *pep);
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
 {
@@ -65,26 +73,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     fio = &File_Service;
     _CORE_API->fio = &File_Service;
     _VSYSTEM_API = &System_Api;
-    /*
-    #ifdef isSteam
-        if ( SteamAPI_RestartAppIfNecessary( 223330 ) )
-        {
-            return EXIT_FAILURE;
-        }
 
-
-        if ( !SteamAPI_Init() )
-        {
-            Alert( "Fatal Error", "Steam must be running to play this game (SteamAPI_Init() failed).\n" );
-            return EXIT_FAILURE;
-        }
-        else
-        {
-            _CORE_API->InitAchievements();
-            _CORE_API->InitSteamDLC();
-        }
-    #endif
-    */
     if (szCmdLine)
     {
         if (szCmdLine[0])
@@ -100,8 +89,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     dword dwMaxFPS = 0;
     if (ini)
     {
-        // if(ini->GetLong("stats","memory_stats",0) != 0) Memory_Service.CollectInfo(true);
-        // else Memory_Service.CollectInfo(false);
         if (ini->GetLong("stats", "memory_stats", 0) != 0)
             bValue = true;
         else
@@ -109,21 +96,27 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
         ini->ReadString(0, "mem_profile", sMemProfileFileName, sizeof(sMemProfileFileName), "");
 
         dwMaxFPS = (dword)ini->GetLong(0, "max_fps", 0);
+
         // eddy. уберем читы
         // bDebugWindow = ini->GetLong(0, "DebugWindow", 0) == 1;
         // bAcceleration = ini->GetLong(0, "Acceleration", 0) == 1;
         // bBackspaceExit = ini->GetLong(0, "BackSpaceExit", 0) == 1;
+
         bTraceFilesOff = ini->GetLong(0, "tracefilesoff", 0) == 1;
         if (ini->GetLong(0, "Steam", 1) != 0)
+        {
             bSteam = true;
+        }
         else
+        {
             bSteam = false;
-
-        // gdi_display.Print("isSteam %d", bSteam);
+        }
 
         bFirstLaunch = ini->GetLong(0, "firstlaunch", 1) != 0;
         if (bFirstLaunch)
+        {
             ini->WriteLong(0, "firstlaunch", 0);
+        }
 
         delete ini;
     }
@@ -139,7 +132,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
 
         if (!SteamAPI_Init())
         {
-            Alert("Fatal Error", "Steam must be running to play this game (SteamAPI_Init() failed).\n");
+            Alert("Fatal Error", "Steam must be running to play this game - SteamAPI_Init() failed!\n");
             return EXIT_FAILURE;
         }
         else
@@ -168,9 +161,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
         }
     }
 
-    //*/
-
-    // Memory_Service.CollectInfo(true);
     _CORE_API->SetExceptions(_X_NO_MEM | _X_NO_FILE_READ);
 
     Control_Stack.Init();
@@ -194,9 +184,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     wndclass.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
     RegisterClassEx(&wndclass);
 
-    hwnd = CreateWindow(AClass, AClass, WS_POPUP,
-                        // WS_POPUP|WS_CAPTION|WS_BORDER,
-                        0, 0, def_width, def_height, NULL, NULL, hInstance, NULL);
+    hwnd = CreateWindow(AClass, AClass, WS_POPUP, 0, 0, def_width, def_height, NULL, NULL, hInstance, NULL);
     hMain = hwnd;
 
     gdi_display.Init(hInstance, hwnd, def_width, def_height);
@@ -212,7 +200,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     try
     {
 #endif
-
         while (true)
         {
             if (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
@@ -231,9 +218,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
             {
 #ifndef EX_OFF
                 try
-                {
+#else
+            __try
 #endif
-
+                {
                     if (bActive || bNetActive)
                     {
                         if (dwMaxFPS)
@@ -249,7 +237,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
                         if (!Run_result)
                         {
                             Core.CleanUp();
-                            gdi_display.Print("Unloading");
                             gdi_display.Switch(true);
                             if (System_Api.Exceptions || System_Api.ExceptionsNF)
                             {
@@ -263,35 +250,40 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
                                 gdi_display.Print("See log file for details");
                                 Sleep(ERROR_MESSAGE_DELAY);
                             }
-                            gdi_display.Print("Close");
                             System_Hold = true;
                             SendMessage(hwnd, WM_CLOSE, 0, 0L);
                         }
                     }
                     else
-                        Sleep(50);
-#ifndef EX_OFF
-                }
-                catch (_EXS xobj)
-                {
-                    trace("");
-                    switch (xobj.xtype)
                     {
-                    case FATAL:
-                        EmergencyExit();
-                        break;
-                    case NON_FATAL:
-                        Core.TraceCurrent();
-                        System_Api.SetXNF();
-                        gdi_display.Print("EXCEPTION( non fatal ) : %s", xobj.string);
-                        break;
+                        Sleep(50);
                     }
-                    trace("");
                 }
-                catch (...)
+#ifdef EX_OFF
+                __except (CreateMiniDump(GetExceptionInformation()), EXCEPTION_EXECUTE_HANDLER)
                 {
-                    EmergencyExit();
                 }
+#else
+            catch (_EXS xobj)
+            {
+                trace("");
+                switch (xobj.xtype)
+                {
+                case FATAL:
+                    EmergencyExit();
+                    break;
+                case NON_FATAL:
+                    Core.TraceCurrent();
+                    System_Api.SetXNF();
+                    gdi_display.Print("EXCEPTION( non fatal ) : %s", xobj.string);
+                    break;
+                }
+                trace("");
+            }
+            catch (...)
+            {
+                EmergencyExit();
+            }
 #endif
             }
         }
@@ -317,20 +309,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
             delete ini;
         }
     }
-#ifdef isSteeam
-    // Shutdown the SteamAPI
-    SteamAPI_Shutdown();
-    _CORE_API->DeleteAchievements();
-    _CORE_API->DeleteSteamDLC();
-#endif
+    if (bSteam)
+    {
+        // Shutdown the SteamAPI
+        SteamAPI_Shutdown();
+        _CORE_API->DeleteAchievements();
+        _CORE_API->DeleteSteamDLC();
+    }
     Core.ReleaseBase();
 
     ClipCursor(0);
-    trace("System exit and cleanup:");
+    trace("System exit and cleanup :");
     trace("Mem state: User memory: %d  MSSystem: %d  Blocks: %d", Memory_Service.Allocated_memory_user,
           Memory_Service.Allocated_memory_system, Memory_Service.Blocks);
-
-    //	Memory_Service.DumpMemoryState();
 
     Memory_Service.GlobalFree();
 
@@ -370,7 +361,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
             break;
 
         case WM_ACTIVATEAPP:
-            //			gdi_display.Print("Activate app");
             break;
 
         case WM_KEYDOWN:
@@ -427,8 +417,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     {
         gdi_display.Print("ERROR in WndProc: System halted");
         System_Hold = true;
-
-    } //*/
+    }
 #endif
 
     return DefWindowProc(hwnd, iMsg, wParam, lParam);
@@ -438,7 +427,6 @@ void ProcessKeys(HWND hwnd, int code, int Press)
 {
     switch (code)
     {
-    // case VK_ESCAPE:
     case VK_BACK:
         if (bBackspaceExit)
         {
@@ -508,4 +496,40 @@ void EmergencyExit()
 int Alert(const char *lpCaption, const char *lpText)
 {
     return ::MessageBox(NULL, lpText, lpCaption, MB_OK);
+}
+
+void CreateMiniDump(EXCEPTION_POINTERS *pep)
+{
+    // Open the file
+    HANDLE hFile = CreateFile(_T("CCS_dump.dmp"), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS,
+                              FILE_ATTRIBUTE_NORMAL, NULL);
+
+    if ((hFile != NULL) && (hFile != INVALID_HANDLE_VALUE))
+    {
+        // Create the minidump
+        MINIDUMP_EXCEPTION_INFORMATION mdei;
+
+        mdei.ThreadId = GetCurrentThreadId();
+        mdei.ExceptionPointers = pep;
+        mdei.ClientPointers = FALSE;
+
+        MINIDUMP_TYPE mdt =
+            (MINIDUMP_TYPE)(MiniDumpWithFullMemory | MiniDumpWithFullMemoryInfo | MiniDumpWithHandleData |
+                            MiniDumpWithThreadInfo | MiniDumpWithUnloadedModules);
+
+        BOOL rv =
+            MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, mdt, (pep != 0) ? &mdei : 0, 0, 0);
+
+        if (!rv)
+            _tprintf(_T("MiniDumpWriteDump failed. Error: %u \n"), GetLastError());
+        else
+            _tprintf(_T("Minidump created.\n"));
+
+        // Close the file
+        CloseHandle(hFile);
+    }
+    else
+    {
+        _tprintf(_T("CreateFile failed. Error: %u \n"), GetLastError());
+    }
 }

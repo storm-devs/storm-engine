@@ -82,6 +82,9 @@ dword _cdecl ActivePerkShower::ProcessMessage(MESSAGE &message)
             DelIconFromList(pA);
     }
     break;
+    case MSG_ACTIVE_PERK_ICON_REFRESH:
+        RefreshShowPlaces(AttributesPointer->GetAttributeClass("ShowParam"));
+        break;
     }
     return 0;
 }
@@ -129,7 +132,18 @@ bool ActivePerkShower::CreateShowPlaces(ATTRIBUTES *pAPlacesRoot)
 {
     if (pAPlacesRoot == null)
         return false;
+
+    RefreshShowPlaces(pAPlacesRoot);
+
+    return InitCommonBuffers();
+}
+
+void ActivePerkShower::RefreshShowPlaces(ATTRIBUTES *pAPlacesRoot)
+{
     ATTRIBUTES *pAttr;
+
+    if (m_pShowPlaces)
+        DELETE(m_pShowPlaces);
 
     m_nIconWidth = 64;
     m_nIconHeight = 64;
@@ -188,8 +202,6 @@ bool ActivePerkShower::CreateShowPlaces(ATTRIBUTES *pAPlacesRoot)
             m_pShowPlaces[idx].bottom = (float)(m_pShowPlaces[idx].top + m_nIconHeight);
         }
     }
-
-    return InitCommonBuffers();
 }
 
 bool ActivePerkShower::InitIconsList(ATTRIBUTES *pAIconsRoot)

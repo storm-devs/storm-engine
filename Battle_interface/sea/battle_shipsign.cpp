@@ -185,12 +185,21 @@ void BIShipIcon::Init(ATTRIBUTES *pRoot, ATTRIBUTES *pA)
             m_idSailorFont = m_pRS->LoadFont(pcTmp);
         m_dwSailorFontColor = pA->GetAttributeAsDword("sailorfontcolor", m_dwSailorFontColor);
         m_fSailorFontScale = pA->GetAttributeAsFloat("sailorfontscale", m_fSailorFontScale);
+        // ugeen 150920
+        pcTmp = pA->GetAttribute("sailorfontoffset");
+        if (pcTmp)
+            sscanf(pcTmp, "%f,%f", &m_SailorFontOffset.x, &m_SailorFontOffset.y);
 
+        // ugeen 150920
         pcTmp = pA->GetAttribute("shipnamefontid");
         if (pcTmp)
             m_idShipNameFont = m_pRS->LoadFont(pcTmp);
         m_dwShipNameFontColor = pA->GetAttributeAsDword("shipnamefontcolor", m_dwShipNameFontColor);
         m_fShipNameFontScale = pA->GetAttributeAsFloat("shipnamefontscale", m_fShipNameFontScale);
+        // ugeen 150920
+        pcTmp = pA->GetAttribute("shipnamefontoffset");
+        if (pcTmp)
+            sscanf(pcTmp, "%f,%f", &m_ShipNameFontOffset.x, &m_ShipNameFontOffset.y);
 
         pcTmp = pA->GetAttribute("backtexturename");
         if (pcTmp)

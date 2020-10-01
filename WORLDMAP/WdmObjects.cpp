@@ -50,6 +50,7 @@ WdmObjects::WdmObjects() : models(_FL_)
     }
     strcpy(coordinate, "N -- --' W -- --'");
     strcpy(stCoordinate, "Coordinates");
+    resizeRatio = 1.0f;
 }
 
 WdmObjects::~WdmObjects()

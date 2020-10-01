@@ -25,10 +25,13 @@ CXI_CHECKBUTTONS::~CXI_CHECKBUTTONS()
 void CXI_CHECKBUTTONS::Draw(bool bSelected, dword Delta_Time)
 {
     float fX, fY;
+    float fX1, fY1;
 
     // Напечатать строки
     fX = (float)m_rect.left;
     fY = (float)m_rect.top;
+    fX1 = fX;
+    fY1 = fY; // ugeen fix 2020
     for (long n = 0; n < m_aButton; n++)
     {
         // определяем цвет строки
@@ -42,8 +45,8 @@ void CXI_CHECKBUTTONS::Draw(bool bSelected, dword Delta_Time)
 
         if (m_bIndividualPos && m_aButton[n]->bSetPos)
         {
-            fX = m_aButton[n]->pos.x;
-            fY = m_aButton[n]->pos.y;
+            fX = m_aButton[n]->pos.x + fX1; // ugeen fix
+            fY = m_aButton[n]->pos.y + fY1;
         }
 
         if (m_aButton[n]->pImg)

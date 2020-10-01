@@ -96,7 +96,7 @@ class BISignIcon
     long m_idSignTextFont;
     dword m_dwSignTextFontColor;
     float m_fSignTextFontScale;
-    POINT m_SignTextFontOffset;
+    FPOINT m_SignTextFontOffset;
 
     bool m_bMakeUpdate;
     bool m_bActive;

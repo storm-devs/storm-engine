@@ -227,6 +227,7 @@ bool WorldMap::Init()
         char *s = AttributesPointer->GetAttribute("debug");
         wdmObjects->isDebug = s && (stricmp(s, "true") == 0);
         saveData = AttributesPointer->CreateSubAClass(AttributesPointer, "encounters");
+        wdmObjects->resizeRatio = AttributesPointer->GetAttributeAsFloat("resizeRatio", wdmObjects->resizeRatio);
     }
     ((WdmShip *)ro)->Teleport(psX, psZ, psAy);
     ((WdmPlayerShip *)ro)->SetActionRadius(psRad);
