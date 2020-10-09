@@ -1,0 +1,64 @@
+vertexshader vs_seafoam()
+{
+	decl
+	{
+		stream(0)
+		{
+			vector3		vPos;
+			color		vColor;
+			vector2		vTexCoord0;
+		}
+	}
+
+	asm
+	{
+		vs.1.1
+
+		m4x4 r11, vPos, c[GC_MTX_WVP]
+		mov oPos, r11
+		mul oT0.xy, vPos.xz, c[GC_FREE].xx
+		mov oT0.z, c[GC_ANIMATION].x
+		mov	oD0, vColor
+		FOG(r11);
+	}
+}
+
+pixelshader ps_seafoam()
+{
+	asm
+	{
+		ps.1.1
+
+		tex t0
+
+		mul r0, t0, v0.a
+	}
+}
+
+block SeaFoam(	texture tFoam1, tFoam2, 
+				vbuffer vFoamBuffer, 
+				ibuffer iFoamBuffer)
+{
+	Texture[0] = tFoam1;
+
+	//FillMode = wireframe;
+
+	SetVertexBuffer(0, vFoamBuffer, 0);
+	SetIndexBuffer(iFoamBuffer, 0);
+
+	FogEnable = false;
+
+	AlphaTestEnable = false;
+
+	SrcBlend = srcalpha;
+	DestBlend = one;
+
+	WorldMatrix = matrix();
+
+	VertexShaderConstant[GC_FREE] = 0.2;
+	
+	VertexShader = vs_seafoam();
+	PixelShader = ps_seafoam();
+
+	Draw ();
+}

@@ -1,0 +1,49 @@
+#define DRAW_RECTS(RECTS_VSHADER)			\
+		VertexShader = RECTS_VSHADER();		\
+		matrix mRectOldView = mView;        \
+		ViewMatrix = matrix();           	\
+		WorldMatrix = matrix();          	\
+		Draw();                          	\
+		ViewMatrix = mRectOldView;           
+
+
+vertexshader vs_stdrects()
+{
+	decl
+	{
+		stream(0)
+		{
+			vector3	 	vPos;
+			color		dwColor;
+			vector2		vTexCoord0;
+		}
+	}
+	asm
+	{
+		vs.1.0
+
+		m4x4 oPos, vPos, c[GC_MTX_WVP]
+		mov oD0, dwColor
+		mov oT0, vTexCoord0
+	}
+}
+
+block dbgRects()
+{
+		FogEnable = false;
+	    AlphaTestEnable = false;
+	    ZWriteenable = false;
+
+		SrcBlend = srcalpha;
+		DestBlend = invsrcalpha;
+
+		ColorOp[0] = modulate;
+		ColorArg1[0] = texture;
+		ColorArg2[0] = diffuse;
+
+		AlphaOp[0] = modulate;
+		AlphaArg1[0] = texture;
+		AlphaArg2[0] = diffuse;
+
+		DRAW_RECTS(vs_stdrects)
+}

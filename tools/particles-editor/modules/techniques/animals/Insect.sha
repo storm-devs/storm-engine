@@ -1,0 +1,62 @@
+vertexshader vs_AnimalInsect( NumLights[0,4] )
+{
+	decl
+	{
+		stream(0)
+		{
+			vector3		vPos;
+			color		dwColor;
+			vector2		vTex0;
+		}
+	}
+
+	asm
+	{
+		vs.1.1
+
+#define	POS		r0
+
+		m4x4 	POS, vPos, c[GC_MTX_WVP]
+
+		mov		oPos, POS
+		mov		oD0, dwColor
+		mov		oT0.xy, vTex0
+
+		// lights
+		//VS_LIGHT$NumLights(POS, NORMAL, dwColor)
+
+		// fog
+		FOG(POS)
+	}
+}
+
+block AnimalInsect(texture t1, ibuffer i1, vbuffer v1)
+{
+	SetVertexBuffer(0, v1, 0);
+	SetIndexBuffer(i1, 0);
+
+	CullMode = none;
+	AlphaBlendEnable = true;
+	AlphaTestEnable = true;
+	SpecularEnable = false;
+	FogEnable = true;
+
+	WorldMatrix = matrix();
+
+	Texture[0] = t1;
+
+	ColorOp[0] = modulate;
+	ColorArg1[0] = texture;
+	ColorArg2[0] = diffuse;
+
+	AlphaOp[0] = selectarg1;
+	AlphaArg1[0] = texture;
+
+	ColorOp[1] = disable;
+	AlphaOp[1] = disable;
+
+	SetLights(0.0, 1.0);
+
+	VertexShader = vs_AnimalInsect(dwNumLights);
+	Draw();
+}

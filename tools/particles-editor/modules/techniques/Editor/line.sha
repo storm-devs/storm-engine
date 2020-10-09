@@ -1,0 +1,28 @@
+block EditorLineNoZ()
+{
+ 		FogEnable = false;
+    CullMode = none;
+    ZEnable = false;
+
+    AlphaBlendEnable = true;
+    AlphaTestEnable = false;
+    
+
+    ColorOp[0] = SelectArg1;
+    ColorArg1[0] = diffuse;
+
+    TextureFactor = 0x30303030;
+    AlphaOp[0] = SelectArg1;
+    AlphaArg1[0] = tfactor;
+
+
+    VertexShader = vs_dbgsphere();
+    Draw();
+
+    ZEnable = true;
+    AlphaBlendEnable = false;
+
+    Draw();
+
+  
+}

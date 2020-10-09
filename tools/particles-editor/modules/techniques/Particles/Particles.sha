@@ -1,0 +1,146 @@
+#define DRAW_PARTICLES(RECTS_VSHADER)     \
+  VertexShader = RECTS_VSHADER();   \
+  matrix mRectOldView = mView;        \
+  ViewMatrix = matrix();            \
+  WorldMatrix = matrix();           \
+  Draw();                           \
+  ViewMatrix = mRectOldView;           
+
+
+
+pixelshader ps_particles()
+{
+  asm
+  {
+    ps.1.1
+    
+    def c0, 0.6f,0.6f,0.6f,0.6f
+    
+    tex t0
+    tex t1
+    texcoord t2                  //t2 = (K, 0, 0, undefined)
+    tex t3 
+
+    lrp r0, v1.aaaa, t0, t1           //Блендим между кадрами
+    mul r1, r0, v0               //Учитываем дифуз
+
+    mul r0.rgb, r1, r1.aaaa      //Альфу учитываем
+
+    dp3 r1.rgba, t2, r1.aaaa         //r0.rgba = K*A
+
+    mov r0.a, r1.a
+    
+    dp3 r1, t3_bx2, v1_bx2  //бамп посчитали
+    add r1, r1, c0
+    mul r0.rgb, r0, r1
+    
+      
+  }
+}
+
+
+vertexshader vs_particles()
+{
+	decl
+	{
+		stream(0)
+		{
+			vector3	vRelativePos;
+			color		dwColor;
+			vector2	vTexCoord1;
+			vector2	vTexCoord2;
+			float   fAngle;   
+			float   fBlend;
+			vector3 vParticlePos;
+			float AddPowerK;
+		}
+	}
+	asm
+	{
+		vs.1.0
+		
+
+//-----------------------------------------------
+
+		mov oD0, dwColor
+    mov oT0, vTexCoord1
+    mov oT1, vTexCoord2
+    mov oT3, vTexCoord1
+
+//-------------------------------
+    mov oT2.xyzw, c[GC_CONSTANT].xxxx                              
+    mov oT2.z, AddPowerK.x
+//-------------------------------    
+
+    
+//-----------------------------------------------
+    mad r7.xy, fAngle.x, c[GC_FREE+1].x, c[GC_FREE+1].yzzw
+    frc r2.xy, r7.xy
+    mul r9.xy, r2, c[GC_FREE+1].w
+    add r4.xy, r9, c[GC_FREE+2].x
+    mul r11.xy, r4, r4
+    mad r1.xy, r11.xy, c[GC_FREE+2].w, c[GC_FREE+2].y
+    mad r3.xy, r11.xy, r1, c[GC_FREE+2].z
+    mad r5.xy, r11.xy, r3, c[GC_FREE+0].x
+    mad r7.xy, r11.xy, r5, c[GC_FREE+0].w
+    mad r0.xy, r11.xy, r7, c[GC_FREE+0].y
+//-----------------------------------------------
+//направление света...   
+    mad oD1.x, -r0.y, c[GC_CONSTANT].z, c[GC_CONSTANT].z
+    mad oD1.y, -r0.x, c[GC_CONSTANT].z, c[GC_CONSTANT].z
+    mov oD1.z, c[GC_CONSTANT].z   
+//-----------------------------------------------   
+    mov oD1.w, fBlend.x  
+    
+
+
+		mov r1, vRelativePos
+		mul r3.x, r1.y, r0.y				; r3.x = y*sin 
+		mul r3.y, r1.x, r0.x				; r3.y = x*cos
+		add r2.x, r3.y, r3.x				; X = x*cos + y*sin;
+		
+		mul r3.x, r1.x, r0.y				; r3.x = x*sin
+		mul r3.y, r1.y, r0.x				; r3.y = y*cos
+		add r2.y, r3.y, -r3.x				; Y = y*cos - x*sin;
+		
+		mov r2.z, c[GC_CONSTANT].x 
+		mov r2.w, c[GC_CONSTANT].x 
+		
+//-----------------------------------------------						
+
+    m4x4 r3, vParticlePos, c[GC_FREE+3]
+    add r2, r2, r3
+
+//-----------------------------------------------				
+		
+//		mul r2, r2, fSpeedOrient.xxxx
+    m4x4 oPos, r2, c[GC_FREE+7]
+    
+    FOG (r2) 
+	}
+}
+
+
+
+block Particles()
+{
+	FogEnable = false;
+	ZWriteenable = false;
+	  
+	SrcBlend = one;
+	DestBlend = invsrcalpha;
+	AlphaTestEnable = false;
+  AlphaBlendEnable = true;
+  
+	VertexShaderConstant[GC_FREE] = vector4(0.0416666, 1, 0, -0.5);
+	VertexShaderConstant[GC_FREE+1] = vector4(0.159155, 0.5, 0.25, 6.28319);
+  VertexShaderConstant[GC_FREE+2] = vector4(-3.14159, 0.0000247609, -0.00138884, -0.000000252399);
+  
+  VertexShaderConstant[GC_FREE+3] = mView;
+  VertexShaderConstant[GC_FREE+7] = mProjection;
+
+  PixelShader = ps_particles();
+  DRAW_PARTICLES(vs_particles)
+  
+}
+

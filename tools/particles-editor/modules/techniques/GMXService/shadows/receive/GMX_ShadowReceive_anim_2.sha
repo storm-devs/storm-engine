@@ -1,0 +1,45 @@
+vertexshader GMX_ShadowReceive_anim_2VS() 
+{
+ANIM_DECL
+
+ asm
+ {
+  vs.1.1
+
+	// Upack bones indexes
+	mad r0, vBonesID, c[GC_FREE].xxxx, c[GC_FREE].yyyy            
+
+	// First bone
+	mov a0.x, r0.z                                 
+	m4x3 r2, vPos, c[a0.x]
+
+	// Second bone
+	mov a0.x, r0.y
+  m4x3 r4, vPos, c[a0.x]
+  
+  
+	UNPACK_WEIGHTS(r9, vPackedWeight12)
+
+	// position weights
+	mul r2.xyz, r2.xyz, r9.xxx
+  mad r2.xyz, r4.xyz, r9.yyy, r2.xyz
+ 	mov r2.w, c[GC_FREE].z
+    
+    
+    GMX_VS_SHADOW_RECEIVE(r2)
+    
+    
+ }
+} 
+
+
+block GMX_ShadowReceive_anim_2 ()
+{
+ GMX_SHADOW_RECEIVE_STATES
+
+ 
+ VertexShader = GMX_ShadowReceive_anim_2VS();
+ PixelShader = ReceiveShadowPixelShaderAnim();                                  
+
+ Draw ();
+}

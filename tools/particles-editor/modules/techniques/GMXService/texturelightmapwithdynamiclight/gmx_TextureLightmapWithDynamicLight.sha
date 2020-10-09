@@ -1,0 +1,64 @@
+vertexshader gmx_VolumetricRaysVS() 
+{
+ STATIC_DECL
+
+ asm
+ {
+  vs.1.1
+
+  m4x4 r1, vPos, c[GC_MTX_WVP]    // Transform position
+  mov oPos, r1
+
+  GMX_FOG(r1, r2);
+   
+  UNPACK_TEX(r0, vPackedUV1)
+  UNPACK_TEX(oT1, vPackedUV2)
+
+  
+  add r0.x, r0.x, c[GC_FREE].x
+  add r0.y, r0.y, -c[GC_FREE].y
+  
+  mov oT0, r0
+  
+  
+  
+  
+ }
+} 
+
+
+block gmx_VolumetricRays ()
+{
+  Texture[0] = GMX_TextureStage1;
+  Texture[1] = GMX_TextureStage0;
+
+
+  ZWriteEnable = false;
+  ZEnable = true;
+
+  AlphaTestEnable = false;
+  AlphaBlendEnable = true;
+
+  SrcBlend = one;
+  DestBlend = one;
+
+
+  ColorOp[0] = SelectArg1;
+  ColorArg1[0] = Texture;                       
+
+  ColorOp[1] = Modulate;
+  ColorArg1[1] = Current;                       
+  ColorArg2[1] = Texture;                       
+                                              
+  
+  AlphaOp[0] = disable;
+                                              
+
+  VertexShader = gmx_VolumetricRaysVS();
+	
+  VertexShaderConstant[GC_FREE] = vector4 (fVLAnimU, fVLAnimV, 1.0, 1.0);
+  //VertexShaderConstant[GC_FREE] = vector4 (0.0, 10.0, 1.0, 1.0);
+  
+
+  Draw ();
+}

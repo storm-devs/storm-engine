@@ -1,0 +1,83 @@
+vertexshader vs_Fort_Cannons( NumLights[0,4] )
+{
+	decl
+	{
+		stream(0)
+		{
+			vector3		vPos;
+			vector3		vNormal;
+			color		dwBones;
+			color		dwColor;
+			color		dwSpecular;
+			float		fReserved;
+			vector2		vTexCoord0;
+		}
+	}
+
+	asm
+	{
+		vs.1.1
+
+#define	POS			r0
+#define	NORMAL		r1
+#define TEMP		r2
+
+		mad		TEMP.xy, dwBones.xy, c[GC_FREE].xz, c[GC_FREE].yw
+
+		mov		a0.x, TEMP.y
+		add		r4.xyz, vPos, c[a0.x]
+		mov 	r4.w, vPos.w
+		//mov r4, vPos
+
+		m4x4 	r3, r4, c[GC_MTX_WVP]
+
+		mov		oPos, r3
+		mov		oD0, dwColor
+		mov		oD1, dwSpecular
+		mov		oT0.xy, vTexCoord0
+
+		// lights
+        VS_LIGHT$NumLights(r3, vNormal, dwColor)
+
+		// calculate specular reflection
+
+		// fog
+		FOG(r3)
+	}
+}
+
+block Fort_Cannons(texture t1, t2, ibuffer i1, vbuffer v1)
+{
+	SetVertexBuffer(0, v1, 0);
+	SetIndexBuffer(i1, 0);
+
+	AlphaBlendEnable = false;
+	AlphaTestEnable = false;
+
+	SpecularEnable = false;
+
+	Texture[0] = t1;		// cannon texture
+	//Texture[1] = t2;		// envmap
+
+	VertexShaderConstant[GC_FREE] = vector4(256.0 * 4.0, GC_FREE + 1.0, 256.0, GC_FREE + 10.0);
+
+	WorldMatrix = matrix();
+
+	VertexShader = vs_Fort_Cannons(dwNumLights);
+
+	ColorOp[0] = modulate;
+	ColorArg1[0] = texture;
+	ColorArg2[0] = diffuse;
+
+	AlphaOp[0] = selectarg1;
+	AlphaArg1[0] = texture;
+
+	/*ColorOp[1] = disable;//blendcurrentalpha;
+	ColorArg1[1] = current;
+	ColorArg2[1] = texture;
+
+	AlphaOp[1] = selectarg1;
+	AlphaArg1[1] = current;*/
+
+	Draw();
+}

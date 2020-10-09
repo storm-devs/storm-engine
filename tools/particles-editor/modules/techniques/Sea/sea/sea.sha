@@ -1,0 +1,242 @@
+//#define SEA_BUG
+
+vertexshader vs_sea()
+{
+	decl
+	{
+		stream(0)
+		{
+			vector3		vPos;
+			vector3		vNormal;
+			vector2		vTexCoord0;
+		}
+	}
+
+	// c[GC_FREE]		= { fWAttn, fWRefl, fWTrans, }
+	// c[GC_FREE + 1]	= vWaterColor
+	// c[GC_FREE + 2]	= vSkyColor
+
+	#define POS			r0
+	#define	KF			r7			// {ci, kF, U, }
+
+	asm
+	{
+		vs.1.1
+
+		m4x4	POS, vPos, c[GC_MTX_WVP]
+		mov 	oPos, POS
+
+		FOG(POS)
+		//mov oFog.x, c[GC_FREE].w
+
+		mov		r4, vNormal
+		VS_NORMALIZE(r4)
+
+		sub		r1, vPos, c[GC_CAMERA_POS]
+		VS_NORMALIZE(r1)							// I = !(vPos - vCam)
+	
+		dp3		KF.x, r1, r4					// fresnel coeff
+		mov		r5.x, -KF.x
+		mov		r5.yz, c[GC_FREE + 6].xxy
+		//mov		oD0.xyz, c[GC_LIGHT0]
+#ifndef SEA_BUG
+		VS_FRENEL(KF.y, r5)
+#else
+		VS_FRENEL1(KF.y, r5)
+#endif
+		
+		rcp		r2.x, r1.y
+		mul		r2.x, r2.x, c[GC_FREE].x
+		min		r2.x, r2.x, -r2.x
+		expp	KF.z, r2.x							// U = exp(fWAttn / I.y)
+
+		mul		r2.y, c[GC_FREE].y, KF.y
+		dp3		r3.x, c[GC_FREE + 30], r4
+		mul		r3.y, r3.x, r2.y
+		mul		oD0.xyz, r3.yyy, c[GC_FREE + 2]		// diffuse : color = fWRefl * kF * SkyColor
+
+		mad		r2.x, -KF.y, KF.z, KF.z
+		mul		oD0.w, r2.x, c[GC_FREE].z			// diffuse : alpha = fWTrans * U * (1.0f - kF)
+
+		sub		r2.xy, c[GC_CONSTANT].yy, KF.yz		// 1.0 - kF, 1.0 - U
+		mul		r2.z, r2.x, r2.y
+		mul		oD1.xyz, r2.zzz, c[GC_FREE + 1]		// specular : color = (1.0 - U) * (1.0 - kF) * WaterColor
+		mov		oD1.w, c[GC_CONSTANT].y				// specular : alpha = 1.0
+
+		dp3		r3.x, r1, r4
+		add		r3.x, r3.x, r3.x
+		mad		r2.xyz, r3.xxx, r4, -r1
+
+		VS_CROSS(r10, r4, c[GC_FREE + 5])		// S
+		VS_CROSS(r11, r4, r10)          // T
+
+		; Normalize S and T
+		dp3 r10.w, r10, r10
+		rsq r10.w, r10.w
+		mul r10, r10, r10.w
+
+		dp3 r11.w, r11, r11
+		rsq r11.w, r11.w
+		mul r11, r11, r11.w
+
+		; here we compute SxT (if V_SxT is available, then this is unnecessary, of course)
+		mul r9, r10.zxyw, r11.yzxw           ; 2 instruction cross product
+		mad r9, r10.yzxw, r11.zxyw, -r9
+
+		dp3 oT1.x, r10,  c[GC_FREE + 8]
+		dp3 oT1.y, r11,  c[GC_FREE + 8]
+		dp3 oT1.z, r9, 	 c[GC_FREE + 8]
+
+		dp3 oT2.x, r10,  c[GC_FREE + 9]
+		dp3 oT2.y, r11,  c[GC_FREE + 9]
+		dp3 oT2.z, r9,   c[GC_FREE + 9]
+
+		dp3 oT3.x, r10,  c[GC_FREE + 10]
+		dp3 oT3.y, r11,  c[GC_FREE + 10]
+		dp3 oT3.z, r9, 	 c[GC_FREE + 10]
+
+		mov oT1.w, -r1.x
+		mov oT2.w, -r1.y
+		mov oT3.w, -r1.z
+
+		//mul	r11.xy, vPos.xz, c[GC_CONSTANT].zz
+
+		//mov	oT0.xy, r11.xy
+		mov	oT0.z, c[GC_ANIMATION].x
+		mov	oT0.xy, vTexCoord0
+
+		//mov		oD0.xyz, vNormal
+	}
+}
+
+pixelshader ps_sea()
+{
+	asm
+	{
+		ps.1.1
+
+		tex t0	
+
+		texm3x3pad t1, t0_bx2
+		texm3x3pad t2, t0_bx2
+		texm3x3vspec t3, t0_bx2
+
+		mad r0.xyz, v0, t3, v1
+		mov r0.w, v0.w
+	}
+}
+
+pixelshader ps_sea_sunroad()
+{
+	asm
+	{
+		ps.1.1
+
+		tex t0	
+
+		texm3x3pad t1, t0_bx2
+		texm3x3pad t2, t0_bx2
+		texm3x3vspec t3, t0_bx2
+
+		mov r0, t3
+	}
+}
+
+block Sea(	texture tBump, tEnvMap, tSunRoad, tFoam, 
+			vbuffer vSeaBuffer, 
+			ibuffer iSeaBuffer, 
+			vector4 vSeaColor, vSkyColor, vSeaParameters)
+{
+	SetVertexBuffer(0, vSeaBuffer, 0);
+	SetIndexBuffer(iSeaBuffer, 0);
+
+	CullMode = none;//ccw;//none;
+
+	WorldMatrix = matrix();
+
+    AlphaBlendEnable = true;
+    AlphaTestEnable = false;
+
+	SpecularEnable = false;
+
+	SrcBlend = one;
+	DestBlend = srcalpha;
+
+	Texture[0] = tBump;
+    Texture[3] = tEnvMap;
+
+#ifndef SEA_BUG
+	//VertexShaderConstant[GC_FREE] = vector4(0.9, 0.7, 0.9, 0.0);	// fWAttn, fWRefl, fWTrans
+	VertexShaderConstant[GC_FREE] = vSeaParameters;
+	VertexShaderConstant[GC_FREE + 1] = vSeaColor;//vector4(10.0 / 255.0, 55.0 / 255.0, 100.0 / 255.0, 0.0);
+	VertexShaderConstant[GC_FREE + 2] = vSkyColor;//vector4(1.0, 1.0, 1.0, 0.0);
+
+	//VertexShaderConstant[GC_FREE + 1] = vector4(10.0 / 255.0, 55.0 / 255.0, 100.0 / 255.0, 0.0);
+	//VertexShaderConstant[GC_FREE + 2] = vector4(1.0, 1.0, 1.0, 0.0);
+#else
+	VertexShaderConstant[GC_FREE] = vector4(0.9, 0.95, 0.5, 0.0);	// fWAttn, fWRefl, fWTrans
+	VertexShaderConstant[GC_FREE + 1] = vector4(10.0 / 255.0, 60.0 / 255.0, 90.0 / 255.0, 0.0);
+	VertexShaderConstant[GC_FREE + 2] = vector4(1.2, 1.2, 1.2, 0.0);
+#endif
+
+	VertexShaderConstant[GC_FREE + 5] = vector(1.0, 0.0, 0.0);
+	VertexShaderConstant[GC_FREE + 6] = vector4(0.75, 1.0, 0.5);		// Frenel K, Frenel Max
+	VertexShaderConstant[GC_FREE + 7] = vector(1.0, 0.0, 0.0);
+	VertexShaderConstant[GC_FREE + 8] = matrix(0.0, 0.0, PId2);			// Matrix!!
+
+	VertexShaderConstant[GC_FREE + 30] = !vector(0.2, 1.0, 0.0);
+
+	SetLights(0.0, 1.0);
+
+	VertexShader = vs_sea();
+	PixelShader = ps_sea();
+	//FogEnable = false;
+    Draw ();
+
+	ZWriteEnable = false;
+
+    Texture[3] = tSunRoad;
+
+	AlphaBlendEnable = true;
+	SrcBlend = one;
+	DestBlend = one;
+
+	VertexShader = vs_sea();
+	PixelShader = ps_sea_sunroad();
+
+    //Draw ();
+}
+
+/*vertexshader vs_shadowreceive_sea()
+{
+	decl
+	{
+		stream(0)
+		{
+			vector3		vPos;
+			vector3		vNormal;
+			vector2		vTexCoord0;
+		}
+	}
+
+	asm
+	{
+		vs.1.1
+		
+		VS_SHADOW_RECEIVE_STEP(vPos, vNormal, oPos, r1, r7, r4)
+	}
+}
+
+block ShadowReceive_Sea(texture tBump, tEnvMap, tSunRoad, tFoam, 
+			vbuffer vSeaBuffer, ibuffer iSeaBuffer, 
+			vector4 vSeaColor, vSkyColor, vSeaParameters)
+{
+	SetVertexBuffer(0, vSeaBuffer, 0);
+	SetIndexBuffer(iSeaBuffer, 0);
+
+	SHADOWRECEIVE_SETUP
+	VertexShader = vs_shadowreceive_sea();
+
+	Draw ();
+}
+*/

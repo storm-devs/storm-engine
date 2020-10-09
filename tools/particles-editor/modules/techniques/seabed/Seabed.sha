@@ -1,0 +1,118 @@
+//
+//T0 - rock
+//T1 - coral
+//T2 - sand
+//T3 - caustic
+//
+//stream(1).data.w == height
+//stream(1).data.x == rock-coral blend factor
+//stream(1).data.y == rockcoral-sand blend factor
+//stream(1).data.z == caustic factor
+//
+//wxyz
+
+
+
+
+vertexshader vs_Seabed()
+{
+	decl
+	{
+		stream(0)
+		{
+			vector2	 	vPos;
+			vector2		vTex;
+		}
+		stream(1)
+		{
+			color		data;
+		}
+	}
+	asm
+	{
+		vs.1.0
+
+		//Local position
+		mov r0.xz, vPos.xy
+		//mad r0.y, data.w, c[GC_FREE + 0].w, -c[GC_FREE + 0].z
+		mov r0.y, data.w
+		
+		mov r0.w, c[GC_CONSTANT].y
+		//mov r0.y, c[GC_CONSTANT].y
+		//Srceen position
+		m4x4 oPos, r0, c[GC_MTX_WVP]
+		//Texture coordinates
+	    mov	oT0, vTex
+		mov	oT1, vTex
+		mov	oT2, vTex
+		mov	oT3, vTex
+		
+		//Distance from camera to current vertex
+		add r1, c[GC_CAMERA_POS], -r0				//camPos - vrtPos
+		//mov r1, c[GC_CAMERA_POS]
+		mov r1.y, c[GC_CONSTANT].x
+		dp3 r1, r1, r1								//(camPos - vrtPos)^2
+		rsq r2, r1									//1/sqrt((camPos - vrtPos)^2)
+		mul r1, r1, r2								//(camPos - vrtPos)^2/sqrt((camPos - vrtPos)^2)
+		//Distance factor k = 1 - Clamp((dist - distMin)/(distMax - distMin))
+		add r1, r1, -c[GC_FREE + 0].xxxx			//c[GC_FREE + 0].x == distMin
+		mul r1, r1, c[GC_FREE + 0].yyyy				//c[GC_FREE + 0].x == 1/(distMax - distMin)
+		min r1, r1, c[GC_CONSTANT].yyyy				//r1 = min(r1, 1)
+		max r1, r1, c[GC_CONSTANT].xxxx				//r1 = max(r1, 0)
+		add r1, -r1, c[GC_CONSTANT].yyyy			//r1 = 1 - r1
+		//Blending factors & light
+		mul r1.xyz, r1.xyz, data.www				//Light itensity
+
+		mul r1.xyz, r1.xyz, c[GC_FREE + 1].xyz		//Light color
+		mov r1.w, data.y							//rockcoral-sand blend
+		mov	oD0, r1
+		mov r1.xyz, data.xxx						//rock-coral blend
+		mov r1.w, data.z							//caustic itensity
+		mov	oD1, r1		
+		//mov oD1.w, c[GC_CONSTANT].z	
+	}
+}
+
+block Seabed()
+{
+		FogEnable = false;
+		AlphaTestEnable = false;
+		AlphaBlendEnable= false;
+		SrcBlend = srcalpha;
+		DestBlend = invsrcalpha;
+		cullmode = ccw;
+
+		ColorOp[0] = selectarg2;
+		ColorArg2[0] = texture;
+		//rock-coral blend
+		ColorOp[1] = lerp;
+		ColorArg1[1] = current;
+		ColorArg2[1] = texture;
+		ColorArg0[1] = specular;
+		//rockcoral-sand blend
+		ColorOp[2] = blenddiffusealpha;
+		ColorArg1[2] = current;
+		ColorArg2[2] = texture;
+		//Add caustic
+		ColorOp[3] = multiplyadd;
+		ColorArg1[3] = specular_alphareplicate;
+		ColorArg2[3] = texture;
+		ColorArg0[3] = current;
+		
+		//Apply light
+		ColorOp[4] = modulate2x;
+		ColorArg1[4] = current;
+		ColorArg2[4] = diffuse;
+
+		//VertexShaderConstant[GC_FREE] = mWorld;
+		//x = distMin, y = 1/(distMax - distMin)
+		VertexShaderConstant[GC_FREE + 0] = vector4(150.0, 0.003, 0.0, 0.0);
+		//Light color
+		//VertexShaderConstant[GC_FREE + 1] = vector4(1.0, 1.0, 0.6, 0.2);
+
+		VertexShader = vs_Seabed();
+
+		Draw();
+}
+
+

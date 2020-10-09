@@ -1,0 +1,22 @@
+
+
+
+block BBCollection_Blend()
+{
+	SrcBlend = srcalpha;
+	DestBlend = invsrcalpha;
+	AlphaBlendEnable = true;
+	AlphaTestEnable = false;
+
+	ColorOp[0] = Modulate;
+	ColorArg1[0] = Texture;
+	ColorArg2[0] = Diffuse;
+	
+	AlphaOp[0] = Modulate;
+	AlphaArg1[0] = Texture;
+	AlphaArg2[0] = Diffuse;
+
+
+	BB_DRAW_BILLBOARDS;
+}
+

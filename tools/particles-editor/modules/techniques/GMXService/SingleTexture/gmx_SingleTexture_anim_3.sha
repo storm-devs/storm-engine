@@ -1,0 +1,53 @@
+vertexshader gmx_SingleTexture_anim_3VS() 
+{
+ ANIM_DECL
+
+ asm
+ {
+  vs.1.1
+
+	// Upack bones indexes
+	mad r0, vBonesID, c[GC_FREE].xxxx, c[GC_FREE].yyyy            
+
+	// First bone
+	mov a0.x, r0.z                                 
+	m4x3 r2, vPos, c[a0.x]
+
+	// Second bone
+	mov a0.x, r0.y
+	m4x3 r4, vPos, c[a0.x]
+
+	// Third bone
+	mov a0.x, r0.x
+  m4x3 r6, vPos, c[a0.x]
+  
+
+
+	UNPACK_WEIGHTS(r9, vPackedWeight12)
+	UNPACK_WEIGHTS(r10, vPackedWeight3x)
+
+	// position weights
+	mul r2.xyz, r2.xyz, r9.xxx
+	mad r2.xyz, r4.xyz, r9.yyy, r2.xyz
+	mad r2.xyz, r6.xyz, r10.xxx, r2.xyz
+  
+  // Transform to screen      
+	mov r2.w, c[GC_FREE].z
+  m4x4 oPos, r2, c[GC_MTX_WVP]
+  
+  GMX_FOG(r2, r4);
+  
+  UNPACK_TEX(oT0, vPackedUV1)
+  
+ }
+} 
+
+
+block gmx_SingleTexture_anim_3 ()
+{
+  SETUP_GMX_SINGLETEXTURE
+
+	VertexShader = gmx_SingleTexture_anim_3VS();
+
+  Draw ();
+}

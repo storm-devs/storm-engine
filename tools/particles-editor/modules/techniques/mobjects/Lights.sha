@@ -1,0 +1,45 @@
+
+block PointLightCorona()
+{
+		FogEnable = false;
+		zenable = false;
+		zwriteenable = false;
+		lighting = false;
+
+		CullMode = none;
+
+		AlphaBlendEnable = true;
+		AlphaTestEnable = false;
+
+		srcblend = srcalpha;
+		destblend = one;
+
+		ColorOp[0] = modulate;
+		ColorArg1[0] = texture;
+		ColorArg2[0] = diffuse;
+		ColorOp[1] = disable;
+
+		AlphaOp[0] = modulate;
+		AlphaArg1[0] = texture;
+		AlphaArg2[0] = diffuse;
+		AlphaOp[1] = disable;
+
+		DRAW_RECTS(vs_stdrects)
+}
+
+
+block_noopt LightColorPreveiwEffect(dword dwColor)
+{
+		AlphaBlendEnable = false;
+		AlphaTestEnable = false;
+		
+		TextureFactor = dwColor;
+
+		ColorOp[0] = blenddiffusealpha;
+		ColorArg1[0] = diffuse;
+		ColorArg2[0] = tfactor;
+		ColorOp[1] = disable;
+		AlphaOp[0] = disable;
+
+}
+

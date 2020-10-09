@@ -1,0 +1,29 @@
+#define GMX_SHADOW_RECEIVE_STATES \
+ matrix mShadowWVP = (mWorld * mShadowView) * mShadowProjection;            \
+ VertexShaderConstant[GC_SHADOW_CONST1] = mShadowWVP;                       \
+ VertexShaderConstant[GC_SHADOW_CONST2] = mShadowWVP * mShadowAdjustment;   \
+ VertexShaderConstant[GC_SHADOW_CONST1+3] = vShadowParam2;								\
+ AddressU[3] = Clamp;                                                       \
+ AddressV[3] = Clamp;                                                       \
+ AddressW[3] = Clamp;                                                       \
+ MagFilter[0] = linear;                                                     \
+ MinFilter[0] = linear;                                                     \
+ MipFilter[0] = linear;                                                     \
+ MagFilter[1] = linear;                                                     \
+ MinFilter[1] = linear;                                                     \
+ MipFilter[1] = linear;                                                     \
+ MagFilter[3] = linear;                                                     \
+ MinFilter[3] = linear;                                                     \
+ MipFilter[3] = linear;                                                     \
+ FogEnable = false;                                                         \
+ AlphaBlendEnable = false;                                              \
+ AlphaTestEnable = false;                                                   \
+ AlphaRef = 2;                                                              \
+ SrcBlend = srcalpha;                                                       \
+ DestBlend = invsrcalpha;                                                   \
+ Texture[1] = GMX_TextureStage1;                                            \
+ Texture[3] = tShadowMap;                                                   \
+ 
+ 
+// VertexShaderConstant[GC_SHADOW_CONST1+3] = fShadowObjectID;                \
+ 

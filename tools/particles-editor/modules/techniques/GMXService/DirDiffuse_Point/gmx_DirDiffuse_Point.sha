@@ -1,0 +1,36 @@
+vertexshader gmx_DirDiffuse_PointVS(NumLights[0,4]) 
+{
+ STATIC_DECL
+
+ asm
+ {
+  vs.1.1
+
+  LIGHTINGMAPUV(vPos, r9, oT3)  
+
+
+  m4x4 r1, vPos, c[GC_MTX_WVP]    // Transform position
+  mov oPos, r1
+  GMX_FOG(r1, r2);
+   
+  UNPACK_TEX(oT2, vPackedUV1)
+
+  UNPACK_NORMAL(vUnpackedNormal, vPackedNormal)
+  
+  DIFFUSE_DIR_LIGHT(oT0, vUnpackedNormal, r1)
+
+  
+	GMX_VS_LIGHT$NumLights(vPos, vUnpackedNormal)
+  
+ }
+} 
+
+
+block gmx_DirDiffuse_Point ()
+{
+  SETUP_GMX_DIRDIFFUSE_POINT
+  
+	VertexShader = gmx_DirDiffuse_PointVS(dwNumLights);
+
+  Draw ();
+}

@@ -1,0 +1,35 @@
+
+[Textures]
+MainTexture = Particles_3.txx
+
+[Manager]
+System_0029 = signstar.xps
+System_0028 = Splash_test.xps
+System_0027 = Splash_large.xps
+System_0026 = Bombard.xps
+System_0025 = cancloud_fire_test.xps
+System_0024 = FortFire .xps
+System_0023 = pistolshot.xps
+System_0022 = waterfog.xps
+System_0021 = WaterFall.xps
+System_0020 = smoke.xps
+System_0019 = SmallSmoke.xps
+System_0018 = Ship_Fire.xps
+System_0017 = ShipFire2.xps
+System_0016 = ShipFire1.xps
+System_0015 = Jopa.xps
+System_0014 = GunFire.xps
+System_0013 = Fountain.xps
+System_0012 = Fire2.xps
+System_0011 = Cannon.xps
+System_0010 = candle.xps
+System_0009 = cancloud_fire_big.xps
+System_0008 = cancloud_fire.xps
+System_0007 = Bomb_Smoke.xps
+System_0006 = 2.xps
+System_0005 = blast_inv.xps
+System_0004 = blast.xps
+System_0000 = Fire.xps
+System_0001 = ShipExplode.xps
+System_0002 = Splash.xps
+System_0003 = torch.xps

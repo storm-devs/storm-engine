@@ -1,0 +1,51 @@
+vertexshader vs_seatrack()
+{
+	decl
+	{
+		stream(0)
+		{
+			vector3		vPos;
+			color		dwColor;
+			vector2		vTexCoord0;
+		}
+	}
+
+	asm
+	{
+		vs.1.1
+
+		m4x4 r11, vPos, c[GC_MTX_WVP]
+		mov oPos, r11
+		mov oD0, dwColor
+		mov oT0, vTexCoord0
+	}
+}
+
+block SeaTrack()
+{
+	ZWriteEnable = false;
+	CullMode = none;
+	//FillMode = wireframe;
+
+	FogEnable = false;
+
+	AlphaTestEnable = false;
+
+	SrcBlend = srcalpha;
+	DestBlend = one;
+
+	WorldMatrix = matrix();
+	
+	VertexShader = vs_seatrack();
+
+	TextureFactor = 0x40FFFFFF;
+
+	ColorOp[0] = selectarg1;
+	ColorArg1[0] = texture;
+
+	AlphaOp[0] = modulate;
+	AlphaArg1[0] = texture;
+	AlphaArg2[0] = diffuse;
+
+	Draw ();
+}

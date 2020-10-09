@@ -1,0 +1,54 @@
+#define GMX_VS_LIGHT_0(_VPOS, _VNORMAL)               \
+	mov oD0, c[GC_CONSTANT].xxxx
+
+#define GMX_VS_LIGHT_1(_VPOS, _VNORMAL)               \
+  mov VS_LDIFRESULT, c[GC_CONSTANT].xxxx              \
+	GMX_VS_POINT_LIGHT(GC_LIGHT1, _VPOS, _VNORMAL)      \
+  mov oD0.xyz, VS_LDIFRESULT                          \
+
+#define GMX_VS_LIGHT_2(_VPOS, _VNORMAL)    \
+  mov VS_LDIFRESULT, c[GC_CONSTANT].xxxx              \
+	GMX_VS_POINT_LIGHT(GC_LIGHT1, _VPOS, _VNORMAL)      \
+  GMX_VS_POINT_LIGHT(GC_LIGHT2, _VPOS, _VNORMAL)      \
+  mov oD0.xyz, VS_LDIFRESULT                          \
+
+#define GMX_VS_LIGHT_3(_VPOS, _VNORMAL)               \
+  mov VS_LDIFRESULT, c[GC_CONSTANT].xxxx              \
+	GMX_VS_POINT_LIGHT(GC_LIGHT1, _VPOS, _VNORMAL)	    \
+	GMX_VS_POINT_LIGHT(GC_LIGHT2, _VPOS, _VNORMAL)	    \
+	GMX_VS_POINT_LIGHT(GC_LIGHT3, _VPOS, _VNORMAL)	    \
+  mov oD0.xyz, VS_LDIFRESULT                          \
+
+#define GMX_VS_LIGHT_4(_VPOS, _VNORMAL)               \
+	mov VS_LDIFRESULT, c[GC_CONSTANT].xxxx              \
+	GMX_VS_POINT_LIGHT(GC_LIGHT1, _VPOS, _VNORMAL)	    \
+	GMX_VS_POINT_LIGHT(GC_LIGHT2, _VPOS, _VNORMAL)	    \
+	GMX_VS_POINT_LIGHT(GC_LIGHT3, _VPOS, _VNORMAL)	    \
+	mov oD0.xyz, VS_LDIFRESULT                          \
+
+
+// =======================
+// Point Light
+// =======================
+#define GMX_VS_POINT_LIGHT(_L_INDEX, _VPOS, _VNORMAL)	\ //Start
+	sub VS_LDL.xyz, c[_L_INDEX], _VPOS							\	// Vector 2 Light 
+																\	// Calc LKa dist 2 light 
+	dp3 VS_LTMP.w, VS_LDL, VS_LDL								\	// dist ^ 2
+	rsq VS_LTMP.x, VS_LTMP.w									\	// 1 / sqrt(dist ^ 2)
+	mul VS_LTMP.w, VS_LTMP.w, VS_LTMP.x							\	// dist^2 * (1 / sqrt(dist ^ 2))
+	mov VS_LKa.x, c[_L_INDEX].w									\	// 1.0 / R
+	mad VS_LKa.w, -VS_LTMP.w, VS_LKa.x, c[GC_CONSTANT].y		\	// 1 - dist / R
+	max VS_LKa.w, VS_LKa.w, c[GC_CONSTANT].x					\	// max(0.0, 1.0 - dist / R)
+																\
+	mul VS_LDL.xyz, VS_LDL, VS_LTMP.x							\	// normalize Vector 2 Light
+																\	
+	dp3 VS_LTMP.xyz, VS_LDL, _VNORMAL							\	// cos = N * L
+	max VS_LTMP.xyz, VS_LTMP.xyz, c[GC_CONSTANT].x				\	// max(0.0, cos)
+																\
+	mul VS_LKa.xyz, VS_LKa.www, c[_L_INDEX+1].xyz				\	// Ka = Ka * DIFLight
+																\
+	mad VS_LTMP.xyz, VS_LTMP, -c[_L_INDEX+1].www, VS_LTMP			\	// (1 - a) * COSdif
+	add VS_LTMP.xyz, VS_LTMP.xyz, c[_L_INDEX+1].www					\	// a + (1 - a) * COSdif
+	mul VS_LTMP.xyz, VS_LTMP, VS_LKa								\	// (a + (1 - a) * COSdif) * (Ka * DifLight)
+  mul VS_LTMP.xyz, VS_LTMP, c[GC_MATERIAL]            \ // (a + (1 - a) * COSdif) * (Ka * DifLight) * DIFmat
+  add VS_LDIFRESULT.xyz, VS_LTMP, VS_LDIFRESULT.xyz 

@@ -1,0 +1,27 @@
+#define PI 		3.1415926
+#define PIm2    6.2831852
+#define PId2	1.5707963
+
+/*
+dword dwPixelShaderVersion;
+dword dwVertexShaderVersion;
+
+dword dwMaxSimultaneousTextures;
+dword dwMaxVertexShaderConst;
+dword dwMaxStreams;
+dword dwMaxUserClipPlanes;
+
+matrix mWorldViewProj, mWorld, mView, mProjection;
+
+vector vWorldPos;
+vector vCamPosRelativeWorld;
+vector vCamPos;
+
+float fDeltaTime;
+dword dwNumLights;
+*/
+
+dword bClipPlaneEnable;
+dword dwFirstFreeConstant;
+dword dwVendorID;
+color cBackColor;

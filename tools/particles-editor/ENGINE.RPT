@@ -1,0 +1,1797 @@
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A58C 01:0000958C C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FCA0
+EDX:1002313C
+ESI:10023288
+EDI:01AC4D20
+CS:EIP:001B:1000A58C
+SS:ESP:0023:0012FC80  EBP:00000000
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200212
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A58C 01:0000958C C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FC54
+EDX:1002313C
+ESI:10023288
+EDI:01AC4D20
+CS:EIP:001B:1000A58C
+SS:ESP:0023:0012FC34  EBP:00000000
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200202
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A5BD 01:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FC58
+EDX:1002313C
+ESI:10023288
+EDI:01D26340
+CS:EIP:001B:1000A5BD
+SS:ESP:0023:0012FC38  EBP:01F41580
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200202
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5BD  01F41580  0001:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5BD  01F41580  0001:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: C0000005 ACCESS_VIOLATION
+Fault address:  10001077 01:00000077 C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:00000000
+ECX:0012FE50
+EDX:0000B359
+ESI:00000001
+EDI:1001EFAB
+CS:EIP:001B:10001077
+SS:ESP:0023:0012FC10  EBP:0012FC7C
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00210246
+
+Call stack:
+Address   Frame     Function            SourceFile
+10001077  0012FC7C  0001:00000077 C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+10012429  0012FC98  0001:00011429 C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+1001077D  0012FCD4  0001:0000F77D C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+7C9011A7  0012FCF4  LdrInitializeThunk+29
+7C923F31  0012FD78  LdrShutdownProcess+142
+7C81CA3E  0012FE6C  IsValidLocale+8EB
+7C81CAB6  0012FE80  ExitProcess+14
+00407CCA  0012FE94  0001:00006CCA C:\SLIB\Tools\ParticlesEditor\ENGINE.exe
+00407E4A  0012FFC0  0001:00006E4A C:\SLIB\Tools\ParticlesEditor\ENGINE.exe
+7C816D4F  0012FFF0  RegisterWaitForInputIdle+49
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+10001077  0012FC7C  0001:00000077 C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+10012429  0012FC98  0001:00011429 C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+1001077D  0012FCD4  0001:0000F77D C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+7C9011A7  0012FCF4  LdrInitializeThunk+29
+
+7C923F31  0012FD78  LdrShutdownProcess+142
+
+7C81CA3E  0012FE6C  IsValidLocale+8EB
+
+7C81CAB6  0012FE80  ExitProcess+14
+
+00407CCA  0012FE94  0001:00006CCA C:\SLIB\Tools\ParticlesEditor\ENGINE.exe
+
+00407E4A  0012FFC0  0001:00006E4A C:\SLIB\Tools\ParticlesEditor\ENGINE.exe
+
+7C816D4F  0012FFF0  RegisterWaitForInputIdle+49
+
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A58C 01:0000958C C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FC54
+EDX:1002313C
+ESI:10023288
+EDI:01AC4D20
+CS:EIP:001B:1000A58C
+SS:ESP:0023:0012FC34  EBP:00000000
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200202
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A5BD 01:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FC58
+EDX:1002313C
+ESI:10023288
+EDI:00B8B2D0
+CS:EIP:001B:1000A5BD
+SS:ESP:0023:0012FC38  EBP:00B7FCA0
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200202
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5BD  00B7FCA0  0001:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5BD  00B7FCA0  0001:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: C0000005 ACCESS_VIOLATION
+Fault address:  10001077 01:00000077 C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:00000000
+ECX:0012FE50
+EDX:0000434F
+ESI:00000001
+EDI:1001EFAB
+CS:EIP:001B:10001077
+SS:ESP:0023:0012FC10  EBP:0012FC7C
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00210246
+
+Call stack:
+Address   Frame     Function            SourceFile
+10001077  0012FC7C  0001:00000077 C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+10012429  0012FC98  0001:00011429 C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+1001077D  0012FCD4  0001:0000F77D C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+7C9011A7  0012FCF4  LdrInitializeThunk+29
+7C923F31  0012FD78  LdrShutdownProcess+142
+7C81CA3E  0012FE6C  IsValidLocale+8EB
+7C81CAB6  0012FE80  ExitProcess+14
+00407CCA  0012FE94  0001:00006CCA C:\SLIB\Tools\ParticlesEditor\ENGINE.exe
+00407E4A  0012FFC0  0001:00006E4A C:\SLIB\Tools\ParticlesEditor\ENGINE.exe
+7C816D4F  0012FFF0  RegisterWaitForInputIdle+49
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+10001077  0012FC7C  0001:00000077 C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+10012429  0012FC98  0001:00011429 C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+1001077D  0012FCD4  0001:0000F77D C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+7C9011A7  0012FCF4  LdrInitializeThunk+29
+
+7C923F31  0012FD78  LdrShutdownProcess+142
+
+7C81CA3E  0012FE6C  IsValidLocale+8EB
+
+7C81CAB6  0012FE80  ExitProcess+14
+
+00407CCA  0012FE94  0001:00006CCA C:\SLIB\Tools\ParticlesEditor\ENGINE.exe
+
+00407E4A  0012FFC0  0001:00006E4A C:\SLIB\Tools\ParticlesEditor\ENGINE.exe
+
+7C816D4F  0012FFF0  RegisterWaitForInputIdle+49
+
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A58C 01:0000958C C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FCA0
+EDX:1002313C
+ESI:10023288
+EDI:01AC4D20
+CS:EIP:001B:1000A58C
+SS:ESP:0023:0012FC80  EBP:00000000
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200212
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A5EF 01:000095EF C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FC48
+EDX:1002313C
+ESI:10023288
+EDI:00B57008
+CS:EIP:001B:1000A5EF
+SS:ESP:0023:0012FC28  EBP:00000000
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200206
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A5EF 01:000095EF C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012F32C
+EDX:1002313C
+ESI:10023288
+EDI:00B57008
+CS:EIP:001B:1000A5EF
+SS:ESP:0023:0012F30C  EBP:0012FCC0
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200206
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5EF  0012FCC0  0001:000095EF C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+01CD5010  01429D58  0000:00000000 
+8B137401  082444F6  0000:00000000 
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5EF  0012FCC0  0001:000095EF C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+01CD5010  01429D58  0000:00000000 
+
+8B137401  082444F6  0000:00000000 
+
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A5EF 01:000095EF C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012EA10
+EDX:1002313C
+ESI:10023288
+EDI:00B57008
+CS:EIP:001B:1000A5EF
+SS:ESP:0023:0012E9F0  EBP:0012FCF0
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200216
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5EF  0012FCF0  0001:000095EF C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5EF  0012FCF0  0001:000095EF C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A5BD 01:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FC9C
+EDX:1002313C
+ESI:10023288
+EDI:01AC4D20
+CS:EIP:001B:1000A5BD
+SS:ESP:0023:0012FC7C  EBP:00000000
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200202
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A5BD 01:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FB84
+EDX:1002313C
+ESI:10023288
+EDI:01AC4D20
+CS:EIP:001B:1000A5BD
+SS:ESP:0023:0012FB64  EBP:00BA3234
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200202
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5BD  00BA3234  0001:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5BD  00BA3234  0001:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A5BD 01:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012F250
+EDX:1002313C
+ESI:10023288
+EDI:00BAA018
+CS:EIP:001B:1000A5BD
+SS:ESP:0023:0012F230  EBP:0012FC18
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200216
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5BD  0012FC18  0001:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+03700290  0142C4B9  0000:00000000 
+8B137401  082444F6  0000:00000000 
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5BD  0012FC18  0001:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+03700290  0142C4B9  0000:00000000 
+
+8B137401  082444F6  0000:00000000 
+
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A5BD 01:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012E91C
+EDX:1002313C
+ESI:10023288
+EDI:00B8C240
+CS:EIP:001B:1000A5BD
+SS:ESP:0023:0012E8FC  EBP:0012FC54
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200206
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5BD  0012FC54  0001:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+00B9D818  0142C4B9  0000:00000000 
+8B137401  082444F6  0000:00000000 
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5BD  0012FC54  0001:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+00B9D818  0142C4B9  0000:00000000 
+
+8B137401  082444F6  0000:00000000 
+
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: C0000005 ACCESS_VIOLATION
+Fault address:  10001077 01:00000077 C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:00000000
+ECX:0012FE50
+EDX:0000ACBD
+ESI:00000001
+EDI:1001EFAB
+CS:EIP:001B:10001077
+SS:ESP:0023:0012FC10  EBP:0012FC7C
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00210246
+
+Call stack:
+Address   Frame     Function            SourceFile
+10001077  0012FC7C  0001:00000077 C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+10012429  0012FC98  0001:00011429 C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+1001077D  0012FCD4  0001:0000F77D C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+7C9011A7  0012FCF4  LdrInitializeThunk+29
+7C923F31  0012FD78  LdrShutdownProcess+142
+7C81CA3E  0012FE6C  IsValidLocale+8EB
+7C81CAB6  0012FE80  ExitProcess+14
+00407CCA  0012FE94  0001:00006CCA C:\SLIB\Tools\ParticlesEditor\ENGINE.exe
+00407E4A  0012FFC0  0001:00006E4A C:\SLIB\Tools\ParticlesEditor\ENGINE.exe
+7C816D4F  0012FFF0  RegisterWaitForInputIdle+49
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+10001077  0012FC7C  0001:00000077 C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+10012429  0012FC98  0001:00011429 C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+1001077D  0012FCD4  0001:0000F77D C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+7C9011A7  0012FCF4  LdrInitializeThunk+29
+
+7C923F31  0012FD78  LdrShutdownProcess+142
+
+7C81CA3E  0012FE6C  IsValidLocale+8EB
+
+7C81CAB6  0012FE80  ExitProcess+14
+
+00407CCA  0012FE94  0001:00006CCA C:\SLIB\Tools\ParticlesEditor\ENGINE.exe
+
+00407E4A  0012FFC0  0001:00006E4A C:\SLIB\Tools\ParticlesEditor\ENGINE.exe
+
+7C816D4F  0012FFF0  RegisterWaitForInputIdle+49
+
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A5BD 01:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FC24
+EDX:1002313C
+ESI:10023288
+EDI:01E98EA8
+CS:EIP:001B:1000A5BD
+SS:ESP:0023:0012FC04  EBP:00000000
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200202
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A5BD 01:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012F308
+EDX:1002313C
+ESI:10023288
+EDI:01E98EA8
+CS:EIP:001B:1000A5BD
+SS:ESP:0023:0012F2E8  EBP:0012FC9C
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200206
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5BD  0012FC9C  0001:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+01BAD0E8  01429D58  0000:00000000 
+8B137401  082444F6  0000:00000000 
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5BD  0012FC9C  0001:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+01BAD0E8  01429D58  0000:00000000 
+
+8B137401  082444F6  0000:00000000 
+
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A5BD 01:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012E9EC
+EDX:1002313C
+ESI:10023288
+EDI:01E98EA8
+CS:EIP:001B:1000A5BD
+SS:ESP:0023:0012E9CC  EBP:0012FCCC
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200206
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5BD  0012FCCC  0001:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+01CB8758  0142A9A8  0000:00000000 
+8B137401  082444F6  0000:00000000 
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5BD  0012FCCC  0001:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+01CB8758  0142A9A8  0000:00000000 
+
+8B137401  082444F6  0000:00000000 
+
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A5BD 01:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012E0D0
+EDX:1002313C
+ESI:10023288
+EDI:01E98EA8
+CS:EIP:001B:1000A5BD
+SS:ESP:0023:0012E0B0  EBP:0012FCF0
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200212
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5BD  0012FCF0  0001:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5BD  0012FCF0  0001:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A5BD 01:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FC9C
+EDX:1002313C
+ESI:10023288
+EDI:01E98EA8
+CS:EIP:001B:1000A5BD
+SS:ESP:0023:0012FC7C  EBP:00000000
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200202
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A58C 01:0000958C C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FC78
+EDX:1002313C
+ESI:10023288
+EDI:01E98EA8
+CS:EIP:001B:1000A58C
+SS:ESP:0023:0012FC58  EBP:00000000
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200202
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A58C 01:0000958C C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012F35C
+EDX:1002313C
+ESI:10023288
+EDI:01E98EA8
+CS:EIP:001B:1000A58C
+SS:ESP:0023:0012F33C  EBP:0012FCF0
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200206
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A58C  0012FCF0  0001:0000958C C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A58C  0012FCF0  0001:0000958C C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A58C 01:0000958C C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FC54
+EDX:1002313C
+ESI:10023288
+EDI:01E98EA8
+CS:EIP:001B:1000A58C
+SS:ESP:0023:0012FC34  EBP:00000000
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200202
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A5BD 01:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FC8C
+EDX:1002313C
+ESI:10023288
+EDI:01E2D008
+CS:EIP:001B:1000A5BD
+SS:ESP:0023:0012FC6C  EBP:01C02DE4
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200206
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5BD  01C02DE4  0001:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5BD  01C02DE4  0001:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A58C 01:0000958C C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012F358
+EDX:1002313C
+ESI:10023288
+EDI:01E992C0
+CS:EIP:001B:1000A58C
+SS:ESP:0023:0012F338  EBP:0012FD20
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200202
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A58C  0012FD20  0001:0000958C C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+01E3A648  0142C4B9  0000:00000000 
+8B137401  082444F6  0000:00000000 
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A58C  0012FD20  0001:0000958C C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+01E3A648  0142C4B9  0000:00000000 
+
+8B137401  082444F6  0000:00000000 
+
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A5BD 01:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012EA20
+EDX:1002313C
+ESI:10023288
+EDI:01E2D008
+CS:EIP:001B:1000A5BD
+SS:ESP:0023:0012EA00  EBP:0012FD58
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200216
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5BD  0012FD58  0001:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+00BEC518  01444C49  0000:00000000 
+8B137401  082444F6  0000:00000000 
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5BD  0012FD58  0001:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+00BEC518  01444C49  0000:00000000 
+
+8B137401  082444F6  0000:00000000 
+
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A5BD 01:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FC78
+EDX:1002313C
+ESI:10023288
+EDI:01E2D008
+CS:EIP:001B:1000A5BD
+SS:ESP:0023:0012FC58  EBP:00000000
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200202
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A5BD 01:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012F35C
+EDX:1002313C
+ESI:10023288
+EDI:01E2D008
+CS:EIP:001B:1000A5BD
+SS:ESP:0023:0012F33C  EBP:0012FCF0
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200206
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5BD  0012FCF0  0001:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5BD  0012FCF0  0001:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A58C 01:0000958C C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FC9C
+EDX:1002313C
+ESI:10023288
+EDI:01E2D008
+CS:EIP:001B:1000A58C
+SS:ESP:0023:0012FC7C  EBP:00000000
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200202
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A58C 01:0000958C C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FC9C
+EDX:1002313C
+ESI:10023288
+EDI:01E2D008
+CS:EIP:001B:1000A58C
+SS:ESP:0023:0012FC7C  EBP:00000000
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200202
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A58C 01:0000958C C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FC54
+EDX:1002313C
+ESI:10023288
+EDI:01E2D008
+CS:EIP:001B:1000A58C
+SS:ESP:0023:0012FC34  EBP:00000000
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200202
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A58C 01:0000958C C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FC74
+EDX:1002313C
+ESI:10023288
+EDI:01E2D008
+CS:EIP:001B:1000A58C
+SS:ESP:0023:0012FC54  EBP:00000000
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200202
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A58C 01:0000958C C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012F358
+EDX:1002313C
+ESI:10023288
+EDI:01E2D008
+CS:EIP:001B:1000A58C
+SS:ESP:0023:0012F338  EBP:0012FCF4
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200202
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A58C  0012FCF4  0001:0000958C C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A58C  0012FCF4  0001:0000958C C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A5BD 01:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FC50
+EDX:1002313C
+ESI:10023288
+EDI:01E2D008
+CS:EIP:001B:1000A5BD
+SS:ESP:0023:0012FC30  EBP:00000000
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200216
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A5BD 01:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012F334
+EDX:1002313C
+ESI:10023288
+EDI:01E2D008
+CS:EIP:001B:1000A5BD
+SS:ESP:0023:0012F314  EBP:0012FCC8
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200206
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5BD  0012FCC8  0001:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+00B54948  01429D58  0000:00000000 
+8B137401  082444F6  0000:00000000 
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5BD  0012FCC8  0001:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+00B54948  01429D58  0000:00000000 
+
+8B137401  082444F6  0000:00000000 
+
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A5BD 01:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012EA18
+EDX:1002313C
+ESI:10023288
+EDI:01E2D008
+CS:EIP:001B:1000A5BD
+SS:ESP:0023:0012E9F8  EBP:0012FCF0
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200202
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5BD  0012FCF0  0001:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5BD  0012FCF0  0001:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A5EF 01:000095EF C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FC54
+EDX:1002313C
+ESI:10023288
+EDI:00B57008
+CS:EIP:001B:1000A5EF
+SS:ESP:0023:0012FC34  EBP:00000000
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200202
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A5BD 01:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FC9C
+EDX:1002313C
+ESI:10023288
+EDI:01E2D008
+CS:EIP:001B:1000A5BD
+SS:ESP:0023:0012FC7C  EBP:00000000
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200202
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A5BD 01:000095BD C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FC9C
+EDX:1002313C
+ESI:10023288
+EDI:01E2D008
+CS:EIP:001B:1000A5BD
+SS:ESP:0023:0012FC7C  EBP:00000000
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200202
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A58C 01:0000958C C:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FC54
+EDX:1002313C
+ESI:10023288
+EDI:01E2D008
+CS:EIP:001B:1000A58C
+SS:ESP:0023:0012FC34  EBP:00000000
+DS:0023  ES:0023  FS:003B  GS:0000
+Flags:00200202
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A5BD 01:000095BD E:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FC9C
+EDX:00000000
+ESI:10023288
+EDI:02080878
+CS:EIP:0023:1000A5BD
+SS:ESP:002B:0012FC7C  EBP:00000000
+DS:002B  ES:002B  FS:0053  GS:002B
+Flags:00000202
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A5BD 01:000095BD E:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FC28
+EDX:00000000
+ESI:10023288
+EDI:0335B8B8
+CS:EIP:0023:1000A5BD
+SS:ESP:002B:0012FC08  EBP:03571D6C
+DS:002B  ES:002B  FS:0053  GS:002B
+Flags:00000202
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5BD  03571D6C  StormEngine_GetCoreManager+953D
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5BD  03571D6C  StormEngine_GetCoreManager+953D
+
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A58C 01:0000958C E:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FC78
+EDX:00000000
+ESI:10023288
+EDI:0335B8B8
+CS:EIP:0023:1000A58C
+SS:ESP:002B:0012FC58  EBP:00000000
+DS:002B  ES:002B  FS:0053  GS:002B
+Flags:00000202
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A58C 01:0000958C E:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FC54
+EDX:00000000
+ESI:10023288
+EDI:0335B8B8
+CS:EIP:0023:1000A58C
+SS:ESP:002B:0012FC34  EBP:00000000
+DS:002B  ES:002B  FS:0053  GS:002B
+Flags:00000202
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A58C 01:0000958C E:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FC54
+EDX:00000000
+ESI:10023288
+EDI:02080878
+CS:EIP:0023:1000A58C
+SS:ESP:002B:0012FC34  EBP:00000000
+DS:002B  ES:002B  FS:0053  GS:002B
+Flags:00000202
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A5BD 01:000095BD E:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FC9C
+EDX:00000000
+ESI:10023288
+EDI:02080878
+CS:EIP:0023:1000A5BD
+SS:ESP:002B:0012FC7C  EBP:00000000
+DS:002B  ES:002B  FS:0053  GS:002B
+Flags:00000202
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A58C 01:0000958C E:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FC54
+EDX:00000000
+ESI:10023288
+EDI:02080878
+CS:EIP:0023:1000A58C
+SS:ESP:002B:0012FC34  EBP:00000000
+DS:002B  ES:002B  FS:0053  GS:002B
+Flags:00000202
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A58C 01:0000958C E:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FC70
+EDX:00000000
+ESI:10023288
+EDI:02080878
+CS:EIP:0023:1000A58C
+SS:ESP:002B:0012FC50  EBP:00000000
+DS:002B  ES:002B  FS:0053  GS:002B
+Flags:00000216
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A5BD 01:000095BD E:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FC9C
+EDX:00000000
+ESI:10023288
+EDI:02080878
+CS:EIP:0023:1000A5BD
+SS:ESP:002B:0012FC7C  EBP:00000000
+DS:002B  ES:002B  FS:0053  GS:002B
+Flags:00000202
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A5EF 01:000095EF E:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FC50
+EDX:00000000
+ESI:10023288
+EDI:02080878
+CS:EIP:0023:1000A5EF
+SS:ESP:002B:0012FC30  EBP:034887DC
+DS:002B  ES:002B  FS:0053  GS:002B
+Flags:00000216
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5EF  034887DC  StormEngine_GetCoreManager+956F
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5EF  034887DC  StormEngine_GetCoreManager+956F
+
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A58C 01:0000958C E:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FC54
+EDX:00000000
+ESI:10023288
+EDI:02080878
+CS:EIP:0023:1000A58C
+SS:ESP:002B:0012FC34  EBP:00000000
+DS:002B  ES:002B  FS:0053  GS:002B
+Flags:00000202
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A5EF 01:000095EF E:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FB84
+EDX:00000000
+ESI:10023288
+EDI:02080878
+CS:EIP:0023:1000A5EF
+SS:ESP:002B:0012FB64  EBP:0209227C
+DS:002B  ES:002B  FS:0053  GS:002B
+Flags:00000202
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5EF  0209227C  StormEngine_GetCoreManager+956F
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5EF  0209227C  StormEngine_GetCoreManager+956F
+
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A5BD 01:000095BD E:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FC9C
+EDX:00000000
+ESI:10023288
+EDI:02080878
+CS:EIP:0023:1000A5BD
+SS:ESP:002B:0012FC7C  EBP:00000000
+DS:002B  ES:002B  FS:0053  GS:002B
+Flags:00000202
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A58C 01:0000958C E:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0012FC24
+EDX:00000000
+ESI:10023288
+EDI:02080878
+CS:EIP:0023:1000A58C
+SS:ESP:002B:0012FC04  EBP:00000000
+DS:002B  ES:002B  FS:0053  GS:002B
+Flags:00000202
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A5EF 01:000095EF D:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0017FC64
+EDX:00000000
+ESI:10023288
+EDI:0034FA68
+CS:EIP:0023:1000A5EF
+SS:ESP:002B:0017FC44  EBP:00000000
+DS:002B  ES:002B  FS:0053  GS:002B
+Flags:00000206
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A5EF 01:000095EF D:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0017F318
+EDX:00000000
+ESI:10023288
+EDI:0034FA68
+CS:EIP:0023:1000A5EF
+SS:ESP:002B:0017F2F8  EBP:0017FCB8
+DS:002B  ES:002B  FS:0053  GS:002B
+Flags:00000202
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5EF  0017FCB8  0001:000095EF D:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+1000A5EF  0017FCB8  0001:000095EF D:\SLIB\Tools\ParticlesEditor\Modules\core.dll
+
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A5EF 01:000095EF C:\Users\Nikolai\storm-engine\tools\ParticlesEditorStorm3.0\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0019FC04
+EDX:00000000
+ESI:10023288
+EDI:0AA00D58
+CS:EIP:0023:1000A5EF
+SS:ESP:002B:0019FBE4  EBP:00000000
+DS:002B  ES:002B  FS:0053  GS:002B
+Flags:00200206
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+
+//=====================================================
+Exception code: 80000003 BREAKPOINT
+Fault address:  1000A58C 01:0000958C C:\Users\Nikolai\storm-engine\tools\ParticlesEditorStorm3.0\Modules\core.dll
+
+Registers:
+EAX:00000000
+EBX:476F6F64
+ECX:0019FC04
+EDX:002FB000
+ESI:10023288
+EDI:0AD2BB48
+CS:EIP:0023:1000A58C
+SS:ESP:002B:0019FBE4  EBP:00000000
+DS:002B  ES:002B  FS:0053  GS:002B
+Flags:00200206
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Local Variables And Parameters
+
+Call stack:
+Address   Frame     Function            SourceFile
+========================
+Global Variables
+	'StormEngine_GetCoreManager'
+

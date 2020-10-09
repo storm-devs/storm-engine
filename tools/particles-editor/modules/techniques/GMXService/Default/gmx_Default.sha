@@ -1,0 +1,29 @@
+vertexshader gmx_DefaultVS() 
+{
+ STATIC_DECL
+
+ asm
+ {
+  vs.1.1
+
+  m4x4 oPos, vPos, c[GC_MTX_WVP]
+ }
+} 
+
+block gmx_Default ()
+{
+  FogEnable = false;
+
+  TextureFactor = 0xFFFF0000;
+  ColorOp[0] = SelectArg1;
+  ColorArg1[0] = TFactor;
+
+  AlphaOp[0] = disable;
+
+  AlphaBlendEnable = false;
+  AlphaTestEnable = false;
+
+  VertexShader = gmx_DefaultVS();
+  
+  Draw ();
+}

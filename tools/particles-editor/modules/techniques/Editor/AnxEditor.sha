@@ -1,0 +1,86 @@
+
+vertexshader vs_AnxDrawFill()
+{
+	decl
+	{
+		stream(0)
+		{
+			vector3 v0;
+			color	v1;
+		}
+	}
+	asm
+	{
+		vs.1.0
+		m4x4 oPos, v0, c[GC_MTX_WVP]
+		mov oD0, v1
+	}
+}
+
+block AnxScreenDrawFill()
+{
+		FogEnable = false;
+		zenable = false;
+
+		CullMode = none;
+
+		AlphaBlendEnable = true;
+		AlphaTestEnable = false;
+
+		ColorOp[0] = SelectArg1;
+		ColorArg1[0] = diffuse;
+		ColorOp[1] = disable;
+
+		AlphaOp[0] = SelectArg1;
+		AlphaArg1[0] = diffuse;
+		AlphaOp[1] = disable;
+
+		VertexShader = vs_AnxDrawFill();
+
+		Draw();
+}
+
+vertexshader vs_AnxDrawTexture()
+{
+	decl
+	{
+		stream(0)
+		{
+			vector3 v0;
+			color	v1;
+			vector2 v2;
+		}
+	}
+	asm
+	{
+		vs.1.0
+		m4x4 oPos, v0, c[GC_MTX_WVP]
+		mov oD0, v1
+		mov oT0, v2
+	}
+}
+
+block AnxScreenDrawTexture()
+{
+		FogEnable = false;
+		zenable = false;
+
+		CullMode = none;
+
+		AlphaBlendEnable = true;
+		AlphaTestEnable = false;
+
+		ColorOp[0] = modulate;
+		ColorArg1[0] = diffuse;
+		ColorArg2[0] = texture;
+		ColorOp[1] = disable;
+
+		AlphaOp[0] = modulate;
+		AlphaArg1[0] = diffuse;
+		AlphaArg2[0] = texture;
+		AlphaOp[1] = disable;
+
+		VertexShader = vs_AnxDrawTexture();
+
+		Draw();
+}

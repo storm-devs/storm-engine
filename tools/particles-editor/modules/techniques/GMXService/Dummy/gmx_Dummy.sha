@@ -1,0 +1,43 @@
+vertexshader gmx_DummyVS() 
+{
+ STATIC_DECL
+
+ asm
+ {
+  vs.1.1
+
+  m4x4 oPos, vPos, c[GC_MTX_WVP]    // Transform position
+
+        UNPACK_NORMAL(r3, vPackedNormal)
+
+        dp3 r0, r3, c[GC_FREE]       // cos = N * L
+        max r0, c[GC_FREE+2], r0          
+        min r0, c[GC_FREE+5], r0          
+
+        mul r1, r0.x, c[GC_FREE+1]        // r1 =  cos * MaterialColor
+        add r2, r1, c[GC_FREE+2]          // r2 = (cos * MaterialColor) + Ambient 
+        mov oD0, r2
+ }
+} 
+
+
+block gmx_Dummy ()
+{
+        FogEnable = false;
+        AlphaTestEnable = false;
+        AlphaBlendEnable = false;
+
+        ColorOp[0] = selectarg1;
+        ColorArg1[0] = diffuse;
+
+        AlphaOp[0] = disable;
+
+  VertexShader = gmx_DummyVS();
+
+        VertexShaderConstant[GC_FREE] = (Vector(0.0, 0.0, -1.0) ^ (!mView)) ^ (!mWorld);
+        VertexShaderConstant[GC_FREE+1] = Vector4(1.0, 1.0, 1.0, 1.0);
+        VertexShaderConstant[GC_FREE+2] = Vector4(0.2, 0.2, 0.2, 0.2);  
+        VertexShaderConstant[GC_FREE+5] = Vector4(0.9, 0.9, 0.9, 0.9);  
+
+		Draw ();
+}

@@ -1,0 +1,58 @@
+vertexshader vs_GI_Color()
+{
+	decl
+	{
+		stream(0)
+		{
+			vector3		vPos; // Pos;
+			color		vCol; // Color;
+			vector2		vTex; // TexCoord0;
+		}
+	}
+
+	asm
+	{
+		vs.1.1
+
+		m4x4		oPos, vPos, c[GC_FREE]
+		mov		oD0, vCol
+	}
+}
+
+block GI_Color_2D()
+{
+		CullMode = none;
+		FogEnable = false;
+		AlphaBlendEnable = true;
+		AlphaTestEnable = false;
+		zenable = false;
+
+		ColorOp[0] = selectarg1;
+		ColorArg1[0] = diffuse;
+
+		AlphaOp[0] = selectarg1;
+		AlphaArg1[0] = diffuse;
+
+		VertexShaderConstant[GC_FREE] = matrix();
+		VertexShader = vs_GI_Color();
+		Draw ();
+}
+
+block GI_Color_3D()
+{
+		CullMode = none;
+		FogEnable = false;
+		AlphaBlendEnable = true;
+		AlphaTestEnable = true;
+		zenable = true;
+
+		ColorOp[0] = selectarg1;
+		ColorArg1[0] = diffuse;
+
+		AlphaOp[0] = selectarg1;
+		AlphaArg1[0] = diffuse;
+
+		VertexShaderConstant[GC_FREE] = mProjection;
+		VertexShader = vs_GI_Color();
+		Draw ();
+}

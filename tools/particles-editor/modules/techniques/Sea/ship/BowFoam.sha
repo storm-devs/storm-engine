@@ -1,0 +1,20 @@
+block BowFoam()
+{
+		FogEnable = false;
+		AlphaBlendEnable = true;
+	    AlphaTestEnable = false;
+	    ZWriteenable = false;
+
+		SrcBlend = srcalpha;
+		DestBlend = one;
+
+		ColorOp[0] = modulate;
+		ColorArg1[0] = texture;
+		ColorArg2[0] = diffuse;
+
+		AlphaOp[0] = modulate;
+		AlphaArg1[0] = texture;
+		AlphaArg2[0] = diffuse;
+
+		DRAW_RECTS(vs_stdrects)
+}

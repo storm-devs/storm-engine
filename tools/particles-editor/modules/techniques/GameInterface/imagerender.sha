@@ -1,0 +1,44 @@
+vertexshader vs_IR_Image()
+{
+	decl
+	{
+		stream(0)
+		{
+			vector3		vPos; // Pos;
+			color		vCol; // Color;
+			vector2		vTex; // TexCoord0;
+		}
+	}
+
+	asm
+	{
+		vs.1.1
+
+		mov	oPos, vPos
+		mov	oD0, vCol
+		mov	oT0, vTex
+	}
+}
+
+block IR_Image(vbuffer vIRBuffer, ibuffer iIRBuffer)
+{
+		SetVertexBuffer(0, vIRBuffer, 0);
+		SetIndexBuffer(iIRBuffer, 0);
+
+		CullMode = none;
+		FogEnable = false;
+		AlphaBlendEnable = true;
+		AlphaTestEnable = false;
+		zenable = false;
+
+		ColorOp[0] = modulate2x;
+		ColorArg1[0] = diffuse;
+		ColorArg2[0] = texture;
+
+		AlphaOp[0] = modulate;
+		AlphaArg1[0] = diffuse;
+		AlphaArg2[0] = texture;
+
+		VertexShader = vs_IR_Image();
+		Draw ();
+}

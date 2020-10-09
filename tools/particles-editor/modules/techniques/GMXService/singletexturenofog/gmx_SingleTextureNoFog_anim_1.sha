@@ -1,0 +1,35 @@
+vertexshader gmx_SingleTextureNoFog_anim_1VS() 
+{
+ ANIM_DECL
+
+ asm
+ {
+  vs.1.1
+
+	// Upack bones indexes
+	mad r0, vBonesID, c[GC_FREE].xxxx, c[GC_FREE].yyyy            
+
+	// First bone
+	mov a0.x, r0.z                                 
+  m4x3 r2, vPos, c[a0.x]
+  
+  
+  // Transform to screen      
+	mov r2.w, c[GC_FREE].z
+	m4x4 oPos, r2, c[GC_MTX_WVP]
+
+  
+  UNPACK_TEX(oT0, vPackedUV1)
+  
+ }
+} 
+
+
+block gmx_SingleTextureNoFog_anim_1 ()
+{
+  SETUP_GMX_SINGLETEXTURE
+
+	VertexShader = gmx_SingleTextureNoFog_anim_1VS();
+
+  Draw ();
+}

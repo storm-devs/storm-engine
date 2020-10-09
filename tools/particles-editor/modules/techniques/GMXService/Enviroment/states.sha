@@ -1,0 +1,25 @@
+#define SETUP_GMX_ENVIRONMENT                 \
+                                              \
+VertexShaderConstant[GMX_MWORLD] = mWorld;    \
+                                              \
+Texture[0] = GMX_TextureStage0;               \
+Texture[1] = TextureGlobalLight;              \
+Texture[2] = MissionEnvironmentMap;           \
+                                              \
+ColorOp[0] = SelectArg1;                      \
+ColorArg1[0] = Texture;                       \
+                                              \
+ColorOp[1] = Modulate2X;                      \
+ColorArg1[1] = current;                       \
+ColorArg2[1] = Texture;                       \
+                                              \
+ColorOp[2] = BLENDDIFFUSEALPHA;               \
+ColorArg1[2] = current;                       \
+ColorArg2[2] = Texture;                       \
+                                              \
+AlphaOp[0] = Modulate;                        \
+AlphaArg1[0] = Texture;                       \
+AlphaArg2[0] = TFactor;                       \
+                                              \
+TextureFactor = GMX_ObjectsTransparency;      \
+AlphaRef = 1;                                 \

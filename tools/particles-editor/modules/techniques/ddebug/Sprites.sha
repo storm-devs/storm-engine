@@ -1,0 +1,62 @@
+vertexshader vs_dbgsprites()
+{
+	decl
+	{
+		stream(0)
+		{
+			vector3	 	vPos;
+			color		dwColor;
+			vector2		vTexCoord0;
+		}
+	}
+	asm
+	{
+		vs.1.0
+
+		mov oPos, vPos
+		mov oD0, dwColor
+		mov oT0, vTexCoord0
+	}
+}
+
+block dbgSprites()
+{
+  	FogEnable = false;
+	AlphaTestEnable = false;
+	CullMode = none;
+	ColorOp[0] = modulate;
+	ColorArg1[0] = texture;
+	ColorArg2[0] = diffuse;
+
+	AlphaOp[0] = modulate;
+	AlphaArg1[0] = texture;
+	AlphaArg2[0] = diffuse;
+
+	VertexShader = vs_dbgsprites();
+
+	Draw();
+}
+
+block dbgInfoSprite()
+{
+  	FogEnable = false;
+	FillMode = solid;
+	AlphaTestEnable = false;
+	CullMode = none;
+	
+	SrcBlend = srcalpha;
+	DestBlend = invsrcalpha;
+
+	ZEnable = false;
+	
+	TextureFactor = 0x7F5F5F5F;
+	ColorOp[0] = selectarg1;
+	ColorArg1[0] = tfactor;
+
+	AlphaOp[0] = selectarg1;
+	AlphaArg1[0] = tfactor;
+		
+	VertexShader = vs_dbgsprites();
+		
+	Draw();
+}

@@ -1,0 +1,126 @@
+block_noopt Default()
+{
+    // Texture Stage States 
+	for (dword i=0; i<8; i++)
+	{
+        TexCoordIndex[i] = i;
+
+        ColorOp[i] = disable;
+        ColorArg1[i] = current;
+        ColorArg2[i] = texture;
+        ColorArg0[i] = current;
+
+        AlphaOp[i] = disable;
+        AlphaArg1[i] = current;
+        AlphaArg2[i] = texture;
+        AlphaArg0[i] = current;
+
+        MagFilter[i] = linear;
+        MinFilter[i] = linear;
+        MipFilter[i] = linear;
+        
+        BumpEnvMat00[i] = 0.0;
+        BumpEnvMat01[i] = 0.0;
+        BumpEnvMat10[i] = 0.0;
+        BumpEnvMat11[i] = 0.0;
+
+        AddressU[i] = Wrap;
+        AddressV[i] = Wrap;
+        AddressW[i] = Wrap;
+        BorderColor[i] = 0x00000000;
+        MipMapLodBias[i] = 0.0;
+        MaxMipLevel[i] = 0;
+        MaxAnisotropy[i] = 1;
+        BumpEnvLScale[i] = 0.0;
+        BumpEnvLOffset[i] = 0.0;
+        TextureTransformFlags[i] = disable;
+        ResultArg[i] = current;
+	}
+
+	ColorOp[0] = modulate;
+
+// Render States
+        ZEnable = true;
+        FillMode = solid;
+        ShadeMode = gouraud;
+        //LinePattern = 0;
+        ZWriteEnable = true;
+        AlphaTestEnable = true;
+        LastPixel = true;
+        SrcBlend = srcalpha;
+        DestBlend = invsrcalpha;
+        CullMode = ccw;
+        ZFunc = lessequal;
+        AlphaRef = 128;
+        AlphaFunc = greater;
+        DitherEnable = false;
+        AlphaBlendEnable = true;
+        SpecularEnable = false;
+        FogEnable = true;
+        FogColor = 0xBDCBDE;
+        FogTableMode = none;
+		FogVertexMode = none;
+        FogStart = 0.0;
+        FogEnd = 0.0;
+        FogDensity = 0.0;
+        EdgeAntialias = false;
+        ZBias = 0;
+        RangeFogEnable = false;
+        StencilEnable = false;
+        StencilFail = keep;
+        StencilZFail = keep;
+        StencilPass = keep;
+        StencilFunc = always;
+        StencilRef = 0;
+        StencilMask = 0xFFFFFFFF;
+        StencilWriteMask = 0xFFFFFFFF;
+        TextureFactor = 0xFFFFFFFF;
+        Wrap0 = 0;
+        Wrap1 = 0;
+        Wrap2 = 0;
+        Wrap3 = 0;
+        Wrap4 = 0;
+        Wrap5 = 0;
+        Wrap6 = 0;
+        Wrap7 = 0;
+        Clipping = true;
+        Lighting = false;
+        Ambient = 0x0;
+        ColorVertex = true;
+        LocalViewer = false;
+        NormalizeNormals = false;
+        DiffuseMaterialSource = color1;
+        SpecularMaterialSource = color2;
+        AmbientMaterialSource = color2;
+        EmissiveMaterialSource = material;
+        VertexBlend = disable;
+        ClipPlaneEnable = 0;
+        SoftwareVertexProcessing = false;
+        PointSize = 0.0;
+        PointSize_MIN = 0.0;
+        PointSpriteEnable = false;
+        PointScaleEnable = false;
+        PointScale_A = 1.0;
+        PointScale_B = 1.0;
+        PointScale_C = 1.0;
+        MultiSampleAntialias = true;
+        MultiSampleMask = 0xFFFFFFFF;
+        PatchEdgeStyle = discrete;
+        PatchSegments = 1.0;
+        PointSize_MAX = 64.0;
+        IndexedVertexBlendEnable = false;
+        ColorWriteEnable = 0x0000000F;
+        TweenFactor = 0.0;
+        BlendOp = add;
+
+        //ZVisible = 
+        //DebugMonitorToken = enable;
+        //PositionOrder = cubic;
+        //NormalOrder = linear;
+
+		fFogDensity = 0.0;
+		dwFirstFreeConstant = GC_FREE;
+		bOverdrawShow = 0;
+		dwNumLights = 0;
+}
+

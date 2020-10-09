@@ -1,0 +1,13 @@
+block_noopt SeaEffect_ReflectionShips()
+{
+	AlphaTestEnable = false;
+
+	float fA = fCamera2ObjectDistance / 1500.0;
+	if (fA > 1.0) return;
+	if (fA < 0.3) fA = 0.3;
+
+	TextureFactor = color(0.0, 0.0, 0.0, 1.0 - fA * fA);
+
+	AlphaOp[0] = selectarg1;
+	AlphaArg1[0] = tfactor;
+}

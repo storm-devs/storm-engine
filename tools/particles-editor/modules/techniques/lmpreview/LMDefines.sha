@@ -1,0 +1,25 @@
+Vector4 LightingMapParams;
+Texture LightingMapTexture;
+
+#define LM_CONST GC_SHADOW_CONST1
+#define LM_WORLD_MATRIX GMX_MWORLD
+
+
+#define LIGHTINGMAPUV(_pos, _temp, _res)                   \
+  m4x4 _temp, _pos, c[LM_WORLD_MATRIX]                     \
+  mad _res.x, -_temp.x, c[LM_CONST].x, c[LM_CONST].y        \
+  mad _res.y, _temp.z, c[LM_CONST].z, c[LM_CONST].w        \
+ 
+ 
+#define SETUPLIGHTINGMAP(TexStage)                    \
+  Texture[TexStage] = LightingMapTexture;                    \
+  VertexShaderConstant[LM_CONST] = LightingMapParams; \
+  VertexShaderConstant[LM_WORLD_MATRIX] = mWorld;    \
+  ColorOp[TexStage] = Modulate2X;                        \
+  ColorArg1[TexStage] = Current;                       \
+  ColorArg2[TexStage] = Texture;                       \
+  AddressU[TexStage] = Clamp;                          \
+  AddressV[TexStage] = Clamp;                          \
+  AddressW[TexStage] = Clamp;                          \
+  
+ 

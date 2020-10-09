@@ -1,0 +1,23 @@
+block dbgLights(dword dwColor)
+{
+		FogEnable = false;
+		cullmode = none;
+		zenable = false;
+		fillmode = wireframe;
+
+		AlphaBlendEnable = true;
+		AlphaTestEnable = false;
+
+		TextureFactor = dwColor;
+
+		ColorOp[0] = selectarg2;
+		ColorArg1[0] = diffuse;
+		ColorArg2[0] = tfactor;
+
+		AlphaOp[0] = SelectArg1;
+		AlphaArg1[0] = diffuse;
+
+		VertexShader = vs_dbgsphere();
+
+		Draw();
+}

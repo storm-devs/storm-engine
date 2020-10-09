@@ -1,0 +1,36 @@
+vertexshader WaterClipPlaneVS() 
+{
+ decl                                    
+ {                                       
+   stream(0)                            
+   {                                    
+    vector3         vPos;               
+   }                                    
+ }                                      
+
+ asm
+ {
+  vs.1.1
+
+  m4x4 r1, vPos, c[GC_MTX_WVP]    // Transform position
+//  sub r1.z, c[GC_CONSTANT].y, r1.z
+  mov oPos, r1
+  
+ }
+} 
+
+
+block WaterClipPlane ()
+{
+ TextureFactor = 0xFFFFFFFF;
+ ColorOp[0] = SelectArg1;                     
+ ColorArg1[0] = TFactor;                       
+
+
+ VertexShader = WaterClipPlaneVS();
+
+ CullMode = none;  
+//  ColorWriteEnable = 0;
+
+ Draw ();
+}

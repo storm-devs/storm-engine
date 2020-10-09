@@ -1,0 +1,31 @@
+#define SETUP_GMX_ENVIRONMENT_POINT           \
+                                              \
+VertexShaderConstant[GMX_MWORLD] = mWorld;    \
+                                              \
+Texture[0] = TextureGlobalLight;              \
+Texture[2] = GMX_TextureStage0;               \
+Texture[3] = MissionEnvironmentMap;           \
+                                              \
+ColorOp[0] = SelectArg1;                      \
+ColorArg1[0] = Texture;                       \
+                                              \
+ColorOp[1] = Add;                             \
+ColorArg1[1] = current;                       \
+ColorArg2[1] = Diffuse;                       \
+                                              \
+ColorOp[2] = Modulate2X;                      \
+ColorArg1[2] = current;                       \
+ColorArg2[2] = Texture;                       \
+                                              \
+ColorOp[3] = BLENDDIFFUSEALPHA;               \
+ColorArg1[3] = current;                       \
+ColorArg2[3] = Texture;                       \
+                                              \
+SetLights(0.0, 1.0);                          \
+                                              \
+AlphaOp[0] = Modulate;                        \
+AlphaArg1[0] = Texture;                       \
+AlphaArg2[0] = TFactor;                       \
+                                              \
+TextureFactor = GMX_ObjectsTransparency;      \
+AlphaRef = 1;                                 \

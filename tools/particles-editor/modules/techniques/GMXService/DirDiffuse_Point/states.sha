@@ -1,0 +1,34 @@
+#define SETUP_GMX_DIRDIFFUSE_POINT            \
+                                              \
+VertexShaderConstant[GMX_MWORLD] = mWorld;    \
+Texture[0] = TextureGlobalLight;              \
+Texture[2] = GMX_TextureStage0;               \
+                                              \
+                                              \
+ColorOp[0] = SelectArg1;                      \
+ColorArg1[0] = Texture;                       \
+                                              \
+ColorOp[1] = Add;                             \
+ColorArg1[1] = Current;                       \
+ColorArg2[1] = Diffuse;                       \
+                                              \
+ColorOp[2] = Modulate2X;                      \
+ColorArg1[2] = Current;                       \
+ColorArg2[2] = Texture;                       \
+                                              \
+SETUPLIGHTINGMAP(3)                           \
+                                              \
+AlphaOp[0] = SelectArg1;                      \
+AlphaArg1[0] = Current;                       \
+                                              \
+AlphaOp[1] = SelectArg1;                      \
+AlphaArg1[1] = Current;                       \
+                                              \
+AlphaOp[2] = Modulate;                        \
+AlphaArg1[2] = Texture;                       \
+AlphaArg2[2] = TFactor;                       \
+                                              \
+TextureFactor = GMX_ObjectsTransparency;      \
+AlphaRef = 1;                                 \
+                                              \
+SetLights(0.0, 1.0);                          \

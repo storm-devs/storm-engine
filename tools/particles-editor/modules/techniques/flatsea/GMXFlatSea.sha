@@ -1,0 +1,186 @@
+float fFlatSeaBumpScale = 0.2;
+
+vertexshader GMXFlatSea_VS() 
+{
+ STATIC_DECL
+
+ asm
+ {
+  vs.1.1
+
+//¬ мир переводим
+  m4x4 r2, vPos, c[GC_FREE+2]      
+
+//¬ектор vertex-eye в мировой системе
+  add r2, -r2, c[GC_FREE+10]
+  VS_NORMALIZE(r2)
+  
+  
+//fresnel
+  UNPACK_NORMAL(r9, vPackedNormal)
+  dp3   r10.x, r2, r9          // fresnel coeff
+  
+  //mul r10.x, c[GC_FREE+12].x, r10.x
+
+  sub r10.x, r10.x, c[GC_FREE+12].x // cos - lim
+  mul r10.y, r10.x, c[GC_FREE+12].y // (cos - lim) / (1 - lim)
+  min r10.y, r10.y, c[GC_CONSTANT].y // clamp 1.0 
+  max r10.y, r10.y, c[GC_CONSTANT].x // clamp 0.0
+
+  sub r10.y, c[GC_CONSTANT].y, r10.y
+
+  mad r10.x, r10.y, c[GC_FREE+12].w, c[GC_FREE+12].z  
+   
+   
+      
+  
+  
+//  mul r10.x, r10.x, r10.x 
+//  mul r10.x, r10.x, r10.x 
+
+
+//fresnel  
+
+// Get half angle
+//свет в локальной системе но на это можно забить
+//т.к. море двигать нельз€
+  add r2.xyz, r2.xyz, c[GC_LIGHT0]     
+  VS_NORMALIZE(r2)
+  
+//ќтправл€ем в пиксел шэйдер
+  mov oT3.xyz, c[GC_CONSTANT].xxx
+ 
+  mov r2.xyz, r2.xzy
+  mov oT2.xyz, r2
+  
+  
+
+  m4x4 r1, vPos, c[GC_MTX_WVP]    // Transform position
+  mov oPos, r1
+  
+  //ƒелим на W компоненту вертекса, что бы привести к диапазону -1  1
+  max r1.w, r1.w, c[GC_FREE+1].w
+  rcp r2, r1
+  mul r1, r2, r1
+  
+//  GMX_FOG(r1, r2);
+  mul r3.xy, vPos.xz, c[GC_FREE].xx
+  add oT0.xy, r3.xy, c[GC_FREE+15].xz
+  mov	oT0.z, c[GC_ANIMATION].x
+
+  mad r3, r1, c[GC_CONSTANT].zzzz, c[GC_CONSTANT].zzzz
+  
+  mad r3.y, r3.y, -c[GC_CONSTANT].y, c[GC_CONSTANT].y
+  
+//  add r3.y, r3.y, c[GC_FREE+1].x 
+
+  mov oT1, r3
+
+
+  mov oD0.xyz, c[GC_FREE+11].xyz
+  mov oD0.w, r10.x 
+
+  
+   
+  
+ }
+} 
+
+
+pixelshader GMXFlatSea_PS()
+{
+  asm
+  {
+    ps.1.1
+    
+    tex t0  // bump
+    texbem t1, t0
+    
+    //-------- спекул€р рассчитываем ---------------------
+    texm3x2pad t2, t0_bx2 // calculates u from first row
+    texm3x2tex t3, t0_bx2 // calculates v from second row (zero)
+    //в t3 теперь лежит спекул€р уже в степени...
+    
+    
+    //÷вет спекул€ра...
+    mul_x4 t3, t3, c2    
+    
+    
+    //tex t1
+    mov r0, t1
+    mul r0, r0, v0
+
+
+    mov r0.a, v0.a
+
+    //ѕрибавл€ем спекул€р к текущему цвету...
+    add r0, r0, t3
+    
+    
+  }
+}
+
+
+
+block GMXFlatSea ()
+{
+ FogEnable = false;
+ 
+ AddressU[1] = Clamp;
+ AddressV[1] = Clamp;
+ AddressW[1] = Clamp;
+
+ AddressU[3] = Clamp;
+ AddressV[3] = Clamp;
+ AddressW[3] = Clamp;
+ 
+
+ ColorOp[0] = SelectArg1;                     
+ ColorArg1[0] = Texture;                       
+
+ ColorOp[1] = disable;                     
+// ColorArg1[1] = Texture;                       
+
+// ColorOp[2] = SelectArg1;                     
+// ColorArg1[2] = Texture;                       
+
+// ColorOp[3] = SelectArg1;                     
+// ColorArg1[3] = Texture;                       
+                                              
+// AlphaOp[0] = Disable;                        
+               
+                                              
+ VertexShader = GMXFlatSea_VS();
+ PixelShader = GMXFlatSea_PS();
+ 
+ VertexShaderConstant[GC_FREE+1] = Vector4(-0.5, -1.0, 0.0, 1.0);
+
+ VertexShaderConstant[GC_FREE+2] = mWorld; 
+
+
+ VertexShaderConstant[GC_FREE+10] = vCamPos; 
+
+
+//x = minimal cos (lim)
+//y = 1.0f / (1.0f - x)
+//z = min alpha
+//w = 1 - min alpha 
+ VertexShaderConstant[GC_FREE+12] = Vector4(0.2, 1.25, 0.3, 0.7); 
+
+
+ AlphaBlendEnable = true;
+ AlphaTestEnable = false;
+ SrcBlend = srcalpha;
+ DestBlend = invsrcalpha;
+
+ 
+ 
+ 
+ BumpEnvMat00[1] = -fFlatSeaBumpScale;
+ BumpEnvMat01[1] = -fFlatSeaBumpScale;
+ BumpEnvMat10[1] = fFlatSeaBumpScale;
+ BumpEnvMat11[1] = fFlatSeaBumpScale;
+ 
+ 
+ Draw ();
+}
