@@ -7,7 +7,8 @@ add_library(waterrings MODULE
 	TIVBufferManager.h
 	WaterRings.cpp
 	WaterRings.h
+	
+	${Storm_SOURCE_DIR}/Common_h/rands.cpp
 )
-target_include_directories(waterrings PRIVATE common_h)
-target_include_directories(waterrings PRIVATE SoundService)
-target_include_directories(waterrings PRIVATE extern/directx/include)
+
+target_include_directories(waterrings PRIVATE ${DirectX_INCLUDE_DIR})

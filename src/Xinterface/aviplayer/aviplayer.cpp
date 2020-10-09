@@ -3,9 +3,6 @@
 #include "..\\..\\engine\\program\\interface\\messages.h"
 #include <stdio.h>
 
-#pragma comment(lib, "amstrmid.lib")
-#pragma comment(lib, "ddraw.lib")
-
 #define IRELEASE(i)                                                                                                    \
     {                                                                                                                  \
         if (i)                                                                                                         \

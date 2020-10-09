@@ -6,6 +6,5 @@ add_library(shadow MODULE
 	shadow.cpp
 	shadow.h
 )
-target_include_directories(shadow PRIVATE common_h)
-target_include_directories(shadow PRIVATE SoundService)
-target_include_directories(shadow PRIVATE extern/directx/include)
+
+target_include_directories(shadow PRIVATE ${DirectX_INCLUDE_DIR})

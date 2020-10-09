@@ -8,6 +8,5 @@ add_library(locator MODULE
 	locator.cpp
 	locator.h
 )
-target_include_directories(locator PRIVATE common_h)
-target_include_directories(locator PRIVATE SoundService)
-target_include_directories(locator PRIVATE extern/directx/include)
+
+target_include_directories(locator PRIVATE ${DirectX_INCLUDE_DIR})

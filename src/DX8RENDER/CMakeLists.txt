@@ -12,6 +12,10 @@ add_library(render MODULE
 	Technique.h
 	texture.h
 )
-target_include_directories(render PRIVATE common_h)
-target_include_directories(render PRIVATE SoundService)
-target_include_directories(render PRIVATE extern/directx/include)
+
+target_include_directories(render PRIVATE ${DirectX_INCLUDE_DIR})
+
+target_link_libraries(render PRIVATE ${DirectX_LIBRARY})
+target_link_libraries(render PRIVATE ${DirectX_D3DX9_LIBRARY})
+target_link_libraries(render PRIVATE ${DirectX_DXERR_LIBRARY})
+target_link_libraries(render PRIVATE gdiplus.lib)

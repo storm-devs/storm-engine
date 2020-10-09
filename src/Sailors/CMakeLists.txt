@@ -16,6 +16,5 @@ add_library(sailors MODULE
 	d3dx8math.h
 	resource.h
 )
-target_include_directories(sailors PRIVATE common_h)
-target_include_directories(sailors PRIVATE SoundService)
-target_include_directories(sailors PRIVATE extern/directx/include)
+
+target_include_directories(sailors PRIVATE ${DirectX_INCLUDE_DIR})

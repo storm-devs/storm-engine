@@ -21,6 +21,7 @@ add_library(weather MODULE
 	Weather.h
 	typedef.h
 )
-target_include_directories(weather PRIVATE common_h)
-target_include_directories(weather PRIVATE SoundService)
-target_include_directories(weather PRIVATE extern/directx/include)
+
+target_include_directories(weather PRIVATE ${DirectX_INCLUDE_DIR})
+
+target_link_libraries(weather PRIVATE ${DirectX_D3DX9_LIBRARY})

@@ -1,9 +1,6 @@
 #include "Technique.h"
 #include "..\common_h\defines.h"
 
-#pragma comment(lib, "d3dx9.lib")
-#pragma comment(lib, "d3d9.lib")
-
 #define SHA_DIR "modules\\Techniques"
 #define SHA_EXT ".sha"
 

@@ -2,6 +2,13 @@ cmake_minimum_required(VERSION 3.18)
 
 project(animation)
 
+find_package(DirectX REQUIRED)
+
+include_directories(
+	${Storm_SOURCE_DIR}/Common_h
+	${DirectX_INCLUDE_DIR}
+)
+
 add_library(animation MODULE 
 	ActionInfo.cpp
 	ActionInfo.h
@@ -20,6 +27,5 @@ add_library(animation MODULE
 	UserData.cpp
 	UserData.h
 )
-target_include_directories(animation PRIVATE common_h)
-target_include_directories(animation PRIVATE SoundService)
-target_include_directories(animation PRIVATE extern/directx/include)
+
+target_link_libraries(animation PRIVATE ${DirectX_D3DX9_LIBRARY})

@@ -6,6 +6,5 @@ add_library(dialog MODULE
 	dialog.cpp
 	dialog.h
 )
-target_include_directories(dialog PRIVATE common_h)
-target_include_directories(dialog PRIVATE SoundService)
-target_include_directories(dialog PRIVATE extern/directx/include)
+
+target_include_directories(dialog PRIVATE ${DirectX_INCLUDE_DIR})

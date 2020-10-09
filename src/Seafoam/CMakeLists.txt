@@ -14,6 +14,5 @@ add_library(seafoam MODULE
 	seafoam_ps.cpp
 	seafoam_ps.h
 )
-target_include_directories(seafoam PRIVATE common_h)
-target_include_directories(seafoam PRIVATE SoundService)
-target_include_directories(seafoam PRIVATE extern/directx/include)
+
+target_include_directories(seafoam PRIVATE ${DirectX_INCLUDE_DIR})

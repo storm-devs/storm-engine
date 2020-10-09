@@ -2,6 +2,11 @@ cmake_minimum_required(VERSION 3.18)
 
 project(ballsplash)
 
+include_directories(
+	#${Storm_SOURCE_DIR}/Common_h
+	${DirectX_INCLUDE_DIR}
+)
+
 add_library(ballsplash MODULE 
 	BallSplash.cpp
 	BallSplash.h
@@ -9,7 +14,5 @@ add_library(ballsplash MODULE
 	BallSplashDefines.h
 	TSplash.cpp
 	TSplash.h
+	${Storm_SOURCE_DIR}/Common_h/rands.cpp
 )
-target_include_directories(ballsplash PRIVATE common_h)
-target_include_directories(ballsplash PRIVATE SoundService)
-target_include_directories(ballsplash PRIVATE extern/directx/include)

@@ -20,6 +20,5 @@ add_library(lighter MODULE
 	Window.cpp
 	Window.h
 )
-target_include_directories(lighter PRIVATE common_h)
-target_include_directories(lighter PRIVATE SoundService)
-target_include_directories(lighter PRIVATE extern/directx/include)
+
+target_include_directories(lighter PRIVATE ${DirectX_INCLUDE_DIR})

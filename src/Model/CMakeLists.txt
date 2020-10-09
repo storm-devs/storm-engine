@@ -7,6 +7,5 @@ add_library(model MODULE
 	modelr.h
 	node.cpp
 )
-target_include_directories(model PRIVATE common_h)
-target_include_directories(model PRIVATE SoundService)
-target_include_directories(model PRIVATE extern/directx/include)
+
+target_include_directories(model PRIVATE ${DirectX_INCLUDE_DIR})

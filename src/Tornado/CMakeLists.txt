@@ -14,6 +14,5 @@ add_library(tornado MODULE
 	TornadoParticles.cpp
 	TornadoParticles.h
 )
-target_include_directories(tornado PRIVATE common_h)
-target_include_directories(tornado PRIVATE SoundService)
-target_include_directories(tornado PRIVATE extern/directx/include)
+
+target_include_directories(tornado PRIVATE ${DirectX_INCLUDE_DIR})

@@ -35,22 +35,11 @@ add_library(seaai MODULE
 	AIShipTouchController.h
 	AIShipTrade.cpp
 	AIShipWar.cpp
-	AITemplate.cpp
-	AITemplate.h
 	LocatorShow.cpp
 	LocatorShow.h
 	SEA_AI.cpp
 	SEA_AI.h
 	SeaSaveLoad.cpp
-
-	templates/Array.h
-	templates/HTable.h
-	templates/dtimer.h
-	templates/map.h
-	templates/stack.h
-	templates/string.h
-	templates/tcommon.h
 )
-target_include_directories(seaai PRIVATE common_h)
-target_include_directories(seaai PRIVATE SoundService)
-target_include_directories(seaai PRIVATE extern/directx/include)
+
+target_include_directories(seaai PRIVATE ${DirectX_INCLUDE_DIR})

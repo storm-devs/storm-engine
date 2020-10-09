@@ -6,14 +6,13 @@
 #include "..\common_h\templates.h"
 #include "..\common_h\vmodule_api.h"
 #include "SoundDefines.h"
-#include "VSound.h"
 #include "VSoundService.h"
 #include <dsound.h>
 
 ///////////////////////////////////////////////////////////////////
 // DEFINES & TYPES
 ///////////////////////////////////////////////////////////////////
-typedef array<VSound> TSoundArray;
+
 typedef struct
 {
     LPGUID guid;

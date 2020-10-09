@@ -6,11 +6,10 @@
 #include "..\common_h\CVECTOR.h"
 #include "..\common_h\templates.h"
 #include "..\common_h\vmodule_api.h"
-#include ".\FMOD20000\api\inc\fmod.hpp"
-#include ".\FMOD20000\api\inc\fmod_errors.h"
 #include "SoundDefines.h"
-#include "VSound.h"
 #include "VSoundService.h"
+#include "fmod.hpp"
+#include "fmod_errors.h"
 #include <dsound.h>
 
 #define MAX_SOUNDS_SLOTS 512

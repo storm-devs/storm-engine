@@ -2,11 +2,12 @@ cmake_minimum_required(VERSION 3.18)
 
 project(collide)
 
+include_directories(
+	${DirectX_INCLUDE_DIR}
+)
+
 add_library(collide MODULE 
 	coll.cpp
 	local_collide.cpp
 	vcollide.h
 )
-target_include_directories(collide PRIVATE common_h)
-target_include_directories(collide PRIVATE SoundService)
-target_include_directories(collide PRIVATE extern/directx/include)

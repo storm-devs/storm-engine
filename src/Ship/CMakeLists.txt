@@ -13,6 +13,5 @@ add_library(ship MODULE
 	ship.h
 	ship_utils.cpp
 )
-target_include_directories(ship PRIVATE common_h)
-target_include_directories(ship PRIVATE SoundService)
-target_include_directories(ship PRIVATE extern/directx/include)
+
+target_include_directories(ship PRIVATE ${DirectX_INCLUDE_DIR})

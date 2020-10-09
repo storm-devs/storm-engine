@@ -2,6 +2,13 @@ cmake_minimum_required(VERSION 3.18)
 
 project(animals)
 
+find_package(DirectX REQUIRED)
+
+include_directories(
+	${Storm_SOURCE_DIR}/Common_h
+	${DirectX_INCLUDE_DIR}
+)
+
 add_library(animals MODULE 
 	Animals.cpp
 	Animals.h
@@ -23,7 +30,6 @@ add_library(animals MODULE
 	TSeagulls.h
 	TSharks.cpp
 	TSharks.h
+	${Storm_SOURCE_DIR}/Common_h/rands.cpp
 )
-target_include_directories(animals PRIVATE common_h)
-target_include_directories(animals PRIVATE SoundService)
-target_include_directories(animals PRIVATE extern/directx/include)
+

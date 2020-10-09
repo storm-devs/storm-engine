@@ -16,7 +16,8 @@ add_library(sinkeffect MODULE
 	TSinkSplash.h
 	seps.cpp
 	seps.h
+	
+	${Storm_SOURCE_DIR}/Common_h/rands.cpp
 )
-target_include_directories(sinkeffect PRIVATE common_h)
-target_include_directories(sinkeffect PRIVATE SoundService)
-target_include_directories(sinkeffect PRIVATE extern/directx/include)
+
+target_include_directories(sinkeffect PRIVATE ${DirectX_INCLUDE_DIR})

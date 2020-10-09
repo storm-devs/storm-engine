@@ -11,6 +11,5 @@ add_library(geometry MODULE
 	collide.cpp
 	Rdf.h
 )
-target_include_directories(geometry PRIVATE common_h)
-target_include_directories(geometry PRIVATE SoundService)
-target_include_directories(geometry PRIVATE extern/directx/include)
+
+target_include_directories(geometry PRIVATE ${DirectX_INCLUDE_DIR})

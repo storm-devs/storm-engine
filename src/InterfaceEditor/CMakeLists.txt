@@ -17,6 +17,5 @@ add_library(interfaceeditor MODULE
 	EditorManager.h
 	EditorManager.cpp
 )
-target_include_directories(interfaceeditor PRIVATE common_h)
-target_include_directories(interfaceeditor PRIVATE SoundService)
-target_include_directories(interfaceeditor PRIVATE extern/directx/include)
+
+target_include_directories(interfaceeditor PRIVATE ${DirectX_INCLUDE_DIR})

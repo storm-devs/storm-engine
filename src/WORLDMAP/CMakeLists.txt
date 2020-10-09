@@ -27,12 +27,8 @@ add_library(worldmap MODULE
 	WdmIcon.h
 	WdmInterfaceObject.cpp
 	WdmInterfaceObject.h
-	WdmIsland.cpp
-	WdmIsland.h
 	WdmIslands.cpp
 	WdmIslands.h
-	WdmLocations.cpp
-	WdmLocations.h
 	WdmMerchantShip.cpp
 	WdmMerchantShip.h
 	WdmObjects.cpp
@@ -63,6 +59,5 @@ add_library(worldmap MODULE
 	WorldMap.h
 	ptc.h
 )
-target_include_directories(worldmap PRIVATE common_h)
-target_include_directories(worldmap PRIVATE SoundService)
-target_include_directories(worldmap PRIVATE extern/directx/include)
+
+target_include_directories(worldmap PRIVATE ${DirectX_INCLUDE_DIR})

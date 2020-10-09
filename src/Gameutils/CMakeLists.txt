@@ -2,11 +2,12 @@ cmake_minimum_required(VERSION 3.18)
 
 project(gameutils)
 
+find_package(DirectX REQUIRED)
+
 add_library(gameutils MODULE 
 	GameUtils.cpp
 	IslandED.cpp
 	IslandED.h
 )
-target_include_directories(gameutils PRIVATE common_h)
-target_include_directories(gameutils PRIVATE SoundService)
-target_include_directories(gameutils PRIVATE extern/directx/include)
+
+target_include_directories(gameutils PRIVATE ${DirectX_INCLUDE_DIR})

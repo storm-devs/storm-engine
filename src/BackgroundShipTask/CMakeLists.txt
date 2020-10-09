@@ -2,12 +2,14 @@ cmake_minimum_required(VERSION 3.18)
 
 project(backgroundshiptask)
 
+include_directories(
+	#${Storm_SOURCE_DIR}/Common_h
+	${DirectX_INCLUDE_DIR}
+)
+
 add_library(backgroundshiptask MODULE 
 	BackgroundDate.cpp
 	BackgroundDate.h
 	BackgroundShipTask.cpp
 	BackgroundShipTask.h
 )
-target_include_directories(backgroundshiptask PRIVATE common_h)
-target_include_directories(backgroundshiptask PRIVATE SoundService)
-target_include_directories(backgroundshiptask PRIVATE extern/directx/include)

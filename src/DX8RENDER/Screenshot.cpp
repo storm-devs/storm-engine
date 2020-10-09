@@ -9,8 +9,6 @@
 #include "..\common_h\tga.h"
 #include "sdevice.h"
 
-#pragma comment(lib, "Gdiplus.lib")
-
 void DX8RENDER::PrepareCapture()
 {
     hDesktopDC = GetDC(api->GetAppHWND());

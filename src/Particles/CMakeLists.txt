@@ -3,13 +3,6 @@ cmake_minimum_required(VERSION 3.18)
 project(particles)
 
 add_library(particles MODULE 
-	dynamix.h
-	particles.cpp
-	particles.h
-	particles_ms.h
-	particles_system.cpp
-	particles_system.h
-
 	DataCache/DataCache.cpp
 	DataCache/DataCache.h
 
@@ -75,6 +68,5 @@ add_library(particles MODULE
 	System/ParticleSystem/particlesystem.cpp
 	System/ParticleSystem/particlesystem.h
 )
-target_include_directories(particles PRIVATE common_h)
-target_include_directories(particles PRIVATE SoundService)
-target_include_directories(particles PRIVATE extern/directx/include)
+
+target_include_directories(particles PRIVATE ${DirectX_INCLUDE_DIR})

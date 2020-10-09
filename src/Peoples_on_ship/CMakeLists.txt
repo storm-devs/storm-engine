@@ -7,7 +7,8 @@ add_library(peopleonship MODULE
 	PEOPLES_ON_SHIP.h
 	TWalkGraph.cpp
 	TWalkGraph.h
+	
+	${Storm_SOURCE_DIR}/Common_h/rands.cpp
 )
-target_include_directories(peopleonship PRIVATE common_h)
-target_include_directories(peopleonship PRIVATE SoundService)
-target_include_directories(peopleonship PRIVATE extern/directx/include)
+
+target_include_directories(peopleonship PRIVATE ${DirectX_INCLUDE_DIR})

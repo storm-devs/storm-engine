@@ -10,6 +10,5 @@ add_library(island MODULE
 	MapZipper.cpp
 	ZapSuperGenerator.cpp
 )
-target_include_directories(island PRIVATE common_h)
-target_include_directories(island PRIVATE SoundService)
-target_include_directories(island PRIVATE extern/directx/include)
+
+target_include_directories(island PRIVATE ${DirectX_INCLUDE_DIR})

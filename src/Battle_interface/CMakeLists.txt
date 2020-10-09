@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.18)
 
 project(battleinterface)
 
+include_directories(
+	${DirectX_INCLUDE_DIR}
+)
+
 add_library(battleinterface MODULE 
 	EnemyStatShower/enemystatshower.cpp
 	EnemyStatShower/enemystatshower.h
@@ -89,36 +93,13 @@ add_library(battleinterface MODULE
 	ActivePerkShower.h
 	battle_command.cpp
 	battle_command.h
-	battle_land.cpp
-	battle_land.h
-	battle_navigator.cpp
-	battle_navigator.h
-	battle_shipcommand.cpp
-	battle_shipcommand.h
-	battle_shipsign.cpp
-	battle_shipsign.h
 	battle_sign.cpp
 	battle_sign.h
 	defines.h
-	ibattle.cpp
-	ibattle.h
-	IBoardingStatus.cpp
-	IBoardingStatus.h
-	island_descr.cpp
-	island_descr.h
 	LogAndAction.cpp
 	LogAndAction.h
 	MessageIcons.cpp
 	MessageIcons.h
-	ShipPointer.cpp
-	ShipPointer.h
-	ships_list.cpp
-	ships_list.h
-	spyglass.cpp
-	spyglass.h
 	Utils.cpp
 	Utils.h
 )
-target_include_directories(battleinterface PRIVATE common_h)
-target_include_directories(battleinterface PRIVATE SoundService)
-target_include_directories(battleinterface PRIVATE extern/directx/include)

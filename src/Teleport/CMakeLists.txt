@@ -6,6 +6,5 @@ add_library(teleport MODULE
 	teleport.cpp
 	teleport.h
 )
-target_include_directories(teleport PRIVATE common_h)
-target_include_directories(teleport PRIVATE SoundService)
-target_include_directories(teleport PRIVATE extern/directx/include)
+
+target_include_directories(teleport PRIVATE ${DirectX_INCLUDE_DIR})

@@ -7,11 +7,6 @@
 #include <DxErr.h>
 #include <io.h>
 
-#pragma comment(lib, "d3d9.lib")
-#pragma comment(lib, "d3dx9.lib")
-#pragma comment(lib, "Gdiplus.lib")
-#pragma comment(lib, "dxerr.lib")
-
 #define POST_PROCESS_FVF D3DFVF_XYZRHW | D3DFVF_TEX4
 
 #define S_RELEASE(a, b)                                                                                                \
@@ -120,11 +115,6 @@ dword _rdtsc;
 dword dwTotalSize = 0;
 dword dwSplashTime = 0;
 bool bSplash = false;
-#pragma warning(push)
-#pragma warning(disable : 4305 4309)
-char sSplashText[] = {0xbb, 0x9a, 0x89, 0x9a, 0x93, 0x90, 0x8f, 0x9a, 0x8d, 0x8c, 0xdf, 0xbc, 0x90, 0x8f, 0x86, 0xd1,
-                      0xdf, 0xb1, 0x90, 0x8b, 0xdf, 0x99, 0x90, 0x8d, 0xdf, 0xac, 0x9e, 0x93, 0x9a, 0xd1, 0};
-#pragma warning(pop)
 char splashbuffer[256];
 
 #define TEXTURESDIR "resource\\textures\\%s.tx"

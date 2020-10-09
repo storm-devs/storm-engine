@@ -7,8 +7,6 @@ add_library(xinterface MODULE
 	InfoHandler.h
 	base_video.h
 	defines.h
-	editor.cpp
-	editor.h
 	inode.cpp
 	inode.h
 	vxservice.h
@@ -123,11 +121,6 @@ add_library(xinterface MODULE
 	TextureSequence/TextureSequence.cpp
 	TextureSequence/TextureSequence.h
 
-	WMVideo/WMVBase.cpp
-	WMVideo/WMVBase.h
-	WMVideo/WMVideo.cpp
-	WMVideo/WMVideo.h
-
 	aviplayer/aviplayer.cpp
 	aviplayer/aviplayer.h
 
@@ -143,6 +136,8 @@ add_library(xinterface MODULE
 	templates/TDynArray.h
 	templates/ctext.h
 )
-target_include_directories(xinterface PRIVATE common_h)
-target_include_directories(xinterface PRIVATE SoundService)
-target_include_directories(xinterface PRIVATE extern/directx/include)
+
+target_include_directories(xinterface PRIVATE ${DirectX_INCLUDE_DIR})
+
+target_link_libraries(xinterface PRIVATE ddraw.lib)
+target_link_libraries(xinterface PRIVATE amstrmid.lib)

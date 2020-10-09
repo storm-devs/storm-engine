@@ -18,6 +18,5 @@ add_library(rigging MODULE
 	script_func.cpp
 	script_func.h
 )
-target_include_directories(rigging PRIVATE common_h)
-target_include_directories(rigging PRIVATE SoundService)
-target_include_directories(rigging PRIVATE extern/directx/include)
+
+target_include_directories(rigging PRIVATE ${DirectX_INCLUDE_DIR})

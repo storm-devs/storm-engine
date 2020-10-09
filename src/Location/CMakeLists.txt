@@ -69,6 +69,5 @@ add_library(location MODULE
 	grs.h
 	ptc.h
 )
-target_include_directories(location PRIVATE common_h)
-target_include_directories(location PRIVATE SoundService)
-target_include_directories(location PRIVATE extern/directx/include)
+
+target_include_directories(location PRIVATE ${DirectX_INCLUDE_DIR})
