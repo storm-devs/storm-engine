@@ -1,7 +1,6 @@
 //============================================================================================
 #include "..\..\common_h\achievements.h"
 #include "system_log.h"
-#pragma comment(lib, "steam_api.lib")
 
 #define _ACH_ID(id, name)                                                                                              \
     {                                                                                                                  \

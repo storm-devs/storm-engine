@@ -2,12 +2,20 @@ cmake_minimum_required(VERSION 3.18)
 
 project(engine)
 
-add_library(engine MODULE 
+set(ZLIB_ROOT "${Storm_EXTERN_DIR}/zlib")
+set(ZLIB_LIBRARY "${ZLIB_ROOT}/build/RelWithDebInfo/zlib.lib")
+
+find_package(SteamSdk REQUIRED)
+find_package(ZLIB REQUIRED)
+find_package(DirectX REQUIRED)
+
+add_executable(engine WIN32 
 	achievements.cpp
 	C_atom.cpp
 	C_atom.h
 	classes_table.cpp
 	classes_table.h
+	common_h.h
 	compiler.cpp
 	compiler.h
 	control_stack.cpp
@@ -111,6 +119,10 @@ add_library(engine MODULE
 	token.h
 	vbuffer.h
 )
-target_include_directories(engine PRIVATE common_h)
-target_include_directories(engine PRIVATE SoundService)
-target_include_directories(engine PRIVATE extern/directx/include)
+target_include_directories(engine PRIVATE ${Storm_SOURCE_DIR}/Common_h)
+target_include_directories(engine PRIVATE ${SteamSdk_INCLUDE_DIR})
+target_include_directories(engine PRIVATE ${DirectX_INCLUDE_DIR})
+
+target_link_libraries(engine PRIVATE ${SteamSdk_LIBRARY})
+target_link_libraries(engine PRIVATE ZLIB::ZLIB)
+target_link_libraries(engine PRIVATE comctl32.lib)

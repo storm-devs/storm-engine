@@ -4,6 +4,8 @@
 #include "sstring.h"
 #include <stdio.h>
 
+#include "zlib.h"
+
 #define SKIP_COMMENT_TRACING
 #define TRACE_OFF
 #define INVALID_SEGMENT_INDEX 0xffffffff
@@ -14,14 +16,8 @@
 
 #define INVALID_OFFSET 0xffffffff
 #define DSL_INI_VALUE 0
-#define RDTSC_B(x)                                                                                                     \
-    {                                                                                                                  \
-        _asm rdtsc _asm mov x, eax                                                                                     \
-    }
-#define RDTSC_E(x)                                                                                                     \
-    {                                                                                                                  \
-        _asm rdtsc _asm sub eax, x _asm mov x, eax                                                                     \
-    }
+//#define RDTSC_B(x)	{ _asm rdtsc _asm mov x,eax }
+//#define RDTSC_E(x)	{ _asm rdtsc _asm sub eax,x _asm mov x,eax }
 #define WARNINGS_OFF
 #define SBUPDATE 4
 #define DEF_COMPILE_EXPRESSIONS

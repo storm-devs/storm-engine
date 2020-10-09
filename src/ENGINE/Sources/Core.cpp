@@ -1,13 +1,13 @@
 #include "core.h"
 #include "..\..\common_h\memop.h"
 #include "..\..\common_h\vmodule_api.h"
+#include "common_h.h"
 #include "messages.h"
 #include "vbuffer.h"
 
 #include "..\..\common_h\dx8render.h"
 
 #include "steam_api.h"
-#pragma comment(lib, "steam_api.lib")
 
 #define CORE_MODULE_WILD_MASK "*.dll"
 #define CORE_DEFAULT_MODULES_PATH "Modules\\"

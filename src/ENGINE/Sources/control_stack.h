@@ -1,8 +1,8 @@
 #ifndef _CONTROL_STACK_H_
 #define _CONTROL_STACK_H_
 
+//#include "common_h.h"
 #include "..\..\common_h\entity_id.h"
-#include "common_h.h"
 
 typedef struct
 {

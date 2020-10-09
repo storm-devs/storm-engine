@@ -14,8 +14,8 @@
 #include "..\..\common_h\vapi.h"
 //#include "..\..\common_h\input.h"
 
+//#include "common_h.h"
 #include "c_atom.h"
-#include "common_h.h"
 #include "compiler.h"
 #include "entity_state_R.h"
 #include "externs.h"
@@ -32,7 +32,7 @@
 #include "timer.h"
 //#include "program.h"
 
-#include "ZLIB\zlib.h"
+//#include "zlib.h"
 
 #define ENGINE_SCRIPT_VERSION 57853
 

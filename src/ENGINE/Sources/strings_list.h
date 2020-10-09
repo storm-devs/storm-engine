@@ -7,7 +7,7 @@
 // using SetStringDataSize(..) function. When you changing the size for this data, all items in list
 // cleared. This data can be set or retrivied
 
-#include "common_h.h"
+#include "../../Common_h/d_types.h"
 
 #define SL_BLOCK_SIZE 128 // initiate number of strings
 #define INVALID_ORDINAL_NUMBER 0xffffffff

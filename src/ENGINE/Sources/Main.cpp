@@ -14,8 +14,8 @@
 #define def_width 600
 #define def_height 400
 
+#include "common_h.h"
 #include "steam_api.h"
-#pragma comment(lib, "steam_api.lib")
 
 #pragma comment(lib, "dbghelp.lib")
 

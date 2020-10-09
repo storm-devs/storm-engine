@@ -1,6 +1,8 @@
 #include "modules_table.h"
+
 #include "..\..\common_h\exs.h"
 #include "..\..\common_h\memop.h"
+#include "common_h.h"
 #include "externs.h"
 #include "internal_modules.h"
 #include "messages.h"

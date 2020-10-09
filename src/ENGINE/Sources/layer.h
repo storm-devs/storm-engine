@@ -2,7 +2,7 @@
 #define _LAYER_H_
 
 #include "..\..\common_h\entity_id.h"
-#include "common_h.h"
+//#include "common_h.h"
 #include "idwalker.h"
 
 #define _MAX_LAYER_NAME 290
