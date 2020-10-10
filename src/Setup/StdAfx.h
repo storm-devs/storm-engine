@@ -10,6 +10,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#define _AFXDLL 1
+
 #define VC_EXTRALEAN // Exclude rarely-used stuff from Windows headers
 
 #include <afxdtctl.h> // MFC support for Internet Explorer 4 Common Controls

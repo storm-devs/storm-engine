@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.18)
 
 project(setup)
 
-add_library(setup MODULE 
+add_executable(setup WIN32 
 	Resource.h
 	Setup.cpp
 	Setup.h
@@ -11,6 +11,5 @@ add_library(setup MODULE
 	StdAfx.cpp
 	StdAfx.h
 )
-target_include_directories(setup PRIVATE common_h)
-target_include_directories(setup PRIVATE SoundService)
-target_include_directories(setup PRIVATE extern/directx/include)
+
+target_link_libraries(setup PRIVATE ddraw.lib)
