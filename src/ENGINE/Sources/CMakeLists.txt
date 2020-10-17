@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.18)
-
 project(engine)
 
 set(ZLIB_ROOT "${Storm_EXTERN_DIR}/zlib")

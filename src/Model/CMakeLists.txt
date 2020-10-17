@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.18)
-
 project(model)
 
 add_library(model MODULE 

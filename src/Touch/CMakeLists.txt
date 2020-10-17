@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.18)
-
 project(touch)
 
 add_library(touch MODULE 

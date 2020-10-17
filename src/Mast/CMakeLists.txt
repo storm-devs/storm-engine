@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.18)
-
 project(mast)
 
 add_library(mast MODULE 

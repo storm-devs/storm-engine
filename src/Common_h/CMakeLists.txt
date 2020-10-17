@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.18)
-
 project(common_h)
 
 add_library(common_h MODULE 

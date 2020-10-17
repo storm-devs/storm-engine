@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.18)
-
 project(mleaks)
 
 add_library(mleaks MODULE 
