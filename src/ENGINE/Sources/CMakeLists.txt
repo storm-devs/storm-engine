@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.18)
 project(engine)
 
 set(ZLIB_ROOT "${Storm_EXTERN_DIR}/zlib")
-set(ZLIB_LIBRARY "${ZLIB_ROOT}/build/RelWithDebInfo/zlib.lib")
 
 find_package(SteamSdk REQUIRED)
 find_package(ZLIB REQUIRED)
