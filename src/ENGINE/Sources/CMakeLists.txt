@@ -125,3 +125,13 @@ target_include_directories(engine PRIVATE ${DirectX_INCLUDE_DIR})
 target_link_libraries(engine PRIVATE ${SteamSdk_LIBRARY})
 target_link_libraries(engine PRIVATE ZLIB::ZLIB)
 target_link_libraries(engine PRIVATE comctl32.lib)
+
+add_custom_command(TARGET engine POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${SteamSdk_LIBRARY_PATHS}/steam_api.dll"
+        "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>"
+		
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${ZLIB_INCLUDE_DIRS}/zlib.dll"
+        "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>"
+) 
