@@ -120,6 +120,8 @@ target_include_directories(engine PRIVATE ${Storm_SOURCE_DIR}/Common_h)
 target_include_directories(engine PRIVATE ${SteamSdk_INCLUDE_DIR})
 target_include_directories(engine PRIVATE ${DirectX_INCLUDE_DIR})
 
+target_compile_definitions(engine PRIVATE _ENGINE_IN_)
+
 target_link_libraries(engine PRIVATE ${SteamSdk_LIBRARY})
 target_link_libraries(engine PRIVATE ZLIB::ZLIB)
 target_link_libraries(engine PRIVATE comctl32.lib)
