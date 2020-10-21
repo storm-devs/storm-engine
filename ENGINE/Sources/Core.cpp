@@ -77,7 +77,6 @@ CORE::CORE()
     //#ifdef isSteam
     g_SteamAchievements = NULL;
     g_SteamDLC = NULL;
-    //#endif
 }
 
 CORE::~CORE()
@@ -120,6 +119,8 @@ void CORE::ResetCore()
     Constructor_counter = 0;
 
     Root_flag = false;
+
+    //	ReleaseThread();
 
     UNGUARD
 }
@@ -166,6 +167,8 @@ void CORE::CleanUp()
     if (State_file_name)
         delete State_file_name;
     State_file_name = null;
+
+    ReleaseThread();
 }
 
 void CORE::ReleaseServices()
@@ -325,7 +328,6 @@ bool CORE::Run()
     ProcessExecute(); // transfer control to objects via Execute() function
     ProcessRealize(); // transfer control to objects via Realize() function
 
-    //#ifdef isSteam
     if (bSteam)
         SteamAPI_RunCallbacks();
     //#endif
@@ -338,9 +340,6 @@ bool CORE::Run()
 
     if (Controls && bActive)
         ProcessControls();
-
-    //	Compiler.ProcessFrame(Timer.Delta_Time);
-    //	Compiler.ProcessEvent("frame");
 
     ProcessRunEnd(SECTION_ALL);
 
@@ -456,6 +455,9 @@ bool __declspec(noinline) __cdecl CORE::Initialize()
     DeleteServicesList.Init(sizeof(CODE_AND_POINTER), 8);
     DeleteEntityList.Init(sizeof(ENTITY_ID), 2);
     DeleteLayerList.Init(sizeof(dword), 8);
+
+    InitializeCriticalSection(&lock);
+    StartThread();
 
     gdi_display.Print(CMS_INIT_COMPLETE);
     Initialized = true;
@@ -3155,6 +3157,16 @@ void CORE::SetDeltaTime(long delta_time)
     Timer.SetDelta(delta_time);
 }
 
+void CORE::StartCounter()
+{
+    Timer.StartCounter();
+}
+
+double CORE::GetCounter()
+{
+    return Timer.GetCounter();
+}
+
 void CORE::SystemMessages(ENTITY_ID eid, bool on)
 {
     /*	LayerCreate(SYSTEMMESSAGES_LAYER,false,false);
@@ -3488,6 +3500,64 @@ void *CORE::GetScriptVariable(const char *pVariableName, DWORD *pdwVarIndex)
     return vi.pDClass;
 }
 
+void CORE::Start_CriticalSection()
+{
+    EnterCriticalSection(&lock);
+};
+void CORE::Leave_CriticalSection()
+{
+    LeaveCriticalSection(&lock);
+};
+
+DWORD CORE::Process()
+{
+    DWORD dwWaitResult;
+    DWORD function_code;
+    DATA *pResult;
+
+    while (1)
+    {
+        if (!thrQueue.IsEmpty())
+            SetEvent(hEvent);
+        dwWaitResult = WaitForSingleObject(hEvent, 1);
+        if (dwWaitResult == WAIT_OBJECT_0)
+        {
+            EnterCriticalSection(&lock);
+            function_code = thrQueue.Pop();
+            Compiler.BC_Execute(function_code, pResult);
+            LeaveCriticalSection(&lock);
+        }
+        if (Reset_flag)
+            return 0;
+    }
+    return 0;
+}
+
+void CORE::StartEvent(DWORD function_code)
+{
+    thrQueue.Push(function_code);
+}
+
+void CORE::StartThread()
+{
+    hEvent = CreateEvent(null, false, false, "thrEvent");
+    if (hEvent == NULL)
+    {
+        trace("Error create event!!");
+    }
+    MyThread.pThis = this;
+    MyThread.pMethod = &CORE::Process;
+    MyThread.Handle = CreateThread(NULL, 0, MyThread.Function, &MyThread, CREATE_SUSPENDED, NULL);
+    SetThreadPriority(MyThread.Handle, THREAD_PRIORITY_NORMAL);
+    ResumeThread(MyThread.Handle);
+}
+
+void CORE::ReleaseThread()
+{
+    WaitForSingleObject(MyThread.Handle, 0);
+    CloseHandle(MyThread.Handle);
+}
+
 void CORE::SetNetActive(bool bActive)
 {
     bNetActive = bActive;
@@ -3497,8 +3567,6 @@ bool CORE::IsNetActive() const
 {
     return bNetActive;
 }
-//#ifdef isSteam
-// Steam achievements && DLC section
 
 bool CORE::isSteamEnabled()
 {
@@ -3589,7 +3657,7 @@ bool CORE::isDLCActive(long nDLC)
 {
     if (bSteam)
         return g_SteamDLC->isDLCInstalled(nDLC);
-    return 0;
+    return 1;
 }
 
 long CORE::getDLCCount()
@@ -3612,4 +3680,3 @@ bool CORE::activateGameOverlayDLC(long nAppId)
         return g_SteamDLC->activateGameOverlay(nAppId);
     return 0;
 }
-//#endif

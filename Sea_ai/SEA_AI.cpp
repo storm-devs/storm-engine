@@ -152,6 +152,16 @@ dword _cdecl SEA_AI::ProcessMessage(MESSAGE &message)
         api->Send_Message(pAIShip->GetShipEID(), "lf", MSG_SHIP_SET_SAIL_STATE, fSailState);
     }
     break;
+    case AI_MESSAGE_DO_FAKE_FIRE: {
+        char cBort[256];
+        ATTRIBUTES *pCharacter = message.AttributePointer();
+        message.String(sizeof(cBort), cBort);
+        float fRandTime = message.Float();
+        float fAng = message.Float();
+        //	api->Trace("AI_MESSAGE_DO_FAKE_FIRE  %s %f %f", cBort, fRandTime, fAng);
+        //	AIShip::ShipFire(pCharacter, true);
+    }
+    break;
     case AI_MESSAGE_SHIP_SET_TASK: {
         ATTRIBUTES *pCharacter1, *pCharacter2;
         dword dwCommand = message.Long();

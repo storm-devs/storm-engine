@@ -608,6 +608,8 @@ VDATA *COMPILER::ProcessEvent(char *event_name)
             pMem->Move2Start();
         }
 
+        Core.Start_CriticalSection();
+
         DWORD nStackVars;
         nStackVars = SStack.GetDataNum(); // remember stack elements num
         RDTSC_B(nTicks);
@@ -643,6 +645,8 @@ VDATA *COMPILER::ProcessEvent(char *event_name)
             pVD = 0;
             SetError("process event stack error");
         }
+
+        Core.Leave_CriticalSection();
 
         if (bEventsBreak)
             break;
@@ -3350,11 +3354,14 @@ bool COMPILER::BC_CallFunction(DWORD func_code, DWORD &ip, DATA *&pVResult)
     }
     else
     {
-        // BC_Execute(func_code,pVResult);
+        Core.Start_CriticalSection();
+
         RDTSC_B(nTicks);
         BC_Execute(func_code, pVResult);
         RDTSC_E(nTicks);
         FuncTab.AddTime(func_code, nTicks);
+
+        Core.Leave_CriticalSection();
     }
 
     if (nDebugEnterMode == TMODE_MAKESTEP)

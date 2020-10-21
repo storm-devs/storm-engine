@@ -30,12 +30,12 @@ GDI_DISPLAY gdi_display;
 CORE Core;
 VAPI *_CORE_API;
 VMA *_pModuleClassRoot = 0;
-
 VAPI *api = 0;
 VFILE_SERVICE *fio = 0;
 
 bool bBackspaceExit = false;
-bool bDebugWindow = false, bAcceleration = false;
+bool bDebugWindow = false;
+bool bAcceleration = false;
 bool bActive = true;
 bool bSteam = true;
 bool bNetActive = false;

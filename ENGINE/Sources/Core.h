@@ -2,6 +2,7 @@
 #define _CORE_H_
 
 #ifndef _XBOX
+#include <process.h>
 #include <windows.h>
 #else
 #include <xtl.h>
@@ -25,6 +26,7 @@
 #include "layer_service.h"
 #include "memory_service.h"
 #include "modules_table.h"
+#include "safequeue.h"
 #include "services_list.h"
 #include "system_api.h"
 #include "timer.h"
@@ -33,7 +35,18 @@
 #include "ZLIB\zlib.h"
 
 #define ENGINE_SCRIPT_VERSION 57853
-//#define ENGINE_SCRIPT_VERSION		54128
+
+template <typename T> struct tThrd
+{
+    typedef DWORD (__thiscall T::*PMethod)();
+    static DWORD WINAPI Function(PVOID pParam)
+    {
+        return (((tThrd *)pParam)->pThis->*((tThrd *)pParam)->pMethod)();
+    };
+    T *pThis;
+    PMethod pMethod;
+    HANDLE Handle;
+};
 
 typedef struct
 {
@@ -147,6 +160,10 @@ class CORE : public VAPI
 
     CORE_STATE CoreState;
     char *State_file_name;
+
+    CRITICAL_SECTION lock;
+    void Start_CriticalSection();
+    void Leave_CriticalSection();
 
     C_ATOM **Atoms_PTR;
     dword Atom_Search_Position;   // first version
@@ -320,6 +337,9 @@ class CORE : public VAPI
     //
     dword GetDeltaTime();
     dword GetRDeltaTime();
+
+    void StartCounter();
+    double GetCounter();
     //
     float GetKeyState(dword key_code, dword *value);
     //
@@ -350,8 +370,13 @@ class CORE : public VAPI
     bool IsNetActive() const;
 
     bool __declspec(dllexport) __cdecl LoCheck();
-    //#ifdef isSteam
+
     CSteamStatsAchievements *g_SteamAchievements;
+
+    DWORD Process();
+    void StartEvent(dword function_code);
+    void StartThread();
+    void ReleaseThread();
 
     bool isSteamEnabled();
     void InitAchievements();
@@ -372,7 +397,11 @@ class CORE : public VAPI
     long getDLCCount();
     long getDLCDataByIndex(long iDLC);
     bool activateGameOverlayDLC(long nAppId);
-    //#endif
+
+  private:
+    SafeQueue<dword> thrQueue;
+    tThrd<CORE> MyThread;
+    HANDLE hEvent;
 };
 
 #endif

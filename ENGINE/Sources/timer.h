@@ -7,21 +7,20 @@
 #include <xtl.h>
 #endif
 
-#define USE_HIGH_FREQUENCY
 #define FILTER_SIZE 16
 class TIMER
 {
   public:
     TIMER()
     {
-#ifdef USE_HIGH_FREQUENCY
         LARGE_INTEGER liFreq;
         QueryPerformanceFrequency(&liFreq);
         fSecondsPerTick = 1.0f / liFreq.QuadPart;
         QueryPerformanceCounter(&liPrevTime);
-#else
-        Previous_Time = GetTickCount();
-#endif
+
+        PCFreq = 0.0;
+        CounterStart = 0;
+
         Delta_Time = 20;
         rDelta_Time = Delta_Time;
         fps = 0;
@@ -33,13 +32,13 @@ class TIMER
         ADT_ON = true;
         ADT_val = 10;
     };
+
     bool FixedDelta;
     dword FixedDeltaValue;
     bool Ring;
-#ifdef USE_HIGH_FREQUENCY
     float fSecondsPerTick;
     LARGE_INTEGER liPrevTime;
-#endif
+
     dword Previous_Time;
     dword Delta_Time;
     float fDeltaTime;
@@ -50,19 +49,17 @@ class TIMER
     dword ADT;
     float ADT_val;
     bool ADT_ON;
+
+    double PCFreq;
+    __int64 CounterStart;
+
     dword Run()
     {
-#ifdef USE_HIGH_FREQUENCY
         LARGE_INTEGER liCurTime;
         QueryPerformanceCounter(&liCurTime);
         fDeltaTime = 1000.0f * (liCurTime.QuadPart - liPrevTime.QuadPart) * fSecondsPerTick;
         Delta_Time = long(fDeltaTime);
-#else
-        dword Current_Time;
-        Current_Time = GetTickCount();
-        Delta_Time = Current_Time - Previous_Time;
-        rDelta_Time = Delta_Time;
-#endif
+
         rDelta_Time = Delta_Time;
         if (Delta_Time > 100)
         {
@@ -80,11 +77,8 @@ class TIMER
         }
         else
             Ring = false;
-#ifdef USE_HIGH_FREQUENCY
+
         liPrevTime = liCurTime;
-#else
-        Previous_Time = Current_Time;
-#endif
 
         if (Delta_Time == 0)
             Delta_Time = 1;
@@ -111,6 +105,24 @@ class TIMER
             FixedDeltaValue = DeltaTime;
             FixedDelta = true;
         }
+    }
+
+    void StartCounter()
+    {
+        LARGE_INTEGER li;
+        QueryPerformanceFrequency(&li);
+
+        PCFreq = double(li.QuadPart) / 1000000.0; // in microseconds
+
+        QueryPerformanceCounter(&li);
+        CounterStart = li.QuadPart;
+    }
+
+    double GetCounter()
+    {
+        LARGE_INTEGER li;
+        QueryPerformanceCounter(&li);
+        return double(li.QuadPart - CounterStart) / PCFreq;
     }
 };
 #endif

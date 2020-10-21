@@ -175,6 +175,7 @@
 #define AI_MESSAGE_RESEARCH_CANNONS                                                                                    \
     51050 // boal 08.08.06 метод пересчета орудий на корабле SendMessage(&AISea, "la", AI_MESSAGE_RESEARCH_CANNONS,
           // aCharacter)
+#define AI_MESSAGE_DO_FAKE_FIRE 51051
 
 // cameras
 #define AI_CAMERAS_ADD_CAMERA 55000
