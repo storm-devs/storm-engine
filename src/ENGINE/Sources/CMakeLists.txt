@@ -93,6 +93,7 @@ add_executable(engine WIN32
 	s_tstack.h
 	s_vartab.cpp
 	s_vartab.h
+	safequeue.h
 	services_list.cpp
 	services_list.h
 	sp.h
