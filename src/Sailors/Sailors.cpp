@@ -54,11 +54,7 @@ ShipMan::ShipMan()
 //------------------------------------------------------------------------------------
 void ShipMan::Free()
 {
-    GUARD_SAILORS(ShipMan::Free())
-
     api->DeleteEntity(this->modelID);
-
-    UNGUARD_SAILORS
 };
 //-----Построение матрицы с учетом текущего состояния---------------------------------
 void ShipMan::SetPos(MODEL *ship, SHIP_BASE *ship_base, dword &dltTime, ShipState &shipState)
@@ -707,14 +703,10 @@ void ShipMan::UpdatePos(dword &dltTime, SailorsPoints &sailorsPoints, ShipState 
 //------------------------------------------------------------------------------------
 void ShipWalk::Free()
 {
-    GUARD_SAILORS(ShipWalk::Free())
-
     for (int i = 0; i < crewCount; i++)
     {
         shipMan[i].Free();
     }
-
-    UNGUARD_SAILORS
 };
 //-----Обнулить флаги зарядки пушек---------------------------------------------------
 void ShipWalk::ReloadCannons(int bort)
@@ -1059,13 +1051,10 @@ Sailors::Sailors() : shipWalk(_FL_)
 //------------------------------------------------------------------------------------
 Sailors::~Sailors()
 {
-    GUARD_SAILORS(Sailors::~Sailors())
-
     for (int i = 0; i < shipsCount; i++)
     {
         shipWalk[i].Free();
     }
-    UNGUARD_SAILORS
 }
 //------------------------------------------------------------------------------------
 bool Sailors::Init()

@@ -1,9 +1,6 @@
 #ifndef BI_SHIPSIGN_H
 #define BI_SHIPSIGN_H
 
-#include "..\image\defines.h"
-#include "defines.h"
-
 class BIShipLiga;
 class BIShipCommand;
 

@@ -1,8 +1,7 @@
 #ifndef BI_SHIPLIGA_H
 #define BI_SHIPLIGA_H
 
-#include "..\image\defines.h"
-#include "defines.h"
+#include "../../Common_h/templates/Array.h"
 
 class BISeaInterface;
 class BIShipSign;

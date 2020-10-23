@@ -199,7 +199,7 @@ void BIShipIcon::Init(ATTRIBUTES *pRoot, ATTRIBUTES *pA)
         // ugeen 150920
         pcTmp = pA->GetAttribute("shipnamefontoffset");
         if (pcTmp)
-            sscanf(pcTmp, "%f,%f", &m_ShipNameFontOffset.x, &m_ShipNameFontOffset.y);
+            sscanf(pcTmp, "%ld,%ld", &m_ShipNameFontOffset.x, &m_ShipNameFontOffset.y);
 
         pcTmp = pA->GetAttribute("backtexturename");
         if (pcTmp)

@@ -2,7 +2,6 @@
 #define BI_SHIPCOMMAND_H
 
 #include "..\image\defines.h"
-#include "defines.h"
 
 class BIShipSign;
 class BIImage;

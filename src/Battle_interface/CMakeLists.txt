@@ -64,7 +64,6 @@ add_library(battleinterface MODULE
 	sea/ships_list.cpp
 	sea/ships_list.h
 	
-	seainterface/defines.h
 	seainterface/seadatabase.cpp
 	seainterface/seadatabase.h
 	seainterface/shipcommand.cpp

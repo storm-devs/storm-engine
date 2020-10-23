@@ -1,8 +1,8 @@
 #ifndef BI_SEADATABASE_H
 #define BI_SEADATABASE_H
 
-#include "..\image\defines.h"
-#include "defines.h"
+#include "../../Common_h/templates/Array.h"
+#include "../../Common_h/templates/string.h"
 
 class BISeaDatabase
 {
