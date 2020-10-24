@@ -104,7 +104,7 @@ void DECK_CAMERA::Move(DWORD DeltaTime)
     CMatrix glbRotMtx;
     glbRotMtx.BuildMatrix(camera_ang);
     CMatrix rotMtx;
-    pathNode->glob_mtx.Get3X3(&rotMtx);
+    pathNode->glob_mtx.Get3X3(rotMtx);
     glbRotMtx *= rotMtx;
     float cx = cosf(camera_ang.x);
     float sx = sinf(camera_ang.x);

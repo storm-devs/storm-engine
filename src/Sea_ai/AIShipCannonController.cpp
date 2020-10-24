@@ -259,7 +259,7 @@ float AIShipCannonController::GetBortHeightAngle(long iBortIndex)
     CMatrix m;
     CVECTOR v, vZ;
 
-    GetAIShip()->GetMatrix()->Get3X3(&m);
+    GetAIShip()->GetMatrix()->Get3X3(m);
 
     v.y = 0.0f;
     v.x = sinf(aShipBorts[iBortIndex].fFireDir);

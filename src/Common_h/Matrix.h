@@ -203,7 +203,11 @@ class CMatrix
 
 __forceinline CVECTOR operator*(const CVECTOR &v, const CMatrix &mtx)
 {
-    return v * mtx;
+    CVECTOR tv;
+    tv.x = mtx.m[0][0] * v.x + mtx.m[1][0] * v.y + mtx.m[2][0] * v.z + mtx.m[3][0];
+    tv.y = mtx.m[0][1] * v.x + mtx.m[1][1] * v.y + mtx.m[2][1] * v.z + mtx.m[3][1];
+    tv.z = mtx.m[0][2] * v.x + mtx.m[1][2] * v.y + mtx.m[2][2] * v.z + mtx.m[3][2];
+    return tv;
 }
 
 //============================================================================================
@@ -664,56 +668,26 @@ __forceinline float &CMatrix::operator()(long i, long j)
 // Create only rotate matrix
 __forceinline void CMatrix::Get3X3(CMatrix &mtr)
 {
-    /*_asm
-    {
-        mov		esi, this
-        mov		edi, dword ptr mtr
-        mov		ebx, [esi + 0*4]
-        mov		ecx, [esi + 1*4]
-        mov		edx, [esi + 2*4]
-        mov		[edi + 0*4], ebx
-        mov		[edi + 1*4], ecx
-        mov		[edi + 2*4], edx
-        mov		ebx, [esi + 4*4]
-        mov		ecx, [esi + 5*4]
-        mov		edx, [esi + 6*4]
-        mov		[edi + 4*4], ebx
-        mov		[edi + 5*4], ecx
-        mov		[edi + 6*4], edx
-        mov		ebx, [esi + 8*4]
-        mov		ecx, [esi + 9*4]
-        mov		edx, [esi + 10*4]
-        mov		[edi + 8*4], ebx
-        mov		[edi + 9*4], ecx
-        mov		[edi + 10*4], edx
-    }*/
-}
+    float ebx = matrix[0];
+    float ecx = matrix[1];
+    float edx = matrix[2];
+    mtr.matrix[0] = ebx;
+    mtr.matrix[1] = ecx;
+    mtr.matrix[2] = edx;
 
-__forceinline void CMatrix::Get3X3(CMatrix *mtr)
-{
-    /*_asm
-    {
-        mov		esi, this
-        mov		edi, mtr
-        mov		ebx, [esi + 0*4]
-        mov		ecx, [esi + 1*4]
-        mov		edx, [esi + 2*4]
-        mov		[edi + 0*4], ebx
-        mov		[edi + 1*4], ecx
-        mov		[edi + 2*4], edx
-        mov		ebx, [esi + 4*4]
-        mov		ecx, [esi + 5*4]
-        mov		edx, [esi + 6*4]
-        mov		[edi + 4*4], ebx
-        mov		[edi + 5*4], ecx
-        mov		[edi + 6*4], edx
-        mov		ebx, [esi + 8*4]
-        mov		ecx, [esi + 9*4]
-        mov		edx, [esi + 10*4]
-        mov		[edi + 8*4], ebx
-        mov		[edi + 9*4], ecx
-        mov		[edi + 10*4], edx
-    }*/
+    ebx = matrix[4];
+    ecx = matrix[5];
+    edx = matrix[6];
+    mtr.matrix[4] = ebx;
+    mtr.matrix[5] = ecx;
+    mtr.matrix[6] = edx;
+
+    ebx = matrix[8];
+    ecx = matrix[9];
+    edx = matrix[10];
+    mtr.matrix[8] = ebx;
+    mtr.matrix[9] = ecx;
+    mtr.matrix[10] = edx;
 }
 
 // Projection

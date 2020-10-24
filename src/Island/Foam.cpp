@@ -64,7 +64,7 @@ void CoastFoam::ExtractRay(const D3DVIEWPORT9 &viewport, float fCursorX, float f
     CMatrix mView3x3;
     CMatrix mView = Render().GetView();
     mView.Transposition();
-    mView.Get3X3(&mView3x3);
+    mView.Get3X3(mView3x3);
 
     CVECTOR raydir;
     CVECTOR rayorig;
