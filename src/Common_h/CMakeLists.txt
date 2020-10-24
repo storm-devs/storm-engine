@@ -1,6 +1,10 @@
 project(common_h)
 
-add_library(common_h MODULE 
+add_library(common_h INTERFACE)
+
+target_include_directories(common_h INTERFACE .)
+
+set(PROJECT_SOURCES
 	math3d/Box.h
 	math3d/Capsule.h
 	math3d/Color.h
@@ -100,3 +104,5 @@ add_library(common_h MODULE
 	vstring_codec.h
 	vsystem_api.h
 )
+
+add_custom_target(common_h_ SOURCES ${PROJECT_SOURCES})
