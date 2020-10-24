@@ -143,7 +143,7 @@ class ISLAND : public ISLAND_BASE
     {
         return 0;
     };
-    bool GetCollideTriangle(TRIANGLE &triangle)
+    bool GetCollideTriangle(Triangle &triangle)
     {
         return false;
     };

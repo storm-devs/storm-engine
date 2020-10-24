@@ -51,7 +51,7 @@ class ModelProcessor
     ModelProcessor(ParticleManager *pManager);
     ~ModelProcessor();
 
-    void AddParticle(ParticleSystem *pSystem, const Vector &velocity_dir, const Vector &pos, const Matrix &matWorld,
+    void AddParticle(ParticleSystem *pSystem, const CVECTOR &velocity_dir, const CVECTOR &pos, const CMatrix &matWorld,
                      float EmitterTime, float EmitterLifeTime, FieldList *pFields, DWORD *pActiveCount, DWORD dwGUID);
 
     void Process(float DeltaTime);

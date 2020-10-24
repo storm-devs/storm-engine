@@ -9,7 +9,7 @@
 
 #pragma pack(push, 1)
 
-#include "Vector.h"
+#include "CVector.h"
 
 ///Класс представления плоскости в 3D пространстве
 class Plane
@@ -19,17 +19,17 @@ class Plane
         struct
         {
             ///Нормаль
-            Vector n;
+            CVECTOR n;
         };
         struct
         {
             ///Нормаль
-            Vector normal;
+            CVECTOR normal;
         };
         struct
         {
             ///Нормаль
-            Vector N;
+            CVECTOR N;
         };
     };
     union {
@@ -50,9 +50,9 @@ class Plane
     ///Задать направление
     Plane(float Nx, float Ny, float Nz);
     ///Задать направление
-    Plane(const Vector &normal);
+    Plane(const CVECTOR &normal);
     ///Создать плоскость
-    Plane(const Vector &normal, const Vector &point);
+    Plane(const CVECTOR &normal, const CVECTOR &point);
     ///Конструктор копирования
     Plane(const Plane &plane);
 
@@ -63,20 +63,20 @@ class Plane
     ///Нормализовать
     Plane &Normalize();
     ///Переместить плоскость в заданную точку
-    Plane &Move(const Vector &point);
+    Plane &Move(const CVECTOR &point);
 
     //-----------------------------------------------------------
     //Утилитные
     //-----------------------------------------------------------
   public:
     //Найти дистанцию до плоскости (*)
-    float Dist(const Vector &point) const;
+    float Dist(const CVECTOR &point) const;
     //Проверить на пересечение отрезка и плоскости
-    bool Intersection(const Vector &src, const Vector &dst) const;
+    bool Intersection(const CVECTOR &src, const CVECTOR &dst) const;
     //Найти точку пересечения отрезка и плоскости
-    bool Intersection(const Vector &src, const Vector &dst, Vector &res) const;
+    bool Intersection(const CVECTOR &src, const CVECTOR &dst, CVECTOR &res) const;
     //Проверить на пересечение линии и плоскости
-    bool IntersectionLine(const Vector &src, const Vector &dst, float &k) const;
+    bool IntersectionLine(const CVECTOR &src, const CVECTOR &dst, float &k) const;
 };
 
 //===========================================================
@@ -84,12 +84,12 @@ class Plane
 //===========================================================
 
 ///Пустой конструктор
-mathinline Plane::Plane()
+__forceinline Plane::Plane()
 {
 }
 
 ///Задать направление
-mathinline Plane::Plane(float Nx, float Ny, float Nz)
+__forceinline Plane::Plane(float Nx, float Ny, float Nz)
 {
     N.x = Nx;
     N.y = Ny;
@@ -98,20 +98,20 @@ mathinline Plane::Plane(float Nx, float Ny, float Nz)
 }
 
 ///Задать направление
-mathinline Plane::Plane(const Vector &normal)
+__forceinline Plane::Plane(const CVECTOR &normal)
 {
     N = normal;
 }
 
 ///Создать плоскость
-mathinline Plane::Plane(const Vector &normal, const Vector &point)
+__forceinline Plane::Plane(const CVECTOR &normal, const CVECTOR &point)
 {
     N = normal;
     D = normal | point;
 }
 
 ///Конструктор копирования
-mathinline Plane::Plane(const Plane &plane)
+__forceinline Plane::Plane(const Plane &plane)
 {
     N = plane.N;
     D = plane.D;
@@ -124,7 +124,7 @@ mathinline Plane::Plane(const Plane &plane)
 /*!\relates Plane
 Дистанция от точки до плоскости
 */
-mathinline float operator*(const Vector &point, const Plane &plane)
+__forceinline float operator*(const CVECTOR &point, const Plane &plane)
 {
     return (plane.N | point) - plane.D;
 }
@@ -132,7 +132,7 @@ mathinline float operator*(const Vector &point, const Plane &plane)
 /*!\relates Plane
 Дистанция от точки до плоскости
 */
-mathinline float operator*(const Plane &plane, const Vector &point)
+__forceinline float operator*(const Plane &plane, const CVECTOR &point)
 {
     return (plane.N | point) - plane.D;
 }
@@ -142,7 +142,7 @@ mathinline float operator*(const Plane &plane, const Vector &point)
 //===========================================================
 
 ///Нормализовать
-mathinline Plane &Plane::Normalize()
+__forceinline Plane &Plane::Normalize()
 {
     float d = normal.Normalize();
     if (d != 0.0f)
@@ -153,7 +153,7 @@ mathinline Plane &Plane::Normalize()
 }
 
 ///Переместить плоскость в заданную точку
-mathinline Plane &Plane::Move(const Vector &point)
+__forceinline Plane &Plane::Move(const CVECTOR &point)
 {
     D = (N | point);
     return *this;
@@ -164,13 +164,13 @@ mathinline Plane &Plane::Move(const Vector &point)
 //===========================================================
 
 //Найти дистанцию до плоскости (*)
-mathinline float Plane::Dist(const Vector &point) const
+__forceinline float Plane::Dist(const CVECTOR &point) const
 {
     return *this * point;
 }
 
 //Проверить на пересечение отрезка и плоскости
-mathinline bool Plane::Intersection(const Vector &src, const Vector &dst) const
+__forceinline bool Plane::Intersection(const CVECTOR &src, const CVECTOR &dst) const
 {
     float dsrc = *this * src;
     float ddst = *this * dst;
@@ -178,7 +178,7 @@ mathinline bool Plane::Intersection(const Vector &src, const Vector &dst) const
 }
 
 //Найти точку пересечения отрезка и плоскости
-mathinline bool Plane::Intersection(const Vector &src, const Vector &dst, Vector &res) const
+__forceinline bool Plane::Intersection(const CVECTOR &src, const CVECTOR &dst, CVECTOR &res) const
 {
     float dsrc = *this * src;
     float ddst = *this * dst;
@@ -192,7 +192,7 @@ mathinline bool Plane::Intersection(const Vector &src, const Vector &dst, Vector
 }
 
 //Проверить на пересечение линии и плоскости
-mathinline bool Plane::IntersectionLine(const Vector &src, const Vector &dst, float &k) const
+__forceinline bool Plane::IntersectionLine(const CVECTOR &src, const CVECTOR &dst, float &k) const
 {
     float dsrc = *this * src;
     float ddst = *this * dst;

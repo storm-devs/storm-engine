@@ -9,8 +9,8 @@
 
 #pragma pack(push, 1)
 
-#include "Vector.h"
-#include "Vector4.h"
+#include "../CVector.h"
+#include "../CVector4.h"
 
 ///Класс представления шара в 3D пространстве
 class Sphere
@@ -33,12 +33,12 @@ class Sphere
                     struct
                     {
                         ///Позиция
-                        Vector p;
+                        CVECTOR p;
                     };
                     struct
                     {
                         ///Позиция
-                        Vector pos;
+                        CVECTOR pos;
                     };
                 };
             };
@@ -51,8 +51,8 @@ class Sphere
         };
         struct
         {
-            ///Представление в виде Vector4
-            Vector4 v4;
+            ///Представление в виде CVECTOR4
+            CVECTOR4 v4;
         };
     };
 
@@ -65,21 +65,21 @@ class Sphere
     }
 
     //Точка в сфере
-    bool Intersection(const Vector &p);
+    bool Intersection(const CVECTOR &p);
     //Проверить пересечение отрезка и сферы
-    bool Intersection(const Vector &src, const Vector &dst);
+    bool Intersection(const CVECTOR &src, const CVECTOR &dst);
     //Проверить пересечение луча и сферы
-    bool Intersection(const Vector &orig, const Vector &normdir, float *res);
+    bool Intersection(const CVECTOR &orig, const CVECTOR &normdir, float *res);
     //Проверить пересечение сферы и сферы
     bool Intersection(const Sphere &sph);
 
     //Установить сферу в точку с 0 радиусом
-    void Reset(const Vector &p);
+    void Reset(const CVECTOR &p);
     //Включить в описывающую сферу точку
-    void AddPoint(const Vector &p);
+    void AddPoint(const CVECTOR &p);
 
     //Проверить пересечение луча и сферы
-    static bool Intersection(const Vector &orig, const Vector &normdir, const Vector &pos, float r, float *res);
+    static bool Intersection(const CVECTOR &orig, const CVECTOR &normdir, const CVECTOR &pos, float r, float *res);
 };
 
 //===========================================================
@@ -87,15 +87,15 @@ class Sphere
 //===========================================================
 
 //Точка в сфере
-mathinline bool Sphere::Intersection(const Vector &p)
+__forceinline bool Sphere::Intersection(const CVECTOR &p)
 {
     return ~(pos - p) <= radius * radius;
 }
 
 //Проверить пересечение отрезка и сферы
-mathinline bool Sphere::Intersection(const Vector &src, const Vector &dst)
+__forceinline bool Sphere::Intersection(const CVECTOR &src, const CVECTOR &dst)
 {
-    Vector dir = dst - src;
+    CVECTOR dir = dst - src;
     float len = dir.Normalize();
     if (len > 1e-10f)
     {
@@ -119,26 +119,26 @@ mathinline bool Sphere::Intersection(const Vector &src, const Vector &dst)
 }
 
 //Проверить пересечение луча и сферы
-mathinline bool Sphere::Intersection(const Vector &orig, const Vector &normdir, float *res)
+__forceinline bool Sphere::Intersection(const CVECTOR &orig, const CVECTOR &normdir, float *res)
 {
     return Intersection(orig, normdir, pos, r, res);
 }
 
 //Проверить пересечение сферы и сферы
-mathinline bool Sphere::Intersection(const Sphere &sph)
+__forceinline bool Sphere::Intersection(const Sphere &sph)
 {
     return (~(p - sph.p) <= (r + sph.r) * (r + sph.r));
 }
 
 //Установить сферу в точку с 0 радиусом
-mathinline void Sphere::Reset(const Vector &p)
+__forceinline void Sphere::Reset(const CVECTOR &p)
 {
     pos = p;
     r = 0.0f;
 }
 
 //Включить в описывающую сферу точку
-mathinline void Sphere::AddPoint(const Vector &p)
+__forceinline void Sphere::AddPoint(const CVECTOR &p)
 {
     //Вектор из точки к центру
     float dx = pos.x - p.x;
@@ -158,9 +158,10 @@ mathinline void Sphere::AddPoint(const Vector &p)
 }
 
 //Проверить пересечение луча и сферы
-mathinline bool Sphere::Intersection(const Vector &orig, const Vector &normdir, const Vector &pos, float r, float *res)
+__forceinline bool Sphere::Intersection(const CVECTOR &orig, const CVECTOR &normdir, const CVECTOR &pos, float r,
+                                        float *res)
 {
-    Vector toCenter = pos - orig;
+    CVECTOR toCenter = pos - orig;
     float distToOrtoPlane = normdir | toCenter;
     float distFromOrtoPlaneToSphere2 = r * r - (~toCenter - distToOrtoPlane * distToOrtoPlane);
     if (distFromOrtoPlaneToSphere2 < 0.0f)

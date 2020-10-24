@@ -26,13 +26,13 @@ class BillBoardProcessor
 
     struct RECT_VERTEX
     {
-        Vector vRelativePos;
+        CVECTOR vRelativePos;
         dword dwColor;
         float tu1, tv1;
         float tu2, tv2;
         float angle;
         float BlendK;
-        Vector vParticlePos;
+        CVECTOR vParticlePos;
         float AddPowerK;
     };
 
@@ -71,7 +71,7 @@ class BillBoardProcessor
     BillBoardProcessor();
     ~BillBoardProcessor();
 
-    void AddParticle(ParticleSystem *pSystem, const Vector &velocity_dir, const Vector &pos, const Matrix &matWorld,
+    void AddParticle(ParticleSystem *pSystem, const CVECTOR &velocity_dir, const CVECTOR &pos, const CMatrix &matWorld,
                      float EmitterTime, float EmitterLifeTime, FieldList *pFields, DWORD *pActiveCount, DWORD dwGUID);
 
     void Process(float DeltaTime);

@@ -250,7 +250,7 @@ void LightProcessor::CalcShadows()
 }
 
 //Распределить затенение с треугольника на вершины
-void LightProcessor::ApplyTriangleShadows(Triangle &t)
+void LightProcessor::ApplyTriangleShadows(LighterTriangle &t)
 {
     Lights &ls = *lights;
     long num = ls.Num();

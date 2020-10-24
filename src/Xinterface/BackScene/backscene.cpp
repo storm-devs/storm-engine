@@ -430,13 +430,13 @@ void InterfaceBackScene::LoadModel(const char *pcModelName)
 void InterfaceBackScene::SetCameraPosition(const char *pcLocatorName)
 {
     // FindLocator( pcLocatorName, 0, &m_vCamPos, &m_vCamAng.y );
-    Matrix mtx;
+    CMatrix mtx;
     FindLocator(pcLocatorName, (CMatrix *)&mtx, &m_vCamPos, 0);
-    Vector vAddZ;
+    CVECTOR vAddZ;
     mtx.GetAngles(m_vCamAng.x, m_vCamAng.y, m_vCamAng.z);
     // api->Trace("InterfaceBackScene::set camera 02  m_vCamAng.x = %f  m_vCamAng.y = %f  m_vCamAng.z =
     // %f",m_vCamAng.x,m_vCamAng.y,m_vCamAng.z);
-    vAddZ = mtx.MulNormal(Vector(0.f, 0.f, 1.f));
+    vAddZ = mtx.MulNormal(CVECTOR(0.f, 0.f, 1.f));
     vAddZ *= -0.1f;
     m_vCamPos.x += vAddZ.x;
     m_vCamPos.y += vAddZ.y;

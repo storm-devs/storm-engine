@@ -9,7 +9,7 @@
 
 #pragma pack(push, 1)
 
-#include "Vector.h"
+#include "../CVector.h"
 
 ///Класс представления ориентированного по осям ящика
 class Box
@@ -19,34 +19,34 @@ class Box
         struct
         {
             ///Позиция центра
-            Vector p;
+            CVECTOR p;
         };
         struct
         {
             ///Позиция центра
-            Vector pos;
+            CVECTOR pos;
         };
         struct
         {
             ///Позиция центра
-            Vector c;
+            CVECTOR c;
         };
         struct
         {
             ///Позиция центра
-            Vector center;
+            CVECTOR center;
         };
     };
     union {
         struct
         {
             ///Размер
-            Vector s;
+            CVECTOR s;
         };
         struct
         {
             ///Размер
-            Vector size;
+            CVECTOR size;
         };
     };
 };

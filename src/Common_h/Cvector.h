@@ -137,6 +137,10 @@ struct CVECTOR
     {
         return CVECTOR(v1.x * f, v1.y * f, v1.z * f);
     };
+    friend __forceinline CVECTOR operator*(float f, const CVECTOR &v1)
+    {
+        return CVECTOR(v1.x * f, v1.y * f, v1.z * f);
+    };
     // divide each element by each
     friend __forceinline CVECTOR operator/(const CVECTOR &v1, const CVECTOR &v2)
     {
@@ -157,6 +161,57 @@ struct CVECTOR
     friend __forceinline float operator|(const CVECTOR &v1, const CVECTOR &v2)
     {
         return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+    }
+
+    __forceinline float Normalize()
+    {
+        double len = sqrt(double(x) * double(x) + double(y) * double(y) + double(z) * double(z));
+        if (len > 0.0)
+        {
+            double k = 1.0 / len;
+            x = float(x * k);
+            y = float(y * k);
+            z = float(z * k);
+        }
+        return float(len);
+    }
+
+    __forceinline CVECTOR Get2D() const
+    {
+        return CVECTOR(x, 0.0f, z);
+    }
+
+    __forceinline float GetLength2D2() const
+    {
+        return x * x + z * z;
+    }
+
+    // Get rotation angle around Y axis
+    __forceinline float GetAY(float defAngle = 0.0f) const
+    {
+        double len = double(x) * double(x) + double(z) * double(z);
+        if (len > 0.00000000001)
+        {
+            len = z / sqrt(len);
+            if (len > 1.0)
+                len = 1.0;
+            if (len < -1.0)
+                len = -1.0;
+            len = acos(len);
+        }
+        else
+            return defAngle;
+        if (x < 0)
+            len = -len;
+        return float(len);
+    }
+
+    __forceinline CVECTOR &Lerp(const CVECTOR &v1, const CVECTOR &v2, float kBlend)
+    {
+        x = v1.x + (v2.x - v1.x) * kBlend;
+        y = v1.y + (v2.y - v1.y) * kBlend;
+        z = v1.z + (v2.z - v1.z) * kBlend;
+        return *this;
     }
 };
 

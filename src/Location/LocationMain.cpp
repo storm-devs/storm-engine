@@ -80,7 +80,29 @@ CREATE_CLASS(LocRats)
 CREATE_CLASS(LocCrabs)
 CREATE_CLASS(LocModelRealizer)
 CREATE_CLASS(Blood)
-CREATE_CLASS(LocationP)
+
+class LocationPvmacd : public VMA
+{
+  public:
+    LocationPvmacd(VMA *&_pR)
+    {
+        pNext = _pR;
+        _pR = this;
+    };
+
+    char *GetName()
+    {
+        return "LocationP";
+    }
+
+    void *CreateClass()
+    {
+        nReference++;
+        return new ("LocationMain.cpp", 83) LocationP;
+    }
+};
+
+LocationPvmacd LocationPvmaci(_pModuleClassRoot);
 
 //============================================================================================
 

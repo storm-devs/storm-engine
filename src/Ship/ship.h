@@ -226,7 +226,7 @@ class SHIP : public SHIP_BASE
     {
         return 0;
     };
-    virtual bool GetCollideTriangle(TRIANGLE &triangle)
+    virtual bool GetCollideTriangle(Triangle &triangle)
     {
         return false;
     };

@@ -78,7 +78,7 @@ class LocationCamera : public ENTITY
 
     //Протрейсит луч через локацию
     float Trace(const CVECTOR &src, const CVECTOR &dst);
-    bool GetCollideTriangle(TRIANGLE &trg);
+    bool GetCollideTriangle(Triangle &trg);
     void Clip(PLANE *p, long numPlanes, CVECTOR &cnt, float rad, bool (*fnc)(const CVECTOR *vtx, long num));
 
   private:

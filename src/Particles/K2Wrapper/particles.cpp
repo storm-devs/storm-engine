@@ -128,7 +128,7 @@ dword _cdecl PARTICLES::ProcessMessage(MESSAGE &message)
         pos.y = message.Float();
         pos.z = message.Float();
 
-        Vector normal;
+        CVECTOR normal;
         normal.x = message.Float();
         normal.y = message.Float();
         normal.z = message.Float();

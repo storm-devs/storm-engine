@@ -5,13 +5,10 @@ add_library(common_h MODULE
 	math3d/Capsule.h
 	math3d/Color.h
 	math3d/Line.h
-	math3d/Matrix.h
 	math3d/Plane.h
 	math3d/Quaternion.h
 	math3d/Sphere.h
 	math3d/Triangle.h
-	math3d/Vector.h
-	math3d/Vector4.h
 
 	particles/gmx_QSort.h
 	particles/iparticlemanager.h
@@ -82,7 +79,6 @@ add_library(common_h MODULE
 	stringService.h
 	templates.h
 	tga.h
-	triangle.h
 	types3d.h
 	v_s_stack.h
 	v_udp_transport.h

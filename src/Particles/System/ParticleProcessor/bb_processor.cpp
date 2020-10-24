@@ -101,8 +101,8 @@ void BillBoardProcessor::FreeParticle(BB_ParticleData *pItem)
     }
 }
 
-void BillBoardProcessor::AddParticle(ParticleSystem *pSystem, const Vector &velocity_dir, const Vector &pos,
-                                     const Matrix &matWorld, float EmitterTime, float EmitterLifeTime,
+void BillBoardProcessor::AddParticle(ParticleSystem *pSystem, const CVECTOR &velocity_dir, const CVECTOR &pos,
+                                     const CMatrix &matWorld, float EmitterTime, float EmitterLifeTime,
                                      FieldList *pFields, DWORD *pActiveCount, DWORD dwGUID)
 {
     BB_ParticleData *pData = AllocParticle();
@@ -118,7 +118,7 @@ void BillBoardProcessor::AddParticle(ParticleSystem *pSystem, const Vector &velo
     pData->Graph_TrackY = pFields->FindGraph(PARTICLE_TRACK_Y);
     pData->Graph_TrackZ = pFields->FindGraph(PARTICLE_TRACK_Z);
 
-    Vector PositionOffset;
+    CVECTOR PositionOffset;
     PositionOffset.x = pData->Graph_TrackX->GetRandomValue(0.0f, 100.0f);
     PositionOffset.y = pData->Graph_TrackY->GetRandomValue(0.0f, 100.0f);
     PositionOffset.z = pData->Graph_TrackZ->GetRandomValue(0.0f, 100.0f);
@@ -133,7 +133,7 @@ void BillBoardProcessor::AddParticle(ParticleSystem *pSystem, const Vector &velo
 
     pData->Angle = 0.0f;
     pData->RenderAngle = 0.0f;
-    pData->ExternalForce = Vector(0.0f, 0.0f, 0.0f);
+    pData->ExternalForce = CVECTOR(0.0f, 0.0f, 0.0f);
     pData->PhysPos = pData->RenderPos;
 
     pData->OldRenderPos = pData->RenderPos;
@@ -225,7 +225,7 @@ void BillBoardProcessor::Process(float DeltaTime)
         AddGravityForce(Particles[n]->ExternalForce, Particles[n]->Mass, GravK);
         SolvePhysic(Particles[n]->PhysPos, Particles[n]->Velocity, Particles[n]->ExternalForce, Particles[n]->UMass,
                     Drag, DeltaTime);
-        Particles[n]->ExternalForce = Vector(0.0f);
+        Particles[n]->ExternalForce = CVECTOR(0.0f);
 
         // FIX ME !!!
         float SpinDrag = Particles[n]->Graph_SpinDrag->GetValue(Time, LifeTime, Particles[n]->SpinDragK);
@@ -236,7 +236,7 @@ void BillBoardProcessor::Process(float DeltaTime)
             SpinDrag = 1.0f;
         Particles[n]->Angle += (Particles[n]->Spin * SpinDrag) * DeltaTime;
 
-        Vector TrackPos;
+        CVECTOR TrackPos;
         TrackPos.x = Particles[n]->Graph_TrackX->GetValue(Time, LifeTime, Particles[n]->KTrackX);
         TrackPos.y = Particles[n]->Graph_TrackY->GetValue(Time, LifeTime, Particles[n]->KTrackY);
         TrackPos.z = Particles[n]->Graph_TrackZ->GetValue(Time, LifeTime, Particles[n]->KTrackZ);
@@ -269,8 +269,8 @@ void BillBoardProcessor::Process(float DeltaTime)
         {
             //			api->Trace("%d, %3.2f, %3.2f, %3.2f", n, Particles[n]->RenderPos.x, Particles[n]->RenderPos.y,
             //Particles[n]->RenderPos.z); 			Particles[n]->AttachedEmitter->SaveTime();
-            Particles[n]->AttachedEmitter->Teleport(Matrix(Particles[n]->OldRenderAngle, Particles[n]->OldRenderPos));
-            Particles[n]->AttachedEmitter->SetTransform(Matrix(Particles[n]->RenderAngle, Particles[n]->RenderPos));
+            Particles[n]->AttachedEmitter->Teleport(CMatrix(Particles[n]->OldRenderAngle, Particles[n]->OldRenderPos));
+            Particles[n]->AttachedEmitter->SetTransform(CMatrix(Particles[n]->RenderAngle, Particles[n]->RenderPos));
             Particles[n]->AttachedEmitter->BornParticles(DeltaTime);
 
             // if (n < Particles.Size()-1)	Particles[n]->AttachedEmitter->RestoreTime();
@@ -285,11 +285,11 @@ void BillBoardProcessor::Process(float DeltaTime)
 DWORD BillBoardProcessor::CalcDistanceToCamera()
 {
     DWORD VisParticles = 0;
-    Matrix mView;
+    CMatrix mView;
     pRS->GetTransform(D3DTS_VIEW, mView);
     for (DWORD j = 0; j < Particles.Size(); j++)
     {
-        Particles[j]->CamDistance = Vector(Particles[j]->RenderPos * mView).z;
+        Particles[j]->CamDistance = CVECTOR(Particles[j]->RenderPos * mView).z;
 
         //		_mm_prefetch ((const char *)Particles[j+1], _MM_HINT_T0);
 
@@ -342,7 +342,7 @@ void BillBoardProcessor::Draw()
         //		_mm_prefetch ((const char *)Particles[j+1], _MM_HINT_T0);
 
         float fAngle = pR->RenderAngle;
-        Vector vPos = pR->RenderPos;
+        CVECTOR vPos = pR->RenderPos;
         DWORD dwColor = pR->Graph_Color->GetValue(pR->ElapsedTime, pR->LifeTime, pR->ColorK);
 
         float Alpha = pR->Graph_Transparency->GetValue(pR->ElapsedTime, pR->LifeTime, pR->AlphaK);
@@ -367,8 +367,8 @@ void BillBoardProcessor::Draw()
         float FrameIndex = pR->Graph_Frames->GetValue(pR->ElapsedTime, pR->LifeTime, pR->FrameK);
         long FrameIndexLong = fftol(FrameIndex);
         float FrameBlendK = 1.0f - (FrameIndex - FrameIndexLong);
-        const Vector4 &UV_WH1 = pR->Graph_UV->GetValue(FrameIndexLong);
-        const Vector4 &UV_WH2 = pR->Graph_UV->GetValue(FrameIndexLong + 1);
+        const CVECTOR4 &UV_WH1 = pR->Graph_UV->GetValue(FrameIndexLong);
+        const CVECTOR4 &UV_WH2 = pR->Graph_UV->GetValue(FrameIndexLong + 1);
 
         //Ограничитель максимального размера партиклов...
         //=============================================================
@@ -385,20 +385,20 @@ void BillBoardProcessor::Draw()
 
         if (SpeedOriented)
         {
-            Matrix matView;
+            CMatrix matView;
             pRS->GetTransform(D3DTS_VIEW, matView);
-            Vector SpeedVector = pR->Velocity;
+            CVECTOR SpeedCVECTOR = pR->Velocity;
             // pR->RenderPos - pR->OldRenderPos;
-            SpeedVector = matView.MulNormal(SpeedVector);
-            SpeedVector.Normalize();
-            ScaleF = 1.0f - fabsf(SpeedVector.z);
+            SpeedCVECTOR = matView.MulNormal(SpeedCVECTOR);
+            SpeedCVECTOR.Normalize();
+            ScaleF = 1.0f - fabsf(SpeedCVECTOR.z);
 
             if (ScaleF < 0.3f)
                 ScaleF = 0.3f;
             Alpha *= ScaleF;
 
-            SpeedVector.z = SpeedVector.y;
-            DirAngle = SpeedVector.GetAY(pR->OldRenderAngle);
+            SpeedCVECTOR.z = SpeedCVECTOR.y;
+            DirAngle = SpeedCVECTOR.GetAY(pR->OldRenderAngle);
 
             pR->OldRenderAngle = DirAngle;
         }
@@ -409,12 +409,12 @@ void BillBoardProcessor::Draw()
 
         // if (j == 0)	api->Trace("fAngle[0]: %3.2f", fAngle);
 
-        pV[0].vRelativePos = Vector(-fSize, -fSize, 0.0f);
+        pV[0].vRelativePos = CVECTOR(-fSize, -fSize, 0.0f);
         pV[0].dwColor = dwColor;
-        pV[0].tu1 = UV_WH1.v4[UV_TX1];
-        pV[0].tv1 = UV_WH1.v4[UV_TY1];
-        pV[0].tu2 = UV_WH2.v4[UV_TX1];
-        pV[0].tv2 = UV_WH2.v4[UV_TY1];
+        pV[0].tu1 = UV_WH1.v[UV_TX1];
+        pV[0].tv1 = UV_WH1.v[UV_TY1];
+        pV[0].tu2 = UV_WH2.v[UV_TX1];
+        pV[0].tv2 = UV_WH2.v[UV_TY1];
         pV[0].angle = fAngle;
         pV[0].BlendK = FrameBlendK;
         pV[0].vParticlePos = vPos;
@@ -428,12 +428,12 @@ void BillBoardProcessor::Draw()
             pV[0].vRelativePos.y *= ScaleF;
         }
 
-        pV[1].vRelativePos = Vector(-fSize, fSize, 0.0f);
+        pV[1].vRelativePos = CVECTOR(-fSize, fSize, 0.0f);
         pV[1].dwColor = dwColor;
-        pV[1].tu1 = UV_WH1.v4[UV_TX1];
-        pV[1].tv1 = UV_WH1.v4[UV_TY2];
-        pV[1].tu2 = UV_WH2.v4[UV_TX1];
-        pV[1].tv2 = UV_WH2.v4[UV_TY2];
+        pV[1].tu1 = UV_WH1.v[UV_TX1];
+        pV[1].tv1 = UV_WH1.v[UV_TY2];
+        pV[1].tu2 = UV_WH2.v[UV_TX1];
+        pV[1].tv2 = UV_WH2.v[UV_TY2];
         pV[1].angle = fAngle;
         pV[1].BlendK = FrameBlendK;
         pV[1].vParticlePos = vPos;
@@ -446,12 +446,12 @@ void BillBoardProcessor::Draw()
             pV[1].vRelativePos.y *= ScaleF;
         }
 
-        pV[2].vRelativePos = Vector(fSize, fSize, 0.0f);
+        pV[2].vRelativePos = CVECTOR(fSize, fSize, 0.0f);
         pV[2].dwColor = dwColor;
-        pV[2].tu1 = UV_WH1.v4[UV_TX2];
-        pV[2].tv1 = UV_WH1.v4[UV_TY2];
-        pV[2].tu2 = UV_WH2.v4[UV_TX2];
-        pV[2].tv2 = UV_WH2.v4[UV_TY2];
+        pV[2].tu1 = UV_WH1.v[UV_TX2];
+        pV[2].tv1 = UV_WH1.v[UV_TY2];
+        pV[2].tu2 = UV_WH2.v[UV_TX2];
+        pV[2].tv2 = UV_WH2.v[UV_TY2];
         pV[2].angle = fAngle;
         pV[2].BlendK = FrameBlendK;
         pV[2].vParticlePos = vPos;
@@ -464,12 +464,12 @@ void BillBoardProcessor::Draw()
             pV[2].vRelativePos.y *= ScaleF;
         }
 
-        pV[3].vRelativePos = Vector(fSize, -fSize, 0.0f);
+        pV[3].vRelativePos = CVECTOR(fSize, -fSize, 0.0f);
         pV[3].dwColor = dwColor;
-        pV[3].tu1 = UV_WH1.v4[UV_TX2];
-        pV[3].tv1 = UV_WH1.v4[UV_TY1];
-        pV[3].tu2 = UV_WH2.v4[UV_TX2];
-        pV[3].tv2 = UV_WH2.v4[UV_TY1];
+        pV[3].tu1 = UV_WH1.v[UV_TX2];
+        pV[3].tv1 = UV_WH1.v[UV_TY1];
+        pV[3].tu2 = UV_WH2.v[UV_TX2];
+        pV[3].tv2 = UV_WH2.v[UV_TY1];
         pV[3].angle = fAngle;
         pV[3].BlendK = FrameBlendK;
         pV[3].vParticlePos = vPos;
@@ -487,18 +487,18 @@ void BillBoardProcessor::Draw()
 
     pRS->UnLockVertexBuffer(pVBuffer);
 
-    Vector4 const1(0.0416666f, 1.0f, 0.0f, -0.5f);
-    Vector4 const2(0.159155f, 0.5f, 0.25f, 6.28319f);
-    Vector4 const3(-3.14159f, 0.0000247609f, -0.00138884f, -0.000000252399f);
+    CVECTOR4 const1(0.0416666f, 1.0f, 0.0f, -0.5f);
+    CVECTOR4 const2(0.159155f, 0.5f, 0.25f, 6.28319f);
+    CVECTOR4 const3(-3.14159f, 0.0000247609f, -0.00138884f, -0.000000252399f);
 
-    Vector4 cGlobal(0.0f, 1.0f, 0.5f, 0.0f);
+    CVECTOR4 cGlobal(0.0f, 1.0f, 0.5f, 0.0f);
 
-    pRS->SetVertexShaderConstant(0, const1.v4, 1);
-    pRS->SetVertexShaderConstant(1, const2.v4, 1);
-    pRS->SetVertexShaderConstant(2, const3.v4, 1);
-    pRS->SetVertexShaderConstant(13, cGlobal.v4, 1);
+    pRS->SetVertexShaderConstant(0, const1.v, 1);
+    pRS->SetVertexShaderConstant(1, const2.v, 1);
+    pRS->SetVertexShaderConstant(2, const3.v, 1);
+    pRS->SetVertexShaderConstant(13, cGlobal.v, 1);
 
-    Matrix matOldView, matView, matProjection;
+    CMatrix matOldView, matView, matProjection;
     pRS->GetTransform(D3DTS_VIEW, matView);
     pRS->GetTransform(D3DTS_PROJECTION, matProjection);
 
@@ -509,8 +509,8 @@ void BillBoardProcessor::Draw()
     pRS->SetVertexShaderConstant(3, matView.matrix, 4);
     pRS->SetVertexShaderConstant(7, matProjection.matrix, 4);
 
-    pRS->SetTransform(D3DTS_VIEW, Matrix());
-    pRS->SetTransform(D3DTS_WORLD, Matrix());
+    pRS->SetTransform(D3DTS_VIEW, CMatrix());
+    pRS->SetTransform(D3DTS_WORLD, CMatrix());
     pRS->DrawBuffer(pVBuffer, sizeof(RECT_VERTEX), pIBuffer, 0, ParticlesCount * 4, 0, ParticlesCount * 2,
                     "AdvancedParticles");
 

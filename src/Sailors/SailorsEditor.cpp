@@ -2,7 +2,7 @@
 #include "SailorsEditor.h"
 
 #include "..\ENGINE\PROGRAM\SEA_AI\script_defines.h"
-#include "..\common_h\math3d\matrix.h"
+#include "..\common_h\matrix.h"
 
 SailorsEditor ::SailorsEditor()
 {

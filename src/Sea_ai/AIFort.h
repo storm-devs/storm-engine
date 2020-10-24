@@ -65,7 +65,7 @@ class AIFort : public VAI_OBJBASE
             {
                 return null;
             };
-            virtual bool GetCollideTriangle(TRIANGLE &triangle)
+            virtual bool GetCollideTriangle(Triangle &triangle)
             {
                 return false;
             };
@@ -259,7 +259,7 @@ class AIFort : public VAI_OBJBASE
     {
         return null;
     };
-    virtual bool GetCollideTriangle(TRIANGLE &triangle)
+    virtual bool GetCollideTriangle(Triangle &triangle)
     {
         return false;
     };

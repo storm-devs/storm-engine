@@ -22,7 +22,7 @@ BaseEmitter::BaseEmitter(ParticleSystem *pSystem) : ParticleTypes(_FL_)
     LifeTime = 0.0f;
     pMaster = pSystem;
     ElapsedTime = 0.0f;
-    Position = Vector(0.0f);
+    Position = CVECTOR(0.0f);
     EmissionDirX = NULL;
     EmissionDirY = NULL;
     EmissionDirZ = NULL;
@@ -42,7 +42,7 @@ void BaseEmitter::BornParticles(float DeltaTime)
     float SavedTime = ElapsedTime;
     if (!Visible)
         return;
-    Matrix matTransform;
+    CMatrix matTransform;
 
     float MatrixBlend = 0.0f;
     float MatrixBlendInc = 1.0f / INTERPOLATION_STEPS;
@@ -51,7 +51,7 @@ void BaseEmitter::BornParticles(float DeltaTime)
     {
         BlendMatrix(matWorldTransform, matWorldTransformOld, matWorldTransformNew, MatrixBlend);
 
-        Vector TransformPos = Position * matWorldTransform;
+        CVECTOR TransformPos = Position * matWorldTransform;
         matWorldTransform.pos = TransformPos;
         MatrixBlend += MatrixBlendInc;
 
@@ -84,9 +84,9 @@ void BaseEmitter::BornParticles(float DeltaTime)
                 ParticleTypes[n].Remain -= 1.0f;
                 if (ParticleTypes[n].ActiveCount < ParticleTypes[n].MaxParticlesCount)
                 {
-                    Vector ParticlePos = GetNewParticlePosition(DeltaTime);
+                    CVECTOR ParticlePos = GetNewParticlePosition(DeltaTime);
                     GetEmissionDirection(matTransform);
-                    Vector VelDir = matTransform.vy;
+                    CVECTOR VelDir = matTransform.vy;
                     switch (ParticleTypes[n].Type)
                     {
                     case BILLBOARD_PARTICLE:
@@ -220,16 +220,16 @@ ParticleManager *BaseEmitter::GetManager()
     return pMaster->GetMaster();
 }
 
-void BaseEmitter::GetEmissionDirection(Matrix &matWorld)
+void BaseEmitter::GetEmissionDirection(CMatrix &matWorld)
 {
-    Vector DirAngles;
+    CVECTOR DirAngles;
     DirAngles.x = EmissionDirX->GetRandomValue(ElapsedTime, LifeTime);
     DirAngles.y = EmissionDirY->GetRandomValue(ElapsedTime, LifeTime);
     DirAngles.z = EmissionDirZ->GetRandomValue(ElapsedTime, LifeTime);
 
     DirAngles *= MUL_DEGTORAD;
 
-    matWorld = Matrix(DirAngles, Vector(0.0f));
+    matWorld = CMatrix(DirAngles, CVECTOR(0.0f));
 }
 
 void BaseEmitter::Restart()
@@ -257,7 +257,7 @@ bool BaseEmitter::IsStoped()
     return Stoped;
 }
 
-void BaseEmitter::SetTransform(const Matrix &matWorld)
+void BaseEmitter::SetTransform(const CMatrix &matWorld)
 {
     if (OldMatrixNotInitialized)
     {
@@ -269,23 +269,23 @@ void BaseEmitter::SetTransform(const Matrix &matWorld)
     // matWorldTransform = matWorld;
 }
 
-void BaseEmitter::Teleport(const Matrix &matWorld)
+void BaseEmitter::Teleport(const CMatrix &matWorld)
 {
     matWorldTransformOld = matWorld;
     matWorldTransformNew = matWorld;
 }
 
-void BaseEmitter::BlendMatrix(Matrix &result, const Matrix &mat1, const Matrix &mat2, float BlendK)
+void BaseEmitter::BlendMatrix(CMatrix &result, const CMatrix &mat1, const CMatrix &mat2, float BlendK)
 {
     Quaternion qRot1(mat1);
     Quaternion qRot2(mat2);
-    Vector vPos1 = mat1.pos;
-    Vector vPos2 = mat2.pos;
+    CVECTOR vPos1 = mat1.pos;
+    CVECTOR vPos2 = mat2.pos;
 
     Quaternion qBlend;
     qBlend.SLerp(qRot1, qRot2, BlendK);
 
-    Vector vBlend;
+    CVECTOR vBlend;
     vBlend.Lerp(vPos1, vPos2, BlendK);
 
     qBlend.GetMatrix(result);

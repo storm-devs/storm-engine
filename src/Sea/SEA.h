@@ -206,7 +206,7 @@ class SEA : public SEA_BASE
     {
         return null;
     };
-    virtual bool GetCollideTriangle(TRIANGLE &triangle)
+    virtual bool GetCollideTriangle(Triangle &triangle)
     {
         return false;
     }

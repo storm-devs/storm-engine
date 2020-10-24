@@ -170,7 +170,7 @@ void Blots::AddBlot(long i, long rnd, const CVECTOR &lpos, const CVECTOR &dir, f
     p[5].D = -(pos.x - BLOTS_RADIUS);
     //Вырезаем треугольники лежащии в ящике
     numClipTriangles = 0;
-    normal = -0.1f * dir;
+    normal = CVECTOR(-0.1f) * dir;
     //Неколизимся с патчём и мачтами
     NODE *root = m->GetNode(0);
     SetNodesCollision(root, true);
@@ -517,7 +517,7 @@ bool Blots::AddPolygon(const CVECTOR *v, long nv)
     CVECTOR norm = (v[0] - v[1]) ^ (v[0] - v[2]);
     if ((norm | dir) >= 0.0f)
         return true;
-    normal += 100.0f * norm;
+    normal += CVECTOR(100.0f) * norm;
     //Добавляем
     for (long i = 2; i < nv; i++)
     {

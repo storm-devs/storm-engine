@@ -309,7 +309,7 @@ bool LGeometry::Process(VDX8RENDER *rs, long numLights)
                 if (numTrg >= maxTrg)
                 {
                     maxTrg += 256;
-                    trg = (Triangle *)RESIZE(trg, maxTrg * sizeof(Triangle));
+                    trg = (LighterTriangle *)RESIZE(trg, maxTrg * sizeof(LighterTriangle));
                 }
                 trg[numTrg].n = nrm * (1.0f / sq);
                 trg[numTrg].sq = sq;

@@ -43,7 +43,7 @@ class ParticleSystem : public IParticleSystem
 
     ParticleManager *pMaster;
 
-    Matrix matWorld;
+    CMatrix matWorld;
 
   public:
     //Создание/удаление
@@ -68,8 +68,8 @@ class ParticleSystem : public IParticleSystem
     //Узнаять автоудаляемая система или нет
     virtual bool IsAutoDeleted();
     //Установить матрицу трансформации для системы
-    virtual void SetTransform(const Matrix &transform);
-    virtual void GetTransform(Matrix &_matWorld);
+    virtual void SetTransform(const CMatrix &transform);
+    virtual void GetTransform(CMatrix &_matWorld);
 
     void CreateFromDataSource(DataSource *pDataSource);
 
@@ -78,7 +78,7 @@ class ParticleSystem : public IParticleSystem
     IEmitter *FindEmitter(const char *name);
     IEmitter *FindEmitterByData(FieldList *Data);
 
-    void Teleport(const Matrix &transform);
+    void Teleport(const CMatrix &transform);
 
     bool IsAlive();
 

@@ -489,7 +489,7 @@ void Grass::Realize(dword delta_time)
         if (aColor.z > 1.0f)
             aColor.z = 1.0f;
         float y = aColor.z * 0.299f + aColor.y * 0.587f + aColor.x * 0.114f;
-        aColor = y * 0.7f + aColor * 0.3f;
+        aColor = CVECTOR(y * 0.7f) + aColor * 0.3f;
         aColor *= 0.8f;
     }
     else

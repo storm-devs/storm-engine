@@ -20,51 +20,51 @@ class Line
                 struct
                 {
                     ///Начальная позиция линии
-                    Vector p1;
+                    CVECTOR p1;
                 };
                 struct
                 {
                     ///Начальная позиция линии
-                    Vector src;
+                    CVECTOR src;
                 };
                 struct
                 {
                     ///Начальная позиция линии
-                    Vector start;
+                    CVECTOR start;
                 };
                 struct
                 {
                     ///Начальная позиция линии
-                    Vector s;
+                    CVECTOR s;
                 };
             };
             union {
                 struct
                 {
                     ///Конечная позиция линии
-                    Vector p2;
+                    CVECTOR p2;
                 };
                 struct
                 {
                     ///Конечная позиция линии
-                    Vector dst;
+                    CVECTOR dst;
                 };
                 struct
                 {
                     ///Конечная позиция линии
-                    Vector end;
+                    CVECTOR end;
                 };
                 struct
                 {
                     ///Конечная позиция линии
-                    Vector e;
+                    CVECTOR e;
                 };
             };
         };
         struct
         {
             ///Представление в виде массива от 0->1
-            Vector p[2];
+            CVECTOR p[2];
         };
     };
 
@@ -77,7 +77,7 @@ class Line
     ///Заполнить числом
     Line(float f);
     ///Заполнить векторами
-    Line(const Vector &start, const Vector &end);
+    Line(const CVECTOR &start, const CVECTOR &end);
 
     Line(const Line &rhs)
     {
@@ -92,18 +92,18 @@ class Line
     //Найти точку пересечения с плоскостью
     bool Intersection(Plane &plane) const;
     //Найти точку пересечения с плоскостью
-    bool Intersection(Plane &plane, Vector &point) const;
+    bool Intersection(Plane &plane, CVECTOR &point) const;
     //Найти точку пересечения с прямых, проходящих через линии
-    bool IntersectionLines(const Line &line, Vector &point, float eps = 0.001f) const;
+    bool IntersectionLines(const Line &line, CVECTOR &point, float eps = 0.001f) const;
     //Найти точку пересечения с прямых, проходящих через линии
-    bool IntersectionLinesXZ(const Line &line, Vector &point) const;
+    bool IntersectionLinesXZ(const Line &line, CVECTOR &point) const;
     //Найти расстояние от точки до прямой, проходящей через линию
-    float DistanceToLine(const Vector &point) const;
+    float DistanceToLine(const CVECTOR &point) const;
     //Найти расстояние от точки до прямой, проходящей через линию
-    float DistanceToLineXZ(const Vector &point) const;
+    float DistanceToLineXZ(const CVECTOR &point) const;
 
     //Получить нормализованное направление прямой
-    Vector Direction() const;
+    CVECTOR Direction() const;
 };
 
 //===========================================================
@@ -111,19 +111,19 @@ class Line
 //===========================================================
 
 //Пустой конструктор
-mathinline Line::Line()
+__forceinline Line::Line()
 {
 }
 
 //Заполнить числом
-mathinline Line::Line(float f)
+__forceinline Line::Line(float f)
 {
     p1 = 0.0f;
     p2 = 0.0f;
 }
 
 //Заполнить векторами
-mathinline Line::Line(const Vector &start, const Vector &end)
+__forceinline Line::Line(const CVECTOR &start, const CVECTOR &end)
 {
     p1 = start;
     p2 = end;
@@ -134,23 +134,23 @@ mathinline Line::Line(const Vector &start, const Vector &end)
 //===========================================================
 
 //Найти точку пересечения с плоскостью
-mathinline bool Line::Intersection(Plane &plane) const
+__forceinline bool Line::Intersection(Plane &plane) const
 {
     return plane.Intersection(p1, p2);
 }
 
 //Найти точку пересечения с плоскостью
-mathinline bool Line::Intersection(Plane &plane, Vector &point) const
+__forceinline bool Line::Intersection(Plane &plane, CVECTOR &point) const
 {
     return plane.Intersection(p1, p2, point);
 }
 
 //Найти точку пересечения прямых, проходящих через линии
-mathinline bool Line::IntersectionLines(const Line &line, Vector &point, float eps) const
+__forceinline bool Line::IntersectionLines(const Line &line, CVECTOR &point, float eps) const
 {
     //Направляющие прямых
-    Vector dir1 = dst - src;
-    Vector dir2 = line.dst - line.src;
+    CVECTOR dir1 = dst - src;
+    CVECTOR dir2 = line.dst - line.src;
     //Плоскость образованая line и перпендикулярным отрезком между прямыми
     Plane plane((dir1 ^ dir2) ^ dir2);
     if (plane.normal.Normalize() <= 1e-30f)
@@ -160,7 +160,7 @@ mathinline bool Line::IntersectionLines(const Line &line, Vector &point, float e
     float k;
     if (!plane.IntersectionLine(src, dst, k))
         return false;
-    Vector p = src + (dst - src) * k;
+    CVECTOR p = src + (dst - src) * k;
     k = line.DistanceToLine(p);
     if (k < 0.0f || k > eps)
         return false;
@@ -169,7 +169,7 @@ mathinline bool Line::IntersectionLines(const Line &line, Vector &point, float e
 }
 
 //Найти точку пересечения с прямых, проходящих через линии
-mathinline bool Line::IntersectionLinesXZ(const Line &line, Vector &point) const
+__forceinline bool Line::IntersectionLinesXZ(const Line &line, CVECTOR &point) const
 {
     Line l1 = *this;
     l1.src.y = 0.0f;
@@ -181,7 +181,7 @@ mathinline bool Line::IntersectionLinesXZ(const Line &line, Vector &point) const
 }
 
 //Найти расстояние от точки до прямой, проходящей через линию
-mathinline float Line::DistanceToLine(const Vector &point) const
+__forceinline float Line::DistanceToLine(const CVECTOR &point) const
 {
     Plane plane(dst - src);
     if (plane.n.Normalize() <= 1e-30f)
@@ -194,9 +194,9 @@ mathinline float Line::DistanceToLine(const Vector &point) const
 }
 
 //Найти расстояние от точки до прямой, проходящей через линию
-mathinline float Line::DistanceToLineXZ(const Vector &point) const
+__forceinline float Line::DistanceToLineXZ(const CVECTOR &point) const
 {
-    Vector p = point;
+    CVECTOR p = point;
     p.y = 0.0f;
     Line l1 = *this;
     l1.src.y = 0.0f;
@@ -205,7 +205,7 @@ mathinline float Line::DistanceToLineXZ(const Vector &point) const
 }
 
 //Получить нормализованное направление прямой
-mathinline Vector Line::Direction() const
+__forceinline CVECTOR Line::Direction() const
 {
     return !(dst - src);
 }

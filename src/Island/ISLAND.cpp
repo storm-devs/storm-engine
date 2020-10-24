@@ -406,7 +406,7 @@ bool ISLAND::ActivateCamomileTrace(CVECTOR &vSrc)
 
     for (long i = 0; i < iNumPetal; i++)
     {
-        TRIANGLE trg;
+        Triangle trg;
         CVECTOR vDst, vCross;
         float fAng, fCos, fSin, fRes;
 
@@ -421,7 +421,7 @@ bool ISLAND::ActivateCamomileTrace(CVECTOR &vSrc)
         MODEL *pEnt = (MODEL *)api->GetEntityPointer(&pCollide->GetObjectID());
         Assert(pEnt);
         pEnt->GetCollideTriangle(trg);
-        vCross = !((trg.vrt[1] - trg.vrt[0]) ^ (trg.vrt[2] - trg.vrt[0]));
+        vCross = !((trg.p[1] - trg.p[0]) ^ (trg.p[2] - trg.p[0]));
         fRes = vCross | (!(vDst - vSrc));
         if (fRes > 0.0f)
             iNumInner++;

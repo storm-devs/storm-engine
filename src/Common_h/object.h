@@ -1,8 +1,8 @@
 #ifndef _OBJECT_H_
 #define _OBJECT_H_
 
+#include "..\common_h\math3d/Triangle.h"
 #include "..\common_h\matrix.h"
-#include "..\common_h\triangle.h"
 #include "dx8render.h"
 
 typedef bool (*ADD_POLYGON_FUNC)(const CVECTOR *v, long nv);
@@ -18,6 +18,6 @@ class COLLISION_OBJECT : public ENTITY
                       ADD_POLYGON_FUNC addpoly) = 0;
 
     virtual const char *GetCollideMaterialName() = 0;
-    virtual bool GetCollideTriangle(TRIANGLE &triangle) = 0;
+    virtual bool GetCollideTriangle(Triangle &triangle) = 0;
 };
 #endif

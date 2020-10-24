@@ -366,8 +366,8 @@ void ShipInfoImages::CalculateDirectingVectors(const CVECTOR &pos)
     if (m_fImgScale < 1.f)
         m_fImgScale = 1.f;
 
-    m_vRightDir = m_fImgScale * .5f * !((campos - pos) ^ CVECTOR(0.f, 1.f, 0.f));
-    m_vUpDir = m_fImgScale * CVECTOR(0.f, 1.f, 0.f);
+    m_vRightDir = CVECTOR(m_fImgScale * .5f) * !((campos - pos) ^ CVECTOR(0.f, 1.f, 0.f));
+    m_vUpDir = CVECTOR(m_fImgScale) * CVECTOR(0.f, 1.f, 0.f);
 }
 
 void ShipInfoImages::WriteSquareVertex(SII_VERTEX *pV, const CVECTOR &center, const CVECTOR &offset, const FPOINT &size,

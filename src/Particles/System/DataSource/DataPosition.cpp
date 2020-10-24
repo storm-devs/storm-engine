@@ -5,7 +5,7 @@
 //конструктор/деструктор
 DataPosition::DataPosition()
 {
-    Value = Vector(0, 0, 0);
+    Value = CVECTOR(0.0f, 0.0f, 0.0f);
 }
 
 DataPosition::~DataPosition()
@@ -13,20 +13,20 @@ DataPosition::~DataPosition()
 }
 
 //Получить значение (Текущее время, Коэфицент рандома[0..1])
-const Vector &DataPosition::GetValue()
+const CVECTOR &DataPosition::GetValue()
 {
     return Value;
 }
 
 //Установить значение
-void DataPosition::SetValue(const Vector &val)
+void DataPosition::SetValue(const CVECTOR &val)
 {
     Value = val;
 }
 
 void DataPosition::Load(MemFile *File)
 {
-    Vector vValue;
+    CVECTOR vValue;
     File->ReadType(vValue.x);
     File->ReadType(vValue.y);
     File->ReadType(vValue.z);
@@ -55,7 +55,7 @@ const char *DataPosition::GetName()
 
 void DataPosition::Write(MemFile *File)
 {
-    Vector vValue = GetValue();
+    CVECTOR vValue = GetValue();
     // api->Trace("Write position %3.2f, %3.2f, %3.2f", vValue.x, vValue.y, vValue.z);
     File->WriteType(vValue.x);
     File->WriteType(vValue.y);

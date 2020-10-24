@@ -103,7 +103,7 @@ class MODEL : public COLLISION_OBJECT
                       ADD_POLYGON_FUNC addpoly) = 0;
 
     virtual const char *GetCollideMaterialName() = 0;
-    virtual bool GetCollideTriangle(TRIANGLE &triangle) = 0;
+    virtual bool GetCollideTriangle(Triangle &triangle) = 0;
 
     virtual NODE *GetCollideNode() = 0;
 };

@@ -14,7 +14,7 @@ class DataPosition
 {
     string Name;
 
-    Vector Value;
+    CVECTOR Value;
 
   public:
     //конструктор/деструктор
@@ -22,10 +22,10 @@ class DataPosition
     virtual ~DataPosition();
 
     //Получить значение (Текущее время, Коэфицент рандома[0..1])
-    const Vector &GetValue();
+    const CVECTOR &GetValue();
 
     //Установить значение
-    void SetValue(const Vector &val);
+    void SetValue(const CVECTOR &val);
 
     void Load(MemFile *File);
     void Write(MemFile *File);

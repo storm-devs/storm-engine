@@ -93,7 +93,7 @@ void PathTracks::Draw(VDX8RENDER *render)
 }
 
 //Получить точку трека
-bool PathTracks::GetPoint(float index, Vector &cp, Quaternion &cq)
+bool PathTracks::GetPoint(float index, CVECTOR &cp, Quaternion &cq)
 {
     Assert(point);
     if (index < 0.0 || index >= 1.f)

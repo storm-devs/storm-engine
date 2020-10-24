@@ -63,7 +63,7 @@ class LGeometry
     long numVrt;
     long maxVrt;
 
-    Triangle *trg;
+    LighterTriangle *trg;
     long numTrg;
     long maxTrg;
 

@@ -117,7 +117,7 @@ class ModelArray
     bool VisibleTest(const CVECTOR &p1, const CVECTOR &p2);
     //Протрейсит луч через локацию
     float Trace(const CVECTOR &src, const CVECTOR &dst);
-    bool GetCollideTriangle(TRIANGLE &trg);
+    bool GetCollideTriangle(Triangle &trg);
     void Clip(PLANE *p, long numPlanes, CVECTOR &cnt, float rad, bool (*fnc)(const CVECTOR *vtx, long num));
 
     //--------------------------------------------------------------------------------------------
@@ -132,7 +132,7 @@ class ModelArray
     LocationModel *model;
     long numModels;
     long maxModels;
-    TRIANGLE ctrg;
+    Triangle ctrg;
     bool isHavecTrg;
 
   public:

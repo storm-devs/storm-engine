@@ -3,6 +3,8 @@
 
 #include "cvector.h"
 
+#include <cstring>
+
 //============================================================================================
 
 /*
@@ -57,7 +59,7 @@ class CMatrix
     CMatrix(); // Identity matrix
     CMatrix(float angX, float angY, float angZ, float x, float y, float z);
     CMatrix(float angX, float angY, float angZ);
-    CMatrix(CVECTOR &ang, CVECTOR &pos);
+    CMatrix(const CVECTOR &ang, const CVECTOR &pos);
     CMatrix(CVECTOR &ang);
     CMatrix(const CMatrix &matrix);
     CMatrix(CMatrix *matrix);
@@ -109,6 +111,8 @@ class CMatrix
     // Transform normal to local coordinate system
     void MulToInvNorm(CVECTOR &srcNorm, CVECTOR &resNorm);
 
+    CMatrix &Inverse();
+
     // Transposition
     void Transposition();
     void Transposition3X3();
@@ -158,7 +162,49 @@ class CMatrix
 
     // D3D extends (return (D3DXMATRIX *)pointer)
     operator D3DXMATRIX *() const;
+
+    //Получить углы из нескалированной матрицы поворота
+    __forceinline void GetAngles(float &ax, float &ay, float &az)
+    {
+        if (vz.y < 1.0f)
+        {
+            if (vz.y > -1.0f)
+            {
+                ax = (float)asin(-vz.y);
+                ay = (float)atan2(vz.x, vz.z);
+                az = (float)atan2(vx.y, vy.y);
+                return;
+            }
+            else
+            {
+                ax = 3.141592654f * 0.5f;
+                ay = 0.0f;
+                az = (float)atan2(vx.z, vx.x);
+            }
+        }
+        else
+        {
+            ax = -3.141592654f * 0.5f;
+            ay = 0.0f;
+            az = (float)-atan2(vx.z, vx.x);
+        }
+    }
+
+    //Умножить нормаль на матрицу
+    __forceinline CVECTOR MulNormal(const CVECTOR &v) const
+    {
+        CVECTOR tv;
+        tv.x = m[0][0] * v.x + m[1][0] * v.y + m[2][0] * v.z;
+        tv.y = m[0][1] * v.x + m[1][1] * v.y + m[2][1] * v.z;
+        tv.z = m[0][2] * v.x + m[1][2] * v.y + m[2][2] * v.z;
+        return tv;
+    }
 };
+
+__forceinline CVECTOR operator*(const CVECTOR &v, const CMatrix &mtx)
+{
+    return v * mtx;
+}
 
 //============================================================================================
 // Constructors
@@ -179,7 +225,7 @@ __forceinline CMatrix::CMatrix(float angX, float angY, float angZ, float x, floa
     BuildMatrix(angX, angY, angZ, x, y, z);
 }
 
-__forceinline CMatrix::CMatrix(CVECTOR &ang, CVECTOR &pos)
+__forceinline CMatrix::CMatrix(const CVECTOR &ang, const CVECTOR &pos)
 {
     BuildMatrix(ang.x, ang.y, ang.z, pos.x, pos.y, pos.z);
 }
@@ -212,39 +258,36 @@ __forceinline CMatrix::CMatrix(CMatrix &m1, CMatrix &m2)
 // Create identity matrix
 __forceinline void CMatrix::SetIdentity()
 {
-    _asm
-    {
-		mov		eax, this
-		mov		ecx, 0x3f800000
-		xor		ebx, ebx
-		mov		[eax + 0*4], ecx
-		mov		[eax + 1*4], ebx
-		mov		[eax + 2*4], ebx
-		mov		[eax + 3*4], ebx
-		mov		[eax + 4*4], ebx
-		mov		[eax + 5*4], ecx
-		mov		[eax + 6*4], ebx
-		mov		[eax + 7*4], ebx
-		mov		[eax + 8*4], ebx
-		mov		[eax + 9*4], ebx
-		mov		[eax + 10*4], ecx
-		mov		[eax + 11*4], ebx
-		mov		[eax + 12*4], ebx
-		mov		[eax + 13*4], ebx
-		mov		[eax + 14*4], ebx
-		mov		[eax + 15*4], ecx
-    }
+    m[0][0] = 1.0f;
+    m[1][0] = 0.0f;
+    m[2][0] = 0.0f;
+    m[3][0] = 0.0f;
+
+    m[0][1] = 0.0f;
+    m[1][1] = 1.0f;
+    m[2][1] = 0.0f;
+    m[3][1] = 0.0f;
+
+    m[0][2] = 0.0f;
+    m[1][2] = 0.0f;
+    m[2][2] = 1.0f;
+    m[3][2] = 0.0f;
+
+    m[0][3] = 0.0f;
+    m[1][3] = 0.0f;
+    m[2][3] = 0.0f;
+    m[3][3] = 1.0f;
 }
 
 // Build matrix
 __forceinline void CMatrix::BuildMatrix(float angX, float angY, float angZ, float x, float y, float z)
 {
-    register float sinAx = sinf(angX);
-    register float cosAx = cosf(angX);
-    register float sinAy = sinf(angY);
-    register float cosAy = cosf(angY);
-    register float sinAz = sinf(angZ);
-    register float cosAz = cosf(angZ);
+    float sinAx = sinf(angX);
+    float cosAx = cosf(angX);
+    float sinAy = sinf(angY);
+    float cosAy = cosf(angY);
+    float sinAz = sinf(angZ);
+    float cosAz = cosf(angZ);
 
     //Создаём матрицу с порядком вращений rz*rx*ry
     m[0][0] = cosAz * cosAy + sinAz * sinAx * sinAy;
@@ -270,12 +313,12 @@ __forceinline void CMatrix::BuildMatrix(float angX, float angY, float angZ, floa
 
 __forceinline void CMatrix::BuildMatrixXYZ(float angX, float angY, float angZ, float x, float y, float z)
 {
-    register float sinAx = sinf(angX);
-    register float cosAx = cosf(angX);
-    register float sinAy = sinf(angY);
-    register float cosAy = cosf(angY);
-    register float sinAz = sinf(angZ);
-    register float cosAz = cosf(angZ);
+    float sinAx = sinf(angX);
+    float cosAx = cosf(angX);
+    float sinAy = sinf(angY);
+    float cosAy = cosf(angY);
+    float sinAz = sinf(angZ);
+    float cosAz = cosf(angZ);
 
     m[0][0] = cosAy * cosAz;
     m[1][0] = sinAx * sinAy * cosAz - cosAx * sinAz;
@@ -353,14 +396,7 @@ __forceinline void CMatrix::BuildPosition(float x, float y, float z)
 // Equal
 __forceinline void CMatrix::operator=(const CMatrix &matrix)
 {
-    _asm
-    {
-		cld
-		mov		edi, this
-		mov		esi, dword ptr matrix
-		mov		ecx, 16
-		rep		movsd
-    }
+    memcpy(this->matrix, matrix.matrix, sizeof(this->matrix));
 }
 
 // Multiply
@@ -404,6 +440,15 @@ __forceinline CVECTOR CMatrix::operator*(CVECTOR &vector)
     tmp.x = matrix[0] * vector.x + matrix[4] * vector.y + matrix[8] * vector.z + matrix[12];
     tmp.y = matrix[1] * vector.x + matrix[5] * vector.y + matrix[9] * vector.z + matrix[13];
     tmp.z = matrix[2] * vector.x + matrix[6] * vector.y + matrix[10] * vector.z + matrix[14];
+    return tmp;
+}
+
+__forceinline CVECTOR operator*(const CMatrix &mtx, const CVECTOR &vector)
+{
+    CVECTOR tmp;
+    tmp.x = mtx.matrix[0] * vector.x + mtx.matrix[4] * vector.y + mtx.matrix[8] * vector.z + mtx.matrix[12];
+    tmp.y = mtx.matrix[1] * vector.x + mtx.matrix[5] * vector.y + mtx.matrix[9] * vector.z + mtx.matrix[13];
+    tmp.z = mtx.matrix[2] * vector.x + mtx.matrix[6] * vector.y + mtx.matrix[10] * vector.z + mtx.matrix[14];
     return tmp;
 }
 
@@ -475,56 +520,52 @@ __forceinline void CMatrix::Transposition()
     Transposition3X3();
 }
 
+//Расчёт обратной матрицы
+__forceinline CMatrix &CMatrix::Inverse()
+{
+    pos = CVECTOR(-(pos | vx), -(pos | vy), -(pos | vz));
+    Transposition3X3();
+    return *this;
+}
+
 __forceinline void CMatrix::Transposition3X3()
 {
-    _asm
-    {
-		mov		eax, this
-		mov		ebx, [eax + 4*4]
-		mov		ecx, [eax + 8*4]
-		mov		esi, [eax + 1*4]
-		mov		edi, [eax + 2*4]
-		mov		[eax + 4*4], esi
-		mov		[eax + 8*4], edi
-		mov		[eax + 1*4], ebx
-		mov		[eax + 2*4], ecx
-		mov		ebx, [eax + 6*4]
-		mov		esi, [eax + 9*4]
-		mov		[eax + 6*4], esi		
-		mov		[eax + 9*4], ebx
-    }
+    float m01 = m[0][1];
+    float m02 = m[0][2];
+    float m12 = m[1][2];
+
+    m[0][1] = m[1][0];
+    m[0][2] = m[2][0];
+    m[1][2] = m[2][1];
+
+    m[1][0] = m01;
+    m[2][0] = m02;
+    m[2][1] = m12;
 }
 
 __forceinline CMatrix &__fastcall CMatrix::Transposition4x4()
 {
-    _asm
-    {
-		mov		eax, this
-		mov		ebx, [eax + 1*4]
-		mov		ecx, [eax + 2*4]
-		mov		esi, [eax + 4*4]
-		mov		edi, [eax + 8*4]
-		mov		[eax + 4*4], ebx
-		mov		[eax + 8*4], ecx
-		mov		[eax + 1*4], esi
-		mov		[eax + 2*4], edi
-		mov		ebx, [eax + 3*4]
-		mov		ecx, [eax + 6*4]
-		mov		esi, [eax + 12*4]
-		mov		edi, [eax + 9*4]
-		mov		[eax + 12*4], ebx
-		mov		[eax + 9*4], ecx
-		mov		[eax + 3*4], esi
-		mov		[eax + 6*4], edi
-		mov		ebx, [eax + 7*4]
-		mov		ecx, [eax + 11*4]
-		mov		esi, [eax + 13*4]
-		mov		edi, [eax + 14*4]
-		mov		[eax + 13*4], ebx
-		mov		[eax + 14*4], ecx
-		mov		[eax + 7*4], esi
-		mov		[eax + 11*4], edi
-    }
+    float m01 = m[0][1];
+    float m02 = m[0][2];
+    float m03 = m[0][3];
+    float m12 = m[1][2];
+    float m13 = m[1][3];
+    float m23 = m[2][3];
+
+    m[0][1] = m[1][0];
+    m[0][2] = m[2][0];
+    m[0][3] = m[3][0];
+    m[1][2] = m[2][1];
+    m[1][3] = m[3][1];
+    m[2][3] = m[3][2];
+
+    m[1][0] = m01;
+    m[2][0] = m02;
+    m[3][0] = m03;
+    m[2][1] = m12;
+    m[3][1] = m13;
+    m[3][2] = m23;
+
     return *this;
 }
 
@@ -623,70 +664,64 @@ __forceinline float &CMatrix::operator()(long i, long j)
 // Create only rotate matrix
 __forceinline void CMatrix::Get3X3(CMatrix &mtr)
 {
-    _asm
+    /*_asm
     {
-		mov		esi, this
-		mov		edi, dword ptr mtr
-		mov		ebx, [esi + 0*4]
-		mov		ecx, [esi + 1*4]
-		mov		edx, [esi + 2*4]
-		mov		[edi + 0*4], ebx
-		mov		[edi + 1*4], ecx
-		mov		[edi + 2*4], edx
-		mov		ebx, [esi + 4*4]
-		mov		ecx, [esi + 5*4]
-		mov		edx, [esi + 6*4]
-		mov		[edi + 4*4], ebx
-		mov		[edi + 5*4], ecx
-		mov		[edi + 6*4], edx
-		mov		ebx, [esi + 8*4]
-		mov		ecx, [esi + 9*4]
-		mov		edx, [esi + 10*4]
-		mov		[edi + 8*4], ebx
-		mov		[edi + 9*4], ecx
-		mov		[edi + 10*4], edx
-    }
+        mov		esi, this
+        mov		edi, dword ptr mtr
+        mov		ebx, [esi + 0*4]
+        mov		ecx, [esi + 1*4]
+        mov		edx, [esi + 2*4]
+        mov		[edi + 0*4], ebx
+        mov		[edi + 1*4], ecx
+        mov		[edi + 2*4], edx
+        mov		ebx, [esi + 4*4]
+        mov		ecx, [esi + 5*4]
+        mov		edx, [esi + 6*4]
+        mov		[edi + 4*4], ebx
+        mov		[edi + 5*4], ecx
+        mov		[edi + 6*4], edx
+        mov		ebx, [esi + 8*4]
+        mov		ecx, [esi + 9*4]
+        mov		edx, [esi + 10*4]
+        mov		[edi + 8*4], ebx
+        mov		[edi + 9*4], ecx
+        mov		[edi + 10*4], edx
+    }*/
 }
 
 __forceinline void CMatrix::Get3X3(CMatrix *mtr)
 {
-    _asm
+    /*_asm
     {
-		mov		esi, this
-		mov		edi, mtr
-		mov		ebx, [esi + 0*4]
-		mov		ecx, [esi + 1*4]
-		mov		edx, [esi + 2*4]
-		mov		[edi + 0*4], ebx
-		mov		[edi + 1*4], ecx
-		mov		[edi + 2*4], edx
-		mov		ebx, [esi + 4*4]
-		mov		ecx, [esi + 5*4]
-		mov		edx, [esi + 6*4]
-		mov		[edi + 4*4], ebx
-		mov		[edi + 5*4], ecx
-		mov		[edi + 6*4], edx
-		mov		ebx, [esi + 8*4]
-		mov		ecx, [esi + 9*4]
-		mov		edx, [esi + 10*4]
-		mov		[edi + 8*4], ebx
-		mov		[edi + 9*4], ecx
-		mov		[edi + 10*4], edx
-    }
+        mov		esi, this
+        mov		edi, mtr
+        mov		ebx, [esi + 0*4]
+        mov		ecx, [esi + 1*4]
+        mov		edx, [esi + 2*4]
+        mov		[edi + 0*4], ebx
+        mov		[edi + 1*4], ecx
+        mov		[edi + 2*4], edx
+        mov		ebx, [esi + 4*4]
+        mov		ecx, [esi + 5*4]
+        mov		edx, [esi + 6*4]
+        mov		[edi + 4*4], ebx
+        mov		[edi + 5*4], ecx
+        mov		[edi + 6*4], edx
+        mov		ebx, [esi + 8*4]
+        mov		ecx, [esi + 9*4]
+        mov		edx, [esi + 10*4]
+        mov		[edi + 8*4], ebx
+        mov		[edi + 9*4], ecx
+        mov		[edi + 10*4], edx
+    }*/
 }
 
 // Projection
 __forceinline CMatrix &CMatrix::BuildProjectionMatrix(float viewAngle, float vpWidth, float vpHeight, float zNear,
                                                       float zFar)
 {
-    _asm
-    {
-		cld
-		xor		eax, eax
-		mov		edi, this
-		mov		ecx, 16
-		rep		stosd
-    }
+    memset(matrix, 0, sizeof(matrix));
+
     float cs = cosf(viewAngle * 0.5f);
     float sn = sinf(viewAngle * 0.5f);
     double Q = (double)zFar / (double)(zFar - zNear);
@@ -703,7 +738,7 @@ __forceinline CMatrix &CMatrix::BuildProjectionMatrix(float viewAngle, float vpW
 __forceinline void CMatrix::Projection(CVECTOR *srcArray, MTX_PRJ_VECTOR *dstArray, long num, float vphWidth05,
                                        float vphHeight05, long srcStrcSize, long dstStrcSize)
 {
-    register float k;
+    float k;
     for (; num > 0; num--)
     {
         dstArray->x = matrix[0] * srcArray->x + matrix[4] * srcArray->y + matrix[8] * srcArray->z + matrix[12];

@@ -45,7 +45,7 @@ class LightProcessor
     //Расчитать освещение
     void CalcLights(long lit = -1, bool isCos = true, bool isAtt = true, bool isSdw = true);
     //Распределить затенение с треугольника на вершины
-    void ApplyTriangleShadows(Triangle &t);
+    void ApplyTriangleShadows(LighterTriangle &t);
 
   private:
     LGeometry *geometry;

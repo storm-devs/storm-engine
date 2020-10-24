@@ -41,7 +41,7 @@ class BaseEmitter : public IEmitter
     FieldList *pFields;
     bool IsAttachedFlag;
 
-    Vector Position;
+    CVECTOR Position;
     EmitterType Type;
     float LifeTime;
     float ElapsedTime;
@@ -55,12 +55,12 @@ class BaseEmitter : public IEmitter
 
     DWORD Unique_GUID;
 
-    Matrix matWorldTransform;
+    CMatrix matWorldTransform;
     bool OldMatrixNotInitialized;
-    Matrix matWorldTransformOld;
-    Matrix matWorldTransformNew;
+    CMatrix matWorldTransformOld;
+    CMatrix matWorldTransformNew;
 
-    void BlendMatrix(Matrix &result, const Matrix &mat1, const Matrix &mat2, float BlendK);
+    void BlendMatrix(CMatrix &result, const CMatrix &mat1, const CMatrix &mat2, float BlendK);
 
     void IncreaseTime(float DeltaTime);
 
@@ -74,7 +74,7 @@ class BaseEmitter : public IEmitter
     virtual ~BaseEmitter();
 
     //Получить позицию для рождения новых партиклов
-    virtual Vector GetNewParticlePosition(float DeltaTime) = 0;
+    virtual CVECTOR GetNewParticlePosition(float DeltaTime) = 0;
 
     //Родить новые партиклы
     void BornParticles(float DeltaTime);
@@ -89,7 +89,7 @@ class BaseEmitter : public IEmitter
 
     ParticleSystem *GetMaster();
     ParticleManager *GetManager();
-    void GetEmissionDirection(Matrix &matWorld);
+    void GetEmissionDirection(CMatrix &matWorld);
 
     virtual void SetGUID(DWORD GUID)
     {
@@ -106,8 +106,8 @@ class BaseEmitter : public IEmitter
     virtual DWORD GetParticleCount();
     virtual bool IsStoped();
 
-    virtual void SetTransform(const Matrix &matWorld);
-    virtual void Teleport(const Matrix &matWorld);
+    virtual void SetTransform(const CMatrix &matWorld);
+    virtual void Teleport(const CMatrix &matWorld);
 
     virtual const char *GetName();
 

@@ -33,10 +33,10 @@ class IParticleSystem
     //Узнаять автоудаляемая система или нет
     virtual bool IsAutoDeleted() = 0;
     //Установить матрицу трансформации для системы
-    virtual void SetTransform(const Matrix &transform) = 0;
-    virtual void GetTransform(Matrix &_matWorld) = 0;
+    virtual void SetTransform(const CMatrix &transform) = 0;
+    virtual void GetTransform(CMatrix &_matWorld) = 0;
 
-    virtual void Teleport(const Matrix &transform) = 0;
+    virtual void Teleport(const CMatrix &transform) = 0;
 
     virtual bool IsAlive() = 0;
 

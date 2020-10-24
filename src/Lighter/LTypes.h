@@ -76,7 +76,7 @@ struct Vertex
     long cindex;    //Индекс в конечном буфере цветов объекта
 };
 
-struct Triangle
+struct LighterTriangle
 {
     CVECTOR n; //Нормаль
     float sq;  //Площадь

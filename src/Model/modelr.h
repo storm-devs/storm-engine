@@ -112,7 +112,7 @@ class MODELR : public MODEL
 
     virtual float Trace(const CVECTOR &src, const CVECTOR &dst);
     virtual const char *GetCollideMaterialName();
-    virtual bool GetCollideTriangle(TRIANGLE &triangle);
+    virtual bool GetCollideTriangle(Triangle &triangle);
     virtual bool Clip(const PLANE *planes, long nplanes, const CVECTOR &center, float radius, ADD_POLYGON_FUNC addpoly);
 
     virtual NODE *GetCollideNode();

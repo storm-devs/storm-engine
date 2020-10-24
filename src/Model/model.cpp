@@ -551,14 +551,14 @@ const char *MODELR::GetCollideMaterialName()
     return gm.name;
 }
 //-------------------------------------------------------------------
-bool MODELR::GetCollideTriangle(TRIANGLE &triangle)
+bool MODELR::GetCollideTriangle(Triangle &triangle)
 {
     GEOS::TRACE_INFO ti;
     if (colideNode->geo->GetCollisionDetails(ti) == false)
         return false;
-    triangle.vrt[0] = colideNode->glob_mtx * CVECTOR(ti.vrt[0].x, ti.vrt[0].y, ti.vrt[0].z);
-    triangle.vrt[1] = colideNode->glob_mtx * CVECTOR(ti.vrt[1].x, ti.vrt[1].y, ti.vrt[1].z);
-    triangle.vrt[2] = colideNode->glob_mtx * CVECTOR(ti.vrt[2].x, ti.vrt[2].y, ti.vrt[2].z);
+    triangle.p[0] = colideNode->glob_mtx * CVECTOR(ti.vrt[0].x, ti.vrt[0].y, ti.vrt[0].z);
+    triangle.p[1] = colideNode->glob_mtx * CVECTOR(ti.vrt[1].x, ti.vrt[1].y, ti.vrt[1].z);
+    triangle.p[2] = colideNode->glob_mtx * CVECTOR(ti.vrt[2].x, ti.vrt[2].y, ti.vrt[2].z);
     return true;
 }
 

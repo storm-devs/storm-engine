@@ -31,7 +31,7 @@ class ParticleManager : public IParticleManager
     {
         string Name;
         bool AutoDeleted;
-        Matrix matWorld;
+        CMatrix matWorld;
     };
 
     bool ShowStat;

@@ -31,8 +31,8 @@ class IEmitter
 
     virtual bool IsStoped() = 0;
 
-    virtual void SetTransform(const Matrix &matWorld) = 0;
-    virtual void Teleport(const Matrix &matWorld) = 0;
+    virtual void SetTransform(const CMatrix &matWorld) = 0;
+    virtual void Teleport(const CMatrix &matWorld) = 0;
 
     virtual const char *GetName() = 0;
 

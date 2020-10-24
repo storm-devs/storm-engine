@@ -436,7 +436,7 @@ void SAIL::Execute(dword Delta_Time)
                 //                    if(!slist[i]->ss.rollingSail)
                 //                        slist[i]->SetRolling(gdata[slist[i]->HostNum].bFinalSailUp);
                 // расчет бокса ограничивающего паруса
-                CVECTOR vtmp = slist[i]->ss.boundSphere.rc - slist[i]->ss.boundSphere.r;
+                CVECTOR vtmp = slist[i]->ss.boundSphere.rc - CVECTOR(slist[i]->ss.boundSphere.r);
                 int itmp = slist[i]->HostNum;
                 if (gdata[itmp].boxCenter.x > vtmp.x)
                     gdata[itmp].boxCenter.x = vtmp.x;
@@ -445,7 +445,7 @@ void SAIL::Execute(dword Delta_Time)
                 if (gdata[itmp].boxCenter.z > vtmp.z)
                     gdata[itmp].boxCenter.z = vtmp.z;
 
-                vtmp = slist[i]->ss.boundSphere.rc + slist[i]->ss.boundSphere.r;
+                vtmp = slist[i]->ss.boundSphere.rc + CVECTOR(slist[i]->ss.boundSphere.r);
                 if (gdata[itmp].boxSize.x < vtmp.x)
                     gdata[itmp].boxSize.x = vtmp.x;
                 if (gdata[itmp].boxSize.y < vtmp.y)
@@ -1569,7 +1569,7 @@ const char *SAIL::GetCollideMaterialName()
     return "sail";
 }
 
-bool SAIL::GetCollideTriangle(struct TRIANGLE &trg)
+bool SAIL::GetCollideTriangle(struct Triangle &trg)
 {
     return false;
 }

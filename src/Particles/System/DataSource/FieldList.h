@@ -50,7 +50,7 @@ class FieldList
     void CreateEmptyBoolField(const char *Name, bool def_value);
     void CreateEmptyFloatField(const char *Name, float def_value);
     void CreateEmptyGraphField(const char *Name, float def_value_min, float def_value_max);
-    void CreateEmptyPositionField(const char *Name, const Vector &def_value);
+    void CreateEmptyPositionField(const char *Name, const CVECTOR &def_value);
     void CreateEmptyStringField(const char *Name, const char *def_value);
     void CreateEmptyUVField(const char *Name);
     void CreateEmptyColorField(const char *Name, DWORD def_value);
@@ -89,7 +89,7 @@ class FieldList
     int GetFloatAsInt(const char *AttrName, int def_value = 0);
     bool GetBool(const char *AttrName, bool def_value = false);
     const char *GetString(const char *AttrName, const char *def_value = "");
-    const Vector &GetPosition(const char *AttrName, const Vector &def_value = Vector(0.0f));
+    const CVECTOR &GetPosition(const char *AttrName, const CVECTOR &def_value = CVECTOR(0.0f));
 
     float GetGraphVal(const char *AttrName, float Time, float LifeTime, float K_Rand, float def_value = 0.0f);
     float GetRandomGraphVal(const char *AttrName, float Time, float LifeTime, float def_value = 0.0f);

@@ -11,8 +11,8 @@ class PathTracks
     struct Point
     {
         Quaternion q;
-        Vector p;
-        Vector s;
+        CVECTOR p;
+        CVECTOR s;
     };
 #pragma pack(pop)
 
@@ -28,7 +28,7 @@ class PathTracks
     //Нарисовать трек
     void Draw(VDX8RENDER *render);
     //Получить точку трека
-    bool GetPoint(float index, Vector &cp, Quaternion &cq);
+    bool GetPoint(float index, CVECTOR &cp, Quaternion &cq);
 
     //--------------------------------------------------------------------------------------------
   private:

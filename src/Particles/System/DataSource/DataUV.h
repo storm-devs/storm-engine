@@ -15,7 +15,7 @@ class DataUV
 {
     string Name;
 
-    array<Vector4> Frames;
+    array<CVECTOR4> Frames;
 
   public:
     //конструктор/деструктор
@@ -23,10 +23,10 @@ class DataUV
     virtual ~DataUV();
 
     //Получить значение   [ x,y = UV1; z,w = UV2 ]
-    const Vector4 &GetValue(DWORD FrameNum);
+    const CVECTOR4 &GetValue(DWORD FrameNum);
 
     //Установить значения
-    void SetValues(const Vector4 *_Frames, DWORD FramesCount);
+    void SetValues(const CVECTOR4 *_Frames, DWORD FramesCount);
 
     //Получить кол-во кадров
     DWORD GetFrameCount();

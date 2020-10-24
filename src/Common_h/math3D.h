@@ -9,22 +9,21 @@
 
 #include "d_types.h"
 
-#define mathinline __forceinline
-
+#include "CVector.h"
+#include "CVector4.h"
 #include "Math3D\Box.h"
 #include "Math3D\Capsule.h"
 #include "Math3D\Color.h"
 #include "Math3D\Line.h"
-#include "Math3D\Matrix.h"
 #include "Math3D\Plane.h"
 #include "Math3D\Quaternion.h"
 #include "Math3D\Sphere.h"
 #include "Math3D\Triangle.h"
-#include "Math3D\Vector.h"
-#include "Math3D\Vector4.h"
+#include "Matrix.h"
+#include <cstdlib>
 
 ///Быстрое приведение числа с плавающей точкой к целому с отбрасыванием дробной части
-mathinline long fftol(float f)
+__forceinline long fftol(float f)
 {
     long l;
     static const float cnt[2] = {-0.4999999f, 0.4999999f};
@@ -40,7 +39,7 @@ mathinline long fftol(float f)
 }
 
 ///Быстрое приведение числа с плавающей точкой к целому с округлением к ближайшему
-mathinline long fftoi(float f)
+__forceinline long fftoi(float f)
 {
     long l;
     _asm
@@ -52,7 +51,7 @@ mathinline long fftoi(float f)
 }
 
 /// Fast floor
-mathinline long ffloor(float f)
+__forceinline long ffloor(float f)
 {
     long l;
     static const float c = -0.5f;
@@ -66,7 +65,7 @@ mathinline long ffloor(float f)
 }
 
 /// Fast ceil
-mathinline long fceil(float f)
+__forceinline long fceil(float f)
 {
     long l;
     static const float c = 0.5f;
@@ -80,32 +79,32 @@ mathinline long fceil(float f)
 }
 
 /// Fast fasb in memory
-mathinline float &ffabs(float &f)
+__forceinline float &ffabs(float &f)
 {
     *(unsigned long *)&f &= 0x7fffffff;
     return f;
 }
 
 //Возвести в квадрат
-mathinline float sqrf(float f)
+__forceinline float sqrf(float f)
 {
     return f * f;
 }
 
 //Случайное число
-mathinline float Rnd(float max = 1.0f)
+__forceinline float Rnd(float max = 1.0f)
 {
     return rand() * (max * (1.0f / RAND_MAX));
 }
 
 //Случайное число
-mathinline float RRnd(float min, float max)
+__forceinline float RRnd(float min, float max)
 {
     return min + rand() * ((max - min) * (1.0f / RAND_MAX));
 }
 
 //Ограничить float
-mathinline float Clampf(float v, float min = 0.0f, float max = 1.0f)
+__forceinline float Clampf(float v, float min = 0.0f, float max = 1.0f)
 {
     if (v < min)
         v = min;
@@ -115,7 +114,7 @@ mathinline float Clampf(float v, float min = 0.0f, float max = 1.0f)
 }
 
 //Ограничить float
-mathinline float Clampfr(float &v, float min = 0.0f, float max = 1.0f)
+__forceinline float Clampfr(float &v, float min = 0.0f, float max = 1.0f)
 {
     if (v < min)
         v = min;
@@ -125,7 +124,7 @@ mathinline float Clampfr(float &v, float min = 0.0f, float max = 1.0f)
 }
 
 //Привести угол к диапазону 0..2PI
-mathinline float NormAngle2PI(float angle)
+__forceinline float NormAngle2PI(float angle)
 {
     static const float pi = 3.14159265358979323846f;
     if (angle >= 0.0f && angle <= 2 * pi)
@@ -134,7 +133,7 @@ mathinline float NormAngle2PI(float angle)
 }
 
 //Привести угол к диапазону -PI..PI
-mathinline float NormAnglePI(float angle)
+__forceinline float NormAnglePI(float angle)
 {
     static const float pi = 3.14159265358979323846f;
     if (angle >= -pi && angle <= pi)
@@ -143,7 +142,7 @@ mathinline float NormAnglePI(float angle)
 }
 
 //Посчитать acos с ограничением диапазона
-mathinline float safeACos(float ang)
+__forceinline float safeACos(float ang)
 {
     double d = (double)ang;
     if (d < -1.0)
@@ -155,7 +154,7 @@ mathinline float safeACos(float ang)
 }
 
 //Посчитать asin с ограничением диапазона
-mathinline float safeASin(float ang)
+__forceinline float safeASin(float ang)
 {
     double d = (double)ang;
     if (d < -1.0)

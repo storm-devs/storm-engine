@@ -867,10 +867,10 @@ void DX8RENDER::CreateRenderQuad(float fWidth, float fHeight, float fSrcWidth, f
     float StartY = -0.5f;
     fWidth -= 0.5f;
     fHeight -= 0.5f;
-    PostProcessQuad[0].vPos = Vector4(StartX, fHeight, 0.0f, 1.0f);
-    PostProcessQuad[1].vPos = Vector4(StartX, StartY, 0.0f, 1.0f);
-    PostProcessQuad[2].vPos = Vector4(fWidth, fHeight, 0.0f, 1.0f);
-    PostProcessQuad[3].vPos = Vector4(fWidth, StartY, 0.0f, 1.0f);
+    PostProcessQuad[0].vPos = CVECTOR4(StartX, fHeight, 0.0f, 1.0f);
+    PostProcessQuad[1].vPos = CVECTOR4(StartX, StartY, 0.0f, 1.0f);
+    PostProcessQuad[2].vPos = CVECTOR4(fWidth, fHeight, 0.0f, 1.0f);
+    PostProcessQuad[3].vPos = CVECTOR4(fWidth, StartY, 0.0f, 1.0f);
 
     float fTexelU = 1.0f / fSrcWidth;
     float fTexelV = 1.0f / fSrcHeight;
@@ -961,10 +961,10 @@ void DX8RENDER::CopyGlowToScreen()
     FLOAT sx = (FLOAT)screen_size.x;
     FLOAT sy = (FLOAT)screen_size.y;
     //Рендерим на экран
-    PostProcessQuad[0].vPos = Vector4(0, sy, 0.0f, 1.0f);
-    PostProcessQuad[1].vPos = Vector4(0, 0, 0.0f, 1.0f);
-    PostProcessQuad[2].vPos = Vector4(sx, sy, 0.0f, 1.0f);
-    PostProcessQuad[3].vPos = Vector4(sx, 0, 0.0f, 1.0f);
+    PostProcessQuad[0].vPos = CVECTOR4(0, sy, 0.0f, 1.0f);
+    PostProcessQuad[1].vPos = CVECTOR4(0, 0, 0.0f, 1.0f);
+    PostProcessQuad[2].vPos = CVECTOR4(sx, sy, 0.0f, 1.0f);
+    PostProcessQuad[3].vPos = CVECTOR4(sx, 0, 0.0f, 1.0f);
 
     PostProcessQuad[0].v0 = 1.0f;
     PostProcessQuad[0].u0 = 0.0f;
@@ -1000,10 +1000,10 @@ void DX8RENDER::CopyPostProcessToScreen()
 {
     FLOAT sx = (FLOAT)screen_size.x;
     FLOAT sy = (FLOAT)screen_size.y;
-    PostProcessQuad[0].vPos = Vector4(0, sy, 0.0f, 1.0f);
-    PostProcessQuad[1].vPos = Vector4(0, 0, 0.0f, 1.0f);
-    PostProcessQuad[2].vPos = Vector4(sx, sy, 0.0f, 1.0f);
-    PostProcessQuad[3].vPos = Vector4(sx, 0, 0.0f, 1.0f);
+    PostProcessQuad[0].vPos = CVECTOR4(0, sy, 0.0f, 1.0f);
+    PostProcessQuad[1].vPos = CVECTOR4(0, 0, 0.0f, 1.0f);
+    PostProcessQuad[2].vPos = CVECTOR4(sx, sy, 0.0f, 1.0f);
+    PostProcessQuad[3].vPos = CVECTOR4(sx, 0, 0.0f, 1.0f);
 
     PostProcessQuad[0].v0 = 1.0f;
     PostProcessQuad[0].u0 = 0.0f;
@@ -2551,7 +2551,7 @@ void DX8RENDER::RunStart()
         {
             for (long x = 0; x < 32; x++)
             {
-                qv[x + y * 32].vPos = Vector4(sx * float(x) / 31.0f, sy * float(y) / 31.0f, 0.0f, 1.0f);
+                qv[x + y * 32].vPos = CVECTOR4(sx * float(x) / 31.0f, sy * float(y) / 31.0f, 0.0f, 1.0f);
 
                 qv[x + y * 32].u0 =
                     (sx * float(x) / 31.0f + sinf(fSin + float(x) / 31.0f * PI * 16.0f) * fDX + fDX) / sx2;

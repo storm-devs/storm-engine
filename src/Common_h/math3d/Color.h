@@ -9,8 +9,8 @@
 
 #pragma pack(push, 1)
 
-#include "Vector.h"
-#include "Vector4.h"
+#include "CVector.h"
+#include "CVector4.h"
 
 ///Класс представления цвета (float)
 class Color
@@ -33,12 +33,12 @@ class Color
                     struct
                     {
                         /// rgb в векторе
-                        Vector c;
+                        CVECTOR c;
                     };
                     struct
                     {
                         /// rgb в векторе
-                        Vector color;
+                        CVECTOR color;
                     };
                 };
             };
@@ -51,8 +51,8 @@ class Color
         };
         struct
         {
-            ///Представление в виде Vector4
-            Vector4 v4;
+            ///Представление в виде CVECTOR4
+            CVECTOR4 v4;
         };
     };
 
@@ -69,9 +69,9 @@ class Color
     ///Заполнить все компоненты
     Color(const float f[3], float a = 1.0f);
     ///Заполнить все компоненты
-    Color(const Vector &v, float a = 1.0f);
+    Color(const CVECTOR &v, float a = 1.0f);
     ///Заполнить все компоненты
-    Color(const Vector4 &v);
+    Color(const CVECTOR4 &v);
     ///Распоковать
     Color(unsigned long c);
     ///Распоковать
@@ -96,9 +96,9 @@ class Color
     ///Распаковать и присвоить
     Color &operator=(unsigned long c);
     ///Присвоить rgb
-    Color &operator=(const Vector &v);
+    Color &operator=(const CVECTOR &v);
     ///Присвоить
-    Color &operator=(const Vector4 &v);
+    Color &operator=(const CVECTOR4 &v);
     ///Присвоить
     Color &operator=(const Color &c);
     ///Покомпонентное сложение с присваиванием rgb
@@ -106,9 +106,9 @@ class Color
     ///Распаковать и сложить
     Color &operator+=(unsigned long c);
     ///Покомпонентное сложение с присваиванием rgb
-    Color &operator+=(const Vector &v);
+    Color &operator+=(const CVECTOR &v);
     ///Покомпонентное сложение с присваиванием
-    Color &operator+=(const Vector4 &v);
+    Color &operator+=(const CVECTOR4 &v);
     ///Покомпонентное сложение с присваиванием
     Color &operator+=(const Color &c);
     ///Покомпонентное вычитание с присваиванием rgb
@@ -116,9 +116,9 @@ class Color
     ///Распаковать и вычесть
     Color &operator-=(unsigned long c);
     ///Покомпонентное вычитание с присваиванием rgb
-    Color &operator-=(const Vector &v);
+    Color &operator-=(const CVECTOR &v);
     ///Покомпонентное вычитание с присваиванием
-    Color &operator-=(const Vector4 &v);
+    Color &operator-=(const CVECTOR4 &v);
     ///Покомпонентное вычитание с присваиванием
     Color &operator-=(const Color &c);
     ///Покомпонентное умножение с присваиванием rgb
@@ -126,9 +126,9 @@ class Color
     ///Распаковать и умножить
     Color &operator*=(unsigned long c);
     ///Покомпонентное умножение с присваиванием rgb
-    Color &operator*=(const Vector &v);
+    Color &operator*=(const CVECTOR &v);
     ///Покомпонентное умножение с присваиванием
-    Color &operator*=(const Vector4 &v);
+    Color &operator*=(const CVECTOR4 &v);
     ///Покомпонентное умножение с присваиванием
     Color &operator*=(const Color &c);
     ///Покомпонентное деление с присваиванием rgb
@@ -136,9 +136,9 @@ class Color
     ///Распаковать и разделить
     Color &operator/=(unsigned long c);
     ///Покомпонентное деление с присваиванием rgb
-    Color &operator/=(const Vector &v);
+    Color &operator/=(const CVECTOR &v);
     ///Покомпонентное деление с присваиванием
-    Color &operator/=(const Vector4 &v);
+    Color &operator/=(const CVECTOR4 &v);
     ///Покомпонентное деление с присваиванием
     Color &operator/=(const Color &c);
 
@@ -255,7 +255,7 @@ class DColor
 //===========================================================
 
 //Пустой конструктор
-mathinline Color::Color()
+__forceinline Color::Color()
 {
     r = 0.0f;
     g = 0.0f;
@@ -264,7 +264,7 @@ mathinline Color::Color()
 }
 
 //Заполнить числом rgb
-mathinline Color::Color(float rgb, float a)
+__forceinline Color::Color(float rgb, float a)
 {
     r = rgb;
     g = rgb;
@@ -273,7 +273,7 @@ mathinline Color::Color(float rgb, float a)
 }
 
 //Заполнить все компоненты
-mathinline Color::Color(float r, float g, float b, float a)
+__forceinline Color::Color(float r, float g, float b, float a)
 {
     this->r = r;
     this->g = g;
@@ -282,7 +282,7 @@ mathinline Color::Color(float r, float g, float b, float a)
 }
 
 //Заполнить все компоненты
-mathinline Color::Color(const float f[3], float a)
+__forceinline Color::Color(const float f[3], float a)
 {
     r = f[0];
     g = f[1];
@@ -291,7 +291,7 @@ mathinline Color::Color(const float f[3], float a)
 }
 
 //Заполнить все компоненты
-mathinline Color::Color(const Vector &v, float a)
+__forceinline Color::Color(const CVECTOR &v, float a)
 {
     r = v.x;
     g = v.y;
@@ -300,7 +300,7 @@ mathinline Color::Color(const Vector &v, float a)
 }
 
 //Заполнить все компоненты
-mathinline Color::Color(const Vector4 &v)
+__forceinline Color::Color(const CVECTOR4 &v)
 {
     r = v.x;
     g = v.y;
@@ -309,19 +309,19 @@ mathinline Color::Color(const Vector4 &v)
 }
 
 //Распоковать
-mathinline Color::Color(unsigned long c)
+__forceinline Color::Color(unsigned long c)
 {
     *this = c;
 }
 
 ///Распоковать
-mathinline Color::Color(long c)
+__forceinline Color::Color(long c)
 {
     *this = (dword)c;
 }
 
 //Конструктор копирования
-mathinline Color::Color(const Color &c)
+__forceinline Color::Color(const Color &c)
 {
     r = c.r;
     g = c.g;
@@ -334,13 +334,13 @@ mathinline Color::Color(const Color &c)
 //===========================================================
 
 //Получить интенсивность rgb
-mathinline float Color::operator~() const
+__forceinline float Color::operator~() const
 {
     return GetIntensity();
 }
 
 //Вернуть цвет с ограниченными компанентами 0..1
-mathinline Color Color::operator!() const
+__forceinline Color Color::operator!() const
 {
     Color c(*this);
     c.Clamp();
@@ -348,7 +348,7 @@ mathinline Color Color::operator!() const
 }
 
 //Получить отрицательный цвет
-mathinline Color Color::operator-() const
+__forceinline Color Color::operator-() const
 {
     Color c(*this);
     c.r = -c.r;
@@ -359,7 +359,7 @@ mathinline Color Color::operator-() const
 }
 
 //Присвоить rgb
-mathinline Color &Color::operator=(float f)
+__forceinline Color &Color::operator=(float f)
 {
     r = f;
     g = f;
@@ -369,7 +369,7 @@ mathinline Color &Color::operator=(float f)
 }
 
 //Присвоить rgb
-mathinline Color &Color::operator=(const Vector &v)
+__forceinline Color &Color::operator=(const CVECTOR &v)
 {
     r = v.x;
     g = v.y;
@@ -379,7 +379,7 @@ mathinline Color &Color::operator=(const Vector &v)
 }
 
 //Присвоить
-mathinline Color &Color::operator=(const Vector4 &v)
+__forceinline Color &Color::operator=(const CVECTOR4 &v)
 {
     r = v.x;
     g = v.y;
@@ -389,7 +389,7 @@ mathinline Color &Color::operator=(const Vector4 &v)
 }
 
 //Распаковать и присвоить
-mathinline Color &Color::operator=(unsigned long c)
+__forceinline Color &Color::operator=(unsigned long c)
 {
     r = ((unsigned char)(c >> 16)) * (1.0f / 255.0f);
     g = ((unsigned char)(c >> 8)) * (1.0f / 255.0f);
@@ -399,7 +399,7 @@ mathinline Color &Color::operator=(unsigned long c)
 }
 
 //Присвоить
-mathinline Color &Color::operator=(const Color &c)
+__forceinline Color &Color::operator=(const Color &c)
 {
     r = c.r;
     g = c.g;
@@ -409,7 +409,7 @@ mathinline Color &Color::operator=(const Color &c)
 }
 
 //Покомпонентное сложение с присваиванием rgb
-mathinline Color &Color::operator+=(float f)
+__forceinline Color &Color::operator+=(float f)
 {
     r += f;
     g += f;
@@ -418,7 +418,7 @@ mathinline Color &Color::operator+=(float f)
 }
 
 //Распаковать и сложить
-mathinline Color &Color::operator+=(unsigned long c)
+__forceinline Color &Color::operator+=(unsigned long c)
 {
     Color clr(c);
     *this += clr;
@@ -426,7 +426,7 @@ mathinline Color &Color::operator+=(unsigned long c)
 }
 
 //Покомпонентное сложение с присваиванием rgb
-mathinline Color &Color::operator+=(const Vector &v)
+__forceinline Color &Color::operator+=(const CVECTOR &v)
 {
     r += v.x;
     g += v.y;
@@ -435,7 +435,7 @@ mathinline Color &Color::operator+=(const Vector &v)
 }
 
 //Покомпонентное сложение с присваиванием
-mathinline Color &Color::operator+=(const Vector4 &v)
+__forceinline Color &Color::operator+=(const CVECTOR4 &v)
 {
     r += v.x;
     g += v.y;
@@ -445,7 +445,7 @@ mathinline Color &Color::operator+=(const Vector4 &v)
 }
 
 //Покомпонентное сложение с присваиванием
-mathinline Color &Color::operator+=(const Color &c)
+__forceinline Color &Color::operator+=(const Color &c)
 {
     r += c.r;
     g += c.g;
@@ -455,7 +455,7 @@ mathinline Color &Color::operator+=(const Color &c)
 }
 
 //Покомпонентное вычитание с присваиванием rgb
-mathinline Color &Color::operator-=(float f)
+__forceinline Color &Color::operator-=(float f)
 {
     r -= f;
     g -= f;
@@ -464,7 +464,7 @@ mathinline Color &Color::operator-=(float f)
 }
 
 ///Распаковать и вычесть
-mathinline Color &Color::operator-=(unsigned long c)
+__forceinline Color &Color::operator-=(unsigned long c)
 {
     Color clr(c);
     *this = clr;
@@ -472,7 +472,7 @@ mathinline Color &Color::operator-=(unsigned long c)
 }
 
 //Покомпонентное вычитание с присваиванием rgb
-mathinline Color &Color::operator-=(const Vector &v)
+__forceinline Color &Color::operator-=(const CVECTOR &v)
 {
     r -= v.x;
     g -= v.y;
@@ -481,7 +481,7 @@ mathinline Color &Color::operator-=(const Vector &v)
 }
 
 //Покомпонентное вычитание с присваиванием
-mathinline Color &Color::operator-=(const Vector4 &v)
+__forceinline Color &Color::operator-=(const CVECTOR4 &v)
 {
     r -= v.x;
     g -= v.y;
@@ -491,7 +491,7 @@ mathinline Color &Color::operator-=(const Vector4 &v)
 }
 
 //Покомпонентное вычитание с присваиванием
-mathinline Color &Color::operator-=(const Color &c)
+__forceinline Color &Color::operator-=(const Color &c)
 {
     r -= c.r;
     g -= c.g;
@@ -501,7 +501,7 @@ mathinline Color &Color::operator-=(const Color &c)
 }
 
 //Покомпонентное умножение с присваиванием rgb
-mathinline Color &Color::operator*=(float f)
+__forceinline Color &Color::operator*=(float f)
 {
     r *= f;
     g *= f;
@@ -510,7 +510,7 @@ mathinline Color &Color::operator*=(float f)
 }
 
 ///Распаковать и умножить
-mathinline Color &Color::operator*=(unsigned long c)
+__forceinline Color &Color::operator*=(unsigned long c)
 {
     Color clr(c);
     *this *= clr;
@@ -518,7 +518,7 @@ mathinline Color &Color::operator*=(unsigned long c)
 }
 
 //Покомпонентное умножение с присваиванием rgb
-mathinline Color &Color::operator*=(const Vector &v)
+__forceinline Color &Color::operator*=(const CVECTOR &v)
 {
     r *= v.x;
     g *= v.y;
@@ -527,7 +527,7 @@ mathinline Color &Color::operator*=(const Vector &v)
 }
 
 //Покомпонентное умножение с присваиванием
-mathinline Color &Color::operator*=(const Vector4 &v)
+__forceinline Color &Color::operator*=(const CVECTOR4 &v)
 {
     r *= v.x;
     g *= v.y;
@@ -537,7 +537,7 @@ mathinline Color &Color::operator*=(const Vector4 &v)
 }
 
 //Покомпонентное умножение с присваиванием
-mathinline Color &Color::operator*=(const Color &c)
+__forceinline Color &Color::operator*=(const Color &c)
 {
     r *= c.r;
     g *= c.g;
@@ -547,7 +547,7 @@ mathinline Color &Color::operator*=(const Color &c)
 }
 
 //Покомпонентное деление с присваиванием rgb
-mathinline Color &Color::operator/=(float f)
+__forceinline Color &Color::operator/=(float f)
 {
     f = 1.0f / f;
     r *= f;
@@ -557,7 +557,7 @@ mathinline Color &Color::operator/=(float f)
 }
 
 //Распаковать и разделить
-mathinline Color &Color::operator/=(unsigned long c)
+__forceinline Color &Color::operator/=(unsigned long c)
 {
     Color clr(c);
     *this /= clr;
@@ -565,7 +565,7 @@ mathinline Color &Color::operator/=(unsigned long c)
 }
 
 //Покомпонентное деление с присваиванием rgb
-mathinline Color &Color::operator/=(const Vector &v)
+__forceinline Color &Color::operator/=(const CVECTOR &v)
 {
     r /= v.x;
     g /= v.y;
@@ -574,7 +574,7 @@ mathinline Color &Color::operator/=(const Vector &v)
 }
 
 //Покомпонентное деление с присваиванием
-mathinline Color &Color::operator/=(const Vector4 &v)
+__forceinline Color &Color::operator/=(const CVECTOR4 &v)
 {
     r /= v.x;
     g /= v.y;
@@ -584,7 +584,7 @@ mathinline Color &Color::operator/=(const Vector4 &v)
 }
 
 //Покомпонентное деление с присваиванием
-mathinline Color &Color::operator/=(const Color &c)
+__forceinline Color &Color::operator/=(const Color &c)
 {
     r /= c.r;
     g /= c.g;
@@ -594,14 +594,14 @@ mathinline Color &Color::operator/=(const Color &c)
 }
 
 //Скалярное перемножение rgb, результат копируется во все компоненты
-mathinline Color &Color::operator|=(const Color &c)
+__forceinline Color &Color::operator|=(const Color &c)
 {
     r = g = b = a = r * c.r + g * c.g + b * c.b;
     return *this;
 }
 
 //Получить упакованный цвет в long
-mathinline Color::operator dword() const
+__forceinline Color::operator dword() const
 {
     Color c(*this);
     c.Clamp();
@@ -611,7 +611,7 @@ mathinline Color::operator dword() const
 /*!\relates Color
 Покомпонентное сложение с присваиванием rgb
 */
-mathinline Color operator+(const Color &c, float f)
+__forceinline Color operator+(const Color &c, float f)
 {
     Color clr(c);
     clr += f;
@@ -621,7 +621,7 @@ mathinline Color operator+(const Color &c, float f)
 /*!\relates Color
 Покомпонентное сложение с присваиванием rgb
 */
-mathinline Color operator+(float f, const Color &c)
+__forceinline Color operator+(float f, const Color &c)
 {
     Color clr(c);
     clr += f;
@@ -631,7 +631,7 @@ mathinline Color operator+(float f, const Color &c)
 /*!\relates Color
 Распаковать и сложить
 */
-mathinline Color operator+(const Color &c, unsigned long cl)
+__forceinline Color operator+(const Color &c, unsigned long cl)
 {
     Color clr(c);
     clr += cl;
@@ -641,7 +641,7 @@ mathinline Color operator+(const Color &c, unsigned long cl)
 /*!\relates Color
 Распаковать и сложить
 */
-mathinline Color operator+(unsigned long cl, const Color &c)
+__forceinline Color operator+(unsigned long cl, const Color &c)
 {
     Color clr(c);
     clr += cl;
@@ -651,7 +651,7 @@ mathinline Color operator+(unsigned long cl, const Color &c)
 /*!\relates Color
 Покомпонентное сложение с присваиванием rgb
 */
-mathinline Color operator+(const Color &c, const Vector &v)
+__forceinline Color operator+(const Color &c, const CVECTOR &v)
 {
     Color clr(c);
     clr += v;
@@ -661,7 +661,7 @@ mathinline Color operator+(const Color &c, const Vector &v)
 /*!\relates Color
 Покомпонентное сложение с присваиванием rgb
 */
-mathinline Color operator+(const Vector &v, const Color &c)
+__forceinline Color operator+(const CVECTOR &v, const Color &c)
 {
     Color clr(c);
     clr += v;
@@ -671,7 +671,7 @@ mathinline Color operator+(const Vector &v, const Color &c)
 /*!\relates Color
 Покомпонентное сложение с присваиванием
 */
-mathinline Color operator+(const Color &c, const Vector4 &v)
+__forceinline Color operator+(const Color &c, const CVECTOR4 &v)
 {
     Color clr(c);
     clr += v;
@@ -681,7 +681,7 @@ mathinline Color operator+(const Color &c, const Vector4 &v)
 /*!\relates Color
 Покомпонентное сложение с присваиванием
 */
-mathinline Color operator+(const Vector4 &v, const Color &c)
+__forceinline Color operator+(const CVECTOR4 &v, const Color &c)
 {
     Color clr(c);
     clr += v;
@@ -691,7 +691,7 @@ mathinline Color operator+(const Vector4 &v, const Color &c)
 /*!\relates Color
 Покомпонентное сложение с присваиванием
 */
-mathinline Color operator+(const Color &c1, const Color &c2)
+__forceinline Color operator+(const Color &c1, const Color &c2)
 {
     Color clr(c1);
     clr += c2;
@@ -701,7 +701,7 @@ mathinline Color operator+(const Color &c1, const Color &c2)
 /*!\relates Color
 Покомпонентное вычитание с присваиванием rgb
 */
-mathinline Color operator-(const Color &c, float f)
+__forceinline Color operator-(const Color &c, float f)
 {
     Color clr(c);
     clr -= f;
@@ -711,7 +711,7 @@ mathinline Color operator-(const Color &c, float f)
 /*!\relates Color
 Покомпонентное вычитание с присваиванием rgb
 */
-mathinline Color operator-(float f, const Color &c)
+__forceinline Color operator-(float f, const Color &c)
 {
     Color clr(f);
     clr -= f;
@@ -721,7 +721,7 @@ mathinline Color operator-(float f, const Color &c)
 /*!\relates Color
 Распаковать и вычесть
 */
-mathinline Color operator-(const Color &c, unsigned long cl)
+__forceinline Color operator-(const Color &c, unsigned long cl)
 {
     Color clr(c);
     clr -= cl;
@@ -731,7 +731,7 @@ mathinline Color operator-(const Color &c, unsigned long cl)
 /*!\relates Color
 Распаковать и вычесть
 */
-mathinline Color operator-(unsigned long cl, const Color &c)
+__forceinline Color operator-(unsigned long cl, const Color &c)
 {
     Color clr(cl);
     clr -= c;
@@ -741,7 +741,7 @@ mathinline Color operator-(unsigned long cl, const Color &c)
 /*!\relates Color
 Покомпонентное вычитание с присваиванием rgb
 */
-mathinline Color operator-(const Color &c, const Vector &v)
+__forceinline Color operator-(const Color &c, const CVECTOR &v)
 {
     Color clr(c);
     clr -= v;
@@ -751,7 +751,7 @@ mathinline Color operator-(const Color &c, const Vector &v)
 /*!\relates Color
 Покомпонентное вычитание с присваиванием rgb
 */
-mathinline Color operator-(const Vector &v, const Color &c)
+__forceinline Color operator-(const CVECTOR &v, const Color &c)
 {
     Color clr(v);
     clr -= c;
@@ -761,7 +761,7 @@ mathinline Color operator-(const Vector &v, const Color &c)
 /*!\relates Color
 Покомпонентное вычитание с присваиванием
 */
-mathinline Color operator-(const Color &c, const Vector4 &v)
+__forceinline Color operator-(const Color &c, const CVECTOR4 &v)
 {
     Color clr(c);
     clr -= v;
@@ -771,7 +771,7 @@ mathinline Color operator-(const Color &c, const Vector4 &v)
 /*!\relates Color
 Покомпонентное вычитание с присваиванием
 */
-mathinline Color operator-(const Vector4 &v, const Color &c)
+__forceinline Color operator-(const CVECTOR4 &v, const Color &c)
 {
     Color clr(v);
     clr -= c;
@@ -781,7 +781,7 @@ mathinline Color operator-(const Vector4 &v, const Color &c)
 /*!\relates Color
 Покомпонентное вычитание с присваиванием
 */
-mathinline Color operator-(const Color &c1, const Color &c2)
+__forceinline Color operator-(const Color &c1, const Color &c2)
 {
     Color c(c1);
     c -= c2;
@@ -791,7 +791,7 @@ mathinline Color operator-(const Color &c1, const Color &c2)
 /*!\relates Color
 Покомпонентное умножение с присваиванием rgb
 */
-mathinline Color operator*(const Color &c, float f)
+__forceinline Color operator*(const Color &c, float f)
 {
     Color clr(c);
     clr *= f;
@@ -801,7 +801,7 @@ mathinline Color operator*(const Color &c, float f)
 /*!\relates Color
 Покомпонентное умножение с присваиванием rgb
 */
-mathinline Color operator*(float f, const Color &c)
+__forceinline Color operator*(float f, const Color &c)
 {
     Color clr(c);
     clr *= f;
@@ -811,7 +811,7 @@ mathinline Color operator*(float f, const Color &c)
 /*!\relates Color
 Распаковать и умножить
 */
-mathinline Color operator*(const Color &c, unsigned long cl)
+__forceinline Color operator*(const Color &c, unsigned long cl)
 {
     Color clr(c);
     clr *= cl;
@@ -821,7 +821,7 @@ mathinline Color operator*(const Color &c, unsigned long cl)
 /*!\relates Color
 Распаковать и умножить
 */
-mathinline Color operator*(unsigned long cl, const Color &c)
+__forceinline Color operator*(unsigned long cl, const Color &c)
 {
     Color clr(c);
     clr *= cl;
@@ -831,7 +831,7 @@ mathinline Color operator*(unsigned long cl, const Color &c)
 /*!\relates Color
 Покомпонентное умножение с присваиванием rgb
 */
-mathinline Color operator*(const Color &c, const Vector &v)
+__forceinline Color operator*(const Color &c, const CVECTOR &v)
 {
     Color clr(c);
     clr *= v;
@@ -841,7 +841,7 @@ mathinline Color operator*(const Color &c, const Vector &v)
 /*!\relates Color
 Покомпонентное умножение с присваиванием rgb
 */
-mathinline Color operator*(const Vector &v, const Color &c)
+__forceinline Color operator*(const CVECTOR &v, const Color &c)
 {
     Color clr(c);
     clr *= v;
@@ -851,7 +851,7 @@ mathinline Color operator*(const Vector &v, const Color &c)
 /*!\relates Color
 Покомпонентное умножение с присваиванием
 */
-mathinline Color operator*(const Color &c, const Vector4 &v)
+__forceinline Color operator*(const Color &c, const CVECTOR4 &v)
 {
     Color clr(c);
     clr *= v;
@@ -861,7 +861,7 @@ mathinline Color operator*(const Color &c, const Vector4 &v)
 /*!\relates Color
 Покомпонентное умножение с присваиванием
 */
-mathinline Color operator*(const Vector4 &v, const Color &c)
+__forceinline Color operator*(const CVECTOR4 &v, const Color &c)
 {
     Color clr(c);
     clr *= v;
@@ -871,7 +871,7 @@ mathinline Color operator*(const Vector4 &v, const Color &c)
 /*!\relates Color
 Покомпонентное умножение с присваиванием
 */
-mathinline Color operator*(const Color &c1, const Color &c2)
+__forceinline Color operator*(const Color &c1, const Color &c2)
 {
     Color clr(c1);
     clr *= c2;
@@ -881,7 +881,7 @@ mathinline Color operator*(const Color &c1, const Color &c2)
 /*!\relates Color
 Покомпонентное деление с присваиванием rgb
 */
-mathinline Color operator/(const Color &c, float f)
+__forceinline Color operator/(const Color &c, float f)
 {
     Color clr(c);
     clr /= f;
@@ -891,7 +891,7 @@ mathinline Color operator/(const Color &c, float f)
 /*!\relates Color
 Покомпонентное деление с присваиванием rgb
 */
-mathinline Color operator/(float f, const Color &c)
+__forceinline Color operator/(float f, const Color &c)
 {
     Color clr(f);
     clr /= c;
@@ -901,7 +901,7 @@ mathinline Color operator/(float f, const Color &c)
 /*!\relates Color
 Распаковать и разделить
 */
-mathinline Color operator/(const Color &c, unsigned long cl)
+__forceinline Color operator/(const Color &c, unsigned long cl)
 {
     Color clr(c);
     clr /= cl;
@@ -911,7 +911,7 @@ mathinline Color operator/(const Color &c, unsigned long cl)
 /*!\relates Color
 Распаковать и разделить
 */
-mathinline Color operator/(unsigned long cl, const Color &c)
+__forceinline Color operator/(unsigned long cl, const Color &c)
 {
     Color clr(cl);
     clr /= c;
@@ -921,7 +921,7 @@ mathinline Color operator/(unsigned long cl, const Color &c)
 /*!\relates Color
 Покомпонентное деление с присваиванием rgb
 */
-mathinline Color operator/(const Color &c, const Vector &v)
+__forceinline Color operator/(const Color &c, const CVECTOR &v)
 {
     Color clr(c);
     clr /= v;
@@ -931,7 +931,7 @@ mathinline Color operator/(const Color &c, const Vector &v)
 /*!\relates Color
 Покомпонентное деление с присваиванием rgb
 */
-mathinline Color operator/(const Vector &v, const Color &c)
+__forceinline Color operator/(const CVECTOR &v, const Color &c)
 {
     Color clr(v);
     clr /= c;
@@ -941,7 +941,7 @@ mathinline Color operator/(const Vector &v, const Color &c)
 /*!\relates Color
 Покомпонентное деление с присваиванием
 */
-mathinline Color operator/(const Color &c, const Vector4 &v)
+__forceinline Color operator/(const Color &c, const CVECTOR4 &v)
 {
     Color clr(c);
     clr /= v;
@@ -951,7 +951,7 @@ mathinline Color operator/(const Color &c, const Vector4 &v)
 /*!\relates Color
 Покомпонентное деление с присваиванием
 */
-mathinline Color operator/(const Vector4 &v, const Color &c)
+__forceinline Color operator/(const CVECTOR4 &v, const Color &c)
 {
     Color clr(v);
     clr /= c;
@@ -961,7 +961,7 @@ mathinline Color operator/(const Vector4 &v, const Color &c)
 /*!\relates Color
 Покомпонентное деление с присваиванием
 */
-mathinline Color operator/(const Color &c1, const Color &c2)
+__forceinline Color operator/(const Color &c1, const Color &c2)
 {
     Color clr(c1);
     clr /= c2;
@@ -971,7 +971,7 @@ mathinline Color operator/(const Color &c1, const Color &c2)
 /*!\relates Color
 Скалярное перемножение rgb, результат копируется во все компоненты
 */
-mathinline Color operator|(const Color &c1, const Color &c2)
+__forceinline Color operator|(const Color &c1, const Color &c2)
 {
     Color clr(c1);
     clr |= c2;
@@ -983,7 +983,7 @@ mathinline Color operator|(const Color &c1, const Color &c2)
 //===========================================================
 
 //Ограничить диапазоном 0..1
-mathinline void Color::Clamp()
+__forceinline void Color::Clamp()
 {
     if (r < 0.0f)
         r = 0.0f;
@@ -1004,7 +1004,7 @@ mathinline void Color::Clamp()
 }
 
 //Ограничить диапазоном
-mathinline void Color::Clamp(float min, float max)
+__forceinline void Color::Clamp(float min, float max)
 {
     if (r < min)
         r = min;
@@ -1025,7 +1025,7 @@ mathinline void Color::Clamp(float min, float max)
 }
 
 //Сохранить минимальные компаненты
-mathinline void Color::Min(const Color &c)
+__forceinline void Color::Min(const Color &c)
 {
     if (r > c.r)
         r = c.r;
@@ -1038,7 +1038,7 @@ mathinline void Color::Min(const Color &c)
 }
 
 //Сохранить максимальные компаненты
-mathinline void Color::Max(const Color &c)
+__forceinline void Color::Max(const Color &c)
 {
     if (r < c.r)
         r = c.r;
@@ -1051,7 +1051,7 @@ mathinline void Color::Max(const Color &c)
 }
 
 //Яркость -1..1
-mathinline void Color::Brightness(float br)
+__forceinline void Color::Brightness(float br)
 {
     if (br > 1.0f)
         br = 1.0f;
@@ -1062,7 +1062,7 @@ mathinline void Color::Brightness(float br)
 }
 
 //Гамма -1..1
-mathinline void Color::Gamma(float gm)
+__forceinline void Color::Gamma(float gm)
 {
     Clamp();
     if (gm > 0.0f)
@@ -1086,7 +1086,7 @@ mathinline void Color::Gamma(float gm)
 }
 
 //Контраст -1..1
-mathinline void Color::Contrast(float cn)
+__forceinline void Color::Contrast(float cn)
 {
     if (cn > 1.0f)
         cn = 1.0f;
@@ -1100,7 +1100,7 @@ mathinline void Color::Contrast(float cn)
 }
 
 //Изменить сумарно яркость, гамму и контраст
-mathinline void Color::Processed(float br, float gm, float cn)
+__forceinline void Color::Processed(float br, float gm, float cn)
 {
     Contrast(cn);
     Gamma(gm);
@@ -1112,13 +1112,13 @@ mathinline void Color::Processed(float br, float gm, float cn)
 //===========================================================
 
 //Получить интенсивность
-mathinline float Color::GetIntensity() const
+__forceinline float Color::GetIntensity() const
 {
     return r * 0.299f + g * 0.587f + b * 0.114f;
 }
 
 //Нормализовать rgb
-mathinline Color &Color::Normalize()
+__forceinline Color &Color::Normalize()
 {
     float min = r;
     float max = r;
@@ -1148,13 +1148,13 @@ mathinline Color &Color::Normalize()
 }
 
 //Получить цветовую дистанцию между цветами
-mathinline float Color::GetDistance(const Color &c) const
+__forceinline float Color::GetDistance(const Color &c) const
 {
     return sqrtf(GetDistanceSqr(c));
 }
 
 //Получить цветовую дистанцию между цветами в квадрате
-mathinline float Color::GetDistanceSqr(const Color &c) const
+__forceinline float Color::GetDistanceSqr(const Color &c) const
 {
     float dr = (r - c.r) * 0.299f;
     float dg = (g - c.g) * 0.587f;
@@ -1163,7 +1163,7 @@ mathinline float Color::GetDistanceSqr(const Color &c) const
 }
 
 //Расчитать линейно интерполированное значение
-mathinline Color &Color::Lerp(const Color &c1, const Color &c2, float kBlend)
+__forceinline Color &Color::Lerp(const Color &c1, const Color &c2, float kBlend)
 {
     r = c1.r + (c2.r - c1.r) * kBlend;
     g = c1.g + (c2.g - c1.g) * kBlend;
@@ -1172,7 +1172,7 @@ mathinline Color &Color::Lerp(const Color &c1, const Color &c2, float kBlend)
 }
 
 //Расчитать линейно интерполированное значение
-mathinline Color &Color::LerpA(const Color &c1, const Color &c2, float kBlend)
+__forceinline Color &Color::LerpA(const Color &c1, const Color &c2, float kBlend)
 {
     r = c1.r + (c2.r - c1.r) * kBlend;
     g = c1.g + (c2.g - c1.g) * kBlend;
@@ -1182,7 +1182,7 @@ mathinline Color &Color::LerpA(const Color &c1, const Color &c2, float kBlend)
 }
 
 //Умножить цвет на число
-mathinline Color &Color::MulColor(float k)
+__forceinline Color &Color::MulColor(float k)
 {
     r *= k;
     g *= k;
@@ -1191,14 +1191,14 @@ mathinline Color &Color::MulColor(float k)
 }
 
 //Умножить альфу на число
-mathinline Color &Color::MulAlpha(float k)
+__forceinline Color &Color::MulAlpha(float k)
 {
     a *= k;
     return *this;
 }
 
 //Поменять местами r,b
-mathinline Color &Color::SwapRB()
+__forceinline Color &Color::SwapRB()
 {
     float t = r;
     r = b;
@@ -1207,7 +1207,7 @@ mathinline Color &Color::SwapRB()
 }
 
 //Получить запакованный цвет в dword
-mathinline unsigned long Color::GetDword() const
+__forceinline unsigned long Color::GetDword() const
 {
     long l;
     DColor color;
@@ -1245,7 +1245,7 @@ mathinline unsigned long Color::GetDword() const
 }
 
 //Преобразование A8R8G8B8 в R5G6B5
-mathinline unsigned short Color::Make565(unsigned long color)
+__forceinline unsigned short Color::Make565(unsigned long color)
 {
     //   11111000 11111100 11111000
     //           11111 111111 11111
@@ -1256,7 +1256,7 @@ mathinline unsigned short Color::Make565(unsigned long color)
 }
 
 //Преобразование A8R8G8B8 в X1R5G5B5
-mathinline unsigned short Color::Make555(unsigned long color)
+__forceinline unsigned short Color::Make555(unsigned long color)
 {
     //   11111000 11111000 11111000
     //           011111 11111 11111
@@ -1267,7 +1267,7 @@ mathinline unsigned short Color::Make555(unsigned long color)
 }
 
 //Преобразование A8R8G8B8 в A1R5G5B5
-mathinline unsigned short Color::Make1555(unsigned long color)
+__forceinline unsigned short Color::Make1555(unsigned long color)
 {
     //   11111000 11111000 11111000
     //          1 11111 11111 11111
@@ -1279,7 +1279,7 @@ mathinline unsigned short Color::Make1555(unsigned long color)
 }
 
 //Преобразование A8R8G8B8 в A1R5G5B5
-mathinline unsigned short Color::Make4444(unsigned long color)
+__forceinline unsigned short Color::Make4444(unsigned long color)
 {
     //  11110000 11111000 11111000 11111000
     //                  1111 1111 1111 1111
@@ -1295,21 +1295,21 @@ mathinline unsigned short Color::Make4444(unsigned long color)
 //===========================================================
 
 //Присвоить
-mathinline DColor &DColor::operator=(unsigned long color)
+__forceinline DColor &DColor::operator=(unsigned long color)
 {
     c = color;
     return *this;
 }
 
 //Присвоить
-mathinline DColor &DColor::operator=(long color)
+__forceinline DColor &DColor::operator=(long color)
 {
     c = (unsigned long)color;
     return *this;
 }
 
 //Получить long
-mathinline DColor::operator dword() const
+__forceinline DColor::operator dword() const
 {
     return long(c);
 }

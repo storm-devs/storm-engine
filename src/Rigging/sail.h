@@ -95,7 +95,7 @@ class SAIL : public SAIL_BASE
     int LastTraceGroup;
     float Trace(const CVECTOR &src, const CVECTOR &dst);
     const char *GetCollideMaterialName();
-    bool GetCollideTriangle(TRIANGLE &triangle);
+    bool GetCollideTriangle(Triangle &triangle);
     bool Clip(const PLANE *planes, long nplanes, const CVECTOR &center, float radius, ADD_POLYGON_FUNC addpoly);
     float Cannon_Trace(long iBallOwner, const CVECTOR &src, const CVECTOR &dst);
     ENTITY_ID GetShipID()

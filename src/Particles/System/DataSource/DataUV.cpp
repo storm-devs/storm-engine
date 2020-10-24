@@ -12,7 +12,7 @@ DataUV::~DataUV()
 }
 
 //Получить значение   [ x,y = UV1; z,w = UV2 ]
-const Vector4 &DataUV::GetValue(DWORD FrameNum)
+const CVECTOR4 &DataUV::GetValue(DWORD FrameNum)
 {
     DWORD TotalFrames = Frames.Size();
     FrameNum = FrameNum % TotalFrames;
@@ -20,7 +20,7 @@ const Vector4 &DataUV::GetValue(DWORD FrameNum)
 }
 
 //Установить значения
-void DataUV::SetValues(const Vector4 *_Frames, DWORD FramesCount)
+void DataUV::SetValues(const CVECTOR4 *_Frames, DWORD FramesCount)
 {
     Frames.DelAll();
 
@@ -42,13 +42,13 @@ void DataUV::Load(MemFile *File)
     File->ReadType(ElementCount);
     for (DWORD n = 0; n < ElementCount; n++)
     {
-        Vector4 rFrame;
+        CVECTOR4 rFrame;
         File->ReadType(rFrame.x);
         File->ReadType(rFrame.y);
         File->ReadType(rFrame.z);
         File->ReadType(rFrame.w);
 
-        Vector4 newFrame;
+        CVECTOR4 newFrame;
         newFrame = rFrame;
         newFrame.z += newFrame.x;
         newFrame.w += newFrame.y;

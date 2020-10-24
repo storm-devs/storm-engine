@@ -155,7 +155,7 @@ bool ParticleSystem::IsAutoDeleted()
 }
 
 //Установить матрицу трансформации для системы
-void ParticleSystem::SetTransform(const Matrix &transform)
+void ParticleSystem::SetTransform(const CMatrix &transform)
 {
     matWorld = transform;
     for (DWORD n = 0; n < Emitters.Size(); n++)
@@ -164,7 +164,7 @@ void ParticleSystem::SetTransform(const Matrix &transform)
     }
 }
 
-void ParticleSystem::Teleport(const Matrix &transform)
+void ParticleSystem::Teleport(const CMatrix &transform)
 {
     matWorld = transform;
     for (DWORD n = 0; n < Emitters.Size(); n++)
@@ -173,7 +173,7 @@ void ParticleSystem::Teleport(const Matrix &transform)
     }
 }
 
-void ParticleSystem::GetTransform(Matrix &_matWorld)
+void ParticleSystem::GetTransform(CMatrix &_matWorld)
 {
     _matWorld = matWorld;
 }

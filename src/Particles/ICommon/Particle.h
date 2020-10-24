@@ -17,7 +17,7 @@ struct BB_ParticleData
     DWORD *ActiveCount;
 
     //Физическая позиция
-    Vector PhysPos;
+    CVECTOR PhysPos;
 
     //Угол поворота
     float Angle;
@@ -26,10 +26,10 @@ struct BB_ParticleData
     float Spin;
 
     //Направление и "сила" скорости (НЕ Нормализованная)
-    Vector Velocity;
+    CVECTOR Velocity;
 
     //Внешняя сила (для прикладывания ее к партиклу)
-    Vector ExternalForce;
+    CVECTOR ExternalForce;
 
     //Время жизни
     float LifeTime;
@@ -38,7 +38,7 @@ struct BB_ParticleData
     float ElapsedTime;
 
     //Матрица трансформации, при рождении партикла (для трека)
-    Matrix matWorld;
+    CMatrix matWorld;
 
     //Масса
     float Mass;
@@ -48,9 +48,9 @@ struct BB_ParticleData
 
     //===========================================================================
     //Финальная позиция/угол для рендера
-    Vector RenderPos;
+    CVECTOR RenderPos;
     float RenderAngle;
-    Vector OldRenderPos;
+    CVECTOR OldRenderPos;
     float OldRenderAngle;
 
     //===========================================================================
@@ -106,19 +106,19 @@ struct MDL_ParticleData
     DWORD *ActiveCount;
 
     //Физическая позиция
-    Vector PhysPos;
+    CVECTOR PhysPos;
 
     //Угол поворота
-    Vector Angle;
+    CVECTOR Angle;
 
     //Скорость закручивания, радиан в сек.
-    Vector Spin;
+    CVECTOR Spin;
 
     //Направление и "сила" скорости (НЕ Нормализованная)
-    Vector Velocity;
+    CVECTOR Velocity;
 
     //Внешняя сила (для прикладывания ее к партиклу)
-    Vector ExternalForce;
+    CVECTOR ExternalForce;
 
     //Время жизни
     float LifeTime;
@@ -127,7 +127,7 @@ struct MDL_ParticleData
     float ElapsedTime;
 
     //Матрица трансформации, при рождении партикла (для трека)
-    Matrix matWorld;
+    CMatrix matWorld;
 
     //Масса
     float Mass;
@@ -137,10 +137,10 @@ struct MDL_ParticleData
 
     //===========================================================================
     //Финальная позиция/угол для рендера
-    Vector RenderPos;
-    Vector RenderAngle;
-    Vector OldRenderPos;
-    Vector OldRenderAngle;
+    CVECTOR RenderPos;
+    CVECTOR RenderAngle;
+    CVECTOR OldRenderPos;
+    CVECTOR OldRenderAngle;
 
     //===========================================================================
     //Графики.........

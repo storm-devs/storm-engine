@@ -454,7 +454,7 @@ float ModelArray::Trace(const CVECTOR &src, const CVECTOR &dst)
     return k;
 }
 
-bool ModelArray::GetCollideTriangle(TRIANGLE &trg)
+bool ModelArray::GetCollideTriangle(Triangle &trg)
 {
     trg = ctrg;
     return isHavecTrg;

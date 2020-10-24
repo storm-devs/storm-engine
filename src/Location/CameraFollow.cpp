@@ -651,18 +651,18 @@ float CameraFollow::Trace(const CVECTOR &src, const CVECTOR &dst)
 //Протянуть луч с учётом cull
 inline float CameraFollow::SubTrace(const CVECTOR &src, const CVECTOR &dst)
 {
-    TRIANGLE trg;
+    Triangle trg;
     float k = lc->Trace(src, dst);
     if (k > 1.0f || !lc->GetCollideTriangle(trg))
         return 2.0f;
     //Определяем нормаль
-    CVECTOR n = (trg.vrt[0] - trg.vrt[1]) ^ (trg.vrt[1] - trg.vrt[2]);
+    CVECTOR n = (trg.p[0] - trg.p[1]) ^ (trg.p[1] - trg.p[2]);
     float l = ~n;
     if (l > 0.0f)
     {
         //Оперделим с какой стороны проходим через треугольник
         n *= 1.0f / sqrtf(l);
-        if ((n | src) > (n | trg.vrt[0]))
+        if ((n | src) > (n | trg.p[0]))
             return k;
     }
     return 2.0f;

@@ -476,14 +476,14 @@ void ISPYGLASS::FindNewTargetShip()
         {
             // find by ship sphere
             fFindedDistance = -1.f;
-            Vector vsrc = *(Vector *)&src;
-            Vector vdst = *(Vector *)&dst;
+            CVECTOR vsrc = *(CVECTOR *)&src;
+            CVECTOR vdst = *(CVECTOR *)&dst;
             for (SHIP_DESCRIBE_LIST::SHIP_DESCR *pSD = g_ShipList.GetShipRoot(); pSD; pSD = pSD->next)
             {
                 if (pMainSD == pSD)
                     continue;
                 Sphere sph;
-                sph.pos = *(Vector *)&pSD->pShip->GetPos();
+                sph.pos = *(CVECTOR *)&pSD->pShip->GetPos();
                 sph.r = 40.f;
                 if (sph.Intersection(vsrc, vdst))
                 {

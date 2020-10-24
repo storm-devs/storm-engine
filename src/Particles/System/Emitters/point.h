@@ -8,7 +8,7 @@ class PointEmitter : public BaseEmitter
 
   protected:
     //Получить позицию для рождения новых партиклов
-    virtual Vector GetNewParticlePosition(float DeltaTime);
+    virtual CVECTOR GetNewParticlePosition(float DeltaTime);
 
   public:
     // Конструктор / деструктор

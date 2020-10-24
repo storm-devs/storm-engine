@@ -282,10 +282,10 @@ void CoastFoam::Realize(dword Delta_Time)
             if (bSelected && (vStart.y > 0.0f && vStart.y > vEnd.y))
             {
                 FoamPart *pFP = &aFoams[iEditFoam]->aFoamParts[iEditFoamPart];
-                Plane pln(Vector(0.0f, 1.0f, 0.0f), Vector(0.0f));
-                Vector vS1 = Vector(vStart.x, vStart.y, vStart.z);
-                Vector vE1 = Vector(vEnd.x, vEnd.y, vEnd.z);
-                Vector vR1;
+                Plane pln(CVECTOR(0.0f, 1.0f, 0.0f), CVECTOR(0.0f));
+                CVECTOR vS1 = CVECTOR(vStart.x, vStart.y, vStart.z);
+                CVECTOR vE1 = CVECTOR(vEnd.x, vEnd.y, vEnd.z);
+                CVECTOR vR1;
                 if (pln.Intersection(vS1, vE1, vR1))
                 {
                     CVECTOR vDiff = pFP->v[1] - pFP->v[0];

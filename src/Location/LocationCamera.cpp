@@ -574,7 +574,7 @@ float LocationCamera::Trace(const CVECTOR &src, const CVECTOR &dst)
     return location->Trace(src, dst);
 }
 
-bool LocationCamera::GetCollideTriangle(TRIANGLE &trg)
+bool LocationCamera::GetCollideTriangle(Triangle &trg)
 {
     if (!location)
         return false;
@@ -731,9 +731,9 @@ bool LocationCamera::LoadCameraTrack(const char *pcTrackFile, float fTrackTime)
     m_sCurTrackName = pcTrackFile;
 
     // установка камеры на начало трека
-    Vector pos;
+    CVECTOR pos;
     Quaternion ang;
-    Matrix view;
+    CMatrix view;
     m_track.GetPoint(0.f, pos, ang);
     ang.GetMatrix(view);
     view.vx = -view.vx;
@@ -753,9 +753,9 @@ void LocationCamera::TurnOffTrackCamera()
     {
         kMorph = 0.f;
 
-        Vector pos;
+        CVECTOR pos;
         Quaternion ang;
-        Matrix view;
+        CMatrix view;
         m_track.GetPoint(0.99999f, pos, ang);
         ang.GetMatrix(view);
         view.vx = -view.vx;
@@ -778,9 +778,9 @@ void LocationCamera::ProcessTrackCamera()
         return;
     }
 
-    Vector pos;
+    CVECTOR pos;
     Quaternion ang;
-    Matrix view;
+    CMatrix view;
     m_track.GetPoint(fTrackTime / m_fTrackMaxTime, pos, ang);
     ang.GetMatrix(view);
     view.vx = -view.vx;

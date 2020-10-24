@@ -116,7 +116,7 @@ void FieldList::CreateEmptyGraphField(const char *Name, float def_value_min, flo
     Fields.Add(pDesc);
 }
 
-void FieldList::CreateEmptyPositionField(const char *Name, const Vector &def_value)
+void FieldList::CreateEmptyPositionField(const char *Name, const CVECTOR &def_value)
 {
     DataPosition *Field = NEW DataPosition;
     Field->SetName(Name);
@@ -150,7 +150,7 @@ void FieldList::CreateEmptyUVField(const char *Name)
 {
     DataUV *Field = NEW DataUV;
     Field->SetName(Name);
-    Field->SetValues(&Vector4(0.0f, 0.0f, 1.0f, 1.0f), 1);
+    Field->SetValues(&CVECTOR4(0.0f, 0.0f, 1.0f, 1.0f), 1);
 
     FieldDesc pDesc;
     pDesc.MarkForDelete = false;
@@ -479,7 +479,7 @@ const char *FieldList::GetString(const char *AttrName, const char *def_value)
     return pFind->GetValue();
 }
 
-const Vector &FieldList::GetPosition(const char *AttrName, const Vector &def_value)
+const CVECTOR &FieldList::GetPosition(const char *AttrName, const CVECTOR &def_value)
 {
     DataPosition *pFind = FindPosition(AttrName);
     if (!pFind)
@@ -556,7 +556,7 @@ void FieldList::Convert(DataDescripion *pDataDescriptor)
                 CreateEmptyGraphField(NeedFieldName, 0.0f, 0.0f);
                 break;
             case FIELD_POSITION:
-                CreateEmptyPositionField(NeedFieldName, Vector(0.0f));
+                CreateEmptyPositionField(NeedFieldName, CVECTOR(0.0f));
                 break;
             case FIELD_UV:
                 CreateEmptyUVField(NeedFieldName);

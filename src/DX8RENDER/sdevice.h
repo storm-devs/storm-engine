@@ -148,7 +148,7 @@ class DX8RENDER : public VDX8RENDER
 
     struct QuadVertex
     {
-        Vector4 vPos;
+        CVECTOR4 vPos;
 
         float u0;
         float v0;

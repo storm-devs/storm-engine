@@ -25,14 +25,14 @@ void PARTICLE_SYSTEM::SetEmitter(CVECTOR p, CVECTOR a)
 {
     // api->Trace("K2 Particles Wrapper: SetEmitter (%3.2f, %3.2f, %3.2f, %3.2f, %3.2f, %3.2f)", p.x, p.y, p.z, a.x,
     // a.y, a.z);
-    Vector pos, angles;
+    CVECTOR pos, angles;
     pos.x = p.x;
     pos.y = p.y;
     pos.z = p.z;
     angles.x = a.x;
     angles.y = a.y;
     angles.z = a.z;
-    Matrix mTransform(angles, pos);
+    CMatrix mTransform(angles, pos);
     pSystem->SetTransform(mTransform);
 }
 

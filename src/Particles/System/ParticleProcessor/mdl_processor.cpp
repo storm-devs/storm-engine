@@ -59,8 +59,8 @@ void ModelProcessor::FreeParticle(MDL_ParticleData *pItem)
     }
 }
 
-void ModelProcessor::AddParticle(ParticleSystem *pSystem, const Vector &velocity_dir, const Vector &pos,
-                                 const Matrix &matWorld, float EmitterTime, float EmitterLifeTime, FieldList *pFields,
+void ModelProcessor::AddParticle(ParticleSystem *pSystem, const CVECTOR &velocity_dir, const CVECTOR &pos,
+                                 const CMatrix &matWorld, float EmitterTime, float EmitterLifeTime, FieldList *pFields,
                                  DWORD *pActiveCount, DWORD dwGUID)
 {
     MDL_ParticleData *pData = AllocParticle();
@@ -88,7 +88,7 @@ void ModelProcessor::AddParticle(ParticleSystem *pSystem, const Vector &velocity
     pData->Graph_TrackY = pFields->FindGraph(PARTICLE_TRACK_Y);
     pData->Graph_TrackZ = pFields->FindGraph(PARTICLE_TRACK_Z);
 
-    Vector PositionOffset;
+    CVECTOR PositionOffset;
     PositionOffset.x = pData->Graph_TrackX->GetRandomValue(0.0f, 100.0f);
     PositionOffset.y = pData->Graph_TrackY->GetRandomValue(0.0f, 100.0f);
     PositionOffset.z = pData->Graph_TrackZ->GetRandomValue(0.0f, 100.0f);
@@ -100,9 +100,9 @@ void ModelProcessor::AddParticle(ParticleSystem *pSystem, const Vector &velocity
     pData->ElapsedTime = 0.0f;
     pData->matWorld = matWorld;
 
-    pData->Angle = Vector(0.0f);
-    pData->RenderAngle = Vector(0.0f);
-    pData->ExternalForce = Vector(0.0f, 0.0f, 0.0f);
+    pData->Angle = CVECTOR(0.0f);
+    pData->RenderAngle = CVECTOR(0.0f);
+    pData->ExternalForce = CVECTOR(0.0f, 0.0f, 0.0f);
     pData->PhysPos = pData->RenderPos;
 
     pData->OldRenderPos = pData->RenderPos;
@@ -191,10 +191,10 @@ void ModelProcessor::Process(float DeltaTime)
         AddGravityForce(Particles[n]->ExternalForce, Particles[n]->Mass, GravK);
         SolvePhysic(Particles[n]->PhysPos, Particles[n]->Velocity, Particles[n]->ExternalForce, Particles[n]->UMass,
                     Drag, DeltaTime);
-        Particles[n]->ExternalForce = Vector(0.0f);
+        Particles[n]->ExternalForce = CVECTOR(0.0f);
 
         // FIX ME !!!
-        Vector SpinDrag;
+        CVECTOR SpinDrag;
         SpinDrag.x = Particles[n]->Graph_SpinDragX->GetValue(Time, LifeTime, Particles[n]->SpinDragK_X);
         SpinDrag.x = 1.0f - (SpinDrag.x * 0.01f);
         if (SpinDrag.x < 0.0f)
@@ -218,7 +218,7 @@ void ModelProcessor::Process(float DeltaTime)
 
         Particles[n]->Angle += (Particles[n]->Spin * SpinDrag) * DeltaTime;
 
-        Vector TrackPos;
+        CVECTOR TrackPos;
         TrackPos.x = Particles[n]->Graph_TrackX->GetValue(Time, LifeTime, Particles[n]->KTrackX);
         TrackPos.y = Particles[n]->Graph_TrackY->GetValue(Time, LifeTime, Particles[n]->KTrackY);
         TrackPos.z = Particles[n]->Graph_TrackZ->GetValue(Time, LifeTime, Particles[n]->KTrackZ);
@@ -251,8 +251,8 @@ void ModelProcessor::Process(float DeltaTime)
         {
             // api->Trace("%d, %3.2f, %3.2f, %3.2f", n, Particles[n]->RenderPos.x, Particles[n]->RenderPos.y,
             // Particles[n]->RenderPos.z); Particles[n]->AttachedEmitter->SaveTime();
-            Particles[n]->AttachedEmitter->Teleport(Matrix(Particles[n]->OldRenderAngle, Particles[n]->OldRenderPos));
-            Particles[n]->AttachedEmitter->SetTransform(Matrix(Particles[n]->RenderAngle, Particles[n]->RenderPos));
+            Particles[n]->AttachedEmitter->Teleport(CMatrix(Particles[n]->OldRenderAngle, Particles[n]->OldRenderPos));
+            Particles[n]->AttachedEmitter->SetTransform(CMatrix(Particles[n]->RenderAngle, Particles[n]->RenderPos));
             Particles[n]->AttachedEmitter->BornParticles(DeltaTime);
 
             // if (n < Particles.Size()-1)  Particles[n]->AttachedEmitter->RestoreTime();
@@ -289,7 +289,7 @@ void ModelProcessor::Draw()
     {
         MDL_ParticleData *pR = Particles[j];
 
-        pMasterManager->Render()->SetTransform(D3DTS_WORLD, Matrix(pR->RenderAngle, pR->RenderPos));
+        pMasterManager->Render()->SetTransform(D3DTS_WORLD, CMatrix(pR->RenderAngle, pR->RenderPos));
         pR->pScene->Draw(NULL, 0, NULL);
     }
 

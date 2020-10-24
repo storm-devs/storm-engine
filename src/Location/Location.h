@@ -86,7 +86,7 @@ class Location : public ENTITY
 
     //Протрейсит луч через локацию
     float Trace(const CVECTOR &src, const CVECTOR &dst);
-    bool GetCollideTriangle(TRIANGLE &trg);
+    bool GetCollideTriangle(Triangle &trg);
     void Clip(PLANE *p, long numPlanes, CVECTOR &cnt, float rad, bool (*fnc)(const CVECTOR *vtx, long num));
 
     Lights *GetLights();
@@ -225,7 +225,7 @@ inline float Location::Trace(const CVECTOR &src, const CVECTOR &dst)
     return model.Trace(src, dst);
 }
 
-inline bool Location::GetCollideTriangle(TRIANGLE &trg)
+inline bool Location::GetCollideTriangle(Triangle &trg)
 {
     return model.GetCollideTriangle(trg);
 }
