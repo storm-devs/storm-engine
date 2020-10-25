@@ -65,7 +65,6 @@ add_executable(engine WIN32
 	pcinput.h
 	program.cpp
 	program.h
-	resource.h
 	s_classtab.cpp
 	s_classtab.h
 	s_compress.cpp

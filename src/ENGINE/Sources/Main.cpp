@@ -1,7 +1,6 @@
 #include "..\..\common_h\exs.h"
 #include "core.h"
 #include "gdi_display.h"
-#include "resource.h"
 #include "s_debug.h"
 #include "system_log.h"
 #include <windows.h>
