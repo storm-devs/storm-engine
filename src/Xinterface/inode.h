@@ -1,12 +1,12 @@
 #ifndef _INODE_H
 #define _INODE_H
 
-#include "..\common_h\dx8render.h"
-#include "..\common_h\templates\string.h"
-#include "..\common_h\vmodule_api.h"
-#include "defines.h"
+#include "dx8render.h"
 #include "nodes\xi_tooltips.h"
 #include "nodes\xi_util.h"
+#include "templates\string.h"
+#include "vmodule_api.h"
+#include "xi_defines.h"
 
 class CXI_ToolTip;
 

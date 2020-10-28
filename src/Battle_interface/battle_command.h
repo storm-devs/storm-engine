@@ -1,9 +1,9 @@
 #ifndef _BI_COMMANDLIST_H_
 #define _BI_COMMANDLIST_H_
 
-#include "..\common_h\templates\array.h"
-#include "..\common_h\templates\string.h"
-#include "defines.h"
+#include "bi_defines.h"
+#include "templates\array.h"
+#include "templates\string.h"
 
 class BIImageRender;
 

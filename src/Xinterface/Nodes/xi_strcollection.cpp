@@ -1,5 +1,5 @@
 #include "xi_strcollection.h"
-#include "..\\defines.h"
+#include "..\\xi_defines.h"
 #include <stdio.h>
 
 CXI_STRCOLLECTION::CXI_STRCOLLECTION()
@@ -323,7 +323,7 @@ dword _cdecl CXI_STRCOLLECTION::MessageProc(long msgcode, MESSAGE &message)
         if (nDst >= 0 && nSrc >= 0 && nDst < m_nStr && nSrc < m_nStr)
         {
             m_pStrDescr[nDst].strNum = -1;
-            DELETE(m_pStrDescr[nDst].strStr);
+            SE_DELETE(m_pStrDescr[nDst].strStr);
             if (m_pStrDescr[nSrc].strStr)
                 DublicateString(m_pStrDescr[nDst].strStr, m_pStrDescr[nSrc].strStr);
             else
@@ -347,7 +347,7 @@ void CXI_STRCOLLECTION::ChangeString(long num, const char *sValue)
     if (num >= 0 && num < m_nStr)
     {
         m_pStrDescr[num].strNum = -1;
-        DELETE(m_pStrDescr[num].strStr);
+        SE_DELETE(m_pStrDescr[num].strStr);
         if (sValue)
         {
             if (sValue[0] == '#')

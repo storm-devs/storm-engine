@@ -1,9 +1,9 @@
 #ifndef _LOCATOR_H_
 #define _LOCATOR_H_
 
-#include "..\common_h\geometry.h"
-#include "..\common_h\vmodule_api.h"
 #include "blast.h"
+#include "geometry.h"
+#include "vmodule_api.h"
 
 class LOCATOR : public ENTITY
 {

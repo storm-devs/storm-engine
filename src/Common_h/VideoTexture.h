@@ -1,7 +1,7 @@
 #ifndef _VIDEOTEXTURE_H
 #define _VIDEOTEXTURE_H
 
-#include "..\common_h\dx8render.h"
+#include "dx8render.h"
 
 //-----------------------------------------------------------------------------
 // Name: class VideoToTexture

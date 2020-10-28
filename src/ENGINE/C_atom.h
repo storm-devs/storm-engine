@@ -6,7 +6,7 @@
 #else
 #include <xtl.h>
 #endif
-#include "..\..\common_h\entity.h"
+#include "entity.h"
 
 #define _LAYERS_BITMASK_DWORDS 4
 #define _MAX_LAYERS (_LAYERS_BITMASK_DWORDS * 32)

@@ -1,4 +1,4 @@
-#include "..\common_h\object.h"
+#include "object.h"
 #include "vcollide.h"
 
 INTERFACE_FUNCTION

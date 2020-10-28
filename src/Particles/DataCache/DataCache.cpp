@@ -1,6 +1,6 @@
 #include "datacache.h"
-#include "..\..\common_h\particles.h"
 #include "..\icommon\memfile.h"
+#include "particles.h"
 
 bool ReadingAlreadyComplete;
 

@@ -6,8 +6,8 @@
 #include <sstream>
 #include <stdio.h>
 
-#include "..\common_h\tga.h"
 #include "sdevice.h"
+#include "tga.h"
 
 void DX8RENDER::PrepareCapture()
 {

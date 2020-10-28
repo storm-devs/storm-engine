@@ -1,8 +1,8 @@
 
 
 #include "LocationScriptLib.h"
-#include "..\common_h\dx8render.h"
 #include "Fader.h"
+#include "dx8render.h"
 
 //============================================================================================
 

@@ -1,18 +1,18 @@
 #ifndef _TBUTTERFLIES_H_
 #define _TBUTTERFLIES_H_
 
-#include "..\common_h\animation.h"
-#include "..\common_h\collide.h"
-#include "..\common_h\dx8render.h"
-#include "..\common_h\geometry.h"
-#include "..\common_h\geos.h"
-#include "..\common_h\matrix.h"
-#include "..\common_h\messages.h"
-#include "..\common_h\model.h"
-#include "..\common_h\object.h"
 #include "AnimalsDefines.h"
 #include "TButterfly.h"
 #include "TIVBufferManager.h"
+#include "animation.h"
+#include "collide.h"
+#include "dx8render.h"
+#include "geometry.h"
+#include "geos.h"
+#include "matrix.h"
+#include "messages.h"
+#include "model.h"
+#include "object.h"
 
 #define Y_REDEFINE_TIME 250
 

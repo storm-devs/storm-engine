@@ -11,9 +11,9 @@
 #ifndef _UserData_H_
 #define _UserData_H_
 
-#include "..\Common_h\d_types.h"
-#include "..\Common_h\exs.h"
-#include "..\Common_h\memop.h"
+#include "d_types.h"
+#include "exs.h"
+#include "memop.h"
 
 class UserData
 {

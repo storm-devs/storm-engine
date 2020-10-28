@@ -1,10 +1,10 @@
 
-#include "..\common_h\dx8render.h"
-#include "..\common_h\messages.h"
-#include "..\common_h\model.h"
-#include "..\common_h\rands.h"
-#include "..\common_h\ship_base.h"
-#include "..\common_h\templates\array.h"
+#include "dx8render.h"
+#include "messages.h"
+#include "model.h"
+#include "rands.h"
+#include "ship_base.h"
+#include "templates\array.h"
 
 #include "SailorsMenu.h"
 

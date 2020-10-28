@@ -8,8 +8,8 @@ Comments:
 Import library main file
 ******************************************************************************/
 #include "..\\common_h\\memop.h"
-#include "..\common_h\vmodule_api.h"
 #include "geom.h"
+#include "vmodule_api.h"
 #include <stdio.h>
 
 // create geometry func

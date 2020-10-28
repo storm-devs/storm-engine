@@ -1,6 +1,6 @@
 project(seafoam)
 
-add_library(seafoam MODULE 
+add_library(${PROJECT_NAME} MODULE
 	Seafoam.H
 	Seafoam.cpp
 	SeafoamDefines.cpp
@@ -13,4 +13,4 @@ add_library(seafoam MODULE
 	seafoam_ps.h
 )
 
-target_include_directories(seafoam PRIVATE ${DirectX_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

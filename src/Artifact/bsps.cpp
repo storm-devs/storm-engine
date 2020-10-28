@@ -1,5 +1,5 @@
 #include "bsps.h"
-#include "..\common_h\object.h"
+#include "object.h"
 
 BSPS_PS::BSPS_PS()
 {

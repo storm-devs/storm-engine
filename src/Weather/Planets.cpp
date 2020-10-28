@@ -1,5 +1,5 @@
-#include "..\common_h\Weather_Base.h"
 #include "Astronomy.h"
+#include "Weather_Base.h"
 
 Astronomy::PLANETS::PLANETS() : aPlanets(_FL_)
 {

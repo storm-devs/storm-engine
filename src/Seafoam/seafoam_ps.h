@@ -1,12 +1,12 @@
 #ifndef _SEAFOAM_PS_H_
 #define _SEAFOAM_PS_H_
 
-#include "..\common_h\dx8render.h"
-#include "..\common_h\geometry.h"
-#include "..\common_h\matrix.h"
-#include "..\common_h\vfile_service.h"
-#include "..\common_h\vmodule_api.h"
-#include "..\common_h\vparticle_system.h"
+#include "dx8render.h"
+#include "geometry.h"
+#include "matrix.h"
+#include "vfile_service.h"
+#include "vmodule_api.h"
+#include "vparticle_system.h"
 
 #define MAX_PS_TEXTURES 8
 #define VERTEXS_ON_PARTICLE 6

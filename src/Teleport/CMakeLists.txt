@@ -1,8 +1,8 @@
 project(teleport)
 
-add_library(teleport MODULE 
+add_library(${PROJECT_NAME} MODULE
 	teleport.cpp
 	teleport.h
 )
 
-target_include_directories(teleport PRIVATE ${DirectX_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

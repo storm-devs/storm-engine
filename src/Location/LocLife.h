@@ -11,8 +11,8 @@
 #ifndef _LocLife_h_
 #define _LocLife_h_
 
-#include "..\common_h\animation.h"
-#include "..\common_h\vmodule_api.h"
+#include "animation.h"
+#include "vmodule_api.h"
 
 class Location;
 class Animation;

@@ -1,5 +1,5 @@
 #include "seafoam_ps.h"
-#include "..\common_h\object.h"
+#include "object.h"
 
 SEAFOAM_PS::SEAFOAM_PS() : enableEmit(true)
 {

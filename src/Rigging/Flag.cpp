@@ -1,8 +1,8 @@
 #include "flag.h"
-#include "..\common_h\Weather_base.h"
-#include "..\common_h\defines.h"
-#include "..\common_h\sail_msg.h"
+#include "Weather_base.h"
+#include "common_defines.h"
 #include "rigging_define.h"
+#include "sail_msg.h"
 #include <stdio.h>
 
 FLAG::FLAG()

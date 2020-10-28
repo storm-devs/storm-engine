@@ -1,10 +1,10 @@
 #ifndef _K2_PARTICLES_H_
 #define _K2_PARTICLES_H_
 
-#include "..\..\common_h\entity.h"
-#include "..\..\common_h\messages.h"
-#include "..\..\common_h\templates.h"
-#include "..\..\common_h\vmodule_api.h"
+#include "entity.h"
+#include "messages.h"
+#include "templates.h"
+#include "vmodule_api.h"
 
 class IParticleService;
 class IParticleManager;

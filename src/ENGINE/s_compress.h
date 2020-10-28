@@ -5,7 +5,7 @@
 #define DWORD unsigned long
 #endif
 
-#include "..\..\common_h\memop.h"
+#include "memop.h"
 //#include "sstring.h"
 #include "dstring_codec.h"
 #include <malloc.h>

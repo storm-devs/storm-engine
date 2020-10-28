@@ -11,7 +11,7 @@
 #ifndef _ActionInfo_H_
 #define _ActionInfo_H_
 
-#include "..\common_h\Animation.h"
+#include "Animation.h"
 #include "Bone.h"
 #include "UserData.h"
 

@@ -1,9 +1,9 @@
 #ifndef _MODELR_H_
 #define _MODELR_H_
 
-#include "..\common_h\dx8render.h"
-#include "..\common_h\geometry.h"
-#include "..\common_h\model.h"
+#include "dx8render.h"
+#include "geometry.h"
+#include "model.h"
 
 class NODER : public NODE
 {

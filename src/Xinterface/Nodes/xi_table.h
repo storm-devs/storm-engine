@@ -26,7 +26,7 @@ class XI_TableCellDescribe
         }
         ~ImgDescribe()
         {
-            DELETE(pImage);
+            SE_DELETE(pImage);
         }
     };
 

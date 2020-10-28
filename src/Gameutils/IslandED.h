@@ -2,12 +2,12 @@
 #define IN_GAME_UTILS_ISLAND_ED_HPP
 
 #include "..\Sea_AI\AIFlowGraph.h"
-#include "..\common_h\defines.h"
-#include "..\common_h\dx8render.h"
-#include "..\common_h\templates\array.h"
-#include "..\common_h\templates\string.h"
-#include "..\common_h\tga.h"
-#include "..\common_h\vmodule_api.h"
+#include "common_defines.h"
+#include "dx8render.h"
+#include "templates\array.h"
+#include "templates\string.h"
+#include "tga.h"
+#include "vmodule_api.h"
 
 #define INVALID_POINT_INDEX 0xFFFFFFFF
 

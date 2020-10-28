@@ -11,8 +11,8 @@
 #ifndef _Location_H_
 #define _Location_H_
 
-#include "..\common_h\matrix.h"
-#include "..\common_h\vmodule_api.h"
+#include "matrix.h"
+#include "vmodule_api.h"
 
 #include "LocatorArray.h"
 #include "ModelArray.h"

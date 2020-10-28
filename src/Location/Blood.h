@@ -2,11 +2,10 @@
 #ifndef _Blood_H_
 #define _Blood_H_
 
-#include "..\common_h\collide.h"
-#include "..\common_h\defines.h"
-#include "..\common_h\dx8render.h"
-#include "..\common_h\templates\array.h"
-#include "..\common_h\vmodule_api.h"
+#include "collide.h"
+#include "dx8render.h"
+#include "templates\array.h"
+#include "vmodule_api.h"
 
 #define MAX_BLOOD_TRIANGLES 10000
 #define ON_LIVETIME_BLOOD_TRIANGLES (MAX_BLOOD_TRIANGLES * 3 / 4)

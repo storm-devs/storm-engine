@@ -5,7 +5,7 @@
 // Simple class for creating and keeping in memory list of structures with fixed size
 // This class can only accumulate data
 
-#include "../../Common_h/d_types.h"
+#include "d_types.h"
 
 class FSDATA_LIST
 {

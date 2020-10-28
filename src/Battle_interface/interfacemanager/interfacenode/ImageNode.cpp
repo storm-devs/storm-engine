@@ -11,7 +11,7 @@ BI_ImageNode::BI_ImageNode(BI_ManagerBase *pManager, const char *texture, const 
 
 BI_ImageNode::~BI_ImageNode()
 {
-    DELETE(m_pImage);
+    SE_DELETE(m_pImage);
 }
 
 void BI_ImageNode::Update()

@@ -1,6 +1,6 @@
 #ifndef SAIL_BASE_H
 #define SAIL_BASE_H
-#include "..\common_h\object.h"
+#include "object.h"
 
 class SAIL_BASE : public COLLISION_OBJECT
 {

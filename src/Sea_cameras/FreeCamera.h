@@ -1,10 +1,10 @@
 #ifndef _CAMERA_H_
 #define _CAMERA_H_
 
-#include "..\common_h\Island_Base.h"
-#include "..\common_h\dx8render.h"
-#include "..\common_h\vmodule_api.h"
 #include "Common_Camera.h"
+#include "Island_Base.h"
+#include "dx8render.h"
+#include "vmodule_api.h"
 
 class FREE_CAMERA : public COMMON_CAMERA
 {

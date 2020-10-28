@@ -9,7 +9,7 @@
 //============================================================================================
 
 #include "LocationEffects.h"
-#include "..\common_h\dx8render.h"
+#include "dx8render.h"
 
 #define LFX_SPLASHES_NUM (sizeof(chrSplash) / sizeof(ChrSplash))
 #define LFX_SPLASHES_P_NUM 64 // fix boal for intel cpp (sizeof(LocationEffects::ChrSplash::prt)/sizeof(ParticleSplash))

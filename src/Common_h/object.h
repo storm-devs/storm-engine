@@ -1,9 +1,9 @@
 #ifndef _OBJECT_H_
 #define _OBJECT_H_
 
-#include "..\common_h\math3d/Triangle.h"
-#include "..\common_h\matrix.h"
 #include "dx8render.h"
+#include "math3d/Triangle.h"
+#include "matrix.h"
 
 typedef bool (*ADD_POLYGON_FUNC)(const CVECTOR *v, long nv);
 

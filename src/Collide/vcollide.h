@@ -1,8 +1,8 @@
 #ifndef __VCOLLIDE_H__
 #define __VCOLLIDE_H__
 
-#include "..\common_h\collide.h"
-#include "..\common_h\vidwalker.h"
+#include "collide.h"
+#include "vidwalker.h"
 
 #pragma pack(push)
 #pragma pack(1)

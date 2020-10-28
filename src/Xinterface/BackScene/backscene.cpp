@@ -1,9 +1,9 @@
 #include "backscene.h"
-#include "..\..\common_h\geometry.h"
-#include "..\..\common_h\matrix.h"
-#include "..\..\common_h\model.h"
-#include "..\..\common_h\templates\string.h"
 #include "..\xinterface.h"
+#include "geometry.h"
+#include "matrix.h"
+#include "model.h"
+#include "templates\string.h"
 
 InterfaceBackScene::LightParam::~LightParam()
 {

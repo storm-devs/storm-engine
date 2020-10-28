@@ -1,10 +1,10 @@
 #ifndef _FONT_H_
 #define _FONT_H_
 
-#include "..\common_h\dx8render.h"
-#include "..\common_h\matrix.h"
-#include "..\common_h\vfile_service.h"
-#include "..\common_h\vmodule_api.h"
+#include "dx8render.h"
+#include "matrix.h"
+#include "vfile_service.h"
+#include "vmodule_api.h"
 //#include "iimage.h"
 
 #define USED_CODES 256

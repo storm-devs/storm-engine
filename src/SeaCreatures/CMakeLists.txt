@@ -1,9 +1,9 @@
 project(seacreatures)
 
-add_library(seacreatures MODULE 
+add_library(${PROJECT_NAME} MODULE
 	SeaCreaturesMain.cpp
 	Sharks.cpp
 	Sharks.h
 )
 
-target_include_directories(seacreatures PRIVATE ${DirectX_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

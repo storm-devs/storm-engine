@@ -1,19 +1,19 @@
 #ifndef _TSHARKS_H_
 #define _TSHARKS_H_
 
-#include "..\common_h\animation.h"
-#include "..\common_h\dx8render.h"
-#include "..\common_h\geometry.h"
-#include "..\common_h\geos.h"
-#include "..\common_h\matrix.h"
-#include "..\common_h\messages.h"
-#include "..\common_h\model.h"
-#include "..\common_h\object.h"
-#include "..\common_h\sea_base.h"
-#include "..\common_h\ship_base.h"
 #include "AnimalsDefines.h"
 #include "TDynamicObject.h"
 #include "TDynamicSystem.h"
+#include "animation.h"
+#include "dx8render.h"
+#include "geometry.h"
+#include "geos.h"
+#include "matrix.h"
+#include "messages.h"
+#include "model.h"
+#include "object.h"
+#include "sea_base.h"
+#include "ship_base.h"
 
 ///////////////////////////////////////////////////////////////////
 // DEFINES & TYPES

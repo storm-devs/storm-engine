@@ -1,19 +1,19 @@
 #ifndef WEATHER_TYPEDEF_HPP
 #define WEATHER_TYPEDEF_HPP
 
-#include "..\common_h\Matrix.h"
-#include "..\common_h\collide.h"
-#include "..\common_h\defines.h"
-#include "..\common_h\dx8render.h"
-#include "..\common_h\entity.h"
-#include "..\common_h\geometry.h"
-#include "..\common_h\geos.h"
-#include "..\common_h\messages.h"
-#include "..\common_h\templates\array.h"
-#include "..\common_h\templates\map.h"
-#include "..\common_h\templates\string.h"
-#include "..\common_h\vmodule_api.h"
-#include "..\engine\program\sea_ai\Script_Defines.h"
+#include "Matrix.h"
+#include "Script_Defines.h"
+#include "collide.h"
+#include "common_defines.h"
+#include "dx8render.h"
+#include "entity.h"
+#include "geometry.h"
+#include "geos.h"
+#include "messages.h"
+#include "templates\array.h"
+#include "templates\map.h"
+#include "templates\string.h"
+#include "vmodule_api.h"
 #include <stdio.h>
 
 #endif

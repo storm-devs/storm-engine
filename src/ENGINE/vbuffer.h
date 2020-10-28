@@ -7,7 +7,7 @@
 #include <xtl.h>
 #endif
 
-#include "..\..\common_h\exs.h"
+#include "exs.h"
 
 class VBUFFER
 {

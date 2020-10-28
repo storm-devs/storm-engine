@@ -1,8 +1,8 @@
 #ifndef _SERVICES_LIST_H_
 #define _SERVICES_LIST_H_
 
-#include "..\..\common_h\memop.h"
-#include "..\..\common_h\service.h"
+#include "memop.h"
+#include "service.h"
 
 typedef struct
 {

@@ -1,6 +1,6 @@
 #include "DeckCamera.h"
-#include "..\common_h\geos.h"
-#include "..\common_h\ship_base.h"
+#include "geos.h"
+#include "ship_base.h"
 #include <stdio.h>
 
 #define DISCR_F_VAL 0.00001f

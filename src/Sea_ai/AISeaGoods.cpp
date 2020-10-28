@@ -18,7 +18,7 @@ AISeaGoods::~AISeaGoods()
             pGeoService->DeleteGeometry(aGoods[i]->pGeo);
         aGoods[i]->sModel.DelAll();
         aGoods[i]->aItems.DelAll();
-        DELETE(aGoods[i]);
+        SE_DELETE(aGoods[i]);
     }
     aGoods.DelAll();
 }

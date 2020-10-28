@@ -1,9 +1,9 @@
 #ifndef _BATTLE_MANSIGN_H
 #define _BATTLE_MANSIGN_H
 
-#include "..\..\common_h\templates\array.h"
-#include "..\..\common_h\templates\string.h"
-#include "..\defines.h"
+#include "..\bi_defines.h"
+#include "templates\array.h"
+#include "templates\string.h"
 
 #define MAX_MAN_QUANTITY 4
 

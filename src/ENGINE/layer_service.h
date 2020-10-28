@@ -1,8 +1,8 @@
 #ifndef _LAYER_SERVICE_H_
 #define _LAYER_SERVICE_H_
 
-#include "..\..\common_h\exs.h"
 #include "c_atom.h"
+#include "exs.h"
 #include "layer.h"
 
 typedef struct

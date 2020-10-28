@@ -1,5 +1,5 @@
 #include "TextureSequence.h"
-#include "..\\..\\common_h\\defines.h"
+#include "..\\..\\common_h\\common_defines.h"
 #include "..\\..\\common_h\\matrix.h"
 #include "..\\..\\common_h\\vmodule_api.h"
 #include <stdio.h>

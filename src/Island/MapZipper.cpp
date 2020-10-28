@@ -13,8 +13,8 @@ MapZipper::~MapZipper()
 
 void MapZipper::UnInit()
 {
-    DELETE(pWordTable);
-    DELETE(pRealData);
+    SE_DELETE(pWordTable);
+    SE_DELETE(pRealData);
 }
 
 void MapZipper::DoZip(byte *pSrc, dword _dwSizeX)

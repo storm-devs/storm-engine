@@ -1,7 +1,7 @@
 #ifndef _VEVENT_H_
 #define _VEVENT_H_
 
-#include "..\common_h\vmodule_api.h"
+#include "vmodule_api.h"
 
 class VEVENT : public SERVICE
 {

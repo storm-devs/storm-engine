@@ -1,14 +1,10 @@
 project(battleinterface)
 
-include_directories(
-	${DirectX_INCLUDE_DIR}
-)
-
-add_library(battleinterface MODULE 
+add_library(${PROJECT_NAME} MODULE
 	EnemyStatShower/enemystatshower.cpp
 	EnemyStatShower/enemystatshower.h
 
-	image/defines.h
+	image/bi_image_defines.h
 	image/image.cpp
 	image/image.h
 	image/imgrender.cpp
@@ -92,11 +88,18 @@ add_library(battleinterface MODULE
 	battle_command.h
 	battle_sign.cpp
 	battle_sign.h
-	defines.h
+	bi_defines.h
 	LogAndAction.cpp
 	LogAndAction.h
 	MessageIcons.cpp
 	MessageIcons.h
+	messages.h
 	Utils.cpp
 	Utils.h
+
+	#copied from scripts
+	log_msg.h
+	msg_control.h
 )
+
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

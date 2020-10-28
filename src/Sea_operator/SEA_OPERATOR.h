@@ -1,11 +1,11 @@
 #ifndef _SEA_OPERATOR_H_
 #define _SEA_OPERATOR_H_
 
-#include "..\common_h\dx8render.h"
-#include "..\common_h\model.h"
-#include "..\common_h\sea_base.h"
-#include "..\common_h\ship_base.h"
 #include "TFIFOBuffer.h"
+#include "dx8render.h"
+#include "model.h"
+#include "sea_base.h"
+#include "ship_base.h"
 
 #define ACTION_TIME 1000
 #define TIME_BETWEEN_ACTIONS 1000

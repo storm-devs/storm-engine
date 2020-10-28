@@ -1,7 +1,7 @@
 #ifndef _IDWALKER_H_
 #define _IDWALKER_H_
 
-#include "..\..\common_h\vidwalker.h"
+#include "vidwalker.h"
 
 class IDWALKER : VIDWALKER
 {

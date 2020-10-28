@@ -11,7 +11,7 @@
 #ifndef _Pillar_H_
 #define _Pillar_H_
 
-#include "..\common_h\vmodule_api.h"
+#include "vmodule_api.h"
 
 #define TRND_PI 3.141592654f
 

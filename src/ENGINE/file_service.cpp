@@ -1,6 +1,6 @@
 #include "file_service.h"
-#include "..\..\common_h\exs.h"
-#include "..\..\common_h\memop.h"
+#include "exs.h"
+#include "memop.h"
 #include "system_log.h"
 
 #ifdef _XBOX
@@ -10,7 +10,7 @@ void CacheData();
 bool XFileDelete(const char *_fileName);
 bool XProcessFileDelete(const char *_srcDir, const char *_mask, const WIN32_FIND_DATA &_findData);
 
-#include "..\..\common_h\dx8render.h"
+#include "dx8render.h"
 extern VDX8RENDER *pDevice;
 extern DWORD dwCacheScreenN;
 extern RECT CacheScreenRect;

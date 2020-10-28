@@ -1,10 +1,10 @@
 #ifndef _VANT_H_
 #define _VANT_H_
 
-#include "..\common_h\dx8render.h"
-#include "..\common_h\geos.h"
-#include "..\common_h\matrix.h"
-#include "..\common_h\vmodule_api.h"
+#include "dx8render.h"
+#include "geos.h"
+#include "matrix.h"
+#include "vmodule_api.h"
 
 class NODE;
 

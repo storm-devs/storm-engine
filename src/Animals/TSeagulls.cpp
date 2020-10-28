@@ -1,5 +1,5 @@
 #include "TSeagulls.h"
-#include "..\common_h\rands.h"
+#include "rands.h"
 
 //#pragma warning (disable : 4244)
 

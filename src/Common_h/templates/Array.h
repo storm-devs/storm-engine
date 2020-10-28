@@ -44,7 +44,7 @@ template <class _Ty> class array
     _Myt &DelAllWithPointers()
     {
         for (dword i = 0; i < Size(); i++)
-            DELETE(_Al.pE[i]);
+            SE_DELETE(_Al.pE[i]);
 
         _Al.DelAll();
         return *this;

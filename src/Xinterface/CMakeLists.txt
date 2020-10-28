@@ -1,10 +1,10 @@
 project(xinterface)
 
-add_library(xinterface MODULE 
+add_library(${PROJECT_NAME} MODULE
 	InfoHandler.cpp
 	InfoHandler.h
 	base_video.h
-	defines.h
+    xi_defines.h
 	inode.cpp
 	inode.h
 	vxservice.h
@@ -122,8 +122,8 @@ add_library(xinterface MODULE
 	aviplayer/aviplayer.cpp
 	aviplayer/aviplayer.h
 
-	editor/defines.cpp
-	editor/defines.h
+	editor/xi_editor_defines.cpp
+	editor/xi_editor_defines.h
 	editor/editor.cpp
 	editor/editor.h
 	editor/font.cpp
@@ -133,9 +133,14 @@ add_library(xinterface MODULE
 
 	templates/TDynArray.h
 	templates/ctext.h
+
+	#copied from scripts
+	xi_messages.h
 )
 
-target_include_directories(xinterface PRIVATE ${DirectX_INCLUDE_DIR})
-
-target_link_libraries(xinterface PRIVATE ddraw.lib)
-target_link_libraries(xinterface PRIVATE amstrmid.lib)
+target_link_libraries(${PROJECT_NAME}
+	PRIVATE
+	common_h
+	ddraw.lib
+	amstrmid.lib
+)

@@ -1,8 +1,8 @@
 #ifndef _OBJ_STRSERVICE_H_
 #define _OBJ_STRSERVICE_H_
 
-#include "..\..\common_h\stringService.h"
 #include "..\\..\\common_h\\dx8render.h"
+#include "stringService.h"
 
 class OBJ_STRSERVICE : public ENTITY
 {

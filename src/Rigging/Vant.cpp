@@ -1,9 +1,9 @@
 #include "Vant.h"
-#include "..\common_h\defines.h"
-#include "..\common_h\model.h"
-#include "..\common_h\sail_msg.h"
-#include "..\common_h\ship_base.h"
+#include "common_defines.h"
+#include "model.h"
 #include "rigging_define.h"
+#include "sail_msg.h"
+#include "ship_base.h"
 #include <stdio.h>
 
 VANT_BASE::VANT_BASE()

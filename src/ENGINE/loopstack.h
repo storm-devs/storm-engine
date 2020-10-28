@@ -2,7 +2,7 @@
 #define _LOOPSTACK_H_
 
 //#include <windows.h>
-#include "..\..\common_h\memop.h"
+#include "memop.h"
 #include "token.h"
 
 struct LOOPBLOCK

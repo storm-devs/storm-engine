@@ -1,7 +1,7 @@
 #ifndef VCUBEMAP_SERVICE_HPP
 #define VCUBEMAP_SERVICE_HPP
 
-#include "defines.h"
+#include "common_defines.h"
 #include "dx8render.h"
 #include "vmodule_api.h"
 

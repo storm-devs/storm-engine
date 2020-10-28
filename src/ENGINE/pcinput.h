@@ -1,8 +1,8 @@
 #ifndef _PCINPUT_H_
 #define _PCINPUT_H_
 
-#include "..\..\common_h\input.h"
-#include "..\..\common_h\key_codes.h"
+#include "input.h"
+#include "key_codes.h"
 
 struct KEY_STATE
 {

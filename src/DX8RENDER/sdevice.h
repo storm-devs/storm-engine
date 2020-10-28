@@ -1,13 +1,13 @@
 #ifndef __SDEVICE_H__
 #define __SDEVICE_H__
 
-#include "..\common_h\VideoTexture.h"
-#include "..\common_h\defines.h"
-#include "..\common_h\dx8render.h"
-#include "..\common_h\templates.h"
-#include "..\common_h\vmodule_api.h"
 #include "Technique.h"
+#include "VideoTexture.h"
+#include "common_defines.h"
+#include "dx8render.h"
 #include "font.h"
+#include "templates.h"
+#include "vmodule_api.h"
 
 #include <D3DX9.h>
 #include <D3DX9core.h>

@@ -1,7 +1,7 @@
 #ifndef __LOG_AND_ACTION_H_
 #define __LOG_AND_ACTION_H_
 
-#include "defines.h"
+#include "bi_defines.h"
 #include "utils.h"
 
 class ILogAndActions : public ENTITY

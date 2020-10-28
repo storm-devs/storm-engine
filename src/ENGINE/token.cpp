@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "..\..\common_h\memop.h"
-#include "..\..\common_h\vapi.h"
+#include "memop.h"
+#include "vapi.h"
 
 extern VAPI *api;
 #define DISCARD_DATABUFFER                                                                                             \

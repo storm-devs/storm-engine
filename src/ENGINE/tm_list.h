@@ -3,7 +3,6 @@
 
 #ifndef _XBOX
 
-#include "resource.h"
 #include <commctrl.h>
 #include <windows.h>
 

@@ -1,8 +1,8 @@
 #ifndef __BATTLE_NAVIGATOR_H_
 #define __BATTLE_NAVIGATOR_H_
 
-#include "..\..\common_h\Weather_base.h"
-#include "..\defines.h"
+#include "..\bi_defines.h"
+#include "Weather_base.h"
 
 #define RADIAL_QUANTITY 36
 #define BI_DEFAULT_COLOR 0xFF0010C0

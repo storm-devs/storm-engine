@@ -60,8 +60,8 @@ void CXI_BORDER::ReleaseAll()
     PICTURE_TEXTURE_RELEASE(pPictureService, m_sGroupName.GetBuffer(), m_idTex);
     VERTEX_BUF_RELEASE(m_rs, m_idVBuf);
     INDEX_BUF_RELEASE(m_rs, m_idIBuf);
-    DELETE(m_pBackImage);
-    DELETE(m_pCaptionImage);
+    SE_DELETE(m_pBackImage);
+    SE_DELETE(m_pCaptionImage);
 }
 
 bool CXI_BORDER::IsClick(int buttonID, long xPos, long yPos)

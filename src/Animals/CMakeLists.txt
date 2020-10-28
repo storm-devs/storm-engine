@@ -1,13 +1,6 @@
 project(animals)
 
-find_package(DirectX REQUIRED)
-
-include_directories(
-	${Storm_SOURCE_DIR}/Common_h
-	${DirectX_INCLUDE_DIR}
-)
-
-add_library(animals MODULE 
+add_library(${PROJECT_NAME} MODULE
 	Animals.cpp
 	Animals.h
 	AnimalsDefines.cpp
@@ -31,3 +24,4 @@ add_library(animals MODULE
 	${Storm_SOURCE_DIR}/Common_h/rands.cpp
 )
 
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

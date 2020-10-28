@@ -1,13 +1,10 @@
 project(backgroundshiptask)
 
-include_directories(
-	#${Storm_SOURCE_DIR}/Common_h
-	${DirectX_INCLUDE_DIR}
-)
-
-add_library(backgroundshiptask MODULE 
+add_library(${PROJECT_NAME} MODULE
 	BackgroundDate.cpp
 	BackgroundDate.h
 	BackgroundShipTask.cpp
 	BackgroundShipTask.h
 )
+
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

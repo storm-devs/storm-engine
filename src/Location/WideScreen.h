@@ -11,8 +11,8 @@
 #ifndef _WideScreen_H_
 #define _WideScreen_H_
 
-#include "..\common_h\dx8render.h"
-#include "..\common_h\vmodule_api.h"
+#include "dx8render.h"
+#include "vmodule_api.h"
 
 class WideScreen : public ENTITY
 {

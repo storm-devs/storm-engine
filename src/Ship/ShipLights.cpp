@@ -599,8 +599,8 @@ void ShipLights::Execute(dword dwDeltaTime)
         }
     }
 
-    DELETE(vwSunTrace);
-    DELETE(vwSailsTrace);
+    SE_DELETE(vwSunTrace);
+    SE_DELETE(vwSailsTrace);
 }
 
 // draw flares

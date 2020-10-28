@@ -1,10 +1,10 @@
 #ifndef AI_FLOW_GRAPH_HPP
 #define AI_FLOW_GRAPH_HPP
 
-#include "..\common_h\defines.h"
-#include "..\common_h\templates\array.h"
-#include "..\common_h\templates\string.h"
-#include "..\common_h\vmodule_api.h"
+#include "common_defines.h"
+#include "templates\array.h"
+#include "templates\string.h"
+#include "vmodule_api.h"
 
 class AIFlowGraph
 {
@@ -169,7 +169,7 @@ class AIFlowGraph
     };
     ~AIFlowGraph()
     {
-        DELETE(pTable);
+        SE_DELETE(pTable);
     };
 
     // save/load/release section
@@ -347,7 +347,7 @@ inline void AIFlowGraph::BuildTable()
     dword i, j, k, x, y;
     dword dwNumPoints = aPoints.Size();
 
-    DELETE(pTable);
+    SE_DELETE(pTable);
     pTable = new table_t[SQR(dwNumPoints)];
     for (i = 0; i < SQR(dwNumPoints); i++)
     {
@@ -428,7 +428,7 @@ inline AIFlowGraph::VectorPath *AIFlowGraph::GetVectorPath(dword dwP1, dword dwP
         for (dword i = 0; i < pPath->aPoints.Size(); i++)
             pVPath->AddPoint(GetPointPos(pPath->aPoints[i].dwPnt));
     }
-    DELETE(pPath);
+    SE_DELETE(pPath);
     return pVPath;
 }
 

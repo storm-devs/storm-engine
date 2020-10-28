@@ -1,4 +1,5 @@
 #include "shipcommand.h"
+#include "../msg_control.h"
 
 WMShipCommandList::WMShipCommandList(ENTITY_ID &eid, ATTRIBUTES *pA, VDX8RENDER *rs) : BICommandList(eid, pA, rs)
 {

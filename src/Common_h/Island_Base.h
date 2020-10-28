@@ -1,9 +1,9 @@
 #ifndef ISLAND_BASE_HPP
 #define ISLAND_BASE_HPP
 
-#include "..\common_h\d_types.h"
-#include "..\common_h\entity.h"
-#include "..\common_h\sd2_h\CannonTrace.h"
+#include "d_types.h"
+#include "entity.h"
+#include "sd2_h\CannonTrace.h"
 
 class ISLAND_BASE : public CANNON_TRACE_BASE
 {

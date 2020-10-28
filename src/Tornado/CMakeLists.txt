@@ -1,6 +1,6 @@
 project(tornado)
 
-add_library(tornado MODULE 
+add_library(${PROJECT_NAME} MODULE
 	Debris.cpp
 	Debris.h
 	NoiseCloud.cpp
@@ -13,4 +13,4 @@ add_library(tornado MODULE
 	TornadoParticles.h
 )
 
-target_include_directories(tornado PRIVATE ${DirectX_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

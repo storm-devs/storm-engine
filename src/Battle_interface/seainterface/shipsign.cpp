@@ -16,5 +16,5 @@ BIShipSign::~BIShipSign()
 
 void BIShipSign::Release()
 {
-    DELETE(m_apCommand);
+    SE_DELETE(m_apCommand);
 }

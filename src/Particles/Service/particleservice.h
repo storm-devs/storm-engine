@@ -8,8 +8,8 @@
 #ifndef PARTICLES_SERVICE_IMPLEMENTATION
 #define PARTICLES_SERVICE_IMPLEMENTATION
 
-#include "..\..\common_h\Particles\iparticlesservice.h"
-#include "..\..\common_h\templates.h"
+#include "Particles\iparticlesservice.h"
+#include "templates.h"
 
 class ParticleManager;
 

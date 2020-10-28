@@ -7,12 +7,12 @@
 
 #include <windows.h>
 
-#include "..\..\common_h\d_types.h"
-#include "..\..\common_h\exs.h"
-#include "..\..\common_h\vmemory_service.h"
+#include "d_types.h"
+#include "exs.h"
 #include "mem_pool.h"
 #include "mem_utils.h"
 #include "system_log.h"
+#include "vmemory_service.h"
 
 #define M_LOCKED 1
 

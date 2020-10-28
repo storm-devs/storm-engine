@@ -1,18 +1,18 @@
 #ifndef _TCARCASS_H_
 #define _TCARCASS_H_
 
-#include "..\common_h\CVECTOR.h"
-#include "..\common_h\MATRIX.h"
-#include "..\common_h\dx8render.h"
-#include "..\common_h\geometry.h"
-#include "..\common_h\geos.h"
-#include "..\common_h\matrix.h"
-#include "..\common_h\messages.h"
-#include "..\common_h\model.h"
-#include "..\common_h\object.h"
-#include "..\common_h\sea_base.h"
-#include "..\common_h\ship_base.h"
+#include "CVECTOR.h"
+#include "MATRIX.h"
 #include "TIVBufferManager.h"
+#include "dx8render.h"
+#include "geometry.h"
+#include "geos.h"
+#include "matrix.h"
+#include "messages.h"
+#include "model.h"
+#include "object.h"
+#include "sea_base.h"
+#include "ship_base.h"
 
 #define MAX_MEASURE_POINTS 10
 #define MAX_LEVELS 20

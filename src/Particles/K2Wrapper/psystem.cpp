@@ -1,6 +1,7 @@
 #include "psystem.h"
-#include "..\..\common_h\particles.h"
 #include "particles.h"
+
+#include "particles/iparticlesystem.h"
 
 PARTICLE_SYSTEM::PARTICLE_SYSTEM(IParticleSystem *_pSystem)
 {

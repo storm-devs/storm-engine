@@ -1,14 +1,14 @@
-#include "..\common_h\CVECTOR.h"
-#include "..\common_h\dx8render.h"
-#include "..\common_h\exs.h"
-#include "..\common_h\geometry.h"
-#include "..\common_h\geos.h"
-#include "..\common_h\messages.h"
-#include "..\common_h\model.h"
-#include "..\common_h\net.h"
-#include "..\common_h\sea_base.h"
-#include "..\common_h\ship_base.h"
+#include "CVECTOR.h"
+#include "dx8render.h"
+#include "exs.h"
+#include "geometry.h"
+#include "geos.h"
+#include "messages.h"
+#include "model.h"
+//#include "net.h"
 #include "SeafoamDefines.h"
+#include "sea_base.h"
+#include "ship_base.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -48,16 +48,8 @@ bool SEAFOAM::Init()
 {
     GUARD(SEAFOAM::Init)
 
-    if (api->IsNetActive())
-    {
-        NetFindClass(false, &seaID, "NetSea");
-        sea = (SEA_BASE *)_CORE_API->GetEntityPointer(&seaID);
-    }
-    else
-    {
-        _CORE_API->FindClass(&seaID, "sea", 0);
-        sea = (SEA_BASE *)_CORE_API->GetEntityPointer(&seaID);
-    }
+    _CORE_API->FindClass(&seaID, "sea", 0);
+    sea = (SEA_BASE *)_CORE_API->GetEntityPointer(&seaID);
 
     renderer = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
     soundService = (VSoundService *)_CORE_API->CreateService("SoundService");
@@ -585,25 +577,6 @@ dword SEAFOAM::AttributeChanged(ATTRIBUTES *pA)
             isStorm = true;
         else
             isStorm = false;
-    }
-
-    if (stricmp(nm, "AddNetShip") == 0)
-    {
-        ENTITY_ID shipID;
-        dword dwShipNetID = pA->GetAttributeAsDword();
-        if (api->IsNetActive())
-        {
-            if (NetFindClass(false, &shipID, "NetShip"))
-                do
-                {
-                    ENTITY *pE = api->GetEntityPointer(&shipID);
-                    if (pE->GetNetID() == dwShipNetID)
-                    {
-                        AddShip(&shipID);
-                        break;
-                    }
-                } while (NetFindClassNext(false, &shipID));
-        }
     }
 
     return 0;

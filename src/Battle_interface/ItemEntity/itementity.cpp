@@ -1,6 +1,6 @@
 #include "itementity.h"
-#include "..\..\common_h\model.h"
 #include "..\utils.h"
+#include "model.h"
 
 ItemEntity::ItemEntity()
 {

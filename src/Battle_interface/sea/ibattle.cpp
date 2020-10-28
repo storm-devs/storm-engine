@@ -17,7 +17,7 @@
 #include "..\timer\timer.h"
 #include "..\utils.h"
 
-#include "..\..\engine\program\battle_interface\msg_control.h"
+#include "..\msg_control.h"
 
 #include "..\InterfaceManager\InterfaceManager.h"
 
@@ -65,12 +65,12 @@ BATTLE_INTERFACE::BATTLE_INTERFACE() : m_TextArray(_FL_)
 
 BATTLE_INTERFACE::~BATTLE_INTERFACE()
 {
-    // DELETE(m_pMessageIcons);
-    DELETE(m_pShipIcon);
+    // SE_DELETE(m_pMessageIcons);
+    SE_DELETE(m_pShipIcon);
     m_TextArray.DelAll();
     m_LinesInfo.Release();
     m_ImagesInfo.Release();
-    DELETE(m_pShipInfoImages);
+    SE_DELETE(m_pShipInfoImages);
 }
 
 bool BATTLE_INTERFACE::Init()
@@ -212,14 +212,14 @@ void BATTLE_INTERFACE::LoadIniFile()
         m_ImagesInfo.Init(rs, AttributesPointer->GetAttributeClass("imageslist"));
     }
 
-    /*DELETE( m_pMessageIcons );
+    /*SE_DELETE( m_pMessageIcons );
     m_pMessageIcons = NEW MESSAGE_ICONS;
     if(m_pMessageIcons==NULL) {
         SE_THROW("allocate memory error");
     }
     if(m_pMessageIcons)	m_pMessageIcons->InitData(GetID(),rs,pA);*/
 
-    DELETE(m_pShipIcon);
+    SE_DELETE(m_pShipIcon);
     m_pShipIcon = NEW BIShipIcon(GetID(), rs);
     Assert(m_pShipIcon);
     m_pShipIcon->Init(AttributesPointer, AttributesPointer ? AttributesPointer->GetAttributeClass("ShipIcon") : null);

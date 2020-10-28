@@ -11,8 +11,8 @@
 #ifndef _WdmCloud_H_
 #define _WdmCloud_H_
 
-#include "..\common_h\matrix.h"
 #include "WdmRenderObject.h"
+#include "matrix.h"
 
 class WdmCloud : public WdmRenderObject
 {

@@ -1,19 +1,18 @@
 #ifndef AIHELPER_HPP
 #define AIHELPER_HPP
 
-#include "..\common_h\Character.h"
-#include "..\common_h\Island_Base.h"
-#include "..\common_h\SD2_H\SaveLoad.h"
-#include "..\common_h\collide.h"
-#include "..\common_h\defines.h"
-#include "..\common_h\dx8render.h"
-#include "..\common_h\island_base.h"
-#include "..\common_h\templates\DTimer.h"
-#include "..\common_h\templates\array.h"
-#include "..\common_h\templates\string.h"
-#include "..\common_h\vmodule_api.h"
-#include "..\engine\program\Events.h"
-#include "..\engine\program\sea_ai\Script_Defines.h"
+#include "Character.h"
+#include "Island_Base.h"
+#include "SD2_H\SaveLoad.h"
+#include "Script_Defines.h"
+#include "collide.h"
+#include "common_defines.h"
+#include "dx8render.h"
+#include "island_base.h"
+#include "templates\DTimer.h"
+#include "templates\array.h"
+#include "templates\string.h"
+#include "vmodule_api.h"
 
 class AIAttributesHolder
 {

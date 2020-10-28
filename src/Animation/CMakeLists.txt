@@ -1,13 +1,6 @@
 project(animation)
 
-find_package(DirectX REQUIRED)
-
-include_directories(
-	${Storm_SOURCE_DIR}/Common_h
-	${DirectX_INCLUDE_DIR}
-)
-
-add_library(animation MODULE 
+add_library(${PROJECT_NAME} MODULE
 	ActionInfo.cpp
 	ActionInfo.h
 	ActionPlayerImp.cpp
@@ -26,4 +19,4 @@ add_library(animation MODULE
 	UserData.h
 )
 
-target_link_libraries(animation PRIVATE ${DirectX_D3DX9_LIBRARY})
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

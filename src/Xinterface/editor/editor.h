@@ -1,9 +1,9 @@
 #ifndef _GI_EDITOR_H
 #define _GI_EDITOR_H
 
-#include "..\..\common_h\dx8render.h"
 #include "..\inode.h"
-#include "defines.h"
+#include "dx8render.h"
+#include "xi_editor_defines.h"
 
 class XINTERFACE;
 class CXI_IMAGE;

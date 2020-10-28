@@ -1,10 +1,8 @@
 project(blot)
 
-include_directories(
-	${DirectX_INCLUDE_DIR}
-)
-
-add_library(blot MODULE 
+add_library(${PROJECT_NAME} MODULE
 	Blots.cpp
 	Blots.h
 )
+
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

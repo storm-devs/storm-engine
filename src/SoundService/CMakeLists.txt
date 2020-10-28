@@ -2,7 +2,7 @@ project(soundservice)
 
 find_package(Fmod REQUIRED)
 
-add_library(soundservice MODULE 
+add_library(${PROJECT_NAME} MODULE
 	DebugEntity.cpp
 	DebugEntity.h
 	SoundDefines.h
@@ -14,7 +14,9 @@ add_library(soundservice MODULE
 	${Storm_SOURCE_DIR}/Common_h/rands.cpp
 )
 
-target_include_directories(soundservice PRIVATE ${Fmod_INCLUDE_DIR})
-target_include_directories(soundservice PRIVATE ${DirectX_INCLUDE_DIR})
+target_include_directories(${PROJECT_NAME} PRIVATE ${Fmod_INCLUDE_DIR})
 
-target_link_libraries(soundservice PRIVATE ${Fmod_LIBRARY})
+target_link_libraries(${PROJECT_NAME} PRIVATE
+	common_h
+	${Fmod_LIBRARY}
+)

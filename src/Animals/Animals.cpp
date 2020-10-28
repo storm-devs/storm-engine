@@ -1,9 +1,9 @@
-#include "..\common_h\messages.h"
+#include "messages.h"
 #include <stdio.h>
-//#include "..\common_h\defines.h"
+//#include "defines.h"
 #include "..\SoundService\VSoundService.h"
-#include "..\common_h\CVECTOR.h"
-#include "..\common_h\exs.h"
+#include "CVECTOR.h"
+#include "exs.h"
 
 #include "ANIMALS.h"
 

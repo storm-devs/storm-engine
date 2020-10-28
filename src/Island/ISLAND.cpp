@@ -1,7 +1,7 @@
 #include "ISLAND.h"
-#include "..\common_h\weather_base.h"
-#include "..\engine\program\sea_ai\Script_Defines.h"
 #include "Foam.h"
+#include "Script_Defines.h"
+#include "weather_base.h"
 #include <stdio.h>
 
 INTERFACE_FUNCTION
@@ -38,7 +38,7 @@ ISLAND::~ISLAND()
 {
     Uninit();
 
-    DELETE(pIslandTraceWalker);
+    SE_DELETE(pIslandTraceWalker);
 }
 
 void ISLAND::Uninit()
@@ -46,8 +46,8 @@ void ISLAND::Uninit()
     for (dword i = 0; i < aSpheres.Size(); i++)
         api->DeleteEntity(aSpheres[i]);
     aSpheres.DelAll();
-    DELETE(pDepthMap);
-    DELETE(pShadowMap);
+    SE_DELETE(pDepthMap);
+    SE_DELETE(pShadowMap);
 
     if (!bForeignModels)
     {
@@ -535,7 +535,7 @@ bool ISLAND::CreateShadowMap(char *pDir, char *pName)
 
         mzShadow.DoZip(pShadowMap, dwSize);
         mzShadow.Save(string(fname) + ".zap");
-        DELETE(pShadowMap);
+        SE_DELETE(pShadowMap);
         return true;
     }
 
@@ -580,7 +580,7 @@ bool ISLAND::CreateShadowMap(char *pDir, char *pName)
     mzShadow.DoZip(pShadowMap, DMAP_SIZE);
     mzShadow.Save(string(fname) + ".zap");
 
-    DELETE(pShadowMap);
+    SE_DELETE(pShadowMap);
 
     return true;
 }
@@ -608,7 +608,7 @@ void ISLAND::Blur8(byte **pBuffer, dword dwSize)
             pNewBuffer[z * dwSize + x] = byte(dwRes);
         }
 
-    DELETE(*pBuffer);
+    SE_DELETE(*pBuffer);
     *pBuffer = pNewBuffer;
 }
 
@@ -650,7 +650,7 @@ bool ISLAND::CreateHeightMap(char *pDir, char *pName)
 
             mzDepth.DoZip(pDepthMap, iDMapSize);
             mzDepth.Save(string(fname) + ".zap");
-            DELETE(pDepthMap);
+            SE_DELETE(pDepthMap);
             bLoad = true;
         }
     }
@@ -716,7 +716,7 @@ bool ISLAND::CreateHeightMap(char *pDir, char *pName)
     vRealBoxSize /= 2.0f;
 
     mzDepth.DoZip(pDepthMap, iDMapSize);
-    DELETE(pDepthMap);
+    SE_DELETE(pDepthMap);
 
     return true;
 #endif
@@ -790,7 +790,7 @@ bool ISLAND::CreateHeightMap(char *pDir, char *pName)
 
     mzDepth.DoZip(pDepthMap, iDMapSize);
     mzDepth.Save(string(fname) + ".zap");
-    DELETE(pDepthMap);
+    SE_DELETE(pDepthMap);
 
     INIFILE *pI = fio->OpenIniFile(iname);
     if (!pI)
@@ -896,7 +896,7 @@ bool ISLAND::Mount(char *fname, char *fdir, ENTITY_ID *eID)
     }*/
 
     // AIFlowGraph::Path * pPath = FindPath(CVECTOR(-10000.0f,0.0f,-10000.0f),CVECTOR(10000.0f,0.0f,10000.0f));
-    // DELETE(pPath);
+    // SE_DELETE(pPath);
 
     return true;
 }
@@ -974,8 +974,8 @@ bool ISLAND::GetMovePoint(CVECTOR &vSrc, CVECTOR &vDst, CVECTOR &vRes)
     if (INVALID_ARRAY_INDEX != dwI)
         vRes = AIPath.GetPointPos((*PointsSrc)[dwI].dwPnt);
 
-    DELETE(PointsSrc);
-    DELETE(PointsDst);
+    SE_DELETE(PointsSrc);
+    SE_DELETE(PointsDst);
 
     return true;
 }

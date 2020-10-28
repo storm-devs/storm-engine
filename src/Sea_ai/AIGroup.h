@@ -1,8 +1,8 @@
 #ifndef SEA_GROUP_AI_HPP
 #define SEA_GROUP_AI_HPP
 
-#include "..\common_h\vmodule_api.h"
 #include "AIShip.h"
+#include "vmodule_api.h"
 
 // ============================================================================
 // Master class AIGroup

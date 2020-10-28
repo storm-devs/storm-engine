@@ -320,7 +320,7 @@ void CXI_IMAGE::Unload()
     }
     if (m_pTexture)
         RELEASE(m_pTexture);
-    DELETE(m_pcPictureListName);
+    SE_DELETE(m_pcPictureListName);
 }
 
 bool CXI_IMAGE::IsPointInside(long nX, long nY)

@@ -5,12 +5,12 @@
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
-#include "..\common_h\dx8render.h"
-#include "..\common_h\matrix.h"
-#include "..\common_h\vmodule_api.h"
+#include "dx8render.h"
+#include "matrix.h"
+#include "vmodule_api.h"
 
-#include "..\common_h\templates\array.h"
-#include "..\common_h\templates\string.h"
+#include "templates\array.h"
+#include "templates\string.h"
 
 #define MAX_LINES 5
 #define SCROLL_LINE_TIME 100

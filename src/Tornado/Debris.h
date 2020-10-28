@@ -12,9 +12,9 @@
 #define _Debris_H_
 
 #include "..\SoundService\VSoundService.h"
-#include "..\common_h\matrix.h"
-#include "..\common_h\model.h"
 #include "Pillar.h"
+#include "matrix.h"
+#include "model.h"
 
 class Debris
 {

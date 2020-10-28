@@ -11,9 +11,9 @@
 #ifndef _Blots_H_
 #define _Blots_H_
 
-#include "..\common_h\dx8render.h"
-#include "..\common_h\model.h"
-#include "..\common_h\vmodule_api.h"
+#include "dx8render.h"
+#include "model.h"
+#include "vmodule_api.h"
 
 #define BLOTS_NTRGS 32    //Треугольников в 1 пятне
 #define BLOTS_MAX 256     //Всего пятен

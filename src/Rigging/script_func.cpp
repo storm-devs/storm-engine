@@ -1,7 +1,7 @@
 #include "script_func.h"
-#include "..\common_h\net.h"
-#include "..\common_h\sail_base.h"
+//#include "net.h"
 #include "sail.h"
+#include "sail_base.h"
 
 extern float g_fSailHoleDepend;
 // extern float GetSailSpeed(int holeQ,int holeMax,float maxSpeed,float fSailHoleDepend);
@@ -19,7 +19,7 @@ DWORD __cdecl _ShipSailState(VS_STACK *pS)
 
     // find sail class
     ENTITY_ID eid;
-    if (api->FindClass(&eid, "SAIL", 0) || NetFindClass(true, &eid, "NetSail"))
+    if (api->FindClass(&eid, "SAIL", 0))
     {
         long n = ((SAIL *)eid.pointer)->GetSailStateForCharacter(nChrIdx);
         pVR->Set(n);
@@ -173,7 +173,7 @@ DWORD __cdecl _RandomHole2Sail(VS_STACK *pS)
 
     SAILONE_BASE *pSail = null;
     ENTITY_ID ei;
-    if (api->FindClass(&ei, "sail", 0) || NetFindClass(true, &ei, "NetSail"))
+    if (api->FindClass(&ei, "sail", 0))
     {
         pSail = ((SAIL_BASE *)api->GetEntityPointer(&ei))->FindSailForCharacter(_chrIdx, _reyName, _groupNum);
     }
@@ -236,7 +236,7 @@ DWORD __cdecl _DeleteOneSailHole(VS_STACK *pS)
 
     SAILONE_BASE *pSail = null;
     ENTITY_ID ei;
-    if (api->FindClass(&ei, "sail", 0) || NetFindClass(true, &ei, "NetSail"))
+    if (api->FindClass(&ei, "sail", 0))
     {
         pSail = ((SAIL_BASE *)api->GetEntityPointer(&ei))->FindSailForCharacter(_chrIdx, _reyName, _groupNum);
     }

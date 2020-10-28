@@ -1,10 +1,10 @@
 #ifndef _K2_PSYSTEM_H
 #define _K2_PSYSTEM_H
 
-#include "..\..\common_h\cvector.h"
-#include "..\..\common_h\matrix.h"
-#include "..\..\common_h\vmodule_api.h"
-#include "..\..\common_h\vparticle_system.h"
+#include "cvector.h"
+#include "matrix.h"
+#include "vmodule_api.h"
+#include "vparticle_system.h"
 
 class IParticleSystem;
 class PARTICLES;

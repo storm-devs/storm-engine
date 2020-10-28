@@ -1,6 +1,6 @@
 #include "particlemanager.h"
-#include "..\..\common_h\dx8render.h"
-#include "..\..\common_h\vapi.h"
+#include "dx8render.h"
+#include "vapi.h"
 
 #include "..\datacache\datacache.h"
 #include "..\geomcache\geomcache.h"

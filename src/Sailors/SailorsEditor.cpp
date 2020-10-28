@@ -1,8 +1,8 @@
 
 #include "SailorsEditor.h"
 
-#include "..\ENGINE\PROGRAM\SEA_AI\script_defines.h"
-#include "..\common_h\matrix.h"
+#include "Script_Defines.h"
+#include "matrix.h"
 
 SailorsEditor ::SailorsEditor()
 {

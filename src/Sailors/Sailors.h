@@ -2,19 +2,19 @@
 #ifndef _Sailors_h_
 #define _Sailors_h_
 
-#include "..\common_h\collide.h"
-#include "..\common_h\dx8render.h"
-#include "..\common_h\exs.h"
-#include "..\common_h\geos.h"
-#include "..\common_h\messages.h"
-#include "..\common_h\model.h"
-#include "..\common_h\rands.h"
-#include "..\common_h\ship_base.h"
-#include "..\common_h\templates\array.h"
-#include "..\common_h\templates\string.h"
-#include "..\common_h\vmodule_api.h"
+#include "collide.h"
+#include "dx8render.h"
+#include "exs.h"
+#include "geos.h"
+#include "messages.h"
+#include "model.h"
+#include "rands.h"
+#include "ship_base.h"
+#include "templates\array.h"
+#include "templates\string.h"
+#include "vmodule_api.h"
 
-#include "..\common_h\sea_base.h"
+#include "sea_base.h"
 
 const float RUN_SPEED = 0.30f;
 const float MOVE_SPEED = 0.15f;
@@ -23,7 +23,7 @@ const float CLIMB_SPEED = 0.065f;
 const float JUMP_SPEED_X_MASTFALL = 3.0f;
 const float JUMP_SPEED_Y_EXPLOSION = 30.0f;
 
-#include "..\ENGINE\PROGRAM\SEA_AI\seaPeople.h"
+#include "..\peoples_on_ship\seaPeople.h"
 #include "SailorsWayPoints.h"
 
 #define CREW2VISIBLE(n) 5.0f * logf(n) //???

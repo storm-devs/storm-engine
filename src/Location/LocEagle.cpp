@@ -9,8 +9,8 @@
 //============================================================================================
 
 #include "LocEagle.h"
-#include "..\Common_h\geometry.h"
 #include "Location.h"
+#include "geometry.h"
 
 LocEagle::LocEagle()
 {

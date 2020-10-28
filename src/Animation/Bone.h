@@ -13,10 +13,10 @@
 
 //============================================================================================
 
-#include "..\Common_h\Matrix.h"
-#include "..\Common_h\d_types.h"
-#include "..\Common_h\exs.h"
-#include "..\Common_h\memop.h"
+#include "Matrix.h"
+#include "d_types.h"
+#include "exs.h"
+#include "memop.h"
 
 #include <d3dx9.h>
 //============================================================================================

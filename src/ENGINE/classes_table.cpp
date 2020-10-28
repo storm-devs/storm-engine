@@ -1,7 +1,7 @@
 #include "classes_table.h"
-#include "..\..\common_h\exs.h"
-#include "..\..\common_h\memop.h"
+#include "exs.h"
 #include "externs.h"
+#include "memop.h"
 
 dword CLASSES_TABLE::GetClassCode(char *class_name)
 {

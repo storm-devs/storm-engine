@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "..\..\..\common_h\math3d.h"
+#include "math3d.h"
 
 class DataPosition
 {

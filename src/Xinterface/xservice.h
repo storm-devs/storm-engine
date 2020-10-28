@@ -1,7 +1,7 @@
 #ifndef _XISERVICE_H
 #define _XISERVICE_H
 
-#include "defines.h"
+#include "xi_defines.h"
 
 class XSERVICE : public VXSERVICE
 {

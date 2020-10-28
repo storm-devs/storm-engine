@@ -9,9 +9,9 @@
 //============================================================================================
 
 #include "LocationCamera.h"
-#include "..\common_h\sea_base.h"
 #include "Character.h"
 #include "Location.h"
+#include "sea_base.h"
 
 //#define CAMERA_VIEW_TEST_ENABLE
 #define CAMERA_VIEW_TEST_R 3

@@ -1,9 +1,9 @@
 #ifndef _S_EVENTTAB_H_
 #define _S_EVENTTAB_H_
 
-#include "..\..\COMMON_H\d_types.h"
-#include "..\..\COMMON_H\memop.h"
+#include "d_types.h"
 #include "data.h"
+#include "memop.h"
 
 #define BUFFER_BLOCK_SIZE 4
 #define INVALID_EVENT_CODE 0xffffffff

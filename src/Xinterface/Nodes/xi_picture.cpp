@@ -451,7 +451,7 @@ void CXI_PICTURE::ReleasePicture()
     if (m_pD3D8Texture)
         m_pD3D8Texture->Release();
     m_pD3D8Texture = null;
-    DELETE(m_pcGroupName);
+    SE_DELETE(m_pcGroupName);
     TEXTURE_RELEASE(m_rs, m_idTex);
     VIDEOTEXTURE_RELEASE(m_rs, m_pTex);
 }

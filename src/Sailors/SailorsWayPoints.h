@@ -1,8 +1,8 @@
 
-#include "..\common_h\dx8render.h"
-#include "..\common_h\matrix.h"
-#include "..\common_h\templates\array.h"
-#include "..\common_h\templates\string.h"
+#include "dx8render.h"
+#include "matrix.h"
+#include "templates\array.h"
+#include "templates\string.h"
 
 #include <cmath>
 

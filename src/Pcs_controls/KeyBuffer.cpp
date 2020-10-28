@@ -1,5 +1,5 @@
 #include "KeyBuffer.h"
-#include "..\\common_h\\defines.h"
+#include "..\\common_h\\common_defines.h"
 
 ControlKeyBuffer::ControlKeyBuffer()
 {

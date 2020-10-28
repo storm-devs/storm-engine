@@ -6,11 +6,11 @@
 #include <stdlib.h>
 
 #ifndef _NOBLOOD_
-#include "..\..\common_h\vmodule_api.h"
-#include "..\..\common_h\memop.h"
-#include "..\..\common_h\d_types.h"
-#include "..\..\common_h\defines.h"
-#include "..\..\common_h\Exs.h"
+#include "vmodule_api.h"
+#include "memop.h"
+#include "d_types.h"
+#include "../common_defines.h"
+#include "Exs.h"
 #else
 #include <memory.h>
 
@@ -36,7 +36,7 @@ inline void __XxX_Assert__(bool expression)
 
 #define FRAND(x) ((x) * (float)rand() / (float)RAND_MAX)
 
-#define DELETE(x)                                                                                                      \
+#define SE_DELETE(x)                                                                                                   \
     {                                                                                                                  \
         free(x);                                                                                                       \
         x = null;                                                                                                      \
@@ -149,7 +149,7 @@ template <class _Ty> class allocator
         dwMaxElements = 0;
         dwNumElements = 0;
         void *pTE = pE;
-        DELETE(pTE);
+        SE_DELETE(pTE);
         pE = null;
     }
 

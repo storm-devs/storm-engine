@@ -1,7 +1,7 @@
 #ifndef VSHIP_H
 #define VSHIP_H
-#include "..\common_h\ship_msg.h"
-#include "..\common_h\vcannon.h"
+#include "ship_msg.h"
+#include "vcannon.h"
 
 class VSHIP : public ENTITY
 {

@@ -1,11 +1,8 @@
 project(blade)
 
-include_directories(
-	#${Storm_SOURCE_DIR}/Common_h
-	${DirectX_INCLUDE_DIR}
-)
-
-add_library(blade MODULE 
+add_library(${PROJECT_NAME} MODULE
 	blade.cpp
 	blade.h
 )
+
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

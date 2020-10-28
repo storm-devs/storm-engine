@@ -1,5 +1,5 @@
 #include "BackgroundDate.h"
-#include "..\common_h\dx8render.h"
+#include "dx8render.h"
 #include <stdio.h>
 
 BackgroundDataDescriber::BackgroundDataDescriber()

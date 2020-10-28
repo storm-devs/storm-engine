@@ -1,6 +1,6 @@
 #include "mem_utils.h"
-#include "..\..\common_h\vapi.h"
 #include "system_log.h"
+#include "vapi.h"
 extern VAPI *api;
 
 MEM_USAGE_INFO::MEM_USAGE_INFO()

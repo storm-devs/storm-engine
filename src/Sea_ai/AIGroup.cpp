@@ -24,7 +24,7 @@ AIGroup::~AIGroup()
 {
     dword i;
     for (i = 0; i < aGroupShips.Size(); i++)
-        DELETE(aGroupShips[i]);
+        SE_DELETE(aGroupShips[i]);
     aGroupShips.DelAll();
 }
 

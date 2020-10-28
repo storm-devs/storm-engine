@@ -1,6 +1,6 @@
 #include "aviplayer.h"
-#include "..\\..\\common_h\\defines.h"
-#include "..\\..\\engine\\program\\interface\\messages.h"
+#include "..\xi_messages.h"
+#include "common_defines.h"
 #include <stdio.h>
 
 #define IRELEASE(i)                                                                                                    \

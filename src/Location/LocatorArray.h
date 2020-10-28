@@ -11,8 +11,8 @@
 #ifndef _LocatorArray_H_
 #define _LocatorArray_H_
 
-#include "..\common_h\matrix.h"
-#include "..\common_h\vmodule_api.h"
+#include "matrix.h"
+#include "vmodule_api.h"
 
 class LocatorArray
 {

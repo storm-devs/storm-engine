@@ -1,10 +1,10 @@
 #ifndef _BATTLE_SHIPSIGN_H
 #define _BATTLE_SHIPSIGN_H
 
-#include "..\..\common_h\templates\array.h"
-#include "..\..\common_h\templates\string.h"
-#include "..\defines.h"
+#include "..\bi_defines.h"
 #include "ships_list.h"
+#include "templates\array.h"
+#include "templates\string.h"
 
 #define MAX_SHIP_QUANTITY 8
 

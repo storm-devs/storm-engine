@@ -1,8 +1,7 @@
 project(geometry)
 
-add_library(geometry MODULE 
+add_library(${PROJECT_NAME} MODULE
 	geometry_R.h
-	geometry.h
 	geometry.cpp
 	geom_static.cpp
 	geom.h
@@ -10,4 +9,4 @@ add_library(geometry MODULE
 	Rdf.h
 )
 
-target_include_directories(geometry PRIVATE ${DirectX_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

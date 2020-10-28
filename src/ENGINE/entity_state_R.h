@@ -7,9 +7,9 @@
 #include <xtl.h>
 #endif
 
-#include "..\..\common_h\entity_state.h"
-#include "..\..\common_h\memop.h"
-#include "..\..\common_h\vfile_service.h"
+#include "entity_state.h"
+#include "memop.h"
+#include "vfile_service.h"
 
 #define INITIAL_BUFFER_SIZE 1024
 

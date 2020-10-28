@@ -1,5 +1,6 @@
 #include "ActivePerkShower.h"
-#include "defines.h"
+#include "bi_defines.h"
+#include "msg_control.h"
 
 ActivePerkShower::ActivePerkShower()
 {
@@ -143,7 +144,7 @@ void ActivePerkShower::RefreshShowPlaces(ATTRIBUTES *pAPlacesRoot)
     ATTRIBUTES *pAttr;
 
     if (m_pShowPlaces)
-        DELETE(m_pShowPlaces);
+        SE_DELETE(m_pShowPlaces);
 
     m_nIconWidth = 64;
     m_nIconHeight = 64;
@@ -402,12 +403,12 @@ void ActivePerkShower::ReleaseAll()
 
     for (i = 0; i < m_nTextureQ; i++)
         TEXTURE_RELEASE(rs, m_pTexDescr[i].m_idTexture);
-    DELETE(m_pTexDescr);
+    SE_DELETE(m_pTexDescr);
     m_nTextureQ = 0;
 
-    DELETE(m_pShowPlaces);
+    SE_DELETE(m_pShowPlaces);
     m_nShowPlaceQ = 0;
 
-    DELETE(m_pIconsList);
+    SE_DELETE(m_pIconsList);
     m_nIShowQ = 0;
 }

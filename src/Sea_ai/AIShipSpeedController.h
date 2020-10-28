@@ -1,13 +1,13 @@
 #ifndef AISHIPSPEEDCONTROLLER_HPP
 #define AISHIPSPEEDCONTROLLER_HPP
 
-#include "..\common_h\character.h"
-#include "..\common_h\sd2_h\CannonTrace.h"
-#include "..\common_h\sd2_h\VAI_ObjBase.h"
-#include "..\common_h\templates\array.h"
-#include "..\common_h\templates\string.h"
-#include "..\common_h\vmodule_api.h"
-#include "..\engine\program\sea_ai\Script_Defines.h"
+#include "Script_Defines.h"
+#include "character.h"
+#include "sd2_h\CannonTrace.h"
+#include "sd2_h\VAI_ObjBase.h"
+#include "templates\array.h"
+#include "templates\string.h"
+#include "vmodule_api.h"
 
 // ============================================================================
 // master class AIShipSpeedController

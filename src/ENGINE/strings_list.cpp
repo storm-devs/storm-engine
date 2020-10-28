@@ -1,6 +1,6 @@
 #include "strings_list.h"
-#include "..\..\common_h\exs.h"
-#include "..\..\common_h\memop.h"
+#include "exs.h"
+#include "memop.h"
 
 STRINGS_LIST::STRINGS_LIST()
 {

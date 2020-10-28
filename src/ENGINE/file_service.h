@@ -1,8 +1,8 @@
 #ifndef _FILE_SERVICE_H_
 #define _FILE_SERVICE_H_
 
-#include "..\..\common_h\vfile_service.h"
 #include "ifs.h"
+#include "vfile_service.h"
 
 #define _MAX_OPEN_INI_FILES 1024
 

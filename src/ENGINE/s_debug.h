@@ -10,8 +10,8 @@
 
 #define PROJECT_NAME "project.df"
 
-#include "..\..\COMMON_H\d_types.h"
-#include "..\..\COMMON_H\memop.h"
+#include "d_types.h"
+#include "memop.h"
 #include "s_dbg_breaktable.h"
 #include "s_dbg_sourceview.h"
 #include "s_dbg_watcherlist.h"

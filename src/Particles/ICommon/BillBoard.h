@@ -1,7 +1,7 @@
 #ifndef _BILLBOARD_H_
 #define _BILLBOARD_H_
 
-#include "..\..\common_h\math3d.h"
+#include "math3d.h"
 
 //Партикл
 struct ParticleBillboard

@@ -1,7 +1,7 @@
 #include "Sea.h"
-#include "..\common_h\tga.h"
-#include "..\engine\program\sea_ai\script_defines.h"
 #include "SSE.h"
+#include "Script_Defines.h"
+#include "tga.h"
 
 //#define OLD_WORLD_POS
 
@@ -154,21 +154,21 @@ SEA::~SEA()
         Render().TextureRelease(iFoamTexture);
     iFoamTexture = -1;
 
-    DELETE(pIndices);
-    DELETE(pVSea);
+    SE_DELETE(pIndices);
+    SE_DELETE(pVSea);
 
     for (long i = 0; i < aBumpMaps.Size(); i++)
         Render().Release(aBumpMaps[i]);
 
     for (long i = 0; i < aBumps; i++)
-        DELETE(aBumps[i]);
+        SE_DELETE(aBumps[i]);
     for (long i = 0; i < aNormals; i++)
-        DELETE(aNormals[i]);
+        SE_DELETE(aNormals[i]);
 
-    DELETE(pSeaFrame1);
-    DELETE(pSeaFrame2);
-    DELETE(pSeaNormalsFrame1);
-    DELETE(pSeaNormalsFrame2);
+    SE_DELETE(pSeaFrame1);
+    SE_DELETE(pSeaFrame2);
+    SE_DELETE(pSeaNormalsFrame1);
+    SE_DELETE(pSeaNormalsFrame2);
 }
 
 void SEA::SFLB_CreateBuffers()
@@ -189,7 +189,7 @@ bool SEA::Init()
     bIniFoamEnable = (pEngineIni) ? pEngineIni->GetLong("Sea", "FoamEnable", 1) != 0 : false;
     bool bEnableSSE = (pEngineIni) ? pEngineIni->GetLong(null, "EnableSSE", 1) != 0 : false; // boal
     bSeaDebug = (pEngineIni) ? pEngineIni->GetLong("Sea", "SeaDebug", 1) != 0 : false;
-    DELETE(pEngineIni);
+    SE_DELETE(pEngineIni);
 
     if (bEnableSSE)
     {
@@ -291,7 +291,7 @@ bool SEA::Init()
                 pFB += sizeof(dword);
             }
 
-        DELETE(pFBuffer);
+        SE_DELETE(pFBuffer);
     }
 
     for (i = 0; i < FRAMES; i++)
@@ -316,7 +316,7 @@ bool SEA::Init()
     }
 
     for (i = 0; i < aTmpBumps(); i++)
-        DELETE(aTmpBumps[i]);
+        SE_DELETE(aTmpBumps[i]);
 
     BuildVolumeTexture();
 
@@ -514,7 +514,7 @@ void SEA::BuildVolumeTexture()
                                 ARGB(0x80, blue, green, red);
                     }
         }
-        DELETE(pVectors);
+        SE_DELETE(pVectors);
     }
 
     if (pVolumeTexture)
@@ -522,7 +522,7 @@ void SEA::BuildVolumeTexture()
             pVolumeTexture->UnlockBox(i);
 
     aVectors.DelAllWithPointers();
-    DELETE(pDst);
+    SE_DELETE(pDst);
 }
 
 bool SEA::EditMode_Update()

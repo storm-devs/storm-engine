@@ -8,8 +8,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "..\..\..\common_h\d_types.h"
-#include "..\..\..\common_h\math3d.h"
+#include "d_types.h"
+#include "math3d.h"
 
 class DataUV
 {

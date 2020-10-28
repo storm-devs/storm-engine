@@ -8,7 +8,6 @@
 #include "datastring.h"
 #include "datauv.h"
 
-#include "..\..\..\common_h\vmodule_api.h"
 #include "..\..\icommon\memfile.h"
 
 #define HEADER "PSYS"

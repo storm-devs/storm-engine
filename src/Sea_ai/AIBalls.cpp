@@ -36,7 +36,7 @@ AIBalls::~AIBalls()
             BALL_PARAMS *pBall = &pBallsType->Balls[j];
             if (pBall->pParticle)
             {
-                DELETE(pBall->pParticle);
+                SE_DELETE(pBall->pParticle);
             }
             pBall->sBallEvent.DelAll();
         }
@@ -44,7 +44,7 @@ AIBalls::~AIBalls()
     }
     aBallTypes.DelAll();
 
-    DELETE(pVWShips);
+    SE_DELETE(pVWShips);
 }
 
 bool AIBalls::Init()
@@ -288,7 +288,7 @@ void AIBalls::Execute(dword Delta_Time)
                 if (pBall->pParticle)
                 {
                     pBall->pParticle->Stop();
-                    DELETE(pBall->pParticle);
+                    SE_DELETE(pBall->pParticle);
                 }
                 pBallsType->Balls.ExtractNoShift(j);
                 j--;
@@ -349,7 +349,7 @@ dword AIBalls::AttributeChanged(ATTRIBUTES *pAttributeChanged)
                 if (pBall->pParticle)
                 {
                     pBall->pParticle->Stop();
-                    DELETE(pBall->pParticle);
+                    SE_DELETE(pBall->pParticle);
                 }
             }
 
@@ -419,7 +419,7 @@ dword AIBalls::ProcessMessage(MESSAGE &message)
                 if (pBall->pParticle)
                 {
                     pBall->pParticle->Stop();
-                    DELETE(pBall->pParticle);
+                    SE_DELETE(pBall->pParticle);
                 }
             }
     }

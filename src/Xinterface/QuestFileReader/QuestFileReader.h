@@ -1,11 +1,11 @@
 #ifndef _QUEST_FILE_READER_H_
 #define _QUEST_FILE_READER_H_
 
-#include "..\..\common_h\templates\array.h"
-#include "..\..\common_h\templates\string.h"
-#include "..\..\common_h\vmodule_api.h"
 #include "..\templates\TDynArray.h"
 #include "..\templates\ctext.h"
+#include "templates\array.h"
+#include "templates\string.h"
+#include "vmodule_api.h"
 
 class QUEST_FILE_READER
 {

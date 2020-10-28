@@ -1,7 +1,6 @@
-#include "..\common_h\defines.h"
-#include "..\common_h\stringService.h"
-#include "defines.h"
+#include "stringService.h"
 #include "vxservice.h" // pictures & string lists control
+#include "xi_defines.h"
 #include <stdio.h>
 
 //////////////////////////////////////////////

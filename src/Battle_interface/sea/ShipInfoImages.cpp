@@ -1,6 +1,6 @@
 #include "ShipInfoImages.h"
-#include "..\..\common_h\ship_base.h"
 #include "..\image\imgrender.h"
+#include "ship_base.h"
 
 // определим вертексы
 #define SPV_FORMAT (D3DFVF_XYZ | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2)

@@ -3,8 +3,8 @@
 
 #include "backgrounddate.h"
 
-#include "..\common_h\defines.h"
-#include "..\common_h\dx8render.h"
+#include "common_defines.h"
+#include "dx8render.h"
 
 class BackgroundShipTask : public ENTITY
 {

@@ -3,13 +3,13 @@
 
 //#include <mmreg.h>
 //#include <dxerr8.h>
-#include "..\common_h\CVECTOR.h"
-#include "..\common_h\templates.h"
-#include "..\common_h\vmodule_api.h"
+#include "CVECTOR.h"
 #include "SoundDefines.h"
 #include "VSoundService.h"
 #include "fmod.hpp"
 #include "fmod_errors.h"
+#include "templates.h"
+#include "vmodule_api.h"
 #include <dsound.h>
 
 #define MAX_SOUNDS_SLOTS 512

@@ -1,6 +1,6 @@
 project(rigging)
 
-add_library(rigging MODULE 
+add_library(${PROJECT_NAME} MODULE
 	Flag.cpp
 	Flag.h
 	Rope.cpp
@@ -17,4 +17,4 @@ add_library(rigging MODULE
 	script_func.h
 )
 
-target_include_directories(rigging PRIVATE ${DirectX_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

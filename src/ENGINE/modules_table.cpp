@@ -1,10 +1,10 @@
 #include "modules_table.h"
 
-#include "..\..\common_h\exs.h"
-#include "..\..\common_h\memop.h"
 #include "common_h.h"
+#include "exs.h"
 #include "externs.h"
 #include "internal_modules.h"
+#include "memop.h"
 #include "messages.h"
 
 #define MROOT_DIRECTORY 0xffffffff

@@ -1,9 +1,9 @@
 #ifndef _TIVBUFFERMANAGER_H_
 #define _TIVBUFFERMANAGER_H_
 
-#include "..\common_h\dx8render.h"
-#include "..\common_h\exs.h"
-#include "..\common_h\geos.h"
+#include "dx8render.h"
+#include "exs.h"
+#include "geos.h"
 
 ///////////////////////////////////////////////////////////////////
 // CLASS DEFINITION

@@ -1,6 +1,6 @@
 project(weather)
 
-add_library(weather MODULE 
+add_library(${PROJECT_NAME} MODULE
 	Astronomy.cpp
 	Astronomy.h
 	Lightning.cpp
@@ -20,6 +20,4 @@ add_library(weather MODULE
 	typedef.h
 )
 
-target_include_directories(weather PRIVATE ${DirectX_INCLUDE_DIR})
-
-target_link_libraries(weather PRIVATE ${DirectX_D3DX9_LIBRARY})
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

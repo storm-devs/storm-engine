@@ -1,7 +1,7 @@
 #include "TButterflies.h"
-#include "..\common_h\rands.h"
-#include "..\common_h\ship_base.h"
-#include "..\common_h\vidwalker.h"
+#include "rands.h"
+#include "ship_base.h"
+#include "vidwalker.h"
 
 #pragma warning(disable : 4244)
 

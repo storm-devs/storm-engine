@@ -1,8 +1,8 @@
 #ifndef _IEDITOR_UTILS_H_
 #define _IEDITOR_UTILS_H_
 
-#include "..\..\common_h\dx8render.h"
 #include "defines.h"
+#include "dx8render.h"
 
 class EdUtils
 {

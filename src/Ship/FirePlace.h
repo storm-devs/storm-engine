@@ -1,17 +1,17 @@
 #ifndef _SHIP_FIRE_PLACE_HPP
 #define _SHIP_FIRE_PLACE_HPP
 
-#include "..\common_h\collide.h"
-#include "..\common_h\dx8render.h"
-#include "..\common_h\model.h"
-#include "..\common_h\sea_base.h"
-#include "..\common_h\ship_base.h"
-#include "..\common_h\vparticle_system.h"
+#include "collide.h"
+#include "dx8render.h"
+#include "model.h"
+#include "sea_base.h"
+#include "ship_base.h"
+#include "vparticle_system.h"
 
-#include "..\common_h\templates\array.h"
-#include "..\common_h\templates\string.h"
+#include "templates\array.h"
+#include "templates\string.h"
 
-#include "..\common_h\sd2_h\SaveLoad.h"
+#include "sd2_h\SaveLoad.h"
 
 class FirePlace
 {

@@ -2,7 +2,7 @@
 #define _CONTROL_STACK_H_
 
 //#include "common_h.h"
-#include "..\..\common_h\entity_id.h"
+#include "entity_id.h"
 
 typedef struct
 {

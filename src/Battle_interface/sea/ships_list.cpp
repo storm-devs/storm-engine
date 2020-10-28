@@ -1,6 +1,7 @@
 #include "ships_list.h"
-#include "..\..\common_h\net.h"
+#include "../msg_control.h"
 #include <assert.h>
+//#include "net.h"
 //#include "battle_command.h"
 
 #define LOADING_MODE_MY_SHIP 0
@@ -219,19 +220,6 @@ void SHIP_DESCRIBE_LIST::Add(long mainChrIndex, long chIdx, ATTRIBUTES *pChAttr,
                 break;
             }
         } while (api->FindClassNext(&ei));
-    if (NetFindClass(false, &ei, "netship"))
-        do
-        {
-            VAI_OBJBASE *vob = (VAI_OBJBASE *)_CORE_API->GetEntityPointer(&ei);
-            if (vob == NULL)
-                continue;
-            ATTRIBUTES *pA = vob->GetACharacter();
-            if ((long)pA->GetAttributeAsDword("id") == chIdx)
-            {
-                pr->pShip = vob;
-                break;
-            }
-        } while (NetFindClassNext(false, &ei));
 
     SHIP_DESCR *ptmp = root;
     if (ptmp == NULL)
@@ -291,17 +279,7 @@ void SHIP_DESCRIBE_LIST::Refresh()
                 continue;
             tls.Push((long)pA->GetAttributeAsDword("index"));
         } while (api->FindClassNext(&ei));
-    if (NetFindClass(false, &ei, "NetShip"))
-        do
-        {
-            VAI_OBJBASE *vob = (VAI_OBJBASE *)_CORE_API->GetEntityPointer(&ei);
-            if (vob == NULL)
-                continue;
-            ATTRIBUTES *pA = vob->GetACharacter();
-            if (pA == NULL)
-                continue;
-            tls.Push((long)pA->GetAttributeAsDword("id"));
-        } while (NetFindClassNext(false, &ei));
+
     tls.Push(-1);
 
     for (long chrIdx = tls.GetFore(); chrIdx >= 0; chrIdx = tls.GetFore())

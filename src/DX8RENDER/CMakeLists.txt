@@ -1,6 +1,6 @@
 project(render)
 
-add_library(render MODULE 
+add_library(${PROJECT_NAME} MODULE
 	Font.cpp
 	Font.h
 	Screenshot.cpp
@@ -11,9 +11,13 @@ add_library(render MODULE
 	texture.h
 )
 
-target_include_directories(render PRIVATE ${DirectX_INCLUDE_DIR})
+target_include_directories(${PROJECT_NAME} PRIVATE ${DirectX_INCLUDE_DIR})
 
-target_link_libraries(render PRIVATE ${DirectX_LIBRARY})
-target_link_libraries(render PRIVATE ${DirectX_D3DX9_LIBRARY})
-target_link_libraries(render PRIVATE ${DirectX_DXERR_LIBRARY})
-target_link_libraries(render PRIVATE gdiplus.lib)
+target_link_libraries(${PROJECT_NAME}
+	PRIVATE
+	common_h
+	${DirectX_LIBRARY}
+	${DirectX_D3DX9_LIBRARY}
+	${DirectX_DXERR_LIBRARY}
+	gdiplus.lib
+)

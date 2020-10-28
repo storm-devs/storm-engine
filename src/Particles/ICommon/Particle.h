@@ -1,7 +1,9 @@
 #ifndef PARTICLE_STRUCT
 #define PARTICLE_STRUCT
 
-#include "../../common_h/math3d.h"
+#include <Windows.h>
+
+#include "math3d.h"
 
 class DataGraph;
 class DataColor;

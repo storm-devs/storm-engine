@@ -1,6 +1,6 @@
 project(sailors)
 
-add_library(sailors MODULE 
+add_library(${PROJECT_NAME} MODULE
 	Sailors.cpp
 	Sailors.h
 	Sailors.rc
@@ -15,4 +15,4 @@ add_library(sailors MODULE
 	resource.h
 )
 
-target_include_directories(sailors PRIVATE ${DirectX_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

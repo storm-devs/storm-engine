@@ -1,5 +1,5 @@
 #include "FirePlace.h"
-#include "..\engine\program\sound.h"
+#include "sound.h"
 
 ENTITY_ID FirePlace::eidSound;
 
@@ -56,8 +56,8 @@ void FirePlace::DeleteParticle()
         }*/
     }
 
-    // DELETE(pParticleSmoke);
-    // DELETE(pParticleFire);
+    // SE_DELETE(pParticleSmoke);
+    // SE_DELETE(pParticleFire);
     pParticleSmoke = 0;
     pParticleFire = 0;
 }

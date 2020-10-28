@@ -1,9 +1,9 @@
 #ifndef _S_FUNCTAB_H_
 #define _S_FUNCTAB_H_
 
-#include "..\..\COMMON_H\d_types.h"
-#include "..\..\COMMON_H\memop.h"
-#include "..\..\common_h\s_import_func.h"
+#include "d_types.h"
+#include "memop.h"
+#include "s_import_func.h"
 #include "s_vartab.h"
 
 #define FUNC_BUFFER_BLOCK_SIZE 1024

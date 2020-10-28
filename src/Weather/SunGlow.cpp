@@ -97,8 +97,8 @@ void SUNGLOW::Release()
         pRS->TextureRelease(iReflTexture);
     iReflTexture = -1;
 
-    DELETE(pVWSunTrace);
-    DELETE(pVWSailsTrace);
+    SE_DELETE(pVWSunTrace);
+    SE_DELETE(pVWSailsTrace);
 }
 
 void SUNGLOW::GenerateSunGlow()

@@ -1,14 +1,14 @@
 #ifndef _XINTERFACE_H_
 #define _XINTERFACE_H_
 
-#include "..\common_h\dx8render.h"
-#include "..\common_h\matrix.h"
-#include "..\common_h\templates\string.h"
-#include "..\common_h\vmodule_api.h"
 #include "QuestFileReader\\QuestFileReader.h"
+#include "dx8render.h"
 #include "editor\editor.h"
 #include "inode.h"
+#include "matrix.h"
 #include "nodes\xi_util.h"
+#include "templates\string.h"
+#include "vmodule_api.h"
 
 class CXI_WINDOW;
 

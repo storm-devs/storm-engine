@@ -1,6 +1,6 @@
 #include "touch.h"
-#include "..\common_h\character.h"
-#include "..\engine\program\sea_ai\Script_Defines.h"
+#include "Script_Defines.h"
+#include "character.h"
 #include <crtdbg.h>
 #include <math.h>
 #include <stdio.h>
@@ -37,7 +37,7 @@ TOUCH::TOUCH()
 TOUCH::~TOUCH()
 {
     for (long i = 0; i < iNumShips; i++)
-        DELETE(pShips[i]);
+        SE_DELETE(pShips[i]);
 }
 
 dword _cdecl TOUCH::ProcessMessage(MESSAGE &message)

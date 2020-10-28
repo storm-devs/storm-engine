@@ -261,7 +261,7 @@ bool QUEST_FILE_READER::InitQuestsQuery()
 
 void QUEST_FILE_READER::CloseQuestsQuery()
 {
-    DELETE(m_pFileBuf);
+    SE_DELETE(m_pFileBuf);
     m_aQuestData.DelAll();
     m_sCurQuestTitle.Empty();
 }

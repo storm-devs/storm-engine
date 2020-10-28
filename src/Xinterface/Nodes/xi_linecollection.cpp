@@ -1,5 +1,5 @@
 #include "xi_linecollection.h"
-#include "..\\defines.h"
+#include "..\\xi_defines.h"
 #include <stdio.h>
 
 CXI_LINECOLLECTION::CXI_LINECOLLECTION() : m_aLines(_FL)

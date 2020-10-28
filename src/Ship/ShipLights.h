@@ -1,13 +1,13 @@
 #ifndef SHIPLIGHTS_HPP
 #define SHIPLIGHTS_HPP
 
-#include "..\common_h\ShipLights.h"
-#include "..\common_h\dx8render.h"
-#include "..\common_h\sea_base.h"
+#include "IShipLights.h"
+#include "dx8render.h"
+#include "sea_base.h"
 
-#include "..\common_h\templates\array.h"
-#include "..\common_h\templates\dtimer.h"
-#include "..\common_h\templates\string.h"
+#include "templates\array.h"
+#include "templates\dtimer.h"
+#include "templates\string.h"
 
 class ShipLights : public IShipLights
 {

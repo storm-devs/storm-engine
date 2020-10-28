@@ -1,6 +1,6 @@
 project(seacameras)
 
-add_library(seacameras MODULE 
+add_library(${PROJECT_NAME} MODULE
 	Common_Camera.h
 	DeckCamera.cpp
 	DeckCamera.h
@@ -12,4 +12,4 @@ add_library(seacameras MODULE
 	ShipCamera.h
 )
 
-target_include_directories(seacameras PRIVATE ${DirectX_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

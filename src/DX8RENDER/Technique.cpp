@@ -1,5 +1,5 @@
 #include "Technique.h"
-#include "..\common_h\defines.h"
+#include "common_defines.h"
 
 #define SHA_DIR "modules\\Techniques"
 #define SHA_EXT ".sha"
@@ -599,17 +599,17 @@ CTechnique::~CTechnique()
         {
             technique_t *pTech = &pB->pTechniques[j];
             for (k = 0; k < pTech->dwNumPasses; k++)
-                DELETE(pTech->pPasses[k].pPass);
-            DELETE(pTech->pPasses);
+                SE_DELETE(pTech->pPasses[k].pPass);
+            SE_DELETE(pTech->pPasses);
         }
-        DELETE(pB->pParams);
-        DELETE(pB->pBlockName);
-        DELETE(pB->pTechniques);
+        SE_DELETE(pB->pParams);
+        SE_DELETE(pB->pBlockName);
+        SE_DELETE(pB->pTechniques);
     }
     for (i = 0; i < dwNumShaders; i++)
     {
-        DELETE(pShaders[i].pName);
-        DELETE(pShaders[i].pDecl);
+        SE_DELETE(pShaders[i].pName);
+        SE_DELETE(pShaders[i].pDecl);
         if (pShaders[i].dwShaderHandle != INVALID_SHADER_HANDLE)
         {
             if (pShaders[i].dwShaderType == CODE_SVS)
@@ -617,12 +617,12 @@ CTechnique::~CTechnique()
             if (pShaders[i].dwShaderType == CODE_SPS)
                 pRS->DeletePixelShader(pShaders[i].pShader);
         }
-        DELETE(pShaders[i].decl);
+        SE_DELETE(pShaders[i].decl);
     }
-    DELETE(pShaders);
-    DELETE(pBlocks);
-    DELETE(pSavedStates);
-    DELETE(pCurParams);
+    SE_DELETE(pShaders);
+    SE_DELETE(pBlocks);
+    SE_DELETE(pSavedStates);
+    SE_DELETE(pCurParams);
 }
 
 #define END_TEST (dword(pCurrent - pBegin) >= dwSize - 2)
@@ -1346,17 +1346,17 @@ char *CTechnique::Preprocessor(char *pBuffer, dword &dwSize)
         pStr++;
         continue;
     }
-    DELETE(pBuffer);
+    SE_DELETE(pBuffer);
     if (pProgram)
         pProgram[dwProgramSize] = 0x0;
     dwSize = dwProgramSize;
     //	api->Trace(pProgram);
     for (i = 0; i < dwNumDefines; i++)
     {
-        DELETE(pDefines[i].pName);
-        DELETE(pDefines[i].pValue);
+        SE_DELETE(pDefines[i].pName);
+        SE_DELETE(pDefines[i].pValue);
     }
-    DELETE(pDefines);
+    SE_DELETE(pDefines);
 
     return pProgram;
 }
@@ -1398,7 +1398,7 @@ dword CTechnique::ProcessShaderAsm(shader_t *pS, char *pFile, dword dwSize, char
         strcpy(&pBuffer[dwTotalLen], pTemp);
         strcpy(&pBuffer[dwTotalLen + iLen + 1], "\r\n\0");
         dwTotalLen += iLen + 2;
-        DELETE(pTempBuffer);
+        SE_DELETE(pTempBuffer);
         TOTAL_SKIP;
     }
     ID3DXBuffer *CompiledShader = null, *ErrorShader = null;
@@ -1416,8 +1416,8 @@ dword CTechnique::ProcessShaderAsm(shader_t *pS, char *pFile, dword dwSize, char
         api->Trace("ERROR: in compile shader %s\nerror:\n%s", pS->pName, pErrStr);
         RELEASE(CompiledShader);
         RELEASE(ErrorShader);
-        DELETE(pBuffer);
-        DELETE(pErrStr);
+        SE_DELETE(pBuffer);
+        SE_DELETE(pErrStr);
         return 0;
     }
 
@@ -1427,7 +1427,7 @@ dword CTechnique::ProcessShaderAsm(shader_t *pS, char *pFile, dword dwSize, char
         strncpy(pInfoStr, (char *)ErrorShader->GetBufferPointer(), ErrorShader->GetBufferSize());
         pInfoStr[ErrorShader->GetBufferSize()] = 0;
         //		api->Trace("DebugInfo: in compile shader %s\ninfo:\n%s", pS->pName, pInfoStr);
-        DELETE(pInfoStr);
+        SE_DELETE(pInfoStr);
     }
 
     if (dwShaderType == CODE_SVS)
@@ -1441,7 +1441,7 @@ dword CTechnique::ProcessShaderAsm(shader_t *pS, char *pFile, dword dwSize, char
 
     RELEASE(CompiledShader);
     RELEASE(ErrorShader);
-    DELETE(pBuffer);
+    SE_DELETE(pBuffer);
     return 0;
 }
 
@@ -1566,9 +1566,9 @@ dword CTechnique::ProcessBlock(char *pFile, dword dwSize, char **pStr)
 
     // delete parameters
     for (i = 0; i < dwNumParams; i++)
-        DELETE(pParams[i].cName);
+        SE_DELETE(pParams[i].cName);
     dwNumParams = 0;
-    DELETE(pParams);
+    SE_DELETE(pParams);
 
     sCurrentBlockName[0] = 0;
 
@@ -1606,7 +1606,7 @@ void CTechnique::DecodeFiles(char *sub_dir)
 
     InnerDecodeFiles(sub_dir);
 
-    DELETE(pPassStorage);
+    SE_DELETE(pPassStorage);
     RDTSC_E(dwRDTSC);
     api->Trace("Techniques: %d shaders compiled.", dwNumShaders);
     api->Trace("Techniques: %d techniques compiled.", dwNumBlocks);
@@ -1614,7 +1614,7 @@ void CTechnique::DecodeFiles(char *sub_dir)
 
     // some optimize
     for (dword i = 0; i < dwNumBlocks; i++)
-        DELETE(pBlocks[i].pBlockName);
+        SE_DELETE(pBlocks[i].pBlockName);
 }
 
 void CTechnique::InnerDecodeFiles(char *sub_dir)
@@ -1706,7 +1706,7 @@ bool CTechnique::DecodeFile(char *sname)
         SKIP;
     }
 
-    DELETE(pFile);
+    SE_DELETE(pFile);
     return true;
 }
 

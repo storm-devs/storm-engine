@@ -1,10 +1,10 @@
 #ifndef _TOUCH_H_
 #define _TOUCH_H_
 
-#include "..\common_h\dx8render.h"
-#include "..\common_h\island_base.h"
-#include "..\common_h\ship_base.h"
-#include "..\common_h\templates\array.h"
+#include "dx8render.h"
+#include "island_base.h"
+#include "ship_base.h"
+#include "templates\array.h"
 
 #define D3DTLVERTEX_FORMAT (D3DFVF_XYZRHW | D3DFVF_DIFFUSE)
 

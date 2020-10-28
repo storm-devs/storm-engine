@@ -1,7 +1,7 @@
 #include "sdevice.h"
-#include "..\common_h\matrix.h"
 #include "d3dx9math.h"
 #include "gdiplus.h"
+#include "matrix.h"
 #include "stdio.h"
 #include "texture.h"
 #include <DxErr.h>
@@ -574,8 +574,8 @@ DX8RENDER::~DX8RENDER()
     if (fontIniFileName != NULL)
         delete fontIniFileName;
 
-    DELETE(DX8sphereVertex);
-    DELETE(pTechnique);
+    SE_DELETE(DX8sphereVertex);
+    SE_DELETE(pTechnique);
 
     ReleaseDevice();
 
@@ -1474,7 +1474,7 @@ long DX8RENDER::TextureCreate(const char *fname)
         if (TextureLoad(t))
             return t;
         Textures[t].ref--;
-        DELETE(Textures[t].name);
+        SE_DELETE(Textures[t].name);
     }
     return -1;
 }
@@ -2603,7 +2603,7 @@ void DX8RENDER::RunStart()
     // boal del_cheat
     if (api->Controls->GetDebugAsyncKeyState(VK_F11) < 0)
     {
-        DELETE(pTechnique);
+        SE_DELETE(pTechnique);
         pTechnique = NEW CTechnique(this);
         pTechnique->DecodeFiles();
     }

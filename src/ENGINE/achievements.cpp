@@ -1,5 +1,5 @@
 //============================================================================================
-#include "..\..\common_h\achievements.h"
+#include "achievements.h"
 #include "system_log.h"
 
 #define _ACH_ID(id, name)                                                                                              \

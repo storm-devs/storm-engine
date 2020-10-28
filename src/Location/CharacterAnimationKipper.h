@@ -11,8 +11,8 @@
 #ifndef _CharacterAnimationKipper_H_
 #define _CharacterAnimationKipper_H_
 
-#include "..\common_h\animation.h"
-#include "..\common_h\vmodule_api.h"
+#include "animation.h"
+#include "vmodule_api.h"
 
 class VDX8RENDER;
 

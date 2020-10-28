@@ -3,13 +3,13 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "SAILONE.h"
-#include "..\\common_h\defines.h"
-#include "..\common_h\Matrix.h"
-#include "..\common_h\model.h"
-#include "..\common_h\sail_base.h"
-#include "..\common_h\sd2_h\VAI_ObjBase.h"
+#include "..\\common_h\common_defines.h"
+#include "Matrix.h"
+#include "model.h"
 #include "rigging_define.h"
 #include "sail.h"
+#include "sail_base.h"
+#include "sd2_h\VAI_ObjBase.h"
 
 extern long g_iBallOwnerIdx;
 

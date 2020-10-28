@@ -1,10 +1,10 @@
 #ifndef __STRSERVICE_H__
 #define __STRSERVICE_H__
 
-#include "..\..\common_h\vmodule_api.h"
-//#include "..\..\common_h\defines.h"
+#include "vmodule_api.h"
+//#include "defines.h"
 
-#include "..\..\common_h\stringService.h"
+#include "stringService.h"
 
 //-----------SDEVICE-----------
 class STRSERVICE : public VSTRSERVICE

@@ -11,7 +11,7 @@
 #ifndef _WdmCamera_H_
 #define _WdmCamera_H_
 
-#include "..\common_h\dx8render.h"
+#include "dx8render.h"
 
 class WdmCamera
 {

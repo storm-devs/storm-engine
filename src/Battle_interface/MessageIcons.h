@@ -1,7 +1,7 @@
 #ifndef _BI_MESSAGE_ICONS_H_
 #define _BI_MESSAGE_ICONS_H_
 
-#include "defines.h"
+#include "bi_defines.h"
 
 #define MESSAGE_ICONS_COLUMN_QUANTITY 4
 

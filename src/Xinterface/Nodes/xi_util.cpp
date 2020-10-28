@@ -1,7 +1,6 @@
 #include "xi_util.h"
-#include "..\..\common_h\defines.h"
-#include "..\..\common_h\vmodule_api.h"
 #include "..\inode.h"
+#include "vmodule_api.h"
 #include <stdio.h>
 
 CXI_UTILS *CXI_UTILS::pThis = 0;

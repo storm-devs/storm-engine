@@ -1,5 +1,5 @@
 #include "utils.h"
-#include "..\common_h\defines.h"
+#include "bi_defines.h"
 #include "image\imgrender.h"
 
 // extern data
@@ -415,7 +415,7 @@ BIImagesInfo::~BIImagesInfo()
 void BIImagesInfo::Release()
 {
     images.DelAllWithPointers();
-    DELETE(pImgRender);
+    SE_DELETE(pImgRender);
 }
 
 void BIImagesInfo::Init(VDX8RENDER *rs, ATTRIBUTES *pA)

@@ -11,8 +11,8 @@
 #ifndef _WorldMap_H_
 #define _WorldMap_H_
 
-#include "..\common_h\templates\string.h"
-#include "..\common_h\vmodule_api.h"
+#include "templates\string.h"
+#include "vmodule_api.h"
 
 #define WDMAP_MAXOBJECTS 4096
 

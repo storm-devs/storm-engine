@@ -1,4 +1,5 @@
 #include "battle_shipsign.h"
+#include "../msg_control.h"
 #include "..\utils.h"
 #include "battle_shipcommand.h"
 #include "ships_list.h"
@@ -413,7 +414,7 @@ void BIShipIcon::Release()
 {
     SetActive(false); // отключить контрол
 
-    DELETE(m_pCommandList);
+    SE_DELETE(m_pCommandList);
     TEXTURE_RELEASE(m_pRS, m_nBackTextureID);
     TEXTURE_RELEASE(m_pRS, m_nShipTextureID);
     TEXTURE_RELEASE(m_pRS, m_nShipStateTextureID);

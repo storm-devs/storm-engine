@@ -1,11 +1,11 @@
 #ifndef AISHIPTOUCHCONTROLLER_HPP
 #define AISHIPTOUCHCONTROLLER_HPP
 
-#include "..\common_h\character.h"
-#include "..\common_h\dx8render.h"
-#include "..\common_h\templates\array.h"
-#include "..\common_h\templates\string.h"
-#include "..\common_h\vmodule_api.h"
+#include "character.h"
+#include "dx8render.h"
+#include "templates\array.h"
+#include "templates\string.h"
+#include "vmodule_api.h"
 
 class AIShip;
 class AIShipTouchController

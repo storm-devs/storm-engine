@@ -2,15 +2,15 @@
 #define _TSEAGULLS_H_
 
 #include "..\SoundService\VSoundService.h"
-#include "..\common_h\animation.h"
-#include "..\common_h\dx8render.h"
-#include "..\common_h\geometry.h"
-#include "..\common_h\geos.h"
-#include "..\common_h\matrix.h"
-#include "..\common_h\messages.h"
-#include "..\common_h\model.h"
-#include "..\common_h\object.h"
 #include "AnimalsDefines.h"
+#include "animation.h"
+#include "dx8render.h"
+#include "geometry.h"
+#include "geos.h"
+#include "matrix.h"
+#include "messages.h"
+#include "model.h"
+#include "object.h"
 
 ///////////////////////////////////////////////////////////////////
 // DEFINES & TYPES

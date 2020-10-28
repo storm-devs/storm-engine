@@ -6,7 +6,7 @@ find_package(SteamSdk REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(DirectX REQUIRED)
 
-add_executable(engine WIN32 
+add_executable(${PROJECT_NAME} WIN32
 	achievements.cpp
 	C_atom.cpp
 	C_atom.h
@@ -115,18 +115,29 @@ add_executable(engine WIN32
 	token.cpp
 	token.h
 	vbuffer.h
+
+	${Storm_RESOURCE_DIR}/engine/resource.rc
 )
-target_include_directories(engine PRIVATE ${Storm_SOURCE_DIR}/Common_h)
-target_include_directories(engine PRIVATE ${SteamSdk_INCLUDE_DIR})
-target_include_directories(engine PRIVATE ${DirectX_INCLUDE_DIR})
 
-target_compile_definitions(engine PRIVATE _ENGINE_IN_)
+target_include_directories(${PROJECT_NAME}
+	PRIVATE
+	${Storm_RESOURCE_DIR}/engine
+	${SteamSdk_INCLUDE_DIR}
+	${DirectX_INCLUDE_DIR}
+)
 
-target_link_libraries(engine PRIVATE ${SteamSdk_LIBRARY})
-target_link_libraries(engine PRIVATE ZLIB::ZLIB)
-target_link_libraries(engine PRIVATE comctl32.lib)
+target_compile_definitions(${PROJECT_NAME} PRIVATE _ENGINE_IN_)
 
-add_custom_command(TARGET engine POST_BUILD
+target_link_libraries(${PROJECT_NAME}
+	PRIVATE
+	common_h
+
+	${SteamSdk_LIBRARY}
+	ZLIB::ZLIB
+	comctl32.lib
+)
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${SteamSdk_LIBRARY_PATHS}/steam_api.dll"
         "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>"

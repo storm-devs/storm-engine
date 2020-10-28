@@ -8,11 +8,11 @@
 #include <xtl.h>
 #endif
 
-#include "..\..\common_h\achievements.h"
-#include "..\..\common_h\exs.h"
-#include "..\..\common_h\memop.h"
-#include "..\..\common_h\vapi.h"
-//#include "..\..\common_h\input.h"
+#include "achievements.h"
+#include "exs.h"
+#include "memop.h"
+#include "vapi.h"
+//#include "input.h"
 
 //#include "common_h.h"
 #include "c_atom.h"
@@ -364,10 +364,7 @@ class CORE : public VAPI
 
     void *GetScriptVariable(const char *pVariableName, DWORD *pdwVarIndex);
 
-    void SetNetActive(bool bActive);
-
     void _cdecl BTrace(const char *Format, ...);
-    bool IsNetActive() const;
 
     bool __declspec(dllexport) __cdecl LoCheck();
 

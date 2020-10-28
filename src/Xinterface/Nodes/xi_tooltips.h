@@ -2,6 +2,11 @@
 #define _XI_TOOLTIP_H_
 
 #include "..\inode.h"
+#include "..\vxservice.h"
+#include "..\xi_defines.h"
+#include "stringService.h"
+
+class XI_ONETEX_VERTEX;
 
 class CXI_ToolTip
 {

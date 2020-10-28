@@ -1,5 +1,5 @@
 #include "Artifact.h"
-#include "..\common_h\rands.h"
+#include "rands.h"
 
 INTERFACE_FUNCTION
 CREATE_CLASS(Artifact)

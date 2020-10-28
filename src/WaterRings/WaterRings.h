@@ -1,10 +1,10 @@
 #pragma once
 
-#include "..\common_h\collide.h"
-#include "..\common_h\dx8render.h"
-#include "..\common_h\model.h"
-#include "..\common_h\sea_base.h"
-#include "..\common_h\vmodule_api.h"
+#include "collide.h"
+#include "dx8render.h"
+#include "model.h"
+#include "sea_base.h"
+#include "vmodule_api.h"
 //#include "..\geom_lib\geos.h"
 #include "TIVBufferManager.h"
 

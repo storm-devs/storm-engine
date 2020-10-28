@@ -1,8 +1,8 @@
 project(shadow)
 
-add_library(shadow MODULE 
+add_library(${PROJECT_NAME} MODULE
 	shadow.cpp
 	shadow.h
 )
 
-target_include_directories(shadow PRIVATE ${DirectX_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

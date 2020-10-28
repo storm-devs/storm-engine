@@ -2,6 +2,8 @@
 #include "AIFort.h"
 #include "AIShip.h"
 
+#include "..\battle_interface\Events.h"
+
 AIHelper Helper;
 
 VDX8RENDER *AIHelper::pRS = null;
@@ -30,7 +32,7 @@ bool AIHelper::Uninit()
     aCharacters.DelAll();
     aMainCharacters.DelAll();
     dwRelationSize = 0;
-    DELETE(pRelations);
+    SE_DELETE(pRelations);
     return true;
 }
 
@@ -79,7 +81,7 @@ void AIHelper::CalculateRelations()
 {
     dword x, y;
 
-    DELETE(pRelations);
+    SE_DELETE(pRelations);
     dwRelationSize = aCharacters.Size();
     pRelations = NEW dword[SQR(dwRelationSize)];
     for (y = 0; y < dwRelationSize; y++)

@@ -1,8 +1,8 @@
 #include "ifs.h"
 
-#include "..\..\common_h\exs.h"
-#include "..\..\common_h\memop.h"
-#include "..\..\common_h\vmodule_api.h"
+#include "exs.h"
+#include "memop.h"
+#include "vmodule_api.h"
 #include <stdio.h>
 
 #define COMMENT ';'

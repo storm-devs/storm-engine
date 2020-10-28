@@ -10,8 +10,6 @@
 #include "message.h"
 #include "vsystem_api.h"
 
-#include "..\ENGINE\PROGRAM\NET\net_defines.h"
-
 //-------------------------------------------------------------------------------------------------
 // Pop operation (from run stack) for object constructor perform engine code
 // Push and Pop operation for object destructor perform engine code
@@ -47,7 +45,6 @@ class ENTITY
     VGEOMETRY *__pGeoService;
     VDX8RENDER *__pRenderService;
     COLLIDE *__pCollideService;
-    dword dwNetID;
 
   public:
     ATTRIBUTES *AttributesPointer;
@@ -67,7 +64,6 @@ class ENTITY
         __pCollideService = null;
         bServer = false;
         bFirstTestServer = true;
-        dwNetID = DST_INVALID;
     };
     virtual ~ENTITY()
     {
@@ -134,15 +130,6 @@ class ENTITY
     virtual bool IsClient()
     {
         return !IsServer();
-    };
-
-    virtual dword GetNetID()
-    {
-        return dwNetID;
-    };
-    virtual void SetNetID(dword dwNetID)
-    {
-        this->dwNetID = dwNetID;
     };
 
     virtual void LostRender(){};

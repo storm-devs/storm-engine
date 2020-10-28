@@ -1,7 +1,7 @@
 #ifndef _LAYER_H_
 #define _LAYER_H_
 
-#include "..\..\common_h\entity_id.h"
+#include "entity_id.h"
 //#include "common_h.h"
 #include "idwalker.h"
 

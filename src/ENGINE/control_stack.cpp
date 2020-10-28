@@ -1,7 +1,7 @@
 #include "control_stack.h"
-#include "..\..\common_h\exs.h"
-#include "..\..\common_h\memop.h"
+#include "exs.h"
 #include "externs.h"
+#include "memop.h"
 
 CONTROL_STACK::CONTROL_STACK()
 {

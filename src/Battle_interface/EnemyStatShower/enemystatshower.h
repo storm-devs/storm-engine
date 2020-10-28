@@ -1,10 +1,10 @@
 #ifndef _BI_ENEMY_STAT_SHOWER_H_
 #define _BI_ENEMY_STAT_SHOWER_H_
 
-#include "..\..\common_h\animation.h"
-#include "..\..\common_h\defines.h"
-#include "..\..\common_h\dx8render.h"
-#include "..\..\common_h\templates\string.h"
+#include "animation.h"
+#include "common_defines.h"
+#include "dx8render.h"
+#include "templates\string.h"
 
 class MODEL;
 class NODE;

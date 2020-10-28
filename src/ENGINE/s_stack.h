@@ -1,8 +1,8 @@
 #ifndef _S_STACK_H_
 #define _S_STACK_H_
 
-#include "..\..\common_h\v_s_stack.h"
 #include "data.h"
+#include "v_s_stack.h"
 
 #define STACK_BUFFER_BLOCK_SIZE 512
 #define STACK_BUFFER_LIMIT 65535

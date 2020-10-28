@@ -1,12 +1,12 @@
 #ifndef _PARTICLE_DATA_SOURCE_H_
 #define _PARTICLE_DATA_SOURCE_H_
 
-#include "..\..\..\common_h\exs.h"
-#include "..\..\..\common_h\templates.h"
 #include "..\..\icommon\names.h"
 #include "..\..\icommon\types.h"
 #include "..\datadesc\data_desc.h"
+#include "exs.h"
 #include "fieldlist.h"
+#include "templates.h"
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>

@@ -1,7 +1,7 @@
 #include "AIShip.h"
-#include "..\common_h\ship_base.h"
 #include "AIFort.h"
 #include "AIGroup.h"
+#include "ship_base.h"
 
 array<AIShip *> AIShip::AIShips(_FL_, 8);
 array<AIShip::can_fire_t> AIShip::aShipFire(_FL_, 128);
@@ -29,13 +29,13 @@ AIShip::~AIShip()
 {
     DELETE_ENTITY(eidShip);
 
-    DELETE(pMoveController);
-    DELETE(pTaskController);
-    DELETE(pCannonController);
-    DELETE(pCameraController);
-    DELETE(pTouchController);
-    DELETE(pRotateController);
-    DELETE(pSpeedController);
+    SE_DELETE(pMoveController);
+    SE_DELETE(pTaskController);
+    SE_DELETE(pCannonController);
+    SE_DELETE(pCameraController);
+    SE_DELETE(pTouchController);
+    SE_DELETE(pRotateController);
+    SE_DELETE(pSpeedController);
 
     aShipFire.DelAll();
 }
@@ -102,7 +102,7 @@ void AIShip::Execute(float fDeltaTime)
     else
     {
         if (GetCameraController())
-            DELETE(pCameraController);
+            SE_DELETE(pCameraController);
     }
 
     if (GetCameraController())

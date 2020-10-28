@@ -1,8 +1,8 @@
 #include "DIALOG.h"
-#include "..\common_h\defines.h"
-#include "..\common_h\geometry.h"
-#include "..\common_h\messages.h"
-#include "..\common_h\model.h"
+#include "common_defines.h"
+#include "geometry.h"
+#include "messages.h"
+#include "model.h"
 
 #include "..\SoundService\VSoundService.h"
 
@@ -876,7 +876,7 @@ bool DIALOG::Init()
     INIFILE *ini = api->fio->OpenIniFile("Resource\\Ini\\dialog.ini");
     m_DlgText.Init(RenderService, textViewport, ini);
     m_DlgLinks.Init(RenderService, textViewport, ini);
-    DELETE(ini);
+    SE_DELETE(ini);
 
     CreateButtons();
     FillButtons();

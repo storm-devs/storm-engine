@@ -1,7 +1,7 @@
 #include "InterfaceManager.h"
-#include "..\..\engine\program\BIManager\messages.h"
 #include "..\image\image.h"
 #include "..\image\imgrender.h"
+#include "..\messages.h"
 #include "..\utils.h"
 #include "InterfaceNode\AllNodes.h"
 #include "MousePointer.h"
@@ -19,10 +19,10 @@ BI_InterfaceManager::BI_InterfaceManager() : m_aNodes(_FL)
 
 BI_InterfaceManager::~BI_InterfaceManager()
 {
-    DELETE(m_pInterfaceSheet);
+    SE_DELETE(m_pInterfaceSheet);
     m_aNodes.DelAllWithPointers();
-    DELETE(m_pMouse);
-    DELETE(m_pImgRender);
+    SE_DELETE(m_pMouse);
+    SE_DELETE(m_pImgRender);
 }
 
 bool BI_InterfaceManager::Init()
@@ -76,7 +76,7 @@ dword _cdecl BI_InterfaceManager::ProcessMessage(MESSAGE &message)
     switch (message.Long())
     {
     case MSG_BIMANAGER_DELETE_SHEET:
-        DELETE(m_pInterfaceSheet);
+        SE_DELETE(m_pInterfaceSheet);
         break;
 
     case MSG_BIMANAGER_LOAD_SHEET:
@@ -131,7 +131,7 @@ void BI_InterfaceManager::DeleteNode(BI_ManagerNodeBase *pNod)
 long BI_InterfaceManager::MsgLoadSheet(MESSAGE &message)
 {
     // удаляем старый интерфейс
-    DELETE(m_pInterfaceSheet);
+    SE_DELETE(m_pInterfaceSheet);
 
     char param[512];
     message.String(sizeof(param), param);
@@ -174,7 +174,7 @@ long BI_InterfaceManager::MsgDeleteNode(MESSAGE &message)
         return 0;
     if (m_aNodes.Find(pNod) >= 0)
     {
-        DELETE(pNod);
+        SE_DELETE(pNod);
     }
     return 0;
 }

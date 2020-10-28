@@ -1,6 +1,6 @@
-#include "..\common_h\CVECTOR.h"
-#include "..\common_h\exs.h"
-#include "..\common_h\messages.h"
+#include "CVECTOR.h"
+#include "exs.h"
+#include "messages.h"
 #include <stdio.h>
 #include <stdlib.h>
 //#include "..\SoundService\VSoundService.h"

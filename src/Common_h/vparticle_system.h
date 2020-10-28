@@ -2,7 +2,7 @@
 #define _VPARTICLE_SYSTEM_H_
 
 //#include <windows.h>
-#include "..\common_h\service.h"
+#include "service.h"
 
 class VPARTICLE_SYSTEM
 {

@@ -1,5 +1,5 @@
 #include "xi_glowCursor.h"
-#include "..\..\common_h\matrix.h"
+#include "matrix.h"
 
 CXI_GLOWCURSOR::CXI_GLOWCURSOR()
 {

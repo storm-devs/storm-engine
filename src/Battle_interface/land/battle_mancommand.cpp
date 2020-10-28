@@ -1,4 +1,5 @@
 #include "battle_mancommand.h"
+#include "../msg_control.h"
 
 BIManCommandList::BIManCommandList(ENTITY_ID &eid, ATTRIBUTES *pA, VDX8RENDER *rs) : BICommandList(eid, pA, rs)
 {

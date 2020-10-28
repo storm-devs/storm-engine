@@ -1,6 +1,6 @@
 project(lighter)
 
-add_library(lighter MODULE 
+add_library(${PROJECT_NAME} MODULE
 	LGeometry.cpp
 	LGeometry.h
 	LObject.cpp
@@ -19,4 +19,4 @@ add_library(lighter MODULE
 	Window.h
 )
 
-target_include_directories(lighter PRIVATE ${DirectX_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

@@ -1,9 +1,9 @@
 #ifndef _CONTROL_KEYBUFFER_H_
 #define _CONTROL_KEYBUFFER_H_
 
-#include "..\common_h\controls.h"
-#include "..\common_h\templates\string.h"
-#include "..\common_h\vmodule_api.h"
+#include "controls.h"
+#include "templates\string.h"
+#include "vmodule_api.h"
 
 struct ControlKeyBuffer
 {

@@ -1,7 +1,7 @@
 #ifndef BI_IMAGE_H
 #define BI_IMAGE_H
 
-#include "defines.h"
+#include "bi_image_defines.h"
 
 class BIImageMaterial;
 

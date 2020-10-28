@@ -1,5 +1,5 @@
 #include "TButterfly.h"
-#include "..\common_h\matrix.h"
+#include "matrix.h"
 
 #define PI 3.14159265358979323846f
 #define PIm2 (PI * 2.0f)

@@ -1,14 +1,15 @@
 #include "spyglass.h"
-#include "..\..\engine\program\events.h"
-#include "..\..\engine\program\messages.h"
+#include "../msg_control.h"
+#include "..\events.h"
 #include "..\image\image.h"
 #include "..\image\imgrender.h"
 #include "..\sea\ships_list.h"
 #include "..\utils.h"
+#include "messages.h"
 
 void ISPYGLASS::ImageParam::Release()
 {
-    DELETE(pImage);
+    SE_DELETE(pImage);
 }
 
 void ISPYGLASS::ImageParam::LoadFromAttr(BIImageRender *pImgRender, ATTRIBUTES *pA, const char *pcDefName,
@@ -38,7 +39,7 @@ void ISPYGLASS::ImageParam::ChangeIcon(BIImageRender *pImgRender, const char *pc
     else
     {
         long nPrior = pImage ? pImage->GetPrioritet() : ImagePrioritet_DefaultValue;
-        DELETE(pImage);
+        SE_DELETE(pImage);
         sTextureName = pcTextureName;
         pImage =
             (BIImage *)pImgRender->CreateImage(BIType_square, sTextureName.GetBuffer(), dwColor, rUV, rPos, nPrior);
@@ -331,7 +332,7 @@ void ISPYGLASS::Release()
     m_ImgCaptainBoarding.Release();
     m_TextCaptainBoarding.Release();
 
-    DELETE(m_pImgRender);
+    SE_DELETE(m_pImgRender);
 }
 
 ATTRIBUTES *ISPYGLASS::GetAttr(const char *pcAttrName)

@@ -38,9 +38,9 @@ class CSaveLoad
             if (pV)
                 pV->GetAClass()->SetAttribute("save", pFFSave);
 
-            DELETE(pFFSave);
+            SE_DELETE(pFFSave);
         }
-        DELETE(pSaveBuffer);
+        SE_DELETE(pSaveBuffer);
     }
 
     void CreateWrite()

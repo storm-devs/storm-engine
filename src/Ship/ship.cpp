@@ -1,8 +1,8 @@
 #include "ship.h"
-#include "..\engine\program\sea_ai\Script_Defines.h"
-#include "..\engine\program\sound.h"
+#include "Script_Defines.h"
 #include "ShipLights.h"
 #include "Track.h"
+#include "sound.h"
 
 INTERFACE_FUNCTION
 CREATE_CLASS(SHIP)
@@ -78,8 +78,8 @@ SHIP::~SHIP()
     api->Send_Message(vantl_id, "li", MSG_VANT_DEL_GROUP, GetModelEID());
     api->Send_Message(vantz_id, "li", MSG_VANT_DEL_GROUP, GetModelEID());
     api->DeleteEntity(blots_id);
-    DELETE(pMasts);
-    DELETE(pHulls);
+    SE_DELETE(pMasts);
+    SE_DELETE(pHulls);
 
     ENTITY_ID eidTmp;
     if (api->FindClass(&eidTmp, "ShipTracks", 0))
@@ -795,8 +795,8 @@ void SHIP::Execute(DWORD DeltaTime)
                     MastFall(pM);
                 }
         }
-        DELETE(pVWShip);
-        DELETE(pVWIsland);
+        SE_DELETE(pVWShip);
+        SE_DELETE(pVWIsland);
     }
 
     // key states

@@ -1,9 +1,10 @@
 #include "battle_navigator.h"
-#include "..\..\common_h\Island_Base.h"
-#include "..\..\common_h\Weather_base.h"
-#include "..\..\common_h\sd2_h\VAI_ObjBase.h"
-#include "..\..\common_h\ship_base.h"
+#include "../msg_control.h"
 #include "..\utils.h"
+#include "Island_Base.h"
+#include "Weather_base.h"
+#include "sd2_h\VAI_ObjBase.h"
+#include "ship_base.h"
 #include "ships_list.h"
 #include <stdio.h>
 
@@ -1481,13 +1482,6 @@ void BATTLE_NAVIGATOR::UpdateWindParam()
         ENTITY_ID ei;
         if (api->FindClass(&ei, "weather", 0))
             m_wb = (WEATHER_BASE *)api->GetEntityPointer(&ei);
-        if (api->IsNetActive() && !m_wb && m_pOwnerEI)
-        {
-            VDATA *pSVWeather = (VDATA *)api->GetScriptVariable((m_pOwnerEI->IsServer()) ? "NSWeather" : "NCWeather");
-            Assert(pSVWeather);
-            m_pAWeather = pSVWeather->GetAClass();
-            Assert(m_pAWeather);
-        }
     }
 
     if (m_wb)

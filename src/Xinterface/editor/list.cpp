@@ -1,7 +1,7 @@
 #include "list.h"
 #include "..\nodes\xi_image.h"
-#include "defines.h"
 #include "font.h"
+#include "xi_editor_defines.h"
 
 GIEditorList::GIEditorList(GIEditor *pEditor) : m_aStrings(_FL)
 {
@@ -45,10 +45,10 @@ GIEditorList::~GIEditorList()
 
 void GIEditorList::Release()
 {
-    DELETE(m_pChangeSelected);
-    DELETE(m_pBackImage);
-    DELETE(m_pSelectImage);
-    DELETE(m_pFont);
+    SE_DELETE(m_pChangeSelected);
+    SE_DELETE(m_pBackImage);
+    SE_DELETE(m_pSelectImage);
+    SE_DELETE(m_pFont);
 }
 
 void GIEditorList::Create()

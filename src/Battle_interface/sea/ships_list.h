@@ -1,8 +1,8 @@
 #ifndef __SHIPS_LIST_
 #define __SHIPS_LIST_
 
-#include "..\..\common_h\sd2_h\VAI_ObjBase.h"
-#include "..\defines.h"
+#include "..\bi_defines.h"
+#include "sd2_h\VAI_ObjBase.h"
 
 class SHIP_DESCRIBE_LIST
 {

@@ -1,5 +1,5 @@
-#include "..\..\common_h\exs.h"
 #include "core.h"
+#include "exs.h"
 #include "gdi_display.h"
 #include "s_debug.h"
 #include "system_log.h"

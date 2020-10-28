@@ -1,6 +1,6 @@
 #include "SHARKS_PS.h"
-#include "..\common_h\object.h"
-#include "..\common_h\rands.h"
+#include "object.h"
+#include "rands.h"
 
 SHARKS_PS::SHARKS_PS()
 {

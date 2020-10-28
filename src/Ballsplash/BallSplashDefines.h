@@ -1,7 +1,7 @@
 #ifndef _BALLSPLASHDEFINES_
 #define _BALLSPLASHDEFINES_
 
-#include "..\common_h\rands.h"
+#include "rands.h"
 #include <stdlib.h>
 
 #define BALLSPLASH_TRACE_INFORMATION

@@ -1,8 +1,8 @@
 #include "SEA_OPERATOR.h"
 
-#include "..\common_h\defines.h"
-#include "..\common_h\exs.h"
-#include "..\common_h\rands.h"
+#include "common_defines.h"
+#include "exs.h"
+#include "rands.h"
 #include <stdio.h>
 
 INTERFACE_FUNCTION

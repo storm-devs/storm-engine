@@ -1,7 +1,7 @@
 #include "inode.h"
 #include <stdarg.h>
 
-#include "..\\engine\\program\\interface\\messages.h"
+#include "xi_messages.h"
 
 CINODE::CINODE()
 {
@@ -31,9 +31,9 @@ CINODE::CINODE()
 
 CINODE::~CINODE()
 {
-    DELETE(m_strHelpTextureFile);
+    SE_DELETE(m_strHelpTextureFile);
 
-    DELETE(m_nodeName);
+    SE_DELETE(m_nodeName);
 
     if (m_list)
     {
@@ -43,8 +43,8 @@ CINODE::~CINODE()
 
     for (int i = 0; i < COMMAND_QUANTITY; i++)
     {
-        DELETE(m_pCommands[i].sRetControl);
-        DELETE(m_pCommands[i].sEventName);
+        SE_DELETE(m_pCommands[i].sRetControl);
+        SE_DELETE(m_pCommands[i].sEventName);
 
         COMMAND_REDIRECT *pContrl = m_pCommands[i].pNextControl;
         while (pContrl != null)
@@ -55,7 +55,7 @@ CINODE::~CINODE()
         }
         m_pCommands[i].pNextControl = 0;
     }
-    DELETE(m_pToolTip);
+    SE_DELETE(m_pToolTip);
 }
 
 void CINODE::FrameProcess(dword DeltaTime)

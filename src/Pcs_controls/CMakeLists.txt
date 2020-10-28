@@ -1,6 +1,6 @@
 project(pcscontrols)
 
-add_library(pcscontrols MODULE 
+add_library(${PROJECT_NAME} MODULE
 	ControlTree.cpp
 	ControlTree.h
 	KeyBuffer.cpp
@@ -9,4 +9,4 @@ add_library(pcscontrols MODULE
 	pcs_controls.h
 )
 
-target_include_directories(pcscontrols PRIVATE ${DirectX_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

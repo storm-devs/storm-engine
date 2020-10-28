@@ -8,8 +8,8 @@ Comments:
 dynamic shadow cpp file
 ******************************************************************************/
 #include "SHADOW.h"
-#include "..\common_h\defines.h"
-#include "..\common_h\model.h"
+#include "common_defines.h"
+#include "model.h"
 
 static unsigned long HEAD_DENSITY = 0xFF606060;
 static unsigned long DENSITY = 0xFF606040;

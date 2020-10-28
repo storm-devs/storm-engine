@@ -8,9 +8,9 @@
 #ifndef PARTICLES_MANAGER_IMPLEMENTATION
 #define PARTICLES_MANAGER_IMPLEMENTATION
 
-#include "..\..\common_h\exs.h"
-#include "..\..\common_h\particles\iparticlemanager.h"
-#include "..\..\common_h\templates.h"
+#include "exs.h"
+#include "particles\iparticlemanager.h"
+#include "templates.h"
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>

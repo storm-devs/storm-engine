@@ -1,8 +1,8 @@
 project(touch)
 
-add_library(touch MODULE 
+add_library(${PROJECT_NAME} MODULE
 	touch.cpp
 	touch.h
 )
 
-target_include_directories(touch PRIVATE ${DirectX_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

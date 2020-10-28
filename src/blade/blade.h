@@ -8,11 +8,11 @@ model binded to an animated locator
 ******************************************************************************/
 #pragma once
 
-#include "..\common_h\collide.h"
-#include "..\common_h\dx8render.h"
-#include "..\common_h\geos.h"
-#include "..\common_h\model.h"
-#include "..\common_h\vmodule_api.h"
+#include "collide.h"
+#include "dx8render.h"
+#include "geos.h"
+#include "model.h"
+#include "vmodule_api.h"
 
 #define BLADE_INFO_QUANTITY 2
 #define ITEMS_INFO_QUANTITY 10

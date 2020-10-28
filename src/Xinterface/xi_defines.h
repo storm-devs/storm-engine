@@ -3,9 +3,9 @@
 
 #include "..\\common_h\\cvector.h"
 #include "..\\common_h\\stringService.h"
-#include "..\\engine\\program\\interface\\messages.h"
 #include "QuestFileReader\\QuestFileReader.h"
 #include "vxservice.h"
+#include "xi_messages.h"
 
 #define PI 3.14159265358979323846f
 

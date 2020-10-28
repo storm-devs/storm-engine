@@ -1,6 +1,6 @@
 project(waterrings)
 
-add_library(waterrings MODULE 
+add_library(${PROJECT_NAME} MODULE
 	TIVBufferManager.cpp
 	TIVBufferManager.h
 	WaterRings.cpp
@@ -9,4 +9,4 @@ add_library(waterrings MODULE
 	${Storm_SOURCE_DIR}/Common_h/rands.cpp
 )
 
-target_include_directories(waterrings PRIVATE ${DirectX_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

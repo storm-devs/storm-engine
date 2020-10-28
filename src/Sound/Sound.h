@@ -1,11 +1,11 @@
 #ifndef _SOUND_H_
 #define _SOUND_H_
 
-#include "..\common_h\dx8render.h"
-#include "..\common_h\entity.h"
-#include "..\common_h\messages.h"
-#include "..\common_h\object.h"
-#include "..\common_h\vmodule_api.h"
+#include "dx8render.h"
+#include "entity.h"
+#include "messages.h"
+#include "object.h"
+#include "vmodule_api.h"
 
 ///////////////////////////////////////////////////////////////////
 // DEFINES & TYPES

@@ -8,7 +8,7 @@
 //
 //============================================================================================
 
-#include "..\common_h\messages.h"
+#include "messages.h"
 
 #include "WorldMap.h"
 

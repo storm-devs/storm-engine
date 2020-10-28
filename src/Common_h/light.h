@@ -1,7 +1,7 @@
 #ifndef __LIGHT_H__
 #define __LIGHT_H__
 
-#include "..\common_h\vmodule_api.h"
+#include "vmodule_api.h"
 
 class LIGHTSRC
 {

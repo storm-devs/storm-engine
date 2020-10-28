@@ -14,8 +14,8 @@
 #include "Location.h"
 
 #include "..\SoundService\VSoundService.h"
-#include "..\common_h\geometry.h"
-#include "..\common_h\sea_base.h"
+#include "geometry.h"
+#include "sea_base.h"
 
 //============================================================================================
 

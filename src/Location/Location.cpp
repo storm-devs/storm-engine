@@ -13,8 +13,8 @@
 #include "Grass.h"
 #include "Lights.h"
 
-#include "..\common_h\cvector4.h"
-#include "..\common_h\model.h"
+#include "cvector4.h"
+#include "model.h"
 
 float fCausticScale, fCausticDelta, fFogDensity, fCausticDistance;
 CVECTOR4 v4CausticColor;

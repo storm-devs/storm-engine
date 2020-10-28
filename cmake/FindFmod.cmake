@@ -8,10 +8,7 @@
 
 set(Fmod_FOUND false)
 
-if(WIN32) # The only platform it makes sense to check for Fmod SDK
-
-  # We start with Microsoft Fmod SDK (August 2008) 9.24.1400
-  # Example of path is C:\apps_x86\Microsoft Fmod SDK (August 2008)\Include
+if(WIN32)
   find_path(Fmod_INCLUDE_DIR fmod.h
     "${Storm_EXTERN_DIR}/fmod/api/inc"
     )

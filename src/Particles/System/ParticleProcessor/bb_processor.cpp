@@ -1,13 +1,13 @@
 #include "bb_processor.h"
-#include "..\..\..\common_h\dx8render.h"
-#include "..\..\..\common_h\exs.h"
-#include "..\..\..\common_h\math3d.h"
 #include "..\..\icommon\IEmitter.h"
 #include "..\..\icommon\names.h"
 #include "..\datasource\datacolor.h"
 #include "..\datasource\datagraph.h"
 #include "..\datasource\datauv.h"
 #include "..\particlesystem\particlesystem.h"
+#include "dx8render.h"
+#include "exs.h"
+#include "math3d.h"
 #include "physic.h"
 
 //Сколько всего может быть плашек

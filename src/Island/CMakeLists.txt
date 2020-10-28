@@ -1,6 +1,6 @@
 project(island)
 
-add_library(island MODULE 
+add_library(${PROJECT_NAME} MODULE
 	Foam.cpp
 	Foam.h
 	ISLAND.cpp
@@ -9,4 +9,4 @@ add_library(island MODULE
 	ZapSuperGenerator.cpp
 )
 
-target_include_directories(island PRIVATE ${DirectX_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

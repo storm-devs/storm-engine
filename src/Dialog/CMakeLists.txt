@@ -1,8 +1,8 @@
 project(dialog)
 
-add_library(dialog MODULE 
+add_library(${PROJECT_NAME} MODULE
 	dialog.cpp
 	dialog.h
 )
 
-target_include_directories(dialog PRIVATE ${DirectX_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

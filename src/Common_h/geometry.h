@@ -1,8 +1,8 @@
 #ifndef __GEOMETRY_H__
 #define __GEOMETRY_H__
 
-#include "..\common_h\vmodule_api.h"
 #include "geos.h"
+#include "vmodule_api.h"
 
 class ANIMATION
 {

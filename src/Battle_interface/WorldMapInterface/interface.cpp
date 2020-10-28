@@ -1,5 +1,5 @@
 #include "interface.h"
-#include "..\..\engine\program\battle_interface\msg_control.h"
+#include "../msg_control.h"
 #include "shipcommand.h"
 #include "shipsign.h"
 
@@ -17,8 +17,8 @@ WM_INTERFACE::WM_INTERFACE()
 
 WM_INTERFACE::~WM_INTERFACE()
 {
-    DELETE(m_pShipIcon);
-    DELETE(m_pCommandList);
+    SE_DELETE(m_pShipIcon);
+    SE_DELETE(m_pCommandList);
 }
 
 bool WM_INTERFACE::Init()

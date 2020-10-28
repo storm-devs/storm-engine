@@ -1,8 +1,8 @@
 #ifndef VAI_BASE_HPP
 #define VAI_BASE_HPP
 
+#include "..\common_defines.h"
 #include "..\cvector.h"
-#include "..\defines.h"
 #include "..\matrix.h"
 #include "..\model.h"
 #include "..\vmodule_api.h"

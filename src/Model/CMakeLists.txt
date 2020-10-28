@@ -1,9 +1,9 @@
 project(model)
 
-add_library(model MODULE 
+add_library(${PROJECT_NAME} MODULE
 	model.cpp
 	modelr.h
 	node.cpp
 )
 
-target_include_directories(model PRIVATE ${DirectX_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

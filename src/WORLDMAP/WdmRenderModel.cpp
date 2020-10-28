@@ -8,7 +8,7 @@
 //
 //============================================================================================
 
-#include "..\common_h\geometry.h"
+#include "geometry.h"
 
 #include "WdmRenderModel.h"
 

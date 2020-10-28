@@ -19,7 +19,7 @@ void LIGHTNING::Release()
     pRS->TextureRelease(iLightningTexture);
     pRS->TextureRelease(iFlashTexture);
 
-    DELETE(pVWSunTrace);
+    SE_DELETE(pVWSunTrace);
 }
 
 bool LIGHTNING::Init()

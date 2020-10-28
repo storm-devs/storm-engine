@@ -3,7 +3,7 @@
 #ifndef _MEMORY_FILE_
 #define _MEMORY_FILE_
 
-#include "..\..\common_h\d_types.h"
+#include "d_types.h"
 
 #define VFSEEK_SET (0x00000000)
 #define VFSEEK_CURRENT (0x00000001)

@@ -112,9 +112,9 @@ void BITimer::SetBeginData()
 
 void BITimer::Release()
 {
-    DELETE(m_pBackImage);
-    DELETE(m_pForeImage);
-    DELETE(m_pImgRndr);
+    SE_DELETE(m_pBackImage);
+    SE_DELETE(m_pForeImage);
+    SE_DELETE(m_pImgRndr);
 }
 
 void BITimer::OpenTimer(float fTime, const char *pcEventName)

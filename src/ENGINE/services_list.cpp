@@ -1,5 +1,5 @@
 #include "services_list.h"
-#include "..\..\common_h\exs.h"
+#include "exs.h"
 
 SERVICES_LIST::SERVICES_LIST()
 {

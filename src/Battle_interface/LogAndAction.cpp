@@ -1,6 +1,6 @@
 #include "LogAndAction.h"
-#include "..\common_h\matrix.h"
-#include "..\engine\program\battle_interface\log_msg.h"
+#include "log_msg.h"
+#include "matrix.h"
 #include <stdio.h>
 
 static ENTITY_ID g_ILogAndActions;

@@ -2,14 +2,14 @@
 #define _TSINKSPLASH_H_
 
 #include "..\SoundService\VSoundService.h"
-#include "..\common_h\CVECTOR.h"
-#include "..\common_h\dx8render.h"
-#include "..\common_h\exs.h"
-#include "..\common_h\geos.h"
-#include "..\common_h\matrix.h"
-#include "..\common_h\messages.h"
-#include "..\common_h\model.h"
-#include "..\common_h\sea_base.h"
+#include "CVECTOR.h"
+#include "dx8render.h"
+#include "exs.h"
+#include "geos.h"
+#include "matrix.h"
+#include "messages.h"
+#include "model.h"
+#include "sea_base.h"
 #include "seps.h"
 
 ///////////////////////////////////////////////////////////////////

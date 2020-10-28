@@ -1,11 +1,11 @@
 #include "core.h"
-#include "..\..\common_h\memop.h"
-#include "..\..\common_h\vmodule_api.h"
 #include "common_h.h"
+#include "memop.h"
 #include "messages.h"
 #include "vbuffer.h"
+#include "vmodule_api.h"
 
-#include "..\..\common_h\dx8render.h"
+#include "dx8render.h"
 
 #include "steam_api.h"
 
@@ -18,7 +18,6 @@
 //#define ENGINE_INI_FILE_NAME			"engine.ini"
 extern char ENGINE_INI_FILE_NAME[256];
 extern bool bDebugWindow, bAcceleration;
-extern bool bNetActive;
 extern bool bSteam;
 
 #define RDTSCB(x)                                                                                                      \
@@ -72,7 +71,6 @@ CORE::CORE()
     Memory_Leak_flag = false;
     Controls = 0;
     fTimeScale = 1.0f;
-    bNetActive = false;
     nSplitScreenshotGrid = 4;
     //#ifdef isSteam
     g_SteamAchievements = NULL;
@@ -294,17 +292,14 @@ bool CORE::Run()
             pVDay->Set(long(st.wDay));
     }
 
-    if (!bNetActive)
-    {
 #ifndef _XBOX
-        if (bAcceleration && Controls && Controls->GetDebugAsyncKeyState('R') < 0)
-            Timer.Delta_Time *= 10;
-        if (bAcceleration && Controls && Controls->GetDebugAsyncKeyState('Y') < 0)
-            Timer.Delta_Time = (DWORD)(Timer.Delta_Time * 0.2f);
+    if (bAcceleration && Controls && Controls->GetDebugAsyncKeyState('R') < 0)
+        Timer.Delta_Time *= 10;
+    if (bAcceleration && Controls && Controls->GetDebugAsyncKeyState('Y') < 0)
+        Timer.Delta_Time = (DWORD)(Timer.Delta_Time * 0.2f);
 #endif
-        Timer.Delta_Time = (DWORD)(Timer.Delta_Time * fTimeScale);
-        Timer.fDeltaTime *= fTimeScale;
-    }
+    Timer.Delta_Time = (DWORD)(Timer.Delta_Time * fTimeScale);
+    Timer.fDeltaTime *= fTimeScale;
 
     VDATA *pVData = (VDATA *)GetScriptVariable("fHighPrecisionDeltaTime", null);
     if (pVData)
@@ -3556,16 +3551,6 @@ void CORE::ReleaseThread()
 {
     WaitForSingleObject(MyThread.Handle, 0);
     CloseHandle(MyThread.Handle);
-}
-
-void CORE::SetNetActive(bool bActive)
-{
-    bNetActive = bActive;
-}
-
-bool CORE::IsNetActive() const
-{
-    return bNetActive;
 }
 
 bool CORE::isSteamEnabled()

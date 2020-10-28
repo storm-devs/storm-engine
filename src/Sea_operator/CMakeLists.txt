@@ -1,6 +1,6 @@
 project(seaoperator)
 
-add_library(seaoperator MODULE 
+add_library(${PROJECT_NAME} MODULE
 	SEA_OPERATOR.cpp
 	SEA_OPERATOR.h
 	TFIFOBuffer.h
@@ -8,4 +8,4 @@ add_library(seaoperator MODULE
 	${Storm_SOURCE_DIR}/Common_h/rands.cpp
 )
 
-target_include_directories(seaoperator PRIVATE ${DirectX_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

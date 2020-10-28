@@ -11,8 +11,8 @@
 #ifndef _PtcData_H_
 #define _PtcData_H_
 
-#include "..\common_h\vmodule_api.h"
 #include "ptc.h"
+#include "vmodule_api.h"
 
 #define PTCDATA_MAXSTEPS 32
 

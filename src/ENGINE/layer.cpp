@@ -1,6 +1,6 @@
 #include "layer.h"
-#include "..\..\common_h\exs.h"
-#include "..\..\common_h\memop.h"
+#include "exs.h"
+#include "memop.h"
 
 LAYER::LAYER(char *name, bool ordered, bool system, dword system_flags)
 {

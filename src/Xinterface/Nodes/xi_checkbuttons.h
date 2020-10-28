@@ -13,7 +13,7 @@ struct ButtonDescribe
     }
     ~ButtonDescribe()
     {
-        DELETE(pImg);
+        SE_DELETE(pImg);
     }
 
     struct StrDescribe

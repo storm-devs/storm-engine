@@ -1,10 +1,10 @@
 project(locator)
 
-add_library(locator MODULE 
+add_library(${PROJECT_NAME} MODULE
 	blast.cpp
 	blast.h
 	locator.cpp
 	locator.h
 )
 
-target_include_directories(locator PRIVATE ${DirectX_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

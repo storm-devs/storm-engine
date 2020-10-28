@@ -1,7 +1,6 @@
 #ifndef WEATHER_HPP
 #define WEATHER_HPP
 
-#include "..\common_h\Weather_Base.h"
 #include "Astronomy.h"
 #include "Lightning.h"
 #include "Rain.h"
@@ -9,6 +8,7 @@
 #include "SunGlow.h"
 #include "Typedef.h"
 #include "WaterFlare.h"
+#include "Weather_Base.h"
 #include <stdio.h>
 
 class WEATHER : public WEATHER_BASE

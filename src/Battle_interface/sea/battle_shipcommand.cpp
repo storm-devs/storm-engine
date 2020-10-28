@@ -1,4 +1,5 @@
 #include "battle_shipcommand.h"
+#include "../msg_control.h"
 #include "island_descr.h"
 #include "ships_list.h"
 

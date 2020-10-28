@@ -1,5 +1,6 @@
 #include "battle_command.h"
 #include "image\imgrender.h"
+#include "msg_control.h"
 #include "sea\ships_list.h"
 #include "utils.h"
 
@@ -379,7 +380,7 @@ void BICommandList::AddAdditiveToIconList(long nTextureNum, long nPictureNum, fl
 
 void BICommandList::Release()
 {
-    DELETE(m_pImgRender);
+    SE_DELETE(m_pImgRender);
     FONT_RELEASE(m_pRS, m_NoteFontID);
 }
 

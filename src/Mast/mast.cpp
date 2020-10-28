@@ -1,9 +1,9 @@
 #include "mast.h"
-#include "..\common_h\Island_Base.h"
-#include "..\common_h\geos.h"
-#include "..\common_h\mast_msg.h"
-#include "..\common_h\sail_msg.h"
-#include "..\common_h\ship_base.h"
+#include "Island_Base.h"
+#include "geos.h"
+#include "mast_msg.h"
+#include "sail_msg.h"
+#include "ship_base.h"
 #include <stdio.h>
 
 #define DELTA_TIME(x) ((x)*0.001f)

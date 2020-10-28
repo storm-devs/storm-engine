@@ -1,6 +1,6 @@
 #include "teleport.h"
 #include "..\PCS_CONTROLS\pcs_controls.h"
-#include "..\common_h\defines.h"
+#include "common_defines.h"
 
 #define DELETE_PTR(x)                                                                                                  \
     if (x)                                                                                                             \

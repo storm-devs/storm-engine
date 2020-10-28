@@ -1,12 +1,10 @@
 project(sea)
 
-add_library(sea MODULE 
+add_library(${PROJECT_NAME} MODULE
 	EnvMap.cpp
 	SEA.cpp
 	SEA.h
 	SSE.h
 )
 
-target_include_directories(sea PRIVATE ${DirectX_INCLUDE_DIR})
-
-target_link_libraries(sea PRIVATE ${DirectX_D3DX9_LIBRARY})
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

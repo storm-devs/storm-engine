@@ -2,8 +2,8 @@
 #define _TDYNAMICOBJECT_H_
 
 //#include <windows.h>
-#include "..\common_h\cvector.h"
-#include "..\common_h\rands.h"
+#include "cvector.h"
+#include "rands.h"
 
 #define ATTRACT_FACTOR 0.9f // 0.01f
 #define DEFLECT_FACTOR 10.5f

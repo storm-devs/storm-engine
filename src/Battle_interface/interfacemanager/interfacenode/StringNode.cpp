@@ -11,7 +11,7 @@ BI_StringNode::BI_StringNode(BI_ManagerBase *pManager, const char *text, const c
 
 BI_StringNode::~BI_StringNode()
 {
-    DELETE(m_pStr);
+    SE_DELETE(m_pStr);
 }
 
 void BI_StringNode::Update()

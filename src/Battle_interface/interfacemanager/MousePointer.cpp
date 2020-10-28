@@ -29,7 +29,7 @@ MousePointer::MousePointer(BI_ManagerBase *pManager, ATTRIBUTES *pARoot)
 
 MousePointer::~MousePointer()
 {
-    DELETE(m_pIcon);
+    SE_DELETE(m_pIcon);
 }
 
 void MousePointer::Update()
@@ -107,7 +107,7 @@ void MousePointer::SetCurrentCursor()
     {
         if (!m_pIcon || m_aCursors[m_nCurrentCursor].texture != m_aCursors[nNewCursor].texture)
         {
-            DELETE(m_pIcon);
+            SE_DELETE(m_pIcon);
             m_nCurrentCursor = nNewCursor;
             m_pIcon = m_pManager->GetImageRender()->CreateImage(BIType_square, m_aCursors[nNewCursor].texture,
                                                                 0xFF808080, m_aCursors[nNewCursor].uv,

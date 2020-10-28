@@ -1,5 +1,7 @@
 #include "particles.h"
-#include "..\..\common_h\particles.h"
+#include "particles/iparticlemanager.h"
+#include "particles/iparticlesservice.h"
+#include "particles/iparticlesystem.h"
 #include "psystem.h"
 
 PARTICLES::PARTICLES() : CreatedSystems(_FL_), CaptureBuffer(_FL_)

@@ -1,5 +1,4 @@
 #include "base.h"
-#include "..\..\..\common_h\vmodule_api.h"
 #include "..\..\icommon\names.h"
 #include "..\DataSource\databool.h"
 #include "..\DataSource\datacolor.h"

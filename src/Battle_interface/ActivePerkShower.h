@@ -1,8 +1,8 @@
 #ifndef _ACTIVEPERKSHOWER_H_
 #define _ACTIVEPERKSHOWER_H_
 
-#include "..\common_h\defines.h"
-#include "..\common_h\dx8render.h"
+#include "bi_defines.h"
+#include "dx8render.h"
 
 class ActivePerkShower : public ENTITY
 {

@@ -1,8 +1,8 @@
 #ifndef _IEDITOR_DEFINES_H_
 #define _IEDITOR_DEFINES_H_
 
-#include "..\..\common_h\CVector.h"
-#include "..\..\common_h\vsystem_api.h"
+#include "CVector.h"
+#include "vsystem_api.h"
 
 #define EdVF_ColorUV (D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2)
 struct EdVertexColorUV

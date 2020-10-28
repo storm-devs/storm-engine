@@ -1,8 +1,8 @@
 #ifndef LIGHTNING_HPP
 #define LIGHTNING_HPP
 
-#include "..\common_h\Weather_base.h"
 #include "Typedef.h"
+#include "Weather_base.h"
 
 #define MAX_LIGHTNING_TEXTURES 2
 

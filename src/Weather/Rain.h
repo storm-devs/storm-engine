@@ -1,10 +1,10 @@
 #ifndef WEATHER_RAIN_HPP
 #define WEATHER_RAIN_HPP
 
-#include "..\common_h\Weather_base.h"
-#include "..\common_h\sea_base.h"
-#include "..\common_h\ship_base.h"
 #include "Typedef.h"
+#include "Weather_base.h"
+#include "sea_base.h"
+#include "ship_base.h"
 
 #define NUM_SEA_DROPS 500
 #define D3DRAINVERTEX_FORMAT (D3DFVF_XYZ | D3DFVF_DIFFUSE)

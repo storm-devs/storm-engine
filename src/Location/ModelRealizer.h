@@ -1,8 +1,8 @@
 #ifndef _ModelWraper_H_
 #define _ModelWraper_H_
 
-#include "..\common_h\geometry.h"
-#include "..\common_h\vmodule_api.h"
+#include "geometry.h"
+#include "vmodule_api.h"
 
 class Lights;
 

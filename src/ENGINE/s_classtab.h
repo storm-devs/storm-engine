@@ -1,9 +1,9 @@
 #ifndef _S_CLASSTAB_H_
 #define _S_CLASSTAB_H_
 
-#include "..\..\COMMON_H\d_types.h"
-#include "..\..\COMMON_H\memop.h"
+#include "d_types.h"
 #include "data.h"
+#include "memop.h"
 
 #define CLASS_BUFFER_BLOCK_SIZE 1024
 #define INVALID_CLASS_CODE 0xffffffff

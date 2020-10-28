@@ -11,10 +11,10 @@
 #ifndef _LocRats_h_
 #define _LocRats_h_
 
-#include "..\common_h\collide.h"
-#include "..\common_h\dx8render.h"
-#include "..\common_h\matrix.h"
-#include "..\common_h\vmodule_api.h"
+#include "collide.h"
+#include "dx8render.h"
+#include "matrix.h"
+#include "vmodule_api.h"
 
 #include "LocRat.h"
 

@@ -2,6 +2,7 @@
 #ifndef STRING_HPP
 #define STRING_HPP
 
+#include "../common_defines.h"
 #include "tcommon.h"
 
 #define STRING_DEFAULT_ADD 8
@@ -482,7 +483,7 @@ class string
 
     void DelAll()
     {
-        DELETE(pBuffer);
+        SE_DELETE(pBuffer);
         dwSize = 0;
         dwCurSize = 0;
     }

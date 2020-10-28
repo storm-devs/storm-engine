@@ -3,11 +3,11 @@
 #include "HelpChooser\HelpChooser.h"
 #include "InfoHandler.h"
 #include "TextureSequence\TextureSequence.h"
-#include "defines.h"
 #include "nodes\all_xinode.h"
 #include "scrshoter\scrshoter.h"
 #include "stringservice\obj_strservice.h"
 #include "stringservice\strservice.h"
+#include "xi_defines.h"
 #include "xservice.h"
 #include <stdio.h>
 

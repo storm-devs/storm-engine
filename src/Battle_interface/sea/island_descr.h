@@ -1,7 +1,7 @@
 #ifndef _ISLAND_DESCR_H_
 #define _ISLAND_DESCR_H_
 
-#include "..\defines.h"
+#include "..\bi_defines.h"
 
 // тип локации - места высадки
 #define ISLAND_LOCATOR_LAND 1

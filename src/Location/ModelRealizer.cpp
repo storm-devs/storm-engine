@@ -1,7 +1,7 @@
 #include "ModelRealizer.h"
-#include "..\common_h\cvector4.h"
-#include "..\common_h\messages.h"
+#include "cvector4.h"
 #include "lights.h"
+#include "messages.h"
 
 //============================================================================================
 //Конструирование, деструктурирование

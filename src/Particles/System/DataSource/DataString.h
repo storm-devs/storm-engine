@@ -8,8 +8,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "..\..\..\common_h\vapi.h"
-
 class DataString
 {
     string Name;

@@ -11,13 +11,13 @@
 #ifndef _Sharks_H_
 #define _Sharks_H_
 
-#include "..\common_h\animation.h"
-#include "..\common_h\dx8render.h"
-#include "..\common_h\island_base.h"
-#include "..\common_h\matrix.h"
-#include "..\common_h\sea_base.h"
-#include "..\common_h\ship_base.h"
-#include "..\common_h\vmodule_api.h"
+#include "animation.h"
+#include "dx8render.h"
+#include "island_base.h"
+#include "matrix.h"
+#include "sea_base.h"
+#include "ship_base.h"
+#include "vmodule_api.h"
 
 class Sharks : public ENTITY
 {

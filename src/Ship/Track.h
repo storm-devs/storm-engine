@@ -1,12 +1,12 @@
 #ifndef __SHIP_TRACKS_HPP
 #define __SHIP_TRACKS_HPP
 
-#include "..\common_h\dx8render.h"
-#include "..\common_h\sea_base.h"
-#include "..\common_h\ship_base.h"
+#include "dx8render.h"
+#include "sea_base.h"
+#include "ship_base.h"
 
-#include "..\common_h\templates\array.h"
-#include "..\common_h\templates\string.h"
+#include "templates\array.h"
+#include "templates\string.h"
 
 class ShipTracks : public ENTITY
 {

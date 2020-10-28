@@ -1,8 +1,13 @@
 project(common_h)
 
-add_library(common_h INTERFACE)
+find_package(DirectX REQUIRED)
 
-target_include_directories(common_h INTERFACE .)
+add_library(${PROJECT_NAME} INTERFACE)
+
+target_include_directories(${PROJECT_NAME} INTERFACE .)
+target_include_directories(${PROJECT_NAME} INTERFACE ${DirectX_INCLUDE_DIR})
+
+target_link_libraries(${PROJECT_NAME} INTERFACE ${DirectX_D3DX9_LIBRARY})
 
 set(PROJECT_SOURCES
 	math3d/Box.h
@@ -42,8 +47,7 @@ set(PROJECT_SOURCES
 	Intel.h
 	Island_Base.h
 	Matrix.h
-	Net.h
-	ShipLights.h
+	IShipLights.h
 	VideoTexture.h
 	Weather_Base.h
 	achievements.h
@@ -51,7 +55,7 @@ set(PROJECT_SOURCES
 	collide.h
 	controls.h
 	d_types.h
-	defines.h
+	common_defines.h
 	dx8render.h
 	entity.h
 	entity_id.h
@@ -66,7 +70,6 @@ set(PROJECT_SOURCES
 	math3D.h
 	memop.h
 	message.h
-	messages.h
 	model.h
 	object.h
 	particles.h
@@ -103,6 +106,10 @@ set(PROJECT_SOURCES
 	vship.h
 	vstring_codec.h
 	vsystem_api.h
+
+	#copied from scripts
+	messages.h
+	Script_defines.h
 )
 
-add_custom_target(common_h_ SOURCES ${PROJECT_SOURCES})
+add_custom_target(${PROJECT_NAME}_ SOURCES ${PROJECT_SOURCES})

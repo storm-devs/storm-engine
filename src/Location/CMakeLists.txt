@@ -1,6 +1,6 @@
 project(location)
 
-add_library(location MODULE 
+add_library(${PROJECT_NAME} MODULE
 	AICharacter.cpp
 	AICharacter.h
 	Blood.cpp
@@ -68,4 +68,4 @@ add_library(location MODULE
 	ptc.h
 )
 
-target_include_directories(location PRIVATE ${DirectX_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

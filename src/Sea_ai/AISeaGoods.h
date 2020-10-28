@@ -1,10 +1,10 @@
 #ifndef AI_SEA_GOODS_HPP
 #define AI_SEA_GOODS_HPP
 
-#include "..\common_h\geometry.h"
-#include "..\common_h\sea_base.h"
-#include "..\common_h\ship_base.h"
 #include "AIHelper.h"
+#include "geometry.h"
+#include "sea_base.h"
+#include "ship_base.h"
 
 class AISeaGoods : public ENTITY
 {

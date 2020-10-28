@@ -1,7 +1,7 @@
 #ifndef _SYSTEM_API_H_
 #define _SYSTEM_API_H_
 
-#include "..\..\common_h\vsystem_api.h"
+#include "vsystem_api.h"
 
 class SYSTEM_API : public VSYSTEM_API
 {

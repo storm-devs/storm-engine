@@ -8,14 +8,14 @@
 #include "sailors.h"
 #include <stdio.h>
 
-#include "..\ENGINE\PROGRAM\SEA_AI\script_defines.h"
 #include "..\Ship\ship.h"
-#include "..\common_h\exs.h"
-#include "..\common_h\messages.h"
-#include "..\common_h\rands.h"
-#include "..\common_h\ship_msg.h"
-#include "..\common_h\types3d.h"
-#include "..\engine\program\sea_ai\seaPeople.h"
+#include "..\peoples_on_ship\seaPeople.h"
+#include "Script_Defines.h"
+#include "exs.h"
+#include "messages.h"
+#include "rands.h"
+#include "ship_msg.h"
+#include "types3d.h"
 
 #define GUARD_SAILORS(block)                                                                                           \
     {                                                                                                                  \

@@ -1,10 +1,10 @@
 #ifndef _CONTROLTREE_H_
 #define _CONTROLTREE_H_
 
-#include "..\common_h\controls.h"
-#include "..\common_h\templates\array.h"
-#include "..\common_h\templates\string.h"
-#include "..\common_h\vmodule_api.h"
+#include "controls.h"
+#include "templates\array.h"
+#include "templates\string.h"
+#include "vmodule_api.h"
 
 struct ControlTree
 {

@@ -11,8 +11,8 @@
 #ifndef _WdmEnemyShip_H_
 #define _WdmEnemyShip_H_
 
-#include "..\common_h\attributes.h"
 #include "WdmShip.h"
+#include "attributes.h"
 
 class WdmEnemyShip : public WdmShip
 {

@@ -1,8 +1,8 @@
 #ifndef _SHIP_BASE_H_
 #define _SHIP_BASE_H_
 
+#include "common_defines.h"
 #include "cvector.h"
-#include "defines.h"
 #include "messages.h"
 #include "sail_msg.h"
 #include "sd2_h\VAI_ObjBase.h"

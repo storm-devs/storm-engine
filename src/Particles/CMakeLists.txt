@@ -1,6 +1,6 @@
 project(particles)
 
-add_library(particles MODULE 
+add_library(${PROJECT_NAME} MODULE
 	DataCache/DataCache.cpp
 	DataCache/DataCache.h
 
@@ -67,4 +67,4 @@ add_library(particles MODULE
 	System/ParticleSystem/particlesystem.h
 )
 
-target_include_directories(particles PRIVATE ${DirectX_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

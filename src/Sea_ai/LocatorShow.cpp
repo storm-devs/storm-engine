@@ -11,7 +11,7 @@ SeaLocatorShow::SeaLocatorShow()
 
 SeaLocatorShow::~SeaLocatorShow()
 {
-    DELETE(sphereVertex);
+    SE_DELETE(sphereVertex);
 }
 
 bool SeaLocatorShow::Init()

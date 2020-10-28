@@ -1,11 +1,11 @@
 #ifndef _SHADOW_H_
 #define _SHADOW_H_
 
-#include "..\common_h\collide.h"
-#include "..\common_h\dx8render.h"
-#include "..\common_h\geos.h"
-#include "..\common_h\model.h"
-#include "..\common_h\vmodule_api.h"
+#include "collide.h"
+#include "dx8render.h"
+#include "geos.h"
+#include "model.h"
+#include "vmodule_api.h"
 
 class SHADOW : public ENTITY
 {

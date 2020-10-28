@@ -1,6 +1,6 @@
 #include "gdi_display.h"
-#include "../../Common_h/d_types.h"
-#include "..\..\common_h\memop.h"
+#include "d_types.h"
+#include "memop.h"
 #include "resource.h"
 #include "system_log.h"
 

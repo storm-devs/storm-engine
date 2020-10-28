@@ -1,12 +1,12 @@
 #ifndef _MODEL_H_
 #define _MODEL_H_
 
-#include "..\common_h\animation.h"
-#include "..\common_h\geos.h"
-#include "..\common_h\matrix.h"
-#include "..\common_h\messages.h"
-#include "..\common_h\object.h"
-#include "..\common_h\vmodule_api.h"
+#include "animation.h"
+#include "geos.h"
+#include "matrix.h"
+#include "messages.h"
+#include "object.h"
+#include "vmodule_api.h"
 
 class NODER;
 

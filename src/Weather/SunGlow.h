@@ -1,8 +1,8 @@
 #ifndef SUN_GLOW_HPP
 #define SUN_GLOW_HPP
 
-#include "..\common_h\Weather_base.h"
 #include "Typedef.h"
+#include "Weather_base.h"
 
 class SKY;
 

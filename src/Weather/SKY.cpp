@@ -1,6 +1,6 @@
 #include "SKY.h"
-#include "..\common_h\weather_base.h"
 #include "SunGlow.h"
+#include "weather_base.h"
 
 SKY::SKY() : aSkyDirArray(_FL)
 {

@@ -2,8 +2,8 @@
 #define _COMMON_H_H_
 
 //#include <windows.h>
-#include "..\..\common_h\d_types.h"
-#include "..\..\common_h\memop.h"
+#include "d_types.h"
+#include "memop.h"
 
 //------------------------------------------------------------------------------------------------
 // Predefined codes

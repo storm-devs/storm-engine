@@ -1,13 +1,13 @@
 #pragma once
 
-#include "..\common_h\collide.h"
-#include "..\common_h\dx8render.h"
-#include "..\common_h\geos.h"
-#include "..\common_h\model.h"
-#include "..\common_h\sea_base.h"
-#include "..\common_h\ship_base.h"
-#include "..\common_h\vmodule_api.h"
 #include "bsps.h"
+#include "collide.h"
+#include "dx8render.h"
+#include "geos.h"
+#include "model.h"
+#include "sea_base.h"
+#include "ship_base.h"
+#include "vmodule_api.h"
 
 #define GRID_WIDTH 20.f
 #define GRID_HEIGHT 20.f

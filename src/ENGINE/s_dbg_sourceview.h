@@ -3,8 +3,8 @@
 
 #ifndef _XBOX
 
-#include "..\..\common_h\templates.h"
 #include "core.h"
+#include "templates.h"
 #include <commctrl.h>
 #include <windows.h>
 

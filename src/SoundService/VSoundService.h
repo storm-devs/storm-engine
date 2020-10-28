@@ -1,12 +1,12 @@
 #ifndef _VSOUND_H_
 #define _VSOUND_H_
 
-#include "..\common_h\CVECTOR.h"
-#include "..\common_h\service.h"
-#include "..\common_h\templates.h"
-#include "..\common_h\vmodule_api.h"
+#include "CVECTOR.h"
 #include "SoundDefines.h"
 #include "VSoundService.h"
+#include "service.h"
+#include "templates.h"
+#include "vmodule_api.h"
 #include <dsound.h>
 
 ///////////////////////////////////////////////////////////////////

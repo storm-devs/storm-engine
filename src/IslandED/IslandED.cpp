@@ -24,8 +24,8 @@ IslandED::IslandED() : aPoints(_FL)
 IslandED::~IslandED()
 {
     Graph.Save(pIni);
-    DELETE(pRaw);
-    DELETE(pIni);
+    SE_DELETE(pRaw);
+    SE_DELETE(pIni);
     RELEASE(pIslandTexture);
     ShowCursor(true);
 }
@@ -176,7 +176,7 @@ void IslandED::Execute(dword dwDeltaTime)
         if (bPathFirstPnt)
         {
             bPathFirstPnt = false;
-            DELETE(pPath);
+            SE_DELETE(pPath);
             pPath = Graph.GetPath(dwFirstPointIdx, GetNearestPointIdx(pV));
         }
         else
@@ -220,7 +220,7 @@ void IslandED::Execute(dword dwDeltaTime)
                 }
         }
         Graph.Save(pIni);
-        DELETE(pPath);
+        SE_DELETE(pPath);
         RDTSC_B(DWR);
         Graph.BuildTable();
         RDTSC_E(DWR);
@@ -229,7 +229,7 @@ void IslandED::Execute(dword dwDeltaTime)
     if (GetAsyncKeyState('H') < 0 && bCanDoGraf)
     {
         Graph.BuildTable();
-        // DELETE(pPath);
+        // SE_DELETE(pPath);
         // pPath = Graph.GetPath(rand()%Graph.aPoints.Size(),rand()%Graph.aPoints.Size());
     }
 }
@@ -335,7 +335,7 @@ void IslandED::Realize(dword dwDeltaTime)
                 FillSpriteVertex(rsp[idx + 3], pV.x - ddx, pV.z + ddy, 1.0f, dwColor);
             }
         pRS->DrawSprites(&rsp[0], dx * dy, "islanded_points");
-        DELETE(rsp);
+        SE_DELETE(rsp);
     }
     if (aPoints.Size())
     {
@@ -353,7 +353,7 @@ void IslandED::Realize(dword dwDeltaTime)
             FillSpriteVertex(rsp[i * 4 + 3], pV.x - dx, pV.z + dy);
         }
         pRS->DrawSprites(&rsp[0], aPoints.Size(), "islanded_points");
-        DELETE(rsp);
+        SE_DELETE(rsp);
     }
 
     pRS->SetTexture(0, pIslandTexture);
@@ -368,7 +368,7 @@ void IslandED::OpenNewFile()
 {
     char sFile[512], sCurDir[512];
 
-    DELETE(pRaw);
+    SE_DELETE(pRaw);
     bLoaded = false;
 
     ZERO(sFile[0]);
@@ -387,7 +387,7 @@ void IslandED::OpenNewFile()
     if (!bRes)
         return;
 
-    DELETE(pIni);
+    SE_DELETE(pIni);
     pIni = fio->OpenIniFile(sFile);
     if (!pIni)
         return;
@@ -411,7 +411,7 @@ void IslandED::OpenNewFile()
         pRS->CreateTexture(Header.width, Header.height, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pIslandTexture);
     if (D3D_OK != hr)
     {
-        DELETE(pRaw);
+        SE_DELETE(pRaw);
         fio->_CloseHandle(hFile);
         return;
     }

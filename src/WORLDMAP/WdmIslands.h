@@ -11,9 +11,9 @@
 #ifndef _WdmIslands_H_
 #define _WdmIslands_H_
 
-#include "..\common_h\geometry.h"
 #include "PtcData.h"
 #include "WdmRenderModel.h"
+#include "geometry.h"
 
 class WdmIslandWaves : public WdmRenderModel
 {

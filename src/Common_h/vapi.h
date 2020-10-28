@@ -178,10 +178,8 @@ class VAPI
     virtual DWORD AttributeName2Code(const char *pAttributeName) = 0;
 
     virtual void *GetScriptVariable(const char *pVariableName, DWORD *pdwVarIndex = 0) = 0;
-    virtual void SetNetActive(bool bActive) = 0;
 
     virtual void _cdecl BTrace(const char *Format, ...) = 0; // Trace with beep
-    virtual bool IsNetActive() const = 0;
 
     //#ifdef isSteam
     virtual bool isSteamEnabled() = 0;

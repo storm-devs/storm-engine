@@ -58,18 +58,18 @@ template <class _Ty> class htable
                 elem *pE = &pElements[i];
                 for (dword j = 0; j < pE->aSubElements.Size(); j++)
                 {
-                    DELETE(pE->aSubElements[j]._T);
-                    DELETE(pE->aSubElements[j].pStr);
+                    SE_DELETE(pE->aSubElements[j]._T);
+                    SE_DELETE(pE->aSubElements[j].pStr);
                 }
                 pE->aSubElements.DelAll();
 
                 pElements[i].~elem();
             }
             // DELETE_ARRAY(pElements);
-            DELETE(pElements);
+            SE_DELETE(pElements);
         }
 
-        DELETE(_TBadFind);
+        SE_DELETE(_TBadFind);
     }
 
     void Reset()
@@ -97,14 +97,14 @@ template <class _Ty> class htable
             elem *pE = &pElements[i];
             for (dword j = 0; j < pE->aSubElements.Size(); j++)
             {
-                DELETE(pE->aSubElements[j].pStr);
+                SE_DELETE(pE->aSubElements[j].pStr);
             }
             pE->aSubElements.DelAll();
 
             pElements[i].~elem();
         }
         // DELETE_ARRAY(pElements);
-        DELETE(pElements);
+        SE_DELETE(pElements);
     }
 
     void SetBadFind(_Ty _T)
@@ -190,7 +190,7 @@ template <class _Ty> class htable
                 continue;
             if (stricmp(pSE.pStr, pStr) == 0)
             {
-                DELETE(pSE.pStr);
+                SE_DELETE(pSE.pStr);
                 pE.aSubElements.ExtractNoShift(i);
                 return true;
             }

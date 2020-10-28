@@ -1,5 +1,5 @@
-#include "..\common_h\defines.h"
-#include "..\common_h\messages.h"
+#include "common_defines.h"
+#include "messages.h"
 #include "modelr.h"
 #include <stdio.h>
 

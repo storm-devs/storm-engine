@@ -1,8 +1,8 @@
 #ifndef _GI_EDITOR_DEFINES_H_
 #define _GI_EDITOR_DEFINES_H_
 
-#include "..\..\common_h\templates\array.h"
-#include "..\..\common_h\vmodule_api.h"
+#include "templates\array.h"
+#include "vmodule_api.h"
 
 enum GIEditorStates
 {

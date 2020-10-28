@@ -1,11 +1,11 @@
 #ifndef __BATTLE_INTERFACE_H_
 #define __BATTLE_INTERFACE_H_
 
-#include "..\..\common_h\defines.h"
-#include "..\..\common_h\dx8render.h"
-#include "..\..\common_h\templates\array.h"
 #include "..\utils.h"
 #include "battle_navigator.h"
+#include "common_defines.h"
+#include "dx8render.h"
+#include "templates\array.h"
 
 class BIShipIcon;
 class ShipInfoImages;

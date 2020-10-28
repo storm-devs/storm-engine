@@ -2,12 +2,12 @@
 #define _TBUTTERFLY_H_
 
 //#include <windows.h>
-#include "..\common_h\collide.h"
-#include "..\common_h\cvector.h"
-#include "..\common_h\dx8render.h"
-#include "..\common_h\model.h"
-#include "..\common_h\rands.h"
 #include "TIVBufferManager.h"
+#include "collide.h"
+#include "cvector.h"
+#include "dx8render.h"
+#include "model.h"
+#include "rands.h"
 
 ///////////////////////////////////////////////////////////////////
 // DEFINES & TYPES

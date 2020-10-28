@@ -1,9 +1,9 @@
 #ifndef _S_DEFTAB_H_
 #define _S_DEFTAB_H_
 
-#include "..\..\COMMON_H\d_types.h"
-#include "..\..\COMMON_H\memop.h"
+#include "d_types.h"
 #include "data.h"
+#include "memop.h"
 
 // when segment_id is INVALID_SEGMENT_ID, variable segment is unloaded
 // and variable value and type undefined

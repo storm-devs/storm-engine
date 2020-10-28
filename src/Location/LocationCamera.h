@@ -11,12 +11,12 @@
 #ifndef _LocationCamera_H_
 #define _LocationCamera_H_
 
-#include "..\common_h\dx8render.h"
-#include "..\common_h\matrix.h"
-#include "..\common_h\templates\array.h"
-#include "..\common_h\templates\string.h"
-#include "..\common_h\vmodule_api.h"
 #include "PathTracks.h"
+#include "dx8render.h"
+#include "matrix.h"
+#include "templates\array.h"
+#include "templates\string.h"
+#include "vmodule_api.h"
 
 #include "CameraFollow.h"
 

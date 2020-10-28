@@ -2,6 +2,7 @@
 //#include "windows.h"
 #include "s_dbg_sourceview.h"
 #include "core.h"
+#include "resource.h"
 #include "s_debug.h"
 
 extern CORE Core;

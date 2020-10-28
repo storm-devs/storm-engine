@@ -1,10 +1,10 @@
 #ifndef _SPYGLASS_H_
 #define _SPYGLASS_H_
 
-#include "..\..\common_h\defines.h"
-#include "..\..\common_h\dx8render.h"
-#include "..\..\common_h\templates\array.h"
-#include "..\..\common_h\templates\string.h"
+#include "common_defines.h"
+#include "dx8render.h"
+#include "templates\array.h"
+#include "templates\string.h"
 
 class BIImageRender;
 class BIImage;

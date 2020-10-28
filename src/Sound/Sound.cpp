@@ -7,10 +7,10 @@
 #endif
 
 #include "..\SoundService\VSoundService.h"
-#include "..\common_h\CVECTOR.h"
-#include "..\common_h\defines.h"
-#include "..\common_h\exs.h"
-#include "..\common_h\messages.h"
+#include "CVECTOR.h"
+#include "common_defines.h"
+#include "exs.h"
+#include "messages.h"
 
 #include "SOUND.h"
 

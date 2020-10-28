@@ -50,7 +50,7 @@ BEGIN
     "LANGUAGE 9, 1\r\n"
     "#pragma code_page(1252)\r\n"
     "#endif //_WIN32\r\n"
-    "#include ""res\\Setup.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""Setup.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
     "#include ""afxres.rc""         // Standard components\r\n"
     "#endif\r\n"
     "\0"
@@ -70,8 +70,8 @@ CAPTION "About Setup"
 FONT 8, "MS Sans Serif"
 BEGIN
     ICON            128,IDC_STATIC,104,7,20,20
-    CTEXT           "Õ‡ÒÚÓÈÍË v 2.0",IDC_STATIC,86,31,62,8,SS_NOPREFIX
-    CTEXT           "ﬂ ÚÛÚ ·˚Î (C) 2003",IDC_STATIC,86,46,62,8
+    CTEXT           "√ç√†√±√≤√∞√Æ√©√™√® v 2.0",IDC_STATIC,86,31,62,8,SS_NOPREFIX
+    CTEXT           "√ü √≤√≥√≤ √°√ª√´ (C) 2003",IDC_STATIC,86,46,62,8
     DEFPUSHBUTTON   "OK",IDOK,89,61,50,14,WS_GROUP
 END
 
@@ -79,42 +79,42 @@ IDD_SETUP_DIALOG DIALOGEX 0, 0, 227, 186
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
     WS_SYSMENU
 EXSTYLE WS_EX_APPWINDOW
-CAPTION " ÓÒ‡˚:  ‡Ê‰ÓÏÛ —‚Ó∏"
+CAPTION "√ä√Æ√∞√±√†√∞√ª: √ä√†√¶√§√Æ√¨√≥ √ë√¢√Æ¬∏"
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "—Óı‡ÌËÚ¸",IDOK,6,165,50,14
-    PUSHBUTTON      "¬˚ıÓ‰",IDCANCEL,170,165,50,14
-    LTEXT           "–‡ÁÂ¯ÂÌËÂ",IDC_STATIC,14,35,43,8
+    DEFPUSHBUTTON   "√ë√Æ√µ√∞√†√≠√®√≤√º",IDOK,6,165,50,14
+    PUSHBUTTON      "√Ç√ª√µ√Æ√§",IDCANCEL,170,165,50,14
+    LTEXT           "√ê√†√ß√∞√•√∏√•√≠√®√•",IDC_STATIC,14,35,43,8
     COMBOBOX        IDC_RESOLUTIONLIST,60,33,70,121,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "Õ‡ÒÚÓÈÍË ‚Ë‰ÂÓ",IDC_STATIC,7,5,213,77
-    CONTROL         "œÓÎÌÓ˝Í‡ÌÌ˚È ÂÊËÏ",IDC_FULLSCREEN,"Button",
+    GROUPBOX        "√ç√†√±√≤√∞√Æ√©√™√® √¢√®√§√•√Æ",IDC_STATIC,7,5,213,77
+    CONTROL         "√è√Æ√´√≠√Æ√Ω√™√∞√†√≠√≠√ª√© √∞√•√¶√®√¨",IDC_FULLSCREEN,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,14,50,94,10
-    GROUPBOX        "Õ‡ÒÚÓÈÍË Á‚ÛÍ‡",IDC_STATIC,7,84,213,74
-    CONTROL         "¬˚ÍÎ˛˜ËÚ¸ Á‚ÛÍ",IDC_SND_MUS_ON,"Button",BS_AUTOCHECKBOX | 
+    GROUPBOX        "√ç√†√±√≤√∞√Æ√©√™√® √ß√¢√≥√™√†",IDC_STATIC,7,84,213,74
+    CONTROL         "√Ç√ª√™√´√æ√∑√®√≤√º √ß√¢√≥√™",IDC_SND_MUS_ON,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,27,97,71,10
     CONTROL         "Slider1",IDC_MUSIC_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,90,111,124,12
-    LTEXT           "√ÓÏÍÓÒÚ¸ ÏÛÁ˚ÍË",IDC_STATIC,12,112,74,9
+    LTEXT           "√É√∞√Æ√¨√™√Æ√±√≤√º √¨√≥√ß√ª√™√®",IDC_STATIC,12,112,74,9
     CONTROL         "Slider1",IDC_SOUND_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,90,125,124,12
-    LTEXT           "√ÓÏÍÓÒÚ¸ ˝ÙÙÂÍÚÓ‚",IDC_STATIC,12,126,74,9
-    PUSHBUTTON      "œÓ ÛÏÓÎ˜‡ÌË˛",IDC_DEFAULTSETTINGS,113,165,53,14
-    PUSHBUTTON      "»„‡",ID_STARTGAME,59,165,50,14
-    LTEXT           "”ÒÚÓÈÒÚ‚Ó",IDC_STATIC,14,19,41,8
+    LTEXT           "√É√∞√Æ√¨√™√Æ√±√≤√º √Ω√¥√¥√•√™√≤√Æ√¢",IDC_STATIC,12,126,74,9
+    PUSHBUTTON      "√è√Æ √≥√¨√Æ√´√∑√†√≠√®√æ",IDC_DEFAULTSETTINGS,113,165,53,14
+    PUSHBUTTON      "√à√£√∞√†",ID_STARTGAME,59,165,50,14
+    LTEXT           "√ì√±√≤√∞√Æ√©√±√≤√¢√Æ",IDC_STATIC,14,19,41,8
     COMBOBOX        IDC_DEVICELIST,60,16,150,137,CBS_DROPDOWN | CBS_SORT | 
                     WS_DISABLED | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Slider1",IDC_DIALOG_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,90,139,124,12
-    LTEXT           "√ÓÏÍÓÒÚ¸ ‰Ë‡ÎÓ„Ó‚",IDC_STATIC,12,140,74,9
-    CONTROL         "¡ÂÁÓÔ‡ÒÌ˚È ÂÊËÏ",IDC_SAFE_RENDER,"Button",
+    LTEXT           "√É√∞√Æ√¨√™√Æ√±√≤√º √§√®√†√´√Æ√£√Æ√¢",IDC_STATIC,12,140,74,9
+    CONTROL         "√Å√•√ß√Æ√Ø√†√±√≠√ª√© √∞√•√¶√®√¨",IDC_SAFE_RENDER,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,124,97,83,10
-    LTEXT           " ‡˜ÂÒÚ‚Ó ÚÂÍÒÚÛ",IDC_STATIC,14,66,60,8
+    LTEXT           "√ä√†√∑√•√±√≤√¢√Æ √≤√•√™√±√≤√≥√∞",IDC_STATIC,14,66,60,8
     CONTROL         "Slider1",IDC_TEXTURE_QUALITY,"msctls_trackbar32",
                     TBS_AUTOTICKS | TBS_TOP | TBS_ENABLESELRANGE | 
                     WS_TABSTOP,79,57,74,22
     LTEXT           "High",IDC_TEXQUALITY_INFO,160,67,56,8
-    CONTROL         "œÓÒÚÔÓˆÂÒÒËÌ„",IDC_GLOW,"Button",BS_AUTOCHECKBOX | 
+    CONTROL         "√è√Æ√±√≤√Ø√∞√Æ√∂√•√±√±√®√≠√£",IDC_GLOW,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,136,35,72,10
 END
 
@@ -160,43 +160,43 @@ IDR_MAINFRAME           ICON                    "icon1.ico"
 STRINGTABLE 
 BEGIN
     IDS_ABOUTBOX            "&About Setup..."
-	IDS_FULLSCREEN_WARNING  "¬ÌËÏ‡ÌËÂ! »„‡ ÌÂ ÔÓ‰‰ÂÊË‚‡ÂÚ ÔÂÂÍÎ˛˜ÂÌËÂ ÏÂÊ‰Û Á‡‰‡˜‡ÏË ‚ ÔÓÎÌÓ˝Í‡ÌÌÓÏ ÂÊËÏÂ."     
+	IDS_FULLSCREEN_WARNING  "√Ç√≠√®√¨√†√≠√®√•! √à√£√∞√† √≠√• √Ø√Æ√§√§√•√∞√¶√®√¢√†√•√≤ √Ø√•√∞√•√™√´√æ√∑√•√≠√®√• √¨√•√¶√§√≥ √ß√†√§√†√∑√†√¨√® √¢ √Ø√Æ√´√≠√Æ√Ω√™√∞√†√≠√≠√Æ√¨ √∞√•√¶√®√¨√•."     
 END
 
 STRINGTABLE 
 BEGIN
-    IDC_DEVICELIST          "¬˚·ÂËÚÂ ÛÒÚÓÈÒÚ‚Ó Direct3D, ÍÓÚÓÓÂ ·Û‰ÂÚ ËÒÔÓÎ¸ÁÓ‚‡Ú¸Òˇ Ë„ÓÈ"
-    IDC_RESOLUTIONLIST      "¬˚·ÂËÚÂ ‡ÁÏÂ ÓÍÌ‡/‡ÁÂ¯ÂÌËÂ ‚ ÔÓÎÌÓ˝Í‡ÌÌÓÏ ÂÊËÏÂ"
-    IDC_FULLSCREEN          "œÂÂÍÎ˛˜‡ÚÂÎ¸ ÔÓÎÌÓ˝Í‡ÌÌÓ„Ó/ÓÍÓÌÌÓ„Ó ÂÊËÏ‡"
-    IDC_MUSIC_VOL           "–Â„ÛÎËÛÂÚ „ÓÏÍÓÒÚ¸ ÏÛÁ˚ÍË"
+    IDC_DEVICELIST          "√Ç√ª√°√•√∞√®√≤√• √≥√±√≤√∞√Æ√©√±√≤√¢√Æ Direct3D, √™√Æ√≤√Æ√∞√Æ√• √°√≥√§√•√≤ √®√±√Ø√Æ√´√º√ß√Æ√¢√†√≤√º√±√ø √®√£√∞√Æ√©"
+    IDC_RESOLUTIONLIST      "√Ç√ª√°√•√∞√®√≤√• √∞√†√ß√¨√•√∞ √Æ√™√≠√†/√∞√†√ß√∞√•√∏√•√≠√®√• √¢ √Ø√Æ√´√≠√Æ√Ω√™√∞√†√≠√≠√Æ√¨ √∞√•√¶√®√¨√•"
+    IDC_FULLSCREEN          "√è√•√∞√•√™√´√æ√∑√†√≤√•√´√º √Ø√Æ√´√≠√Æ√Ω√™√∞√†√≠√≠√Æ√£√Æ/√Æ√™√Æ√≠√≠√Æ√£√Æ √∞√•√¶√®√¨√†"
+    IDC_MUSIC_VOL           "√ê√•√£√≥√´√®√∞√≥√•√≤ √£√∞√Æ√¨√™√Æ√±√≤√º √¨√≥√ß√ª√™√®"
 END
 
 STRINGTABLE 
 BEGIN
-    IDC_SOUND_VOL           "–Â„ÛÎËÛÂÚ „ÓÏÍÓÒÚ¸ ˝ÙÙÂÍÚÓ‚"
-    IDC_DIALOG_VOL          "–Â„ÛÎËÛÂÚ „ÓÏÍÓÒÚ¸ ‰Ë‡ÎÓ„Ó‚ ÔÂÒÓÌ‡ÊÂÈ"
-    IDS_INITERROR           "ƒÎˇ Á‡ÔÛÒÍ‡ ÛÒÚ‡ÌÓ‚ÍË ÌÛÊÂÌ DirectX ‚ÂÒËË 8.0 ËÎË ‚˚¯Â."
-    IDS_INIMISSED           "Engine.ini ËÎË options Ù‡ÈÎ ÌÂ Ì‡È‰ÂÌ."
-    IDS_OPENFILE            "¬˚·ÂËÚÂ ‰ËÂÍÚÓË˛ ÍÛ‰‡ Ë„‡ ·˚Î‡ ÛÒÚ‡ÌÓ‚ÎÂÌ‡"
-    IDC_SND_MUS_ON          "›Ú‡ ÓÔˆËˇ ÔÓÎÌÓÒÚ¸˛ ÓÚÍÎ˛˜‡ÂÚ Á‚ÛÍ ‚ Ë„Â"
-    IDS_TEXQUALITY_LOW      "œÎÓıÓÂ"
-    IDC_SAFE_RENDER         "¬ÍÎ˛˜ÂÌËÂ ˝ÚÓÈ ÓÔˆËË ÏÓÊÂÚ ÔÓÏÓ˜¸ ÔË Á‡ËÍ‡ÌËË Á‚ÛÍ‡ ‚ Ë„Â"
-    IDS_TEXQUALITY_MEDIUM   "—Â‰ÌÂÂ"
-    IDS_TEXQUALITY_HIGH     "¬˚ÒÓÍÓÂ"
-    IDC_TEXTURE_QUALITY     " ‡˜ÂÒÚ‚Ó ÚÂÍÒÚÛ ‚ Ë„Â. ”ÏÂÌ¸¯ËÚÂ ÂÒÎË Ë„‡ ‡·ÓÚ‡ÂÚ ÏÂ‰ÎÂÌÌÓ"
+    IDC_SOUND_VOL           "√ê√•√£√≥√´√®√∞√≥√•√≤ √£√∞√Æ√¨√™√Æ√±√≤√º √Ω√¥√¥√•√™√≤√Æ√¢"
+    IDC_DIALOG_VOL          "√ê√•√£√≥√´√®√∞√≥√•√≤ √£√∞√Æ√¨√™√Æ√±√≤√º √§√®√†√´√Æ√£√Æ√¢ √Ø√•√∞√±√Æ√≠√†√¶√•√©"
+    IDS_INITERROR           "√Ñ√´√ø √ß√†√Ø√≥√±√™√† √≥√±√≤√†√≠√Æ√¢√™√® √≠√≥√¶√•√≠ DirectX √¢√•√∞√±√®√® 8.0 √®√´√® √¢√ª√∏√•."
+    IDS_INIMISSED           "Engine.ini √®√´√® options √¥√†√©√´ √≠√• √≠√†√©√§√•√≠."
+    IDS_OPENFILE            "√Ç√ª√°√•√∞√®√≤√• √§√®√∞√•√™√≤√Æ√∞√®√æ √™√≥√§√† √®√£√∞√† √°√ª√´√† √≥√±√≤√†√≠√Æ√¢√´√•√≠√†"
+    IDC_SND_MUS_ON          "√ù√≤√† √Æ√Ø√∂√®√ø √Ø√Æ√´√≠√Æ√±√≤√º√æ √Æ√≤√™√´√æ√∑√†√•√≤ √ß√¢√≥√™ √¢ √®√£√∞√•"
+    IDS_TEXQUALITY_LOW      "√è√´√Æ√µ√Æ√•"
+    IDC_SAFE_RENDER         "√Ç√™√´√æ√∑√•√≠√®√• √Ω√≤√Æ√© √Æ√Ø√∂√®√® √¨√Æ√¶√•√≤ √Ø√Æ√¨√Æ√∑√º √Ø√∞√® √ß√†√®√™√†√≠√®√® √ß√¢√≥√™√† √¢ √®√£√∞√•"
+    IDS_TEXQUALITY_MEDIUM   "√ë√∞√•√§√≠√•√•"
+    IDS_TEXQUALITY_HIGH     "√Ç√ª√±√Æ√™√Æ√•"
+    IDC_TEXTURE_QUALITY     "√ä√†√∑√•√±√≤√¢√Æ √≤√•√™√±√≤√≥√∞ √¢ √®√£√∞√•. √ì√¨√•√≠√º√∏√®√≤√• √•√±√´√® √®√£√∞√† √∞√†√°√Æ√≤√†√•√≤ √¨√•√§√´√•√≠√≠√Æ"
 END
 
 STRINGTABLE 
 BEGIN
-    IDOK                    "—Óı‡ÌËÚ¸ Ì‡ÒÚÓÈÍË Ë ‚˚ÈÚË."
-    IDCANCEL                "ŒÚÏÂÌËÚ¸ ‚ÒÂ ËÁÏÂÌÂÌËˇ Ë ‚˚ÈÚË."
-    IDC_DEFAULTSETTINGS     "”ÒÚ‡ÌÓ‚ËÚ¸ ÁÌ‡˜ÂÌËˇ ÔÓ ÛÏÓÎ˜‡ÌË˛."
-    ID_STARTGAME            "—Óı‡ÌËÚ¸ Ì‡ÒÚÓÈÍË Ë Á‡ÔÛÒÚËÚ¸ Ë„Û."
+    IDOK                    "√ë√Æ√µ√∞√†√≠√®√≤√º √≠√†√±√≤√∞√Æ√©√™√® √® √¢√ª√©√≤√®."
+    IDCANCEL                "√é√≤√¨√•√≠√®√≤√º √¢√±√• √®√ß√¨√•√≠√•√≠√®√ø √® √¢√ª√©√≤√®."
+    IDC_DEFAULTSETTINGS     "√ì√±√≤√†√≠√Æ√¢√®√≤√º √ß√≠√†√∑√•√≠√®√ø √Ø√Æ √≥√¨√Æ√´√∑√†√≠√®√æ."
+    ID_STARTGAME            "√ë√Æ√µ√∞√†√≠√®√≤√º √≠√†√±√≤√∞√Æ√©√™√® √® √ß√†√Ø√≥√±√≤√®√≤√º √®√£√∞√≥."
 END
 
 STRINGTABLE 
 BEGIN
-    IDC_ARCADE_MODE         "”‚ÂÎË˜Ë‚‡ÂÚ ÒÍÓÓÒÚ¸ ÔÂÂÁ‡ˇ‰ÍË ÔÛ¯ÂÍ, ÒÍÓÓÒÚ¸ Ë Ï‡ÌÂ‚ÂÌÌÓÒÚ¸ ‚ÒÂı ÍÓ‡·ÎÂÈ"
+    IDC_ARCADE_MODE         "√ì√¢√•√´√®√∑√®√¢√†√•√≤ √±√™√Æ√∞√Æ√±√≤√º √Ø√•√∞√•√ß√†√∞√ø√§√™√® √Ø√≥√∏√•√™, √±√™√Æ√∞√Æ√±√≤√º √® √¨√†√≠√•√¢√∞√•√≠√≠√Æ√±√≤√º √¢√±√•√µ √™√Æ√∞√†√°√´√•√©"
 END
 
 #endif    // Russian resources
@@ -226,7 +226,7 @@ FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Speichern",IDOK,6,165,50,14
     PUSHBUTTON      "Abbrechen",IDCANCEL,170,165,50,14
-    LTEXT           "Auflˆsung",IDC_STATIC,14,35,40,8
+    LTEXT           "Aufl√∂sung",IDC_STATIC,14,35,40,8
     COMBOBOX        IDC_RESOLUTIONLIST,57,33,70,121,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Fullscreen Modus",IDC_FULLSCREEN,"Button",
@@ -250,7 +250,7 @@ BEGIN
     LTEXT           "Dialog-Ausgabe",IDC_STATIC,12,140,57,9
     CONTROL         "Sicherer Modus",IDC_SAFE_RENDER,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,145,97,65,10
-    LTEXT           "Farb-Qualit‰t",IDC_STATIC,14,66,79,8
+    LTEXT           "Farb-Qualit√§t",IDC_STATIC,14,66,79,8
     CONTROL         "Slider1",IDC_TEXTURE_QUALITY,"msctls_trackbar32",
                     TBS_AUTOTICKS | TBS_TOP | TBS_ENABLESELRANGE | 
                     WS_TABSTOP,62,57,74,22
@@ -512,10 +512,10 @@ FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Guardar",IDOK,6,165,45,14
     PUSHBUTTON      "Cancelar",IDCANCEL,170,165,50,14
-    LTEXT           "ResoluciÛn",IDC_STATIC,14,35,36,8
+    LTEXT           "Resoluci√≥n",IDC_STATIC,14,35,36,8
     COMBOBOX        IDC_RESOLUTIONLIST,57,33,70,121,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "Opciones De la ExhibiciÛn",IDC_STATIC,7,5,213,77
+    GROUPBOX        "Opciones De la Exhibici√≥n",IDC_STATIC,7,5,213,77
     CONTROL         "Modo De Fullscreen",IDC_FULLSCREEN,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,14,50,78,10
     GROUPBOX        "Opciones Sanas",IDC_STATIC,7,84,213,74
@@ -523,18 +523,18 @@ BEGIN
                     WS_TABSTOP,27,97,68,10
     CONTROL         "Slider1",IDC_MUSIC_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,111,122,12
-    LTEXT           "Volumen De la M˙sica",IDC_STATIC,12,112,75,9
+    LTEXT           "Volumen De la M√∫sica",IDC_STATIC,12,112,75,9
     CONTROL         "Slider1",IDC_SOUND_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,125,122,12
     LTEXT           "Volumen De los Efectos",IDC_STATIC,12,126,80,9
     PUSHBUTTON      "Predefinido",IDC_DEFAULTSETTINGS,117,165,50,14
     PUSHBUTTON      "Guardar Y Jugar",ID_STARTGAME,54,165,60,14
-    LTEXT           "Tarjeta de VÌdeo",IDC_STATIC,14,19,56,8
+    LTEXT           "Tarjeta de V√≠deo",IDC_STATIC,14,19,56,8
     COMBOBOX        IDC_DEVICELIST,75,17,139,137,CBS_DROPDOWN | CBS_SORT | 
                     WS_DISABLED | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Slider1",IDC_DIALOG_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,139,122,12
-    LTEXT           "Volumen Del Di·logo",IDC_STATIC,12,140,70,9
+    LTEXT           "Volumen Del Di√°logo",IDC_STATIC,12,140,70,9
     CONTROL         "Modo Seguro",IDC_SAFE_RENDER,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,145,97,59,10
     LTEXT           "Calidad De la Textura",IDC_STATIC,14,67,69,8
@@ -615,7 +615,7 @@ FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Sauvegarder",IDOK,6,164,50,14
     PUSHBUTTON      "Annuler",IDCANCEL,177,164,43,14
-    LTEXT           "RÈsolution",IDC_STATIC,14,35,34,8
+    LTEXT           "R√©solution",IDC_STATIC,14,35,34,8
     COMBOBOX        IDC_RESOLUTIONLIST,57,33,70,121,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
     GROUPBOX        "Options D'Affichage",IDC_STATIC,7,5,213,77
@@ -629,17 +629,17 @@ BEGIN
     CONTROL         "Slider1",IDC_SOUND_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,68,125,146,12
     LTEXT           "Volume Effets",IDC_STATIC,12,126,53,9
-    PUSHBUTTON      "DÈfaut",IDC_DEFAULTSETTINGS,136,164,39,14
+    PUSHBUTTON      "D√©faut",IDC_DEFAULTSETTINGS,136,164,39,14
     PUSHBUTTON      "Sauvegarder et Jouer",ID_STARTGAME,58,164,76,14
-    LTEXT           "Carte vidÈo",IDC_STATIC,14,19,37,8
+    LTEXT           "Carte vid√©o",IDC_STATIC,14,19,37,8
     COMBOBOX        IDC_DEVICELIST,57,16,157,137,CBS_DROPDOWN | CBS_SORT | 
                     WS_DISABLED | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Slider1",IDC_DIALOG_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,68,139,146,12
     LTEXT           "Volume Voix",IDC_STATIC,12,140,57,9
-    CONTROL         "Mode S˚r",IDC_SAFE_RENDER,"Button",BS_AUTOCHECKBOX | 
+    CONTROL         "Mode S√ªr",IDC_SAFE_RENDER,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,145,97,48,10
-    LTEXT           "QualitÈ De Texture",IDC_STATIC,14,66,60,8
+    LTEXT           "Qualit√© De Texture",IDC_STATIC,14,66,60,8
     CONTROL         "Slider1",IDC_TEXTURE_QUALITY,"msctls_trackbar32",
                     TBS_AUTOTICKS | TBS_TOP | TBS_ENABLESELRANGE | 
                     WS_TABSTOP,79,57,74,22
@@ -778,7 +778,7 @@ FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Speichern",IDOK,6,165,50,14
     PUSHBUTTON      "Abbrechen",IDCANCEL,170,165,50,14
-    LTEXT           "Auflˆsung",IDC_STATIC,14,35,40,8
+    LTEXT           "Aufl√∂sung",IDC_STATIC,14,35,40,8
     COMBOBOX        IDC_RESOLUTIONLIST,57,33,70,121,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Fullscreen Modus",IDC_FULLSCREEN,"Button",
@@ -802,7 +802,7 @@ BEGIN
     LTEXT           "Dialog-Ausgabe",IDC_STATIC,12,140,57,9
     CONTROL         "Sicherer Modus",IDC_SAFE_RENDER,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,145,97,65,10
-    LTEXT           "Farb-Qualit‰t",IDC_STATIC,14,66,79,8
+    LTEXT           "Farb-Qualit√§t",IDC_STATIC,14,66,79,8
     CONTROL         "Slider1",IDC_TEXTURE_QUALITY,"msctls_trackbar32",
                     TBS_AUTOTICKS | TBS_TOP | TBS_ENABLESELRANGE | 
                     WS_TABSTOP,62,57,74,22
@@ -858,10 +858,10 @@ FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Guardar",IDOK,6,165,45,14
     PUSHBUTTON      "Cancelar",IDCANCEL,170,165,50,14
-    LTEXT           "ResoluciÛn",IDC_STATIC,14,35,36,8
+    LTEXT           "Resoluci√≥n",IDC_STATIC,14,35,36,8
     COMBOBOX        IDC_RESOLUTIONLIST,57,33,70,121,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "Opciones De la ExhibiciÛn",IDC_STATIC,7,5,213,77
+    GROUPBOX        "Opciones De la Exhibici√≥n",IDC_STATIC,7,5,213,77
     CONTROL         "Modo De Fullscreen",IDC_FULLSCREEN,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,14,50,78,10
     GROUPBOX        "Opciones Sanas",IDC_STATIC,7,84,213,74
@@ -869,18 +869,18 @@ BEGIN
                     WS_TABSTOP,27,97,68,10
     CONTROL         "Slider1",IDC_MUSIC_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,111,122,12
-    LTEXT           "Volumen De la M˙sica",IDC_STATIC,12,112,75,9
+    LTEXT           "Volumen De la M√∫sica",IDC_STATIC,12,112,75,9
     CONTROL         "Slider1",IDC_SOUND_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,125,122,12
     LTEXT           "Volumen De los Efectos",IDC_STATIC,12,126,80,9
     PUSHBUTTON      "Predefinido",IDC_DEFAULTSETTINGS,117,165,50,14
     PUSHBUTTON      "Guardar Y Jugar",ID_STARTGAME,54,165,60,14
-    LTEXT           "Tarjeta de VÌdeo",IDC_STATIC,14,19,56,8
+    LTEXT           "Tarjeta de V√≠deo",IDC_STATIC,14,19,56,8
     COMBOBOX        IDC_DEVICELIST,75,17,139,137,CBS_DROPDOWN | CBS_SORT | 
                     WS_DISABLED | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Slider1",IDC_DIALOG_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,139,122,12
-    LTEXT           "Volumen Del Di·logo",IDC_STATIC,12,140,70,9
+    LTEXT           "Volumen Del Di√°logo",IDC_STATIC,12,140,70,9
     CONTROL         "Modo Seguro",IDC_SAFE_RENDER,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,145,97,59,10
     LTEXT           "Calidad De la Textura",IDC_STATIC,14,67,69,8
@@ -961,7 +961,7 @@ FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Sauvegarder",IDOK,6,164,50,14
     PUSHBUTTON      "Annuler",IDCANCEL,177,164,43,14
-    LTEXT           "RÈsolution",IDC_STATIC,14,35,34,8
+    LTEXT           "R√©solution",IDC_STATIC,14,35,34,8
     COMBOBOX        IDC_RESOLUTIONLIST,57,33,70,121,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
     GROUPBOX        "Options D'Affichage",IDC_STATIC,7,5,213,77
@@ -975,17 +975,17 @@ BEGIN
     CONTROL         "Slider1",IDC_SOUND_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,68,125,146,12
     LTEXT           "Volume Effets",IDC_STATIC,12,126,53,9
-    PUSHBUTTON      "DÈfaut",IDC_DEFAULTSETTINGS,136,164,39,14
+    PUSHBUTTON      "D√©faut",IDC_DEFAULTSETTINGS,136,164,39,14
     PUSHBUTTON      "Sauvegarder et Jouer",ID_STARTGAME,58,164,76,14
-    LTEXT           "Carte vidÈo",IDC_STATIC,14,19,37,8
+    LTEXT           "Carte vid√©o",IDC_STATIC,14,19,37,8
     COMBOBOX        IDC_DEVICELIST,57,16,157,137,CBS_DROPDOWN | CBS_SORT | 
                     WS_DISABLED | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Slider1",IDC_DIALOG_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,68,139,146,12
     LTEXT           "Volume Voix",IDC_STATIC,12,140,57,9
-    CONTROL         "Mode S˚r",IDC_SAFE_RENDER,"Button",BS_AUTOCHECKBOX | 
+    CONTROL         "Mode S√ªr",IDC_SAFE_RENDER,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,145,97,48,10
-    LTEXT           "QualitÈ De Texture",IDC_STATIC,14,66,60,8
+    LTEXT           "Qualit√© De Texture",IDC_STATIC,14,66,60,8
     CONTROL         "Slider1",IDC_TEXTURE_QUALITY,"msctls_trackbar32",
                     TBS_AUTOTICKS | TBS_TOP | TBS_ENABLESELRANGE | 
                     WS_TABSTOP,79,57,74,22
@@ -1042,7 +1042,7 @@ FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Speichern",IDOK,6,165,50,14
     PUSHBUTTON      "Abbrechen",IDCANCEL,170,165,50,14
-    LTEXT           "Auflˆsung",IDC_STATIC,14,35,40,8
+    LTEXT           "Aufl√∂sung",IDC_STATIC,14,35,40,8
     COMBOBOX        IDC_RESOLUTIONLIST,57,33,70,121,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Fullscreen Modus",IDC_FULLSCREEN,"Button",
@@ -1066,7 +1066,7 @@ BEGIN
     LTEXT           "Dialog-Ausgabe",IDC_STATIC,12,140,57,9
     CONTROL         "Sicherer Modus",IDC_SAFE_RENDER,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,145,97,65,10
-    LTEXT           "Farb-Qualit‰t",IDC_STATIC,14,66,79,8
+    LTEXT           "Farb-Qualit√§t",IDC_STATIC,14,66,79,8
     CONTROL         "Slider1",IDC_TEXTURE_QUALITY,"msctls_trackbar32",
                     TBS_AUTOTICKS | TBS_TOP | TBS_ENABLESELRANGE | 
                     WS_TABSTOP,62,57,74,22
@@ -1122,10 +1122,10 @@ FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Guardar",IDOK,6,165,45,14
     PUSHBUTTON      "Cancelar",IDCANCEL,170,165,50,14
-    LTEXT           "ResoluciÛn",IDC_STATIC,14,35,36,8
+    LTEXT           "Resoluci√≥n",IDC_STATIC,14,35,36,8
     COMBOBOX        IDC_RESOLUTIONLIST,57,33,70,121,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "Opciones De la ExhibiciÛn",IDC_STATIC,7,5,213,77
+    GROUPBOX        "Opciones De la Exhibici√≥n",IDC_STATIC,7,5,213,77
     CONTROL         "Modo De Fullscreen",IDC_FULLSCREEN,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,14,50,78,10
     GROUPBOX        "Opciones Sanas",IDC_STATIC,7,84,213,74
@@ -1133,18 +1133,18 @@ BEGIN
                     WS_TABSTOP,27,97,68,10
     CONTROL         "Slider1",IDC_MUSIC_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,111,122,12
-    LTEXT           "Volumen De la M˙sica",IDC_STATIC,12,112,75,9
+    LTEXT           "Volumen De la M√∫sica",IDC_STATIC,12,112,75,9
     CONTROL         "Slider1",IDC_SOUND_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,125,122,12
     LTEXT           "Volumen De los Efectos",IDC_STATIC,12,126,80,9
     PUSHBUTTON      "Predefinido",IDC_DEFAULTSETTINGS,117,165,50,14
     PUSHBUTTON      "Guardar Y Jugar",ID_STARTGAME,54,165,60,14
-    LTEXT           "Tarjeta de VÌdeo",IDC_STATIC,14,19,56,8
+    LTEXT           "Tarjeta de V√≠deo",IDC_STATIC,14,19,56,8
     COMBOBOX        IDC_DEVICELIST,75,17,139,137,CBS_DROPDOWN | CBS_SORT | 
                     WS_DISABLED | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Slider1",IDC_DIALOG_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,139,122,12
-    LTEXT           "Volumen Del Di·logo",IDC_STATIC,12,140,70,9
+    LTEXT           "Volumen Del Di√°logo",IDC_STATIC,12,140,70,9
     CONTROL         "Modo Seguro",IDC_SAFE_RENDER,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,145,97,59,10
     LTEXT           "Calidad De la Textura",IDC_STATIC,14,67,69,8
@@ -1225,7 +1225,7 @@ FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Sauvegarder",IDOK,6,164,50,14
     PUSHBUTTON      "Annuler",IDCANCEL,177,164,43,14
-    LTEXT           "RÈsolution",IDC_STATIC,14,35,34,8
+    LTEXT           "R√©solution",IDC_STATIC,14,35,34,8
     COMBOBOX        IDC_RESOLUTIONLIST,57,33,70,121,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
     GROUPBOX        "Options D'Affichage",IDC_STATIC,7,5,213,77
@@ -1239,17 +1239,17 @@ BEGIN
     CONTROL         "Slider1",IDC_SOUND_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,68,125,146,12
     LTEXT           "Volume Effets",IDC_STATIC,12,126,53,9
-    PUSHBUTTON      "DÈfaut",IDC_DEFAULTSETTINGS,136,164,39,14
+    PUSHBUTTON      "D√©faut",IDC_DEFAULTSETTINGS,136,164,39,14
     PUSHBUTTON      "Sauvegarder et Jouer",ID_STARTGAME,58,164,76,14
-    LTEXT           "Carte vidÈo",IDC_STATIC,14,19,37,8
+    LTEXT           "Carte vid√©o",IDC_STATIC,14,19,37,8
     COMBOBOX        IDC_DEVICELIST,57,16,157,137,CBS_DROPDOWN | CBS_SORT | 
                     WS_DISABLED | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Slider1",IDC_DIALOG_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,68,139,146,12
     LTEXT           "Volume Voix",IDC_STATIC,12,140,57,9
-    CONTROL         "Mode S˚r",IDC_SAFE_RENDER,"Button",BS_AUTOCHECKBOX | 
+    CONTROL         "Mode S√ªr",IDC_SAFE_RENDER,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,145,97,48,10
-    LTEXT           "QualitÈ De Texture",IDC_STATIC,14,66,60,8
+    LTEXT           "Qualit√© De Texture",IDC_STATIC,14,66,60,8
     CONTROL         "Slider1",IDC_TEXTURE_QUALITY,"msctls_trackbar32",
                     TBS_AUTOTICKS | TBS_TOP | TBS_ENABLESELRANGE | 
                     WS_TABSTOP,79,57,74,22
@@ -1306,7 +1306,7 @@ FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Speichern",IDOK,6,165,50,14
     PUSHBUTTON      "Abbrechen",IDCANCEL,170,165,50,14
-    LTEXT           "Auflˆsung",IDC_STATIC,14,35,40,8
+    LTEXT           "Aufl√∂sung",IDC_STATIC,14,35,40,8
     COMBOBOX        IDC_RESOLUTIONLIST,57,33,70,121,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Fullscreen Modus",IDC_FULLSCREEN,"Button",
@@ -1330,7 +1330,7 @@ BEGIN
     LTEXT           "Dialog-Ausgabe",IDC_STATIC,12,140,57,9
     CONTROL         "Sicherer Modus",IDC_SAFE_RENDER,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,145,97,65,10
-    LTEXT           "Farb-Qualit‰t",IDC_STATIC,14,66,79,8
+    LTEXT           "Farb-Qualit√§t",IDC_STATIC,14,66,79,8
     CONTROL         "Slider1",IDC_TEXTURE_QUALITY,"msctls_trackbar32",
                     TBS_AUTOTICKS | TBS_TOP | TBS_ENABLESELRANGE | 
                     WS_TABSTOP,62,57,74,22
@@ -1386,10 +1386,10 @@ FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Guardar",IDOK,6,165,45,14
     PUSHBUTTON      "Cancelar",IDCANCEL,170,165,50,14
-    LTEXT           "ResoluciÛn",IDC_STATIC,14,35,36,8
+    LTEXT           "Resoluci√≥n",IDC_STATIC,14,35,36,8
     COMBOBOX        IDC_RESOLUTIONLIST,57,33,70,121,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "Opciones De la ExhibiciÛn",IDC_STATIC,7,5,213,77
+    GROUPBOX        "Opciones De la Exhibici√≥n",IDC_STATIC,7,5,213,77
     CONTROL         "Modo De Fullscreen",IDC_FULLSCREEN,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,14,50,78,10
     GROUPBOX        "Opciones Sanas",IDC_STATIC,7,84,213,74
@@ -1397,18 +1397,18 @@ BEGIN
                     WS_TABSTOP,27,97,68,10
     CONTROL         "Slider1",IDC_MUSIC_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,111,122,12
-    LTEXT           "Volumen De la M˙sica",IDC_STATIC,12,112,75,9
+    LTEXT           "Volumen De la M√∫sica",IDC_STATIC,12,112,75,9
     CONTROL         "Slider1",IDC_SOUND_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,125,122,12
     LTEXT           "Volumen De los Efectos",IDC_STATIC,12,126,80,9
     PUSHBUTTON      "Predefinido",IDC_DEFAULTSETTINGS,117,165,50,14
     PUSHBUTTON      "Guardar Y Jugar",ID_STARTGAME,54,165,60,14
-    LTEXT           "Tarjeta de VÌdeo",IDC_STATIC,14,19,56,8
+    LTEXT           "Tarjeta de V√≠deo",IDC_STATIC,14,19,56,8
     COMBOBOX        IDC_DEVICELIST,75,17,139,137,CBS_DROPDOWN | CBS_SORT | 
                     WS_DISABLED | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Slider1",IDC_DIALOG_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,139,122,12
-    LTEXT           "Volumen Del Di·logo",IDC_STATIC,12,140,70,9
+    LTEXT           "Volumen Del Di√°logo",IDC_STATIC,12,140,70,9
     CONTROL         "Modo Seguro",IDC_SAFE_RENDER,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,145,97,59,10
     LTEXT           "Calidad De la Textura",IDC_STATIC,14,67,69,8
@@ -1467,7 +1467,7 @@ FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Sauvegarder",IDOK,6,164,50,14
     PUSHBUTTON      "Annuler",IDCANCEL,177,164,43,14
-    LTEXT           "RÈsolution",IDC_STATIC,14,35,34,8
+    LTEXT           "R√©solution",IDC_STATIC,14,35,34,8
     COMBOBOX        IDC_RESOLUTIONLIST,57,33,70,121,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
     GROUPBOX        "Options D'Affichage",IDC_STATIC,7,5,213,77
@@ -1481,17 +1481,17 @@ BEGIN
     CONTROL         "Slider1",IDC_SOUND_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,68,125,146,12
     LTEXT           "Volume Effets",IDC_STATIC,12,126,53,9
-    PUSHBUTTON      "DÈfaut",IDC_DEFAULTSETTINGS,136,164,39,14
+    PUSHBUTTON      "D√©faut",IDC_DEFAULTSETTINGS,136,164,39,14
     PUSHBUTTON      "Sauvegarder et Jouer",ID_STARTGAME,58,164,76,14
-    LTEXT           "Carte vidÈo",IDC_STATIC,14,19,37,8
+    LTEXT           "Carte vid√©o",IDC_STATIC,14,19,37,8
     COMBOBOX        IDC_DEVICELIST,57,16,157,137,CBS_DROPDOWN | CBS_SORT | 
                     WS_DISABLED | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Slider1",IDC_DIALOG_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,68,139,146,12
     LTEXT           "Volume Voix",IDC_STATIC,12,140,57,9
-    CONTROL         "Mode S˚r",IDC_SAFE_RENDER,"Button",BS_AUTOCHECKBOX | 
+    CONTROL         "Mode S√ªr",IDC_SAFE_RENDER,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,145,97,48,10
-    LTEXT           "QualitÈ De Texture",IDC_STATIC,14,66,60,8
+    LTEXT           "Qualit√© De Texture",IDC_STATIC,14,66,60,8
     CONTROL         "Slider1",IDC_TEXTURE_QUALITY,"msctls_trackbar32",
                     TBS_AUTOTICKS | TBS_TOP | TBS_ENABLESELRANGE | 
                     WS_TABSTOP,79,57,74,22
@@ -1548,7 +1548,7 @@ FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Speichern",IDOK,6,165,50,14
     PUSHBUTTON      "Abbrechen",IDCANCEL,170,165,50,14
-    LTEXT           "Auflˆsung",IDC_STATIC,14,35,40,8
+    LTEXT           "Aufl√∂sung",IDC_STATIC,14,35,40,8
     COMBOBOX        IDC_RESOLUTIONLIST,57,33,70,121,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Fullscreen Modus",IDC_FULLSCREEN,"Button",
@@ -1572,7 +1572,7 @@ BEGIN
     LTEXT           "Dialog-Ausgabe",IDC_STATIC,12,140,57,9
     CONTROL         "Sicherer Modus",IDC_SAFE_RENDER,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,145,97,65,10
-    LTEXT           "Farb-Qualit‰t",IDC_STATIC,14,66,79,8
+    LTEXT           "Farb-Qualit√§t",IDC_STATIC,14,66,79,8
     CONTROL         "Slider1",IDC_TEXTURE_QUALITY,"msctls_trackbar32",
                     TBS_AUTOTICKS | TBS_TOP | TBS_ENABLESELRANGE | 
                     WS_TABSTOP,62,57,74,22
@@ -1628,10 +1628,10 @@ FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Guardar",IDOK,6,165,45,14
     PUSHBUTTON      "Cancelar",IDCANCEL,170,165,50,14
-    LTEXT           "ResoluciÛn",IDC_STATIC,14,35,36,8
+    LTEXT           "Resoluci√≥n",IDC_STATIC,14,35,36,8
     COMBOBOX        IDC_RESOLUTIONLIST,57,33,70,121,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "Opciones De la ExhibiciÛn",IDC_STATIC,7,5,213,77
+    GROUPBOX        "Opciones De la Exhibici√≥n",IDC_STATIC,7,5,213,77
     CONTROL         "Modo De Fullscreen",IDC_FULLSCREEN,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,14,50,78,10
     GROUPBOX        "Opciones Sanas",IDC_STATIC,7,84,213,74
@@ -1639,18 +1639,18 @@ BEGIN
                     WS_TABSTOP,27,97,68,10
     CONTROL         "Slider1",IDC_MUSIC_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,111,122,12
-    LTEXT           "Volumen De la M˙sica",IDC_STATIC,12,112,75,9
+    LTEXT           "Volumen De la M√∫sica",IDC_STATIC,12,112,75,9
     CONTROL         "Slider1",IDC_SOUND_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,125,122,12
     LTEXT           "Volumen De los Efectos",IDC_STATIC,12,126,80,9
     PUSHBUTTON      "Predefinido",IDC_DEFAULTSETTINGS,117,165,50,14
     PUSHBUTTON      "Guardar Y Jugar",ID_STARTGAME,54,165,60,14
-    LTEXT           "Tarjeta de VÌdeo",IDC_STATIC,14,19,56,8
+    LTEXT           "Tarjeta de V√≠deo",IDC_STATIC,14,19,56,8
     COMBOBOX        IDC_DEVICELIST,75,17,139,137,CBS_DROPDOWN | CBS_SORT | 
                     WS_DISABLED | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Slider1",IDC_DIALOG_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,139,122,12
-    LTEXT           "Volumen Del Di·logo",IDC_STATIC,12,140,70,9
+    LTEXT           "Volumen Del Di√°logo",IDC_STATIC,12,140,70,9
     CONTROL         "Modo Seguro",IDC_SAFE_RENDER,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,145,97,59,10
     LTEXT           "Calidad De la Textura",IDC_STATIC,14,67,69,8
@@ -1709,7 +1709,7 @@ FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Sauvegarder",IDOK,6,164,50,14
     PUSHBUTTON      "Annuler",IDCANCEL,177,164,43,14
-    LTEXT           "RÈsolution",IDC_STATIC,14,35,34,8
+    LTEXT           "R√©solution",IDC_STATIC,14,35,34,8
     COMBOBOX        IDC_RESOLUTIONLIST,57,33,70,121,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
     GROUPBOX        "Options D'Affichage",IDC_STATIC,7,5,213,77
@@ -1723,17 +1723,17 @@ BEGIN
     CONTROL         "Slider1",IDC_SOUND_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,68,125,146,12
     LTEXT           "Volume Effets",IDC_STATIC,12,126,53,9
-    PUSHBUTTON      "DÈfaut",IDC_DEFAULTSETTINGS,136,164,39,14
+    PUSHBUTTON      "D√©faut",IDC_DEFAULTSETTINGS,136,164,39,14
     PUSHBUTTON      "Sauvegarder et Jouer",ID_STARTGAME,58,164,76,14
-    LTEXT           "Carte vidÈo",IDC_STATIC,14,19,37,8
+    LTEXT           "Carte vid√©o",IDC_STATIC,14,19,37,8
     COMBOBOX        IDC_DEVICELIST,57,16,157,137,CBS_DROPDOWN | CBS_SORT | 
                     WS_DISABLED | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Slider1",IDC_DIALOG_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,68,139,146,12
     LTEXT           "Volume Voix",IDC_STATIC,12,140,57,9
-    CONTROL         "Mode S˚r",IDC_SAFE_RENDER,"Button",BS_AUTOCHECKBOX | 
+    CONTROL         "Mode S√ªr",IDC_SAFE_RENDER,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,145,97,48,10
-    LTEXT           "QualitÈ De Texture",IDC_STATIC,14,66,60,8
+    LTEXT           "Qualit√© De Texture",IDC_STATIC,14,66,60,8
     CONTROL         "Slider1",IDC_TEXTURE_QUALITY,"msctls_trackbar32",
                     TBS_AUTOTICKS | TBS_TOP | TBS_ENABLESELRANGE | 
                     WS_TABSTOP,79,57,74,22
@@ -1790,10 +1790,10 @@ FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Guardar",IDOK,6,165,45,14
     PUSHBUTTON      "Cancelar",IDCANCEL,170,165,50,14
-    LTEXT           "ResoluciÛn",IDC_STATIC,14,35,36,8
+    LTEXT           "Resoluci√≥n",IDC_STATIC,14,35,36,8
     COMBOBOX        IDC_RESOLUTIONLIST,57,33,70,121,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "Opciones De la ExhibiciÛn",IDC_STATIC,7,5,213,77
+    GROUPBOX        "Opciones De la Exhibici√≥n",IDC_STATIC,7,5,213,77
     CONTROL         "Modo De Fullscreen",IDC_FULLSCREEN,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,14,50,78,10
     GROUPBOX        "Opciones Sanas",IDC_STATIC,7,84,213,74
@@ -1801,18 +1801,18 @@ BEGIN
                     WS_TABSTOP,27,97,68,10
     CONTROL         "Slider1",IDC_MUSIC_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,111,122,12
-    LTEXT           "Volumen De la M˙sica",IDC_STATIC,12,112,75,9
+    LTEXT           "Volumen De la M√∫sica",IDC_STATIC,12,112,75,9
     CONTROL         "Slider1",IDC_SOUND_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,125,122,12
     LTEXT           "Volumen De los Efectos",IDC_STATIC,12,126,80,9
     PUSHBUTTON      "Predefinido",IDC_DEFAULTSETTINGS,117,165,50,14
     PUSHBUTTON      "Guardar Y Jugar",ID_STARTGAME,54,165,60,14
-    LTEXT           "Tarjeta de VÌdeo",IDC_STATIC,14,19,56,8
+    LTEXT           "Tarjeta de V√≠deo",IDC_STATIC,14,19,56,8
     COMBOBOX        IDC_DEVICELIST,75,17,139,137,CBS_DROPDOWN | CBS_SORT | 
                     WS_DISABLED | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Slider1",IDC_DIALOG_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,139,122,12
-    LTEXT           "Volumen Del Di·logo",IDC_STATIC,12,140,70,9
+    LTEXT           "Volumen Del Di√°logo",IDC_STATIC,12,140,70,9
     CONTROL         "Modo Seguro",IDC_SAFE_RENDER,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,145,97,59,10
     LTEXT           "Calidad De la Textura",IDC_STATIC,14,67,69,8
@@ -1871,7 +1871,7 @@ FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Sauvegarder",IDOK,6,164,50,14
     PUSHBUTTON      "Annuler",IDCANCEL,177,164,43,14
-    LTEXT           "RÈsolution",IDC_STATIC,14,35,34,8
+    LTEXT           "R√©solution",IDC_STATIC,14,35,34,8
     COMBOBOX        IDC_RESOLUTIONLIST,57,33,70,121,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
     GROUPBOX        "Options D'Affichage",IDC_STATIC,7,5,213,77
@@ -1885,17 +1885,17 @@ BEGIN
     CONTROL         "Slider1",IDC_SOUND_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,68,125,146,12
     LTEXT           "Volume Effets",IDC_STATIC,12,126,53,9
-    PUSHBUTTON      "DÈfaut",IDC_DEFAULTSETTINGS,136,164,39,14
+    PUSHBUTTON      "D√©faut",IDC_DEFAULTSETTINGS,136,164,39,14
     PUSHBUTTON      "Sauvegarder et Jouer",ID_STARTGAME,58,164,76,14
-    LTEXT           "Carte vidÈo",IDC_STATIC,14,19,37,8
+    LTEXT           "Carte vid√©o",IDC_STATIC,14,19,37,8
     COMBOBOX        IDC_DEVICELIST,57,16,157,137,CBS_DROPDOWN | CBS_SORT | 
                     WS_DISABLED | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Slider1",IDC_DIALOG_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,68,139,146,12
     LTEXT           "Volume Voix",IDC_STATIC,12,140,57,9
-    CONTROL         "Mode S˚r",IDC_SAFE_RENDER,"Button",BS_AUTOCHECKBOX | 
+    CONTROL         "Mode S√ªr",IDC_SAFE_RENDER,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,145,97,48,10
-    LTEXT           "QualitÈ De Texture",IDC_STATIC,14,66,60,8
+    LTEXT           "Qualit√© De Texture",IDC_STATIC,14,66,60,8
     CONTROL         "Slider1",IDC_TEXTURE_QUALITY,"msctls_trackbar32",
                     TBS_AUTOTICKS | TBS_TOP | TBS_ENABLESELRANGE | 
                     WS_TABSTOP,79,57,74,22
@@ -1952,10 +1952,10 @@ FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Guardar",IDOK,6,165,45,14
     PUSHBUTTON      "Cancelar",IDCANCEL,170,165,50,14
-    LTEXT           "ResoluciÛn",IDC_STATIC,14,35,36,8
+    LTEXT           "Resoluci√≥n",IDC_STATIC,14,35,36,8
     COMBOBOX        IDC_RESOLUTIONLIST,57,33,70,121,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "Opciones De la ExhibiciÛn",IDC_STATIC,7,5,213,77
+    GROUPBOX        "Opciones De la Exhibici√≥n",IDC_STATIC,7,5,213,77
     CONTROL         "Modo De Fullscreen",IDC_FULLSCREEN,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,14,50,78,10
     GROUPBOX        "Opciones Sanas",IDC_STATIC,7,84,213,74
@@ -1963,18 +1963,18 @@ BEGIN
                     WS_TABSTOP,27,97,68,10
     CONTROL         "Slider1",IDC_MUSIC_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,111,122,12
-    LTEXT           "Volumen De la M˙sica",IDC_STATIC,12,112,75,9
+    LTEXT           "Volumen De la M√∫sica",IDC_STATIC,12,112,75,9
     CONTROL         "Slider1",IDC_SOUND_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,125,122,12
     LTEXT           "Volumen De los Efectos",IDC_STATIC,12,126,80,9
     PUSHBUTTON      "Predefinido",IDC_DEFAULTSETTINGS,117,165,50,14
     PUSHBUTTON      "Guardar Y Jugar",ID_STARTGAME,54,165,60,14
-    LTEXT           "Tarjeta de VÌdeo",IDC_STATIC,14,19,56,8
+    LTEXT           "Tarjeta de V√≠deo",IDC_STATIC,14,19,56,8
     COMBOBOX        IDC_DEVICELIST,75,17,139,137,CBS_DROPDOWN | CBS_SORT | 
                     WS_DISABLED | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Slider1",IDC_DIALOG_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,139,122,12
-    LTEXT           "Volumen Del Di·logo",IDC_STATIC,12,140,70,9
+    LTEXT           "Volumen Del Di√°logo",IDC_STATIC,12,140,70,9
     CONTROL         "Modo Seguro",IDC_SAFE_RENDER,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,145,97,59,10
     LTEXT           "Calidad De la Textura",IDC_STATIC,14,67,69,8
@@ -2033,10 +2033,10 @@ FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Guardar",IDOK,6,165,45,14
     PUSHBUTTON      "Cancelar",IDCANCEL,170,165,50,14
-    LTEXT           "ResoluciÛn",IDC_STATIC,14,35,36,8
+    LTEXT           "Resoluci√≥n",IDC_STATIC,14,35,36,8
     COMBOBOX        IDC_RESOLUTIONLIST,57,33,70,121,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "Opciones De la ExhibiciÛn",IDC_STATIC,7,5,213,77
+    GROUPBOX        "Opciones De la Exhibici√≥n",IDC_STATIC,7,5,213,77
     CONTROL         "Modo De Fullscreen",IDC_FULLSCREEN,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,14,50,78,10
     GROUPBOX        "Opciones Sanas",IDC_STATIC,7,84,213,74
@@ -2044,18 +2044,18 @@ BEGIN
                     WS_TABSTOP,27,97,68,10
     CONTROL         "Slider1",IDC_MUSIC_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,111,122,12
-    LTEXT           "Volumen De la M˙sica",IDC_STATIC,12,112,75,9
+    LTEXT           "Volumen De la M√∫sica",IDC_STATIC,12,112,75,9
     CONTROL         "Slider1",IDC_SOUND_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,125,122,12
     LTEXT           "Volumen De los Efectos",IDC_STATIC,12,126,80,9
     PUSHBUTTON      "Predefinido",IDC_DEFAULTSETTINGS,117,165,50,14
     PUSHBUTTON      "Guardar Y Jugar",ID_STARTGAME,54,165,60,14
-    LTEXT           "Tarjeta de VÌdeo",IDC_STATIC,14,19,56,8
+    LTEXT           "Tarjeta de V√≠deo",IDC_STATIC,14,19,56,8
     COMBOBOX        IDC_DEVICELIST,75,17,139,137,CBS_DROPDOWN | CBS_SORT | 
                     WS_DISABLED | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Slider1",IDC_DIALOG_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,139,122,12
-    LTEXT           "Volumen Del Di·logo",IDC_STATIC,12,140,70,9
+    LTEXT           "Volumen Del Di√°logo",IDC_STATIC,12,140,70,9
     CONTROL         "Modo Seguro",IDC_SAFE_RENDER,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,145,97,59,10
     LTEXT           "Calidad De la Textura",IDC_STATIC,14,67,69,8
@@ -2114,10 +2114,10 @@ FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Guardar",IDOK,6,165,45,14
     PUSHBUTTON      "Cancelar",IDCANCEL,170,165,50,14
-    LTEXT           "ResoluciÛn",IDC_STATIC,14,35,36,8
+    LTEXT           "Resoluci√≥n",IDC_STATIC,14,35,36,8
     COMBOBOX        IDC_RESOLUTIONLIST,57,33,70,121,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "Opciones De la ExhibiciÛn",IDC_STATIC,7,5,213,77
+    GROUPBOX        "Opciones De la Exhibici√≥n",IDC_STATIC,7,5,213,77
     CONTROL         "Modo De Fullscreen",IDC_FULLSCREEN,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,14,50,78,10
     GROUPBOX        "Opciones Sanas",IDC_STATIC,7,84,213,74
@@ -2125,18 +2125,18 @@ BEGIN
                     WS_TABSTOP,27,97,68,10
     CONTROL         "Slider1",IDC_MUSIC_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,111,122,12
-    LTEXT           "Volumen De la M˙sica",IDC_STATIC,12,112,75,9
+    LTEXT           "Volumen De la M√∫sica",IDC_STATIC,12,112,75,9
     CONTROL         "Slider1",IDC_SOUND_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,125,122,12
     LTEXT           "Volumen De los Efectos",IDC_STATIC,12,126,80,9
     PUSHBUTTON      "Predefinido",IDC_DEFAULTSETTINGS,117,165,50,14
     PUSHBUTTON      "Guardar Y Jugar",ID_STARTGAME,54,165,60,14
-    LTEXT           "Tarjeta de VÌdeo",IDC_STATIC,14,19,56,8
+    LTEXT           "Tarjeta de V√≠deo",IDC_STATIC,14,19,56,8
     COMBOBOX        IDC_DEVICELIST,75,17,139,137,CBS_DROPDOWN | CBS_SORT | 
                     WS_DISABLED | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Slider1",IDC_DIALOG_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,139,122,12
-    LTEXT           "Volumen Del Di·logo",IDC_STATIC,12,140,70,9
+    LTEXT           "Volumen Del Di√°logo",IDC_STATIC,12,140,70,9
     CONTROL         "Modo Seguro",IDC_SAFE_RENDER,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,145,97,59,10
     LTEXT           "Calidad De la Textura",IDC_STATIC,14,67,69,8
@@ -2195,10 +2195,10 @@ FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Guardar",IDOK,6,165,45,14
     PUSHBUTTON      "Cancelar",IDCANCEL,170,165,50,14
-    LTEXT           "ResoluciÛn",IDC_STATIC,14,35,36,8
+    LTEXT           "Resoluci√≥n",IDC_STATIC,14,35,36,8
     COMBOBOX        IDC_RESOLUTIONLIST,57,33,70,121,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "Opciones De la ExhibiciÛn",IDC_STATIC,7,5,213,77
+    GROUPBOX        "Opciones De la Exhibici√≥n",IDC_STATIC,7,5,213,77
     CONTROL         "Modo De Fullscreen",IDC_FULLSCREEN,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,14,50,78,10
     GROUPBOX        "Opciones Sanas",IDC_STATIC,7,84,213,74
@@ -2206,18 +2206,18 @@ BEGIN
                     WS_TABSTOP,27,97,68,10
     CONTROL         "Slider1",IDC_MUSIC_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,111,122,12
-    LTEXT           "Volumen De la M˙sica",IDC_STATIC,12,112,75,9
+    LTEXT           "Volumen De la M√∫sica",IDC_STATIC,12,112,75,9
     CONTROL         "Slider1",IDC_SOUND_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,125,122,12
     LTEXT           "Volumen De los Efectos",IDC_STATIC,12,126,80,9
     PUSHBUTTON      "Predefinido",IDC_DEFAULTSETTINGS,117,165,50,14
     PUSHBUTTON      "Guardar Y Jugar",ID_STARTGAME,54,165,60,14
-    LTEXT           "Tarjeta de VÌdeo",IDC_STATIC,14,19,56,8
+    LTEXT           "Tarjeta de V√≠deo",IDC_STATIC,14,19,56,8
     COMBOBOX        IDC_DEVICELIST,75,17,139,137,CBS_DROPDOWN | CBS_SORT | 
                     WS_DISABLED | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Slider1",IDC_DIALOG_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,139,122,12
-    LTEXT           "Volumen Del Di·logo",IDC_STATIC,12,140,70,9
+    LTEXT           "Volumen Del Di√°logo",IDC_STATIC,12,140,70,9
     CONTROL         "Modo Seguro",IDC_SAFE_RENDER,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,145,97,59,10
     LTEXT           "Calidad De la Textura",IDC_STATIC,14,67,69,8
@@ -2276,10 +2276,10 @@ FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Guardar",IDOK,6,165,45,14
     PUSHBUTTON      "Cancelar",IDCANCEL,170,165,50,14
-    LTEXT           "ResoluciÛn",IDC_STATIC,14,35,36,8
+    LTEXT           "Resoluci√≥n",IDC_STATIC,14,35,36,8
     COMBOBOX        IDC_RESOLUTIONLIST,57,33,70,121,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "Opciones De la ExhibiciÛn",IDC_STATIC,7,5,213,77
+    GROUPBOX        "Opciones De la Exhibici√≥n",IDC_STATIC,7,5,213,77
     CONTROL         "Modo De Fullscreen",IDC_FULLSCREEN,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,14,50,78,10
     GROUPBOX        "Opciones Sanas",IDC_STATIC,7,84,213,74
@@ -2287,18 +2287,18 @@ BEGIN
                     WS_TABSTOP,27,97,68,10
     CONTROL         "Slider1",IDC_MUSIC_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,111,122,12
-    LTEXT           "Volumen De la M˙sica",IDC_STATIC,12,112,75,9
+    LTEXT           "Volumen De la M√∫sica",IDC_STATIC,12,112,75,9
     CONTROL         "Slider1",IDC_SOUND_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,125,122,12
     LTEXT           "Volumen De los Efectos",IDC_STATIC,12,126,80,9
     PUSHBUTTON      "Predefinido",IDC_DEFAULTSETTINGS,117,165,50,14
     PUSHBUTTON      "Guardar Y Jugar",ID_STARTGAME,54,165,60,14
-    LTEXT           "Tarjeta de VÌdeo",IDC_STATIC,14,19,56,8
+    LTEXT           "Tarjeta de V√≠deo",IDC_STATIC,14,19,56,8
     COMBOBOX        IDC_DEVICELIST,75,17,139,137,CBS_DROPDOWN | CBS_SORT | 
                     WS_DISABLED | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Slider1",IDC_DIALOG_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,139,122,12
-    LTEXT           "Volumen Del Di·logo",IDC_STATIC,12,140,70,9
+    LTEXT           "Volumen Del Di√°logo",IDC_STATIC,12,140,70,9
     CONTROL         "Modo Seguro",IDC_SAFE_RENDER,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,145,97,59,10
     LTEXT           "Calidad De la Textura",IDC_STATIC,14,67,69,8
@@ -2357,10 +2357,10 @@ FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Guardar",IDOK,6,165,45,14
     PUSHBUTTON      "Cancelar",IDCANCEL,170,165,50,14
-    LTEXT           "ResoluciÛn",IDC_STATIC,14,35,36,8
+    LTEXT           "Resoluci√≥n",IDC_STATIC,14,35,36,8
     COMBOBOX        IDC_RESOLUTIONLIST,57,33,70,121,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "Opciones De la ExhibiciÛn",IDC_STATIC,7,5,213,77
+    GROUPBOX        "Opciones De la Exhibici√≥n",IDC_STATIC,7,5,213,77
     CONTROL         "Modo De Fullscreen",IDC_FULLSCREEN,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,14,50,78,10
     GROUPBOX        "Opciones Sanas",IDC_STATIC,7,84,213,74
@@ -2368,18 +2368,18 @@ BEGIN
                     WS_TABSTOP,27,97,68,10
     CONTROL         "Slider1",IDC_MUSIC_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,111,122,12
-    LTEXT           "Volumen De la M˙sica",IDC_STATIC,12,112,75,9
+    LTEXT           "Volumen De la M√∫sica",IDC_STATIC,12,112,75,9
     CONTROL         "Slider1",IDC_SOUND_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,125,122,12
     LTEXT           "Volumen De los Efectos",IDC_STATIC,12,126,80,9
     PUSHBUTTON      "Predefinido",IDC_DEFAULTSETTINGS,117,165,50,14
     PUSHBUTTON      "Guardar Y Jugar",ID_STARTGAME,54,165,60,14
-    LTEXT           "Tarjeta de VÌdeo",IDC_STATIC,14,19,56,8
+    LTEXT           "Tarjeta de V√≠deo",IDC_STATIC,14,19,56,8
     COMBOBOX        IDC_DEVICELIST,75,17,139,137,CBS_DROPDOWN | CBS_SORT | 
                     WS_DISABLED | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Slider1",IDC_DIALOG_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,139,122,12
-    LTEXT           "Volumen Del Di·logo",IDC_STATIC,12,140,70,9
+    LTEXT           "Volumen Del Di√°logo",IDC_STATIC,12,140,70,9
     CONTROL         "Modo Seguro",IDC_SAFE_RENDER,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,145,97,59,10
     LTEXT           "Calidad De la Textura",IDC_STATIC,14,67,69,8
@@ -2438,10 +2438,10 @@ FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Guardar",IDOK,6,165,45,14
     PUSHBUTTON      "Cancelar",IDCANCEL,170,165,50,14
-    LTEXT           "ResoluciÛn",IDC_STATIC,14,35,36,8
+    LTEXT           "Resoluci√≥n",IDC_STATIC,14,35,36,8
     COMBOBOX        IDC_RESOLUTIONLIST,57,33,70,121,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "Opciones De la ExhibiciÛn",IDC_STATIC,7,5,213,77
+    GROUPBOX        "Opciones De la Exhibici√≥n",IDC_STATIC,7,5,213,77
     CONTROL         "Modo De Fullscreen",IDC_FULLSCREEN,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,14,50,78,10
     GROUPBOX        "Opciones Sanas",IDC_STATIC,7,84,213,74
@@ -2449,18 +2449,18 @@ BEGIN
                     WS_TABSTOP,27,97,68,10
     CONTROL         "Slider1",IDC_MUSIC_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,111,122,12
-    LTEXT           "Volumen De la M˙sica",IDC_STATIC,12,112,75,9
+    LTEXT           "Volumen De la M√∫sica",IDC_STATIC,12,112,75,9
     CONTROL         "Slider1",IDC_SOUND_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,125,122,12
     LTEXT           "Volumen De los Efectos",IDC_STATIC,12,126,80,9
     PUSHBUTTON      "Predefinido",IDC_DEFAULTSETTINGS,117,165,50,14
     PUSHBUTTON      "Guardar Y Jugar",ID_STARTGAME,54,165,60,14
-    LTEXT           "Tarjeta de VÌdeo",IDC_STATIC,14,19,56,8
+    LTEXT           "Tarjeta de V√≠deo",IDC_STATIC,14,19,56,8
     COMBOBOX        IDC_DEVICELIST,75,17,139,137,CBS_DROPDOWN | CBS_SORT | 
                     WS_DISABLED | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Slider1",IDC_DIALOG_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,139,122,12
-    LTEXT           "Volumen Del Di·logo",IDC_STATIC,12,140,70,9
+    LTEXT           "Volumen Del Di√°logo",IDC_STATIC,12,140,70,9
     CONTROL         "Modo Seguro",IDC_SAFE_RENDER,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,145,97,59,10
     LTEXT           "Calidad De la Textura",IDC_STATIC,14,67,69,8
@@ -2519,10 +2519,10 @@ FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Guardar",IDOK,6,165,45,14
     PUSHBUTTON      "Cancelar",IDCANCEL,170,165,50,14
-    LTEXT           "ResoluciÛn",IDC_STATIC,14,35,36,8
+    LTEXT           "Resoluci√≥n",IDC_STATIC,14,35,36,8
     COMBOBOX        IDC_RESOLUTIONLIST,57,33,70,121,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "Opciones De la ExhibiciÛn",IDC_STATIC,7,5,213,77
+    GROUPBOX        "Opciones De la Exhibici√≥n",IDC_STATIC,7,5,213,77
     CONTROL         "Modo De Fullscreen",IDC_FULLSCREEN,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,14,50,78,10
     GROUPBOX        "Opciones Sanas",IDC_STATIC,7,84,213,74
@@ -2530,18 +2530,18 @@ BEGIN
                     WS_TABSTOP,27,97,68,10
     CONTROL         "Slider1",IDC_MUSIC_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,111,122,12
-    LTEXT           "Volumen De la M˙sica",IDC_STATIC,12,112,75,9
+    LTEXT           "Volumen De la M√∫sica",IDC_STATIC,12,112,75,9
     CONTROL         "Slider1",IDC_SOUND_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,125,122,12
     LTEXT           "Volumen De los Efectos",IDC_STATIC,12,126,80,9
     PUSHBUTTON      "Predefinido",IDC_DEFAULTSETTINGS,117,165,50,14
     PUSHBUTTON      "Guardar Y Jugar",ID_STARTGAME,54,165,60,14
-    LTEXT           "Tarjeta de VÌdeo",IDC_STATIC,14,19,56,8
+    LTEXT           "Tarjeta de V√≠deo",IDC_STATIC,14,19,56,8
     COMBOBOX        IDC_DEVICELIST,75,17,139,137,CBS_DROPDOWN | CBS_SORT | 
                     WS_DISABLED | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Slider1",IDC_DIALOG_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,139,122,12
-    LTEXT           "Volumen Del Di·logo",IDC_STATIC,12,140,70,9
+    LTEXT           "Volumen Del Di√°logo",IDC_STATIC,12,140,70,9
     CONTROL         "Modo Seguro",IDC_SAFE_RENDER,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,145,97,59,10
     LTEXT           "Calidad De la Textura",IDC_STATIC,14,67,69,8
@@ -2600,10 +2600,10 @@ FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Guardar",IDOK,6,165,45,14
     PUSHBUTTON      "Cancelar",IDCANCEL,170,165,50,14
-    LTEXT           "ResoluciÛn",IDC_STATIC,14,35,36,8
+    LTEXT           "Resoluci√≥n",IDC_STATIC,14,35,36,8
     COMBOBOX        IDC_RESOLUTIONLIST,57,33,70,121,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "Opciones De la ExhibiciÛn",IDC_STATIC,7,5,213,77
+    GROUPBOX        "Opciones De la Exhibici√≥n",IDC_STATIC,7,5,213,77
     CONTROL         "Modo De Fullscreen",IDC_FULLSCREEN,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,14,50,78,10
     GROUPBOX        "Opciones Sanas",IDC_STATIC,7,84,213,74
@@ -2611,18 +2611,18 @@ BEGIN
                     WS_TABSTOP,27,97,68,10
     CONTROL         "Slider1",IDC_MUSIC_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,111,122,12
-    LTEXT           "Volumen De la M˙sica",IDC_STATIC,12,112,75,9
+    LTEXT           "Volumen De la M√∫sica",IDC_STATIC,12,112,75,9
     CONTROL         "Slider1",IDC_SOUND_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,125,122,12
     LTEXT           "Volumen De los Efectos",IDC_STATIC,12,126,80,9
     PUSHBUTTON      "Predefinido",IDC_DEFAULTSETTINGS,117,165,50,14
     PUSHBUTTON      "Guardar Y Jugar",ID_STARTGAME,54,165,60,14
-    LTEXT           "Tarjeta de VÌdeo",IDC_STATIC,14,19,56,8
+    LTEXT           "Tarjeta de V√≠deo",IDC_STATIC,14,19,56,8
     COMBOBOX        IDC_DEVICELIST,75,17,139,137,CBS_DROPDOWN | CBS_SORT | 
                     WS_DISABLED | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Slider1",IDC_DIALOG_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,139,122,12
-    LTEXT           "Volumen Del Di·logo",IDC_STATIC,12,140,70,9
+    LTEXT           "Volumen Del Di√°logo",IDC_STATIC,12,140,70,9
     CONTROL         "Modo Seguro",IDC_SAFE_RENDER,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,145,97,59,10
     LTEXT           "Calidad De la Textura",IDC_STATIC,14,67,69,8
@@ -2681,10 +2681,10 @@ FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Guardar",IDOK,6,165,45,14
     PUSHBUTTON      "Cancelar",IDCANCEL,170,165,50,14
-    LTEXT           "ResoluciÛn",IDC_STATIC,14,35,36,8
+    LTEXT           "Resoluci√≥n",IDC_STATIC,14,35,36,8
     COMBOBOX        IDC_RESOLUTIONLIST,57,33,70,121,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "Opciones De la ExhibiciÛn",IDC_STATIC,7,5,213,77
+    GROUPBOX        "Opciones De la Exhibici√≥n",IDC_STATIC,7,5,213,77
     CONTROL         "Modo De Fullscreen",IDC_FULLSCREEN,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,14,50,78,10
     GROUPBOX        "Opciones Sanas",IDC_STATIC,7,84,213,74
@@ -2692,18 +2692,18 @@ BEGIN
                     WS_TABSTOP,27,97,68,10
     CONTROL         "Slider1",IDC_MUSIC_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,111,122,12
-    LTEXT           "Volumen De la M˙sica",IDC_STATIC,12,112,75,9
+    LTEXT           "Volumen De la M√∫sica",IDC_STATIC,12,112,75,9
     CONTROL         "Slider1",IDC_SOUND_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,125,122,12
     LTEXT           "Volumen De los Efectos",IDC_STATIC,12,126,80,9
     PUSHBUTTON      "Predefinido",IDC_DEFAULTSETTINGS,117,165,50,14
     PUSHBUTTON      "Guardar Y Jugar",ID_STARTGAME,54,165,60,14
-    LTEXT           "Tarjeta de VÌdeo",IDC_STATIC,14,19,56,8
+    LTEXT           "Tarjeta de V√≠deo",IDC_STATIC,14,19,56,8
     COMBOBOX        IDC_DEVICELIST,75,17,139,137,CBS_DROPDOWN | CBS_SORT | 
                     WS_DISABLED | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Slider1",IDC_DIALOG_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,139,122,12
-    LTEXT           "Volumen Del Di·logo",IDC_STATIC,12,140,70,9
+    LTEXT           "Volumen Del Di√°logo",IDC_STATIC,12,140,70,9
     CONTROL         "Modo Seguro",IDC_SAFE_RENDER,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,145,97,59,10
     LTEXT           "Calidad De la Textura",IDC_STATIC,14,67,69,8
@@ -2762,10 +2762,10 @@ FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Guardar",IDOK,6,165,45,14
     PUSHBUTTON      "Cancelar",IDCANCEL,170,165,50,14
-    LTEXT           "ResoluciÛn",IDC_STATIC,14,35,36,8
+    LTEXT           "Resoluci√≥n",IDC_STATIC,14,35,36,8
     COMBOBOX        IDC_RESOLUTIONLIST,57,33,70,121,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "Opciones De la ExhibiciÛn",IDC_STATIC,7,5,213,77
+    GROUPBOX        "Opciones De la Exhibici√≥n",IDC_STATIC,7,5,213,77
     CONTROL         "Modo De Fullscreen",IDC_FULLSCREEN,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,14,50,78,10
     GROUPBOX        "Opciones Sanas",IDC_STATIC,7,84,213,74
@@ -2773,18 +2773,18 @@ BEGIN
                     WS_TABSTOP,27,97,68,10
     CONTROL         "Slider1",IDC_MUSIC_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,111,122,12
-    LTEXT           "Volumen De la M˙sica",IDC_STATIC,12,112,75,9
+    LTEXT           "Volumen De la M√∫sica",IDC_STATIC,12,112,75,9
     CONTROL         "Slider1",IDC_SOUND_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,125,122,12
     LTEXT           "Volumen De los Efectos",IDC_STATIC,12,126,80,9
     PUSHBUTTON      "Predefinido",IDC_DEFAULTSETTINGS,117,165,50,14
     PUSHBUTTON      "Guardar Y Jugar",ID_STARTGAME,54,165,60,14
-    LTEXT           "Tarjeta de VÌdeo",IDC_STATIC,14,19,56,8
+    LTEXT           "Tarjeta de V√≠deo",IDC_STATIC,14,19,56,8
     COMBOBOX        IDC_DEVICELIST,75,17,139,137,CBS_DROPDOWN | CBS_SORT | 
                     WS_DISABLED | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Slider1",IDC_DIALOG_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,139,122,12
-    LTEXT           "Volumen Del Di·logo",IDC_STATIC,12,140,70,9
+    LTEXT           "Volumen Del Di√°logo",IDC_STATIC,12,140,70,9
     CONTROL         "Modo Seguro",IDC_SAFE_RENDER,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,145,97,59,10
     LTEXT           "Calidad De la Textura",IDC_STATIC,14,67,69,8
@@ -2843,10 +2843,10 @@ FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Guardar",IDOK,6,165,45,14
     PUSHBUTTON      "Cancelar",IDCANCEL,170,165,50,14
-    LTEXT           "ResoluciÛn",IDC_STATIC,14,35,36,8
+    LTEXT           "Resoluci√≥n",IDC_STATIC,14,35,36,8
     COMBOBOX        IDC_RESOLUTIONLIST,57,33,70,121,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "Opciones De la ExhibiciÛn",IDC_STATIC,7,5,213,77
+    GROUPBOX        "Opciones De la Exhibici√≥n",IDC_STATIC,7,5,213,77
     CONTROL         "Modo De Fullscreen",IDC_FULLSCREEN,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,14,50,78,10
     GROUPBOX        "Opciones Sanas",IDC_STATIC,7,84,213,74
@@ -2854,18 +2854,18 @@ BEGIN
                     WS_TABSTOP,27,97,68,10
     CONTROL         "Slider1",IDC_MUSIC_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,111,122,12
-    LTEXT           "Volumen De la M˙sica",IDC_STATIC,12,112,75,9
+    LTEXT           "Volumen De la M√∫sica",IDC_STATIC,12,112,75,9
     CONTROL         "Slider1",IDC_SOUND_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,125,122,12
     LTEXT           "Volumen De los Efectos",IDC_STATIC,12,126,80,9
     PUSHBUTTON      "Predefinido",IDC_DEFAULTSETTINGS,117,165,50,14
     PUSHBUTTON      "Guardar Y Jugar",ID_STARTGAME,54,165,60,14
-    LTEXT           "Tarjeta de VÌdeo",IDC_STATIC,14,19,56,8
+    LTEXT           "Tarjeta de V√≠deo",IDC_STATIC,14,19,56,8
     COMBOBOX        IDC_DEVICELIST,75,17,139,137,CBS_DROPDOWN | CBS_SORT | 
                     WS_DISABLED | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Slider1",IDC_DIALOG_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,139,122,12
-    LTEXT           "Volumen Del Di·logo",IDC_STATIC,12,140,70,9
+    LTEXT           "Volumen Del Di√°logo",IDC_STATIC,12,140,70,9
     CONTROL         "Modo Seguro",IDC_SAFE_RENDER,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,145,97,59,10
     LTEXT           "Calidad De la Textura",IDC_STATIC,14,67,69,8
@@ -2924,10 +2924,10 @@ FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Guardar",IDOK,6,165,45,14
     PUSHBUTTON      "Cancelar",IDCANCEL,170,165,50,14
-    LTEXT           "ResoluciÛn",IDC_STATIC,14,35,36,8
+    LTEXT           "Resoluci√≥n",IDC_STATIC,14,35,36,8
     COMBOBOX        IDC_RESOLUTIONLIST,57,33,70,121,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "Opciones De la ExhibiciÛn",IDC_STATIC,7,5,213,77
+    GROUPBOX        "Opciones De la Exhibici√≥n",IDC_STATIC,7,5,213,77
     CONTROL         "Modo De Fullscreen",IDC_FULLSCREEN,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,14,50,78,10
     GROUPBOX        "Opciones Sanas",IDC_STATIC,7,84,213,74
@@ -2935,18 +2935,18 @@ BEGIN
                     WS_TABSTOP,27,97,68,10
     CONTROL         "Slider1",IDC_MUSIC_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,111,122,12
-    LTEXT           "Volumen De la M˙sica",IDC_STATIC,12,112,75,9
+    LTEXT           "Volumen De la M√∫sica",IDC_STATIC,12,112,75,9
     CONTROL         "Slider1",IDC_SOUND_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,125,122,12
     LTEXT           "Volumen De los Efectos",IDC_STATIC,12,126,80,9
     PUSHBUTTON      "Predefinido",IDC_DEFAULTSETTINGS,117,165,50,14
     PUSHBUTTON      "Guardar Y Jugar",ID_STARTGAME,54,165,60,14
-    LTEXT           "Tarjeta de VÌdeo",IDC_STATIC,14,19,56,8
+    LTEXT           "Tarjeta de V√≠deo",IDC_STATIC,14,19,56,8
     COMBOBOX        IDC_DEVICELIST,75,17,139,137,CBS_DROPDOWN | CBS_SORT | 
                     WS_DISABLED | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Slider1",IDC_DIALOG_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,139,122,12
-    LTEXT           "Volumen Del Di·logo",IDC_STATIC,12,140,70,9
+    LTEXT           "Volumen Del Di√°logo",IDC_STATIC,12,140,70,9
     CONTROL         "Modo Seguro",IDC_SAFE_RENDER,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,145,97,59,10
     LTEXT           "Calidad De la Textura",IDC_STATIC,14,67,69,8
@@ -3005,10 +3005,10 @@ FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Guardar",IDOK,6,165,45,14
     PUSHBUTTON      "Cancelar",IDCANCEL,170,165,50,14
-    LTEXT           "ResoluciÛn",IDC_STATIC,14,35,36,8
+    LTEXT           "Resoluci√≥n",IDC_STATIC,14,35,36,8
     COMBOBOX        IDC_RESOLUTIONLIST,57,33,70,121,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "Opciones De la ExhibiciÛn",IDC_STATIC,7,5,213,77
+    GROUPBOX        "Opciones De la Exhibici√≥n",IDC_STATIC,7,5,213,77
     CONTROL         "Modo De Fullscreen",IDC_FULLSCREEN,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,14,50,78,10
     GROUPBOX        "Opciones Sanas",IDC_STATIC,7,84,213,74
@@ -3016,18 +3016,18 @@ BEGIN
                     WS_TABSTOP,27,97,68,10
     CONTROL         "Slider1",IDC_MUSIC_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,111,122,12
-    LTEXT           "Volumen De la M˙sica",IDC_STATIC,12,112,75,9
+    LTEXT           "Volumen De la M√∫sica",IDC_STATIC,12,112,75,9
     CONTROL         "Slider1",IDC_SOUND_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,125,122,12
     LTEXT           "Volumen De los Efectos",IDC_STATIC,12,126,80,9
     PUSHBUTTON      "Predefinido",IDC_DEFAULTSETTINGS,117,165,50,14
     PUSHBUTTON      "Guardar Y Jugar",ID_STARTGAME,54,165,60,14
-    LTEXT           "Tarjeta de VÌdeo",IDC_STATIC,14,19,56,8
+    LTEXT           "Tarjeta de V√≠deo",IDC_STATIC,14,19,56,8
     COMBOBOX        IDC_DEVICELIST,75,17,139,137,CBS_DROPDOWN | CBS_SORT | 
                     WS_DISABLED | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Slider1",IDC_DIALOG_VOL,"msctls_trackbar32",TBS_BOTH | 
                     TBS_NOTICKS | WS_TABSTOP,92,139,122,12
-    LTEXT           "Volumen Del Di·logo",IDC_STATIC,12,140,70,9
+    LTEXT           "Volumen Del Di√°logo",IDC_STATIC,12,140,70,9
     CONTROL         "Modo Seguro",IDC_SAFE_RENDER,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,145,97,59,10
     LTEXT           "Calidad De la Textura",IDC_STATIC,14,67,69,8
@@ -3079,7 +3079,7 @@ END
 LANGUAGE 9, 1
 #pragma code_page(1252)
 #endif //_WIN32
-#include "res\Setup.rc2"  // non-Microsoft Visual C++ edited resources
+#include "Setup.rc2"  // non-Microsoft Visual C++ edited resources
 #include "afxres.rc"         // Standard components
 #endif
 

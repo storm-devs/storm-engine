@@ -9,10 +9,10 @@
 //============================================================================================
 
 #include "Sharks.h"
-#include "..\Common_h\geometry.h"
-#include "..\common_h\defines.h"
-#include "..\common_h\messages.h"
-#include "..\common_h\model.h"
+#include "common_defines.h"
+#include "geometry.h"
+#include "messages.h"
+#include "model.h"
 
 //============================================================================================
 // Fish

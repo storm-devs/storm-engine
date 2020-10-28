@@ -1,10 +1,9 @@
 #ifndef WEATHER_BASE_HPP
 #define WEATHER_BASE_HPP
 
-#include "..\common_h\cvector.h"
-#include "..\common_h\entity.h"
-#include "..\common_h\vmodule_api.h"
-#include "..\engine\program\sea_ai\script_defines.h"
+#include "cvector.h"
+#include "entity.h"
+#include "vmodule_api.h"
 
 #define MAX_FLOAT_PARAMS 128
 #define MAX_LONG_PARAMS 64

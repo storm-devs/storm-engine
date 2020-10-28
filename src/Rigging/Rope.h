@@ -1,10 +1,10 @@
 #ifndef _ROPE_H_
 #define _ROPE_H_
 
-#include "..\common_h\dx8render.h"
-#include "..\common_h\geos.h"
-#include "..\common_h\matrix.h"
-#include "..\common_h\sail_base.h"
+#include "dx8render.h"
+#include "geos.h"
+#include "matrix.h"
+#include "sail_base.h"
 
 class NODE;
 

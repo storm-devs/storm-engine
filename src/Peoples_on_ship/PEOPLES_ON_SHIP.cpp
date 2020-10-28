@@ -1,10 +1,10 @@
 #include "PEOPLES_ON_SHIP.h"
-#include "..\ENGINE\PROGRAM\SEA_AI\script_defines.h"
-#include "..\common_h\exs.h"
-#include "..\common_h\messages.h"
-#include "..\common_h\rands.h"
-#include "..\common_h\types3d.h"
-#include "..\engine\program\sea_ai\seaPeople.h"
+#include "Script_Defines.h"
+#include "exs.h"
+#include "messages.h"
+#include "rands.h"
+#include "seaPeople.h"
+#include "types3d.h"
 #include <stdio.h>
 
 #define SHIP_BLACK_PEARL 164

@@ -789,7 +789,7 @@ void CoastFoam::Save()
             pI->WriteString(cSection, cKey, cTemp);
         }
     }
-    DELETE(pI);
+    SE_DELETE(pI);
     _flushall();
 }
 
@@ -874,7 +874,7 @@ void CoastFoam::Load()
 
         RecalculateFoam(i);
     }
-    DELETE(pI);
+    SE_DELETE(pI);
 }
 
 dword CoastFoam::AttributeChanged(ATTRIBUTES *pA)

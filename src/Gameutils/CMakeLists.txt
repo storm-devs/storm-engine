@@ -1,11 +1,9 @@
 project(gameutils)
 
-find_package(DirectX REQUIRED)
-
-add_library(gameutils MODULE 
+add_library(${PROJECT_NAME} MODULE
 	GameUtils.cpp
 	IslandED.cpp
 	IslandED.h
 )
 
-target_include_directories(gameutils PRIVATE ${DirectX_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

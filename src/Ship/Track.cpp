@@ -52,7 +52,7 @@ void ShipTracks::DelShip(SHIP_BASE *pShip)
     for (long i = 0; i < aShips; i++)
         if (aShips[i]->pShip == pShip)
         {
-            DELETE(aShips[i]);
+            SE_DELETE(aShips[i]);
             aShips.Extract(i);
             break;
         }

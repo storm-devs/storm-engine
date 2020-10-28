@@ -1,12 +1,12 @@
 #ifndef _SAIL_H_
 #define _SAIL_H_
 
-#include "..\common_h\dx8render.h"
-#include "..\common_h\geos.h"
-#include "..\common_h\model.h"
-#include "..\common_h\sail_base.h"
-#include "..\common_h\vmodule_api.h"
 #include "SAILONE.h"
+#include "dx8render.h"
+#include "geos.h"
+#include "model.h"
+#include "sail_base.h"
+#include "vmodule_api.h"
 
 struct SAILGROUP
 {

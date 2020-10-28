@@ -1,4 +1,5 @@
 #include "battle_mansign.h"
+#include "../msg_control.h"
 #include "..\utils.h"
 #include "battle_mancommand.h"
 
@@ -404,7 +405,7 @@ void BIManSign::ExecuteCommand(long command)
 
 void BIManSign::Release()
 {
-    DELETE(m_pCommandList);
+    SE_DELETE(m_pCommandList);
     TEXTURE_RELEASE(m_pRS, m_nBackTextureID);
     // TEXTURE_RELEASE( m_pRS, m_nShipTextureID );
     TEXTURE_RELEASE(m_pRS, m_nManStateTextureID);

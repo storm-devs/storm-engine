@@ -1,8 +1,8 @@
 project(mast)
 
-add_library(mast MODULE 
+add_library(${PROJECT_NAME} MODULE
 	mast.cpp
 	mast.h
 )
 
-target_include_directories(mast PRIVATE ${DirectX_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

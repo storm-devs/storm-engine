@@ -1,10 +1,10 @@
 #ifndef TECHNIQUE_HPP
 #define TECHNIQUE_HPP
 
-#include "..\common_h\dx8render.h"
-#include "..\common_h\templates\htable.h"
-#include "..\common_h\templates\string.h"
-#include "..\common_h\vmodule_api.h"
+#include "dx8render.h"
+#include "templates\htable.h"
+#include "templates\string.h"
+#include "vmodule_api.h"
 #include <stdio.h>
 
 struct SRSPARAM

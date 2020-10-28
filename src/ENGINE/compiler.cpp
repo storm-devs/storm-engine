@@ -22,7 +22,7 @@
 #define SBUPDATE 4
 #define DEF_COMPILE_EXPRESSIONS
 
-#include "..\..\common_h\vapi.h"
+#include "vapi.h"
 
 extern bool bTraceFilesOff;
 extern VAPI *_CORE_API;

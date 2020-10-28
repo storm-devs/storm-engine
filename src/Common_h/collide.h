@@ -3,9 +3,9 @@
 
 #include "cvector.h"
 
-#include "..\common_h\object.h"
-#include "..\common_h\types3d.h"
-#include "..\common_h\vmodule_api.h"
+#include "object.h"
+#include "types3d.h"
+#include "vmodule_api.h"
 
 class LOCAL_COLLIDE
 {

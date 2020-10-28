@@ -1,8 +1,8 @@
 #include "editor.h"
 #include "..\nodes\xi_image.h"
 #include "..\xinterface.h"
-#include "defines.h"
 #include "list.h"
+#include "xi_editor_defines.h"
 
 GIEditor::GIEditor(XINTERFACE *pInterface)
 {
@@ -43,9 +43,9 @@ void GIEditor::Release()
     m_pGIOwner = 0;
     m_bShowMode = false;
 
-    DELETE(m_pImageBack);
-    DELETE(m_pNodeList);
-    DELETE(m_pSubNameList);
+    SE_DELETE(m_pImageBack);
+    SE_DELETE(m_pNodeList);
+    SE_DELETE(m_pSubNameList);
 }
 
 void GIEditor::Render()

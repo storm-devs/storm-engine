@@ -1,5 +1,6 @@
 #include "island_descr.h"
-#include "..\..\common_h\model.h"
+#include "../msg_control.h"
+#include "model.h"
 
 ISLAND_DESCRIBER::ISLAND_DESCRIBER()
 {

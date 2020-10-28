@@ -1,4 +1,5 @@
 #include "vano_files.h"
+#include <common_defines.h>
 
 DWORD __cdecl _RDTSC_B(VS_STACK *pS)
 {

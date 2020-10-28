@@ -67,7 +67,7 @@ inline DWORD F2DW(FLOAT f)
             free(x);                                                                                                   \
         x = 0;                                                                                                         \
     }
-#define DELETE(x)                                                                                                      \
+#define SE_DELETE(x)                                                                                                   \
     {                                                                                                                  \
         if (x)                                                                                                         \
             delete x;                                                                                                  \

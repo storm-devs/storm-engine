@@ -1,5 +1,5 @@
 #include "obj_strservice.h"
-#include "..\\..\\engine\\program\\interface\\messages.h"
+#include "..\xi_messages.h"
 
 OBJ_STRSERVICE::OBJ_STRSERVICE()
 {

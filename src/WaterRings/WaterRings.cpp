@@ -1,5 +1,5 @@
 #include "WaterRings.h"
-#include "..\common_h\rands.h"
+#include "rands.h"
 
 #define PI 3.14159265358979323846f
 #define PIm2 (PI * 2.0f)

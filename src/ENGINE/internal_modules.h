@@ -1,7 +1,7 @@
 #ifndef _INTERNAL_MODULES_H_
 #define _INTERNAL_MODULES_H_
 
-#include "..\..\common_h\vmodule_api.h"
+#include "vmodule_api.h"
 
 struct INTERNAL_MODULE_DESC
 {

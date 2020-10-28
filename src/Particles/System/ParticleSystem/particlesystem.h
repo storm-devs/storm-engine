@@ -1,13 +1,13 @@
 #ifndef _PARTICLE_SYSTEM_H_
 #define _PARTICLE_SYSTEM_H_
 
-#include "../../../common_h/exs.h"
-#include "..\..\..\common_h\particles\iparticlesystem.h"
-#include "..\..\..\common_h\templates.h"
-#include "..\..\..\common_h\vmodule_api.h"
 #include "..\..\\icommon\types.h"
 #include "..\..\manager\particlemanager.h"
 #include "..\datasource\datasource.h"
+#include "exs.h"
+#include "particles\iparticlesystem.h"
+#include "templates.h"
+#include "vmodule_api.h"
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>

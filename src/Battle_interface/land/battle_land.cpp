@@ -1,6 +1,6 @@
 #include "battle_land.h"
-#include "..\..\engine\program\battle_interface\msg_control.h"
-#include "..\defines.h"
+#include "..\bi_defines.h"
+#include "..\msg_control.h"
 #include "..\utils.h"
 #include "battle_mansign.h"
 
@@ -130,7 +130,7 @@ void BATTLE_LAND_INTERFACE::SetParameters()
 void BATTLE_LAND_INTERFACE::Release()
 {
     m_pRS = NULL;
-    DELETE(m_pManSign);
+    SE_DELETE(m_pManSign);
 
     m_TextInfo.DelAll();
 }

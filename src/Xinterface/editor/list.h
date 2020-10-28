@@ -2,7 +2,7 @@
 #define _GI_EDITOR_LIST_H
 
 #include "..\inode.h"
-#include "defines.h"
+#include "xi_editor_defines.h"
 
 class GIEditor;
 class CXI_IMAGE;

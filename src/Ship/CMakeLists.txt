@@ -1,6 +1,6 @@
 project(ship)
 
-add_library(ship MODULE 
+add_library(${PROJECT_NAME} MODULE
 	FirePlace.cpp
 	FirePlace.h
 	ShipLights.cpp
@@ -10,6 +10,9 @@ add_library(ship MODULE
 	ship.cpp
 	ship.h
 	ship_utils.cpp
+
+	#copied from scripts
+	sound.h
 )
 
-target_include_directories(ship PRIVATE ${DirectX_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

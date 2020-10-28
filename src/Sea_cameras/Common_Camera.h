@@ -1,11 +1,11 @@
 #ifndef SEA_COMMON_CAMERA_HPP
 #define SEA_COMMON_CAMERA_HPP
 
-#include "..\common_h\defines.h"
-#include "..\common_h\sd2_h\SaveLoad.h"
-#include "..\common_h\sd2_h\VAI_ObjBase.h"
-#include "..\common_h\templates.h"
-#include "..\common_h\vmodule_api.h"
+#include "common_defines.h"
+#include "sd2_h\SaveLoad.h"
+#include "sd2_h\VAI_ObjBase.h"
+#include "templates.h"
+#include "vmodule_api.h"
 
 class COMMON_CAMERA : public ENTITY
 {

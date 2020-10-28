@@ -1,7 +1,6 @@
 #ifndef SEA_SHIP_AI_HPP
 #define SEA_SHIP_AI_HPP
 
-#include "..\common_h\Ship_Base.h"
 #include "AICannon.h"
 #include "AIShipCameraController.h"
 #include "AIShipCannonController.h"
@@ -10,6 +9,7 @@
 #include "AIShipSpeedController.h"
 #include "AIShipTaskController.h"
 #include "AIShipTouchController.h"
+#include "Ship_Base.h"
 //#include "AITemplate.h"
 #include "AIFlowGraph.h"
 #include "AIHelper.h"

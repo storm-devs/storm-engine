@@ -2,17 +2,17 @@
 #define __DX8RENDER_H__
 
 //#include <windows.h>
-#include "..\common_h\vmodule_api.h"
+#include "vmodule_api.h"
 #include <D3DX9.h>
 
-//#include "..\common_h\vmodule_api.h"
-#include "..\common_h\Matrix.h"
-#include "..\common_h\types3d.h"
+//#include "vmodule_api.h"
+#include "Matrix.h"
+#include "types3d.h"
 #ifdef _XBOX
 #include <xgraphics.h>
 #endif
 
-#include "..\common_h\VideoTexture.h"
+#include "VideoTexture.h"
 
 #define FONT_DEFAULT 0
 

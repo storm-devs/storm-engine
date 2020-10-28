@@ -1,8 +1,8 @@
 #ifndef SIMPLE_GEOM_NAME_PARSER
 #define SIMPLE_GEOM_NAME_PARSER
 
-#include "..\..\..\common_h\exs.h"
-#include "..\..\..\common_h\templates.h"
+#include "exs.h"
+#include "templates.h"
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>

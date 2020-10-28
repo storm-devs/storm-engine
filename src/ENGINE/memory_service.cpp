@@ -1,6 +1,6 @@
 #include "memory_service.h"
 
-#include "..\..\common_h\vapi.h"
+#include "vapi.h"
 extern VAPI *api;
 
 #define DEBUGCLASSES

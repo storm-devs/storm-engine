@@ -1,6 +1,6 @@
 project(interfaceeditor)
 
-add_library(interfaceeditor MODULE 
+add_library(${PROJECT_NAME} MODULE
 	gui/utils.h
 	gui/utils.cpp
 	gui/node.h
@@ -16,4 +16,4 @@ add_library(interfaceeditor MODULE
 	EditorManager.cpp
 )
 
-target_include_directories(interfaceeditor PRIVATE ${DirectX_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

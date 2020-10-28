@@ -1,6 +1,6 @@
 #include "scrshoter.h"
-#include "..\\..\\engine\\program\\interface\\messages.h"
-#include "..\\defines.h"
+#include "..\xi_defines.h"
+#include "..\xi_messages.h"
 
 #define SS_TEXTURE_WIDTH 128
 #define SS_TEXTURE_HEIGHT 128

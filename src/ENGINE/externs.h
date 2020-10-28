@@ -1,14 +1,14 @@
 #ifndef _EXTERNS_H_
 #define _EXTERNS_H_
 
-#include "..\..\common_h\memop.h"
-#include "..\..\common_h\vapi.h"
 #include "control_stack.h"
 #include "file_service.h"
 #include "gdi_display.h"
+#include "memop.h"
 #include "memory_service.h"
 #include "system_api.h"
 #include "system_log.h"
+#include "vapi.h"
 
 extern dword Exceptions_Mask;
 extern GDI_DISPLAY gdi_display;

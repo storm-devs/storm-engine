@@ -1,4 +1,4 @@
-#include "defines.h"
+#include "xi_editor_defines.h"
 
 void GIEditorObject::LinkEvent(GIEditorEventHandler *pEventHandler, const GIEditorEvent &pEventFunction)
 {

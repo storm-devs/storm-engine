@@ -1,6 +1,6 @@
-#include "..\common_h\Weather_Base.h"
 #include "..\dx8render\technique.h"
 #include "Astronomy.h"
+#include "Weather_Base.h"
 
 Astronomy::STARS::STARS() : aStars(_FL_, 16384)
 {

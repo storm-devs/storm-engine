@@ -1,8 +1,8 @@
 #include "ShipPointer.h"
-#include "..\..\common_h\net.h"
-#include "..\..\common_h\ship_base.h"
-#include "..\..\engine\program\battle_interface\msg_control.h"
-#include "..\defines.h"
+#include "../msg_control.h"
+#include "..\bi_defines.h"
+//#include "net.h"
+#include "ship_base.h"
 
 // определим вертексы
 #define SPV_FORMAT (D3DFVF_XYZ | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2)
@@ -175,17 +175,6 @@ VAI_OBJBASE *SHIPPOINTER::FindShipByChrIndex(long chrIdx)
                     return ps;
             }
         } while (api->FindClassNext(&ei));
-
-    if (NetFindClass(false, &ei, "netship"))
-        do
-        {
-            VAI_OBJBASE *ps = (VAI_OBJBASE *)api->GetEntityPointer(&ei);
-            if (ps != null && ps->GetACharacter() != null)
-            {
-                if ((long)ps->GetACharacter()->GetAttributeAsDword("id", -2) == chrIdx)
-                    return ps;
-            }
-        } while (NetFindClassNext(false, &ei));
 
     return null;
 }

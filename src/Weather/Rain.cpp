@@ -38,7 +38,7 @@ RAIN::~RAIN()
 
 void RAIN::Release()
 {
-    DELETE(pRainBlocks);
+    SE_DELETE(pRainBlocks);
     if (iVertexBuffer >= 0)
         Render().ReleaseVertexBuffer(iVertexBuffer);
     if (iRainbowTex >= 0)
@@ -85,7 +85,7 @@ void RAIN::GenerateRain()
 
     Release();
 
-    /*DELETE(pRainBlocks);
+    /*SE_DELETE(pRainBlocks);
     if (iVertexBuffer>=0) RS->ReleaseVertexBuffer(iVertexBuffer);
     iVertexBuffer = -1;*/
 

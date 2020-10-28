@@ -1,8 +1,8 @@
 #ifndef _DATA_H_
 #define _DATA_H_
 
-#include "..\..\common_h\vdata.h"
 #include "token.h"
+#include "vdata.h"
 
 class VIRTUAL_COMPILER
 {

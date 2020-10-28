@@ -1,8 +1,8 @@
 #ifndef _SOUND_VISUALISATION_H_
 #define _SOUND_VISUALISATION_H_
 
-#include "..\common_h\dx8render.h"
-#include "..\common_h\entity.h"
+#include "dx8render.h"
+#include "entity.h"
 
 class SoundService;
 

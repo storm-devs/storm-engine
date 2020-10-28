@@ -8,7 +8,7 @@
 #include <xtl.h>
 #endif
 
-#include "..\..\common_h\d_types.h"
+#include "d_types.h"
 enum S_TOKEN_TYPE
 {
     END_OF_PROGRAMM,

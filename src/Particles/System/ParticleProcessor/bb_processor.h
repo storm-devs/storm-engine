@@ -8,10 +8,7 @@
 #ifndef BILLBOARD_PARTICLE_PROCESSOR
 #define BILLBOARD_PARTICLE_PROCESSOR
 
-#include "..\..\..\common_h\dx8render.h"
-#include "..\..\..\common_h\exs.h"
-#include "..\..\..\common_h\particles\gmx_QSort.h"
-#include "..\..\..\common_h\templates.h"
+#include "particles\gmx_QSort.h"
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>

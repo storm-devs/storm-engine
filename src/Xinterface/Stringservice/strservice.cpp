@@ -1,5 +1,4 @@
 #include "strservice.h"
-#include "..\..\common_h\defines.h"
 #include "..\xinterface.h"
 #include <stdio.h>
 
@@ -115,9 +114,9 @@ STRSERVICE::~STRSERVICE()
         delete m_psString;
         m_psString = null;
     }
-    DELETE(m_sIniFileName);
-    DELETE(m_sLanguage);
-    DELETE(m_sLanguageDir);
+    SE_DELETE(m_sIniFileName);
+    SE_DELETE(m_sLanguage);
+    SE_DELETE(m_sLanguageDir);
 
     while (m_pUsersBlocks != null)
     {
@@ -200,7 +199,7 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
     }
 
     // установим новое имя для языка
-    DELETE(m_sLanguage);
+    SE_DELETE(m_sLanguage);
     if ((m_sLanguage = NEW char[strlen(sLanguage) + 1]) == null)
     {
         SE_THROW("Allocate memory error");
@@ -210,8 +209,8 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
     while (true)
     {
         // удалим старые данные
-        DELETE(m_sIniFileName);
-        DELETE(m_sLanguageDir);
+        SE_DELETE(m_sIniFileName);
+        SE_DELETE(m_sLanguageDir);
 
         // получим директорию для текстовых файлов данного языка
         if (ini->ReadString("DIRECTORY", m_sLanguage, param, sizeof(param) - 1, ""))
@@ -247,7 +246,7 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
                 break;
             api->Trace("WARNING! Language %s not exist some ini parameters. Language set to default %s", m_sLanguage,
                        param);
-            DELETE(m_sLanguage);
+            SE_DELETE(m_sLanguage);
             m_sLanguage = NEW char[strlen(param) + 1];
             if (m_sLanguage == null)
             {
@@ -621,7 +620,7 @@ long STRSERVICE::OpenUsersStringFile(char *fileName)
     {
         api->Trace("Can`t read strings file: %s", fileName);
         api->fio->_CloseHandle(hfile);
-        DELETE(fileBuf);
+        SE_DELETE(fileBuf);
         return -1;
     }
     api->fio->_CloseHandle(hfile);
@@ -661,7 +660,7 @@ long STRSERVICE::OpenUsersStringFile(char *fileName)
             GetNextUsersString(fileBuf, stridx, &pUSB->psStrName[i], &pUSB->psString[i]);
     }
 
-    DELETE(fileBuf);
+    SE_DELETE(fileBuf);
 
     pUSB->next = 0;
     if (pPrev == null)

@@ -10,10 +10,10 @@
 
 #include "Player.h"
 
-#include "..\common_h\collide.h"
-#include "..\common_h\messages.h"
 #include "Location.h"
 #include "LocationCamera.h"
+#include "collide.h"
+#include "messages.h"
 
 //============================================================================================
 //Конструирование, деструктурирование

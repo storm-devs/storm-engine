@@ -1,5 +1,5 @@
 #include "xi_fourimg.h"
-#include "..\\defines.h"
+#include "..\\xi_defines.h"
 #include <assert.h>
 #include <stdio.h>
 

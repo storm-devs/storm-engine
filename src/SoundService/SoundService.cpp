@@ -1,13 +1,13 @@
 #include "SoundService.h"
-#include "..\common_h\defines.h"
-#include "..\common_h\exs.h"
-#include "..\common_h\matrix.h"
-#include "..\common_h\rands.h"
+#include "common_defines.h"
+#include "exs.h"
+#include "matrix.h"
+#include "rands.h"
 #include <math.h>
 
 //для debug
-#include "..\common_h\dx8render.h"
 #include "DebugEntity.h"
+#include "dx8render.h"
 VDX8RENDER *pRS = NULL;
 
 INTERFACE_FUNCTION
@@ -116,7 +116,7 @@ bool SoundService::Init()
             status = fmod_system->setOutput(FMOD_OUTPUTTYPE_AUTODETECT);
             FMOD_ERROR("FMOD:setOutput", status);
         }
-        DELETE(pEngineIni);
+        SE_DELETE(pEngineIni);
     }
 
     status = fmod_system->init(MAX_SOUNDS_SLOTS, FMOD_INIT_NORMAL, api->GetAppHWND());
@@ -1142,7 +1142,7 @@ void SoundService::LoadAliasFile(const char *_filename)
         }
     }
 
-    DELETE(aliasIni);
+    SE_DELETE(aliasIni);
 }
 
 void SoundService::InitAliases()
@@ -1555,7 +1555,7 @@ bool SoundService::AddScheme(const char *_schemeName)
             AddSoundSchemeChannel(tempString, true);
     }
 
-    DELETE(ini);
+    SE_DELETE(ini);
     return true;
 }
 

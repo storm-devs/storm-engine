@@ -2,8 +2,8 @@
 #define _DATA_CACHE_
 
 #include "..\system\datasource\datasource.h"
-//#include "..\..\common_h\file.h"
-#include "..\..\common_h\templates.h"
+//#include "file.h"
+#include "templates.h"
 
 class IParticleManager;
 

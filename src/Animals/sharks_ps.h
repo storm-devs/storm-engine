@@ -1,13 +1,13 @@
 #ifndef _SHARKS_PS_H_
 #define _SHARKS_PS_H_
 
-#include "..\common_h\dx8render.h"
-#include "..\common_h\geometry.h"
-#include "..\common_h\matrix.h"
-#include "..\common_h\object.h"
-#include "..\common_h\sea_base.h"
-#include "..\common_h\vfile_service.h"
-#include "..\common_h\vmodule_api.h"
+#include "dx8render.h"
+#include "geometry.h"
+#include "matrix.h"
+#include "object.h"
+#include "sea_base.h"
+#include "vfile_service.h"
+#include "vmodule_api.h"
 
 #define MAX_PS_TEXTURES 8
 #define VERTEXS_ON_PARTICLE 6

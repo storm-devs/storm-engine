@@ -1,5 +1,5 @@
 #include "pcinput.h"
-#include "..\..\common_h\vapi.h"
+#include "vapi.h"
 extern VAPI *_CORE_API;
 extern bool bActive;
 float PCINPUT::GetKeyState(dword key_code, dword *value)

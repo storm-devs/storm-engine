@@ -9,9 +9,9 @@
 //============================================================================================
 
 #include "Blots.h"
-#include "..\common_h\defines.h"
-#include "..\common_h\messages.h"
-#include "..\engine\program\sea_ai\Script_Defines.h"
+#include "Script_Defines.h"
+#include "common_defines.h"
+#include "messages.h"
 
 //============================================================================================
 

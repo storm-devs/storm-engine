@@ -2,9 +2,9 @@
 #ifndef _LighterTypes_H_
 #define _LighterTypes_H_
 
-#include "..\common_h\matrix.h"
-#include "..\common_h\model.h"
-#include "..\common_h\vmodule_api.h"
+#include "matrix.h"
+#include "model.h"
+#include "vmodule_api.h"
 
 struct Light
 {

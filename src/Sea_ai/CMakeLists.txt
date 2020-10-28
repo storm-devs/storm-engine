@@ -1,6 +1,6 @@
 project(seaai)
 
-add_library(seaai MODULE 
+add_library(${PROJECT_NAME} MODULE
 	AIBalls.cpp
 	AIBalls.h
 	AICannon.cpp
@@ -40,4 +40,4 @@ add_library(seaai MODULE
 	SeaSaveLoad.cpp
 )
 
-target_include_directories(seaai PRIVATE ${DirectX_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

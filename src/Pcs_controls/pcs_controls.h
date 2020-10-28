@@ -1,10 +1,10 @@
 #ifndef _PCS_CONTROLS_H_
 #define _PCS_CONTROLS_H_
 
-#include "..\common_h\templates\array.h"
-#include "..\common_h\vmodule_api.h"
 #include "ControlTree.h"
 #include "KeyBuffer.h"
+#include "templates\array.h"
+#include "vmodule_api.h"
 
 struct SYSTEM_CONTROL_ELEMENT
 {

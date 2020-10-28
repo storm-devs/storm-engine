@@ -11,7 +11,7 @@
 #ifndef _AnimationTimerImp_H_
 #define _AnimationTimerImp_H_
 
-#include "..\common_h\Animation.h"
+#include "Animation.h"
 
 #define ANITM_PLAYERSMAX ((ANI_MAX_ACTIONS + 31) >> 5)
 

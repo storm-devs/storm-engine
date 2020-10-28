@@ -1,11 +1,9 @@
 #ifndef __DEFINES_BATTLE_INTERFACE_H_
 #define __DEFINES_BATTLE_INTERFACE_H_
 
-#include "..\common_h\defines.h"
-#include "..\common_h\dx8render.h"
+#include "common_defines.h"
+#include "dx8render.h"
 #include <assert.h>
-
-#include "..\engine\program\battle_interface\msg_control.h"
 
 #define INI_FILE_NAME "resource\\ini\\interfaces\\battle_interface.ini"
 

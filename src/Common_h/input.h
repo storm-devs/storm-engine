@@ -6,7 +6,7 @@
 #else
 #include <xtl.h>
 #endif
-#include "..\..\common_h\d_types.h"
+#include "d_types.h"
 
 class CORE_INPUT
 {

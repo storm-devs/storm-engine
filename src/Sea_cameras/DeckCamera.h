@@ -4,10 +4,10 @@
 #ifndef _DECK_CAMERA_H_
 #define _DECK_CAMERA_H_
 
-#include "..\common_h\dx8render.h"
-#include "..\common_h\model.h"
-#include "..\common_h\vmodule_api.h"
 #include "common_camera.h"
+#include "dx8render.h"
+#include "model.h"
+#include "vmodule_api.h"
 
 #define D3DFVF_VERTEX (D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1)
 #define AIM_SIZE 0.05f

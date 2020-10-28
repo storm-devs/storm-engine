@@ -204,8 +204,8 @@ void CXI_ToolTip::MousePos(float fDeltaTime, long nX, long nY)
 void CXI_ToolTip::ReleaseAll()
 {
     PICTURE_TEXTURE_RELEASE(m_pPicService, m_sGroupName.GetBuffer(), m_nTextureID);
-    DELETE(m_pV);
-    DELETE(m_pI);
+    SE_DELETE(m_pV);
+    SE_DELETE(m_pI);
     m_nSquareQ = 0;
     m_bDisableDraw = true;
     FONT_RELEASE(m_rs, m_nFontID);

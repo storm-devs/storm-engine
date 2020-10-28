@@ -1,5 +1,5 @@
 #include "s_vartab.h"
-#include "..\..\common_h\memop.h"
+#include "memop.h"
 //#include <string.h>
 #include "system_log.h"
 

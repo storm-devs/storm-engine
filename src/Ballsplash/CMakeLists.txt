@@ -1,11 +1,6 @@
 project(ballsplash)
 
-include_directories(
-	#${Storm_SOURCE_DIR}/Common_h
-	${DirectX_INCLUDE_DIR}
-)
-
-add_library(ballsplash MODULE 
+add_library(${PROJECT_NAME} MODULE
 	BallSplash.cpp
 	BallSplash.h
 	BallSplashDefines.cpp
@@ -14,3 +9,5 @@ add_library(ballsplash MODULE
 	TSplash.h
 	${Storm_SOURCE_DIR}/Common_h/rands.cpp
 )
+
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

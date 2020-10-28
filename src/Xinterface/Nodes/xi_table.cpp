@@ -98,7 +98,7 @@ void XI_TableLineDescribe::SetData(long nRowIndex, ATTRIBUTES *pLA, bool bHeader
     }
     while (c < m_aCell)
     {
-        DELETE(m_aCell[c]);
+        SE_DELETE(m_aCell[c]);
         m_aCell.DelIndex(c);
     }
 }
@@ -442,7 +442,7 @@ void CXI_TABLE::ReleaseAll()
 {
     // release all rows
     m_aLine.DelAllWithPointers();
-    DELETE(m_pHeader);
+    SE_DELETE(m_pHeader);
 
     // release back image
     m_bBackPresent = false;
@@ -1174,7 +1174,7 @@ void CXI_TABLE::UpdateTableCells()
     }
     else
     {
-        DELETE(m_pHeader);
+        SE_DELETE(m_pHeader);
     }
     // потом
     q = m_bVariableLineHeight ? 1000 : (m_nRowQuantity - (m_pHeader ? 1 : 0));
@@ -1199,7 +1199,7 @@ void CXI_TABLE::UpdateTableCells()
     // удаляем лишние строки
     while ((long)m_aLine.Size() > r)
     {
-        DELETE(m_aLine[r]);
+        SE_DELETE(m_aLine[r]);
         m_aLine.DelIndex(r);
     }
 

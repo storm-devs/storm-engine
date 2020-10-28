@@ -15,7 +15,7 @@ AIFort::~AIFort()
 {
     pAIFort = null;
     for (dword i = 0; i < aForts.Size(); i++)
-        DELETE(aForts[i]);
+        SE_DELETE(aForts[i]);
 }
 
 bool AIFort::Init()

@@ -1,6 +1,6 @@
 project(sinkeffect)
 
-add_library(sinkeffect MODULE 
+add_library(${PROJECT_NAME} MODULE
 	SinkEffect.H
 	SinkEffect.cpp
 	SinkSplashDefines.h
@@ -18,4 +18,4 @@ add_library(sinkeffect MODULE
 	${Storm_SOURCE_DIR}/Common_h/rands.cpp
 )
 
-target_include_directories(sinkeffect PRIVATE ${DirectX_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

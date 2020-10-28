@@ -1,10 +1,9 @@
 #ifndef _COMPILER_H_
 #define _COMPILER_H_
 
-#include "..\..\common_h\message.h"
-#include "..\..\common_h\script_libriary.h"
 #include "data.h"
 #include "loopstack.h"
+#include "message.h"
 #include "message_script.h"
 #include "s_classtab.h"
 #include "s_compress.h"
@@ -16,6 +15,7 @@
 #include "s_stack.h"
 #include "s_tstack.h"
 #include "s_vartab.h"
+#include "script_libriary.h"
 #include "stack.h"
 #include "string_codec.h"
 #include "strings_list.h"

@@ -1,6 +1,6 @@
 #include "TSharks.h"
-#include "..\common_h\rands.h"
-#include "..\common_h\ship_base.h"
+#include "rands.h"
+#include "ship_base.h"
 
 #pragma warning(disable : 4244)
 
