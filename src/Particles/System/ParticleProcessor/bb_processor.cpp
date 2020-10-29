@@ -503,8 +503,8 @@ void BillBoardProcessor::Draw()
     pRS->GetTransform(D3DTS_PROJECTION, matProjection);
 
     matOldView = matView;
-    matView.Transposition();
-    matProjection.Transposition();
+    matView.TranspositionX();
+    matProjection.TranspositionX();
 
     pRS->SetVertexShaderConstant(3, matView.matrix, 4);
     pRS->SetVertexShaderConstant(7, matProjection.matrix, 4);

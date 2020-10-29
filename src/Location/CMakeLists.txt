@@ -9,7 +9,6 @@ add_library(${PROJECT_NAME} MODULE
 	CameraFollow.h
 	CameraTracksFile.h
 	Character.cpp
-	Character.cpy
 	Character.h
 	CharacterAnimationKipper.cpp
 	CharacterAnimationKipper.h

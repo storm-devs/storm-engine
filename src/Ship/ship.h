@@ -151,6 +151,7 @@ class SHIP : public SHIP_BASE
     //	void 		MastFallChild(mast_t * pM);
     void TestMastFall(long iMast);
     void HullFall(hull_t *pM);
+    void FakeFire(char *sBort, float fRandTime);
 
     CMatrix UpdateModelMatrix();
     void RecalculateWorldOffset();

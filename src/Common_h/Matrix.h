@@ -116,6 +116,8 @@ class CMatrix
     // Transposition
     void Transposition();
     void Transposition3X3();
+    ///Транспанирование матрицы
+    CMatrix &TranspositionX();
     CMatrix &__fastcall Transposition4x4();
 
     // Rotate
@@ -522,6 +524,40 @@ __forceinline void CMatrix::Transposition()
     Pos().y = -y;
     Pos().z = -z;
     Transposition3X3();
+}
+
+//Транспанирование матрицы
+__forceinline CMatrix &CMatrix::TranspositionX()
+{
+    _asm
+    {
+		mov		eax, this
+		mov		ebx, [eax + 1*4]
+		mov		ecx, [eax + 2*4]
+		mov		esi, [eax + 4*4]
+		mov		edi, [eax + 8*4]
+		mov		[eax + 4*4], ebx
+		mov		[eax + 8*4], ecx
+		mov		[eax + 1*4], esi
+		mov		[eax + 2*4], edi
+		mov		ebx, [eax + 3*4]
+		mov		ecx, [eax + 6*4]
+		mov		esi, [eax + 12*4]
+		mov		edi, [eax + 9*4]
+		mov		[eax + 12*4], ebx
+		mov		[eax + 9*4], ecx
+		mov		[eax + 3*4], esi
+		mov		[eax + 6*4], edi
+		mov		ebx, [eax + 7*4]
+		mov		ecx, [eax + 11*4]
+		mov		esi, [eax + 13*4]
+		mov		edi, [eax + 14*4]
+		mov		[eax + 13*4], ebx
+		mov		[eax + 14*4], ecx
+		mov		[eax + 7*4], esi
+		mov		[eax + 11*4], edi
+    }
+    return *this;
 }
 
 //Расчёт обратной матрицы

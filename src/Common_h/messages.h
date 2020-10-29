@@ -73,6 +73,7 @@
 #define MSG_SHIP_CURVES 50400
 #define MSG_SHIP_TEST_MAST_FALL 50401 // ugeen 29.11.17
 #define MSG_SHIP_LIGHTSRESET 50402    // ugeen 25.12.19
+#define MSG_SHIP_DO_FAKE_FIRE 50403
 
 //============================================================================================
 // Weather Messages

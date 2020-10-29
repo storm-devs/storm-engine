@@ -1091,14 +1091,19 @@ void DX8RENDER::MakePostProcess()
 //################################################################################
 bool DX8RENDER::DX8EndScene()
 {
-    MEMORYSTATUS ms;
-    GlobalMemoryStatus(&ms);
-
-    dword dwTotalTexSize = 0;
-    dword dwTotalTexNum = 0, dwTotalVB = 0, dwTotalIB = 0, dwTotalVBSize = 0, dwTotalIBSize = 0;
-
     if (bShowFps)
     {
+        Print(screen_size.x - 100, screen_size.y - 50, "FPS %d", api->EngineFps());
+    }
+
+    if (bShowExInfo)
+    {
+        MSTATE sms;
+        api->GetMemoryState(&sms);
+
+        dword dwTotalTexSize = 0;
+        dword dwTotalTexNum = 0, dwTotalVB = 0, dwTotalIB = 0, dwTotalVBSize = 0, dwTotalIBSize = 0;
+
         long t;
         for (t = 0; t < MAX_STEXTURES; t++)
             if (Textures[t].ref > 0)
@@ -1120,42 +1125,17 @@ bool DX8RENDER::DX8EndScene()
                 dwTotalIB++;
             }
         }
-    }
 
-    if (api->Controls->GetDebugAsyncKeyState(VK_MULTIPLY) < 0)
-    {
-        // MEMORYSTATUS ms;
-        // GlobalMemoryStatus(&ms);
-        // trace("Allocate(long size) %d   - FREE( %d )",size,ms.dwAvailPhys);
-        // Print(screen_size.x - 100,150,"%d",api->fio->_GetDiskFreeSpaceEx();
-        bShowFps = 0;
         CMatrix mView;
         GetTransform(D3DTS_VIEW, mView);
         mView.Transposition();
-        Print(0, 0, "Cam: %.3f, %.3f, %.3f", mView.Pos().x, mView.Pos().y, mView.Pos().z);
-        Print(screen_size.x - 100, 50, "%d fps", api->EngineFps());
-
-        if (bShowFps)
-        {
-            MSTATE sms;
-            api->GetMemoryState(&sms);
-            Print(screen_size.x - 100, 50, "%d", api->EngineFps());
-
-            // Print(80,50,"%d Kb",(ms.dwTotalPhys - ms.dwAvailPhys)/(1024));
-
-            Print(80, 50, "%.3f Mb", (ms.dwTotalPhys - ms.dwAvailPhys) / (1024.f * 1024.f));
-            Print(80, 80, "%.3f Mb in %d blocks", sms.nMemorySize / (1024.f * 1024.f), sms.nBlocksNum);
-
-            if (bShowExInfo)
-            {
-                Print(80, 70, "t: %d, %.3f Mb", dwTotalTexNum, float(dwTotalTexSize) / (1024.0f * 1024.0f));
-                Print(80, 90, "v: %d, %.3f Mb", dwTotalVB, float(dwTotalVBSize) / (1024.0f * 1024.0f));
-                Print(80, 110, "i: %d, %.3f Mb", dwTotalIB, float(dwTotalIBSize) / (1024.0f * 1024.0f));
-                Print(80, 130, "d: %d, lv: %d, li: %d", dwNumDrawPrimitive, dwNumLV, dwNumLI);
-                Print(80, 150, "s: %d, %.3f, %.3f", dwSoundBuffersCount, dwSoundBytes / 1024.f,
-                      dwSoundBytesCached / 1024.f);
-            }
-        }
+        Print(80, 50, "Cam: %.3f, %.3f, %.3f", mView.Pos().x, mView.Pos().y, mView.Pos().z);
+        Print(80, 70, "%.3f Mb in %d blocks", sms.nMemorySize / (1024.f * 1024.f), sms.nBlocksNum);
+        Print(80, 90, "t : %d, %.3f Mb", dwTotalTexNum, float(dwTotalTexSize) / (1024.0f * 1024.0f));
+        Print(80, 110, "v : %d, %.3f Mb", dwTotalVB, float(dwTotalVBSize) / (1024.0f * 1024.0f));
+        Print(80, 130, "i : %d, %.3f Mb", dwTotalIB, float(dwTotalIBSize) / (1024.0f * 1024.0f));
+        Print(80, 150, "d : %d, lv: %d, li: %d", dwNumDrawPrimitive, dwNumLV, dwNumLI);
+        Print(80, 170, "s : %d, %.3f, %.3f", dwSoundBuffersCount, dwSoundBytes / 1024.f, dwSoundBytesCached / 1024.f);
     }
 
     // Try to drop video conveyor

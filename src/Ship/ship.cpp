@@ -1426,10 +1426,56 @@ dword _cdecl SHIP::ProcessMessage(MESSAGE &message)
     case MSG_SHIP_LIGHTSRESET:
         UnSetLights();
         break;
+    case MSG_SHIP_DO_FAKE_FIRE:
+        char cBort[256];
+        message.String(sizeof(cBort), cBort);
+        float fRandTime = message.Float();
+        FakeFire(cBort, fRandTime);
+        break;
     }
     return 0;
 }
 
+void SHIP::FakeFire(char *sBort, float fRandTime)
+{
+    GEOS::LABEL label;
+    GEOS::INFO info;
+    NODE *pNode;
+
+    MODEL *pModel = GetModel();
+    Assert(pModel);
+
+    // search cannons
+    dword dwIdx = 0;
+    while (pNode = pModel->GetNode(dwIdx))
+    {
+        pNode->geo->GetInfo(info);
+        for (dword i = 0; i < dword(info.nlabels); i++)
+        {
+            pNode->geo->GetLabel(i, label);
+            if (strcmp(sBort, label.group_name) == 0)
+            {
+                CVECTOR vPos, vCurPos, vDir;
+                CMatrix m;
+                CMatrix mNode = pNode->glob_mtx;
+                CMatrix mRot;
+                memcpy(m, label.m, sizeof(m));
+
+                vPos = m.Pos();
+                vCurPos = mNode * vPos;
+
+                GetMatrix()->Get3X3(mRot);
+                vDir = CVECTOR(m.Vz().x, 0.0f, m.Vz().z);
+
+                CVECTOR vDirTemp = mRot * vDir;
+                float fDir = NormalizeAngle(atan2f(vDirTemp.x, vDirTemp.z));
+
+                api->Event("Ship_FakeFire", "ffff", vCurPos.x, vCurPos.y, vCurPos.z, fDir);
+            }
+        }
+        dwIdx++;
+    }
+}
 void SHIP::LoadPositionFromAttributes()
 {
     ATTRIBUTES *pAPos = GetACharacter()->FindAClass(GetACharacter(), "ship.pos");

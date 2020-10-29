@@ -481,40 +481,67 @@ void Lights::SetCharacterLights(const CVECTOR &pos)
     long num = 1;
 
     array<long> aLightsSort(_FL);
+    array<lt_elem> aLightsDstSort(_FL);
+
     for (i = 0; i < numLights; i++)
         aLightsSort.Add(i);
-    for (i = 0; i < aMovingLight; i++)
+
+    for (i = 0; i < aMovingLight.Size(); i++)
     {
         aLightsSort.Del(aMovingLight[i].light);
         aLightsSort.Insert(aMovingLight[i].light, 0);
     }
+    aLightsDstSort.DelAll();
 
-    for (n = 0; n < aLightsSort && num < 8; n++)
+    for (n = 0; n < aLightsSort.Size(); n++)
     {
         i = aLightsSort[n];
+
         //Смотрим дистанцию
         float dx = (pos.x - lights[i].pos.x);
         float dy = (pos.y - lights[i].pos.y);
         float dz = (pos.z - lights[i].pos.z);
         float dst = dx * dx + dy * dy + dz * dz + 2.0f;
         float rng = types[lights[i].type].dxLight.Range;
-        if (dst > rng * rng)
-            continue;
+
+        if (dst <= rng * rng)
+        {
+            int j;
+            for (j = 0; j < aLightsDstSort.Size(); j++)
+            {
+                if (dst < aLightsDstSort[j].dst)
+                    break;
+            }
+            lt_elem le = {i, dst};
+            if (j == aLightsDstSort.Size())
+                aLightsDstSort.Add(le);
+            else
+                aLightsDstSort.Insert(le, j);
+
+            if (aLightsDstSort.Size() == 8)
+                aLightsDstSort.DelIndex(7);
+        }
+    }
+
+    for (n = 0; n < aLightsDstSort.Size(); n++)
+    {
+        i = aLightsDstSort[n].idx;
+
         //Устанавливаем источник
         LightType &l = types[lights[i].type];
         l.dxLight.Diffuse = lights[i].color;
         l.dxLight.Position = lights[i].pos;
-        rs->SetLight(num, &l.dxLight);
-        rs->LightEnable(num, true);
-        lt[num].light = i;
-        lt[num].set = true;
-        num++;
+        rs->SetLight(n + 1, &l.dxLight);
+        rs->LightEnable(n + 1, true);
+        lt[n + 1].light = i;
+        lt[n + 1].set = true;
     }
 
-    for (; num < 8; num++)
+    //Выключаем остальное
+    while (++n < 8)
     {
-        lt[num].light = -1;
-        lt[num].set = false;
+        lt[n].light = -1;
+        lt[n].set = false;
     }
 }
 

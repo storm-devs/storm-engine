@@ -1,4 +1,4 @@
-project(render)
+project(dx9render)
 
 add_library(${PROJECT_NAME} MODULE
 	Font.cpp
