@@ -4,7 +4,7 @@ set(ZLIB_ROOT "${Storm_EXTERN_DIR}/zlib")
 
 find_package(SteamSdk REQUIRED)
 find_package(ZLIB REQUIRED)
-find_package(DirectX REQUIRED)
+find_package(Fmod REQUIRED) # required to set ${Fmod_LIBRARY_PATHS}
 
 add_executable(${PROJECT_NAME} WIN32
 	achievements.cpp
@@ -123,7 +123,6 @@ target_include_directories(${PROJECT_NAME}
 	PRIVATE
 	${Storm_RESOURCE_DIR}/engine
 	${SteamSdk_INCLUDE_DIR}
-	${DirectX_INCLUDE_DIR}
 )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE _ENGINE_IN_)
@@ -145,4 +144,12 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${ZLIB_INCLUDE_DIRS}/zlib.dll"
         "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>"
-) 
+		
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${Fmod_LIBRARY_PATHS}/fmod.dll"
+        "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>"
+		
+	COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${Storm_SOURCE_DIR}/techniques"
+        "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/techniques"
+)
