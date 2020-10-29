@@ -6,7 +6,7 @@ add_library(${PROJECT_NAME} MODULE
 	TWalkGraph.cpp
 	TWalkGraph.h
 	
-	${Storm_SOURCE_DIR}/Common_h/rands.cpp
+	${Storm_SOURCE_DIR}/libs/Common_h/rands.cpp
 
 	#copied from scripts
 	SeaPeople.h

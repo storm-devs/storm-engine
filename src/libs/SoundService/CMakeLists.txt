@@ -11,7 +11,7 @@ add_library(${PROJECT_NAME} MODULE
 	VSoundService.cpp
 	VSoundService.h
 	
-	${Storm_SOURCE_DIR}/Common_h/rands.cpp
+	${Storm_SOURCE_DIR}/libs/Common_h/rands.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${Fmod_INCLUDE_DIR})

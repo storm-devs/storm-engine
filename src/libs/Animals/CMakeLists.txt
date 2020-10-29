@@ -21,7 +21,7 @@ add_library(${PROJECT_NAME} MODULE
 	TSeagulls.h
 	TSharks.cpp
 	TSharks.h
-	${Storm_SOURCE_DIR}/Common_h/rands.cpp
+	${Storm_SOURCE_DIR}/libs/Common_h/rands.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE common_h)
