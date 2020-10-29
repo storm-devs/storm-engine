@@ -529,34 +529,33 @@ __forceinline void CMatrix::Transposition()
 //Транспанирование матрицы
 __forceinline CMatrix &CMatrix::TranspositionX()
 {
-    _asm
-    {
-		mov		eax, this
-		mov		ebx, [eax + 1*4]
-		mov		ecx, [eax + 2*4]
-		mov		esi, [eax + 4*4]
-		mov		edi, [eax + 8*4]
-		mov		[eax + 4*4], ebx
-		mov		[eax + 8*4], ecx
-		mov		[eax + 1*4], esi
-		mov		[eax + 2*4], edi
-		mov		ebx, [eax + 3*4]
-		mov		ecx, [eax + 6*4]
-		mov		esi, [eax + 12*4]
-		mov		edi, [eax + 9*4]
-		mov		[eax + 12*4], ebx
-		mov		[eax + 9*4], ecx
-		mov		[eax + 3*4], esi
-		mov		[eax + 6*4], edi
-		mov		ebx, [eax + 7*4]
-		mov		ecx, [eax + 11*4]
-		mov		esi, [eax + 13*4]
-		mov		edi, [eax + 14*4]
-		mov		[eax + 13*4], ebx
-		mov		[eax + 14*4], ecx
-		mov		[eax + 7*4], esi
-		mov		[eax + 11*4], edi
-    }
+    float ebx = matrix[1];
+    float ecx = matrix[2];
+    float esi = matrix[4];
+    float edi = matrix[8];
+    matrix[4] = ebx;
+    matrix[8] = ecx;
+    matrix[1] = esi;
+    matrix[2] = edi;
+
+    ebx = matrix[3];
+    ecx = matrix[6];
+    esi = matrix[12];
+    edi = matrix[9];
+    matrix[12] = ebx;
+    matrix[9] = ecx;
+    matrix[3] = esi;
+    matrix[6] = edi;
+
+    ebx = matrix[7];
+    ecx = matrix[11];
+    esi = matrix[13];
+    edi = matrix[14];
+    matrix[13] = ebx;
+    matrix[14] = ecx;
+    matrix[7] = esi;
+    matrix[11] = edi;
+
     return *this;
 }
 
