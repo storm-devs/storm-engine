@@ -178,7 +178,7 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
 
     int i;
     INIFILE *ini;
-    char param[512];
+    char param[2048];
 
     if (sLanguage == null)
     {
