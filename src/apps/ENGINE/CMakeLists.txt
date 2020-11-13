@@ -134,6 +134,7 @@ target_link_libraries(${PROJECT_NAME}
 	${SteamSdk_LIBRARY}
 	ZLIB::ZLIB
 	comctl32.lib
+	dbghelp.lib
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

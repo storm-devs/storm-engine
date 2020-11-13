@@ -16,8 +16,6 @@
 #include "common_h.h"
 #include "steam_api.h"
 
-#pragma comment(lib, "dbghelp.lib")
-
 HWND hMain;
 HINSTANCE hInst;
 
