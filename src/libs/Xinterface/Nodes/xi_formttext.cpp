@@ -1,5 +1,4 @@
 #include "xi_formttext.h"
-#include "..\\defines.h"
 #include "..\xinterface.h"
 #include "xi_scroller.h"
 #include <assert.h>
