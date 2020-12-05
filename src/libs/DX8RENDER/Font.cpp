@@ -1,118 +1,9 @@
 #include "font.h"
+#include "../Common_h/utf8.h"
 
-#include <cstdint>
 #include <stdio.h>
 
 static char Buffer1024[1024];
-
-namespace
-{
-/* is c the start of a utf8 sequence? */
-#define isutf(c) (((c)&0xC0) != 0x80)
-
-// taken from https://gist.github.com/MightyPork/52eda3e5677b4b03524e40c9f0ab1da5
-int CodepointToUtf8(char *out, uint32_t codepoint)
-{
-    if (codepoint <= 0x7F)
-    {
-        // Plain ASCII
-        out[0] = (char)codepoint;
-        out[1] = 0;
-        return 1;
-    }
-    else if (codepoint <= 0x07FF)
-    {
-        // 2-byte unicode
-        out[0] = (char)(((codepoint >> 6) & 0x1F) | 0xC0);
-        out[1] = (char)(((codepoint >> 0) & 0x3F) | 0x80);
-        out[2] = 0;
-        return 2;
-    }
-    else if (codepoint <= 0xFFFF)
-    {
-        // 3-byte unicode
-        out[0] = (char)(((codepoint >> 12) & 0x0F) | 0xE0);
-        out[1] = (char)(((codepoint >> 6) & 0x3F) | 0x80);
-        out[2] = (char)(((codepoint >> 0) & 0x3F) | 0x80);
-        out[3] = 0;
-        return 3;
-    }
-    else if (codepoint <= 0x10FFFF)
-    {
-        // 4-byte unicode
-        out[0] = (char)(((codepoint >> 18) & 0x07) | 0xF0);
-        out[1] = (char)(((codepoint >> 12) & 0x3F) | 0x80);
-        out[2] = (char)(((codepoint >> 6) & 0x3F) | 0x80);
-        out[3] = (char)(((codepoint >> 0) & 0x3F) | 0x80);
-        out[4] = 0;
-        return 4;
-    }
-    else
-    {
-        // error - use replacement character
-        out[0] = (char)0xEF;
-        out[1] = (char)0xBF;
-        out[2] = (char)0xBD;
-        out[3] = 0;
-        return 0;
-    }
-}
-
-// taken from http://www.zedwood.com/article/cpp-utf8-char-to-codepoint
-int Utf8ToCodepoint(const char *utf8)
-{
-    int l = strlen(utf8);
-
-    if (l < 1)
-        return -1;
-    unsigned char u0 = utf8[0];
-    if (u0 >= 0 && u0 <= 0x7F)
-        return u0;
-
-    if (l < 2)
-        return -1;
-    unsigned char u1 = utf8[1];
-    if (u0 >= 0xC0 && u0 <= 0xDF)
-        return (u0 - 192) * 64 + (u1 - 128);
-
-    if (utf8[0] == 0xed && (utf8[1] & 0xa0) == 0xa0)
-        return -1; // code points, 0xd800 to 0xdfff
-
-    if (l < 3)
-        return -1;
-    unsigned char u2 = utf8[2];
-    if (u0 >= 224 && u0 <= 239)
-        return (u0 - 224) * 4096 + (u1 - 128) * 64 + (u2 - 128);
-
-    if (l < 4)
-        return -1;
-    unsigned char u3 = utf8[3];
-    if (u0 >= 240 && u0 <= 247)
-        return (u0 - 240) * 262144 + (u1 - 128) * 4096 + (u2 - 128) * 64 + (u3 - 128);
-    return -1;
-}
-
-int Utf8StringLength(const char *s)
-{
-    long s_num = 0;
-    while (*s)
-        s_num += (*s++ & 0xC0) != 0x80;
-
-    return s_num;
-}
-
-// taken from https://www.cprogramming.com/tutorial/utf8.c
-void u8_inc(const char *s, int *i)
-{
-    bool utf8 = false;
-    while (*s && !utf8)
-    {
-        s++;
-        (*i)++;
-        utf8 = isutf(*s);
-    }
-}
-} // namespace
 
 FONT::FONT()
 {
@@ -254,7 +145,7 @@ bool FONT::Init(char *font_name, char *iniName, IDirect3DDevice9 *_device, VDX8R
     for (codepoint = 30; codepoint < USED_CODES; codepoint++)
     {
         char utf8[5];
-        CodepointToUtf8(utf8, codepoint);
+        utf8::CodepointToUtf8(utf8, codepoint);
         if (codepoint >= 'a' && codepoint <= 'z')
         {
             wsprintf(key_name, "char_%s_", utf8);
@@ -351,9 +242,9 @@ long FONT::GetStringWidth(const char *Text)
     float xoffset = 0;
     long s_num = strlen(Text);
 
-    for (int i = 0; i < s_num; u8_inc(Text + i, &i))
+    for (int i = 0; i < s_num; i += utf8::u8_inc(Text + i))
     {
-        uint32_t Codepoint = Utf8ToCodepoint(Text + i);
+        uint32_t Codepoint = utf8::Utf8ToCodepoint(Text + i);
         Assert(Codepoint < USED_CODES);
 
         FLOAT_RECT pos = CharT[Codepoint].Pos;
@@ -386,11 +277,11 @@ long FONT::UpdateVertexBuffer(long x, long y, char *data_PTR, int utf8length)
 
     xoffset = 0;
 
-    for (int i = 0, curLetter = 0; i < s_num; u8_inc(data_PTR + i, &i), curLetter++)
+    for (int i = 0, curLetter = 0; i < s_num; i += utf8::u8_inc(data_PTR + i), curLetter++)
     {
         Assert(curLetter < utf8length);
 
-        int Codepoint = Utf8ToCodepoint(data_PTR + i);
+        int Codepoint = utf8::Utf8ToCodepoint(data_PTR + i);
         Assert(Codepoint < USED_CODES);
 
         n = curLetter * 6;
@@ -461,7 +352,7 @@ long FONT::Print(long x, long y, char *data_PTR)
         return 0;
     long xoffset = 0L;
 
-    long s_num = Utf8StringLength(data_PTR);
+    long s_num = utf8::Utf8StringLength(data_PTR);
     if (s_num == 0)
         return 0;
 
