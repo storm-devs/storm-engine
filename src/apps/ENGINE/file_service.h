@@ -101,30 +101,30 @@ class FILE_SERVICE : public VFILE_SERVICE
   public:
     FILE_SERVICE();
     ~FILE_SERVICE();
-    HANDLE _CreateFile(LPCTSTR lpFileName, DWORD dwDesiriedAccess = GENERIC_READ, DWORD dwShareMode = FILE_SHARE_READ,
-                       DWORD dwCreationDisposition = OPEN_EXISTING);
+    HANDLE _CreateFile(const char *lpFileName, DWORD dwDesiriedAccess = GENERIC_READ,
+                       DWORD dwShareMode = FILE_SHARE_READ, DWORD dwCreationDisposition = OPEN_EXISTING);
     void _CloseHandle(HANDLE hFile);
     DWORD _SetFilePointer(HANDLE hFile, long DistanceToMove, PLONG lpDistanceToMoveHigh, DWORD dwMoveMethod);
     long _GetFilePointer(HANDLE hFile);
-    BOOL _DeleteFile(LPCTSTR lpFileName);
+    BOOL _DeleteFile(const char *lpFileName);
     BOOL _WriteFile(HANDLE hFile, LPCVOID lpBuffer, DWORD nNumberOfBytesToWrite, LPDWORD lpNumberOfBytesWritten);
     BOOL _ReadFile(HANDLE hFile, LPVOID lpBuffer, DWORD nNumberOfBytesToRead, LPDWORD lpNumberOfBytesRead);
-    HANDLE _FindFirstFile(LPCTSTR lpFileName, LPWIN32_FIND_DATA lpFindFileData);
+    HANDLE _FindFirstFile(const char *lpFileName, LPWIN32_FIND_DATA lpFindFileData);
     BOOL _FindNextFile(HANDLE hFindFile, LPWIN32_FIND_DATA lpFindFileData);
     BOOL _FindClose(HANDLE hFindFile);
     BOOL _FlushFileBuffers(HANDLE hFile);
-    DWORD _GetCurrentDirectory(DWORD nBufferLength, LPTSTR lpBuffer);
-    BOOL _GetDiskFreeSpaceEx(LPCTSTR lpDirectoryName, PULARGE_INTEGER lpFreeBytesAvailableToCaller,
+    DWORD _GetCurrentDirectory(DWORD nBufferLength, char *lpBuffer);
+    BOOL _GetDiskFreeSpaceEx(const char *lpDirectoryName, PULARGE_INTEGER lpFreeBytesAvailableToCaller,
                              PULARGE_INTEGER lpTotalNumberOfBytes, PULARGE_INTEGER lpTotalNumberOfFreeBytes);
-    UINT _GetDriveType(LPCTSTR lpRootPathName);
+    UINT _GetDriveType(const char *lpRootPathName);
     DWORD _GetFileSize(HANDLE hFile, LPDWORD lpFileSizeHigh);
     DWORD _GetLogicalDrives(VOID);
     DWORD _GetLogicalDriveStrings(DWORD nBufferLength, LPTSTR lpBuffer);
-    BOOL _SetCurrentDirectory(LPCTSTR lpPathName);
-    BOOL _CreateDirectory(LPCTSTR lpPathName, LPSECURITY_ATTRIBUTES lpSecurityAttributes);
-    BOOL _RemoveDirectory(LPCTSTR lpPathName);
-    BOOL _CopyFile(LPCTSTR lpExistingFileName, LPCTSTR lpNewFileName, BOOL bFailIfExists);
-    BOOL _SetFileAttributes(LPCTSTR lpFileName, DWORD dwFileAttributes);
+    BOOL _SetCurrentDirectory(const char *lpPathName);
+    BOOL _CreateDirectory(const char *lpPathName, LPSECURITY_ATTRIBUTES lpSecurityAttributes);
+    BOOL _RemoveDirectory(const char *lpPathName);
+    BOOL _CopyFile(const char *lpExistingFileName, const char *lpNewFileName, BOOL bFailIfExists);
+    BOOL _SetFileAttributes(const char *lpFileName, DWORD dwFileAttributes);
     BOOL FileExist(const char *file_name);
     BOOL LoadFile(const char *file_name, char **ppBuffer, dword *dwSize);
     // ini files section

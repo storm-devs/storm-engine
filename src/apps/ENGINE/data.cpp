@@ -2856,7 +2856,7 @@ bool DATA::RefConvert()
 void DATA::BadIndex(DWORD index, DWORD array_size)
 {
     char buffer[MAX_PATH];
-    wsprintf(buffer, "invalid index %d [size:%d]", index, array_size);
+    sprintf(buffer, "invalid index %d [size:%d]", index, array_size);
     Error(buffer);
 }
 

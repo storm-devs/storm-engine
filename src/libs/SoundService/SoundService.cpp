@@ -1155,8 +1155,10 @@ void SoundService::InitAliases()
     if ((foundFile = api->fio->_FindFirstFile(iniName, &findData)) != INVALID_HANDLE_VALUE)
     {
         do
-            LoadAliasFile(findData.cFileName);
-        while (api->fio->_FindNextFile(foundFile, &findData) == TRUE);
+        {
+            std::string FileName = utf8::ConvertWideToUtf8(findData.cFileName);
+            LoadAliasFile(FileName.c_str());
+        } while (api->fio->_FindNextFile(foundFile, &findData) == TRUE);
     }
 }
 

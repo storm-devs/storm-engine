@@ -85,6 +85,7 @@ class CXI_UTILS
     static void StringFillStringArray(const char *pcString, array<string> &asStringsArray);
     static long SplitStringByWidth(const char *pcText, long nFontID, float fFontScale, long nWidth,
                                    array<string> &asOutStr);
+
     static InterfaceStringCurTokenType GetCurrentTokenIntoString(const char *pcStr)
     {
         if (!pcStr)

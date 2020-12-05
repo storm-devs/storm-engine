@@ -2,10 +2,11 @@
 #include "d3dx9math.h"
 #include "gdiplus.h"
 #include "matrix.h"
-#include "stdio.h"
 #include "texture.h"
 #include <DxErr.h>
+#include <cstdio>
 #include <io.h>
+#include <string>
 
 #define POST_PROCESS_FVF D3DFVF_XYZRHW | D3DFVF_TEX4
 
@@ -816,8 +817,9 @@ bool DX8RENDER::ReleaseDevice()
         hr = d3d9->Release();
         if (FAILED(hr))
         {
-            api->Trace("Release d3d9   Error: %s error description: %s\n", DXGetErrorString(hr),
-                       DXGetErrorDescription(hr));
+            std::string Error = utf8::ConvertWideToUtf8(DXGetErrorString(hr));
+            std::string Desc = utf8::ConvertWideToUtf8(DXGetErrorDescription(hr));
+            api->Trace("Release d3d9   Error: %s error description: %s\n", Desc.c_str(), Desc.c_str());
         }
         d3d9 = NULL;
     }
@@ -827,8 +829,9 @@ bool DX8RENDER::ReleaseDevice()
         hr = d3d->Release();
         if (FAILED(hr))
         {
-            api->Trace("Release d3d    Error: %s error description: %s\n", DXGetErrorString(hr),
-                       DXGetErrorDescription(hr));
+            std::string Error = utf8::ConvertWideToUtf8(DXGetErrorString(hr));
+            std::string Desc = utf8::ConvertWideToUtf8(DXGetErrorDescription(hr));
+            api->Trace("Release d3d9   Error: %s error description: %s\n", Desc.c_str(), Desc.c_str());
         }
         d3d = NULL;
     }
@@ -1468,7 +1471,7 @@ bool DX8RENDER::TextureLoad(long t)
     {
         return false;
     }
-    wsprintf(fn, TEXTURESDIR, Textures[t].name);
+    sprintf(fn, TEXTURESDIR, Textures[t].name);
     for (long s = 0, d = 0; fn[d]; s++)
     {
         if (d > 0 && fn[d - 1] == '\\' && fn[s] == '\\')
@@ -2626,7 +2629,7 @@ long _cdecl DX8RENDER::Print(long x, long y, char *format, ...)
 
     va_list args;
     va_start(args, format);
-    _vsnprintf(Buff_4k, sizeof(Buff_4k), format, args);
+    vsnprintf(Buff_4k, sizeof(Buff_4k), format, args);
     va_end(args);
 
     return FontList[idFontCurrent].font->Print(x, y, Buff_4k);
@@ -2643,7 +2646,7 @@ long _cdecl DX8RENDER::Print(long nFontNum, DWORD color, long x, long y, char *f
 
     va_list args;
     va_start(args, format);
-    _vsnprintf(Buff_4k, sizeof(Buff_4k), format, args);
+    vsnprintf(Buff_4k, sizeof(Buff_4k), format, args);
     va_end(args);
 
     FontList[nFontNum].font->StoreFontParameters();
@@ -2654,7 +2657,7 @@ long _cdecl DX8RENDER::Print(long nFontNum, DWORD color, long x, long y, char *f
     UNGUARD
 }
 
-long DX8RENDER::StringWidth(char *string, long nFontNum, float fScale, long scrWidth)
+long DX8RENDER::StringWidth(const char *string, long nFontNum, float fScale, long scrWidth)
 {
     if (nFontNum < 0 || nFontNum >= nFontQuantity)
         return 0;
@@ -2676,12 +2679,10 @@ long DX8RENDER::StringWidth(char *string, long nFontNum, float fScale, long scrW
     return retVal;
 }
 
-long DX8RENDER::CharWidth(char ch, long nFontNum, float fScale, long scrWidth)
+long DX8RENDER::CharWidth(utf8::u8_char ch, long nFontNum, float fScale, long scrWidth)
 {
-    char str[2];
-    str[0] = ch;
-    str[1] = 0;
-    return StringWidth(str, nFontNum, fScale, scrWidth);
+    std::string str(ch.b, ch.l);
+    return StringWidth(str.c_str(), nFontNum, fScale, scrWidth);
 }
 
 long DX8RENDER::CharHeight(long fontID)
@@ -2707,7 +2708,7 @@ long _cdecl DX8RENDER::ExtPrint(long nFontNum, DWORD foreColor, DWORD backColor,
 
     va_list args;
     va_start(args, format);
-    _vsnprintf(Buff_4k, sizeof(Buff_4k), format, args);
+    vsnprintf(Buff_4k, sizeof(Buff_4k), format, args);
     va_end(args);
 
     pFont->StoreFontParameters();
@@ -3115,7 +3116,7 @@ void DX8RENDER::MakeScreenShot()
     //Получаем имя файла
     for (i = 0; i < 10000; i++)
     {
-        wsprintf(file_name, "CCS_%04d.tga", i);
+        sprintf(file_name, "CCS_%04d.tga", i);
         if (_access(file_name, 0) == -1)
             break;
     }

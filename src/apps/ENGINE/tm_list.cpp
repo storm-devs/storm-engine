@@ -7,8 +7,6 @@
 extern CORE Core;
 extern S_DEBUG CDebug;
 
-static char TM_LIST_Buffer[MAX_STR_SIZE];
-
 TM_LIST::TM_LIST()
 {
     hInst = null;
@@ -46,7 +44,7 @@ void TM_LIST::Initialize(HWND hwnd, HINSTANCE hinst, dword style, dword style_ex
     icc.dwICC = ICC_LISTVIEW_CLASSES;
     InitCommonControlsEx(&icc);
 
-    hOwn = CreateWindowEx(WS_EX_CLIENTEDGE, WC_LISTVIEW, "", WS_CHILD | LVS_REPORT | LVS_SHOWSELALWAYS, 0, 0,
+    hOwn = CreateWindowEx(WS_EX_CLIENTEDGE, WC_LISTVIEW, TEXT(""), WS_CHILD | LVS_REPORT | LVS_SHOWSELALWAYS, 0, 0,
                           CW_USEDEFAULT, CW_USEDEFAULT, hMain, NULL, hInst, NULL);
     if (hOwn == NULL)
         throw "cant create list view";
@@ -105,7 +103,7 @@ void TM_LIST::AddColumn(char *name, long length)
 {
     LVCOLUMN lvc;
 
-    char string[MAX_STR_SIZE];
+    wchar_t string[MAX_STR_SIZE];
     ZeroMemory(&lvc, sizeof(lvc));
 
     lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM; // | LVCF_ORDER ;
@@ -114,9 +112,12 @@ void TM_LIST::AddColumn(char *name, long length)
     lvc.pszText = string;
     // lvc.iOrder = Columns_Num;
     if (name)
-        strcpy(string, name);
+    {
+        std::wstring NameW = utf8::ConvertUtf8ToWide(name);
+        wcscpy(string, NameW.c_str());
+    }
     else
-        strcpy(string, "");
+        wcscpy(string, L"");
     lvc.iSubItem = Columns_Num;
     if (ListView_InsertColumn(hOwn, Columns_Num, &lvc) == -1)
         throw "cant add column";
@@ -126,7 +127,7 @@ void TM_LIST::AddColumn(char *name, long length)
 void TM_LIST::AddItem(char *name)
 {
     LVITEM lvi;
-    char string[MAX_STR_SIZE];
+    wchar_t string[MAX_STR_SIZE];
     lvi.mask = LVIF_TEXT | LVIF_IMAGE | LVIF_PARAM | LVIF_STATE;
     lvi.state = 0;
     lvi.stateMask = 0;
@@ -136,9 +137,12 @@ void TM_LIST::AddItem(char *name)
     lvi.iSubItem = 0;
     lvi.lParam = 0;
     if (name)
-        strcpy(string, name);
+    {
+        std::wstring NameW = utf8::ConvertUtf8ToWide(name);
+        wcscpy(string, NameW.c_str());
+    }
     else
-        strcpy(string, "");
+        wcscpy(string, L"");
     ListView_InsertItem(hOwn, &lvi);
     Items_Num++;
 }
@@ -146,13 +150,19 @@ void TM_LIST::AddItem(char *name)
 void TM_LIST::SetItemText(long Item_index, long Subitem_index, char *text)
 {
     if (text)
-        ListView_SetItemText(hOwn, Item_index, Subitem_index, text);
+    {
+        std::wstring TextW = utf8::ConvertUtf8ToWide(text);
+        ListView_SetItemText(hOwn, Item_index, Subitem_index, const_cast<wchar_t *>(TextW.c_str()));
+    }
 }
 
 void TM_LIST::GetItemText(long Item_index, long Subitem_index, char *text, long max_size)
 {
     if (text)
-        ListView_GetItemText(hOwn, Item_index, Subitem_index, text, max_size);
+    {
+        std::wstring TextW = utf8::ConvertUtf8ToWide(text);
+        ListView_GetItemText(hOwn, Item_index, Subitem_index, const_cast<wchar_t *>(TextW.c_str()), max_size);
+    }
 }
 
 // if (text) for (long i=0, j=0; i<max_size && text[i]; i++) if (text[i] != '\n') text[j++] = text[i];
@@ -192,16 +202,6 @@ void TM_LIST::UpdatePosition()
         Pos.bottom = height;
 
     MoveWindow(hOwn, Pos.left, Pos.top, Pos.right - Pos.left, Pos.bottom - Pos.top, true);
-}
-
-char *TM_LIST::GetSelectedName()
-{
-    long index;
-    index = ListView_GetSelectionMark(hOwn);
-    if (index < 0)
-        return 0;
-    ListView_GetItemText(hOwn, index, 0, TM_LIST_Buffer, sizeof(TM_LIST_Buffer));
-    return TM_LIST_Buffer;
 }
 
 void TM_LIST::SelectItem(char *name)
@@ -377,7 +377,7 @@ void TM_LIST::ProcessMessageBase(DWORD iMsg, DWORD wParam, DWORD lParam)
                     hEdit = 0;
 
                     hEdit = CreateWindowEx(
-                        WS_EX_TOPMOST, "EDIT", "",
+                        WS_EX_TOPMOST, TEXT("EDIT"), TEXT(""),
                         WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL | ES_MULTILINE | ES_WANTRETURN | ES_AUTOVSCROLL,
                         // hEdit = CreateWindowEx(WS_EX_TOPMOST,"STATIC","",WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL |
                         // ES_MULTILINE | ES_WANTRETURN | ES_AUTOVSCROLL ,
@@ -390,7 +390,8 @@ void TM_LIST::ProcessMessageBase(DWORD iMsg, DWORD wParam, DWORD lParam)
                     MoveWindow(hEdit, EditPos.left, EditPos.top, EditPos.right - EditPos.left,
                                EditPos.bottom - EditPos.top, true);
                     SetFocus(hEdit);
-                    SetWindowText(hEdit, TextEditBuffer);
+                    std::wstring TextEditBufferW = utf8::ConvertUtf8ToWide(TextEditBuffer);
+                    SetWindowText(hEdit, TextEditBufferW.c_str());
                 }
             }
             break;

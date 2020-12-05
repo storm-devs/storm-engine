@@ -3,6 +3,9 @@
 #include "memop.h"
 #include "resource.h"
 #include "system_log.h"
+#include "utf8.h"
+
+#include <string>
 
 #define DEFAULT_DISPLAY_STACK_SIZE 12
 
@@ -72,7 +75,7 @@ void GDI_DISPLAY::Init(HINSTANCE hInstance, HWND _hwnd, long w, long h)
     ShowWindow(hwnd, SW_SHOWNORMAL);
 
     hFont = CreateFont(FONT_SIZE, 0, 0, 0, FW_BOLD, 1, false, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
-                       CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, VARIABLE_PITCH, FONT_NAME);
+                       CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, VARIABLE_PITCH, TEXT(FONT_NAME));
 
     Set_Message_Stack(DEFAULT_DISPLAY_STACK_SIZE);
 }
@@ -116,27 +119,27 @@ void GDI_DISPLAY::On_Paint(HWND hwnd)
     SetBkMode(dc, TRANSPARENT);
 
     SetTextColor(dc, RGB(0, 0, 0));
-    TextOut(dc, LEFT_OFFSET + dis, TOP_OFFSET + dis, HEADER_TEXT, strlen(HEADER_TEXT));
+    TextOut(dc, LEFT_OFFSET + dis, TOP_OFFSET + dis, TEXT(HEADER_TEXT), wcslen(TEXT(HEADER_TEXT)));
     SetTextColor(dc, RGB(255, 255, 222));
-    TextOut(dc, LEFT_OFFSET, TOP_OFFSET, HEADER_TEXT, strlen(HEADER_TEXT));
+    TextOut(dc, LEFT_OFFSET, TOP_OFFSET, TEXT(HEADER_TEXT), wcslen(TEXT(HEADER_TEXT)));
 
     RECT r;
     GetClientRect(hwnd, &r);
 
     SetTextColor(dc, RGB(0, 0, 0));
-    TextOut(dc, LEFT_OFFSET + dis, r.bottom - TOP_OFFSET - FONT_SIZE + dis, buffer, strlen(buffer));
+    std::wstring bufferW = utf8::ConvertUtf8ToWide(buffer);
+    TextOut(dc, LEFT_OFFSET + dis, r.bottom - TOP_OFFSET - FONT_SIZE + dis, bufferW.c_str(), bufferW.length());
     SetTextColor(dc, RGB(255, 255, 222));
-    TextOut(dc, LEFT_OFFSET, r.bottom - TOP_OFFSET - FONT_SIZE, buffer, strlen(buffer));
+    TextOut(dc, LEFT_OFFSET, r.bottom - TOP_OFFSET - FONT_SIZE, bufferW.c_str(), bufferW.length());
 
     long n;
     for (n = 0; n < MS_Count; n++)
     {
         SetTextColor(dc, RGB(0, 0, 0));
-        TextOut(dc, 2 * LEFT_OFFSET + dis, TOP_OFFSET + FONT_SIZE * (n + 2) + dis, ms_PTR + n * BUFFER_SIZE,
-                strlen(ms_PTR + n * BUFFER_SIZE));
+        std::wstring msPtrW = utf8::ConvertUtf8ToWide(ms_PTR + n * BUFFER_SIZE);
+        TextOut(dc, 2 * LEFT_OFFSET + dis, TOP_OFFSET + FONT_SIZE * (n + 2) + dis, msPtrW.c_str(), msPtrW.length());
         SetTextColor(dc, RGB(255, 255, 222));
-        TextOut(dc, 2 * LEFT_OFFSET, TOP_OFFSET + FONT_SIZE * (n + 2), ms_PTR + n * BUFFER_SIZE,
-                strlen(ms_PTR + n * BUFFER_SIZE));
+        TextOut(dc, 2 * LEFT_OFFSET, TOP_OFFSET + FONT_SIZE * (n + 2), msPtrW.c_str(), msPtrW.length());
     }
 
     SelectObject(dc, hFont_old);
@@ -145,7 +148,7 @@ void GDI_DISPLAY::On_Paint(HWND hwnd)
     EndPaint(hwnd, &PS);
 }
 
-void GDI_DISPLAY::Set_Text(char *text_PTR, ...)
+void GDI_DISPLAY::Set_Text(const char *text_PTR, ...)
 {
     if (gdi_off)
         return;

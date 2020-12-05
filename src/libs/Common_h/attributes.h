@@ -35,8 +35,8 @@ class ATTRIBUTES
         if (data_PTR == 0)
             return;
 
-        HANDLE file_h =
-            CreateFile("attributes.log", GENERIC_WRITE, FILE_SHARE_READ, 0, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+        HANDLE file_h = CreateFile(TEXT("attributes.log"), GENERIC_WRITE, FILE_SHARE_READ, 0, OPEN_ALWAYS,
+                                   FILE_ATTRIBUTE_NORMAL, 0);
         SetFilePointer(file_h, 0, 0, FILE_END);
         va_list args;
 

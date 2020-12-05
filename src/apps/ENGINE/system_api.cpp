@@ -46,7 +46,8 @@ void _cdecl SYSTEM_API::Trace(char *data_PTR, ...)
     va_end(args);
     trace(buffer);
     strcat(buffer, "\x0d\x0a");
-    OutputDebugString(buffer);
+    std::wstring BufferW = utf8::ConvertUtf8ToWide(buffer);
+    OutputDebugString(BufferW.c_str());
 }
 
 void SYSTEM_API::SetX()

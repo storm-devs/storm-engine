@@ -20,33 +20,33 @@ class VFILE_SERVICE
   public:
     VFILE_SERVICE(){};
     virtual ~VFILE_SERVICE(){};
-    virtual HANDLE _CreateFile(LPCTSTR lpFileName, DWORD dwDesiriedAccess = GENERIC_READ,
+    virtual HANDLE _CreateFile(const char *lpFileName, DWORD dwDesiriedAccess = GENERIC_READ,
                                DWORD dwShareMode = FILE_SHARE_READ, DWORD dwCreationDisposition = OPEN_EXISTING) = 0;
     virtual void _CloseHandle(HANDLE hFile) = 0;
     virtual DWORD _SetFilePointer(HANDLE hFile, long DistanceToMove, PLONG lpDistanceToMoveHigh,
                                   DWORD dwMoveMethod) = 0;
     virtual long _GetFilePointer(HANDLE hFile) = 0;
-    virtual BOOL _DeleteFile(LPCTSTR lpFileName) = 0;
+    virtual BOOL _DeleteFile(const char *lpFileName) = 0;
     virtual BOOL _WriteFile(HANDLE hFile, LPCVOID lpBuffer, DWORD nNumberOfBytesToWrite,
                             LPDWORD lpNumberOfBytesWritten) = 0;
     virtual BOOL _ReadFile(HANDLE hFile, LPVOID lpBuffer, DWORD nNumberOfBytesToRead, LPDWORD lpNumberOfBytesRead) = 0;
-    virtual HANDLE _FindFirstFile(LPCTSTR lpFileName, LPWIN32_FIND_DATA lpFindFileData) = 0;
+    virtual HANDLE _FindFirstFile(const char *lpFileName, LPWIN32_FIND_DATA lpFindFileData) = 0;
     virtual BOOL _FindNextFile(HANDLE hFindFile, LPWIN32_FIND_DATA lpFindFileData) = 0;
     virtual BOOL _FindClose(HANDLE hFindFile) = 0;
     virtual BOOL _FlushFileBuffers(HANDLE hFile) = 0;
-    virtual DWORD _GetCurrentDirectory(DWORD nBufferLength, LPTSTR lpBuffer) = 0;
-    virtual BOOL _GetDiskFreeSpaceEx(LPCTSTR lpDirectoryName, PULARGE_INTEGER lpFreeBytesAvailableToCaller,
+    virtual DWORD _GetCurrentDirectory(DWORD nBufferLength, char *lpBuffer) = 0;
+    virtual BOOL _GetDiskFreeSpaceEx(const char *lpDirectoryName, PULARGE_INTEGER lpFreeBytesAvailableToCaller,
                                      PULARGE_INTEGER lpTotalNumberOfBytes,
                                      PULARGE_INTEGER lpTotalNumberOfFreeBytes) = 0;
-    virtual UINT _GetDriveType(LPCTSTR lpRootPathName) = 0;
+    virtual UINT _GetDriveType(const char *lpRootPathName) = 0;
     virtual DWORD _GetFileSize(HANDLE hFile, LPDWORD lpFileSizeHigh) = 0;
     virtual DWORD _GetLogicalDrives(VOID) = 0;
     virtual DWORD _GetLogicalDriveStrings(DWORD nBufferLength, LPTSTR lpBuffer) = 0;
-    virtual BOOL _SetCurrentDirectory(LPCTSTR lpPathName) = 0;
-    virtual BOOL _CreateDirectory(LPCTSTR lpPathName, LPSECURITY_ATTRIBUTES lpSecurityAttributes) = 0;
-    virtual BOOL _RemoveDirectory(LPCTSTR lpPathName) = 0;
-    virtual BOOL _CopyFile(LPCTSTR lpExistingFileName, LPCTSTR lpNewFileName, BOOL bFailIfExists) = 0;
-    virtual BOOL _SetFileAttributes(LPCTSTR lpFileName, DWORD dwFileAttributes) = 0;
+    virtual BOOL _SetCurrentDirectory(const char *lpPathName) = 0;
+    virtual BOOL _CreateDirectory(const char *lpPathName, LPSECURITY_ATTRIBUTES lpSecurityAttributes) = 0;
+    virtual BOOL _RemoveDirectory(const char *lpPathName) = 0;
+    virtual BOOL _CopyFile(const char *lpExistingFileName, const char *lpNewFileName, BOOL bFailIfExists) = 0;
+    virtual BOOL _SetFileAttributes(const char *lpFileName, DWORD dwFileAttributes) = 0;
     virtual INIFILE *OpenIniFile(const char *file_name) = 0;
     virtual BOOL FileExist(const char *file_name) = 0;
     virtual BOOL LoadFile(const char *file_name, char **ppBuffer, dword *dwSize = 0) = 0;

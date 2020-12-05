@@ -8,6 +8,7 @@
 #include ".\setupdlg.h"
 #include <ddraw.h>
 #include <math.h>
+#include <string>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -17,6 +18,25 @@ static char THIS_FILE[] = __FILE__;
 
 /////////////////////////////////////////////////////////////////////////////
 // CAboutDlg dialog used for App About
+
+namespace
+{
+std::string ConvertWideToUtf8(const std::wstring &wstr)
+{
+    int count = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), wstr.length(), NULL, 0, NULL, NULL);
+    std::string str(count, 0);
+    WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, &str[0], count, NULL, NULL);
+    return str;
+}
+
+std::wstring ConvertUtf8ToWide(const std::string &str)
+{
+    int count = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), str.length(), NULL, 0);
+    std::wstring wstr(count, 0);
+    MultiByteToWideChar(CP_UTF8, 0, str.c_str(), str.length(), &wstr[0], count);
+    return wstr;
+}
+} // namespace
 
 class CAboutDlg : public CDialog
 {
@@ -134,7 +154,8 @@ void CSetupDlg::Trace(char *data_PTR, ...)
     va_end(args);
     strcat(buffer, "\x0d\x0a");
 
-    HANDLE file_h = CreateFile("config.log", GENERIC_WRITE, FILE_SHARE_READ, 0, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+    HANDLE file_h =
+        CreateFile(TEXT("config.log"), GENERIC_WRITE, FILE_SHARE_READ, 0, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
     SetFilePointer(file_h, 0, 0, FILE_END);
     DWORD bytes;
     WriteFile(file_h, buffer, strlen(buffer), &bytes, 0);
@@ -144,9 +165,9 @@ void CSetupDlg::Trace(char *data_PTR, ...)
 
 BOOL CSetupDlg::OnInitDialog()
 {
-    char txt[256];
+    wchar_t txt[256];
 
-    DeleteFile("config.log");
+    DeleteFile(TEXT("config.log"));
 
     Trace("OnInitDialog::Start");
     CDialog::OnInitDialog();
@@ -183,7 +204,7 @@ BOOL CSetupDlg::OnInitDialog()
     if (!EnumerateDevicesAndResolutions())
     {
         LoadString(AfxGetResourceHandle(), IDS_INITERROR, &txt[0], 256);
-        MessageBox(txt, "Error", MB_OK);
+        MessageBox(txt, TEXT("Error"), MB_OK);
         SendMessage(WM_CLOSE, 0, 0);
         return false;
     }
@@ -192,7 +213,7 @@ BOOL CSetupDlg::OnInitDialog()
     if (!LoadSettings())
     {
         LoadString(AfxGetResourceHandle(), IDS_INIMISSED, &txt[0], 256);
-        MessageBox(txt, "Error", MB_OK);
+        MessageBox(txt, TEXT("Error"), MB_OK);
         SendMessage(WM_CLOSE, 0, 0);
         return false;
     }
@@ -268,7 +289,7 @@ BOOL CSetupDlg::LoadSettings()
     if (hKy)
     {
         pData = _MAX_PATH;
-        a = RegQueryValueEx(hKy, "Path", NULL, NULL, (BYTE*)InstallLocation, &pData);
+        a = RegQueryValueEx(hKy, "Path", NULL, NULL, (BYTE*)InstallLocationW, &pData);
         RegCloseKey(hKy);
     }
     else
@@ -278,7 +299,7 @@ BOOL CSetupDlg::LoadSettings()
         if (hKy)
         {
             pData = _MAX_PATH;
-            a = RegQueryValueEx(hKy, "InstallLocation", NULL, NULL, (BYTE*)InstallLocation, &pData);
+            a = RegQueryValueEx(hKy, "InstallLocationW", NULL, NULL, (BYTE*)InstallLocationW, &pData);
             RegCloseKey(hKy);
         }
     }
@@ -298,17 +319,17 @@ BOOL CSetupDlg::LoadSettings()
         bi.lpszTitle = &title[0];
         iil = SHBrowseForFolder(&bi);
         if (!iil) return false;
-        BOOL ret = SHGetPathFromIDList(iil,InstallLocation);
+        BOOL ret = SHGetPathFromIDList(iil,InstallLocationW);
         if (!ret) return false;
     }
     else
     {
-        //strcat(InstallLocation, "\\engine.ini");
+        //strcat(InstallLocationW, "\\engine.ini");
     }*/
 
     Trace("LoadSettings::GetCurrentDirectory");
-    GetCurrentDirectory(sizeof(InstallLocation) - 1, InstallLocation);
-    sprintf(InstallLocationExe, "%s\\engine.exe", InstallLocation);
+    GetCurrentDirectory(sizeof(InstallLocationW) - 1, InstallLocationW);
+    wsprintf(InstallLocationExeW, L"%s\\engine.exe", InstallLocationW);
 
     Files[0].pFile = "engine.ini";
     Files[0].file = NULL;
@@ -322,11 +343,12 @@ BOOL CSetupDlg::LoadSettings()
     ZeroMemory(Strings, sizeof(Strings));
     numstrings = 0;
 
+    std::string InstallLocation = ConvertWideToUtf8(InstallLocationW);
     for (DWORD kk = 0; kk < NUM_FILES; kk++)
     {
         char cFileName[2048];
 
-        sprintf(cFileName, "%s\\%s", InstallLocation, Files[kk].pFile);
+        sprintf(cFileName, "%s\\%s", InstallLocation.c_str(), Files[kk].pFile);
 
         FILE *f = fopen(cFileName, "r");
         if (!f)
@@ -374,7 +396,9 @@ BOOL CSetupDlg::LoadSettings()
     m_TexQuality.SetRange(0, 2, true);
 
     for (i = 0; i < numdevices; i++)
+    {
         m_DeviceList.InsertString(i, Devices[i].Name);
+    }
 
     currentdevice = 0;
 
@@ -497,9 +521,9 @@ void CSetupDlg::UpdateResolutions()
 
     for (DWORD i = 0; i < pD->numresolutions; i++)
     {
-        char str[256];
+        wchar_t str[256];
         res_t *pR = &pD->Resolutions[i];
-        sprintf(str, "%dx%d %s bit", pR->width, pR->height, (pR->bpp == 16) ? "16" : "32");
+        wsprintf(str, L"%dx%d %s bit", pR->width, pR->height, (pR->bpp == 16) ? L"16" : L"32");
         m_ResList.InsertString(i, str);
     }
 }
@@ -524,10 +548,10 @@ HRESULT WINAPI DDEnumModesCallback(LPDDSURFACEDESC lpDDSD, LPVOID lpContext)
     return DDENUMRET_OK;
 }
 
-BOOL WINAPI DDEnumCallback(LPGUID lpGUID, LPSTR lpDriverDescription, LPSTR lpDriverName, LPVOID lpContext)
+BOOL WINAPI DDEnumCallback(LPGUID lpGUID, LPWSTR lpDriverDescription, LPWSTR lpDriverName, LPVOID lpContext)
 {
     CSetupDlg *This = (CSetupDlg *)lpContext;
-    strcpy(This->Devices[This->numdevices].Name, lpDriverDescription);
+    wcscpy(This->Devices[This->numdevices].Name, lpDriverDescription);
     This->Devices[This->numdevices].lpGUID = lpGUID;
 
     This->numdevices++;
@@ -616,10 +640,12 @@ void CSetupDlg::SaveParameters()
     char sFmtEStr[256];
     DWORD i, kk;
     // TODO: Add your control notification handler code here
+
+    std::string InstallLocation = ConvertWideToUtf8(InstallLocationW);
     for (kk = 0; kk < NUM_FILES; kk++)
     {
         char cFileName[1024];
-        sprintf(cFileName, "%s\\%s", InstallLocation, Files[kk].pFile);
+        sprintf(cFileName, "%s\\%s", InstallLocation.c_str(), Files[kk].pFile);
 
         Files[kk].file = fopen(cFileName, "w+b");
     }
@@ -786,7 +812,7 @@ void CSetupDlg::OnStartgame()
 
     // TODO: Add your control notification handler code here
     SaveParameters();
-    BOOL bProcess = CreateProcess(InstallLocationExe, NULL, NULL, NULL, FALSE, NULL, NULL, InstallLocation, &si, &pi);
+    BOOL bProcess = CreateProcess(InstallLocationExeW, NULL, NULL, NULL, FALSE, NULL, NULL, InstallLocationW, &si, &pi);
     DWORD dw = GetLastError();
     SendMessage(WM_CLOSE, 0, 0);
 }
@@ -817,12 +843,12 @@ void CSetupDlg::OnTtnTooltipShowCustom1(NMHDR *pNMHDR, LRESULT *pResult)
 
 void CSetupDlg::OnBnClickedFullscreen()
 {
-    char txt[2048];
+    wchar_t txt[2048];
     // TODO: Add your control notification handler code here
     UpdateData(true);
     LoadString(AfxGetResourceHandle(), IDS_FULLSCREEN_WARNING, &txt[0], sizeof(txt));
     if (m_Fullscreen)
-        MessageBox(txt, "Warning!");
+        MessageBox(txt, TEXT("Warning!"));
 }
 
 void CSetupDlg::OnBnClickedGlow()

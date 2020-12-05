@@ -12,7 +12,7 @@ extern S_DEBUG CDebug;
 
 #define WRGB(r, g, b) ((COLORREF)(((BYTE)(r) | ((WORD)((BYTE)(g)) << 8)) | (((DWORD)(BYTE)(b)) << 16)))
 
-char SVClass[] = "Source View";
+const wchar_t *SVClass = L"Source View";
 
 extern int FONT_HEIGHT;
 bool SelectionInProgress = false;
@@ -716,9 +716,10 @@ void SOURCE_VIEW::OnPaint()
                     LineTo(dc, Pos.right, y + nFontHeight - 1);
                 }
 
+                std::wstring TextW = utf8::ConvertUtf8ToWide(pSourceFile + pLineOffset[n]);
                 if (nStartSelection == nEndSelection || n != Cursor.line)
                 {
-                    TabbedTextOut(dc, x, y, pSourceFile + pLineOffset[n], nTextLen, 0, 0, 0);
+                    TabbedTextOut(dc, x, y, TextW.c_str(), nTextLen, 0, 0, 0);
                 }
                 else
                 {
@@ -740,7 +741,7 @@ void SOURCE_VIEW::OnPaint()
 
                     if (nFrom > 0)
                     {
-                        w = LOWORD(TabbedTextOut(dc, x, y, pSourceFile + pLineOffset[n], nFrom, 0, 0, 0));
+                        w = LOWORD(TabbedTextOut(dc, x, y, TextW.c_str(), nFrom, 0, 0, 0));
                         x += w;
                     }
 
@@ -748,7 +749,7 @@ void SOURCE_VIEW::OnPaint()
                     SetTextColor(dc, WRGB(255, 255, 255));
 
                     CopyPasteRect.left = x;
-                    w = LOWORD(TabbedTextOut(dc, x, y, pSourceFile + pLineOffset[n] + nFrom, nTo - nFrom, 0, 0, 0));
+                    w = LOWORD(TabbedTextOut(dc, x, y, TextW.c_str() + nFrom, nTo - nFrom, 0, 0, 0));
                     x += w;
                     CopyPasteRect.right = CopyPasteRect.left + w;
                     CopyPasteRect.top = y;
@@ -763,7 +764,7 @@ void SOURCE_VIEW::OnPaint()
                     SetBkMode(dc, TRANSPARENT);
 
                     SetTextColor(dc, WRGB(0, 0, 0));
-                    TabbedTextOut(dc, x, y, pSourceFile + pLineOffset[n] + nTo, nTextLen - nTo, 0, 0, 0);
+                    TabbedTextOut(dc, x, y, TextW.c_str() + nTo, nTextLen - nTo, 0, 0, 0);
 
                     x = 16;
                 }
@@ -775,7 +776,7 @@ void SOURCE_VIEW::OnPaint()
         }
     }
     else
-        TextOut(dc, 0, 0, "Source View", strlen("Source View"));
+        TextOut(dc, 0, 0, TEXT("Source View"), wcslen(TEXT("Source View")));
 
     DeleteObject(hBreakBrush);
     DeleteObject(hControlBrush);
@@ -883,6 +884,7 @@ void SOURCE_VIEW::StartSelection(DWORD x_pos)
     SetBkMode(dc, TRANSPARENT);
 
     pLine = pSourceFile + pLineOffset[nActiveLine];
+    std::wstring LineW = utf8::ConvertUtf8ToWide(pLine);
 
     nLen = 0;
     nSymNum = 0;
@@ -892,7 +894,7 @@ void SOURCE_VIEW::StartSelection(DWORD x_pos)
         // nLen = LOWORD(GetTabbedTextExtent(dc,pLine,nSymNum+1,0,0));
 
         BeginPath(dc);
-        TabbedTextOut(dc, X_OFFSET, 0, pLine, nSymNum + 1, 0, 0, 0);
+        TabbedTextOut(dc, X_OFFSET, 0, LineW.c_str(), nSymNum + 1, 0, 0, 0);
         EndPath(dc);
         r = PathToRegion(dc);
         if (r)
@@ -933,6 +935,7 @@ void SOURCE_VIEW::MoveSelection(DWORD x_pos)
     SetBkMode(dc, TRANSPARENT);
 
     pLine = pSourceFile + pLineOffset[nActiveLine];
+    std::wstring LineW = utf8::ConvertUtf8ToWide(pLine);
 
     nLen = 0;
     nSymNum = 0;
@@ -942,7 +945,7 @@ void SOURCE_VIEW::MoveSelection(DWORD x_pos)
         // nLen = LOWORD(GetTabbedTextExtent(dc,pLine,nSymNum+1,0,0));
 
         BeginPath(dc);
-        TabbedTextOut(dc, X_OFFSET, 0, pLine, nSymNum + 1, 0, 0, 0);
+        TabbedTextOut(dc, X_OFFSET, 0, LineW.c_str(), nSymNum + 1, 0, 0, 0);
         EndPath(dc);
         r = PathToRegion(dc);
         if (r)
@@ -993,6 +996,7 @@ void SOURCE_VIEW::InvalidateLineSection(DWORD line, DWORD r1, DWORD r2)
     SetBkMode(dc, TRANSPARENT);
 
     pLine = pSourceFile + pLineOffset[line]; // + old_pos.collumn;
+    std::wstring LineW = utf8::ConvertUtf8ToWide(pLine);
 
     DWORD nSymNum = 0;
     DWORD nLen = 0;
@@ -1000,8 +1004,8 @@ void SOURCE_VIEW::InvalidateLineSection(DWORD line, DWORD r1, DWORD r2)
     RECT SelectionRect = Pos;
     SelectionRect.top = (line - nTopLine) * nFontHeight;
     SelectionRect.bottom = SelectionRect.top + nFontHeight;
-    SelectionRect.left = LOWORD(GetTabbedTextExtent(dc, pLine, r1 + 1, 0, 0));
-    SelectionRect.right = LOWORD(GetTabbedTextExtent(dc, pLine, r2 + 2, 0, 0));
+    SelectionRect.left = LOWORD(GetTabbedTextExtent(dc, LineW.c_str(), r1 + 1, 0, 0));
+    SelectionRect.right = LOWORD(GetTabbedTextExtent(dc, LineW.c_str(), r2 + 2, 0, 0));
 
     InvalidateRect(hOwn, &SelectionRect, true);
 
@@ -1031,13 +1035,14 @@ void SOURCE_VIEW::DetCursorPos(DWORD x_pos, DWORD y_pos)
     SetBkMode(dc, TRANSPARENT);
 
     pLine = pSourceFile + pLineOffset[nActiveLine]; // + old_pos.collumn;
+    std::wstring LineW = utf8::ConvertUtf8ToWide(pLine);
 
     DWORD nSymNum = 0;
     DWORD nLen = 0;
 
     while (!(pLine[nSymNum] == 0xd || pLine[nSymNum] == 0xa || pLine[nSymNum] == 0))
     {
-        nLen = LOWORD(GetTabbedTextExtent(dc, pLine, nSymNum + 1, 0, 0));
+        nLen = LOWORD(GetTabbedTextExtent(dc, LineW.c_str(), nSymNum + 1, 0, 0));
         if (nLen + X_OFFSET /*+ old_pos.x_pos*/ >= x_pos)
         {
             // nEndSelection = nSymNum;
@@ -1222,10 +1227,11 @@ INT_PTR CALLBACK VarChangeDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
         CDebug.SourceView->aStrings.DelAll();
         for (long i = 0; i < iNum; i++)
         {
-            char str[1024];
+            wchar_t str[1024];
             str[0] = 0;
             ListView_GetItemText(hwndList, i, 0, str, sizeof(str));
-            string sValue = str;
+            std::string utf8 = utf8::ConvertWideToUtf8(str);
+            string sValue = utf8.c_str();
             CDebug.SourceView->aStrings.Add(sValue);
         }
     }
@@ -1238,8 +1244,8 @@ INT_PTR CALLBACK VarChangeDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
         col.mask = LVCF_FMT | LVCF_TEXT | LVCF_WIDTH;
         col.fmt = LVCFMT_LEFT;
         col.cx = 378;
-        col.pszText = "Variable name";
-        col.cchTextMax = strlen("Variable name");
+        col.pszText = TEXT("Variable name");
+        col.cchTextMax = wcslen(TEXT("Variable name"));
         ListView_InsertColumn(hwndList, 0, &col);
         dword dwOld = ListView_GetExtendedListViewStyle(hwndList);
         ListView_SetExtendedListViewStyle(hwndList, dwOld | LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
@@ -1251,7 +1257,8 @@ INT_PTR CALLBACK VarChangeDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
             item.mask = LVIF_TEXT;
             item.iItem = 0;
             item.iSubItem = 0;
-            item.pszText = (char *)CDebug.SourceView->aStrings[i].c_str();
+            std::wstring StrW = utf8::ConvertUtf8ToWide(CDebug.SourceView->aStrings[i].c_str());
+            item.pszText = const_cast<wchar_t *>(StrW.c_str());
             item.cchTextMax = CDebug.SourceView->aStrings[i].Len();
             ListView_InsertItem(hwndList, &item);
         }
@@ -1270,15 +1277,16 @@ INT_PTR CALLBACK VarChangeDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
             HWND hwndEdit = GetDlgItem(hwndDlg, IDC_XEDIT);
             HWND hwndList = GetDlgItem(hwndDlg, IDC_XLIST);
 
-            char str[1024];
-            str[0] = 0;
-            GetWindowText(hwndEdit, str, sizeof(str));
-            if (!str[0])
+            wchar_t StrW[1024];
+            StrW[0] = 0;
+            GetWindowText(hwndEdit, StrW, sizeof(StrW));
+            if (!StrW[0])
                 return false;
 
-            if (!CDebug.SourceView->SetVariableOnChange(str, true))
+            std::string Str = utf8::ConvertWideToUtf8(StrW);
+            if (!CDebug.SourceView->SetVariableOnChange(Str.c_str(), true))
             {
-                MessageBox(hwndDlg, "Не найдена переменная", "Ошибка", MB_OK);
+                MessageBox(hwndDlg, TEXT("Не найдена переменная"), TEXT("Ошибка"), MB_OK);
                 return false;
             }
 
@@ -1287,8 +1295,8 @@ INT_PTR CALLBACK VarChangeDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
             item.mask = LVIF_TEXT;
             item.iItem = 0;
             item.iSubItem = 0;
-            item.pszText = str;
-            item.cchTextMax = strlen(str);
+            item.pszText = StrW;
+            item.cchTextMax = wcslen(StrW);
             ListView_InsertItem(hwndList, &item);
 
             return false;
@@ -1296,15 +1304,16 @@ INT_PTR CALLBACK VarChangeDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
 
         if (LOWORD(wParam) == ID_XDELETE)
         {
-            char str[1024];
-            str[0] = 0;
+            wchar_t StrW[1024];
+            StrW[0] = 0;
 
             HWND hwndList = GetDlgItem(hwndDlg, IDC_XLIST);
             long iSel = ListView_GetSelectionMark(hwndList);
             if (iSel == -1)
                 return false;
-            ListView_GetItemText(hwndList, iSel, 0, str, sizeof(str));
-            CDebug.SourceView->SetVariableOnChange(str, false);
+            ListView_GetItemText(hwndList, iSel, 0, StrW, sizeof(StrW));
+            std::string Str = utf8::ConvertWideToUtf8(StrW);
+            CDebug.SourceView->SetVariableOnChange(Str.c_str(), false);
             ListView_DeleteItem(hwndList, iSel);
             return false;
         }
@@ -1328,10 +1337,11 @@ INT_PTR CALLBACK FindDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM l
         }
         if (LOWORD(wParam) == IDC_EDIT1)
         {
-            char str[1024];
-            str[0] = 0;
-            GetWindowText((HWND)lParam, str, sizeof(str));
-            CDebug.SourceView->sFindStr = str;
+            wchar_t StrW[1024];
+            StrW[0] = 0;
+            GetWindowText((HWND)lParam, StrW, sizeof(StrW));
+            std::string Str = utf8::ConvertWideToUtf8(StrW);
+            CDebug.SourceView->sFindStr = Str.c_str();
         }
         break;
     }

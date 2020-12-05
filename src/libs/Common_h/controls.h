@@ -2,6 +2,7 @@
 #define _CONTROLS_H_
 
 #include "d_types.h"
+#include "utf8.h"
 
 #include <windows.h>
 
@@ -75,7 +76,7 @@ struct CONTROL_STATE
 
 struct KeyDescr
 {
-    byte ucVKey;
+    utf8::u8_char ucVKey;
     bool bSystem;
 };
 

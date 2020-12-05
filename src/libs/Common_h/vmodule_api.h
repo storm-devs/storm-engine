@@ -147,7 +147,7 @@ class VMA
         };                                                                                                             \
         char *GetName()                                                                                                \
         {                                                                                                              \
-            return TEXT(#a);                                                                                           \
+            return #a;                                                                                                 \
         }                                                                                                              \
         void *CreateClass()                                                                                            \
         {                                                                                                              \
@@ -169,7 +169,7 @@ class VMA
         };                                                                                                             \
         char *GetName()                                                                                                \
         {                                                                                                              \
-            return TEXT(#a);                                                                                           \
+            return #a;                                                                                                 \
         }                                                                                                              \
         void *CreateClass()                                                                                            \
         {                                                                                                              \
@@ -202,7 +202,7 @@ class VMA
         };                                                                                                             \
         char *GetName()                                                                                                \
         {                                                                                                              \
-            return TEXT(#a);                                                                                           \
+            return #a;                                                                                                 \
         }                                                                                                              \
         void *CreateClass()                                                                                            \
         { /*if(pLibraryInitClass == 0) pLibraryInitClass = NEW a; nReference++; return pLibraryInitClass;*/            \

@@ -585,7 +585,7 @@ void __declspec(noinline) __cdecl CORE::ProcessEngineIniFile()
         if (iScriptVersion != ENGINE_SCRIPT_VERSION)
         {
             ShowCursor(true);
-            MessageBox(GetAppHWND(), "Wrong script version", "Error", MB_OK);
+            MessageBox(GetAppHWND(), TEXT("Wrong script version"), TEXT("Error"), MB_OK);
             Compiler.ExitProgram();
         }
     }
@@ -3535,7 +3535,7 @@ void CORE::StartEvent(DWORD function_code)
 
 void CORE::StartThread()
 {
-    hEvent = CreateEvent(null, false, false, "thrEvent");
+    hEvent = CreateEvent(null, false, false, TEXT("thrEvent"));
     if (hEvent == NULL)
     {
         trace("Error create event!!");

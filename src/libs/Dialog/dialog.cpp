@@ -6,6 +6,8 @@
 
 #include "..\SoundService\VSoundService.h"
 
+#include <string>
+
 #define CNORMAL 0xFFFFFFFF
 #define UNFADE_TIME 1000
 
@@ -303,7 +305,7 @@ void __declspec(noinline) __cdecl DIALOG::DlgLinkDescribe::ShowEditMode(long nX,
             {
                 if (pKeys[n].bSystem)
                 {
-                    switch (pKeys[n].ucVKey)
+                    switch (pKeys[n].ucVKey.c)
                     {
                     case VK_LEFT:
                         if (nEditCharIndex > 0)
@@ -313,33 +315,40 @@ void __declspec(noinline) __cdecl DIALOG::DlgLinkDescribe::ShowEditMode(long nX,
                         if (nEditCharIndex > 0)
                         {
                             nEditCharIndex--;
-                            asText[nTextIdx].Delete(nEditCharIndex, 1);
+                            int offset = utf8::u8_offset(asText[nTextIdx].c_str(), nEditCharIndex);
+                            int length = utf8::u8_inc(asText[nTextIdx].c_str() + offset);
+                            asText[nTextIdx].Delete(offset, length);
                         }
                         break;
-                    case VK_RIGHT:
-                        if (nEditCharIndex < (long)asText[nTextIdx].Len())
+                    case VK_RIGHT: {
+                        int strLength = utf8::Utf8StringLength(asText[nTextIdx].c_str());
+                        if (nEditCharIndex < strLength)
                             nEditCharIndex++;
                         break;
-                    case VK_DELETE:
-                        if (nEditCharIndex >= 0 && nEditCharIndex < (long)asText[nTextIdx].Len())
+                    }
+                    case VK_DELETE: {
+                        int strLength = utf8::Utf8StringLength(asText[nTextIdx].c_str());
+                        if (nEditCharIndex >= 0 && nEditCharIndex < strLength)
                         {
-                            asText[nTextIdx].Delete(nEditCharIndex, 1);
+                            int offset = utf8::u8_offset(asText[nTextIdx].c_str(), nEditCharIndex);
+                            int length = utf8::u8_inc(asText[nTextIdx].c_str() + offset);
+                            asText[nTextIdx].Delete(offset, length);
                         }
                         break;
                     }
+                    }
                     continue;
                 }
-                if (pKeys[n].ucVKey < 0x20)
+                if (pKeys[n].ucVKey.c < 0x20)
                     continue;
 
-                char pcTmp[2];
-                pcTmp[0] = pKeys[n].ucVKey;
-                pcTmp[1] = 0;
-                if (rs->StringWidth((char *)asText[nTextIdx].GetBuffer(), nFontID, fScale, 0) +
-                        rs->CharWidth(pcTmp[0], nFontID, fScale) <=
+                std::string tmp(pKeys[n].ucVKey.b, pKeys[n].ucVKey.l);
+                if (rs->StringWidth(asText[nTextIdx].GetBuffer(), nFontID, fScale, 0) +
+                        rs->CharWidth(pKeys[n].ucVKey, nFontID, fScale) <=
                     nWindowWidth)
                 {
-                    asText[nTextIdx].Insert(nEditCharIndex, pcTmp);
+                    int offset = utf8::u8_offset(asText[nTextIdx].c_str(), nEditCharIndex);
+                    asText[nTextIdx].Insert(offset, tmp.c_str());
                     nEditCharIndex++;
                 }
             }
@@ -355,15 +364,17 @@ void __declspec(noinline) __cdecl DIALOG::DlgLinkDescribe::ShowEditMode(long nX,
         long nW = 0;
         if (!asText[nTextIdx].IsEmpty())
         {
-            if (nEditCharIndex < (long)asText[nTextIdx].Len())
+            int strLength = utf8::Utf8StringLength(asText[nTextIdx].c_str());
+            if (nEditCharIndex < strLength)
             {
-                char cTmp = asText[nTextIdx][nEditCharIndex];
-                asText[nTextIdx][nEditCharIndex] = 0;
-                nW = rs->StringWidth((char *)asText[nTextIdx].GetBuffer(), nFontID, fScale, 0);
-                asText[nTextIdx][nEditCharIndex] = cTmp;
+                int offset = utf8::u8_offset(asText[nTextIdx].c_str(), nEditCharIndex);
+                char cTmp = asText[nTextIdx][offset];
+                asText[nTextIdx][offset] = 0;
+                nW = rs->StringWidth(asText[nTextIdx].GetBuffer(), nFontID, fScale, 0);
+                asText[nTextIdx][offset] = cTmp;
             }
             else
-                nW = rs->StringWidth((char *)asText[nTextIdx].GetBuffer(), nFontID, fScale, 0);
+                nW = rs->StringWidth(asText[nTextIdx].GetBuffer(), nFontID, fScale, 0);
         }
         rs->ExtPrint(nFontID, dwSelColor, 0, ALIGN_LEFT, true, fScale, 0, 0, nX + nW, nY, "_");
     }
@@ -810,8 +821,9 @@ void DIALOG::AddToStringArrayLimitedByWidth(const char *pcSrcText, long nFontID,
                         // ищем первый попавший в диапазон набор символов
                         while (n > 0 && RenderService->StringWidth(param, nFontID, fScale) > nLimitWidth)
                         {
-                            n--;
-                            nCur--;
+                            int dec = utf8::u8_dec(param + n);
+                            n -= dec;
+                            nCur -= dec;
                             param[n] = 0;
                         }
                     }

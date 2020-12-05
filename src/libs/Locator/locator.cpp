@@ -62,7 +62,7 @@ void LOCATOR::LocateForI_L2(ATTRIBUTES *pA, GEOS *g, GEOS::LABEL &label)
     for (stringIndex = 0; (stringIndex = g->FindLabelG(stringIndex, groupID)) >= 0; stringIndex++)
     {
         g->GetLabel(stringIndex, label2);
-        wsprintf(name, "l%d", n);
+        sprintf(name, "l%d", n);
         pAA = pA->CreateSubAClass(pA, name);
         pAA->SetAttributeUseFloat("x", label2.m[3][0]);
         pAA->SetAttributeUseFloat("y", label2.m[3][1]);

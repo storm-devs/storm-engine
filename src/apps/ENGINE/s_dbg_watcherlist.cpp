@@ -34,7 +34,7 @@ WATCHER_LIST::WATCHER_LIST(HWND hwnd, HINSTANCE hinst)
     n = 0;
     if (ini)
     {
-        wsprintf(buffer, "E%d", n);
+        sprintf(buffer, "E%d", n);
         if (ini->ReadString(0, buffer, buffer, sizeof(buffer), ""))
         {
             if (n < 11)
@@ -44,7 +44,7 @@ WATCHER_LIST::WATCHER_LIST(HWND hwnd, HINSTANCE hinst)
             }
             n++;
 
-            wsprintf(buffer, "E%d", n);
+            sprintf(buffer, "E%d", n);
             while (ini->ReadStringNext(0, buffer, buffer, sizeof(buffer)))
             {
                 if (n < 11)
@@ -53,7 +53,7 @@ WATCHER_LIST::WATCHER_LIST(HWND hwnd, HINSTANCE hinst)
                     SetItemText(n, 1, CDebug.ProcessExpression(buffer));
                 }
                 n++;
-                wsprintf(buffer, "E%d", n);
+                sprintf(buffer, "E%d", n);
             }
         }
         else
@@ -99,7 +99,7 @@ void WATCHER_LIST::ItemChanged(long Item_index, long Subitem_index)
     {
     case 0:
         SetItemText(Item_index, 1, CDebug.ProcessExpression(buffer));
-        wsprintf(keyname, "E%d", Item_index);
+        sprintf(keyname, "E%d", Item_index);
         ini->WriteString(0, keyname, buffer);
         break;
     case 1:

@@ -16,7 +16,7 @@ class GDI_DISPLAY
     ~GDI_DISPLAY();
     void Init(HINSTANCE hInstance, HWND _hwnd, long w, long h);
     void On_Paint(HWND hwnd);
-    void Set_Text(char *text_PTR, ...);
+    void Set_Text(const char *text_PTR, ...);
     bool Set_Message_Stack(long lines);
     void Print(char *text_PTR, ...);
     void Print_Add(char *text_PTR, ...);

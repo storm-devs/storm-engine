@@ -2,14 +2,50 @@
 
 #include <cstdint>
 #include <cstring>
+#include <string>
+
+#include <Windows.h>
 
 namespace utf8
 {
+struct u8_char
+{
+    u8_char() : l(0), c(0)
+    {
+    }
+
+    u8_char(char ch) : l(sizeof(ch)), c(ch)
+    {
+    }
+
+    int l;
+    union {
+        uint32_t c;
+        char b[4];
+    };
+};
+
+inline std::string ConvertWideToUtf8(const std::wstring &wstr)
+{
+    int count = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), wstr.length(), NULL, 0, NULL, NULL);
+    std::string str(count, 0);
+    WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, &str[0], count, NULL, NULL);
+    return str;
+}
+
+inline std::wstring ConvertUtf8ToWide(const std::string &str)
+{
+    int count = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), str.length(), NULL, 0);
+    std::wstring wstr(count, 0);
+    MultiByteToWideChar(CP_UTF8, 0, str.c_str(), str.length(), &wstr[0], count);
+    return wstr;
+}
+
 /* is c the start of a utf8 sequence? */
 #define isutf(c) (((c)&0xC0) != 0x80)
 
 // taken from https://gist.github.com/MightyPork/52eda3e5677b4b03524e40c9f0ab1da5
-int CodepointToUtf8(char *out, uint32_t codepoint)
+inline int CodepointToUtf8(char *out, uint32_t codepoint)
 {
     if (codepoint <= 0x7F)
     {
@@ -57,7 +93,7 @@ int CodepointToUtf8(char *out, uint32_t codepoint)
 }
 
 // taken from http://www.zedwood.com/article/cpp-utf8-char-to-codepoint
-int Utf8ToCodepoint(const char *utf8)
+inline int Utf8ToCodepoint(const char *utf8)
 {
     int l = strlen(utf8);
 
@@ -90,7 +126,7 @@ int Utf8ToCodepoint(const char *utf8)
     return -1;
 }
 
-int Utf8StringLength(const char *s)
+inline int Utf8StringLength(const char *s)
 {
     long s_num = 0;
     while (*s)
@@ -100,7 +136,7 @@ int Utf8StringLength(const char *s)
 }
 
 // taken from https://www.cprogramming.com/tutorial/utf8.c
-int u8_inc(const char *s)
+inline int u8_inc(const char *s)
 {
     int i = 1;
     while (s[i] && (s[i] & 0xC0) == 0x80)
@@ -117,7 +153,7 @@ int u8_inc(const char *s)
     // return i;
 }
 
-int u8_dec(const char *s)
+inline int u8_dec(const char *s)
 {
     int i = 1;
     while (s[-i] && (s[-i] & 0xC0) == 0x80)
@@ -125,5 +161,18 @@ int u8_dec(const char *s)
         i++;
     }
     return i;
+}
+
+/* charnum => byte offset */
+inline int u8_offset(const char *str, int charnum)
+{
+    int offs = 0;
+
+    while (charnum > 0 && str[offs])
+    {
+        (void)(isutf(str[++offs]) || isutf(str[++offs]) || isutf(str[++offs]) || ++offs);
+        charnum--;
+    }
+    return offs;
 }
 } // namespace utf8

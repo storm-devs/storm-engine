@@ -148,12 +148,12 @@ bool FONT::Init(char *font_name, char *iniName, IDirect3DDevice9 *_device, VDX8R
         utf8::CodepointToUtf8(utf8, codepoint);
         if (codepoint >= 'a' && codepoint <= 'z')
         {
-            wsprintf(key_name, "char_%s_", utf8);
+            sprintf(key_name, "char_%s_", utf8);
         }
         else if (codepoint == '=')
-            wsprintf(key_name, "char_equ");
+            sprintf(key_name, "char_equ");
         else
-            wsprintf(key_name, "char_%s", utf8);
+            sprintf(key_name, "char_%s", utf8);
 
         if (!ini->ReadString(font_name, key_name, buffer, sizeof(buffer), ""))
             continue;

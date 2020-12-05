@@ -137,8 +137,8 @@ class VDX8RENDER : public SERVICE
     virtual long _cdecl Print(long nFontNum, DWORD color, long x, long y, char *format, ...) = 0;
     virtual long _cdecl ExtPrint(long nFontNum, DWORD foreColor, DWORD backColor, int wAlignment, bool bShadow,
                                  float fScale, long scrWidth, long scrHeight, long x, long y, char *format, ...) = 0;
-    virtual long StringWidth(char *string, long nFontNum = 0, float fScale = 1.f, long scrWidth = 0) = 0;
-    virtual long CharWidth(char ch, long nFontNum = 0, float fScale = 1.f, long scrWidth = 0) = 0;
+    virtual long StringWidth(const char *string, long nFontNum = 0, float fScale = 1.f, long scrWidth = 0) = 0;
+    virtual long CharWidth(utf8::u8_char ch, long nFontNum = 0, float fScale = 1.f, long scrWidth = 0) = 0;
     virtual long CharHeight(long fontID) = 0;
     virtual long LoadFont(char *fontName) = 0; // возвращает номер\идентификатор шрифта или -1 в случае ошибки
     virtual bool UnloadFont(char *fontName) = 0; // возвращает истину если шрифт остался в использовании

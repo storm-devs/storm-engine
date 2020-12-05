@@ -778,7 +778,7 @@ void CXI_FORMATEDTEXT::GetOneLine(int fontNum, char *pStr, char *buf, int bufSiz
 
     while (lineSize > 0 && strWidth > m_nCompareWidth)
     {
-        lineSize--;
+        lineSize -= utf8::u8_dec(buf + lineSize);
         buf[lineSize] = 0;
         strWidth = m_rs->StringWidth(buf, fontNum);
     }
