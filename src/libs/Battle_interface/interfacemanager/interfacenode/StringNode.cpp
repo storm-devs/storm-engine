@@ -1,0 +1,19 @@
+#include "StringNode.h"
+#include "..\..\image\imgrender.h"
+
+BI_StringNode::BI_StringNode(BI_ManagerBase *pManager, const char *text, const char *font, dword color, float scale,
+                             const RECT &pos, long nHAlign, long nVAlign, long prioritet)
+    : BI_BaseNode(pManager)
+{
+    m_pStr =
+        Manager()->GetImageRender()->CreateString(text, font, scale, color, nVAlign, nHAlign, (RECT)pos, prioritet);
+}
+
+BI_StringNode::~BI_StringNode()
+{
+    SE_DELETE(m_pStr);
+}
+
+void BI_StringNode::Update()
+{
+}

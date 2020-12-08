@@ -1,0 +1,72 @@
+vertexshader vs_AnimalModelArray( NumLights[0,4] )
+{
+	decl
+	{
+		stream(0)
+		{
+			vector3		vPos;
+			vector3		vNormal;
+			color		dwBone;
+			color		dwColor;
+			vector2		vTex0;
+		}
+	}
+
+	asm
+	{
+		vs.1.1
+
+#define	POS		r0
+#define	NORMAL		r1
+#define	TEMP		r2
+
+		mad		TEMP.x, dwBone.x, c[GC_FREE].x, c[GC_FREE].y
+		mov		a0.x, TEMP.x
+
+		m4x3		TEMP, vPos, c[a0.x]
+		mov		TEMP.w, c[GC_CONSTANT].y
+		m3x3		NORMAL, vNormal, c[a0.x]
+		m4x4 		POS, TEMP, c[GC_MTX_WVP]
+
+		mov		oPos, POS
+		mov		oD0, dwColor
+		mov		oT0.xy, vTex0
+
+		// lights
+		VS_LIGHT$NumLights(POS, NORMAL, dwColor)
+
+		// fog
+		FOG(POS)
+	}
+}
+
+block AnimalModelArray(matrix m1, texture t1, ibuffer i1, vbuffer v1)
+{
+	SetVertexBuffer(0, v1, 0);
+	SetIndexBuffer(i1, 0);
+
+	AlphaBlendEnable = true;
+	AlphaTestEnable = true;
+	SpecularEnable = false;
+	FogEnable = false;
+
+	WorldMatrix = matrix();
+
+	Texture[0] = t1;
+
+	ColorOp[0] = modulate;
+	ColorArg1[0] = texture;
+	ColorArg2[0] = diffuse;
+
+	AlphaOp[0] = selectarg1;
+	AlphaArg1[0] = texture;
+
+	ColorOp[1] = disable;
+	AlphaOp[1] = disable;
+
+	SetLights(0.0, 1.0);
+
+	VertexShaderConstant[GC_FREE] = vector4(256.0*3, GC_FREE+1, 0, 0);
+	VertexShader = vs_AnimalModelArray(dwNumLights);
+	Draw();
+}

@@ -1,0 +1,73 @@
+vertexshader vs_GUI2DUV()
+{
+ decl
+  {
+   stream(0)
+    {
+     vector3         v0;
+     color           v1;
+     vector2         v2;     
+     
+    }
+  }
+
+ asm
+  {
+   vs.1.0
+//   mov oPos, v0
+   m4x4 oPos, v0, c[GC_FREE]
+   
+   mov oD0,  v1
+   
+   mov oT0,  v2   
+  }
+}
+
+block GUISprite()
+{
+
+
+ AlphaBlendEnable = true;
+ AlphaTestEnable = false;
+// AlphaBlendEnable = false;
+// AlphaTestEnable = false;
+
+ FogEnable = false;
+ ZEnable = false;
+// FillMode = solid;
+                
+ SrcBlend = srcalpha;
+ DestBlend = invsrcalpha;
+
+
+ MagFilter[0] = point;
+ MinFilter[0] = point;
+ MipFilter[0] = point;
+
+
+ ColorOp[0] = modulate;
+ ColorArg1[0] = diffuse;
+ ColorArg2[0] = texture;
+
+ AddressU[0] = Clamp;
+ AddressV[0] = Clamp;
+ AddressW[0] = Clamp;
+
+
+ ColorOp[1] = disable;
+
+ TextureFactor = 0xE0E0E0E0;
+
+// AlphaOp[0] = modulate;
+ AlphaOp[0] = SelectArg1;
+ AlphaArg1[0] = texture;
+// AlphaArg2[0] = tfactor;
+
+ AlphaOp[1] = disable;
+
+
+ VertexShader = vs_GUI2DUV();
+
+ Draw();
+}
+

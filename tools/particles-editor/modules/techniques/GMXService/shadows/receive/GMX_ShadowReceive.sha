@@ -1,0 +1,28 @@
+vertexshader GMX_ShadowReceiveVS() 
+{
+ STATIC_DECL
+
+ asm
+ {
+  vs.1.1
+
+    GMX_VS_SHADOW_RECEIVE(vPos)
+    
+    UNPACK_TEX(oT1, vPackedUV2)
+    
+
+ }
+} 
+
+
+block GMX_ShadowReceive ()
+{
+ GMX_SHADOW_RECEIVE_STATES
+
+ 
+ VertexShader = GMX_ShadowReceiveVS();
+ PixelShader = ReceiveShadowPixelShader();                                  
+ 
+
+ Draw ();
+}

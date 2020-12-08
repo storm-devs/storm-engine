@@ -1,0 +1,59 @@
+vertexshader vs_stdsolidbox()
+{
+	decl
+	{
+		stream(0)
+		{
+			vector3	 	vPos;
+			vector3		vNormal;
+		}
+	}
+	asm
+	{
+		vs.1.0
+
+		mul r3, vPos, c[GC_FREE + 4]
+		add r3.xyz, r3, c[GC_FREE + 3]
+		m4x4 oPos, r3, c[GC_MTX_WVP]
+
+		dp3 r0, vNormal, c[GC_FREE]       // cos = N * L
+		max r0, c[GC_FREE+2], r0          
+		min r0, c[GC_FREE+5], r0          
+                 
+		mul r1, r0.x, c[GC_FREE+1]        // r1 =  cos * MaterialColor
+		add r2, r1, c[GC_FREE+2]          // r2 = (cos * MaterialColor) + Ambient 
+		mov oD0, r2
+	}
+}
+
+block dbgSolidBox(matrix mMatrix, vector vCenter, vector vScale, dword dwColor)
+{
+		FogEnable = false;
+		AlphaTestEnable = false;
+		SrcBlend = srcalpha;
+		DestBlend = invsrcalpha;
+		cullmode = ccw;
+
+		WorldMatrix = mMatrix;
+		TextureFactor = dwColor;
+
+		ColorOp[0] = selectarg1;
+		ColorArg1[0] = diffuse;
+		ColorArg2[0] = tfactor;
+
+		AlphaOp[0] = selectarg1;
+		AlphaArg1[0] = tfactor;
+
+		ColorOp[1] = disable;
+		AlphaOp[1] = disable;
+
+		VertexShader = vs_stdsolidbox();
+		VertexShaderConstant[GC_FREE] = (Vector(0.0, 0.0, -1.0) ^ (!mView)) ^ (!mWorld);
+		VertexShaderConstant[GC_FREE+1] = Vector4(1.0, 1.0, 1.0, 1.0);
+		VertexShaderConstant[GC_FREE+2] = Vector4(0.2, 0.2, 0.2, 0.2);  
+		VertexShaderConstant[GC_FREE+3] = vCenter;
+		VertexShaderConstant[GC_FREE+4] = vScale;
+		VertexShaderConstant[GC_FREE+5] = Vector4(0.9, 0.9, 0.9, 0.9);  
+		
+		Draw();
+}

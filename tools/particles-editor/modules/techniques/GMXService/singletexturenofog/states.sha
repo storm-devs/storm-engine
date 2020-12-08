@@ -1,0 +1,15 @@
+#define SETUP_GMX_SINGLETEXTURE               \
+                                              \
+FogEnable = false;                            \
+                                              \
+Texture[0] = GMX_TextureStage0;               \
+                                              \
+ColorOp[0] = SelectArg1;                      \
+ColorArg1[0] = Texture;                       \
+                                              \
+AlphaOp[0] = Modulate;                        \
+AlphaArg1[0] = Texture;                       \
+AlphaArg2[0] = TFactor;                       \
+                                              \
+TextureFactor = GMX_ObjectsTransparency;      \
+AlphaRef = 1;                                 \

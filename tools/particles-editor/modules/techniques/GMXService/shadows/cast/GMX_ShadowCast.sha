@@ -1,0 +1,25 @@
+
+
+vertexshader GMX_ShadowCastVS() 
+{
+ STATIC_DECL
+
+ asm
+ {
+  vs.1.1
+
+  GMX_VS_SHADOW_CAST(vPos)
+  UNPACK_TEX(oT0, vPackedUV1)
+ }
+} 
+
+
+block GMX_ShadowCast ()
+{
+ GMX_SHADOW_CAST_STATES
+   
+ VertexShader = GMX_ShadowCastVS();
+ PixelShader = CastShadowPixelShader();                                  
+
+ Draw ();
+}

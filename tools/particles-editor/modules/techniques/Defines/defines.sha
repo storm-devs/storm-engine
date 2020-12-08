@@ -1,0 +1,16 @@
+#define GC_CONSTANT             0 	// Global constants = {0.0, 1.0, 0.5, 0.0000152590218967 = (0.5 / 32767.5)}
+#define GC_CONSTANT2            1 	// Global constants 2 = {2.0, -1.0, 0.00036621652552071 = (12 / 32767.5), fog}
+#define GC_ANIMATION			2 	// Animation frames(0.0-1.0) for 4 stages = {stage0, stage1, stage2, stage3}
+#define GC_SHADOW_CONST1	    3  
+#define GC_SHADOW_CONST2		7 
+#define GC_LIGHT4               11 	//
+#define GC_LIGHT3               13 
+#define GC_LIGHT2               15
+#define GC_LIGHT1               17 
+#define GC_LIGHT0               19 
+#define GC_MATERIAL             21 	// 
+#define GC_CAMERA_POS           23 	// Local Camera position = {x, y, z, 0.0}
+#define GC_MTX_WVP              24	// c[0] = mWorld * mView * mProjection
+
+#define GC_FREE					28
+

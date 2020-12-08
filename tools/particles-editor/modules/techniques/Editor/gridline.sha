@@ -1,0 +1,19 @@
+block EditorGridLine()
+{
+    FogEnable = false;
+    ZWriteEnable = false;
+                CullMode = none;
+
+                AlphaBlendEnable = false;
+                AlphaTestEnable = false;
+
+                ColorOp[0] = SelectArg1;
+                ColorArg1[0] = diffuse;
+
+//                AlphaOp[0] = SelectArg1;
+//                AlphaArg1[0] = diffuse;
+
+                VertexShader = vs_dbgsphere();
+
+                Draw();
+}

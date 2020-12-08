@@ -1,0 +1,70 @@
+
+//------------------------------------------------------------------------------
+//Reflection
+//------------------------------------------------------------------------------
+//
+//
+//Math:
+//
+//    V = Norm(_vVtx - _vCamPos)
+//    R = V - N*2*dot(V, N)
+//
+//Arguments:
+//    _vCamPos - camera position
+//    _vVtx - vertex position
+//    _vNorm - vertex normal
+//    _vR - temp register
+//
+//Return:
+//    _vR.xyz = R
+//    _vR.w = 2*dot(V, N)
+//
+
+#define VS_REFLECTION(_vCamPos, _vVtx, _vNorm, _vR)                    \
+						add _vR, _vVtx, -_vCamPos                      \
+						dp3 _vR.w, _vR, _vR	                           \
+						rsq _vR.w, _vR.w		                       \
+						mul _vR, _vR, _vR.w	                           \
+						dp3 _vR.w, _vR, _vNorm	                       \
+						add _vR.w, _vR.w, _vR.w                        \
+						mad _vR.xyz, -_vNorm.xyz, _vR.www, _vR.xyz
+
+
+//------------------------------------------------------------------------------						
+//Sphere environment maping
+//------------------------------------------------------------------------------
+//
+//
+//
+//Math:
+//
+//    V = Norm(_vVtx - _vCamPos)
+//    R = V - N*2*dot(V, N)
+//    UV = R.xz*0.5 + 0.5
+//
+//Arguments:
+//    _vCamPos - camera position
+//    _vVtx - vertex position
+//    _vNorm - vertex normal
+//    _vTmp - temp register
+//    _vUV - output register
+//
+//Return:
+//    VS_SPHEREMAP: _vUV.xy
+//    VS_SPHEREMAPFAKE: _vUV.xy^3
+//
+
+#define VS_SPHEREMAP(_vCamPos, _vVtx, _vNorm, _vTmp, _vUV)			                  \
+						VS_REFLECTION(_vCamPos, _vVtx, _vNorm, _vTmp)                 \
+						mad _vUV.xy, c[GC_CONSTANT].zz, _vTmp.xz, c[GC_CONSTANT].zz
+						
+#define VS_SPHEREMAPFAKE(_vCamPos, _vVtx, _vNorm, _vTmp, _vUV)			              \
+						VS_REFLECTION(_vCamPos, _vVtx, _vNorm, _vTmp)                 \
+						mad _vTmp.xy, c[GC_CONSTANT].zz, _vTmp.xz, c[GC_CONSTANT].zz  \
+						mul _vTmp.xy, _vTmp.xy, _vTmp.xy                              \
+						mul _vUV.xy, _vTmp.xy, _vTmp.xy
+						
+						
+						
+
+

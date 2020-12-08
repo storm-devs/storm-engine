@@ -1,0 +1,28 @@
+pixelshader ReceiveShadowPixelShaderAnim()
+{
+	asm
+	{
+		ps.1.1
+
+			//c0 - ID object (кодированный в RGB)
+			//c1 - цвет тени, альфа 1
+			//c2 - цвет тени, альфа 0
+			//c3 - прибавить нужно...
+
+			def c3, 0.49411764705882353, 0.49411764705882353, 0.49411764705882353, 0.49411764705882353
+			def c4, 0.5, 0.5, 0.5, 0.5
+
+			tex t1                  // Prelighted Shadow map (shadows in alpha)
+			tex t3                  // Shadow Map ID    (SID)
+
+			add r0, t3, -c0            // r0 = texel.rgb - ObjectID.rgb
+			dp3_sat r0, r0, r0	           // r0.a = dp3(r0.rgb)
+			add r0, r0, c3
+			cnd r0, r0.a, c1, c2    // в r0 теперь нужный нам цвет
+
+			mul r0.a, r0.a, t3.a		//В r0.a лежит интенсивность тени...
+    
+    
+  }
+}
+

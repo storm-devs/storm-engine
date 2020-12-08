@@ -1,0 +1,55 @@
+vertexshader vs_reloaderfade()
+{
+	decl
+	{
+		stream(0)
+		{
+			vector3 v0;
+		}
+	}
+	asm
+	{
+		vs.1.0
+		
+		mov r0, c[GC_CONSTANT].zzx
+		mad r0, v0, r0, r0
+		add r0.y, -r0.y, c[GC_CONSTANT].y
+		mov oT0.xyz, r0
+		mov	oPos.xyz, v0
+		mov	oPos.w, c[GC_CONSTANT].y
+		
+	}
+}
+
+block ReloaderFade(color clr, texture t)
+{
+
+	FogEnable = false;
+    zenable = false;
+	CullMode = none;
+
+	AlphaBlendEnable = true;
+	AlphaTestEnable = false;
+	texturefactor = clr;
+	
+	srcblend = invsrcalpha;
+	destblend = srcalpha;
+
+	if(t != 0)
+	{
+		Texture[0] = t;
+		ColorOp[0] = SelectArg1;
+		ColorArg1[0] = texture;
+	}else{
+		ColorOp[0] = SelectArg1;
+		ColorArg1[0] = tfactor;	
+	}
+
+	AlphaOp[0] = SelectArg1;
+	AlphaArg1[0] = tfactor;
+
+	VertexShader = vs_reloaderfade(); 
+
+	Draw();
+}
+

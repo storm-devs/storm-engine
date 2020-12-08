@@ -1,0 +1,46 @@
+vertexshader gmx_TextureLightmapVS() 
+{
+ STATIC_DECL
+
+ asm
+ {
+  vs.1.1
+
+  m4x4 r1, vPos, c[GC_MTX_WVP]    // Transform position
+  mov oPos, r1 
+  UNPACK_TEX(oT0, vPackedUV1)
+  UNPACK_TEX(oT1, vPackedUV2)
+  
+  GMX_FOG(r1, r2);
+ }
+} 
+
+
+block gmx_TextureLightmap ()
+{
+  Texture[0] = GMX_TextureStage0;
+  Texture[1] = GMX_TextureStage1;
+
+  ColorOp[0] = SelectArg1;
+  ColorArg1[0] = Texture;
+
+  ColorOp[1] = Modulate2X;
+  ColorArg1[1] = Current;
+  ColorArg2[1] = Texture;
+
+                                              
+  AlphaOp[0] = Modulate;                        
+  AlphaArg1[0] = Texture;                       
+  AlphaArg2[0] = TFactor;                       
+                                              
+  TextureFactor = GMX_ObjectsTransparency;      
+  AlphaRef = 1;                                 
+
+                
+  AlphaBlendEnable = true;
+  AlphaTestEnable = true;
+
+  VertexShader = gmx_TextureLightmapVS();
+
+  Draw ();
+}

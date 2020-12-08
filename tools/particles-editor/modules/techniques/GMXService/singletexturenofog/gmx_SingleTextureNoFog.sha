@@ -1,0 +1,25 @@
+vertexshader gmx_SingleTextureNoFogVS() 
+{
+ STATIC_DECL
+
+ asm
+ {
+  vs.1.1
+
+  m4x4 r1, vPos, c[GC_MTX_WVP]    // Transform position
+  mov oPos, r1
+
+  UNPACK_TEX(oT0, vPackedUV1)
+  
+ }
+} 
+
+
+block gmx_SingleTextureNoFog ()
+{
+  SETUP_GMX_SINGLETEXTURE
+  
+	VertexShader = gmx_SingleTextureNoFogVS();
+
+  Draw ();
+}

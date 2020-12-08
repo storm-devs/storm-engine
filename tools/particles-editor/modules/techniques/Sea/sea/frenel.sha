@@ -1,0 +1,46 @@
+#define VS_FRENEL(RES, SRC)					\	// SRC.x = ci,	SRC.y = n, SRC.z = min for result
+	mul		r10.xy, SRC.xy, SRC.xy			\	
+	mad		r10.z, r10.y, r10.x, -r10.y		\	
+	add		r10.z, r10.z, c[GC_CONSTANT].y	\
+											\
+	rsq		r9.x, r10.z						\	
+	mul		r9.x, r10.z, r9.x				\ // ct = sqrt(1.0f + SQR(n) * (SQR(ci) - 1.0f))	
+											\
+	mad		r10.y, SRC.y, r9.x, SRC.x		\ // ci + n * ct			
+	mad		r10.x, -SRC.y, r9.x, SRC.x		\ // ci - n * ct
+	rcp		r9.y, r10.y						\ // 1.0 / (ci + n * ct)
+											\
+	mad		r10.w, SRC.y, SRC.x, r9.x		\ // n * ci + ct
+	mad		r10.z, SRC.y, SRC.x, -r9.x 		\ // n * ci - ct
+	rcp		r9.z, r10.w						\ // 1.0 / (n * ci + ct)
+											\
+	mul		r9.yz, r9.xyz, r10.xxz			\
+	mul		r9.xw, r9.yyyz, r9.yyyz			\
+											\
+	add		RES, r9.x, r9.w					\
+	mul		RES, RES, c[GC_CONSTANT].z		\ // 0.5 * 
+	min		RES, RES, SRC.z					  // limitation		
+
+#define VS_FRENEL1(RES, SRC)				\	// SRC.x = ci,	SRC.y = n, SRC.z = min for result
+											\	
+	dp3		r10.xy, SRC.xy, SRC.xy			\	
+	mad		r10.z, r10.y, r10.x, -r10.y		\	
+	add		r10.z, r10.z, c[GC_CONSTANT].y	\
+											\
+	rsq		r9.x, r10.z						\	
+	mul		r9.x, r10.z, r9.x				\ // ct = sqrt(1.0f + SQR(n) * (SQR(ci) - 1.0f))	
+											\
+	mad		r10.y, SRC.y, r9.x, SRC.x		\ // ci + n * ct			
+	mad		r10.x, -SRC.y, r9.x, SRC.x		\ // ci - n * ct
+	rcp		r9.y, r10.y						\ // 1.0 / (ci + n * ct)
+											\
+	mad		r10.w, SRC.y, SRC.x, r9.x		\ // n * ci + ct
+	mad		r10.z, SRC.y, SRC.x, -r9.x 		\ // n * ci - ct
+	rcp		r9.z, r10.w						\ // 1.0 / (n * ci + ct)
+											\
+	mul		r9.yz, r9.xyz, r10.xxz			\
+	dp3		r9.xw, r9.yyyz, r9.yyyz			\
+											\
+	add		RES, r9.x, r9.w					\
+	mul		RES, RES, c[GC_CONSTANT].z		\ // 0.5 * 
+	min		RES, RES, SRC.z					  // limitation		

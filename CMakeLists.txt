@@ -1,0 +1,15 @@
+cmake_minimum_required(VERSION 3.17)
+
+project(storm-engine)
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" )
+
+set(STORM_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+set(Storm_RESOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/res")
+set(Storm_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
+set(Storm_EXTERN_DIR "${CMAKE_CURRENT_SOURCE_DIR}/extern")
+
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/$<CONFIG>/modules")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+
+add_subdirectory(src)

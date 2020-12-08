@@ -1,0 +1,23 @@
+vertexshader vs_DropVideoConveyor()
+{
+	decl
+	{
+		stream(0)
+		{
+			vector3	 	v0;
+		}
+	}
+	asm
+	{
+		vs.1.0
+		mov oPos, v0
+	}
+}
+
+block DropVideoConveyor()
+{
+	ColorOp[0] = disable;
+	AlphaOp[0] = disable;
+	VertexShader = vs_DropVideoConveyor();
+	Draw();
+}

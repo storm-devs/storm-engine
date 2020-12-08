@@ -1,0 +1,12 @@
+
+
+
+
+E:/SEA DOGS 2/TOOLS/PatchCreator_v1.06/residence04_patch.gm
+objects: 3, textures: 3, materials: 3
+triangles: 412, vertices: 473
+2-sided triangles: 206
+-----------------------------------
+bbox_size: 17.076061,0.623493,14.368122, radius: 11.161943
+-----------------------------------
+traverses/vertex: 12.227346, max depth: 28

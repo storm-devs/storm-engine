@@ -1,0 +1,69 @@
+global proc int SD2GeoExportMel ( string $parent, string $action, string $initialSettings, string $resultCallback )
+{
+	int		$intVal;
+	float	$floatVal;
+	int		$bResult;
+	string	$currentOptions;
+	string	$optionList[];
+	string	$optionBreakDown[];
+	string	$strVal;
+
+	int		$index;
+
+	if ($action == "post")
+	{
+		setParent $parent;
+        setUITemplate -pushTemplate DefaultTemplate;
+
+		//---------- FORM -------------//
+		formLayout optionsBoxForm;
+	    columnLayout -adj true;
+			columnLayout -adj true ;
+			checkBox -v true -l "0.01 Scale (cm->m)" -al "left" Check1;
+
+			checkBox  -l "ExportCharacterPatch" -al "left" ExportCharacterPatch;
+			checkBox  -l "animation" -al "left" Check3;
+			checkBox  -l "Build BSP" -al "left" Check2;
+			radioButtonGrp -l "Method:" -nrb 2 -la2 "Draft" "Product"
+				-cw3 80 50 80 radioGrp1;
+			radioButtonGrp -e -sl 1 radioGrp1;
+
+			setParent ..; // columnLayout
+        setParent ..; // columnLayout
+
+		// ---------------------------------------------------
+		// Set to current settings.
+		// ---------------------------------------------------
+
+		$currentOptions = $initialSettings;
+		if (size($currentOptions) > 0)
+		{
+		
+		}
+		$result = 1;
+	
+
+		formLayout -e -vis true optionsBoxForm;
+        setUITemplate -popTemplate;
+	} 
+	// ---------------------------------------------------
+	// Set option string
+	// ---------------------------------------------------
+	else if ($action == "query")
+	{
+		if(`checkBox -q -v Check1`==1) $currentOptions =$currentOptions +"Check1=1;";
+		if(`checkBox -q -v Check2`==1) $currentOptions =$currentOptions +"Check2=1;";
+		if(`checkBox -q -v Check3`==1) $currentOptions =$currentOptions +"Check3=1;";
+		if(`checkBox -q -v ExportCharacterPatch`==1) $currentOptions =$currentOptions +"ExportCharacterPatch=1;";
+
+		$intVal = `radioButtonGrp -q -sl radioGrp1`;
+		if($intVal==1)				$currentOptions =$currentOptions +"radioGrp1=1;";
+		if($intVal==2)				$currentOptions =$currentOptions +"radioGrp1=2;";
+	}
+
+	//-------------------------------------------//
+	eval($resultCallback+" \""+$currentOptions+"\"");
+	$result = 1;
+	
+	return $bResult;
+}

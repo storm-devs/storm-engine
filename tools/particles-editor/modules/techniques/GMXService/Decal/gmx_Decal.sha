@@ -1,0 +1,42 @@
+vertexshader gmx_DecalVS() 
+{
+ STATIC_DECL
+
+ asm
+ {
+  vs.1.1
+
+  m4x4 r1, vPos, c[GC_MTX_WVP]    // Transform position
+  mov oPos, r1
+
+  GMX_FOG(r1, r2);
+   
+  UNPACK_TEX(oT0, vPackedUV1)
+  UNPACK_TEX(oT1, vPackedUV2)
+  
+ }
+} 
+
+
+block gmx_Decal ()
+{
+  Texture[0] = GMX_TextureStage0;
+
+  ZEnable = true;
+	ZWriteEnable = false;
+  AlphaTestEnable = false;
+
+  ColorOp[0] = SelectArg1;
+  ColorArg1[0] = Texture;
+  
+  TextureFactor = GMX_ObjectsTransparency;
+  AlphaRef = 1;                                 
+                                                
+  AlphaOp[0] = Modulate;
+  AlphaArg1[0] = Texture;
+  AlphaArg2[0] = TFactor;
+    
+  VertexShader = gmx_DecalVS();
+
+  Draw ();
+}

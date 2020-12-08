@@ -1,0 +1,47 @@
+vertexshader vs_seaballs()
+{
+	decl
+	{
+		stream(0)
+		{
+			vector3 	vPos;
+			color		vDiffuse;
+			vector2		vTexCoord0;
+		}
+	}
+
+	asm
+	{
+		vs.1.1
+
+		m4x4 r0, vPos, c[GC_MTX_WVP]
+		mov oPos, r0
+		FOG(r0)
+
+		mov oD0, vDiffuse
+		mov oT0, vTexCoord0
+	}
+}
+
+block SeaAI_Balls(texture t1)
+{
+		CullMode = ccw;
+
+		AlphaBlendEnable = true;
+		AlphaTestEnable = true;
+
+		SrcBlend = srcalpha;
+		DestBlend = invsrcalpha;
+
+		Texture[0] = t1;
+
+		ColorOp[0] = modulate;
+		ColorArg1[0] = diffuse;
+		ColorArg2[0] = texture;
+
+		AlphaOp[0] = SelectArg1;
+		AlphaArg1[0] = texture;
+
+
+		DRAW_RECTS(vs_seaballs);
+}

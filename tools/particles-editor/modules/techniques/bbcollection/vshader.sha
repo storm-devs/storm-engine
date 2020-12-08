@@ -1,0 +1,122 @@
+#define BB_VS_POINT_LIGHT(_L_INDEX, _VPOS)						\ //Start
+sub VS_LDL.xyz, c[_L_INDEX], _VPOS										\	// Vector 2 Light 
+																											\	// Calc LKa dist 2 light 
+dp3 VS_LTMP.w, VS_LDL, VS_LDL													\	// dist ^ 2
+rsq VS_LTMP.x, VS_LTMP.w															\	// 1 / sqrt(dist ^ 2)
+mul VS_LTMP.w, VS_LTMP.w, VS_LTMP.x										\	// dist^2 * (1 / sqrt(dist ^ 2))
+mov VS_LKa.x, c[_L_INDEX].w														\	// 1.0 / R
+mad VS_LKa.w, -VS_LTMP.w, VS_LKa.x, c[GC_CONSTANT].y	\	// 1 - dist / R
+max VS_LKa.w, VS_LKa.w, c[GC_CONSTANT].x							\	// max(0.0, Ka)
+mul VS_LKa.xyz, VS_LKa.www, c[_L_INDEX+1].xyz					\	// Ka = Ka * DIFLight
+add VS_LDIFRESULT.xyz, VS_LKa.xyz, VS_LDIFRESULT.xyz	\
+
+
+
+
+#define BB_VS_LIGHT_0(_VPOS, _VCOLOR)														\
+	mov oD0.xyz, _VCOLOR.xyz																			\
+
+#define BB_VS_LIGHT_1(_VPOS, _VCOLOR)														\
+	mov VS_LDIFRESULT, c[GC_CONSTANT].xxxx												\
+	BB_VS_POINT_LIGHT(GC_LIGHT1, _VPOS)														\
+	add oD0.xyz, VS_LDIFRESULT.xyz, _VCOLOR.xyz										\
+	
+
+
+
+
+#define BB_VS_LIGHT_2(_VPOS, _VCOLOR)														\
+	mov VS_LDIFRESULT, c[GC_CONSTANT].xxxx												\
+	BB_VS_POINT_LIGHT(GC_LIGHT1, _VPOS)														\
+	BB_VS_POINT_LIGHT(GC_LIGHT2, _VPOS)														\
+	add oD0.xyz, VS_LDIFRESULT.xyz, _VCOLOR.xyz										\
+
+
+#define BB_VS_LIGHT_3(_VPOS, _VCOLOR)														\
+	mov VS_LDIFRESULT, c[GC_CONSTANT].xxxx												\
+	BB_VS_POINT_LIGHT(GC_LIGHT1, _VPOS)														\
+	BB_VS_POINT_LIGHT(GC_LIGHT2, _VPOS)														\
+	BB_VS_POINT_LIGHT(GC_LIGHT3, _VPOS)														\
+	add oD0.xyz, VS_LDIFRESULT.xyz, _VCOLOR.xyz										\
+
+
+
+#define BB_VS_LIGHT_4(_VPOS, _VCOLOR)														\
+	mov VS_LDIFRESULT, c[GC_CONSTANT].xxxx												\
+	BB_VS_POINT_LIGHT(GC_LIGHT1, _VPOS)														\
+	BB_VS_POINT_LIGHT(GC_LIGHT2, _VPOS)														\
+	BB_VS_POINT_LIGHT(GC_LIGHT3, _VPOS)														\
+	BB_VS_POINT_LIGHT(GC_LIGHT4, _VPOS)														\
+	add oD0.xyz, VS_LDIFRESULT.xyz, _VCOLOR.xyz										\
+
+
+
+
+vertexshader vs_billbards(NumLights[0,4])
+{
+	decl
+	{
+		stream(0)
+		{
+			vector3	vRelativePos;
+			color		dwColor;
+			vector2	vTexCoord1;
+			float   fAngle;   
+			vector3 vParticlePos;
+			float   fDisolve;   
+		}
+	}
+	asm
+	{
+		vs.1.0
+
+
+			//Свет считаем
+
+			BB_VS_LIGHT$NumLights(vParticlePos, dwColor)
+
+
+
+			//UV
+			mov oT0, vTexCoord1
+
+			//Считаем Sin, Cos
+			mad r7.xy, fAngle.x, c[GC_FREE+1].x, c[GC_FREE+1].yzzw
+			frc r2.xy, r7.xy
+			mul r9.xy, r2, c[GC_FREE+1].w
+			add r4.xy, r9, c[GC_FREE+2].x
+			mul r11.xy, r4, r4
+			mad r1.xy, r11.xy, c[GC_FREE+2].w, c[GC_FREE+2].y
+			mad r3.xy, r11.xy, r1, c[GC_FREE+2].z
+			mad r5.xy, r11.xy, r3, c[GC_FREE+0].x
+			mad r7.xy, r11.xy, r5, c[GC_FREE+0].w
+			mad r0.xy, r11.xy, r7, c[GC_FREE+0].y
+
+			// Поворачиваем точку вокруг центра
+			mov r1, vRelativePos
+			mul r3.x, r1.y, r0.y				; r3.x = y*sin 
+			mul r3.y, r1.x, r0.x				; r3.y = x*cos
+			add r2.x, r3.y, r3.x				; X = x*cos + y*sin;
+
+			mul r3.x, r1.x, r0.y				; r3.x = x*sin
+			mul r3.y, r1.y, r0.x				; r3.y = y*cos
+			add r2.y, r3.y, -r3.x				; Y = y*cos - x*sin;
+
+			mov r2.z, c[GC_CONSTANT].x 
+			mov r2.w, c[GC_CONSTANT].x 
+
+			//Трансформим используя mView
+			m4x4 r3, vParticlePos, c[GC_FREE+3]
+			add r2, r2, r3
+
+				//Проецируем на экран...
+			m4x4 oPos, r2, c[GC_FREE+7]
+
+      FOG (r2)
+
+      mov r0, fDisolve.x 
+      mul oD0.w, r0, dwColor.w 
+       
+	}
+}
+

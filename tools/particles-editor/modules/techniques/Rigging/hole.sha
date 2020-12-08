@@ -1,0 +1,81 @@
+vertexshader vs_rig_sailhole( NumLights[0,4] )
+{
+	decl
+	{
+		stream(0)
+		{
+			vector3		vPos; // Pos;
+			vector3		vNorm; // Normal;
+			vector2		vTex1; // TexCoord0;
+			vector2		vTex2; // TexCoord1;
+		}
+	}
+
+	asm
+	{
+		vs.1.1
+
+#define	POS		r0
+#define	NORMAL		r1
+#define	TEMP		r2
+
+		m4x4	POS, vPos, c[GC_MTX_WVP]
+		m3x3	NORMAL, vNorm, c[GC_FREE+1]
+
+		mov	oPos, POS
+		mov	oT0, vTex1
+		mov	oT1, vTex2
+		mov oD0, c[GC_FREE]
+
+		// lights
+		//VS_LIGHT$NumLights(POS, NORMAL, c[GC_FREE])
+		DIFFUSE_DIR_LIGHT(oT2, NORMAL, TEMP)
+
+		// fog
+		FOG(POS)
+	}
+}
+
+block SailHole(texture tSail, texture tHole, vbuffer vHoleBuffer, ibuffer iHoleBuffer, matrix mworld)
+{
+		SetVertexBuffer(0, vHoleBuffer, 0);
+
+		CullMode = none;
+		AlphaBlendEnable = true;
+		AlphaTestEnable = true;
+
+		Texture[0] = tSail;
+		Texture[1] = tHole;
+		Texture[2] = TextureGlobalLight;
+
+		ColorOp[0] = modulate;
+		ColorArg1[0] = current;
+		ColorArg2[0] = texture;
+
+		AlphaOp[0] = selectarg2;
+		AlphaArg2[0] = texture;
+
+		ColorOp[1] = modulate;
+		ColorArg1[1] = current;
+		ColorArg2[1] = texture;
+
+		AlphaOp[1] = modulate;
+		AlphaArg1[1] = current;
+		AlphaArg2[1] = texture;
+
+		ColorOp[2] = modulate2x;
+		ColorArg1[2] = current;
+		ColorArg2[2] = texture;
+		
+		AlphaOp[2] = SelectArg1;
+		AlphaArg1[2] = current;
+
+		WorldMatrix = mworld;
+		VertexShaderConstant[GC_FREE] = 0xFFFFFFFF;
+		VertexShaderConstant[GC_FREE+1] = mworld;
+		VertexShaderConstant[GMX_MWORLD] = mworld;
+
+		VertexShader = vs_rig_sailhole( dwNumLights );
+
+		Draw ();
+}

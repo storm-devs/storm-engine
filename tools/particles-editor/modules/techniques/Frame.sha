@@ -1,0 +1,128 @@
+float fFogDensity;
+color cFogColor;
+dword bReflection;
+float waterU;
+float fVLAnimU;
+float fVLAnimV;
+
+dword bOverdrawShow;
+
+// All RenderStates and TextureStageStates setup by Frame() executed as default RS and TSS
+block_noopt Frame()
+{
+	// setup fog
+	FogColor = cFogColor;
+	VertexShaderConstant[GC_CONSTANT] = vector4(0.0, 1.0, 0.5, 0.000015259254738);
+	VertexShaderConstant[GC_CONSTANT2] = vector4(2.0, -1.0, 0.00036621652552071, fFogDensity * 0.1);
+
+	// setup reflection
+	bReflection = 0;
+
+	// setup water
+	waterU = waterU - fDeltaTime * 150.0;
+	fVLAnimU = fVLAnimU + fDeltaTime * 0.05f;
+	fVLAnimV = fVLAnimV + fDeltaTime * 0.02f;
+	
+	if (bOverdrawShow)
+	{
+        StencilEnable = true;
+        StencilMask = 0x0;
+        StencilFail = keep;
+        StencilZFail = incrsat;
+        StencilPass = incrsat;
+        StencilFunc = always;
+	}
+	else
+	{
+        StencilEnable = false;
+	}
+}
+
+// called at once after D3D8->BeginScene
+block BeginScene()
+{
+}
+
+vertexshader vsOverdrawShow()
+{
+	decl
+	{
+		stream(0)
+		{
+			vector3	 	vPos;
+			color		dwColor;
+			vector2		vTexCoord0;
+		}
+	}
+	asm
+	{
+		vs.1.0
+
+		mov oPos, vPos
+		mov oD0, dwColor
+		mov oT0, vTexCoord0
+	}
+}
+
+// called before D3D8->EndScene and D3D8->Present
+block EndScene()
+{
+	if (bOverdrawShow)
+	{
+		FogEnable = false;
+		AlphaBlendEnable = false;
+		AlphaTestEnable = false;
+		
+		VertexShader = vsOverdrawShow();
+
+        StencilFunc = notequal;
+        StencilRef = 0x0;
+
+        StencilFail = keep;
+        StencilZFail = keep;
+        StencilPass = keep;
+
+		ColorOp[0] = selectarg1;
+		ColorArg1[0] = tfactor;
+
+		// 00000001
+        StencilMask = 0x1;
+		TextureFactor = 0xFF008000;
+		DrawScreenRect();
+
+		// 00000010
+        StencilMask = 0x2;
+		TextureFactor = 0xFF00FF00;
+		DrawScreenRect();
+
+		// 00000100
+        StencilMask = 0x4;
+		TextureFactor = 0xFFBCFF00;
+		DrawScreenRect();
+
+		// 00001000
+        StencilMask = 0x8;
+		TextureFactor = 0xFFFFFF00;
+		DrawScreenRect();
+
+		// 00010000
+        StencilMask = 0x10;
+		TextureFactor = 0xFFFFD600;
+		DrawScreenRect();
+
+		// 00100000
+        StencilMask = 0x20;
+		TextureFactor = 0xFFFF9D00;
+		DrawScreenRect();
+
+		// 01000000
+        StencilMask = 0x40;
+		TextureFactor = 0xFFFF0000;
+		DrawScreenRect();
+
+		// 10000000
+        StencilMask = 0x80;
+		TextureFactor = 0xFF000000;
+		DrawScreenRect();
+	}
+}

@@ -1,0 +1,390 @@
+[main]
+screen_size = 1024,768
+safe_frame = 0,0
+
+
+
+;========================================================================================
+;========================================================================================
+; Use3d - attribut by one is use 3D position and use Z test
+;========================================================================================
+;========================================================================================
+[test_text3D]
+Use3D = 1
+font = arial
+MaxViewDistance = 100.0
+LineOffset = 0
+describe1 = useblend=1, color=(255,255,255,255), height=24, time=5.0, 3DPos=(0.0,0.0,0.0)
+describe2 = useblend=1, color=(255,255,0,0), height=24, time=2.0, 3DPos=(0.0,10.0,0.0)
+
+[test_timer3D]
+Use3D = 1
+font = arial
+MaxViewDistance = 100.0
+LineOffset = 0
+format = 3.0
+describe1 = useblend=1, color=(255,255,255,255), height=24, time=5.0, 3DPos=(0.0,0.0,0.0)
+describe2 = useblend=1, color=(255,255,0,0), height=24, time=2.0, 3DPos=(0.0,10.0,0.0)
+
+[test_image3D]
+Use3D = 1
+texture_file = gui\material
+texture_uv = 0,0, 1,1
+image_size = 32,32
+color = 255,255,255,255
+
+
+
+
+[LI_Parameters]
+;face_model = model=LI_FaceModel, 2DPos=(0,0)
+;image_faceback = image=LI_FaceBackImage, 2DPos=(0,0)
+;progress_life = image=LI_LifeProgress, 2DPos=(78,57)
+;progress_life = image=LI_LifeProgress, 2DPos=(76,34)
+;progress_life = image=LI_LifeProgress, 2DPos=(0,0)
+;progress_life = image=LI_LifeProgress, 2DPos=(111,22)
+;progress_gun = image=LI_GunProgress, 2DPos=(107,40)
+;progress_rush = image=LI_RushProgress, 2DPos=(103,58)
+;image_weapon = image=LI_SecondaryWeapon, 2DPos=(14,18)
+
+[LI_FaceModel]
+pos = 12,22
+size = 64,78
+model = bloodsaber
+model_offset = 0.5,1.0
+model_scale = 0.2
+
+[LI_FaceBackImage]
+Use3D = 0
+image_offset = 0,0
+;texture_file = interface\Monitor\Land_interface
+;texture_uv = 0.015625,0.0625, 0.984375,0.5625
+;image_size = 504,144
+texture_file = interface\Monitor\Land_interface
+texture_uv = 0.03125,0.0625, 0.96875,0.6015625
+image_size = 496,154
+
+[LI_LifeProgress]
+Use3D = 0
+;foreimage_texture = interface\Monitor\Land_interface
+;foreimage_uv = 0.16796875,0.59375, 0.70703125,0.2734375
+;foreimage_size = 362,70
+foreimage_texture = interface\Monitor\Land_interface
+foreimage_uv = 0.1796875,0.75, 0.71875,0.171875
+foreimage_size = 368,44
+foreimage_offset = 76,34
+
+[LI_EnemyFaceBackImage]
+Use3D = 0
+flip_horz = 1
+image_offset = 528,0
+;texture_file = interface\Monitor\Land_interface
+;texture_uv = 0.015625,0.0625, 0.984375,0.5625
+;image_size = 504,144
+texture_file = interface\Monitor\EnemyHP
+texture_uv = 0.03125,0.0625, 0.96875,0.6015625
+image_size = 496,154
+
+[LI_EnemyLifeProgress]
+Use3D = 0
+progress_right_to_left = 1
+foreimage_offset = 580,34
+;foreimage_texture = interface\Monitor\EnemyHP
+;foreimage_uv = 0.16796875,0.59375, 0.70703125,0.2734375
+;foreimage_size = 362,70
+foreimage_texture = interface\Monitor\Land_interface
+;foreimage_uv = 0.1796875,0.75, 0.71875,0.171875
+foreimage_uv = 0.8984375,0.75, -0.71875,0.171875
+foreimage_size = 368,44
+
+[LI_GunProgress]
+Use3D = 0
+;progress_right_to_left = 1
+backimage_texture = interface\Monitor\LI_States
+backimage_uv = 0,0.762, 0.3203125,0.06
+backimage_size = 164,14
+foreimage_texture = interface\Monitor\LI_States
+foreimage_uv = 0,0.879, 0.384765625,0.06
+foreimage_size = 164,14
+
+[LI_RushProgress]
+Use3D = 0
+backimage_texture = interface\Monitor\LI_States
+backimage_uv = 0,0.762, 0.3203125,0.06
+backimage_size = 164,14
+foreimage_texture = interface\Monitor\LI_States
+foreimage_uv = 0,0.82, 0.3203125,0.06
+foreimage_size = 164,14
+
+[LI_SecondaryWeapon]
+Use3D = 0
+;texture_file = interface\Monitor\LI_States
+image_offset = 0,0
+texture_uv = 0,0, 1.0,1.0
+image_size = 64,64
+
+
+
+[SI_Parameters]
+image_shipback1 = image=SI_ShipBackImage1, 2DPos=(0,0)
+image_shipback2 = image=SI_ShipBackImage2, 2DPos=(0,70)
+image_shipback3 = image=SI_ShipBackImage3, 2DPos=(0,135)
+progress_hull = image=SI_HullProgress, 2DPos=(66,82)
+progress_sail = image=SI_SailProgress, 2DPos=(66,18)
+progress_crew = image=SI_CrewProgress, 2DPos=(66,148)
+;image_shipcharge = image=SI_ShipCharge, 2DPos=(10,20)
+;image_minimapback = image=SI_MinimapBack, 2DPos=(830,0)
+image_minimapcompass = image=SI_MinimapCompass, 2DPos=(784,0)
+image_minimapwindarrow = image=SI_MinimapWindArrow, 2DPos=(810,104)
+counter_shipspeed = image=SI_ShipSpeedCounter, 2DPos=(790,10)
+petal_cannonchargestatus = image=SI_CannonChargeStatus, 2DPos=(809,25)
+petal_cannondamagestatus = image=SI_CannonDamageStatus, 2DPos=(809,25)
+petal_cannonattackzone = image=SI_CannonAttackStatus, 2DPos=(904,120)
+image_minimapbacksea = image=SI_MinimapSeaBack, 2DPos=(904,120)
+cannon_ready_color = 255,128,128,128
+cannon_charged_color = 255,128,128,128
+
+[SI_ShipBackImage1]
+Use3D = 0
+image_offset = 0,0
+texture_file = interface\Monitor\Sea_Interface
+texture_uv = 0.03125,0.03125, 0.625,0.13671875
+image_size = 320,70
+
+[SI_ShipBackImage2]
+Use3D = 0
+image_offset = 0,0
+texture_file = interface\Monitor\Sea_Interface
+texture_uv = 0.03125,0.16796875, 0.625,0.126953125
+image_size = 320,65
+
+[SI_ShipBackImage3]
+Use3D = 0
+image_offset = 0,0
+texture_file = interface\Monitor\Sea_Interface
+texture_uv = 0.03125,0.294921875, 0.625,0.13671875
+image_size = 320,70
+
+[SI_HullProgress]
+Use3D = 0
+foreimage_texture = interface\Monitor\Sea_Interface
+foreimage_uv = 0.16015625,0.5, 0.4296875,0.0546875
+foreimage_size = 220,28
+
+[SI_SailProgress]
+Use3D = 0
+foreimage_texture = interface\Monitor\Sea_Interface
+foreimage_uv = 0.16015625,0.4453125, 0.4296875,0.0546875
+foreimage_size = 220,28
+
+[SI_CrewProgress]
+Use3D = 0
+foreimage_texture = interface\Monitor\Sea_Interface
+foreimage_uv = 0.16015625,0.5546875, 0.4296875,0.0546875
+foreimage_size = 220,28
+
+[SI_ShipCharge]
+Use3D = 0
+texture_file = interface\Monitor\SI_States
+texture_uv = 0,0, 0,0
+image_size = 64,64
+image_offset = 0,0
+color = 255,255,255,255
+
+[SI_MinimapBack]
+Use3D = 0
+texture_file = interface\Monitor\SI_Minimap
+texture_uv = 0.62109375,0, 0.37890625,0.7265625
+image_size = 194,186
+image_offset = 0,0
+color = 255,255,255,255
+
+[SI_MinimapCompass]
+Use3D = 0
+texture_file = interface\Monitor\Sea_interface_compass
+texture_uv = 0.017578125,0.013671875, 0.46875,0.46875
+image_size = 240,240
+image_offset = 0,0
+color = 255,255,255,255
+
+[SI_MinimapWindArrow]
+Use3D = 0
+texture_file = interface\Monitor\Sea_interface_compass
+texture_uv = 0.5859375,0.216796875, 0.3671875,0.0625
+image_size = 188,32
+image_offset = 0,0
+color = 255,255,255,255
+;rotate_grads = 45
+rotate_base = 45
+
+[SI_ShipSpeedCounter]
+Use3D = 0
+font = arial
+describe1 = useblend=0, color=(255,255,255,255), height=36, time=0, 2DPos=(0.0,0.0)
+format = 2.1
+
+[SI_CannonChargeStatus]
+Use3D = 0
+technique = GI_ColorUV_2D_Mod2X
+texture_file = interface\Monitor\Sea_interface_compass
+texture_uv = 0.064453125,0.53125, 0.37109375,0.37109375
+image_size = 190,190
+image_offset = 0,0
+color = 255,128,128,128
+sector1 = -16, 32
+sector2 = 135, -90
+sector3 = 205, -32
+sector4 = -135, 90
+
+[SI_CannonDamageStatus]
+Use3D = 0
+texture_file = interface\Monitor\Sea_interface_compass
+texture_uv = 0.529296875,0.53125, 0.37109375,0.37109375
+image_size = 190,190
+image_offset = 0,0
+color = 255,255,255,255
+sector1 = -16, 32
+sector2 = 135, -90
+sector3 = 196, -32
+sector4 = -135, 90
+
+[SI_CannonAttackStatus]
+Use3D = 0
+;texture_file =
+;texture_uv_center = 0.5, 0.5
+;texture_uv_radius = 0.5
+image_offset = 0,0
+color = 80,255,255,255
+radius_scale = 0.03
+sector1 = 4, -15,30, 1000.0
+sector2 = 6, 65,50, 1000.0
+sector3 = 4, 165,30, 1000.0
+sector4 = 6, 245,50, 1000.0
+
+[SI_MinimapSeaBack]
+Use3D = 0
+radius = 90
+;texture_file = 
+;texture_uv_center = 0.5, 0.5
+;texture_uv_radius = 0.5
+image_offset = 0,0
+color = 198,84,96,118
+segment_quantity = 32
+
+; BAHO xepe
+[SI_Crosshair]
+Use3D = 0
+texture_file = interface\Monitor\SI_Crosshair
+;texture_uv = 0.01171875, 0.8515625, 0.40625, 0.1015625
+image_size = 64, 64
+image_offset = -32, -32
+color = 255, 255, 255, 255
+
+[EditorImageSimple]
+Use3D = 0
+texture_uv = 0,0, 1,1
+image_size = 32,32
+color = 255,255,255,255
+;describe1 = useblend=1, color=(255,255,255,255), angle=0.0, time=5.0, size=(64,64), 2DPos=(0.0,0.0)
+
+[EditorTimerSimple]
+Use3D = 0
+font = arial
+format = 3.0
+describe1 = useblend=1, color=(255,255,255,255), height=24, time=5.0, 3DPos=(0.0,0.0,0.0)
+
+[EditorTextSimple]
+Use3D = 0
+font = arial
+describe1 = useblend=1, color=(255,255,255,255), height=24, time=5.0, 3DPos=(0.0,0.0,0.0)
+
+[Mission9message1]
+Use3D = 0
+texture_uv = 0,0, 1,1
+image_size = 32,32
+color = 255,255,255,255
+describe1 = useblend=1, color=(0,255,255,255), angle=0.0, time=1.0, size=(512,384), 2DPos=(0.0,0.0)
+describe2 = useblend=1, color=(255,255,255,255), angle=0.0, time=4.0, size=(512,384), 2DPos=(0.0,0.0)
+describe3 = useblend=1, color=(255,255,255,255), angle=0.0, time=1.0, size=(512,384), 2DPos=(0.0,0.0)
+
+[Mission9message2]
+Use3D = 0
+texture_uv = 0,0, 1,1
+image_size = 32,32
+color = 255,255,255,255
+describe1 = useblend=1, color=(255,255,255,255), angle=0.0, time=-1, size=(512,384), 2DPos=(0.0,0.0)
+
+[Mission9message3]
+Use3D = 0
+texture_uv = 0,0, 1,1
+image_size = 32,32
+color = 255,255,255,255
+describe1 = useblend=1, color=(0,255,255,255), angle=0.0, time=1.0, size=(512,384), 2DPos=(0.0,0.0)
+describe2 = useblend=1, color=(255,255,255,255), angle=0.0, time=4.0, size=(512,384), 2DPos=(0.0,0.0)
+describe3 = useblend=1, color=(255,255,255,255), angle=0.0, time=1.0, size=(512,384), 2DPos=(0.0,0.0)
+
+[Mission9message4]
+Use3D = 0
+texture_uv = 0,0, 1,1
+image_size = 32,32
+color = 255,255,255,255
+describe1 = useblend=1, color=(0,255,255,255), angle=0.0, time=1.0, size=(512,384), 2DPos=(0.0,0.0)
+describe2 = useblend=1, color=(255,255,255,255), angle=0.0, time=4.0, size=(512,384), 2DPos=(0.0,0.0)
+describe3 = useblend=1, color=(255,255,255,255), angle=0.0, time=1.0, size=(512,384), 2DPos=(0.0,0.0)
+
+[Mission9message5]
+Use3D = 0
+texture_uv = 0,0, 1,1
+image_size = 32,32
+color = 255,255,255,255
+describe1 = useblend=0, color=(0,255,255,255), angle=0.0, time=0.2, size=(512,384), 2DPos=(0.0,0.0)
+describe2 = useblend=0, color=(255,255,255,255), angle=0.0, time=0.2, size=(512,384), 2DPos=(0.0,0.0)
+describe3 = useblend=0, color=(0,255,255,255), angle=0.0, time=0.2, size=(512,384), 2DPos=(0.0,0.0)
+describe4 = useblend=0, color=(255,255,255,255), angle=0.0, time=0.2, size=(512,384), 2DPos=(0.0,0.0)
+describe5 = useblend=0, color=(0,255,255,255), angle=0.0, time=0.2, size=(512,384), 2DPos=(0.0,0.0)
+describe6 = useblend=0, color=(255,255,255,255), angle=0.0, time=2.0, size=(512,384), 2DPos=(0.0,0.0)
+
+[Mission9message6]
+Use3D = 0
+texture_uv = 0,0, 1,1
+image_size = 32,32
+color = 255,255,255,255
+describe1 = useblend=1, color=(0,255,255,255), angle=0.0, time=1.0, size=(512,384), 2DPos=(0.0,0.0)
+describe2 = useblend=1, color=(255,255,255,255), angle=0.0, time=4.0, size=(512,384), 2DPos=(0.0,0.0)
+describe3 = useblend=1, color=(0,255,255,255), angle=0.0, time=1.0, size=(512,384), 2DPos=(0.0,0.0)
+
+[SturvalText]
+Use3D = 0
+color = 255,255,255,255
+describe1 = useblend=1, color=(255,255,255,255), angle=0.0, time=0.5, size=(512,512), 2DPos=(0.0,0.0)
+describe2 = useblend=1, color=(255,255,255,255), angle=0.0, time=0.5, size=(384,384), 2DPos=(0.0,0.0)
+
+[GoRightText]
+Use3D = 0
+color = 255,255,255,255
+describe1 = useblend=0, color=(255,255,255,255), angle=0.0, time=0.3, size=(512,512), 2DPos=(0.0,0.0)
+describe2 = useblend=0, color=(0,255,255,255), angle=0.0, time=0.3, size=(512,512), 2DPos=(0.0,0.0)
+
+[BoatText]
+Use3D = 0
+color = 255,255,255,255
+describe1 = useblend=1, color=(255,255,255,255), angle=0.0, time=0.5, size=(512,512), 2DPos=(0.0,0.0)
+describe2 = useblend=1, color=(255,255,255,255), angle=0.0, time=0.5, size=(384,384), 2DPos=(0.0,0.0)
+
+[GoDownText]
+Use3D = 0
+color = 255,255,255,255
+describe1 = useblend=0, color=(255,255,255,255), angle=0.0, time=0.3, size=(512,512), 2DPos=(0.0,0.0)
+describe2 = useblend=0, color=(0,255,255,255), angle=0.0, time=0.3, size=(512,512), 2DPos=(0.0,0.0)
+
+[BonaventuraText]
+Use3D = 0
+color = 255,255,255,255
+describe1 = useblend=1, color=(255,255,255,255), angle=0.0, time=0.5, size=(512,512), 2DPos=(0.0,0.0)
+describe2 = useblend=1, color=(255,255,255,255), angle=0.0, time=0.5, size=(384,384), 2DPos=(0.0,0.0)
+
+[GoUpText]
+Use3D = 0
+color = 255,255,255,255
+describe1 = useblend=0, color=(255,255,255,255), angle=0.0, time=0.3, size=(512,512), 2DPos=(0.0,0.0)
+describe2 = useblend=0, color=(0,255,255,255), angle=0.0, time=0.3, size=(512,512), 2DPos=(0.0,0.0)

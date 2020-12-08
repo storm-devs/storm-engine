@@ -1,0 +1,50 @@
+#define VS_STATICLIGHT_0(_VPOS, _VDIFFUSE)			\
+	add oD0.xyz, _VDIFFUSE, c[GC_MATERIAL + 1]		\
+	mov oD0.w, _VDIFFUSE
+	
+#define VS_STATICLIGHT_1(_VPOS, _VDIFFUSE)					\
+	mov VS_LDIFRESULT, c[GC_CONSTANT].xxxx					\
+	VS_STAT_LIGHT(GC_LIGHT1, _VPOS, _VDIFFUSE)				\
+	add oD0.xyz, VS_LDIFRESULT, c[GC_MATERIAL + 1]			\
+	mov oD0.w, _VDIFFUSE
+
+#define VS_STATICLIGHT_2(_VPOS, _VDIFFUSE)					\
+	mov VS_LDIFRESULT, c[GC_CONSTANT].xxxx					\
+	VS_STAT_LIGHT(GC_LIGHT1, _VPOS, _VDIFFUSE)				\
+	VS_STAT_LIGHT(GC_LIGHT2, _VPOS, _VDIFFUSE)				\
+	add oD0.xyz, VS_LDIFRESULT, c[GC_MATERIAL + 1]			\
+	mov oD0.w, _VDIFFUSE
+
+#define VS_STATICLIGHT_3(_VPOS, _VDIFFUSE)					\
+	mov VS_LDIFRESULT, c[GC_CONSTANT].xxxx					\
+	VS_STAT_LIGHT(GC_LIGHT1, _VPOS, _VDIFFUSE)				\
+	VS_STAT_LIGHT(GC_LIGHT2, _VPOS, _VDIFFUSE)				\
+	VS_STAT_LIGHT(GC_LIGHT3, _VPOS, _VDIFFUSE)				\
+	add oD0.xyz, VS_LDIFRESULT, c[GC_MATERIAL + 1]			\
+	mov oD0.w, _VDIFFUSE
+
+#define VS_STATICLIGHT_4(_VPOS, _VDIFFUSE)					\
+	mov VS_LDIFRESULT, c[GC_CONSTANT].xxxx					\
+	VS_STAT_LIGHT(GC_LIGHT1, _VPOS, _VDIFFUSE)				\
+	VS_STAT_LIGHT(GC_LIGHT2, _VPOS, _VDIFFUSE)				\
+	VS_STAT_LIGHT(GC_LIGHT3, _VPOS, _VDIFFUSE)				\
+	VS_STAT_LIGHT(GC_LIGHT4, _VPOS, _VDIFFUSE)				\
+	add oD0.xyz, VS_LDIFRESULT, c[GC_MATERIAL + 1]			\
+	mov oD0.w, _VDIFFUSE
+
+// =======================
+// Point Light
+// =======================
+#define VS_STAT_LIGHT(_L_INDEX, _VPOS, _VDIFFUSE)					\
+	sub VS_LDL.xyz, c[_L_INDEX], _VPOS								\	// Vector 2 Light 
+																	\	
+	dp3 VS_LTMP.w, VS_LDL, VS_LDL									\	// dist ^ 2
+	rsq VS_LTMP.x, VS_LTMP.w										\	// 1 / sqrt(dist ^ 2)
+	mul VS_LTMP.w, VS_LTMP.w, VS_LTMP.x								\	// dist^2 * (1 / sqrt(dist ^ 2))
+	mov VS_LKa.x, c[_L_INDEX].w										\	// 1.0 / R
+	mad VS_LKa.w, -VS_LTMP.w, VS_LKa.x, c[GC_CONSTANT].y			\	// 1 - dist / R
+	max VS_LKa.w, VS_LKa.w, c[GC_CONSTANT].x						\	// max(0.0, 1.0 - dist / R)
+																	\
+	mul VS_LKa.xyz, VS_LKa.www, c[_L_INDEX+1].xyz					\	// Ka = Ka * DIFLight
+	mul VS_LTMP.xyz, VS_LKa, c[GC_MATERIAL]							\	// (Ka * DifLight) * DIFmat
+	mad VS_LDIFRESULT.xyz, VS_LTMP, _VDIFFUSE, VS_LDIFRESULT.xyz	\	// DIFresult += (Ka * DifLight) * DIFmat * DIFvertex

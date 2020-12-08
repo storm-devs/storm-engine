@@ -1,0 +1,30 @@
+NathanKell (nathankell@piratesahoy.net)
+
+DESCRIPTION:
+This program will allow you to merge the bone numbers that were baked into the UV coordinates of a WRL file on export from The Tool
+into a second WRL file you specify with edited UVs. If you have not edited the UVs since exporting the WRL from The Tool, running this
+program is not necessary.
+However, if your 3d suite does *not* support UV coordinates with six decimal places, you will need to run this
+program and give it The Tool's original WRL and your modified WRL.
+
+USAGE:
+Place in same folder as WRLs.
+Go to a command prompt there.
+Type:
+Bonemerge FileWithCorrectBoneNumbers[.wrl] FileToAddThemTo[.wrl] [FilenameForMergedData.[wrl]] [-d] [-h]
+
+NOTE: The first two wrl files must have the same number of vertices in the same order.
+You need not append .wrl to each filename. If desired, you may explicitly specify the name of the file to write to; if not, the filename
+will be FileToAddThemTo_b.wrl
+
+FileWithCorrectBoneNumbers.wrl: This file must have the correct six-digit UVs. The XYZ positions of the vertices need not be the same as when it was exported from The Tool, though.
+
+FileToAddThemTo.wrl: This file has the edited UVs. It must have the same number and order of vertices as the first file.
+
+FilenameForMergedData.wrl: If specified, the program will write to this file. Otherwise it will write to FileToAddThemTo_b.wrl
+
+-d: Debug mode. Will output to debug.log the states of the reading and writing operations, and the bone numbers of the vertices (if found).
+-h: Help mode. This.
+
+
+BIG NOTE: This will only do the merging for the FIRST object/material group in your WRL file. So make sure that, when you export to WRL in your 3D package, all geometry is part of the same object and it all uses the same texture.

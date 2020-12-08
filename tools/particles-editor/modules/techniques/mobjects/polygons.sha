@@ -1,0 +1,40 @@
+vertexshader vs_ShowPolygon()
+{
+	decl
+	{
+		stream(0)
+		{
+			vector3 v0;
+		}
+	}
+	asm
+	{
+		vs.1.0
+		m4x4 oPos, v0, c[GC_MTX_WVP]
+	}
+}
+
+block ShowPolygon()
+{
+		FogEnable = false;
+        zenable = true;
+		zwriteenable = true;
+		CullMode = none;
+		zbias = 10;
+
+		AlphaBlendEnable = true;
+		AlphaTestEnable = false;
+
+		texturefactor = 0xffff00ff;
+
+		ColorOp[0] = SelectArg1;
+		ColorArg1[0] = tfactor;
+
+		AlphaOp[0] = disable;
+
+		VertexShader = vs_ShowPolygon();
+
+		Draw();
+}
+
+

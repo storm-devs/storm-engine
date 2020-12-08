@@ -1,0 +1,90 @@
+vertexshader vs_Ship_GunPorts()
+{
+	decl
+	{
+		stream(0)
+		{
+			vector3		vPos;
+			vector3		vNormal;
+			color		dwBones;
+			color		dwColor;
+			color		dwSpecular;
+			float		fReserved;
+			vector2		vTexCoord0;
+		}
+	}
+
+	asm
+	{
+		vs.1.1
+
+#define	POS			r0
+#define	NORMAL		r1
+#define TEMP		r2
+
+		mad		TEMP.xy, dwBones.xy, c[GC_FREE].xz, c[GC_FREE].yw
+
+		mov 	r4, vPos
+
+		mov		a0.x, TEMP.x
+		m4x4	POS, r4, c[a0.x]
+		m3x3	NORMAL, vNormal, c[a0.x]
+
+		m4x4 	r3, POS, c[GC_MTX_WVP]
+
+		mov		oPos, r3
+		mov		oD1, dwSpecular
+		mov		oT0.xy, vTexCoord0
+
+		mov		oD0, dwColor
+
+		// lights
+        //VS_LIGHT$NumLights(r3, NORMAL, dwColor)
+		DIFFUSE_DIR_LIGHT(oT1, NORMAL, r6)
+
+		// calculate specular reflection
+
+		// fog
+		FOG(r3)
+	}
+}
+
+block Ship_GunPorts(matrix m1, m2, texture t1, t2, ibuffer i1, vbuffer v1)
+{
+	SetVertexBuffer(0, v1, 0);
+	SetIndexBuffer(i1, 0);
+
+	AlphaBlendEnable = false;
+	AlphaTestEnable = false;
+
+	SpecularEnable = false;
+
+	Texture[0] = t1;		// gunport texture
+	//Texture[1] = t2;		// envmap
+	Texture[1] = TextureGlobalLight;		// diffuse light
+
+	VertexShaderConstant[GMX_MWORLD] = mWorld;
+	VertexShaderConstant[GC_FREE] = vector4(256.0 * 4.0, GC_FREE + 1.0, 256.0, GC_FREE + 10.0);
+	VertexShaderConstant[GC_FREE + 1] = m1;
+	VertexShaderConstant[GC_FREE + 5] = m2;
+
+	WorldMatrix = matrix();
+
+	VertexShader = vs_Ship_GunPorts();
+
+	ColorOp[0] = modulate;
+	ColorArg1[0] = texture;
+	ColorArg2[0] = diffuse;
+
+	AlphaOp[0] = selectarg1;
+	AlphaArg1[0] = texture;
+
+	ColorOp[1] = Modulate2X;                      
+	ColorArg1[1] = Current;                       
+	ColorArg2[1] = Texture;                       
+
+	AlphaOp[1] = selectarg1;
+	AlphaArg1[1] = current;
+
+	Draw();
+}

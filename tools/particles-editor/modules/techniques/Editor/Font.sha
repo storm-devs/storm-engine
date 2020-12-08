@@ -1,0 +1,57 @@
+vertexshader vs_Editorfont()
+{
+	decl
+	{
+		stream(0)
+		{
+			vector3	 	v0;
+			vector2		v1;
+		}
+	}
+	asm
+	{
+		vs.1.0
+    mov oPos, v0
+    mov oD0, c[GC_FREE+10]
+		mov oT0, v1
+	}
+}
+
+
+block EditorFont(dword dwColor)
+{
+		FogEnable = false;
+    ZEnable = false;
+		FillMode = solid;
+
+		AlphaBlendEnable = true;
+		AlphaTestEnable = false;
+		
+		SrcBlend = srcalpha;
+		DestBlend = invsrcalpha;
+
+    VertexShaderConstant[GC_FREE+10] = color(dwColor); 
+
+
+		ColorOp[0] = modulate;
+		ColorArg1[0] = texture;
+		ColorArg2[0] = diffuse;
+
+    TextureFactor = 0x60606060;
+
+		AlphaOp[0] = modulate;
+		AlphaArg1[0] = tfactor;
+    AlphaArg2[0] = texture;
+
+    VertexShader = vs_Editorfont();
+
+    Draw();
+
+		AlphaOp[0] = SelectArg1;
+    AlphaArg1[0] = texture;
+
+    ZEnable = true;
+
+   Draw();
+   
+}

@@ -1,0 +1,36 @@
+vertexshader vsShadowBorder()
+{
+ decl
+  {
+   stream(0)
+    {
+     vector3         v0;
+			color	v1;
+    }
+  }
+
+ asm
+  {
+   vs.1.0
+   mov oPos, v0
+   mov oD0, v1
+  }
+}
+
+block ShadowBorder()
+{
+ AlphaTestEnable = false;
+ FogEnable = false;
+ ZEnable = false;
+ LastPixel = true;
+
+
+ AlphaBlendEnable = false;
+ ColorOp[0] = selectarg1;
+ ColorArg1[0] = diffuse;
+
+ VertexShader = vsShadowBorder();
+
+ Draw();
+}
+

@@ -1,0 +1,1 @@
+PatchCreator.exe -l *.gm

@@ -1,0 +1,47 @@
+vertexshader vs_GUI2DAlpha()
+{
+ decl
+  {
+   stream(0)
+    {
+     vector3         v0;
+     color           v1;
+    }
+  }
+
+ asm
+  {
+   vs.1.0
+//   mov oPos, v0
+   m4x4 oPos, v0, c[GC_FREE]
+   mov oD0,  v1
+  }
+}
+
+block GUIBaseAlpha()
+{
+ AlphaTestEnable = false;
+
+ FogEnable = false;
+ ZEnable = false;
+ LastPixel = true;
+
+
+ AlphaBlendEnable = true;
+ SrcBlend = srcalpha;
+ DestBlend = invsrcalpha;
+// TextureFactor = 0xE0E0E0E0;
+ AlphaOp[0] = selectarg1;
+ AlphaArg1[0] = diffuse;
+
+ ColorOp[0] = selectarg1;
+ ColorArg1[0] = diffuse;
+
+ 
+
+ VertexShader = vs_GUI2DAlpha();
+
+ Draw();
+ 
+}
+

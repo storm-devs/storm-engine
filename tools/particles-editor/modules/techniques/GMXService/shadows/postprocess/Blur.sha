@@ -1,0 +1,131 @@
+pixelshader BlurPS()
+{
+	asm
+	{
+    ps.1.1
+    
+			//c1 - цвет тени...
+    def c2, 0.33333, 0.33333, 0.33333, 0.33333
+		def c3, 1.0, 0.0, 0.0, 0.0
+		def c4, 0.5, 0.5, 0.5, 0.5
+
+
+		//В RGB лежит цвет статическая тень...
+		//В Alpha динамическая
+
+/*
+		tex t0
+		dp3 r0, t0, c3
+		mov r0.rgb, c1
+*/
+
+		tex t0	
+		tex t1	
+		tex t2	
+    tex t3  
+    
+		//mov r1.a, t3.a
+		mul r1.a, t1.a, c2
+		mad r1.a, t2.a, c2, r1.a
+		mad r1.a, t3.a, c2, r1.a
+
+		//В r1.a размытая динамическая тень
+		//В t0.rgb статическая тень...
+
+		//Распространяем из RGB в Alpha
+		dp3 t1, t0, c3
+
+
+
+		add r0.a, r1.a, -t1.a        // r0 = DYN - STAT 
+		add r0.a, r0.a, c4.a         // r0 = r1 + 0.5
+
+		//r1.a - разблюреная динамическая тень
+		//t1.a - статическая тень
+		//r0.a - для условия
+
+		cnd r0.a, r0.a, r1.a, t1.a
+
+
+   
+    mov r0.rgb, c1
+  }
+}
+
+
+
+
+
+vertexshader ShadowPostProcessBlurVS()
+{
+	decl
+	{
+		stream(0)
+		{
+			vector3	 	vPos;
+			vector2		vTexCoord0;
+			vector2		vTexCoord1;
+			vector2		vTexCoord2;
+			vector2		vTexCoord3;
+		}
+	}
+	asm
+	{
+		vs.1.0
+
+		mov oPos, vPos
+		mov oT0, vTexCoord0
+		mov oT1, vTexCoord1
+		mov oT2, vTexCoord2
+		mov oT3, vTexCoord3
+	}
+}
+
+block ShadowPostProcessBlur()
+{
+  AlphaBlendEnable = true;
+  AlphaTestEnable = false;
+ 	FogEnable = false;
+
+  CullMode = none;
+  ZEnable = false;
+
+	MagFilter[0] = point;                                               
+	MinFilter[0] = point;                                            
+	MipFilter[0] = point;                                          
+
+	MagFilter[1] = point;                                               
+	MinFilter[1] = point;                                            
+	MipFilter[1] = point;                                          
+
+	MagFilter[2] = point;                                               
+	MinFilter[2] = point;                                            
+	MipFilter[2] = point;                                          
+
+	MagFilter[3] = point;                                               
+	MinFilter[3] = point;                                            
+	MipFilter[3] = point;                                          
+
+/*
+  ColorOp[0] = SelectArg1;
+	ColorArg1[0] = texture;
+
+  ColorOp[1] = Add;
+  ColorArg1[1] = current;
+	ColorArg2[1] = texture;
+
+  ColorOp[2] = Add;
+  ColorArg1[2] = current;
+	ColorArg2[2] = texture;
+
+  ColorOp[3] = Add;
+  ColorArg1[3] = current;
+	ColorArg2[3] = texture;
+*/
+
+  VertexShader = ShadowPostProcessBlurVS();
+  PixelShader = BlurPS();
+
+	Draw();
+}
+

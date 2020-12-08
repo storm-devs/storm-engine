@@ -1,0 +1,69 @@
+vertexshader vs_rig_rope()
+{
+	decl
+	{
+		stream(0)
+		{
+			vector3		vPos; // Pos;
+			vector3		vNorm; // Normal;
+			vector2		vTex; // TexCoord0;
+		}
+	}
+
+	asm
+	{
+		vs.1.1
+
+#define	POS		r0
+#define	NORMAL		r1
+#define	TEMP		r2
+
+		m4x4	POS, vPos, c[GC_MTX_WVP]
+		m3x3	NORMAL, vNorm, c[GC_FREE+1]
+
+		mov	oPos, POS
+		mov	oT0, vTex
+		mov oD0, c[GC_FREE]
+
+		// lights
+		DIFFUSE_DIR_LIGHT(oT1, NORMAL, TEMP)
+
+		// fog
+		FOG(POS)
+	}
+}
+
+block Rope(texture tRope, vbuffer vRopeBuffer, ibuffer iRopeBuffer, matrix mworld)
+{
+		SetVertexBuffer(0, vRopeBuffer, 0);
+
+		CullMode = ccw;
+		AlphaBlendEnable = false;
+		AlphaTestEnable = false;
+
+		Texture[0] = tRope;
+		Texture[1] = TextureGlobalLight;
+
+		ColorOp[0] = modulate;
+		ColorArg1[0] = texture;
+		ColorArg2[0] = diffuse;
+
+		AlphaOp[0] = selectarg1;
+		AlphaArg1[0] = texture;
+
+		ColorOp[1] = Modulate2X;
+		ColorArg1[1] = Current;
+		ColorArg2[1] = Texture;
+
+		AlphaOp[1] = selectarg1;
+		AlphaArg1[1] = current;
+
+		WorldMatrix = mworld;
+		VertexShaderConstant[GC_FREE] = 0xFFFFFFFF;
+		VertexShaderConstant[GC_FREE+1] = mworld;
+		VertexShaderConstant[GMX_MWORLD] = mworld;
+
+		VertexShader = vs_rig_rope();
+
+		Draw ();
+}

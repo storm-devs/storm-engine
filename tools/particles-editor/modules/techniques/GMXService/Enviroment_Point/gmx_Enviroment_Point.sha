@@ -1,0 +1,35 @@
+vertexshader gmx_Enviroment_PointVS(NumLights[0,4]) 
+{
+ STATIC_DECL
+
+ asm
+ {
+  vs.1.1
+
+  m4x4 r1, vPos, c[GC_MTX_WVP]    // Transform position
+  mov oPos, r1
+  GMX_FOG(r1, r2);
+  
+  UNPACK_TEX(oT2, vPackedUV1)
+
+  UNPACK_NORMAL(vUnpackedNormal, vPackedNormal)
+  
+  DIFFUSE_DIR_LIGHT(oT0, vUnpackedNormal, r1)
+  
+  SPECULAR_DIR_LIGHT_RES_OD0(oT3, vUnpackedNormal, r4, r5, r6)
+  
+	GMX_VS_LIGHT$NumLights(vPos, vUnpackedNormal)
+  
+
+ }
+} 
+
+
+block gmx_Enviroment_Point ()
+{
+  SETUP_GMX_ENVIRONMENT_POINT
+    
+	VertexShader = gmx_Enviroment_PointVS(dwNumLights);
+
+  Draw ();
+}

@@ -1,0 +1,74 @@
+pixelshader TerrainPS()
+{
+  asm
+  {
+    ps.1.1
+    
+    tex t0
+    tex t1
+    tex t2
+    tex t3
+
+    mov r0, t0
+    lrp r0, v0.a, t1, r0     
+    lrp r0.xyz, v1, t2, r0     
+    lrp r0, v1.a, t3, r0
+    mul r0, r0, v0     
+      
+  }
+}
+
+
+
+vertexshader TerrainVS() 
+{
+	decl
+  {
+   stream(0)                            
+   {                                    
+    vector3         vPos;
+    vector3         vBlend;
+    vector2         vUV;
+   }
+  }                                    
+
+
+ asm
+ {
+  vs.1.1
+  
+  m4x4 oPos, vPos, c[GC_MTX_WVP]
+  
+  mov oT0, vUV
+  //mov oT1, vUV
+  mul oT1, vUV, c[GC_FREE]
+  
+  mov oD0, c[GC_CONSTANT].yyyy
+ }
+} 
+
+block Terrain ()
+{
+  LastPixel = true;
+  FogEnable = false;
+
+  ColorOp[0] = SelectArg1;
+  ColorArg1[0] = Texture;
+
+  ColorOp[1] = Modulate2X;
+  ColorArg1[1] = Current;
+  ColorArg2[1] = Texture;
+
+  AlphaBlendEnable = false;
+  AlphaTestEnable = false;
+
+  VertexShader = TerrainVS();
+  //PixelShader = TerrainPS();
+  
+  VertexShaderConstant[GC_FREE] = Vector4(1.0, 1.0, 1.0, 1.0);
+  
+  Draw ();
+}
+
+
+

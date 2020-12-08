@@ -1,0 +1,43 @@
+
+vertexshader vsDebugShowCubeMap() 
+{
+ decl
+ {
+   stream(0)
+   {
+    vector3         vPos;
+    vector3         vNormal;
+   }
+ }
+
+ asm
+ {
+  vs.1.1
+  
+  mov oPos, vPos
+  mov oT0, vNormal
+
+ }
+} 
+
+
+block DebugShowCubeMap ()
+{
+  ZEnable = false;
+  FogEnable = false;
+
+  TextureFactor = 0xFFFF0000;
+
+  ColorOp[0] = SelectArg1;
+  ColorArg1[0] = Texture;
+
+  AlphaOp[0] = disable;
+ 
+  AlphaBlendEnable = false;
+  AlphaTestEnable = false;
+
+  CullMode = none;
+  VertexShader = vsDebugShowCubeMap();
+  
+  Draw ();
+}

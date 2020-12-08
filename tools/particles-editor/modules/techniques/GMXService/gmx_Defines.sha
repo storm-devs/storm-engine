@@ -1,0 +1,97 @@
+texture GMX_TextureStage0;
+texture GMX_TextureStage1;
+texture GMX_TextureStage2;
+texture GMX_TextureStage3;
+color GMX_ObjectsTransparency;
+
+
+#define GMX_MWORLD GC_SHADOW_CONST2
+
+//Тут будет лежадь распакованная нормаль
+#define vUnpackedNormal r11
+
+
+#define GMX_FOG(__VPOS, __TEMP)										\
+	mul __TEMP.z, __VPOS.z, c[GC_CONSTANT2].w				\	// dist * density
+	expp __TEMP.z, __TEMP.z													\	// res = e^(dist * density)
+	rcp __TEMP.z, __TEMP.z													\	// res = 1 / e^(dist * density)
+	mov oFog.x, __TEMP.z
+
+
+
+//==========================================================
+//
+// Рассчитать дифузную составляющую
+//
+//==========================================================
+#define DIFFUSE_DIR_LIGHT(res, normal, temp) \
+m3x3 temp, normal, c[GMX_MWORLD]        \
+mov temp.w, c[GC_CONSTANT].y            \
+mov res, temp                           \
+
+//==========================================================
+//
+// Рассчитать спекулярную составляющую
+//
+//==========================================================
+#define SPECULAR_DIR_LIGHT_RES_OD1(res, normal, temp1, temp2, temp3) \
+mov temp1, c[GC_CAMERA_POS]                 \
+VS_REFLECTION(temp1, vPos, normal, temp2)   \
+m3x3 temp3, temp2, c[GMX_MWORLD]            \
+mov temp3.w, c[GC_CONSTANT].y               \
+mov res, temp3                              \
+mov oD1.w, vPackedNormal.w                  \ 
+
+#define SPECULAR_DIR_LIGHT_RES_OD0(res, normal, temp1, temp2, temp3) \
+mov temp1, c[GC_CAMERA_POS]                 \
+VS_REFLECTION(temp1, vPos, normal, temp2)   \
+m3x3 temp3, temp2, c[GMX_MWORLD]            \
+mov temp3.w, c[GC_CONSTANT].y               \
+mov res, temp3                              \
+mov oD0.w, vPackedNormal.w                  \ 
+                                           
+//==========================================================
+//
+// Сбросить xyz регистра в 1.0f
+//
+//==========================================================
+#define SET_REGISTER_XYZ_TO_ONE(reg) mov reg.xyz, c[GC_CONSTANT].yyy
+
+//==========================================================
+//
+// Декларация для статической геометрии
+//
+//==========================================================
+#define STATIC_DECL                     \
+decl                                    \
+{                                       \
+   stream(0)                            \
+   {                                    \
+    vector3         vPos;               \
+    color           vPackedNormal;      \
+    short2          vPackedUV1;         \
+		short2          vPackedUV2;         \
+   }                                    \
+ }                                      \
+
+//==========================================================
+//
+// Декларация для анимированной геометрии
+//
+//==========================================================
+#define ANIM_DECL                       \
+ decl                                   \
+ {                                      \
+   stream(0)                            \
+   {                                    \
+    vector3         vPos;               \
+    color           vPackedNormal;      \
+    short2          vPackedUV1;         \
+		short2          vPackedWeight12;    \
+		short2          vPackedWeight3x;    \
+   }                                    \
+	 stream(1)                            \
+	 {                                    \
+		 color           vBonesID;          \
+	 }                                    \
+ }                                      \

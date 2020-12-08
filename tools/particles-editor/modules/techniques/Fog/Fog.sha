@@ -1,0 +1,6 @@
+#define FOG(__VPOS)									\
+		mul r11.z, __VPOS.z, c[GC_CONSTANT2].w		\	// dist * density
+		expp r11.z, r11.z							\	// res = e^(dist * density)
+		rcp r11.z, r11.z							\	// res = 1 / e^(dist * density)
+		mov oFog.x, r11.z
+

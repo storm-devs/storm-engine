@@ -1,0 +1,46 @@
+vertexshader vs_GUILINE2D()
+{
+ decl
+  {
+   stream(0)
+    {
+     vector3         v0;
+    }
+  }
+
+ asm
+  {
+   vs.1.0
+//   mov oPos, v0
+   m4x4 oPos, v0, c[GC_FREE]
+   mov oD0, c[GC_FREE+6]  
+  }
+}
+
+block GUILines()
+{
+ AlphaTestEnable = false;
+
+ FogEnable = false;
+ ZEnable = false;
+ LastPixel = true;
+
+
+// AlphaBlendEnable = true;
+ AlphaBlendEnable = false;
+ SrcBlend = srcalpha;
+ DestBlend = invsrcalpha;
+ TextureFactor = 0xE0E0E0E0;
+ AlphaOp[0] = selectarg1;
+ AlphaArg1[0] = tfactor;
+
+ ColorOp[0] = selectarg1;
+ ColorArg1[0] = diffuse;
+
+ 
+
+ VertexShader = vs_GUILINE2D();
+
+ Draw();
+}
+

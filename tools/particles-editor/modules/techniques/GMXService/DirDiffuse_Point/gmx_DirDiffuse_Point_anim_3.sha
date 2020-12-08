@@ -1,0 +1,73 @@
+vertexshader gmx_DirDiffuse_Point_anim_3VS(NumLights[0,4]) 
+{
+ ANIM_DECL
+
+ asm
+ {
+  vs.1.1
+
+  UNPACK_NORMAL(vUnpackedNormal, vPackedNormal)
+
+	// Upack bones indexes
+	mad r0, vBonesID, c[GC_FREE].xxxx, c[GC_FREE].yyyy            
+
+	// First bone
+	mov a0.x, r0.z                                 
+	m4x3 r2, vPos, c[a0.x]
+	m3x3 r3, vUnpackedNormal, c[a0.x]
+
+	// Second bone
+	mov a0.x, r0.y
+	m4x3 r4, vPos, c[a0.x]
+	m3x3 r5, vUnpackedNormal, c[a0.x]
+
+	// Third bone
+	mov a0.x, r0.x
+	m4x3 r6, vPos, c[a0.x]
+	m3x3 r7, vUnpackedNormal, c[a0.x]
+
+	UNPACK_WEIGHTS(r9, vPackedWeight12)
+	UNPACK_WEIGHTS(r10, vPackedWeight3x)
+
+	// position weights
+	mul r2.xyz, r2.xyz, r9.xxx
+	mad r2.xyz, r4.xyz, r9.yyy, r2.xyz
+	mad r2.xyz, r6.xyz, r10.xxx, r2.xyz
+
+  // Transform to screen      
+	mov r2.w, c[GC_FREE].z
+  m4x4 oPos, r2, c[GC_MTX_WVP]
+
+	// normal weights
+	mul r3.xyz, r3.xyz, r9.xxx
+	mad r3.xyz, r5.xyz, r9.yyy, r3.xyz
+	mad r3.xyz, r7.xyz, r10.xxx, r3.xyz
+	mov r3.w, c[GC_FREE].z
+
+  
+  LIGHTINGMAPUV(r2, r9, oT3)  
+  
+  
+  GMX_FOG(r2, r9);
+  
+
+
+  UNPACK_TEX(oT2, vPackedUV1)
+
+  DIFFUSE_DIR_LIGHT(oT0, r3, r9)
+
+  
+	GMX_VS_LIGHT$NumLights(vPos, vUnpackedNormal)
+  
+ }
+} 
+
+
+block gmx_DirDiffuse_Point_anim_3 ()
+{
+  SETUP_GMX_DIRDIFFUSE_POINT
+
+	VertexShader = gmx_DirDiffuse_Point_anim_3VS(dwNumLights);
+
+  Draw ();
+}

@@ -1,0 +1,33 @@
+vertexshader gmx_EnviromentVS() 
+{
+ STATIC_DECL
+
+ asm
+ {
+  vs.1.1
+
+  m4x4 r1, vPos, c[GC_MTX_WVP]    // Transform position
+  mov oPos, r1
+  GMX_FOG(r1, r2);
+  
+  UNPACK_TEX(oT0, vPackedUV1)
+
+  UNPACK_NORMAL(vUnpackedNormal, vPackedNormal)
+  
+  DIFFUSE_DIR_LIGHT(oT1, vUnpackedNormal, r1)
+  
+  SPECULAR_DIR_LIGHT_RES_OD0(oT2, vUnpackedNormal, r4, r5, r6)
+
+  SET_REGISTER_XYZ_TO_ONE(oD0)
+ }
+} 
+
+
+block gmx_Enviroment ()
+{
+  SETUP_GMX_ENVIRONMENT
+    
+	VertexShader = gmx_EnviromentVS();
+
+  Draw ();
+}

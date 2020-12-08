@@ -1,0 +1,46 @@
+vertexshader vsShip_Holes()
+{
+	decl
+	{
+		stream (0)
+		{
+			vector3		vPos;
+			vector2		vTexCoord;
+		}
+	}
+	asm
+	{
+		vs.1.1
+		m4x4 oPos, vPos, c[GC_MTX_WVP]
+		mov oT0.xy, vTexCoord
+	}
+}
+
+block Ship_Holes()
+{
+	ZEnable = true;
+
+	ZWriteEnable = false;
+    ZFunc = less;
+
+
+	StencilEnable = true;
+	StencilFunc = always;
+	StencilRef = 10;
+	StencilPass = replace;
+	StencilZFail = keep;
+
+	AlphaBlendEnable = false;
+	AlphaTestEnable = true;
+
+	ColorOp[0] = selectarg1;
+	ColorArg1[0]  = texture;
+
+	AlphaOp[0] = selectarg1;
+	AlphaArg1[0] = texture;
+	
+	VertexShader = vsShip_Holes();
+
+	Draw();
+}
+

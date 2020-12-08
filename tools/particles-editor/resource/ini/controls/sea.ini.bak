@@ -1,0 +1,23 @@
+[controls]
+
+assign = group, mission.sea
+assign = Ship_RightTurn, D, joyRight
+assign = Ship_LeftTurn, A, joyLeft
+assign = Ship_SailsUp, W, joyUp
+assign = Ship_SailsDown, S, joyDown
+assign = Ship_Fire, kb_space, joyBtnA
+
+assign = ShipCamera_Turn_H, (1.0)MouseH, (0.2)joyStick2H
+assign = ShipCamera_Turn_V, (1.0)MouseV, (0.2)joyStick2V
+assign = ShipCamera_SpeedUp4x, kb_control
+assign = ShipCamera_SpeedUp10x, kb_shift
+assign = ShipCamera_Forward, MouseLClick
+assign = ShipCamera_Back, MouseRClick
+
+assign = DeckCamera_Zoom, kb_control, joyBtnb
+
+assign = group, mission.sea.followcamera
+assign = FollowCamera_Switch, kb_tab, joyBtnY
+
+assign = group, mission.sea.deckcamera
+assign = DeckCamera_Switch, kb_tab, joyBtnY
