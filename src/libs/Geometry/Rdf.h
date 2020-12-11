@@ -11,9 +11,6 @@ geometry file format
 #ifndef __RDF_H__
 #define __RDF_H__
 
-#include <memory.h>
-#include <string.h>
-
 #pragma pack(push, 1)
 
 #include "cvector.h"

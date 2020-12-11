@@ -10,8 +10,8 @@ Import library class
 #ifndef _GEOM_H_
 #define _GEOM_H_
 
-#include "GEOS.h"
-#include "rdf.h"
+#include "Rdf.h"
+#include "geos.h"
 
 #define EPSILON 4e-7
 struct SAVAGE

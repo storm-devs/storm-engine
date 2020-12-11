@@ -1,20 +1,19 @@
 #ifndef __GEOMETRY_R__H__
 #define __GEOMETRY_R__H__
 
-#include "dx8render.h"
-#include "geometry.h"
+#include "dx9render.h"
 #include "vmodule_api.h"
+#include <geometry.h>
 
 //-------------------------------------------------------------------
 // animated vertices
 //-------------------------------------------------------------------
-class GEOMETRY : public VGEOMETRY
+class GEOMETRY final : public VGEOMETRY
 {
-    VDX8RENDER *RenderService;
+    VDX9RENDER *RenderService;
 
   public:
     GEOMETRY();
-    virtual ~GEOMETRY();
     bool Init();
     bool LoadState(ENTITY_STATE *state);
     GEOS *CreateGeometry(const char *file_name, const char *light_file_name, long flags, const char *lmPath);
@@ -30,23 +29,23 @@ class GEOMETRY : public VGEOMETRY
     void SetCausticMode(bool bSet = false);
 };
 
-class GEOM_SERVICE_R : public GEOM_SERVICE
+class GEOM_SERVICE_R final : public GEOM_SERVICE
 {
-    VDX8RENDER *RenderService;
+    static IDirect3DVertexDeclaration9 *vertexDecl_;
+
+    VDX9RENDER *RenderService;
     GEOS::ID CurentIndexBuffer;
     GEOS::ID CurentVertexBuffer;
-    dword CurentVertexBufferSize;
+    uint32_t CurentVertexBufferSize;
     bool bCaustic;
 
   public:
-    void SetRenderService(VDX8RENDER *render_service);
+    void SetRenderService(VDX9RENDER *render_service);
 
-    virtual ~GEOM_SERVICE_R();
-    GEOS::ID OpenFile(const char *fname);
-    int FileSize(GEOS::ID file);
-    void ReadFile(GEOS::ID file, void *data, long bytes);
-    long GetFilePointer(GEOS::ID file);
-    void CloseFile(GEOS::ID file);
+    HANDLE OpenFile(const char *fname);
+    int FileSize(HANDLE file);
+    void ReadFile(HANDLE file, void *data, long bytes);
+    void CloseFile(HANDLE file);
     void *malloc(long bytes);
     void free(void *ptr);
 

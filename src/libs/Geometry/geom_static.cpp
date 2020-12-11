@@ -7,69 +7,65 @@ Copyright (C) 2000, 2001 Nick Chirkov
 Comments:
 Import library main file
 ******************************************************************************/
-#include "..\\common_h\\memop.h"
 #include "geom.h"
-#include "vmodule_api.h"
-#include <stdio.h>
+#include <cstring>
 
 // create geometry func
-GEOS *_cdecl CreateGeometry(const char *fname, const char *lightname, GEOM_SERVICE &srv, long flags)
+GEOS *CreateGeometry(const char *fname, const char *lightname, GEOM_SERVICE &srv, long flags)
 {
-    return NEW GEOM(fname, lightname, srv, flags);
+    return new GEOM(fname, lightname, srv, flags);
 }
 
 // geometry constructor does all init
 GEOM::GEOM(const char *fname, const char *lightname, GEOM_SERVICE &_srv, long flags) : srv(_srv)
 {
-    long ltfl;
-    unsigned int *colData = 0;
-    int flsz = 0;
-    if (lightname != NULL)
+    unsigned int *colData = nullptr;
+    auto flsz = 0;
+    if (lightname != nullptr)
     {
-        ltfl = srv.OpenFile(lightname);
+        auto *ltfl = srv.OpenFile(lightname);
         flsz = srv.FileSize(ltfl);
         if (flsz > 0)
         {
-            colData = (unsigned int *)srv.malloc(flsz);
+            colData = static_cast<unsigned *>(srv.malloc(flsz));
             srv.ReadFile(ltfl, colData, flsz);
         }
         else
-            lightname = 0;
+            lightname = nullptr;
         srv.CloseFile(ltfl);
     }
 
-    long file = srv.OpenFile(fname);
+    auto *file = srv.OpenFile(fname);
     // read header
-    srv.ReadFile(file, &rhead, sizeof RDF_HEAD);
+    srv.ReadFile(file, &rhead, sizeof(RDF_HEAD));
     if (rhead.version != RDF_VERSION)
         throw "invalid version";
 
     // read names
-    globname = (char *)srv.malloc(rhead.name_size);
+    globname = static_cast<char *>(srv.malloc(rhead.name_size));
     srv.ReadFile(file, globname, rhead.name_size);
 
-    names = (long *)srv.malloc(rhead.names * sizeof(long));
+    names = static_cast<long *>(srv.malloc(rhead.names * sizeof(long)));
     srv.ReadFile(file, names, rhead.names * sizeof(long));
 
     // load textures
-    tname = (long *)srv.malloc(rhead.ntextures * sizeof(long));
-    tlookup = (long *)srv.malloc(rhead.ntextures * sizeof(long));
+    tname = static_cast<long *>(srv.malloc(rhead.ntextures * sizeof(long)));
+    tlookup = static_cast<long *>(srv.malloc(rhead.ntextures * sizeof(long)));
     srv.ReadFile(file, tname, rhead.ntextures * sizeof(long));
 
     // read materials
-    RDF_MATERIAL *rmat = (RDF_MATERIAL *)srv.malloc(sizeof RDF_MATERIAL * rhead.nmaterials);
-    srv.ReadFile(file, rmat, sizeof RDF_MATERIAL * rhead.nmaterials);
-    material = (MATERIAL *)srv.malloc(sizeof MATERIAL * rhead.nmaterials);
+    auto *rmat = static_cast<RDF_MATERIAL *>(srv.malloc(sizeof(RDF_MATERIAL) * rhead.nmaterials));
+    srv.ReadFile(file, rmat, sizeof(RDF_MATERIAL) * rhead.nmaterials);
+    material = static_cast<MATERIAL *>(srv.malloc(sizeof(MATERIAL) * rhead.nmaterials));
 
     // read lights
-    RDF_LIGHT *rlig = (RDF_LIGHT *)srv.malloc(sizeof RDF_LIGHT * rhead.nlights);
-    srv.ReadFile(file, rlig, sizeof RDF_LIGHT * rhead.nlights);
-    light = (LIGHT *)srv.malloc(sizeof LIGHT * rhead.nlights);
+    auto *rlig = static_cast<RDF_LIGHT *>(srv.malloc(sizeof(RDF_LIGHT) * rhead.nlights));
+    srv.ReadFile(file, rlig, sizeof(RDF_LIGHT) * rhead.nlights);
+    light = static_cast<LIGHT *>(srv.malloc(sizeof(LIGHT) * rhead.nlights));
     for (long l = 0; l < rhead.nlights; l++)
     {
-
         light[l].flags = rlig[l].flags;
-        light[l].type = (LIGHT_TYPE)rlig[l].type;
+        light[l].type = static_cast<LIGHT_TYPE>(rlig[l].type);
         light[l].name = &globname[rlig[l].name];
         light[l].r = rlig[l].r;
         light[l].g = rlig[l].g;
@@ -93,9 +89,9 @@ GEOM::GEOM(const char *fname, const char *lightname, GEOM_SERVICE &_srv, long fl
     srv.free(rlig);
 
     // read labels
-    RDF_LABEL *lab = (RDF_LABEL *)srv.malloc(sizeof RDF_LABEL * rhead.nlabels);
-    srv.ReadFile(file, lab, sizeof RDF_LABEL * rhead.nlabels);
-    label = (LABEL *)srv.malloc(sizeof LABEL * rhead.nlabels);
+    auto *lab = static_cast<RDF_LABEL *>(srv.malloc(sizeof(RDF_LABEL) * rhead.nlabels));
+    srv.ReadFile(file, lab, sizeof(RDF_LABEL) * rhead.nlabels);
+    label = static_cast<LABEL *>(srv.malloc(sizeof(LABEL) * rhead.nlabels));
     for (long lb = 0; lb < rhead.nlabels; lb++)
     {
         label[lb].flags = lab[lb].flags;
@@ -108,10 +104,10 @@ GEOM::GEOM(const char *fname, const char *lightname, GEOM_SERVICE &_srv, long fl
     srv.free(lab);
 
     // read objects
-    RDF_OBJECT *obj = (RDF_OBJECT *)srv.malloc(sizeof RDF_OBJECT * rhead.nobjects);
-    atriangles = (long *)srv.malloc(sizeof(long) * rhead.nobjects);
-    srv.ReadFile(file, obj, sizeof RDF_OBJECT * rhead.nobjects);
-    object = (OBJECT *)srv.malloc(sizeof OBJECT * rhead.nobjects);
+    auto *obj = static_cast<RDF_OBJECT *>(srv.malloc(sizeof(RDF_OBJECT) * rhead.nobjects));
+    atriangles = static_cast<long *>(srv.malloc(sizeof(long) * rhead.nobjects));
+    srv.ReadFile(file, obj, sizeof(RDF_OBJECT) * rhead.nobjects);
+    object = static_cast<OBJECT *>(srv.malloc(sizeof(OBJECT) * rhead.nobjects));
     for (long o = 0; o < rhead.nobjects; o++)
     {
         object[o].flags = obj[o].flags;
@@ -133,40 +129,41 @@ GEOM::GEOM(const char *fname, const char *lightname, GEOM_SERVICE &_srv, long fl
 
     // read triangles
     idx_buff = srv.CreateIndexBuffer(rhead.ntriangles * sizeof(RDF_TRIANGLE));
-    RDF_TRIANGLE *trg = (RDF_TRIANGLE *)srv.LockIndexBuffer(idx_buff);
-    srv.ReadFile(file, trg, sizeof RDF_TRIANGLE * rhead.ntriangles);
+    auto *trg = static_cast<RDF_TRIANGLE *>(srv.LockIndexBuffer(idx_buff));
+    srv.ReadFile(file, trg, sizeof(RDF_TRIANGLE) * rhead.ntriangles);
     srv.UnlockIndexBuffer(idx_buff);
 
-    int nvertices = 0;
+    auto nvertices = 0;
     // read vertex buffers
-    RDF_VERTEXBUFF *rvb = (RDF_VERTEXBUFF *)srv.malloc(rhead.nvrtbuffs * sizeof RDF_VERTEXBUFF);
+    auto *rvb = static_cast<RDF_VERTEXBUFF *>(srv.malloc(rhead.nvrtbuffs * sizeof(RDF_VERTEXBUFF)));
     srv.ReadFile(file, rvb, rhead.nvrtbuffs * sizeof(RDF_VERTEXBUFF));
-    vbuff = (VERTEX_BUFFER *)srv.malloc(rhead.nvrtbuffs * sizeof(VERTEX_BUFFER));
-    for (long v = 0; v < rhead.nvrtbuffs; v++)
+    vbuff = static_cast<VERTEX_BUFFER *>(srv.malloc(rhead.nvrtbuffs * sizeof(VERTEX_BUFFER)));
+    long v;
+    for (v = 0; v < rhead.nvrtbuffs; v++)
     {
         vbuff[v].type = rvb[v].type;
         vbuff[v].stride = sizeof(RDF_VERTEX0) + (rvb[v].type & 3) * 8 + (rvb[v].type >> 2) * 8;
         vbuff[v].size = rvb[v].size;
         vbuff[v].nverts = vbuff[v].size / vbuff[v].stride;
-        vbuff[v].dev_buff = srv.CreateVertexBuffer(rvb[v].type, rvb[v].size);
+        vbuff[v].dev_buff = vbuff[v].nverts > 0 ? srv.CreateVertexBuffer(rvb[v].type, rvb[v].size) : -1;
         nvertices += vbuff[v].nverts;
     }
     srv.free(rvb);
     // read vertices
-    unsigned int *_colData = colData;
-    if (lightname != NULL && flsz / 4 != nvertices)
+    auto *_colData = colData;
+    if (lightname != nullptr && flsz / 4 != nvertices)
     {
         srv.free(colData);
-        lightname = NULL;
+        lightname = nullptr;
     }
-    for (long v = 0; v < rhead.nvrtbuffs; v++)
+    for (v = 0; v < rhead.nvrtbuffs; v++)
     {
-        RDF_VERTEX0 *vrt = (RDF_VERTEX0 *)srv.LockVertexBuffer(vbuff[v].dev_buff);
+        auto *vrt = static_cast<RDF_VERTEX0 *>(srv.LockVertexBuffer(vbuff[v].dev_buff));
         srv.ReadFile(file, vrt, vbuff[v].size);
         for (long vr = 0; vr < vbuff[v].nverts; vr++)
         {
-            RDF_VERTEX0 *prv = (RDF_VERTEX0 *)(long(vrt) + vbuff[v].stride * vr);
-            if (lightname != NULL)
+            auto *prv = (RDF_VERTEX0 *)((uint8_t *)(vrt) + vbuff[v].stride * vr);
+            if (lightname != nullptr)
                 prv->color = *_colData++;
             // prv->norm.x = 0.0f;
         }
@@ -179,25 +176,21 @@ GEOM::GEOM(const char *fname, const char *lightname, GEOM_SERVICE &_srv, long fl
     if (rhead.flags & FLAGS_BSP_PRESENT)
     {
         RDF_BSPHEAD bhead;
-        bhead.nnodes = 0;
-        bhead.nvertices = 0;
-        bhead.ntriangles = 0;
-
         srv.ReadFile(file, &bhead, sizeof(RDF_BSPHEAD));
 
-        sroot = (BSP_NODE *)srv.malloc(bhead.nnodes * sizeof(BSP_NODE));
+        sroot = static_cast<BSP_NODE *>(srv.malloc(bhead.nnodes * sizeof(BSP_NODE)));
         srv.ReadFile(file, sroot, bhead.nnodes * sizeof(BSP_NODE));
 
-        vrt = (CVECTOR *)srv.malloc(bhead.nvertices * sizeof(RDF_BSPVERTEX));
+        vrt = static_cast<CVECTOR *>(srv.malloc(bhead.nvertices * sizeof(RDF_BSPVERTEX)));
         srv.ReadFile(file, vrt, bhead.nvertices * sizeof(RDF_BSPVERTEX));
 
-        btrg = (RDF_BSPTRIANGLE *)srv.malloc(bhead.ntriangles * sizeof(RDF_BSPTRIANGLE));
+        btrg = static_cast<RDF_BSPTRIANGLE *>(srv.malloc(bhead.ntriangles * sizeof(RDF_BSPTRIANGLE)));
         srv.ReadFile(file, btrg, bhead.ntriangles * sizeof(RDF_BSPTRIANGLE));
     }
 
     srv.CloseFile(file);
 
-    if (lightname != NULL)
+    if (lightname != nullptr)
         srv.free(colData);
 
     for (long t = 0; t < rhead.ntextures; t++)
@@ -266,11 +259,11 @@ void GEOM::Draw(const PLANE *pl, long np, MATERIAL_FUNC mtf) const
         if (!(object[o].flags & VISIBLE))
             continue;
         // clip by external planes
-        long cp = 0;
+        long cp;
         for (cp = 0; cp < np; cp++)
         {
-            float dist = object[o].center.x * pl[cp].nrm.x + object[o].center.y * pl[cp].nrm.y +
-                         object[o].center.z * pl[cp].nrm.z - pl[cp].d;
+            const auto dist = object[o].center.x * pl[cp].nrm.x + object[o].center.y * pl[cp].nrm.y +
+                              object[o].center.z * pl[cp].nrm.z - pl[cp].d;
             if (dist > object[o].radius)
                 break;
             // if(dist<-object[o].radius)	break;
@@ -278,10 +271,10 @@ void GEOM::Draw(const PLANE *pl, long np, MATERIAL_FUNC mtf) const
         if (cp < np)
             continue;
 
-        VERTEX_BUFFER *vb = &vbuff[object[o].vertex_buff];
+        auto *const vb = &vbuff[object[o].vertex_buff];
         srv.SetVertexBuffer(vb->stride, vb->dev_buff);
         srv.SetMaterial(material[object[o].material]);
-        if (mtf != 0)
+        if (mtf != nullptr)
             mtf(material[object[o].material]);
         srv.DrawIndexedPrimitive(object[o].start_vertex, object[o].num_vertices, vb->stride, object[o].striangle * 3,
                                  object[o].ntriangles);
@@ -307,24 +300,24 @@ bool GEOM::GetCollisionDetails(TRACE_INFO &ti) const
     vindex[2] =
         (btrg[traceid].vindex[2][0] << 0) | (btrg[traceid].vindex[2][1] << 8) | (btrg[traceid].vindex[2][2] << 16);
 
-    DVECTOR ve = dst - src;
-    DVECTOR a = vrt[vindex[1]] - vrt[vindex[0]];
-    DVECTOR b = vrt[vindex[2]] - vrt[vindex[0]];
-    DVECTOR pvec = ve ^ b;
-    double det = a | pvec;
-    double invdet = 1.0 / det;
-    DVECTOR c = src - vrt[vindex[0]];
+    const auto ve = dst - src;
+    const DVECTOR a = vrt[vindex[1]] - vrt[vindex[0]];
+    const DVECTOR b = vrt[vindex[2]] - vrt[vindex[0]];
+    const auto pvec = ve ^ b;
+    const double det = a | pvec;
+    const double invdet = 1.0 / det;
+    const DVECTOR c = src - vrt[vindex[0]];
 
-    ti.a = float((c | pvec) * invdet);
-    ti.b = float((ve | (c ^ a)) * invdet);
+    ti.a = static_cast<float>((c | pvec) * invdet);
+    ti.b = static_cast<float>((ve | (c ^ a)) * invdet);
 
     // plane info
-    DVECTOR nrm = !(a ^ b);
-    double pldist = nrm | vrt[vindex[0]];
-    ti.plane.nrm.x = float(nrm.x);
-    ti.plane.nrm.y = float(nrm.y);
-    ti.plane.nrm.z = float(nrm.z);
-    ti.plane.d = float(pldist);
+    const DVECTOR nrm = !(a ^ b);
+    const double pldist = nrm | vrt[vindex[0]];
+    ti.plane.nrm.x = static_cast<float>(nrm.x);
+    ti.plane.nrm.y = static_cast<float>(nrm.y);
+    ti.plane.nrm.z = static_cast<float>(nrm.z);
+    ti.plane.d = static_cast<float>(pldist);
 
     // object and triangle
     for (long o = 0; o < rhead.nobjects; o++)
@@ -371,6 +364,7 @@ void GEOM::SetObj(long o, const OBJECT &ob)
     object[o].flags = ob.flags;
     object[o].material = ob.material;
 }
+
 void GEOM::GetObj(long o, OBJECT &ob) const
 {
     ob = object[o];
@@ -409,16 +403,26 @@ long GEOM::GetTexture(long tx) const
 {
     return tlookup[tx];
 }
+
 const char *GEOM::GetTextureName(long tx) const
 {
     return &globname[tname[tx]];
 }
 
+// ~!~
+// пока оставлю так
+// потом будем думать
+// TODO: ptr можно убрать из скриптов
+auto unbelievable_workaround(void *ptr)
+{
+    return reinterpret_cast<unsigned long long>(ptr) & 0x7FFFFFFF;
+}
+
 long GEOM::FindName(const char *name) const
 {
     for (long n = 0; n < rhead.names; n++)
-        if (strcmpi(&globname[names[n]], name) == 0)
-            return long(&globname[names[n]]);
+        if (_strcmpi(&globname[names[n]], name) == 0)
+            return unbelievable_workaround(&globname[names[n]]);
     return -1;
 }
 
@@ -428,14 +432,15 @@ long GEOM::FindName(const char *name) const
 long GEOM::FindLabelN(long start_index, long name_id)
 {
     for (; start_index < rhead.nlabels; start_index++)
-        if (long(label[start_index].name) == name_id)
+        if (unbelievable_workaround(label[start_index].name) == name_id)
             return start_index;
     return -1;
 }
+
 long GEOM::FindLabelG(long start_index, long name_id)
 {
     for (; start_index < rhead.nlabels; start_index++)
-        if (long(label[start_index].group_name) == name_id)
+        if (unbelievable_workaround(label[start_index].group_name) == name_id)
             return start_index;
     return -1;
 }
@@ -449,6 +454,7 @@ void GEOM::GetLabel(long l, LABEL &lb) const
     memcpy(&lb.weight[0], &label[l].weight[0], sizeof(lb.weight));
     memcpy(&lb.m[0][0], &label[l].m[0][0], sizeof(lb.m));
 }
+
 void GEOM::SetLabel(long l, const LABEL &lb)
 {
     label[l].flags = lb.flags;
@@ -456,51 +462,58 @@ void GEOM::SetLabel(long l, const LABEL &lb)
     memcpy(&label[l].weight[0], &lb.weight[0], sizeof(lb.weight));
     memcpy(&label[l].m[0][0], &lb.m[0][0], sizeof(lb.m));
 }
+
 //--------------------------------------------------
 // object functions
 //--------------------------------------------------
 long GEOM::FindObjN(long start_index, long name_id)
 {
     for (; start_index < rhead.nobjects; start_index++)
-        if (long(object[start_index].name) == name_id)
+        if (unbelievable_workaround(object[start_index].name) == name_id)
             return start_index;
     return -1;
 }
+
 long GEOM::FindObjG(long start_index, long name_id)
 {
     for (; start_index < rhead.nobjects; start_index++)
-        if (long(object[start_index].group_name) == name_id)
+        if (unbelievable_workaround(object[start_index].group_name) == name_id)
             return start_index;
     return -1;
 }
+
 long GEOM::FindMaterialN(long start_index, long name_id)
 {
     for (; start_index < rhead.nmaterials; start_index++)
-        if (long(material[start_index].name) == name_id)
+        if (unbelievable_workaround(material[start_index].name) == name_id)
             return start_index;
     return -1;
 }
+
 long GEOM::FindMaterialG(long start_index, long name_id)
 {
     for (; start_index < rhead.nmaterials; start_index++)
-        if (long(material[start_index].group_name) == name_id)
+        if (unbelievable_workaround(material[start_index].group_name) == name_id)
             return start_index;
     return -1;
 }
+
 long GEOM::FindLightN(long start_index, long name_id)
 {
     for (; start_index < rhead.nlights; start_index++)
-        if (long(light[start_index].name) == name_id)
+        if (unbelievable_workaround(light[start_index].name) == name_id)
             return start_index;
     return -1;
 }
+
 long GEOM::FindLightG(long start_index, long name_id)
 {
     for (; start_index < rhead.nlights; start_index++)
-        if (long(light[start_index].group_name) == name_id)
+        if (unbelievable_workaround(light[start_index].group_name) == name_id)
             return start_index;
     return -1;
 }
+
 void GEOM::SetLight(long l, const LIGHT &lt)
 {
     light[l].atten[0] = lt.atten[0];
@@ -518,13 +531,15 @@ void GEOM::SetLight(long l, const LIGHT &lt)
     light[l].range = lt.range;
     light[l].type = lt.type;
 }
+
 long GEOM::FindTexture(long start_index, long name_id)
 {
     for (; start_index < rhead.ntextures; start_index++)
-        if (long(globname[tlookup[start_index]]) == name_id)
+        if (globname[tlookup[start_index]] == name_id)
             return start_index;
     return -1;
 }
+
 void GEOM::GetLight(long l, LIGHT &lt) const
 {
     lt = light[l];

@@ -1,11 +1,11 @@
 project(geometry)
 
-add_library(${PROJECT_NAME} MODULE
+add_library(${PROJECT_NAME} STATIC
+	collide.cpp
+	geom.h
+	geom_static.cpp
 	geometry_R.h
 	geometry.cpp
-	geom_static.cpp
-	geom.h
-	collide.cpp
 	Rdf.h
 )
 
