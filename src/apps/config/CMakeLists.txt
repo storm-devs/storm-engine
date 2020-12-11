@@ -1,4 +1,4 @@
-project(setup)
+project(config)
 
 add_executable(${PROJECT_NAME} WIN32
 	Setup.cpp
@@ -8,12 +8,12 @@ add_executable(${PROJECT_NAME} WIN32
 	StdAfx.cpp
 	StdAfx.h
 
-	${Storm_RESOURCE_DIR}/setup/setup.rc
+	${STORM_RESOURCE_DIR}/setup/setup.rc
 )
 
 target_include_directories(${PROJECT_NAME}
 	PRIVATE
-	${Storm_RESOURCE_DIR}/setup
+	${STORM_RESOURCE_DIR}/setup
 	)
 
 target_link_options(${PROJECT_NAME} PRIVATE /ENTRY:"wWinMainCRTStartup")

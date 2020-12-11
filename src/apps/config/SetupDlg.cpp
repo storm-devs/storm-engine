@@ -675,11 +675,9 @@ void CSetupDlg::OnSave()
 BOOL CSetupDlg::OnToolTipNotify(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 {
     TOOLTIPTEXT *pTTT = (TOOLTIPTEXT *)pNMHDR;
-    UINT nID = pNMHDR->idFrom;
     if (pTTT->uFlags & TTF_IDISHWND)
     {
-        // idFrom is actually the HWND of the tool
-        nID = ::GetDlgCtrlID((HWND)nID);
+        int nID = ::GetDlgCtrlID(pNMHDR->hwndFrom);
         if (nID)
         {
             pTTT->lpszText = MAKEINTRESOURCE(nID);

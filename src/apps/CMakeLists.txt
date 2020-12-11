@@ -1,2 +1,2 @@
-add_subdirectory(ENGINE)
-add_subdirectory(Setup)
+add_subdirectory(engine)
+add_subdirectory(config)
