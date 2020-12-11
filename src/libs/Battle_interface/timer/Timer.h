@@ -1,22 +1,38 @@
 #ifndef _BI_TIMER_H_
 #define _BI_TIMER_H_
 
-#include "common_defines.h"
-#include "dx8render.h"
-#include "templates\string.h"
+#include "../bi_defines.h"
+#include "Entity.h"
+#include <string>
 
 class BIImageRender;
 class IBIImage;
 
-class BITimer : public ENTITY
+class BITimer : public Entity
 {
   public:
     BITimer();
     ~BITimer();
 
-    bool Init();
-    void Realize(dword delta_time);
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    bool Init() override;
+    void Realize(uint32_t delta_time);
+    uint64_t ProcessMessage(MESSAGE &message) override;
+
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+            // case Stage::execute:
+            //	Execute(delta); break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
 
   protected:
     bool ReadAndCreate();
@@ -29,9 +45,9 @@ class BITimer : public ENTITY
   protected: // data
     float m_fCurTimerCounter;
     float m_fMaxTimerCounter;
-    string m_sEventName;
+    std::string m_sEventName;
 
-    VDX8RENDER *m_pRender;
+    VDX9RENDER *m_pRender;
     BIImageRender *m_pImgRndr;
     IBIImage *m_pBackImage;
     IBIImage *m_pForeImage;

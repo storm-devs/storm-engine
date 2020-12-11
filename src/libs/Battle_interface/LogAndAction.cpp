@@ -1,9 +1,9 @@
 #include "LogAndAction.h"
-#include "log_msg.h"
-#include "matrix.h"
+#include "../../Shared/battle_interface/log_msg.h"
+#include "vmodule_api.h"
 #include <stdio.h>
 
-static ENTITY_ID g_ILogAndActions;
+static entid_t g_ILogAndActions;
 
 #define BI_FAST_COMMANDS "BIFastCommand"
 
@@ -11,17 +11,17 @@ static ENTITY_ID g_ILogAndActions;
 
 void CalculateTexturePos(FRECT &texRect, int hort, int vert, int numt)
 {
-    int vn = numt / hort;
-    int hn = numt - vn * hort;
-    texRect.right = (texRect.left = (float)hn / hort) + 1.f / hort;
-    texRect.bottom = (texRect.top = (float)vn / vert) + 1.f / vert;
+    const auto vn = numt / hort;
+    const auto hn = numt - vn * hort;
+    texRect.right = (texRect.left = static_cast<float>(hn) / hort) + 1.f / hort;
+    texRect.bottom = (texRect.top = static_cast<float>(vn) / vert) + 1.f / vert;
 }
 
 ILogAndActions::ILogAndActions()
 {
-    rs = NULL;
+    rs = nullptr;
     m_idIconTexture = -1;
-    m_sRoot = NULL;
+    m_sRoot = nullptr;
     m_fontID = -1;
     m_fFontScale = 1.f;
     m_bShowActiveCommand = false;
@@ -40,9 +40,9 @@ ILogAndActions::~ILogAndActions()
 
 bool ILogAndActions::Init()
 {
-    if ((rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render")) == NULL)
+    if ((rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"))) == nullptr)
     {
-        SE_THROW_MSG("Can`t create render service");
+        throw std::exception("Can`t create render service");
     }
     D3DVIEWPORT9 vp;
     rs->GetViewport(&vp);
@@ -52,11 +52,11 @@ bool ILogAndActions::Init()
     api->Event("SetWindowSize", "lll", vp.Width, vp.Height, true);
 #endif
 
-    g_ILogAndActions = GetID();
+    g_ILogAndActions = GetId();
     return true;
 }
 
-void ILogAndActions::Execute(dword delta_time)
+void ILogAndActions::Execute(uint32_t delta_time)
 {
     if (m_bDontShowAll)
         return;
@@ -67,20 +67,20 @@ void ILogAndActions::Execute(dword delta_time)
         api->Event("BI_FastCommand", "s", m_sActionName);
 
     // погасим строки
-    float colDelta = delta_time * m_fBlendSpeed;
-    STRING_DESCR *prev_sd = NULL;
-    STRING_DESCR *sd = NULL;
-    for (sd = m_sRoot; sd != NULL;)
+    const auto colDelta = delta_time * m_fBlendSpeed;
+    STRING_DESCR *prev_sd = nullptr;
+    STRING_DESCR *sd;
+    for (sd = m_sRoot; sd != nullptr;)
     {
         if (sd->alpha <= 255.f)
             if ((sd->alpha -= colDelta) <= 0)
             {
-                if (prev_sd == NULL)
+                if (prev_sd == nullptr)
                     m_sRoot = sd->next;
                 else
                     prev_sd->next = sd->next;
-                PTR_DELETE(sd->str);
-                PTR_DELETE(sd);
+                STORM_DELETE(sd->str);
+                STORM_DELETE(sd);
                 sd = m_sRoot;
                 continue;
             }
@@ -89,9 +89,9 @@ void ILogAndActions::Execute(dword delta_time)
     }
 
     // пододвинуть строки на свободные позиции
-    float delta = delta_time * m_fShiftSpeed;
-    float top = 0.f;
-    for (sd = m_sRoot; sd != null; sd = sd->next)
+    const auto delta = delta_time * m_fShiftSpeed;
+    auto top = 0.f;
+    for (sd = m_sRoot; sd != nullptr; sd = sd->next)
     {
         if (sd->offset > top)
         {
@@ -103,33 +103,34 @@ void ILogAndActions::Execute(dword delta_time)
     }
 }
 
-dword _cdecl ILogAndActions::ProcessMessage(MESSAGE &message)
+uint64_t ILogAndActions::ProcessMessage(MESSAGE &message)
 {
     switch (message.Long())
     {
     case LOG_ADD_STRING: {
-        bool stringImmortal = message.Long() != 0;
+        const auto stringImmortal = message.Long() != 0;
         char param[256];
         message.String(sizeof(param) - 1, param);
         if (stringImmortal)
         {
             // найдем последний элемент списка
-            STRING_DESCR *last = NULL;
-            for (last = m_sRoot; last != null; last = last->next)
+            STRING_DESCR *last;
+            for (last = m_sRoot; last != nullptr; last = last->next)
                 if (last->alpha > 255.f)
                     break;
-            if (last == null)
+            if (last == nullptr)
                 SetString(param, true);
             else
             {
-                PTR_DELETE(last->str);
+                STORM_DELETE(last->str);
                 if (param[0] != 0)
                 {
-                    if ((last->str = NEW char[strlen(param) + 1]) == null)
+                    const auto len = strlen(param) + 1;
+                    if ((last->str = new char[len]) == nullptr)
                     {
-                        SE_THROW_MSG("allocate memory error");
+                        throw std::exception("allocate memory error");
                     }
-                    strcpy(last->str, param);
+                    strcpy_s(last->str, len, param);
                 }
                 else
                 {
@@ -137,14 +138,14 @@ dword _cdecl ILogAndActions::ProcessMessage(MESSAGE &message)
                         m_sRoot = m_sRoot->next;
                     else
                     {
-                        for (STRING_DESCR *prev = m_sRoot; prev != null && prev->next != last; prev = prev->next)
-                            if (prev != null && prev->next == last)
+                        for (auto *prev = m_sRoot; prev != nullptr && prev->next != last; prev = prev->next)
+                            if (prev != nullptr && prev->next == last) //~!~
                             {
                                 prev->next = last->next;
                                 break;
                             }
                     }
-                    PTR_DELETE(last);
+                    STORM_DELETE(last);
                 }
             }
         }
@@ -160,15 +161,15 @@ dword _cdecl ILogAndActions::ProcessMessage(MESSAGE &message)
     break;
     case LOG_AND_ACTIONS_INIT: {
         m_sOldActionName[0] = '0';
-        long bfc = message.Long();
-        long bls = message.Long();
+        const auto bfc = message.Long();
+        const auto bls = message.Long();
         Create(bfc != 0, bls != 0);
     }
     break;
     case LOG_AND_ACTIONS_CHANGE: {
         m_sOldActionName[0] = '0';
-        long bfc = message.Long();
-        long bls = message.Long();
+        const auto bfc = message.Long();
+        const auto bls = message.Long();
         ActionChange(bfc != 0, bls != 0);
     }
     break;
@@ -176,18 +177,18 @@ dword _cdecl ILogAndActions::ProcessMessage(MESSAGE &message)
         m_bDontShowAll = (message.Long() == 0);
         break;
     case LI_CLEAR_STRINGS:
-        while (m_sRoot != NULL)
+        while (m_sRoot != nullptr)
         {
-            STRING_DESCR *p = m_sRoot;
+            auto *const p = m_sRoot;
             m_sRoot = p->next;
-            PTR_DELETE(p->str);
+            STORM_DELETE(p->str);
             delete p;
         }
         break;
     case LI_OTHER_MSG: {
         char param[256];
         message.String(sizeof(param) - 1, param);
-        if (stricmp(param, "SetTimeScale") == 0)
+        if (_stricmp(param, "SetTimeScale") == 0)
         {
             api->SetTimeScale(message.Float());
         }
@@ -197,7 +198,7 @@ dword _cdecl ILogAndActions::ProcessMessage(MESSAGE &message)
     return 0;
 }
 
-void ILogAndActions::Realize(dword delta_time)
+void ILogAndActions::Realize(uint32_t delta_time)
 {
 #ifndef _XBOX
 #ifdef SPECIAL_VERSION
@@ -221,14 +222,14 @@ void ILogAndActions::Realize(dword delta_time)
         {
             nA = (long)(255.f * (2500 - m_nTimeCounter) / 500.f);
         }
-        rs->ExtPrint(m_fontID, ARGB(nA, 255, 255, 255), 0, ALIGN_CENTER, false, 3.9f, 800, 600, 400, 300,
-                     "ВЕРСИЯ ДЛЯ ПРЕССЫ");
+        rs->ExtPrint(m_fontID, ARGB(nA, 255, 255, 255), 0, PR_ALIGN_CENTER, false, 3.9f, 800, 600, 400, 300,
+                     "¬≈–—»я ƒЋя ѕ–≈——џ");
     }
 #endif
     if (api->Controls->GetDebugAsyncKeyState('K') < 0)
         return;
 #endif
-    if (rs == NULL)
+    if (rs == nullptr)
         return;
     if (m_bDontShowAll)
         return;
@@ -256,28 +257,28 @@ void ILogAndActions::Realize(dword delta_time)
     // Show log strings
     if (m_bShowLogStrings)
     {
-        if (m_sRoot == NULL)
+        if (m_sRoot == nullptr)
             return;
-        STRING_DESCR *ptr = m_sRoot;
-        long nAlign = ALIGN_LEFT;
-        long strX = m_nWindowLeft;
+        auto *ptr = m_sRoot;
+        long nAlign = PR_ALIGN_LEFT;
+        auto strX = m_nWindowLeft;
         if (m_nWindowRight >= 0)
         {
             strX = m_nWindowRight;
-            nAlign = ALIGN_RIGHT;
+            nAlign = PR_ALIGN_RIGHT;
         }
-        long strY = m_nStringBegin;
-        while (ptr != NULL)
+        auto strY = m_nStringBegin;
+        while (ptr != nullptr)
         {
             // rs->Print(m_fontID,m_dwColor,strX,strY,"%s",ptr->str);
             if (ptr->alpha <= 255.f)
                 // rs->Print(m_fontID,m_dwColor+(long(ptr->alpha)<<24),strX,m_nWindowUp+(long)ptr->offset,"%s",ptr->str);
-                rs->ExtPrint(m_fontID, m_dwColor + (long(ptr->alpha) << 24), 0, nAlign, true, m_fFontScale, 0, 0, strX,
-                             m_nWindowUp + (long)ptr->offset, "%s", ptr->str);
+                rs->ExtPrint(m_fontID, m_dwColor + (static_cast<long>(ptr->alpha) << 24), 0, nAlign, true, m_fFontScale,
+                             0, 0, strX, m_nWindowUp + static_cast<long>(ptr->offset), "%s", ptr->str);
             else
                 // rs->Print(m_fontID,m_dwColor+0xFF000000,strX,m_nWindowUp+(long)ptr->offset,"%s",ptr->str);
                 rs->ExtPrint(m_fontID, m_dwColor + 0xFF000000, 0, nAlign, true, m_fFontScale, 0, 0, strX,
-                             m_nWindowUp + (long)ptr->offset, "%s", ptr->str);
+                             m_nWindowUp + static_cast<long>(ptr->offset), "%s", ptr->str);
             strY += m_nStringOffset;
             ptr = ptr->next;
         }
@@ -289,9 +290,9 @@ void ILogAndActions::Create(bool bFastComShow, bool bLogStringShow)
     m_bShowActiveCommand = bFastComShow;
     m_bShowLogStrings = bLogStringShow;
 
-    // Установить параметры для иконки активного действия
-    ATTRIBUTES *pA = api->Entity_GetAttributeClass(&g_ILogAndActions, "ActiveActions");
-    if (pA != NULL)
+    // ”становить параметры дл€ иконки активного действи€
+    auto *pA = api->Entity_GetAttributeClass(g_ILogAndActions, "ActiveActions");
+    if (pA != nullptr)
     {
         m_idIconTexture = rs->TextureCreate(pA->GetAttribute("TextureName"));
         m_horzDiv = pA->GetAttributeAsDword("horzQ", 1);
@@ -314,21 +315,21 @@ void ILogAndActions::Create(bool bFastComShow, bool bLogStringShow)
         m_nIconLeft = 0;
         m_nIconUp = 0;
     }
-    // построить прямоугольник для отрисовки активного действия
+    // построить пр€моугольник дл€ отрисовки активного действи€
     m_IconVertex[0].w = m_IconVertex[1].w = m_IconVertex[2].w = m_IconVertex[3].w = .5f;
     m_IconVertex[0].pos.z = m_IconVertex[1].pos.z = m_IconVertex[2].pos.z = m_IconVertex[3].pos.z = 1.f;
-    m_IconVertex[0].pos.x = m_IconVertex[1].pos.x = (float)m_nIconLeft;
-    m_IconVertex[2].pos.x = m_IconVertex[3].pos.x = float(m_nIconLeft + m_nIconWidth);
-    m_IconVertex[0].pos.y = m_IconVertex[2].pos.y = (float)m_nIconUp;
-    m_IconVertex[1].pos.y = m_IconVertex[3].pos.y = float(m_nIconUp + m_nIconHeight);
+    m_IconVertex[0].pos.x = m_IconVertex[1].pos.x = static_cast<float>(m_nIconLeft);
+    m_IconVertex[2].pos.x = m_IconVertex[3].pos.x = static_cast<float>(m_nIconLeft + m_nIconWidth);
+    m_IconVertex[0].pos.y = m_IconVertex[2].pos.y = static_cast<float>(m_nIconUp);
+    m_IconVertex[1].pos.y = m_IconVertex[3].pos.y = static_cast<float>(m_nIconUp + m_nIconHeight);
     m_IconVertex[0].tu = m_IconVertex[1].tu = 0.f;
-    m_IconVertex[2].tu = m_IconVertex[3].tu = 1.f / (float)m_horzDiv;
+    m_IconVertex[2].tu = m_IconVertex[3].tu = 1.f / static_cast<float>(m_horzDiv);
     m_IconVertex[0].tv = m_IconVertex[2].tv = 0.f;
-    m_IconVertex[1].tv = m_IconVertex[3].tv = 1.f / (float)m_vertDiv;
+    m_IconVertex[1].tv = m_IconVertex[3].tv = 1.f / static_cast<float>(m_vertDiv);
 
-    // установить параметры для строк прошедших действий
-    pA = _CORE_API->Entity_GetAttributeClass(&g_ILogAndActions, "Log");
-    if (pA != NULL)
+    // установить параметры дл€ строк прошедших действий
+    pA = api->Entity_GetAttributeClass(g_ILogAndActions, "Log");
+    if (pA != nullptr)
     {
         m_nWindowWidth = pA->GetAttributeAsDword("width", 200);
         m_nWindowHeight = pA->GetAttributeAsDword("height", 128);
@@ -365,12 +366,12 @@ void ILogAndActions::ActionChange(bool bFastComShow, bool bLogStringShow)
 
     m_bThatRealAction = false;
 
-    // Удалим старые параметры
+    // ”далим старые параметры
     TEXTURE_RELEASE(rs, m_idIconTexture);
 
-    // Установить параметры для иконки активного действия
-    ATTRIBUTES *pA = _CORE_API->Entity_GetAttributeClass(&g_ILogAndActions, "ActiveActions");
-    if (pA != NULL)
+    // ”становить параметры дл€ иконки активного действи€
+    ATTRIBUTES *pA = api->Entity_GetAttributeClass(g_ILogAndActions, "ActiveActions");
+    if (pA != nullptr)
     {
         m_idIconTexture = rs->TextureCreate(pA->GetAttribute("TextureName"));
         m_horzDiv = pA->GetAttributeAsDword("horzQ", 1);
@@ -393,17 +394,17 @@ void ILogAndActions::ActionChange(bool bFastComShow, bool bLogStringShow)
         m_nIconLeft = 0;
         m_nIconUp = 0;
     }
-    // построить прямоугольник для отрисовки активного действия
+    // построить пр€моугольник дл€ отрисовки активного действи€
     m_IconVertex[0].w = m_IconVertex[1].w = m_IconVertex[2].w = m_IconVertex[3].w = .5f;
     m_IconVertex[0].pos.z = m_IconVertex[1].pos.z = m_IconVertex[2].pos.z = m_IconVertex[3].pos.z = 1.f;
-    m_IconVertex[0].pos.x = m_IconVertex[1].pos.x = (float)m_nIconLeft;
-    m_IconVertex[2].pos.x = m_IconVertex[3].pos.x = float(m_nIconLeft + m_nIconWidth);
-    m_IconVertex[0].pos.y = m_IconVertex[2].pos.y = (float)m_nIconUp;
-    m_IconVertex[1].pos.y = m_IconVertex[3].pos.y = float(m_nIconUp + m_nIconHeight);
+    m_IconVertex[0].pos.x = m_IconVertex[1].pos.x = static_cast<float>(m_nIconLeft);
+    m_IconVertex[2].pos.x = m_IconVertex[3].pos.x = static_cast<float>(m_nIconLeft + m_nIconWidth);
+    m_IconVertex[0].pos.y = m_IconVertex[2].pos.y = static_cast<float>(m_nIconUp);
+    m_IconVertex[1].pos.y = m_IconVertex[3].pos.y = static_cast<float>(m_nIconUp + m_nIconHeight);
     m_IconVertex[0].tu = m_IconVertex[1].tu = 0.f;
-    m_IconVertex[2].tu = m_IconVertex[3].tu = 1.f / (float)m_horzDiv;
+    m_IconVertex[2].tu = m_IconVertex[3].tu = 1.f / static_cast<float>(m_horzDiv);
     m_IconVertex[0].tv = m_IconVertex[2].tv = 0.f;
-    m_IconVertex[1].tv = m_IconVertex[3].tv = 1.f / (float)m_vertDiv;
+    m_IconVertex[1].tv = m_IconVertex[3].tv = 1.f / static_cast<float>(m_vertDiv);
 }
 
 void ILogAndActions::Release()
@@ -411,57 +412,58 @@ void ILogAndActions::Release()
     TEXTURE_RELEASE(rs, m_idIconTexture);
 
     rs->UnloadFont(m_fontID);
-    while (m_sRoot != NULL)
+    while (m_sRoot != nullptr)
     {
         STRING_DESCR *p = m_sRoot;
         m_sRoot = p->next;
-        PTR_DELETE(p->str);
+        STORM_DELETE(p->str);
         delete p;
     }
     m_ActionHint1.Release();
     m_ActionHint2.Release();
-    rs = NULL;
+    rs = nullptr;
 }
 
 void ILogAndActions::SetString(char *str, bool immortal)
 {
-    if (str == NULL)
+    if (str == nullptr)
         return;
 
     // найдем последний элемент списка
     STRING_DESCR *last = m_sRoot;
-    if (last != NULL)
-        while (last->next != NULL)
+    if (last != nullptr)
+        while (last->next != nullptr)
             last = last->next;
 
-    // Возхврат если такая строка уже есть и она последняя
-    if (last != null && last->str != null && stricmp(last->str, str) == 0)
+    // ¬озхврат если така€ строка уже есть и она последн€€
+    if (last != nullptr && last->str != nullptr && _stricmp(last->str, str) == 0)
         return;
 
     // создать новый дескриптор строки
-    STRING_DESCR *newDescr = NEW STRING_DESCR;
-    if (newDescr == NULL)
+    auto *newDescr = new STRING_DESCR;
+    if (newDescr == nullptr)
     {
-        SE_THROW_MSG("Allocate memory error");
+        throw std::exception("Allocate memory error");
     }
     // он будет последним в списке
-    newDescr->next = NULL;
+    newDescr->next = nullptr;
     // занесем в него заданную строку
-    if ((newDescr->str = NEW char[strlen(str) + 1]) == NULL)
+    const auto len = strlen(str) + 1;
+    if ((newDescr->str = new char[len]) == nullptr)
     {
-        SE_THROW_MSG("Allocate memory error");
+        throw std::exception("Allocate memory error");
     }
-    strcpy(newDescr->str, str);
-    // Поставим максимальную видимость
+    strcpy_s(newDescr->str, len, str);
+    // ѕоставим максимальную видимость
     if (immortal)
         newDescr->alpha = 10000.f;
     else
         newDescr->alpha = 255.f;
 
     // если список пустой, то ставим нашу строку как корневую
-    if (last == NULL)
+    if (last == nullptr)
     {
-        newDescr->offset = (float)m_nStringBegin;
+        newDescr->offset = static_cast<float>(m_nStringBegin);
         m_sRoot = newDescr;
     }
     // иначе дописываем ее в конец списка
@@ -471,13 +473,13 @@ void ILogAndActions::SetString(char *str, bool immortal)
         last->next = newDescr;
         if (newDescr->offset + m_nStringOffset > m_nWindowHeight)
         {
-            long offsetDelta = (long)newDescr->offset + m_nStringOffset - m_nWindowHeight;
-            for (STRING_DESCR *tmpDescr = m_sRoot; tmpDescr != NULL;)
+            const long offsetDelta = static_cast<long>(newDescr->offset) + m_nStringOffset - m_nWindowHeight;
+            for (STRING_DESCR *tmpDescr = m_sRoot; tmpDescr != nullptr;)
             {
                 if ((tmpDescr->offset -= offsetDelta) < 0)
                 {
                     m_sRoot = tmpDescr->next;
-                    PTR_DELETE(tmpDescr->str);
+                    STORM_DELETE(tmpDescr->str);
                     delete tmpDescr;
                     tmpDescr = m_sRoot;
                     continue;
@@ -492,36 +494,35 @@ void ILogAndActions::SetAction(char *actionName)
 {
     ATTRIBUTES *pA;
 
-    if (actionName == NULL)
+    if (actionName == nullptr)
         return;
     if ((strlen(actionName) + 1) > sizeof(m_sActionName))
     {
-        _CORE_API->Trace("Action name: %s  - overup size of name");
+        api->Trace("Action name: %s  - overup size of name");
         return;
     }
-    pA = api->Entity_GetAttributeClass(&g_ILogAndActions, "ActiveActions");
-    if (pA != NULL)
+    pA = api->Entity_GetAttributeClass(g_ILogAndActions, "ActiveActions");
+    if (pA != nullptr)
         pA = pA->GetAttributeClass(actionName);
-    if (pA == NULL)
+    if (pA == nullptr)
         return;
-    strcpy(m_sActionName, actionName);
+    strcpy_s(m_sActionName, actionName);
     // set texture coordinates for this action icon
     FRECT texRect;
-    long curIconNum = pA->GetAttributeAsDword("IconNum", 0);
+    const long curIconNum = pA->GetAttributeAsDword("IconNum", 0);
     if (curIconNum == -1)
     {
         m_bThatRealAction = false;
         return;
     }
-    else
-        m_bThatRealAction = true;
+    m_bThatRealAction = true;
     CalculateTexturePos(texRect, m_horzDiv, m_vertDiv, curIconNum);
     m_IconVertex[1].tu = m_IconVertex[0].tu = texRect.left;
     m_IconVertex[2].tu = m_IconVertex[3].tu = texRect.right;
     m_IconVertex[0].tv = m_IconVertex[2].tv = texRect.top;
     m_IconVertex[1].tv = m_IconVertex[3].tv = texRect.bottom;
 
-    pA = api->Entity_GetAttributeClass(&g_ILogAndActions, "ActiveActions");
+    pA = api->Entity_GetAttributeClass(g_ILogAndActions, "ActiveActions");
     if (pA)
     {
         m_ActionHint1.Init(rs, pA->GetAttributeClass("text1"));
@@ -529,7 +530,7 @@ void ILogAndActions::SetAction(char *actionName)
     }
     else
     {
-        m_ActionHint1.Init(rs, 0);
-        m_ActionHint2.Init(rs, 0);
+        m_ActionHint1.Init(rs, nullptr);
+        m_ActionHint2.Init(rs, nullptr);
     }
 }

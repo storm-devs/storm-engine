@@ -1,18 +1,15 @@
 #ifndef BI_IMAGE_DEFINES_H
 #define BI_IMAGE_DEFINES_H
 
-#include "..\bi_defines.h"
-
-#include "dx8render.h"
-#include "templates\array.h"
-#include "templates\string.h"
+#include "defines.h"
+#include "dx9render.h"
 
 #define BI_IMAGE_VERTEX_FORMAT (D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2)
 struct BI_IMAGE_VERTEX
 {
     CVECTOR pos;
     float w;
-    DWORD col;
+    uint32_t col;
     float tu, tv;
 };
 
@@ -35,7 +32,7 @@ class IBIImage
     virtual ~IBIImage()
     {
     }
-    virtual void SetColor(dword color) = 0;
+    virtual void SetColor(uint32_t color) = 0;
     virtual void SetPosition(long nLeft, long nTop, long nRight, long nBottom) = 0;
     virtual void Set3DPosition(const CVECTOR &vPos, float fWidth, float fHeight) = 0;
     virtual void SetUV(const FRECT &uv) = 0;
@@ -56,7 +53,7 @@ class IBIString
     {
     }
 
-    virtual void SetColor(dword color) = 0;
+    virtual void SetColor(uint32_t color) = 0;
     virtual void SetScale(float fScale) = 0;
     virtual void SetFont(const char *pcFontName) = 0;
     virtual void SetAlign(long nHorzAlign, long nVertAlign) = 0;

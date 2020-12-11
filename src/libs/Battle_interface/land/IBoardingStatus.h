@@ -1,20 +1,34 @@
 #ifndef _IBOARDINGSTATUS_H_
 #define _IBOARDINGSTATUS_H_
 
-#include "..\bi_defines.h"
-#include "common_defines.h"
-#include "dx8render.h"
+#include "../bi_defines.h"
 
-class IBoardingStatus : public ENTITY
+class IBoardingStatus : public Entity
 {
-    VDX8RENDER *rs;
+    VDX9RENDER *rs;
 
   public:
     IBoardingStatus();
     ~IBoardingStatus();
-    bool Init();
-    void Realize(dword delta_time);
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    bool Init() override;
+    void Realize(uint32_t delta_time);
+    uint64_t ProcessMessage(MESSAGE &message) override;
+
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+            // case Stage::execute:
+            //	Execute(delta); break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
 
   protected:
     void Create();
@@ -27,8 +41,8 @@ class IBoardingStatus : public ENTITY
     long m_Height;
     FPOINT m_myPos;
     FPOINT m_enemyPos;
-    DWORD m_myColor;
-    DWORD m_enemyColor;
+    uint32_t m_myColor;
+    uint32_t m_enemyColor;
 
     BI_COLORONLY_VERTEX m_MyChar[4];
     BI_COLORONLY_VERTEX m_EnemyChar[4];

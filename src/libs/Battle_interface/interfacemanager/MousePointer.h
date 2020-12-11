@@ -2,6 +2,7 @@
 #define MousePointer_h
 
 #include "BaseManager.h"
+#include <string>
 
 #define BI_CURSORS_QUANTITY 10
 #define BI_CURSOR_COMMON 0
@@ -14,7 +15,7 @@ class MousePointer : public BI_MousePointerBase
     MousePointer(BI_ManagerBase *pManager, ATTRIBUTES *pARoot);
     ~MousePointer();
 
-    virtual void Update();
+    void Update() override;
 
   protected:
     BI_ManagerBase *m_pManager;
@@ -28,9 +29,10 @@ class MousePointer : public BI_MousePointerBase
     struct MouseCursorInfo
     {
         POINT offset;
-        string texture;
+        std::string texture;
         FRECT uv;
     };
+
     MouseCursorInfo m_aCursors[BI_CURSORS_QUANTITY];
     long m_nCurrentCursor;
     POINT m_cursorsize;
@@ -38,7 +40,7 @@ class MousePointer : public BI_MousePointerBase
     void InitMouseCursors();
     void MoveCursor();
     void SetCurrentCursor();
-    RECT GetCurrentCursorIconPos();
+    RECT GetCurrentCursorIconPos() const;
 };
 
 #endif

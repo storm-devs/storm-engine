@@ -1,30 +1,54 @@
 #ifndef __BATTLE_INTERFACE_H_
 #define __BATTLE_INTERFACE_H_
 
-#include "..\utils.h"
+#include "../Utils.h"
+#include "../bi_defines.h"
 #include "battle_navigator.h"
-#include "common_defines.h"
-#include "dx8render.h"
-#include "templates\array.h"
+#include "dx9render.h"
 
 class BIShipIcon;
 class ShipInfoImages;
 
-class BATTLE_INTERFACE : public ENTITY
+class BATTLE_INTERFACE : public Entity
 {
-    VDX8RENDER *rs;
+    VDX9RENDER *rs;
 
   public:
     BATTLE_INTERFACE();
     ~BATTLE_INTERFACE();
-    bool Init();
-    void Execute(dword delta_time);
-    void Realize(dword delta_time);
-    dword _cdecl ProcessMessage(MESSAGE &message);
-    dword AttributeChanged(ATTRIBUTES *pAttr);
+    bool Init() override;
+    void Execute(uint32_t delta_time);
+    void Realize(uint32_t delta_time);
+    uint64_t ProcessMessage(MESSAGE &message) override;
+    uint32_t AttributeChanged(ATTRIBUTES *pAttr) override;
 
-    void LostRender();
-    void RestoreRender();
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+        case Stage::lost_render:
+            LostRender();
+            break;
+        case Stage::restore_render:
+            RestoreRender();
+            break;
+        }
+    }
+
+    void LostRender()
+    {
+        BattleNavigator.LostRender();
+    };
+    void RestoreRender()
+    {
+        BattleNavigator.RestoreRender();
+    };
 
   protected:
     BATTLE_NAVIGATOR BattleNavigator; // навигационные иконки
@@ -42,7 +66,7 @@ class BATTLE_INTERFACE : public ENTITY
 
     bool m_bMyShipView;
 
-    array<BITextInfo> m_TextArray;
+    std::vector<BITextInfo> m_TextArray;
     BILinesInfo m_LinesInfo;
     bool m_bShowBattleBorder;
     BIBorderInfo m_BattleBorder;

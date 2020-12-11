@@ -1,16 +1,16 @@
 #ifndef _BATTLE_SHIPCOMMAND_H_
 #define _BATTLE_SHIPCOMMAND_H_
 
-#include "..\battle_command.h"
+#include "../battle_command.h"
 
 class BIShipCommandList : public BICommandList
 {
   public:
-    BIShipCommandList(ENTITY_ID &eid, ATTRIBUTES *pA, VDX8RENDER *rs);
+    BIShipCommandList(entid_t eid, ATTRIBUTES *pA, VDX9RENDER *rs);
     virtual ~BIShipCommandList();
 
-    virtual void FillIcons();
-    virtual void Init();
+    void FillIcons() override;
+    void Init() override;
 
   protected:
     void Release();
@@ -30,7 +30,7 @@ class BIShipCommandList : public BICommandList
     long m_nChargeTextureNum;
     long m_nCommandTextureNum;
 
-    array<long> m_aChargeQuantity;
+    std::vector<long> m_aChargeQuantity;
 };
 
 #endif

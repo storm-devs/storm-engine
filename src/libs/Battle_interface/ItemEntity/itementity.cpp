@@ -1,5 +1,7 @@
 #include "itementity.h"
-#include "..\utils.h"
+#include "../Utils.h"
+#include "../shared/messages.h"
+#include "EntityManager.h"
 #include "model.h"
 
 ItemEntity::ItemEntity()
@@ -19,24 +21,24 @@ bool ItemEntity::Init()
     return true;
 }
 
-void ItemEntity::Realize(dword delta_time)
+void ItemEntity::Realize(uint32_t delta_time)
 {
     if (m_bVisible && m_pModel)
         if (m_bTieToLocator)
             DrawIntoLocator();
         else
-            m_pModel->Realize(delta_time);
+            m_pModel->ProcessStage(Stage::realize, delta_time);
 }
 
-dword _cdecl ItemEntity::ProcessMessage(MESSAGE &message)
+uint64_t ItemEntity::ProcessMessage(MESSAGE &message)
 {
-    long nMsgCod = message.Long();
+    const auto nMsgCod = message.Long();
     switch (nMsgCod)
     {
     case 0: // Tie item to moving locator
     {
         DeleteParticle();
-        ENTITY_ID mdlEID = GetModelEIDFromCharacterEID(message.EntityID());
+        const auto mdlEID = GetModelEIDFromCharacterEID(message.EntityID());
         char locName[255];
         message.String(sizeof(locName) - 1, locName);
         m_bTieToLocator = TieToLocator(mdlEID, locName);
@@ -82,8 +84,8 @@ dword _cdecl ItemEntity::ProcessMessage(MESSAGE &message)
 
     case 5: {
         DeleteParticle();
-        ENTITY_ID mdlID = GetModelEIDFromCharacterEID(message.EntityID());
-        ENTITY_ID mdlToTieID = GetModelEIDFromCharacterEID(message.EntityID());
+        const auto mdlID = GetModelEIDFromCharacterEID(message.EntityID());
+        const auto mdlToTieID = GetModelEIDFromCharacterEID(message.EntityID());
         char sLocName[255];
         message.String(sizeof(sLocName) - 1, sLocName);
         char sStartEvntName[255];
@@ -103,19 +105,19 @@ bool ItemEntity::ReadAndCreate()
     BIUtils::ReadVectorFormAttr(AttributesPointer, "pos.vx", m_mtxpos.Vx(), CVECTOR(0.f));
     BIUtils::ReadVectorFormAttr(AttributesPointer, "pos.vy", m_mtxpos.Vy(), CVECTOR(0.f));
     BIUtils::ReadVectorFormAttr(AttributesPointer, "pos.vz", m_mtxpos.Vz(), CVECTOR(0.f));
-    char *pcModelName = BIUtils::GetStringFromAttr(AttributesPointer, "model", "");
-    char *pcTechnique = BIUtils::GetStringFromAttr(AttributesPointer, "technique", "");
+    auto *const pcModelName = BIUtils::GetStringFromAttr(AttributesPointer, "model", "");
+    auto *const pcTechnique = BIUtils::GetStringFromAttr(AttributesPointer, "technique", "");
     if (pcModelName)
     {
-        if (api->CreateEntity(&m_eidModel, "modelr"))
+        if (m_eidModel = EntityManager::CreateEntity("modelr"))
         {
             api->Send_Message(m_eidModel, "ls", MSG_MODEL_LOAD_GEO, pcModelName);
-            m_pModel = (MODEL *)api->GetEntityPointer(&m_eidModel);
+            m_pModel = static_cast<MODEL *>(EntityManager::GetEntityPointer(m_eidModel));
             SetModelToPosition(m_mtxpos);
             SetTechnique(pcTechnique);
         }
     }
-    m_bVisible = m_pModel != 0;
+    m_bVisible = m_pModel != nullptr;
     if (m_bVisible)
         CreateParticle();
     return true;
@@ -124,22 +126,22 @@ bool ItemEntity::ReadAndCreate()
 void ItemEntity::SetBeginData()
 {
     m_bVisible = false;
-    m_pModel = 0;
+    m_pModel = nullptr;
     m_bTieToLocator = false;
-    m_pParticle = 0;
+    m_pParticle = nullptr;
 }
 
 void ItemEntity::Release()
 {
     if (m_pModel)
     {
-        api->DeleteEntity(m_eidModel);
-        m_pModel = 0;
+        EntityManager::EraseEntity(m_eidModel);
+        m_pModel = nullptr;
     }
     DeleteParticle();
 }
 
-void ItemEntity::SetModelToPosition(const CMatrix &mtx)
+void ItemEntity::SetModelToPosition(const CMatrix &mtx) const
 {
     if (m_pModel)
     {
@@ -149,11 +151,11 @@ void ItemEntity::SetModelToPosition(const CMatrix &mtx)
     }
 }
 
-void ItemEntity::SetTechnique(const char *pcTechnique)
+void ItemEntity::SetTechnique(const char *pcTechnique) const
 {
     if (m_pModel)
     {
-        NODE *pRootNod = m_pModel->GetNode(0);
+        auto *pRootNod = m_pModel->GetNode(0);
         if (pRootNod)
         {
             pRootNod->SetTechnique(pcTechnique);
@@ -161,11 +163,11 @@ void ItemEntity::SetTechnique(const char *pcTechnique)
     }
 }
 
-bool ItemEntity::TieToLocator(ENTITY_ID &mdlEID, const char *pcLocName)
+bool ItemEntity::TieToLocator(entid_t mdlEID, const char *pcLocName)
 {
     m_eidTieModel = mdlEID;
     m_sTieLocName = pcLocName;
-    MODEL *pMdl = (MODEL *)api->GetEntityPointer(&mdlEID);
+    auto *pMdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(mdlEID));
     if (pMdl)
     {
         m_pMdlNode = pMdl->GetNode(0);
@@ -198,7 +200,7 @@ void ItemEntity::EndEventProcess()
 
 void ItemEntity::DrawIntoLocator()
 {
-    MODEL *pMdl = (MODEL *)api->GetEntityPointer(&m_eidTieModel);
+    auto *pMdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(m_eidTieModel));
     if (!pMdl)
     {
         UnTieFromLocator();
@@ -210,12 +212,12 @@ void ItemEntity::DrawIntoLocator()
     if (m_pModel)
     {
         sti = -1;
-        long idLoc = m_pMdlNode->geo->FindName(m_sTieLocName);
+        auto idLoc = m_pMdlNode->geo->FindName(m_sTieLocName.c_str());
 
         if ((sti = m_pMdlNode->geo->FindLabelN(sti + 1, idLoc)) > -1)
         {
-            Animation *ani = pMdl->GetAnimation();
-            CMatrix *bones = &ani->GetAnimationMatrix(0);
+            auto *ani = pMdl->GetAnimation();
+            auto *bones = &ani->GetAnimationMatrix(0);
 
             GEOS::LABEL lb;
             m_pMdlNode->geo->GetLabel(sti, lb);
@@ -225,7 +227,7 @@ void ItemEntity::DrawIntoLocator()
             mt.Vz() = CVECTOR(lb.m[2][0], lb.m[2][1], lb.m[2][2]);
             mt.Pos() = CVECTOR(lb.m[3][0], lb.m[3][1], lb.m[3][2]);
 
-            CMatrix mbn = mt * bones[lb.bones[0]];
+            auto mbn = mt * bones[lb.bones[0]];
             mbn.Pos().x *= -1.0f;
             mbn.Vx().x *= -1.0f;
             mbn.Vy().x *= -1.0f;
@@ -241,29 +243,28 @@ void ItemEntity::DrawIntoLocator()
         }
 
         m_pModel->mtx = perMtx;
-        m_pModel->Realize(0);
+        m_pModel->ProcessStage(Stage::realize, 0);
     }
 }
 
-ENTITY_ID ItemEntity::GetModelEIDFromCharacterEID(ENTITY_ID &chrEID)
+entid_t ItemEntity::GetModelEIDFromCharacterEID(entid_t chrEID)
 {
-    ENTITY_ID eid;
-    VDATA *pvdat = (VDATA *)api->GetScriptVariable("g_TmpModelVariable");
-    if (pvdat)
+    if (auto *data = static_cast<VDATA *>(api->GetScriptVariable("g_TmpModelVariable")))
     {
-        api->Send_Message(chrEID, "le", MSG_CHARACTER_GETMODEL, pvdat);
-        eid = pvdat->GetEntityID();
+        api->Send_Message(chrEID, "le", MSG_CHARACTER_GETMODEL, data);
+        return data->GetEntityID();
     }
-    return eid;
+
+    return invalid_entity;
 }
 
-void ItemEntity::SetEventListener(ENTITY_ID &mdlEID, ENTITY_ID &mdlToTieEID, const char *pcLocName,
-                                  const char *pcStartEvent, const char *pcEndEvent)
+void ItemEntity::SetEventListener(entid_t mdlEID, entid_t mdlToTieEID, const char *pcLocName, const char *pcStartEvent,
+                                  const char *pcEndEvent)
 {
-    MODEL *pMdl = (MODEL *)api->GetEntityPointer(&mdlEID);
+    auto *pMdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(mdlEID));
     if (!pMdl)
         return;
-    Animation *a = pMdl->GetAnimation();
+    auto *a = pMdl->GetAnimation();
     if (a)
     {
         m_eventListener.item = this;
@@ -283,20 +284,19 @@ void ItemEntity::EventListener::Event(Animation *animation, long playerIndex, co
     if (m_bStartWaiting && m_sStartEvent == eventName)
     {
         m_bStartWaiting = false;
-        item->m_bTieToLocator = item->TieToLocator(m_eidToTieModel, m_sToTieLocator);
+        item->m_bTieToLocator = item->TieToLocator(m_eidToTieModel, m_sToTieLocator.c_str());
         return;
     }
     if (!m_bStartWaiting && m_sEndEvent == eventName)
     {
-        MODEL *pMdl = (MODEL *)api->GetEntityPointer(&m_eidListenedModel);
+        auto *pMdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(m_eidListenedModel));
         if (pMdl)
         {
-            Animation *a = pMdl->GetAnimation();
+            auto *a = pMdl->GetAnimation();
             if (a)
-                a->SetEventListener(0);
+                a->SetEventListener(nullptr);
         }
         item->EndEventProcess();
-        return;
     }
 }
 
@@ -306,13 +306,13 @@ bool ItemEntity::CreateParticle()
 
     if (m_bVisible)
     {
-        char *pcParticleName = BIUtils::GetStringFromAttr(AttributesPointer, "particle", "");
+        auto *const pcParticleName = BIUtils::GetStringFromAttr(AttributesPointer, "particle", "");
         if (pcParticleName && pcParticleName[0])
         {
-            ENTITY_ID eidParticle;
-            if (api->FindClass(&eidParticle, "particles", 0))
+            const auto eidParticle = EntityManager::GetEntityId("particles");
+            if (eidParticle)
             {
-                CVECTOR vPos = m_mtxpos.Pos();
+                const auto vPos = m_mtxpos.Pos();
                 m_pParticle =
                     (VPARTICLE_SYSTEM *)api->Send_Message(eidParticle, "lsffffffl", PS_CREATE_RIC, pcParticleName,
                                                           vPos.x, vPos.y, vPos.z, 0.0f, 1.0f, 0.0f, 0);
@@ -327,12 +327,12 @@ void ItemEntity::DeleteParticle()
 {
     if (m_pParticle)
     {
-        ENTITY_ID eidParticle;
-        if (api->FindClass(&eidParticle, "particles", 0))
+        const auto eidParticle = EntityManager::GetEntityId("particles");
+        if (eidParticle)
         {
-            if (api->Send_Message(eidParticle, "ll", PS_VALIDATE_PARTICLE, (long)m_pParticle))
+            if (api->Send_Message(eidParticle, "lp", PS_VALIDATE_PARTICLE, m_pParticle))
                 m_pParticle->Pause(true);
         }
-        m_pParticle = 0;
+        m_pParticle = nullptr;
     }
 }

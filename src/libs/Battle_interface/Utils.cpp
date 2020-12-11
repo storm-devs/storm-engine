@@ -1,47 +1,47 @@
-#include "utils.h"
-#include "bi_defines.h"
-#include "image\imgrender.h"
+#include "Utils.h"
+#include "image/imgrender.h"
+#include "vmodule_api.h"
 
 // extern data
-ENTITY_ID BIUtils::idBattleInterface;
-DWORD BIUtils::g_dwBlinkColor;
+entid_t BIUtils::idBattleInterface;
+uint32_t BIUtils::g_dwBlinkColor;
 
 long BIUtils::GetLongFromAttr(ATTRIBUTES *pA, const char *name, long defVal)
 {
-    if (pA == null || name == null)
+    if (pA == nullptr || name == nullptr)
         return defVal;
     return pA->GetAttributeAsDword(name, defVal);
 }
 
 float BIUtils::GetFloatFromAttr(ATTRIBUTES *pA, const char *name, float defVal)
 {
-    if (pA == null || name == null)
+    if (pA == nullptr || name == nullptr)
         return defVal;
     return pA->GetAttributeAsFloat(name, defVal);
 }
 
 bool BIUtils::ReadStringFromAttr(ATTRIBUTES *pA, const char *name, char *buf, long bufSize, const char *defVal)
 {
-    if (buf == null || bufSize < 1)
+    if (buf == nullptr || bufSize < 1)
         return false;
     buf[0] = 0;
     const char *strGet;
-    bool bRet = true;
-    if (pA == null || (strGet = pA->GetAttribute(name)) == null)
+    auto bRet = true;
+    if (pA == nullptr || (strGet = pA->GetAttribute(name)) == nullptr)
     {
         strGet = defVal;
         bRet = false;
     }
 
-    if (strGet != null)
+    if (strGet != nullptr)
     {
-        if ((int)strlen(strGet) > bufSize - 1)
+        if (static_cast<int>(strlen(strGet)) > bufSize - 1)
         {
-            strncpy(buf, strGet, bufSize - 1);
+            strncpy_s(buf, bufSize, strGet, bufSize - 1);
             buf[bufSize - 1] = 0;
         }
         else
-            strcpy(buf, strGet);
+            strcpy_s(buf, bufSize, strGet);
     }
     else
         bRet = false;
@@ -51,19 +51,19 @@ bool BIUtils::ReadStringFromAttr(ATTRIBUTES *pA, const char *name, char *buf, lo
 
 char *BIUtils::GetStringFromAttr(ATTRIBUTES *pA, const char *name, const char *defVal)
 {
-    if (pA == null || name == null)
+    if (pA == nullptr || name == nullptr)
         return (char *)defVal;
-    char *aVal = pA->GetAttribute(name);
-    if (aVal == null)
+    auto *const aVal = pA->GetAttribute(name);
+    if (aVal == nullptr)
         return (char *)defVal;
     return aVal;
 }
 
-long BIUtils::GetTextureFromAttr(VDX8RENDER *rs, ATTRIBUTES *pA, const char *sAttrName)
+long BIUtils::GetTextureFromAttr(VDX9RENDER *rs, ATTRIBUTES *pA, const char *sAttrName)
 {
     if (!rs || !pA)
         return -1;
-    char *sname = pA->GetAttribute(sAttrName);
+    auto *const sname = pA->GetAttribute(sAttrName);
     if (!sname || sname[0] == 0)
         return -1;
     return rs->TextureCreate(sname);
@@ -74,7 +74,7 @@ bool BIUtils::ReadRectFromAttr(ATTRIBUTES *pA, const char *name, FRECT &rOut, FR
     rOut = rDefault;
     if (pA && name)
     {
-        char *pcStr = pA->GetAttribute(name);
+        auto *const pcStr = pA->GetAttribute(name);
         if (pcStr)
         {
             sscanf(pcStr, "%f,%f,%f,%f", &rOut.left, &rOut.top, &rOut.right, &rOut.bottom);
@@ -89,7 +89,7 @@ bool BIUtils::ReadRectFromAttr(ATTRIBUTES *pA, const char *name, RECT &rOut, REC
     rOut = rDefault;
     if (pA && name)
     {
-        char *pcStr = pA->GetAttribute(name);
+        auto *const pcStr = pA->GetAttribute(name);
         if (pcStr)
         {
             sscanf(pcStr, "%d,%d,%d,%d", &rOut.left, &rOut.top, &rOut.right, &rOut.bottom);
@@ -105,7 +105,7 @@ bool BIUtils::ReadPosFromAttr(ATTRIBUTES *pA, const char *name, float &fX, float
     fY = fYDef;
     if (pA && name)
     {
-        char *pcStr = pA->GetAttribute(name);
+        auto *const pcStr = pA->GetAttribute(name);
         if (pcStr)
         {
             sscanf(pcStr, "%f,%f", &fX, &fY);
@@ -138,18 +138,18 @@ long BIUtils::GetAlignmentFromAttr(ATTRIBUTES *pA, const char *name, long nDefAl
         char *pcTmp = pA->GetAttribute(name);
         if (pcTmp)
         {
-            if (stricmp(pcTmp, "left") == 0)
-                return ALIGN_LEFT;
-            if (stricmp(pcTmp, "center") == 0)
-                return ALIGN_CENTER;
-            if (stricmp(pcTmp, "right") == 0)
-                return ALIGN_RIGHT;
+            if (_stricmp(pcTmp, "left") == 0)
+                return PR_ALIGN_LEFT;
+            if (_stricmp(pcTmp, "center") == 0)
+                return PR_ALIGN_CENTER;
+            if (_stricmp(pcTmp, "right") == 0)
+                return PR_ALIGN_RIGHT;
         }
     }
     return nDefAlign;
 }
 
-long BIUtils::GetFontIDFromAttr(ATTRIBUTES *pA, const char *name, VDX8RENDER *rs, const char *pcDefFontName)
+long BIUtils::GetFontIDFromAttr(ATTRIBUTES *pA, const char *name, VDX9RENDER *rs, const char *pcDefFontName)
 {
     if (rs && pA && name)
     {
@@ -184,17 +184,17 @@ bool BIUtils::ComparePoint(POINT &p1, POINT &p2)
     return ((p1.x == p2.x) && (p1.y == p2.y));
 }
 
-ATTRIBUTES *_cdecl BIUtils::GetAttributesFromPath(ATTRIBUTES *pA, ...)
+ATTRIBUTES *BIUtils::GetAttributesFromPath(ATTRIBUTES *pA, ...)
 {
     va_list arglist;
 
     char *sName;
     ATTRIBUTES *pTmpAttr = pA;
     va_start(arglist, pA);
-    while ((sName = va_arg(arglist, char *)) != NULL)
+    while ((sName = va_arg(arglist, char *)) != nullptr)
     {
-        if (pTmpAttr == NULL)
-            return NULL;
+        if (pTmpAttr == nullptr)
+            return nullptr;
         pTmpAttr = pTmpAttr->GetAttributeClass(sName);
     }
     va_end(arglist);
@@ -202,21 +202,21 @@ ATTRIBUTES *_cdecl BIUtils::GetAttributesFromPath(ATTRIBUTES *pA, ...)
     return pTmpAttr;
 }
 
-DWORD BIUtils::GetIntervalColor(DWORD minV, DWORD maxV, float fpar)
+uint32_t BIUtils::GetIntervalColor(uint32_t minV, uint32_t maxV, float fpar)
 {
     long a = minV >> 24L;
-    long ad = (long)(maxV >> 24L) - a;
+    const long ad = static_cast<long>(maxV >> 24L) - a;
     long r = (minV & 0xFF0000) >> 16;
-    long rd = (long)((maxV & 0xFF0000) >> 16) - r;
+    const long rd = static_cast<long>((maxV & 0xFF0000) >> 16) - r;
     long g = (minV & 0xFF00) >> 8;
-    long gd = (long)((maxV & 0xFF00) >> 8) - g;
+    const long gd = static_cast<long>((maxV & 0xFF00) >> 8) - g;
     long b = minV & 0xFF;
-    long bd = (long)(maxV & 0xFF) - b;
+    const long bd = static_cast<long>(maxV & 0xFF) - b;
 
-    a += long(ad * fpar);
-    r += long(rd * fpar);
-    g += long(gd * fpar);
-    b += long(bd * fpar);
+    a += static_cast<long>(ad * fpar);
+    r += static_cast<long>(rd * fpar);
+    g += static_cast<long>(gd * fpar);
+    b += static_cast<long>(bd * fpar);
 
     return ARGB(a, r, g, b);
 }
@@ -241,7 +241,7 @@ long BIUtils::GetMaxFromFourLong(long n1, long n2, long n3, long n4)
     return n4;
 }
 
-float BIUtils::GetFromStr_Float(char *&pcStr, float fDefault)
+float BIUtils::GetFromStr_Float(const char *&pcStr, float fDefault)
 {
     if (!pcStr)
         return fDefault;
@@ -257,32 +257,60 @@ float BIUtils::GetFromStr_Float(char *&pcStr, float fDefault)
     ctmp[n] = 0;
     while (pcStr[0] == ',')
         pcStr++;
-    return (float)atof(ctmp);
+    return static_cast<float>(atof(ctmp));
 }
 
-void BIUtils::FillTextInfoArray(VDX8RENDER *pRS, ATTRIBUTES *pA, array<BITextInfo> &tia)
+void BIUtils::FillTextInfoArray(VDX9RENDER *pRS, ATTRIBUTES *pA, std::vector<BITextInfo> &tia)
 {
     if (!pA)
         return;
-    tia.DelAll();
+    tia.clear();
 
-    long q = pA->GetAttributesNum();
+    const long q = pA->GetAttributesNum();
+    tia.reserve(q);
     for (long n = 0; n < q; n++)
     {
-        long i = tia.Add();
-        tia[i].Init(pRS, pA->GetAttributeClass(n));
+        tia.emplace_back().Init(pRS, pA->GetAttributeClass(n));
     }
 }
 
-void BIUtils::PrintTextInfoArray(array<BITextInfo> &tia)
+void BIUtils::PrintTextInfoArray(std::vector<BITextInfo> &tia)
 {
-    for (long n = 0; n < tia; n++)
+    for (long n = 0; n < tia.size(); n++)
         tia[n].Print();
+}
+
+BITextInfo::BITextInfo(BITextInfo &&text_info) noexcept
+{
+    pRS = text_info.pRS;
+    sText = std::move(text_info.sText);
+    pos = std::move(text_info.pos);
+    fScale = text_info.fScale;
+    nFont = text_info.nFont;
+    dwColor = text_info.dwColor;
+    bShadow = text_info.bShadow;
+    pARefresh = text_info.pARefresh;
+
+    text_info.nFont = -1;
+}
+
+BITextInfo::BITextInfo(const BITextInfo &text_info)
+{
+    pRS = text_info.pRS;
+    sText = text_info.sText;
+    pos = text_info.pos;
+    fScale = text_info.fScale;
+    nFont = text_info.nFont;
+    dwColor = text_info.dwColor;
+    bShadow = text_info.bShadow;
+    pARefresh = text_info.pARefresh;
+
+    pRS->IncRefCounter(nFont);
 }
 
 BITextInfo::BITextInfo()
 {
-    pRS = 0;
+    pRS = nullptr;
     nFont = -1;
 }
 
@@ -297,7 +325,7 @@ void BITextInfo::Release()
     FONT_RELEASE(pRS, nFont);
 }
 
-void BITextInfo::Init(VDX8RENDER *rs, ATTRIBUTES *pA)
+void BITextInfo::Init(VDX9RENDER *rs, ATTRIBUTES *pA)
 {
     FONT_RELEASE(pRS, nFont);
     pRS = rs;
@@ -322,7 +350,7 @@ void BITextInfo::Init(VDX8RENDER *rs, ATTRIBUTES *pA)
 
     sText = pA->GetAttribute("text");
 
-    pARefresh = 0;
+    pARefresh = nullptr;
     if (pA->GetAttributeAsDword("refreshable", 0))
         pARefresh = pA;
 }
@@ -333,15 +361,14 @@ void BITextInfo::Print()
     {
         if (pARefresh)
             sText = pARefresh->GetAttribute("text");
-        if (!sText.IsEmpty())
-            pRS->ExtPrint(nFont, dwColor, 0, ALIGN_CENTER, bShadow, fScale, 0, 0, pos.x, pos.y, "%s",
-                          sText.GetBuffer());
+        if (!sText.empty())
+            pRS->ExtPrint(nFont, dwColor, 0, PR_ALIGN_CENTER, bShadow, fScale, 0, 0, pos.x, pos.y, "%s", sText.c_str());
     }
 }
 
-BILinesInfo::BILinesInfo() : lines(_FL_)
+BILinesInfo::BILinesInfo()
 {
-    pRS = 0;
+    pRS = nullptr;
 }
 
 BILinesInfo::~BILinesInfo()
@@ -351,24 +378,28 @@ BILinesInfo::~BILinesInfo()
 
 void BILinesInfo::Release()
 {
-    lines.DelAll();
+    lines.clear();
 }
 
-void BILinesInfo::Init(VDX8RENDER *rs, ATTRIBUTES *pA)
+void BILinesInfo::Init(VDX9RENDER *rs, ATTRIBUTES *pA)
 {
     pRS = rs;
     if (!pA)
         return;
 
-    long q = pA->GetAttributesNum();
+    const long q = pA->GetAttributesNum();
     for (long n = 0; n < q; n++)
     {
         ATTRIBUTES *pAttr = pA->GetAttributeClass(n);
         if (!pAttr)
             break;
 
-        long bi = lines.Add();
-        long ei = lines.Add();
+        // long bi = lines.Add();
+        // long ei = lines.Add();
+        lines.push_back(RS_LINE2D{});
+        const auto bi = lines.size() - 1;
+        lines.push_back(RS_LINE2D{});
+        const auto ei = lines.size() - 1;
 
         lines[bi].rhw = lines[ei].rhw = 0.5f;
         lines[bi].vPos.z = lines[ei].vPos.z = 1.f;
@@ -376,8 +407,8 @@ void BILinesInfo::Init(VDX8RENDER *rs, ATTRIBUTES *pA)
         ATTRIBUTES *pAPos = pAttr->GetAttributeClass("begin");
         if (pAPos)
         {
-            lines[bi].vPos.x = (float)pAPos->GetAttributeAsDword("x", 0);
-            lines[bi].vPos.y = (float)pAPos->GetAttributeAsDword("y", 0);
+            lines[bi].vPos.x = static_cast<float>(pAPos->GetAttributeAsDword("x", 0));
+            lines[bi].vPos.y = static_cast<float>(pAPos->GetAttributeAsDword("y", 0));
         }
         else
         {
@@ -398,13 +429,13 @@ void BILinesInfo::Init(VDX8RENDER *rs, ATTRIBUTES *pA)
 
 void BILinesInfo::Draw()
 {
-    pRS->DrawLines2D(&lines[0], lines / 2, "AILine");
+    pRS->DrawLines2D(&lines[0], lines.size() / 2, "Line");
 }
 
-BIImagesInfo::BIImagesInfo() : images(_FL)
+BIImagesInfo::BIImagesInfo()
 {
-    pRS = 0;
-    pImgRender = 0;
+    pRS = nullptr;
+    pImgRender = nullptr;
 }
 
 BIImagesInfo::~BIImagesInfo()
@@ -414,21 +445,23 @@ BIImagesInfo::~BIImagesInfo()
 
 void BIImagesInfo::Release()
 {
-    images.DelAllWithPointers();
-    SE_DELETE(pImgRender);
+    // images.DelAllWithPointers();
+    for (const auto &image : images)
+        delete image;
+    STORM_DELETE(pImgRender);
 }
 
-void BIImagesInfo::Init(VDX8RENDER *rs, ATTRIBUTES *pA)
+void BIImagesInfo::Init(VDX9RENDER *rs, ATTRIBUTES *pA)
 {
     if (!pA || !rs)
         return;
 
     pRS = rs;
-    pImgRender = NEW BIImageRender(rs);
+    pImgRender = new BIImageRender(rs);
     if (!pImgRender)
         return;
 
-    long q = pA->GetAttributesNum();
+    const long q = pA->GetAttributesNum();
     for (long n = 0; n < q; n++)
     {
         ATTRIBUTES *pAImg = pA->GetAttributeClass(n);
@@ -444,19 +477,19 @@ void BIImagesInfo::Init(VDX8RENDER *rs, ATTRIBUTES *pA)
             pImgRender->CreateImage(BIType_square, pAImg->GetAttribute("texture"),
                                     pAImg->GetAttributeAsDword("color", ARGB(255, 128, 128, 128)), rUV, rPos);
         if (pCurImg)
-            images.Add(pCurImg);
+            images.push_back(pCurImg);
     }
 }
 
-void BIImagesInfo::Draw()
+void BIImagesInfo::Draw() const
 {
     if (pImgRender)
         pImgRender->Render();
 }
 
-BIBorderInfo::BIBorderInfo()
+BIBorderInfo::BIBorderInfo() : dwColor1(0), dwColor2(0), fCur(0), fSpeed(0)
 {
-    pRS = 0;
+    pRS = nullptr;
     nVBuf = -1;
     nTexID = -1;
     bUp = true;
@@ -474,10 +507,10 @@ void BIBorderInfo::Release()
     TEXTURE_RELEASE(pRS, nTexID);
 }
 
-void BIBorderInfo::Init(VDX8RENDER *rs, ATTRIBUTES *pA)
+void BIBorderInfo::Init(VDX9RENDER *rs, ATTRIBUTES *pA)
 {
     pRS = rs;
-    nVBuf = rs->CreateVertexBufferManaged(BI_COLOR_VERTEX_FORMAT, 2 * 5 * sizeof(BI_COLOR_VERTEX), D3DUSAGE_WRITEONLY);
+    nVBuf = rs->CreateVertexBuffer(BI_COLOR_VERTEX_FORMAT, 2 * 5 * sizeof(BI_COLOR_VERTEX), D3DUSAGE_WRITEONLY);
     dwColor1 = dwColor2 = ARGB(255, 255, 255, 255);
     ext_pos.left = 0.f;
     ext_pos.top = 0.f;
@@ -509,7 +542,7 @@ void BIBorderInfo::Draw()
 {
     if (!bUsed || nVBuf < 0)
         return;
-    BI_COLOR_VERTEX *pV = (BI_COLOR_VERTEX *)pRS->LockVertexBuffer(nVBuf);
+    auto *pV = static_cast<BI_COLOR_VERTEX *>(pRS->LockVertexBuffer(nVBuf));
     if (!pV)
         return;
 
@@ -531,7 +564,7 @@ void BIBorderInfo::Draw()
             bUp = true;
         }
     }
-    dword dwColor = BIUtils::GetIntervalColor(dwColor1, dwColor2, fCur);
+    const uint32_t dwColor = BIUtils::GetIntervalColor(dwColor1, dwColor2, fCur);
     FRECT int_pos;
     BIUtils::GetIntervalRect(fCur, int_pos1, int_pos2, int_pos);
 

@@ -1,11 +1,12 @@
 #include "ShipPointer.h"
-#include "../msg_control.h"
-#include "..\bi_defines.h"
-//#include "net.h"
+#include "../bi_defines.h"
+#include "../shared/battle_interface/msg_control.h"
 #include "ship_base.h"
+#include <EntityManager.h>
 
 // определим вертексы
 #define SPV_FORMAT (D3DFVF_XYZ | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2)
+
 struct SPV_VERTEX
 {
     CVECTOR pos;
@@ -30,17 +31,17 @@ SHIPPOINTER::~SHIPPOINTER()
 
 bool SHIPPOINTER::Init()
 {
-    if ((rs = (VDX8RENDER *)api->CreateService("dx8render")) == NULL)
+    if ((rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"))) == nullptr)
     {
-        SE_THROW_MSG("Can`t create render service");
+        throw std::exception("Can`t create render service");
     }
 
-    m_idVBuf = rs->CreateVertexBufferManaged(SPV_FORMAT, 4 * sizeof(SPV_VERTEX), D3DUSAGE_WRITEONLY);
+    m_idVBuf = rs->CreateVertexBuffer(SPV_FORMAT, 4 * sizeof(SPV_VERTEX), D3DUSAGE_WRITEONLY);
     if (m_idVBuf < 0)
         return false;
 
-    SPV_VERTEX *pv = (SPV_VERTEX *)rs->LockVertexBuffer(m_idVBuf);
-    if (pv != null)
+    auto *pv = static_cast<SPV_VERTEX *>(rs->LockVertexBuffer(m_idVBuf));
+    if (pv != nullptr)
     {
         pv[0].tu = 0.f;
         pv[0].tv = 0.f;
@@ -53,8 +54,8 @@ bool SHIPPOINTER::Init()
         rs->UnLockVertexBuffer(m_idVBuf);
     }
 
-    ATTRIBUTES *pA = api->Entity_GetAttributeClass(&GetID(), "textures");
-    if (pA == null)
+    auto *pA = api->Entity_GetAttributeClass(GetId(), "textures");
+    if (pA == nullptr)
     {
         api->Trace("WARNING! object SHIPPOINTER hav`t attribute TEXTURES");
         return false;
@@ -67,12 +68,12 @@ bool SHIPPOINTER::Init()
     return true;
 }
 
-void SHIPPOINTER::Execute(dword delta_time)
+void SHIPPOINTER::Execute(uint32_t delta_time)
 {
     if (!m_bVisible)
         return;
 
-    if (m_pShip != null)
+    if (m_pShip != nullptr)
     {
         m_fShiftVal += m_fShiftSpeed * delta_time;
         while (m_fShiftVal > PIm2)
@@ -81,7 +82,7 @@ void SHIPPOINTER::Execute(dword delta_time)
     }
 }
 
-void SHIPPOINTER::Realize(dword delta_time)
+void SHIPPOINTER::Realize(uint32_t delta_time) const
 {
     if (!m_bVisible)
         return;
@@ -97,14 +98,14 @@ void SHIPPOINTER::Realize(dword delta_time)
     rs->DrawPrimitive(D3DPT_TRIANGLESTRIP, m_idVBuf, sizeof(SPV_VERTEX), 0, 2, "battle_shippointer");
 }
 
-dword _cdecl SHIPPOINTER::ProcessMessage(MESSAGE &message)
+uint64_t SHIPPOINTER::ProcessMessage(MESSAGE &message)
 {
     switch (message.Long())
     {
     case MSG_SP_CHANGESHIP: {
-        long chrIdx = message.Long();
+        const auto chrIdx = message.Long();
         m_pShip = FindShipByChrIndex(chrIdx);
-        if (m_pShip == null)
+        if (m_pShip == nullptr)
         {
             m_bVisible = false;
             return 0;
@@ -118,7 +119,7 @@ dword _cdecl SHIPPOINTER::ProcessMessage(MESSAGE &message)
         m_fShiftHSize = message.Float();
         m_fShiftTop = message.Float();
 
-        m_fShiftTop += ((SHIP_BASE *)m_pShip)->State.vRealBoxSize.y;
+        m_fShiftTop += static_cast<SHIP_BASE *>(m_pShip)->State.vRealBoxSize.y;
     }
     break;
     }
@@ -126,27 +127,27 @@ dword _cdecl SHIPPOINTER::ProcessMessage(MESSAGE &message)
     return 0;
 }
 
-void SHIPPOINTER::UpdateShipPointer()
+void SHIPPOINTER::UpdateShipPointer() const
 {
     if (!m_bVisible)
         return;
-    if (m_pShip == null)
+    if (m_pShip == nullptr)
         return;
 
-    SPV_VERTEX *pv = (SPV_VERTEX *)rs->LockVertexBuffer(m_idVBuf);
-    if (pv != null)
+    auto *pv = static_cast<SPV_VERTEX *>(rs->LockVertexBuffer(m_idVBuf));
+    if (pv != nullptr)
     {
         CVECTOR campos, camang;
         float camper;
         rs->GetCamera(campos, camang, camper);
 
-        CVECTOR ourPos = m_pShip->GetPos() + CVECTOR(0.f, m_fShiftTop + m_fShiftAmp * sinf(m_fShiftVal), 0.f);
-        float k = camper * .05f * sqrtf(~(campos - ourPos));
+        auto ourPos = m_pShip->GetPos() + CVECTOR(0.f, m_fShiftTop + m_fShiftAmp * sinf(m_fShiftVal), 0.f);
+        auto k = camper * .05f * sqrtf(~(campos - ourPos));
         if (k < 1.f)
             k = 1.f;
 
-        CVECTOR cvhorz = k * .5f * !((campos - ourPos) ^ CVECTOR(0.f, 1.f, 0.f));
-        CVECTOR cvvert = k * CVECTOR(0.f, 1.f, 0.f);
+        const auto cvhorz = k * .5f * !((campos - ourPos) ^ CVECTOR(0.f, 1.f, 0.f));
+        const CVECTOR cvvert = k * CVECTOR(0.f, 1.f, 0.f);
 
         ourPos.y += k * 1.0f;
 
@@ -159,22 +160,31 @@ void SHIPPOINTER::UpdateShipPointer()
     }
 }
 
-VAI_OBJBASE *SHIPPOINTER::FindShipByChrIndex(long chrIdx)
+VAI_OBJBASE *SHIPPOINTER::FindShipByChrIndex(long chrIdx) const
 {
     if (chrIdx == -1)
-        return null;
+        return nullptr;
 
-    ENTITY_ID ei;
-    if (api->FindClass(&ei, "ship", 0))
-        do
+    const auto &entities = EntityManager::GetEntityIdVector("ship");
+    for (auto ship : entities)
+    {
+        VAI_OBJBASE *ps = static_cast<VAI_OBJBASE *>(EntityManager::GetEntityPointer(ship));
+        if (ps != nullptr && ps->GetACharacter() != nullptr)
         {
-            VAI_OBJBASE *ps = (VAI_OBJBASE *)api->GetEntityPointer(&ei);
-            if (ps != null && ps->GetACharacter() != null)
-            {
-                if ((long)ps->GetACharacter()->GetAttributeAsDword("index", -2) == chrIdx)
-                    return ps;
-            }
-        } while (api->FindClassNext(&ei));
+            if (static_cast<long>(ps->GetACharacter()->GetAttributeAsDword("index", -2)) == chrIdx)
+                return ps;
+        }
+    }
 
-    return null;
+    /*if( NetFindClass(false,&ei,"netship") ) do
+    {
+      VAI_OBJBASE * ps = (VAI_OBJBASE*)EntityManager::GetEntityPointer(ei);
+      if(ps!= nullptr && ps->GetACharacter()!= nullptr)
+      {
+        if( (long)ps->GetACharacter()->GetAttributeAsDword("id",-2) == chrIdx )
+          return ps;
+      }
+    } while( NetFindClassNext(false,&ei) );*/
+
+    return nullptr;
 }

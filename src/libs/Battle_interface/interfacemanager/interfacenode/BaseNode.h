@@ -1,7 +1,7 @@
 #ifndef BIManager_BaseNode_H
 #define BIManager_BaseNode_H
 
-#include "..\BaseManager.h"
+#include "../BaseManager.h"
 
 class BI_ManagerBase;
 
@@ -11,38 +11,38 @@ class BI_BaseNode : public BI_ManagerNodeBase
     BI_BaseNode(BI_ManagerBase *pManager);
     virtual ~BI_BaseNode();
 
-    virtual void Update();
+    void Update() override;
 
-    virtual long Event(const char *pcEventName)
+    long Event(const char *pcEventName) override
     {
         return 0;
     }
 
-    virtual bool IsPointInside(float fX, float fY)
+    bool IsPointInside(float fX, float fY) override
     {
         return false;
     }
-    virtual bool IsMouseClickReaction()
+    bool IsMouseClickReaction() override
     {
         return false;
     }
-    virtual bool IsMouseMoveReaction()
+    bool IsMouseMoveReaction() override
     {
         return false;
     }
 
-    BI_ManagerBase *Manager()
+    BI_ManagerBase *Manager() const
     {
         return m_pManager;
     }
-    VDX8RENDER *Render()
+    VDX9RENDER *Render() const
     {
         return m_pRS;
     }
 
   protected:
     BI_ManagerBase *m_pManager;
-    VDX8RENDER *m_pRS;
+    VDX9RENDER *m_pRS;
 };
 
 #endif

@@ -1,6 +1,6 @@
 #include "BaseGroup.h"
 
-BI_BaseGroup::BI_BaseGroup(BI_ManagerBase *pManager) : m_aNodes(_FL)
+BI_BaseGroup::BI_BaseGroup(BI_ManagerBase *pManager)
 {
     Assert(pManager);
     m_pManager = pManager;
@@ -9,7 +9,9 @@ BI_BaseGroup::BI_BaseGroup(BI_ManagerBase *pManager) : m_aNodes(_FL)
 
 BI_BaseGroup::~BI_BaseGroup()
 {
-    for (long n = 0; n < m_aNodes; n++)
-        m_pManager->DeleteNode(m_aNodes[n]);
-    m_aNodes.DelAllWithPointers();
+    for (auto &node : m_aNodes)
+    {
+        m_pManager->DeleteNode(node);
+        delete node;
+    }
 }

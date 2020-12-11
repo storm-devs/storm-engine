@@ -1,27 +1,43 @@
 #ifndef _BATTLE_LAND_H_
 #define _BATTLE_LAND_H_
 
-#include "..\utils.h"
-#include "common_defines.h"
-#include "dx8render.h"
+#include "../Utils.h"
+#include "../bi_defines.h"
 
 class BIManSign;
 
-class BATTLE_LAND_INTERFACE : public ENTITY
+class BATTLE_LAND_INTERFACE : public Entity
 {
     // metods
   public:
     BATTLE_LAND_INTERFACE();
     ~BATTLE_LAND_INTERFACE();
-    bool Init();
-    void Execute(dword delta_time);
-    void Realize(dword delta_time);
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    bool Init() override;
+    void Execute(uint32_t delta_time) const;
+    void Realize(uint32_t delta_time);
+    uint64_t ProcessMessage(MESSAGE &message) override;
+
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
 
   protected:
     void SetShowParameters();
     void SetParameters();
-    void UpdateCommandos();
+    void UpdateCommandos() const;
     void UpdateAlarm();
     void EndShow();
     void Release();
@@ -31,12 +47,12 @@ class BATTLE_LAND_INTERFACE : public ENTITY
 
     // data
   protected:
-    VDX8RENDER *m_pRS;
+    VDX9RENDER *m_pRS;
     bool m_bShowCommandos;
 
     BIManSign *m_pManSign;
 
-    array<BITextInfo> m_TextInfo;
+    std::vector<BITextInfo> m_TextInfo;
 
     BIImagesInfo m_Images;
 };

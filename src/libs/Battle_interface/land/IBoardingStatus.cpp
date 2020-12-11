@@ -1,11 +1,11 @@
 #include "IBoardingStatus.h"
-#include "..\log_msg.h"
-#include "matrix.h"
+#include "../shared/battle_interface/log_msg.h"
+#include "EntityManager.h"
 #include <stdio.h>
 
 IBoardingStatus::IBoardingStatus()
 {
-    rs = NULL;
+    rs = nullptr;
 }
 
 IBoardingStatus::~IBoardingStatus()
@@ -14,18 +14,18 @@ IBoardingStatus::~IBoardingStatus()
 
 bool IBoardingStatus::Init()
 {
-    if ((rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render")) == NULL)
+    if ((rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"))) == nullptr)
     {
-        SE_THROW_MSG("Can`t create render service");
+        throw std::exception("Can`t create render service");
     }
 
-    _CORE_API->SystemMessages(GetID(), true);
-    _CORE_API->LayerAdd("realize", GetID(), 0xFFFFFFFF);
+    // api->SystemMessages(GetId(),true);
+    EntityManager::AddToLayer(REALIZE, GetId(), 0xFFFFFFFF);
 
     return true;
 }
 
-dword _cdecl IBoardingStatus::ProcessMessage(MESSAGE &message)
+uint64_t IBoardingStatus::ProcessMessage(MESSAGE &message)
 {
     switch (message.Long())
     {
@@ -33,8 +33,8 @@ dword _cdecl IBoardingStatus::ProcessMessage(MESSAGE &message)
         Create();
         break;
     case LOG_SET_CHARCTER_HP: {
-        float myHP = message.Float();
-        float enemyHP = message.Float();
+        const auto myHP = message.Float();
+        const auto enemyHP = message.Float();
         SetCharactersHP(myHP, enemyHP);
     }
     break;
@@ -42,9 +42,9 @@ dword _cdecl IBoardingStatus::ProcessMessage(MESSAGE &message)
     return 0;
 }
 
-void IBoardingStatus::Realize(dword delta_time)
+void IBoardingStatus::Realize(uint32_t delta_time)
 {
-    if (rs == NULL)
+    if (rs == nullptr)
         return;
 
     rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, BI_COLORONLY_VERTEX_FORMAT, 2, m_MyChar, sizeof(BI_COLORONLY_VERTEX),
@@ -56,13 +56,13 @@ void IBoardingStatus::Realize(dword delta_time)
 void IBoardingStatus::Create()
 {
     // Установить параметры для иконки активного действия
-    ATTRIBUTES *pA = api->Entity_GetAttributePointer(&GetID());
-    if (pA != NULL)
+    auto *pA = api->Entity_GetAttributePointer(GetId());
+    if (pA != nullptr)
     {
-        m_myPos.x = (float)pA->GetAttributeAsDword("myLeft", 10);
-        m_myPos.y = (float)pA->GetAttributeAsDword("myTop", 460);
-        m_enemyPos.x = (float)pA->GetAttributeAsDword("enemyLeft", 10);
-        m_enemyPos.y = (float)pA->GetAttributeAsDword("enemyTop", 450);
+        m_myPos.x = static_cast<float>(pA->GetAttributeAsDword("myLeft", 10));
+        m_myPos.y = static_cast<float>(pA->GetAttributeAsDword("myTop", 460));
+        m_enemyPos.x = static_cast<float>(pA->GetAttributeAsDword("enemyLeft", 10));
+        m_enemyPos.y = static_cast<float>(pA->GetAttributeAsDword("enemyTop", 450));
         m_Width = pA->GetAttributeAsDword("width", 120);
         m_Height = pA->GetAttributeAsDword("height", 8);
         m_myColor = pA->GetAttributeAsDword("myColor", ARGB(255, 0, 0, 128));

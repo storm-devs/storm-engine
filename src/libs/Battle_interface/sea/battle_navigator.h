@@ -1,8 +1,8 @@
 #ifndef __BATTLE_NAVIGATOR_H_
 #define __BATTLE_NAVIGATOR_H_
 
-#include "..\bi_defines.h"
-#include "Weather_base.h"
+#include "../bi_defines.h"
+#include "Weather_Base.h"
 
 #define RADIAL_QUANTITY 36
 #define BI_DEFAULT_COLOR 0xFF0010C0
@@ -13,42 +13,47 @@
 
 class BATTLE_NAVIGATOR
 {
-    VDX8RENDER *rs;
-    ENTITY *m_pOwnerEI;
+    VDX9RENDER *rs;
+    Entity *m_pOwnerEI;
 
   public:
+    BATTLE_NAVIGATOR(BATTLE_NAVIGATOR &&) = delete;
+    BATTLE_NAVIGATOR(const BATTLE_NAVIGATOR &) = delete;
     BATTLE_NAVIGATOR();
     ~BATTLE_NAVIGATOR();
 
-    void Draw();
+    void Draw() const;
     void Update();
-    void Init(VDX8RENDER *RenderService, ENTITY *pOwnerEI);
+    void Init(VDX9RENDER *RenderService, Entity *pOwnerEI);
     void SetIsland();
+
     void DecrementScale()
     {
         m_fCurScale -= m_fScaleStep;
         if (m_fCurScale < m_fMinScale)
             m_fCurScale = m_fMinScale;
     }
+
     void IncrementScale()
     {
         m_fCurScale += m_fScaleStep;
         if (m_fCurScale > m_fMaxScale)
             m_fCurScale = m_fMaxScale;
     }
+
     void SetEnoughBalls(bool notEnoughBallFlag)
     {
         m_bNotEnoughBallFlag = notEnoughBallFlag;
     }
-
     void LostRender();
     void RestoreRender();
 
   protected:
     void CalculateTextureRect(FRECT &texRect, long num, long hq, long vq);
-    long SetCircleVertexPos(BI_ONETEXTURE_VERTEX *v, float x, float y, float rad, float angle = 0);
+    long SetCircleVertexPos(BI_ONETEXTURE_VERTEX *v, float x, float y, float rad, float angle = 0) const;
     long SetCircleVertexTex(BI_ONETEXTURE_VERTEX *v, float x = .5f, float y = .5f, float rad = .5f, float angle = 0);
-    long SetRectangleVertexPos(BI_ONETEXTURE_VERTEX *v, float x, float y, float width, float height, float angle = 0);
+    long SetRectangleVertexPos(BI_ONETEXTURE_VERTEX *v, float x, float y, float width, float height,
+                               float angle = 0) const;
     long SetRectangleVertexTex(BI_ONETEXTURE_VERTEX *v, float x = .5f, float y = .5f, float width = 1.f,
                                float height = 1.f, float angle = 0);
     long SetRectangleSegVertexPos(BI_ONETEXTURE_VERTEX *v, float x, float y, float width, float height, float begAngle,
@@ -62,15 +67,15 @@ class BATTLE_NAVIGATOR
     void SetAnotherShip();
     void ReleaseAll();
     void UpdateMiniMap();
-    void UpdateFireRangeBuffer();
-    void FillOneSideFireRange(BI_NOTEXTURE_VERTEX *pv, ATTRIBUTES *pShip, ATTRIBUTES *pChar, char *pstr);
+    void UpdateFireRangeBuffer() const;
+    void FillOneSideFireRange(BI_NOTEXTURE_VERTEX *pv, ATTRIBUTES *pShip, ATTRIBUTES *pChar, const char *pstr) const;
     void UpdateCurrentCharge();
 
     void UpdateWindParam();
 
   protected:
-    DWORD m_dwBackGradColor1;
-    DWORD m_dwBackGradColor2;
+    uint32_t m_dwBackGradColor1;
+    uint32_t m_dwBackGradColor2;
     // параметры видимого горизонта
     float m_fMapRadius;    // радиус миникарты на экране
     float m_fTextureRad;   // радиус миникарты в текстуре
@@ -113,9 +118,9 @@ class BATTLE_NAVIGATOR
     long m_windHeight;
 
     // параметры заряда пушек
-    DWORD m_dwChargeCannon;
-    DWORD m_dwReadyCannon;
-    DWORD m_dwDamagedCannon;
+    uint32_t m_dwChargeCannon;
+    uint32_t m_dwReadyCannon;
+    uint32_t m_dwDamagedCannon;
 
     float m_fBegAnglLeftCharge;
     float m_fCurAnglLeftCharge;
@@ -154,16 +159,17 @@ class BATTLE_NAVIGATOR
     long m_idWindTex;       // ветер
     long m_idBestCourseTex; // указатели наилучшего курса
     long m_idChargeTexture; // текущий тип заряда пушек
+    long m_idPowderTexture; // текущий порох
     long m_idWindTexture;   // скорость ветра
     long m_idSailTexture;   // положение парусов/скорость корабля
     IDirect3DTexture9 *m_pIslandTexture;
 
-    DWORD m_dwSeaColor;         // цвет моря на миникарте
-    DWORD m_dwFireZoneColor;    // цвет зоны огня на миникарте
-    DWORD m_dwEnemyShipColor;   // цвет вражеских кораблей
-    DWORD m_dwFrendShipColor;   // цвет своих кораблей
-    DWORD m_dwNeutralShipColor; // цвет своих кораблей
-    DWORD m_dwDeadShipColor;    // цвет тонущего корабля
+    uint32_t m_dwSeaColor;         // цвет моря на миникарте
+    uint32_t m_dwFireZoneColor;    // цвет зоны огня на миникарте
+    uint32_t m_dwEnemyShipColor;   // цвет вражеских кораблей
+    uint32_t m_dwFrendShipColor;   // цвет своих кораблей
+    uint32_t m_dwNeutralShipColor; // цвет своих кораблей
+    uint32_t m_dwDeadShipColor;    // цвет тонущего корабля
 
     // буфера
     long m_idEmptyVBuf;
@@ -201,6 +207,12 @@ class BATTLE_NAVIGATOR
     POINT m_ChargePos;
     POINT m_ChargeSize;
     long m_curCharge;
+    // иконка пороха
+    POINT m_PowderGreed;
+    POINT m_PowderPos;
+    POINT m_PowderSize;
+    long m_curPowder;
+    bool m_bPowderRunOut; // для мигания
     // иконка ветра
     long m_curWindPic;
     POINT m_WindGreed;

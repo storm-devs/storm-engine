@@ -1,8 +1,7 @@
 #include "shipsign.h"
-#include "..\utils.h"
-#include "shipcommand.h"
+#include "../Utils.h"
 
-WMShipIcon::WMShipIcon(ENTITY_ID &BIEntityID, VDX8RENDER *pRS) : BISignIcon(BIEntityID, pRS)
+WMShipIcon::WMShipIcon(entid_t BIEntityID, VDX9RENDER *pRS) : BISignIcon(BIEntityID, pRS)
 {
 }
 
@@ -23,8 +22,8 @@ long WMShipIcon::CalculateSignQuantity()
     {
         for (n = 0; n < MAX_SIGN_QUANTITY; n++)
         {
-            _snprintf(param, sizeof(param), "sign%d", n + 1);
-            ATTRIBUTES *pA = m_pAData->GetAttributeClass(param);
+            sprintf_s(param, sizeof(param), "sign%d", n + 1);
+            auto *pA = m_pAData->GetAttributeClass(param);
             if (pA)
             {
                 m_Sign[n].bUse = true;
@@ -33,7 +32,9 @@ long WMShipIcon::CalculateSignQuantity()
                 m_Sign[n].fStarProgress = pA->GetAttributeAsFloat("starprogress", 0.f);
                 FULLRECT(m_Sign[n].rFaceUV);
                 BIUtils::ReadRectFromAttr(pA, "faceuv", m_Sign[n].rFaceUV, m_Sign[n].rFaceUV);
-                m_Sign[n].sText = pA->GetAttribute("text");
+                const char *attr = pA->GetAttribute("text");
+                if (attr != nullptr)
+                    m_Sign[n].sText = attr;
             }
             else
             {

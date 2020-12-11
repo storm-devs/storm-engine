@@ -1,15 +1,16 @@
 #include "battle_mansign.h"
-#include "../msg_control.h"
-#include "..\utils.h"
+#include "../Utils.h"
+#include "../shared/battle_interface/msg_control.h"
 #include "battle_mancommand.h"
+#include "vmodule_api.h"
 
-BIManSign::BIManSign(ENTITY_ID &BIEntityID, VDX8RENDER *pRS) : m_aChargeProgress(_FL)
+BIManSign::BIManSign(entid_t BIEntityID, VDX9RENDER *pRS)
 {
     Assert(pRS);
 
     m_idHostEntity = BIEntityID;
     m_pRS = pRS;
-    m_pCommandList = 0;
+    m_pCommandList = nullptr;
     m_nManQuantity = 0;
 
     m_nVBufID = -1;
@@ -75,7 +76,7 @@ void BIManSign::Draw()
     if (m_nVBufID != -1 && m_nIBufID != -1)
     {
         long nStartV = 0;
-        long nStartI = 0;
+        const long nStartI = 0;
 
         for (long n = 0; n < m_nManQuantity; n++)
         {
@@ -86,7 +87,7 @@ void BIManSign::Draw()
         }
 
         //
-        if (m_nBackTextureID && m_nBackSquareQ > 0)
+        if (m_nBackSquareQ > 0)
         {
             m_pRS->TextureSet(0, m_nBackTextureID);
             m_pRS->DrawBuffer(m_nVBufID, sizeof(BI_COLOR_VERTEX), m_nIBufID, nStartV, m_nBackSquareQ * 4, nStartI,
@@ -103,7 +104,7 @@ void BIManSign::Draw()
         }
 
         //
-        if (m_nManStateTextureID && m_nManStateSquareQ > 0)
+        if (m_nManStateSquareQ > 0)
         {
             m_pRS->TextureSet(0, m_nManStateTextureID);
             m_pRS->DrawBuffer(m_nVBufID, sizeof(BI_COLOR_VERTEX), m_nIBufID, nStartV, m_nManStateSquareQ * 4, nStartI,
@@ -112,7 +113,7 @@ void BIManSign::Draw()
         nStartV += m_nManStateSquareQ * 4;
 
         //
-        if (m_nGunChargeTextureID && m_nGunChargeSquareQ > 0)
+        if (m_nGunChargeSquareQ > 0)
         {
             m_pRS->TextureSet(0, m_nGunChargeTextureID);
             m_pRS->DrawBuffer(m_nVBufID, sizeof(BI_COLOR_VERTEX), m_nIBufID, nStartV, m_nGunChargeSquareQ * 4, nStartI,
@@ -129,12 +130,12 @@ void BIManSign::Init(ATTRIBUTES *pRoot, ATTRIBUTES *pA)
 {
     long n;
     float fTmp;
-    char *pcTmp;
+    const char *pcTmp;
     char param[256];
 
     m_pARoot = pRoot;
 
-    m_pCommandList = NEW BIManCommandList(m_idHostEntity, pRoot, m_pRS);
+    m_pCommandList = new BIManCommandList(m_idHostEntity, pRoot, m_pRS);
 
     // default value
     m_nBackTextureID = -1;
@@ -263,7 +264,7 @@ void BIManSign::Init(ATTRIBUTES *pRoot, ATTRIBUTES *pA)
         {
             do
             {
-                m_aChargeProgress.Add(BIUtils::GetFromStr_Float(pcTmp, 0.f));
+                m_aChargeProgress.push_back(BIUtils::GetFromStr_Float(pcTmp, 0.f));
             } while (pcTmp[0]);
         }
 
@@ -279,7 +280,7 @@ void BIManSign::Init(ATTRIBUTES *pRoot, ATTRIBUTES *pA)
 
         for (n = 0; n < MAX_MAN_QUANTITY; n++)
         {
-            _snprintf(param, sizeof(param), "iconoffset%d", n + 1);
+            sprintf_s(param, sizeof(param), "iconoffset%d", n + 1);
             pcTmp = pA->GetAttribute(param);
             if (pcTmp)
                 sscanf(pcTmp, "%f,%f", &m_Man[n].pntPos.x, &m_Man[n].pntPos.y);
@@ -289,7 +290,7 @@ void BIManSign::Init(ATTRIBUTES *pRoot, ATTRIBUTES *pA)
     m_bMakeUpdate = true;
 }
 
-long BIManSign::AddTexture(const char *pcTextureName, long nCols, long nRows)
+long BIManSign::AddTexture(const char *pcTextureName, long nCols, long nRows) const
 {
     if (m_pCommandList)
         return m_pCommandList->AddTexture(pcTextureName, nCols, nRows);
@@ -298,11 +299,11 @@ long BIManSign::AddTexture(const char *pcTextureName, long nCols, long nRows)
 
 void BIManSign::Recollect()
 {
-    long n = CalculateManQuantity();
+    const auto n = CalculateManQuantity();
     UpdateBuffers(n);
 }
 
-bool BIManSign::IsActive()
+bool BIManSign::IsActive() const
 {
     if (!m_pCommandList)
         return false;
@@ -311,7 +312,7 @@ bool BIManSign::IsActive()
 
 void BIManSign::SetActive(bool bActive)
 {
-    bool bSameActive = (IsActive() == bActive);
+    const auto bSameActive = (IsActive() == bActive);
     if (m_pCommandList)
         m_pCommandList->SetActive(bActive);
     if (bSameActive)
@@ -326,21 +327,15 @@ void BIManSign::MakeControl()
 
     api->Controls->GetControlState(BI_COMMANDS_CONFIRM, cs);
     if (cs.state == CST_ACTIVATED)
-    {
         ExecuteCommand(BI_MSG_COMMAND_ACTIVATE);
-    }
 
     api->Controls->GetControlState(BI_COMMANDS_LEFTSTEP, cs);
     if (cs.state == CST_ACTIVATED)
-    {
         ExecuteCommand(BI_MSG_COMMAND_LEFT);
-    }
 
     api->Controls->GetControlState(BI_COMMANDS_RIGHTSTEP, cs);
     if (cs.state == CST_ACTIVATED)
-    {
         ExecuteCommand(BI_MSG_COMMAND_RIGHT);
-    }
 
     api->Controls->GetControlState(BI_COMMANDS_UPSTEP, cs);
     if (cs.state == CST_ACTIVATED)
@@ -352,9 +347,7 @@ void BIManSign::MakeControl()
 
     api->Controls->GetControlState(BI_COMMANDS_CANCEL, cs);
     if (cs.state == CST_ACTIVATED)
-    {
         ExecuteCommand(BI_MSG_COMMAND_DEACTIVATE);
-    }
 }
 
 void BIManSign::ExecuteCommand(long command)
@@ -364,14 +357,12 @@ void BIManSign::ExecuteCommand(long command)
     case BI_MSG_COMMAND_ACTIVATE:
         if (m_pCommandList)
         {
-            long nTmp = m_pCommandList->ExecuteConfirm();
+            const auto nTmp = m_pCommandList->ExecuteConfirm();
             if (nTmp != -1)
                 m_nCommandMode = nTmp;
         }
         if (m_nCommandMode == 0)
-        {
             SetActive(false);
-        }
         break;
 
     case BI_MSG_COMMAND_LEFT:
@@ -405,7 +396,7 @@ void BIManSign::ExecuteCommand(long command)
 
 void BIManSign::Release()
 {
-    SE_DELETE(m_pCommandList);
+    STORM_DELETE(m_pCommandList);
     TEXTURE_RELEASE(m_pRS, m_nBackTextureID);
     // TEXTURE_RELEASE( m_pRS, m_nShipTextureID );
     TEXTURE_RELEASE(m_pRS, m_nManStateTextureID);
@@ -437,15 +428,15 @@ long BIManSign::CalculateManQuantity()
         m_Man[n].nShootCurrent = 0;
     }
 
-    ATTRIBUTES *pAttr = m_pARoot ? m_pARoot->GetAttributeClass("data") : 0;
+    auto *pAttr = m_pARoot ? m_pARoot->GetAttributeClass("data") : nullptr;
     if (pAttr)
         pAttr = pAttr->GetAttributeClass("icons");
     char attrname[128];
     if (pAttr)
         for (n = 0; n < MAX_MAN_QUANTITY; n++)
         {
-            _snprintf(attrname, sizeof(attrname), "id%d", n);
-            ATTRIBUTES *pA = pAttr->GetAttributeClass(attrname);
+            sprintf_s(attrname, sizeof(attrname), "id%d", n);
+            auto *const pA = pAttr->GetAttributeClass(attrname);
             if (!pA)
                 continue;
             m_Man[m_nManQuantity].nCharacterIndex = -1;
@@ -461,47 +452,47 @@ void BIManSign::UpdateBuffers(long nShipQ)
     m_nBackSquareQ = nShipQ;
     m_nManStateSquareQ = nShipQ * 2;
     m_nGunChargeSquareQ = nShipQ * 2;
-    long nManSquareQ = nShipQ;
-    long nAlarmSquareQ = (m_bIsAlarmOn && (nShipQ > 0)) ? 1 : 0;
+    const auto nManSquareQ = nShipQ;
+    const long nAlarmSquareQ = (m_bIsAlarmOn && (nShipQ > 0)) ? 1 : 0;
 
-    long nMaxSquareQ =
+    const auto nMaxSquareQ =
         BIUtils::GetMaxFromFourLong(m_nBackSquareQ, m_nManStateSquareQ, m_nGunChargeSquareQ, nManSquareQ);
     if (m_nMaxSquareQ != nMaxSquareQ)
     {
         m_nMaxSquareQ = nMaxSquareQ;
         INDEX_BUFFER_RELEASE(m_pRS, m_nIBufID);
         if (m_nMaxSquareQ > 0)
-            m_nIBufID = m_pRS->CreateIndexBufferManaged(m_nMaxSquareQ * 6 * sizeof(word));
+            m_nIBufID = m_pRS->CreateIndexBuffer(m_nMaxSquareQ * 6 * sizeof(uint16_t));
         FillIndexBuffer();
     }
 
     if ((m_nBackSquareQ + m_nManStateSquareQ + m_nGunChargeSquareQ + nManSquareQ + nAlarmSquareQ) != m_nSquareQ)
     {
         m_nSquareQ = m_nBackSquareQ + m_nManStateSquareQ + m_nGunChargeSquareQ + nManSquareQ + nAlarmSquareQ;
-        long n = 6 * 4 + 1;
+        const long n = 6 * 4 + 1;
         VERTEX_BUFFER_RELEASE(m_pRS, m_nVBufID);
-        m_nVBufID = m_pRS->CreateVertexBufferManaged(BI_COLOR_VERTEX_FORMAT, n * 4 * sizeof(BI_COLOR_VERTEX),
-                                                     D3DUSAGE_WRITEONLY);
+        m_nVBufID =
+            m_pRS->CreateVertexBuffer(BI_COLOR_VERTEX_FORMAT, n * 4 * sizeof(BI_COLOR_VERTEX), D3DUSAGE_WRITEONLY);
     }
     // FillVertexBuffer();
 }
 
-void BIManSign::FillIndexBuffer()
+void BIManSign::FillIndexBuffer() const
 {
     if (m_nIBufID < 0)
         return;
-    word *pI = (word *)m_pRS->LockIndexBuffer(m_nIBufID);
+    auto *pI = static_cast<uint16_t *>(m_pRS->LockIndexBuffer(m_nIBufID));
     if (pI)
     {
         for (long n = 0; n < m_nMaxSquareQ; n++)
         {
-            pI[n * 6 + 0] = (word)(n * 4 + 0);
-            pI[n * 6 + 1] = (word)(n * 4 + 1);
-            pI[n * 6 + 2] = (word)(n * 4 + 2);
+            pI[n * 6 + 0] = static_cast<uint16_t>(n * 4 + 0);
+            pI[n * 6 + 1] = static_cast<uint16_t>(n * 4 + 1);
+            pI[n * 6 + 2] = static_cast<uint16_t>(n * 4 + 2);
 
-            pI[n * 6 + 3] = (word)(n * 4 + 2);
-            pI[n * 6 + 4] = (word)(n * 4 + 1);
-            pI[n * 6 + 5] = (word)(n * 4 + 3);
+            pI[n * 6 + 3] = static_cast<uint16_t>(n * 4 + 2);
+            pI[n * 6 + 4] = static_cast<uint16_t>(n * 4 + 1);
+            pI[n * 6 + 5] = static_cast<uint16_t>(n * 4 + 3);
         }
         m_pRS->UnLockIndexBuffer(m_nIBufID);
     }
@@ -512,7 +503,7 @@ void BIManSign::FillVertexBuffer()
     long n;
     if (m_nVBufID < 0)
         return;
-    BI_COLOR_VERTEX *pV = (BI_COLOR_VERTEX *)m_pRS->LockVertexBuffer(m_nVBufID);
+    auto *pV = static_cast<BI_COLOR_VERTEX *>(m_pRS->LockVertexBuffer(m_nVBufID));
     if (pV)
     {
         long vn = 0;
@@ -561,15 +552,16 @@ void BIManSign::FillVertexBuffer()
     }
 }
 
-long BIManSign::WriteSquareToVBuff(BI_COLOR_VERTEX *pv, FRECT &uv, dword color, BIFPOINT &center, FPOINT &size)
+long BIManSign::WriteSquareToVBuff(BI_COLOR_VERTEX *pv, const FRECT &uv, uint32_t color, const BIFPOINT &center,
+                                   const FPOINT &size)
 {
     if (!pv)
         return 0;
 
-    float fLeft = (float)(center.x - size.x / 2);
-    float fTop = (float)(center.y - size.y / 2);
-    float fRight = fLeft + size.x;
-    float fBottom = fTop + size.y;
+    const auto fLeft = static_cast<float>(center.x - size.x / 2);
+    const auto fTop = static_cast<float>(center.y - size.y / 2);
+    const auto fRight = fLeft + size.x;
+    const auto fBottom = fTop + size.y;
 
     pv[0].pos.x = fLeft;
     pv[0].pos.y = fTop;
@@ -606,27 +598,27 @@ long BIManSign::WriteSquareToVBuff(BI_COLOR_VERTEX *pv, FRECT &uv, dword color, 
     return 4;
 }
 
-long BIManSign::WriteSquareToVBuffWithProgress(BI_COLOR_VERTEX *pv, FRECT &uv, dword color, BIFPOINT &center,
-                                               FPOINT &size, float fClampUp, float fClampDown, float fClampLeft,
-                                               float fClampRight)
+long BIManSign::WriteSquareToVBuffWithProgress(BI_COLOR_VERTEX *pv, const FRECT &uv, uint32_t color,
+                                               const BIFPOINT &center, const FPOINT &size, float fClampUp,
+                                               float fClampDown, float fClampLeft, float fClampRight)
 {
     if (!pv)
         return 0;
 
-    float fLeft = (float)(center.x - size.x / 2);
-    float fTop = (float)(center.y - size.y / 2);
-    float fRight = fLeft + size.x;
-    float fBottom = fTop + size.y;
+    auto fLeft = static_cast<float>(center.x - size.x / 2);
+    auto fTop = static_cast<float>(center.y - size.y / 2);
+    auto fRight = fLeft + size.x;
+    auto fBottom = fTop + size.y;
 
     fLeft += size.x * fClampLeft;
     fRight -= size.x * fClampRight;
     fTop += size.y * fClampUp;
     fBottom += size.y * fClampDown;
 
-    float fLeftUV = uv.left + (uv.right - uv.left) * fClampLeft;
-    float fRightUV = uv.right - (uv.right - uv.left) * fClampRight;
-    float fTopUV = uv.top + (uv.bottom - uv.top) * fClampUp;
-    float fBottomUV = uv.bottom - (uv.bottom - uv.top) * fClampDown;
+    const auto fLeftUV = uv.left + (uv.right - uv.left) * fClampLeft;
+    const auto fRightUV = uv.right - (uv.right - uv.left) * fClampRight;
+    const auto fTopUV = uv.top + (uv.bottom - uv.top) * fClampUp;
+    const auto fBottomUV = uv.bottom - (uv.bottom - uv.top) * fClampDown;
 
     pv[0].pos.x = fLeft;
     pv[0].pos.y = fTop;
@@ -663,43 +655,41 @@ long BIManSign::WriteSquareToVBuffWithProgress(BI_COLOR_VERTEX *pv, FRECT &uv, d
     return 4;
 }
 
-void BIManSign::UpdateCommandList()
+void BIManSign::UpdateCommandList() const
 {
     if (m_pCommandList)
-    {
         m_pCommandList->Update(GetCurrentCommandTopLine(), GetCurrentCommandCharacterIndex(), GetCurrentCommandMode());
-    }
 }
 
-long BIManSign::GetCurrentCommandTopLine()
+long BIManSign::GetCurrentCommandTopLine() const
 {
-    long n = m_nCurrentManIndex;
+    auto n = m_nCurrentManIndex;
     if (n < 0 || n >= m_nManQuantity)
         n = 0;
-    return (long)(m_Man[n].pntPos.y) + m_nCommandListVerticalOffset;
+    return static_cast<long>(m_Man[n].pntPos.y) + m_nCommandListVerticalOffset;
 }
 
-long BIManSign::GetCurrentCommandCharacterIndex()
+long BIManSign::GetCurrentCommandCharacterIndex() const
 {
-    long n = m_nCurrentManIndex;
+    auto n = m_nCurrentManIndex;
     if (n < 0 || n >= m_nManQuantity)
         n = 0;
-    return (long)m_Man[n].nCharacterIndex;
+    return static_cast<long>(m_Man[n].nCharacterIndex);
 }
 
-long BIManSign::GetCurrentCommandMode()
+long BIManSign::GetCurrentCommandMode() const
 {
     return m_nCommandMode;
 }
 
-float BIManSign::GetProgressManHP(long nIdx)
+float BIManSign::GetProgressManHP(long nIdx) const
 {
     if (nIdx < 0 || nIdx >= m_nManQuantity)
         return 1.f;
     return 1.f - m_Man[nIdx].fHealth;
 }
 
-float BIManSign::GetProgressManEnergy(long nIdx)
+float BIManSign::GetProgressManEnergy(long nIdx) const
 {
     if (nIdx < 0 || nIdx >= m_nManQuantity)
         return 1.f;
@@ -722,14 +712,14 @@ float BIManSign::GetProgressGunCharge(long nIdx)
 
 float BIManSign::GetGunProgressByIndex(long nIdx)
 {
-    if (nIdx < 0 || nIdx >= m_aChargeProgress)
+    if (nIdx < 0 || nIdx >= m_aChargeProgress.size())
         return 0.f;
     return m_aChargeProgress[nIdx];
 }
 
 void BIManSign::CheckDataChange()
 {
-    ATTRIBUTES *pAttr = m_pARoot ? m_pARoot->GetAttributeClass("data") : 0;
+    auto *pAttr = m_pARoot ? m_pARoot->GetAttributeClass("data") : nullptr;
     if (pAttr && BoolACompare(pAttr, "alarm", m_bIsAlarmOn))
         m_bMakeVertexFill = true;
     if (pAttr)
@@ -742,8 +732,8 @@ void BIManSign::CheckDataChange()
     {
         if (m_Man[n].nSlotIndex < 0)
             continue;
-        _snprintf(attrname, sizeof(attrname), "id%d", m_Man[n].nSlotIndex);
-        ATTRIBUTES *pA = pAttr->GetAttributeClass(attrname);
+        sprintf_s(attrname, sizeof(attrname), "id%d", m_Man[n].nSlotIndex);
+        auto *const pA = pAttr->GetAttributeClass(attrname);
         if (!pA)
             continue;
 
@@ -762,7 +752,7 @@ void BIManSign::CheckDataChange()
         if (StringACompare(pA, "texture", m_Man[n].sTexture))
         {
             TEXTURE_RELEASE(m_pRS, m_Man[n].nTexture);
-            m_Man[n].nTexture = m_pRS->TextureCreate(m_Man[n].sTexture);
+            m_Man[n].nTexture = m_pRS->TextureCreate(m_Man[n].sTexture.c_str());
             m_bMakeVertexFill = true;
         }
     }

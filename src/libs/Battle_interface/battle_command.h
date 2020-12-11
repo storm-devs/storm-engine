@@ -2,8 +2,8 @@
 #define _BI_COMMANDLIST_H_
 
 #include "bi_defines.h"
-#include "templates\array.h"
-#include "templates\string.h"
+#include <string>
+#include <vector>
 
 class BIImageRender;
 
@@ -20,14 +20,16 @@ class BIImageRender;
 class BICommandList
 {
   public:
-    BICommandList(ENTITY_ID &eid, ATTRIBUTES *pA, VDX8RENDER *rs);
+    BICommandList(BICommandList &&) = delete;
+    BICommandList(const BICommandList &) = delete;
+    BICommandList(entid_t eid, ATTRIBUTES *pA, VDX9RENDER *rs);
     virtual ~BICommandList();
 
     void Draw();
     void Update(long nTopLine, long nCharacterIndex, long nCommandMode);
     virtual void FillIcons() = 0;
 
-    long AddTexture(const char *pcTextureName, long nCols, long nRows);
+    long AddTexture(const char *pcTextureName, uint32_t nCols, uint32_t nRows);
 
     // commands
     long ExecuteConfirm();
@@ -36,7 +38,7 @@ class BICommandList
     long ExecuteCancel();
 
     void SetActive(bool bActive);
-    bool GetActive()
+    bool GetActive() const
     {
         return m_bActive;
     }
@@ -51,27 +53,28 @@ class BICommandList
     void AddAdditiveToIconList(long nTextureNum, long nPictureNum, float fDist, float fWidth, float fHeight);
 
   protected:
-    ENTITY_ID m_idHostObj;
+    entid_t m_idHostObj;
     ATTRIBUTES *m_pARoot;
-    VDX8RENDER *m_pRS;
+    VDX9RENDER *m_pRS;
 
     BIImageRender *m_pImgRender;
 
     struct TextureDescr
     {
-        string sFileName;
-        long nCols;
-        long nRows;
+        std::string sFileName;
+        uint32_t nCols;
+        uint32_t nRows;
     };
-    array<TextureDescr> m_aTexture;
+
+    std::vector<TextureDescr> m_aTexture;
 
     struct UsedCommand
     {
         long nCharIndex;
-        string sCommandName;
+        std::string sCommandName;
         long nTargetIndex;
-        string sLocName;
-        string sNote;
+        std::string sLocName;
+        std::string sNote;
 
         long nTextureIndex;
         long nSelPictureIndex;
@@ -87,14 +90,13 @@ class BICommandList
             float fDelta;
             FPOINT fpSize;
         };
-        array<AdditiveIcon> aAddPicList;
 
-        UsedCommand() : aAddPicList(_FL_){};
+        std::vector<AdditiveIcon> aAddPicList;
     };
 
     bool m_bActive;
 
-    array<UsedCommand> m_aUsedCommand;
+    std::vector<UsedCommand> m_aUsedCommand;
     long m_nStartUsedCommandIndex;
     long m_nSelectedCommandIndex;
     long m_nIconShowMaxQuantity;
@@ -103,21 +105,21 @@ class BICommandList
 
     POINT m_pntActiveIconOffset;
     POINT m_pntActiveIconSize;
-    string m_sActiveIconTexture;
+    std::string m_sActiveIconTexture;
     FRECT m_frActiveIconUV1;
     FRECT m_frActiveIconUV2;
-    string m_sActiveIconNote;
+    std::string m_sActiveIconNote;
 
     bool m_bUpArrow;
     bool m_bDownArrow;
-    string m_sUpDownArrowTexture;
+    std::string m_sUpDownArrowTexture;
     FRECT m_frUpArrowUV;
     FRECT m_frDownArrowUV;
     POINT m_pntUpDownArrowSize;
     POINT m_pntUpArrowOffset;
     POINT m_pntDownArrowOffset;
 
-    string m_sCurrentCommandName;
+    std::string m_sCurrentCommandName;
     long m_nCurrentCommandCharacterIndex;
     long m_nCurrentCommandMode;
 
@@ -126,11 +128,11 @@ class BICommandList
     long m_nIconSpace;
 
     long m_NoteFontID;
-    dword m_NoteFontColor;
+    uint32_t m_NoteFontColor;
     float m_NoteFontScale;
     POINT m_NotePos;
     POINT m_NoteOffset;
-    string m_NoteText;
+    std::string m_NoteText;
 
     struct CoolDownUpdateData
     {
@@ -138,21 +140,22 @@ class BICommandList
         float fTime;
         float fUpdateTime;
     };
-    array<CoolDownUpdateData> m_aCooldownUpdate;
+
+    std::vector<CoolDownUpdateData> m_aCooldownUpdate;
 
     void Release();
 
     long IconAdd(long nPictureNum, long nTextureNum, RECT &rpos);
     long ClockIconAdd(long nForePictureNum, long nBackPictureNum, long nTextureNum, RECT &rpos, float fFactor);
-    void AdditiveIconAdd(float fX, float fY, array<UsedCommand::AdditiveIcon> &aList);
+    void AdditiveIconAdd(float fX, float fY, std::vector<UsedCommand::AdditiveIcon> &aList);
     FRECT &GetPictureUV(long nTextureNum, long nPictureNum, FRECT &uv);
-    RECT &GetCurrentPos(long num, RECT &rpos);
+    RECT &GetCurrentPos(long num, RECT &rpos) const;
     RECT &GetAddingPos(long num, RECT &rpos);
 
     void UpdateShowIcon();
     void SetNote(const char *pcNote, long nX, long nY);
 
-    ATTRIBUTES *GetCurrentCommandAttribute();
+    ATTRIBUTES *GetCurrentCommandAttribute() const;
 };
 
 #endif

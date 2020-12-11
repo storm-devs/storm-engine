@@ -2,24 +2,28 @@
 #define _BI_UTILS_H_
 
 #include "bi_defines.h"
-#include "templates\array.h"
-#include "templates\string.h"
+#include <string>
+#include <vector>
 
-class BITextInfo
+class BITextInfo final
 {
   public:
+    BITextInfo(BITextInfo &&text_info) noexcept;
+
+    BITextInfo(const BITextInfo &text_info);
+
     BITextInfo();
     ~BITextInfo();
     void Release();
-    void Init(VDX8RENDER *rs, ATTRIBUTES *pA);
+    void Init(VDX9RENDER *rs, ATTRIBUTES *pA);
     void Print();
 
-    VDX8RENDER *pRS;
-    string sText;
+    VDX9RENDER *pRS;
+    std::string sText;
     POINT pos;
     float fScale;
     long nFont;
-    dword dwColor;
+    uint32_t dwColor;
     bool bShadow;
 
     ATTRIBUTES *pARefresh;
@@ -31,27 +35,28 @@ class BILinesInfo
     BILinesInfo();
     ~BILinesInfo();
     void Release();
-    void Init(VDX8RENDER *rs, ATTRIBUTES *pA);
+    void Init(VDX9RENDER *rs, ATTRIBUTES *pA);
     void Draw();
 
-    VDX8RENDER *pRS;
-    array<RS_LINE2D> lines;
+    VDX9RENDER *pRS;
+    std::vector<RS_LINE2D> lines;
 };
 
 class IBIImage;
 class BIImageRender;
+
 class BIImagesInfo
 {
   public:
     BIImagesInfo();
     ~BIImagesInfo();
     void Release();
-    void Init(VDX8RENDER *rs, ATTRIBUTES *pA);
-    void Draw();
+    void Init(VDX9RENDER *rs, ATTRIBUTES *pA);
+    void Draw() const;
 
-    VDX8RENDER *pRS;
+    VDX9RENDER *pRS;
     BIImageRender *pImgRender;
-    array<IBIImage *> images;
+    std::vector<IBIImage *> images;
 };
 
 class BIBorderInfo
@@ -60,17 +65,17 @@ class BIBorderInfo
     BIBorderInfo();
     ~BIBorderInfo();
     void Release();
-    void Init(VDX8RENDER *rs, ATTRIBUTES *pA);
+    void Init(VDX9RENDER *rs, ATTRIBUTES *pA);
     void Draw();
 
-    VDX8RENDER *pRS;
+    VDX9RENDER *pRS;
     long nVBuf;
     long nTexID;
     FRECT ext_pos;
     FRECT int_pos1;
     FRECT int_pos2;
-    dword dwColor1;
-    dword dwColor2;
+    uint32_t dwColor1;
+    uint32_t dwColor2;
     float fCur;
     float fSpeed;
     bool bUp;
@@ -85,33 +90,33 @@ class BIUtils
     static float GetFloatFromAttr(ATTRIBUTES *pA, const char *name, float defVal);
     static bool ReadStringFromAttr(ATTRIBUTES *pA, const char *name, char *buf, long bufSize, const char *defVal);
     static char *GetStringFromAttr(ATTRIBUTES *pA, const char *name, const char *defVal);
-    static long GetTextureFromAttr(VDX8RENDER *rs, ATTRIBUTES *pA, const char *sAttrName);
+    static long GetTextureFromAttr(VDX9RENDER *rs, ATTRIBUTES *pA, const char *sAttrName);
     static bool ReadRectFromAttr(ATTRIBUTES *pA, const char *name, FRECT &rOut, FRECT &rDefault);
     static bool ReadRectFromAttr(ATTRIBUTES *pA, const char *name, RECT &rOut, RECT &rDefault);
     static bool ReadPosFromAttr(ATTRIBUTES *pA, const char *name, float &fX, float &fY, float fXDef, float fYDef);
     static bool ReadPosFromAttr(ATTRIBUTES *pA, const char *name, long &nX, long &nY, long nXDef, long nYDef);
     static long GetAlignmentFromAttr(ATTRIBUTES *pA, const char *name, long nDefAlign);
-    static long GetFontIDFromAttr(ATTRIBUTES *pA, const char *name, VDX8RENDER *rs, const char *pcDefFontName);
+    static long GetFontIDFromAttr(ATTRIBUTES *pA, const char *name, VDX9RENDER *rs, const char *pcDefFontName);
     static bool ReadVectorFormAttr(ATTRIBUTES *pA, const char *name, CVECTOR &vOut, const CVECTOR &vDef);
 
     static bool ComparePoint(POINT &p1, POINT &p2);
 
-    static ATTRIBUTES *_cdecl GetAttributesFromPath(ATTRIBUTES *pA, ...);
+    static ATTRIBUTES *GetAttributesFromPath(ATTRIBUTES *pA, ...);
 
-    static DWORD GetIntervalColor(DWORD minV, DWORD maxV, float fpar);
+    static uint32_t GetIntervalColor(uint32_t minV, uint32_t maxV, float fpar);
     static bool GetIntervalRect(float fk, const FRECT &r1, const FRECT &r2, FRECT &rOut);
 
     static long GetMaxFromFourLong(long n1, long n2, long n3, long n4);
 
-    static float GetFromStr_Float(char *&pcStr, float fDefault);
+    static float GetFromStr_Float(const char *&pcStr, float fDefault);
 
-    static void FillTextInfoArray(VDX8RENDER *pRS, ATTRIBUTES *pA, array<BITextInfo> &tia);
-    static void PrintTextInfoArray(array<BITextInfo> &tia);
+    static void FillTextInfoArray(VDX9RENDER *pRS, ATTRIBUTES *pA, std::vector<BITextInfo> &tia);
+    static void PrintTextInfoArray(std::vector<BITextInfo> &tia);
     //---------------------------------------
     //---------------------------------------
   public: // data
-    static ENTITY_ID idBattleInterface;
-    static DWORD g_dwBlinkColor;
+    static entid_t idBattleInterface;
+    static uint32_t g_dwBlinkColor;
     //---------------------------------------
 };
 

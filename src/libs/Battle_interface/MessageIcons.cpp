@@ -1,16 +1,16 @@
 #include "MessageIcons.h"
-#include "utils.h"
+#include "Utils.h"
 
 MESSAGE_ICONS::MESSAGE_ICONS()
 {
-    rs = null;
+    rs = nullptr;
 
     m_bShowMsgIcon = false;
     m_idMsgIconsTexture = -1;
     m_vMsgIconBufID = -1;
     m_iMsgIconBufID = -1;
 
-    ZeroMemory(m_pIconsAttr, sizeof(m_pIconsAttr));
+    PZERO(m_pIconsAttr, sizeof(m_pIconsAttr));
 }
 
 MESSAGE_ICONS::~MESSAGE_ICONS()
@@ -20,17 +20,17 @@ MESSAGE_ICONS::~MESSAGE_ICONS()
     TEXTURE_RELEASE(rs, m_idMsgIconsTexture);
 }
 
-void MESSAGE_ICONS::Update(DWORD deltaTime)
+void MESSAGE_ICONS::Update(uint32_t deltaTime)
 {
     int i, j, n, q;
     if (m_bShowMsgIcon)
     {
-        BI_COLOR_VERTEX *pVBuf = (BI_COLOR_VERTEX *)rs->LockVertexBuffer(m_vMsgIconBufID);
+        auto *pVBuf = static_cast<BI_COLOR_VERTEX *>(rs->LockVertexBuffer(m_vMsgIconBufID));
         if (!pVBuf)
             return;
 
-        // Расчет цвета мигания
-        DWORD blindColor = m_dwNormalColor;
+        // –асчет цвета мигани€
+        auto blindColor = m_dwNormalColor;
         if (m_bBlindDirectUp)
             blindColor =
                 BIUtils::GetIntervalColor(m_dwHighBlindColor, m_dwLowBlindColor, m_fCurBlindTime / m_fBlindTimeUp);
@@ -38,16 +38,16 @@ void MESSAGE_ICONS::Update(DWORD deltaTime)
             blindColor =
                 BIUtils::GetIntervalColor(m_dwLowBlindColor, m_dwHighBlindColor, m_fCurBlindTime / m_fBlindTimeDown);
 
-        float fFallDist = m_fFallSpeed * deltaTime * .001f;
+        auto fFallDist = m_fFallSpeed * deltaTime * .001f;
 
         m_nMsgIconQnt = 0;
 
         for (i = 0; i < MESSAGE_ICONS_COLUMN_QUANTITY; i++)
         {
-            // действия над иконками
+            // действи€ над иконками
             for (j = 0; j < m_pMsgColumns[i].rowQ; j++)
             {
-                // Проведем проверку на удаление иконок
+                // ѕроведем проверку на удаление иконок
                 if (m_pMsgColumns[i].pRow[j].bDoBlend)
                 {
                     if ((m_pMsgColumns[i].pRow[j].curTime -= deltaTime * .001f) <= 0.f)
@@ -64,7 +64,7 @@ void MESSAGE_ICONS::Update(DWORD deltaTime)
                                                   m_pMsgColumns[i].pRow[j].curTime / m_fBlendTime);
                 }
                 // осадка иконок вниз
-                float fBottonLimit = (float)m_nBottomY;
+                auto fBottonLimit = static_cast<float>(m_nBottomY);
                 if (j > 0)
                     fBottonLimit = m_pMsgColumns[i].pRow[j - 1].bottom - m_nMsgIconHeight - m_nMsgIconDist;
                 if (m_pMsgColumns[i].pRow[j].bottom < fBottonLimit)
@@ -78,7 +78,7 @@ void MESSAGE_ICONS::Update(DWORD deltaTime)
             // пометим иконки
             if (m_pIconsAttr[i])
             {
-                // пометим все иконки как удаляемые
+                // пометим все иконки как удал€емые
                 for (n = 0; n < m_pMsgColumns[i].rowQ; n++)
                 {
                     if (!m_pMsgColumns[i].pRow[n].bDoBlend)
@@ -87,13 +87,13 @@ void MESSAGE_ICONS::Update(DWORD deltaTime)
                         m_pMsgColumns[i].pRow[n].curTime = m_fBlendTime;
                     }
                 }
-                // пройдемся по иконкам
+                // пройдемс€ по иконкам
                 q = m_pIconsAttr[i]->GetAttributesNum();
                 for (n = 0; n < q; n++)
                 {
-                    ATTRIBUTES *pA = m_pIconsAttr[i]->GetAttributeClass(n);
+                    auto *pA = m_pIconsAttr[i]->GetAttributeClass(n);
                     int picNum = pA->GetAttributeAsDword("pic");
-                    int k = 0;
+                    int k;
                     for (k = 0; k < m_pMsgColumns[i].rowQ; k++)
                         if (picNum == m_pMsgColumns[i].pRow[k].pic)
                         {
@@ -105,7 +105,7 @@ void MESSAGE_ICONS::Update(DWORD deltaTime)
                         continue;
                     m_pMsgColumns[i].pRow[m_pMsgColumns[i].rowQ].pic = picNum;
                     m_pMsgColumns[i].pRow[m_pMsgColumns[i].rowQ].bottom =
-                        (float)m_nBottomY - m_pMsgColumns[i].rowQ * (m_nMsgIconHeight + m_nMsgIconDist);
+                        static_cast<float>(m_nBottomY) - m_pMsgColumns[i].rowQ * (m_nMsgIconHeight + m_nMsgIconDist);
                     m_pMsgColumns[i].pRow[k].color = ARGB(255, 128, 128, 128);
                     m_pMsgColumns[i].pRow[k].bDoBlend = false;
                     m_pMsgColumns[i].pRow[k].bDoBlind = false;
@@ -117,7 +117,7 @@ void MESSAGE_ICONS::Update(DWORD deltaTime)
             FRECT frectTmp;
             for (j = 0; j < m_pMsgColumns[i].rowQ; j++)
             {
-                frectTmp.right = (frectTmp.left = (float)m_pMsgColumns[i].leftPos) + m_nMsgIconWidth;
+                frectTmp.right = (frectTmp.left = static_cast<float>(m_pMsgColumns[i].leftPos)) + m_nMsgIconWidth;
                 frectTmp.top = (frectTmp.bottom = m_pMsgColumns[i].pRow[j].bottom) - m_nMsgIconHeight;
                 SetRectanglePos(&pVBuf[m_nMsgIconQnt * 4], frectTmp);
                 SetRectangleTexture(&pVBuf[m_nMsgIconQnt * 4],
@@ -133,9 +133,9 @@ void MESSAGE_ICONS::Update(DWORD deltaTime)
     }
 }
 
-void MESSAGE_ICONS::Draw()
+void MESSAGE_ICONS::Draw() const
 {
-    // показать сообщения
+    // показать сообщени€
     if (m_bShowMsgIcon && m_nMsgIconQnt > 0 && m_idMsgIconsTexture >= 0)
     {
         rs->TextureSet(0, m_idMsgIconsTexture);
@@ -149,7 +149,7 @@ void MESSAGE_ICONS::StartData(ATTRIBUTES *pAData[MESSAGE_ICONS_COLUMN_QUANTITY],
                               long pLeft[MESSAGE_ICONS_COLUMN_QUANTITY])
 {
     int i, j;
-    if (pAData == null)
+    if (pAData == nullptr)
         return;
 
     for (i = 0; i < MESSAGE_ICONS_COLUMN_QUANTITY; i++)
@@ -165,17 +165,17 @@ void MESSAGE_ICONS::StartData(ATTRIBUTES *pAData[MESSAGE_ICONS_COLUMN_QUANTITY],
             q = m_nMsgIconRowQnt;
         for (j = 0; j < q; j++)
         {
-            ATTRIBUTES *pA = pAData[i]->GetAttributeClass(j);
+            auto *pA = pAData[i]->GetAttributeClass(j);
             if (!pA)
                 continue;
             m_pMsgColumns[i].pRow[j].pic = pA->GetAttributeAsDword("pic", -1);
-            m_pMsgColumns[i].pRow[j].bottom = (float)(m_nBottomY - (m_nMsgIconHeight + m_nMsgIconDist) * j);
+            m_pMsgColumns[i].pRow[j].bottom = static_cast<float>(m_nBottomY - (m_nMsgIconHeight + m_nMsgIconDist) * j);
         }
         m_pMsgColumns[i].rowQ = q;
     }
 }
 
-bool MESSAGE_ICONS::InitData(ENTITY_ID &host_eid, VDX8RENDER *_rs, ATTRIBUTES *pARoot)
+bool MESSAGE_ICONS::InitData(entid_t host_eid, VDX9RENDER *_rs, ATTRIBUTES *pARoot)
 {
     m_idHost = host_eid;
     rs = _rs;
@@ -196,34 +196,35 @@ bool MESSAGE_ICONS::InitData(ENTITY_ID &host_eid, VDX8RENDER *_rs, ATTRIBUTES *p
     m_fBlindTimeUp = pARoot->GetAttributeAsFloat("BlindUpTime", .5f);
     m_fBlindTimeDown = pARoot->GetAttributeAsFloat("BlindDownTime", 1.f);
 
-    char *stmp = pARoot->GetAttribute("texture");
-    if (stmp != null)
+    auto *const stmp = pARoot->GetAttribute("texture");
+    if (stmp != nullptr)
         m_idMsgIconsTexture = rs->TextureCreate(stmp);
     m_nHorzTextureSize = pARoot->GetAttributeAsDword("TexHSize", 1);
     m_nVertTextureSize = pARoot->GetAttributeAsDword("TexVSize", 1);
 
-    m_vMsgIconBufID = rs->CreateVertexBufferManaged(
+    m_vMsgIconBufID = rs->CreateVertexBuffer(
         BI_COLOR_VERTEX_FORMAT, m_nMsgIconRowQnt * MESSAGE_ICONS_COLUMN_QUANTITY * 4 * sizeof(BI_COLOR_VERTEX),
         D3DUSAGE_WRITEONLY);
-    m_iMsgIconBufID = rs->CreateIndexBufferManaged(m_nMsgIconRowQnt * MESSAGE_ICONS_COLUMN_QUANTITY * 6 * 2);
+    m_iMsgIconBufID = rs->CreateIndexBuffer(m_nMsgIconRowQnt * MESSAGE_ICONS_COLUMN_QUANTITY * 6 * 2);
     m_nMsgIconQnt = 0;
     m_bShowMsgIcon = false;
 
-    for (int i = 0; i < MESSAGE_ICONS_COLUMN_QUANTITY; i++)
+    int i;
+    for (i = 0; i < MESSAGE_ICONS_COLUMN_QUANTITY; i++)
     {
         m_pMsgColumns[i].rowQ = 0;
         m_pMsgColumns[i].startVertex = i * m_nMsgIconRowQnt;
-        m_pMsgColumns[i].pRow = NEW COLUMN_DESCRIBER::ROW_DESCR[m_nMsgIconRowQnt];
-        if (m_pMsgColumns[i].pRow == null)
+        m_pMsgColumns[i].pRow = new COLUMN_DESCRIBER::ROW_DESCR[m_nMsgIconRowQnt];
+        if (m_pMsgColumns[i].pRow == nullptr)
         {
-            SE_THROW_MSG("allocate memory error");
+            throw std::exception("allocate memory error");
         }
     }
 
-    BI_COLOR_VERTEX *pVBuf = (BI_COLOR_VERTEX *)rs->LockVertexBuffer(m_vMsgIconBufID);
-    if (pVBuf != null)
+    auto *pVBuf = static_cast<BI_COLOR_VERTEX *>(rs->LockVertexBuffer(m_vMsgIconBufID));
+    if (pVBuf != nullptr)
     {
-        for (int i = 0; i < m_nMsgIconRowQnt * MESSAGE_ICONS_COLUMN_QUANTITY * 4; i++)
+        for (i = 0; i < m_nMsgIconRowQnt * MESSAGE_ICONS_COLUMN_QUANTITY * 4; i++)
         {
             pVBuf[i].w = 0.5f;
             pVBuf[i].pos.z = 1.f;
@@ -232,10 +233,10 @@ bool MESSAGE_ICONS::InitData(ENTITY_ID &host_eid, VDX8RENDER *_rs, ATTRIBUTES *p
         rs->UnLockVertexBuffer(m_vMsgIconBufID);
     }
 
-    WORD *pIBuf = (WORD *)rs->LockIndexBuffer(m_iMsgIconBufID);
-    if (pIBuf != null)
+    auto *pIBuf = static_cast<uint16_t *>(rs->LockIndexBuffer(m_iMsgIconBufID));
+    if (pIBuf != nullptr)
     {
-        for (int i = 0; i < m_nMsgIconRowQnt * MESSAGE_ICONS_COLUMN_QUANTITY; i++)
+        for (i = 0; i < m_nMsgIconRowQnt * MESSAGE_ICONS_COLUMN_QUANTITY; i++)
         {
             pIBuf[i * 6 + 0] = i * 4 + 0;
             pIBuf[i * 6 + 1] = i * 4 + 1;

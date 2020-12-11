@@ -1,12 +1,13 @@
 #include "battle_sign.h"
-#include "utils.h"
+#include "Utils.h"
+#include "vmodule_api.h"
 
-BISignIcon::BISignIcon(ENTITY_ID &BIEntityID, VDX8RENDER *pRS)
+BISignIcon::BISignIcon(entid_t BIEntityID, VDX9RENDER *pRS)
 {
     Assert(pRS);
 
-    m_pARoot = 0;
-    m_pAData = 0;
+    m_pARoot = nullptr;
+    m_pAData = nullptr;
 
     m_idHostEntity = BIEntityID;
     m_pRS = pRS;
@@ -52,10 +53,10 @@ void BISignIcon::Draw()
     if (m_nVBufID != -1 && m_nIBufID != -1)
     {
         long nStartV = 0;
-        long nStartI = 0;
+        const long nStartI = 0;
 
         // sign face
-        if (m_nSignFaceTextureID && m_nSignFaceSquareQ > 0)
+        if (m_nSignFaceSquareQ > 0)
         {
             m_pRS->TextureSet(0, m_nSignFaceTextureID);
             m_pRS->DrawBuffer(m_nVBufID, sizeof(BI_COLOR_VERTEX), m_nIBufID, nStartV, m_nSignFaceSquareQ * 4, nStartI,
@@ -64,7 +65,7 @@ void BISignIcon::Draw()
         nStartV += m_nSignFaceSquareQ * 4;
 
         // back
-        if (m_nBackTextureID && m_nBackSquareQ > 0)
+        if (m_nBackSquareQ > 0)
         {
             m_pRS->TextureSet(0, m_nBackTextureID);
             m_pRS->DrawBuffer(m_nVBufID, sizeof(BI_COLOR_VERTEX), m_nIBufID, nStartV, m_nBackSquareQ * 4, nStartI,
@@ -73,7 +74,7 @@ void BISignIcon::Draw()
         nStartV += m_nBackSquareQ * 4;
 
         // sign state (left & right)
-        if (m_nSignStateTextureID && m_nSignStateSquareQ > 0)
+        if (m_nSignStateSquareQ > 0)
         {
             m_pRS->TextureSet(0, m_nSignStateTextureID);
             m_pRS->DrawBuffer(m_nVBufID, sizeof(BI_COLOR_VERTEX), m_nIBufID, nStartV, m_nSignStateSquareQ * 4, nStartI,
@@ -82,7 +83,7 @@ void BISignIcon::Draw()
         nStartV += m_nSignStateSquareQ * 4;
 
         // sign star
-        if (m_nSignStarTextureID && m_nSignStarSquareQ > 0)
+        if (m_nSignStarSquareQ > 0)
         {
             m_pRS->TextureSet(0, m_nSignStarTextureID);
             m_pRS->DrawBuffer(m_nVBufID, sizeof(BI_COLOR_VERTEX), m_nIBufID, nStartV, m_nSignStarSquareQ * 4, nStartI,
@@ -93,11 +94,12 @@ void BISignIcon::Draw()
 
     for (long n = 0; n < m_nSignQ; n++)
     {
-        if (m_Sign[n].sText)
+        if (m_Sign[n].sText.length() > 0)
         {
-            m_pRS->ExtPrint(m_idSignTextFont, m_dwSignTextFontColor, 0, ALIGN_CENTER, false, m_fSignTextFontScale, 0, 0,
-                            (long)m_Sign[n].pntPos.x + m_SignTextFontOffset.x,
-                            (long)m_Sign[n].pntPos.y + m_SignTextFontOffset.y, "%s", m_Sign[n].sText.GetBuffer());
+            m_pRS->ExtPrint(m_idSignTextFont, m_dwSignTextFontColor, 0, PR_ALIGN_CENTER, false, m_fSignTextFontScale, 0,
+                            0, static_cast<long>(m_Sign[n].pntPos.x) + m_SignTextFontOffset.x,
+                            static_cast<long>(m_Sign[n].pntPos.y) + m_SignTextFontOffset.y, "%s",
+                            m_Sign[n].sText.c_str());
         }
     }
 }
@@ -157,10 +159,10 @@ void BISignIcon::Init(ATTRIBUTES *pRoot, ATTRIBUTES *pA)
             m_idSignTextFont = m_pRS->LoadFont(pcTmp);
         m_dwSignTextFontColor = pA->GetAttributeAsDword("fontcolor", m_dwSignTextFontColor);
         m_fSignTextFontScale = pA->GetAttributeAsFloat("fontscale", m_fSignTextFontScale);
-        pcTmp = pA->GetAttribute("fontoffset");
 
+        pcTmp = pA->GetAttribute("fontoffset");
         if (pcTmp)
-            sscanf(pcTmp, "%f,%f", &m_SignTextFontOffset.x, &m_SignTextFontOffset.y);
+            sscanf(pcTmp, "%l,%l", &m_SignTextFontOffset.x, &m_SignTextFontOffset.y);
 
         pcTmp = pA->GetAttribute("backtexturename");
         if (pcTmp)
@@ -232,7 +234,7 @@ void BISignIcon::Init(ATTRIBUTES *pRoot, ATTRIBUTES *pA)
 
         for (n = 0; n < MAX_SIGN_QUANTITY; n++)
         {
-            _snprintf(param, sizeof(param), "iconoffset%d", n + 1);
+            sprintf_s(param, sizeof(param), "iconoffset%d", n + 1);
             pcTmp = pA->GetAttribute(param);
             if (pcTmp)
                 sscanf(pcTmp, "%f,%f", &m_Sign[n].pntPos.x, &m_Sign[n].pntPos.y);
@@ -244,7 +246,7 @@ void BISignIcon::Init(ATTRIBUTES *pRoot, ATTRIBUTES *pA)
 
 void BISignIcon::Recollect()
 {
-    long n = CalculateSignQuantity();
+    const auto n = CalculateSignQuantity();
     UpdateBuffers(n);
 }
 
@@ -324,17 +326,18 @@ long BISignIcon::CalculateSignQuantity()
 
 void BISignIcon::UpdateBuffers(long nQ)
 {
-    long nBackSquareQ = nQ;
-    long nSignStateSquareQ = nQ * 2;
-    long nSignStarSquareQ = nQ;
-    long nSignFaceSquareQ = nQ;
+    const auto nBackSquareQ = nQ;
+    const auto nSignStateSquareQ = nQ * 2;
+    const auto nSignStarSquareQ = nQ;
+    const auto nSignFaceSquareQ = nQ;
 
-    long nMaxSignQ = BIUtils::GetMaxFromFourLong(nBackSquareQ, nSignStateSquareQ, nSignStarSquareQ, nSignFaceSquareQ);
+    const auto nMaxSignQ =
+        BIUtils::GetMaxFromFourLong(nBackSquareQ, nSignStateSquareQ, nSignStarSquareQ, nSignFaceSquareQ);
     if (m_nMaxSquareQ != nMaxSignQ)
     {
         m_nMaxSquareQ = nMaxSignQ;
         INDEX_BUFFER_RELEASE(m_pRS, m_nIBufID);
-        m_nIBufID = m_pRS->CreateIndexBufferManaged(m_nMaxSquareQ * 6 * sizeof(word));
+        m_nIBufID = m_pRS->CreateIndexBuffer(m_nMaxSquareQ * 6 * sizeof(uint16_t));
         FillIndexBuffer();
     }
 
@@ -346,31 +349,31 @@ void BISignIcon::UpdateBuffers(long nQ)
         m_nSignStarSquareQ = nSignStarSquareQ;
         m_nSignFaceSquareQ = nSignFaceSquareQ;
         VERTEX_BUFFER_RELEASE(m_pRS, m_nVBufID);
-        m_nVBufID = m_pRS->CreateVertexBufferManaged(
-            BI_COLOR_VERTEX_FORMAT,
-            (m_nBackSquareQ + m_nSignStateSquareQ + m_nSignStarSquareQ + m_nSignFaceSquareQ) * 4 *
-                sizeof(BI_COLOR_VERTEX),
-            D3DUSAGE_WRITEONLY);
+        m_nVBufID =
+            m_pRS->CreateVertexBuffer(BI_COLOR_VERTEX_FORMAT,
+                                      (m_nBackSquareQ + m_nSignStateSquareQ + m_nSignStarSquareQ + m_nSignFaceSquareQ) *
+                                          4 * sizeof(BI_COLOR_VERTEX),
+                                      D3DUSAGE_WRITEONLY);
     }
     FillVertexBuffer();
 }
 
-void BISignIcon::FillIndexBuffer()
+void BISignIcon::FillIndexBuffer() const
 {
     if (m_nIBufID < 0)
         return;
-    word *pI = (word *)m_pRS->LockIndexBuffer(m_nIBufID);
+    auto *pI = static_cast<uint16_t *>(m_pRS->LockIndexBuffer(m_nIBufID));
     if (pI)
     {
         for (long n = 0; n < m_nMaxSquareQ; n++)
         {
-            pI[n * 6 + 0] = (word)(n * 4 + 0);
-            pI[n * 6 + 1] = (word)(n * 4 + 1);
-            pI[n * 6 + 2] = (word)(n * 4 + 2);
+            pI[n * 6 + 0] = static_cast<uint16_t>(n * 4 + 0);
+            pI[n * 6 + 1] = static_cast<uint16_t>(n * 4 + 1);
+            pI[n * 6 + 2] = static_cast<uint16_t>(n * 4 + 2);
 
-            pI[n * 6 + 3] = (word)(n * 4 + 2);
-            pI[n * 6 + 4] = (word)(n * 4 + 1);
-            pI[n * 6 + 5] = (word)(n * 4 + 3);
+            pI[n * 6 + 3] = static_cast<uint16_t>(n * 4 + 2);
+            pI[n * 6 + 4] = static_cast<uint16_t>(n * 4 + 1);
+            pI[n * 6 + 5] = static_cast<uint16_t>(n * 4 + 3);
         }
         m_pRS->UnLockIndexBuffer(m_nIBufID);
     }
@@ -381,7 +384,7 @@ void BISignIcon::FillVertexBuffer()
     long n;
     if (m_nVBufID < 0)
         return;
-    BI_COLOR_VERTEX *pV = (BI_COLOR_VERTEX *)m_pRS->LockVertexBuffer(m_nVBufID);
+    auto *pV = static_cast<BI_COLOR_VERTEX *>(m_pRS->LockVertexBuffer(m_nVBufID));
     if (pV)
     {
         long vn = 0;
@@ -415,15 +418,16 @@ void BISignIcon::FillVertexBuffer()
     }
 }
 
-long BISignIcon::WriteSquareToVBuff(BI_COLOR_VERTEX *pv, FRECT &uv, dword color, BIFPOINT &center, FPOINT &size)
+long BISignIcon::WriteSquareToVBuff(BI_COLOR_VERTEX *pv, const FRECT &uv, uint32_t color, const BIFPOINT &center,
+                                    const FPOINT &size)
 {
     if (!pv)
         return 0;
 
-    float fLeft = (float)(center.x - size.x / 2);
-    float fTop = (float)(center.y - size.y / 2);
-    float fRight = fLeft + size.x;
-    float fBottom = fTop + size.y;
+    const auto fLeft = static_cast<float>(center.x - size.x / 2);
+    const auto fTop = static_cast<float>(center.y - size.y / 2);
+    const auto fRight = fLeft + size.x;
+    const auto fBottom = fTop + size.y;
 
     pv[0].pos.x = fLeft;
     pv[0].pos.y = fTop;
@@ -460,27 +464,27 @@ long BISignIcon::WriteSquareToVBuff(BI_COLOR_VERTEX *pv, FRECT &uv, dword color,
     return 4;
 }
 
-long BISignIcon::WriteSquareToVBuffWithProgress(BI_COLOR_VERTEX *pv, FRECT &uv, dword color, BIFPOINT &center,
-                                                FPOINT &size, float fClampUp, float fClampDown, float fClampLeft,
-                                                float fClampRight)
+long BISignIcon::WriteSquareToVBuffWithProgress(BI_COLOR_VERTEX *pv, const FRECT &uv, uint32_t color,
+                                                const BIFPOINT &center, const FPOINT &size, float fClampUp,
+                                                float fClampDown, float fClampLeft, float fClampRight)
 {
     if (!pv)
         return 0;
 
-    float fLeft = (float)(center.x - size.x / 2);
-    float fTop = (float)(center.y - size.y / 2);
-    float fRight = fLeft + size.x;
-    float fBottom = fTop + size.y;
+    auto fLeft = static_cast<float>(center.x - size.x / 2);
+    auto fTop = static_cast<float>(center.y - size.y / 2);
+    auto fRight = fLeft + size.x;
+    auto fBottom = fTop + size.y;
 
     fLeft += size.x * fClampLeft;
     fRight -= size.x * fClampRight;
     fTop += size.y * fClampUp;
     fBottom += size.y * fClampDown;
 
-    float fLeftUV = uv.left + (uv.right - uv.left) * fClampLeft;
-    float fRightUV = uv.right - (uv.right - uv.left) * fClampRight;
-    float fTopUV = uv.top + (uv.bottom - uv.top) * fClampUp;
-    float fBottomUV = uv.bottom - (uv.bottom - uv.top) * fClampDown;
+    const auto fLeftUV = uv.left + (uv.right - uv.left) * fClampLeft;
+    const auto fRightUV = uv.right - (uv.right - uv.left) * fClampRight;
+    const auto fTopUV = uv.top + (uv.bottom - uv.top) * fClampUp;
+    const auto fBottomUV = uv.bottom - (uv.bottom - uv.top) * fClampDown;
 
     pv[0].pos.x = fLeft;
     pv[0].pos.y = fTop;

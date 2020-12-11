@@ -2,7 +2,7 @@
 #define _BATTLE_SIGN_H
 
 #include "bi_defines.h"
-#include "templates\string.h"
+#include <string>
 
 #define MAX_SIGN_QUANTITY 8
 
@@ -21,7 +21,9 @@ class BISignIcon
         Command_ForceDword = 0xffffffff
     };
 
-    BISignIcon(ENTITY_ID &BIEntityID, VDX8RENDER *pRS);
+    BISignIcon(BISignIcon &&) = delete;
+    BISignIcon(const BISignIcon &) = delete;
+    BISignIcon(entid_t BIEntityID, VDX9RENDER *pRS);
     virtual ~BISignIcon();
 
     virtual void Draw();
@@ -32,7 +34,7 @@ class BISignIcon
     {
         m_bMakeUpdate = true;
     }
-    bool IsActive()
+    bool IsActive() const
     {
         return m_bActive;
     }
@@ -41,9 +43,9 @@ class BISignIcon
     void MakeControl();
     virtual void ExecuteCommand(CommandType command) = 0;
 
-    long GetLineY(long n)
+    long GetLineY(long n) const
     {
-        return (long)m_Sign[n].pntPos.x;
+        return static_cast<long>(m_Sign[n].pntPos.x);
     }
 
   protected:
@@ -52,27 +54,29 @@ class BISignIcon
 
     void Release();
     void UpdateBuffers(long nQ);
-    void FillIndexBuffer();
+    void FillIndexBuffer() const;
     void FillVertexBuffer();
-    long WriteSquareToVBuff(BI_COLOR_VERTEX *pv, FRECT &uv, dword color, BIFPOINT &center, FPOINT &size);
-    long WriteSquareToVBuffWithProgress(BI_COLOR_VERTEX *pv, FRECT &uv, dword color, BIFPOINT &center, FPOINT &size,
-                                        float fClampUp, float fClampDown, float fClampLeft, float fClampRight);
+    long WriteSquareToVBuff(BI_COLOR_VERTEX *pv, const FRECT &uv, uint32_t color, const BIFPOINT &center,
+                            const FPOINT &size);
+    long WriteSquareToVBuffWithProgress(BI_COLOR_VERTEX *pv, const FRECT &uv, uint32_t color, const BIFPOINT &center,
+                                        const FPOINT &size, float fClampUp, float fClampDown, float fClampLeft,
+                                        float fClampRight);
 
-    VDX8RENDER *m_pRS;
+    VDX9RENDER *m_pRS;
 
     long m_nVBufID;
     long m_nIBufID;
 
     long m_nBackTextureID;
     long m_nBackSquareQ;
-    dword m_dwBackColor;
+    uint32_t m_dwBackColor;
     FRECT m_rBackUV;
     BIFPOINT m_pntBackOffset;
     FPOINT m_pntBackIconSize;
 
     long m_nSignStateTextureID;
     long m_nSignStateSquareQ;
-    dword m_dwSignStateColor;
+    uint32_t m_dwSignStateColor;
     FRECT m_rSignStateLeftUV;
     BIFPOINT m_pntSignStateLeftOffset;
     FPOINT m_pntSignStateLeftIconSize;
@@ -82,28 +86,28 @@ class BISignIcon
 
     long m_nSignStarTextureID;
     long m_nSignStarSquareQ;
-    dword m_dwSignStarColor;
+    uint32_t m_dwSignStarColor;
     FRECT m_rSignStarUV;
     BIFPOINT m_pntSignStarOffset;
     FPOINT m_pntSignStarIconSize;
 
     long m_nSignFaceTextureID;
     long m_nSignFaceSquareQ;
-    dword m_dwSignFaceColor;
+    uint32_t m_dwSignFaceColor;
     BIFPOINT m_pntSignFaceOffset;
     FPOINT m_pntSignFaceIconSize;
 
     long m_idSignTextFont;
-    dword m_dwSignTextFontColor;
+    uint32_t m_dwSignTextFontColor;
     float m_fSignTextFontScale;
-    FPOINT m_SignTextFontOffset;
+    POINT m_SignTextFontOffset;
 
     bool m_bMakeUpdate;
     bool m_bActive;
 
     ATTRIBUTES *m_pARoot;
     ATTRIBUTES *m_pAData;
-    ENTITY_ID m_idHostEntity;
+    entid_t m_idHostEntity;
 
     struct SignDescr
     {
@@ -113,8 +117,9 @@ class BISignIcon
         float fRightState;
         float fStarProgress;
         FRECT rFaceUV;
-        string sText;
+        std::string sText;
     } m_Sign[MAX_SIGN_QUANTITY];
+
     long m_nMaxSquareQ;
     long m_nSignQ;
 };

@@ -1,28 +1,28 @@
 #ifndef _SPYGLASS_H_
 #define _SPYGLASS_H_
 
-#include "common_defines.h"
-#include "dx8render.h"
-#include "templates\array.h"
-#include "templates\string.h"
+#include "../bi_defines.h"
+#include "Entity.h"
+#include <string>
+#include <vector>
 
 class BIImageRender;
 class BIImage;
 class VAI_OBJBASE;
 
-class ISPYGLASS : public ENTITY
+class ISPYGLASS : public Entity
 {
     struct ImageParam
     {
         BIImage *pImage;
-        string sTextureName;
-        dword dwColor;
+        std::string sTextureName;
+        uint32_t dwColor;
         FRECT rUV;
         RECT rPos;
 
         ImageParam()
         {
-            pImage = 0;
+            pImage = nullptr;
         };
         ~ImageParam()
         {
@@ -36,31 +36,37 @@ class ISPYGLASS : public ENTITY
 
     struct TextParam
     {
-        VDX8RENDER *rs;
+        VDX9RENDER *rs;
         long nFontID;
         POINT pos;
         float fScale;
-        dword dwColor;
-        string sText;
+        uint32_t dwColor;
+        std::string sText;
         long nAlign;
+
+        TextParam(TextParam &&) = delete;
+        TextParam(const TextParam &) = delete;
 
         TextParam()
         {
-            rs = 0;
+            rs = nullptr;
             nFontID = -1;
         }
+
         ~TextParam()
         {
             Release();
         }
+
         void Release()
         {
             if (rs && nFontID >= 0)
                 rs->UnloadFont(nFontID);
             nFontID = -1;
         }
-        void LoadFromAttr(VDX8RENDER *rs, ATTRIBUTES *pA, const char *pcDefText, long nDefXPos, long nDefYPos);
-        void Print();
+
+        void LoadFromAttr(VDX9RENDER *rs, ATTRIBUTES *pA, const char *pcDefText, long nDefXPos, long nDefYPos);
+        void Print() const;
     };
 
     struct SpyGlassCameraParameters
@@ -81,13 +87,30 @@ class ISPYGLASS : public ENTITY
   public:
     ISPYGLASS();
     ~ISPYGLASS();
-    bool Init();
-    void Execute(dword delta_time);
-    void Realize(dword delta_time);
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    bool Init() override;
+    void Execute(uint32_t delta_time);
+    void Realize(uint32_t delta_time) const;
+    uint64_t ProcessMessage(MESSAGE &message) override;
+
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
 
   protected:
-    VDX8RENDER *rs;
+    VDX9RENDER *rs;
     BIImageRender *m_pImgRender;
 
     // telescope lens
@@ -139,10 +162,10 @@ class ISPYGLASS : public ENTITY
     bool m_bIsPresentShipInfo;
     long m_nInfoCharacterIndex;
 
-    SpyGlassCameraParameters m_Camera;
-    array<FRECT> m_aNationUV;
-    array<FRECT> m_aChargeUV;
-    array<FRECT> m_aSailUV;
+    SpyGlassCameraParameters m_Camera{};
+    std::vector<FRECT> m_aNationUV;
+    std::vector<FRECT> m_aChargeUV;
+    std::vector<FRECT> m_aSailUV;
 
     VAI_OBJBASE *m_pFortObj;
 
@@ -151,7 +174,7 @@ class ISPYGLASS : public ENTITY
 
   protected:
     void Release();
-    ATTRIBUTES *GetAttr(const char *pcAttrName);
+    ATTRIBUTES *GetAttr(const char *pcAttrName) const;
     void TurnOnTelescope(bool bTurnOn);
     void SetShipInfo(long nCharIndex);
     void FindNewTargetShip();
@@ -163,7 +186,7 @@ class ISPYGLASS : public ENTITY
                           long nCharge, long nNation, long nSailState, long nFace, long nFencing, long nCannon,
                           long nAccuracy, long nNavigation, long nBoarding, const char *pcCaptainName,
                           const char *pcFaceTexture, long nShipClass);
-    void FillUVArrayFromAttributes(array<FRECT> &m_aUV, ATTRIBUTES *pA);
+    void FillUVArrayFromAttributes(std::vector<FRECT> &m_aUV, ATTRIBUTES *pA) const;
     VAI_OBJBASE *GetFort();
 };
 

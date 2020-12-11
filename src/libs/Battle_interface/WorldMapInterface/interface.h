@@ -1,25 +1,39 @@
 #ifndef _WM_INTERFACE_H_
 #define _WM_INTERFACE_H_
 
-#include "..\utils.h"
-#include "common_defines.h"
-#include "dx8render.h"
-#include "templates\array.h"
+#include "../bi_defines.h"
+#include "Entity.h"
 
 class WMShipIcon;
 class WMShipCommandList;
 
-class WM_INTERFACE : public ENTITY
+class WM_INTERFACE : public Entity
 {
-    VDX8RENDER *rs;
+    VDX9RENDER *rs;
 
   public:
     WM_INTERFACE();
     ~WM_INTERFACE();
-    bool Init();
-    void Realize(dword delta_time);
-    dword _cdecl ProcessMessage(MESSAGE &message);
-    dword AttributeChanged(ATTRIBUTES *pAttr);
+    bool Init() override;
+    void Realize(uint32_t delta_time);
+    uint64_t ProcessMessage(MESSAGE &message) override;
+    uint32_t AttributeChanged(ATTRIBUTES *pAttr) override;
+
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+            // case Stage::execute:
+            //	Execute(delta); break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
 
   protected:
     WMShipIcon *m_pShipIcon; // иконки команд и целеуказаний в боевом меню
@@ -34,12 +48,12 @@ class WM_INTERFACE : public ENTITY
 
     void MakeControl();
     void ExecuteCommand(long command);
-    void UpdateCommandList();
-    long GetCurrentCommandTopLine();
-    long GetCurrentCommandCharacterIndex();
-    long GetCurrentCommandMode();
+    void UpdateCommandList() const;
+    long GetCurrentCommandTopLine() const;
+    long GetCurrentCommandCharacterIndex() const;
+    long GetCurrentCommandMode() const;
 
-    bool IsCommandMenuActive();
+    bool IsCommandMenuActive() const;
 };
 
 #endif

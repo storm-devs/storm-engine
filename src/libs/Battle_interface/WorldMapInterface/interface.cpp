@@ -1,12 +1,13 @@
 #include "interface.h"
-#include "../msg_control.h"
+#include "../shared/battle_interface/msg_control.h"
 #include "shipcommand.h"
 #include "shipsign.h"
+#include "vmodule_api.h"
 
-WM_INTERFACE::WM_INTERFACE()
+WM_INTERFACE::WM_INTERFACE() : rs(nullptr)
 {
-    m_pShipIcon = 0;
-    m_pCommandList = 0;
+    m_pShipIcon = nullptr;
+    m_pCommandList = nullptr;
 
     m_nCommandListVerticalOffset = 0;
     m_nMainCharIndex = -1;
@@ -17,20 +18,20 @@ WM_INTERFACE::WM_INTERFACE()
 
 WM_INTERFACE::~WM_INTERFACE()
 {
-    SE_DELETE(m_pShipIcon);
-    SE_DELETE(m_pCommandList);
+    STORM_DELETE(m_pShipIcon);
+    STORM_DELETE(m_pCommandList);
 }
 
 bool WM_INTERFACE::Init()
 {
-    rs = (VDX8RENDER *)api->CreateService("DX8RENDER");
+    rs = static_cast<VDX9RENDER *>(api->CreateService("DX9RENDER"));
     Assert(rs);
 
     LoadIniFile();
     return true;
 }
 
-void WM_INTERFACE::Realize(dword delta_time)
+void WM_INTERFACE::Realize(uint32_t delta_time)
 {
     if (m_bVisible)
     {
@@ -62,14 +63,14 @@ void WM_INTERFACE::Realize(dword delta_time)
     }
 }
 
-dword _cdecl WM_INTERFACE::ProcessMessage(MESSAGE &message)
+uint64_t WM_INTERFACE::ProcessMessage(MESSAGE &message)
 {
     switch (message.Long())
     {
     case MSG_BATTLE_LAND_MAKE_COMMAND: {
         char param[256];
         message.String(sizeof(param) - 1, param);
-        if (stricmp(param, "cancel") == 0)
+        if (_stricmp(param, "cancel") == 0)
         {
             ExecuteCommand(BI_MSG_COMMAND_DEACTIVATE);
         }
@@ -83,22 +84,22 @@ dword _cdecl WM_INTERFACE::ProcessMessage(MESSAGE &message)
     return 0;
 }
 
-dword WM_INTERFACE::AttributeChanged(ATTRIBUTES *pAttr)
+uint32_t WM_INTERFACE::AttributeChanged(ATTRIBUTES *pAttr)
 {
     return 0;
 }
 
 void WM_INTERFACE::LoadIniFile()
 {
-    m_pShipIcon = NEW WMShipIcon(GetID(), rs);
+    m_pShipIcon = new WMShipIcon(GetId(), rs);
     Assert(m_pShipIcon);
-    ATTRIBUTES *pA = AttributesPointer ? AttributesPointer->GetAttributeClass("wm_sign") : 0;
+    auto *pA = AttributesPointer ? AttributesPointer->GetAttributeClass("wm_sign") : nullptr;
     m_pShipIcon->Init(AttributesPointer, pA);
     m_nCommandListVerticalOffset = pA ? pA->GetAttributeAsDword("commandlistverticaloffset") : -48;
 
     m_nMainCharIndex = AttributesPointer ? AttributesPointer->GetAttributeAsDword("maincharindex", -1) : -1;
 
-    m_pCommandList = NEW WMShipCommandList(GetID(), AttributesPointer, rs);
+    m_pCommandList = new WMShipCommandList(GetId(), AttributesPointer, rs);
     Assert(m_pCommandList);
 
     UpdateCommandList();
@@ -140,7 +141,7 @@ void WM_INTERFACE::ExecuteCommand(long command)
     case BI_MSG_COMMAND_ACTIVATE:
         if (m_pCommandList)
         {
-            long nTmp = m_pCommandList->ExecuteConfirm();
+            const auto nTmp = m_pCommandList->ExecuteConfirm();
             if (nTmp != -1)
                 m_nCommandMode = nTmp;
             if (m_nCommandMode == 0)
@@ -186,28 +187,28 @@ void WM_INTERFACE::ExecuteCommand(long command)
     }
 }
 
-void WM_INTERFACE::UpdateCommandList()
+void WM_INTERFACE::UpdateCommandList() const
 {
     if (m_pCommandList)
         m_pCommandList->Update(GetCurrentCommandTopLine(), GetCurrentCommandCharacterIndex(), GetCurrentCommandMode());
 }
 
-long WM_INTERFACE::GetCurrentCommandTopLine()
+long WM_INTERFACE::GetCurrentCommandTopLine() const
 {
     return m_pShipIcon->GetLineY(0) + m_nCommandListVerticalOffset;
 }
 
-long WM_INTERFACE::GetCurrentCommandCharacterIndex()
+long WM_INTERFACE::GetCurrentCommandCharacterIndex() const
 {
     return m_nMainCharIndex;
 }
 
-long WM_INTERFACE::GetCurrentCommandMode()
+long WM_INTERFACE::GetCurrentCommandMode() const
 {
     return m_nCommandMode;
 }
 
-bool WM_INTERFACE::IsCommandMenuActive()
+bool WM_INTERFACE::IsCommandMenuActive() const
 {
     if (!m_pCommandList)
         return false;

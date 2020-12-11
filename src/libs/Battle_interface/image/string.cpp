@@ -1,7 +1,8 @@
 #include "string.h"
+#include "../bi_defines.h"
 #include "imgrender.h"
 
-BIString::BIString(BIImageRender *pImgRender, VDX8RENDER *rs)
+BIString::BIString(BIImageRender *pImgRender, VDX9RENDER *rs)
 {
     m_pImgRender = pImgRender;
     Assert(m_pImgRender);
@@ -27,8 +28,8 @@ void BIString::Render()
     {
         UpdateString();
     }
-    m_pRS->ExtPrint(m_nFontID, m_dwColor, 0, ALIGN_LEFT, true, m_fScale, 0, 0, m_pntOutPos.x, m_pntOutPos.y, "%s",
-                    m_sText.GetBuffer());
+    m_pRS->ExtPrint(m_nFontID, m_dwColor, 0, PR_ALIGN_LEFT, true, m_fScale, 0, 0, m_pntOutPos.x, m_pntOutPos.y, "%s",
+                    m_sText.c_str());
 }
 
 void BIString::SetFont(const char *pcFontName)
@@ -45,8 +46,10 @@ void BIString::SetAlign(long nHorzAlign, long nVertAlign)
 
 void BIString::SetPosition(long nLeft, long nTop, long nRight, long nBottom)
 {
-    m_pImgRender->TranslateBasePosToRealPos((float)nLeft, (float)nTop, m_BasePos.left, m_BasePos.top);
-    m_pImgRender->TranslateBasePosToRealPos((float)nRight, (float)nBottom, m_BasePos.right, m_BasePos.bottom);
+    m_pImgRender->TranslateBasePosToRealPos(static_cast<float>(nLeft), static_cast<float>(nTop), m_BasePos.left,
+                                            m_BasePos.top);
+    m_pImgRender->TranslateBasePosToRealPos(static_cast<float>(nRight), static_cast<float>(nBottom), m_BasePos.right,
+                                            m_BasePos.bottom);
     m_bUpdateString = true;
 }
 

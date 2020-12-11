@@ -1,39 +1,40 @@
 #ifndef BI_IMAGE_H
 #define BI_IMAGE_H
 
-#include "bi_image_defines.h"
+#include "image_defines.h"
+#include <vector>
 
 class BIImageMaterial;
 
 class BIImage : public IBIImage
 {
   public:
-    BIImage(VDX8RENDER *rs, BIImageMaterial *pMaterial);
+    BIImage(VDX9RENDER *rs, BIImageMaterial *pMaterial);
     ~BIImage();
 
-    long GetVertexQuantity()
+    long GetVertexQuantity() const
     {
         return m_nVertexQuantity;
     }
-    long GetTriangleQuantity()
+    long GetTriangleQuantity() const
     {
         return m_nTriangleQuantity;
     }
-    void FillBuffers(BI_IMAGE_VERTEX *pV, word *pT, long &nV, long &nT);
+    void FillBuffers(BI_IMAGE_VERTEX *pV, uint16_t *pT, long &nV, long &nT);
 
-    void SetColor(dword color);
-    void SetPosition(long nLeft, long nTop, long nRight, long nBottom);
-    void Set3DPosition(const CVECTOR &vPos, float fWidth, float fHeight);
-    void SetUV(const FRECT &uv);
+    void SetColor(uint32_t color) override;
+    void SetPosition(long nLeft, long nTop, long nRight, long nBottom) override;
+    void Set3DPosition(const CVECTOR &vPos, float fWidth, float fHeight) override;
+    void SetUV(const FRECT &uv) override;
     void SetType(BIImageType type);
 
-    void CutSide(float fleft, float fright, float ftop, float fbottom);
-    void CutClock(float fBegin, float fEnd, float fFactor);
+    void CutSide(float fleft, float fright, float ftop, float fbottom) override;
+    void CutClock(float fBegin, float fEnd, float fFactor) override;
     FPOINT &GetClockPoint(float fAng, FPOINT &fp);
     float GetNextClockCorner(float fAng);
     float GetPrevClockCorner(float fAng);
 
-    long GetPrioritet()
+    long GetPrioritet() const
     {
         return m_nPrioritet;
     }
@@ -47,9 +48,9 @@ class BIImage : public IBIImage
     {
         return fMin + fK * (fMax - fMin);
     }
-    void Release();
+    void Release() const;
 
-    VDX8RENDER *m_pRS;
+    VDX9RENDER *m_pRS;
     BIImageMaterial *m_pMaterial;
 
     long m_nVertexQuantity;
@@ -57,9 +58,9 @@ class BIImage : public IBIImage
 
     FRECT m_BasePos;
     FRECT m_BaseUV;
-    dword m_dwColor;
+    uint32_t m_dwColor;
 
-    array<FPOINT> m_aRelPos;
+    std::vector<FPOINT> m_aRelPos;
     BIImageType m_eType;
 
     long m_nPrioritet;

@@ -1,12 +1,13 @@
 #ifndef __LOG_AND_ACTION_H_
 #define __LOG_AND_ACTION_H_
 
-#include "bi_defines.h"
-#include "utils.h"
+#include "Utils.h"
+#include "defines.h"
 
-class ILogAndActions : public ENTITY
+class ILogAndActions : public Entity
 {
-    VDX8RENDER *rs;
+    VDX9RENDER *rs;
+
     struct STRING_DESCR
     {
         char *str;
@@ -16,12 +17,31 @@ class ILogAndActions : public ENTITY
     };
 
   public:
+    ILogAndActions(ILogAndActions &&) = delete;
+    ILogAndActions(const ILogAndActions &) = delete;
     ILogAndActions();
     ~ILogAndActions();
-    bool Init();
-    void Execute(dword delta_time);
-    void Realize(dword delta_time);
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    bool Init() override;
+    void Execute(uint32_t delta_time);
+    void Realize(uint32_t delta_time);
+    uint64_t ProcessMessage(MESSAGE &message) override;
+
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
 
   protected:
     void Create(bool bFastComShow, bool bLogStringShow);
@@ -41,7 +61,7 @@ class ILogAndActions : public ENTITY
     long m_nWindowUp;
     long m_fontID;
     float m_fFontScale;
-    DWORD m_dwColor;
+    uint32_t m_dwColor;
     long m_nStringBegin;
     long m_nStringOffset;
     float m_fShiftSpeed;
