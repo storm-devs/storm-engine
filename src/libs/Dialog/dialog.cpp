@@ -1,12 +1,6 @@
-#include "DIALOG.h"
-#include "common_defines.h"
-#include "geometry.h"
-#include "messages.h"
-#include "model.h"
-
-#include "..\SoundService\VSoundService.h"
-
-#include <string>
+#include "dialog.h"
+#include "../SoundService/VSoundService.h"
+#include "defines.h"
 
 #define CNORMAL 0xFFFFFFFF
 #define UNFADE_TIME 1000
@@ -17,7 +11,7 @@
 INTERFACE_FUNCTION
 CREATE_CLASS(DIALOG)
 
-VDX8RENDER *DIALOG::RenderService = 0;
+VDX9RENDER *DIALOG::RenderService = nullptr;
 FRECT DIALOG::m_frScreenData;
 
 inline void SetVerticesForSquare(XI_TEX_VERTEX *pV, FRECT uv, float left, float top, float right, float bottom)
@@ -55,10 +49,10 @@ inline void SetVerticesForSquare(XI_TEX_VERTEX *pV, FRECT uv, float left, float 
     pV[3].v = uv.bottom;
 }
 
-void __declspec(noinline) __cdecl DIALOG::DlgTextDescribe::ChangeText(const char *pcText)
+void DIALOG::DlgTextDescribe::ChangeText(const char *pcText)
 {
-    asText.DelAll();
-    anPageEndIndex.DelAll();
+    asText.clear();
+    anPageEndIndex.clear();
     if (!pcText)
         return;
 
@@ -67,29 +61,28 @@ void __declspec(noinline) __cdecl DIALOG::DlgTextDescribe::ChangeText(const char
     {
         if (pcText[n] == '\\' && (pcText[n + 1] == 'n' || pcText[n + 1] == 'N'))
         {
-            char *pcTmp = NEW char[4 + n - i];
+            auto *const pcTmp = new char[4 + n - i];
             Assert(pcTmp);
             if (n - i > 0)
                 memcpy(pcTmp, &pcText[i], (n - i) * sizeof(char));
             memcpy(&pcTmp[n - i], "...", 4 * sizeof(char));
             i = n + 2;
             n++;
-            DIALOG::AddToStringArrayLimitedByWidth(pcTmp, nFontID, fScale, nWindowWidth, asText, &anPageEndIndex,
-                                                   nShowQuantity);
-            if (anPageEndIndex.Size() == 0 || anPageEndIndex[anPageEndIndex.Size() - 1] != asText.Size())
-                anPageEndIndex.Add(asText.Size());
-            delete pcTmp;
+            AddToStringArrayLimitedByWidth(pcTmp, nFontID, fScale, nWindowWidth, asText, &anPageEndIndex,
+                                           nShowQuantity);
+            if (anPageEndIndex.size() == 0 || anPageEndIndex[anPageEndIndex.size() - 1] != asText.size())
+                anPageEndIndex.push_back(asText.size());
+            delete[] pcTmp;
         }
     }
-    DIALOG::AddToStringArrayLimitedByWidth(&pcText[i], nFontID, fScale, nWindowWidth, asText, &anPageEndIndex,
-                                           nShowQuantity);
-    //	if( anPageEndIndex.Size()!=0 && anPageEndIndex[anPageEndIndex.Size()-1]!=asText.Size() )
-    //		anPageEndIndex.Add( asText.Size() );
+    AddToStringArrayLimitedByWidth(&pcText[i], nFontID, fScale, nWindowWidth, asText, &anPageEndIndex, nShowQuantity);
+    //	if( anPageEndIndex.size()!=0 && anPageEndIndex[anPageEndIndex.size()-1]!=asText.size() )
+    //		anPageEndIndex.Add( asText.size() );
     nStartIndex = 0;
     nSelectLine = -1;
 }
 
-void __declspec(noinline) __cdecl DIALOG::DlgTextDescribe::Init(VDX8RENDER *pRS, D3DVIEWPORT9 &vp, INIFILE *pIni)
+void DIALOG::DlgTextDescribe::Init(VDX9RENDER *pRS, D3DVIEWPORT9 &vp, INIFILE *pIni)
 {
     Assert(pRS);
     rs = pRS;
@@ -103,13 +96,13 @@ void __declspec(noinline) __cdecl DIALOG::DlgTextDescribe::Init(VDX8RENDER *pRS,
     if (pIni)
         pIni->ReadString("DIALOG", "mainfont", FName, MAX_PATH, "DIALOG2");
     else
-        strcpy(FName, "DIALOG2");
+        strcpy_s(FName, "DIALOG2");
     nFontID = rs->LoadFont(FName);
 
     dwColor = ARGB(255, 210, 227, 227);
-    // dwColor = pIni ? pIni->GetLong("DIALOG","mainFontColor",dwColor) : dwColor;
-    fScale = DIALOG::GetScrHeight(pIni ? pIni->GetFloat("DIALOG", "mainFontScale", 1.f) : 1.f);
-    nLineInterval = (long)(rs->CharHeight(nFontID) * fScale);
+    dwColor = pIni ? pIni->GetLong("DIALOG", "mainFontColor", dwColor) : dwColor;
+    fScale = GetScrHeight(pIni ? pIni->GetFloat("DIALOG", "mainFontScale", 1.f) : 1.f);
+    nLineInterval = static_cast<long>(rs->CharHeight(nFontID) * fScale);
 
     nStartIndex = 0;
     nShowQuantity = 5;
@@ -120,14 +113,14 @@ void __declspec(noinline) __cdecl DIALOG::DlgTextDescribe::Init(VDX8RENDER *pRS,
 
 long DIALOG::DlgTextDescribe::GetShowHeight()
 {
-    long n = 0;
-    for (n = 0; n < anPageEndIndex; n++)
+    long n;
+    for (n = 0; n < anPageEndIndex.size(); n++)
         if (nStartIndex < anPageEndIndex[n])
             break;
-    if (n < anPageEndIndex)
+    if (n < anPageEndIndex.size())
         n = anPageEndIndex[n] - nStartIndex;
     else
-        n = asText.Size() - nStartIndex;
+        n = asText.size() - nStartIndex;
     if (n > nShowQuantity)
         n = nShowQuantity;
     return (n * nLineInterval);
@@ -139,35 +132,35 @@ void DIALOG::DlgTextDescribe::Show(long nY)
 
     y = nY + offset.y;
     i = 0;
-    for (n = 0; n < anPageEndIndex; n++)
+    for (n = 0; n < anPageEndIndex.size(); n++)
         if (anPageEndIndex[n] > nStartIndex)
             break;
-    if (n < anPageEndIndex)
+    if (n < anPageEndIndex.size())
         nEnd = anPageEndIndex[n];
     else
-        nEnd = asText.Size();
+        nEnd = asText.size();
     for (n = nStartIndex; i < nShowQuantity && n < nEnd; i++, n++)
     {
-        rs->ExtPrint(nFontID, dwColor, 0, ALIGN_LEFT, true, fScale, 0, 0, offset.x, y, "%s", asText[n].GetBuffer());
+        rs->ExtPrint(nFontID, dwColor, 0, PR_ALIGN_LEFT, true, fScale, 0, 0, offset.x, y, "%s", asText[n].c_str());
         y += nLineInterval;
     }
 }
 
 bool DIALOG::DlgTextDescribe::IsLastPage()
 {
-    long n = 0;
-    for (n = 0; n < anPageEndIndex; n++)
+    long n;
+    for (n = 0; n < anPageEndIndex.size(); n++)
         if (anPageEndIndex[n] > nStartIndex)
             break;
-    if (n >= anPageEndIndex || anPageEndIndex[n] >= asText)
+    if (n >= anPageEndIndex.size() || anPageEndIndex[n] >= asText.size())
         return true;
     return false;
 }
 
 void DIALOG::DlgTextDescribe::PrevPage()
 {
-    long n = 0;
-    for (n = anPageEndIndex.Size() - 1; n >= 0; n--)
+    long n;
+    for (n = anPageEndIndex.size() - 1; n >= 0; n--)
         if (anPageEndIndex[n] < nStartIndex)
             break;
     if (n >= 0)
@@ -178,25 +171,25 @@ void DIALOG::DlgTextDescribe::PrevPage()
 
 void DIALOG::DlgTextDescribe::NextPage()
 {
-    long n = 0;
-    for (n = 0; n < anPageEndIndex; n++)
+    long n;
+    for (n = 0; n < anPageEndIndex.size(); n++)
         if (anPageEndIndex[n] > nStartIndex)
             break;
-    if (n < anPageEndIndex && anPageEndIndex[n] < asText)
+    if (n < anPageEndIndex.size() && anPageEndIndex[n] < asText.size())
         nStartIndex = anPageEndIndex[n];
 }
 
-void __declspec(noinline) __cdecl DIALOG::DlgLinkDescribe::ChangeText(ATTRIBUTES *pALinks)
+void DIALOG::DlgLinkDescribe::ChangeText(ATTRIBUTES *pALinks)
 {
     nEditLine = -1;
-    asText.DelAll();
-    anLineEndIndex.DelAll();
+    asText.clear();
+    anLineEndIndex.clear();
     if (!pALinks)
         return;
 
-    for (long n = 0; n < (long)pALinks->GetAttributesNum(); n++)
+    for (long n = 0; n < static_cast<long>(pALinks->GetAttributesNum()); n++)
     {
-        ATTRIBUTES *pA = pALinks->GetAttributeClass(n);
+        auto *pA = pALinks->GetAttributeClass(n);
         if (pA)
         {
             // long i = asText.Add();
@@ -207,8 +200,8 @@ void __declspec(noinline) __cdecl DIALOG::DlgLinkDescribe::ChangeText(ATTRIBUTES
                 nEditVarIndex = pA->GetAttributeAsDword("edit", 0);
                 nEditCharIndex = 0;
             }
-            DIALOG::AddToStringArrayLimitedByWidth(pA->GetThisAttr(), nFontID, fScale, nWindowWidth, asText, 0, 100);
-            anLineEndIndex.Add((long)asText);
+            AddToStringArrayLimitedByWidth(pA->GetThisAttr(), nFontID, fScale, nWindowWidth, asText, nullptr, 100);
+            anLineEndIndex.push_back(asText.size());
         }
     }
 
@@ -217,7 +210,7 @@ void __declspec(noinline) __cdecl DIALOG::DlgLinkDescribe::ChangeText(ATTRIBUTES
     fCursorCurrentTime = 0.f;
 }
 
-void __declspec(noinline) __cdecl DIALOG::DlgLinkDescribe::Init(VDX8RENDER *pRS, D3DVIEWPORT9 &vp, INIFILE *pIni)
+void DIALOG::DlgLinkDescribe::Init(VDX9RENDER *pRS, D3DVIEWPORT9 &vp, INIFILE *pIni)
 {
     Assert(pRS);
     rs = pRS;
@@ -231,15 +224,15 @@ void __declspec(noinline) __cdecl DIALOG::DlgLinkDescribe::Init(VDX8RENDER *pRS,
     if (pIni)
         pIni->ReadString("DIALOG", "subfont", FName, MAX_PATH, "DIALOG3");
     else
-        strcpy(FName, "DIALOG3");
+        strcpy_s(FName, "DIALOG3");
     nFontID = rs->LoadFont(FName);
 
     dwColor = 0xFF808080;
     dwSelColor = 0xFFFFFFFF;
-    //	dwColor = pIni ? pIni->GetLong("DIALOG","subFontColor",dwColor) : dwColor;
-    //	dwSelColor = pIni ? pIni->GetLong("DIALOG","subFontColorSelect",dwSelColor) : dwSelColor;
-    fScale = DIALOG::GetScrHeight(pIni ? pIni->GetFloat("DIALOG", "subFontScale", 1.f) : 1.f);
-    nLineInterval = (long)(rs->CharHeight(nFontID) * fScale * .9f);
+    dwColor = pIni ? pIni->GetLong("DIALOG", "subFontColor", dwColor) : dwColor;
+    dwSelColor = pIni ? pIni->GetLong("DIALOG", "subFontColorSelect", dwSelColor) : dwSelColor;
+    fScale = GetScrHeight(pIni ? pIni->GetFloat("DIALOG", "subFontScale", 1.f) : 1.f);
+    nLineInterval = static_cast<long>(rs->CharHeight(nFontID) * fScale * .9f);
 
     nStartIndex = 0;
     nShowQuantity = 5;
@@ -254,7 +247,7 @@ void __declspec(noinline) __cdecl DIALOG::DlgLinkDescribe::Init(VDX8RENDER *pRS,
 
 long DIALOG::DlgLinkDescribe::GetShowHeight()
 {
-    long n = asText.Size() - nStartIndex;
+    long n = asText.size() - nStartIndex;
     if (n > nShowQuantity)
         n = nShowQuantity;
     return (n * nLineInterval);
@@ -267,7 +260,7 @@ void DIALOG::DlgLinkDescribe::Show(long nY)
     y = nY + offset.y;
     n = nStartIndex;
     nBeg = 0;
-    if (nSelectLine < anLineEndIndex && nSelectLine >= 0)
+    if (nSelectLine < anLineEndIndex.size() && nSelectLine >= 0)
     {
         if (nSelectLine > 0)
             nBeg = anLineEndIndex[nSelectLine - 1];
@@ -275,10 +268,10 @@ void DIALOG::DlgLinkDescribe::Show(long nY)
     }
     else
         nEnd = -1;
-    for (i = 0; i < nShowQuantity && n < asText; i++, n++)
+    for (i = 0; i < nShowQuantity && n < asText.size(); i++, n++)
     {
-        rs->ExtPrint(nFontID, (n >= nBeg && n < nEnd) ? dwSelColor : dwColor, 0, ALIGN_LEFT, true, fScale, 0, 0,
-                     offset.x, y, "%s", asText[n].GetBuffer());
+        rs->ExtPrint(nFontID, (n >= nBeg && n < nEnd) ? dwSelColor : dwColor, 0, PR_ALIGN_LEFT, true, fScale, 0, 0,
+                     offset.x, y, "%s", asText[n].c_str());
 
         if (nEditLine != -1 && (n >= nBeg && n < nEnd) && nSelectLine == nEditLine)
         {
@@ -293,19 +286,19 @@ void DIALOG::DlgLinkDescribe::Show(long nY)
     }
 }
 
-void __declspec(noinline) __cdecl DIALOG::DlgLinkDescribe::ShowEditMode(long nX, long nY, long nTextIdx)
+void DIALOG::DlgLinkDescribe::ShowEditMode(long nX, long nY, long nTextIdx)
 {
-    long nKeyQ = api->Controls->GetKeyBufferLength();
+    const auto nKeyQ = api->Controls->GetKeyBufferLength();
     if (nKeyQ > 0)
     {
-        const KeyDescr *pKeys = api->Controls->GetKeyBuffer();
+        const auto *const pKeys = api->Controls->GetKeyBuffer();
         if (pKeys)
         {
             for (long n = 0; n < nKeyQ; n++)
             {
                 if (pKeys[n].bSystem)
                 {
-                    switch (pKeys[n].ucVKey.c)
+                    switch (pKeys[n].ucVKey)
                     {
                     case VK_LEFT:
                         if (nEditCharIndex > 0)
@@ -315,40 +308,33 @@ void __declspec(noinline) __cdecl DIALOG::DlgLinkDescribe::ShowEditMode(long nX,
                         if (nEditCharIndex > 0)
                         {
                             nEditCharIndex--;
-                            int offset = utf8::u8_offset(asText[nTextIdx].c_str(), nEditCharIndex);
-                            int length = utf8::u8_inc(asText[nTextIdx].c_str() + offset);
-                            asText[nTextIdx].Delete(offset, length);
+                            asText[nTextIdx].erase(nEditCharIndex, 1);
                         }
                         break;
-                    case VK_RIGHT: {
-                        int strLength = utf8::Utf8StringLength(asText[nTextIdx].c_str());
-                        if (nEditCharIndex < strLength)
+                    case VK_RIGHT:
+                        if (nEditCharIndex < static_cast<long>(asText[nTextIdx].size()))
                             nEditCharIndex++;
                         break;
-                    }
-                    case VK_DELETE: {
-                        int strLength = utf8::Utf8StringLength(asText[nTextIdx].c_str());
-                        if (nEditCharIndex >= 0 && nEditCharIndex < strLength)
+                    case VK_DELETE:
+                        if (nEditCharIndex >= 0 && nEditCharIndex < static_cast<long>(asText[nTextIdx].size()))
                         {
-                            int offset = utf8::u8_offset(asText[nTextIdx].c_str(), nEditCharIndex);
-                            int length = utf8::u8_inc(asText[nTextIdx].c_str() + offset);
-                            asText[nTextIdx].Delete(offset, length);
+                            asText[nTextIdx].erase(nEditCharIndex, 1);
                         }
                         break;
-                    }
                     }
                     continue;
                 }
-                if (pKeys[n].ucVKey.c < 0x20)
+                if (pKeys[n].ucVKey < 0x20)
                     continue;
 
-                std::string tmp(pKeys[n].ucVKey.b, pKeys[n].ucVKey.l);
-                if (rs->StringWidth(asText[nTextIdx].GetBuffer(), nFontID, fScale, 0) +
-                        rs->CharWidth(pKeys[n].ucVKey, nFontID, fScale) <=
+                char pcTmp[2];
+                pcTmp[0] = pKeys[n].ucVKey;
+                pcTmp[1] = 0;
+                if (rs->StringWidth((char *)asText[nTextIdx].c_str(), nFontID, fScale, 0) +
+                        rs->CharWidth(pcTmp[0], nFontID, fScale) <=
                     nWindowWidth)
                 {
-                    int offset = utf8::u8_offset(asText[nTextIdx].c_str(), nEditCharIndex);
-                    asText[nTextIdx].Insert(offset, tmp.c_str());
+                    asText[nTextIdx].insert(nEditCharIndex, pcTmp);
                     nEditCharIndex++;
                 }
             }
@@ -362,28 +348,26 @@ void __declspec(noinline) __cdecl DIALOG::DlgLinkDescribe::ShowEditMode(long nX,
     if (fCursorCurrentTime <= fCursorVisibleTime)
     {
         long nW = 0;
-        if (!asText[nTextIdx].IsEmpty())
+        if (!asText[nTextIdx].empty())
         {
-            int strLength = utf8::Utf8StringLength(asText[nTextIdx].c_str());
-            if (nEditCharIndex < strLength)
+            if (nEditCharIndex < static_cast<long>(asText[nTextIdx].size()))
             {
-                int offset = utf8::u8_offset(asText[nTextIdx].c_str(), nEditCharIndex);
-                char cTmp = asText[nTextIdx][offset];
-                asText[nTextIdx][offset] = 0;
-                nW = rs->StringWidth(asText[nTextIdx].GetBuffer(), nFontID, fScale, 0);
-                asText[nTextIdx][offset] = cTmp;
+                const auto cTmp = asText[nTextIdx][nEditCharIndex];
+                asText[nTextIdx][nEditCharIndex] = 0;
+                nW = rs->StringWidth((char *)asText[nTextIdx].c_str(), nFontID, fScale, 0);
+                asText[nTextIdx][nEditCharIndex] = cTmp;
             }
             else
-                nW = rs->StringWidth(asText[nTextIdx].GetBuffer(), nFontID, fScale, 0);
+                nW = rs->StringWidth((char *)asText[nTextIdx].c_str(), nFontID, fScale, 0);
         }
-        rs->ExtPrint(nFontID, dwSelColor, 0, ALIGN_LEFT, true, fScale, 0, 0, nX + nW, nY, "_");
+        rs->ExtPrint(nFontID, dwSelColor, 0, PR_ALIGN_LEFT, true, fScale, 0, 0, nX + nW, nY, "_");
     }
 
     if (nEditVarIndex >= 0 && nEditVarIndex < 10)
     {
-        VDATA *pDat = (VDATA *)api->GetScriptVariable("dialogEditStrings");
+        auto *pDat = static_cast<VDATA *>(api->GetScriptVariable("dialogEditStrings"));
         if (pDat)
-            pDat->Set((char *)asText[nTextIdx].GetBuffer(), nEditVarIndex);
+            pDat->Set((char *)asText[nTextIdx].c_str(), nEditVarIndex);
     }
 }
 
@@ -395,7 +379,7 @@ DIALOG::DIALOG()
     play = -1;
     start = true;
 
-    RenderService = 0;
+    RenderService = nullptr;
 
     m_idVBufBack = -1;
     m_idIBufBack = -1;
@@ -409,7 +393,7 @@ DIALOG::DIALOG()
 
     m_bDlgChanged = true;
 
-    strcpy(charDefSnd, "\0");
+    strcpy_s(charDefSnd, "\0");
 
     bEditMode = false;
     m_DlgLinks.SetDlg(this);
@@ -442,29 +426,29 @@ DIALOG::~DIALOG()
     m_nCharNameTextFont = -1;
 }
 
-void __declspec(noinline) __cdecl DIALOG::CreateBack()
+void DIALOG::CreateBack()
 {
-    long nSquareQuantity = 9 + 3 + 1;  // 9-for back, 3-for name & 1-for divider
-    m_nIQntBack = 6 * nSquareQuantity; // 6 индексов в одном прямоугольнике
-    m_nVQntBack = 4 * nSquareQuantity; // 4 вертекса в одном прямоуголькнике
+    const long nSquareQuantity = 9 + 3 + 1; // 9-for back, 3-for name & 1-for divider
+    m_nIQntBack = 6 * nSquareQuantity;      // 6 индексов в одном прямоугольнике
+    m_nVQntBack = 4 * nSquareQuantity;      // 4 вертекса в одном прямоуголькнике
 
     if (m_idVBufBack == -1)
-        m_idVBufBack = RenderService->CreateVertexBufferManaged(XI_TEX_FVF, m_nVQntBack * sizeof(XI_TEX_VERTEX),
-                                                                D3DUSAGE_WRITEONLY);
+        m_idVBufBack =
+            RenderService->CreateVertexBuffer(XI_TEX_FVF, m_nVQntBack * sizeof(XI_TEX_VERTEX), D3DUSAGE_WRITEONLY);
     if (m_idIBufBack == -1)
-        m_idIBufBack = RenderService->CreateIndexBufferManaged(m_nIQntBack * sizeof(WORD));
+        m_idIBufBack = RenderService->CreateIndexBuffer(m_nIQntBack * sizeof(uint16_t));
 
-    WORD *pI = (WORD *)RenderService->LockIndexBuffer(m_idIBufBack);
+    auto *const pI = static_cast<uint16_t *>(RenderService->LockIndexBuffer(m_idIBufBack));
     if (pI)
     {
         for (long n = 0; n < nSquareQuantity; n++)
         {
-            pI[n * 6 + 0] = (WORD)(n * 4 + 0);
-            pI[n * 6 + 1] = (WORD)(n * 4 + 2);
-            pI[n * 6 + 2] = (WORD)(n * 4 + 1);
-            pI[n * 6 + 3] = (WORD)(n * 4 + 1);
-            pI[n * 6 + 4] = (WORD)(n * 4 + 2);
-            pI[n * 6 + 5] = (WORD)(n * 4 + 3);
+            pI[n * 6 + 0] = static_cast<uint16_t>(n * 4 + 0);
+            pI[n * 6 + 1] = static_cast<uint16_t>(n * 4 + 2);
+            pI[n * 6 + 2] = static_cast<uint16_t>(n * 4 + 1);
+            pI[n * 6 + 3] = static_cast<uint16_t>(n * 4 + 1);
+            pI[n * 6 + 4] = static_cast<uint16_t>(n * 4 + 2);
+            pI[n * 6 + 5] = static_cast<uint16_t>(n * 4 + 3);
         }
         RenderService->UnLockIndexBuffer(m_idIBufBack);
     }
@@ -481,7 +465,7 @@ void DIALOG::FillBack()
     if (m_idVBufBack == -1)
         return;
 
-    XI_TEX_VERTEX *pV = (XI_TEX_VERTEX *)RenderService->LockVertexBuffer(m_idVBufBack);
+    auto *pV = static_cast<XI_TEX_VERTEX *>(RenderService->LockVertexBuffer(m_idVBufBack));
     // center
     SetVerticesForSquare(&pV[0], m_BackParams.m_frCenterUV, m_BackParams.m_frBorderInt.left,
                          m_BackParams.m_frBorderInt.top, m_BackParams.m_frBorderInt.right,
@@ -547,8 +531,8 @@ void DIALOG::FillDivider()
     if (!m_BackParams.bShowDivider)
         return;
 
-    XI_TEX_VERTEX *pV = (XI_TEX_VERTEX *)RenderService->LockVertexBuffer(m_idVBufBack);
-    float fDividerY = (float)(textViewport.Y + m_BackParams.nDividerOffsetY);
+    XI_TEX_VERTEX *pV = static_cast<XI_TEX_VERTEX *>(RenderService->LockVertexBuffer(m_idVBufBack));
+    const auto fDividerY = static_cast<float>(textViewport.Y + m_BackParams.nDividerOffsetY);
     SetVerticesForSquare(&pV[m_nVQntBack - 4], m_BackParams.m_frDividerUV,
                          m_BackParams.m_frBorderInt.left + m_BackParams.nDividerOffsetX, fDividerY,
                          m_BackParams.m_frBorderInt.right - m_BackParams.nDividerOffsetX,
@@ -573,22 +557,22 @@ void DIALOG::CreateButtons()
     m_nVQntButton = 4 * 2; // 4 вертекса на один прямоугольник
 
     if (m_idVBufButton == -1)
-        m_idVBufButton = RenderService->CreateVertexBufferManaged(XI_TEX_FVF, m_nVQntButton * sizeof(XI_TEX_VERTEX),
-                                                                  D3DUSAGE_WRITEONLY);
+        m_idVBufButton =
+            RenderService->CreateVertexBuffer(XI_TEX_FVF, m_nVQntButton * sizeof(XI_TEX_VERTEX), D3DUSAGE_WRITEONLY);
     if (m_idIBufButton == -1)
-        m_idIBufButton = RenderService->CreateIndexBufferManaged(m_nIQntButton * sizeof(WORD));
+        m_idIBufButton = RenderService->CreateIndexBuffer(m_nIQntButton * sizeof(uint16_t));
 
-    WORD *pI = (WORD *)RenderService->LockIndexBuffer(m_idIBufButton);
+    auto *pI = static_cast<uint16_t *>(RenderService->LockIndexBuffer(m_idIBufButton));
     if (pI)
     {
         for (long n = 0; n < 2; n++)
         {
-            pI[n * 6 + 0] = (WORD)(n * 4 + 0);
-            pI[n * 6 + 1] = (WORD)(n * 4 + 2);
-            pI[n * 6 + 2] = (WORD)(n * 4 + 1);
-            pI[n * 6 + 3] = (WORD)(n * 4 + 1);
-            pI[n * 6 + 4] = (WORD)(n * 4 + 2);
-            pI[n * 6 + 5] = (WORD)(n * 4 + 3);
+            pI[n * 6 + 0] = static_cast<uint16_t>(n * 4 + 0);
+            pI[n * 6 + 1] = static_cast<uint16_t>(n * 4 + 2);
+            pI[n * 6 + 2] = static_cast<uint16_t>(n * 4 + 1);
+            pI[n * 6 + 3] = static_cast<uint16_t>(n * 4 + 1);
+            pI[n * 6 + 4] = static_cast<uint16_t>(n * 4 + 2);
+            pI[n * 6 + 5] = static_cast<uint16_t>(n * 4 + 3);
         }
         RenderService->UnLockIndexBuffer(m_idIBufButton);
     }
@@ -601,7 +585,7 @@ void DIALOG::FillButtons()
 
     m_dwButtonState &= ~(BUTTON_STATE_UPENABLE | BUTTON_STATE_DOWNENABLE);
 
-    if ((!m_DlgText.IsLastPage()) || (m_DlgLinks.nStartIndex + m_DlgLinks.nShowQuantity < m_DlgLinks.asText))
+    if ((!m_DlgText.IsLastPage()) || (m_DlgLinks.nStartIndex + m_DlgLinks.nShowQuantity < m_DlgLinks.asText.size()))
         m_dwButtonState |= BUTTON_STATE_DOWNENABLE;
 
     if (m_DlgText.IsLastPage() && m_DlgLinks.nStartIndex > 0)
@@ -610,7 +594,7 @@ void DIALOG::FillButtons()
     if (m_DlgText.nStartIndex > 0)
         m_dwButtonState |= BUTTON_STATE_UPENABLE;
 
-    XI_TEX_VERTEX *pV = (XI_TEX_VERTEX *)RenderService->LockVertexBuffer(m_idVBufButton);
+    XI_TEX_VERTEX *pV = static_cast<XI_TEX_VERTEX *>(RenderService->LockVertexBuffer(m_idVBufButton));
     if (m_dwButtonState & BUTTON_STATE_UPLIGHT)
     {
         SetVerticesForSquare(
@@ -670,7 +654,7 @@ void DIALOG::DrawButtons()
 
 void DIALOG::LoadFromIni()
 {
-    INIFILE *pIni = api->fio->OpenIniFile("resource\\ini\\dialog.ini");
+    INIFILE *pIni = fio->OpenIniFile("resource\\ini\\dialog.ini");
     if (!pIni)
     {
         api->Trace("Warning! DIALOG: Can`t open ini file %s", "resource\\ini\\dialog.ini");
@@ -688,8 +672,8 @@ void DIALOG::LoadFromIni()
         fpScrSize.x = 800.f;
     if (fpScrSize.y <= 0)
         fpScrSize.y = 600.f;
-    m_nScrBaseWidth = (long)fpScrSize.x;
-    m_nScrBaseHeight = (long)fpScrSize.y;
+    m_nScrBaseWidth = static_cast<long>(fpScrSize.x);
+    m_nScrBaseHeight = static_cast<long>(fpScrSize.y);
     D3DVIEWPORT9 vp;
     RenderService->GetViewport(&vp);
     m_frScreenData.right = vp.Width / (fpScrSize.x + fpScrOffset.x);
@@ -720,8 +704,8 @@ void DIALOG::LoadFromIni()
     m_BackParams.fCharacterNameRectRightWidth = GetScrWidth(pIni->GetFloat("BACKPARAM", "ChrNameRightWidth", 16.f));
 
     m_BackParams.bShowDivider = false;
-    m_BackParams.nDividerHeight = GetScrHeight((float)pIni->GetLong("BACKPARAM", "dividerHeight", 8));
-    m_BackParams.nDividerOffsetX = GetScrWidth((float)pIni->GetLong("BACKPARAM", "dividerOffsetX", 8));
+    m_BackParams.nDividerHeight = GetScrHeight(static_cast<float>(pIni->GetLong("BACKPARAM", "dividerHeight", 8)));
+    m_BackParams.nDividerOffsetX = GetScrWidth(static_cast<float>(pIni->GetLong("BACKPARAM", "dividerOffsetX", 8)));
     m_BackParams.nDividerOffsetY = 0;
 
     GetRectFromIni(pIni, "BACKPARAM", "backBorderOffset", m_BackParams.frBorderRect);
@@ -749,8 +733,7 @@ void DIALOG::LoadFromIni()
     char FName[MAX_PATH];
     pIni->ReadString("DIALOG", "charnamefont", FName, MAX_PATH, "DIALOG2");
     m_nCharNameTextFont = RenderService->LoadFont(FName);
-    // m_dwCharNameTextColor = pIni->GetLong( "DIALOG","charnamecolor",0xFFFFFFFF);
-    m_dwCharNameTextColor = 0xFFFFFFFF;
+    m_dwCharNameTextColor = pIni->GetLong("DIALOG", "charnamecolor", 0xFFFFFFFF);
     m_fCharNameTextScale = pIni->GetFloat("DIALOG", "charnamescale", 1.f);
     GetPointFromIni(pIni, "DIALOG", "charnameoffset", m_fpCharNameTextOffset);
     m_fpCharNameTextOffset.x = GetScrWidth(m_fpCharNameTextOffset.x);
@@ -785,7 +768,8 @@ void DIALOG::GetPointFromIni(INIFILE *ini, const char *pcSection, const char *pc
 }
 
 void DIALOG::AddToStringArrayLimitedByWidth(const char *pcSrcText, long nFontID, float fScale, long nLimitWidth,
-                                            array<string> &asOutTextList, array<long> *panPageIndices, long nPageSize)
+                                            std::vector<std::string> &asOutTextList, std::vector<long> *panPageIndices,
+                                            long nPageSize)
 {
     if (!pcSrcText)
         return;
@@ -796,16 +780,18 @@ void DIALOG::AddToStringArrayLimitedByWidth(const char *pcSrcText, long nFontID,
     char param[1024];
     long nCur = 0;
     long nPrevIdx = 0;
-    if (panPageIndices && panPageIndices->Size() > 0)
-        nPrevIdx = panPageIndices->LastE();
+    if (panPageIndices && panPageIndices->size() > 0)
+        nPrevIdx = panPageIndices->back();
     while (true)
     {
         if ((pcSrcText[nCur] == 0x20 && pcSrcText[nCur + 1] != 0) || pcSrcText[nCur] == 0) // space
-        { // boal fix пробел в конце строки
+        {
+            // boal fix пробел в конце строки
             param[n] = 0;
-            long nW = RenderService->StringWidth(param, nFontID, fScale);
+            const long nW = RenderService->StringWidth(param, nFontID, fScale);
             if (nW < nLimitWidth && pcSrcText[nCur] != 0)
-            { // пока еще не перешли предел по ширине
+            {
+                // пока еще не перешли предел по ширине
                 param[n++] = 0x20;
             }
             else
@@ -821,9 +807,8 @@ void DIALOG::AddToStringArrayLimitedByWidth(const char *pcSrcText, long nFontID,
                         // ищем первый попавший в диапазон набор символов
                         while (n > 0 && RenderService->StringWidth(param, nFontID, fScale) > nLimitWidth)
                         {
-                            int dec = utf8::u8_dec(param + n);
-                            n -= dec;
-                            nCur -= dec;
+                            n--;
+                            nCur--;
                             param[n] = 0;
                         }
                     }
@@ -835,14 +820,13 @@ void DIALOG::AddToStringArrayLimitedByWidth(const char *pcSrcText, long nFontID,
                         nCur = nPrev;
                     }
                 }
-                long i = asOutTextList.Add();
-                asOutTextList[i] = param;
+                asOutTextList.push_back(param);
                 n = 0;
 
-                if (panPageIndices && asOutTextList.Size() - nPrevIdx == nPageSize)
+                if (panPageIndices && asOutTextList.size() - nPrevIdx == nPageSize)
                 {
-                    nPrevIdx = asOutTextList.Size();
-                    panPageIndices->Add(nPrevIdx);
+                    nPrevIdx = asOutTextList.size();
+                    panPageIndices->push_back(nPrevIdx);
                 }
             }
             while (pcSrcText[nCur] == 0x20 && pcSrcText[nCur + 1] != 0)
@@ -865,10 +849,10 @@ bool DIALOG::Init()
     api->SetTimeScale(0.f);
     unfadeTime = 0;
 
-    RenderService = (VDX8RENDER *)api->CreateService("dx8render");
+    RenderService = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
     Assert(RenderService);
 
-    snd = (VSoundService *)api->CreateService("SoundService");
+    snd = static_cast<VSoundService *>(api->CreateService("SoundService"));
     // Assert( snd );
 
     //----------------------------------------------------------
@@ -878,17 +862,17 @@ bool DIALOG::Init()
     FillBack();
     FillDivider();
 
-    textViewport.X = (long)(m_BackParams.m_frBorderInt.left + GetScrWidth(4));
-    textViewport.Y = (long)GetScrY(437);
-    textViewport.Width = (long)(m_BackParams.m_frBorderInt.right - GetScrWidth(4)) - textViewport.X;
-    textViewport.Height = (unsigned long)GetScrHeight(66);
+    textViewport.X = static_cast<long>(m_BackParams.m_frBorderInt.left + GetScrWidth(4));
+    textViewport.Y = static_cast<long>(GetScrY(437));
+    textViewport.Width = static_cast<long>(m_BackParams.m_frBorderInt.right - GetScrWidth(4)) - textViewport.X;
+    textViewport.Height = static_cast<unsigned long>(GetScrHeight(66));
     textViewport.MinZ = 0.0f;
     textViewport.MaxZ = 1.0f;
 
-    INIFILE *ini = api->fio->OpenIniFile("Resource\\Ini\\dialog.ini");
+    INIFILE *ini = fio->OpenIniFile("Resource\\Ini\\dialog.ini");
     m_DlgText.Init(RenderService, textViewport, ini);
     m_DlgLinks.Init(RenderService, textViewport, ini);
-    SE_DELETE(ini);
+    STORM_DELETE(ini);
 
     CreateButtons();
     FillButtons();
@@ -897,14 +881,14 @@ bool DIALOG::Init()
 }
 
 //--------------------------------------------------------------------
-void DIALOG::Realize(dword Delta_Time)
+void DIALOG::Realize(uint32_t Delta_Time)
 {
     RenderService->MakePostProcess();
     // замедленный выход из паузы
     if (unfadeTime <= UNFADE_TIME)
     {
-        unfadeTime += (int)api->GetRDeltaTime();
-        float timeK = (float)unfadeTime / UNFADE_TIME;
+        unfadeTime += static_cast<int>(api->GetRDeltaTime());
+        float timeK = static_cast<float>(unfadeTime) / UNFADE_TIME;
         if (timeK > 1.f)
             timeK = 1.f;
         api->SetTimeScale(timeK);
@@ -978,7 +962,7 @@ void DIALOG::Realize(dword Delta_Time)
         {
             if (m_DlgLinks.nSelectLine > 0)
                 m_DlgLinks.nSelectLine--;
-            long nTmp = (m_DlgLinks.nSelectLine > 0) ? m_DlgLinks.anLineEndIndex[m_DlgLinks.nSelectLine - 1] : 0;
+            const long nTmp = (m_DlgLinks.nSelectLine > 0) ? m_DlgLinks.anLineEndIndex[m_DlgLinks.nSelectLine - 1] : 0;
             if (m_DlgLinks.nStartIndex > nTmp)
             {
                 m_DlgLinks.nStartIndex = nTmp;
@@ -995,7 +979,7 @@ void DIALOG::Realize(dword Delta_Time)
 
         if (m_DlgText.IsLastPage())
         {
-            if (m_DlgLinks.nSelectLine < (long)m_DlgLinks.anLineEndIndex.Size() - 1)
+            if (m_DlgLinks.nSelectLine < static_cast<long>(m_DlgLinks.anLineEndIndex.size()) - 1)
                 m_DlgLinks.nSelectLine++;
             if (m_DlgLinks.nStartIndex + m_DlgLinks.nShowQuantity < m_DlgLinks.anLineEndIndex[m_DlgLinks.nSelectLine])
             {
@@ -1047,28 +1031,30 @@ void DIALOG::Realize(dword Delta_Time)
             snd->SoundPlay(TICK_SOUND, PCM_STEREO, VOLUME_FX);
 
         if (m_DlgText.IsLastPage())
-        { // показываем варианты ответа
+        {
+            // показываем варианты ответа
             ATTRIBUTES *pA = AttributesPointer->GetAttributeClass("links");
             if (pA)
                 pA = pA->GetAttributeClass(m_DlgLinks.nSelectLine);
             if (pA)
             {
                 char *goName = pA->GetAttribute("go");
-                if (!goName || stricmp(goName, selectedLinkName) == 0)
+                if (!goName || _stricmp(goName, selectedLinkName) == 0)
                     EmergencyExit();
                 else
                 {
                     AttributesPointer->SetAttribute("CurrentNode", goName);
-                    strcpy(selectedLinkName, goName);
+                    strcpy_s(selectedLinkName, goName);
 
                     // set default
-                    strcpy(soundName, charDefSnd);
+                    strcpy_s(soundName, charDefSnd);
                     api->Event("DialogEvent");
                 }
             }
         }
         else
-        { // пока еще показываем текст
+        {
+            // пока еще показываем текст
             m_DlgText.NextPage();
             UpdateDlgViewport();
             FillDivider();
@@ -1079,14 +1065,14 @@ void DIALOG::Realize(dword Delta_Time)
     DrawBack();
     DrawButtons();
 
-    RenderService->ExtPrint(m_nCharNameTextFont, m_dwCharNameTextColor, 0, ALIGN_LEFT, true, m_fCharNameTextScale, 0, 0,
-                            (long)(m_BackParams.m_frBorderExt.left + m_fpCharNameTextOffset.x),
-                            (long)(m_BackParams.m_frBorderExt.top + m_fpCharNameTextOffset.y), "%s",
-                            m_sTalkPersName.GetBuffer());
+    RenderService->ExtPrint(m_nCharNameTextFont, m_dwCharNameTextColor, 0, PR_ALIGN_LEFT, true, m_fCharNameTextScale, 0,
+                            0, static_cast<long>(m_BackParams.m_frBorderExt.left + m_fpCharNameTextOffset.x),
+                            static_cast<long>(m_BackParams.m_frBorderExt.top + m_fpCharNameTextOffset.y), "%s",
+                            m_sTalkPersName.c_str());
 
     m_DlgText.Show(textViewport.Y);
     if (m_DlgText.IsLastPage())
-        m_DlgLinks.Show((long)(textViewport.Y + m_BackParams.nDividerOffsetY + m_BackParams.nDividerHeight));
+        m_DlgLinks.Show(static_cast<long>(textViewport.Y + m_BackParams.nDividerOffsetY + m_BackParams.nDividerHeight));
 
     if (snd && !snd->SoundIsPlaying(curSnd))
     {
@@ -1097,24 +1083,24 @@ void DIALOG::Realize(dword Delta_Time)
 }
 
 //--------------------------------------------------------------------
-dword DIALOG::AttributeChanged(ATTRIBUTES *pA)
+uint32_t DIALOG::AttributeChanged(ATTRIBUTES *pA)
 {
     // search for default settings
     bool parLinks = false;
     ATTRIBUTES *par = pA->GetParent();
-    if (par != 0)
+    if (par != nullptr)
     {
         const char *parname = par->GetThisName();
-        if (parname != 0 && stricmp(parname, "Links") == 0)
+        if (parname != nullptr && _stricmp(parname, "Links") == 0)
             parLinks = true;
     }
 
     const char *nm = pA->GetThisName();
 
     // play sound d.speech
-    if (!parLinks && nm && stricmp(nm, "greeting") == 0) // was "snd"
+    if (!parLinks && nm && _stricmp(nm, "greeting") == 0) // was "snd"
     {
-        strcpy(soundName, pA->GetThisAttr());
+        strcpy_s(soundName, pA->GetThisAttr());
         if (start)
             play = 0;
     }
@@ -1124,26 +1110,29 @@ dword DIALOG::AttributeChanged(ATTRIBUTES *pA)
 }
 
 //--------------------------------------------------------------------
-dword _cdecl DIALOG::ProcessMessage(MESSAGE &message)
+uint64_t DIALOG::ProcessMessage(MESSAGE &message)
 {
     switch (message.Long())
     {
-    // get character ID
+        // get character ID
     case 0:
         persId = message.EntityID();
         persMdl = message.EntityID();
         break;
-    // get person ID
+        // get person ID
     case 1:
         charId = message.EntityID();
         charMdl = message.EntityID();
-        m_sTalkPersName = api->Entity_GetAttribute(&charId, "name");
-        if (m_sTalkPersName.Size() > 0)
+        const char *attr = nullptr;
+        if (attr = api->Entity_GetAttribute(charId, "name"))
+            m_sTalkPersName = attr;
+        if (m_sTalkPersName.size() > 0)
             m_sTalkPersName += " ";
-        m_sTalkPersName += api->Entity_GetAttribute(&charId, "lastname");
+        if (attr = api->Entity_GetAttribute(charId, "lastname"))
+            m_sTalkPersName += attr;
         m_BackParams.fCharacterNameRectCenterWidth =
             4.f +
-            RenderService->StringWidth((char *)m_sTalkPersName.GetBuffer(), m_nCharNameTextFont, m_fCharNameTextScale);
+            RenderService->StringWidth((char *)m_sTalkPersName.c_str(), m_nCharNameTextFont, m_fCharNameTextScale);
         break;
     }
     return 0;
@@ -1173,15 +1162,15 @@ void DIALOG::UpdateDlgTexts()
 
 void DIALOG::UpdateDlgViewport()
 {
-    long nTextHeight = m_DlgText.GetShowHeight();
-    long nLinksHeight = m_DlgText.IsLastPage() ? m_DlgLinks.GetShowHeight() : 0;
+    const long nTextHeight = m_DlgText.GetShowHeight();
+    const long nLinksHeight = m_DlgText.IsLastPage() ? m_DlgLinks.GetShowHeight() : 0;
 
     long nAllHeight = nTextHeight;
     if (nLinksHeight > 0)
     {
         m_BackParams.bShowDivider = true;
         m_BackParams.nDividerOffsetY = nTextHeight;
-        nAllHeight += nLinksHeight + (long)m_BackParams.nDividerHeight;
+        nAllHeight += nLinksHeight + static_cast<long>(m_BackParams.nDividerHeight);
     }
     else
     {
@@ -1189,10 +1178,10 @@ void DIALOG::UpdateDlgViewport()
     }
 
     textViewport.Height = nAllHeight;
-    textViewport.Y =
-        (unsigned long)((long)m_BackParams.m_frBorderInt.bottom - nAllHeight - GetScrHeight(DIALOG_BOTTOM_LINESPACE));
+    textViewport.Y = static_cast<unsigned long>(static_cast<long>(m_BackParams.m_frBorderInt.bottom) - nAllHeight -
+                                                GetScrHeight(DIALOG_BOTTOM_LINESPACE));
 
-    float fTopBorder = textViewport.Y - GetScrHeight(DIALOG_TOP_LINESPACE);
+    const float fTopBorder = textViewport.Y - GetScrHeight(DIALOG_TOP_LINESPACE);
     if (m_BackParams.m_frBorderInt.top != fTopBorder)
     {
         m_BackParams.m_frBorderInt.top = fTopBorder;

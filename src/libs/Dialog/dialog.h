@@ -1,16 +1,13 @@
 #ifndef _DIALOG_H_
 #define _DIALOG_H_
 
-#if defined(_WIN32) && !defined(_CRT_SECURE_NO_WARNINGS)
-#define _CRT_SECURE_NO_WARNINGS
-#endif
-
-#include "dx8render.h"
+#include "dx9render.h"
 #include "matrix.h"
 #include "vmodule_api.h"
 
-#include "templates\array.h"
-#include "templates\string.h"
+#include "defines.h"
+#include <string>
+#include <vector>
 
 #define MAX_LINES 5
 #define SCROLL_LINE_TIME 100
@@ -23,7 +20,7 @@ struct XI_TEX_VERTEX
 {
     CVECTOR pos;
     float rhw;
-    DWORD color;
+    uint32_t color;
     float u, v;
 };
 
@@ -34,47 +31,64 @@ struct XI_TEX_VERTEX
 
 class VSoundService;
 
-class DIALOG : public ENTITY
+class DIALOG : public Entity
 {
-    static VDX8RENDER *RenderService;
+    static VDX9RENDER *RenderService;
 
   public:
+    DIALOG(DIALOG &&) = delete;
+    DIALOG(const DIALOG &) = delete;
     DIALOG();
     ~DIALOG();
 
     bool Init();
-    void Realize(dword Delta_Time);
-    dword AttributeChanged(ATTRIBUTES *pA);
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    void Realize(uint32_t Delta_Time);
+    uint32_t AttributeChanged(ATTRIBUTES *pA);
+    uint64_t ProcessMessage(MESSAGE &message);
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        // case Stage::execute:
+        //	Execute(delta); break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+                LostRender(delta); break;
+            case Stage::restore_render:
+                RestoreRender(delta); break;*/
+        }
+    }
 
     static void AddToStringArrayLimitedByWidth(const char *pcSrcText, long nFontID, float fScale, long nLimitWidth,
-                                               array<string> &asOutTextList, array<long> *panPageIndices,
-                                               long nPageSize);
+                                               std::vector<std::string> &asOutTextList,
+                                               std::vector<long> *panPageIndices, long nPageSize);
 
   private:
     void EmergencyExit();
 
     // Nikita data
-    string m_sTalkPersName;
+    std::string m_sTalkPersName;
 
     struct TextDescribe
     {
-        VDX8RENDER *rs;
+        VDX9RENDER *rs;
         POINT offset;
         long nWindowWidth;
         long nFontID;
-        dword dwColor;
-        dword dwSelColor;
+        uint32_t dwColor;
+        uint32_t dwSelColor;
         float fScale;
         long nLineInterval;
-        array<string> asText;
+        std::vector<std::string> asText;
         long nStartIndex;
         long nShowQuantity;
         long nSelectLine;
 
-        TextDescribe() : asText(_FL)
+        TextDescribe()
         {
-            rs = 0;
+            rs = nullptr;
             nFontID = -1;
         }
         virtual ~TextDescribe()
@@ -86,7 +100,7 @@ class DIALOG : public ENTITY
             if (rs && nFontID >= 0)
                 rs->UnloadFont(nFontID);
             nFontID = -1;
-            asText.DelAll();
+            asText.clear();
         }
     };
 
@@ -97,11 +111,12 @@ class DIALOG : public ENTITY
     struct DlgTextDescribe : public TextDescribe
     {
         float fScrollTime;
-        array<long> anPageEndIndex;
+        std::vector<long> anPageEndIndex;
 
-        DlgTextDescribe() : TextDescribe(), anPageEndIndex(_FL)
+        DlgTextDescribe() : TextDescribe(), fScrollTime(0)
         {
         }
+
         virtual ~DlgTextDescribe()
         {
             Release();
@@ -110,8 +125,8 @@ class DIALOG : public ENTITY
         {
             TextDescribe::Release();
         }
-        void __declspec(dllexport) __cdecl ChangeText(const char *pcText);
-        void __declspec(dllexport) __cdecl Init(VDX8RENDER *pRS, D3DVIEWPORT9 &vp, INIFILE *pIni);
+        void ChangeText(const char *pcText);
+        void Init(VDX9RENDER *pRS, D3DVIEWPORT9 &vp, INIFILE *pIni);
         long GetShowHeight();
         void Show(long nY);
         bool IsLastPage();
@@ -122,7 +137,7 @@ class DIALOG : public ENTITY
 
     struct DlgLinkDescribe : public TextDescribe
     {
-        array<long> anLineEndIndex;
+        std::vector<long> anLineEndIndex;
 
         long nEditLine;
         long nEditVarIndex;
@@ -130,9 +145,9 @@ class DIALOG : public ENTITY
         float fCursorCurrentTime, fCursorVisibleTime, fCursorInvisibleTime;
         DIALOG *pDlg;
 
-        DlgLinkDescribe() : TextDescribe(), anLineEndIndex(_FL)
+        DlgLinkDescribe() : TextDescribe()
         {
-            pDlg = 0;
+            pDlg = nullptr;
         }
         virtual ~DlgLinkDescribe()
         {
@@ -142,11 +157,11 @@ class DIALOG : public ENTITY
         {
             TextDescribe::Release();
         }
-        void __declspec(dllexport) __cdecl ChangeText(ATTRIBUTES *pALinks);
-        void __declspec(dllexport) __cdecl Init(VDX8RENDER *pRS, D3DVIEWPORT9 &vp, INIFILE *pIni);
+        void ChangeText(ATTRIBUTES *pALinks);
+        void Init(VDX9RENDER *pRS, D3DVIEWPORT9 &vp, INIFILE *pIni);
         long GetShowHeight();
         void Show(long nY);
-        void __declspec(dllexport) __cdecl ShowEditMode(long nX, long nY, long nTextIdx);
+        void ShowEditMode(long nX, long nY, long nTextIdx);
         void SetDlg(DIALOG *_pDlg)
         {
             pDlg = _pDlg;
@@ -213,10 +228,10 @@ class DIALOG : public ENTITY
     long m_idIBufButton;
     long m_nVQntButton;
     long m_nIQntButton;
-    dword m_dwButtonState;
+    uint32_t m_dwButtonState;
 
     long m_nCharNameTextFont;
-    dword m_dwCharNameTextColor;
+    uint32_t m_dwCharNameTextColor;
     float m_fCharNameTextScale;
     FPOINT m_fpCharNameTextOffset;
 
@@ -241,7 +256,7 @@ class DIALOG : public ENTITY
         return fY * m_frScreenData.bottom;
     }
 
-    void __declspec(dllexport) __cdecl CreateBack();
+    void CreateBack();
     void FillBack();
     void FillDivider();
     void DrawBack();
@@ -256,8 +271,8 @@ class DIALOG : public ENTITY
     static void GetPointFromIni(INIFILE *ini, const char *pcSection, const char *pcKey, FPOINT &fpoint);
 
     VSoundService *snd;
-    ENTITY_ID charId, persId;
-    ENTITY_ID charMdl, persMdl;
+    entid_t charId, persId;
+    entid_t charMdl, persMdl;
     D3DVIEWPORT9 textViewport;
 
     long curSnd;
