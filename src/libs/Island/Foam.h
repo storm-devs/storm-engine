@@ -1,16 +1,11 @@
 #ifndef _COAST_FOAM_HPP_
 #define _COAST_FOAM_HPP_
 
-#include "..\sea_ai\AIFlowGraph.h"
-#include "Island_base.h"
+#include "../Sea_ai/AIFlowGraph.h"
+#include "Island_Base.h"
 #include "collide.h"
-#include "dx8render.h"
-#include "geometry.h"
-#include "geos.h"
-#include "messages.h"
 #include "model.h"
 #include "sea_base.h"
-#include "tga.h"
 #include "vmodule_api.h"
 
 enum FOAMTYPE
@@ -21,22 +16,38 @@ enum FOAMTYPE
     FOAM_MODE_FORCEDWORD = 0x7FFFFFFF
 };
 
-class CoastFoam : public ENTITY
+class CoastFoam : public Entity
 {
   public:
     CoastFoam();
     ~CoastFoam();
 
     bool Init();
-    void Realize(dword Delta_Time);
-    void Execute(dword Delta_Time);
-    dword AttributeChanged(ATTRIBUTES *pA);
+    void Realize(uint32_t Delta_Time);
+    void Execute(uint32_t Delta_Time);
+    uint32_t AttributeChanged(ATTRIBUTES *pA);
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+                LostRender(delta); break;
+            case Stage::restore_render:
+                RestoreRender(delta); break;*/
+        }
+    }
 
   private:
     struct FoamVertex
     {
         CVECTOR vPos;
-        dword dwColor;
+        uint32_t dwColor;
         float tu, tv;
     };
 
@@ -63,19 +74,19 @@ class CoastFoam : public ENTITY
 
     struct Foam
     {
-        Foam() : aFoamParts(_FL_), aWorkParts(_FL_)
+        Foam()
         {
             iTexture = -1;
         }
 
-        array<FoamPart> aFoamParts;
-        array<WorkPart> aWorkParts;
+        std::vector<FoamPart> aFoamParts;
+        std::vector<WorkPart> aWorkParts;
         float fMove[2];
         float fSX[2];
         float fSpeed[2], fBraking[2];
         long iMode[2];
         long iTexture;
-        string sTexture;
+        std::string sTexture;
         long iNumFoams;
 
         FOAMTYPE Type;
@@ -92,14 +103,16 @@ class CoastFoam : public ENTITY
     float fCursorPosX, fCursorPosY;
     long iFoamTexture, iCursorTex;
     SEA_BASE *pSea;
-    array<Foam *> aFoams;
+    std::vector<Foam *> aFoams;
     long iVBuffer, iIBuffer;
     PLANE *pFrustumPlanes;
 
     float fMaxFoamDistance, fFoamDeltaY;
     long iFoamDivides;
 
-    dword dwNumPenasExecuted;
+    uint32_t dwNumPenasExecuted;
+
+    VDX9RENDER *rs;
 
     void ExtractRay(const D3DVIEWPORT9 &viewport, float fCursorX, float fCursorY, CVECTOR &raystart, CVECTOR &rayend);
 
@@ -107,7 +120,7 @@ class CoastFoam : public ENTITY
 
     void Save();
     void Load();
-    void DelAll();
+    void clear();
 
     void InitNewFoam(Foam *pF);
     void RecalculateFoam(long iFoam);
