@@ -17,7 +17,7 @@
 
 AnimationTimerImp::AnimationTimerImp()
 {
-    ani = null;
+    ani = nullptr;
     for (long i = 0; i < ANITM_PLAYERSMAX; i++)
     {
         playersMask[i] = 0;
@@ -67,21 +67,21 @@ void AnimationTimerImp::Stop()
     curTime = 0.0f;
     kTime = 0.0f;
     value = 1.0f;
-    long i = 0;
     //Устанавливаем конечные значения и останавливаем анимацию, где просят
+    long i;
     for (i = 0; i < ANI_MAX_ACTIONS; i++)
     {
         if (playersMask[i >> 5] & (1 << (i & 31)))
         {
             if (inverseMask[i >> 5] & (1 << (i & 31)))
             {
-                ((ActionPlayerImp *)&ani->Player(i))->TimerBlend() = 0.0f;
+                static_cast<ActionPlayerImp *>(&ani->Player(i))->TimerBlend() = 0.0f;
                 if (ani->Player(i).IsAutoStop())
                     ani->Player(i).Stop();
             }
             else
             {
-                ((ActionPlayerImp *)&ani->Player(i))->TimerBlend() = 1.0f;
+                static_cast<ActionPlayerImp *>(&ani->Player(i))->TimerBlend() = 1.0f;
             }
         }
     }
@@ -129,7 +129,7 @@ float AnimationTimerImp::GetTime() const
 //Назначить ActionPlayer для блендинга (isInverse == false -> kBlend = [0..1])
 void AnimationTimerImp::SetPlayer(long playerIndex, bool isInverse)
 {
-    Assert(playerIndex >= 0 || playerIndex < ANI_MAX_ACTIONS);
+    Assert(playerIndex >= 0 && playerIndex < ANI_MAX_ACTIONS);
     //Устанавливаем себе
     playersMask[playerIndex >> 5] |= 1 << (playerIndex & 31);
     //Установим чего использовать
@@ -141,21 +141,21 @@ void AnimationTimerImp::SetPlayer(long playerIndex, bool isInverse)
     {
         inverseMask[playerIndex >> 5] &= ~(1 << (playerIndex & 31));
     }
-    ((ActionPlayerImp *)&ani->Player(playerIndex))->TimerBlend() = 1.0f;
+    static_cast<ActionPlayerImp *>(&ani->Player(playerIndex))->TimerBlend() = 1.0f;
 }
 
 void AnimationTimerImp::ResetPlayer(long playerIndex)
 {
-    Assert(playerIndex >= 0 || playerIndex < ANI_MAX_ACTIONS);
+    Assert(playerIndex >= 0 && playerIndex < ANI_MAX_ACTIONS);
     //Сбросим флажёк использования
     playersMask[playerIndex >> 5] &= ~(1 << (playerIndex & 31));
-    ((ActionPlayerImp *)&ani->Player(playerIndex))->TimerBlend() = 1.0f;
+    static_cast<ActionPlayerImp *>(&ani->Player(playerIndex))->TimerBlend() = 1.0f;
 }
 
 //Узнать, используется ли ActionPlayer
 bool AnimationTimerImp::IsUsedPlayer(long playerIndex, bool *isInverse)
 {
-    Assert(playerIndex >= 0 || playerIndex < ANI_MAX_ACTIONS);
+    Assert(playerIndex >= 0 && playerIndex < ANI_MAX_ACTIONS);
     if (playersMask[playerIndex >> 5] & (1 << (playerIndex & 31)))
     {
         if (isInverse)
@@ -168,15 +168,14 @@ bool AnimationTimerImp::IsUsedPlayer(long playerIndex, bool *isInverse)
 //Получить велечину блендинга для плеера (если не используется то 1.0f)
 float AnimationTimerImp::GetPlayerValue(long playerIndex)
 {
-    Assert(playerIndex >= 0 || playerIndex < ANI_MAX_ACTIONS);
+    Assert(playerIndex >= 0 && playerIndex < ANI_MAX_ACTIONS);
     if (playersMask[playerIndex >> 5] & (1 << (playerIndex & 31)))
     {
         if ((inverseMask[playerIndex >> 5] & (1 << (playerIndex & 31))) != 0)
         {
             return kTime != 0 ? 1.0f - value : 0.0f;
         }
-        else
-            return kTime != 0 ? value : 1.0f;
+        return kTime != 0 ? value : 1.0f;
     }
     return 1.0f;
 }
@@ -202,11 +201,11 @@ void AnimationTimerImp::Execute(long dltTime)
             {
                 if (inverseMask[i >> 5] & (1 << (i & 31)))
                 {
-                    ((ActionPlayerImp *)&ani->Player(i))->TimerBlend() *= 1.0f - value;
+                    static_cast<ActionPlayerImp *>(&ani->Player(i))->TimerBlend() *= 1.0f - value;
                 }
                 else
                 {
-                    ((ActionPlayerImp *)&ani->Player(i))->TimerBlend() *= value;
+                    static_cast<ActionPlayerImp *>(&ani->Player(i))->TimerBlend() *= value;
                 }
             }
         }

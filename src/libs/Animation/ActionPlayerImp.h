@@ -125,7 +125,7 @@ class ActionPlayerImp : public ActionPlayer
     //Проигрывать зацикленно
     bool isLoop;
     //Маска для свершившихся событий
-    dword eventsMask[ACTIONPLAYEREVENTFLAGS];
+    uint32_t eventsMask[ACTIONPLAYEREVENTFLAGS];
     //Коэфициент блендинга
     float kBlend;
     //Скалирующий коэфициент блендинга для таймера

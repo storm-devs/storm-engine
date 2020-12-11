@@ -49,7 +49,7 @@ class AnimationTimerImp : public AnimationTimer
     virtual void SetPlayer(long playerIndex, bool isInverse = false);
     virtual void ResetPlayer(long playerIndex);
     //Узнать, используется ли ActionPlayer
-    virtual bool IsUsedPlayer(long playerIndex, bool *isInverse = null);
+    virtual bool IsUsedPlayer(long playerIndex, bool *isInverse = nullptr);
     //Получить велечину блендинга для плеера (если не используется то 1.0f)
     virtual float GetPlayerValue(long playerIndex);
 
@@ -71,8 +71,8 @@ class AnimationTimerImp : public AnimationTimer
     float kTime;
     float value;
     //Биты, показывающие кому чего устанавливать
-    dword playersMask[ANITM_PLAYERSMAX];
-    dword inverseMask[ANITM_PLAYERSMAX];
+    uint32_t playersMask[ANITM_PLAYERSMAX];
+    uint32_t inverseMask[ANITM_PLAYERSMAX];
 };
 
 #endif

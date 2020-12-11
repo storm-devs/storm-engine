@@ -9,7 +9,7 @@
 //============================================================================================
 
 #include "ActionInfo.h"
-#include <stdio.h>
+#include "storm_assert.h"
 
 //============================================================================================
 //Конструирование, деструктурирование
@@ -22,32 +22,28 @@ ActionInfo::ActionInfo(const char *aname, long startframe, long endframe)
     Assert(strlen(aname) < 64);
     Assert(startframe >= 0);
     Assert(startframe <= endframe);
-    strcpy(name, aname);
+    strcpy_s(name, aname);
     startFrame = startframe;
     endFrame = endframe;
     kRate = 1.0f;
     type = at_normal;
     isLoop = false;
-    for (int i = 0; i < 8; i++)
+    for (auto i = 0; i < 8; i++)
         bonesMask[0] = 0xffffffff;
     numEvents = 0;
-}
-
-ActionInfo::~ActionInfo()
-{
 }
 
 //Добавить событие
 bool ActionInfo::AddEvent(const char *ename, float frame, ExtAnimationEventType eventType)
 {
-    if (numEvents >= ANI_MAX_EVENTS || ename[0] == 0)
-        return false;
     Assert(ename);
     Assert(strlen(ename) < 64);
+    if (numEvents >= ANI_MAX_EVENTS || ename[0] == 0)
+        return false;
     //Расчитаем относительное время
-    if (frame > float(endFrame))
-        frame = float(endFrame);
-    float t = float(frame - startFrame);
+    if (frame > static_cast<float>(endFrame))
+        frame = static_cast<float>(endFrame);
+    auto t = static_cast<float>(frame - startFrame);
     if (t < 0.0f)
         t = 0.0f;
     if (t > 0.0f)
@@ -55,7 +51,7 @@ bool ActionInfo::AddEvent(const char *ename, float frame, ExtAnimationEventType 
     if (t > 1.0f)
         t = 1.0f;
     //Заполним структуру
-    strcpy(event[numEvents].name, ename);
+    strcpy_s(event[numEvents].name, ename);
     event[numEvents].time = t;
     event[numEvents].event = eventType;
     numEvents++;
@@ -66,9 +62,9 @@ bool ActionInfo::AddEvent(const char *ename, float frame, ExtAnimationEventType 
 //Работа с действием
 //--------------------------------------------------------------------------------------------
 //Сравнить с текущим именем
-bool ActionInfo::operator==(const char *actionName)
+bool ActionInfo::operator==(const char *actionName) const
 {
-    return stricmp(actionName, name) == 0;
+    return _stricmp(actionName, name) == 0;
 }
 
 //Проверим на выполнимость условия генерации события

@@ -13,7 +13,8 @@
 
 #include "Animation.h"
 #include "Bone.h"
-#include "UserData.h"
+#include <string>
+#include <unordered_map>
 
 enum ExtAnimationEventType
 {
@@ -24,7 +25,7 @@ enum ExtAnimationEventType
 
 class ActionPlayerImp;
 
-class ActionInfo
+class ActionInfo final
 {
     friend ActionPlayerImp;
 
@@ -40,7 +41,6 @@ class ActionInfo
     //--------------------------------------------------------------------------------------------
   public:
     ActionInfo(const char *aname, long startframe, long endframe);
-    virtual ~ActionInfo();
     //Установить коэфициент скорости воспроизведения
     void SetRate(float rate);
     //Установить тип анимации
@@ -55,7 +55,7 @@ class ActionInfo
     //--------------------------------------------------------------------------------------------
   public:
     //Сравнить с текущим именем
-    bool operator==(const char *actionName);
+    bool operator==(const char *actionName) const;
     //Получить имя действия
     const char *GetName();
     //Получить количество событий
@@ -68,7 +68,7 @@ class ActionInfo
     //Получить длительность в кадрах
     long GetFrames();
     //Доступ к пользовательским данным
-    UserData &GetUserData();
+    std::unordered_map<std::string, std::string> &GetUserData();
 
     //--------------------------------------------------------------------------------------------
     //Инкапсуляция
@@ -83,12 +83,12 @@ class ActionInfo
     AnimationType type; //Тип анимации
     bool isLoop;        //Зацикленность воспроизведения анимации
 
-    dword bonesMask[8]; //Маска используемых костей в анимации
+    uint32_t bonesMask[8]; //Маска используемых костей в анимации
 
     Event event[ANI_MAX_EVENTS]; //События
     long numEvents;              //Количество событий
 
-    UserData userData; //Пользовательские данные
+    std::unordered_map<std::string, std::string> userData; //Пользовательские данные
 };
 
 //============================================================================================
@@ -140,7 +140,7 @@ inline long ActionInfo::GetFrames()
 }
 
 //Доступ к пользовательским данным
-inline UserData &ActionInfo::GetUserData()
+inline std::unordered_map<std::string, std::string> &ActionInfo::GetUserData()
 {
     return userData;
 }
