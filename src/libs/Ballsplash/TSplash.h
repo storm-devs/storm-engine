@@ -1,16 +1,11 @@
 #ifndef _TSPLASH_H_
 #define _TSPLASH_H_
 
-#include "CVECTOR.h"
-#include "common_defines.h"
-#include "dx8render.h"
-#include "exs.h"
-#include "geos.h"
-#include "matrix.h"
-#include "messages.h"
-#include "model.h"
-#include "rands.h"
+#include "Cvector.h"
+#include "defines.h"
+#include "dx9render.h"
 #include "sea_base.h"
+
 //#include "..\SoundService\VSoundService.h"
 
 ///////////////////////////////////////////////////////////////////
@@ -19,14 +14,14 @@
 struct GRID_VERTEX
 {
     CVECTOR pos;
-    dword color;
+    uint32_t color;
     float tu, tv;
 };
 
 struct GRID_VERTEX2
 {
     CVECTOR pos;
-    dword color;
+    uint32_t color;
     float tu, tv;
     float tu2, tv2;
 };
@@ -37,32 +32,33 @@ class TSplash
     TSplash();
     virtual ~TSplash();
 
-    void Initialize(INIFILE *_ini, IDirect3DDevice9 *_device, SEA_BASE *sea, VDX8RENDER *_renderer);
+    void Initialize(INIFILE *_ini, IDirect3DDevice9 *_device, SEA_BASE *sea, VDX9RENDER *_renderer);
     void Release();
     void Start(const CVECTOR &_pos, const CVECTOR &_dir);
-    bool Process(dword _dTime);
-    bool Process2(dword _dTime);
+    bool Process(uint32_t dTime);
+    bool Process2(uint32_t dTime);
     void PostProcess();
     void PostProcess2();
-    void Realize(dword _dTime);
-    void Realize2(dword _dTime);
+    void Realize(uint32_t dTime);
+    void Realize2(uint32_t dTime);
     bool Enabled();
 
     static bool startRender;
-    static dword lockTicks, fillTicks, unlockTicks, realizeTicks, processCount, topIndex, topIndex2;
+    static uint64_t lockTicks, fillTicks, unlockTicks, realizeTicks;
+    static uint32_t processCount, topIndex, topIndex2;
 
   private:
-    float HeightF(dword _time, float _r, float _k);
+    float HeightF(uint32_t time, float _r, float _k);
 
     bool enabled;
 
-    static VDX8RENDER *renderer;
+    static VDX9RENDER *renderer;
     SEA_BASE *sea;
     IDirect3DDevice9 *device;
 
     static long vBuffer, iBuffer, texture, texture2, vBuffer2, iBuffer2;
     static int buffersUsage;
-    dword time;
+    uint32_t time;
 
     float width2;
     float distortDivider;

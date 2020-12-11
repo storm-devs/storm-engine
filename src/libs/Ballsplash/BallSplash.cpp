@@ -1,53 +1,48 @@
-#include "CVECTOR.h"
-#include "exs.h"
-#include "messages.h"
+#include "BallSplash.H"
+#include "../../Shared/messages.h"
+#include "EntityManager.h"
 #include <stdio.h>
-#include <stdlib.h>
-//#include "..\SoundService\VSoundService.h"
-#include "BALLSPLASH.h"
 
 INTERFACE_FUNCTION
 CREATE_CLASS(BALLSPLASH)
 
 //--------------------------------------------------------------------
-BALLSPLASH::BALLSPLASH() : sea(0), renderer(0)
+BALLSPLASH::BALLSPLASH() : renderer(nullptr), sea(nullptr)
 {
 }
 
 //--------------------------------------------------------------------
 BALLSPLASH::~BALLSPLASH()
 {
-    GUARD(BALLSPLASH::~BALLSPLASH)
+    // GUARD(BALLSPLASH::~BALLSPLASH)
 
-    UNGUARD
+    // UNGUARD
 }
 
 //--------------------------------------------------------------------
 bool BALLSPLASH::Init()
 {
-    GUARD(BALLSPLASH::Init)
+    // GUARD(BALLSPLASH::Init)
 
-    ENTITY_ID seaID;
-    _CORE_API->FindClass(&seaID, "sea", 0);
-    sea = (SEA_BASE *)_CORE_API->GetEntityPointer(&seaID);
+    sea = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(EntityManager::GetEntityId("sea")));
 
-    renderer = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
+    renderer = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
 
-    //_CORE_API->CreateEntity(&arrowModel,"MODELR");
-    //_CORE_API->Send_Message(arrowModel,"ls",MSG_MODEL_LOAD_GEO, "fish01");
+    // EntityManager::CreateEntity(&arrowModel,"MODELR");
+    // api->Send_Message(arrowModel,"ls",MSG_MODEL_LOAD_GEO, "fish01");
     InitializeSplashes();
 
     return true;
-    UNGUARD
+    // UNGUARD
 }
 
 //--------------------------------------------------------------------
-dword _cdecl BALLSPLASH::ProcessMessage(MESSAGE &message)
+uint64_t BALLSPLASH::ProcessMessage(MESSAGE &message)
 {
-    GUARD(BALLSPLASH::ProcessMessage)
+    // GUARD(BALLSPLASH::ProcessMessage)
 
-    long code = message.Long();
-    dword outValue = 0;
+    const auto code = message.Long();
+    const uint32_t outValue = 0;
 
     switch (code)
     {
@@ -72,15 +67,15 @@ dword _cdecl BALLSPLASH::ProcessMessage(MESSAGE &message)
     }
 
     return outValue;
-    UNGUARD
+    // UNGUARD
 }
 
 //--------------------------------------------------------------------
-void BALLSPLASH::Realize(dword _dTime)
+void BALLSPLASH::Realize(uint32_t _dTime)
 {
-    GUARD(BALLSPLASH::Realize)
+    // GUARD(BALLSPLASH::Realize)
 
-    dword ticks;
+    uint64_t ticks;
     RDTSC_B(ticks);
 
     TSplash::lockTicks = 0;
@@ -92,8 +87,8 @@ void BALLSPLASH::Realize(dword _dTime)
     // draw bottom part
     TSplash::startRender = true;
     TSplash::topIndex = 0;
-    int lastProcessed = -1;
-    for (int i = 0; i < MAX_SPLASHES; ++i)
+    auto lastProcessed = -1;
+    for (auto i = 0; i < MAX_SPLASHES; ++i)
         if (splashes[i].Process(_dTime))
             lastProcessed = i;
     if (lastProcessed != -1)
@@ -101,11 +96,11 @@ void BALLSPLASH::Realize(dword _dTime)
     splashes[lastProcessed].Realize(_dTime);
 
     // draw top part
-    bool techniqueStarted = renderer->TechniqueExecuteStart("splash2");
+    const auto techniqueStarted = renderer->TechniqueExecuteStart("splash2");
     TSplash::startRender = true;
     TSplash::topIndex = 0;
     lastProcessed = -1;
-    for (int i = 0; i < MAX_SPLASHES; ++i)
+    for (auto i = 0; i < MAX_SPLASHES; ++i)
     {
         if (splashes[i].Process2(_dTime))
             lastProcessed = i;
@@ -120,37 +115,37 @@ void BALLSPLASH::Realize(dword _dTime)
     /*
     if ((GetKeyState('Z') & 0x8000) != 0)
     {
-        renderer->Print(0, 150, "splash: all = %d, count = %d", ticks/1000, TSplash::processCount);
-        if (TSplash::processCount)
-        {
-            renderer->Print(0, 175, "splash: lock = %d()", TSplash::lockTicks / 1000);
-            renderer->Print(0, 200, "splash: fill = %d(%d)", TSplash::fillTicks / 1000, TSplash::fillTicks /
+      renderer->Print(0, 150, "splash: all = %d, count = %d", ticks/1000, TSplash::processCount);
+      if (TSplash::processCount)
+      {
+        renderer->Print(0, 175, "splash: lock = %d()", TSplash::lockTicks / 1000);
+        renderer->Print(0, 200, "splash: fill = %d(%d)", TSplash::fillTicks / 1000, TSplash::fillTicks /
     (TSplash::processCount*1000)); renderer->Print(0, 225, "splash: ulock = %d()", TSplash::unlockTicks / 1000);
-            renderer->Print(0, 250, "splash: realize = %d(%d)", TSplash::realizeTicks / 1000, TSplash::realizeTicks /
+        renderer->Print(0, 250, "splash: realize = %d(%d)", TSplash::realizeTicks / 1000, TSplash::realizeTicks /
     (2*1000));
-        }
+      }
     }
     */
-    UNGUARD
+    // UNGUARD
 }
 
 //--------------------------------------------------------------------
-void BALLSPLASH::Execute(dword _dTime)
+void BALLSPLASH::Execute(uint32_t dTime)
 {
-    GUARD(BALLSPLASH::Execute)
+    // GUARD(BALLSPLASH::Execute)
 
-    UNGUARD
+    // UNGUARD
 }
 
 //--------------------------------------------------------------------
 void BALLSPLASH::InitializeSplashes()
 {
-    INIFILE *psIni = _CORE_API->fio->OpenIniFile("resource\\ini\\particles.ini");
+    auto *const psIni = fio->OpenIniFile("resource\\ini\\particles.ini");
 
-    for (int i = 0; i < MAX_SPLASHES; ++i)
+    for (auto i = 0; i < MAX_SPLASHES; ++i)
     {
         splashes[i].Release();
-        splashes[i].Initialize(psIni, null, sea, renderer);
+        splashes[i].Initialize(psIni, nullptr, sea, renderer);
     }
 
     delete psIni;
@@ -159,10 +154,10 @@ void BALLSPLASH::InitializeSplashes()
 //--------------------------------------------------------------------
 TSplash *BALLSPLASH::TryToAddSplash(const CVECTOR &_pos, const CVECTOR &_dir)
 {
-    CVECTOR backDir = !_dir;
+    auto backDir = !_dir;
     backDir.y = -backDir.y;
 
-    for (int i = 0; i < MAX_SPLASHES; ++i)
+    for (auto i = 0; i < MAX_SPLASHES; ++i)
     {
         if (!splashes[i].Enabled())
         {
@@ -171,7 +166,7 @@ TSplash *BALLSPLASH::TryToAddSplash(const CVECTOR &_pos, const CVECTOR &_dir)
         }
     }
 
-    return 0;
+    return nullptr;
 }
 
 //--------------------------------------------------------------------
