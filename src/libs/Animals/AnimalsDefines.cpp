@@ -1,8 +1,5 @@
 #include "AnimalsDefines.h"
 
-#include <math.h>
-#include <stdlib.h>
-
 char ANIMALS_INI_FILENAME[] = "resource\\ini\\animals.ini";
 char ANIMALS_SEAGULLS_SCREAM_FILENAME[] = "chaika.wav";
 const char ANIMALS_SEAGULL_FILENAME[] = "seagull";

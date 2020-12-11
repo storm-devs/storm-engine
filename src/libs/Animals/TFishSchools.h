@@ -2,16 +2,11 @@
 #define _TFISHSCHOOLS_H_
 
 #include "AnimalsDefines.h"
+#include "Matrix.h"
 #include "TDynamicObject.h"
 #include "TDynamicSystem.h"
-#include "animation.h"
-#include "dx8render.h"
+#include "dx9render.h"
 #include "geometry.h"
-#include "geos.h"
-#include "matrix.h"
-#include "messages.h"
-#include "model.h"
-#include "object.h"
 #include "sea_base.h"
 #include "ship_base.h"
 
@@ -22,7 +17,7 @@ class TFishSchool : public TDynamicObject
 {
   public:
     float depth;
-    dword time;
+    uint32_t time;
     float timeDivider;
     float amplitude;
 };
@@ -38,16 +33,16 @@ class TFishSchools : public TDynamicSystem
     TFishSchools();
     virtual ~TFishSchools();
 
-    dword ProcessMessage(long _code, MESSAGE &message);
+    uint64_t ProcessMessage(long _code, MESSAGE &message);
     void Init();
-    void Realize(dword _dTime);
-    void Execute(dword _dTime);
+    void Realize(uint32_t dTime);
+    void Execute(uint32_t dTime);
 
   private:
     void LoadSettings();
 
-    VDX8RENDER *renderService;
-    ENTITY_ID fishSchoolModel;
+    VDX9RENDER *renderService;
+    entid_t fishSchoolModel;
     TFishSchool *fishSchools[FISHSCHOOL_COUNT];
     long shipsCount;
     long fishSchoolsCount;
@@ -56,7 +51,6 @@ class TFishSchools : public TDynamicSystem
     float maxDistance;
 
     bool enabled;
-    ENTITY_ID seaID;
     SEA_BASE *sea;
 };
 

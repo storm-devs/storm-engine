@@ -1,4 +1,5 @@
 #include "TDynamicObject.h"
+#include "rands.h"
 
 #define PI 3.1415926
 #define PId2 (PI / 2.0)
@@ -47,7 +48,7 @@ void TDynamicObject::Calculate(TDynamicObject **a, int aCount, TDynamicObject **
 
         CVECTOR delta;
         delta = (*effectObject)->pos - pos;
-        float d = (float)sqrt(~delta);
+        auto d = static_cast<float>(sqrt(~delta));
         if (d < 1e-10f)
             d = 1e-10f;
         dEffect += DEFLECT_FACTOR * !delta / d;
@@ -57,38 +58,38 @@ void TDynamicObject::Calculate(TDynamicObject **a, int aCount, TDynamicObject **
     pos += _k * velocity;
 
     /*
-        float dEffect = 0;
-        for (i=0, effectObject = a; i<aCount; i++, effectObject++)
+      float dEffect = 0;
+      for (i=0, effectObject = a; i<aCount; i++, effectObject++)
+      {
+        if (!effectObject || (this == effectObject))
+          continue;
+
+        effect = effectObject->pos - pos;
+        float effectAng = atan2(effect.z, effect.x);
+        dEffect += ATTRACT_FACTOR * ~effect;
+
+        if (dEffect > MAX_ANG_DELTA)
+          dEffect = MAX_ANG_DELTA;
+
+        if (fabs(ang) < PId2)
         {
-            if (!effectObject || (this == effectObject))
-                continue;
-
-            effect = effectObject->pos - pos;
-            float effectAng = atan2(effect.z, effect.x);
-            dEffect += ATTRACT_FACTOR * ~effect;
-
-            if (dEffect > MAX_ANG_DELTA)
-                dEffect = MAX_ANG_DELTA;
-
-            if (fabs(ang) < PId2)
-            {
-                if (effectAng > ang)
-                    ang += dEffect;
-                else
-                    ang -= dEffect;
-            }
-            else
-            {
-                if (effectAng > ang)
-                    ang -= dEffect;
-                else
-                    ang += dEffect;
-            }
+          if (effectAng > ang)
+            ang += dEffect;
+          else
+            ang -= dEffect;
         }
+        else
+        {
+          if (effectAng > ang)
+            ang -= dEffect;
+          else
+            ang += dEffect;
+        }
+      }
 
         pos.x += cos(ang);
-        pos.z += sin(ang);
-        */
+      pos.z += sin(ang);
+      */
 }
 
 //--------------------------------------------------------------------

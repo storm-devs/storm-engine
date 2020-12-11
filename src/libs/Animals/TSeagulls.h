@@ -1,16 +1,12 @@
 #ifndef _TSEAGULLS_H_
 #define _TSEAGULLS_H_
 
-#include "..\SoundService\VSoundService.h"
+#include "../SoundService/VSoundService.h"
 #include "AnimalsDefines.h"
-#include "animation.h"
-#include "dx8render.h"
+#include "Matrix.h"
+#include "dx9render.h"
 #include "geometry.h"
-#include "geos.h"
-#include "matrix.h"
-#include "messages.h"
-#include "model.h"
-#include "object.h"
+#include "message.h"
 
 ///////////////////////////////////////////////////////////////////
 // DEFINES & TYPES
@@ -38,11 +34,11 @@ class TSeagulls
     TSeagulls();
     virtual ~TSeagulls();
 
-    dword ProcessMessage(long _code, MESSAGE &message);
+    uint64_t ProcessMessage(long _code, MESSAGE &message);
     void Init();
     void Add(float _x, float _y, float _z);
-    void Realize(dword _dTime);
-    void Execute(dword _dTime);
+    void Realize(uint32_t dTime);
+    void Execute(uint32_t dTime);
     void SetStartY(float _startY)
     {
         startY = _startY;
@@ -52,9 +48,9 @@ class TSeagulls
     void LoadSettings();
     void Frighten();
 
-    ENTITY_ID seagullModel;
+    entid_t seagullModel;
     tSeagull seagulls[SEAGULL_COUNT];
-    VDX8RENDER *renderService;
+    VDX9RENDER *renderService;
     VSoundService *soundService;
     bool enabled;
     long count;

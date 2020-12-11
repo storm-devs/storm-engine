@@ -1,33 +1,31 @@
 #include "TFishSchools.h"
+#include "../../Shared/messages.h"
+#include "EntityManager.h"
+#include "defines.h"
 #include "rands.h"
-#include "ship_base.h"
-
-#include <cmath>
-
-#pragma warning(disable : 4244)
 
 //--------------------------------------------------------------------
 TFishSchools::TFishSchools() : enabled(false)
 {
-    ZeroMemory(fishSchools, FISHSCHOOL_COUNT << 2);
+    memset(fishSchools, 0, sizeof(fishSchools));
 }
 
 //--------------------------------------------------------------------
 TFishSchools::~TFishSchools()
 {
-    for (int i = 0; i < fishSchoolsCount; i++)
+    for (auto i = 0; i < fishSchoolsCount; i++)
     {
         if (fishSchools[i])
             delete fishSchools[i];
     }
 
-    _CORE_API->DeleteEntity(fishSchoolModel);
+    EntityManager::EraseEntity(fishSchoolModel);
 }
 
 //--------------------------------------------------------------------
 void TFishSchools::LoadSettings()
 {
-    INIFILE *ini = _CORE_API->fio->OpenIniFile(ANIMALS_INI_FILENAME);
+    auto *ini = fio->OpenIniFile(ANIMALS_INI_FILENAME);
     if (!ini)
         return;
 
@@ -42,41 +40,38 @@ void TFishSchools::Init()
 {
     LoadSettings();
 
-    renderService = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
+    renderService = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
     if (!renderService)
-        SE_THROW_MSG("!FishSchools: No service 'dx8render'");
+        throw std::exception("!FishSchools: No service 'dx9render'");
 
-    _CORE_API->FindClass(&seaID, "sea", 0);
-    sea = (SEA_BASE *)_CORE_API->GetEntityPointer(&seaID);
+    sea = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(EntityManager::GetEntityId("sea")));
     if (!sea)
     {
         enabled = false;
         return;
     }
 
-    for (int i = 0; i < fishSchoolsCount; i++)
+    for (auto i = 0; i < fishSchoolsCount; i++)
     {
-        fishSchools[i] = NEW TFishSchool();
-        fishSchools[i]->TDynamicObject::Initialize(CVECTOR(0.0f, 0.0f, 0.0f), maxDistance);
+        fishSchools[i] = new TFishSchool();
+        fishSchools[i]->Initialize(CVECTOR(0.0f, 0.0f, 0.0f), maxDistance);
         fishSchools[i]->depth = 0.05f;
         fishSchools[i]->time = 0;
         fishSchools[i]->timeDivider = randUpper(100.0f);
         fishSchools[i]->amplitude = rand(0.01f);
-        TDynamicSystem::AddDeflector(fishSchools[i]);
+        AddDeflector(fishSchools[i]);
     }
 
-    TDynamicSystem::AddAttractor(&cameraObject);
+    AddAttractor(&cameraObject);
 
-    _CORE_API->CreateEntity(&fishSchoolModel, "MODELR");
-    _CORE_API->Send_Message(fishSchoolModel, "ls", MSG_MODEL_LOAD_GEO, ANIMALS_FISHSCHOOL_FILENAME);
+    fishSchoolModel = EntityManager::CreateEntity("MODELR");
+    api->Send_Message(fishSchoolModel, "ls", MSG_MODEL_LOAD_GEO, ANIMALS_FISHSCHOOL_FILENAME);
 }
 
 //--------------------------------------------------------------------
-dword TFishSchools::ProcessMessage(long _code, MESSAGE &message)
+uint64_t TFishSchools::ProcessMessage(long _code, MESSAGE &message)
 {
-    GUARD(TFishSchools::ProcessMessage)
-
-    dword outValue = 0;
+    const uint32_t outValue = 0;
 
     switch (_code)
     {
@@ -90,14 +85,11 @@ dword TFishSchools::ProcessMessage(long _code, MESSAGE &message)
     }
 
     return outValue;
-    UNGUARD
 }
 
 //--------------------------------------------------------------------
-void TFishSchools::Execute(dword _dTime)
+void TFishSchools::Execute(uint32_t _dTime)
 {
-    GUARD(ANIMALS::Execute)
-
     if (!enabled)
         return;
 
@@ -106,51 +98,47 @@ void TFishSchools::Execute(dword _dTime)
     renderService->GetCamera(pos, ang, persp);
 
     cameraObject.SetXYZ(pos);
-    float speedK = ((float)_dTime) / 1000.0f;
-    for (int i = 0; i < fishSchoolsCount; i++)
+    const auto speedK = static_cast<float>(_dTime) / 1000.0f;
+    for (auto i = 0; i < fishSchoolsCount; i++)
     {
         // respawn near camera if needed
         fishPos = fishSchools[i]->GetXYZ();
-        if ((abs(fishPos.x - pos.x) + fabs(fishPos.x - pos.x)) > RESPAWN_DISTANCE)
-            fishSchools[i]->TDynamicObject::Initialize(pos, maxDistance);
+        if ((fabs(fishPos.x - pos.x) + fabs(fishPos.x - pos.x)) > RESPAWN_DISTANCE)
+            fishSchools[i]->Initialize(pos, maxDistance);
 
         // recalculate all fishes
         fishSchools[i]->Calculate(attractors, MAX_DYNAMIC_OBJECTS, deflectors, MAX_DYNAMIC_OBJECTS, speedK);
         fishSchools[i]->time += _dTime;
     }
-
-    UNGUARD
 }
 
 //--------------------------------------------------------------------
-void TFishSchools::Realize(dword _dTime)
+void TFishSchools::Realize(uint32_t _dTime)
 {
-    GUARD(ANIMALS::Realize)
-
     if (!enabled)
         return;
     /*
-        CVECTOR cameraPos, cameraAng;
-        float   cameraPersp;
-        renderService->GetCamera(cameraPos, cameraAng, cameraPersp);
+      CVECTOR cameraPos, cameraAng;
+      float   cameraPersp;
+      renderService->GetCamera(cameraPos, cameraAng, cameraPersp);
     */
-    sea = (SEA_BASE *)_CORE_API->GetEntityPointer(&seaID);
+    sea = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(EntityManager::GetEntityId("sea")));
     if (!sea)
     {
         enabled = false;
         return;
     }
 
-    MODEL *fishSchool = (MODEL *)_CORE_API->GetEntityPointer(&fishSchoolModel);
+    auto *fishSchool = static_cast<MODEL *>(EntityManager::GetEntityPointer(fishSchoolModel));
     if (!fishSchool)
         return;
 
-    for (int i = 0; i < fishSchoolsCount; i++)
+    for (auto i = 0; i < fishSchoolsCount; i++)
     {
-        static const float OSC_AMPLITUDE = 0.1f;
-        float fishSchoolAngle = fishSchools[i]->GetAngle();
-        CVECTOR fishSchoolPos = fishSchools[i]->GetXYZ();
-        float fishSchoolTime = fishSchools[i]->time / fishSchools[i]->timeDivider;
+        static const auto OSC_AMPLITUDE = 0.1f;
+        const auto fishSchoolAngle = fishSchools[i]->GetAngle();
+        const auto fishSchoolPos = fishSchools[i]->GetXYZ();
+        const auto fishSchoolTime = fishSchools[i]->time / fishSchools[i]->timeDivider;
         CVECTOR ang(0.0f,
                     PId2 - fishSchoolAngle - (fishSchools[i]->amplitude * (PId2 / 10.0f) / 0.1f) * cosf(fishSchoolTime),
                     0.0f);
@@ -159,10 +147,8 @@ void TFishSchools::Realize(dword _dTime)
         pos.z = fishSchoolPos.z + fishSchools[i]->amplitude * sinf(fishSchoolAngle + PId2) * sinf(fishSchoolTime);
         pos.y = sea->WaveXZ(pos.x, pos.z) - fishSchools[i]->depth;
         fishSchool->mtx.BuildMatrix(ang, pos);
-        fishSchool->Realize(_dTime);
+        fishSchool->ProcessStage(Entity::Stage::realize, _dTime);
     }
-
-    UNGUARD
 }
 
 //--------------------------------------------------------------------

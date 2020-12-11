@@ -1,12 +1,10 @@
 #include "TButterflies.h"
-#include "rands.h"
-#include "ship_base.h"
-#include "vidwalker.h"
+#include "../../Shared/messages.h"
 
 #pragma warning(disable : 4244)
 
 //--------------------------------------------------------------------
-TButterflies::TButterflies() : enabled(false), yDefineTime(0), walker(0)
+TButterflies::TButterflies() : enabled(false), yDefineTime(0)
 {
 }
 
@@ -15,17 +13,13 @@ TButterflies::~TButterflies()
 {
     renderService->TextureRelease(texture);
 
-    if (walker)
-        delete walker;
-
-    if (ivManager)
-        delete ivManager;
+    delete ivManager;
 }
 
 //--------------------------------------------------------------------
 void TButterflies::LoadSettings()
 {
-    INIFILE *ini = _CORE_API->fio->OpenIniFile(ANIMALS_INI_FILENAME);
+    auto *ini = fio->OpenIniFile(ANIMALS_INI_FILENAME);
     if (!ini)
         return;
 
@@ -43,20 +37,18 @@ void TButterflies::Init()
 {
     LoadSettings();
 
-    renderService = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
+    renderService = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
     if (!renderService)
-        SE_THROW_MSG("!Butterflies: No service 'dx8render'");
+        throw std::exception("!Butterflies: No service 'dx9render'");
 
-    collide = (COLLIDE *)_CORE_API->CreateService("coll");
+    collide = static_cast<COLLIDE *>(api->CreateService("coll"));
     if (!collide)
-        SE_THROW_MSG("!Butterflies: No service COLLIDE");
+        throw std::exception("!Butterflies: No service COLLIDE");
 
-    walker = _CORE_API->LayerGetWalker("shadow");
-
-    ivManager = NEW TIVBufferManager(renderService, BUTTERFLY_VERTEX_TYPE, sizeof(tButterflyVertex), 3 * 4, 6,
+    ivManager = new TIVBufferManager(renderService, BUTTERFLY_VERTEX_TYPE, sizeof(tButterflyVertex), 3 * 4, 6,
                                      butterfliesCount);
 
-    for (int i = 0; i < butterfliesCount; i++)
+    for (auto i = 0; i < butterfliesCount; i++)
         butterflies[i].Initialize(CVECTOR(0.0f, 0.0f, 0.0f), maxDistance, ivManager->ReserveElement(), rand() % 4,
                                   rand() % 4);
 
@@ -64,11 +56,9 @@ void TButterflies::Init()
 }
 
 //--------------------------------------------------------------------
-dword TButterflies::ProcessMessage(long _code, MESSAGE &message)
+uint64_t TButterflies::ProcessMessage(long _code, MESSAGE &message)
 {
-    GUARD(TButterflies::ProcessMessage)
-
-    dword outValue = 0;
+    const uint32_t outValue = 0;
     switch (_code)
     {
     case MSG_ANIMALS_BUTTERFLIES_SHOW:
@@ -83,7 +73,7 @@ dword TButterflies::ProcessMessage(long _code, MESSAGE &message)
         static CVECTOR affectVector(0.f, 0.f, 0.f);
         affectVector.x = message.Float();
         affectVector.z = message.Float();
-        for (int i = 0; i < butterfliesCount; i++)
+        for (auto i = 0; i < butterfliesCount; i++)
         {
             butterflies[i].Effect(affectVector);
         }
@@ -91,14 +81,11 @@ dword TButterflies::ProcessMessage(long _code, MESSAGE &message)
     break;
     }
     return outValue;
-    UNGUARD
 }
 
 //--------------------------------------------------------------------
-void TButterflies::Execute(dword _dTime)
+void TButterflies::Execute(uint32_t _dTime)
 {
-    GUARD(ANIMALS::Execute)
-
     if (!enabled)
         return;
 
@@ -109,22 +96,21 @@ void TButterflies::Execute(dword _dTime)
     butterflies[0].SetCenter(pos);
     int i;
 
+    const auto its = EntityManager::GetEntityIdIterators(SHADOW);
+
     // redefine minY
     yDefineTime += _dTime;
     if (yDefineTime > Y_REDEFINE_TIME)
     {
-        if (!walker)
-            walker = _CORE_API->LayerGetWalker("shadow");
-
         for (i = 0; i < butterfliesCount; i++)
         {
-            static const float ALL_Y = 1000.0f;
-            CVECTOR topVector = butterflies[i].GetPosition();
-            CVECTOR bottomVector = butterflies[i].GetPosition();
+            static const auto ALL_Y = 1000.0f;
+            auto topVector = butterflies[i].GetPosition();
+            auto bottomVector = butterflies[i].GetPosition();
             topVector.y = ALL_Y;
             bottomVector.y = -ALL_Y;
 
-            float ray = collide->Trace(*walker, topVector, bottomVector, 0, 0);
+            const auto ray = collide->Trace(its, topVector, bottomVector, nullptr, 0);
             if (ray <= 1.0f)
                 butterflies[i].SetMinY(-ALL_Y + (1.f - ray) * 2.f * ALL_Y);
             else
@@ -137,33 +123,27 @@ void TButterflies::Execute(dword _dTime)
 
     for (i = 0; i < butterfliesCount; i++)
     {
-        butterflies[i].Calculate(_dTime, collide, walker);
+        butterflies[i].Calculate(_dTime, collide, its);
         butterflies[i].Draw(ivManager);
         // butterflies[i].Draw(renderService);
     }
 
     ivManager->UnlockBuffers();
-
-    UNGUARD
 }
 
 //--------------------------------------------------------------------
-void TButterflies::Realize(dword _dTime)
+void TButterflies::Realize(uint32_t dTime)
 {
-    GUARD(ANIMALS::Realize)
-
     if (!enabled)
         return;
 
-    CMatrix wMatrix;
+    const CMatrix wMatrix;
 
-    renderService->SetTransform(D3DTS_WORLD, (D3DMATRIX *)wMatrix);
+    renderService->SetTransform(D3DTS_WORLD, static_cast<D3DMATRIX *>(wMatrix));
     renderService->TextureSet(0, texture);
     // for (int i = 0; i<butterfliesCount; i++)
     //	butterflies[i].Draw(renderService, butterfly);
     ivManager->DrawBuffers("Butterfly");
-
-    UNGUARD
 }
 
 //--------------------------------------------------------------------
