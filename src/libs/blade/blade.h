@@ -8,16 +8,15 @@ model binded to an animated locator
 ******************************************************************************/
 #pragma once
 
+#include "EntityManager.h"
 #include "collide.h"
-#include "dx8render.h"
-#include "geos.h"
+#include "dx9render.h"
 #include "model.h"
-#include "vmodule_api.h"
 
 #define BLADE_INFO_QUANTITY 2
 #define ITEMS_INFO_QUANTITY 10
 
-class BLADE : public ENTITY
+class BLADE : public Entity
 {
 #define FVF (D3DFVF_XYZ | D3DFVF_DIFFUSE)
     struct VERTEX
@@ -29,7 +28,7 @@ class BLADE : public ENTITY
 
     struct BLADE_INFO
     {
-        ENTITY_ID eid;
+        entid_t eid;
         long color[2];               //	color of the blade
         float defLifeTime, lifeTime; //
         float time;                  // current time
@@ -40,38 +39,38 @@ class BLADE : public ENTITY
 
         BLADE_INFO();
         ~BLADE_INFO();
-        void DrawBlade(VDX8RENDER *rs, unsigned int blendValue, MODEL *mdl, NODE *manNode);
+        void DrawBlade(VDX9RENDER *rs, unsigned int blendValue, MODEL *mdl, NODE *manNode);
         bool LoadBladeModel(MESSAGE &message);
     };
 
     struct TIEITEM_INFO
     {
         long nItemIndex;
-        ENTITY_ID eid;
+        entid_t eid;
         char *locatorName;
 
         TIEITEM_INFO()
         {
             nItemIndex = -1;
-            locatorName = 0;
+            locatorName = nullptr;
         }
         ~TIEITEM_INFO()
         {
             Release();
         }
         void Release();
-        void DrawItem(VDX8RENDER *rs, unsigned int blendValue, MODEL *mdl, NODE *manNode);
+        void DrawItem(VDX9RENDER *rs, unsigned int blendValue, MODEL *mdl, NODE *manNode);
         bool LoadItemModel(const char *mdlName, const char *locName);
     };
 
-    VDX8RENDER *rs;
+    VDX9RENDER *rs;
     COLLIDE *col;
-    ENTITY_ID man;
+    entid_t man;
     unsigned int blendValue;
 
     BLADE_INFO blade[BLADE_INFO_QUANTITY];
 
-    ENTITY_ID gun;
+    entid_t gun;
     const char *gunLocName;
 
     TIEITEM_INFO items[ITEMS_INFO_QUANTITY];
@@ -88,7 +87,25 @@ class BLADE : public ENTITY
   public:
     BLADE();
     ~BLADE();
-    bool Init();
-    void Realize(dword Delta_Time);
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    bool Init() override;
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        // case Stage::execute:
+        //	Execute(delta);
+        //	break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            // case Stage::lost_render:
+            //	LostRender();
+            //	break;
+            // case Stage::restore_render:
+            //	RestoreRender();
+            //	break;
+        }
+    }
+    void Realize(uint32_t Delta_Time);
+    uint64_t ProcessMessage(MESSAGE &message) override;
 };

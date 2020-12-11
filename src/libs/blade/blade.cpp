@@ -7,8 +7,8 @@ Comments:
 model binded to an animated locator
 ******************************************************************************/
 #include "blade.h"
+#include "../../Shared/messages.h"
 #include "geometry.h"
-#include "model.h"
 static const char *handName = "Saber_hand";
 static const char *beltName = "Saber_belt";
 static const char *bloodName = "Saber_blood";
@@ -41,17 +41,17 @@ BLADE::BLADE_INFO::BLADE_INFO()
 
 BLADE::BLADE_INFO::~BLADE_INFO()
 {
-    api->DeleteEntity(eid);
+    EntityManager::EraseEntity(eid);
 }
 
-void BLADE::BLADE_INFO::DrawBlade(VDX8RENDER *rs, unsigned int blendValue, MODEL *mdl, NODE *manNode)
+void BLADE::BLADE_INFO::DrawBlade(VDX9RENDER *rs, unsigned int blendValue, MODEL *mdl, NODE *manNode)
 {
-    MODEL *obj = (MODEL *)api->GetEntityPointer(&eid);
-    if (obj != 0)
+    auto *obj = static_cast<MODEL *>(EntityManager::GetEntityPointer(eid));
+    if (obj != nullptr)
     {
         CMatrix perMtx;
 
-        NODE *bladeNode = obj->GetNode(0);
+        auto *bladeNode = obj->GetNode(0);
         if ((blendValue & 0xff000000) == 0xff000000)
         {
             bladeNode->SetTechnique("EnvAmmoShader");
@@ -61,13 +61,12 @@ void BLADE::BLADE_INFO::DrawBlade(VDX8RENDER *rs, unsigned int blendValue, MODEL
             bladeNode->SetTechnique("AnimationBlend");
         }
         long sti = -1;
-        long idBlade;
-        idBlade = manNode->geo->FindName(locatorName);
+        auto idBlade = manNode->geo->FindName(locatorName);
 
         if ((sti = manNode->geo->FindLabelN(sti + 1, idBlade)) > -1)
         {
-            Animation *ani = mdl->GetAnimation();
-            CMatrix *bones = &ani->GetAnimationMatrix(0);
+            auto *ani = mdl->GetAnimation();
+            auto *bones = &ani->GetAnimationMatrix(0);
 
             GEOS::LABEL lb;
             manNode->geo->GetLabel(sti, lb);
@@ -77,7 +76,7 @@ void BLADE::BLADE_INFO::DrawBlade(VDX8RENDER *rs, unsigned int blendValue, MODEL
             mt.Vz() = CVECTOR(lb.m[2][0], lb.m[2][1], lb.m[2][2]);
             mt.Pos() = CVECTOR(lb.m[3][0], lb.m[3][1], lb.m[3][2]);
 
-            CMatrix mbn = mt * bones[lb.bones[0]];
+            auto mbn = mt * bones[lb.bones[0]];
             mbn.Pos().x *= -1.0f;
             mbn.Vx().x *= -1.0f;
             mbn.Vy().x *= -1.0f;
@@ -92,10 +91,10 @@ void BLADE::BLADE_INFO::DrawBlade(VDX8RENDER *rs, unsigned int blendValue, MODEL
             perMtx = mbn * mdl->mtx;
         }
         obj->mtx = perMtx;
-        obj->Realize(0);
+        obj->ProcessStage(Stage::realize, 0);
 
         //--------------------------------------------------------------------------
-        rs->SetTexture(0, 0);
+        rs->SetTexture(0, nullptr);
         rs->SetTransform(D3DTS_WORLD, CMatrix());
 
         // move to the beginning
@@ -111,23 +110,23 @@ void BLADE::BLADE_INFO::DrawBlade(VDX8RENDER *rs, unsigned int blendValue, MODEL
 
             first++;
 
-            float blend = (time - vrtTime[v + 1]) / lifeTime;
+            auto blend = (time - vrtTime[v + 1]) / lifeTime;
 
-            float fcol0 = float((color[0] >> 24) & 0xFF);
-            float fcol1 = float((color[1] >> 24) & 0xFF);
-            unsigned long a = (unsigned long)(fcol0 + blend * (fcol1 - fcol0));
+            auto fcol0 = static_cast<float>((color[0] >> 24) & 0xFF);
+            auto fcol1 = static_cast<float>((color[1] >> 24) & 0xFF);
+            auto a = static_cast<unsigned long>(fcol0 + blend * (fcol1 - fcol0));
 
-            fcol0 = float((color[0] >> 16) & 0xFF);
-            fcol1 = float((color[1] >> 16) & 0xFF);
-            unsigned long r = (unsigned long)(fcol0 + blend * (fcol1 - fcol0));
+            fcol0 = static_cast<float>((color[0] >> 16) & 0xFF);
+            fcol1 = static_cast<float>((color[1] >> 16) & 0xFF);
+            auto r = static_cast<unsigned long>(fcol0 + blend * (fcol1 - fcol0));
 
-            fcol0 = float((color[0] >> 8) & 0xFF);
-            fcol1 = float((color[1] >> 8) & 0xFF);
-            unsigned long g = (unsigned long)(fcol0 + blend * (fcol1 - fcol0));
+            fcol0 = static_cast<float>((color[0] >> 8) & 0xFF);
+            fcol1 = static_cast<float>((color[1] >> 8) & 0xFF);
+            auto g = static_cast<unsigned long>(fcol0 + blend * (fcol1 - fcol0));
 
-            fcol0 = float((color[0] >> 0) & 0xFF);
-            fcol1 = float((color[1] >> 0) & 0xFF);
-            unsigned long b = (unsigned long)(fcol0 + blend * (fcol1 - fcol0));
+            fcol0 = static_cast<float>((color[0] >> 0) & 0xFF);
+            fcol1 = static_cast<float>((color[1] >> 0) & 0xFF);
+            auto b = static_cast<unsigned long>(fcol0 + blend * (fcol1 - fcol0));
 
             vrt[v * 2 + 2].diffuse = vrt[v * 2 + 3].diffuse = (a << 24) | (r << 16) | (g << 8) | b;
         }
@@ -148,7 +147,7 @@ void BLADE::BLADE_INFO::DrawBlade(VDX8RENDER *rs, unsigned int blendValue, MODEL
                 vrt[1].diffuse = color[0];
                 vrtTime[0] = time;
 
-                bool bDraw = rs->TechniqueExecuteStart("blade");
+                auto bDraw = rs->TechniqueExecuteStart("Blade");
                 if (bDraw)
                 {
                     if (first > 0)
@@ -156,7 +155,7 @@ void BLADE::BLADE_INFO::DrawBlade(VDX8RENDER *rs, unsigned int blendValue, MODEL
                 }
                 while (rs->TechniqueExecuteNext())
                 {
-                };
+                }
             }
             else
             {
@@ -172,34 +171,34 @@ void BLADE::BLADE_INFO::DrawBlade(VDX8RENDER *rs, unsigned int blendValue, MODEL
 
 bool BLADE::BLADE_INFO::LoadBladeModel(MESSAGE &message)
 {
-    api->DeleteEntity(eid);
+    EntityManager::EraseEntity(eid);
 
-    //Имя модельки
+    //»м€ модельки
     char mdlName[200];
     message.String(sizeof(mdlName), mdlName);
     mdlName[sizeof(mdlName) - 1] = 0;
-    if (strlen(mdlName) > 0)
+    if (mdlName[0] != '\0')
     {
-        //Путь до модельки
+        //ѕуть до модельки
         char path[256];
-        strcpy(path, "Ammo\\");
-        strcat(path, mdlName);
-        //Путь до текстур
-        VGEOMETRY *gs = (VGEOMETRY *)_CORE_API->CreateService("geometry");
+        strcpy_s(path, "Ammo\\");
+        strcat_s(path, mdlName);
+        //ѕуть до текстур
+        auto *gs = static_cast<VGEOMETRY *>(api->CreateService("geometry"));
         if (gs)
             gs->SetTexturePath("Ammo\\");
-        //Создаём модельку
-        api->CreateEntity(&eid, "modelr");
+        //—оздаЄм модельку
+        eid = EntityManager::CreateEntity("modelr");
         if (!api->Send_Message(eid, "ls", MSG_MODEL_LOAD_GEO, path))
         {
-            api->DeleteEntity(eid);
+            EntityManager::EraseEntity(eid);
             if (gs)
                 gs->SetTexturePath("");
             return false;
         }
         if (gs)
             gs->SetTexturePath("");
-        //Параметры следа
+        //ѕараметры следа
         defLifeTime = message.Float();
         color[0] = message.Long();
         color[1] = message.Long();
@@ -217,7 +216,7 @@ BLADE::BLADE()
 
 BLADE::~BLADE()
 {
-    _CORE_API->DeleteEntity(gun);
+    EntityManager::EraseEntity(gun);
 
     for (long i = 0; i < ITEMS_INFO_QUANTITY; i++)
         items[i].Release();
@@ -225,34 +224,34 @@ BLADE::~BLADE()
 
 bool BLADE::Init()
 {
-    GUARD(BLADE::BLADE())
+    // GUARD(BLADE::BLADE())
 
-    col = (COLLIDE *)_CORE_API->CreateService("coll");
-    if (col == null)
-        SE_THROW_MSG("No service: COLLIDE");
+    col = static_cast<COLLIDE *>(api->CreateService("coll"));
+    if (col == nullptr)
+        throw std::exception("No service: COLLIDE");
 
-    _CORE_API->LayerAdd("realize", GetID(), 65550);
+    EntityManager::AddToLayer(REALIZE, GetId(), 65550);
 
-    rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
+    rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
     if (!rs)
-        SE_THROW_MSG("No service: dx8render");
+        throw std::exception("No service: dx9render");
 
-    UNGUARD
+    // UNGUARD
     return true;
 }
 
 //------------------------------------------------------------------------------------
 // realize
 //------------------------------------------------------------------------------------
-void BLADE::Realize(dword Delta_Time)
+void BLADE::Realize(uint32_t Delta_Time)
 {
     blade[0].time += 0.001f * (Delta_Time);
 
-    MODEL *mdl = (MODEL *)_CORE_API->GetEntityPointer(&man);
+    auto *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(man));
     if (!mdl)
         return;
 
-    NODE *manNode = mdl->GetNode(0);
+    auto *manNode = mdl->GetNode(0);
     rs->TextureSet(0, -1);
     rs->TextureSet(1, -1);
     rs->TextureSet(2, -1);
@@ -269,10 +268,10 @@ void BLADE::Realize(dword Delta_Time)
     // draw gun
     CMatrix perMtx;
     long sti;
-    MODEL *obj = (MODEL *)_CORE_API->GetEntityPointer(&gun);
-    if (obj != 0)
+    auto *obj = static_cast<MODEL *>(EntityManager::GetEntityPointer(gun));
+    if (obj != nullptr)
     {
-        NODE *gunNode = obj->GetNode(0);
+        auto *gunNode = obj->GetNode(0);
         if ((blendValue & 0xff000000) == 0xff000000)
         {
             gunNode->SetTechnique("EnvAmmoShader");
@@ -282,12 +281,12 @@ void BLADE::Realize(dword Delta_Time)
             gunNode->SetTechnique("AnimationBlend");
         }
         sti = -1;
-        long idGun = manNode->geo->FindName(gunLocName);
+        auto idGun = manNode->geo->FindName(gunLocName);
 
         if ((sti = manNode->geo->FindLabelN(sti + 1, idGun)) > -1)
         {
-            Animation *ani = mdl->GetAnimation();
-            CMatrix *bones = &ani->GetAnimationMatrix(0);
+            auto *ani = mdl->GetAnimation();
+            auto *bones = &ani->GetAnimationMatrix(0);
 
             GEOS::LABEL lb;
             manNode->geo->GetLabel(sti, lb);
@@ -297,7 +296,7 @@ void BLADE::Realize(dword Delta_Time)
             mt.Vz() = CVECTOR(lb.m[2][0], lb.m[2][1], lb.m[2][2]);
             mt.Pos() = CVECTOR(lb.m[3][0], lb.m[3][1], lb.m[3][2]);
 
-            CMatrix mbn = mt * bones[lb.bones[0]];
+            auto mbn = mt * bones[lb.bones[0]];
             mbn.Pos().x *= -1.0f;
             mbn.Vx().x *= -1.0f;
             mbn.Vy().x *= -1.0f;
@@ -313,7 +312,7 @@ void BLADE::Realize(dword Delta_Time)
         }
         obj->mtx = perMtx;
 
-        obj->Realize(0);
+        obj->ProcessStage(Stage::realize, 0);
     }
 
     //------------------------------------------------------
@@ -333,7 +332,7 @@ void BLADE::Realize(dword Delta_Time)
 
 bool BLADE::LoadBladeModel(MESSAGE &message)
 {
-    long nBladeIdx = message.Long();
+    const auto nBladeIdx = message.Long();
     if (nBladeIdx < 0 || nBladeIdx >= BLADE_INFO_QUANTITY)
         return false;
 
@@ -349,27 +348,27 @@ bool BLADE::LoadBladeModel(MESSAGE &message)
 
 bool BLADE::LoadGunModel(MESSAGE &message)
 {
-    _CORE_API->DeleteEntity(gun);
+    EntityManager::EraseEntity(gun);
     man = message.EntityID();
-    //Имя модельки
+    //»м€ модельки
     char mdlName[200];
     message.String(sizeof(mdlName), mdlName);
     mdlName[sizeof(mdlName) - 1] = 0;
-    if (strlen(mdlName) > 0)
+    if (mdlName[0] != '\0')
     {
-        //Путь до модельки
+        //ѕуть до модельки
         char path[256];
-        strcpy(path, "Ammo\\");
-        strcat(path, mdlName);
-        //Путь до текстур
-        VGEOMETRY *gs = (VGEOMETRY *)_CORE_API->CreateService("geometry");
+        strcpy_s(path, "Ammo\\");
+        strcat_s(path, mdlName);
+        //ѕуть до текстур
+        auto *gs = static_cast<VGEOMETRY *>(api->CreateService("geometry"));
         if (gs)
             gs->SetTexturePath("Ammo\\");
-        //Создаём модельку
-        _CORE_API->CreateEntity(&gun, "modelr");
-        if (!_CORE_API->Send_Message(gun, "ls", MSG_MODEL_LOAD_GEO, path))
+        //—оздаЄм модельку
+        gun = EntityManager::CreateEntity("modelr");
+        if (!api->Send_Message(gun, "ls", MSG_MODEL_LOAD_GEO, path))
         {
-            _CORE_API->DeleteEntity(gun);
+            EntityManager::EraseEntity(gun);
             if (gs)
                 gs->SetTexturePath("");
             return false;
@@ -384,28 +383,28 @@ bool BLADE::LoadGunModel(MESSAGE &message)
 
 void BLADE::GunFire()
 {
-    MODEL *mdl = (MODEL *)_CORE_API->GetEntityPointer(&man);
-    NODE *manNode = mdl->GetNode(0);
+    auto *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(man));
+    auto *manNode = mdl->GetNode(0);
 
     //------------------------------------------------------
     // search gunfire
     CMatrix perMtx;
     long sti;
 
-    MODEL *obj = (MODEL *)_CORE_API->GetEntityPointer(&gun);
-    if (obj == 0) // нет пистолета - посмотрим на саблю-пистолет
-        obj = (MODEL *)api->GetEntityPointer(&blade[1].eid);
+    auto *obj = static_cast<MODEL *>(EntityManager::GetEntityPointer(gun));
+    if (obj == nullptr) // нет пистолета - посмотрим на саблю-пистолет
+        obj = static_cast<MODEL *>(EntityManager::GetEntityPointer(blade[1].eid));
 
-    if (obj != 0)
+    if (obj != nullptr)
     {
-        NODE *gunNode = obj->GetNode(0);
+        auto *gunNode = obj->GetNode(0);
         sti = -1;
-        long idGun = manNode->geo->FindName(gunLocName);
+        auto idGun = manNode->geo->FindName(gunLocName);
 
         if ((sti = manNode->geo->FindLabelN(sti + 1, idGun)) > -1)
         {
-            Animation *ani = mdl->GetAnimation();
-            CMatrix *bones = &ani->GetAnimationMatrix(0);
+            auto *ani = mdl->GetAnimation();
+            auto *bones = &ani->GetAnimationMatrix(0);
 
             GEOS::LABEL lb;
             manNode->geo->GetLabel(sti, lb);
@@ -415,7 +414,7 @@ void BLADE::GunFire()
             mt.Vz() = CVECTOR(lb.m[2][0], lb.m[2][1], lb.m[2][2]);
             mt.Pos() = CVECTOR(lb.m[3][0], lb.m[3][1], lb.m[3][2]);
 
-            CMatrix mbn = mt * bones[lb.bones[0]];
+            auto mbn = mt * bones[lb.bones[0]];
             mbn.Pos().x *= -1.0f;
             mbn.Vx().x *= -1.0f;
             mbn.Vy().x *= -1.0f;
@@ -431,19 +430,17 @@ void BLADE::GunFire()
             gunNode->geo->GetLabel(sti, lb);
             CMatrix resm;
             resm.EqMultiply(perMtx, *(CMatrix *)&lb.m);
-            CVECTOR rp = perMtx * CVECTOR(lb.m[3][0], lb.m[3][1], lb.m[3][2]);
+            auto rp = perMtx * CVECTOR(lb.m[3][0], lb.m[3][1], lb.m[3][2]);
 
-            ENTITY_ID prt;
-            api->FindClass(&prt, "particles", 0);
-            api->Send_Message(prt, "lsffffffl", PS_CREATEX, "gunfire", rp.x, rp.y, rp.z, resm.Vz().x, resm.Vz().y,
-                              resm.Vz().z, 0);
+            api->Send_Message(EntityManager::GetEntityId("particles"), "lsffffffl", PS_CREATEX, "gunfire", rp.x, rp.y,
+                              rp.z, resm.Vz().x, resm.Vz().y, resm.Vz().z, 0);
         }
         else
-            _CORE_API->Trace("MSG_BLADE_GUNFIRE Can't find gun_fire locator");
+            api->Trace("MSG_BLADE_GUNFIRE Can't find gun_fire locator");
     }
 }
 
-dword _cdecl BLADE::ProcessMessage(MESSAGE &message)
+uint64_t BLADE::ProcessMessage(MESSAGE &message)
 {
     long n;
 
@@ -465,7 +462,7 @@ dword _cdecl BLADE::ProcessMessage(MESSAGE &message)
             blade[n].locatorName = sabergunBeltName;
             blade[n].lifeTime = 0.0f;
         }
-        //_CORE_API->Trace("MSG_BLADE_BELT::%s", beltName);
+        // api->Trace("MSG_BLADE_BELT::%s", beltName);
         break;
 
     case MSG_BLADE_HAND:
@@ -478,7 +475,7 @@ dword _cdecl BLADE::ProcessMessage(MESSAGE &message)
         {
             blade[n].locatorName = sabergunHandName;
         }
-        //_CORE_API->Trace("MSG_BLADE_HAND::%s", handName);
+        // api->Trace("MSG_BLADE_HAND::%s", handName);
         break;
 
     case MSG_BLADE_GUNSET:
@@ -486,15 +483,15 @@ dword _cdecl BLADE::ProcessMessage(MESSAGE &message)
         break;
     case MSG_BLADE_GUNBELT:
         gunLocName = gunBeltName;
-        //_CORE_API->Trace("MSG_BLADE_GUNBELT::%s", gunLocName);
+        // api->Trace("MSG_BLADE_GUNBELT::%s", gunLocName);
         break;
     case MSG_BLADE_GUNHAND:
         gunLocName = gunHandName;
-        //_CORE_API->Trace("MSG_BLADE_GUNHAND::%s", gunLocName);
+        // api->Trace("MSG_BLADE_GUNHAND::%s", gunLocName);
         break;
     case MSG_BLADE_GUNFIRE:
         GunFire();
-        //_CORE_API->Trace("MSG_BLADE_GUNFIRE::%s", handName);
+        // api->Trace("MSG_BLADE_GUNFIRE::%s", handName);
         break;
 
     case MSG_BLADE_TRACE_ON:
@@ -503,7 +500,7 @@ dword _cdecl BLADE::ProcessMessage(MESSAGE &message)
         {
             blade[0].lifeTime = blade[0].defLifeTime;
         }
-        //_CORE_API->Trace("MSG_BLADE_TRACE_ON::%f", lifeTime);
+        // api->Trace("MSG_BLADE_TRACE_ON::%f", lifeTime);
         break;
 
     case MSG_BLADE_TRACE_OFF:
@@ -512,15 +509,15 @@ dword _cdecl BLADE::ProcessMessage(MESSAGE &message)
         {
             blade[0].lifeTime = 0.0f;
         }
-        //_CORE_API->Trace("MSG_BLADE_TRACE_OFF");
+        // api->Trace("MSG_BLADE_TRACE_OFF");
         break;
 
     case MSG_BLADE_BLOOD:
-        //_CORE_API->Trace("MSG_BLADE_BLOOD");
+        // api->Trace("MSG_BLADE_BLOOD");
         break;
 
     case MSG_BLADE_LIGHT:
-        //_CORE_API->Trace("MSG_BLADE_LIGHT");
+        // api->Trace("MSG_BLADE_LIGHT");
         break;
     case MSG_BLADE_ALPHA:
         blendValue = message.Long();
@@ -542,7 +539,7 @@ dword _cdecl BLADE::ProcessMessage(MESSAGE &message)
 
 void BLADE::AddTieItem(MESSAGE &message)
 {
-    long nItemIdx = message.Long();
+    const auto nItemIdx = message.Long();
 
     char mdlName[MAX_PATH];
     message.String(sizeof(mdlName), mdlName);
@@ -550,7 +547,7 @@ void BLADE::AddTieItem(MESSAGE &message)
     char locName[128];
     message.String(sizeof(locName), locName);
 
-    long n = FindTieItemByIndex(nItemIdx);
+    auto n = FindTieItemByIndex(nItemIdx);
     if (n >= 0)
     {
         api->Trace("Warning! BLADE::AddTieItem(%d,%s,%s) already set that item", nItemIdx, mdlName, locName);
@@ -574,8 +571,8 @@ void BLADE::AddTieItem(MESSAGE &message)
 
 void BLADE::DelTieItem(MESSAGE &message)
 {
-    long nItemIdx = message.Long();
-    long n = FindTieItemByIndex(nItemIdx);
+    const auto nItemIdx = message.Long();
+    const long n = FindTieItemByIndex(nItemIdx);
     if (n >= 0)
         items[n].Release();
 }
@@ -602,16 +599,16 @@ void BLADE::TIEITEM_INFO::Release()
     if (nItemIndex != -1)
     {
         nItemIndex = -1;
-        api->DeleteEntity(eid);
-        if (locatorName)
-            delete locatorName;
-        locatorName = 0;
+        EntityManager::EraseEntity(eid);
+        delete locatorName;
+        locatorName = nullptr;
     }
 }
-void BLADE::TIEITEM_INFO::DrawItem(VDX8RENDER *rs, unsigned int blendValue, MODEL *mdl, NODE *manNode)
+
+void BLADE::TIEITEM_INFO::DrawItem(VDX9RENDER *rs, unsigned int blendValue, MODEL *mdl, NODE *manNode)
 {
-    MODEL *obj = (MODEL *)api->GetEntityPointer(&eid);
-    if (obj != 0)
+    auto *obj = static_cast<MODEL *>(EntityManager::GetEntityPointer(eid));
+    if (obj != nullptr)
     {
         CMatrix perMtx;
 
@@ -625,8 +622,7 @@ void BLADE::TIEITEM_INFO::DrawItem(VDX8RENDER *rs, unsigned int blendValue, MODE
             mdlNode->SetTechnique("AnimationBlend");
         }
         long sti = -1;
-        long idLoc;
-        idLoc = manNode->geo->FindName(locatorName);
+        auto idLoc = manNode->geo->FindName(locatorName);
 
         if ((sti = manNode->geo->FindLabelN(sti + 1, idLoc)) > -1)
         {
@@ -656,36 +652,37 @@ void BLADE::TIEITEM_INFO::DrawItem(VDX8RENDER *rs, unsigned int blendValue, MODE
             perMtx = mbn * mdl->mtx;
         }
         obj->mtx = perMtx;
-        obj->Realize(0);
+        obj->ProcessStage(Stage::realize, 0);
     }
 }
+
 bool BLADE::TIEITEM_INFO::LoadItemModel(const char *mdlName, const char *locName)
 {
-    api->DeleteEntity(eid);
-    if (locatorName)
-        delete locatorName;
-    locatorName = 0;
+    EntityManager::EraseEntity(eid);
+    delete locatorName;
+    locatorName = nullptr;
 
     if (!locName || !mdlName)
         return false;
 
-    locatorName = new char[strlen(locName) + 1];
+    const auto len = strlen(locName) + 1;
+    locatorName = new char[len];
     Assert(locatorName);
-    strcpy(locatorName, locName);
+    memcpy(locatorName, locName, len);
 
-    //Путь до модельки
+    //ѕуть до модельки
     char path[256];
-    strcpy(path, "Ammo\\");
-    strcat(path, mdlName);
-    //Путь до текстур
-    VGEOMETRY *gs = (VGEOMETRY *)api->CreateService("geometry");
+    strcpy_s(path, "Ammo\\");
+    strcat_s(path, mdlName);
+    //ѕуть до текстур
+    auto *gs = static_cast<VGEOMETRY *>(api->CreateService("geometry"));
     if (gs)
         gs->SetTexturePath("Ammo\\");
-    //Создаём модельку
-    api->CreateEntity(&eid, "modelr");
+    //—оздаЄм модельку
+    eid = EntityManager::CreateEntity("modelr");
     if (!api->Send_Message(eid, "ls", MSG_MODEL_LOAD_GEO, path))
     {
-        api->DeleteEntity(eid);
+        EntityManager::EraseEntity(eid);
         if (gs)
             gs->SetTexturePath("");
         return false;
