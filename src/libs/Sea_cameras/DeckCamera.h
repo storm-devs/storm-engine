@@ -16,7 +16,7 @@ class DECK_CAMERA : public COMMON_CAMERA
 {
     struct VERTEX
     {
-        D3DXVECTOR3 v;
+        D3DVECTOR v;
         D3DCOLOR color;
         float tu;
         float tv;

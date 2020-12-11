@@ -58,8 +58,11 @@ long TIVBufferManager::ReserveElement()
 //--------------------------------------------------------------------
 void TIVBufferManager::FreeElement(long _i)
 {
-    if (_i < 0)
+    if (_i < 0 || _i > elementsCount || !used[count])
+    {
+        //~!~
         return;
+    }
 
     --count;
     ivIndexes[count] = ivIndexes[_i];

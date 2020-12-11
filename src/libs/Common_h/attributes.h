@@ -7,6 +7,9 @@
 #include <cstdio>
 #include <vector>
 
+// пока тут
+constexpr size_t TSE_MAX_EVENT_LENGTH = 64;
+
 #define INVALID_ATTRIBUTE_HANDLE 0xffffffff
 
 //--------------------------------------------------------------------------------------------------------------

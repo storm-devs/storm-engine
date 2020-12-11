@@ -220,7 +220,7 @@ void Lights::Realize(uint32_t delta_time)
         auto &l = types[ls.type];
         if (l.corona < 0)
             continue;
-        //Поподание в передний план
+        //Попадание в передний план
         auto dist = ls.pos.x * camMtx.Vx().z + ls.pos.y * camMtx.Vy().z + ls.pos.z * camMtx.Vz().z + camPDist;
         if (dist < -2.0f * l.coronaSize)
             continue;

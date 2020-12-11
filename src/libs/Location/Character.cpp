@@ -902,7 +902,7 @@ uint32_t Character::AttributeChanged(ATTRIBUTES *apnt)
         long fnt1, fnt2;
         ReadFightActions(apnt->FindAClass(apnt, "attack_feint"), attackFeint, fnt1);
         ReadFightActions(apnt->FindAClass(apnt, "attack_feintc"), attackFeintC, fnt2);
-        numAttackFeint = min(fnt1, fnt2);
+        numAttackFeint = std::min(fnt1, fnt2);
         ReadFightActions(apnt->FindAClass(apnt, "hit_attack"), hit, numHits);
         ReadFightActions(apnt->FindAClass(apnt, "parry"), parry, numParry);
         //Выстрел

@@ -1893,9 +1893,9 @@ void SHIP::Load(CSaveLoad *pSL)
 
     uniIDX = pSL->LoadLong();
     bUse = pSL->LoadDword() != 0;
-    pSL->Load2Buffer((char *)&ShipPoints[0][0]);
+    pSL->Load2Buffer(&ShipPoints[0][0]);
     vSpeedAccel = pSL->LoadVector();
-    pSL->Load2Buffer((char *)&SP);
+    pSL->Load2Buffer(&SP);
     vPos = pSL->LoadVector();
     vAng = pSL->LoadVector();
     fWaterLine = pSL->LoadFloat();
@@ -1914,19 +1914,19 @@ void SHIP::Load(CSaveLoad *pSL)
     bVisible = pSL->LoadDword() != 0;
     vDeadDir = pSL->LoadVector();
     vCurDeadDir = pSL->LoadVector();
-    pSL->Load2Buffer((char *)&vKeelContour[0]);
+    pSL->Load2Buffer(&vKeelContour[0]);
     bShip2Strand = pSL->LoadDword() != 0;
     bMounted = pSL->LoadDword() != 0;
     bKeelContour = pSL->LoadDword() != 0;
     bPerkTurnActive = pSL->LoadDword() != 0;
     fInitialPerkAngle = pSL->LoadFloat();
     fResultPerkAngle = pSL->LoadFloat();
-    pSL->Load2Buffer((char *)&Strength[0]);
+    pSL->Load2Buffer(&Strength[0]);
     bSetLightAndFog = pSL->LoadDword() != 0;
     dwSaveAmbient = pSL->LoadDword();
     dwSaveFogColor = pSL->LoadDword();
-    pSL->Load2Buffer((char *)&saveLight);
-    pSL->Load2Buffer((char *)&State);
+    pSL->Load2Buffer(&saveLight);
+    pSL->Load2Buffer(&State);
 
     iNumMasts = pSL->LoadLong();
     // pMasts = new mast_t[iNumMasts];

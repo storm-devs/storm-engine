@@ -216,11 +216,13 @@ class CSaveLoad
         Read(*pBuffer, dwSize);
     }
 
-    void Load2Buffer(char *pBuffer)
+    template <typename T> constexpr void Load2Buffer(T *pBuffer)
     {
+        // защита от долбоеба
+        static_assert(std::is_trivial_v<T>, "Load2Buffer is only available for trivial types.");
         uint32_t dwSize;
         Read(&dwSize, sizeof(dwSize));
-        Read(pBuffer, dwSize);
+        Read(reinterpret_cast<char *>(pBuffer), dwSize);
     }
 
     ATTRIBUTES *LoadAPointer(const char *pStr)

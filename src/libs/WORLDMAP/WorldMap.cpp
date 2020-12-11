@@ -1111,7 +1111,7 @@ bool WorldMap::CreateWarringShips(const char *modelName1, const char *modelName2
     if (!CreateModel(ship2, modelName2))
         return false;
     const float moveRadius = (ship1->modelRadius + ship2->modelRadius) * (0.4f + (rand() & 3) * (0.1f / 3.0f));
-    const float fullRadius = 0.6f * (moveRadius + 2.0f * max(ship1->modelRadius, ship2->modelRadius));
+    const float fullRadius = 0.6f * (moveRadius + 2.0f * std::max(ship1->modelRadius, ship2->modelRadius));
     //Общая позиция
     float x, z;
     if (!WdmEnemyShip::GeneratePosition(fullRadius, 1.5f, x, z))

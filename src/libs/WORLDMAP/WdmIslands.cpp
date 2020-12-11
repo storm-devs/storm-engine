@@ -78,12 +78,12 @@ WdmIslands::WdmIslands()
     }
     if (isMin && isMax)
     {
-        vmin.x = min(vmn.x, vmx.x);
+        vmin.x = std::min(vmn.x, vmx.x);
         vmin.y = 0.0f;
-        vmin.z = min(vmn.z, vmx.z);
-        vmax.x = max(vmn.x, vmx.x);
+        vmin.z = std::min(vmn.z, vmx.z);
+        vmax.x = std::max(vmn.x, vmx.x);
         vmax.y = 0.0f;
-        vmax.z = max(vmn.z, vmx.z);
+        vmax.z = std::max(vmn.z, vmx.z);
         center = (vmin + vmax) * -0.5f;
         vmin += center;
         vmax += center;
@@ -431,7 +431,7 @@ void WdmIslands::SetIslandsData(ATTRIBUTES *apnt, bool isChange)
         float textHeight = static_cast<float>(wdmObjects->rs->CharHeight(labels[index].font));
         //Размеры метки
         const float labelWidth = textWidth + (labels[index].icon >= 0 ? icons.w + 4.0f : 0.0f);
-        const float labelHeight = labels[index].icon >= 0 ? max(textHeight, icons.h) : textHeight;
+        const float labelHeight = labels[index].icon >= 0 ? std::max(textHeight, icons.h) : textHeight;
         //Позиция метки с учётом смещения
         const float labelX = pivotX * labelWidth;
         const float labelY = pivotY * labelHeight;
