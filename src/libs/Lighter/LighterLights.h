@@ -13,14 +13,14 @@
 
 #include "LTypes.h"
 
-class Lights
+class LighterLights
 {
     //--------------------------------------------------------------------------------------------
     //Конструирование, деструктурирование
     //--------------------------------------------------------------------------------------------
   public:
-    Lights();
-    virtual ~Lights();
+    LighterLights();
+    virtual ~LighterLights();
 
     void AddAmbient(const CVECTOR &color);
     void AddWeaterLights(const CVECTOR &color, const CVECTOR &dir);
@@ -39,17 +39,17 @@ class Lights
     void SetDefLightParam(long i);
 
   private:
-    Light *light;
+    std::vector<Light> light;
     long numLights;
     long maxLights;
 };
 
-inline long Lights::Num() const
+inline long LighterLights::Num() const
 {
     return numLights;
 }
 
-inline Light &Lights::operator[](long i)
+inline Light &LighterLights::operator[](long i)
 {
     Assert(i >= 0 && i < numLights);
     return light[i];

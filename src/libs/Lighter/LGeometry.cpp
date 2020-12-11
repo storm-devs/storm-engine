@@ -9,7 +9,7 @@
 //============================================================================================
 
 #include "LGeometry.h"
-#include <io.h>
+#include "EntityManager.h"
 
 //============================================================================================
 //Конструирование, деструктурирование
@@ -17,20 +17,16 @@
 
 LGeometry::LGeometry()
 {
-    object = null;
     numObjects = 0;
     maxObjects = 0;
-    vrt = null;
     numVrt = 0;
     maxVrt = 0;
-    trg = null;
     numTrg = 0;
     maxTrg = 0;
-    vbuffer = null;
     numVBuffers = 0;
     maxVBuffers = 0;
-    shadows = null;
-    drawbuf = null;
+    shadows = nullptr;
+    drawbuf = nullptr;
     radius = 0.0f;
     modelsPath[0] = 0;
     lightPath[0] = 0;
@@ -38,62 +34,52 @@ LGeometry::LGeometry()
 
 LGeometry::~LGeometry()
 {
-    if (object)
+    for (long i = 0; i < numObjects; i++)
     {
-        for (long i = 0; i < numObjects; i++)
-        {
-            delete object[i].name;
-            delete object[i].nameReal;
-        }
-        delete object;
+        delete object[i].name;
+        delete object[i].nameReal;
     }
-    if (vrt)
-        delete vrt;
-    if (trg)
-        delete trg;
-    if (vbuffer)
-        delete vbuffer;
-    if (shadows)
-        delete shadows;
-    if (drawbuf)
-        delete drawbuf;
+    delete shadows;
+    delete drawbuf;
 }
 
 //Установить путь до моделек
 void LGeometry::SetModelsPath(const char *mPath)
 {
-    strcpy(modelsPath, mPath);
+    strcpy_s(modelsPath, mPath);
 }
 
 //Установить путь для текущей погоды
 void LGeometry::SetLightPath(const char *lPath)
 {
-    strcpy(lightPath, lPath);
+    strcpy_s(lightPath, lPath);
 }
 
 //Добавить объект
-void LGeometry::AddObject(const char *name, ENTITY_ID &model)
+void LGeometry::AddObject(const char *name, entid_t model)
 {
     if (numObjects >= maxObjects)
     {
         maxObjects += 16;
-        object = (Object *)RESIZE(object, maxObjects * sizeof(Object));
+        object.resize(maxObjects);
     }
-    object[numObjects].nameReal = NEW char[strlen(name) + strlen(modelsPath) + 8];
+    auto len = strlen(name) + strlen(modelsPath) + 8;
+    object[numObjects].nameReal = new char[len];
     object[numObjects].nameReal[0] = 0;
-    strcat(object[numObjects].nameReal, modelsPath);
-    strcat(object[numObjects].nameReal, name);
-    strcat(object[numObjects].nameReal, ".gm");
-    object[numObjects].name = NEW char[strlen(name) + 2048];
+    strcat_s(object[numObjects].nameReal, len, modelsPath);
+    strcat_s(object[numObjects].nameReal, len, name);
+    strcat_s(object[numObjects].nameReal, len, ".gm");
+    object[numObjects].name = new char[strlen(name) + 2048];
+    len = strlen(name) + 2048;
     object[numObjects].name[0] = 0;
-    strcat(object[numObjects].name, "resource\\models\\");
-    strcat(object[numObjects].name, modelsPath);
-    strcat(object[numObjects].name, "\\");
-    strcat(object[numObjects].name, name);
-    strcat(object[numObjects].name, "_");
-    strcat(object[numObjects].name, lightPath);
-    strcat(object[numObjects].name, ".col");
-    char *str = object[numObjects].name;
+    strcat_s(object[numObjects].name, len, "resource\\models\\");
+    strcat_s(object[numObjects].name, len, modelsPath);
+    strcat_s(object[numObjects].name, len, "\\");
+    strcat_s(object[numObjects].name, len, name);
+    strcat_s(object[numObjects].name, len, "_");
+    strcat_s(object[numObjects].name, len, lightPath);
+    strcat_s(object[numObjects].name, len, ".col");
+    auto *const str = object[numObjects].name;
     for (long s = 0, d = 0; str[d]; s++)
     {
         if (str[s] >= 'a' && str[s] <= 'z')
@@ -103,7 +89,7 @@ void LGeometry::AddObject(const char *name, ENTITY_ID &model)
         str[d++] = str[s];
     }
     object[numObjects].model = model;
-    object[numObjects].m = (MODEL *)api->GetEntityPointer(&model);
+    object[numObjects].m = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
     if (!object[numObjects].m)
     {
         api->Trace("Location lighter: can't get pointer to model %s", name);
@@ -113,18 +99,16 @@ void LGeometry::AddObject(const char *name, ENTITY_ID &model)
 }
 
 //Обработать данные
-bool LGeometry::Process(VDX8RENDER *rs, long numLights)
+bool LGeometry::Process(VDX9RENDER *rs, long numLights)
 {
-    long vb = 0, i = 0;
-    ;
     //Подготовка данных для освещения
-    for (i = 0; i < numObjects; i++)
+    for (long i = 0; i < numObjects; i++)
     {
         //Вершины--------------------------------------------------------------------------------
         //Индекс в конечном файле
         long cindex = 0;
         //Проверочка
-        if (object[i].m != (MODEL *)api->GetEntityPointer(&object[i].model))
+        if (object[i].m != static_cast<MODEL *>(EntityManager::GetEntityPointer(object[i].model)))
         {
             api->Trace("Location lighter: lost model!!!");
             return false;
@@ -137,8 +121,8 @@ bool LGeometry::Process(VDX8RENDER *rs, long numLights)
         //Пересчитать матрицы
         object[i].m->Update();
         //Получаем геометрию
-        NODE *node = object[i].m->GetNode(0);
-        GEOS *g = node->geo;
+        auto *node = object[i].m->GetNode(0);
+        auto *g = node->geo;
         if (!g)
         {
             api->Trace("Location lighter: incorrent model %s (node not include geos)", object[i].nameReal);
@@ -156,17 +140,17 @@ bool LGeometry::Process(VDX8RENDER *rs, long numLights)
         if (numVBuffers + info.nvrtbuffs > maxVBuffers)
         {
             maxVBuffers += info.nvrtbuffs + 16;
-            vbuffer = (VertexBuffer *)RESIZE(vbuffer, maxVBuffers * sizeof(VertexBuffer));
+            vbuffer.resize(maxVBuffers);
         }
-        for (vb = 0; vb < info.nvrtbuffs; vb++)
+        for (long vb = 0; vb < info.nvrtbuffs; vb++)
         {
-            long vbID = g->GetVertexBuffer(vb);
+            auto vbID = g->GetVertexBuffer(vb);
             if (vbID < 0)
                 continue;
             vbuffer[numVBuffers].vbID = vbID;
             vbuffer[numVBuffers++].start = numVrt;
             //Получаем вершины
-            IDirect3DVertexBuffer9 *vbuf = rs->GetVertexBuffer(vbID);
+            auto *vbuf = rs->GetVertexBuffer(vbID);
             D3DVERTEXBUFFER_DESC desc;
             if (!vbuf || vbuf->GetDesc(&desc) != D3D_OK)
             {
@@ -174,7 +158,7 @@ bool LGeometry::Process(VDX8RENDER *rs, long numLights)
                 return false;
             }
             //Анализируем тип
-            bool isEnabledType = true;
+            auto isEnabledType = true;
             isEnabledType &= ((desc.FVF & D3DFVF_POSITION_MASK) == D3DFVF_XYZ);
             isEnabledType &= ((desc.FVF & D3DFVF_NORMAL) != 0);
             isEnabledType &= ((desc.FVF & D3DFVF_DIFFUSE) != 0);
@@ -186,12 +170,12 @@ bool LGeometry::Process(VDX8RENDER *rs, long numLights)
                 return false;
             }
             //Размер вершины
-            long stride = 6 * sizeof(float) + sizeof(dword);
+            long stride = 6 * sizeof(float) + sizeof(uint32_t);
             stride += ((desc.FVF & D3DFVF_TEXCOUNT_MASK) >> D3DFVF_TEXCOUNT_SHIFT) * 2 * sizeof(float);
             if (desc.FVF & D3DFVF_SPECULAR)
-                stride += sizeof(dword);
+                stride += sizeof(uint32_t);
             //Количество вершин
-            long num = desc.Size / stride;
+            auto num = desc.Size / stride;
             if (num <= 0)
             {
                 api->Trace("Location lighter: incorrect number of verteces in vertex buffer, model %s, vbID %i",
@@ -202,23 +186,23 @@ bool LGeometry::Process(VDX8RENDER *rs, long numLights)
             if (numVrt + num > maxVrt)
             {
                 maxVrt = numVrt + num + 64;
-                vrt = (Vertex *)RESIZE(vrt, maxVrt * sizeof(Vertex));
+                vrt.resize(maxVrt);
             }
             //Копируем
-            byte *pnt = null;
-            if (vbuf->Lock(0, desc.Size, (void **)&pnt, 0) != D3D_OK)
+            uint8_t *pnt = nullptr;
+            if (vbuf->Lock(0, desc.Size, (VOID **)&pnt, 0) != D3D_OK)
             {
                 api->Trace("Location lighter: vertex buffer no locked, model %s, vbID %i", object[i].nameReal, vbID);
                 return false;
             }
             for (long v = 0; v < num; v++)
             {
-                CVECTOR *pos = (CVECTOR *)(pnt + v * stride);
+                auto *pos = (CVECTOR *)(pnt + v * stride);
                 vrt[numVrt].p = *pos;
-                CVECTOR *nrm = (CVECTOR *)(pnt + v * stride + 3 * sizeof(float));
+                auto *nrm = (CVECTOR *)(pnt + v * stride + 3 * sizeof(float));
                 vrt[numVrt].n = *nrm;
-                dword color = *(dword *)(pnt + v * stride + 6 * sizeof(float));
-                float l = ~vrt[numVrt].n;
+                auto color = *(uint32_t *)(pnt + v * stride + 6 * sizeof(float));
+                auto l = ~vrt[numVrt].n;
                 if (l > 0.0f)
                 {
                     if (l != 1.0f)
@@ -235,7 +219,7 @@ bool LGeometry::Process(VDX8RENDER *rs, long numLights)
                 vrt[numVrt].alpha = 0xff000000;
                 vrt[numVrt].flags = Vertex::f_zero;
                 vrt[numVrt].vbid = vbID;
-                vrt[numVrt].shadow = null;
+                vrt[numVrt].shadow = nullptr;
                 vrt[numVrt].addr = v * stride + 6 * sizeof(float);
                 vrt[numVrt].obj = i;
                 vrt[numVrt].cindex = cindex++;
@@ -252,8 +236,8 @@ bool LGeometry::Process(VDX8RENDER *rs, long numLights)
         }
         object[i].lBufSize = cindex;
         //Треугольники--------------------------------------------------------------------------------
-        long ibID = g->GetIndexBuffer();
-        word *idx = (word *)rs->LockIndexBuffer(ibID);
+        auto ibID = g->GetIndexBuffer();
+        auto *idx = static_cast<uint16_t *>(rs->LockIndexBuffer(ibID));
         if (!idx)
         {
             api->Trace("Location lighter: index buffer no locked, model %s", object[i].nameReal);
@@ -264,8 +248,9 @@ bool LGeometry::Process(VDX8RENDER *rs, long numLights)
         {
             g->GetObj(n, obj);
             //Ищем вертексбуфер
+            long vb;
             for (vb = 0; vb < numVBuffers; vb++)
-                if (vbuffer[vb].vbID == long(obj.vertex_buff))
+                if (vbuffer[vb].vbID == static_cast<long>(obj.vertex_buff))
                     break;
             if (vb >= numVBuffers)
             {
@@ -275,7 +260,7 @@ bool LGeometry::Process(VDX8RENDER *rs, long numLights)
             }
             vb = vbuffer[vb].start + obj.start_vertex;
             //Читаем треугольники
-            word *triangles = idx + obj.striangle * 3;
+            auto *triangles = idx + obj.striangle * 3;
             for (long t = 0; t < obj.ntriangles; t++)
             {
                 //Относительные индексы
@@ -296,7 +281,7 @@ bool LGeometry::Process(VDX8RENDER *rs, long numLights)
                 Assert(i1 >= 0 && i1 < numVrt);
                 Assert(i2 >= 0 && i2 < numVrt);
                 Assert(i3 >= 0 && i3 < numVrt);
-                CVECTOR nrm = ((vrt[i2].p - vrt[i1].p) ^ (vrt[i3].p - vrt[i1].p));
+                auto nrm = ((vrt[i2].p - vrt[i1].p) ^ (vrt[i3].p - vrt[i1].p));
                 float sq = sqrtf(~nrm);
                 //Пропустим пустой треугольник
                 if (sq <= 0.0f)
@@ -309,7 +294,7 @@ bool LGeometry::Process(VDX8RENDER *rs, long numLights)
                 if (numTrg >= maxTrg)
                 {
                     maxTrg += 256;
-                    trg = (LighterTriangle *)RESIZE(trg, maxTrg * sizeof(LighterTriangle));
+                    trg.resize(maxTrg);
                 }
                 trg[numTrg].n = nrm * (1.0f / sq);
                 trg[numTrg].sq = sq;
@@ -341,12 +326,12 @@ bool LGeometry::Process(VDX8RENDER *rs, long numLights)
     }
     if (numVrt <= 0)
         return false;
-    shadows = NEW Shadow[numVrt * numLights];
+    shadows = new Shadow[numVrt * numLights];
     memset(shadows, 0, numVrt * numLights * sizeof(Shadow));
     min = vrt[0].p;
     max = vrt[0].p;
     long lghtpnt = 0;
-    for (i = 0; i < numVrt; i++)
+    for (long i = 0; i < numVrt; i++)
     {
         Vertex &v = vrt[i];
         v.shadow = shadows + lghtpnt;
@@ -378,13 +363,13 @@ bool LGeometry::Process(VDX8RENDER *rs, long numLights)
 }
 
 //Нарисовать нормали
-void LGeometry::DrawNormals(VDX8RENDER *rs)
+void LGeometry::DrawNormals(VDX9RENDER *rs)
 {
-    long i = 0, p = 0;
     if (!drawbuf)
-        drawbuf = NEW CVECTOR[1024];
+        drawbuf = new CVECTOR[1024];
     rs->SetRenderState(D3DRS_TEXTUREFACTOR, 0xff00ff00);
-    for (i = 0, p = 0; i < numVrt; i++)
+    long p = 0;
+    for (long i = 0; i < numVrt; i++)
     {
         drawbuf[p + 0] = vrt[i].p;
         drawbuf[p + 1] = vrt[i].p + vrt[i].n;
@@ -402,10 +387,10 @@ void LGeometry::DrawNormals(VDX8RENDER *rs)
 }
 
 //Обновить цвета в буферах
-void LGeometry::UpdateColors(VDX8RENDER *rs)
+void LGeometry::UpdateColors(VDX9RENDER *rs)
 {
     long lockedVB = -1;
-    byte *pnt = null;
+    uint8_t *pnt = nullptr;
     for (long i = 0; i < numVrt; i++)
     {
         if (vrt[i].vbid != lockedVB)
@@ -413,7 +398,7 @@ void LGeometry::UpdateColors(VDX8RENDER *rs)
             if (lockedVB >= 0)
                 rs->UnLockVertexBuffer(lockedVB);
             lockedVB = -1;
-            pnt = (byte *)rs->LockVertexBuffer(vrt[i].vbid);
+            pnt = static_cast<uint8_t *>(rs->LockVertexBuffer(vrt[i].vbid));
             if (!pnt)
             {
                 api->Trace("Location lighter: no lock vertex buffer for update color");
@@ -434,19 +419,20 @@ void LGeometry::UpdateColors(VDX8RENDER *rs)
             c.z = 0.0f;
         if (c.z > 255.0f)
             c.z = 255.0f;
-        dword &clr = *(dword *)(pnt + vrt[i].addr);
-        clr = (dword(c.x) << 16) | (dword(c.y) << 8) | (dword(c.z) << 0) | vrt[i].alpha;
+        uint32_t &clr = *(uint32_t *)(pnt + vrt[i].addr);
+        clr = (static_cast<uint32_t>(c.x) << 16) | (static_cast<uint32_t>(c.y) << 8) |
+              (static_cast<uint32_t>(c.z) << 0) | vrt[i].alpha;
     }
     if (lockedVB >= 0)
         rs->UnLockVertexBuffer(lockedVB);
 }
 
 //Протрейсить луч
-float LGeometry::Trace(CVECTOR &src, CVECTOR &dst)
+float LGeometry::Trace(const CVECTOR &src, const CVECTOR &dst)
 {
     for (long i = 0; i < numObjects; i++)
     {
-        float res = object[i].m->Trace(src, dst);
+        const float res = object[i].m->Trace(src, dst);
         if (res <= 1.0f)
             return res;
     }
@@ -457,19 +443,19 @@ float LGeometry::Trace(CVECTOR &src, CVECTOR &dst)
 bool LGeometry::Save()
 {
     //Сохраняем текущий путь
-    char *oldPath = NEW char[4096];
-    fio->_GetCurrentDirectory(4096, oldPath);
-    char *dir = NEW char[4096];
+    char *oldPath = new char[4096];
+    ::GetCurrentDirectory(4096, oldPath);
+    char *dir = new char[4096];
     //Сохраняем объекты
     bool result = true;
-    long bufSize = 16384;
-    dword *buf = NEW dword[bufSize];
+    const long bufSize = 16384;
+    auto *buf = new uint32_t[bufSize];
     for (long i = 0, pnt = 0; i < numObjects; i++)
     {
         if (object[i].lBufSize <= 0)
             continue;
         //Создаём путь
-        fio->_SetCurrentDirectory(oldPath);
+        ::SetCurrentDirectory(oldPath);
         bool isCont = false;
         for (long c = 0, p = 0; true; c++, p++)
         {
@@ -479,13 +465,13 @@ bool LGeometry::Save()
                 dir[p] = 0;
                 if (_access(dir, 0) == -1)
                 {
-                    if (!fio->_CreateDirectory(dir, null))
+                    if (!CreateDirectory(dir, nullptr))
                     {
                         isCont = true;
                         break;
                     }
                 }
-                fio->_SetCurrentDirectory(dir);
+                ::SetCurrentDirectory(dir);
                 p = -1;
                 continue;
             }
@@ -517,20 +503,21 @@ bool LGeometry::Save()
                 c.z = 0.0f;
             if (c.z > 255.0f)
                 c.z = 255.0f;
-            buf[sv++] = (dword(c.x) << 16) | (dword(c.y) << 8) | (dword(c.z) << 0) | 0xff000000;
+            buf[sv++] = (static_cast<uint32_t>(c.x) << 16) | (static_cast<uint32_t>(c.y) << 8) |
+                        (static_cast<uint32_t>(c.z) << 0) | 0xff000000;
             if (sv >= bufSize)
             {
-                result = (fwrite(buf, sv * sizeof(dword), 1, fl) == 1);
+                result = (fwrite(buf, sv * sizeof(uint32_t), 1, fl) == 1);
                 sv = 0;
             }
         }
         if (sv > 0)
-            result &= (fwrite(buf, sv * sizeof(dword), 1, fl) == 1);
+            result &= (fwrite(buf, sv * sizeof(uint32_t), 1, fl) == 1);
         fclose(fl);
     }
-    fio->_SetCurrentDirectory(oldPath);
-    delete oldPath;
-    delete dir;
-    delete buf;
+    ::SetCurrentDirectory(oldPath);
+    delete[] oldPath;
+    delete[] dir;
+    delete[] buf;
     return result;
 }

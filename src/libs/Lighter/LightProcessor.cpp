@@ -20,8 +20,8 @@
 
 LightProcessor::LightProcessor()
 {
-    geometry = null;
-    window = null;
+    geometry = nullptr;
+    window = nullptr;
     shadowTriangle = -1;
     smoothVertex = -1;
     blurVertex = -1;
@@ -31,7 +31,7 @@ LightProcessor::~LightProcessor()
 {
 }
 
-void LightProcessor::SetParams(LGeometry *g, Window *win, Lights *lit, OctTree *ot, VDX8RENDER *_rs)
+void LightProcessor::SetParams(LGeometry *g, Window *win, LighterLights *lit, OctTree *ot, VDX9RENDER *_rs)
 {
     geometry = g;
     window = win;
@@ -47,16 +47,16 @@ void LightProcessor::Process()
         if (geometry->numTrg)
         {
             CalcShadows();
-            window->tracePrc = shadowTriangle / float(geometry->numTrg);
+            window->tracePrc = shadowTriangle / static_cast<float>(geometry->numTrg);
         }
         else
             shadowTriangle = -1;
         if (shadowTriangle == -1)
         {
             //Нормализуем результат
-            Vertex *vrt = geometry->vrt;
-            long numVrt = geometry->numVrt;
-            long numLights = lights->Num();
+            auto *const vrt = geometry->vrt.data();
+            const auto numVrt = geometry->numVrt;
+            const auto numLights = lights->Num();
             for (long i = 0; i < numVrt; i++)
             {
                 for (long j = 0; j < numLights; j++)
@@ -92,7 +92,7 @@ void LightProcessor::Process()
         else
         {
             if (geometry->numVrt)
-                window->smoothPrc = smoothVertex / float(geometry->numVrt);
+                window->smoothPrc = smoothVertex / static_cast<float>(geometry->numVrt);
         }
     }
     if (blurVertex >= 0)
@@ -108,7 +108,7 @@ void LightProcessor::Process()
         else
         {
             if (geometry->numVrt)
-                window->blurPrc = blurVertex / float(geometry->numVrt);
+                window->blurPrc = blurVertex / static_cast<float>(geometry->numVrt);
         }
     }
     if (window->isTraceShadows)
@@ -119,9 +119,9 @@ void LightProcessor::Process()
         window->isLockCtrl = true;
         window->tracePrc = 0.0f;
         //Сбрасываем состояние цветов
-        Vertex *vrt = geometry->vrt;
-        long numVrt = geometry->numVrt;
-        long numLights = lights->Num();
+        auto *const vrt = geometry->vrt.data();
+        const auto numVrt = geometry->numVrt;
+        const auto numLights = lights->Num();
         for (long i = 0; i < numVrt; i++)
         {
             for (long j = 0; j < numLights; j++)
@@ -149,8 +149,8 @@ void LightProcessor::Process()
     }
     if (window->isResetBlurLight)
     {
-        Vertex *vrt = geometry->vrt;
-        long numVrt = geometry->numVrt;
+        auto *const vrt = geometry->vrt.data();
+        const auto numVrt = geometry->numVrt;
         for (long i = 0; i < numVrt; i++)
             vrt[i].bc = 0.0f;
         window->isResetBlurLight = false;
@@ -169,20 +169,20 @@ void LightProcessor::Process()
 
 void LightProcessor::UpdateLightsParam()
 {
-    Vertex *vrt = geometry->vrt;
-    long numVrt = geometry->numVrt;
-    long numLights = lights->Num();
-    Lights &ls = *lights;
+    auto *const vrt = geometry->vrt.data();
+    const auto numVrt = geometry->numVrt;
+    const auto numLights = lights->Num();
+    auto &ls = *lights;
     float cs, att;
     float dst;
     CVECTOR nrm;
     for (long i = 0; i < numVrt; i++)
     {
-        Vertex &v = vrt[i];
+        auto &v = vrt[i];
         for (long j = 0; j < numLights; j++)
         {
-            Light &lt = ls[j];
-            Shadow &swh = v.shadow[j];
+            auto &lt = ls[j];
+            auto &swh = v.shadow[j];
             switch (lt.type)
             {
             case Light::t_amb:
@@ -233,7 +233,7 @@ void LightProcessor::UpdateLightsParam()
                 swh.dst = dst;
                 break;
             }
-            swh.csatt = float(swh.cs * swh.att);
+            swh.csatt = static_cast<float>(swh.cs * swh.att);
             swh.shw = 1.0f;
         }
     }
@@ -250,11 +250,11 @@ void LightProcessor::CalcShadows()
 }
 
 //Распределить затенение с треугольника на вершины
-void LightProcessor::ApplyTriangleShadows(LighterTriangle &t)
+void LightProcessor::ApplyTriangleShadows(Triangle &t)
 {
-    Lights &ls = *lights;
-    long num = ls.Num();
-    Vertex *vrt = geometry->vrt;
+    auto &ls = *lights;
+    const auto num = ls.Num();
+    auto *const vrt = geometry->vrt.data();
     for (long i = 0; i < num; i++)
     {
         //Нужно ли трейсить
@@ -265,7 +265,7 @@ void LightProcessor::ApplyTriangleShadows(LighterTriangle &t)
         vrt[t.i[1]].shadow[i].nrm += t.sq;
         vrt[t.i[2]].shadow[i].nrm += t.sq;
         //Точка откуда трейсить
-        CVECTOR pnt = (vrt[t.i[0]].p + vrt[t.i[1]].p + vrt[t.i[2]].p) / 3.0f;
+        auto pnt = (vrt[t.i[0]].p + vrt[t.i[1]].p + vrt[t.i[2]].p) / 3.0f;
         pnt += t.n * 0.001f;
         //Определяем затенённость
         switch (ls[i].type)
@@ -287,8 +287,8 @@ void LightProcessor::ApplyTriangleShadows(LighterTriangle &t)
             if (t.n.y >= 0.0f)
             {
                 float sky = 0.0;
-                float rad = geometry->radius;
-                float rdx = geometry->radius * 0.2f;
+                const auto rad = geometry->radius;
+                const auto rdx = geometry->radius * 0.2f;
                 if (geometry->Trace(pnt, pnt + CVECTOR(0.0f, rad, 0.0f)) > 1.0f)
                     sky += 1.0f / 5.0f;
                 if (geometry->Trace(pnt, pnt + CVECTOR(rdx, rad, 0.0f)) > 1.0f)
@@ -328,54 +328,52 @@ void LightProcessor::ApplyTriangleShadows(LighterTriangle &t)
 //Сгладить затенённость
 void LightProcessor::SmoothShadows()
 {
-    bool lookNorm = window->smoothNorm;
-    float smoothRad = window->smoothRad;
-    float kSmoothRad = 1.0f / smoothRad;
+    const auto lookNorm = window->smoothNorm;
+    const auto smoothRad = window->smoothRad;
+    const auto kSmoothRad = 1.0f / smoothRad;
     double smoothRad2 = smoothRad * smoothRad;
-    Lights &ls = *lights;
-    long num = ls.Num();
-    Vertex *vrt = geometry->vrt;
+    auto &ls = *lights;
+    const auto num = ls.Num();
+    auto &vrt = geometry->vrt;
     for (long i = 0; i < LIGHTPRC_SMOOTH_NUM && smoothVertex < geometry->numVrt; i++, smoothVertex++)
     {
-        Vertex &v = vrt[smoothVertex];
+        auto &v = vrt[smoothVertex];
         //Ищем окружающие вершины
         octtree->FindVerts(v.p, smoothRad);
-        OctFndVerts *verts = octtree->verts;
-        long numVerts = octtree->numVerts;
+        auto *const verts = octtree->verts.data();
+        const auto numVerts = octtree->numVerts;
 
-        if (false)
+        /*if constexpr (false)
         {
-            float r2 = smoothRad * smoothRad;
-            static Vertex *ov[16384];
-            long numV = 0;
-            long num = geometry->numVrt;
-            for (long n = 0; n < num; n++)
+          float r2 = smoothRad * smoothRad;
+          static Vertex* ov[16384];
+          long numV = 0;
+          long num = geometry->numVrt;
+          long n;
+          for (n = 0; n < num; n++)
+          {
+            float r = ~(vrt[n].p - v.p);
+            if (r < r2)
             {
-                float r = ~(vrt[n].p - v.p);
-                if (r < r2)
-                {
-                    Assert(numV < sizeof(ov) / sizeof(OctFndVerts));
-                    ov[numV++] = vrt + n;
-                }
+              Assert(numV < sizeof(ov)/sizeof(OctFndVerts));
+              ov[numV++] = &vrt[n];
             }
-            if (numVerts != numV)
-                api->Trace("numVerts(%i) != numV(%i)", numVerts, numV);
-            for (long n = 0; n < numVerts; n++)
-            {
-                long k = 0;
-                for (k = 0; k < numV; k++)
-                    if (verts[n].v == ov[k])
-                        break;
-                if (k >= numV)
-                    api->Trace("k >= numV");
-            }
-        }
+          }
+          if (numVerts != numV) api->Trace("numVerts(%i) != numV(%i)", numVerts, numV);
+          for (n = 0; n < numVerts; n++)
+          {
+            long k;
+            for (k = 0; k < numV; k++)
+              if (verts[n].v == ov[k]) break;
+            if (k >= numV) api->Trace("k >= numV");
+          }
+        }*/
         //		Assert(numVerts > 0);
         //Проходимся по всем источникам
         for (long n = 0; n < num; n++)
         {
             //Обнуляем
-            double sm = 0.0;
+            auto sm = 0.0;
             double kNorm = 0.0f;
             //По всем вершинам
             for (long j = 0; j < numVerts; j++)
@@ -405,37 +403,37 @@ void LightProcessor::SmoothShadows()
 //Сгладить освещение
 void LightProcessor::BlurLight()
 {
-    bool isTrace = window->isTraceBlur;
-    float blurRad = window->blurRad;
-    float kBlurRad = 1.0f / blurRad;
-    float pw = window->blurAtt;
-    float kCos = window->blurCos;
-    float kCos1 = 1.0f - window->blurCos;
+    auto isTrace = window->isTraceBlur;
+    const auto blurRad = window->blurRad;
+    auto kBlurRad = 1.0f / blurRad;
+    auto pw = window->blurAtt;
+    auto kCos = window->blurCos;
+    auto kCos1 = 1.0f - window->blurCos;
     double blurRad2 = blurRad * blurRad;
-    Vertex *vrt = geometry->vrt;
-    long numVrt = geometry->numVrt;
+    auto *const vrt = geometry->vrt.data();
+    const auto numVrt = geometry->numVrt;
     for (long i = 0; i < LIGHTPRC_BLUR_NUM && blurVertex < numVrt; i++, blurVertex++)
     {
-        Vertex &v = vrt[blurVertex];
+        auto &v = vrt[blurVertex];
         //Ищем окружающие вершины
         octtree->FindVerts(v.p, blurRad);
-        OctFndVerts *verts = octtree->verts;
-        long numVerts = octtree->numVerts;
+        auto *verts = octtree->verts.data();
+        auto numVerts = octtree->numVerts;
 
         continue;
 
-        long step = (numVerts + 8) >> 4;
+        auto step = (numVerts + 8) >> 4;
         if (step < 1)
             step = 1;
         step = 1;
-        double r = 0.0, g = 0.0, b = 0.0, sum = 0.0;
+        auto r = 0.0, g = 0.0, b = 0.0, sum = 0.0;
         //По всем вершинам
         for (long j = 0; j < numVerts; j += step)
         {
-            Vertex &vs = *verts[j].v;
+            auto &vs = *verts[j].v;
             if (vs.c.x + vs.c.y + vs.c.z <= 0.0f)
                 continue;
-            CVECTOR n = vs.p - v.p;
+            auto n = vs.p - v.p;
             double css = -(n | vs.n);
             if (css <= 0.0)
                 continue;
@@ -445,9 +443,9 @@ void LightProcessor::BlurLight()
             double dst = sqrt(~n);
             if (dst <= 0.0)
                 continue;
-            double k = dst * kBlurRad;
+            auto k = dst * kBlurRad;
             dst = 1.0f / dst;
-            n *= float(dst * 0.001);
+            n *= static_cast<float>(dst * 0.001);
             if (isTrace && geometry->Trace(v.p + n, vs.p - n) <= 1.0f)
                 continue;
             css *= dst;
@@ -460,7 +458,7 @@ void LightProcessor::BlurLight()
                 continue;
             if (k > 1.0)
                 k = 1.0;
-            k = powf(1.0 - k, pw) * (css * csd * kCos + kCos1);
+            k = powf(1.0f - k, pw) * (css * csd * kCos + kCos1);
             r += vs.c.x * k;
             g += vs.c.y * k;
             b += vs.c.z * k;
@@ -473,7 +471,7 @@ void LightProcessor::BlurLight()
             g *= sum;
             b *= sum;
         }
-        double max = r > g ? r : g;
+        auto max = r > g ? r : g;
         if (max < b)
             max = b;
         max = 1.0;
@@ -484,9 +482,9 @@ void LightProcessor::BlurLight()
             g *= max;
             b *= max;
         }
-        v.bc.x = float(r);
-        v.bc.y = float(g);
-        v.bc.z = float(b);
+        v.bc.x = static_cast<float>(r);
+        v.bc.y = static_cast<float>(g);
+        v.bc.z = static_cast<float>(b);
     }
     if (blurVertex >= geometry->numVrt)
         blurVertex = -1;
@@ -496,11 +494,11 @@ void LightProcessor::BlurLight()
 void LightProcessor::CalcLights(long lit, bool isCos, bool isAtt, bool isSdw)
 {
     lights->UpdateLights(lit);
-    Lights &ls = *lights;
-    long num = ls.Num();
-    Vertex *vrt = geometry->vrt;
-    float kBlur = window->kBlur;
-    CVECTOR c, nrm;
+    auto &ls = *lights;
+    const auto num = ls.Num();
+    auto *const vrt = geometry->vrt.data();
+    const auto kBlur = window->kBlur;
+    CVECTOR c;
     for (long i = 0; i < num; i++)
     {
         if (!ls[i].isOn)
@@ -513,7 +511,7 @@ void LightProcessor::CalcLights(long lit, bool isCos, bool isAtt, bool isSdw)
     }
     for (long n = 0; n < geometry->numVrt; n++)
     {
-        Vertex &v = vrt[n];
+        auto &v = vrt[n];
         if (!v.shadow)
             continue;
         c = v.bc * (kBlur * kBlur * 2.0f);
@@ -521,10 +519,10 @@ void LightProcessor::CalcLights(long lit, bool isCos, bool isAtt, bool isSdw)
         double vl;
         for (long i = 0; i < num; i++)
         {
-            Light &lt = ls[i];
+            auto &lt = ls[i];
             if (!lt.isOn)
                 continue;
-            Shadow &shw = v.shadow[i];
+            auto &shw = v.shadow[i];
             if (!lt.isMark)
             {
                 c += shw.c;
@@ -550,7 +548,7 @@ void LightProcessor::CalcLights(long lit, bool isCos, bool isAtt, bool isSdw)
                         vl = 0.0f;
                     if (vl > 1.0f)
                         vl = 1.0f;
-                    sw = float(pow(vl, double(lt.curgm))) + (lt.bright - 0.5f) * 1.8f;
+                    sw = static_cast<float>(pow(vl, static_cast<double>(lt.curgm))) + (lt.bright - 0.5f) * 1.8f;
                     if (sw < 0.0f)
                         sw = 0.0f;
                     if (sw > 1.0f)
@@ -575,7 +573,7 @@ void LightProcessor::CalcLights(long lit, bool isCos, bool isAtt, bool isSdw)
                         vl = 0.0f;
                     if (vl > 1.0f)
                         vl = 1.0f;
-                    sw = float(pow(vl, double(lt.curgm))) + (lt.bright - 0.5f) * 1.8f;
+                    sw = static_cast<float>(pow(vl, static_cast<double>(lt.curgm))) + (lt.bright - 0.5f) * 1.8f;
                     if (sw < 0.0f)
                         sw = 0.0f;
                     if (sw > 1.0f)
@@ -614,7 +612,7 @@ void LightProcessor::CalcLights(long lit, bool isCos, bool isAtt, bool isSdw)
                         vl = 0.0f;
                     if (vl > 1.0f)
                         vl = 1.0f;
-                    sw = float(pow(vl, double(lt.curgm))) + (lt.bright - 0.5f) * 1.8f;
+                    sw = static_cast<float>(pow(vl, static_cast<double>(lt.curgm))) + (lt.bright - 0.5f) * 1.8f;
                     if (sw < 0.0f)
                         sw = 0.0f;
                     if (sw > 1.0f)

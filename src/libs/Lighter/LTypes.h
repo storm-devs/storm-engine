@@ -2,8 +2,7 @@
 #ifndef _LighterTypes_H_
 #define _LighterTypes_H_
 
-#include "matrix.h"
-#include "model.h"
+#include "Matrix.h"
 #include "vmodule_api.h"
 
 struct Light
@@ -67,7 +66,7 @@ struct Vertex
     CVECTOR c;      //Цвет
     CVECTOR bc;     //Цвет для сглаживания
     CVECTOR mc;     //Цветовая маска
-    dword alpha;    //Альфа вертекса
+    uint32_t alpha; //Альфа вертекса
     Shadow *shadow; //Значения затенения от каждого источника
     long flags;     //Флаги
     long vbid;      //Буфер вершин
@@ -76,7 +75,7 @@ struct Vertex
     long cindex;    //Индекс в конечном буфере цветов объекта
 };
 
-struct LighterTriangle
+struct Triangle
 {
     CVECTOR n; //Нормаль
     float sq;  //Площадь

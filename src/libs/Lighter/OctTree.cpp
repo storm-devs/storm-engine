@@ -14,20 +14,19 @@
 
 #define LLOT_MAX 128
 
-OctTree::OTNode::OTNode(CVECTOR &_min, CVECTOR &_max)
+OctTree::OTNode::OTNode(const CVECTOR &_min, const CVECTOR &_max)
 {
     for (long i = 0; i < 8; i++)
-        node[i] = null;
+        node[i] = nullptr;
     min = _min;
     max = _max;
-    vrt = NEW Vertex *[LLOT_MAX];
+    vrt = new Vertex *[LLOT_MAX];
     num = 0;
 }
 
 OctTree::OTNode::~OTNode()
 {
-    if (vrt)
-        delete vrt;
+    delete vrt;
     for (long i = 0; i < 8; i++)
         if (node[i])
             delete node[i];
@@ -39,36 +38,32 @@ OctTree::OTNode::~OTNode()
 
 OctTree::OctTree()
 {
-    root = null;
-    verts = null;
+    root = nullptr;
     numVerts = 0;
     maxVerts = 0;
-    vrt = null;
+    vrt = nullptr;
     numVrt = 0;
 }
 
 OctTree::~OctTree()
 {
-    if (root)
-        delete root;
-    if (verts)
-        delete verts;
+    delete root;
 }
 
 //Инициализировать дерево
 void OctTree::Init(LGeometry *g)
 {
-    vrt = g->vrt;
+    vrt = g->vrt.data();
     numVrt = g->numVrt;
-    root = NEW OTNode(g->min, g->max);
+    root = new OTNode(g->min, g->max);
     for (long i = 0; i < numVrt; i++)
-        AddVertex(root, vrt + i);
+        AddVertex(root, &vrt[i]);
     Optimize(root);
     /*
     for(i = 0; i < numVrt; i++)
     {
-        long num = Check(root, vrt + i, 0);
-        Assert(num == 1);
+      long num = Check(root, vrt + i, 0);
+      Assert(num == 1);
     }
     */
 }
@@ -92,8 +87,8 @@ long OctTree::Check(OTNode *node, Vertex *v, long num)
 
 bool OctTree::AddVertex(OTNode *node, Vertex *v)
 {
-    CVECTOR &min = node->min;
-    CVECTOR &max = node->max;
+    auto &min = node->min;
+    auto &max = node->max;
     if (v->p.x < min.x || v->p.x > max.x)
         return false;
     if (v->p.y < min.y || v->p.y > max.y)
@@ -108,35 +103,32 @@ bool OctTree::AddVertex(OTNode *node, Vertex *v)
             node->vrt[node->num++] = v;
             return true;
         }
-        else
+        //Переполнение, надо распределять по детям
+        const auto cnt = (node->min + node->max) * 0.5f;
+        node->node[0] = new OTNode(CVECTOR(min.x, min.y, min.z), CVECTOR(cnt.x, cnt.y, cnt.z));
+        node->node[1] = new OTNode(CVECTOR(min.x, min.y, cnt.z), CVECTOR(cnt.x, cnt.y, max.z));
+        node->node[2] = new OTNode(CVECTOR(cnt.x, min.y, cnt.z), CVECTOR(max.x, cnt.y, max.z));
+        node->node[3] = new OTNode(CVECTOR(cnt.x, min.y, min.z), CVECTOR(max.x, cnt.y, cnt.z));
+        node->node[4] = new OTNode(CVECTOR(min.x, cnt.y, min.z), CVECTOR(cnt.x, max.y, cnt.z));
+        node->node[5] = new OTNode(CVECTOR(min.x, cnt.y, cnt.z), CVECTOR(cnt.x, max.y, max.z));
+        node->node[6] = new OTNode(CVECTOR(cnt.x, cnt.y, cnt.z), CVECTOR(max.x, max.y, max.z));
+        node->node[7] = new OTNode(CVECTOR(cnt.x, cnt.y, min.z), CVECTOR(max.x, max.y, cnt.z));
+        for (long n = 0; n < node->num; n++)
         {
-            //Переполнение, надо распределять по детям
-            CVECTOR cnt = (node->min + node->max) * 0.5f;
-            node->node[0] = NEW OTNode(CVECTOR(min.x, min.y, min.z), CVECTOR(cnt.x, cnt.y, cnt.z));
-            node->node[1] = NEW OTNode(CVECTOR(min.x, min.y, cnt.z), CVECTOR(cnt.x, cnt.y, max.z));
-            node->node[2] = NEW OTNode(CVECTOR(cnt.x, min.y, cnt.z), CVECTOR(max.x, cnt.y, max.z));
-            node->node[3] = NEW OTNode(CVECTOR(cnt.x, min.y, min.z), CVECTOR(max.x, cnt.y, cnt.z));
-            node->node[4] = NEW OTNode(CVECTOR(min.x, cnt.y, min.z), CVECTOR(cnt.x, max.y, cnt.z));
-            node->node[5] = NEW OTNode(CVECTOR(min.x, cnt.y, cnt.z), CVECTOR(cnt.x, max.y, max.z));
-            node->node[6] = NEW OTNode(CVECTOR(cnt.x, cnt.y, cnt.z), CVECTOR(max.x, max.y, max.z));
-            node->node[7] = NEW OTNode(CVECTOR(cnt.x, cnt.y, min.z), CVECTOR(max.x, max.y, cnt.z));
-            for (long n = 0; n < node->num; n++)
+            long c;
+            for (c = 0; c < 8; c++)
             {
-                long c = 0;
-                for (c = 0; c < 8; c++)
-                {
-                    if (AddVertex(node->node[c], node->vrt[n]))
-                        break;
-                }
-                Assert(c < 8);
+                if (AddVertex(node->node[c], node->vrt[n]))
+                    break;
             }
-            delete node->vrt;
-            node->vrt = null;
-            node->num = 0;
+            Assert(c < 8);
         }
+        delete node->vrt;
+        node->vrt = nullptr;
+        node->num = 0;
     }
     //Добавляем детям
-    long c = 0;
+    long c;
     for (c = 0; c < 8; c++)
     {
         if (AddVertex(node->node[c], v))
@@ -160,7 +152,7 @@ void OctTree::Optimize(OTNode *node)
                 if (node->node[i]->num <= 0)
                 {
                     delete node->node[i];
-                    node->node[i] = null;
+                    node->node[i] = nullptr;
                 }
             }
             else
@@ -170,7 +162,7 @@ void OctTree::Optimize(OTNode *node)
 }
 
 //Найти вершины в заданном радиусе
-void OctTree::FindVerts(CVECTOR &pos, float r)
+void OctTree::FindVerts(const CVECTOR &pos, float r)
 {
     numVerts = 0;
     vertsPos = pos;
@@ -185,8 +177,8 @@ void OctTree::FindVerts(CVECTOR &pos, float r)
 //Поиск
 void OctTree::FindVerts(OTNode *node)
 {
-    CVECTOR &min = node->min;
-    CVECTOR &max = node->max;
+    auto &min = node->min;
+    auto &max = node->max;
     //Предворительная проверка
     if (vertsPosMin.x > max.x)
         return;
@@ -203,7 +195,7 @@ void OctTree::FindVerts(OTNode *node)
     //Уточнёная проверка
 
     //Если нет своего масива отправим к детям
-    if (node->vrt == null)
+    if (node->vrt == nullptr)
     {
         for (long i = 0; i < 8; i++)
             if (node->node[i])
@@ -213,13 +205,13 @@ void OctTree::FindVerts(OTNode *node)
     {
         for (long i = 0; i < node->num; i++)
         {
-            float r = ~(node->vrt[i]->p - vertsPos);
+            const auto r = ~(node->vrt[i]->p - vertsPos);
             if (r < vertsR)
             {
                 if (numVerts >= maxVerts)
                 {
                     maxVerts += 1024;
-                    verts = (OctFndVerts *)RESIZE(verts, maxVerts * sizeof(OctFndVerts));
+                    verts.resize(maxVerts);
                 }
                 verts[numVerts].v = node->vrt[i];
                 verts[numVerts++].r2 = r;

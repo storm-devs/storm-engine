@@ -13,7 +13,7 @@
 
 #include "LightProcessor.h"
 
-class Lighter : public ENTITY
+class Lighter : public Entity
 {
     //--------------------------------------------------------------------------------------------
     //Конструирование, деструктурирование
@@ -25,10 +25,26 @@ class Lighter : public ENTITY
     //Инициализация
     bool Init();
     //Исполнение
-    void Execute(dword delta_time);
-    void Realize(dword delta_time);
+    void Execute(uint32_t delta_time);
+    void Realize(uint32_t delta_time);
     //Сообщения
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    uint64_t ProcessMessage(MESSAGE &message);
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+                LostRender(delta); break;
+            case Stage::restore_render:
+                RestoreRender(delta); break;*/
+        }
+    }
 
     //--------------------------------------------------------------------------------------------
     //Инкапсуляция
@@ -41,12 +57,12 @@ class Lighter : public ENTITY
     void PreparingData();
 
   private:
-    VDX8RENDER *rs;
+    VDX9RENDER *rs;
 
     LGeometry geometry;
     OctTree octTree;
     Window window;
-    Lights lights;
+    LighterLights lights;
     LightProcessor lightProcessor;
 
     long initCounter;

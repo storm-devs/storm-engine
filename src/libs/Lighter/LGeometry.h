@@ -12,6 +12,7 @@
 #define _LGeometry_H_
 
 #include "LTypes.h"
+#include "model.h"
 
 class LGeometry
 {
@@ -19,16 +20,16 @@ class LGeometry
     {
         Object()
         {
-            name = null;
-            nameReal = null;
-            m = null;
+            name = nullptr;
+            nameReal = nullptr;
+            m = nullptr;
             lBufSize = 0;
         };
-        char *name;      //Путь то col файла
-        char *nameReal;  //Имя модельки
-        MODEL *m;        //Указатель на модельку
-        ENTITY_ID model; //Моделька
-        long lBufSize;   //Размер буфера цветов для этой модельки
+        char *name;     //Путь то col файла
+        char *nameReal; //Имя модельки
+        MODEL *m;       //Указатель на модельку
+        entid_t model;  //Моделька
+        long lBufSize;  //Размер буфера цветов для этой модельки
     };
 
     //--------------------------------------------------------------------------------------------
@@ -43,31 +44,31 @@ class LGeometry
     //Установить путь для текущей погоды
     void SetLightPath(const char *lPath);
     //Добавить объект
-    void AddObject(const char *name, ENTITY_ID &model);
+    void AddObject(const char *name, entid_t model);
     //Обработать данные
-    bool Process(VDX8RENDER *rs, long numLights);
+    bool Process(VDX9RENDER *rs, long numLights);
     //Нарисовать нормали
-    void DrawNormals(VDX8RENDER *rs);
+    void DrawNormals(VDX9RENDER *rs);
     //Обновить цвета в буферах
-    void UpdateColors(VDX8RENDER *rs);
+    void UpdateColors(VDX9RENDER *rs);
     //Протрейсить луч через все модели
-    float Trace(CVECTOR &src, CVECTOR &dst);
+    float Trace(const CVECTOR &src, const CVECTOR &dst);
     //Сохранить освещение
     bool Save();
 
-    Object *object;
+    std::vector<Object> object;
     long numObjects;
     long maxObjects;
 
-    Vertex *vrt;
+    std::vector<Vertex> vrt;
     long numVrt;
     long maxVrt;
 
-    LighterTriangle *trg;
+    std::vector<Triangle> trg;
     long numTrg;
     long maxTrg;
 
-    VertexBuffer *vbuffer;
+    std::vector<VertexBuffer> vbuffer;
     long numVBuffers;
     long maxVBuffers;
 

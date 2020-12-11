@@ -18,7 +18,7 @@ class OctTree
 
     struct OTNode
     {
-        OTNode(CVECTOR &_min, CVECTOR &_max);
+        OTNode(const CVECTOR &_min, const CVECTOR &_max);
         ~OTNode();
         OTNode *node[8]; //Дети
         CVECTOR min;     //Минимальное значение
@@ -37,9 +37,9 @@ class OctTree
     //Инициализировать дерево
     void Init(LGeometry *g);
     //Найти вершины в заданном радиусе
-    void FindVerts(CVECTOR &pos, float r);
+    void FindVerts(const CVECTOR &pos, float r);
 
-    OctFndVerts *verts;
+    std::vector<OctFndVerts> verts;
     long numVerts;
     long maxVerts;
 

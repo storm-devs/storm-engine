@@ -8,52 +8,47 @@
 //
 //============================================================================================
 
-#include "Lights.h"
+#include "LighterLights.h"
 
 //============================================================================================
 //Конструирование, деструктурирование
 //============================================================================================
 
-Lights::Lights()
+LighterLights::LighterLights()
 {
     maxLights = 256;
     numLights = 3;
-    light = (Light *)RESIZE(null, maxLights * sizeof(Light));
+    light.resize(maxLights);
     for (long i = 0; i < maxLights; i++)
         SetDefLightParam(i);
     light[0].type = Light::t_amb;
     light[0].color = CVECTOR(0.2f, 0.2f, 0.2f);
-    light[0].group = null;
+    light[0].group = nullptr;
     light[0].isOn = false;
     light[1].type = Light::t_sun;
     light[1].color = CVECTOR(0.9f, 0.9f, 0.6f);
     light[1].p = !CVECTOR(1.0f, 1.0f, 1.0f);
-    light[1].group = null;
+    light[1].group = nullptr;
     light[1].isOn = false;
     light[2].type = Light::t_sky;
     light[2].color = CVECTOR(0.3f, 0.5f, 1.0f);
-    light[2].group = null;
+    light[2].group = nullptr;
     light[2].isOn = false;
 }
 
-Lights::~Lights()
+LighterLights::~LighterLights()
 {
-    if (light)
-    {
-        for (long i = 0; i < numLights; i++)
-            if (light[i].group)
-                delete light[i].group;
-        delete light;
-    }
+    for (long i = 0; i < numLights; i++)
+        delete light[i].group;
 }
 
-void Lights::AddAmbient(const CVECTOR &color)
+void LighterLights::AddAmbient(const CVECTOR &color)
 {
     light[0].color = color;
     light[0].isOn = true;
 }
 
-void Lights::AddWeaterLights(const CVECTOR &color, const CVECTOR &dir)
+void LighterLights::AddWeaterLights(const CVECTOR &color, const CVECTOR &dir)
 {
     light[1].color = color;
     if (~dir > 0.0f)
@@ -62,13 +57,13 @@ void Lights::AddWeaterLights(const CVECTOR &color, const CVECTOR &dir)
     light[2].isOn = true;
 }
 
-void Lights::AddPointLight(const CVECTOR &color, const CVECTOR &pos, float att0, float att1, float att2, float range,
-                           const char *group)
+void LighterLights::AddPointLight(const CVECTOR &color, const CVECTOR &pos, float att0, float att1, float att2,
+                                  float range, const char *group)
 {
     if (numLights > maxLights)
     {
         maxLights += 32;
-        light = (Light *)RESIZE(light, maxLights * sizeof(Light));
+        light.resize(maxLights);
     }
     SetDefLightParam(numLights);
     light[numLights].color = color;
@@ -79,17 +74,19 @@ void Lights::AddPointLight(const CVECTOR &color, const CVECTOR &pos, float att0,
     light[numLights].range = range;
     if (group && group[0])
     {
-        light[numLights].group = NEW char[strlen(group) + 1];
-        strcpy(light[numLights].group, group);
+        const auto len = strlen(group) + 1;
+        light[numLights].group = new char[len];
+        // strcpy_s(light[numLights].group, group);
+        std::copy(group, group + len, light[numLights].group);
     }
     else
-        light[numLights].group = null;
+        light[numLights].group = nullptr;
     light[numLights].type = Light::t_point;
     light[numLights].isOn = true;
     numLights++;
 }
 
-void Lights::SetDefLightParam(long i)
+void LighterLights::SetDefLightParam(long i)
 {
     light[i].cosine = 1.0f;
     light[i].shadow = 0.8f;
@@ -100,18 +97,18 @@ void Lights::SetDefLightParam(long i)
     light[i].isMark = false;
 }
 
-void Lights::PostInit()
+void LighterLights::PostInit()
 {
     //Соберём все существующие группы
-    char **grp = NEW char * [numLights + 1];
+    auto *const grp = new char *[numLights + 1];
     long numGrp = 0;
     for (long i = 0; i < numLights; i++)
     {
         if (!light[i].group)
             continue;
-        long j = 0;
+        long j;
         for (j = 0; j < numGrp; j++)
-            if (stricmp(grp[j], light[i].group) == 0)
+            if (_stricmp(grp[j], light[i].group) == 0)
                 break;
         if (j == numGrp)
             grp[numGrp++] = light[i].group;
@@ -120,21 +117,23 @@ void Lights::PostInit()
     if (numLights + numGrp > maxLights)
     {
         maxLights += numGrp + 4;
-        light = (Light *)RESIZE(light, maxLights * sizeof(Light));
+        light.resize(maxLights);
     }
-    long num = numLights;
+    auto num = numLights;
     for (long i = 0; i < numGrp; i++)
     {
         memset(&light[numLights], 0, sizeof(light[numLights]));
-        light[numLights].group = NEW char[strlen(grp[i]) + 1];
-        strcpy(light[numLights].group, grp[i]);
+        const auto len = strlen(grp[i]) + 1;
+        light[numLights].group = new char[len];
+        // strcpy_s(light[numLights].group, grp[i]);
+        std::copy(grp[i], grp[i] + len, light[numLights].group);
         light[numLights].type = Light::t_group;
         light[numLights].isOn = true;
         //Собираем параметры
-        float nrm = 0.0f;
+        auto nrm = 0.0f;
         for (long j = 0; j < numLights; j++)
         {
-            if (light[j].group && stricmp(light[j].group, grp[i]) == 0)
+            if (light[j].group && _stricmp(light[j].group, grp[i]) == 0)
             {
                 nrm += 1.0f;
                 light[numLights].color += light[j].color;
@@ -169,10 +168,10 @@ void Lights::PostInit()
         light[numLights].range *= nrm;
         numLights++;
     }
-    delete grp;
+    delete[] grp;
 }
 
-void Lights::UpdateLights(long lit)
+void LighterLights::UpdateLights(long lit)
 {
     long i;
     if (lit >= 0)
@@ -187,14 +186,13 @@ void Lights::UpdateLights(long lit)
     }
     for (i = 0; i < numLights; i++)
     {
-
         if (light[i].type == Light::t_group)
         {
             for (long j = 0; j < numLights; j++)
             {
                 if (light[j].type == Light::t_point && light[j].group)
                 {
-                    if (stricmp(light[j].group, light[i].group) == 0)
+                    if (_stricmp(light[j].group, light[i].group) == 0)
                     {
                         light[j].color = light[i].color;
                         light[j].cosine = light[i].cosine;

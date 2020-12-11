@@ -12,8 +12,8 @@
 #define _Window_H_
 
 #include "LTypes.h"
-
-class Lights;
+#include "LighterLights.h"
+#include "dx9render.h"
 
 class Window
 {
@@ -63,11 +63,13 @@ class Window
     //Конструирование, деструктурирование
     //--------------------------------------------------------------------------------------------
   public:
+    Window(Window &&) = delete;
+    Window(const Window &) = delete;
     Window();
     virtual ~Window();
 
-    bool Init(VDX8RENDER *rs);
-    void InitList(Lights &ls);
+    bool Init(VDX9RENDER *rs);
+    void InitList(LighterLights &ls);
     void Draw(float dltTime);
     void Reset(bool isVis);
 
@@ -103,16 +105,16 @@ class Window
     //Инкапсуляция
     //--------------------------------------------------------------------------------------------
   private:
-    void DrawRect(float x1, float y1, float x2, float y2, dword color);
-    void DrawLine(float x1, float y1, float x2, float y2, dword color);
-    void DrawLRect(float x1, float y1, float x2, float y2, dword bkgColor, dword lnColor);
+    void DrawRect(float x1, float y1, float x2, float y2, uint32_t color);
+    void DrawLine(float x1, float y1, float x2, float y2, uint32_t color);
+    void DrawLRect(float x1, float y1, float x2, float y2, uint32_t bkgColor, uint32_t lnColor);
     void Print(long color, float xleft, float xright, float y, float scale, bool isAlign, const char *format, ...);
     void DrawCursor();
 
     bool Slider(long id, float y, const char *text, float &value, float min = 0.0f, float max = 1.0f,
                 bool drawVal = false);
     bool ColorPicker(long id, float y, CVECTOR &ref, float st, CVECTOR &res);
-    bool Button(float x, float y, float w, float h, const char *text, long *act = null, long init = -1);
+    bool Button(float x, float y, float w, float h, const char *text, long *act = nullptr, long init = -1);
     void Checker(float x, float y, const char *text, bool &res);
     long SelPreset();
 
@@ -126,12 +128,12 @@ class Window
 
   private:
     //
-    VDX8RENDER *rs;
+    VDX9RENDER *rs;
     //Размер экранна
     float sw, sh;
     //Параметры окон
     float winx, winy, winw, winh;
-    dword bkgColor, frmColor, textColor, selColor;
+    uint32_t bkgColor, frmColor, textColor, selColor;
     float sldLen;
     // Font
     long font;
