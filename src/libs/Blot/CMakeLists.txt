@@ -1,6 +1,6 @@
 project(blot)
 
-add_library(${PROJECT_NAME} MODULE
+add_library(${PROJECT_NAME} STATIC
 	Blots.cpp
 	Blots.h
 )
