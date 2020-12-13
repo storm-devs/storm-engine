@@ -12,26 +12,26 @@ class AIGroup
 {
   private:
     DTimer dtCheckTask;
-    string sCommand, sCommandGroup;
-    string sGroupName;
-    string sLocationNearOtherGroup;
-    string sGroupType;
+    std::string sCommand, sCommandGroup;
+    std::string sGroupName;
+    std::string sLocationNearOtherGroup;
+    std::string sGroupType;
     CVECTOR vInitGroupPos, vMovePoint;
     bool bFirstExecute;
-    long iWarShipsNum, iTradeShipsNum;
+    uint32_t iWarShipsNum, iTradeShipsNum;
 
     ATTRIBUTES *pACommander;
 
     // ship container for this group
-    array<AIShip *> aGroupShips;
+    std::vector<AIShip *> aGroupShips;
 
   public:
-    AIGroup() : aGroupShips(_FL_){};
+    AIGroup(){};
     AIGroup(const char *pGroupName);
     virtual ~AIGroup();
 
     // global group container, accessible for AIGroup and SEA_AI.
-    static array<AIGroup *> AIGroups;
+    static std::vector<AIGroup *> AIGroups;
     static float fDistanceBetweenGroupShips;
     static float fDistanceBetweenGroupLines;
 
@@ -64,7 +64,7 @@ class AIGroup
     float GetPower();
 
     // return group name
-    string &GetName()
+    std::string &GetName()
     {
         return sGroupName;
     };
@@ -74,9 +74,10 @@ class AIGroup
     void InsertShip(AIShip *pAIShip);
 
     // add new ship to group
-    ATTRIBUTES *GetCommanderACharacter();
+    ATTRIBUTES *GetCommanderACharacter() const;
     AIShip *GetMainShip();
-    void AddShip(ENTITY_ID _eidShip, ATTRIBUTES *pACharacter, ATTRIBUTES *pAShip);
+    void AddShip(entid_t _eidShip, ATTRIBUTES *pACharacter, ATTRIBUTES *pAShip);
+
     void Unload(){};
 
     // execute/realize function (on each frame)

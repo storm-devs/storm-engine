@@ -2,12 +2,7 @@
 #define AISHIPMOVECONTROLLER_HPP
 
 #include "AIFlowGraph.h"
-#include "Script_Defines.h"
-#include "character.h"
-#include "sd2_h\CannonTrace.h"
-#include "sd2_h\VAI_ObjBase.h"
-#include "templates\array.h"
-#include "templates\string.h"
+#include "Sd2_h/VAI_ObjBase.h"
 #include "vmodule_api.h"
 
 // ============================================================================
@@ -15,10 +10,11 @@
 // Contain base virtual functions
 // ============================================================================
 class AIShip;
+
 class AIShipMoveController
 {
   private:
-    ENTITY_ID eidSphere;
+    entid_t eidSphere;
 
     AIShip *pOurAIShip; // our AI ship pointer
 
@@ -28,7 +24,7 @@ class AIShipMoveController
 
     float fMoveTime;
 
-    dword dwCurPnt;
+    uint32_t dwCurPnt;
 
     AIFlowGraph::VectorPath *pVPath;
 
@@ -59,7 +55,7 @@ class AIShipMoveController
     {
         pOurAIShip = pShip;
     }
-    AIShip *GetAIShip()
+    AIShip *GetAIShip() const
     {
         return pOurAIShip;
     }
@@ -67,7 +63,7 @@ class AIShipMoveController
     AIShipMoveController(AIShip *pShip);
     virtual ~AIShipMoveController();
 
-    void Save(CSaveLoad *pSL);
+    void Save(CSaveLoad *pSL) const;
     void Load(CSaveLoad *pSL);
 };
 

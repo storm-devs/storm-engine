@@ -2,9 +2,8 @@
 #define SEA_BALLS_AI_HPP
 
 #include "AIHelper.h"
-#include "character.h"
-#include "messages.h"
-#include "sd2_h\CannonTrace.h"
+#include "Character.h"
+#include "Sd2_h/CannonTrace.h"
 #include "vmodule_api.h"
 #include "vparticle_system.h"
 
@@ -12,7 +11,7 @@ struct BALL_PARAMS
 {
     CVECTOR vFirstPos, vPos; // first and current ball position
     VPARTICLE_SYSTEM *pParticle;
-    string sBallEvent;
+    std::string sBallEvent;
     long iBallOwner;    // ball owner(character index)
     float fTime;        // ball time: in seconds
     float fSpeedV0;     // initial speed: in m/s
@@ -25,7 +24,7 @@ struct BALL_PARAMS
     float fSizeMultiply;      // Size of ball multiply
     float fTimeSpeedMultiply; // Time speed multiply
     float fMaxFireDistance;
-    dword dwCannonType; // Additional parameter
+    uint32_t dwCannonType; // Additional parameter
 };
 
 // ============================================================================
@@ -33,23 +32,23 @@ struct BALL_PARAMS
 // ============================================================================
 struct BALL_TYPE
 {
-    string sName;             // ball name
-    string sParticleName;     // particle name
-    dword dwSubTexIndex;      //
-    dword dwGoodIndex;        //
-    float fSize;              // ball size(sprite size in meters)
-    float fWeight;            // ball weight
-    array<BALL_PARAMS> Balls; // container with current balls
+    std::string sName;              // ball name
+    std::string sParticleName;      // particle name
+    uint32_t dwSubTexIndex;         //
+    uint32_t dwGoodIndex;           //
+    float fSize;                    // ball size(sprite size in meters)
+    float fWeight;                  // ball weight
+    std::vector<BALL_PARAMS> Balls; // container with current balls
 
     // constructor for initialization
-    BALL_TYPE() : Balls(_FL_, 64){};
+    // BALL_TYPE() : Balls(_FL_, 64) {};
 };
 
 // ============================================================================
 // Master class AIBalls
 // Contains functions of balls : drawing, physics and collision
 // ============================================================================
-class AIBalls : public ENTITY
+class AIBalls : public Entity
 {
   private:
     CANNON_TRACE_BASE *pSail, *pSea, *pFort, *pIsland;
@@ -58,29 +57,47 @@ class AIBalls : public ENTITY
     float fBallFlySoundDistance;
     float fBallFlySoundStereoMultiplyer;
 
-    string sTextureName;            // texture name
-    dword dwTextureIndex;           // texture index
-    dword dwSubTexX, dwSubTexY;     // all balls must be in one texture
-    VIDWALKER *pVWForts, *pVWShips; //
-    dword dwFireBallFromCameraTime;
+    std::string sTextureName;      // texture name
+    uint32_t dwTextureIndex;       // texture index
+    uint32_t dwSubTexX, dwSubTexY; // all balls must be in one texture
+    uint32_t dwFireBallFromCameraTime;
 
-    array<BALL_TYPE> aBallTypes; // Balls types container
-    array<RS_RECT> aBallRects;   // Balls container for render
+    std::vector<BALL_TYPE> aBallTypes; // Balls types container
+    std::vector<RS_RECT> aBallRects;   // Balls container for render
+
+    VDX9RENDER *rs;
 
     void AddBall(ATTRIBUTES *pABall);
 
-    // inherited functions from ENTITY
-    bool Init();
+    // inherited functions from Entity
+    bool Init() override;
     void SetDevice();
 
-    void Realize(dword Delta_Time);
-    void Execute(dword Delta_Time);
+    void Realize(uint32_t Delta_Time);
+    void Execute(uint32_t Delta_Time);
 
     void FireBallFromCamera();
 
-    dword AttributeChanged(ATTRIBUTES *pAttributeChanged);
+    uint32_t AttributeChanged(ATTRIBUTES *pAttributeChanged) override;
 
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    uint64_t ProcessMessage(MESSAGE &message) override;
+
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
 
   public:
     static AIBalls *pAIBalls;

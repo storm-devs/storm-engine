@@ -1,94 +1,85 @@
 #include "AIGroup.h"
-#include "AIFort.h"
+#include "../../Shared/messages.h"
 
-array<AIGroup *> AIGroup::AIGroups(_FL_, 4);
+std::vector<AIGroup *> AIGroup::AIGroups;
 float AIGroup::fDistanceBetweenGroupShips = 300.0f;
 float AIGroup::fDistanceBetweenGroupLines = 250.0f;
 
-AIGroup::AIGroup(const char *pGroupName) : aGroupShips(_FL_, 4)
+AIGroup::AIGroup(const char *pGroupName)
 {
     Assert(pGroupName);
 
     bFirstExecute = true;
-    pACommander = null;
-
-    sGroupName = pGroupName;
+    pACommander = nullptr;
 
     iWarShipsNum = 0;
     iTradeShipsNum = 0;
+    sGroupName = pGroupName;
 
     dtCheckTask.Setup(FRAND(4.0f), 2.0f, 4.0f);
 }
 
 AIGroup::~AIGroup()
 {
-    dword i;
-    for (i = 0; i < aGroupShips.Size(); i++)
-        SE_DELETE(aGroupShips[i]);
-    aGroupShips.DelAll();
+    uint32_t i;
+    for (i = 0; i < aGroupShips.size(); i++)
+        STORM_DELETE(aGroupShips[i]);
+    aGroupShips.clear();
 }
 
-void AIGroup::AddShip(ENTITY_ID eidShip, ATTRIBUTES *pACharacter, ATTRIBUTES *pAShip)
+void AIGroup::AddShip(entid_t eidShip, ATTRIBUTES *pACharacter, ATTRIBUTES *pAShip)
 {
-    ATTRIBUTES *pAMode = pACharacter->FindAClass(pACharacter, "Ship.Mode");
-    AIShip *pShip = null;
+    auto *const pAMode = pACharacter->FindAClass(pACharacter, "Ship.Mode");
+    AIShip *pShip = nullptr;
     bool isWarShip = true;
     if (pAMode)
     {
-        if (string("war") == pAMode->GetThisAttr())
+        if (std::string("war") == pAMode->GetThisAttr())
         {
-            pShip = NEW AIShipWar();
+            pShip = new AIShipWar();
             isWarShip = true;
             iWarShipsNum++;
         }
-        if (string("trade") == pAMode->GetThisAttr())
+        else if (std::string("trade") == pAMode->GetThisAttr())
         {
-            pShip = NEW AIShipTrade();
+            pShip = new AIShipTrade();
             isWarShip = false;
             iTradeShipsNum++;
         }
-        if (string("boat") == pAMode->GetThisAttr())
+        else if (std::string("boat") == pAMode->GetThisAttr())
         {
-            pShip = NEW AIShipBoat();
+            pShip = new AIShipBoat();
             isWarShip = false;
             iTradeShipsNum++;
         }
     }
     if (!pShip)
     {
-        pShip = NEW AIShipWar();
+        pShip = new AIShipWar();
         isWarShip = true;
         iWarShipsNum++;
     }
-
     CVECTOR vShipPos, vTmpPos;
 
-    // vTmpPos = (aGroupShips.Size() * AIGroup::fDistanceBetweenGroupShips) * CVECTOR(sinf(vInitGroupPos.y), 0.0f,
-    // cosf(vInitGroupPos.y));
-
-    if (isWarShip) // военный
-    {
+    if (isWarShip)
+    { // war
         vTmpPos = ((iWarShipsNum - 1) * AIGroup::fDistanceBetweenGroupShips) *
                   CVECTOR(sinf(vInitGroupPos.y), 0.0f, cosf(vInitGroupPos.y));
         vShipPos = CVECTOR(vInitGroupPos.x, vInitGroupPos.y, vInitGroupPos.z) - vTmpPos;
     }
-    else // торговый
-    {
+    else
+    { // trade
         vTmpPos = ((iTradeShipsNum - 1) * AIGroup::fDistanceBetweenGroupShips) *
                   CVECTOR(sinf(vInitGroupPos.y), 0.0f, cosf(vInitGroupPos.y));
         vShipPos = CVECTOR(vInitGroupPos.x, vInitGroupPos.y, vInitGroupPos.z) - vTmpPos -
                    CVECTOR(0.0f, 0.0f, AIGroup::fDistanceBetweenGroupLines);
     }
 
-    // vShipPos = CVECTOR(vInitGroupPos.x, vInitGroupPos.y, vInitGroupPos.z) - (aGroupShips.Size() *
-    // (AIGroup::fDistanceBetweenGroupShips + FRAND(50.0f))) * CVECTOR(sinf(vInitGroupPos.y), 0.0f,
-    // cosf(vInitGroupPos.y));
-
     pShip->CreateShip(eidShip, pACharacter, pAShip, &vShipPos);
     pShip->SetGroupName(GetName());
 
-    AIShip::AIShips.Add(pShip); // add to global array
-    aGroupShips.Add(pShip);     // add to local group array
+    AIShip::AIShips.push_back(pShip); // add to global array
+    aGroupShips.push_back(pShip);     // add to local group array
 
     // pACharacter->Dump(pACharacter, 0);
     Helper.AddCharacter(pACharacter, GetCommanderACharacter());
@@ -98,7 +89,7 @@ void AIGroup::AddShip(ENTITY_ID eidShip, ATTRIBUTES *pACharacter, ATTRIBUTES *pA
 
 bool AIGroup::isMainGroup()
 {
-    for (dword i = 0; i < aGroupShips.Size(); i++)
+    for (uint32_t i = 0; i < aGroupShips.size(); i++)
         if (aGroupShips[i]->isMainCharacter())
             return true;
 
@@ -107,12 +98,12 @@ bool AIGroup::isMainGroup()
 
 AIShip *AIGroup::GetMainShip()
 {
-    AIShip *pShip = AIShip::FindShip(GetCommanderACharacter());
+    auto *pShip = AIShip::FindShip(GetCommanderACharacter());
     // return AIShip::FindShip(GetCommanderACharacter());
-    /*if (aGroupShips.Size() == 0) return null;
+    /*if (aGroupShips.size() == 0) return null;
     if (isMainGroup())
-        for (dword i=0;i<aGroupShips.Size();i++) if (aGroupShips[i]->isMainCharacter()) return aGroupShips[i];
-*/
+      for (uint32_t i=0;i<aGroupShips.size();i++) if (aGroupShips[i]->isMainCharacter()) return aGroupShips[i];
+  */
     return (pShip) ? pShip : aGroupShips[0];
 }
 
@@ -122,14 +113,14 @@ void AIGroup::Execute(float fDeltaTime)
 
     if (bFirstExecute)
     {
-        if (!sLocationNearOtherGroup.IsEmpty())
+        if (!sLocationNearOtherGroup.empty())
         {
-            float fNewAng = FRAND(PIm2);
-            AIGroup *pG = FindGroup(sLocationNearOtherGroup);
-            CVECTOR vNewGroupPos =
+            const auto fNewAng = FRAND(PIm2);
+            auto *const pG = FindGroup(sLocationNearOtherGroup.c_str());
+            auto vNewGroupPos =
                 pG->vInitGroupPos + ((100.0f + FRAND(200.0f)) * CVECTOR(sinf(fNewAng), 0.0f, cosf(fNewAng)));
             if (pG)
-                for (dword i = 0; i < aGroupShips.Size(); i++)
+                for (uint32_t i = 0; i < aGroupShips.size(); i++)
                 {
                     aGroupShips[i]->SetPos(vNewGroupPos);
                     aGroupShips[i]->CheckStartPosition();
@@ -138,7 +129,7 @@ void AIGroup::Execute(float fDeltaTime)
 
         if (isMainGroup())
         {
-            for (dword i = 0; i < aGroupShips.Size(); i++)
+            for (uint32_t i = 0; i < aGroupShips.size(); i++)
                 if (!aGroupShips[i]->isMainCharacter())
                     aGroupShips[i]->GetTaskController()->SetNewTask(PRIMARY_TASK, AITASK_DEFEND,
                                                                     GetCommanderACharacter());
@@ -148,62 +139,61 @@ void AIGroup::Execute(float fDeltaTime)
     }
     /*if (!isMainGroup())
     {
-        if (sCommand == "runaway")
-            for (dword i=0; i<aGroupShips.Size(); i++) if (!aGroupShips[i]->isMainCharacter())
-                aGroupShips[i]->GetTaskController()->SetNewTask(PRIMARY_TASK, AITASK_RUNAWAY, null);
+      if (sCommand == "runaway")
+        for (uint32_t i=0; i<aGroupShips.size(); i++) if (!aGroupShips[i]->isMainCharacter())
+          aGroupShips[i]->GetTaskController()->SetNewTask(PRIMARY_TASK, AITASK_RUNAWAY, null);
 
-        if (sCommand == "move")
-            for (dword i=0; i<aGroupShips.Size(); i++) if (!aGroupShips[i]->isMainCharacter())
-            {
-                CVECTOR vDir = CVECTOR(vInitGroupPos.x, 0.0f, vInitGroupPos.z) + 20000.0f *
+      if (sCommand == "move")
+        for (uint32_t i=0; i<aGroupShips.size(); i++) if (!aGroupShips[i]->isMainCharacter())
+        {
+          CVECTOR vDir = CVECTOR(vInitGroupPos.x, 0.0f, vInitGroupPos.z) + 20000.0f *
     CVECTOR(sinf(vInitGroupPos.y),0.0f,cosf(vInitGroupPos.y));
-                aGroupShips[i]->GetTaskController()->SetNewTask(PRIMARY_TASK, AITASK_MOVE, vDir);
-            }
+          aGroupShips[i]->GetTaskController()->SetNewTask(PRIMARY_TASK, AITASK_MOVE, vDir);
+        }
 
-        sCommand = "";
+      sCommand = "";
     }*/
 
     if (!isDead() && dtCheckTask.Update(fDeltaTime))
-        api->Event(GROUP_CHECKTASKEVENT, "s", (char *)GetName().GetBuffer());
+        api->Event(GROUP_CHECKTASKEVENT, "s", (char *)GetName().c_str());
 
     if (!isMainGroup())
     {
-        float fMinimalSpeed = 1e+10f;
-        for (dword i = 0; i < aGroupShips.Size(); i++)
+        auto fMinimalSpeed = 1e+10f;
+        for (uint32_t i = 0; i < aGroupShips.size(); i++)
         {
-            float fCurSpeed = aGroupShips[i]->GetShipBasePointer()->GetCurrentSpeed();
+            const auto fCurSpeed = aGroupShips[i]->GetShipBasePointer()->GetCurrentSpeed();
             if (fCurSpeed < fMinimalSpeed)
                 fMinimalSpeed = fCurSpeed;
         }
 
-        bool bSetFixedSpeed = sCommand == "move";
+        const auto bSetFixedSpeed = sCommand == "move";
 
-        for (dword i = 0; i < aGroupShips.Size(); i++)
+        for (uint32_t i = 0; i < aGroupShips.size(); i++)
             aGroupShips[i]->GetShipBasePointer()->SetFixedSpeed(bSetFixedSpeed, fMinimalSpeed);
     }
 
-    for (dword i = 0; i < aGroupShips.Size(); i++)
+    for (uint32_t i = 0; i < aGroupShips.size(); i++)
         aGroupShips[i]->Execute(fDeltaTime);
 }
 
 void AIGroup::Realize(float fDeltaTime)
 {
-    dword i;
+    uint32_t i;
 
 #ifndef _XBOX
     /*if (GetAsyncKeyState('G')<0)
     {
-        float fScale = 0.6f;
-        long fh = long(AIHelper::pRS->CharHeight(FONT_DEFAULT) * fScale);
-        for (i=0;i<AIGroups.Size();i++) if (this==AIGroups[i])
-        {
-            //char str[256];
-            //AIHelper::pRS->ExtPrint(FONT_DEFAULT, 0xFFFFFFFF, 0x00000000, ALIGN_LEFT, 0, fScale, 0, 0, 0, i * fh,
-    str);
-        }
+      float fScale = 0.6f;
+      long fh = long(AIHelper::pRS->CharHeight(FONT_DEFAULT) * fScale);
+      for (i=0;i<AIGroups.size();i++) if (this==AIGroups[i])
+      {
+        //char str[256];
+        //AIHelper::pRS->ExtPrint(FONT_DEFAULT, 0xFFFFFFFF, 0x00000000, PR_ALIGN_LEFT, 0, fScale, 0, 0, 0, i * fh, str);
+      }
     }*/
 #endif
-    for (i = 0; i < aGroupShips.Size(); i++)
+    for (i = 0; i < aGroupShips.size(); i++)
     {
         aGroupShips[i]->Realize(fDeltaTime);
     }
@@ -211,7 +201,7 @@ void AIGroup::Realize(float fDeltaTime)
 
 bool AIGroup::isDead()
 {
-    for (dword i = 0; i < aGroupShips.Size(); i++)
+    for (uint32_t i = 0; i < aGroupShips.size(); i++)
         if (!aGroupShips[i]->isDead())
             return false;
     return true;
@@ -219,8 +209,8 @@ bool AIGroup::isDead()
 
 float AIGroup::GetPower()
 {
-    float fPower = 0.0f;
-    for (dword i = 0; i < aGroupShips.Size(); i++)
+    auto fPower = 0.0f;
+    for (uint32_t i = 0; i < aGroupShips.size(); i++)
         fPower += aGroupShips[i]->GetPower();
     return fPower;
 }
@@ -228,39 +218,40 @@ float AIGroup::GetPower()
 AIGroup *AIGroup::CreateNewGroup(const char *pGroupName)
 {
     Assert(pGroupName);
-    AIGroup *pAIGroup = NEW AIGroup(pGroupName);
-    AIGroup::AIGroups.Add(pAIGroup);
+    auto *pAIGroup = new AIGroup(pGroupName);
+    AIGroups.push_back(pAIGroup);
+
     return pAIGroup;
 }
 
 AIGroup *AIGroup::FindGroup(ATTRIBUTES *pACharacter)
 {
     if (!pACharacter)
-        return null;
-    for (dword i = 0; i < AIGroup::AIGroups.Size(); i++)
+        return nullptr;
+    for (uint32_t i = 0; i < AIGroups.size(); i++)
     {
-        AIGroup *pGroup = AIGroup::AIGroups[i];
-        for (dword j = 0; j < pGroup->aGroupShips.Size(); j++)
+        AIGroup *pGroup = AIGroups[i];
+        for (uint32_t j = 0; j < pGroup->aGroupShips.size(); j++)
             if (*pGroup->aGroupShips[j] == pACharacter)
                 return pGroup;
     }
-    return null;
+    return nullptr;
 }
 
 AIGroup *AIGroup::FindGroup(const char *pGroupName)
 {
-    for (dword i = 0; i < AIGroup::AIGroups.Size(); i++)
-        if (AIGroup::AIGroups[i]->GetName() == pGroupName)
-            return AIGroup::AIGroups[i];
-    return null;
+    for (uint32_t i = 0; i < AIGroups.size(); i++)
+        if (AIGroups[i]->GetName() == pGroupName)
+            return AIGroups[i];
+    return nullptr;
 }
 
 AIGroup *AIGroup::FindMainGroup()
 {
-    for (dword i = 0; i < AIGroup::AIGroups.Size(); i++)
+    for (uint32_t i = 0; i < AIGroups.size(); i++)
         if (AIGroups[i]->isMainGroup())
             return AIGroups[i];
-    return null;
+    return nullptr;
 }
 
 void AIGroup::SailMainGroup(CVECTOR vPos, float fAngle, ATTRIBUTES *pACharacter)
@@ -269,17 +260,16 @@ void AIGroup::SailMainGroup(CVECTOR vPos, float fAngle, ATTRIBUTES *pACharacter)
     Assert(pMG);
     AIGroup *pG1 = FindGroup(pACharacter);
 
-    ENTITY_ID eidSea;
-    api->FindClass(&eidSea, "sea", 0);
+    const auto eidSea = EntityManager::GetEntityId("sea");
 
-    for (dword i = 0; i < pMG->aGroupShips.Size(); i++)
+    for (uint32_t i = 0; i < pMG->aGroupShips.size(); i++)
     {
         AIShip *pAIShip = pMG->aGroupShips[i];
 
         if (pAIShip->isDead())
             continue;
 
-        dword dwTaskType = AITASK_NONE;
+        uint32_t dwTaskType = AITASK_NONE;
         AITask *pTask = pAIShip->GetTaskController()->GetCurrentTask();
         if (pTask)
             dwTaskType = pTask->dwTaskType;
@@ -322,9 +312,9 @@ void AIGroup::GroupSetRunAway(const char *pGroupName)
 
 void AIGroup::GroupSetAttack(AIShip *pS1, AIShip *pS2)
 {
-    AIGroup *pG1 = FindGroup(pS1->GetGroupName());
+    AIGroup *pG1 = FindGroup(pS1->GetGroupName().c_str());
     Assert(pG1);
-    AIGroup *pG2 = FindGroup(pS2->GetGroupName());
+    AIGroup *pG2 = FindGroup(pS2->GetGroupName().c_str());
     Assert(pG2);
 
     pG2->sCommand = "attack";
@@ -356,19 +346,19 @@ void AIGroup::SetXYZ_AY(const char *pGroupName, CVECTOR vPos, float _fAY)
 
 AIShip *AIGroup::ExtractShip(ATTRIBUTES *pACharacter)
 {
-    for (dword i = 0; i < aGroupShips.Size(); i++)
+    for (uint32_t i = 0; i < aGroupShips.size(); i++)
     {
         if (*aGroupShips[i] == pACharacter)
         {
             AIShip *pAIShip = aGroupShips[i];
-            aGroupShips.Extract(i);
+            aGroupShips.erase(aGroupShips.begin() + i);
             return pAIShip;
         }
     }
-    return null;
+    return nullptr;
 }
 
-ATTRIBUTES *AIGroup::GetCommanderACharacter()
+ATTRIBUTES *AIGroup::GetCommanderACharacter() const
 {
     Assert(pACommander);
     return pACommander;
@@ -378,7 +368,7 @@ void AIGroup::InsertShip(AIShip *pAIShip)
 {
     pAIShip->SetGroupName(sGroupName);
 
-    aGroupShips.Add(pAIShip); // add to local group array
+    aGroupShips.push_back(pAIShip); // add to local group array
 
     Helper.AddCharacter(pAIShip->GetACharacter(), GetCommanderACharacter());
 }
@@ -468,8 +458,8 @@ void AIGroup::Save(CSaveLoad *pSL)
     pSL->SaveVector(vMovePoint);
     pSL->SaveDword(bFirstExecute);
 
-    pSL->SaveDword(aGroupShips.Size());
-    for (dword i = 0; i < aGroupShips.Size(); i++)
+    pSL->SaveDword(aGroupShips.size());
+    for (uint32_t i = 0; i < aGroupShips.size(); i++)
         aGroupShips[i]->Save(pSL);
 }
 
@@ -485,12 +475,12 @@ void AIGroup::Load(CSaveLoad *pSL)
     vInitGroupPos = pSL->LoadVector();
     vMovePoint = pSL->LoadVector();
     bFirstExecute = pSL->LoadDword() != 0;
-    dword dwNum = pSL->LoadDword();
-    for (dword i = 0; i < dwNum; i++)
+    const uint32_t dwNum = pSL->LoadDword();
+    for (uint32_t i = 0; i < dwNum; i++)
     {
-        AIShip *pShip = NEW AIShipWar();
-        AIShip::AIShips.Add(pShip); // add to global array
-        aGroupShips.Add(pShip);     // add to local group array
+        AIShip *pShip = new AIShipWar();
+        AIShip::AIShips.push_back(pShip); // add to global array
+        aGroupShips.push_back(pShip);     // add to local group array
         pShip->Load(pSL);
     }
 }

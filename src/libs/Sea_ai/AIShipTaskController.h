@@ -1,5 +1,6 @@
 #ifndef AISHIPTASKCONTROLLER_HPP
 #define AISHIPTASKCONTROLLER_HPP
+#include "../../Shared/sea_ai/Script_defines.h"
 
 // ============================================================================
 // master class AIShipTaskController
@@ -17,11 +18,11 @@ class AITask
     AITask() : bActive(false)
     {
         dwTaskType = AITASK_NONE;
-        pATaskCharacter = null;
+        pATaskCharacter = nullptr;
         vTaskPnt = 0.0f;
     };
 
-    dword dwTaskType;
+    uint32_t dwTaskType;
 
     ATTRIBUTES *pATaskCharacter;
     CVECTOR vTaskPnt;
@@ -30,12 +31,12 @@ class AITask
     {
         bActive = _bActive;
     };
-    bool isActive()
+    bool isActive() const
     {
         return bActive;
     };
 
-    void Save(CSaveLoad *pSL)
+    void Save(CSaveLoad *pSL) const
     {
         pSL->SaveDword(bActive);
         pSL->SaveDword(dwTaskType);
@@ -59,7 +60,7 @@ class AIShipTaskController
 
     AITask Primary, Secondary;
 
-    AITask *GetTask(dword dwPriority)
+    AITask *GetTask(uint32_t dwPriority)
     {
         return (dwPriority == PRIMARY_TASK) ? &Primary : &Secondary;
     };
@@ -67,11 +68,11 @@ class AIShipTaskController
     {
         return AIHelper::FindAIInnerObj(GetCurrentTask()->pATaskCharacter);
     };
-    bool isCurrentTaskSecondary()
+    bool isCurrentTaskSecondary() const
     {
         return Secondary.isActive();
     };
-    bool isCurrentTaskPrimary()
+    bool isCurrentTaskPrimary() const
     {
         return !Secondary.isActive();
     };
@@ -97,8 +98,8 @@ class AIShipTaskController
         return (Secondary.isActive()) ? &Secondary : &Primary;
     };
 
-    void SetNewTask(dword dwPriority, dword _dwNewTaskType, CVECTOR &vPnt);
-    void SetNewTask(dword dwPriority, dword _dwNewTaskType, ATTRIBUTES *_pATaskCharacter);
+    void SetNewTask(uint32_t dwPriority, uint32_t dwNewTaskType, CVECTOR &vPnt);
+    void SetNewTask(uint32_t dwPriority, uint32_t dwNewTaskType, ATTRIBUTES *_pATaskCharacter);
 
     // controller execute
     void Execute(float);
@@ -108,7 +109,7 @@ class AIShipTaskController
     {
         pOurAIShip = pShip;
     };
-    AIShip *GetAIShip()
+    AIShip *GetAIShip() const
     {
         return pOurAIShip;
     };

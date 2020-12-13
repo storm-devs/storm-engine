@@ -1,17 +1,16 @@
 #include "AIBalls.h"
+#include "../../Shared/messages.h"
 #include "AIFort.h"
+#include "inlines.h"
 
-AIBalls *AIBalls::pAIBalls = null;
+AIBalls *AIBalls::pAIBalls = nullptr;
 
-AIBalls::AIBalls() : aBallTypes(_FL_, 4), aBallRects(_FL_, 256)
+AIBalls::AIBalls()
 {
-    pSail = null;
-    pSea = null;
-    pFort = null;
-    pIsland = null;
-
-    pVWShips = null;
-    // pVWForts = null;
+    pSail = nullptr;
+    pSea = nullptr;
+    pFort = nullptr;
+    pIsland = nullptr;
     pAIBalls = this;
 
     fBallFlySoundDistance = 1.0f;
@@ -22,33 +21,32 @@ AIBalls::AIBalls() : aBallTypes(_FL_, 4), aBallRects(_FL_, 256)
 
 AIBalls::~AIBalls()
 {
-    dword i, j;
+    uint32_t i, j;
 
-    pAIBalls = null;
+    pAIBalls = nullptr;
 
     AIHelper::pRS->TextureRelease(dwTextureIndex);
 
-    for (i = 0; i < aBallTypes.Size(); i++)
+    for (i = 0; i < aBallTypes.size(); i++)
     {
-        BALL_TYPE *pBallsType = &aBallTypes[i];
-        for (j = 0; j < pBallsType->Balls.Size(); j++)
+        auto *pBallsType = &aBallTypes[i];
+        for (j = 0; j < pBallsType->Balls.size(); j++)
         {
-            BALL_PARAMS *pBall = &pBallsType->Balls[j];
+            auto *pBall = &pBallsType->Balls[j];
             if (pBall->pParticle)
             {
-                SE_DELETE(pBall->pParticle);
+                STORM_DELETE(pBall->pParticle);
             }
-            pBall->sBallEvent.DelAll();
+            pBall->sBallEvent.clear();
         }
-        aBallTypes[i].Balls.DelAll();
+        aBallTypes[i].Balls.clear();
     }
-    aBallTypes.DelAll();
-
-    SE_DELETE(pVWShips);
+    aBallTypes.clear();
 }
 
 bool AIBalls::Init()
 {
+    rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
     SetDevice();
     return true;
 }
@@ -59,24 +57,24 @@ void AIBalls::SetDevice()
 
 void AIBalls::FireBallFromCamera()
 {
-    VDATA *pMainCharIndex = (VDATA *)api->GetScriptVariable("nMainCharacterIndex");
+    auto *pMainCharIndex = static_cast<VDATA *>(api->GetScriptVariable("nMainCharacterIndex"));
     if (!pMainCharIndex)
         return;
-    long iMainCharIndex = pMainCharIndex->GetLong();
+    auto iMainCharIndex = pMainCharIndex->GetLong();
     if (iMainCharIndex < 0)
         return;
-    VDATA *pMainCharacter = (VDATA *)api->GetScriptVariable("Characters");
+    auto *pMainCharacter = static_cast<VDATA *>(api->GetScriptVariable("Characters"));
     if (!pMainCharacter)
         return;
-    ATTRIBUTES *pAMainCharacter = pMainCharacter->GetAClass(iMainCharIndex);
+    auto *pAMainCharacter = pMainCharacter->GetAClass(iMainCharIndex);
     if (!pAMainCharacter)
         return;
-    ATTRIBUTES *pACannonType = pAMainCharacter->FindAClass(pAMainCharacter, "Ship.Cannons.Type");
+    auto *pACannonType = pAMainCharacter->FindAClass(pAMainCharacter, "Ship.Cannons.Type");
     if (!pACannonType)
         return;
-    dword dwCannonType = pACannonType->GetAttributeAsDword();
+    auto dwCannonType = pACannonType->GetAttributeAsDword();
 
-    ATTRIBUTES *pABall = pAMainCharacter->CreateAttribute("_err324__", "");
+    auto *pABall = pAMainCharacter->CreateAttribute("_err324__", "");
     if (!pABall)
         return;
 
@@ -91,13 +89,13 @@ void AIBalls::FireBallFromCamera()
     AIHelper::pRS->GetCamera(vCamPos, vCamAng, fFov);
 
     CMatrix mView(vCamAng, vCamPos);
-    CMatrix mIView = mView;
+    auto mIView = mView;
     // mIView.Transposition3X3();
-    float fY = atan2f(mIView.Vz().x, mIView.Vz().z);
-    float fX = SIGN(mIView.Vz().y) * acosf(mIView.Vz() | CVECTOR(mIView.Vz().x, 0.0f, mIView.Vz().z));
+    auto fY = atan2f(mIView.Vz().x, mIView.Vz().z);
+    auto fX = SIGN(mIView.Vz().y) * acosf(mIView.Vz() | CVECTOR(mIView.Vz().x, 0.0f, mIView.Vz().z));
 
     pABall->SetAttribute("Type", "Balls");
-    pABall->SetAttributeUseDword("CharacterIndex", dword(iMainCharIndex));
+    pABall->SetAttributeUseDword("CharacterIndex", static_cast<uint32_t>(iMainCharIndex));
     pABall->SetAttributeUseFloat("x", mIView.Pos().x);
     pABall->SetAttributeUseFloat("y", mIView.Pos().y);
     pABall->SetAttributeUseFloat("z", mIView.Pos().z);
@@ -118,16 +116,19 @@ void AIBalls::FireBallFromCamera()
 
 void AIBalls::AddBall(ATTRIBUTES *pABall)
 {
-    char *pBallName = pABall->GetAttribute("Type");
+    auto *const pBallName = pABall->GetAttribute("Type");
     Assert(pBallName);
-    dword i = 0;
-    for (i = 0; i < aBallTypes.Size(); i++)
-        if (stricmp(aBallTypes[i].sName, pBallName) == 0)
+
+    uint32_t i;
+    for (i = 0; i < aBallTypes.size(); i++)
+        if (_stricmp(aBallTypes[i].sName.c_str(), pBallName) == 0)
             break;
-    if (i == aBallTypes.Size())
+    if (i == aBallTypes.size())
         return;
 
-    BALL_PARAMS *pBall = &aBallTypes[i].Balls[aBallTypes[i].Balls.Add()];
+    aBallTypes[i].Balls.push_back(BALL_PARAMS{});
+    // BALL_PARAMS * pBall = &aBallTypes[i].Balls[aBallTypes[i].Balls.Add()];
+    auto *pBall = &aBallTypes[i].Balls.back();
 
     pBall->iBallOwner = pABall->GetAttributeAsDword("CharacterIndex");
 
@@ -142,60 +143,58 @@ void AIBalls::AddBall(ATTRIBUTES *pABall)
     pBall->fTimeSpeedMultiply = GetAFloat("TimeSpeedMultiply");
     pBall->dwCannonType = GetADword("CannonType");
     pBall->fMaxFireDistance = GetAFloat("MaxFireDistance");
-    float fAngle = GetAFloat("Ang");
+    const auto fAngle = GetAFloat("Ang");
     pBall->fCosAngle = cosf(fAngle);
     pBall->fSinAngle = sinf(fAngle);
-    float fDir = GetAFloat("Dir");
+    const auto fDir = GetAFloat("Dir");
     pBall->fDirX = cosf(fDir);
     pBall->fDirZ = sinf(fDir);
-    pBall->pParticle = null;
+    pBall->pParticle = nullptr;
 
     pBall->sBallEvent = pABall->GetAttribute("Event");
 
-    if (aBallTypes[i].sParticleName.Len())
+    if (aBallTypes[i].sParticleName.size())
     {
-        ENTITY_ID eidParticle;
-        if (api->FindClass(&eidParticle, "particles", 0))
+        entid_t eidParticle;
+        if (eidParticle = EntityManager::GetEntityId("particles"))
         {
             pBall->pParticle = (VPARTICLE_SYSTEM *)api->Send_Message(
-                eidParticle, "lsffffffl", PS_CREATE_RIC, (char *)aBallTypes[i].sParticleName.GetBuffer(), pBall->vPos.x,
+                eidParticle, "lsffffffl", PS_CREATE_RIC, (char *)aBallTypes[i].sParticleName.c_str(), pBall->vPos.x,
                 pBall->vPos.y, pBall->vPos.z, 0.0f, 1.0f, 0.0f, 100000);
         }
     }
 }
 
-void AIBalls::Execute(dword Delta_Time)
+void AIBalls::Execute(uint32_t Delta_Time)
 {
-    dword i, j;
+    uint32_t i, j;
     CVECTOR vSrc, vDst;
-    ENTITY_ID EID, *pEID;
+    entid_t EID;
 
-    if (!pIsland && api->FindClass(&EID, "island", 0))
-        pIsland = (CANNON_TRACE_BASE *)api->GetEntityPointer(&EID);
-    if (!pSail && api->FindClass(&EID, "sail", 0))
-        pSail = (CANNON_TRACE_BASE *)api->GetEntityPointer(&EID);
-    if (!pSea && api->FindClass(&EID, "sea", 0))
-        pSea = (CANNON_TRACE_BASE *)api->GetEntityPointer(&EID);
+    if (!pIsland && (EID = EntityManager::GetEntityId("island")))
+        pIsland = static_cast<CANNON_TRACE_BASE *>(EntityManager::GetEntityPointer(EID));
+    if (!pSail && (EID = EntityManager::GetEntityId("sail")))
+        pSail = static_cast<CANNON_TRACE_BASE *>(EntityManager::GetEntityPointer(EID));
+    if (!pSea && (EID = EntityManager::GetEntityId("sea")))
+        pSea = static_cast<CANNON_TRACE_BASE *>(EntityManager::GetEntityPointer(EID));
 
-    aBallRects.Empty();
+    aBallRects.clear();
 
     // if (!pVWForts) pVWForts = (VIDWALKER*)api->LayerGetWalker("fort_cannon_trace");
-    if (!pVWShips)
-        pVWShips = (VIDWALKER *)api->LayerGetWalker("ship_cannon_trace");
 
-    CMatrix mView = Render().GetView();
+    auto mView = rs->GetView();
 
-    float fDeltaTime = 0.001f * float(Delta_Time);
+    auto fDeltaTime = 0.001f * static_cast<float>(Delta_Time);
 
-    for (i = 0; i < aBallTypes.Size(); i++)
+    for (i = 0; i < aBallTypes.size(); i++)
     {
-        BALL_TYPE *pBallsType = &aBallTypes[i];
+        auto *pBallsType = &aBallTypes[i];
 
         AttributesPointer->SetAttributeUseDword("CurrentBallType", pBallsType->dwGoodIndex);
 
-        for (j = 0; j < pBallsType->Balls.Size(); j++)
+        for (j = 0; j < pBallsType->Balls.size(); j++)
         {
-            BALL_PARAMS *pBall = &pBallsType->Balls[j];
+            auto *pBall = &pBallsType->Balls[j];
 
             vSrc = pBall->vPos;
 
@@ -215,8 +214,8 @@ void AIBalls::Execute(dword Delta_Time)
 
             vDst = pBall->vPos;
 
-            if (pBall->sBallEvent.Len())
-                api->Event((char *)pBall->sBallEvent.GetBuffer(), "lllffffffs", pBall->iBallOwner, (dword)1,
+            if (pBall->sBallEvent.size())
+                api->Event((char *)pBall->sBallEvent.c_str(), "lllffffffs", pBall->iBallOwner, static_cast<uint32_t>(1),
                            pBallsType->dwGoodIndex, pBall->vPos.x, pBall->vPos.y, pBall->vPos.z, vSrc.x, vSrc.y,
                            vSrc.z);
 
@@ -250,15 +249,14 @@ void AIBalls::Execute(dword Delta_Time)
             if (pSail)
                 pSail->Cannon_Trace(pBall->iBallOwner, vSrc, vDst);
 
-            // ship trace
-            if (pVWShips && (pEID = pVWShips->GetID()) != 0)
-                do
-                {
-                    CANNON_TRACE_BASE *pShip = (CANNON_TRACE_BASE *)api->GetEntityPointer(pEID);
-                    fRes = pShip->Cannon_Trace(pBall->iBallOwner, vSrc, vDst);
-                    if (fRes <= 1.0f)
-                        break;
-                } while (pEID = pVWShips->GetIDNext());
+            const auto its = EntityManager::GetEntityIdIterators(SHIP_CANNON_TRACE);
+            for (auto it = its.first; it != its.second; ++it)
+            {
+                auto *pShip = static_cast<CANNON_TRACE_BASE *>(EntityManager::GetEntityPointer(it->second));
+                fRes = pShip->Cannon_Trace(pBall->iBallOwner, vSrc, vDst);
+                if (fRes <= 1.0f)
+                    break;
+            }
 
             // fort trace
             if (fRes > 1.0f && AIFort::pAIFort)
@@ -277,28 +275,32 @@ void AIBalls::Execute(dword Delta_Time)
             // delete ball
             if (fRes <= 1.0f)
             {
-                if (pBall->sBallEvent.Len())
+                if (pBall->sBallEvent.size())
                 {
-                    api->Event((char *)pBall->sBallEvent.GetBuffer(), "lllffffff", pBall->iBallOwner, (dword)0,
-                               pBallsType->dwGoodIndex, pBall->vPos.x, pBall->vPos.y, pBall->vPos.z, vSrc.x, vSrc.y,
-                               vSrc.z);
-                    pBall->sBallEvent.DelAll();
+                    api->Event((char *)pBall->sBallEvent.c_str(), "lllffffff", pBall->iBallOwner,
+                               static_cast<uint32_t>(0), pBallsType->dwGoodIndex, pBall->vPos.x, pBall->vPos.y,
+                               pBall->vPos.z, vSrc.x, vSrc.y, vSrc.z);
+                    pBall->sBallEvent.clear();
                 }
 
                 if (pBall->pParticle)
                 {
                     pBall->pParticle->Stop();
-                    SE_DELETE(pBall->pParticle);
+                    STORM_DELETE(pBall->pParticle);
                 }
-                pBallsType->Balls.ExtractNoShift(j);
+                // pBallsType->Balls.ExtractNoShift(j);
+                pBallsType->Balls[j] = pBallsType->Balls.back();
+                pBallsType->Balls.pop_back();
                 j--;
 
                 continue;
             }
 
-            if (!pBall->sBallEvent.Len())
+            if (!pBall->sBallEvent.size())
             {
-                RS_RECT *pRSR = &aBallRects[aBallRects.Add()];
+                aBallRects.push_back(RS_RECT{});
+                // RS_RECT * pRSR = &aBallRects[aBallRects.Add()];
+                RS_RECT *pRSR = &aBallRects.back();
                 pRSR->vPos = pBall->vPos;
                 pRSR->dwColor = 0xFFFFFF;
                 pRSR->dwSubTexture = pBallsType->dwSubTexIndex;
@@ -309,51 +311,51 @@ void AIBalls::Execute(dword Delta_Time)
     }
 }
 
-void AIBalls::Realize(dword Delta_Time)
+void AIBalls::Realize(uint32_t Delta_Time)
 {
-    if (aBallRects.Size())
+    if (aBallRects.size())
     {
         AIHelper::pRS->TextureSet(0, dwTextureIndex);
-        AIHelper::pRS->DrawRects(&aBallRects[0], aBallRects.Size(), "Cannonballs", dwSubTexX, dwSubTexY);
-        aBallRects.Empty();
+        AIHelper::pRS->DrawRects(&aBallRects[0], aBallRects.size(), "Cannonballs", dwSubTexX, dwSubTexY);
+        aBallRects.clear();
     }
 
     dwFireBallFromCameraTime += Delta_Time;
     /*
-#ifndef _XBOX
+  #ifndef _XBOX
     if (api->Controls->GetDebugAsyncKeyState('C') < 0 && dwFireBallFromCameraTime > 30 &&
-AttributesPointer->GetAttributeAsDword("FireBallFromCamera", 0) != 0)
+  AttributesPointer->GetAttributeAsDword("FireBallFromCamera", 0) != 0)
     {
-        dwFireBallFromCameraTime = 0;
-        FireBallFromCamera();
+      dwFireBallFromCameraTime = 0;
+      FireBallFromCamera();
     }
-#endif
-*/
+  #endif
+  */
 }
 
-dword AIBalls::AttributeChanged(ATTRIBUTES *pAttributeChanged)
+uint32_t AIBalls::AttributeChanged(ATTRIBUTES *pAttributeChanged)
 {
     if (*pAttributeChanged == "clear")
     {
-        for (dword i = 0; i < aBallTypes.Size(); i++)
+        for (uint32_t i = 0; i < aBallTypes.size(); i++)
         {
             BALL_TYPE *pBallsType = &aBallTypes[i];
 
-            for (dword j = 0; j < pBallsType->Balls.Size(); j++)
+            for (uint32_t j = 0; j < pBallsType->Balls.size(); j++)
             {
                 BALL_PARAMS *pBall = &pBallsType->Balls[j];
 
-                if (pBall->sBallEvent.Len())
-                    pBall->sBallEvent.DelAll();
+                if (pBall->sBallEvent.size())
+                    pBall->sBallEvent.clear();
 
                 if (pBall->pParticle)
                 {
                     pBall->pParticle->Stop();
-                    SE_DELETE(pBall->pParticle);
+                    STORM_DELETE(pBall->pParticle);
                 }
             }
 
-            pBallsType->Balls.DelAll();
+            pBallsType->Balls.clear();
         }
 
         return 0;
@@ -375,30 +377,31 @@ dword AIBalls::AttributeChanged(ATTRIBUTES *pAttributeChanged)
         dwSubTexX = AttributesPointer->GetAttributeAsDword("SubTexX");
         dwSubTexY = AttributesPointer->GetAttributeAsDword("SubTexY");
 
-        dwTextureIndex = AIHelper::pRS->TextureCreate(sTextureName);
+        dwTextureIndex = AIHelper::pRS->TextureCreate(sTextureName.c_str());
 
         // install balls
         ATTRIBUTES *pAPBalls = AttributesPointer->GetAttributeClass("Balls");
-        dword dwIdx = 0;
+        uint32_t dwIdx = 0;
         while (pAPBalls && true)
         {
-            char *pName = pAPBalls->GetAttributeName(dwIdx);
+            const char *pName = pAPBalls->GetAttributeName(dwIdx);
             if (!pName)
                 break;
             ATTRIBUTES *pAP = pAPBalls->GetAttributeClass(pName);
             if (!pAP)
                 break;
 
-            dword dwBallNum = aBallTypes.Add();
-
-            aBallTypes[dwBallNum].sName = pName;
-            aBallTypes[dwBallNum].dwSubTexIndex = pAP->GetAttributeAsDword("SubTexIndex");
-            aBallTypes[dwBallNum].dwGoodIndex = pAP->GetAttributeAsDword("GoodIndex");
-            aBallTypes[dwBallNum].fSize = pAP->GetAttributeAsFloat("Size");
-            aBallTypes[dwBallNum].fWeight = pAP->GetAttributeAsFloat("Weight");
+            BALL_TYPE ballType;
+            ballType.sName = pName;
+            ballType.dwSubTexIndex = pAP->GetAttributeAsDword("SubTexIndex");
+            ballType.dwGoodIndex = pAP->GetAttributeAsDword("GoodIndex");
+            ballType.fSize = pAP->GetAttributeAsFloat("Size");
+            ballType.fWeight = pAP->GetAttributeAsFloat("Weight");
 
             if (pAP->GetAttribute("Particle"))
-                aBallTypes[dwBallNum].sParticleName = pAP->GetAttribute("Particle");
+                ballType.sParticleName = pAP->GetAttribute("Particle");
+
+            aBallTypes.push_back(ballType);
 
             dwIdx++;
         }
@@ -407,19 +410,19 @@ dword AIBalls::AttributeChanged(ATTRIBUTES *pAttributeChanged)
     return 0;
 }
 
-dword AIBalls::ProcessMessage(MESSAGE &message)
+uint64_t AIBalls::ProcessMessage(MESSAGE &message)
 {
     if (message.Long() == MSG_MODEL_RELEASE)
     {
-        for (dword i = 0; i < aBallTypes.Size(); i++)
-            for (dword j = 0; j < aBallTypes[i].Balls.Size(); j++)
+        for (uint32_t i = 0; i < aBallTypes.size(); i++)
+            for (uint32_t j = 0; j < aBallTypes[i].Balls.size(); j++)
             {
                 BALL_PARAMS *pBall = &aBallTypes[i].Balls[j];
 
                 if (pBall->pParticle)
                 {
                     pBall->pParticle->Stop();
-                    SE_DELETE(pBall->pParticle);
+                    STORM_DELETE(pBall->pParticle);
                 }
             }
     }
@@ -428,11 +431,11 @@ dword AIBalls::ProcessMessage(MESSAGE &message)
 
 void AIBalls::Save(CSaveLoad *pSL)
 {
-    for (dword i = 0; i < aBallTypes.Size(); i++)
+    for (uint32_t i = 0; i < aBallTypes.size(); i++)
     {
-        pSL->SaveDword(aBallTypes[i].Balls.Size());
+        pSL->SaveDword(aBallTypes[i].Balls.size());
 
-        for (dword j = 0; j < aBallTypes[i].Balls.Size(); j++)
+        for (uint32_t j = 0; j < aBallTypes[i].Balls.size(); j++)
         {
             pSL->SaveBuffer((const char *)&aBallTypes[i].Balls[j], sizeof(BALL_PARAMS));
         }
@@ -441,22 +444,24 @@ void AIBalls::Save(CSaveLoad *pSL)
 
 void AIBalls::Load(CSaveLoad *pSL)
 {
-    for (dword i = 0; i < aBallTypes.Size(); i++)
+    for (uint32_t i = 0; i < aBallTypes.size(); i++)
     {
-        dword dwNum = pSL->LoadDword();
+        const uint32_t dwNum = pSL->LoadDword();
 
-        for (dword j = 0; j < dwNum; j++)
+        for (uint32_t j = 0; j < dwNum; j++)
         {
-            BALL_PARAMS *pB = &aBallTypes[i].Balls[aBallTypes[i].Balls.Add()];
+            aBallTypes[i].Balls.push_back(BALL_PARAMS{});
+            // BALL_PARAMS * pB = &aBallTypes[i].Balls[aBallTypes[i].Balls.Add()];
+            BALL_PARAMS *pB = &aBallTypes[i].Balls.back();
             pSL->Load2Buffer((char *)pB);
             if (pB->pParticle)
             {
-                pB->pParticle = null;
-                ENTITY_ID eidParticle;
-                if (api->FindClass(&eidParticle, "particles", 0))
+                pB->pParticle = nullptr;
+                entid_t eidParticle;
+                if (eidParticle = EntityManager::GetEntityId("particles"))
                 {
                     pB->pParticle = (VPARTICLE_SYSTEM *)api->Send_Message(
-                        eidParticle, "lsffffffl", PS_CREATE_RIC, (char *)aBallTypes[i].sParticleName.GetBuffer(),
+                        eidParticle, "lsffffffl", PS_CREATE_RIC, (char *)aBallTypes[i].sParticleName.c_str(),
                         pB->vPos.x, pB->vPos.y, pB->vPos.z, 0.0f, 1.0f, 0.0f, 100000);
                 }
             }

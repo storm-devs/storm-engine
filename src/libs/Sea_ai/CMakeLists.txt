@@ -1,6 +1,6 @@
-project(seaai)
+project(sea_ai)
 
-add_library(${PROJECT_NAME} MODULE
+add_library(${PROJECT_NAME} STATIC
 	AIBalls.cpp
 	AIBalls.h
 	AICannon.cpp
@@ -37,7 +37,6 @@ add_library(${PROJECT_NAME} MODULE
 	LocatorShow.h
 	SEA_AI.cpp
 	SEA_AI.h
-	SeaSaveLoad.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

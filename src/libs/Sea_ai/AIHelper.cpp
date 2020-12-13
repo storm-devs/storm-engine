@@ -1,21 +1,19 @@
 #include "AIHelper.h"
+#include "../../Shared/events.h"
 #include "AIFort.h"
-#include "AIShip.h"
-
-#include "..\battle_interface\Events.h"
 
 AIHelper Helper;
 
-VDX8RENDER *AIHelper::pRS = null;
-ISLAND_BASE *AIHelper::pIsland = null;
-COLLIDE *AIHelper::pCollide = null;
-ATTRIBUTES *AIHelper::pASeaCameras = null;
+VDX9RENDER *AIHelper::pRS = nullptr;
+ISLAND_BASE *AIHelper::pIsland = nullptr;
+COLLIDE *AIHelper::pCollide = nullptr;
+ATTRIBUTES *AIHelper::pASeaCameras = nullptr;
 
 float AIHelper::fGravity = 9.81f;
 
-AIHelper::AIHelper() : aCharacters(_FL_), aMainCharacters(_FL_)
+AIHelper::AIHelper()
 {
-    pRelations = null;
+    pRelations = nullptr;
 }
 
 AIHelper::~AIHelper()
@@ -26,72 +24,76 @@ AIHelper::~AIHelper()
 bool AIHelper::Uninit()
 {
     // pRS = null;
-    pIsland = null;
+    pIsland = nullptr;
     // pCollide = null;
-    pASeaCameras = null;
-    aCharacters.DelAll();
-    aMainCharacters.DelAll();
+    pASeaCameras = nullptr;
+    aCharacters.clear();
+    aMainCharacters.clear();
     dwRelationSize = 0;
-    SE_DELETE(pRelations);
+    STORM_DELETE(pRelations);
     return true;
 }
 
 bool AIHelper::SetDevice()
 {
-    pRS = (VDX8RENDER *)api->CreateService("dx8render");
+    pRS = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
     Assert(pRS);
-    pCollide = (COLLIDE *)api->CreateService("COLL");
+    pCollide = static_cast<COLLIDE *>(api->CreateService("COLL"));
     Assert(pCollide);
 
     return true;
 }
 
-bool AIHelper::Init()
+bool AIHelper::Init() const
 {
-    pIsland = null;
-
-    ENTITY_ID eidIsland;
-    if (api->FindClass(&eidIsland, "island", 0))
-        pIsland = (ISLAND_BASE *)api->GetEntityPointer(&eidIsland);
+    pIsland = static_cast<ISLAND_BASE *>(EntityManager::GetEntityPointer(EntityManager::GetEntityId("island")));
 
     return true;
 }
 
 ATTRIBUTES *AIHelper::GetMainCharacter(ATTRIBUTES *pACharacter)
 {
-    dword dwIdx = aCharacters.Find(pACharacter);
+    /*uint32_t dwIdx = aCharacters.Find(pACharacter);
     if (dwIdx != INVALID_ARRAY_INDEX)
-        return aMainCharacters[dwIdx];
-    return null;
+      return aMainCharacters[dwIdx];
+    return null;*/
+    const auto it = std::find(aCharacters.begin(), aCharacters.end(), pACharacter); //~!~
+    return it != aCharacters.end() ? aMainCharacters[it - aCharacters.begin()] : nullptr;
 }
 
 void AIHelper::AddCharacter(ATTRIBUTES *pACharacter, ATTRIBUTES *pAMainCharacter)
 {
-    dword dwIdx = aCharacters.Find(pACharacter);
-    if (dwIdx != INVALID_ARRAY_INDEX)
+    // uint32_t dwIdx = aCharacters.Find(pACharacter);
+    // if (dwIdx != INVALID_ARRAY_INDEX)
+    //{
+    //	aMainCharacters[dwIdx] = pAMainCharacter;
+    //	return;
+    //}
+    const auto it = std::find(aCharacters.begin(), aCharacters.end(), pACharacter); //~!~
+    if (it != aCharacters.end())
     {
-        aMainCharacters[dwIdx] = pAMainCharacter;
+        aMainCharacters[it - aCharacters.begin()] = pAMainCharacter;
         return;
     }
-    aCharacters.Add(pACharacter);
-    aMainCharacters.Add(pAMainCharacter);
+    aCharacters.push_back(pACharacter);
+    aMainCharacters.push_back(pAMainCharacter);
 }
 
 void AIHelper::CalculateRelations()
 {
-    dword x, y;
+    uint32_t x, y;
 
-    SE_DELETE(pRelations);
-    dwRelationSize = aCharacters.Size();
-    pRelations = NEW dword[SQR(dwRelationSize)];
+    STORM_DELETE(pRelations);
+    dwRelationSize = aCharacters.size();
+    pRelations = new uint32_t[SQR(dwRelationSize)];
     for (y = 0; y < dwRelationSize; y++)
         for (x = 0; x < dwRelationSize; x++)
             if (x != y)
             {
-                VDATA *pData =
+                auto *pData =
                     api->Event(GET_RELATION_EVENT, "ll", GetIndex(aMainCharacters[y]), GetIndex(aMainCharacters[x]));
                 Assert(pData);
-                *GetRelation(y, x) = dword(pData->GetLong());
+                *GetRelation(y, x) = static_cast<uint32_t>(pData->GetLong());
             }
             else
             {
@@ -99,37 +101,38 @@ void AIHelper::CalculateRelations()
             }
 }
 
-dword AIHelper::FindIndex(ATTRIBUTES *pACharacter) const
+uint32_t AIHelper::FindIndex(ATTRIBUTES *pACharacter) const
 {
-    return aCharacters.Find(pACharacter);
+    const auto it = std::find(aCharacters.begin(), aCharacters.end(), pACharacter);
+    return it != aCharacters.end() ? it - aCharacters.begin() : -1;
 }
 
-dword *AIHelper::GetRelation(dword x, dword y) const
+uint32_t *AIHelper::GetRelation(uint32_t x, uint32_t y) const
 {
     Assert(x < dwRelationSize && y < dwRelationSize);
     return &pRelations[x + y * dwRelationSize];
 }
 
-dword AIHelper::GetRelationSafe(ATTRIBUTES *pA1, ATTRIBUTES *pA2) const
+uint32_t AIHelper::GetRelationSafe(ATTRIBUTES *pA1, ATTRIBUTES *pA2) const
 {
     Assert(pA1 && pA2);
     if (dwRelationSize == 0)
         return RELATION_NEUTRAL;
-    dword dw1 = FindIndex(pA1);
+    const auto dw1 = FindIndex(pA1);
     if (dw1 == INVALID_ARRAY_INDEX)
         return RELATION_NEUTRAL;
-    dword dw2 = FindIndex(pA2);
+    const auto dw2 = FindIndex(pA2);
     if (dw2 == INVALID_ARRAY_INDEX)
         return RELATION_NEUTRAL;
     return *GetRelation(dw1, dw2);
 }
 
-dword AIHelper::GetRelation(ATTRIBUTES *pA1, ATTRIBUTES *pA2) const
+uint32_t AIHelper::GetRelation(ATTRIBUTES *pA1, ATTRIBUTES *pA2) const
 {
     Assert(pA1 && pA2);
-    dword dw1 = FindIndex(pA1);
+    const auto dw1 = FindIndex(pA1);
     Assert(dw1 != INVALID_ARRAY_INDEX);
-    dword dw2 = FindIndex(pA2);
+    const auto dw2 = FindIndex(pA2);
     Assert(dw2 != INVALID_ARRAY_INDEX);
     return *GetRelation(dw1, dw2);
 }
@@ -151,7 +154,7 @@ bool AIHelper::isNeutral(ATTRIBUTES *pA1, ATTRIBUTES *pA2) const
 
 VAI_INNEROBJ *AIHelper::FindAIInnerObj(ATTRIBUTES *pACharacter)
 {
-    VAI_INNEROBJ *pObj = null;
+    VAI_INNEROBJ *pObj = nullptr;
     if (AIFort::pAIFort)
         pObj = AIFort::pAIFort->FindFort(pACharacter);
     if (!pObj)
@@ -159,19 +162,20 @@ VAI_INNEROBJ *AIHelper::FindAIInnerObj(ATTRIBUTES *pACharacter)
     return pObj;
 }
 
-void AIHelper::Print(float x, float y, float fScale, char *pFormat, ...)
+void AIHelper::Print(float x, float y, float fScale, const char *pFormat, ...)
 {
     char cBuffer[2048];
 
     va_list args;
     va_start(args, pFormat);
-    _vsnprintf(cBuffer, sizeof(cBuffer), pFormat, args);
+    _vsnprintf_s(cBuffer, sizeof(cBuffer), pFormat, args);
     va_end(args);
 
-    pRS->ExtPrint(FONT_DEFAULT, 0xFFFFFFFF, 0x00000000, ALIGN_CENTER, 0, fScale, 0, 0, long(x), long(y), cBuffer);
+    pRS->ExtPrint(FONT_DEFAULT, 0xFFFFFFFF, 0x00000000, PR_ALIGN_CENTER, false, fScale, 0, 0, static_cast<long>(x),
+                  static_cast<long>(y), cBuffer);
 }
 
-void AIHelper::Print3D(CVECTOR vPos, float dy, float fScale, char *pFormat, ...)
+void AIHelper::Print3D(CVECTOR vPos, float dy, float fScale, const char *pFormat, ...)
 {
     CMatrix mtx, view, prj;
     char Buff_4k[2048];
@@ -184,35 +188,35 @@ void AIHelper::Print3D(CVECTOR vPos, float dy, float fScale, char *pFormat, ...)
     view.Transposition();
 
     pRS->GetViewport(&vp);
-    float fWidth = vp.Width * 0.5f;
-    float fHeight = vp.Height * 0.5f;
+    auto fWidth = vp.Width * 0.5f;
+    auto fHeight = vp.Height * 0.5f;
 
     mtx.Projection(&vPos, &vrt, 1, fWidth, fHeight, sizeof(CVECTOR), sizeof(MTX_PRJ_VECTOR));
     vPos = CVECTOR(vrt.x, vrt.y, vrt.z);
 
     va_list args;
     va_start(args, pFormat);
-    _vsnprintf(Buff_4k, sizeof(Buff_4k), pFormat, args);
+    _vsnprintf_s(Buff_4k, sizeof(Buff_4k), pFormat, args);
     va_end(args);
 
-    pRS->ExtPrint(FONT_DEFAULT, 0xFFFFFFFF, 0x00000000, ALIGN_CENTER, 0, fScale, 0, 0, (long)vPos.x, long(vPos.y + dy),
-                  Buff_4k);
+    pRS->ExtPrint(FONT_DEFAULT, 0xFFFFFFFF, 0x00000000, PR_ALIGN_CENTER, false, fScale, 0, 0, static_cast<long>(vPos.x),
+                  static_cast<long>(vPos.y + dy), Buff_4k);
 }
 
 void AIHelper::Save(CSaveLoad *pSL)
 {
     pSL->SaveFloat(fGravity);
     pSL->SaveDword(dwRelationSize);
-    pSL->SaveBuffer((const char *)pRelations, dwRelationSize * dwRelationSize * sizeof(dword));
+    pSL->SaveBuffer((const char *)pRelations, dwRelationSize * dwRelationSize * sizeof(uint32_t));
 
     pSL->SaveAPointer("seacameras", pASeaCameras);
 
-    pSL->SaveDword(aCharacters.Size());
-    for (dword i = 0; i < aCharacters.Size(); i++)
+    pSL->SaveDword(aCharacters.size());
+    for (uint32_t i = 0; i < aCharacters.size(); i++)
         pSL->SaveAPointer("character", aCharacters[i]);
 
-    pSL->SaveDword(aMainCharacters.Size());
-    for (dword i = 0; i < aMainCharacters.Size(); i++)
+    pSL->SaveDword(aMainCharacters.size());
+    for (uint32_t i = 0; i < aMainCharacters.size(); i++)
         pSL->SaveAPointer("character", aMainCharacters[i]);
 }
 
@@ -224,11 +228,11 @@ void AIHelper::Load(CSaveLoad *pSL)
 
     pASeaCameras = pSL->LoadAPointer("seacameras");
 
-    dword dwNum = pSL->LoadDword();
-    for (dword i = 0; i < dwNum; i++)
-        aCharacters.Add(pSL->LoadAPointer("character"));
+    auto dwNum = pSL->LoadDword();
+    for (uint32_t i = 0; i < dwNum; i++)
+        aCharacters.push_back(pSL->LoadAPointer("character"));
 
     dwNum = pSL->LoadDword();
-    for (dword i = 0; i < dwNum; i++)
-        aMainCharacters.Add(pSL->LoadAPointer("character"));
+    for (uint32_t i = 0; i < dwNum; i++)
+        aMainCharacters.push_back(pSL->LoadAPointer("character"));
 }

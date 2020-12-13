@@ -3,7 +3,7 @@
 
 #include "AIHelper.h"
 
-class SeaLocatorShow : public ENTITY
+class SeaLocatorShow : public Entity
 {
     ATTRIBUTES *pALocators;
     bool bShow;
@@ -15,10 +15,10 @@ class SeaLocatorShow : public ENTITY
     struct SphVertex
     {
         CVECTOR v;
-        dword c;
+        uint32_t c;
     };
 
-    dword sphereNumTrgs;
+    uint32_t sphereNumTrgs;
     SphVertex *sphereVertex;
 
     void CreateSphere();
@@ -27,9 +27,9 @@ class SeaLocatorShow : public ENTITY
     CVECTOR GetLocatorPos(ATTRIBUTES *pA);
     float GetLocatorAng(ATTRIBUTES *pA);
     float GetLocatorRadius(ATTRIBUTES *pA);
-    char *GetRealLocatorName(ATTRIBUTES *pA);
-    char *GetLocatorName(ATTRIBUTES *pA);
-    char *GetLocatorGroupName(ATTRIBUTES *pA);
+    const char *GetRealLocatorName(ATTRIBUTES *pA);
+    const char *GetLocatorName(ATTRIBUTES *pA);
+    const char *GetLocatorGroupName(ATTRIBUTES *pA);
 
     void PrintLocator(ATTRIBUTES *pA);
     void ProcessLocators(ATTRIBUTES *pA);
@@ -38,19 +38,36 @@ class SeaLocatorShow : public ENTITY
     SeaLocatorShow();
     ~SeaLocatorShow();
 
-    bool Init();
+    bool Init() override;
     void SetDevice();
 
-    void Realize(dword Delta_Time);
-    void Execute(dword Delta_Time);
+    void Realize(uint32_t Delta_Time);
+    void Execute(uint32_t Delta_Time) const;
 
     bool CreateState(ENTITY_STATE_GEN *state_gen);
     bool LoadState(ENTITY_STATE *state);
 
-    void ProcessMessage(dword iMsg, dword wParam, dword lParam);
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    void ProcessMessage(uint32_t iMsg, uint32_t wParam, uint32_t lParam);
+    uint64_t ProcessMessage(MESSAGE &message) override;
 
-    dword AttributeChanged(ATTRIBUTES *pAttribute);
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
+
+    uint32_t AttributeChanged(ATTRIBUTES *pAttribute) override;
 };
 
 #endif

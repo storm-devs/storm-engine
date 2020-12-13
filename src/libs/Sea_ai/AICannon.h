@@ -1,9 +1,8 @@
 #ifndef SEA_CANNON_AI_HPP
 #define SEA_CANNON_AI_HPP
 
-#include "AIBalls.h"
 #include "AIHelper.h"
-#include "sd2_h\VAI_ObjBase.h"
+#include "Sd2_h/VAI_ObjBase.h"
 
 // ============================================================================
 // Master class AICannon
@@ -13,7 +12,7 @@ class AICannon
 {
   private:
     AIAttributesHolder *pAHolder;
-    ENTITY_ID eidParent;     // parent for cannon (ship, or fort entity)
+    entid_t eidParent;       // parent for cannon (ship, or fort entity)
     CVECTOR vPos, vDir;      // Cannon position and direction(relative to parent)
     float fTime2Action;      // timeout before action(calculated in script)
     float fTotalTime2Action; // total timeout before action(calculated in script)(unchangeable)
@@ -49,20 +48,20 @@ class AICannon
     AICannon();
     virtual ~AICannon();
 
-    void Init(AIAttributesHolder *_pAHolder, const ENTITY_ID &eid, GEOS::LABEL &lbl);
+    void Init(AIAttributesHolder *_pAHolder, entid_t eid, GEOS::LABEL &lbl);
 
     void Execute(float fDeltaTime);
 
     static float CalcMaxFireDistance(float fFireHeight, float fSpeedV0, float fAngle);
 
-    ENTITY_ID GetParentEID() const
+    entid_t GetParentEID() const
     {
         return eidParent;
     };
     VAI_OBJBASE *GetAIObjPointer() const;
 
-    float CalcHeightFireAngle(float _fSpeedV0, CVECTOR &vOur, CVECTOR &vEnemy);
-    bool Fire(float fSpeedV0, CVECTOR &vFirePos);
+    float CalcHeightFireAngle(float _fSpeedV0, const CVECTOR &vOur, const CVECTOR &vEnemy) const;
+    bool Fire(float fSpeedV0, const CVECTOR &vFirePos);
     void Load();
     void Unload();
     void Recharge();
@@ -77,14 +76,14 @@ class AICannon
     {
         fDamaged = _fDamage;
     };
-    float GetDamage()
+    float GetDamage() const
     {
         return fDamaged;
     };
-    CVECTOR GetPos();
-    CVECTOR GetDir();
-    float GetDirY();
-    float GetDistance(CVECTOR &vPos)
+    CVECTOR GetPos() const;
+    CVECTOR GetDir() const;
+    float GetDirY() const;
+    float GetDistance(CVECTOR &vPos) const
     {
         return sqrtf(~(vPos - GetPos()));
     };
@@ -94,41 +93,41 @@ class AICannon
         this->fMaxFireDistance = fMaxFireDistance;
     };
 
-    inline void SetRechargeEnable(bool bRechargeEnable)
+    void SetRechargeEnable(bool bRechargeEnable)
     {
         bCanRecharge = bRechargeEnable;
     }
-    inline bool isLoad()
+    bool isLoad() const
     {
         return bLoad;
     }
-    inline bool isEmpty()
+    bool isEmpty() const
     {
         return bEmpty;
     }
-    inline bool isReady2Fire()
+    bool isReady2Fire() const
     {
         return (bReady2Fire & (!isDamaged()));
     } // CHECK-ME
-    inline bool isDamaged()
+    bool isDamaged() const
     {
         return fDamaged >= 1.0f;
     }
-    inline bool isDisabled()
+    bool isDisabled() const
     {
         return fDamaged >= 2.0f;
     }
-    inline bool isFired()
+    bool isFired() const
     {
         return bFired;
     }
-    inline bool isRecharged()
+    bool isRecharged() const
     {
         return bRecharged;
     }
 
-    void Save(CSaveLoad *pSL);
-    void Load(CSaveLoad *pSL, AIAttributesHolder *_pAHolder, const ENTITY_ID &eid);
+    void Save(CSaveLoad *pSL) const;
+    void Load(CSaveLoad *pSL, AIAttributesHolder *_pAHolder, entid_t eid);
 
   private:
     CANNONTYPE CannonType;
