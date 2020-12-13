@@ -1,40 +1,53 @@
 #ifndef __SHIP_TRACKS_HPP
 #define __SHIP_TRACKS_HPP
 
-#include "dx8render.h"
+#include "dx9render.h"
 #include "sea_base.h"
 #include "ship_base.h"
+#include <vector>
 
-#include "templates\array.h"
-#include "templates\string.h"
-
-class ShipTracks : public ENTITY
+class ShipTracks : public Entity
 {
   public:
-    ShipTracks();
+    ShipTracks() = default;
     ~ShipTracks();
 
     bool Init();
 
-    void Execute(dword dwDeltaTime);
-    void Realize(dword dwDeltaTime);
-
+    void Execute(uint32_t dwDeltaTime);
+    void Realize(uint32_t dwDeltaTime);
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+                LostRender(delta); break;
+            case Stage::restore_render:
+                RestoreRender(delta); break;*/
+        }
+    }
     void AddShip(SHIP_BASE *pShip);
     void DelShip(SHIP_BASE *pShip);
     void ResetTrack(SHIP_BASE *pShip);
 
-    dword AttributeChanged(ATTRIBUTES *pA);
+    uint32_t AttributeChanged(ATTRIBUTES *pA);
 
   private:
     class ShipTrack
     {
       public:
-        static VDX8RENDER *pRS;
+        static VDX9RENDER *pRS;
         static SEA_BASE *pSea;
         static long iVTmpBuffer1, iVTmpBuffer2;
         static long iITmpBuffer1, iITmpBuffer2;
         static long iRefCount;
-        static dword dwMaxBufferSize1, dwMaxBufferSize2;
+        static uint32_t dwMaxBufferSize1, dwMaxBufferSize2;
 
         SHIP_BASE *pShip;
 
@@ -62,7 +75,7 @@ class ShipTracks : public ENTITY
         struct TrackVertex
         {
             CVECTOR vPos;
-            dword dwColor;
+            uint32_t dwColor;
             float tu, tv;
         };
 
@@ -71,23 +84,23 @@ class ShipTracks : public ENTITY
         float fCurTV;
         CVECTOR vLastPos, vLastAng;
 
-        array<Track> aTrack1, aTrack2;
+        std::vector<Track> aTrack1, aTrack2;
         long iTrackTexture1, iTrackTexture2;
         float fWidth11, fWidth12, fWidth21, fWidth22;
         float fSpeed11, fSpeed12, fSpeed21, fSpeed22;
         float fLifeTime1, fLifeTime2;
         float fZStart1, fZStart2;
         float fTrackStep1, fTrackStep2;
-        dword dwTrackStep1, dwTrackStep2;
+        uint32_t dwTrackStep1, dwTrackStep2;
         float fUP1, fUP2;
 
         float fTrackDistance;
 
-        bool Reserve1(dword dwSize);
-        bool Reserve2(dword dwSize);
+        bool Reserve1(uint32_t dwSize);
+        bool Reserve2(uint32_t dwSize);
     };
 
-    array<ShipTrack *> aShips;
+    std::vector<ShipTrack *> aShips;
 };
 
 #endif

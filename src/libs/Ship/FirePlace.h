@@ -1,17 +1,13 @@
 #ifndef _SHIP_FIRE_PLACE_HPP
 #define _SHIP_FIRE_PLACE_HPP
 
-#include "collide.h"
-#include "dx8render.h"
+#include "dx9render.h"
 #include "model.h"
 #include "sea_base.h"
 #include "ship_base.h"
 #include "vparticle_system.h"
 
-#include "templates\array.h"
-#include "templates\string.h"
-
-#include "sd2_h\SaveLoad.h"
+#include <string>
 
 class FirePlace
 {
@@ -65,7 +61,7 @@ class FirePlace
     void Save(CSaveLoad *pSL);
     void Load(CSaveLoad *pSL);
 
-    static ENTITY_ID eidSound;
+    static entid_t eidSound;
 
   private:
     bool CreateParticle(const char *pParticleSmokeName, const char *pParticleFireName);
@@ -84,7 +80,7 @@ class FirePlace
     CVECTOR vOrigPos;
     bool bActive;
     float fRunTime;
-    string sParticleSmokeName, sParticleFireName, sSoundName;
+    std::string sParticleSmokeName, sParticleFireName, sSoundName;
 };
 
 #endif
