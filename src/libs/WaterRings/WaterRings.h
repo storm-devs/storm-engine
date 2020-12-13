@@ -1,7 +1,7 @@
 #pragma once
 
 #include "collide.h"
-#include "dx8render.h"
+#include "dx9render.h"
 #include "model.h"
 #include "sea_base.h"
 #include "vmodule_api.h"
@@ -20,7 +20,7 @@
 struct RING_VERTEX
 {
     CVECTOR pos;
-    dword color;
+    uint32_t color;
     float tu, tv;
 };
 
@@ -41,19 +41,34 @@ struct tRing
     float cosA, sinA;
 };
 
-class WaterRings : public ENTITY
+class WaterRings : public Entity
 {
   public:
     WaterRings();
     ~WaterRings();
     bool Init();
-    void Realize(dword _dTime);
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    void Realize(uint32_t dTime);
+    uint64_t ProcessMessage(MESSAGE &message);
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        // case Stage::execute:
+        //	Execute(delta); break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+                LostRender(delta); break;
+            case Stage::restore_render:
+                RestoreRender(delta); break;*/
+        }
+    }
 
   private:
-    void UpdateGrid(int _ringI, WORD *iPointer, RING_VERTEX *vPointer, long vOffset);
+    void UpdateGrid(int _ringI, uint16_t *iPointer, RING_VERTEX *vPointer, long vOffset);
 
-    VDX8RENDER *renderService;
+    VDX9RENDER *renderService;
     SEA_BASE *sea;
     TIVBufferManager *ivManager;
     long ringTexture;
