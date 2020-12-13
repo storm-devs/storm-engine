@@ -1,7 +1,6 @@
 #ifndef _SCRIPT_LIBRIARY_TEST_H_
 #define _SCRIPT_LIBRIARY_TEST_H_
-
-#include "vmodule_api.h"
+#include "script_libriary.h"
 
 class SCRIPT_LIBRIARY_TEST : public SCRIPT_LIBRIARY
 {

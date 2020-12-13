@@ -1,6 +1,6 @@
-project(scriptlibrary)
+project(script_library)
 
-add_library(${PROJECT_NAME} MODULE
+add_library(${PROJECT_NAME} STATIC
 	script_libriary_test.cpp
 	script_libriary_test.h
 	vano_files.cpp
