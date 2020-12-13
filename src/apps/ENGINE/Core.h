@@ -1,5 +1,6 @@
 #pragma once
 
+#include <process.h>
 #include <windows.h>
 
 #include "EntityManager.h"
@@ -11,8 +12,21 @@
 #include <vector>
 //#include "program.h"
 #include "achievements.h"
+#include "safequeue.h"
 
 #define ENGINE_SCRIPT_VERSION 54128
+
+template <typename T> struct tThrd
+{
+    typedef uint32_t (__thiscall T::*PMethod)();
+    static uint32_t WINAPI Function(PVOID pParam)
+    {
+        return (((tThrd *)pParam)->pThis->*((tThrd *)pParam)->pMethod)();
+    };
+    T *pThis;
+    PMethod pMethod;
+    HANDLE Handle;
+};
 
 typedef struct
 {
@@ -83,6 +97,10 @@ class CORE : public VAPI
 
     CORE_STATE CoreState{};
     char *State_file_name;
+
+    CRITICAL_SECTION lock;
+    void Start_CriticalSection();
+    void Leave_CriticalSection();
 
     TIMER Timer;
     SYSTEM_MESSAGE MessageStack[SYSTEM_MESSAGE_STACK_SIZE]{};
@@ -167,6 +185,11 @@ class CORE : public VAPI
 
     bool LoCheck();
 
+    uint32_t Process();
+    void StartEvent(uint32_t function_code);
+    void StartThread();
+    void ReleaseThread();
+
     // steam section
     CSteamStatsAchievements *g_SteamAchievements;
 
@@ -190,4 +213,9 @@ class CORE : public VAPI
     uint32_t getDLCCount();
     uint32_t getDLCDataByIndex(uint32_t iDLC);
     bool activateGameOverlayDLC(uint32_t nAppId);
+
+  private:
+    SafeQueue<uint32_t> thrQueue;
+    tThrd<CORE> MyThread;
+    HANDLE hEvent;
 };

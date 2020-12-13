@@ -71,6 +71,7 @@ void CORE::CleanUp()
     Services_List.Release();
     Services_List.Release();
     delete State_file_name;
+    ReleaseThread();
 }
 
 void CORE::InitBase()
@@ -233,6 +234,9 @@ void CORE::ProcessControls()
 bool CORE::Initialize()
 {
     ResetCore();
+
+    InitializeCriticalSection(&lock);
+    StartThread();
 
     Initialized = true;
 
@@ -922,6 +926,64 @@ bool CORE::IsNetActive() const
     //return bNetActive;
 }
 */
+
+void CORE::Start_CriticalSection()
+{
+    EnterCriticalSection(&lock);
+};
+void CORE::Leave_CriticalSection()
+{
+    LeaveCriticalSection(&lock);
+};
+
+uint32_t CORE::Process()
+{
+    DWORD dwWaitResult;
+    uint32_t function_code;
+    DATA *pResult;
+
+    while (1)
+    {
+        if (!thrQueue.IsEmpty())
+            SetEvent(hEvent);
+        dwWaitResult = WaitForSingleObject(hEvent, 1);
+        if (dwWaitResult == WAIT_OBJECT_0)
+        {
+            EnterCriticalSection(&lock);
+            function_code = thrQueue.Pop();
+            Compiler.BC_Execute(function_code, pResult);
+            LeaveCriticalSection(&lock);
+        }
+        //		if(Reset_flag) return 0;
+    }
+    return 0;
+}
+
+void CORE::StartEvent(uint32_t function_code)
+{
+    thrQueue.Push(function_code);
+}
+
+void CORE::StartThread()
+{
+    hEvent = CreateEvent(nullptr, false, false, "thrEvent");
+    if (hEvent == NULL)
+    {
+        Trace("Error create event!!");
+    }
+    MyThread.pThis = this;
+    MyThread.pMethod = &CORE::Process;
+    MyThread.Handle = CreateThread(nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(MyThread.Function), &MyThread,
+                                   CREATE_SUSPENDED, nullptr);
+    SetThreadPriority(MyThread.Handle, THREAD_PRIORITY_NORMAL);
+    ResumeThread(MyThread.Handle);
+}
+
+void CORE::ReleaseThread()
+{
+    WaitForSingleObject(MyThread.Handle, 0);
+    CloseHandle(MyThread.Handle);
+}
 
 bool CORE::isSteamEnabled()
 {
