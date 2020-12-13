@@ -1,7 +1,6 @@
 #include "DeckCamera.h"
-#include "geos.h"
-#include "ship_base.h"
-#include <stdio.h>
+#include "../../Shared/messages.h"
+#include "Sd2_h/SaveLoad.h"
 
 #define DISCR_F_VAL 0.00001f
 #define EQU_FLOAT(x, y) (x) - (y) > DISCR_F_VAL ? false : (y) - (x) > DISCR_F_VAL ? false : true
@@ -10,12 +9,12 @@
 DECK_CAMERA::DECK_CAMERA()
 {
     vb_id = 0;
-    RenderService = 0;
-    ZeroMemory(&camera_pos, sizeof(camera_pos));
+    RenderService = nullptr;
+    PZERO(&camera_pos, sizeof(camera_pos));
     camera_pos.y = 1.0f;
-    ZeroMemory(&camera_ang, sizeof(camera_ang));
-    pACharacter = null;
-    pathNode = null;
+    PZERO(&camera_ang, sizeof(camera_ang));
+    pACharacter = nullptr;
+    pathNode = nullptr;
     bLoad = false;
 }
 
@@ -25,16 +24,16 @@ DECK_CAMERA::~DECK_CAMERA()
 
 bool DECK_CAMERA::Init()
 {
-    GUARD(DECK_CAMERA::Init())
-    _CORE_API->SystemMessages(GetID(), true);
+    // GUARD(DECK_CAMERA::Init())
+    // api->SystemMessages(GetId(),true);
     SetDevice();
-    UNGUARD
+    // UNGUARD
     return true;
 }
 
 void DECK_CAMERA::SetDevice()
 {
-    RenderService = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
+    RenderService = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
     Assert(RenderService);
 }
 
@@ -49,7 +48,7 @@ bool DECK_CAMERA::LoadState(ENTITY_STATE *state)
     return true;
 }
 
-void DECK_CAMERA::Execute(dword Delta_Time)
+void DECK_CAMERA::Execute(uint32_t Delta_Time)
 {
     if (!isOn())
         return;
@@ -61,35 +60,35 @@ void DECK_CAMERA::Execute(dword Delta_Time)
     Move(Delta_Time);
 }
 
-void DECK_CAMERA::Realize(dword Delta_Time)
+void DECK_CAMERA::Realize(uint32_t Delta_Time)
 {
     if (!isOn())
         return;
 }
 
-void DECK_CAMERA::Move(DWORD DeltaTime)
+void DECK_CAMERA::Move(uint32_t DeltaTime)
 {
     if (!isActive())
         return;
 
-    pModel = (MODEL *)GetModelPointer();
+    pModel = static_cast<MODEL *>(GetModelPointer());
     Assert(pModel);
 
     pModel->Update();
     CONTROL_STATE cs;
-    _CORE_API->Controls->GetControlState("DeckCamera_Turn_H", cs);
-    camera_ang.y += fSensivityAzimuthAngle * 3.0f * (float)(cs.fValue);
+    api->Controls->GetControlState("DeckCamera_Turn_H", cs);
+    camera_ang.y += fSensivityAzimuthAngle * 3.0f * static_cast<float>(cs.fValue);
 
-    _CORE_API->Controls->GetControlState("DeckCamera_Left", cs);
+    api->Controls->GetControlState("DeckCamera_Left", cs);
     if (cs.state == CST_ACTIVE)
-        camera_ang.y -= fSensivityAzimuthAngle * 15.f * (float)(cs.fValue);
+        camera_ang.y -= fSensivityAzimuthAngle * 15.f * static_cast<float>(cs.fValue);
 
-    _CORE_API->Controls->GetControlState("DeckCamera_Right", cs);
+    api->Controls->GetControlState("DeckCamera_Right", cs);
     if (cs.state == CST_ACTIVE)
-        camera_ang.y += fSensivityAzimuthAngle * 15.f * (float)(cs.fValue);
+        camera_ang.y += fSensivityAzimuthAngle * 15.f * static_cast<float>(cs.fValue);
 
-    _CORE_API->Controls->GetControlState("DeckCamera_Turn_V", cs);
-    camera_ang.x -= fSensivityHeightAngle * 3.0f * (float)(cs.fValue);
+    api->Controls->GetControlState("DeckCamera_Turn_V", cs);
+    camera_ang.x -= fSensivityHeightAngle * 3.0f * static_cast<float>(cs.fValue);
 
     if (camera_ang.x > CAMERA_MAX_X)
         camera_ang.x = CAMERA_MAX_X;
@@ -104,14 +103,14 @@ void DECK_CAMERA::Move(DWORD DeltaTime)
     CMatrix glbRotMtx;
     glbRotMtx.BuildMatrix(camera_ang);
     CMatrix rotMtx;
-    pathNode->glob_mtx.Get3X3(rotMtx);
+    pathNode->glob_mtx.Get3X3(&rotMtx);
     glbRotMtx *= rotMtx;
-    float cx = cosf(camera_ang.x);
-    float sx = sinf(camera_ang.x);
-    float cy = cosf(camera_ang.y);
-    float sy = sinf(camera_ang.y);
+    auto cx = cosf(camera_ang.x);
+    auto sx = sinf(camera_ang.x);
+    auto cy = cosf(camera_ang.y);
+    auto sy = sinf(camera_ang.y);
     float xAng, yAng, zAng;
-    CVECTOR v = glbRotMtx * CVECTOR(0, 0, 1.f);
+    auto v = glbRotMtx * CVECTOR(0, 0, 1.f);
     yAng = atan2f(v.x, v.z);
     glbRotMtx.RotateY(-yAng);
     v = glbRotMtx * CVECTOR(0, 0, 1.f);
@@ -125,34 +124,34 @@ void DECK_CAMERA::Move(DWORD DeltaTime)
     s_ang.z = zAng * fRockingZ;
 
     // узнать новую позицию камеры
-    CVECTOR prev_pos = camera_pos;
-    float speed0 = DeltaTime * fSensivityDistance;
-    float speed = 0.f;
+    auto prev_pos = camera_pos;
+    auto speed0 = DeltaTime * fSensivityDistance;
+    auto speed = 0.f;
     CVECTOR vShift;
     vShift.x = cx * sy;
     vShift.y = 0.f;
     vShift.z = cx * cy;
 
     /*CVECTOR strafeV = CVECTOR(0.f,0.f,0.f);
-    _CORE_API->Controls->GetControlState("DeckCamera_Left",cs);
+    api->Controls->GetControlState("DeckCamera_Left",cs);
     if(cs.state == CST_ACTIVE)
     {
-        strafeV = !(CVECTOR(0.f, -1.f, 0.f)^vShift);
-        speed=speed0;
+      strafeV = !(CVECTOR(0.f, -1.f, 0.f)^vShift);
+      speed=speed0;
     }
 
-    _CORE_API->Controls->GetControlState("DeckCamera_Right",cs);
+    api->Controls->GetControlState("DeckCamera_Right",cs);
     if(cs.state == CST_ACTIVE)
     {
-        strafeV = !(CVECTOR(0.f, 1.f, 0.f)^vShift);
-        speed=speed0;
+      strafeV = !(CVECTOR(0.f, 1.f, 0.f)^vShift);
+      speed=speed0;
     }*/
 
-    _CORE_API->Controls->GetControlState("DeckCamera_Forward", cs);
+    api->Controls->GetControlState("DeckCamera_Forward", cs);
     if (cs.state == CST_ACTIVE)
         speed = speed0;
 
-    _CORE_API->Controls->GetControlState("DeckCamera_Backward", cs);
+    api->Controls->GetControlState("DeckCamera_Backward", cs);
     if (cs.state == CST_ACTIVE)
     {
         speed = speed0;
@@ -167,14 +166,14 @@ void DECK_CAMERA::Move(DWORD DeltaTime)
         CVECTOR src, dst;
         src.y = 500.f;
         dst.y = -500.f;
-        bool bNoFinded = true;
-        CVECTOR vRes = camera_pos;
-        float step = MEN_STEP_MIN;
+        auto bNoFinded = true;
+        auto vRes = camera_pos;
+        auto step = MEN_STEP_MIN;
         float len;
-        CVECTOR prev_res = vRes;
+        auto prev_res = vRes;
         CVECTOR p1, p2;
         long trgNum = -1;
-        while (1)
+        while (true)
         {
             // определяем треугольник на котором мы находимся
             src.x = dst.x = vRes.x;
@@ -196,7 +195,7 @@ void DECK_CAMERA::Move(DWORD DeltaTime)
                     // определить высоту камеры
                     src.x = dst.x = vRes.x;
                     src.z = dst.z = vRes.z;
-                    float tmp = MultiTrace(src, dst, camera_pos.y); // pathNode->geo->Trace(src,dst);
+                    auto tmp = MultiTrace(src, dst, camera_pos.y); // pathNode->geo->Trace(src,dst);
                     if (tmp <= 1.f)
                     {
                         vRes.y = 500.f - 1000.f * tmp;
@@ -207,7 +206,7 @@ void DECK_CAMERA::Move(DWORD DeltaTime)
                     bNoFinded = false;
                     break;
                 }
-                else if (len > 0.f)
+                if (len > 0.f)
                 {
                     prev_res = vRes - vShift * .0001f;
                     vRes += vShift * MEN_STEP_MIN;
@@ -276,7 +275,7 @@ void DECK_CAMERA::Move(DWORD DeltaTime)
             // проверим на попадание камеры в приемлимое место
             src.x = dst.x = vRes.x;
             src.z = dst.z = vRes.z;
-            float fTmp = MultiTrace(src, dst, camera_pos.y);
+            auto fTmp = MultiTrace(src, dst, camera_pos.y);
             // float fDist = 1000.f;
             // if(fTmp<=1.f) fDist = src.y + fTmp*(dst.y-src.y) - camera_pos.y;
             if (fTmp <= 1.f)
@@ -296,12 +295,12 @@ void DECK_CAMERA::Move(DWORD DeltaTime)
     s_pos = pathNode->glob_mtx * (camera_pos + CVECTOR(0.f, h_eye, 0.f));
 
     // установить камеру
-    RenderService->SetCamera(&s_pos, &s_ang, GetPerspective());
+    RenderService->SetCamera(s_pos, s_ang, GetPerspective());
 }
 
 void DECK_CAMERA::SetCharacter(ATTRIBUTES *_pACharacter)
 {
-    ENTITY_ID eidTemp;
+    entid_t eidTemp;
 
     pACharacter = _pACharacter;
 }
@@ -311,7 +310,7 @@ bool DECK_CAMERA::FindPath()
     pModel = GetModelPointer();
     Assert(pModel); // если есть адрес у объекта
 
-    NODE *pNewPathNode = pModel->FindNode("path");
+    auto *const pNewPathNode = pModel->FindNode("path");
     Assert(pNewPathNode);
     if (pathNode != pNewPathNode)
     {
@@ -324,7 +323,7 @@ bool DECK_CAMERA::FindPath()
     return true;
 }
 
-dword _cdecl DECK_CAMERA::ProcessMessage(MESSAGE &message)
+uint64_t DECK_CAMERA::ProcessMessage(MESSAGE &message)
 {
     switch (message.Long())
     {
@@ -358,14 +357,14 @@ void DECK_CAMERA::SetStartPos()
         camera_pos.z = 0.f;
         camera_pos.y = -500.f;
 
-        for (int i = 0; i < 1000; i++)
+        for (auto i = 0; i < 1000; i++)
         {
-            NODE *root = pModel->GetNode(i);
-            if (root == NULL)
+            auto *root = pModel->GetNode(i);
+            if (root == nullptr)
                 break;
             GEOS::INFO gi;
             root->geo->GetInfo(gi);
-            int j = 0;
+            int j;
             for (j = 0; j < gi.nlabels; j++)
             {
                 GEOS::LABEL gl;
@@ -387,7 +386,7 @@ void DECK_CAMERA::SetStartPos()
         src.x = dst.x = camera_pos.x;
         src.z = dst.z = camera_pos.z;
 
-        float tmp = pathNode->geo->Trace(src, dst);
+        auto tmp = pathNode->geo->Trace(src, dst);
         if (tmp <= 1.f)
         {
             tmp = 500.f - tmp * 1000.f;
@@ -412,13 +411,13 @@ void DECK_CAMERA::SetStartPos()
 
 bool DECK_CAMERA::GetCrossXZ(CVECTOR &spos, CVECTOR &dv, CVECTOR &p1, CVECTOR &p2, CVECTOR &res)
 {
-    bool bNoCross = false;
+    auto bNoCross = false;
 
-    bool bXset = false;
-    bool bZset = false;
+    auto bXset = false;
+    auto bZset = false;
 
-    float xRes = 0.f;
-    float zRes = 0.f;
+    auto xRes = 0.f;
+    auto zRes = 0.f;
 
     // проверка на dx=0 для направляющего вектора
     if (!bNoCross)
@@ -440,7 +439,7 @@ bool DECK_CAMERA::GetCrossXZ(CVECTOR &spos, CVECTOR &dv, CVECTOR &p1, CVECTOR &p
             {
                 if (spos.z != zRes)
                     bNoCross = true;
-            }
+            } //~!~
             else
             {
                 bZset = true;
@@ -448,7 +447,7 @@ bool DECK_CAMERA::GetCrossXZ(CVECTOR &spos, CVECTOR &dv, CVECTOR &p1, CVECTOR &p
             }
 
     // проверка на dx=0 для отрезка
-    if (!bNoCross)
+    if (!bNoCross) //~!~
         if (EQU_FLOAT(p1.x, p2.x))
             if (bXset)
             {
@@ -554,16 +553,13 @@ bool DECK_CAMERA::GetCrossXZ(CVECTOR &spos, CVECTOR &dv, CVECTOR &p1, CVECTOR &p
     if ((xRes > spos.x && dv.x < 0.f) || (xRes < spos.x && dv.x > 0.f) || (zRes > spos.z && dv.z < 0.f) ||
         (zRes < spos.z && dv.z > 0.f))
         return false;
-    else
-    {
-        res.x = xRes;
-        res.y = yRes;
-        res.z = zRes;
-        return true;
-    }
+    res.x = xRes;
+    res.y = yRes;
+    res.z = zRes;
+    return true;
 }
 
-dword DECK_CAMERA::AttributeChanged(ATTRIBUTES *pAttr)
+uint32_t DECK_CAMERA::AttributeChanged(ATTRIBUTES *pAttr)
 {
     if (*pAttr == "SensivityDistance")
         fSensivityDistance = pAttr->GetAttributeAsFloat();
@@ -597,7 +593,7 @@ dword DECK_CAMERA::AttributeChanged(ATTRIBUTES *pAttr)
 
 void DECK_CAMERA::SetViewPoint(CVECTOR &cViewPoint)
 {
-    if (pathNode == null)
+    if (pathNode == nullptr)
         return;
 
     /*// расчитать позицию камеры
@@ -633,10 +629,10 @@ void DECK_CAMERA::SetViewPoint(CVECTOR &cViewPoint)
 
 float DECK_CAMERA::MultiTrace(const CVECTOR &cvUp, const CVECTOR &cvDown, float fHBase)
 {
-    if (pathNode == null)
+    if (pathNode == nullptr)
         return 2.f;
 
-    float fRet = 2.f;
+    auto fRet = 2.f;
 
     float fTmp;
     GEOS::VERTEX curUp, curDown;
@@ -647,7 +643,7 @@ float DECK_CAMERA::MultiTrace(const CVECTOR &cvUp, const CVECTOR &cvDown, float 
     curDown.y = cvDown.y;
     curDown.z = cvDown.z;
 
-    float fDist = MEN_STEP_UP;
+    auto fDist = MEN_STEP_UP;
 
     while ((fTmp = pathNode->geo->Trace(curUp, curDown)) <= 1.f)
     {
