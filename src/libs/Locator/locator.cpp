@@ -1,29 +1,30 @@
 #include "locator.h"
-#include "messages.h"
+#include "../../Shared/messages.h"
+#include "EntityManager.h"
 
 INTERFACE_FUNCTION
 CREATE_CLASS(LOCATOR)
+
 CREATE_CLASS(BLAST)
 
 LOCATOR::LOCATOR()
 {
-    gs = 0;
-    geo = 0;
+    gs = nullptr;
+    geo = nullptr;
     groupID = -1;
     stringIndex = -1;
 }
 
 LOCATOR::~LOCATOR()
 {
-    if (geo)
-        delete geo;
-    geo = 0;
+    delete geo;
+    geo = nullptr;
 }
 
 bool LOCATOR::Init()
 {
-    rs = (VDX8RENDER *)api->CreateService("dx8render");
-    gs = (VGEOMETRY *)api->CreateService("geometry");
+    rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+    gs = static_cast<VGEOMETRY *>(api->CreateService("geometry"));
     if (!gs)
         return false;
 
@@ -32,24 +33,19 @@ bool LOCATOR::Init()
 
 bool LOCATOR::VerifyParticles()
 {
-    if (!api->FindClass(&ParticlesID, "particles", 0))
-    {
-        if (!api->CreateEntity(&ParticlesID, "particles"))
-            return false;
-    }
-    return true;
+    ParticlesID = EntityManager::GetEntityId("particles");
+    if (!ParticlesID)
+        ParticlesID = EntityManager::CreateEntity("particles");
+
+    return static_cast<bool>(ParticlesID);
 }
 
 void LOCATOR::LocateForI_L2(ATTRIBUTES *pA, GEOS *g, GEOS::LABEL &label)
 {
-    long groupID;
-    long stringIndex;
-    long n;
     char name[16];
-    ATTRIBUTES *pAA;
     GEOS::LABEL label2;
 
-    groupID = g->FindName(label.name);
+    const auto groupID = g->FindName(label.name);
     if (groupID < 0)
     {
         api->Trace("?void LOCATOR::LocateForI_L2(...)");
@@ -58,12 +54,12 @@ void LOCATOR::LocateForI_L2(ATTRIBUTES *pA, GEOS *g, GEOS::LABEL &label)
 
     pA = pA->CreateSubAClass(pA, "ships");
 
-    n = 0;
-    for (stringIndex = 0; (stringIndex = g->FindLabelG(stringIndex, groupID)) >= 0; stringIndex++)
+    long n = 0;
+    for (long stringIndex = 0; (stringIndex = g->FindLabelG(stringIndex, groupID)) >= 0; stringIndex++)
     {
         g->GetLabel(stringIndex, label2);
-        sprintf(name, "l%d", n);
-        pAA = pA->CreateSubAClass(pA, name);
+        sprintf_s(name, "l%d", n);
+        auto *pAA = pA->CreateSubAClass(pA, name);
         pAA->SetAttributeUseFloat("x", label2.m[3][0]);
         pAA->SetAttributeUseFloat("y", label2.m[3][1]);
         pAA->SetAttributeUseFloat("z", label2.m[3][2]);
@@ -78,16 +74,15 @@ void LOCATOR::LocateForI(VDATA *pData)
     ATTRIBUTES *pAA;
     GEOS *g;
     GEOS::LABEL label;
-    long groupID;
     long i, n;
 
-    if (pData == 0)
+    if (pData == nullptr)
     {
         api->Trace("?void LOCATOR::LocateForI(VDATA * pData)");
         return;
     }
     pA = pData->GetAClass();
-    if (pA == null)
+    if (pA == nullptr)
     {
         api->Trace("?void LOCATOR::LocateForI(VDATA * pData)");
         return;
@@ -98,8 +93,8 @@ void LOCATOR::LocateForI(VDATA *pData)
         return;
     }
     char sFileLocators[256];
-    ATTRIBUTES *pAFilesPath = pA->FindAClass(pA, "filespath.models");
-    sprintf(sFileLocators, "%s\\%s", (pAFilesPath) ? pAFilesPath->GetThisAttr() : "", pA->GetAttribute("locators"));
+    auto *const pAFilesPath = pA->FindAClass(pA, "filespath.models");
+    sprintf_s(sFileLocators, "%s\\%s", (pAFilesPath) ? pAFilesPath->GetThisAttr() : "", pA->GetAttribute("locators"));
     rs->SetLoadTextureEnable(false);
     g = gs->CreateGeometry(sFileLocators, "", 0);
     rs->SetLoadTextureEnable(true);
@@ -109,15 +104,15 @@ void LOCATOR::LocateForI(VDATA *pData)
         return;
     }
 
-    groupID = g->FindName("reload");
+    auto groupID = g->FindName("reload");
     if (groupID >= 0)
     {
-        for (i = 0; (i = g->FindLabelG(i, groupID)) >= 0; i++)
+        for (long i = 0; (i = g->FindLabelG(i, groupID)) >= 0; i++)
         {
             g->GetLabel(i, label);
             pAA = pA->FindAClass(pA, "reload");
             if (pAA)
-                for (n = 0; n < (long)pAA->GetAttributesNum(); n++)
+                for (n = 0; n < static_cast<long>(pAA->GetAttributesNum()); n++)
                 {
                     if (pAA->GetAttributeClass(n))
                     {
@@ -126,7 +121,7 @@ void LOCATOR::LocateForI(VDATA *pData)
                             api->Trace("LOCATOR: no name");
                             continue;
                         }
-                        if (stricmp(pAA->GetAttributeClass(n)->GetAttribute("name"), label.name) == 0)
+                        if (_stricmp(pAA->GetAttributeClass(n)->GetAttribute("name"), label.name) == 0)
                         {
                             pAA->GetAttributeClass(n)->SetAttributeUseFloat("x", label.m[3][0]);
                             pAA->GetAttributeClass(n)->SetAttributeUseFloat("y", label.m[3][1]);
@@ -142,9 +137,9 @@ void LOCATOR::LocateForI(VDATA *pData)
     // check for unfind reloads
     pAA = pA->FindAClass(pA, "reload");
     if (pAA)
-        for (n = 0; n < (long)pAA->GetAttributesNum(); n++)
+        for (n = 0; n < static_cast<long>(pAA->GetAttributesNum()); n++)
         {
-            ATTRIBUTES *pARC = pAA->GetAttributeClass(n);
+            auto *pARC = pAA->GetAttributeClass(n);
             if (!pARC->FindAClass(pARC, "x"))
             {
                 api->Trace("LOCATOR: Can't find locator with name: %s, geo: %s", pARC->GetAttribute("name"),
@@ -204,11 +199,11 @@ void LOCATOR::LocateForI(VDATA *pData)
             LocateForI_Locators(pAA, g, groupID, _XYZ_);
     }
 
-    ATTRIBUTES *pGA = pA->FindAClass(pA, "LoadGroup");
+    auto *pGA = pA->FindAClass(pA, "LoadGroup");
     if (pGA)
-        for (n = 0; n < (long)pGA->GetAttributesNum(); n++)
+        for (n = 0; n < static_cast<long>(pGA->GetAttributesNum()); n++)
         {
-            ATTRIBUTES *pARC = pGA->GetAttributeClass(n);
+            auto *const pARC = pGA->GetAttributeClass(n);
             const char *pLoadGroupName = pARC->GetThisAttr();
             if (!pLoadGroupName)
                 continue;
@@ -227,7 +222,7 @@ void LOCATOR::LocateForI(VDATA *pData)
     delete g;
 }
 
-void LOCATOR::LocateForI_Locators(ATTRIBUTES *pA, GEOS *geo, long iGroupID, dword dwFlags)
+void LOCATOR::LocateForI_Locators(ATTRIBUTES *pA, GEOS *geo, long iGroupID, uint32_t dwFlags)
 {
     long i;
     GEOS::LABEL label;
@@ -248,7 +243,7 @@ void LOCATOR::LocateForI_Locators(ATTRIBUTES *pA, GEOS *geo, long iGroupID, dwor
     }
 }
 
-dword _cdecl LOCATOR::ProcessMessage(MESSAGE &message)
+uint64_t LOCATOR::ProcessMessage(MESSAGE &message)
 {
     long message_code;
     char name[MAX_PATH];
@@ -314,63 +309,61 @@ dword _cdecl LOCATOR::ProcessMessage(MESSAGE &message)
 
     case LM_SET_GEOMETRY:
         message.String(sizeof(name), name);
-        if (geo)
-            delete geo;
-        geo = 0;
+        delete geo;
+        geo = nullptr;
         rs->SetLoadTextureEnable(false);
         geo = gs->CreateGeometry(name, "", 0);
         rs->SetLoadTextureEnable(true);
         break;
         /*case LM_LOCATE:
-            groupID = geo->FindName("smoke");
-            if(groupID >= 0)
+          groupID = geo->FindName("smoke");
+          if(groupID >= 0)
+          {
+            VerifyParticles();
+            for(stringIndex = 0; (stringIndex = geo->FindLabelG(stringIndex, groupID)) >= 0; stringIndex++)
             {
-                VerifyParticles();
-                for(stringIndex = 0; (stringIndex = geo->FindLabelG(stringIndex, groupID)) >= 0; stringIndex++)
-                {
-                    geo->GetLabel(stringIndex, label);
-                    api->Send_Message(ParticlesID,"lsffffffl",
-                        PS_CREATE,"smoke",label.m[3][0],label.m[3][1],label.m[3][2],-1.57,0,0,0);
-                }
+              geo->GetLabel(stringIndex, label);
+              api->Send_Message(ParticlesID,"lsffffffl",
+                PS_CREATE,"smoke",label.m[3][0],label.m[3][1],label.m[3][2],-1.57,0,0,0);
             }
+          }
 
-            groupID = geo->FindName("fire");
-            if(groupID >= 0)
+          groupID = geo->FindName("fire");
+          if(groupID >= 0)
+          {
+            if(!api->FindClass(&ParticlesID,"particles",0))
             {
-                if(!api->FindClass(&ParticlesID,"particles",0))
-                {
-                    if(!api->CreateEntity(&ParticlesID,"particles")) return 0;
-                }
-                for(stringIndex = 0; (stringIndex = geo->FindLabelG(stringIndex, groupID)) >= 0; stringIndex++)
-                {
-                    geo->GetLabel(stringIndex, label);
-                    api->Send_Message(ParticlesID,"lsffffffl",
-                        PS_CREATE,"fire",label.m[3][0],label.m[3][1],label.m[3][2],-1.57,0,0,0);
-                }
+              if(!EntityManager::CreateEntity(&ParticlesID,"particles")) return 0;
             }
-
-            groupID = geo->FindName("water");
-            if(groupID >= 0)
+            for(stringIndex = 0; (stringIndex = geo->FindLabelG(stringIndex, groupID)) >= 0; stringIndex++)
             {
-                if(!api->FindClass(&ParticlesID,"particles",0))
-                {
-                    if(!api->CreateEntity(&ParticlesID,"particles")) return 0;
-                }
-                for(stringIndex = 0; (stringIndex = geo->FindLabelG(stringIndex, groupID)) >= 0; stringIndex++)
-                {
-
-                    geo->GetLabel(stringIndex, label);
-                    api->Send_Message(ParticlesID,"lsffffffl",
-                        PS_CREATEX,"waterfall",label.m[3][0],label.m[3][1],label.m[3][2],label.m[2][0],label.m[2][1],-label.m[2][2],0);
-                }
+              geo->GetLabel(stringIndex, label);
+              api->Send_Message(ParticlesID,"lsffffffl",
+                PS_CREATE,"fire",label.m[3][0],label.m[3][1],label.m[3][2],-1.57,0,0,0);
             }
+          }
+
+          groupID = geo->FindName("water");
+          if(groupID >= 0)
+          {
+            if(!api->FindClass(&ParticlesID,"particles",0))
+            {
+              if(!EntityManager::CreateEntity(&ParticlesID,"particles")) return 0;
+            }
+            for(stringIndex = 0; (stringIndex = geo->FindLabelG(stringIndex, groupID)) >= 0; stringIndex++)
+            {
+
+              geo->GetLabel(stringIndex, label);
+              api->Send_Message(ParticlesID,"lsffffffl",
+                PS_CREATEX,"waterfall",label.m[3][0],label.m[3][1],label.m[3][2],label.m[2][0],label.m[2][1],-label.m[2][2],0);
+            }
+          }
         break;*/
     }
     return 0;
 }
 
-dword LOCATOR::AttributeChanged(ATTRIBUTES *pA)
+uint32_t LOCATOR::AttributeChanged(ATTRIBUTES *pA)
 {
-
     return 0;
 }

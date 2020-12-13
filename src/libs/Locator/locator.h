@@ -5,7 +5,7 @@
 #include "geometry.h"
 #include "vmodule_api.h"
 
-class LOCATOR : public ENTITY
+class LOCATOR : public Entity
 {
     enum
     {
@@ -18,22 +18,25 @@ class LOCATOR : public ENTITY
         _XYZ_ = _X_ | _Y_ | _Z_
     };
     VGEOMETRY *gs;
-    VDX8RENDER *rs;
+    VDX9RENDER *rs;
     GEOS *geo;
     long groupID;
     long stringIndex;
-    ENTITY_ID ParticlesID;
+    entid_t ParticlesID;
 
     void LocateForI(VDATA *pData);
     void LocateForI_L2(ATTRIBUTES *pA, GEOS *g, GEOS::LABEL &label);
-    void LocateForI_Locators(ATTRIBUTES *pA, GEOS *geo, long iGroupID, dword dwFlags);
+    void LocateForI_Locators(ATTRIBUTES *pA, GEOS *geo, long iGroupID, uint32_t dwFlags);
 
   public:
     ~LOCATOR();
     LOCATOR();
     bool Init();
-    dword _cdecl ProcessMessage(MESSAGE &message);
-    dword AttributeChanged(ATTRIBUTES *);
+    uint64_t ProcessMessage(MESSAGE &message);
+    uint32_t AttributeChanged(ATTRIBUTES *);
+    void ProcessStage(Stage, uint32_t) override
+    {
+    }
     bool VerifyParticles();
 };
 

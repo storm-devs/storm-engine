@@ -1,6 +1,6 @@
 project(locator)
 
-add_library(${PROJECT_NAME} MODULE
+add_library(${PROJECT_NAME} STATIC
 	blast.cpp
 	blast.h
 	locator.cpp
