@@ -26,19 +26,19 @@ class WdmCameraStdCtrl : public WdmCamera
     //Функции возвращающие реакции клавиш
     //--------------------------------------------------------------------------------------------
   public:
-    virtual void CtrlProcess(float dltTime);
-    virtual float MoveLeftRight(float dltTime);
-    virtual float MoveUpDown(float dltTime);
-    virtual float RotLeftRight(float dltTime);
-    virtual float ZoomInOut(float dltTime);
-    virtual bool CurrentFreeMode();
-    virtual bool GetHightHeight(float &height);
+    void CtrlProcess(float dltTime) override;
+    float MoveLeftRight(float dltTime) override;
+    float MoveUpDown(float dltTime) override;
+    float RotLeftRight(float dltTime) override;
+    float ZoomInOut(float dltTime) override;
+    bool CurrentFreeMode() override;
+    bool GetHightHeight(float &height) override;
 
     //--------------------------------------------------------------------------------------------
     //Инкапсуляция
     //--------------------------------------------------------------------------------------------
   private:
-    bool GetCurFreeMode();
+    bool GetCurFreeMode() const;
 
   private:
     bool isFree;

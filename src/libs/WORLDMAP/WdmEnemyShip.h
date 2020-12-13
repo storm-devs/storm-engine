@@ -24,10 +24,10 @@ class WdmEnemyShip : public WdmShip
     virtual ~WdmEnemyShip();
 
     //Расчёты
-    virtual void Update(float dltTime);
+    void Update(float dltTime) override;
 
     //Отрисовка дебажной информации
-    virtual void LRender(VDX8RENDER *rs);
+    void LRender(VDX9RENDER *rs) override;
 
     //Найти позицию для корабля относительно игрока
     static bool GeneratePosition(float objRadius, float brnDltAng, float &x, float &z);
@@ -35,13 +35,13 @@ class WdmEnemyShip : public WdmShip
     //Установить время жизни
     void SetLiveTime(float time);
     //Получить время жизни
-    float GetLiveTime();
+    float GetLiveTime() const;
 
     bool isEnableKill;
     bool isEnemy; //Если установлен, то атакует нас
     bool isEntryPlayer;
 
-    dword type;
+    uint32_t type;
     WdmEnemyShip *attack;
 
     EnemyShipType shipType;
@@ -49,7 +49,7 @@ class WdmEnemyShip : public WdmShip
     bool canSkip;
 
     //Получить имя атрибута
-    const char *GetAttributeName();
+    const char *GetAttributeName() const;
 
   protected:
     //Найти силу притягивающую в нужном направлении
@@ -93,7 +93,7 @@ class WdmEnemyShip : public WdmShip
 };
 
 //Получить время жизни
-inline float WdmEnemyShip::GetLiveTime()
+inline float WdmEnemyShip::GetLiveTime() const
 {
     if (!isEnableKill)
         return -1.0f;

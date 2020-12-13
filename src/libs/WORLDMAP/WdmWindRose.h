@@ -18,9 +18,10 @@ class WdmWindRose : public WdmRenderModel
     struct Vertex
     {
         float x, y, z;
-        dword c;
+        uint32_t c;
         float tu, tv;
     };
+
     //--------------------------------------------------------------------------------------------
     //Конструирование, деструктурирование
     //--------------------------------------------------------------------------------------------
@@ -29,11 +30,12 @@ class WdmWindRose : public WdmRenderModel
     virtual ~WdmWindRose();
 
     //Расчёты
-    void Update(float dltTime);
+    void Update(float dltTime) override;
 
-    void PRender(VDX8RENDER *rs){};
-    void MRender(VDX8RENDER *rs){};
-    void LRender(VDX8RENDER *rs);
+    void PRender(VDX9RENDER *rs) override{};
+
+    void MRender(VDX9RENDER *rs) override{};
+    void LRender(VDX9RENDER *rs) override;
 
     //--------------------------------------------------------------------------------------------
     //Инкапсуляция

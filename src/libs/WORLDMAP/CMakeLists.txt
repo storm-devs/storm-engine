@@ -1,8 +1,7 @@
 project(worldmap)
 
-add_library(${PROJECT_NAME} MODULE
-	PtcData.cpp
-	PtcData.h
+add_library(${PROJECT_NAME} STATIC
+	ptc.h
 	WdmCamera.cpp
 	WdmCamera.h
 	WdmCameraStdCtrl.cpp
@@ -13,12 +12,9 @@ add_library(${PROJECT_NAME} MODULE
 	WdmClouds.h
 	WdmCounter.cpp
 	WdmCounter.h
-	WdmDateLabel.cpp
 	WdmDateLabel.h
 	WdmEnemyShip.cpp
 	WdmEnemyShip.h
-	WdmEventWindow.cpp
-	WdmEventWindow.h
 	WdmFollowShip.cpp
 	WdmFollowShip.h
 	WdmIcon.cpp
@@ -55,7 +51,6 @@ add_library(${PROJECT_NAME} MODULE
 	WoldMapMain.cpp
 	WorldMap.cpp
 	WorldMap.h
-	ptc.h
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

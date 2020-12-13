@@ -24,7 +24,7 @@
 
 WdmEnemyShip::WdmEnemyShip()
 {
-    saveAttribute = null;
+    saveAttribute = nullptr;
     mx = mz = 0.0f;
     ix = iz = 0.0f;
     sx = sz = 0.0f;
@@ -38,7 +38,7 @@ WdmEnemyShip::WdmEnemyShip()
     brnAlpha = 0.0f;
     alpha = 0.0f;
     type = -1;
-    attack = null;
+    attack = nullptr;
     //Время жизни
     liveTime = WDM_ENEMYSHIP_MINTIME + rand() * ((WDM_ENEMYSHIP_MAXTIME - WDM_ENEMYSHIP_MINTIME) / RAND_MAX);
     shipType = wdmest_unknow;
@@ -50,9 +50,9 @@ WdmEnemyShip::~WdmEnemyShip()
     /*
     if(saveAttribute)
     {
-        ATTRIBUTES * atr = saveAttribute->GetParent();
-        atr->DeleteAttributeClassX(saveAttribute);
-        _CORE_API->Event("WorldMap_DeleteShipEncounter", "l", type);
+      ATTRIBUTES * atr = saveAttribute->GetParent();
+      atr->DeleteAttributeClassX(saveAttribute);
+      api->Event("WorldMap_DeleteShipEncounter", "l", type);
     }*/
 }
 
@@ -64,9 +64,9 @@ void WdmEnemyShip::Update(float dltTime)
     //Перемещение
     Move(dltTime);
     //Расстояние от нас до игрока
-    float dx = wdmObjects->playerShip->mtx.Pos().x - mtx.Pos().x;
-    float dz = wdmObjects->playerShip->mtx.Pos().z - mtx.Pos().z;
-    float d = sqrtf(dx * dx + dz * dz);
+    const auto dx = wdmObjects->playerShip->mtx.Pos().x - mtx.Pos().x;
+    const auto dz = wdmObjects->playerShip->mtx.Pos().z - mtx.Pos().z;
+    const auto d = sqrtf(dx * dx + dz * dz);
     //Видимость
     //От удалённости от игрока
     alpha = 1.0f - (d - wdmObjects->enemyshipViewDistMin) /
@@ -105,12 +105,12 @@ void WdmEnemyShip::Update(float dltTime)
             slowingAlfa = deleteAlpha;
             if (deleteAlpha < 0.0f)
             {
-                const char *delEnc = "";
+                const auto *delEnc = "";
                 if (saveAttribute)
                 {
                     delEnc = saveAttribute->GetThisName();
                 }
-                VDATA *pVDat = 0;
+                VDATA *pVDat = nullptr;
                 if (!killMe && delEnc && delEnc[0])
                 {
                     pVDat = api->Event("WorldMap_EncounterDelete", "s", delEnc);
@@ -133,11 +133,11 @@ void WdmEnemyShip::Update(float dltTime)
     UpdateSaveData();
 }
 
-void WdmEnemyShip::LRender(VDX8RENDER *rs)
+void WdmEnemyShip::LRender(VDX9RENDER *rs)
 {
     if (isWMRender && wdmObjects->isDebug)
     {
-        long a = long(alpha * 255.0f);
+        auto a = static_cast<long>(alpha * 255.0f);
         if (a < 60)
             a = 60;
         if (a > 255)
@@ -180,20 +180,19 @@ void WdmEnemyShip::FindShipsForce()
 {
     sx = 0.0f;
     sz = 0.0f;
-    WdmShip **s = wdmObjects->ships;
-    for (long i = 0; i < wdmObjects->numShips; i++)
+    for (const auto &ship : wdmObjects->ships)
     {
-        if (!s[i])
+        if (!ship)
             continue;
-        if (s[i] == this)
+        if (ship == this)
             continue;
-        if (s[i] == wdmObjects->playerShip && !isLookOnPlayer)
+        if (ship == wdmObjects->playerShip && !isLookOnPlayer)
             continue;
         //Вертор от него до нас
-        float fx = mtx.Pos().x - s[i]->mtx.Pos().x;
-        float fz = mtx.Pos().z - s[i]->mtx.Pos().z;
+        auto fx = mtx.Pos().x - ship->mtx.Pos().x;
+        auto fz = mtx.Pos().z - ship->mtx.Pos().z;
         //Дистанция
-        float fl = fx * fx + fz * fz - 25.0f * 25.0f;
+        auto fl = fx * fx + fz * fz - 25.0f * 25.0f;
         if (fl > 25.0f * 25.0f)
             continue;
         if (fl < 0.1f)
@@ -205,12 +204,12 @@ void WdmEnemyShip::FindShipsForce()
         sz += fz;
         //Отклонение
         fl = fx * fx + fz * fz;
-        fx *= s[i]->mtx.Vz().x;
-        fz *= s[i]->mtx.Vz().z;
+        fx *= ship->mtx.Vz().x;
+        fz *= ship->mtx.Vz().z;
         sx += -fz * 0.01f;
         sz += fx * 0.01f;
     }
-    float sl = sx * sx + sz * sz;
+    auto sl = sx * sx + sz * sz;
     if (sl > 1.0f)
     {
         sl = 1.0f / sqrtf(sl);
@@ -232,17 +231,17 @@ void WdmEnemyShip::Move(float dltTime)
     //Результирующее
     dx = 1.0f * mx + 1.5f * ix + 1.1f * sx;
     dz = 1.0f * mz + 1.5f * iz + 1.1f * sz;
-    float dl = dx * dx + dz * dz;
+    const auto dl = dx * dx + dz * dz;
     //Наше направление
-    float vx = mtx.Vz().x;
-    float vz = mtx.Vz().z;
-    float vl = vx * vx + vz * vz;
+    const auto vx = mtx.Vz().x;
+    const auto vz = mtx.Vz().z;
+    const auto vl = vx * vx + vz * vz;
     //Синус угла между этой парой векторов
-    float sn = vz * dx - vx * dz;
+    auto sn = vz * dx - vx * dz;
     if (dl * vl > 0.0f)
         sn /= sqrtf(dl * vl);
     //Если игрок сзади, то вырабатываем поворот на полную катушку
-    float cs = vx * dx + vz * dz;
+    const auto cs = vx * dx + vz * dz;
     if (cs < 0.0f)
     {
         if (sn < 0.0f)
@@ -319,7 +318,7 @@ void WdmEnemyShip::SetSaveAttribute(ATTRIBUTES *save)
         return;
     brnAlpha = saveAttribute->GetAttributeAsFloat("brnAlpha", brnAlpha);
     deleteAlpha = saveAttribute->GetAttributeAsFloat("deleteAlpha", deleteAlpha);
-    liveTime = liveTime = saveAttribute->GetAttributeAsFloat("liveTime", liveTime);
+    liveTime = saveAttribute->GetAttributeAsFloat("liveTime", liveTime);
     mtx.Pos().x = saveAttribute->GetAttributeAsFloat("x", mtx.Pos().x);
     mtx.Pos().y = saveAttribute->GetAttributeAsFloat("y", mtx.Pos().y);
     mtx.Pos().z = saveAttribute->GetAttributeAsFloat("z", mtx.Pos().z);
@@ -356,7 +355,7 @@ void WdmEnemyShip::DeleteUpdate()
     {
         isEnableKill = true;
         deleteAlpha = 0.999999f;
-        saveAttribute = 0;
+        saveAttribute = nullptr;
     }
 }
 
@@ -366,27 +365,27 @@ bool WdmEnemyShip::GeneratePosition(float objRadius, float brnDltAng, float &x, 
     //Позиция игрока
     if (!wdmObjects->playerShip)
         return false;
-    float psx = wdmObjects->playerShip->mtx.Pos().x;
-    float psz = wdmObjects->playerShip->mtx.Pos().z;
-    float psay = ((WdmEnemyShip *)wdmObjects->playerShip)->ay;
+    const auto psx = wdmObjects->playerShip->mtx.Pos().x;
+    const auto psz = wdmObjects->playerShip->mtx.Pos().z;
+    const auto psay = static_cast<WdmEnemyShip *>(wdmObjects->playerShip)->ay;
     //Поля возможных вариантов
-    byte field[32];
+    uint8_t field[32];
     for (long i = 0; i < 32; i++)
         field[i] = 0;
     //Попытки расстановок
     while (true)
     {
         //Определим угл
-        long ang = rand() & 31;
+        const long ang = rand() & 31;
         if (field[ang] != 0xff)
         {
-            float angle = psay + brnDltAng * (0.5f - ang / 31.0f);
+            const auto angle = psay + brnDltAng * (0.5f - ang / 31.0f);
             //Определяем радиус
-            long rad = 0;
+            long rad;
             for (rad = rand() & 7; field[ang] & (1 << rad); rad = rand() & 7)
                 ;
-            float radius = wdmObjects->enemyshipBrnDistMin +
-                           (wdmObjects->enemyshipBrnDistMax - wdmObjects->enemyshipBrnDistMin) * rad / 7.0f;
+            const auto radius = wdmObjects->enemyshipBrnDistMin +
+                                (wdmObjects->enemyshipBrnDistMax - wdmObjects->enemyshipBrnDistMin) * rad / 7.0f;
             //Координаты
             x = psx + radius * sinf(angle);
             z = psz + radius * cosf(angle);
@@ -396,7 +395,7 @@ bool WdmEnemyShip::GeneratePosition(float objRadius, float brnDltAng, float &x, 
             field[ang] |= 1 << rad;
         }
         //Проверка на возможность продолжения
-        long i = 0;
+        long i;
         for (i = 0; i < 32 && field[i] == 0xff; i++)
             ;
         if (i == 32)
@@ -414,12 +413,11 @@ void WdmEnemyShip::SetLiveTime(float time)
 }
 
 //Получить имя атрибута
-const char *WdmEnemyShip::GetAttributeName()
+const char *WdmEnemyShip::GetAttributeName() const
 {
-    static char *empty = "";
     if (saveAttribute)
     {
         return saveAttribute->GetThisName();
     }
-    return empty;
+    return "";
 }

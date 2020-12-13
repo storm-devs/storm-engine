@@ -9,9 +9,8 @@
 //============================================================================================
 
 #include "WdmClouds.h"
-#include "WdmCamera.h"
-#include "WdmCloud.h"
-#include "WorldMap.h"
+#include "../Sink_effect/SinkSplashDefines.h"
+#include "WdmObjects.h"
 
 //============================================================================================
 
@@ -20,46 +19,44 @@
 #define WdmCloudsSizeMin 30.0f
 #define WdmCloudsSizeMax 50.0f
 
+IDirect3DVertexDeclaration9 *WdmClouds::vertexDecl_ = nullptr;
+
 WdmClouds::Cloud::Cloud()
 {
     count = 0;
 }
 
-WdmClouds::Cloud::~Cloud()
-{
-}
-
-__forceinline bool WdmClouds::Cloud::Reset(bool isFirstTime)
+bool WdmClouds::Cloud::Reset(bool isFirstTime)
 {
     if (count > 0)
         return false;
     //Определяем количество
-    count = long((rand() * (0.5f / RAND_MAX) + 0.5f) * WDMCLOUDSMAX);
+    count = static_cast<long>((rand() * (0.5f / RAND_MAX) + 0.5f) * WDMCLOUDSMAX);
     if (count < 1)
         count = 1;
     //Базовая позиция
-    float baseX = (rand() * (1.0f / RAND_MAX) - 0.5f) * wdmObjects->worldSizeX;
-    float baseZ = (rand() * (1.0f / RAND_MAX) - 0.5f) * wdmObjects->worldSizeZ;
+    const auto baseX = (rand() * (1.0f / RAND_MAX) - 0.5f) * wdmObjects->worldSizeX;
+    const auto baseZ = (rand() * (1.0f / RAND_MAX) - 0.5f) * wdmObjects->worldSizeZ;
     //Скалирующий фактор
-    float scaleX = (rand() * (0.8f / RAND_MAX) + 0.2f);
-    float scaleZ = (rand() * (0.8f / RAND_MAX) + 0.2f);
-    float nrm = 1.0f / sqrtf(scaleX * scaleX + scaleZ * scaleZ);
+    auto scaleX = (rand() * (0.8f / RAND_MAX) + 0.2f);
+    auto scaleZ = (rand() * (0.8f / RAND_MAX) + 0.2f);
+    const auto nrm = 1.0f / sqrtf(scaleX * scaleX + scaleZ * scaleZ);
     scaleX *= nrm;
     scaleZ *= nrm;
     //Определяем стартовые позиции
     for (long i = 0; i < count; i++)
     {
-        float ang = rand() * (2.0f * PI / RAND_MAX);
-        float rad = rand() * (WdmCloudsCloudRad / RAND_MAX);
-        Cld &cld = cloud[i];
+        auto ang = rand() * (2.0f * PI / RAND_MAX);
+        auto rad = rand() * (WdmCloudsCloudRad / RAND_MAX);
+        auto &cld = cloud[i];
         cld.pos.x = baseX + rad * scaleX * sinf(ang);
         cld.pos.y = WdmCloudsCloudHeight;
         cld.pos.z = baseZ + rad * scaleZ * cosf(ang);
         cld.angle = rand() * (2.0f * PI / RAND_MAX);
-        byte size = rand() & 0xff;
+        const uint8_t size = rand() & 0xff;
         cld.size = WdmCloudsSizeMin + size * ((WdmCloudsSizeMax - WdmCloudsSizeMin) / 255.0f);
         cld.alpha = 1.0f;
-        dword dclr = rand() & 0xf;
+        const uint32_t dclr = rand() & 0xf;
         cld.color = 0x80f00000 | (dclr << 16) | size | ((rand() & 0x7f) << 24);
         cld.pict = rand() & 3;
         cld.index = 0;
@@ -84,28 +81,28 @@ __forceinline bool WdmClouds::Cloud::Reset(bool isFirstTime)
 }
 
 //Расчёты
-__forceinline void WdmClouds::Cloud::Update(float dltTime)
+void WdmClouds::Cloud::Update(float dltTime)
 {
     if (count <= 0)
         return;
-    const float minDist = WdmCloudsCloudRad * 0.5f;
-    const float midDist = WdmCloudsCloudRad * 1.0f;
-    const float maxDist = WdmCloudsCloudRad * 1.5f;
-    const float minWorldX = -0.5f * wdmObjects->worldSizeX;
-    const float maxWorldX = 0.5f * wdmObjects->worldSizeX;
-    const float minWorldZ = -0.5f * wdmObjects->worldSizeZ;
-    const float maxWorldZ = 0.5f * wdmObjects->worldSizeZ;
+    const auto minDist = WdmCloudsCloudRad * 0.5f;
+    const auto midDist = WdmCloudsCloudRad * 1.0f;
+    const auto maxDist = WdmCloudsCloudRad * 1.5f;
+    const auto minWorldX = -0.5f * wdmObjects->worldSizeX;
+    const auto maxWorldX = 0.5f * wdmObjects->worldSizeX;
+    const auto minWorldZ = -0.5f * wdmObjects->worldSizeZ;
+    const auto maxWorldZ = 0.5f * wdmObjects->worldSizeZ;
     //Двигаем облака
     long outsideCount = 0;
     for (long i = 0; i < count; i++)
     {
         //Партикл
-        Cld &cld = cloud[i];
+        auto &cld = cloud[i];
         //Модифицируем направление
         if (cld.index >= count)
             cld.index = 0;
-        CVECTOR dir = cloud[cld.index].pos - cld.pos;      //Направление
-        float dist = sqrtf(dir.x * dir.x + dir.z * dir.z); //Получаем дистанцию
+        auto dir = cloud[cld.index].pos - cld.pos;        //Направление
+        auto dist = sqrtf(dir.x * dir.x + dir.z * dir.z); //Получаем дистанцию
         if (dist > minDist)
         {
             //Модифицируем альфаканал
@@ -124,7 +121,7 @@ __forceinline void WdmClouds::Cloud::Update(float dltTime)
             //Притягиваемся
             if (dist > midDist)
             {
-                float nrm = 1.0f / dist;
+                const auto nrm = 1.0f / dist;
                 dist = (dist - midDist) / (maxDist - midDist);
                 if (dist > 1.0f)
                     dist = 1.0f;
@@ -151,7 +148,7 @@ __forceinline void WdmClouds::Cloud::Update(float dltTime)
         //Направление ветра
         wdmObjects->GetWind(cld.pos.x, cld.pos.z, dir);
         //Вращение
-        float arot = cld.dir.z * dir.x - cld.dir.x * dir.z;
+        auto arot = cld.dir.z * dir.x - cld.dir.x * dir.z;
         if (arot < -1.0f)
             arot = -1.0f;
         if (arot > 1.0f)
@@ -170,11 +167,11 @@ __forceinline void WdmClouds::Cloud::Update(float dltTime)
             outsideCount++;
         }
         //Учитываем партикл в боундсфере
-        float cldr = cld.size * 1.5f;
+        const auto cldr = cld.size * 1.5f;
         if (i)
         {
             dir = center - cld.pos;
-            float r = sqrtf(dir.x * dir.x + dir.z * dir.z);
+            const auto r = sqrtf(dir.x * dir.x + dir.z * dir.z);
             if (r + cldr < radius)
                 continue;
             if (r > 1e-8f)
@@ -215,22 +212,22 @@ __forceinline void WdmClouds::Cloud::Update(float dltTime)
     }
 }
 
-__forceinline long WdmClouds::Cloud::FillRects(RS_RECT *rects, long cnt, float galpha)
+long WdmClouds::Cloud::FillRects(RS_RECT *rects, long cnt, float galpha)
 {
     for (long i = 0; i < count; i++)
     {
-        Cld &c = cloud[i];
+        auto &c = cloud[i];
         //Вычисляем альфу
-        float a = float(byte(c.color >> 24));
+        auto a = static_cast<float>(static_cast<uint8_t>(c.color >> 24));
         a *= alpha;
         a *= 0.1f + c.alpha * 0.9f;
-        long la = long(a * galpha);
+        auto la = static_cast<long>(a * galpha);
         if (la > 0xff)
             la = 0xff;
         if (la <= 0)
             continue;
         //Заполняем
-        RS_RECT &r = rects[cnt++];
+        auto &r = rects[cnt++];
         r.vPos = c.pos;
         r.fAngle = c.angle;
         r.fSize = c.size;
@@ -241,7 +238,7 @@ __forceinline long WdmClouds::Cloud::FillRects(RS_RECT *rects, long cnt, float g
 }
 
 //Получить центр сферы и радиус
-__forceinline float WdmClouds::Cloud::GetBound(CVECTOR &_center)
+float WdmClouds::Cloud::GetBound(CVECTOR &_center) const
 {
     if (!count)
     {
@@ -253,14 +250,14 @@ __forceinline float WdmClouds::Cloud::GetBound(CVECTOR &_center)
 }
 
 //Запустить механизм удаления облака если есть пересечение
-__forceinline void WdmClouds::Cloud::Kill(const Cloud &cld)
+void WdmClouds::Cloud::Kill(const Cloud &cld)
 {
     if (count && cld.count)
     {
-        float dx = center.x - cld.center.x;
-        float dz = center.z - cld.center.z;
-        float d = dx * dx + dz * dz;
-        float minDist = (radius + cld.radius) * 0.2f;
+        const auto dx = center.x - cld.center.x;
+        const auto dz = center.z - cld.center.z;
+        const auto d = dx * dx + dz * dz;
+        const auto minDist = (radius + cld.radius) * 0.2f;
         if (d < minDist * minDist)
         {
             lifeTime = 0.0f;
@@ -308,7 +305,7 @@ void WdmClouds::Update(float dltTime)
     //Удаляем сильно пересекающиеся
     for (long i = 0; i < sizeof(clouds) / sizeof(Cloud) - 1; i++)
     {
-        for (long j = i + 1; j < sizeof(clouds) / sizeof(Cloud); j++)
+        for (auto j = i + 1; j < sizeof(clouds) / sizeof(Cloud); j++)
         {
             clouds[j].Kill(clouds[i]);
         }
@@ -316,35 +313,35 @@ void WdmClouds::Update(float dltTime)
 }
 
 //Рисование
-void WdmClouds::LRender(VDX8RENDER *rs)
+void WdmClouds::LRender(VDX9RENDER *rs)
 {
     long cnt = 0;
     //Получаем фрустум камеры
-    PLANE *plane = rs->GetPlanes();
+    auto *plane = rs->GetPlanes();
     //Определяем глобальную альфу в зависимости от дистанции до камеры
     CMatrix view;
     rs->GetTransform(D3DTS_VIEW, view);
     CVECTOR camPos;
     view.MulToInv(CVECTOR(0.0f), camPos);
-    float alpha = (camPos.y - WdmCloudsCloudHeight - 10.0f) * 1.0f / 80.0f;
+    auto alpha = (camPos.y - WdmCloudsCloudHeight - 10.0f) * 1.0f / 80.0f;
     if (alpha <= 0.0f)
         return;
     if (alpha > 1.0f)
         alpha = 1.0f;
     alpha *= alpha;
     //Рисуем видимые
-    long i = 0, count = 0;
-    for (i = 0, count = 0; i < sizeof(clouds) / sizeof(Cloud); i++)
+    long count = 0;
+    for (long i = 0; i < sizeof(clouds) / sizeof(Cloud); i++)
     {
         //Получаем сферу
         CVECTOR c;
-        float r = clouds[i].GetBound(c);
+        auto r = clouds[i].GetBound(c);
         //Тестируем на видимость
-        long j = 0;
+        long j;
         for (j = 0; j < 4; j++)
         {
-            PLANE &p = plane[j];
-            float dist = c.x * p.Nx + c.y * p.Ny + c.z * p.Nz - p.D;
+            auto &p = plane[j];
+            auto dist = c.x * p.Nx + c.y * p.Ny + c.z * p.Nz - p.D;
             if (dist < -r)
                 break;
         }
@@ -357,13 +354,16 @@ void WdmClouds::LRender(VDX8RENDER *rs)
     }
     if (count > 0)
     {
+        CreateVertexDeclaration(rs);
+        rs->SetVertexDeclaration(vertexDecl_);
+
         rs->TextureSet(0, texture);
         rs->TextureSet(1, light);
 
         CMatrix prj;
         rs->GetTransform(D3DTS_PROJECTION, prj);
         view.Transposition();
-        rs->SetVertexShaderConstant(0, prj, 4);
+        rs->SetVertexShaderConstantF(0, prj, 4);
         prj.matrix[0] = view.matrix[1];
         prj.matrix[1] = view.matrix[5];
         prj.matrix[2] = view.matrix[9];
@@ -372,8 +372,22 @@ void WdmClouds::LRender(VDX8RENDER *rs)
         prj.matrix[5] = 0.0f;
         prj.matrix[6] = (WdmCloudsSizeMax - WdmCloudsSizeMin) * 1.4f;
         prj.matrix[7] = 0.5f;
-        rs->SetVertexShaderConstant(4, prj, 2);
+        rs->SetVertexShaderConstantF(4, prj, 2);
         rs->DrawRects(rects, count, "WdmClouds", 2, 2);
     }
     // rs->Print(20, 200, "Visible clouds = %i, Visible particles = %i", cnt, count);
+}
+
+void WdmClouds::CreateVertexDeclaration(VDX9RENDER *rs)
+{
+    if (vertexDecl_ != nullptr)
+        return;
+
+    const D3DVERTEXELEMENT9 VertexElements[] = {
+        {0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
+        {0, 12, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 0},
+        {0, 16, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0},
+        D3DDECL_END()};
+
+    rs->CreateVertexDeclaration(VertexElements, &vertexDecl_);
 }

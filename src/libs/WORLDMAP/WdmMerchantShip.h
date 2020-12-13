@@ -26,17 +26,17 @@ class WdmMerchantShip : public WdmEnemyShip
 
   protected:
     //Найти силу притягивающую в нужном направлении
-    virtual void FindMoveForce();
+    void FindMoveForce() override;
     //Проверка на завершение
-    virtual bool KillTest();
+    bool KillTest() override;
 
     //Обновление сохраняемых данных
-    virtual void UpdateSaveData();
+    void UpdateSaveData() override;
     //Установка параметров
-    virtual void SetSaveAttribute(ATTRIBUTES *save);
+    void SetSaveAttribute(ATTRIBUTES *save) override;
 
     //Установка параметров
-    virtual bool Load(const char *modelName);
+    bool Load(const char *modelName) override;
 
     //--------------------------------------------------------------------------------------------
     //Инкапсуляция

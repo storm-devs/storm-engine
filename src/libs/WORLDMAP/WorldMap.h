@@ -11,19 +11,19 @@
 #ifndef _WorldMap_H_
 #define _WorldMap_H_
 
-#include "templates\string.h"
 #include "vmodule_api.h"
+#include <string>
 
 #define WDMAP_MAXOBJECTS 4096
 
 class WdmRenderObject;
 class WdmRenderModel;
-class VDX8RENDER;
+class VDX9RENDER;
 class WdmCamera;
 class WdmEventWindow;
 class WdmWaitMenu;
 
-class WorldMap : public ENTITY
+class WorldMap : public Entity
 {
     struct RObject
     {
@@ -45,14 +45,31 @@ class WorldMap : public ENTITY
     //--------------------------------------------------------------------------------------------
   public:
     //Инициализация
-    bool Init();
+    bool Init() override;
     //Исполнение
-    void Execute(dword delta_time);
-    void Realize(dword delta_time);
+    void Execute(uint32_t delta_time);
+    void Realize(uint32_t delta_time);
     //Сообщения
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    uint64_t ProcessMessage(MESSAGE &message) override;
     //Изменение атрибута
-    dword AttributeChanged(ATTRIBUTES *apnt);
+    uint32_t AttributeChanged(ATTRIBUTES *apnt) override;
+
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
 
     //--------------------------------------------------------------------------------------------
     //Управление объектами
@@ -75,7 +92,7 @@ class WorldMap : public ENTITY
 
     //--------------------------------------------------------------------------------------------
 
-    VDX8RENDER *GetRS();
+    VDX9RENDER *GetRS() const;
 
     //--------------------------------------------------------------------------------------------
     //Инкапсуляция
@@ -89,18 +106,18 @@ class WorldMap : public ENTITY
 
     //Утилитные
     //Создать шторм, если это возможно
-    bool CreateStorm(bool isTornado, float time = -1.0f, ATTRIBUTES *save = null);
+    bool CreateStorm(bool isTornado, float time = -1.0f, ATTRIBUTES *save = nullptr);
     //Создать кораблик купца
     bool CreateMerchantShip(const char *modelName, const char *locNameStart, const char *locNameEnd, float kSpeed,
-                            float time = -1.0f, ATTRIBUTES *save = null);
+                            float time = -1.0f, ATTRIBUTES *save = nullptr);
     // boal Создать кораблик купца в координатах
     bool CreateMerchantShipXZ(const char *modelName, float x1, float z1, float x2, float z2, float kSpeed,
-                              float time = -1.0f, ATTRIBUTES *save = null);
+                              float time = -1.0f, ATTRIBUTES *save = nullptr);
     //Создать кораблик преследующий нас
-    bool CreateFollowShip(const char *modelName, float kSpeed, float time = -1.0f, ATTRIBUTES *save = null);
+    bool CreateFollowShip(const char *modelName, float kSpeed, float time = -1.0f, ATTRIBUTES *save = nullptr);
     //Создать пару воюющих кораблики
     bool CreateWarringShips(const char *modelName1, const char *modelName2, float time = -1.0f,
-                            ATTRIBUTES *save1 = null, ATTRIBUTES *save2 = null);
+                            ATTRIBUTES *save1 = nullptr, ATTRIBUTES *save2 = nullptr);
     //Удалить все энкоунтеры
     void ReleaseEncounters();
     //Создать атрибут для сохранения параметров энкоунтера
@@ -109,11 +126,11 @@ class WorldMap : public ENTITY
     //Найти координаты и радиус по месту назначения
     bool FindIslandPosition(const char *name, float &x, float &z, float &r);
 
-    void ResetScriptInterfaces();
+    void ResetScriptInterfaces() const;
 
   private:
     //Сервис рендера
-    VDX8RENDER *rs;
+    VDX9RENDER *rs;
     WdmCamera *camera;
 
     ATTRIBUTES *aStorm;
@@ -121,7 +138,6 @@ class WorldMap : public ENTITY
     ATTRIBUTES *aInfo;
     ATTRIBUTES *saveData;
 
-    WdmEventWindow *eventWindow;
     WdmWaitMenu *waitMenu;
 
     //Событие
@@ -139,10 +155,10 @@ class WorldMap : public ENTITY
     ATTRIBUTES *aDate;
     float timeScale;
 
-    string bufForSave;
+    std::string bufForSave;
 
   public:
-    dword encCounter;
+    uint32_t encCounter;
 
     float hour;
     long day;
@@ -152,7 +168,7 @@ class WorldMap : public ENTITY
     static long month[];
 };
 
-inline VDX8RENDER *WorldMap::GetRS()
+inline VDX9RENDER *WorldMap::GetRS() const
 {
     return rs;
 }

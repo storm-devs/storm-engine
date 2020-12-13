@@ -9,7 +9,6 @@
 //============================================================================================
 
 #include "WdmCamera.h"
-#include "WdmObjects.h"
 #include "WdmPlayerShip.h"
 
 //============================================================================================
@@ -40,14 +39,14 @@ WdmCamera::WdmCamera()
 
 WdmCamera::~WdmCamera()
 {
-    wdmObjects->camera = null;
+    wdmObjects->camera = nullptr;
 }
 
 void WdmCamera::Init(float defAy, float defHeight)
 {
-    const float pi2 = 2.0f * 3.14159265f;
-    float k = defAy / pi2;
-    ang.y = (k - long(k)) * pi2;
+    const auto pi2 = 2.0f * 3.14159265f;
+    const auto k = defAy / pi2;
+    ang.y = (k - static_cast<long>(k)) * pi2;
     if (defHeight < WDM_CAMERA_HEIGHT_MIN)
         defHeight = WDM_CAMERA_HEIGHT_MIN;
     if (defHeight > WDM_CAMERA_HEIGHT_MAX)
@@ -56,18 +55,18 @@ void WdmCamera::Init(float defAy, float defHeight)
     realHeight = pos.y;
 }
 
-void WdmCamera::Move(float dltTime, VDX8RENDER *rs)
+void WdmCamera::Move(float dltTime, VDX9RENDER *rs)
 {
-    const float pi = 3.14159265f;
+    const auto pi = 3.14159265f;
     if (dltTime > 0.1f)
         dltTime = 0.1f;
     CtrlProcess(dltTime);
-    CVECTOR ang = this->ang;
-    float k = dltTime * 2.0f;
+    auto ang = this->ang;
+    auto k = dltTime * 2.0f;
     if (k > 1.0f)
         k = 1.0f;
-    float shipAy = ((WdmPlayerShip *)wdmObjects->playerShip)->GetAy();
-    float dltAng = shipAy - elasticAy;
+    const auto shipAy = static_cast<WdmPlayerShip *>(wdmObjects->playerShip)->GetAy();
+    const auto dltAng = shipAy - elasticAy;
     if (dltAng > pi)
         elasticAy += 2.0f * pi;
     if (dltAng < -pi)
@@ -77,7 +76,7 @@ void WdmCamera::Move(float dltTime, VDX8RENDER *rs)
     if (!isInit)
         elasticAy = shipAy;
 
-    bool freeMode = CurrentFreeMode();
+    const auto freeMode = CurrentFreeMode();
     if (isFreeMode != freeMode)
     {
         if (freeMode)
@@ -99,18 +98,18 @@ void WdmCamera::Move(float dltTime, VDX8RENDER *rs)
     if (lock)
         ang.y = 0.0f;
 
-    float cs = cosf(ang.y);
-    float sn = sinf(ang.y);
-    float csX = cosf(ang.x);
-    float snX = sinf(ang.x);
-    float movelrspd = 50.0f * MoveLeftRight(dltTime);
-    float moveudspd = 50.0f * MoveUpDown(dltTime);
-    float rotspd = 1.0f * RotLeftRight(dltTime);
-    float zoomspd = 30.0f * ZoomInOut(dltTime);
+    const auto cs = cosf(ang.y);
+    const auto sn = sinf(ang.y);
+    const auto csX = cosf(ang.x);
+    const auto snX = sinf(ang.x);
+    const auto movelrspd = 50.0f * MoveLeftRight(dltTime);
+    const auto moveudspd = 50.0f * MoveUpDown(dltTime);
+    const auto rotspd = 1.0f * RotLeftRight(dltTime);
+    const auto zoomspd = 30.0f * ZoomInOut(dltTime);
     //Точка на высоте 0 в которую смотрим относительно текущий позиции камеры
-    float cx = sn * pos.y * csX / snX;
-    float cz = cs * pos.y * csX / snX;
-    float r = sqrtf(cx * cx + cz * cz);
+    const auto cx = sn * pos.y * csX / snX;
+    const auto cz = cs * pos.y * csX / snX;
+    auto r = sqrtf(cx * cx + cz * cz);
     //Перемещение свободной камеры
     if (CurrentFreeMode() && isInit)
     {
@@ -175,7 +174,7 @@ void WdmCamera::Move(float dltTime, VDX8RENDER *rs)
             realHeight = height;
     }
     r = (pos.y - realHeight) * csX / snX;
-    CVECTOR ps = pos;
+    auto ps = pos;
     kBlendPos += dltTime * 8.0f;
     if (kBlendPos < 1.0f)
     {
@@ -184,19 +183,19 @@ void WdmCamera::Move(float dltTime, VDX8RENDER *rs)
     }
     else
         kBlendPos = 1.0f;
-    rs->SetCamera(&CVECTOR(ps.x + r * sn, realHeight, ps.z + r * cs), &ang);
+    rs->SetCamera(CVECTOR(ps.x + r * sn, realHeight, ps.z + r * cs), ang);
 }
 
 void WdmCamera::CheckRange()
 {
-    float cs = cosf(ang.y);
-    float sn = sinf(ang.y);
-    float csX = cosf(ang.x);
-    float snX = sinf(ang.x);
+    const auto cs = cosf(ang.y);
+    const auto sn = sinf(ang.y);
+    const auto csX = cosf(ang.x);
+    const auto snX = sinf(ang.x);
     //Точка, в которую смотрим
-    float cx = pos.x + sn * pos.y * csX / snX;
-    float cz = pos.z + cs * pos.y * csX / snX;
-    float ccx = cx, ccz = cz;
+    const auto cx = pos.x + sn * pos.y * csX / snX;
+    const auto cz = pos.z + cs * pos.y * csX / snX;
+    const auto ccx = cx, ccz = cz;
     //Ограничиваем координату
     // if(cx < -0.5f*WDM_WORLD_SIZE_X) cx = -0.5f*WDM_WORLD_SIZE_X;
     // if(cx > 0.5f*WDM_WORLD_SIZE_X) cx = 0.5f*WDM_WORLD_SIZE_X;

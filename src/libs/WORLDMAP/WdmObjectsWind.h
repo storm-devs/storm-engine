@@ -1,12 +1,9 @@
-
-
 #define WindFieldSize 64
 #define WindFieldSteps 64
 #define WindFieldUpdateTime 0.1f
 
 class WindField
 {
-
     enum CurrentStep
     {
         cs_initors,
@@ -31,7 +28,7 @@ class WindField
     {
         float x, z;
 
-        void __forceinline Lerp(const Wind &w1, const Wind &w2, float k)
+        void Lerp(const Wind &w1, const Wind &w2, float k)
         {
             x = w1.x + (w2.x - w1.x) * k;
             z = w1.z + (w2.z - w1.z) * k;
@@ -48,7 +45,7 @@ class WindField
     //Конструирование поля на заданной области
     WindField()
     {
-        float minX = 0.0f, minZ = 0.0f, maxX = 1.0f, maxZ = 1.0f;
+        const auto minX = 0.0f, minZ = 0.0f, maxX = 1.0f, maxZ = 1.0f;
         baseX = minX;
         baseZ = minZ;
         kX = (WindFieldSize - 2) / (maxX - minX);
@@ -62,7 +59,7 @@ class WindField
         memset(wind, 0, sizeof(wind));
         memset(field, 0, sizeof(field));
         memset(tmp, 0, sizeof(tmp));
-        const float diag = 1.0f / sqrtf(2);
+        const auto diag = 1.0f / sqrtf(2);
         dir[0].x = -diag;
         dir[0].y = -diag;
         dir[0].i = -1;
@@ -119,7 +116,7 @@ class WindField
         memset(wind, 0, sizeof(wind));
         memset(field, 0, sizeof(field));
         memset(tmp, 0, sizeof(tmp));
-        const float diag = 1.0f / sqrtf(2);
+        const auto diag = 1.0f / sqrtf(2);
         dir[0].x = -diag;
         dir[0].y = -diag;
         dir[0].i = -1;
@@ -159,7 +156,7 @@ class WindField
     }
 
     //Сделать шаг вычислений
-    __forceinline void Step(float dltTime)
+    void Step(float dltTime)
     {
         switch (step)
         {
@@ -180,18 +177,18 @@ class WindField
     }
 
     //Получить ветер в заданной точке
-    __forceinline void GetWind(float x, float z, float &wx, float &wz)
+    void GetWind(float x, float z, float &wx, float &wz) const
     {
         //Получаем координаты в системе поля
         x = (x - baseX) * kX + 1.0f;
         z = (z - baseZ) * kZ + 1.0f;
         //Параметры для выборки из кадра
-        long fx1 = long(x);
-        long fx2 = fx1 + 1;
-        long fz1 = long(z);
-        long fz2 = fz1 + 1;
-        float kx = x - fx1;
-        float kz = z - fz1;
+        auto fx1 = static_cast<long>(x);
+        auto fx2 = fx1 + 1;
+        auto fz1 = static_cast<long>(z);
+        auto fz2 = fz1 + 1;
+        const auto kx = x - fx1;
+        const auto kz = z - fz1;
         if (fx1 < 0)
             fx1 = 0;
         if (fx1 >= WindFieldSize)
@@ -209,11 +206,11 @@ class WindField
         if (fz2 >= WindFieldSize)
             fz2 = WindFieldSize - 1;
         //Получаем следующий кадр
-        long nextWind = curWind + 1;
+        auto nextWind = curWind + 1;
         if (nextWind > 2)
             nextWind = 0;
         //Коэфициент блендинга между кадрами
-        float k = updateTime * (1.0f / WindFieldUpdateTime);
+        auto k = updateTime * (1.0f / WindFieldUpdateTime);
         if (k > 1.0f)
             k = 1.0f;
         //Делаем выборку в первом кадре
@@ -238,8 +235,8 @@ class WindField
             steps = 0;
             for (long i = 0; i < 4; i++)
             {
-                float ang = rand() * (3.14159265358979f * 2.0f / RAND_MAX);
-                float amp = rand() * (4.0f / RAND_MAX);
+                const auto ang = rand() * (3.14159265358979f * 2.0f / RAND_MAX);
+                const auto amp = rand() * (4.0f / RAND_MAX);
                 initors[i][1].x = (amp * sinf(ang) - initors[i][0].x) * (1.0f / (WindFieldSteps - 1));
                 initors[i][1].y = (amp * cosf(ang) - initors[i][0].y) * (1.0f / (WindFieldSteps - 1));
             }
@@ -252,8 +249,8 @@ class WindField
         }
         for (long i = 0; i < WindFieldSize; i++)
         {
-            float w2 = i * 1.0f / (WindFieldSize - 1);
-            float w1 = 1.0f - w2;
+            const auto w2 = i * 1.0f / (WindFieldSize - 1);
+            const auto w1 = 1.0f - w2;
             field[0][i].x = w1 * initors[0][0].x + w2 * initors[1][0].x;
             field[0][i].y = w1 * initors[0][0].y + w2 * initors[1][0].y;
             field[WindFieldSize - 1][i].x = w1 * initors[2][0].x + w2 * initors[3][0].x;
@@ -277,13 +274,14 @@ class WindField
     void SubStep3()
     {
         //Количество линий, которое необходимо просчитать
-        long needLines = long(updateTime * (float(WindFieldSize) / WindFieldUpdateTime) + 0.99f - curLine);
+        auto needLines =
+            static_cast<long>(updateTime * (static_cast<float>(WindFieldSize) / WindFieldUpdateTime) + 0.99f - curLine);
         if (needLines < 1)
             needLines = 1;
         for (; needLines > 0; needLines--)
         {
             //Считаем по линиям
-            long i = curLine++;
+            const auto i = curLine++;
             if (curLine >= WindFieldSize)
             {
                 curLine = -1000;
@@ -292,23 +290,23 @@ class WindField
             }
             for (long j = 1; j < WindFieldSize - 1; j++)
             {
-                Point &pnt = tmp[i][j];
-                float x = tmp[i][j].x * 0.2f;
-                float y = tmp[i][j].y * 0.2f;
+                auto &pnt = tmp[i][j];
+                auto x = tmp[i][j].x * 0.2f;
+                auto y = tmp[i][j].y * 0.2f;
                 for (long n = 0; n < 8; n++)
                 {
-                    Direction &d = dir[n];
-                    Point &p = tmp[i + d.i][j + d.j];
-                    float prj = (p.x * d.x + p.y * d.y);
+                    auto &d = dir[n];
+                    auto &p = tmp[i + d.i][j + d.j];
+                    auto prj = (p.x * d.x + p.y * d.y);
                     if (d.i & d.j)
                         prj *= 0.707f;
                     x += d.x * prj * 0.3f;
                     y += d.y * prj * 0.3f;
                 }
-                Point &p = field[i][j];
+                auto &p = field[i][j];
                 p.x = x;
                 p.y = y;
-                float len = p.x * p.x + p.y * p.y;
+                auto len = p.x * p.x + p.y * p.y;
                 if (len > 1.0f)
                 {
                     len = 1.0f / sqrtf(len);
@@ -343,10 +341,10 @@ class WindField
         curWind++;
         if (curWind > 2)
             curWind = 0;
-        long frame = (curWind + 1) % 3;
-        Point *from = &field[0][0];
-        Wind *to = &wind[frame][0][0];
-        long count = WindFieldSize * WindFieldSize;
+        const auto frame = (curWind + 1) % 3;
+        auto *from = &field[0][0];
+        auto *to = &wind[frame][0][0];
+        const long count = WindFieldSize * WindFieldSize;
         for (long i = 0; i < count; i++, from++, to++)
         {
             to->x = from->x;

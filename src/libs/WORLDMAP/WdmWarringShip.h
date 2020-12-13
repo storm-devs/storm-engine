@@ -31,14 +31,14 @@ class WdmWarringShip : public WdmEnemyShip
     virtual ~WdmWarringShip();
 
     //Расчёты
-    virtual void Update(float dltTime);
+    void Update(float dltTime) override;
 
     //Отрисовка
-    virtual void LRender(VDX8RENDER *rs);
+    void LRender(VDX9RENDER *rs) override;
 
   protected:
     //Все расчёты то перемещению вместе
-    virtual void Move(float dltTime){};
+    void Move(float dltTime) override{};
 
     //--------------------------------------------------------------------------------------------
     //Инкапсуляция

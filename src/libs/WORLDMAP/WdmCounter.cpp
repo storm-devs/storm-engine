@@ -24,13 +24,13 @@ const char *WdmCounter::skytex[WMD_NUM_SKYS] = {
 
 WdmCounter::WdmCounter()
 {
-    sky = null;
-    d[0] = d[1] = null;
-    m[0] = m[1] = null;
-    y[0] = y[1] = y[2] = y[3] = null;
+    sky = nullptr;
+    d[0] = d[1] = nullptr;
+    m[0] = m[1] = nullptr;
+    y[0] = y[1] = y[2] = y[3] = nullptr;
 
     Assert(wdmObjects->rs);
-    float kDef = wdmObjects->rs->GetHeightDeformator();
+    const auto kDef = wdmObjects->rs->GetHeightDeformator();
 #ifndef _XBOX
     mtx.BuildMatrix(-0.1f, 0.0f, 0.0f, 1.4f, 0.9f * kDef, 40.0f);
 #else
@@ -125,7 +125,7 @@ void WdmCounter::Update(float dltTime)
 {
 }
 
-void WdmCounter::LRender(VDX8RENDER *rs)
+void WdmCounter::LRender(VDX9RENDER *rs)
 {
     //Матрица камеры
     static CMatrix view, prj, oldPrj;
@@ -153,10 +153,10 @@ void WdmCounter::LRender(VDX8RENDER *rs)
     // wdmObjects->wm->day = 31;
     // wdmObjects->wm->mon = 12;
     // wdmObjects->wm->hour = 9.0f;
-    float hr = (wdmObjects->wm->hour + 11.0f) * 2.0f / 24.0f;
-    long ofs = long(hr);
-    long one = skyCounter + ofs;
-    long two = one + 1;
+    auto hr = (wdmObjects->wm->hour + 11.0f) * 2.0f / 24.0f;
+    const auto ofs = static_cast<long>(hr);
+    auto one = skyCounter + ofs;
+    auto two = one + 1;
     one &= numSkys - 1;
     two &= numSkys - 1;
     hr = (hr - ofs - 0.5f);
@@ -169,18 +169,18 @@ void WdmCounter::LRender(VDX8RENDER *rs)
     sky->SetTexture(0, skyseq[one]);
     sky->SetTexture(1, skyseq[two]);
     rs->TextureSet(1, skyseq[two]);
-    rs->SetRenderState(D3DRS_TEXTUREFACTOR, (long(hr * 255.0f) << 24) | 0x00ffffff);
+    rs->SetRenderState(D3DRS_TEXTUREFACTOR, (static_cast<long>(hr * 255.0f) << 24) | 0x00ffffff);
     sky->LRender(rs);
     //Корпус
     WdmRenderModel::LRender(rs);
     //Цифры
     //День
-    long day = wdmObjects->wm->day - 1;
-    long mon = wdmObjects->wm->mon - 1;
-    long days = wdmObjects->wm->month[mon + 1];
-    long year = wdmObjects->wm->year;
-    float kHeight = wdmObjects->wm->hour / 24.0f;
-    float kNext = 0.0f;
+    const auto day = wdmObjects->wm->day - 1;
+    const auto mon = wdmObjects->wm->mon - 1;
+    const auto days = wdmObjects->wm->month[mon + 1];
+    const auto year = wdmObjects->wm->year;
+    const auto kHeight = wdmObjects->wm->hour / 24.0f;
+    auto kNext = 0.0f;
     float low, dlt, kMove;
     if (days == 30)
     {
@@ -257,27 +257,27 @@ void WdmCounter::LRender(VDX8RENDER *rs)
     kMove = 0.0f;
     if (mon == 11 && day == 30)
         kMove = kNext;
-    low = float(year % 10);
+    low = static_cast<float>(year % 10);
     DrawNum(rs, y[3], 0.0f, (low + kMove) * 0.1f);
     if (low < 9)
         kMove = 0.0f;
-    low = float((year / 10) % 10);
+    low = static_cast<float>((year / 10) % 10);
     DrawNum(rs, y[2], 0.0f, (low + kMove) * 0.1f);
     if (low < 9)
         kMove = 0.0f;
-    low = float((year / 100) % 10);
+    low = static_cast<float>((year / 100) % 10);
     DrawNum(rs, y[1], 0.0f, (low + kMove) * 0.1f);
     if (low < 9)
         kMove = 0.0f;
-    low = float((year / 1000) % 10);
+    low = static_cast<float>((year / 1000) % 10);
     DrawNum(rs, y[0], 0.0f, (low + kMove) * 0.1f);
     rs->SetTransform(D3DTS_PROJECTION, oldPrj);
     rs->SetTransform(D3DTS_VIEW, view);
 }
 
-bool WdmCounter::LoadModel(WdmRenderModel *&pnt, const char *name, const char *tech)
+bool WdmCounter::LoadModel(WdmRenderModel *&pnt, const char *name, const char *tech) const
 {
-    pnt = NEW WdmRenderModel();
+    pnt = new WdmRenderModel();
     if (!pnt->Load(name))
         return false;
     pnt->mtx = mtx;
@@ -285,7 +285,7 @@ bool WdmCounter::LoadModel(WdmRenderModel *&pnt, const char *name, const char *t
     return true;
 }
 
-void WdmCounter::DrawNum(VDX8RENDER *rs, WdmRenderModel *m, float u, float v)
+void WdmCounter::DrawNum(VDX9RENDER *rs, WdmRenderModel *m, float u, float v)
 {
     CMatrix mtx;
     mtx.m[0][0] = 0.25f;

@@ -13,6 +13,7 @@
 
 #include "WdmRenderObject.h"
 
+class ATTRIBUTES;
 class WdmCloud;
 
 class WdmStorm : public WdmRenderObject
@@ -25,17 +26,17 @@ class WdmStorm : public WdmRenderObject
     virtual ~WdmStorm();
 
     void SetLiveTime(float t);
-    float GetLiveTime();
-    void GetPosition(float &x, float &z);
-    bool IsActive();
+    float GetLiveTime() const;
+    void GetPosition(float &x, float &z) const;
+    bool IsActive() const;
 
     bool CheckIntersection(float x, float z, float r);
 
     //Расчёты
-    virtual void Update(float dltTime);
-    virtual void LRender(VDX8RENDER *rs);
+    void Update(float dltTime) override;
+    void LRender(VDX9RENDER *rs) override;
 
-    const char *GetID();
+    const char *GetId() const;
 
   public:
     //Установка параметров
@@ -82,18 +83,18 @@ inline void WdmStorm::SetLiveTime(float t)
     liveTime = t;
 }
 
-inline float WdmStorm::GetLiveTime()
+inline float WdmStorm::GetLiveTime() const
 {
     return liveTime >= 0.0f ? liveTime : 0.0f;
 }
 
-inline void WdmStorm::GetPosition(float &x, float &z)
+inline void WdmStorm::GetPosition(float &x, float &z) const
 {
     x = pos.x;
     z = pos.z;
 }
 
-inline bool WdmStorm::IsActive()
+inline bool WdmStorm::IsActive() const
 {
     return isActiveTime <= 0.0f;
 }

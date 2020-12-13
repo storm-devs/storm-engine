@@ -9,10 +9,14 @@
 //============================================================================================
 
 #include "WdmCloud.h"
+#include "WdmObjects.h"
+#include "defines.h"
 
 #define WdmStormCloudHeight 40.0f
 #define WdmStormSizeMin 40.0f
 #define WdmStormSizeMax 60.0f
+
+IDirect3DVertexDeclaration9 *WdmCloud::vertexDecl_ = nullptr;
 
 //============================================================================================
 //Конструирование, деструктурирование
@@ -55,7 +59,7 @@ WdmCloud::~WdmCloud()
 //Расчёты
 void WdmCloud::Update(float dltTime)
 {
-    const float pi2 = 2.0f * 3.14159265358979323846f;
+    const auto pi2 = 2.0f * 3.14159265358979323846f;
     if (dltTime > 1.0f)
         dltTime = 1.0f;
 
@@ -67,9 +71,8 @@ void WdmCloud::Update(float dltTime)
     //Перемещение облака
     Move(dltTime);
     //Время для перемещения партиклов внутри облака
-    float dlt = dltTime * 0.1f;
-    long i = 0;
-    for (i = 0; i < numRects; i++)
+    const auto dlt = dltTime * 0.1f;
+    for (long i = 0; i < numRects; i++)
     {
         rect[i].vPos = pos + move[i].pos;
         rect[i].vPos.y = WdmStormCloudHeight;
@@ -80,13 +83,13 @@ void WdmCloud::Update(float dltTime)
         if (rect[i].fAngle < -pi2)
             rect[i].fAngle += pi2;
         //Определим цвет
-        float c = ~move[i].pos * 1.8f;
+        auto c = ~move[i].pos * 1.8f;
         if (c > 255.0f)
             c = 255.0f;
         if (c < 40.0f)
             c = 40.0f;
         c *= constAlpha * globalAlpha;
-        rect[i].dwColor = (long(c) << 24) | (rect[i].dwColor & 0xffffff);
+        rect[i].dwColor = (static_cast<long>(c) << 24) | (rect[i].dwColor & 0xffffff);
         //Двигаем партикл
         move[i].dTime += dlt;
         move[i].pos += move[i].v * dlt;
@@ -94,11 +97,11 @@ void WdmCloud::Update(float dltTime)
     if (curMove >= numRects)
         curMove = 0;
     //Скорость партикла
-    i = curMove++;
+    const auto i = curMove++;
     //Центровое воздействие
     dltTime = move[i].dTime;
     move[i].dTime = 0.0f;
-    float d = ~move[i].pos;
+    auto d = ~move[i].pos;
     if (d < 100.0f)
     {
         move[i].v += (move[i].pos - move[i].cent) * (move[i].kSpd * dltTime);
@@ -118,10 +121,10 @@ void WdmCloud::Update(float dltTime)
         move[i].v -= move[i].v * d;
     }
     //Расталкивающее воздействие
-    long l = i - 1;
+    auto l = i - 1;
     if (l < 0)
         l = numRects - 1;
-    CVECTOR v = move[i].pos - move[l].pos;
+    auto v = move[i].pos - move[l].pos;
     v.y = 0.0f;
     d = ~v;
     if (d > 0.0000001f && d < 40.0f)
@@ -168,7 +171,7 @@ void WdmCloud::Update(float dltTime)
     //Дождик
     for (long i = 0; i < sizeof(rain) / sizeof(rain[0]); i++)
     {
-        Rain &r = rain[i];
+        auto &r = rain[i];
         if (!r.isLive)
             continue;
         if (r.pos.y > 3.0f)
@@ -183,7 +186,7 @@ void WdmCloud::Update(float dltTime)
         {
             r.alpha -= dltTime * 1.0f;
             r.size += dltTime * 8.0f;
-            float k = dltTime * 2.0f;
+            auto k = dltTime * 2.0f;
             if (k > 1.0f)
                 k = 1.0f;
             r.vy -= k * r.vy;
@@ -200,11 +203,11 @@ void WdmCloud::Update(float dltTime)
     {
         for (long i = 0; i < sizeof(rain) / sizeof(rain[0]); i++)
         {
-            Rain &r = rain[i];
+            auto &r = rain[i];
             if (!r.isLive)
             {
                 rainBurnTime += 0.01f;
-                long p = rand() % numRects;
+                const auto p = rand() % numRects;
                 r.isLive = true;
                 r.pos = rect[p].vPos;
                 r.pos.y -= 10.0f;
@@ -218,12 +221,12 @@ void WdmCloud::Update(float dltTime)
     }
 }
 
-void WdmCloud::PRender(VDX8RENDER *rs)
+void WdmCloud::PRender(VDX9RENDER *rs)
 {
     //	LRender(rs);
 }
 
-void WdmCloud::LRender(VDX8RENDER *rs)
+void WdmCloud::LRender(VDX9RENDER *rs)
 {
     Render(rs);
 }
@@ -239,21 +242,21 @@ long WdmCloud::FillRain(RS_RECT *rainRect, long rcnt)
     //Рисуем дождь
     for (long i = 0; i < sizeof(rain) / sizeof(rain[0]); i++)
     {
-        Rain &r = rain[i];
+        auto &r = rain[i];
         if (!r.isLive)
             continue;
-        RS_RECT &rct = rainRect[rcnt];
+        auto &rct = rainRect[rcnt];
         rct.vPos = r.pos;
         rct.fSize = r.size;
         rct.fAngle = r.angle;
         rct.dwSubTexture = 0;
-        rct.dwColor = (byte(r.alpha * 95.0f * globalAlpha) << 24) | 0x00ffffff;
+        rct.dwColor = (static_cast<uint8_t>(r.alpha * 95.0f * globalAlpha) << 24) | 0x00ffffff;
         rcnt++;
     }
     return rcnt;
 }
 
-void WdmCloud::Render(VDX8RENDER *rs)
+void WdmCloud::Render(VDX9RENDER *rs)
 {
     //Инверсная матрица камеры
     CMatrix view;
@@ -262,18 +265,18 @@ void WdmCloud::Render(VDX8RENDER *rs)
     //Рисуем молнии если надо
     Vertex lght[4];
     rs->TextureSet(0, lightning);
-    dword lightningColor = (byte(globalAlpha * 255.0f) << 24) | 0x00ffffff;
+    const uint32_t lightningColor = (static_cast<uint8_t>(globalAlpha * 255.0f) << 24) | 0x00ffffff;
     for (long i = 0; i < numRects; i++)
     {
-        RS_RECT &r = rect[i];
+        auto &r = rect[i];
         if (r.dwColor & 0x0000ff00)
         {
             if (r.dwColor & 0x00000400)
             {
-                const float kFrames = 1.0f / 4.0f;
-                const float width = 10.0f;
-                float u = ((r.dwColor >> 8) & 3) * kFrames;
-                CVECTOR &vx = view.Vx();
+                const auto kFrames = 1.0f / 4.0f;
+                const auto width = 10.0f;
+                const auto u = ((r.dwColor >> 8) & 3) * kFrames;
+                auto &vx = view.Vx();
                 lght[0].pos = r.vPos - vx * width - CVECTOR(0.0f, 3.0f, 0.0f);
                 lght[0].c = lightningColor;
                 lght[0].u = u;
@@ -298,13 +301,17 @@ void WdmCloud::Render(VDX8RENDER *rs)
             r.dwColor = (r.dwColor & ~0x00000400) | ((rand() & 1) ? 0x00000400 : 0);
         }
     }
+
+    CreateVertexDeclaration(rs);
+    rs->SetVertexDeclaration(vertexDecl_);
+
     //Текстуры
     rs->TextureSet(0, texture);
     rs->TextureSet(1, light);
     //Константы
     CMatrix prj;
     rs->GetTransform(D3DTS_PROJECTION, prj);
-    rs->SetVertexShaderConstant(0, prj, 4);
+    rs->SetVertexShaderConstantF(0, prj, 4);
     prj.matrix[0] = view.matrix[1];
     prj.matrix[1] = view.matrix[5];
     prj.matrix[2] = view.matrix[9];
@@ -317,7 +324,7 @@ void WdmCloud::Render(VDX8RENDER *rs)
     prj.matrix[9] = 0.6f;
     prj.matrix[10] = 1.0f;
     prj.matrix[11] = 1.0f;
-    rs->SetVertexShaderConstant(4, prj, 3);
+    rs->SetVertexShaderConstantF(4, prj, 3);
     // Render
     rs->DrawRects(rect, numRects, "WdmClouds", 2, 2);
 }
@@ -329,9 +336,9 @@ void WdmCloud::BuildCloud(long n)
     for (long i = 0; i < n; i++, numRects++)
     {
         FindPartPos(move[i].pos);
-        dword sz = rand() & 0xff;
+        const uint32_t sz = rand() & 0xff;
         rect[i].fSize = WdmStormSizeMin + (WdmStormSizeMax - WdmStormSizeMin) * (sz / 255.0f);
-        dword clr = rand() & 0xf;
+        const uint32_t clr = rand() & 0xf;
         rect[i].dwColor = 0xf0f00000 | (clr << 24) | (clr << 16) | sz;
         rect[i].fAngle = 0.0f;
         rect[i].dwSubTexture = rand() & 3;
@@ -360,8 +367,22 @@ void WdmCloud::FindPartPos(CVECTOR &v)
 
 inline float WdmCloud::Rnd()
 {
-    float f = powf(rand() * 1.0f / RAND_MAX, 0.1f);
+    auto f = powf(rand() * 1.0f / RAND_MAX, 0.1f);
     if (rand() & 1)
         f = -f;
     return f;
+}
+
+void WdmCloud::CreateVertexDeclaration(VDX9RENDER *rs)
+{
+    if (vertexDecl_ != nullptr)
+        return;
+
+    const D3DVERTEXELEMENT9 VertexElements[] = {
+        {0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
+        {0, 12, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 0},
+        {0, 16, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0},
+        D3DDECL_END()};
+
+    rs->CreateVertexDeclaration(VertexElements, &vertexDecl_);
 }

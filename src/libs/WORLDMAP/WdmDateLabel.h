@@ -25,7 +25,7 @@ class WdmDateLabel : public WdmInterfaceObject
 
     void SetAttributes(ATTRIBUTES *apnt);
     //Отрисовка
-    virtual void LRender(VDX8RENDER *rs);
+    virtual void LRender(VDX9RENDER *rs);
 
     //--------------------------------------------------------------------------------------------
     //Инкапсуляция
