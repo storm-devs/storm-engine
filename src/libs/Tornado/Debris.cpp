@@ -9,6 +9,8 @@
 //============================================================================================
 
 #include "Debris.h"
+#include "../../Shared/messages.h"
+#include "EntityManager.h"
 #include "geometry.h"
 #include "ship_base.h"
 
@@ -20,16 +22,15 @@ Debris::Debris(Pillar &_pillar) : pillar(_pillar)
 {
     numModels = 0;
     flyCounter = 0;
-    shipcode = _CORE_API->Class_Name2Code("ship");
     SetGlobalAlpha(1.0f);
-    soundService = null;
+    soundService = nullptr;
     lastPlayTime = 0.0f;
 }
 
 Debris::~Debris()
 {
     for (long i = 0; i < numModels; i++)
-        _CORE_API->DeleteEntity(mdl[i].mdl->GetID());
+        EntityManager::EraseEntity(mdl[i].mdl->GetId());
 }
 
 void Debris::Init()
@@ -47,7 +48,7 @@ void Debris::Init()
     AddModel("Tornado\\Flotsam6", 5, 1.1f);
     AddModel("Tornado\\Flotsam7", 5, 1.2f);
     NormalazedModels();
-    soundService = (VSoundService *)api->CreateService("SoundService");
+    soundService = static_cast<VSoundService *>(api->CreateService("SoundService"));
 }
 
 void Debris::Update(float dltTime)
@@ -78,8 +79,8 @@ void Debris::Update(float dltTime)
                 {
                     if (lastPlayTime <= 0.0f)
                     {
-                        soundService->SoundPlay("TornadoCrackSound", PCM_3D, VOLUME_FX, false, false, true, 0,
-                                                &CVECTOR(pillar.GetX(0.0f), 0.0f, pillar.GetZ(0.0f)));
+                        const auto pos = CVECTOR(pillar.GetX(0.0f), 0.0f, pillar.GetZ(0.0f));
+                        soundService->SoundPlay("TornadoCrackSound", PCM_3D, VOLUME_FX, false, false, true, 0, &pos);
                         lastPlayTime = 0.2f + rand() * (0.2f / RAND_MAX);
                     }
                 }
@@ -87,7 +88,7 @@ void Debris::Update(float dltTime)
         }
     }
     //Полёт
-    float h = pillar.GetHeight();
+    const auto h = pillar.GetHeight();
     for (long i = 0; i < flyCounter; i++)
     {
         //Обновляем позицию по высоте
@@ -101,7 +102,7 @@ void Debris::Update(float dltTime)
             continue;
         }
         //Обновляем радиус
-        float k = dltTime * 1.0f;
+        auto k = dltTime * 1.0f;
         if (k > 1.0f)
             k = 1.0f;
         fly[i].r += (pillar.GetRaduis(fly[i].y) - fly[i].r) * k;
@@ -132,7 +133,7 @@ void Debris::Update(float dltTime)
     }
 }
 
-void Debris::Draw(VDX8RENDER *rs)
+void Debris::Draw(VDX9RENDER *rs)
 {
     for (long i = 0; i < flyCounter; i++)
     {
@@ -145,41 +146,41 @@ void Debris::Draw(VDX8RENDER *rs)
         for (long a = 0; a < 3; a++)
             for (long b = 0; b < 3; b++)
                 fly[i].mdl->mtx.m[a][b] *= fly[i].scale;
-        rs->SetRenderState(D3DRS_TEXTUREFACTOR, (long(fly[i].alpha * galpha) << 24) | 0xffffff);
-        fly[i].mdl->Realize(10);
+        rs->SetRenderState(D3DRS_TEXTUREFACTOR, (static_cast<long>(fly[i].alpha * galpha) << 24) | 0xffffff);
+        fly[i].mdl->ProcessStage(Entity::Stage::realize, 10);
     }
 }
 
 void Debris::AddModel(const char *modelName, float prt, float spd)
 {
-    if (numModels >= sizeof(mdl) / sizeof(MODEL *))
+    if (numModels > _countof(mdl))
         return;
     //Создаём модельку
-    ENTITY_ID id;
-    if (!_CORE_API->CreateEntity(&id, "modelr"))
+    entid_t id;
+    if (!(id = EntityManager::CreateEntity("modelr")))
         return;
-    MODEL *m = (MODEL *)_CORE_API->GetEntityPointer(&id);
+    auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(id));
     if (!m)
         return;
     //Путь для текстур
-    VGEOMETRY *gs = (VGEOMETRY *)_CORE_API->CreateService("geometry");
+    auto *gs = static_cast<VGEOMETRY *>(api->CreateService("geometry"));
     if (!gs)
         return;
     gs->SetTexturePath("Tornado\\");
     //Загружаем
     try
     {
-        _CORE_API->Send_Message(id, "ls", MSG_MODEL_LOAD_GEO, modelName);
+        api->Send_Message(id, "ls", MSG_MODEL_LOAD_GEO, modelName);
     }
     catch (...)
     {
         gs->SetTexturePath("");
-        _CORE_API->DeleteEntity(id);
+        EntityManager::EraseEntity(id);
         return;
     }
     gs->SetTexturePath("");
     //Настраиваем
-    NODE *node = m->GetNode(0);
+    auto *node = m->GetNode(0);
     if (node)
         node->SetTechnique("TornadoDebris");
     //Сохраняем
@@ -190,7 +191,7 @@ void Debris::AddModel(const char *modelName, float prt, float spd)
 
 void Debris::NormalazedModels()
 {
-    float sum = 0.0f;
+    auto sum = 0.0f;
     for (long i = 0; i < numModels; i++)
         sum += mdl[i].prt;
     for (long i = 0; i < numModels; i++)
@@ -199,9 +200,9 @@ void Debris::NormalazedModels()
 
 MODEL *Debris::SelectModel(float &maxSpd)
 {
-    float rnd = rand() * (1.0f / RAND_MAX);
-    float sum = 0.0f;
-    long i = 0;
+    const auto rnd = rand() * (1.0f / RAND_MAX);
+    auto sum = 0.0f;
+    long i;
     for (i = 0; i < numModels - 1; i++)
     {
         sum += mdl[i].prt;
@@ -217,27 +218,25 @@ MODEL *Debris::SelectModel(float &maxSpd)
 
 bool Debris::IsShip()
 {
-    ENTITY_ID id;
-    bool res = _CORE_API->FindClass(&id, null, shipcode);
-    if (!res)
-        return false;
-    CVECTOR p(pillar.GetX(0.0f), 0.0f, pillar.GetZ(0.0f));
+    const CVECTOR p(pillar.GetX(0.0f), 0.0f, pillar.GetZ(0.0f));
     CVECTOR pos;
-    for (; res; res = _CORE_API->FindClassNext(&id))
+    const auto &entities = EntityManager::GetEntityIdVector("ship");
+    for (auto id : entities)
     {
         //Указатель на объект
-        VAI_OBJBASE *ship = (VAI_OBJBASE *)_CORE_API->GetEntityPointer(&id);
+        auto *ship = static_cast<VAI_OBJBASE *>(EntityManager::GetEntityPointer(id));
         if (!ship)
             break;
         //Позиция торнадо в системе корабля
         Assert(ship->GetMatrix());
         ship->GetMatrix()->MulToInv(p, pos);
         //Проверим попадание в бокс
-        CVECTOR s = ship->GetBoxSize();
+        const auto s = ship->GetBoxsize();
         if (pos.x < -s.x - 6.0f || pos.x > s.x + 6.0f)
             continue;
         if (pos.z < -s.z - 6.0f || pos.z > s.z + 6.0f)
             continue;
+
         return true;
     }
     return false;

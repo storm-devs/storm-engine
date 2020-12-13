@@ -36,7 +36,7 @@ class Pillar
     struct Vertex
     {
         float x, y, z;
-        dword color;
+        uint32_t color;
     };
 
     //--------------------------------------------------------------------------------------------
@@ -48,7 +48,7 @@ class Pillar
 
     void Update(float dltTime);
     void FillVertexBuffer(Vertex *buffer);
-    void FillIndexBuffer(word *buffer);
+    void FillIndexBuffer(uint16_t *buffer);
 
     long GetNumVerteces();
     long GetNumTriangles();
