@@ -10,11 +10,11 @@ set(Spdlog_FOUND false)
 
 if(WIN32)
   find_path(Spdlog_INCLUDE_DIR spdlog.h
-    "${Storm_EXTERN_DIR}/spdlog/inc"
+    "${STORM_EXTERN_DIR}/spdlog/inc"
     )
   mark_as_advanced(Spdlog_INCLUDE_DIR)
   if(Spdlog_INCLUDE_DIR)
-    set(Spdlog_ROOT_DIR "${Storm_EXTERN_DIR}/spdlog")
+    set(Spdlog_ROOT_DIR "${STORM_EXTERN_DIR}/spdlog")
   endif()
 
   set(Spdlog_LIBRARY_PATHS)

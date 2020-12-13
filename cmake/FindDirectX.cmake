@@ -8,7 +8,7 @@
 
 set(DirectX_FOUND false)
 
-set(DirectX_INCLUDE_DIR "${Storm_EXTERN_DIR}/directx/include")
+set(DirectX_INCLUDE_DIR "${STORM_EXTERN_DIR}/directx/include")
 mark_as_advanced(DirectX_INCLUDE_DIR)
 if(DirectX_INCLUDE_DIR)
   set(DirectX_ROOT_DIR "${DirectX_INCLUDE_DIR}/..")
