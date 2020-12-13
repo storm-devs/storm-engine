@@ -1,14 +1,12 @@
 #ifndef _SOUNDDEFINES_H_
 #define _SOUNDDEFINES_H_
 
-#include "d_types.h"
-#include "memop.h"
 ///////////////////////////////////////////////////////////////////
 // CONSTANTS
 ///////////////////////////////////////////////////////////////////
 //#define TRACE_INFORMATION
 #ifndef _XBOX
-#define FIO(a) api->fio->_##a
+#define FIO(a) fio->_##a
 #else
 #define FIO(a) a
 #endif
@@ -57,12 +55,14 @@ enum eSoundType
     MP3_3D = 3,
     PCM_STEREO = 4
 };
+
 enum eVolumeType
 {
     VOLUME_FX = 1,
     VOLUME_MUSIC = 2,
     VOLUME_SPEECH = 3
 };
+
 enum eSoundMessage
 {
     SM_MAX_DISTANCE = 1,
@@ -82,10 +82,10 @@ typedef unsigned long FOURCC;
 typedef struct
 {
     FOURCC ckid;
-    dword cksize;
+    uint32_t cksize;
     FOURCC fccType;
-    dword dwDataOffset;
-    dword dwFlags;
+    uint32_t dwDataOffset;
+    uint32_t dwFlags;
 } MMCKINFO;
 #endif
 ///////////////////////////////////////////////////////////////////
@@ -102,9 +102,7 @@ typedef struct
 #define THROW_STRING(s, p)                                                                                             \
     {                                                                                                                  \
         static char _tmpString[2048];                                                                                  \
-                                                                                                                       \
-        sprintf(_tmpString, s, p);                                                                                     \
-        _VSYSTEM_API->Trace(_tmpString);                                                                               \
+        sprintf_s(_tmpString, s, p);                                                                                   \
         throw _tmpString;                                                                                              \
     }
 

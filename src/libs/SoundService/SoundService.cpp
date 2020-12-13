@@ -1,46 +1,45 @@
 #include "SoundService.h"
-#include "common_defines.h"
-#include "exs.h"
-#include "matrix.h"
+#include "EntityManager.h"
+#include "Matrix.h"
+#include "defines.h"
 #include "rands.h"
-#include <math.h>
+#include <fmod_errors.h>
 
 //для debug
 #include "DebugEntity.h"
-#include "dx8render.h"
-VDX8RENDER *pRS = NULL;
+#include "math3d/Color.h"
 
-INTERFACE_FUNCTION
 CREATE_SERVICE(SoundService)
+
 CREATE_CLASS(SoundVisualisationEntity)
 
 #define DISTANCEFACTOR 1.0f
 
 //#define FADE_TIME 4.0f
 
-void FMOD_ERROR(const char *szFromWhere, FMOD_RESULT result)
+#define CHECKFMODERR(expr) ErrorHandler(expr, __FILE__, __LINE__, __func__, #expr)
+
+FMOD_RESULT SoundService::ErrorHandler(const FMOD_RESULT result, const char *file, unsigned line, const char *func,
+                                       const char *expr)
 {
     if (result != FMOD_OK)
     {
-        char *szTxtError = (char *)FMOD_ErrorString(result);
-        api->Trace("%s error! (%d) %s", szFromWhere, result, szTxtError);
+        api->Trace("[%s:%s:%d] %s (%s)", file, func, line, FMOD_ErrorString(result), expr);
     }
+    return result;
 }
 
-//////////////////////////////////////////////////////////////////////
-// CLASS IMPLEMENTATION
-//////////////////////////////////////////////////////////////////////
-SoundService::SoundService() : Aliases(_FL_), SoundCache(_FL_), SoundSchemeChannels(_FL_), OGGPosition(_FL_)
+SoundService::SoundService()
 {
     fFXVolume = 0.5f;
     fMusicVolume = 0.5f;
     fSpeechVolume = 0.5f;
 
     bShowDebugInfo = false;
-    OGG_sound[0] = NULL;
-    OGG_sound[1] = NULL;
-    fmod_system = NULL;
-    bInited = false;
+    OGG_sound[0] = nullptr;
+    OGG_sound[1] = nullptr;
+    system = nullptr;
+    initialized = false;
 
     vListenerPos.x = 0.0f;
     vListenerPos.y = 0.0f;
@@ -57,112 +56,76 @@ SoundService::SoundService() : Aliases(_FL_), SoundCache(_FL_), SoundSchemeChann
     FaderParity = false;
 }
 
-//--------------------------------------------------------------------
 SoundService::~SoundService()
 {
-
-    if (bInited)
+    if (initialized)
     {
-        status = fmod_system->close();
-        FMOD_ERROR("FMOD:Close", status);
-        status = fmod_system->release();
-        FMOD_ERROR("FMOD:Release", status);
+        CHECKFMODERR(system->close());
+        CHECKFMODERR(system->release());
     }
-    bInited = false;
 }
 
-//--------------------------------------------------------------------
-// static TSD_ID i5 = 0;
 bool SoundService::Init()
 {
-    pRS = (VDX8RENDER *)_CORE_API->CreateService("DX8RENDER");
+    initialized = false;
 
-    status = FMOD::System_Create(&fmod_system);
-    FMOD_ERROR("FMOD:System_Create", status);
+    rs = static_cast<VDX9RENDER *>(api->CreateService("DX9RENDER"));
 
-    unsigned int version;
-    status = fmod_system->getVersion(&version);
-    FMOD_ERROR("FMOD:getVersion", status);
+    CHECKFMODERR(FMOD::System_Create(&system));
+    unsigned version;
+    CHECKFMODERR(system->getVersion(&version));
 
-    bInited = false;
     if (version < FMOD_VERSION)
     {
         api->Trace("Error : You are using old FMOD version %08x !\n", version);
         return false;
     }
-    else
-    {
-        api->Trace("Using FMOD %08x", FMOD_VERSION);
-    }
+    api->Trace("Using FMOD %08x", FMOD_VERSION);
+
+    CHECKFMODERR(system->init(MAX_SOUNDS_SLOTS, FMOD_INIT_NORMAL, nullptr));
+    CHECKFMODERR(system->set3DSettings(1.0, DISTANCEFACTOR, 1.0f));
+
+    InitAliases();
+    CreateEntityIfNeed();
+
+    initialized = true;
+    return true;
 
     // 32 звука мы слышим
-    status = fmod_system->setSoftwareChannels(32);
-    FMOD_ERROR("FMOD:setSoftwareChannels", status);
-
-    // fmod_system->setDriver()
-
-    // status = fmod_system->setSpeakerMode(FMOD_SPEAKERMODE_STEREO);
-    // FMOD_ERROR("FMOD:setSpeakerMode", status);
-
+    // CHECKFMODERR(system->setSoftwareChannels(32));
+    // FMOD_CHECK("FMOD:setSoftwareChannels", status);
+    // system->setDriver()
+    // status = system->setSpeakerMode(FMOD_SPEAKERMODE_STEREO);
+    // FMOD_CHECK("FMOD:setSpeakerMode", status);
     //всего MAX_SOUNDS_SLOTS можно звуков завести
+    /*FMOD_SPEAKERMODE speaker_mode;
+    status = system->getSpeakerMode(&speaker_mode);
+    FMOD_CHECK("FMOD:getSpeakerMode", status);
 
-    INIFILE *pEngineIni = fio->OpenIniFile(api->EngineIniFileName());
-    if (pEngineIni)
-    {
-        bool bUseMMDevice = pEngineIni->GetLong("Sound", "UseMM", 0) == 1;
-        if (bUseMMDevice)
-        {
-            // status = fmod_system->setOutput(FMOD_OUTPUTTYPE_WINMM);
-            status = fmod_system->setOutput(FMOD_OUTPUTTYPE_AUTODETECT);
-            FMOD_ERROR("FMOD:setOutput", status);
-        }
-        SE_DELETE(pEngineIni);
-    }
-
-    status = fmod_system->init(MAX_SOUNDS_SLOTS, FMOD_INIT_NORMAL, api->GetAppHWND());
-    FMOD_ERROR("FMOD:init", status);
-    status = fmod_system->set3DSettings(1.0, DISTANCEFACTOR, 1.0f);
-    FMOD_ERROR("FMOD:set3DSettings", status);
-
-    bInited = true;
-    api->Trace("Sound inited ok !!!");
-
-    FMOD_SPEAKERMODE speaker_mode;
-    status = fmod_system->getSoftwareFormat(NULL, &speaker_mode, NULL);
-
-    FMOD_ERROR("FMOD:getSpeakerMode", status);
-
-    string TextSpkMode = "RAW";
+    std::string TextSpkMode = "RAW";
     switch (speaker_mode)
     {
     case FMOD_SPEAKERMODE_MONO:
-        TextSpkMode = "MONO";
-        break;
+      TextSpkMode = "MONO";
+      break;
     case FMOD_SPEAKERMODE_STEREO:
-        TextSpkMode = "STEREO";
-        break;
+      TextSpkMode = "STEREO";
+      break;
     case FMOD_SPEAKERMODE_5POINT1:
-        TextSpkMode = "5:1";
-        break;
+      TextSpkMode = "5:1";
+      break;
     case FMOD_SPEAKERMODE_7POINT1:
-        TextSpkMode = "7:1";
-        break;
+      TextSpkMode = "7:1";
+      break;
+    case FMOD_SPEAKERMODE_PROLOGIC:
+      TextSpkMode = "PROLOGIC";
+      break;
 
-        //	case FMOD_SPEAKERMODE_PROLOGIC:
-        //		TextSpkMode = "PROLOGIC";
-        //		break;
     }
-    api->Trace("FMOD: Speaker mode %s", TextSpkMode.c_str());
-
-    InitAliases();
-
+    api->Trace("FMOD: Speaker mode %s", TextSpkMode.c_str());*/
     // FMOD_REVERB_PROPERTIES revProp = FMOD_PRESET_CONCERTHALL;
-    // status = fmod_system->setReverbProperties(&revProp);
-    // FMOD_ERROR("FMOD:setReverbProperties",status);
-
-    CreateEntityIfNeed();
-
-    return true;
+    // status = system->setReverbProperties(&revProp);
+    // FMOD_CHECK("FMOD:setReverbProperties",status);
 }
 
 //--------------------------------------------------------------------
@@ -170,8 +133,7 @@ void SoundService::RunEnd()
 {
     CreateEntityIfNeed();
     //Внутреннее обновление FMOD
-    status = fmod_system->update();
-    FMOD_ERROR("FMOD:update", status);
+    CHECKFMODERR(system->update());
 }
 
 //--------------------------------------------------------------------
@@ -193,7 +155,7 @@ void SoundService::ProcessFader(int idx)
         return;
     }
 
-    float fTime = api->GetDeltaTime() * 0.001f;
+    const auto fTime = api->GetDeltaTime() * 0.001f;
 
     PlayingSounds[idx].fFaderCurrentVolume += PlayingSounds[idx].fFaderDeltaInSec * fTime;
 
@@ -228,12 +190,12 @@ void SoundService::RunStart()
 {
     CreateEntityIfNeed();
 
-    if (pRS)
+    if (rs)
     {
         static CVECTOR pos, ang, nose, head;
         static CMatrix view;
 
-        pRS->GetTransform(D3DTS_VIEW, view);
+        rs->GetTransform(D3DTS_VIEW, view);
         view.Transposition();
         nose = view.Vz();
         head = view.Vy();
@@ -247,7 +209,7 @@ void SoundService::RunStart()
     ProcessFader(1);
 
     //Освобождаем звуки которые проигрались...
-    for (int i = 0; i < MAX_SOUNDS_SLOTS; i++)
+    for (auto i = 0; i < MAX_SOUNDS_SLOTS; i++)
     {
         if (PlayingSounds[i].bFree)
             continue;
@@ -255,38 +217,35 @@ void SoundService::RunStart()
         //Если просто на паузе стоит, трогать его не надо...
 
         bool paused;
-        status = PlayingSounds[i].channel->getPaused(&paused);
+        auto status = CHECKFMODERR(PlayingSounds[i].channel->getPaused(&paused));
         if (status != FMOD_OK)
         {
             PlayingSounds[i].bFree = true;
             continue;
         }
 
-        // FMOD_ERROR(status);
+        // FMOD_CHECK(status);
 
         if (paused)
             continue;
 
         bool is_playing;
-        status = PlayingSounds[i].channel->isPlaying(&is_playing);
-        FMOD_ERROR("FMOD_SOUND:isplaying", status);
+        status = CHECKFMODERR(PlayingSounds[i].channel->isPlaying(&is_playing));
 
         if (!is_playing || status != FMOD_OK)
         {
             PlayingSounds[i].bFree = true;
-            PlayingSounds[i].channel = NULL;
+            PlayingSounds[i].channel = nullptr;
 
-            if (i == 0 && OGG_sound[0] != NULL)
+            if (i == 0 && OGG_sound[0] != nullptr)
             {
-                status = OGG_sound[0]->release();
-                FMOD_ERROR("FMOD_SOUND:release", status);
-                OGG_sound[0] = NULL;
+                CHECKFMODERR(OGG_sound[0]->release());
+                OGG_sound[0] = nullptr;
             }
-            if (i == 1 && OGG_sound[1] != NULL)
+            if (i == 1 && OGG_sound[1] != nullptr)
             {
-                status = OGG_sound[1]->release();
-                FMOD_ERROR("FMOD_SOUND:release", status);
-                OGG_sound[1] = NULL;
+                CHECKFMODERR(OGG_sound[1]->release());
+                OGG_sound[1] = nullptr;
             }
         }
     }
@@ -294,38 +253,39 @@ void SoundService::RunStart()
     ProcessSoundSchemes();
 }
 
-int SoundService::FindEmptySlot()
+int SoundService::FindEmptySlot() const
 {
-    for (int i = 2; i < MAX_SOUNDS_SLOTS; i++)
+    for (auto i = 2; i < MAX_SOUNDS_SLOTS; i++)
     {
         if (PlayingSounds[i].bFree)
             return i;
     }
 
+    api->Trace("SoundService::FindEmptySlot(): no empty slots");
     return -1;
 }
 
 //--------------------------------------------------------------------
-const char *SoundService::GetRandomName(tAlias *_alias)
+const char *SoundService::GetRandomName(tAlias *_alias) const
 {
-    float randomFloat = rand(_alias->fMaxProbabilityValue);
-    int currentNameIndex = 0;
-    float currentFloat = 0.f;
+    const auto randomFloat = rand(_alias->fMaxProbabilityValue);
+    auto currentNameIndex = 0;
+    auto currentFloat = 0.f;
 
     for (;;)
     {
         if (currentFloat > randomFloat)
             break;
-        if ((currentNameIndex + 1) >= (int)_alias->SoundFiles.Size())
+        if ((currentNameIndex + 1) >= static_cast<int>(_alias->SoundFiles.size()))
             break;
 
         currentFloat += _alias->SoundFiles[currentNameIndex].fProbability;
         currentNameIndex++;
     }
 
-    if (currentNameIndex >= (int)_alias->SoundFiles.Size())
+    if (currentNameIndex >= static_cast<int>(_alias->SoundFiles.size()))
     {
-        currentNameIndex = (int)_alias->SoundFiles.Size() - 1;
+        currentNameIndex = static_cast<int>(_alias->SoundFiles.size()) - 1;
     }
 
     return _alias->SoundFiles[currentNameIndex].FileName.c_str();
@@ -334,8 +294,8 @@ const char *SoundService::GetRandomName(tAlias *_alias)
 
 int SoundService::GetAliasIndexByName(const char *szAliasName)
 {
-    dword dwSearchHash = string::HashNoCase(szAliasName);
-    for (dword i = 0; i < Aliases.Size(); i++)
+    const uint32_t dwSearchHash = TOREMOVE::HashNoCase(szAliasName);
+    for (uint32_t i = 0; i < Aliases.size(); i++)
     {
         if (Aliases[i].dwNameHash == dwSearchHash)
         {
@@ -351,18 +311,19 @@ int SoundService::GetAliasIndexByName(const char *szAliasName)
 
 TSD_ID SoundService::SoundPlay(const char *_name, eSoundType _type, eVolumeType _volumeType,
                                bool _simpleCache /*=false*/, bool _looped /*= false*/, bool _cached /*= false*/,
-                               long _time /* = 0*/, CVECTOR *_startPosition /* = 0*/, float _minDistance /* = -1.0f*/,
-                               float _maxDistance /* = -1.0f*/, long _loopPauseTime /*= 0*/, float _volume, /*= 1.0f*/
+                               long _time /* = 0*/, const CVECTOR *_startPosition /* = 0*/,
+                               float _minDistance /* = -1.0f*/, float _maxDistance /* = -1.0f*/,
+                               long _loopPauseTime /*= 0*/, float _volume, /*= 1.0f*/
                                long _prior)
 {
-    string FileName = _name;
+    std::string FileName = _name;
 
     // aliases don`t contain `\`
     if (!strchr(_name, '\\'))
     {
         //Пробуем найти в алиасах
-        int AliasIdx = GetAliasIndexByName(_name);
-        if (AliasIdx >= 0 && Aliases[AliasIdx].SoundFiles.Size() > 0)
+        const auto AliasIdx = GetAliasIndexByName(_name);
+        if (AliasIdx >= 0 && Aliases[AliasIdx].SoundFiles.size() > 0)
         {
             //Играем из алиаса звук...
             FileName = GetRandomName(&Aliases[AliasIdx]);
@@ -379,29 +340,25 @@ TSD_ID SoundService::SoundPlay(const char *_name, eSoundType _type, eVolumeType 
         }
     }
 
-    string SoundName = "resource\\sounds\\";
+    std::string SoundName = "resource\\sounds\\";
     SoundName += FileName;
 
-    FMOD::Sound *sound = NULL;
-    int SoundIdx = 0;
+    FMOD::Sound *sound = nullptr;
+    auto SoundIdx = 0;
     if (_type == MP3_STEREO)
     {
         //Стримленые играем сразу, без кеширования и всегда в 0 слоте....
 
         try
         {
-
-            dword dwMode = FMOD_LOOP_OFF;
+            uint32_t dwMode = FMOD_LOOP_OFF;
             if (_looped)
                 dwMode = FMOD_LOOP_NORMAL;
-            //			status = fmod_system->createStream(SoundName.c_str(), FMOD_HARDWARE | FMOD_2D | dwMode, 0,
-            //&sound);
-            status = fmod_system->createStream(SoundName.c_str(), FMOD_2D | dwMode, 0, &sound);
-            FMOD_ERROR("FMOD_SOUND:createStream", status);
+            const auto status = CHECKFMODERR(
+                system->createStream(SoundName.c_str(), FMOD_CREATESAMPLE | FMOD_2D | dwMode, nullptr, &sound));
             if (status != FMOD_OK)
             {
-                api->Trace("fmod_system->createStream(%s, FMOD_HARDWARE | FMOD_2D | dwMode, 0, &sound)",
-                           SoundName.c_str());
+                api->Trace("system->createStream(%s, FMOD_HARDWARE | FMOD_2D | dwMode, 0, &sound)", SoundName.c_str());
                 return 0;
             }
         }
@@ -412,8 +369,8 @@ TSD_ID SoundService::SoundPlay(const char *_name, eSoundType _type, eVolumeType 
             return 0;
         }
 
-        int MusicIdx = 0;
-        int OldMusicIdx = 1;
+        auto MusicIdx = 0;
+        auto OldMusicIdx = 1;
         if (FaderParity)
         {
             MusicIdx = 1;
@@ -426,10 +383,10 @@ TSD_ID SoundService::SoundPlay(const char *_name, eSoundType _type, eVolumeType 
             SoundStop(OldMusicIdx + 1, _time);
             /*
             status = PlayingSounds[OldMusicIdx].channel->stop();
-            FMOD_ERROR("FMOD_SOUND:stop",status);
+            FMOD_CHECK("FMOD_SOUND:stop",status);
             PlayingSounds[OldMusicIdx].channel = NULL;
             status = OGG_sound[OldMusicIdx]->release();
-            FMOD_ERROR("FMOD_SOUND:release",status);
+            FMOD_CHECK("FMOD_SOUND:release",status);
             */
             //			PlayingSounds[OldMusicIdx].fFaderNeedVolume = 0.0f ;
             //			PlayingSounds[OldMusicIdx].fFaderCurrentVolume = _volume;
@@ -445,7 +402,7 @@ TSD_ID SoundService::SoundPlay(const char *_name, eSoundType _type, eVolumeType 
     else
     {
         //Для всех остальных звуков берем из кеша
-        int CacheIdx = GetFromCache(SoundName.c_str(), _type);
+        const auto CacheIdx = GetFromCache(SoundName.c_str(), _type);
         if (CacheIdx < 0)
         {
             return 0;
@@ -462,25 +419,22 @@ TSD_ID SoundService::SoundPlay(const char *_name, eSoundType _type, eVolumeType 
     }
 
     //--------
-    TSD_ID SoundID = SoundIdx + 1;
+    const TSD_ID SoundID = SoundIdx + 1;
 
     PlayingSounds[SoundIdx].type = _volumeType;
 
     PlayingSounds[SoundIdx].fSoundVolume = _volume;
 
     //Начинаем проигрывать звук, правда запауженный...
-    // status = fmod_system->playSound(FMOD_CHANNEL_FREE, sound, true, &PlayingSounds[SoundIdx].channel);
-    status = fmod_system->playSound(sound, NULL, true, &PlayingSounds[SoundIdx].channel);
-    FMOD_ERROR("FMOD_SOUND:playSound", status);
-
+    const auto status = CHECKFMODERR(system->playSound(sound, nullptr, true, &PlayingSounds[SoundIdx].channel));
     if (status != FMOD_OK)
     {
-        api->Trace("fmod_system->playSound(FMOD_CHANNEL_FREE, sound, true, &PlayingSounds[%d].channel)", SoundIdx);
+        api->Trace("system->playSound(FMOD_CHANNEL_FREE, sound, true, &PlayingSounds[%d].channel)", SoundIdx);
     }
 
     if (SoundIdx <= 1)
     {
-        unsigned int OGGpos = GetOGGPosition(SoundName.c_str());
+        const auto OGGpos = GetOGGPosition(SoundName.c_str());
         PlayingSounds[SoundIdx].channel->setPosition(OGGpos, FMOD_TIMEUNIT_MS);
 
         _prior = 0;
@@ -504,17 +458,15 @@ TSD_ID SoundService::SoundPlay(const char *_name, eSoundType _type, eVolumeType 
             _maxDistance = 0.0f;
         // FMOD_Sound_Set3DMinMaxDistance(PlayingSounds[SoundIdx].sound, _minDistance * DISTANCEFACTOR, _maxDistance *
         // DISTANCEFACTOR);
-        status = PlayingSounds[SoundIdx].channel->set3DMinMaxDistance(_minDistance * DISTANCEFACTOR,
-                                                                      _maxDistance * DISTANCEFACTOR);
-        FMOD_ERROR("FMOD_SOUND:set3DMinMaxDistance", status);
+        CHECKFMODERR(PlayingSounds[SoundIdx].channel->set3DMinMaxDistance(_minDistance * DISTANCEFACTOR,
+                                                                          _maxDistance * DISTANCEFACTOR));
 
         FMOD_VECTOR vVelocity = {0.0f, 0.0f, 0.0f};
         FMOD_VECTOR vPosition;
         vPosition.x = _startPosition->x;
         vPosition.y = _startPosition->y;
         vPosition.z = _startPosition->z;
-        status = PlayingSounds[SoundIdx].channel->set3DAttributes(&vPosition, &vVelocity);
-        FMOD_ERROR("FMOD_SOUND:set3DAttributes", status);
+        CHECKFMODERR(PlayingSounds[SoundIdx].channel->set3DAttributes(&vPosition, &vVelocity));
     }
 
     switch (_volumeType)
@@ -535,16 +487,14 @@ TSD_ID SoundService::SoundPlay(const char *_name, eSoundType _type, eVolumeType 
 
     if (_time <= 0)
     {
-        status = PlayingSounds[SoundIdx].channel->setVolume(_volume);
-        FMOD_ERROR("FMOD_SOUND:setVolume", status);
+        CHECKFMODERR(PlayingSounds[SoundIdx].channel->setVolume(_volume));
     }
     else
     {
-        status = PlayingSounds[SoundIdx].channel->setVolume(0);
-        FMOD_ERROR("FMOD_SOUND:setVolume", status);
+        CHECKFMODERR(PlayingSounds[SoundIdx].channel->setVolume(0));
     }
 
-    PlayingSounds[SoundIdx].Name = SoundName;
+    PlayingSounds[SoundIdx].Name = std::move(SoundName);
     PlayingSounds[SoundIdx].sound_type = _type;
 
     //На OGG убираем все EAX эффекты...
@@ -555,13 +505,11 @@ TSD_ID SoundService::SoundPlay(const char *_name, eSoundType _type, eVolumeType 
     //Если не просто кеширование.... то снимаем с паузы...
     if (!_simpleCache)
     {
-        status = PlayingSounds[SoundIdx].channel->setPaused(false);
-        FMOD_ERROR("FMOD_SOUND:setPaused", status);
+        CHECKFMODERR(PlayingSounds[SoundIdx].channel->setPaused(false));
     }
     else
     {
-        status = PlayingSounds[SoundIdx].channel->setPaused(true);
-        FMOD_ERROR("FMOD_SOUND:setPaused", status);
+        CHECKFMODERR(PlayingSounds[SoundIdx].channel->setPaused(true));
     }
 
     PlayingSounds[SoundIdx].bFree = false;
@@ -569,18 +517,16 @@ TSD_ID SoundService::SoundPlay(const char *_name, eSoundType _type, eVolumeType 
     //Лупинг задаем..
     if (_looped)
     {
-        status = PlayingSounds[SoundIdx].channel->setMode(FMOD_LOOP_NORMAL);
+        CHECKFMODERR(PlayingSounds[SoundIdx].channel->setMode(FMOD_LOOP_NORMAL));
     }
     else
     {
-        status = PlayingSounds[SoundIdx].channel->setMode(FMOD_LOOP_OFF);
+        CHECKFMODERR(PlayingSounds[SoundIdx].channel->setMode(FMOD_LOOP_OFF));
     }
-
-    FMOD_ERROR("FMOD_SOUND:setMode", status);
 
     //---------- пробегаем по всем звукам ищем с таким же channel --------------
 
-    for (dword j = 0; j < MAX_SOUNDS_SLOTS; j++)
+    for (uint32_t j = 0; j < MAX_SOUNDS_SLOTS; j++)
     {
         if (j == SoundIdx)
             continue;
@@ -608,35 +554,32 @@ void SoundService::SoundSet3DParam(TSD_ID _id, eSoundMessage _message, const voi
     if (PlayingSounds[_id].bFree)
         return;
 
-    CVECTOR vVelocity = CVECTOR(0.0f, 0.0f, 0.0f);
+    auto vVelocity = CVECTOR(0.0f, 0.0f, 0.0f);
 
     switch (_message)
     {
     case SM_MAX_DISTANCE: {
         float maxDistance;
         maxDistance = *((float *)_op);
-        status = PlayingSounds[_id].channel->set3DMinMaxDistance(NULL, maxDistance);
-        FMOD_ERROR("FMOD_SOUND:set3DMinMaxDistance", status);
+        CHECKFMODERR(PlayingSounds[_id].channel->set3DMinMaxDistance(NULL, maxDistance));
         break;
     }
 
     case SM_MIN_DISTANCE: {
         float minDistance;
         minDistance = *((float *)_op);
-        status = PlayingSounds[_id].channel->set3DMinMaxDistance(minDistance, NULL);
-        FMOD_ERROR("FMOD_SOUND:set3DMinMaxDistance", status);
+        CHECKFMODERR(PlayingSounds[_id].channel->set3DMinMaxDistance(minDistance, NULL));
         break;
     }
 
     case SM_POSITION: {
         FMOD_VECTOR pos;
-        float *fPtr = (float *)_op;
+        auto *fPtr = (float *)_op;
         pos.x = *(fPtr + 0);
         pos.y = *(fPtr + 1);
         pos.z = *(fPtr + 2);
         FMOD_VECTOR vVelocity = {0.0f, 0.0f, 0.0f};
-        status = PlayingSounds[_id].channel->set3DAttributes(&pos, &vVelocity);
-        FMOD_ERROR("FMOD_SOUND:set3DAttributes", status);
+        CHECKFMODERR(PlayingSounds[_id].channel->set3DAttributes(&pos, &vVelocity));
         break;
     }
     }
@@ -666,7 +609,7 @@ void SoundService::SoundSetVolume(TSD_ID _id, float _volume)
 {
     if (_id == 0)
     {
-        for (int i = 0; i < MAX_SOUNDS_SLOTS; i++)
+        for (auto i = 0; i < MAX_SOUNDS_SLOTS; i++)
         {
             if (PlayingSounds[i].bFree)
                 continue;
@@ -695,8 +638,7 @@ void SoundService::SoundSetVolume(TSD_ID _id, float _volume)
                 PlayingSounds[i].fFaderCurrentVolume = PlayingSounds[i].fFaderNeedVolume;
             }
 
-            status = PlayingSounds[i].channel->setVolume(_volume);
-            FMOD_ERROR("FMOD_SOUND:setVolume", status);
+            CHECKFMODERR(PlayingSounds[i].channel->setVolume(_volume));
         }
         return;
     }
@@ -736,8 +678,7 @@ void SoundService::SoundSetVolume(TSD_ID _id, float _volume)
         break;
     }
 
-    status = PlayingSounds[_id].channel->setVolume(_volume);
-    FMOD_ERROR("FMOD_SOUND:setVolume", status);
+    CHECKFMODERR(PlayingSounds[_id].channel->setVolume(_volume));
 }
 
 //--------------------------------------------------------------------
@@ -752,14 +693,13 @@ bool SoundService::SoundIsPlaying(TSD_ID _id)
 //--------------------------------------------------------------------
 void SoundService::SoundResume(TSD_ID _id, long _time /* = 0*/)
 {
-    if (_id == 0 || _id == 1)
+    if (_id == 0 || _id == 1 || _id == -1)
     {
-        for (int i = 0; i < MAX_SOUNDS_SLOTS; i++)
+        for (auto i = 0; i < MAX_SOUNDS_SLOTS; i++)
         {
             if (PlayingSounds[i].bFree)
                 continue;
-            status = PlayingSounds[i].channel->setPaused(false);
-            FMOD_ERROR("FMOD_SOUND:setPaused", status);
+            CHECKFMODERR(PlayingSounds[i].channel->setPaused(false));
         }
         return;
     }
@@ -767,12 +707,11 @@ void SoundService::SoundResume(TSD_ID _id, long _time /* = 0*/)
     _id--;
     if (PlayingSounds[_id].bFree)
     {
-        api->Trace("Can't sound resume %d !!!! Sound is not playing !!!!", _id);
+        api->Trace("Can't sound resume %d !!!! Sound is not playig !!!!", _id);
         return;
     }
 
-    status = PlayingSounds[_id].channel->setPaused(false);
-    FMOD_ERROR("FMOD_SOUND:setPaused", status);
+    CHECKFMODERR(PlayingSounds[_id].channel->setPaused(false));
     // PlayingSounds[_id].bCacheOnly = false;
 }
 
@@ -786,8 +725,7 @@ float SoundService::SoundGetPosition(TSD_ID _id)
         return 0;
 
     unsigned int SoundPositionInMilisecond;
-    status = PlayingSounds[_id].channel->getPosition(&SoundPositionInMilisecond, FMOD_TIMEUNIT_MS);
-    FMOD_ERROR("FMOD_SOUND:getPosition", status);
+    CHECKFMODERR(PlayingSounds[_id].channel->getPosition(&SoundPositionInMilisecond, FMOD_TIMEUNIT_MS));
     return 0;
 }
 
@@ -798,16 +736,14 @@ void SoundService::SetCameraPosition(const CVECTOR &_cameraPosition)
     vListenerPos.y = _cameraPosition.y;
     vListenerPos.z = _cameraPosition.z;
 
-    //	status = fmod_system->set3DListenerAttributes(0, &vListenerPos, NULL, &vListenerForward, &vListenerTop);
-    status = fmod_system->set3DListenerAttributes(0, &vListenerPos, NULL, NULL, NULL);
-    FMOD_ERROR("FMOD:set3DListenerAttributes", status);
+    CHECKFMODERR(system->set3DListenerAttributes(0, &vListenerPos, nullptr, nullptr, nullptr));
 }
 
 //--------------------------------------------------------------------
 void SoundService::SetCameraOrientation(const CVECTOR &_nose, const CVECTOR &_head)
 {
-    CVECTOR nose = !_nose;
-    CVECTOR head = !_head;
+    const auto nose = !_nose;
+    const auto head = !_head;
 
     vListenerForward.x = nose.x;
     vListenerForward.y = nose.y;
@@ -817,9 +753,7 @@ void SoundService::SetCameraOrientation(const CVECTOR &_nose, const CVECTOR &_he
     vListenerTop.y = head.y;
     vListenerTop.z = head.z;
 
-    status = fmod_system->set3DListenerAttributes(0, &vListenerPos, NULL, &vListenerForward, &vListenerTop);
-    //	status = fmod_system->set3DListenerAttributes(0, &vListenerPos, NULL, NULL, NULL);
-    FMOD_ERROR("FMOD:set3DListenerAttributes", status);
+    CHECKFMODERR(system->set3DListenerAttributes(0, nullptr, nullptr, &vListenerForward, &vListenerTop));
 }
 
 //--------------------------------------------------------------------
@@ -856,8 +790,8 @@ void SoundService::SetMasterVolume(float _fxVolume, float _musicVolume, float _s
         status = PlayingSounds[i].channel->isPlaying(&bPlaying);
         if (status != FMOD_OK)
         {
-            PlayingSounds[i].bFree = true;
-            continue;
+          PlayingSounds[i].bFree = true;
+          continue;
         }*/
 
         // update volume.....
@@ -880,13 +814,12 @@ void SoundService::SetMasterVolume(float _fxVolume, float _musicVolume, float _s
             break;
         }
 
-        status = PlayingSounds[i].channel->setVolume(_volume);
+        const auto status = CHECKFMODERR(PlayingSounds[i].channel->setVolume(_volume));
         if (status != FMOD_OK)
         {
             PlayingSounds[i].bFree = true;
-            continue;
         }
-        // FMOD_ERROR("FMOD_SOUND:setVolume",status);
+        // FMOD_CHECK("FMOD_SOUND:setVolume",status);
     }
 
     // api->Trace("Set master volume");
@@ -933,8 +866,8 @@ void SoundService::SoundStop(TSD_ID _id, long _time)
 
             if (PlayingSounds[0].fFaderDeltaInSec <= 0.00001f)
             {
-                status = OGG_sound[0]->release();
-                OGG_sound[0] = NULL;
+                CHECKFMODERR(OGG_sound[0]->release());
+                OGG_sound[0] = nullptr;
             }
 
             PlayingSounds[1].channel->getVolume(&fVol);
@@ -944,8 +877,8 @@ void SoundService::SoundStop(TSD_ID _id, long _time)
 
             if (PlayingSounds[1].fFaderDeltaInSec <= 0.00001f)
             {
-                status = OGG_sound[1]->release();
-                OGG_sound[1] = NULL;
+                CHECKFMODERR(OGG_sound[1]->release());
+                OGG_sound[1] = nullptr;
             }
 
             start = 2;
@@ -967,15 +900,14 @@ void SoundService::SoundStop(TSD_ID _id, long _time)
                 SetOGGPosition(PlayingSounds[i].Name.c_str(), OGGpos);
             }
 
-            status = PlayingSounds[i].channel->isPlaying(&is_playing);
+            const auto status = CHECKFMODERR(PlayingSounds[i].channel->isPlaying(&is_playing));
             if (!is_playing || status != FMOD_OK) // boal fix
             {
                 PlayingSounds[i].bFree = true;
             }
             else
             {
-                status = PlayingSounds[i].channel->stop();
-                FMOD_ERROR("FMOD_SOUND:stop", status);
+                CHECKFMODERR(PlayingSounds[i].channel->stop());
             }
         }
 
@@ -983,17 +915,15 @@ void SoundService::SoundStop(TSD_ID _id, long _time)
         {
             if (OGG_sound[0])
             {
-                status = OGG_sound[0]->release();
-                FMOD_ERROR("FMOD_SOUND:release", status);
+                CHECKFMODERR(OGG_sound[0]->release());
             }
-            OGG_sound[0] = NULL;
+            OGG_sound[0] = nullptr;
 
             if (OGG_sound[1])
             {
-                status = OGG_sound[1]->release();
-                FMOD_ERROR("FMOD_SOUND:release", status);
+                CHECKFMODERR(OGG_sound[1]->release());
             }
-            OGG_sound[1] = NULL;
+            OGG_sound[1] = nullptr;
         }
 
         //--------- удаляем все звуки нах. -----------------------------------------
@@ -1024,53 +954,52 @@ void SoundService::SoundStop(TSD_ID _id, long _time)
             SetOGGPosition(PlayingSounds[_id].Name.c_str(), OGGpos);
         }
 
+        auto status = FMOD_OK;
         if (!PlayingSounds[_id].bFree) // boal fix
         {
-            status = PlayingSounds[_id].channel->isPlaying(&is_playing);
+            status = CHECKFMODERR(PlayingSounds[_id].channel->isPlaying(&is_playing));
             if (!is_playing || status != FMOD_OK) // boal fix
             {
                 PlayingSounds[_id].bFree = true;
             }
             else
             {
-                status = PlayingSounds[_id].channel->stop();
-                FMOD_ERROR("FMOD_SOUND:stop", status);
+                status = CHECKFMODERR(PlayingSounds[_id].channel->stop());
             }
         }
 
         if (_id == 0 && OGG_sound[0] && status == FMOD_OK)
         {
-            status = OGG_sound[0]->release();
-            FMOD_ERROR("FMOD_SOUND:release", status);
-            OGG_sound[0] = NULL;
+            CHECKFMODERR(OGG_sound[0]->release());
+            OGG_sound[0] = nullptr;
         }
 
         if (_id == 1 && OGG_sound[1] && status == FMOD_OK)
         {
-            status = OGG_sound[1]->release();
-            FMOD_ERROR("FMOD_SOUND:release", status);
-            OGG_sound[1] = NULL;
+            CHECKFMODERR(OGG_sound[1]->release());
+            OGG_sound[1] = nullptr;
         }
     }
 }
 
-void SoundService::AnalyseNameStringAndAddToAlias(tAlias *_alias, const char *in_string)
+void SoundService::AnalyseNameStringAndAddToAlias(tAlias *_alias, const char *in_string) const
 {
     static char tempString2[COMMON_STRING_LENGTH];
-    strncpy(tempString2, in_string, COMMON_STRING_LENGTH);
+    strncpy_s(tempString2, in_string, COMMON_STRING_LENGTH);
 
     tAliasSound snd;
 
     char *col = strchr(tempString2, ',');
     if (!col)
-    { // only name, without delays
+    {
+        // only name, without delays
         _alias->fMaxProbabilityValue += DEFAULT_PROBABILITY;
         snd.fProbability = DEFAULT_PROBABILITY;
         snd.FileName = tempString2;
 
         // api->Trace("  -> sound %s", snd.FileName.c_str());
 
-        _alias->SoundFiles.Add(snd);
+        _alias->SoundFiles.push_back(snd);
 
         return;
     }
@@ -1088,7 +1017,7 @@ void SoundService::AnalyseNameStringAndAddToAlias(tAlias *_alias, const char *in
 
     // api->Trace("  -> sound %s, %f", snd.FileName.c_str(), snd.fProbability);
 
-    _alias->SoundFiles.Add(snd);
+    _alias->SoundFiles.push_back(snd);
 }
 
 void SoundService::AddAlias(INIFILE *_iniFile, char *_sectionName)
@@ -1099,22 +1028,22 @@ void SoundService::AddAlias(INIFILE *_iniFile, char *_sectionName)
 
     // api->Trace("Add sound alias %s", _sectionName);
 
-    tAlias *pAlias = &Aliases[Aliases.Add()];
-
-    pAlias->Name = _sectionName;
-    pAlias->dwNameHash = string::HashNoCase(pAlias->Name.c_str());
-    pAlias->fMaxDistance = _iniFile->GetFloat(_sectionName, "maxDistance", -1.0f);
-    pAlias->fMinDistance = _iniFile->GetFloat(_sectionName, "minDistance", -1.0f);
-    pAlias->fVolume = _iniFile->GetFloat(_sectionName, "volume", -1.0f);
-    pAlias->iPrior = _iniFile->GetLong(_sectionName, "prior", 128);
-
-    pAlias->fMaxProbabilityValue = 0.0f;
+    // tAlias* pAlias = &Aliases[Aliases.Add()];
+    Aliases.push_back(tAlias{});
+    tAlias &alias = Aliases.back();
+    alias.Name = _sectionName;
+    alias.dwNameHash = TOREMOVE::HashNoCase(alias.Name.c_str());
+    alias.fMaxDistance = _iniFile->GetFloat(_sectionName, "maxDistance", -1.0f);
+    alias.fMinDistance = _iniFile->GetFloat(_sectionName, "minDistance", -1.0f);
+    alias.fVolume = _iniFile->GetFloat(_sectionName, "volume", -1.0f);
+    alias.iPrior = _iniFile->GetLong(_sectionName, "prior", 128);
+    alias.fMaxProbabilityValue = 0.0f;
 
     if (_iniFile->ReadString(_sectionName, "name", tempString, COMMON_STRING_LENGTH, ""))
     {
-        AnalyseNameStringAndAddToAlias(pAlias, tempString);
+        AnalyseNameStringAndAddToAlias(&alias, tempString);
         while (_iniFile->ReadStringNext(_sectionName, "name", tempString, COMMON_STRING_LENGTH))
-            AnalyseNameStringAndAddToAlias(pAlias, tempString);
+            AnalyseNameStringAndAddToAlias(&alias, tempString);
     }
 }
 
@@ -1123,13 +1052,13 @@ void SoundService::LoadAliasFile(const char *_filename)
     const static int SECTION_NAME_LENGTH = 128;
     static char sectionName[SECTION_NAME_LENGTH];
 
-    string iniName = ALIAS_DIRECTORY;
+    std::string iniName = ALIAS_DIRECTORY;
     iniName += _filename;
 
     // api->Trace("Find sound alias file %s", iniName.c_str());
 
     INIFILE *aliasIni;
-    aliasIni = api->fio->OpenIniFile(iniName);
+    aliasIni = fio->OpenIniFile(iniName.c_str());
     if (!aliasIni)
         return;
 
@@ -1142,38 +1071,36 @@ void SoundService::LoadAliasFile(const char *_filename)
         }
     }
 
-    SE_DELETE(aliasIni);
+    STORM_DELETE(aliasIni);
 }
 
 void SoundService::InitAliases()
 {
-    string iniName = ALIAS_DIRECTORY;
+    std::string iniName = ALIAS_DIRECTORY;
     iniName += "*.ini";
 
     HANDLE foundFile;
     WIN32_FIND_DATA findData;
-    if ((foundFile = api->fio->_FindFirstFile(iniName, &findData)) != INVALID_HANDLE_VALUE)
+    if ((foundFile = fio->_FindFirstFile(iniName.c_str(), &findData)) != INVALID_HANDLE_VALUE)
     {
         do
-        {
-            std::string FileName = utf8::ConvertWideToUtf8(findData.cFileName);
-            LoadAliasFile(FileName.c_str());
-        } while (api->fio->_FindNextFile(foundFile, &findData) == TRUE);
+            LoadAliasFile(findData.cFileName);
+        while (fio->_FindNextFile(foundFile, &findData) == TRUE);
+        if (foundFile != INVALID_HANDLE_VALUE)
+            fio->_FindClose(foundFile);
     }
 }
 
 void SoundService::CreateEntityIfNeed()
 {
-    ENTITY_ID DebugEntity_id;
-    bool bResult = api->FindClass(&DebugEntity_id, "SoundVisualisationEntity", 0);
-    if (!bResult)
+    auto Debugentid_t = EntityManager::GetEntityId("SoundVisualisationEntity");
+    if (!Debugentid_t)
     {
-        api->CreateEntity(&DebugEntity_id, "SoundVisualisationEntity");
+        Debugentid_t = EntityManager::CreateEntity("SoundVisualisationEntity");
+        auto *pDebugEntity = static_cast<SoundVisualisationEntity *>(EntityManager::GetEntityPointer(Debugentid_t));
+        pDebugEntity->SetMasterSoundService(this);
+        pDebugEntity->Wakeup();
     }
-
-    SoundVisualisationEntity *pDebugEntity = (SoundVisualisationEntity *)api->GetEntityPointer(&DebugEntity_id);
-    pDebugEntity->SetMasterSoundService(this);
-    pDebugEntity->Wakeup();
 }
 
 void SoundService::DebugDraw()
@@ -1186,7 +1113,7 @@ void SoundService::DebugDraw()
 
     if (!bShowDebugInfo)
         return;
-    //	pRS->Print(0, 0, "sound debug draw !!!!");
+    //	rs->Print(0, 0, "sound debug draw !!!!");
 
     bool bShowDistances = true;
 
@@ -1195,12 +1122,12 @@ void SoundService::DebugDraw()
     int RealCount = 0;
 
     FMOD_VECTOR lpos, lvel, lforward, lup;
-    fmod_system->get3DListenerAttributes(0, &lpos, &lvel, &lforward, &lup);
+    system->get3DListenerAttributes(0, &lpos, &lvel, &lforward, &lup);
 
     CVECTOR vListener = CVECTOR(lpos.x, lpos.y, lpos.z);
 
     float fTotal;
-    fmod_system->getCPUUsage(NULL, NULL, NULL, NULL, &fTotal);
+    system->getCPUUsage(nullptr, nullptr, nullptr, nullptr, &fTotal);
     int CurrentAlloc, PeakAlloc;
     FMOD::Memory_GetStats(&CurrentAlloc, &PeakAlloc);
 
@@ -1208,16 +1135,16 @@ void SoundService::DebugDraw()
     list_pos.x = lpos.x;
     list_pos.y = lpos.y;
     list_pos.z = lpos.z;
-    // pRS->DrawSphere(list_pos, 4.0f, 0xFF008000);
+    // rs->DrawSphere(list_pos, 4.0f, 0xFF008000);
 
-    pRS->Print(0, 0, "CPU Usage %3.2f Mem: %3.2f Kb, MemPeak %3.2f Kb, Cached %d sounds", fTotal,
-               CurrentAlloc / 1024.0f, PeakAlloc / 1024.0f, SoundCache.Size());
-    pRS->Print(0, 16, "position  %3.2f, %3.2f, %3.2f, forward %3.2f, %3.2f, %3.2f, up %3.2f, %3.2f, %3.2f", lpos.x,
-               lpos.y, lpos.z, lforward.x, lforward.y, lforward.z, lup.x, lup.y, lup.z);
+    rs->Print(0, 0, "CPU Usage %3.2f Mem: %3.2f Kb, MemPeak %3.2f Kb, Cached %d sounds", fTotal, CurrentAlloc / 1024.0f,
+              PeakAlloc / 1024.0f, SoundCache.size());
+    rs->Print(0, 16, "position  %3.2f, %3.2f, %3.2f, forward %3.2f, %3.2f, %3.2f, up %3.2f, %3.2f, %3.2f", lpos.x,
+              lpos.y, lpos.z, lforward.x, lforward.y, lforward.z, lup.x, lup.y, lup.z);
 
     CMatrix ind;
     ind.SetIdentity();
-    pRS->SetWorld(ind);
+    rs->SetWorld(ind);
 
     for (int i = 0; i < MAX_SOUNDS_SLOTS; i++)
     {
@@ -1267,13 +1194,13 @@ void SoundService::DebugDraw()
             // 0xFFFF0000 не играет, отклипировался
             // 0xFF00FF00 играет
 
-            Color drawColor = Color(0xFFFF0000L);
+            Color drawColor = Color(0xFFFF0000);
 
             if (!bVirtual)
             {
                 //морфируем между желтым audib 0 и зеленыи audib 1 цветами
-                Color Zero = Color(0xFFFFFF00L);
-                Color Full = Color(0xFF00FF00L);
+                auto Zero = Color(0xFFFFFF00);
+                auto Full = Color(0xFF00FF00);
                 drawColor.Lerp(Zero, Full, audib);
             }
 
@@ -1281,11 +1208,11 @@ void SoundService::DebugDraw()
             vec_pos.x = pos.x;
             vec_pos.y = pos.y;
             vec_pos.z = pos.z;
-            pRS->DrawSphere(vec_pos, 0.2f, drawColor.GetDword());
+            rs->DrawSphere(vec_pos, 0.2f, drawColor.GetDword());
 
             if (bShowDistances && audib > 0.001f)
             {
-                pRS->SetWorld(ind);
+                rs->SetWorld(ind);
                 Draw2DCircle(vec_pos, drawColor.GetDword(), fMin, drawColor.GetDword(), fMax);
             }
 
@@ -1297,37 +1224,37 @@ void SoundService::DebugDraw()
         }
         else
         {
-            pRS->Print(0, Ypos,
-                       "[%d] [vol:%f] [Pos:%d] [Loop:%d] [Play:%d] sound [Pause:%d][Vir:%d][Aud:%f] '%s' 0x%08X", i,
-                       fVol, position, bIsLooped, bPlaying, paused, bVirtual, audib, PlayingSounds[i].Name.c_str(),
-                       PlayingSounds[i].channel);
+            rs->Print(0, Ypos,
+                      "[%d] [vol:%f] [Pos:%d] [Loop:%d] [Play:%d] sound [Pause:%d][Vir:%d][Aud:%f] '%s' 0x%08X", i,
+                      fVol, position, bIsLooped, bPlaying, paused, bVirtual, audib, PlayingSounds[i].Name.c_str(),
+                      PlayingSounds[i].channel);
             Ypos += 16;
         }
 
-        // pRS->Print(0, Ypos, "pos %f, %f, %f", pos.x, pos.y, pos.z);
+        // rs->Print(0, Ypos, "pos %f, %f, %f", pos.x, pos.y, pos.z);
         // Ypos += 16;
-        // pRS->Print(0, Ypos, "min %f,  max %f", fMin, fMax);
+        // rs->Print(0, Ypos, "min %f,  max %f", fMin, fMax);
         // Ypos += 16;
 
-        // pRS->DrawSphere(vec_pos, fMax, 0xFFFF0000);
+        // rs->DrawSphere(vec_pos, fMax, 0xFFFF0000);
     }
 
-    pRS->Print(0, 32, "Real sounds %d, Total sounds %d", RealCount, Count);
+    rs->Print(0, 32, "Real sounds %d, Total sounds %d", RealCount, Count);
 
-    pRS->Print(500, 0, "Sound schemes %d", SoundSchemeChannels.Size());
+    rs->Print(500, 0, "Sound schemes %d", SoundSchemeChannels.size());
     Ypos = 16;
-    for (dword i = 0; i < SoundSchemeChannels.Size(); i++)
+    for (uint32_t i = 0; i < SoundSchemeChannels.size(); i++)
     {
-        pRS->Print(510, Ypos, "[%d] %s", i, SoundSchemeChannels[i].soundName);
+        rs->Print(510, Ypos, "[%d] %s", i, SoundSchemeChannels[i].soundName.c_str());
         Ypos += 16;
     }
 }
 
 int SoundService::GetFromCache(const char *szName, eSoundType _type)
 {
-    dword dwSearchHash = string::HashNoCase(szName);
+    const uint32_t dwSearchHash = TOREMOVE::HashNoCase(szName);
 
-    for (dword i = 0; i < SoundCache.Size(); i++)
+    for (uint32_t i = 0; i < SoundCache.size(); i++)
     {
         if (SoundCache[i].type != _type)
             continue;
@@ -1341,25 +1268,22 @@ int SoundService::GetFromCache(const char *szName, eSoundType _type)
         }
     }
 
-    //	FMOD_MODE mode =  FMOD_SOFTWARE;
-    FMOD_MODE mode;
+    FMOD_MODE mode = FMOD_DEFAULT;
     if (_type == PCM_3D)
     {
-        // mode = mode | FMOD_3D | FMOD_3D_LINEARROLLOFF;
-        mode = FMOD_3D | FMOD_3D_LINEARROLLOFF;
+        mode = mode | FMOD_3D | FMOD_3D_LINEARROLLOFF;
     }
 
     if (_type == PCM_STEREO)
     {
-        // mode = mode | FMOD_2D;
-        mode = FMOD_2D;
+        mode = mode | FMOD_2D;
     }
 
     tSoundCache Cache;
-    status = fmod_system->createSound(szName, mode, 0, &Cache.sound);
-    // FMOD_ERROR("FMOD_SOUND:createSound",status);
+    CHECKFMODERR(system->createSound(szName, mode, nullptr, &Cache.sound));
+    // FMOD_CHECK("FMOD_SOUND:createSound",status);
 
-    if (Cache.sound == NULL)
+    if (Cache.sound == nullptr)
     {
         // api->Trace("Problem with sound loading !!! '%s'", szName);
         return -1;
@@ -1369,39 +1293,38 @@ int SoundService::GetFromCache(const char *szName, eSoundType _type)
     Cache.dwNameHash = dwSearchHash;
     Cache.fTimeFromLastPlay = 0.0f;
 
-    SoundCache.Add(Cache);
+    SoundCache.push_back(Cache);
 
-    return (SoundCache.Size() - 1);
+    return (SoundCache.size() - 1);
 }
 
 //Написать текст
-void _cdecl SoundService::DebugPrint3D(const CVECTOR &pos3D, float rad, long line, float alpha, dword color,
-                                       float scale, const char *format, ...)
+void SoundService::DebugPrint3D(const CVECTOR &pos3D, float rad, long line, float alpha, uint32_t color, float scale,
+                                const char *format, ...) const
 {
-
     static char buf[256];
     //Печатаем в буфер
-    long len = _vsnprintf(buf, sizeof(buf) - 1, format, (char *)(&format + 1));
+    long len = _vsnprintf_s(buf, sizeof(buf) - 1, format, (char *)(&format + 1));
     buf[sizeof(buf) - 1] = 0;
     //Ищем позицию точки на экране
     static CMatrix mtx, view, prj;
     static D3DVIEWPORT9 vp;
     MTX_PRJ_VECTOR vrt;
-    pRS->GetTransform(D3DTS_VIEW, view);
-    pRS->GetTransform(D3DTS_PROJECTION, prj);
+    rs->GetTransform(D3DTS_VIEW, view);
+    rs->GetTransform(D3DTS_PROJECTION, prj);
     mtx.EqMultiply(view, prj);
     view.Transposition();
     float dist = ~(pos3D - view.Pos());
     if (dist >= rad * rad)
         return;
-    float d = view.Vz() | view.Pos();
+    const float d = view.Vz() | view.Pos();
     if ((pos3D | view.Vz()) < d)
         return;
-    pRS->GetViewport(&vp);
+    rs->GetViewport(&vp);
     mtx.Projection((CVECTOR *)&pos3D, &vrt, 1, vp.Width * 0.5f, vp.Height * 0.5f, sizeof(CVECTOR),
                    sizeof(MTX_PRJ_VECTOR));
     //Ищем позицию
-    long fh = pRS->CharHeight(FONT_DEFAULT) / 2;
+    const long fh = rs->CharHeight(FONT_DEFAULT) / 2;
     vrt.y -= (line + 0.5f) * fh;
     //Прозрачность
     const float kDist = 0.75f;
@@ -1416,12 +1339,14 @@ void _cdecl SoundService::DebugPrint3D(const CVECTOR &pos3D, float rad, long lin
     }
     if (alpha <= 0.0f)
         return;
-    color = (dword(alpha * 255.0f) << 24) | (color & 0xffffff);
+    color = (static_cast<uint32_t>(alpha * 255.0f) << 24) | (color & 0xffffff);
     //Печатаем текст
-    pRS->ExtPrint(FONT_DEFAULT, color, 0x00000000, ALIGN_CENTER, 0, scale, 0, 0, long(vrt.x), long(vrt.y), buf);
+    rs->ExtPrint(FONT_DEFAULT, color, 0x00000000, PR_ALIGN_CENTER, false, scale, 0, 0, static_cast<long>(vrt.x),
+                 static_cast<long>(vrt.y), buf);
 }
 
-void SoundService::Draw2DCircle(const CVECTOR &center, DWORD dwColor, float fRadius, DWORD dwColor2, float fRadius2)
+void SoundService::Draw2DCircle(const CVECTOR &center, uint32_t dwColor, float fRadius, uint32_t dwColor2,
+                                float fRadius2) const
 {
     float fDelta = 0.2f;
     RS_LINE line[2];
@@ -1443,8 +1368,8 @@ void SoundService::Draw2DCircle(const CVECTOR &center, DWORD dwColor, float fRad
         line[0].dwColor = dwColor;
         line[1].vPos = vEnd;
         line[1].dwColor = dwColor;
-        pRS->DrawLines(line, 1, "AILine");
-        // pRS->DrawVector(vStart, vEnd, dwColor);
+        rs->DrawLines(line, 1, "Line");
+        // rs->DrawVector(vStart, vEnd, dwColor);
         vStartPoint = vPoint;
     }
 
@@ -1456,7 +1381,7 @@ void SoundService::Draw2DCircle(const CVECTOR &center, DWORD dwColor, float fRad
     line[0].dwColor = dwColor;
     line[1].vPos = vEnd;
     line[1].dwColor = dwColor;
-    pRS->DrawLines(line, 1, "AILine");
+    rs->DrawLines(line, 1, "Line");
 
     vStartPoint = CVECTOR(cosf(0) * fRadius2, 0.0f, sinf(0) * fRadius2);
     vStartPoint += center;
@@ -1472,8 +1397,8 @@ void SoundService::Draw2DCircle(const CVECTOR &center, DWORD dwColor, float fRad
         line[0].dwColor = dwColor2;
         line[1].vPos = vEnd;
         line[1].dwColor = dwColor2;
-        pRS->DrawLines(line, 1, "AILine");
-        // pRS->DrawVector(vStart, vEnd, dwColor);
+        rs->DrawLines(line, 1, "Line");
+        // rs->DrawVector(vStart, vEnd, dwColor);
         vStartPoint = vPoint;
     }
 
@@ -1485,33 +1410,33 @@ void SoundService::Draw2DCircle(const CVECTOR &center, DWORD dwColor, float fRad
     line[0].dwColor = dwColor2;
     line[1].vPos = vEnd;
     line[1].dwColor = dwColor2;
-    pRS->DrawLines(line, 1, "AILine");
+    rs->DrawLines(line, 1, "Line");
 
     line[0].vPos = CVECTOR(fRadius, 0.0f, 0.0f) + center;
     line[0].dwColor = dwColor;
     line[1].vPos = CVECTOR(fRadius2, 0.0f, 0.0f) + center;
     line[1].dwColor = dwColor;
-    pRS->DrawLines(line, 1, "AILine");
+    rs->DrawLines(line, 1, "Line");
 
     line[0].vPos = CVECTOR(-fRadius, 0.0f, 0.0f) + center;
     line[0].dwColor = dwColor;
     line[1].vPos = CVECTOR(-fRadius2, 0.0f, 0.0f) + center;
     line[1].dwColor = dwColor;
-    pRS->DrawLines(line, 1, "AILine");
+    rs->DrawLines(line, 1, "Line");
 
     line[0].vPos = CVECTOR(0.0f, 0.0f, fRadius) + center;
     line[0].dwColor = dwColor;
     line[1].vPos = CVECTOR(0.0f, 0.0f, fRadius2) + center;
     line[1].dwColor = dwColor;
-    pRS->DrawLines(line, 1, "AILine");
+    rs->DrawLines(line, 1, "Line");
 
     line[0].vPos = CVECTOR(0.0f, 0.0f, -fRadius) + center;
     line[0].dwColor = dwColor;
     line[1].vPos = CVECTOR(0.0f, 0.0f, -fRadius2) + center;
     line[1].dwColor = dwColor;
-    pRS->DrawLines(line, 1, "AILine");
+    rs->DrawLines(line, 1, "Line");
 
-    // pRS->DrawVector(vStart, vEnd, dwColor);
+    // rs->DrawVector(vStart, vEnd, dwColor);
 }
 
 //--------------------------------------------------------------------
@@ -1529,7 +1454,7 @@ bool SoundService::SetScheme(const char *_schemeName)
 //--------------------------------------------------------------------
 void SoundService::ResetScheme()
 {
-    SoundSchemeChannels.DelAll();
+    SoundSchemeChannels.clear();
 }
 
 //--------------------------------------------------------------------
@@ -1537,7 +1462,7 @@ bool SoundService::AddScheme(const char *_schemeName)
 {
     INIFILE *ini;
     static char tempString[COMMON_STRING_LENGTH];
-    ini = api->fio->OpenIniFile(SCHEME_INI_NAME);
+    ini = fio->OpenIniFile(SCHEME_INI_NAME);
 
     if (!ini)
         return false;
@@ -1557,29 +1482,31 @@ bool SoundService::AddScheme(const char *_schemeName)
             AddSoundSchemeChannel(tempString, true);
     }
 
-    SE_DELETE(ini);
+    STORM_DELETE(ini);
     return true;
 }
 
 bool SoundService::AddSoundSchemeChannel(char *in_string, bool _looped /*= false*/)
 {
     static char tempString2[COMMON_STRING_LENGTH];
-    strncpy(tempString2, in_string, COMMON_STRING_LENGTH);
+    strncpy_s(tempString2, in_string, COMMON_STRING_LENGTH);
 
     char *col = strchr(tempString2, ',');
     if (!col)
-    { // only name, without delays
+    {
+        // only name, without delays
         tSoundSchemeChannel NewChannel;
         NewChannel.soundName = tempString2;
         NewChannel.minDelayTime = SCHEME_MIN_DELAY;
         NewChannel.maxDelayTime = SCHEME_MAX_DELAY;
-        NewChannel.timeToNextPlay = (long)rand((float)(NewChannel.maxDelayTime - NewChannel.minDelayTime));
+        NewChannel.timeToNextPlay =
+            static_cast<long>(rand(static_cast<float>(NewChannel.maxDelayTime - NewChannel.minDelayTime)));
         NewChannel.volume = 1.f;
         NewChannel.looped = _looped;
         if (_looped)
             NewChannel.timeToNextPlay = 0;
 
-        SoundSchemeChannels.Add(NewChannel);
+        SoundSchemeChannels.push_back(NewChannel);
         return true;
     }
 
@@ -1588,7 +1515,7 @@ bool SoundService::AddSoundSchemeChannel(char *in_string, bool _looped /*= false
     // try to convert forthcoming numbers
     int n1, n2;
     float f1;
-    int numbersConverted = sscanf(++col, "%d, %d, %f", &n1, &n2, &f1);
+    const int numbersConverted = sscanf(++col, "%d, %d, %f", &n1, &n2, &f1);
     switch (numbersConverted)
     {
     case 1:
@@ -1606,7 +1533,7 @@ bool SoundService::AddSoundSchemeChannel(char *in_string, bool _looped /*= false
         NewChannel.maxDelayTime = n2 * 1000;
         NewChannel.volume = f1;
         break;
-    };
+    }
     *(--col) = 0; // truncate at first ','
     NewChannel.soundName = tempString2;
     NewChannel.looped = _looped;
@@ -1614,9 +1541,10 @@ bool SoundService::AddSoundSchemeChannel(char *in_string, bool _looped /*= false
     if (_looped)
         NewChannel.timeToNextPlay = 0;
     else
-        NewChannel.timeToNextPlay = (long)rand((float)(NewChannel.maxDelayTime - NewChannel.minDelayTime));
+        NewChannel.timeToNextPlay =
+            static_cast<long>(rand(static_cast<float>(NewChannel.maxDelayTime - NewChannel.minDelayTime)));
 
-    SoundSchemeChannels.Add(NewChannel);
+    SoundSchemeChannels.push_back(NewChannel);
     return true;
 }
 
@@ -1625,17 +1553,17 @@ void SoundService::ProcessSoundSchemes()
     // handle schemes
     // if (!schemesEnabled) return;
 
-    dword dTime = api->GetDeltaTime();
+    const uint32_t dTime = api->GetDeltaTime();
 
-    for (dword i = 0; i < SoundSchemeChannels.Size(); i++)
+    for (uint32_t i = 0; i < SoundSchemeChannels.size(); i++)
     {
         if (SoundSchemeChannels[i].looped)
         {
             if (SoundSchemeChannels[i].timeToNextPlay)
                 continue;
             SoundSchemeChannels[i].timeToNextPlay = -1;
-            SoundPlay(SoundSchemeChannels[i].soundName, PCM_STEREO, VOLUME_FX, false, true, false, 0, 0, -1.f, -1.f, 0,
-                      SoundSchemeChannels[i].volume);
+            SoundPlay(SoundSchemeChannels[i].soundName.c_str(), PCM_STEREO, VOLUME_FX, false, true, false, 0, nullptr,
+                      -1.f, -1.f, 0, SoundSchemeChannels[i].volume);
         }
         else
         {
@@ -1647,9 +1575,10 @@ void SoundService::ProcessSoundSchemes()
             {
                 SoundSchemeChannels[i].timeToNextPlay =
                     SoundSchemeChannels[i].minDelayTime +
-                    (long)rand((float)(SoundSchemeChannels[i].maxDelayTime - SoundSchemeChannels[i].minDelayTime));
-                SoundPlay(SoundSchemeChannels[i].soundName, PCM_STEREO, VOLUME_FX, false, false, false, 0, 0, -1.f,
-                          -1.f, 0, SoundSchemeChannels[i].volume);
+                    static_cast<long>(rand(
+                        static_cast<float>(SoundSchemeChannels[i].maxDelayTime - SoundSchemeChannels[i].minDelayTime)));
+                SoundPlay(SoundSchemeChannels[i].soundName.c_str(), PCM_STEREO, VOLUME_FX, false, false, false, 0,
+                          nullptr, -1.f, -1.f, 0, SoundSchemeChannels[i].volume);
             }
         } // looped
     }
@@ -1657,9 +1586,9 @@ void SoundService::ProcessSoundSchemes()
 
 int SoundService::GetOGGPositionIndex(const char *szName)
 {
-    dword dwHash = string::HashNoCase(szName);
+    const uint32_t dwHash = TOREMOVE::HashNoCase(szName);
 
-    for (dword i = 0; i < OGGPosition.Size(); i++)
+    for (uint32_t i = 0; i < OGGPosition.size(); i++)
     {
         if (OGGPosition[i].dwHash == dwHash)
         {
@@ -1675,7 +1604,7 @@ int SoundService::GetOGGPositionIndex(const char *szName)
 
 unsigned int SoundService::GetOGGPosition(const char *szName)
 {
-    int idx = GetOGGPositionIndex(szName);
+    const int idx = GetOGGPositionIndex(szName);
     if (idx >= 0)
     {
         return OGGPosition[idx].position;
@@ -1686,7 +1615,7 @@ unsigned int SoundService::GetOGGPosition(const char *szName)
 
 void SoundService::SetOGGPosition(const char *szName, unsigned int pos)
 {
-    int idx = GetOGGPositionIndex(szName);
+    const int idx = GetOGGPositionIndex(szName);
     if (idx >= 0)
     {
         OGGPosition[idx].position = pos;
@@ -1694,9 +1623,9 @@ void SoundService::SetOGGPosition(const char *szName, unsigned int pos)
     }
 
     PlayedOGG ogg;
-    ogg.dwHash = string::HashNoCase(szName);
+    ogg.dwHash = TOREMOVE::HashNoCase(szName);
     ogg.Name = szName;
     ogg.position = pos;
 
-    OGGPosition.Add(ogg);
+    OGGPosition.push_back(ogg);
 }
