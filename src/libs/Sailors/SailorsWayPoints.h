@@ -1,12 +1,8 @@
-
-#include "dx8render.h"
-#include "matrix.h"
-#include "templates\array.h"
-#include "templates\string.h"
-
-#include <cmath>
-
-//#include "d3dx9math.h"
+#include "Matrix.h"
+#include "defines.h"
+#include "dx9render.h"
+#include <string>
+#include <vector>
 
 const int MAX_POINTS = 100;
 
@@ -31,13 +27,14 @@ enum PointType
 #define COLOR_POINT D3DCOLOR_ARGB(255, 200, 200, 0);
 #define COLOR_GRAY D3DCOLOR_ARGB(200, 200, 200, 200);
 #define COLOR_SELECTED 0xFFFFFFFF;
+
 //-----------------------------------------------------------------------------------------------
 struct Path
 {
-    byte length;              // Длина цепочки (кол-во элементов)
-    float min;                // Значение пути
-    byte point[MAX_POINTS];   // Последовательность обхода
-    int currentPointPosition; // Текущее положение в пути
+    uint8_t length;            // Длина цепочки (кол-во элементов)
+    float min;                 // Значение пути
+    uint8_t point[MAX_POINTS]; // Последовательность обхода
+    int currentPointPosition;  // Текущее положение в пути
 
     Path()
     {
@@ -52,29 +49,30 @@ struct Link
 {
     int first, next;
 };
+
 //-----------------------------------------------------------------------------------------------
 
 class Links
 {
   public:
-    array<Link> link;
+    std::vector<Link> link;
     int selected;
     int count;
 
     void Add();
     void Delete(int Index);
 
-    Links() : link(_FL_)
+    Links()
     {
         selected = -1;
         count = 0;
     };
 };
+
 //-----------------------------------------------------------------------------------------------
 
 struct Point
 {
-
     float x, y, z;
     PointType pointType;
 
@@ -86,7 +84,6 @@ struct Point
 
     Point()
     {
-
         pointType = PT_TYPE_NORMAL;
         buisy = false;
         disabled = false;
@@ -97,16 +94,16 @@ struct Point
         z = 0;
     };
 
-    bool IsMast();
-    bool IsCannon();
-    bool IsNormal();
+    bool IsMast() const;
+    bool IsCannon() const;
+    bool IsNormal() const;
 };
 
 //-----------------------------------------------------------------------------------------------
 
 struct Points
 {
-    array<Point> point;
+    std::vector<Point> point;
 
     int count;
     int selected;
@@ -114,7 +111,7 @@ struct Points
     void Add();
     void Delete(int Index);
 
-    Points() : point(_FL_)
+    Points()
     {
         count = 0;
         selected = -1;
@@ -135,36 +132,34 @@ class SailorsPoints
     Points points;
     Links links;
 
-    void Draw(VDX8RENDER *rs, bool pointmode);
-    void Draw_(VDX8RENDER *rs, bool pointmode);
-    void DrawLinks(VDX8RENDER *rs);
+    void Draw(VDX9RENDER *rs, bool pointmode);
+    void Draw_(VDX9RENDER *rs, bool pointmode);
+    void DrawLinks(VDX9RENDER *rs);
 
     Path findPath(Path &path, int from, int to); // Посчитать путь
 
     void UpdateLinks(); //Обновить матрицу поиска пути
 
-    int WriteToFile(string fileName);
-    int ReadFromFile(string fileName);
+    int WriteToFile(std::string fileName);
+    int ReadFromFile(std::string fileName);
 };
 
 //-------------------------------------------------------------------------------------
 
 inline float Dest(const CVECTOR &_v1, const CVECTOR &_v2)
 {
-
-    return float(sqrt((_v2.x - _v1.x) * (_v2.x - _v1.x) + (_v2.y - _v1.y) * (_v2.y - _v1.y) +
-                      (_v2.z - _v1.z) * (_v2.z - _v1.z)));
+    return static_cast<float>(sqrt((_v2.x - _v1.x) * (_v2.x - _v1.x) + (_v2.y - _v1.y) * (_v2.y - _v1.y) +
+                                   (_v2.z - _v1.z) * (_v2.z - _v1.z)));
 };
 
 inline bool Dest(const CVECTOR &_v1, const CVECTOR &_v2, float d)
 {
-
-    return (abs(_v2.x - _v1.x) < d && abs(_v2.y - _v1.y) < d && abs(_v2.z - _v1.z) < d);
+    return (fabs(_v2.x - _v1.x) < d && fabs(_v2.y - _v1.y) < d && fabs(_v2.z - _v1.z) < d);
 };
 
 inline float Vector2Angle(const CVECTOR &_v)
 {
-    float result = (float)atan2(_v.x, _v.z);
+    auto result = static_cast<float>(atan2(_v.x, _v.z));
 
     while (result >= PI * 2)
         result -= PI * 2;

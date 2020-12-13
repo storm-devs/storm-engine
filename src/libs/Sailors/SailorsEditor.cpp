@@ -1,10 +1,9 @@
-
 #include "SailorsEditor.h"
 
-#include "Script_Defines.h"
-#include "matrix.h"
+#include "../../Shared/messages.h"
+#include "../../Shared/sea_ai/Script_defines.h"
 
-SailorsEditor ::SailorsEditor()
+SailorsEditor::SailorsEditor() : rs(nullptr), model(nullptr)
 {
     cameraAng = 0.0f;
 
@@ -15,42 +14,40 @@ SailorsEditor ::SailorsEditor()
     cameraPos = CVECTOR(0.0f, 30.0f, 0.0f);
 };
 
-SailorsEditor ::~SailorsEditor()
+SailorsEditor::~SailorsEditor()
 {
-    api->DeleteEntity(sailors);
-    api->DeleteEntity(shipID);
+    EntityManager::EraseEntity(sailors);
+    EntityManager::EraseEntity(shipID);
 };
 
-bool SailorsEditor ::Init()
+bool SailorsEditor::Init()
 {
-    rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
+    rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
 
-    bool result = api->CreateEntity(&sailors, "Sailors");
+    sailors = EntityManager::CreateEntity("Sailors");
 
-    _CORE_API->LayerCreate("execute", true, false);
-    _CORE_API->LayerSetFlags("execute", LRFLAG_EXECUTE);
-    _CORE_API->LayerAdd("execute", GetID(), 0);
+    EntityManager::SetLayerType(EXECUTE, EntityManager::Layer::Type::execute);
+    EntityManager::AddToLayer(EXECUTE, GetId(), 0);
 
-    api->LayerCreate("editor_realize", true, false);
-    api->LayerSetFlags("editor_realize", LRFLAG_REALIZE);
-    api->LayerAdd("editor_realize", GetID(), 100000);
+    EntityManager::SetLayerType(EDITOR_REALIZE, EntityManager::Layer::Type::realize);
+    EntityManager::AddToLayer(EDITOR_REALIZE, GetId(), 100000);
 
     LoadFromIni("SailorsEditor.ini");
 
-    api->CreateEntity(&shipID, "MODELR");
-    api->Send_Message(shipID, "ls", MSG_MODEL_LOAD_GEO, _shipName);
+    shipID = EntityManager::CreateEntity("MODELR");
+    api->Send_Message(shipID, "ls", MSG_MODEL_LOAD_GEO, _shipName.c_str());
 
-    api->LayerAdd("editor_realize", shipID, 100000);
-    model = (MODEL *)api->GetEntityPointer(&shipID);
+    EntityManager::AddToLayer(EDITOR_REALIZE, shipID, 100000);
+    model = static_cast<MODEL *>(EntityManager::GetEntityPointer(shipID));
 
     model->mtx.BuildMatrix(CVECTOR(0.0f), CVECTOR(0.0f, 0.0f, 0.0f));
 
-    long ctrl = api->Controls->CreateControl("DeltaMouseH");
+    auto ctrl = api->Controls->CreateControl("DeltaMouseH");
     api->Controls->MapControl(ctrl, 256);
     ctrl = api->Controls->CreateControl("DeltaMouseV");
     api->Controls->MapControl(ctrl, 257);
 
-    menu.sailrs = (Sailors *)api->GetEntityPointer(&sailors);
+    menu.sailrs = static_cast<Sailors *>(EntityManager::GetEntityPointer(sailors));
 
     menu.sailrs->editorMode = true;
 
@@ -58,10 +55,10 @@ bool SailorsEditor ::Init()
 
     menu.Update(menu.sailrs->shipWalk[0].sailorsPoints);
 
-    return result;
+    return true;
 };
 
-void SailorsEditor ::Execute(dword dltTime)
+void SailorsEditor::Execute(uint32_t dltTime)
 {
     SetCamera(dltTime);
     menu.OnKeyPress(menu.sailrs->shipWalk[0].sailorsPoints);
@@ -70,7 +67,7 @@ void SailorsEditor ::Execute(dword dltTime)
         ExitProcess(0);
 };
 
-void SailorsEditor ::Realize(dword dltTime)
+void SailorsEditor::Realize(uint32_t dltTime)
 {
     menu.Draw(rs, menu.sailrs->shipWalk[0].sailorsPoints);
 
@@ -80,12 +77,12 @@ void SailorsEditor ::Realize(dword dltTime)
         menu.sailrs->shipWalk[0].sailorsPoints.Draw(rs, (menu.selected == 1 && menu.blocked == 1));
 
     if (menu.blocked < 1)
-        menu.sailrs->shipWalk[0].sailorsPoints.Draw_(rs, (menu.selected == 1 && menu.blocked == 1));
+        menu.sailrs->shipWalk[0].sailorsPoints.Draw_(rs, false);
+    // menu.sailrs->shipWalk[0].sailorsPoints.Draw_(rs, (menu.selected== 1 && menu.blocked== 1));
 };
 
-void SailorsEditor ::SetCamera(dword &dltTime)
+void SailorsEditor::SetCamera(uint32_t &dltTime)
 {
-
     CONTROL_STATE cs;
     api->Controls->GetControlState("DeltaMouseV", cs);
     cameraAng.x += -cs.fValue * 0.001f;
@@ -113,31 +110,27 @@ void SailorsEditor ::SetCamera(dword &dltTime)
 
     if (GetAsyncKeyState(0x57) < 0)
     {
-
         cameraTo.x -= sin(cameraAng.y) * dltTime / 50.0f;
         cameraTo.z -= cos(cameraAng.y) * dltTime / 50.0f;
-    };
+    }
 
     if (GetAsyncKeyState(0x53) < 0)
     {
-
         cameraTo.x += sin(cameraAng.y) * dltTime / 50.0f;
         cameraTo.z += cos(cameraAng.y) * dltTime / 50.0f;
-    };
+    }
 
     if (GetAsyncKeyState(0x41) < 0)
     {
-
         cameraTo.x += sin(cameraAng.y + PI / 2) * dltTime / 50.0f;
         cameraTo.z += cos(cameraAng.y + PI / 2) * dltTime / 50.0f;
-    };
+    }
 
     if (GetAsyncKeyState(0x44) < 0)
     {
-
         cameraTo.x -= sin(cameraAng.y + PI / 2) * dltTime / 50.0f;
         cameraTo.z -= cos(cameraAng.y + PI / 2) * dltTime / 50.0f;
-    };
+    }
 
     menu.cameraAng = cameraAng;
     menu.cameraPos = cameraTo;
@@ -145,15 +138,15 @@ void SailorsEditor ::SetCamera(dword &dltTime)
     menu.dltTime = dltTime;
 };
 
-void SailorsEditor ::LoadFromIni(string fileName)
+void SailorsEditor::LoadFromIni(std::string fileName)
 {
     char param[256];
 
-    INIFILE *pIni = fio->OpenIniFile(fileName);
+    auto *pIni = fio->OpenIniFile(fileName.c_str());
 
     if (!pIni)
     {
-        api->Trace("Sailors : Can`t open '%s'", fileName);
+        api->Trace("Sailors : Can`t open '%s'", fileName.c_str());
         return;
     }
 
