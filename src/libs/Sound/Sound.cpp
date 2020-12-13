@@ -1,25 +1,16 @@
-#include <stdio.h>
+#include "../../Shared/messages.h"
+#include "../SoundService/VSoundService.h"
+#include "EntityManager.h"
 
-#ifndef _XBOX
-#include <windows.h>
-#else
-#include <xtl.h>
-#endif
-
-#include "..\SoundService\VSoundService.h"
-#include "CVECTOR.h"
-#include "common_defines.h"
-#include "exs.h"
-#include "messages.h"
-
-#include "SOUND.h"
+#include "SOUND.H"
 
 #define MSG_SOUND_ALIAS_ADD 77017 //"s"		  alias_name
 
 INTERFACE_FUNCTION
 CREATE_CLASS(SOUND)
+
 //--------------------------------------------------------------------
-SOUND::SOUND() : soundService(0)
+SOUND::SOUND() : soundService(nullptr)
 {
 }
 
@@ -31,28 +22,28 @@ SOUND::~SOUND()
 //--------------------------------------------------------------------
 bool SOUND::Init()
 {
-    GUARD(SOUND::Init)
+    // GUARD(SOUND::Init)
 
-    soundService = (VSoundService *)_CORE_API->CreateService("SoundService");
+    soundService = static_cast<VSoundService *>(api->CreateService("SoundService"));
     if (!soundService)
         api->Trace("!SOUND: Can`t create sound service");
 
-    renderer = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
-    _CORE_API->LayerAdd("realize", GetID(), -1);
+    renderer = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+    EntityManager::AddToLayer(REALIZE, GetId(), -1);
 
     return true;
-    UNGUARD
+    // UNGUARD
 }
 
 //--------------------------------------------------------------------
-dword _cdecl SOUND::ProcessMessage(MESSAGE &message)
+uint64_t SOUND::ProcessMessage(MESSAGE &message)
 {
-    // GUARD(SOUND::ProcessMessage)
+    ////GUARD(SOUND::ProcessMessage)
 
     if (!soundService)
         return 0;
 
-    long code = message.Long();
+    auto code = message.Long();
     CVECTOR vector, vector2;
     char tempString[SOUND_STRING_SIZE];
     long temp, temp2, temp3, temp4, vt;
@@ -62,7 +53,7 @@ dword _cdecl SOUND::ProcessMessage(MESSAGE &message)
     float v1, v2, v3;
     float volume;
     VDATA *vd1, *vd2, *vd3;
-    dword outValue = 0;
+    uint32_t outValue = 0;
 
     switch (code)
     {
@@ -101,7 +92,7 @@ dword _cdecl SOUND::ProcessMessage(MESSAGE &message)
 
         temp = message.Long(); // type
         // defaults
-        vt = (int)VOLUME_FX; // volume type
+        vt = static_cast<int>(VOLUME_FX); // volume type
         temp2 = 0;
         temp3 = 0;
         temp4 = 0;
@@ -149,9 +140,9 @@ dword _cdecl SOUND::ProcessMessage(MESSAGE &message)
                 maxD = message.Float();
         }
 
-        outValue =
-            (dword)soundService->SoundPlay(tempString, (eSoundType)temp, (eVolumeType)vt, (temp2 != 0), (temp3 != 0),
-                                           (temp4 != 0), tempLong, &vector, minD, maxD, loopPauseTime, volume);
+        outValue = static_cast<uint32_t>(soundService->SoundPlay(
+            tempString, static_cast<eSoundType>(temp), static_cast<eVolumeType>(vt), (temp2 != 0), (temp3 != 0),
+            (temp4 != 0), tempLong, &vector, minD, maxD, loopPauseTime, volume));
 
         break;
     case MSG_SOUND_STOP:
@@ -165,7 +156,7 @@ dword _cdecl SOUND::ProcessMessage(MESSAGE &message)
         break;
     case MSG_SOUND_DUPLICATE:
         id = message.Long();
-        outValue = (dword)soundService->SoundDuplicate(id);
+        outValue = static_cast<uint32_t>(soundService->SoundDuplicate(id));
         break;
     case MSG_SOUND_SET_3D_PARAM:
         id = message.Long();
@@ -204,7 +195,7 @@ dword _cdecl SOUND::ProcessMessage(MESSAGE &message)
         break;
     case MSG_SOUND_GET_POSITION:
         id = message.Long();
-        outValue = (dword)(soundService->SoundGetPosition(id) * 100.0f);
+        outValue = static_cast<uint32_t>(soundService->SoundGetPosition(id) * 100.0f);
         break;
     case MSG_SOUND_RESTART:
         id = message.Long();
@@ -238,33 +229,34 @@ dword _cdecl SOUND::ProcessMessage(MESSAGE &message)
     }
 
     return outValue;
-    // UNGUARD
+    ////UNGUARD
 }
 
 //--------------------------------------------------------------------
-void SOUND::Realize(dword _dTime)
+void SOUND::Realize(uint32_t dTime)
 {
     if (!soundService)
         return;
     /*
-        bool drawInfo;
+      bool drawInfo;
     #ifndef _XBOX
-        drawInfo = (GetKeyState(VK_SUBTRACT) & 0x8000) != 0;
+      drawInfo = (GetKeyState(VK_SUBTRACT) & 0x8000) != 0;
     #else
-        drawInfo = true;
+      drawInfo = true;
     #endif
-        if (drawInfo)
-        {
-            renderer->Print(0, 90, "cnt[%d,%d] buf[%d,%d] cach[%d,%d]"
-                           ,soundService->soundStatistics.soundsCount
-                           ,soundService->soundStatistics.maxSoundsCount
-                           ,soundService->soundStatistics.bytesInBuffers / 1024
-                           ,soundService->soundStatistics.maxBytesInBuffers / 1024
-                           ,soundService->soundStatistics.bytesCached / 1024
-                           ,soundService->soundStatistics.maxBytesCached / 1024
-                           );
-        }
+      if (drawInfo)
+      {
+        renderer->Print(0, 90, "cnt[%d,%d] buf[%d,%d] cach[%d,%d]"
+                 ,soundService->soundStatistics.soundsCount
+                 ,soundService->soundStatistics.maxSoundsCount
+                 ,soundService->soundStatistics.bytesInBuffers / 1024
+                  ,soundService->soundStatistics.maxBytesInBuffers / 1024
+                 ,soundService->soundStatistics.bytesCached / 1024
+                 ,soundService->soundStatistics.maxBytesCached / 1024
+                 );
+      }
     */
 }
+
 //--------------------------------------------------------------------
 //--------------------------------------------------------------------

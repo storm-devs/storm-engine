@@ -1,6 +1,6 @@
 project(sound)
 
-add_library(${PROJECT_NAME} MODULE
+add_library(${PROJECT_NAME} STATIC
 	Sound.cpp
 	Sound.h
 )
