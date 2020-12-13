@@ -1,6 +1,6 @@
 #include "ControlTree.h"
 
-ControlTree::ControlChild::ControlChild() : aChild(_FL)
+ControlTree::ControlChild::ControlChild()
 {
     index = -1;
     sControlName = "";
@@ -16,7 +16,7 @@ ControlTree::ControlChild::~ControlChild()
     index = -1;
     bActive = false;
     fCurTime = 0.f;
-    aChild.DelAll();
+    aChild.clear();
 }
 
 void ControlTree::ControlChild::Process(float fDeltaTime, ControlTree *pControlTree)
@@ -25,16 +25,16 @@ void ControlTree::ControlChild::Process(float fDeltaTime, ControlTree *pControlT
 
     // нет базовой контролки - всегда считаем активной
     // сразу переходим к дочерним веткам
-    if (sControlName.IsEmpty())
+    if (sControlName.empty())
     {
         bActive = true;
-        for (n = 0; n < aChild; n++)
+        for (n = 0; n < aChild.size(); n++)
             aChild[n].Process(fDeltaTime, pControlTree);
         return;
     }
 
     CONTROL_STATE cs;
-    api->Controls->GetControlState((char *)sControlName.GetBuffer(), cs);
+    api->Controls->GetControlState((char *)sControlName.c_str(), cs);
 
     // если узел уже активизирован, то считаем таймаут
     if (bActive)
@@ -61,25 +61,26 @@ void ControlTree::ControlChild::Process(float fDeltaTime, ControlTree *pControlT
         bWaitReleaseControl = false;
         fCurTime = 0.f;
 
-        for (n = 0; n < aChild; n++)
+        for (n = 0; n < aChild.size(); n++)
         {
             aChild[n].bActive = false;
             aChild[n].bWaitReleaseControl = false;
         }
 
-        pControlTree->ControlInAction(sControlName, nLayer);
+        pControlTree->ControlInAction(sControlName.c_str(), nLayer);
     }
 
     // таймаут прошел - включаем выходную контролку
     if ((!bWaitReleaseControl) && fCurTime >= fTimeOut)
     {
-        bActive = pControlTree->AddOutControl(sOutControlName, cs.state == CST_ACTIVATED || cs.state == CST_ACTIVE);
+        bActive =
+            pControlTree->AddOutControl(sOutControlName.c_str(), cs.state == CST_ACTIVATED || cs.state == CST_ACTIVE);
         return;
     }
 
     // переходим к дочерним веткам
-    bool bChildActive = false;
-    for (n = 0; n < aChild; n++)
+    auto bChildActive = false;
+    for (n = 0; n < aChild.size(); n++)
     {
         aChild[n].Process(fDeltaTime, pControlTree);
         if (aChild[n].bActive)
@@ -103,7 +104,7 @@ bool ControlTree::ControlChild::ControlInAction(ControlTree *pControlTree, const
 
     if (sControlName == pcControlName)
     {
-        pControlTree->ExcludeControlFromActive(sOutControlName);
+        pControlTree->ExcludeControlFromActive(sOutControlName.c_str());
         bWaitReleaseControl = true;
         bActive = true;
         fCurTime = 0.f;
@@ -111,7 +112,7 @@ bool ControlTree::ControlChild::ControlInAction(ControlTree *pControlTree, const
 
     if (bActive)
     {
-        for (long n = 0; n < aChild; n++)
+        for (long n = 0; n < aChild.size(); n++)
         {
             if (aChild[n].ControlInAction(pControlTree, pcControlName, _nLayer))
                 bWaitReleaseControl = true;
@@ -121,7 +122,7 @@ bool ControlTree::ControlChild::ControlInAction(ControlTree *pControlTree, const
     return bWaitReleaseControl;
 }
 
-ControlTree::ControlTree() : m_aOutControlList(_FL)
+ControlTree::ControlTree()
 {
     Init();
 }
@@ -137,7 +138,7 @@ void ControlTree::Process()
 
     // все контролы которые деактивировались становятся неактивными
     // а все акивированные активными
-    for (n = 0; n < m_aOutControlList; n++)
+    for (n = 0; n < m_aOutControlList.size(); n++)
     {
         if (m_aOutControlList[n].state == CST_INACTIVATED)
             m_aOutControlList[n].state = CST_INACTIVE;
@@ -149,11 +150,11 @@ void ControlTree::Process()
     m_RootControl.Process(api->GetDeltaTime() * 0.001f, this);
 
     // удалим деактивированные контролы
-    for (n = 0; n < m_aOutControlList; n++)
+    for (n = 0; n < m_aOutControlList.size(); n++)
     {
         if (m_aOutControlList[n].state == CST_INACTIVE)
         {
-            m_aOutControlList.DelIndex(n);
+            m_aOutControlList.erase(m_aOutControlList.begin() + n);
             n--;
         }
     }
@@ -162,17 +163,19 @@ void ControlTree::Process()
 long ControlTree::AddControlChild(long nParentIdx, const char *pcControlName, const char *pcOutControlName,
                                   float fTimeOut)
 {
-    ControlChild *pParent = FindControlChild(nParentIdx);
+    auto *pParent = FindControlChild(nParentIdx);
     if (!pParent)
         return -1;
-    long n = pParent->aChild.Add();
-    pParent->aChild[n].bActive = false;
-    pParent->aChild[n].fCurTime = 0.f;
-    pParent->aChild[n].fTimeOut = fTimeOut;
-    pParent->aChild[n].index = m_nControlsNum;
-    pParent->aChild[n].sControlName = pcControlName;
-    pParent->aChild[n].sOutControlName = pcOutControlName;
-    pParent->aChild[n].nLayer = pParent->nLayer + 1;
+    ControlChild child;
+    child.bActive = false;
+    child.fCurTime = 0.f;
+    child.fTimeOut = fTimeOut;
+    child.index = m_nControlsNum;
+    child.sControlName = pcControlName;
+    child.sOutControlName = pcOutControlName;
+    child.nLayer = pParent->nLayer + 1;
+    pParent->aChild.push_back(child);
+
     m_nControlsNum++;
     return m_nControlsNum - 1;
 }
@@ -181,7 +184,7 @@ CONTROL_STATE_TYPE ControlTree::CheckControlActivated(const char *pcControlName)
 {
     if (!pcControlName)
         return CST_INACTIVE;
-    for (long n = 0; n < m_aOutControlList; n++)
+    for (long n = 0; n < m_aOutControlList.size(); n++)
         if (m_aOutControlList[n].sControlName == pcControlName)
             return m_aOutControlList[n].state;
     return CST_INACTIVE;
@@ -200,7 +203,7 @@ ControlTree::ControlChild *ControlTree::FindControlChild(long idx)
 {
     if (idx < 0 || idx >= m_nControlsNum)
         return &m_RootControl;
-    ControlChild *pCC = FindControlChild(idx, &m_RootControl);
+    auto *const pCC = FindControlChild(idx, &m_RootControl);
     if (pCC)
         return pCC;
     return &m_RootControl;
@@ -209,16 +212,16 @@ ControlTree::ControlChild *ControlTree::FindControlChild(long idx)
 ControlTree::ControlChild *ControlTree::FindControlChild(long idx, ControlChild *pParent)
 {
     if (!pParent)
-        return 0;
+        return nullptr;
     if (pParent->index == idx)
         return pParent;
-    for (long n = 0; n < pParent->aChild; n++)
+    for (long n = 0; n < pParent->aChild.size(); n++)
     {
-        ControlChild *pCC = FindControlChild(idx, &pParent->aChild[n]);
+        auto *const pCC = FindControlChild(idx, &pParent->aChild[n]);
         if (pCC)
             return pCC;
     }
-    return 0;
+    return nullptr;
 }
 
 bool ControlTree::AddOutControl(const char *pcOutControlName, bool isActive)
@@ -227,22 +230,23 @@ bool ControlTree::AddOutControl(const char *pcOutControlName, bool isActive)
         return false;
 
     // ищем контролку в списке
-    long n = 0;
-    for (n = 0; n < m_aOutControlList; n++)
+    long n;
+    for (n = 0; n < m_aOutControlList.size(); n++)
         if (m_aOutControlList[n].sControlName == pcOutControlName)
             break;
 
     // не было такой контролки - добавляем с предыдущим состоянием = ненажата
-    if (n >= m_aOutControlList)
+    if (n >= m_aOutControlList.size())
     {
-        n = m_aOutControlList.Add();
-        m_aOutControlList[n].sControlName = pcOutControlName;
-        m_aOutControlList[n].state = CST_INACTIVE;
+        OutControlInfo info;
+        info.sControlName = pcOutControlName;
+        info.state = CST_INACTIVE;
+        m_aOutControlList.push_back(info);
         isActive = true;
     }
 
     // нажата контролка
-    CONTROL_STATE_TYPE cs_prev = m_aOutControlList[n].state;
+    const auto cs_prev = m_aOutControlList[n].state;
     if (isActive)
     {
         if (cs_prev == CST_INACTIVE || cs_prev == CST_INACTIVATED)
@@ -276,13 +280,13 @@ void ControlTree::ControlInAction(const char *pcControlName, long nLayer)
 
 bool ControlTree::ExcludeControlFromActive(const char *pcControlName)
 {
-    for (long n = 0; n < m_aOutControlList; n++)
+    for (long n = 0; n < m_aOutControlList.size(); n++)
     {
         if (m_aOutControlList[n].sControlName == pcControlName)
         {
             if (m_aOutControlList[n].state == CST_ACTIVATED)
             {
-                m_aOutControlList.DelIndex(n);
+                m_aOutControlList.erase(m_aOutControlList.begin() + n);
                 return true;
             }
             return false;

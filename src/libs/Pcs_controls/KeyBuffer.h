@@ -2,7 +2,6 @@
 #define _CONTROL_KEYBUFFER_H_
 
 #include "controls.h"
-#include "templates\string.h"
 #include "vmodule_api.h"
 
 struct ControlKeyBuffer
@@ -12,13 +11,13 @@ struct ControlKeyBuffer
     ~ControlKeyBuffer();
 
     void Reset();
-    void AddKey(char *u8_str, int u8_size, bool bSystem);
+    void AddKey(long nKeyCode, UINT uScanCode, bool bSystem);
 
     long GetBufferLength()
     {
         return m_nBufLen;
     }
-    const KeyDescr *GetBuffer()
+    const KeyDescr *c_str()
     {
         return m_pcBuffer;
     }

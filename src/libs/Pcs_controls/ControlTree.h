@@ -2,9 +2,9 @@
 #define _CONTROLTREE_H_
 
 #include "controls.h"
-#include "templates\array.h"
-#include "templates\string.h"
 #include "vmodule_api.h"
+#include <string>
+#include <vector>
 
 struct ControlTree
 {
@@ -18,19 +18,19 @@ struct ControlTree
         bool ControlInAction(ControlTree *pControlTree, const char *pcControlName, long _nLayer);
 
         long index;
-        string sControlName;
-        array<ControlChild> aChild;
+        std::string sControlName;
+        std::vector<ControlChild> aChild;
         bool bActive;
         bool bWaitReleaseControl;
         float fTimeOut;
         float fCurTime;
-        string sOutControlName;
+        std::string sOutControlName;
         long nLayer;
     };
 
     struct OutControlInfo
     {
-        string sControlName;
+        std::string sControlName;
         CONTROL_STATE_TYPE state;
     };
 
@@ -57,7 +57,7 @@ struct ControlTree
     long m_nControlsNum;
     ControlChild m_RootControl;
 
-    array<OutControlInfo> m_aOutControlList;
+    std::vector<OutControlInfo> m_aOutControlList;
 };
 
 #endif
