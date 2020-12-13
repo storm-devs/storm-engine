@@ -1,36 +1,33 @@
-#include "font.h"
-#include "../Common_h/utf8.h"
-
-#include <stdio.h>
+#include "Font.h"
+#include "defines.h"
 
 static char Buffer1024[1024];
 
 FONT::FONT()
 {
-    api = (VAPI *)_CORE_API;
-    RenderService = 0;
-    Device = 0;
-    VBuffer = 0;
+    RenderService = nullptr;
+    Device = nullptr;
+    VBuffer = nullptr;
     TextureID = -1;
     Color = oldColor = 0xffffffff;
-    ZeroMemory(CharT, sizeof(CharT));
-    ZeroMemory(&Pos, sizeof(Pos));
+    PZERO(CharT, sizeof(CharT));
+    PZERO(&Pos, sizeof(Pos));
     bInverse = bOldInverse = false;
-    techniqueName = NULL;
-    textureName = NULL;
+    techniqueName = nullptr;
+    textureName = nullptr;
 }
 
 FONT::~FONT()
 {
-    if (techniqueName != NULL)
+    if (techniqueName != nullptr)
     {
         delete techniqueName;
-        techniqueName = NULL;
+        techniqueName = nullptr;
     }
-    if (textureName != NULL)
+    if (textureName != nullptr)
     {
         delete textureName;
-        textureName = NULL;
+        textureName = nullptr;
     }
     if (VBuffer)
         VBuffer->Release();
@@ -38,7 +35,7 @@ FONT::~FONT()
     {
         if (TextureID >= 0)
             RenderService->TextureRelease(TextureID);
-        // api->FreeService("dx8render");
+        // api->FreeService("dx9render");
     }
 }
 
@@ -62,47 +59,43 @@ bool FONT::MakeLong(char **pDataPointer, long *result)
             *result = atol(pData);
             return true;
         }
-        else
+        if (pData[index] == ',')
         {
-            if (pData[index] == ',')
-            {
-                pData[index] = 0;
-                *result = atol(pData);
-                *pDataPointer += (index + 1);
-                return true;
-            }
+            pData[index] = 0;
+            *result = atol(pData);
+            *pDataPointer += (index + 1);
+            return true;
         }
         index++;
         if (index > 8)
-            SE_THROW_MSG(inf loop);
+            throw std::exception("inf loop");
     }
     return false;
 }
 
-bool FONT::Init(char *font_name, char *iniName, IDirect3DDevice9 *_device, VDX8RENDER *_render)
+bool FONT::Init(const char *font_name, const char *iniName, IDirect3DDevice9 *_device, VDX9RENDER *_render)
 {
     INIFILE *ini;
     char key_name[MAX_PATH];
     char buffer[MAX_PATH];
-    long codepoint;
+    long n;
     long ltmp;
     char *pData;
 
-    ini = api->fio->OpenIniFile(iniName);
-    if (ini == 0)
+    ini = fio->OpenIniFile(iniName);
+    if (ini == nullptr)
         return false;
 
     m_fAspectRatioH = 1.f;
-    // m_fAspectRatioV = _render->GetHeightDeformator();
-    m_fAspectRatioV = 1.f;
-
+    //  m_fAspectRatioV = _render->GetHeightDeformator();
+    m_fAspectRatioV = 1.f; // ugeen - для ККС чтобы шрифты не плющило
     if (ini->GetLong(font_name, "AspectHeightConstant", 0) == 1)
     {
         m_fAspectRatioH = 1.f / m_fAspectRatioV;
         m_fAspectRatioV = 1.f;
     }
 
-    float _fscale = 1.f;
+    auto _fscale = 1.f;
 #ifndef _XBOX
     _fscale = ini->GetFloat(font_name, "pcscale", 1.f);
 #else
@@ -115,67 +108,70 @@ bool FONT::Init(char *font_name, char *iniName, IDirect3DDevice9 *_device, VDX8R
     }
 
     Height = ini->GetLong(font_name, "Height", 0);
-    Height = (long)(Height * m_fAspectRatioV);
+    Height = static_cast<long>(Height * m_fAspectRatioV);
 
     if (ini->ReadString(font_name, "Texture", buffer, sizeof(buffer) - 1, ""))
     {
-        if ((textureName = NEW char[strlen(buffer) + 1]) == NULL)
-            SE_THROW_MSG("allocate memory error")
-        strcpy(textureName, buffer);
+        const auto len = strlen(buffer) + 1;
+        if ((textureName = new char[len]) == nullptr)
+            throw std::exception("allocate memory error");
+        strcpy_s(textureName, len, buffer);
     }
     if (ini->ReadString(font_name, "Techniques", buffer, sizeof(buffer) - 1, ""))
     {
-        if ((techniqueName = NEW char[strlen(buffer) + 1]) == NULL)
-            SE_THROW_MSG("allocate memory error")
-        strcpy(techniqueName, buffer);
+        const auto len = strlen(buffer) + 1;
+        if ((techniqueName = new char[len]) == nullptr)
+            throw std::exception("allocate memory error");
+        strcpy_s(techniqueName, len, buffer);
     }
     Texture_XSize = ini->GetLong(font_name, "Texture_xsize", 1);
     Texture_YSize = ini->GetLong(font_name, "Texture_ysize", 1);
     Symbol_interval = ini->GetLong(font_name, "Symbol_interval", 0);
 
     bShadow = bOldShadow = false;
-    if (ini->TestKey(font_name, "Shadow", 0))
+    if (ini->TestKey(font_name, "Shadow", nullptr))
         bShadow = bOldShadow = true;
 
     Shadow_offsetx = ini->GetLong(font_name, "Shadow_offsetx", 2);
     Shadow_offsety = ini->GetLong(font_name, "Shadow_offsety", 2);
-    Spacebar = (long)(ini->GetLong(font_name, "Spacebar", 8) * m_fAspectRatioH);
+    Spacebar = static_cast<long>(ini->GetLong(font_name, "Spacebar", 8) * m_fAspectRatioH);
 
     ini->CaseSensitive(true);
-    for (codepoint = 30; codepoint < USED_CODES; codepoint++)
+    for (n = 30; n < USED_CODES; n++)
     {
-        char utf8[5];
-        utf8::CodepointToUtf8(utf8, codepoint);
-        if (codepoint >= 'a' && codepoint <= 'z')
+        if (n >= 'a' && n <= 'z')
         {
-            sprintf(key_name, "char_%s_", utf8);
+            sprintf_s(key_name, "char_%c_", static_cast<char>(n));
         }
-        else if (codepoint == '=')
-            sprintf(key_name, "char_equ");
+        else if (n == '=')
+            sprintf_s(key_name, "char_equ");
         else
-            sprintf(key_name, "char_%s", utf8);
-
+            sprintf_s(key_name, "char_%c", static_cast<char>(n));
         if (!ini->ReadString(font_name, key_name, buffer, sizeof(buffer), ""))
-            continue;
+        {
+            sprintf_s(key_name, "ascii_%d", n);
+            if (!ini->ReadString(font_name, key_name, buffer, sizeof(buffer), ""))
+                continue;
+        }
         pData = buffer;
         if (!MakeLong(&pData, &ltmp))
-            SE_THROW_MSG(invalid font record);
-        CharT[codepoint].Pos.x1 = 0;
-        CharT[codepoint].Tuv.x1 = (float)(ltmp + .5f) / (float)Texture_XSize;
+            throw std::exception("invalid font record");
+        CharT[n].Pos.x1 = 0;
+        CharT[n].Tuv.x1 = static_cast<float>(ltmp + .5f) / static_cast<float>(Texture_XSize);
         if (!MakeLong(&pData, &ltmp))
-            SE_THROW_MSG(invalid font record);
-        CharT[codepoint].Pos.y1 = 0.f;
-        CharT[codepoint].Tuv.y1 = (float)(ltmp + .5f) / (float)Texture_YSize;
+            throw std::exception("invalid font record");
+        CharT[n].Pos.y1 = 0.f;
+        CharT[n].Tuv.y1 = static_cast<float>(ltmp + .5f) / static_cast<float>(Texture_YSize);
 
         if (!MakeLong(&pData, &ltmp))
-            SE_THROW_MSG(invalid font record);
-        CharT[codepoint].Pos.x2 = (float)((long)(ltmp * m_fAspectRatioH));
-        CharT[codepoint].Tuv.x2 = CharT[codepoint].Tuv.x1 + (float)(ltmp - 1.f) / (float)Texture_XSize;
+            throw std::exception("invalid font record");
+        CharT[n].Pos.x2 = static_cast<float>(static_cast<long>(ltmp * m_fAspectRatioH));
+        CharT[n].Tuv.x2 = CharT[n].Tuv.x1 + static_cast<float>(ltmp - 1.f) / static_cast<float>(Texture_XSize);
         if (!MakeLong(&pData, &ltmp))
-            SE_THROW_MSG(invalid font record);
-        CharT[codepoint].Pos.y1 = (float)(Height - (long)(ltmp * m_fAspectRatioV));
-        CharT[codepoint].Pos.y2 = (float)Height; //((long)(ltmp*m_fAspectRatioV));
-        CharT[codepoint].Tuv.y2 = CharT[codepoint].Tuv.y1 + (float)(ltmp - 1.f) / (float)Texture_YSize;
+            throw std::exception("invalid font record");
+        CharT[n].Pos.y1 = static_cast<float>(Height - static_cast<long>(ltmp * m_fAspectRatioV));
+        CharT[n].Pos.y2 = static_cast<float>(Height); //((long)(ltmp*m_fAspectRatioV));
+        CharT[n].Tuv.y2 = CharT[n].Tuv.y1 + static_cast<float>(ltmp - 1.f) / static_cast<float>(Texture_YSize);
     }
     ini->CaseSensitive(false);
 
@@ -186,13 +182,13 @@ bool FONT::Init(char *font_name, char *iniName, IDirect3DDevice9 *_device, VDX8R
 
     IMAGE_VERTEX *pVertex;
     Device->CreateVertexBuffer(sizeof(IMAGE_VERTEX) * MAX_SYMBOLS * SYM_VERTEXS, D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY,
-                               IMAGE_FVF, D3DPOOL_SYSTEMMEM, &VBuffer, NULL);
-    if (VBuffer == 0)
-        SE_THROW_MSG(vbuffer error);
-    VBuffer->Lock(0, sizeof(IMAGE_VERTEX) * MAX_SYMBOLS * SYM_VERTEXS, (void **)&pVertex, 0);
-    for (codepoint = 0; codepoint < MAX_SYMBOLS * SYM_VERTEXS; codepoint++)
+                               IMAGE_FVF, D3DPOOL_SYSTEMMEM, &VBuffer, nullptr);
+    if (VBuffer == nullptr)
+        throw std::exception("vbuffer error");
+    VBuffer->Lock(0, sizeof(IMAGE_VERTEX) * MAX_SYMBOLS * SYM_VERTEXS, (VOID **)&pVertex, 0);
+    for (n = 0; n < MAX_SYMBOLS * SYM_VERTEXS; n++)
     {
-        pVertex[codepoint].pos.z = 0.5f;
+        pVertex[n].pos.z = 0.5f;
     }
     VBuffer->Unlock();
 
@@ -202,27 +198,27 @@ bool FONT::Init(char *font_name, char *iniName, IDirect3DDevice9 *_device, VDX8R
     TextureID = RenderService->TextureCreate(textureName);
     if (TextureID < 0)
     {
-        _CORE_API->Trace("Not Found Texture: %s", textureName);
+        api->Trace("Not Found Texture: %s", textureName);
         return false;
     }
 
     return true;
 }
 
-void FONT::Realize(DWORD DeltaTime)
+void FONT::Realize(uint32_t DeltaTime)
 {
 }
 
-void FONT::SetColor(DWORD color)
+void FONT::SetColor(uint32_t color)
 {
     Color = color;
 }
 
-long _cdecl FONT::Printf(long x, long y, char *data_PTR, ...)
+long FONT::Printf(long x, long y, char *data_PTR, ...)
 {
     va_list args;
     va_start(args, data_PTR);
-    _vsnprintf(Buffer1024, sizeof(Buffer1024), data_PTR, args);
+    _vsnprintf_s(Buffer1024, sizeof(Buffer1024), data_PTR, args);
     va_end(args);
     return Print(x, y, Buffer1024);
 }
@@ -237,55 +233,54 @@ void OffsetFRect(FLOAT_RECT &fr, float dx, float dy)
 
 long FONT::GetStringWidth(const char *Text)
 {
-    if (Text == NULL)
+    if (Text == nullptr)
         return 0;
+    FLOAT_RECT pos;
     float xoffset = 0;
-    long s_num = strlen(Text);
+    const long s_num = strlen(Text);
 
-    for (int i = 0; i < s_num; i += utf8::u8_inc(Text + i))
+    for (long i = 0; i < s_num; i++)
     {
-        uint32_t Codepoint = utf8::Utf8ToCodepoint(Text + i);
-        Assert(Codepoint < USED_CODES);
-
-        FLOAT_RECT pos = CharT[Codepoint].Pos;
-
+        pos = CharT[static_cast<uint8_t>(Text[i])].Pos;
         if (fScale != 1.f)
         {
             pos.x1 *= fScale;
             pos.x2 *= fScale;
         }
         xoffset += pos.x2 - pos.x1 + Symbol_interval * fScale;
-        if (Codepoint == ' ')
+        if (Text[i] == ' ')
         {
+            pos.x1 = pos.x2 = pos.y1 = pos.y2 = 0;
             xoffset += Spacebar * fScale;
         }
     }
 
-    return (long)xoffset;
+    return static_cast<long>(xoffset);
 }
 
-long FONT::UpdateVertexBuffer(long x, long y, char *data_PTR, int utf8length)
+long FONT::UpdateVertexBuffer(long x, long y, char *data_PTR)
 {
     long s_num;
     long n;
+    long i;
     float xoffset;
+    uint8_t sym;
+    FLOAT_RECT pos;
+    FLOAT_RECT tuv;
     IMAGE_VERTEX *pVertex;
 
     s_num = strlen(data_PTR);
 
-    VBuffer->Lock(0, sizeof(IMAGE_VERTEX) * utf8length * SYM_VERTEXS, (void **)&pVertex, 0);
+    VBuffer->Lock(0, sizeof(IMAGE_VERTEX) * s_num * SYM_VERTEXS, (VOID **)&pVertex, 0);
 
     xoffset = 0;
 
-    for (int i = 0, curLetter = 0; i < s_num; i += utf8::u8_inc(data_PTR + i), curLetter++)
+    for (i = 0; i < s_num; i++)
     {
-        Assert(curLetter < utf8length);
+        sym = data_PTR[i];
 
-        int Codepoint = utf8::Utf8ToCodepoint(data_PTR + i);
-        Assert(Codepoint < USED_CODES);
-
-        n = curLetter * 6;
-        FLOAT_RECT pos = CharT[Codepoint].Pos;
+        n = i * 6;
+        pos = CharT[sym].Pos;
         if (fScale != 1.f)
         {
             pos.x1 *= fScale;
@@ -293,10 +288,10 @@ long FONT::UpdateVertexBuffer(long x, long y, char *data_PTR, int utf8length)
             pos.y1 *= fScale;
             pos.y2 *= fScale;
         }
-        OffsetFRect(pos, (float)x + xoffset, (float)y);
+        OffsetFRect(pos, static_cast<float>(x) + xoffset, static_cast<float>(y));
         xoffset += pos.x2 - pos.x1 + Symbol_interval * fScale;
 
-        if (Codepoint == ' ')
+        if (sym == ' ')
         {
             pos.x1 = pos.x2 = pos.y1 = pos.y2 = 0;
             xoffset += Spacebar * fScale;
@@ -318,7 +313,7 @@ long FONT::UpdateVertexBuffer(long x, long y, char *data_PTR, int utf8length)
         pVertex[n + 4].pos.y = pos.y2;
         pVertex[n + 5].pos.y = pos.y1;
 
-        FLOAT_RECT tuv = CharT[Codepoint].Tuv;
+        tuv = CharT[sym].Tuv;
 
         pVertex[n + 0].tu = tuv.x1;
         pVertex[n + 1].tu = tuv.x1;
@@ -343,34 +338,33 @@ long FONT::UpdateVertexBuffer(long x, long y, char *data_PTR, int utf8length)
             pVertex[n + 5].rhw = fScale;
     }
     VBuffer->Unlock();
-    return (long)xoffset;
+    return static_cast<long>(xoffset);
 }
 
 long FONT::Print(long x, long y, char *data_PTR)
 {
-    if (data_PTR == NULL || techniqueName == NULL)
+    if (data_PTR == nullptr || techniqueName == nullptr)
         return 0;
-    long xoffset = 0L;
-
-    long s_num = utf8::Utf8StringLength(data_PTR);
+    long s_num;
+    auto xoffset = 0L;
+    s_num = strlen(data_PTR);
     if (s_num == 0)
         return 0;
 
-    bool bDraw = RenderService->TechniqueExecuteStart(techniqueName);
+    const auto bDraw = RenderService->TechniqueExecuteStart(techniqueName);
     if (!bDraw)
         return xoffset;
 
     RenderService->TextureSet(0, TextureID);
-    Device->SetVertexShader(NULL);
     Device->SetFVF(IMAGE_FVF);
     Device->SetStreamSource(0, VBuffer, 0, sizeof(IMAGE_VERTEX));
-    Device->SetIndices(0);
+    // Device->SetIndices(0);
 
     if (bInverse)
     {
         if (bShadow)
         {
-            UpdateVertexBuffer(x + Shadow_offsetx, y + Shadow_offsety, data_PTR, s_num);
+            UpdateVertexBuffer(x + Shadow_offsetx, y + Shadow_offsety, data_PTR);
 
             Device->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
             Device->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
@@ -378,7 +372,7 @@ long FONT::Print(long x, long y, char *data_PTR)
             Device->DrawPrimitive(D3DPT_TRIANGLELIST, 0, s_num * 2);
         }
 
-        xoffset = UpdateVertexBuffer(x, y, data_PTR, s_num);
+        xoffset = UpdateVertexBuffer(x, y, data_PTR);
 
         Device->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ZERO);
         Device->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
@@ -389,7 +383,7 @@ long FONT::Print(long x, long y, char *data_PTR)
     {
         if (bShadow)
         {
-            UpdateVertexBuffer(x + Shadow_offsetx, y + Shadow_offsety, data_PTR, s_num);
+            UpdateVertexBuffer(x + Shadow_offsetx, y + Shadow_offsety, data_PTR);
 
             Device->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ZERO);
             Device->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
@@ -397,7 +391,7 @@ long FONT::Print(long x, long y, char *data_PTR)
             Device->DrawPrimitive(D3DPT_TRIANGLELIST, 0, s_num * 2);
         }
 
-        xoffset = UpdateVertexBuffer(x, y, data_PTR, s_num);
+        xoffset = UpdateVertexBuffer(x, y, data_PTR);
 
         Device->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
         Device->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
@@ -434,7 +428,7 @@ void FONT::SetScale(float scale)
 
 void FONT::TempUnload()
 {
-    if (RenderService != NULL)
+    if (RenderService != nullptr)
     {
         if (TextureID != -1L)
             RenderService->TextureRelease(TextureID);

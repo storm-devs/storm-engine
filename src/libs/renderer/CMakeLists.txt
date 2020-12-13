@@ -1,14 +1,15 @@
-project(dx9render)
+project(renderer)
 
-add_library(${PROJECT_NAME} MODULE
+add_library(${PROJECT_NAME} STATIC
+	Effects.cpp
+	Effects.h
 	Font.cpp
 	Font.h
 	Screenshot.cpp
 	sdevice.cpp
 	sdevice.h
-	Technique.cpp
-	Technique.h
 	texture.h
+	TIVBufferManager.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${DirectX_INCLUDE_DIR})

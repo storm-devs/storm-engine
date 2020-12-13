@@ -19,7 +19,7 @@
 //		...					/
 //
 //   Remarks:
-//		TEXTURE_FORMAT equal of a DX8 D3DFORMAT
+//		TEXTURE_FORMAT equal of a DX9 D3DFORMAT
 //		pallette color TX_PALETTE_COLOR equal of a PALETTEENTRY (std. windows structure)
 //	CubeMap:
 //		always is quads
@@ -66,10 +66,10 @@ struct TX_FILE_HEADER
 // Pallette color
 struct TX_PALETTE_COLOR
 {
-    BYTE r;
-    BYTE g;
-    BYTE b;
-    BYTE f;
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
+    uint8_t f;
 };
 
 // Texture pallete

@@ -1,13 +1,12 @@
 #ifndef _FONT_H_
 #define _FONT_H_
 
-#include "dx8render.h"
+#include "dx9render.h"
 #include "matrix.h"
-#include "vfile_service.h"
 #include "vmodule_api.h"
 //#include "iimage.h"
 
-#define USED_CODES 0x2070 // end of https://unicode-table.com/en/blocks/general-punctuation/
+#define USED_CODES 256
 #define MAX_SYMBOLS 512
 #define SYM_VERTEXS 6
 
@@ -17,7 +16,7 @@ struct IMAGE_VERTEX
 {
     CVECTOR pos;
     float rhw;
-    DWORD color;
+    uint32_t color;
     float tu, tv;
 };
 #endif
@@ -44,14 +43,13 @@ struct FONT_SYMBOL
 
 class FONT
 {
-    VAPI *api;
-    VDX8RENDER *RenderService;
+    VDX9RENDER *RenderService;
     IDirect3DDevice9 *Device;
     IDirect3DVertexBuffer9 *VBuffer;
     char *techniqueName;
     char *textureName;
     long TextureID;
-    DWORD Color, oldColor;
+    uint32_t Color, oldColor;
     float fScale, fOldScale;
     FLOAT_RECT Pos;
     FONT_SYMBOL CharT[USED_CODES];
@@ -74,18 +72,18 @@ class FONT
   public:
     FONT();
     ~FONT();
-    bool Init(char *font_name, char *iniName, IDirect3DDevice9 *_device, VDX8RENDER *_render);
+    bool Init(const char *font_name, const char *iniName, IDirect3DDevice9 *_device, VDX9RENDER *_render);
     void TempUnload();
     void RepeatInit();
-    void Realize(DWORD DeltaTime);
-    void SetColor(DWORD color);
+    void Realize(uint32_t DeltaTime);
+    void SetColor(uint32_t color);
     void SetScale(float scale);
     void SetShadow(bool s);
     void SetCenter(bool c);
     bool MakeLong(char **pDataPointer, long *result);
-    long _cdecl Printf(long x, long y, char *Text, ...);
+    long Printf(long x, long y, char *Text, ...);
     long Print(long x, long y, char *Text);
-    long UpdateVertexBuffer(long x, long y, char *data_PTR, int utf8length);
+    long UpdateVertexBuffer(long x, long y, char *data_PTR);
     long GetStringWidth(const char *Text);
     long GetHeight()
     {
