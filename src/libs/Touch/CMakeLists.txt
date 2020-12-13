@@ -1,6 +1,6 @@
 project(touch)
 
-add_library(${PROJECT_NAME} MODULE
+add_library(${PROJECT_NAME} STATIC
 	touch.cpp
 	touch.h
 )

@@ -1,10 +1,10 @@
 #ifndef _TOUCH_H_
 #define _TOUCH_H_
 
-#include "dx8render.h"
-#include "island_base.h"
+#include "Island_Base.h"
+#include "dx9render.h"
 #include "ship_base.h"
-#include "templates\array.h"
+#include <vector>
 
 #define D3DTLVERTEX_FORMAT (D3DFVF_XYZRHW | D3DFVF_DIFFUSE)
 
@@ -12,12 +12,12 @@ typedef struct
 {
     CVECTOR vPos;
     float fRHW;
-    DWORD dwDiffuse;
+    uint32_t dwDiffuse;
 } D3DTLVERTEX;
 
 struct TOUCH_SHIP
 {
-    ENTITY_ID eID;                // ship id
+    entid_t eID;                  // ship id
     CVECTOR vContourTemp[2][128]; // temporary storage / must be deleted
     TOUCH_PARAMS TP[2];           // touch params	for collision
     SHIP_BASE *pShip;             // ship pointer
@@ -28,10 +28,10 @@ struct TOUCH_SHIP
     long iNumVContour;            // num points in contour
 };
 
-class TOUCH : public ENTITY
+class TOUCH : public Entity
 {
   protected:
-    VDX8RENDER *pRS;
+    VDX9RENDER *pRS;
     ISLAND_BASE *pIslandBase;
 
     bool bUseTouch;
@@ -39,7 +39,7 @@ class TOUCH : public ENTITY
     float fScale;
     float fCollisionDepth;
 
-    dword dwDeltaTime;
+    uint32_t dwDeltaTime;
     long iDeltaTime;
 
     TOUCH_SHIP *pShips[256];
@@ -60,7 +60,7 @@ class TOUCH : public ENTITY
     long ProcessImpulse(long iOurIdx, CVECTOR vPos, CVECTOR vDir, float fPowerApplied);
     long GetTouchPoint(long iIdx, const CVECTOR &vPos);
 
-    void DrawLine(array<RS_LINE2D> &aLines, float x1, float y1, float x2, float y2, DWORD color);
+    void DrawLine(std::vector<RS_LINE2D> &aLines, float x1, float y1, float x2, float y2, uint32_t color);
     void DrawShips();
     CVECTOR GetPoint(float x, float y, float xx, float yy, float xscale, float yscale, float fCos, float fSin,
                      POINT ss);
@@ -72,10 +72,26 @@ class TOUCH : public ENTITY
     TOUCH();
     void LoadServices();
     bool Init();
-    void Realize(dword Delta_Time);
-    void Execute(dword Delta_Time);
-    dword _cdecl ProcessMessage(MESSAGE &message);
-    dword AttributeChanged(ATTRIBUTES *pAttribute);
+    void Realize(uint32_t Delta_Time);
+    void Execute(uint32_t Delta_Time);
+    uint64_t ProcessMessage(MESSAGE &message);
+    uint32_t AttributeChanged(ATTRIBUTES *pAttribute);
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+                LostRender(delta); break;
+            case Stage::restore_render:
+                RestoreRender(delta); break;*/
+        }
+    }
 };
 
 #endif
