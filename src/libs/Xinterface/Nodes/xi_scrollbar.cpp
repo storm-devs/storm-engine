@@ -1,5 +1,4 @@
 #include "xi_scrollbar.h"
-#include <stdio.h>
 
 #define CLICK_TYPE_CENTER 0
 #define CLICK_TYPE_LEFT 1
@@ -8,8 +7,8 @@
 CXI_SCROLLBAR::CXI_SCROLLBAR()
 {
     m_idTex = -1;
-    m_sGroupName = NULL;
-    m_rs = NULL;
+    m_sGroupName = nullptr;
+    m_rs = nullptr;
 
     m_fXShadow = 0.f;
     m_fYShadow = 0.f;
@@ -37,7 +36,7 @@ CXI_SCROLLBAR::~CXI_SCROLLBAR()
     ReleaseAll();
 }
 
-void CXI_SCROLLBAR::Draw(bool bSelected, dword Delta_Time)
+void CXI_SCROLLBAR::Draw(bool bSelected, uint32_t Delta_Time)
 {
     if (m_nPressedDelay > 0)
         m_nPressedDelay--;
@@ -65,12 +64,12 @@ void CXI_SCROLLBAR::Draw(bool bSelected, dword Delta_Time)
     {
         if (bSelected ^ m_bPrevSelectStatus)
         {
-            XI_ONETEX_VERTEX *pVert = (XI_ONETEX_VERTEX *)m_rs->LockVertexBuffer(m_idVBuf);
-            if (pVert != NULL)
+            auto *pVert = static_cast<XI_ONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_idVBuf));
+            if (pVert != nullptr)
             {
                 m_bPrevSelectStatus = bSelected;
                 if (bSelected)
-                    for (int idx = 0; idx < 6 * 12; idx += 12)
+                    for (auto idx = 0; idx < 6 * 12; idx += 12)
                     {
                         pVert[idx + 4].tu = m_rectSelectCenterTex.left;
                         pVert[idx + 4].tv = m_rectSelectCenterTex.top;
@@ -82,7 +81,7 @@ void CXI_SCROLLBAR::Draw(bool bSelected, dword Delta_Time)
                         pVert[idx + 7].tv = m_rectSelectCenterTex.bottom;
                     }
                 else
-                    for (int idx = 0; idx < 6 * 12; idx += 12)
+                    for (auto idx = 0; idx < 6 * 12; idx += 12)
                     {
                         pVert[idx + 4].tu = m_rectCenterTex.left;
                         pVert[idx + 4].tv = m_rectCenterTex.top;
@@ -120,16 +119,16 @@ void CXI_SCROLLBAR::Draw(bool bSelected, dword Delta_Time)
 
     if (m_bShowString)
     {
-        ATTRIBUTES *pA = ptrOwner->AttributesPointer;
+        auto *pA = ptrOwner->AttributesPointer;
         if (pA)
         {
             pA = pA->GetAttributeClass(m_nodeName);
             if (pA)
             {
-                char *pcStr = pA->GetAttribute("str");
+                auto *const pcStr = pA->GetAttribute("str");
                 if (pcStr)
                 {
-                    m_rs->ExtPrint(m_nFontID, m_dwFontColor, 0, ALIGN_CENTER, true, m_fFontScale, m_screenSize.x,
+                    m_rs->ExtPrint(m_nFontID, m_dwFontColor, 0, PR_ALIGN_CENTER, true, m_fFontScale, m_screenSize.x,
                                    m_screenSize.y, (m_rect.left + m_rect.right) / 2 + m_pntFontOffset.x,
                                    m_rect.top + m_pntFontOffset.y, "%s", pcStr);
                 }
@@ -138,15 +137,15 @@ void CXI_SCROLLBAR::Draw(bool bSelected, dword Delta_Time)
     }
 }
 
-bool CXI_SCROLLBAR::Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, VDX8RENDER *rs, XYRECT &hostRect,
-                         XYPOINT &ScreenSize)
+bool CXI_SCROLLBAR::Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs,
+                         XYRECT &hostRect, XYPOINT &ScreenSize)
 {
     if (!CINODE::Init(ini1, name1, ini2, name2, rs, hostRect, ScreenSize))
         return false;
     return true;
 }
 
-void CXI_SCROLLBAR::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2)
+void CXI_SCROLLBAR::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2)
 {
     char param[255];
     FXYPOINT fPnt;
@@ -171,13 +170,14 @@ void CXI_SCROLLBAR::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *nam
 
     // get group name and get texture for this
     m_idTex = -1;
-    m_sGroupName = null;
+    m_sGroupName = nullptr;
     if (ReadIniString(ini1, name1, ini2, name2, "group", param, sizeof(param), ""))
     {
-        m_sGroupName = NEW char[strlen(param) + 1];
-        if (m_sGroupName == null)
-            SE_THROW_MSG("allocate memory error")
-        strcpy(m_sGroupName, param);
+        const auto len = strlen(param) + 1;
+        m_sGroupName = new char[len];
+        if (m_sGroupName == nullptr)
+            throw std::exception("allocate memory error");
+        memcpy(m_sGroupName, param, len);
         m_idTex = pPictureService->GetTextureID(param);
     }
 
@@ -201,18 +201,18 @@ void CXI_SCROLLBAR::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *nam
 
     m_nVert = 12 * 6;    //
     m_nIndx = 3 * 2 * 3; // 3 rectangle * 2 treangle into rectangle * 3 vertex into triangle
-    m_idIBuf = m_rs->CreateIndexBufferManaged(m_nIndx * 2);
-    m_idVBuf = m_rs->CreateVertexBufferManaged(XI_ONETEX_FVF, m_nVert * sizeof(XI_ONETEX_VERTEX), D3DUSAGE_WRITEONLY);
+    m_idIBuf = m_rs->CreateIndexBuffer(m_nIndx * 2);
+    m_idVBuf = m_rs->CreateVertexBuffer(XI_ONETEX_FVF, m_nVert * sizeof(XI_ONETEX_VERTEX), D3DUSAGE_WRITEONLY);
 
     // Lock buffers for write
-    XI_ONETEX_VERTEX *pVert = (XI_ONETEX_VERTEX *)m_rs->LockVertexBuffer(m_idVBuf);
-    WORD *pIndx = (WORD *)m_rs->LockIndexBuffer(m_idIBuf);
-    if (pVert == NULL || pIndx == NULL)
-        SE_THROW_MSG("can not create the index&vertex buffers")
+    auto *pVert = static_cast<XI_ONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_idVBuf));
+    auto *pIndx = static_cast<uint16_t *>(m_rs->LockIndexBuffer(m_idIBuf));
+    if (pVert == nullptr || pIndx == nullptr)
+        throw std::exception("can not create the index&vertex buffers");
 
     // fill triangles buffer
-    int i = 0;
-    for (int tidx = 0; tidx < 3; tidx++)
+    auto i = 0;
+    for (auto tidx = 0; tidx < 3; tidx++)
     {
         pIndx[i + 0] = tidx * 4;
         pIndx[i + 1] = tidx * 4 + 1;
@@ -268,7 +268,7 @@ void CXI_SCROLLBAR::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *nam
     m_fStepValue = GetIniFloat(ini1, name1, ini2, name2, "valueStep", 1.f);
     m_fSpeedMultiplay = GetIniFloat(ini1, name1, ini2, name2, "valueStepMultiply", 10.f);
     m_fCurValue = m_fStartValue;
-    ATTRIBUTES *pA = ptrOwner->AttributesPointer;
+    auto *pA = ptrOwner->AttributesPointer;
     if (pA)
         pA = pA->GetAttributeClass(m_nodeName);
     if (pA)
@@ -279,7 +279,7 @@ void CXI_SCROLLBAR::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *nam
 void CXI_SCROLLBAR::ReleaseAll()
 {
     PICTURE_TEXTURE_RELEASE(pPictureService, m_sGroupName, m_idTex);
-    PTR_DELETE(m_sGroupName);
+    STORM_DELETE(m_sGroupName);
     VERTEX_BUF_RELEASE(m_rs, m_idVBuf);
     INDEX_BUF_RELEASE(m_rs, m_idIBuf);
     FONT_RELEASE(m_rs, m_nFontID);
@@ -327,10 +327,11 @@ int CXI_SCROLLBAR::CommandExecute(int wActCode)
             }
 
             if (m_nPressedDelay > 0)
+            {
                 if (m_bRightPress)
                     return ACTION_RIGHTSTEP;
-                else
-                    return ACTION_LEFTSTEP;
+                return ACTION_LEFTSTEP;
+            }
             break;
         }
     }
@@ -366,15 +367,15 @@ void CXI_SCROLLBAR::SaveParametersToIni()
 {
     char pcWriteParam[2048];
 
-    INIFILE *pIni = api->fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.GetBuffer());
+    auto *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
-        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.GetBuffer());
+        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
         return;
     }
 
     // save position
-    _snprintf(pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rect.left, m_rect.top, m_rect.right, m_rect.bottom);
+    sprintf_s(pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rect.left, m_rect.top, m_rect.right, m_rect.bottom);
     pIni->WriteString(m_nodeName, "position", pcWriteParam);
 
     delete pIni;
@@ -382,13 +383,13 @@ void CXI_SCROLLBAR::SaveParametersToIni()
 
 XYRECT CXI_SCROLLBAR::GetCursorRect()
 {
-    XYRECT retRect = m_rect;
-    retRect.right += (long)m_fXShadow;
-    retRect.bottom += (long)m_fYShadow;
+    auto retRect = m_rect;
+    retRect.right += static_cast<long>(m_fXShadow);
+    retRect.bottom += static_cast<long>(m_fYShadow);
     return retRect;
 }
 
-dword _cdecl CXI_SCROLLBAR::MessageProc(long msgcode, MESSAGE &message)
+uint32_t CXI_SCROLLBAR::MessageProc(long msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
@@ -407,11 +408,11 @@ dword _cdecl CXI_SCROLLBAR::MessageProc(long msgcode, MESSAGE &message)
     return 0;
 }
 
-void CXI_SCROLLBAR::UpdatePosition()
+void CXI_SCROLLBAR::UpdatePosition() const
 {
-    XI_ONETEX_VERTEX *pVert = (XI_ONETEX_VERTEX *)m_rs->LockVertexBuffer(m_idVBuf);
+    auto *pVert = static_cast<XI_ONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_idVBuf));
 
-    int idx = 0;
+    auto idx = 0;
     int sideWidth = m_nSideWidth;
     if (sideWidth < 0)
         sideWidth = (m_rect.right - m_rect.left - m_nBarWidth) / 2;
@@ -422,52 +423,52 @@ void CXI_SCROLLBAR::UpdatePosition()
     pVert[idx + 1].tu = pVert[idx + 3].tu = m_frLeftTex.right;
     pVert[idx].tv = pVert[idx + 1].tv = m_frLeftTex.top;
     pVert[idx + 2].tv = pVert[idx + 3].tv = m_frLeftTex.bottom;
-    pVert[idx].pos.x = pVert[idx + 2].pos.x = (float)m_rect.left;
-    pVert[idx + 1].pos.x = pVert[idx + 3].pos.x = float(m_rect.left + sideWidth);
-    pVert[idx].pos.y = pVert[idx + 1].pos.y = (float)m_rect.top;
-    pVert[idx + 2].pos.y = pVert[idx + 3].pos.y = (float)m_rect.bottom;
+    pVert[idx].pos.x = pVert[idx + 2].pos.x = static_cast<float>(m_rect.left);
+    pVert[idx + 1].pos.x = pVert[idx + 3].pos.x = static_cast<float>(m_rect.left + sideWidth);
+    pVert[idx].pos.y = pVert[idx + 1].pos.y = static_cast<float>(m_rect.top);
+    pVert[idx + 2].pos.y = pVert[idx + 3].pos.y = static_cast<float>(m_rect.bottom);
     pVert[idx + 4].tu = pVert[idx + 6].tu = m_rectCenterTex.left;
     pVert[idx + 5].tu = pVert[idx + 7].tu = m_rectCenterTex.right;
     pVert[idx + 4].tv = pVert[idx + 5].tv = m_rectCenterTex.top;
     pVert[idx + 6].tv = pVert[idx + 7].tv = m_rectCenterTex.bottom;
-    pVert[idx + 4].pos.x = pVert[idx + 6].pos.x = float(m_rect.left + sideWidth);
-    pVert[idx + 5].pos.x = pVert[idx + 7].pos.x = float(m_rect.right - sideWidth);
-    pVert[idx + 4].pos.y = pVert[idx + 5].pos.y = (float)m_rect.top;
-    pVert[idx + 6].pos.y = pVert[idx + 7].pos.y = (float)m_rect.bottom;
+    pVert[idx + 4].pos.x = pVert[idx + 6].pos.x = static_cast<float>(m_rect.left + sideWidth);
+    pVert[idx + 5].pos.x = pVert[idx + 7].pos.x = static_cast<float>(m_rect.right - sideWidth);
+    pVert[idx + 4].pos.y = pVert[idx + 5].pos.y = static_cast<float>(m_rect.top);
+    pVert[idx + 6].pos.y = pVert[idx + 7].pos.y = static_cast<float>(m_rect.bottom);
     pVert[idx + 8].tu = pVert[idx + 10].tu = m_frRightTex.left;
     pVert[idx + 9].tu = pVert[idx + 11].tu = m_frRightTex.right;
     pVert[idx + 8].tv = pVert[idx + 9].tv = m_frRightTex.top;
     pVert[idx + 10].tv = pVert[idx + 11].tv = m_frRightTex.bottom;
-    pVert[idx + 8].pos.x = pVert[idx + 10].pos.x = float(m_rect.right - sideWidth);
-    pVert[idx + 9].pos.x = pVert[idx + 11].pos.x = (float)m_rect.right;
-    pVert[idx + 8].pos.y = pVert[idx + 9].pos.y = (float)m_rect.top;
-    pVert[idx + 10].pos.y = pVert[idx + 11].pos.y = (float)m_rect.bottom;
+    pVert[idx + 8].pos.x = pVert[idx + 10].pos.x = static_cast<float>(m_rect.right - sideWidth);
+    pVert[idx + 9].pos.x = pVert[idx + 11].pos.x = static_cast<float>(m_rect.right);
+    pVert[idx + 8].pos.y = pVert[idx + 9].pos.y = static_cast<float>(m_rect.top);
+    pVert[idx + 10].pos.y = pVert[idx + 11].pos.y = static_cast<float>(m_rect.bottom);
     idx += 12;
     // fill shadow
     pVert[idx].tu = pVert[idx + 2].tu = m_frLeftTex.left;
     pVert[idx + 1].tu = pVert[idx + 3].tu = m_frLeftTex.right;
     pVert[idx].tv = pVert[idx + 1].tv = m_frLeftTex.top;
     pVert[idx + 2].tv = pVert[idx + 3].tv = m_frLeftTex.bottom;
-    pVert[idx].pos.x = pVert[idx + 2].pos.x = (float)m_rect.left + m_fXShadow;
-    pVert[idx + 1].pos.x = pVert[idx + 3].pos.x = float(m_rect.left + sideWidth) + m_fXShadow;
-    pVert[idx].pos.y = pVert[idx + 1].pos.y = (float)m_rect.top + m_fYShadow;
-    pVert[idx + 2].pos.y = pVert[idx + 3].pos.y = (float)m_rect.bottom + m_fYShadow;
+    pVert[idx].pos.x = pVert[idx + 2].pos.x = static_cast<float>(m_rect.left) + m_fXShadow;
+    pVert[idx + 1].pos.x = pVert[idx + 3].pos.x = static_cast<float>(m_rect.left + sideWidth) + m_fXShadow;
+    pVert[idx].pos.y = pVert[idx + 1].pos.y = static_cast<float>(m_rect.top) + m_fYShadow;
+    pVert[idx + 2].pos.y = pVert[idx + 3].pos.y = static_cast<float>(m_rect.bottom) + m_fYShadow;
     pVert[idx + 4].tu = pVert[idx + 6].tu = m_rectCenterTex.left;
     pVert[idx + 5].tu = pVert[idx + 7].tu = m_rectCenterTex.right;
     pVert[idx + 4].tv = pVert[idx + 5].tv = m_rectCenterTex.top;
     pVert[idx + 6].tv = pVert[idx + 7].tv = m_rectCenterTex.bottom;
-    pVert[idx + 4].pos.x = pVert[idx + 6].pos.x = float(m_rect.left + sideWidth) + m_fXShadow;
-    pVert[idx + 5].pos.x = pVert[idx + 7].pos.x = float(m_rect.right - sideWidth) + m_fXShadow;
-    pVert[idx + 4].pos.y = pVert[idx + 5].pos.y = (float)m_rect.top + m_fYShadow;
-    pVert[idx + 6].pos.y = pVert[idx + 7].pos.y = (float)m_rect.bottom + m_fYShadow;
+    pVert[idx + 4].pos.x = pVert[idx + 6].pos.x = static_cast<float>(m_rect.left + sideWidth) + m_fXShadow;
+    pVert[idx + 5].pos.x = pVert[idx + 7].pos.x = static_cast<float>(m_rect.right - sideWidth) + m_fXShadow;
+    pVert[idx + 4].pos.y = pVert[idx + 5].pos.y = static_cast<float>(m_rect.top) + m_fYShadow;
+    pVert[idx + 6].pos.y = pVert[idx + 7].pos.y = static_cast<float>(m_rect.bottom) + m_fYShadow;
     pVert[idx + 8].tu = pVert[idx + 10].tu = m_frRightTex.left;
     pVert[idx + 9].tu = pVert[idx + 11].tu = m_frRightTex.right;
     pVert[idx + 8].tv = pVert[idx + 9].tv = m_frRightTex.top;
     pVert[idx + 10].tv = pVert[idx + 11].tv = m_frRightTex.bottom;
-    pVert[idx + 8].pos.x = pVert[idx + 10].pos.x = float(m_rect.right - sideWidth) + m_fXShadow;
-    pVert[idx + 9].pos.x = pVert[idx + 11].pos.x = (float)m_rect.right + m_fXShadow;
-    pVert[idx + 8].pos.y = pVert[idx + 9].pos.y = (float)m_rect.top + m_fYShadow;
-    pVert[idx + 10].pos.y = pVert[idx + 11].pos.y = (float)m_rect.bottom + m_fYShadow;
+    pVert[idx + 8].pos.x = pVert[idx + 10].pos.x = static_cast<float>(m_rect.right - sideWidth) + m_fXShadow;
+    pVert[idx + 9].pos.x = pVert[idx + 11].pos.x = static_cast<float>(m_rect.right) + m_fXShadow;
+    pVert[idx + 8].pos.y = pVert[idx + 9].pos.y = static_cast<float>(m_rect.top) + m_fYShadow;
+    pVert[idx + 10].pos.y = pVert[idx + 11].pos.y = static_cast<float>(m_rect.bottom) + m_fYShadow;
     idx += 12;
 
     // fill left press picture
@@ -477,52 +478,53 @@ void CXI_SCROLLBAR::UpdatePosition()
     pVert[idx + 1].tu = pVert[idx + 3].tu = m_frLeftTex.right;
     pVert[idx].tv = pVert[idx + 1].tv = m_frLeftTex.top;
     pVert[idx + 2].tv = pVert[idx + 3].tv = m_frLeftTex.bottom;
-    pVert[idx].pos.x = pVert[idx + 2].pos.x = (float)m_rect.left + m_fXDeltaPress;
-    pVert[idx + 1].pos.x = pVert[idx + 3].pos.x = float(m_rect.left + sideWidth) + m_fXDeltaPress;
-    pVert[idx].pos.y = pVert[idx + 1].pos.y = (float)m_rect.top + m_fYDeltaPress;
-    pVert[idx + 2].pos.y = pVert[idx + 3].pos.y = (float)m_rect.bottom + m_fYDeltaPress;
+    pVert[idx].pos.x = pVert[idx + 2].pos.x = static_cast<float>(m_rect.left) + m_fXDeltaPress;
+    pVert[idx + 1].pos.x = pVert[idx + 3].pos.x = static_cast<float>(m_rect.left + sideWidth) + m_fXDeltaPress;
+    pVert[idx].pos.y = pVert[idx + 1].pos.y = static_cast<float>(m_rect.top) + m_fYDeltaPress;
+    pVert[idx + 2].pos.y = pVert[idx + 3].pos.y = static_cast<float>(m_rect.bottom) + m_fYDeltaPress;
     pVert[idx + 4].tu = pVert[idx + 6].tu = m_rectCenterTex.left;
     pVert[idx + 5].tu = pVert[idx + 7].tu = m_rectCenterTex.right;
     pVert[idx + 4].tv = pVert[idx + 5].tv = m_rectCenterTex.top;
     pVert[idx + 6].tv = pVert[idx + 7].tv = m_rectCenterTex.bottom;
-    pVert[idx + 4].pos.x = pVert[idx + 6].pos.x = float(m_rect.left + sideWidth);
-    pVert[idx + 5].pos.x = pVert[idx + 7].pos.x = float(m_rect.right - sideWidth);
-    pVert[idx + 4].pos.y = pVert[idx + 5].pos.y = (float)m_rect.top;
-    pVert[idx + 6].pos.y = pVert[idx + 7].pos.y = (float)m_rect.bottom;
+    pVert[idx + 4].pos.x = pVert[idx + 6].pos.x = static_cast<float>(m_rect.left + sideWidth);
+    pVert[idx + 5].pos.x = pVert[idx + 7].pos.x = static_cast<float>(m_rect.right - sideWidth);
+    pVert[idx + 4].pos.y = pVert[idx + 5].pos.y = static_cast<float>(m_rect.top);
+    pVert[idx + 6].pos.y = pVert[idx + 7].pos.y = static_cast<float>(m_rect.bottom);
     pVert[idx + 8].tu = pVert[idx + 10].tu = m_frRightTex.left;
     pVert[idx + 9].tu = pVert[idx + 11].tu = m_frRightTex.right;
     pVert[idx + 8].tv = pVert[idx + 9].tv = m_frRightTex.top;
     pVert[idx + 10].tv = pVert[idx + 11].tv = m_frRightTex.bottom;
-    pVert[idx + 8].pos.x = pVert[idx + 10].pos.x = float(m_rect.right - sideWidth);
-    pVert[idx + 9].pos.x = pVert[idx + 11].pos.x = (float)m_rect.right;
-    pVert[idx + 8].pos.y = pVert[idx + 9].pos.y = (float)m_rect.top;
-    pVert[idx + 10].pos.y = pVert[idx + 11].pos.y = (float)m_rect.bottom;
+    pVert[idx + 8].pos.x = pVert[idx + 10].pos.x = static_cast<float>(m_rect.right - sideWidth);
+    pVert[idx + 9].pos.x = pVert[idx + 11].pos.x = static_cast<float>(m_rect.right);
+    pVert[idx + 8].pos.y = pVert[idx + 9].pos.y = static_cast<float>(m_rect.top);
+    pVert[idx + 10].pos.y = pVert[idx + 11].pos.y = static_cast<float>(m_rect.bottom);
     idx += 12;
     // fill shadow
     pVert[idx].tu = pVert[idx + 2].tu = m_frLeftTex.left;
     pVert[idx + 1].tu = pVert[idx + 3].tu = m_frLeftTex.right;
     pVert[idx].tv = pVert[idx + 1].tv = m_frLeftTex.top;
     pVert[idx + 2].tv = pVert[idx + 3].tv = m_frLeftTex.bottom;
-    pVert[idx].pos.x = pVert[idx + 2].pos.x = (float)m_rect.left + m_fXDeltaPress + m_fXShadowPress;
-    pVert[idx + 1].pos.x = pVert[idx + 3].pos.x = float(m_rect.left + sideWidth) + m_fXDeltaPress + m_fXShadowPress;
-    pVert[idx].pos.y = pVert[idx + 1].pos.y = (float)m_rect.top + m_fYDeltaPress + m_fYShadowPress;
-    pVert[idx + 2].pos.y = pVert[idx + 3].pos.y = (float)m_rect.bottom + m_fYDeltaPress + m_fYShadowPress;
+    pVert[idx].pos.x = pVert[idx + 2].pos.x = static_cast<float>(m_rect.left) + m_fXDeltaPress + m_fXShadowPress;
+    pVert[idx + 1].pos.x = pVert[idx + 3].pos.x =
+        static_cast<float>(m_rect.left + sideWidth) + m_fXDeltaPress + m_fXShadowPress;
+    pVert[idx].pos.y = pVert[idx + 1].pos.y = static_cast<float>(m_rect.top) + m_fYDeltaPress + m_fYShadowPress;
+    pVert[idx + 2].pos.y = pVert[idx + 3].pos.y = static_cast<float>(m_rect.bottom) + m_fYDeltaPress + m_fYShadowPress;
     pVert[idx + 4].tu = pVert[idx + 6].tu = m_rectCenterTex.left;
     pVert[idx + 5].tu = pVert[idx + 7].tu = m_rectCenterTex.right;
     pVert[idx + 4].tv = pVert[idx + 5].tv = m_rectCenterTex.top;
     pVert[idx + 6].tv = pVert[idx + 7].tv = m_rectCenterTex.bottom;
-    pVert[idx + 4].pos.x = pVert[idx + 6].pos.x = float(m_rect.left + sideWidth) + m_fXShadow;
-    pVert[idx + 5].pos.x = pVert[idx + 7].pos.x = float(m_rect.right - sideWidth) + m_fXShadow;
-    pVert[idx + 4].pos.y = pVert[idx + 5].pos.y = (float)m_rect.top + m_fYShadow;
-    pVert[idx + 6].pos.y = pVert[idx + 7].pos.y = (float)m_rect.bottom + m_fYShadow;
+    pVert[idx + 4].pos.x = pVert[idx + 6].pos.x = static_cast<float>(m_rect.left + sideWidth) + m_fXShadow;
+    pVert[idx + 5].pos.x = pVert[idx + 7].pos.x = static_cast<float>(m_rect.right - sideWidth) + m_fXShadow;
+    pVert[idx + 4].pos.y = pVert[idx + 5].pos.y = static_cast<float>(m_rect.top) + m_fYShadow;
+    pVert[idx + 6].pos.y = pVert[idx + 7].pos.y = static_cast<float>(m_rect.bottom) + m_fYShadow;
     pVert[idx + 8].tu = pVert[idx + 10].tu = m_frRightTex.left;
     pVert[idx + 9].tu = pVert[idx + 11].tu = m_frRightTex.right;
     pVert[idx + 8].tv = pVert[idx + 9].tv = m_frRightTex.top;
     pVert[idx + 10].tv = pVert[idx + 11].tv = m_frRightTex.bottom;
-    pVert[idx + 8].pos.x = pVert[idx + 10].pos.x = float(m_rect.right - sideWidth) + m_fXShadow;
-    pVert[idx + 9].pos.x = pVert[idx + 11].pos.x = (float)m_rect.right + m_fXShadow;
-    pVert[idx + 8].pos.y = pVert[idx + 9].pos.y = (float)m_rect.top + m_fYShadow;
-    pVert[idx + 10].pos.y = pVert[idx + 11].pos.y = (float)m_rect.bottom + m_fYShadow;
+    pVert[idx + 8].pos.x = pVert[idx + 10].pos.x = static_cast<float>(m_rect.right - sideWidth) + m_fXShadow;
+    pVert[idx + 9].pos.x = pVert[idx + 11].pos.x = static_cast<float>(m_rect.right) + m_fXShadow;
+    pVert[idx + 8].pos.y = pVert[idx + 9].pos.y = static_cast<float>(m_rect.top) + m_fYShadow;
+    pVert[idx + 10].pos.y = pVert[idx + 11].pos.y = static_cast<float>(m_rect.bottom) + m_fYShadow;
     idx += 12;
 
     // fill right press picture
@@ -532,60 +534,62 @@ void CXI_SCROLLBAR::UpdatePosition()
     pVert[idx + 1].tu = pVert[idx + 3].tu = m_frLeftTex.right;
     pVert[idx].tv = pVert[idx + 1].tv = m_frLeftTex.top;
     pVert[idx + 2].tv = pVert[idx + 3].tv = m_frLeftTex.bottom;
-    pVert[idx].pos.x = pVert[idx + 2].pos.x = (float)m_rect.left;
-    pVert[idx + 1].pos.x = pVert[idx + 3].pos.x = float(m_rect.left + sideWidth);
-    pVert[idx].pos.y = pVert[idx + 1].pos.y = (float)m_rect.top;
-    pVert[idx + 2].pos.y = pVert[idx + 3].pos.y = (float)m_rect.bottom;
+    pVert[idx].pos.x = pVert[idx + 2].pos.x = static_cast<float>(m_rect.left);
+    pVert[idx + 1].pos.x = pVert[idx + 3].pos.x = static_cast<float>(m_rect.left + sideWidth);
+    pVert[idx].pos.y = pVert[idx + 1].pos.y = static_cast<float>(m_rect.top);
+    pVert[idx + 2].pos.y = pVert[idx + 3].pos.y = static_cast<float>(m_rect.bottom);
     pVert[idx + 4].tu = pVert[idx + 6].tu = m_rectCenterTex.left;
     pVert[idx + 5].tu = pVert[idx + 7].tu = m_rectCenterTex.right;
     pVert[idx + 4].tv = pVert[idx + 5].tv = m_rectCenterTex.top;
     pVert[idx + 6].tv = pVert[idx + 7].tv = m_rectCenterTex.bottom;
-    pVert[idx + 4].pos.x = pVert[idx + 6].pos.x = float(m_rect.left + sideWidth);
-    pVert[idx + 5].pos.x = pVert[idx + 7].pos.x = float(m_rect.right - sideWidth);
-    pVert[idx + 4].pos.y = pVert[idx + 5].pos.y = (float)m_rect.top;
-    pVert[idx + 6].pos.y = pVert[idx + 7].pos.y = (float)m_rect.bottom;
+    pVert[idx + 4].pos.x = pVert[idx + 6].pos.x = static_cast<float>(m_rect.left + sideWidth);
+    pVert[idx + 5].pos.x = pVert[idx + 7].pos.x = static_cast<float>(m_rect.right - sideWidth);
+    pVert[idx + 4].pos.y = pVert[idx + 5].pos.y = static_cast<float>(m_rect.top);
+    pVert[idx + 6].pos.y = pVert[idx + 7].pos.y = static_cast<float>(m_rect.bottom);
     pVert[idx + 8].tu = pVert[idx + 10].tu = m_frRightTex.left;
     pVert[idx + 9].tu = pVert[idx + 11].tu = m_frRightTex.right;
     pVert[idx + 8].tv = pVert[idx + 9].tv = m_frRightTex.top;
     pVert[idx + 10].tv = pVert[idx + 11].tv = m_frRightTex.bottom;
-    pVert[idx + 8].pos.x = pVert[idx + 10].pos.x = float(m_rect.right - sideWidth) + m_fXDeltaPress;
-    pVert[idx + 9].pos.x = pVert[idx + 11].pos.x = (float)m_rect.right + m_fXDeltaPress;
-    pVert[idx + 8].pos.y = pVert[idx + 9].pos.y = (float)m_rect.top + m_fYDeltaPress;
-    pVert[idx + 10].pos.y = pVert[idx + 11].pos.y = (float)m_rect.bottom + m_fYDeltaPress;
+    pVert[idx + 8].pos.x = pVert[idx + 10].pos.x = static_cast<float>(m_rect.right - sideWidth) + m_fXDeltaPress;
+    pVert[idx + 9].pos.x = pVert[idx + 11].pos.x = static_cast<float>(m_rect.right) + m_fXDeltaPress;
+    pVert[idx + 8].pos.y = pVert[idx + 9].pos.y = static_cast<float>(m_rect.top) + m_fYDeltaPress;
+    pVert[idx + 10].pos.y = pVert[idx + 11].pos.y = static_cast<float>(m_rect.bottom) + m_fYDeltaPress;
     idx += 12;
     // fill shadow
     pVert[idx].tu = pVert[idx + 2].tu = m_frLeftTex.left;
     pVert[idx + 1].tu = pVert[idx + 3].tu = m_frLeftTex.right;
     pVert[idx].tv = pVert[idx + 1].tv = m_frLeftTex.top;
     pVert[idx + 2].tv = pVert[idx + 3].tv = m_frLeftTex.bottom;
-    pVert[idx].pos.x = pVert[idx + 2].pos.x = (float)m_rect.left + m_fXShadow;
-    pVert[idx + 1].pos.x = pVert[idx + 3].pos.x = float(m_rect.left + sideWidth) + m_fXShadow;
-    pVert[idx].pos.y = pVert[idx + 1].pos.y = (float)m_rect.top + m_fYShadow;
-    pVert[idx + 2].pos.y = pVert[idx + 3].pos.y = (float)m_rect.bottom + m_fYShadow;
+    pVert[idx].pos.x = pVert[idx + 2].pos.x = static_cast<float>(m_rect.left) + m_fXShadow;
+    pVert[idx + 1].pos.x = pVert[idx + 3].pos.x = static_cast<float>(m_rect.left + sideWidth) + m_fXShadow;
+    pVert[idx].pos.y = pVert[idx + 1].pos.y = static_cast<float>(m_rect.top) + m_fYShadow;
+    pVert[idx + 2].pos.y = pVert[idx + 3].pos.y = static_cast<float>(m_rect.bottom) + m_fYShadow;
     pVert[idx + 4].tu = pVert[idx + 6].tu = m_rectCenterTex.left;
     pVert[idx + 5].tu = pVert[idx + 7].tu = m_rectCenterTex.right;
     pVert[idx + 4].tv = pVert[idx + 5].tv = m_rectCenterTex.top;
     pVert[idx + 6].tv = pVert[idx + 7].tv = m_rectCenterTex.bottom;
-    pVert[idx + 4].pos.x = pVert[idx + 6].pos.x = float(m_rect.left + sideWidth) + m_fXShadow;
-    pVert[idx + 5].pos.x = pVert[idx + 7].pos.x = float(m_rect.right - sideWidth) + m_fXShadow;
-    pVert[idx + 4].pos.y = pVert[idx + 5].pos.y = (float)m_rect.top + m_fYShadow;
-    pVert[idx + 6].pos.y = pVert[idx + 7].pos.y = (float)m_rect.bottom + m_fYShadow;
+    pVert[idx + 4].pos.x = pVert[idx + 6].pos.x = static_cast<float>(m_rect.left + sideWidth) + m_fXShadow;
+    pVert[idx + 5].pos.x = pVert[idx + 7].pos.x = static_cast<float>(m_rect.right - sideWidth) + m_fXShadow;
+    pVert[idx + 4].pos.y = pVert[idx + 5].pos.y = static_cast<float>(m_rect.top) + m_fYShadow;
+    pVert[idx + 6].pos.y = pVert[idx + 7].pos.y = static_cast<float>(m_rect.bottom) + m_fYShadow;
     pVert[idx + 8].tu = pVert[idx + 10].tu = m_frRightTex.left;
     pVert[idx + 9].tu = pVert[idx + 11].tu = m_frRightTex.right;
     pVert[idx + 8].tv = pVert[idx + 9].tv = m_frRightTex.top;
     pVert[idx + 10].tv = pVert[idx + 11].tv = m_frRightTex.bottom;
-    pVert[idx + 8].pos.x = pVert[idx + 10].pos.x = float(m_rect.right - sideWidth) + m_fXDeltaPress + m_fXShadowPress;
-    pVert[idx + 9].pos.x = pVert[idx + 11].pos.x = (float)m_rect.right + m_fXDeltaPress + m_fXShadowPress;
-    pVert[idx + 8].pos.y = pVert[idx + 9].pos.y = (float)m_rect.top + m_fYDeltaPress + m_fYShadowPress;
-    pVert[idx + 10].pos.y = pVert[idx + 11].pos.y = (float)m_rect.bottom + m_fYDeltaPress + m_fYShadowPress;
+    pVert[idx + 8].pos.x = pVert[idx + 10].pos.x =
+        static_cast<float>(m_rect.right - sideWidth) + m_fXDeltaPress + m_fXShadowPress;
+    pVert[idx + 9].pos.x = pVert[idx + 11].pos.x = static_cast<float>(m_rect.right) + m_fXDeltaPress + m_fXShadowPress;
+    pVert[idx + 8].pos.y = pVert[idx + 9].pos.y = static_cast<float>(m_rect.top) + m_fYDeltaPress + m_fYShadowPress;
+    pVert[idx + 10].pos.y = pVert[idx + 11].pos.y =
+        static_cast<float>(m_rect.bottom) + m_fYDeltaPress + m_fYShadowPress;
     idx += 12;
 
     m_rs->UnLockVertexBuffer(m_idVBuf);
 }
 
-void CXI_SCROLLBAR::WriteDataToAttribute()
+void CXI_SCROLLBAR::WriteDataToAttribute() const
 {
-    ATTRIBUTES *pRoot = ptrOwner->AttributesPointer;
+    auto *pRoot = ptrOwner->AttributesPointer;
     if (!pRoot)
         return;
     ATTRIBUTES *pA = pRoot->GetAttributeClass(m_nodeName);

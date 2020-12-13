@@ -1,12 +1,11 @@
 #include "xi_questtitles.h"
-#include <stdio.h>
 
-void SubRightWord(char *buf, int fontNum, int width, VDX8RENDER *rs)
+void SubRightWord(char *buf, int fontNum, int width, VDX9RENDER *rs)
 {
-    if (buf == NULL)
+    if (buf == nullptr)
         return;
-    long bufSize = strlen(buf);
-    for (char *pEnd = buf + bufSize; pEnd > buf; pEnd--)
+    const long bufSize = strlen(buf);
+    for (auto *pEnd = buf + bufSize; pEnd > buf; pEnd--)
     {
         if (*pEnd == ' ')
         {
@@ -17,12 +16,12 @@ void SubRightWord(char *buf, int fontNum, int width, VDX8RENDER *rs)
     }
 }
 
-bool CXI_QUESTTITLE::GetLineNext(int fontNum, char *&pInStr, char *buf, int bufSize)
+bool CXI_QUESTTITLE::GetLineNext(int fontNum, char *&pInStr, char *buf, int bufSize) const
 {
-    if (pInStr == NULL || buf == NULL)
+    if (pInStr == nullptr || buf == nullptr)
         return false;
-    char *pStart = pInStr;
-    bool bYesEOL = false;
+    auto *const pStart = pInStr;
+    auto bYesEOL = false;
     while (*pInStr != 0)
     {
         if (*pInStr == 0x0D || *pInStr == 0x0A)
@@ -31,14 +30,14 @@ bool CXI_QUESTTITLE::GetLineNext(int fontNum, char *&pInStr, char *buf, int bufS
             break;
         pInStr++;
     }
-    long lineSize = (long)pInStr - (long)pStart;
+    const size_t lineSize = pInStr - pStart;
     if (lineSize == 0)
         return false;
 
-    strncpy(buf, pStart, lineSize);
+    strncpy_s(buf, bufSize, pStart, lineSize);
     buf[lineSize] = 0;
-    long strWidth = m_rs->StringWidth(buf, fontNum);
-    long needWidth = m_rect.right - m_rect.left - m_iconWidth;
+    const auto strWidth = m_rs->StringWidth(buf, fontNum);
+    const auto needWidth = m_rect.right - m_rect.left - m_iconWidth;
     if (strWidth <= needWidth)
         return true;
 
@@ -46,7 +45,7 @@ bool CXI_QUESTTITLE::GetLineNext(int fontNum, char *&pInStr, char *buf, int bufS
     pInStr = pStart + strlen(buf);
 
     // удалим начальные пробелы
-    while (*pInStr != 0 && (unsigned)*pInStr <= ' ')
+    while (*pInStr != 0 && static_cast<unsigned>(*pInStr) <= ' ')
         pInStr++;
 
     return true;
@@ -64,12 +63,12 @@ CXI_QUESTTITLE::CXI_QUESTTITLE()
     m_stringQuantity = 0;
     m_allStrings = 0;
 
-    m_strList = NULL;
+    m_strList = nullptr;
     m_curIdx = 0;
     m_selectOffset = 8;
     m_fontOffset = 4;
     m_bSelected = true;
-    m_iconGroupName = null;
+    m_iconGroupName = nullptr;
 
     m_nCommonQuantity = 0;
 }
@@ -79,14 +78,14 @@ CXI_QUESTTITLE::~CXI_QUESTTITLE()
     ReleaseAll();
 }
 
-void CXI_QUESTTITLE::Draw(bool bSelected, dword Delta_Time)
+void CXI_QUESTTITLE::Draw(bool bSelected, uint32_t Delta_Time)
 {
     int i, j;
     if (!m_bUse)
         return;
 
-    long curY = m_rect.top;
-    int lineNum = 0;
+    auto curY = m_rect.top;
+    auto lineNum = 0;
     for (i = 0; i < m_stringQuantity && lineNum < m_allStrings; i++)
     {
         // отобразить выделение
@@ -98,20 +97,20 @@ void CXI_QUESTTITLE::Draw(bool bSelected, dword Delta_Time)
                 selV[j].pos.z = 1.f;
                 selV[j].color = m_dwSelectRectangleColor;
             }
-            selV[0].pos.x = selV[1].pos.x = (float)m_rect.left - m_selectOffset;
-            selV[2].pos.x = selV[3].pos.x = (float)m_rect.right;
-            selV[0].pos.y = selV[2].pos.y = (float)curY;
-            selV[1].pos.y = selV[3].pos.y = (float)curY + m_strList[i].lineQuantity * m_vertOffset;
+            selV[0].pos.x = selV[1].pos.x = static_cast<float>(m_rect.left) - m_selectOffset;
+            selV[2].pos.x = selV[3].pos.x = static_cast<float>(m_rect.right);
+            selV[0].pos.y = selV[2].pos.y = static_cast<float>(curY);
+            selV[1].pos.y = selV[3].pos.y = static_cast<float>(curY) + m_strList[i].lineQuantity * m_vertOffset;
             m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_NOTEX_FVF, 2, selV, sizeof(XI_NOTEX_VERTEX), "iRectangle");
         }
 
         // отобразить иконку выполнения
         XI_ONLYONETEX_VERTEX v[4];
         v[0].pos.z = v[1].pos.z = v[2].pos.z = v[3].pos.z = 1.f;
-        v[0].pos.x = v[1].pos.x = (float)m_rect.right - m_iconWidth;
-        v[2].pos.x = v[3].pos.x = (float)m_rect.right;
-        v[0].pos.y = v[2].pos.y = (float)curY + m_iconVOffset;
-        v[1].pos.y = v[3].pos.y = (float)curY + m_iconVOffset + m_iconHeight;
+        v[0].pos.x = v[1].pos.x = static_cast<float>(m_rect.right) - m_iconWidth;
+        v[2].pos.x = v[3].pos.x = static_cast<float>(m_rect.right);
+        v[0].pos.y = v[2].pos.y = static_cast<float>(curY) + m_iconVOffset;
+        v[1].pos.y = v[3].pos.y = static_cast<float>(curY) + m_iconVOffset + m_iconHeight;
         if (m_strList[i].complete)
         {
             v[0].tu = v[1].tu = m_texComplete.left;
@@ -131,12 +130,12 @@ void CXI_QUESTTITLE::Draw(bool bSelected, dword Delta_Time)
                               "iDinamicPictures");
 
         // отобразить строки
-        DWORD curColor = m_strList[i].complete ? m_dwCompleteColor : m_dwNonCompleteColor;
+        auto curColor = m_strList[i].complete ? m_dwCompleteColor : m_dwNonCompleteColor;
         if (m_strList[i].dwSpecColor != 0)
             curColor = m_strList[i].dwSpecColor;
         for (j = 0; j < m_strList[i].lineQuantity; j++)
         {
-            m_rs->ExtPrint(m_idFont, curColor, 0, ALIGN_LEFT, true, 1.f, m_screenSize.x, m_screenSize.y, m_rect.left,
+            m_rs->ExtPrint(m_idFont, curColor, 0, PR_ALIGN_LEFT, true, 1.f, m_screenSize.x, m_screenSize.y, m_rect.left,
                            curY + m_fontOffset, "%s", m_strList[i].name[j]);
             curY += m_vertOffset;
             lineNum++;
@@ -146,8 +145,8 @@ void CXI_QUESTTITLE::Draw(bool bSelected, dword Delta_Time)
     }
 }
 
-bool CXI_QUESTTITLE::Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, VDX8RENDER *rs, XYRECT &hostRect,
-                          XYPOINT &ScreenSize)
+bool CXI_QUESTTITLE::Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs,
+                          XYRECT &hostRect, XYPOINT &ScreenSize)
 {
     if (!CINODE::Init(ini1, name1, ini2, name2, rs, hostRect, ScreenSize))
         return false;
@@ -158,12 +157,12 @@ bool CXI_QUESTTITLE::Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2
 void CXI_QUESTTITLE::ReleaseAll()
 {
     FONT_RELEASE(m_rs, m_idFont);
-    if (m_strList != NULL)
-        for (int i = 0; i < m_stringQuantity; i++)
-            for (int j = 0; j < m_strList[i].lineQuantity; j++)
-                PTR_DELETE(m_strList[i].name[j]);
-    PTR_DELETE(m_strList);
-    PTR_DELETE(m_iconGroupName);
+    if (m_strList != nullptr)
+        for (auto i = 0; i < m_stringQuantity; i++)
+            for (auto j = 0; j < m_strList[i].lineQuantity; j++)
+                STORM_DELETE(m_strList[i].name[j]);
+    STORM_DELETE(m_strList);
+    STORM_DELETE(m_iconGroupName);
     m_stringQuantity = 0;
 }
 
@@ -209,14 +208,15 @@ bool CXI_QUESTTITLE::IsClick(int buttonID, long xPos, long yPos)
 
     long top, bottom;
     top = m_rect.top;
-    for (int i = 0; i < m_stringQuantity; i++)
+    for (auto i = 0; i < m_stringQuantity; i++)
     {
         bottom = top + m_strList[i].lineQuantity * m_vertOffset;
         if (i == m_curIdx)
+        {
             if (yPos >= top && yPos <= bottom)
                 return true;
-            else
-                return false;
+            return false;
+        }
         top = bottom;
     }
     return false;
@@ -231,21 +231,21 @@ void CXI_QUESTTITLE::SaveParametersToIni()
 {
     char pcWriteParam[2048];
 
-    INIFILE *pIni = api->fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.GetBuffer());
+    auto *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
-        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.GetBuffer());
+        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
         return;
     }
 
     // save position
-    _snprintf(pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rect.left, m_rect.top, m_rect.right, m_rect.bottom);
+    sprintf_s(pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rect.left, m_rect.top, m_rect.right, m_rect.bottom);
     pIni->WriteString(m_nodeName, "position", pcWriteParam);
 
     delete pIni;
 }
 
-void CXI_QUESTTITLE::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2)
+void CXI_QUESTTITLE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2)
 {
     char param[255];
 
@@ -277,15 +277,16 @@ void CXI_QUESTTITLE::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *na
     m_iconVOffset = m_vertOffset / 2 - m_iconHeight / 2;
     if (ReadIniString(ini1, name1, ini2, name2, "iconGroup", param, sizeof(param), ""))
     {
-        m_iconGroupName = NEW char[strlen(param) + 1];
-        if (m_iconGroupName == null)
+        const auto len = strlen(param) + 1;
+        m_iconGroupName = new char[len];
+        if (m_iconGroupName == nullptr)
         {
-            SE_THROW_MSG("allocate memory error");
+            throw std::exception("allocate memory error");
         }
-        strcpy(m_iconGroupName, param);
+        memcpy(m_iconGroupName, param, len);
     }
     else
-        m_iconGroupName = null;
+        m_iconGroupName = nullptr;
     m_texId = ptrOwner->PictureService()->GetTextureID(m_iconGroupName);
 
     if (ReadIniString(ini1, name1, ini2, name2, "completeIcon", param, sizeof(param), ""))
@@ -314,18 +315,18 @@ void CXI_QUESTTITLE::SetNewTopQuest(ATTRIBUTES *pA, int topNum)
     int i;
     m_nCommonQuantity = 0;
     // удалим старые строки
-    if (m_strList != NULL)
+    if (m_strList != nullptr)
     {
         for (i = 0; i < m_stringQuantity; i++)
-            for (int j = 0; j < m_strList[i].lineQuantity; j++)
-                PTR_DELETE(m_strList[i].name[j]);
-        PTR_DELETE(m_strList);
+            for (auto j = 0; j < m_strList[i].lineQuantity; j++)
+                STORM_DELETE(m_strList[i].name[j]);
+        STORM_DELETE(m_strList);
         m_stringQuantity = 0;
     } // boal перенес наверх, иначе не трется, если квестов нет, а были уже
 
-    if (pA == NULL)
+    if (pA == nullptr)
         return;
-    long aq = pA->GetAttributesNum();
+    const long aq = pA->GetAttributesNum();
     if (topNum < 0 || topNum >= aq)
     {
         api->Trace("quest number out of range");
@@ -348,18 +349,18 @@ void CXI_QUESTTITLE::SetNewTopQuest(ATTRIBUTES *pA, int topNum)
         // создание массива строк
         if (m_stringQuantity <= 0)
             return;
-        if ((m_strList = NEW STRING_DESCRIBER[m_stringQuantity]) == NULL)
+        if ((m_strList = new STRING_DESCRIBER[m_stringQuantity]) == nullptr)
         {
-            SE_THROW_MSG("allocate memory error");
+            throw std::exception("allocate memory error");
         }
         // и заполнение этих строк
-        int lineNum = 0;
+        auto lineNum = 0;
         for (i = 0; i < m_stringQuantity; i++)
         {
             m_strList[i].lineQuantity = 0;
             m_strList[i].dwSpecColor = 0;
-            ATTRIBUTES *pAttr = pA->GetAttributeClass(topNum + i);
-            if (pAttr == NULL)
+            auto *pAttr = pA->GetAttributeClass(topNum + i);
+            if (pAttr == nullptr)
             {
                 m_strList[i].complete = false;
                 m_strList[i].lineQuantity = 0;
@@ -367,24 +368,25 @@ void CXI_QUESTTITLE::SetNewTopQuest(ATTRIBUTES *pA, int topNum)
             }
             m_strList[i].dwSpecColor = pAttr->GetAttributeAsDword("color", 0);
             m_strList[i].complete = pAttr->GetAttributeAsDword("Complete", 0) != 0;
-            char *pTmpQuestRecordID = pAttr->GetAttribute("LogName");
+            const char *pTmpQuestRecordID = pAttr->GetAttribute("LogName");
             if (!pTmpQuestRecordID)
                 pTmpQuestRecordID = pAttr->GetThisName();
             if (ptrOwner->QuestFileReader()->GetQuestTitle(pTmpQuestRecordID, pAttr->GetThisName(), sizeof(param) - 1,
                                                            param))
             {
-                int titleSize = strlen(param);
+                const int titleSize = strlen(param);
                 if (titleSize == 0)
                     m_strList[i].lineQuantity = 0;
                 else
                 {
                     char lineName[sizeof(param)];
-                    char *pstr = param;
+                    auto *pstr = param;
                     int ln = 0;
                     while (GetLineNext(m_idFont, pstr, lineName, sizeof(lineName)))
                     {
-                        m_strList[i].name[ln] = NEW char[strlen(lineName) + 1];
-                        strcpy(m_strList[i].name[ln], lineName);
+                        const auto len = strlen(lineName) + 1;
+                        m_strList[i].name[ln] = new char[len];
+                        memcpy(m_strList[i].name[ln], lineName, len);
                         ln++;
                     }
                     m_strList[i].lineQuantity = ln;
@@ -399,11 +401,11 @@ void CXI_QUESTTITLE::SetNewTopQuest(ATTRIBUTES *pA, int topNum)
     }
 }
 
-float CXI_QUESTTITLE::GetLineStep()
+float CXI_QUESTTITLE::GetLineStep() const
 {
     if (m_nCommonQuantity <= 0)
         return 0.f;
-    return 1.f / (float)m_nCommonQuantity;
+    return 1.f / static_cast<float>(m_nCommonQuantity);
 }
 
 void CXI_QUESTTITLE::ScrollerChanged(float fPos)
@@ -412,13 +414,13 @@ void CXI_QUESTTITLE::ScrollerChanged(float fPos)
 
 void CXI_QUESTTITLE::MouseThis(float fX, float fY)
 {
-    float left = (float)m_rect.left - m_selectOffset;
-    float right = (float)m_rect.right;
+    const float left = static_cast<float>(m_rect.left) - m_selectOffset;
+    const auto right = static_cast<float>(m_rect.right);
     if (fX < left || fX > right)
         return;
 
     float top, bottom;
-    top = (float)m_rect.top;
+    top = static_cast<float>(m_rect.top);
     for (int i = 0; i < m_stringQuantity; i++)
     {
         bottom = top + m_strList[i].lineQuantity * m_vertOffset;

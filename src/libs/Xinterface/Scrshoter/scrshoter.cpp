@@ -1,14 +1,13 @@
 #include "scrshoter.h"
-#include "..\xi_defines.h"
-#include "..\xi_messages.h"
+#include "../xdefines.h"
 
 #define SS_TEXTURE_WIDTH 128
 #define SS_TEXTURE_HEIGHT 128
 #define SS_TEXTURE_FONECOLOR 0xFF000000
 
-DWORD GetA8R8G8B8_FromFMT(void *p, DWORD fmt)
+uint32_t GetA8R8G8B8_FromFMT(void *p, uint32_t fmt)
 {
-    DWORD retVal;
+    uint32_t retVal;
 
 #ifdef _XBOX
     if (fmt == D3DFMT_R5G6B5 || fmt == D3DFMT_LIN_R5G6B5)
@@ -16,12 +15,13 @@ DWORD GetA8R8G8B8_FromFMT(void *p, DWORD fmt)
     if (fmt == D3DFMT_R5G6B5)
 #endif
     {
-        retVal = 0xFF000000 | (((DWORD)(*(WORD *)(p)&0xF800)) << 8) | (((DWORD)(*(WORD *)(p)&0x7E0)) << 5) |
-                 (((DWORD)(*(WORD *)(p)&0x1F)) << 3);
+        retVal = 0xFF000000 | (static_cast<uint32_t>(*static_cast<uint16_t *>(p) & 0xF800) << 8) |
+                 (static_cast<uint32_t>(*static_cast<uint16_t *>(p) & 0x7E0) << 5) |
+                 (static_cast<uint32_t>(*static_cast<uint16_t *>(p) & 0x1F) << 3);
     }
     else
     {
-        retVal = 0xFF000000 | (*(DWORD *)(p));
+        retVal = 0xFF000000 | (*static_cast<uint32_t *>(p));
     }
 
     return retVal;
@@ -29,23 +29,22 @@ DWORD GetA8R8G8B8_FromFMT(void *p, DWORD fmt)
 
 SCRSHOTER::SCRSHOTER()
 {
-    m_pScrShotTex = null;
-    m_list = null;
+    m_pScrShotTex = nullptr;
+    m_list = nullptr;
 }
 
 SCRSHOTER::~SCRSHOTER()
 {
-    if (m_pScrShotTex != null && rs != null)
+    if (m_pScrShotTex != nullptr && rs != nullptr)
         rs->Release(m_pScrShotTex);
-    m_pScrShotTex = null;
+    m_pScrShotTex = nullptr;
     SAVETEXTURES *pst;
     while (m_list)
     {
         pst = m_list;
         m_list = pst->next;
-        if (pst->fileName != null)
-            delete pst->fileName;
-        if (pst->m_pTex != null && rs != null)
+        delete pst->fileName;
+        if (pst->m_pTex != nullptr && rs != nullptr)
             rs->Release(pst->m_pTex);
         delete pst;
     }
@@ -53,38 +52,34 @@ SCRSHOTER::~SCRSHOTER()
 
 bool SCRSHOTER::Init()
 {
-    GUARD(SCRSHOTER::Init())
+    // GUARD(SCRSHOTER::Init())
     SetDevice();
-    UNGUARD
+    // UNGUARD
     return true;
 }
 
 void SCRSHOTER::SetDevice()
 {
     // получить сервис рендера
-    rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
+    rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
     if (!rs)
-    {
-        SE_THROW_MSG("No service: dx8render")
-    }
+        throw std::exception("No service: dx9render");
 }
 
-void SCRSHOTER::Execute(dword Delta_Time)
+void SCRSHOTER::Execute(uint32_t Delta_Time)
 {
 }
 
-void SCRSHOTER::Realize(dword Delta_Time)
+void SCRSHOTER::Realize(uint32_t Delta_Time)
 {
-    if (m_pScrShotTex == null)
-    {
+    if (m_pScrShotTex == nullptr)
         if (!MakeScreenShot())
         {
             api->Trace("ERROR!!! screen shot create error");
-            api->Event("makescrshot", 0);
+            api->Event("makescrshot", nullptr);
         }
         else
-            api->Event("makescrshot", 0);
-    }
+            api->Event("makescrshot", nullptr);
 }
 
 bool SCRSHOTER::MakeScreenShot()
@@ -92,7 +87,7 @@ bool SCRSHOTER::MakeScreenShot()
     int n;
     D3DLOCKED_RECT inRect, outRect;
 
-    HRESULT hr = D3D_OK;
+    auto hr = D3D_OK;
 
     // Заставим видео карту отрисовать все незакоченные задания
     hr = rs->EndScene();
@@ -109,48 +104,42 @@ bool SCRSHOTER::MakeScreenShot()
     }
 
     // удалим старый скрин шот
-    if (m_pScrShotTex != null && rs != null)
+    if (m_pScrShotTex != nullptr && rs != nullptr)
         rs->Release(m_pScrShotTex);
-    m_pScrShotTex = null;
+    m_pScrShotTex = nullptr;
 
     // получим данные о старой поверхности рендера
     D3DSURFACE_DESC desc;
-
-    IDirect3DSurface9 *pOldRenderTarg = null;
+    IDirect3DSurface9 *pOldRenderTarg = nullptr;
     if (hr == D3D_OK)
         hr = rs->GetRenderTarget(&pOldRenderTarg);
     if (hr == D3D_OK)
         hr = pOldRenderTarg->GetDesc(&desc);
 
     // получим копию рендер буфера
-    IDirect3DSurface9 *pRenderTarg = null;
+    IDirect3DSurface9 *pRenderTarg = nullptr;
     if (hr == D3D_OK)
-        hr = rs->CreateImageSurface(desc.Width, desc.Height, desc.Format, &pRenderTarg);
+        hr = rs->CreateOffscreenPlainSurface(desc.Width, desc.Height, desc.Format, &pRenderTarg);
     if (hr == D3D_OK)
         hr = rs->GetRenderTargetData(pOldRenderTarg, pRenderTarg);
-
-    if (pOldRenderTarg != null)
+    if (pOldRenderTarg != nullptr)
         pOldRenderTarg->Release();
 
     // создадим новый скрин шот
-    // if( hr==D3D_OK) hr =
-    // rs->CreateTexture(SS_TEXTURE_WIDTH,SS_TEXTURE_HEIGHT,1,0,D3DFMT_A8R8G8B8,D3DPOOL_SYSTEMMEM,&m_pScrShotTex); if(
-    // hr==D3D_OK) hr =
-    // rs->CreateTexture(SS_TEXTURE_WIDTH,SS_TEXTURE_HEIGHT,1,0,D3DFMT_A8R8G8B8,D3DPOOL_MANAGED,&m_pScrShotTex);
     if (hr == D3D_OK)
-        hr = rs->CreateTexture(SS_TEXTURE_WIDTH, SS_TEXTURE_HEIGHT, 1, D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8,
-                               D3DPOOL_DEFAULT, &m_pScrShotTex);
+        hr = rs->CreateTexture(SS_TEXTURE_WIDTH, SS_TEXTURE_HEIGHT, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED,
+                               &m_pScrShotTex); //~!~
 
     // получим буфер для копии поверхности рендеринга
-    void *pIn = null;
+    void *pIn = nullptr;
     if (hr == D3D_OK)
-        hr = pRenderTarg->LockRect(&inRect, null, 0);
+        hr = pRenderTarg->LockRect(&inRect, nullptr, 0);
     if (hr == D3D_OK)
         pIn = inRect.pBits;
     // получим буфер для текстуры
-    void *pOut = null;
+    void *pOut = nullptr;
     if (hr == D3D_OK)
-        hr = m_pScrShotTex->LockRect(0, &outRect, null, 0);
+        hr = m_pScrShotTex->LockRect(0, &outRect, nullptr, 0);
     if (hr == D3D_OK)
         pOut = outRect.pBits;
 
@@ -158,14 +147,14 @@ bool SCRSHOTER::MakeScreenShot()
     if (hr == D3D_OK)
     {
         // Создать набор отступов по ординатам
-        int *pHorzOff = NEW int[SS_TEXTURE_WIDTH];
-        int *pVertOff = NEW int[SS_TEXTURE_HEIGHT];
+        auto *const pHorzOff = new int[SS_TEXTURE_WIDTH];
+        auto *const pVertOff = new int[SS_TEXTURE_HEIGHT];
         if (!pHorzOff || !pVertOff)
         {
-            SE_THROW_MSG("allocate memory error");
+            throw std::exception("allocate memory error");
         }
         int nHorzSize, nVertSize;
-        if ((float)desc.Width / desc.Height < (float)SS_TEXTURE_WIDTH / SS_TEXTURE_HEIGHT)
+        if (static_cast<float>(desc.Width) / desc.Height < static_cast<float>(SS_TEXTURE_WIDTH) / SS_TEXTURE_HEIGHT)
         {
             nHorzSize = desc.Width;
             nVertSize = desc.Width * SS_TEXTURE_HEIGHT / SS_TEXTURE_WIDTH;
@@ -185,29 +174,29 @@ bool SCRSHOTER::MakeScreenShot()
         int vi, hi;
         for (vi = 0; vi < SS_TEXTURE_HEIGHT; vi++)
         {
-            BYTE *pInPxl = (BYTE *)pIn + inRect.Pitch * pVertOff[vi];
-            DWORD *pOutPxl = (DWORD *)((BYTE *)pOut + outRect.Pitch * vi);
+            auto *const pInPxl = static_cast<uint8_t *>(pIn) + inRect.Pitch * pVertOff[vi];
+            auto *pOutPxl = (uint32_t *)(static_cast<uint8_t *>(pOut) + outRect.Pitch * vi);
             for (hi = 0; hi < SS_TEXTURE_WIDTH; hi++)
             {
                 pOutPxl[hi] = GetA8R8G8B8_FromFMT(&pInPxl[pHorzOff[hi]], desc.Format);
             }
         }
 
-        delete pHorzOff;
-        delete pVertOff;
+        delete[] pHorzOff;
+        delete[] pVertOff;
     }
 
     // закрываем открытые буфера
-    if (pIn != null)
+    if (pIn != nullptr)
         pRenderTarg->UnlockRect();
 
 #ifdef _XBOX
     // Делаем перевод в смешанную текстуру
-    DWORD dwTmp = outRect.Pitch * SS_TEXTURE_HEIGHT;
+    uint32_t dwTmp = outRect.Pitch * SS_TEXTURE_HEIGHT;
     // DWORD dwPixelSize = XGBytesPerPixelFromFormat( D3DFMT_A8R8G8B8 );
-    if ((pIn = NEW char[dwTmp]) == null)
+    if ((pIn = new char[dwTmp]) == null)
     {
-        SE_THROW_MSG("allocate memory error")
+        throw std::exception("allocate memory error")
     }
     memcpy(pIn, outRect.pBits, dwTmp);
     XGSwizzleRect(pIn, 0, NULL, outRect.pBits, SS_TEXTURE_WIDTH, SS_TEXTURE_HEIGHT, NULL,
@@ -216,32 +205,29 @@ bool SCRSHOTER::MakeScreenShot()
 #endif
 
     // закрываем открытые буфера
-    if (pOut != null)
+    if (pOut != nullptr)
         m_pScrShotTex->UnlockRect(0);
 
     // Удалим ненужную уже копию экрана
-    if (pRenderTarg != null)
+    if (pRenderTarg != nullptr)
         pRenderTarg->Release();
 
     // Наложим на шот текстуру с рамкой
-    int nTextureID = rs->TextureCreate("interfaces\\EmptyBorder.tga");
+    const int nTextureID = rs->TextureCreate("interfaces\\EmptyBorder.tga");
     if (nTextureID >= 0)
     {
-        IDirect3DTexture9 *pScrShotTex = null;
-
+        IDirect3DTexture9 *pScrShotTex = nullptr;
         if (D3D_OK == rs->CreateTexture(SS_TEXTURE_WIDTH, SS_TEXTURE_HEIGHT, 1, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8,
                                         D3DPOOL_DEFAULT, &pScrShotTex))
-        // if( D3D_OK ==
-        // rs->CreateTexture(SS_TEXTURE_WIDTH,SS_TEXTURE_HEIGHT,1,0,D3DFMT_A8R8G8B8,D3DPOOL_SYSTEMMEM,&pScrShotTex) )
         {
-            DWORD BI_SCRSHOTER_VERTEX_FORMAT = (D3DFVF_XYZRHW | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2);
+            const uint32_t BI_SCRSHOTER_VERTEX_FORMAT = (D3DFVF_XYZRHW | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2);
             struct BI_SCRSHOTER_VERTEX
             {
                 CVECTOR pos;
                 float w;
                 float tu, tv;
             } vert[4];
-            for (int i = 0; i < 4; i++)
+            for (auto i = 0; i < 4; i++)
             {
                 vert[i].pos.z = 1.f;
                 vert[i].w = 0.5f;
@@ -255,14 +241,14 @@ bool SCRSHOTER::MakeScreenShot()
             vert[3].tu = vert[2].tu = 1.f;
             vert[3].tv = vert[1].tv = 1.f;
 
-            pOldRenderTarg = null;
-            pRenderTarg = null;
+            pOldRenderTarg = nullptr;
+            pRenderTarg = nullptr;
             if (rs->GetRenderTarget(&pOldRenderTarg) == S_OK)
             {
-                IDirect3DSurface9 *pStencil = null;
+                IDirect3DSurface9 *pStencil = nullptr;
                 rs->GetDepthStencilSurface(&pStencil);
                 pScrShotTex->GetSurfaceLevel(0, &pRenderTarg);
-                if (rs->SetRenderTarget(pRenderTarg, NULL) == S_OK)
+                if (rs->SetRenderTarget(pRenderTarg, nullptr) == S_OK)
                 {
                     rs->SetTexture(0, m_pScrShotTex);
                     rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, BI_SCRSHOTER_VERTEX_FORMAT, 2, vert,
@@ -279,40 +265,30 @@ bool SCRSHOTER::MakeScreenShot()
                 if (pOldRenderTarg)
                     pOldRenderTarg->Release();
             }
-            IDirect3DSurface9 *pSurf1 = null, *pSurf2 = null;
-
-            bool bOk1 = (rs->GetSurfaceLevel(m_pScrShotTex, 0, &pSurf1) == D3D_OK);
-            bool bOk2 = (rs->GetSurfaceLevel(pScrShotTex, 0, &pSurf2) == D3D_OK);
-
-            if (bOk1 && bOk2)
-            {
-                hr = rs->CopyRects(pSurf1, null, 0, pSurf2, null);
-                // hr = rs->UpdateSurface(pSurf1,null,pSurf2,null);
-            }
-
+            IDirect3DSurface9 *pSurf1 = nullptr, *pSurf2 = nullptr;
+            rs->GetSurfaceLevel(m_pScrShotTex, 0, &pSurf1);
+            rs->GetSurfaceLevel(pScrShotTex, 0, &pSurf2);
+            // rs->UpdateSurface(pSurf2,null,0,pSurf1,null);
+            hr = D3DXLoadSurfaceFromSurface(pSurf1, nullptr, nullptr, pSurf2, nullptr, nullptr, D3DX_DEFAULT, 0);
             if (pSurf1)
                 rs->Release(pSurf1);
             if (pSurf2)
                 rs->Release(pSurf2);
-
-            if (pScrShotTex != null && rs != null)
-            {
-                rs->Release(pScrShotTex);
-            }
-            pScrShotTex = null;
+            rs->Release(pScrShotTex);
         }
+
         rs->TextureRelease(nTextureID);
     }
 
     return hr == D3D_OK;
 }
 
-dword _cdecl SCRSHOTER::ProcessMessage(MESSAGE &message)
+uint64_t SCRSHOTER::ProcessMessage(MESSAGE &message)
 {
     switch (message.Long())
     {
     case MSG_SCRSHOT_MAKE:
-        return (dword)m_pScrShotTex;
+        return (uintptr_t)m_pScrShotTex;
         break;
     case MSG_SCRSHOT_READ: {
         char param[512], param2[256];
@@ -322,14 +298,14 @@ dword _cdecl SCRSHOTER::ProcessMessage(MESSAGE &message)
         message.String(sizeof(param2) - 1, param2);
         pvdat = message.ScriptVariablePointer();
 
-        IDirect3DTexture9 *pRetTex = AddSaveTexture(param, param2);
-        char *strDat = FindSaveData(param2);
+        auto *pRetTex = AddSaveTexture(param, param2);
+        auto *const strDat = FindSaveData(param2);
         if (pvdat)
             if (!strDat)
                 pvdat->Set("\0");
             else
                 pvdat->Set(strDat);
-        return (dword)pRetTex;
+        return (uintptr_t)pRetTex;
     }
     break;
     case MSG_SCRSHOT_RELEASE: {
@@ -342,60 +318,63 @@ dword _cdecl SCRSHOTER::ProcessMessage(MESSAGE &message)
     return 0;
 }
 
-IDirect3DTexture9 *SCRSHOTER::FindSaveTexture(char *fileName)
+IDirect3DTexture9 *SCRSHOTER::FindSaveTexture(char *fileName) const
 {
     if (!fileName)
-        return null;
-    SAVETEXTURES *ps = m_list;
+        return nullptr;
+    auto *ps = m_list;
     while (ps)
-        if (ps->fileName && stricmp(fileName, ps->fileName) == 0)
+    {
+        if (ps->fileName && _stricmp(fileName, ps->fileName) == 0)
             return ps->m_pTex;
-        else
-            ps = ps->next;
-    return null;
+        ps = ps->next;
+    }
+    return nullptr;
 }
 
-char *SCRSHOTER::FindSaveData(char *fileName)
+char *SCRSHOTER::FindSaveData(char *fileName) const
 {
     if (!fileName)
-        return null;
+        return nullptr;
     SAVETEXTURES *ps = m_list;
     while (ps)
-        if (ps->fileName && stricmp(fileName, ps->fileName) == 0)
+    {
+        if (ps->fileName && _stricmp(fileName, ps->fileName) == 0)
             return ps->dataString;
-        else
-            ps = ps->next;
-    return null;
+        ps = ps->next;
+    }
+    return nullptr;
 }
 
 IDirect3DTexture9 *SCRSHOTER::AddSaveTexture(char *dirName, char *fileName)
 {
-    if (fileName == null)
-        return null;
+    if (fileName == nullptr)
+        return nullptr;
     IDirect3DTexture9 *rval = FindSaveTexture(fileName);
     if (rval)
         return rval;
-    if (stricmp(fileName, "newsave") == 0)
+    if (_stricmp(fileName, "newsave") == 0)
         return m_pScrShotTex;
-    SAVETEXTURES *ps = NEW SAVETEXTURES;
-    if (ps == null)
+    auto *ps = new SAVETEXTURES;
+    if (ps == nullptr)
     {
-        SE_THROW_MSG("Allocate memory error");
+        throw std::exception("Allocate memory error");
     }
-    ps->dataString = null;
+    ps->dataString = nullptr;
     ps->next = m_list;
     m_list = ps;
-    m_list->fileName = NEW char[strlen(fileName) + 1];
-    if (m_list->fileName == null)
+    const auto len = strlen(fileName) + 1;
+    m_list->fileName = new char[len];
+    if (m_list->fileName == nullptr)
     {
-        SE_THROW_MSG("Allocate memory error");
+        throw std::exception("Allocate memory error");
     }
-    strcpy(m_list->fileName, fileName);
+    memcpy(m_list->fileName, fileName, len);
     char param[1024];
-    if (dirName == null || dirName[0] == 0)
-        sprintf(param, "%s", fileName);
+    if (dirName == nullptr || dirName[0] == 0)
+        sprintf_s(param, "%s", fileName);
     else
-        sprintf(param, "%s\\%s", dirName, fileName);
+        sprintf_s(param, "%s\\%s", dirName, fileName);
     m_list->m_pTex = GetTexFromSave(param, &ps->dataString);
     return m_list->m_pTex;
 }
@@ -404,44 +383,41 @@ void SCRSHOTER::DelSaveTexture(char *fileName)
 {
     if (!fileName)
         return;
-    SAVETEXTURES *oldps = null;
+    SAVETEXTURES *oldps = nullptr;
     SAVETEXTURES *ps = m_list;
     while (ps)
-        if (ps->fileName && stricmp(fileName, ps->fileName) == 0)
+    {
+        if (ps->fileName && _stricmp(fileName, ps->fileName) == 0)
         {
             if (oldps)
                 oldps->next = ps->next;
             else
                 m_list = ps->next;
-            if (ps->fileName != null)
-                delete ps->fileName;
-            if (ps->dataString != null)
-                delete ps->dataString;
-            if (ps->m_pTex != null && rs != null)
+            delete ps->fileName;
+            delete ps->dataString;
+            if (ps->m_pTex != nullptr && rs != nullptr)
                 rs->Release(ps->m_pTex);
             delete ps;
             return;
         }
-        else
-        {
-            oldps = ps;
-            ps = ps->next;
-        }
+        oldps = ps;
+        ps = ps->next;
+    }
 }
 
-IDirect3DTexture9 *SCRSHOTER::GetTexFromSave(char *fileName, char **pDatStr)
+IDirect3DTexture9 *SCRSHOTER::GetTexFromSave(char *fileName, char **pDatStr) const
 {
     HRESULT hr = D3D_OK;
     D3DLOCKED_RECT outRect;
-    IDirect3DTexture9 *pt = null;
-    *pDatStr = 0;
+    IDirect3DTexture9 *pt = nullptr;
+    *pDatStr = nullptr; //~!~
 
     long datSize = 0;
-    char *pdat = null;
-    pdat = (char *)api->GetSaveData(fileName, datSize);
+    char *pdat = nullptr;
+    pdat = static_cast<char *>(api->GetSaveData(fileName, datSize));
     long startIdx = 0;
     long texSize = 0;
-    if (pdat != null && datSize > sizeof(SAVE_DATA_HANDLE))
+    if (pdat != nullptr && datSize > sizeof(SAVE_DATA_HANDLE))
     {
         startIdx = ((SAVE_DATA_HANDLE *)pdat)->StringDataSize + sizeof(SAVE_DATA_HANDLE);
         texSize = ((SAVE_DATA_HANDLE *)pdat)->SurfaceDataSize;
@@ -451,7 +427,7 @@ IDirect3DTexture9 *SCRSHOTER::GetTexFromSave(char *fileName, char **pDatStr)
     {
         hr = rs->CreateTexture(SS_TEXTURE_WIDTH, SS_TEXTURE_HEIGHT, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pt);
         if (hr == D3D_OK)
-            hr = pt->LockRect(0, &outRect, null, 0);
+            hr = pt->LockRect(0, &outRect, nullptr, 0);
         if (hr == D3D_OK)
         {
             memcpy(outRect.pBits, &pdat[startIdx], texSize);
@@ -459,49 +435,34 @@ IDirect3DTexture9 *SCRSHOTER::GetTexFromSave(char *fileName, char **pDatStr)
         }
         if (pDatStr)
         {
-            int strLen = startIdx - sizeof(SAVE_DATA_HANDLE);
-            *pDatStr = NEW char[strLen + 1];
+            const int strLen = startIdx - sizeof(SAVE_DATA_HANDLE);
+            *pDatStr = new char[strLen + 1];
             if (!*pDatStr)
             {
-                SE_THROW_MSG("allocate memory error");
+                throw std::exception("allocate memory error");
             }
-            strncpy(*pDatStr, &pdat[sizeof(SAVE_DATA_HANDLE)], strLen);
+            strncpy_s(*pDatStr, strLen + 1, &pdat[sizeof(SAVE_DATA_HANDLE)], strLen);
             (*pDatStr)[strLen] = 0;
         }
     }
     /*	else
-        {
-            int idx=0;
-            for(int i=0; i<SS_TEXTURE_HEIGHT; i++)
-                for(int j=0; j<SS_TEXTURE_WIDTH; j++)
-                {
-                    ((DWORD*)outRect.pBits)[idx] = 0xFF000000;
-                    idx++;
-                }
-        }
-    */
-    PTR_DELETE(pdat);
+      {
+        int idx=0;
+        for(int i=0; i<SS_TEXTURE_HEIGHT; i++)
+          for(int j=0; j<SS_TEXTURE_WIDTH; j++)
+          {
+            ((DWORD*)outRect.pBits)[idx] = 0xFF000000;
+            idx++;
+          }
+      }*/
+    delete pdat;
 
     if (hr == D3D_OK)
         return pt;
     if (*pDatStr)
         delete (*pDatStr);
-    *pDatStr = 0;
+    *pDatStr = nullptr;
     if (pt && rs)
         rs->Release(pt);
-    return null;
-}
-
-void SCRSHOTER::LostRender()
-{
-    if (m_pScrShotTex != null && rs != null)
-    {
-        rs->Release(m_pScrShotTex);
-        m_pScrShotTex = null;
-    }
-}
-
-void SCRSHOTER::RestoreRender()
-{
-    // rs->CreateTexture(SS_TEXTURE_WIDTH,SS_TEXTURE_HEIGHT,1,D3DUSAGE_DYNAMIC,D3DFMT_A8R8G8B8,D3DPOOL_DEFAULT,&m_pScrShotTex);
+    return nullptr;
 }

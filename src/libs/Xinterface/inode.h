@@ -1,12 +1,12 @@
 #ifndef _INODE_H
 #define _INODE_H
 
-#include "dx8render.h"
-#include "nodes\xi_tooltips.h"
-#include "nodes\xi_util.h"
-#include "templates\string.h"
+#include "Nodes/xi_tooltips.h"
+#include "VideoTexture.h"
+#include "defines.h"
+#include "dx9render.h"
 #include "vmodule_api.h"
-#include "xi_defines.h"
+#include "vxservice.h"
 
 class CXI_ToolTip;
 
@@ -77,17 +77,17 @@ class CXI_ToolTip;
 
 class CINODE;
 
-class XINTERFACE_BASE : public ENTITY
+class XINTERFACE_BASE : public Entity
 {
   public:
     virtual QUEST_FILE_READER *QuestFileReader() = 0;
     virtual VXSERVICE *PictureService() = 0;
     virtual VSTRSERVICE *StringService() = 0;
-    virtual VDX8RENDER *RenderService() = 0;
+    virtual VDX9RENDER *RenderService() = 0;
     virtual void *GetCurrentNode() = 0;
     virtual FXYPOINT GetMousePoint() = 0;
-    virtual long PrintIntoWindow(long wl, long wr, long idFont, DWORD dwFCol, DWORD dwBCol, long align, bool shadow,
-                                 float scale, long sxs, long sys, long left, long top, char *str,
+    virtual long PrintIntoWindow(long wl, long wr, long idFont, uint32_t dwFCol, uint32_t dwBCol, long align,
+                                 bool shadow, float scale, long sxs, long sys, long left, long top, char *str,
                                  int nWidthForScaleCorrecting = -1, int nSplit = 0) = 0;
 
     virtual CINODE *FindNode(const char *sNodeName, CINODE *findRoot) = 0;
@@ -98,9 +98,9 @@ class XINTERFACE_BASE : public ENTITY
     virtual void RegistryExitKey(const char *pcKeyName) = 0;
 
     // blind
-    dword GetBlendColor(dword minCol, dword maxCol, float fFactor);
+    uint32_t GetBlendColor(uint32_t minCol, uint32_t maxCol, float fFactor);
 
-    string m_sDialogFileName;
+    std::string m_sDialogFileName;
 };
 
 class CINODE
@@ -121,16 +121,19 @@ class CINODE
         // CINODE *			pControl;
         int command;
         COMMAND_REDIRECT *next;
+
         COMMAND_REDIRECT()
         {
-            sControlName = 0;
-            next = 0;
+            sControlName = nullptr;
+            next = nullptr;
         }
+
         ~COMMAND_REDIRECT()
         {
-            PTR_DELETE(sControlName);
+            STORM_DELETE(sControlName);
         }
     };
+
     struct COMMAND_ACTION
     {
         bool bUse;
@@ -140,20 +143,22 @@ class CINODE
         COMMAND_REDIRECT *pNextControl;
         char *sEventName;
         long nActionDelay;
+
         COMMAND_ACTION()
         {
             bUse = false;
-            sRetControl = 0;
-            pNextControl = 0;
-            sEventName = 0;
+            sRetControl = nullptr;
+            pNextControl = nullptr;
+            sEventName = nullptr;
         }
+
         ~COMMAND_ACTION()
         {
-            PTR_DELETE(sRetControl);
-            PTR_DELETE(sEventName);
+            STORM_DELETE(sRetControl);
+            STORM_DELETE(sEventName);
             while (pNextControl)
             {
-                COMMAND_REDIRECT *pOld = pNextControl;
+                auto *const pOld = pNextControl;
                 pNextControl = pNextControl->next;
                 delete pOld;
             }
@@ -163,9 +168,9 @@ class CINODE
   public:
     CINODE();
     virtual ~CINODE();
-    virtual void Draw(bool bSelected, dword Delta_Time) = 0;
-    virtual bool Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, VDX8RENDER *rs, XYRECT &hostRect,
-                      XYPOINT &ScreenSize);
+    virtual void Draw(bool bSelected, uint32_t Delta_Time) = 0;
+    virtual bool Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs,
+                      XYRECT &hostRect, XYPOINT &ScreenSize);
     virtual void ReleaseAll() = 0;
     CINODE *DoAction(int wActCode, bool &bBreakPress, bool bFirstPress);
     virtual int CommandExecute(int wActCode) = 0;
@@ -189,7 +194,7 @@ class CINODE
         m_bUse = bUsing;
     }
     virtual bool IsClick(int buttonID, long xPos, long yPos) = 0;
-    virtual void FrameProcess(dword DeltaTime);
+    virtual void FrameProcess(uint32_t DeltaTime);
     virtual void MouseThis(float fX, float fY) = 0;
     virtual long GetClickState()
     {
@@ -199,24 +204,27 @@ class CINODE
     {
         m_nPriority = prior;
     }
-    long GetPriority()
+    long GetPriority() const
     {
         return m_nPriority;
     }
-    bool CheckCommandUsed(int comCode);
+    bool CheckCommandUsed(int comCode) const;
     bool IsCurrentNode()
     {
         return ptrOwner->GetCurrentNode() == this;
     }
-    void NotUsingTime(dword Delta_Time)
+
+    void NotUsingTime(uint32_t Delta_Time)
     {
     }
+
     virtual XYRECT GetCursorRect()
     {
         if (m_bUseUserGlowCursor)
             return m_rectUserGlowCursor;
         return m_rect;
     }
+
     virtual bool IsShowGlowCursor()
     {
         return m_bShowGlowCursor;
@@ -229,28 +237,29 @@ class CINODE
     {
         return false;
     }
-    virtual void LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2) = 0;
+    virtual void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) = 0;
 
     virtual void MakeLClickPreaction()
     {
     }
 
-    bool IsWeelActive()
+    bool IsWeelActive() const
     {
         return m_bMouseWeelReaction;
     }
 
     virtual void ChangePosition(XYRECT &rNewPos) = 0;
     virtual void SaveParametersToIni() = 0;
-    virtual bool GetInternalNameList(array<string> &aStr)
+    virtual bool GetInternalNameList(std::vector<std::string> &aStr)
     {
         return false;
     }
-    virtual void SetInternalName(string &sName)
+
+    virtual void SetInternalName(std::string &sName)
     {
     }
 
-    virtual dword _cdecl MessageProc(long msgcode, MESSAGE &message);
+    virtual uint32_t MessageProc(long msgcode, MESSAGE &message);
 
     void SetGlowCursor(bool bShowFlag)
     {
@@ -260,7 +269,8 @@ class CINODE
     {
         m_bGlowCursorBack = bBackFlag;
     }
-    void UpdateGlowOffsets(float &fx, float &fy)
+
+    void UpdateGlowOffsets(float &fx, float &fy) const
     {
         if (m_bUseUserGlowOffset)
         {
@@ -269,42 +279,43 @@ class CINODE
         }
     }
 
-    static float GetIniFloat(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, char *keyName,
+    static float GetIniFloat(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, const char *keyName,
                              float fDefault = 0.f);
-    static long GetIniLong(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, char *keyName, long iDefault = 0);
-    static bool ReadIniString(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, char *keyName, char *buf,
-                              size_t bufSize, char *strDef = null);
-    static bool GetIniBool(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, char *keyName,
+    static long GetIniLong(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, const char *keyName,
+                           long iDefault = 0);
+    static bool ReadIniString(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, const char *keyName,
+                              char *buf, size_t bufSize, const char *strDef = nullptr);
+    static bool GetIniBool(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, const char *keyName,
                            bool bDefault = false);
-    static XYRECT GetIniLongRect(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, char *keyName,
-                                 XYRECT &rectDefault);
-    static FXYRECT GetIniFloatRect(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, char *keyName,
-                                   FXYRECT &rectDefault);
-    static XYPOINT GetIniLongPoint(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, char *keyName,
-                                   XYPOINT &pntDefault);
-    static FXYPOINT GetIniFloatPoint(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, char *keyName,
-                                     FXYPOINT &pntDefault);
-    static DWORD GetIniARGB(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, char *keyName,
-                            DWORD dwDefColor = 0);
+    static XYRECT GetIniLongRect(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2,
+                                 const char *keyName, const XYRECT &rectDefault);
+    static FXYRECT GetIniFloatRect(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2,
+                                   const char *keyName, const FXYRECT &rectDefault);
+    static XYPOINT GetIniLongPoint(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2,
+                                   const char *keyName, const XYPOINT &pntDefault);
+    static FXYPOINT GetIniFloatPoint(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2,
+                                     const char *keyName, const FXYPOINT &pntDefault);
+    static uint32_t GetIniARGB(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, const char *keyName,
+                               uint32_t dwDefColor = 0);
 
-    void GetRelativeRect(XYRECT &rect);
-    void GetAbsoluteRect(XYRECT &rect, int at);
+    void GetRelativeRect(XYRECT &rect) const;
+    void GetAbsoluteRect(XYRECT &rect, int at) const;
 
-    static char *GetSubStr(char *inStr, char *buf, size_t bufSize, char devChar = ',');
-    static bool GetMidStr(char *inStr, char *buf, size_t bufSize, char *begStr, char *endStr);
-    static char *GetDataStr(char *inStr, char *strOrder, ...);
-    static DWORD GetColorFromStr(char *inStr, DWORD dwDefColor);
+    static const char *GetSubStr(const char *inStr, char *buf, size_t bufSize, char devChar = ',');
+    static bool GetMidStr(const char *inStr, char *buf, size_t bufSize, const char *begStr, const char *endStr);
+    static const char *GetDataStr(const char *inStr, const char *strOrder, ...);
+    static uint32_t GetColorFromStr(const char *inStr, uint32_t dwDefColor);
 
     virtual void MoveMouseOutScreen(float fX, float fY)
     {
     }
 
     virtual bool CheckByToolTip(float fX, float fY);
-    void ShowToolTip();
+    void ShowToolTip() const;
 
     XINTERFACE_BASE *ptrOwner;
 
-    VDX8RENDER *m_rs;
+    VDX9RENDER *m_rs;
     XYPOINT m_screenSize;
     XYRECT m_rect;
     XYRECT m_hostRect;

@@ -1,8 +1,7 @@
 #include "editor.h"
-#include "..\nodes\xi_image.h"
-#include "..\xinterface.h"
+#include "../Nodes/xi_image.h"
+#include "../xinterface.h"
 #include "list.h"
-#include "xi_editor_defines.h"
 
 GIEditor::GIEditor(XINTERFACE *pInterface)
 {
@@ -11,23 +10,23 @@ GIEditor::GIEditor(XINTERFACE *pInterface)
 
     m_bShowMode = false;
 
-    m_pEditableNode = null;
+    m_pEditableNode = nullptr;
     m_fLastKeyPressTime = -1.f;
 
-    m_pImageBack = NEW CXI_IMAGE;
+    m_pImageBack = new CXI_IMAGE;
     Assert(m_pImageBack);
     m_pImageBack->SetPosition(100, 60);
     m_pImageBack->SetSize(600, 400);
     m_pImageBack->SetColor(0xD0606060);
     m_pImageBack->SetThisRectangleNotUseTexture(true);
 
-    m_pNodeList = NEW GIEditorList(this);
+    m_pNodeList = new GIEditorList(this);
     Assert(m_pNodeList);
     m_pNodeList->SetPosition(120, 80, 360, 380);
-    LinkEvent(m_pNodeList->m_pChangeSelected, (GIEditorEvent)&GIEditor::ChangeNodeName);
+    LinkEvent(m_pNodeList->m_pChangeSelected, static_cast<GIEditorEvent>(&GIEditor::ChangeNodeName));
 
     m_bSubNameOn = false;
-    m_pSubNameList = NEW GIEditorList(this);
+    m_pSubNameList = new GIEditorList(this);
     Assert(m_pSubNameList);
     m_pSubNameList->SetPosition(380, 80, 500, 380);
     LinkEvent(m_pSubNameList->m_pChangeSelected, (GIEditorEvent)&GIEditor::ChangeSubNodeName);
@@ -40,20 +39,20 @@ GIEditor::~GIEditor()
 
 void GIEditor::Release()
 {
-    m_pGIOwner = 0;
+    m_pGIOwner = nullptr;
     m_bShowMode = false;
 
-    SE_DELETE(m_pImageBack);
-    SE_DELETE(m_pNodeList);
-    SE_DELETE(m_pSubNameList);
+    STORM_DELETE(m_pImageBack);
+    STORM_DELETE(m_pNodeList);
+    STORM_DELETE(m_pSubNameList);
 }
 
-void GIEditor::Render()
+void GIEditor::Render() const
 {
     if (!m_bShowMode)
         return;
 
-    FXYPOINT pntMouse = m_pGIOwner->GetMousePoint();
+    const auto pntMouse = m_pGIOwner->GetMousePoint();
     m_pNodeList->CheckMouseInside(pntMouse.x, pntMouse.y);
     if (m_bSubNameOn)
         m_pSubNameList->CheckMouseInside(pntMouse.x, pntMouse.y);
@@ -105,17 +104,17 @@ bool GIEditor::ProcessControl()
             m_bShowMode = false;
             if (!m_bSubNameOn)
             {
-                array<string> aStr(_FL);
+                std::vector<std::string> aStr;
                 if (m_pEditableNode && m_pEditableNode->GetInternalNameList(aStr))
                 {
                     m_bShowMode = true;
                     m_bSubNameOn = false;
                     m_pSubNameList->RemoveAllStrings();
-                    for (long n = 0; n < aStr; n++)
+                    for (long n = 0; n < aStr.size(); n++)
                         m_pSubNameList->AddString(aStr[n]);
                     m_bSubNameOn = true;
                     m_pSubNameList->SetSelectIndex(0);
-                    aStr.DelAll();
+                    aStr.clear();
                 }
             }
         }
@@ -131,8 +130,8 @@ bool GIEditor::ProcessControl()
     if (!m_pEditableNode)
         return false;
 
-    bool bMove = 0;
-    bool bSize = false;
+    auto bMove = false;
+    auto bSize = false;
     if (api->Controls->GetDebugAsyncKeyState(VK_CONTROL) < 0) // двигаем
     {
         bMove = true;
@@ -190,15 +189,15 @@ bool GIEditor::ProcessControl()
 
         if (nHorz != 0 || nVert != 0)
         {
-            XYRECT rectNew = m_pEditableNode->m_rect;
+            auto rectNew = m_pEditableNode->m_rect;
             if (nHorz != 0)
             {
                 rectNew.right += nHorz;
                 if (bMove)
                     rectNew.left += nHorz;
                 /*
-                                if( rectNew.right < 0 ) rectNew.right = 0;
-                                if( rectNew.left > (long)m_pGIOwner->GetScreenWidth() ) rectNew.left =
+                        if( rectNew.right < 0 ) rectNew.right = 0;
+                        if( rectNew.left > (long)m_pGIOwner->GetScreenWidth() ) rectNew.left =
                    m_pGIOwner->GetScreenWidth(); if( rectNew.right < rectNew.left ) rectNew.right = rectNew.left;*/
             }
             if (nVert != 0)
@@ -208,7 +207,7 @@ bool GIEditor::ProcessControl()
                     rectNew.top += nVert;
 
                 /*				if( rectNew.bottom < 0 ) rectNew.bottom = 0;
-                                if( rectNew.top > (long)m_pGIOwner->GetScreenHeight() ) rectNew.top =
+                        if( rectNew.top > (long)m_pGIOwner->GetScreenHeight() ) rectNew.top =
                    m_pGIOwner->GetScreenHeight(); if( rectNew.bottom < rectNew.top ) rectNew.bottom = rectNew.top;*/
             }
             m_pEditableNode->ChangePosition(rectNew);
@@ -220,7 +219,7 @@ bool GIEditor::ProcessControl()
     return false;
 }
 
-bool GIEditor::IsShowMode()
+bool GIEditor::IsShowMode() const
 {
     return m_bShowMode;
 }
@@ -235,30 +234,30 @@ void GIEditor::SetEditNode(CINODE *pNode)
     m_pEditableNode = pNode;
 }
 
-void GIEditor::ReCreate()
+void GIEditor::ReCreate() const
 {
     m_pNodeList->RemoveAllStrings();
-    string sStr = "Nothing";
+    std::string sStr = "Nothing";
     m_pNodeList->AddString(sStr);
     m_pNodeList->SetSelectIndex(0);
 }
 
-void GIEditor::AddNode(CINODE *pNode)
+void GIEditor::AddNode(CINODE *pNode) const
 {
     if (!pNode)
         return;
-    string sStr = pNode->m_nodeName;
+    std::string sStr = pNode->m_nodeName;
     m_pNodeList->AddString(sStr);
 }
 
-void GIEditor::DelNode(CINODE *pNode)
+void GIEditor::DelNode(CINODE *pNode) const
 {
     if (!pNode)
         return;
-    m_pNodeList->RemoveString(string(pNode->m_nodeName));
+    m_pNodeList->RemoveString(pNode->m_nodeName);
 }
 
-void GIEditor::DrawSizeBox()
+void GIEditor::DrawSizeBox() const
 {
     if (!m_pEditableNode)
         return;
@@ -270,36 +269,36 @@ void GIEditor::DrawSizeBox()
             rsl[n].dwColor = 0xFFFFFFFF;
             rsl[n].vPos.z = 1.f;
         }
-        rsl[0].vPos.x = (float)m_pEditableNode->m_rect.left;
-        rsl[0].vPos.y = (float)m_pEditableNode->m_rect.top;
-        rsl[1].vPos.x = (float)m_pEditableNode->m_rect.right;
-        rsl[1].vPos.y = (float)m_pEditableNode->m_rect.top;
+        rsl[0].vPos.x = static_cast<float>(m_pEditableNode->m_rect.left);
+        rsl[0].vPos.y = static_cast<float>(m_pEditableNode->m_rect.top);
+        rsl[1].vPos.x = static_cast<float>(m_pEditableNode->m_rect.right);
+        rsl[1].vPos.y = static_cast<float>(m_pEditableNode->m_rect.top);
 
-        rsl[2].vPos.x = (float)m_pEditableNode->m_rect.right;
-        rsl[2].vPos.y = (float)m_pEditableNode->m_rect.top;
-        rsl[3].vPos.x = (float)m_pEditableNode->m_rect.right;
-        rsl[3].vPos.y = (float)m_pEditableNode->m_rect.bottom;
+        rsl[2].vPos.x = static_cast<float>(m_pEditableNode->m_rect.right);
+        rsl[2].vPos.y = static_cast<float>(m_pEditableNode->m_rect.top);
+        rsl[3].vPos.x = static_cast<float>(m_pEditableNode->m_rect.right);
+        rsl[3].vPos.y = static_cast<float>(m_pEditableNode->m_rect.bottom);
 
-        rsl[4].vPos.x = (float)m_pEditableNode->m_rect.right;
-        rsl[4].vPos.y = (float)m_pEditableNode->m_rect.bottom;
-        rsl[5].vPos.x = (float)m_pEditableNode->m_rect.left;
-        rsl[5].vPos.y = (float)m_pEditableNode->m_rect.bottom;
+        rsl[4].vPos.x = static_cast<float>(m_pEditableNode->m_rect.right);
+        rsl[4].vPos.y = static_cast<float>(m_pEditableNode->m_rect.bottom);
+        rsl[5].vPos.x = static_cast<float>(m_pEditableNode->m_rect.left);
+        rsl[5].vPos.y = static_cast<float>(m_pEditableNode->m_rect.bottom);
 
-        rsl[6].vPos.x = (float)m_pEditableNode->m_rect.left;
-        rsl[6].vPos.y = (float)m_pEditableNode->m_rect.bottom;
-        rsl[7].vPos.x = (float)m_pEditableNode->m_rect.left;
-        rsl[7].vPos.y = (float)m_pEditableNode->m_rect.top;
-        m_pRS->DrawLines(rsl, 4, "AILine");
+        rsl[6].vPos.x = static_cast<float>(m_pEditableNode->m_rect.left);
+        rsl[6].vPos.y = static_cast<float>(m_pEditableNode->m_rect.bottom);
+        rsl[7].vPos.x = static_cast<float>(m_pEditableNode->m_rect.left);
+        rsl[7].vPos.y = static_cast<float>(m_pEditableNode->m_rect.top);
+        m_pRS->DrawLines(rsl, 4, "Line");
         // boal -->
         // idFont, dwFCol, dwBCol, align, shadow, scale, sxs, sys,
         // left, top, "%s", str
-        long m_fontID = m_pGIOwner->GetRenderService()->LoadFont("interface_normal");
+        const auto m_fontID = m_pGIOwner->GetRenderService()->LoadFont("interface_normal");
         m_pGIOwner->GetRenderService()->ExtPrint(
-            m_fontID, 0xFFFFFFFF, 0, ALIGN_LEFT, false, 1.0, 800, 600, 10, 10, "(%d, %d) - (%d, %d) W - %d H - %d",
-            (int)m_pEditableNode->m_rect.left, (int)m_pEditableNode->m_rect.top, (int)m_pEditableNode->m_rect.right,
-            (int)m_pEditableNode->m_rect.bottom,
-            ((int)m_pEditableNode->m_rect.right - (int)m_pEditableNode->m_rect.left),
-            ((int)m_pEditableNode->m_rect.bottom - (int)m_pEditableNode->m_rect.top));
+            m_fontID, 0xFFFFFFFF, 0, PR_ALIGN_LEFT, false, 1.0, 800, 600, 10, 10, "(%d, %d) - (%d, %d) W - %d H - %d",
+            static_cast<int>(m_pEditableNode->m_rect.left), static_cast<int>(m_pEditableNode->m_rect.top),
+            static_cast<int>(m_pEditableNode->m_rect.right), static_cast<int>(m_pEditableNode->m_rect.bottom),
+            (static_cast<int>(m_pEditableNode->m_rect.right) - static_cast<int>(m_pEditableNode->m_rect.left)),
+            (static_cast<int>(m_pEditableNode->m_rect.bottom) - static_cast<int>(m_pEditableNode->m_rect.top)));
         m_pGIOwner->GetRenderService()->UnloadFont(m_fontID);
         // boal <--
     }
@@ -309,14 +308,14 @@ void GIEditor::ChangeNodeName()
 {
     if (m_pNodeList->GetSelectString() == "Nothing" || m_pNodeList->GetSelectString() == "")
     {
-        m_pEditableNode = null;
+        m_pEditableNode = nullptr;
         return;
     }
 
-    m_pEditableNode = m_pGIOwner->FindNode(m_pNodeList->GetSelectString().GetBuffer(), 0);
+    m_pEditableNode = m_pGIOwner->FindNode(m_pNodeList->GetSelectString().c_str(), nullptr);
 }
 
-void GIEditor::ChangeSubNodeName()
+void GIEditor::ChangeSubNodeName() const
 {
     if (!m_bSubNameOn)
         return;

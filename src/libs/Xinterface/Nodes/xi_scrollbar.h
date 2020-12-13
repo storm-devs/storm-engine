@@ -1,34 +1,38 @@
 #ifndef __XI_SCROLLBAR_H__
 #define __XI_SCROLLBAR_H__
 
-#include "..\\inode.h"
+#include "..//inode.h"
 
 // picture
 class CXI_SCROLLBAR : public CINODE
 {
   public:
+    CXI_SCROLLBAR(CXI_SCROLLBAR &&) = delete;
+    CXI_SCROLLBAR(const CXI_SCROLLBAR &) = delete;
     CXI_SCROLLBAR();
     ~CXI_SCROLLBAR();
 
-    void Draw(bool bSelected, dword Delta_Time);
-    bool Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, VDX8RENDER *rs, XYRECT &hostRect,
-              XYPOINT &ScreenSize);
-    void ReleaseAll();
-    int CommandExecute(int wActCode);
-    bool IsClick(int buttonID, long xPos, long yPos);
-    void MouseThis(float fX, float fY)
+    void Draw(bool bSelected, uint32_t Delta_Time) override;
+    bool Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs, XYRECT &hostRect,
+              XYPOINT &ScreenSize) override;
+    void ReleaseAll() override;
+    int CommandExecute(int wActCode) override;
+    bool IsClick(int buttonID, long xPos, long yPos) override;
+
+    void MouseThis(float fX, float fY) override
     {
     }
-    void ChangePosition(XYRECT &rNewPos);
-    void SaveParametersToIni();
-    XYRECT GetCursorRect();
-    dword _cdecl MessageProc(long msgcode, MESSAGE &message);
+
+    void ChangePosition(XYRECT &rNewPos) override;
+    void SaveParametersToIni() override;
+    XYRECT GetCursorRect() override;
+    uint32_t MessageProc(long msgcode, MESSAGE &message) override;
 
   protected:
-    void LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2);
-    void UpdatePosition();
+    void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
+    void UpdatePosition() const;
 
-    void WriteDataToAttribute();
+    void WriteDataToAttribute() const;
     void ChangeValue(bool bGrowing, bool bMultiply);
 
   protected:
@@ -41,8 +45,8 @@ class CXI_SCROLLBAR : public CINODE
     long m_nBarWidth;
     long m_nSideWidth;
 
-    DWORD m_dwShadowColor;
-    DWORD m_dwFaceColor;
+    uint32_t m_dwShadowColor;
+    uint32_t m_dwFaceColor;
 
     float m_fXShadow;
     float m_fYShadow;
@@ -67,7 +71,7 @@ class CXI_SCROLLBAR : public CINODE
     FXYRECT m_frRightTex;
 
     long m_nFontID;
-    dword m_dwFontColor;
+    uint32_t m_dwFontColor;
     float m_fFontScale;
     XYPOINT m_pntFontOffset;
 

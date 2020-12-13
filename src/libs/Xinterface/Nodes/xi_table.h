@@ -1,7 +1,8 @@
 #ifndef __XI_TABLE_H__
 #define __XI_TABLE_H__
 
-#include "..\inode.h"
+#include "../inode.h"
+#include "../xdefines.h"
 #include "xi_image.h"
 
 class CXI_TABLE;
@@ -11,7 +12,7 @@ class XI_TableCellDescribe
 {
     struct StrDescribe
     {
-        string str;
+        std::string str;
         FPOINT offset;
     };
 
@@ -19,20 +20,23 @@ class XI_TableCellDescribe
     {
         CXI_IMAGE *pImage;
         POINT offset;
+
         ImgDescribe()
         {
-            pImage = 0;
+            pImage = nullptr;
             offset.x = offset.y = 0;
         }
+
         ~ImgDescribe()
         {
-            SE_DELETE(pImage);
+            STORM_DELETE(pImage);
         }
     };
 
   public:
     XI_TableCellDescribe(CXI_TABLE *pTable, XI_TableLineDescribe *pLine);
     ~XI_TableCellDescribe();
+
     void SetOwners(CXI_TABLE *pTable, XI_TableLineDescribe *pLine)
     {
         m_pTable = pTable;
@@ -41,7 +45,7 @@ class XI_TableCellDescribe
 
     void Draw(float fLeft, float fTop);
     void SetData(long nColIndex, ATTRIBUTES *pAttr, bool bHeader);
-    void LoadImageParam(ImgDescribe *pImg, ATTRIBUTES *pA);
+    void LoadImageParam(ImgDescribe *pImg, ATTRIBUTES *pA) const;
 
   protected:
     CXI_TABLE *m_pTable;
@@ -50,7 +54,7 @@ class XI_TableCellDescribe
     FPOINT m_TextOffset;
     long m_nFontID;
     long m_nFontIndex;
-    dword m_dwColor;
+    uint32_t m_dwColor;
     float m_fScale;
     long m_nAlignment;
     long m_nVAlignment;
@@ -58,8 +62,8 @@ class XI_TableCellDescribe
     long m_nLeftLineWidth;
     long m_nTopLineHeight;
 
-    array<StrDescribe> m_aStrings;
-    array<ImgDescribe> m_aImage;
+    std::vector<StrDescribe> m_aStrings;
+    std::vector<ImgDescribe> m_aImage;
 
   public:
     long m_nColIndex;
@@ -76,10 +80,10 @@ class XI_TableLineDescribe
     }
 
     void Draw(float fTop);
-    void DrawSpecColor(float fTop);
+    void DrawSpecColor(float fTop) const;
     void SetData(long nRowIndex, ATTRIBUTES *pLA, bool bHeader);
 
-    long GetLineHeight();
+    long GetLineHeight() const;
     void SetLineHeight(long nHeight)
     {
         m_nHeight = nHeight;
@@ -87,10 +91,10 @@ class XI_TableLineDescribe
 
   protected:
     CXI_TABLE *m_pTable;
-    array<XI_TableCellDescribe *> m_aCell;
+    std::vector<XI_TableCellDescribe *> m_aCell;
 
     bool m_bUseSpecColor;
-    dword m_dwSpecColor;
+    uint32_t m_dwSpecColor;
     long m_nHeight;
 
   public:
@@ -104,41 +108,46 @@ class CXI_TABLE : public CINODE
     friend XI_TableCellDescribe;
 
   public:
+    CXI_TABLE(CXI_TABLE &&) = delete;
+    CXI_TABLE(const CXI_TABLE &) = delete;
     CXI_TABLE();
     ~CXI_TABLE();
 
-    void Draw(bool bSelected, dword Delta_Time);
-    bool Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, VDX8RENDER *rs, XYRECT &hostRect,
-              XYPOINT &ScreenSize);
-    void ReleaseAll();
-    int CommandExecute(int wActCode);
-    bool IsClick(int buttonID, long xPos, long yPos);
-    void MouseThis(float fX, float fY)
+    void Draw(bool bSelected, uint32_t Delta_Time) override;
+    bool Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs, XYRECT &hostRect,
+              XYPOINT &ScreenSize) override;
+    void ReleaseAll() override;
+    int CommandExecute(int wActCode) override;
+    bool IsClick(int buttonID, long xPos, long yPos) override;
+
+    void MouseThis(float fX, float fY) override
     {
     }
-    void ChangePosition(XYRECT &rNewPos);
-    void SaveParametersToIni();
-    dword _cdecl MessageProc(long msgcode, MESSAGE &message);
 
-    virtual bool GetInternalNameList(array<string> &aStr);
-    virtual void SetInternalName(string &sName);
+    void ChangePosition(XYRECT &rNewPos) override;
+    void SaveParametersToIni() override;
+    uint32_t MessageProc(long msgcode, MESSAGE &message) override;
+
+    bool GetInternalNameList(std::vector<std::string> &aStr) override;
+    void SetInternalName(std::string &sName) override;
 
     void ScrollerChanged(float fRelativeScrollPos);
-    float GetLineStep()
+
+    float GetLineStep() const
     {
         if (m_nLineQuantity <= 0)
             return 0.f;
         if (m_nLineQuantity > 1)
-            return 1.f / (float)(m_nLineQuantity - 1);
+            return 1.f / static_cast<float>(m_nLineQuantity - 1);
         return 1.f;
     }
 
   protected:
-    void LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2);
+    void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void UpdateBorders();
-    void WriteSquare(XI_ONETEX_VERTEX *pV, long nImgID, dword dwCol, long nX, long nY, long nW, long nH);
+    void WriteSquare(XI_ONETEX_VERTEX *pV, long nImgID, uint32_t dwCol, long nX, long nY, long nW, long nH) const;
     void UpdateTableCells();
-    long GetLineByPoint(FXYPOINT &pnt);
+    long GetLineByPoint(const FXYPOINT &pnt);
     long GetColByX(long x);
     void SelectRow(long nRowNum);
     void SelectRow(long nRowNum, long nColNum);
@@ -150,7 +159,7 @@ class CXI_TABLE : public CINODE
     void UpdateSelectImage();
     void UpdateLineQuantity();
     void SetTopIndex(long nTopIndex);
-    void UpdateScroller();
+    void UpdateScroller() const;
     void RecalculateLineHeights();
 
     bool m_bFirstFrame;
@@ -158,19 +167,19 @@ class CXI_TABLE : public CINODE
     bool m_bVariableLineHeight;
     long m_nNormalLineHeight;
 
-    array<XI_TableLineDescribe *> m_aLine;
+    std::vector<XI_TableLineDescribe *> m_aLine;
     XI_TableLineDescribe *m_pHeader;
 
-    array<long> m_anFontList;
+    std::vector<long> m_anFontList;
 
     long m_nFontCellID;
-    dword m_dwFontCellColor;
+    uint32_t m_dwFontCellColor;
     float m_fFontCellScale;
     long m_nFontCellAlignment;
     long m_nFontCellVAlignment;
 
     long m_nFontTitleID;
-    dword m_dwFontTitleColor;
+    uint32_t m_dwFontTitleColor;
     float m_fFontTitleScale;
     long m_nFontTitleAlignment;
     long m_nFontTitleVAlignment;
@@ -182,7 +191,7 @@ class CXI_TABLE : public CINODE
     bool m_bDoColsSelect;
     long m_nSelectColIndex;
 
-    string m_sBorderIconGroupName;
+    std::string m_sBorderIconGroupName;
     long m_idBorderTexture;
     long m_idBorderVBuf;
     long m_idBorderIBuf;
@@ -199,7 +208,7 @@ class CXI_TABLE : public CINODE
     long m_nBorderIcon_VLine;
     long m_nBorderIcon_HLine;
 
-    dword m_dwBorderColor;
+    uint32_t m_dwBorderColor;
     long m_nBorderWidth;
     long m_nVLineWidth;
     long m_nHLineHeight;
@@ -210,8 +219,8 @@ class CXI_TABLE : public CINODE
 
     long m_nRowQuantity;
     long m_nColQuantity;
-    array<long> m_anRowsHeights;
-    array<long> m_anColsWidth;
+    std::vector<long> m_anRowsHeights;
+    std::vector<long> m_anColsWidth;
 
     struct EditModeDescribe
     {
@@ -219,6 +228,7 @@ class CXI_TABLE : public CINODE
         bool bColsEditable;
         long nEditableIndex;
     };
+
     EditModeDescribe m_EditData;
 
     long m_nTopIndex;
@@ -226,7 +236,7 @@ class CXI_TABLE : public CINODE
 
     long m_nLineQuantity;
 
-    string m_sScrollerName;
+    std::string m_sScrollerName;
 };
 
 #endif

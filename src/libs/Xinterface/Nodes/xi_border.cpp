@@ -1,10 +1,9 @@
 #include "xi_border.h"
 #include "xi_image.h"
-#include <stdio.h>
 
 CXI_BORDER::CXI_BORDER()
 {
-    m_rs = NULL;
+    m_rs = nullptr;
 
     m_idTex = -1;
 
@@ -13,8 +12,8 @@ CXI_BORDER::CXI_BORDER()
 
     m_nSquareQ = 0;
     m_nNodeType = NODETYPE_BORDER;
-    m_pBackImage = null;
-    m_pCaptionImage = null;
+    m_pBackImage = nullptr;
+    m_pCaptionImage = nullptr;
 }
 
 CXI_BORDER::~CXI_BORDER()
@@ -27,7 +26,7 @@ int CXI_BORDER::CommandExecute(int wActCode)
     return -1;
 }
 
-void CXI_BORDER::Draw(bool bSelected, dword Delta_Time)
+void CXI_BORDER::Draw(bool bSelected, uint32_t Delta_Time)
 {
     if (m_bUse)
     {
@@ -46,8 +45,8 @@ void CXI_BORDER::Draw(bool bSelected, dword Delta_Time)
     }
 }
 
-bool CXI_BORDER::Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, VDX8RENDER *rs, XYRECT &hostRect,
-                      XYPOINT &ScreenSize)
+bool CXI_BORDER::Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs,
+                      XYRECT &hostRect, XYPOINT &ScreenSize)
 {
     if (!CINODE::Init(ini1, name1, ini2, name2, rs, hostRect, ScreenSize))
         return false;
@@ -57,11 +56,11 @@ bool CXI_BORDER::Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, VD
 void CXI_BORDER::ReleaseAll()
 {
     m_bUse = false;
-    PICTURE_TEXTURE_RELEASE(pPictureService, m_sGroupName.GetBuffer(), m_idTex);
+    PICTURE_TEXTURE_RELEASE(pPictureService, m_sGroupName.c_str(), m_idTex);
     VERTEX_BUF_RELEASE(m_rs, m_idVBuf);
     INDEX_BUF_RELEASE(m_rs, m_idIBuf);
-    SE_DELETE(m_pBackImage);
-    SE_DELETE(m_pCaptionImage);
+    STORM_DELETE(m_pBackImage);
+    STORM_DELETE(m_pCaptionImage);
 }
 
 bool CXI_BORDER::IsClick(int buttonID, long xPos, long yPos)
@@ -78,7 +77,7 @@ void CXI_BORDER::ChangePosition(XYRECT &rNewPos)
     // смещаем картинку заголовка
     if (m_pCaptionImage && m_nCaptionHeight > 0)
     {
-        XYRECT rCapRect = m_rCapRect;
+        auto rCapRect = m_rCapRect;
         rCapRect.top += m_rect.top;
         rCapRect.bottom = rCapRect.top + m_nCaptionHeight - rCapRect.bottom;
         rCapRect.left += m_rect.left;
@@ -93,28 +92,28 @@ void CXI_BORDER::SaveParametersToIni()
 {
     char pcWriteParam[2048];
 
-    INIFILE *pIni = api->fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.GetBuffer());
+    auto *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
-        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.GetBuffer());
+        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
         return;
     }
 
     // save position
-    _snprintf(pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rect.left, m_rect.top, m_rect.right, m_rect.bottom);
+    sprintf_s(pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rect.left, m_rect.top, m_rect.right, m_rect.bottom);
     pIni->WriteString(m_nodeName, "position", pcWriteParam);
 
     delete pIni;
 }
 
-void CXI_BORDER::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2)
+void CXI_BORDER::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2)
 {
     char param[256];
 
     // get back image
     if (ReadIniString(ini1, name1, ini2, name2, "backimage", param, sizeof(param), ""))
     {
-        m_pBackImage = NEW CXI_IMAGE;
+        m_pBackImage = new CXI_IMAGE;
         if (m_pBackImage)
         {
             m_pBackImage->LoadAccordingToString(param);
@@ -127,7 +126,7 @@ void CXI_BORDER::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2)
     m_mCaptionDividerHeight = GetIniLong(ini1, name1, ini2, name2, "captiondividerheight", 2);
     if (m_nCaptionHeight > 0 && ReadIniString(ini1, name1, ini2, name2, "captionimage", param, sizeof(param), ""))
     {
-        m_pCaptionImage = NEW CXI_IMAGE;
+        m_pCaptionImage = new CXI_IMAGE;
         if (m_pCaptionImage)
         {
             m_pCaptionImage->LoadAccordingToString(param);
@@ -141,14 +140,13 @@ void CXI_BORDER::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2)
     if (ReadIniString(ini1, name1, ini2, name2, "groupName", param, sizeof(param), ""))
     {
         m_sGroupName = param;
-        m_idTex = pPictureService->GetTextureID(m_sGroupName);
+        m_idTex = pPictureService->GetTextureID(m_sGroupName.c_str());
     }
 
     // create index and vertex buffers
     m_nSquareQ = 4 + 4 + 1; // 4 edge & 4 angle & 1 caption
-    m_idVBuf =
-        m_rs->CreateVertexBufferManaged(XI_ONETEX_FVF, m_nSquareQ * 4 * sizeof(XI_ONETEX_VERTEX), D3DUSAGE_WRITEONLY);
-    m_idIBuf = m_rs->CreateIndexBufferManaged(m_nSquareQ * 6 * 2);
+    m_idVBuf = m_rs->CreateVertexBuffer(XI_ONETEX_FVF, m_nSquareQ * 4 * sizeof(XI_ONETEX_VERTEX), D3DUSAGE_WRITEONLY);
+    m_idIBuf = m_rs->CreateIndexBuffer(m_nSquareQ * 6 * 2);
     if (m_nCaptionHeight == 0 || !m_pCaptionImage)
         m_nSquareQ--; // don`t show caption
 
@@ -156,7 +154,7 @@ void CXI_BORDER::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2)
     // left top corner
     m_nLeftTopPicture = -1;
     if (ReadIniString(ini1, name1, ini2, name2, "lefttop_pic", param, sizeof(param), ""))
-        m_nLeftTopPicture = pPictureService->GetImageNum(m_sGroupName, param);
+        m_nLeftTopPicture = pPictureService->GetImageNum(m_sGroupName.c_str(), param);
     if (m_nLeftTopPicture < 0)
     {
         m_frLeftTopUV.left = m_frLeftTopUV.top = 0.f;
@@ -169,7 +167,7 @@ void CXI_BORDER::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2)
     // right top corner
     m_nRightTopPicture = -1;
     if (ReadIniString(ini1, name1, ini2, name2, "righttop_pic", param, sizeof(param), ""))
-        m_nRightTopPicture = pPictureService->GetImageNum(m_sGroupName, param);
+        m_nRightTopPicture = pPictureService->GetImageNum(m_sGroupName.c_str(), param);
     if (m_nRightTopPicture < 0)
     {
         m_frRightTopUV.left = m_frRightTopUV.top = 0.f;
@@ -182,7 +180,7 @@ void CXI_BORDER::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2)
     // left bottom corner
     m_nLeftBottomPicture = -1;
     if (ReadIniString(ini1, name1, ini2, name2, "leftbottom_pic", param, sizeof(param), ""))
-        m_nLeftBottomPicture = pPictureService->GetImageNum(m_sGroupName, param);
+        m_nLeftBottomPicture = pPictureService->GetImageNum(m_sGroupName.c_str(), param);
     if (m_nLeftBottomPicture < 0)
     {
         m_frLeftBottomUV.left = m_frLeftBottomUV.top = 0.f;
@@ -195,7 +193,7 @@ void CXI_BORDER::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2)
     // left bottom corner
     m_nRightBottomPicture = -1;
     if (ReadIniString(ini1, name1, ini2, name2, "rightbottom_pic", param, sizeof(param), ""))
-        m_nRightBottomPicture = pPictureService->GetImageNum(m_sGroupName, param);
+        m_nRightBottomPicture = pPictureService->GetImageNum(m_sGroupName.c_str(), param);
     if (m_nRightBottomPicture < 0)
     {
         m_frRightBottomUV.left = m_frRightBottomUV.top = 0.f;
@@ -208,7 +206,7 @@ void CXI_BORDER::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2)
     // top edge
     m_nTopLinePicture = -1;
     if (ReadIniString(ini1, name1, ini2, name2, "topline_pic", param, sizeof(param), ""))
-        m_nTopLinePicture = pPictureService->GetImageNum(m_sGroupName, param);
+        m_nTopLinePicture = pPictureService->GetImageNum(m_sGroupName.c_str(), param);
     if (m_nTopLinePicture < 0)
     {
         m_frTopLineUV.left = m_frTopLineUV.top = 0.f;
@@ -221,7 +219,7 @@ void CXI_BORDER::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2)
     // bottom edge
     m_nBottomLinePicture = -1;
     if (ReadIniString(ini1, name1, ini2, name2, "bottomline_pic", param, sizeof(param), ""))
-        m_nBottomLinePicture = pPictureService->GetImageNum(m_sGroupName, param);
+        m_nBottomLinePicture = pPictureService->GetImageNum(m_sGroupName.c_str(), param);
     if (m_nBottomLinePicture < 0)
     {
         m_frBottomLineUV.left = m_frBottomLineUV.top = 0.f;
@@ -234,7 +232,7 @@ void CXI_BORDER::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2)
     // left edge
     m_nLeftLinePicture = -1;
     if (ReadIniString(ini1, name1, ini2, name2, "leftline_pic", param, sizeof(param), ""))
-        m_nLeftLinePicture = pPictureService->GetImageNum(m_sGroupName, param);
+        m_nLeftLinePicture = pPictureService->GetImageNum(m_sGroupName.c_str(), param);
     if (m_nLeftLinePicture < 0)
     {
         m_frLeftLineUV.left = m_frLeftLineUV.top = 0.f;
@@ -247,7 +245,7 @@ void CXI_BORDER::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2)
     // right edge
     m_nRightLinePicture = -1;
     if (ReadIniString(ini1, name1, ini2, name2, "rightline_pic", param, sizeof(param), ""))
-        m_nRightLinePicture = pPictureService->GetImageNum(m_sGroupName, param);
+        m_nRightLinePicture = pPictureService->GetImageNum(m_sGroupName.c_str(), param);
     if (m_nRightLinePicture < 0)
     {
         m_frRightLineUV.left = m_frRightLineUV.top = 0.f;
@@ -275,21 +273,21 @@ void CXI_BORDER::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2)
     FillVertexBuffers();
 }
 
-void CXI_BORDER::FillIndexBuffers()
+void CXI_BORDER::FillIndexBuffers() const
 {
     if (m_idIBuf < 0)
         return;
-    WORD *pI = (WORD *)m_rs->LockIndexBuffer(m_idIBuf);
+    auto *pI = static_cast<uint16_t *>(m_rs->LockIndexBuffer(m_idIBuf));
 
     for (long n = 0; n < m_nSquareQ; n++)
     {
-        pI[n * 6 + 0] = (WORD)(n * 4 + 0);
-        pI[n * 6 + 1] = (WORD)(n * 4 + 1);
-        pI[n * 6 + 2] = (WORD)(n * 4 + 2);
+        pI[n * 6 + 0] = static_cast<uint16_t>(n * 4 + 0);
+        pI[n * 6 + 1] = static_cast<uint16_t>(n * 4 + 1);
+        pI[n * 6 + 2] = static_cast<uint16_t>(n * 4 + 2);
 
-        pI[n * 6 + 3] = (WORD)(n * 4 + 1);
-        pI[n * 6 + 4] = (WORD)(n * 4 + 3);
-        pI[n * 6 + 5] = (WORD)(n * 4 + 2);
+        pI[n * 6 + 3] = static_cast<uint16_t>(n * 4 + 1);
+        pI[n * 6 + 4] = static_cast<uint16_t>(n * 4 + 3);
+        pI[n * 6 + 5] = static_cast<uint16_t>(n * 4 + 2);
     }
 
     m_rs->UnLockIndexBuffer(m_idIBuf);
@@ -299,7 +297,7 @@ void CXI_BORDER::FillVertexBuffers()
 {
     if (m_idVBuf < 0)
         return;
-    XI_ONETEX_VERTEX *pV = (XI_ONETEX_VERTEX *)m_rs->LockVertexBuffer(m_idVBuf);
+    auto *pV = static_cast<XI_ONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_idVBuf));
 
     for (long n = 0; n < m_nSquareQ * 4; n++)
     {
@@ -344,43 +342,43 @@ void CXI_BORDER::FillVertexBuffers()
     m_rs->UnLockVertexBuffer(m_idVBuf);
 }
 
-void CXI_BORDER::WriteVertexForSquare(XI_ONETEX_VERTEX *pV, FXYRECT &UVRect, dword dwColor, long left, long top,
+void CXI_BORDER::WriteVertexForSquare(XI_ONETEX_VERTEX *pV, FXYRECT &UVRect, uint32_t dwColor, long left, long top,
                                       long right, long bottom)
 {
     pV[0].color = dwColor;
-    pV[0].pos.x = (float)left;
-    pV[0].pos.y = (float)top;
+    pV[0].pos.x = static_cast<float>(left);
+    pV[0].pos.y = static_cast<float>(top);
     pV[0].pos.z = 1.f;
     pV[0].tu = UVRect.left;
     pV[0].tv = UVRect.top;
 
     pV[1].color = dwColor;
-    pV[1].pos.x = (float)left;
-    pV[1].pos.y = (float)bottom;
+    pV[1].pos.x = static_cast<float>(left);
+    pV[1].pos.y = static_cast<float>(bottom);
     pV[1].pos.z = 1.f;
     pV[1].tu = UVRect.left;
     pV[1].tv = UVRect.bottom;
 
     pV[2].color = dwColor;
-    pV[2].pos.x = (float)right;
-    pV[2].pos.y = (float)top;
+    pV[2].pos.x = static_cast<float>(right);
+    pV[2].pos.y = static_cast<float>(top);
     pV[2].pos.z = 1.f;
     pV[2].tu = UVRect.right;
     pV[2].tv = UVRect.top;
 
     pV[3].color = dwColor;
-    pV[3].pos.x = (float)right;
-    pV[3].pos.y = (float)bottom;
+    pV[3].pos.x = static_cast<float>(right);
+    pV[3].pos.y = static_cast<float>(bottom);
     pV[3].pos.z = 1.f;
     pV[3].tu = UVRect.right;
     pV[3].tv = UVRect.bottom;
 }
 
-dword _cdecl CXI_BORDER::MessageProc(long msgcode, MESSAGE &message)
+uint32_t CXI_BORDER::MessageProc(long msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
-    case 0: // Сменить позицию кнопки
+    case 0: // —менить позицию кнопки
         m_dwColor = message.Long();
         FillVertexBuffers();
         break;

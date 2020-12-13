@@ -1,7 +1,7 @@
 #ifndef __XI_CHANGER_H__
 #define __XI_CHANGER_H__
 
-#include "..\\inode.h"
+#include "..//inode.h"
 
 // picture
 class CXI_CHANGER : public CINODE
@@ -10,26 +10,28 @@ class CXI_CHANGER : public CINODE
     CXI_CHANGER();
     ~CXI_CHANGER();
 
-    void Draw(bool bSelected, dword Delta_Time);
-    bool Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, VDX8RENDER *rs, XYRECT &hostRect,
-              XYPOINT &ScreenSize);
-    void ReleaseAll();
-    int CommandExecute(int wActCode);
-    bool IsClick(int buttonID, long xPos, long yPos);
-    void MouseThis(float fX, float fY)
+    void Draw(bool bSelected, uint32_t Delta_Time) override;
+    bool Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs, XYRECT &hostRect,
+              XYPOINT &ScreenSize) override;
+    void ReleaseAll() override;
+    int CommandExecute(int wActCode) override;
+    bool IsClick(int buttonID, long xPos, long yPos) override;
+
+    void MouseThis(float fX, float fY) override
     {
     }
-    void ChangePosition(XYRECT &rNewPos);
-    void SaveParametersToIni();
-    dword _cdecl MessageProc(long msgcode, MESSAGE &message);
-    XYRECT GetCursorRect();
-    bool IsGlowChanged()
+
+    void ChangePosition(XYRECT &rNewPos) override;
+    void SaveParametersToIni() override;
+    uint32_t MessageProc(long msgcode, MESSAGE &message) override;
+    XYRECT GetCursorRect() override;
+    bool IsGlowChanged() override
     {
         return true;
     }
 
   protected:
-    void LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2);
+    void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void SetRectanglesToPosition(int nPos);
 
   protected:
@@ -37,9 +39,9 @@ class CXI_CHANGER : public CINODE
     XYRECT *m_pPlace;
 
     bool m_bUseBlind;
-    DWORD m_dwFoneColor;
-    DWORD m_dwBlindColor;
-    DWORD m_dwCurColor;
+    uint32_t m_dwFoneColor;
+    uint32_t m_dwBlindColor;
+    uint32_t m_dwCurColor;
     float m_xOffset, m_yOffset;
     bool m_bUpBlind;
     float m_fCurM;

@@ -1,17 +1,16 @@
 #ifndef _XI_BACK_SCENE_H
 #define _XI_BACK_SCENE_H
 
-#include "..\xi_defines.h"
-#include "dx8render.h"
-#include "matrix.h"
-#include "templates\array.h"
-#include "templates\string.h"
+#include "../xdefines.h"
+#include "EntityManager.h"
+#include "Matrix.h"
+#include "dx9render.h"
 
 class MODEL;
 class NODE;
 class CMatrix;
 
-class InterfaceBackScene : public ENTITY
+class InterfaceBackScene : public Entity
 {
     struct LightParam
     {
@@ -21,7 +20,7 @@ class InterfaceBackScene : public ENTITY
         D3DLIGHT9 lightSource;
         D3DLIGHT9 lightOldSource;
 
-        dword dwFlareColor;
+        uint32_t dwFlareColor;
         float fMinFlareColor;
         float fMaxFlareColor;
 
@@ -36,7 +35,7 @@ class InterfaceBackScene : public ENTITY
         float fRangePeriod;
 
         MODEL *pModel;
-        ENTITY_ID eiModel;
+        entid_t eiModel;
 
         CVECTOR vLightPos;
         NODE *pLightSrcNode;
@@ -44,10 +43,11 @@ class InterfaceBackScene : public ENTITY
         LightParam()
         {
             bUse = false;
-            pModel = 0;
-            pLightSrcNode = 0;
+            pModel = nullptr;
+            pLightSrcNode = nullptr;
             fColorTimer = 0.0f;
         }
+
         ~LightParam();
         void UpdateParams(float fTime);
     };
@@ -56,17 +56,34 @@ class InterfaceBackScene : public ENTITY
     InterfaceBackScene();
     ~InterfaceBackScene();
 
-    bool Init();
-    void Execute(dword Delta_Time);
-    void Realize(dword Delta_Time);
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    bool Init() override;
+    void Execute(uint32_t Delta_Time);
+    void Realize(uint32_t Delta_Time);
+    uint64_t ProcessMessage(MESSAGE &message) override;
+
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
 
   protected:
-    VDX8RENDER *m_pRS;
+    VDX9RENDER *m_pRS;
 
-    ENTITY_ID m_eiModel;
+    entid_t m_eiModel;
     MODEL *m_pModel;
-    ENTITY_ID m_eiLocators;
+    entid_t m_eiLocators;
     MODEL *m_pLocators;
 
     FXYPOINT m_pntOldMouse;
@@ -74,35 +91,37 @@ class InterfaceBackScene : public ENTITY
     CVECTOR m_vCamAng;
     float m_fCamPerspective;
 
-    array<LightParam *> m_aLights;
+    std::vector<LightParam *> m_aLights;
 
     struct MenuDescr
     {
         bool bSelectable;
-        ENTITY_ID eiActive;
+        entid_t eiActive;
         MODEL *pActive;
-        ENTITY_ID eiPassive;
+        entid_t eiPassive;
         MODEL *pPassive;
-        string sEventName;
+        std::string sEventName;
 
         MenuDescr()
         {
-            pActive = 0;
-            pPassive = 0;
+            pActive = nullptr;
+            pPassive = nullptr;
             bSelectable = false;
         }
+
         ~MenuDescr();
         void Set(CMatrix *pMtx, const char *pcActiveName, const char *pcPassiveName, const char *pcEvent,
                  const char *pcPathName, const char *pcTechniqueName);
     };
-    array<MenuDescr *> m_aMenuDescr;
+
+    std::vector<MenuDescr *> m_aMenuDescr;
     long m_nSelectMenuIndex;
 
     void LoadModel(const char *pcModelName);
     void SetCameraPosition(const char *pcLocatorName);
-    void SetShipPosition(const char *pcLocName, ATTRIBUTES *pAChar);
+    void SetShipPosition(const char *pcLocName, ATTRIBUTES *pAChar) const;
 
-    bool FindLocator(const char *pcLocName, CMatrix *pMtx, CVECTOR *pPos, float *pYAng);
+    bool FindLocator(const char *pcLocName, CMatrix *pMtx, CVECTOR *pPos, float *pYAng) const;
     void SetLocatorPosition(MODEL *pModel, const char *pcLocName, CVECTOR &pos, NODE *&pNodPtr);
 
     void ReleaseMenuList();
@@ -125,24 +144,26 @@ class InterfaceBackScene : public ENTITY
 
     struct AniModelDescr
     {
-        ENTITY_ID ei;
+        entid_t ei;
         MODEL *pModel;
 
         bool bUseTFactor;
-        DWORD dwTFactor;
+        uint32_t dwTFactor;
 
         AniModelDescr()
         {
-            pModel = 0;
+            pModel = nullptr;
             bUseTFactor = false;
         }
+
         ~AniModelDescr()
         {
-            api->DeleteEntity(ei);
-            pModel = 0;
+            EntityManager::EraseEntity(ei);
+            pModel = nullptr;
         }
     };
-    array<AniModelDescr *> m_apAniModel;
+
+    std::vector<AniModelDescr *> m_apAniModel;
 
     // муха - перелетная птица!
     struct Particle
@@ -152,17 +173,20 @@ class InterfaceBackScene : public ENTITY
         float size;
         float alpha;
     };
+
     struct ParticleEx : public Particle
     {
-        dword color;
+        uint32_t color;
         float frame;
     };
+
     struct ParticleFly : public ParticleEx
     {
         float ax, ay;
         float kx, ky;
         float a, k;
     };
+
     struct LampFlys
     {
         CVECTOR pos;
@@ -170,16 +194,18 @@ class InterfaceBackScene : public ENTITY
         long start;
         long num;
     };
+
     struct Vertex
     {
         CVECTOR pos;
-        dword color;
+        uint32_t color;
         float u, v;
     };
-    LampFlys *flys;
+
+    std::vector<LampFlys> flys;
     long numFlys;
     long maxFlys;
-    ParticleFly *fly;
+    std::vector<ParticleFly> fly;
     long numFly;
     long flyTex;
     Vertex buffer[256 * 6];

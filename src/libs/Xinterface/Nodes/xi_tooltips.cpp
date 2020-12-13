@@ -1,23 +1,22 @@
 #include "xi_tooltips.h"
-#include "..\xinterface.h"
-#include "xi_util.h"
-#include <stdio.h>
+#include "../xinterface.h"
+#include "strutils.h"
 
-CXI_ToolTip::CXI_ToolTip(VXSERVICE *pPicService, VSTRSERVICE *pStrService, XYPOINT &pntScrSize) : m_aSubText(_FL)
+CXI_ToolTip::CXI_ToolTip(VXSERVICE *pPicService, VSTRSERVICE *pStrService, XYPOINT &pntScrSize)
+    : m_pntScreenSize(pntScrSize)
 {
     m_pPicService = pPicService;
     m_pStrService = pStrService;
-    m_pntScreenSize = pntScrSize;
 
     m_rs = XINTERFACE::GetRenderService();
     if (!m_rs)
     {
-        SE_THROW_MSG("No service: dx8render");
-    };
+        throw std::exception("No service: dx9render");
+    }
 
     m_nTextureID = -1;
-    m_pV = 0;
-    m_pI = 0;
+    m_pV = nullptr;
+    m_pI = nullptr;
     m_nSquareQ = 0;
     m_dwBackColor = ARGB(255, 128, 128, 128);
 
@@ -39,7 +38,7 @@ void CXI_ToolTip::Draw()
 {
     if (m_bDisableDraw)
         return;
-    if (m_sText.IsEmpty())
+    if (m_sText.empty())
         return; // нет ни ... чего
 
     if (m_nSquareQ > 0)
@@ -49,13 +48,13 @@ void CXI_ToolTip::Draw()
                                      sizeof(XI_ONETEX_VERTEX), "iVideo");
     }
 
-    long nX = (m_rPos.left + m_rPos.right) / 2;
-    long nY = m_rPos.top + m_pntTextOffset.y;
-    for (long n = 0; n < m_aSubText; n++)
+    const auto nX = (m_rPos.left + m_rPos.right) / 2;
+    auto nY = m_rPos.top + m_pntTextOffset.y;
+    for (long n = 0; n < m_aSubText.size(); n++)
     {
-        m_rs->ExtPrint(m_nFontID, m_dwFontColor, 0, ALIGN_CENTER, true, m_fFontScale, m_pntScreenSize.x,
-                       m_pntScreenSize.y, nX, nY, "%s", m_aSubText[n].GetBuffer());
-        nY += (long)(m_rs->CharHeight(m_nFontID) * m_fFontScale);
+        m_rs->ExtPrint(m_nFontID, m_dwFontColor, 0, PR_ALIGN_CENTER, true, m_fFontScale, m_pntScreenSize.x,
+                       m_pntScreenSize.y, nX, nY, "%s", m_aSubText[n].c_str());
+        nY += static_cast<long>(m_rs->CharHeight(m_nFontID) * m_fFontScale);
     }
 }
 
@@ -71,17 +70,17 @@ void CXI_ToolTip::SetByFormatString(XYRECT &rectOwner, INIFILE *pDefIni, const c
 
     m_rActiveZone = rectOwner;
 
-    _snprintf(pcToolTipType, sizeof(pcToolTipType), "ToolTip");
-    long m_nMaxStrWidth = -1;
+    sprintf_s(pcToolTipType, sizeof(pcToolTipType), "ToolTip");
+    long m_nMaxStrWidth = -1; //~!~
 
-    for (char *pcParam = (char *)pFmtStr; pcParam && pcParam[0];)
+    for (auto *pcParam = (char *)pFmtStr; pcParam && pcParam[0];)
     {
-        if (0 == CXI_UTILS::StringGetTokenID(pcParam, tokenID, sizeof(tokenID)))
+        if (nullptr == CXI_UTILS::StringGetTokenID(pcParam, tokenID, sizeof(tokenID)))
             break;
-        long nTokenCode = CXI_UTILS::StringGetTokenCode(tokenID);
+        const auto nTokenCode = CXI_UTILS::StringGetTokenCode(tokenID);
         if (CXI_UTILS::StringGetTokenString(pcParam, tokenString, sizeof(tokenString)))
         {
-            char *pStr = tokenString;
+            const char *pStr = tokenString;
             switch (nTokenCode)
             {
             case InterfaceToken_text:
@@ -91,7 +90,7 @@ void CXI_ToolTip::SetByFormatString(XYRECT &rectOwner, INIFILE *pDefIni, const c
                     m_sText = m_pStrService->GetString(m_pStrService->GetStringNum(tokenString));
                 break;
             case InterfaceToken_class:
-                _snprintf(pcToolTipType, sizeof(pcToolTipType), "%s", tokenString);
+                sprintf_s(pcToolTipType, sizeof(pcToolTipType), "%s", tokenString);
                 break;
             case InterfaceToken_width:
                 m_nMaxStrWidth = CXI_UTILS::StringGetLong(pStr);
@@ -119,32 +118,33 @@ void CXI_ToolTip::SetByFormatString(XYRECT &rectOwner, INIFILE *pDefIni, const c
         if (pDefIni->ReadString(pcToolTipType, "font_id", param, sizeof(param), ""))
             m_nFontID = m_rs->LoadFont(param);
         m_fFontScale = pDefIni->GetFloat(pcToolTipType, "font_scale", m_fFontScale);
-        m_dwFontColor = CINODE::GetIniARGB(pDefIni, pcToolTipType, 0, 0, "font_color", m_dwFontColor);
+        m_dwFontColor = CINODE::GetIniARGB(pDefIni, pcToolTipType, nullptr, nullptr, "font_color", m_dwFontColor);
         if (m_nMaxStrWidth <= 0)
             m_nMaxStrWidth = pDefIni->GetLong(pcToolTipType, "str_width", m_pntScreenSize.x);
-        m_pntTextOffset = CINODE::GetIniLongPoint(pDefIni, pcToolTipType, 0, 0, "str_offset", m_pntTextOffset);
+        m_pntTextOffset =
+            CINODE::GetIniLongPoint(pDefIni, pcToolTipType, nullptr, nullptr, "str_offset", m_pntTextOffset);
 
         // read back info
-        m_dwBackColor = CINODE::GetIniARGB(pDefIni, pcToolTipType, 0, 0, "back_color", m_dwBackColor);
+        m_dwBackColor = CINODE::GetIniARGB(pDefIni, pcToolTipType, nullptr, nullptr, "back_color", m_dwBackColor);
         m_nLeftSideWidth = pDefIni->GetLong(pcToolTipType, "back_leftwidth", m_nLeftSideWidth);
         m_nRightSideWidth = pDefIni->GetLong(pcToolTipType, "back_rightwidth", m_nRightSideWidth);
         if (pDefIni->ReadString(pcToolTipType, "back_imagegroup", param, sizeof(param), ""))
         {
             m_sGroupName = param;
-            m_nTextureID = m_pPicService->GetTextureID(m_sGroupName);
+            m_nTextureID = m_pPicService->GetTextureID(m_sGroupName.c_str());
             if (pDefIni->ReadString(pcToolTipType, "back_imageleft", param, sizeof(param), ""))
             {
-                m_nPicIndex_Left = m_pPicService->GetImageNum(m_sGroupName, param);
+                m_nPicIndex_Left = m_pPicService->GetImageNum(m_sGroupName.c_str(), param);
                 m_pPicService->GetTexturePos(m_nPicIndex_Left, m_uvBackLeft);
             }
             if (pDefIni->ReadString(pcToolTipType, "back_imageright", param, sizeof(param), ""))
             {
-                m_nPicIndex_Right = m_pPicService->GetImageNum(m_sGroupName, param);
+                m_nPicIndex_Right = m_pPicService->GetImageNum(m_sGroupName.c_str(), param);
                 m_pPicService->GetTexturePos(m_nPicIndex_Right, m_uvBackRight);
             }
             if (pDefIni->ReadString(pcToolTipType, "back_imagemiddle", param, sizeof(param), ""))
             {
-                m_nPicIndex_Middle = m_pPicService->GetImageNum(m_sGroupName, param);
+                m_nPicIndex_Middle = m_pPicService->GetImageNum(m_sGroupName.c_str(), param);
                 m_pPicService->GetTexturePos(m_nPicIndex_Middle, m_uvBackMiddle);
             }
         }
@@ -157,18 +157,22 @@ void CXI_ToolTip::SetByFormatString(XYRECT &rectOwner, INIFILE *pDefIni, const c
         m_nMaxStrWidth = m_pntScreenSize.x;
 
     //
-    CXI_UTILS::SplitStringByWidth(m_sText, m_nFontID, m_fFontScale, m_nMaxStrWidth, m_aSubText);
+    CXI_UTILS::SplitStringByWidth(m_sText.c_str(), m_nFontID, m_fFontScale, m_nMaxStrWidth, m_aSubText);
     m_nUseWidth = 0;
-    for (n = 0; n < m_aSubText; n++)
+    for (n = 0; n < m_aSubText.size(); n++)
     {
-        m_aSubText[n].TrimLeft();
-        m_aSubText[n].TrimRight();
-        long nW = m_rs->StringWidth((char *)m_aSubText[n].GetBuffer(), m_nFontID, m_fFontScale, 0);
+        // m_aSubText[n].TrimLeft();
+        // m_aSubText[n].TrimRight();
+        TOREMOVE::trim(m_aSubText[n]);
+        TOREMOVE::rtrim(m_aSubText[n]);
+
+        const auto nW = m_rs->StringWidth((char *)m_aSubText[n].c_str(), m_nFontID, m_fFontScale, 0);
         if (nW > m_nUseWidth)
             m_nUseWidth = nW;
     }
     m_nUseWidth += m_pntTextOffset.x * 2;
-    m_nUseHeight = m_aSubText.Size() * (long)(m_rs->CharHeight(m_nFontID) * m_fFontScale) + 2 * m_pntTextOffset.x;
+    m_nUseHeight =
+        m_aSubText.size() * static_cast<long>(m_rs->CharHeight(m_nFontID) * m_fFontScale) + 2 * m_pntTextOffset.x;
 
     m_nSquareQ = 3;
     CreateIndexBuffer();
@@ -203,9 +207,9 @@ void CXI_ToolTip::MousePos(float fDeltaTime, long nX, long nY)
 
 void CXI_ToolTip::ReleaseAll()
 {
-    PICTURE_TEXTURE_RELEASE(m_pPicService, m_sGroupName.GetBuffer(), m_nTextureID);
-    SE_DELETE(m_pV);
-    SE_DELETE(m_pI);
+    PICTURE_TEXTURE_RELEASE(m_pPicService, m_sGroupName.c_str(), m_nTextureID);
+    STORM_DELETE(m_pV);
+    STORM_DELETE(m_pI);
     m_nSquareQ = 0;
     m_bDisableDraw = true;
     FONT_RELEASE(m_rs, m_nFontID);
@@ -215,7 +219,7 @@ void CXI_ToolTip::CreateIndexBuffer()
 {
     if (m_nSquareQ > 0)
     {
-        m_pI = NEW word[m_nSquareQ * 6];
+        m_pI = new uint16_t[m_nSquareQ * 6];
         Assert(m_pI);
     }
 }
@@ -224,24 +228,24 @@ void CXI_ToolTip::CreateVertexBuffer()
 {
     if (m_nSquareQ > 0)
     {
-        m_pV = NEW XI_ONETEX_VERTEX[m_nSquareQ * 4];
+        m_pV = new XI_ONETEX_VERTEX[m_nSquareQ * 4];
         Assert(m_pV);
     }
 }
 
-void CXI_ToolTip::UpdateIndexBuffer()
+void CXI_ToolTip::UpdateIndexBuffer() const
 {
     if (!m_pI)
         return;
     for (long n = 0; n < m_nSquareQ; n++)
     {
-        m_pI[n * 6 + 0] = (word)(n * 4 + 0);
-        m_pI[n * 6 + 1] = (word)(n * 4 + 1);
-        m_pI[n * 6 + 2] = (word)(n * 4 + 2);
+        m_pI[n * 6 + 0] = static_cast<uint16_t>(n * 4 + 0);
+        m_pI[n * 6 + 1] = static_cast<uint16_t>(n * 4 + 1);
+        m_pI[n * 6 + 2] = static_cast<uint16_t>(n * 4 + 2);
 
-        m_pI[n * 6 + 3] = (word)(n * 4 + 1);
-        m_pI[n * 6 + 4] = (word)(n * 4 + 3);
-        m_pI[n * 6 + 5] = (word)(n * 4 + 2);
+        m_pI[n * 6 + 3] = static_cast<uint16_t>(n * 4 + 1);
+        m_pI[n * 6 + 4] = static_cast<uint16_t>(n * 4 + 3);
+        m_pI[n * 6 + 5] = static_cast<uint16_t>(n * 4 + 2);
     }
 }
 
@@ -259,8 +263,8 @@ void CXI_ToolTip::UpdateVertexBuffer()
 
 void CXI_ToolTip::ReplaceRectangle(long x, long y)
 {
-    long top = y + m_nYRectangleOffsetUp;
-    long bottom = y + m_nYRectangleOffsetDown;
+    auto top = y + m_nYRectangleOffsetUp;
+    auto bottom = y + m_nYRectangleOffsetDown;
     if (top > m_rActiveZone.top)
         top = m_rActiveZone.top;
     if (bottom < m_rActiveZone.bottom)
@@ -280,7 +284,8 @@ void CXI_ToolTip::ReplaceRectangle(long x, long y)
             m_rPos.top = m_rPos.bottom - m_nUseHeight;
         }
         else
-        { // все равно внизу
+        {
+            // все равно внизу
             m_rPos.top = bottom;
             m_rPos.bottom = m_rPos.top + m_nUseHeight;
         }

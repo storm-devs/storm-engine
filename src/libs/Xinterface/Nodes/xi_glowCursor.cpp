@@ -1,12 +1,11 @@
 #include "xi_glowCursor.h"
-#include "matrix.h"
 
 CXI_GLOWCURSOR::CXI_GLOWCURSOR()
 {
     m_nNodeType = NODETYPE_GLOWCURSOR;
     m_idBackTex = -1;
-    m_pBackTex = null;
-    m_pPrevNode = null;
+    m_pBackTex = nullptr;
+    m_pPrevNode = nullptr;
     m_bShowGlow = false;
     m_bGlowToBack = false;
 }
@@ -16,7 +15,7 @@ CXI_GLOWCURSOR::~CXI_GLOWCURSOR()
     ReleaseAll();
 }
 
-void CXI_GLOWCURSOR::Draw(bool bSelected, dword Delta_Time)
+void CXI_GLOWCURSOR::Draw(bool bSelected, uint32_t Delta_Time)
 {
     if (m_bUse)
     {
@@ -24,7 +23,7 @@ void CXI_GLOWCURSOR::Draw(bool bSelected, dword Delta_Time)
         {
             if (m_pPrevNode != ptrOwner->GetCurrentNode())
             {
-                m_pPrevNode = (CINODE *)ptrOwner->GetCurrentNode();
+                m_pPrevNode = static_cast<CINODE *>(ptrOwner->GetCurrentNode());
                 if (m_pPrevNode)
                 {
                     m_bShowGlow = m_pPrevNode->IsShowGlowCursor();
@@ -37,14 +36,19 @@ void CXI_GLOWCURSOR::Draw(bool bSelected, dword Delta_Time)
             }
             else
             {
-                m_bShowGlow = m_pPrevNode->IsShowGlowCursor();
-                if (m_bShowGlow && m_pPrevNode && m_pPrevNode->IsGlowChanged())
+                if (m_pPrevNode)
                 {
-                    XYRECT rectXY = m_pPrevNode->GetCursorRect();
-                    if ((int)m_pTexVert[0].pos.x != rectXY.left || (int)m_pTexVert[0].pos.y != rectXY.top ||
-                        (int)m_pTexVert[3].pos.x != rectXY.right || (int)m_pTexVert[3].pos.y != rectXY.bottom)
+                    m_bShowGlow = m_pPrevNode->IsShowGlowCursor();
+                    if (m_bShowGlow && m_pPrevNode->IsGlowChanged())
                     {
-                        SetRectanglesToPosition(rectXY);
+                        const auto rectXY = m_pPrevNode->GetCursorRect();
+                        if (static_cast<int>(m_pTexVert[0].pos.x) != rectXY.left ||
+                            static_cast<int>(m_pTexVert[0].pos.y) != rectXY.top ||
+                            static_cast<int>(m_pTexVert[3].pos.x) != rectXY.right ||
+                            static_cast<int>(m_pTexVert[3].pos.y) != rectXY.bottom)
+                        {
+                            SetRectanglesToPosition(rectXY);
+                        }
                     }
                 }
             }
@@ -71,7 +75,7 @@ void CXI_GLOWCURSOR::Draw(bool bSelected, dword Delta_Time)
                             m_bUpBlind = true;
                         }
                     }
-                    for (int j = 0; j < 14; j++)
+                    for (auto j = 0; j < 14; j++)
                     {
                         m_pTexVert[j].color = m_dwCurColor;
                     }
@@ -83,7 +87,7 @@ void CXI_GLOWCURSOR::Draw(bool bSelected, dword Delta_Time)
                     m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, m_pTexVert, sizeof(XI_ONETEX_VERTEX),
                                           "iGlow");
                 }
-                if (m_pBackTex != null)
+                if (m_pBackTex != nullptr)
                 {
                     m_rs->SetTexture(0, m_pBackTex->m_pTexture);
                     m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, m_pTexVert, sizeof(XI_ONETEX_VERTEX),
@@ -101,7 +105,7 @@ void CXI_GLOWCURSOR::Draw(bool bSelected, dword Delta_Time)
                     m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 8, &m_pTexVert[4],
                                           sizeof(XI_ONETEX_VERTEX), "iGlow");
                 }
-                if (m_pBackTex != null)
+                if (m_pBackTex != nullptr)
                 {
                     m_rs->SetTexture(0, m_pBackTex->m_pTexture);
                     m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 8, &m_pTexVert[4],
@@ -112,8 +116,8 @@ void CXI_GLOWCURSOR::Draw(bool bSelected, dword Delta_Time)
     }
 }
 
-bool CXI_GLOWCURSOR::Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, VDX8RENDER *rs, XYRECT &hostRect,
-                          XYPOINT &ScreenSize)
+bool CXI_GLOWCURSOR::Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs,
+                          XYRECT &hostRect, XYPOINT &ScreenSize)
 {
     if (!CINODE::Init(ini1, name1, ini2, name2, rs, hostRect, ScreenSize))
         return false;
@@ -135,21 +139,21 @@ void CXI_GLOWCURSOR::SaveParametersToIni()
 {
     char pcWriteParam[2048];
 
-    INIFILE *pIni = api->fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.GetBuffer());
+    auto *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
-        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.GetBuffer());
+        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
         return;
     }
 
     // save position
-    _snprintf(pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rect.left, m_rect.top, m_rect.right, m_rect.bottom);
+    sprintf_s(pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rect.left, m_rect.top, m_rect.right, m_rect.bottom);
     pIni->WriteString(m_nodeName, "position", pcWriteParam);
 
     delete pIni;
 }
 
-void CXI_GLOWCURSOR::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2)
+void CXI_GLOWCURSOR::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2)
 {
     int i;
     char param[255];
@@ -185,7 +189,7 @@ void CXI_GLOWCURSOR::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *na
     m_yOffset = fPnt.y;
 
     // get video texture (for inside picture)
-    m_pBackTex = null;
+    m_pBackTex = nullptr;
     if (ReadIniString(ini1, name1, ini2, name2, "videoTexture", param, sizeof(param), ""))
         m_pBackTex = m_rs->GetVideoTexture(param);
 
@@ -205,23 +209,23 @@ void CXI_GLOWCURSOR::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *na
     m_pTexVert[8].tv = m_pTexVert[10].tv = 1.f;
 
     XYRECT rectXY;
-    ZeroMemory(&rectXY, sizeof(rectXY));
+    PZERO(&rectXY, sizeof(rectXY));
     SetRectanglesToPosition(rectXY);
 }
 
-void CXI_GLOWCURSOR::SetRectanglesToPosition(XYRECT &rectXY)
+void CXI_GLOWCURSOR::SetRectanglesToPosition(const XYRECT &rectXY)
 {
-    float fW = (float)(rectXY.right - rectXY.left);
+    auto fW = static_cast<float>(rectXY.right - rectXY.left);
     if (fW < 1.f)
         m_bShowGlow = false;
-    float fH = (float)(rectXY.bottom - rectXY.top);
+    auto fH = static_cast<float>(rectXY.bottom - rectXY.top);
     if (fH < 1.f)
         m_bShowGlow = false;
     if (!m_bShowGlow)
         return;
 
-    float fxOffset = m_xOffset;
-    float fyOffset = m_yOffset;
+    auto fxOffset = m_xOffset;
+    auto fyOffset = m_yOffset;
     if (m_pPrevNode)
         m_pPrevNode->UpdateGlowOffsets(fxOffset, fyOffset);
 
@@ -235,11 +239,13 @@ void CXI_GLOWCURSOR::SetRectanglesToPosition(XYRECT &rectXY)
     m_pTexVert[8].pos.y = m_pTexVert[10].pos.y = rectXY.bottom + fyOffset;
 
     m_pTexVert[0].pos.x = m_pTexVert[2].pos.x = m_pTexVert[5].pos.x = m_pTexVert[11].pos.x = m_pTexVert[13].pos.x =
-        (float)rectXY.left;
+        static_cast<float>(rectXY.left);
     m_pTexVert[0].pos.y = m_pTexVert[1].pos.y = m_pTexVert[5].pos.y = m_pTexVert[7].pos.y = m_pTexVert[13].pos.y =
-        (float)rectXY.top;
-    m_pTexVert[1].pos.x = m_pTexVert[3].pos.x = m_pTexVert[7].pos.x = m_pTexVert[9].pos.x = (float)rectXY.right;
-    m_pTexVert[2].pos.y = m_pTexVert[3].pos.y = m_pTexVert[9].pos.y = m_pTexVert[11].pos.y = (float)rectXY.bottom;
+        static_cast<float>(rectXY.top);
+    m_pTexVert[1].pos.x = m_pTexVert[3].pos.x = m_pTexVert[7].pos.x = m_pTexVert[9].pos.x =
+        static_cast<float>(rectXY.right);
+    m_pTexVert[2].pos.y = m_pTexVert[3].pos.y = m_pTexVert[9].pos.y = m_pTexVert[11].pos.y =
+        static_cast<float>(rectXY.bottom);
 
     m_pTexVert[0].tu = m_pTexVert[2].tu = m_pTexVert[5].tu = m_pTexVert[11].tu = m_pTexVert[13].tu = (1.f - fW) * .5f;
     m_pTexVert[0].tv = m_pTexVert[1].tv = m_pTexVert[5].tv = m_pTexVert[7].tv = m_pTexVert[13].tv = (1.f - fH) * .5f;

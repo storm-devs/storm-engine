@@ -1,7 +1,7 @@
 #ifndef __XI_TITLE_H__
 #define __XI_TITLR_H__
 
-#include "..\inode.h"
+#include "../inode.h"
 
 class CXI_WINDOW : public CINODE
 {
@@ -9,42 +9,45 @@ class CXI_WINDOW : public CINODE
     CXI_WINDOW();
     ~CXI_WINDOW();
 
-    bool Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, VDX8RENDER *rs, XYRECT &hostRect,
-              XYPOINT &ScreenSize);
-    void ChangePosition(XYRECT &rNewPos);
-    void SaveParametersToIni();
+    bool Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs, XYRECT &hostRect,
+              XYPOINT &ScreenSize) override;
+    void ChangePosition(XYRECT &rNewPos) override;
+    void SaveParametersToIni() override;
 
     void SetShow(bool bShow);
-    bool GetShow()
+    bool GetShow() const
     {
         return m_bShow;
     }
 
     void SetActive(bool bActive);
-    bool GetActive()
+    bool GetActive() const
     {
         return m_bActive;
     }
 
     void AddNode(const char *pcNodeName);
 
-    virtual int CommandExecute(int wActCode)
+    int CommandExecute(int wActCode) override
     {
         return -1;
     };
-    virtual void Draw(bool bSelected, dword Delta_Time){};
-    virtual void ReleaseAll(){};
-    virtual bool IsClick(int buttonID, long xPos, long yPos)
+
+    void Draw(bool bSelected, uint32_t Delta_Time) override{};
+
+    void ReleaseAll() override{};
+    bool IsClick(int buttonID, long xPos, long yPos) override
     {
         return false;
     };
-    virtual void MouseThis(float fX, float fY){};
+
+    void MouseThis(float fX, float fY) override{};
 
   protected:
-    void LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2);
+    void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
 
   protected:
-    array<string> m_aNodeNameList;
+    std::vector<std::string> m_aNodeNameList;
 
     bool m_bShow;
     bool m_bActive;

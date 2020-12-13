@@ -1,10 +1,10 @@
 #include "xi_videorect.h"
-#include "..\\base_video.h"
-#include <stdio.h>
+#include "../base_video.h"
+#include "EntityManager.h"
 
 CXI_VIDEORECT::CXI_VIDEORECT()
 {
-    m_rs = 0;
+    m_rs = nullptr;
     m_nNodeType = NODETYPE_VIDEORECT;
 }
 
@@ -13,33 +13,33 @@ CXI_VIDEORECT::~CXI_VIDEORECT()
     ReleaseAll();
 }
 
-void CXI_VIDEORECT::Draw(bool bSelected, dword Delta_Time)
+void CXI_VIDEORECT::Draw(bool bSelected, uint32_t Delta_Time)
 {
     if (m_bUse)
     {
-        if (api->ValidateEntity(&m_eiVideo))
+        if (auto *const ptr = EntityManager::GetEntityPointer(m_eiVideo))
         {
-            IDirect3DTexture9 *pTex = ((xiBaseVideo *)m_eiVideo.pointer)->GetCurrentVideoTexture();
-            if (pTex != null)
+            auto *const pTex = static_cast<xiBaseVideo *>(ptr)->GetCurrentVideoTexture();
+            if (pTex != nullptr)
             {
                 // Create rectangle
                 XI_ONETEX_VERTEX v[4];
-                v[0].pos.x = (float)m_rect.left;
-                v[0].pos.y = (float)m_rect.top;
+                v[0].pos.x = static_cast<float>(m_rect.left);
+                v[0].pos.y = static_cast<float>(m_rect.top);
                 v[0].tu = m_rectTex.left;
                 v[0].tv = m_rectTex.bottom;
-                v[1].pos.x = (float)m_rect.left;
-                v[1].pos.y = (float)m_rect.bottom;
+                v[1].pos.x = static_cast<float>(m_rect.left);
+                v[1].pos.y = static_cast<float>(m_rect.bottom);
                 v[1].tu = m_rectTex.left;
                 v[1].tv = m_rectTex.top;
-                v[2].pos.x = (float)m_rect.right;
-                v[2].pos.y = (float)m_rect.top;
+                v[2].pos.x = static_cast<float>(m_rect.right);
+                v[2].pos.y = static_cast<float>(m_rect.top);
                 v[2].tu = m_rectTex.right;
                 v[2].tv = m_rectTex.bottom;
-                v[3].pos.x = (float)m_rect.right, v[3].pos.y = (float)m_rect.bottom;
+                v[3].pos.x = static_cast<float>(m_rect.right), v[3].pos.y = static_cast<float>(m_rect.bottom);
                 v[3].tu = m_rectTex.right;
                 v[3].tv = m_rectTex.top;
-                for (int i = 0; i < 4; i++)
+                for (auto i = 0; i < 4; i++)
                 {
                     v[i].color = m_dwColor;
                     v[i].pos.z = 1.f;
@@ -52,8 +52,8 @@ void CXI_VIDEORECT::Draw(bool bSelected, dword Delta_Time)
     }
 }
 
-bool CXI_VIDEORECT::Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, VDX8RENDER *rs, XYRECT &hostRect,
-                         XYPOINT &ScreenSize)
+bool CXI_VIDEORECT::Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs,
+                         XYRECT &hostRect, XYPOINT &ScreenSize)
 {
     if (!CINODE::Init(ini1, name1, ini2, name2, rs, hostRect, ScreenSize))
         return false;
@@ -61,7 +61,7 @@ bool CXI_VIDEORECT::Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2,
     return true;
 }
 
-void CXI_VIDEORECT::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2)
+void CXI_VIDEORECT::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2)
 {
     char param[255];
 
@@ -73,7 +73,7 @@ void CXI_VIDEORECT::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *nam
 
 void CXI_VIDEORECT::ReleaseAll()
 {
-    api->DeleteEntity(m_eiVideo);
+    EntityManager::EraseEntity(m_eiVideo);
 }
 
 void CXI_VIDEORECT::ChangePosition(XYRECT &rNewPos)
@@ -85,15 +85,15 @@ void CXI_VIDEORECT::SaveParametersToIni()
 {
     char pcWriteParam[2048];
 
-    INIFILE *pIni = api->fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.GetBuffer());
+    auto *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
-        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.GetBuffer());
+        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
         return;
     }
 
     // save position
-    _snprintf(pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rect.left, m_rect.top, m_rect.right, m_rect.bottom);
+    sprintf_s(pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rect.left, m_rect.top, m_rect.right, m_rect.bottom);
     pIni->WriteString(m_nodeName, "position", pcWriteParam);
 
     delete pIni;
@@ -104,7 +104,7 @@ int CXI_VIDEORECT::CommandExecute(int wActCode)
     return -1;
 }
 
-dword _cdecl CXI_VIDEORECT::MessageProc(long msgcode, MESSAGE &message)
+uint32_t CXI_VIDEORECT::MessageProc(long msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
@@ -122,23 +122,23 @@ dword _cdecl CXI_VIDEORECT::MessageProc(long msgcode, MESSAGE &message)
 
 void CXI_VIDEORECT::StartVideoPlay(char *videoFileName)
 {
-    if (api->ValidateEntity(&m_eiVideo))
+    if (EntityManager::GetEntityPointer(m_eiVideo))
     {
-        api->DeleteEntity(m_eiVideo);
+        EntityManager::EraseEntity(m_eiVideo);
     }
-    if (videoFileName == null)
+    if (videoFileName == nullptr)
         return;
 
 #ifndef _XBOX
-    api->CreateEntity(&m_eiVideo, "CAviPlayer");
+    m_eiVideo = EntityManager::CreateEntity("CAviPlayer");
     m_rectTex.bottom = 1.f - m_rectTex.bottom;
     m_rectTex.top = 1.f - m_rectTex.top;
-    if (api->ValidateEntity(&m_eiVideo))
-        ((xiBaseVideo *)m_eiVideo.pointer)->SetShowVideo(false);
+    if (auto *const ptr = EntityManager::GetEntityPointer(m_eiVideo))
+        static_cast<xiBaseVideo *>(ptr)->SetShowVideo(false);
     api->Send_Message(m_eiVideo, "ls", MSG_SET_VIDEO_PLAY, videoFileName);
 
 #else
-    api->CreateEntity(&m_eiVideo, "WMVideoPlay");
+    EntityManager::CreateEntity(&m_eiVideo, "WMVideoPlay");
     api->Send_Message(m_eiVideo, "ls", MSG_SET_VIDEO_PLAY, videoFileName);
     float fScrW = (float)m_screenSize.x;
     float fScrH = (float)m_screenSize.y;

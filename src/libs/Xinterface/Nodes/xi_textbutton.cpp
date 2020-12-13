@@ -1,11 +1,10 @@
 #include "xi_textbutton.h"
-#include <stdio.h>
 
 CXI_TEXTBUTTON::CXI_TEXTBUTTON()
 {
-    m_rs = null;
+    m_rs = nullptr;
 
-    m_sGroupName = null;
+    m_sGroupName = nullptr;
     m_idTex = -1;
     m_idShadowTex = -1;
 
@@ -25,9 +24,9 @@ CXI_TEXTBUTTON::CXI_TEXTBUTTON()
     m_bSelected = true;
     m_bMouseSelect = true;
 
-    m_pTex = null;
+    m_pTex = nullptr;
     m_nNodeType = NODETYPE_TEXTBUTTON;
-    m_sString = null;
+    m_sString = nullptr;
     m_bVideoToBack = true;
 
     m_dwBackColor = ARGB(128, 0, 0, 0);
@@ -38,7 +37,7 @@ CXI_TEXTBUTTON::~CXI_TEXTBUTTON()
     ReleaseAll();
 }
 
-void CXI_TEXTBUTTON::Draw(bool bSelected, dword Delta_Time)
+void CXI_TEXTBUTTON::Draw(bool bSelected, uint32_t Delta_Time)
 {
     if (!m_bMakeActionInDeclick && m_nPressedDelay > 0)
         m_nPressedDelay--;
@@ -47,8 +46,8 @@ void CXI_TEXTBUTTON::Draw(bool bSelected, dword Delta_Time)
     {
         if (bSelected ^ m_bCurrentSelected)
         {
-            XI_ONETEX_VERTEX *pVert = (XI_ONETEX_VERTEX *)m_rs->LockVertexBuffer(m_idVBuf);
-            if (pVert != NULL)
+            auto *pVert = static_cast<XI_ONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_idVBuf));
+            if (pVert != nullptr)
             {
                 FXYRECT texRect;
                 m_bCurrentSelected = bSelected;
@@ -139,7 +138,7 @@ void CXI_TEXTBUTTON::Draw(bool bSelected, dword Delta_Time)
         if (m_bVideoToBack)
         {
             // show midle video fragment
-            if (bSelected && m_pTex != null)
+            if (bSelected && m_pTex != nullptr)
             {
                 m_rs->SetTexture(0, m_pTex->m_pTexture);
                 if (m_nPressedDelay > 0)
@@ -171,7 +170,7 @@ void CXI_TEXTBUTTON::Draw(bool bSelected, dword Delta_Time)
         if (!m_bVideoToBack)
         {
             // show midle video fragment
-            if (bSelected && m_pTex != null)
+            if (bSelected && m_pTex != nullptr)
             {
                 m_rs->SetTexture(0, m_pTex->m_pTexture);
                 if (m_nPressedDelay > 0)
@@ -183,37 +182,38 @@ void CXI_TEXTBUTTON::Draw(bool bSelected, dword Delta_Time)
             }
         }
 
-        if (m_idString != -1 || m_sString != null)
+        if (m_idString != -1 || m_sString != nullptr)
             if (m_nPressedDelay > 0)
             {
-                m_rs->ExtPrint(m_nFontNum, m_dwFontColor, 0, ALIGN_CENTER, true, m_fFontScale, m_screenSize.x,
-                               m_screenSize.y, (m_rect.left + m_rect.right) / 2 + (int)m_fXDeltaPress,
-                               m_rect.top + m_dwStrOffset + (int)m_fYDeltaPress, "%s",
+                m_rs->ExtPrint(m_nFontNum, m_dwFontColor, 0, PR_ALIGN_CENTER, true, m_fFontScale, m_screenSize.x,
+                               m_screenSize.y, (m_rect.left + m_rect.right) / 2 + static_cast<int>(m_fXDeltaPress),
+                               m_rect.top + m_dwStrOffset + static_cast<int>(m_fYDeltaPress), "%s",
                                m_idString != -1 ? pStringService->GetString(m_idString) : m_sString);
             }
             else
             {
                 if (m_bSelected)
-                    m_rs->ExtPrint(m_nFontNum, m_dwFontColor, 0, ALIGN_CENTER, true, m_fFontScale, m_screenSize.x,
+                    m_rs->ExtPrint(m_nFontNum, m_dwFontColor, 0, PR_ALIGN_CENTER, true, m_fFontScale, m_screenSize.x,
                                    m_screenSize.y, (m_rect.left + m_rect.right) / 2, m_rect.top + m_dwStrOffset, "%s",
                                    m_idString != -1 ? pStringService->GetString(m_idString) : m_sString);
                 else
-                    m_rs->ExtPrint(m_nFontNum, m_dwUnselFontColor, 0, ALIGN_CENTER, true, m_fFontScale, m_screenSize.x,
-                                   m_screenSize.y, (m_rect.left + m_rect.right) / 2, m_rect.top + m_dwStrOffset, "%s",
+                    m_rs->ExtPrint(m_nFontNum, m_dwUnselFontColor, 0, PR_ALIGN_CENTER, true, m_fFontScale,
+                                   m_screenSize.x, m_screenSize.y, (m_rect.left + m_rect.right) / 2,
+                                   m_rect.top + m_dwStrOffset, "%s",
                                    m_idString != -1 ? pStringService->GetString(m_idString) : m_sString);
             }
     }
 }
 
-bool CXI_TEXTBUTTON::Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, VDX8RENDER *rs, XYRECT &hostRect,
-                          XYPOINT &ScreenSize)
+bool CXI_TEXTBUTTON::Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs,
+                          XYRECT &hostRect, XYPOINT &ScreenSize)
 {
     if (!CINODE::Init(ini1, name1, ini2, name2, rs, hostRect, ScreenSize))
         return false;
     return true;
 }
 
-void CXI_TEXTBUTTON::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2)
+void CXI_TEXTBUTTON::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2)
 {
     char param[255];
     FXYPOINT fPos;
@@ -242,15 +242,16 @@ void CXI_TEXTBUTTON::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *na
     m_dwUnselFontColor = GetIniARGB(ini1, name1, ini2, name2, "unselectableFontColor", ARGB(255, 128, 128, 128));
 
     // get group name and get texture for this
-    m_sGroupName = null;
+    m_sGroupName = nullptr;
     m_idTex = -1;
     if (ReadIniString(ini1, name1, ini2, name2, "group", param, sizeof(param), ""))
     {
         m_idTex = pPictureService->GetTextureID(param);
-        m_sGroupName = NEW char[strlen(param) + 1];
-        if (m_sGroupName == NULL)
-            SE_THROW_MSG("allocate memory error")
-        strcpy(m_sGroupName, param);
+        const auto len = strlen(param) + 1;
+        m_sGroupName = new char[len];
+        if (m_sGroupName == nullptr)
+            throw std::exception("allocate memory error");
+        memcpy(m_sGroupName, param, len);
     }
 
     m_idShadowTex = -1;
@@ -292,7 +293,7 @@ void CXI_TEXTBUTTON::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *na
         m_idString = pStringService->GetStringNum(param);
 
     // get video fragment parameters
-    m_pTex = null;
+    m_pTex = nullptr;
     if (ReadIniString(ini1, name1, ini2, name2, "midVideo", param, sizeof(param), ""))
         m_pTex = m_rs->GetVideoTexture(param);
 
@@ -301,18 +302,18 @@ void CXI_TEXTBUTTON::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *na
     m_nVert = 4 * 3 * 2 * 2; // 4 vertex * 3 rectangle * (2=face&shadow) * (2=press&notpress)
     if (m_idShadowTex >= 0)
         m_nVert += 8;
-    m_idIBuf = m_rs->CreateIndexBufferManaged(m_nIndx * 2);
-    m_idVBuf = m_rs->CreateVertexBufferManaged(XI_ONETEX_FVF, m_nVert * sizeof(XI_ONETEX_VERTEX), D3DUSAGE_WRITEONLY);
+    m_idIBuf = m_rs->CreateIndexBuffer(m_nIndx * 2);
+    m_idVBuf = m_rs->CreateVertexBuffer(XI_ONETEX_FVF, m_nVert * sizeof(XI_ONETEX_VERTEX), D3DUSAGE_WRITEONLY);
 
     // Lock buffers for write
-    XI_ONETEX_VERTEX *pVert = (XI_ONETEX_VERTEX *)m_rs->LockVertexBuffer(m_idVBuf);
-    WORD *pIndx = (WORD *)m_rs->LockIndexBuffer(m_idIBuf);
-    if (pVert == NULL || pIndx == NULL)
-        SE_THROW_MSG("can not create the index&vertex buffers")
+    auto *pVert = static_cast<XI_ONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_idVBuf));
+    auto *pIndx = static_cast<uint16_t *>(m_rs->LockIndexBuffer(m_idIBuf));
+    if (pVert == nullptr || pIndx == nullptr)
+        throw std::exception("can not create the index&vertex buffers");
 
     // fill triangles buffer
-    int i = 0;
-    for (int tidx = 0; tidx < 3; tidx++)
+    auto i = 0;
+    for (auto tidx = 0; tidx < 3; tidx++)
     {
         pIndx[i + 0] = tidx * 4;
         pIndx[i + 1] = tidx * 4 + 1;
@@ -352,8 +353,8 @@ void CXI_TEXTBUTTON::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *na
         pVert[i + 7].tu = pVert[i + 3].tu = frectShadowUV.right;
         pVert[i + 7].tv = pVert[i + 3].tv = frectShadowUV.bottom;
 
-        float fhorzoffset = (m_rect.right - m_rect.left) * (m_fShadowScale - 1.f) * .5f;
-        float fvertoffset = (m_rect.bottom - m_rect.top) * (m_fShadowScale - 1.f) * .5f;
+        const auto fhorzoffset = (m_rect.right - m_rect.left) * (m_fShadowScale - 1.f) * .5f;
+        const auto fvertoffset = (m_rect.bottom - m_rect.top) * (m_fShadowScale - 1.f) * .5f;
 
         pVert[i + 0].pos.x = m_rect.left - fhorzoffset + m_fXShadow;
         pVert[i + 0].pos.y = m_rect.top - fvertoffset + m_fYShadow;
@@ -384,7 +385,7 @@ void CXI_TEXTBUTTON::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *na
         m_idUnSelectLeft = pPictureService->GetImageNum(m_sGroupName, param);
     pPictureService->GetTexturePos(m_idUnSelectLeft, texRect);
     pPictureService->GetTexturePos(m_idUnSelectLeft, natureRect);
-    float fLeftMiddle = float(m_rect.left + natureRect.right - natureRect.left);
+    auto fLeftMiddle = static_cast<float>(m_rect.left + natureRect.right - natureRect.left);
     pVert[0].tu = pVert[12].tu = pVert[24].tu = pVert[36].tu = texRect.left;
     pVert[0].tv = pVert[12].tv = pVert[24].tv = pVert[36].tv = texRect.top;
     pVert[1].tu = pVert[13].tu = pVert[25].tu = pVert[37].tu = texRect.right;
@@ -393,11 +394,11 @@ void CXI_TEXTBUTTON::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *na
     pVert[2].tv = pVert[14].tv = pVert[26].tv = pVert[38].tv = texRect.bottom;
     pVert[3].tu = pVert[15].tu = pVert[27].tu = pVert[39].tu = texRect.right;
     pVert[3].tv = pVert[15].tv = pVert[27].tv = pVert[39].tv = texRect.bottom;
-    pVert[0].pos.x = pVert[2].pos.x = (float)m_rect.left;
+    pVert[0].pos.x = pVert[2].pos.x = static_cast<float>(m_rect.left);
     pVert[12].pos.x = pVert[14].pos.x = m_rect.left + m_fXShadow;
     pVert[24].pos.x = pVert[26].pos.x = m_rect.left + m_fXDeltaPress;
     pVert[36].pos.x = pVert[38].pos.x = m_rect.left + m_fXDeltaPress + m_fXShadowPress;
-    pVert[0].pos.y = pVert[1].pos.y = (float)m_rect.top;
+    pVert[0].pos.y = pVert[1].pos.y = static_cast<float>(m_rect.top);
     pVert[12].pos.y = pVert[13].pos.y = m_rect.top + m_fYShadow;
     pVert[24].pos.y = pVert[25].pos.y = m_rect.top + m_fYDeltaPress;
     pVert[36].pos.y = pVert[37].pos.y = m_rect.top + m_fYDeltaPress + m_fYShadowPress;
@@ -405,12 +406,12 @@ void CXI_TEXTBUTTON::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *na
     pVert[13].pos.x = pVert[15].pos.x = fLeftMiddle + m_fXShadow;
     pVert[25].pos.x = pVert[27].pos.x = fLeftMiddle + m_fXDeltaPress;
     pVert[37].pos.x = pVert[39].pos.x = fLeftMiddle + m_fXDeltaPress + m_fXShadowPress;
-    pVert[2].pos.y = pVert[3].pos.y = (float)m_rect.bottom;
+    pVert[2].pos.y = pVert[3].pos.y = static_cast<float>(m_rect.bottom);
     pVert[14].pos.y = pVert[15].pos.y = m_rect.bottom + m_fYShadow;
     pVert[26].pos.y = pVert[27].pos.y = m_rect.bottom + m_fYDeltaPress;
     pVert[38].pos.y = pVert[39].pos.y = m_rect.bottom + m_fYDeltaPress + m_fYShadowPress;
     // fill right side of button
-    float fRightMiddle = m_rect.right - (fLeftMiddle - m_rect.left);
+    auto fRightMiddle = m_rect.right - (fLeftMiddle - m_rect.left);
     m_idUnSelectRight = m_idSelectRight = -1;
     if (ReadIniString(ini1, name1, ini2, name2, "buttonRight", param, sizeof(param), ""))
         m_idUnSelectRight = pPictureService->GetImageNum(m_sGroupName, param);
@@ -427,7 +428,7 @@ void CXI_TEXTBUTTON::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *na
         pPictureService->GetTexturePos(TEXTURE_MODIFY_HORZFLIP, m_idUnSelectLeft, texRect);
         pPictureService->GetTexturePos(m_idUnSelectLeft, natureRect);
     }
-    fRightMiddle = m_rect.right - float(natureRect.right - natureRect.left);
+    fRightMiddle = m_rect.right - static_cast<float>(natureRect.right - natureRect.left);
     pVert[8].tu = pVert[20].tu = pVert[32].tu = pVert[44].tu = texRect.left;
     pVert[8].tv = pVert[20].tv = pVert[32].tv = pVert[44].tv = texRect.top;
     pVert[9].tu = pVert[21].tu = pVert[33].tu = pVert[45].tu = texRect.right;
@@ -440,15 +441,15 @@ void CXI_TEXTBUTTON::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *na
     pVert[20].pos.x = pVert[22].pos.x = fRightMiddle + m_fXShadow;
     pVert[32].pos.x = pVert[34].pos.x = fRightMiddle + m_fXDeltaPress;
     pVert[44].pos.x = pVert[46].pos.x = fRightMiddle + m_fXDeltaPress + m_fXShadowPress;
-    pVert[8].pos.y = pVert[9].pos.y = (float)m_rect.top; // left top Y
+    pVert[8].pos.y = pVert[9].pos.y = static_cast<float>(m_rect.top); // left top Y
     pVert[20].pos.y = pVert[21].pos.y = m_rect.top + m_fYShadow;
     pVert[32].pos.y = pVert[33].pos.y = m_rect.top + m_fYDeltaPress;
     pVert[44].pos.y = pVert[45].pos.y = m_rect.top + m_fYDeltaPress + m_fYShadowPress;
-    pVert[9].pos.x = pVert[11].pos.x = (float)m_rect.right; // right top X
+    pVert[9].pos.x = pVert[11].pos.x = static_cast<float>(m_rect.right); // right top X
     pVert[21].pos.x = pVert[23].pos.x = m_rect.right + m_fXShadow;
     pVert[33].pos.x = pVert[35].pos.x = m_rect.right + m_fXDeltaPress;
     pVert[45].pos.x = pVert[47].pos.x = m_rect.right + m_fXDeltaPress + m_fXShadowPress;
-    pVert[10].pos.y = pVert[11].pos.y = (float)m_rect.bottom; // left bottom Y
+    pVert[10].pos.y = pVert[11].pos.y = static_cast<float>(m_rect.bottom); // left bottom Y
     pVert[22].pos.y = pVert[23].pos.y = m_rect.bottom + m_fYShadow;
     pVert[34].pos.y = pVert[35].pos.y = m_rect.bottom + m_fYDeltaPress;
     pVert[46].pos.y = pVert[47].pos.y = m_rect.bottom + m_fYDeltaPress + m_fYShadowPress;
@@ -471,7 +472,7 @@ void CXI_TEXTBUTTON::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *na
     pVert[16].pos.x = pVert[18].pos.x = fLeftMiddle + m_fXShadow;
     pVert[28].pos.x = pVert[30].pos.x = fLeftMiddle + m_fXDeltaPress;
     pVert[40].pos.x = pVert[42].pos.x = fLeftMiddle + m_fXDeltaPress + m_fXShadowPress;
-    pVert[4].pos.y = pVert[5].pos.y = (float)m_rect.top; // top
+    pVert[4].pos.y = pVert[5].pos.y = static_cast<float>(m_rect.top); // top
     pVert[16].pos.y = pVert[17].pos.y = m_rect.top + m_fYShadow;
     pVert[28].pos.y = pVert[29].pos.y = m_rect.top + m_fYDeltaPress;
     pVert[40].pos.y = pVert[41].pos.y = m_rect.top + m_fYDeltaPress + m_fYShadowPress;
@@ -479,7 +480,7 @@ void CXI_TEXTBUTTON::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *na
     pVert[17].pos.x = pVert[19].pos.x = fRightMiddle + m_fXShadow;
     pVert[29].pos.x = pVert[31].pos.x = fRightMiddle + m_fXDeltaPress;
     pVert[41].pos.x = pVert[43].pos.x = fRightMiddle + m_fXDeltaPress + m_fXShadowPress;
-    pVert[6].pos.y = pVert[7].pos.y = (float)m_rect.bottom; // bottom
+    pVert[6].pos.y = pVert[7].pos.y = static_cast<float>(m_rect.bottom); // bottom
     pVert[18].pos.y = pVert[19].pos.y = m_rect.bottom + m_fYShadow;
     pVert[30].pos.y = pVert[31].pos.y = m_rect.bottom + m_fYDeltaPress;
     pVert[42].pos.y = pVert[43].pos.y = m_rect.bottom + m_fYDeltaPress + m_fYShadowPress;
@@ -506,29 +507,29 @@ void CXI_TEXTBUTTON::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *na
 
     if (m_bVideoToBack)
     {
-        fLeftMiddle = (float)m_rect.left;
-        fRightMiddle = (float)m_rect.right;
+        fLeftMiddle = static_cast<float>(m_rect.left);
+        fRightMiddle = static_cast<float>(m_rect.right);
     }
 
     m_v[4].pos.x = (m_v[0].pos.x = fLeftMiddle) + m_fXDeltaPress;
-    m_v[4].pos.y = (m_v[0].pos.y = (float)m_rect.top) + m_fYDeltaPress;
+    m_v[4].pos.y = (m_v[0].pos.y = static_cast<float>(m_rect.top)) + m_fYDeltaPress;
 
     m_v[5].pos.x = (m_v[1].pos.x = fRightMiddle) + m_fXDeltaPress;
-    m_v[5].pos.y = (m_v[1].pos.y = (float)m_rect.top) + m_fYDeltaPress;
+    m_v[5].pos.y = (m_v[1].pos.y = static_cast<float>(m_rect.top)) + m_fYDeltaPress;
 
     m_v[6].pos.x = (m_v[2].pos.x = fLeftMiddle) + m_fXDeltaPress;
-    m_v[6].pos.y = (m_v[2].pos.y = (float)m_rect.bottom) + m_fYDeltaPress;
+    m_v[6].pos.y = (m_v[2].pos.y = static_cast<float>(m_rect.bottom)) + m_fYDeltaPress;
 
     m_v[7].pos.x = (m_v[3].pos.x = fRightMiddle) + m_fXDeltaPress;
-    m_v[7].pos.y = (m_v[3].pos.y = (float)m_rect.bottom) + m_fYDeltaPress;
+    m_v[7].pos.y = (m_v[3].pos.y = static_cast<float>(m_rect.bottom)) + m_fYDeltaPress;
 }
 
 void CXI_TEXTBUTTON::ReleaseAll()
 {
     PICTURE_TEXTURE_RELEASE(pPictureService, m_sGroupName, m_idTex);
     TEXTURE_RELEASE(m_rs, m_idShadowTex);
-    PTR_DELETE(m_sGroupName);
-    PTR_DELETE(m_sString);
+    STORM_DELETE(m_sGroupName);
+    STORM_DELETE(m_sString);
     VERTEX_BUF_RELEASE(m_rs, m_idVBuf);
     INDEX_BUF_RELEASE(m_rs, m_idIBuf);
     VIDEOTEXTURE_RELEASE(m_rs, m_pTex);
@@ -573,21 +574,21 @@ void CXI_TEXTBUTTON::SaveParametersToIni()
 {
     char pcWriteParam[2048];
 
-    INIFILE *pIni = api->fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.GetBuffer());
+    auto *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
-        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.GetBuffer());
+        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
         return;
     }
 
     // save position
-    _snprintf(pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rect.left, m_rect.top, m_rect.right, m_rect.bottom);
+    sprintf_s(pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rect.left, m_rect.top, m_rect.right, m_rect.bottom);
     pIni->WriteString(m_nodeName, "position", pcWriteParam);
 
     delete pIni;
 }
 
-dword _cdecl CXI_TEXTBUTTON::MessageProc(long msgcode, MESSAGE &message)
+uint32_t CXI_TEXTBUTTON::MessageProc(long msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
@@ -596,15 +597,18 @@ dword _cdecl CXI_TEXTBUTTON::MessageProc(long msgcode, MESSAGE &message)
         char param[256];
         message.String(sizeof(param) - 1, param);
         param[sizeof(param) - 1] = 0;
-        PTR_DELETE(m_sString);
+        STORM_DELETE(m_sString);
         m_idString = -1;
         if (param[0] == '#')
         {
-            if ((m_sString = NEW char[strlen(param)]) == null)
             {
-                SE_THROW_MSG("allocate memory error");
+                const auto len = strlen(param);
+                if ((m_sString = new char[len]) == nullptr)
+                {
+                    throw std::exception("allocate memory error");
+                }
+                memcpy(m_sString, &param[1], len);
             }
-            strcpy(m_sString, &param[1]);
         }
         else
         {
@@ -618,7 +622,6 @@ dword _cdecl CXI_TEXTBUTTON::MessageProc(long msgcode, MESSAGE &message)
         newPos.top = message.Long();
         newPos.right = message.Long();
         newPos.bottom = message.Long();
-        GetAbsoluteRect(newPos, 0);
         ChangePosition(newPos);
         break;
     }
@@ -633,7 +636,7 @@ void CXI_TEXTBUTTON::SetUsing(bool bUsing)
 
 void CXI_TEXTBUTTON::MakeLClickPreaction()
 {
-    FXYPOINT mouse_pos = ptrOwner->GetMousePoint();
+    const auto mouse_pos = ptrOwner->GetMousePoint();
     if (mouse_pos.x >= m_rect.left && mouse_pos.x <= m_rect.right && mouse_pos.y >= m_rect.top &&
         mouse_pos.y <= m_rect.bottom)
     {
@@ -647,13 +650,13 @@ void CXI_TEXTBUTTON::FillPositionIntoVertices()
     FXYRECT texRect;
     XYRECT natureRect;
 
-    XI_ONETEX_VERTEX *pVert = (XI_ONETEX_VERTEX *)m_rs->LockVertexBuffer(m_idVBuf);
+    auto *pVert = static_cast<XI_ONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_idVBuf));
 
     if (m_idShadowTex >= 0)
     {
         i = m_nVert - 8;
-        float fhorzoffset = (m_rect.right - m_rect.left) * (m_fShadowScale - 1.f) * .5f;
-        float fvertoffset = (m_rect.bottom - m_rect.top) * (m_fShadowScale - 1.f) * .5f;
+        const auto fhorzoffset = (m_rect.right - m_rect.left) * (m_fShadowScale - 1.f) * .5f;
+        const auto fvertoffset = (m_rect.bottom - m_rect.top) * (m_fShadowScale - 1.f) * .5f;
 
         pVert[i + 0].pos.x = m_rect.left - fhorzoffset + m_fXShadow;
         pVert[i + 0].pos.y = m_rect.top - fvertoffset + m_fYShadow;
@@ -677,12 +680,12 @@ void CXI_TEXTBUTTON::FillPositionIntoVertices()
     // fill left side of button
     pPictureService->GetTexturePos(m_idUnSelectLeft, texRect);
     pPictureService->GetTexturePos(m_idUnSelectLeft, natureRect);
-    float fLeftMiddle = float(m_rect.left + natureRect.right - natureRect.left);
-    pVert[0].pos.x = pVert[2].pos.x = (float)m_rect.left;
+    float fLeftMiddle = static_cast<float>(m_rect.left + natureRect.right - natureRect.left);
+    pVert[0].pos.x = pVert[2].pos.x = static_cast<float>(m_rect.left);
     pVert[12].pos.x = pVert[14].pos.x = m_rect.left + m_fXShadow;
     pVert[24].pos.x = pVert[26].pos.x = m_rect.left + m_fXDeltaPress;
     pVert[36].pos.x = pVert[38].pos.x = m_rect.left + m_fXDeltaPress + m_fXShadowPress;
-    pVert[0].pos.y = pVert[1].pos.y = (float)m_rect.top;
+    pVert[0].pos.y = pVert[1].pos.y = static_cast<float>(m_rect.top);
     pVert[12].pos.y = pVert[13].pos.y = m_rect.top + m_fYShadow;
     pVert[24].pos.y = pVert[25].pos.y = m_rect.top + m_fYDeltaPress;
     pVert[36].pos.y = pVert[37].pos.y = m_rect.top + m_fYDeltaPress + m_fYShadowPress;
@@ -690,7 +693,7 @@ void CXI_TEXTBUTTON::FillPositionIntoVertices()
     pVert[13].pos.x = pVert[15].pos.x = fLeftMiddle + m_fXShadow;
     pVert[25].pos.x = pVert[27].pos.x = fLeftMiddle + m_fXDeltaPress;
     pVert[37].pos.x = pVert[39].pos.x = fLeftMiddle + m_fXDeltaPress + m_fXShadowPress;
-    pVert[2].pos.y = pVert[3].pos.y = (float)m_rect.bottom;
+    pVert[2].pos.y = pVert[3].pos.y = static_cast<float>(m_rect.bottom);
     pVert[14].pos.y = pVert[15].pos.y = m_rect.bottom + m_fYShadow;
     pVert[26].pos.y = pVert[27].pos.y = m_rect.bottom + m_fYDeltaPress;
     pVert[38].pos.y = pVert[39].pos.y = m_rect.bottom + m_fYDeltaPress + m_fYShadowPress;
@@ -706,20 +709,20 @@ void CXI_TEXTBUTTON::FillPositionIntoVertices()
         pPictureService->GetTexturePos(TEXTURE_MODIFY_HORZFLIP, m_idUnSelectLeft, texRect);
         pPictureService->GetTexturePos(m_idUnSelectLeft, natureRect);
     }
-    float fRightMiddle = m_rect.right - float(natureRect.right - natureRect.left);
+    float fRightMiddle = m_rect.right - static_cast<float>(natureRect.right - natureRect.left);
     pVert[8].pos.x = pVert[10].pos.x = fRightMiddle; // left top X
     pVert[20].pos.x = pVert[22].pos.x = fRightMiddle + m_fXShadow;
     pVert[32].pos.x = pVert[34].pos.x = fRightMiddle + m_fXDeltaPress;
     pVert[44].pos.x = pVert[46].pos.x = fRightMiddle + m_fXDeltaPress + m_fXShadowPress;
-    pVert[8].pos.y = pVert[9].pos.y = (float)m_rect.top; // left top Y
+    pVert[8].pos.y = pVert[9].pos.y = static_cast<float>(m_rect.top); // left top Y
     pVert[20].pos.y = pVert[21].pos.y = m_rect.top + m_fYShadow;
     pVert[32].pos.y = pVert[33].pos.y = m_rect.top + m_fYDeltaPress;
     pVert[44].pos.y = pVert[45].pos.y = m_rect.top + m_fYDeltaPress + m_fYShadowPress;
-    pVert[9].pos.x = pVert[11].pos.x = (float)m_rect.right; // right top X
+    pVert[9].pos.x = pVert[11].pos.x = static_cast<float>(m_rect.right); // right top X
     pVert[21].pos.x = pVert[23].pos.x = m_rect.right + m_fXShadow;
     pVert[33].pos.x = pVert[35].pos.x = m_rect.right + m_fXDeltaPress;
     pVert[45].pos.x = pVert[47].pos.x = m_rect.right + m_fXDeltaPress + m_fXShadowPress;
-    pVert[10].pos.y = pVert[11].pos.y = (float)m_rect.bottom; // left bottom Y
+    pVert[10].pos.y = pVert[11].pos.y = static_cast<float>(m_rect.bottom); // left bottom Y
     pVert[22].pos.y = pVert[23].pos.y = m_rect.bottom + m_fYShadow;
     pVert[34].pos.y = pVert[35].pos.y = m_rect.bottom + m_fYDeltaPress;
     pVert[46].pos.y = pVert[47].pos.y = m_rect.bottom + m_fYDeltaPress + m_fYShadowPress;
@@ -730,7 +733,7 @@ void CXI_TEXTBUTTON::FillPositionIntoVertices()
     pVert[16].pos.x = pVert[18].pos.x = fLeftMiddle + m_fXShadow;
     pVert[28].pos.x = pVert[30].pos.x = fLeftMiddle + m_fXDeltaPress;
     pVert[40].pos.x = pVert[42].pos.x = fLeftMiddle + m_fXDeltaPress + m_fXShadowPress;
-    pVert[4].pos.y = pVert[5].pos.y = (float)m_rect.top; // top
+    pVert[4].pos.y = pVert[5].pos.y = static_cast<float>(m_rect.top); // top
     pVert[16].pos.y = pVert[17].pos.y = m_rect.top + m_fYShadow;
     pVert[28].pos.y = pVert[29].pos.y = m_rect.top + m_fYDeltaPress;
     pVert[40].pos.y = pVert[41].pos.y = m_rect.top + m_fYDeltaPress + m_fYShadowPress;
@@ -738,7 +741,7 @@ void CXI_TEXTBUTTON::FillPositionIntoVertices()
     pVert[17].pos.x = pVert[19].pos.x = fRightMiddle + m_fXShadow;
     pVert[29].pos.x = pVert[31].pos.x = fRightMiddle + m_fXDeltaPress;
     pVert[41].pos.x = pVert[43].pos.x = fRightMiddle + m_fXDeltaPress + m_fXShadowPress;
-    pVert[6].pos.y = pVert[7].pos.y = (float)m_rect.bottom; // bottom
+    pVert[6].pos.y = pVert[7].pos.y = static_cast<float>(m_rect.bottom); // bottom
     pVert[18].pos.y = pVert[19].pos.y = m_rect.bottom + m_fYShadow;
     pVert[30].pos.y = pVert[31].pos.y = m_rect.bottom + m_fYDeltaPress;
     pVert[42].pos.y = pVert[43].pos.y = m_rect.bottom + m_fYDeltaPress + m_fYShadowPress;
@@ -747,19 +750,19 @@ void CXI_TEXTBUTTON::FillPositionIntoVertices()
 
     if (m_bVideoToBack)
     {
-        fLeftMiddle = (float)m_rect.left;
-        fRightMiddle = (float)m_rect.right;
+        fLeftMiddle = static_cast<float>(m_rect.left);
+        fRightMiddle = static_cast<float>(m_rect.right);
     }
 
     m_v[4].pos.x = (m_v[0].pos.x = fLeftMiddle) + m_fXDeltaPress;
-    m_v[4].pos.y = (m_v[0].pos.y = (float)m_rect.top) + m_fYDeltaPress;
+    m_v[4].pos.y = (m_v[0].pos.y = static_cast<float>(m_rect.top)) + m_fYDeltaPress;
 
     m_v[5].pos.x = (m_v[1].pos.x = fRightMiddle) + m_fXDeltaPress;
-    m_v[5].pos.y = (m_v[1].pos.y = (float)m_rect.top) + m_fYDeltaPress;
+    m_v[5].pos.y = (m_v[1].pos.y = static_cast<float>(m_rect.top)) + m_fYDeltaPress;
 
     m_v[6].pos.x = (m_v[2].pos.x = fLeftMiddle) + m_fXDeltaPress;
-    m_v[6].pos.y = (m_v[2].pos.y = (float)m_rect.bottom) + m_fYDeltaPress;
+    m_v[6].pos.y = (m_v[2].pos.y = static_cast<float>(m_rect.bottom)) + m_fYDeltaPress;
 
     m_v[7].pos.x = (m_v[3].pos.x = fRightMiddle) + m_fXDeltaPress;
-    m_v[7].pos.y = (m_v[3].pos.y = (float)m_rect.bottom) + m_fYDeltaPress;
+    m_v[7].pos.y = (m_v[3].pos.y = static_cast<float>(m_rect.bottom)) + m_fYDeltaPress;
 }

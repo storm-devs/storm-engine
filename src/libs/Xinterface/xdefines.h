@@ -1,11 +1,10 @@
 #ifndef _XINTERFACE_DEFAULT_H_
 #define _XINTERFACE_DEFAULT_H_
 
-#include "..\\common_h\\cvector.h"
-#include "..\\common_h\\stringService.h"
-#include "QuestFileReader\\QuestFileReader.h"
-#include "vxservice.h"
-#include "xi_messages.h"
+#include "../../Shared/interface/messages.h"
+#include "Cvector.h"
+#include "QuestFileReader//QuestFileReader.h"
+#include "stringService.h"
 
 #define PI 3.14159265358979323846f
 
@@ -17,7 +16,7 @@
 
 struct COMMANDDESCR
 {
-    char *sName;
+    const char *sName;
     int code;
 };
 extern COMMANDDESCR pCommandsList[COMMAND_QUANTITY];
@@ -42,7 +41,7 @@ struct XYPOINT
         x = ix;
         y = iy;
     }
-    void operator=(XYPOINT &lp)
+    void operator=(const XYPOINT &lp)
     {
         this->x = lp.x;
         this->y = lp.y;
@@ -62,7 +61,7 @@ struct XYRECT
         right = iright;
         bottom = ibottom;
     }
-    void operator=(XYRECT &ir)
+    void operator=(const XYRECT &ir)
     {
         this->left = ir.left;
         this->top = ir.top;
@@ -78,7 +77,7 @@ struct FXYPOINT
     {
         x = y = 0.f;
     }
-    FXYPOINT(FXYPOINT &fp)
+    FXYPOINT(const FXYPOINT &fp)
     {
         x = fp.x;
         y = fp.y;
@@ -124,28 +123,28 @@ struct FXYRECT
         right = fright;
         bottom = fbottom;
     }
-    void operator=(FXYRECT &fr)
+    void operator=(const FXYRECT &fr)
     {
         this->left = fr.left;
         this->top = fr.top;
         this->right = fr.right;
         this->bottom = fr.bottom;
     }
-    void operator+=(FXYRECT &fr)
+    void operator+=(const FXYRECT &fr)
     {
         this->left += fr.left;
         this->top += fr.top;
         this->right += fr.right;
         this->bottom += fr.bottom;
     }
-    void operator-=(FXYRECT &fr)
+    void operator-=(const FXYRECT &fr)
     {
         this->left -= fr.left;
         this->top -= fr.top;
         this->right -= fr.right;
         this->bottom -= fr.bottom;
     }
-    FXYRECT operator+(FXYRECT &fr)
+    FXYRECT operator+(const FXYRECT &fr)
     {
         FXYRECT tmp;
         tmp.left = this->left + fr.left;
@@ -154,7 +153,7 @@ struct FXYRECT
         tmp.bottom = this->bottom + fr.bottom;
         return tmp;
     }
-    FXYRECT operator-(FXYRECT &fr)
+    FXYRECT operator-(const FXYRECT &fr)
     {
         FXYRECT tmp;
         tmp.left = this->left - fr.left;
@@ -163,7 +162,7 @@ struct FXYRECT
         tmp.bottom = this->bottom - fr.bottom;
         return tmp;
     }
-    FXYRECT operator+(FXYPOINT &fp)
+    FXYRECT operator+(const FXYPOINT &fp)
     {
         FXYRECT tmp;
         tmp.left = this->left + fp.x;
@@ -172,7 +171,7 @@ struct FXYRECT
         tmp.bottom = this->bottom + fp.y;
         return tmp;
     }
-    FXYRECT operator-(FXYPOINT &fp)
+    FXYRECT operator-(const FXYPOINT &fp)
     {
         FXYRECT tmp;
         tmp.left = this->left - fp.x;
@@ -188,7 +187,7 @@ struct FXYRECT
 struct XI_NOTEX_VERTEX
 {
     CVECTOR pos;
-    DWORD color;
+    uint32_t color;
 };
 #define XI_ONLYONETEX_FVF (D3DFVF_XYZ | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2)
 struct XI_ONLYONETEX_VERTEX
@@ -200,14 +199,14 @@ struct XI_ONLYONETEX_VERTEX
 struct XI_ONETEX_VERTEX
 {
     CVECTOR pos;
-    DWORD color;
+    uint32_t color;
     float tu, tv;
 };
 #define XI_TWOTEX_FVF (D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX2 | D3DFVF_TEXTUREFORMAT2)
 struct XI_TWOTEX_VERTEX
 {
     CVECTOR pos;
-    DWORD color;
+    uint32_t color;
     float tu1, tv1;
     float tu2, tv2;
 };
@@ -215,18 +214,12 @@ struct XI_TWOTEX_VERTEX
 struct XI_THREETEX_VERTEX
 {
     CVECTOR pos;
-    DWORD color;
+    uint32_t color;
     float tu1, tv1;
     float tu2, tv2;
     float tu3, tv3;
 };
 
-#define PTR_DELETE(p)                                                                                                  \
-    if (p != NULL)                                                                                                     \
-    {                                                                                                                  \
-        delete p;                                                                                                      \
-        p = NULL;                                                                                                      \
-    }
 #define TEXTURE_RELEASE(rs, idtex)                                                                                     \
     if (rs != NULL && idtex != -1)                                                                                     \
     {                                                                                                                  \
@@ -264,9 +257,9 @@ struct XI_THREETEX_VERTEX
         tex = NULL;                                                                                                    \
     }
 
-extern ENTITY_ID g_idInterface;
+extern entid_t g_idInterface;
 
-extern DWORD ColorInterpolate(DWORD sCol, DWORD dCol, float m);
+extern uint32_t ColorInterpolate(uint32_t sCol, uint32_t dCol, float m);
 extern void DublicateString(char *&pDstStr, const char *pSrcStr);
 
 #endif

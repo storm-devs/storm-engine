@@ -1,9 +1,10 @@
 #include "InfoHandler.h"
+#include "vmodule_api.h"
 
 InfoHandler::InfoHandler()
 {
-    m_pSurface = null;
-    m_pRenderTarget = null;
+    m_pSurface = nullptr;
+    m_pRenderTarget = nullptr;
 }
 
 InfoHandler::~InfoHandler()
@@ -17,10 +18,10 @@ InfoHandler::~InfoHandler()
 bool InfoHandler::Init()
 {
     // получить сервис рендера
-    m_rs = (VDX8RENDER *)api->CreateService("dx8render");
+    m_rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
     if (!m_rs)
     {
-        api->Trace("No service: dx8render");
+        api->Trace("No service: dx9render");
         return false;
     }
     if (m_rs->IsInsideScene())
@@ -28,17 +29,17 @@ bool InfoHandler::Init()
         m_rs->MakePostProcess();
     }
 
-    if (m_rs->GetRenderTarget(&m_pRenderTarget) != D3D_OK)
+    if (m_rs->GetRenderTarget(&m_pRenderTarget) != D3D_OK || !m_pRenderTarget)
     {
         api->Trace("Can`t get render target");
         return false;
     }
 
-    bool isOk = false;
+    auto isOk = false;
     D3DSURFACE_DESC desc;
     if (m_pRenderTarget->GetDesc(&desc) == D3D_OK)
     {
-        if (m_rs->CreateImageSurface(desc.Width, desc.Height, desc.Format, &m_pSurface) == D3D_OK)
+        if (m_rs->CreateOffscreenPlainSurface(desc.Width, desc.Height, desc.Format, &m_pSurface) == D3D_OK)
         {
             if (DoPreOut())
             {
@@ -51,16 +52,16 @@ bool InfoHandler::Init()
     }
     if (!isOk)
     {
-        api->Trace("InfoHandler : Screen shot for info shower not created!");
+        api->Trace("Screen shot for info shower not created!");
         if (m_pSurface)
         {
             m_rs->Release(m_pSurface);
-            m_pSurface = 0;
+            m_pSurface = nullptr;
         }
         if (m_pRenderTarget)
         {
             m_rs->Release(m_pRenderTarget);
-            m_pRenderTarget = 0;
+            m_pRenderTarget = nullptr;
         }
         return false;
     }
@@ -68,25 +69,25 @@ bool InfoHandler::Init()
     return true;
 }
 
-void InfoHandler::Execute(dword delta_time)
+void InfoHandler::Execute(uint32_t delta_time)
 {
 }
 
-void InfoHandler::Realize(dword delta_time)
+void InfoHandler::Realize(uint32_t delta_time) const
 {
-    if (m_pSurface == null || m_pRenderTarget == null)
+    if (m_pSurface == nullptr || m_pRenderTarget == nullptr)
         return;
     m_rs->MakePostProcess();
-    // поддерживаем постоЯнный экран)
-    if (m_rs->UpdateSurface(m_pSurface, null, m_pRenderTarget, null) != D3D_OK)
+    // ѕоддерживаем посто€нный экран
+    if (m_rs->UpdateSurface(m_pSurface, nullptr, 0, m_pRenderTarget, nullptr) != D3D_OK)
     {
-        api->Trace("InfoHandler : Can't copy fader screen shot to render target!");
+        api->Trace("Can't copy fader screen shot to render target!");
     }
 }
 
-dword _cdecl InfoHandler::ProcessMessage(MESSAGE &message)
+uint64_t InfoHandler::ProcessMessage(MESSAGE &message)
 {
-    long nMsgCode = message.Long();
+    const auto nMsgCode = message.Long();
     switch (nMsgCode)
     {
     case 1:
@@ -98,11 +99,11 @@ dword _cdecl InfoHandler::ProcessMessage(MESSAGE &message)
 
 bool InfoHandler::DoPreOut()
 {
-    if (AttributesPointer == null)
+    if (AttributesPointer == nullptr)
         return false;
 
-    bool isOK = false;
-    DWORD dwBCol, dwFCol;
+    auto isOK = false;
+    uint32_t dwBCol, dwFCol;
     char *inStrStart;
     char outStr[1048];
     D3DSURFACE_DESC desc;
@@ -111,7 +112,7 @@ bool InfoHandler::DoPreOut()
     int nRowQ;
 
     inStrStart = AttributesPointer->GetAttribute("infoStr");
-    if (inStrStart != null)
+    if (inStrStart != nullptr)
     {
         dwBCol = AttributesPointer->GetAttributeAsDword("backColor", 0);
         dwFCol = AttributesPointer->GetAttributeAsDword("foreColor", 0);
@@ -119,15 +120,14 @@ bool InfoHandler::DoPreOut()
         fScale = AttributesPointer->GetAttributeAsFloat("scale", 1.f);
         nOutOffset = AttributesPointer->GetAttributeAsDword("offset", m_rs->CharHeight(0));
     }
-    char *picTexureFile = AttributesPointer->GetAttribute("picfilename");
-    char *picBackTexureFile = AttributesPointer->GetAttribute("picbackfilename");
-
-    DWORD TMP_VERTEX_FORMAT = (D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2);
+    auto *const picTexureFile = AttributesPointer->GetAttribute("picfilename");
+    auto *const picBackTexureFile = AttributesPointer->GetAttribute("picbackfilename");
+    const uint32_t TMP_VERTEX_FORMAT = (D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2);
     struct TMP_VERTEX
     {
         CVECTOR pos;
         float w;
-        DWORD col;
+        uint32_t col;
         float tu, tv;
     } pV[4];
 
@@ -143,34 +143,34 @@ bool InfoHandler::DoPreOut()
     if (m_pRenderTarget->GetDesc(&desc) != D3D_OK)
         return false;
 
-    int ntmp = 0;
-    char *ps = null;
+    auto ntmp = 0;
+    char *ps = nullptr;
     if (inStrStart)
     {
         ntmp = m_rs->StringWidth(inStrStart, 0, fScale);
-        nOutWidth =
-            (int)(sqrtf(4.f * ntmp * nOutOffset) + .9f); // ширина записи приблизительно больше высоты в четыре раза
-        if (nOutWidth > (int)desc.Width)
+        nOutWidth = static_cast<int>(sqrtf(4.f * ntmp * nOutOffset) + .9f);
+        // ширина записи приблизительно больше высоты в четыре раза
+        if (nOutWidth > static_cast<int>(desc.Width))
             nOutWidth = desc.Width;
         nInsideRectWidth = nOutWidth + nBorderWidth * 2;
-        if (nInsideRectWidth > (int)desc.Width)
+        if (nInsideRectWidth > static_cast<int>(desc.Width))
             nInsideRectWidth = desc.Width;
 
         nRowQ = 0;
-        for (ps = inStrStart; ps != null && *ps;)
+        for (ps = inStrStart; ps != nullptr && *ps;)
         {
             ps = GetCutString(ps, nOutWidth, fScale);
             nRowQ++;
         }
-        if (nRowQ * nOutOffset > (int)desc.Height)
+        if (nRowQ * nOutOffset > static_cast<int>(desc.Height))
             nRowQ = desc.Height / nOutOffset;
         nInsideRectHeight = nRowQ * nOutOffset + nBorderWidth * 2;
-        if (nInsideRectHeight > (int)desc.Height)
+        if (nInsideRectHeight > static_cast<int>(desc.Height))
             nInsideRectHeight = desc.Height;
     }
 
     isOK = m_rs->IsInsideScene();
-    bool bMakeEndScene = false;
+    auto bMakeEndScene = false;
     if (!isOK)
     {
         bMakeEndScene = true;
@@ -180,9 +180,9 @@ bool InfoHandler::DoPreOut()
     if (isOK)
     {
         // show picture
-        if (picBackTexureFile != null)
+        if (picBackTexureFile != nullptr)
         {
-            int picBackID = m_rs->TextureCreate(picBackTexureFile);
+            const int picBackID = m_rs->TextureCreate(picBackTexureFile);
             if (picBackID >= 0)
             {
                 m_rs->TextureSet(0, picBackID);
@@ -190,11 +190,11 @@ bool InfoHandler::DoPreOut()
                 pV[0].pos.x = 0.f;
                 pV[0].pos.y = 0.f;
                 pV[1].pos.x = 0.f;
-                pV[1].pos.y = (float)desc.Height;
-                pV[2].pos.x = (float)desc.Width;
+                pV[1].pos.y = static_cast<float>(desc.Height);
+                pV[2].pos.x = static_cast<float>(desc.Width);
                 pV[2].pos.y = 0.f;
-                pV[3].pos.x = (float)desc.Width;
-                pV[3].pos.y = (float)desc.Height;
+                pV[3].pos.x = static_cast<float>(desc.Width);
+                pV[3].pos.y = static_cast<float>(desc.Height);
                 pV[0].tu = 0.f;
                 pV[0].tv = 0.f;
                 pV[1].tu = 0.f;
@@ -210,9 +210,9 @@ bool InfoHandler::DoPreOut()
             }
         }
 
-        if (picTexureFile != null)
+        if (picTexureFile != nullptr)
         {
-            int picID = m_rs->TextureCreate(picTexureFile);
+            const int picID = m_rs->TextureCreate(picTexureFile);
             if (picID >= 0)
             {
                 m_rs->TextureSet(0, picID);
@@ -267,32 +267,32 @@ bool InfoHandler::DoPreOut()
             pV[0].pos.x = 0.f;
             pV[0].pos.y = 0.f;
             pV[1].pos.x = 0.f;
-            pV[1].pos.y = (float)desc.Height;
-            pV[2].pos.x = (float)desc.Width;
+            pV[1].pos.y = static_cast<float>(desc.Height);
+            pV[2].pos.x = static_cast<float>(desc.Width);
             pV[2].pos.y = 0.f;
-            pV[3].pos.x = (float)desc.Width;
-            pV[3].pos.y = (float)desc.Height;
+            pV[3].pos.x = static_cast<float>(desc.Width);
+            pV[3].pos.y = static_cast<float>(desc.Height);
             m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, TMP_VERTEX_FORMAT, 2, &pV, sizeof(TMP_VERTEX), "iInfoShower");
 
             // show fore
             pV[0].col = pV[1].col = pV[2].col = pV[3].col = dwFCol;
-            pV[1].pos.x = pV[0].pos.x = (float)(desc.Width - nInsideRectWidth) / 2;
+            pV[1].pos.x = pV[0].pos.x = static_cast<float>(desc.Width - nInsideRectWidth) / 2;
             pV[3].pos.x = pV[2].pos.x = pV[0].pos.x + nInsideRectWidth;
-            pV[2].pos.y = pV[0].pos.y = (float)(desc.Height - nInsideRectHeight) / 2;
+            pV[2].pos.y = pV[0].pos.y = static_cast<float>(desc.Height - nInsideRectHeight) / 2;
             pV[3].pos.y = pV[1].pos.y = pV[0].pos.y + nInsideRectHeight;
             m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, TMP_VERTEX_FORMAT, 2, &pV, sizeof(TMP_VERTEX), "iInfoShower");
 
             // show strings
             ntmp = 0;
-            int topY = (desc.Height - nRowQ * nOutOffset) / 2;
-            for (ps = inStrStart; ps != null && *ps;)
+            const int topY = (desc.Height - nRowQ * nOutOffset) / 2;
+            for (ps = inStrStart; ps != nullptr && *ps;)
             {
-                char *oldps = ps;
+                auto *const oldps = ps;
                 ps = GetCutString(ps, nOutWidth, fScale);
                 if (!ps || ps == oldps)
                     break;
                 StringToBufer(outStr, sizeof(outStr), oldps, ps - oldps);
-                m_rs->ExtPrint(0, 0xFFFFFFFF, 0, ALIGN_CENTER, true, fScale, 0, 0, desc.Width / 2,
+                m_rs->ExtPrint(0, 0xFFFFFFFF, 0, PR_ALIGN_CENTER, true, fScale, 0, 0, desc.Width / 2,
                                topY + ntmp * nOutOffset, outStr);
                 ntmp++;
                 if (ntmp >= nRowQ)
@@ -307,17 +307,17 @@ bool InfoHandler::DoPreOut()
     return isOK;
 }
 
-char *InfoHandler::GetCutString(char *pstr, int nOutWidth, float fScale)
+char *InfoHandler::GetCutString(char *pstr, int nOutWidth, float fScale) const
 {
-    bool spaceWait = false;
+    auto spaceWait = false;
     char param[1024];
 
-    // удаляем первые переходы на новую строку
+    // удал€ем первые переходы на новую строку
     while (pstr && (*pstr == 0x0A || *pstr == 0x0D || *pstr == 32))
         pstr++;
 
-    char *oldps = null;
-    char *ps = null;
+    char *oldps = nullptr;
+    char *ps;
     for (ps = pstr; ps && *ps; ps++)
     {
         if (*ps == 0x0a || *ps == 0x0d)
@@ -329,55 +329,53 @@ char *InfoHandler::GetCutString(char *pstr, int nOutWidth, float fScale)
                 continue;
             spaceWait = true;
 
-            int n = ps - pstr;
+            const int n = ps - pstr;
             if (n == 0)
                 continue;
             if (n >= 1023)
                 break;
 
-            strncpy(param, pstr, n);
+            strncpy_s(param, pstr, n);
             param[n] = 0;
-            int j = m_rs->StringWidth(param, 0, fScale);
+            const int j = m_rs->StringWidth(param, 0, fScale);
             if (j < nOutWidth)
             {
                 oldps = ps;
                 continue;
             }
-            else if (oldps)
+            if (oldps)
                 return oldps;
-            else
-                return ps;
+            return ps;
         }
         spaceWait = false;
     }
 
     int nt = ps - pstr;
     if (nt <= 0)
-        return null;
+        return nullptr;
     if (nt >= 1023)
     {
         nt = 1023;
-        nt -= utf8::u8_dec(pstr + nt);
         ps = pstr + nt;
     }
 
-    strncpy(param, pstr, nt);
+    strncpy_s(param, pstr, nt);
     param[nt] = 0;
-    int jt = m_rs->StringWidth(param, 0, fScale);
+    const int jt = m_rs->StringWidth(param, 0, fScale);
     if (jt < nOutWidth)
         return ps;
-    else if (oldps)
+    if (oldps)
         return oldps;
 
     return ps;
 }
 
-void InfoHandler::StringToBufer(char *outStr, int sizeBuf, char *inStr, int copySize)
+void InfoHandler::StringToBufer(char *outStr, int sizeBuf, char *inStr, int copySize) const
 {
-    if (outStr == null || sizeBuf <= 0)
+    if (outStr == nullptr || sizeBuf <= 0)
         return;
     outStr[0] = 0;
-    if (inStr == null)
+    if (inStr == nullptr)
         return;
     while (*inStr && (*inStr == 0x0A || *inStr == 0x0D || *inStr == 32))
         inStr++;
@@ -391,6 +389,50 @@ void InfoHandler::StringToBufer(char *outStr, int sizeBuf, char *inStr, int copy
     if (n < 1)
         return;
 
-    strncpy(outStr, inStr, n);
+    strncpy_s(outStr, sizeBuf, inStr, n);
     outStr[n] = 0;
 }
+
+/*
+void InfoHandler::LostRender()
+{
+    if (m_pSurface) m_rs->Release(m_pSurface);
+    if (m_pRenderTarget) m_rs->Release(m_pRenderTarget);
+}
+
+void InfoHandler::RestoreRender()
+{
+    if (m_rs->GetRenderTarget(&m_pRenderTarget) != D3D_OK)
+    {
+        api->Trace("Can`t get render target");
+        return;
+    }
+
+    bool isOk = false;
+    D3DSURFACE_DESC desc;
+    if (m_pRenderTarget->GetDesc(&desc) == D3D_OK)
+    {
+        if (m_rs->CreateOffscreenPlainSurface(desc.Width, desc.Height, desc.Format, &m_pSurface) == D3D_OK)
+        {
+            if (DoPreOut())
+            {
+                if (m_rs->GetRenderTargetData(m_pRenderTarget, m_pSurface) == D3D_OK)
+                {
+                    isOk = true;
+                }
+            }
+        }
+    }
+    if (!isOk)
+    {
+        api->Trace("Screen shot for info shower not created!");
+        if (m_pSurface)
+        {
+            m_rs->Release(m_pSurface); m_pSurface = 0;
+        }
+        if (m_pRenderTarget)
+        {
+            m_rs->Release(m_pRenderTarget); m_pRenderTarget = 0;
+        }
+    }
+}*/

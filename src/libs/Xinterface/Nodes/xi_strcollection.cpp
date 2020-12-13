@@ -1,12 +1,11 @@
 #include "xi_strcollection.h"
-#include "..\\xi_defines.h"
 #include <stdio.h>
 
 CXI_STRCOLLECTION::CXI_STRCOLLECTION()
 {
-    m_rs = null;
+    m_rs = nullptr;
 
-    m_pStrDescr = null;
+    m_pStrDescr = nullptr;
     m_nStr = 0;
     m_nNodeType = NODETYPE_STRINGCOLLECTION;
 
@@ -23,12 +22,12 @@ int CXI_STRCOLLECTION::CommandExecute(int wActCode)
     return -1;
 }
 
-void CXI_STRCOLLECTION::Draw(bool bSelected, dword Delta_Time)
+void CXI_STRCOLLECTION::Draw(bool bSelected, uint32_t Delta_Time)
 {
     if (m_bUse)
     {
-        for (int i = 0; i < m_nStr; i++)
-            if (m_pStrDescr[i].strStr != null)
+        for (auto i = 0; i < m_nStr; i++)
+            if (m_pStrDescr[i].strStr != nullptr)
                 m_rs->ExtPrint(m_pStrDescr[i].nFontNum, m_pStrDescr[i].foreColor, m_pStrDescr[i].backColor,
                                m_pStrDescr[i].wAlignment, m_pStrDescr[i].bShadow, m_pStrDescr[i].fScale, m_screenSize.x,
                                m_screenSize.y, m_pStrDescr[i].scrPos.x, m_pStrDescr[i].scrPos.y, "%s",
@@ -41,8 +40,8 @@ void CXI_STRCOLLECTION::Draw(bool bSelected, dword Delta_Time)
     }
 }
 
-bool CXI_STRCOLLECTION::Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, VDX8RENDER *rs, XYRECT &hostRect,
-                             XYPOINT &ScreenSize)
+bool CXI_STRCOLLECTION::Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs,
+                             XYRECT &hostRect, XYPOINT &ScreenSize)
 {
     if (!CINODE::Init(ini1, name1, ini2, name2, rs, hostRect, ScreenSize))
         return false;
@@ -52,15 +51,15 @@ bool CXI_STRCOLLECTION::Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *na
     return true;
 }
 
-void CXI_STRCOLLECTION::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2)
+void CXI_STRCOLLECTION::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2)
 {
     int i;
     char param[256];
 
-    bool bRelativeRect = !GetIniLong(ini1, name1, ini2, name2, "bAbsoluteRectangle", 0);
+    const auto bRelativeRect = !GetIniLong(ini1, name1, ini2, name2, "bAbsoluteRectangle", 0);
 
-    INIFILE *ini = ini1;
-    char *name = name1;
+    auto *ini = ini1;
+    const auto *name = name1;
     if (!ini1)
     {
         ini = ini2;
@@ -76,7 +75,7 @@ void CXI_STRCOLLECTION::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char 
 
     if (m_nStr)
     {
-        m_pStrDescr = NEW STRINGDESCR[m_nStr];
+        m_pStrDescr = new STRINGDESCR[m_nStr];
 
         // Set strings
         int a_fc, r_fc, g_fc, b_fc;
@@ -88,7 +87,7 @@ void CXI_STRCOLLECTION::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char 
         for (i = 0; i < m_nStr; i++)
         {
             // set all parameters to zero
-            ZeroMemory(&m_pStrDescr[i], sizeof(STRINGDESCR));
+            PZERO(&m_pStrDescr[i], sizeof(STRINGDESCR));
             m_pStrDescr[i].nFontNum = -1;
 
             // read same parameters
@@ -112,9 +111,9 @@ void CXI_STRCOLLECTION::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char 
             for (int k = strlen(strState); k >= 0; k--)
             {
                 if (strState[k] == 'C' || strState[k] == 'c')
-                    m_pStrDescr[i].wAlignment = ALIGN_CENTER;
-                if (strState[k] == 'R' || strState[k] == 'c')
-                    m_pStrDescr[i].wAlignment = ALIGN_RIGHT;
+                    m_pStrDescr[i].wAlignment = PR_ALIGN_CENTER;
+                if (strState[k] == 'R' || strState[k] == 'r')
+                    m_pStrDescr[i].wAlignment = PR_ALIGN_RIGHT;
                 if (strState[k] == 'S' || strState[k] == 's')
                     m_pStrDescr[i].bShadow = true;
             }
@@ -132,14 +131,14 @@ void CXI_STRCOLLECTION::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char 
 
 void CXI_STRCOLLECTION::ReleaseAll()
 {
-    for (int i = 0; i < m_nStr; i++)
+    for (auto i = 0; i < m_nStr; i++)
     {
-        PTR_DELETE(m_pStrDescr[i].strID);
-        PTR_DELETE(m_pStrDescr[i].strStr);
-        PTR_DELETE(m_pStrDescr[i].sFontName);
+        STORM_DELETE(m_pStrDescr[i].strID);
+        STORM_DELETE(m_pStrDescr[i].strStr);
+        STORM_DELETE(m_pStrDescr[i].sFontName);
         FONT_RELEASE(m_rs, m_pStrDescr[i].nFontNum);
     }
-    PTR_DELETE(m_pStrDescr);
+    STORM_DELETE(m_pStrDescr);
     m_nStr = 0;
 }
 
@@ -148,40 +147,42 @@ bool CXI_STRCOLLECTION::IsClick(int buttonID, long xPos, long yPos)
     return false;
 }
 
-bool CXI_STRCOLLECTION::GetInternalNameList(array<string> &aStr)
+bool CXI_STRCOLLECTION::GetInternalNameList(std::vector<std::string> &aStr)
 {
-    aStr.DelAll();
-    aStr.Add();
-    aStr[0] = "All";
+    aStr.clear();
+    // aStr.Add();
+    // aStr[0] = "All";
+    aStr.push_back("All");
     for (long n = 0; n < m_nStr; n++)
     {
         if (m_pStrDescr[n].strID)
             continue;
-        aStr.Add();
+        // aStr.Add();
+        aStr.push_back(std::string{});
         char param[512];
-        _snprintf(param, sizeof(param), "%d - %s", n + 1, pStringService->GetStringName(m_pStrDescr[n].strNum));
+        sprintf_s(param, sizeof(param), "%d - %s", n + 1, pStringService->GetStringName(m_pStrDescr[n].strNum));
         aStr[n + 1] = param;
     }
-    return aStr.Size() > 1;
+    return aStr.size() > 1;
 }
 
-void CXI_STRCOLLECTION::SetInternalName(string &sName)
+void CXI_STRCOLLECTION::SetInternalName(std::string &sName)
 {
-    if (sName.IsEmpty())
+    if (sName.empty())
         return;
     if (sName == "All")
         m_nEditIndex = -1;
     else
     {
-        sscanf(sName, "%d -", &m_nEditIndex);
+        sscanf(sName.c_str(), "%d -", &m_nEditIndex);
         m_nEditIndex--;
     }
 }
 
 void CXI_STRCOLLECTION::ChangePosition(XYRECT &rNewPos)
 {
-    long nX = rNewPos.left - m_rect.left;
-    long nY = rNewPos.top - m_rect.top;
+    const auto nX = rNewPos.left - m_rect.left;
+    const auto nY = rNewPos.top - m_rect.top;
     if (nX != 0 || nY != 0)
     {
         if (m_nEditIndex >= 0 && m_nEditIndex < m_nStr)
@@ -202,10 +203,10 @@ void CXI_STRCOLLECTION::SaveParametersToIni()
 {
     //	char pcWriteParam[2048];
 
-    INIFILE *pIni = api->fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.GetBuffer());
+    auto *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
-        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.GetBuffer());
+        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
         return;
     }
 
@@ -220,10 +221,10 @@ void CXI_STRCOLLECTION::SaveParametersToIni()
         char pcState[3];
         switch (m_pStrDescr[n].wAlignment)
         {
-        case ALIGN_CENTER:
+        case PR_ALIGN_CENTER:
             pcState[0] = 'C';
             break;
-        case ALIGN_RIGHT:
+        case PR_ALIGN_RIGHT:
             pcState[0] = 'R';
             break;
         default:
@@ -238,7 +239,7 @@ void CXI_STRCOLLECTION::SaveParametersToIni()
             pcState[1] = 0;
 
         if (m_pStrDescr[n].strStr)
-            _snprintf(param, sizeof(param),
+            sprintf_s(param, sizeof(param),
                       "#%s,font:%s,pos:{%d,%d},fc:{%d,%d,%d,%d},bc:{%d,%d,%d,%d},scale:%.2f,state:{%s}",
                       m_pStrDescr[n].strStr,                            // strID
                       m_pStrDescr[n].sFontName,                         // font name
@@ -247,7 +248,7 @@ void CXI_STRCOLLECTION::SaveParametersToIni()
                       BLUE(m_pStrDescr[n].foreColor), ALPHA(m_pStrDescr[n].backColor), RED(m_pStrDescr[n].backColor),
                       GREEN(m_pStrDescr[n].backColor), BLUE(m_pStrDescr[n].backColor), m_pStrDescr[n].fScale, pcState);
         else
-            _snprintf(param, sizeof(param),
+            sprintf_s(param, sizeof(param),
                       "%s,font:%s,pos:{%d,%d},fc:{%d,%d,%d,%d},bc:{%d,%d,%d,%d},scale:%.2f,state:{%s}",
                       pStringService->GetStringName(m_pStrDescr[n].strNum), // strID
                       m_pStrDescr[n].sFontName,                             // font name
@@ -261,7 +262,7 @@ void CXI_STRCOLLECTION::SaveParametersToIni()
     delete pIni;
 }
 
-dword _cdecl CXI_STRCOLLECTION::MessageProc(long msgcode, MESSAGE &message)
+uint32_t CXI_STRCOLLECTION::MessageProc(long msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
@@ -271,8 +272,8 @@ dword _cdecl CXI_STRCOLLECTION::MessageProc(long msgcode, MESSAGE &message)
         char paramID[256], paramStr[512];
         message.String(sizeof(paramID), paramID);   // msg
         message.String(sizeof(paramStr), paramStr); // msg
-        STRINGDESCR *pstr = CreateNewDinamicString(paramID, paramStr);
-        if (pstr == null)
+        auto *pstr = CreateNewDinamicString(paramID, paramStr);
+        if (pstr == nullptr)
             return -1;
         // string font
         char fontName[256];
@@ -281,36 +282,35 @@ dword _cdecl CXI_STRCOLLECTION::MessageProc(long msgcode, MESSAGE &message)
         // string pos.x&y, color front&back, alignment, shadow, scale
         pstr->scrPos.x = message.Long() + m_hostRect.left; // msg
         pstr->scrPos.y = message.Long() + m_hostRect.top;  // msg
-
-        pstr->foreColor = message.Long(); // msg
-        pstr->backColor = message.Long(); // msg
-        switch (message.Long())           // msg
+        pstr->foreColor = message.Long();                  // msg
+        pstr->backColor = message.Long();                  // msg
+        switch (message.Long())                            // msg
         {
         case SCRIPT_ALIGN_RIGHT:
-            pstr->wAlignment = ALIGN_RIGHT;
+            pstr->wAlignment = PR_ALIGN_RIGHT;
             break;
         case SCRIPT_ALIGN_CENTER:
-            pstr->wAlignment = ALIGN_CENTER;
+            pstr->wAlignment = PR_ALIGN_CENTER;
             break;
         case SCRIPT_ALIGN_LEFT:
-            pstr->wAlignment = ALIGN_LEFT;
+            pstr->wAlignment = PR_ALIGN_LEFT;
             break;
         }
         pstr->bShadow = message.Long() != 0; // msg
         pstr->fScale = message.Float();      // msg
         // обязательная ширина
-        int nWidth = message.Long(); // msg
+        const int nWidth = message.Long(); // msg
         if (nWidth > 0)
         {
-            int realWidth = m_rs->StringWidth(paramStr, pstr->nFontNum, pstr->fScale);
+            const int realWidth = m_rs->StringWidth(paramStr, pstr->nFontNum, pstr->fScale);
             if (realWidth > nWidth)
-                pstr->fScale *= (float)(nWidth - 1) / realWidth;
+                pstr->fScale *= static_cast<float>(nWidth - 1) / realWidth;
         }
     }
     break;
     case 1: // изменить строку по номеру
     {
-        long n = message.Long() - 1;
+        const auto n = message.Long() - 1;
         char param[512];
         message.String(sizeof(param), param);
         ChangeString(n, param);
@@ -318,12 +318,12 @@ dword _cdecl CXI_STRCOLLECTION::MessageProc(long msgcode, MESSAGE &message)
     break;
     case 2: // скопировать строку с одного места на другое (первая строка имеет номер 1)
     {
-        long nDst = message.Long() - 1;
-        long nSrc = message.Long() - 1;
+        const auto nDst = message.Long() - 1;
+        const auto nSrc = message.Long() - 1;
         if (nDst >= 0 && nSrc >= 0 && nDst < m_nStr && nSrc < m_nStr)
         {
             m_pStrDescr[nDst].strNum = -1;
-            SE_DELETE(m_pStrDescr[nDst].strStr);
+            STORM_DELETE(m_pStrDescr[nDst].strStr);
             if (m_pStrDescr[nSrc].strStr)
                 DublicateString(m_pStrDescr[nDst].strStr, m_pStrDescr[nSrc].strStr);
             else
@@ -333,8 +333,8 @@ dword _cdecl CXI_STRCOLLECTION::MessageProc(long msgcode, MESSAGE &message)
     break;
     case 3: // поменять цвет строки
     {
-        long nStr = message.Long() - 1;
-        dword nColor = message.Long();
+        const long nStr = message.Long() - 1;
+        const uint32_t nColor = message.Long();
         ChangeStringColor(nStr, nColor);
     }
     break;
@@ -342,12 +342,12 @@ dword _cdecl CXI_STRCOLLECTION::MessageProc(long msgcode, MESSAGE &message)
     return -1;
 }
 
-void CXI_STRCOLLECTION::ChangeString(long num, const char *sValue)
+void CXI_STRCOLLECTION::ChangeString(long num, const char *sValue) const
 {
     if (num >= 0 && num < m_nStr)
     {
         m_pStrDescr[num].strNum = -1;
-        SE_DELETE(m_pStrDescr[num].strStr);
+        STORM_DELETE(m_pStrDescr[num].strStr);
         if (sValue)
         {
             if (sValue[0] == '#')
@@ -358,13 +358,13 @@ void CXI_STRCOLLECTION::ChangeString(long num, const char *sValue)
     }
 }
 
-void CXI_STRCOLLECTION::ChangeStringColor(long num, dword dwColor)
+void CXI_STRCOLLECTION::ChangeStringColor(long num, uint32_t dwColor) const
 {
     if (num >= 0 && num < m_nStr)
         m_pStrDescr[num].foreColor = dwColor;
 }
 
-void CXI_STRCOLLECTION::ChangeStringPos(long num, XYPOINT &pntNewPos)
+void CXI_STRCOLLECTION::ChangeStringPos(long num, XYPOINT &pntNewPos) const
 {
     if (num >= 0 && num < m_nStr)
         m_pStrDescr[num].scrPos = pntNewPos;
@@ -372,58 +372,60 @@ void CXI_STRCOLLECTION::ChangeStringPos(long num, XYPOINT &pntNewPos)
 
 CXI_STRCOLLECTION::STRINGDESCR *CXI_STRCOLLECTION::CreateNewDinamicString(char *strID, char *strStr)
 {
-    if (strID == null || strID[0] == 0)
-        return null;
-    int i = 0;
+    if (strID == nullptr || strID[0] == 0)
+        return nullptr;
+    int i;
     for (i = 0; i < m_nStr; i++)
     {
-        if (m_pStrDescr[i].strID != null && stricmp(m_pStrDescr[i].strID, strID) == 0)
+        if (m_pStrDescr[i].strID != nullptr && _stricmp(m_pStrDescr[i].strID, strID) == 0)
             break;
     }
     if (i < m_nStr)
     {
-        if (strStr == null || strStr[0] == 0)
+        if (strStr == nullptr || strStr[0] == 0)
         {
-            PTR_DELETE(m_pStrDescr[i].strID);
-            PTR_DELETE(m_pStrDescr[i].strStr);
+            STORM_DELETE(m_pStrDescr[i].strID);
+            STORM_DELETE(m_pStrDescr[i].strStr);
             FONT_RELEASE(m_rs, m_pStrDescr[i].nFontNum);
             m_nStr--;
             if (m_nStr > i)
                 memcpy(&m_pStrDescr[i], &m_pStrDescr[i + 1], sizeof(STRINGDESCR) * (m_nStr - i));
-            return null;
+            return nullptr;
         }
         FONT_RELEASE(m_rs, m_pStrDescr[i].nFontNum);
-        PTR_DELETE(m_pStrDescr[i].strStr);
-        m_pStrDescr[i].strStr = NEW char[strlen(strStr) + 1];
-        if (m_pStrDescr[i].strStr == null)
+        STORM_DELETE(m_pStrDescr[i].strStr);
+        const auto len = strlen(strStr) + 1;
+        m_pStrDescr[i].strStr = new char[len];
+        if (m_pStrDescr[i].strStr == nullptr)
         {
-            SE_THROW("allocate memory error");
+            throw std::exception("allocate memory error");
         }
-        strcpy(m_pStrDescr[i].strStr, strStr);
+        memcpy(m_pStrDescr[i].strStr, strStr, len);
         return &m_pStrDescr[i];
     }
-    if (strStr == null || strStr[0] == 0)
-        return null;
+    if (strStr == nullptr || strStr[0] == 0)
+        return nullptr;
     STRINGDESCR *pOld = m_pStrDescr;
     m_nStr++;
-    m_pStrDescr = NEW STRINGDESCR[m_nStr];
-    if (m_pStrDescr == null)
+    m_pStrDescr = new STRINGDESCR[m_nStr];
+    if (m_pStrDescr == nullptr)
     {
-        SE_THROW("allocate memory error");
+        throw std::exception("allocate memory error");
     }
     if (pOld && i)
         memcpy(m_pStrDescr, pOld, sizeof(STRINGDESCR) * i);
-    if (pOld)
-        delete pOld;
-    ZeroMemory(&m_pStrDescr[i], sizeof(STRINGDESCR));
+    delete pOld;
+    PZERO(&m_pStrDescr[i], sizeof(STRINGDESCR));
     m_pStrDescr[i].nFontNum = -1;
-    m_pStrDescr[i].strID = NEW char[strlen(strID) + 1];
-    m_pStrDescr[i].strStr = NEW char[strlen(strStr) + 1];
-    if (m_pStrDescr[i].strID == null || m_pStrDescr[i].strStr == null)
+    const auto len1 = strlen(strID) + 1;
+    const auto len2 = strlen(strStr) + 1;
+    m_pStrDescr[i].strID = new char[len1];
+    m_pStrDescr[i].strStr = new char[len2];
+    if (m_pStrDescr[i].strID == nullptr || m_pStrDescr[i].strStr == nullptr)
     {
-        SE_THROW("allocate memory error");
+        throw std::exception("allocate memory error");
     }
-    strcpy(m_pStrDescr[i].strID, strID);
-    strcpy(m_pStrDescr[i].strStr, strStr);
+    memcpy(m_pStrDescr[i].strID, strID, len1);
+    memcpy(m_pStrDescr[i].strStr, strStr, len2);
     return &m_pStrDescr[i];
 }

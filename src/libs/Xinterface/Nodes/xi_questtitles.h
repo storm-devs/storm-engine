@@ -1,32 +1,34 @@
 #ifndef _XI_QUESTTITLES_H_
 #define _XI_QUESTTITLES_H_
 
-#include "..\\inode.h"
+#include "..//inode.h"
 
 class CXI_QUESTTITLE : public CINODE
 {
   public:
+    CXI_QUESTTITLE(CXI_QUESTTITLE &&) = delete;
+    CXI_QUESTTITLE(const CXI_QUESTTITLE &) = delete;
     CXI_QUESTTITLE();
     ~CXI_QUESTTITLE();
 
-    void Draw(bool bSelected, dword Delta_Time);
-    bool Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, VDX8RENDER *rs, XYRECT &hostRect,
-              XYPOINT &ScreenSize);
-    void ReleaseAll();
-    int CommandExecute(int wActCode);
-    bool IsClick(int buttonID, long xPos, long yPos);
-    void MouseThis(float fX, float fY);
-    void ChangePosition(XYRECT &rNewPos);
-    void SaveParametersToIni();
+    void Draw(bool bSelected, uint32_t Delta_Time) override;
+    bool Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs, XYRECT &hostRect,
+              XYPOINT &ScreenSize) override;
+    void ReleaseAll() override;
+    int CommandExecute(int wActCode) override;
+    bool IsClick(int buttonID, long xPos, long yPos) override;
+    void MouseThis(float fX, float fY) override;
+    void ChangePosition(XYRECT &rNewPos) override;
+    void SaveParametersToIni() override;
 
     void SetNewTopQuest(ATTRIBUTES *pA, int topNum);
 
-    float GetLineStep();
+    float GetLineStep() const;
     void ScrollerChanged(float fPos);
 
   protected:
-    bool GetLineNext(int fontNum, char *&pInStr, char *buf, int bufSize);
-    void LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2);
+    bool GetLineNext(int fontNum, char *&pInStr, char *buf, int bufSize) const;
+    void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
 
     int m_iconWidth;
     int m_iconHeight;
@@ -37,9 +39,9 @@ class CXI_QUESTTITLE : public CINODE
     long m_texId;
 
     long m_idFont;
-    DWORD m_dwNonCompleteColor;
-    DWORD m_dwCompleteColor;
-    DWORD m_dwSelectRectangleColor;
+    uint32_t m_dwNonCompleteColor;
+    uint32_t m_dwCompleteColor;
+    uint32_t m_dwSelectRectangleColor;
     int m_fontOffset;
 
     int m_stringQuantity;
@@ -56,8 +58,9 @@ class CXI_QUESTTITLE : public CINODE
         long lineQuantity;
         char *name[10];
         bool complete;
-        dword dwSpecColor;
+        uint32_t dwSpecColor;
     };
+
     STRING_DESCRIBER *m_strList;
 };
 

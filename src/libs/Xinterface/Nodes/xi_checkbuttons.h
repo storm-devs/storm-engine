@@ -1,27 +1,30 @@
 #ifndef __XI_CHECKBUTTONS_H__
 #define __XI_CHECKBUTTONS_H__
 
-#include "..\inode.h"
+#include "../inode.h"
+#include "../xdefines.h"
 #include "xi_image.h"
 
 struct ButtonDescribe
 {
-    ButtonDescribe() : aStr(_FL)
+    ButtonDescribe()
     {
-        pImg = null;
+        pImg = nullptr;
         bSetPos = false;
     }
+
     ~ButtonDescribe()
     {
-        SE_DELETE(pImg);
+        STORM_DELETE(pImg);
     }
 
     struct StrDescribe
     {
-        string str;
+        std::string str;
         float fX;
     };
-    array<StrDescribe> aStr;
+
+    std::vector<StrDescribe> aStr;
     bool bChoose;
     bool bDisable;
 
@@ -35,27 +38,31 @@ struct ButtonDescribe
 class CXI_CHECKBUTTONS : public CINODE
 {
   public:
+    CXI_CHECKBUTTONS(CXI_CHECKBUTTONS &&) = delete;
+    CXI_CHECKBUTTONS(const CXI_CHECKBUTTONS &) = delete;
     CXI_CHECKBUTTONS();
     ~CXI_CHECKBUTTONS();
 
-    void Draw(bool bSelected, dword Delta_Time);
-    bool Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, VDX8RENDER *rs, XYRECT &hostRect,
-              XYPOINT &ScreenSize);
-    void ReleaseAll();
-    int CommandExecute(int wActCode);
-    bool IsClick(int buttonID, long xPos, long yPos);
-    void MouseThis(float fX, float fY)
+    void Draw(bool bSelected, uint32_t Delta_Time) override;
+    bool Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs, XYRECT &hostRect,
+              XYPOINT &ScreenSize) override;
+    void ReleaseAll() override;
+    int CommandExecute(int wActCode) override;
+    bool IsClick(int buttonID, long xPos, long yPos) override;
+
+    void MouseThis(float fX, float fY) override
     {
     }
-    void ChangePosition(XYRECT &rNewPos);
-    void SaveParametersToIni();
-    dword _cdecl MessageProc(long msgcode, MESSAGE &message);
 
-    virtual bool GetInternalNameList(array<string> &aStr);
-    virtual void SetInternalName(string &sName);
+    void ChangePosition(XYRECT &rNewPos) override;
+    void SaveParametersToIni() override;
+    uint32_t MessageProc(long msgcode, MESSAGE &message) override;
+
+    bool GetInternalNameList(std::vector<std::string> &aStr) override;
+    void SetInternalName(std::string &sName) override;
 
   protected:
-    void LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2);
+    void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void AddButton(const char *pcText, bool bDisable, bool bSelect);
     void ChangeText(long nButtonNum, const char *pcText);
 
@@ -73,9 +80,9 @@ class CXI_CHECKBUTTONS : public CINODE
 
     long m_nFontNum;
     float m_fFontScale;
-    dword m_dwNormalFontColor;
-    dword m_dwSelectFontColor;
-    dword m_dwDisableFontColor;
+    uint32_t m_dwNormalFontColor;
+    uint32_t m_dwSelectFontColor;
+    uint32_t m_dwDisableFontColor;
     FXYRECT m_frTextOffset;
     float m_fTextLineHeight;
     float m_fTextSectionInterval;
@@ -83,21 +90,21 @@ class CXI_CHECKBUTTONS : public CINODE
 
     bool m_bClickIntoTextActive;
     bool m_bIndividualPos;
-    array<ButtonDescribe *> m_aButton;
+    std::vector<ButtonDescribe *> m_aButton;
     long m_nEditableSectionIndex;
 
     FXYPOINT m_fpIconSize;
     FXYPOINT m_fpIconOffset;
-    string m_sIconGroupName;
+    std::string m_sIconGroupName;
     //
-    string m_sNormalPicture;
-    dword m_dwNormalPicColor;
+    std::string m_sNormalPicture;
+    uint32_t m_dwNormalPicColor;
     //
-    string m_sSelectPicture;
-    dword m_dwSelectPicColor;
+    std::string m_sSelectPicture;
+    uint32_t m_dwSelectPicColor;
     //
-    string m_sDisablePicture;
-    dword m_dwDisablePicColor;
+    std::string m_sDisablePicture;
+    uint32_t m_dwDisablePicColor;
 };
 
 #endif

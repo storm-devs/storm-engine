@@ -1,23 +1,41 @@
 #ifndef _INFO_HANDLER_H_
 #define _INFO_HANDLER_H_
 
-#include "..\\common_h\\dx8render.h"
+#include "Entity.h"
+#include "dx9render.h"
 
-class InfoHandler : public ENTITY
+class InfoHandler : public Entity
 {
-    VDX8RENDER *m_rs;
+    VDX9RENDER *m_rs;
 
   public:
     InfoHandler();
     ~InfoHandler();
-    bool Init();
-    void Execute(dword delta_time);
-    void Realize(dword delta_time);
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    bool Init() override;
+    void Execute(uint32_t delta_time);
+    void Realize(uint32_t delta_time) const;
+    uint64_t ProcessMessage(MESSAGE &message) override;
+
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
 
   protected:
-    void StringToBufer(char *outStr, int sizeBuf, char *inStr, int copySize);
-    char *GetCutString(char *pstr, int nOutWidth, float fScale);
+    void StringToBufer(char *outStr, int sizeBuf, char *inStr, int copySize) const;
+    char *GetCutString(char *pstr, int nOutWidth, float fScale) const;
     bool DoPreOut();
 
     IDirect3DSurface9 *m_pSurface;
@@ -35,9 +53,9 @@ class InfoHandler : public ENTITY
 
     struct	STRING_LIST
     {
-        int x,y;
-        char * strData;
-        STRING_LIST	* next;
+      int x,y;
+      char * strData;
+      STRING_LIST	* next;
     } * m_strList;*/
 };
 

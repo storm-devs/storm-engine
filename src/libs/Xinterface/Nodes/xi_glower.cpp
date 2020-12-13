@@ -13,7 +13,7 @@ CXI_GLOWER::~CXI_GLOWER()
     ReleaseAll();
 }
 
-void CXI_GLOWER::Draw(bool bSelected, dword Delta_Time)
+void CXI_GLOWER::Draw(bool bSelected, uint32_t Delta_Time)
 {
     m_rs->TextureSet(0, m_texID);
     for (long i = 0; i < m_nQuantity; i++)
@@ -22,11 +22,11 @@ void CXI_GLOWER::Draw(bool bSelected, dword Delta_Time)
         {
             // recalculate color
             if (m_glows[i].action == GLOW_ACTION_COLORUP)
-                m_glows[i].rect.dwColor =
-                    ColorInterpolate(m_dwMaxColor, m_dwMinColor, (float)m_glows[i].curTime / m_glows[i].allTime);
+                m_glows[i].rect.dwColor = ColorInterpolate(m_dwMaxColor, m_dwMinColor,
+                                                           static_cast<float>(m_glows[i].curTime) / m_glows[i].allTime);
             if (m_glows[i].action == GLOW_ACTION_BLEND)
-                m_glows[i].rect.dwColor =
-                    ColorInterpolate(m_dwMaxColor, m_dwMinColor, 1.f - (float)m_glows[i].curTime / m_glows[i].allTime);
+                m_glows[i].rect.dwColor = ColorInterpolate(
+                    m_dwMaxColor, m_dwMinColor, 1.f - static_cast<float>(m_glows[i].curTime) / m_glows[i].allTime);
             // show this rectangle
             m_rs->DrawRects(&m_glows[i].rect, 1, "iGlow");
 
@@ -41,12 +41,12 @@ void CXI_GLOWER::Draw(bool bSelected, dword Delta_Time)
                     m_glows[i].action = GLOW_ACTION_SHOW;
                     m_glows[i].rect.dwColor = m_dwMaxColor;
                     m_glows[i].curTime = m_glows[i].allTime =
-                        long(m_minShowTime + (m_maxShowTime - m_minShowTime) * rand() / RAND_MAX);
+                        static_cast<long>(m_minShowTime + (m_maxShowTime - m_minShowTime) * rand() / RAND_MAX);
                     break;
                 case GLOW_ACTION_SHOW:
                     m_glows[i].action = GLOW_ACTION_BLEND;
-                    m_glows[i].curTime = m_glows[i].allTime =
-                        long(m_minGlowTime + (float)(m_maxGlowTime - m_minGlowTime) * rand() / RAND_MAX);
+                    m_glows[i].curTime = m_glows[i].allTime = static_cast<long>(
+                        m_minGlowTime + static_cast<float>(m_maxGlowTime - m_minGlowTime) * rand() / RAND_MAX);
                     break;
                 case GLOW_ACTION_BLEND:
                     m_glows[i].action = GLOW_ACTION_NONE;
@@ -55,20 +55,22 @@ void CXI_GLOWER::Draw(bool bSelected, dword Delta_Time)
             }
         }
         else
-        { // to can or not to turn on the glow
+        {
+            // to can or not to turn on the glow
             if (rand() < m_nRandomMax)
-            { // yes! this new glow
+            {
+                // yes! this new glow
                 m_glows[i].action = GLOW_ACTION_COLORUP;
-                m_glows[i].curTime = m_glows[i].allTime =
-                    long(m_minGlowTime + (float)(m_maxGlowTime - m_minGlowTime) * rand() / RAND_MAX);
+                m_glows[i].curTime = m_glows[i].allTime = static_cast<long>(
+                    m_minGlowTime + static_cast<float>(m_maxGlowTime - m_minGlowTime) * rand() / RAND_MAX);
                 m_glows[i].angleSpeed = -(m_fAngleSpeedMin + (m_fAngleSpeedMax - m_fAngleSpeedMin) * rand() / RAND_MAX);
             }
         }
     }
 }
 
-bool CXI_GLOWER::Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, VDX8RENDER *rs, XYRECT &hostRect,
-                      XYPOINT &ScreenSize)
+bool CXI_GLOWER::Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs,
+                      XYRECT &hostRect, XYPOINT &ScreenSize)
 {
     if (!CINODE::Init(ini1, name1, ini2, name2, rs, hostRect, ScreenSize))
         return false;
@@ -100,21 +102,21 @@ void CXI_GLOWER::SaveParametersToIni()
 {
     char pcWriteParam[2048];
 
-    INIFILE *pIni = api->fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.GetBuffer());
+    auto *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
-        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.GetBuffer());
+        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
         return;
     }
 
     // save position
-    _snprintf(pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rect.left, m_rect.top, m_rect.right, m_rect.bottom);
+    sprintf_s(pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rect.left, m_rect.top, m_rect.right, m_rect.bottom);
     pIni->WriteString(m_nodeName, "position", pcWriteParam);
 
     delete pIni;
 }
 
-void CXI_GLOWER::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2)
+void CXI_GLOWER::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2)
 {
     int i;
     char param[255];
@@ -148,15 +150,15 @@ void CXI_GLOWER::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2)
     for (i = 0; i < m_nQuantity; i++)
     {
         GetDataStr(param, "ll", &x, &y);
-        m_glows[i].rect.vPos.x = (float)x + m_hostRect.left;
-        m_glows[i].rect.vPos.y = (float)y + m_hostRect.top;
+        m_glows[i].rect.vPos.x = static_cast<float>(x) + m_hostRect.left;
+        m_glows[i].rect.vPos.y = static_cast<float>(y) + m_hostRect.top;
         ini1->ReadStringNext(name1, "pos", param, sizeof(param) - 1);
     }
 
     // fill rectangles size
     x = GetIniLong(ini1, name1, ini2, name2, "spriteSize", 8);
     for (i = 0; i < m_nQuantity; i++)
-        m_glows[i].rect.fSize = (float)x;
+        m_glows[i].rect.fSize = static_cast<float>(x);
 
     // set colors
     m_dwMinColor = GetIniARGB(ini1, name1, ini2, name2, "minColor", 0);
@@ -167,7 +169,7 @@ void CXI_GLOWER::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2)
     m_minShowTime = GetIniLong(ini1, name1, ini2, name2, "minShowTime", 200);
     m_maxShowTime = GetIniLong(ini1, name1, ini2, name2, "maxShowTime", 600);
 
-    m_nRandomMax = (long)(GetIniFloat(ini1, name1, ini2, name2, "createProbability", 0.1f) * RAND_MAX);
+    m_nRandomMax = static_cast<long>(GetIniFloat(ini1, name1, ini2, name2, "createProbability", 0.1f) * RAND_MAX);
 
     m_fAngleSpeedMin = GetIniFloat(ini1, name1, ini2, name2, "minRotateSpeed", 15.f) * PI / 180000.f;
     m_fAngleSpeedMax = GetIniFloat(ini1, name1, ini2, name2, "maxRotateSpeed", 180.f) * PI / 180000.f;

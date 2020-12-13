@@ -1,7 +1,7 @@
 #ifndef __XI_SCROLLTEXT_H_
 #define __XI_SCROLLTEXT_H_
 
-#include "..\inode.h"
+#include "../inode.h"
 
 #define PICE_TYPE_STRING 0      // описатель строки
 #define PICE_TYPE_FONTCHANGE 1  // описатель нового фонта
@@ -12,14 +12,16 @@
 struct STRING_PICE
 {
     long type;
+
     union {
         struct
         {
             long startOffset;
             long charQuantity;
         } strDescr;
+
         long fontID;
-        DWORD color;
+        uint32_t color;
     } data;
 };
 
@@ -29,25 +31,27 @@ class CXI_SCROLLTEXT : public CINODE
     CXI_SCROLLTEXT();
     ~CXI_SCROLLTEXT();
 
-    void Draw(bool bSelected, dword Delta_Time);
-    bool Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, VDX8RENDER *rs, XYRECT &hostRect,
-              XYPOINT &ScreenSize);
-    void ReleaseAll();
-    int CommandExecute(int wActCode);
-    bool IsClick(int buttonID, long xPos, long yPos);
-    void MouseThis(float fX, float fY)
+    void Draw(bool bSelected, uint32_t Delta_Time) override;
+    bool Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs, XYRECT &hostRect,
+              XYPOINT &ScreenSize) override;
+    void ReleaseAll() override;
+    int CommandExecute(int wActCode) override;
+    bool IsClick(int buttonID, long xPos, long yPos) override;
+
+    void MouseThis(float fX, float fY) override
     {
     }
-    void ChangePosition(XYRECT &rNewPos);
-    void SaveParametersToIni();
 
-    void SetText(char *newText);
+    void ChangePosition(XYRECT &rNewPos) override;
+    void SaveParametersToIni() override;
+
+    void SetText(const char *newText);
 
   protected:
     void ClearText();
     long FillPices(char *pt, size_t beg, size_t size, long &idx, STRING_PICE *spl, long wid);
 
-    void LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2);
+    void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
 
     void TextDownShift(float);
     void TextUpShift();
@@ -56,8 +60,8 @@ class CXI_SCROLLTEXT : public CINODE
     CINODE *m_pScroller; // ссылка на скроллер (!!! обязан быть прописан перед этим)
     long m_nMaxStringes; // число строк в выводимом окне
 
-    DWORD m_dwFontColor; // текущий цвет
-    long m_idFont;       // текущий шрифт
+    uint32_t m_dwFontColor; // текущий цвет
+    long m_idFont;          // текущий шрифт
 
     char *m_pText;
     long m_nPiceQuantity;

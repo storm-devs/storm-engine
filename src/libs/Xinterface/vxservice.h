@@ -5,7 +5,7 @@
 #define TEXTURE_MODIFY_HORZFLIP 1
 #define TEXTURE_MODIFY_VERTFLIP 2
 
-class VDX8RENDER;
+class VDX9RENDER;
 struct FXYRECT;
 struct XYRECT;
 struct FXYPOINT;
@@ -14,7 +14,8 @@ struct XYPOINT;
 class VXSERVICE
 {
   public:
-    virtual void Init(VDX8RENDER *pRS, long lWidth, long lHight) = 0;
+    virtual ~VXSERVICE() = default;
+    virtual void Init(VDX9RENDER *pRS, long lWidth, long lHight) = 0;
 
     // get texture identificator for image group
     virtual long GetTextureID(const char *sImageListName) = 0;

@@ -1,7 +1,7 @@
 #ifndef _XI_TWOPICTURE_H_
 #define _XI_TWOPICTURE_H_
 
-#include "..\\inode.h"
+#include "..//inode.h"
 
 // video
 class CXI_TWOPICTURE : public CINODE
@@ -9,21 +9,21 @@ class CXI_TWOPICTURE : public CINODE
   public:
     CXI_TWOPICTURE();
     ~CXI_TWOPICTURE();
-    void Draw(bool bSelected, dword Delta_Time);
-    bool Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, VDX8RENDER *rs, XYRECT &hostRect,
-              XYPOINT &ScreenSize);
-    void ReleaseAll();
-    int CommandExecute(int wActCode);
-    bool IsClick(int buttonID, long xPos, long yPos);
-    void MouseThis(float fX, float fY);
+    void Draw(bool bSelected, uint32_t Delta_Time) override;
+    bool Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs, XYRECT &hostRect,
+              XYPOINT &ScreenSize) override;
+    void ReleaseAll() override;
+    int CommandExecute(int wActCode) override;
+    bool IsClick(int buttonID, long xPos, long yPos) override;
+    void MouseThis(float fX, float fY) override;
 
-    void ChangePosition(XYRECT &rNewPos);
-    void SaveParametersToIni();
+    void ChangePosition(XYRECT &rNewPos) override;
+    void SaveParametersToIni() override;
 
     void SetNewPicture(char *sNewTexName);
 
   protected:
-    void LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2);
+    void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void UpdateRectangles();
 
     bool m_bMouseInsideIndifferent;
@@ -35,9 +35,9 @@ class CXI_TWOPICTURE : public CINODE
     FXYPOINT m_leftPicCenter;
     FXYPOINT m_rightPicCenter;
 
-    DWORD m_dwDarkColor;
-    DWORD m_dwSelectColor;
-    DWORD m_dwShadowColor;
+    uint32_t m_dwDarkColor;
+    uint32_t m_dwSelectColor;
+    uint32_t m_dwShadowColor;
 
     bool m_bLeftSelect;
     bool m_leftClick;

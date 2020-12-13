@@ -1,31 +1,50 @@
 #ifndef _HELPCHOOSER_H_
 #define _HELPCHOOSER_H_
 
-#include "..\\..\\common_h\\dx8render.h"
+#include "Entity.h"
+#include "dx9render.h"
+#include <defines.h>
 
-class HELPCHOOSER : public ENTITY
+class HELPCHOOSER : public Entity
 {
-    VDX8RENDER *rs;
+    VDX9RENDER *rs;
 
   public:
     HELPCHOOSER();
     ~HELPCHOOSER();
     void SetDevice();
-    bool Init();
-    void Execute(dword Delta_Time);
-    void Realize(dword Delta_Time);
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    bool Init() override;
+    void Execute(uint32_t Delta_Time);
+    void Realize(uint32_t Delta_Time) const;
+    uint64_t ProcessMessage(MESSAGE &message) override;
+
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
 
   protected:
     void AllRelease();
     bool RunChooser(char *ChooserGroup);
     void SetRectangle(long newRectNum);
-    long GetRectangleLeft();
-    long GetRectangleRight();
-    long GetRectangleUp();
-    long GetRectangleDown();
+    long GetRectangleLeft() const;
+    long GetRectangleRight() const;
+    long GetRectangleUp() const;
+    long GetRectangleDown() const;
     bool MouseMove();
-    long GetRectangleFromPos(float x, float y);
+    long GetRectangleFromPos(float x, float y) const;
 
   protected:
     long m_idMouseTexture;

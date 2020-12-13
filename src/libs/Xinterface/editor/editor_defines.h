@@ -1,8 +1,6 @@
 #ifndef _GI_EDITOR_DEFINES_H_
 #define _GI_EDITOR_DEFINES_H_
-
-#include "templates\array.h"
-#include "vmodule_api.h"
+#include <vector>
 
 enum GIEditorStates
 {
@@ -16,7 +14,7 @@ enum GIEditorStates
 class GIEditorEventHandler;
 class GIEditorObject;
 
-typedef void (_cdecl GIEditorObject::*GIEditorEvent)();
+typedef void (GIEditorObject::*GIEditorEvent)();
 
 class GIEditorObject
 {
@@ -45,7 +43,8 @@ class GIEditorEventHandler
         GIEditorObject *pObj;
         GIEditorEvent func;
     };
-    array<FuncDescr> m_aEventFuncs;
+
+    std::vector<FuncDescr> m_aEventFuncs;
 };
 
 #endif

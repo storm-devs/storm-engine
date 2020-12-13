@@ -1,12 +1,12 @@
 #ifndef _GI_EDITOR_LIST_H
 #define _GI_EDITOR_LIST_H
 
-#include "..\inode.h"
-#include "xi_editor_defines.h"
+#include "../inode.h"
+#include "defines.h"
+#include "font.h"
 
 class GIEditor;
 class CXI_IMAGE;
-class GIFont;
 
 class GIEditorList : public GIEditorObject
 {
@@ -21,27 +21,27 @@ class GIEditorList : public GIEditorObject
 
     void SetPosition(float fLeft, float fTop, float fRight, float fBottom);
 
-    void AddString(string &sNewStr);
-    void RemoveString(string &sStr);
+    void AddString(std::string &sNewStr);
+    void RemoveString(const std::string &sStr);
     void RemoveString(long nIndex);
     void RemoveAllStrings();
-    long FindString(string &sStr);
-    long GetStringQuantity()
+    long FindString(const std::string &sStr);
+    long GetStringQuantity() const
     {
-        return m_aStrings.Size();
+        return m_aStrings.size();
     }
-    string &GetString(long nIndex);
-    long GetSelectIndex()
+    std::string &GetString(long nIndex);
+    long GetSelectIndex() const
     {
         return m_nSelectIndex;
     }
     void SetSelectIndex(long nIndex);
-    string &GetSelectString()
+    std::string &GetSelectString()
     {
         return GetString(m_nSelectIndex);
     }
 
-    bool CheckMouseInside(float fX, float fY);
+    bool CheckMouseInside(float fX, float fY) const;
     void MakeMouseClick(float fX, float fY);
     void DoKeyChecking();
 
@@ -59,12 +59,12 @@ class GIEditorList : public GIEditorObject
     FXYRECT m_frBackRect;
     FXYRECT m_frSelectRect;
 
-    string m_sEmptyString;
+    std::string m_sEmptyString;
     GIFont *m_pFont;
 
     FXYRECT m_frStrOffset;
     float m_fStrLineStep;
-    array<string> m_aStrings;
+    std::vector<std::string> m_aStrings;
     long m_nSelectIndex;
     long m_nTopIndex;
     long m_nLineQuantity;
@@ -75,7 +75,7 @@ class GIEditorList : public GIEditorObject
     float m_fKeyRepeatInterval;
 
   public:
-    dword m_dwStatus;
+    uint32_t m_dwStatus;
     GIEditorEventHandler *m_pChangeSelected;
 };
 

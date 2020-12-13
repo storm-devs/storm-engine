@@ -1,9 +1,8 @@
 #include "xi_util.h"
-#include "..\inode.h"
-#include "vmodule_api.h"
+#include "../inode.h"
 #include <stdio.h>
 
-CXI_UTILS *CXI_UTILS::pThis = 0;
+CXI_UTILS *CXI_UTILS::pThis = nullptr;
 
 CXI_UTILS::CXI_UTILS()
 {
@@ -36,12 +35,14 @@ void CXI_UTILS::Release()
 void CXI_UTILS::FrameUpdate()
 {
     if (m_bIsKeyPressed && m_bFrameKeyPressedFlag)
-    { // опроса на этом кадре не было - значит можно все клавиши сбросить (мы вышли из цикла опроса)
+    {
+        // опроса на этом кадре не было - значит можно все клавиши сбросить (мы вышли из цикла опроса)
         for (long n = 0; n < UTILS_KEYS_QUANTITY; n++)
+        {
             if (keys[n].nAsyncKeyCode < 0)
                 continue;
-            else
-                keys[n].nPressedState = -1;
+            keys[n].nPressedState = -1;
+        }
         m_bIsKeyPressed = false;
     }
     m_bFrameKeyPressedFlag = true;
@@ -103,12 +104,12 @@ char CXI_UTILS::GetKeyInput()
                     break;
                 }
 
-                byte pKBState[256];
-                WORD pcTmp[16]; // вообще то нужно только 2 символа (остальные на всякий случай)
+                uint8_t pKBState[256];
+                uint16_t pcTmp[16]; // вообще то нужно только 2 символа (остальные на всякий случай)
                 GetKeyboardState(pKBState);
                 if (ToAscii(n, MapVirtualKey(n, 0), pKBState, pcTmp, 0) == 1)
                 {
-                    cRetVal = (char)pcTmp[0];
+                    cRetVal = static_cast<char>(pcTmp[0]);
                     return cRetVal;
                 }
             }
@@ -141,14 +142,14 @@ void CXI_UTILS::StringLeftClamp(char *&pcString)
 const char *CXI_UTILS::StringGetTokenID(char *&pcString, char *pcBuffer, long nBufferSize)
 {
     if (!pcString || !pcBuffer || nBufferSize <= 0)
-        return 0;
+        return nullptr;
     pcBuffer[0] = 0;
 
     StringLeftClamp(pcString);
 
     long n = 0;
-    long q = nBufferSize - 1;
-    for (char cCur = pcString[0]; cCur && n < q; pcString++, cCur = pcString[0])
+    const auto q = nBufferSize - 1;
+    for (auto cCur = pcString[0]; cCur && n < q; pcString++, cCur = pcString[0])
     {
         if (cCur == '=')
             break;
@@ -175,21 +176,21 @@ const char *CXI_UTILS::StringGetTokenID(char *&pcString, char *pcBuffer, long nB
 
     if (pcBuffer[0])
         return pcBuffer;
-    return 0;
+    return nullptr;
 }
 
 const char *CXI_UTILS::StringGetTokenString(char *&pcString, char *pcBuffer, long nBufferSize)
 {
     if (!pcString || !pcBuffer || nBufferSize <= 0)
-        return 0;
+        return nullptr;
     pcBuffer[0] = 0;
 
     StringLeftClamp(pcString);
 
     long n = 0;
-    long q = nBufferSize - 1;
+    const auto q = nBufferSize - 1;
     long nQuote = 0;
-    for (char cCur = pcString[0]; cCur && n < q; pcString++, cCur = pcString[0])
+    for (auto cCur = pcString[0]; cCur && n < q; pcString++, cCur = pcString[0])
     {
         if (cCur == ',' && nQuote == 0)
             break;
@@ -212,68 +213,68 @@ const char *CXI_UTILS::StringGetTokenString(char *&pcString, char *pcBuffer, lon
 
     if (pcBuffer[0])
         return pcBuffer;
-    return 0;
+    return nullptr;
 }
 
 long CXI_UTILS::StringGetTokenCode(const char *pcTokenID)
 {
-    if (stricmp(pcTokenID, "color") == 0)
+    if (_stricmp(pcTokenID, "color") == 0)
         return InterfaceToken_color;
-    if (stricmp(pcTokenID, "file") == 0)
+    if (_stricmp(pcTokenID, "file") == 0)
         return InterfaceToken_file;
-    if (stricmp(pcTokenID, "piclist") == 0)
+    if (_stricmp(pcTokenID, "piclist") == 0)
         return InterfaceToken_picture_list;
-    if (stricmp(pcTokenID, "picname") == 0)
+    if (_stricmp(pcTokenID, "picname") == 0)
         return InterfaceToken_picture_name;
-    if (stricmp(pcTokenID, "piccutuv") == 0)
+    if (_stricmp(pcTokenID, "piccutuv") == 0)
         return InterfaceToken_picture_cut_uv;
-    if (stricmp(pcTokenID, "size") == 0)
+    if (_stricmp(pcTokenID, "size") == 0)
         return InterfaceToken_size;
-    if (stricmp(pcTokenID, "rectUV") == 0)
+    if (_stricmp(pcTokenID, "rectUV") == 0)
         return InterfaceToken_rectUV;
-    if (stricmp(pcTokenID, "pos") == 0)
+    if (_stricmp(pcTokenID, "pos") == 0)
         return InterfaceToken_pos;
-    if (stricmp(pcTokenID, "text") == 0)
+    if (_stricmp(pcTokenID, "text") == 0)
         return InterfaceToken_text;
-    if (stricmp(pcTokenID, "width") == 0)
+    if (_stricmp(pcTokenID, "width") == 0)
         return InterfaceToken_width;
-    if (stricmp(pcTokenID, "class") == 0)
+    if (_stricmp(pcTokenID, "class") == 0)
         return InterfaceToken_class;
 
     return InterfaceToken_unknown;
 }
 
-DWORD CXI_UTILS::StringGetColor(char *pcARGBString)
+uint32_t CXI_UTILS::StringGetColor(const char *pcARGBString)
 {
-    long nA = StringGetLong(pcARGBString);
-    long nR = StringGetLong(pcARGBString);
-    long nG = StringGetLong(pcARGBString);
-    long nB = StringGetLong(pcARGBString);
+    const auto nA = StringGetLong(pcARGBString);
+    const auto nR = StringGetLong(pcARGBString);
+    const auto nG = StringGetLong(pcARGBString);
+    const auto nB = StringGetLong(pcARGBString);
     return ARGB(nA, nR, nG, nB);
 }
 
 void CXI_UTILS::StringDoublicate(const char *pcSrc, char *&pcDst)
 {
-    if (pcDst)
-        delete pcDst;
-    pcDst = 0;
+    delete pcDst;
+    pcDst = nullptr;
     if (pcSrc)
     {
-        pcDst = NEW char[strlen(pcSrc) + 1];
+        const auto len = strlen(pcSrc) + 1;
+        pcDst = new char[len];
         if (pcDst)
-            strcpy(pcDst, pcSrc);
+            memcpy(pcDst, pcSrc, len);
         else
-            SE_THROW_MSG("allocate memory error");
+            throw std::exception("allocate memory error");
     }
 }
 
-void CXI_UTILS::StringTwoLong(char *pcString, long &nLong1, long &nLong2)
+void CXI_UTILS::StringTwoLong(const char *pcString, long &nLong1, long &nLong2)
 {
     nLong1 = StringGetLong(pcString);
     nLong2 = StringGetLong(pcString);
 }
 
-long CXI_UTILS::StringGetLong(char *&pcString)
+long CXI_UTILS::StringGetLong(const char *&pcString)
 {
     if (!pcString)
         return 0;
@@ -295,7 +296,7 @@ long CXI_UTILS::StringGetLong(char *&pcString)
     return nRetVal;
 }
 
-float CXI_UTILS::StringGetFloat(char *&pcString)
+float CXI_UTILS::StringGetFloat(const char *&pcString)
 {
     if (!pcString)
         return 0.f;
@@ -317,10 +318,10 @@ float CXI_UTILS::StringGetFloat(char *&pcString)
         }
     }
     sTmp[n] = 0;
-    return (float)atof(sTmp);
+    return static_cast<float>(atof(sTmp));
 }
 
-void CXI_UTILS::StringFourFloat(char *pcString, float &f1, float &f2, float &f3, float &f4)
+void CXI_UTILS::StringFourFloat(const char *pcString, float &f1, float &f2, float &f3, float &f4)
 {
     f1 = StringGetFloat(pcString);
     f2 = StringGetFloat(pcString);
@@ -328,32 +329,32 @@ void CXI_UTILS::StringFourFloat(char *pcString, float &f1, float &f2, float &f3,
     f4 = StringGetFloat(pcString);
 }
 
-void CXI_UTILS::StringFillStringArray(const char *pcString, array<string> &asStringsArray)
+void CXI_UTILS::StringFillStringArray(const char *pcString, std::vector<std::string> &asStringsArray)
 {
     char tmpstr[256];
-    char *pcSrcStr = (char *)pcString;
+    auto *pcSrcStr = (char *)pcString;
 
     // delete old
-    asStringsArray.DelAll();
+    asStringsArray.clear();
 
     // create new
-    while (0 != CXI_UTILS::StringGetTokenString(pcSrcStr, tmpstr, sizeof(tmpstr)))
+    while (nullptr != StringGetTokenString(pcSrcStr, tmpstr, sizeof(tmpstr)))
     {
         if (!tmpstr[0])
             continue;
-        asStringsArray.Add(string(tmpstr));
+        asStringsArray.emplace_back(tmpstr);
     }
 }
 
 long CXI_UTILS::SplitStringByWidth(const char *pcText, long nFontID, float fFontScale, long nWidth,
-                                   array<string> &asOutStr)
+                                   std::vector<std::string> &asOutStr)
 {
     long nMaxUsingWidth = 0;
-    const char *pcSrcStr = pcText;
-    if (pcSrcStr == 0)
+    const auto *const pcSrcStr = pcText;
+    if (pcSrcStr == nullptr)
         return nMaxUsingWidth;
-    VDX8RENDER *rs = (VDX8RENDER *)api->CreateService("dx8render");
-    asOutStr.DelAll();
+    auto *rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+    asOutStr.clear();
 
     long nSrc = 0;
     long nDst = 0;
@@ -362,7 +363,7 @@ long CXI_UTILS::SplitStringByWidth(const char *pcText, long nFontID, float fFont
     char param[1024];
     while (true)
     {
-        long nToken = GetCurrentTokenIntoString(&pcSrcStr[nSrc]);
+        const long nToken = GetCurrentTokenIntoString(&pcSrcStr[nSrc]);
         if (nToken == StrTokenType_common)
         {
             param[nDst++] = pcSrcStr[nSrc++];
@@ -370,7 +371,7 @@ long CXI_UTILS::SplitStringByWidth(const char *pcText, long nFontID, float fFont
         }
 
         param[nDst] = 0;
-        long nW = rs->StringWidth(param, nFontID, fFontScale);
+        auto nW = rs->StringWidth(param, nFontID, fFontScale);
         if (nW < nWidth && nToken == StrTokenType_Space) // пробел но может не последний
         {
             nSrcPrev = nSrc;
@@ -399,8 +400,8 @@ long CXI_UTILS::SplitStringByWidth(const char *pcText, long nFontID, float fFont
         }
 
         nDstPrev = nDst = 0;
-        long n = asOutStr.Add();
-        asOutStr[n] = param;
+        asOutStr.emplace_back(param);
+        // asOutStr[n] = param;
         nW = rs->StringWidth(param, nFontID, fFontScale);
         if (nW > nMaxUsingWidth)
             nMaxUsingWidth = nW;
@@ -416,86 +417,86 @@ float CXI_UTILS::GetByStrNumFromAttribute_Float(ATTRIBUTES *pA, const char *pStr
     if (!pA)
         return fDefValue;
     char stmp[64];
-    _snprintf(stmp, sizeof(stmp), "%s%d", pStr, num);
+    sprintf_s(stmp, sizeof(stmp), "%s%d", pStr, num);
     return pA->GetAttributeAsFloat(stmp, fDefValue);
 }
 
-void CXI_UTILS::WriteSquareToVertexBuffer(XI_ONETEX_VERTEX *pv, dword color, FXYRECT &uv, XYRECT &rect)
+void CXI_UTILS::WriteSquareToVertexBuffer(XI_ONETEX_VERTEX *pv, uint32_t color, FXYRECT &uv, XYRECT &rect)
 {
     pv[0].color = color;
-    pv[0].pos.x = (float)rect.left;
-    pv[0].pos.y = (float)rect.top;
+    pv[0].pos.x = static_cast<float>(rect.left);
+    pv[0].pos.y = static_cast<float>(rect.top);
     pv[0].pos.z = 1.f;
     pv[0].tu = uv.left;
     pv[0].tv = uv.top;
 
     pv[1].color = color;
-    pv[1].pos.x = (float)rect.left;
-    pv[1].pos.y = (float)rect.bottom;
+    pv[1].pos.x = static_cast<float>(rect.left);
+    pv[1].pos.y = static_cast<float>(rect.bottom);
     pv[1].pos.z = 1.f;
     pv[1].tu = uv.left;
     pv[1].tv = uv.bottom;
 
     pv[2].color = color;
-    pv[2].pos.x = (float)rect.right;
-    pv[2].pos.y = (float)rect.top;
+    pv[2].pos.x = static_cast<float>(rect.right);
+    pv[2].pos.y = static_cast<float>(rect.top);
     pv[2].pos.z = 1.f;
     pv[2].tu = uv.right;
     pv[2].tv = uv.top;
 
     pv[3].color = color;
-    pv[3].pos.x = (float)rect.right;
-    pv[3].pos.y = (float)rect.bottom;
+    pv[3].pos.x = static_cast<float>(rect.right);
+    pv[3].pos.y = static_cast<float>(rect.bottom);
     pv[3].pos.z = 1.f;
     pv[3].tu = uv.right;
     pv[3].tv = uv.bottom;
 }
 
-void CXI_UTILS::WriteSquareToVertexBuffer(XI_ONETEX_VERTEX *pv, dword color, FXYRECT &uv, long left, long top,
+void CXI_UTILS::WriteSquareToVertexBuffer(XI_ONETEX_VERTEX *pv, uint32_t color, FXYRECT &uv, long left, long top,
                                           long right, long bottom)
 {
     pv[0].color = color;
-    pv[0].pos.x = (float)left;
-    pv[0].pos.y = (float)top;
+    pv[0].pos.x = static_cast<float>(left);
+    pv[0].pos.y = static_cast<float>(top);
     pv[0].pos.z = 1.f;
     pv[0].tu = uv.left;
     pv[0].tv = uv.top;
 
     pv[1].color = color;
-    pv[1].pos.x = (float)left;
-    pv[1].pos.y = (float)bottom;
+    pv[1].pos.x = static_cast<float>(left);
+    pv[1].pos.y = static_cast<float>(bottom);
     pv[1].pos.z = 1.f;
     pv[1].tu = uv.left;
     pv[1].tv = uv.bottom;
 
     pv[2].color = color;
-    pv[2].pos.x = (float)right;
-    pv[2].pos.y = (float)top;
+    pv[2].pos.x = static_cast<float>(right);
+    pv[2].pos.y = static_cast<float>(top);
     pv[2].pos.z = 1.f;
     pv[2].tu = uv.right;
     pv[2].tv = uv.top;
 
     pv[3].color = color;
-    pv[3].pos.x = (float)right;
-    pv[3].pos.y = (float)bottom;
+    pv[3].pos.x = static_cast<float>(right);
+    pv[3].pos.y = static_cast<float>(bottom);
     pv[3].pos.z = 1.f;
     pv[3].tu = uv.right;
     pv[3].tv = uv.bottom;
 }
 
-void CXI_UTILS::PrintTextIntoWindow(VDX8RENDER *pRender, long nFont, dword dwColor, long wAlignment, bool bShadow,
+void CXI_UTILS::PrintTextIntoWindow(VDX9RENDER *pRender, long nFont, uint32_t dwColor, long wAlignment, bool bShadow,
                                     float fScale, long scrWidth, long scrHeight, long x, long y, const char *pcString,
                                     long left, long top, long width, long height)
 {
-    long nStrWidth = pRender->StringWidth((char *)pcString, nFont, fScale, 0);
+    const auto nStrWidth = pRender->StringWidth((char *)pcString, nFont, fScale, 0);
     if (nStrWidth == 0)
         return;
-    long right = left + width;
+    const auto right = left + width;
 
     long nL, nR;
-    if (wAlignment == ALIGN_RIGHT)
+    if (wAlignment == PR_ALIGN_RIGHT)
         nL = x - nStrWidth;
-    else if (wAlignment == ALIGN_CENTER)
+    else if (wAlignment == PR_ALIGN_CENTER)
         nL = x - nStrWidth / 2;
     else
         nL = x;
@@ -509,13 +510,13 @@ void CXI_UTILS::PrintTextIntoWindow(VDX8RENDER *pRender, long nFont, dword dwCol
     }
 
     char tmpstr[4096];
-    _snprintf(tmpstr, sizeof(tmpstr), "%s", pcString);
+    sprintf_s(tmpstr, sizeof(tmpstr), "%s", pcString);
     char *pc = tmpstr;
 
     // режем левый край
     while (pc[0] && nL < left)
     {
-        pc += utf8::u8_inc(pc);
+        pc++;
         nL = nR - pRender->StringWidth(pc, nFont, fScale, 0);
     }
 
@@ -525,11 +526,10 @@ void CXI_UTILS::PrintTextIntoWindow(VDX8RENDER *pRender, long nFont, dword dwCol
         long n = strlen(pc);
         while (n > 0 && nR > right)
         {
-            n -= utf8::u8_dec(pc + n);
-            pc[n] = '\0';
+            pc[--n] = 0;
             nR = nL + pRender->StringWidth(pc, nFont, fScale, 0);
         }
     }
 
-    pRender->ExtPrint(nFont, dwColor, 0, ALIGN_LEFT, bShadow, fScale, scrWidth, scrHeight, nL, y, "%s", pc);
+    pRender->ExtPrint(nFont, dwColor, 0, PR_ALIGN_LEFT, bShadow, fScale, scrWidth, scrHeight, nL, y, "%s", pc);
 }

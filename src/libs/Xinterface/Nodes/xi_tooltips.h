@@ -1,16 +1,16 @@
 #ifndef _XI_TOOLTIP_H_
 #define _XI_TOOLTIP_H_
 
-#include "..\inode.h"
-#include "..\vxservice.h"
-#include "..\xi_defines.h"
-#include "stringService.h"
+#include "../xdefines.h"
+#include "dx9render.h"
 
-class XI_ONETEX_VERTEX;
+class VXSERVICE;
 
 class CXI_ToolTip
 {
   public:
+    CXI_ToolTip(CXI_ToolTip &&) = delete;
+    CXI_ToolTip(const CXI_ToolTip &) = delete;
     CXI_ToolTip(VXSERVICE *pPicService, VSTRSERVICE *pStrService, XYPOINT &pntScrSize);
     ~CXI_ToolTip();
 
@@ -24,47 +24,47 @@ class CXI_ToolTip
 
     void CreateIndexBuffer();
     void CreateVertexBuffer();
-    void UpdateIndexBuffer();
+    void UpdateIndexBuffer() const;
     void UpdateVertexBuffer();
 
     void ReplaceRectangle(long x, long y);
 
   protected:
-    VDX8RENDER *m_rs;
+    VDX9RENDER *m_rs;
     XI_ONETEX_VERTEX *m_pV;
-    WORD *m_pI;
+    uint16_t *m_pI;
     long m_nSquareQ;
-    dword m_dwBackColor;
-    long m_nLeftSideWidth;
-    long m_nRightSideWidth;
+    uint32_t m_dwBackColor;
+    long m_nLeftSideWidth{};
+    long m_nRightSideWidth{};
 
     FXYRECT m_uvBackLeft;
     FXYRECT m_uvBackRight;
     FXYRECT m_uvBackMiddle;
 
-    string m_sGroupName;
+    std::string m_sGroupName;
     long m_nTextureID;
-    long m_nPicIndex_Left;
-    long m_nPicIndex_Right;
-    long m_nPicIndex_Middle;
+    long m_nPicIndex_Left{};
+    long m_nPicIndex_Right{};
+    long m_nPicIndex_Middle{};
 
     XYPOINT m_pntScreenSize;
     XYPOINT m_pntTextOffset;
     XYRECT m_rPos;
     XYRECT m_rActiveZone;
 
-    long m_nXRectangleOffset;
-    long m_nYRectangleOffsetUp;
-    long m_nYRectangleOffsetDown;
+    long m_nXRectangleOffset{};
+    long m_nYRectangleOffsetUp{};
+    long m_nYRectangleOffsetDown{};
 
-    string m_sText;
-    array<string> m_aSubText;
+    std::string m_sText;
+    std::vector<std::string> m_aSubText;
     long m_nFontID;
-    dword m_dwFontColor;
-    float m_fFontScale;
-    long m_nMaxStrWidth;
-    long m_nUseWidth;
-    long m_nUseHeight;
+    uint32_t m_dwFontColor{};
+    float m_fFontScale{};
+    long m_nMaxStrWidth{};
+    long m_nUseWidth{};
+    long m_nUseHeight{};
 
     bool m_bDisableDraw;
     float m_fTurnOnDelay;
