@@ -3372,7 +3372,6 @@ uint32_t Character::zExMessage(MESSAGE &message)
         if (_stricmp(msg, "CheckID") == 0)
         {
 #ifdef _DEBUG
-#ifndef _XBOX
             message.String(sizeof(msg), msg);
             msg[sizeof(msg) - 1] = 0;
             if (AttributesPointer)
@@ -3388,7 +3387,6 @@ uint32_t Character::zExMessage(MESSAGE &message)
             }
             if (strcmp(msg, characterID) != 0)
                 __debugbreak();
-#endif
 #endif
             return 1;
         }

@@ -515,25 +515,6 @@ void STRSERVICE::LoadIni()
     }
     delete ini;
 
-#ifdef _XBOX
-    switch (XGetLanguage())
-    {
-    case XC_LANGUAGE_GERMAN:
-        strcpy_s(param, "German");
-        break;
-    case XC_LANGUAGE_FRENCH:
-        strcpy_s(param, "French");
-        break;
-    case XC_LANGUAGE_SPANISH:
-        strcpy_s(param, "Spanish");
-        break;
-    case XC_LANGUAGE_ENGLISH:
-        strcpy_s(param, "English");
-        break;
-        // case XC_LANGUAGE_ITALIAN: strcpy_s(param,"Russian"); break;
-        //	default: strcpy_s(param,"English"); break;
-    }
-#endif
     if (param[0] != 0)
         SetLanguage(param);
 

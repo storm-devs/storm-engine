@@ -1,8 +1,6 @@
 #ifndef _SOURCE_VIEW_H_
 #define _SOURCE_VIEW_H_
 
-#ifndef _XBOX
-
 #include "Core.h"
 #include <CommCtrl.h>
 #include <Windows.h>
@@ -84,7 +82,4 @@ class SOURCE_VIEW
     bool SetVariableOnChange(const char *pStr, bool bSet);
     const char *GetToken(const char *pStr, std::string &sResult);
 };
-
-#endif
-
 #endif

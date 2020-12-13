@@ -158,9 +158,6 @@ void AIShipCameraController::Realize(float fDeltaTime)
 {
     if (isCameraOutside())
         return;
-#ifndef _XBOX
-        // if (GetAsyncKeyState('K') < 0) return;
-#endif
 
     CMatrix m;
     RS_RECT rCam;

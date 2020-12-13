@@ -321,16 +321,6 @@ void AIBalls::Realize(uint32_t Delta_Time)
     }
 
     dwFireBallFromCameraTime += Delta_Time;
-    /*
-  #ifndef _XBOX
-    if (api->Controls->GetDebugAsyncKeyState('C') < 0 && dwFireBallFromCameraTime > 30 &&
-  AttributesPointer->GetAttributeAsDword("FireBallFromCamera", 0) != 0)
-    {
-      dwFireBallFromCameraTime = 0;
-      FireBallFromCamera();
-    }
-  #endif
-  */
 }
 
 uint32_t AIBalls::AttributeChanged(ATTRIBUTES *pAttributeChanged)

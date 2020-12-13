@@ -1,25 +1,6 @@
 #include "file_service.h"
 #include <exception>
 
-#ifdef _XBOX
-bool XProcessFile(const char *_srcDir, const char *_destDir, const char *_mask, const WIN32_FIND_DATA &_findData);
-bool XDirCopy(const char *_srcDir, const char *_destDir, const char *_mask);
-void CacheData();
-bool XFileSTORM_DELETE(const char *_fileName);
-bool XProcessFileSTORM_DELETE(const char *_srcDir, const char *_mask, const WIN32_FIND_DATA &_findData);
-
-#include "..\dx9render.h"
-extern VDX9RENDER *pDevice;
-extern uint32_t dwCacheScreenN;
-extern RECT CacheScreenRect;
-extern uint32_t dwCacheFiles;
-extern bool bCacheOverwrite;
-extern long nCacheFonTexId;
-extern long nCacheProgressCacheId[10];
-extern bool bCacheEstDirsStructure;
-
-#endif
-
 #define COMMENT ';'
 #define SECTION_A '['
 #define SECTION_B ']'
@@ -61,69 +42,8 @@ HANDLE FILE_SERVICE::_CreateFile(const char *lpFileName, uint32_t dwDesiriedAcce
                                  uint32_t dwCreationDisposition)
 {
     HANDLE fh;
-#ifndef _XBOX
     fh = CreateFile(lpFileName, dwDesiriedAccess, dwShareMode, nullptr, dwCreationDisposition, FILE_ATTRIBUTE_NORMAL,
                     nullptr);
-    // DWORD er = GetLastError();
-#else
-    bool bCached;
-    char xbox_file_name[MAX_PATH];
-    char file_name_buffer[MAX_PATH];
-    /*if(sDriveLetter[0])
-    {
-        strcpy_s(xbox_file_name,sDriveLetter);
-        strcat_s(xbox_file_name,lpFileName);
-    }
-    else strcpy_s(xbox_file_name,lpFileName);//*/
-    if (_stricmp(sDriveLetter, XBOXDRIVE_DVD) == 0)
-    {
-        if (IsCached(lpFileName))
-        {
-            bCached = true;
-            strcpy_s(xbox_file_name, XBOXDRIVE_CACHE);
-            strcat_s(xbox_file_name, lpFileName);
-        }
-        else
-        {
-            bCached = false;
-            strcpy_s(xbox_file_name, XBOXDRIVE_DVD);
-            strcat_s(xbox_file_name, lpFileName);
-        }
-    }
-    else
-    {
-        if (sDriveLetter[0])
-        {
-            strcpy_s(xbox_file_name, sDriveLetter);
-            strcat_s(xbox_file_name, lpFileName);
-        }
-        else
-            strcpy_s(xbox_file_name, lpFileName);
-    }
-
-    fh = CreateFile(xbox_file_name, dwDesiriedAccess, dwShareMode, 0, dwCreationDisposition, FILE_ATTRIBUTE_NORMAL, 0);
-    if (fh == INVALID_HANDLE_VALUE && bCached)
-    {
-        // if file isn't in cache - copy to cache (time distributed caching)
-
-        strcpy_s(file_name_buffer, XBOXDRIVE_DVD);
-        strcat_s(file_name_buffer, lpFileName);
-        bool bRes = CopyFile(file_name_buffer, xbox_file_name, false) != 0;
-        if (bRes)
-            fh = CreateFile(xbox_file_name, dwDesiriedAccess, dwShareMode, 0, dwCreationDisposition,
-                            FILE_ATTRIBUTE_NORMAL, 0);
-        else
-            fh = CreateFile(file_name_buffer, dwDesiriedAccess, dwShareMode, 0, dwCreationDisposition,
-                            FILE_ATTRIBUTE_NORMAL, 0);
-
-        /*//trace("file cache miss");
-        strcpy_s(xbox_file_name,XBOXDRIVE_DVD);
-        strcat_s(xbox_file_name,lpFileName);
-        fh = CreateFile(xbox_file_name,dwDesiriedAccess,dwShareMode,0,dwCreationDisposition,FILE_ATTRIBUTE_NORMAL,0);
-        //*/
-    }
-#endif
-    // if(fh == INVALID_HANDLE_VALUE) if(Exceptions_Mask & _X_NO_FILE) throw std::exception(_X_NO_FILE);
     return fh;
 }
 
@@ -140,19 +60,7 @@ uint32_t FILE_SERVICE::_SetFilePointer(HANDLE hFile, long DistanceToMove, long *
 
 BOOL FILE_SERVICE::_DeleteFile(const char *lpFileName)
 {
-#ifdef _XBOX
-    char xbox_file_name[MAX_PATH];
-    if (sDriveLetter[0])
-    {
-        strcpy_s(xbox_file_name, sDriveLetter);
-        strcat_s(xbox_file_name, lpFileName);
-    }
-    else
-        strcpy_s(xbox_file_name, lpFileName);
-    return DeleteFile(xbox_file_name);
-#else
     return DeleteFile(lpFileName);
-#endif
 }
 
 BOOL FILE_SERVICE::_WriteFile(HANDLE hFile, const void *lpBuffer, uint32_t nNumberOfBytesToWrite,
@@ -179,15 +87,7 @@ BOOL FILE_SERVICE::_ReadFile(HANDLE hFile, void *lpBuffer, uint32_t nNumberOfByt
 HANDLE FILE_SERVICE::_FindFirstFile(const char *lpFileName, LPWIN32_FIND_DATA lpFindFileData)
 {
     HANDLE hFile;
-#ifndef _XBOX
     hFile = FindFirstFile(lpFileName, lpFindFileData);
-#else
-    char xbox_file_name[MAX_PATH];
-    // strcpy_s(xbox_file_name,"d:\\");
-    strcpy_s(xbox_file_name, sDriveLetter);
-    strcat_s(xbox_file_name, lpFileName);
-    hFile = FindFirstFile(xbox_file_name, lpFindFileData);
-#endif
     return hFile;
 }
 
@@ -208,17 +108,7 @@ BOOL FILE_SERVICE::_FlushFileBuffers(HANDLE hFile)
 
 uint32_t FILE_SERVICE::_GetCurrentDirectory(uint32_t nBufferLength, char *lpBuffer)
 {
-#ifndef _XBOX
     return GetCurrentDirectory(nBufferLength, lpBuffer);
-#else
-    // if(nBufferLength > strlen("d:\\") && lpBuffer) strcpy_s(lpBuffer,"d:\\");
-    // return strlen("d:\\");
-
-    if (nBufferLength > strlen(sDriveLetter) && lpBuffer)
-        strcpy_s(lpBuffer, sDriveLetter);
-    return strlen(sDriveLetter);
-
-#endif
 }
 
 BOOL FILE_SERVICE::_GetDiskFreeSpaceEx(const char *lpDirectoryName, PULARGE_INTEGER lpFreeBytesAvailableToCaller,
@@ -230,11 +120,7 @@ BOOL FILE_SERVICE::_GetDiskFreeSpaceEx(const char *lpDirectoryName, PULARGE_INTE
 
 UINT FILE_SERVICE::_GetDriveType(const char *lpRootPathName)
 {
-#ifndef _XBOX
     return GetDriveType(lpRootPathName);
-#else
-    return 0;
-#endif
 }
 
 uint32_t FILE_SERVICE::_GetFileSize(HANDLE hFile, uint32_t *lpFileSizeHigh)
@@ -244,29 +130,17 @@ uint32_t FILE_SERVICE::_GetFileSize(HANDLE hFile, uint32_t *lpFileSizeHigh)
 
 uint32_t FILE_SERVICE::_GetLogicalDrives()
 {
-#ifndef _XBOX
     return GetLogicalDrives();
-#else
-    return 0;
-#endif
 }
 
 uint32_t FILE_SERVICE::_GetLogicalDriveStrings(uint32_t nBufferLength, char *lpBuffer)
 {
-#ifndef _XBOX
     return GetLogicalDriveStrings(nBufferLength, lpBuffer);
-#else
-    return 0;
-#endif
 }
 
 BOOL FILE_SERVICE::_SetCurrentDirectory(const char *lpPathName)
 {
-#ifndef _XBOX
     return SetCurrentDirectory(lpPathName);
-#else
-    return 0;
-#endif
 }
 
 BOOL FILE_SERVICE::_CreateDirectory(const char *lpPathName, LPSECURITY_ATTRIBUTES lpSecurityAttributes)
@@ -431,214 +305,8 @@ BOOL FILE_SERVICE::LoadFile(const char *file_name, char **ppBuffer, uint32_t *dw
 
 BOOL FILE_SERVICE::SetDrive(const char *pDriveName)
 {
-#ifdef _XBOX
-    if (pDriveName == 0)
-    {
-        strcpy_s(sDriveLetter, XBOXDRIVE_DVD);
-        return true;
-    }
-    if (!pDriveName[0])
-    {
-        sDriveLetter[0] = 0;
-        return true;
-    }
-    if (strlen(pDriveName) > 4)
-        return false;
-    strcpy_s(sDriveLetter, pDriveName);
-    return true;
-#else
     return false;
-#endif
 }
-
-#ifdef _XBOX
-
-bool XDirCopy(const char *_srcDir, const char *_destDir, const char *_mask)
-{
-
-    if (bCacheEstDirsStructure)
-    {
-        /*if(pDevice)
-        {
-            dwCacheScreenN++;
-            if(dwCacheScreenN > 8) dwCacheScreenN = 0;
-            pDevice->RunStart();
-            pDevice->ImageBlt(nCacheFonTexId);
-            pDevice->ImageBlt(nCacheProgressCacheId[dwCacheScreenN],&CacheScreenRect);
-            pDevice->RunEnd();
-        }*/
-    }
-
-    File_Service.MarkDirectoryCached(_srcDir + 3);
-
-    WIN32_FIND_DATA findData;
-    char *srcFilename = new char[strlen(_srcDir) + strlen(_mask) + 2];
-    if (!srcFilename)
-        return false;
-
-    strcpy_s(srcFilename, _srcDir);
-    if (_srcDir[strlen(_srcDir) - 1] != '\\')
-        strcat_s(srcFilename, "\\");
-    strcat_s(srcFilename, _mask);
-
-    bool bRes;
-    bRes = CreateDirectory(_destDir, 0) == TRUE;
-
-    HANDLE findHandle = FindFirstFile(srcFilename, &findData);
-    if (findHandle == INVALID_HANDLE_VALUE)
-    {
-        delete[] srcFilename;
-        return false;
-    }
-
-    XProcessFile(_srcDir, _destDir, _mask, findData);
-    while (FindNextFile(findHandle, &findData) == TRUE)
-    {
-        XProcessFile(_srcDir, _destDir, _mask, findData);
-    }
-
-    delete[] srcFilename;
-    FindClose(findHandle);
-    return true;
-}
-
-bool XDirSTORM_DELETE(const char *_srcDir)
-{
-    WIN32_FIND_DATA findData;
-    char _mask[] = "*.*";
-    char *srcFilename = new char[strlen(_srcDir) + strlen(_mask) + 2];
-    if (!srcFilename)
-        return false;
-
-    strcpy_s(srcFilename, _srcDir);
-    if (_srcDir[strlen(_srcDir) - 1] != '\\')
-        strcat_s(srcFilename, "\\");
-    strcat_s(srcFilename, _mask);
-
-    // bool bRes;
-    // bRes = CreateDirectory(_destDir, 0)==TRUE;
-
-    HANDLE findHandle = FindFirstFile(srcFilename, &findData);
-    if (findHandle == INVALID_HANDLE_VALUE)
-    {
-        delete[] srcFilename;
-        RemoveDirectory(_srcDir);
-        return false;
-    }
-
-    XProcessFileSTORM_DELETE(_srcDir, _mask, findData);
-    while (FindNextFile(findHandle, &findData) == TRUE)
-    {
-        XProcessFileSTORM_DELETE(_srcDir, _mask, findData);
-    }
-
-    delete[] srcFilename;
-    FindClose(findHandle);
-    RemoveDirectory(_srcDir);
-    return true;
-}
-
-bool XFileCopy(const char *_srcName, const char *_destName)
-{
-    bool bRes;
-
-    if (bCacheEstDirsStructure)
-        return true; // only structure of directories is created in this case
-
-    if (dwCacheFiles >= 100)
-    {
-        dwCacheFiles = 0;
-        if (pDevice)
-        {
-            dwCacheScreenN++;
-            if (dwCacheScreenN > 8)
-                dwCacheScreenN = 0;
-            pDevice->RunStart();
-            pDevice->ImageBlt(nCacheFonTexId);
-            pDevice->ImageBlt(nCacheProgressCacheId[dwCacheScreenN], &CacheScreenRect);
-            pDevice->RunEnd();
-        }
-    }
-    else
-        dwCacheFiles++;
-
-    // bRes = CopyFile(_srcName, _destName, TRUE)!=0;
-    bRes = CopyFile(_srcName, _destName, !bCacheOverwrite) != 0;
-
-    return bRes;
-    // return (CopyFile(_srcName, _destName, TRUE) != 0);
-}
-
-bool XFileSTORM_DELETE(const char *_fileName)
-{
-    bool bRes;
-    bRes = DeleteFile(_fileName) != 0;
-    return bRes;
-}
-
-bool XProcessFile(const char *_srcDir, const char *_destDir, const char *_mask, const WIN32_FIND_DATA &_findData)
-{
-    if (!strcmp(_findData.cFileName, "."))
-        return false;
-    if (!strcmp(_findData.cFileName, ".."))
-        return false;
-
-    char *srcName = new char[strlen(_srcDir) + strlen(_findData.cFileName) + 2];
-    char *destName = new char[strlen(_destDir) + strlen(_findData.cFileName) + 2];
-
-    strcpy_s(srcName, _srcDir);
-    if (_srcDir[strlen(_srcDir) - 1] != '\\')
-        strcat_s(srcName, "\\");
-    strcat_s(srcName, _findData.cFileName);
-
-    strcpy_s(destName, _destDir);
-    if (_destDir[strlen(_destDir) - 1] != '\\')
-        strcat_s(destName, "\\");
-    strcat_s(destName, _findData.cFileName);
-
-    if (!(_findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
-    { // file
-        XFileCopy(srcName, destName);
-    }
-    else
-    { // directory
-        XDirCopy(srcName, destName, _mask);
-    }
-
-    delete[] srcName;
-    delete[] destName;
-
-    return true;
-}
-
-bool XProcessFileSTORM_DELETE(const char *_srcDir, const char *_mask, const WIN32_FIND_DATA &_findData)
-{
-    if (!strcmp(_findData.cFileName, "."))
-        return false;
-    if (!strcmp(_findData.cFileName, ".."))
-        return false;
-
-    char *srcName = new char[strlen(_srcDir) + strlen(_findData.cFileName) + 2];
-
-    strcpy_s(srcName, _srcDir);
-    if (_srcDir[strlen(_srcDir) - 1] != '\\')
-        strcat_s(srcName, "\\");
-    strcat_s(srcName, _findData.cFileName);
-
-    if (!(_findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
-    { // file
-        XFileSTORM_DELETE(srcName);
-    }
-    else
-    { // directory
-        XDirSTORM_DELETE(srcName);
-    }
-
-    delete[] srcName;
-    return true;
-}
-
-#endif
 
 uint32_t FILE_SERVICE::MakeHashValue(const char *string)
 {

@@ -120,17 +120,6 @@ void LocationCamera::Realize(uint32_t delta_time)
     }
 
     //Режим камеры
-#ifdef _XBOX
-    VDATA *vd = api->Event("EventGetSpecialMode", 0);
-    if (vd)
-    {
-        long isSpec = 0;
-        if (vd->Get(isSpec))
-        {
-            isSpecialMode = (isSpec != 0);
-        }
-    }
-#endif
     CONTROL_STATE cs;
     api->Controls->GetControlState("ChrCamSpecMode", cs);
     isSpecialMode = cs.state == CST_ACTIVE;
@@ -552,7 +541,6 @@ void LocationCamera::ExecuteFree(float dltTime)
     lookTo.x = cosf(freeAx) * sinf(freeAy);
     lookTo.y = sinf(freeAx);
     lookTo.z = cosf(freeAx) * cosf(freeAy);
-#ifndef _XBOX
     if (api->Controls->GetDebugAsyncKeyState(VK_CONTROL) < 0)
         dltTime *= 10.0f;
     if (api->Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0)
@@ -561,7 +549,6 @@ void LocationCamera::ExecuteFree(float dltTime)
         camPos += 5.0f * lookTo * dltTime;
     if (api->Controls->GetDebugAsyncKeyState(VK_RBUTTON) < 0)
         camPos -= 5.0f * lookTo * dltTime;
-#endif
     lookTo += camPos;
 }
 

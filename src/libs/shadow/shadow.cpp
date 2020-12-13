@@ -350,11 +350,7 @@ void Shadow::Realize(uint32_t Delta_Time)
     rs->SetStreamSource(0, vbuff, sizeof(SHADOW_VERTEX));
 
     tot_verts = 0;
-#ifndef _XBOX
     rs->VBLock(vbuff, 0, 0, (uint8_t **)&shadvert, D3DLOCK_DISCARD | D3DLOCK_NOSYSLOCK);
-#else
-    rs->VBLock(vbuff, 0, 0, (uint8_t **)&shadvert, 0);
-#endif
     col->Clip(its, &planes[0], 5, cen, radius, AddPoly, &entity, 1);
 
     rs->VBUnlock(vbuff);

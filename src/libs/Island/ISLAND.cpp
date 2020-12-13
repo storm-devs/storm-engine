@@ -92,19 +92,6 @@ void ISLAND::Realize(uint32_t Delta_Time)
 {
     uint32_t dwAmbient, dwAmbientOld;
 
-#ifndef _XBOX
-    // update foam
-    /*if (GetAsyncKeyState('Z') < 0 && GetAsyncKeyState('G') < 0)
-    {
-      DoZapSuperGenerator();
-    }
-    if (GetAsyncKeyState('U') < 0)
-    {
-      CreateHeightMap(cFoamDir, cModelsID);
-      //CreateShadowMap(cModelsDir, cModelsID);
-    }       */
-#endif
-
     if (bForeignModels)
         return;
 
@@ -223,7 +210,6 @@ void ISLAND::Realize(uint32_t Delta_Time)
             pModel->mtx.BuildPosition(vPos.x, 5.0f, vPos.z);
     }
 
-#ifndef _XBOX
     if (api->Controls->GetDebugAsyncKeyState('O') < 0)
         bView ^= 1;
     if (bView)
@@ -239,7 +225,6 @@ void ISLAND::Realize(uint32_t Delta_Time)
         pRS->SetTransform(D3DTS_WORLD, m);
         pRS->DrawLines(&aLines[0], aLines.size() / 2, "Line");
     }
-#endif
 }
 
 bool ISLAND::GetDepth(FRECT *pRect, float *fMinH, float *fMaxH)
@@ -460,7 +445,6 @@ void ISLAND::CalcBoxParameters(CVECTOR &_vBoxCenter, CVECTOR &_vBoxSize)
 
 void ISLAND::CreateDirectories(char *pDir)
 {
-#ifndef _XBOX
     char sCurDir[256], sTemp[256];
 
     fio->_GetCurrentDirectory(sizeof(sCurDir), sCurDir);
@@ -482,7 +466,6 @@ void ISLAND::CreateDirectories(char *pDir)
         strcat_s(sCurDir, "\\");
         BOOL bOk = fio->_CreateDirectory(sCurDir, nullptr);
     }
-#endif
 }
 
 bool ISLAND::CreateShadowMap(char *pDir, char *pName)
@@ -687,28 +670,6 @@ bool ISLAND::CreateHeightMap(char *pDir, char *pName)
     }
 
     api->Trace("WARN: FOAM: Can't find foam: %s", fileName.c_str());
-
-#ifdef _XBOX
-    iDMapSizeShift = 11;
-    iDMapSize = (1 << iDMapSizeShift);
-
-    fStepDX = vBoxSize.x / float(iDMapSize);
-    fStepDZ = vBoxSize.z / float(iDMapSize);
-
-    fStep1divDX = 1.0f / fStepDX;
-    fStep1divDZ = 1.0f / fStepDZ;
-
-    pDepthMap = new uint8_t[iDMapSize * iDMapSize];
-    PZERO(pDepthMap, iDMapSize * iDMapSize);
-
-    vBoxSize /= 2.0f;
-    vRealBoxSize /= 2.0f;
-
-    mzDepth.DoZip(pDepthMap, iDMapSize);
-    STORM_DELETE(pDepthMap);
-
-    return true;
-#endif
 
     long iTestSize = static_cast<long>(vBoxSize.x / 1.5f);
     // fixed maximum depth map to 1024 size!!!!!!!

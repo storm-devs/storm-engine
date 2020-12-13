@@ -114,12 +114,12 @@ void FREE_CAMERA::Move(uint32_t DeltaTime)
     auto c2 = cosf(vAng.z);
     float s2 = sinf(vAng.z);
     float speed = 5.0f * 0.001f * static_cast<float>(DeltaTime);
-#ifndef _XBOX
+
     if (GetAsyncKeyState(VK_SHIFT))
         speed *= 4.0f;
     if (GetAsyncKeyState(VK_CONTROL))
         speed *= 8.0f;
-#endif
+
     api->Controls->GetControlState("FreeCamera_Forward", cs);
     if (cs.state == CST_ACTIVE)
         vPos += speed * CVECTOR(s0 * c1, -s1, c0 * c1);

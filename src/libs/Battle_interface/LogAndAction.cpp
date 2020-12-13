@@ -46,12 +46,7 @@ bool ILogAndActions::Init()
     }
     D3DVIEWPORT9 vp;
     rs->GetViewport(&vp);
-#ifndef _XBOX
     api->Event("SetWindowSize", "lll", vp.Width, vp.Height, false);
-#else
-    api->Event("SetWindowSize", "lll", vp.Width, vp.Height, true);
-#endif
-
     g_ILogAndActions = GetId();
     return true;
 }
@@ -200,7 +195,6 @@ uint64_t ILogAndActions::ProcessMessage(MESSAGE &message)
 
 void ILogAndActions::Realize(uint32_t delta_time)
 {
-#ifndef _XBOX
 #ifdef SPECIAL_VERSION
     if (api->Controls->GetDebugAsyncKeyState(VK_F8) >= 0)
     {
@@ -228,7 +222,6 @@ void ILogAndActions::Realize(uint32_t delta_time)
 #endif
     if (api->Controls->GetDebugAsyncKeyState('K') < 0)
         return;
-#endif
     if (rs == nullptr)
         return;
     if (m_bDontShowAll)

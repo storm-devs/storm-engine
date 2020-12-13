@@ -96,7 +96,6 @@ GEOS *GEOMETRY::CreateGeometry(const char *file_name, const char *light_file_nam
             *bs = 0;
     }
 
-#ifndef _XBOX
     static auto first = 0;
     FILE *fl;
     if (geoLog)
@@ -107,7 +106,6 @@ GEOS *GEOMETRY::CreateGeometry(const char *file_name, const char *light_file_nam
         else
             fl = fopen("geoLoad.txt", "a");
     }
-#endif
 
     GEOS *gp;
     try
@@ -140,7 +138,6 @@ GEOS *GEOMETRY::CreateGeometry(const char *file_name, const char *light_file_nam
         return nullptr;
     }
 
-#ifndef _XBOX
     if (geoLog)
     {
         //---------------------------------------------------------------
@@ -153,7 +150,6 @@ GEOS *GEOMETRY::CreateGeometry(const char *file_name, const char *light_file_nam
                 gi.ntriangles * 2 * 3, vrtSize, gi.ntextures, gi.nobjects, file_name);
         fclose(fl);
     }
-#endif
 
     return gp;
 }

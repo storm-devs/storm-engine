@@ -1,13 +1,6 @@
 #ifndef _S_DEBUG_H_
 #define _S_DEBUG_H_
 
-#ifndef _XBOX
-/*#ifndef _XBOX
-#include <windows.h>
-#else
-#include <xtl.h>
-#endif*/
-
 #define PROJECT_NAME "project.df"
 
 #include "s_dbg_breaktable.h"
@@ -103,5 +96,4 @@ class S_DEBUG
     long GetRecentFileALine(const char *pFileName);
     void SaveRecentFileALine(const char *pFileName, long nLine);
 };
-#endif
 #endif

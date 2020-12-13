@@ -609,11 +609,7 @@ void SAIL::Realize(uint32_t Delta_Time)
                     RenderService->GetSamplerState(2, D3DSAMP_ADDRESSU, &dwOld);
                     RenderService->SetSamplerState(2, D3DSAMP_ADDRESSU, D3DTADDRESS_MIRROR);
                     // slist[i]->FillIndex(pt);
-#ifndef _XBOX
                     auto *pt = static_cast<uint16_t *>(RenderService->LockIndexBuffer(sg.indxBuf, D3DLOCK_DISCARD));
-#else
-                    uint16_t *pt = (uint16_t *)RenderService->LockIndexBuffer(sg.indxBuf, 0);
-#endif
                     if (pt)
                         slist[i]->FillIndex(pt);
                     RenderService->UnLockIndexBuffer(sg.indxBuf);

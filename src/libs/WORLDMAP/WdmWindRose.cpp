@@ -44,11 +44,7 @@ void WdmWindRose::LRender(VDX9RENDER *rs)
     rs->GetTransform(D3DTS_PROJECTION, oldPrj);
     view.Transposition();
     const auto kDef = rs->GetHeightDeformator();
-#ifndef _XBOX
     mtx.SetPosition(view * CVECTOR(0.34f, -0.247f * kDef, 10.0f));
-#else
-    mtx.SetPosition(view * CVECTOR(0.27f, -0.19f * kDef, 10.0f));
-#endif
 
     float scrw, scrh;
     wdmObjects->GetVPSize(scrw, scrh);

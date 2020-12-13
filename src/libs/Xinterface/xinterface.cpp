@@ -12,9 +12,7 @@
 
 #include <direct.h>
 
-#ifndef _XBOX
 #include "aviplayer/aviplayer.h"
-#endif
 
 #define CHECK_FILE_NAME "PiratesReadme.txt"
 
@@ -58,9 +56,7 @@ CREATE_CLASS(CONTROLS_CONTAINER)
 
 CREATE_CLASS(InterfaceBackScene)
 
-#ifndef _XBOX
 CREATE_CLASS(CAviPlayer)
-#endif
 
 #define DEFAULT_IMODE 0
 #define CONTEXTHELP_IMODE 1
@@ -1023,13 +1019,6 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     break;
     case MSG_INTERFACE_GET_FREE_SPACE: {
         long retVal = 0;
-#ifdef _XBOX
-        ULARGE_INTEGER ulFreeBytes, ulTotalBytes, ulTotalFree;
-        GetDiskFreeSpaceEx("U:\\", &ulFreeBytes, &ulTotalBytes, &ulTotalFree);
-        uint32_t blocks = (uint32_t)(ulFreeBytes.QuadPart >> 14);
-        return blocks;
-        // return XGetDisplayBlocks("U:\\");
-#endif
     }
     break;
 
@@ -1050,14 +1039,6 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     break;
 
     case MSG_INTERFACE_LAUNCH_DASHBOARD: {
-#ifdef _XBOX
-        LD_LAUNCH_DASHBOARD LaunchDash;
-        LaunchDash.dwReason = XLD_LAUNCH_DASHBOARD_MEMORY;
-        LaunchDash.dwContext = 0;
-        LaunchDash.dwParameter1 = uint32_t('U');
-        LaunchDash.dwParameter2 = 200;
-        XLaunchNewImage(NULL, (PLAUNCH_DATA)(&LaunchDash));
-#endif
     }
     break;
 
@@ -1067,19 +1048,6 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
         VDATA *pvdat = message.ScriptVariablePointer();
         int i = 0;
         int nStrLen = strlen(param);
-#ifdef _XBOX
-        if (nStrLen > 2 && param[1] == ':')
-        {
-            for (i = 3; i < nStrLen; i++)
-            {
-                if (param[i] == '\\')
-                    break;
-            }
-            i++;
-        }
-        if (i >= nStrLen)
-            i = 0;
-#endif
         if (pvdat)
             pvdat->Set(&param[i]);
     }
@@ -1095,9 +1063,6 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
         else
         {
             WIN32_FIND_DATA wfd;
-#ifdef _XBOX
-            fio->SetDrive(XBOXDRIVE_NONE);
-#endif
             HANDLE h = fio->_FindFirstFile(param, &wfd);
             if (h != INVALID_HANDLE_VALUE)
             {
@@ -1108,9 +1073,6 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
             }
             else
                 GetLocalTime(&systTime);
-#ifdef _XBOX
-            fio->SetDrive();
-#endif
         }
         sprintf_s(param2, "%2.2d:%2.2d:%2.2d", systTime.wHour, systTime.wMinute, systTime.wSecond);
         VDATA *pvdat = message.ScriptVariablePointer();
@@ -1163,11 +1125,7 @@ void XINTERFACE::LoadIni()
     // GUARD(XINTERFACE::LoadIni());
     char section[256];
 
-#ifndef _XBOX
     const char *platform = "PC_SCREEN";
-#else
-    const char *platform = "XBOX_SCREEN";
-#endif
     INIFILE *ini;
     ini = fio->OpenIniFile((char *)RESOURCE_FILENAME);
     if (!ini)
@@ -1239,7 +1197,6 @@ void XINTERFACE::LoadIni()
     m_nMaxPressDelay = ini->GetLong(section, "RepeatDelay", 500);
 
     // set mouse cursor
-#ifndef _XBOX
     char param[256];
     ini->ReadString(section, "MousePointer", param, sizeof(param) - 1, "");
     char param2[256];
@@ -1260,7 +1217,6 @@ void XINTERFACE::LoadIni()
     vMouse[0].tv = vMouse[2].tv = 0.f;
     vMouse[1].tv = vMouse[3].tv = 1.f;
     ShowCursor(false);
-#endif
 
     // set blind parameters
     m_fBlindSpeed = ini->GetFloat(section, "BlindTime", 1.f);
@@ -1330,9 +1286,6 @@ void XINTERFACE::LoadDialog(char *sFileName)
             if (!_stricmp(param, "PC") || !_stricmp(param, "XBOX") || !_stricmp(param, "LANG"))
             {
                 const bool bThisXBOX = false;
-#ifdef _XBOX
-                bThisXBOX = true;
-#endif
                 if (!_stricmp(param, "PC"))
                 {
                     if (bThisXBOX)
@@ -2408,9 +2361,6 @@ void XINTERFACE::MouseMove()
 {
     if (m_nInterfaceMode == CONTEXTHELP_IMODE)
         return;
-#ifdef _XBOX
-    return;
-#endif
     CONTROL_STATE csv, csh;
     api->Controls->GetControlState(INTERFACE_MOUSE_VERT, csv);
     api->Controls->GetControlState(INTERFACE_MOUSE_HORZ, csh);
@@ -2960,7 +2910,6 @@ char *XINTERFACE::SaveFileFind(long saveNum, char *buffer, size_t bufSize, long 
     if (!m_pSaveFindRoot) // create save file list
     {
         // different function save file find for XBOX or PC
-#ifndef _XBOX
         WIN32_FIND_DATA wfd;
         // get file name for searching (whith full path)
         char param[1024];
@@ -2986,30 +2935,6 @@ char *XINTERFACE::SaveFileFind(long saveNum, char *buffer, size_t bufSize, long 
             // close handle for file finding
             fio->_FindClose(h);
         }
-#else
-        int n;
-        long file_sz;
-        char sTemp[MAX_PATH], sFullName[MAX_PATH];
-        XGAME_FIND_DATA fd;
-        // start save file finding
-        HANDLE sh = XFindFirstSaveGame("U:\\", &fd);
-        if (sh != INVALID_HANDLE_VALUE)
-        {
-            do
-            {
-                for (n = 0; fd.szSaveGameName[n]; n++)
-                    sTemp[n] = (char)fd.szSaveGameName[n];
-                sTemp[n] = 0;
-                if (n >= 6 && _strnicmp(sTemp, "options", 6) != 0)
-                {
-                    sprintf_s(sFullName, "%s%s", fd.szSaveGameDirectory, sTemp);
-                    file_sz = (fd.wfd.nFileSizeLow + (1 << 14) - 1) >> 14;
-                    AddFindData(sFullName, file_sz, fd.wfd.ftLastWriteTime);
-                }
-            } while (XFindNextSaveGame(sh, &fd));
-            XFindClose(sh);
-        }
-#endif
         // common part
         Sorting_FindData();
     }
@@ -3044,29 +2969,6 @@ bool XINTERFACE::NewSaveFileName(char *fileName) const
     if (fileName == nullptr)
         return false;
 
-#ifdef _XBOX
-    XGAME_FIND_DATA fd;
-    HANDLE sh = XFindFirstSaveGame("U:\\", &fd);
-    if (sh == INVALID_HANDLE_VALUE)
-        return true;
-
-    do
-    {
-        char tmpstr[256];
-        for (int n = 0; fd.szSaveGameName[n]; n++)
-            tmpstr[n] = (char)fd.szSaveGameName[n];
-        tmpstr[n] = 0;
-
-        if (_stricmp(tmpstr, fileName) == 0)
-        {
-            XFindClose(sh);
-            return false;
-        }
-    } while (XFindNextSaveGame(sh, &fd));
-
-    XFindClose(sh);
-    return true;
-#else
     char *sSavePath;
     char param[256];
     WIN32_FIND_DATA wfd;
@@ -3083,7 +2985,6 @@ bool XINTERFACE::NewSaveFileName(char *fileName) const
 
     fio->_FindClose(h);
     return false;
-#endif
 }
 
 void XINTERFACE::DeleteSaveFile(char *fileName)
@@ -3092,7 +2993,6 @@ void XINTERFACE::DeleteSaveFile(char *fileName)
         return;
     char param[256];
     char *sSavePath = AttributesPointer->GetAttribute("SavePath");
-#ifndef _XBOX
     WIN32_FIND_DATA wfd;
     if (sSavePath == nullptr)
         sprintf_s(param, "%s", fileName);
@@ -3104,22 +3004,6 @@ void XINTERFACE::DeleteSaveFile(char *fileName)
         fio->_FindClose(h);
         fio->_DeleteFile(param);
     }
-#else
-    int i, j, startIdx;
-    WCHAR wparam[256];
-    startIdx = 0;
-    for (i = 0; fileName[i] != 0; i++)
-        if (fileName[i] == '\\')
-            startIdx = i + 1;
-    for (j = 0, i = startIdx; fileName[i] != 0, j < 255; i++, j++)
-        wparam[j] = fileName[i];
-    wparam[j] = 0;
-    if (startIdx > 0)
-        sprintf_s(param, "%c:\\", *fileName);
-    else
-        param[0] = 0;
-    XDeleteSaveGame(param, wparam);
-#endif
 }
 
 uint32_t XINTERFACE_BASE::GetBlendColor(uint32_t minCol, uint32_t maxCol, float fBlendFactor)
@@ -3431,28 +3315,7 @@ void XINTERFACE::SaveOptionsFile(char *fileName, ATTRIBUTES *pAttr)
 
     if (fileName == nullptr || pAttr == nullptr)
         return;
-#ifdef _XBOX
-    int n;
-    char PathBuffer[MAX_PATH];
-    uint16_t FileBuffer[MAX_PATH];
-    for (n = 0; fileName[n]; n++)
-    {
-        FileBuffer[n] = fileName[n];
-    }
-    FileBuffer[n] = 0;
-    if (XCreateSaveGame("U:\\", FileBuffer, OPEN_ALWAYS, 0, PathBuffer, sizeof(PathBuffer)) != ERROR_SUCCESS)
-    {
-        api->Trace("cant create options ini file");
-        return;
-    }
-    strcpy_s(FullPath, PathBuffer);
-    strcat_s(FullPath, fileName);
-
-    strcat_s(PathBuffer, "saveimage.xbx");
-    CopyFile("d:\\resource\\textures\\options.xbx", PathBuffer, FALSE);
-#else
     strcpy_s(FullPath, fileName);
-#endif
 
     fio->SetDrive(XBOXDRIVE_NONE);
     PrecreateDirForFile(FullPath);
@@ -3469,21 +3332,6 @@ void XINTERFACE::SaveOptionsFile(char *fileName, ATTRIBUTES *pAttr)
 
     if (pOutBuffer)
     {
-#ifdef _XBOX
-        // calculate signature
-        XCALCSIG_SIGNATURE xsig;
-        HANDLE hSig;
-        memset(&xsig, 0, sizeof(xsig));
-        hSig = XCalculateSignatureBegin(0);
-        // calculate signature for data
-        if (hSig != INVALID_HANDLE_VALUE)
-            XCalculateSignatureUpdate(hSig, (uint8_t *)pOutBuffer, strlen(pOutBuffer));
-        if (hSig != INVALID_HANDLE_VALUE)
-            XCalculateSignatureEnd(hSig, &xsig);
-        // save signature
-        fio->_WriteFile(fh, &xsig, sizeof(xsig), &dwRealSaved);
-#endif
-
         fio->_WriteFile(fh, pOutBuffer, strlen(pOutBuffer), &dwRealSaved);
         delete pOutBuffer;
     }
@@ -3497,25 +3345,7 @@ void XINTERFACE::LoadOptionsFile(char *fileName, ATTRIBUTES *pAttr)
 
     if (fileName == nullptr || pAttr == nullptr)
         return;
-#ifdef _XBOX
-    int n;
-    char PathBuffer[MAX_PATH];
-    uint16_t FileBuffer[MAX_PATH];
-    for (n = 0; fileName[n]; n++)
-    {
-        FileBuffer[n] = fileName[n];
-    }
-    FileBuffer[n] = 0;
-    if (XCreateSaveGame("U:\\", FileBuffer, OPEN_EXISTING, 0, PathBuffer, sizeof(PathBuffer)) != ERROR_SUCCESS)
-    {
-        api->Trace("cant open options ini file");
-        return;
-    }
-    strcpy_s(FullPath, PathBuffer);
-    strcat_s(FullPath, fileName);
-#else
     strcpy_s(FullPath, fileName);
-#endif
 
     fio->SetDrive(XBOXDRIVE_NONE);
     fh = fio->_CreateFile(FullPath, GENERIC_READ, 0, OPEN_EXISTING);
@@ -3539,37 +3369,6 @@ void XINTERFACE::LoadOptionsFile(char *fileName, ATTRIBUTES *pAttr)
         if (pAttr) //~!~
         {
             char *pBuf = pOutBuffer;
-#ifdef _XBOX
-            XCALCSIG_SIGNATURE xsig;
-            XCALCSIG_SIGNATURE save_xsig;
-            HANDLE hSig;
-
-            if (dwSaveSize <= sizeof(save_xsig) || dwRealSize <= sizeof(save_xsig))
-                pBuf = 0;
-            else
-            {
-                // get signature from saved options
-                memcpy(&save_xsig, pBuf, sizeof(save_xsig));
-                pBuf = &pBuf[sizeof(save_xsig)];
-
-                // calculate signature for current title
-                memset(&xsig, 0, sizeof(xsig));
-                hSig = XCalculateSignatureBegin(0);
-                // calculate signature for data
-                if (hSig != INVALID_HANDLE_VALUE)
-                    XCalculateSignatureUpdate(hSig, (uint8_t *)pBuf, dwSaveSize - sizeof(save_xsig));
-                if (hSig != INVALID_HANDLE_VALUE)
-                    XCalculateSignatureEnd(hSig, &xsig);
-
-                // compare signatures
-                if (memcmp(&xsig, &save_xsig, sizeof(xsig)) != 0)
-                {
-                    // options file is broken
-                    pBuf = 0; // Do not read info from a file
-                    api->Event("evntOptionsBreak");
-                }
-            }
-#endif
             while (pBuf && *pBuf != 0)
             {
                 char param1[512], param2[512];
@@ -3671,7 +3470,6 @@ int XINTERFACE::LoadIsExist()
     if (sCurLngName == nullptr)
         return 0;
 
-#ifndef _XBOX
     WIN32_FIND_DATA wfd;
     char param[1024];
     char *sSavePath = AttributesPointer->GetAttribute("SavePath");
@@ -3719,41 +3517,6 @@ int XINTERFACE::LoadIsExist()
     if (h != INVALID_HANDLE_VALUE)
         fio->_FindClose(h);
     return bFindFile ? 1 : 0;
-#else
-
-    XGAME_FIND_DATA fd;
-    HANDLE sh;
-
-    sh = XFindFirstSaveGame("U:\\", &fd);
-    bool bFindFile = sh != INVALID_HANDLE_VALUE;
-
-    while (bFindFile)
-    {
-        char datBuf[512];
-        char stmp[512];
-        for (int j = 0; fd.szSaveGameName[j]; j++)
-            datBuf[j] = (char)fd.szSaveGameName[j];
-        datBuf[j] = 0;
-        sprintf_s(stmp, "%s%s", fd.szSaveGameDirectory, datBuf);
-        if (SFLB_GetSaveFileData(stmp, sizeof(datBuf), datBuf))
-        {
-            int nLen = strlen(datBuf);
-            for (int i = strlen(datBuf); i >= 0 && datBuf[i] != '@'; i--)
-                ;
-            if (i < 0)
-                i = 0;
-            if (datBuf[i] == '@')
-                i++;
-            if (_stricmp(sCurLngName, &datBuf[i]) == 0)
-                break;
-        }
-
-        bFindFile = XFindNextSaveGame(sh, &fd);
-    }
-    if (sh != INVALID_HANDLE_VALUE)
-        XFindClose(sh);
-    return bFindFile ? 1 : 0;
-#endif
 }
 
 void XINTERFACE::PrecreateDirForFile(const char *pcFullFileName)
@@ -3992,10 +3755,7 @@ CONTROLS_CONTAINER::CONTEINER_DESCR::CONTROL_DESCR *CONTROLS_CONTAINER::CONTEINE
 
 bool CheckPCcd()
 {
-#ifdef _XBOX
-    DiskCheck = true;
-    return true;
-#else
+
     // return true;
     if (DiskCheck)
         return true;
@@ -4035,6 +3795,5 @@ bool CheckPCcd()
     _chdrive(curdrive);
 
     return drive < 27;
-#endif
     return false;
 }

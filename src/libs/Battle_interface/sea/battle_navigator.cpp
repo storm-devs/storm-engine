@@ -804,22 +804,12 @@ void BATTLE_NAVIGATOR::Init(VDX9RENDER *RenderService, Entity *pOwnerEI)
     {
         pcv[0].w = pcv[1].w = pcv[2].w = 0.5f;
         pcv[0].pos.z = pcv[1].pos.z = pcv[2].pos.z = 1.f;
-#ifndef _XBOX
         pcv[0].pos.x = static_cast<float>(m_XNavigator) + m_NavigationWidth / 2;
         pcv[0].pos.y = static_cast<float>(m_YNavigator) - m_NavigationHeight / 2;
         pcv[1].pos.x = static_cast<float>(m_XNavigator) - NAVBACKGROUND_SIZESCALE * m_NavigationWidth / 2;
         pcv[1].pos.y = static_cast<float>(m_YNavigator) - m_NavigationHeight / 2;
         pcv[2].pos.x = static_cast<float>(m_XNavigator) + m_NavigationWidth / 2;
         pcv[2].pos.y = static_cast<float>(m_YNavigator) + NAVBACKGROUND_SIZESCALE * m_NavigationHeight / 2;
-#else
-        pcv[0].pos.x = 720.f;
-        pcv[0].pos.y = 0.f;
-        pcv[1].pos.x = (float)m_XNavigator - NAVBACKGROUND_SIZESCALE * m_NavigationWidth / 2;
-        pcv[1].pos.y = 0.f;
-        pcv[2].pos.x = 720.f;
-        pcv[2].pos.y = (float)m_YNavigator + NAVBACKGROUND_SIZESCALE * m_NavigationHeight / 2;
-#endif
-
         pcv[0].col = m_dwBackGradColor1;
         pcv[1].col = pcv[2].col = m_dwBackGradColor2;
         rs->UnLockVertexBuffer(m_idGradBackVBuf);

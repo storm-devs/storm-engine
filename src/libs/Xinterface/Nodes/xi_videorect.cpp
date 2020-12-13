@@ -129,20 +129,10 @@ void CXI_VIDEORECT::StartVideoPlay(char *videoFileName)
     if (videoFileName == nullptr)
         return;
 
-#ifndef _XBOX
     m_eiVideo = EntityManager::CreateEntity("CAviPlayer");
     m_rectTex.bottom = 1.f - m_rectTex.bottom;
     m_rectTex.top = 1.f - m_rectTex.top;
     if (auto *const ptr = EntityManager::GetEntityPointer(m_eiVideo))
         static_cast<xiBaseVideo *>(ptr)->SetShowVideo(false);
     api->Send_Message(m_eiVideo, "ls", MSG_SET_VIDEO_PLAY, videoFileName);
-
-#else
-    EntityManager::CreateEntity(&m_eiVideo, "WMVideoPlay");
-    api->Send_Message(m_eiVideo, "ls", MSG_SET_VIDEO_PLAY, videoFileName);
-    float fScrW = (float)m_screenSize.x;
-    float fScrH = (float)m_screenSize.y;
-    api->Send_Message(m_eiVideo, "lffffffff", 40123, m_rectTex.left, m_rectTex.top, m_rectTex.right, m_rectTex.bottom,
-                      m_rect.left / fScrW, m_rect.top / fScrH, m_rect.right / fScrW, m_rect.bottom / fScrH);
-#endif
 }

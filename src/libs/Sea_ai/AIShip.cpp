@@ -223,16 +223,6 @@ void AIShip::Realize(float fDeltaTime)
     GetTouchController()->Realize(fDeltaTime);
     GetRotateController()->Realize(fDeltaTime);
     GetSpeedController()->Realize(fDeltaTime);
-
-    // print info about ship
-    /*   // boal del_cheat
-    #ifndef _XBOX
-      if (api->Controls->GetDebugAsyncKeyState('O')<0)
-      {
-
-      }
-    #endif
-    */
 }
 
 void AIShip::SetACharacter(ATTRIBUTES *pAP)

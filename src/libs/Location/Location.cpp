@@ -58,10 +58,8 @@ Location::~Location()
     auto *const atr = AttributesPointer->FindAClass(AttributesPointer, "locators");
     if (atr)
         AttributesPointer->DeleteAttributeClassX(atr);
-#ifndef _XBOX
     // EntityManager::EraseEntity(cubeShotMaker);
     EntityManager::EraseEntity(lighter);
-#endif
     EntityManager::EraseEntity(lizards);
     EntityManager::EraseEntity(rats);
     EntityManager::EraseEntity(crabs);
@@ -98,10 +96,8 @@ bool Location::Init()
 
     enemyBarsTexture = rs->TextureCreate("LocEfx\\state_bars.tga");
 
-#ifndef _XBOX
     lighter = EntityManager::CreateEntity("Lighter");
     // cubeShotMaker = EntityManager::CreateEntity("CubeShotMakerCam");
-#endif
     return true;
 }
 
@@ -324,9 +320,7 @@ uint64_t Location::ProcessMessage(MESSAGE &message)
         model.modelspath[sizeof(model.modelspath) - 1] = 0;
         model.UpdateModelsPath();
 
-#ifndef _XBOX
         api->Send_Message(lighter, "ss", "ModelsPath", model.modelspath);
-#endif
 
         return 1;
     case MSG_LOCATION_TEXTURESPATH:
@@ -338,10 +332,7 @@ uint64_t Location::ProcessMessage(MESSAGE &message)
         message.String(sizeof(model.lightpath), model.lightpath);
         model.lightpath[sizeof(model.lightpath) - 1] = 0;
         model.UpdateLightPath();
-
-#ifndef _XBOX
         api->Send_Message(lighter, "ss", "LightPath", model.lightpath);
-#endif
 
         return 1;
     case MSG_LOCATION_SHADOWPATH:
@@ -516,7 +507,6 @@ long Location::LoadStaticModel(const char *modelName, const char *tech, long lev
         if (locIndex < 0)
         {
             auto &mtxx = *((CMatrix *)label.m);
-#ifndef _XBOX
             for (long me = 0; me < 16; me++)
                 if (_isnan(mtxx.matrix[me]))
                 {
@@ -525,7 +515,6 @@ long Location::LoadStaticModel(const char *modelName, const char *tech, long lev
                     mtxx.SetIdentity();
                     break;
                 }
-#endif
             locators[j]->AddLocator(mtxx, label.name);
         }
         else
@@ -534,9 +523,7 @@ long Location::LoadStaticModel(const char *modelName, const char *tech, long lev
         }
     }
 
-#ifndef _XBOX
     api->Send_Message(lighter, "ssi", "AddModel", modelName, mdl->GetId());
-#endif
 
     return im;
 }
@@ -1005,26 +992,12 @@ void Location::CreateSphere()
 
 bool Location::IsExDebugView()
 {
-#ifndef _XBOX
     return api->Controls->GetDebugAsyncKeyState('O') < 0;
-#else
-    return false;
-#endif
 }
 
 bool Location::IsDebugView()
 {
-#ifndef _XBOX
-    /*if(api->Controls->GetDebugAsyncKeyState('Y') < 0)
-    {
-      api->SetTimeScale(0.1f);
-    }else{
-      api->SetTimeScale(1.0f);
-    }*/
     return api->Controls->GetDebugAsyncKeyState('G') < 0 || api->Controls->GetDebugAsyncKeyState('O') < 0;
-#else
-    return false;
-#endif
 }
 
 //Написать текст

@@ -1,8 +1,6 @@
 #ifndef _TM_LIST_H_
 #define _TM_LIST_H_
 
-#ifndef _XBOX
-
 #include <CommCtrl.h>
 #include <Windows.h>
 #include <cstdint>
@@ -81,7 +79,4 @@ class TM_LIST
 
     void StartEditSelectedItem();
 };
-
-#endif
-
 #endif

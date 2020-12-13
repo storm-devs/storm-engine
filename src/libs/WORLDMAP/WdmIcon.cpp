@@ -119,11 +119,7 @@ void WdmIcon::LRender(VDX9RENDER *rs)
     wdmObjects->GetVPSize(w, h);
     //Иконка в верхнем углу
     auto kDef = rs->GetHeightDeformator();
-#ifndef _XBOX
     FillRectCoord(vrt, 8.0f, 8.0f, 64.0f, 64.0f * kDef);
-#else
-    FillRectCoord(vrt, 50.0f, 50.0f, 64.0f, 64.0f * kDef);
-#endif
     FillRectUV1(vrt, 0.0f, 0.0f, 1.0f, 1.0f);
     long alpha;
     if (icon[1].u >= 0.0f)
@@ -143,12 +139,7 @@ void WdmIcon::LRender(VDX9RENDER *rs)
     //Иконка в нижнем углу
     if (islandAlpha > 0.0f)
     {
-#ifndef _XBOX
         FillRectCoord(vrt, 8.0f + 8.0f, h - 64.0f * kDef - 8.0f, 64.0f, 64.0f * kDef);
-#else
-        FillRectCoord(vrt, 50.0f, h - 64.0f * kDef - 50.0f, 64.0f, 64.0f * kDef);
-#endif
-
         FillRectUV(vrt, 0.0f, 0.0f, 1.0f / 8.0f, 1.0f);
         FillRectUV1(vrt, 0.0f, 0.0f, 1.0f, 1.0f);
         FillRectColor(vrt, (static_cast<long>(islandAlpha * 255.0f) << 24) | 0xffffff);
@@ -157,11 +148,7 @@ void WdmIcon::LRender(VDX9RENDER *rs)
     //Иконка скипанья энкоунтера
     if (skipAlpha > 0.0f)
     {
-#ifndef _XBOX
         FillRectCoord(vrt, 8.0f + 64.0f + 8.0f, 8.0f, 64.0f, 64.0f * kDef);
-#else
-        FillRectCoord(vrt, 50.0f + 64.0f + 8.0f, 50.0f, 64.0f, 64.0f * kDef);
-#endif
         FillRectUV(vrt, 4.0f / 8.0f, 0.0f, 1.0f / 8.0f, 1.0f);
         FillRectUV1(vrt, 0.0f, 0.0f, 1.0f, 1.0f);
         FillRectColor(vrt, (static_cast<long>(skipAlpha * 255.0f) << 24) | 0xffffff);
@@ -191,11 +178,7 @@ void WdmIcon::LRender(VDX9RENDER *rs)
         move += m;
         move *= 64.0f + 8.0f;
 
-#ifndef _XBOX
         FillRectCoord(vrt, 8.0f + move, 8.0f, 64.0f, 64.0f * kDef);
-#else
-        FillRectCoord(vrt, 50.0f + move, 50.0f, 64.0f, 64.0f * kDef);
-#endif
         FillRectUV(vrt, 5.0f / 8.0f, 0.0f, 1.0f / 8.0f, 1.0f);
         FillRectUV1(vrt, 0.0f, 0.0f, 1.0f, 1.0f);
         FillRectColor(vrt, (static_cast<long>(stormAlpha * 255.0f) << 24) | 0xffffff);

@@ -240,54 +240,6 @@ float AIShipTouchController::GetBestRotateDirection()
 
 void AIShipTouchController::Realize(float fDeltaTime)
 {
-#ifndef _XBOX
-    /* espkk. code was unreachable (return)
-     *if (api->Controls->GetDebugAsyncKeyState('G')<0)
-    {
-      uint32_t			i;
-      CMatrix			m;
-      std::vector<RS_LINE>	rsLines(_FL_);
-
-      CVECTOR vOurPos = GetAIShip()->GetPos();
-      if (!GetAIShip()->isMainCharacter())
-        for (i=0;i<aTouchRays.size();i++)
-        {
-          RS_LINE *pRL = &rsLines[rsLines.Add()];
-          pRL->dwColor = 0x7F7F7F;
-          pRL->vPos = vOurPos;
-
-          pRL = &rsLines[rsLines.Add()];
-          pRL->dwColor = 0x3F3F3F;
-          float fDist = fRaySize * aTouchRays[i].fDist;
-          float fAng = GetAIShip()->GetAng().y + float(i) / float(aTouchRays.size()) * PIm2;
-          CVECTOR vPos = fDist * CVECTOR(sinf(fAng),0.0f,cosf(fAng));
-          pRL->vPos = vOurPos + vPos;
-        }
-      CVECTOR			vBoxSize, v[5];
-
-      vBoxSize = GetAIShip()->GetBoxsize() / 2.0f;
-      m.BuildRotateY(GetAIShip()->GetAng().y);
-      v[0] = m * CVECTOR(-vBoxSize.x, 0.0f, -vBoxSize.z);
-      v[1] = m * CVECTOR(vBoxSize.x, 0.0f, -vBoxSize.z);
-      v[2] = m * CVECTOR(vBoxSize.x, 0.0f, vBoxSize.z / 1.5f);
-      v[3] = m * CVECTOR(0.0f, 0.0f, vBoxSize.z);
-      v[4] = m * CVECTOR(-vBoxSize.x, 0.0f, vBoxSize.z / 1.5f);
-      for (i=0;i<5;i++)
-      {
-        RS_LINE *pRL = &rsLines[rsLines.Add()];
-        pRL->dwColor = 0x00FF00;
-        pRL->vPos = vOurPos + v[i];
-
-        pRL = &rsLines[rsLines.Add()];
-        pRL->dwColor = 0x00FF00;
-        pRL->vPos = vOurPos + v[(i==4) ? 0 : i + 1];
-      }
-
-      m.SetIdentity();
-      AIHelper::pRS->SetTransform(D3DTS_WORLD,m);
-      AIHelper::pRS->DrawLines(&rsLines[0],rsLines.size()/2,"Line");
-    }*/
-#endif
 }
 
 void AIShipTouchController::Save(CSaveLoad *pSL)

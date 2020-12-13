@@ -91,10 +91,8 @@ uint32_t AnimationServiceImp::RunSection()
 //Функции исполнения
 void AnimationServiceImp::RunStart()
 {
-#ifndef _XBOX
     if (api->Controls->GetDebugAsyncKeyState(VK_F4))
         return;
-#endif
     auto dltTime = api->GetDeltaTime();
     if (dltTime > 1000)
         dltTime = 1000;

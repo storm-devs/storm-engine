@@ -125,15 +125,8 @@ char sSplashText[] = {'\xbb', '\x9a', '\x89', '\x9a', '\x93', '\x90', '\x8f', '\
 #pragma warning(pop)
 char splashbuffer[256];
 
-#ifndef _XBOX
 #define TEXTURESDIR "resource\\textures\\%s.tx"
 #define VIDEODIR "Resource\\Videos\\%s"
-#else
-#define TEXTURESDIR "resource\\textures\\%s.tx"
-#define VIDEODIR "d:\\Resource\\Videos\\%s"
-
-#include <xgraphics.h>
-#endif
 
 struct DX9SphVertex
 {
@@ -383,11 +376,7 @@ bool DX9RENDER::Init()
         texLog = ini->GetLong(nullptr, "texture_log", 0) == 1;
         bUseLargeBackBuffer = ini->GetLong(nullptr, "UseLargeBackBuffer", 0) != 0;
 
-#ifndef _XBOX
         bWindow = ini->GetLong(nullptr, "full_screen", 1) == 0;
-#else
-        bWindow = false;
-#endif
 
         nTextureDegradation = ini->GetLong(nullptr, "texture_degradation", 0);
 
@@ -475,7 +464,6 @@ bool DX9RENDER::Init()
 
         delete ini;
 
-#ifndef _XBOX
         if (bWindow)
         {
             long xs, ys;
@@ -487,7 +475,6 @@ bool DX9RENDER::Init()
                 MoveWindow(api->GetAppHWND(), (xs - screen_size.x) / 2, (ys - screen_size.y) / 2, screen_size.x,
                            screen_size.y, true);
         }
-#endif
 
         CreateSphere();
         auto *pScriptRender = static_cast<VDATA *>(api->GetScriptVariable("Render"));
@@ -581,99 +568,6 @@ DX9RENDER::~DX9RENDER()
     // aCaptureBuffers.DelAllWithPointers();
 }
 
-//################################################################################
-#ifdef _XBOX
-bool getBestVideoMode(IDirect3D9 *d3, D3DPRESENT_PARAMETERS &d3dpp, bool bpp32)
-{
-    memset(&d3dpp, 0, sizeof(d3dpp));
-
-    bool _1080i = false;
-    bool _720p = false;
-    bool PAL0 = false;
-    bool PAL1 = false;
-    bool NTSC0 = false;
-    bool NTSC1 = false;
-
-    long n_modes = d3->GetAdapterModeCount(D3DADAPTER_DEFAULT);
-    for (long nm = 0; nm < n_modes; nm++)
-    {
-        D3DDISPLAYMODE am;
-        d3->EnumAdapterModes(D3DADAPTER_DEFAULT, nm, &am);
-
-        if ((bpp32 && am.Format == D3DFMT_LIN_X8R8G8B8) || (!bpp32 && am.Format == D3DFMT_LIN_R5G6B5))
-        {
-            // if(am.Width==1920 && am.Height==1080)	_1080i = true;
-            // if(am.Width==1280 && am.Height==720)	_720p = true;
-            if (am.Width == 640 && am.Height == 576)
-                PAL0 = true;
-            if (am.Width == 720 && am.Height == 576)
-                PAL1 = true;
-            if (am.Width == 640 && am.Height == 480)
-                NTSC0 = true;
-            if (am.Width == 720 && am.Height == 480)
-                NTSC1 = true;
-        }
-    }
-
-    if (PAL1)
-    {
-        d3dpp.BackBufferWidth = 720;
-        d3dpp.BackBufferHeight = 576;
-    }
-    else if (PAL0)
-    {
-        d3dpp.BackBufferWidth = 640;
-        d3dpp.BackBufferHeight = 576;
-    }
-    else if (NTSC1)
-    {
-        d3dpp.BackBufferWidth = 720;
-        d3dpp.BackBufferHeight = 480;
-    }
-    else if (NTSC0)
-    {
-        d3dpp.BackBufferWidth = 640;
-        d3dpp.BackBufferHeight = 480;
-    }
-    else
-        return false;
-    /*if(_720p)
-    {
-    d3dpp.BackBufferWidth = 1280;
-    d3dpp.BackBufferHeight = 720;
-    }
-    else
-    if(_1080i)
-    {
-    d3dpp.BackBufferWidth = 1920;
-    d3dpp.BackBufferHeight = 1080;
-    }
-    else
-    {
-    return false;
-    }*/
-
-    if (bpp32)
-    {
-        d3dpp.AutoDepthStencilFormat = D3DFMT_D24S8;
-        d3dpp.BackBufferFormat = D3DFMT_X8R8G8B8;
-    }
-    else
-    {
-        d3dpp.AutoDepthStencilFormat = D3DFMT_D16;
-        d3dpp.BackBufferFormat = D3DFMT_R5G6B5;
-    }
-    d3dpp.BackBufferCount = 1;
-    d3dpp.EnableAutoDepthStencil = TRUE;
-    d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
-
-    // d3dpp.BackBufferWidth = 640;
-    // d3dpp.BackBufferHeight = 480;
-
-    return true;
-}
-#endif
-
 bool DX9RENDER::InitDevice(bool windowed, HWND _hwnd, long width, long height)
 {
     // GUARD(DX9RENDER::InitDevice)
@@ -755,7 +649,6 @@ bool DX9RENDER::InitDevice(bool windowed, HWND _hwnd, long width, long height)
         // d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
     }
 
-#ifndef _XBOX
     if (d3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd, D3DCREATE_MIXED_VERTEXPROCESSING, &d3dpp, &d3d9) !=
         D3D_OK)
     {
@@ -765,19 +658,6 @@ bool DX9RENDER::InitDevice(bool windowed, HWND _hwnd, long width, long height)
             return false;
     }
     effects_.setDevice(d3d9);
-#else
-    if (getBestVideoMode(d3d, d3dpp, !(d3dpp.BackBufferFormat == D3DFMT_R5G6B5)))
-    {
-        d3dpp.AutoDepthStencilFormat = D3DFMT_D24S8;
-        d3d->CreateDevice(0, D3DDEVTYPE_HAL, NULL, D3DCREATE_HARDWARE_VERTEXPROCESSING, &d3dpp, &d3d9);
-        width = d3dpp.BackBufferWidth;
-        height = d3dpp.BackBufferHeight;
-    }
-    else
-    {
-        api->Trace("no standard supported video medes found [ 640*480, 720*480, 640*576, 720*576, 1280*720. 1920*1080");
-    }
-#endif
 
     //Создаем рендерtargetы для POST PROCESS эффектов...
     d3d9->GetRenderTarget(0, &pOriginalScreenSurface);
@@ -846,11 +726,8 @@ bool DX9RENDER::InitDevice(bool windowed, HWND _hwnd, long width, long height)
     }
 
     long num_stages;
-#ifndef _XBOX
     num_stages = 8;
-#else
-    num_stages = 4;
-#endif
+
     for (long s = 0; s < num_stages; s++)
     {
         // texture operation
@@ -894,22 +771,8 @@ bool DX9RENDER::InitDevice(bool windowed, HWND _hwnd, long width, long height)
     screen_size.y = height;
 
     m_fHeightDeformator = (float)(height * 4.0f) / (float)(width * 3.0f);
-    /*#ifdef _XBOX
-    DWORD videoFlags = XGetVideoFlags();
-    if( videoFlags & XC_VIDEO_FLAGS_WIDESCREEN ) {
-    m_fHeightDeformator = (float)(height*16)/(float)(width*9);
-    }
-    #endif*/
 
     d3d9->GetGammaRamp(0, &DefaultRamp);
-#ifdef _XBOX
-    for (i = 0; i < 256; i++)
-    {
-        DefaultRamp.red[i] *= 256;
-        DefaultRamp.green[i] *= 256;
-        DefaultRamp.blue[i] *= 256;
-    }
-#endif
 
     // UNGUARD
     return true;
@@ -1255,20 +1118,9 @@ bool DX9RENDER::DX9EndScene()
     if (CHECKD3DERR(EndScene()))
         return false;
 
-#ifndef _XBOX
-    /*if (api->Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0 && api->Controls->GetDebugAsyncKeyState(VK_F6) < 0)
-    {
-    bVideoCapture ^= 1;
-    api->SetDeltaTime((bVideoCapture) ? long(1000.0f / fFixedFPS) : 0);
-    if (!bVideoCapture)
-    SaveCaptureBuffers();
-    Sleep(300);
-    }*/
-
     // boal if (bMakeShoot || api->Controls->GetDebugAsyncKeyState(VK_F8) < 0)  MakeScreenShot();
     if (bMakeShoot || GetAsyncKeyState(VK_F8) < 0)
         MakeScreenShot();
-#endif
 
     if (bVideoCapture)
         MakeCapture();
@@ -1280,14 +1132,12 @@ bool DX9RENDER::DX9EndScene()
         bDeviceLost = true;
     }
 
-#ifndef _XBOX
     if (bSafeRendering)
     {
         const HDC dc = GetDC(hwnd);
         SetPixel(dc, 0, 0, 0);
         ReleaseDC(hwnd, dc);
     }
-#endif
 
     return true;
 }
@@ -1670,7 +1520,6 @@ bool DX9RENDER::TextureLoad(long t)
     //---------------------------------------------------------------
     // print statistics
     //---------------------------------------------------------------
-    //#ifndef _XBOX
     if (texLog)
     {
         char s[256];
@@ -1685,7 +1534,6 @@ bool DX9RENDER::TextureLoad(long t)
         fio->_FlushFileBuffers(fh);
         fio->_CloseHandle(fh);
     }
-    //#endif
     dwTotalSize += Textures[t].dwSize;
     //---------------------------------------------------------------
     Textures[t].loaded = true;
@@ -1740,7 +1588,6 @@ uint32_t DX9RENDER::LoadCubmapSide(HANDLE file, IDirect3DCubeTexture9 *tex, D3DC
 bool DX9RENDER::LoadTextureSurface(HANDLE file, IDirect3DSurface9 *suface, uint32_t mipSize, uint32_t width,
                                    uint32_t height, bool isSwizzled)
 {
-#ifndef _XBOX
     //------------------------------------------------------------------------------------------
     // PC version
     //------------------------------------------------------------------------------------------
@@ -1761,48 +1608,6 @@ bool DX9RENDER::LoadTextureSurface(HANDLE file, IDirect3DSurface9 *suface, uint3
         return false;
     return true;
     //------------------------------------------------------------------------------------------
-#else
-    //------------------------------------------------------------------------------------------
-    // XBOX version
-    //------------------------------------------------------------------------------------------
-    //Буфер для перемешивания текстур
-    void *buffer = null;
-    if (!isSwizzled)
-        buffer = new char[mipSize];
-    //Байт на пиксель
-    uint32_t bytesPerPixel = mipSize / (width * height);
-    //Указатель на поверхность
-    D3DLOCKED_RECT lock;
-    if (CHECKD3DERR(suface->LockRect(&lock, NULL, 0L)) == true)
-        return false;
-    if (isSwizzled)
-        buffer = lock.pBits;
-    //Зачитывание
-    uint32_t readingBytes = 0;
-    if (!fio->_ReadFile(file, buffer, mipSize, &readingBytes) || readingBytes != mipSize)
-    {
-        if (CHECKD3DERR(suface->UnlockRect()) == true)
-            return false;
-        return false;
-    }
-    //Переформатирование
-    if (!isSwizzled)
-    {
-        uint8_t *notAlignedBuffer = new uint8_t[mipSize + 16];
-        uint8_t *alignedBuffer = (uint8_t *)(((uint32_t)notAlignedBuffer + 15) & ~15);
-        XGSwizzleRect(buffer, width * bytesPerPixel, 0, alignedBuffer, width, height, 0, bytesPerPixel);
-        memcpy(lock.pBits, alignedBuffer, mipSize);
-        delete notAlignedBuffer;
-    }
-    //Освобождение поверхности
-    if (CHECKD3DERR(suface->UnlockRect()) == true)
-        return false;
-    //Освобождение буфера
-    if (!isSwizzled)
-        delete buffer;
-    return true;
-    //------------------------------------------------------------------------------------------
-#endif
 }
 
 //################################################################################
@@ -1857,7 +1662,6 @@ bool DX9RENDER::TextureRelease(long texid)
         return false;
     if (Textures[texid].name != nullptr)
     {
-        //#ifndef _XBOX
         if (texLog)
         {
             const HANDLE fh =
@@ -1899,7 +1703,6 @@ bool DX9RENDER::TextureRelease(long texid)
             delete buf;
             fclose(flstat);*/
         }
-        //#endif
 
         delete Textures[texid].name;
         Textures[texid].name = nullptr;
@@ -2520,11 +2323,7 @@ void DX9RENDER::RestoreRender()
         }
     }
     long num_stages;
-#ifndef _XBOX
     num_stages = 8;
-#else
-    num_stages = 4;
-#endif
     for (long s = 0; s < num_stages; s++)
     {
         // texture operation
@@ -2682,8 +2481,6 @@ void DX9RENDER::RunStart()
     // execute default technique for set default render/texture states
     // if (TechniqueExecuteStart("default")) do{} while (TechniqueExecuteNext());
 
-#ifndef _XBOX
-
     // boal del_cheat
     if (api->Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0 && api->Controls->GetDebugAsyncKeyState(VK_F11) < 0)
     {
@@ -2693,9 +2490,6 @@ void DX9RENDER::RunStart()
     SetRenderState(D3DRS_FILLMODE, (api->Controls->GetDebugAsyncKeyState('F') < 0) ? D3DFILL_WIREFRAME : D3DFILL_SOLID);
     // SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID); eddy
 
-#else
-    SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
-#endif
     PlayToTexture();
 }
 
@@ -3477,12 +3271,8 @@ void DX9RENDER::DrawSprites(RS_SPRITE *pRSS, uint32_t dwSpritesNum, const char *
     if (bDraw)
         do
         {
-#ifndef _XBOX
             DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, dwSpritesNum * 4, dwSpritesNum * 2, pIndices, D3DFMT_INDEX16,
                                    pRSS, sizeof(RS_SPRITE));
-#else
-            DrawPrimitiveUP(D3DPT_QUADLIST, RS_SPRITE_VERTEX_FORMAT, dwSpritesNum, pRSS, sizeof(RS_SPRITE));
-#endif
         } while (cBlockName && TechniqueExecuteNext());
     delete[] pIndices;
 }
@@ -4276,15 +4066,9 @@ void DX9RENDER::SetColorParameters(float fGamma, float fBrightness, float fContr
             fRamp = 0.0f;
         if (fRamp > 65535.0f)
             fRamp = 65535.0f;
-#ifdef _XBOX
-        ramp.red[i] = uint8_t(fRamp / 256.0f);
-        ramp.green[i] = uint8_t(fRamp / 256.0f);
-        ramp.blue[i] = uint8_t(fRamp / 256.0f);
-#else
         ramp.red[i] = static_cast<uint16_t>(fRamp);
         ramp.green[i] = static_cast<uint16_t>(fRamp);
         ramp.blue[i] = static_cast<uint16_t>(fRamp);
-#endif
     }
     d3d9->SetGammaRamp(0, D3DSGR_NO_CALIBRATION, &ramp);
 }

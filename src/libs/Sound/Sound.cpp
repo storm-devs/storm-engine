@@ -237,25 +237,6 @@ void SOUND::Realize(uint32_t dTime)
 {
     if (!soundService)
         return;
-    /*
-      bool drawInfo;
-    #ifndef _XBOX
-      drawInfo = (GetKeyState(VK_SUBTRACT) & 0x8000) != 0;
-    #else
-      drawInfo = true;
-    #endif
-      if (drawInfo)
-      {
-        renderer->Print(0, 90, "cnt[%d,%d] buf[%d,%d] cach[%d,%d]"
-                 ,soundService->soundStatistics.soundsCount
-                 ,soundService->soundStatistics.maxSoundsCount
-                 ,soundService->soundStatistics.bytesInBuffers / 1024
-                  ,soundService->soundStatistics.maxBytesInBuffers / 1024
-                 ,soundService->soundStatistics.bytesCached / 1024
-                 ,soundService->soundStatistics.maxBytesCached / 1024
-                 );
-      }
-    */
 }
 
 //--------------------------------------------------------------------

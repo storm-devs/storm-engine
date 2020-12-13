@@ -31,12 +31,7 @@ WdmCounter::WdmCounter()
 
     Assert(wdmObjects->rs);
     const auto kDef = wdmObjects->rs->GetHeightDeformator();
-#ifndef _XBOX
     mtx.BuildMatrix(-0.1f, 0.0f, 0.0f, 1.4f, 0.9f * kDef, 40.0f);
-#else
-    mtx.BuildMatrix(-0.1f, 0.0f, 0.0f, 1.1f, 0.74f * kDef, 40.0f);
-#endif
-
     mtx.Vx() *= -0.25f;
     mtx.Vy() *= 0.25f;
     mtx.Vz() *= -0.25f;

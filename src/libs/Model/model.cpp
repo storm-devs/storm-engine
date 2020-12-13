@@ -67,99 +67,7 @@ void *VBTransform(void *vb, long startVrt, long nVerts, long totVerts)
     auto *src = static_cast<GEOS::AVERTEX0 *>(vb);
 
     GEOS::VERTEX0 *dst;
-#ifndef _XBOX
     dest_vb->Lock(0, 0, (VOID **)&dst, D3DLOCK_DISCARD | D3DLOCK_NOSYSLOCK);
-#else
-    dest_vb->Lock(0, 0, (VOID **)&dst, 0);
-#endif
-
-    // dest_vb->Lock(sizeof(GEOS::VERTEX0)*startVrt, sizeof(GEOS::VERTEX0)*nVerts, (unsigned char**)&dst,
-    // D3DLOCK_DISCARD|D3DLOCK_NOSYSLOCK); src += startVrt; for(long v=0; v<nVerts; v++) if(GetAsyncKeyState('8') < 0)
-    //{
-    /*
-      //Коэфициент блендинга
-      static float one = 1.0f;
-      //Позиция
-      _asm
-      {
-        mov eax, src
-        mov ebx, dst
-  vrt_loop:	prefetcht0 [eax]
-        prefetcht0 [eax + 32]
-        xor ecx, ecx
-        xor edx, edx
-        mov esi, bones
-        mov cl, [eax + 16]
-        mov dl, [eax + 17]
-        mov edi, esi
-        shl ecx, 6
-        shl edx, 6
-        add esi, ecx
-        add edi, edx
-        movss  xmm0, [eax + 12]				//000w
-        movss  xmm1, one					//0001
-        shufps xmm0, xmm0, 00000000b		//xmm0 = wwww
-        shufps xmm1, xmm1, 00000000b		//1111
-        movups xmm4, [esi + 0]				//m1.vx
-        movups xmm6, [edi + 0]				//m2.vx
-        subps  xmm1, xmm0					//xmm1 = (1 - w)(1 - w)(1 - w)(1 - w)
-        movups xmm5, [esi + 16]				//m1.vy
-        movups xmm7, [edi + 16]				//m2.vy
-        mulps  xmm4, xmm0					//m1.vx*w
-        mulps  xmm6, xmm1					//m2.vx*(1 - w)
-        mulps  xmm5, xmm0					//m1.vy*w
-        mulps  xmm7, xmm1					//m2.vy*(1 - w)
-        addps  xmm4, xmm6					//m1.vx*w + m2.vx*(1 - w)
-        addps  xmm5, xmm7					//m1.vy*w + m2.vy*(1 - w)
-        movups xmm6, [esi + 32]				//m1.vz
-        movups xmm2, [edi + 32]				//m2.vz
-        movups xmm7, [esi + 48]				//m1.pos
-        movups xmm3, [edi + 48]				//m2.pos
-        mulps  xmm6, xmm0					//m1.vz*w
-        mulps  xmm2, xmm1					//m2.vz*(1 - w)
-        mulps  xmm7, xmm0					//m1.pos*w
-        mulps  xmm3, xmm1					//m2.pos*(1 - w)
-        addps  xmm6, xmm2					//m1.vx*w + m2.vx*(1 - w)
-        addps  xmm7, xmm3					//m1.vy*w + m2.vy*(1 - w)
-        movss  xmm0, [eax + 0]				//000x
-        movss  xmm1, [eax + 4]				//000y
-        movss  xmm2, [eax + 8]				//000z
-        shufps xmm0, xmm0, 01000000b		//0xxx
-        shufps xmm1, xmm1, 01000000b		//0yyy
-        shufps xmm2, xmm2, 01000000b		//0zzz
-        mulps  xmm0, xmm4					//0xxx*m.vx
-        mulps  xmm1, xmm5					//0yyy*m.vy
-        mulps  xmm2, xmm6					//0zzz*m.vz
-        addps  xmm0, xmm7					//0xxx*m.vx + m.pos
-        addps  xmm1, xmm2					//0yyy*m.vx + 0zzz*m.vx
-        movss  xmm2, [eax + 28]				//000z
-        addps  xmm0, xmm1					//0xxx*m.vx + m.pos + 0yyy*m.vx + 0zzz*m.vx
-        movups [ebx + 0], xmm0				//Сохраняем позицию
-        shufps xmm2, xmm2, 01000000b		//0zzz
-        movss  xmm0, [eax + 20]				//000x
-        movss  xmm1, [eax + 24]				//000y
-        mov    ecx, [eax + 36]				//vrt.tu0
-        mov    edx, [eax + 40]				//vrt.tv0
-        shufps xmm0, xmm0, 01000000b		//0xxx
-        shufps xmm1, xmm1, 01000000b		//0yyy
-        mov    [ebx + 28], ecx				//Сохраняем u
-        mulps  xmm0, xmm4					//0xxx*m.vx
-        mov    [ebx + 32], edx				//Сохраняем v
-        mulps  xmm1, xmm5					//0yyy*m.vy
-        mulps  xmm2, xmm6					//0zzz*m.vz
-        addps  xmm0, xmm7					//0xxx*m.vx + m.pos
-        addps  xmm1, xmm2					//0yyy*m.vx + 0zzz*m.vx
-        mov    ecx, [eax + 32]				//vrt.color
-        addps  xmm0, xmm1					//0xxx*m.vx + m.pos + 0yyy*m.vx + 0zzz*m.vx
-        movups [ebx + 12], xmm0				//Сохраняем нормаль
-        mov    [ebx + 24], ecx				//Сохраняем color
-        add    eax, 44
-        add    ebx, 36
-        dec    totVerts
-        jnz    vrt_loop
-      };
-  */
-    //}else{
 
     CMatrix mtx;
     for (long v = 0; v < totVerts; v++)
@@ -393,9 +301,7 @@ uint64_t MODELR::ProcessMessage(MESSAGE &message)
         alpha2 = message.Float();
         break;
     case MSG_MODEL_LOAD_GEO: // set geometry
-                             // GUARD(MSG_MODEL_LOAD_GEO)
-
-#ifndef _XBOX
+        // GUARD(MSG_MODEL_LOAD_GEO)
         message.String(255, str);
         NODER::gs = GeometyService;
         NODER::rs = rs;
@@ -411,31 +317,6 @@ uint64_t MODELR::ProcessMessage(MESSAGE &message)
         // CVECTOR tmp;
         root->Update(mtx, tmp);
         return 1;
-#else
-                             // fio->SetDrive(XBOXDRIVE_CACHE);	// look in cache
-        message.String(255, str);
-        NODER::gs = GeometyService;
-        NODER::rs = rs;
-        root = new NODER();
-
-        if (!root->Init(LightPath, str, "", CMatrix(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), mtx, null, lmPath))
-        {
-            fio->SetDrive(); // try on dvd
-            if (!root->Init(LightPath, str, "", CMatrix(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), mtx, null, lmPath))
-            {
-                delete root;
-                root = null;
-                EntityManager::EraseEntity(GetId());
-                fio->SetDrive();
-                return 0;
-            }
-        }
-
-        root->Update(mtx, tmp);
-        fio->SetDrive();
-        return 1;
-
-#endif
         // UNGUARD
         break;
     case MSG_MODEL_LOAD_ANI: // set animation

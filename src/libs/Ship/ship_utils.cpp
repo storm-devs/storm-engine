@@ -43,9 +43,7 @@ BOOL SHIP::BuildContour(CVECTOR *vContour, long &iNumVContour)
     {
         api->Trace("SHIP: Up trace error, ship %s", GetAShip()->GetAttribute("Name"));
         bDefaultContour = true;
-#ifndef _XBOX
         Beep(1000, 200);
-#endif
     }
     // Assert(fRes<=1.0f);
 
@@ -59,9 +57,7 @@ BOOL SHIP::BuildContour(CVECTOR *vContour, long &iNumVContour)
     {
         api->Trace("SHIP: Down trace error, ship %s", GetAShip()->GetAttribute("Name"));
         bDefaultContour = true;
-#ifndef _XBOX
         Beep(1000, 200);
-#endif
     }
     // Assert(fRes<=1.0f);
 

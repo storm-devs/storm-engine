@@ -9,11 +9,7 @@ uint32_t GetA8R8G8B8_FromFMT(void *p, uint32_t fmt)
 {
     uint32_t retVal;
 
-#ifdef _XBOX
-    if (fmt == D3DFMT_R5G6B5 || fmt == D3DFMT_LIN_R5G6B5)
-#else
     if (fmt == D3DFMT_R5G6B5)
-#endif
     {
         retVal = 0xFF000000 | (static_cast<uint32_t>(*static_cast<uint16_t *>(p) & 0xF800) << 8) |
                  (static_cast<uint32_t>(*static_cast<uint16_t *>(p) & 0x7E0) << 5) |
@@ -189,20 +185,6 @@ bool SCRSHOTER::MakeScreenShot()
     // закрываем открытые буфера
     if (pIn != nullptr)
         pRenderTarg->UnlockRect();
-
-#ifdef _XBOX
-    // Делаем перевод в смешанную текстуру
-    uint32_t dwTmp = outRect.Pitch * SS_TEXTURE_HEIGHT;
-    // DWORD dwPixelSize = XGBytesPerPixelFromFormat( D3DFMT_A8R8G8B8 );
-    if ((pIn = new char[dwTmp]) == null)
-    {
-        throw std::exception("allocate memory error")
-    }
-    memcpy(pIn, outRect.pBits, dwTmp);
-    XGSwizzleRect(pIn, 0, NULL, outRect.pBits, SS_TEXTURE_WIDTH, SS_TEXTURE_HEIGHT, NULL,
-                  XGBytesPerPixelFromFormat(D3DFMT_A8R8G8B8));
-    delete pIn;
-#endif
 
     // закрываем открытые буфера
     if (pOut != nullptr)

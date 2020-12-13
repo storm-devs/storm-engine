@@ -5,13 +5,8 @@
 #define XBOXDRIVE_CACHE "z:\\"
 #define XBOXDRIVE_DVD "d:\\"
 
-#include <cstdint>
-
-#ifndef _XBOX
 #include <Windows.h>
-#else
-#include <xtl.h>
-#endif
+#include <cstdint>
 
 class INIFILE;
 

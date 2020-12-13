@@ -1,8 +1,7 @@
+#include "s_dbg_sourceview.h"
+#include "Core.h"
 #include "defines.h"
 #include "resource.h"
-#ifndef _XBOX
-#include "Core.h"
-#include "s_dbg_sourceview.h"
 #include "s_debug.h"
 #include <algorithm>
 
@@ -62,7 +61,6 @@ LRESULT CALLBACK SourceViewWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM l
         case WM_KEYDOWN:
             switch (static_cast<int>(wParam))
             {
-#ifndef _XBOX
             case VK_HOME:
                 if (GetAsyncKeyState(VK_CONTROL) < 0)
                     CDebug.SourceView->SetActiveLine(0);
@@ -97,7 +95,6 @@ LRESULT CALLBACK SourceViewWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM l
             case VK_F3:
                 CDebug.SourceView->FindNext();
                 break;
-#endif
             case VK_UP:
                 CDebug.SourceView->DoStep(-1);
                 break;
@@ -1346,5 +1343,3 @@ void SOURCE_VIEW::FindNext()
         }
     }
 }
-
-#endif

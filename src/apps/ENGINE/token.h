@@ -1,13 +1,8 @@
 #ifndef _S_TOKEN_H_
 #define _S_TOKEN_H_
 
-#include <cstdint>
-
-#ifndef _XBOX
 #include <Windows.h>
-#else
-#include <xtl.h>
-#endif
+#include <cstdint>
 
 enum S_TOKEN_TYPE
 {

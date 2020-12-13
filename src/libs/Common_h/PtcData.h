@@ -80,11 +80,8 @@ class PtcData
     //--------------------------------------------------------------------------------------------
   private:
     //Функция защиты
-#ifndef _XBOX
     void SFLB_PotectionLoad();
-#else
-    void SFLB_PotectionLoad();
-#endif
+
     //Вычислить высоту точки на плоскосте треугольника
     float FindHeight(long trgID, float x, float z);
     //Найти направление пути

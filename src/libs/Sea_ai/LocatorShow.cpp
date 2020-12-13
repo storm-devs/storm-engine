@@ -145,7 +145,6 @@ void SeaLocatorShow::ProcessLocators(ATTRIBUTES *pA)
 
 void SeaLocatorShow::Realize(uint32_t Delta_Time)
 {
-#ifndef _XBOX
     if (api->Controls->GetDebugAsyncKeyState('6') < 0)
         fScale -= static_cast<float>(Delta_Time) * 0.001f * 0.5f;
     if (api->Controls->GetDebugAsyncKeyState('7') < 0)
@@ -155,7 +154,6 @@ void SeaLocatorShow::Realize(uint32_t Delta_Time)
         bShow ^= 1;
         Sleep(200);
     }
-#endif
     if (!bShow || !pALocators)
         return;
     const CMatrix prj;

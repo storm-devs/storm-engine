@@ -135,11 +135,6 @@ bool CharactersGroups::Init()
 //Исполнение
 void CharactersGroups::Execute(uint32_t delta_time)
 {
-    /*#ifndef _XBOX
-    #ifdef _DEBUG
-      if(api->Controls->GetDebugAsyncKeyState(VK_F11) < 0) DumpRelations();
-    #endif
-    #endif*/ //boal свои у нас читы
     //Время
     const auto dltTime = delta_time * 0.001f;
     //Исполняем группы

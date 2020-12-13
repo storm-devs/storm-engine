@@ -13,18 +13,10 @@
 #endif
 #define INVALID_OFFSET 0xffffffff
 #define DSL_INI_VALUE 0
-//#define IOBUFFER_SIZE			65535
-//#define WARNINGS_OFF
-//#define DTRACEOFF
 #define SBUPDATE 4
 #define DEF_COMPILE_EXPRESSIONS
 
 #include "zlib.h"
-
-#ifdef _XBOX
-#include "..\..\soundservice\vsoundservice.h"
-#include "..\dx9render.h"
-#endif
 
 extern VAPI *api;
 extern CORE Core;
@@ -203,9 +195,7 @@ void COMPILER::SetProgramDirectory(const char *dir_name)
         strcpy_s(ProgramDirectory, len, dir_name);
         strcat_s(ProgramDirectory, len, "\\");
     }
-#ifndef _XBOX
     CDebug.SetProgramDirectory(dir_name);
-#endif
 }
 
 // load file into memory
@@ -426,10 +416,8 @@ void COMPILER::SetError(const char *data_PTR, ...)
     fio->_CloseHandle(file_h);
     //_flushall();
 
-#ifndef _XBOX
     if (bBreakOnError)
         CDebug.SetTraceMode(TMODE_MAKESTEP);
-#endif
 }
 
 void COMPILER::SetWarning(const char *data_PTR, ...)
@@ -515,14 +503,13 @@ void COMPILER::LoadPreprocess()
 
         delete engine_ini;
     }
-#ifndef _XBOX
+
     INIFILE *ini = fio->OpenIniFile(PROJECT_NAME);
     if (ini)
     {
         bBreakOnError = (ini->GetLong("options", "break_on_error", 0) == 1);
         delete ini;
     }
-#endif
 }
 
 bool COMPILER::CreateProgram(const char *file_name)
@@ -738,11 +725,7 @@ VDATA *COMPILER::ProcessEvent(const char *event_name)
     bEventsBreak = false;
 
     uint32_t nTimeOnEvent = GetTickCount();
-#ifndef _XBOX
     current_debug_mode = CDebug.GetTraceMode();
-#else
-    current_debug_mode = 0;
-#endif
 
     pVD = nullptr;
     if (event_name == nullptr)
@@ -811,11 +794,10 @@ VDATA *COMPILER::ProcessEvent(const char *event_name)
     nRuntimeTicks += nTimeOnEvent;
 
     pRun_fi = nullptr;
-#ifndef _XBOX
+
     if (current_debug_mode == TMODE_CONTINUE)
         CDebug.SetTraceMode(TMODE_CONTINUE);
-        // SetFocus(Core.App_Hwnd);		// VANO CHANGES
-#endif
+    // SetFocus(Core.App_Hwnd);		// VANO CHANGES
 
     RDTSC_E(dwRDTSC);
 
@@ -1313,15 +1295,6 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
     CompilerStage = CS_COMPILATION;
 
     RunningSegmentID = INVALID_SEGMENT_INDEX;
-
-#ifdef _XBOX
-    if (bFirstRun)
-    {
-        VDX9RENDER *pDX = (VDX9RENDER *)api->CreateService("dx9render");
-        if (pDX)
-            pDX->ProgressView();
-    }
-#endif
 
     //	bool bCDStop;
     bool bFunctionBlock;
@@ -2287,14 +2260,7 @@ bool COMPILER::CompileBlock(SEGMENT_DESC &Segment, bool &bFunctionBlock, uint32_
     uint32_t def_code;
     DEFINFO di;
     uint32_t dwRCode;
-    //	VARINFO vi;
 
-    /*
-    #ifdef _XBOX
-      VDX9RENDER * pDX = (VDX9RENDER *)api->CreateService("dx9render");
-      if(pDX) pDX->ProgressView();
-    #endif
-    */
     VARINFO vi;
     LVARINFO lvi;
 
@@ -3789,10 +3755,7 @@ bool COMPILER::BC_CallFunction(uint32_t func_code, uint32_t &ip, DATA *&pVResult
     const char *mem_codebase;
     uint32_t arguments;
     uint32_t check_sp;
-
-#ifndef _XBOX
     uint32_t nDebugEnterMode;
-#endif
 
     CompilerStage = CS_RUNTIME;
 
@@ -3802,10 +3765,6 @@ bool COMPILER::BC_CallFunction(uint32_t func_code, uint32_t &ip, DATA *&pVResult
         SetError("Invalid function call");
         return false;
     }
-    // if(_stricmp(call_fi.name,"InitRandomShipsNames")==0)
-    //{
-    //_asm int 3;
-    //}//*/
 
     // number f arguments pushed into stack for this function call
     if (BC_TokenGet() != ARGS_NUM)
@@ -3863,9 +3822,7 @@ bool COMPILER::BC_CallFunction(uint32_t func_code, uint32_t &ip, DATA *&pVResult
     mem_pfi = pRun_fi;
     mem_codebase = pRunCodeBase;
 
-#ifndef _XBOX
     nDebugEnterMode = CDebug.GetTraceMode();
-#endif
     uint64_t nTicks;
     if (call_fi.segment_id == INTERNAL_SEGMENT_ID)
     {
@@ -3900,12 +3857,10 @@ bool COMPILER::BC_CallFunction(uint32_t func_code, uint32_t &ip, DATA *&pVResult
         RDTSC_E(nTicks);
         FuncTab.AddTime(func_code, nTicks);
     }
-#ifndef _XBOX
     if (nDebugEnterMode == TMODE_MAKESTEP)
     {
         CDebug.SetTraceMode(TMODE_MAKESTEP);
     }
-#endif
 
     if (pVResult)
     {
@@ -4438,7 +4393,6 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
             break;
             break;
         case DEBUG_LINE_CODE:
-#ifndef _XBOX
             if (Core.Exit_flag)
                 return false;
             if (pDbgExpSource)
@@ -4494,10 +4448,6 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
                     }
                 }
             }
-#else
-            memcpy(&nDTLCode, &pCodeBase[ip], sizeof(uint32_t));
-
-#endif
             break;
         case DEBUG_FILE_NAME:
 
@@ -6336,15 +6286,6 @@ bool COMPILER::ReadVariable(char *name, /* DWORD code,*/ bool bDim, uint32_t a_i
     uint32_t var_code;
     bool bSkipVariable;
 
-#ifdef _XBOX
-    VDX9RENDER *pDX = (VDX9RENDER *)api->CreateService("dx9render");
-    if (pDX)
-        pDX->ProgressView();
-#endif
-
-    // if(!VarTab.GetVarX(vi,code)) return false;
-    // replacing by name search
-
     bSkipVariable = false;
     var_code = VarTab.FindVar(name);
     if (var_code == INVALID_VAR_CODE)
@@ -6937,38 +6878,7 @@ bool COMPILER::SetSaveData(const char *file_name, void *save_data, long data_siz
         return false;
     }
 
-#ifdef _XBOX
-    DWORD n;
-    char sTemp[MAX_PATH];
-    XGAME_FIND_DATA fd;
-    HANDLE sh;
-
-    if(file_name[0] == 'U' && file_name[1] ==':')
-    {
-        strcpy_s(sFileName,file_name);
-    }
-    else
-    {
-        bool bFound = false;
-        sh = XFindFirstSaveGame("U:\\",&fd);
-        if(INVALID_HANDLE_VALUE == sh) return false;
-        for(n=0;fd.szSaveGameName[n];n++) sTemp[n] = (char)fd.szSaveGameName[n];	sTemp[n] = 0;
-        sprintf_s(sFileName,"%s%s",fd.szSaveGameDirectory,sTemp);
-        if(_stricmp(sTemp,file_name)==0) bFound = true;
-        while(!bFound)
-        {
-            if(!XFindNextSaveGame(sh,&fd)) break;
-
-            for(n=0;fd.szSaveGameName[n];n++) sTemp[n] = (char)fd.szSaveGameName[n];	sTemp[n] = 0;
-            sprintf_s(sFileName,"%s%s",fd.szSaveGameDirectory,sTemp);
-            if(_stricmp(sTemp,file_name)==0) bFound = true;
-        }
-        if(!bFound) return false;
-        XFindClose(sh);
-    }
-#else
     strcpy_s(sFileName,file_name);
-#endif
 
     // open save file
     fio->SetDrive(XBOXDRIVE_NONE);
@@ -7023,50 +6933,12 @@ bool COMPILER::SetSaveData(const char *file_name, void *save_data, long data_siz
     exdh.dwExtDataOffset = sizeof(exdh) + dwOrgDataSize;
     exdh.dwExtDataSize = data_size;
 
-
-#ifdef _XBOX
-    VSoundService * pSound = (VSoundService *)api->CreateService("soundservice");
-    if(pSound)
-    {
-        for(n=0;n<SBUPDATE;n++)
-        {
-            pSound->RunStart();
-            pSound->RunEnd();
-        }
-    }
-
-    XCALCSIG_SIGNATURE xsig;
-    HANDLE hSig;
-    memset(&xsig,0,sizeof(xsig));
-
-    hSig = XCalculateSignatureBegin( 0 );
-
-    // save header
-    if(hSig != INVALID_HANDLE_VALUE) XCalculateSignatureUpdate(hSig,(BYTE *)&exdh,sizeof(exdh));
-    SaveData(&exdh,sizeof(exdh));
-
-    // save org data
-    if(hSig != INVALID_HANDLE_VALUE) XCalculateSignatureUpdate(hSig,(BYTE *)pOrgData,dwOrgDataSize);
-    SaveData(pOrgData,dwOrgDataSize);
-
-    // save ext data
-    if(hSig != INVALID_HANDLE_VALUE) XCalculateSignatureUpdate(hSig,(BYTE *)save_data,data_size);
-    SaveData(save_data,data_size);
-
-    if(hSig != INVALID_HANDLE_VALUE) XCalculateSignatureEnd(hSig,&xsig);
-
-    // save signature
-    SaveData(&xsig,sizeof(xsig));
-
-#else
     // save header
     SaveData(&exdh,sizeof(exdh));
     // save org data
     SaveData(pOrgData,dwOrgDataSize);
     // save ext data
     SaveData(save_data,data_size);
-
-#endif
 
     // cleanup
     fio->_CloseHandle(fh);
@@ -7133,24 +7005,6 @@ void *COMPILER::GetSaveData(const char *file_name, long &data_size)
 /*void * COMPILER::GetSaveData(char * file_name, long & data_size)
 {
     DWORD n;
-#ifdef _XBOX
-    XCALCSIG_SIGNATURE xsig;
-    XCALCSIG_SIGNATURE save_xsig;
-    HANDLE hSig;
-    memset(&xsig,0,sizeof(xsig));
-    hSig = XCalculateSignatureBegin( 0 );
-
-    VSoundService * pSound = (VSoundService *)api->CreateService("soundservice");
-    if(pSound)
-    {
-        for(n=0;n<SBUPDATE;n++)
-        {
-            pSound->RunStart();
-            pSound->RunEnd();
-        }
-    }
-
-#endif
 
     EXTDATA_HEADER exdh;
     char * pExtData;
@@ -7181,9 +7035,6 @@ void *COMPILER::GetSaveData(const char *file_name, long &data_size)
         fio->_CloseHandle(fh);
         return 0;
     }
-#ifdef _XBOX
-    if(hSig != INVALID_HANDLE_VALUE) XCalculateSignatureUpdate(hSig,(BYTE *)&exdh,sizeof(exdh));
-#endif
 
     int fsize = fio->_GetFileSize(fh,0);
     if( fsize < exdh.dwExtDataOffset+exdh.dwExtDataSize )
@@ -7201,25 +7052,7 @@ void *COMPILER::GetSaveData(const char *file_name, long &data_size)
         return 0;
     }
 
-#ifdef _XBOX
 
-    // calculate signature for xbox save
-    char * pOrgData;
-    DWORD dwOrgDataSize;
-
-    dwOrgDataSize = exdh.dwExtDataOffset - sizeof(exdh);
-    pOrgData = new char[dwOrgDataSize];
-    if(pOrgData == 0)
-    {
-        SetError("no memory");
-        if(pExtData) delete pExtData;
-        fio->_CloseHandle(fh);
-        return 0;
-    }
-    ReadData(pOrgData,dwOrgDataSize);
-    if(hSig != INVALID_HANDLE_VALUE) XCalculateSignatureUpdate(hSig,(BYTE *)pOrgData,dwOrgDataSize);
-    delete pOrgData;
-#else
     // move to ext data
     DWORD dwRes = fio->_SetFilePointer(fh,exdh.dwExtDataOffset,0,FILE_BEGIN);
     if(dwRes == 0xffffffff)
@@ -7228,30 +7061,9 @@ void *COMPILER::GetSaveData(const char *file_name, long &data_size)
         SetError("invalid seek");
         return 0;
     }
-#endif
 
     // read ext data
     ReadData(pExtData,exdh.dwExtDataSize);
-
-#ifdef _XBOX
-    if(hSig != INVALID_HANDLE_VALUE) XCalculateSignatureUpdate(hSig,(BYTE *)pExtData,exdh.dwExtDataSize);
-
-    if(hSig != INVALID_HANDLE_VALUE) XCalculateSignatureEnd(hSig,&xsig);
-
-    ReadData(&save_xsig,sizeof(save_xsig));
-
-    if(memcmp(&xsig,&save_xsig,sizeof(xsig))!=0)
-    {
-        // save data broken
-        fio->_CloseHandle(fh);
-        SetError("save signature check failed");
-        delete pExtData;
-        data_size = 0;
-        return 0;
-    }
-
-#endif
-
 
     // cleanup
     fio->_CloseHandle(fh);

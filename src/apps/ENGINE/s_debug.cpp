@@ -1,5 +1,3 @@
-#ifndef _XBOX
-
 #include "s_debug.h"
 #include "Core.h"
 #include "resource.h"
@@ -953,5 +951,3 @@ void S_DEBUG::OpenNewFile()
         CDebug.Add2RecentFiles(buffer);
     }
 }
-
-#endif

@@ -93,9 +93,7 @@ class SLIBHOLDER
     }
 };
 
-#ifndef _XBOX
 class S_DEBUG;
-#endif
 
 enum COMPILER_STAGE
 {
@@ -107,9 +105,8 @@ class CORE;
 class COMPILER : public VIRTUAL_COMPILER
 {
     friend CORE;
-#ifndef _XBOX
     friend S_DEBUG;
-#endif
+
     COMPILER_STAGE CompilerStage;
     STRINGS_LIST LabelTable;
     // STRINGS_LIST EventTable;

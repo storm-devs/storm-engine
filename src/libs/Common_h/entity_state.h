@@ -1,13 +1,8 @@
 #ifndef _ENTITY_STATE_H_
 #define _ENTITY_STATE_H_
 
-#include <cstdint>
-
-#ifndef _XBOX
 #include <Windows.h>
-#else
-#include <xtl.h>
-#endif
+#include <cstdint>
 
 class ENTITY_STATE_GEN
 {

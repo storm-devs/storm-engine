@@ -5,17 +5,8 @@
 // CONSTANTS
 ///////////////////////////////////////////////////////////////////
 //#define TRACE_INFORMATION
-#ifndef _XBOX
 #define FIO(a) fio->_##a
-#else
-#define FIO(a) a
-#endif
-
-#ifndef _XBOX
 #define MAX_CACHED_DATA (4 * 1024 * 1024)
-#else
-#define MAX_CACHED_DATA (2 * 1024 * 1024)
-#endif
 
 #define SOUND_INVALID_ID 0
 #define MAX_SOUND_DUPLICATES 50 // 8
@@ -75,19 +66,6 @@ enum eSoundMessage
     */
 };
 
-#ifdef _XBOX
-typedef unsigned long FOURCC;
-#define D3DVALUE float
-
-typedef struct
-{
-    FOURCC ckid;
-    uint32_t cksize;
-    FOURCC fccType;
-    uint32_t dwDataOffset;
-    uint32_t dwFlags;
-} MMCKINFO;
-#endif
 ///////////////////////////////////////////////////////////////////
 // DEFINES
 ///////////////////////////////////////////////////////////////////

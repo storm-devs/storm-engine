@@ -77,11 +77,9 @@ class Player : public NPCharacter
     bool isSpecialMode;
     bool isSetBlock;
     entid_t baterfl;
-#ifndef _XBOX
     bool shootgunMode;
     float kSMReload;
     LocationCamera *locCam;
-#endif
 };
 
 #endif

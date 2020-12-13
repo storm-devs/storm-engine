@@ -396,11 +396,7 @@ class DX9RENDER : public VDX9RENDER
     HRESULT SetStreamSource(UINT StreamNumber, void *pStreamData, UINT Stride) override;
     HRESULT SetIndices(void *pIndexData) override;
     HRESULT DrawPrimitive(D3DPRIMITIVETYPE PrimitiveType, UINT StartVertex, UINT PrimitiveCount) override;
-#ifndef _XBOX
     HRESULT Release(IUnknown *pSurface) override;
-#else
-    virtual HRESULT Release(IDirect3DResource8 *pSurface);
-#endif
 
     // Vertex/Index Buffers Section
     HRESULT CreateVertexBuffer(UINT Length, uint32_t Usage, uint32_t FVF, D3DPOOL Pool,

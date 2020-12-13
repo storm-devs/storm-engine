@@ -27,21 +27,17 @@ Player::Player()
     CmdNone();
     isSpecialMode = false;
     isSetBlock = false;
-#ifndef _XBOX
     kSMReload = 1.0f;
     locCam = nullptr;
     shootgunMode = false;
     // shootgunMode = false;
-#endif
 }
 
 Player::~Player()
 {
-#ifndef _XBOX
     entid_t peid;
     if (peid = EntityManager::GetEntityId("ShootGunParticles"))
         EntityManager::EraseEntity(peid);
-#endif
 }
 
 bool Player::PostInit()
@@ -63,7 +59,6 @@ void Player::Reset()
 //Перемещаем персонажа в желаемую позицию
 void Player::Move(float dltTime)
 {
-#ifndef _XBOX
 
     kSMReload += dltTime * 0.7f;
     if (kSMReload > 1.0f)
@@ -109,8 +104,6 @@ void Player::Move(float dltTime)
         }
     }
 
-#endif
-
     /*
     if(GetAsyncKeyState(VK_SPACE) < 0)
     {
@@ -153,11 +146,9 @@ void Player::Move(float dltTime)
         }
         else
             lastChange += dltTime;
-            //------------------------------------
-#ifndef _XBOX
+        //------------------------------------
         if (!shootgunMode)
         {
-#endif
             if (IsChangeFightMode())
             {
                 isSetBlock = false;
@@ -242,7 +233,6 @@ void Player::Move(float dltTime)
                     Fire();
                 }
             }
-#ifndef _XBOX
         }
         else
         {
@@ -253,7 +243,6 @@ void Player::Move(float dltTime)
                 if (IsFire())
                     FireFromShootgun();
         }
-#endif
         //------------------------------------
     }
     else
@@ -263,20 +252,6 @@ void Player::Move(float dltTime)
 
 void Player::Update(float dltTime)
 {
-#ifdef _XBOX
-    isSpecialMode = false;
-    VDATA *vd = api->Event("EventGetSpecialMode", 0);
-    if (vd)
-    {
-        long isSpec = 0;
-        if (vd->Get(isSpec))
-        {
-            isSpecialMode = (isSpec != 0);
-            if (isLookFromEyes)
-                isSpecialMode = false;
-        }
-    }
-#endif
     auto aDialog = false;
     if (task.task == npct_none)
     {
@@ -748,7 +723,6 @@ Player *Player::FindAttackCharacter()
 
 void Player::FireFromShootgun()
 {
-#ifndef _XBOX
     kSMReload = 0.0f;
     if (const auto peid = EntityManager::GetEntityId("sound"))
     {
@@ -837,7 +811,6 @@ void Player::FireFromShootgun()
     {
         api->Event("Location_CharacterSGFire", "iif", GetId(), chrs[i].chr->GetId(), chrs[i].dmg);
     }
-#endif
 }
 
 float Player::GetRotateH()

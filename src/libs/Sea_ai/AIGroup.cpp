@@ -180,19 +180,6 @@ void AIGroup::Execute(float fDeltaTime)
 void AIGroup::Realize(float fDeltaTime)
 {
     uint32_t i;
-
-#ifndef _XBOX
-    /*if (GetAsyncKeyState('G')<0)
-    {
-      float fScale = 0.6f;
-      long fh = long(AIHelper::pRS->CharHeight(FONT_DEFAULT) * fScale);
-      for (i=0;i<AIGroups.size();i++) if (this==AIGroups[i])
-      {
-        //char str[256];
-        //AIHelper::pRS->ExtPrint(FONT_DEFAULT, 0xFFFFFFFF, 0x00000000, PR_ALIGN_LEFT, 0, fScale, 0, 0, 0, i * fh, str);
-      }
-    }*/
-#endif
     for (i = 0; i < aGroupShips.size(); i++)
     {
         aGroupShips[i]->Realize(fDeltaTime);

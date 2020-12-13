@@ -299,11 +299,9 @@ bool HELPCHOOSER::RunChooser(char *ChooserGroup)
     m_nMouseHeight = ini->GetLong("COMMON", "mouseHeight", 32);
     m_nMouseCornerX = ini->GetLong("COMMON", "mouseCornerX", 0);
     m_nMouseCornerY = ini->GetLong("COMMON", "mouseCornerY", 0);
-#ifndef _XBOX
     if (m_nMouseWidth > 0 && m_nMouseHeight > 0)
         if (ini->ReadString("COMMON", "mouseTexture", param, sizeof(param) - 1, ""))
             m_idMouseTexture = rs->TextureCreate(param);
-#endif
 
     // —оздаем буфер вертексов
     m_idVBuf = rs->CreateVertexBuffer(HCHOOSER_FVF, 18 * sizeof(HCHOOSER_VERTEX), D3DUSAGE_WRITEONLY);

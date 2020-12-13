@@ -79,7 +79,6 @@ void GIEditor::Render() const
 
 bool GIEditor::ProcessControl()
 {
-#ifndef _XBOX
     if (!m_bShowMode)
     {
         if (api->Controls->GetDebugAsyncKeyState(VK_CONTROL) < 0 &&
@@ -215,7 +214,6 @@ bool GIEditor::ProcessControl()
 
         return true;
     }
-#endif
     return false;
 }
 

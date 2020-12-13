@@ -44,11 +44,7 @@ class ATTRIBUTES
         _flushall();
     }
 
-#ifdef _XBOX
-    static VSTRING_CODEC *pVStringCodec;
-#else
     VSTRING_CODEC *pVStringCodec;
-#endif
     uint32_t nNameCode;
     char *Attribute;
     std::vector<ATTRIBUTES *> pAttributes;

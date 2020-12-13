@@ -436,10 +436,4 @@ class CONTROLS_CONTAINER : public Entity
     CONTEINER_DESCR *FindContainer(const char *sContainer);
 };
 
-/*#ifndef _XBOX
-API_MODULE_START("xinterface")
-    CREATE_CLASS(0,XINTERFACE)
-API_MODULE_END
-#endif*/
-
 #endif

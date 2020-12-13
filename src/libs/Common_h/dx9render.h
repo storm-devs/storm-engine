@@ -205,11 +205,8 @@ class VDX9RENDER : public SERVICE
     virtual HRESULT SetStreamSource(UINT StreamNumber, void *pStreamData, UINT Stride) = 0;
     virtual HRESULT SetIndices(void *pIndexData) = 0;
     virtual HRESULT DrawPrimitive(D3DPRIMITIVETYPE PrimitiveType, UINT StartVertex, UINT PrimitiveCount) = 0;
-#ifndef _XBOX
+
     virtual HRESULT Release(IUnknown *pSurface) = 0;
-#else
-    virtual HRESULT Release(IDirect3DResource8 *pSurface) = 0;
-#endif
 
     // Vertex/Index Buffers Section
     virtual HRESULT CreateVertexBuffer(UINT Length, uint32_t Usage, uint32_t FVF, D3DPOOL Pool,

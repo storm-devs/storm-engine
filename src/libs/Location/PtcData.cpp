@@ -112,11 +112,7 @@ bool PtcData::Load(const char *path)
 }
 
 //Функция защиты
-#ifndef _XBOX
 void PtcData::SFLB_PotectionLoad()
-#else
-void PtcData::SFLB_PotectionLoad()
-#endif
 {
     //Данные
     auto *const buf = static_cast<char *>(data);

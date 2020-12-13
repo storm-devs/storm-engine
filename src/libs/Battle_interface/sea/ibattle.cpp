@@ -151,10 +151,8 @@ void BATTLE_INTERFACE::Execute(uint32_t delta_time)
 
 void BATTLE_INTERFACE::Realize(uint32_t delta_time)
 {
-#ifndef _XBOX
     if (api->Controls->GetDebugAsyncKeyState('K') < 0)
         return;
-#endif
     if (m_bNeedIslandSet)
     {
         api->Trace("Island Set");

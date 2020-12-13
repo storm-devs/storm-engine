@@ -96,11 +96,7 @@ bool FONT::Init(const char *font_name, const char *iniName, IDirect3DDevice9 *_d
     }
 
     auto _fscale = 1.f;
-#ifndef _XBOX
     _fscale = ini->GetFloat(font_name, "pcscale", 1.f);
-#else
-    _fscale = ini->GetFloat(font_name, "xboxscale", 1.f);
-#endif
     if (_fscale != 1.f)
     {
         m_fAspectRatioH *= _fscale;

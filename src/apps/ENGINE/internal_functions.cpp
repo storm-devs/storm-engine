@@ -891,11 +891,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
 
     case FUNC_GETTARGETPLATFORM:
         pV = SStack.Push();
-#ifdef _XBOX
-        pV->Set("xbox");
-#else
         pV->Set("pc");
-#endif
         pVResult = pV;
         return pV;
 

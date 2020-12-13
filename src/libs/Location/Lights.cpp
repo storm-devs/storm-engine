@@ -157,14 +157,12 @@ bool Lights::Init()
 //Исполнение
 void Lights::Execute(uint32_t delta_time)
 {
-#ifndef _XBOX
 #ifdef LIGHTS_DEBUG
     if (api->Controls->GetDebugAsyncKeyState(VK_F11) < 0)
     {
         for (long i = 0; i < numTypes; i++)
             UpdateLightTypes(i);
     }
-#endif
 #endif
     for (long i = 0; i < numLights; i++)
     {
@@ -376,9 +374,7 @@ void Lights::AddLight(long index, const CVECTOR &pos)
     lights[numLights].timeSlow = 0.0f;
     lights[numLights].type = index;
 
-#ifndef _XBOX
     //Отправим сообщение лайтеру
-
     if (const auto eid = EntityManager::GetEntityId("Lighter"))
     {
         api->Send_Message(eid, "sffffffffffs", "AddLight", pos.x, pos.y, pos.z, types[index].color.r,
@@ -386,7 +382,6 @@ void Lights::AddLight(long index, const CVECTOR &pos)
                           types[index].dxLight.Attenuation1, types[index].dxLight.Attenuation2,
                           types[index].dxLight.Range, types[index].name);
     }
-#endif
 
     numLights++;
 }

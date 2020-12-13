@@ -1,11 +1,7 @@
 #ifndef _TIMER_H_
 #define _TIMER_H_
 
-#ifndef _XBOX
 #include <Windows.h>
-#else
-#include <xtl.h>
-#endif
 
 #define USE_HIGH_FREQUENCY
 #define FILTER_SIZE 16

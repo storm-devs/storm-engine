@@ -815,36 +815,6 @@ void SHIP::Execute(uint32_t DeltaTime)
     for (uint32_t i = 0; i < aFirePlaces.size(); i++)
         aFirePlaces[i].Execute(fDeltaTime);
 
-    /*  // boal del_cheat
-  #ifndef _XBOX
-    if (api->Controls->GetDebugAsyncKeyState('L') < 0)
-      if (GetAsyncKeyState('K') < 0)
-      {
-        // for test only
-        if (GetAsyncKeyState('0') < 0) bUse = (uniIDX == 0);
-        if (GetAsyncKeyState('1') < 0) bUse = (uniIDX == 1);
-        if (GetAsyncKeyState('2') < 0) bUse = (uniIDX == 2);
-        if (GetAsyncKeyState('3') < 0) bUse = (uniIDX == 3);
-        if (GetAsyncKeyState('4') < 0) bUse = (uniIDX == 4);
-        if (GetAsyncKeyState('5') < 0) bUse = (uniIDX == 5);
-        if (GetAsyncKeyState('6') < 0) bUse = (uniIDX == 6);
-        if (GetAsyncKeyState('7') < 0) bUse = (uniIDX == 7);
-        if (GetAsyncKeyState('8') < 0) bUse = (uniIDX == 8);
-        if (GetAsyncKeyState('9') < 0) bUse = (uniIDX == 9);
-
-        if (GetAsyncKeyState('J')<0 && bUse)
-        {
-          float fov;
-          CVECTOR cpos,cang;
-          pRS->GetCamera(cpos,cang,fov);
-          State.vPos = cpos;
-          fXOffset = fZOffset = 0.f;
-          RecalculateWorldOffset();
-          State.vAng = cang;
-        }
-      }
-  #endif
-     */
     // water sound: set position and volume
     auto *pASounds = AttributesPointer->FindAClass(AttributesPointer, "Ship.Sounds");
 

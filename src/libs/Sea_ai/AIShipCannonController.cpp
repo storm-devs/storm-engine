@@ -577,7 +577,6 @@ void AIShipCannonController::Realize(float fDeltaTime)
       strcat_s(str,tmp);
     }
     pRS->Print(0,20,str);*/
-#ifndef _XBOX
     if (api->Controls->GetDebugAsyncKeyState('H') < 0)
     {
         Verts.clear();
@@ -624,7 +623,6 @@ void AIShipCannonController::Realize(float fDeltaTime)
                                                    sizeof(tr_vertex), "ShipCannonAngles");
             }
     }
-#endif
 }
 
 bool AIShipCannonController::Init(ATTRIBUTES *_pAShip)
