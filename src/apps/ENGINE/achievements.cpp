@@ -1,6 +1,8 @@
 //============================================================================================
 #include "achievements.h"
-#include "system_log.h"
+#include "vapi.h"
+
+extern VAPI *api;
 
 #define _ACH_ID(id, name)                                                                                              \
     {                                                                                                                  \
@@ -264,7 +266,7 @@ bool CSteamStatsAchievements::GetAchievement(const char *ID)
     return false;
 }
 
-bool CSteamStatsAchievements::SetStat(const char *ID, long value)
+bool CSteamStatsAchievements::SetStat(const char *ID, uint32_t value)
 {
     if (m_bInitialized)
     {
@@ -282,7 +284,7 @@ bool CSteamStatsAchievements::SetStat(const char *ID, long value)
     return false;
 }
 
-long CSteamStatsAchievements::GetStat(const char *ID)
+uint32_t CSteamStatsAchievements::GetStat(const char *ID)
 {
     if (m_bInitialized)
     {
@@ -292,7 +294,6 @@ long CSteamStatsAchievements::GetStat(const char *ID)
             if (strcmp(ID, stat.m_pchStatName) == 0)
             {
                 SteamUserStats()->GetStat(stat.m_pchStatName, &stat.m_iValue);
-                //				trace("GetStat %s %d", stat.m_pchStatName, stat.m_iValue);
                 return stat.m_iValue;
             }
         }
@@ -305,7 +306,6 @@ bool CSteamStatsAchievements::ResetStats(bool bAchievementsToo)
 {
     if (m_bInitialized)
     {
-        //		trace("Reset all stats and achievements from Steam");
         return SteamUserStats()->ResetAllStats(bAchievementsToo);
     }
     return false;
@@ -315,7 +315,6 @@ bool CSteamStatsAchievements::ClearAchievement(const char *ID)
 {
     if (m_bInitialized)
     {
-        //		trace("ClearAchievement %s", ID);
         return SteamUserStats()->ClearAchievement(ID);
     }
     return false;
@@ -328,7 +327,6 @@ void CSteamStatsAchievements::OnUserStatsReceived(UserStatsReceived_t *pCallback
     {
         if (k_EResultOK == pCallback->m_eResult)
         {
-            //			trace("Received stats and achievements from Steam");
             m_bInitialized = true;
 
             // load achievements
@@ -358,15 +356,7 @@ void CSteamStatsAchievements::OnUserStatsReceived(UserStatsReceived_t *pCallback
                 default:
                     break;
                 }
-
-                //				trace("OnUserStatsReceived %s %d", stat.m_pchStatName, stat.m_iValue);
             }
-        }
-        else
-        {
-            //			char buffer[128];
-            //			_snprintf( buffer, 128, "RequestStats - failed, %d", pCallback->m_eResult );
-            //			trace( buffer );
         }
     }
 }
@@ -378,21 +368,13 @@ void CSteamStatsAchievements::OnUserStatsStored(UserStatsStored_t *pCallback)
     {
         if (pCallback->m_eResult == k_EResultOK)
         {
-            //			trace( "Steam : Stored stats - success!!" );
         }
         else if (pCallback->m_eResult == k_EResultInvalidParam)
         {
-            //			trace( "Steam : StoreStats - some failed to validate" );
             UserStatsReceived_t callback;
             callback.m_eResult = k_EResultOK;
             callback.m_nGameID = m_iAppID;
             OnUserStatsReceived(&callback);
-        }
-        else
-        {
-            //			char buffer[128];
-            //			_snprintf( buffer, 128, "Steam : StatsStored - failed, %d", pCallback->m_eResult );
-            //			trace( buffer );
         }
     }
 }
@@ -404,16 +386,16 @@ void CSteamStatsAchievements::OnAchievementStored(UserAchievementStored_t *pCall
     {
         if (pCallback->m_nMaxProgress == 0)
         {
-            char buffer[128];
-            _snprintf(buffer, 128, "Achievement '%s' unlocked!", pCallback->m_rgchAchievementName);
-            trace(buffer);
+            //			char buffer[128];
+            //			_snprintf( buffer, 128, "Achievement '%s' unlocked!", pCallback->m_rgchAchievementName );
+            //			trace( buffer );
         }
         else
         {
-            char buffer[128];
-            _snprintf(buffer, 128, "Achievement '%s' progress callback, (%d,%d)\n", pCallback->m_rgchAchievementName,
-                      pCallback->m_nCurProgress, pCallback->m_nMaxProgress);
-            trace(buffer);
+            //			char buffer[128];
+            //			_snprintf( buffer, 128, "Achievement '%s' progress callback, (%d,%d)\n",
+            //			pCallback->m_rgchAchievementName, pCallback->m_nCurProgress, pCallback->m_nMaxProgress );
+            //			trace( buffer );
         }
     }
 }
@@ -432,68 +414,55 @@ void CSteamDLC::OnOverlayActivated(GameOverlayActivated_t *pCallback)
     char buffer[128];
     if (pCallback->m_bActive != 0)
     {
-        //		_snprintf( buffer, 128, "Steam Overlay has been activated\n");
-        //		trace( buffer );
         isOverlayActivated = true;
     }
     else
     {
-        //		_snprintf( buffer, 128, "Steam Overlay has been closed\n");
-        //		trace( buffer );
         isOverlayActivated = false;
     }
     VDATA *pvdat = api->Event("evntSteamOverlayActivated", "l", isOverlayActivated);
 }
 
-long CSteamDLC::getDLCCount()
+uint32_t CSteamDLC::getDLCCount()
 {
-    // if ( SteamUser() == NULL || !SteamUser()->BLoggedOn() )
     if (SteamUser() == NULL)
     {
         return 0;
     }
 
-    m_DLCcount = (long)SteamApps()->GetDLCCount();
-
-    //	trace("DLCcount %d", m_DLCcount );
+    m_DLCcount = (uint32_t)SteamApps()->GetDLCCount();
 
     return m_DLCcount;
 }
 
-long CSteamDLC::bGetDLCDataByIndex(long iDLC)
+uint32_t CSteamDLC::bGetDLCDataByIndex(uint32_t iDLC)
 {
-    // if ( SteamUser() == NULL || !SteamUser()->BLoggedOn() )
     if (SteamUser() == NULL)
     {
         return 0;
     }
     m_bInitialized = SteamApps()->BGetDLCDataByIndex(iDLC, &pAppID, &pbAvailable, pchName, 128);
 
-    //	trace("iDLC %d app_id %d isAvailable %d  name %s", iDLC, pAppID, pbAvailable, pchName );
-
     if (m_bInitialized)
-        return (long)pAppID;
+        return (uint32_t)pAppID;
 
     return 0;
 }
 
-bool CSteamDLC::isDLCInstalled(long nDLC)
+bool CSteamDLC::isDLCInstalled(uint32_t nDLC)
 {
-    // if ( SteamUser() == NULL || !SteamUser()->BLoggedOn() )
     if (SteamUser() == NULL)
     {
         return false;
     }
 
     m_bInitialized = (SteamApps()->BIsSubscribedApp(nDLC) && SteamApps()->BIsDlcInstalled(nDLC));
-    //	trace("isDLCActive %d", m_bInitialized );
 
     return m_bInitialized;
 }
 
-bool CSteamDLC::activateGameOverlay(long nAppId)
+bool CSteamDLC::activateGameOverlay(uint32_t nAppId)
 {
-    // if ( SteamUser() == NULL || !SteamUser()->BLoggedOn() )
     if (SteamUser() == NULL)
     {
         return false;

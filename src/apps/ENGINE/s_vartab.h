@@ -1,9 +1,8 @@
 #ifndef _S_VARTAB_H_
 #define _S_VARTAB_H_
 
-#include "d_types.h"
 #include "data.h"
-#include "memop.h"
+#include <vector>
 
 // when segment_id is INVALID_SEGMENT_ID, variable segment is unloaded
 // and variable value and type undefined
@@ -16,19 +15,19 @@ struct VARINFO
 {
     VARINFO()
     {
-        pDClass = 0;
-        name = 0;
+        pDClass = nullptr;
+        name = nullptr;
         type = UNKNOWN;
         bArray = false;
         elements = 0;
         segment_id = INVALID_SEGMENT_ID;
         hash = 0;
     };
-    dword segment_id;
-    dword hash;
+    uint32_t segment_id;
+    uint32_t hash;
     DATA *pDClass;
     char *name;
-    dword elements;
+    uint32_t elements;
     S_TOKEN_TYPE type;
     bool bArray;
 };
@@ -42,47 +41,46 @@ struct VTHASHLINE
     VTHASHLINE()
     {
         nNumElements = 0;
-        pElements = 0;
     };
-    DWORD nNumElements;
-    DWORD *pElements;
+    uint32_t nNumElements;
+    std::vector<uint32_t> pElements;
 };
 
 class S_VARTAB
 {
     friend S_DEBUG;
 
-    dword Buffer_size;
-    dword Var_num;
-    VARINFO *pTable;
+    uint32_t Buffer_size;
+    uint32_t Var_num;
+    std::vector<VARINFO> pTable;
     // bool bKeepName;
-    dword Global_var_num;
+    uint32_t Global_var_num;
     VIRTUAL_COMPILER *pVCompiler;
     VTHASHLINE HashLine[VTHASHT_SIZE];
 
   public:
     S_VARTAB();
     ~S_VARTAB();
-    dword GetVarNum()
+    uint32_t GetVarNum()
     {
         return Var_num;
     };
-    dword AddVar(VARINFO &vi);
-    bool GetVar(VARINFO &vi, dword var_code);  // return true if var registred and loaded
-    bool GetVarX(VARINFO &vi, dword var_code); // return true if var registred
-    dword MakeHashValue(const char *string);
+    uint32_t AddVar(VARINFO &vi);
+    bool GetVar(VARINFO &vi, uint32_t var_code);  // return true if var registred and loaded
+    bool GetVarX(VARINFO &vi, uint32_t var_code); // return true if var registred
+    uint32_t MakeHashValue(const char *string);
     //	void  KeepNameMode(bool on){bKeepName = on;};
     void Release();
-    void InvalidateBySegmentID(dword segment_id);
-    dword FindVar(const char *var_name);
-    void SetElementsNum(dword var_code, dword elements_num){};
-    void SetType(dword var_code, dword type){};
+    void InvalidateBySegmentID(uint32_t segment_id);
+    uint32_t FindVar(const char *var_name);
+    void SetElementsNum(uint32_t var_code, uint32_t elements_num){};
+    void SetType(uint32_t var_code, uint32_t type){};
     void SetVCompiler(VIRTUAL_COMPILER *pvc)
     {
         pVCompiler = pvc;
     }
-    bool ArraySizeChanged(dword nIndex, dword nNewSize);
-    void UpdateHashTable(DWORD code, DWORD hash, bool in);
+    bool ArraySizeChanged(uint32_t nIndex, uint32_t nNewSize);
+    void UpdateHashTable(uint32_t code, uint32_t hash, bool in);
 };
 
 #endif

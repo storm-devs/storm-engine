@@ -1,9 +1,7 @@
 #include "s_classtab.h"
-#include <string.h>
 
 S_CLASSTAB::S_CLASSTAB()
 {
-    pTable = 0;
     Buffer_size = 0;
     nClassesNum = 0;
 }
@@ -15,33 +13,24 @@ S_CLASSTAB::~S_CLASSTAB()
 
 void S_CLASSTAB::Release()
 {
-    dword n, m;
-    if (pTable)
+    for (uint32_t n = 0; n < nClassesNum; n++)
     {
-        for (n = 0; n < nClassesNum; n++)
+        if (pTable[n].pComponent)
         {
-            if (pTable[n].pComponent)
-            {
-                // delete components names memory (allocated by Compiler)
-                for (m = 0; m < pTable[n].nComponentsNum; m++)
-                {
-                    if (pTable[n].pComponent[m].name)
-                        delete pTable[n].pComponent[m].name;
-                }
-                // delete components info memory
-                delete pTable[n].pComponent;
-            }
-            if (pTable[n].name)
-                delete pTable[n].name;
+            // delete components names memory (allocated by Compiler)
+            for (uint32_t m = 0; m < pTable[n].nComponentsNum; m++)
+                delete pTable[n].pComponent[m].name;
+            // delete components info memory
+            delete pTable[n].pComponent;
         }
-        delete pTable;
-        pTable = 0;
+        delete pTable[n].name;
     }
+    pTable.clear();
     Buffer_size = 0;
     nClassesNum = 0;
 }
 
-bool S_CLASSTAB::GetClass(CLASSINFO &ci, dword class_code)
+bool S_CLASSTAB::GetClass(CLASSINFO &ci, uint32_t class_code)
 {
     if (class_code >= nClassesNum)
         return false;
@@ -51,7 +40,7 @@ bool S_CLASSTAB::GetClass(CLASSINFO &ci, dword class_code)
     return true;
 }
 
-bool S_CLASSTAB::GetClassX(CLASSINFO &ci, dword class_code)
+bool S_CLASSTAB::GetClassX(CLASSINFO &ci, uint32_t class_code)
 {
     if (class_code >= nClassesNum)
         return false;
@@ -59,22 +48,18 @@ bool S_CLASSTAB::GetClassX(CLASSINFO &ci, dword class_code)
     return true;
 }
 
-dword S_CLASSTAB::AddClass(CLASSINFO &ci, bool bRegisterOnly)
+uint32_t S_CLASSTAB::AddClass(CLASSINFO &ci, bool bRegisterOnly)
 {
-    dword n;
-    dword hash;
-    dword nClassN;
-
-    if (ci.name == 0)
+    if (ci.name == nullptr)
         return INVALID_CLASS_CODE;
 
-    hash = MakeHashValue(ci.name);
+    const auto hash = MakeHashValue(ci.name);
 
-    for (n = 0; n < nClassesNum; n++)
+    for (uint32_t n = 0; n < nClassesNum; n++)
     {
         if (pTable[n].hash == hash)
         {
-            if (stricmp(pTable[n].name, ci.name) != 0)
+            if (_stricmp(pTable[n].name, ci.name) != 0)
                 continue;
 
             // class with such name already registred,
@@ -99,8 +84,7 @@ dword S_CLASSTAB::AddClass(CLASSINFO &ci, bool bRegisterOnly)
             pTable[n].bClassRegistredOnly = false;
             if (ci.nComponentsNum)
             {
-
-                pTable[n].pComponent = (CLASS_COMPONENT *)NEW CLASS_COMPONENT[ci.nComponentsNum];
+                pTable[n].pComponent = static_cast<CLASS_COMPONENT *>(new CLASS_COMPONENT[ci.nComponentsNum]);
                 memcpy(pTable[n].pComponent, ci.pComponent, ci.nComponentsNum * sizeof(CLASS_COMPONENT));
             }
 
@@ -110,22 +94,22 @@ dword S_CLASSTAB::AddClass(CLASSINFO &ci, bool bRegisterOnly)
     // class not found, add a new one
 
     // check for class components description
-    if (ci.nComponentsNum && ci.pComponent == 0)
+    if (ci.nComponentsNum && ci.pComponent == nullptr)
         return INVALID_CLASS_CODE;
 
     // adjust buffer size
     if (nClassesNum >= Buffer_size)
     {
         Buffer_size += CLASS_BUFFER_BLOCK_SIZE;
-        pTable = (CLASSINFO *)RESIZE(pTable, Buffer_size * sizeof(CLASSINFO));
+        pTable.resize(Buffer_size);
     }
 
-    nClassN = nClassesNum;
+    const auto nClassN = nClassesNum;
     if (bRegisterOnly)
     {
         pTable[nClassN].segment_id = 0xffffffff;
         pTable[nClassN].nComponentsNum = 0;
-        pTable[nClassN].pComponent = 0;
+        pTable[nClassN].pComponent = nullptr;
     }
     else
     {
@@ -133,34 +117,33 @@ dword S_CLASSTAB::AddClass(CLASSINFO &ci, bool bRegisterOnly)
         pTable[nClassN].nComponentsNum = ci.nComponentsNum;
         if (ci.nComponentsNum)
         {
-
-            pTable[nClassN].pComponent = (CLASS_COMPONENT *)NEW CLASS_COMPONENT[ci.nComponentsNum];
+            pTable[nClassN].pComponent = static_cast<CLASS_COMPONENT *>(new CLASS_COMPONENT[ci.nComponentsNum]);
             memcpy(pTable[nClassN].pComponent, ci.pComponent, ci.nComponentsNum * sizeof(CLASS_COMPONENT));
         }
     }
     pTable[nClassN].bClassRegistredOnly = bRegisterOnly;
     pTable[nClassN].hash = hash;
 
-    pTable[nClassN].name = NEW char[strlen(ci.name) + 1];
-    strcpy(pTable[nClassN].name, ci.name);
+    // const auto len = strlen(ci.name) + 1;
+    // pTable[nClassN].name = new char[len];
+    // memcpy(pTable[nClassN].name, ci.name, len);
+    pTable[nClassN].name = _strdup(ci.name);
 
     nClassesNum++;
 
     return nClassN;
 }
 
-dword S_CLASSTAB::MakeHashValue(const char *string)
+uint32_t S_CLASSTAB::MakeHashValue(const char *string)
 {
-    dword hval = 0;
-    dword g;
-    char v;
+    uint32_t hval = 0;
     while (*string != 0)
     {
-        v = *string++;
+        auto v = *string++;
         if ('A' <= v && v <= 'Z')
             v += 'a' - 'A'; // case independent
-        hval = (hval << 4) + (unsigned long int)v;
-        g = hval & ((unsigned long int)0xf << (32 - 4));
+        hval = (hval << 4) + static_cast<unsigned long>(v);
+        const uint32_t g = hval & (static_cast<unsigned long>(0xf) << (32 - 4));
         if (g != 0)
         {
             hval ^= g >> (32 - 8);
@@ -170,41 +153,37 @@ dword S_CLASSTAB::MakeHashValue(const char *string)
     return hval;
 }
 
-void S_CLASSTAB::InvalidateBySegmentID(dword segment_id)
+void S_CLASSTAB::InvalidateBySegmentID(uint32_t segment_id)
 {
-    dword n;
-    for (n = 0; n < nClassesNum; n++)
+    for (uint32_t n = 0; n < nClassesNum; n++)
     {
         if (pTable[n].segment_id != segment_id)
             continue;
-        if (pTable[n].pComponent)
-            delete pTable[n].pComponent;
-        pTable[n].pComponent = 0;
+        delete pTable[n].pComponent;
+        pTable[n].pComponent = nullptr;
         pTable[n].nComponentsNum = 0;
         pTable[n].bClassRegistredOnly = true;
         pTable[n].segment_id = INVALID_SEGMENT_ID;
     }
 }
 
-dword S_CLASSTAB::FindClass(const char *class_name)
+uint32_t S_CLASSTAB::FindClass(const char *class_name)
 {
-    dword n;
-    dword hash;
-    if (class_name == 0)
+    if (class_name == nullptr)
         return INVALID_CLASS_CODE;
-    hash = MakeHashValue(class_name);
-    for (n = 0; n < nClassesNum; n++)
+    const auto hash = MakeHashValue(class_name);
+    for (uint32_t n = 0; n < nClassesNum; n++)
     {
         if (pTable[n].hash == hash)
         {
-            if (stricmp(pTable[n].name, class_name) == 0)
+            if (_stricmp(pTable[n].name, class_name) == 0)
                 return n; // case independent
         }
     }
     return INVALID_CLASS_CODE;
 }
 
-bool S_CLASSTAB::IsClassDataSet(dword class_id)
+bool S_CLASSTAB::IsClassDataSet(uint32_t class_id)
 {
     if (class_id >= nClassesNum)
         return false;

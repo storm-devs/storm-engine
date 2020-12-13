@@ -1,23 +1,18 @@
 #include "file_service.h"
-#include "exs.h"
-#include "memop.h"
-#include "system_log.h"
-#include "utf8.h"
-
-#include <string>
+#include <exception>
 
 #ifdef _XBOX
 bool XProcessFile(const char *_srcDir, const char *_destDir, const char *_mask, const WIN32_FIND_DATA &_findData);
 bool XDirCopy(const char *_srcDir, const char *_destDir, const char *_mask);
 void CacheData();
-bool XFileDelete(const char *_fileName);
-bool XProcessFileDelete(const char *_srcDir, const char *_mask, const WIN32_FIND_DATA &_findData);
+bool XFileSTORM_DELETE(const char *_fileName);
+bool XProcessFileSTORM_DELETE(const char *_srcDir, const char *_mask, const WIN32_FIND_DATA &_findData);
 
-#include "dx8render.h"
-extern VDX8RENDER *pDevice;
-extern DWORD dwCacheScreenN;
+#include "..\dx9render.h"
+extern VDX9RENDER *pDevice;
+extern uint32_t dwCacheScreenN;
 extern RECT CacheScreenRect;
-extern DWORD dwCacheFiles;
+extern uint32_t dwCacheFiles;
 extern bool bCacheOverwrite;
 extern long nCacheFonTexId;
 extern long nCacheProgressCacheId[10];
@@ -41,9 +36,9 @@ extern FILE_SERVICE File_Service;
 
 void FILE_SERVICE::FlushIniFiles()
 {
-    for (dword n = 0; n <= Max_File_Index; n++)
+    for (uint32_t n = 0; n <= Max_File_Index; n++)
     {
-        if (OpenFiles[n] == null)
+        if (OpenFiles[n] == nullptr)
             continue;
         OpenFiles[n]->FlushFile();
     }
@@ -53,22 +48,22 @@ FILE_SERVICE::FILE_SERVICE()
 {
     Files_Num = 0;
     Max_File_Index = 0;
-    for (dword n = 0; n < _MAX_OPEN_INI_FILES; n++)
-        OpenFiles[n] = null;
+    for (uint32_t n = 0; n < _MAX_OPEN_INI_FILES; n++)
+        OpenFiles[n] = nullptr;
 }
+
 FILE_SERVICE::~FILE_SERVICE()
 {
     Close();
 }
 
-HANDLE FILE_SERVICE::_CreateFile(const char *lpFileName, DWORD dwDesiriedAccess, DWORD dwShareMode,
-                                 DWORD dwCreationDisposition)
+HANDLE FILE_SERVICE::_CreateFile(const char *lpFileName, uint32_t dwDesiriedAccess, uint32_t dwShareMode,
+                                 uint32_t dwCreationDisposition)
 {
     HANDLE fh;
 #ifndef _XBOX
-    std::wstring filePathW = utf8::ConvertUtf8ToWide(lpFileName);
-    fh = CreateFile(filePathW.c_str(), dwDesiriedAccess, dwShareMode, 0, dwCreationDisposition, FILE_ATTRIBUTE_NORMAL,
-                    0);
+    fh = CreateFile(lpFileName, dwDesiriedAccess, dwShareMode, nullptr, dwCreationDisposition, FILE_ATTRIBUTE_NORMAL,
+                    nullptr);
     // DWORD er = GetLastError();
 #else
     bool bCached;
@@ -76,34 +71,34 @@ HANDLE FILE_SERVICE::_CreateFile(const char *lpFileName, DWORD dwDesiriedAccess,
     char file_name_buffer[MAX_PATH];
     /*if(sDriveLetter[0])
     {
-        strcpy(xbox_file_name,sDriveLetter);
-        strcat(xbox_file_name,lpFileName);
+        strcpy_s(xbox_file_name,sDriveLetter);
+        strcat_s(xbox_file_name,lpFileName);
     }
-    else strcpy(xbox_file_name,lpFileName);//*/
-    if (stricmp(sDriveLetter, XBOXDRIVE_DVD) == 0)
+    else strcpy_s(xbox_file_name,lpFileName);//*/
+    if (_stricmp(sDriveLetter, XBOXDRIVE_DVD) == 0)
     {
         if (IsCached(lpFileName))
         {
             bCached = true;
-            strcpy(xbox_file_name, XBOXDRIVE_CACHE);
-            strcat(xbox_file_name, lpFileName);
+            strcpy_s(xbox_file_name, XBOXDRIVE_CACHE);
+            strcat_s(xbox_file_name, lpFileName);
         }
         else
         {
             bCached = false;
-            strcpy(xbox_file_name, XBOXDRIVE_DVD);
-            strcat(xbox_file_name, lpFileName);
+            strcpy_s(xbox_file_name, XBOXDRIVE_DVD);
+            strcat_s(xbox_file_name, lpFileName);
         }
     }
     else
     {
         if (sDriveLetter[0])
         {
-            strcpy(xbox_file_name, sDriveLetter);
-            strcat(xbox_file_name, lpFileName);
+            strcpy_s(xbox_file_name, sDriveLetter);
+            strcat_s(xbox_file_name, lpFileName);
         }
         else
-            strcpy(xbox_file_name, lpFileName);
+            strcpy_s(xbox_file_name, lpFileName);
     }
 
     fh = CreateFile(xbox_file_name, dwDesiriedAccess, dwShareMode, 0, dwCreationDisposition, FILE_ATTRIBUTE_NORMAL, 0);
@@ -111,8 +106,8 @@ HANDLE FILE_SERVICE::_CreateFile(const char *lpFileName, DWORD dwDesiriedAccess,
     {
         // if file isn't in cache - copy to cache (time distributed caching)
 
-        strcpy(file_name_buffer, XBOXDRIVE_DVD);
-        strcat(file_name_buffer, lpFileName);
+        strcpy_s(file_name_buffer, XBOXDRIVE_DVD);
+        strcat_s(file_name_buffer, lpFileName);
         bool bRes = CopyFile(file_name_buffer, xbox_file_name, false) != 0;
         if (bRes)
             fh = CreateFile(xbox_file_name, dwDesiriedAccess, dwShareMode, 0, dwCreationDisposition,
@@ -122,27 +117,25 @@ HANDLE FILE_SERVICE::_CreateFile(const char *lpFileName, DWORD dwDesiriedAccess,
                             FILE_ATTRIBUTE_NORMAL, 0);
 
         /*//trace("file cache miss");
-        strcpy(xbox_file_name,XBOXDRIVE_DVD);
-        strcat(xbox_file_name,lpFileName);
+        strcpy_s(xbox_file_name,XBOXDRIVE_DVD);
+        strcat_s(xbox_file_name,lpFileName);
         fh = CreateFile(xbox_file_name,dwDesiriedAccess,dwShareMode,0,dwCreationDisposition,FILE_ATTRIBUTE_NORMAL,0);
         //*/
     }
 #endif
-    // if(fh == INVALID_HANDLE_VALUE) if(Exceptions_Mask & _X_NO_FILE) SE_THROW_MSG(_X_NO_FILE);
+    // if(fh == INVALID_HANDLE_VALUE) if(Exceptions_Mask & _X_NO_FILE) throw std::exception(_X_NO_FILE);
     return fh;
 }
+
 void FILE_SERVICE::_CloseHandle(HANDLE hFile)
 {
     CloseHandle(hFile);
 }
-DWORD FILE_SERVICE::_SetFilePointer(HANDLE hFile, long DistanceToMove, PLONG lpDistanceToMoveHigh, DWORD dwMoveMethod)
+
+uint32_t FILE_SERVICE::_SetFilePointer(HANDLE hFile, long DistanceToMove, long *lpDistanceToMoveHigh,
+                                       uint32_t dwMoveMethod)
 {
     return SetFilePointer(hFile, DistanceToMove, lpDistanceToMoveHigh, dwMoveMethod);
-}
-
-long FILE_SERVICE::_GetFilePointer(HANDLE hFile)
-{
-    return SetFilePointer(hFile, 0, 0, FILE_CURRENT);
 }
 
 BOOL FILE_SERVICE::_DeleteFile(const char *lpFileName)
@@ -151,104 +144,105 @@ BOOL FILE_SERVICE::_DeleteFile(const char *lpFileName)
     char xbox_file_name[MAX_PATH];
     if (sDriveLetter[0])
     {
-        strcpy(xbox_file_name, sDriveLetter);
-        strcat(xbox_file_name, lpFileName);
+        strcpy_s(xbox_file_name, sDriveLetter);
+        strcat_s(xbox_file_name, lpFileName);
     }
     else
-        strcpy(xbox_file_name, lpFileName);
+        strcpy_s(xbox_file_name, lpFileName);
     return DeleteFile(xbox_file_name);
 #else
-    std::wstring filePathW = utf8::ConvertUtf8ToWide(lpFileName);
-    return DeleteFile(filePathW.c_str());
+    return DeleteFile(lpFileName);
 #endif
 }
-BOOL FILE_SERVICE::_WriteFile(HANDLE hFile, LPCVOID lpBuffer, DWORD nNumberOfBytesToWrite,
-                              LPDWORD lpNumberOfBytesWritten)
+
+BOOL FILE_SERVICE::_WriteFile(HANDLE hFile, const void *lpBuffer, uint32_t nNumberOfBytesToWrite,
+                              uint32_t *lpNumberOfBytesWritten)
 {
-    BOOL bRes;
-    dword dwR;
-    bRes = WriteFile(hFile, lpBuffer, nNumberOfBytesToWrite, &dwR, 0);
-    if (lpNumberOfBytesWritten != 0)
+    uint32_t dwR;
+    const auto bRes = WriteFile(hFile, lpBuffer, nNumberOfBytesToWrite, (LPDWORD)&dwR, nullptr);
+    if (lpNumberOfBytesWritten != nullptr)
         *lpNumberOfBytesWritten = dwR;
-    //	if(dwR != nNumberOfBytesToWrite) if(Exceptions_Mask & _X_NO_FILE_WRITE) SE_THROW_MSG(_X_NO_FILE_WRITE);
+    //	if(dwR != nNumberOfBytesToWrite) if(Exceptions_Mask & _X_NO_FILE_WRITE) throw std::exception(_X_NO_FILE_WRITE);
     return bRes;
 }
-BOOL FILE_SERVICE::_ReadFile(HANDLE hFile, LPVOID lpBuffer, DWORD nNumberOfBytesToRead, LPDWORD lpNumberOfBytesRead)
+
+BOOL FILE_SERVICE::_ReadFile(HANDLE hFile, void *lpBuffer, uint32_t nNumberOfBytesToRead, uint32_t *lpNumberOfBytesRead)
 {
-    BOOL bRes;
-    dword dwR;
-    bRes = ReadFile(hFile, lpBuffer, nNumberOfBytesToRead, &dwR, 0);
-    if (lpNumberOfBytesRead != 0)
+    uint32_t dwR;
+    const auto bRes = ReadFile(hFile, lpBuffer, nNumberOfBytesToRead, (LPDWORD)&dwR, nullptr);
+    if (lpNumberOfBytesRead != nullptr)
         *lpNumberOfBytesRead = dwR;
-    //	if(dwR != nNumberOfBytesToRead) if(Exceptions_Mask & _X_NO_FILE_READ) SE_THROW_MSG(_X_NO_FILE_READ);
+    //	if(dwR != nNumberOfBytesToRead) if(Exceptions_Mask & _X_NO_FILE_READ) throw std::exception(_X_NO_FILE_READ);
     return bRes;
 }
+
 HANDLE FILE_SERVICE::_FindFirstFile(const char *lpFileName, LPWIN32_FIND_DATA lpFindFileData)
 {
     HANDLE hFile;
 #ifndef _XBOX
-    std::wstring filePathW = utf8::ConvertUtf8ToWide(lpFileName);
-    hFile = FindFirstFile(filePathW.c_str(), lpFindFileData);
+    hFile = FindFirstFile(lpFileName, lpFindFileData);
 #else
     char xbox_file_name[MAX_PATH];
-    // strcpy(xbox_file_name,"d:\\");
-    strcpy(xbox_file_name, sDriveLetter);
-    strcat(xbox_file_name, lpFileName);
+    // strcpy_s(xbox_file_name,"d:\\");
+    strcpy_s(xbox_file_name, sDriveLetter);
+    strcat_s(xbox_file_name, lpFileName);
     hFile = FindFirstFile(xbox_file_name, lpFindFileData);
 #endif
     return hFile;
 }
+
 BOOL FILE_SERVICE::_FindNextFile(HANDLE hFindFile, LPWIN32_FIND_DATA lpFindFileData)
 {
     return FindNextFile(hFindFile, lpFindFileData);
 }
+
 BOOL FILE_SERVICE::_FindClose(HANDLE hFindFile)
 {
     return FindClose(hFindFile);
 }
+
 BOOL FILE_SERVICE::_FlushFileBuffers(HANDLE hFile)
 {
     return FlushFileBuffers(hFile);
 }
-DWORD FILE_SERVICE::_GetCurrentDirectory(DWORD nBufferLength, char *lpBuffer)
+
+uint32_t FILE_SERVICE::_GetCurrentDirectory(uint32_t nBufferLength, char *lpBuffer)
 {
 #ifndef _XBOX
-    wchar_t BufferW[MAX_PATH];
-    DWORD Res = GetCurrentDirectory(nBufferLength, BufferW);
-    std::string CurrentDirectory = utf8::ConvertWideToUtf8(BufferW);
-    strcpy_s(lpBuffer, nBufferLength, CurrentDirectory.c_str());
-    return Res;
+    return GetCurrentDirectory(nBufferLength, lpBuffer);
 #else
-    // if(nBufferLength > strlen("d:\\") && lpBuffer) strcpy(lpBuffer,"d:\\");
+    // if(nBufferLength > strlen("d:\\") && lpBuffer) strcpy_s(lpBuffer,"d:\\");
     // return strlen("d:\\");
 
     if (nBufferLength > strlen(sDriveLetter) && lpBuffer)
-        strcpy(lpBuffer, sDriveLetter);
+        strcpy_s(lpBuffer, sDriveLetter);
     return strlen(sDriveLetter);
 
 #endif
 }
+
 BOOL FILE_SERVICE::_GetDiskFreeSpaceEx(const char *lpDirectoryName, PULARGE_INTEGER lpFreeBytesAvailableToCaller,
                                        PULARGE_INTEGER lpTotalNumberOfBytes, PULARGE_INTEGER lpTotalNumberOfFreeBytes)
 {
-    std::wstring DirectoryNameW = utf8::ConvertUtf8ToWide(lpDirectoryName);
-    return GetDiskFreeSpaceEx(DirectoryNameW.c_str(), lpFreeBytesAvailableToCaller, lpTotalNumberOfBytes,
+    return GetDiskFreeSpaceEx(lpDirectoryName, lpFreeBytesAvailableToCaller, lpTotalNumberOfBytes,
                               lpTotalNumberOfFreeBytes);
 }
+
 UINT FILE_SERVICE::_GetDriveType(const char *lpRootPathName)
 {
 #ifndef _XBOX
-    std::wstring RootPathNameW = utf8::ConvertUtf8ToWide(lpRootPathName);
-    return GetDriveType(RootPathNameW.c_str());
+    return GetDriveType(lpRootPathName);
 #else
     return 0;
 #endif
 }
-DWORD FILE_SERVICE::_GetFileSize(HANDLE hFile, LPDWORD lpFileSizeHigh)
+
+uint32_t FILE_SERVICE::_GetFileSize(HANDLE hFile, uint32_t *lpFileSizeHigh)
 {
-    return GetFileSize(hFile, lpFileSizeHigh);
+    return GetFileSize(hFile, (LPDWORD)lpFileSizeHigh);
 }
-DWORD FILE_SERVICE::_GetLogicalDrives()
+
+uint32_t FILE_SERVICE::_GetLogicalDrives()
 {
 #ifndef _XBOX
     return GetLogicalDrives();
@@ -256,7 +250,8 @@ DWORD FILE_SERVICE::_GetLogicalDrives()
     return 0;
 #endif
 }
-DWORD FILE_SERVICE::_GetLogicalDriveStrings(DWORD nBufferLength, LPTSTR lpBuffer)
+
+uint32_t FILE_SERVICE::_GetLogicalDriveStrings(uint32_t nBufferLength, char *lpBuffer)
 {
 #ifndef _XBOX
     return GetLogicalDriveStrings(nBufferLength, lpBuffer);
@@ -264,42 +259,39 @@ DWORD FILE_SERVICE::_GetLogicalDriveStrings(DWORD nBufferLength, LPTSTR lpBuffer
     return 0;
 #endif
 }
+
 BOOL FILE_SERVICE::_SetCurrentDirectory(const char *lpPathName)
 {
 #ifndef _XBOX
-    std::wstring PathNameW = utf8::ConvertUtf8ToWide(lpPathName);
-    return SetCurrentDirectory(PathNameW.c_str());
+    return SetCurrentDirectory(lpPathName);
 #else
     return 0;
 #endif
 }
+
 BOOL FILE_SERVICE::_CreateDirectory(const char *lpPathName, LPSECURITY_ATTRIBUTES lpSecurityAttributes)
 {
-    std::wstring PathNameW = utf8::ConvertUtf8ToWide(lpPathName);
-    return CreateDirectory(PathNameW.c_str(), lpSecurityAttributes);
-}
-BOOL FILE_SERVICE::_RemoveDirectory(const char *lpPathName)
-{
-    std::wstring PathNameW = utf8::ConvertUtf8ToWide(lpPathName);
-    return RemoveDirectory(PathNameW.c_str());
-}
-BOOL FILE_SERVICE::_CopyFile(const char *lpExistingFileName, const char *lpNewFileName, BOOL bFailIfExists)
-{
-    std::wstring ExistingFileNameW = utf8::ConvertUtf8ToWide(lpExistingFileName);
-    std::wstring NewFileNameW = utf8::ConvertUtf8ToWide(lpNewFileName);
-    return CopyFile(ExistingFileNameW.c_str(), NewFileNameW.c_str(), bFailIfExists);
+    return CreateDirectory(lpPathName, lpSecurityAttributes);
 }
 
-BOOL FILE_SERVICE::_SetFileAttributes(const char *lpFileName, DWORD dwFileAttributes)
+BOOL FILE_SERVICE::_RemoveDirectory(const char *lpPathName)
 {
-    std::wstring FileNameW = utf8::ConvertUtf8ToWide(lpFileName);
-    return SetFileAttributes(FileNameW.c_str(), dwFileAttributes);
+    return RemoveDirectory(lpPathName);
+}
+
+BOOL FILE_SERVICE::_CopyFile(const char *lpExistingFileName, const char *lpNewFileName, bool bFailIfExists)
+{
+    return CopyFile(lpExistingFileName, lpNewFileName, bFailIfExists);
+}
+
+BOOL FILE_SERVICE::_SetFileAttributes(const char *lpFileName, uint32_t dwFileAttributes)
+{
+    return SetFileAttributes(lpFileName, dwFileAttributes);
 }
 
 BOOL FILE_SERVICE::FileExist(const char *file_name)
 {
-    HANDLE fh;
-    fh = _CreateFile(file_name);
+    auto *const fh = _CreateFile(file_name);
     if (fh == INVALID_HANDLE_VALUE)
         return false;
     CloseHandle(fh);
@@ -312,39 +304,38 @@ BOOL FILE_SERVICE::FileExist(const char *file_name)
 
 INIFILE *FILE_SERVICE::CreateIniFile(const char *file_name, bool fail_if_exist)
 {
-    HANDLE fh;
-    fh = _CreateFile(file_name, GENERIC_READ, 0, OPEN_EXISTING);
+    auto *fh = _CreateFile(file_name, GENERIC_READ, 0, OPEN_EXISTING);
     if (fh != INVALID_HANDLE_VALUE && fail_if_exist)
     {
         _CloseHandle(fh);
-        return null;
+        return nullptr;
     }
     _CloseHandle(fh);
     fh = _CreateFile(file_name, GENERIC_WRITE, 0, CREATE_NEW);
     if (fh == INVALID_HANDLE_VALUE)
-        return null;
+        return nullptr;
     _CloseHandle(fh);
     return OpenIniFile(file_name);
 }
 
 INIFILE *FILE_SERVICE::OpenIniFile(const char *file_name)
 {
-    // GUARD(FILE_SERVICE::OpenIniFile)
+    ////GUARD(FILE_SERVICE::OpenIniFile)
     INIFILE_T *inifile_T;
-    dword n;
+    uint32_t n;
     //	PUSH_CONTROL(0,0,0)	// core control
 
     for (n = 0; n <= Max_File_Index; n++)
     {
-        if (OpenFiles[n] == null || OpenFiles[n]->GetFileName() == null)
+        if (OpenFiles[n] == nullptr || OpenFiles[n]->GetFileName() == nullptr)
             continue;
-        if (stricmp(OpenFiles[n]->GetFileName(), file_name) == 0)
+        if (_stricmp(OpenFiles[n]->GetFileName(), file_name) == 0)
         {
             OpenFiles[n]->IncReference();
 
-            inifile_T = NEW INIFILE_T(OpenFiles[n]);
-            if (inifile_T == null)
-                SE_THROW;
+            inifile_T = new INIFILE_T(OpenFiles[n]);
+            if (inifile_T == nullptr)
+                throw std::exception();
             //			POP_CONTROL(0)
             return inifile_T;
         }
@@ -352,17 +343,17 @@ INIFILE *FILE_SERVICE::OpenIniFile(const char *file_name)
 
     for (n = 0; n < _MAX_OPEN_INI_FILES; n++)
     {
-        if (OpenFiles[n] != null)
+        if (OpenFiles[n] != nullptr)
             continue;
 
-        OpenFiles[n] = NEW IFS(this);
-        if (OpenFiles[n] == null)
-            SE_THROW; //(FILE_SERVICE::OpenIniFile : no mem A);
+        OpenFiles[n] = new IFS(this);
+        if (OpenFiles[n] == nullptr)
+            throw std::exception(); //(FILE_SERVICE::OpenIniFile : no mem A);
         if (!OpenFiles[n]->LoadFile(file_name))
         {
             delete OpenFiles[n];
-            OpenFiles[n] = null;
-            return null;
+            OpenFiles[n] = nullptr;
+            return nullptr;
         }
         if (Max_File_Index < n)
             Max_File_Index = n;
@@ -370,73 +361,70 @@ INIFILE *FILE_SERVICE::OpenIniFile(const char *file_name)
         //		POP_CONTROL(0)
         // INIFILE_T object belonged to entity and must be deleted by entity
         // OpenFiles[n]->inifile_T = new INIFILE_T(OpenFiles[n]);
-        // if(OpenFiles[n]->inifile_T == null) SE_THROW;
+        // if(OpenFiles[n]->inifile_T == null) throw std::exception();
         // return OpenFiles[n]->inifile_T;
 
-        inifile_T = NEW INIFILE_T(OpenFiles[n]);
-        if (inifile_T == null)
-            SE_THROW;
+        inifile_T = new INIFILE_T(OpenFiles[n]);
+        if (inifile_T == nullptr)
+            throw std::exception();
         return inifile_T;
     }
     //	POP_CONTROL(0)
-    // UNGUARD
-    return null;
+    ////UNGUARD
+    return nullptr;
 }
 
 void FILE_SERVICE::RefDec(INIFILE *ini_obj)
 {
-    GUARD(FILE_SERVICE::RefDec)
-    dword n;
-    for (n = 0; n <= Max_File_Index; n++)
+    for (uint32_t n = 0; n <= Max_File_Index; n++)
     {
         if (OpenFiles[n] != ini_obj)
             continue;
         // OpenFiles[n]->SearchData = &OpenFiles[n]->Search;
         if (OpenFiles[n]->GetReference() == 0)
-            SE_THROW_MSG(Reference error);
+            throw std::exception("Reference error");
         OpenFiles[n]->DecReference();
         if (OpenFiles[n]->GetReference() == 0)
         {
             delete OpenFiles[n];
-            OpenFiles[n] = null;
+            OpenFiles[n] = nullptr;
         }
         return;
     }
-    SE_THROW_MSG(bad inifile object);
-    UNGUARD
+    throw std::exception("bad inifile object");
+    // UNGUARD
 }
 
 void FILE_SERVICE::Close()
 {
-    dword n;
-    for (n = 0; n < _MAX_OPEN_INI_FILES; n++)
+    for (uint32_t n = 0; n < _MAX_OPEN_INI_FILES; n++)
     {
-        if (OpenFiles[n] == null)
+        if (OpenFiles[n] == nullptr)
             continue;
         delete OpenFiles[n];
-        OpenFiles[n] = null;
+        OpenFiles[n] = nullptr;
     }
 }
 
-BOOL FILE_SERVICE::LoadFile(const char *file_name, char **ppBuffer, dword *dwSize)
+BOOL FILE_SERVICE::LoadFile(const char *file_name, char **ppBuffer, uint32_t *dwSize)
 {
-    if (ppBuffer == 0)
+    if (ppBuffer == nullptr)
         return false;
 
-    HANDLE hFile = _CreateFile(file_name);
+    auto *const hFile = _CreateFile(file_name);
     if (INVALID_HANDLE_VALUE == hFile)
         return false;
-    dword dwLowSize = _GetFileSize(hFile, 0);
+    const auto dwLowSize = _GetFileSize(hFile, nullptr);
     if (dwSize)
         *dwSize = dwLowSize;
     if (dwLowSize == 0)
     {
-        *ppBuffer = null;
+        *ppBuffer = nullptr;
         return false;
     }
 
-    *ppBuffer = NEW char[dwLowSize];
-    _ReadFile(hFile, *ppBuffer, dwLowSize, 0);
+    *ppBuffer = new char[dwLowSize];
+    _ReadFile(hFile, *ppBuffer, dwLowSize, nullptr);
     _CloseHandle(hFile);
     return true;
 }
@@ -446,7 +434,7 @@ BOOL FILE_SERVICE::SetDrive(const char *pDriveName)
 #ifdef _XBOX
     if (pDriveName == 0)
     {
-        strcpy(sDriveLetter, XBOXDRIVE_DVD);
+        strcpy_s(sDriveLetter, XBOXDRIVE_DVD);
         return true;
     }
     if (!pDriveName[0])
@@ -456,7 +444,7 @@ BOOL FILE_SERVICE::SetDrive(const char *pDriveName)
     }
     if (strlen(pDriveName) > 4)
         return false;
-    strcpy(sDriveLetter, pDriveName);
+    strcpy_s(sDriveLetter, pDriveName);
     return true;
 #else
     return false;
@@ -488,10 +476,10 @@ bool XDirCopy(const char *_srcDir, const char *_destDir, const char *_mask)
     if (!srcFilename)
         return false;
 
-    strcpy(srcFilename, _srcDir);
+    strcpy_s(srcFilename, _srcDir);
     if (_srcDir[strlen(_srcDir) - 1] != '\\')
-        strcat(srcFilename, "\\");
-    strcat(srcFilename, _mask);
+        strcat_s(srcFilename, "\\");
+    strcat_s(srcFilename, _mask);
 
     bool bRes;
     bRes = CreateDirectory(_destDir, 0) == TRUE;
@@ -514,7 +502,7 @@ bool XDirCopy(const char *_srcDir, const char *_destDir, const char *_mask)
     return true;
 }
 
-bool XDirDelete(const char *_srcDir)
+bool XDirSTORM_DELETE(const char *_srcDir)
 {
     WIN32_FIND_DATA findData;
     char _mask[] = "*.*";
@@ -522,10 +510,10 @@ bool XDirDelete(const char *_srcDir)
     if (!srcFilename)
         return false;
 
-    strcpy(srcFilename, _srcDir);
+    strcpy_s(srcFilename, _srcDir);
     if (_srcDir[strlen(_srcDir) - 1] != '\\')
-        strcat(srcFilename, "\\");
-    strcat(srcFilename, _mask);
+        strcat_s(srcFilename, "\\");
+    strcat_s(srcFilename, _mask);
 
     // bool bRes;
     // bRes = CreateDirectory(_destDir, 0)==TRUE;
@@ -538,10 +526,10 @@ bool XDirDelete(const char *_srcDir)
         return false;
     }
 
-    XProcessFileDelete(_srcDir, _mask, findData);
+    XProcessFileSTORM_DELETE(_srcDir, _mask, findData);
     while (FindNextFile(findHandle, &findData) == TRUE)
     {
-        XProcessFileDelete(_srcDir, _mask, findData);
+        XProcessFileSTORM_DELETE(_srcDir, _mask, findData);
     }
 
     delete[] srcFilename;
@@ -581,7 +569,7 @@ bool XFileCopy(const char *_srcName, const char *_destName)
     // return (CopyFile(_srcName, _destName, TRUE) != 0);
 }
 
-bool XFileDelete(const char *_fileName)
+bool XFileSTORM_DELETE(const char *_fileName)
 {
     bool bRes;
     bRes = DeleteFile(_fileName) != 0;
@@ -598,15 +586,15 @@ bool XProcessFile(const char *_srcDir, const char *_destDir, const char *_mask, 
     char *srcName = new char[strlen(_srcDir) + strlen(_findData.cFileName) + 2];
     char *destName = new char[strlen(_destDir) + strlen(_findData.cFileName) + 2];
 
-    strcpy(srcName, _srcDir);
+    strcpy_s(srcName, _srcDir);
     if (_srcDir[strlen(_srcDir) - 1] != '\\')
-        strcat(srcName, "\\");
-    strcat(srcName, _findData.cFileName);
+        strcat_s(srcName, "\\");
+    strcat_s(srcName, _findData.cFileName);
 
-    strcpy(destName, _destDir);
+    strcpy_s(destName, _destDir);
     if (_destDir[strlen(_destDir) - 1] != '\\')
-        strcat(destName, "\\");
-    strcat(destName, _findData.cFileName);
+        strcat_s(destName, "\\");
+    strcat_s(destName, _findData.cFileName);
 
     if (!(_findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
     { // file
@@ -623,7 +611,7 @@ bool XProcessFile(const char *_srcDir, const char *_destDir, const char *_mask, 
     return true;
 }
 
-bool XProcessFileDelete(const char *_srcDir, const char *_mask, const WIN32_FIND_DATA &_findData)
+bool XProcessFileSTORM_DELETE(const char *_srcDir, const char *_mask, const WIN32_FIND_DATA &_findData)
 {
     if (!strcmp(_findData.cFileName, "."))
         return false;
@@ -632,18 +620,18 @@ bool XProcessFileDelete(const char *_srcDir, const char *_mask, const WIN32_FIND
 
     char *srcName = new char[strlen(_srcDir) + strlen(_findData.cFileName) + 2];
 
-    strcpy(srcName, _srcDir);
+    strcpy_s(srcName, _srcDir);
     if (_srcDir[strlen(_srcDir) - 1] != '\\')
-        strcat(srcName, "\\");
-    strcat(srcName, _findData.cFileName);
+        strcat_s(srcName, "\\");
+    strcat_s(srcName, _findData.cFileName);
 
     if (!(_findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
     { // file
-        XFileDelete(srcName);
+        XFileSTORM_DELETE(srcName);
     }
     else
     { // directory
-        XDirDelete(srcName);
+        XDirSTORM_DELETE(srcName);
     }
 
     delete[] srcName;
@@ -652,18 +640,16 @@ bool XProcessFileDelete(const char *_srcDir, const char *_mask, const WIN32_FIND
 
 #endif
 
-DWORD FILE_SERVICE::MakeHashValue(const char *string)
+uint32_t FILE_SERVICE::MakeHashValue(const char *string)
 {
-    DWORD hval = 0;
-    DWORD g;
-    char v;
+    uint32_t hval = 0;
     while (*string != 0)
     {
-        v = *string++;
+        char v = *string++;
         if ('A' <= v && v <= 'Z')
             v += 'a' - 'A'; // case independent
-        hval = (hval << 4) + (unsigned long int)v;
-        g = hval & ((unsigned long int)0xf << (32 - 4));
+        hval = (hval << 4) + static_cast<unsigned long>(v);
+        const uint32_t g = hval & (static_cast<unsigned long>(0xf) << (32 - 4));
         if (g != 0)
         {
             hval ^= g >> (32 - 8);
@@ -675,210 +661,20 @@ DWORD FILE_SERVICE::MakeHashValue(const char *string)
 
 BOOL FILE_SERVICE::CacheDirectory(const char *pDirName)
 {
-#ifndef _XBOX
     return false;
-#else
-    DWORD dwHashIndex;
-    DWORD n;
-
-    char sDNSrc[MAX_PATH];
-    char sDNDst[MAX_PATH];
-    char sDirectoryName[MAX_PATH];
-
-    strcpy(sDirectoryName, pDirName);
-
-    dwHashIndex = MakeHashValue(pDirName) % CACHEDIRSTABLESIZE;
-    for (n = 0; n < CacheDirs[dwHashIndex].dwElementsNum; n++)
-    {
-        if (stricmp(CacheDirs[dwHashIndex].pDirName[n], pDirName) == 0)
-            return true; // already cached
-    }
-    CacheDirs[dwHashIndex].dwElementsNum++;
-    CacheDirs[dwHashIndex].pDirName =
-        (char **)RESIZE(CacheDirs[dwHashIndex].pDirName, CacheDirs[dwHashIndex].dwElementsNum * sizeof(char *));
-    CacheDirs[dwHashIndex].pDirName[n] = (char *)NEW char[strlen(pDirName) + 1];
-    strcpy(CacheDirs[dwHashIndex].pDirName[n], pDirName);
-
-    // Copy Directory
-
-    // verify directory path
-    n = 0;
-    while (sDirectoryName[n])
-    {
-        if (sDirectoryName[n] == '\\')
-        {
-            sDirectoryName[n] = 0;
-            strcpy(sDNDst, XBOXDRIVE_CACHE);
-            strcat(sDNDst, sDirectoryName);
-            bool bRes = CreateDirectory(sDNDst, 0) == TRUE;
-            sDirectoryName[n] = '\\';
-        }
-        n++;
-    }
-    strcpy(sDNSrc, XBOXDRIVE_DVD);
-    strcat(sDNSrc, sDirectoryName);
-
-    strcpy(sDNDst, XBOXDRIVE_CACHE);
-    strcat(sDNDst, sDirectoryName);
-
-    XDirCopy(sDNSrc, sDNDst, "*.*");
-
-    return true;
-#endif
 }
 
 void FILE_SERVICE::MarkDirectoryCached(const char *pDirName)
 {
-#ifdef _XBOX
-    DWORD dwLen;
-    DWORD dwHashIndex;
-    DWORD n;
-    char *pTemp;
-
-    if (!pDirName)
-        return;
-
-    pTemp = 0;
-
-    dwLen = strlen(pDirName);
-    if (dwLen == 0)
-        return;
-
-    if (pDirName[dwLen - 1] == '\\')
-    {
-
-        dwHashIndex = MakeHashValue(pDirName) % CACHEDIRSTABLESIZE;
-        for (n = 0; n < CacheDirs[dwHashIndex].dwElementsNum; n++)
-        {
-            if (stricmp(CacheDirs[dwHashIndex].pDirName[n], pDirName) == 0)
-                return; // already marked
-        }
-    }
-    else
-    {
-
-        pTemp = (char *)NEW char[dwLen + 2];
-        strcpy(pTemp, pDirName);
-        strcat(pTemp, "\\");
-        dwHashIndex = MakeHashValue(pTemp) % CACHEDIRSTABLESIZE;
-        for (n = 0; n < CacheDirs[dwHashIndex].dwElementsNum; n++)
-        {
-            if (stricmp(CacheDirs[dwHashIndex].pDirName[n], pTemp) == 0)
-            {
-                delete pTemp;
-                return; // already marked
-            }
-        }
-        // delete pTemp;
-    }
-
-    CacheDirs[dwHashIndex].dwElementsNum++;
-    CacheDirs[dwHashIndex].pDirName =
-        (char **)RESIZE(CacheDirs[dwHashIndex].pDirName, CacheDirs[dwHashIndex].dwElementsNum * sizeof(char *));
-
-    if (pTemp)
-    {
-        CacheDirs[dwHashIndex].pDirName[n] = pTemp;
-    }
-    else
-    {
-        CacheDirs[dwHashIndex].pDirName[n] = (char *)NEW char[strlen(pDirName) + 1];
-        strcpy(CacheDirs[dwHashIndex].pDirName[n], pDirName);
-    }
-
-    /*if(pDirName[dwLen]== '\\')
-    {
-        CacheDirs[dwHashIndex].pDirName[n] = (char *)NEW char[strlen(pDirName) + 1];
-        strcpy(CacheDirs[dwHashIndex].pDirName[n],pDirName);
-    }
-    else
-    {
-        CacheDirs[dwHashIndex].pDirName[n] = (char *)NEW char[strlen(pDirName) + 2];
-        strcpy(CacheDirs[dwHashIndex].pDirName[n],pDirName);
-        strcat(CacheDirs[dwHashIndex].pDirName[n],"\\");
-    }*/
-    // trace("cached dir: %s",CacheDirs[dwHashIndex].pDirName[n]);
-
-#endif
 }
 
 BOOL FILE_SERVICE::UnCacheDirectory(const char *pDirName)
 {
-#ifndef _XBOX
     return false;
-#else
-    bool bFound;
-    char sDNDst[MAX_PATH];
-    DWORD dwHashIndex;
-    DWORD n;
-
-    dwHashIndex = MakeHashValue(pDirName) % CACHEDIRSTABLESIZE;
-    bFound = false;
-    for (n = 0; n < CacheDirs[dwHashIndex].dwElementsNum; n++)
-    {
-        if (stricmp(CacheDirs[dwHashIndex].pDirName[n], pDirName) == 0)
-        {
-            bFound = true;
-            break;
-        }
-    }
-    if (!bFound)
-        return true; // directiry isnt cached
-
-    if (CacheDirs[dwHashIndex].dwElementsNum == 0)
-    {
-        trace("cache error");
-        return false;
-    }
-
-    delete CacheDirs[dwHashIndex].pDirName[n];
-
-    if ((CacheDirs[dwHashIndex].dwElementsNum - 1) > n)
-    {
-
-        CacheDirs[dwHashIndex].pDirName[n] = CacheDirs[dwHashIndex].pDirName[CacheDirs[dwHashIndex].dwElementsNum - 1];
-    }
-    CacheDirs[dwHashIndex].dwElementsNum--;
-    CacheDirs[dwHashIndex].pDirName =
-        (char **)RESIZE(CacheDirs[dwHashIndex].pDirName, CacheDirs[dwHashIndex].dwElementsNum * sizeof(char *));
-
-    // Remove Directory
-
-    strcpy(sDNDst, XBOXDRIVE_CACHE);
-    strcat(sDNDst, pDirName);
-
-    XDirDelete(sDNDst);
-
-    return true;
-
-#endif
 }
 
 BOOL FILE_SERVICE::IsCached(const char *pFileName)
 {
-    char sDirName[MAX_PATH];
-    DWORD dwLen;
-    DWORD dwHashIndex;
-    long n;
-    DWORD i;
-
-    dwLen = strlen(pFileName);
-    strcpy(sDirName, pFileName);
-
-    for (n = dwLen; n >= 0; n--)
-    {
-        if (sDirName[n] == '\\')
-        {
-            dwHashIndex = MakeHashValue(sDirName) % CACHEDIRSTABLESIZE;
-            for (i = 0; i < CacheDirs[dwHashIndex].dwElementsNum; i++)
-            {
-                if (stricmp(CacheDirs[dwHashIndex].pDirName[i], sDirName) == 0)
-                    return true;
-            }
-            return false;
-        }
-        sDirName[n] = 0;
-    }
     return false;
 }
 
@@ -888,112 +684,116 @@ INIFILE_T::~INIFILE_T()
     File_Service.RefDec(ifs_PTR);
 }
 
-void INIFILE_T::AddString(char *section_name, char *key_name, char *string)
+void INIFILE_T::AddString(const char *section_name, const char *key_name, const char *string)
 {
     ifs_PTR->AddString(section_name, key_name, string);
 }
+
 // write string to file, overwrite data if exist, throw EXS exception object if failed
-void INIFILE_T::WriteString(char *section_name, char *key_name, char *string)
+void INIFILE_T::WriteString(const char *section_name, const char *key_name, const char *string)
 {
     ifs_PTR->WriteString(section_name, key_name, string);
 }
+
 // write long value of key in pointed section if section and key exist, throw EXS object otherwise
-void INIFILE_T::WriteLong(char *section_name, char *key_name, long value)
+void INIFILE_T::WriteLong(const char *section_name, const char *key_name, long value)
 {
     ifs_PTR->WriteLong(section_name, key_name, value);
 }
 
 // write double value of key in pointed section if section and key exist, throw EXS object otherwise
-void INIFILE_T::WriteDouble(char *section_name, char *key_name, double value)
+void INIFILE_T::WriteDouble(const char *section_name, const char *key_name, double value)
 {
     ifs_PTR->WriteDouble(section_name, key_name, value);
 }
 
 // fill buffer with key value, throw EXS exception object if failed or if section or key doesnt exist
-void INIFILE_T::ReadString(char *section_name, char *key_name, char *buffer, dword buffer_size)
+void INIFILE_T::ReadString(const char *section_name, const char *key_name, char *buffer, uint32_t buffer_size)
 {
     ifs_PTR->ReadString(&Search, section_name, key_name, buffer, buffer_size);
 }
 
 // fill buffer with key value if section and key exist, otherwise fill with def_string and return false
-bool INIFILE_T::ReadString(char *section_name, char *key_name, char *buffer, dword buffer_size, char *def_string)
+bool INIFILE_T::ReadString(const char *section_name, const char *key_name, char *buffer, uint32_t buffer_size,
+                           const char *def_string)
 {
     return ifs_PTR->ReadString(&Search, section_name, key_name, buffer, buffer_size, def_string);
 }
 
 // continue search from key founded in previous call this function or to function ReadString
 // fill buffer with key value if section and key exist, otherwise return false
-bool INIFILE_T::ReadStringNext(char *section_name, char *key_name, char *buffer, dword buffer_size)
+bool INIFILE_T::ReadStringNext(const char *section_name, const char *key_name, char *buffer, uint32_t buffer_size)
 {
     return ifs_PTR->ReadStringNext(&Search, section_name, key_name, buffer, buffer_size);
 }
 
 // return long value of key in pointed section if section and key exist, throw EXS object otherwise
-long INIFILE_T::GetLong(char *section_name, char *key_name)
+long INIFILE_T::GetLong(const char *section_name, const char *key_name)
 {
     return ifs_PTR->GetLong(&Search, section_name, key_name);
 }
 
 // return long value of key in pointed section if section and key exist, if not - return def_value
-long INIFILE_T::GetLong(char *section_name, char *key_name, long def_val)
+long INIFILE_T::GetLong(const char *section_name, const char *key_name, long def_val)
 {
     return ifs_PTR->GetLong(&Search, section_name, key_name, def_val);
 }
 
 // return double value of key in pointed section if section and key exist, throw EXS object otherwise
-double INIFILE_T::GetDouble(char *section_name, char *key_name)
+double INIFILE_T::GetDouble(const char *section_name, const char *key_name)
 {
     return ifs_PTR->GetDouble(&Search, section_name, key_name);
 }
 
 // return double value of key in pointed section if section and key exist, if not - return def_value
-double INIFILE_T::GetDouble(char *section_name, char *key_name, double def_val)
+double INIFILE_T::GetDouble(const char *section_name, const char *key_name, double def_val)
 {
     return ifs_PTR->GetDouble(&Search, section_name, key_name, def_val);
 }
 
-bool INIFILE_T::GetLongNext(char *section_name, char *key_name, long *val)
+bool INIFILE_T::GetLongNext(const char *section_name, const char *key_name, long *val)
 {
     return ifs_PTR->GetLongNext(&Search, section_name, key_name, val);
 }
 
-bool INIFILE_T::GetDoubleNext(char *section_name, char *key_name, double *val)
+bool INIFILE_T::GetDoubleNext(const char *section_name, const char *key_name, double *val)
 {
     return ifs_PTR->GetDoubleNext(&Search, section_name, key_name, val);
 }
 
 // return double value of key in pointed section if section and key exist, throw EXS object otherwise
-float INIFILE_T::GetFloat(char *section_name, char *key_name)
+float INIFILE_T::GetFloat(const char *section_name, const char *key_name)
 {
     return ifs_PTR->GetFloat(&Search, section_name, key_name);
 }
 
 // return float value of key in pointed section if section and key exist, if not - return def_value
-float INIFILE_T::GetFloat(char *section_name, char *key_name, float def_val)
+float INIFILE_T::GetFloat(const char *section_name, const char *key_name, float def_val)
 {
     return ifs_PTR->GetFloat(&Search, section_name, key_name, def_val);
 }
-bool INIFILE_T::GetFloatNext(char *section_name, char *key_name, float *val)
+
+bool INIFILE_T::GetFloatNext(const char *section_name, const char *key_name, float *val)
 {
     return ifs_PTR->GetFloatNext(&Search, section_name, key_name, val);
 }
 
-void INIFILE_T::DeleteKey(char *section_name, char *key_name)
+void INIFILE_T::DeleteKey(const char *section_name, const char *key_name)
 {
     ifs_PTR->DeleteKey(section_name, key_name);
 }
 
-void INIFILE_T::DeleteKey(char *section_name, char *key_name, char *key_value)
+void INIFILE_T::DeleteKey(const char *section_name, const char *key_name, const char *key_value)
 {
     ifs_PTR->DeleteKey(section_name, key_name, key_value);
 }
 
-bool INIFILE_T::TestKey(char *section_name, char *key_name, char *key_value)
+bool INIFILE_T::TestKey(const char *section_name, const char *key_name, const char *key_value)
 {
     return ifs_PTR->TestKey(section_name, key_name, key_value);
 }
 
-void INIFILE_T::DeleteSection(char *section_name)
+void INIFILE_T::DeleteSection(const char *section_name)
 {
     ifs_PTR->DeleteSection(section_name);
 }
@@ -1023,7 +823,7 @@ bool INIFILE_T::CaseSensitive(bool v)
     return ifs_PTR->CaseSensitive(v);
 }
 
-bool INIFILE_T::TestSection(char *section_name)
+bool INIFILE_T::TestSection(const char *section_name)
 {
     return ifs_PTR->TestSection(section_name);
 };

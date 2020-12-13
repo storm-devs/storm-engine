@@ -1,12 +1,10 @@
 #ifndef _TCLASS_LIST_
 #define _TCLASS_LIST_
 
-#include "memop.h"
-
 template <class ClassType> class TCLASS_LIST
 {
     ClassType **pTable;
-    DWORD nClassesNum;
+    uint32_t nClassesNum;
 
   public:
     TCLASS_LIST()
@@ -20,41 +18,38 @@ template <class ClassType> class TCLASS_LIST
     };
     void Release()
     {
-        DWORD n;
         if (pTable)
         {
-            for (n = 0; n < nClassesNum; n++)
+            for (uint32_t n = 0; n < nClassesNum; n++)
                 delete pTable[n];
-            delete pTable;
+            free(pTable);
             pTable = 0;
         }
         nClassesNum = 0;
     };
     void Add(ClassType *pClass)
     {
-        DWORD n;
-        n = nClassesNum;
+        uint32_t n = nClassesNum;
         nClassesNum++;
-        pTable = (ClassType **)RESIZE(pTable, nClassesNum * sizeof(ClassType *));
+        pTable = (ClassType **)realloc(pTable, nClassesNum * sizeof(ClassType *));
         pTable[n] = pClass;
     };
-    void Del(DWORD _n)
+    void Del(uint32_t _n)
     {
-        DWORD n;
         if (_n >= nClassesNum)
             return;
         delete pTable[_n];
-        for (n = _n; n < (nClassesNum - 1); n++)
+        for (uint32_t n = _n; n < (nClassesNum - 1); n++)
             pTable[n] = pTable[n + 1];
         nClassesNum--;
     }
-    ClassType *Read(DWORD _n)
+    ClassType *Read(uint32_t _n)
     {
         if (_n >= nClassesNum)
-            return 0;
+            return nullptr;
         return pTable[_n];
     };
-    DWORD GetClassesNum()
+    uint32_t GetClassesNum()
     {
         return nClassesNum;
     }

@@ -1,14 +1,14 @@
 #ifndef _S_TOKEN_H_
 #define _S_TOKEN_H_
 
-//#include <windows.h>
+#include <cstdint>
+
 #ifndef _XBOX
-#include <windows.h>
+#include <Windows.h>
 #else
 #include <xtl.h>
 #endif
 
-#include "d_types.h"
 enum S_TOKEN_TYPE
 {
     END_OF_PROGRAMM,
@@ -18,6 +18,7 @@ enum S_TOKEN_TYPE
     COMMENT,
     INCLIDE_FILE,
     VAR_INTEGER,
+    VAR_PTR,
     VAR_FLOAT,
     VAR_STRING,
     VAR_OBJECT,
@@ -142,8 +143,8 @@ enum S_TOKEN_TYPE
 
 struct INTFUNCDESC
 {
-    DWORD dwArgsNum;
-    char *pName;
+    uint32_t dwArgsNum;
+    const char *pName;
     S_TOKEN_TYPE ReturnType;
 };
 
@@ -156,24 +157,24 @@ struct THLINE
     THLINE()
     {
         dwNum = 0;
-        pIndex = 0;
+        pIndex = nullptr;
     };
-    DWORD dwNum;
-    BYTE *pIndex;
+    uint32_t dwNum;
+    uint8_t *pIndex;
 };
 
 class TOKEN
 {
     THLINE KeywordsHash[TOKENHASHTABLE_SIZE];
     S_TOKEN_TYPE eTokenType;
-    long TokenDataBufferSize;
+    ptrdiff_t TokenDataBufferSize;
     long Lines_in_token;
     char *pTokenData;
-    DWORD ProgramSteps[PROGRAM_STEPS_CACHE];
+    ptrdiff_t ProgramSteps[PROGRAM_STEPS_CACHE];
     long ProgramStepsNum;
     char *Program;
     char *ProgramBase;
-    DWORD dwKeywordsNum;
+    uint32_t dwKeywordsNum;
 
   public:
     TOKEN();
@@ -187,30 +188,30 @@ class TOKEN
     {
         return ProgramBase;
     };
-    DWORD GetProgramOffset();
+    ptrdiff_t GetProgramOffset();
 
     S_TOKEN_TYPE Get(bool bKeepData = false);
     S_TOKEN_TYPE ProcessToken(char *&pointer, bool bKeepData = false);
     S_TOKEN_TYPE GetType();
-    void CacheToken(char *pointer);
+    void CacheToken(const char *pointer);
     bool StepBack();
-    long SetTokenData(char *pointer, bool bKeepControlSymbols = false);
-    long SetNTokenData(char *pointer, long Data_size);
-    long StopArgument(char *pointer, bool bKeepControlSymbols = false);
+    long SetTokenData(const char *pointer, bool bKeepControlSymbols = false);
+    ptrdiff_t SetNTokenData(const char *pointer, ptrdiff_t Data_size);
+    long StopArgument(const char *pointer, bool bKeepControlSymbols = false);
     void StartArgument(char *&pointer, bool bKeepControlSymbols = false);
-    char *GetTypeName(S_TOKEN_TYPE code);
-    char *GetTypeName();
-    char *GetData();
+    const char *GetTypeName(S_TOKEN_TYPE code);
+    const char *GetTypeName();
+    const char *GetData();
     bool Is(S_TOKEN_TYPE ttype);
-    bool IsNumber(char *pointer);
-    bool IsFloatNumber(char *pointer);
+    bool IsNumber(const char *pointer);
+    bool IsFloatNumber(const char *pointer);
     long TokenLines();
     void LowCase();
 
     S_TOKEN_TYPE FormatGet();
 
-    S_TOKEN_TYPE Keyword2TokenType(char *pString);
-    DWORD MakeHashValue(const char *string, DWORD max_syms = 0);
+    S_TOKEN_TYPE Keyword2TokenType(const char *pString);
+    uint32_t MakeHashValue(const char *string, uint32_t max_syms = 0);
     bool InitializeHashTable();
 };
 

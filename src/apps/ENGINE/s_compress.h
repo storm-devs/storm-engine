@@ -1,14 +1,9 @@
 #ifndef _S_COMPRESS_H_
 #define _S_COMPRESS_H_
 
-#ifndef DWORD
-#define DWORD unsigned long
-#endif
-
-#include "memop.h"
-//#include "sstring.h"
 #include "dstring_codec.h"
-#include <malloc.h>
+#include <cstdint>
+#include <vector>
 
 struct PACKHEADER
 {
@@ -20,37 +15,38 @@ struct PACKHEADER
         dwSign[0] = 'P';
     };
     char dwSign[4];
-    DWORD dwHeaderSize;
-    DWORD dwDataSize;
-    DWORD dwBitsGhangesNum;
+    uint32_t dwHeaderSize;
+    uint32_t dwDataSize;
+    uint32_t dwBitsGhangesNum;
 };
 
 struct BITSCHANGE
 {
-    DWORD dwBits;
-    DWORD dwChangeOffset;
+    uint32_t dwBits;
+    uint32_t dwChangeOffset;
 };
 
 class COMPRESS
 {
     PACKHEADER Header;
     DSTRING_CODEC SCodec;
-    BITSCHANGE *pBTCompressionTable;
-    DWORD dwBTCompressionTableSize;
+    std::vector<BITSCHANGE> pBTCompressionTable;
+    uint32_t dwBTCompressionTableSize;
 
   public:
     COMPRESS();
     ~COMPRESS();
     void Release();
-    void SetBitsChange(DWORD dwChangeOffset, DWORD dwBits);
-    bool Pack(const char *pSource, DWORD nSourceSize, char *&pDestination, DWORD &nPackedSize);
-    bool APack(const char *pSource, DWORD nSourceSize, char *&pDestination, DWORD &nPackedSize);
-    bool Unpack(const char *pSource, DWORD nSourceSize, char *&pDestination, DWORD &nPackedSize);
-    bool AppendCode(char *&pDestination, DWORD &nPackedSize, DWORD nCode);
-    bool AAppendCode(char *&pDestination, DWORD &nPackedSize, DWORD nCode, DWORD &dwBitsOnCode, DWORD &dwBitsCoded);
-    bool TranslateCode(DWORD code, char *&pDataBuffer, DWORD &nBufferSize, DWORD &nDataSize);
-    bool ReadCode(const char *pSource, DWORD nSourceSize, DWORD &nOffset, DWORD &nResult);
-    bool AppendData(char *&pDestination, DWORD &nUnpackedSize, char *pData, DWORD nSize);
+    void SetBitsChange(uint32_t dwChangeOffset, uint32_t dwBits);
+    bool Pack(const char *pSource, uint32_t nSourceSize, char *&pDestination, uint32_t &nPackedSize);
+    bool APack(const char *pSource, uint32_t nSourceSize, char *&pDestination, uint32_t &nPackedSize);
+    bool Unpack(const char *pSource, uint32_t nSourceSize, char *&pDestination, uint32_t &nPackedSize);
+    bool AppendCode(char *&pDestination, uint32_t &nPackedSize, uint32_t nCode);
+    bool AAppendCode(char *&pDestination, uint32_t &nPackedSize, uint32_t nCode, uint32_t &dwBitsOnCode,
+                     uint32_t &dwBitsCoded);
+    bool TranslateCode(uint32_t code, char *&pDataBuffer, uint32_t &nBufferSize, uint32_t &nDataSize);
+    bool ReadCode(const char *pSource, uint32_t nSourceSize, uint32_t &nOffset, uint32_t &nResult);
+    bool AppendData(char *&pDestination, uint32_t &nUnpackedSize, char *pData, uint32_t nSize);
 };
 
 #endif

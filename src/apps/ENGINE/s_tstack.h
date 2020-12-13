@@ -1,12 +1,14 @@
 #ifndef _S_TSTACK_H_
 #define _S_TSTACK_H_
 
+#include <vector>
+
 #define TSTACK_BUFFER_BLOCK_SIZE 128
 #define TSTACK_BUFFER_LIMIT 65535
 
 class S_TSTACK
 {
-    char *pStackData;
+    std::vector<char> pStackData;
     unsigned long Buffer_size;
     unsigned long Data_num;
     unsigned long Unit_size;

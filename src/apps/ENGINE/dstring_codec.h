@@ -1,8 +1,8 @@
 #ifndef _DSTRING_CODEC_H_
 #define _DSTRING_CODEC_H_
 
-#include "memop.h"
-#include <memory.h>
+#include <cstring>
+#include <malloc.h>
 
 #define DHASH_TABLE_SIZE 255
 #define DHASH_SINGLESYM DHASH_TABLE_SIZE
@@ -13,32 +13,32 @@ class DSTRING_CODEC
     {
         HTSUBELEMENT()
         {
-            pDString = 0;
+            pDString = nullptr;
             nSize = 0;
         };
         char *pDString;
-        DWORD nSize;
+        uint32_t nSize;
     };
 
     struct HTDELEMENT
     {
         HTDELEMENT()
         {
-            ppDat = 0;
+            ppDat = nullptr;
             nStringsNum = 0;
         };
         HTSUBELEMENT *ppDat;
-        DWORD nStringsNum;
+        uint32_t nStringsNum;
     };
 
-    DWORD nStringsNum;
-    DWORD nHTIndex;
-    DWORD nHTEIndex;
+    uint32_t nStringsNum;
+    uint32_t nHTIndex;
+    uint32_t nHTEIndex;
     char pSymbol[2];
 
   public:
     HTDELEMENT HTable[DHASH_TABLE_SIZE];
-    DSTRING_CODEC()
+    DSTRING_CODEC() : nHTIndex(0), nHTEIndex(0)
     {
         nStringsNum = 0;
         pSymbol[0] = 0;
@@ -49,34 +49,31 @@ class DSTRING_CODEC
         Release();
     };
 
-    DWORD GetNum()
+    uint32_t GetNum()
     {
         return nStringsNum;
     };
 
     void Release()
     {
-        DWORD n, m;
-        for (m = 0; m < DHASH_TABLE_SIZE; m++)
+        for (uint32_t m = 0; m < DHASH_TABLE_SIZE; m++)
         {
             if (HTable[m].ppDat)
             {
-                for (n = 0; n < HTable[m].nStringsNum; n++)
+                for (uint32_t n = 0; n < HTable[m].nStringsNum; n++)
                     delete HTable[m].ppDat[n].pDString;
-                delete HTable[m].ppDat;
+                free(HTable[m].ppDat);
             }
-            HTable[m].ppDat = 0;
+            HTable[m].ppDat = nullptr;
             HTable[m].nStringsNum = 0;
         }
     }
 
-    DWORD Convert(const char *pString, DWORD nDataSize, bool &bNew)
+    uint32_t Convert(const char *pString, uint32_t nDataSize, bool &bNew)
     {
-        DWORD nHash;
-        DWORD nTableIndex;
-        DWORD nStringCode;
-        DWORD n;
-        if (pString == 0)
+        uint32_t nStringCode;
+        uint32_t n;
+        if (pString == nullptr)
             return 0xffffffff;
 
         if (nDataSize == 1)
@@ -86,13 +83,13 @@ class DSTRING_CODEC
             bNew = true;
             if (nStringCode >= 0xffffff)
             {
-                _asm int 3;
+                __debugbreak();
             }
             return nStringCode;
         }
 
-        nHash = MakeHashValue(pString, nDataSize);
-        nTableIndex = nHash % DHASH_TABLE_SIZE;
+        uint32_t nHash = MakeHashValue(pString, nDataSize);
+        uint32_t nTableIndex = nHash % DHASH_TABLE_SIZE;
 
         for (n = 0; n < HTable[nTableIndex].nStringsNum; n++)
         {
@@ -106,7 +103,7 @@ class DSTRING_CODEC
                 bNew = false;
                 if (nStringCode >= 0xffffff)
                 {
-                    _asm int 3;
+                    __debugbreak();
                 }
                 return nStringCode;
             }
@@ -115,9 +112,9 @@ class DSTRING_CODEC
         n = HTable[nTableIndex].nStringsNum;
         HTable[nTableIndex].nStringsNum++;
         HTable[nTableIndex].ppDat =
-            (HTSUBELEMENT *)RESIZE(HTable[nTableIndex].ppDat, HTable[nTableIndex].nStringsNum * sizeof(HTSUBELEMENT));
+            (HTSUBELEMENT *)realloc(HTable[nTableIndex].ppDat, HTable[nTableIndex].nStringsNum * sizeof(HTSUBELEMENT));
 
-        HTable[nTableIndex].ppDat[n].pDString = NEW char[nDataSize];
+        HTable[nTableIndex].ppDat[n].pDString = new char[nDataSize];
         HTable[nTableIndex].ppDat[n].nSize = nDataSize;
         memcpy(HTable[nTableIndex].ppDat[n].pDString, pString, nDataSize);
         // nStringCode = (nTableIndex<<16)| (n & 0xffff);
@@ -126,12 +123,10 @@ class DSTRING_CODEC
         bNew = true;
         return nStringCode;
     }
-    char *Convert(DWORD code, DWORD &nSize)
+    char *Convert(uint32_t code, uint32_t &nSize)
     {
-        DWORD nTableIndex;
-        DWORD n;
         // nTableIndex = code>>16;
-        nTableIndex = code & 0xff;
+        uint32_t nTableIndex = code & 0xff;
         if (nTableIndex == DHASH_SINGLESYM)
         {
             nSize = 1;
@@ -141,29 +136,27 @@ class DSTRING_CODEC
         }
         if (nTableIndex >= DHASH_TABLE_SIZE)
         {
-            return 0;
+            return nullptr;
         }
         // n = code & 0xffff;
-        n = code >> 8;
+        uint32_t n = code >> 8;
         if (n >= HTable[nTableIndex].nStringsNum)
         {
-            return 0;
+            return nullptr;
         }
         nSize = HTable[nTableIndex].ppDat[n].nSize;
         return HTable[nTableIndex].ppDat[n].pDString;
     }
-    DWORD MakeHashValue(const char *ps, DWORD nSize)
+    uint32_t MakeHashValue(const char *ps, uint32_t nSize)
     {
-        DWORD hval = 0;
-        DWORD g;
-        DWORD n = 0;
-        char v;
+        uint32_t hval = 0;
+        uint32_t n = 0;
         // while(*ps != 0)
         for (n = 0; n < nSize; n++)
         {
-            v = ps[n];
+            char v = ps[n];
             hval = (hval << 4) + (unsigned long int)v;
-            g = hval & ((unsigned long int)0xf << (32 - 4));
+            uint32_t g = hval & ((unsigned long int)0xf << (32 - 4));
             if (g != 0)
             {
                 hval ^= g >> (32 - 8);

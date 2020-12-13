@@ -1,19 +1,18 @@
 #ifndef _POSTEVENTS_H_
 #define _POSTEVENTS_H_
 
-#include "memop.h"
 #include "s_eventmsg.h"
 
 class POSTEVENTS_LIST
 {
     S_EVENTMSG **pTable;
-    DWORD nClassesNum;
+    uint32_t nClassesNum;
 
   public:
     POSTEVENTS_LIST()
     {
         nClassesNum = 0;
-        pTable = 0;
+        pTable = nullptr;
     };
     ~POSTEVENTS_LIST()
     {
@@ -21,59 +20,54 @@ class POSTEVENTS_LIST
     };
     void Release()
     {
-        DWORD n;
         if (pTable)
         {
-            for (n = 0; n < nClassesNum; n++)
+            for (uint32_t n = 0; n < nClassesNum; n++)
                 delete pTable[n];
-            delete pTable;
-            pTable = 0;
+            free(pTable);
+            pTable = nullptr;
         }
         nClassesNum = 0;
     };
     void Add(S_EVENTMSG *pClass)
     {
-        DWORD n;
-        n = nClassesNum;
+        uint32_t n = nClassesNum;
         nClassesNum++;
-        pTable = (S_EVENTMSG **)RESIZE(pTable, nClassesNum * sizeof(S_EVENTMSG *));
+        pTable = (S_EVENTMSG **)realloc(pTable, nClassesNum * sizeof(S_EVENTMSG *));
         pTable[n] = pClass;
     };
-    void Del(DWORD _n)
+    void Del(uint32_t _n)
     {
-        DWORD n;
         if (_n >= nClassesNum)
             return;
         delete pTable[_n];
-        for (n = _n; n < (nClassesNum - 1); n++)
+        for (uint32_t n = _n; n < (nClassesNum - 1); n++)
             pTable[n] = pTable[n + 1];
         nClassesNum--;
     }
-    S_EVENTMSG *Read(DWORD _n)
+    S_EVENTMSG *Read(uint32_t _n)
     {
         if (_n >= nClassesNum)
-            return 0;
+            return nullptr;
         return pTable[_n];
     };
-    DWORD GetClassesNum()
+    uint32_t GetClassesNum()
     {
         return nClassesNum;
     }
     void InvalidateAll()
     {
-        DWORD n;
         if (pTable)
         {
-            for (n = 0; n < nClassesNum; n++)
+            for (uint32_t n = 0; n < nClassesNum; n++)
                 pTable[n]->Invalidate();
         }
     };
     void RemoveInvalidated()
     {
-        DWORD n;
         if (pTable)
         {
-            for (n = 0; n < nClassesNum; n++)
+            for (uint32_t n = 0; n < nClassesNum; n++)
             {
                 if (pTable[n]->bInvalide)
                 {

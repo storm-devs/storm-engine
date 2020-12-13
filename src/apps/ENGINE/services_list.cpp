@@ -1,9 +1,10 @@
 #include "services_list.h"
-#include "exs.h"
+#include <cstdint>
+#include <exception>
 
 SERVICES_LIST::SERVICES_LIST()
 {
-    List = 0;
+    List = nullptr;
     Search_module_code = 0;
     Objects = 0;
 }
@@ -13,17 +14,14 @@ SERVICES_LIST::~SERVICES_LIST()
     Release();
 }
 
-SERVICE *SERVICES_LIST::Add(dword module_code, dword class_code, SERVICE *pointer)
+SERVICE *SERVICES_LIST::Add(uint32_t module_code, uint32_t class_code, SERVICE *pointer)
 {
-    SERVICE_NODE *node_PTR;
-    SERVICE *Pointer;
-
-    Pointer = AddRef(module_code);
+    auto *const Pointer = AddRef(module_code);
 
     if (Pointer)
         return Pointer;
 
-    node_PTR = (SERVICE_NODE *)NEW char[sizeof(SERVICE_NODE)];
+    auto *node_PTR = (SERVICE_NODE *)new char[sizeof(SERVICE_NODE)];
     memset(node_PTR, 0, sizeof(SERVICE_NODE));
     node_PTR->module_code = module_code;
     node_PTR->class_code = class_code;
@@ -32,7 +30,7 @@ SERVICE *SERVICES_LIST::Add(dword module_code, dword class_code, SERVICE *pointe
 
     Objects++;
 
-    if (List == 0)
+    if (List == nullptr)
     {
         // add first node ------------------------------------------
         List = node_PTR;
@@ -45,33 +43,30 @@ SERVICE *SERVICES_LIST::Add(dword module_code, dword class_code, SERVICE *pointe
     return node_PTR->pointer;
 }
 
-SERVICE *SERVICES_LIST::AddRef(dword module_code)
+SERVICE *SERVICES_LIST::AddRef(uint32_t module_code)
 {
-    SERVICE_NODE *node_PTR;
-    node_PTR = FindNode(module_code);
-    if (node_PTR == 0)
-        return 0;
+    auto *const node_PTR = FindNode(module_code);
+    if (node_PTR == nullptr)
+        return nullptr;
     node_PTR->reference++;
     return node_PTR->pointer;
 }
 
-SERVICE *SERVICES_LIST::Find(dword module_code)
+SERVICE *SERVICES_LIST::Find(uint32_t module_code)
 {
-    SERVICE_NODE *node_PTR;
-    node_PTR = List;
+    auto *node_PTR = List;
     while (node_PTR)
     {
         if (node_PTR->module_code == module_code)
             return node_PTR->pointer;
-        node_PTR = (SERVICE_NODE *)node_PTR->linkL;
+        node_PTR = static_cast<SERVICE_NODE *>(node_PTR->linkL);
     }
-    return 0;
+    return nullptr;
 }
 
-SERVICE *SERVICES_LIST::Find(dword module_code, dword class_code)
+SERVICE *SERVICES_LIST::Find(uint32_t module_code, uint32_t class_code)
 {
-    SERVICE_NODE *node_PTR;
-    node_PTR = List;
+    auto *node_PTR = List;
     while (node_PTR)
     {
         if (node_PTR->module_code == module_code)
@@ -79,46 +74,40 @@ SERVICE *SERVICES_LIST::Find(dword module_code, dword class_code)
             if (node_PTR->class_code == class_code)
                 return node_PTR->pointer;
         }
-        node_PTR = (SERVICE_NODE *)node_PTR->linkL;
+        node_PTR = static_cast<SERVICE_NODE *>(node_PTR->linkL);
     }
-    return 0;
+    return nullptr;
 }
 
-SERVICE_NODE *SERVICES_LIST::FindNode(dword module_code)
+SERVICE_NODE *SERVICES_LIST::FindNode(uint32_t module_code)
 {
-    SERVICE_NODE *node_PTR;
-    node_PTR = List;
+    auto *node_PTR = List;
     while (node_PTR)
     {
         if (node_PTR->module_code == module_code)
             return node_PTR;
-        node_PTR = (SERVICE_NODE *)node_PTR->linkL;
+        node_PTR = static_cast<SERVICE_NODE *>(node_PTR->linkL);
     }
-    return 0;
+    return nullptr;
 }
 
 SERVICE_NODE *SERVICES_LIST::FindNode(SERVICE *sp)
 {
-    SERVICE_NODE *node_PTR;
-    node_PTR = List;
+    SERVICE_NODE *node_PTR = List;
     while (node_PTR)
     {
         if (node_PTR->pointer == sp)
             return node_PTR;
-        node_PTR = (SERVICE_NODE *)node_PTR->linkL;
+        node_PTR = static_cast<SERVICE_NODE *>(node_PTR->linkL);
     }
-    return 0;
+    return nullptr;
 }
 
-dword SERVICES_LIST::Release(dword module_code, dword class_code)
+uint32_t SERVICES_LIST::Release(uint32_t module_code, uint32_t class_code)
 {
-    SERVICE_NODE *node_PTR;
-    SERVICE_NODE *node_L;
-    SERVICE_NODE *node_R;
-    SERVICE *pointer;
-    dword ref;
+    uint32_t ref;
 
-    node_PTR = List;
+    SERVICE_NODE *node_PTR = List;
     while (node_PTR)
     {
         if (node_PTR->module_code == module_code)
@@ -130,9 +119,9 @@ dword SERVICES_LIST::Release(dword module_code, dword class_code)
                 ref = node_PTR->reference;
                 if (node_PTR->reference == 0)
                 {
-                    pointer = node_PTR->pointer;
-                    node_L = (SERVICE_NODE *)node_PTR->linkL;
-                    node_R = (SERVICE_NODE *)node_PTR->linkR;
+                    SERVICE *pointer = node_PTR->pointer;
+                    auto *node_L = static_cast<SERVICE_NODE *>(node_PTR->linkL);
+                    auto *node_R = static_cast<SERVICE_NODE *>(node_PTR->linkR);
                     if (node_L)
                         node_L->linkR = node_R;
                     if (node_R)
@@ -146,24 +135,22 @@ dword SERVICES_LIST::Release(dword module_code, dword class_code)
             }
             return ref;
         }
-        node_PTR = (SERVICE_NODE *)node_PTR->linkL;
+        node_PTR = static_cast<SERVICE_NODE *>(node_PTR->linkL);
     }
     return 0;
 }
 
 void SERVICES_LIST::Release()
 {
-    SERVICE_NODE *node_PTR;
-
-    node_PTR = List;
+    SERVICE_NODE *node_PTR = List;
     while (node_PTR)
     {
-        List = (SERVICE_NODE *)node_PTR->linkL;
+        List = static_cast<SERVICE_NODE *>(node_PTR->linkL);
         delete node_PTR;
         node_PTR = List;
     }
 
-    List = 0;
+    List = nullptr;
 }
 
 SERVICE *SERVICES_LIST::GetService()
@@ -173,33 +160,30 @@ SERVICE *SERVICES_LIST::GetService()
         Search_module_code = List->module_code;
         return List->pointer;
     }
-    return 0;
+    return nullptr;
 }
 
 SERVICE *SERVICES_LIST::GetServiceNext()
 {
-    SERVICE_NODE *node_PTR;
-    SERVICE_NODE *node_L;
-
-    node_PTR = List;
+    SERVICE_NODE *node_PTR = List;
     while (node_PTR)
     {
         if (node_PTR->module_code == Search_module_code)
         {
-            node_L = (SERVICE_NODE *)node_PTR->linkL;
+            auto *node_L = static_cast<SERVICE_NODE *>(node_PTR->linkL);
             if (node_L)
             {
                 Search_module_code = node_L->module_code;
                 return node_L->pointer;
             }
-            return 0;
+            return nullptr;
         }
-        node_PTR = (SERVICE_NODE *)node_PTR->linkL;
+        node_PTR = static_cast<SERVICE_NODE *>(node_PTR->linkL);
     }
-    return 0;
+    return nullptr;
 }
 
-SERVICE *SERVICES_LIST::GetService(dword &class_code)
+SERVICE *SERVICES_LIST::GetService(uint32_t &class_code)
 {
     if (List)
     {
@@ -207,47 +191,42 @@ SERVICE *SERVICES_LIST::GetService(dword &class_code)
         class_code = List->class_code;
         return List->pointer;
     }
-    return 0;
+    return nullptr;
 }
 
-SERVICE *SERVICES_LIST::GetServiceNext(dword &class_code)
+SERVICE *SERVICES_LIST::GetServiceNext(uint32_t &class_code)
 {
-    SERVICE_NODE *node_PTR;
-    SERVICE_NODE *node_L;
-
-    node_PTR = List;
+    SERVICE_NODE *node_PTR = List;
     while (node_PTR)
     {
         if (node_PTR->module_code == Search_module_code)
         {
-            node_L = (SERVICE_NODE *)node_PTR->linkL;
+            auto *node_L = static_cast<SERVICE_NODE *>(node_PTR->linkL);
             if (node_L)
             {
                 Search_module_code = node_L->module_code;
                 class_code = node_L->class_code;
                 return node_L->pointer;
             }
-            return 0;
+            return nullptr;
         }
-        node_PTR = (SERVICE_NODE *)node_PTR->linkL;
+        node_PTR = static_cast<SERVICE_NODE *>(node_PTR->linkL);
     }
-    return 0;
+    return nullptr;
 }
 
-dword SERVICES_LIST::GetRef(SERVICE *sp)
+uint32_t SERVICES_LIST::GetRef(SERVICE *sp)
 {
-    SERVICE_NODE *node_PTR;
-    node_PTR = FindNode(sp);
-    if (node_PTR == null)
-        SE_THROW_MSG(no service);
+    SERVICE_NODE *node_PTR = FindNode(sp);
+    if (node_PTR == nullptr)
+        throw std::exception("no service");
     return node_PTR->reference;
 }
 
-void SERVICES_LIST::SetRef(SERVICE *sp, dword ref)
+void SERVICES_LIST::SetRef(SERVICE *sp, uint32_t ref)
 {
-    SERVICE_NODE *node_PTR;
-    node_PTR = FindNode(sp);
-    if (node_PTR == null)
-        SE_THROW_MSG(no service);
+    SERVICE_NODE *node_PTR = FindNode(sp);
+    if (node_PTR == nullptr)
+        throw std::exception("no service");
     node_PTR->reference = ref;
 }

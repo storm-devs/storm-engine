@@ -1,4 +1,5 @@
 #include "s_dbg_breaktable.h"
+#include "file_service.h"
 
 extern CORE Core;
 extern FILE_SERVICE File_Service;
@@ -9,7 +10,6 @@ BREAKPOINTS_TABLE::BREAKPOINTS_TABLE()
 {
     fio = &File_Service;
     nPoints = 0;
-    pTable = 0;
     ProjectName[0] = 0;
     // bReleased = false;
 }
@@ -21,14 +21,13 @@ BREAKPOINTS_TABLE::~BREAKPOINTS_TABLE()
 
 void BREAKPOINTS_TABLE::Release()
 {
-    INIFILE *ini;
-    DWORD n;
+    uint32_t n;
     char buffer[MAX_PATH];
 
     // if(nPoints)
     if (ProjectName[0] != 0)
     {
-        ini = fio->OpenIniFile(ProjectName);
+        auto *ini = fio->OpenIniFile(ProjectName);
         if (!ini)
             ini = fio->CreateIniFile(ProjectName, false);
         if (ini)
@@ -38,7 +37,7 @@ void BREAKPOINTS_TABLE::Release()
             {
                 if (!pTable[n].pFileName)
                     continue;
-                sprintf(buffer, "%s,%d", pTable[n].pFileName, pTable[n].nLineNumber);
+                sprintf_s(buffer, "%s,%d", pTable[n].pFileName, pTable[n].nLineNumber);
                 ini->AddString(SECTION_NAME, "B", buffer);
             }
             delete ini;
@@ -46,39 +45,33 @@ void BREAKPOINTS_TABLE::Release()
         ProjectName[0] = 0;
     }
 
-    if (pTable)
+    for (n = 0; n < nPoints; n++)
     {
-        for (n = 0; n < nPoints; n++)
-        {
-            if (pTable[n].pFileName)
-                delete pTable[n].pFileName;
-        }
-        delete pTable;
+        delete pTable[n].pFileName;
     }
-    pTable = 0;
+
+    pTable.clear();
     nPoints = 0;
     // bReleased = true;
 }
 
 void BREAKPOINTS_TABLE::UpdateProjectFile()
 {
-    INIFILE *ini;
-    DWORD n;
     char buffer[MAX_PATH];
 
     if (ProjectName[0] != 0)
     {
-        ini = fio->OpenIniFile(ProjectName);
+        auto *ini = fio->OpenIniFile(ProjectName);
         if (!ini)
             ini = fio->CreateIniFile(ProjectName, false);
         if (ini)
         {
             ini->DeleteSection(SECTION_NAME);
-            for (n = 0; n < nPoints; n++)
+            for (uint32_t n = 0; n < nPoints; n++)
             {
                 if (!pTable[n].pFileName)
                     continue;
-                sprintf(buffer, "%s,%d", pTable[n].pFileName, pTable[n].nLineNumber);
+                sprintf_s(buffer, "%s,%d", pTable[n].pFileName, pTable[n].nLineNumber);
                 ini->AddString(SECTION_NAME, "B", buffer);
             }
             delete ini;
@@ -86,12 +79,11 @@ void BREAKPOINTS_TABLE::UpdateProjectFile()
     }
 }
 
-bool MakeLineCode(char *buffer, DWORD &nLineCode)
+bool MakeLineCode(char *buffer, uint32_t &nLineCode)
 {
-    DWORD n;
-    if (buffer == 0)
+    if (buffer == nullptr)
         return false;
-    n = 0;
+    uint32_t n = 0;
     while (buffer[n])
     {
         if (buffer[n] == ',')
@@ -107,19 +99,18 @@ bool MakeLineCode(char *buffer, DWORD &nLineCode)
     return false;
 }
 
-bool BREAKPOINTS_TABLE::ReadProject(char *filename)
+bool BREAKPOINTS_TABLE::ReadProject(const char *filename)
 {
-    INIFILE *ini;
     char buffer[MAX_PATH];
 
-    DWORD nLineNumber;
+    uint32_t nLineNumber;
 
     Release();
 
-    ini = fio->OpenIniFile(filename);
+    auto *ini = fio->OpenIniFile(filename);
     if (ini)
     {
-        strcpy(ProjectName, filename);
+        strcpy_s(ProjectName, filename);
         if (ini->ReadString(SECTION_NAME, "B", buffer, sizeof(buffer), ""))
         {
             if (MakeLineCode(buffer, nLineNumber))
@@ -137,33 +128,32 @@ bool BREAKPOINTS_TABLE::ReadProject(char *filename)
     return false;
 }
 
-void BREAKPOINTS_TABLE::AddBreakPoint(const char *filename, DWORD line)
+void BREAKPOINTS_TABLE::AddBreakPoint(const char *filename, uint32_t line)
 {
-    DWORD n;
-
-    if (filename == 0)
+    if (filename == nullptr)
         return;
 
-    for (n = 0; n < nPoints; n++)
+    for (uint32_t n = 0; n < nPoints; n++)
     {
         if (pTable[n].nLineNumber != line)
             continue;
-        if (stricmp(pTable[n].pFileName, filename) != 0)
+        if (_stricmp(pTable[n].pFileName, filename) != 0)
             continue;
         return; // already in list
     }
 
-    pTable = (BREAKPOINT_DESC *)RESIZE(pTable, (nPoints + 1) * sizeof(BREAKPOINT_DESC));
+    pTable.resize(nPoints + 1);
     pTable[nPoints].nLineNumber = line;
 
-    pTable[nPoints].pFileName = NEW char[strlen(filename) + 1];
-    strcpy(pTable[nPoints].pFileName, filename);
+    const auto len = strlen(filename) + 1;
+    pTable[nPoints].pFileName = new char[len];
+    memcpy(pTable[nPoints].pFileName, filename, len);
     nPoints++;
 
     // UpdateProjectFile();
 }
 
-void BREAKPOINTS_TABLE::FlipBreakPoint(const char *filename, DWORD line)
+void BREAKPOINTS_TABLE::FlipBreakPoint(const char *filename, uint32_t line)
 {
     if (Find(filename, line))
         DelBreakPoint(filename, line);
@@ -171,20 +161,18 @@ void BREAKPOINTS_TABLE::FlipBreakPoint(const char *filename, DWORD line)
         AddBreakPoint(filename, line);
 }
 
-void BREAKPOINTS_TABLE::DelBreakPoint(const char *filename, DWORD line)
+void BREAKPOINTS_TABLE::DelBreakPoint(const char *filename, uint32_t line)
 {
-    DWORD n;
-    if (filename == 0)
+    if (filename == nullptr)
         return;
-    for (n = 0; n < nPoints; n++)
+    for (uint32_t n = 0; n < nPoints; n++)
     {
         if (pTable[n].nLineNumber != line)
             continue;
-        if (stricmp(pTable[n].pFileName, filename) != 0)
+        if (_stricmp(pTable[n].pFileName, filename) != 0)
             continue;
 
-        if (pTable[n].pFileName)
-            delete pTable[n].pFileName;
+        delete pTable[n].pFileName;
 
         for (; n < (nPoints - 1); n++)
         {
@@ -197,16 +185,16 @@ void BREAKPOINTS_TABLE::DelBreakPoint(const char *filename, DWORD line)
         return;
     }
 }
-bool BREAKPOINTS_TABLE::Find(const char *filename, DWORD line)
+
+bool BREAKPOINTS_TABLE::Find(const char *filename, uint32_t line)
 {
-    DWORD n;
-    if (filename == 0)
+    if (filename == nullptr)
         return false;
-    for (n = 0; n < nPoints; n++)
+    for (uint32_t n = 0; n < nPoints; n++)
     {
         if (pTable[n].nLineNumber != line)
             continue;
-        if (stricmp(pTable[n].pFileName, filename) != 0)
+        if (_stricmp(pTable[n].pFileName, filename) != 0)
             continue;
 
         return true;

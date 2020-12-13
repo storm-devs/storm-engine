@@ -3,20 +3,20 @@
 
 #ifndef _XBOX
 
-#include "core.h"
+#include "Core.h"
 #include "tm_list.h"
 
 class WATCHER_LIST : public TM_LIST
 {
-    dword ShowMask;
+    uint32_t ShowMask;
     HMENU hMenu;
     INIFILE *ini;
 
   public:
     WATCHER_LIST(HWND hwnd, HINSTANCE hinst);
     ~WATCHER_LIST();
-    void ProcessMessage(DWORD, DWORD, DWORD);
-    void SetShowMask(dword mask)
+    void ProcessMessage(uint64_t, uint64_t, uint64_t);
+    void SetShowMask(uint32_t mask)
     {
         ShowMask = mask;
     };

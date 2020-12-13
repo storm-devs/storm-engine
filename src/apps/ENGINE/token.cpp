@@ -1,9 +1,7 @@
 #include "token.h"
-#include "system_log.h"
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
 
-#include "memop.h"
+#include "defines.h"
 #include "vapi.h"
 
 extern VAPI *api;
@@ -13,7 +11,7 @@ extern VAPI *api;
             pTokenData[0] = 0;                                                                                         \
     }
 #define INVALID_ARG_DCHARS 32
-char *TokenTypeName[] = {
+const char *TokenTypeName[] = {
     "END_OF_PROGRAMM",
     "INVALID_TOKEN",
     "UNKNOWN",
@@ -21,6 +19,7 @@ char *TokenTypeName[] = {
     "COMMENT",
     "INCLIDE_FILE",
     "integer",
+    "pointer",
     "float",
     "string",
     "object",
@@ -147,7 +146,7 @@ char *TokenTypeName[] = {
 struct S_KEYWORD
 {
     S_TOKEN_TYPE type;
-    char *name;
+    const char *name;
 };
 
 S_KEYWORD Keywords[] = {
@@ -161,6 +160,8 @@ S_KEYWORD Keywords[] = {
     "#libriary",
     VAR_INTEGER,
     "int",
+    VAR_PTR,
+    "ptr",
     VAR_FLOAT,
     "float",
     VAR_STRING,
@@ -293,13 +294,13 @@ S_KEYWORD Keywords[] = {
 
 TOKEN::TOKEN()
 {
-    pTokenData = 0;
+    pTokenData = nullptr;
     eTokenType = UNKNOWN;
     TokenDataBufferSize = 0;
-    ZeroMemory(ProgramSteps, sizeof(ProgramSteps));
+    PZERO(ProgramSteps, sizeof(ProgramSteps));
     ProgramStepsNum = 0;
-    Program = 0;
-    ProgramBase = 0;
+    Program = nullptr;
+    ProgramBase = nullptr;
     Lines_in_token = 0;
 
     InitializeHashTable();
@@ -307,12 +308,11 @@ TOKEN::TOKEN()
 
 void TOKEN::Release()
 {
-    DWORD n;
-    for (n = 0; n < TOKENHASHTABLE_SIZE; n++)
+    for (uint32_t n = 0; n < TOKENHASHTABLE_SIZE; n++)
     {
         if (KeywordsHash[n].pIndex)
-            delete KeywordsHash[n].pIndex;
-        KeywordsHash[n].pIndex = 0;
+            free(KeywordsHash[n].pIndex);
+        KeywordsHash[n].pIndex = nullptr;
     }
 }
 
@@ -325,7 +325,7 @@ void TOKEN::SetProgram(char *pProgramBase, char *pProgramControl)
 {
     Program = pProgramControl;
     ProgramBase = pProgramBase;
-    ZeroMemory(ProgramSteps, sizeof(ProgramSteps));
+    PZERO(ProgramSteps, sizeof(ProgramSteps));
     ProgramStepsNum = 0;
 }
 
@@ -339,22 +339,21 @@ char *TOKEN::GetProgramControl()
     return Program;
 }
 
-DWORD TOKEN::GetProgramOffset()
+ptrdiff_t TOKEN::GetProgramOffset()
 {
-    return (DWORD)Program - (DWORD)ProgramBase;
+    return Program - ProgramBase;
 }
 
 void TOKEN::Reset()
 {
-    if (pTokenData)
-        delete pTokenData;
-    pTokenData = 0;
+    delete pTokenData;
+    pTokenData = nullptr;
     eTokenType = UNKNOWN;
     TokenDataBufferSize = 0;
-    ZeroMemory(ProgramSteps, sizeof(ProgramSteps));
+    PZERO(ProgramSteps, sizeof(ProgramSteps));
     ProgramStepsNum = 0;
-    Program = 0;
-    ProgramBase = 0;
+    Program = nullptr;
+    ProgramBase = nullptr;
 }
 
 bool TOKEN::Is(S_TOKEN_TYPE ttype)
@@ -368,10 +367,10 @@ void TOKEN::LowCase()
 {
     if (pTokenData[0] == 0)
         return;
-    strlwr(pTokenData);
+    _strlwr(pTokenData);
 }
 
-char *TOKEN::GetData()
+const char *TOKEN::GetData()
 {
     // if(pTokenData[0] == 0) return 0;
     return pTokenData;
@@ -382,21 +381,20 @@ S_TOKEN_TYPE TOKEN::GetType()
     return eTokenType;
 }
 
-char *TOKEN::GetTypeName()
+const char *TOKEN::GetTypeName()
 {
     return TokenTypeName[eTokenType];
 }
 
-char *TOKEN::GetTypeName(S_TOKEN_TYPE code)
+const char *TOKEN::GetTypeName(S_TOKEN_TYPE code)
 {
     return TokenTypeName[code];
 }
 
 S_TOKEN_TYPE TOKEN::Get(bool bKeepData)
 {
-    char sym;
     char *pBase;
-    DWORD counter;
+    ptrdiff_t counter;
 
     eTokenType = UNKNOWN;
 
@@ -404,10 +402,10 @@ S_TOKEN_TYPE TOKEN::Get(bool bKeepData)
     CacheToken(Program);
 
     Lines_in_token = 0;
-    sym = *Program;
+    auto sym = *Program;
     switch (sym)
     {
-    // end of program
+        // end of program
     case 0:
         DISCARD_DATABUFFER
         eTokenType = END_OF_PROGRAMM;
@@ -432,7 +430,7 @@ S_TOKEN_TYPE TOKEN::Get(bool bKeepData)
             Program++;
         return eTokenType;
 
-    // commented text
+        // commented text
     case '/':
         sym = Program[1];
         if (sym != '*')
@@ -450,7 +448,7 @@ S_TOKEN_TYPE TOKEN::Get(bool bKeepData)
                 sym = Program[1];
                 if (sym == '/')
                 {
-                    SetNTokenData(pBase, (DWORD)Program - (DWORD)pBase);
+                    SetNTokenData(pBase, Program - pBase);
                     eTokenType = COMMENT;
                     Program++;
                     Program++;
@@ -474,9 +472,8 @@ S_TOKEN_TYPE TOKEN::Get(bool bKeepData)
                 }
             }
             Program++;
-
         } while (sym != 0);
-        counter = (DWORD)Program - (DWORD)pBase;
+        counter = Program - pBase;
         if (counter > INVALID_ARG_DCHARS)
             counter = INVALID_ARG_DCHARS;
         SetNTokenData(pBase, counter);
@@ -490,26 +487,24 @@ S_TOKEN_TYPE TOKEN::Get(bool bKeepData)
             sym = *Program;
             if (sym == '"')
             {
-
-                SetNTokenData(pBase, (DWORD)Program - (DWORD)pBase);
+                SetNTokenData(pBase, Program - pBase);
                 eTokenType = STRING;
                 Program++;
                 return eTokenType;
             }
             Program++;
         } while (sym != 0);
-        counter = (DWORD)Program - (DWORD)pBase;
+        counter = Program - pBase;
         if (counter > INVALID_ARG_DCHARS)
             counter = INVALID_ARG_DCHARS;
         SetNTokenData(pBase, counter);
         eTokenType = INVALID_TOKEN;
         return eTokenType;
     }
-    S_TOKEN_TYPE stt;
-    stt = ProcessToken(Program, bKeepData);
+    const auto stt = ProcessToken(Program, bKeepData);
     if (stt == HOLD_COMPILATION)
     {
-        _asm int 3;
+        __debugbreak();
         // stt == HOLD_COMPILATION;
     }
     return stt;
@@ -519,7 +514,7 @@ S_TOKEN_TYPE TOKEN::FormatGet()
 {
     char sym;
     char *pBase;
-    DWORD counter;
+    ptrdiff_t counter;
 
     eTokenType = UNKNOWN;
 
@@ -530,7 +525,7 @@ S_TOKEN_TYPE TOKEN::FormatGet()
     sym = *Program;
     switch (sym)
     {
-    // end of program
+        // end of program
     case 0:
         DISCARD_DATABUFFER
         eTokenType = END_OF_PROGRAMM;
@@ -549,7 +544,7 @@ S_TOKEN_TYPE TOKEN::FormatGet()
         Program++;
         if (Program[0] == 0xa)
         {
-            SetNTokenData((char *)(Program - 1), 2);
+            SetNTokenData(static_cast<char *>(Program - 1), 2);
             Program++;
         }
         else
@@ -562,14 +557,14 @@ S_TOKEN_TYPE TOKEN::FormatGet()
         Program++;
         if (Program[0] == 0xd)
         {
-            SetNTokenData((char *)(Program - 1), 2);
+            SetNTokenData(static_cast<char *>(Program - 1), 2);
             Program++;
         }
         else
             SetNTokenData(&sym, 1);
         return eTokenType;
 
-    // commented text
+        // commented text
     case '/':
         pBase = Program;
         sym = Program[1];
@@ -592,7 +587,7 @@ S_TOKEN_TYPE TOKEN::FormatGet()
                     eTokenType = COMMENT;
                     Program++;
                     Program++;
-                    SetNTokenData(pBase, (DWORD)Program - (DWORD)pBase);
+                    SetNTokenData(pBase, Program - pBase);
                     return eTokenType;
                 }
             }
@@ -613,9 +608,8 @@ S_TOKEN_TYPE TOKEN::FormatGet()
                 }
             }
             Program++;
-
         } while (sym != 0);
-        counter = (DWORD)Program - (DWORD)pBase;
+        counter = Program - pBase;
         if (counter > INVALID_ARG_DCHARS)
             counter = INVALID_ARG_DCHARS;
         SetNTokenData(pBase, counter);
@@ -631,14 +625,14 @@ S_TOKEN_TYPE TOKEN::FormatGet()
             if (sym == '"')
             {
                 Program++;
-                SetNTokenData(pBase, (DWORD)Program - (DWORD)pBase);
+                SetNTokenData(pBase, Program - pBase);
                 eTokenType = STRING;
                 // Program++;
                 return eTokenType;
             }
             Program++;
         } while (sym != 0);
-        counter = (DWORD)Program - (DWORD)pBase;
+        counter = Program - pBase;
         if (counter > INVALID_ARG_DCHARS)
             counter = INVALID_ARG_DCHARS;
         SetNTokenData(pBase, counter);
@@ -650,11 +644,10 @@ S_TOKEN_TYPE TOKEN::FormatGet()
 }
 
 // copy argument data to buffer and close the termination 0
-long TOKEN::SetTokenData(char *pointer, bool bKeepControlSymbols)
+long TOKEN::SetTokenData(const char *pointer, bool bKeepControlSymbols)
 {
-    long Data_size;
     // if(!IsOperator(pointer,Data_size))
-    Data_size = StopArgument(pointer, bKeepControlSymbols);
+    const auto Data_size = StopArgument(pointer, bKeepControlSymbols);
     if (Data_size == 0)
     {
         if (pTokenData)
@@ -663,10 +656,9 @@ long TOKEN::SetTokenData(char *pointer, bool bKeepControlSymbols)
     }
     if (Data_size >= TokenDataBufferSize)
     {
-        if (pTokenData)
-            delete pTokenData;
+        delete pTokenData;
 
-        pTokenData = NEW char[Data_size + 1];
+        pTokenData = new char[Data_size + 1];
         TokenDataBufferSize = Data_size + 1;
     }
     memcpy(pTokenData, pointer, Data_size);
@@ -675,7 +667,7 @@ long TOKEN::SetTokenData(char *pointer, bool bKeepControlSymbols)
 }
 
 // copy exact nymber of argument data to buffer and close the termination 0
-long TOKEN::SetNTokenData(char *pointer, long Data_size)
+ptrdiff_t TOKEN::SetNTokenData(const char *pointer, ptrdiff_t Data_size)
 {
     if (Data_size == 0)
     {
@@ -684,10 +676,9 @@ long TOKEN::SetNTokenData(char *pointer, long Data_size)
     }
     if (Data_size >= TokenDataBufferSize)
     {
-        if (pTokenData)
-            delete pTokenData;
+        delete pTokenData;
 
-        pTokenData = NEW char[Data_size + 1];
+        pTokenData = new char[Data_size + 1];
         TokenDataBufferSize = Data_size + 1;
     }
     memcpy(pTokenData, pointer, Data_size);
@@ -698,18 +689,14 @@ long TOKEN::SetNTokenData(char *pointer, long Data_size)
 // search throw the program code until find non significant argument character:
 // SPACE,TAB,0,'\0xd','\0xa'
 // return number of significant symbols
-long TOKEN::StopArgument(char *pointer, bool bKeepControlSymbols)
+long TOKEN::StopArgument(const char *pointer, bool bKeepControlSymbols)
 {
-    long size;
-    char sym;
-    bool bOnlyDigit;
-    bool bDot;
-    size = 0;
-    bDot = false;
-    bOnlyDigit = true;
+    long size = 0;
+    auto bDot = false;
+    auto bOnlyDigit = true;
     do
     {
-        sym = *pointer;
+        auto sym = *pointer;
 
         if (sym == '.')
             bDot = true;
@@ -744,11 +731,11 @@ long TOKEN::StopArgument(char *pointer, bool bKeepControlSymbols)
             return size;
         /*if(sym == 'f')
         {
-            if(bDot && bOnlyDigit)
-            {
-                size++;
-                return size;
-            }
+          if(bDot && bOnlyDigit)
+          {
+            size++;
+            return size;
+          }
         }*/
 
         if (sym == '{' || sym == '}' || sym == ':' || sym == '(' || sym == ')' || sym == '[' || sym == ']' ||
@@ -798,12 +785,9 @@ long TOKEN::StopArgument(char *pointer, bool bKeepControlSymbols)
                     return 1;
                 return size;
             }
-            else
-            {
-                if (size == 0)
-                    return 2;
-                return size;
-            }
+            if (size == 0)
+                return 2;
+            return size;
         }
 
         if (sym == '=')
@@ -816,12 +800,9 @@ long TOKEN::StopArgument(char *pointer, bool bKeepControlSymbols)
                     return 1;
                 return size;
             }
-            else
-            {
-                if (size == 0)
-                    return 2;
-                return size;
-            }
+            if (size == 0)
+                return 2;
+            return size;
         }
         if (sym == '!')
         {
@@ -833,12 +814,9 @@ long TOKEN::StopArgument(char *pointer, bool bKeepControlSymbols)
                     return 1;
                 return size;
             }
-            else
-            {
-                if (size == 0)
-                    return 2;
-                return size;
-            }
+            if (size == 0)
+                return 2;
+            return size;
         }
         if (sym == '&')
         {
@@ -850,12 +828,9 @@ long TOKEN::StopArgument(char *pointer, bool bKeepControlSymbols)
                     return 1;
                 return size;
             }
-            else
-            {
-                if (size == 0)
-                    return 2;
-                return size;
-            }
+            if (size == 0)
+                return 2;
+            return size;
         }
         if (sym == '+')
         {
@@ -897,12 +872,12 @@ long TOKEN::StopArgument(char *pointer, bool bKeepControlSymbols)
             sym = *pointer;
             /*if(sym != '/')
             {
-                if(size == 0) return 1;
-                return size;
+              if(size == 0) return 1;
+              return size;
             } else
             {
-                if(size == 0) return 2;
-                return size;
+              if(size == 0) return 2;
+              return size;
             }*/
 
             switch (sym)
@@ -928,10 +903,9 @@ long TOKEN::StopArgument(char *pointer, bool bKeepControlSymbols)
 // advance program pointer until not found significant argument symbol
 void TOKEN::StartArgument(char *&pointer, bool bKeepControlSymbols)
 {
-    char sym;
     do
     {
-        sym = *pointer;
+        const auto sym = *pointer;
         if (sym == 0)
             return;
         if (sym == 0xa || sym == 0xd)
@@ -948,12 +922,11 @@ void TOKEN::StartArgument(char *&pointer, bool bKeepControlSymbols)
     } while (true);
 }
 
-bool TOKEN::IsNumber(char *pointer)
+bool TOKEN::IsNumber(const char *pointer)
 {
-    DWORD n;
-    if (pointer == 0)
+    if (pointer == nullptr)
         return false;
-    for (n = 0; pointer[n]; n++)
+    for (uint32_t n = 0; pointer[n]; n++)
     {
         if (pointer[n] < 0x20 && n > 0)
             return true; // end on white space
@@ -964,12 +937,11 @@ bool TOKEN::IsNumber(char *pointer)
 }
 
 // this function can interpreted integer as float, so always check using IsNumber function
-bool TOKEN::IsFloatNumber(char *pointer)
+bool TOKEN::IsFloatNumber(const char *pointer)
 {
-    DWORD n;
-    if (pointer == 0)
+    if (pointer == nullptr)
         return false;
-    for (n = 0; pointer[n]; n++)
+    for (uint32_t n = 0; pointer[n]; n++)
     {
         if (pointer[n] == '.')
         {
@@ -983,6 +955,7 @@ bool TOKEN::IsFloatNumber(char *pointer)
     }
     return true;
 }
+
 /*
 bool TOKEN::IsOperator(char * pointer)
 {
@@ -1047,20 +1020,19 @@ bool TOKEN::IsOperator(char * pointer, long & syms)
     return false;
 }
 */
-void TOKEN::CacheToken(char *pointer)
+void TOKEN::CacheToken(const char *pointer)
 {
     if (ProgramStepsNum < PROGRAM_STEPS_CACHE)
     {
-        ProgramSteps[ProgramStepsNum] = (DWORD)pointer - (DWORD)ProgramBase;
+        ProgramSteps[ProgramStepsNum] = pointer - ProgramBase;
         ProgramStepsNum++;
         return;
     }
-    DWORD n;
-    for (n = 0; n < (PROGRAM_STEPS_CACHE - 1); n++)
+    for (uint32_t n = 0; n < (PROGRAM_STEPS_CACHE - 1); n++)
     {
         ProgramSteps[n] = ProgramSteps[n + 1];
     }
-    ProgramSteps[PROGRAM_STEPS_CACHE - 1] = (DWORD)pointer - (DWORD)ProgramBase;
+    ProgramSteps[PROGRAM_STEPS_CACHE - 1] = pointer - ProgramBase;
 }
 
 // set pointer to previous (processed) token, return false if no pointers in cache
@@ -1083,7 +1055,7 @@ S_TOKEN_TYPE TOKEN::ProcessToken(char *&pointer, bool bKeepData)
     pointer += SetTokenData(pointer, bKeepData);
 
     eTokenType = UNKNOWN;
-    if (GetData() == 0)
+    if (GetData() == nullptr)
     {
         pointer++;
         DISCARD_DATABUFFER
@@ -1093,11 +1065,11 @@ S_TOKEN_TYPE TOKEN::ProcessToken(char *&pointer, bool bKeepData)
     /*keywords_num = sizeof(Keywords)/sizeof(S_KEYWORD);
     for(n=0;n<keywords_num;n++)
     {
-        if(stricmp(pTokenData,Keywords[n].name) == 0)
-        {
-            eTokenType = Keywords[n].type;
-            break;
-        }
+      if(_stricmp(pTokenData,Keywords[n].name) == 0)
+      {
+        eTokenType = Keywords[n].type;
+        break;
+      }
     }*/
 
     eTokenType = Keyword2TokenType(pTokenData);
@@ -1147,9 +1119,8 @@ S_TOKEN_TYPE TOKEN::ProcessToken(char *&pointer, bool bKeepData)
             Program++;
             if (sym == 0xd || sym == 0xa)
                 break;
-
         } while (sym != 0);
-        SetNTokenData(pBase, (DWORD)Program - (DWORD)pBase);
+        SetNTokenData(pBase, Program - pBase);
         break;
     case CALL:
     case IMPORT:
@@ -1232,25 +1203,23 @@ long TOKEN::TokenLines()
     return Lines_in_token;
 }
 
-S_TOKEN_TYPE TOKEN::Keyword2TokenType(char *pString)
+S_TOKEN_TYPE TOKEN::Keyword2TokenType(const char *pString)
 {
     /*	DWORD n;
-        for(n=0;n<dwKeywordsNum;n++)
+      for(n=0;n<dwKeywordsNum;n++)
+      {
+        if(_stricmp(pString,Keywords[n].name) == 0)
         {
-            if(stricmp(pString,Keywords[n].name) == 0)
-            {
-                return Keywords[n].type;
-            }
+          return Keywords[n].type;
         }
-        return UNKNOWN;//*/
+      }
+      return UNKNOWN;//*/
 
-    DWORD n;
-    DWORD index;
-    DWORD hash = MakeHashValue(pString, 4) % TOKENHASHTABLE_SIZE;
-    for (n = 0; n < KeywordsHash[hash].dwNum; n++)
+    const auto hash = MakeHashValue(pString, 4) % TOKENHASHTABLE_SIZE;
+    for (uint32_t n = 0; n < KeywordsHash[hash].dwNum; n++)
     {
-        index = KeywordsHash[hash].pIndex[n];
-        if (stricmp(pString, Keywords[index].name) == 0)
+        const uint32_t index = KeywordsHash[hash].pIndex[n];
+        if (_stricmp(pString, Keywords[index].name) == 0)
         {
             return Keywords[index].type;
         }
@@ -1258,21 +1227,19 @@ S_TOKEN_TYPE TOKEN::Keyword2TokenType(char *pString)
     return UNKNOWN; //*/
 }
 
-DWORD TOKEN::MakeHashValue(const char *string, DWORD max_syms)
+uint32_t TOKEN::MakeHashValue(const char *string, uint32_t max_syms)
 {
     // if ('A' <= string[0] && string[0] <= 'Z') return (DWORD)(string[0] + 'a' - 'A');
     // else return string[0];
     // return (DWORD)string[0];
-    DWORD hval = 0;
-    DWORD g;
-    char v;
+    uint32_t hval = 0;
     while (*string != 0)
     {
-        v = *string++;
+        auto v = *string++;
         if ('A' <= v && v <= 'Z')
             v += 'a' - 'A'; // case independent
-        hval = (hval << 4) + (unsigned long int)v;
-        g = hval & ((unsigned long int)0xf << (32 - 4));
+        hval = (hval << 4) + static_cast<unsigned long>(v);
+        const uint32_t g = hval & (static_cast<unsigned long>(0xf) << (32 - 4));
         if (g != 0)
         {
             hval ^= g >> (32 - 8);
@@ -1290,33 +1257,33 @@ DWORD TOKEN::MakeHashValue(const char *string, DWORD max_syms)
 
 bool TOKEN::InitializeHashTable()
 {
+    static_assert(sizeof(Keywords) / sizeof(S_KEYWORD) < 256, "keywords num more then 256 - change index type");
     dwKeywordsNum = sizeof(Keywords) / sizeof(S_KEYWORD);
-    if (dwKeywordsNum > 255)
-    {
-        trace("keywords num more then 256 - change index type");
-        return false;
-    }
+    // if(dwKeywordsNum > 255)
+    //{
+    //	trace("keywords num more then 256 - change index type");
+    //	return false;
+    //}
 
-    DWORD n;
-    DWORD hash;
-    for (n = 0; n < dwKeywordsNum; n++)
+    for (uint32_t n = 0; n < dwKeywordsNum; n++)
     {
-        hash = MakeHashValue(Keywords[n].name, 4) % TOKENHASHTABLE_SIZE;
+        const auto hash = MakeHashValue(Keywords[n].name, 4) % TOKENHASHTABLE_SIZE;
 
         KeywordsHash[hash].dwNum++;
-        KeywordsHash[hash].pIndex = (BYTE *)RESIZE(KeywordsHash[hash].pIndex, KeywordsHash[hash].dwNum);
-        KeywordsHash[hash].pIndex[KeywordsHash[hash].dwNum - 1] = (BYTE)n;
+        KeywordsHash[hash].pIndex =
+            static_cast<uint8_t *>(realloc(KeywordsHash[hash].pIndex, KeywordsHash[hash].dwNum));
+        KeywordsHash[hash].pIndex[KeywordsHash[hash].dwNum - 1] = static_cast<uint8_t>(n);
     }
 
     // debug
     /*DWORD i;
     for(n=0;n<TOKENHASHTABLE_SIZE;n++)
     {
-        trace("Hash: %d",n);
-        for(i=0;i<KeywordsHash[n].dwNum;i++)
-        {
-            trace("      String: %s",Keywords[KeywordsHash[n].pIndex[i]].name);
-        }
+      trace("Hash: %d",n);
+      for(i=0;i<KeywordsHash[n].dwNum;i++)
+      {
+        trace("      String: %s",Keywords[KeywordsHash[n].pIndex[i]].name);
+      }
     }//*/
 
     return true;

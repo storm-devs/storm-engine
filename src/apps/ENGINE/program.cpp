@@ -1,14 +1,13 @@
 #include "program.h"
-#include "core.h"
 
 extern CORE Core;
 
-PROGRAM::PROGRAM()
+PROGRAM::PROGRAM() : ProgramBlock(nullptr)
 {
-    ProgramDirectory = 0;
+    ProgramDirectory = nullptr;
     ProgramNum = 0;
-    DeleteFile(TEXT(COMPILER_LOG_FILENAME));
-    DeleteFile(TEXT(COMPILER_ERRORLOG_FILENAME));
+    DeleteFile(COMPILER_LOG_FILENAME);
+    DeleteFile(COMPILER_ERRORLOG_FILENAME);
 }
 
 PROGRAM::~PROGRAM()
@@ -18,39 +17,35 @@ PROGRAM::~PROGRAM()
 
 void PROGRAM::Release()
 {
-    if (ProgramDirectory)
-        delete ProgramDirectory;
-    ProgramDirectory = 0;
-    DWORD n;
+    delete ProgramDirectory;
+    ProgramDirectory = nullptr;
     if (ProgramBlock)
     {
-        for (n = 0; n < ProgramNum; n++)
+        for (uint32_t n = 0; n < ProgramNum; n++)
         {
             ProgramBlock[n]->Release();
             delete ProgramBlock[n];
         }
-        delete ProgramBlock;
-        ProgramBlock = 0;
+        free(ProgramBlock);
+        ProgramBlock = nullptr;
     }
 }
 
 bool PROGRAM::RunProgram(char *program_name)
 {
-    DWORD code;
-
     if (Running(program_name))
         return true;
-    code = ProgramNum;
+    const auto code = ProgramNum;
     ProgramNum++;
-    ProgramBlock = (COMPILER **)RESIZE(ProgramBlock, ProgramNum * sizeof(COMPILER *));
+    ProgramBlock = static_cast<COMPILER **>(realloc(ProgramBlock, ProgramNum * sizeof(COMPILER *)));
 
-    ProgramBlock[code] = NEW COMPILER;
+    ProgramBlock[code] = new COMPILER;
     ProgramBlock[code]->SetProgramDirectory(ProgramDirectory);
     if (!ProgramBlock[code]->CreateProgram(program_name))
     {
         delete ProgramBlock[code];
         ProgramNum--;
-        ProgramBlock = (COMPILER **)RESIZE(ProgramBlock, ProgramNum * sizeof(COMPILER *));
+        ProgramBlock = static_cast<COMPILER **>(realloc(ProgramBlock, ProgramNum * sizeof(COMPILER *)));
         return false;
     }
     return ProgramBlock[code]->Run();
@@ -58,8 +53,7 @@ bool PROGRAM::RunProgram(char *program_name)
 
 bool PROGRAM::Running(char *program_name)
 {
-    DWORD n;
-    for (n = 0; n < ProgramNum; n++)
+    for (uint32_t n = 0; n < ProgramNum; n++)
     {
         if (strcmp(ProgramBlock[n]->GetName(), program_name) == 0)
             return true;
@@ -73,21 +67,20 @@ void PROGRAM::StopProgram(char *program_name)
 
 void PROGRAM::SetProgramDirectory(char *dir_name)
 {
-    if (ProgramDirectory)
-        delete ProgramDirectory;
-    ProgramDirectory = 0;
+    delete ProgramDirectory;
+    ProgramDirectory = nullptr;
     if (dir_name)
     {
-
-        ProgramDirectory = NEW char[strlen(dir_name) + 1];
-        strcpy(ProgramDirectory, dir_name);
+        const auto len = strlen(dir_name) + 1;
+        ProgramDirectory = new char[len];
+        memcpy(ProgramDirectory, dir_name, len);
     }
 }
+
 VDATA *PROGRAM::ProcessEvent(char *event_name, MESSAGE message)
 {
-    DWORD n;
     VDATA *pVD;
-    for (n = 0; n < ProgramNum; n++)
+    for (uint32_t n = 0; n < ProgramNum; n++)
     {
         message.Move2Start();
         pVD = ProgramBlock[n]->ProcessEvent(event_name, message);
@@ -98,40 +91,36 @@ VDATA *PROGRAM::ProcessEvent(char *event_name, MESSAGE message)
 VDATA *PROGRAM::ProcessEvent(char *event_name)
 {
     VDATA *pVD;
-    DWORD n;
-    for (n = 0; n < ProgramNum; n++)
+    for (uint32_t n = 0; n < ProgramNum; n++)
     {
         pVD = ProgramBlock[n]->ProcessEvent(event_name);
     }
     return pVD;
 }
 
-void PROGRAM::ProcessFrame(DWORD DeltaTime)
+void PROGRAM::ProcessFrame(uint32_t DeltaTime)
 {
-    DWORD n, i, old_size;
-
-    old_size = ProgramNum;
-    for (n = 0; n < ProgramNum; n++)
+    const auto old_size = ProgramNum;
+    for (uint32_t n = 0; n < ProgramNum; n++)
     {
         ProgramBlock[n]->ProcessFrame(DeltaTime);
         if (!ProgramBlock[n]->Completed())
             continue;
         ProgramBlock[n]->Release();
         delete ProgramBlock[n];
-        for (i = n; i < (ProgramNum - 1); i++)
+        for (auto i = n; i < (ProgramNum - 1); i++)
         {
             ProgramBlock[i] = ProgramBlock[i + 1];
         }
         ProgramNum--;
     }
     if (old_size != ProgramNum)
-        ProgramBlock = (COMPILER **)RESIZE(ProgramBlock, ProgramNum * sizeof(COMPILER *));
+        ProgramBlock = static_cast<COMPILER **>(realloc(ProgramBlock, ProgramNum * sizeof(COMPILER *)));
 }
 
 void PROGRAM::ClearEvents()
 {
-    DWORD n;
-    for (n = 0; n < ProgramNum; n++)
+    for (uint32_t n = 0; n < ProgramNum; n++)
     {
         ProgramBlock[n]->ClearEvents();
     }
@@ -139,9 +128,8 @@ void PROGRAM::ClearEvents()
 
 bool PROGRAM::SaveState(HANDLE fh)
 {
-    DWORD n;
-    Core.fio->_WriteFile(fh, &ProgramNum, sizeof(ProgramNum), 0);
-    for (n = 0; n < ProgramNum; n++)
+    fio->_WriteFile(fh, &ProgramNum, sizeof(ProgramNum), nullptr);
+    for (uint32_t n = 0; n < ProgramNum; n++)
     {
         ProgramBlock[n]->SaveState(fh);
     }
@@ -150,14 +138,12 @@ bool PROGRAM::SaveState(HANDLE fh)
 
 bool PROGRAM::LoadState(HANDLE fh)
 {
-    DWORD n;
     Release();
-    Core.fio->_ReadFile(fh, &ProgramNum, sizeof(ProgramNum), 0);
-    ProgramBlock = (COMPILER **)RESIZE(ProgramBlock, ProgramNum * sizeof(COMPILER *));
-    for (n = 0; n < ProgramNum; n++)
+    fio->_ReadFile(fh, &ProgramNum, sizeof(ProgramNum), nullptr);
+    ProgramBlock = static_cast<COMPILER **>(realloc(ProgramBlock, ProgramNum * sizeof(COMPILER *)));
+    for (uint32_t n = 0; n < ProgramNum; n++)
     {
-
-        ProgramBlock[n] = NEW COMPILER;
+        ProgramBlock[n] = new COMPILER;
         if (!ProgramBlock[n]->LoadState(fh))
             return false;
     }
@@ -166,8 +152,7 @@ bool PROGRAM::LoadState(HANDLE fh)
 
 bool PROGRAM::OnLoad()
 {
-    DWORD n;
-    for (n = 0; n < ProgramNum; n++)
+    for (uint32_t n = 0; n < ProgramNum; n++)
     {
         ProgramBlock[n]->OnLoad();
     }
@@ -176,8 +161,7 @@ bool PROGRAM::OnLoad()
 
 void PROGRAM::AddPostEvent(S_EVENTMSG *pEM)
 {
-    DWORD n;
-    for (n = 0; n < ProgramNum; n++)
+    for (uint32_t n = 0; n < ProgramNum; n++)
     {
         ProgramBlock[n]->AddPostEvent(pEM);
     }
