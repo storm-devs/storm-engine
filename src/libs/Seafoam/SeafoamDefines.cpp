@@ -1,12 +1,13 @@
 #include "SeafoamDefines.h"
-
+#include "rands.h"
+#include <cstdlib>
 //--------------------------------------------------------------------
-
+/*
 float rand(float r)
 // returns random float
 {
-    static const float randMax = (float)RAND_MAX;
-    return r * (((float)rand()) / randMax);
+    static const float randMax = (float) RAND_MAX;
+    return r * (((float) rand()) / randMax);
 }
 //--------------------------------------------------------------------
 
@@ -25,3 +26,4 @@ float randCentered(float r)
     return (rand(r) - half);
 }
 //--------------------------------------------------------------------
+*/

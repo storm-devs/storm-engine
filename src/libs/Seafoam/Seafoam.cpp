@@ -1,109 +1,99 @@
-#include "CVECTOR.h"
-#include "dx8render.h"
-#include "exs.h"
-#include "geometry.h"
-#include "geos.h"
-#include "messages.h"
-#include "model.h"
-//#include "net.h"
-#include "SeafoamDefines.h"
-#include "sea_base.h"
-#include "ship_base.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include "SEAFOAM.h"
+#include "Seafoam.h"
+#include "../../Shared/messages.h"
+#include "defines.h"
+#include <EntityManager.h>
 
 INTERFACE_FUNCTION
 CREATE_CLASS(SEAFOAM)
 
-// ENTITY_ID arrowModel;
+// entid_t arrowModel;
 
 #define U_SPEED_K 24e-4f
 #define V_SPEED_K 10e-5f
 #define START_FADE_SPEED 5.f
 
 //--------------------------------------------------------------------
-SEAFOAM::SEAFOAM() : shipsCount(0), isStorm(false)
+SEAFOAM::SEAFOAM() : sea(nullptr), shipsCount(0), carcassTexture(0), isStorm(false), soundService(nullptr)
 {
-    psIni = null;
-    renderer = null;
+    psIni = nullptr;
+    renderer = nullptr;
 }
 
 //--------------------------------------------------------------------
 SEAFOAM::~SEAFOAM()
 {
-    GUARD(SEAFOAM::~SEAFOAM)
+    // GUARD(SEAFOAM::~SEAFOAM)
 
     ReleaseShipFoam();
     delete psIni;
     if (renderer && (carcassTexture >= 0))
         renderer->TextureRelease(carcassTexture);
-    UNGUARD
+    // UNGUARD
 }
 
 //--------------------------------------------------------------------
 bool SEAFOAM::Init()
 {
-    GUARD(SEAFOAM::Init)
+    // GUARD(SEAFOAM::Init)
 
-    _CORE_API->FindClass(&seaID, "sea", 0);
-    sea = (SEA_BASE *)_CORE_API->GetEntityPointer(&seaID);
+    /*if (api->IsNetActive())
+    {
+      NetFindClass(false, &seaID, "NetSea");
+      sea = (SEA_BASE*) EntityManager::GetEntityPointer(seaID);
+    }
+    else*/
+    {
+        seaID = EntityManager::GetEntityId("sea");
+        sea = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(seaID));
+    }
 
-    renderer = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
-    soundService = (VSoundService *)_CORE_API->CreateService("SoundService");
+    renderer = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+    soundService = static_cast<VSoundService *>(api->CreateService("SoundService"));
 
-    psIni = _CORE_API->fio->OpenIniFile("resource\\ini\\particles.ini");
+    psIni = fio->OpenIniFile("resource\\ini\\particles.ini");
 
     InitializeShipFoam();
 
-    //_CORE_API->CreateEntity(&arrowModel,"MODELR");
-    //_CORE_API->Send_Message(arrowModel,"ls",MSG_MODEL_LOAD_GEO, "fish01");
+    // EntityManager::CreateEntity(&arrowModel,"MODELR");
+    // api->Send_Message(arrowModel,"ls",MSG_MODEL_LOAD_GEO, "fish01");
 
     carcassTexture = renderer->TextureCreate("seafoam_2.tga");
     return true;
-    UNGUARD
+    // UNGUARD
 }
 
 //--------------------------------------------------------------------
 void SEAFOAM::InitializeShipFoam()
 {
-    ENTITY_ID shipID;
-    array<ENTITY_ID> aShipsID(_FL_);
-
-    if (api->FindClass(&shipID, "ship", 0))
-        do
-        {
-            aShipsID.Add(shipID);
-        } while (api->FindClassNext(&shipID));
-
-    for (long i = 0; i < aShipsID; i++)
-        AddShip(&aShipsID[i]);
+    const auto &entities = EntityManager::GetEntityIdVector("ship");
+    for (auto ent : entities)
+    {
+        AddShip(ent);
+    }
 }
 
-void SEAFOAM::AddShip(ENTITY_ID *pShipEID)
+void SEAFOAM::AddShip(entid_t pShipEID)
 {
-    tShipFoamInfo *foamInfo = &shipFoamInfo[shipsCount++];
+    auto *foamInfo = &shipFoamInfo[shipsCount++];
 
-    foamInfo->ship = (SHIP_BASE *)_CORE_API->GetEntityPointer(pShipEID);
+    foamInfo->ship = static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(pShipEID));
     foamInfo->shipModel = foamInfo->ship->GetModel();
     foamInfo->shipModel->GetNode(0)->geo->GetInfo(foamInfo->hullInfo);
     foamInfo->enabled = true;
-    foamInfo->frontEmitter[0] = NEW SEAFOAM_PS();
+    foamInfo->frontEmitter[0] = new SEAFOAM_PS();
     foamInfo->frontEmitter[0]->Init(psIni, "seafoam");
-    foamInfo->frontEmitter[1] = NEW SEAFOAM_PS();
+    foamInfo->frontEmitter[1] = new SEAFOAM_PS();
     foamInfo->frontEmitter[1]->Init(psIni, "seafoam2");
-    foamInfo->frontEmitter[2] = NEW SEAFOAM_PS();
+    foamInfo->frontEmitter[2] = new SEAFOAM_PS();
     foamInfo->frontEmitter[2]->Init(psIni, "seafoam_front");
 
     CreateTracePoints(foamInfo);
-    float wideK = sqrtf(foamInfo->hullInfo.boxsize.y / 17.f);
-    foamInfo->carcass[0] = NEW TCarcass(TRACE_STEPS_Z, MEASURE_POINTS, renderer, true);
+    const auto wideK = sqrtf(foamInfo->hullInfo.boxsize.y / 17.f);
+    foamInfo->carcass[0] = new TCarcass(TRACE_STEPS_Z, MEASURE_POINTS, renderer, true);
     foamInfo->carcass[0]->Initialize();
     foamInfo->carcass[0]->InitCircleMeasure(wideK * 1.4f, wideK * -1.f, .55f);
 
-    foamInfo->carcass[1] = NEW TCarcass(TRACE_STEPS_Z, MEASURE_POINTS, renderer, false);
+    foamInfo->carcass[1] = new TCarcass(TRACE_STEPS_Z, MEASURE_POINTS, renderer, false);
     foamInfo->carcass[1]->Initialize();
     foamInfo->carcass[1]->InitCircleMeasure(wideK * 1.4f, wideK * 1.f, .55f);
 
@@ -115,9 +105,9 @@ void SEAFOAM::AddShip(ENTITY_ID *pShipEID)
 //--------------------------------------------------------------------
 void SEAFOAM::ReleaseShipFoam()
 {
-    tShipFoamInfo *foamInfo = 0;
+    tShipFoamInfo *foamInfo = nullptr;
 
-    for (int ship = 0; ship < shipsCount; ship++)
+    for (auto ship = 0; ship < shipsCount; ship++)
     {
         foamInfo = &shipFoamInfo[ship];
 
@@ -136,10 +126,10 @@ void SEAFOAM::ReleaseShipFoam()
 //--------------------------------------------------------------------
 void SEAFOAM::CreateTracePoints(tShipFoamInfo *_shipFoamInfo)
 {
-    float yStep = 0.9f * _shipFoamInfo->hullInfo.boxsize.y / (TRACE_STEPS_Y - 1);
-    float zStep = .15f * _shipFoamInfo->hullInfo.boxsize.z / TRACE_STEPS_Z;
+    const auto yStep = 0.9f * _shipFoamInfo->hullInfo.boxsize.y / (TRACE_STEPS_Y - 1);
+    const auto zStep = .15f * _shipFoamInfo->hullInfo.boxsize.z / TRACE_STEPS_Z;
     float curY, curZ;
-    GEOS::VERTEX startSrcV, startDestV;
+    GEOS::VERTEX startSrcV, startDestV{};
     float startZ[TRACE_STEPS_Y];
 
     // <find_startZ>
@@ -150,18 +140,16 @@ void SEAFOAM::CreateTracePoints(tShipFoamInfo *_shipFoamInfo)
 
     startDestV.x = _shipFoamInfo->hullInfo.boxcenter.x;
     startDestV.z = _shipFoamInfo->hullInfo.boxcenter.z - _shipFoamInfo->hullInfo.boxsize.z / 2.0f;
-
-    for (int y = 0; y < TRACE_STEPS_Y; y++, curY -= yStep)
+    int y;
+    for (y = 0; y < TRACE_STEPS_Y; y++, curY -= yStep)
     {
         startSrcV.y = curY;
         startDestV.y = curY;
-        float d = _shipFoamInfo->shipModel->GetNode(0)->geo->Trace(startSrcV, startDestV);
+        const auto d = _shipFoamInfo->shipModel->GetNode(0)->geo->Trace(startSrcV, startDestV);
         if (d <= 1.0f)
         {
-            startZ[y] =
-                d * _shipFoamInfo->hullInfo.boxsize.z /*(startSrcV.z - 2.0f * _shipFoamInfo->hullInfo.boxcenter.z) +
-                                                         _shipFoamInfo->hullInfo.boxcenter.z*/
-                ;
+            startZ[y] = d * _shipFoamInfo->hullInfo.boxsize.z
+                /*(startSrcV.z - 2.0f * _shipFoamInfo->hullInfo.boxcenter.z) + _shipFoamInfo->hullInfo.boxcenter.z*/;
             if (startZ[y] > (_shipFoamInfo->hullInfo.boxsize.z / 4.0f))
                 startZ[y] = 0.0f;
         }
@@ -170,26 +158,26 @@ void SEAFOAM::CreateTracePoints(tShipFoamInfo *_shipFoamInfo)
     }
 
     // <trace_from_sides>
-    float halfZ = (_shipFoamInfo->hullInfo.boxsize.z / 2.0f);
+    const auto halfZ = (_shipFoamInfo->hullInfo.boxsize.z / 2.0f);
     curZ = _shipFoamInfo->hullInfo.boxcenter.z + halfZ;
-    for (int z = 0; z < TRACE_STEPS_Z;
+    for (auto z = 0; z < TRACE_STEPS_Z;
          z++, curZ -= zStep * (1 + 8 * sinf(PId2 * (_shipFoamInfo->hullInfo.boxcenter.z + halfZ - curZ) / halfZ)))
     {
         curY = _shipFoamInfo->hullInfo.boxcenter.y + (_shipFoamInfo->hullInfo.boxsize.y / 2.0f);
         CVECTOR meanPointSum(0.0f, 0.0f, 0.0f);
-        int meanCount = 0;
-        int firstEnabledY = 0;
+        auto meanCount = 0;
+        auto firstEnabledY = 0;
         float deltaZ;
-        float kSum = 0.0f;
+        auto kSum = 0.0f;
 
-        for (int y = 0; y < TRACE_STEPS_Y; y++, curY -= yStep)
+        for (y = 0; y < TRACE_STEPS_Y; y++, curY -= yStep)
         {
             deltaZ = startZ[y];
-            CVECTOR srcLeft(_shipFoamInfo->hullInfo.boxcenter.x - _shipFoamInfo->hullInfo.boxsize.x / 2.0f, curY,
-                            curZ - deltaZ);
-            CVECTOR srcRight(_shipFoamInfo->hullInfo.boxcenter.x + _shipFoamInfo->hullInfo.boxsize.x / 2.0f, curY,
-                             curZ - deltaZ);
-            CVECTOR dst(_shipFoamInfo->hullInfo.boxcenter.x, curY, curZ - deltaZ);
+            const CVECTOR srcLeft(_shipFoamInfo->hullInfo.boxcenter.x - _shipFoamInfo->hullInfo.boxsize.x / 2.0f, curY,
+                                  curZ - deltaZ);
+            const CVECTOR srcRight(_shipFoamInfo->hullInfo.boxcenter.x + _shipFoamInfo->hullInfo.boxsize.x / 2.0f, curY,
+                                   curZ - deltaZ);
+            const CVECTOR dst(_shipFoamInfo->hullInfo.boxcenter.x, curY, curZ - deltaZ);
             GEOS::VERTEX srcLeftV, srcRightV, dstV;
             srcLeftV.x = srcLeft.x;
             srcLeftV.y = srcLeft.y;
@@ -206,7 +194,7 @@ void SEAFOAM::CreateTracePoints(tShipFoamInfo *_shipFoamInfo)
             _shipFoamInfo->hull[1][z].center[y].y = curY;
             _shipFoamInfo->hull[1][z].center[y].z = curZ - deltaZ;
             // <from_left>
-            float d = _shipFoamInfo->shipModel->GetNode(0)->geo->Trace(srcLeftV, dstV);
+            auto d = _shipFoamInfo->shipModel->GetNode(0)->geo->Trace(srcLeftV, dstV);
             if (d > 1.0f)
                 _shipFoamInfo->hull[0][z].center[y].x = _shipFoamInfo->hullInfo.boxcenter.x;
             else
@@ -227,13 +215,12 @@ void SEAFOAM::CreateTracePoints(tShipFoamInfo *_shipFoamInfo)
 }
 
 //--------------------------------------------------------------------
-void SEAFOAM::InterpolateLeftParticle(tShipFoamInfo &_shipFoamInfo, int z, dword _dTime)
+void SEAFOAM::InterpolateLeftParticle(tShipFoamInfo &_shipFoamInfo, int z, uint32_t dTime)
 {
-    CVECTOR ang, finalAng, testPoint;
-    CMatrix finalMatrix;
+    CVECTOR testPoint{};
     float seaY, interpK;
     int curY;
-    CVECTOR lowPoint, highPoint, lastTestPoint, finalPos;
+    CVECTOR lowPoint, highPoint, lastTestPoint;
     int testY, lastTestY;
     float lowSeaY, highSeaY, seaK;
 
@@ -243,11 +230,12 @@ void SEAFOAM::InterpolateLeftParticle(tShipFoamInfo &_shipFoamInfo, int z, dword
     highSeaY = sea->WaveXZ(highPoint.x, highPoint.z);
 
     seaK = (highSeaY - lowSeaY) /
-           (_shipFoamInfo.hull[0][z].center[0].y - _shipFoamInfo.hull[0][z].center[TRACE_STEPS_Y].y); // k < 0
+           (_shipFoamInfo.hull[0][z].center[0].y - _shipFoamInfo.hull[0][z].center[TRACE_STEPS_Y - 1].y); // k < 0
     if ((lowSeaY > lowPoint.y) && (highSeaY > highPoint.y))
-    { // above sea
+    {
+        // above sea
         _shipFoamInfo.levelStarts[0][z] = _shipFoamInfo.hull[0][z].center[0];
-        CVECTOR tempVector;
+        CVECTOR tempVector{};
         _shipFoamInfo.shipModel->mtx.MulToInv(CVECTOR(highPoint.x, (lowSeaY + highSeaY) * 0.5f, highPoint.z),
                                               tempVector);
         _shipFoamInfo.levelStarts[0][z].y = tempVector.y;
@@ -255,9 +243,10 @@ void SEAFOAM::InterpolateLeftParticle(tShipFoamInfo &_shipFoamInfo, int z, dword
     }
 
     if ((lowSeaY < lowPoint.y) && (highSeaY < highPoint.y))
-    { // under sea
+    {
+        // under sea
         _shipFoamInfo.levelStarts[0][z] = _shipFoamInfo.hull[0][z].center[TRACE_STEPS_Y - 1];
-        CVECTOR tempVector;
+        CVECTOR tempVector{};
         _shipFoamInfo.shipModel->mtx.MulToInv(CVECTOR(lowPoint.x, (lowSeaY + highSeaY) * 0.5f, lowPoint.z), tempVector);
         _shipFoamInfo.levelStarts[0][z].y = tempVector.y;
         return;
@@ -282,12 +271,13 @@ void SEAFOAM::InterpolateLeftParticle(tShipFoamInfo &_shipFoamInfo, int z, dword
     }
 
     if (curY < TRACE_STEPS_Y)
-    { // successful search
+    {
+        // successful search
         interpK = (seaY - lastTestPoint.y) / (testPoint.y - lastTestPoint.y);
         testPoint = _shipFoamInfo.hull[0][z].center[curY];
         lastTestPoint = _shipFoamInfo.hull[0][z].center[curY - 1];
-        _shipFoamInfo.levelStarts[0][z] =
-            lastTestPoint + interpK * (testPoint - lastTestPoint); // interpK*(testPoint - lastTestPoint);
+        _shipFoamInfo.levelStarts[0][z] = lastTestPoint + interpK * (testPoint - lastTestPoint);
+        // interpK*(testPoint - lastTestPoint);
     }
     else
     {
@@ -296,14 +286,10 @@ void SEAFOAM::InterpolateLeftParticle(tShipFoamInfo &_shipFoamInfo, int z, dword
 }
 
 //--------------------------------------------------------------------
-void SEAFOAM::InterpolateRightParticle(tShipFoamInfo &_shipFoamInfo, int z, dword _dTime)
+void SEAFOAM::InterpolateRightParticle(tShipFoamInfo &_shipFoamInfo, int z, uint32_t dTime)
 {
-    CVECTOR ang, finalAng, testPoint;
-    CMatrix finalMatrix;
-    float seaY, interpK;
-    int curY;
-    CVECTOR lowPoint, highPoint, lastTestPoint, finalPos;
-    int testY, lastTestY;
+    float interpK;
+    CVECTOR lowPoint, highPoint;
     float lowSeaY, highSeaY, seaK;
 
     lowPoint = _shipFoamInfo.shipModel->mtx * (_shipFoamInfo.hull[1][z].center[TRACE_STEPS_Y - 1]);
@@ -312,9 +298,10 @@ void SEAFOAM::InterpolateRightParticle(tShipFoamInfo &_shipFoamInfo, int z, dwor
     highSeaY = sea->WaveXZ(highPoint.x, highPoint.z);
 
     seaK = (highSeaY - lowSeaY) /
-           (_shipFoamInfo.hull[1][z].center[1].y - _shipFoamInfo.hull[1][z].center[TRACE_STEPS_Y].y); // k < 0
+           (_shipFoamInfo.hull[1][z].center[1].y - _shipFoamInfo.hull[1][z].center[TRACE_STEPS_Y - 1].y); // k < 0
     if ((lowSeaY > lowPoint.y) && (highSeaY > highPoint.y))
-    { // above sea
+    {
+        // above sea
         _shipFoamInfo.levelStarts[1][z] = _shipFoamInfo.hull[1][z].center[1];
         CVECTOR tempVector;
         _shipFoamInfo.shipModel->mtx.MulToInv(CVECTOR(highPoint.x, (lowSeaY + highSeaY) * 0.5f, highPoint.z),
@@ -324,7 +311,8 @@ void SEAFOAM::InterpolateRightParticle(tShipFoamInfo &_shipFoamInfo, int z, dwor
     }
 
     if ((lowSeaY < lowPoint.y) && (highSeaY < highPoint.y))
-    { // under sea
+    {
+        // under sea
         _shipFoamInfo.levelStarts[1][z] = _shipFoamInfo.hull[1][z].center[TRACE_STEPS_Y - 1];
         CVECTOR tempVector;
         _shipFoamInfo.shipModel->mtx.MulToInv(CVECTOR(lowPoint.x, (lowSeaY + highSeaY) * 0.5f, lowPoint.z), tempVector);
@@ -332,13 +320,13 @@ void SEAFOAM::InterpolateRightParticle(tShipFoamInfo &_shipFoamInfo, int z, dwor
         return;
     }
 
-    curY = 0;
-    testPoint = _shipFoamInfo.hull[1][z].center[curY];
-    lastTestPoint = testPoint;
-    testY = curY;
-    lastTestY = testY;
+    auto curY = 0;
+    auto testPoint = _shipFoamInfo.hull[1][z].center[curY];
+    auto lastTestPoint = testPoint;
+    auto testY = curY;
+    auto lastTestY = testY;
 
-    seaY = /*__max(lowSeaY, highSeaY)*/ (lowSeaY + highSeaY) / 2.0f;
+    const auto seaY = /*__max(lowSeaY, highSeaY)*/ (lowSeaY + highSeaY) / 2.0f;
     for (curY = 0; curY < TRACE_STEPS_Y; ++curY)
     {
         testPoint = _shipFoamInfo.shipModel->mtx * _shipFoamInfo.hull[1][z].center[curY];
@@ -350,13 +338,14 @@ void SEAFOAM::InterpolateRightParticle(tShipFoamInfo &_shipFoamInfo, int z, dwor
         testY = curY;
     }
 
-    if (curY < TRACE_STEPS_Y)
-    { // successful search
+    if (curY > 0 && curY < TRACE_STEPS_Y) //~!~
+    {
+        // successful search
         interpK = (seaY - lastTestPoint.y) / (testPoint.y - lastTestPoint.y);
         testPoint = _shipFoamInfo.hull[1][z].center[curY];
         lastTestPoint = _shipFoamInfo.hull[1][z].center[curY - 1];
-        _shipFoamInfo.levelStarts[1][z] =
-            lastTestPoint + interpK * (testPoint - lastTestPoint); // interpK*(testPoint - lastTestPoint);
+        _shipFoamInfo.levelStarts[1][z] = lastTestPoint + interpK * (testPoint - lastTestPoint);
+        // interpK*(testPoint - lastTestPoint);
     }
     else
     {
@@ -365,26 +354,26 @@ void SEAFOAM::InterpolateRightParticle(tShipFoamInfo &_shipFoamInfo, int z, dwor
 }
 
 //--------------------------------------------------------------------
-void SEAFOAM::RealizeShipFoam_Particles(tShipFoamInfo &_shipFoamInfo, dword _dTime)
+void SEAFOAM::RealizeShipFoam_Particles(tShipFoamInfo &_shipFoamInfo, uint32_t _dTime)
 {
-    // MODEL *arrow = (MODEL*)_CORE_API->GetEntityPointer(&arrowModel);
+    // MODEL *arrow = (MODEL*)EntityManager::GetEntityPointer(arrowModel);
 
-    for (int z = 0; z < TRACE_STEPS_Z; ++z)
+    for (auto z = 0; z < TRACE_STEPS_Z; ++z)
     {
         /*
         for (int y=0; y<TRACE_STEPS_Y; ++y)
         {
-            CVECTOR fPos = _shipFoamInfo.shipModel->mtx * (_shipFoamInfo.hull[0][z].center[y]);
-            arrow->mtx.BuildMatrix(CVECTOR(1.0f, 0.0f, 0.0f), fPos);
-            arrow->Realize(_dTime);
+          CVECTOR fPos = _shipFoamInfo.shipModel->mtx * (_shipFoamInfo.hull[0][z].center[y]);
+          arrow->mtx.BuildMatrix(CVECTOR(1.0f, 0.0f, 0.0f), fPos);
+          arrow->Realize(_dTime);
 
-            fPos = _shipFoamInfo.shipModel->mtx * (_shipFoamInfo.levelStarts[0][z]);
-            arrow->mtx.BuildMatrix(CVECTOR(0.0f, 0.0f, 0.0f), fPos);
-            arrow->Realize(_dTime);
-            arrow->mtx.BuildMatrix(CVECTOR(0.0f, PId2, 0.0f), fPos);
-            arrow->Realize(_dTime);
-            arrow->mtx.BuildMatrix(CVECTOR(PId2, 0.0f, 0.0f), fPos);
-            arrow->Realize(_dTime);
+          fPos = _shipFoamInfo.shipModel->mtx * (_shipFoamInfo.levelStarts[0][z]);
+          arrow->mtx.BuildMatrix(CVECTOR(0.0f, 0.0f, 0.0f), fPos);
+          arrow->Realize(_dTime);
+          arrow->mtx.BuildMatrix(CVECTOR(0.0f, PId2, 0.0f), fPos);
+          arrow->Realize(_dTime);
+          arrow->mtx.BuildMatrix(CVECTOR(PId2, 0.0f, 0.0f), fPos);
+          arrow->Realize(_dTime);
 
         }
         */
@@ -392,12 +381,12 @@ void SEAFOAM::RealizeShipFoam_Particles(tShipFoamInfo &_shipFoamInfo, dword _dTi
         InterpolateRightParticle(_shipFoamInfo, z, _dTime);
     }
 
-    dword ticks = 0;
+    uint64_t ticks = 0;
     RDTSC_B(ticks)
 
-    CVECTOR frontEmitterPos = 0.5f * (_shipFoamInfo.levelStarts[0][0] + _shipFoamInfo.levelStarts[1][0]);
-    float shipSpeed = _shipFoamInfo.ship->GetCurrentSpeed();
-    float speedDeltaY = 0.f;
+    auto frontEmitterPos = 0.5f * (_shipFoamInfo.levelStarts[0][0] + _shipFoamInfo.levelStarts[1][0]);
+    const auto shipSpeed = _shipFoamInfo.ship->GetCurrentSpeed();
+    auto speedDeltaY = 0.f;
     if (shipSpeed < START_FADE_SPEED)
         speedDeltaY = 1.f * (1.f - shipSpeed / START_FADE_SPEED);
     frontEmitterPos.z += FOAM_SHIFT_Z + .25f * shipSpeed;
@@ -414,7 +403,7 @@ void SEAFOAM::RealizeShipFoam_Particles(tShipFoamInfo &_shipFoamInfo, dword _dTi
 
     if (isStorm)
     {
-        static float oldFrontEmitterPosY = frontEmitterPos.y;
+        static auto oldFrontEmitterPosY = frontEmitterPos.y;
         if ((frontEmitterPos.y - oldFrontEmitterPosY) / _dTime < 5e-4f) // 0.025
         {
             _shipFoamInfo.frontEmitter[2]->EnableEmit(false);
@@ -426,9 +415,9 @@ void SEAFOAM::RealizeShipFoam_Particles(tShipFoamInfo &_shipFoamInfo, dword _dTi
             _shipFoamInfo.doSplash = true;
         }
         oldFrontEmitterPosY = frontEmitterPos.y;
-        CMatrix mtx2 = _shipFoamInfo.shipModel->mtx;
+        auto mtx2 = _shipFoamInfo.shipModel->mtx;
         mtx2.Pos() = 0.f;
-        CVECTOR a = mtx2 * CVECTOR(0.f, 1.0f, -.15f);
+        const auto a = mtx2 * CVECTOR(0.f, 1.0f, -.15f);
         _shipFoamInfo.frontEmitter[2]->SetEmitter(_shipFoamInfo.shipModel->mtx * frontEmitterPos, a);
         _shipFoamInfo.frontEmitter[2]->Realize(_dTime);
     }
@@ -440,7 +429,7 @@ void SEAFOAM::RealizeShipFoam_Particles(tShipFoamInfo &_shipFoamInfo, dword _dTi
         //_shipFoamInfo.sound = soundService->SoundPlay("ship_bow", PCM_3D, VOLUME_FX, false, true, true);
         if (_shipFoamInfo.sound)
         {
-            CVECTOR pos = _shipFoamInfo.shipModel->mtx * CVECTOR(0.f, 0.f, _shipFoamInfo.hullInfo.boxsize.z / 2.f);
+            auto pos = _shipFoamInfo.shipModel->mtx * CVECTOR(0.f, 0.f, _shipFoamInfo.hullInfo.boxsize.z / 2.f);
             pos.y = sea->WaveXZ(pos.x, pos.z);
             // soundService->SoundSetVolume(_shipFoamInfo.sound, _shipFoamInfo.splashFactor);
             soundService->SoundSet3DParam(_shipFoamInfo.sound, SM_POSITION, &pos);
@@ -451,30 +440,30 @@ void SEAFOAM::RealizeShipFoam_Particles(tShipFoamInfo &_shipFoamInfo, dword _dTi
     // api->Trace("Seafoam realize(carcass->Execute) = %d", ticks);
 }
 
-void SEAFOAM::RealizeShipFoam_Mesh(tShipFoamInfo &_shipFoamInfo, dword _dTime)
+void SEAFOAM::RealizeShipFoam_Mesh(tShipFoamInfo &_shipFoamInfo, uint32_t _dTime)
 {
     _shipFoamInfo.carcass[0]->Execute(_dTime, _shipFoamInfo.shipModel->mtx, _shipFoamInfo.levelStarts[0]);
     _shipFoamInfo.carcass[1]->Execute(_dTime, _shipFoamInfo.shipModel->mtx, _shipFoamInfo.levelStarts[1]);
 
-    _shipFoamInfo.carcass[0]->Realize(0);
-    _shipFoamInfo.carcass[1]->Realize(0);
+    _shipFoamInfo.carcass[0]->Realize(nullptr);
+    _shipFoamInfo.carcass[1]->Realize(nullptr);
 }
 
 //--------------------------------------------------------------------
-dword _cdecl SEAFOAM::ProcessMessage(MESSAGE &message)
+uint64_t SEAFOAM::ProcessMessage(MESSAGE &message)
 {
-    GUARD(SEAFOAM::ProcessMessage)
+    // GUARD(SEAFOAM::ProcessMessage)
 
-    long code = message.Long();
-    dword outValue = 0;
+    const auto code = message.Long();
+    const uint32_t outValue = 0;
 
     switch (code)
     {
     case MSG_SHIP_DELETE: {
-        ATTRIBUTES *attrs = message.AttributePointer();
-        tShipFoamInfo *foamInfo = 0;
+        auto *const attrs = message.AttributePointer();
+        tShipFoamInfo *foamInfo = nullptr;
         if (attrs)
-            for (int ship = 0; ship < shipsCount; ship++)
+            for (auto ship = 0; ship < shipsCount; ship++)
             {
                 if (attrs == shipFoamInfo[ship].ship->GetACharacter())
                 {
@@ -493,18 +482,18 @@ dword _cdecl SEAFOAM::ProcessMessage(MESSAGE &message)
     }
 
     return outValue;
-    UNGUARD
+    // UNGUARD
 }
 
 //--------------------------------------------------------------------
-void SEAFOAM::Realize(dword _dTime)
+void SEAFOAM::Realize(uint32_t _dTime)
 {
-    GUARD(SEAFOAM::Realize)
+    // GUARD(SEAFOAM::Realize)
 
-    dword ticks = 0;
+    uint64_t ticks = 0;
     RDTSC_B(ticks)
 
-    tShipFoamInfo *foamInfo = 0;
+    tShipFoamInfo *foamInfo = nullptr;
     int ship;
 
     for (ship = 0; ship < shipsCount; ship++)
@@ -516,10 +505,10 @@ void SEAFOAM::Realize(dword _dTime)
     }
 
     static CMatrix wMatrix;
-    renderer->SetTransform(D3DTS_WORLD, (D3DMATRIX *)wMatrix);
+    renderer->SetTransform(D3DTS_WORLD, static_cast<D3DMATRIX *>(wMatrix));
 
     renderer->TextureSet(0, carcassTexture);
-    bool techniqueStarted = renderer->TechniqueExecuteStart("new_seafoam");
+    const auto techniqueStarted = renderer->TechniqueExecuteStart("new_seafoam");
     for (ship = 0; ship < shipsCount; ship++)
     {
         foamInfo = &shipFoamInfo[ship];
@@ -533,17 +522,17 @@ void SEAFOAM::Realize(dword _dTime)
 
     RDTSC_E(ticks)
     // api->Trace("Seafoam realize = %d", ticks);
-    UNGUARD
+    // UNGUARD
 }
 
 //--------------------------------------------------------------------
-void SEAFOAM::Execute(dword _dTime)
+void SEAFOAM::Execute(uint32_t dTime)
 {
-    GUARD(SEAFOAM::Execute);
-    tShipFoamInfo *foamInfo = 0;
+    // GUARD(SEAFOAM::Execute);
+    tShipFoamInfo *foamInfo = nullptr;
     float shipSpeed, speedA;
 
-    for (int ship = 0; ship < shipsCount; ship++)
+    for (auto ship = 0; ship < shipsCount; ship++)
     {
         foamInfo = &shipFoamInfo[ship];
         if (!foamInfo->enabled)
@@ -563,21 +552,39 @@ void SEAFOAM::Execute(dword _dTime)
                                        speedA);
     }
 
-    UNGUARD
+    // UNGUARD
 }
 
 //--------------------------------------------------------------------
-dword SEAFOAM::AttributeChanged(ATTRIBUTES *pA)
+uint32_t SEAFOAM::AttributeChanged(ATTRIBUTES *pA)
 {
-    const char *nm = pA->GetThisName();
+    const auto *const nm = pA->GetThisName();
 
-    if (!stricmp(nm, "storm"))
+    if (!_stricmp(nm, "storm"))
     {
         if (!strcmp(pA->GetThisAttr(), "true"))
             isStorm = true;
         else
             isStorm = false;
     }
+
+    /*if (_stricmp(nm, "AddNetShip") == 0)
+    {
+      entid_t shipID;
+      uint32_t dwShipNetID = pA->GetAttributeAsDword();
+      if (api->IsNetActive())
+      {
+        if (NetFindClass(false, &shipID, "NetShip")) do
+        {
+          Entity * pE = EntityManager::GetEntityPointer(shipID);
+          if (pE->GetNetID() == dwShipNetID)
+          {
+            AddShip(&shipID);
+            break;
+          }
+        } while (NetFindClassNext(false, &shipID));
+      }
+    }*/
 
     return 0;
 }

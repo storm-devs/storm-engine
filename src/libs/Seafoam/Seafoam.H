@@ -1,18 +1,12 @@
 #ifndef _SEAFOAM_H_
 #define _SEAFOAM_H_
 
-#include "object.h"
-#include "matrix.h"
-#include "animation.h"
-#include "messages.h"
 #include "geos.h"
-#include "geometry.h"
-#include "dx8render.h"
+#include "dx9render.h"
 #include "ship_base.h"
 #include "model.h"
-#include "geos.h"
 #include "sea_base.h"
-#include "..\SoundService\VSoundService.h"
+#include "../SoundService/VSoundService.h"
 #include "SeafoamDefines.h"
 #include "seafoam_ps.h"
 #include "TCarcass.h"
@@ -43,32 +37,46 @@ struct tShipFoamInfo
 	bool enabled;
 };
  
-class SEAFOAM: public ENTITY
+class SEAFOAM: public Entity
 {
 public:
 	SEAFOAM();
 	virtual ~SEAFOAM();
 
 	virtual bool Init();
-	dword AttributeChanged(ATTRIBUTES * pA);
-	virtual dword _cdecl ProcessMessage(MESSAGE & message);
-	virtual void Realize(dword _dTime);
-	virtual void Execute(dword _dTime);
+	uint32_t AttributeChanged(ATTRIBUTES * pA);
+	virtual uint64_t ProcessMessage(MESSAGE & message);
+	virtual void Realize(uint32_t dTime);
+	virtual void Execute(uint32_t dTime);
 
+	void ProcessStage(Stage stage, uint32_t delta) override
+	{
+		switch (stage)
+		{
+		case Stage::execute:
+			Execute(delta); break;
+		case Stage::realize:
+			Realize(delta); break;
+			/*case Stage::lost_render:
+				LostRender(delta); break;
+			case Stage::restore_render:
+				RestoreRender(delta); break;*/
+		}
+	}
 private:
 	void InitializeShipFoam();
 	void ReleaseShipFoam();
-	void RealizeShipFoam_Particles(tShipFoamInfo &_shipFoamInfo, dword _dTime);
-	void RealizeShipFoam_Mesh(tShipFoamInfo &_shipFoamInfo, dword _dTime);
+	void RealizeShipFoam_Particles(tShipFoamInfo &_shipFoamInfo, uint32_t dTime);
+	void RealizeShipFoam_Mesh(tShipFoamInfo &_shipFoamInfo, uint32_t dTime);
 	void CreateTracePoints(tShipFoamInfo *_shipFoamInfo);
-	void InterpolateLeftParticle(tShipFoamInfo &_shipFoamInfo, int z, dword _dTime);
-	void InterpolateRightParticle(tShipFoamInfo &_shipFoamInfo, int z, dword _dTime);
-	void AddShip(ENTITY_ID * pShipEID);
+	void InterpolateLeftParticle(tShipFoamInfo &_shipFoamInfo, int z, uint32_t dTime);
+	void InterpolateRightParticle(tShipFoamInfo &_shipFoamInfo, int z, uint32_t dTime);
+	void AddShip(entid_t  pShipEID);
 
-	VDX8RENDER *renderer;
-	ENTITY_ID seaID;
+	VDX9RENDER *renderer;
+	entid_t seaID;
 	SEA_BASE *sea;
-	tShipFoamInfo shipFoamInfo[MAX_SHIPS];
+	tShipFoamInfo shipFoamInfo[MAX_SHIPS]{};
 	int shipsCount;
 	INIFILE *psIni;
 	long carcassTexture;

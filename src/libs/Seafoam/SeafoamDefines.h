@@ -1,8 +1,6 @@
 #ifndef _SEAFOAMDEFINES_
 #define _SEAFOAMDEFINES_
 
-#include <stdlib.h>
-
 //#define SEAFOAM_TRACE_INFORMATION
 
 #define PI 3.14159265358979323846f
@@ -30,11 +28,11 @@
 #define SEAFOAM_TRACE(a) _VSYSTEM_API->Trace(a);
 #define SEAFOAM_TRACE2(a, b) _VSYSTEM_API->Trace(a, b);
 #endif
-
+/*
 //--------------------------------------------------------------------
 float rand(float r);
 float randUpper(float r);
 float randCentered(float r);
 //--------------------------------------------------------------------
-
+*/
 #endif

@@ -1,14 +1,12 @@
 project(seafoam)
 
-add_library(${PROJECT_NAME} MODULE
+add_library(${PROJECT_NAME} STATIC
 	Seafoam.H
 	Seafoam.cpp
 	SeafoamDefines.cpp
 	SeafoamDefines.h
 	TCarcass.cpp
 	TCarcass.h
-	TIVBufferManager.cpp
-	TIVBufferManager.h
 	seafoam_ps.cpp
 	seafoam_ps.h
 )

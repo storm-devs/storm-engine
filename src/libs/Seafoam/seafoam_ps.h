@@ -1,9 +1,9 @@
 #ifndef _SEAFOAM_PS_H_
 #define _SEAFOAM_PS_H_
 
-#include "dx8render.h"
+#include "Matrix.h"
+#include "dx9render.h"
 #include "geometry.h"
-#include "matrix.h"
 #include "vfile_service.h"
 #include "vmodule_api.h"
 #include "vparticle_system.h"
@@ -49,7 +49,7 @@
 struct PARTICLE_VERTEX
 {
     CVECTOR pos;
-    DWORD color;
+    uint32_t color;
     float tu, tv;
 };
 
@@ -78,11 +78,11 @@ struct PARTICLE
 
     long lifetime;
     long time;
-    dword color;
+    uint32_t color;
     bool live;
     bool done;
 
-    dword flow_track_index;
+    uint32_t flow_track_index;
 };
 
 #define TRACK_EVENT_MAX 16
@@ -107,8 +107,7 @@ class SEAFOAM_PS : VPARTICLE_SYSTEM
 
     bool bTrackAngle;
 
-    VAPI *api;
-    VDX8RENDER *RenderService;
+    VDX9RENDER *RenderService;
     VGEOMETRY *gs;
 
     long TextureID[MAX_PS_TEXTURES];
@@ -144,26 +143,26 @@ class SEAFOAM_PS : VPARTICLE_SYSTEM
     //---------------------------------
 
     bool enableEmit;
-    dword nEmitted;
+    uint32_t nEmitted;
     float EmissionTime; // time for emitting one particle
     long DeltaTimeSLE;  // SinceLastEmission
     bool EmitParticle();
     long nSystemLifeTime;
-    void AddTrackPoint(CVECTOR pos);
+    // void  AddTrackPoint(CVECTOR pos);
     CVECTOR *pFlowTrack;
-    dword nFlowTrackSize;
+    uint32_t nFlowTrackSize;
     bool bUseFlowTrack;
-    void SetFlowTrack(dword index);
+    void SetFlowTrack(uint32_t index);
     float fTrackPointRadius;
     float EmissionTimeRand;
     float CurrentEmissionTimeRand;
     bool bLayOnSurface;
-    void LayOnSurface(dword index);
-    ENTITY_ID SurfaceID;
-    void UseSurface(ENTITY_ID surface_id);
+    void LayOnSurface(uint32_t index);
+    entid_t SurfaceID;
+    void UseSurface(entid_t surface_id);
     float fSurfaceOffset;
     char *TechniqueName;
-    dword ParticleColor;
+    uint32_t ParticleColor;
 
     //---------------------------------
 
@@ -184,7 +183,7 @@ class SEAFOAM_PS : VPARTICLE_SYSTEM
     SEAFOAM_PS *l_PTR;
     SEAFOAM_PS *r_PTR;
 
-    ENTITY_ID LinkObject;
+    entid_t LinkObject;
     CVECTOR LinkPos;
     CVECTOR LinkDir;
     CVECTOR LinkDirPos;
@@ -195,23 +194,23 @@ class SEAFOAM_PS : VPARTICLE_SYSTEM
   public:
     SEAFOAM_PS();
     ~SEAFOAM_PS();
-    bool Init(INIFILE *ini, char *psname);
+    bool Init(INIFILE *ini, const char *psname);
     void UpdateVertexBuffer();
-    void Realize(dword DeltaTime);
-    void Execute(dword DeltaTime);
-    void ProcessParticles(dword DeltaTime);
+    void Realize(uint32_t DeltaTime);
+    void Execute(uint32_t DeltaTime);
+    void ProcessParticles(uint32_t DeltaTime);
     bool Complete();
     void Stop()
     {
         bComplete = true;
     };
 
-    void SetParticlesTracks(dword DeltaTime);
+    void SetParticlesTracks(uint32_t DeltaTime);
 
     float GetTrackValue(TRACK_EVENT *Track, long Time);
-    bool BuildTrack(INIFILE *ini, TRACK_EVENT *Track, char *psname, char *key_name);
+    bool BuildTrack(INIFILE *ini, TRACK_EVENT *Track, const char *psname, const char *key_name);
     void SetEmitter(CVECTOR p, CVECTOR a);
-    void LinkToObject(ENTITY_ID id, CVECTOR _LinkPos);
+    void LinkToObject(entid_t id, CVECTOR _LinkPos);
     void SetDelay(long _delay);
     void EnableEmit(bool _enableEmit)
     {
@@ -229,7 +228,7 @@ class SEAFOAM_PS : VPARTICLE_SYSTEM
     void ProcessOrder(SEAFOAM_PS **Root, SEAFOAM_PS **Top);
     //---------------------------------------------------------------
 
-    void SetLifeTime(dword time)
+    void SetLifeTime(uint32_t time)
     {
         nSystemLifeTime = time;
     }
