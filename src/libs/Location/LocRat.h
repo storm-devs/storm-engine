@@ -20,16 +20,16 @@ class LocRat : public LocLife
     virtual ~LocRat();
 
   private:
-    virtual const char *GetModelName();
-    virtual const char *GetAniName();
-    virtual bool PostInit(Animation *ani);
+    const char *GetModelName() override;
+    const char *GetAniName() override;
+    bool PostInit(Animation *ani) override;
 
-    virtual void IdleProcess(Animation *ani, float dltTime);
-    virtual void MoveProcess(Animation *ani, float dltTime);
-    virtual void IsStartMove(Animation *ani);
-    virtual void IsStopMove(Animation *ani);
+    void IdleProcess(Animation *ani, float dltTime) override;
+    void MoveProcess(Animation *ani, float dltTime) override;
+    void IsStartMove(Animation *ani) override;
+    void IsStopMove(Animation *ani) override;
 
-    virtual void Event(Animation *animation, long index, long eventID, AnimationEvent event);
+    void Event(Animation *animation, long index, long eventID, AnimationEvent event) override;
 
     void StartNewAction(Animation *ani);
 

@@ -1,8 +1,7 @@
-
-
 #include "LocationScriptLib.h"
+#include "EntityManager.h"
 #include "Fader.h"
-#include "dx8render.h"
+#include "v_s_stack.h"
 
 //============================================================================================
 
@@ -10,7 +9,7 @@ struct LocationFindCacheElement
 {
     LocationFindCacheElement()
     {
-        name = null;
+        name = nullptr;
         size = 0;
         max = 0;
         index = -1;
@@ -19,30 +18,28 @@ struct LocationFindCacheElement
 
     ~LocationFindCacheElement()
     {
-        if (name)
-            delete name;
+        delete name;
     };
 
-    inline long Cmp(const LocationFindCacheElement &v)
+    long Cmp(const LocationFindCacheElement &v) const
     {
         if (v.size != size)
             return false;
-        if (stricmp(v.name, name) == 0)
+        if (_stricmp(v.name, name) == 0)
             return true;
         return false;
     };
 
-    inline void Set(const char *str)
+    void Set(const char *str)
     {
         size = strlen(str) + 1;
         if (size > max)
         {
             max = (size + 15) & ~15;
-            if (name)
-                delete name;
+            delete name;
             name = new char[max];
         }
-        strcpy(name, str);
+        memcpy(name, str, size);
     };
 
     char *name;
@@ -55,23 +52,22 @@ struct LocationFindCacheElement
 LocationFindCacheElement charactersFindCache[16];
 LocationFindCacheElement locationsFindCache[8];
 LocationFindCacheElement charactersFindBuf;
-dword locationFindCodeID = -1;
 
 inline bool CheckID(VDATA *vd, const char *id, bool &res)
 {
     res = false;
     if (!vd || !id || !id[0])
         return false;
-    ATTRIBUTES *a = vd->GetAClass();
+    auto *a = vd->GetAClass();
     if (!a)
         return false;
-    a = a->GetAttributeClassByCode(locationFindCodeID);
+    a = a->GetAttributeClass("id");
     if (!a)
         return true;
-    char *attr = a->GetThisAttr();
+    auto *const attr = a->GetThisAttr();
     if (!attr)
         return true;
-    res = stricmp(attr, id) == 0;
+    res = _stricmp(attr, id) == 0;
     return true;
 }
 
@@ -80,8 +76,8 @@ void slAddToCache(LocationFindCacheElement *element, long size, const char *name
     Assert(name);
     Assert(name[0]);
     //Ищем ячейку для записи
-    long i = 0, j = 0, min = 0;
-    for (i = 0, j = 0, min = element[i].use; i < size; i++)
+    long j = 0;
+    for (long i = 0, min = element[i].use; i < size; i++)
     {
         if (element[i].index < 0)
         {
@@ -99,11 +95,11 @@ void slAddToCache(LocationFindCacheElement *element, long size, const char *name
     element[j].Set(name);
 }
 
-dword slNativeFastFind(VS_STACK *pS, LocationFindCacheElement *cache, long cacheSize)
+uint32_t slNativeFastFind(VS_STACK *pS, LocationFindCacheElement *cache, long cacheSize)
 {
     //Получить строки
-    VDATA *pStr = (VDATA *)pS->Pop();
-    char *nm = null;
+    auto *pStr = (VDATA *)pS->Pop();
+    const char *nm = nullptr;
     if (!pStr->Get(nm))
         return IFUNCRESULT_FAILED;
     if (nm)
@@ -111,14 +107,14 @@ dword slNativeFastFind(VS_STACK *pS, LocationFindCacheElement *cache, long cache
     else
         charactersFindBuf.Set("");
     //Массив персонажей
-    VDATA *pArray = (VDATA *)pS->Pop();
+    auto *pArray = (VDATA *)pS->Pop();
     if (!pArray)
         return IFUNCRESULT_FAILED;
     pArray = (VDATA *)pArray->GetReference();
     if (!pArray)
         return IFUNCRESULT_FAILED;
     //Возвращаемое значение
-    VDATA *pReturn = (VDATA *)pS->Push();
+    auto *pReturn = (VDATA *)pS->Push();
     if (!pReturn)
         return IFUNCRESULT_FAILED;
     if (!charactersFindBuf.name[0])
@@ -127,8 +123,7 @@ dword slNativeFastFind(VS_STACK *pS, LocationFindCacheElement *cache, long cache
         return IFUNCRESULT_OK;
     }
     //Снижаем значения использования в кеше
-    long i = 0;
-    for (i = 0; i < cacheSize; i++)
+    for (long i = 0; i < cacheSize; i++)
     {
         cache[i].use--;
         if (cache[i].use < 0)
@@ -136,19 +131,19 @@ dword slNativeFastFind(VS_STACK *pS, LocationFindCacheElement *cache, long cache
     }
     //Смотрим в кеше
     bool res;
-    for (i = 0; i < cacheSize; i++)
+    for (long i = 0; i < cacheSize; i++)
     {
         if (cache[i].index < 0)
             continue;
         if (!cache[i].Cmp(charactersFindBuf))
             continue;
         //Проверяем на правильность кешь-значения
-        if (dword(cache[i].index) >= pArray->GetElementsNum())
+        if (static_cast<uint32_t>(cache[i].index) >= pArray->GetElementsNum())
         {
             cache[i].index = -1;
             continue;
         }
-        VDATA *vd = (VDATA *)pArray->GetArrayElement(cache[i].index);
+        auto *vd = (VDATA *)pArray->GetArrayElement(cache[i].index);
         if (!CheckID(vd, charactersFindBuf.name, res))
         {
             cache[i].index = -1;
@@ -163,10 +158,10 @@ dword slNativeFastFind(VS_STACK *pS, LocationFindCacheElement *cache, long cache
         }
     }
     //Придётся искать по массиву
-    long num = pArray->GetElementsNum();
-    for (i = 0; i < num; i++)
+    const long num = pArray->GetElementsNum();
+    for (long i = 0; i < num; i++)
     {
-        VDATA *vd = (VDATA *)pArray->GetArrayElement(i);
+        auto *const vd = (VDATA *)pArray->GetArrayElement(i);
         if (CheckID(vd, charactersFindBuf.name, res))
         {
             if (res)
@@ -182,49 +177,49 @@ dword slNativeFastFind(VS_STACK *pS, LocationFindCacheElement *cache, long cache
     return IFUNCRESULT_OK;
 }
 
-dword __cdecl slNativeFindCharacter(VS_STACK *pS)
+uint32_t slNativeFindCharacter(VS_STACK *pS)
 {
     return slNativeFastFind(pS, charactersFindCache, sizeof(charactersFindCache) / sizeof(LocationFindCacheElement));
 }
 
-dword __cdecl slNativeFindLocation(VS_STACK *pS)
+uint32_t slNativeFindLocation(VS_STACK *pS)
 {
     return slNativeFastFind(pS, locationsFindCache, sizeof(locationsFindCache) / sizeof(LocationFindCacheElement));
 }
 
-dword __cdecl slNativeFindLaodLocation(VS_STACK *pS)
+uint32_t slNativeFindLaodLocation(VS_STACK *pS)
 {
     //Возвращаемое значение
     VDATA *pReturn = (VDATA *)pS->Push();
     if (!pReturn)
         return IFUNCRESULT_FAILED;
     //Ищим локацию
-    ENTITY_ID loc;
-    if (!api->FindClass(&loc, "Location", 0))
+    const auto loc = EntityManager::GetEntityId("location");
+    if (!loc)
     {
         pReturn->Set(-1L);
         return IFUNCRESULT_OK;
     }
-    ENTITY *l = api->GetEntityPointer(&loc);
+    Entity *l = EntityManager::GetEntityPointer(loc);
     if (!l || !l->AttributesPointer)
     {
         pReturn->Set(-1L);
         return IFUNCRESULT_OK;
     }
-    long index = l->AttributesPointer->GetAttributeAsDword("index", -1L);
+    const long index = l->AttributesPointer->GetAttributeAsDword("index", -1L);
     pReturn->Set(index);
     return IFUNCRESULT_OK;
 }
 
-dword __cdecl slNativeSetReloadBackImage(VS_STACK *pS)
+uint32_t slNativeSetReloadBackImage(VS_STACK *pS)
 {
     //Получить строки
     VDATA *pStr = (VDATA *)pS->Pop();
-    char *nm = null;
+    const char *nm = nullptr;
     if (!pStr->Get(nm))
         return IFUNCRESULT_FAILED;
     //Устанавливаем картинку
-    VDX8RENDER *rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
+    VDX9RENDER *rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
     if (rs)
     {
         rs->SetProgressImage(nm);
@@ -232,34 +227,34 @@ dword __cdecl slNativeSetReloadBackImage(VS_STACK *pS)
     return IFUNCRESULT_OK;
 }
 
-dword __cdecl slNativeReloadProgressStart(VS_STACK *pS)
+uint32_t slNativeReloadProgressStart(VS_STACK *pS)
 {
-    VDX8RENDER *rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
+    VDX9RENDER *rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
     if (rs)
         rs->StartProgressView();
     return IFUNCRESULT_OK;
 }
 
-dword __cdecl slNativeReloadProgressUpdate(VS_STACK *pS)
+uint32_t slNativeReloadProgressUpdate(VS_STACK *pS)
 {
-    VDX8RENDER *rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
+    VDX9RENDER *rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
     if (rs)
         rs->ProgressView();
     return IFUNCRESULT_OK;
 }
 
-dword __cdecl slNativeReloadProgressEnd(VS_STACK *pS)
+uint32_t slNativeReloadProgressEnd(VS_STACK *pS)
 {
-    VDX8RENDER *rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
+    auto *rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
     if (rs)
         rs->EndProgressView();
     return IFUNCRESULT_OK;
 }
 
-dword __cdecl slNativeSleep(VS_STACK *pS)
+uint32_t slNativeSleep(VS_STACK *pS)
 {
     //Получить строки
-    VDATA *pInt = (VDATA *)pS->Pop();
+    auto *pInt = (VDATA *)pS->Pop();
     long delay = 1;
     if (!pInt || !pInt->Get(delay))
         return IFUNCRESULT_FAILED;
@@ -269,17 +264,17 @@ dword __cdecl slNativeSleep(VS_STACK *pS)
     return IFUNCRESULT_OK;
 }
 
-dword __cdecl slNativeExecuteTechnique(VS_STACK *pS)
+uint32_t slNativeExecuteTechnique(VS_STACK *pS)
 {
     //Получить строку
     VDATA *pStr = (VDATA *)pS->Pop();
-    char *nm = null;
+    const char *nm = nullptr;
     if (!pStr->Get(nm))
         return IFUNCRESULT_FAILED;
-    //Исполнить технику
+    //Исполить технику
     if (nm && nm[0])
     {
-        VDX8RENDER *rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
+        auto *rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
         rs->TechniqueExecuteStart(nm);
         while (rs->TechniqueExecuteNext())
             ;
@@ -287,17 +282,17 @@ dword __cdecl slNativeExecuteTechnique(VS_STACK *pS)
     return IFUNCRESULT_OK;
 }
 
-dword __cdecl slGetNextLineString(VS_STACK *pS)
+uint32_t slGetNextLineString(VS_STACK *pS)
 {
     //Возвращаемое значение
-    VDATA *pReturn = (VDATA *)pS->Push();
+    auto *pReturn = (VDATA *)pS->Push();
     if (!pReturn)
         return IFUNCRESULT_FAILED;
     pReturn->Set("\r\n");
     return IFUNCRESULT_OK;
 }
 
-dword __cdecl slNativeSetReloadNextTipsImage(VS_STACK *pS)
+uint32_t slNativeSetReloadNextTipsImage(VS_STACK *pS)
 {
     if (Fader::numberOfTips <= 0)
     {
@@ -310,10 +305,10 @@ dword __cdecl slNativeSetReloadNextTipsImage(VS_STACK *pS)
     return IFUNCRESULT_OK;
 }
 
-dword __cdecl slSetAchievement(VS_STACK *pS)
+uint32_t slSetAchievement(VS_STACK *pS)
 {
     VDATA *pStr = (VDATA *)pS->Pop();
-    char *nm = null;
+    const char *nm = nullptr;
     long ret = 0;
     if (!pStr->Get(nm))
         return IFUNCRESULT_FAILED;
@@ -322,45 +317,46 @@ dword __cdecl slSetAchievement(VS_STACK *pS)
         VDATA *pReturn = (VDATA *)pS->Push();
         if (!pReturn)
             return IFUNCRESULT_FAILED;
-        //#ifdef isSteam
-        if (_CORE_API->isSteamEnabled())
-            ret = _CORE_API->SetAchievementState(nm);
-        //#else
+
+        if (api->isSteamEnabled())
+            ret = api->SetAchievementState(nm);
+
         else
             ret = 0;
-        //#endif
+
         pReturn->Set(ret);
         return IFUNCRESULT_OK;
     }
     return IFUNCRESULT_OK;
 }
 
-dword __cdecl slGetAchievement(VS_STACK *pS)
+uint32_t slGetAchievement(VS_STACK *pS)
 {
     VDATA *pStr = (VDATA *)pS->Pop();
-    char *nm = null;
+    const char *nm = nullptr;
     long ret = 0;
     if (!pStr->Get(nm))
         return IFUNCRESULT_FAILED;
+
     if (nm && nm[0])
     {
         VDATA *pReturn = (VDATA *)pS->Push();
         if (!pReturn)
             return IFUNCRESULT_FAILED;
-        //#ifdef isSteam
-        if (_CORE_API->isSteamEnabled())
-            ret = _CORE_API->GetAchievementState(nm);
-        //#else
+
+        if (api->isSteamEnabled())
+            ret = api->GetAchievementState(nm);
+
         else
             ret = 0;
-        //#endif
+
         pReturn->Set(ret);
         return IFUNCRESULT_OK;
     }
     return IFUNCRESULT_OK;
 }
 
-dword __cdecl slSetStat(VS_STACK *pS)
+uint32_t slSetStat(VS_STACK *pS)
 {
     VDATA *pInt = (VDATA *)pS->Pop();
     long val = 0;
@@ -369,7 +365,7 @@ dword __cdecl slSetStat(VS_STACK *pS)
         return IFUNCRESULT_FAILED;
 
     VDATA *pStr = (VDATA *)pS->Pop();
-    char *nm = null;
+    const char *nm = nullptr;
     if (!pStr->Get(nm))
         return IFUNCRESULT_FAILED;
 
@@ -378,23 +374,23 @@ dword __cdecl slSetStat(VS_STACK *pS)
         VDATA *pReturn = (VDATA *)pS->Push();
         if (!pReturn)
             return IFUNCRESULT_FAILED;
-        //#ifdef isSteam
-        if (_CORE_API->isSteamEnabled())
-            ret = _CORE_API->SetStatValue(nm, val);
-        //#else
+
+        if (api->isSteamEnabled())
+            ret = api->SetStatValue(nm, val);
+
         else
             ret = 0;
-        //#endif
+
         pReturn->Set(ret);
         return IFUNCRESULT_OK;
     }
     return IFUNCRESULT_OK;
 }
 
-dword __cdecl slGetStat(VS_STACK *pS)
+uint32_t slGetStat(VS_STACK *pS)
 {
     VDATA *pStr = (VDATA *)pS->Pop();
-    char *nm = null;
+    const char *nm = nullptr;
     long ret = 0;
     if (!pStr->Get(nm))
         return IFUNCRESULT_FAILED;
@@ -403,78 +399,80 @@ dword __cdecl slGetStat(VS_STACK *pS)
         VDATA *pReturn = (VDATA *)pS->Push();
         if (!pReturn)
             return IFUNCRESULT_FAILED;
-        //#ifdef isSteam
-        if (_CORE_API->isSteamEnabled())
-            ret = _CORE_API->GetStatValue(nm);
-        //#else
+
+        if (api->isSteamEnabled())
+            ret = api->GetStatValue(nm);
+
         else
             ret = 0;
-        //#endif
+
         pReturn->Set(ret);
         return IFUNCRESULT_OK;
     }
     return IFUNCRESULT_OK;
 }
 
-dword __cdecl slStoreStats(VS_STACK *pS)
+uint32_t slStoreStats(VS_STACK *pS)
 {
     long ret = 0;
     VDATA *pReturn = (VDATA *)pS->Push();
     if (!pReturn)
         return IFUNCRESULT_FAILED;
-    //#ifdef isSteam
-    if (_CORE_API->isSteamEnabled())
-        ret = _CORE_API->StoreStats();
-    //#else
+
+    if (api->isSteamEnabled())
+        ret = api->StoreStats();
+
     else
         ret = 0;
-    //#endif
+
     pReturn->Set(ret);
     return IFUNCRESULT_OK;
 }
 
-dword __cdecl slClearAchievement(VS_STACK *pS)
+uint32_t slClearAchievement(VS_STACK *pS)
 {
     VDATA *pStr = (VDATA *)pS->Pop();
-    char *nm = null;
+    const char *nm = nullptr;
     long ret = 0;
     if (!pStr->Get(nm))
         return IFUNCRESULT_FAILED;
+
     if (nm && nm[0])
     {
         VDATA *pReturn = (VDATA *)pS->Push();
         if (!pReturn)
             return IFUNCRESULT_FAILED;
-        //#ifdef isSteam
-        if (_CORE_API->isSteamEnabled())
-            ret = _CORE_API->ClearAchievement(nm);
-        //#else
+
+        if (api->isSteamEnabled())
+            ret = api->ClearAchievement(nm);
+
         else
             ret = 0;
-        //#endif
+
         pReturn->Set(ret);
         return IFUNCRESULT_OK;
     }
     return IFUNCRESULT_OK;
 }
 
-dword __cdecl slResetStats(VS_STACK *pS)
+uint32_t slResetStats(VS_STACK *pS)
 {
     VDATA *pInt = (VDATA *)pS->Pop();
     long val = 0;
     long ret = 0;
     if (!pInt->Get(val))
         return IFUNCRESULT_FAILED;
+
     VDATA *pReturn = (VDATA *)pS->Push();
     if (!pReturn)
         return IFUNCRESULT_FAILED;
-    //#ifdef isSteam
-    if (_CORE_API->isSteamEnabled())
-        ret = _CORE_API->ResetStats(val);
-    //#else
+
+    if (api->isSteamEnabled())
+        ret = api->ResetStats(val);
+
     else
         ret = 0;
-    //#endif
+
     pReturn->Set(ret);
 
     return IFUNCRESULT_OK;
@@ -484,8 +482,6 @@ dword __cdecl slResetStats(VS_STACK *pS)
 
 bool ScriptLocationLibrary::Init()
 {
-    locationFindCodeID = api->AttributeName2Code("id");
-
     IFUNCINFO sIFuncInfo;
     sIFuncInfo.nArguments = 2;
     sIFuncInfo.pFuncName = "NativeFindCharacter";

@@ -11,11 +11,10 @@
 #ifndef _Character_H_
 #define _Character_H_
 
-#include "PtcData.h"
-#include "matrix.h"
+#include "Matrix.h"
 #include "model.h"
-#include "templates.h"
 #include "vmodule_api.h"
+#include <string>
 
 class Location;
 class MODEL;
@@ -29,7 +28,7 @@ class VSoundService;
 #define CHARACTER_BLOCK_ANG 50.0f //Максимальный угл срабатывания блока (градусы)
 #define CHARACTER_MAX_JMP_STEPS 50
 
-class Character : public ENTITY
+class Character : public Entity
 {
     float hScale;
     float wScale;
@@ -82,7 +81,7 @@ class Character : public ENTITY
         Blender();
         void Blend(float _old, float _new, float _time);
         bool Update(float dltTime);
-        float Get();
+        float Get() const;
 
         float old;
         float dlt;
@@ -106,8 +105,8 @@ class Character : public ENTITY
 
     class RTuner : public MODEL::RenderTuner
     {
-        virtual void Set(MODEL *model, VDX8RENDER *rs);
-        virtual void Restore(MODEL *model, VDX8RENDER *rs);
+        void Set(MODEL *model, VDX9RENDER *rs) override;
+        void Restore(MODEL *model, VDX9RENDER *rs) override;
 
       public:
         RTuner();
@@ -118,7 +117,7 @@ class Character : public ENTITY
         Character *character;
         bool isVisible;
 
-        float GetAlpha();
+        float GetAlpha() const;
     };
 
     class EventListener : public AnimationEventListener
@@ -126,9 +125,9 @@ class Character : public ENTITY
       public:
         Character *character;
         //Принять событие
-        virtual void Event(Animation *animation, long index, long eventID, AnimationEvent event);
+        void Event(Animation *animation, long index, long eventID, AnimationEvent event) override;
         //Принять событие
-        virtual void Event(Animation *animation, long playerIndex, const char *eventName);
+        void Event(Animation *animation, long playerIndex, const char *eventName) override;
     };
 
     friend RTuner;
@@ -144,26 +143,46 @@ class Character : public ENTITY
   protected:
     enum FightAction
     {
-        fgt_none = 0,      //Нет никакого боевого действия
-        fgt_attack_fast,   //Быстрый удар
-        fgt_attack_force,  //Сильный удар
-        fgt_attack_round,  //Круговой удар
-        fgt_attack_break,  //Пробивающий удар
-        fgt_attack_feint,  //Финт - спрециальный обманный удар
-        fgt_attack_feintc, //Продолжение финта в случае контратаки
-        fgt_fire,          //Выстрел из пистолета
-        fgt_hit_attack, //Реакция попадания удара по персонажу вводящая его в stall
-        fgt_hit_feint,  //Реакция от финта вводящая его в stall
-        fgt_hit_parry,  //Реакция от парирования вводящая его в stall
-        fgt_hit_round,  //Реакция отталкивание круговым ударом
-        fgt_hit_fire,   //Реакция от выстрела вводящая его в stall
-        fgt_block,      //Защита саблей
-        fgt_blockhit,   //Защита саблей
-        fgt_blockbreak, //Пробивка блока
-        fgt_parry, //Парирование, защитное движение вводящее противника в stall
-        fgt_recoil,   //Отскок назад
-        fgt_strafe_l, //Отскок влево
-        fgt_strafe_r, //Отскок право
+        fgt_none = 0,
+        //Нет никакого боевого действия
+        fgt_attack_fast,
+        //Быстрый удар
+        fgt_attack_force,
+        //Сильный удар
+        fgt_attack_round,
+        //Круговой удар
+        fgt_attack_break,
+        //Пробивающий удар
+        fgt_attack_feint,
+        //Финт - спрециальный обманный удар
+        fgt_attack_feintc,
+        //Продолжение финта в случае контратаки
+        fgt_fire,
+        //Выстрел из пистолета
+        fgt_hit_attack,
+        //Реакция попадания удара по персонажу вводящая его в stall
+        fgt_hit_feint,
+        //Реакция от финта вводящая его в stall
+        fgt_hit_parry,
+        //Реакция от парирования вводящая его в stall
+        fgt_hit_round,
+        //Реакция отталкивание круговым ударом
+        fgt_hit_fire,
+        //Реакция от выстрела вводящая его в stall
+        fgt_block,
+        //Защита саблей
+        fgt_blockhit,
+        //Защита саблей
+        fgt_blockbreak,
+        //Пробивка блока
+        fgt_parry,
+        //Парирование, защитное движение вводящее противника в stall
+        fgt_recoil,
+        //Отскок назад
+        fgt_strafe_l,
+        //Отскок влево
+        fgt_strafe_r,
+        //Отскок право
         fgt_max,
     };
 
@@ -175,11 +194,16 @@ class Character : public ENTITY
     virtual ~Character();
 
     //Инициализация
-    bool Init();
+    bool Init() override;
     //Сообщения
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    uint64_t ProcessMessage(MESSAGE &message) override;
     //Изменение атрибута
-    dword AttributeChanged(ATTRIBUTES *apnt);
+    uint32_t AttributeChanged(ATTRIBUTES *apnt) override;
+
+    void ProcessStage(Stage, uint32_t) override
+    {
+    }
+
     void SetSignModel();
     void SetSignTechnique();
     void ReadFightActions(ATTRIBUTES *at, ActionCharacter actions[4], long &counter);
@@ -188,19 +212,19 @@ class Character : public ENTITY
     {
         return true;
     };
-    virtual dword ChlProcessMessage(long messageID, MESSAGE &message)
+    virtual uint32_t ChlProcessMessage(long messageID, MESSAGE &message)
     {
         return 0;
     };
 
-    void AlreadyDelete();
+    void AlreadySTORM_DELETE();
 
     //--------------------------------------------------------------------------------------------
     // Character model
     //--------------------------------------------------------------------------------------------
   public:
     //Получить модельку персонажа
-    MODEL *Model();
+    MODEL *Model() const;
 
     //Переместить модельку в точку x, y, z
     bool Teleport(float x, float y, float z);
@@ -221,6 +245,7 @@ class Character : public ENTITY
 
   protected:
     virtual void CharacterTeleport(){};
+
     virtual void HitChild(bool isInBlock){};
 
     //--------------------------------------------------------------------------------------------
@@ -240,35 +265,35 @@ class Character : public ENTITY
     //Направить персонажа по углу
     void Turn(float _ay);
     //Узнать направление
-    float GetAY();
+    float GetAY() const;
     //Установить режим бега
     void SetRunMode(bool _isRun = true);
     //Двигаемся ли
-    bool IsMove();
+    bool IsMove() const;
     //Узнать режим бега
-    bool IsRun();
+    bool IsRun() const;
     //Плывём ли
-    bool IsSwim();
+    bool IsSwim() const;
     //Установить режим боя
     bool SetFightMode(bool _isFight, bool isPlayAni = true);
     //Проверить, можно ли переходить в режим боя
-    bool IsFightEnable();
+    bool IsFightEnable() const;
     //Узнать режим боя
-    bool IsFight();
+    bool IsFight() const;
     //В данный момент идёт выбор цели для выстрела (игроком)
-    bool IsFireFindTarget();
+    bool IsFireFindTarget() const;
     //В диаалоге
-    bool IsDialog();
+    bool IsDialog() const;
     //Получить высоту персонажа
-    float GetHeight();
+    float GetHeight() const;
     //Получить позицию персонажа
-    void GetPosition(CVECTOR &pos);
+    void GetPosition(CVECTOR &pos) const;
     //Получить позицию персонажа
-    void GetGrassPosition(CVECTOR &pos, CVECTOR &gpos);
+    void GetGrassPosition(CVECTOR &pos, CVECTOR &gpos) const;
     //Установить флажёк хождения по траве
     void SetGrassSound();
     //Получить максимальный радиус персонажа
-    float GetRadius();
+    float GetRadius() const;
     //Атаковать
     void Attack(Character *enemy, FightAction type);
     //Блок
@@ -286,7 +311,7 @@ class Character : public ENTITY
     //Выстрел
     void Fire();
     //Проверить, заряжен ли пистолет
-    bool IsGunLoad();
+    bool IsGunLoad() const;
     //Смерть
     void Dead();
     //Заход в локацию
@@ -294,12 +319,12 @@ class Character : public ENTITY
     //Выход из локации
     void ExitFromLocation();
     //Может уже умер
-    bool IsDead();
+    bool IsDead() const;
     //прыжок
     void StartJump();
 
     //Есть ли оружие
-    bool IsSetBlade();
+    bool IsSetBlade() const;
 
     //Установить прозрачность персонажу
     void SetCameraAlpha(float alpha);
@@ -313,7 +338,7 @@ class Character : public ENTITY
     //Заблокировать вращение персонажа за камерой
     void LockRotate(bool isLock);
     //Отросительная скорость поворота камеры
-    float CameraTurnSpeed();
+    float CameraTurnSpeed() const;
     //Просмотр из глаз
     void LookFromEyes(bool isLook);
 
@@ -374,7 +399,7 @@ class Character : public ENTITY
     bool zTurnByChr(MESSAGE &message);
     bool zTurnByPoint(MESSAGE &message);
     bool zDistByCharacter(MESSAGE &message, bool is2D);
-    dword zExMessage(MESSAGE &message);
+    uint32_t zExMessage(MESSAGE &message);
     bool zPlaySound(MESSAGE &message);
     bool TestJump(CVECTOR pos);
     bool BuildJump(CVECTOR pos, float fAng);
@@ -399,7 +424,7 @@ class Character : public ENTITY
     //Получить направление на противника для подскока при ударе
     CVECTOR GetEnemyDirForImpulse();
 
-    bool PriorityActionIsJump();
+    bool PriorityActionIsJump() const;
 
   protected:
     //Найти персонажа в которого попали из пистолета kDist = 1..0
@@ -416,8 +441,6 @@ class Character : public ENTITY
     static const char *GetValueByPrefix(const char *str, const char *pref);
 
   protected:
-    //Локация в которой находится персонаж
-    Location *location;
     //
     VSoundService *soundService;
     //Размеры персонажа
@@ -555,8 +578,7 @@ class Character : public ENTITY
     ActionCharacter recoil;      //Отскок назад
     ActionCharacter strafe_l;    //Отскок влево
     ActionCharacter strafe_r;    //Отскок вправо
-
-    bool isStunEnable; // Разрешен ли стан после удара врагом <-- ugeen 29.12.10
+    bool isStunEnable;           // Разрешен ли стан после удара врагом <-- ugeen 29.12.10
     //Логическое состояние
     FightAction fgtCurType;   //Тип текущего действия
     long fgtCurIndex;         //Индекс текущего действия
@@ -572,11 +594,11 @@ class Character : public ENTITY
     float camRotMax;          //Максимальное время поворота
     float strafeAngle;        //Угол стрейфа
     float strafeVel;          //Стрейф на месте
-    ENTITY_ID enemyAttack;    //На кого ориентируемся во время атаки
+    entid_t enemyAttack;      //На кого ориентируемся во время атаки
 
     //Таблица возможности смены одного действия другим
-    static byte fightTbl[fgt_max][fgt_max];
-    static char *fightNamesTbl[fgt_max];
+    static uint8_t fightTbl[fgt_max][fgt_max];
+    static const char *fightNamesTbl[fgt_max];
 
     //Действие, которое необходимо проигрывать
     ActionCharacter priorityAction;
@@ -590,24 +612,24 @@ class Character : public ENTITY
     long numDetectors;
 
     //Моделька персонажа
-    ENTITY_ID mdl;
+    entid_t mdl;
     //Тень
-    ENTITY_ID shadow;
+    entid_t shadow;
     //Сабля
-    ENTITY_ID blade;
+    entid_t blade;
     bool isBladeSet;
     bool isGunSet;
     //Море
-    ENTITY_ID sea;
+    entid_t sea;
 
-    ENTITY_ID effects;
+    entid_t effects;
     //Моделька привязанного знака
-    ENTITY_ID sign;
-    string signName;
-    string signTechniqueName;
+    entid_t sign;
+    std::string signName;
+    std::string signTechniqueName;
 
     //Круги на воде
-    ENTITY_ID waterrings;
+    entid_t waterrings;
     float stepsRate;
 
     //Если установлен, то не удаляться из supervisor
@@ -640,11 +662,15 @@ class Character : public ENTITY
 
     //
     long m_nHandLightID;
-    char *m_pcHandLightLocator;
+    const char *m_pcHandLightLocator;
     CVECTOR GetHandLightPos();
 
     bool CheckObstacle(float fx, float fz, float fzlen);
     long GetRandomIndexByObstacle(ObstacleZone *pZone, long num);
+
+    Location *GetLocation();
+
+    long eventId = {};
 
   public:
     bool isPlayerEnemy;
@@ -653,7 +679,7 @@ class Character : public ENTITY
     //Информация для групп
     struct GrpTarget
     {
-        ENTITY_ID chr; //Идентификатор цели
+        entid_t chr;   //Идентификатор цели
         float time;    //Время потери цели из виду
         float timemax; //Максимальное время удержания цели
     };
@@ -662,51 +688,55 @@ class Character : public ENTITY
     long numTargets;          //Количество целей
     long groupID;             //Индекс группы для ускорения поиска
     char group[128];          //Имя текущей группы
+
+  private:
+    //Локация в которой находится персонаж
+    entid_t loc_id;
 };
 
-inline void Character::AlreadyDelete()
+inline void Character::AlreadySTORM_DELETE()
 {
     isDeleted = true;
 }
 
 //Узнать направление
-inline float Character::GetAY()
+inline float Character::GetAY() const
 {
     return ay;
 }
 
 //Узнать режим бега
-inline bool Character::IsRun()
+inline bool Character::IsRun() const
 {
     return isRun && !isRunDisable;
 }
 
 //Плывём ли
-inline bool Character::IsSwim()
+inline bool Character::IsSwim() const
 {
     return isSwim;
 }
 
 //Узнать режим боя
-inline bool Character::IsFight()
+inline bool Character::IsFight() const
 {
     return isFight;
 }
 
 //В диаалоге
-inline bool Character::IsDialog()
+inline bool Character::IsDialog() const
 {
     return isDialog;
 }
 
 //Получить высоту персонажа
-inline float Character::GetHeight()
+inline float Character::GetHeight() const
 {
     return height;
 }
 
 //Получить позицию персонажа
-inline void Character::GetPosition(CVECTOR &pos)
+inline void Character::GetPosition(CVECTOR &pos) const
 {
     pos = curPos;
     if (isSwim)
@@ -714,7 +744,7 @@ inline void Character::GetPosition(CVECTOR &pos)
 }
 
 //Получить позицию персонажа
-inline void Character::GetGrassPosition(CVECTOR &pos, CVECTOR &gpos)
+inline void Character::GetGrassPosition(CVECTOR &pos, CVECTOR &gpos) const
 {
     pos = curPos;
     gpos = grsPos;
@@ -727,7 +757,7 @@ inline void Character::SetGrassSound()
 }
 
 //Получить максимальный радиус персонажа
-inline float Character::GetRadius()
+inline float Character::GetRadius() const
 {
     return radius;
 }
@@ -743,7 +773,7 @@ inline void Character::SetCameraAlpha(float alpha)
 }
 
 //Двигаемся ли
-inline bool Character::IsMove()
+inline bool Character::IsMove() const
 {
     return isMove;
 }
@@ -773,11 +803,11 @@ inline void Character::LockRotate(bool isLock)
 }
 
 //Отросительная скорость поворота камеры
-inline float Character::CameraTurnSpeed()
+inline float Character::CameraTurnSpeed() const
 {
     if (camRotWait <= 0.0f || camRotMax <= 0.0f)
         return 1.0f;
-    float k = camRotWait / camRotMax;
+    auto k = camRotWait / camRotMax;
     if (k > 1.0f)
         k = 1.0f;
     return powf(1.0f - k, 1.8f);
@@ -790,21 +820,21 @@ inline void Character::LookFromEyes(bool isLook)
 }
 
 //Может уже умер
-inline bool Character::IsDead()
+inline bool Character::IsDead() const
 {
     return (liveValue < 0 || deadName);
 }
 
 //Есть ли оружие
-inline bool Character::IsSetBlade()
+inline bool Character::IsSetBlade() const
 {
     return isBladeSet | isFightWOWps;
 }
 
-inline bool Character::PriorityActionIsJump()
+inline bool Character::PriorityActionIsJump() const
 {
     return (priorityAction.name &&
-            (stricmp(priorityAction.name, jump.name) == 0 || stricmp(priorityAction.name, fall.name) == 0));
+            (_stricmp(priorityAction.name, jump.name) == 0 || _stricmp(priorityAction.name, fall.name) == 0));
 }
 
 #endif

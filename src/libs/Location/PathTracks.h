@@ -1,9 +1,9 @@
 #ifndef _PathTracks_h_
 #define _PathTracks_h_
 
-#include "CameraTracksFile.h"
-#include "dx8render.h"
+#include "dx9render.h"
 #include "math3D.h"
+#include "math3d/Quaternion.h"
 
 class PathTracks
 {
@@ -11,8 +11,8 @@ class PathTracks
     struct Point
     {
         Quaternion q;
-        CVECTOR p;
-        CVECTOR s;
+        Vector p;
+        Vector s;
     };
 #pragma pack(pop)
 
@@ -26,9 +26,9 @@ class PathTracks
     //Загрузить трек в PathTracks
     bool Load(const char *fileName);
     //Нарисовать трек
-    void Draw(VDX8RENDER *render);
+    void Draw(VDX9RENDER *render);
     //Получить точку трека
-    bool GetPoint(float index, CVECTOR &cp, Quaternion &cq);
+    bool GetPoint(float index, Vector &cp, Quaternion &cq) const;
 
     //--------------------------------------------------------------------------------------------
   private:

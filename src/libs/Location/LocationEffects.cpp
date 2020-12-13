@@ -9,7 +9,8 @@
 //============================================================================================
 
 #include "LocationEffects.h"
-#include "dx8render.h"
+#include "EntityManager.h"
+#include "dx9render.h"
 
 #define LFX_SPLASHES_NUM (sizeof(chrSplash) / sizeof(ChrSplash))
 #define LFX_SPLASHES_P_NUM 64 // fix boal for intel cpp (sizeof(LocationEffects::ChrSplash::prt)/sizeof(ParticleSplash))
@@ -29,10 +30,8 @@ LocationEffects::LocationEffects()
         chrSplash[i].time = -1.0f;
     splashesTxt = -1;
     //Мухи
-    flys = null;
     numFlys = 0;
     maxFlys = 0;
-    fly = null;
     numFly = 0;
     flyTex = -1;
     //Шотган
@@ -63,27 +62,23 @@ LocationEffects::~LocationEffects()
         if (flyTex >= 0)
             rs->TextureRelease(flyTex);
     }
-    if (flys)
-        delete flys;
-    if (fly)
-        delete fly;
 }
 
 //Инициализация
 bool LocationEffects::Init()
 {
-    // DX8 render
-    rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
+    // DX9 render
+    rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
     if (!rs)
-        SE_THROW_MSG("No service: dx8render");
+        throw std::exception("No service: dx9render");
 
-    _CORE_API->LayerCreate("execute", true, false);
-    _CORE_API->LayerSetFlags("execute", LRFLAG_EXECUTE);
-    _CORE_API->LayerAdd("execute", GetID(), 10);
+    // api->LayerCreate("execute", true, false);
+    EntityManager::SetLayerType(EXECUTE, EntityManager::Layer::Type::execute);
+    EntityManager::AddToLayer(EXECUTE, GetId(), 10);
 
-    _CORE_API->LayerCreate("realize", true, false);
-    _CORE_API->LayerSetFlags("realize", LRFLAG_REALIZE);
-    _CORE_API->LayerAdd("realize", GetID(), 1000000);
+    // api->LayerCreate("realize", true, false);
+    EntityManager::SetLayerType(REALIZE, EntityManager::Layer::Type::realize);
+    EntityManager::AddToLayer(REALIZE, GetId(), 1000000);
 
     splashesTxt = rs->TextureCreate("LocEfx\\chrsplprt.tga");
     flyTex = rs->TextureCreate("LocEfx\\firefly.tga");
@@ -92,33 +87,33 @@ bool LocationEffects::Init()
 }
 
 //Исполнение
-void LocationEffects::Execute(dword delta_time)
+void LocationEffects::Execute(uint32_t delta_time)
 {
 }
 
-void LocationEffects::Realize(dword delta_time)
+void LocationEffects::Realize(uint32_t delta_time)
 {
-    float dltTime = delta_time * 0.001f;
+    const auto dltTime = delta_time * 0.001f;
     ProcessedFlys(dltTime);
     ProcessedChrSplash(dltTime);
     ProcessedShotgun(dltTime);
 }
 
 //Сообщения
-dword _cdecl LocationEffects::ProcessMessage(MESSAGE &message)
+uint64_t LocationEffects::ProcessMessage(MESSAGE &message)
 {
     char buf[32];
     message.String(32, buf);
     buf[31] = 0;
     CVECTOR pos, dir;
-    if (stricmp(buf, "Splashes") == 0)
+    if (_stricmp(buf, "Splashes") == 0)
     {
         pos.x = message.Float();
         pos.y = message.Float();
         pos.z = message.Float();
         CreateSplash(pos, message.Float());
     }
-    else if (stricmp(buf, "SGFireParticles") == 0)
+    else if (_stricmp(buf, "SGFireParticles") == 0)
     {
         pos.x = message.Float();
         pos.y = message.Float();
@@ -128,7 +123,7 @@ dword _cdecl LocationEffects::ProcessMessage(MESSAGE &message)
         dir.z = message.Float();
         SGFirePrt(pos, dir);
     }
-    else if (stricmp(buf, "SGBloodParticles") == 0)
+    else if (_stricmp(buf, "SGBloodParticles") == 0)
     {
         pos.x = message.Float();
         pos.y = message.Float();
@@ -138,7 +133,7 @@ dword _cdecl LocationEffects::ProcessMessage(MESSAGE &message)
         dir.z = message.Float();
         SGBldPrt(pos, dir);
     }
-    else if (stricmp(buf, "SGEnvParticles") == 0)
+    else if (_stricmp(buf, "SGEnvParticles") == 0)
     {
         pos.x = message.Float();
         pos.y = message.Float();
@@ -148,22 +143,22 @@ dword _cdecl LocationEffects::ProcessMessage(MESSAGE &message)
         dir.z = message.Float();
         SGEnvPrt(pos, dir);
     }
-    else if (stricmp(buf, "SGInited") == 0)
+    else if (_stricmp(buf, "SGInited") == 0)
     {
         SGInited();
     }
-    else if (stricmp(buf, "SGRelease") == 0)
+    else if (_stricmp(buf, "SGRelease") == 0)
     {
         SGRelease();
     }
-    else if (stricmp(buf, "AddFly") == 0)
+    else if (_stricmp(buf, "AddFly") == 0)
     {
         pos.x = message.Float();
         pos.y = message.Float();
         pos.z = message.Float();
         AddLampFlys(pos);
     }
-    else if (stricmp(buf, "DelFlys") == 0)
+    else if (_stricmp(buf, "DelFlys") == 0)
     {
         numFlys = 0;
         numFly = 0;
@@ -181,26 +176,26 @@ inline void LocationEffects::DrawParticles(void *prts, long num, long size, long
     rs->SetTransform(D3DTS_VIEW, CMatrix());
     rs->SetTransform(D3DTS_WORLD, CMatrix());
     rs->TextureSet(0, texture);
-    long i = 0, n = 0;
-    for (i = 0, n = 0; i < num; i++)
+    long n = 0;
+    for (long i = 0; i < num; i++)
     {
-        Particle *parts = (Particle *)prts;
-        prts = (char *)prts + size;
-        CVECTOR pos = camMtx * parts->pos;
-        float size = parts->size * 0.5f;
-        float sn = sinf(parts->angle);
-        float cs = cosf(parts->angle);
-        long color = (long(parts->alpha) << 24);
+        auto *parts = static_cast<Particle *>(prts);
+        prts = static_cast<char *>(prts) + size;
+        auto pos = camMtx * parts->pos;
+        const auto size = parts->size * 0.5f;
+        const auto sn = sinf(parts->angle);
+        const auto cs = cosf(parts->angle);
+        auto color = (static_cast<long>(parts->alpha) << 24);
         if (!isEx)
             color |= 0x00ffffff;
         else
-            color |= 0x00ffffff & ((ParticleEx *)parts)->color;
-        float u1 = 0.0f;
-        float u2 = 1.0f;
+            color |= 0x00ffffff & static_cast<ParticleEx *>(parts)->color;
+        auto u1 = 0.0f;
+        auto u2 = 1.0f;
         if (isEx && numU)
         {
-            u2 = 1.0f / float(numU);
-            u1 = long(((ParticleEx *)parts)->frame) * u2;
+            u2 = 1.0f / static_cast<float>(numU);
+            u1 = static_cast<long>(static_cast<ParticleEx *>(parts)->frame) * u2;
             u2 += u1;
         }
         buffer[n * 6 + 0].pos = pos + CVECTOR(size * (-cs + sn), size * (sn + cs), 0.0f);
@@ -246,7 +241,7 @@ inline void LocationEffects::DrawParticles(void *prts, long num, long size, long
 void LocationEffects::CreateSplash(const CVECTOR &pos, float power)
 {
     //Выберим освободившийся блок
-    long i = 0;
+    long i;
     for (i = 0; i < LFX_SPLASHES_NUM; i++)
         if (chrSplash[i].time < 0.0f)
             break;
@@ -257,20 +252,20 @@ void LocationEffects::CreateSplash(const CVECTOR &pos, float power)
     if (power > 1.0f)
         power = 1.0f;
     //Инициализируем
-    ChrSplash &spl = chrSplash[i];
+    auto &spl = chrSplash[i];
     spl.time = 0.0f;
     spl.kTime = 1.4f;
     for (i = 0; i < LFX_SPLASHES_P_NUM; i++)
     {
-        float ang = rand() * (LFX_PI * 2.0f / RAND_MAX);
-        float r = rand() * (2.0f * LFX_SPLASHES_SRAD / float(RAND_MAX));
-        float s = 1.0f + rand() * (3.0f / float(RAND_MAX));
+        const auto ang = rand() * (LFX_PI * 2.0f / RAND_MAX);
+        const auto r = rand() * (2.0f * LFX_SPLASHES_SRAD / static_cast<float>(RAND_MAX));
+        const auto s = 1.0f + rand() * (3.0f / static_cast<float>(RAND_MAX));
         spl.prt[i].dir = CVECTOR(0.3f * sinf(ang), s, 0.3f * cosf(ang));
         spl.prt[i].pos = pos + CVECTOR(r * sinf(ang), 0.0f, r * cosf(ang));
         spl.prt[i].angle = 0.0f;
         spl.prt[i].alpha = 0.0f;
         spl.prt[i].dAng = ((rand() & 7) * (1.0f / 7.0f) - 0.5f) * 0.2f;
-        spl.prt[i].size = 0.5f + rand() * (0.5f / float(RAND_MAX));
+        spl.prt[i].size = 0.5f + rand() * (0.5f / static_cast<float>(RAND_MAX));
     }
     if (chrSplashRefCounter < 0)
         chrSplashRefCounter = 0;
@@ -284,7 +279,7 @@ void LocationEffects::ProcessedChrSplash(float dltTime)
         return;
     for (long i = 0; i < LFX_SPLASHES_NUM; i++)
     {
-        ChrSplash &spl = chrSplash[i];
+        auto &spl = chrSplash[i];
         //Смотрим время жизни
         if (spl.time < 0.0f)
             continue;
@@ -328,7 +323,7 @@ void LocationEffects::AddLampFlys(CVECTOR &pos)
     if (numFlys >= maxFlys)
     {
         maxFlys += 8;
-        flys = (LampFlys *)RESIZE(flys, maxFlys * sizeof(LampFlys));
+        flys.resize(maxFlys);
     }
     //Заполняем параметры
     //Общие
@@ -337,7 +332,7 @@ void LocationEffects::AddLampFlys(CVECTOR &pos)
     flys[numFlys].start = numFly;
     flys[numFlys].num = 1 + (rand() & 7);
     numFly += flys[numFlys].num;
-    fly = (ParticleFly *)RESIZE(fly, numFly * sizeof(ParticleFly));
+    fly.resize(numFly);
     //Каждой мухи
     for (long i = 0; i < flys[numFlys].num; i++)
     {
@@ -357,7 +352,7 @@ void LocationEffects::AddLampFlys(CVECTOR &pos)
         f.angle = 0.0f;
         f.size = 0.03f;
         f.alpha = 1.0f;
-        f.frame = float(rand() & 3);
+        f.frame = static_cast<float>(rand() & 3);
     }
     numFlys++;
 }
@@ -367,10 +362,10 @@ void LocationEffects::ProcessedFlys(float dltTime)
     CMatrix view;
     rs->GetTransform(D3DTS_VIEW, view);
     view.Transposition();
-    CVECTOR cam = view.Pos();
-    float dax = dltTime * 1.3f;
-    float day = dltTime * 1.4f;
-    float da = dltTime * 5.6f;
+    const CVECTOR cam = view.Pos();
+    const float dax = dltTime * 1.3f;
+    const float day = dltTime * 1.4f;
+    const float da = dltTime * 5.6f;
     //Расчитываем
     for (long i = 0; i < numFlys; i++)
     {
@@ -387,7 +382,7 @@ void LocationEffects::ProcessedFlys(float dltTime)
         if (k > 1.0f)
             k = 1.0f;
         //Обновляем мух
-        ParticleFly *fl = fly + flys[i].start;
+        ParticleFly *fl = &fly[flys[i].start];
         for (long j = 0; j < flys[i].num; j++)
         {
             ParticleFly &f = fl[j];
@@ -421,7 +416,7 @@ void LocationEffects::ProcessedFlys(float dltTime)
                 cs = 0.0f;
             if (cs > 1.0f)
                 cs = 1.0f;
-            f.color = long(cs * 255.0f);
+            f.color = static_cast<long>(cs * 255.0f);
             f.color |= (f.color << 16) | (f.color << 8);
             //Кадр
             f.frame += dltTime * f.k * 25.0f;
@@ -432,7 +427,7 @@ void LocationEffects::ProcessedFlys(float dltTime)
         }
     }
     //Рисуем
-    DrawParticles(fly, numFly, sizeof(ParticleFly), flyTex, "LocFly", true, 4);
+    DrawParticles(fly.data(), numFly, sizeof(ParticleFly), flyTex, "LocFly", true, 4);
 }
 
 //---------------------------------------------------------------------------------
@@ -469,14 +464,14 @@ void LocationEffects::SGRelease()
 void LocationEffects::SGEnvPrt(const CVECTOR &pos, const CVECTOR &ndir)
 {
     SGInited();
-    long max = sizeof(flinders) / sizeof(flinders[0]);
-    long num = 4 + (rand() & 3);
+    const long max = sizeof(flinders) / sizeof(flinders[0]);
+    const long num = 4 + (rand() & 3);
     for (long i = 0; i < num && numFlinders < max; i++)
     {
         flinders[numFlinders].pos = pos;
         flinders[numFlinders].spd = ndir;
         float r = rand() * 0.7f / RAND_MAX;
-        float a = rand() * 6.283185307f / (RAND_MAX + 1);
+        const float a = rand() * 6.283185307f / (RAND_MAX + 1);
         flinders[numFlinders].spd.y += r * sinf(a);
         r *= cosf(a);
         flinders[numFlinders].spd.x += r * ndir.z;
@@ -503,14 +498,14 @@ void LocationEffects::SGEnvPrt(const CVECTOR &pos, const CVECTOR &ndir)
 void LocationEffects::SGBldPrt(const CVECTOR &pos, const CVECTOR &ndir)
 {
     SGInited();
-    long max = sizeof(blood) / sizeof(blood[0]);
-    long num = 16 + (rand() & 7);
+    const long max = sizeof(blood) / sizeof(blood[0]);
+    const long num = 16 + (rand() & 7);
     for (long i = 0; i < num && numBlood < max; i++)
     {
         blood[numBlood].pos = pos;
         blood[numBlood].spd = ndir;
         float r = rand() * 0.7f / RAND_MAX;
-        float a = rand() * 6.283185307f / (RAND_MAX + 1);
+        const float a = rand() * 6.283185307f / (RAND_MAX + 1);
         blood[numBlood].spd.y += r * sinf(a);
         r *= cosf(a);
         blood[numBlood].spd.x += r * ndir.z;
@@ -537,14 +532,14 @@ void LocationEffects::SGBldPrt(const CVECTOR &pos, const CVECTOR &ndir)
 void LocationEffects::SGFirePrt(const CVECTOR &pos, const CVECTOR &ndir)
 {
     SGInited();
-    long max = sizeof(smoke) / sizeof(smoke[0]);
-    long num = 5 + (rand() & 3);
+    const long max = sizeof(smoke) / sizeof(smoke[0]);
+    const long num = 5 + (rand() & 3);
     for (long i = 0; i < num && numSmoke < max; i++)
     {
         smoke[numSmoke].pos = pos;
         smoke[numSmoke].spd = ndir;
         float r = rand() * 0.03f / RAND_MAX;
-        float a = rand() * 6.283185307f / (RAND_MAX + 1);
+        const float a = rand() * 6.283185307f / (RAND_MAX + 1);
         smoke[numSmoke].spd.y += r * sinf(a);
         r *= cosf(a);
         smoke[numSmoke].spd.x += r * ndir.z;
@@ -573,7 +568,7 @@ void LocationEffects::ProcessedShotgun(float dltTime)
     if (!isShgInited)
         return;
     CVECTOR winDir = 0.0f;
-    VDATA *param = _CORE_API->Event("EWhr_GetWindAngle", 0);
+    VDATA *param = api->Event("EWhr_GetWindAngle", nullptr);
     if (param)
     {
         float ang;
@@ -582,7 +577,7 @@ void LocationEffects::ProcessedShotgun(float dltTime)
         winDir.x = sinf(ang);
         winDir.z = cosf(ang);
     }
-    param = _CORE_API->Event("EWhr_GetWindSpeed", 0);
+    param = api->Event("EWhr_GetWindSpeed", nullptr);
     if (param)
     {
         float spd;
@@ -598,7 +593,7 @@ void LocationEffects::ProcessedShotgun(float dltTime)
     {
         winDir *= 0.05f;
     }
-    long i = 0, j = 0;
+    long i, j;
     for (i = 0, j = 0; i < numSmoke; i++)
     {
         smoke[i].pos += (smoke[i].spd + winDir) * dltTime;
@@ -635,7 +630,7 @@ void LocationEffects::ProcessedShotgun(float dltTime)
             if (i != j)
                 smoke[j] = smoke[i];
             j++;
-        };
+        }
     }
     numSmoke = j;
     for (i = 0, j = 0; i < numBlood; i++)
@@ -656,7 +651,7 @@ void LocationEffects::ProcessedShotgun(float dltTime)
             if (i != j)
                 blood[j] = blood[i];
             j++;
-        };
+        }
     }
     numBlood = j;
     for (i = 0, j = 0; i < numFlinders; i++)
@@ -676,7 +671,7 @@ void LocationEffects::ProcessedShotgun(float dltTime)
             if (i != j)
                 flinders[j] = flinders[i];
             j++;
-        };
+        }
     }
     numFlinders = j;
     //

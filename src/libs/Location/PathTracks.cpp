@@ -7,20 +7,21 @@
 //============================================================================================
 
 #include "PathTracks.h"
+#include "CameraTracksFile.h"
+#include "vmodule_api.h"
 
 //============================================================================================
 
 PathTracks::PathTracks()
 {
-    point = null;
+    point = nullptr;
     numPoints = 0;
 }
 
 PathTracks::~PathTracks()
 {
-    if (point)
-        delete point;
-    point = null;
+    delete point;
+    point = nullptr;
     numPoints = 0;
 }
 
@@ -32,14 +33,13 @@ bool PathTracks::Load(const char *fileName)
     //Загружаем файл в память
     Assert(sizeof(AntFileTrackElement) == sizeof(Point));
 
-    if (point)
-        delete point;
-    point = 0;
+    delete point;
+    point = nullptr;
     numPoints = 0;
 
-    char *data = null;
-    dword size = 0;
-    if (api->fio->LoadFile(fileName, &data, &size) == FALSE || !data)
+    char *data = nullptr;
+    uint32_t size = 0;
+    if (fio->LoadFile(fileName, &data, &size) == FALSE || !data)
     {
         api->Trace("Camera tracks file %s not loaded...", fileName);
         return false;
@@ -57,9 +57,9 @@ bool PathTracks::Load(const char *fileName)
         delete data;
         return false;
     }
-    long nPoints = ((AntFileHeader *)data)->framesCount;
-    long nStringSize = ((AntFileHeader *)data)->stringsTableSize;
-    long nBoneCount = ((AntFileHeader *)data)->bonesCount;
+    const long nPoints = ((AntFileHeader *)data)->framesCount;
+    const long nStringSize = ((AntFileHeader *)data)->stringsTableSize;
+    const long nBoneCount = ((AntFileHeader *)data)->bonesCount;
     //Проверяем размеры файла
     if (size < sizeof(AntFileHeader) + sizeof(char) * nStringSize + sizeof(AntFileBone) * nBoneCount +
                    sizeof(AntFileTrackElement) * nPoints)
@@ -69,9 +69,9 @@ bool PathTracks::Load(const char *fileName)
         return false;
     }
     //Сохраняем данные
-    point = NEW Point[nPoints];
+    point = new Point[nPoints];
     Assert(point);
-    memcpy(point, (byte *)data + sizeof(AntFileHeader) + nStringSize + sizeof(AntFileBone) * nBoneCount,
+    memcpy(point, (uint8_t *)data + sizeof(AntFileHeader) + nStringSize + sizeof(AntFileBone) * nBoneCount,
            sizeof(AntFileTrackElement) * nPoints);
     numPoints = nPoints;
 
@@ -79,28 +79,28 @@ bool PathTracks::Load(const char *fileName)
 }
 
 //Нарисовать трек
-void PathTracks::Draw(VDX8RENDER *render)
+void PathTracks::Draw(VDX9RENDER *render)
 {
     /*render.FlushBufferedLines();
     for(long i = 0; i < numPoints - 1; i++)
     {
-        render.DrawBufferedLine(point[i].p1, 0xff00ff00, point[i + 1].p1, 0xff00ffff, false);
-        render.DrawBufferedLine(point[i].p2, 0xff00ff00, point[i + 1].p2, 0xff00ffff, false);
-        render.DrawBufferedLine(point[i].p, 0xffff0000, point[i + 1].p, 0xffffff00, false);
-        render.DrawBufferedLine(point[i].p1, 0xffffff00, point[i].p2, 0xffffff00, false);
+      render.DrawBufferedLine(point[i].p1, 0xff00ff00, point[i + 1].p1, 0xff00ffff, false);
+      render.DrawBufferedLine(point[i].p2, 0xff00ff00, point[i + 1].p2, 0xff00ffff, false);
+      render.DrawBufferedLine(point[i].p, 0xffff0000, point[i + 1].p, 0xffffff00, false);
+      render.DrawBufferedLine(point[i].p1, 0xffffff00, point[i].p2, 0xffffff00, false);
     }
     render.FlushBufferedLines();*/
 }
 
 //Получить точку трека
-bool PathTracks::GetPoint(float index, CVECTOR &cp, Quaternion &cq)
+bool PathTracks::GetPoint(float index, Vector &cp, Quaternion &cq) const
 {
     Assert(point);
     if (index < 0.0 || index >= 1.f)
         return false;
     index *= numPoints;
-    long i1 = long(index);
-    long i2 = i1 + 1;
+    auto i1 = static_cast<long>(index);
+    auto i2 = i1 + 1;
     if (i1 >= numPoints)
         i1 = numPoints - 1;
     if (i2 >= numPoints)

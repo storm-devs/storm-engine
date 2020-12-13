@@ -12,6 +12,7 @@
 #define _NPCharacter_H_
 
 #include "AICharacter.h"
+#include "EntityManager.h"
 
 class NPCharacter : public AICharacter
 {
@@ -19,14 +20,22 @@ class NPCharacter : public AICharacter
     enum NPCTask
     {
         npct_unknow = 0,
-        npct_none,            //Нет задачи, персонаж контролируется извне
-        npct_stay,            //Стоять на месте
-        npct_gotopoint,       //Идти в точку
-        npct_runtopoint,      //Бежать в точку
-        npct_followcharacter, //Идти за перcонажем
-        npct_fight,           //Сражаться с другим персонажем
-        npct_escape,          //Уходить от персонажа
-        npct_dead,            //Смерть персонажа
+        npct_none,
+        //Нет задачи, персонаж контролируется извне
+        npct_stay,
+        //Стоять на месте
+        npct_gotopoint,
+        //Идти в точку
+        npct_runtopoint,
+        //Бежать в точку
+        npct_followcharacter,
+        //Идти за перcонажем
+        npct_fight,
+        //Сражаться с другим персонажем
+        npct_escape,
+        //Уходить от персонажа
+        npct_dead,
+        //Смерть персонажа
         npct_max
     };
 
@@ -34,14 +43,16 @@ class NPCharacter : public AICharacter
     {
         NPCTask task;
         CVECTOR to;
-        ENTITY_ID target;
+        entid_t target;
+
         union {
-            dword flags;
+            uint32_t flags;
+
             struct
             {
-                dword isRun : 1;
-                dword isFight : 1;
-                dword isFollowInit : 1;
+                uint32_t isRun : 1;
+                uint32_t isFight : 1;
+                uint32_t isFollowInit : 1;
             };
         };
     };
@@ -61,18 +72,18 @@ class NPCharacter : public AICharacter
     NPCharacter();
     virtual ~NPCharacter();
 
-    virtual bool PostInit();
+    bool PostInit() override;
 
-    dword ChlProcessMessage(long messageID, MESSAGE &message);
-    void Move(float dltTime);
-    void Update(float dltTime);
+    uint32_t ChlProcessMessage(long messageID, MESSAGE &message) override;
+    void Move(float dltTime) override;
+    void Update(float dltTime) override;
 
     //--------------------------------------------------------------------------------------------
     //
     //--------------------------------------------------------------------------------------------
   public:
     //Получить атакуещего персонажа
-    Character *GetAttackedCharacter();
+    Character *GetAttackedCharacter() const;
 
     //--------------------------------------------------------------------------------------------
     //Задачи
@@ -81,8 +92,8 @@ class NPCharacter : public AICharacter
     //Установить новую задачу
     bool SetNewTask(NPCTask tsk, MESSAGE &message);
 
-    bool InitFollowChartacter(ENTITY_ID &eid);
-    bool InitFightChartacter(ENTITY_ID &eid);
+    bool InitFollowChartacter(entid_t eid);
+    bool InitFightChartacter(entid_t eid);
 
     //--------------------------------------------------------------------------------------------
     //Исполнение задач
@@ -106,22 +117,22 @@ class NPCharacter : public AICharacter
     void DoFightBlock(bool needParry = false);
 
     //Получить энергию
-    float GetEnergy();
+    float GetEnergy() const;
     //Получить энергию для действия
-    float GetActEnergy(const char *act);
+    float GetActEnergy(const char *act) const;
 
     //События
 
     //Невозможно дальнейшее выполнение команды
-    virtual void FailureCommand();
+    void FailureCommand() override;
     //Персонаж прибыл в точку
-    virtual void EndGotoCommand();
+    void EndGotoCommand() override;
     //Персонаж удалился от точки на необходимый радиус
-    virtual void EndEscapeCommand();
+    void EndEscapeCommand() override;
     //С персонажем слишком часто коллизяться
-    virtual void CollisionThreshold();
+    void CollisionThreshold() override;
 
-    virtual void HitChild(bool isInBlock);
+    void HitChild(bool isInBlock) override;
 
     //Сохранить задачу в стеке
     bool PushTask();
@@ -133,7 +144,7 @@ class NPCharacter : public AICharacter
     //--------------------------------------------------------------------------------------------
   private:
     //Невозможно дальнейшее выполнение команды
-    void FailureCommand(NPCTask task);
+    void FailureCommand(NPCTask task) const;
     //Принятие решений
     void FightTick();
     //Получить тип задачи по имени
@@ -152,7 +163,7 @@ class NPCharacter : public AICharacter
     long stackPointer;  //Указатель стека
 
     //Объект групп
-    ENTITY_ID charactersGroups;
+    entid_t charactersGroups;
 
     //Система боя
     float fightLevel; //Уровень поведения в бою 0..1
@@ -185,21 +196,21 @@ class NPCharacter : public AICharacter
     bool isFgtChanged;
     FightAction enemyFgtType;
 
-    bool bMusketer;
+    bool bMusketer; //~!~
     float fMusketerDistance;
     float fMusketerTime, fMusketerFireTime, fMusketerCheckFireTime;
-    bool bMusketerNoMove;
+    bool bMusketerNoMove; //~!~
     bool bTryAnyTarget;
 
     void SetEscapeTask(Character *c);
 };
 
 //Получить атакуещего персонажа
-inline Character *NPCharacter::GetAttackedCharacter()
+inline Character *NPCharacter::GetAttackedCharacter() const
 {
     if (task.task != npct_fight)
-        return null;
-    return (Character *)api->GetEntityPointer(&task.target);
+        return nullptr;
+    return static_cast<Character *>(EntityManager::GetEntityPointer(task.target));
 }
 
 //Проверить событие
@@ -210,14 +221,14 @@ inline bool NPCharacter::PrTest(float probability, float &testTime)
     testTime = rand() * (0.02f / RAND_MAX);
     if (probability <= 0.0f)
         return false;
-    float r = rand() * (1.0f / RAND_MAX);
+    const auto r = rand() * (1.0f / RAND_MAX);
     return r < probability;
 }
 
 //Проверить событие
 inline bool NPCharacter::PrTest(float probability)
 {
-    float r = rand() * (1.0f / RAND_MAX);
+    const auto r = rand() * (1.0f / RAND_MAX);
     return r < probability;
 }
 

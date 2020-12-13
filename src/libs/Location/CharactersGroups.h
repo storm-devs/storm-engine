@@ -11,17 +11,16 @@
 #ifndef _CharactersGroups_H_
 #define _CharactersGroups_H_
 
-#include "matrix.h"
+#include "Matrix.h"
 #include "vmodule_api.h"
 
 #include "Character.h"
 #include "Location.h"
-#include "LocatorArray.h"
 
 class Location;
 class Character;
 
-class CharactersGroups : public ENTITY
+class CharactersGroups : public Entity
 {
   public:
     struct String
@@ -35,11 +34,11 @@ class CharactersGroups : public ENTITY
         long hash;
 
         void operator=(const char *str);
-        inline operator const char *()
+        operator const char *() const
         {
             return name;
         };
-        bool Cmp(const char *str, long l, long h);
+        bool Cmp(const char *str, long l, long h) const;
         static long GetHash(const char *str);
         static long GetLen(const char *str);
     };
@@ -74,8 +73,8 @@ class CharactersGroups : public ENTITY
         float say; //Радиус на котором персонаж может сообщить соседним об опасности
         long priority; //Преоритет защиты
         Relation *relations; //Список отношений - размер соответствует индексу группы в списке
-        ENTITY_ID c[MAX_CHARACTERS]; //Список персонажей находящихся в группе
-        long numChr;                 //Количество персонажей в группе
+        entid_t c[MAX_CHARACTERS]; //Список персонажей находящихся в группе
+        long numChr;               //Количество персонажей в группе
     };
 
     //--------------------------------------------------------------------------------------------
@@ -86,13 +85,29 @@ class CharactersGroups : public ENTITY
     virtual ~CharactersGroups();
 
     //Инициализация
-    bool Init();
+    bool Init() override;
     //Исполнение
-    void Execute(dword delta_time);
+    void Execute(uint32_t delta_time);
     //Сообщения
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    uint64_t ProcessMessage(MESSAGE &message) override;
     //Изменение атрибута
-    dword AttributeChanged(ATTRIBUTES *apnt);
+    uint32_t AttributeChanged(ATTRIBUTES *apnt) override;
+
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+            // case Stage::realize:
+            //	Realize(delta); break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
 
     //--------------------------------------------------------------------------------------------
     //Инкапсуляция
@@ -107,13 +122,13 @@ class CharactersGroups : public ENTITY
     //Удалить все неактивные или неправильные цели
     void RemoveAllInvalidTargets();
     //Удалить неактивные или неправильные цели
-    bool RemoveInvalidTargets(Character *chr, Character *check = null);
+    bool RemoveInvalidTargets(Character *chr, Character *check = nullptr);
 
   private:
     //Проверить на действительность цель
     bool MsgIsValidateTarget(MESSAGE &message);
     //Найти оптимальную цель
-    bool MsgGetOptimalTarget(MESSAGE &message);
+    bool MsgGetOptimalTarget(MESSAGE &message) const;
     //Враг ли данный персонаж
     bool MsgIsEnemy(MESSAGE &message);
     //Реакция групп на атаку
@@ -155,7 +170,7 @@ class CharactersGroups : public ENTITY
     void UnloadCharacter(MESSAGE &message);
 
     //Исключить персонажа из всех групп
-    void RemoveCharacterFromAllGroups(ENTITY_ID *chr);
+    void RemoveCharacterFromAllGroups(entid_t chr);
 
   public:
     //Получить группу из сообщения
@@ -165,16 +180,16 @@ class CharactersGroups : public ENTITY
     //Найти группу по имени
     long FindGroupIndex(const char *name);
     //Найти отношение групп
-    Relation &FindRelation(MESSAGE &message, bool *selfgroup = null);
+    Relation &FindRelation(MESSAGE &message, bool *selfgroup = nullptr);
     //Найти отношение групп
-    Relation &FindRelation(const char *name1, const char *name2, bool *selfgroup = null);
+    Relation &FindRelation(const char *name1, const char *name2, bool *selfgroup = nullptr);
     //Найти отношение групп
-    Relation &FindRelation(long g1, long g2, bool *selfgroup = null);
+    Relation &FindRelation(long g1, long g2, bool *selfgroup = nullptr);
     //Получить индекс группы персонажа
     long GetCharacterGroup(Character *c);
 
     //Удалить все цели
-    void ClearAllTargets();
+    void ClearAllTargets() const;
     //Сохранить даные в объект
     void SaveData();
     //Прочитать даные отношений из объекта
@@ -188,12 +203,12 @@ class CharactersGroups : public ENTITY
     const char *GetTextState(RelState state);
 
   private:
-    Group **groups;     //Группы
-    long numGroups;     //Количество групп
-    long maxGroups;     //Количество групп
-    Location *location; //Текущая локация
-    long curExecuteChr; //Индекс текущего исполняемого персонажа
-    float waveTime;     //Время с прошлого запуска волны
+    std::vector<Group *> groups; //Группы
+    long numGroups;              //Количество групп
+    long maxGroups;              //Количество групп
+    Location *location;          //Текущая локация
+    long curExecuteChr;          //Индекс текущего исполняемого персонажа
+    float waveTime;              //Время с прошлого запуска волны
 
     //Массив для поиска персонажей
     Supervisor::FindCharacter fnd[MAX_CHARACTERS];

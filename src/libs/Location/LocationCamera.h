@@ -11,12 +11,12 @@
 #ifndef _LocationCamera_H_
 #define _LocationCamera_H_
 
+#include "Matrix.h"
 #include "PathTracks.h"
-#include "dx8render.h"
-#include "matrix.h"
-#include "templates\array.h"
-#include "templates\string.h"
+#include "dx9render.h"
 #include "vmodule_api.h"
+#include <string>
+#include <vector>
 
 #include "CameraFollow.h"
 
@@ -24,16 +24,19 @@ class MODEL;
 class Character;
 class Location;
 
-class LocationCamera : public ENTITY
+class LocationCamera : public Entity
 {
     friend CameraFollow;
 
     enum CameraWorkMode
     {
         cwm_none = 0,
-        cwm_follow, //Камера преследования человека
-        cwm_topos,  //Переместить камеру в заданную позицию
-        cwm_free,   //Камера свободно летающая (отладочная)
+        cwm_follow,
+        //Камера преследования человека
+        cwm_topos,
+        //Переместить камеру в заданную позицию
+        cwm_free,
+        //Камера свободно летающая (отладочная)
     };
 
     //--------------------------------------------------------------------------------------------
@@ -44,17 +47,34 @@ class LocationCamera : public ENTITY
     virtual ~LocationCamera();
 
     //Инициализация
-    bool Init();
+    bool Init() override;
     //Исполнение
-    void Execute(dword delta_time);
-    void Realize(dword delta_time);
+    void Execute(uint32_t delta_time);
+    void Realize(uint32_t delta_time);
     //Сообщения
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    uint64_t ProcessMessage(MESSAGE &message) override;
     //Изменение атрибута
-    dword AttributeChanged(ATTRIBUTES *apnt);
+    uint32_t AttributeChanged(ATTRIBUTES *apnt) override;
+
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
 
     void LockFPMode(bool isLock);
-    float GetAx();
+    float GetAx() const;
 
     //--------------------------------------------------------------------------------------------
     //Инкапсуляция
@@ -77,14 +97,14 @@ class LocationCamera : public ENTITY
     bool MoveFollow(CVECTOR &pos, const CVECTOR &cpos, const CVECTOR &to);
 
     //Протрейсит луч через локацию
-    float Trace(const CVECTOR &src, const CVECTOR &dst);
-    bool GetCollideTriangle(Triangle &trg);
-    void Clip(PLANE *p, long numPlanes, CVECTOR &cnt, float rad, bool (*fnc)(const CVECTOR *vtx, long num));
+    float Trace(const CVECTOR &src, const CVECTOR &dst) const;
+    bool GetCollideTriangle(TRIANGLE &trg) const;
+    void Clip(PLANE *p, long numPlanes, CVECTOR &cnt, float rad, bool (*fnc)(const CVECTOR *vtx, long num)) const;
 
   private:
-    VDX8RENDER *rs;
+    VDX9RENDER *rs;
     //Море
-    ENTITY_ID sea;
+    entid_t sea;
     //Параметры камеры
     float ax; //Угол наклона камеры
     float lAx;
@@ -100,7 +120,7 @@ class LocationCamera : public ENTITY
     bool isLockFPMode;
     bool isViewExecute;
 
-    ENTITY_ID loc;
+    entid_t loc;
     Location *location;
 
     //Режим работы
@@ -115,8 +135,8 @@ class LocationCamera : public ENTITY
     float kMorph;              //Текущий коэфициент морфинга
 
     //Модельки
-    ENTITY_ID chr;      //Персонаж
-    ENTITY_ID patchMdl; //Патч для камеры
+    entid_t chr;      //Персонаж
+    entid_t patchMdl; //Патч для камеры
 
     CameraFollow cf; //Камера следующая за персонажем
 
@@ -140,6 +160,7 @@ class LocationCamera : public ENTITY
     float chradius;       //Радиус персонажа
 
     //динамическое изменение перспективы (пьянство)
+    //~!~ rearrange this!
     struct
     {
         bool isOn;
@@ -155,6 +176,7 @@ class LocationCamera : public ENTITY
         float fAngleSpeed;
         bool bAngleUp;
     } dynamic_fog;
+
     void TurnOnDynamicFov(float fSpeed, float fTime, float fRelationMin, float fRelationMax, float fAngSpeed,
                           float fAngMax);
     void ProcessDynamicFov(float fDeltaTime, const CVECTOR &vFrom, const CVECTOR &vTo, CVECTOR &vUp);
@@ -164,7 +186,7 @@ class LocationCamera : public ENTITY
     bool m_bTrackMode;
     float m_fTrackCurTime;
     float m_fTrackMaxTime;
-    string m_sCurTrackName;
+    std::string m_sCurTrackName;
     float m_fPauseTime;
 
     struct CameraTrackPause
@@ -172,7 +194,8 @@ class LocationCamera : public ENTITY
         float trackTime;
         float pauseTime;
     };
-    array<CameraTrackPause> m_aTrackPauses;
+
+    std::vector<CameraTrackPause> m_aTrackPauses;
     long m_nCurPauseIndex;
 
     bool LoadCameraTrack(const char *pcTrackFile, float fTrackTime);
@@ -188,7 +211,7 @@ inline void LocationCamera::LockFPMode(bool isLock)
     isLockFPMode = isLock;
 }
 
-inline float LocationCamera::GetAx()
+inline float LocationCamera::GetAx() const
 {
     return ax;
 }

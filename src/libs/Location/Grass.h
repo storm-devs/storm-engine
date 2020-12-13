@@ -11,9 +11,9 @@
 #ifndef _Grass_H_
 #define _Grass_H_
 
-#include "dx8render.h"
+#include "Supervisor.h"
+#include "dx9render.h"
 #include "grs.h"
-#include "supervisor.h"
 #include "vmodule_api.h"
 
 #define MSG_GRASS_LOAD_DATA 40666
@@ -24,27 +24,30 @@ class GEOS;
 
 class Character;
 
-class Grass : public ENTITY
+class Grass : public Entity
 {
 #pragma pack(push, 1)
+
+    static IDirect3DVertexDeclaration9 *vertexDecl_;
 
     struct Vertex
     {
         float x, y, z;
-        dword data;
-        dword offset;
+        uint32_t data;
+        uint32_t offset;
         float wx, wz;
         float alpha;
     };
 
     struct VSConstant
     {
-        inline VSConstant()
+        VSConstant()
         {
             x = y = z = 0.0f;
             w = 1.0f;
         };
-        inline VSConstant(float _x, float _y, float _z, float _w)
+
+        VSConstant(float _x, float _y, float _z, float _w)
         {
             x = _x;
             y = _y;
@@ -68,12 +71,13 @@ class Grass : public ENTITY
         union {
             struct
             {
-                byte frame; //Кадр
-                byte h;     //Высота
-                byte w;     //Ширина
-                byte ang;   //Угол поворота
+                uint8_t frame; //Кадр
+                uint8_t h;     //Высота
+                uint8_t w;     //Ширина
+                uint8_t ang;   //Угол поворота
             };
-            dword data;
+
+            uint32_t data;
         };
     };
 
@@ -102,12 +106,29 @@ class Grass : public ENTITY
     virtual ~Grass();
 
     //Инициализация
-    bool Init();
+    bool Init() override;
     //Работа
-    void Execute(dword delta_time);
-    void Realize(dword delta_time);
+    void Execute(uint32_t delta_time);
+    void Realize(uint32_t delta_time);
     //
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    uint64_t ProcessMessage(MESSAGE &message) override;
+
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+                LostRender(delta); break;
+            case Stage::restore_render:
+                RestoreRender(delta); break;*/
+        }
+    }
 
     //Загрузить данные для травы
     bool LoadData(const char *patchName);
@@ -131,10 +152,12 @@ class Grass : public ENTITY
     void DrawBuffer();
     //Получить цвет
     static long GetColor(CVECTOR color);
+    // Vertex declaration
+    void CreateVertexDeclaration();
 
   private:
     //Сервис рендера
-    VDX8RENDER *rs;
+    VDX9RENDER *rs;
     //Буфера
     long vb, ib;
     long numPoints;

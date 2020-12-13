@@ -25,8 +25,8 @@ class ModelArray
     class UVSlider : public MODEL::RenderTuner
     {
       public:
-        virtual void Set(MODEL *model, VDX8RENDER *rs);
-        virtual void Restore(MODEL *model, VDX8RENDER *rs);
+        void Set(MODEL *model, VDX9RENDER *rs) override;
+        void Restore(MODEL *model, VDX9RENDER *rs) override;
 
         float u0, v0;
         float us0, vs0;
@@ -37,9 +37,9 @@ class ModelArray
     class Relection : public MODEL::RenderTuner
     {
       public:
-        virtual void Set(MODEL *model, VDX8RENDER *rs);
-        virtual void Restore(MODEL *model, VDX8RENDER *rs);
-        dword tfactor;
+        void Set(MODEL *model, VDX9RENDER *rs) override;
+        void Restore(MODEL *model, VDX9RENDER *rs) override;
+        uint32_t tfactor;
     };
 
     struct Rotator
@@ -49,16 +49,18 @@ class ModelArray
 
     struct LocationModel
     {
-        ENTITY_ID modelrealizer; //Отрисовщик модели
-        ENTITY_ID id;            //Модель
-        dword hash;              //Хэшь значение для быстрого поиска
+        entid_t modelrealizer; //Отрисовщик модели
+        entid_t id;            //Модель
+        uint32_t hash;         //Хэшь значение для быстрого поиска
         union {
-            dword flags;
+            uint32_t flags;
+
             struct
             {
-                dword isVisible : 1;
+                uint32_t isVisible : 1;
             };
         };
+
         UVSlider *slider;
         Rotator *rotator;
         Relection *reflection;
@@ -74,7 +76,7 @@ class ModelArray
 
     //Создать модель
     long CreateModel(const char *modelName, const char *technique, long level, bool isVisible = true,
-                     void *pLights = 0);
+                     void *pLights = nullptr);
     //Удалить модель
     void DeleteModel(long modelIndex);
     //Установить модели анимацию
@@ -83,20 +85,20 @@ class ModelArray
     long FindModel(const char *modelName);
 
     //Проверить на правильность индекс
-    bool IsValidateIndex(long index);
+    bool IsValidateIndex(long index) const;
     //Получить название модели
     const char *GetModelName(long index);
 
     //Количество моделий
-    long Models();
+    long Models() const;
     //Получение ID модели по индексу
-    ENTITY_ID &ID(long modelIndex);
+    entid_t ID(long modelIndex);
     //Получение модели по индексу
     MODEL *operator[](long modelIndex);
     //Получение анимации по индексу
     Animation *GetAnimation(long modelIndex);
     //Получение ID отрисовщика по индексу
-    ENTITY_ID &RealizerID(long modelIndex);
+    entid_t RealizerID(long modelIndex);
 
     //Установить модельке анимацию скольжения uv
     void SetUVSlide(long modelIndex, float u0, float v0, float u1, float v1);
@@ -117,22 +119,22 @@ class ModelArray
     bool VisibleTest(const CVECTOR &p1, const CVECTOR &p2);
     //Протрейсит луч через локацию
     float Trace(const CVECTOR &src, const CVECTOR &dst);
-    bool GetCollideTriangle(Triangle &trg);
+    bool GetCollideTriangle(TRIANGLE &trg) const;
     void Clip(PLANE *p, long numPlanes, CVECTOR &cnt, float rad, bool (*fnc)(const CVECTOR *vtx, long num));
 
     //--------------------------------------------------------------------------------------------
     //Инкапсуляция
     //--------------------------------------------------------------------------------------------
   private:
-    dword CalcHashString(const char *str);
+    uint32_t CalcHashString(const char *str);
     static void UpdatePath(char *path);
 
   private:
     //Модели локации
-    LocationModel *model;
+    std::vector<LocationModel> model;
     long numModels;
     long maxModels;
-    Triangle ctrg;
+    TRIANGLE ctrg;
     bool isHavecTrg;
 
   public:
@@ -144,7 +146,7 @@ class ModelArray
 };
 
 //Проверить на правильность индекс
-inline bool ModelArray::IsValidateIndex(long index)
+inline bool ModelArray::IsValidateIndex(long index) const
 {
     return index >= 0 && index < numModels;
 }
@@ -154,7 +156,7 @@ inline const char *ModelArray::GetModelName(long index)
 {
     if (index >= 0 && index < numModels)
         return model[index].name;
-    return null;
+    return nullptr;
 }
 
 #endif

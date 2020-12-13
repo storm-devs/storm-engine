@@ -9,7 +9,8 @@
 //============================================================================================
 
 #include "CharacterAnimationKipper.h"
-#include "dx8render.h"
+#include "EntityManager.h"
+#include "dx9render.h"
 
 //============================================================================================
 //Конструирование, деструктурирование
@@ -17,21 +18,19 @@
 
 CharacterAnimationKipper::CharacterAnimationKipper()
 {
-    asr = null;
-    aniMan = null;
-    aniWoman = null;
+    asr = nullptr;
+    aniMan = nullptr;
+    aniWoman = nullptr;
     for (long i = 0; i < sizeof(lockTextures) / sizeof(long); i++)
         lockTextures[i] = -1;
     numLTextures = 0;
-    rs = null;
+    rs = nullptr;
 }
 
 CharacterAnimationKipper::~CharacterAnimationKipper()
 {
-    if (aniMan)
-        delete aniMan;
-    if (aniWoman)
-        delete aniWoman;
+    delete aniMan;
+    delete aniWoman;
     if (rs)
     {
         for (long i = 0; i < sizeof(lockTextures) / sizeof(long); i++)
@@ -44,21 +43,22 @@ CharacterAnimationKipper::~CharacterAnimationKipper()
 bool CharacterAnimationKipper::Init()
 {
     //Проверим что единственные
-    ENTITY_ID eid;
-    if (_CORE_API->FindClass(&eid, "CharacterAnimationKipper", 0))
+    const auto &entities = EntityManager::GetEntityIdVector("CharacterAnimationKipper");
+    for (auto eid : entities)
     {
-        if (_CORE_API->GetEntityPointer(&eid) != this || _CORE_API->FindClassNext(&eid))
-        {
-            _CORE_API->Trace("CharacterAnimationKipper::Init() -> CharacterAnimationKipper already created");
-            return false;
-        }
+        if (EntityManager::GetEntityPointer(eid) == this)
+            continue;
+
+        api->Trace("CharacterAnimationKipper::Init() -> CharacterAnimationKipper already created");
+        return false;
     }
-    rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
+
+    rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
     if (!rs)
-        SE_THROW_MSG("No service: dx8render");
-    AnimationService *asr = (AnimationService *)_CORE_API->CreateService("AnimationServiceImp");
+        throw std::exception("No service: dx9render");
+    auto *asr = static_cast<AnimationService *>(api->CreateService("AnimationServiceImp"));
     if (!asr)
-        SE_THROW_MSG("Anumation service not created!");
+        throw std::exception("Anumation service not created!");
     aniMan = asr->CreateAnimation("man");
     aniWoman = asr->CreateAnimation("towngirl");
     // LockTexture("dialog\dialog.tga");

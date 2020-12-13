@@ -147,7 +147,7 @@ void LocRat::Event(Animation *animation, long index, long eventID, AnimationEven
 
 void LocRat::StartNewAction(Animation *ani)
 {
-    float p = rand() * (1.0f / RAND_MAX);
+    const auto p = rand() * (1.0f / RAND_MAX);
     if (p < 0.4f)
     {
         ani->Player(0).SetAction("idle");

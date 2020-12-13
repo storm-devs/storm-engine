@@ -11,7 +11,7 @@
 #ifndef _LocLife_h_
 #define _LocLife_h_
 
-#include "animation.h"
+#include "Animation.h"
 #include "vmodule_api.h"
 
 class Location;
@@ -30,24 +30,24 @@ class LocLife : public AnimationEventListener
 
     //--------------------------------------------------------------------------------------------
   protected:
-    virtual const char *GetModelName() = null;
-    virtual const char *GetAniName() = null;
-    virtual bool PostInit(Animation *ani) = null;
+    virtual const char *GetModelName() = 0;
+    virtual const char *GetAniName() = 0;
+    virtual bool PostInit(Animation *ani) = 0;
 
-    virtual void IdleProcess(Animation *ani, float dltTime) = null;
-    virtual void MoveProcess(Animation *ani, float dltTime) = null;
-    virtual void IsStartMove(Animation *ani) = null;
-    virtual void IsStopMove(Animation *ani) = null;
+    virtual void IdleProcess(Animation *ani, float dltTime) = 0;
+    virtual void MoveProcess(Animation *ani, float dltTime) = 0;
+    virtual void IsStartMove(Animation *ani) = 0;
+    virtual void IsStopMove(Animation *ani) = 0;
 
     //--------------------------------------------------------------------------------------------
   protected:
     void StartMove();
     void StopMove();
-    bool IsNearPlayer(float radius);
+    bool IsNearPlayer(float radius) const;
 
   private:
     long FindPos();
-    long FindRandomPos(CVECTOR &pos);
+    long FindRandomPos(CVECTOR &pos) const;
 
     //--------------------------------------------------------------------------------------------
   protected:
@@ -56,7 +56,7 @@ class LocLife : public AnimationEventListener
 
   private:
     Location *location;
-    ENTITY_ID model;
+    entid_t model;
     long node;
     float ay;
     CVECTOR pos;

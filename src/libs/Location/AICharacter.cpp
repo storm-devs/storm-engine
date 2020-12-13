@@ -57,18 +57,19 @@ void AICharacter::Move(float dltTime)
     case aicmd_escape:
         CmdProcessEscape(dltTime);
         break;
-    };
+    }
     Character::Move(dltTime);
 }
 
 //Провести дополнительные расчёты
 void AICharacter::Calculate(float dltTime)
 {
+    auto *const location = GetLocation();
     CalcRepulsionForces();
     CVECTOR slideForce;
     location->GetPtcData().FindForce(currentNode, slideForce);
     //Ограничим вектора
-    float l = ~separation;
+    auto l = ~separation;
     if (l > 1.0f)
         separation *= 1.0f / sqrtf(l);
     l = ~alignment;
@@ -128,7 +129,7 @@ void AICharacter::Update(float dltTime)
     case aicmd_escape:
         CmdUpdateEscape(dltTime);
         break;
-    };
+    }
     Character::Update(dltTime);
     if (isCollision)
     {
@@ -163,7 +164,7 @@ void AICharacter::CharacterTeleport()
 bool AICharacter::CmdNone()
 {
     command.cmd = aicmd_none;
-    command.exch = null;
+    command.exch = nullptr;
     return true;
 }
 
@@ -171,7 +172,7 @@ bool AICharacter::CmdNone()
 bool AICharacter::CmdStay()
 {
     command.cmd = aicmd_stay;
-    command.exch = null;
+    command.exch = nullptr;
     StopMove();
     return true;
 }
@@ -197,7 +198,7 @@ bool AICharacter::CmdGotoPoint(float x, float y, float z, float rad, long node, 
     command.isWait = false;
     command.isBusy = isCheckBusyPos;
     command.cnt = 0;
-    command.exch = null;
+    command.exch = nullptr;
     StartMove();
     return true;
 }
@@ -213,7 +214,7 @@ bool AICharacter::CmdEscape(float x, float y, float z, float rad)
     command.radius = rad;
     command.waitTime = 0.0f;
     command.isWait = false;
-    command.exch = null;
+    command.exch = nullptr;
     StartMove();
     return true;
 }
@@ -246,14 +247,14 @@ void AICharacter::CmdProcessGotoPoint(float dltTime)
     goForce.x = command.tpnt.x - curPos.x;
     goForce.y = 0.0f;
     goForce.z = command.tpnt.z - curPos.z;
-    float fl = sqrtf(~goForce);
-    float sn = sinf(ay);
-    float cs = cosf(ay);
+    auto fl = sqrtf(~goForce);
+    const auto sn = sinf(ay);
+    const auto cs = cosf(ay);
     if (fl <= 0.0f)
     {
         goForce.x = command.pnt.x - curPos.x;
         goForce.z = command.pnt.z - curPos.z;
-        float fl = sqrtf(~goForce);
+        fl = sqrtf(~goForce);
     }
     if (fl > 0.0f)
     {
@@ -286,15 +287,16 @@ void AICharacter::CmdProcessGotoPoint(float dltTime)
         StopMove();
     }
     //Если дошли, то надо остановиться
-    float dx = command.pnt.x - curPos.x;
-    float dz = command.pnt.z - curPos.z;
-    float d = dx * dx + dz * dz;
+    const auto dx = command.pnt.x - curPos.x;
+    const auto dz = command.pnt.z - curPos.z;
+    auto d = dx * dx + dz * dz;
+    auto *const location = GetLocation();
     if (location->IsDebugView())
     {
-        float dist = sqrtf(d) * 10.0f;
+        auto dist = sqrtf(d) * 10.0f;
         if (dist > 255.0f)
             dist = 255.0f;
-        dword color = long(dist);
+        uint32_t color = static_cast<long>(dist);
         color |= (255 - color) << 16;
         color |= 0xff00ff00;
         location->DrawLine(command.pnt + CVECTOR(0, 0.01f, 0), color, command.pnt + CVECTOR(0, 3.01f, 0), color, false);
@@ -321,7 +323,7 @@ void AICharacter::CmdProcessGotoPoint(float dltTime)
             {
                 if (!command.isWait)
                 {
-                    if (command.cnt > dword(1 + (rand() & 3)))
+                    if (command.cnt > static_cast<uint32_t>(1 + (rand() & 3)))
                     {
                         command.cmd = aicmd_none;
                         StopMove();
@@ -329,8 +331,8 @@ void AICharacter::CmdProcessGotoPoint(float dltTime)
                     }
                     else
                     {
-                        _CORE_API->Event("Location_CharacterBusyPos", "ifff", GetID(), command.pnt.x, command.pnt.y,
-                                         command.pnt.z);
+                        api->Event("Location_CharacterBusyPos", "ifff", GetId(), command.pnt.x, command.pnt.y,
+                                   command.pnt.z);
                         command.cnt++;
                         command.isWait = true;
                         command.waitTime = 2.0f + rand() * 2.0f / RAND_MAX;
@@ -350,7 +352,7 @@ void AICharacter::CmdUpdateGotoPoint(float dltTime)
         StartMove();
         // if(location->IsDebugView()) location->DrawLine(curPos, 0xffff0000, curPos + force*2.0f, 0xffff0000, false);
         Turn(force.x, force.z);
-        float l = force.x * force.x + force.z * force.z;
+        const auto l = force.x * force.x + force.z * force.z;
         if (l < 0.7f)
             kSpd = likeKSpd * l / 0.7f;
         else
@@ -361,10 +363,10 @@ void AICharacter::CmdUpdateGotoPoint(float dltTime)
             /*
             if(isSlide && (rand() & 31) == 5)
             {
-                StopMove();
-                command.isWait = true;
-                command.waitTime = 1.0f + rand()*1.0f/rand();
-                Turn(goForce.x, goForce.z);
+              StopMove();
+              command.isWait = true;
+              command.waitTime = 1.0f + rand()*1.0f/rand();
+              Turn(goForce.x, goForce.z);
             }
             */
         }
@@ -375,12 +377,13 @@ void AICharacter::CmdUpdateGotoPoint(float dltTime)
     {
         if (command.waitTime <= 0.0f)
         {
+            auto *const location = GetLocation();
             if (location->supervisor.CheckPosition(command.pnt.x, command.pnt.y, command.pnt.z, this))
             {
                 //Продолжаем путь
                 StartMove();
                 command.isWait = false;
-                command.waitTime = 1.0f + rand() * 1.0f / rand();
+                command.waitTime = 1.0f + rand() * 1.0f / (rand() + 1.0f);
             }
             else
             {
@@ -414,7 +417,7 @@ void AICharacter::CmdProcessEscape(float dltTime)
     goForce.x = curPos.x - command.pnt.x;
     goForce.y = 0.0f;
     goForce.z = curPos.z - command.pnt.z;
-    float l = goForce.x * goForce.x + goForce.z * goForce.z;
+    auto l = goForce.x * goForce.x + goForce.z * goForce.z;
     if (l >= command.radius * command.radius)
     {
         goForce = 0.0f;
@@ -439,10 +442,11 @@ void AICharacter::CmdProcessEscape(float dltTime)
 
 void AICharacter::CmdUpdateEscape(float dltTime)
 {
+    auto *const location = GetLocation();
     if (location->IsDebugView())
         location->DrawLine(curPos, 0xffff0000, curPos + force * 2.0f, 0xffff0000, false);
     Turn(force.x, force.z);
-    float l = force.x * force.x + force.z * force.z;
+    const auto l = force.x * force.x + force.z * force.z;
     if (l < 0.7f)
         kSpd = likeKSpd * l / 0.7f;
     else
@@ -454,8 +458,9 @@ void AICharacter::CmdUpdateEscape(float dltTime)
 //Найти индекс нода для данной координаты
 long AICharacter::FindNodeIndex(const CVECTOR &pos, float *hy)
 {
+    auto *const location = GetLocation();
     float yy;
-    long node = location->GetPtcData().FindNode(pos, yy);
+    const auto node = location->GetPtcData().FindNode(pos, yy);
     if (hy)
         *hy = yy;
     return node;
@@ -466,6 +471,7 @@ bool AICharacter::FindDirectional()
 {
     if (command.tnode < 0 || command.node < 0)
         return false;
+    auto *const location = GetLocation();
     if (!location->GetPtcData().FindPathDir(command.tnode, CVECTOR(command.tpnt), command.node, command.pnt,
                                             command.tnode, command.tpnt))
         return false;
@@ -486,29 +492,30 @@ void AICharacter::CalcRepulsionForces()
     if (numColCharacter <= 0)
         return;
     float k;
-    float kn = 1.0f / numColCharacter;
+    const auto kn = 1.0f / numColCharacter;
     for (long i = 0; i < numColCharacter; i++)
     {
-        Supervisor::CharacterInfo &ci = location->supervisor.colchr[startColCharacter + i];
+        auto *const location = GetLocation();
+        auto &ci = location->supervisor.colchr[startColCharacter + i];
         if (ci.d == 0.0f)
             continue;
-        AICharacter *c = (AICharacter *)ci.c;
+        auto *c = static_cast<AICharacter *>(ci.c);
         if (command.exch == c || c->command.exch == this)
             continue;
-        float dx = c->curPos.x - curPos.x;
-        float dz = c->curPos.z - curPos.z;
-        float kd = 1.0f / ci.d;
-        float kr = kn * (ci.maxD - ci.d) / ci.maxD;
+        const auto dx = c->curPos.x - curPos.x;
+        const auto dz = c->curPos.z - curPos.z;
+        const auto kd = 1.0f / ci.d;
+        const auto kr = kn * (ci.maxD - ci.d) / ci.maxD;
         //Сила расталкивания
-        float sx = dx * kr * kd * kd;
-        float sz = dz * kr * kd * kd;
+        const auto sx = dx * kr * kd * kd;
+        const auto sz = dz * kr * kd * kd;
         separation.x -= sx;
         separation.z -= sz;
         c->separation.x += sx;
         c->separation.z += sz;
         //Сила выравнивания направлений
         k = 1.0f - fabsf(goForce.x * c->goForce.x + goForce.z * c->goForce.z);
-        CVECTOR af = (goForce + c->goForce) * (kn * kr * kd * k);
+        const auto af = (goForce + c->goForce) * (kn * kr * kd * k);
         if (af.x * dx + af.z * dz < 0.0f)
         {
             alignment += af;
@@ -520,7 +527,7 @@ void AICharacter::CalcRepulsionForces()
             c->alignment += af;
         }
         //Сила для обхода
-        float kcs = goForce.x * dx + goForce.z * dz;
+        const auto kcs = goForce.x * dx + goForce.z * dz;
         if (kcs > 0.0f)
         {
             k = kn * kr * kd * kcs;
@@ -538,14 +545,14 @@ void AICharacter::CalcRepulsionForces()
 bool AICharacter::FindIntersection(const CVECTOR &s, const CVECTOR &e, const CVECTOR &cur, const CVECTOR &to,
                                    CVECTOR &res)
 {
-    float deX = e.x - s.x;
-    float deZ = e.z - s.z;
-    float dX = to.x - cur.x;
-    float dZ = to.z - cur.z;
+    const auto deX = e.x - s.x;
+    const auto deZ = e.z - s.z;
+    const auto dX = to.x - cur.x;
+    const auto dZ = to.z - cur.z;
     //Плоскасть проходящая через отрезок перемещения
-    float nx = dZ;
-    float nz = -dX;
-    float nl = nx * nx + nz * nz;
+    auto nx = dZ;
+    auto nz = -dX;
+    auto nl = nx * nx + nz * nz;
     if (nl == 0.0f)
     {
         res = to;
@@ -554,15 +561,15 @@ bool AICharacter::FindIntersection(const CVECTOR &s, const CVECTOR &e, const CVE
     nl = sqrtf(nl);
     nx /= nl;
     nz /= nl;
-    float d = cur.x * nx + cur.z * nz;
+    const auto d = cur.x * nx + cur.z * nz;
     //Расстояния вершин ребра до плоскости
-    float ds = nx * s.x + nz * s.z - d;
-    float de = nx * e.x + nz * e.z - d;
+    const auto ds = nx * s.x + nz * s.z - d;
+    const auto de = nx * e.x + nz * e.z - d;
     //Решим что делать
     if (ds != de)
     {
         //Пересекаем плоскость
-        float k = ds / (ds - de);
+        auto k = ds / (ds - de);
         if (k < 0.0f)
             k = 0.0f;
         if (k > 1.0f)
@@ -594,13 +601,13 @@ bool AICharacter::FindIntersection(const CVECTOR &s, const CVECTOR &e, const CVE
 float AICharacter::Angle(double vx, double vz, float defAy)
 {
     //Вычисляем угол
-    double l = vx * vx + vz * vz;
+    const auto l = vx * vx + vz * vz;
     if (l <= 0.0)
         return defAy;
     vz = acos(vz / sqrt(l));
     if (vx < 0)
         vz = -vz;
-    return float(vz);
+    return static_cast<float>(vz);
 }
 
 const char *AICharacter::GetCommandName(AICommand cmd)

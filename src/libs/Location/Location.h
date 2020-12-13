@@ -11,8 +11,9 @@
 #ifndef _Location_H_
 #define _Location_H_
 
-#include "matrix.h"
+#include "Matrix.h"
 #include "vmodule_api.h"
+#include <cstdint>
 
 #include "LocatorArray.h"
 #include "ModelArray.h"
@@ -22,19 +23,19 @@
 class MODEL;
 class Lights;
 
-class Location : public ENTITY
+class Location : public Entity
 {
     struct SphVertex
     {
         CVECTOR v;
-        dword c;
+        uint32_t c;
     };
 
     struct BarVertex
     {
         CVECTOR p;
         float rhw;
-        dword c;
+        uint32_t c;
         float u, v;
     };
 
@@ -43,7 +44,7 @@ class Location : public ENTITY
         CVECTOR p;
         float alpha;
         float hit, hp;
-        dword c;
+        uint32_t c;
     };
 
     struct EnemyBar
@@ -62,12 +63,29 @@ class Location : public ENTITY
     virtual ~Location();
 
     //Инициализация
-    bool Init();
+    bool Init() override;
     //Исполнение
-    void Execute(dword delta_time);
-    void Realize(dword delta_time);
+    void Execute(uint32_t delta_time);
+    void Realize(uint32_t delta_time);
     //Сообщения
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    uint64_t ProcessMessage(MESSAGE &message) override;
+
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
 
     //--------------------------------------------------------------------------------------------
     // Location
@@ -86,23 +104,23 @@ class Location : public ENTITY
 
     //Протрейсит луч через локацию
     float Trace(const CVECTOR &src, const CVECTOR &dst);
-    bool GetCollideTriangle(Triangle &trg);
+    bool GetCollideTriangle(TRIANGLE &trg) const;
     void Clip(PLANE *p, long numPlanes, CVECTOR &cnt, float rad, bool (*fnc)(const CVECTOR *vtx, long num));
 
-    Lights *GetLights();
+    Lights *GetLights() const;
 
-    VDX8RENDER *GetRS();
-    void DrawLine(const CVECTOR &s, dword cs, const CVECTOR &d, dword cd, bool useZ = true);
+    VDX9RENDER *GetRS() const;
+    void DrawLine(const CVECTOR &s, uint32_t cs, const CVECTOR &d, uint32_t cd, bool useZ = true) const;
     //Написать текст
-    void _cdecl Print(const CVECTOR &pos3D, float rad, long line, float alpha, dword color, float scale,
-                      const char *format, ...);
+    void Print(const CVECTOR &pos3D, float rad, long line, float alpha, uint32_t color, float scale, const char *format,
+               ...) const;
 
     bool IsDebugView();
     bool IsExDebugView();
 
-    bool IsPaused();
+    bool IsPaused() const;
 
-    bool IsSwimming();
+    bool IsSwimming() const;
 
     //Добавить сообщение о повреждении
     void AddDamageMessage(const CVECTOR &pos3D, float hit, float curhp, float maxhp);
@@ -117,12 +135,12 @@ class Location : public ENTITY
     //Инкапсуляция
     //--------------------------------------------------------------------------------------------
   private:
-    void Update(dword delta_time);
+    void Update(uint32_t delta_time);
     long LoadStaticModel(const char *modelName, const char *tech, long level, bool useDynamicLights);
     bool LoadCharacterPatch(const char *ptcName);
-    void LoadCaustic();
-    bool __declspec(dllexport) __cdecl LoadJumpPatch(const char *modelName);
-    bool __declspec(dllexport) __cdecl LoadGrass(const char *modelName, const char *texture);
+    void LoadCaustic() const;
+    bool LoadJumpPatch(const char *modelName);
+    bool LoadGrass(const char *modelName, const char *texture);
     bool MessageEx(const char *name, MESSAGE &message);
     void UpdateLocators();
     void DrawLocators(LocatorArray *la);
@@ -130,7 +148,7 @@ class Location : public ENTITY
     void TestLocatorsInPatch(MESSAGE &message);
     //Отрисовка полосок над персонажами
     void DrawEnemyBars();
-    void DrawBar(const MTX_PRJ_VECTOR &vrt, dword color, float hp, float energy);
+    void DrawBar(const MTX_PRJ_VECTOR &vrt, uint32_t color, float hp, float energy);
     void CorrectBar(float v, float start, float end, BarVertex *vrt);
 
   private:
@@ -140,43 +158,43 @@ class Location : public ENTITY
     long lastLoadStaticModel;
 
     //Все локаторы
-    LocatorArray **locators;
+    std::vector<LocatorArray *> locators;
     long numLocators;
     long maxLocators;
 
     bool isPause;
     bool isDebugView;
 
-    VDX8RENDER *rs;
+    VDX9RENDER *rs;
 
     //Все модельки
     ModelArray model;
 
     //Трава
-    ENTITY_ID grass;
+    entid_t grass;
     //Орёл
-    ENTITY_ID eagle;
+    entid_t eagle;
     //Ящерецы
-    ENTITY_ID lizards;
+    entid_t lizards;
     //Крысы
-    ENTITY_ID rats;
+    entid_t rats;
     //Крабы
-    ENTITY_ID crabs;
+    entid_t crabs;
     //Кровь
-    ENTITY_ID blood;
+    entid_t blood;
 
-    ENTITY_ID lightsid;
+    entid_t lightsid;
     Lights *lights; //Указатель для текущего кадра
 
-    ENTITY_ID loceffectsid;
+    entid_t loceffectsid;
 
     SphVertex *sphereVertex;
     long sphereNumTrgs;
 
     float locationTimeUpdate;
 
-    ENTITY_ID lighter;
-    ENTITY_ID cubeShotMaker;
+    entid_t lighter;
+    // entid_t cubeShotMaker;
 
     DmgMessage message[32];
     long curMessage;
@@ -199,11 +217,11 @@ inline PtcData &Location::GetPtcData()
 inline MODEL *Location::JmpPatch()
 {
     if (patchJump < 0)
-        return null;
+        return nullptr;
     return model[patchJump];
 }
 
-inline VDX8RENDER *Location::GetRS()
+inline VDX9RENDER *Location::GetRS() const
 {
     return rs;
 }
@@ -214,7 +232,7 @@ inline bool Location::VisibleTest(const CVECTOR &p1, const CVECTOR &p2)
     return model.VisibleTest(p1, p2);
 }
 
-inline Lights *Location::GetLights()
+inline Lights *Location::GetLights() const
 {
     return lights;
 }
@@ -225,7 +243,7 @@ inline float Location::Trace(const CVECTOR &src, const CVECTOR &dst)
     return model.Trace(src, dst);
 }
 
-inline bool Location::GetCollideTriangle(Triangle &trg)
+inline bool Location::GetCollideTriangle(TRIANGLE &trg) const
 {
     return model.GetCollideTriangle(trg);
 }
@@ -235,7 +253,7 @@ inline void Location::Clip(PLANE *p, long numPlanes, CVECTOR &cnt, float rad, bo
     model.Clip(p, numPlanes, cnt, rad, fnc);
 }
 
-inline bool Location::IsPaused()
+inline bool Location::IsPaused() const
 {
     return isPause;
 }
