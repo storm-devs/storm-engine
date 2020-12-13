@@ -5,53 +5,57 @@
 #define XBOXDRIVE_CACHE "z:\\"
 #define XBOXDRIVE_DVD "d:\\"
 
+#include <cstdint>
+
 #ifndef _XBOX
-#include <windows.h>
+#include <Windows.h>
 #else
 #include <xtl.h>
 #endif
-
-#include "d_types.h"
 
 class INIFILE;
 
 class VFILE_SERVICE
 {
   public:
-    VFILE_SERVICE(){};
-    virtual ~VFILE_SERVICE(){};
-    virtual HANDLE _CreateFile(const char *lpFileName, DWORD dwDesiriedAccess = GENERIC_READ,
-                               DWORD dwShareMode = FILE_SHARE_READ, DWORD dwCreationDisposition = OPEN_EXISTING) = 0;
+    // VFILE_SERVICE()= 0;
+    virtual ~VFILE_SERVICE()
+    {
+    }
+
+    virtual HANDLE _CreateFile(const char *lpFileName, uint32_t dwDesiriedAccess = GENERIC_READ,
+                               uint32_t dwShareMode = FILE_SHARE_READ,
+                               uint32_t dwCreationDisposition = OPEN_EXISTING) = 0;
     virtual void _CloseHandle(HANDLE hFile) = 0;
-    virtual DWORD _SetFilePointer(HANDLE hFile, long DistanceToMove, PLONG lpDistanceToMoveHigh,
-                                  DWORD dwMoveMethod) = 0;
-    virtual long _GetFilePointer(HANDLE hFile) = 0;
+    virtual uint32_t _SetFilePointer(HANDLE hFile, long DistanceToMove, long *lpDistanceToMoveHigh,
+                                     uint32_t dwMoveMethod) = 0;
     virtual BOOL _DeleteFile(const char *lpFileName) = 0;
-    virtual BOOL _WriteFile(HANDLE hFile, LPCVOID lpBuffer, DWORD nNumberOfBytesToWrite,
-                            LPDWORD lpNumberOfBytesWritten) = 0;
-    virtual BOOL _ReadFile(HANDLE hFile, LPVOID lpBuffer, DWORD nNumberOfBytesToRead, LPDWORD lpNumberOfBytesRead) = 0;
+    virtual BOOL _WriteFile(HANDLE hFile, const void *lpBuffer, uint32_t nNumberOfBytesToWrite,
+                            uint32_t *lpNumberOfBytesWritten) = 0;
+    virtual BOOL _ReadFile(HANDLE hFile, void *lpBuffer, uint32_t nNumberOfBytesToRead,
+                           uint32_t *lpNumberOfBytesRead) = 0;
     virtual HANDLE _FindFirstFile(const char *lpFileName, LPWIN32_FIND_DATA lpFindFileData) = 0;
     virtual BOOL _FindNextFile(HANDLE hFindFile, LPWIN32_FIND_DATA lpFindFileData) = 0;
     virtual BOOL _FindClose(HANDLE hFindFile) = 0;
     virtual BOOL _FlushFileBuffers(HANDLE hFile) = 0;
-    virtual DWORD _GetCurrentDirectory(DWORD nBufferLength, char *lpBuffer) = 0;
+    virtual uint32_t _GetCurrentDirectory(uint32_t nBufferLength, char *lpBuffer) = 0;
     virtual BOOL _GetDiskFreeSpaceEx(const char *lpDirectoryName, PULARGE_INTEGER lpFreeBytesAvailableToCaller,
                                      PULARGE_INTEGER lpTotalNumberOfBytes,
                                      PULARGE_INTEGER lpTotalNumberOfFreeBytes) = 0;
     virtual UINT _GetDriveType(const char *lpRootPathName) = 0;
-    virtual DWORD _GetFileSize(HANDLE hFile, LPDWORD lpFileSizeHigh) = 0;
-    virtual DWORD _GetLogicalDrives(VOID) = 0;
-    virtual DWORD _GetLogicalDriveStrings(DWORD nBufferLength, LPTSTR lpBuffer) = 0;
+    virtual uint32_t _GetFileSize(HANDLE hFile, uint32_t *lpFileSizeHigh) = 0;
+    virtual uint32_t _GetLogicalDrives(VOID) = 0;
+    virtual uint32_t _GetLogicalDriveStrings(uint32_t nBufferLength, char *lpBuffer) = 0;
     virtual BOOL _SetCurrentDirectory(const char *lpPathName) = 0;
     virtual BOOL _CreateDirectory(const char *lpPathName, LPSECURITY_ATTRIBUTES lpSecurityAttributes) = 0;
     virtual BOOL _RemoveDirectory(const char *lpPathName) = 0;
-    virtual BOOL _CopyFile(const char *lpExistingFileName, const char *lpNewFileName, BOOL bFailIfExists) = 0;
-    virtual BOOL _SetFileAttributes(const char *lpFileName, DWORD dwFileAttributes) = 0;
+    virtual BOOL _CopyFile(const char *lpExistingFileName, const char *lpNewFileName, bool bFailIfExists) = 0;
+    virtual BOOL _SetFileAttributes(const char *lpFileName, uint32_t dwFileAttributes) = 0;
     virtual INIFILE *OpenIniFile(const char *file_name) = 0;
     virtual BOOL FileExist(const char *file_name) = 0;
-    virtual BOOL LoadFile(const char *file_name, char **ppBuffer, dword *dwSize = 0) = 0;
+    virtual BOOL LoadFile(const char *file_name, char **ppBuffer, uint32_t *dwSize = nullptr) = 0;
     virtual INIFILE *CreateIniFile(const char *file_name, bool fail_if_exist) = 0;
-    virtual BOOL SetDrive(const char *pDriveName = 0) = 0;
+    virtual BOOL SetDrive(const char *pDriveName = nullptr) = 0;
     virtual BOOL CacheDirectory(const char *pDirName) = 0;
     virtual BOOL UnCacheDirectory(const char *pDirName) = 0;
 };
@@ -76,114 +80,65 @@ class VFILE_SERVICE
 class INIFILE
 {
   public:
-    INIFILE(){};
-    virtual ~INIFILE(){};
+    virtual ~INIFILE() = default;
 
     // add string to file
-    virtual void AddString(char *section_name, char *key_name, char *string){};
+    virtual void AddString(const char *section_name, const char *key_name, const char *string) = 0;
     // write string to file, overwrite data if exist, throw EXS exception object if failed
-    virtual void WriteString(char *section_name, char *key_name, char *string){};
+    virtual void WriteString(const char *section_name, const char *key_name, const char *string) = 0;
     // write long value of key in pointed section if section and key exist, throw EXS object otherwise
-    virtual void WriteLong(char *section_name, char *key_name, long value){};
+    virtual void WriteLong(const char *section_name, const char *key_name, long value) = 0;
     // write double value of key in pointed section if section and key exist, throw EXS object otherwise
-    virtual void WriteDouble(char *section_name, char *key_name, double value){};
+    virtual void WriteDouble(const char *section_name, const char *key_name, double value) = 0;
 
     // fill buffer with key value, throw EXS exception object if failed or if section or key doesnt exist
-    virtual void ReadString(char *section_name, char *key_name, char *buffer, dword buffer_size){};
+    virtual void ReadString(const char *section_name, const char *key_name, char *buffer, uint32_t buffer_size) = 0;
+
     // fill buffer with key value if section and key exist, otherwise fill with def_string and return false
-    virtual bool ReadString(char *section_name, char *key_name, char *buffer, dword buffer_size, char *def_string)
-    {
-        return false;
-    };
+    virtual bool ReadString(const char *section_name, const char *key_name, char *buffer, uint32_t buffer_size,
+                            const char *def_string) = 0;
+
     // continue search from key founded in previous call this function or to function ReadString
     // fill buffer with key value if section and key exist, otherwise return false
-    virtual bool ReadStringNext(char *section_name, char *key_name, char *buffer, dword buffer_size)
-    {
-        return false;
-    };
+    virtual bool ReadStringNext(const char *section_name, const char *key_name, char *buffer, uint32_t buffer_size) = 0;
 
     // return long value of key in pointed section if section and key exist, throw EXS object otherwise
-    virtual long GetLong(char *section_name, char *key_name)
-    {
-        return 0;
-    };
+    virtual long GetLong(const char *section_name, const char *key_name) = 0;
     // return long value of key in pointed section if section and key exist, if not - return def_value
-    virtual long GetLong(char *section_name, char *key_name, long def_val)
-    {
-        return 0;
-    };
+    virtual long GetLong(const char *section_name, const char *key_name, long def_val) = 0;
     // continue scanning for key in section, fill val with long value of key if it found and return true
     // if not - return false
-    virtual bool GetLongNext(char *section_name, char *key_name, long *val)
-    {
-        return 0;
-    };
+    virtual bool GetLongNext(const char *section_name, const char *key_name, long *val) = 0;
 
     // return double value of key in pointed section if section and key exist, throw EXS object otherwise
-    virtual double GetDouble(char *section_name, char *key_name)
-    {
-        return 0;
-    };
+    virtual double GetDouble(const char *section_name, const char *key_name) = 0;
     // return double value of key in pointed section if section and key exist, if not - return def_value
-    virtual double GetDouble(char *section_name, char *key_name, double def_val)
-    {
-        return 0;
-    };
+    virtual double GetDouble(const char *section_name, const char *key_name, double def_val) = 0;
     // continue scanning for key in section, fill val with double value of key if it found and return true
     // if not - return false
-    virtual bool GetDoubleNext(char *section_name, char *key_name, double *val)
-    {
-        return 0;
-    };
+    virtual bool GetDoubleNext(const char *section_name, const char *key_name, double *val) = 0;
 
-    virtual float GetFloat(char *section_name, char *key_name)
-    {
-        return 0;
-    };
-    virtual float GetFloat(char *section_name, char *key_name, float def_val)
-    {
-        return 0;
-    };
-    virtual bool GetFloatNext(char *section_name, char *key_name, float *val)
-    {
-        return 0;
-    };
+    virtual float GetFloat(const char *section_name, const char *key_name) = 0;
+    virtual float GetFloat(const char *section_name, const char *key_name, float def_val) = 0;
+    virtual bool GetFloatNext(const char *section_name, const char *key_name, float *val) = 0;
 
-    virtual void SetSearch(void *){};
+    // virtual void	SetSearch(void *)= 0;
 
-    virtual void DeleteKey(char *section_name, char *key_name){};
+    virtual void DeleteKey(const char *section_name, const char *key_name) = 0;
 
-    virtual void DeleteKey(char *section_name, char *key_name, char *key_value){};
+    virtual void DeleteKey(const char *section_name, const char *key_name, const char *key_value) = 0;
 
-    virtual void DeleteSection(char *section_name){};
+    virtual void DeleteSection(const char *section_name) = 0;
 
-    virtual bool TestKey(char *section_name, char *key_name, char *key_value)
-    {
-        return false;
-    };
+    virtual bool TestKey(const char *section_name, const char *key_name, const char *key_value) = 0;
 
-    virtual bool GetSectionName(char *section_name_buffer, long buffer_size)
-    {
-        return false;
-    };
-    virtual bool GetSectionNameNext(char *section_name_buffer, long buffer_size)
-    {
-        return false;
-    };
+    virtual bool GetSectionName(char *section_name_buffer, long buffer_size) = 0;
+    virtual bool GetSectionNameNext(char *section_name_buffer, long buffer_size) = 0;
 
-    virtual void Flush(){};
-    virtual bool Reload()
-    {
-        return false;
-    };
-    virtual bool CaseSensitive(bool yes)
-    {
-        return false;
-    };
-    virtual bool TestSection(char *section_name)
-    {
-        return false;
-    };
+    virtual void Flush() = 0;
+    virtual bool Reload() = 0;
+    virtual bool CaseSensitive(bool yes) = 0;
+    virtual bool TestSection(const char *section_name) = 0;
 };
 
 #endif

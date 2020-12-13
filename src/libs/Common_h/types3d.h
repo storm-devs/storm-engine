@@ -2,7 +2,6 @@
 #define _TYPES3D_H_
 
 //#include <windows.h>
-#include <winbase.h>
 
 #pragma pack(push)
 #pragma pack(1)

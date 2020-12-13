@@ -1,9 +1,8 @@
 #ifndef WEATHER_BASE_HPP
 #define WEATHER_BASE_HPP
 
-#include "cvector.h"
+#include "Cvector.h"
 #include "entity.h"
-#include "vmodule_api.h"
 
 #define MAX_FLOAT_PARAMS 128
 #define MAX_LONG_PARAMS 64
@@ -83,17 +82,18 @@
 #define whs_sunglow_texture 0
 #define whs_rainbow_texture 1
 
-class WEATHER_BASE : public ENTITY
+class WEATHER_BASE : public Entity
 {
   public:
     WEATHER_BASE(){};
+
     virtual ~WEATHER_BASE(){};
 
-    virtual long GetLong(dword dwCode) = 0;
-    virtual dword GetColor(dword, CVECTOR *) = 0;
-    virtual dword GetColor(dword) = 0;
-    virtual float GetFloat(dword) = 0;
-    virtual void GetVector(dword, CVECTOR *) = 0;
+    virtual long GetLong(uint32_t dwCode) = 0;
+    virtual uint32_t GetColor(uint32_t, CVECTOR *) = 0;
+    virtual uint32_t GetColor(uint32_t) = 0;
+    virtual float GetFloat(uint32_t) = 0;
+    virtual void GetVector(uint32_t, CVECTOR *) = 0;
 };
 
 #endif

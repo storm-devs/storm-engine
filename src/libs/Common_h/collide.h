@@ -1,8 +1,9 @@
 #ifndef __COLLIDE_H__
 #define __COLLIDE_H__
 
-#include "cvector.h"
+#include "Cvector.h"
 
+#include "EntityManager.h"
 #include "object.h"
 #include "types3d.h"
 #include "vmodule_api.h"
@@ -25,19 +26,20 @@ class LOCAL_COLLIDE
 class COLLIDE : public SERVICE
 {
   public:
+    virtual ~COLLIDE() = default;
+
     // creates LocalCollide object which must be deleted after use
-    virtual LOCAL_COLLIDE *CreateLocalCollide(const char *layerName) = 0;
+    virtual LOCAL_COLLIDE *CreateLocalCollide(EntityManager::layer_index_t idx) = 0;
 
-    virtual ~COLLIDE(){};
-    virtual float Trace(ENTITY_ID &entity, const CVECTOR &src, const CVECTOR &dst) = 0;
+    virtual float Trace(entid_t entity, const CVECTOR &src, const CVECTOR &dst) = 0;
 
-    virtual float Trace(VIDWALKER &walker, const CVECTOR &src, const CVECTOR &dst, const ENTITY_ID *exclude_list,
-                        long entities) = 0;
+    virtual float Trace(EntityManager::LayerIterators its, const CVECTOR &src, const CVECTOR &dst,
+                        const entid_t *exclude_list, long entities) = 0;
 
-    virtual bool Clip(VIDWALKER &walker, const PLANE *planes, long nplanes, const CVECTOR &center, float radius,
-                      ADD_POLYGON_FUNC addpoly, const ENTITY_ID *exclude_list, long entities) = 0;
+    virtual bool Clip(EntityManager::LayerIterators its, const PLANE *planes, long nplanes, const CVECTOR &center,
+                      float radius, ADD_POLYGON_FUNC addpoly, const entid_t *exclude_list, long entities) = 0;
 
-    virtual ENTITY_ID GetObjectID() = 0;
+    virtual entid_t GetObjectID() = 0;
 };
 
 #endif

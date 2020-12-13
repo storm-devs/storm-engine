@@ -1,14 +1,13 @@
 #ifndef PARTICLE_SYSTEM_INTERFACE
 #define PARTICLE_SYSTEM_INTERFACE
 
-#include "..\math3d.h"
-#include "iparticlemanager.h"
+#include <cstdint>
 
 class IGMXEntity;
+class Matrix;
 
 class IParticleSystem
 {
-
   protected:
     virtual ~IParticleSystem(){};
 
@@ -18,10 +17,10 @@ class IParticleSystem
     virtual bool Release() = 0;
 
     //Отработать всем партиклам
-    virtual DWORD Execute(float DeltaTime) = 0;
+    virtual uint32_t Execute(float DeltaTime) = 0;
 
     //Перезапустить партикловую систему
-    virtual void Restart(DWORD RandomSeed) = 0;
+    virtual void Restart(uint32_t RandomSeed) = 0;
 
     //Запаузить испускание партиклов
     virtual void PauseEmission(bool bPause) = 0;
@@ -33,10 +32,10 @@ class IParticleSystem
     //Узнаять автоудаляемая система или нет
     virtual bool IsAutoDeleted() = 0;
     //Установить матрицу трансформации для системы
-    virtual void SetTransform(const CMatrix &transform) = 0;
-    virtual void GetTransform(CMatrix &_matWorld) = 0;
+    virtual void SetTransform(const Matrix &transform) = 0;
+    virtual void GetTransform(Matrix &_matWorld) = 0;
 
-    virtual void Teleport(const CMatrix &transform) = 0;
+    virtual void Teleport(const Matrix &transform) = 0;
 
     virtual bool IsAlive() = 0;
 

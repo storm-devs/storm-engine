@@ -3,21 +3,22 @@
 
 typedef struct tagTGA_H
 {
-    BYTE byte1; // = 0
-    BYTE byte2; // = 0
-    BYTE type;
-    BYTE byte4_9[9]; // = 0
-    WORD width;
-    WORD height;
-    BYTE bpp; // bit per pixel
+    uint8_t byte1; // = 0
+    uint8_t byte2; // = 0
+    uint8_t type;
+    uint8_t byte4_9[9]; // = 0
+    uint16_t width;
+    uint16_t height;
+    uint8_t bpp; // bit per pixel
     union {
-        BYTE attr8;
+        uint8_t attr8;
+
         struct
         {
-            BYTE attr : 4;
-            BYTE rez : 1;
-            BYTE origin : 1;
-            BYTE storage : 2;
+            uint8_t attr : 4;
+            uint8_t rez : 1;
+            uint8_t origin : 1;
+            uint8_t storage : 2;
         };
     };
 } TGA_H;

@@ -3,16 +3,12 @@
 
 #include "ship_base.h"
 
-#include "templates\array.h"
-#include "templates\dtimer.h"
-#include "templates\string.h"
-
-class IShipLights : public ENTITY
+class IShipLights : public Entity
 {
   public:
     IShipLights(){};
-    virtual ~IShipLights(){};
 
+    virtual ~IShipLights(){};
     virtual void Release(VAI_OBJBASE *pObject) = 0;
 
     virtual void AddLights(VAI_OBJBASE *pObject, MODEL *pModel, bool bLights, bool bFlares) = 0;

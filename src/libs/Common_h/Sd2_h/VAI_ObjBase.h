@@ -1,11 +1,10 @@
 #ifndef VAI_BASE_HPP
 #define VAI_BASE_HPP
 
-#include "..\common_defines.h"
-#include "..\cvector.h"
-#include "..\matrix.h"
-#include "..\model.h"
-#include "..\vmodule_api.h"
+#include "../Cvector.h"
+#include "../Matrix.h"
+#include "../model.h"
+#include "../vmodule_api.h"
 #include "CannonTrace.h"
 
 class CSaveLoad;
@@ -27,29 +26,17 @@ class VAI_OBJBASE : public CANNON_TRACE_BASE
         return pACharacter;
     };
 
-    virtual bool Mount(ATTRIBUTES *)
-    {
-        return false;
-    };
+    virtual bool Mount(ATTRIBUTES *) = 0;
 
-    virtual void SetPos(CVECTOR &vNewPos){};
+    virtual void SetPos(const CVECTOR &vNewPos) = 0;
 
-    virtual CVECTOR GetPos()
-    {
-        return 0.0f;
-    };
-    virtual CVECTOR GetAng()
-    {
-        return 0.0f;
-    };
+    virtual CVECTOR GetPos() const = 0;
+    virtual CVECTOR GetAng() const = 0;
     virtual CMatrix *GetMatrix() = 0;
-    virtual CVECTOR GetBoxSize()
-    {
-        return 0.0f;
-    };
+    virtual CVECTOR GetBoxsize() const = 0;
 
-    virtual MODEL *GetModel() = 0;
-    virtual ENTITY_ID GetModelEID() = 0;
+    virtual MODEL *GetModel() const = 0;
+    virtual entid_t GetModelEID() const = 0;
 
     virtual void Save(CSaveLoad *pSL) = 0;
     virtual void Load(CSaveLoad *pSL) = 0;

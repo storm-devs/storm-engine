@@ -1,14 +1,67 @@
-#ifndef DEFINES_HPP
-#define DEFINES_HPP
+#pragma once
 
-#if defined(_WIN32) && !defined(_CRT_SECURE_NO_WARNINGS)
-#define _CRT_SECURE_NO_WARNINGS
-#endif
+namespace TOREMOVE
+{
+inline unsigned long HashNoCase(const char *str)
+{
+    unsigned long hval = 0;
+    while (*str != '\0')
+    {
+        auto c = *str++;
+        if (c >= 'A' && c <= 'Z')
+            c += 'a' - 'A';
+        hval = (hval << 4) + static_cast<unsigned long>(c);
+        const auto g = hval & (static_cast<unsigned long>(0xf) << (32 - 4));
+        if (g != 0)
+        {
+            hval ^= g >> (32 - 8);
+            hval ^= g;
+        }
+    }
+    return hval;
+}
+} // namespace TOREMOVE
 
 // includes
-#include "math3d.h"
+#include "math3D.h"
+#include <cstdint>
+#include <cstring>
 
-#include <windows.h>
+#define _FILE_ __FILE__
+#define _L __LINE__
+#define _FL_ __FILE__, __LINE__
+#define _FL __FILE__, __LINE__
+#define _FILELINE_ _FL_
+
+struct FPOINT
+{
+    float x, y;
+};
+
+struct FRECT
+{
+    union {
+        struct
+        {
+            float x1, y1, x2, y2;
+        };
+
+        struct
+        {
+            float xs, ys, xe, ye;
+        };
+
+        struct
+        {
+            float x_start, y_start, x_end, y_end;
+        };
+
+        struct
+        {
+            float left, top, right, bottom;
+        };
+    };
+};
 
 // Constants
 
@@ -19,12 +72,19 @@
 
 #define RDTSC_B(x)                                                                                                     \
     {                                                                                                                  \
-        _asm rdtsc _asm mov x, eax                                                                                     \
+        LARGE_INTEGER li;                                                                                              \
+        QueryPerformanceCounter(&li);                                                                                  \
+        x = li.QuadPart;                                                                                               \
     }
 #define RDTSC_E(x)                                                                                                     \
     {                                                                                                                  \
-        _asm rdtsc _asm sub eax, x _asm mov x, eax                                                                     \
+        LARGE_INTEGER li;                                                                                              \
+        QueryPerformanceCounter(&li);                                                                                  \
+        x = li.QuadPart - x;                                                                                           \
     }
+
+//#define RDTSC_B(x)	{ x = __rdtsc(); }
+//#define RDTSC_E(x)	{ x = __rdtsc() - x; }
 
 // Defines
 #ifdef RGB
@@ -39,50 +99,24 @@
 #undef SQR
 #endif
 
-//#define isSteam				1
-
-inline DWORD F2DW(FLOAT f)
+inline uint32_t F2DW(float f)
 {
-    return *((DWORD *)&f);
+    return *reinterpret_cast<uint32_t *>(&f);
 }
 
-#ifdef _XBOX
-#define IS_XBOX(a, b) a
-#else
-#define IS_XBOX(a, b) b
-#endif
+inline int ftoi(float f)
+{
+    return _mm_cvt_ss2si(_mm_load_ss(&f));
+}
 
-#define FTOL(l, f)                                                                                                     \
+#define STORM_DELETE(x)                                                                                                \
     {                                                                                                                  \
-        __asm fld dword ptr[f] __asm fistp dword ptr l                                                                 \
-    }
-#define GET_DATA(x, p)                                                                                                 \
-    {                                                                                                                  \
-        memcpy(&(x), p, sizeof(x));                                                                                    \
-        p += sizeof(x);                                                                                                \
-    }
-#define FREE(x)                                                                                                        \
-    {                                                                                                                  \
-        if (x)                                                                                                         \
-            free(x);                                                                                                   \
+        delete x;                                                                                                      \
         x = 0;                                                                                                         \
     }
-#define SE_DELETE(x)                                                                                                   \
+#define DELETE_Entity(x)                                                                                               \
     {                                                                                                                  \
-        if (x)                                                                                                         \
-            delete x;                                                                                                  \
-        x = 0;                                                                                                         \
-    }
-#define DELETE_ARRAY(x)                                                                                                \
-    {                                                                                                                  \
-        if (x)                                                                                                         \
-            delete[] x;                                                                                                \
-        x = 0;                                                                                                         \
-    }
-#define DELETE_ENTITY(x)                                                                                               \
-    {                                                                                                                  \
-        if (_CORE_API->ValidateEntity(&x))                                                                             \
-            _CORE_API->DeleteEntity(x);                                                                                \
+        EntityManager::EraseEntity(x);                                                                                 \
     }
 #define RELEASE(x)                                                                                                     \
     {                                                                                                                  \
@@ -99,15 +133,19 @@ inline DWORD F2DW(FLOAT f)
 #define MAX3(x, y, z) (((x) > (y)) ? ((x) > (z) ? (x) : (z)) : ((y) > (z) ? (y) : (z)))
 #define MIN3(x, y, z) (((x) < (y)) ? ((x) < (z) ? (x) : (z)) : ((y) < (z) ? (y) : (z)))
 #define CLAMP(x) (((x) > 1.0f) ? 1.0f : (((x) < 0.0f) ? 0.0f : (x)))
-#define RGB(r, g, b) (DWORD(b) | (DWORD(g) << 8L) | (DWORD(r) << 16L))
-#define RGB565(r, g, b) WORD(((DWORD(b) >> 3L)) | ((DWORD(g) >> 2L) << 5L) | ((DWORD(r) >> 3L) << 11L))
-#define RGB1555(r, g, b) WORD(((DWORD(b) >> 3L)) | ((DWORD(g) >> 3L) << 5L) | ((DWORD(r) >> 3L) << 10L))
-#define ARGB1555(a, r, g, b)                                                                                           \
-    WORD((DWORD(a & 1L) << 15L) | ((DWORD(b) >> 3L)) | ((DWORD(g) >> 3L) << 5L) | ((DWORD(r) >> 3L) << 10L))
-#define ARGB(a, r, g, b) (DWORD(b) | (DWORD(g) << 8L) | (DWORD(r) << 16L) | (DWORD(a) << 24L))
+//#define RGB(r,g,b)			( uint32_t(b)|(uint32_t(g)<<8L)|(uint32_t(r)<<16L) )
+constexpr auto makeRGB(uint32_t r, uint32_t g, uint32_t b)
+{
+    return static_cast<uint32_t>(b) | static_cast<uint32_t>(g << 8L) | static_cast<uint32_t>(r) << 16L;
+}
+#define ARGB(a, r, g, b) (uint32_t(b) | (uint32_t(g) << 8L) | (uint32_t(r) << 16L) | (uint32_t(a) << 24L))
+#define STORM_ZERO(x, y)                                                                                               \
+    {                                                                                                                  \
+        memset(x, 0, y);                                                                                               \
+    }
 #define ZERO(x)                                                                                                        \
     {                                                                                                                  \
-        ZeroMemory(&x, sizeof(x));                                                                                     \
+        STORM_ZERO(&x, sizeof(x));                                                                                     \
     }
 #define ZERO2(x, y)                                                                                                    \
     {                                                                                                                  \
@@ -123,13 +161,13 @@ inline DWORD F2DW(FLOAT f)
     }
 #define PZERO(x, size)                                                                                                 \
     {                                                                                                                  \
-        ZeroMemory(x, size);                                                                                           \
+        STORM_ZERO(x, size);                                                                                           \
     }
 #define COPY_STRING(a, b)                                                                                              \
     {                                                                                                                  \
-        a = NEW char[strlen(b) + 1];                                                                                   \
+        a = new char[strlen(b) + 1];                                                                                   \
         if (a)                                                                                                         \
-            strcpy(a, b);                                                                                              \
+            strcpy_s(a, b);                                                                                            \
     }
 #define COLOR2VECTOR(a) CVECTOR(float((a & 0xFF0000) >> 0x10), float((a & 0xFF00) >> 0x8), float(a & 0xFF));
 #define COLOR2VECTOR4(a)                                                                                               \
@@ -147,14 +185,16 @@ template <class T> void Swap(T &t1, T &t2)
     t1 = t2;
     t2 = tmp;
 };
+
 template <class T> T Clamp(T t)
 {
-    if (t < (T)0)
-        return (T)0;
-    if (t > (T)1)
-        return (T)1;
+    if (t < static_cast<T>(0))
+        return static_cast<T>(0);
+    if (t > static_cast<T>(1))
+        return static_cast<T>(1);
     return t;
 };
+
 template <class T> T Clamp(T t, T Min, T Max)
 {
     if (t < Min)
@@ -163,33 +203,36 @@ template <class T> T Clamp(T t, T Min, T Max)
         return Max;
     return t;
 };
+
 template <class T> T Bring2Range(T Min1, T Max1, T Min2, T Max2, T Value)
 {
     if (Value < Min2)
         Value = Min2;
     if (Value > Max2)
         Value = Max2;
-    float Delta = float(Value - Min2) / float(Max2 - Min2);
+    auto Delta = static_cast<float>(Value - Min2) / static_cast<float>(Max2 - Min2);
     return Min1 + Delta * (Max1 - Min1);
 };
+
 template <class T> T Bring2RangeNoCheck(T Min1, T Max1, T Min2, T Max2, T Value)
 {
-    float Delta = float(Value - Min2) / float(Max2 - Min2);
+    auto Delta = static_cast<float>(Value - Min2) / static_cast<float>(Max2 - Min2);
     return Min1 + Delta * (Max1 - Min1);
 };
+
 template <class T> T Min(T t1, T t2)
 {
     return ((t1 < t2) ? t1 : t2);
 };
+
 template <class T> T Max(T t1, T t2)
 {
     return ((t1 > t2) ? t1 : t2);
 };
+
 template <class T> T Sqr(T t1)
 {
     return (t1 * t1);
 };
 
-#include "inlines.h"
-
-#endif
+//#include "inlines.h"

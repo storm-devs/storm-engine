@@ -1,12 +1,12 @@
-#include "dx8render.h"
+#include "dx9render.h"
 
 inline unsigned long hash_string(const char *str)
 {
     unsigned long hval = 0;
     while (*str != '\0')
     {
-        hval = (hval << 4) + (unsigned long int)*str++;
-        unsigned long g = hval & ((unsigned long int)0xf << (32 - 4));
+        hval = (hval << 4) + static_cast<unsigned long>(*str++);
+        const auto g = hval & (static_cast<unsigned long>(0xf) << (32 - 4));
         if (g != 0)
         {
             hval ^= g >> (32 - 8);
@@ -18,8 +18,8 @@ inline unsigned long hash_string(const char *str)
 
 inline void RotateAroundY(float &x, float &z, float cos, float sin)
 {
-    float xx = x * cos + z * sin;
-    float zz = z * cos - x * sin;
+    const auto xx = x * cos + z * sin;
+    const auto zz = z * cos - x * sin;
     x = xx;
     z = zz;
 }
@@ -29,12 +29,12 @@ inline float NormalizeAngle(float fAngle)
     long times;
     if (fAngle >= 2 * PI)
     {
-        times = (long)(fAngle / PIm2);
+        times = static_cast<long>(fAngle / PIm2);
         return fAngle - times * PIm2;
     }
     if (fAngle < 0)
     {
-        times = (long)(-fAngle / PIm2);
+        times = static_cast<long>(-fAngle / PIm2);
         return fAngle + PIm2 * (times + 1);
     }
     return fAngle;
@@ -62,14 +62,14 @@ inline bool IntersectLines2D(const CVECTOR &v1, const CVECTOR &v2, const CVECTOR
     vRes.z = (a2 * c1 - a1 * c2) / (b2 * a1 - a2 * b1);
     vRes.x = (-b1 * vRes.z - c1) / (a1 + 1e-5f);
 
-    float half1 = 1.0f / 4.0f * (SQR(v2.x - v1.x) + SQR(v2.z - v1.z));
-    float d1 = SQR(vRes.x - (v1.x + v2.x) / 2.0f) + SQR(vRes.z - (v1.z + v2.z) / 2.0f);
+    const auto half1 = 1.0f / 4.0f * (SQR(v2.x - v1.x) + SQR(v2.z - v1.z));
+    const auto d1 = SQR(vRes.x - (v1.x + v2.x) / 2.0f) + SQR(vRes.z - (v1.z + v2.z) / 2.0f);
 
     if (d1 > half1)
         return false;
 
-    float half2 = 1.0f / 4.0f * (SQR(v4.x - v3.x) + SQR(v4.z - v3.z));
-    float d2 = SQR(vRes.x - (v3.x + v4.x) / 2.0f) + SQR(vRes.z - (v3.z + v4.z) / 2.0f);
+    const auto half2 = 1.0f / 4.0f * (SQR(v4.x - v3.x) + SQR(v4.z - v3.z));
+    const auto d2 = SQR(vRes.x - (v3.x + v4.x) / 2.0f) + SQR(vRes.z - (v3.z + v4.z) / 2.0f);
 
     if (d2 > half2)
         return false;
@@ -77,8 +77,8 @@ inline bool IntersectLines2D(const CVECTOR &v1, const CVECTOR &v2, const CVECTOR
     return true;
 }
 
-__forceinline void FillRectVertex(RS_RECT &pV, float x, float y, float z, float fSize, float fAngle = 0.0f,
-                                  dword dwColor = 0xFFFFFF, dword dwSubTexture = 0)
+inline void FillRectVertex(RS_RECT &pV, float x, float y, float z, float fSize, float fAngle = 0.0f,
+                           uint32_t dwColor = 0xFFFFFF, uint32_t dwSubTexture = 0)
 {
     pV.vPos.x = x;
     pV.vPos.y = y;
@@ -89,8 +89,8 @@ __forceinline void FillRectVertex(RS_RECT &pV, float x, float y, float z, float 
     pV.fSize = fSize;
 }
 
-__forceinline void FillSpriteVertex(RS_SPRITE &pV, float x, float y, float z = 1.0f, dword dwColor = 0xFFFFFF,
-                                    float tu = 0.0f, float tv = 0.0f)
+inline void FillSpriteVertex(RS_SPRITE &pV, float x, float y, float z = 1.0f, uint32_t dwColor = 0xFFFFFF,
+                             float tu = 0.0f, float tv = 0.0f)
 {
     pV.vPos.x = x;
     pV.vPos.y = y;
@@ -101,10 +101,10 @@ __forceinline void FillSpriteVertex(RS_SPRITE &pV, float x, float y, float z = 1
     pV.tv = tv;
 }
 
-inline dword Number2Shift(dword dwNumber)
+inline uint32_t Number2Shift(uint32_t dwNumber)
 {
-    for (dword i = 0; i < 31; i++)
-        if (dword(1 << i) == dwNumber)
+    for (uint32_t i = 0; i < 31; i++)
+        if (static_cast<uint32_t>(1 << i) == dwNumber)
             return i;
     return 0;
 }

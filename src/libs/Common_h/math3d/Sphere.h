@@ -9,8 +9,8 @@
 
 #pragma pack(push, 1)
 
-#include "../CVector.h"
-#include "../CVector4.h"
+#include "Vector.h"
+#include "Vector4.h"
 
 ///Класс представления шара в 3D пространстве
 class Sphere
@@ -29,19 +29,22 @@ class Sphere
                     ///Позиция по Z
                     float z;
                 };
+
                 union {
                     struct
                     {
                         ///Позиция
-                        CVECTOR p;
+                        Vector p;
                     };
+
                     struct
                     {
                         ///Позиция
-                        CVECTOR pos;
+                        Vector pos;
                     };
                 };
             };
+
             union {
                 ///Радиус
                 float r;
@@ -49,37 +52,58 @@ class Sphere
                 float radius;
             };
         };
+
         struct
         {
-            ///Представление в виде CVECTOR4
-            CVECTOR4 v4;
+            ///Представление в виде Vector4
+            Vector4 v4;
         };
     };
 
     //-----------------------------------------------------------
+    //Конструкторы
+    //-----------------------------------------------------------
+  public:
+    //Пустой конструктор
+    Sphere();
+    //Конструктор копирования
+    Sphere(const Sphere &s);
+    //-----------------------------------------------------------
     //Утилитные
     //-----------------------------------------------------------
   public:
-    Sphere()
-    {
-    }
-
     //Точка в сфере
-    bool Intersection(const CVECTOR &p);
+    bool Intersection(const Vector &p);
     //Проверить пересечение отрезка и сферы
-    bool Intersection(const CVECTOR &src, const CVECTOR &dst);
+    bool Intersection(const Vector &src, const Vector &dst);
     //Проверить пересечение луча и сферы
-    bool Intersection(const CVECTOR &orig, const CVECTOR &normdir, float *res);
+    bool Intersection(const Vector &orig, const Vector &normdir, float *res);
     //Проверить пересечение сферы и сферы
     bool Intersection(const Sphere &sph);
 
     //Установить сферу в точку с 0 радиусом
-    void Reset(const CVECTOR &p);
+    void Reset(const Vector &p);
     //Включить в описывающую сферу точку
-    void AddPoint(const CVECTOR &p);
+    void AddPoint(const Vector &p);
 
     //Проверить пересечение луча и сферы
-    static bool Intersection(const CVECTOR &orig, const CVECTOR &normdir, const CVECTOR &pos, float r, float *res);
+    static bool Intersection(const Vector &orig, const Vector &normdir, const Vector &pos, float r, float *res);
+};
+
+//-----------------------------------------------------------
+//Конструкторы
+//-----------------------------------------------------------
+
+//Пустой конструктор
+inline Sphere::Sphere()
+{
+    v4 = Vector4();
+};
+
+//Конструктор копирования
+inline Sphere::Sphere(const Sphere &s)
+{
+    v4 = s.v4;
 };
 
 //===========================================================
@@ -87,16 +111,16 @@ class Sphere
 //===========================================================
 
 //Точка в сфере
-__forceinline bool Sphere::Intersection(const CVECTOR &p)
+inline bool Sphere::Intersection(const Vector &p)
 {
     return ~(pos - p) <= radius * radius;
 }
 
 //Проверить пересечение отрезка и сферы
-__forceinline bool Sphere::Intersection(const CVECTOR &src, const CVECTOR &dst)
+inline bool Sphere::Intersection(const Vector &src, const Vector &dst)
 {
-    CVECTOR dir = dst - src;
-    float len = dir.Normalize();
+    Vector dir = dst - src;
+    const float len = dir.Normalize();
     if (len > 1e-10f)
     {
         float dist;
@@ -119,31 +143,31 @@ __forceinline bool Sphere::Intersection(const CVECTOR &src, const CVECTOR &dst)
 }
 
 //Проверить пересечение луча и сферы
-__forceinline bool Sphere::Intersection(const CVECTOR &orig, const CVECTOR &normdir, float *res)
+inline bool Sphere::Intersection(const Vector &orig, const Vector &normdir, float *res)
 {
     return Intersection(orig, normdir, pos, r, res);
 }
 
 //Проверить пересечение сферы и сферы
-__forceinline bool Sphere::Intersection(const Sphere &sph)
+inline bool Sphere::Intersection(const Sphere &sph)
 {
     return (~(p - sph.p) <= (r + sph.r) * (r + sph.r));
 }
 
 //Установить сферу в точку с 0 радиусом
-__forceinline void Sphere::Reset(const CVECTOR &p)
+inline void Sphere::Reset(const Vector &p)
 {
     pos = p;
     r = 0.0f;
 }
 
 //Включить в описывающую сферу точку
-__forceinline void Sphere::AddPoint(const CVECTOR &p)
+inline void Sphere::AddPoint(const Vector &p)
 {
     //Вектор из точки к центру
-    float dx = pos.x - p.x;
-    float dy = pos.y - p.y;
-    float dz = pos.z - p.z;
+    const float dx = pos.x - p.x;
+    const float dy = pos.y - p.y;
+    const float dz = pos.z - p.z;
     float len = dx * dx + dy * dy + dz * dz;
     if (len <= r * r)
         return;
@@ -158,12 +182,11 @@ __forceinline void Sphere::AddPoint(const CVECTOR &p)
 }
 
 //Проверить пересечение луча и сферы
-__forceinline bool Sphere::Intersection(const CVECTOR &orig, const CVECTOR &normdir, const CVECTOR &pos, float r,
-                                        float *res)
+inline bool Sphere::Intersection(const Vector &orig, const Vector &normdir, const Vector &pos, float r, float *res)
 {
-    CVECTOR toCenter = pos - orig;
-    float distToOrtoPlane = normdir | toCenter;
-    float distFromOrtoPlaneToSphere2 = r * r - (~toCenter - distToOrtoPlane * distToOrtoPlane);
+    const Vector toCenter = pos - orig;
+    const float distToOrtoPlane = normdir | toCenter;
+    const float distFromOrtoPlaneToSphere2 = r * r - (~toCenter - distToOrtoPlane * distToOrtoPlane);
     if (distFromOrtoPlaneToSphere2 < 0.0f)
         return false;
     if (res)

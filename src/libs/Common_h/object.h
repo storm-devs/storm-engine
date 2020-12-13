@@ -1,15 +1,20 @@
 #ifndef _OBJECT_H_
 #define _OBJECT_H_
 
-#include "dx8render.h"
-#include "math3d/Triangle.h"
-#include "matrix.h"
+#include "Matrix.h"
+#include "dx9render.h"
+#include "triangle.h"
 
 typedef bool (*ADD_POLYGON_FUNC)(const CVECTOR *v, long nv);
 
-class COLLISION_OBJECT : public ENTITY
+class COLLISION_OBJECT : public Entity
 {
   public:
+    bool Init() override
+    {
+        return true;
+    }
+
     virtual ~COLLISION_OBJECT(){};
     CMatrix mtx;
 
@@ -18,6 +23,6 @@ class COLLISION_OBJECT : public ENTITY
                       ADD_POLYGON_FUNC addpoly) = 0;
 
     virtual const char *GetCollideMaterialName() = 0;
-    virtual bool GetCollideTriangle(Triangle &triangle) = 0;
+    virtual bool GetCollideTriangle(TRIANGLE &triangle) = 0;
 };
 #endif

@@ -1,11 +1,6 @@
 #ifndef _CONTROLS_H_
 #define _CONTROLS_H_
 
-#include "d_types.h"
-#include "utf8.h"
-
-#include <windows.h>
-
 #define INVALID_CONTROL_CODE 0xffffffff
 #define UNASSIGNED_CONTROL 0xffffffff
 
@@ -16,7 +11,7 @@
 
 struct DEVICE_DESC
 {
-    char *name;
+    const char *name;
 };
 
 struct SYSTEM_CONTROL_DESC
@@ -28,8 +23,9 @@ struct SYSTEM_CONTROL_DESC
         CT_FORCE_FEEDBACK,
         FORCE_DWORD = 0xffffffff
     };
+
     CONTROL_TYPE ControlType;
-    char *pControlName;
+    const char *pControlName;
 };
 
 enum CONTROL_STATE_TYPE
@@ -52,9 +48,9 @@ struct USER_CONTROL
 {
     char *name;
     long system_code;
-    DWORD flags;
+    uint32_t flags;
     CONTROL_STATE_TYPE state;
-    DWORD nframe;
+    uint32_t nframe;
     float fTreshold;
     bool bLocked;
     bool bSystemLocked;
@@ -76,7 +72,7 @@ struct CONTROL_STATE
 
 struct KeyDescr
 {
-    utf8::u8_char ucVKey;
+    uint8_t ucVKey;
     bool bSystem;
 };
 
@@ -84,9 +80,10 @@ class CONTROLS
 {
   public:
     CONTROLS(){};
+
     virtual ~CONTROLS(){};
 
-    virtual void Update(DWORD DeltaTime){};
+    virtual void Update(uint32_t DeltaTime){};
     virtual long GetSystemControlsNum()
     {
         return 0;
@@ -95,9 +92,10 @@ class CONTROLS
     {
         return false;
     };
+
     virtual void ResetControlsMap(){};
 
-    virtual long CreateControl(char *control_name)
+    virtual long CreateControl(const char *control_name)
     {
         return 0;
     };
@@ -109,7 +107,7 @@ class CONTROLS
     {
         return false;
     };
-    virtual bool SetControlFlags(long code, DWORD _flags)
+    virtual bool SetControlFlags(long code, uint32_t flags)
     {
         return true;
     }
@@ -128,7 +126,7 @@ class CONTROLS
     };
     virtual char *GetDeviceControlName(long device_code, long code)
     {
-        return 0;
+        return nullptr;
     };
 
     virtual long AddControlTreeNode(long nParent, const char *pcBaseControl, const char *pcOutControl, float fTimeOut)
@@ -137,11 +135,13 @@ class CONTROLS
     }
 
     virtual void MapControl(long control_code, long system_control_code){};
+
     virtual void AppState(bool state){};
+
     /*	virtual CONTROL_STATE_TYPE GetControlState(char * control_name, float * pvalue = 0){return CST_INACTIVE;};
-        virtual CONTROL_STATE_TYPE GetControlState(long control_code, float * pvalue = 0){return CST_INACTIVE;};
-        virtual float GetControlValue(char * control_name, CONTROL_STATE_TYPE * pstate = 0){return 0;};
-        virtual float GetControlValue(long control_code, CONTROL_STATE_TYPE * pstate = 0){return 0;};
+      virtual CONTROL_STATE_TYPE GetControlState(long control_code, float * pvalue = 0){return CST_INACTIVE;};
+      virtual float GetControlValue(char * control_name, CONTROL_STATE_TYPE * pstate = 0){return 0;};
+      virtual float GetControlValue(long control_code, CONTROL_STATE_TYPE * pstate = 0){return 0;};
     */
     virtual void SetControlEffect(FFB_EFFECT effect, long time = 0){};
 
@@ -150,16 +150,19 @@ class CONTROLS
         memset(&_state_struct, 0, sizeof(_state_struct));
         return false;
     };
-    virtual bool GetControlState(char *control_name, CONTROL_STATE &_state_struct)
+
+    virtual bool GetControlState(const char *control_name, CONTROL_STATE &_state_struct)
     {
         memset(&_state_struct, 0, sizeof(_state_struct));
         return false;
     };
-    virtual bool SetControlState(char *control_name, CONTROL_STATE &_state_struct)
+
+    virtual bool SetControlState(const char *control_name, CONTROL_STATE &_state_struct)
     {
         memset(&_state_struct, 0, sizeof(_state_struct));
         return false;
     };
+
     virtual bool SetControlState(long control_code, CONTROL_STATE &_state_struct)
     {
         memset(&_state_struct, 0, sizeof(_state_struct));
@@ -169,9 +172,13 @@ class CONTROLS
     {
         return 0;
     };
+
     virtual void SetControlTreshold(long control_code, float thval){};
-    virtual void LockControl(char *control_name, bool mode){};
+
+    virtual void LockControl(const char *control_name, bool mode){};
+
     virtual void SetMouseSensivityX(float){};
+
     virtual void SetMouseSensivityY(float){};
     virtual short GetDebugAsyncKeyState(int vk)
     {
@@ -194,8 +201,9 @@ class CONTROLS
     }
     virtual const KeyDescr *GetKeyBuffer()
     {
-        return null;
+        return nullptr;
     }
+
     virtual void ClearKeyBuffer()
     {
     }

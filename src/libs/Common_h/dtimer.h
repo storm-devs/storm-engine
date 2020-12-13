@@ -15,6 +15,7 @@ class DTimer
     {
         Setup(_fCurrent, _fMax);
     };
+
     ~DTimer(){};
 
     void Setup(float _fCurrent, float _fMin, float _fMax)
@@ -31,10 +32,11 @@ class DTimer
         fMax = _fMax;
     }
 
-    bool Update(dword dwDeltaTime)
+    bool Update(uint32_t dwDeltaTime)
     {
-        return Update(0.001f * float(dwDeltaTime));
+        return Update(0.001f * static_cast<float>(dwDeltaTime));
     }
+
     bool Update(float fDeltaTime)
     {
         fCurrent -= fDeltaTime;
