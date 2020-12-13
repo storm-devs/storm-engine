@@ -1,5 +1,3 @@
-
-
 #include "Sharks.h"
 
 INTERFACE_FUNCTION
