@@ -1,18 +1,6 @@
 #ifndef _RIGGING_DEFINE_H_
 #define _RIGGING_DEFINE_H_
 
-#define PTR_DELETE(p)                                                                                                  \
-    if (p != NULL)                                                                                                     \
-    {                                                                                                                  \
-        delete p;                                                                                                      \
-        p = NULL;                                                                                                      \
-    }
-#define VOIDPTR_DELETE(p)                                                                                              \
-    if (p != NULL)                                                                                                     \
-    {                                                                                                                  \
-        delete (void *)p;                                                                                              \
-        p = NULL;                                                                                                      \
-    }
 #define TEXTURE_RELEASE(rs, tex)                                                                                       \
     if (tex != -1 && rs != NULL)                                                                                       \
     {                                                                                                                  \

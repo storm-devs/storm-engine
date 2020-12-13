@@ -1,6 +1,6 @@
 project(rigging)
 
-add_library(${PROJECT_NAME} MODULE
+add_library(${PROJECT_NAME} STATIC
 	Flag.cpp
 	Flag.h
 	Rope.cpp

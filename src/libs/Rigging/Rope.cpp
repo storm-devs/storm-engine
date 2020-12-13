@@ -1,25 +1,24 @@
-#include "ROPE.h"
-#include "common_defines.h"
-#include "model.h"
+#include "Rope.h"
+#include "../../shared/sail_msg.h"
+#include "EntityManager.h"
+#include "defines.h"
 #include "rigging_define.h"
-#include "sail_msg.h"
 #include "ship_base.h"
-#include <stdio.h>
 
-extern void _cdecl sailPrint(VDX8RENDER *rs, const CVECTOR &pos3D, float rad, long line, const char *format, ...);
+extern void sailPrint(VDX9RENDER *rs, const CVECTOR &pos3D, float rad, long line, const char *format, ...);
 
 ROPE::ROPE()
 {
     bUse = false;
     bYesDeleted = false;
     wRopeLast = 0;
-    RenderService = 0;
-    gdata = 0;
+    RenderService = nullptr;
+    gdata = nullptr;
     groupQuantity = 0;
-    rlist = 0;
+    rlist = nullptr;
     ropeQuantity = 0;
 
-    TextureName = 0;
+    TextureName = nullptr;
     texl = -1;
     bFirstRun = true;
 
@@ -40,22 +39,22 @@ ROPE::~ROPE()
     // очистка и удаление списка веревок
     if (rlist)
     {
-        for (int i = 0; i < ropeQuantity; i++)
-            PTR_DELETE(rlist[i]);
-        PTR_DELETE(rlist);
+        for (auto i = 0; i < ropeQuantity; i++)
+            STORM_DELETE(rlist[i]);
+        STORM_DELETE(rlist);
         ropeQuantity = 0;
     }
     // очистка и удаление списка групп
     if (gdata)
     {
-        for (int i = 0; i < groupQuantity; i++)
-            PTR_DELETE(gdata[i].ropeIdx);
-        PTR_DELETE(gdata);
+        for (auto i = 0; i < groupQuantity; i++)
+            STORM_DELETE(gdata[i].ropeIdx);
+        STORM_DELETE(gdata);
         groupQuantity = 0;
     }
     // удаление текстур
     TEXTURE_RELEASE(RenderService, texl);
-    PTR_DELETE(TextureName);
+    STORM_DELETE(TextureName);
 
     VERTEX_BUFFER_RELEASE(RenderService, vBuf);
     INDEX_BUFFER_RELEASE(RenderService, iBuf);
@@ -64,19 +63,19 @@ ROPE::~ROPE()
 
 bool ROPE::Init()
 {
-    GUARD(ROPE::ROPE())
+    // GUARD(ROPE::ROPE())
     SetDevice();
-    UNGUARD
+    // UNGUARD
     return true;
 }
 
 void ROPE::SetDevice()
 {
     // получить сервис рендера
-    RenderService = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
+    RenderService = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
     if (!RenderService)
     {
-        SE_THROW_MSG("No service: dx8render");
+        throw std::exception("No service: dx9render");
     }
 
     LoadIni();
@@ -95,30 +94,32 @@ bool ROPE::LoadState(ENTITY_STATE *state)
 }
 
 FILETIME ft_old;
-void ROPE::Execute(dword Delta_Time)
-{
-    DWORD rtm;
-    _asm rdtsc _asm mov rtm, eax
 
-        if (bFirstRun) FirstRun();
+void ROPE::Execute(uint32_t Delta_Time)
+{
+    uint64_t rtm;
+    RDTSC_B(rtm);
+
+    if (bFirstRun)
+        FirstRun();
     if (bYesDeleted)
-        DoDelete();
+        DoSTORM_DELETE();
 
     if (bUse)
     {
-        vertBuf = (ROPEVERTEX *)RenderService->LockVertexBuffer(vBuf);
+        vertBuf = static_cast<ROPEVERTEX *>(RenderService->LockVertexBuffer(vBuf));
         if (vertBuf)
         {
-            float dtime = (float)Delta_Time * .02f;
-            for (int i = 0; i < ropeQuantity; i++)
+            const auto dtime = static_cast<float>(Delta_Time) * .02f;
+            for (auto i = 0; i < ropeQuantity; i++)
             {
                 if (rlist[i]->bUse && !gdata[rlist[i]->HostGroup].bDeleted)
                     SetVertexes(rlist[i], dtime);
                 // DoMove(rlist[i]);
                 else if (rlist[i]->len != 0.f) // set all vertex to point(0,0,0)
                 {
-                    CVECTOR nulVect = CVECTOR(0.f, 0.f, 0.f);
-                    for (dword idx = rlist[i]->sv; idx < rlist[i]->sv + rlist[i]->nv; idx++)
+                    const auto nulVect = CVECTOR(0.f, 0.f, 0.f);
+                    for (auto idx = rlist[i]->sv; idx < rlist[i]->sv + rlist[i]->nv; idx++)
                         vertBuf[idx].pos = nulVect;
                 }
             }
@@ -127,20 +128,17 @@ void ROPE::Execute(dword Delta_Time)
         }
     }
 
-    _asm rdtsc;
-    _asm sub eax, rtm;
-    _asm mov rtm, eax;
+    RDTSC_E(rtm);
     execute_tm = rtm;
 }
 
-void ROPE::Realize(dword Delta_Time)
+void ROPE::Realize(uint32_t Delta_Time)
 {
     if (bUse)
     {
-        DWORD rtm;
+        uint64_t rtm;
 
-        _asm rdtsc;
-        _asm mov rtm, eax;
+        RDTSC_B(rtm);
         if (Delta_Time == 0)
         {
             // draw mirror rope
@@ -153,70 +151,71 @@ void ROPE::Realize(dword Delta_Time)
             RenderService->GetCamera(cp, ca, pr);
             pr = tanf(pr * .5f);
 
-            bool bDraw = RenderService->TechniqueExecuteStart("ShipRope");
+            const auto bDraw = RenderService->TechniqueExecuteStart("ShipRope");
 
             if (bDraw)
-                for (int i = 0; i < groupQuantity; i++)
+            {
+                for (auto i = 0; i < groupQuantity; i++)
                     if (!gdata[i].bDeleted && gdata[i].nt != 0 && nVert != 0)
-                        if ((~(gdata[i].pMatWorld->Pos() - cp)) * pr <
-                            fMaxRopeDist) // если расстояние до корабля не больше максимального
+                        if ((~(gdata[i].pMatWorld->Pos() - cp)) * pr < fMaxRopeDist)
+                        // если расстояние до корабля не больше максимального
                         {
-                            ((SHIP_BASE *)gdata[i].shipEI.pointer)->SetLightAndFog(true);
+                            static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(gdata[i].shipEI))
+                                ->SetLightAndFog(true);
                             RenderService->SetTransform(D3DTS_WORLD, (D3DXMATRIX *)gdata[i].pMatWorld);
 
                             RenderService->TextureSet(0, texl);
                             RenderService->SetMaterial(mat);
                             RenderService->DrawBuffer(vBuf, sizeof(ROPEVERTEX), iBuf, 0, nVert, gdata[i].st,
                                                       gdata[i].nt);
-                            ((SHIP_BASE *)gdata[i].shipEI.pointer)->RestoreLightAndFog();
+                            static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(gdata[i].shipEI))
+                                ->RestoreLightAndFog();
                         }
-            if (bDraw)
                 while (RenderService->TechniqueExecuteNext())
                 {
-                };
+                }
+            }
 
-            _asm rdtsc;
-            _asm sub eax, rtm;
-            _asm mov rtm, eax;
+            RDTSC_E(rtm);
             realize_tm = rtm;
             // RenderService->Print(0,10,"exec=%d, real=%d",execute_tm,realize_tm);
             /*if(api->Controls->GetDebugAsyncKeyState('M')<0)
-                for(int i=0; i<ropeQuantity; i++)
-                {
-                    sailPrint(RenderService,*(rlist[i]->bMatWorld) *
-               rlist[i]->pBeg,25.f,0,"B%d_%s%d",rlist[i]->ropeNum,rlist[i]->btie?"tie":"",rlist[i]->bgnum);
-                    sailPrint(RenderService,*(rlist[i]->eMatWorld) *
-               rlist[i]->pEnd,25.f,0,"E%d_%s%d",rlist[i]->ropeNum,rlist[i]->etie?"tie":"",rlist[i]->bgnum);
-                }*/
+              for(int i=0; i<ropeQuantity; i++)
+              {
+                sailPrint(RenderService,*(rlist[i]->bMatWorld) *
+              rlist[i]->pBeg,25.f,0,"B%d_%s%d",rlist[i]->ropeNum,rlist[i]->btie?"tie":"",rlist[i]->bgnum);
+                sailPrint(RenderService,*(rlist[i]->eMatWorld) *
+              rlist[i]->pEnd,25.f,0,"E%d_%s%d",rlist[i]->ropeNum,rlist[i]->etie?"tie":"",rlist[i]->bgnum);
+              }*/
         }
     }
 }
 
-dword _cdecl ROPE::ProcessMessage(MESSAGE &message)
+uint64_t ROPE::ProcessMessage(MESSAGE &message)
 {
-    long code = message.Long();
-    ENTITY_ID tmp_id;
+    const auto code = message.Long();
+    entid_t tmp_id;
 
     switch (code)
     {
     case MSG_ROPE_INIT: {
-        ENTITY_ID tmp_shipEI = message.EntityID();
-        ENTITY_ID tmp_modelEI = message.EntityID();
-        MODEL *mdl = (MODEL *)_CORE_API->GetEntityPointer(&tmp_modelEI);
-        if (mdl == null)
+        const auto tmp_shipEI = message.EntityID();
+        const auto tmp_modelEI = message.EntityID();
+        auto *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(tmp_modelEI));
+        if (mdl == nullptr)
         {
             api->Trace("WARNING!!! Missing INIT message to ROPE - bad ship model");
             return 0;
         }
 
-        int wFirstRope = ropeQuantity;
-        if (gdata != 0)
+        const auto wFirstRope = ropeQuantity;
+        if (gdata != nullptr)
         {
-            GROUPDATA *oldgdata = gdata;
-            gdata = NEW GROUPDATA[groupQuantity + 1];
-            if (gdata == NULL)
+            auto *const oldgdata = gdata;
+            gdata = new GROUPDATA[groupQuantity + 1];
+            if (gdata == nullptr)
             {
-                SE_THROW_MSG("allocate memory error");
+                throw std::exception("allocate memory error");
             }
             memcpy(gdata, oldgdata, sizeof(GROUPDATA) * groupQuantity);
             delete oldgdata;
@@ -224,11 +223,11 @@ dword _cdecl ROPE::ProcessMessage(MESSAGE &message)
         }
         else
         {
-            gdata = NEW GROUPDATA[1];
+            gdata = new GROUPDATA[1];
             groupQuantity = 1;
-            if (gdata == NULL)
+            if (gdata == nullptr)
             {
-                SE_THROW_MSG("allocate memory error");
+                throw std::exception("allocate memory error");
             }
         }
 
@@ -265,7 +264,7 @@ dword _cdecl ROPE::ProcessMessage(MESSAGE &message)
         {
             groupQuantity--;
             if (groupQuantity <= 0)
-                PTR_DELETE(gdata);
+                STORM_DELETE(gdata);
             return 0;
         }
 
@@ -281,8 +280,7 @@ dword _cdecl ROPE::ProcessMessage(MESSAGE &message)
         gdata[groupQuantity - 1].st = nIndx;
         gdata[groupQuantity - 1].sv = nVert;
         gdata[groupQuantity - 1].ropeQuantity = 0;
-        int rn = 0;
-        for (rn = wFirstRope; rn < ropeQuantity; rn++)
+        for (int rn = wFirstRope; rn < ropeQuantity; rn++)
         {
             if (rlist[rn]->HostGroup == groupQuantity - 1)
             {
@@ -295,19 +293,19 @@ dword _cdecl ROPE::ProcessMessage(MESSAGE &message)
                 nIndx += rlist[rn]->nt * 3;
             }
         }
-        gdata[groupQuantity - 1].ropeIdx = NEW int[gdata[groupQuantity - 1].ropeQuantity];
-        if (gdata[groupQuantity - 1].ropeIdx == NULL)
+        gdata[groupQuantity - 1].ropeIdx = new int[gdata[groupQuantity - 1].ropeQuantity];
+        if (gdata[groupQuantity - 1].ropeIdx == nullptr)
         {
-            SE_THROW_MSG("allocate memory error");
+            throw std::exception("allocate memory error");
         }
         int idx = 0;
-        for (rn = wFirstRope; rn < ropeQuantity; rn++)
+        for (int rn = wFirstRope; rn < ropeQuantity; rn++)
             if (rlist[rn]->HostGroup == groupQuantity - 1)
                 gdata[groupQuantity - 1].ropeIdx[idx++] = rn;
     }
     break;
 
-    // удаление веревки из отображения и расчета
+        // удаление веревки из отображения и расчета
     case MSG_ROPE_DELETE: {
         tmp_id = message.EntityID();
         int rope_number;
@@ -318,12 +316,11 @@ dword _cdecl ROPE::ProcessMessage(MESSAGE &message)
             {
                 rlist[i]->bDeleted = true;
                 bYesDeleted = true;
-
                 // rlist[i]->bUse=false;
-                /*ENTITY_ID sailEI;
-                if(_CORE_API->FindClass(&sailEI,"sail",0))
+                /*entid_t sailEI;
+                if(api->FindClass(&sailEI,"sail",0))
                     if(rlist[i]->btie || rlist[i]->etie) // отвяжем парус от веревки
-                        _CORE_API->Send_Message(sailEI,"ll",MSG_SAIL_ROPE_UNTIE,rope_number);*/
+                        api->Send_Message(sailEI,"ll",MSG_SAIL_ROPE_UNTIE,rope_number);*/
                 break;
             }
         }
@@ -346,12 +343,12 @@ dword _cdecl ROPE::ProcessMessage(MESSAGE &message)
     return 0;
 }
 
-void ROPE::SetIndex()
+void ROPE::SetIndex() const
 {
     int i, j;
     int ti, vi;
 
-    WORD *pt = (WORD *)RenderService->LockIndexBuffer(iBuf);
+    auto *pt = static_cast<uint16_t *>(RenderService->LockIndexBuffer(iBuf));
     if (pt)
     {
         for (int rn = 0; rn < ropeQuantity; rn++)
@@ -413,7 +410,7 @@ void ROPE::SetIndex()
 
 void ROPE::SetVertexes()
 {
-    vertBuf = (ROPEVERTEX *)RenderService->LockVertexBuffer(vBuf);
+    vertBuf = static_cast<ROPEVERTEX *>(RenderService->LockVertexBuffer(vBuf));
     if (vertBuf)
     {
         for (int rn = 0; rn < ropeQuantity; rn++)
@@ -427,7 +424,7 @@ void ROPE::SetVertexes()
     }
 }
 
-void ROPE::SetVertexes(ROPEDATA *pr, float dtime)
+void ROPE::SetVertexes(ROPEDATA *pr, float dtime) const
 {
     // установить параметры формы веревки
     float deepVal;
@@ -445,7 +442,7 @@ void ROPE::SetVertexes(ROPEDATA *pr, float dtime)
 
     int vertnum = pr->sv;
 
-    CVECTOR cvb, cve, cv;
+    CVECTOR cvb, cve;
     // Get begin point into Ship coordinate
     gdata[pr->HostGroup].pMatWorld->MulToInv(*pr->bMatWorld * pr->pBeg, cvb);
     // Get end point into Ship coordinate
@@ -459,13 +456,13 @@ void ROPE::SetVertexes(ROPEDATA *pr, float dtime)
 
     vertnum++;
 
-    CVECTOR dtV = (cve - cvb - pr->cv) / (float)pr->segquant;
-    CVECTOR deepV = pr->vDeep * (4.f / (float)(pr->segquant * pr->segquant));
+    const CVECTOR dtV = (cve - cvb - pr->cv) / static_cast<float>(pr->segquant);
+    const CVECTOR deepV = pr->vDeep * (4.f / static_cast<float>(pr->segquant * pr->segquant));
     for (int segn = 0; segn <= pr->segquant; segn++)
     {
         CVECTOR cv = cvb;
         if (pr->bMakeWave)
-            cv += deepV * (float)(segn * (pr->segquant - segn));
+            cv += deepV * static_cast<float>(segn * (pr->segquant - segn));
 
         // установить новые координаты в текущем сечении
         for (int i = 0; i < ROPE_EDGE; i++)
@@ -475,6 +472,7 @@ void ROPE::SetVertexes(ROPEDATA *pr, float dtime)
         vertnum += ROPE_EDGE;
     }
 }
+
 /*
 void ROPE::DoMove(ROPEDATA *pr)
 {
@@ -544,7 +542,7 @@ void ROPE::AddLabel(GEOS::LABEL &lbl, NODE *nod, bool bDontSage)
     int ropeNum, grNum;
     int rn;
 
-    if (nod == 0)
+    if (nod == nullptr)
         return;
 
     if (bDontSage)
@@ -581,20 +579,20 @@ void ROPE::AddLabel(GEOS::LABEL &lbl, NODE *nod, bool bDontSage)
     if (rn == ropeQuantity) // добавляем новую веревку
     {
         // изменим список веревок
-        if (rlist == 0)
+        if (rlist == nullptr)
         {
-            rlist = NEW ROPEDATA *[1];
+            rlist = new ROPEDATA *[1];
             ropeQuantity = 1;
         }
         else
         {
             ROPEDATA **oldrlist = rlist;
-            rlist = NEW ROPEDATA * [ropeQuantity + 1];
+            rlist = new ROPEDATA *[ropeQuantity + 1];
             memcpy(rlist, oldrlist, sizeof(ROPEDATA *) * ropeQuantity);
             delete oldrlist;
             ropeQuantity++;
         }
-        rd = rlist[ropeQuantity - 1] = NEW ROPEDATA;
+        rd = rlist[ropeQuantity - 1] = new ROPEDATA;
         PZERO(rd, sizeof(ROPEDATA));
         rd->ropeNum = ropeNum;
         rd->HostGroup = groupQuantity - 1;
@@ -645,7 +643,7 @@ void ROPE::AddLabel(GEOS::LABEL &lbl, NODE *nod, bool bDontSage)
 
     // now getting all two points
     CVECTOR ce, cb;
-    if (rd->bMatWorld != 0 && rd->eMatWorld != 0)
+    if (rd->bMatWorld != nullptr && rd->eMatWorld != nullptr)
     {
         cb = *rd->bMatWorld * rd->pBeg;
         ce = *rd->eMatWorld * rd->pEnd;
@@ -658,12 +656,12 @@ void ROPE::AddLabel(GEOS::LABEL &lbl, NODE *nod, bool bDontSage)
             if (ropeQuantity == 1)
             {
                 delete rlist;
-                rlist = 0;
+                rlist = nullptr;
             }
             else
             {
                 ROPEDATA **oldrlist = rlist;
-                rlist = NEW ROPEDATA * [ropeQuantity - 1];
+                rlist = new ROPEDATA *[ropeQuantity - 1];
                 if (rn > 0)
                     memcpy(rlist, oldrlist, sizeof(ROPEDATA *) * rn);
                 if (rn < ropeQuantity - 1)
@@ -674,7 +672,7 @@ void ROPE::AddLabel(GEOS::LABEL &lbl, NODE *nod, bool bDontSage)
         }
         else
         {
-            rd->segquant = (WORD)(rd->len / ROPE_SEG_LENGTH) + 1;
+            rd->segquant = static_cast<uint16_t>(rd->len / ROPE_SEG_LENGTH) + 1;
             rd->cv = (!(ce - cb)) * ROPE_END_LENGTH; // vector for rope edge length
             // Set normals with length equal the rope width
             CVECTOR norm;
@@ -682,7 +680,7 @@ void ROPE::AddLabel(GEOS::LABEL &lbl, NODE *nod, bool bDontSage)
             norm = ce - cb;
             cvert = norm.z / rd->len;
             svert = norm.y / rd->len;
-            float ftmp = sqrtf(norm.x * norm.x + norm.z * norm.z);
+            const float ftmp = sqrtf(norm.x * norm.x + norm.z * norm.z);
             if (ftmp >= 0.0001f)
             {
                 chorz = norm.z / ftmp;
@@ -733,25 +731,24 @@ void ROPE::AddLabel(GEOS::LABEL &lbl, NODE *nod, bool bDontSage)
             rd->angRot = 0.f;
             rd->vDeep = 0.f;
 
-            ENTITY_ID sailEI;
-            if (_CORE_API->FindClass(&sailEI, "sail", 0))
+            if (const auto sailEI = EntityManager::GetEntityId("sail"))
             {
-                MODEL *mdl = (MODEL *)_CORE_API->GetEntityPointer(&gdata[rd->HostGroup].modelEI);
-                if (mdl == 0)
+                auto *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(gdata[rd->HostGroup].modelEI));
+                if (mdl == nullptr)
                     rd->btie = rd->etie = false;
                 else
                     for (int i = 0; i < 10000; i++)
                     {
                         NODE *nd = mdl->GetNode(i);
-                        if (nd == 0)
+                        if (nd == nullptr)
                             break;
 
                         if (rd->btie && rd->bMatWorld == &nd->glob_mtx)
-                            _CORE_API->Send_Message(sailEI, "lplpl", MSG_SAIL_ROPE_TIE, nd, rd->bgnum, &rd->pBeg,
-                                                    rd->ropeNum);
+                            api->Send_Message(sailEI, "lplpl", MSG_SAIL_ROPE_TIE, nd, rd->bgnum, &rd->pBeg,
+                                              rd->ropeNum);
                         if (rd->etie && rd->eMatWorld == &nd->glob_mtx)
-                            _CORE_API->Send_Message(sailEI, "lplpl", MSG_SAIL_ROPE_TIE, nd, rd->egnum, &rd->pEnd,
-                                                    -rd->ropeNum);
+                            api->Send_Message(sailEI, "lplpl", MSG_SAIL_ROPE_TIE, nd, rd->egnum, &rd->pEnd,
+                                              -rd->ropeNum);
                     }
             }
             else
@@ -763,11 +760,11 @@ void ROPE::AddLabel(GEOS::LABEL &lbl, NODE *nod, bool bDontSage)
 }
 
 // получить конечную точку веревки в координатах начальной точки
-void ROPE::GetEndPoint(CVECTOR *cv, int ropenum, ENTITY_ID &mdl_id)
+void ROPE::GetEndPoint(CVECTOR *cv, int ropenum, entid_t mdl_id)
 {
     int rn;
 
-    if (cv == 0) // плохой указатель на вектор
+    if (cv == nullptr) // плохой указатель на вектор
         return;
 
     // выяснить какой конец веревки нам надо получить
@@ -793,16 +790,16 @@ void ROPE::GetEndPoint(CVECTOR *cv, int ropenum, ENTITY_ID &mdl_id)
 
 void ROPE::LoadIni()
 {
-    GUARD(ROPE::LoadIni());
+    // GUARD(ROPE::LoadIni());
     char section[256];
     char param[256];
 
     INIFILE *ini;
-    ini = _CORE_API->fio->OpenIniFile("resource\\ini\\rigging.ini");
+    ini = fio->OpenIniFile("resource\\ini\\rigging.ini");
     if (!ini)
-        SE_THROW("rigging.ini file not found!");
+        throw std::exception("rigging.ini file not found!");
 
-    sprintf(section, "ROPES");
+    sprintf_s(section, "ROPES");
 
     // имя текстуры
     ini->ReadString(section, "TextureName", param, sizeof(param) - 1, "sail_rope.tga");
@@ -811,17 +808,19 @@ void ROPE::LoadIni()
         if (strcmp(TextureName, param))
             if (RenderService)
             {
+                const auto len = strlen(param) + 1;
                 delete TextureName;
-                TextureName = NEW char[strlen(param) + 1];
-                strcpy(TextureName, param);
+                TextureName = new char[len];
+                memcpy(TextureName, param, len);
                 RenderService->TextureRelease(texl);
                 texl = RenderService->TextureCreate(TextureName);
             }
     }
     else
     {
-        TextureName = NEW char[strlen(param) + 1];
-        strcpy(TextureName, param);
+        const auto len = strlen(param) + 1;
+        TextureName = new char[len];
+        memcpy(TextureName, param, len);
     }
     // длина одного сегмента веревки
     ROPE_SEG_LENGTH = ini->GetFloat(section, "fSEG_LENGTH", 2.f);
@@ -851,7 +850,7 @@ void ROPE::LoadIni()
     VAR_ROTATE_ANGL = ini->GetFloat(section, "fRotateAng", .1f);
 
     delete ini;
-    UNGUARD
+    // UNGUARD
 }
 
 void ROPE::FirstRun()
@@ -890,7 +889,7 @@ void ROPE::FirstRun()
                     nIndx+=rlist[rn]->nt*3;
                 }
             }
-            gdata[gn].ropeIdx = NEW int[gdata[gn].ropeQuantity];
+            gdata[gn].ropeIdx = new int[gdata[gn].ropeQuantity];
             int idx=0;
             for(rn=wRopeLast; rn<ropeQuantity; rn++)
                 if(rlist[rn]->HostGroup==gn)
@@ -906,9 +905,8 @@ void ROPE::FirstRun()
                 VERTEX_BUFFER_RELEASE(RenderService, vBuf);
                 INDEX_BUFFER_RELEASE(RenderService, iBuf);
             }
-            vBuf = RenderService->CreateVertexBufferManaged(ROPEVERTEX_FORMAT, nVert * sizeof(ROPEVERTEX),
-                                                            D3DUSAGE_WRITEONLY);
-            iBuf = RenderService->CreateIndexBufferManaged(nIndx * 2);
+            vBuf = RenderService->CreateVertexBuffer(ROPEVERTEX_FORMAT, nVert * sizeof(ROPEVERTEX), D3DUSAGE_WRITEONLY);
+            iBuf = RenderService->CreateIndexBuffer(nIndx * 2);
 
             if (vBuf >= 0 && iBuf >= 0)
             {
@@ -926,11 +924,11 @@ void ROPE::FirstRun()
     wRopeLast = ropeQuantity;
 }
 
-void ROPE::SetTextureGrid(ROPEDATA *pv)
+void ROPE::SetTextureGrid(ROPEDATA *pv) const
 {
     int iv = pv->sv;
 
-    float tvMax = sqrtf(~(*pv->eMatWorld * pv->pEnd - *pv->bMatWorld * pv->pBeg));
+    const float tvMax = sqrtf(~(*pv->eMatWorld * pv->pEnd - *pv->bMatWorld * pv->pBeg));
 
     vertBuf[iv].tu = 0.f;
     vertBuf[iv].tv = 0.f;
@@ -941,15 +939,16 @@ void ROPE::SetTextureGrid(ROPEDATA *pv)
     // Set begin segment point and delta point
     iv++;
     float tv = ROPE_END_LENGTH / ROPE_TEX_LEN;
-    float dtv = (tvMax / ROPE_TEX_LEN - tv) / (float)pv->segquant;
+    const float dtv = (tvMax / ROPE_TEX_LEN - tv) / static_cast<float>(pv->segquant);
     for (int j = 0; j <= pv->segquant; j++)
     {
         for (int i = 0; i < ROPE_EDGE; i++)
         {
             if (i <= ROPE_EDGE / 2)
-                vertBuf[iv + i].tu = (float)i / (float)(ROPE_EDGE / 2);
+                vertBuf[iv + i].tu = static_cast<float>(i) / static_cast<float>((ROPE_EDGE / 2));
             else
-                vertBuf[iv + i].tu = 1.f - (float)(i - ROPE_EDGE / 2) / (float)((ROPE_EDGE + 1) / 2);
+                vertBuf[iv + i].tu =
+                    1.f - static_cast<float>(i - ROPE_EDGE / 2) / static_cast<float>((ROPE_EDGE + 1) / 2);
             vertBuf[iv + i].tv = tv;
         }
         iv += ROPE_EDGE;
@@ -960,29 +959,28 @@ void ROPE::SetTextureGrid(ROPEDATA *pv)
 void ROPE::SetAdd(int firstNum)
 {
     // set vertex and index buffers
-    int rn = 0;
-    for (rn = firstNum; rn < ropeQuantity; rn++)
+    for (int rn = firstNum; rn < ropeQuantity; rn++)
     {
         // удалить плохие веревки
-        while (rlist[rn]->bMatWorld == 0 || rlist[rn]->eMatWorld == 0)
+        while (rlist[rn]->bMatWorld == nullptr || rlist[rn]->eMatWorld == nullptr)
         {
-            long gn = rlist[rn]->HostGroup;
-            const char *pcModlName = 0;
-            MODEL *pMdl = (MODEL *)api->GetEntityPointer(&gdata[gn].modelEI);
+            const long gn = rlist[rn]->HostGroup;
+            const char *pcModlName = nullptr;
+            auto *pMdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(gdata[gn].modelEI));
             if (pMdl && pMdl->GetNode(0))
                 pcModlName = pMdl->GetNode(0)->GetName();
 
             api->Trace("Bad rope data for rope: (model=%s) (rope num = %d) (begin group=%d, end group=%d)", pcModlName,
                        rlist[rn]->ropeNum, rlist[rn]->bgnum, rlist[rn]->egnum);
             api->Trace("Begin pointer = %d? end pointer = %d", rlist[rn]->bMatWorld, rlist[rn]->eMatWorld);
-            // SE_THROW_MSG("Rope error: Not label");
+            // throw std::exception("Rope error: Not label");
             delete rlist[rn];
             ropeQuantity--;
             if (ropeQuantity)
             {
                 ROPEDATA **oldrlist = rlist;
-                rlist = NEW ROPEDATA *[ropeQuantity];
-                if (rlist == 0)
+                rlist = new ROPEDATA *[ropeQuantity];
+                if (rlist == nullptr)
                     rlist = oldrlist;
                 if (rn > 0)
                     memcpy(rlist, oldrlist, sizeof(ROPEDATA *) * rn);
@@ -992,43 +990,51 @@ void ROPE::SetAdd(int firstNum)
                     delete oldrlist;
             }
             else
+            {
                 delete rlist;
+                rlist = nullptr;
+            }
             if (rn == ropeQuantity)
                 break;
         }
         if (rn == ropeQuantity)
             break;
 
-        rlist[rn]->bUse = true;
-        rlist[rn]->nv = (rlist[rn]->segquant + 1) * ROPE_EDGE + 2;
-        rlist[rn]->nt = (rlist[rn]->segquant + 1) * ROPE_EDGE * 2;
-        rlist[rn]->segnum = 0;
-        if (rlist[rn]->segquant <= 2)
-            rlist[rn]->ropeWave = -ROPE_WAVE * .2f;
-        else
-            rlist[rn]->ropeWave = -ROPE_WAVE;
+        if (rlist != nullptr)
+        {
+            rlist[rn]->bUse = true;
+            rlist[rn]->nv = (rlist[rn]->segquant + 1) * ROPE_EDGE + 2;
+            rlist[rn]->nt = (rlist[rn]->segquant + 1) * ROPE_EDGE * 2;
+            rlist[rn]->segnum = 0;
+            if (rlist[rn]->segquant <= 2)
+                rlist[rn]->ropeWave = -ROPE_WAVE * .2f;
+            else
+                rlist[rn]->ropeWave = -ROPE_WAVE;
+        }
     }
 
-    for (rn = firstNum; rn < ropeQuantity; rn++)
+    if (rlist != nullptr)
     {
-        if (rlist[rn]->segquant > 100 || rlist[rn]->segquant < 0)
-            rlist[rn]->segquant = rlist[rn]->segquant;
+        for (int rn = firstNum; rn < ropeQuantity; rn++)
+        {
+            if (rlist[rn]->segquant > 100 || rlist[rn]->segquant < 0)
+                rlist[rn]->segquant = rlist[rn]->segquant; //~!~
+        }
     }
 }
 
-void ROPE::DoDelete()
+void ROPE::DoSTORM_DELETE()
 {
-    DWORD oldnVert = nVert;
-    int gn = 0, rn = 0;
+    const uint32_t oldnVert = nVert;
 
     // пройтись по удаленным группам и пометить на удаление все принадлежащие им веревки
-    for (gn = 0; gn < groupQuantity; gn++)
+    for (int gn = 0; gn < groupQuantity; gn++)
         if (gdata[gn].bDeleted)
             for (int idx = 0; idx < gdata[gn].ropeQuantity; idx++)
                 rlist[gdata[gn].ropeIdx[idx]]->bDeleted = true;
 
     // удалить удаленные веревки в списке веревок
-    int nrn = 0;
+    int nrn = 0, rn;
     for (rn = 0; rn < ropeQuantity; rn++)
     {
         if (rlist[rn]->bDeleted)
@@ -1045,7 +1051,7 @@ void ROPE::DoDelete()
     ropeQuantity = nrn;
 
     // переделаем список групп
-    int ngn = 0;
+    int ngn = 0, gn;
     nIndx = 0;
     nVert = 0;
     for (gn = 0; gn < groupQuantity; gn++)
@@ -1053,8 +1059,7 @@ void ROPE::DoDelete()
         // если группа удалена, то пропускаем ее
         if (gdata[gn].bDeleted)
         {
-            if (gdata[gn].ropeIdx)
-                delete gdata[gn].ropeIdx;
+            delete gdata[gn].ropeIdx;
             continue;
         }
 
@@ -1082,8 +1087,7 @@ void ROPE::DoDelete()
         // если группа стала пустой, то удаляем ее физически
         if (rq == 0)
         {
-            if (gdata[gn].ropeIdx)
-                delete gdata[gn].ropeIdx;
+            delete gdata[gn].ropeIdx;
             continue;
         }
 
@@ -1091,8 +1095,8 @@ void ROPE::DoDelete()
         if (rq < gdata[gn].ropeQuantity)
         {
             int *oldropeIdx = gdata[gn].ropeIdx;
-            gdata[gn].ropeIdx = NEW int[rq];
-            if (gdata[gn].ropeIdx == 0)
+            gdata[gn].ropeIdx = new int[rq];
+            if (gdata[gn].ropeIdx == nullptr)
                 gdata[gn].ropeIdx = oldropeIdx;
 
             gdata[gn].ropeQuantity = rq;
@@ -1115,10 +1119,9 @@ void ROPE::DoDelete()
         INDEX_BUFFER_RELEASE(RenderService, iBuf);
 
         if (nVert > 0)
-            vBuf = RenderService->CreateVertexBufferManaged(ROPEVERTEX_FORMAT, nVert * sizeof(ROPEVERTEX),
-                                                            D3DUSAGE_WRITEONLY);
+            vBuf = RenderService->CreateVertexBuffer(ROPEVERTEX_FORMAT, nVert * sizeof(ROPEVERTEX), D3DUSAGE_WRITEONLY);
         if (nIndx > 0)
-            iBuf = RenderService->CreateIndexBufferManaged(nIndx * 6);
+            iBuf = RenderService->CreateIndexBuffer(nIndx * 6);
 
         if (nVert > 0 && nIndx > 0)
         {
@@ -1132,12 +1135,12 @@ void ROPE::DoDelete()
     bUse = ropeQuantity > 0;
 }
 
-bool ROPE::IsAbsentRope(ENTITY_ID &mdl_id, int ropenum)
+bool ROPE::IsAbsentRope(entid_t mdl_id, int ropenum)
 {
     bool retVal = true;
 
     // найдем нужную группу
-    int gn = 0;
+    int gn;
     for (gn = 0; gn < groupQuantity; gn++)
         if (gdata[gn].modelEI == mdl_id)
             break;
@@ -1156,9 +1159,9 @@ bool ROPE::IsAbsentRope(ENTITY_ID &mdl_id, int ropenum)
     return retVal;
 }
 
-void ROPE::DoDeleteUntie(ENTITY_ID &mdl_id, NODE *rnod, int gNum)
+void ROPE::DoDeleteUntie(entid_t mdl_id, NODE *rnod, int gNum)
 {
-    int gn = 0;
+    int gn;
     for (gn = 0; gn < groupQuantity; gn++)
         if (gdata[gn].modelEI == mdl_id)
             break;
@@ -1167,7 +1170,7 @@ void ROPE::DoDeleteUntie(ENTITY_ID &mdl_id, NODE *rnod, int gNum)
     {
         for (int ri = 0; ri < gdata[gn].ropeQuantity; ri++)
         {
-            int rn = gdata[gn].ropeIdx[ri];
+            const int rn = gdata[gn].ropeIdx[ri];
             if (((rlist[rn]->bMatWorld == &rnod->glob_mtx) && (rlist[rn]->bgnum == gNum)) ||
                 ((rlist[rn]->eMatWorld == &rnod->glob_mtx) && (rlist[rn]->egnum == gNum)))
             {

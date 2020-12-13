@@ -1,7 +1,8 @@
 #ifndef _ROPE_H_
 #define _ROPE_H_
 
-#include "dx8render.h"
+#include "Entity.h"
+#include "dx9render.h"
 #include "geos.h"
 #include "matrix.h"
 #include "sail_base.h"
@@ -35,7 +36,7 @@ class ROPE : public ROPE_BASE
     float MIN_DEEP_MUL; // минимальное значение коэффициента использования прогиба веревки
     float VAR_DEEP_MUL; // предел изменения коэффициента использования прогиба веревки
     float VAR_ROTATE_ANGL; // амплитуда угла качания веревки
-                           //-------------------------------------
+    //-------------------------------------
 
     D3DMATERIAL9 mat;
 
@@ -47,26 +48,45 @@ class ROPE : public ROPE_BASE
     char *TextureName;
     long texl;
 
-    VDX8RENDER *RenderService;
+    VDX9RENDER *RenderService;
 
   public:
     ROPE();
     ~ROPE();
     // Entity Function
     void SetDevice();
-    bool Init();
-    void Realize(dword Delta_Time);
-    void Execute(dword Delta_Time);
+    bool Init() override;
+    void Realize(uint32_t Delta_Time);
+    void Execute(uint32_t Delta_Time);
+
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
+
     bool CreateState(ENTITY_STATE_GEN *state_gen);
     bool LoadState(ENTITY_STATE *state);
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    uint64_t ProcessMessage(MESSAGE &message) override;
     // Service Function
-    void GetEndPoint(CVECTOR *cv, int ropenum, ENTITY_ID &mdl_id);
-    bool IsAbsentRope(ENTITY_ID &mdl_id, int ropenum);
-    void DoDeleteUntie(ENTITY_ID &mdl_id, NODE *rnod, int gNum);
+    void GetEndPoint(CVECTOR *cv, int ropenum, entid_t mdl_id) override;
+    bool IsAbsentRope(entid_t mdl_id, int ropenum) override;
+    void DoDeleteUntie(entid_t mdl_id, NODE *rnod, int gNum) override;
 
   private:
     ROPEVERTEX *vertBuf;
+
     // список веревок
     struct ROPEDATA
     {
@@ -84,49 +104,52 @@ class ROPE : public ROPE_BASE
         int bgnum, egnum;
         CMatrix *bMatWorld, *eMatWorld;
 
-        DWORD sv, nv, st, nt;
+        uint32_t sv, nv, st, nt;
 
         int ropeNum;
         CVECTOR pos[ROPE_EDGE];
         CVECTOR cv;
-        WORD segnum;
-        WORD segquant;
+        uint16_t segnum;
+        uint16_t segquant;
 
         float ropeWave; // амплитуда колебания веревки
         bool bMakeWave;
     };
+
     int ropeQuantity;
     ROPEDATA **rlist;
+
     // список групп (кораблей) веревок
     struct GROUPDATA
     {
         bool bDeleted;
         int ropeQuantity;
         int *ropeIdx;
-        ENTITY_ID shipEI;
-        ENTITY_ID modelEI;
+        entid_t shipEI;
+        entid_t modelEI;
         CMatrix *pMatWorld;
         long sv, nv;
         long st, nt;
     };
+
     int groupQuantity;
     GROUPDATA *gdata;
 
     void SetVertexes();
-    void SetVertexes(ROPEDATA *pr, float dtime);
-    void SetTextureGrid(ROPEDATA *pr);
-    void SetIndex();
-    void DoDelete();
+    void SetVertexes(ROPEDATA *pr, float dtime) const;
+    void SetTextureGrid(ROPEDATA *pr) const;
+    void SetIndex() const;
+    void DoSTORM_DELETE();
     void AddLabel(GEOS::LABEL &lbl, NODE *nod, bool bDontSage);
     void SetAdd(int firstNum);
     void LoadIni();
     void FirstRun();
 
     long vBuf, iBuf;
-    DWORD nVert, nIndx;
+    uint32_t nVert, nIndx;
 
-    dword execute_tm;
-    dword realize_tm;
+    uint64_t execute_tm;
+    uint64_t realize_tm;
 };
 
 /*API_MODULE_START("rope")

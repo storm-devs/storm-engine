@@ -1,20 +1,21 @@
-#include "flag.h"
-#include "Weather_base.h"
-#include "common_defines.h"
+#include "Flag.h"
+#include "../../shared/sail_msg.h"
+#include "EntityManager.h"
+#include "Weather_Base.h"
+#include "defines.h"
 #include "rigging_define.h"
-#include "sail_msg.h"
-#include <stdio.h>
+#include "ship_base.h"
 
 FLAG::FLAG()
 {
     bUse = false;
-    RenderService = 0;
-    TextureName = 0;
+    RenderService = nullptr;
+    TextureName = nullptr;
     bFirstRun = true;
     texl = -1;
-    flist = 0;
+    flist = nullptr;
     flagQuantity = 0;
-    gdata = 0;
+    gdata = nullptr;
     groupQuantity = 0;
     bYesDeleted = false;
     wFlagLast = 0;
@@ -25,34 +26,34 @@ FLAG::FLAG()
 FLAG::~FLAG()
 {
     TEXTURE_RELEASE(RenderService, texl);
-    PTR_DELETE(TextureName);
-    PTR_DELETE(gdata);
+    STORM_DELETE(TextureName);
+    STORM_DELETE(gdata);
     VERTEX_BUFFER_RELEASE(RenderService, vBuf);
     INDEX_BUFFER_RELEASE(RenderService, iBuf);
 
     while (flagQuantity > 0)
     {
         flagQuantity--;
-        PTR_DELETE(flist[flagQuantity]);
+        STORM_DELETE(flist[flagQuantity]);
     }
-    PTR_DELETE(flist);
+    STORM_DELETE(flist);
 }
 
 bool FLAG::Init()
 {
-    GUARD(FLAG::FLAG())
+    // GUARD(FLAG::FLAG())
     SetDevice();
-    UNGUARD
+    // UNGUARD
     return true;
 }
 
 void FLAG::SetDevice()
 {
     // получить сервис рендера
-    RenderService = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
+    RenderService = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
     if (!RenderService)
     {
-        SE_THROW_MSG("No service: dx8render");
+        throw std::exception("No service: dx9render");
     }
     globalWind.ang.x = 0.f;
     globalWind.ang.y = 0.f;
@@ -72,22 +73,22 @@ bool FLAG::LoadState(ENTITY_STATE *state)
     return true;
 }
 
-void FLAG::Execute(dword Delta_Time)
+void FLAG::Execute(uint32_t Delta_Time)
 {
     if (bFirstRun)
         FirstRun();
     if (bYesDeleted)
-        DoDelete();
+        DoSTORM_DELETE();
     if (bUse)
     {
         //====================================================
         // Если был изменен ини-файл, то считать инфо из него
         WIN32_FIND_DATA wfd;
-        HANDLE h = _CORE_API->fio->_FindFirstFile("resource\\ini\\rigging.ini", &wfd);
+        auto *const h = fio->_FindFirstFile("resource\\ini\\rigging.ini", &wfd);
         if (INVALID_HANDLE_VALUE != h)
         {
-            FILETIME ft_new = wfd.ftLastWriteTime;
-            _CORE_API->fio->_FindClose(h);
+            auto ft_new = wfd.ftLastWriteTime;
+            fio->_FindClose(h);
 
             if (CompareFileTime(&ft_old, &ft_new) != 0)
             {
@@ -96,10 +97,9 @@ void FLAG::Execute(dword Delta_Time)
         }
 
         // получим значение ветра
-        ENTITY_ID ei;
-        if (_CORE_API->FindClass(&ei, "weather", 0))
+        if (const auto ei = EntityManager::GetEntityId("weather"))
         {
-            WEATHER_BASE *wb = (WEATHER_BASE *)_CORE_API->GetEntityPointer(&ei);
+            auto *wb = static_cast<WEATHER_BASE *>(EntityManager::GetEntityPointer(ei));
             globalWind.ang.x = wb->GetFloat(whf_wind_angle);
             globalWind.ang.z = cosf(globalWind.ang.x);
             globalWind.ang.x = sinf(globalWind.ang.x);
@@ -107,27 +107,25 @@ void FLAG::Execute(dword Delta_Time)
         }
 
         // расчет формы флага
-        vertBuf = (FLAGLXVERTEX *)RenderService->LockVertexBuffer(vBuf);
+        vertBuf = static_cast<FLAGLXVERTEX *>(RenderService->LockVertexBuffer(vBuf));
         if (vertBuf)
         {
-            float dt = (float)Delta_Time * 0.02f;
-            for (int fn = 0; fn < flagQuantity; fn++)
+            const auto dt = static_cast<float>(Delta_Time) * 0.02f;
+            for (auto fn = 0; fn < flagQuantity; fn++)
                 DoMove(flist[fn], dt);
             RenderService->UnLockVertexBuffer(vBuf);
         }
     }
 }
 
-void FLAG::Realize(dword Delta_Time)
+void FLAG::Realize(uint32_t Delta_Time)
 {
     if (bUse)
     {
-        DWORD rtm;
+        //_asm rdtsc _asm mov rtm,eax
 
-        _asm rdtsc _asm mov rtm, eax
-
-                                     RenderService->TextureSet(0, texl);
-        DWORD ambient;
+        RenderService->TextureSet(0, texl);
+        uint32_t ambient;
         RenderService->GetRenderState(D3DRS_AMBIENT, &ambient);
         RenderService->SetRenderState(D3DRS_TEXTUREFACTOR, ambient);
         RenderService->SetTransform(D3DTS_WORLD, &rootMatrix);
@@ -135,43 +133,47 @@ void FLAG::Realize(dword Delta_Time)
         // draw nature flag
         if (nVert != 0 && nIndx != 0)
             RenderService->DrawBuffer(vBuf, sizeof(FLAGLXVERTEX), iBuf, 0, nVert, 0, nIndx, "ShipFlag");
-        _asm rdtsc _asm sub eax, rtm _asm mov rtm, eax
+        //_asm rdtsc  _asm sub eax,rtm _asm mov rtm,eax
         // Print info
         // RenderService->Print(0,220,"Flags tics= %d",rtm);
     }
 }
 
-dword _cdecl FLAG::ProcessMessage(MESSAGE &message)
+uint64_t FLAG::ProcessMessage(MESSAGE &message)
 {
-    long code = message.Long();
+    const auto code = message.Long();
 
     switch (code)
     {
+        //**********************
+        // Start Initialisation
+        //----------------------
     case MSG_FLAG_INIT: {
-        ENTITY_ID eidModel = message.EntityID();
-        long nNation = message.Long();
-        ENTITY_ID eidShip = message.EntityID();
+        const auto eidModel = message.EntityID();
+        const auto nNation = message.Long();
+        entid_t eidShip = message.EntityID();
 
         MODEL *host_mdl;
-        host_mdl = (MODEL *)api->GetEntityPointer(&eidModel);
-        if (host_mdl == 0)
+        host_mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(eidModel));
+        if (host_mdl == nullptr)
         {
             api->Trace("Missing INIT message to FLAG: bad MODEL");
         }
 
         if (groupQuantity == 0)
         {
-            gdata = NEW GROUPDATA[1];
-            if (gdata == 0)
-                SE_THROW_MSG("Not memory allocation");
+            gdata = new GROUPDATA[1];
+            if (gdata == nullptr)
+                throw std::exception("Not memory allocation");
+
             groupQuantity = 1;
         }
         else
         {
-            GROUPDATA *oldgdata = gdata;
-            gdata = NEW GROUPDATA[groupQuantity + 1];
-            if (gdata == 0)
-                SE_THROW_MSG("Not memory allocation");
+            auto *const oldgdata = gdata;
+            gdata = new GROUPDATA[groupQuantity + 1];
+            if (gdata == nullptr)
+                throw std::exception("Not memory allocation");
             memcpy(gdata, oldgdata, sizeof(GROUPDATA) * groupQuantity);
             delete oldgdata;
             groupQuantity++;
@@ -182,7 +184,7 @@ dword _cdecl FLAG::ProcessMessage(MESSAGE &message)
         gdata[groupQuantity - 1].ship_id = eidShip;
         gdata[groupQuantity - 1].isShip = true;
         gdata[groupQuantity - 1].char_attributes =
-            ((VAI_OBJBASE *)gdata[groupQuantity - 1].ship_id.pointer)->GetACharacter();
+            ((VAI_OBJBASE *)EntityManager::GetEntityPointer(gdata[groupQuantity - 1].ship_id))->GetACharacter();
 
         NODE *nod;
         GEOS::INFO gi;
@@ -191,7 +193,7 @@ dword _cdecl FLAG::ProcessMessage(MESSAGE &message)
         for (j = 0; true; j++)
         {
             nod = host_mdl->GetNode(j);
-            if (nod == NULL || nod->geo == NULL)
+            if (nod == nullptr || nod->geo == nullptr)
                 break;
 
             nod->geo->GetInfo(gi);
@@ -214,29 +216,29 @@ dword _cdecl FLAG::ProcessMessage(MESSAGE &message)
     break;
 
     case MSG_FLAG_INIT_TOWN: {
-        ENTITY_ID eidModel = message.EntityID();
+        entid_t eidModel = message.EntityID();
         long nNation = message.Long();
 
         MODEL *host_mdl;
-        host_mdl = (MODEL *)api->GetEntityPointer(&eidModel);
-        if (host_mdl == 0)
+        host_mdl = (MODEL *)EntityManager::GetEntityPointer(eidModel);
+        if (host_mdl == nullptr)
         {
             api->Trace("Missing INIT message to FLAG: bad MODEL");
         }
 
         if (groupQuantity == 0)
         {
-            gdata = NEW GROUPDATA[1];
-            if (gdata == 0)
-                SE_THROW_MSG("Not memory allocation");
+            gdata = new GROUPDATA[1];
+            if (gdata == nullptr)
+                throw std::exception("Not memory allocation");
             groupQuantity = 1;
         }
         else
         {
             GROUPDATA *oldgdata = gdata;
-            gdata = NEW GROUPDATA[groupQuantity + 1];
+            gdata = new GROUPDATA[groupQuantity + 1];
             if (gdata == 0)
-                SE_THROW_MSG("Not memory allocation");
+                _THROW("Not memory allocation");
             memcpy(gdata, oldgdata, sizeof(GROUPDATA) * groupQuantity);
             delete oldgdata;
             groupQuantity++;
@@ -253,7 +255,7 @@ dword _cdecl FLAG::ProcessMessage(MESSAGE &message)
         for (j = 0; true; j++)
         {
             nod = host_mdl->GetNode(j);
-            if (nod == NULL || nod->geo == NULL)
+            if (nod == nullptr || nod->geo == nullptr)
                 break;
 
             nod->geo->GetInfo(gi);
@@ -276,13 +278,14 @@ dword _cdecl FLAG::ProcessMessage(MESSAGE &message)
     break;
 
     case MSG_FLAG_DEL_GROUP:
-        GroupDelete(message.EntityID());
+        GroupSTORM_DELETE(message.EntityID());
         break;
 
-    case MSG_FLAG_TO_NEWHOST: {
-        ENTITY_ID oldModelID = message.EntityID();
-        long flagGroupNum = message.Long();
-        ENTITY_ID newModelID = message.EntityID();
+    case MSG_FLAG_TO_NEWHOST: // format "lili" (msg_code,oldmodel_id,groupNum,newmodel_id)
+    {
+        const auto oldModelID = message.EntityID();
+        const auto flagGroupNum = message.Long();
+        const auto newModelID = message.EntityID();
         MoveOtherHost(newModelID, flagGroupNum, oldModelID);
     }
     break;
@@ -290,7 +293,7 @@ dword _cdecl FLAG::ProcessMessage(MESSAGE &message)
     return 0;
 }
 
-void FLAG::SetTextureCoordinate()
+void FLAG::SetTextureCoordinate() const
 {
     if (bUse)
     {
@@ -299,26 +302,26 @@ void FLAG::SetTextureCoordinate()
         float stu, addtu, dtu;
         float stv, addtv, dtv;
 
-        FLAGLXVERTEX *pv = (FLAGLXVERTEX *)RenderService->LockVertexBuffer(vBuf);
+        auto *pv = static_cast<FLAGLXVERTEX *>(RenderService->LockVertexBuffer(vBuf));
         if (pv)
         {
-            for (int fn = 0; fn < flagQuantity; fn++)
+            for (auto fn = 0; fn < flagQuantity; fn++)
             {
-                if (flist[fn] == NULL)
+                if (flist[fn] == nullptr)
                     continue;
                 sIdx = flist[fn]->sv;
-                addtu = 1.f / (float)FlagTextureQuantity;
+                addtu = 1.f / static_cast<float>(FlagTextureQuantity);
                 addtv = 1.f / (float)FlagTextureQuantityRow;
                 stu = addtu * flist[fn]->texNumC;
                 stv = addtv * flist[fn]->texNumR;
                 if (flist[fn]->triangle)
                 {
-                    dtu = addtu / (float)(flist[fn]->vectQuant + 1);
-                    dtv = 0.5f / (float)(flist[fn]->vectQuant + 1);
+                    dtu = addtu / static_cast<float>(flist[fn]->vectQuant + 1);
+                    dtv = .5f / static_cast<float>(flist[fn]->vectQuant + 1);
                 }
                 else
                 {
-                    dtu = addtu / (float)flist[fn]->vectQuant;
+                    dtu = addtu / static_cast<float>(flist[fn]->vectQuant);
                     dtv = 0.f;
                 }
                 for (i = 0; i <= flist[fn]->vectQuant; i++)
@@ -342,26 +345,28 @@ void FLAG::SetTextureCoordinate()
     }
 }
 
-void FLAG::DoMove(FLAGDATA *pr, float delta_time)
+void FLAG::DoMove(FLAGDATA *pr, float delta_time) const
 {
-    if (pr == NULL)
+    if (pr == nullptr)
         return;
     CVECTOR cPos;
     cPos = *pr->pMatWorld * pr->spos;
 
-    float xMul = globalWind.ang.x;
-    float zMul = globalWind.ang.z;
+    auto xMul = globalWind.ang.x;
+    auto zMul = globalWind.ang.z;
 
-    if ((pr->Alfa += (ALFA_DEPEND + ALFA_RAND * (float)rand() / (float)RAND_MAX) * delta_time) > PIm2)
+    if ((pr->Alfa +=
+         (ALFA_DEPEND + ALFA_RAND * static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) * delta_time) > PIm2)
         pr->Alfa = 0.f;
-    if ((pr->Beta += (BETA_DEPEND + BETA_RAND * (float)rand() / (float)RAND_MAX) * delta_time) > PIm2)
+    if ((pr->Beta +=
+         (BETA_DEPEND + BETA_RAND * static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) * delta_time) > PIm2)
         pr->Beta = 0.f;
-    float Alfa = -pr->Alfa;
-    float Beta = -pr->Beta;
-    float sAlfa = sinf(Alfa);
-    float cAlfa = cosf(Alfa);
-    float sBeta = sinf(Beta);
-    float cBeta = cosf(Beta);
+    auto Alfa = -pr->Alfa;
+    auto Beta = -pr->Beta;
+    auto sAlfa = sinf(Alfa);
+    auto cAlfa = cosf(Alfa);
+    auto sBeta = sinf(Beta);
+    auto cBeta = cosf(Beta);
 
     CVECTOR dhVect;
     dhVect = *pr->pMatWorld * pr->dhv - pr->pMatWorld->Pos();
@@ -373,20 +378,20 @@ void FLAG::DoMove(FLAGDATA *pr, float delta_time)
     incrVect.z = FLAGVECTORLEN * zMul;
     incrVect.y = -DOWNVAL;
 
-    float oldSa = sAlfa;
-    float oldCa = cAlfa;
-    float oldSb = sBeta;
-    float oldCb = cBeta;
-    float hIncr = pr->dhv.y;
+    auto oldSa = sAlfa;
+    auto oldCa = cAlfa;
+    auto oldSb = sBeta;
+    auto oldCb = cBeta;
+    auto hIncr = pr->dhv.y;
 
-    float tmp = fAlfaStep + fAlfaMax / (float)pr->vectQuant;
-    float sa = sinf(tmp);
-    float ca = cosf(tmp);
-    tmp = fBetaStep + fBetaMax / (float)pr->vectQuant;
-    float sb = sinf(tmp);
-    float cb = cosf(tmp);
+    auto tmp = fAlfaStep + fAlfaMax / static_cast<float>(pr->vectQuant);
+    auto sa = sinf(tmp);
+    auto ca = cosf(tmp);
+    tmp = fBetaStep + fBetaMax / static_cast<float>(pr->vectQuant);
+    auto sb = sinf(tmp);
+    auto cb = cosf(tmp);
 
-    for (int i = 0; i <= pr->vectQuant; i++)
+    for (auto i = 0; i <= pr->vectQuant; i++)
     {
         tmp = fWindAm * (sAlfa - oldSa);
         dopVect.y = fWindAm * (cAlfa - oldCa);
@@ -418,7 +423,7 @@ void FLAG::DoMove(FLAGDATA *pr, float delta_time)
         }
         else
         {
-            float fT = hIncr * hIncr - tmp * tmp;
+            auto fT = hIncr * hIncr - tmp * tmp;
             if (fT < 0.f)
                 fT = -fT;
             dhVect.y = sqrtf(hIncr * hIncr - tmp * tmp);
@@ -446,7 +451,7 @@ void FLAG::AddLabel(GEOS::LABEL &gl, NODE *nod, bool isSpecialFlag, bool isShip)
     int grNum;
 
     // for fail parameters do not set of data
-    if (nod == 0)
+    if (nod == nullptr)
         return;
 
     if (isSpecialFlag)
@@ -454,9 +459,9 @@ void FLAG::AddLabel(GEOS::LABEL &gl, NODE *nod, bool isSpecialFlag, bool isShip)
     else
         grNum = atoi(&gl.group_name[4]);
 
-    int fn = 0;
+    int fn;
     for (fn = 0; fn < flagQuantity; fn++)
-        if (flist[fn] != NULL && flist[fn]->HostGroup == groupQuantity - 1 && flist[fn]->grNum == grNum &&
+        if (flist[fn] != nullptr && flist[fn]->HostGroup == groupQuantity - 1 && flist[fn]->grNum == grNum &&
             flist[fn]->nod == nod)
         {
             fd = flist[fn];
@@ -465,9 +470,9 @@ void FLAG::AddLabel(GEOS::LABEL &gl, NODE *nod, bool isSpecialFlag, bool isShip)
     if (fn == flagQuantity)
     {
         // create new flag
-        fd = NEW FLAGDATA;
-        if (fd == 0)
-            SE_THROW_MSG("Not memory allocation");
+        fd = new FLAGDATA;
+        if (fd == nullptr)
+            throw std::exception("Not memory allocation");
         PZERO(fd, sizeof(FLAGDATA));
         fd->triangle = true; // this is Vimpel
         fd->isSpecialFlag = isSpecialFlag;
@@ -482,17 +487,17 @@ void FLAG::AddLabel(GEOS::LABEL &gl, NODE *nod, bool isSpecialFlag, bool isShip)
 
         if (flagQuantity == 0)
         {
-            flist = NEW FLAGDATA *[1];
-            if (flist == 0)
-                SE_THROW_MSG("Not memory allocation");
+            flist = new FLAGDATA *[1];
+            if (flist == nullptr)
+                throw std::exception("Not memory allocation");
             flagQuantity = 1;
         }
         else
         {
-            FLAGDATA **oldflist = flist;
-            flist = NEW FLAGDATA * [flagQuantity + 1];
-            if (flist == 0)
-                SE_THROW_MSG("Not memory allocation");
+            auto *const oldflist = flist;
+            flist = new FLAGDATA *[flagQuantity + 1];
+            if (flist == nullptr)
+                throw std::exception("Not memory allocation");
             memcpy(flist, oldflist, sizeof(FLAGDATA *) * flagQuantity);
             delete oldflist;
             flagQuantity++;
@@ -504,7 +509,9 @@ void FLAG::AddLabel(GEOS::LABEL &gl, NODE *nod, bool isSpecialFlag, bool isShip)
     cv.x = gl.m[3][0] + nod->loc_mtx.matrix[3];
     cv.y = gl.m[3][1] + nod->loc_mtx.matrix[7];
     cv.z = gl.m[3][2] + nod->loc_mtx.matrix[11];
-
+    /*cv.x = gl.m[3][0];
+    cv.y = gl.m[3][1];
+    cv.z = gl.m[3][2];*/
     // set flag point
     switch (gl.name[1])
     {
@@ -530,23 +537,23 @@ void FLAG::SetAll()
     SetAdd(0);
 }
 
-void FLAG::SetTreangle()
+void FLAG::SetTreangle() const
 {
     int i, idx;
 
-    WORD *pt = (WORD *)RenderService->LockIndexBuffer(iBuf);
+    auto *pt = static_cast<uint16_t *>(RenderService->LockIndexBuffer(iBuf));
     if (pt)
     {
-        for (int fn = 0; fn < flagQuantity; fn++)
+        for (auto fn = 0; fn < flagQuantity; fn++)
         {
-            if (flist[fn] == NULL)
+            if (flist[fn] == nullptr)
                 continue;
             idx = flist[fn]->st;
-            for (i = 0; i < (int)flist[fn]->nt; i++)
+            for (i = 0; i < static_cast<int>(flist[fn]->nt); i++)
             {
-                pt[idx++] = (WORD)(i + flist[fn]->sv);
-                pt[idx++] = (WORD)(i + flist[fn]->sv + 1);
-                pt[idx++] = (WORD)(i + flist[fn]->sv + 2);
+                pt[idx++] = static_cast<uint16_t>(i + flist[fn]->sv);
+                pt[idx++] = static_cast<uint16_t>(i + flist[fn]->sv + 1);
+                pt[idx++] = static_cast<uint16_t>(i + flist[fn]->sv + 2);
             }
         }
 
@@ -556,41 +563,45 @@ void FLAG::SetTreangle()
 
 void FLAG::LoadIni()
 {
-    GUARD(FLAG::LoadIni());
+    // GUARD(FLAG::LoadIni());
     char section[256];
     char param[256];
 
     INIFILE *ini;
     WIN32_FIND_DATA wfd;
-    HANDLE h = _CORE_API->fio->_FindFirstFile("resource\\ini\\rigging.ini", &wfd);
+    auto *const h = fio->_FindFirstFile("resource\\ini\\rigging.ini", &wfd);
     if (INVALID_HANDLE_VALUE != h)
     {
         ft_old = wfd.ftLastWriteTime;
-        _CORE_API->fio->_FindClose(h);
+        fio->_FindClose(h);
     }
-    ini = _CORE_API->fio->OpenIniFile("resource\\ini\\rigging.ini");
+    ini = fio->OpenIniFile("resource\\ini\\rigging.ini");
     if (!ini)
-        SE_THROW("rigging.ini file not found!");
+        throw std::exception("rigging.ini file not found!");
 
-    sprintf(section, "FLAGS");
+    sprintf_s(section, "FLAGS");
 
+    auto texChange = false;
+    int tmp;
     // load texture parameters
-    ini->ReadString(section, "TextureName", param, sizeof(param) - 1, "flagall_ship_b.tga");
-    if (TextureName != 0)
+    ini->ReadString(section, "TextureName", param, sizeof(param) - 1, "flagall.tga");
+    if (TextureName != nullptr)
     {
         if (strcmp(TextureName, param))
         {
             delete TextureName;
-            NEW char[strlen(param) + 1];
-            strcpy(TextureName, param);
+            const auto len = strlen(param) + 1;
+            TextureName = new char[len];
+            memcpy(TextureName, param, len);
             RenderService->TextureRelease(texl);
             texl = RenderService->TextureCreate(TextureName);
         }
     }
     else
     {
-        TextureName = NEW char[strlen(param) + 1];
-        strcpy(TextureName, param);
+        const auto len = strlen(param) + 1;
+        TextureName = new char[len];
+        memcpy(TextureName, param, len);
     }
 
     FlagTextureQuantity = (int)ini->GetLong(section, "TextureCountColumn", 4);
@@ -629,7 +640,7 @@ void FLAG::LoadIni()
     MinSegmentQuantity = ini->GetLong(section, "MinSegQuantity", 4);
 
     delete ini;
-    UNGUARD
+    // UNGUARD
 }
 
 void FLAG::FirstRun()
@@ -639,6 +650,7 @@ void FLAG::FirstRun()
     else
     {
         SetAll();
+
         ZERO(rootMatrix);
         rootMatrix._11 = rootMatrix._22 = rootMatrix._33 = rootMatrix._44 = 1.f;
     }
@@ -646,10 +658,9 @@ void FLAG::FirstRun()
     if (nVert)
     {
         bUse = true;
-        iBuf = RenderService->CreateIndexBufferManaged(nIndx * 2);
+        iBuf = RenderService->CreateIndexBuffer(nIndx * 2);
         SetTreangle();
-        vBuf = RenderService->CreateVertexBufferManaged(FLAGLXVERTEX_FORMAT, nVert * sizeof(FLAGLXVERTEX),
-                                                        D3DUSAGE_WRITEONLY);
+        vBuf = RenderService->CreateVertexBuffer(FLAGLXVERTEX_FORMAT, nVert * sizeof(FLAGLXVERTEX), D3DUSAGE_WRITEONLY);
         SetTextureCoordinate();
         nIndx /= 3;
     }
@@ -658,10 +669,10 @@ void FLAG::FirstRun()
     wFlagLast = flagQuantity;
 }
 
-void FLAG::GroupDelete(ENTITY_ID m_id)
+void FLAG::GroupSTORM_DELETE(entid_t m_id)
 {
     // найдем группу соответствующую полученной модели
-    for (int gn = 0; gn < groupQuantity; gn++)
+    for (auto gn = 0; gn < groupQuantity; gn++)
         if (gdata[gn].model_id == m_id)
         {
             gdata[gn].bDeleted = true; // пометим ее как удаленную
@@ -670,17 +681,17 @@ void FLAG::GroupDelete(ENTITY_ID m_id)
         }
 }
 
-void FLAG::DoDelete()
+void FLAG::DoSTORM_DELETE()
 {
     // пройтись по всем удаленным группам и удалить содержащиеся в них флаги
-    int ngn = 0;
+    auto ngn = 0;
     nVert = 0;
     nIndx = 0;
-    for (int gn = 0; gn < groupQuantity; gn++)
+    for (auto gn = 0; gn < groupQuantity; gn++)
     {
-        int gs = 0; // число неудаленных флагов в группе
-        for (int fn = 0; fn < flagQuantity; fn++)
-            if (flist[fn] != NULL && flist[fn]->HostGroup == gn)
+        auto gs = 0; // число неудаленных флагов в группе
+        for (auto fn = 0; fn < flagQuantity; fn++)
+            if (flist[fn] != nullptr && flist[fn]->HostGroup == gn)
             {
                 // если флаг помечен удаленным, то удалить физически
                 if (gdata[gn].bDeleted || flist[fn]->bDeleted || flist[fn]->nv <= 0 || flist[fn]->nt <= 0)
@@ -706,15 +717,15 @@ void FLAG::DoDelete()
         ngn++;
     }
 
-    int nfn = 0;
-    for (int fn = 0; fn < flagQuantity; fn++)
+    auto nfn = 0;
+    for (auto fn = 0; fn < flagQuantity; fn++)
     {
-        if (flist[fn] == NULL)
+        if (flist[fn] == nullptr)
             continue;
         if (flist[fn]->bDeleted)
         {
             delete flist[fn];
-            flist[fn] = NULL;
+            flist[fn] = nullptr;
             continue;
         }
 
@@ -728,23 +739,22 @@ void FLAG::DoDelete()
         INDEX_BUFFER_RELEASE(RenderService, iBuf);
         flagQuantity = groupQuantity = 0;
         delete flist;
-        flist = 0;
+        flist = nullptr;
         delete gdata;
-        gdata = 0;
+        gdata = nullptr;
     }
     else if (nfn != flagQuantity || ngn != groupQuantity)
     {
         VERTEX_BUFFER_RELEASE(RenderService, vBuf);
         INDEX_BUFFER_RELEASE(RenderService, iBuf);
-        vBuf = RenderService->CreateVertexBufferManaged(FLAGLXVERTEX_FORMAT, nVert * sizeof(FLAGLXVERTEX),
-                                                        D3DUSAGE_WRITEONLY);
-        iBuf = RenderService->CreateIndexBufferManaged(nIndx * 6);
+        vBuf = RenderService->CreateVertexBuffer(FLAGLXVERTEX_FORMAT, nVert * sizeof(FLAGLXVERTEX), D3DUSAGE_WRITEONLY);
+        iBuf = RenderService->CreateIndexBuffer(nIndx * 6);
 
         flagQuantity = nfn;
         groupQuantity = ngn;
 
-        FLAGDATA **oldflist = flist;
-        flist = NEW FLAGDATA *[flagQuantity];
+        auto *const oldflist = flist;
+        flist = new FLAGDATA *[flagQuantity];
         if (flist)
         {
             memcpy(flist, oldflist, sizeof(FLAGDATA *) * flagQuantity);
@@ -753,8 +763,8 @@ void FLAG::DoDelete()
         else
             flist = oldflist;
 
-        GROUPDATA *oldgdata = gdata;
-        gdata = NEW GROUPDATA[groupQuantity];
+        auto *const oldgdata = gdata;
+        gdata = new GROUPDATA[groupQuantity];
         if (gdata)
         {
             memcpy(gdata, oldgdata, sizeof(GROUPDATA) * groupQuantity);
@@ -777,17 +787,17 @@ void FLAG::SetAdd(int flagNum)
     VDATA *pvdat;
     // set vertex and index buffers
     nIndx *= 3;
-    for (int fn = flagNum; fn < flagQuantity; fn++)
+    for (auto fn = flagNum; fn < flagQuantity; fn++)
     {
-        if (flist[fn] == NULL)
+        if (flist[fn] == nullptr)
             continue;
         CVECTOR bmpos, empos;
         float len;
 
-        CVECTOR p0 = flist[fn]->spos;
-        CVECTOR p1 = flist[fn]->dv;
-        CVECTOR p2 = flist[fn]->dhv;
-        CVECTOR p3 = flist[fn]->ddhv;
+        auto p0 = flist[fn]->spos;
+        auto p1 = flist[fn]->dv;
+        auto p2 = flist[fn]->dhv;
+        auto p3 = flist[fn]->ddhv;
         flist[fn]->spos = bmpos = (p0 + p1) * .5f; // середина начального края флага
         // вычислить середину конечного края флага
         if (flist[fn]->triangle)
@@ -802,15 +812,15 @@ void FLAG::SetAdd(int flagNum)
             if (flagQuantity == 1)
             {
                 delete flist;
-                flist = 0;
+                flist = nullptr;
                 flagQuantity = 0;
             }
             else
             {
-                FLAGDATA **oldflist = flist;
+                auto *const oldflist = flist;
                 flagQuantity--;
-                flist = NEW FLAGDATA *[flagQuantity];
-                if (flist == 0)
+                flist = new FLAGDATA *[flagQuantity];
+                if (flist == nullptr)
                     flist = oldflist;
                 if (fn > 0)
                     memcpy(flist, oldflist, sizeof(FLAGDATA *) * fn);
@@ -836,7 +846,7 @@ void FLAG::SetAdd(int flagNum)
                 pvdat = api->Event("GetRiggingData", "slll", "GetTownFlagTexNum", flist[fn]->triangle,
                                    gdata[flist[fn]->HostGroup].nation, flist[fn]->isSpecialFlag);
             }
-            if (pvdat == null)
+            if (pvdat == nullptr)
             {
                 flist[fn]->texNumC = 0;
                 flist[fn]->texNumR = 0;
@@ -853,15 +863,15 @@ void FLAG::SetAdd(int flagNum)
             if (flist[fn]->vectQuant < MinSegmentQuantity)
                 flist[fn]->vectQuant = MinSegmentQuantity;
             // вычислить приращение флага
-            flist[fn]->dv = (empos - bmpos) / (float)flist[fn]->vectQuant;
+            flist[fn]->dv = (empos - bmpos) / static_cast<float>(flist[fn]->vectQuant);
             if (flist[fn]->triangle)
-                flist[fn]->ddhv = (p2 - p0 - empos + bmpos) / (float)(flist[fn]->vectQuant);
+                flist[fn]->ddhv = (p2 - p0 - empos + bmpos) / static_cast<float>(flist[fn]->vectQuant);
             else
-                flist[fn]->ddhv = (p2 - p0 - empos + bmpos) / (float)(flist[fn]->vectQuant + 1);
+                flist[fn]->ddhv = (p2 - p0 - empos + bmpos) / static_cast<float>(flist[fn]->vectQuant + 1);
 
             flist[fn]->sv = nVert;
             flist[fn]->st = nIndx;
-            flist[fn]->vectQuant;
+            flist[fn]->vectQuant; //~!~
             if (flist[fn]->triangle)
             {
                 nVert += (flist[fn]->nv = flist[fn]->vectQuant * 2 + 3);
@@ -879,10 +889,10 @@ void FLAG::SetAdd(int flagNum)
     INDEX_BUFFER_RELEASE(RenderService, iBuf);
 }
 
-void FLAG::MoveOtherHost(ENTITY_ID newm_id, long flagNum, ENTITY_ID oldm_id)
+void FLAG::MoveOtherHost(entid_t newm_id, long flagNum, entid_t oldm_id)
 {
-    int oldgn = 0, newgn = 0;
     // найдем старую группу
+    int oldgn;
     for (oldgn = 0; oldgn < groupQuantity; oldgn++)
         if (gdata[oldgn].model_id == oldm_id)
             break;
@@ -891,16 +901,17 @@ void FLAG::MoveOtherHost(ENTITY_ID newm_id, long flagNum, ENTITY_ID oldm_id)
         return;
 
     // найдем новую группу
+    int newgn;
     for (newgn = 0; newgn < groupQuantity; newgn++)
         if (gdata[newgn].model_id == newm_id)
             break;
     // если нет новой группы, то создаем ее
     if (newgn == groupQuantity)
     {
-        GROUPDATA *oldgdata = gdata;
-        gdata = NEW GROUPDATA[groupQuantity + 1];
-        if (gdata == 0)
-            SE_THROW_MSG("Not memory allocation");
+        auto *const oldgdata = gdata;
+        gdata = new GROUPDATA[groupQuantity + 1];
+        if (gdata == nullptr)
+            throw std::exception("Not memory allocation");
         memcpy(gdata, oldgdata, sizeof(GROUPDATA) * groupQuantity);
         delete oldgdata;
         groupQuantity++;
@@ -909,18 +920,12 @@ void FLAG::MoveOtherHost(ENTITY_ID newm_id, long flagNum, ENTITY_ID oldm_id)
         gdata[newgn].bDeleted = false;
         gdata[newgn].model_id = newm_id;
         gdata[newgn].nation = gdata[oldgn].nation;
-
-        if (gdata[oldgn].isShip)
-        {
-            gdata[newgn].ship_id = gdata[oldgn].ship_id;
-            gdata[newgn].char_attributes = gdata[oldgn].char_attributes;
-        }
     }
 
-    int fn = 0;
     // найдем нужный нам флаг
+    int fn;
     for (fn = 0; fn < flagQuantity; fn++)
-        if (flist[fn] != NULL && flist[fn]->grNum == flagNum && flist[fn]->HostGroup == oldgn)
+        if (flist[fn] != nullptr && flist[fn]->grNum == flagNum && flist[fn]->HostGroup == oldgn)
             break;
     // переназначим его хозяина на нового хозяина
     if (fn < flagQuantity)

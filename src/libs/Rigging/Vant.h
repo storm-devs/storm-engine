@@ -1,9 +1,9 @@
 #ifndef _VANT_H_
 #define _VANT_H_
 
-#include "dx8render.h"
+#include "Matrix.h"
+#include "dx9render.h"
 #include "geos.h"
-#include "matrix.h"
 #include "vmodule_api.h"
 
 class NODE;
@@ -18,24 +18,39 @@ struct VANTVERTEX
     float tu, tv;
 };
 
-class VANT_BASE : public ENTITY
+class VANT_BASE : public Entity
 {
 
   public:
-    VDX8RENDER *RenderService;
-
     VANT_BASE();
     virtual ~VANT_BASE();
-
     void SetDevice();
-    bool Init();
-    void Realize(dword Delta_Time);
-    void Execute(dword Delta_Time);
+    bool Init() override;
+    void Realize(uint32_t Delta_Time);
+    void Execute(uint32_t Delta_Time);
     bool CreateState(ENTITY_STATE_GEN *state_gen);
     bool LoadState(ENTITY_STATE *state);
-    dword _cdecl ProcessMessage(MESSAGE &message);
-
+    uint64_t ProcessMessage(MESSAGE &message) override;
     virtual void LoadIni() = 0;
+
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+                LostRender(delta); break;
+            case Stage::restore_render:
+                RestoreRender(delta); break;*/
+        }
+    }
+
+    VDX9RENDER *RenderService;
 
   protected:
     // параметры получаемые из INI-файла //
@@ -77,7 +92,7 @@ class VANT_BASE : public ENTITY
         bool bDeleted;
         CVECTOR pUp, pLeft, pRight;
         CMatrix *pUpMatWorld, *pDownMatWorld;
-        DWORD sv, nv, st, nt;
+        uint32_t sv, nv, st, nt;
 
         int vantNum;
         CVECTOR pos[VANT_EDGE];
@@ -85,6 +100,7 @@ class VANT_BASE : public ENTITY
         CVECTOR pUpOld, pLeftOld, pUpStart, pLeftStart;
         int HostGroup;
     };
+
     int vantQuantity;
     VANTDATA **vlist;
 
@@ -97,26 +113,27 @@ class VANT_BASE : public ENTITY
         long sIndx, nIndx;
 
         CMatrix *pMatWorld;
-        ENTITY_ID model_id;
-        ENTITY_ID shipEI;
+        entid_t model_id;
+        entid_t shipEI;
     };
+
     int groupQuantity;
     GROUPDATA *gdata;
 
-    void SetVertexes();
-    void SetIndex();
+    void SetVertexes() const;
+    void SetIndex() const;
     void AddLabel(GEOS::LABEL &lbl, NODE *nod);
     void SetAll();
     void SetAdd(int firstNum);
     void doMove();
     bool VectCmp(CVECTOR v1, CVECTOR v2, float minCmpVal);
     void FirstRun();
-    void DoDelete();
+    void DoSTORM_DELETE();
 
     VANTVERTEX *vertBuf;
 
     long vBuf, iBuf;
-    DWORD nVert, nIndx;
+    uint32_t nVert, nIndx;
 };
 
 class VANT : public VANT_BASE

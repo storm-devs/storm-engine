@@ -1,23 +1,22 @@
 #include "Vant.h"
-#include "common_defines.h"
-#include "model.h"
+#include "../../shared/sail_msg.h"
+#include "EntityManager.h"
+#include "defines.h"
 #include "rigging_define.h"
-#include "sail_msg.h"
 #include "ship_base.h"
-#include <stdio.h>
 
 VANT_BASE::VANT_BASE()
 {
     bUse = false;
-    RenderService = 0;
-    TextureName = 0;
+    RenderService = nullptr;
+    TextureName = nullptr;
     texl = -1;
     bRunFirstTime = true;
     bYesDeleted = false;
     wVantLast = 0;
-    gdata = 0;
+    gdata = nullptr;
     groupQuantity = 0;
-    vlist = 0;
+    vlist = nullptr;
     vantQuantity = 0;
     vBuf = iBuf = -1;
     nVert = nIndx = 0;
@@ -27,19 +26,19 @@ VANT_BASE::VANT_BASE()
 VANT_BASE::~VANT_BASE()
 {
     TEXTURE_RELEASE(RenderService, texl);
-    PTR_DELETE(TextureName);
+    STORM_DELETE(TextureName);
     while (groupQuantity > 0)
     {
         groupQuantity--;
-        PTR_DELETE(gdata[groupQuantity].vantIdx);
+        STORM_DELETE(gdata[groupQuantity].vantIdx);
     }
-    PTR_DELETE(gdata);
+    STORM_DELETE(gdata);
     while (vantQuantity > 0)
     {
         vantQuantity--;
-        PTR_DELETE(vlist[vantQuantity]);
+        STORM_DELETE(vlist[vantQuantity]);
     }
-    PTR_DELETE(vlist);
+    STORM_DELETE(vlist);
     VERTEX_BUFFER_RELEASE(RenderService, vBuf);
     INDEX_BUFFER_RELEASE(RenderService, iBuf);
     nVert = nIndx = 0;
@@ -47,19 +46,19 @@ VANT_BASE::~VANT_BASE()
 
 bool VANT_BASE::Init()
 {
-    GUARD(VANT_BASE::VANT_BASE())
+    // GUARD(VANT::VANT())
     SetDevice();
-    UNGUARD
+    // UNGUARD
     return true;
 }
 
 void VANT_BASE::SetDevice()
 {
     // получить сервис рендера
-    RenderService = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
+    RenderService = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
     if (!RenderService)
     {
-        SE_THROW_MSG("No service: dx8render");
+        throw std::exception("No service: dx9render");
     }
 
     LoadIni();
@@ -78,46 +77,45 @@ bool VANT_BASE::LoadState(ENTITY_STATE *state)
     return true;
 }
 
-void VANT_BASE::Execute(dword Delta_Time)
+void VANT_BASE::Execute(uint32_t Delta_Time)
 {
     if (bRunFirstTime)
         FirstRun();
     if (bYesDeleted)
-        DoDelete();
+        DoSTORM_DELETE();
 
     if (bUse)
     {
         //====================================================
         // Если был изменен ини-файл, то считать инфо из него
         WIN32_FIND_DATA wfd;
-        HANDLE h = _CORE_API->fio->_FindFirstFile("resource\\ini\\rigging.ini", &wfd);
+        auto *const h = fio->_FindFirstFile("resource\\ini\\rigging.ini", &wfd);
         if (INVALID_HANDLE_VALUE != h)
         {
-            FILETIME ft_new = wfd.ftLastWriteTime;
-            _CORE_API->fio->_FindClose(h);
+            auto ft_new = wfd.ftLastWriteTime;
+            fio->_FindClose(h);
 
             if (CompareFileTime(&ft_old, &ft_new) != 0)
             {
                 LoadIni();
             }
         }
+
         doMove();
     }
 }
 
-void VANT_BASE::Realize(dword Delta_Time)
+void VANT_BASE::Realize(uint32_t Delta_Time)
 {
     if (bUse)
     {
-        DWORD rtm;
+        // _asm rdtsc _asm mov rtm,eax
 
-        _asm rdtsc _asm mov rtm, eax
-
-                                     RenderService->TextureSet(0, texl);
-        DWORD ambient;
+        RenderService->TextureSet(0, texl);
+        uint32_t ambient;
         RenderService->GetRenderState(D3DRS_AMBIENT, &ambient);
         RenderService->SetRenderState(D3DRS_TEXTUREFACTOR, ambient);
-        bool bDraw = RenderService->TechniqueExecuteStart("ShipVant");
+        const auto bDraw = RenderService->TechniqueExecuteStart("ShipVant");
         if (!bDraw)
             return;
 
@@ -126,45 +124,45 @@ void VANT_BASE::Realize(dword Delta_Time)
         float pr;
         RenderService->GetCamera(cp, ca, pr);
         pr = tanf(pr * .5f);
-        for (int gn = 0; gn < groupQuantity; gn++)
+        for (auto gn = 0; gn < groupQuantity; gn++)
             if (gdata[gn].nIndx && nVert && (~(gdata[gn].pMatWorld->Pos() - cp)) * pr < fVantMaxDist)
             {
-                ((SHIP_BASE *)gdata[gn].shipEI.pointer)->SetLightAndFog(true);
-                ((SHIP_BASE *)gdata[gn].shipEI.pointer)->SetLights();
+                static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(gdata[gn].shipEI))->SetLightAndFog(true);
+                static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(gdata[gn].shipEI))->SetLights();
 
                 RenderService->SetTransform(D3DTS_WORLD, (D3DXMATRIX *)gdata[gn].pMatWorld);
                 RenderService->DrawBuffer(vBuf, sizeof(VANTVERTEX), iBuf, 0, nVert, gdata[gn].sIndx, gdata[gn].nIndx);
 
-                ((SHIP_BASE *)gdata[gn].shipEI.pointer)->UnSetLights();
-                ((SHIP_BASE *)gdata[gn].shipEI.pointer)->RestoreLightAndFog();
-                _asm rdtsc _asm sub eax, rtm _asm mov rtm, eax
+                static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(gdata[gn].shipEI))->UnSetLights();
+                static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(gdata[gn].shipEI))->RestoreLightAndFog();
+                //_asm rdtsc  _asm sub eax,rtm _asm mov rtm,eax
             }
         while (RenderService->TechniqueExecuteNext())
         {
-        };
+        }
         // RenderService->Print(0,200,"Vants vert=%d, tr=%d, time=%d",nVert,nIndx,rtm);
     }
 }
 
-dword _cdecl VANT_BASE::ProcessMessage(MESSAGE &message)
+uint64_t VANT_BASE::ProcessMessage(MESSAGE &message)
 {
-    long code = message.Long();
+    const auto code = message.Long();
 
     switch (code)
     {
     case MSG_VANT_INIT: {
-        int oldvantQuantity = vantQuantity;
-        if (gdata == 0)
+        const auto oldvantQuantity = vantQuantity;
+        if (gdata == nullptr)
         {
-            if ((gdata = NEW GROUPDATA[1]) == 0)
-                SE_THROW_MSG("Not memory allocation");
+            if ((gdata = new GROUPDATA[1]) == nullptr)
+                throw std::exception("Not memory allocation");
             groupQuantity = 1;
         }
         else
         {
-            GROUPDATA *oldgdata = gdata;
-            if ((gdata = NEW GROUPDATA[groupQuantity + 1]) == 0)
-                SE_THROW_MSG("Not memory allocation");
+            auto *const oldgdata = gdata;
+            if ((gdata = new GROUPDATA[groupQuantity + 1]) == nullptr)
+                throw std::exception("Not memory allocation");
             memcpy(gdata, oldgdata, sizeof(GROUPDATA) * groupQuantity);
             delete oldgdata;
             groupQuantity++;
@@ -173,17 +171,15 @@ dword _cdecl VANT_BASE::ProcessMessage(MESSAGE &message)
         gdata[groupQuantity - 1].shipEI = message.EntityID();
         gdata[groupQuantity - 1].model_id = message.EntityID();
         MODEL *mdl;
-        mdl = (MODEL *)_CORE_API->GetEntityPointer(&gdata[groupQuantity - 1].model_id);
-        if (mdl == 0)
-            SE_THROW_MSG("Bad Vant INIT");
+        mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(gdata[groupQuantity - 1].model_id));
+        if (mdl == nullptr)
+            throw std::exception("Bad Vant INIT");
 
         gdata[groupQuantity - 1].pMatWorld = &mdl->mtx;
-
         NODE *nod;
         GEOS::INFO gi;
         GEOS::LABEL gl;
         int i, j;
-
         for (j = 0; j < 1000; j++)
         {
             nod = mdl->GetNode(j);
@@ -217,15 +213,15 @@ dword _cdecl VANT_BASE::ProcessMessage(MESSAGE &message)
             if (groupQuantity == 1)
             {
                 delete gdata;
-                gdata = 0;
+                gdata = nullptr;
                 groupQuantity = 0;
             }
             else
             {
                 groupQuantity--;
-                GROUPDATA *oldgdata = gdata;
-                gdata = NEW GROUPDATA[groupQuantity];
-                if (gdata == 0)
+                auto *const oldgdata = gdata;
+                gdata = new GROUPDATA[groupQuantity];
+                if (gdata == nullptr)
                     gdata = oldgdata;
                 else
                 {
@@ -240,19 +236,20 @@ dword _cdecl VANT_BASE::ProcessMessage(MESSAGE &message)
         SetAdd(oldvantQuantity);
 
         nIndx *= 3;
+        //			if(gdata[groupQuantity-1].vantIdx) delete gdata[groupQuantity-1].vantIdx;
         gdata[groupQuantity - 1].sIndx = nIndx;
         gdata[groupQuantity - 1].nIndx = 0;
         gdata[groupQuantity - 1].sVert = nVert;
         gdata[groupQuantity - 1].nVert = 0;
 
         gdata[groupQuantity - 1].vantQuantity = vantQuantity - oldvantQuantity;
-        gdata[groupQuantity - 1].vantIdx = NEW int[vantQuantity - oldvantQuantity];
-        if (gdata[groupQuantity - 1].vantIdx == NULL)
+        gdata[groupQuantity - 1].vantIdx = new int[vantQuantity - oldvantQuantity];
+        if (gdata[groupQuantity - 1].vantIdx == nullptr)
         {
-            SE_THROW_MSG("allocate memory error");
+            throw std::exception("allocate memory error");
         }
 
-        int idx = 0;
+        auto idx = 0;
         for (int vn = oldvantQuantity; vn < vantQuantity; vn++)
         {
             gdata[groupQuantity - 1].vantIdx[idx++] = vn;
@@ -269,23 +266,21 @@ dword _cdecl VANT_BASE::ProcessMessage(MESSAGE &message)
     break;
 
     case MSG_VANT_DEL_GROUP: {
-        ENTITY_ID tmp_id = message.EntityID();
+        const entid_t tmp_id = message.EntityID();
         for (int i = 0; i < groupQuantity; i++)
-        {
             if (gdata[i].model_id == tmp_id)
             {
                 gdata[i].bDeleted = true;
                 bYesDeleted = true;
                 break;
             }
-        }
     }
     break;
 
     case MSG_VANT_DEL_MAST: {
-        ENTITY_ID tmp_id = message.EntityID();
+        const entid_t tmp_id = message.EntityID();
         NODE *mastNode = (NODE *)message.Pointer();
-        if (mastNode == NULL)
+        if (mastNode == nullptr)
             break;
         for (int i = 0; i < groupQuantity; i++)
             if (gdata[i].model_id == tmp_id)
@@ -301,15 +296,16 @@ dword _cdecl VANT_BASE::ProcessMessage(MESSAGE &message)
     }
     break;
     }
+
     return 0;
 }
 
-void VANT_BASE::SetIndex()
+void VANT_BASE::SetIndex() const
 {
     int i, j;
     int ti, vi;
 
-    WORD *pt = (WORD *)RenderService->LockIndexBuffer(iBuf);
+    uint16_t *pt = static_cast<uint16_t *>(RenderService->LockIndexBuffer(iBuf));
     if (pt)
     {
         for (int vn = 0; vn < vantQuantity; vn++)
@@ -364,25 +360,34 @@ void VANT_BASE::SetIndex()
                 {
                     pt[ti] = pt[ti + 3] = vi + j;
                     pt[ti + 2] = dIdx + j;
+                    //                    if(j<(VANT_EDGE-1))
+                    //                    {
                     pt[ti + 4] = vi + j + 1;
                     pt[ti + 1] = pt[ti + 5] = dIdx + j + 1;
+                    //                    }
+                    /*                    else
+                                        {
+                                            pt[ti+4]=vi;
+                                            pt[ti+1]=pt[ti+5]=dIdx;
+                                        }*/
                     ti += 6;
                 }
                 dIdx += VANT_EDGE + 1;
                 vi += VANT_EDGE + 1;
             }
         }
+
         RenderService->UnLockIndexBuffer(iBuf);
     }
 }
 
-void VANT_BASE::SetVertexes()
+void VANT_BASE::SetVertexes() const
 {
     int j, i;
-    DWORD iv;
+    uint32_t iv;
     CVECTOR uPos, lPos, rPos;
 
-    VANTVERTEX *pv = (VANTVERTEX *)RenderService->LockVertexBuffer(vBuf);
+    auto *pv = static_cast<VANTVERTEX *>(RenderService->LockVertexBuffer(vBuf));
     if (pv)
     {
         for (int vn = 0; vn < vantQuantity; vn++)
@@ -417,8 +422,8 @@ void VANT_BASE::SetVertexes()
             pv[iv + 2].tu = treangXr;
             pv[iv + 2].tv = treangYd;
             //
-            float fh = sqrtf(~((rPos + lPos) * .5f - uPos));
-            float ftmp = (float)(int)(fh / hRopeHeight + .5f);
+            const float fh = sqrtf(~((rPos + lPos) * .5f - uPos));
+            auto ftmp = static_cast<float>(static_cast<int>(fh / hRopeHeight + .5f));
             pv[iv + 3].tu = ropeXl;
             pv[iv + 3].tv = 0.f;
             pv[iv + 4].tu = ropeXr;
@@ -447,8 +452,8 @@ void VANT_BASE::SetVertexes()
 
             // Set up ropes points
             CVECTOR sp = uPos - horzDirect * (.5f * upWidth) + vertDirect * upHeight;
-            CVECTOR dp = horzDirect * (upWidth / (float)(ROPE_QUANT - 1));
-            float dtmp = (vRopeXr - vRopeXl) / (float)VANT_EDGE;
+            CVECTOR dp = horzDirect * (upWidth / static_cast<float>(ROPE_QUANT - 1));
+            const float dtmp = (vRopeXr - vRopeXl) / static_cast<float>(VANT_EDGE);
             for (i = 0; i < ROPE_QUANT; i++)
             {
                 for (j = 0; j <= VANT_EDGE; j++)
@@ -457,7 +462,7 @@ void VANT_BASE::SetVertexes()
                         pv[iv + j].pos = sp + vlist[vn]->pos[0];
                     else
                         pv[iv + j].pos = sp + vlist[vn]->pos[j];
-                    pv[iv + j].tu = vRopeXl + dtmp * (float)j;
+                    pv[iv + j].tu = vRopeXl + dtmp * static_cast<float>(j);
                     pv[iv + j].tv = 0.f;
                 }
                 iv += VANT_EDGE + 1;
@@ -466,7 +471,7 @@ void VANT_BASE::SetVertexes()
 
             // Set down ropes points
             sp = lPos;
-            dp = (rPos - lPos) / (float)(ROPE_QUANT - 1);
+            dp = (rPos - lPos) / static_cast<float>(ROPE_QUANT - 1);
             ftmp = fh / vRopeHeight;
             for (i = 0; i < ROPE_QUANT; i++)
             {
@@ -476,13 +481,14 @@ void VANT_BASE::SetVertexes()
                         pv[iv + j].pos = sp + vlist[vn]->pos[0];
                     else
                         pv[iv + j].pos = sp + vlist[vn]->pos[j];
-                    pv[iv + j].tu = vRopeXl + dtmp * (float)j;
+                    pv[iv + j].tu = vRopeXl + dtmp * static_cast<float>(j);
                     pv[iv + j].tv = ftmp;
                 }
                 iv += VANT_EDGE + 1;
                 sp += dp;
             }
         }
+
         RenderService->UnLockVertexBuffer(vBuf);
     }
 }
@@ -492,7 +498,7 @@ void VANT_BASE::AddLabel(GEOS::LABEL &lbl, NODE *nod)
     VANTDATA *vd;
     int vantNum;
 
-    if (nod == 0)
+    if (nod == nullptr)
         return;
 
     vantNum = atoi(&lbl.name[4]);
@@ -507,54 +513,53 @@ void VANT_BASE::AddLabel(GEOS::LABEL &lbl, NODE *nod)
     if (vn == vantQuantity)
     {
         //создаем новый вант
-        vd = NEW VANTDATA;
-        if (vd == 0)
-            SE_THROW_MSG("Not memory allocate");
+        vd = new VANTDATA;
+        if (vd == nullptr)
+            throw std::exception("Not memory allocate");
         PZERO(vd, sizeof(VANTDATA));
         vd->bDeleted = false;
         vd->vantNum = vantNum;
-        vd->pUpMatWorld = vd->pDownMatWorld = 0;
+        vd->pUpMatWorld = vd->pDownMatWorld = nullptr;
         vd->HostGroup = groupQuantity - 1;
 
         if (vantQuantity == 0)
         {
-            vlist = NEW VANTDATA *[1];
+            vlist = new VANTDATA *[1];
             vantQuantity = 1;
         }
         else
         {
             VANTDATA **oldvlist = vlist;
-            vlist = NEW VANTDATA * [vantQuantity + 1];
-            if (vlist == 0)
-                SE_THROW_MSG("Not memory allocate");
+            vlist = new VANTDATA *[vantQuantity + 1];
+            if (vlist == nullptr)
+                throw std::exception("Not memory allocate");
             memcpy(vlist, oldvlist, sizeof(VANTDATA *) * vantQuantity);
             delete oldvlist;
             vantQuantity++;
         }
+
         vlist[vantQuantity - 1] = vd;
     }
 
     switch (lbl.name[5])
     {
     case 'u': // up edge of vant
-        vd->pUp = CVECTOR(lbl.m[3][0], lbl.m[3][1], lbl.m[3][2]) -
-                  gdata[groupQuantity - 1].pMatWorld->Pos(); // + nod->glob_mtx.Pos();
-        vd->pUpMatWorld = &nod->glob_mtx;                    // get host matrix
+        vd->pUp = CVECTOR(lbl.m[3][0], lbl.m[3][1], lbl.m[3][2]) - gdata[groupQuantity - 1].pMatWorld->Pos();
+        // + nod->glob_mtx.Pos();
+        vd->pUpMatWorld = &nod->glob_mtx; // get host matrix
         break;
-
     case 'l': // left edge of vant
-        vd->pLeft = CVECTOR(lbl.m[3][0], lbl.m[3][1], lbl.m[3][2]) -
-                    gdata[groupQuantity - 1].pMatWorld->Pos(); // + nod->glob_mtx.Pos();
-        if (vd->pDownMatWorld == 0)
+        vd->pLeft = CVECTOR(lbl.m[3][0], lbl.m[3][1], lbl.m[3][2]) - gdata[groupQuantity - 1].pMatWorld->Pos();
+        // + nod->glob_mtx.Pos();
+        if (vd->pDownMatWorld == nullptr)
             vd->pDownMatWorld = &nod->glob_mtx; // get host matrix
         else if (vd->pDownMatWorld != &nod->glob_mtx)
             vd->pDownMatWorld->MulToInv(nod->glob_mtx * vd->pLeft, vd->pLeft);
         break;
-
     case 'r': // right edge of vant
-        vd->pRight = CVECTOR(lbl.m[3][0], lbl.m[3][1], lbl.m[3][2]) -
-                     gdata[groupQuantity - 1].pMatWorld->Pos(); // + nod->glob_mtx.Pos();
-        if (vd->pDownMatWorld == 0)
+        vd->pRight = CVECTOR(lbl.m[3][0], lbl.m[3][1], lbl.m[3][2]) - gdata[groupQuantity - 1].pMatWorld->Pos();
+        // + nod->glob_mtx.Pos();
+        if (vd->pDownMatWorld == nullptr)
             vd->pDownMatWorld = &nod->glob_mtx; // get host matrix
         else if (vd->pDownMatWorld != &nod->glob_mtx)
             vd->pDownMatWorld->MulToInv(nod->glob_mtx * vd->pLeft, vd->pLeft);
@@ -567,7 +572,7 @@ void VANT_BASE::SetAll()
     // set vertex and index buffers
     for (int vn = 0; vn < vantQuantity; vn++)
     {
-        while (1)
+        while (true)
         {
             if (!gdata[vlist[vn]->HostGroup].bDeleted)
                 if (vlist[vn]->pUpMatWorld && vlist[vn]->pDownMatWorld)
@@ -578,7 +583,7 @@ void VANT_BASE::SetAll()
             if (vantQuantity > 0)
             {
                 VANTDATA **oldvlist = vlist;
-                vlist = NEW VANTDATA *[vantQuantity];
+                vlist = new VANTDATA *[vantQuantity];
                 if (vlist)
                 {
                     if (vn > 0)
@@ -593,7 +598,7 @@ void VANT_BASE::SetAll()
             else
             {
                 delete vlist;
-                vlist = 0;
+                vlist = nullptr;
             }
             if (vn == vantQuantity)
                 break;
@@ -607,8 +612,9 @@ void VANT_BASE::SetAll()
         float ca, sa;
         for (int i = 0; i < VANT_EDGE; i++)
         {
-            ca = cosf((float)i / (float)VANT_EDGE * 2.f * PI);
-            sa = sinf((float)i / (float)VANT_EDGE * 2.f * PI);
+            ca = cosf(static_cast<float>(i) / static_cast<float>(VANT_EDGE) * 2.f * PI);
+            sa = sinf(static_cast<float>(i) / static_cast<float>(VANT_EDGE) * 2.f * PI);
+            // tmat.MulToInvNorm(CVECTOR(ROPE_WIDTH/2.f*ca,ROPE_WIDTH/2.f*sa,0.f),vlist[vn]->pos[i]);
             vlist[vn]->pos[i] = CVECTOR(ROPE_WIDTH / 2.f * ca, 0.f, ROPE_WIDTH / 2.f * sa);
         }
 
@@ -617,13 +623,265 @@ void VANT_BASE::SetAll()
     }
 }
 
+void VANT::LoadIni()
+{
+    // GUARD(VANT::LoadIni());
+    char section[256];
+    char param[256];
+
+    INIFILE *ini;
+    WIN32_FIND_DATA wfd;
+    const HANDLE h = fio->_FindFirstFile("resource\\ini\\rigging.ini", &wfd);
+    if (INVALID_HANDLE_VALUE != h)
+    {
+        ft_old = wfd.ftLastWriteTime;
+        fio->_FindClose(h);
+    }
+    ini = fio->OpenIniFile("resource\\ini\\rigging.ini");
+    if (!ini)
+        throw std::exception("rigging.ini file not found!");
+
+    sprintf_s(section, "VANTS");
+
+    // имя текстуры
+    ini->ReadString(section, "TextureName", param, sizeof(param) - 1, "vant.tga");
+    if (texl != -1)
+    {
+        if (strcmp(TextureName, param))
+            if (RenderService)
+            {
+                delete TextureName;
+                const auto len = strlen(param) + 1;
+                TextureName = new char[len];
+                memcpy(TextureName, param, len);
+                RenderService->TextureRelease(texl);
+                texl = RenderService->TextureCreate(TextureName);
+            }
+    }
+    else
+    {
+        const auto len = strlen(param) + 1;
+        TextureName = new char[len];
+        memcpy(TextureName, param, len);
+    }
+    // толщина веревки
+    ROPE_WIDTH = ini->GetFloat(section, "fWidth", 0.1f);
+    // количество веревок
+    ROPE_QUANT = static_cast<int>(ini->GetLong(section, "fRopeQuant", 5));
+    if (ROPE_QUANT < 2)
+        ROPE_QUANT = 2;
+    // координаты текстуры горизонтальной веревки xBeg
+    ropeXl = ini->GetFloat(section, "fHRopeXbeg", 0.5f);
+    ropeXr = ini->GetFloat(section, "fHRopeXend", 1.f);
+    // координаты текстуры треугольника
+    treangXl = ini->GetFloat(section, "fTreangXbeg", 0.f);
+    treangXr = ini->GetFloat(section, "fTreangXend", 0.5f);
+    treangYu = ini->GetFloat(section, "fTreangYbeg", 0.f);
+    treangYd = ini->GetFloat(section, "fTreangYend", 1.f);
+    // координаты текстуры балки
+    balkYu = ini->GetFloat(section, "fBalkYbeg", 0.6f);
+    balkYd = ini->GetFloat(section, "fBalkYend", 1.f);
+    // координаты текстуры вертикальной веревки
+    vRopeXl = ini->GetFloat(section, "fVRopeXbeg", 0.f);
+    vRopeXr = ini->GetFloat(section, "fVRopeXend", 0.1f);
+    // ширина верхнего треугольника
+    upWidth = ini->GetFloat(section, "fTreangWidth", 1.f);
+    // высота верхнего треугольника
+    upHeight = ini->GetFloat(section, "fTreangHeight", 1.f);
+    // высота вертикальной веревки
+    vRopeHeight = ini->GetFloat(section, "fVRopeHeight", 1.f);
+    // высота горизонтальной веревки
+    hRopeHeight = ini->GetFloat(section, "fHRopeHeight", 1.f);
+    // высота балки относительно высоты треугольника
+    fBalkHeight = ini->GetFloat(section, "fBalkHeight", 0.1f);
+    fBalkWidth = ini->GetFloat(section, "fBalkWidth", 1.2f);
+    // квадрат расстояния с которого не видны ванты
+    fVantMaxDist = ini->GetFloat(section, "fVantMaxDist", 10000.f);
+    // шаг дискретизации движения ванта
+    ZERO_CMP_VAL = ini->GetFloat(section, "fDiscrValue", 0.01f);
+    // максимальное изменение положения ванта при котором вант перестает отображаться
+    MAXFALL_CMP_VAL = ini->GetFloat(section, "fDisapearValue", 5.f);
+
+    VantId = 0;
+    delete ini;
+    // UNGUARD
+}
+
+void VANTL::LoadIni()
+{
+    // GUARD(VANT::LoadIni());
+    char section[256];
+    char param[256];
+
+    INIFILE *ini;
+    WIN32_FIND_DATA wfd;
+    HANDLE h = fio->_FindFirstFile("resource\\ini\\rigging.ini", &wfd);
+    if (INVALID_HANDLE_VALUE != h)
+    {
+        ft_old = wfd.ftLastWriteTime;
+        fio->_FindClose(h);
+    }
+    ini = fio->OpenIniFile("resource\\ini\\rigging.ini");
+    if (!ini)
+        throw std::exception("rigging.ini file not found!");
+
+    sprintf_s(section, "VANTS_L");
+
+    // имя текстуры
+    ini->ReadString(section, "TextureName", param, sizeof(param) - 1, "vant.tga");
+    if (texl != -1)
+    {
+        if (strcmp(TextureName, param))
+            if (RenderService)
+            {
+                delete TextureName;
+                const auto len = strlen(param) + 1;
+                TextureName = new char[len];
+                memcpy(TextureName, param, len);
+                RenderService->TextureRelease(texl);
+                texl = RenderService->TextureCreate(TextureName);
+            }
+    }
+    else
+    {
+        const auto len = strlen(param) + 1;
+        TextureName = new char[len];
+        memcpy(TextureName, param, len);
+    }
+    // толщина веревки
+    ROPE_WIDTH = ini->GetFloat(section, "fWidth", 0.1f);
+    // количество веревок
+    ROPE_QUANT = (int)ini->GetLong(section, "fRopeQuant", 5);
+    if (ROPE_QUANT < 2)
+        ROPE_QUANT = 2;
+    // координаты текстуры горизонтальной веревки xBeg
+    ropeXl = ini->GetFloat(section, "fHRopeXbeg", 0.5f);
+    ropeXr = ini->GetFloat(section, "fHRopeXend", 1.f);
+    // координаты текстуры треугольника
+    treangXl = ini->GetFloat(section, "fTreangXbeg", 0.f);
+    treangXr = ini->GetFloat(section, "fTreangXend", 0.5f);
+    treangYu = ini->GetFloat(section, "fTreangYbeg", 0.f);
+    treangYd = ini->GetFloat(section, "fTreangYend", 1.f);
+    // координаты текстуры балки
+    balkYu = ini->GetFloat(section, "fBalkYbeg", 0.6f);
+    balkYd = ini->GetFloat(section, "fBalkYend", 1.f);
+    // координаты текстуры вертикальной веревки
+    vRopeXl = ini->GetFloat(section, "fVRopeXbeg", 0.f);
+    vRopeXr = ini->GetFloat(section, "fVRopeXend", 0.1f);
+    // ширина верхнего треугольника
+    upWidth = ini->GetFloat(section, "fTreangWidth", 1.f);
+    // высота верхнего треугольника
+    upHeight = ini->GetFloat(section, "fTreangHeight", 1.f);
+    // высота вертикальной веревки
+    vRopeHeight = ini->GetFloat(section, "fVRopeHeight", 1.f);
+    // высота горизонтальной веревки
+    hRopeHeight = ini->GetFloat(section, "fHRopeHeight", 1.f);
+    // высота балки относительно высоты треугольника
+    fBalkHeight = ini->GetFloat(section, "fBalkHeight", 0.1f);
+    fBalkWidth = ini->GetFloat(section, "fBalkWidth", 1.2f);
+    // квадрат расстояния с которого не видны ванты
+    fVantMaxDist = ini->GetFloat(section, "fVantMaxDist", 10000.f);
+    // шаг дискретизации движения ванта
+    ZERO_CMP_VAL = ini->GetFloat(section, "fDiscrValue", 0.01f);
+    // максимальное изменение положения ванта при котором вант перестает отображаться
+    MAXFALL_CMP_VAL = ini->GetFloat(section, "fDisapearValue", 5.f);
+
+    VantId = 1;
+    delete ini;
+    // UNGUARD
+}
+
+void VANTZ::LoadIni()
+{
+    // GUARD(VANT::LoadIni());
+    char section[256];
+    char param[256];
+
+    INIFILE *ini;
+    WIN32_FIND_DATA wfd;
+    HANDLE h = fio->_FindFirstFile("resource\\ini\\rigging.ini", &wfd);
+    if (INVALID_HANDLE_VALUE != h)
+    {
+        ft_old = wfd.ftLastWriteTime;
+        fio->_FindClose(h);
+    }
+    ini = fio->OpenIniFile("resource\\ini\\rigging.ini");
+    if (!ini)
+        throw std::exception("rigging.ini file not found!");
+
+    sprintf_s(section, "VANTS_Z");
+
+    // имя текстуры
+    ini->ReadString(section, "TextureName", param, sizeof(param) - 1, "vant.tga");
+    if (texl != -1)
+    {
+        if (strcmp(TextureName, param))
+            if (RenderService)
+            {
+                delete TextureName;
+                const auto len = strlen(param) + 1;
+                TextureName = new char[len];
+                memcpy(TextureName, param, len);
+                RenderService->TextureRelease(texl);
+                texl = RenderService->TextureCreate(TextureName);
+            }
+    }
+    else
+    {
+        const auto len = strlen(param) + 1;
+        TextureName = new char[len];
+        memcpy(TextureName, param, len);
+    }
+    // толщина веревки
+    ROPE_WIDTH = ini->GetFloat(section, "fWidth", 0.1f);
+    // количество веревок
+    ROPE_QUANT = (int)ini->GetLong(section, "fRopeQuant", 5);
+    if (ROPE_QUANT < 2)
+        ROPE_QUANT = 2;
+    // координаты текстуры горизонтальной веревки xBeg
+    ropeXl = ini->GetFloat(section, "fHRopeXbeg", 0.5f);
+    ropeXr = ini->GetFloat(section, "fHRopeXend", 1.f);
+    // координаты текстуры треугольника
+    treangXl = ini->GetFloat(section, "fTreangXbeg", 0.f);
+    treangXr = ini->GetFloat(section, "fTreangXend", 0.5f);
+    treangYu = ini->GetFloat(section, "fTreangYbeg", 0.f);
+    treangYd = ini->GetFloat(section, "fTreangYend", 1.f);
+    // координаты текстуры балки
+    balkYu = ini->GetFloat(section, "fBalkYbeg", 0.6f);
+    balkYd = ini->GetFloat(section, "fBalkYend", 1.f);
+    // координаты текстуры вертикальной веревки
+    vRopeXl = ini->GetFloat(section, "fVRopeXbeg", 0.f);
+    vRopeXr = ini->GetFloat(section, "fVRopeXend", 0.1f);
+    // ширина верхнего треугольника
+    upWidth = ini->GetFloat(section, "fTreangWidth", 1.f);
+    // высота верхнего треугольника
+    upHeight = ini->GetFloat(section, "fTreangHeight", 1.f);
+    // высота вертикальной веревки
+    vRopeHeight = ini->GetFloat(section, "fVRopeHeight", 1.f);
+    // высота горизонтальной веревки
+    hRopeHeight = ini->GetFloat(section, "fHRopeHeight", 1.f);
+    // высота балки относительно высоты треугольника
+    fBalkHeight = ini->GetFloat(section, "fBalkHeight", 0.1f);
+    fBalkWidth = ini->GetFloat(section, "fBalkWidth", 1.2f);
+    // квадрат расстояния с которого не видны ванты
+    fVantMaxDist = ini->GetFloat(section, "fVantMaxDist", 10000.f);
+    // шаг дискретизации движения ванта
+    ZERO_CMP_VAL = ini->GetFloat(section, "fDiscrValue", 0.01f);
+    // максимальное изменение положения ванта при котором вант перестает отображаться
+    MAXFALL_CMP_VAL = ini->GetFloat(section, "fDisapearValue", 5.f);
+
+    VantId = 2;
+    delete ini;
+    // UNGUARD
+}
+
 void VANT_BASE::doMove()
 {
     int j, i;
-    DWORD iv;
+    uint32_t iv;
     CVECTOR uPos, lPos, rPos;
 
-    VANTVERTEX *pv = (VANTVERTEX *)RenderService->LockVertexBuffer(vBuf);
+    auto *pv = static_cast<VANTVERTEX *>(RenderService->LockVertexBuffer(vBuf));
     if (pv)
     {
         for (int vn = 0; vn < vantQuantity; vn++)
@@ -679,7 +937,7 @@ void VANT_BASE::doMove()
 
                 // Set up ropes points
                 CVECTOR sp = uPos - horzDirect * (.5f * upWidth) + vertDirect * upHeight;
-                CVECTOR dp = horzDirect * (upWidth / (float)(ROPE_QUANT - 1));
+                CVECTOR dp = horzDirect * (upWidth / static_cast<float>(ROPE_QUANT - 1));
                 for (i = 0; i < ROPE_QUANT; i++)
                 {
                     for (j = 0; j <= VANT_EDGE; j++)
@@ -695,7 +953,7 @@ void VANT_BASE::doMove()
 
                 // Set down ropes points
                 sp = lPos;
-                dp = (rPos - lPos) / (float)(ROPE_QUANT - 1);
+                dp = (rPos - lPos) / static_cast<float>(ROPE_QUANT - 1);
                 for (i = 0; i < ROPE_QUANT; i++)
                 {
                     for (j = 0; j <= VANT_EDGE; j++)
@@ -710,13 +968,14 @@ void VANT_BASE::doMove()
                 }
             }
         }
+
         RenderService->UnLockVertexBuffer(vBuf);
     }
 }
 
 bool VANT_BASE::VectCmp(CVECTOR v1, CVECTOR v2, float minCmpVal) // return true if equal
 {
-    CVECTOR dv = v1 - v2;
+    const CVECTOR dv = v1 - v2;
 
     if (dv.x > minCmpVal || dv.x < -minCmpVal || dv.y > minCmpVal || dv.y < -minCmpVal || dv.z > minCmpVal ||
         dv.z < -minCmpVal)
@@ -730,9 +989,8 @@ void VANT_BASE::FirstRun()
     {
         VERTEX_BUFFER_RELEASE(RenderService, vBuf);
         INDEX_BUFFER_RELEASE(RenderService, iBuf);
-        vBuf =
-            RenderService->CreateVertexBufferManaged(VANTVERTEX_FORMAT, nVert * sizeof(VANTVERTEX), D3DUSAGE_WRITEONLY);
-        iBuf = RenderService->CreateIndexBufferManaged(nIndx * 6);
+        vBuf = RenderService->CreateVertexBuffer(VANTVERTEX_FORMAT, nVert * sizeof(VANTVERTEX), D3DUSAGE_WRITEONLY);
+        iBuf = RenderService->CreateIndexBuffer(nIndx * 6);
         SetVertexes();
         SetIndex();
     }
@@ -748,15 +1006,15 @@ void VANT_BASE::SetAdd(int firstNum)
     // set vertex and index buffers
     for (int vn = firstNum; vn < vantQuantity; vn++)
     {
-        while (vlist[vn]->pUpMatWorld == 0 || vlist[vn]->pDownMatWorld == 0)
+        while (vlist[vn]->pUpMatWorld == nullptr || vlist[vn]->pDownMatWorld == nullptr)
         {
             delete vlist[vn];
             vantQuantity--;
             if (vantQuantity > 0)
             {
                 VANTDATA **oldvlist = vlist;
-                vlist = NEW VANTDATA *[vantQuantity];
-                if (vlist == 0)
+                vlist = new VANTDATA *[vantQuantity];
+                if (vlist == nullptr)
                     vlist = oldvlist;
                 if (vn > 0)
                     memcpy(vlist, oldvlist, sizeof(VANTDATA *) * vn);
@@ -768,7 +1026,7 @@ void VANT_BASE::SetAdd(int firstNum)
             else
             {
                 delete vlist;
-                vlist = 0;
+                vlist = nullptr;
             }
             if (vn == vantQuantity)
                 break;
@@ -782,8 +1040,8 @@ void VANT_BASE::SetAdd(int firstNum)
         float ca, sa;
         for (int i = 0; i < VANT_EDGE; i++)
         {
-            ca = cosf((float)i / (float)VANT_EDGE * 2.f * PI);
-            sa = sinf((float)i / (float)VANT_EDGE * 2.f * PI);
+            ca = cosf(static_cast<float>(i) / static_cast<float>(VANT_EDGE) * 2.f * PI);
+            sa = sinf(static_cast<float>(i) / static_cast<float>(VANT_EDGE) * 2.f * PI);
             tmat.MulToInvNorm(CVECTOR(ROPE_WIDTH / 2.f * ca, ROPE_WIDTH / 2.f * sa, 0.f), vlist[vn]->pos[i]);
         }
 
@@ -792,7 +1050,7 @@ void VANT_BASE::SetAdd(int firstNum)
     }
 }
 
-void VANT_BASE::DoDelete()
+void VANT_BASE::DoSTORM_DELETE()
 {
     // для всех удаленных групп удалим принадлежащие им ванты
     int ngn = 0;
@@ -808,7 +1066,7 @@ void VANT_BASE::DoDelete()
         gdata[gn].nIndx = 0;
         for (int idx = 0; idx < gdata[gn].vantQuantity; idx++)
         {
-            int vn = gdata[gn].vantIdx[idx];
+            const int vn = gdata[gn].vantIdx[idx];
             if (vlist[vn]->bDeleted || gdata[gn].bDeleted)
             {
                 delete vlist[vn];
@@ -832,8 +1090,7 @@ void VANT_BASE::DoDelete()
         // если группа пустая, то удалим ее
         if (gs == 0)
         {
-            if (gdata[gn].vantIdx)
-                delete gdata[gn].vantIdx;
+            delete gdata[gn].vantIdx;
             continue;
         }
 
@@ -852,9 +1109,9 @@ void VANT_BASE::DoDelete()
         VERTEX_BUFFER_RELEASE(RenderService, vBuf);
         INDEX_BUFFER_RELEASE(RenderService, iBuf);
         delete vlist;
-        vlist = 0;
+        vlist = nullptr;
         delete gdata;
-        gdata = 0;
+        gdata = nullptr;
     }
     else if (nvn != vantQuantity || ngn != groupQuantity)
     {
@@ -862,9 +1119,8 @@ void VANT_BASE::DoDelete()
         groupQuantity = ngn;
         VERTEX_BUFFER_RELEASE(RenderService, vBuf);
         INDEX_BUFFER_RELEASE(RenderService, iBuf);
-        vBuf =
-            RenderService->CreateVertexBufferManaged(VANTVERTEX_FORMAT, nVert * sizeof(VANTVERTEX), D3DUSAGE_WRITEONLY);
-        iBuf = RenderService->CreateIndexBufferManaged(nIndx * 6);
+        vBuf = RenderService->CreateVertexBuffer(VANTVERTEX_FORMAT, nVert * sizeof(VANTVERTEX), D3DUSAGE_WRITEONLY);
+        iBuf = RenderService->CreateIndexBuffer(nIndx * 6);
         SetVertexes();
         SetIndex();
     }
@@ -872,250 +1128,4 @@ void VANT_BASE::DoDelete()
     bYesDeleted = false;
     wVantLast = vantQuantity;
     bUse = vantQuantity > 0;
-}
-
-void VANT::LoadIni()
-{
-    GUARD(VANT::LoadIni());
-    char section[256];
-    char param[256];
-
-    INIFILE *ini;
-    WIN32_FIND_DATA wfd;
-    HANDLE h = _CORE_API->fio->_FindFirstFile("resource\\ini\\rigging.ini", &wfd);
-    if (INVALID_HANDLE_VALUE != h)
-    {
-        ft_old = wfd.ftLastWriteTime;
-        _CORE_API->fio->_FindClose(h);
-    }
-    ini = _CORE_API->fio->OpenIniFile("resource\\ini\\rigging.ini");
-    if (!ini)
-        SE_THROW("rigging.ini file not found!");
-
-    sprintf(section, "VANTS");
-
-    // имя текстуры
-    ini->ReadString(section, "TextureName", param, sizeof(param) - 1, "vant.tga");
-    if (texl != -1)
-    {
-        if (strcmp(TextureName, param))
-            if (RenderService)
-            {
-                delete TextureName;
-                TextureName = NEW char[strlen(param) + 1];
-                strcpy(TextureName, param);
-                RenderService->TextureRelease(texl);
-                texl = RenderService->TextureCreate(TextureName);
-            }
-    }
-    else
-    {
-        TextureName = NEW char[strlen(param) + 1];
-        strcpy(TextureName, param);
-    }
-    // толщина веревки
-    ROPE_WIDTH = ini->GetFloat(section, "fWidth", 0.1f);
-    // количество веревок
-    ROPE_QUANT = (int)ini->GetLong(section, "fRopeQuant", 5);
-    if (ROPE_QUANT < 2)
-        ROPE_QUANT = 2;
-    // координаты текстуры горизонтальной веревки xBeg
-    ropeXl = ini->GetFloat(section, "fHRopeXbeg", 0.5f);
-    ropeXr = ini->GetFloat(section, "fHRopeXend", 1.f);
-    // координаты текстуры треугольника
-    treangXl = ini->GetFloat(section, "fTreangXbeg", 0.f);
-    treangXr = ini->GetFloat(section, "fTreangXend", 0.5f);
-    treangYu = ini->GetFloat(section, "fTreangYbeg", 0.f);
-    treangYd = ini->GetFloat(section, "fTreangYend", 1.f);
-    // координаты текстуры балки
-    balkYu = ini->GetFloat(section, "fBalkYbeg", 0.6f);
-    balkYd = ini->GetFloat(section, "fBalkYend", 1.f);
-    // координаты текстуры вертикальной веревки
-    vRopeXl = ini->GetFloat(section, "fVRopeXbeg", 0.f);
-    vRopeXr = ini->GetFloat(section, "fVRopeXend", 0.1f);
-    // ширина верхнего треугольника
-    upWidth = ini->GetFloat(section, "fTreangWidth", 1.f);
-    // высота верхнего треугольника
-    upHeight = ini->GetFloat(section, "fTreangHeight", 1.f);
-    // высота вертикальной веревки
-    vRopeHeight = ini->GetFloat(section, "fVRopeHeight", 1.f);
-    // высота горизонтальной веревки
-    hRopeHeight = ini->GetFloat(section, "fHRopeHeight", 1.f);
-    // высота балки относительно высоты треугольника
-    fBalkHeight = ini->GetFloat(section, "fBalkHeight", 0.1f);
-    fBalkWidth = ini->GetFloat(section, "fBalkWidth", 1.2f);
-    // квадрат расстояния с которого не видны ванты
-    fVantMaxDist = ini->GetFloat(section, "fVantMaxDist", 10000.f);
-    // шаг дискретизации движения ванта
-    ZERO_CMP_VAL = ini->GetFloat(section, "fDiscrValue", 0.01f);
-    // максимальное изменение положения ванта при котором вант перестает отображаться
-    MAXFALL_CMP_VAL = ini->GetFloat(section, "fDisapearValue", 5.f);
-
-    VantId = 0;
-    delete ini;
-    UNGUARD
-}
-
-void VANTL::LoadIni()
-{
-    GUARD(VANT::LoadIni());
-    char section[256];
-    char param[256];
-
-    INIFILE *ini;
-    WIN32_FIND_DATA wfd;
-    HANDLE h = _CORE_API->fio->_FindFirstFile("resource\\ini\\rigging.ini", &wfd);
-    if (INVALID_HANDLE_VALUE != h)
-    {
-        ft_old = wfd.ftLastWriteTime;
-        _CORE_API->fio->_FindClose(h);
-    }
-    ini = _CORE_API->fio->OpenIniFile("resource\\ini\\rigging.ini");
-    if (!ini)
-        SE_THROW("rigging.ini file not found!");
-
-    sprintf(section, "VANTS_L");
-
-    // имя текстуры
-    ini->ReadString(section, "TextureName", param, sizeof(param) - 1, "vant.tga");
-    if (texl != -1)
-    {
-        if (strcmp(TextureName, param))
-            if (RenderService)
-            {
-                delete TextureName;
-                TextureName = NEW char[strlen(param) + 1];
-                strcpy(TextureName, param);
-                RenderService->TextureRelease(texl);
-                texl = RenderService->TextureCreate(TextureName);
-            }
-    }
-    else
-    {
-        TextureName = NEW char[strlen(param) + 1];
-        strcpy(TextureName, param);
-    }
-    // толщина веревки
-    ROPE_WIDTH = ini->GetFloat(section, "fWidth", 0.1f);
-    // количество веревок
-    ROPE_QUANT = (int)ini->GetLong(section, "fRopeQuant", 5);
-    if (ROPE_QUANT < 2)
-        ROPE_QUANT = 2;
-    // координаты текстуры горизонтальной веревки xBeg
-    ropeXl = ini->GetFloat(section, "fHRopeXbeg", 0.5f);
-    ropeXr = ini->GetFloat(section, "fHRopeXend", 1.f);
-    // координаты текстуры треугольника
-    treangXl = ini->GetFloat(section, "fTreangXbeg", 0.f);
-    treangXr = ini->GetFloat(section, "fTreangXend", 0.5f);
-    treangYu = ini->GetFloat(section, "fTreangYbeg", 0.f);
-    treangYd = ini->GetFloat(section, "fTreangYend", 1.f);
-    // координаты текстуры балки
-    balkYu = ini->GetFloat(section, "fBalkYbeg", 0.6f);
-    balkYd = ini->GetFloat(section, "fBalkYend", 1.f);
-    // координаты текстуры вертикальной веревки
-    vRopeXl = ini->GetFloat(section, "fVRopeXbeg", 0.f);
-    vRopeXr = ini->GetFloat(section, "fVRopeXend", 0.1f);
-    // ширина верхнего треугольника
-    upWidth = ini->GetFloat(section, "fTreangWidth", 1.f);
-    // высота верхнего треугольника
-    upHeight = ini->GetFloat(section, "fTreangHeight", 1.f);
-    // высота вертикальной веревки
-    vRopeHeight = ini->GetFloat(section, "fVRopeHeight", 1.f);
-    // высота горизонтальной веревки
-    hRopeHeight = ini->GetFloat(section, "fHRopeHeight", 1.f);
-    // высота балки относительно высоты треугольника
-    fBalkHeight = ini->GetFloat(section, "fBalkHeight", 0.1f);
-    fBalkWidth = ini->GetFloat(section, "fBalkWidth", 1.2f);
-    // квадрат расстояния с которого не видны ванты
-    fVantMaxDist = ini->GetFloat(section, "fVantMaxDist", 10000.f);
-    // шаг дискретизации движения ванта
-    ZERO_CMP_VAL = ini->GetFloat(section, "fDiscrValue", 0.01f);
-    // максимальное изменение положения ванта при котором вант перестает отображаться
-    MAXFALL_CMP_VAL = ini->GetFloat(section, "fDisapearValue", 5.f);
-
-    VantId = 1;
-    delete ini;
-    UNGUARD
-}
-
-void VANTZ::LoadIni()
-{
-    GUARD(VANT::LoadIni());
-    char section[256];
-    char param[256];
-
-    INIFILE *ini;
-    WIN32_FIND_DATA wfd;
-    HANDLE h = _CORE_API->fio->_FindFirstFile("resource\\ini\\rigging.ini", &wfd);
-    if (INVALID_HANDLE_VALUE != h)
-    {
-        ft_old = wfd.ftLastWriteTime;
-        _CORE_API->fio->_FindClose(h);
-    }
-    ini = _CORE_API->fio->OpenIniFile("resource\\ini\\rigging.ini");
-    if (!ini)
-        SE_THROW("rigging.ini file not found!");
-
-    sprintf(section, "VANTS_Z");
-
-    // имя текстуры
-    ini->ReadString(section, "TextureName", param, sizeof(param) - 1, "vant.tga");
-    if (texl != -1)
-    {
-        if (strcmp(TextureName, param))
-            if (RenderService)
-            {
-                delete TextureName;
-                TextureName = NEW char[strlen(param) + 1];
-                strcpy(TextureName, param);
-                RenderService->TextureRelease(texl);
-                texl = RenderService->TextureCreate(TextureName);
-            }
-    }
-    else
-    {
-        TextureName = NEW char[strlen(param) + 1];
-        strcpy(TextureName, param);
-    }
-    // толщина веревки
-    ROPE_WIDTH = ini->GetFloat(section, "fWidth", 0.1f);
-    // количество веревок
-    ROPE_QUANT = (int)ini->GetLong(section, "fRopeQuant", 5);
-    if (ROPE_QUANT < 2)
-        ROPE_QUANT = 2;
-    // координаты текстуры горизонтальной веревки xBeg
-    ropeXl = ini->GetFloat(section, "fHRopeXbeg", 0.5f);
-    ropeXr = ini->GetFloat(section, "fHRopeXend", 1.f);
-    // координаты текстуры треугольника
-    treangXl = ini->GetFloat(section, "fTreangXbeg", 0.f);
-    treangXr = ini->GetFloat(section, "fTreangXend", 0.5f);
-    treangYu = ini->GetFloat(section, "fTreangYbeg", 0.f);
-    treangYd = ini->GetFloat(section, "fTreangYend", 1.f);
-    // координаты текстуры балки
-    balkYu = ini->GetFloat(section, "fBalkYbeg", 0.6f);
-    balkYd = ini->GetFloat(section, "fBalkYend", 1.f);
-    // координаты текстуры вертикальной веревки
-    vRopeXl = ini->GetFloat(section, "fVRopeXbeg", 0.f);
-    vRopeXr = ini->GetFloat(section, "fVRopeXend", 0.1f);
-    // ширина верхнего треугольника
-    upWidth = ini->GetFloat(section, "fTreangWidth", 1.f);
-    // высота верхнего треугольника
-    upHeight = ini->GetFloat(section, "fTreangHeight", 1.f);
-    // высота вертикальной веревки
-    vRopeHeight = ini->GetFloat(section, "fVRopeHeight", 1.f);
-    // высота горизонтальной веревки
-    hRopeHeight = ini->GetFloat(section, "fHRopeHeight", 1.f);
-    // высота балки относительно высоты треугольника
-    fBalkHeight = ini->GetFloat(section, "fBalkHeight", 0.1f);
-    fBalkWidth = ini->GetFloat(section, "fBalkWidth", 1.2f);
-    // квадрат расстояния с которого не видны ванты
-    fVantMaxDist = ini->GetFloat(section, "fVantMaxDist", 10000.f);
-    // шаг дискретизации движения ванта
-    ZERO_CMP_VAL = ini->GetFloat(section, "fDiscrValue", 0.01f);
-    // максимальное изменение положения ванта при котором вант перестает отображаться
-    MAXFALL_CMP_VAL = ini->GetFloat(section, "fDisapearValue", 5.f);
-
-    VantId = 2;
-    delete ini;
-    UNGUARD
 }
