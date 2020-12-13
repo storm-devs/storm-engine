@@ -1,5 +1,6 @@
-#include "Sea.h"
-#include "messages.h"
+#include "../../Shared/messages.h"
+#include "EntityManager.h"
+#include "sea.h"
 
 void SEA::EnvMap_GetSideMatrix(D3DCUBEMAP_FACES Face, CMatrix &mView)
 {
@@ -38,54 +39,48 @@ void SEA::EnvMap_GetSideMatrix(D3DCUBEMAP_FACES Face, CMatrix &mView)
 
 bool SEA::SunRoad_Render2()
 {
-    CMatrix mOldView = Render().GetView();
-    CMatrix mOldProjection = Render().GetProjection();
+    auto mOldView = rs->GetView();
+    auto mOldProjection = rs->GetProjection();
 
-    Render().EndScene();
-    Render().PushRenderTarget();
+    rs->EndScene();
+    rs->PushRenderTarget();
 
-    // Render().SetProjection( CMatrix().BuildProjectionMatrix(PI / 2.0f, 256.0f, 256.0f, 1.0f, 4000.0f) );
+    // rs->SetProjection( CMatrix().BuildProjectionMatrix(PI / 2.0f, 256.0f, 256.0f, 1.0f, 4000.0f) );
 
-    float PlaneHeight = 0.5f;
+    auto PlaneHeight = 0.5f;
 
     D3DXPLANE plane;
-    D3DXPlaneFromPointNormal(&plane, &D3DXVECTOR3(0, PlaneHeight, 0), &D3DXVECTOR3(0, 1, 0));
+    const D3DXVECTOR3 point(0, PlaneHeight, 0), normal(0, 1, 0);
+    D3DXPlaneFromPointNormal(&plane, &point, &normal);
 
     D3DXMATRIX matReflect;
     D3DXMatrixReflect(&matReflect, &plane);
 
-    CMatrix mView = Render().GetView();
+    auto mView = rs->GetView();
 
-    CMatrix mViewNew = mView;
+    auto mViewNew = mView;
 
     CMatrix Invertor;
     memcpy(Invertor.m, matReflect.m, sizeof(float) * 16);
     mViewNew = Invertor * mViewNew;
 
-    Render().SetView(mViewNew);
+    rs->SetView(mViewNew);
 
-    CMatrix _mWorld = CMatrix();
-    CMatrix _mView = Render().GetView();
-    CMatrix _mProj = Render().GetProjection();
-    CMatrix _mWorldView = _mWorld * _mView;
-    CMatrix _mWorldViewProj = _mWorldView * _mProj;
+    auto _mWorld = CMatrix();
+    auto _mView = rs->GetView();
+    auto _mProj = rs->GetProjection();
+    auto _mWorldView = _mWorld * _mView;
+    auto _mWorldViewProj = _mWorldView * _mProj;
 
     D3DXMATRIX mInv;
     memcpy(mInv.m, _mWorldViewProj.m, sizeof(float) * 16);
-    D3DXMatrixInverse(&mInv, NULL, &mInv);
+    D3DXMatrixInverse(&mInv, nullptr, &mInv);
     D3DXMatrixTranspose(&mInv, &mInv);
     D3DXPlaneTransform(&plane, &plane, &mInv);
-    Render().SetClipPlane(0, (FLOAT *)&plane);
+    rs->SetClipPlane(0, (FLOAT *)&plane);
 
-    dword dwSkyCode = api->Class_Name2Code("sky");
-    dword dwIslandCode = api->Class_Name2Code("island");
-    dword dwShipCode = api->Class_Name2Code("ship");
-    dword dwSailCode = api->Class_Name2Code("sail");
-
-    bool bLayerFrozen = (api->LayerGetFlags("sea_reflection2") & LRFLAG_FROZEN) != 0;
-
-    dword Colors[6] = {0xd934c8, 0x2FFF1F, 0x0000FF, 0xFF00, 0xb28e11, 0x0};
-    // for (dword i=0; i<6; i++)
+    uint32_t Colors[6] = {0xd934c8, 0x2FFF1F, 0x0000FF, 0xFF00, 0xb28e11, 0x0};
+    // for (uint32_t i=0; i<6; i++)
     {
         // if (i == D3DCUBEMAP_FACE_NEGATIVE_Y) continue;
         // if (i != D3DCUBEMAP_FACE_NEGATIVE_Z) continue;
@@ -93,9 +88,9 @@ bool SEA::SunRoad_Render2()
         IDirect3DSurface9 *pReflectionSurface;
         pReflectionSunroad->GetSurfaceLevel(0, &pReflectionSurface);
 
-        Render().BeginScene();
-        bool bCool = Render().SetRenderTarget(pReflectionSurface, pZStencil);
-        bCool = D3D_OK != Render().Clear(0, null, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, 0x0, 1.0f, 0);
+        rs->BeginScene();
+        bool bCool = rs->SetRenderTarget(pReflectionSurface, pZStencil);
+        bCool = D3D_OK != rs->Clear(0, nullptr, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, 0x0, 1.0f, 0);
 
         // CMatrix mView;
         // EnvMap_GetSideMatrix((D3DCUBEMAP_FACES)i, mView);
@@ -104,52 +99,58 @@ bool SEA::SunRoad_Render2()
         // mView.m[3][1] = -(mView.m[0][1] * vCamPos.x - mView.m[1][1] * vCamPos.y + mView.m[2][1] * vCamPos.z);
         // mView.m[3][2] = -(mView.m[0][2] * vCamPos.x - mView.m[1][2] * vCamPos.y + mView.m[2][2] * vCamPos.z);
 
-        // Render().SetView(mView);
+        // rs->SetView(mView);
 
-        ENTITY_ID ent_id;
         // Render scene here.
-        if (api->SetEntityScanLayer("sea_sunroad") && api->GetEntity(&ent_id))
-            do
-            {
-                dword dwCCode = ent_id.class_code;
-                if (!bLayerFrozen || (dwCCode != dwShipCode && dwCCode != dwSailCode && dwCCode != dwIslandCode))
-                {
-                    api->Send_Message(ent_id, "ll", MSG_SEA_SUNROAD_DRAW, long(bSimpleSea));
-                }
-            } while (api->GetEntityNext(&ent_id));
+        // uint32_t dwSkyCode = MakeHashValue("sky");
 
-        Render().EndScene();
+        if (!EntityManager::IsLayerFrozen(SEA_REFLECTION2))
+        {
+            const auto its = EntityManager::GetEntityIdIterators(SEA_SUNROAD);
+            for (auto it = its.first; it != its.second; ++it)
+            {
+                const auto ent_id = it->second;
+                const auto hash = EntityManager::GetClassCode(ent_id);
+                if (hash != dwShipCode && hash != dwSailCode && hash != dwIslandCode)
+                {
+                    api->Send_Message(ent_id, "ll", MSG_SEA_SUNROAD_DRAW, static_cast<long>(bSimpleSea));
+                }
+            }
+        }
+
+        rs->EndScene();
         pReflectionSurface->Release();
     }
 
-    Render().PopRenderTarget();
-    Render().SetView(mOldView);
-    Render().SetProjection(mOldProjection);
+    rs->PopRenderTarget();
+    rs->SetView(mOldView);
+    rs->SetProjection(mOldProjection);
 
-    Render().BeginScene();
-    mOldView = Render().GetView();
+    rs->BeginScene();
+    mOldView = rs->GetView();
 
     return true;
 }
 
 bool SEA::EnvMap_Render2()
 {
-    CMatrix mOldView = Render().GetView();
-    CMatrix mOldProjection = Render().GetProjection();
-    Render().EndScene();
-    Render().PushRenderTarget();
+    auto mOldView = rs->GetView();
+    auto mOldProjection = rs->GetProjection();
+    rs->EndScene();
+    rs->PushRenderTarget();
 
-    // Render().SetProjection( CMatrix().BuildProjectionMatrix(PI / 2.0f, 256.0f, 256.0f, 1.0f, 4000.0f) );
+    // rs->SetProjection( CMatrix().BuildProjectionMatrix(PI / 2.0f, 256.0f, 256.0f, 1.0f, 4000.0f) );
 
-    float PlaneHeight = 0.5f;
+    auto PlaneHeight = 0.5f;
 
     D3DXPLANE plane;
-    D3DXPlaneFromPointNormal(&plane, &D3DXVECTOR3(0, PlaneHeight, 0), &D3DXVECTOR3(0, 1, 0));
+    const D3DXVECTOR3 point(0, PlaneHeight, 0), normal(0, 1, 0);
+    D3DXPlaneFromPointNormal(&plane, &point, &normal);
 
     D3DXMATRIX matReflect;
     D3DXMatrixReflect(&matReflect, &plane);
 
-    CMatrix mView = Render().GetView();
+    auto mView = rs->GetView();
 
     CMatrix mViewNew = mView;
 
@@ -157,27 +158,25 @@ bool SEA::EnvMap_Render2()
     memcpy(Invertor.m, matReflect.m, sizeof(float) * 16);
     mViewNew = Invertor * mViewNew;
 
-    Render().SetView(mViewNew);
+    rs->SetView(mViewNew);
 
     CMatrix _mWorld = CMatrix();
-    CMatrix _mView = Render().GetView();
-    CMatrix _mProj = Render().GetProjection();
+    CMatrix _mView = rs->GetView();
+    CMatrix _mProj = rs->GetProjection();
     CMatrix _mWorldView = _mWorld * _mView;
     CMatrix _mWorldViewProj = _mWorldView * _mProj;
 
     D3DXMATRIX mInv;
     memcpy(mInv.m, _mWorldViewProj.m, sizeof(float) * 16);
-    D3DXMatrixInverse(&mInv, NULL, &mInv);
+    D3DXMatrixInverse(&mInv, nullptr, &mInv);
     D3DXMatrixTranspose(&mInv, &mInv);
     D3DXPlaneTransform(&plane, &plane, &mInv);
-    Render().SetClipPlane(0, (FLOAT *)&plane);
-    // Render().SetEffect("FlatSeaReverseCull");
+    rs->SetClipPlane(0, (FLOAT *)&plane);
+    // rs->SetEffect("FlatSeaReverseCull");
     // Event("SeaReflection");
 
-    bool bLayerFrozen = (api->LayerGetFlags("sea_reflection2") & LRFLAG_FROZEN) != 0;
-
-    dword Colors[6] = {0xd934c8, 0x2FFF1F, 0x0000FF, 0xFF00, 0xb28e11, 0x0};
-    // for (dword i=0; i<6; i++)
+    uint32_t Colors[6] = {0xd934c8, 0x2FFF1F, 0x0000FF, 0xFF00, 0xb28e11, 0x0};
+    // for (uint32_t i=0; i<6; i++)
     {
         // if (i == D3DCUBEMAP_FACE_NEGATIVE_Y) continue;
         // if (i != D3DCUBEMAP_FACE_NEGATIVE_Z) continue;
@@ -185,11 +184,11 @@ bool SEA::EnvMap_Render2()
         IDirect3DSurface9 *pReflectionSurface;
         pReflection->GetSurfaceLevel(0, &pReflectionSurface);
 
-        Render().BeginScene();
-        // bool bCool = Render().SetRenderTarget(pEnvMap, i, 0, pZStencil);
-        // bool bCool = Render().SetRenderTarget(pEnvMap, i, 0, pZStencil);
-        bool bCool = Render().SetRenderTarget(pReflectionSurface, pReflectionSurfaceDepth);
-        bCool = D3D_OK != Render().Clear(0, null, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, 0x0, 1.0f, 0);
+        rs->BeginScene();
+        // bool bCool = rs->SetRenderTarget(pEnvMap, i, 0, pZStencil);
+        // bool bCool = rs->SetRenderTarget(pEnvMap, i, 0, pZStencil);
+        bool bCool = rs->SetRenderTarget(pReflectionSurface, pReflectionSurfaceDepth);
+        bCool = D3D_OK != rs->Clear(0, nullptr, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, 0x0, 1.0f, 0);
 
         // CMatrix mView;
         // EnvMap_GetSideMatrix((D3DCUBEMAP_FACES)i, mView);
@@ -199,42 +198,40 @@ bool SEA::EnvMap_Render2()
         // mView.m[3][2] = -(mView.m[0][2] * vCamPos.x - mView.m[1][2] * vCamPos.y + mView.m[2][2] * vCamPos.z);
 
         // api->Trace("sea: %.3f, %.3f, %.3f", mView.m[3][0], mView.m[3][1], mView.m[3][2]);
-        // Render().SetView(mView);
-
-        ENTITY_ID ent_id;
+        // rs->SetView(mView);
 
         // Render scene here.
-        if (api->SetEntityScanLayer("sea_reflection") && api->GetEntity(&ent_id))
-            do
-            {
-                api->Send_Message(ent_id, "ll", MSG_SEA_REFLECTION_DRAW, long(bSimpleSea));
-            } while (api->GetEntityNext(&ent_id));
+        auto its = EntityManager::GetEntityIdIterators(SEA_REFLECTION);
+        for (auto it = its.first; it != its.second; ++it)
+        {
+            api->Send_Message(it->second, "ll", MSG_SEA_REFLECTION_DRAW, static_cast<long>(bSimpleSea));
+        }
 
-        if (!bLayerFrozen && api->SetEntityScanLayer("sea_reflection2") && api->GetEntity(&ent_id))
-            do
-            {
-                api->Send_Message(ent_id, "ll", MSG_SEA_REFLECTION_DRAW, long(bSimpleSea));
-            } while (api->GetEntityNext(&ent_id));
+        its = EntityManager::GetEntityIdIterators(SEA_REFLECTION2);
+        for (auto it = its.first; it != its.second; ++it)
+        {
+            api->Send_Message(it->second, "ll", MSG_SEA_REFLECTION_DRAW, static_cast<long>(bSimpleSea));
+        }
 
-        Render().EndScene();
+        rs->EndScene();
         pReflectionSurface->Release();
     }
 
-    Render().PopRenderTarget();
-    Render().SetView(mOldView);
-    Render().SetProjection(mOldProjection);
+    rs->PopRenderTarget();
+    rs->SetView(mOldView);
+    rs->SetProjection(mOldProjection);
 
-    Render().BeginScene();
+    rs->BeginScene();
 
     CMatrix mTex;
     mTex.BuildScale(CVECTOR(0.5f, -0.5f, 0.5f));
     mTex.pos = CVECTOR(0.5f, 0.5f, 0.5f);
 
-    CMatrix mProj = Render().GetProjection();
+    CMatrix mProj = rs->GetProjection();
     mProj = mProj * mTex;
 
-    CMatrix mCurWorld = Render().GetWorld();
-    CMatrix mCurView = Render().GetView();
+    CMatrix mCurWorld = rs->GetWorld();
+    CMatrix mCurView = rs->GetView();
 
     mTexProjection = (mCurWorld * mCurView) * mProj;
 
@@ -243,120 +240,112 @@ bool SEA::EnvMap_Render2()
 
 bool SEA::SunRoad_Render()
 {
-    CMatrix mOldView = Render().GetView();
-    CMatrix mOldProjection = Render().GetProjection();
+    CMatrix mOldView = rs->GetView();
+    CMatrix mOldProjection = rs->GetProjection();
 
-    Render().EndScene();
-    Render().PushRenderTarget();
+    rs->EndScene();
+    rs->PushRenderTarget();
 
-    Render().SetProjection(CMatrix().BuildProjectionMatrix(PI / 2.0f, 256.0f, 256.0f, 1.0f, 4000.0f));
+    rs->SetProjection(CMatrix().BuildProjectionMatrix(PI / 2.0f, 256.0f, 256.0f, 1.0f, 4000.0f));
 
-    dword dwSkyCode = api->Class_Name2Code("sky");
-    dword dwIslandCode = api->Class_Name2Code("island");
-    dword dwShipCode = api->Class_Name2Code("ship");
-    dword dwSailCode = api->Class_Name2Code("sail");
-
-    bool bLayerFrozen = (api->LayerGetFlags("sea_reflection2") & LRFLAG_FROZEN) != 0;
-
-    dword Colors[6] = {0xd934c8, 0x2FFF1F, 0x0000FF, 0xFF00, 0xb28e11, 0x0};
-    for (dword i = 0; i < 6; i++)
+    uint32_t Colors[6] = {0xd934c8, 0x2FFF1F, 0x0000FF, 0xFF00, 0xb28e11, 0x0};
+    for (uint32_t i = 0; i < 6; i++)
     {
         if (!bUnderSea && i == D3DCUBEMAP_FACE_NEGATIVE_Y)
             continue;
 
-        Render().BeginScene();
-        bool bCool = Render().SetRenderTarget(pSunRoadMap, i, 0, pZStencil);
-        bCool = D3D_OK != Render().Clear(0, null, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, 0x0, 1.0f, 0);
+        rs->BeginScene();
+        bool bCool = rs->SetRenderTarget(pSunRoadMap, i, 0, pZStencil);
+        bCool = D3D_OK != rs->Clear(0, nullptr, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, 0x0, 1.0f, 0);
 
         CMatrix mView;
-        EnvMap_GetSideMatrix((D3DCUBEMAP_FACES)i, mView);
+        EnvMap_GetSideMatrix(static_cast<D3DCUBEMAP_FACES>(i), mView);
 
         mView.m[3][0] = -(mView.m[0][0] * vCamPos.x - mView.m[1][0] * vCamPos.y + mView.m[2][0] * vCamPos.z);
         mView.m[3][1] = -(mView.m[0][1] * vCamPos.x - mView.m[1][1] * vCamPos.y + mView.m[2][1] * vCamPos.z);
         mView.m[3][2] = -(mView.m[0][2] * vCamPos.x - mView.m[1][2] * vCamPos.y + mView.m[2][2] * vCamPos.z);
 
-        Render().SetView(mView);
+        rs->SetView(mView);
 
-        ENTITY_ID ent_id;
         // Render scene here.
-        if (api->SetEntityScanLayer("sea_sunroad") && api->GetEntity(&ent_id))
-            do
+        if (!EntityManager::IsLayerFrozen(SEA_REFLECTION2))
+        {
+            const auto its = EntityManager::GetEntityIdIterators(SEA_SUNROAD);
+            for (auto it = its.first; it != its.second; ++it)
             {
-                dword dwCCode = ent_id.class_code;
-                if (!bLayerFrozen || (dwCCode != dwShipCode && dwCCode != dwSailCode && dwCCode != dwIslandCode))
+                const auto ent_id = it->second;
+                const auto hash = EntityManager::GetClassCode(ent_id);
+                if (hash != dwShipCode && hash != dwSailCode && hash != dwIslandCode)
                 {
-                    api->Send_Message(ent_id, "ll", MSG_SEA_SUNROAD_DRAW, long(bSimpleSea));
+                    api->Send_Message(ent_id, "ll", MSG_SEA_SUNROAD_DRAW, static_cast<long>(bSimpleSea));
                 }
-            } while (api->GetEntityNext(&ent_id));
+            }
+        }
 
-        Render().EndScene();
+        rs->EndScene();
     }
 
-    Render().PopRenderTarget();
-    Render().SetView(mOldView);
-    Render().SetProjection(mOldProjection);
+    rs->PopRenderTarget();
+    rs->SetView(mOldView);
+    rs->SetProjection(mOldProjection);
 
-    Render().BeginScene();
-    mOldView = Render().GetView();
+    rs->BeginScene();
+    mOldView = rs->GetView();
 
     return true;
 }
 
 bool SEA::EnvMap_Render()
 {
-    CMatrix mOldView = Render().GetView();
-    CMatrix mOldProjection = Render().GetProjection();
-    Render().EndScene();
-    Render().PushRenderTarget();
+    CMatrix mOldView = rs->GetView();
+    CMatrix mOldProjection = rs->GetProjection();
+    rs->EndScene();
+    rs->PushRenderTarget();
 
-    Render().SetProjection(CMatrix().BuildProjectionMatrix(PI / 2.0f, 256.0f, 256.0f, 1.0f, 4000.0f));
+    rs->SetProjection(CMatrix().BuildProjectionMatrix(PI / 2.0f, 256.0f, 256.0f, 1.0f, 4000.0f));
 
-    bool bLayerFrozen = (api->LayerGetFlags("sea_reflection2") & LRFLAG_FROZEN) != 0;
-
-    dword Colors[6] = {0xd934c8, 0x2FFF1F, 0x0000FF, 0xFF00, 0xb28e11, 0x0};
-    for (dword i = 0; i < 6; i++)
+    uint32_t Colors[6] = {0xd934c8, 0x2FFF1F, 0x0000FF, 0xFF00, 0xb28e11, 0x0};
+    for (uint32_t i = 0; i < 6; i++)
     {
         if (!bUnderSea && i == D3DCUBEMAP_FACE_NEGATIVE_Y)
             continue;
         // if (i != D3DCUBEMAP_FACE_NEGATIVE_Z) continue;
 
-        Render().BeginScene();
-        bool bCool = Render().SetRenderTarget(pEnvMap, i, 0, pZStencil);
-        bCool = D3D_OK != Render().Clear(0, null, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, Colors[i] /*0x0*/, 1.0f, 0);
+        rs->BeginScene();
+        bool bCool = rs->SetRenderTarget(pEnvMap, i, 0, pZStencil);
+        bCool = D3D_OK != rs->Clear(0, nullptr, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, Colors[i] /*0x0*/, 1.0f, 0);
 
         CMatrix mView;
-        EnvMap_GetSideMatrix((D3DCUBEMAP_FACES)i, mView);
+        EnvMap_GetSideMatrix(static_cast<D3DCUBEMAP_FACES>(i), mView);
 
         mView.m[3][0] = -(mView.m[0][0] * vCamPos.x - mView.m[1][0] * vCamPos.y + mView.m[2][0] * vCamPos.z);
         mView.m[3][1] = -(mView.m[0][1] * vCamPos.x - mView.m[1][1] * vCamPos.y + mView.m[2][1] * vCamPos.z);
         mView.m[3][2] = -(mView.m[0][2] * vCamPos.x - mView.m[1][2] * vCamPos.y + mView.m[2][2] * vCamPos.z);
 
         // api->Trace("sea: %.3f, %.3f, %.3f", mView.m[3][0], mView.m[3][1], mView.m[3][2]);
-        Render().SetView(mView);
-
-        ENTITY_ID ent_id;
+        rs->SetView(mView);
 
         // Render scene here.
-        if (api->SetEntityScanLayer("sea_reflection") && api->GetEntity(&ent_id))
-            do
-            {
-                api->Send_Message(ent_id, "ll", MSG_SEA_REFLECTION_DRAW, long(bSimpleSea));
-            } while (api->GetEntityNext(&ent_id));
+        auto its = EntityManager::GetEntityIdIterators(SEA_REFLECTION);
+        for (auto it = its.first; it != its.second; ++it)
+        {
+            api->Send_Message(it->second, "ll", MSG_SEA_REFLECTION_DRAW, static_cast<long>(bSimpleSea));
+        }
 
-        if (!bLayerFrozen && api->SetEntityScanLayer("sea_reflection2") && api->GetEntity(&ent_id))
-            do
-            {
-                api->Send_Message(ent_id, "ll", MSG_SEA_REFLECTION_DRAW, long(bSimpleSea));
-            } while (api->GetEntityNext(&ent_id));
+        its = EntityManager::GetEntityIdIterators(SEA_REFLECTION2);
+        for (auto it = its.first; it != its.second; ++it)
+        {
+            api->Send_Message(it->second, "ll", MSG_SEA_REFLECTION_DRAW, static_cast<long>(bSimpleSea));
+        }
 
-        Render().EndScene();
+        rs->EndScene();
     }
 
-    Render().PopRenderTarget();
-    Render().SetView(mOldView);
-    Render().SetProjection(mOldProjection);
+    rs->PopRenderTarget();
+    rs->SetView(mOldView);
+    rs->SetProjection(mOldProjection);
 
-    Render().BeginScene();
+    rs->BeginScene();
 
     return true;
 }
