@@ -34,8 +34,6 @@
 //Конструирование, деструктурирование
 //============================================================================================
 
-IDirect3DVertexDeclaration9 *Grass::vertexDecl_ = nullptr;
-
 Grass::Grass()
 {
     miniMap = nullptr;
@@ -105,15 +103,14 @@ bool Grass::Init()
 
     // boal выбор шайдера -->
     isGrassLightsOn = 1;
-    VDATA *param = api->Event("GOpt_isGrassLightsOn", nullptr);
-    if (param)
+    if (auto *param = api->Event("GOpt_isGrassLightsOn", nullptr))
     {
         param->Get(isGrassLightsOn);
     }
     // boal выбор шайдера <--
 
     // DX9 render
-    rs = (VDX9RENDER *)api->CreateService("dx9render");
+    rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
     if (!rs)
         throw std::exception("No service: dx9render");
     // Vertex declaration
@@ -126,38 +123,31 @@ bool Grass::Init()
     ib = rs->CreateIndexBuffer(GRASS_MAX_POINTS * 6 * sizeof(uint16_t));
     if (ib < 0)
         return false;
-    auto *index = (uint16_t *)rs->LockIndexBuffer(ib);
+    auto *index = static_cast<uint16_t *>(rs->LockIndexBuffer(ib));
     if (!index)
         return false;
     for (long i = 0, point = 0; i < GRASS_MAX_POINTS; i++, index += 6, point += 4)
     {
-        index[0] = uint16_t(point + 0);
-        index[1] = uint16_t(point + 1);
-        index[2] = uint16_t(point + 2);
-        index[3] = uint16_t(point + 2);
-        index[4] = uint16_t(point + 1);
-        index[5] = uint16_t(point + 3);
+        index[0] = static_cast<uint16_t>(point + 0);
+        index[1] = static_cast<uint16_t>(point + 1);
+        index[2] = static_cast<uint16_t>(point + 2);
+        index[3] = static_cast<uint16_t>(point + 2);
+        index[4] = static_cast<uint16_t>(point + 1);
+        index[5] = static_cast<uint16_t>(point + 3);
     }
     rs->UnLockIndexBuffer(ib);
+
     //Константы
-    static const float pi2 = 2.0f * 3.141592653f;
-    for (long i = 0; i < 16; i++)
+    static const auto pi2 = 2.0f * 3.141592653f;
+    for (size_t i = 0; i < 16; i++)
     {
         //Таблица углов
-        consts[i].x = sinf(i * pi2 / 16.0f);
-        consts[i].y = cosf(i * pi2 / 16.0f);
-        consts[i].z = 0.0f;
-        consts[i].w = 1.0f;
+        aAngles[i] = {sinf(i * pi2 / 16.0f), cosf(i * pi2 / 16.0f), 0.0f};
+
         //Таблица uv
-        consts[i + 16].x = (i & 3) * (1.0f / 4.0f);
-        consts[i + 16].y = ((i >> 2) & 3) * (1.0f / 4.0f);
-        consts[i + 16].z = 0.0f;
-        consts[i + 16].w = 1.0f;
+        aUV[i] = {static_cast<float>(i & 3) * (1.0f / 4.0f), static_cast<float>((i >> 2) & 3) * (1.0f / 4.0f)};
     }
-    consts[36].w = 0.0f;
-    consts[39] = VSConstant(0.9f, 1.0f, 0.245f, -0.245f);
-    consts[40] = VSConstant(15.0f, -0.5f, 1.0f, 0.8f);
-    consts[41] = VSConstant(0.3f * m_fMaxWidth, 0.4f * m_fMaxHeight, 0.7f * m_fMaxWidth, 0.6f * m_fMaxHeight);
+
     return true;
 }
 
@@ -181,13 +171,13 @@ bool Grass::LoadData(const char *patchName)
         //Проверим данные
         if (size < sizeof(GRSHeader))
             throw "invalide file size";
-        GRSHeader &hdr = *(GRSHeader *)load;
+        auto &hdr = *(GRSHeader *)load;
         if (hdr.id != GRASS_ID)
             throw "invalide file id";
         if (hdr.ver != GRASS_VER)
             throw "invalide file version";
-        long minisize = hdr.miniX * hdr.miniZ;
-        long elements = hdr.numElements;
+        const auto minisize = hdr.miniX * hdr.miniZ;
+        const auto elements = hdr.numElements;
         if (size != sizeof(GRSHeader) + minisize * sizeof(GRSMiniMapElement) + elements * sizeof(GRSMapElement))
             throw "incorrect file data -> file size";
         if (hdr.miniX <= 0 || hdr.miniX > 100000 || hdr.miniZ <= 0 || hdr.miniZ > 100000)
@@ -208,13 +198,13 @@ bool Grass::LoadData(const char *patchName)
         uint8_t translate[16];
         for (long i = 0; i < 16; i++)
         {
-            translate[i] = uint8_t((i * 255) / 15);
+            translate[i] = static_cast<uint8_t>((i * 255) / 15);
         }
         block = new GRSMapElementEx[elements];
-        GRSMapElement *src = (GRSMapElement *)(load + sizeof(GRSHeader) + minisize * sizeof(GRSMiniMapElement));
+        auto *const src = (GRSMapElement *)(load + sizeof(GRSHeader) + minisize * sizeof(GRSMiniMapElement));
         for (long i = 0; i < elements; i++)
         {
-            GRSMapElement &sb = src[i];
+            auto &sb = src[i];
             GRSMapElementEx &b = block[i];
             b.x = sb.x * GRASS_STEP;
             b.y = sb.y;
@@ -231,12 +221,12 @@ bool Grass::LoadData(const char *patchName)
         for (long z = 0; z < miniZ; z++)
         {
             GRSMiniMapElement *line = &miniMap[z * miniX];
-            float cz = startZ + z * GRASS_BLK_DST;
+            const float cz = startZ + z * GRASS_BLK_DST;
             for (long x = 0; x < miniX; x++)
             {
-                float cx = startX + x * GRASS_BLK_DST;
+                const float cx = startX + x * GRASS_BLK_DST;
                 GRSMapElementEx *el = block + line[x].start;
-                long count = line[x].num[0];
+                const long count = line[x].num[0];
                 for (long i = 0; i < count; i++)
                 {
                     el[i].x += cx;
@@ -286,7 +276,7 @@ void Grass::Execute(uint32_t delta_time)
             res = rq_full;
         if (res > rq_off)
             res = rq_off;
-        quality = RenderQuality(res);
+        quality = static_cast<RenderQuality>(res);
     }
     else
     {
@@ -325,7 +315,7 @@ void Grass::Execute(uint32_t delta_time)
             spd = 0.0f;
         if (spd > 30.0f)
             spd = 30.0f;
-        float wf = powf(spd * (1.0f / 30.0f), 0.5f);
+        const float wf = powf(spd * (1.0f / 30.0f), 0.5f);
         if (initForce < 20)
         {
             initForce++;
@@ -372,7 +362,7 @@ void Grass::Execute(uint32_t delta_time)
 
 void Grass::Realize(uint32_t delta_time)
 {
-    if (quality == rq_off)
+    if (quality == rq_off || fx_ == nullptr)
         return;
     rs->SetTransform(D3DTS_WORLD, CMatrix());
     //Уберём текстуры
@@ -391,7 +381,7 @@ void Grass::Realize(uint32_t delta_time)
     entid_t eidIsland = EntityManager::GetEntityId("ISLAND");
     if (eidIsland)
     {
-        auto fIslandFogDensity = (float)dwOldFogDensity;
+        auto fIslandFogDensity = static_cast<float>(dwOldFogDensity);
         ATTRIBUTES *pA = api->Entity_GetAttributePointer(eidIsland);
         if (pA)
             fIslandFogDensity = pA->GetAttributeAsFloat("FogDensity", 0.0f);
@@ -476,9 +466,9 @@ void Grass::Realize(uint32_t delta_time)
         uint32_t aclr;
         if (rs->GetRenderState(D3DRS_AMBIENT, &aclr) != D3D_OK)
             aclr = 0xffffffff;
-        aColor.z = uint8_t(aclr >> 16) * 1.0f / 255.0f;
-        aColor.y = uint8_t(aclr >> 8) * 1.0f / 255.0f;
-        aColor.x = uint8_t(aclr >> 0) * 1.0f / 255.0f;
+        aColor.z = static_cast<uint8_t>(aclr >> 16) * 1.0f / 255.0f;
+        aColor.y = static_cast<uint8_t>(aclr >> 8) * 1.0f / 255.0f;
+        aColor.x = static_cast<uint8_t>(aclr >> 0) * 1.0f / 255.0f;
         if (aColor.x > 1.0f)
             aColor.x = 1.0f;
         if (aColor.y > 1.0f)
@@ -496,9 +486,9 @@ void Grass::Realize(uint32_t delta_time)
         uint32_t aclr;
         if (rs->GetRenderState(D3DRS_AMBIENT, &aclr) != D3D_OK)
             aclr = 0xffffffff;
-        aColor.z = uint8_t(aclr >> 16) * 1.0f / 255.0f;
-        aColor.y = uint8_t(aclr >> 8) * 1.0f / 255.0f;
-        aColor.x = uint8_t(aclr >> 0) * 1.0f / 255.0f;
+        aColor.z = static_cast<uint8_t>(aclr >> 16) * 1.0f / 255.0f;
+        aColor.y = static_cast<uint8_t>(aclr >> 8) * 1.0f / 255.0f;
+        aColor.x = static_cast<uint8_t>(aclr >> 0) * 1.0f / 255.0f;
         if (aColor.x > 1.0f)
             aColor.x = 1.0f;
         if (aColor.y > 1.0f)
@@ -510,33 +500,24 @@ void Grass::Realize(uint32_t delta_time)
         //Цвет направления
         lColor = 0.3f;
     }
+
     //Пересчитаем параметры углов
     for (long i = 0; i < 16; i++)
     {
-        consts[i].z = fabsf(-consts[i].y * lDir.x + consts[i].x * lDir.z);
-        if (consts[i].z < 0.0f)
-            consts[i].z = 0.0f;
-        if (consts[i].z > 1.0f)
-            consts[i].z = 1.0f;
+        aAngles[i].z = fabsf(-aAngles[i].y * lDir.x + aAngles[i].x * lDir.z);
+        if (aAngles[i].z < 0.0f)
+            aAngles[i].z = 0.0f;
+        if (aAngles[i].z > 1.0f)
+            aAngles[i].z = 1.0f;
     }
+
     //Матрица
     CMatrix view, prj;
     rs->GetTransform(D3DTS_VIEW, view);
     rs->GetTransform(D3DTS_PROJECTION, prj);
-    auto &cmtx = (CMatrix &)consts[32];
+    CMatrix cmtx;
     cmtx.EqMultiply(view, prj);
-    //Параметры источника
-    consts[36].x = lDir.x;
-    consts[36].y = lDir.z;
-    consts[37].x = aColor.x;
-    consts[37].y = aColor.y;
-    consts[37].z = aColor.z;
-    consts[37].w = 1.0f;
-    consts[38].x = lColor.x;
-    consts[38].y = lColor.y;
-    consts[38].z = lColor.z;
-    consts[38].w = m_fDataScale; // 1.f;
-    consts[39].y = kLitWF;
+
     //Позиция камеры
     CVECTOR pos, ang;
     float prs;
@@ -561,11 +542,19 @@ void Grass::Realize(uint32_t delta_time)
     rs->TextureSet(0, texture);
     rs->TextureSet(1, texture);
     //Ставим константы
-    rs->SetVertexShaderConstantF(0, (const float *)consts, sizeof(consts) / sizeof(VSConstant));
-    // rs->SetFVFConstant(0, consts, 40);
+    fx_->SetMatrix(hgVP_, cmtx);
+    fx_->SetValue(haAngles_, &aAngles[0], sizeof(D3DXVECTOR3) * 16);
+    fx_->SetValue(haUV_, &aUV[0], sizeof(D3DXVECTOR2) * 16);
+    fx_->SetValue(hlDir_, D3DXVECTOR2(lDir.x, lDir.z), sizeof(D3DXVECTOR2));
+    fx_->SetValue(haColor_, D3DXVECTOR3(aColor.x, aColor.y, aColor.z), sizeof(D3DXVECTOR3));
+    fx_->SetValue(hlColor_, D3DXVECTOR3(lColor.x, lColor.y, lColor.z), sizeof(D3DXVECTOR3));
+    fx_->SetFloat(hkLitWF_, kLitWF);
+    fx_->SetFloat(hfDataScale_, m_fDataScale);
+    fx_->SetValue(haSize_, D3DXVECTOR2(m_fMaxWidth, m_fMaxHeight), sizeof(D3DXVECTOR2));
+
     //Позиция камеры на карте
-    long camx = long((pos.x / m_fDataScale - startX) / GRASS_BLK_DST);
-    long camz = long((pos.z / m_fDataScale - startZ) / GRASS_BLK_DST);
+    long camx = static_cast<long>((pos.x / m_fDataScale - startX) / GRASS_BLK_DST);
+    long camz = static_cast<long>((pos.z / m_fDataScale - startZ) / GRASS_BLK_DST);
     //Квадрат, охватывающий зону видимости на карте
     long left = camx - GRASS_VEIW, right = camx + GRASS_VEIW;
     long top = camz - GRASS_VEIW, bottom = camz + GRASS_VEIW;
@@ -595,20 +584,31 @@ void Grass::Realize(uint32_t delta_time)
     numPoints = 0;
     rs->SetTransform(D3DTS_WORLD, CMatrix());
 
-    for (long mx = left, mz; mx <= camx; mx++)
+    // api->Trace("%d %d %d %d %d %d", left, top, bottom, right, camx, camz);
+    /*for (long mx = left, mz; mx <= camx; mx++)
     {
-        for (mz = top; mz <= camz; mz++)
-            RenderBlock(pos, plane, numPlanes, mx, mz);
-        for (mz = bottom; mz > camz; mz--)
-            RenderBlock(pos, plane, numPlanes, mx, mz);
+      for (mz = top; mz <= camz; mz++) render(mz, mx);
+      for (mz = bottom; mz > camz; mz--) render(mz, mx);
     }
     for (long mx = right, mz; mx > camx; mx--)
     {
-        for (mz = top; mz <= camz; mz++)
-            RenderBlock(pos, plane, numPlanes, mx, mz);
-        for (mz = bottom; mz > camz; mz--)
-            RenderBlock(pos, plane, numPlanes, mx, mz);
+      for (mz = top; mz <= camz; mz++) render(mz, mx);
+      for (mz = bottom; mz > camz; mz--) render(mz, mx);
+    }*/
+    for (auto mx = left; mx < right; mx++)
+    {
+        for (auto mz = top; mz < bottom; mz++)
+        {
+            GRSMiniMapElement &mm = miniMap[mz * miniX + mx];
+
+            //Проверяем наличие блока
+            if (mm.num[0] != 0)
+            {
+                RenderBlock(pos, plane, numPlanes, mx, mz);
+            }
+        }
     }
+
     //Рисуем буфер
     DrawBuffer();
 
@@ -641,7 +641,6 @@ uint64_t Grass::ProcessMessage(MESSAGE &message)
 
         m_fMaxWidth = message.Float();
         m_fMaxHeight = message.Float();
-        consts[41] = VSConstant(0.3f * m_fMaxWidth, 0.4f * m_fMaxHeight, 0.7f * m_fMaxWidth, 0.6f * m_fMaxHeight);
 
         m_fMinVisibleDist = message.Float();
         m_fMaxVisibleDist = message.Float();
@@ -654,7 +653,7 @@ uint64_t Grass::ProcessMessage(MESSAGE &message)
 }
 
 //Отрисовать блок с координатами на миникарте
-void Grass::RenderBlock(const CVECTOR &camPos, PLANE *plane, long numPlanes, long mx, long mz)
+void Grass::RenderBlock(const CVECTOR &camPos, const PLANE *plane, long numPlanes, long mx, long mz)
 {
     //Рисуем буфер, если переполнен
     if (numPoints >= GRASS_MAX_POINTS - (GRASS_CNT_MIN + GRASS_CNT_DLT) * 3)
@@ -664,13 +663,10 @@ void Grass::RenderBlock(const CVECTOR &camPos, PLANE *plane, long numPlanes, lon
     CVECTOR min, max;
     //Блок, который рисуем
     GRSMiniMapElement &mm = miniMap[mz * miniX + mx];
-    //Проверяем наличие блока
-    if (mm.num[0] == 0)
-        return;
     //Дистанция от центра кластера (бокса) до камеры в 2D
-    float cx = m_fDataScale * (startX + (mx + 0.5f) * GRASS_BLK_DST);
-    float cz = m_fDataScale * (startZ + (mz + 0.5f) * GRASS_BLK_DST);
-    float dist = (cx - camPos.x) * (cx - camPos.x) + (cz - camPos.z) * (cz - camPos.z);
+    const float cx = m_fDataScale * (startX + (mx + 0.5f) * GRASS_BLK_DST);
+    const float cz = m_fDataScale * (startZ + (mz + 0.5f) * GRASS_BLK_DST);
+    const float dist = (cx - camPos.x) * (cx - camPos.x) + (cz - camPos.z) * (cz - camPos.z);
     //Ограничение по дальности
     if (dist >= m_fMaxVisibleDist * m_fMaxVisibleDist)
         return;
@@ -717,13 +713,13 @@ inline bool Grass::VisibleTest(const PLANE *plane, long numPlanes, const CVECTOR
 {
     for (long i = 0; i < numPlanes; i++)
     {
-        float d = plane[i].D;
-        float minX = min.x * plane[i].Nx;
-        float minY = min.y * plane[i].Ny;
-        float minZ = min.z * plane[i].Nz;
-        float maxX = max.x * plane[i].Nx;
-        float maxY = max.y * plane[i].Ny;
-        float maxZ = max.z * plane[i].Nz;
+        const float d = plane[i].D;
+        const float minX = min.x * plane[i].Nx;
+        const float minY = min.y * plane[i].Ny;
+        const float minZ = min.z * plane[i].Nz;
+        const float maxX = max.x * plane[i].Nx;
+        const float maxY = max.y * plane[i].Ny;
+        const float maxZ = max.z * plane[i].Nz;
         if (minX + minY + minZ >= d)
             continue;
         if (minX + maxY + minZ >= d)
@@ -751,7 +747,7 @@ inline void Grass::RenderBlock(GRSMiniMapElement &mme, float kLod)
     //Защитимся от себя
     if (!vbuffer)
     {
-        vbuffer = (Vertex *)rs->LockVertexBuffer(vb);
+        vbuffer = static_cast<Vertex *>(rs->LockVertexBuffer(vb));
         if (!vbuffer)
             return;
     }
@@ -761,7 +757,7 @@ inline void Grass::RenderBlock(GRSMiniMapElement &mme, float kLod)
     GRSMapElementEx *b = block + mme.start;
     //Определяем параметры лода
     kLod = kLod * 3.9999f;
-    long lod = long(kLod);
+    long lod = static_cast<long>(kLod);
     if (lod < quality)
         lod = quality;
     Assert(lod >= 0 && lod < 4);
@@ -771,10 +767,10 @@ inline void Grass::RenderBlock(GRSMiniMapElement &mme, float kLod)
     if (kBlend < 0.0f)
         kBlend = 0.0f;
     //Количество травинок всего
-    long num = mme.num[lod];
+    const long num = mme.num[lod];
     Assert(num <= GRASS_CNT_MIN + GRASS_CNT_DLT);
     //Количество рисуемое без лодирования
-    long lodNum = lod < 3 ? mme.num[lod + 1] : 0;
+    const long lodNum = lod < 3 ? mme.num[lod + 1] : 0;
     //Ветренное дополнение
     float wAddX, wAddZ, kwDirX, kwDirZ;
     if (quality <= rq_middle)
@@ -809,15 +805,15 @@ inline void Grass::RenderBlock(GRSMiniMapElement &mme, float kLod)
         if (quality <= rq_middle)
         {
             //Позиция
-            float x = b[i].x;
-            float y = b[i].y;
-            float z = b[i].z;
+            const float x = b[i].x;
+            const float y = b[i].y;
+            const float z = b[i].z;
             //Волны ветра
-            float dx = winDir.x * x * 0.5f + phase[3];
-            float dz = winDir.z * z * 0.5f + phase[4];
-            float k1 = sinf(dx + dz);
-            float a1 = (0.001f + sinPh5 * sinf((dx + dz) * 0.5f));
-            float k2 = cosf(winDir.z * x * (a1 + sinPh6) - winDir.x * z * a1);
+            const float dx = winDir.x * x * 0.5f + phase[3];
+            const float dz = winDir.z * z * 0.5f + phase[4];
+            const float k1 = sinf(dx + dz);
+            const float a1 = (0.001f + sinPh5 * sinf((dx + dz) * 0.5f));
+            const float k2 = cosf(winDir.z * x * (a1 + sinPh6) - winDir.x * z * a1);
             float kamp = powf(k1 * k2 * 0.5f + 0.5f, winPow) + winF10 + winForce * 0.7f;
             if (kamp > 1.0f)
                 kamp = 1.0f;
@@ -840,7 +836,7 @@ inline void Grass::RenderBlock(GRSMiniMapElement &mme, float kLod)
                         if (dst > 0.0f)
                         {
                             dst = sqrtf(dst);
-                            float k = 0.5f / dst;
+                            const float k = 0.5f / dst;
                             pldx *= k;
                             pldz *= k;
                         }
@@ -951,16 +947,18 @@ long Grass::GetColor(CVECTOR color)
         color.z = 1.0f;
     if (color.z < 0.0f)
         color.z = 0.0f;
-    long r = long(color.z * 255.0f);
-    long g = long(color.y * 255.0f);
-    long b = long(color.x * 255.0f);
+    const long r = static_cast<long>(color.z * 255.0f);
+    const long g = static_cast<long>(color.y * 255.0f);
+    const long b = static_cast<long>(color.x * 255.0f);
     return (r << 16) | (g << 8) | b;
 }
 
-void Grass::CreateVertexDeclaration()
+void Grass::CreateVertexDeclaration() const
 {
     if (vertexDecl_ != nullptr)
+    {
         return;
+    }
 
     const D3DVERTEXELEMENT9 VertexElements[] = {
         {0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
@@ -970,4 +968,18 @@ void Grass::CreateVertexDeclaration()
         D3DDECL_END()};
 
     rs->CreateVertexDeclaration(VertexElements, &vertexDecl_);
+
+    fx_ = rs->GetEffectPointer("Grass");
+    if (fx_ != nullptr)
+    {
+        hgVP_ = fx_->GetParameterByName(nullptr, "gVP");
+        haAngles_ = fx_->GetParameterByName(nullptr, "aAngles");
+        haUV_ = fx_->GetParameterByName(nullptr, "aUV");
+        hlDir_ = fx_->GetParameterByName(nullptr, "lDir");
+        hkLitWF_ = fx_->GetParameterByName(nullptr, "kLitWF");
+        haColor_ = fx_->GetParameterByName(nullptr, "aColor");
+        hlColor_ = fx_->GetParameterByName(nullptr, "lColor");
+        hfDataScale_ = fx_->GetParameterByName(nullptr, "fDataScale");
+        haSize_ = fx_->GetParameterByName(nullptr, "aSize");
+    }
 }
