@@ -1,10 +1,12 @@
 #ifndef WEATHER_RAIN_HPP
 #define WEATHER_RAIN_HPP
 
-#include "Typedef.h"
-#include "Weather_base.h"
+#include "Weather_Base.h"
 #include "sea_base.h"
 #include "ship_base.h"
+#include "typedef.h"
+#include <string>
+#include <vector>
 
 #define NUM_SEA_DROPS 500
 #define D3DRAINVERTEX_FORMAT (D3DFVF_XYZ | D3DFVF_DIFFUSE)
@@ -13,29 +15,29 @@
 typedef struct
 {
     CVECTOR vPos;
-    DWORD dwColor;
+    uint32_t dwColor;
 } RAINVERTEX;
 
 struct SEADROPVERTEX
 {
     CVECTOR vPos;
-    DWORD dwColor;
+    uint32_t dwColor;
     float tu, tv;
 };
 
 typedef struct
 {
     float fWindFlaw, fWindSpeedJitter;
-    DWORD dwTime;
+    uint32_t dwTime;
     CVECTOR vPos;
     CVECTOR vAng;
 } rainblock_t;
 
-class RAIN : public ENTITY
+class RAIN : public Entity
 {
     struct ship_t
     {
-        ENTITY_ID eid;
+        entid_t eid;
         SHIP_BASE *pShip;
     };
 
@@ -57,62 +59,82 @@ class RAIN : public ENTITY
   private:
     long iRainDropsTexture;
     float fDropsDeltaTime;
-    array<RS_RECT> aRects;
-    array<drop_t> aDrops;
-    array<seadrop_t> aSeaDrops;
-    array<ship_t> aShips;
+    std::vector<RS_RECT> aRects;
+    std::vector<drop_t> aDrops;
+    std::vector<seadrop_t> aSeaDrops;
+    std::vector<ship_t> aShips;
 
     bool bShow;
 
     WEATHER_BASE *pWeather;
 
-    dword dwRainMaxBlend, dwRainColor, dwRainR, dwRainG, dwRainB;
+    uint32_t dwRainMaxBlend, dwRainColor, dwRainR, dwRainG, dwRainB;
     float fDropLength, fRainWindSpeed, fRainSpeed, fWindPower, fWindAngle, fRainJitter, fRainWindSpeedJitter;
 
     bool bRainbowEnable;
     long iRainbowTex;
-    string sRainbowTexture;
+    std::string sRainbowTexture;
 
-    dword dwRainTimeBlend;
-    dword dwNumRainBlocks;
+    uint32_t dwRainTimeBlend;
+    uint32_t dwNumRainBlocks;
     rainblock_t *pRainBlocks;
 
     CVECTOR vCamPos, vCamAng;
 
     float fRainHeight, fRainRadius;
-    dword dwNumDrops;
+    uint32_t dwNumDrops;
 
     long iVertexBuffer;
 
-    dword dwDropsColor;
-    dword dwDropsNearNum, dwDropsFarNum;
+    uint32_t dwDropsColor;
+    uint32_t dwDropsNearNum, dwDropsFarNum;
     float fDropsNearRadius, fDropsFarRadius;
     float fDropsLifeTime;
     float fDropsSize;
-    string sDropsTexture, sSeaDropsTexture;
+    std::string sDropsTexture, sSeaDropsTexture;
 
     long iSeaDropTex;
     long iIBSeaDrops;
     long iVBSeaDrops;
 
-    void GenerateRandomDrop(CVECTOR *vPos);
+    VDX9RENDER *rs;
+    COLLIDE *cs;
+
+    void GenerateRandomDrop(CVECTOR *vPos) const;
     void GenerateRain();
-    void InitialSomeBlockParameters(long iIdx);
+    void InitialSomeBlockParameters(long iIdx) const;
     void Release();
-    void RealizeDrops(dword Delta_Time);
+    void RealizeDrops(uint32_t Delta_Time);
 
   public:
     RAIN();
     ~RAIN();
 
     void SetDevice();
-    bool Init();
-    void Realize(dword Delta_Time);
-    void Execute(dword Delta_Time);
+    bool Init() override;
+    void Realize(uint32_t Delta_Time);
+    void Execute(uint32_t Delta_Time);
     bool CreateState(ENTITY_STATE_GEN *state_gen);
     bool LoadState(ENTITY_STATE *state);
-    dword _cdecl ProcessMessage(MESSAGE &message);
-    dword AttributeChanged(ATTRIBUTES *pAttribute);
+    uint64_t ProcessMessage(MESSAGE &message) override;
+    uint32_t AttributeChanged(ATTRIBUTES *pAttribute) override;
+
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
 };
 
 #endif

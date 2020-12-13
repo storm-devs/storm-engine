@@ -2,18 +2,18 @@
 #include "SunGlow.h"
 #include "weather_base.h"
 
-SKY::SKY() : aSkyDirArray(_FL)
+SKY::SKY()
 {
     iSkyVertsID = -1;
     iSkyIndexID = -1;
     iFogVertsID = -1;
     iFogIndexID = -1;
     fAngleY = 0.0f;
-    pRS = null;
+    pRS = nullptr;
     memset(TexturesID, -1, sizeof(TexturesID));
     memset(TexturesNextID, -1, sizeof(TexturesNextID));
-    pAstronomy = 0;
-    pSunGlow = 0;
+    pAstronomy = nullptr;
+    pSunGlow = nullptr;
 }
 
 SKY::~SKY()
@@ -60,15 +60,15 @@ bool SKY::Init()
 
 void SKY::SetDevice()
 {
-    pRS = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
+    pRS = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
     Assert(pRS);
 }
 
-dword SKY::CalcFogDiffuse(CVECTOR &vPos)
+uint32_t SKY::CalcFogDiffuse(CVECTOR &vPos)
 {
-    float fAlpha = vPos.y / 500.0f;
+    auto fAlpha = vPos.y / 500.0f;
     fAlpha = CLAMP(fAlpha);
-    dword dwAlpha = 255 - dword(fAlpha * 255.0f);
+    const auto dwAlpha = 255 - static_cast<uint32_t>(fAlpha * 255.0f);
     return ARGB(dwAlpha, 167, 153, 196);
 }
 
@@ -76,64 +76,63 @@ void SKY::CreateFogSphere()
 {
     long x, y, iNumLevels, iNumAngles, idx = 0;
 
-    float R = 2000.0f;
+    const auto R = 2000.0f;
     iNumLevels = 64;
     iNumAngles = 8;
     iFogNumVerts = iNumAngles * iNumLevels + 1;
-    FOGVERTEX *pVerts = NEW FOGVERTEX[iFogNumVerts];
-    iFogVertsID =
-        pRS->CreateVertexBufferManaged(FOGVERTEX_FORMAT, iFogNumVerts * sizeof(SKYVERTEX), D3DUSAGE_WRITEONLY);
-    FOGVERTEX *pVertBuf = (FOGVERTEX *)pRS->LockVertexBuffer(iFogVertsID);
+    auto *pVerts = new FOGVERTEX[iFogNumVerts];
+    iFogVertsID = pRS->CreateVertexBuffer(FOGVERTEX_FORMAT, iFogNumVerts * sizeof(SKYVERTEX), D3DUSAGE_WRITEONLY);
+    auto *pVertBuf = static_cast<FOGVERTEX *>(pRS->LockVertexBuffer(iFogVertsID));
 
     iFogNumTrgs = 3 * (iNumAngles + (iNumLevels - 1) * iNumAngles * 2);
-    iFogIndexID = pRS->CreateIndexBufferManaged(iFogNumTrgs * 2);
+    iFogIndexID = pRS->CreateIndexBuffer(iFogNumTrgs * 2);
 
-    WORD *pTrgs = (WORD *)pRS->LockIndexBuffer(iFogIndexID);
+    auto *pTrgs = static_cast<uint16_t *>(pRS->LockIndexBuffer(iFogIndexID));
     for (y = 0; y < iNumLevels; y++)
     {
-        float h = y * R / iNumLevels;
-        float R1 = sqrtf(SQR(R) - SQR(h));
+        const auto h = y * R / iNumLevels;
+        const auto R1 = sqrtf(SQR(R) - SQR(h));
         for (x = 0; x < iNumAngles; x++)
         {
-            float fCos = cosf(float(x) / float(iNumAngles) * PIm2);
-            float fSin = sinf(float(x) / float(iNumAngles) * PIm2);
-            CVECTOR vPos = CVECTOR(R1 * fCos, h, R1 * fSin);
+            const auto fCos = cosf(static_cast<float>(x) / static_cast<float>(iNumAngles) * PIm2);
+            const auto fSin = sinf(static_cast<float>(x) / static_cast<float>(iNumAngles) * PIm2);
+            const auto vPos = CVECTOR(R1 * fCos, h, R1 * fSin);
             pVerts[idx].pos = vPos;
-            VDATA *pvData = api->Event(WEATHER_CALC_FOG_COLOR, "fff", vPos.x, vPos.y, vPos.z);
+            auto *pvData = api->Event(WEATHER_CALC_FOG_COLOR, "fff", vPos.x, vPos.y, vPos.z);
             Assert(pvData);
-            pVerts[idx].diffuse = (dword)pvData->GetLong();
+            pVerts[idx].diffuse = static_cast<uint32_t>(pvData->GetLong());
             // pVerts[idx].diffuse = CalcFogDiffuse(pVerts[idx].pos);
 
             if (y == iNumLevels - 1)
             {
-                *pTrgs++ = WORD(iFogNumVerts - 1);
-                *pTrgs++ = WORD(idx);
-                *pTrgs++ = WORD((x == iNumAngles - 1) ? idx - (iNumAngles - 1) : idx + 1);
+                *pTrgs++ = static_cast<uint16_t>(iFogNumVerts - 1);
+                *pTrgs++ = static_cast<uint16_t>(idx);
+                *pTrgs++ = static_cast<uint16_t>((x == iNumAngles - 1) ? idx - (iNumAngles - 1) : idx + 1);
             }
             else
             {
-                *pTrgs++ = WORD(idx);
-                *pTrgs++ = WORD((x == iNumAngles - 1) ? idx - (iNumAngles - 1) : idx + 1);
-                *pTrgs++ = WORD(idx + iNumAngles);
+                *pTrgs++ = static_cast<uint16_t>(idx);
+                *pTrgs++ = static_cast<uint16_t>((x == iNumAngles - 1) ? idx - (iNumAngles - 1) : idx + 1);
+                *pTrgs++ = static_cast<uint16_t>(idx + iNumAngles);
 
-                *pTrgs++ = WORD((x == iNumAngles - 1) ? idx - (iNumAngles - 1) : idx + 1);
-                *pTrgs++ = WORD(idx + iNumAngles);
-                *pTrgs++ = WORD((x == iNumAngles - 1) ? idx + 1 : idx + iNumAngles + 1);
+                *pTrgs++ = static_cast<uint16_t>((x == iNumAngles - 1) ? idx - (iNumAngles - 1) : idx + 1);
+                *pTrgs++ = static_cast<uint16_t>(idx + iNumAngles);
+                *pTrgs++ = static_cast<uint16_t>((x == iNumAngles - 1) ? idx + 1 : idx + iNumAngles + 1);
             }
             idx++;
         }
     }
-    CVECTOR vPos = CVECTOR(0.0f, R, 0.0f);
+    const auto vPos = CVECTOR(0.0f, R, 0.0f);
     pVerts[idx].pos = vPos;
-    VDATA *pvData = api->Event(WEATHER_CALC_FOG_COLOR, "fff", vPos.x, vPos.y, vPos.z);
+    auto *pvData = api->Event(WEATHER_CALC_FOG_COLOR, "fff", vPos.x, vPos.y, vPos.z);
     Assert(pvData);
-    pVerts[idx].diffuse = (dword)pvData->GetLong();
+    pVerts[idx].diffuse = static_cast<uint32_t>(pvData->GetLong());
     if (pVerts)
         memcpy(pVertBuf, pVerts, iFogNumVerts * sizeof(FOGVERTEX));
     pRS->UnLockVertexBuffer(iFogVertsID);
     pRS->UnLockIndexBuffer(iFogIndexID);
 
-    delete pVerts;
+    delete[] pVerts;
 }
 
 void SKY::UpdateFogSphere()
@@ -144,34 +143,34 @@ void SKY::UpdateFogSphere()
     long x, y, iNumLevels, iNumAngles, idx = 0;
 
     CVECTOR vPos;
-    float R = 2000.0f;
+    const auto R = 2000.0f;
     iNumLevels = 64;
     iNumAngles = 8;
     iFogNumVerts = iNumAngles * iNumLevels + 1;
-    FOGVERTEX *pVertBuf = (FOGVERTEX *)pRS->LockVertexBuffer(iFogVertsID);
+    auto *const pVertBuf = static_cast<FOGVERTEX *>(pRS->LockVertexBuffer(iFogVertsID));
 
     for (y = 0; y < iNumLevels; y++)
     {
-        float h = y * R / iNumLevels;
-        float R1 = sqrtf(SQR(R) - SQR(h));
+        const auto h = y * R / iNumLevels;
+        const auto R1 = sqrtf(SQR(R) - SQR(h));
         for (x = 0; x < iNumAngles; x++)
         {
-            float fCos = cosf(float(x) / float(iNumAngles) * PIm2);
-            float fSin = sinf(float(x) / float(iNumAngles) * PIm2);
+            const auto fCos = cosf(static_cast<float>(x) / static_cast<float>(iNumAngles) * PIm2);
+            const auto fSin = sinf(static_cast<float>(x) / static_cast<float>(iNumAngles) * PIm2);
             vPos = CVECTOR(R1 * fCos, h, R1 * fSin);
             pVertBuf[idx].pos = vPos;
-            VDATA *pvData = api->Event(WEATHER_CALC_FOG_COLOR, "fff", vPos.x, vPos.y, vPos.z);
+            auto *pvData = api->Event(WEATHER_CALC_FOG_COLOR, "fff", vPos.x, vPos.y, vPos.z);
             Assert(pvData);
-            pVertBuf[idx].diffuse = (dword)pvData->GetLong();
+            pVertBuf[idx].diffuse = static_cast<uint32_t>(pvData->GetLong());
 
             idx++;
         }
     }
     vPos = CVECTOR(0.0f, R, 0.0f);
     pVertBuf[idx].pos = vPos;
-    VDATA *pvData = api->Event(WEATHER_CALC_FOG_COLOR, "fff", vPos.x, vPos.y, vPos.z);
+    auto *pvData = api->Event(WEATHER_CALC_FOG_COLOR, "fff", vPos.x, vPos.y, vPos.z);
     Assert(pvData);
-    pVertBuf[idx].diffuse = (dword)pvData->GetLong();
+    pVertBuf[idx].diffuse = static_cast<uint32_t>(pvData->GetLong());
     pRS->UnLockVertexBuffer(iFogVertsID);
 }
 
@@ -192,13 +191,13 @@ void SKY::GenerateSky()
     v[6].pos = CVECTOR(1.0f, 1.0f, 1.0f);
     v[7].pos = CVECTOR(-1.0f, 1.0f, 1.0f);
 
-    float fpdelta = 1.0f / 1024.0f;
-    float fpdx = 1.0f - fpdelta; //.25f - fpdelta;
-    float fp0 = fpdelta;
-    float fp1 = 0.25f + fpdelta;
-    float fp2 = 0.5f + fpdelta;
-    float fp3 = 0.75f + fpdelta;
-    float fp4 = 1.0f - fpdelta;
+    const auto fpdelta = 1.0f / 1024.0f;
+    const auto fpdx = 1.0f - fpdelta; //.25f - fpdelta;
+    const auto fp0 = fpdelta;
+    auto fp1 = 0.25f + fpdelta;
+    auto fp2 = 0.5f + fpdelta;
+    auto fp3 = 0.75f + fpdelta;
+    const auto fp4 = 1.0f - fpdelta;
 
     Verts[0] = v[1];
     Verts[0].tu = fp4;
@@ -274,23 +273,22 @@ void SKY::GenerateSky()
         Verts[i].tu2 = Verts[i].tu;
         Verts[i].tv2 = Verts[i].tv;
     }
-    iSkyVertsID =
-        pRS->CreateVertexBufferManaged(SKYVERTEX_FORMAT, SKY_NUM_VERTEX * sizeof(SKYVERTEX), D3DUSAGE_WRITEONLY);
-    iSkyIndexID = pRS->CreateIndexBufferManaged(20 * 3 * 2);
-    SKYVERTEX *pVertBuf = (SKYVERTEX *)pRS->LockVertexBuffer(iSkyVertsID);
+    iSkyVertsID = pRS->CreateVertexBuffer(SKYVERTEX_FORMAT, SKY_NUM_VERTEX * sizeof(SKYVERTEX), D3DUSAGE_WRITEONLY);
+    iSkyIndexID = pRS->CreateIndexBuffer(20 * 3 * 2);
+    auto *pVertBuf = static_cast<SKYVERTEX *>(pRS->LockVertexBuffer(iSkyVertsID));
     if (pVertBuf)
         memcpy(pVertBuf, &Verts[0], sizeof(Verts));
     pRS->UnLockVertexBuffer(iSkyVertsID);
 
-    WORD *pTrgs = (WORD *)pRS->LockIndexBuffer(iSkyIndexID);
+    auto *pTrgs = static_cast<uint16_t *>(pRS->LockIndexBuffer(iSkyIndexID));
     for (i = 0; i < 10; i++)
     {
-        *pTrgs++ = (word)(i * 4) + 0;
-        *pTrgs++ = (word)(i * 4) + 1;
-        *pTrgs++ = (word)(i * 4) + 2;
-        *pTrgs++ = (word)(i * 4) + 0;
-        *pTrgs++ = (word)(i * 4) + 2;
-        *pTrgs++ = (word)(i * 4) + 3;
+        *pTrgs++ = static_cast<uint16_t>(i * 4) + 0;
+        *pTrgs++ = static_cast<uint16_t>(i * 4) + 1;
+        *pTrgs++ = static_cast<uint16_t>(i * 4) + 2;
+        *pTrgs++ = static_cast<uint16_t>(i * 4) + 0;
+        *pTrgs++ = static_cast<uint16_t>(i * 4) + 2;
+        *pTrgs++ = static_cast<uint16_t>(i * 4) + 3;
     }
     pRS->UnLockIndexBuffer(iSkyIndexID);
 
@@ -300,19 +298,20 @@ void SKY::GenerateSky()
 
 void SKY::LoadTextures()
 {
-    char str[256], *names[SKY_NUM_TEXTURES] = {"sky_fr.tga", "sky_lf.tga", "sky_bk.tga", "sky_rt.tga", "sky_up.tga"};
+    char str[256];
+    const char *names[SKY_NUM_TEXTURES] = {"sky_fr.tga", "sky_lf.tga", "sky_bk.tga", "sky_rt.tga", "sky_up.tga"};
 
-    string sSkyDir, sSkyDirNext;
+    std::string sSkyDir, sSkyDirNext;
     GetSkyDirStrings(sSkyDir, sSkyDirNext);
 
     for (long i = 0; i < SKY_NUM_TEXTURES; i++)
     {
-        sprintf(str, "%s%s", (const char *)sSkyDir, names[i]);
+        sprintf_s(str, "%s%s", static_cast<const char *>(sSkyDir.c_str()), names[i]);
         TexturesID[i] = pRS->TextureCreate(str);
 
-        if (aSkyDirArray.Size() > 1)
+        if (aSkyDirArray.size() > 1)
         {
-            sprintf(str, "%s%s", (const char *)sSkyDirNext, names[i]);
+            sprintf_s(str, "%s%s", static_cast<const char *>(sSkyDirNext.c_str()), names[i]);
             TexturesNextID[i] = pRS->TextureCreate(str);
         }
     }
@@ -331,9 +330,9 @@ bool SKY::LoadState(ENTITY_STATE *state)
     return true;
 }
 
-void SKY::Realize(dword Delta_Time)
+void SKY::Realize(uint32_t Delta_Time)
 {
-    fAngleY += float(Delta_Time) * 0.001f * fSkySpeedRotate;
+    fAngleY += static_cast<float>(Delta_Time) * 0.001f * fSkySpeedRotate;
 
     float fFov;
     CVECTOR vPos, vAng;
@@ -349,15 +348,15 @@ void SKY::Realize(dword Delta_Time)
     D3DXMatrixMultiply(&pMatWorld, &pMatRotate, &pMatWorld);
     pRS->SetTransform(D3DTS_WORLD, &pMatWorld);
 
-    if (aSkyDirArray.Size() > 1)
+    if (aSkyDirArray.size() > 1)
     {
         UpdateTimeFactor();
-        float fBlendFactor = fTimeFactor - (long)fTimeFactor;
+        auto fBlendFactor = fTimeFactor - static_cast<long>(fTimeFactor);
         if (fBlendFactor < 0.f)
             fBlendFactor = 0.f;
         if (fBlendFactor > 1.f)
             fBlendFactor = 1.f;
-        dword dwColor = (dwSkyColor & 0x00FFFFFF) | (((long)(0xFF000000 * fBlendFactor)) & 0xFF000000);
+        uint32_t dwColor = (dwSkyColor & 0x00FFFFFF) | (static_cast<long>(0xFF000000 * fBlendFactor) & 0xFF000000);
         pRS->SetRenderState(D3DRS_TEXTUREFACTOR, dwColor);
 
         if (pRS->TechniqueExecuteStart("skyblend"))
@@ -375,22 +374,22 @@ void SKY::Realize(dword Delta_Time)
 
         if (Delta_Time != 0)
         {
-            ENTITY_ID eid;
+            entid_t eid;
 
             if (!pAstronomy)
-                if (api->FindClass(&eid, "Astronomy", 0))
-                    pAstronomy = (ENTITY *)eid.pointer;
+                if (eid = EntityManager::GetEntityId("Astronomy"))
+                    pAstronomy = static_cast<Entity *>(EntityManager::GetEntityPointer(eid));
 
             if (!pSunGlow)
-                if (api->FindClass(&eid, "SUNGLOW", 0))
-                    pSunGlow = (ENTITY *)eid.pointer;
+                if (eid = EntityManager::GetEntityId("SUNGLOW"))
+                    pSunGlow = static_cast<Entity *>(EntityManager::GetEntityPointer(eid));
 
             if (pAstronomy || pSunGlow)
             {
                 if (pAstronomy)
-                    pAstronomy->Realize(Delta_Time);
+                    pAstronomy->ProcessStage(Stage::realize, Delta_Time);
                 if (pSunGlow)
-                    ((SUNGLOW *)pSunGlow)->DrawSunMoon();
+                    static_cast<SUNGLOW *>(pSunGlow)->DrawSunMoon();
 
                 pRS->SetTransform(D3DTS_WORLD, &pMatWorld);
                 if (pRS->TechniqueExecuteStart("skyblend_alpha"))
@@ -401,14 +400,14 @@ void SKY::Realize(dword Delta_Time)
                             pRS->TextureSet(0, TexturesID[i]);
                             pRS->TextureSet(1, TexturesNextID[i]);
                             pRS->DrawBuffer(iSkyVertsID, sizeof(SKYVERTEX), iSkyIndexID, 0, 20, i * 6, 2);
-                            if (Delta_Time == 0)
+                            if (Delta_Time == 0) //~!~
                                 pRS->DrawBuffer(iSkyVertsID, sizeof(SKYVERTEX), iSkyIndexID, 0, 40, 30 + i * 6, 2);
                         }
                     } while (pRS->TechniqueExecuteNext());
             }
         }
 
-        string sSkyPrev, sSkyNext;
+        std::string sSkyPrev, sSkyNext;
         GetSkyDirStrings(sSkyPrev, sSkyNext);
         // debug pRS->Print( 10,10, "time = %.2f(%.2f), skydir = %s,%s", fTimeFactor,fBlendFactor, (const
         // char*)sSkyPrev,(const char*)sSkyNext);
@@ -434,10 +433,10 @@ void SKY::Realize(dword Delta_Time)
     D3DXMatrixTranslation(&pMatTranslate, vPos.x, vPos.y / 6.0f, vPos.z);
     D3DXMatrixMultiply(&pMatWorld, &pMatWorld, &pMatTranslate);
     pRS->SetTransform(D3DTS_WORLD, &pMatWorld);
-    pRS->DrawBuffer(iFogVertsID, sizeof(FOGVERTEX), iFogIndexID, 0, iFogNumVerts, 0, iFogNumTrgs / 3, "SkyFog");
+    pRS->DrawBuffer(iFogVertsID, sizeof(FOGVERTEX), iFogIndexID, 0, iFogNumVerts, 0, iFogNumTrgs / 3, "skyfog");
 }
 
-dword SKY::AttributeChanged(ATTRIBUTES *pAttribute)
+uint32_t SKY::AttributeChanged(ATTRIBUTES *pAttribute)
 {
     // if (*pAttribute == "dir")			{ sSkyDir = pAttribute->GetThisAttr(); return 0; }
     if (*pAttribute == "dir")
@@ -481,7 +480,7 @@ dword SKY::AttributeChanged(ATTRIBUTES *pAttribute)
     return 0;
 }
 
-dword _cdecl SKY::ProcessMessage(MESSAGE &message)
+uint64_t SKY::ProcessMessage(MESSAGE &message)
 {
     if (message.Long() == MSG_SEA_REFLECTION_DRAW)
         Realize(0);
@@ -490,20 +489,21 @@ dword _cdecl SKY::ProcessMessage(MESSAGE &message)
 
 void SKY::FillSkyDirArray(ATTRIBUTES *pAttribute)
 {
-    aSkyDirArray.DelAll();
-    long q = pAttribute->GetAttributesNum();
+    aSkyDirArray.clear();
+    const long q = pAttribute->GetAttributesNum();
     if (q < 1)
         return;
 
-    aSkyDirArray.AddElements(q);
+    // aSkyDirArray.AddElements( q );
+    aSkyDirArray.resize(aSkyDirArray.size() + q);
     if (q > 1)
     {
         for (long n = 0; n < q; n++)
         {
-            char *attrName = pAttribute->GetAttributeName(n);
+            const auto *const attrName = pAttribute->GetAttributeName(n);
             if (attrName && attrName[0] == 'd' && attrName[1] >= '0' && attrName[1] <= '9')
             {
-                long i = atol(&attrName[1]);
+                const auto i = atol(&attrName[1]);
                 if (i < q)
                     aSkyDirArray[i] = pAttribute->GetAttribute(n);
             }
@@ -511,24 +511,24 @@ void SKY::FillSkyDirArray(ATTRIBUTES *pAttribute)
     }
     else
     {
-        aSkyDirArray[0] = pAttribute->GetAttribute((DWORD)0);
+        aSkyDirArray[0] = pAttribute->GetAttribute(static_cast<size_t>(0));
     }
-    fTimeFactor = (float)atof(pAttribute->GetThisAttr());
+    fTimeFactor = static_cast<float>(atof(pAttribute->GetThisAttr()));
     if (fTimeFactor < 0.f || fTimeFactor > 24.f)
         fTimeFactor = 0.f;
-    fTimeFactor *= (1.f / 24.f) * aSkyDirArray.Size();
+    fTimeFactor *= (1.f / 24.f) * aSkyDirArray.size();
 }
 
-void SKY::GetSkyDirStrings(string &sSkyDir, string &sSkyDirNext)
+void SKY::GetSkyDirStrings(std::string &sSkyDir, std::string &sSkyDirNext)
 {
-    long n1 = (long)fTimeFactor;
+    auto n1 = static_cast<long>(fTimeFactor);
     if (n1 >= 0)
     {
-        if (n1 >= (long)aSkyDirArray)
-            n1 -= aSkyDirArray.Size();
-        long n2 = n1 + 1;
-        if (n2 >= (long)aSkyDirArray)
-            n2 -= aSkyDirArray.Size();
+        if (n1 >= static_cast<long>(aSkyDirArray.size()))
+            n1 -= aSkyDirArray.size();
+        auto n2 = n1 + 1;
+        if (n2 >= static_cast<long>(aSkyDirArray.size()))
+            n2 -= aSkyDirArray.size();
 
         sSkyDir = aSkyDirArray[n1];
         sSkyDirNext = aSkyDirArray[n2];
@@ -539,26 +539,26 @@ void SKY::GetSkyDirStrings(string &sSkyDir, string &sSkyDirNext)
 
 void SKY::UpdateTimeFactor()
 {
-    long nPrev = (long)fTimeFactor;
+    const auto nPrev = static_cast<long>(fTimeFactor);
 
     // fTimeFactor += api->GetDeltaTime() * 0.00005f;
-    ENTITY_ID eid;
-    if (!api->FindClass(&eid, "Weather", 0))
+    entid_t eid;
+    if (!(eid = EntityManager::GetEntityId("weather")))
         return;
-    fTimeFactor = ((WEATHER_BASE *)eid.pointer)->GetFloat(whf_time_counter);
-    fTimeFactor *= (1.f / 24.f) * aSkyDirArray.Size();
+    fTimeFactor = static_cast<WEATHER_BASE *>(EntityManager::GetEntityPointer(eid))->GetFloat(whf_time_counter);
+    fTimeFactor *= (1.f / 24.f) * aSkyDirArray.size();
 
-    if ((long)fTimeFactor >= (long)aSkyDirArray)
-        fTimeFactor -= aSkyDirArray.Size();
-    long nNext = (long)fTimeFactor;
+    if (static_cast<long>(fTimeFactor) >= static_cast<long>(aSkyDirArray.size()))
+        fTimeFactor -= aSkyDirArray.size();
+    const auto nNext = static_cast<long>(fTimeFactor);
     if (nPrev != nNext)
     {
         // перечитываем текстуры
 
-        char str[256],
-            *names[SKY_NUM_TEXTURES] = {"sky_fr.tga", "sky_lf.tga", "sky_bk.tga", "sky_rt.tga", "sky_up.tga"};
+        char str[256];
+        const char *names[SKY_NUM_TEXTURES] = {"sky_fr.tga", "sky_lf.tga", "sky_bk.tga", "sky_rt.tga", "sky_up.tga"};
 
-        string sSkyDir, sSkyDirNext;
+        std::string sSkyDir, sSkyDirNext;
         GetSkyDirStrings(sSkyDir, sSkyDirNext);
 
         for (long i = 0; i < SKY_NUM_TEXTURES; i++)
@@ -567,7 +567,7 @@ void SKY::UpdateTimeFactor()
                 pRS->TextureRelease(TexturesID[i]);
             TexturesID[i] = TexturesNextID[i];
 
-            sprintf(str, "%s%s", (const char *)sSkyDirNext, names[i]);
+            sprintf_s(str, "%s%s", static_cast<const char *>(sSkyDirNext.c_str()), names[i]);
             TexturesNextID[i] = pRS->TextureCreate(str);
         }
     }
@@ -686,11 +686,13 @@ float SKY::CalculateAlphaForSun(const CVECTOR &vSunPos, float fSunSize)
         // ищем альфу в текстуре
         if (nTexNum != -1)
         {
-            DWORD dwCol1 = GetPixelColor((IDirect3DTexture9 *)pRS->GetTextureFromID(TexturesID[nTexNum]), fu, fv);
-            DWORD dwCol2 = GetPixelColor((IDirect3DTexture9 *)pRS->GetTextureFromID(TexturesNextID[nTexNum]), fu, fv);
+            const auto dwCol1 =
+                GetPixelColor(static_cast<IDirect3DTexture9 *>(pRS->GetTextureFromID(TexturesID[nTexNum])), fu, fv);
+            const auto dwCol2 =
+                GetPixelColor(static_cast<IDirect3DTexture9 *>(pRS->GetTextureFromID(TexturesNextID[nTexNum])), fu, fv);
 
-            float fK = fTimeFactor - (long)fTimeFactor;
-            float fAlpha = (1.f - fK) * (dwCol1 >> 24) / 255.f + fK * (dwCol2 >> 24) / 255.f;
+            const auto fK = fTimeFactor - static_cast<long>(fTimeFactor);
+            const auto fAlpha = (1.f - fK) * (dwCol1 >> 24) / 255.f + fK * (dwCol2 >> 24) / 255.f;
             return fAlpha;
         }
     }
@@ -698,23 +700,23 @@ float SKY::CalculateAlphaForSun(const CVECTOR &vSunPos, float fSunSize)
     return 1.f;
 }
 
-DWORD SKY::GetPixelColor(IDirect3DTexture9 *pTex, float fu, float fv)
+uint32_t SKY::GetPixelColor(IDirect3DTexture9 *pTex, float fu, float fv) const
 {
     HRESULT hok;
-    DWORD dwCol = 0xFFFFFFFF;
+    auto dwCol = 0xFFFFFFFF;
 
     if (!pTex)
         return dwCol;
 
     D3DSURFACE_DESC texdesc;
     pRS->GetLevelDesc(pTex, 0, &texdesc);
-    long x = (long)(texdesc.Width * fu);
-    long y = (long)(texdesc.Height * fv);
+    const auto x = static_cast<long>(texdesc.Width * fu);
+    const auto y = static_cast<long>(texdesc.Height * fv);
 
     D3DLOCKED_RECT lockRect;
-    if ((hok = pRS->LockRect(pTex, 0, &lockRect, 0, D3DLOCK_READONLY)) == D3D_OK)
+    if ((hok = pRS->LockRect(pTex, 0, &lockRect, nullptr, D3DLOCK_READONLY)) == D3D_OK)
     {
-        DWORD *pLine = (DWORD *)((DWORD)lockRect.pBits + y * lockRect.Pitch);
+        auto *pLine = (uint32_t *)(static_cast<uint8_t *>(lockRect.pBits) + y * lockRect.Pitch);
         dwCol = pLine[x];
         pRS->UnlockRect(pTex, 0);
     }

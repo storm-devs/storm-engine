@@ -3,21 +3,40 @@
 
 #include "Typedef.h"
 #include "Weather_base.h"
+#include <string>
+#include <vector>
 
 class SKY;
 
-class SUNGLOW : public ENTITY
+class SUNGLOW : public Entity
 {
   public:
     SUNGLOW();
     ~SUNGLOW();
 
     void SetDevice();
-    bool Init();
-    void Realize(dword Delta_Time);
-    void Execute(dword Delta_Time);
-    dword AttributeChanged(ATTRIBUTES *pAttribute);
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    bool Init() override;
+    void Realize(uint32_t Delta_Time);
+    void Execute(uint32_t Delta_Time);
+    uint32_t AttributeChanged(ATTRIBUTES *pAttribute) override;
+    uint64_t ProcessMessage(MESSAGE &message) override;
+
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
 
     void DrawSunMoon();
 
@@ -31,7 +50,7 @@ class SUNGLOW : public ENTITY
     struct SUNGLOWVERTEX
     {
         CVECTOR vPos;
-        dword dwColor;
+        uint32_t dwColor;
         float tu, tv;
     };
 
@@ -43,46 +62,44 @@ class SUNGLOW : public ENTITY
         float fDist;
         float fDecayTime;
         float fRotateSpeed;
-        dword dwColor;
-        string sSunTexture, sMoonTexture, sGlowTexture, sTechniqueZ, sTechniqueNoZ;
+        uint32_t dwColor;
+        std::string sSunTexture, sMoonTexture, sGlowTexture, sTechniqueZ, sTechniqueNoZ;
     };
 
     struct flare_t
     {
-        float fDist;         // distance from far
-        float fSize;         // size
-        dword dwColor;       // color
-        dword dwSubTexIndex; // subtexture index
+        float fDist;            // distance from far
+        float fSize;            // size
+        uint32_t dwColor;       // color
+        uint32_t dwSubTexIndex; // subtexture index
     };
 
     struct sunflares_t
     {
-        sunflares_t() : aFlares(_FL_)
-        {
-        }
+        // sunflares_t() : aFlares(_FL_) {}
 
         float fSize;
         float fDist;
         float fFlareScale;
-        dword dwTexSizeX, dwTexSizeY;
-        string sTexture, sTechnique;
-        array<flare_t> aFlares;
+        uint32_t dwTexSizeX, dwTexSizeY;
+        std::string sTexture, sTechnique;
+        std::vector<flare_t> aFlares;
     };
 
     struct overflow_t
     {
-        string sTexture, sTechnique;
+        std::string sTexture, sTechnique;
         float fSize;
         float fStart;
-        dword dwColor;
+        uint32_t dwColor;
     };
 
     struct reflection_t
     {
-        string sTexture, sTechnique;
+        std::string sTexture, sTechnique;
         float fSize;
         float fDist;
-        dword dwColor;
+        uint32_t dwColor;
     };
 
     overflow_t Overflow;
@@ -92,11 +109,10 @@ class SUNGLOW : public ENTITY
     COLLIDE *pCollide;
     WEATHER_BASE *pWeather;
     SKY *pSky;
-    VDX8RENDER *pRS;
-    VIDWALKER *pVWSunTrace, *pVWSailsTrace;
+    VDX9RENDER *pRS;
     long idRectBuf;
 
-    array<RS_RECT> aRSR;
+    std::vector<RS_RECT> aRSR;
 
     bool bSimpleSea;
     long iNumFlares;
@@ -109,13 +125,13 @@ class SUNGLOW : public ENTITY
 
     float fBottomClip;
 
-    float LayerTrace(CVECTOR &vSrc, VIDWALKER *pVW);
+    float LayerTrace(CVECTOR &vSrc, EntityManager::LayerIterators its) const;
     void GenerateSunGlow();
-    void DrawReflection();
+    void DrawReflection() const;
     void Release();
 
-    void DrawRect(dword dwColor, const CVECTOR &pos, float fSize, float fAngle, const char *pcTechnique,
-                  float fBottomClip);
+    void DrawRect(uint32_t dwColor, const CVECTOR &pos, float fSize, float fAngle, const char *pcTechnique,
+                  float fBottomClip) const;
 
     float GetSunFadeoutFactor(const CVECTOR &vSunPos, float fSunSize);
 };

@@ -1,7 +1,7 @@
-#include "sunglow.h"
-#include "sky.h"
+#include "SunGlow.h"
+#include "SKY.h"
 
-SUNGLOW::SUNGLOW() : aRSR(_FL_, 16)
+SUNGLOW::SUNGLOW()
 {
     fAlpha = 0.0f;
     fAlphaFlare = 0.0f;
@@ -15,9 +15,6 @@ SUNGLOW::SUNGLOW() : aRSR(_FL_, 16)
     iFlareTex = -1;
     iOverflowTex = -1;
     iReflTexture = -1;
-
-    pVWSunTrace = null;
-    pVWSailsTrace = null;
 
     bMoon = false;
 
@@ -45,7 +42,7 @@ SUNGLOW::~SUNGLOW()
 
 bool SUNGLOW::Init()
 {
-    pRS = 0;
+    pRS = nullptr;
 
     SetDevice();
 
@@ -54,25 +51,25 @@ bool SUNGLOW::Init()
 
 void SUNGLOW::SetDevice()
 {
-    ENTITY_ID ent;
+    entid_t ent;
 
-    pRS = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
+    pRS = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
     Assert(pRS);
-    pCollide = (COLLIDE *)_CORE_API->CreateService("COLL");
+    pCollide = static_cast<COLLIDE *>(api->CreateService("COLL"));
     Assert(pCollide);
 
-    if (!api->FindClass(&ent, "Weather", 0))
-        SE_THROW_MSG("No found WEATHER entity!");
-    pWeather = (WEATHER_BASE *)_CORE_API->GetEntityPointer(&ent);
+    if (!(ent = EntityManager::GetEntityId("weather")))
+        throw std::exception("No found WEATHER entity!");
+    pWeather = static_cast<WEATHER_BASE *>(EntityManager::GetEntityPointer(ent));
     Assert(pWeather);
 
-    if (api->FindClass(&ent, "SKY", 0))
-        pSky = (SKY *)api->GetEntityPointer(&ent);
+    if (ent = EntityManager::GetEntityId("sky"))
+        pSky = static_cast<SKY *>(EntityManager::GetEntityPointer(ent));
     else
-        pSky = 0;
+        pSky = nullptr;
 
     if (idRectBuf == -1)
-        idRectBuf = pRS->CreateVertexBufferManaged(SUNGLOWVERTEX_FORMAT, sizeof(SUNGLOWVERTEX) * 8, D3DUSAGE_WRITEONLY);
+        idRectBuf = pRS->CreateVertexBuffer(SUNGLOWVERTEX_FORMAT, sizeof(SUNGLOWVERTEX) * 8, D3DUSAGE_WRITEONLY);
 }
 
 void SUNGLOW::Release()
@@ -96,9 +93,6 @@ void SUNGLOW::Release()
     if (iReflTexture >= 0)
         pRS->TextureRelease(iReflTexture);
     iReflTexture = -1;
-
-    SE_DELETE(pVWSunTrace);
-    SE_DELETE(pVWSailsTrace);
 }
 
 void SUNGLOW::GenerateSunGlow()
@@ -113,29 +107,29 @@ void SUNGLOW::GenerateSunGlow()
     iOldTex[nTex++] = iOverflowTex;
     iOldTex[nTex++] = iReflTexture;
 
-    if (Flares.sTexture.Len())
-        iFlareTex = pRS->TextureCreate((const char *)Flares.sTexture);
-    if (Glow.sSunTexture.Len())
-        iSunTex = pRS->TextureCreate((const char *)Glow.sSunTexture);
-    if (Glow.sMoonTexture.Len())
-        iMoonTex = pRS->TextureCreate((const char *)Glow.sMoonTexture);
-    if (Glow.sGlowTexture.Len())
-        iSunGlowTex = pRS->TextureCreate((const char *)Glow.sGlowTexture);
-    if (Overflow.sTexture.Len())
-        iOverflowTex = pRS->TextureCreate((const char *)Overflow.sTexture);
-    if (Reflection.sTexture.Len())
-        iReflTexture = pRS->TextureCreate(Reflection.sTexture);
+    if (Flares.sTexture.size())
+        iFlareTex = pRS->TextureCreate(static_cast<const char *>(Flares.sTexture.c_str()));
+    if (Glow.sSunTexture.size())
+        iSunTex = pRS->TextureCreate(static_cast<const char *>(Glow.sSunTexture.c_str()));
+    if (Glow.sMoonTexture.size())
+        iMoonTex = pRS->TextureCreate(static_cast<const char *>(Glow.sMoonTexture.c_str()));
+    if (Glow.sGlowTexture.size())
+        iSunGlowTex = pRS->TextureCreate(static_cast<const char *>(Glow.sGlowTexture.c_str()));
+    if (Overflow.sTexture.size())
+        iOverflowTex = pRS->TextureCreate(static_cast<const char *>(Overflow.sTexture.c_str()));
+    if (Reflection.sTexture.size())
+        iReflTexture = pRS->TextureCreate(Reflection.sTexture.c_str());
 
     for (long n = 0; n < nTex; n++)
         if (iOldTex[n] >= 0)
             pRS->TextureRelease(iOldTex[n]);
 }
 
-void SUNGLOW::Execute(dword Delta_Time)
+void SUNGLOW::Execute(uint32_t Delta_Time)
 {
     if (bHaveGlow)
     {
-        fAlpha += ((bVisible) ? 1.0f : -1.0f) * float(Delta_Time) * Glow.fDecayTime * 0.001f;
+        fAlpha += ((bVisible) ? 1.0f : -1.0f) * static_cast<float>(Delta_Time) * Glow.fDecayTime * 0.001f;
         fAlpha = CLAMP(fAlpha);
         if (fAlpha < fMinAlphaValue)
             fAlpha = fMinAlphaValue;
@@ -143,13 +137,13 @@ void SUNGLOW::Execute(dword Delta_Time)
 
     if (bHaveFlare)
     {
-        fAlphaFlare += ((bVisibleFlare) ? 1.0f : -1.0f) * float(Delta_Time) * 0.008f;
+        fAlphaFlare += ((bVisibleFlare) ? 1.0f : -1.0f) * static_cast<float>(Delta_Time) * 0.008f;
         fAlphaFlare = CLAMP(fAlphaFlare);
     }
 
     if (bHaveOverflow)
     {
-        fAlphaOverflow += ((bVisible) ? 1.0f : -1.0f) * float(Delta_Time) * 0.008f;
+        fAlphaOverflow += ((bVisible) ? 1.0f : -1.0f) * static_cast<float>(Delta_Time) * 0.008f;
         fAlphaOverflow = CLAMP(fAlphaOverflow);
         if (fAlphaOverflow < fMaxOverflowAlphaValue * fMinAlphaValue)
             fAlphaOverflow = fMaxOverflowAlphaValue * fMinAlphaValue;
@@ -158,26 +152,24 @@ void SUNGLOW::Execute(dword Delta_Time)
     }
 }
 
-float SUNGLOW::LayerTrace(CVECTOR &vSrc, VIDWALKER *pVW)
+float SUNGLOW::LayerTrace(CVECTOR &vSrc, EntityManager::LayerIterators its) const
 {
-    CVECTOR vDst;
-
-    if (!pVW)
+    if (its.first == its.second)
         return 2.0f;
 
+    CVECTOR vDst;
     pWeather->GetVector(whv_sun_pos, &vDst);
     vDst = vSrc + (!vDst) * 10000.0f;
-    return pCollide->Trace(*pVW, vSrc, vDst, 0, 0);
+    return pCollide->Trace(its, vSrc, vDst, nullptr, 0);
 }
 
-void SUNGLOW::Realize(dword Delta_Time)
+void SUNGLOW::Realize(uint32_t Delta_Time)
 {
     CMatrix OldMatrix, IMatrix, View;
     pRS->GetTransform(D3DTS_VIEW, OldMatrix);
     pRS->GetTransform(D3DTS_VIEW, View);
 
     float fFov;
-    CVECTOR vSrc, vDst;
     CVECTOR vSun, vSunPos, vSunDir;
     CVECTOR vCamPos, vCamAng, vCamDir;
 
@@ -186,18 +178,18 @@ void SUNGLOW::Realize(dword Delta_Time)
     vSunDir = !vSunPos;
     vSun = vCamPos + (vSunDir * Glow.fDist);
 
-    bool bTempVisibleFlare = true;
-    PLANE *pPlane = pRS->GetPlanes();
+    auto bTempVisibleFlare = true;
+    auto *pPlane = pRS->GetPlanes();
     if (pPlane)
     {
         for (long i = 0; i < 4; i++)
         {
-            CVECTOR vpn = CVECTOR(pPlane[i].Nx, pPlane[i].Ny, pPlane[i].Nz);
+            auto vpn = CVECTOR(pPlane[i].Nx, pPlane[i].Ny, pPlane[i].Nz);
             if ((vpn | vSunPos) < 0.0f)
             {
                 bTempVisibleFlare = false;
                 break;
-            };
+            }
         }
     }
     if (Delta_Time)
@@ -206,13 +198,8 @@ void SUNGLOW::Realize(dword Delta_Time)
     bVisible = true;
     fMinAlphaValue = 0.0f;
 
-    if (!pVWSunTrace)
-        pVWSunTrace = api->LayerGetWalker("sun_trace");
-    if (!pVWSailsTrace)
-        pVWSailsTrace = api->LayerGetWalker("sails_trace");
-
-    float fSunTrace = LayerTrace(vCamPos, pVWSunTrace);
-    float fSailTrace = LayerTrace(vCamPos, pVWSailsTrace);
+    auto fSunTrace = LayerTrace(vCamPos, EntityManager::GetEntityIdIterators(SUN_TRACE));
+    auto fSailTrace = LayerTrace(vCamPos, EntityManager::GetEntityIdIterators(SAILS_TRACE));
 
     if (fSunTrace <= 1.0f || fSailTrace <= 1.0f)
         bVisible = false;
@@ -222,15 +209,15 @@ void SUNGLOW::Realize(dword Delta_Time)
         fMinAlphaValue = 0.2f;
     }
 
-    /*VIDWALKER * pVW = _CORE_API->LayerGetWalker("sun_trace");
+    /*walker_t pVW = api->LayerGetWalker("sun_trace");
     if (pVW)
     {
-        vSrc = vCamPos;
-        pWeather->GetVector(whv_sun_pos,&vDst);
-        vDst = vCamPos + (!vDst) * 4000.0f;
-        float fRes = pCollide->Trace(*pVW,vSrc,vDst,0,0);
-        bVisible = (fRes>1.0f);
-        delete pVW;
+      vSrc = vCamPos;
+      pWeather->GetVector(whv_sun_pos,&vDst);
+      vDst = vCamPos + (!vDst) * 4000.0f;
+      float fRes = pCollide->Trace(*pVW,vSrc,vDst,0,0);
+      bVisible = (fRes>1.0f);
+      delete pVW;
     }
     else bVisible = true;*/
 
@@ -239,9 +226,9 @@ void SUNGLOW::Realize(dword Delta_Time)
     // calculate angle between camera dir.y and sun dir.y
     vSunDir.y = 0.0f;
     vCamDir = CVECTOR(cosf(vCamAng.y), 0.0f, sinf(vCamAng.y));
-    float fAngle = vSunDir | vCamDir;
+    auto fAngle = vSunDir | vCamDir;
 
-    float fSeaHeight = 0.f; // pWeather->GetFloat(whf_water_attenuation);//0.f;
+    auto fSeaHeight = 0.f; // pWeather->GetFloat(whf_water_attenuation);//0.f;
     fBottomClip = fSeaHeight;
 
     // float fGlowSize = bMoon ? Glow.fMoonSize : Glow.fSunSize;
@@ -263,19 +250,19 @@ void SUNGLOW::Realize(dword Delta_Time)
 
         if (!bMoon)
         {
-            float fGlowFadeout = fFadeout - (1.f - fFadeout) * 1.5f;
+            auto fGlowFadeout = fFadeout - (1.f - fFadeout) * 1.5f;
             if (fGlowFadeout < 0.f)
                 fGlowFadeout = 0.f;
             pRS->TextureSet(0, iSunGlowTex);
             CVECTOR vGlowColor = fAlpha * fGlowFadeout * COLOR2VECTOR(Glow.dwColor);
-            DrawRect(RGB(vGlowColor.x, vGlowColor.y, vGlowColor.z), vSun, Glow.fGlowSize, fAngle * 1.f,
-                     Glow.sTechniqueNoZ, fSeaHeight);
+            DrawRect(makeRGB(vGlowColor.x, vGlowColor.y, vGlowColor.z), vSun, Glow.fGlowSize, fAngle * 1.f,
+                     Glow.sTechniqueNoZ.c_str(), fSeaHeight);
         }
     }
 
     View.Transposition();
-    CVECTOR vCamera = View.Vz();
-    float fDot = vCamera | (!vSun);
+    auto vCamera = View.Vz();
+    auto fDot = vCamera | (!vSun);
 
     fMaxOverflowAlphaValue = (fDot > Overflow.fStart) ? (fDot - Overflow.fStart) / (1.0f - Overflow.fStart) : 0.0f;
     if (bHaveOverflow)
@@ -284,46 +271,51 @@ void SUNGLOW::Realize(dword Delta_Time)
 
         CVECTOR vOverflowColor = fFadeout * fAlphaOverflow * COLOR2VECTOR(Overflow.dwColor);
 
-        rs_rect.dwColor = RGB(vOverflowColor.x, vOverflowColor.y, vOverflowColor.z);
+        rs_rect.dwColor = makeRGB(vOverflowColor.x, vOverflowColor.y, vOverflowColor.z);
         rs_rect.vPos = vSun;
         rs_rect.fSize = Overflow.fSize;
         rs_rect.fAngle = 0.0f;
 
-        pRS->DrawRects(&rs_rect, 1, Overflow.sTechnique);
+        pRS->DrawRects(&rs_rect, 1, Overflow.sTechnique.c_str());
     }
 
     // calculate and draw flares
-    aRSR.Empty();
-    if (Delta_Time && Flares.aFlares.Size() && bHaveFlare)
+    aRSR.clear();
+    if (Delta_Time && Flares.aFlares.size() && bHaveFlare)
     {
-        CMatrix mCam = OldMatrix;
+        auto mCam = OldMatrix;
         mCam.Transposition();
 
         // CVECTOR vCenPos = CVECTOR(0.0f, 0.0f, Flares.fDist / 2.0f);
-        CVECTOR vCenPos = mCam.Vz() * Flares.fDist / 2.0f + mCam.Pos();
-        CVECTOR vDelta = Flares.fDist * !(vCenPos - vSun);
-        for (dword i = 0; i < Flares.aFlares.Size(); i++)
+        auto vCenPos = mCam.Vz() * Flares.fDist / 2.0f + mCam.Pos();
+        auto vDelta = Flares.fDist * !(vCenPos - vSun);
+        for (uint32_t i = 0; i < Flares.aFlares.size(); i++)
         {
-            flare_t *pF = &Flares.aFlares[i];
-            dword r = dword(fFadeout * fAlpha * fAlphaFlare * float((pF->dwColor & 0xFF0000) >> 16L));
-            dword g = dword(fFadeout * fAlpha * fAlphaFlare * float((pF->dwColor & 0xFF00) >> 8L));
-            dword b = dword(fFadeout * fAlpha * fAlphaFlare * float((pF->dwColor & 0xFF) >> 0L));
-            RS_RECT *pRSR = &aRSR[aRSR.Add()];
-            pRSR->dwColor = RGB(r, g, b);
-            pRSR->fAngle = 0.0f;
-            pRSR->dwSubTexture = pF->dwSubTexIndex;
-            pRSR->fSize = pF->fSize * Flares.fFlareScale;
-            pRSR->vPos = vSun + vDelta * (1.0f - pF->fDist);
+            auto *pF = &Flares.aFlares[i];
+            auto r = static_cast<uint32_t>(fFadeout * fAlpha * fAlphaFlare *
+                                           static_cast<float>((pF->dwColor & 0xFF0000) >> 16L));
+            auto g = static_cast<uint32_t>(fFadeout * fAlpha * fAlphaFlare *
+                                           static_cast<float>((pF->dwColor & 0xFF00) >> 8L));
+            auto b =
+                static_cast<uint32_t>(fFadeout * fAlpha * fAlphaFlare * static_cast<float>((pF->dwColor & 0xFF) >> 0L));
+            // RS_RECT * pRSR = &aRSR[aRSR.Add()];
+            RS_RECT rect;
+            rect.dwColor = makeRGB(r, g, b);
+            rect.fAngle = 0.0f;
+            rect.dwSubTexture = pF->dwSubTexIndex;
+            rect.fSize = pF->fSize * Flares.fFlareScale;
+            rect.vPos = vSun + vDelta * (1.0f - pF->fDist);
+            aRSR.push_back(rect);
         }
 
         pRS->TextureSet(0, iFlareTex);
-        pRS->DrawRects(&aRSR[0], aRSR.Size(), Flares.sTechnique, Flares.dwTexSizeX, Flares.dwTexSizeY);
+        pRS->DrawRects(&aRSR[0], aRSR.size(), Flares.sTechnique.c_str(), Flares.dwTexSizeX, Flares.dwTexSizeY);
     }
 }
 
 void SUNGLOW::DrawSunMoon()
 {
-    float fGlowSize = bMoon ? Glow.fMoonSize : Glow.fSunSize;
+    const auto fGlowSize = bMoon ? Glow.fMoonSize : Glow.fSunSize;
 
     float fFov;
     CVECTOR vCamPos, vCamAng;
@@ -336,18 +328,19 @@ void SUNGLOW::DrawSunMoon()
 
     if (bHaveGlow && vSun.y > fBottomClip - fGlowSize)
     {
-        CVECTOR vGlowColor = COLOR2VECTOR(Glow.dwColor);
+        const CVECTOR vGlowColor = COLOR2VECTOR(Glow.dwColor);
 
         if (bMoon)
             pRS->TextureSet(0, iMoonTex);
         else
             pRS->TextureSet(0, iSunTex);
 
-        DrawRect(RGB(vGlowColor.x, vGlowColor.y, vGlowColor.z), vSun, fGlowSize, 0.f, Glow.sTechniqueZ, fBottomClip);
+        DrawRect(makeRGB(vGlowColor.x, vGlowColor.y, vGlowColor.z), vSun, fGlowSize, 0.f, Glow.sTechniqueZ.c_str(),
+                 fBottomClip);
     }
 }
 
-dword SUNGLOW::AttributeChanged(ATTRIBUTES *pAttribute)
+uint32_t SUNGLOW::AttributeChanged(ATTRIBUTES *pAttribute)
 {
     if (*pAttribute == "isDone")
     {
@@ -360,18 +353,20 @@ dword SUNGLOW::AttributeChanged(ATTRIBUTES *pAttribute)
         bHaveFlare = false;
         bHaveGlow = false;
         bHaveOverflow = false;
-        Flares.aFlares.DelAll();
+        Flares.aFlares.clear();
         return 0;
     }
 
-    ATTRIBUTES *pParent = pAttribute->GetParent();
+    auto *const pParent = pAttribute->GetParent();
 
     if (*pParent == "Flares")
     {
         bHaveFlare = true;
-        char *pTemp = pAttribute->GetThisAttr();
-        flare_t *pFlare = &Flares.aFlares[Flares.aFlares.Add()];
-        sscanf(pTemp, "%f,%f,%d,%x", &pFlare->fDist, &pFlare->fSize, &pFlare->dwSubTexIndex, &pFlare->dwColor);
+        auto *const pTemp = pAttribute->GetThisAttr();
+        // flare_t * pFlare = &Flares.aFlares[Flares.aFlares.Add()];
+        flare_t flare;
+        sscanf(pTemp, "%f,%f,%d,%x", &flare.fDist, &flare.fSize, &flare.dwSubTexIndex, &flare.dwColor);
+        Flares.aFlares.push_back(flare);
         return 0;
     }
 
@@ -547,15 +542,14 @@ dword SUNGLOW::AttributeChanged(ATTRIBUTES *pAttribute)
     return 0;
 }
 
-void SUNGLOW::DrawReflection()
+void SUNGLOW::DrawReflection() const
 {
     if (!bHaveReflection)
         return;
 
     float fFov;
-    CVECTOR vSrc, vDst;
     CVECTOR vSun, vSunPos, vSunDir;
-    CVECTOR vCamPos, vCamAng, vCamDir;
+    CVECTOR vCamPos, vCamAng;
 
     pWeather->GetVector(whv_sun_pos, &vSunPos);
     pRS->GetCamera(vCamPos, vCamAng, fFov);
@@ -563,24 +557,24 @@ void SUNGLOW::DrawReflection()
     vSun = vCamPos + (vSunDir * Reflection.fDist);
 
     RS_RECT r_spr;
-    r_spr.dwColor = (0xFFFFFF & Reflection.dwColor) | (((long)(fFadeout * 255.f)) << 24);
+    r_spr.dwColor = (0xFFFFFF & Reflection.dwColor) | (static_cast<long>(fFadeout * 255.f) << 24);
     r_spr.dwSubTexture = 0;
     r_spr.fAngle = 0.0f;
     r_spr.fSize = Reflection.fSize;
     r_spr.vPos = vSun;
 
-    float fSunHeightAngle = pWeather->GetFloat(whf_sun_height_angle);
-    float fCoeffX = Bring2Range(1.0f, 0.6f, 0.0f, 1.0f, fSunHeightAngle);
-    float fCoeffY = Bring2Range(2.0f, 1.0f, 0.0f, 1.0f, fSunHeightAngle);
+    const auto fSunHeightAngle = pWeather->GetFloat(whf_sun_height_angle);
+    const auto fCoeffX = Bring2Range(1.0f, 0.6f, 0.0f, 1.0f, fSunHeightAngle);
+    const auto fCoeffY = Bring2Range(2.0f, 1.0f, 0.0f, 1.0f, fSunHeightAngle);
 
-    Render().TextureSet(0, iReflTexture);
-    Render().DrawRects(&r_spr, 1, Reflection.sTechnique, 0, 0, (bSimpleSea) ? fCoeffX : 1.0f,
-                       (bSimpleSea) ? fCoeffY : 1.0f);
+    pRS->TextureSet(0, iReflTexture);
+    pRS->DrawRects(&r_spr, 1, Reflection.sTechnique.c_str(), 0, 0, (bSimpleSea) ? fCoeffX : 1.0f,
+                   (bSimpleSea) ? fCoeffY : 1.0f);
 }
 
-dword _cdecl SUNGLOW::ProcessMessage(MESSAGE &message)
+uint64_t SUNGLOW::ProcessMessage(MESSAGE &message)
 {
-    long iCode = message.Long();
+    const auto iCode = message.Long();
 
     switch (iCode)
     {
@@ -593,8 +587,8 @@ dword _cdecl SUNGLOW::ProcessMessage(MESSAGE &message)
     return 0;
 }
 
-void SUNGLOW::DrawRect(dword dwColor, const CVECTOR &pos, float fSize, float fAngle, const char *pcTechnique,
-                       float fBClip)
+void SUNGLOW::DrawRect(uint32_t dwColor, const CVECTOR &pos, float fSize, float fAngle, const char *pcTechnique,
+                       float fBClip) const
 {
     if (idRectBuf == -1)
         return;
@@ -602,8 +596,8 @@ void SUNGLOW::DrawRect(dword dwColor, const CVECTOR &pos, float fSize, float fAn
     static CMatrix camMtx;
     pRS->GetTransform(D3DTS_VIEW, camMtx);
     CVECTOR vx, vy, vp1, vp2, vp3, vp4;
-    float sn = sinf(fAngle);
-    float cs = cosf(fAngle);
+    const auto sn = sinf(fAngle);
+    const auto cs = cosf(fAngle);
     camMtx.MulToInvNorm(CVECTOR(fSize, 0, 0) * cs + CVECTOR(0, fSize, 0) * sn, vx);
     camMtx.MulToInvNorm(CVECTOR(0, fSize, 0) * cs - CVECTOR(fSize, 0, 0) * sn, vy);
     vp1 = pos - vx + vy;
@@ -612,7 +606,7 @@ void SUNGLOW::DrawRect(dword dwColor, const CVECTOR &pos, float fSize, float fAn
     vp4 = pos + vx + vy;
 
     long nv = 0;
-    SUNGLOWVERTEX *pV = (SUNGLOWVERTEX *)pRS->LockVertexBuffer(idRectBuf);
+    auto *pV = static_cast<SUNGLOWVERTEX *>(pRS->LockVertexBuffer(idRectBuf));
     if (pV)
     {
         // добавляем первую точку (левый верхний угол)
@@ -627,7 +621,7 @@ void SUNGLOW::DrawRect(dword dwColor, const CVECTOR &pos, float fSize, float fAn
         // добавляем точку пересечения с плоскостью отсечения между 1й и 2й точкой
         if ((vp1.y >= fBClip) != (vp2.y >= fBClip))
         {
-            float fK = vp2.y - vp1.y;
+            auto fK = vp2.y - vp1.y;
             if (fK != 0.f)
             {
                 fK = (fBClip - vp1.y) / fK;
@@ -653,7 +647,7 @@ void SUNGLOW::DrawRect(dword dwColor, const CVECTOR &pos, float fSize, float fAn
         // добавляем точку пересечения с плоскостью отсечения между 2й и 3й точкой
         if ((vp2.y >= fBClip) != (vp3.y >= fBClip))
         {
-            float fK = vp3.y - vp2.y;
+            auto fK = vp3.y - vp2.y;
             if (fK != 0.f)
             {
                 fK = (fBClip - vp2.y) / fK;
@@ -679,7 +673,7 @@ void SUNGLOW::DrawRect(dword dwColor, const CVECTOR &pos, float fSize, float fAn
         // добавляем точку пересечения с плоскостью отсечения между 3й и 4й точкой
         if ((vp3.y >= fBClip) != (vp4.y >= fBClip))
         {
-            float fK = vp4.y - vp3.y;
+            auto fK = vp4.y - vp3.y;
             if (fK != 0.f)
             {
                 fK = (fBClip - vp3.y) / fK;
@@ -705,7 +699,7 @@ void SUNGLOW::DrawRect(dword dwColor, const CVECTOR &pos, float fSize, float fAn
         // добавляем точку пересечения с плоскостью отсечения между 4й и 1й точкой
         if ((vp3.y >= fBClip) != (vp4.y >= fBClip))
         {
-            float fK = vp1.y - vp4.y;
+            auto fK = vp1.y - vp4.y;
             if (fK != 0.f)
             {
                 fK = (fBClip - vp4.y) / fK;
@@ -737,7 +731,7 @@ void SUNGLOW::DrawRect(dword dwColor, const CVECTOR &pos, float fSize, float fAn
     lines[2].vPos = vp2;	lines[3].vPos = vp3;
     lines[4].vPos = vp3;	lines[5].vPos = vp4;
     lines[6].vPos = vp4;	lines[7].vPos = vp1;
-    pRS->DrawLines( lines, 4, "AILine" );*/
+    pRS->DrawLines( lines, 4, "Line" );*/
 }
 
 float SUNGLOW::GetSunFadeoutFactor(const CVECTOR &vSunPos, float fSunSize)
@@ -745,9 +739,7 @@ float SUNGLOW::GetSunFadeoutFactor(const CVECTOR &vSunPos, float fSunSize)
     // получим указатель на небо
     if (!pSky)
     {
-        ENTITY_ID ent;
-        if (api->FindClass(&ent, "SKY", 0))
-            pSky = (SKY *)api->GetEntityPointer(&ent);
+        pSky = static_cast<SKY *>(EntityManager::GetEntityPointer(EntityManager::GetEntityId("sky")));
     }
     return pSky ? pSky->CalculateAlphaForSun(vSunPos, fSunSize) : 1.0f;
 }

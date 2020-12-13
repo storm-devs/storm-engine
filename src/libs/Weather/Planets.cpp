@@ -1,7 +1,7 @@
 #include "Astronomy.h"
 #include "Weather_Base.h"
 
-Astronomy::PLANETS::PLANETS() : aPlanets(_FL_)
+Astronomy::PLANETS::PLANETS()
 {
     fPlanetScale = 1.0f;
 
@@ -17,37 +17,39 @@ Astronomy::PLANETS::~PLANETS()
 
 void Astronomy::PLANETS::ReleasePlanets()
 {
-    for (long i = 0; i < aPlanets; i++)
+    for (long i = 0; i < aPlanets.size(); i++)
     {
         // Astronomy::pGS->DeleteGeometry(aPlanets[i].pGeo);
         if (aPlanets[i].iTexture >= 0)
-            Astronomy::pRS->TextureRelease(aPlanets[i].iTexture);
+            pRS->TextureRelease(aPlanets[i].iTexture);
     }
 
-    aPlanets.DelAll();
+    aPlanets.clear();
 }
 
 void Astronomy::PLANETS::Init(ATTRIBUTES *pAP)
 {
     ReleasePlanets();
-    aPlanets.DelAll();
+    aPlanets.clear();
 
-    Astronomy::pGS->SetTexturePath("Weather\\Astronomy\\Planets\\");
+    pGS->SetTexturePath("Weather\\Astronomy\\Planets\\");
 
     // ATTRIBUTES * pAScale = pAP->FindAClass(pAP, "Planets.Scale");
     // fPlanetScale = ((pAScale) ? pAScale->GetAttributeAsFloat() : 1.0f);
     TimeUpdate(pAP);
 
-    ATTRIBUTES *pAPlanets = pAP->FindAClass(pAP, "Planets.Planet");
+    auto *pAPlanets = pAP->FindAClass(pAP, "Planets.Planet");
     if (pAPlanets)
-        for (dword i = 0; i < pAPlanets->GetAttributesNum(); i++)
+        for (uint32_t i = 0; i < pAPlanets->GetAttributesNum(); i++)
         {
-            ATTRIBUTES *pAPlanet = pAPlanets->GetAttributeClass(i);
-            ATTRIBUTES *pAMag = pAPlanet->GetAttributeClass("Mag");
+            auto *pAPlanet = pAPlanets->GetAttributeClass(i);
+            auto *pAMag = pAPlanet->GetAttributeClass("Mag");
 
-            string sName = pAPlanet->GetThisName();
+            std::string sName = pAPlanet->GetThisName();
 
-            Planet &p = aPlanets[aPlanets.Add()];
+            aPlanets.push_back(Planet{});
+            // Planet & p = aPlanets[aPlanets.Add()];
+            auto &p = aPlanets.back();
             p.fDiameter = pAPlanet->GetAttributeAsFloat("Diameter");
             p.fSpeed = pAPlanet->GetAttributeAsFloat("Speed");
             p.fDistance = pAPlanet->GetAttributeAsFloat("Distance");
@@ -60,24 +62,24 @@ void Astronomy::PLANETS::Init(ATTRIBUTES *pAP)
             // string sFilename = string("Weather\\Planets\\") + pAPlanets->GetAttributeName(i);
             // p.pGeo = Astronomy::pGS->CreateGeometry(sFilename, 0, 0);
 
-            p.iTexture = Astronomy::pRS->TextureCreate(string("Weather\\Astronomy\\Planets\\") + sName + ".tga");
+            p.iTexture = pRS->TextureCreate(("Weather\\Astronomy\\Planets\\" + sName + ".tga").c_str());
         }
 
-    float fMaxDistance = 1e-10f;
+    auto fMaxDistance = 1e-10f;
 
-    for (dword i = 0; i < aPlanets.Size(); i++)
+    for (uint32_t i = 0; i < aPlanets.size(); i++)
         if (aPlanets[i].fDistance > fMaxDistance)
             fMaxDistance = aPlanets[i].fDistance;
 
-    for (dword i = 0; i < aPlanets.Size(); i++)
+    for (uint32_t i = 0; i < aPlanets.size(); i++)
     {
         // aPlanets[i].fDistance /= fMaxDistance;
         aPlanets[i].fRealDistance = 1200.0f + 500.0f * aPlanets[i].fDistance / fMaxDistance;
-        aPlanets[i].fScale = float((aPlanets[i].fRealDistance * aPlanets[i].fDiameter) /
-                                   (fabs(double(aPlanets[i].fDistance) - 1.0) * 150000000.0));
+        aPlanets[i].fScale = static_cast<float>((aPlanets[i].fRealDistance * aPlanets[i].fDiameter) /
+                                                (fabs(static_cast<double>(aPlanets[i].fDistance) - 1.0) * 150000000.0));
     }
 
-    Astronomy::pGS->SetTexturePath("");
+    pGS->SetTexturePath("");
 }
 
 void Astronomy::PLANETS::Execute(double dDeltaTime, double dHour)
@@ -91,10 +93,10 @@ void Astronomy::PLANETS::Realize(double dDeltaTime, double dHour)
     {
         if ((fFadeTime > 0.f && fPlanetFade < 1.f) || (fFadeTime < 0.f && fPlanetFade > 0.f))
         {
-            ENTITY_ID eid;
-            if (api->FindClass(&eid, "Weather", 0))
+            if (const auto eid = EntityManager::GetEntityId("weather"))
             {
-                float fTime = ((WEATHER_BASE *)eid.pointer)->GetFloat(whf_time_counter);
+                auto fTime =
+                    static_cast<WEATHER_BASE *>(EntityManager::GetEntityPointer(eid))->GetFloat(whf_time_counter);
                 if (fFadeTime > 0.f)
                     fPlanetFade = (fTime - fFadeTimeStart) / fFadeTime;
                 if (fFadeTime < 0.f)
@@ -112,22 +114,22 @@ void Astronomy::PLANETS::Realize(double dDeltaTime, double dHour)
 
     CVECTOR vCamPos, vCamAng;
     float fFov;
-    Astronomy::pRS->GetCamera(vCamPos, vCamAng, fFov);
-    dword bLighting, dwAmbient;
-    Astronomy::pRS->GetRenderState(D3DRS_LIGHTING, &bLighting);
-    Astronomy::pRS->GetRenderState(D3DRS_AMBIENT, &dwAmbient);
+    pRS->GetCamera(vCamPos, vCamAng, fFov);
+    uint32_t bLighting, dwAmbient;
+    pRS->GetRenderState(D3DRS_LIGHTING, &bLighting);
+    pRS->GetRenderState(D3DRS_AMBIENT, &dwAmbient);
 
-    Astronomy::pRS->SetRenderState(D3DRS_FOGENABLE, false);
-    Astronomy::pRS->SetRenderState(D3DRS_LIGHTING, false);
-    Astronomy::pRS->SetRenderState(D3DRS_AMBIENT, 0x00FFFFFF);
+    pRS->SetRenderState(D3DRS_FOGENABLE, false);
+    pRS->SetRenderState(D3DRS_LIGHTING, false);
+    pRS->SetRenderState(D3DRS_AMBIENT, 0x00FFFFFF);
 
-    for (dword i = 0; i < aPlanets.Size(); i++)
+    for (uint32_t i = 0; i < aPlanets.size(); i++)
     {
         CMatrix mP, m2;
-        float fDistance = aPlanets[i].fRealDistance;
+        auto fDistance = aPlanets[i].fRealDistance;
         mP.BuildMatrix(0.0f, aPlanets[i].fAngle, 0.0f);
         m2.BuildMatrix(PI / 8.0f, 0.0f, 0.0f);
-        CVECTOR vPos = mP * CVECTOR(0.0f, 0.0f, fDistance);
+        auto vPos = mP * CVECTOR(0.0f, 0.0f, fDistance);
         vPos = m2 * vPos;
         mP.m[0][0] = aPlanets[i].fScale * fPlanetScale;
         mP.m[1][1] = aPlanets[i].fScale * fPlanetScale;
@@ -138,28 +140,28 @@ void Astronomy::PLANETS::Realize(double dDeltaTime, double dHour)
 
         RS_RECT p;
         p.vPos = vPos + vCamPos;
-        p.dwColor = ((dword)(fPlanetFade * 255) << 24) | 0xFFFFFF;
+        p.dwColor = (static_cast<uint32_t>(fPlanetFade * 255) << 24) | 0xFFFFFF;
         p.dwSubTexture = 0;
         p.fAngle = 0.0f;
         p.fSize = aPlanets[i].fScale * fPlanetScale * aPlanets[i].fFakeScale * 10.0f;
-        Astronomy::pRS->TextureSet(0, aPlanets[i].iTexture);
-        Astronomy::pRS->DrawRects(&p, 1, "Planet");
+        pRS->TextureSet(0, aPlanets[i].iTexture);
+        pRS->DrawRects(&p, 1, "planet");
 
         /*if (aPlanets[i].pGeo)
         {
-            mP.SetPosition(vPos + vCamPos);
-            Astronomy::pRS->SetTransform(D3DTS_WORLD, mP);
-            aPlanets[i].pGeo->Draw((GEOS::PLANE*)Astronomy::pRS->GetPlanes(), 0, null);
+          mP.SetPosition(vPos + vCamPos);
+          Astronomy::pRS->SetTransform(D3DTS_WORLD, mP);
+          aPlanets[i].pGeo->Draw((GEOS::PLANE*)Astronomy::pRS->GetPlanes(), 0, null);
         }*/
     }
-    Astronomy::pRS->SetRenderState(D3DRS_LIGHTING, bLighting);
-    Astronomy::pRS->SetRenderState(D3DRS_AMBIENT, dwAmbient);
-    Astronomy::pRS->SetRenderState(D3DRS_FOGENABLE, true);
+    pRS->SetRenderState(D3DRS_LIGHTING, bLighting);
+    pRS->SetRenderState(D3DRS_AMBIENT, dwAmbient);
+    pRS->SetRenderState(D3DRS_FOGENABLE, true);
 }
 
 void Astronomy::PLANETS::TimeUpdate(ATTRIBUTES *pAP)
 {
-    ATTRIBUTES *pAPlan = pAP ? pAP->GetAttributeClass("Planets") : 0;
+    auto *pAPlan = pAP ? pAP->GetAttributeClass("Planets") : nullptr;
     fPlanetScale = 1.f;
     fPlanetFade = 1.f;
     fFadeTimeStart = -1.f;

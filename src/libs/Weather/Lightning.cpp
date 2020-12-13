@@ -1,12 +1,10 @@
-#include "lightning.h"
+#include "Lightning.h"
 #include <stdio.h>
 
-LIGHTNING::LIGHTNING() : aLightnings(_FL_)
+LIGHTNING::LIGHTNING()
 {
     iLightningTexture = -1;
     iFlashTexture = -1;
-
-    pVWSunTrace = null;
 }
 
 LIGHTNING::~LIGHTNING()
@@ -14,12 +12,10 @@ LIGHTNING::~LIGHTNING()
     Release();
 }
 
-void LIGHTNING::Release()
+void LIGHTNING::Release() const
 {
     pRS->TextureRelease(iLightningTexture);
     pRS->TextureRelease(iFlashTexture);
-
-    SE_DELETE(pVWSunTrace);
 }
 
 bool LIGHTNING::Init()
@@ -31,9 +27,9 @@ bool LIGHTNING::Init()
 
 void LIGHTNING::SetDevice()
 {
-    pRS = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
+    pRS = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
     Assert(pRS);
-    pCollide = (COLLIDE *)_CORE_API->CreateService("COLL");
+    pCollide = static_cast<COLLIDE *>(api->CreateService("COLL"));
     Assert(pCollide);
 }
 
@@ -47,19 +43,16 @@ bool LIGHTNING::LoadState(ENTITY_STATE *state)
     return true;
 }
 
-void LIGHTNING::Execute(dword Delta_Time)
+void LIGHTNING::Execute(uint32_t Delta_Time)
 {
-    float fDeltaTime = float(Delta_Time) * 0.001f;
+    const auto fDeltaTime = static_cast<float>(Delta_Time) * 0.001f;
 
-    if (!pVWSunTrace)
-        pVWSunTrace = api->LayerGetWalker("sun_trace");
-
-    for (dword i = 0; i < aLightnings.Size(); i++)
+    for (uint32_t i = 0; i < aLightnings.size(); i++)
     {
-        lightning_t *pL = &aLightnings[i];
+        auto *pL = &aLightnings[i];
         if (pL->fTime > 0.0f)
         {
-            pL->fAlpha = (dword(pL->fTime * 1000.0f) & pL->dwFlickerTime) ? 1.0f : 0.0f;
+            pL->fAlpha = (static_cast<uint32_t>(pL->fTime * 1000.0f) & pL->dwFlickerTime) ? 1.0f : 0.0f;
             pL->fTime -= fDeltaTime;
             if (pL->fTime <= 0.0f)
             {
@@ -68,61 +61,61 @@ void LIGHTNING::Execute(dword Delta_Time)
         }
         if (pL->fTime < 0.0f)
         {
-            pL->fAlpha -= float(Delta_Time) * 0.01f;
+            pL->fAlpha -= static_cast<float>(Delta_Time) * 0.01f;
             if (pL->fAlpha < 0.0f)
             {
-                aLightnings.ExtractNoShift(i);
+                // aLightnings.ExtractNoShift(i);
+                aLightnings[i] = aLightnings.back();
+                aLightnings.pop_back();
                 i--;
-                continue;
             }
         }
     }
 }
 
-void LIGHTNING::Realize(dword Delta_Time)
+void LIGHTNING::Realize(uint32_t Delta_Time)
 {
-    dword i;
+    uint32_t i;
     RS_RECT rs_rect;
 
     if (iLightningTexture >= 0)
     {
         pRS->TextureSet(0, iLightningTexture);
-        for (i = 0; i < aLightnings.Size(); i++)
+        for (i = 0; i < aLightnings.size(); i++)
         {
-            lightning_t *pL = &aLightnings[i];
-            RS_RECT *pR = &rs_rect;
+            auto *const pL = &aLightnings[i];
+            auto *pR = &rs_rect;
 
-            dword dwAlpha = dword(255.0f * pL->fAlpha);
+            const auto dwAlpha = static_cast<uint32_t>(255.0f * pL->fAlpha);
             pR->dwSubTexture = pL->dwSubTexture;
-            pR->dwColor = RGB(dwAlpha, dwAlpha, dwAlpha);
+            pR->dwColor = makeRGB(dwAlpha, dwAlpha, dwAlpha);
             pR->vPos = pL->vPos;
             pR->fSize = pL->fSize;
             pR->fAngle = 0.0f;
-            pRS->DrawRects(pR, 1, (char *)pL->sTechnique, dwSubTexX, dwSubTexY, pL->fScaleX, pL->fScaleY);
+            pRS->DrawRects(pR, 1, static_cast<char *>(pL->sTechnique), dwSubTexX, dwSubTexY, pL->fScaleX, pL->fScaleY);
         }
     }
 
     if (iFlashTexture >= 0)
     {
         pRS->TextureSet(0, iFlashTexture);
-        for (i = 0; i < aLightnings.Size(); i++)
+        for (i = 0; i < aLightnings.size(); i++)
         {
-            lightning_t *pL = &aLightnings[i];
-            RS_RECT *pR = &rs_rect;
+            auto *const pL = &aLightnings[i];
+            auto *pR = &rs_rect;
 
-            dword dwAlpha = dword(255.0f * pL->fAlpha * pL->fPower);
-            pR->dwColor = RGB(dwAlpha, dwAlpha, dwAlpha);
+            const auto dwAlpha = static_cast<uint32_t>(255.0f * pL->fAlpha * pL->fPower);
+            pR->dwColor = makeRGB(dwAlpha, dwAlpha, dwAlpha);
             pR->vPos = pL->vPos;
             pR->fSize = pL->Flash.fSize;
             pR->fAngle = 0.0f;
-            pRS->DrawRects(pR, 1, (char *)pL->Flash.sTechnique);
+            pRS->DrawRects(pR, 1, static_cast<char *>(pL->Flash.sTechnique));
         }
     }
 }
 
-dword LIGHTNING::ProcessMessage(MESSAGE &message)
+uint64_t LIGHTNING::ProcessMessage(MESSAGE &message)
 {
-
     switch (message.Long())
     {
     case MSG_SEA_REFLECTION_DRAW:
@@ -130,12 +123,14 @@ dword LIGHTNING::ProcessMessage(MESSAGE &message)
         break;
     case MSG_WHR_LIGHTNING_ADD: {
         // add new lightning
-        lightning_t *pL = &aLightnings[aLightnings.Add()];
+        aLightnings.push_back(lightning_t{});
+        // lightning_t * pL = &aLightnings[aLightnings.Add()];
+        auto *pL = &aLightnings.back();
 
         pL->dwSubTexture = message.Long();
         message.String(sizeof(pL->sTechnique), pL->sTechnique);
         pL->fTime = message.Float();
-        pL->dwFlickerTime = (dword)message.Long();
+        pL->dwFlickerTime = static_cast<uint32_t>(message.Long());
         pL->fSize = message.Float();
         pL->fScaleX = message.Float();
         pL->fScaleY = message.Float();
@@ -155,7 +150,7 @@ dword LIGHTNING::ProcessMessage(MESSAGE &message)
     return 0;
 }
 
-void LIGHTNING::CalcFlashPower(lightning_t *pL)
+void LIGHTNING::CalcFlashPower(lightning_t *pL) const
 {
     CVECTOR vCamPos, vCamAng, vTrace[3];
     float fFov;
@@ -166,26 +161,27 @@ void LIGHTNING::CalcFlashPower(lightning_t *pL)
     vTrace[1] = pL->vPos;
     vTrace[2] = CVECTOR(pL->vPos.x, pL->vPos.y - pL->fSize * 0.9f, pL->vPos.z);
 
-    float fPower = 1.0f;
+    auto fPower = 1.0f;
 
-    for (dword i = 0; i < 3; i++)
+    for (uint32_t i = 0; i < 3; i++)
     {
-        float fRes = pCollide->Trace(*pVWSunTrace, vCamPos, vTrace[i], 0, 0);
+        const auto fRes =
+            pCollide->Trace(EntityManager::GetEntityIdIterators(SUN_TRACE), vCamPos, vTrace[i], nullptr, 0);
         if (fRes <= 1.0f)
             fPower -= 0.31f;
     }
     pL->fPower = fPower;
 }
 
-dword LIGHTNING::AttributeChanged(ATTRIBUTES *pAttribute)
+uint32_t LIGHTNING::AttributeChanged(ATTRIBUTES *pAttribute)
 {
-    string sTextureName;
+    // std::string sTextureName;
 
-    ATTRIBUTES *pParent = pAttribute->GetParent();
+    auto *const pParent = pAttribute->GetParent();
 
     if (*pAttribute == "Clear")
     {
-        aLightnings.DelAll();
+        aLightnings.clear();
         return 0;
     }
 
