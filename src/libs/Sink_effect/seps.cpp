@@ -1,26 +1,25 @@
 #include "seps.h"
+#include "EntityManager.h"
 #include "object.h"
 
 SEPS_PS::SEPS_PS()
 {
-    api = (VAPI *)_CORE_API;
-
-    TechniqueName = 0;
+    TechniqueName = nullptr;
 
     ParticleColor = 0xffffffff;
 
-    bTrackAngle = 0;
+    bTrackAngle = false;
 
-    l_PTR = 0;
-    r_PTR = 0;
+    l_PTR = nullptr;
+    r_PTR = nullptr;
 
     bLinkEmitter = false;
 
-    RenderService = 0;
+    RenderService = nullptr;
     ParticlesNum = 0;
     TexturesNum = 0;
-    Particle = 0;
-    VBuffer = 0;
+    Particle = nullptr;
+    VBuffer = nullptr;
 
     Emitter.x = Emitter.y = Emitter.z = 0;
     Camera_EmitterPos.x = Camera_EmitterPos.y = Camera_EmitterPos.z = 0;
@@ -49,7 +48,7 @@ SEPS_PS::SEPS_PS()
     fWindPower = 0;
     fWindEffect = 0;
 
-    pFlowTrack = 0;
+    pFlowTrack = nullptr;
     nFlowTrackSize = 0;
     bUseFlowTrack = false;
     bLayOnSurface = false;
@@ -57,43 +56,46 @@ SEPS_PS::SEPS_PS()
 
 void SEPS_PS::Reset()
 {
-    float ChaosVal = 0.0001f;
+    const auto ChaosVal = 0.0001f;
 
     memset(Particle, 0, ParticlesNum * sizeof(PARTICLE));
 
-    for (int n = 0; n < ParticlesNum; n++)
+    for (auto n = 0; n < ParticlesNum; n++)
     {
-        Particle[n].pos.x = Emitter.x + ESpace * (0.5f - (float)rand() / RAND_MAX);
-        Particle[n].pos.y = Emitter.y + ESpace * (0.5f - (float)rand() / RAND_MAX);
-        Particle[n].pos.z = Emitter.z + ESpace * (0.5f - (float)rand() / RAND_MAX);
+        Particle[n].pos.x = Emitter.x + ESpace * (0.5f - static_cast<float>(rand()) / RAND_MAX);
+        Particle[n].pos.y = Emitter.y + ESpace * (0.5f - static_cast<float>(rand()) / RAND_MAX);
+        Particle[n].pos.z = Emitter.z + ESpace * (0.5f - static_cast<float>(rand()) / RAND_MAX);
         // Particle[n].size = 1.0f;
         Particle[n].size = 0.0f;
         Particle[n].color = 0xffffffff;
         Particle[n].color = ParticleColor;
 
-        Particle[n].weight = Weight + WeightDeviation * (0.5f - (float)rand() / RAND_MAX);
+        Particle[n].weight = Weight + WeightDeviation * (0.5f - static_cast<float>(rand()) / RAND_MAX);
 
-        Particle[n].speedVal = Inispeed + SpeedDeviation * (0.5f - (float)rand() / RAND_MAX);
+        Particle[n].speedVal = Inispeed + SpeedDeviation * (0.5f - static_cast<float>(rand()) / RAND_MAX);
         Particle[n].speed = 0; // Particle[n].speedVal;
 
         if (bRandomDirection)
         {
-            Particle[n].ang.x = (0.5f - (float)rand() / RAND_MAX);
-            Particle[n].ang.y = (0.5f - (float)rand() / RAND_MAX);
-            Particle[n].ang.z = (0.5f - (float)rand() / RAND_MAX);
+            Particle[n].ang.x = (0.5f - static_cast<float>(rand()) / RAND_MAX);
+            Particle[n].ang.y = (0.5f - static_cast<float>(rand()) / RAND_MAX);
+            Particle[n].ang.z = (0.5f - static_cast<float>(rand()) / RAND_MAX);
         }
         else
         {
-            Particle[n].ang.x = EmitterDirection.x + DirectionDeviation * (0.5f - (float)rand() / RAND_MAX);
-            Particle[n].ang.y = EmitterDirection.y + DirectionDeviation * (0.5f - (float)rand() / RAND_MAX);
-            Particle[n].ang.z = EmitterDirection.z + DirectionDeviation * (0.5f - (float)rand() / RAND_MAX);
+            Particle[n].ang.x =
+                EmitterDirection.x + DirectionDeviation * (0.5f - static_cast<float>(rand()) / RAND_MAX);
+            Particle[n].ang.y =
+                EmitterDirection.y + DirectionDeviation * (0.5f - static_cast<float>(rand()) / RAND_MAX);
+            Particle[n].ang.z =
+                EmitterDirection.z + DirectionDeviation * (0.5f - static_cast<float>(rand()) / RAND_MAX);
         }
         Particle[n].ang = !Particle[n].ang;
 
-        Particle[n].chaos.x = ChaosVal * (0.5f - (float)rand() / RAND_MAX);
-        Particle[n].chaos.y = ChaosVal * (0.5f - (float)rand() / RAND_MAX);
-        Particle[n].chaos.z = ChaosVal * (0.5f - (float)rand() / RAND_MAX);
-        Particle[n].speed_chaos = 1.0f - 0.1f * ((float)rand() / RAND_MAX);
+        Particle[n].chaos.x = ChaosVal * (0.5f - static_cast<float>(rand()) / RAND_MAX);
+        Particle[n].chaos.y = ChaosVal * (0.5f - static_cast<float>(rand()) / RAND_MAX);
+        Particle[n].chaos.z = ChaosVal * (0.5f - static_cast<float>(rand()) / RAND_MAX);
+        Particle[n].speed_chaos = 1.0f - 0.1f * (static_cast<float>(rand()) / RAND_MAX);
 
         Particle[n].v = Particle[n].ang * Particle[n].speed;
         Particle[n].lifetime = Lifetime;
@@ -104,7 +106,7 @@ void SEPS_PS::Reset()
         // if(bUniformEmit) Particle[n].time = -n*(Lifetime/ParticlesNum);
         // else Particle[n].time = -EmitterIniTime * rand()/RAND_MAX;
 
-        Particle[n].spinVal = Spin + SpinDeviation * (0.5f - (float)rand() / RAND_MAX);
+        Particle[n].spinVal = Spin + SpinDeviation * (0.5f - static_cast<float>(rand()) / RAND_MAX);
         Particle[n].spin = Particle[n].spinVal;
     }
 
@@ -125,17 +127,14 @@ SEPS_PS::~SEPS_PS()
     {
         for (n = 0; n < TexturesNum; n++)
             RenderService->TextureRelease(TextureID[n]);
-        api->FreeService("dx8render");
+        // api->FreeService("dx9render");
     }
-    if (Particle)
-        delete Particle;
-    Particle = 0;
-    if (pFlowTrack)
-        delete pFlowTrack;
-    pFlowTrack = 0;
-    if (TechniqueName)
-        delete TechniqueName;
-    TechniqueName = 0;
+    delete Particle;
+    Particle = nullptr;
+    delete pFlowTrack;
+    pFlowTrack = nullptr;
+    delete TechniqueName;
+    TechniqueName = nullptr;
 }
 
 // node ----------------------------------------------------------------------------
@@ -155,9 +154,10 @@ void SEPS_PS::SetRightNode(SEPS_PS *node)
 {
     r_PTR = node;
 }
+
 void SEPS_PS::Attach(SEPS_PS **Root, SEPS_PS **Top)
 {
-    if (*Root == 0)
+    if (*Root == nullptr)
     {
         *Root = this;
         *Top = this;
@@ -167,6 +167,7 @@ void SEPS_PS::Attach(SEPS_PS **Root, SEPS_PS **Top)
     SetLeftNode(*Top);
     *Top = this;
 }
+
 void SEPS_PS::AttachTo(SEPS_PS *la_PTR, SEPS_PS **Root, SEPS_PS **Top)
 {
     SEPS_PS *t_PTR;
@@ -211,18 +212,18 @@ void SEPS_PS::ProcessOrder(SEPS_PS **Root, SEPS_PS **Top)
 
 bool SEPS_PS::Init(INIFILE *ini, char *psname)
 {
-    GUARD(SEPS_PS::Init)
+    // GUARD(SEPS_PS::Init)
     if (!ini)
         return false;
     long n;
     bool bRes;
 
     // load render service -----------------------------------------------------
-    RenderService = (VDX8RENDER *)api->CreateService("dx8render");
+    RenderService = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
     if (!RenderService)
-        SE_THROW_MSG("No service: dx8render");
+        throw std::exception("No service: dx9render");
 
-    gs = (VGEOMETRY *)_CORE_API->CreateService("geometry");
+    gs = static_cast<VGEOMETRY *>(api->CreateService("geometry"));
     // if(!gs) return false;
 
     // read textures ------------------------------------------------------------
@@ -248,18 +249,20 @@ bool SEPS_PS::Init(INIFILE *ini, char *psname)
 
     if (!ini->ReadString(psname, PSKEY_TECHNIQUE, string, sizeof(string), ""))
     {
-        _CORE_API->Trace("Particle system: %s", psname);
-        SE_THROW_MSG(no technique for particle system);
+        api->Trace("Particle system: %s", psname);
+        throw std::exception("no technique for particle system");
     }
-    TechniqueName = NEW char[strlen(string) + 1];
-    strcpy(TechniqueName, string);
+
+    const auto len = strlen(string) + 1;
+    TechniqueName = new char[strlen(string) + 1];
+    memcpy(TechniqueName, string, len);
 
     // configure particles
     ParticlesNum = ini->GetLong(psname, PSKEY_PNUM, 32);
     EmissionTime = ini->GetFloat(psname, PSKEY_EMISSIONTIME, 0);
-    DeltaTimeSLE = (long)EmissionTime;
+    DeltaTimeSLE = static_cast<long>(EmissionTime);
     EmissionTimeRand = ini->GetFloat(psname, PSKEY_EMISSIONTIMERAND, 0);
-    CurrentEmissionTimeRand = (float)EmissionTimeRand * rand() / RAND_MAX;
+    CurrentEmissionTimeRand = static_cast<float>(EmissionTimeRand) * rand() / RAND_MAX;
     fSurfaceOffset = ini->GetFloat(psname, PSKEY_SURFACEOFFSET, 0);
     ParticleColor = ini->GetLong(psname, "color", 0xffffffff);
 
@@ -279,22 +282,22 @@ bool SEPS_PS::Init(INIFILE *ini, char *psname)
     ESpace = ini->GetFloat(psname, PSKEY_EMITRADIUS, 0);
     fTrackPointRadius = ini->GetFloat(psname, PSKEY_TRACKPOINTRADIUS, 1.0f);
 
-    if (ini->TestKey(psname, PSKEY_COLORINVERSE, 0))
+    if (ini->TestKey(psname, PSKEY_COLORINVERSE, nullptr))
         bColorInverse = true;
     else
         bColorInverse = false;
 
-    if (ini->TestKey(psname, PSKEY_UNIFORMEMIT, 0))
+    if (ini->TestKey(psname, PSKEY_UNIFORMEMIT, nullptr))
         bUniformEmit = true;
     else
         bUniformEmit = false;
 
-    if (ini->TestKey(psname, PSKEY_RANDOMDIRECTION, 0))
+    if (ini->TestKey(psname, PSKEY_RANDOMDIRECTION, nullptr))
         bRandomDirection = true;
     else
         bRandomDirection = false;
 
-    if (ini->TestKey(psname, PSKEY_NONSTOPEMIT, 0))
+    if (ini->TestKey(psname, PSKEY_NONSTOPEMIT, nullptr))
         bRepeat = true;
     else
         bRepeat = false;
@@ -302,45 +305,48 @@ bool SEPS_PS::Init(INIFILE *ini, char *psname)
     float ChaosVal;
     ChaosVal = 0.0001f;
 
-    Particle = (PARTICLE *)NEW char[ParticlesNum * sizeof(PARTICLE)];
-    if (Particle == 0)
-        SE_THROW_MSG(mem error);
+    Particle = (PARTICLE *)new char[ParticlesNum * sizeof(PARTICLE)];
+    if (Particle == nullptr)
+        throw std::exception("mem error");
 
     memset(Particle, 0, ParticlesNum * sizeof(PARTICLE));
 
     for (n = 0; n < ParticlesNum; n++)
     {
-        Particle[n].pos.x = Emitter.x + ESpace * (0.5f - (float)rand() / RAND_MAX);
-        Particle[n].pos.y = Emitter.y + ESpace * (0.5f - (float)rand() / RAND_MAX);
-        Particle[n].pos.z = Emitter.z + ESpace * (0.5f - (float)rand() / RAND_MAX);
+        Particle[n].pos.x = Emitter.x + ESpace * (0.5f - static_cast<float>(rand()) / RAND_MAX);
+        Particle[n].pos.y = Emitter.y + ESpace * (0.5f - static_cast<float>(rand()) / RAND_MAX);
+        Particle[n].pos.z = Emitter.z + ESpace * (0.5f - static_cast<float>(rand()) / RAND_MAX);
         // Particle[n].size = 1.0f;
         Particle[n].size = 0.0f;
         Particle[n].color = 0xffffffff;
         Particle[n].color = ParticleColor;
 
-        Particle[n].weight = Weight + WeightDeviation * (0.5f - (float)rand() / RAND_MAX);
+        Particle[n].weight = Weight + WeightDeviation * (0.5f - static_cast<float>(rand()) / RAND_MAX);
 
-        Particle[n].speedVal = Inispeed + SpeedDeviation * (0.5f - (float)rand() / RAND_MAX);
+        Particle[n].speedVal = Inispeed + SpeedDeviation * (0.5f - static_cast<float>(rand()) / RAND_MAX);
         Particle[n].speed = 0; // Particle[n].speedVal;
 
         if (bRandomDirection)
         {
-            Particle[n].ang.x = (0.5f - (float)rand() / RAND_MAX);
-            Particle[n].ang.y = (0.5f - (float)rand() / RAND_MAX);
-            Particle[n].ang.z = (0.5f - (float)rand() / RAND_MAX);
+            Particle[n].ang.x = (0.5f - static_cast<float>(rand()) / RAND_MAX);
+            Particle[n].ang.y = (0.5f - static_cast<float>(rand()) / RAND_MAX);
+            Particle[n].ang.z = (0.5f - static_cast<float>(rand()) / RAND_MAX);
         }
         else
         {
-            Particle[n].ang.x = EmitterDirection.x + DirectionDeviation * (0.5f - (float)rand() / RAND_MAX);
-            Particle[n].ang.y = EmitterDirection.y + DirectionDeviation * (0.5f - (float)rand() / RAND_MAX);
-            Particle[n].ang.z = EmitterDirection.z + DirectionDeviation * (0.5f - (float)rand() / RAND_MAX);
+            Particle[n].ang.x =
+                EmitterDirection.x + DirectionDeviation * (0.5f - static_cast<float>(rand()) / RAND_MAX);
+            Particle[n].ang.y =
+                EmitterDirection.y + DirectionDeviation * (0.5f - static_cast<float>(rand()) / RAND_MAX);
+            Particle[n].ang.z =
+                EmitterDirection.z + DirectionDeviation * (0.5f - static_cast<float>(rand()) / RAND_MAX);
         }
         Particle[n].ang = !Particle[n].ang;
 
-        Particle[n].chaos.x = ChaosVal * (0.5f - (float)rand() / RAND_MAX);
-        Particle[n].chaos.y = ChaosVal * (0.5f - (float)rand() / RAND_MAX);
-        Particle[n].chaos.z = ChaosVal * (0.5f - (float)rand() / RAND_MAX);
-        Particle[n].speed_chaos = 1.0f - 0.1f * ((float)rand() / RAND_MAX);
+        Particle[n].chaos.x = ChaosVal * (0.5f - static_cast<float>(rand()) / RAND_MAX);
+        Particle[n].chaos.y = ChaosVal * (0.5f - static_cast<float>(rand()) / RAND_MAX);
+        Particle[n].chaos.z = ChaosVal * (0.5f - static_cast<float>(rand()) / RAND_MAX);
+        Particle[n].speed_chaos = 1.0f - 0.1f * (static_cast<float>(rand()) / RAND_MAX);
 
         Particle[n].v = Particle[n].ang * Particle[n].speed;
         Particle[n].lifetime = Lifetime;
@@ -351,7 +357,7 @@ bool SEPS_PS::Init(INIFILE *ini, char *psname)
         // if(bUniformEmit) Particle[n].time = -n*(Lifetime/ParticlesNum);
         // else Particle[n].time = -EmitterIniTime * rand()/RAND_MAX;
 
-        Particle[n].spinVal = Spin + SpinDeviation * (0.5f - (float)rand() / RAND_MAX);
+        Particle[n].spinVal = Spin + SpinDeviation * (0.5f - static_cast<float>(rand()) / RAND_MAX);
         Particle[n].spin = Particle[n].spinVal;
     }
 
@@ -369,12 +375,12 @@ bool SEPS_PS::Init(INIFILE *ini, char *psname)
     // create vertex buffer
     RenderService->CreateVertexBuffer(sizeof(PARTICLE_VERTEX) * VERTEXS_ON_PARTICLE * ParticlesNum,
                                       D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY, PARTICLE_FVF, D3DPOOL_SYSTEMMEM, &VBuffer);
-    if (VBuffer == 0)
-        SE_THROW_MSG(vbuffer error);
+    if (VBuffer == nullptr)
+        throw std::exception("vbuffer error");
 
     UpdateVertexBuffer();
 
-    UNGUARD
+    // UNGUARD
     return true;
 }
 
@@ -392,8 +398,8 @@ void SEPS_PS::UpdateVertexBuffer()
 
     Camera_EmitterPosA.x = Camera_EmitterPosA.y = Camera_EmitterPosA.z = 0;
 
-    RenderService->VBLock(VBuffer, 0, sizeof(PARTICLE_VERTEX) * VERTEXS_ON_PARTICLE * ParticlesNum, (byte **)&pVertex,
-                          0);
+    RenderService->VBLock(VBuffer, 0, sizeof(PARTICLE_VERTEX) * VERTEXS_ON_PARTICLE * ParticlesNum,
+                          (uint8_t **)&pVertex, 0);
     for (n = 0; n < ParticlesNum; n++)
     {
         index = n * VERTEXS_ON_PARTICLE;
@@ -489,34 +495,34 @@ void SEPS_PS::UpdateVertexBuffer()
     }
 }
 
-void SEPS_PS::Execute(dword DeltaTime)
+void SEPS_PS::Execute(uint32_t DeltaTime)
 {
     /*if(Delay > 0) {	Delay = Delay - DeltaTime;	return;	}
 
     if(bLinkEmitter)
     {
-        COLLISION_OBJECT * pLink;
-        pLink = (COLLISION_OBJECT *)api->GetEntityPointer(&LinkObject);
-        if(pLink)
-        {
-            Emitter = pLink->mtx * LinkPos;
-            EmitterDirection = pLink->mtx * LinkDirPos;
-            EmitterDirection = EmitterDirection - Emitter;
-            EmitterDirection = !EmitterDirection;
-        }
+      COLLISION_OBJECT * pLink;
+      pLink = (COLLISION_OBJECT *)EntityManager::GetEntityPointer(LinkObject);
+      if(pLink)
+      {
+        Emitter = pLink->mtx * LinkPos;
+        EmitterDirection = pLink->mtx * LinkDirPos;
+        EmitterDirection = EmitterDirection - Emitter;
+        EmitterDirection = !EmitterDirection;
+      }
     }
     ProcessParticles(DeltaTime);
     SetParticlesTracks(DeltaTime);
     UpdateVertexBuffer();*/
 }
 
-void SEPS_PS::LayOnSurface(dword index)
+void SEPS_PS::LayOnSurface(uint32_t index)
 {
     COLLISION_OBJECT *pLink;
     CVECTOR from, to;
     float dist;
-    pLink = (COLLISION_OBJECT *)api->GetEntityPointer(&SurfaceID);
-    if (pLink == null)
+    pLink = static_cast<COLLISION_OBJECT *>(EntityManager::GetEntityPointer(SurfaceID));
+    if (pLink == nullptr)
         return;
     from = Particle[index].pos;
     to = from;
@@ -526,7 +532,7 @@ void SEPS_PS::LayOnSurface(dword index)
     Particle[index].pos.y = from.y + dist * (to.y - from.y) + fSurfaceOffset;
 }
 
-void SEPS_PS::Realize(dword DeltaTime)
+void SEPS_PS::Realize(uint32_t DeltaTime)
 {
     if (Delay > 0)
     {
@@ -537,7 +543,7 @@ void SEPS_PS::Realize(dword DeltaTime)
     if (bLinkEmitter)
     {
         COLLISION_OBJECT *pLink;
-        pLink = (COLLISION_OBJECT *)api->GetEntityPointer(&LinkObject);
+        pLink = static_cast<COLLISION_OBJECT *>(EntityManager::GetEntityPointer(LinkObject));
         if (pLink)
         {
             Emitter = pLink->mtx * LinkPos;
@@ -550,8 +556,7 @@ void SEPS_PS::Realize(dword DeltaTime)
     CVECTOR p, a;
 
     p.x = p.y = p.z = 0;
-    p.z = 0;
-    a.z = a.y = a.z = 0;
+    a.x = a.y = a.z = 0;
 
     RenderService->GetTransform(D3DTS_VIEW, Matrix);
 
@@ -559,7 +564,7 @@ void SEPS_PS::Realize(dword DeltaTime)
 
     RenderService->GetCamera(CameraPos, CameraAng, Perspective);
 
-    CMatrix IMatrix;
+    const CMatrix IMatrix;
     RenderService->SetTransform(D3DTS_VIEW, IMatrix);
     RenderService->SetTransform(D3DTS_WORLD, IMatrix);
     ProcessParticles(DeltaTime);
@@ -570,7 +575,7 @@ void SEPS_PS::Realize(dword DeltaTime)
 
     RenderService->SetFVF(PARTICLE_FVF);
     RenderService->SetStreamSource(0, VBuffer, sizeof(PARTICLE_VERTEX));
-    RenderService->SetIndices(0, 0);
+    // RenderService->SetIndices(0, 0);
 
     bool bDraw;
     // if(bColorInverse)bDraw = RenderService->TechniqueExecuteStart("particles_inv");
@@ -582,7 +587,7 @@ void SEPS_PS::Realize(dword DeltaTime)
         RenderService->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 2 * ParticlesNum);
         while (RenderService->TechniqueExecuteNext())
         {
-        };
+        }
     }
 
     RenderService->SetTransform(D3DTS_VIEW, Matrix);
@@ -601,23 +606,26 @@ bool SEPS_PS::EmitParticle()
 
         Particle[n].time = 0;
         Particle[n].flow_track_index = 0;
-        Particle[n].pos.x = Emitter.x + ESpace * (0.5f - (float)rand() / RAND_MAX);
-        Particle[n].pos.y = Emitter.y + ESpace * (0.5f - (float)rand() / RAND_MAX);
-        Particle[n].pos.z = Emitter.z + ESpace * (0.5f - (float)rand() / RAND_MAX);
+        Particle[n].pos.x = Emitter.x + ESpace * (0.5f - static_cast<float>(rand()) / RAND_MAX);
+        Particle[n].pos.y = Emitter.y + ESpace * (0.5f - static_cast<float>(rand()) / RAND_MAX);
+        Particle[n].pos.z = Emitter.z + ESpace * (0.5f - static_cast<float>(rand()) / RAND_MAX);
 
         Particle[n].speed = 0; // Inispeed + SpeedDeviation*(0.5f - (float)rand()/RAND_MAX);
 
         if (bRandomDirection)
         {
-            Particle[n].ang.x = (0.5f - (float)rand() / RAND_MAX);
-            Particle[n].ang.y = (0.5f - (float)rand() / RAND_MAX);
-            Particle[n].ang.z = (0.5f - (float)rand() / RAND_MAX);
+            Particle[n].ang.x = (0.5f - static_cast<float>(rand()) / RAND_MAX);
+            Particle[n].ang.y = (0.5f - static_cast<float>(rand()) / RAND_MAX);
+            Particle[n].ang.z = (0.5f - static_cast<float>(rand()) / RAND_MAX);
         }
         else
         {
-            Particle[n].ang.x = EmitterDirection.x + DirectionDeviation * (0.5f - (float)rand() / RAND_MAX);
-            Particle[n].ang.y = EmitterDirection.y + DirectionDeviation * (0.5f - (float)rand() / RAND_MAX);
-            Particle[n].ang.z = EmitterDirection.z + DirectionDeviation * (0.5f - (float)rand() / RAND_MAX);
+            Particle[n].ang.x =
+                EmitterDirection.x + DirectionDeviation * (0.5f - static_cast<float>(rand()) / RAND_MAX);
+            Particle[n].ang.y =
+                EmitterDirection.y + DirectionDeviation * (0.5f - static_cast<float>(rand()) / RAND_MAX);
+            Particle[n].ang.z =
+                EmitterDirection.z + DirectionDeviation * (0.5f - static_cast<float>(rand()) / RAND_MAX);
         }
         Particle[n].ang = !Particle[n].ang;
         Particle[n].v = Particle[n].ang * Particle[n].speed;
@@ -630,7 +638,7 @@ bool SEPS_PS::EmitParticle()
     return false;
 }
 
-void SEPS_PS::ProcessParticles(dword DeltaTime)
+void SEPS_PS::ProcessParticles(uint32_t DeltaTime)
 {
     long n;
 
@@ -696,12 +704,12 @@ void SEPS_PS::ProcessParticles(dword DeltaTime)
 
         /*if(fWindEffect != 0.0f && fWindPower != 0.0f)
         {
-            Particle[n].pos += (DeltaTime*fWindEffect*fWindPower)*vWindDirection;
+          Particle[n].pos += (DeltaTime*fWindEffect*fWindPower)*vWindDirection;
         }*/
         // bComplete = false;	// still have particles to run
     }
 
-    //_CORE_API->Trace("Delta: %d",DeltaTime);
+    // api->Trace("Delta: %d",DeltaTime);
 
     DeltaTimeSLE += DeltaTime;
     if (DeltaTimeSLE >= (EmissionTime + CurrentEmissionTimeRand))
@@ -711,7 +719,7 @@ void SEPS_PS::ProcessParticles(dword DeltaTime)
         {
             DeltaTimeSLE = 0; // DeltaTimeSLE - EmissionTime;
         }
-        CurrentEmissionTimeRand = (float)EmissionTimeRand * rand() / RAND_MAX;
+        CurrentEmissionTimeRand = static_cast<float>(EmissionTimeRand) * rand() / RAND_MAX;
     }
 
     if (!bRepeat)
@@ -744,10 +752,10 @@ void SEPS_PS::SetDelay(long _delay)
     }
 }
 
-void SEPS_PS::SetParticlesTracks(dword DeltaTime)
+void SEPS_PS::SetParticlesTracks(uint32_t DeltaTime)
 {
-    dword color;
-    dword alpha;
+    uint32_t color;
+    uint32_t alpha;
     float val;
     long n;
 
@@ -757,7 +765,7 @@ void SEPS_PS::SetParticlesTracks(dword DeltaTime)
             continue;
         // alpha ----------------------------------------------
         val = GetTrackValue(&Visibility[0], Particle[n].time);
-        alpha = (dword)((float)0xff * val);
+        alpha = static_cast<uint32_t>(static_cast<float>(0xff) * val);
         color = Particle[n].color & (0xffffff);
 
         // if(bColorInverse) {black = alpha; color = (black<<16)|(black<<8)|black;}
@@ -838,7 +846,7 @@ float SEPS_PS::GetTrackValue(TRACK_EVENT *Track, long Time)
     return 0;
 }
 
-bool SEPS_PS::BuildTrack(INIFILE *ini, TRACK_EVENT *Track, char *psname, char *key_name)
+bool SEPS_PS::BuildTrack(INIFILE *ini, TRACK_EVENT *Track, const char *psname, const char *key_name)
 {
     long n, i;
     char buffer[MAX_PATH];
@@ -873,7 +881,7 @@ bool SEPS_PS::BuildTrack(INIFILE *ini, TRACK_EVENT *Track, char *psname, char *k
             if (buffer[i] == ',')
             {
                 buffer[i] = 0;
-                Track[n].value = (float)atof(buffer);
+                Track[n].value = static_cast<float>(atof(buffer));
                 Track[n].time = atol(&buffer[i + 1]);
                 break;
             }
@@ -889,14 +897,14 @@ void SEPS_PS::SetEmitter(CVECTOR p, CVECTOR a)
     /*
     for(n=0;n<ParticlesNum;n++)
     {
-        Particle[n].ang.x = EmitterDirection.x + DirectionDeviation*(0.5f - (float)rand()/RAND_MAX);
-        Particle[n].ang.y = EmitterDirection.y + DirectionDeviation*(0.5f - (float)rand()/RAND_MAX);
-        Particle[n].ang.z = EmitterDirection.z + DirectionDeviation*(0.5f - (float)rand()/RAND_MAX);
+      Particle[n].ang.x = EmitterDirection.x + DirectionDeviation*(0.5f - (float)rand()/RAND_MAX);
+      Particle[n].ang.y = EmitterDirection.y + DirectionDeviation*(0.5f - (float)rand()/RAND_MAX);
+      Particle[n].ang.z = EmitterDirection.z + DirectionDeviation*(0.5f - (float)rand()/RAND_MAX);
     }
     */
 }
 
-void SEPS_PS::LinkToObject(ENTITY_ID id, CVECTOR _LinkPos)
+void SEPS_PS::LinkToObject(entid_t id, CVECTOR _LinkPos)
 {
     long n;
     bLinkEmitter = true;
@@ -906,15 +914,15 @@ void SEPS_PS::LinkToObject(ENTITY_ID id, CVECTOR _LinkPos)
     LinkDirPos = LinkPos + LinkDir;
 
     COLLISION_OBJECT *pLink;
-    pLink = (COLLISION_OBJECT *)api->GetEntityPointer(&LinkObject);
+    pLink = static_cast<COLLISION_OBJECT *>(EntityManager::GetEntityPointer(LinkObject));
     if (pLink)
         Emitter = pLink->mtx * LinkPos;
 
     for (n = 0; n < ParticlesNum; n++)
     {
-        Particle[n].pos.x = Emitter.x + ESpace * (0.5f - (float)rand() / RAND_MAX);
-        Particle[n].pos.y = Emitter.y + ESpace * (0.5f - (float)rand() / RAND_MAX);
-        Particle[n].pos.z = Emitter.z + ESpace * (0.5f - (float)rand() / RAND_MAX);
+        Particle[n].pos.x = Emitter.x + ESpace * (0.5f - static_cast<float>(rand()) / RAND_MAX);
+        Particle[n].pos.y = Emitter.y + ESpace * (0.5f - static_cast<float>(rand()) / RAND_MAX);
+        Particle[n].pos.z = Emitter.z + ESpace * (0.5f - static_cast<float>(rand()) / RAND_MAX);
     }
     UpdateVertexBuffer();
 }
@@ -924,15 +932,17 @@ bool SEPS_PS::Complete()
     return bComplete;
 }
 
+/*
 void SEPS_PS::AddTrackPoint(CVECTOR pos)
 {
     bUseFlowTrack = true;
     nFlowTrackSize++;
-    pFlowTrack = (CVECTOR *)RESIZE(pFlowTrack, nFlowTrackSize * sizeof(CVECTOR));
+    pFlowTrack = (CVECTOR *)RESIZE(pFlowTrack,nFlowTrackSize*sizeof(CVECTOR));
     pFlowTrack[nFlowTrackSize - 1] = pos;
-}
 
-void SEPS_PS::SetFlowTrack(dword index)
+}*/
+
+void SEPS_PS::SetFlowTrack(uint32_t index)
 {
     CVECTOR dest;
     if (Particle[index].flow_track_index >= nFlowTrackSize)
@@ -940,15 +950,15 @@ void SEPS_PS::SetFlowTrack(dword index)
     dest = pFlowTrack[Particle[index].flow_track_index];
     dest = dest - Particle[index].pos;
     Particle[index].ang = !dest;
-    float dist = ~dest;
+    const auto dist = ~dest;
     if (dist < fTrackPointRadius)
     {
         Particle[index].flow_track_index++;
     }
-    // if(index==0)_CORE_API->Trace("track: %d",Particle[index].flow_track_index);
+    // if(index==0)api->Trace("track: %d",Particle[index].flow_track_index);
 }
 
-void SEPS_PS::UseSurface(ENTITY_ID surface_id)
+void SEPS_PS::UseSurface(entid_t surface_id)
 {
     bLayOnSurface = true;
     SurfaceID = surface_id;
@@ -961,5 +971,5 @@ void SEPS_PS::TryEmitParticle()
     {
         DeltaTimeSLE = 0; // DeltaTimeSLE - EmissionTime;
     }
-    CurrentEmissionTimeRand = (float)EmissionTimeRand * rand() / RAND_MAX;
+    CurrentEmissionTimeRand = static_cast<float>(EmissionTimeRand) * rand() / RAND_MAX;
 }

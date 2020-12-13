@@ -2,7 +2,7 @@
 #include "SinkSplashDefines.h"
 
 //--------------------------------------------------------------------
-TSink::TSink() : enabled(false), texture(0), time(0), ivManager(0)
+TSink::TSink() : enabled(false), texture(0), ivManager(nullptr), time(0)
 {
 }
 
@@ -13,21 +13,21 @@ TSink::~TSink()
 }
 
 //--------------------------------------------------------------------
-void TSink::Initialize(INIFILE *_ini, IDirect3DDevice9 *_device, SEA_BASE *_sea, VDX8RENDER *_renderer)
+void TSink::Initialize(INIFILE *_ini, IDirect3DDevice9 *_device, SEA_BASE *_sea, VDX9RENDER *_renderer)
 {
     sea = _sea;
     renderer = _renderer;
 
-    ivManager = NEW TIVBufferManager(renderer, SINK_FVF, sizeof(SINK_VERTEX), 3 * TRIANGLES_COUNT,
+    ivManager = new TIVBufferManager(renderer, SINK_FVF, sizeof(SINK_VERTEX), 3 * TRIANGLES_COUNT,
                                      GRID_STEPS * GRID_STEPS, MAX_SPLASHES);
     texture = renderer->TextureCreate("explos.tga");
-    for (int i = 0; i < MAX_SPLASHES; ++i)
+    for (auto i = 0; i < MAX_SPLASHES; ++i)
     {
         splashes[i].Initialize(_ini, sea);
         ivIndexes[i] = -1;
     }
 
-    for (int i = 0; i < MAX_FLOTSAMS; ++i)
+    for (auto i = 0; i < MAX_FLOTSAMS; ++i)
     {
         flotsams[i].Initialize(sea);
     }
@@ -39,7 +39,7 @@ void TSink::Release()
     if (ivManager)
     {
         delete ivManager;
-        ivManager = 0;
+        ivManager = nullptr;
     }
     if (texture)
     {
@@ -59,33 +59,33 @@ void TSink::Start(const CVECTOR &_pos, float _radius)
     radius = _radius;
 
     enabled = true;
-    for (int i = 0; i < MAX_SPLASHES; i++)
+    for (auto i = 0; i < MAX_SPLASHES; i++)
     {
-        times[i] = (long)rand(SINK_TIME);
+        times[i] = static_cast<long>(rand(SINK_TIME));
         // ivIndexes[i] = -1;
     }
 
-    for (int i = 0; i < MAX_FLOTSAMS; i++)
+    for (auto i = 0; i < MAX_FLOTSAMS; i++)
     {
-        flotsamTimes[i] = (long)rand(SINK_TIME);
+        flotsamTimes[i] = static_cast<long>(rand(SINK_TIME));
     }
 }
 
 //--------------------------------------------------------------------
-void TSink::Process(dword _dTime)
+void TSink::Process(uint32_t _dTime)
 {
     if (!enabled)
         return;
 
     time += _dTime;
-    WORD *indexes;
+    uint16_t *indexes;
     SINK_VERTEX *vertices;
 
     if (time > (SINK_TIME + MAX_SPLASH_TIME))
     {
         enabled = false;
         ivManager->LockBuffers();
-        for (int i = 0; i < MAX_SPLASHES; i++)
+        for (auto i = 0; i < MAX_SPLASHES; i++)
         {
             if (splashes[i].Enabled())
             {
@@ -100,7 +100,7 @@ void TSink::Process(dword _dTime)
     }
 
     ivManager->LockBuffers();
-    for (int i = 0; i < MAX_SPLASHES; i++)
+    for (auto i = 0; i < MAX_SPLASHES; i++)
     {
         if (times[i] > 0)
             times[i] -= _dTime;
@@ -111,12 +111,12 @@ void TSink::Process(dword _dTime)
                 if (ivIndexes[i] != -1)
                 {
                     ivManager->FreeElement(ivIndexes[i]);
-                    times[i] = (long)rand(SINK_TIME);
+                    times[i] = static_cast<long>(rand(SINK_TIME));
                     ivIndexes[i] = -1;
                 }
                 else
                 {
-                    CVECTOR splashCenter = center;
+                    auto splashCenter = center;
                     splashCenter.x += randCentered(2.0f * radius);
                     splashCenter.z += randCentered(2.0f * radius);
                     ivIndexes[i] = ivManager->ReserveElement();
@@ -126,7 +126,6 @@ void TSink::Process(dword _dTime)
                         ivManager->GetPointers(ivIndexes[i], &indexes, (void **)&vertices, &vOffset);
                         splashes[i].Start(splashCenter, indexes, vertices, vOffset);
                     }
-                    continue;
                 }
             }
             else
@@ -138,7 +137,7 @@ void TSink::Process(dword _dTime)
     }
     ivManager->UnlockBuffers();
 
-    for (int i = 0; i < MAX_FLOTSAMS; i++)
+    for (auto i = 0; i < MAX_FLOTSAMS; i++)
     {
         if (flotsamTimes[i] > 0)
             flotsamTimes[i] -= _dTime;
@@ -153,15 +152,15 @@ void TSink::Process(dword _dTime)
 }
 
 //--------------------------------------------------------------------
-void TSink::Realize(dword _dTime)
+void TSink::Realize(uint32_t _dTime)
 {
     if (!enabled)
         return;
 
-    CMatrix m;
-    dword ambient;
+    const CMatrix m;
+    uint32_t ambient;
 
-    renderer->SetTransform(D3DTS_WORLD, (D3DMATRIX *)m);
+    renderer->SetTransform(D3DTS_WORLD, static_cast<D3DMATRIX *>(m));
     renderer->TextureSet(0, texture);
 
     renderer->GetRenderState(D3DRS_AMBIENT, &ambient);
@@ -170,13 +169,13 @@ void TSink::Realize(dword _dTime)
     ivManager->DrawBuffers("sink");
     renderer->SetRenderState(D3DRS_AMBIENT, ambient);
 
-    for (int i = 0; i < MAX_SPLASHES; i++)
+    for (auto i = 0; i < MAX_SPLASHES; i++)
     {
         if (splashes[i].Enabled())
             splashes[i].AdditionalRealize(_dTime);
     }
 
-    for (int i = 0; i < MAX_FLOTSAMS; i++)
+    for (auto i = 0; i < MAX_FLOTSAMS; i++)
     {
         if (flotsams[i].Enabled())
             flotsams[i].Realize(_dTime);

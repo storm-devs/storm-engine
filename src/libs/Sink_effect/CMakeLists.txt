@@ -1,13 +1,11 @@
-project(sinkeffect)
+project(sink_effect)
 
-add_library(${PROJECT_NAME} MODULE
+add_library(${PROJECT_NAME} STATIC
 	SinkEffect.H
 	SinkEffect.cpp
 	SinkSplashDefines.h
 	TFlotsam.cpp
 	TFlotsam.h
-	TIVBufferManager.cpp
-	TIVBufferManager.h
 	TSink.cpp
 	TSink.h
 	TSinkSplash.cpp
@@ -15,7 +13,7 @@ add_library(${PROJECT_NAME} MODULE
 	seps.cpp
 	seps.h
 	
-	${Storm_SOURCE_DIR}/libs/Common_h/rands.cpp
+	${STORM_SOURCE_DIR}/libs/Common_h/rands.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

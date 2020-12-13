@@ -3,7 +3,6 @@
 
 #include "SinkSplashDefines.h"
 #include "geometry.h"
-#include "geos.h"
 #include "model.h"
 #include "sea_base.h"
 
@@ -25,8 +24,8 @@ class TFlotsam
 
     void Start(float _x, float _z, float _radius);
     void Initialize(SEA_BASE *_sea);
-    void Process(dword _dTime);
-    void Realize(dword _dTime);
+    void Process(uint32_t dTime);
+    void Realize(uint32_t dTime);
     bool Enabled();
 
   private:
@@ -34,15 +33,15 @@ class TFlotsam
 
     float x, z, y, vX, vZ, vY, turnY, angY;
     tFlotsamState state;
-    dword floatTime, maxFloatTime;
+    uint32_t floatTime, maxFloatTime;
     bool enabled;
     // MODEL *model;
-    ENTITY_ID ModelID;
+    entid_t ModelID;
 
     static MODEL *models[FLOTSAM_MODELS_COUNT];
     static char modelNames[FLOTSAM_MODELS_COUNT][128];
     static int modelsInitialized;
-    static ENTITY_ID modelIDs[FLOTSAM_MODELS_COUNT];
+    static entid_t modelIDs[FLOTSAM_MODELS_COUNT];
 };
 
 #endif
