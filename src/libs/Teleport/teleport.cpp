@@ -1,6 +1,6 @@
 #include "teleport.h"
-#include "..\PCS_CONTROLS\pcs_controls.h"
-#include "common_defines.h"
+#include "../Pcs_controls/pcs_controls.h"
+#include "defines.h"
 
 #define DELETE_PTR(x)                                                                                                  \
     if (x)                                                                                                             \
@@ -9,35 +9,37 @@
 
 INTERFACE_FUNCTION
 CREATE_CLASS(TMPTELEPORT)
+
 CREATE_CLASS(FINDFILESINTODIRECTORY)
+
 CREATE_CLASS(FINDDIALOGNODES)
 
 bool GetStringLine(char *&pStr, char *bufer, long bufSize)
 {
-    if (pStr == null || bufer == null || bufSize == 0)
+    if (pStr == nullptr || bufer == nullptr || bufSize == 0)
         return false;
     bufer[0] = 0;
 
-    char *ps = pStr;
+    auto *ps = pStr;
     while (*ps && (*ps == 32 || *ps == 9 || *ps == 10 || *ps == 13))
         ps++;
-    char *pStart = ps;
+    auto *const pStart = ps;
 
     while (*ps && *ps != 10 && *ps != 13)
         ps++;
-    char *pEnd = ps;
+    auto *pEnd = ps;
     pStr = pEnd;
 
     if (pEnd == pStart && *ps == 0)
         return false;
-    if ((long)(pEnd - pStart) > bufSize - 1)
+    if (static_cast<long>(pEnd - pStart) > bufSize - 1)
         pEnd = pStart + bufSize - 1;
     else
         bufSize = pEnd - pStart;
 
     if (bufSize > 0)
     {
-        strncpy(bufer, pStart, bufSize);
+        strcpy_s(bufer, bufSize, pStart);
         bufer[bufSize] = 0;
     }
     return true;
@@ -45,10 +47,10 @@ bool GetStringLine(char *&pStr, char *bufer, long bufSize)
 
 void GetQuotedString(char *inBuf, char *outBuf, long bufSize)
 {
-    if (outBuf == null || bufSize <= 0)
+    if (outBuf == nullptr || bufSize <= 0)
         return;
     *outBuf = 0;
-    if (inBuf == null)
+    if (inBuf == nullptr)
         return;
 
     while (*inBuf && *inBuf != '\"')
@@ -56,7 +58,7 @@ void GetQuotedString(char *inBuf, char *outBuf, long bufSize)
     if (*inBuf)
         inBuf++;
 
-    int bufIdx = 0;
+    auto bufIdx = 0;
     while (*inBuf && *inBuf != '\"' && bufIdx < bufSize - 1)
     {
         *outBuf = *inBuf;
@@ -69,8 +71,8 @@ void GetQuotedString(char *inBuf, char *outBuf, long bufSize)
 
 TMPTELEPORT::TMPTELEPORT()
 {
-    rs = NULL;
-    m_descrArray = NULL;
+    rs = nullptr;
+    m_descrArray = nullptr;
     m_nStrQuantity = m_nCurStr = m_nCurShowPos = 0;
 }
 
@@ -81,9 +83,9 @@ TMPTELEPORT::~TMPTELEPORT()
 
 bool TMPTELEPORT::Init()
 {
-    rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
+    rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
     if (!rs)
-        SE_THROW_MSG("No service: dx8render");
+        throw std::exception("No service: dx9render");
 
     m_leftPos = 20;
     m_topPos = 80;
@@ -95,10 +97,10 @@ bool TMPTELEPORT::Init()
     return true;
 }
 
-void TMPTELEPORT::Execute(dword Delta_Time)
+void TMPTELEPORT::Execute(uint32_t Delta_Time)
 {
     CONTROL_STATE cs;
-    if (((PCS_CONTROLS *)api->Controls)->m_bIsOffDebugKeys)
+    if (static_cast<PCS_CONTROLS *>(api->Controls)->m_bIsOffDebugKeys)
         return;
     api->Controls->GetControlState("TeleportActive", cs);
     if (cs.state == CST_ACTIVATED)
@@ -147,19 +149,19 @@ void TMPTELEPORT::Execute(dword Delta_Time)
     {
         if (m_nStrQuantity > 0)
         {
-            long n = m_descrArray[m_nCurStr + m_nCurShowPos].num;
+            const long n = m_descrArray[m_nCurStr + m_nCurShowPos].num;
             ReleaseAll();
             api->Event("TeleportChoose", "l", n);
         }
     }
 }
 
-void TMPTELEPORT::Realize(dword Delta_Time)
+void TMPTELEPORT::Realize(uint32_t Delta_Time)
 {
     if (m_nStrQuantity > 0)
     {
-        int j = 0;
-        long ftop = m_topPos;
+        auto j = 0;
+        auto ftop = m_topPos;
         for (int i = m_nCurStr; i < m_nStrQuantity; i++)
         {
             if (j >= m_showStrQuantity)
@@ -176,9 +178,9 @@ void TMPTELEPORT::Realize(dword Delta_Time)
 
 void TMPTELEPORT::ReleaseAll()
 {
-    if (m_descrArray != NULL)
+    if (m_descrArray != nullptr)
     {
-        for (int i = 0; i < m_nStrQuantity; i++)
+        for (auto i = 0; i < m_nStrQuantity; i++)
         {
             DELETE_PTR(m_descrArray[i].name);
         }
@@ -189,12 +191,12 @@ void TMPTELEPORT::ReleaseAll()
     m_nShowType = 0;
 }
 
-dword _cdecl TMPTELEPORT::ProcessMessage(MESSAGE &message)
+uint64_t TMPTELEPORT::ProcessMessage(MESSAGE &message)
 {
     switch (message.Long())
     {
     case 42222: {
-        ATTRIBUTES *pA = message.AttributePointer();
+        auto *const pA = message.AttributePointer();
         SetShowData(pA);
         if (m_nStrQuantity == 0)
             m_nShowType = 0;
@@ -210,28 +212,29 @@ void TMPTELEPORT::SetShowData(ATTRIBUTES *pA)
 {
     ReleaseAll();
     m_nStrQuantity = 0;
-    if (pA == NULL)
+    if (pA == nullptr)
         return;
     m_nStrQuantity = pA->GetAttributesNum();
     if (m_nStrQuantity == 0)
         return;
-    if ((m_descrArray = NEW TELEPORT_DESCR[m_nStrQuantity]) == NULL)
+    if ((m_descrArray = new TELEPORT_DESCR[m_nStrQuantity]) == nullptr)
     {
-        SE_THROW_MSG("Allocate memory error");
+        throw std::exception("Allocate memory error");
     }
 
-    for (int i = 0; i < m_nStrQuantity; i++)
+    for (auto i = 0; i < m_nStrQuantity; i++)
     {
-        char *tmpStr = pA->GetAttribute(i);
-        m_descrArray[i].name = NULL;
+        auto *const tmpStr = pA->GetAttribute(i);
+        m_descrArray[i].name = nullptr;
         m_descrArray[i].num = i;
-        if (tmpStr == NULL)
+        if (tmpStr == nullptr)
             continue;
-        if ((m_descrArray[i].name = NEW char[strlen(tmpStr) + 1]) == NULL)
+        const auto len = strlen(tmpStr) + 1;
+        if ((m_descrArray[i].name = new char[len]) == nullptr)
         {
-            SE_THROW_MSG("Allocate memory error");
+            throw std::exception("Allocate memory error");
         }
-        strcpy(m_descrArray[i].name, tmpStr);
+        memcpy(m_descrArray[i].name, tmpStr, len);
     }
 
     SortShowData();
@@ -241,15 +244,15 @@ void TMPTELEPORT::SortShowData()
 {
     if (m_nStrQuantity == 0)
         return;
-    bool bContinueSort = true;
+    auto bContinueSort = true;
     do
     {
         bContinueSort = false;
-        for (int i = 1; i < m_nStrQuantity; i++)
+        for (auto i = 1; i < m_nStrQuantity; i++)
         {
-            if (m_descrArray[i - 1].name == NULL)
+            if (m_descrArray[i - 1].name == nullptr)
                 continue;
-            if (m_descrArray[i].name == NULL)
+            if (m_descrArray[i].name == nullptr)
             {
                 XChange(m_descrArray[i - 1], m_descrArray[i]);
                 bContinueSort = true;
@@ -266,11 +269,11 @@ void TMPTELEPORT::SortShowData()
 
 void TMPTELEPORT::XChange(TELEPORT_DESCR &d1, TELEPORT_DESCR &d2)
 {
-    int n = d1.num;
+    const auto n = d1.num;
     d1.num = d2.num;
     d2.num = n;
 
-    char *nm = d1.name;
+    auto *const nm = d1.name;
     d1.name = d2.name;
     d2.name = nm;
 }
@@ -279,33 +282,30 @@ bool FINDFILESINTODIRECTORY::Init()
 {
     if (AttributesPointer)
     {
-        char *dirName = AttributesPointer->GetAttribute("dir");
-        char *maskName = AttributesPointer->GetAttribute("mask");
+        auto *const dirName = AttributesPointer->GetAttribute("dir");
+        auto *const maskName = AttributesPointer->GetAttribute("mask");
         char fullName[512];
         fullName[0] = 0;
         if (dirName)
-            sprintf(fullName, "%s\\", dirName);
+            sprintf_s(fullName, "%s\\", dirName);
         if (maskName)
-            strcat(fullName, maskName);
+            strcat_s(fullName, maskName);
         else
-            strcat(fullName, "*.*");
+            strcat_s(fullName, "*.*");
         WIN32_FIND_DATA finddat;
-        HANDLE hdl = api->fio->_FindFirstFile(fullName, &finddat);
-        ATTRIBUTES *pA = AttributesPointer->CreateSubAClass(AttributesPointer, "filelist");
-        for (int file_idx = 0; hdl != INVALID_HANDLE_VALUE; file_idx++)
+        auto *const hdl = fio->_FindFirstFile(fullName, &finddat);
+        auto *pA = AttributesPointer->CreateSubAClass(AttributesPointer, "filelist");
+        for (auto file_idx = 0; hdl != INVALID_HANDLE_VALUE; file_idx++)
         {
             char sname[32];
-            sprintf(sname, "id%d", file_idx);
+            sprintf_s(sname, "id%d", file_idx);
             if (finddat.cFileName)
-            {
-                std::string FileName = utf8::ConvertWideToUtf8(finddat.cFileName);
-                pA->SetAttribute(sname, FileName.c_str());
-            }
-            if (!api->fio->_FindNextFile(hdl, &finddat))
+                pA->SetAttribute(sname, finddat.cFileName);
+            if (!fio->_FindNextFile(hdl, &finddat))
                 break;
         }
         if (hdl != INVALID_HANDLE_VALUE)
-            api->fio->_FindClose(hdl);
+            fio->_FindClose(hdl);
         return true;
     }
     api->Trace("Attributes Pointer into class FINDFILESINTODIRECTORY = NULL");
@@ -316,64 +316,65 @@ bool FINDDIALOGNODES::Init()
 {
     if (AttributesPointer)
     {
-        char *fileName = AttributesPointer->GetAttribute("file");
-        ATTRIBUTES *pA = AttributesPointer->CreateSubAClass(AttributesPointer, "nodelist");
+        auto *const fileName = AttributesPointer->GetAttribute("file");
+        auto *pA = AttributesPointer->CreateSubAClass(AttributesPointer, "nodelist");
         if (fileName && pA)
         {
-            HANDLE hfile = api->fio->_CreateFile(fileName, GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING);
+            auto *const hfile = fio->_CreateFile(fileName, GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING);
             if (hfile == INVALID_HANDLE_VALUE)
             {
                 api->Trace("WARNING! Can`t dialog file %s", fileName);
                 return false;
             }
 
-            long filesize = api->fio->_GetFileSize(hfile, 0);
+            const long filesize = fio->_GetFileSize(hfile, nullptr);
             if (filesize == 0)
             {
                 api->Trace("Empty dialog file %s", fileName);
-                api->fio->_CloseHandle(hfile);
+                fio->_CloseHandle(hfile);
                 return false;
             }
 
-            char *fileBuf = NEW char[filesize + 1];
-            if (fileBuf == null)
+            auto *const fileBuf = new char[filesize + 1];
+            if (fileBuf == nullptr)
             {
                 api->Trace("Can`t create buffer for read dialog file %s", fileName);
-                api->fio->_CloseHandle(hfile);
+                fio->_CloseHandle(hfile);
                 return false;
             }
 
-            DWORD readsize;
-            if (api->fio->_ReadFile(hfile, fileBuf, filesize, &readsize) == FALSE || readsize != (DWORD)filesize)
+            uint32_t readsize;
+            if (fio->_ReadFile(hfile, fileBuf, filesize, &readsize) == FALSE ||
+                readsize != static_cast<uint32_t>(filesize))
             {
                 api->Trace("Can`t read dialog file: %s", fileName);
-                api->fio->_CloseHandle(hfile);
-                delete fileBuf;
+                fio->_CloseHandle(hfile);
+                delete[] fileBuf;
                 return false;
             }
-            api->fio->_CloseHandle(hfile);
+            fio->_CloseHandle(hfile);
             fileBuf[filesize] = 0;
 
             // теперь есть буфер - начнем его анализировать
-            char *pStr = fileBuf;
+            auto *pStr = fileBuf;
             char param[1024];
 
-            int nodIdx = 0;
+            auto nodIdx = 0;
             while (GetStringLine(pStr, param, sizeof(param) - 1))
             {
-                if (strlen(param) < 5 || strnicmp(param, "case", 4))
+                if (strlen(param) < 5 || _strnicmp(param, "case", 4))
                     continue;
                 char param2[512];
                 GetQuotedString(param, param2, sizeof(param2) - 1);
                 if (strlen(param2) > 0)
                 {
-                    sprintf(param, "id%d", nodIdx);
+                    sprintf_s(param, "id%d", nodIdx);
                     nodIdx++;
                     pA->SetAttribute(param, param2);
                 }
             }
 
-            delete fileBuf;
+            delete[] fileBuf;
             return true;
         }
     }
