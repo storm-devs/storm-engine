@@ -1,9 +1,9 @@
 #ifndef _DATA_CACHE_
 #define _DATA_CACHE_
 
-#include "..\system\datasource\datasource.h"
-//#include "file.h"
-#include "templates.h"
+#include "../system/datasource/datasource.h"
+//#include "..\file.h"
+#include <vector>
 
 class IParticleManager;
 
@@ -13,18 +13,18 @@ class DataCache
 
     struct LoadedDataSource
     {
-        string FileName;
+        std::string FileName;
         DataSource *pData;
 
         LoadedDataSource()
         {
-            pData = NULL;
+            pData = nullptr;
         }
     };
 
-    array<LoadedDataSource> Cache;
+    std::vector<LoadedDataSource> Cache;
 
-    void CreateDataSource(void *pBuffer, DWORD BufferSize, const char *SourceFileName);
+    void CreateDataSource(void *pBuffer, uint32_t BufferSize, const char *SourceFileName);
 
   public:
     //Конструктор/деструктор
@@ -43,8 +43,8 @@ class DataCache
     //Проверить указатель на валидность
     bool ValidatePointer(DataSource *pData);
 
-    DWORD GetCachedCount();
-    const char *GetCachedNameByIndex(DWORD Index);
+    uint32_t GetCachedCount() const;
+    const char *GetCachedNameByIndex(uint32_t Index);
 };
 
 #endif

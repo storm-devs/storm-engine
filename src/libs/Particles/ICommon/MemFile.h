@@ -1,9 +1,10 @@
-//Класс для работы с памятью как с файлом...
+// ласс дл€ работы с пам€тью как с файлом...
 
 #ifndef _MEMORY_FILE_
 #define _MEMORY_FILE_
 
-#include "d_types.h"
+#include <cstdint>
+#include <cstring>
 
 #define VFSEEK_SET (0x00000000)
 #define VFSEEK_CURRENT (0x00000001)
@@ -13,35 +14,35 @@ class MemFile
 {
     bool DataIsMy;
 
-    byte *Data;
-    dword MaxLen;
-    dword CurPos;
-    dword BiggestWritePos;
+    uint8_t *Data;
+    uint32_t MaxLen;
+    uint32_t CurPos;
+    uint32_t BiggestWritePos;
 
   public:
-    MemFile::MemFile()
+    MemFile()
     {
         DataIsMy = false;
-        Data = NULL;
+        Data = nullptr;
         MaxLen = 0;
         CurPos = 0;
         BiggestWritePos = 0;
     }
 
-    MemFile::~MemFile()
+    ~MemFile()
     {
         Close();
     }
 
-    inline bool Compare(MemFile *pMemfile)
+    bool Compare(MemFile *pMemfile)
     {
         if (GetLength() != pMemfile->GetLength())
             return false;
 
-        for (DWORD i = 0; i < GetLength(); i++)
+        for (uint32_t i = 0; i < GetLength(); i++)
         {
-            BYTE *Buffer1 = (BYTE *)GetBuffer();
-            BYTE *Buffer2 = (BYTE *)pMemfile->GetBuffer();
+            const auto Buffer1 = static_cast<uint8_t *>(GetBuffer());
+            const auto Buffer2 = static_cast<uint8_t *>(pMemfile->GetBuffer());
 
             if (Buffer1[i] != Buffer2[i])
                 return false;
@@ -50,36 +51,36 @@ class MemFile
         return true;
     }
 
-    inline void OpenRead(void *Data, dword DataSize)
+    void OpenRead(void *Data, uint32_t DataSize)
     {
         DataIsMy = false;
-        this->Data = (byte *)Data;
+        this->Data = static_cast<uint8_t *>(Data);
         MaxLen = DataSize;
         CurPos = 0;
     }
 
-    inline void OpenWrite(dword MaxSize)
+    void OpenWrite(uint32_t MaxSize)
     {
         DataIsMy = true;
-        Data = NEW byte[MaxSize];
+        Data = new uint8_t[MaxSize];
         memset(Data, 0, MaxSize);
         MaxLen = MaxSize;
         CurPos = 0;
     }
 
-    inline dword MemFile::Tell()
+    uint32_t Tell() const
     {
         return CurPos;
     }
 
-    inline dword MemFile::GetLength()
+    uint32_t GetLength() const
     {
         if (DataIsMy)
             return BiggestWritePos;
         return MaxLen;
     }
 
-    inline void MemFile::Seek(int NewPos, dword flags)
+    void Seek(int NewPos, uint32_t flags)
     {
         switch (flags)
         {
@@ -95,20 +96,20 @@ class MemFile
         }
     }
 
-    inline void MemFile::Close()
+    void Close()
     {
         if (DataIsMy)
         {
             delete Data;
-            Data = NULL;
+            Data = nullptr;
         }
     }
 
-    inline dword MemFile::Read(void *Buffer, dword size)
+    uint32_t Read(void *Buffer, uint32_t size)
     {
         if (!Data)
             return 0;
-        dword real_size = CurPos + size;
+        const auto real_size = CurPos + size;
         if (real_size > MaxLen)
             size = size - (real_size - MaxLen);
         if (size <= 0)
@@ -118,20 +119,20 @@ class MemFile
         return size;
     }
 
-    inline dword MemFile::WriteZeroByte()
+    uint32_t WriteZeroByte()
     {
-        BYTE Zero = 0;
+        uint8_t Zero = 0;
         return Write(&Zero, 1);
     }
 
-    inline dword MemFile::Write(const void *Buffer, dword size)
+    uint32_t Write(const void *Buffer, uint32_t size)
     {
         if (!DataIsMy)
             return 0;
         if (!Data)
             return 0;
 
-        dword real_size = CurPos + size;
+        const auto real_size = CurPos + size;
         if (real_size > MaxLen)
             size = size - (real_size - MaxLen);
         if (size <= 0)
@@ -144,17 +145,17 @@ class MemFile
         return size;
     }
 
-    template <class TYPE> inline dword WriteType(TYPE &Val)
+    template <class TYPE> uint32_t WriteType(TYPE &Val)
     {
         return Write(&Val, sizeof(TYPE));
     }
 
-    template <class TYPE> inline dword ReadType(TYPE &Val)
+    template <class TYPE> uint32_t ReadType(TYPE &Val)
     {
         return Read(&Val, sizeof(TYPE));
     }
 
-    inline void *GetBuffer()
+    void *GetBuffer() const
     {
         return Data;
     }

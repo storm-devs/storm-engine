@@ -1,8 +1,8 @@
 #include "DataUV.h"
-#include "..\..\icommon\memfile.h"
+#include "vmodule_api.h"
 
 //конструктор/деструктор
-DataUV::DataUV() : Frames(_FL_)
+DataUV::DataUV()
 {
 }
 
@@ -11,51 +11,51 @@ DataUV::~DataUV()
 }
 
 //Получить значение   [ x,y = UV1; z,w = UV2 ]
-const CVECTOR4 &DataUV::GetValue(DWORD FrameNum)
+const Vector4 &DataUV::GetValue(uint32_t FrameNum)
 {
-    DWORD TotalFrames = Frames.Size();
+    const uint32_t TotalFrames = Frames.size();
     FrameNum = FrameNum % TotalFrames;
     return Frames[FrameNum];
 }
 
 //Установить значения
-void DataUV::SetValues(const CVECTOR4 *_Frames, DWORD FramesCount)
+void DataUV::SetValues(const Vector4 *_Frames, uint32_t FramesCount)
 {
-    Frames.DelAll();
+    Frames.clear();
 
-    for (DWORD n = 0; n < FramesCount; n++)
+    for (uint32_t n = 0; n < FramesCount; n++)
     {
-        Frames.Add(_Frames[n]);
+        Frames.push_back(_Frames[n]);
     }
 }
 
 //Получить кол-во кадров
-DWORD DataUV::GetFrameCount()
+uint32_t DataUV::GetFrameCount() const
 {
-    return Frames.Size();
+    return Frames.size();
 }
 
 void DataUV::Load(MemFile *File)
 {
-    DWORD ElementCount = 0;
+    uint32_t ElementCount = 0;
     File->ReadType(ElementCount);
-    for (DWORD n = 0; n < ElementCount; n++)
+    for (uint32_t n = 0; n < ElementCount; n++)
     {
-        CVECTOR4 rFrame;
+        Vector4 rFrame;
         File->ReadType(rFrame.x);
         File->ReadType(rFrame.y);
         File->ReadType(rFrame.z);
         File->ReadType(rFrame.w);
 
-        CVECTOR4 newFrame;
+        Vector4 newFrame;
         newFrame = rFrame;
         newFrame.z += newFrame.x;
         newFrame.w += newFrame.y;
-        Frames.Add(newFrame);
+        Frames.push_back(newFrame);
     }
 
     static char AttribueName[128];
-    DWORD NameLength = 0;
+    uint32_t NameLength = 0;
     File->ReadType(NameLength);
     Assert(NameLength < 128);
     File->Read(AttribueName, NameLength);
@@ -69,19 +69,19 @@ void DataUV::SetName(const char *szName)
     Name = szName;
 }
 
-const char *DataUV::GetName()
+const char *DataUV::GetName() const
 {
-    return Name.GetBuffer();
+    return Name.c_str();
 }
 
 void DataUV::Write(MemFile *File)
 {
-    DWORD ElementCount = GetFrameCount();
+    auto ElementCount = GetFrameCount();
     File->WriteType(ElementCount);
-    for (DWORD n = 0; n < ElementCount; n++)
+    for (uint32_t n = 0; n < ElementCount; n++)
     {
-        float w = Frames[n].z - Frames[n].x;
-        float h = Frames[n].w - Frames[n].y;
+        auto w = Frames[n].z - Frames[n].x;
+        auto h = Frames[n].w - Frames[n].y;
         File->WriteType(Frames[n].x);
         File->WriteType(Frames[n].y);
         File->WriteType(w);
@@ -89,10 +89,10 @@ void DataUV::Write(MemFile *File)
     }
 
     // save name
-    DWORD NameLength = Name.Len();
-    DWORD NameLengthPlusZero = NameLength + 1;
+    const uint32_t NameLength = Name.size();
+    auto NameLengthPlusZero = NameLength + 1;
     File->WriteType(NameLengthPlusZero);
     Assert(NameLength < 128);
-    File->Write(Name.GetBuffer(), NameLength);
+    File->Write(Name.c_str(), NameLength);
     File->WriteZeroByte();
 }

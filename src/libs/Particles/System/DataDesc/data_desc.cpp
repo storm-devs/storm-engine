@@ -1,4 +1,5 @@
 #include "data_desc.h"
+#include "storm_assert.h"
 
 DataDescripion::DataDescripion()
 {
@@ -17,17 +18,17 @@ void DataDescripion::AddField(FieldType Type, const char *Name)
     ItemsCount++;
 }
 
-const char *DataDescripion::GetFieldName(DWORD Index)
+const char *DataDescripion::GetFieldName(uint32_t Index) const
 {
     return Fields[Index].Name;
 }
 
-FieldType DataDescripion::GetFieldType(DWORD Index)
+FieldType DataDescripion::GetFieldType(uint32_t Index) const
 {
     return Fields[Index].Type;
 }
 
-int DataDescripion::GetFieldCount()
+int DataDescripion::GetFieldCount() const
 {
     return ItemsCount;
 }

@@ -1,13 +1,14 @@
-#include "fieldlist.h"
-#include "databool.h"
-#include "datacolor.h"
-#include "datafloat.h"
-#include "datagraph.h"
-#include "dataposition.h"
-#include "datastring.h"
-#include "datauv.h"
+#include "FieldList.h"
+#include "DataBool.h"
+#include "DataColor.h"
+#include "DataFloat.h"
+#include "DataGraph.h"
+#include "DataPosition.h"
+#include "DataString.h"
+#include "DataUV.h"
+#include "defines.h"
 
-FieldList::FieldList() : Fields(_FL_)
+FieldList::FieldList()
 {
 }
 
@@ -18,12 +19,12 @@ FieldList::~FieldList()
 
 void FieldList::Load(MemFile *File)
 {
-    DWORD DataFieldsCount = 0;
+    uint32_t DataFieldsCount = 0;
     File->ReadType(DataFieldsCount);
 
-    for (DWORD n = 0; n < DataFieldsCount; n++)
+    for (uint32_t n = 0; n < DataFieldsCount; n++)
     {
-        FieldType fldType = FIELD_UNKNOWN;
+        auto fldType = FIELD_UNKNOWN;
         File->ReadType(fldType);
 
         switch (fldType)
@@ -64,7 +65,7 @@ void FieldList::Load(MemFile *File)
             break;
         }
         default: {
-            SE_THROW_MSG("Particles: Unknown field type !!!!");
+            throw std::exception("Particles: Unknown field type !!!!");
         }
         } // switch
     }     // for all fileds
@@ -72,97 +73,98 @@ void FieldList::Load(MemFile *File)
 
 void FieldList::CreateEmptyBoolField(const char *Name, bool def_value)
 {
-    DataBool *Field = NEW DataBool;
+    auto *Field = new DataBool;
     Field->SetName(Name);
     Field->SetValue(def_value);
 
     FieldDesc pDesc;
     pDesc.MarkForDelete = false;
     pDesc.Name = Field->GetName();
-    pDesc.HashValue = string::HashNoCase(pDesc.Name.GetBuffer());
+    pDesc.HashValue = TOREMOVE::HashNoCase(pDesc.Name.c_str());
     pDesc.pPointer = Field;
     pDesc.Type = FIELD_BOOL;
-    Fields.Add(pDesc);
+    Fields.push_back(pDesc);
 }
 
 void FieldList::CreateEmptyFloatField(const char *Name, float def_value)
 {
-    DataFloat *Field = NEW DataFloat;
+    auto *Field = new DataFloat;
     Field->SetName(Name);
     Field->SetValue(def_value);
 
     FieldDesc pDesc;
     pDesc.MarkForDelete = false;
     pDesc.Name = Field->GetName();
-    pDesc.HashValue = string::HashNoCase(pDesc.Name.GetBuffer());
+    pDesc.HashValue = TOREMOVE::HashNoCase(pDesc.Name.c_str());
     pDesc.pPointer = Field;
     pDesc.Type = FIELD_FLOAT;
-    Fields.Add(pDesc);
+    Fields.push_back(pDesc);
 }
 
 void FieldList::CreateEmptyGraphField(const char *Name, float def_value_min, float def_value_max)
 {
-    DataGraph *Field = NEW DataGraph;
+    auto *Field = new DataGraph;
     Field->SetName(Name);
     Field->SetDefaultValue(def_value_max, def_value_min);
 
     FieldDesc pDesc;
     pDesc.MarkForDelete = false;
     pDesc.Name = Field->GetName();
-    pDesc.HashValue = string::HashNoCase(pDesc.Name.GetBuffer());
+    pDesc.HashValue = TOREMOVE::HashNoCase(pDesc.Name.c_str());
     pDesc.pPointer = Field;
     pDesc.Type = FIELD_GRAPH;
-    Fields.Add(pDesc);
+    Fields.push_back(pDesc);
 }
 
-void FieldList::CreateEmptyPositionField(const char *Name, const CVECTOR &def_value)
+void FieldList::CreateEmptyPositionField(const char *Name, const Vector &def_value)
 {
-    DataPosition *Field = NEW DataPosition;
+    auto *Field = new DataPosition;
     Field->SetName(Name);
     Field->SetValue(def_value);
 
     FieldDesc pDesc;
     pDesc.MarkForDelete = false;
     pDesc.Name = Field->GetName();
-    pDesc.HashValue = string::HashNoCase(pDesc.Name.GetBuffer());
+    pDesc.HashValue = TOREMOVE::HashNoCase(pDesc.Name.c_str());
     pDesc.pPointer = Field;
     pDesc.Type = FIELD_POSITION;
-    Fields.Add(pDesc);
+    Fields.push_back(pDesc);
 }
 
 void FieldList::CreateEmptyStringField(const char *Name, const char *def_value)
 {
-    DataString *Field = NEW DataString;
+    auto *Field = new DataString;
     Field->SetName(Name);
     Field->SetValue(def_value);
 
     FieldDesc pDesc;
     pDesc.MarkForDelete = false;
     pDesc.Name = Field->GetName();
-    pDesc.HashValue = string::HashNoCase(pDesc.Name.GetBuffer());
+    pDesc.HashValue = TOREMOVE::HashNoCase(pDesc.Name.c_str());
     pDesc.pPointer = Field;
     pDesc.Type = FIELD_STRING;
-    Fields.Add(pDesc);
+    Fields.push_back(pDesc);
 }
 
 void FieldList::CreateEmptyUVField(const char *Name)
 {
-    DataUV *Field = NEW DataUV;
+    auto *Field = new DataUV;
     Field->SetName(Name);
-    Field->SetValues(&CVECTOR4(0.0f, 0.0f, 1.0f, 1.0f), 1);
+    const auto vec = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
+    Field->SetValues(&vec, 1);
 
     FieldDesc pDesc;
     pDesc.MarkForDelete = false;
     pDesc.Name = Field->GetName();
-    pDesc.HashValue = string::HashNoCase(pDesc.Name.GetBuffer());
+    pDesc.HashValue = TOREMOVE::HashNoCase(pDesc.Name.c_str());
     pDesc.pPointer = Field;
     pDesc.Type = FIELD_UV;
-    Fields.Add(pDesc);
+    Fields.push_back(pDesc);
 }
 
-void FieldList::CreateEmptyColorField(const char *Name, DWORD def_value)
+void FieldList::CreateEmptyColorField(const char *Name, uint32_t def_value)
 {
-    DataColor *Field = NEW DataColor;
+    auto *Field = new DataColor;
     Field->SetName(Name);
     ColorVertex defVal[2];
     defVal[0].MinValue = def_value;
@@ -174,283 +176,283 @@ void FieldList::CreateEmptyColorField(const char *Name, DWORD def_value)
     FieldDesc pDesc;
     pDesc.MarkForDelete = false;
     pDesc.Name = Field->GetName();
-    pDesc.HashValue = string::HashNoCase(pDesc.Name.GetBuffer());
+    pDesc.HashValue = TOREMOVE::HashNoCase(pDesc.Name.c_str());
     pDesc.pPointer = Field;
     pDesc.Type = FIELD_COLOR;
-    Fields.Add(pDesc);
+    Fields.push_back(pDesc);
 }
 
 void FieldList::CreateBoolField(MemFile *pMemFile)
 {
-    DataBool *Field = NEW DataBool;
+    auto *Field = new DataBool;
     Field->Load(pMemFile);
 
     FieldDesc pDesc;
     pDesc.MarkForDelete = false;
     pDesc.Name = Field->GetName();
-    pDesc.HashValue = string::HashNoCase(pDesc.Name.GetBuffer());
+    pDesc.HashValue = TOREMOVE::HashNoCase(pDesc.Name.c_str());
     pDesc.pPointer = Field;
     pDesc.Type = FIELD_BOOL;
-    Fields.Add(pDesc);
+    Fields.push_back(pDesc);
 }
 
 void FieldList::CreateFloatField(MemFile *pMemFile)
 {
-    DataFloat *Field = NEW DataFloat;
+    auto *Field = new DataFloat;
     Field->Load(pMemFile);
 
     FieldDesc pDesc;
     pDesc.MarkForDelete = false;
     pDesc.Name = Field->GetName();
-    pDesc.HashValue = string::HashNoCase(pDesc.Name.GetBuffer());
+    pDesc.HashValue = TOREMOVE::HashNoCase(pDesc.Name.c_str());
     pDesc.pPointer = Field;
     pDesc.Type = FIELD_FLOAT;
-    Fields.Add(pDesc);
+    Fields.push_back(pDesc);
 }
 
 void FieldList::CreateGraphField(MemFile *pMemFile)
 {
-    DataGraph *Field = NEW DataGraph;
+    auto *Field = new DataGraph;
     Field->Load(pMemFile);
 
     FieldDesc pDesc;
     pDesc.MarkForDelete = false;
     pDesc.Name = Field->GetName();
-    pDesc.HashValue = string::HashNoCase(pDesc.Name.GetBuffer());
+    pDesc.HashValue = TOREMOVE::HashNoCase(pDesc.Name.c_str());
     pDesc.pPointer = Field;
     pDesc.Type = FIELD_GRAPH;
-    Fields.Add(pDesc);
+    Fields.push_back(pDesc);
 }
 
 void FieldList::CreatePositionField(MemFile *pMemFile)
 {
-    DataPosition *Field = NEW DataPosition;
+    auto *Field = new DataPosition;
     Field->Load(pMemFile);
 
     FieldDesc pDesc;
     pDesc.MarkForDelete = false;
     pDesc.Name = Field->GetName();
-    pDesc.HashValue = string::HashNoCase(pDesc.Name.GetBuffer());
+    pDesc.HashValue = TOREMOVE::HashNoCase(pDesc.Name.c_str());
     pDesc.pPointer = Field;
     pDesc.Type = FIELD_POSITION;
-    Fields.Add(pDesc);
+    Fields.push_back(pDesc);
 }
 
 void FieldList::CreateStringField(MemFile *pMemFile)
 {
-    DataString *Field = NEW DataString;
+    auto *Field = new DataString;
     Field->Load(pMemFile);
 
     FieldDesc pDesc;
     pDesc.MarkForDelete = false;
     pDesc.Name = Field->GetName();
-    pDesc.HashValue = string::HashNoCase(pDesc.Name.GetBuffer());
+    pDesc.HashValue = TOREMOVE::HashNoCase(pDesc.Name.c_str());
     pDesc.pPointer = Field;
     pDesc.Type = FIELD_STRING;
-    Fields.Add(pDesc);
+    Fields.push_back(pDesc);
 }
 
 void FieldList::CreateUVField(MemFile *pMemFile)
 {
-    DataUV *Field = NEW DataUV;
+    auto *Field = new DataUV;
     Field->Load(pMemFile);
 
     FieldDesc pDesc;
     pDesc.MarkForDelete = false;
     pDesc.Name = Field->GetName();
-    pDesc.HashValue = string::HashNoCase(pDesc.Name.GetBuffer());
+    pDesc.HashValue = TOREMOVE::HashNoCase(pDesc.Name.c_str());
     pDesc.pPointer = Field;
     pDesc.Type = FIELD_UV;
-    Fields.Add(pDesc);
+    Fields.push_back(pDesc);
 }
 
 void FieldList::CreateColorField(MemFile *pMemFile)
 {
-    DataColor *Field = NEW DataColor;
+    auto *Field = new DataColor;
     Field->Load(pMemFile);
 
     FieldDesc pDesc;
     pDesc.MarkForDelete = false;
     pDesc.Name = Field->GetName();
-    pDesc.HashValue = string::HashNoCase(pDesc.Name.GetBuffer());
+    pDesc.HashValue = TOREMOVE::HashNoCase(pDesc.Name.c_str());
     pDesc.pPointer = Field;
     pDesc.Type = FIELD_COLOR;
-    Fields.Add(pDesc);
+    Fields.push_back(pDesc);
 }
 
 void FieldList::DelAll()
 {
-    for (DWORD n = 0; n < Fields.Size(); n++)
+    for (uint32_t n = 0; n < Fields.size(); n++)
     {
         DeleteFieldData(Fields[n]);
     } // loop
 
-    Fields.DelAll();
+    Fields.clear();
 }
 
 DataColor *FieldList::FindColor(const char *AttrName)
 {
-    DWORD SearchHash = string::HashNoCase(AttrName);
-    for (DWORD n = 0; n < Fields.Size(); n++)
+    const uint32_t SearchHash = TOREMOVE::HashNoCase(AttrName);
+    for (uint32_t n = 0; n < Fields.size(); n++)
     {
         if (Fields[n].Type == FIELD_COLOR)
         {
             if (SearchHash == Fields[n].HashValue)
             {
-                if (stricmp(Fields[n].Name.GetBuffer(), AttrName) == 0)
+                if (_stricmp(Fields[n].Name.c_str(), AttrName) == 0)
                 {
-                    return ((DataColor *)Fields[n].pPointer);
+                    return static_cast<DataColor *>(Fields[n].pPointer);
                 }
             }
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 DataBool *FieldList::FindBool(const char *AttrName)
 {
-    DWORD SearchHash = string::HashNoCase(AttrName);
-    for (DWORD n = 0; n < Fields.Size(); n++)
+    const uint32_t SearchHash = TOREMOVE::HashNoCase(AttrName);
+    for (uint32_t n = 0; n < Fields.size(); n++)
     {
         if (Fields[n].Type == FIELD_BOOL)
         {
             if (SearchHash == Fields[n].HashValue)
             {
-                if (stricmp(Fields[n].Name.GetBuffer(), AttrName) == 0)
+                if (_stricmp(Fields[n].Name.c_str(), AttrName) == 0)
                 {
-                    return ((DataBool *)Fields[n].pPointer);
+                    return static_cast<DataBool *>(Fields[n].pPointer);
                 }
             }
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 DataFloat *FieldList::FindFloat(const char *AttrName)
 {
-    DWORD SearchHash = string::HashNoCase(AttrName);
-    for (DWORD n = 0; n < Fields.Size(); n++)
+    const uint32_t SearchHash = TOREMOVE::HashNoCase(AttrName);
+    for (uint32_t n = 0; n < Fields.size(); n++)
     {
         if (Fields[n].Type == FIELD_FLOAT)
         {
             if (SearchHash == Fields[n].HashValue)
             {
-                if (stricmp(Fields[n].Name.GetBuffer(), AttrName) == 0)
+                if (_stricmp(Fields[n].Name.c_str(), AttrName) == 0)
                 {
-                    return ((DataFloat *)Fields[n].pPointer);
+                    return static_cast<DataFloat *>(Fields[n].pPointer);
                 }
             }
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 DataGraph *FieldList::FindGraph(const char *AttrName)
 {
-    DWORD SearchHash = string::HashNoCase(AttrName);
+    const uint32_t SearchHash = TOREMOVE::HashNoCase(AttrName);
 
-    for (DWORD n = 0; n < Fields.Size(); n++)
+    for (uint32_t n = 0; n < Fields.size(); n++)
     {
         if (Fields[n].Type == FIELD_GRAPH)
         {
             if (SearchHash == Fields[n].HashValue)
             {
-                if (stricmp(Fields[n].Name.GetBuffer(), AttrName) == 0)
+                if (_stricmp(Fields[n].Name.c_str(), AttrName) == 0)
                 {
-                    return ((DataGraph *)Fields[n].pPointer);
+                    return static_cast<DataGraph *>(Fields[n].pPointer);
                 }
             }
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 DataString *FieldList::FindString(const char *AttrName)
 {
-    DWORD SearchHash = string::HashNoCase(AttrName);
+    const uint32_t SearchHash = TOREMOVE::HashNoCase(AttrName);
 
-    for (DWORD n = 0; n < Fields.Size(); n++)
+    for (uint32_t n = 0; n < Fields.size(); n++)
     {
         if (Fields[n].Type == FIELD_STRING)
         {
             if (SearchHash == Fields[n].HashValue)
             {
-                if (stricmp(Fields[n].Name.GetBuffer(), AttrName) == 0)
+                if (_stricmp(Fields[n].Name.c_str(), AttrName) == 0)
                 {
-                    return ((DataString *)Fields[n].pPointer);
+                    return static_cast<DataString *>(Fields[n].pPointer);
                 }
             }
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 DataPosition *FieldList::FindPosition(const char *AttrName)
 {
-    DWORD SearchHash = string::HashNoCase(AttrName);
+    const uint32_t SearchHash = TOREMOVE::HashNoCase(AttrName);
 
-    for (DWORD n = 0; n < Fields.Size(); n++)
+    for (uint32_t n = 0; n < Fields.size(); n++)
     {
         if (Fields[n].Type == FIELD_POSITION)
         {
             if (SearchHash == Fields[n].HashValue)
             {
-                if (stricmp(Fields[n].Name.GetBuffer(), AttrName) == 0)
+                if (_stricmp(Fields[n].Name.c_str(), AttrName) == 0)
                 {
-                    return ((DataPosition *)Fields[n].pPointer);
+                    return static_cast<DataPosition *>(Fields[n].pPointer);
                 }
             }
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 DataUV *FieldList::FindUV(const char *AttrName)
 {
-    DWORD SearchHash = string::HashNoCase(AttrName);
+    const uint32_t SearchHash = TOREMOVE::HashNoCase(AttrName);
 
-    for (DWORD n = 0; n < Fields.Size(); n++)
+    for (uint32_t n = 0; n < Fields.size(); n++)
     {
         if (Fields[n].Type == FIELD_UV)
         {
             if (SearchHash == Fields[n].HashValue)
             {
-                if (stricmp(Fields[n].Name.GetBuffer(), AttrName) == 0)
+                if (_stricmp(Fields[n].Name.c_str(), AttrName) == 0)
                 {
-                    return ((DataUV *)Fields[n].pPointer);
+                    return static_cast<DataUV *>(Fields[n].pPointer);
                 }
             }
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 FieldList::FieldDesc *FieldList::FindField(const char *Name)
 {
-    DWORD SearchHash = string::HashNoCase(Name);
+    const uint32_t SearchHash = TOREMOVE::HashNoCase(Name);
 
-    for (DWORD n = 0; n < Fields.Size(); n++)
+    for (uint32_t n = 0; n < Fields.size(); n++)
     {
         if (SearchHash == Fields[n].HashValue)
         {
-            if (stricmp(Fields[n].Name.GetBuffer(), Name) == 0)
+            if (_stricmp(Fields[n].Name.c_str(), Name) == 0)
             {
                 return &Fields[n];
             }
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 float FieldList::GetFloat(const char *AttrName, float def_value)
 {
-    DataFloat *pFind = FindFloat(AttrName);
+    auto *const pFind = FindFloat(AttrName);
     if (!pFind)
         return def_value;
     return pFind->GetValue();
@@ -458,13 +460,13 @@ float FieldList::GetFloat(const char *AttrName, float def_value)
 
 int FieldList::GetFloatAsInt(const char *AttrName, int def_value)
 {
-    float val = GetFloat(AttrName, (float)def_value);
-    return (int)val;
+    const auto val = GetFloat(AttrName, static_cast<float>(def_value));
+    return static_cast<int>(val);
 }
 
 bool FieldList::GetBool(const char *AttrName, bool def_value)
 {
-    DataBool *pFind = FindBool(AttrName);
+    auto *const pFind = FindBool(AttrName);
     if (!pFind)
         return def_value;
     return pFind->GetValue();
@@ -472,15 +474,15 @@ bool FieldList::GetBool(const char *AttrName, bool def_value)
 
 const char *FieldList::GetString(const char *AttrName, const char *def_value)
 {
-    DataString *pFind = FindString(AttrName);
+    auto *const pFind = FindString(AttrName);
     if (!pFind)
         return def_value;
     return pFind->GetValue();
 }
 
-const CVECTOR &FieldList::GetPosition(const char *AttrName, const CVECTOR &def_value)
+const Vector &FieldList::GetPosition(const char *AttrName, const Vector &def_value)
 {
-    DataPosition *pFind = FindPosition(AttrName);
+    auto *const pFind = FindPosition(AttrName);
     if (!pFind)
         return def_value;
     return pFind->GetValue();
@@ -488,7 +490,7 @@ const CVECTOR &FieldList::GetPosition(const char *AttrName, const CVECTOR &def_v
 
 float FieldList::GetGraphVal(const char *AttrName, float Time, float LifeTime, float K_Rand, float def_value)
 {
-    DataGraph *pFind = FindGraph(AttrName);
+    auto *pFind = FindGraph(AttrName);
     if (!pFind)
         return def_value;
     return pFind->GetValue(Time, LifeTime, K_Rand);
@@ -496,37 +498,37 @@ float FieldList::GetGraphVal(const char *AttrName, float Time, float LifeTime, f
 
 float FieldList::GetRandomGraphVal(const char *AttrName, float Time, float LifeTime, float def_value)
 {
-    DataGraph *pFind = FindGraph(AttrName);
+    auto *pFind = FindGraph(AttrName);
     if (!pFind)
         return def_value;
     return pFind->GetRandomValue(Time, LifeTime);
 }
 
-DWORD FieldList::GetFieldCount()
+uint32_t FieldList::GetFieldCount() const
 {
-    return Fields.Size();
+    return Fields.size();
 }
 
-const FieldList::FieldDesc &FieldList::GetFieldByIndex(DWORD Index)
+const FieldList::FieldDesc &FieldList::GetFieldByIndex(uint32_t Index)
 {
     return Fields[Index];
 }
 
 void FieldList::Convert(DataDescripion *pDataDescriptor)
 {
-    for (DWORD i = 0; i < Fields.Size(); i++)
+    for (uint32_t i = 0; i < Fields.size(); i++)
     {
         Fields[i].MarkForDelete = true;
     }
 
-    DWORD NeedFieldsCount = pDataDescriptor->GetFieldCount();
+    const uint32_t NeedFieldsCount = pDataDescriptor->GetFieldCount();
 
-    for (DWORD n = 0; n < NeedFieldsCount; n++)
+    for (uint32_t n = 0; n < NeedFieldsCount; n++)
     {
-        const char *NeedFieldName = pDataDescriptor->GetFieldName(n);
-        FieldType NeedFieldType = pDataDescriptor->GetFieldType(n);
-        FieldDesc *pDesc = FindField(NeedFieldName);
-        bool FieldExist = false;
+        const auto *const NeedFieldName = pDataDescriptor->GetFieldName(n);
+        const auto NeedFieldType = pDataDescriptor->GetFieldType(n);
+        auto *const pDesc = FindField(NeedFieldName);
+        auto FieldExist = false;
         if (pDesc)
         {
             if (pDesc->Type == NeedFieldType)
@@ -555,7 +557,7 @@ void FieldList::Convert(DataDescripion *pDataDescriptor)
                 CreateEmptyGraphField(NeedFieldName, 0.0f, 0.0f);
                 break;
             case FIELD_POSITION:
-                CreateEmptyPositionField(NeedFieldName, CVECTOR(0.0f));
+                CreateEmptyPositionField(NeedFieldName, Vector(0.0f));
                 break;
             case FIELD_UV:
                 CreateEmptyUVField(NeedFieldName);
@@ -564,110 +566,112 @@ void FieldList::Convert(DataDescripion *pDataDescriptor)
                 CreateEmptyStringField(NeedFieldName, "###");
                 break;
             default:
-                SE_THROW("Unknown Field type !!!");
+                throw std::exception("Unknown Field type !!!");
             }
         }
     }
 
-    for (dword i = 0; i < Fields.Size(); i++)
+    for (uint32_t i = 0; i < Fields.size(); i++)
     {
         if (Fields[i].MarkForDelete)
         {
             DeleteFieldData(Fields[i]);
-            Fields.ExtractNoShift(i);
+            // Fields.ExtractNoShift(i);
+            Fields[i] = Fields.back();
+            Fields.pop_back();
             i--;
         }
     }
 }
 
-void FieldList::DeleteFieldData(const FieldList::FieldDesc &pData)
+void FieldList::DeleteFieldData(const FieldDesc &pData)
 {
-    FieldType fldType = pData.Type;
+    const auto fldType = pData.Type;
 
     switch (fldType)
     {
     case FIELD_BOOL: {
-        delete ((DataBool *)pData.pPointer);
+        delete static_cast<DataBool *>(pData.pPointer);
         break;
     }
     case FIELD_FLOAT: {
-        delete ((DataFloat *)pData.pPointer);
+        delete static_cast<DataFloat *>(pData.pPointer);
         break;
     }
     case FIELD_GRAPH: {
-        delete ((DataGraph *)pData.pPointer);
+        delete static_cast<DataGraph *>(pData.pPointer);
         break;
     }
     case FIELD_POSITION: {
-        delete ((DataPosition *)pData.pPointer);
+        delete static_cast<DataPosition *>(pData.pPointer);
         break;
     }
     case FIELD_STRING: {
-        delete ((DataString *)pData.pPointer);
+        delete static_cast<DataString *>(pData.pPointer);
         break;
     }
     case FIELD_UV: {
-        delete ((DataUV *)pData.pPointer);
+        delete static_cast<DataUV *>(pData.pPointer);
         break;
     }
     case FIELD_COLOR: {
-        delete ((DataColor *)pData.pPointer);
+        delete static_cast<DataColor *>(pData.pPointer);
         break;
     }
     default: {
-        SE_THROW_MSG("Particles: Try delete unknown field type !!!!");
+        throw std::exception("Particles: Try delete unknown field type !!!!");
     }
     } // switch
 }
 
 void FieldList::Write(MemFile *File)
 {
-    DWORD DataFieldsCount = Fields.Size();
+    uint32_t DataFieldsCount = Fields.size();
     File->WriteType(DataFieldsCount);
 
-    for (DWORD n = 0; n < DataFieldsCount; n++)
+    for (uint32_t n = 0; n < DataFieldsCount; n++)
     {
         File->WriteType(Fields[n].Type);
 
         switch (Fields[n].Type)
         {
         case FIELD_BOOL: {
-            DataBool *pBoolField = (DataBool *)Fields[n].pPointer;
+            auto *pBoolField = static_cast<DataBool *>(Fields[n].pPointer);
             pBoolField->Write(File);
             break;
         }
         case FIELD_FLOAT: {
-            DataFloat *pFloatField = (DataFloat *)Fields[n].pPointer;
+            auto *pFloatField = static_cast<DataFloat *>(Fields[n].pPointer);
             pFloatField->Write(File);
             break;
         }
         case FIELD_GRAPH: {
-            DataGraph *pGraphField = (DataGraph *)Fields[n].pPointer;
+            auto *pGraphField = static_cast<DataGraph *>(Fields[n].pPointer);
             pGraphField->Write(File);
             break;
         }
         case FIELD_POSITION: {
-            DataPosition *pPositionField = (DataPosition *)Fields[n].pPointer;
+            auto *pPositionField = static_cast<DataPosition *>(Fields[n].pPointer);
             pPositionField->Write(File);
             break;
         }
         case FIELD_STRING: {
-            DataString *pStringField = (DataString *)Fields[n].pPointer;
+            auto *pStringField = static_cast<DataString *>(Fields[n].pPointer);
             pStringField->Write(File);
             break;
         }
         case FIELD_UV: {
-            DataUV *pUVField = (DataUV *)Fields[n].pPointer;
+            auto *pUVField = static_cast<DataUV *>(Fields[n].pPointer);
             pUVField->Write(File);
             break;
         }
         case FIELD_COLOR: {
-            DataColor *pColorField = (DataColor *)Fields[n].pPointer;
+            auto *pColorField = static_cast<DataColor *>(Fields[n].pPointer);
             pColorField->Write(File);
             break;
         }
         default: {
-            SE_THROW_MSG("Particles: Unknown field type !!!!");
+            throw std::exception("Particles: Unknown field type !!!!");
         }
         } // switch
     }     // loop

@@ -1,30 +1,27 @@
 #include "mdl_processor.h"
-#include "..\..\icommon\IEmitter.h"
-#include "..\..\icommon\names.h"
-#include "..\..\manager\particlemanager.h"
-#include "..\datasource\datacolor.h"
-#include "..\datasource\datagraph.h"
-#include "..\datasource\datauv.h"
-#include "..\particlesystem\particlesystem.h"
-#include "dx8render.h"
-#include "exs.h"
+#include "../../ICommon/IEmitter.h"
+#include "../../ICommon/Names.h"
+#include "../DataSource/DataGraph.h"
+#include "../ParticleSystem/particlesystem.h"
+#include "defines.h"
 #include "geos.h"
 #include "physic.h"
 
-//Сколько всего может быть моделей
+//—колько всего может быть моделей
 #define MAX_MODELS 8192
 
-ModelProcessor::ModelProcessor(ParticleManager *pManager) : Particles(_FL_, MAX_MODELS)
+ModelProcessor::ModelProcessor(ParticleManager *pManager)
 {
+    Particles.reserve(MAX_MODELS);
     pMasterManager = pManager;
-    pMemArray = NEW MemArrayItem[MAX_MODELS];
+    pMemArray = new MemArrayItem[MAX_MODELS];
 
-    for (DWORD n = 0; n < MAX_MODELS; n++)
+    for (uint32_t n = 0; n < MAX_MODELS; n++)
     {
         pMemArray[n].Free = true;
     }
 
-    pRS = (VDX8RENDER *)api->CreateService("DX8Render");
+    pRS = static_cast<VDX9RENDER *>(api->CreateService("DX9Render"));
     Assert(pRS);
 }
 
@@ -33,9 +30,9 @@ ModelProcessor::~ModelProcessor()
     delete pMemArray;
 }
 
-MDL_ParticleData *ModelProcessor::AllocParticle()
+MDL_ParticleData *ModelProcessor::AllocParticle() const
 {
-    for (DWORD n = 0; n < MAX_MODELS; n++)
+    for (uint32_t n = 0; n < MAX_MODELS; n++)
     {
         if (pMemArray[n].Free)
         {
@@ -44,12 +41,12 @@ MDL_ParticleData *ModelProcessor::AllocParticle()
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
-void ModelProcessor::FreeParticle(MDL_ParticleData *pItem)
+void ModelProcessor::FreeParticle(MDL_ParticleData *pItem) const
 {
-    for (DWORD n = 0; n < MAX_MODELS; n++)
+    for (uint32_t n = 0; n < MAX_MODELS; n++)
     {
         if (&pMemArray[n].pData == pItem)
         {
@@ -59,21 +56,21 @@ void ModelProcessor::FreeParticle(MDL_ParticleData *pItem)
     }
 }
 
-void ModelProcessor::AddParticle(ParticleSystem *pSystem, const CVECTOR &velocity_dir, const CVECTOR &pos,
-                                 const CMatrix &matWorld, float EmitterTime, float EmitterLifeTime, FieldList *pFields,
-                                 DWORD *pActiveCount, DWORD dwGUID)
+void ModelProcessor::AddParticle(ParticleSystem *pSystem, const Vector &velocity_dir, const Vector &pos,
+                                 const Matrix &matWorld, float EmitterTime, float EmitterLifeTime, FieldList *pFields,
+                                 uint32_t *pActiveCount, uint32_t dwGUID)
 {
-    MDL_ParticleData *pData = AllocParticle();
+    auto *pData = AllocParticle();
 
-    //Сработает если партиклов будет > MAX_BILLBOARDS, столько их быть не должно :))))
+    //—работает если партиклов будет > MAX_BILLBOARDS, столько их быть не должно :))))
     if (!pData)
     {
         *(pActiveCount) = (*(pActiveCount)-1);
         return;
     }
 
-    const char *GeomNames = pFields->GetString(PARTICLE_GEOM_NAMES);
-    const char *pGeomName = Parser.GetRandomName(GeomNames);
+    const auto *const GeomNames = pFields->GetString(PARTICLE_GEOM_NAMES);
+    const auto *const pGeomName = Parser.GetRandomName(GeomNames);
     pData->pScene = pMasterManager->GetModel(pGeomName);
 
     if (!pData->pScene)
@@ -88,7 +85,7 @@ void ModelProcessor::AddParticle(ParticleSystem *pSystem, const CVECTOR &velocit
     pData->Graph_TrackY = pFields->FindGraph(PARTICLE_TRACK_Y);
     pData->Graph_TrackZ = pFields->FindGraph(PARTICLE_TRACK_Z);
 
-    CVECTOR PositionOffset;
+    Vector PositionOffset;
     PositionOffset.x = pData->Graph_TrackX->GetRandomValue(0.0f, 100.0f);
     PositionOffset.y = pData->Graph_TrackY->GetRandomValue(0.0f, 100.0f);
     PositionOffset.z = pData->Graph_TrackZ->GetRandomValue(0.0f, 100.0f);
@@ -100,9 +97,9 @@ void ModelProcessor::AddParticle(ParticleSystem *pSystem, const CVECTOR &velocit
     pData->ElapsedTime = 0.0f;
     pData->matWorld = matWorld;
 
-    pData->Angle = CVECTOR(0.0f);
-    pData->RenderAngle = CVECTOR(0.0f);
-    pData->ExternalForce = CVECTOR(0.0f, 0.0f, 0.0f);
+    pData->Angle = Vector(0.0f);
+    pData->RenderAngle = Vector(0.0f);
+    pData->ExternalForce = Vector(0.0f, 0.0f, 0.0f);
     pData->PhysPos = pData->RenderPos;
 
     pData->OldRenderPos = pData->RenderPos;
@@ -117,7 +114,7 @@ void ModelProcessor::AddParticle(ParticleSystem *pSystem, const CVECTOR &velocit
     // api->Trace("spin %3.2f, %3.2f, %3.2f [%3.2f, %3.2f]", pData->Spin.x, pData->Spin.y, pData->Spin.z, EmitterTime,
     // EmitterLifeTime);
 
-    float VelocityPower = pFields->GetRandomGraphVal(PARTICLE_VELOCITY_POWER, EmitterTime, EmitterLifeTime);
+    const auto VelocityPower = pFields->GetRandomGraphVal(PARTICLE_VELOCITY_POWER, EmitterTime, EmitterLifeTime);
     pData->Velocity = pData->Velocity * VelocityPower;
     pData->UMass = fabsf(pData->Mass);
 
@@ -139,10 +136,10 @@ void ModelProcessor::AddParticle(ParticleSystem *pSystem, const CVECTOR &velocit
     pData->KTrackY = FRAND(1.0f);
     pData->KTrackZ = FRAND(1.0f);
 
-    const char *pEmitterName = pFields->GetString(ATTACHEDEMITTER_NAME);
-    if (stricmp(pEmitterName, "none") == 0)
+    const auto *const pEmitterName = pFields->GetString(ATTACHEDEMITTER_NAME);
+    if (_stricmp(pEmitterName, "none") == 0)
     {
-        pData->AttachedEmitter = NULL;
+        pData->AttachedEmitter = nullptr;
     }
     else
     {
@@ -151,50 +148,52 @@ void ModelProcessor::AddParticle(ParticleSystem *pSystem, const CVECTOR &velocit
             pData->AttachedEmitter->SetAttachedFlag(true);
     }
 
-    Particles.Add(pData);
+    Particles.push_back(pData);
 }
 
-//Считает физику, треки  и т.д.
+//—читает физику, треки  и т.д.
 void ModelProcessor::Process(float DeltaTime)
 {
     // DWORD t;
     // RDTSC_B (t);
 
-    for (DWORD n = 0; n < Particles.Size(); n++)
+    for (uint32_t n = 0; n < Particles.size(); n++)
     {
         Particles[n]->ElapsedTime += DeltaTime;
 
-        float Time = Particles[n]->ElapsedTime;
-        float LifeTime = Particles[n]->LifeTime;
+        const auto Time = Particles[n]->ElapsedTime;
+        const auto LifeTime = Particles[n]->LifeTime;
 
         //		_mm_prefetch ((const char *)Particles[n+1], _MM_HINT_T0);
 
-        //Сразу убиваем дохлые...
+        //—разу убиваем дохлые...
         if (Time > LifeTime)
         {
             *(Particles[n]->ActiveCount) = (*(Particles[n]->ActiveCount) - 1);
             FreeParticle(Particles[n]);
-            Particles.ExtractNoShift(n);
+            // Particles.ExtractNoShift(n);
+            Particles[n] = Particles.back();
+            Particles.pop_back();
             n--;
             continue;
         }
 
-        float Drag = Particles[n]->Graph_Drag->GetValue(Time, LifeTime, Particles[n]->DragK);
+        auto Drag = Particles[n]->Graph_Drag->GetValue(Time, LifeTime, Particles[n]->DragK);
         Drag = 1.0f - (Drag * 0.01f);
         if (Drag < 0.0f)
             Drag = 0.0f;
         if (Drag > 1.0f)
             Drag = 1.0f;
 
-        float GravK = Particles[n]->graph_GravK->GetValue(Time, LifeTime, Particles[n]->GravKK);
+        const auto GravK = Particles[n]->graph_GravK->GetValue(Time, LifeTime, Particles[n]->GravKK);
 
         AddGravityForce(Particles[n]->ExternalForce, Particles[n]->Mass, GravK);
         SolvePhysic(Particles[n]->PhysPos, Particles[n]->Velocity, Particles[n]->ExternalForce, Particles[n]->UMass,
                     Drag, DeltaTime);
-        Particles[n]->ExternalForce = CVECTOR(0.0f);
+        Particles[n]->ExternalForce = Vector(0.0f);
 
         // FIX ME !!!
-        CVECTOR SpinDrag;
+        Vector SpinDrag;
         SpinDrag.x = Particles[n]->Graph_SpinDragX->GetValue(Time, LifeTime, Particles[n]->SpinDragK_X);
         SpinDrag.x = 1.0f - (SpinDrag.x * 0.01f);
         if (SpinDrag.x < 0.0f)
@@ -218,14 +217,14 @@ void ModelProcessor::Process(float DeltaTime)
 
         Particles[n]->Angle += (Particles[n]->Spin * SpinDrag) * DeltaTime;
 
-        CVECTOR TrackPos;
+        Vector TrackPos;
         TrackPos.x = Particles[n]->Graph_TrackX->GetValue(Time, LifeTime, Particles[n]->KTrackX);
         TrackPos.y = Particles[n]->Graph_TrackY->GetValue(Time, LifeTime, Particles[n]->KTrackY);
         TrackPos.z = Particles[n]->Graph_TrackZ->GetValue(Time, LifeTime, Particles[n]->KTrackZ);
         TrackPos = TrackPos * Particles[n]->matWorld;
 
         // FIX ME !!!
-        float BlendPhys = Particles[n]->Graph_PhysBlend->GetValue(Time, LifeTime, Particles[n]->KPhysBlend);
+        auto BlendPhys = Particles[n]->Graph_PhysBlend->GetValue(Time, LifeTime, Particles[n]->KPhysBlend);
         BlendPhys = 1.0f - (BlendPhys * DeltaTime);
         if (BlendPhys < 0.0f)
             BlendPhys = 0.0f;
@@ -243,19 +242,19 @@ void ModelProcessor::Process(float DeltaTime)
         Particles[n]->RenderAngle = Particles[n]->Angle;
     }
 
-    //Рождаем партиклы, которые привязанны к нашему партиклу...
+    //–ождаем партиклы, которые прив€занны к нашему партиклу...
 
-    for (DWORD n = 0; n < Particles.Size(); n++)
+    for (uint32_t n = 0; n < Particles.size(); n++)
     {
         if (Particles[n]->AttachedEmitter)
         {
             // api->Trace("%d, %3.2f, %3.2f, %3.2f", n, Particles[n]->RenderPos.x, Particles[n]->RenderPos.y,
             // Particles[n]->RenderPos.z); Particles[n]->AttachedEmitter->SaveTime();
-            Particles[n]->AttachedEmitter->Teleport(CMatrix(Particles[n]->OldRenderAngle, Particles[n]->OldRenderPos));
-            Particles[n]->AttachedEmitter->SetTransform(CMatrix(Particles[n]->RenderAngle, Particles[n]->RenderPos));
+            Particles[n]->AttachedEmitter->Teleport(Matrix(Particles[n]->OldRenderAngle, Particles[n]->OldRenderPos));
+            Particles[n]->AttachedEmitter->SetTransform(Matrix(Particles[n]->RenderAngle, Particles[n]->RenderPos));
             Particles[n]->AttachedEmitter->BornParticles(DeltaTime);
 
-            // if (n < Particles.Size()-1)  Particles[n]->AttachedEmitter->RestoreTime();
+            // if (n < Particles.size()-1)  Particles[n]->AttachedEmitter->RestoreTime();
         }
     }
 
@@ -263,45 +262,47 @@ void ModelProcessor::Process(float DeltaTime)
     // api->Trace("Time - %d", t);
 }
 
-DWORD ModelProcessor::GetCount()
+uint32_t ModelProcessor::GetCount() const
 {
-    return Particles.Size();
+    return Particles.size();
 }
 
-void ModelProcessor::DeleteWithGUID(DWORD dwGUID, DWORD GUIDRange)
+void ModelProcessor::DeleteWithGUID(uint32_t dwGUID, uint32_t GUIDRange)
 {
-    for (DWORD j = 0; j < Particles.Size(); j++)
+    for (uint32_t j = 0; j < Particles.size(); j++)
     {
         if (Particles[j]->EmitterGUID >= dwGUID && Particles[j]->EmitterGUID < dwGUID + GUIDSTEP)
         {
             *(Particles[j]->ActiveCount) = (*(Particles[j]->ActiveCount) - 1);
             FreeParticle(Particles[j]);
-            Particles.ExtractNoShift(j);
+            // Particles.ExtractNoShift(j);
+            Particles[j] = Particles.back();
+            Particles.pop_back();
             j--;
         }
     }
 }
 
-//Рисует все плашки...
+//–исует все плашки...
 void ModelProcessor::Draw()
 {
-    for (DWORD j = 0; j < Particles.Size(); j++)
+    for (uint32_t j = 0; j < Particles.size(); j++)
     {
-        MDL_ParticleData *pR = Particles[j];
+        const auto pR = Particles[j];
 
-        pMasterManager->Render()->SetTransform(D3DTS_WORLD, CMatrix(pR->RenderAngle, pR->RenderPos));
-        pR->pScene->Draw(NULL, 0, NULL);
+        pMasterManager->Render()->SetTransform(D3DTS_WORLD, Matrix(pR->RenderAngle, pR->RenderPos));
+        pR->pScene->Draw(nullptr, 0, nullptr);
     }
 
-    // api->Trace ("PSYS 2.0 : Draw %d model particles", Particles.Size());
+    // api->Trace ("PSYS 2.0 : Draw %d model particles", Particles.size());
 }
 
 void ModelProcessor::Clear()
 {
-    for (DWORD j = 0; j < Particles.Size(); j++)
+    for (uint32_t j = 0; j < Particles.size(); j++)
     {
         *(Particles[j]->ActiveCount) = (*(Particles[j]->ActiveCount) - 1);
         FreeParticle(Particles[j]);
     }
-    Particles.DelAll();
+    Particles.clear();
 }

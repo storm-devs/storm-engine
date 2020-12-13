@@ -1,8 +1,8 @@
 #ifndef _K2_PSYSTEM_H
 #define _K2_PSYSTEM_H
 
-#include "cvector.h"
-#include "matrix.h"
+#include "Cvector.h"
+#include "Matrix.h"
 #include "vmodule_api.h"
 #include "vparticle_system.h"
 
@@ -17,17 +17,17 @@ class PARTICLE_SYSTEM : public VPARTICLE_SYSTEM
   public:
     PARTICLE_SYSTEM(IParticleSystem *_pSystem);
     virtual ~PARTICLE_SYSTEM();
-    virtual void Stop();
-    virtual void SetEmitter(CVECTOR p, CVECTOR a);
-    virtual void LinkToObject(ENTITY_ID id, CVECTOR _LinkPos);
-    virtual void SetDelay(long _delay);
-    virtual void SetLifeTime(dword time);
-    virtual void StopEmitter();
-    virtual void Pause(bool _bPause);
+    void Stop() override;
+    void SetEmitter(CVECTOR p, CVECTOR a) override;
+    void LinkToObject(entid_t id, CVECTOR _LinkPos) override;
+    void SetDelay(long _delay) override;
+    void SetLifeTime(uint32_t time) override;
+    void StopEmitter() override;
+    void Pause(bool _bPause) override;
 
   public:
     void SetManager(PARTICLES *_pManager);
-    IParticleSystem *GetSystem();
+    IParticleSystem *GetSystem() const;
 };
 
 #endif

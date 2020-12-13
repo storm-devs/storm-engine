@@ -1,14 +1,12 @@
-#include "datasource.h"
+#include "DataSource.h"
 
-#include "databool.h"
-#include "datacolor.h"
-#include "datafloat.h"
-#include "datagraph.h"
-#include "dataposition.h"
-#include "datastring.h"
-#include "datauv.h"
+#include "DataColor.h"
+#include "DataFloat.h"
+#include "DataGraph.h"
+#include "DataString.h"
 
-#include "..\..\icommon\memfile.h"
+#include "../../ICommon/Names.h"
+#include "vmodule_api.h"
 
 #define HEADER "PSYS"
 #define VERSION "v3.5"
@@ -72,7 +70,7 @@ DATA_STRING(PARTICLE_GEOM_NAMES);
 END_DATA_DESC(ModelParticleDesc)
 
 //---------- Создание/удаление --------------------
-DataSource::DataSource(IParticleManager *Master) : Emitters(_FL_)
+DataSource::DataSource(IParticleManager *Master)
 {
 }
 
@@ -81,7 +79,7 @@ DataSource::~DataSource()
     Destroy();
 }
 
-bool DataSource::Release()
+bool DataSource::Release() const
 {
     delete this;
     return true;
@@ -94,16 +92,16 @@ void DataSource::Write(MemFile *pMemFile)
     pMemFile->Write(HEADER, 4);
     pMemFile->Write(VERSION, 4);
 
-    DWORD dwEmittersCount = Emitters.Size();
+    uint32_t dwEmittersCount = Emitters.size();
     pMemFile->WriteType(dwEmittersCount);
 
-    for (DWORD n = 0; n < dwEmittersCount; n++)
+    for (uint32_t n = 0; n < dwEmittersCount; n++)
     {
         pMemFile->WriteType(Emitters[n].Type);
         Emitters[n].Fields.Write(pMemFile);
-        DWORD dwParticlesSize = Emitters[n].Particles.Size();
+        uint32_t dwParticlesSize = Emitters[n].Particles.size();
         pMemFile->WriteType(dwParticlesSize);
-        for (DWORD i = 0; i < dwParticlesSize; i++)
+        for (uint32_t i = 0; i < dwParticlesSize; i++)
         {
             pMemFile->WriteType(Emitters[n].Particles[i].Type);
             Emitters[n].Particles[i].Fields.Write(pMemFile);
@@ -129,17 +127,17 @@ void DataSource::Load(MemFile *pMemFile)
     pMemFile->Read(Ver, 4);
 
     /* // show warnings
-        if (strcmp (Ver, VERSION) != 0)
+      if (strcmp (Ver, VERSION) != 0)
               api->Trace ("Particles: Warning !!! Incorrect file version %s, must be %s", Ver, VERSION);
     */
 
     //Кол-во эмиттеров...
-    DWORD EmiterCount = 0;
+    uint32_t EmiterCount = 0;
     pMemFile->ReadType(EmiterCount);
 
-    for (DWORD n = 0; n < EmiterCount; n++)
+    for (uint32_t n = 0; n < EmiterCount; n++)
     {
-        EmitterType emType = UNKNOWN_EMITTER;
+        auto emType = UNKNOWN_EMITTER;
         pMemFile->ReadType(emType);
 
         switch (emType)
@@ -151,8 +149,7 @@ void DataSource::Load(MemFile *pMemFile)
         }
 
         default: {
-            SE_THROW_MSG("Particles: Unknown emitter type !");
-            return;
+            throw std::exception("Particles: Unknown emitter type !");
         }
         } // switch
     }     // for all saved emitters...
@@ -161,18 +158,20 @@ void DataSource::Load(MemFile *pMemFile)
 void DataSource::CreatePointEmitter(MemFile *pMemFile)
 {
     // api->Trace ("Particles info: Point emitter");
-    EmitterDesc *PointEmitter = &Emitters[Emitters.Add()];
+    Emitters.push_back(EmitterDesc{});
+    auto *PointEmitter = &Emitters.back();
+    // EmitterDesc* PointEmitter = &Emitters[Emitters.Add()];
     PointEmitter->Fields.Load(pMemFile);
 
     PointEmitter->Fields.Convert(&PointEmitterDesc);
     PointEmitter->Type = POINT_EMITTER;
 
-    DWORD ParticlesCount = 0;
+    uint32_t ParticlesCount = 0;
     pMemFile->ReadType(ParticlesCount);
 
-    for (DWORD n = 0; n < ParticlesCount; n++)
+    for (uint32_t n = 0; n < ParticlesCount; n++)
     {
-        ParticleType ptType = UNKNOWN_PARTICLE;
+        auto ptType = UNKNOWN_PARTICLE;
         pMemFile->ReadType(ptType);
 
         switch (ptType)
@@ -188,47 +187,51 @@ void DataSource::CreatePointEmitter(MemFile *pMemFile)
             break;
         }
         default: {
-            SE_THROW_MSG("Particles: Unknown particle type !!!!");
+            throw std::exception("Particles: Unknown particle type !!!!");
         }
         } // SWITCH
     }     // For all particles
 }
 
 //Создает BillBoard парикл
-void DataSource::CreateBillBoardParticle(array<ParticleDesc> &Particles, MemFile *pMemFile)
+void DataSource::CreateBillBoardParticle(std::vector<ParticleDesc> &Particles, MemFile *pMemFile)
 {
-    ParticleDesc *pDesc = &Particles[Particles.Add()];
-    pDesc->Type = BILLBOARD_PARTICLE;
-    pDesc->Fields.Load(pMemFile);
-    pDesc->Fields.Convert(&BillboardParticleDesc);
+    // ParticleDesc *pDesc = &Particles[Particles.Add()];
+    ParticleDesc desc;
+    desc.Type = BILLBOARD_PARTICLE;
+    desc.Fields.Load(pMemFile);
+    desc.Fields.Convert(&BillboardParticleDesc);
+    Particles.push_back(desc);
 }
 
 //Создает Model парикл
-void DataSource::CreateModelParticle(array<ParticleDesc> &Particles, MemFile *pMemFile)
+void DataSource::CreateModelParticle(std::vector<ParticleDesc> &Particles, MemFile *pMemFile)
 {
-    ParticleDesc *pDesc = &Particles[Particles.Add()];
-    pDesc->Type = MODEL_PARTICLE;
-    pDesc->Fields.Load(pMemFile);
-    pDesc->Fields.Convert(&ModelParticleDesc);
+    // ParticleDesc *pDesc = &Particles[Particles.Add()];
+    ParticleDesc desc;
+    desc.Type = MODEL_PARTICLE;
+    desc.Fields.Load(pMemFile);
+    desc.Fields.Convert(&ModelParticleDesc);
+    Particles.push_back(desc);
 }
 
 void DataSource::Destroy()
 {
-    for (DWORD n = 0; n < Emitters.Size(); n++)
+    for (uint32_t n = 0; n < Emitters.size(); n++)
     {
         Emitters[n].Fields.DelAll();
-        for (DWORD i = 0; i < Emitters[n].Particles.Size(); i++)
+        for (uint32_t i = 0; i < Emitters[n].Particles.size(); i++)
         {
             Emitters[n].Particles[i].Fields.DelAll();
         }
     }
 
-    Emitters.DelAll();
+    Emitters.clear();
 }
 
 int DataSource::GetEmitterCount()
 {
-    return Emitters.Size();
+    return Emitters.size();
 }
 
 DataSource::EmitterDesc *DataSource::GetEmitterDesc(int Index)
@@ -238,33 +241,35 @@ DataSource::EmitterDesc *DataSource::GetEmitterDesc(int Index)
 
 FieldList *DataSource::CreateEmptyPointEmitter(const char *EmitterName)
 {
-    EmitterDesc *PointEmitter = &Emitters[Emitters.Add()];
+    Emitters.push_back(EmitterDesc{});
+    // EmitterDesc* PointEmitter = &Emitters[Emitters.Add()];
+    auto *PointEmitter = &Emitters.back();
     PointEmitter->Fields.Convert(&PointEmitterDesc);
     PointEmitter->Type = POINT_EMITTER;
 
-    DataString *pEmitterName = PointEmitter->Fields.FindString(EMITTER_NAME);
+    auto *pEmitterName = PointEmitter->Fields.FindString(EMITTER_NAME);
 
     if (pEmitterName)
     {
         pEmitterName->SetValue(EmitterName);
     }
 
-    DataFloat *pEmitterLifeTime = PointEmitter->Fields.FindFloat(EMITTER_LIFETIME);
+    auto *pEmitterLifeTime = PointEmitter->Fields.FindFloat(EMITTER_LIFETIME);
 
     if (pEmitterLifeTime)
     {
         pEmitterLifeTime->SetValue(1.0f);
     }
 
-    DataGraph *pAngleX = PointEmitter->Fields.FindGraph(EMISSION_DIR_X);
+    auto *pAngleX = PointEmitter->Fields.FindGraph(EMISSION_DIR_X);
     if (pAngleX)
         pAngleX->SetNegative(true);
 
-    DataGraph *pAngleY = PointEmitter->Fields.FindGraph(EMISSION_DIR_Y);
+    auto *pAngleY = PointEmitter->Fields.FindGraph(EMISSION_DIR_Y);
     if (pAngleY)
         pAngleY->SetNegative(true);
 
-    DataGraph *pAngleZ = PointEmitter->Fields.FindGraph(EMISSION_DIR_Z);
+    auto *pAngleZ = PointEmitter->Fields.FindGraph(EMISSION_DIR_Z);
     if (pAngleZ)
         pAngleZ->SetNegative(true);
 
@@ -273,12 +278,12 @@ FieldList *DataSource::CreateEmptyPointEmitter(const char *EmitterName)
 
 int DataSource::FindEmitter(const char *Name)
 {
-    for (DWORD n = 0; n < Emitters.Size(); n++)
+    for (uint32_t n = 0; n < Emitters.size(); n++)
     {
-        DataString *pString = Emitters[n].Fields.FindString(EMITTER_NAME);
+        auto *const pString = Emitters[n].Fields.FindString(EMITTER_NAME);
         if (pString)
         {
-            if (stricmp(pString->GetValue(), Name) == 0)
+            if (_stricmp(pString->GetValue(), Name) == 0)
             {
                 return n;
             }
@@ -290,67 +295,69 @@ int DataSource::FindEmitter(const char *Name)
 
 FieldList *DataSource::CreateBillBoardParticle(const char *ParticleName, const char *EmitterName)
 {
-    int EmitterIndex = FindEmitter(EmitterName);
+    const auto EmitterIndex = FindEmitter(EmitterName);
     if (EmitterIndex == -1)
-        return NULL;
+        return nullptr;
 
-    ParticleDesc *pDesc = &Emitters[EmitterIndex].Particles[Emitters[EmitterIndex].Particles.Add()];
+    Emitters[EmitterIndex].Particles.push_back(ParticleDesc{});
+    // ParticleDesc *pDesc = &Emitters[EmitterIndex].Particles[Emitters[EmitterIndex].Particles.Add()];
+    auto *pDesc = &Emitters[EmitterIndex].Particles.back();
     pDesc->Type = BILLBOARD_PARTICLE;
     pDesc->Fields.Convert(&BillboardParticleDesc);
 
-    DataString *pParticleName = pDesc->Fields.FindString(PARTICLE_NAME);
+    auto *pParticleName = pDesc->Fields.FindString(PARTICLE_NAME);
     if (pParticleName)
         pParticleName->SetValue(ParticleName);
 
-    DataString *pAttachedEmitter = pDesc->Fields.FindString(ATTACHEDEMITTER_NAME);
+    auto *pAttachedEmitter = pDesc->Fields.FindString(ATTACHEDEMITTER_NAME);
     if (pAttachedEmitter)
         pAttachedEmitter->SetValue("none");
 
-    DataGraph *pSize = pDesc->Fields.FindGraph(PARTICLE_SIZE);
+    auto *pSize = pDesc->Fields.FindGraph(PARTICLE_SIZE);
     if (pSize)
         pSize->SetDefaultValue(3.0f, 2.0f);
 
-    DataGraph *pEmissionRate = pDesc->Fields.FindGraph(PARTICLE_EMISSION_RATE);
+    auto *pEmissionRate = pDesc->Fields.FindGraph(PARTICLE_EMISSION_RATE);
     if (pEmissionRate)
         pEmissionRate->SetDefaultValue(10.0f, 10.0f);
 
-    DataGraph *pLifeTime = pDesc->Fields.FindGraph(PARTICLE_LIFE_TIME);
+    auto *pLifeTime = pDesc->Fields.FindGraph(PARTICLE_LIFE_TIME);
     if (pLifeTime)
         pLifeTime->SetDefaultValue(10.0f, 10.0f);
 
-    DataFloat *pMaxCount = pDesc->Fields.FindFloat(PARTICLE_MAX_COUNT);
+    auto *pMaxCount = pDesc->Fields.FindFloat(PARTICLE_MAX_COUNT);
     if (pMaxCount)
         pMaxCount->SetValue(100);
 
-    DataColor *pColorG = pDesc->Fields.FindColor(PARTICLE_COLOR);
+    auto *pColorG = pDesc->Fields.FindColor(PARTICLE_COLOR);
     if (pColorG)
         pColorG->SetDefaultValue(Color(1.0f, 1.0f, 1.0f, 1.0f));
 
-    DataGraph *pGravityK = pDesc->Fields.FindGraph(PARTICLE_GRAVITATION_K);
+    auto *pGravityK = pDesc->Fields.FindGraph(PARTICLE_GRAVITATION_K);
     if (pGravityK)
         pGravityK->SetDefaultValue(100.0f, 100.0f);
 
-    DataGraph *pTrackX = pDesc->Fields.FindGraph(PARTICLE_TRACK_X);
+    auto *pTrackX = pDesc->Fields.FindGraph(PARTICLE_TRACK_X);
     if (pTrackX)
         pTrackX->SetNegative(true);
 
-    DataGraph *pTrackY = pDesc->Fields.FindGraph(PARTICLE_TRACK_Y);
+    auto *pTrackY = pDesc->Fields.FindGraph(PARTICLE_TRACK_Y);
     if (pTrackY)
         pTrackY->SetNegative(true);
 
-    DataGraph *pTrackZ = pDesc->Fields.FindGraph(PARTICLE_TRACK_Z);
+    auto *pTrackZ = pDesc->Fields.FindGraph(PARTICLE_TRACK_Z);
     if (pTrackZ)
         pTrackZ->SetNegative(true);
 
-    DataGraph *pVelocity = pDesc->Fields.FindGraph(PARTICLE_VELOCITY_POWER);
+    auto *pVelocity = pDesc->Fields.FindGraph(PARTICLE_VELOCITY_POWER);
     if (pVelocity)
         pVelocity->SetNegative(true);
 
-    DataGraph *pMass = pDesc->Fields.FindGraph(PARTICLE_MASS);
+    auto *pMass = pDesc->Fields.FindGraph(PARTICLE_MASS);
     if (pMass)
         pMass->SetNegative(true);
 
-    DataGraph *pSpin = pDesc->Fields.FindGraph(PARTICLE_SPIN);
+    auto *pSpin = pDesc->Fields.FindGraph(PARTICLE_SPIN);
     if (pSpin)
         pSpin->SetNegative(true);
 
@@ -359,67 +366,69 @@ FieldList *DataSource::CreateBillBoardParticle(const char *ParticleName, const c
 
 FieldList *DataSource::CreateModelParticle(const char *ParticleName, const char *EmitterName)
 {
-    int EmitterIndex = FindEmitter(EmitterName);
+    const auto EmitterIndex = FindEmitter(EmitterName);
     if (EmitterIndex == -1)
-        return NULL;
+        return nullptr;
 
-    ParticleDesc *pDesc = &Emitters[EmitterIndex].Particles[Emitters[EmitterIndex].Particles.Add()];
+    Emitters[EmitterIndex].Particles.push_back(ParticleDesc{});
+    // ParticleDesc *pDesc = &Emitters[EmitterIndex].Particles[Emitters[EmitterIndex].Particles.Add()];
+    auto *pDesc = &Emitters[EmitterIndex].Particles.back();
     pDesc->Type = MODEL_PARTICLE;
     pDesc->Fields.Convert(&ModelParticleDesc);
 
-    DataString *pParticleName = pDesc->Fields.FindString(PARTICLE_NAME);
+    auto *pParticleName = pDesc->Fields.FindString(PARTICLE_NAME);
     if (pParticleName)
         pParticleName->SetValue(ParticleName);
 
-    DataString *pAttachedEmitter = pDesc->Fields.FindString(ATTACHEDEMITTER_NAME);
+    auto *pAttachedEmitter = pDesc->Fields.FindString(ATTACHEDEMITTER_NAME);
     if (pAttachedEmitter)
         pAttachedEmitter->SetValue("none");
 
-    DataFloat *pMaxCount = pDesc->Fields.FindFloat(PARTICLE_MAX_COUNT);
+    auto *pMaxCount = pDesc->Fields.FindFloat(PARTICLE_MAX_COUNT);
     if (pMaxCount)
         pMaxCount->SetValue(100);
 
-    DataGraph *pEmissionRate = pDesc->Fields.FindGraph(PARTICLE_EMISSION_RATE);
+    auto *pEmissionRate = pDesc->Fields.FindGraph(PARTICLE_EMISSION_RATE);
     if (pEmissionRate)
         pEmissionRate->SetDefaultValue(10.0f, 10.0f);
 
-    DataGraph *pLifeTime = pDesc->Fields.FindGraph(PARTICLE_LIFE_TIME);
+    auto *pLifeTime = pDesc->Fields.FindGraph(PARTICLE_LIFE_TIME);
     if (pLifeTime)
         pLifeTime->SetDefaultValue(10.0f, 10.0f);
 
-    DataGraph *pGravityK = pDesc->Fields.FindGraph(PARTICLE_GRAVITATION_K);
+    auto *pGravityK = pDesc->Fields.FindGraph(PARTICLE_GRAVITATION_K);
     if (pGravityK)
         pGravityK->SetDefaultValue(100.0f, 100.0f);
 
-    DataGraph *pTrackX = pDesc->Fields.FindGraph(PARTICLE_TRACK_X);
+    auto *pTrackX = pDesc->Fields.FindGraph(PARTICLE_TRACK_X);
     if (pTrackX)
         pTrackX->SetNegative(true);
 
-    DataGraph *pTrackY = pDesc->Fields.FindGraph(PARTICLE_TRACK_Y);
+    auto *pTrackY = pDesc->Fields.FindGraph(PARTICLE_TRACK_Y);
     if (pTrackY)
         pTrackY->SetNegative(true);
 
-    DataGraph *pTrackZ = pDesc->Fields.FindGraph(PARTICLE_TRACK_Z);
+    auto *pTrackZ = pDesc->Fields.FindGraph(PARTICLE_TRACK_Z);
     if (pTrackZ)
         pTrackZ->SetNegative(true);
 
-    DataGraph *pVelocity = pDesc->Fields.FindGraph(PARTICLE_VELOCITY_POWER);
+    auto *pVelocity = pDesc->Fields.FindGraph(PARTICLE_VELOCITY_POWER);
     if (pVelocity)
         pVelocity->SetNegative(true);
 
-    DataGraph *pMass = pDesc->Fields.FindGraph(PARTICLE_MASS);
+    auto *pMass = pDesc->Fields.FindGraph(PARTICLE_MASS);
     if (pMass)
         pMass->SetNegative(true);
 
-    DataGraph *pSpinX = pDesc->Fields.FindGraph(PARTICLE_SPIN_X);
+    auto *pSpinX = pDesc->Fields.FindGraph(PARTICLE_SPIN_X);
     if (pSpinX)
         pSpinX->SetNegative(true);
 
-    DataGraph *pSpinY = pDesc->Fields.FindGraph(PARTICLE_SPIN_Y);
+    auto *pSpinY = pDesc->Fields.FindGraph(PARTICLE_SPIN_Y);
     if (pSpinY)
         pSpinY->SetNegative(true);
 
-    DataGraph *pSpinZ = pDesc->Fields.FindGraph(PARTICLE_SPIN_Z);
+    auto *pSpinZ = pDesc->Fields.FindGraph(PARTICLE_SPIN_Z);
     if (pSpinZ)
         pSpinZ->SetNegative(true);
 
@@ -428,12 +437,14 @@ FieldList *DataSource::CreateModelParticle(const char *ParticleName, const char 
 
 void DataSource::DeletePointEmitter(FieldList *pEmitter)
 {
-    for (DWORD n = 0; n < Emitters.Size(); n++)
+    for (uint32_t n = 0; n < Emitters.size(); n++)
     {
         if (&Emitters[n].Fields == pEmitter)
         {
             Emitters[n].Fields.DelAll();
-            Emitters.ExtractNoShift(n);
+            // Emitters.ExtractNoShift(n);
+            Emitters[n] = Emitters.back();
+            Emitters.pop_back();
             break;
         }
     }
@@ -441,16 +452,18 @@ void DataSource::DeletePointEmitter(FieldList *pEmitter)
 
 void DataSource::DeleteBillboard(FieldList *pEmitter, FieldList *pParticles)
 {
-    for (DWORD n = 0; n < Emitters.Size(); n++)
+    for (uint32_t n = 0; n < Emitters.size(); n++)
     {
         if (&Emitters[n].Fields == pEmitter)
         {
-            for (DWORD i = 0; i < Emitters[n].Particles.Size(); i++)
+            for (uint32_t i = 0; i < Emitters[n].Particles.size(); i++)
             {
                 if (&Emitters[n].Particles[i].Fields == pParticles)
                 {
                     Emitters[n].Particles[i].Fields.DelAll();
-                    Emitters[n].Particles.Extract(i);
+                    // Emitters[n].Particles.Extract(i);
+                    Emitters[n].Particles[i] = Emitters[n].Particles.back();
+                    Emitters[n].Particles.pop_back();
                 }
             }
         }
@@ -459,16 +472,18 @@ void DataSource::DeleteBillboard(FieldList *pEmitter, FieldList *pParticles)
 
 void DataSource::DeleteModel(FieldList *pEmitter, FieldList *pParticles)
 {
-    for (DWORD n = 0; n < Emitters.Size(); n++)
+    for (uint32_t n = 0; n < Emitters.size(); n++)
     {
         if (&Emitters[n].Fields == pEmitter)
         {
-            for (DWORD i = 0; i < Emitters[n].Particles.Size(); i++)
+            for (uint32_t i = 0; i < Emitters[n].Particles.size(); i++)
             {
                 if (&Emitters[n].Particles[i].Fields == pParticles)
                 {
                     Emitters[n].Particles[i].Fields.DelAll();
-                    Emitters[n].Particles.Extract(i);
+                    // Emitters[n].Particles.Extract(i);
+                    Emitters[n].Particles[i] = Emitters[n].Particles.back();
+                    Emitters[n].Particles.pop_back();
                 }
             }
         }

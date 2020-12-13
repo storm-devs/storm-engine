@@ -1,26 +1,23 @@
 #ifndef BASE_EMITTER
 #define BASE_EMITTER
 
-#include "..\..\icommon\iemitter.h"
-#include "..\..\icommon\particle.h"
-#include "..\..\icommon\types.h"
-#include "..\datadesc\data_desc.h"
-#include "..\datasource\datasource.h"
-#include "..\particlesystem\particlesystem.h"
-#include "math3d.h"
+#include "../../ICommon/IEmitter.h"
+#include "../../ICommon/Types.h"
+#include "../DataSource/DataSource.h"
+#include "../ParticleSystem/particlesystem.h"
+#include "math3D.h"
 
 class DataGraph;
 
 class BaseEmitter : public IEmitter
 {
-
     struct structParticleType
     {
-        bool Visible;      //Видим или нет
-        ParticleType Type; // Тип партикла
-        float Remain;      // Сколько осталось незапущенных с прошлого кадра
-        DWORD ActiveCount; // Количество активных партиклов данного типа
-        DWORD MaxParticlesCount; // Максимальное кол-во партиклов этого типа
+        bool Visible;         //Видим или нет
+        ParticleType Type;    // Тип партикла
+        float Remain;         // Сколько осталось незапущенных с прошлого кадра
+        uint32_t ActiveCount; // Количество активных партиклов данного типа
+        uint32_t MaxParticlesCount; // Максимальное кол-во партиклов этого типа
         DataGraph *EmissionRate; // График задающий скорость испускания партиклов
 
         FieldList *pFields;
@@ -29,19 +26,19 @@ class BaseEmitter : public IEmitter
         {
             ActiveCount = 0;
             Remain = 0.0f;
-            EmissionRate = NULL;
-            pFields = NULL;
+            EmissionRate = nullptr;
+            pFields = nullptr;
             Type = UNKNOWN_PARTICLE;
         }
     };
 
-    array<structParticleType> ParticleTypes;
+    std::vector<structParticleType> ParticleTypes;
 
     DataSource::EmitterDesc *pEmitter;
     FieldList *pFields;
     bool IsAttachedFlag;
 
-    CVECTOR Position;
+    Vector Position;
     EmitterType Type;
     float LifeTime;
     float ElapsedTime;
@@ -53,19 +50,19 @@ class BaseEmitter : public IEmitter
     bool Stoped;
     bool Visible;
 
-    DWORD Unique_GUID;
+    uint32_t Unique_GUID;
 
-    CMatrix matWorldTransform;
+    Matrix matWorldTransform;
     bool OldMatrixNotInitialized;
-    CMatrix matWorldTransformOld;
-    CMatrix matWorldTransformNew;
+    Matrix matWorldTransformOld;
+    Matrix matWorldTransformNew;
 
-    void BlendMatrix(CMatrix &result, const CMatrix &mat1, const CMatrix &mat2, float BlendK);
+    void BlendMatrix(Matrix &result, const Matrix &mat1, const Matrix &mat2, float BlendK);
 
     void IncreaseTime(float DeltaTime);
 
   protected:
-    string Name;
+    std::string Name;
     ParticleSystem *pMaster;
 
   public:
@@ -74,12 +71,12 @@ class BaseEmitter : public IEmitter
     virtual ~BaseEmitter();
 
     //Получить позицию для рождения новых партиклов
-    virtual CVECTOR GetNewParticlePosition(float DeltaTime) = 0;
+    virtual Vector GetNewParticlePosition(float DeltaTime) = 0;
 
     //Родить новые партиклы
-    void BornParticles(float DeltaTime);
+    void BornParticles(float DeltaTime) override;
     //Исполнить
-    virtual void Execute(float DeltaTime);
+    void Execute(float DeltaTime) override;
 
     //Присоединиться к источнику данных
     virtual void AttachToDataSource(DataSource::EmitterDesc *pEmitter);
@@ -87,57 +84,57 @@ class BaseEmitter : public IEmitter
     virtual void CreateBillBoardParticle(FieldList &Fields);
     virtual void CreateModelParticle(FieldList &Fields);
 
-    ParticleSystem *GetMaster();
-    ParticleManager *GetManager();
-    void GetEmissionDirection(CMatrix &matWorld);
+    ParticleSystem *GetMaster() const;
+    ParticleManager *GetManager() const;
+    void GetEmissionDirection(Matrix &matWorld) const;
 
-    virtual void SetGUID(DWORD GUID)
+    virtual void SetGUID(uint32_t GUID)
     {
         Unique_GUID = GUID;
     }
 
-    virtual DWORD GetGUID()
+    virtual uint32_t GetGUID()
     {
         return Unique_GUID;
     }
 
-    virtual void Restart();
+    void Restart() override;
 
-    virtual DWORD GetParticleCount();
-    virtual bool IsStoped();
+    uint32_t GetParticleCount() override;
+    bool IsStoped() override;
 
-    virtual void SetTransform(const CMatrix &matWorld);
-    virtual void Teleport(const CMatrix &matWorld);
+    void SetTransform(const Matrix &matWorld) override;
+    void Teleport(const Matrix &matWorld) override;
 
-    virtual const char *GetName();
+    const char *GetName() override;
 
     //Если флаг в true емиттер не будет самостоятельно испускать партиклы
     //так, как он привязан
-    virtual void SetAttachedFlag(bool Flag);
-    virtual bool IsAttached();
+    void SetAttachedFlag(bool Flag) override;
+    bool IsAttached() override;
 
-    virtual float GetTime();
-    virtual void SetTime(float Time);
+    float GetTime() override;
+    void SetTime(float Time) override;
 
-    virtual DWORD GetParticleTypesCount();
-    virtual FieldList *GetParticleTypeDataByIndex(DWORD Index);
-    virtual ParticleType GetParticleTypeByIndex(DWORD Index);
+    uint32_t GetParticleTypesCount() override;
+    FieldList *GetParticleTypeDataByIndex(uint32_t Index) override;
+    ParticleType GetParticleTypeByIndex(uint32_t Index) override;
 
-    virtual FieldList *GetData();
+    FieldList *GetData() override;
 
-    virtual bool SetEnable(bool bVisible);
-    virtual bool GetEnable();
+    bool SetEnable(bool bVisible) override;
+    bool GetEnable() override;
 
     //-1 если не нашли, иначе индекс
-    virtual int GetParticleTypeIndex(FieldList *pFields);
-    virtual bool SetParticleTypeEnable(bool bVisible, DWORD Index);
-    virtual bool GetParticleTypeEnable(DWORD Index);
+    int GetParticleTypeIndex(FieldList *pFields) override;
+    bool SetParticleTypeEnable(bool bVisible, uint32_t Index) override;
+    bool GetParticleTypeEnable(uint32_t Index) override;
 
-    virtual void Editor_UpdateCachedData();
+    void Editor_UpdateCachedData() override;
 
-    virtual void SetName(const char *Name);
+    void SetName(const char *Name) override;
 
-    virtual void Stop();
+    void Stop() override;
 };
 
 #endif

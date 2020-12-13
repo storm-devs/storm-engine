@@ -1,11 +1,11 @@
 #include "psystem.h"
+#include "math3d/Matrix.h"
 #include "particles.h"
-
 #include "particles/iparticlesystem.h"
 
 PARTICLE_SYSTEM::PARTICLE_SYSTEM(IParticleSystem *_pSystem)
 {
-    pManager = NULL;
+    pManager = nullptr;
     pSystem = _pSystem;
 }
 
@@ -15,7 +15,7 @@ PARTICLE_SYSTEM::~PARTICLE_SYSTEM()
 
     if (pSystem)
         pSystem->Release();
-    pSystem = NULL;
+    pSystem = nullptr;
 }
 
 void PARTICLE_SYSTEM::Stop()
@@ -26,18 +26,18 @@ void PARTICLE_SYSTEM::SetEmitter(CVECTOR p, CVECTOR a)
 {
     // api->Trace("K2 Particles Wrapper: SetEmitter (%3.2f, %3.2f, %3.2f, %3.2f, %3.2f, %3.2f)", p.x, p.y, p.z, a.x,
     // a.y, a.z);
-    CVECTOR pos, angles;
+    Vector pos, angles;
     pos.x = p.x;
     pos.y = p.y;
     pos.z = p.z;
     angles.x = a.x;
     angles.y = a.y;
     angles.z = a.z;
-    CMatrix mTransform(angles, pos);
+    const Matrix mTransform(angles, pos);
     pSystem->SetTransform(mTransform);
 }
 
-void PARTICLE_SYSTEM::LinkToObject(ENTITY_ID id, CVECTOR _LinkPos)
+void PARTICLE_SYSTEM::LinkToObject(entid_t id, CVECTOR _LinkPos)
 {
 }
 
@@ -45,7 +45,7 @@ void PARTICLE_SYSTEM::SetDelay(long _delay)
 {
 }
 
-void PARTICLE_SYSTEM::SetLifeTime(dword time)
+void PARTICLE_SYSTEM::SetLifeTime(uint32_t time)
 {
 }
 
@@ -63,7 +63,7 @@ void PARTICLE_SYSTEM::SetManager(PARTICLES *_pManager)
     pManager = _pManager;
 }
 
-IParticleSystem *PARTICLE_SYSTEM::GetSystem()
+IParticleSystem *PARTICLE_SYSTEM::GetSystem() const
 {
     return pSystem;
 }

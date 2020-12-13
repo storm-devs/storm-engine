@@ -9,6 +9,7 @@ struct GraphVertex
             float Time;
             float Val;
         };
+
         struct
         {
             float x;

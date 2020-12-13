@@ -2,46 +2,47 @@
 #define _K2_PARTICLES_H_
 
 #include "entity.h"
-#include "messages.h"
-#include "templates.h"
 #include "vmodule_api.h"
+#include <string>
+#include <vector>
 
 class IParticleService;
 class IParticleManager;
 class IParticleSystem;
 class PARTICLE_SYSTEM;
 
-class PARTICLES : public ENTITY
+class PARTICLES : public Entity
 {
     bool CreationCapture;
     bool bSystemDelete;
 
     struct SystemInfo
     {
-        string FileName;
+        std::string FileName;
         PARTICLE_SYSTEM *pSystem;
-        dword LifeTime;
-        dword PassedTime;
+        uint32_t LifeTime;
+        uint32_t PassedTime;
 
         SystemInfo()
         {
             PassedTime = 0;
-            pSystem = NULL;
+            pSystem = nullptr;
             LifeTime = 0xFFFFFF00;
         }
     };
-    array<SystemInfo> CreatedSystems;
+
+    std::vector<SystemInfo> CreatedSystems;
 
     IParticleService *pService;
     IParticleManager *pManager;
 
-    PARTICLE_SYSTEM *CreateSystem(const char *pFileName, dword LifeTime);
-    void DeleteSystem(long SystemID);
+    PARTICLE_SYSTEM *CreateSystem(const char *pFileName, uint32_t LifeTime);
+    void DeleteSystem(uintptr_t SystemID);
     void DeleteAll();
 
     void PauseAllActive(bool bPaused);
 
-    array<long> CaptureBuffer;
+    std::vector<uintptr_t> CaptureBuffer;
 
     void DeleteCaptured();
 
@@ -52,12 +53,29 @@ class PARTICLES : public ENTITY
     PARTICLES();
     ~PARTICLES();
 
-    bool Init();
+    bool Init() override;
 
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    uint64_t ProcessMessage(MESSAGE &message) override;
 
-    void Realize(dword Delta_Time);
-    void Execute(dword Delta_Time);
+    void Realize(uint32_t Delta_Time);
+    void Execute(uint32_t Delta_Time);
+
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
 };
 
 #endif

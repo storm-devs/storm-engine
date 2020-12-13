@@ -1,6 +1,6 @@
 project(particles)
 
-add_library(${PROJECT_NAME} MODULE
+add_library(${PROJECT_NAME} STATIC
 	DataCache/DataCache.cpp
 	DataCache/DataCache.h
 

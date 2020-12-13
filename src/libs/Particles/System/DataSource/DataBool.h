@@ -1,16 +1,12 @@
 #ifndef _PARTICLE_DATA_BOOLEAN_H_
 #define _PARTICLE_DATA_BOOLEAN_H_
 
-#include "../../../common_h/exs.h"
-#include "../../../common_h/templates.h"
-#include "..\..\icommon\memfile.h"
-#include <stdarg.h>
-#include <stdio.h>
-#include <string.h>
+#include "../../ICommon/MemFile.h"
+#include <string>
 
 class DataBool
 {
-    string Name;
+    std::string Name;
 
     bool Value;
 
@@ -20,17 +16,17 @@ class DataBool
     virtual ~DataBool();
 
     //Получить значение
-    bool GetValue();
+    bool GetValue() const;
 
     //Установить значение
     void SetValue(bool val);
 
     //Сохранить/загрузить...
     void Load(MemFile *File);
-    void Write(MemFile *File);
+    void Write(MemFile *File) const;
 
     void SetName(const char *szName);
-    const char *GetName();
+    const char *GetName() const;
 };
 
 #endif

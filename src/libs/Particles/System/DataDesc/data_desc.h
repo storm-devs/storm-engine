@@ -1,25 +1,19 @@
-#ifndef DATA_DESCRIPTION_CLASS
-#define DATA_DESCRIPTION_CLASS
+#pragma once
 
-#include "../../../common_h/exs.h"
-#include "../../../common_h/templates.h"
-#include "../../icommon/types.h"
-#include <stdarg.h>
-#include <stdio.h>
-#include <string.h>
+#include "../../ICommon/Types.h"
+#include <cstdint>
 
 #define MAX_DESC_COUNT 128
 
 class DataDescripion
 {
-
     struct DescItem
     {
         FieldType Type;
         const char *Name;
     };
 
-    DWORD ItemsCount;
+    uint32_t ItemsCount;
     DescItem Fields[MAX_DESC_COUNT];
 
   public:
@@ -28,9 +22,9 @@ class DataDescripion
 
     void AddField(FieldType Type, const char *Name);
 
-    const char *GetFieldName(DWORD Index);
-    FieldType GetFieldType(DWORD Index);
-    int GetFieldCount();
+    const char *GetFieldName(uint32_t Index) const;
+    FieldType GetFieldType(uint32_t Index) const;
+    int GetFieldCount() const;
 
     void Clear();
 
@@ -62,5 +56,3 @@ class DataDescripion
 #define DATA_POSITION(name) AddField(FIELD_POSITION, name);
 #define DATA_UV(name) AddField(FIELD_UV, name);
 #define DATA_STRING(name) AddField(FIELD_STRING, name);
-
-#endif

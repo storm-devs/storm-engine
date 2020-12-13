@@ -1,14 +1,15 @@
 #include "particleservice.h"
-#include "..\k2Wrapper\particles.h"
-#include "..\manager\particlemanager.h"
+#include "../K2Wrapper/particles.h"
+#include "../Manager/particlemanager.h"
 
 INTERFACE_FUNCTION
 CREATE_SERVICE(ParticleService)
+
 CREATE_CLASS(PARTICLES)
 
-ParticleService::ParticleService() : CreatedManagers(_FL_)
+ParticleService::ParticleService()
 {
-    pDefaultManager = NULL;
+    pDefaultManager = nullptr;
     sysDelete = false;
 }
 
@@ -18,28 +19,28 @@ ParticleService::~ParticleService()
         pDefaultManager->Release();
     sysDelete = true;
 
-    if (CreatedManagers.Size() > 0)
+    if (!CreatedManagers.empty())
     {
         api->Trace("Unreleased particles managers found !\n");
     }
-    for (int n = 0; n < CreatedManagers; n++)
+    for (auto n = 0; n < CreatedManagers.size(); n++)
     {
-        api->Trace("Manager created in %s, Line %d\n", CreatedManagers[n].FileName, CreatedManagers[n].Line);
+        api->Trace("Manager created in %s, Line %d\n", CreatedManagers[n].FileName.c_str(), CreatedManagers[n].Line);
         CreatedManagers[n].pManager->Release();
     }
 }
 
 IParticleManager *ParticleService::CreateManagerEx(const char *ProjectName, const char *File, int Line)
 {
-    ParticleManager *pManager = NEW ParticleManager(this);
+    auto *pManager = new ParticleManager(this);
 
     CreatedManager manager;
     manager.pManager = pManager;
     manager.Line = Line;
     manager.FileName = File;
-    CreatedManagers.Add(manager);
+    CreatedManagers.push_back(manager);
 
-    if (ProjectName != NULL)
+    if (ProjectName != nullptr)
     {
         pManager->OpenProject(ProjectName);
     }
@@ -50,29 +51,31 @@ void ParticleService::RemoveManagerFromList(IParticleManager *pManager)
 {
     if (sysDelete)
         return;
-    for (int n = 0; n < CreatedManagers; n++)
+    for (auto n = 0; n < CreatedManagers.size(); n++)
     {
         if (CreatedManagers[n].pManager == pManager)
         {
-            CreatedManagers.ExtractNoShift(n);
+            // CreatedManagers.ExtractNoShift(n);
+            CreatedManagers[n] = CreatedManagers.back();
+            CreatedManagers.pop_back();
             return;
         }
     }
 }
 
-DWORD ParticleService::GetManagersCount()
+uint32_t ParticleService::GetManagersCount()
 {
-    return CreatedManagers.Size();
+    return CreatedManagers.size();
 }
 
-IParticleManager *ParticleService::GetManagerByIndex(DWORD Index)
+IParticleManager *ParticleService::GetManagerByIndex(uint32_t Index)
 {
     return CreatedManagers[Index].pManager;
 }
 
 bool ParticleService::Init()
 {
-    pDefaultManager = CreateManagerEx(NULL, __FILE__, __LINE__);
+    pDefaultManager = CreateManagerEx(nullptr, __FILE__, __LINE__);
     Assert(pDefaultManager);
     pDefaultManager->OpenDefaultProject();
     return true;

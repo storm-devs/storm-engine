@@ -1,7 +1,7 @@
 #ifndef _PARTICLE_TYPES_DEFINITION_FOR_EDITOR
 #define _PARTICLE_TYPES_DEFINITION_FOR_EDITOR
 
-//Уникальные индентификаторы для редактора партиклов
+//”никальные индентификаторы дл€ редактора партиклов
 enum EditorUniqueTypes
 {
     ET_POINT_EMITTER = 0,

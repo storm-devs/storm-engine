@@ -3,23 +3,22 @@
 
 #include "geometry.h"
 #include "geos.h"
-#include "templates.h"
-#include "vapi.h"
+#include <string>
+#include <vector>
 
 class IGMXScene;
 
 class GeomCache
 {
-
     VGEOMETRY *pGS;
 
     struct CachedGeometry
     {
         GEOS *pGeom;
-        string FileName;
+        std::string FileName;
     };
 
-    array<CachedGeometry> Cache;
+    std::vector<CachedGeometry> Cache;
 
   public:
     //Конструктор/деструктор

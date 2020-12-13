@@ -8,8 +8,9 @@
 #ifndef PARTICLES_SERVICE_IMPLEMENTATION
 #define PARTICLES_SERVICE_IMPLEMENTATION
 
-#include "Particles\iparticlesservice.h"
-#include "templates.h"
+#include "particles/iparticlesservice.h"
+#include <string>
+#include <vector>
 
 class ParticleManager;
 
@@ -20,29 +21,29 @@ class ParticleService : public IParticleService
     struct CreatedManager
     {
         ParticleManager *pManager;
-        string FileName;
+        std::string FileName;
         int Line;
     };
 
     bool sysDelete;
-    array<CreatedManager> CreatedManagers;
+    std::vector<CreatedManager> CreatedManagers;
 
   public:
     //Конструктор / деструктор
     ParticleService();
     virtual ~ParticleService();
 
-    virtual bool Init();
+    bool Init() override;
 
     //Создать менеджер партиклов
-    virtual IParticleManager *CreateManagerEx(const char *ProjectName, const char *File, int Line);
+    IParticleManager *CreateManagerEx(const char *ProjectName, const char *File, int Line) override;
 
     virtual void RemoveManagerFromList(IParticleManager *pManager);
 
-    virtual DWORD GetManagersCount();
-    virtual IParticleManager *GetManagerByIndex(DWORD Index);
+    uint32_t GetManagersCount() override;
+    IParticleManager *GetManagerByIndex(uint32_t Index) override;
 
-    virtual IParticleManager *DefManager();
+    IParticleManager *DefManager() override;
 };
 
 #endif

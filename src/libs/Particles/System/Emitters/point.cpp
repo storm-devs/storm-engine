@@ -10,8 +10,8 @@ PointEmitter::~PointEmitter()
 }
 
 //Получить позицию для рождения новых партиклов
-CVECTOR PointEmitter::GetNewParticlePosition(float DeltaTime)
+Vector PointEmitter::GetNewParticlePosition(float DeltaTime)
 {
     // TODO : Надо рождать на начальной позиции трэка...
-    return CVECTOR(0.0f);
+    return Vector(0.0f);
 }
