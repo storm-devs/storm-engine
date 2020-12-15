@@ -795,3 +795,26 @@ technique iInfoShowerPic
 		AlphaOp[1] = disable;
 	}
 }
+
+technique iInfoShowerPicWithTips
+{
+	pass p0
+	{
+		Lighting = false;
+		ZEnable = false;
+		FogEnable = false;
+		CullMode = none;
+		texcoordindex[1] = 0;
+		AlphaTestEnable = false;
+		AlphaBlendEnable = true;			
+		SrcBlend = srcalpha;
+		DestBlend = invsrcalpha;
+		ColorArg1[0] = texture;
+		ColorOp[0] = SelectArg1;
+		ColorArg1[1] = texture;
+		ColorArg2[1] = current;
+		ColorOp[1] = blendtexturealpha;
+		ColorOp[2] = disable;
+		AlphaOp[0] = disable;
+	}
+}
