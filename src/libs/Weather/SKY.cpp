@@ -359,7 +359,7 @@ void SKY::Realize(uint32_t Delta_Time)
         uint32_t dwColor = (dwSkyColor & 0x00FFFFFF) | (static_cast<long>(0xFF000000 * fBlendFactor) & 0xFF000000);
         pRS->SetRenderState(D3DRS_TEXTUREFACTOR, dwColor);
 
-        if (pRS->TechniqueExecuteStart("skyblend"))
+        if (pRS->TechniqueExecuteStart(sTechSkyBlend.c_str()))
             do
             {
                 for (long i = 0; i < SKY_NUM_TEXTURES; i++)
@@ -392,7 +392,7 @@ void SKY::Realize(uint32_t Delta_Time)
                     static_cast<SUNGLOW *>(pSunGlow)->DrawSunMoon();
 
                 pRS->SetTransform(D3DTS_WORLD, &pMatWorld);
-                if (pRS->TechniqueExecuteStart("skyblend_alpha"))
+                if (pRS->TechniqueExecuteStart(sTechSkyBlendAlpha.c_str()))
                     do
                     {
                         for (long i = 0; i < SKY_NUM_TEXTURES; i++)
@@ -416,7 +416,7 @@ void SKY::Realize(uint32_t Delta_Time)
     {
         pRS->SetRenderState(D3DRS_TEXTUREFACTOR, dwSkyColor);
 
-        if (pRS->TechniqueExecuteStart("sky"))
+        if (pRS->TechniqueExecuteStart(sTechSky.c_str()))
             do
             {
                 for (long i = 0; i < SKY_NUM_TEXTURES; i++)
@@ -433,7 +433,8 @@ void SKY::Realize(uint32_t Delta_Time)
     D3DXMatrixTranslation(&pMatTranslate, vPos.x, vPos.y / 6.0f, vPos.z);
     D3DXMatrixMultiply(&pMatWorld, &pMatWorld, &pMatTranslate);
     pRS->SetTransform(D3DTS_WORLD, &pMatWorld);
-    pRS->DrawBuffer(iFogVertsID, sizeof(FOGVERTEX), iFogIndexID, 0, iFogNumVerts, 0, iFogNumTrgs / 3, "skyfog");
+    pRS->DrawBuffer(iFogVertsID, sizeof(FOGVERTEX), iFogIndexID, 0, iFogNumVerts, 0, iFogNumTrgs / 3,
+                    sTechSkyFog.c_str());
 }
 
 uint32_t SKY::AttributeChanged(ATTRIBUTES *pAttribute)
@@ -462,6 +463,30 @@ uint32_t SKY::AttributeChanged(ATTRIBUTES *pAttribute)
     if (*pAttribute == "Angle")
     {
         fSkyAngle = pAttribute->GetAttributeAsFloat();
+        return 0;
+    }
+
+    if (*pAttribute == "techSky")
+    {
+        sTechSky = pAttribute->GetThisAttr();
+        return 0;
+    }
+
+    if (*pAttribute == "techSkyBlend")
+    {
+        sTechSkyBlend = pAttribute->GetThisAttr();
+        return 0;
+    }
+
+    if (*pAttribute == "techSkyAlpha")
+    {
+        sTechSkyBlendAlpha = pAttribute->GetThisAttr();
+        return 0;
+    }
+
+    if (*pAttribute == "techSkyFog")
+    {
+        sTechSkyFog = pAttribute->GetThisAttr();
         return 0;
     }
 
@@ -511,7 +536,7 @@ void SKY::FillSkyDirArray(ATTRIBUTES *pAttribute)
     }
     else
     {
-        aSkyDirArray[0] = pAttribute->GetAttribute(static_cast<size_t>(0));
+        aSkyDirArray[0] = pAttribute->GetAttribute(static_cast<uint32_t>(0));
     }
     fTimeFactor = static_cast<float>(atof(pAttribute->GetThisAttr()));
     if (fTimeFactor < 0.f || fTimeFactor > 24.f)
