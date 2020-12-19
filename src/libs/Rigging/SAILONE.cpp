@@ -6,7 +6,6 @@
 #include "EntityManager.h"
 #include "Sd2_h/VAI_ObjBase.h"
 #include "defines.h"
-#include "rigging_define.h"
 #include "sail.h"
 
 extern long g_iBallOwnerIdx;

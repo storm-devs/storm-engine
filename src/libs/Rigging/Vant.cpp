@@ -2,7 +2,6 @@
 #include "../../shared/sail_msg.h"
 #include "EntityManager.h"
 #include "defines.h"
-#include "rigging_define.h"
 #include "ship_base.h"
 
 VANT_BASE::VANT_BASE()

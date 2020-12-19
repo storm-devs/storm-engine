@@ -536,7 +536,7 @@ void SKY::FillSkyDirArray(ATTRIBUTES *pAttribute)
     }
     else
     {
-        aSkyDirArray[0] = pAttribute->GetAttribute(static_cast<uint32_t>(0));
+        aSkyDirArray[0] = pAttribute->GetAttribute(static_cast<size_t>(0));
     }
     fTimeFactor = static_cast<float>(atof(pAttribute->GetThisAttr()));
     if (fTimeFactor < 0.f || fTimeFactor > 24.f)
