@@ -1,6 +1,8 @@
 #include "TSeagulls.h"
+
 #include "../../Shared/messages.h"
 #include "EntityManager.h"
+#include "defines.h"
 #include "model.h"
 #include "rands.h"
 //#pragma warning (disable : 4244)

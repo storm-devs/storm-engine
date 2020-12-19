@@ -58,7 +58,7 @@ void SEPS_PS::Reset()
 {
     const auto ChaosVal = 0.0001f;
 
-    memset(Particle, 0, ParticlesNum * sizeof(PARTICLE));
+    memset(Particle, 0, ParticlesNum * sizeof(sink_effect::PARTICLE));
 
     for (auto n = 0; n < ParticlesNum; n++)
     {
@@ -305,11 +305,11 @@ bool SEPS_PS::Init(INIFILE *ini, char *psname)
     float ChaosVal;
     ChaosVal = 0.0001f;
 
-    Particle = (PARTICLE *)new char[ParticlesNum * sizeof(PARTICLE)];
+    Particle = (sink_effect::PARTICLE *)new char[ParticlesNum * sizeof(sink_effect::PARTICLE)];
     if (Particle == nullptr)
         throw std::exception("mem error");
 
-    memset(Particle, 0, ParticlesNum * sizeof(PARTICLE));
+    memset(Particle, 0, ParticlesNum * sizeof(sink_effect::PARTICLE));
 
     for (n = 0; n < ParticlesNum; n++)
     {
@@ -373,7 +373,7 @@ bool SEPS_PS::Init(INIFILE *ini, char *psname)
         bTrackAngle = false;
 
     // create vertex buffer
-    RenderService->CreateVertexBuffer(sizeof(PARTICLE_VERTEX) * VERTEXS_ON_PARTICLE * ParticlesNum,
+    RenderService->CreateVertexBuffer(sizeof(sink_effect::PARTICLE_VERTEX) * VERTEXS_ON_PARTICLE * ParticlesNum,
                                       D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY, PARTICLE_FVF, D3DPOOL_SYSTEMMEM, &VBuffer);
     if (VBuffer == nullptr)
         throw std::exception("vbuffer error");
@@ -390,7 +390,7 @@ void SEPS_PS::UpdateVertexBuffer()
     CVECTOR rpos[4];
     CVECTOR pos;
     CVECTOR local_pos;
-    PARTICLE_VERTEX *pVertex;
+    sink_effect::PARTICLE_VERTEX *pVertex;
     long n, i;
     long index;
     float halfsize;
@@ -398,7 +398,7 @@ void SEPS_PS::UpdateVertexBuffer()
 
     Camera_EmitterPosA.x = Camera_EmitterPosA.y = Camera_EmitterPosA.z = 0;
 
-    RenderService->VBLock(VBuffer, 0, sizeof(PARTICLE_VERTEX) * VERTEXS_ON_PARTICLE * ParticlesNum,
+    RenderService->VBLock(VBuffer, 0, sizeof(sink_effect::PARTICLE_VERTEX) * VERTEXS_ON_PARTICLE * ParticlesNum,
                           (uint8_t **)&pVertex, 0);
     for (n = 0; n < ParticlesNum; n++)
     {
@@ -574,7 +574,7 @@ void SEPS_PS::Realize(uint32_t DeltaTime)
     RenderService->TextureSet(0, TextureID[0]);
 
     RenderService->SetFVF(PARTICLE_FVF);
-    RenderService->SetStreamSource(0, VBuffer, sizeof(PARTICLE_VERTEX));
+    RenderService->SetStreamSource(0, VBuffer, sizeof(sink_effect::PARTICLE_VERTEX));
     // RenderService->SetIndices(0, 0);
 
     bool bDraw;
@@ -796,7 +796,7 @@ void SEPS_PS::SetParticlesTracks(uint32_t DeltaTime)
     }
 }
 
-float SEPS_PS::GetTrackValue(TRACK_EVENT *Track, long Time)
+float SEPS_PS::GetTrackValue(sink_effect::TRACK_EVENT *Track, long Time)
 {
     long n;
     float v1, v2;
@@ -846,7 +846,7 @@ float SEPS_PS::GetTrackValue(TRACK_EVENT *Track, long Time)
     return 0;
 }
 
-bool SEPS_PS::BuildTrack(INIFILE *ini, TRACK_EVENT *Track, const char *psname, const char *key_name)
+bool SEPS_PS::BuildTrack(INIFILE *ini, sink_effect::TRACK_EVENT *Track, const char *psname, const char *key_name)
 {
     long n, i;
     char buffer[MAX_PATH];

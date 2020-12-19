@@ -1,5 +1,7 @@
 #include "TCarcass.h"
+
 #include "SeafoamDefines.h"
+#include "defines.h"
 
 #define FRONT_FADE_LEVEL 3
 #define V_DIAGONAL_K 0.5f

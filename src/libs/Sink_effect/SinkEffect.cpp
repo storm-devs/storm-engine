@@ -4,8 +4,6 @@
 #include "ship_base.h"
 #include <stdio.h>
 
-CREATE_CLASS(SINKEFFECT)
-
 //--------------------------------------------------------------------
 SINKEFFECT::SINKEFFECT() : renderer(nullptr), sea(nullptr)
 {
@@ -80,7 +78,7 @@ void SINKEFFECT::Realize(uint32_t _dTime)
 {
     // GUARD(SINKEFFECT::Realize)
 
-    for (auto i = 0; i < MAX_SINKS; ++i)
+    for (auto i = 0; i < sink_effect::MAX_SINKS; ++i)
         sinks[i].Realize(_dTime);
 
     // UNGUARD
@@ -112,7 +110,7 @@ void SINKEFFECT::Execute(uint32_t _dTime)
         }
       }
     */
-    for (auto i = 0; i < MAX_SINKS; ++i)
+    for (auto i = 0; i < sink_effect::MAX_SINKS; ++i)
         sinks[i].Process(_dTime);
 
     // UNGUARD
@@ -123,7 +121,7 @@ void SINKEFFECT::InitializeSinks()
 {
     auto *const psIni = fio->OpenIniFile("resource\\ini\\particles.ini");
 
-    for (auto i = 0; i < MAX_SINKS; ++i)
+    for (auto i = 0; i < sink_effect::MAX_SINKS; ++i)
     {
         sinks[i].Release();
         sinks[i].Initialize(psIni, nullptr, sea, renderer);
@@ -135,7 +133,7 @@ void SINKEFFECT::InitializeSinks()
 //--------------------------------------------------------------------
 TSink *SINKEFFECT::TryToAddSink(const CVECTOR &_pos, float _r)
 {
-    for (auto i = 0; i < MAX_SINKS; ++i)
+    for (auto i = 0; i < sink_effect::MAX_SINKS; ++i)
     {
         if (!sinks[i].Enabled())
         {

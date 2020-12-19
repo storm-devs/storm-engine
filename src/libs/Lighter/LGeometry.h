@@ -72,7 +72,7 @@ class LGeometry
     long numVBuffers;
     long maxVBuffers;
 
-    Shadow *shadows;
+    lighter::Shadow *shadows;
 
     CVECTOR min, max;
     float radius;

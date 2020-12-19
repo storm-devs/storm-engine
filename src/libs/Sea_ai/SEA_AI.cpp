@@ -4,17 +4,6 @@
 #include "AISeaGoods.h"
 #include "LocatorShow.h"
 
-INTERFACE_FUNCTION
-CREATE_CLASS(SEA_AI)
-
-CREATE_CLASS(AIFort)
-
-CREATE_CLASS(AIBalls)
-
-CREATE_CLASS(AISeaGoods)
-
-CREATE_CLASS(SeaLocatorShow)
-
 SEA_AI::SEA_AI()
 {
     bFirstInit = true;

@@ -50,8 +50,4 @@ class ANIMALS : public Entity
     TButterflies *butterflies;
 };
 
-// API_MODULE_START("Animals")
-//	CREATE_CLASS(ANIMALS)
-// API_MODULE_END
-
 #endif

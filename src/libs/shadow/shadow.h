@@ -50,8 +50,4 @@ class Shadow : public Entity
     void RestoreRender();
 };
 
-// API_MODULE_START("SHADOW")
-//	CREATE_CLASS(0,SHADOW)
-// API_MODULE_END
-
 #endif

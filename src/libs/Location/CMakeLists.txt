@@ -31,7 +31,6 @@ add_library(${PROJECT_NAME} STATIC
 	LocationCamera.h
 	LocationEffects.cpp
 	LocationEffects.h
-	LocationMain.cpp
 	LocationScriptLib.cpp
 	LocationScriptLib.h
 	LocatorArray.cpp

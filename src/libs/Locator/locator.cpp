@@ -2,11 +2,6 @@
 #include "../../Shared/messages.h"
 #include "EntityManager.h"
 
-INTERFACE_FUNCTION
-CREATE_CLASS(LOCATOR)
-
-CREATE_CLASS(BLAST)
-
 LOCATOR::LOCATOR()
 {
     gs = nullptr;

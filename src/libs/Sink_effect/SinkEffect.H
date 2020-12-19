@@ -40,7 +40,7 @@ private:
 	void InitializeSinks();
 	TSink *TryToAddSink(const CVECTOR &_pos, float _r);
 
-	TSink    sinks[MAX_SINKS];
+	TSink    sinks[sink_effect::MAX_SINKS];
 	VDX9RENDER *renderer;
 	SEA_BASE *sea;
 };

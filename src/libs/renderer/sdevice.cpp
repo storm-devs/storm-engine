@@ -16,20 +16,6 @@
         a = NULL;                                                                                                      \
     }
 
-class DX9RENDER_SCRIPT_LIBRIARY : public SCRIPT_LIBRIARY
-{
-  public:
-    DX9RENDER_SCRIPT_LIBRIARY(){};
-
-    ~DX9RENDER_SCRIPT_LIBRIARY(){};
-    bool Init() override;
-};
-
-INTERFACE_FUNCTION
-CREATE_SERVICE(DX9RENDER)
-
-CREATE_SCRIPTLIBRIARY(DX9RENDER_SCRIPT_LIBRIARY)
-
 DX9RENDER *DX9RENDER::pRS = nullptr;
 
 uint32_t DX9SetTexturePath(VS_STACK *pS)
@@ -86,31 +72,6 @@ uint32_t SetGlowParams(VS_STACK *pS)
     auto *pVR = (VDATA *)pS->Push();
     pVR->Set(static_cast<long>(0));
     return IFUNCRESULT_OK;
-}
-
-bool DX9RENDER_SCRIPT_LIBRIARY::Init()
-{
-    IFUNCINFO sIFuncInfo;
-
-    sIFuncInfo.nArguments = 2;
-    sIFuncInfo.pFuncName = "SetTexturePath";
-    sIFuncInfo.pReturnValueName = "int";
-    sIFuncInfo.pFuncAddress = DX9SetTexturePath;
-    api->SetScriptFunction(&sIFuncInfo);
-
-    sIFuncInfo.nArguments = 3;
-    sIFuncInfo.pFuncName = "RPrint";
-    sIFuncInfo.pReturnValueName = "int";
-    sIFuncInfo.pFuncAddress = RPrint;
-    api->SetScriptFunction(&sIFuncInfo);
-
-    sIFuncInfo.nArguments = 3;
-    sIFuncInfo.pFuncName = "SetGlowParams";
-    sIFuncInfo.pReturnValueName = "int";
-    sIFuncInfo.pFuncAddress = SetGlowParams;
-    api->SetScriptFunction(&sIFuncInfo);
-
-    return true;
 }
 
 uint64_t _rdtsc;

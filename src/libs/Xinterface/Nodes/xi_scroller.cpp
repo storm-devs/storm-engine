@@ -88,7 +88,7 @@ void CXI_SCROLLER::ReleaseAll()
     m_bUse = false;
     TEXTURE_RELEASE(m_rs, m_idBaseTex);
     TEXTURE_RELEASE(m_rs, m_idRollerTex);
-    VERTEX_BUF_RELEASE(m_rs, m_idVBuf);
+    VERTEX_BUFFER_RELEASE(m_rs, m_idVBuf);
     m_asOwnedNodes.clear();
 }
 

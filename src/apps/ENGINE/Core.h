@@ -183,8 +183,6 @@ class CORE : public VAPI
 
     void *GetScriptVariable(const char *pVariableName, uint32_t *pdwVarIndex) override;
 
-    bool LoCheck();
-
     uint32_t Process();
     void StartEvent(uint32_t function_code);
     void StartThread();

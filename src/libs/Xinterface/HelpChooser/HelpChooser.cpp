@@ -191,7 +191,7 @@ void HELPCHOOSER::AllRelease()
     TEXTURE_RELEASE(rs, m_idMouseTexture);
     TEXTURE_RELEASE(rs, m_idPicTexture);
     TEXTURE_RELEASE(rs, m_idBackTexture);
-    VERTEX_BUF_RELEASE(rs, m_idVBuf);
+    VERTEX_BUFFER_RELEASE(rs, m_idVBuf);
     STORM_DELETE(m_pRectList);
     for (auto i = 0; i < m_nRectQ; i++)
     {

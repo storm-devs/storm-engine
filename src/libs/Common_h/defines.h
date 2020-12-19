@@ -65,10 +65,10 @@ struct FRECT
 
 // Constants
 
-#define PI 3.14159265358979323846f
-#define PIm2 (PI * 2.0f)
-#define PId2 (PI / 2.0f)
-#define PId4 (PI / 4.0f)
+constexpr float PI = 3.14159265358979323846f;
+constexpr float PIm2 = (PI * 2.0f);
+constexpr float PId2 = (PI / 2.0f);
+constexpr float PId4 = (PI / 4.0f);
 
 #define RDTSC_B(x)                                                                                                     \
     {                                                                                                                  \
@@ -234,5 +234,41 @@ template <class T> T Sqr(T t1)
 {
     return (t1 * t1);
 };
+
+#define TEXTURE_RELEASE(rs, idtex)                                                                                     \
+    {                                                                                                                  \
+        if (rs != NULL && idtex != -1)                                                                                 \
+        {                                                                                                              \
+            rs->TextureRelease(idtex);                                                                                 \
+            idtex = -1;                                                                                                \
+        }                                                                                                              \
+    }
+
+#define FONT_RELEASE(rs, font)                                                                                         \
+    {                                                                                                                  \
+        if (rs != NULL && font != -1)                                                                                  \
+        {                                                                                                              \
+            rs->UnloadFont(font);                                                                                      \
+            font = -1;                                                                                                 \
+        }                                                                                                              \
+    }
+
+#define VERTEX_BUFFER_RELEASE(rs, vb)                                                                                  \
+    {                                                                                                                  \
+        if (rs != NULL && vb != -1)                                                                                    \
+        {                                                                                                              \
+            rs->ReleaseVertexBuffer(vb);                                                                               \
+            vb = -1;                                                                                                   \
+        }                                                                                                              \
+    }
+
+#define INDEX_BUFFER_RELEASE(rs, ib)                                                                                   \
+    {                                                                                                                  \
+        if (rs != NULL && ib != -1)                                                                                    \
+        {                                                                                                              \
+            rs->ReleaseIndexBuffer(ib);                                                                                \
+            ib = -1;                                                                                                   \
+        }                                                                                                              \
+    }
 
 //#include "inlines.h"

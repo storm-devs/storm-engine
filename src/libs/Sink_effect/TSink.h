@@ -34,11 +34,11 @@ class TSink
     TIVBufferManager *ivManager;
     uint32_t time;
 
-    TSinkSplash splashes[MAX_SPLASHES];
-    long times[MAX_SPLASHES];
-    long ivIndexes[MAX_SPLASHES];
-    long flotsamTimes[MAX_FLOTSAMS];
-    TFlotsam flotsams[MAX_FLOTSAMS];
+    TSinkSplash splashes[sink_effect::MAX_SPLASHES];
+    long times[sink_effect::MAX_SPLASHES];
+    long ivIndexes[sink_effect::MAX_SPLASHES];
+    long flotsamTimes[sink_effect::MAX_FLOTSAMS];
+    TFlotsam flotsams[sink_effect::MAX_FLOTSAMS];
     float distortDivider;
     float radius;
     CVECTOR center;

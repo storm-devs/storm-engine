@@ -15,9 +15,6 @@ static unsigned long DENSITY = 0xFF606040;
 static const float nearBlend = 8.0f;
 static const float farBlend = 16.0f;
 
-INTERFACE_FUNCTION
-CREATE_CLASS(Shadow)
-
 static const long vbuff_size = 1024;
 static long ref = 0;
 #define TEXTURE_SIZE 128

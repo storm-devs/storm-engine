@@ -8,13 +8,6 @@
 #include "Track.h"
 #include "inlines.h"
 
-INTERFACE_FUNCTION
-CREATE_CLASS(SHIP)
-
-CREATE_CLASS(ShipLights)
-
-CREATE_CLASS(ShipTracks)
-
 VDX9RENDER *SHIP::pRS = nullptr;
 SEA_BASE *SHIP::pSea = nullptr;
 ISLAND_BASE *SHIP::pIsland = nullptr;

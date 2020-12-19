@@ -2,8 +2,6 @@
 
 #include "Animals.H"
 
-CREATE_CLASS(ANIMALS)
-
 ANIMALS::ANIMALS() : seagulls(nullptr), fishSchools(nullptr), butterflies(nullptr)
 {
     seagulls = new TSeagulls();

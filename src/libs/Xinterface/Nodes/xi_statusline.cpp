@@ -39,8 +39,8 @@ bool CXI_STATUSLINE::Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const
 void CXI_STATUSLINE::ReleaseAll()
 {
     PICTURE_TEXTURE_RELEASE(pPictureService, m_sGroupName, m_idTex);
-    VERTEX_BUF_RELEASE(m_rs, m_vBuf);
-    INDEX_BUF_RELEASE(m_rs, m_iBuf);
+    VERTEX_BUFFER_RELEASE(m_rs, m_vBuf);
+    INDEX_BUFFER_RELEASE(m_rs, m_iBuf);
     STORM_DELETE(m_sGroupName);
 }
 

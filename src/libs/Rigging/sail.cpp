@@ -6,7 +6,6 @@
 #include "EntityManager.h"
 #include "Weather_Base.h"
 #include "defines.h"
-#include "rigging_define.h"
 #include "ship_base.h"
 
 #define WIND_SPEED_MAX 12.f

@@ -1,11 +1,14 @@
 #include "TFlotsam.h"
+
 #include "../../Shared/messages.h"
 #include "EntityManager.h"
+#include "defines.h"
+#include "rands.h"
 
 int TFlotsam::modelsInitialized = 0;
-MODEL *TFlotsam::models[FLOTSAM_MODELS_COUNT];
-char TFlotsam::modelNames[FLOTSAM_MODELS_COUNT][128];
-entid_t TFlotsam::modelIDs[FLOTSAM_MODELS_COUNT];
+MODEL *TFlotsam::models[sink_effect::FLOTSAM_MODELS_COUNT];
+char TFlotsam::modelNames[sink_effect::FLOTSAM_MODELS_COUNT][128];
+entid_t TFlotsam::modelIDs[sink_effect::FLOTSAM_MODELS_COUNT];
 
 //--------------------------------------------------------------------
 TFlotsam::TFlotsam() : sea(nullptr), enabled(false)
@@ -18,7 +21,7 @@ TFlotsam::~TFlotsam()
     --modelsInitialized;
 
     if (!modelsInitialized)
-        for (auto i = 0; i < FLOTSAM_MODELS_COUNT; i++)
+        for (auto i = 0; i < sink_effect::FLOTSAM_MODELS_COUNT; i++)
             EntityManager::EraseEntity(modelIDs[i]);
 }
 
@@ -29,16 +32,16 @@ void TFlotsam::Start(float _x, float _z, float _radius)
     floatTime = 0;
     x = _x + randCentered(_radius);
     z = _z + randCentered(_radius);
-    y = sea->WaveXZ(x, z) - FLOTSAM_START_DELTAY;
-    vX = randCentered(1.0f) * FLOTSAM_H_SPEED;
-    vY = randUpper(1.0f) * FLOTSAM_V_SPEED;
-    vZ = randCentered(1.0f) * FLOTSAM_H_SPEED;
+    y = sea->WaveXZ(x, z) - sink_effect::FLOTSAM_START_DELTAY;
+    vX = randCentered(1.0f) * sink_effect::FLOTSAM_H_SPEED;
+    vY = randUpper(1.0f) * sink_effect::FLOTSAM_V_SPEED;
+    vZ = randCentered(1.0f) * sink_effect::FLOTSAM_H_SPEED;
     angY = rand(PIm2);
-    turnY = randCentered(1.0f) * FLOTSAM_TURN_SPEED;
-    maxFloatTime = static_cast<uint32_t>(randUpper(FLOTSAM_FLOAT_TIME));
+    turnY = randCentered(1.0f) * sink_effect::FLOTSAM_TURN_SPEED;
+    maxFloatTime = static_cast<uint32_t>(randUpper(sink_effect::FLOTSAM_FLOAT_TIME));
     state = FLOTSAM_RISE;
     // model = models[rand() % FLOTSAM_MODELS_COUNT];
-    ModelID = modelIDs[rand() % FLOTSAM_MODELS_COUNT];
+    ModelID = modelIDs[rand() % sink_effect::FLOTSAM_MODELS_COUNT];
 }
 
 //--------------------------------------------------------------------
@@ -52,7 +55,7 @@ void TFlotsam::Initialize(SEA_BASE *_sea)
         strcpy_s(modelNames[2], "particles\\palka03");
         strcpy_s(modelNames[3], "particles\\palka04");
 
-        for (auto i = 0; i < FLOTSAM_MODELS_COUNT; i++)
+        for (auto i = 0; i < sink_effect::FLOTSAM_MODELS_COUNT; i++)
         {
             modelIDs[i] = EntityManager::CreateEntity("MODELR");
             api->Send_Message(modelIDs[i], "ls", MSG_MODEL_LOAD_GEO, modelNames[i]);
@@ -78,7 +81,7 @@ void TFlotsam::Process(uint32_t _dTime)
         x += dTime * vX;
         z += dTime * vZ;
         y += dTime * vY;
-        if (y > (sea->WaveXZ(x, z) + FLOTSAM_DY))
+        if (y > (sea->WaveXZ(x, z) + sink_effect::FLOTSAM_DY))
             state = FLOTSAM_FLOAT;
         break;
     case FLOTSAM_FLOAT:
@@ -93,7 +96,7 @@ void TFlotsam::Process(uint32_t _dTime)
         x += dTime * vX;
         z += dTime * vZ;
         y -= dTime * vY;
-        if (y <= sea->WaveXZ(x, z) - FLOTSAM_START_DELTAY)
+        if (y <= sea->WaveXZ(x, z) - sink_effect::FLOTSAM_START_DELTAY)
             enabled = false;
         break;
     }
@@ -107,7 +110,7 @@ void TFlotsam::Realize(uint32_t _dTime)
 
     CVECTOR pos(x, 0, z);
     if (state == FLOTSAM_FLOAT)
-        pos.y = sea->WaveXZ(x, z) + FLOTSAM_DY;
+        pos.y = sea->WaveXZ(x, z) + sink_effect::FLOTSAM_DY;
     else
         pos.y = y;
     const CVECTOR ang(0.0f, angY, 0.0f);

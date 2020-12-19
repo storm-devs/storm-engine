@@ -7,7 +7,6 @@ add_library(${PROJECT_NAME} STATIC
 	Lighter.h
 	LighterLights.cpp
 	LighterLights.h
-	LighterMain.cpp
 	LightProcessor.cpp
 	LightProcessor.h
 	LObject.cpp

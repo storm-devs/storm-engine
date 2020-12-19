@@ -43,8 +43,8 @@ bool CXI_IMGCOLLECTION::Init(INIFILE *ini1, const char *name1, INIFILE *ini2, co
 void CXI_IMGCOLLECTION::ReleaseAll()
 {
     PICTURE_TEXTURE_RELEASE(pPictureService, sGroupName, texl);
-    VERTEX_BUF_RELEASE(m_rs, vBuf);
-    INDEX_BUF_RELEASE(m_rs, iBuf);
+    VERTEX_BUFFER_RELEASE(m_rs, vBuf);
+    INDEX_BUFFER_RELEASE(m_rs, iBuf);
     STORM_DELETE(sGroupName);
 }
 
@@ -68,8 +68,8 @@ void CXI_IMGCOLLECTION::AddImage(const char *pcPicName, uint32_t dwColor, XYRECT
     m_aEditInfo.push_back(info);
 
     // перекраиваем индекс и вертекс буферы
-    VERTEX_BUF_RELEASE(m_rs, vBuf);
-    INDEX_BUF_RELEASE(m_rs, iBuf);
+    VERTEX_BUFFER_RELEASE(m_rs, vBuf);
+    INDEX_BUFFER_RELEASE(m_rs, iBuf);
 
     // Calculate vertex and index quantity
     nVert = m_aEditInfo.size() * 4;
@@ -426,8 +426,8 @@ uint32_t CXI_IMGCOLLECTION::MessageProc(long msgcode, MESSAGE &message)
     {
         m_aSections.clear();
         m_aEditInfo.clear();
-        VERTEX_BUF_RELEASE(m_rs, vBuf);
-        INDEX_BUF_RELEASE(m_rs, iBuf);
+        VERTEX_BUFFER_RELEASE(m_rs, vBuf);
+        INDEX_BUFFER_RELEASE(m_rs, iBuf);
     }
     break;
 

@@ -326,8 +326,8 @@ bool LGeometry::Process(VDX9RENDER *rs, long numLights)
     }
     if (numVrt <= 0)
         return false;
-    shadows = new Shadow[numVrt * numLights];
-    memset(shadows, 0, numVrt * numLights * sizeof(Shadow));
+    shadows = new lighter::Shadow[numVrt * numLights];
+    memset(shadows, 0, numVrt * numLights * sizeof(lighter::Shadow));
     min = vrt[0].p;
     max = vrt[0].p;
     long lghtpnt = 0;

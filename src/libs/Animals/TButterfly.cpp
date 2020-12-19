@@ -2,10 +2,7 @@
 #include "Matrix.h"
 #include "rands.h"
 
-#define PI 3.14159265358979323846f
-#define PIm2 (PI * 2.0f)
-#define PId2 (PI / 2.0f)
-#define PId4 (PI / 4.0f)
+#include "defines.h"
 
 CVECTOR TButterfly::center;
 

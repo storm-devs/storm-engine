@@ -9,8 +9,6 @@ add_library(${PROJECT_NAME} STATIC
 	SAILONE.h
 	Vant.cpp
 	Vant.h
-	rigging_define.h
-	rigging_main.cpp
 	sail.cpp
 	sail.h
 	script_func.cpp

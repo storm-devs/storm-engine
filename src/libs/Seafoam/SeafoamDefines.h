@@ -3,10 +3,6 @@
 
 //#define SEAFOAM_TRACE_INFORMATION
 
-#define PI 3.14159265358979323846f
-#define PIm2 (PI * 2.0f)
-#define PId2 (PI / 2.0f)
-
 #define TRACE_STEPS_Y 5
 #define TRACE_STEPS_Z 13 // 13
 #define MAX_SHIPS 64

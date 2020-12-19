@@ -40,9 +40,4 @@ class LOCATOR : public Entity
     bool VerifyParticles();
 };
 
-// API_MODULE_START(0)
-//	CREATE_CLASS(0,LOCATOR)
-//	CREATE_CLASS(1,BLAST)
-// API_MODULE_END
-
 #endif

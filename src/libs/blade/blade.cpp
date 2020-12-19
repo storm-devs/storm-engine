@@ -24,9 +24,6 @@ static const char *sabergunHandName = "sabergun_hand";
 static const char *sabergunBeltName = "sabergun_belt";
 static const char *sabergunFire = "sabersabgun_fire";
 
-INTERFACE_FUNCTION
-CREATE_CLASS(BLADE)
-
 BLADE::BLADE_INFO::BLADE_INFO()
 {
     locatorName = beltName;

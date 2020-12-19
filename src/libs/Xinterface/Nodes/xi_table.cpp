@@ -461,8 +461,8 @@ void CXI_TABLE::ReleaseAll()
 
     // release border data
     PICTURE_TEXTURE_RELEASE(pPictureService, m_sBorderIconGroupName.c_str(), m_idBorderTexture);
-    VERTEX_BUF_RELEASE(m_rs, m_idBorderVBuf);
-    INDEX_BUF_RELEASE(m_rs, m_idBorderIBuf);
+    VERTEX_BUFFER_RELEASE(m_rs, m_idBorderVBuf);
+    INDEX_BUFFER_RELEASE(m_rs, m_idBorderIBuf);
 
     // release fonts from list
     FONT_RELEASE(m_rs, m_nFontCellID);
@@ -1015,8 +1015,8 @@ void CXI_TABLE::UpdateBorders()
     if (m_nBorderSubQ != q) // перестраиваем буферы
     {
         m_nBorderSubQ = q;
-        VERTEX_BUF_RELEASE(m_rs, m_idBorderVBuf);
-        INDEX_BUF_RELEASE(m_rs, m_idBorderIBuf);
+        VERTEX_BUFFER_RELEASE(m_rs, m_idBorderVBuf);
+        INDEX_BUFFER_RELEASE(m_rs, m_idBorderIBuf);
 
         // индекс буфер
         m_idBorderIBuf = m_rs->CreateIndexBuffer(q * 6 * sizeof(uint16_t));

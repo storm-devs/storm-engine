@@ -57,8 +57,8 @@ void CXI_BORDER::ReleaseAll()
 {
     m_bUse = false;
     PICTURE_TEXTURE_RELEASE(pPictureService, m_sGroupName.c_str(), m_idTex);
-    VERTEX_BUF_RELEASE(m_rs, m_idVBuf);
-    INDEX_BUF_RELEASE(m_rs, m_idIBuf);
+    VERTEX_BUFFER_RELEASE(m_rs, m_idVBuf);
+    INDEX_BUFFER_RELEASE(m_rs, m_idIBuf);
     STORM_DELETE(m_pBackImage);
     STORM_DELETE(m_pCaptionImage);
 }

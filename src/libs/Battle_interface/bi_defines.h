@@ -8,31 +8,6 @@
 
 #define INI_FILE_NAME "resource\\ini\\interfaces\\battle_interface.ini"
 
-#define TEXTURE_RELEASE(rs, id)                                                                                        \
-    if (id != -1)                                                                                                      \
-    {                                                                                                                  \
-        rs->TextureRelease(id);                                                                                        \
-        id = -1;                                                                                                       \
-    }
-#define FONT_RELEASE(rs, id)                                                                                           \
-    if (id != -1)                                                                                                      \
-    {                                                                                                                  \
-        rs->UnloadFont(id);                                                                                            \
-        id = -1;                                                                                                       \
-    }
-#define VERTEX_BUFFER_RELEASE(rs, id)                                                                                  \
-    if (id != -1)                                                                                                      \
-    {                                                                                                                  \
-        rs->ReleaseVertexBuffer(id);                                                                                   \
-        id = -1;                                                                                                       \
-    }
-#define INDEX_BUFFER_RELEASE(rs, id)                                                                                   \
-    if (id != -1)                                                                                                      \
-    {                                                                                                                  \
-        rs->ReleaseIndexBuffer(id);                                                                                    \
-        id = -1;                                                                                                       \
-    }
-
 #define FULLRECT(r)                                                                                                    \
     {                                                                                                                  \
         r.left = 0.f;                                                                                                  \

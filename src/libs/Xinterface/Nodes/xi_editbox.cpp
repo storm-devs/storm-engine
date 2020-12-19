@@ -136,9 +136,9 @@ void CXI_EDITBOX::ReleaseAll()
 
     TEXTURE_RELEASE(m_rs, m_idBtnTex);
 
-    VERTEX_BUF_RELEASE(m_rs, m_idVBRect);
-    VERTEX_BUF_RELEASE(m_rs, m_idVB);
-    INDEX_BUF_RELEASE(m_rs, m_idIB);
+    VERTEX_BUFFER_RELEASE(m_rs, m_idVBRect);
+    VERTEX_BUFFER_RELEASE(m_rs, m_idVB);
+    INDEX_BUFFER_RELEASE(m_rs, m_idIB);
 
     FONT_RELEASE(m_rs, m_nChrFontNum);
     FONT_RELEASE(m_rs, m_nStrFontNum);

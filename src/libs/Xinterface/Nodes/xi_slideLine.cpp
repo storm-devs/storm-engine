@@ -67,7 +67,7 @@ void CXI_SLIDELINE::ReleaseAll()
     TEXTURE_RELEASE(m_rs, m_idTexLine);
     TEXTURE_RELEASE(m_rs, m_idTexSelLine);
     TEXTURE_RELEASE(m_rs, m_idTexPointer);
-    VERTEX_BUF_RELEASE(m_rs, m_idVBuf);
+    VERTEX_BUFFER_RELEASE(m_rs, m_idVBuf);
 }
 
 int CXI_SLIDELINE::CommandExecute(int wActCode)

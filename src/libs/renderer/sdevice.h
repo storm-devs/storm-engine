@@ -7,6 +7,9 @@
 #include "defines.h"
 #include "dx9render.h"
 #include "vmodule_api.h"
+
+#include "d3d9types.h"
+
 #include <stack>
 #include <vector>
 
@@ -399,7 +402,7 @@ class DX9RENDER : public VDX9RENDER
     HRESULT Release(IUnknown *pSurface) override;
 
     // Vertex/Index Buffers Section
-    HRESULT CreateVertexBuffer(UINT Length, uint32_t Usage, uint32_t FVF, D3DPOOL Pool,
+    HRESULT CreateVertexBuffer(UINT Length, uint32_t Usage, uint32_t fvf, D3DPOOL Pool,
                                IDirect3DVertexBuffer9 **ppVertexBuffer) override;
     HRESULT VBLock(IDirect3DVertexBuffer9 *pVB, UINT OffsetToLock, UINT SizeToLock, uint8_t **ppbData,
                    uint32_t Flags) override;

@@ -69,6 +69,7 @@ add_executable(${PROJECT_NAME} WIN32
 	tm_list.h
 	token.cpp
 	token.h
+	VmaInit.h
 
 	${STORM_RESOURCE_DIR}/engine/resource.rc
 )

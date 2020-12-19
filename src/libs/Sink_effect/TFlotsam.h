@@ -38,10 +38,10 @@ class TFlotsam
     // MODEL *model;
     entid_t ModelID;
 
-    static MODEL *models[FLOTSAM_MODELS_COUNT];
-    static char modelNames[FLOTSAM_MODELS_COUNT][128];
+    static MODEL *models[sink_effect::FLOTSAM_MODELS_COUNT];
+    static char modelNames[sink_effect::FLOTSAM_MODELS_COUNT][128];
     static int modelsInitialized;
-    static entid_t modelIDs[FLOTSAM_MODELS_COUNT];
+    static entid_t modelIDs[sink_effect::FLOTSAM_MODELS_COUNT];
 };
 
 #endif

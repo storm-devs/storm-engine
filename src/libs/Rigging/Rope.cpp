@@ -2,7 +2,6 @@
 #include "../../shared/sail_msg.h"
 #include "EntityManager.h"
 #include "defines.h"
-#include "rigging_define.h"
 #include "ship_base.h"
 
 extern void sailPrint(VDX9RENDER *rs, const CVECTOR &pos3D, float rad, long line, const char *format, ...);

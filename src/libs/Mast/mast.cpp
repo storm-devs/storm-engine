@@ -32,9 +32,6 @@ float MIN_Z_DANG = 0.07f;
 float VAR_Z_DANG = 0.03f;
 float MIN_SIGNIFICANT = 0.1f;
 
-INTERFACE_FUNCTION
-CREATE_CLASS(MAST)
-
 MAST::MAST()
 {
     RenderService = nullptr;

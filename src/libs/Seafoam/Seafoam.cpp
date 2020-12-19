@@ -3,9 +3,6 @@
 #include "defines.h"
 #include <EntityManager.h>
 
-INTERFACE_FUNCTION
-CREATE_CLASS(SEAFOAM)
-
 // entid_t arrowModel;
 
 #define U_SPEED_K 24e-4f

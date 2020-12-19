@@ -140,8 +140,4 @@ class MODELR : public MODEL
     float alpha1, alpha2;
 };
 
-// API_MODULE_START("geometry")
-//	CREATE_CLASS(0,MODELR)
-// API_MODULE_END
-
 #endif

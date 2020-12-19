@@ -453,7 +453,7 @@ void CXI_FOURIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, con
 void CXI_FOURIMAGE::ReleaseAll()
 {
     int i;
-    VERTEX_BUF_RELEASE(m_rs, vBuf);
+    VERTEX_BUFFER_RELEASE(m_rs, vBuf);
 
     TEXTURE_RELEASE(m_rs, m_oneBadTexture);
     TEXTURE_RELEASE(m_rs, m_twoBadTexture);

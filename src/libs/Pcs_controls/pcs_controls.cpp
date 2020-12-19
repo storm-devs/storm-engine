@@ -1,8 +1,5 @@
 #include "pcs_controls.h"
 
-INTERFACE_FUNCTION
-CREATE_SERVICE(PCS_CONTROLS)
-
 PCS_CONTROLS::PCS_CONTROLS()
 {
     m_bLockAll = false;

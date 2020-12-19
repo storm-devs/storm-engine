@@ -530,8 +530,8 @@ void CXI_TEXTBUTTON::ReleaseAll()
     TEXTURE_RELEASE(m_rs, m_idShadowTex);
     STORM_DELETE(m_sGroupName);
     STORM_DELETE(m_sString);
-    VERTEX_BUF_RELEASE(m_rs, m_idVBuf);
-    INDEX_BUF_RELEASE(m_rs, m_idIBuf);
+    VERTEX_BUFFER_RELEASE(m_rs, m_idVBuf);
+    INDEX_BUFFER_RELEASE(m_rs, m_idIBuf);
     VIDEOTEXTURE_RELEASE(m_rs, m_pTex);
     FONT_RELEASE(m_rs, m_nFontNum);
 }

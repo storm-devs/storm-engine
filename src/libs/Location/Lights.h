@@ -8,8 +8,7 @@
 //
 //============================================================================================
 
-#ifndef _Lights_H_
-#define _Lights_H_
+#pragma once
 
 #include "Matrix.h"
 #include "collide.h"
@@ -166,5 +165,3 @@ class Lights : public Entity
     //Отсортированный массив источников для последнего расчета
     std::vector<lt_elem> aLightsDstSort;
 };
-
-#endif

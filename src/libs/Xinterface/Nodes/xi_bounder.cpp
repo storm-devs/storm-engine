@@ -49,8 +49,8 @@ void CXI_BOUNDER::ReleaseAll()
     PICTURE_TEXTURE_RELEASE(pPictureService, m_sGroupName, m_idTex);
     STORM_DELETE(m_sGroupName);
 
-    VERTEX_BUF_RELEASE(m_rs, m_idVBuf);
-    INDEX_BUF_RELEASE(m_rs, m_idIBuf);
+    VERTEX_BUFFER_RELEASE(m_rs, m_idVBuf);
+    INDEX_BUFFER_RELEASE(m_rs, m_idIBuf);
 }
 
 void CXI_BOUNDER::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2)

@@ -12,7 +12,7 @@ add_library(${PROJECT_NAME} STATIC
 	TIVBufferManager.cpp
 )
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${DirectX_INCLUDE_DIR})
+target_include_directories(${PROJECT_NAME} PUBLIC ${DirectX_INCLUDE_DIR})
 
 target_link_libraries(${PROJECT_NAME}
 	PRIVATE

@@ -31,9 +31,6 @@
 
 #define GC_FREE 28
 
-INTERFACE_FUNCTION
-CREATE_CLASS(SEA)
-
 SEA *SEA::pSea = nullptr;
 bool SEA::bIntel = false;
 bool SEA::bSSE = false;

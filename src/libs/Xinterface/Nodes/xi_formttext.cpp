@@ -194,7 +194,7 @@ void CXI_FORMATEDTEXT::ReleaseAll()
 {
     FONT_RELEASE(m_rs, m_idFont);
     VIDEOTEXTURE_RELEASE(m_rs, m_pVidTex);
-    VERTEX_BUF_RELEASE(m_rs, m_idVBuf);
+    VERTEX_BUFFER_RELEASE(m_rs, m_idVBuf);
     TEXTURE_RELEASE(m_rs, m_idUpEnableTexture);
     TEXTURE_RELEASE(m_rs, m_idUpDisableTexture);
     TEXTURE_RELEASE(m_rs, m_idDownEnableTexture);

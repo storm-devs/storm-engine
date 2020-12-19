@@ -1,6 +1,8 @@
 #include "TSink.h"
 #include "SinkSplashDefines.h"
 
+#include "rands.h"
+
 //--------------------------------------------------------------------
 TSink::TSink() : enabled(false), texture(0), ivManager(nullptr), time(0)
 {
@@ -18,16 +20,17 @@ void TSink::Initialize(INIFILE *_ini, IDirect3DDevice9 *_device, SEA_BASE *_sea,
     sea = _sea;
     renderer = _renderer;
 
-    ivManager = new TIVBufferManager(renderer, SINK_FVF, sizeof(SINK_VERTEX), 3 * TRIANGLES_COUNT,
-                                     GRID_STEPS * GRID_STEPS, MAX_SPLASHES);
+    ivManager =
+        new TIVBufferManager(renderer, sink_effect::SINK_FVF, sizeof(SINK_VERTEX), 3 * sink_effect::TRIANGLES_COUNT,
+                             sink_effect::GRID_STEPS * sink_effect::GRID_STEPS, sink_effect::MAX_SPLASHES);
     texture = renderer->TextureCreate("explos.tga");
-    for (auto i = 0; i < MAX_SPLASHES; ++i)
+    for (auto i = 0; i < sink_effect::MAX_SPLASHES; ++i)
     {
         splashes[i].Initialize(_ini, sea);
         ivIndexes[i] = -1;
     }
 
-    for (auto i = 0; i < MAX_FLOTSAMS; ++i)
+    for (auto i = 0; i < sink_effect::MAX_FLOTSAMS; ++i)
     {
         flotsams[i].Initialize(sea);
     }
@@ -59,15 +62,15 @@ void TSink::Start(const CVECTOR &_pos, float _radius)
     radius = _radius;
 
     enabled = true;
-    for (auto i = 0; i < MAX_SPLASHES; i++)
+    for (auto i = 0; i < sink_effect::MAX_SPLASHES; i++)
     {
-        times[i] = static_cast<long>(rand(SINK_TIME));
+        times[i] = static_cast<long>(rand(sink_effect::SINK_TIME));
         // ivIndexes[i] = -1;
     }
 
-    for (auto i = 0; i < MAX_FLOTSAMS; i++)
+    for (auto i = 0; i < sink_effect::MAX_FLOTSAMS; i++)
     {
-        flotsamTimes[i] = static_cast<long>(rand(SINK_TIME));
+        flotsamTimes[i] = static_cast<long>(rand(sink_effect::SINK_TIME));
     }
 }
 
@@ -81,11 +84,11 @@ void TSink::Process(uint32_t _dTime)
     uint16_t *indexes;
     SINK_VERTEX *vertices;
 
-    if (time > (SINK_TIME + MAX_SPLASH_TIME))
+    if (time > (sink_effect::SINK_TIME + sink_effect::MAX_SPLASH_TIME))
     {
         enabled = false;
         ivManager->LockBuffers();
-        for (auto i = 0; i < MAX_SPLASHES; i++)
+        for (auto i = 0; i < sink_effect::MAX_SPLASHES; i++)
         {
             if (splashes[i].Enabled())
             {
@@ -100,7 +103,7 @@ void TSink::Process(uint32_t _dTime)
     }
 
     ivManager->LockBuffers();
-    for (auto i = 0; i < MAX_SPLASHES; i++)
+    for (auto i = 0; i < sink_effect::MAX_SPLASHES; i++)
     {
         if (times[i] > 0)
             times[i] -= _dTime;
@@ -111,7 +114,7 @@ void TSink::Process(uint32_t _dTime)
                 if (ivIndexes[i] != -1)
                 {
                     ivManager->FreeElement(ivIndexes[i]);
-                    times[i] = static_cast<long>(rand(SINK_TIME));
+                    times[i] = static_cast<long>(rand(sink_effect::SINK_TIME));
                     ivIndexes[i] = -1;
                 }
                 else
@@ -137,7 +140,7 @@ void TSink::Process(uint32_t _dTime)
     }
     ivManager->UnlockBuffers();
 
-    for (auto i = 0; i < MAX_FLOTSAMS; i++)
+    for (auto i = 0; i < sink_effect::MAX_FLOTSAMS; i++)
     {
         if (flotsamTimes[i] > 0)
             flotsamTimes[i] -= _dTime;
@@ -169,13 +172,13 @@ void TSink::Realize(uint32_t _dTime)
     ivManager->DrawBuffers("sink");
     renderer->SetRenderState(D3DRS_AMBIENT, ambient);
 
-    for (auto i = 0; i < MAX_SPLASHES; i++)
+    for (auto i = 0; i < sink_effect::MAX_SPLASHES; i++)
     {
         if (splashes[i].Enabled())
             splashes[i].AdditionalRealize(_dTime);
     }
 
-    for (auto i = 0; i < MAX_FLOTSAMS; i++)
+    for (auto i = 0; i < sink_effect::MAX_FLOTSAMS; i++)
     {
         if (flotsams[i].Enabled())
             flotsams[i].Realize(_dTime);

@@ -3,9 +3,6 @@
 #include "EntityManager.h"
 #include <stdio.h>
 
-INTERFACE_FUNCTION
-CREATE_CLASS(BALLSPLASH)
-
 //--------------------------------------------------------------------
 BALLSPLASH::BALLSPLASH() : renderer(nullptr), sea(nullptr)
 {

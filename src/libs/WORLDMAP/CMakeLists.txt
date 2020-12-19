@@ -48,7 +48,6 @@ add_library(${PROJECT_NAME} STATIC
 	WdmWindRose.h
 	WdmWindUI.cpp
 	WdmWindUI.h
-	WoldMapMain.cpp
 	WorldMap.cpp
 	WorldMap.h
 )

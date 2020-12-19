@@ -16,4 +16,6 @@ add_library(${PROJECT_NAME} STATIC
 	${STORM_SOURCE_DIR}/libs/Common_h/rands.cpp
 )
 
+target_include_directories(${PROJECT_NAME} PUBLIC ${DirectX_INCLUDE_DIR})
+
 target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

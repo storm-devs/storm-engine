@@ -7,13 +7,6 @@
         delete x;                                                                                                      \
     x = 0;
 
-INTERFACE_FUNCTION
-CREATE_CLASS(TMPTELEPORT)
-
-CREATE_CLASS(FINDFILESINTODIRECTORY)
-
-CREATE_CLASS(FINDDIALOGNODES)
-
 bool GetStringLine(char *&pStr, char *bufer, long bufSize)
 {
     if (pStr == nullptr || bufer == nullptr || bufSize == 0)

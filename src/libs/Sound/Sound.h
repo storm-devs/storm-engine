@@ -52,8 +52,4 @@ class SOUND : public Entity
     VDX9RENDER *renderer;
 };
 
-// API_MODULE_START("Sound")
-//	CREATE_CLASS(0, SOUND)
-// API_MODULE_END
-
 #endif

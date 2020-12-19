@@ -1,8 +1,5 @@
 #include "geometry_R.h"
 
-INTERFACE_FUNCTION
-CREATE_SERVICE(GEOMETRY)
-
 IDirect3DVertexDeclaration9 *GEOM_SERVICE_R::vertexDecl_ = nullptr;
 
 char technique[256] = "";

@@ -81,7 +81,7 @@ void BIImageMaterial::SetTexture(const char *pcTextureName)
     if (pcTextureName == m_sTextureName)
         return; // уже стоит эта текстура
     m_sTextureName = pcTextureName;
-    TEXTURE_RELEASE(m_pRS, m_nTextureID);
+    m_pRS->TextureRelease(m_nTextureID);
     m_nTextureID = m_pRS->TextureCreate(pcTextureName);
 }
 

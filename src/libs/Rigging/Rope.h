@@ -152,9 +152,4 @@ class ROPE : public ROPE_BASE
     uint64_t realize_tm;
 };
 
-/*API_MODULE_START("rope")
-    CREATE_CLASS(0,ROPE)
-API_MODULE_END
-*/
-
 #endif

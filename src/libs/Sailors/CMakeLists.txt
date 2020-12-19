@@ -5,7 +5,6 @@ add_library(${PROJECT_NAME} STATIC
 	Sailors.h
 	SailorsEditor.cpp
 	SailorsEditor.h
-	SailorsMain.cpp
 	SailorsMenu.cpp
 	SailorsMenu.h
 	SailorsWayPoints.cpp

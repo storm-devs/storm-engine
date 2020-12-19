@@ -8,8 +8,7 @@
 //
 //============================================================================================
 
-#ifndef _Lights_H_
-#define _Lights_H_
+#pragma once
 
 #include "LTypes.h"
 
@@ -54,5 +53,3 @@ inline Light &LighterLights::operator[](long i)
     Assert(i >= 0 && i < numLights);
     return light[i];
 }
-
-#endif

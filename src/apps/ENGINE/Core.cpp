@@ -1,8 +1,7 @@
 #include "Core.h"
+#include "VmaInit.h"
 #include "dx9render.h"
 #include "externs.h"
-
-// CREATE_SERVICE(CONTROLS)
 
 uint32_t dwNumberScriptCommandsExecuted = 0;
 auto constexpr CORE_DEFAULT_ATOMS_SPACE = 128;
@@ -84,19 +83,6 @@ void CORE::ReleaseBase()
     Compiler.Token.Release();
 }
 
-bool CORE::LoCheck()
-{
-    // ~!~
-    const auto test_eid = EntityManager::CreateEntity("LocationP");
-    if (!test_eid)
-        return false;
-    auto *pE = EntityManager::GetEntityPointer(test_eid);
-    pE->ProcessStage(Entity::Stage::execute, ENGINE_SCRIPT_VERSION);
-
-    EntityManager::EraseEntity(test_eid);
-    return true;
-}
-
 bool CORE::Run()
 {
     const auto bDebugWindow = true;
@@ -145,8 +131,6 @@ bool CORE::Run()
     if (!Initialized)
     {
         Initialize(); // initialization at start or after reset
-        if (!LoCheck())
-            throw;
     }
     if (!bEngineIniProcessed)
         ProcessEngineIniFile();

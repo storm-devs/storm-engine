@@ -1,13 +1,7 @@
 #include "WaterRings.h"
 #include "rands.h"
 
-#define PI 3.14159265358979323846f
-#define PIm2 (PI * 2.0f)
-#define PId2 (PI / 2.0f)
-#define PId4 (PI / 4.0f)
-
-INTERFACE_FUNCTION
-CREATE_CLASS(WaterRings)
+#include "defines.h"
 
 //------------------------------------------------------------------------------------
 WaterRings::WaterRings() : ivManager(nullptr)
@@ -35,12 +29,13 @@ bool WaterRings::Init()
     if (!renderService)
         throw std::exception("No service: dx9render");
 
-    ivManager = new TIVBufferManager(renderService, RING_FVF, sizeof(RING_VERTEX), TRIANGLES_COUNT * 3,
-                                     GRID_STEPS_COUNT * GRID_STEPS_COUNT, MAX_RINGS);
+    ivManager =
+        new TIVBufferManager(renderService, waterrings::RING_FVF, sizeof(RING_VERTEX), waterrings::TRIANGLES_COUNT * 3,
+                             waterrings::GRID_STEPS_COUNT * waterrings::GRID_STEPS_COUNT, waterrings::MAX_RINGS);
 
     ringTexture = renderService->TextureCreate("ring.tga");
 
-    for (auto i = 0; i < MAX_RINGS; i++)
+    for (auto i = 0; i < waterrings::MAX_RINGS; i++)
     {
         rings[i].ivIndex = ivManager->ReserveElement();
         rings[i].activeTime = 0;
@@ -65,10 +60,10 @@ void WaterRings::Realize(uint32_t _dTime)
     uint16_t *iPointer;
     RING_VERTEX *vPointer;
     long vOffset;
-    for (auto i = 0; i < MAX_RINGS; i++)
+    for (auto i = 0; i < waterrings::MAX_RINGS; i++)
     {
         // check if ring needs to be removed
-        if (rings[i].activeTime > (FADE_IN_TIME + FADE_OUT_TIME))
+        if (rings[i].activeTime > (waterrings::FADE_IN_TIME + waterrings::FADE_OUT_TIME))
             rings[i].active = false;
         ivManager->GetPointers(rings[i].ivIndex, static_cast<uint16_t **>(&iPointer), (void **)&vPointer, &vOffset);
         UpdateGrid(i, iPointer, vPointer, vOffset);
@@ -86,7 +81,7 @@ void WaterRings::Realize(uint32_t _dTime)
 uint64_t WaterRings::ProcessMessage(MESSAGE &message)
 {
     // add new ring
-    for (auto i = 0; i < MAX_RINGS; i++)
+    for (auto i = 0; i < waterrings::MAX_RINGS; i++)
     {
         if (!rings[i].active)
         {
@@ -145,47 +140,47 @@ void WaterRings::UpdateGrid(int _ringI, uint16_t *_iPointer, RING_VERTEX *_vPoin
     if (ring->firstUpdate)
     {
         uint16_t *indexes = _iPointer;
-        for (z = 0; z < GRID_STEPS_COUNT - 1; ++z)
-            for (x = 0; x < GRID_STEPS_COUNT - 1; ++x)
+        for (z = 0; z < waterrings::GRID_STEPS_COUNT - 1; ++z)
+            for (x = 0; x < waterrings::GRID_STEPS_COUNT - 1; ++x)
             {
-                *(indexes++) = static_cast<uint16_t>(_vOffset + GRID_STEPS_COUNT * z + x);
-                *(indexes++) = static_cast<uint16_t>(_vOffset + GRID_STEPS_COUNT * (z + 1) + x);
-                *(indexes++) = static_cast<uint16_t>(_vOffset + GRID_STEPS_COUNT * (z + 1) + x + 1);
+                *(indexes++) = static_cast<uint16_t>(_vOffset + waterrings::GRID_STEPS_COUNT * z + x);
+                *(indexes++) = static_cast<uint16_t>(_vOffset + waterrings::GRID_STEPS_COUNT * (z + 1) + x);
+                *(indexes++) = static_cast<uint16_t>(_vOffset + waterrings::GRID_STEPS_COUNT * (z + 1) + x + 1);
 
-                *(indexes++) = static_cast<uint16_t>(_vOffset + GRID_STEPS_COUNT * z + x);
-                *(indexes++) = static_cast<uint16_t>(_vOffset + GRID_STEPS_COUNT * (z + 1) + x + 1);
-                *(indexes++) = static_cast<uint16_t>(_vOffset + GRID_STEPS_COUNT * z + x + 1);
+                *(indexes++) = static_cast<uint16_t>(_vOffset + waterrings::GRID_STEPS_COUNT * z + x);
+                *(indexes++) = static_cast<uint16_t>(_vOffset + waterrings::GRID_STEPS_COUNT * (z + 1) + x + 1);
+                *(indexes++) = static_cast<uint16_t>(_vOffset + waterrings::GRID_STEPS_COUNT * z + x + 1);
             }
         ring->firstUpdate = false;
     }
 
-    if (ring->activeTime < FADE_IN_TIME)
-        a = static_cast<float>(ring->activeTime) / FADE_IN_TIME;
+    if (ring->activeTime < waterrings::FADE_IN_TIME)
+        a = static_cast<float>(ring->activeTime) / waterrings::FADE_IN_TIME;
     else
-        a = 1.f - (static_cast<float>(ring->activeTime - FADE_IN_TIME) / FADE_OUT_TIME);
+        a = 1.f - (static_cast<float>(ring->activeTime - waterrings::FADE_IN_TIME) / waterrings::FADE_OUT_TIME);
 
-    const float midX = (GRID_STEPS_COUNT - 1) / 2.f;
-    const float midZ = (GRID_STEPS_COUNT - 1) / 2.f;
+    const float midX = (waterrings::GRID_STEPS_COUNT - 1) / 2.f;
+    const float midZ = (waterrings::GRID_STEPS_COUNT - 1) / 2.f;
     RING_VERTEX *ringVertex = _vPointer;
     float gX, gZ;
     if (ring->active)
     {
         const uint32_t texA = static_cast<uint32_t>(a * 50) << 24;
-        const float r = .4f + 1.5f * ring->activeTime / (FADE_IN_TIME + FADE_OUT_TIME);
+        const float r = .4f + 1.5f * ring->activeTime / (waterrings::FADE_IN_TIME + waterrings::FADE_OUT_TIME);
 
-        for (z = 0; z < GRID_STEPS_COUNT; ++z)
-            for (x = 0; x < GRID_STEPS_COUNT; ++x)
+        for (z = 0; z < waterrings::GRID_STEPS_COUNT; ++z)
+            for (x = 0; x < waterrings::GRID_STEPS_COUNT; ++x)
             {
                 ringVertex->color = texA;
                 gX = (x - midX) / midX;
                 gZ = (z - midZ) / midZ;
                 ringVertex->pos.x = ring->x + r * (gX * ring->cosA + gZ * ring->sinA);
                 ringVertex->pos.z = ring->z + r * (gZ * ring->cosA - gX * ring->sinA);
-                ringVertex->pos.y = Y_DELTA + sea->WaveXZ(ringVertex->pos.x, ringVertex->pos.z);
+                ringVertex->pos.y = waterrings::Y_DELTA + sea->WaveXZ(ringVertex->pos.x, ringVertex->pos.z);
                 // if (ring->state == RING_WALK)
                 {
-                    ringVertex->tu = (static_cast<float>(x) / (GRID_STEPS_COUNT - 1)) * .5f;
-                    ringVertex->tv = static_cast<float>(z) / (GRID_STEPS_COUNT - 1);
+                    ringVertex->tu = (static_cast<float>(x) / (waterrings::GRID_STEPS_COUNT - 1)) * .5f;
+                    ringVertex->tv = static_cast<float>(z) / (waterrings::GRID_STEPS_COUNT - 1);
                 }
                 /*
                 else if (ring->state == RING_RUN)
@@ -199,8 +194,8 @@ void WaterRings::UpdateGrid(int _ringI, uint16_t *_iPointer, RING_VERTEX *_vPoin
     }
     else
     {
-        for (z = 0; z < GRID_STEPS_COUNT; ++z)
-            for (x = 0; x < GRID_STEPS_COUNT; ++x)
+        for (z = 0; z < waterrings::GRID_STEPS_COUNT; ++z)
+            for (x = 0; x < waterrings::GRID_STEPS_COUNT; ++x)
             {
                 ringVertex->color = 0x00000000;
                 ringVertex->pos.x = 0.f;

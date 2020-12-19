@@ -45,6 +45,8 @@
 #define PSKEY_PANGLEKEY "key_angle"
 #define PSKEY_WINDEFFECTKEY "key_windeffect"
 
+namespace sink_effect
+{
 struct PARTICLE_VERTEX
 {
     CVECTOR pos;
@@ -91,18 +93,19 @@ struct TRACK_EVENT
     long time;
     float value;
 };
+} // namespace sink_effect
 
 class PARTICLES;
 
 class SEPS_PS
 {
     friend PARTICLES;
-    TRACK_EVENT Visibility[TRACK_EVENT_MAX];
-    TRACK_EVENT ParticleSize[TRACK_EVENT_MAX];
-    TRACK_EVENT ParticleSpeed[TRACK_EVENT_MAX];
-    TRACK_EVENT ParticleSpin[TRACK_EVENT_MAX];
-    TRACK_EVENT ParticleAngle[TRACK_EVENT_MAX];
-    TRACK_EVENT WindEffect[TRACK_EVENT_MAX];
+    sink_effect::TRACK_EVENT Visibility[TRACK_EVENT_MAX];
+    sink_effect::TRACK_EVENT ParticleSize[TRACK_EVENT_MAX];
+    sink_effect::TRACK_EVENT ParticleSpeed[TRACK_EVENT_MAX];
+    sink_effect::TRACK_EVENT ParticleSpin[TRACK_EVENT_MAX];
+    sink_effect::TRACK_EVENT ParticleAngle[TRACK_EVENT_MAX];
+    sink_effect::TRACK_EVENT WindEffect[TRACK_EVENT_MAX];
 
     bool bTrackAngle;
 
@@ -113,7 +116,7 @@ class SEPS_PS
     long TexturesNum;
 
     long ParticlesNum;
-    PARTICLE *Particle;
+    sink_effect::PARTICLE *Particle;
 
     IDirect3DVertexBuffer9 *VBuffer;
 
@@ -202,8 +205,8 @@ class SEPS_PS
 
     void SetParticlesTracks(uint32_t DeltaTime);
 
-    float GetTrackValue(TRACK_EVENT *Track, long Time);
-    bool BuildTrack(INIFILE *ini, TRACK_EVENT *Track, const char *psname, const char *key_name);
+    float GetTrackValue(sink_effect::TRACK_EVENT *Track, long Time);
+    bool BuildTrack(INIFILE *ini, sink_effect::TRACK_EVENT *Track, const char *psname, const char *key_name);
     void SetEmitter(CVECTOR p, CVECTOR a);
     void LinkToObject(entid_t id, CVECTOR _LinkPos);
     void SetDelay(long _delay);

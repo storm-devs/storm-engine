@@ -5,8 +5,6 @@
 #include "vfile_service.h"
 #include <vector>
 
-#define INTERFACE_FUNCTION
-
 /* TODO: REMOVE THIS.... */
 constexpr uint32_t MakeHashValue(const char *string)
 {

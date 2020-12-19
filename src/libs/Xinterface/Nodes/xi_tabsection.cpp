@@ -41,8 +41,8 @@ bool CXI_TABSECTION::Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const
 void CXI_TABSECTION::ReleaseAll()
 {
     PICTURE_TEXTURE_RELEASE(pPictureService, m_sIconGroupName.c_str(), m_idIconTexture);
-    VERTEX_BUF_RELEASE(m_rs, m_idVBuf);
-    INDEX_BUF_RELEASE(m_rs, m_idIBuf);
+    VERTEX_BUFFER_RELEASE(m_rs, m_idVBuf);
+    INDEX_BUFFER_RELEASE(m_rs, m_idIBuf);
     m_nSubQ = 0;
 }
 

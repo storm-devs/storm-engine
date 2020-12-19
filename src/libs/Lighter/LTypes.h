@@ -38,6 +38,8 @@ struct Light
     bool isMark; //Для построения списка
 };
 
+namespace lighter
+{
 struct Shadow
 {
     double v;    //Расчитанное значение
@@ -50,6 +52,7 @@ struct Shadow
     float shw;   //Коэфициент затухания тени
     CVECTOR c;   //Текущий цвет источника
 };
+} // namespace lighter
 
 struct Vertex
 {
@@ -61,18 +64,18 @@ struct Vertex
         f_bug = 4,  //Была ошибка
     };
 
-    CVECTOR p;      //Позиция
-    CVECTOR n;      //Нормаль
-    CVECTOR c;      //Цвет
-    CVECTOR bc;     //Цвет для сглаживания
-    CVECTOR mc;     //Цветовая маска
-    uint32_t alpha; //Альфа вертекса
-    Shadow *shadow; //Значения затенения от каждого источника
-    long flags;     //Флаги
-    long vbid;      //Буфер вершин
-    long addr;      //Относительный адрес цвета в буфере
-    long obj;       //Объект которому принадлежим
-    long cindex;    //Индекс в конечном буфере цветов объекта
+    CVECTOR p;               //Позиция
+    CVECTOR n;               //Нормаль
+    CVECTOR c;               //Цвет
+    CVECTOR bc;              //Цвет для сглаживания
+    CVECTOR mc;              //Цветовая маска
+    uint32_t alpha;          //Альфа вертекса
+    lighter::Shadow *shadow; //Значения затенения от каждого источника
+    long flags;              //Флаги
+    long vbid;               //Буфер вершин
+    long addr;               //Относительный адрес цвета в буфере
+    long obj;                //Объект которому принадлежим
+    long cindex;             //Индекс в конечном буфере цветов объекта
 };
 
 struct Triangle

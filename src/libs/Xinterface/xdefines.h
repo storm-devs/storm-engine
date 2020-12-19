@@ -4,9 +4,9 @@
 #include "../../Shared/interface/messages.h"
 #include "Cvector.h"
 #include "QuestFileReader//QuestFileReader.h"
+#include "dx9render.h"
 #include "stringService.h"
-
-#define PI 3.14159265358979323846f
+#include "vxservice.h"
 
 #define ALPHA(x) ((x) >> 24)
 #define RED(x) (((x) >> 16) & 0xFF)
@@ -220,42 +220,23 @@ struct XI_THREETEX_VERTEX
     float tu3, tv3;
 };
 
-#define TEXTURE_RELEASE(rs, idtex)                                                                                     \
-    if (rs != NULL && idtex != -1)                                                                                     \
-    {                                                                                                                  \
-        rs->TextureRelease(idtex);                                                                                     \
-        idtex = -1;                                                                                                    \
+inline void PICTURE_TEXTURE_RELEASE(VXSERVICE *ps, const char *gn, long tex)
+{
+    if (tex != -1 && ps != NULL)
+    {
+        ps->ReleaseTextureID(gn);
+        tex = -1;
     }
-#define VERTEX_BUF_RELEASE(rs, vb)                                                                                     \
-    if (rs != NULL && vb != -1)                                                                                        \
-    {                                                                                                                  \
-        rs->ReleaseVertexBuffer(vb);                                                                                   \
-        vb = -1;                                                                                                       \
+}
+
+inline void VIDEOTEXTURE_RELEASE(VDX9RENDER *rs, CVideoTexture *tex)
+{
+    if (rs != NULL && tex != NULL)
+    {
+        rs->ReleaseVideoTexture(tex);
+        tex = NULL;
     }
-#define INDEX_BUF_RELEASE(rs, ib)                                                                                      \
-    if (rs != NULL && ib != -1)                                                                                        \
-    {                                                                                                                  \
-        rs->ReleaseIndexBuffer(ib);                                                                                    \
-        ib = -1;                                                                                                       \
-    }
-#define PICTURE_TEXTURE_RELEASE(ps, gn, tex)                                                                           \
-    if (tex != -1 && ps != NULL)                                                                                       \
-    {                                                                                                                  \
-        ps->ReleaseTextureID(gn);                                                                                      \
-        tex = -1;                                                                                                      \
-    }
-#define FONT_RELEASE(rs, font)                                                                                         \
-    if (rs != NULL && font != -1)                                                                                      \
-    {                                                                                                                  \
-        rs->UnloadFont(font);                                                                                          \
-        font = -1;                                                                                                     \
-    }
-#define VIDEOTEXTURE_RELEASE(rs, tex)                                                                                  \
-    if (rs != NULL && tex != NULL)                                                                                     \
-    {                                                                                                                  \
-        rs->ReleaseVideoTexture(tex);                                                                                  \
-        tex = NULL;                                                                                                    \
-    }
+}
 
 extern entid_t g_idInterface;
 
