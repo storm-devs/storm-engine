@@ -313,7 +313,7 @@ class DX9RENDER : public VDX9RENDER
     long ExtPrint(long nFontNum, uint32_t foreColor, uint32_t backColor, int wAlignment, bool bShadow, float fScale,
                   long scrWidth, long scrHeight, long x, long y, const char *format, ...) override;
     long StringWidth(const char *string, long nFontNum = 0, float fScale = 1.f, long scrWidth = 0) override;
-    long CharWidth(char ch, long nFontNum = 0, float fScale = 1.f, long scrWidth = 0) override;
+    long CharWidth(utf8::u8_char, long nFontNum = 0, float fScale = 1.f, long scrWidth = 0) override;
     long CharHeight(long fontID) override;
     long LoadFont(const char *fontName) override; // возвращает номер\идентификатор шрифта или -1 в случае ошибки
     bool UnloadFont(const char *fontName) override; // возвращает истину если шрифт остался в использовании

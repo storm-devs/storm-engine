@@ -1,4 +1,4 @@
-add_definitions(-DNOMINMAX)
+add_definitions(-DNOMINMAX -DUNICODE -D_UNICODE)
 if (MSVC)
     add_compile_options(/W1 /WX /std:c++latest)
     # add_compile_options(/O2 /Oi /Ot /GL /MT /MP /DNDEBUG /Gy /GR /arch:AVX)

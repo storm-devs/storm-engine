@@ -356,6 +356,7 @@ char *InfoHandler::GetCutString(char *pstr, int nOutWidth, float fScale) const
     if (nt >= 1023)
     {
         nt = 1023;
+        nt -= utf8::u8_dec(pstr + nt);
         ps = pstr + nt;
     }
 

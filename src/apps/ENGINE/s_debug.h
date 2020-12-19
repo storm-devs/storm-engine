@@ -92,7 +92,7 @@ class S_DEBUG
     bool BrowseFileWP(char *buffer, const char *filter);
 
     bool ProcessRegistry_Open();
-    void Add2RecentFiles(char *pFileName);
+    void Add2RecentFiles(const char *pFileName);
     long GetRecentFileALine(const char *pFileName);
     void SaveRecentFileALine(const char *pFileName, long nLine);
 };

@@ -950,7 +950,7 @@ void CORE::StartEvent(uint32_t function_code)
 
 void CORE::StartThread()
 {
-    hEvent = CreateEvent(nullptr, false, false, "thrEvent");
+    hEvent = CreateEvent(nullptr, false, false, TEXT("thrEvent"));
     if (hEvent == NULL)
     {
         Trace("Error create event!!");

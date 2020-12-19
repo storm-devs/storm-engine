@@ -1,5 +1,7 @@
 #include "file_service.h"
+#include "utf8.h"
 #include <exception>
+#include <string>
 
 #define COMMENT ';'
 #define SECTION_A '['
@@ -42,8 +44,9 @@ HANDLE FILE_SERVICE::_CreateFile(const char *lpFileName, uint32_t dwDesiriedAcce
                                  uint32_t dwCreationDisposition)
 {
     HANDLE fh;
-    fh = CreateFile(lpFileName, dwDesiriedAccess, dwShareMode, nullptr, dwCreationDisposition, FILE_ATTRIBUTE_NORMAL,
-                    nullptr);
+    std::wstring filePathW = utf8::ConvertUtf8ToWide(lpFileName);
+    fh = CreateFile(filePathW.c_str(), dwDesiriedAccess, dwShareMode, nullptr, dwCreationDisposition,
+                    FILE_ATTRIBUTE_NORMAL, nullptr);
     return fh;
 }
 
@@ -60,7 +63,8 @@ uint32_t FILE_SERVICE::_SetFilePointer(HANDLE hFile, long DistanceToMove, long *
 
 BOOL FILE_SERVICE::_DeleteFile(const char *lpFileName)
 {
-    return DeleteFile(lpFileName);
+    std::wstring filePathW = utf8::ConvertUtf8ToWide(lpFileName);
+    return DeleteFile(filePathW.c_str());
 }
 
 BOOL FILE_SERVICE::_WriteFile(HANDLE hFile, const void *lpBuffer, uint32_t nNumberOfBytesToWrite,
@@ -87,7 +91,8 @@ BOOL FILE_SERVICE::_ReadFile(HANDLE hFile, void *lpBuffer, uint32_t nNumberOfByt
 HANDLE FILE_SERVICE::_FindFirstFile(const char *lpFileName, LPWIN32_FIND_DATA lpFindFileData)
 {
     HANDLE hFile;
-    hFile = FindFirstFile(lpFileName, lpFindFileData);
+    std::wstring filePathW = utf8::ConvertUtf8ToWide(lpFileName);
+    hFile = FindFirstFile(filePathW.c_str(), lpFindFileData);
     return hFile;
 }
 
@@ -108,19 +113,25 @@ BOOL FILE_SERVICE::_FlushFileBuffers(HANDLE hFile)
 
 uint32_t FILE_SERVICE::_GetCurrentDirectory(uint32_t nBufferLength, char *lpBuffer)
 {
-    return GetCurrentDirectory(nBufferLength, lpBuffer);
+    wchar_t BufferW[MAX_PATH];
+    uint32_t Res = GetCurrentDirectory(nBufferLength, BufferW);
+    std::string CurrentDirectory = utf8::ConvertWideToUtf8(BufferW);
+    strcpy_s(lpBuffer, nBufferLength, CurrentDirectory.c_str());
+    return Res;
 }
 
 BOOL FILE_SERVICE::_GetDiskFreeSpaceEx(const char *lpDirectoryName, PULARGE_INTEGER lpFreeBytesAvailableToCaller,
                                        PULARGE_INTEGER lpTotalNumberOfBytes, PULARGE_INTEGER lpTotalNumberOfFreeBytes)
 {
-    return GetDiskFreeSpaceEx(lpDirectoryName, lpFreeBytesAvailableToCaller, lpTotalNumberOfBytes,
+    std::wstring DirectoryNameW = utf8::ConvertUtf8ToWide(lpDirectoryName);
+    return GetDiskFreeSpaceEx(DirectoryNameW.c_str(), lpFreeBytesAvailableToCaller, lpTotalNumberOfBytes,
                               lpTotalNumberOfFreeBytes);
 }
 
 UINT FILE_SERVICE::_GetDriveType(const char *lpRootPathName)
 {
-    return GetDriveType(lpRootPathName);
+    std::wstring RootPathNameW = utf8::ConvertUtf8ToWide(lpRootPathName);
+    return GetDriveType(RootPathNameW.c_str());
 }
 
 uint32_t FILE_SERVICE::_GetFileSize(HANDLE hFile, uint32_t *lpFileSizeHigh)
@@ -135,32 +146,42 @@ uint32_t FILE_SERVICE::_GetLogicalDrives()
 
 uint32_t FILE_SERVICE::_GetLogicalDriveStrings(uint32_t nBufferLength, char *lpBuffer)
 {
-    return GetLogicalDriveStrings(nBufferLength, lpBuffer);
+    wchar_t BufferW[MAX_PATH];
+    uint32_t Res = GetLogicalDriveStrings(nBufferLength, BufferW);
+    std::string LogicalDrive = utf8::ConvertWideToUtf8(BufferW);
+    strcpy_s(lpBuffer, nBufferLength, LogicalDrive.c_str());
+    return Res;
 }
 
 BOOL FILE_SERVICE::_SetCurrentDirectory(const char *lpPathName)
 {
-    return SetCurrentDirectory(lpPathName);
+    std::wstring PathNameW = utf8::ConvertUtf8ToWide(lpPathName);
+    return SetCurrentDirectory(PathNameW.c_str());
 }
 
 BOOL FILE_SERVICE::_CreateDirectory(const char *lpPathName, LPSECURITY_ATTRIBUTES lpSecurityAttributes)
 {
-    return CreateDirectory(lpPathName, lpSecurityAttributes);
+    std::wstring PathNameW = utf8::ConvertUtf8ToWide(lpPathName);
+    return CreateDirectory(PathNameW.c_str(), lpSecurityAttributes);
 }
 
 BOOL FILE_SERVICE::_RemoveDirectory(const char *lpPathName)
 {
-    return RemoveDirectory(lpPathName);
+    std::wstring PathNameW = utf8::ConvertUtf8ToWide(lpPathName);
+    return RemoveDirectory(PathNameW.c_str());
 }
 
 BOOL FILE_SERVICE::_CopyFile(const char *lpExistingFileName, const char *lpNewFileName, bool bFailIfExists)
 {
-    return CopyFile(lpExistingFileName, lpNewFileName, bFailIfExists);
+    std::wstring ExistingFileNameW = utf8::ConvertUtf8ToWide(lpExistingFileName);
+    std::wstring NewFileNameW = utf8::ConvertUtf8ToWide(lpNewFileName);
+    return CopyFile(ExistingFileNameW.c_str(), NewFileNameW.c_str(), bFailIfExists);
 }
 
 BOOL FILE_SERVICE::_SetFileAttributes(const char *lpFileName, uint32_t dwFileAttributes)
 {
-    return SetFileAttributes(lpFileName, dwFileAttributes);
+    std::wstring FileNameW = utf8::ConvertUtf8ToWide(lpFileName);
+    return SetFileAttributes(FileNameW.c_str(), dwFileAttributes);
 }
 
 BOOL FILE_SERVICE::FileExist(const char *file_name)

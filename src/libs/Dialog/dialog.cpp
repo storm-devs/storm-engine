@@ -1,6 +1,7 @@
 #include "dialog.h"
 #include "../SoundService/VSoundService.h"
 #include "defines.h"
+#include <string>
 
 #define CNORMAL 0xFFFFFFFF
 #define UNFADE_TIME 1000
@@ -295,7 +296,7 @@ void DIALOG::DlgLinkDescribe::ShowEditMode(long nX, long nY, long nTextIdx)
             {
                 if (pKeys[n].bSystem)
                 {
-                    switch (pKeys[n].ucVKey)
+                    switch (pKeys[n].ucVKey.c)
                     {
                     case VK_LEFT:
                         if (nEditCharIndex > 0)
@@ -305,33 +306,40 @@ void DIALOG::DlgLinkDescribe::ShowEditMode(long nX, long nY, long nTextIdx)
                         if (nEditCharIndex > 0)
                         {
                             nEditCharIndex--;
-                            asText[nTextIdx].erase(nEditCharIndex, 1);
+                            int offset = utf8::u8_offset(asText[nTextIdx].c_str(), nEditCharIndex);
+                            int length = utf8::u8_inc(asText[nTextIdx].c_str() + offset);
+                            asText[nTextIdx].erase(offset, length);
                         }
                         break;
-                    case VK_RIGHT:
-                        if (nEditCharIndex < static_cast<long>(asText[nTextIdx].size()))
+                    case VK_RIGHT: {
+                        int strLength = utf8::Utf8StringLength(asText[nTextIdx].c_str());
+                        if (nEditCharIndex < strLength)
                             nEditCharIndex++;
-                        break;
-                    case VK_DELETE:
-                        if (nEditCharIndex >= 0 && nEditCharIndex < static_cast<long>(asText[nTextIdx].size()))
+                    }
+                    break;
+                    case VK_DELETE: {
+                        int strLength = utf8::Utf8StringLength(asText[nTextIdx].c_str());
+                        if (nEditCharIndex >= 0 && nEditCharIndex < strLength)
                         {
-                            asText[nTextIdx].erase(nEditCharIndex, 1);
+                            int offset = utf8::u8_offset(asText[nTextIdx].c_str(), nEditCharIndex);
+                            int length = utf8::u8_inc(asText[nTextIdx].c_str() + offset);
+                            asText[nTextIdx].erase(offset, length);
                         }
-                        break;
+                    }
+                    break;
                     }
                     continue;
                 }
-                if (pKeys[n].ucVKey < 0x20)
+                if (pKeys[n].ucVKey.c < 0x20)
                     continue;
 
-                char pcTmp[2];
-                pcTmp[0] = pKeys[n].ucVKey;
-                pcTmp[1] = 0;
+                std::string tmp(pKeys[n].ucVKey.b, pKeys[n].ucVKey.l);
                 if (rs->StringWidth((char *)asText[nTextIdx].c_str(), nFontID, fScale, 0) +
-                        rs->CharWidth(pcTmp[0], nFontID, fScale) <=
+                        rs->CharWidth(pKeys[n].ucVKey, nFontID, fScale) <=
                     nWindowWidth)
                 {
-                    asText[nTextIdx].insert(nEditCharIndex, pcTmp);
+                    int offset = utf8::u8_offset(asText[nTextIdx].c_str(), nEditCharIndex);
+                    asText[nTextIdx].insert(offset, tmp.c_str());
                     nEditCharIndex++;
                 }
             }
@@ -347,15 +355,17 @@ void DIALOG::DlgLinkDescribe::ShowEditMode(long nX, long nY, long nTextIdx)
         long nW = 0;
         if (!asText[nTextIdx].empty())
         {
-            if (nEditCharIndex < static_cast<long>(asText[nTextIdx].size()))
+            int strLength = utf8::Utf8StringLength(asText[nTextIdx].c_str());
+            if (nEditCharIndex < strLength)
             {
-                const auto cTmp = asText[nTextIdx][nEditCharIndex];
-                asText[nTextIdx][nEditCharIndex] = 0;
-                nW = rs->StringWidth((char *)asText[nTextIdx].c_str(), nFontID, fScale, 0);
-                asText[nTextIdx][nEditCharIndex] = cTmp;
+                int offset = utf8::u8_offset(asText[nTextIdx].c_str(), nEditCharIndex);
+                const auto cTmp = asText[nTextIdx][offset];
+                asText[nTextIdx][offset] = 0;
+                nW = rs->StringWidth(asText[nTextIdx].c_str(), nFontID, fScale, 0);
+                asText[nTextIdx][offset] = cTmp;
             }
             else
-                nW = rs->StringWidth((char *)asText[nTextIdx].c_str(), nFontID, fScale, 0);
+                nW = rs->StringWidth(asText[nTextIdx].c_str(), nFontID, fScale, 0);
         }
         rs->ExtPrint(nFontID, dwSelColor, 0, PR_ALIGN_LEFT, true, fScale, 0, 0, nX + nW, nY, "_");
     }
@@ -804,8 +814,9 @@ void DIALOG::AddToStringArrayLimitedByWidth(const char *pcSrcText, long nFontID,
                         // ищем первый попавший в диапазон набор символов
                         while (n > 0 && RenderService->StringWidth(param, nFontID, fScale) > nLimitWidth)
                         {
-                            n--;
-                            nCur--;
+                            int dec = utf8::u8_dec(param + n);
+                            n -= dec;
+                            nCur -= dec;
                             param[n] = 0;
                         }
                     }

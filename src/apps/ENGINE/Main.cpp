@@ -99,7 +99,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     }
 
     /* Register and show window */
-    const auto *const windowName = "Thunderstorm";
+    const auto *const windowName = L"Thunderstorm";
 
     WNDCLASSEX wndclass;
     wndclass.cbSize = sizeof(wndclass);
@@ -108,15 +108,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     wndclass.cbClsExtra = 0;
     wndclass.cbWndExtra = sizeof(uint16_t);
     wndclass.hInstance = hInstance;
-    wndclass.hIcon = LoadIcon(hInstance, "IDI_ICON1");
-    wndclass.hCursor = LoadCursor(hInstance, "NULL_CURSOR"); // LoadCursor(NULL,IDC_ARROW);
+    wndclass.hIcon = LoadIcon(hInstance, TEXT("IDI_ICON1"));
+    wndclass.hCursor = LoadCursor(hInstance, TEXT("NULL_CURSOR")); // LoadCursor(NULL,IDC_ARROW);
     wndclass.hbrBackground = static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH));
     wndclass.lpszMenuName = nullptr;
     wndclass.lpszClassName = windowName;
     wndclass.hIconSm = LoadIcon(nullptr, IDI_APPLICATION);
-    RegisterClassExA(&wndclass);
+    RegisterClassEx(&wndclass);
 
-    auto *const hwnd = CreateWindowA(windowName, windowName, WS_POPUP, 0, 0, 0, 0, NULL, NULL, hInstance, NULL);
+    auto *const hwnd = CreateWindow(windowName, windowName, WS_POPUP, 0, 0, 0, 0, NULL, NULL, hInstance, NULL);
     ShowWindow(hwnd, SW_SHOWNORMAL);
 
     /* Init stuff */
@@ -285,5 +285,7 @@ void CreateMiniDump(EXCEPTION_POINTERS *pep)
 
 int Alert(const char *lpCaption, const char *lpText)
 {
-    return ::MessageBox(NULL, lpText, lpCaption, MB_OK);
+    std::wstring CaptionW = utf8::ConvertUtf8ToWide(lpCaption);
+    std::wstring TextW = utf8::ConvertUtf8ToWide(lpText);
+    return ::MessageBox(NULL, TextW.c_str(), CaptionW.c_str(), MB_OK);
 }

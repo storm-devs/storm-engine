@@ -220,7 +220,8 @@ void CXI_PICTURE::SetNewPictureFromDir(char *dirName)
         if (h != INVALID_HANDLE_VALUE)
         {
             fio->_FindClose(h);
-            sprintf_s(param, "%s\\%s", dirName, wfd.cFileName);
+            std::string FileName = utf8::ConvertWideToUtf8(wfd.cFileName);
+            sprintf(param, "%s\\%s", dirName, FileName.c_str());
             const int paramlen = strlen(param);
             if (paramlen < sizeof(param) && paramlen >= 3)
                 param[paramlen - 3] = 0;

@@ -109,7 +109,7 @@ class VMA
       public:                                                                                                          \
         const char *GetName()                                                                                          \
         {                                                                                                              \
-            return TEXT(#a);                                                                                           \
+            return #a;                                                                                                 \
         }                                                                                                              \
         void *CreateClass()                                                                                            \
         {                                                                                                              \
@@ -124,7 +124,7 @@ class VMA
         a *pService = 0;                                                                                               \
         const char *GetName()                                                                                          \
         {                                                                                                              \
-            return TEXT(#a);                                                                                           \
+            return #a;                                                                                                 \
         }                                                                                                              \
         void *CreateClass()                                                                                            \
         {                                                                                                              \
@@ -151,7 +151,7 @@ class VMA
       public: /*a * pLibraryInitClass;*/                                                                               \
         const char *GetName()                                                                                          \
         {                                                                                                              \
-            return TEXT(#a);                                                                                           \
+            return #a;                                                                                                 \
         }                                                                                                              \
         void *CreateClass()                                                                                            \
         { /*if(pLibraryInitClass == 0) pLibraryInitClass = new a; nReference++; return pLibraryInitClass;*/            \

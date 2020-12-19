@@ -6,7 +6,7 @@
 #include "vmodule_api.h"
 //#include "iimage.h"
 
-#define USED_CODES 256
+#define USED_CODES 0x2070 // end of https://unicode-table.com/en/blocks/general-punctuation/
 #define MAX_SYMBOLS 512
 #define SYM_VERTEXS 6
 
@@ -83,7 +83,7 @@ class FONT
     bool MakeLong(char **pDataPointer, long *result);
     long Printf(long x, long y, char *Text, ...);
     long Print(long x, long y, char *Text);
-    long UpdateVertexBuffer(long x, long y, char *data_PTR);
+    long UpdateVertexBuffer(long x, long y, char *data_PTR, int utf8length);
     long GetStringWidth(const char *Text);
     long GetHeight()
     {

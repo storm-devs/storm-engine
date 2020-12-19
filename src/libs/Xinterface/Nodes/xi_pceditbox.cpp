@@ -3,6 +3,8 @@
 #include "xi_util.h"
 #include <stdio.h>
 
+#include <string>
+
 #define WIDTH_SCALE_USED 0.9f
 #define HEIGHT_SCALE_USED 0.9f
 
@@ -63,10 +65,11 @@ void CXI_PCEDITBOX::Draw(bool bSelected, uint32_t Delta_Time)
     // m_rs->ExtPrint(
     // m_nFontID,m_dwFontColor,0,m_nStringAlign,true,m_fFontScale,m_screenSize.x,m_screenSize.y,m_rect.left+m_pntFontOffset.x,m_rect.top+m_pntFontOffset.y,"%s",sString.c_str()+m_nFirstShowCharacterIndex);
     {
+        int offset = utf8::u8_offset(sString.c_str(), m_nFirstShowCharacterIndex);
         CXI_UTILS::PrintTextIntoWindow(m_rs, m_nFontID, m_dwFontColor, m_nStringAlign, true, m_fFontScale,
                                        m_screenSize.x, m_screenSize.y, x, m_rect.top + m_pntFontOffset.y,
-                                       &sString[m_nFirstShowCharacterIndex], m_rect.left, m_rect.top,
-                                       m_rect.right - m_rect.left, m_rect.bottom - m_rect.top);
+                                       sString.c_str() + offset, m_rect.left, m_rect.top, m_rect.right - m_rect.left,
+                                       m_rect.bottom - m_rect.top);
     }
 
     // show cursor position
@@ -289,8 +292,9 @@ void CXI_PCEDITBOX::UpdateString(std::string &str)
     if (!pA)
         return;
     str = pA->GetAttribute("str");
+    int strLength = utf8::Utf8StringLength(str.c_str());
     if (m_nEditPos < 0)
-        m_nEditPos = str.size();
+        m_nEditPos = strLength;
 
     if (IsEditMode())
     {
@@ -304,33 +308,34 @@ void CXI_PCEDITBOX::UpdateString(std::string &str)
             {
                 if (pKeys[n].bSystem)
                 {
-                    switch (pKeys[n].ucVKey)
+                    switch (pKeys[n].ucVKey.c)
                     {
                         // символы управления
                     case VK_BACK:
                         if (m_nEditPos > 0)
                         {
                             m_nEditPos--;
-                            str[m_nEditPos] = 0;
+                            int offset = utf8::u8_offset(str.c_str(), m_nEditPos);
+                            str[offset] = 0;
                         }
                         break;
                     case VK_END:
-                        m_nEditPos = str.size();
+                        m_nEditPos = strLength;
                         break;
                     case VK_HOME:
                         m_nEditPos = 0;
                         break;
                     case VK_DELETE:
-                        if (m_nEditPos < static_cast<long>(str.size()))
-                            str.erase(m_nEditPos, 1);
+                        if (m_nEditPos < strLength)
+                        {
+                            int offset = utf8::u8_offset(str.c_str(), m_nEditPos);
+                            int length = utf8::u8_inc(str.c_str() + offset);
+                            str.erase(offset, length);
+                        }
                         break;
                     case VK_LEFT:
                         if (m_nEditPos > 0)
                             m_nEditPos--;
-                        break;
-                    case VK_RIGHT:
-                        if (m_nEditPos < static_cast<long>(str.size()))
-                            m_nEditPos++;
                         break;
                     }
                 }
@@ -384,7 +389,8 @@ void CXI_PCEDITBOX::UpdateString(std::string &str)
             sprintf_s(param, sizeof(param) - 1, "%s", str.c_str());
             for (m_nFirstShowCharacterIndex = 0; m_nFirstShowCharacterIndex < m_nEditPos; m_nFirstShowCharacterIndex++)
             {
-                if (m_rs->StringWidth(&param[m_nFirstShowCharacterIndex], m_nFontID, m_fFontScale) <=
+                int offset = utf8::u8_offset(param, m_nFirstShowCharacterIndex);
+                if (m_rs->StringWidth(param + offset, m_nFontID, m_fFontScale) <=
                     (m_rect.right - m_rect.left - 2 * m_pntFontOffset.x))
                     break;
             }
@@ -403,28 +409,28 @@ void CXI_PCEDITBOX::UpdateString(std::string &str)
     }
 }
 
-char CXI_PCEDITBOX::GetInputSymbol()
-{
-    const char chr = CXI_UTILS::GetKeyInput();
-    return chr;
-}
-
 void CXI_PCEDITBOX::ShowCursorPosition(std::string &str)
 {
     if (m_nEditPos < 0)
         m_nEditPos = 0;
-    if (m_nEditPos > static_cast<long>(str.size()))
-        m_nEditPos = static_cast<long>(str.size());
+
+    int strLength = utf8::Utf8StringLength(str.c_str());
+    if (m_nEditPos > strLength)
+        m_nEditPos = strLength;
+
     std::string strForPosCalculate = str;
-    strForPosCalculate.erase(m_nEditPos, str.size());
+    int editOffset = utf8::u8_offset(str.c_str(), m_nEditPos);
+    strForPosCalculate.erase(editOffset, str.size());
     if (m_nFirstShowCharacterIndex < 0 || m_nFirstShowCharacterIndex > m_nEditPos)
         return;
-    long nPos =
-        m_rs->StringWidth((char *)strForPosCalculate.c_str() + m_nFirstShowCharacterIndex, m_nFontID, m_fFontScale);
+
+    int offset = utf8::u8_offset(str.c_str(), m_nFirstShowCharacterIndex);
+    long nPos = m_rs->StringWidth(strForPosCalculate.c_str() + offset, m_nFontID, m_fFontScale);
+
     if (m_nStringAlign == PR_ALIGN_CENTER)
-        nPos -= m_rs->StringWidth((char *)str.c_str() + m_nFirstShowCharacterIndex, m_nFontID, m_fFontScale) / 2;
+        nPos -= m_rs->StringWidth((char *)str.c_str() + offset, m_nFontID, m_fFontScale) / 2;
     else if (m_nStringAlign == PR_ALIGN_RIGHT)
-        nPos -= m_rs->StringWidth((char *)str.c_str() + m_nFirstShowCharacterIndex, m_nFontID, m_fFontScale);
+        nPos -= m_rs->StringWidth((char *)str.c_str() + offset, m_nFontID, m_fFontScale);
 
     long x = m_rect.left + m_pntFontOffset.x;
     if (m_nStringAlign == PR_ALIGN_CENTER)
@@ -440,31 +446,33 @@ void CXI_PCEDITBOX::ShowCursorPosition(std::string &str)
                    x + nPos, m_rect.top + m_pntFontOffset.y, "_");
 }
 
-void CXI_PCEDITBOX::InsertSymbol(std::string &str, char chr)
+void CXI_PCEDITBOX::InsertSymbol(std::string &str, utf8::u8_char chr)
 {
-    if (static_cast<unsigned char>(chr) < 32)
+    if (chr.c < 32)
         return;
     if (IsExcludeChar(chr))
         return;
 
-    char chrInsert[2];
-    chrInsert[0] = chr;
-    chrInsert[1] = 0;
+    std::string chrInsert(chr.b, chr.l);
+    int strLength = utf8::Utf8StringLength(str.c_str());
     // проверка на максимальное число символов
-    if (m_nMaxSize >= 0 && static_cast<long>(str.size()) >= m_nMaxSize)
+    if (m_nMaxSize >= 0 && strLength >= m_nMaxSize)
         return;
+
+    int offset = utf8::u8_offset(str.c_str(), m_nEditPos);
     // проверка на максимальную ширину строки
     if (m_nMaxWidth >= 0)
     {
         std::string strResult = str;
-        strResult.insert(m_nEditPos, chrInsert);
-        if (m_rs->StringWidth((char *)strResult.c_str(), m_nFontID, m_fFontScale) > m_nMaxWidth)
+        strResult.insert(offset, chrInsert.c_str());
+        if (m_rs->StringWidth(strResult.c_str(), m_nFontID, m_fFontScale) > m_nMaxWidth)
             return;
     }
-    str.insert(m_nEditPos, chrInsert);
+    str.insert(offset, chrInsert.c_str());
     m_nEditPos++;
-    if (m_nEditPos > static_cast<long>(str.size()))
-        m_nEditPos = str.size();
+    strLength++; // account for the added char
+    if (m_nEditPos > strLength)
+        m_nEditPos = strLength;
 }
 
 void CXI_PCEDITBOX::DisguiseString(std::string &str)
@@ -474,11 +482,9 @@ void CXI_PCEDITBOX::DisguiseString(std::string &str)
         str[n] = '*';
 }
 
-bool CXI_PCEDITBOX::IsExcludeChar(char chr) const
+bool CXI_PCEDITBOX::IsExcludeChar(utf8::u8_char chr) const
 {
-    char fndStr[2];
-    fndStr[0] = chr;
-    fndStr[1] = 0;
+    std::string fndStr(chr.b, chr.l);
 
     // if( m_sExcludeChars.FindSubStr(fndStr)>=0 ) return true;
     return m_sExcludeChars.find(fndStr) != std::string::npos;

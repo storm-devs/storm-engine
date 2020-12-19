@@ -32,7 +32,7 @@ class ATTRIBUTES
         if (data_PTR == nullptr)
             return;
 
-        auto *const file_h = CreateFile("attributes.log", GENERIC_WRITE, FILE_SHARE_READ, nullptr, OPEN_ALWAYS,
+        auto *const file_h = CreateFile(TEXT("attributes.log"), GENERIC_WRITE, FILE_SHARE_READ, nullptr, OPEN_ALWAYS,
                                         FILE_ATTRIBUTE_NORMAL, nullptr);
         SetFilePointer(file_h, 0, nullptr, FILE_END);
         va_list args;

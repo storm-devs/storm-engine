@@ -1252,12 +1252,21 @@ uint64_t SHIP::ProcessMessage(MESSAGE &message)
     case MSG_SHIP_LIGHTSRESET:
         UnSetLights();
         break;
-    case MSG_SHIP_DO_FAKE_FIRE:
+    case MSG_SHIP_DO_FAKE_FIRE: {
         char cBort[256];
         message.String(sizeof(cBort), cBort);
         float fRandTime = message.Float();
         FakeFire(cBort, fRandTime);
-        break;
+    }
+    break;
+    case MSG_MODEL_SET_TECHNIQUE: {
+        char sTech[256];
+        message.String(sizeof(sTech), sTech);
+        api->Send_Message(GetModelEID(), "ls", MSG_MODEL_SET_TECHNIQUE, sTech);
+        //	   MODEL * pModel = GetModel();
+        //	   NODE* pNode = pModel->GetNode(0);
+    }
+    break;
     }
     return 0;
 }

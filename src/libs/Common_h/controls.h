@@ -1,6 +1,8 @@
 #ifndef _CONTROLS_H_
 #define _CONTROLS_H_
 
+#include "utf8.h"
+
 #define INVALID_CONTROL_CODE 0xffffffff
 #define UNASSIGNED_CONTROL 0xffffffff
 
@@ -72,7 +74,7 @@ struct CONTROL_STATE
 
 struct KeyDescr
 {
-    uint8_t ucVKey;
+    utf8::u8_char ucVKey;
     bool bSystem;
 };
 

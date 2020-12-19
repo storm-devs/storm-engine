@@ -7,7 +7,7 @@ LRESULT CALLBACK DebugWndProc(HWND, UINT, WPARAM, LPARAM);
 
 //#define PROJECT_NAME	"project.df"
 int FONT_HEIGHT = 15;
-const char DClass[] = "SEDebug";
+const wchar_t *DClass = L"SEDebug";
 
 #define DBGWIN_WIDTH 900
 #define DBGWIN_HEIGHT 600
@@ -51,8 +51,8 @@ LRESULT CALLBACK DebugWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam
     //	WORD wActive;
     //	bool bActive;
     INIFILE *ini;
-    char buffer[MAX_PATH];
-    char wintext[MAX_PATH];
+    wchar_t BufferW[MAX_PATH];
+    wchar_t WinTextW[MAX_PATH];
     BROWSEINFO bi;
 
     if (CDebug.WatcherList)
@@ -86,17 +86,18 @@ LRESULT CALLBACK DebugWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam
                     mii.cbSize = sizeof(mii);
                     mii.fMask = MIIM_TYPE;
                     mii.fType = MFT_STRING;
-                    mii.dwTypeData = buffer;
-                    mii.cch = sizeof(buffer);
+                    mii.dwTypeData = BufferW;
+                    mii.cch = sizeof(BufferW);
 
                     GetMenuItemInfo(hFileSubMenu, n, true, &mii);
 
-                    strcpy_s(CDebug.sLastFileName, buffer);
-                    CDebug.SourceView->OpenSourceFile(buffer);
-                    sprintf_s(wintext, "SDebug - %s", buffer);
-                    SetWindowText(hwnd, wintext);
-                    CDebug.Add2RecentFiles(buffer);
-                    CDebug.SourceView->SetActiveLine(CDebug.GetRecentFileALine(buffer));
+                    std::string Buffer = utf8::ConvertWideToUtf8(BufferW);
+                    strcpy(CDebug.sLastFileName, Buffer.c_str());
+                    CDebug.SourceView->OpenSourceFile(Buffer.c_str());
+                    wsprintf(WinTextW, L"SDebug - %s", BufferW);
+                    SetWindowText(hwnd, WinTextW);
+                    CDebug.Add2RecentFiles(Buffer.c_str());
+                    CDebug.SourceView->SetActiveLine(CDebug.GetRecentFileALine(Buffer.c_str()));
                     break;
                 }
             }
@@ -142,24 +143,27 @@ LRESULT CALLBACK DebugWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam
             }
             delete ini;
             break;
-        case ID_FORMAT_DIALOG:
-            if (CDebug.BrowseFileWP(buffer, filefilter))
+        case ID_FORMAT_DIALOG: {
+            char Buffer[MAX_PATH];
+            if (CDebug.BrowseFileWP(Buffer, filefilter))
             {
-                Core.Compiler.FormatDialog(buffer);
+                Core.Compiler.FormatDialog(Buffer);
             }
-            break;
+        }
+        break;
         case ID_FORMAT_ALLDIALOGS:
             PZERO(&bi, sizeof(bi));
             bi.hwndOwner = hwnd;
             bi.pidlRoot = nullptr;
-            bi.pszDisplayName = buffer;
-            bi.lpszTitle = "Select Dialog Folder";
+            bi.pszDisplayName = BufferW;
+            bi.lpszTitle = TEXT("Select Dialog Folder");
             bi.lpfn = nullptr;
             bi.lParam = 0;
             bi.iImage = 0;
-            if (SHGetPathFromIDList(SHBrowseForFolder(&bi), buffer))
+            if (SHGetPathFromIDList(SHBrowseForFolder(&bi), BufferW))
             {
-                Core.Compiler.FormatAllDialog(buffer);
+                std::string Buffer = utf8::ConvertWideToUtf8(BufferW);
+                Core.Compiler.FormatAllDialog(Buffer.c_str());
             }
             break;
         }
@@ -293,7 +297,8 @@ void S_DEBUG::BreakOn(const char *filename, uint32_t line)
         // SourceView->SetActiveLine(BreakLineCode);
         char wintext[MAX_PATH];
         sprintf_s(wintext, "SDebug - %s", filename);
-        SetWindowText(hMain, wintext);
+        std::wstring WinTextW = utf8::ConvertUtf8ToWide(wintext);
+        SetWindowText(hMain, WinTextW.c_str());
         SourceView->SetActiveLine(BreakLineCode);
     }
 }
@@ -315,7 +320,7 @@ S_DEBUG::S_DEBUG()
     hFont = CreateFont(FONT_HEIGHT, 0, 0, 0,
                        // FW_BOLD,
                        FW_MEDIUM, false, false, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
-                       ANTIALIASED_QUALITY, VARIABLE_PITCH, "Courier New");
+                       ANTIALIASED_QUALITY, VARIABLE_PITCH, TEXT("Courier New"));
     //"arial");
     pExpResBuffer = nullptr;
     bTrace = false;
@@ -376,7 +381,7 @@ bool S_DEBUG::OpenDebugWindow_NT(HINSTANCE hInstance)
     wndclass.hIcon = LoadIcon(nullptr, IDI_APPLICATION);
     wndclass.hCursor = LoadCursor(nullptr, IDC_ARROW);
     wndclass.hbrBackground = static_cast<HBRUSH>(GetStockObject(LTGRAY_BRUSH));
-    wndclass.lpszMenuName = "DebugMenu"; // NULL;
+    wndclass.lpszMenuName = TEXT("DebugMenu"); // NULL;
     wndclass.lpszClassName = DClass;
     wndclass.hIconSm = LoadIcon(nullptr, IDI_APPLICATION);
     RegisterClassEx(&wndclass);
@@ -554,28 +559,31 @@ bool S_DEBUG::BrowseFile(char *buffer, const char *filter)
 {
     char DirectoryName[MAX_PATH];
     fio->_GetCurrentDirectory(sizeof(DirectoryName), DirectoryName);
-    char file_name[MAX_PATH];
+    wchar_t FilenameW[MAX_PATH];
     OPENFILENAME ofn;
-    file_name[0] = 0;
+    FilenameW[0] = 0;
+    std::wstring FilterW = utf8::ConvertUtf8ToWide(filter);
     PZERO(&ofn, sizeof(ofn));
     ofn.lStructSize = sizeof(ofn);
     ofn.hInstance = hInst;
     ofn.hwndOwner = hMain;
-    ofn.lpstrFilter = filter;
+    ofn.lpstrFilter = FilterW.c_str();
     ofn.nFilterIndex = 1;
     ofn.Flags = OFN_FILEMUSTEXIST;
-    ofn.lpstrFile = file_name;
+    ofn.lpstrFile = FilenameW;
     ofn.nMaxFile = MAX_PATH;
-    ofn.lpstrDefExt = filter;
-    ofn.lpstrTitle = "Open script source file";
+    ofn.lpstrDefExt = FilterW.c_str();
+    ofn.lpstrTitle = TEXT("Open script source file");
     const auto bRes = GetOpenFileName(&ofn);
     fio->_SetCurrentDirectory(DirectoryName);
     if (bRes)
     {
+        std::string Filename = utf8::ConvertWideToUtf8(FilenameW);
         strcat_s(DirectoryName, "\\");
         strcat_s(DirectoryName, ProgramDirectory);
         strcat_s(DirectoryName, "\\");
-        strcpy_s(buffer, MAX_PATH, file_name + strlen(DirectoryName));
+        strcpy_s(buffer, MAX_PATH, Filename.c_str() + strlen(DirectoryName));
+        //    strcpy_s(buffer,MAX_PATH, file_name + strlen(DirectoryName));
         // strcpy_s(buffer,file_name);
         return true;
     }
@@ -586,25 +594,27 @@ bool S_DEBUG::BrowseFileWP(char *buffer, const char *filter)
 {
     char DirectoryName[MAX_PATH];
     fio->_GetCurrentDirectory(sizeof(DirectoryName), DirectoryName);
-    char file_name[MAX_PATH];
+    wchar_t FilenameW[MAX_PATH];
     OPENFILENAME ofn;
-    file_name[0] = 0;
+    FilenameW[0] = 0;
+    std::wstring FilterW = utf8::ConvertUtf8ToWide(filter);
     PZERO(&ofn, sizeof(ofn));
     ofn.lStructSize = sizeof(ofn);
     ofn.hInstance = hInst;
     ofn.hwndOwner = hMain;
-    ofn.lpstrFilter = filter;
+    ofn.lpstrFilter = FilterW.c_str();
     ofn.nFilterIndex = 1;
     ofn.Flags = OFN_FILEMUSTEXIST;
-    ofn.lpstrFile = file_name;
+    ofn.lpstrFile = FilenameW;
     ofn.nMaxFile = MAX_PATH;
-    ofn.lpstrDefExt = filter;
-    ofn.lpstrTitle = "Open script source file";
+    ofn.lpstrDefExt = FilterW.c_str();
+    ofn.lpstrTitle = TEXT("Open script source file");
     const auto bRes = GetOpenFileName(&ofn);
     fio->_SetCurrentDirectory(DirectoryName);
     if (bRes)
     {
-        strcpy_s(buffer, MAX_PATH, file_name);
+        std::string Filename = utf8::ConvertWideToUtf8(FilenameW);
+        strcpy_s(buffer, MAX_PATH, Filename.c_str());
         return true;
     }
     return false;
@@ -677,11 +687,11 @@ void S_DEBUG::SetDbgDisplayMode(DBG_DISPLAY_MODE mode)
 #define RECENT_FILES_MAX 8
 #define ID_RECENTFILE_OFFSET 5000
 
-void S_DEBUG::Add2RecentFiles(char *pFileName)
+void S_DEBUG::Add2RecentFiles(const char *pFileName)
 {
     HKEY hKey;
     char buffer[MAX_PATH];
-    char kn[MAX_PATH];
+    wchar_t knW[MAX_PATH];
     bool bAdd;
     uint32_t dwSize;
     HMENU hMenu;
@@ -700,17 +710,17 @@ void S_DEBUG::Add2RecentFiles(char *pFileName)
     {
         nRecentFilesIndex = 0;
     }
-    RegOpenKeyEx(HKEY_CURRENT_USER, "SDIIDEBUGGER", 0, KEY_ALL_ACCESS, &hKey);
+    RegOpenKeyEx(HKEY_CURRENT_USER, TEXT("SDIIDEBUGGER"), 0, KEY_ALL_ACCESS, &hKey);
     if (!hKey)
-        if (RegCreateKey(HKEY_CURRENT_USER, "SDIIDEBUGGER", &hKey) != ERROR_SUCCESS)
+        if (RegCreateKey(HKEY_CURRENT_USER, TEXT("SDIIDEBUGGER"), &hKey) != ERROR_SUCCESS)
             return;
 
     for (uint32_t n = 0; n < nRecentFilesNum; n++)
     {
-        sprintf_s(kn, "file%d", n);
+        wsprintf(knW, L"file%d", n);
         dwSize = sizeof(buffer);
         buffer[0] = 0;
-        if (RegQueryValueEx(hKey, kn, nullptr, nullptr, (unsigned char *)buffer, (LPDWORD)&dwSize) == ERROR_SUCCESS)
+        if (RegQueryValueEx(hKey, knW, nullptr, nullptr, (unsigned char *)buffer, (LPDWORD)&dwSize) == ERROR_SUCCESS)
         {
             if (_stricmp(buffer, pFileName) == 0)
             {
@@ -721,21 +731,22 @@ void S_DEBUG::Add2RecentFiles(char *pFileName)
         }
     }
 
-    sprintf_s(kn, "file%d", nRecentFilesIndex);
-    RegSetValueEx(hKey, kn, 0, REG_SZ, (const unsigned char *)pFileName, strlen(pFileName) + 1);
+    wsprintf(knW, L"file%d", nRecentFilesIndex);
+    RegSetValueEx(hKey, knW, 0, REG_SZ, (const unsigned char *)pFileName, strlen(pFileName) + 1);
 
     if (!bAdd)
     {
         hMenu = GetMenu(hMain);
         if (hMenu)
         {
+            std::wstring FileNameW = utf8::ConvertUtf8ToWide(pFileName);
             hFileSubMenu = GetSubMenu(hMenu, 0);
             PZERO(&mii, sizeof(mii));
             mii.cbSize = sizeof(mii);
             mii.fMask = MIIM_TYPE | MIIM_ID;
             mii.fType = MFT_STRING;
-            mii.dwTypeData = pFileName;
-            mii.cch = strlen(pFileName) + 1;
+            mii.dwTypeData = const_cast<wchar_t *>(FileNameW.c_str());
+            mii.cch = FileNameW.length() + 1;
             mii.wID = ID_RECENTFILE_OFFSET + nRecentFilesIndex;
             SetMenuItemInfo(hFileSubMenu, nRFMOffset + nRecentFilesIndex, true, &mii);
         }
@@ -747,19 +758,20 @@ void S_DEBUG::Add2RecentFiles(char *pFileName)
     if (bAdd && (nRecentFilesNum < RECENT_FILES_MAX))
     {
         nRecentFilesNum++;
-        RegSetValueEx(hKey, "Recent Files Num", 0, REG_DWORD, (const unsigned char *)&nRecentFilesNum,
+        RegSetValueEx(hKey, TEXT("Recent Files Num"), 0, REG_DWORD, (const unsigned char *)&nRecentFilesNum,
                       sizeof(uint32_t));
 
         hMenu = GetMenu(hMain);
         if (hMenu)
         {
+            std::wstring FileNameW = utf8::ConvertUtf8ToWide(pFileName);
             hFileSubMenu = GetSubMenu(hMenu, 0);
             PZERO(&mii, sizeof(mii));
             mii.cbSize = sizeof(mii);
             mii.fMask = MIIM_TYPE | MIIM_ID;
             mii.fType = MFT_STRING;
-            mii.dwTypeData = pFileName;
-            mii.cch = strlen(pFileName) + 1;
+            mii.dwTypeData = const_cast<wchar_t *>(FileNameW.c_str());
+            mii.cch = FileNameW.length() + 1;
             mii.wID = ID_RECENTFILE_OFFSET + nRecentFilesNum - 1;
             InsertMenuItem(hFileSubMenu, nRFMOffset, true, &mii);
         }
@@ -780,24 +792,24 @@ bool S_DEBUG::ProcessRegistry_Open()
 {
     HKEY hKey;
     char buffer[MAX_PATH];
-    char kn[MAX_PATH];
+    wchar_t knW[MAX_PATH];
     uint32_t dwSize;
     uint32_t n;
 
     nRecentFilesNum = 0;
 
-    RegOpenKeyEx(HKEY_CURRENT_USER, "SDIIDEBUGGER", 0, KEY_ALL_ACCESS, &hKey);
+    RegOpenKeyEx(HKEY_CURRENT_USER, TEXT("SDIIDEBUGGER"), 0, KEY_ALL_ACCESS, &hKey);
     if (!hKey)
-        if (RegCreateKey(HKEY_CURRENT_USER, "SDIIDEBUGGER", &hKey) != ERROR_SUCCESS)
+        if (RegCreateKey(HKEY_CURRENT_USER, TEXT("SDIIDEBUGGER"), &hKey) != ERROR_SUCCESS)
             return false;
 
     dwSize = sizeof(uint32_t);
-    const auto nRes = RegQueryValueEx(hKey, "Recent Files Num", nullptr, nullptr, (unsigned char *)&nRecentFilesNum,
-                                      (LPDWORD)&dwSize);
+    const auto nRes = RegQueryValueEx(hKey, TEXT("Recent Files Num"), nullptr, nullptr,
+                                      (unsigned char *)&nRecentFilesNum, (LPDWORD)&dwSize);
     if (nRes != ERROR_SUCCESS)
     {
         // write default value
-        RegSetValueEx(hKey, "Recent Files Num", 0, REG_DWORD, (const unsigned char *)&nRecentFilesNum,
+        RegSetValueEx(hKey, TEXT("Recent Files Num"), 0, REG_DWORD, (const unsigned char *)&nRecentFilesNum,
                       sizeof(uint32_t));
     }
 
@@ -832,17 +844,19 @@ bool S_DEBUG::ProcessRegistry_Open()
 
         for (n = 0; n < nRecentFilesNum; n++)
         {
-            sprintf_s(kn, "file%d", n);
+            wsprintf(knW, L"file%d", n);
             dwSize = sizeof(buffer);
             buffer[0] = 0;
-            RegQueryValueEx(hKey, kn, nullptr, nullptr, (unsigned char *)buffer, (LPDWORD)&dwSize);
+            RegQueryValueEx(hKey, knW, nullptr, nullptr, (unsigned char *)buffer, (LPDWORD)&dwSize);
+
+            std::wstring BufferW = utf8::ConvertUtf8ToWide(buffer);
 
             PZERO(&mii, sizeof(mii));
             mii.cbSize = sizeof(mii);
             mii.fMask = MIIM_TYPE | MIIM_ID;
             mii.fType = MFT_STRING;
-            mii.dwTypeData = buffer;
-            mii.cch = strlen(buffer) + 1;
+            mii.dwTypeData = const_cast<wchar_t *>(BufferW.c_str());
+            mii.cch = BufferW.length() + 1;
             mii.wID = ID_RECENTFILE_OFFSET + n;
             // InsertMenuItem(hFileSubMenu,MENU_EXITDEBUG,false,&mii);
             InsertMenuItem(hFileSubMenu, nRFMOffset, true, &mii);
@@ -866,7 +880,7 @@ long S_DEBUG::GetRecentFileALine(const char *pFileName)
 {
     HKEY hKey;
     char buffer[MAX_PATH];
-    char kn[MAX_PATH];
+    wchar_t knW[MAX_PATH];
 
     uint32_t dwSize;
     uint32_t dwLine;
@@ -874,23 +888,23 @@ long S_DEBUG::GetRecentFileALine(const char *pFileName)
     if (pFileName == nullptr)
         return 0;
 
-    RegOpenKeyEx(HKEY_CURRENT_USER, "SDIIDEBUGGER", 0, KEY_ALL_ACCESS, &hKey);
+    RegOpenKeyEx(HKEY_CURRENT_USER, L"SDIIDEBUGGER", 0, KEY_ALL_ACCESS, &hKey);
     if (!hKey)
         return 0;
 
     for (uint32_t n = 0; n < nRecentFilesNum; n++)
     {
-        sprintf_s(kn, "file%d", n);
+        wsprintf(knW, L"file%d", n);
         dwSize = sizeof(buffer);
         buffer[0] = 0;
-        if (RegQueryValueEx(hKey, kn, nullptr, nullptr, (unsigned char *)buffer, (LPDWORD)&dwSize) == ERROR_SUCCESS)
+        if (RegQueryValueEx(hKey, knW, nullptr, nullptr, (unsigned char *)buffer, (LPDWORD)&dwSize) == ERROR_SUCCESS)
         {
             if (_stricmp(buffer, pFileName) == 0)
             {
-                sprintf_s(kn, "line%d", n);
+                wsprintf(knW, L"line%d", n);
 
                 dwSize = sizeof(uint32_t);
-                if (RegQueryValueEx(hKey, kn, nullptr, nullptr, (unsigned char *)&dwLine, (LPDWORD)&dwSize) ==
+                if (RegQueryValueEx(hKey, knW, nullptr, nullptr, (unsigned char *)&dwLine, (LPDWORD)&dwSize) ==
                     ERROR_SUCCESS)
                 {
                     RegCloseKey(hKey);
@@ -909,28 +923,28 @@ void S_DEBUG::SaveRecentFileALine(const char *pFileName, long nLine)
 {
     HKEY hKey;
     char buffer[MAX_PATH];
-    char kn[MAX_PATH];
+    wchar_t knW[MAX_PATH];
     uint32_t dwSize;
 
     if (pFileName == nullptr)
         return;
 
-    RegOpenKeyEx(HKEY_CURRENT_USER, "SDIIDEBUGGER", 0, KEY_ALL_ACCESS, &hKey);
+    RegOpenKeyEx(HKEY_CURRENT_USER, L"SDIIDEBUGGER", 0, KEY_ALL_ACCESS, &hKey);
     if (!hKey)
-        if (RegCreateKey(HKEY_CURRENT_USER, "SDIIDEBUGGER", &hKey) != ERROR_SUCCESS)
+        if (RegCreateKey(HKEY_CURRENT_USER, L"SDIIDEBUGGER", &hKey) != ERROR_SUCCESS)
             return;
 
     for (uint32_t n = 0; n < nRecentFilesNum; n++)
     {
-        sprintf_s(kn, "file%d", n);
+        wsprintf(knW, L"file%d", n);
         dwSize = sizeof(buffer);
         buffer[0] = 0;
-        if (RegQueryValueEx(hKey, kn, nullptr, nullptr, (unsigned char *)buffer, (LPDWORD)&dwSize) == ERROR_SUCCESS)
+        if (RegQueryValueEx(hKey, knW, nullptr, nullptr, (unsigned char *)buffer, (LPDWORD)&dwSize) == ERROR_SUCCESS)
         {
             if (_stricmp(buffer, pFileName) == 0)
             {
-                sprintf_s(kn, "line%d", n);
-                RegSetValueEx(hKey, kn, 0, REG_DWORD, (const unsigned char *)&nLine, sizeof(uint32_t));
+                wsprintf(knW, L"line%d", n);
+                RegSetValueEx(hKey, knW, 0, REG_DWORD, (const unsigned char *)&nLine, sizeof(uint32_t));
                 RegCloseKey(hKey);
                 return;
             }
@@ -947,7 +961,8 @@ void S_DEBUG::OpenNewFile()
         strcpy_s(CDebug.sLastFileName, buffer);
         CDebug.SourceView->OpenSourceFile(buffer);
         sprintf_s(wintext, "SDebug - %s", buffer);
-        SetWindowText(CDebug.GetWindowHandle(), wintext);
+        std::wstring WinTextW = utf8::ConvertUtf8ToWide(wintext);
+        SetWindowText(CDebug.GetWindowHandle(), WinTextW.c_str());
         CDebug.Add2RecentFiles(buffer);
     }
 }

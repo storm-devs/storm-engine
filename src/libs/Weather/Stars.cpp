@@ -141,7 +141,7 @@ void Astronomy::STARS::Init(ATTRIBUTES *pAP)
     fio->_CloseHandle(hFile);
     }*/
 
-    auto *const hFile = fio->_CreateFile(sCatalog);
+    auto *const hFile = fio->_CreateFile("resource\\hic.dat");
     if (INVALID_HANDLE_VALUE != hFile)
     {
         uint32_t dwSize;

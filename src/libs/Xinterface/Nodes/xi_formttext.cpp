@@ -1,6 +1,7 @@
 #include "xi_formttext.h"
 #include "../xinterface.h"
 #include "EntityManager.h"
+#include "utf8.h"
 #include "xi_scroller.h"
 #include <stdio.h>
 
@@ -693,6 +694,9 @@ bool CXI_FORMATEDTEXT::GetLineNext(int fontNum, char *&pInStr, char *buf, int bu
             }
             buf[j++] = pStart[i];
         }
+
+        if (j == bufSize - 1) // exclude truncated utf8 chars
+            j -= utf8::u8_dec(buf + j);
         buf[j] = 0; // нолем обозначим конец строки
 
         // если строка большая, то режем ее
@@ -778,7 +782,7 @@ void CXI_FORMATEDTEXT::GetOneLine(int fontNum, char *pStr, char *buf, int bufSiz
 
     while (lineSize > 0 && strWidth > m_nCompareWidth)
     {
-        lineSize--;
+        lineSize -= utf8::u8_dec(buf + lineSize);
         buf[lineSize] = 0;
         strWidth = m_rs->StringWidth(buf, fontNum);
     }

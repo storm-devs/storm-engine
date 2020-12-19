@@ -254,8 +254,6 @@ class XINTERFACE : public XINTERFACE_BASE
     void SetExclusiveNode(CINODE *nod);
     void AddExclusiveNode(CINODE *nod);
     void ExitFromExclusive();
-    // cript function
-    void SetOtherData(char *cDat);
     // Game time function
     void IncrementGameTime(uint32_t dwDeltaTime);
     // Options functions
@@ -300,7 +298,7 @@ class XINTERFACE : public XINTERFACE_BASE
 
     SAVE_FIND_DATA *m_pSaveFindRoot;
     void ReleaseSaveFindList();
-    void AddFindData(char *sSaveFileName, long file_size, FILETIME create_time);
+    void AddFindData(const char *sSaveFileName, long file_size, FILETIME create_time);
     void Sorting_FindData();
     SAVE_FIND_DATA *GetSaveDataByIndex(int n) const;
 

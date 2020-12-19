@@ -29,32 +29,35 @@ void ISLAND::DoZapSuperGeneratorInnerDecodeFiles(const char *sub_dir, const char
 
     sprintf_s(file_mask, "resource\\foam\\%s%s%s", (sub_dir) ? sub_dir : "", (sub_dir) ? "\\" : "", "*.*");
 
-    auto *hFile = FindFirstFile(file_mask, &wfd);
+    auto *hFile = fio->_FindFirstFile(file_mask, &wfd);
     if (hFile != INVALID_HANDLE_VALUE)
     {
         do
         {
             if (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
             {
-                if (wfd.cFileName[0] == '.')
+                if (wfd.cFileName[0] == L'.')
                     continue;
-                sprintf_s(file_mask, "%s%s%s", (sub_dir) ? sub_dir : "", (sub_dir) ? "\\" : "", wfd.cFileName);
+
+                std::string FileName = utf8::ConvertWideToUtf8(wfd.cFileName);
+                sprintf(file_mask, "%s%s%s", (sub_dir) ? sub_dir : "", (sub_dir) ? "\\" : "", FileName.c_str());
                 DoZapSuperGeneratorInnerDecodeFiles(file_mask, mask);
             }
-        } while (FindNextFile(hFile, &wfd));
+        } while (fio->_FindNextFile(hFile, &wfd));
         FindClose(hFile);
     }
 
     sprintf_s(file_mask, "resource\\foam\\%s%s%s", (sub_dir) ? sub_dir : "", (sub_dir) ? "\\" : "", mask);
 
-    hFile = FindFirstFile(file_mask, &wfd);
+    hFile = fio->_FindFirstFile(file_mask, &wfd);
     if (hFile != INVALID_HANDLE_VALUE)
     {
         do
         {
-            sprintf_s(file_mask, "resource\\foam\\%s\\%s", (sub_dir) ? sub_dir : "", wfd.cFileName);
+            std::string FileName = utf8::ConvertWideToUtf8(wfd.cFileName);
+            sprintf(file_mask, "resource\\foam\\%s\\%s", (sub_dir) ? sub_dir : "", FileName.c_str());
             DoZapSuperGeneratorDecodeFile(file_mask);
-        } while (FindNextFile(hFile, &wfd));
+        } while (fio->_FindNextFile(hFile, &wfd));
         FindClose(hFile);
     }
 }

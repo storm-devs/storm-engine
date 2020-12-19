@@ -241,7 +241,10 @@ long CXI_SCROLLTEXT::GetStringWord(char *pstr, char *buff, size_t size)
     }
 
     if (retVal >= size)
-        buff[size - 1] = 0;
+    {
+        size -= utf8::u8_dec(buff + size - 1);
+        buff[size] = 0;
+    }
     else
         buff[retVal] = 0;
     return retVal;

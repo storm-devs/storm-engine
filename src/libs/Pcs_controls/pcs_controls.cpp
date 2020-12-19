@@ -568,21 +568,24 @@ void PCS_CONTROLS::SetMouseSensivityY(float _s)
 
 void PCS_CONTROLS::EngineMessage(UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
+    bool isSystem = false;
     switch (iMsg)
     {
     case WM_KEYDOWN:
-        m_KeyBuffer.AddKey(wParam, ((lParam >> 16L) & 0xFF), true); // virtual & scan code
-        break;
+        isSystem = true;
 
-    case WM_CHAR:
-        m_KeyBuffer.AddKey(wParam, ((lParam >> 16L) & 0xFF), false); // virtual & scan code
+    case WM_CHAR: {
+        char Text[5];
+        int TextSize = utf8::CodepointToUtf8(Text, (UINT32)wParam);
+        m_KeyBuffer.AddKey(Text, TextSize, isSystem); // virtual & scan code
         break;
+    }
 
     case WM_KEYUP:
         break;
 
-    case 0x20A:
-        nMouseWheel += static_cast<short>(HIWORD(wParam));
+    case WM_MOUSEWHEEL:
+        nMouseWheel += (short)HIWORD(wParam);
         break;
     }
 }

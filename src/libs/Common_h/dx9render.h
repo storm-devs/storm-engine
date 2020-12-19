@@ -8,6 +8,7 @@
 #include "Matrix.h"
 #include "service.h"
 #include "types3d.h"
+#include "utf8.h"
 
 #define FONT_DEFAULT 0
 
@@ -122,7 +123,7 @@ class VDX9RENDER : public SERVICE
     virtual long ExtPrint(long nFontNum, uint32_t foreColor, uint32_t backColor, int wAlignment, bool bShadow,
                           float fScale, long scrWidth, long scrHeight, long x, long y, const char *format, ...) = 0;
     virtual long StringWidth(const char *string, long nFontNum = 0, float fScale = 1.f, long scrWidth = 0) = 0;
-    virtual long CharWidth(char ch, long nFontNum = 0, float fScale = 1.f, long scrWidth = 0) = 0;
+    virtual long CharWidth(utf8::u8_char ucVKey, long nFontNum = 0, float fScale = 1.f, long scrWidth = 0) = 0;
     virtual long CharHeight(long fontID) = 0;
     virtual long LoadFont(const char *fontName) = 0; // возвращает номер\идентификатор шрифта или -1 в случае ошибки
     virtual bool UnloadFont(const char *fontName) = 0; // возвращает истину если шрифт остался в использовании

@@ -34,9 +34,9 @@ class CXI_PCEDITBOX : public CINODE
         return IsCurrentNode();
     }
     void ShowCursorPosition(std::string &str);
-    void InsertSymbol(std::string &str, char chr);
+    void InsertSymbol(std::string &str, utf8::u8_char chr);
     void DisguiseString(std::string &str);
-    bool IsExcludeChar(char chr) const;
+    bool IsExcludeChar(utf8::u8_char chr) const;
 
   protected:
     long m_nFontID;          // font id

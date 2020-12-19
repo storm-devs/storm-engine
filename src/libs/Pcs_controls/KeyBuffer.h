@@ -11,7 +11,7 @@ struct ControlKeyBuffer
     ~ControlKeyBuffer();
 
     void Reset();
-    void AddKey(long nKeyCode, UINT uScanCode, bool bSystem);
+    void AddKey(char *u8_str, int u8_size, bool bSystem);
 
     long GetBufferLength()
     {

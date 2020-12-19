@@ -35,8 +35,9 @@ void Effects::compile(const char *fxPath)
     debugMsg_ = fxPath;
     ID3DXEffect *fx;
     ID3DXBuffer *errors = nullptr;
-    CHECKD3DERR(D3DXCreateEffectFromFile(device_, fxPath, nullptr, nullptr, D3DXSHADER_OPTIMIZATION_LEVEL3, nullptr,
-                                         &fx, &errors));
+    std::wstring _fxPath = utf8::ConvertUtf8ToWide(fxPath);
+    CHECKD3DERR(D3DXCreateEffectFromFile(device_, _fxPath.c_str(), nullptr, nullptr, D3DXSHADER_OPTIMIZATION_LEVEL3,
+                                         nullptr, &fx, &errors));
 
     if (errors)
     {

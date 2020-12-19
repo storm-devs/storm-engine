@@ -1,5 +1,6 @@
 #include "Font.h"
 #include "defines.h"
+#include "utf8.h"
 
 static char Buffer1024[1024];
 
@@ -78,7 +79,7 @@ bool FONT::Init(const char *font_name, const char *iniName, IDirect3DDevice9 *_d
     INIFILE *ini;
     char key_name[MAX_PATH];
     char buffer[MAX_PATH];
-    long n;
+    long codepoint;
     long ltmp;
     char *pData;
 
@@ -133,41 +134,41 @@ bool FONT::Init(const char *font_name, const char *iniName, IDirect3DDevice9 *_d
     Spacebar = static_cast<long>(ini->GetLong(font_name, "Spacebar", 8) * m_fAspectRatioH);
 
     ini->CaseSensitive(true);
-    for (n = 30; n < USED_CODES; n++)
+    for (codepoint = 30; codepoint < USED_CODES; codepoint++)
     {
-        if (n >= 'a' && n <= 'z')
+        char utf8[5];
+        utf8::CodepointToUtf8(utf8, codepoint);
+        if (codepoint >= 'a' && codepoint <= 'z')
         {
-            sprintf_s(key_name, "char_%c_", static_cast<char>(n));
+            sprintf_s(key_name, "char_%s_", utf8);
         }
-        else if (n == '=')
+        else if (codepoint == '=')
             sprintf_s(key_name, "char_equ");
         else
-            sprintf_s(key_name, "char_%c", static_cast<char>(n));
+            sprintf_s(key_name, "char_%s", utf8);
         if (!ini->ReadString(font_name, key_name, buffer, sizeof(buffer), ""))
-        {
-            sprintf_s(key_name, "ascii_%d", n);
-            if (!ini->ReadString(font_name, key_name, buffer, sizeof(buffer), ""))
-                continue;
-        }
+            continue;
         pData = buffer;
         if (!MakeLong(&pData, &ltmp))
             throw std::exception("invalid font record");
-        CharT[n].Pos.x1 = 0;
-        CharT[n].Tuv.x1 = static_cast<float>(ltmp + .5f) / static_cast<float>(Texture_XSize);
+        CharT[codepoint].Pos.x1 = 0;
+        CharT[codepoint].Tuv.x1 = static_cast<float>(ltmp + .5f) / static_cast<float>(Texture_XSize);
         if (!MakeLong(&pData, &ltmp))
             throw std::exception("invalid font record");
-        CharT[n].Pos.y1 = 0.f;
-        CharT[n].Tuv.y1 = static_cast<float>(ltmp + .5f) / static_cast<float>(Texture_YSize);
+        CharT[codepoint].Pos.y1 = 0.f;
+        CharT[codepoint].Tuv.y1 = static_cast<float>(ltmp + .5f) / static_cast<float>(Texture_YSize);
 
         if (!MakeLong(&pData, &ltmp))
             throw std::exception("invalid font record");
-        CharT[n].Pos.x2 = static_cast<float>(static_cast<long>(ltmp * m_fAspectRatioH));
-        CharT[n].Tuv.x2 = CharT[n].Tuv.x1 + static_cast<float>(ltmp - 1.f) / static_cast<float>(Texture_XSize);
+        CharT[codepoint].Pos.x2 = static_cast<float>(static_cast<long>(ltmp * m_fAspectRatioH));
+        CharT[codepoint].Tuv.x2 =
+            CharT[codepoint].Tuv.x1 + static_cast<float>(ltmp - 1.f) / static_cast<float>(Texture_XSize);
         if (!MakeLong(&pData, &ltmp))
             throw std::exception("invalid font record");
-        CharT[n].Pos.y1 = static_cast<float>(Height - static_cast<long>(ltmp * m_fAspectRatioV));
-        CharT[n].Pos.y2 = static_cast<float>(Height); //((long)(ltmp*m_fAspectRatioV));
-        CharT[n].Tuv.y2 = CharT[n].Tuv.y1 + static_cast<float>(ltmp - 1.f) / static_cast<float>(Texture_YSize);
+        CharT[codepoint].Pos.y1 = static_cast<float>(Height - static_cast<long>(ltmp * m_fAspectRatioV));
+        CharT[codepoint].Pos.y2 = static_cast<float>(Height); //((long)(ltmp*m_fAspectRatioV));
+        CharT[codepoint].Tuv.y2 =
+            CharT[codepoint].Tuv.y1 + static_cast<float>(ltmp - 1.f) / static_cast<float>(Texture_YSize);
     }
     ini->CaseSensitive(false);
 
@@ -182,9 +183,9 @@ bool FONT::Init(const char *font_name, const char *iniName, IDirect3DDevice9 *_d
     if (VBuffer == nullptr)
         throw std::exception("vbuffer error");
     VBuffer->Lock(0, sizeof(IMAGE_VERTEX) * MAX_SYMBOLS * SYM_VERTEXS, (VOID **)&pVertex, 0);
-    for (n = 0; n < MAX_SYMBOLS * SYM_VERTEXS; n++)
+    for (codepoint = 0; codepoint < MAX_SYMBOLS * SYM_VERTEXS; codepoint++)
     {
-        pVertex[n].pos.z = 0.5f;
+        pVertex[codepoint].pos.z = 0.5f;
     }
     VBuffer->Unlock();
 
@@ -231,22 +232,25 @@ long FONT::GetStringWidth(const char *Text)
 {
     if (Text == nullptr)
         return 0;
-    FLOAT_RECT pos;
     float xoffset = 0;
     const long s_num = strlen(Text);
+    //  api->Trace("%s", Text);
 
-    for (long i = 0; i < s_num; i++)
+    for (long i = 0; i < s_num; i += utf8::u8_inc(Text + i))
     {
-        pos = CharT[static_cast<uint8_t>(Text[i])].Pos;
+        uint32_t Codepoint = utf8::Utf8ToCodepoint(Text + i);
+        Assert(Codepoint < USED_CODES);
+
+        FLOAT_RECT pos = CharT[Codepoint].Pos;
+
         if (fScale != 1.f)
         {
             pos.x1 *= fScale;
             pos.x2 *= fScale;
         }
         xoffset += pos.x2 - pos.x1 + Symbol_interval * fScale;
-        if (Text[i] == ' ')
+        if (Codepoint == ' ')
         {
-            pos.x1 = pos.x2 = pos.y1 = pos.y2 = 0;
             xoffset += Spacebar * fScale;
         }
     }
@@ -254,29 +258,29 @@ long FONT::GetStringWidth(const char *Text)
     return static_cast<long>(xoffset);
 }
 
-long FONT::UpdateVertexBuffer(long x, long y, char *data_PTR)
+long FONT::UpdateVertexBuffer(long x, long y, char *data_PTR, int utf8length)
 {
     long s_num;
     long n;
-    long i;
     float xoffset;
     uint8_t sym;
-    FLOAT_RECT pos;
-    FLOAT_RECT tuv;
     IMAGE_VERTEX *pVertex;
 
     s_num = strlen(data_PTR);
 
-    VBuffer->Lock(0, sizeof(IMAGE_VERTEX) * s_num * SYM_VERTEXS, (VOID **)&pVertex, 0);
+    VBuffer->Lock(0, sizeof(IMAGE_VERTEX) * utf8length * SYM_VERTEXS, (VOID **)&pVertex, 0);
 
     xoffset = 0;
 
-    for (i = 0; i < s_num; i++)
+    for (int i = 0, curLetter = 0; i < s_num; i += utf8::u8_inc(data_PTR + i), curLetter++)
     {
-        sym = data_PTR[i];
+        Assert(curLetter < utf8length);
 
-        n = i * 6;
-        pos = CharT[sym].Pos;
+        int Codepoint = utf8::Utf8ToCodepoint(data_PTR + i);
+        Assert(Codepoint < USED_CODES);
+
+        n = curLetter * 6;
+        FLOAT_RECT pos = CharT[Codepoint].Pos;
         if (fScale != 1.f)
         {
             pos.x1 *= fScale;
@@ -287,7 +291,7 @@ long FONT::UpdateVertexBuffer(long x, long y, char *data_PTR)
         OffsetFRect(pos, static_cast<float>(x) + xoffset, static_cast<float>(y));
         xoffset += pos.x2 - pos.x1 + Symbol_interval * fScale;
 
-        if (sym == ' ')
+        if (Codepoint == ' ')
         {
             pos.x1 = pos.x2 = pos.y1 = pos.y2 = 0;
             xoffset += Spacebar * fScale;
@@ -309,7 +313,7 @@ long FONT::UpdateVertexBuffer(long x, long y, char *data_PTR)
         pVertex[n + 4].pos.y = pos.y2;
         pVertex[n + 5].pos.y = pos.y1;
 
-        tuv = CharT[sym].Tuv;
+        FLOAT_RECT tuv = CharT[Codepoint].Tuv;
 
         pVertex[n + 0].tu = tuv.x1;
         pVertex[n + 1].tu = tuv.x1;
@@ -341,9 +345,8 @@ long FONT::Print(long x, long y, char *data_PTR)
 {
     if (data_PTR == nullptr || techniqueName == nullptr)
         return 0;
-    long s_num;
     auto xoffset = 0L;
-    s_num = strlen(data_PTR);
+    long s_num = utf8::Utf8StringLength(data_PTR);
     if (s_num == 0)
         return 0;
 
@@ -360,7 +363,7 @@ long FONT::Print(long x, long y, char *data_PTR)
     {
         if (bShadow)
         {
-            UpdateVertexBuffer(x + Shadow_offsetx, y + Shadow_offsety, data_PTR);
+            UpdateVertexBuffer(x + Shadow_offsetx, y + Shadow_offsety, data_PTR, s_num);
 
             Device->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
             Device->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
@@ -368,7 +371,7 @@ long FONT::Print(long x, long y, char *data_PTR)
             Device->DrawPrimitive(D3DPT_TRIANGLELIST, 0, s_num * 2);
         }
 
-        xoffset = UpdateVertexBuffer(x, y, data_PTR);
+        xoffset = UpdateVertexBuffer(x, y, data_PTR, s_num);
 
         Device->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ZERO);
         Device->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
@@ -379,7 +382,7 @@ long FONT::Print(long x, long y, char *data_PTR)
     {
         if (bShadow)
         {
-            UpdateVertexBuffer(x + Shadow_offsetx, y + Shadow_offsety, data_PTR);
+            UpdateVertexBuffer(x + Shadow_offsetx, y + Shadow_offsety, data_PTR, s_num);
 
             Device->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ZERO);
             Device->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
@@ -387,7 +390,7 @@ long FONT::Print(long x, long y, char *data_PTR)
             Device->DrawPrimitive(D3DPT_TRIANGLELIST, 0, s_num * 2);
         }
 
-        xoffset = UpdateVertexBuffer(x, y, data_PTR);
+        xoffset = UpdateVertexBuffer(x, y, data_PTR, s_num);
 
         Device->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
         Device->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);

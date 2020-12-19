@@ -282,7 +282,7 @@ void COMPILER::Trace(const char *data_PTR, ...)
     char LogBuffer[4096];
     if (data_PTR == nullptr)
         return;
-    auto *file_h = CreateFile(COMPILER_LOG_FILENAME, GENERIC_WRITE, FILE_SHARE_READ, nullptr, OPEN_ALWAYS,
+    auto *file_h = CreateFile(TEXT(COMPILER_LOG_FILENAME), GENERIC_WRITE, FILE_SHARE_READ, nullptr, OPEN_ALWAYS,
                               FILE_ATTRIBUTE_NORMAL, nullptr);
     SetFilePointer(file_h, 0, nullptr, FILE_END);
     va_list args;
@@ -409,8 +409,8 @@ void COMPILER::SetError(const char *data_PTR, ...)
     }
     // sprintf_s(ErrorBuffer,"ERROR - file: %s; line: %d",DebugSourceFileName,DebugSourceLine + 1);
     strcat_s(ErrorBuffer, "\x0d\x0a");
-    fio->_WriteFile(file_h, ErrorBuffer, lstrlen(ErrorBuffer), &bytes);
-    fio->_WriteFile(file_h, LogBuffer, lstrlen(LogBuffer), &bytes);
+    fio->_WriteFile(file_h, ErrorBuffer, strlen(ErrorBuffer), &bytes);
+    fio->_WriteFile(file_h, LogBuffer, strlen(LogBuffer), &bytes);
     va_end(args);
     fio->_FlushFileBuffers(file_h);
     fio->_CloseHandle(file_h);
@@ -442,8 +442,8 @@ void COMPILER::SetWarning(const char *data_PTR, ...)
 
     sprintf_s(ErrorBuffer, "WARNING - file: %s; line: %d", DebugSourceFileName, DebugSourceLine + 1);
     strcat_s(ErrorBuffer, "\x0d\x0a");
-    fio->_WriteFile(file_h, ErrorBuffer, lstrlen(ErrorBuffer), &bytes);
-    fio->_WriteFile(file_h, LogBuffer, lstrlen(LogBuffer), &bytes);
+    fio->_WriteFile(file_h, ErrorBuffer, strlen(ErrorBuffer), &bytes);
+    fio->_WriteFile(file_h, LogBuffer, strlen(LogBuffer), &bytes);
     va_end(args);
     fio->_FlushFileBuffers(file_h);
     fio->_CloseHandle(file_h);
@@ -2110,8 +2110,9 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
     {
         _splitpath(Segment.name, nullptr, nullptr, file_name, nullptr);
         strcat_s(file_name, ".b");
-        fh = CreateFile(file_name, GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL,
-                        nullptr);
+        std::wstring FileNameW = utf8::ConvertUtf8ToWide(file_name);
+        fh = CreateFile(FileNameW.c_str(), GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS,
+                        FILE_ATTRIBUTE_NORMAL, nullptr);
         if (fh != INVALID_HANDLE_VALUE)
         {
             WriteFile(fh, Segment.pCode, Segment.BCode_Program_size, (LPDWORD)&dwR, nullptr);
@@ -7216,7 +7217,7 @@ DATA *COMPILER::GetOperand(const char *pCodeBase, uint32_t &ip, S_TOKEN_TYPE *pT
     return nullptr;
 }
 
-void COMPILER::FormatAllDialog(char *directory_name)
+void COMPILER::FormatAllDialog(const char *directory_name)
 {
     WIN32_FIND_DATA ffd;
     char sFileName[MAX_PATH];
@@ -7224,11 +7225,13 @@ void COMPILER::FormatAllDialog(char *directory_name)
     const HANDLE fh = fio->_FindFirstFile(sFileName, &ffd);
     if (fh != INVALID_HANDLE_VALUE)
     {
-        sprintf_s(sFileName, "%s\\%s", directory_name, ffd.cFileName);
+        std::string Utf8FileName = utf8::ConvertWideToUtf8(ffd.cFileName);
+        sprintf_s(sFileName, "%s\\%s", directory_name, Utf8FileName.c_str());
         FormatDialog(sFileName);
         while (fio->_FindNextFile(fh, &ffd))
         {
-            sprintf_s(sFileName, "%s\\%s", directory_name, ffd.cFileName);
+            Utf8FileName = utf8::ConvertWideToUtf8(ffd.cFileName);
+            sprintf_s(sFileName, "%s\\%s", directory_name, Utf8FileName.c_str());
             FormatDialog(sFileName);
         }
         fio->_FindClose(fh);

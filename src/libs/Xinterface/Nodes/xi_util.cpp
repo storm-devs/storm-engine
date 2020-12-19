@@ -516,7 +516,7 @@ void CXI_UTILS::PrintTextIntoWindow(VDX9RENDER *pRender, long nFont, uint32_t dw
     // режем левый край
     while (pc[0] && nL < left)
     {
-        pc++;
+        pc += utf8::u8_inc(pc);
         nL = nR - pRender->StringWidth(pc, nFont, fScale, 0);
     }
 
@@ -526,7 +526,8 @@ void CXI_UTILS::PrintTextIntoWindow(VDX9RENDER *pRender, long nFont, uint32_t dw
         long n = strlen(pc);
         while (n > 0 && nR > right)
         {
-            pc[--n] = 0;
+            n -= utf8::u8_dec(pc + n);
+            pc[n] = '\0';
             nR = nL + pRender->StringWidth(pc, nFont, fScale, 0);
         }
     }

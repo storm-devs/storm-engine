@@ -2486,7 +2486,7 @@ long DX9RENDER::Print(long x, long y, const char *format, ...)
 
     va_list args;
     va_start(args, format);
-    _vsnprintf_s(Buff_4k, sizeof(Buff_4k), format, args);
+    vsnprintf_s(Buff_4k, sizeof(Buff_4k), format, args);
     va_end(args);
 
     return FontList[idFontCurrent].font->Print(x, y, Buff_4k);
@@ -2503,7 +2503,7 @@ long DX9RENDER::Print(long nFontNum, uint32_t color, long x, long y, const char 
 
     va_list args;
     va_start(args, format);
-    _vsnprintf_s(Buff_4k, sizeof(Buff_4k), format, args);
+    vsnprintf_s(Buff_4k, sizeof(Buff_4k), format, args);
     va_end(args);
 
     FontList[nFontNum].font->StoreFontParameters();
@@ -2536,12 +2536,10 @@ long DX9RENDER::StringWidth(const char *string, long nFontNum, float fScale, lon
     return retVal;
 }
 
-long DX9RENDER::CharWidth(char ch, long nFontNum, float fScale, long scrWidth)
+long DX9RENDER::CharWidth(utf8::u8_char ch, long nFontNum, float fScale, long scrWidth)
 {
-    char str[2];
-    str[0] = ch;
-    str[1] = 0;
-    return StringWidth(str, nFontNum, fScale, scrWidth);
+    std::string str(ch.b, ch.l);
+    return StringWidth(str.c_str(), nFontNum, fScale, scrWidth);
 }
 
 long DX9RENDER::CharHeight(long fontID)
@@ -2567,7 +2565,7 @@ long DX9RENDER::ExtPrint(long nFontNum, uint32_t foreColor, uint32_t backColor, 
 
     va_list args;
     va_start(args, format);
-    _vsnprintf_s(Buff_4k, sizeof(Buff_4k), format, args);
+    vsnprintf_s(Buff_4k, sizeof(Buff_4k), format, args);
     va_end(args);
 
     pFont->StoreFontParameters();
@@ -2983,7 +2981,7 @@ void DX9RENDER::MakeScreenShot()
     //Получаем имя файла
     for (i = 0; i < 10000; i++)
     {
-        sprintf_s(file_name, "Corsairs3_%04d.tga", i);
+        sprintf_s(file_name, "CCS_%04d.tga", i);
         if (_access(file_name, 0) == -1)
             break;
     }

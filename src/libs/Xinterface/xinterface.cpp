@@ -41,10 +41,6 @@
 #define MIN_SCALE 0.1f
 #define MAX_SCALE 3.0f
 
-#define FINDBYTES "qwerty"
-static char CriptedName[256] = {
-    'q', 'w', 'e', 'r', 't', 'y', 0, static_cast<char>(65), static_cast<char>(21), static_cast<char>(65)};
-//(char)15,(char)23,(char)208,(char)145,(char)65,(char)19,(char)175};//"qwerty\65\15\23\208\145\65\19\175";
 static bool g_bIExclusiveMode = false;
 static bool DiskCheck = false;
 
@@ -1064,7 +1060,7 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     break;
 
     case MSG_INTERFACE_CHECK_AGAIN:
-        return CheckPCcd();
+        Assert(0);
         break;
 
     case MSG_INTERFACE_IS_READY_LOAD:
@@ -1246,9 +1242,6 @@ void XINTERFACE::LoadDialog(char *sFileName)
     int keyNum = 1;
     char nodeName[sizeof(param)];
 
-    char crData[sizeof(CriptedName)];
-    SetOtherData(crData);
-
     const char *findName = "item";
     if (ini->ReadString(section, findName, skey, sizeof(skey) - 1, ""))
         while (true)
@@ -1360,9 +1353,6 @@ void XINTERFACE::LoadDialog(char *sFileName)
         CINODE::GetDataStr(param, "ffff", &m_frectDefHelpTextureUV.left, &m_frectDefHelpTextureUV.top,
                            &m_frectDefHelpTextureUV.right, &m_frectDefHelpTextureUV.bottom);
     }
-
-    // set cripted data
-    api->Event("CriptData", "s", crData);
 
     delete ini;
     delete ownerIni;
@@ -2057,11 +2047,6 @@ void XINTERFACE::DoControl()
             api->Controls->GetControlState((char *)m_asExitKey[nExitKey].c_str(), cs);
             if (cs.state != CST_INACTIVE)
                 return;
-        }
-
-        if (!CheckPCcd())
-        {
-            api->Event("evntCheckFailure");
         }
     }
     if (!g_bIExclusiveMode && !DiskCheck)
@@ -2826,7 +2811,7 @@ void XINTERFACE::ReleaseSaveFindList()
     }
 }
 
-void XINTERFACE::AddFindData(char *sSaveFileName, long file_size, FILETIME file_time)
+void XINTERFACE::AddFindData(const char *sSaveFileName, long file_size, FILETIME file_time)
 {
     if (!sSaveFileName || sSaveFileName[0] == '\0')
         return;
@@ -2904,10 +2889,11 @@ char *XINTERFACE::SaveFileFind(long saveNum, char *buffer, size_t bufSize, long 
         {
             do
             {
+                std::string FileName = utf8::ConvertWideToUtf8(wfd.cFileName);
                 // folders not be considers
                 if (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
                     continue;
-                AddFindData(wfd.cFileName, 0, wfd.ftLastWriteTime);
+                AddFindData(FileName.c_str(), 0, wfd.ftLastWriteTime);
             } while (fio->_FindNextFile(h, &wfd) != 0);
             // close handle for file finding
             fio->_FindClose(h);
@@ -2994,19 +2980,6 @@ uint32_t XINTERFACE_BASE::GetBlendColor(uint32_t minCol, uint32_t maxCol, float 
     gd = GREEN(minCol) + static_cast<long>(gd * fBlendFactor);
     bd = BLUE(minCol) + static_cast<long>(bd * fBlendFactor);
     return ARGB(ad, rd, gd, bd);
-}
-
-void XINTERFACE::SetOtherData(char *cDat)
-{
-    auto xorMul = static_cast<uint8_t>(CriptedName[sizeof(FINDBYTES)]);
-    const auto xorAdd = static_cast<uint8_t>(CriptedName[sizeof(FINDBYTES) + 1]);
-    auto *crdata = (uint8_t *)&CriptedName[sizeof(FINDBYTES) + 2];
-    auto *outDat = (uint8_t *)cDat;
-    for (int i = 0; i < sizeof(CriptedName) - sizeof(FINDBYTES) - 2; i++)
-    {
-        outDat[i] = crdata[i] ^ xorMul;
-        xorMul += xorAdd;
-    }
 }
 
 void XINTERFACE::AddNodeToList(CINODE *nod, long priority)
@@ -3162,7 +3135,7 @@ long XINTERFACE::PrintIntoWindow(long wl, long wr, long idFont, uint32_t dwFCol,
     // режем слева
     while (strLeft < wl && newStr != nullptr && newStr[0] != 0)
     {
-        newStr++;
+        newStr += utf8::u8_inc(newStr);
         strWidth = pRenderService->StringWidth(newStr, idFont, scale);
         strLeft = strRight - strWidth;
     }
@@ -3173,7 +3146,7 @@ long XINTERFACE::PrintIntoWindow(long wl, long wr, long idFont, uint32_t dwFCol,
         long nEnd = strlen(newStr);
         while (nEnd > 0 && strRight > wr)
         {
-            nEnd--;
+            nEnd -= utf8::u8_dec(newStr + nEnd);
             const char chOld = newStr[nEnd];
             newStr[nEnd] = 0;
             strWidth = pRenderService->StringWidth(newStr, idFont, scale);
@@ -3469,10 +3442,11 @@ int XINTERFACE::LoadIsExist()
             continue;
         }
 
+        std::string FileName = utf8::ConvertWideToUtf8(wfd.cFileName);
         if (sSavePath == nullptr)
-            sprintf_s(param, "%s", wfd.cFileName);
+            sprintf_s(param, "%s", FileName.c_str());
         else
-            sprintf_s(param, "%s\\%s", sSavePath, wfd.cFileName);
+            sprintf_s(param, "%s\\%s", sSavePath, FileName.c_str());
 
         char datBuf[512];
         if (SFLB_GetSaveFileData(param, sizeof(datBuf), datBuf))
@@ -3728,49 +3702,4 @@ CONTROLS_CONTAINER::CONTEINER_DESCR::CONTROL_DESCR *CONTROLS_CONTAINER::CONTEINE
     }
 
     return nullptr;
-}
-
-bool CheckPCcd()
-{
-
-    // return true;
-    if (DiskCheck)
-        return true;
-
-    int drive, curdrive;
-
-    char nameDrv[32];
-    strcpy_s(nameDrv, "A:\\");
-
-    /* Save current drive. */
-    curdrive = _getdrive();
-
-    /* If we can switch to the drive, it exists. */
-    for (drive = 1; drive < 27; drive++)
-    {
-        nameDrv[0] = drive - 1 + 'A';
-        int nTmp;
-        if ((nTmp = GetDriveType(nameDrv)) == DRIVE_CDROM)
-        {
-            char CheckName[1024];
-            sprintf_s(CheckName, "%c:\\%s", drive - 1 + 'A', CHECK_FILE_NAME);
-            SetErrorMode(SEM_FAILCRITICALERRORS);
-            const HANDLE hFile = CreateFile(CheckName, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING,
-                                            FILE_ATTRIBUTE_NORMAL, nullptr);
-            if (hFile == INVALID_HANDLE_VALUE)
-            {
-                SetErrorMode(0);
-                continue;
-            }
-            CloseHandle(hFile);
-            DiskCheck = true;
-            break;
-        }
-    }
-
-    /* Restore original drive.*/
-    _chdrive(curdrive);
-
-    return drive < 27;
-    return false;
 }
