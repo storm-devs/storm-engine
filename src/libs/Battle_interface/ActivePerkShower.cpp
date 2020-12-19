@@ -246,15 +246,20 @@ void ActivePerkShower::AddIconToList(ATTRIBUTES *pAItemDescr)
     const int picNum = pAItemDescr->GetAttributeAsDword("pic_idx");
     const int texNum = pAItemDescr->GetAttributeAsDword("texture");
 
-    for (auto i = 0; i < m_nIShowQ; i++)
+    if (m_pIconsList != nullptr)
     {
-        if (texNum == m_pIconsList[i].m_nPicTexIdx && picNum == m_pIconsList[i].m_nPicNum)
-            return; // уже есть такая абилити
+        for (auto i = 0; i < m_nIShowQ; i++)
+        {
+            if (texNum == m_pIconsList[i].m_nPicTexIdx && picNum == m_pIconsList[i].m_nPicNum)
+                return; // уже есть такая абилити
+        }
     }
 
     m_nIShowQ++;
     if (m_pIconsList == nullptr)
+    {
         m_pIconsList = new _PICTURE_DESCR[m_nIShowQ];
+    }
     else
     {
         auto *const old_pIconsList = m_pIconsList;

@@ -27,7 +27,7 @@ class TMP_LONG_STACK
 
     ~TMP_LONG_STACK()
     {
-        delete ldat;
+        delete[] ldat;
         ldat = nullptr;
     }
 

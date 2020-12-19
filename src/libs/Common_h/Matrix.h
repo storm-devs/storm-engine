@@ -759,8 +759,8 @@ inline CMatrix &CMatrix::BuildProjectionMatrix(float viewAngle, float vpWidth, f
       mov		ecx, 16
       rep		stosd
     }*/
-    auto cs = cosf(viewAngle * 0.5f);
-    auto sn = sinf(viewAngle * 0.5f);
+    // auto cs = cosf(viewAngle * 0.5f);
+    // auto sn = sinf(viewAngle * 0.5f);
     const auto Q = static_cast<double>(zFar) / static_cast<double>(zFar - zNear);
 
     matrix[0] = 1.0f / tanf(viewAngle * 0.5f);

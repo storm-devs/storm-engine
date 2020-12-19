@@ -18,9 +18,6 @@ CORE::CORE()
     bEngineIniProcessed = false;
     App_Hwnd = nullptr;
     State_file_name = nullptr;
-    PZERO(&CoreState, sizeof(CoreState));
-    CoreState.engine_version = 00000000;
-    SystemMessagesNum = 0;
     Exit_flag = false;
     State_loading = false;
     Memory_Leak_flag = false;
@@ -55,8 +52,6 @@ void CORE::ResetCore()
     ReleaseServices();
 
     Services_List.Release();
-
-    SystemMessagesNum = 0;
 
     STORM_DELETE(State_file_name);
 }
@@ -223,18 +218,6 @@ bool CORE::Initialize()
     StartThread();
 
     Initialized = true;
-
-    return true;
-}
-
-bool CORE::LoadCoreState(CORE_STATE cs)
-{
-    ResetCore();
-
-    CoreState = cs;
-
-    Initialized = true;
-    bEngineIniProcessed = true;
 
     return true;
 }
@@ -704,7 +687,7 @@ FLOAT CORE::Entity_GetAttributeAsFloat(entid_t id_PTR, const char *name, FLOAT d
     return pE->AttributesPointer->GetAttributeAsFloat(name, def);
 }
 
-BOOL CORE::Entity_SetAttribute(entid_t id_PTR, const char *name, const char *attribute)
+bool CORE::Entity_SetAttribute(entid_t id_PTR, const char *name, const char *attribute)
 {
     Entity *pE = EntityManager::GetEntityPointer(id_PTR);
     if (pE == nullptr)
@@ -714,7 +697,7 @@ BOOL CORE::Entity_SetAttribute(entid_t id_PTR, const char *name, const char *att
     return pE->AttributesPointer->SetAttribute(name, attribute);
 }
 
-BOOL CORE::Entity_SetAttributeUseDword(entid_t id_PTR, const char *name, uint32_t val)
+bool CORE::Entity_SetAttributeUseDword(entid_t id_PTR, const char *name, uint32_t val)
 {
     Entity *pE = EntityManager::GetEntityPointer(id_PTR);
     if (pE == nullptr)
@@ -724,7 +707,7 @@ BOOL CORE::Entity_SetAttributeUseDword(entid_t id_PTR, const char *name, uint32_
     return pE->AttributesPointer->SetAttributeUseDword(name, val);
 }
 
-BOOL CORE::Entity_SetAttributeUseFloat(entid_t id_PTR, const char *name, FLOAT val)
+bool CORE::Entity_SetAttributeUseFloat(entid_t id_PTR, const char *name, FLOAT val)
 {
     Entity *pE = EntityManager::GetEntityPointer(id_PTR);
     if (pE == nullptr)

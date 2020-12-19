@@ -31,7 +31,7 @@ struct XI_TEX_VERTEX
 
 class VSoundService;
 
-class DIALOG : public Entity
+class DIALOG final : public Entity
 {
     static VDX9RENDER *RenderService;
 
@@ -91,11 +91,11 @@ class DIALOG : public Entity
             rs = nullptr;
             nFontID = -1;
         }
-        virtual ~TextDescribe()
+        ~TextDescribe()
         {
             Release();
         }
-        virtual void Release()
+        void Release()
         {
             if (rs && nFontID >= 0)
                 rs->UnloadFont(nFontID);

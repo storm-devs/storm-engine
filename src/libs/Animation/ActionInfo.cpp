@@ -18,7 +18,7 @@
 ActionInfo::ActionInfo(const char *aname, long startframe, long endframe)
 {
     Assert(aname);
-    Assert(aname[0] != 0);
+    Assert(aname[0] != '\0');
     Assert(strlen(aname) < 64);
     Assert(startframe >= 0);
     Assert(startframe <= endframe);

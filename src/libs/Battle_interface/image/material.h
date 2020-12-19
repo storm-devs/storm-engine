@@ -41,7 +41,7 @@ class BIImageMaterial
         m_bMakeBufferUpdate = true;
     }
 
-    long GetImageQuantity() const
+    size_t GetImageQuantity() const
     {
         return m_apImage.size();
     }

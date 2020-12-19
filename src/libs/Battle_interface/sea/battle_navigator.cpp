@@ -1335,8 +1335,6 @@ long BATTLE_NAVIGATOR::SetRectangleSegVertexTex(BI_ONETEXTURE_VERTEX *v, float x
 
 void BATTLE_NAVIGATOR::SetIsland()
 {
-    entid_t ei;
-
     CVECTOR posCenter;
     float islSize = 0;
 

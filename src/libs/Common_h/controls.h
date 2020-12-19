@@ -2,6 +2,7 @@
 #define _CONTROLS_H_
 
 #include "utf8.h"
+#include <cstdint>
 
 #define INVALID_CONTROL_CODE 0xffffffff
 #define UNASSIGNED_CONTROL 0xffffffff

@@ -28,9 +28,9 @@ class VAPI
     virtual char *Entity_GetAttribute(entid_t id_PTR, const char *name) = 0;
     virtual uint32_t Entity_GetAttributeAsDword(entid_t id_PTR, const char *name, uint32_t def = 0) = 0;
     virtual FLOAT Entity_GetAttributeAsFloat(entid_t id_PTR, const char *name, FLOAT def = 0) = 0;
-    virtual BOOL Entity_SetAttribute(entid_t id_PTR, const char *name, const char *attribute) = 0;
-    virtual BOOL Entity_SetAttributeUseDword(entid_t id_PTR, const char *name, uint32_t val) = 0;
-    virtual BOOL Entity_SetAttributeUseFloat(entid_t id_PTR, const char *name, FLOAT val) = 0;
+    virtual bool Entity_SetAttribute(entid_t id_PTR, const char *name, const char *attribute) = 0;
+    virtual bool Entity_SetAttributeUseDword(entid_t id_PTR, const char *name, uint32_t val) = 0;
+    virtual bool Entity_SetAttributeUseFloat(entid_t id_PTR, const char *name, FLOAT val) = 0;
     virtual void Entity_SetAttributePointer(entid_t id_PTR, ATTRIBUTES *pA) = 0;
     virtual ATTRIBUTES *Entity_GetAttributePointer(entid_t id_PTR) = 0;
 

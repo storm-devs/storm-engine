@@ -23,4 +23,8 @@ inline void __Storm_Assert__(bool expression, const char *file, long line, const
     }
 }
 
-#define Assert(exp) __Storm_Assert__((exp) != 0, __FILE__, __LINE__, #exp);
+#ifdef _DEBUG
+#define Assert(exp) __Storm_Assert__(exp, __FILE__, __LINE__, #exp)
+#else
+#define Assert(exp)
+#endif

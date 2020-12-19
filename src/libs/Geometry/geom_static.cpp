@@ -412,7 +412,6 @@ const char *GEOM::GetTextureName(long tx) const
 // ~!~
 // пока оставлю так
 // потом будем думать
-// TODO: ptr можно убрать из скриптов
 auto unbelievable_workaround(void *ptr)
 {
     return reinterpret_cast<unsigned long long>(ptr) & 0x7FFFFFFF;
