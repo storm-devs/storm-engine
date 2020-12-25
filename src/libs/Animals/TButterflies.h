@@ -3,9 +3,9 @@
 
 #include "AnimalsDefines.h"
 #include "Animation.h"
+#include "IVBufferManager.h"
 #include "Matrix.h"
 #include "TButterfly.h"
-#include "TIVBufferManager.h"
 #include "collide.h"
 #include "dx9render.h"
 #include "geometry.h"
@@ -31,7 +31,7 @@ class TButterflies
 
     VDX9RENDER *renderService;
     COLLIDE *collide;
-    TIVBufferManager *ivManager;
+    IVBufferManager *ivManager;
     entid_t butterflyModel;
     TButterfly butterflies[BUTTERFLY_COUNT];
     long butterfliesCount;

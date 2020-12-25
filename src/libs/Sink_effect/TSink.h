@@ -3,8 +3,8 @@
 
 #include "../SoundService/VSoundService.h"
 #include "Cvector.h"
+#include "IVBufferManager.h"
 #include "TFlotsam.h"
-#include "TIVBufferManager.h"
 #include "TSinkSplash.h"
 #include "dx9render.h"
 #include "sea_base.h"
@@ -31,7 +31,7 @@ class TSink
     VDX9RENDER *renderer;
     SEA_BASE *sea;
     long texture;
-    TIVBufferManager *ivManager;
+    IVBufferManager *ivManager;
     uint32_t time;
 
     TSinkSplash splashes[sink_effect::MAX_SPLASHES];

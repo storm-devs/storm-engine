@@ -9,7 +9,7 @@ add_library(${PROJECT_NAME} STATIC
 	sdevice.cpp
 	sdevice.h
 	texture.h
-	TIVBufferManager.cpp
+	IVBufferManager.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${DirectX_INCLUDE_DIR})

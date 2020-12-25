@@ -3,7 +3,7 @@
 
 #include "Cvector.h"
 #include "EntityManager.h"
-#include "TIVBufferManager.h"
+#include "IVBufferManager.h"
 #include "collide.h"
 #include "model.h"
 
@@ -66,7 +66,7 @@ class TButterfly
     }
 
     void Draw(HDC _dc);
-    void Draw(TIVBufferManager *_ivManager);
+    void Draw(IVBufferManager *_ivManager);
     void Draw(VDX9RENDER *_renderer, MODEL *_model);
 
   private:

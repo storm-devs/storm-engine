@@ -214,7 +214,7 @@ void TButterfly::Effect(const CVECTOR &_position)
 }
 
 //--------------------------------------------------------------------
-void TButterfly::Draw(TIVBufferManager *_ivManager)
+void TButterfly::Draw(IVBufferManager *_ivManager)
 {
     uint16_t *iPointer;
     tButterflyVertex *vPointer;

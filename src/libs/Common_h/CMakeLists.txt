@@ -79,7 +79,7 @@ set(PROJECT_SOURCES
 	stringService.h
 	strutils.h
 	tga.h
-	TIVBufferManager.h
+	IVBufferManager.h
 	triangle.h
 	types3d.h
 	utf8.h

@@ -24,6 +24,8 @@
 
 typedef uint32_t RS_ID;
 
+using renderer_handle = uint32_t;
+
 struct FVF_VERTEX
 {
     float x, y, z;

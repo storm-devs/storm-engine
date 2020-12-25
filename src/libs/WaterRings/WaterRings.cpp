@@ -3,6 +3,8 @@
 
 #include "defines.h"
 
+#include "IVBufferManager.h"
+
 //------------------------------------------------------------------------------------
 WaterRings::WaterRings() : ivManager(nullptr)
 {
@@ -30,8 +32,8 @@ bool WaterRings::Init()
         throw std::exception("No service: dx9render");
 
     ivManager =
-        new TIVBufferManager(renderService, waterrings::RING_FVF, sizeof(RING_VERTEX), waterrings::TRIANGLES_COUNT * 3,
-                             waterrings::GRID_STEPS_COUNT * waterrings::GRID_STEPS_COUNT, waterrings::MAX_RINGS);
+        new IVBufferManager(renderService, waterrings::RING_FVF, sizeof(RING_VERTEX), waterrings::TRIANGLES_COUNT * 3,
+                            waterrings::GRID_STEPS_COUNT * waterrings::GRID_STEPS_COUNT, waterrings::MAX_RINGS);
 
     ringTexture = renderService->TextureCreate("ring.tga");
 

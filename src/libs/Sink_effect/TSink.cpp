@@ -21,8 +21,8 @@ void TSink::Initialize(INIFILE *_ini, IDirect3DDevice9 *_device, SEA_BASE *_sea,
     renderer = _renderer;
 
     ivManager =
-        new TIVBufferManager(renderer, sink_effect::SINK_FVF, sizeof(SINK_VERTEX), 3 * sink_effect::TRIANGLES_COUNT,
-                             sink_effect::GRID_STEPS * sink_effect::GRID_STEPS, sink_effect::MAX_SPLASHES);
+        new IVBufferManager(renderer, sink_effect::SINK_FVF, sizeof(SINK_VERTEX), 3 * sink_effect::TRIANGLES_COUNT,
+                            sink_effect::GRID_STEPS * sink_effect::GRID_STEPS, sink_effect::MAX_SPLASHES);
     texture = renderer->TextureCreate("explos.tga");
     for (auto i = 0; i < sink_effect::MAX_SPLASHES; ++i)
     {

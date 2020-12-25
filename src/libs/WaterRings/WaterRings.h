@@ -6,7 +6,7 @@
 #include "sea_base.h"
 #include "vmodule_api.h"
 //#include "..\geom_lib\geos.h"
-#include "TIVBufferManager.h"
+#include "IVBufferManager.h"
 
 namespace waterrings
 {
@@ -74,7 +74,7 @@ class WaterRings : public Entity
 
     VDX9RENDER *renderService;
     SEA_BASE *sea;
-    TIVBufferManager *ivManager;
+    IVBufferManager *ivManager;
     long ringTexture;
     tRing rings[waterrings::MAX_RINGS];
 };
