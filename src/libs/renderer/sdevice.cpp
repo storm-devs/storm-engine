@@ -74,6 +74,31 @@ uint32_t SetGlowParams(VS_STACK *pS)
     return IFUNCRESULT_OK;
 }
 
+bool DX9RENDER_SCRIPT_LIBRIARY::Init()
+{
+    IFUNCINFO sIFuncInfo;
+
+    sIFuncInfo.nArguments = 2;
+    sIFuncInfo.pFuncName = "SetTexturePath";
+    sIFuncInfo.pReturnValueName = "int";
+    sIFuncInfo.pFuncAddress = DX9SetTexturePath;
+    api->SetScriptFunction(&sIFuncInfo);
+
+    sIFuncInfo.nArguments = 3;
+    sIFuncInfo.pFuncName = "RPrint";
+    sIFuncInfo.pReturnValueName = "int";
+    sIFuncInfo.pFuncAddress = RPrint;
+    api->SetScriptFunction(&sIFuncInfo);
+
+    sIFuncInfo.nArguments = 3;
+    sIFuncInfo.pFuncName = "SetGlowParams";
+    sIFuncInfo.pReturnValueName = "int";
+    sIFuncInfo.pFuncAddress = SetGlowParams;
+    api->SetScriptFunction(&sIFuncInfo);
+
+    return true;
+}
+
 uint64_t _rdtsc;
 uint32_t dwTotalSize = 0;
 uint32_t dwSplashTime = 0;
@@ -2321,6 +2346,7 @@ void DX9RENDER::RecompileEffects()
 {
     effects_.release();
 
+    fs::current_path(fio->_GetExecutableDirectory());
     for (const auto &p : fs::recursive_directory_iterator("resource/techniques"))
         if (is_regular_file(p) && p.path().extension() == ".fx")
         {

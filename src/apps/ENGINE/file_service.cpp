@@ -1,4 +1,7 @@
 #include "file_service.h"
+
+#include "storm_assert.h"
+
 #include "utf8.h"
 #include <exception>
 #include <string>
@@ -118,6 +121,20 @@ uint32_t FILE_SERVICE::_GetCurrentDirectory(uint32_t nBufferLength, char *lpBuff
     std::string CurrentDirectory = utf8::ConvertWideToUtf8(BufferW);
     strcpy_s(lpBuffer, nBufferLength, CurrentDirectory.c_str());
     return Res;
+}
+
+std::string FILE_SERVICE::_GetExecutableDirectory()
+{
+    wchar_t BufferW[MAX_PATH];
+    uint32_t Res = GetModuleFileName(NULL, BufferW, MAX_PATH);
+    Assert(Res);
+    std::string ExePath = utf8::ConvertWideToUtf8(BufferW);
+    size_t i = ExePath.rfind('\\', ExePath.length());
+    if (i != std::string::npos)
+    {
+        return ExePath.substr(0, i);
+    }
+    return "";
 }
 
 BOOL FILE_SERVICE::_GetDiskFreeSpaceEx(const char *lpDirectoryName, PULARGE_INTEGER lpFreeBytesAvailableToCaller,

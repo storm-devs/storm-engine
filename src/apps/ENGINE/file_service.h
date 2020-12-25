@@ -102,6 +102,7 @@ class FILE_SERVICE : public VFILE_SERVICE
     BOOL _FindClose(HANDLE hFindFile) override;
     BOOL _FlushFileBuffers(HANDLE hFile) override;
     uint32_t _GetCurrentDirectory(uint32_t nBufferLength, char *lpBuffer) override;
+    std::string _GetExecutableDirectory() override;
     BOOL _GetDiskFreeSpaceEx(const char *lpDirectoryName, PULARGE_INTEGER lpFreeBytesAvailableToCaller,
                              PULARGE_INTEGER lpTotalNumberOfBytes, PULARGE_INTEGER lpTotalNumberOfFreeBytes) override;
     UINT _GetDriveType(const char *lpRootPathName) override;

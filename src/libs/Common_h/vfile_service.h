@@ -7,6 +7,7 @@
 
 #include <Windows.h>
 #include <cstdint>
+#include <string>
 
 class INIFILE;
 
@@ -34,6 +35,7 @@ class VFILE_SERVICE
     virtual BOOL _FindClose(HANDLE hFindFile) = 0;
     virtual BOOL _FlushFileBuffers(HANDLE hFile) = 0;
     virtual uint32_t _GetCurrentDirectory(uint32_t nBufferLength, char *lpBuffer) = 0;
+    virtual std::string _GetExecutableDirectory() = 0;
     virtual BOOL _GetDiskFreeSpaceEx(const char *lpDirectoryName, PULARGE_INTEGER lpFreeBytesAvailableToCaller,
                                      PULARGE_INTEGER lpTotalNumberOfBytes,
                                      PULARGE_INTEGER lpTotalNumberOfFreeBytes) = 0;

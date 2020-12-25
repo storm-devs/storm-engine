@@ -3,8 +3,6 @@
 #include "s_debug.h"
 #include <cstdio>
 
-//#define STARFORCE_PROTECTION
-
 #define SKIP_COMMENT_TRACING
 #define TRACE_OFF
 #define INVALID_SEGMENT_INDEX 0xffffffff
@@ -208,23 +206,20 @@ char *COMPILER::LoadFile(const char *file_name, uint32_t &file_size, bool bFullP
 
     if (!bFullPath)
     {
-        if (ProgramDirectory)
+        std::string EngineDir = "storm-engine\\";
+        if (strncmp(file_name, EngineDir.c_str(), EngineDir.length()) == 0)
+        {
+            std::string ExePath = fio->_GetExecutableDirectory() + "\\resource\\shared\\";
+            strcpy_s(buffer, ExePath.c_str());
+            strcat_s(buffer, file_name + EngineDir.length());
+        }
+        else if (ProgramDirectory)
         {
             strcpy_s(buffer, ProgramDirectory);
-#ifdef STARFORCE_PROTECTION
-            strcat_s(buffer, "xyz");
-#endif
             strcat_s(buffer, file_name);
         }
         else
-        {
-#ifdef STARFORCE_PROTECTION
-            strcpy_s(buffer, "xyz");
-            strcat_s(buffer, file_name);
-#else
             strcpy_s(buffer, file_name);
-#endif
-        }
     }
 
     file_size = 0;

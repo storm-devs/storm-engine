@@ -148,5 +148,9 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 		
 	COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${STORM_SOURCE_DIR}/techniques"
-        "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/techniques"
+        "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/resource/techniques"
+
+	COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${STORM_SOURCE_DIR}/shared"
+        "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/resource/shared"
 )

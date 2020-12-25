@@ -20,11 +20,11 @@ bool _loopMain()
 {
     bool runResult = false;
 
-    __try
+    //__try
     {
         runResult = Core.Run();
     }
-    __except (CreateMiniDump(GetExceptionInformation()), EXCEPTION_EXECUTE_HANDLER)
+    //__except( CreateMiniDump( GetExceptionInformation() ), EXCEPTION_EXECUTE_HANDLER )
     {
     }
 

@@ -9,6 +9,7 @@
 #include "vmodule_api.h"
 
 #include "d3d9types.h"
+#include "script_libriary.h"
 
 #include <stack>
 #include <vector>
@@ -79,6 +80,15 @@ struct VideoTextureEntity
 extern uint32_t dwSoundBuffersCount;
 extern uint32_t dwSoundBytes;
 extern uint32_t dwSoundBytesCached;
+
+class DX9RENDER_SCRIPT_LIBRIARY : public SCRIPT_LIBRIARY
+{
+  public:
+    DX9RENDER_SCRIPT_LIBRIARY(){};
+
+    ~DX9RENDER_SCRIPT_LIBRIARY(){};
+    bool Init() override;
+};
 
 //-----------SDEVICE-----------
 class DX9RENDER : public VDX9RENDER
