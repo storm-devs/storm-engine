@@ -11,11 +11,14 @@
 #ifndef _WorldMap_H_
 #define _WorldMap_H_
 
+#include "Entity.h"
 #include "vmodule_api.h"
 #include <string>
 
 #define WDMAP_MAXOBJECTS 4096
 
+class ATTRIBUTES;
+class MESSAGE;
 class WdmRenderObject;
 class WdmRenderModel;
 class VDX9RENDER;

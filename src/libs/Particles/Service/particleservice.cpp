@@ -1,4 +1,7 @@
 #include "particleservice.h"
+
+#include "core.h"
+
 #include "../K2Wrapper/particles.h"
 #include "../Manager/particlemanager.h"
 
@@ -16,11 +19,11 @@ ParticleService::~ParticleService()
 
     if (!CreatedManagers.empty())
     {
-        api->Trace("Unreleased particles managers found !\n");
+        core.Trace("Unreleased particles managers found !\n");
     }
     for (auto n = 0; n < CreatedManagers.size(); n++)
     {
-        api->Trace("Manager created in %s, Line %d\n", CreatedManagers[n].FileName.c_str(), CreatedManagers[n].Line);
+        core.Trace("Manager created in %s, Line %d\n", CreatedManagers[n].FileName.c_str(), CreatedManagers[n].Line);
         CreatedManagers[n].pManager->Release();
     }
 }

@@ -1,5 +1,7 @@
 #include "DataSource.h"
 
+#include "core.h"
+
 #include "DataColor.h"
 #include "DataFloat.h"
 #include "DataGraph.h"
@@ -117,7 +119,7 @@ void DataSource::Load(MemFile *pMemFile)
     pMemFile->Read(Id, 4);
     if (strcmp(Id, HEADER) != 0)
     {
-        api->Trace("Particles: Incorrect file type");
+        core.Trace("Particles: Incorrect file type");
         return;
     }
 
@@ -128,7 +130,7 @@ void DataSource::Load(MemFile *pMemFile)
 
     /* // show warnings
       if (strcmp (Ver, VERSION) != 0)
-              api->Trace ("Particles: Warning !!! Incorrect file version %s, must be %s", Ver, VERSION);
+              core.Trace ("Particles: Warning !!! Incorrect file version %s, must be %s", Ver, VERSION);
     */
 
     //Кол-во эмиттеров...
@@ -143,7 +145,7 @@ void DataSource::Load(MemFile *pMemFile)
         switch (emType)
         {
         case POINT_EMITTER: {
-            //				api->Trace ("Particles info: Point emitter");
+            //				core.Trace ("Particles info: Point emitter");
             CreatePointEmitter(pMemFile);
             break;
         }
@@ -157,7 +159,7 @@ void DataSource::Load(MemFile *pMemFile)
 
 void DataSource::CreatePointEmitter(MemFile *pMemFile)
 {
-    // api->Trace ("Particles info: Point emitter");
+    // core.Trace ("Particles info: Point emitter");
     Emitters.push_back(EmitterDesc{});
     auto *PointEmitter = &Emitters.back();
     // EmitterDesc* PointEmitter = &Emitters[Emitters.Add()];
@@ -177,12 +179,12 @@ void DataSource::CreatePointEmitter(MemFile *pMemFile)
         switch (ptType)
         {
         case BILLBOARD_PARTICLE: {
-            // api->Trace ("Particles info: Billboard particle");
+            // core.Trace ("Particles info: Billboard particle");
             CreateBillBoardParticle(PointEmitter->Particles, pMemFile);
             break;
         }
         case MODEL_PARTICLE: {
-            // api->Trace ("Particles info: Model particle");
+            // core.Trace ("Particles info: Model particle");
             CreateModelParticle(PointEmitter->Particles, pMemFile);
             break;
         }

@@ -22,7 +22,7 @@ SailorsEditor::~SailorsEditor()
 
 bool SailorsEditor::Init()
 {
-    rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
 
     sailors = EntityManager::CreateEntity("Sailors");
 
@@ -35,23 +35,23 @@ bool SailorsEditor::Init()
     LoadFromIni("SailorsEditor.ini");
 
     shipID = EntityManager::CreateEntity("MODELR");
-    api->Send_Message(shipID, "ls", MSG_MODEL_LOAD_GEO, _shipName.c_str());
+    core.Send_Message(shipID, "ls", MSG_MODEL_LOAD_GEO, _shipName.c_str());
 
     EntityManager::AddToLayer(EDITOR_REALIZE, shipID, 100000);
     model = static_cast<MODEL *>(EntityManager::GetEntityPointer(shipID));
 
     model->mtx.BuildMatrix(CVECTOR(0.0f), CVECTOR(0.0f, 0.0f, 0.0f));
 
-    auto ctrl = api->Controls->CreateControl("DeltaMouseH");
-    api->Controls->MapControl(ctrl, 256);
-    ctrl = api->Controls->CreateControl("DeltaMouseV");
-    api->Controls->MapControl(ctrl, 257);
+    auto ctrl = core.Controls->CreateControl("DeltaMouseH");
+    core.Controls->MapControl(ctrl, 256);
+    ctrl = core.Controls->CreateControl("DeltaMouseV");
+    core.Controls->MapControl(ctrl, 257);
 
     menu.sailrs = static_cast<Sailors *>(EntityManager::GetEntityPointer(sailors));
 
     menu.sailrs->editorMode = true;
 
-    api->Send_Message(sailors, "lis", AI_MESSAGE_ADD_SHIP, shipID, "");
+    core.Send_Message(sailors, "lis", AI_MESSAGE_ADD_SHIP, shipID, "");
 
     menu.Update(menu.sailrs->shipWalk[0].sailorsPoints);
 
@@ -84,14 +84,14 @@ void SailorsEditor::Realize(uint32_t dltTime)
 void SailorsEditor::SetCamera(uint32_t &dltTime)
 {
     CONTROL_STATE cs;
-    api->Controls->GetControlState("DeltaMouseV", cs);
+    core.Controls->GetControlState("DeltaMouseV", cs);
     cameraAng.x += -cs.fValue * 0.001f;
     if (cameraAng.x < 0.01f)
         cameraAng.x = 0.01f;
     if (cameraAng.x > 1.57f)
         cameraAng.x = 1.57f;
 
-    api->Controls->GetControlState("DeltaMouseH", cs);
+    core.Controls->GetControlState("DeltaMouseH", cs);
     cameraAng.y += cs.fValue * 0.001f;
 
     CVECTOR pos;
@@ -146,7 +146,7 @@ void SailorsEditor::LoadFromIni(std::string fileName)
 
     if (!pIni)
     {
-        api->Trace("Sailors : Can`t open '%s'", fileName.c_str());
+        core.Trace("Sailors : Can`t open '%s'", fileName.c_str());
         return;
     }
 

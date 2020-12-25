@@ -1,5 +1,6 @@
 #include "ShipCamera.h"
 #include "Sd2_h/SaveLoad.h"
+#include "core.h"
 
 #define SCMR_BOXSCALE_X 1.6f
 #define SCMR_BOXSCALE_Y 1.3f
@@ -31,7 +32,7 @@ SHIP_CAMERA::~SHIP_CAMERA()
 
 bool SHIP_CAMERA::Init()
 {
-    // api->SystemMessages(GetId(),true);
+    // core.SystemMessages(GetId(),true);
 
     iLockX = 0;
     iLockY = 0;
@@ -43,7 +44,7 @@ bool SHIP_CAMERA::Init()
 
 void SHIP_CAMERA::SetDevices()
 {
-    pRS = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+    pRS = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     Assert(pRS);
 
     pSea = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(EntityManager::GetEntityId("sea")));
@@ -59,7 +60,7 @@ void SHIP_CAMERA::Execute(uint32_t dwDeltaTime)
 
     SetPerspective(AttributesPointer->GetAttributeAsFloat("Perspective"));
 
-    const auto fDeltaTime = 0.001f * static_cast<float>(api->GetDeltaTime());
+    const auto fDeltaTime = 0.001f * static_cast<float>(core.GetDeltaTime());
 
     auto *pModel = GetModelPointer();
     Assert(pModel);
@@ -85,10 +86,10 @@ void SHIP_CAMERA::Move(float fDeltaTime)
 
     // Distance
     auto fSensivityDistanceDlt = 0.0f;
-    api->Controls->GetControlState("ShipCamera_Forward", cs);
+    core.Controls->GetControlState("ShipCamera_Forward", cs);
     if (cs.state == CST_ACTIVE || cs.state == CST_ACTIVATED)
         fSensivityDistanceDlt -= fSensivityDistance;
-    api->Controls->GetControlState("ShipCamera_Backward", cs);
+    core.Controls->GetControlState("ShipCamera_Backward", cs);
     if (cs.state == CST_ACTIVE || cs.state == CST_ACTIVATED)
         fSensivityDistanceDlt += fSensivityDistance;
 
@@ -106,7 +107,7 @@ void SHIP_CAMERA::Move(float fDeltaTime)
         fDistance = 0.0f;
 
     // Rotate
-    api->Controls->GetControlState("ShipCamera_Turn_H", cs);
+    core.Controls->GetControlState("ShipCamera_Turn_H", cs);
 
     auto fValue = fInvertMouseX * 2.0f * (cs.fValue) * fSensivityAzimuthAngle;
     fKInert = fAngleYInertia * fSpeed;
@@ -117,7 +118,7 @@ void SHIP_CAMERA::Move(float fDeltaTime)
     fAngleYDlt += (fValue - fAngleYDlt) * fKInert;
     vAng.y += fSpeed * fAngleYDlt;
 
-    api->Controls->GetControlState("ShipCamera_Turn_V", cs);
+    core.Controls->GetControlState("ShipCamera_Turn_V", cs);
 
     fValue = fInvertMouseY * 3.0f * (cs.fValue) * fSensivityHeightAngle;
     fKInert = fAngleXInertia * fSpeed;

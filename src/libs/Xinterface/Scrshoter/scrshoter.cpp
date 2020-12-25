@@ -1,6 +1,8 @@
 #include "scrshoter.h"
 #include "../xdefines.h"
 
+#include "core.h"
+
 #define SS_TEXTURE_WIDTH 128
 #define SS_TEXTURE_HEIGHT 128
 #define SS_TEXTURE_FONECOLOR 0xFF000000
@@ -57,7 +59,7 @@ bool SCRSHOTER::Init()
 void SCRSHOTER::SetDevice()
 {
     // получить сервис рендера
-    rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!rs)
         throw std::exception("No service: dx9render");
 }
@@ -71,11 +73,11 @@ void SCRSHOTER::Realize(uint32_t Delta_Time)
     if (m_pScrShotTex == nullptr)
         if (!MakeScreenShot())
         {
-            api->Trace("ERROR!!! screen shot create error");
-            api->Event("makescrshot", nullptr);
+            core.Trace("ERROR!!! screen shot create error");
+            core.Event("makescrshot", nullptr);
         }
         else
-            api->Event("makescrshot", nullptr);
+            core.Event("makescrshot", nullptr);
 }
 
 bool SCRSHOTER::MakeScreenShot()
@@ -89,13 +91,13 @@ bool SCRSHOTER::MakeScreenShot()
     hr = rs->EndScene();
     if (hr != D3D_OK)
     {
-        api->Trace("ERROR!!! Can`t EndScene");
+        core.Trace("ERROR!!! Can`t EndScene");
         return false;
     }
     hr = rs->BeginScene();
     if (hr != D3D_OK)
     {
-        api->Trace("ERROR!!! Can`t BeginScene");
+        core.Trace("ERROR!!! Can`t BeginScene");
         return false;
     }
 
@@ -396,7 +398,7 @@ IDirect3DTexture9 *SCRSHOTER::GetTexFromSave(char *fileName, char **pDatStr) con
 
     long datSize = 0;
     char *pdat = nullptr;
-    pdat = static_cast<char *>(api->GetSaveData(fileName, datSize));
+    pdat = static_cast<char *>(core.GetSaveData(fileName, datSize));
     long startIdx = 0;
     long texSize = 0;
     if (pdat != nullptr && datSize > sizeof(SAVE_DATA_HANDLE))

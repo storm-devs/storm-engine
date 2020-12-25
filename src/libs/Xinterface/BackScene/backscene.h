@@ -2,7 +2,7 @@
 #define _XI_BACK_SCENE_H
 
 #include "../xdefines.h"
-#include "EntityManager.h"
+#include "Entity.h"
 #include "Matrix.h"
 #include "dx9render.h"
 

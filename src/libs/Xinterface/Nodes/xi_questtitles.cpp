@@ -176,23 +176,23 @@ int CXI_QUESTTITLE::CommandExecute(int wActCode)
             if (m_curIdx > 0)
                 m_curIdx--;
             else
-                api->Event("QuestTopChange", "l", -1);
+                core.Event("QuestTopChange", "l", -1);
             break;
         case ACTION_DOWNSTEP:
             if (m_curIdx < m_stringQuantity - 1)
                 m_curIdx++;
             else
-                api->Event("QuestTopChange", "l", 1);
+                core.Event("QuestTopChange", "l", 1);
             break;
         case ACTION_SPEEDUP:
-            api->Event("QuestTopChange", "l", -m_allStrings);
+            core.Event("QuestTopChange", "l", -m_allStrings);
             break;
         case ACTION_SPEEDDOWN:
-            api->Event("QuestTopChange", "l", m_allStrings);
+            core.Event("QuestTopChange", "l", m_allStrings);
             break;
         case ACTION_MOUSECLICK:
         case ACTION_ACTIVATE:
-            api->Event("QuestActivate", "l", m_curIdx);
+            core.Event("QuestActivate", "l", m_curIdx);
             break;
         }
     }
@@ -234,7 +234,7 @@ void CXI_QUESTTITLE::SaveParametersToIni()
     auto *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
-        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
+        core.Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
         return;
     }
 
@@ -329,7 +329,7 @@ void CXI_QUESTTITLE::SetNewTopQuest(ATTRIBUTES *pA, int topNum)
     const long aq = pA->GetAttributesNum();
     if (topNum < 0 || topNum >= aq)
     {
-        api->Trace("quest number out of range");
+        core.Trace("quest number out of range");
         return;
     }
     m_nCommonQuantity = aq;

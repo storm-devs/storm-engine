@@ -9,6 +9,8 @@
 
 #define INVALID_ARRAY_INDEX 0xFFFFFFFF
 
+class INIFILE;
+
 class AIFlowGraph
 {
     friend class IslandED;

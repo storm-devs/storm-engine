@@ -9,8 +9,11 @@
 //============================================================================================
 
 #include "Grass.h"
+
+#include "core.h"
+
 #include "Character.h"
-#include "EntityManager.h"
+#include "Entity.h"
 #include "defines.h"
 
 //============================================================================================
@@ -94,23 +97,23 @@ Grass::~Grass()
 bool Grass::Init()
 {
     // Layers
-    // api->LayerCreate("execute", true, false);
+    // core.LayerCreate("execute", true, false);
     EntityManager::SetLayerType(EXECUTE, EntityManager::Layer::Type::execute);
     EntityManager::AddToLayer(EXECUTE, GetId(), 1000);
-    // api->LayerCreate("realize", true, false);
+    // core.LayerCreate("realize", true, false);
     EntityManager::SetLayerType(REALIZE, EntityManager::Layer::Type::realize);
     EntityManager::AddToLayer(REALIZE, GetId(), 1000);
 
     // boal выбор шайдера -->
     isGrassLightsOn = 1;
-    if (auto *param = api->Event("GOpt_isGrassLightsOn", nullptr))
+    if (auto *param = core.Event("GOpt_isGrassLightsOn", nullptr))
     {
         param->Get(isGrassLightsOn);
     }
     // boal выбор шайдера <--
 
     // DX9 render
-    rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!rs)
         throw std::exception("No service: dx9render");
     // Vertex declaration
@@ -237,7 +240,7 @@ bool Grass::LoadData(const char *patchName)
     }
     catch (const char *error)
     {
-        api->Trace("Grass: incorrect grs file %s (%s)", patchName, error);
+        core.Trace("Grass: incorrect grs file %s (%s)", patchName, error);
         delete miniMap;
         miniMap = nullptr;
         delete block;
@@ -268,7 +271,7 @@ void Grass::Execute(uint32_t delta_time)
         initForce++;
     }
 
-    VDATA *param = api->Event("GOpt_GetGrassQuality", nullptr);
+    VDATA *param = core.Event("GOpt_GetGrassQuality", nullptr);
     long res = rq_full;
     if (param && param->Get(res))
     {
@@ -285,7 +288,7 @@ void Grass::Execute(uint32_t delta_time)
     if (quality == rq_off)
         return;
     //Параметры верта
-    param = api->Event("EWhr_GetWindAngle", nullptr);
+    param = core.Event("EWhr_GetWindAngle", nullptr);
     if (param)
     {
         float ang;
@@ -305,7 +308,7 @@ void Grass::Execute(uint32_t delta_time)
         winDir.x = sinf(ang);
         winDir.z = cosf(ang);
     }
-    param = api->Event("EWhr_GetWindSpeed", nullptr);
+    param = core.Event("EWhr_GetWindSpeed", nullptr);
     if (param)
     {
         float spd;
@@ -382,7 +385,7 @@ void Grass::Realize(uint32_t delta_time)
     if (eidIsland)
     {
         auto fIslandFogDensity = static_cast<float>(dwOldFogDensity);
-        ATTRIBUTES *pA = api->Entity_GetAttributePointer(eidIsland);
+        ATTRIBUTES *pA = core.Entity_GetAttributePointer(eidIsland);
         if (pA)
             fIslandFogDensity = pA->GetAttributeAsFloat("FogDensity", 0.0f);
         rs->SetRenderState(D3DRS_FOGDENSITY, F2DW(fIslandFogDensity));
@@ -422,7 +425,7 @@ void Grass::Realize(uint32_t delta_time)
     rs->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
     rs->SetRenderState(D3DRS_ZENABLE, TRUE);
 
-    // if(api->Controls->GetDebugAsyncKeyState('H') < 0) return;
+    // if(core.Controls->GetDebugAsyncKeyState('H') < 0) return;
 
     //Если нет карты, то нет и рисования
     if (!block)
@@ -584,7 +587,7 @@ void Grass::Realize(uint32_t delta_time)
     numPoints = 0;
     rs->SetTransform(D3DTS_WORLD, CMatrix());
 
-    // api->Trace("%d %d %d %d %d %d", left, top, bottom, right, camx, camz);
+    // core.Trace("%d %d %d %d %d %d", left, top, bottom, right, camx, camz);
     /*for (long mx = left, mz; mx <= camx; mx++)
     {
       for (mz = top; mz <= camz; mz++) render(mz, mx);

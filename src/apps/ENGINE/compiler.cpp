@@ -16,8 +16,6 @@
 
 #include "zlib.h"
 
-extern VAPI *api;
-extern CORE Core;
 extern FILE_SERVICE File_Service;
 // extern char * FuncNameTable[];
 extern INTFUNCDESC IntFuncTable[];
@@ -465,7 +463,7 @@ void COMPILER::SetWarning(const char *data_PTR, ...)
 
 void COMPILER::LoadPreprocess()
 {
-    INIFILE *engine_ini = fio->OpenIniFile(api->EngineIniFileName());
+    INIFILE *engine_ini = fio->OpenIniFile(core.EngineIniFileName());
     if (engine_ini != nullptr)
     {
         if (engine_ini->GetLong("script", "debuginfo", 0) == 0)
@@ -512,7 +510,7 @@ bool COMPILER::CreateProgram(const char *file_name)
 {
     /*	INIFILE * engine_ini;
 
-    engine_ini = fio->OpenIniFile(api->EngineIniFileName());
+    engine_ini = fio->OpenIniFile(core.EngineIniFileName());
     if(engine_ini != null)
     {
       if(engine_ini->GetLong("script","debuginfo",0) == 0)
@@ -745,7 +743,7 @@ VDATA *COMPILER::ProcessEvent(const char *event_name)
             pMem->Move2Start();
         }
 
-        Core.Start_CriticalSection();
+        core.Start_CriticalSection();
 
         const uint32_t nStackVars = SStack.GetDataNum(); // remember stack elements num
         RDTSC_B(nTicks);
@@ -783,7 +781,7 @@ VDATA *COMPILER::ProcessEvent(const char *event_name)
             SetError("process event stack error");
         }
 
-        Core.Leave_CriticalSection();
+        core.Leave_CriticalSection();
 
         if (bEventsBreak)
             break;
@@ -797,14 +795,14 @@ VDATA *COMPILER::ProcessEvent(const char *event_name)
 
     if (current_debug_mode == TMODE_CONTINUE)
         CDebug.SetTraceMode(TMODE_CONTINUE);
-    // SetFocus(Core.App_Hwnd);		// VANO CHANGES
+    // SetFocus(core.App_Hwnd);		// VANO CHANGES
 
     RDTSC_E(dwRDTSC);
 
     // VANO CHANGES - remove in release
-    if (api->Controls->GetDebugAsyncKeyState('5') < 0 && api->Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0)
+    if (core.Controls->GetDebugAsyncKeyState('5') < 0 && core.Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0)
     {
-        api->Trace("evnt: %d, %s", dwRDTSC, event_name);
+        core.Trace("evnt: %d, %s", dwRDTSC, event_name);
     }
 
     return pVD;
@@ -1088,7 +1086,7 @@ bool COMPILER::ProcessDebugExpression0(const char *pExpression, DATA &Result)
 
 void COMPILER::ProcessFrame(uint32_t DeltaTime)
 {
-    if (Core.Timer.Ring)
+    if (core.Timer.Ring)
         AddRuntimeEvent();
 
     for (uint32_t n = 0; n < SegmentsNum; n++)
@@ -1420,7 +1418,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                 break;
             //-----------------------------------------------------
 
-            pClass = Core.FindVMA(Token.GetData());
+            pClass = core.FindVMA(Token.GetData());
             if (!pClass)
             {
                 SetWarning("cant load libriary '%s'", Token.GetData());
@@ -3853,12 +3851,12 @@ bool COMPILER::BC_CallFunction(uint32_t func_code, uint32_t &ip, DATA *&pVResult
     else
     {
         // BC_Execute(func_code,pVResult);
-        Core.Start_CriticalSection();
+        core.Start_CriticalSection();
         RDTSC_B(nTicks);
         BC_Execute(func_code, pVResult);
         RDTSC_E(nTicks);
         FuncTab.AddTime(func_code, nTicks);
-        Core.Leave_CriticalSection();
+        core.Leave_CriticalSection();
     }
     if (nDebugEnterMode == TMODE_MAKESTEP)
     {
@@ -4396,7 +4394,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
             break;
             break;
         case DEBUG_LINE_CODE:
-            if (Core.Exit_flag)
+            if (core.Exit_flag)
                 return false;
             if (pDbgExpSource)
                 break;
@@ -4411,7 +4409,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
                         break;
 
                     if (!CDebug.IsDebug())
-                        CDebug.OpenDebugWindow(Core.GetAppInstance());
+                        CDebug.OpenDebugWindow(core.GetAppInstance());
                     // else
                     ShowWindow(CDebug.GetWindowHandle(), SW_NORMAL);
 
@@ -4433,10 +4431,10 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
                     if (CDebug.Breaks.Find(fi.decl_file_name, nDebugTraceLineCode))
                     {
                         if (!CDebug.IsDebug())
-                            CDebug.OpenDebugWindow(Core.GetAppInstance());
+                            CDebug.OpenDebugWindow(core.GetAppInstance());
 
                         ShowWindow(CDebug.GetWindowHandle(), SW_NORMAL);
-                        // CDebug.OpenDebugWindow(Core.hInstance);
+                        // CDebug.OpenDebugWindow(core.hInstance);
                         CDebug.SetTraceMode(TMODE_WAIT);
                         CDebug.BreakOn(fi.decl_file_name, nDebugTraceLineCode);
 
@@ -4813,7 +4811,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
                   if(pV == 0) { SetError("bad array element"); return false; }
                   pV->Get(eid);
                   //api->Entity_AttributeChanged(&eid,pLeftOperandAClass->GetThisName());
-                  if(bEntityUpdate) Core.Entity_AttributeChanged(&eid,pLeftOperandAClass);
+                  if(bEntityUpdate) core.Entity_AttributeChanged(&eid,pLeftOperandAClass);
                   break;
                 }
                 // copy value to variable
@@ -5350,7 +5348,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
                 pVDst->Get(eid);
                 if (bEntityUpdate)
                 {
-                    Core.Entity_AttributeChanged(eid, pLeftOperandAClass);
+                    core.Entity_AttributeChanged(eid, pLeftOperandAClass);
                 }
                 break;
             }
@@ -6005,7 +6003,7 @@ void COMPILER::ExitProgram()
         DATA *pResult;
         BC_Execute(function_code, pResult);
     }
-    api->Exit();
+    core.Exit();
 }
 
 void COMPILER::ClearEvents()
@@ -6597,7 +6595,7 @@ bool COMPILER::SaveState(HANDLE fh)
         BC_Execute(function_code, pResult);
 
     EXTDATA_HEADER edh;
-    auto *pVDat = static_cast<VDATA *>(api->GetScriptVariable("savefile_info"));
+    auto *pVDat = static_cast<VDATA *>(core.GetScriptVariable("savefile_info"));
     if (pVDat && pVDat->GetString())
         sprintf_s(edh.sFileInfo, sizeof(edh.sFileInfo), "%s", pVDat->GetString());
     else
@@ -6841,7 +6839,7 @@ bool COMPILER::SetSaveData(const char *file_name, void *save_data, long data_siz
         return false;
 
     const uint32_t dwFileSize = fio->_GetFileSize(fh, nullptr);
-    auto *pVDat = static_cast<VDATA *>(api->GetScriptVariable("savefile_info"));
+    auto *pVDat = static_cast<VDATA *>(core.GetScriptVariable("savefile_info"));
     if (pVDat && pVDat->GetString())
         sprintf_s(exdh.sFileInfo, sizeof(exdh.sFileInfo), "%s", pVDat->GetString());
     else
@@ -6999,7 +6997,7 @@ void *COMPILER::GetSaveData(const char *file_name, long &data_size)
     fio->_CloseHandle(fh);
     delete[] pCBuffer;
     RDTSC_E(dw2);
-    // api->Trace("GetSaveData = %d", dw2);
+    // core.Trace("GetSaveData = %d", dw2);
 
     data_size = dwDestLen;
     return pBuffer;

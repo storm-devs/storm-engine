@@ -11,6 +11,7 @@
 #ifndef _PtcData_H_
 #define _PtcData_H_
 
+#include "Cvector.h"
 #include "ptc.h"
 #include "vmodule_api.h"
 

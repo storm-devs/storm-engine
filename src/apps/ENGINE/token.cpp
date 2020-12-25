@@ -2,9 +2,7 @@
 #include <cstdio>
 
 #include "defines.h"
-#include "vapi.h"
 
-extern VAPI *api;
 #define DISCARD_DATABUFFER                                                                                             \
     {                                                                                                                  \
         if (pTokenData)                                                                                                \

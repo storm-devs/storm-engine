@@ -7,7 +7,7 @@ entid_t last_trace_eid;
 //----------------------------------------------------------------------------------
 LOCAL_COLLIDE *COLL::CreateLocalCollide(EntityManager::layer_index_t idx)
 {
-    return new LCOLL(idx, *api);
+    return new LCOLL(idx);
 }
 
 //----------------------------------------------------------------------------------

@@ -11,7 +11,7 @@
 #include "../../Shared/sea_ai/Script_defines.h"
 
 //#define //GUARD_SAILORS(block)	{ static const TCHAR block_name[] = TEXT(#block); try {
-//#define //UN//GUARD_SAILORS			} catch(...) { api->Trace("ERROR in Sailors.dll : block '%s'", (char*)block_name);
+//#define //UN//GUARD_SAILORS			} catch(...) { core.Trace("ERROR in Sailors.dll : block '%s'", (char*)block_name);
 //throw _EXS(FATAL,"unknown"); }}
 
 //------------------------------------------------------------------------------------
@@ -722,26 +722,26 @@ void ShipWalk::CreateNewMan(SailorsPoints &sailorsPoints)
     switch (rand() % 6) // 6 different character types
     {
     case 0:
-        api->Send_Message(shipMan[current].modelID, "ls", MSG_MODEL_LOAD_GEO, "Lowcharacters\\Lo_Man_1");
+        core.Send_Message(shipMan[current].modelID, "ls", MSG_MODEL_LOAD_GEO, "Lowcharacters\\Lo_Man_1");
         break;
     case 1:
-        api->Send_Message(shipMan[current].modelID, "ls", MSG_MODEL_LOAD_GEO, "Lowcharacters\\Lo_Man_2");
+        core.Send_Message(shipMan[current].modelID, "ls", MSG_MODEL_LOAD_GEO, "Lowcharacters\\Lo_Man_2");
         break;
     case 2:
-        api->Send_Message(shipMan[current].modelID, "ls", MSG_MODEL_LOAD_GEO, "Lowcharacters\\Lo_Man_3");
+        core.Send_Message(shipMan[current].modelID, "ls", MSG_MODEL_LOAD_GEO, "Lowcharacters\\Lo_Man_3");
         break;
     case 3:
-        api->Send_Message(shipMan[current].modelID, "ls", MSG_MODEL_LOAD_GEO, "Lowcharacters\\Lo_Man_Kamzol_1");
+        core.Send_Message(shipMan[current].modelID, "ls", MSG_MODEL_LOAD_GEO, "Lowcharacters\\Lo_Man_Kamzol_1");
         break;
     case 4:
-        api->Send_Message(shipMan[current].modelID, "ls", MSG_MODEL_LOAD_GEO, "Lowcharacters\\Lo_Man_Kamzol_2");
+        core.Send_Message(shipMan[current].modelID, "ls", MSG_MODEL_LOAD_GEO, "Lowcharacters\\Lo_Man_Kamzol_2");
         break;
     case 5:
-        api->Send_Message(shipMan[current].modelID, "ls", MSG_MODEL_LOAD_GEO, "Lowcharacters\\Lo_Man_Kamzol_3");
+        core.Send_Message(shipMan[current].modelID, "ls", MSG_MODEL_LOAD_GEO, "Lowcharacters\\Lo_Man_Kamzol_3");
         break;
     }
 
-    api->Send_Message(shipMan[current].modelID, "ls", MSG_MODEL_LOAD_ANI, "Lo_Man");
+    core.Send_Message(shipMan[current].modelID, "ls", MSG_MODEL_LOAD_ANI, "Lo_Man");
 
     shipMan[current].model = static_cast<MODEL *>(EntityManager::GetEntityPointer(shipMan[current].modelID));
     shipMan[current].SetAnimation(0, shipState);
@@ -1042,7 +1042,7 @@ bool Sailors::Init()
 {
     // GUARD_SAILORS(Sailors :: Init())
 
-    rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
 
     EntityManager::SetLayerType(SEA_REALIZE, EntityManager::Layer::Type::realize);
     EntityManager::AddToLayer(SEA_REALIZE, GetId(), 65530);
@@ -1068,7 +1068,7 @@ void Sailors::Realize(uint32_t dltTime)
     rs->SetRenderState(D3DRS_LIGHTING, true);
 
 #ifdef SAILORS_DEBUG
-    if (api->Controls->GetDebugAsyncKeyState(VK_F7) < 0)
+    if (core.Controls->GetDebugAsyncKeyState(VK_F7) < 0)
     {
         for (int i = 0; i < shipsCount; i++)
         {
@@ -1172,7 +1172,7 @@ uint64_t Sailors::ProcessMessage(MESSAGE &message)
                 !shipWalk[shipsCount - 1].sailorsPoints.links.count)
             {
                 DeleteShip(shipsCount - 1);
-                api->Trace("Sailors: sailors ship %s deleted", &c[0]);
+                core.Trace("Sailors: sailors ship %s deleted", &c[0]);
                 return 0;
             }
         break;

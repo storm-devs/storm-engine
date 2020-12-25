@@ -1,6 +1,10 @@
+#include "core.h"
+
 #include "../../Shared/messages.h"
-#include "EntityManager.h"
+#include "Entity.h"
 #include "sea.h"
+
+#include "../../Shared/layers.h"
 
 void SEA::EnvMap_GetSideMatrix(D3DCUBEMAP_FACES Face, CMatrix &mView)
 {
@@ -113,7 +117,7 @@ bool SEA::SunRoad_Render2()
                 const auto hash = EntityManager::GetClassCode(ent_id);
                 if (hash != dwShipCode && hash != dwSailCode && hash != dwIslandCode)
                 {
-                    api->Send_Message(ent_id, "ll", MSG_SEA_SUNROAD_DRAW, static_cast<long>(bSimpleSea));
+                    core.Send_Message(ent_id, "ll", MSG_SEA_SUNROAD_DRAW, static_cast<long>(bSimpleSea));
                 }
             }
         }
@@ -197,20 +201,20 @@ bool SEA::EnvMap_Render2()
         // mView.m[3][1] = -(mView.m[0][1] * vCamPos.x - mView.m[1][1] * vCamPos.y + mView.m[2][1] * vCamPos.z);
         // mView.m[3][2] = -(mView.m[0][2] * vCamPos.x - mView.m[1][2] * vCamPos.y + mView.m[2][2] * vCamPos.z);
 
-        // api->Trace("sea: %.3f, %.3f, %.3f", mView.m[3][0], mView.m[3][1], mView.m[3][2]);
+        // core.Trace("sea: %.3f, %.3f, %.3f", mView.m[3][0], mView.m[3][1], mView.m[3][2]);
         // rs->SetView(mView);
 
         // Render scene here.
         auto its = EntityManager::GetEntityIdIterators(SEA_REFLECTION);
         for (auto it = its.first; it != its.second; ++it)
         {
-            api->Send_Message(it->second, "ll", MSG_SEA_REFLECTION_DRAW, static_cast<long>(bSimpleSea));
+            core.Send_Message(it->second, "ll", MSG_SEA_REFLECTION_DRAW, static_cast<long>(bSimpleSea));
         }
 
         its = EntityManager::GetEntityIdIterators(SEA_REFLECTION2);
         for (auto it = its.first; it != its.second; ++it)
         {
-            api->Send_Message(it->second, "ll", MSG_SEA_REFLECTION_DRAW, static_cast<long>(bSimpleSea));
+            core.Send_Message(it->second, "ll", MSG_SEA_REFLECTION_DRAW, static_cast<long>(bSimpleSea));
         }
 
         rs->EndScene();
@@ -277,7 +281,7 @@ bool SEA::SunRoad_Render()
                 const auto hash = EntityManager::GetClassCode(ent_id);
                 if (hash != dwShipCode && hash != dwSailCode && hash != dwIslandCode)
                 {
-                    api->Send_Message(ent_id, "ll", MSG_SEA_SUNROAD_DRAW, static_cast<long>(bSimpleSea));
+                    core.Send_Message(ent_id, "ll", MSG_SEA_SUNROAD_DRAW, static_cast<long>(bSimpleSea));
                 }
             }
         }
@@ -322,20 +326,20 @@ bool SEA::EnvMap_Render()
         mView.m[3][1] = -(mView.m[0][1] * vCamPos.x - mView.m[1][1] * vCamPos.y + mView.m[2][1] * vCamPos.z);
         mView.m[3][2] = -(mView.m[0][2] * vCamPos.x - mView.m[1][2] * vCamPos.y + mView.m[2][2] * vCamPos.z);
 
-        // api->Trace("sea: %.3f, %.3f, %.3f", mView.m[3][0], mView.m[3][1], mView.m[3][2]);
+        // core.Trace("sea: %.3f, %.3f, %.3f", mView.m[3][0], mView.m[3][1], mView.m[3][2]);
         rs->SetView(mView);
 
         // Render scene here.
         auto its = EntityManager::GetEntityIdIterators(SEA_REFLECTION);
         for (auto it = its.first; it != its.second; ++it)
         {
-            api->Send_Message(it->second, "ll", MSG_SEA_REFLECTION_DRAW, static_cast<long>(bSimpleSea));
+            core.Send_Message(it->second, "ll", MSG_SEA_REFLECTION_DRAW, static_cast<long>(bSimpleSea));
         }
 
         its = EntityManager::GetEntityIdIterators(SEA_REFLECTION2);
         for (auto it = its.first; it != its.second; ++it)
         {
-            api->Send_Message(it->second, "ll", MSG_SEA_REFLECTION_DRAW, static_cast<long>(bSimpleSea));
+            core.Send_Message(it->second, "ll", MSG_SEA_REFLECTION_DRAW, static_cast<long>(bSimpleSea));
         }
 
         rs->EndScene();

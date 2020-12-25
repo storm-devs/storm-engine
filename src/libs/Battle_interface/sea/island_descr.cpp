@@ -1,4 +1,7 @@
 #include "island_descr.h"
+
+#include "core.h"
+
 #include "../shared/battle_interface/msg_control.h"
 #include "model.h"
 
@@ -56,7 +59,7 @@ void ISLAND_DESCRIBER::SetIsland(ATTRIBUTES *pAIsland)
         m_pLocators[i].texIdx = -1;
         m_pLocators[i].characterIndex = -1;
         m_pLocators[i].bDiseased = false;
-        auto *pvdat = api->Event("evntGetLandData", "a", pATmp);
+        auto *pvdat = core.Event("evntGetLandData", "a", pATmp);
         if (pvdat)
         {
             long lTmp;
@@ -237,7 +240,7 @@ void ISLAND_DESCRIBER::Refresh() const
         if (m_pLocators[i].locatorType == ISLAND_LOCATOR_FORT)
         {
             m_pLocators[i].relation =
-                GetVDATALong(api->Event(BI_EVENT_GET_FORT_RELATION, "a", m_pLocators[i].pA), BI_RELATION_NEUTRAL);
+                GetVDATALong(core.Event(BI_EVENT_GET_FORT_RELATION, "a", m_pLocators[i].pA), BI_RELATION_NEUTRAL);
         }
     }
 }

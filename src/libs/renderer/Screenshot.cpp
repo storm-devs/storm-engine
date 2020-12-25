@@ -1,11 +1,12 @@
 #include <io.h>
 
+#include "core.h"
 #include "sdevice.h"
 #include "tga.h"
 
 void DX9RENDER::PrepareCapture()
 {
-    hDesktopDC = GetDC(api->GetAppHWND());
+    hDesktopDC = GetDC(core.GetAppHWND());
     hCaptureDC = CreateCompatibleDC(hDesktopDC);
     hCaptureBitmap = CreateCompatibleBitmap(hDesktopDC, screen_size.x, screen_size.y);
 

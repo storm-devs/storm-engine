@@ -1,5 +1,7 @@
 #include "battle_sign.h"
 #include "Utils.h"
+#include "controls.h"
+#include "core.h"
 #include "vmodule_api.h"
 
 BISignIcon::BISignIcon(entid_t BIEntityID, VDX9RENDER *pRS)
@@ -268,27 +270,27 @@ void BISignIcon::MakeControl()
 {
     CONTROL_STATE cs;
 
-    api->Controls->GetControlState(BI_COMMANDS_CONFIRM, cs);
+    core.Controls->GetControlState(BI_COMMANDS_CONFIRM, cs);
     if (cs.state == CST_ACTIVATED)
         ExecuteCommand(Command_confirm);
 
-    api->Controls->GetControlState(BI_COMMANDS_LEFTSTEP, cs);
+    core.Controls->GetControlState(BI_COMMANDS_LEFTSTEP, cs);
     if (cs.state == CST_ACTIVATED)
         ExecuteCommand(Command_left);
 
-    api->Controls->GetControlState(BI_COMMANDS_RIGHTSTEP, cs);
+    core.Controls->GetControlState(BI_COMMANDS_RIGHTSTEP, cs);
     if (cs.state == CST_ACTIVATED)
         ExecuteCommand(Command_right);
 
-    api->Controls->GetControlState(BI_COMMANDS_UPSTEP, cs);
+    core.Controls->GetControlState(BI_COMMANDS_UPSTEP, cs);
     if (cs.state == CST_ACTIVATED)
         ExecuteCommand(Command_up);
 
-    api->Controls->GetControlState(BI_COMMANDS_DOWNSTEP, cs);
+    core.Controls->GetControlState(BI_COMMANDS_DOWNSTEP, cs);
     if (cs.state == CST_ACTIVATED)
         ExecuteCommand(Command_down);
 
-    api->Controls->GetControlState(BI_COMMANDS_CANCEL, cs);
+    core.Controls->GetControlState(BI_COMMANDS_CANCEL, cs);
     if (cs.state == CST_ACTIVATED)
         ExecuteCommand(Command_cancel);
 }

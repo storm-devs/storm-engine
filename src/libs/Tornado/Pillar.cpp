@@ -10,6 +10,11 @@
 
 #include "Pillar.h"
 
+#include <ctime>
+
+#include "Cvector.h"
+#include "storm_assert.h"
+
 //============================================================================================
 
 #define TRND_NUMSEC (sizeof(section) / sizeof(Section))
@@ -26,7 +31,7 @@
 
 Pillar::Pillar()
 {
-    srand(GetTickCount());
+    srand(time(nullptr));
     //Секции
     long i;
     for (i = 0; i < TRND_NUMSEC; i++)

@@ -61,11 +61,11 @@ void MAST::SetDevice()
 {
     // GUARD(MAST::SetDevice())
 
-    RenderService = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+    RenderService = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!RenderService)
         throw std::exception("No service: dx9render");
 
-    pCollide = static_cast<COLLIDE *>(api->CreateService("COLL"));
+    pCollide = static_cast<COLLIDE *>(core.CreateService("COLL"));
     if (!pCollide)
         throw std::exception("No service: collide");
 
@@ -223,11 +223,11 @@ void MAST::Mount(entid_t modelEI, entid_t shipEI, NODE *mastNodePointer)
     long chrIdx = -1;
     if (pA != nullptr)
         chrIdx = pA->GetAttributeAsDword("index", -1);
-    api->Event("EventMastFall", "lsl", chrIdx, mastNodePointer->GetName(), fMastDamage < 1.f);
+    core.Event("EventMastFall", "lsl", chrIdx, mastNodePointer->GetName(), fMastDamage < 1.f);
     if (fMastDamage < 1.f)
     {
         if (sailEI)
-            api->Send_Message(sailEI, "lls", MSG_SAIL_MAST_PROCESSING, chrIdx, mastNodePointer->GetName());
+            core.Send_Message(sailEI, "lls", MSG_SAIL_MAST_PROCESSING, chrIdx, mastNodePointer->GetName());
     }
 
     if (mastNodePointer != nullptr) //~!~
@@ -240,7 +240,7 @@ void MAST::Mount(entid_t modelEI, entid_t shipEI, NODE *mastNodePointer)
 
         // пройдем по всем веревкам данной мачты и отключим их
         if (vantEI)
-            api->Send_Message(vantEI, "lip", MSG_VANT_DEL_MAST, modelEI, mastNodePointer);
+            core.Send_Message(vantEI, "lip", MSG_VANT_DEL_MAST, modelEI, mastNodePointer);
         MODEL *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(model_id));
         if (mdl != nullptr)
             for (i = 0; i < 10000; i++)
@@ -257,35 +257,35 @@ void MAST::Mount(entid_t modelEI, entid_t shipEI, NODE *mastNodePointer)
                     if (!strncmp(gl.name, "rope", 4))
                     {
                         if (ropeEI)
-                            api->Send_Message(ropeEI, "lil", MSG_ROPE_DELETE, modelEI, atoi(&gl.name[5]));
+                            core.Send_Message(ropeEI, "lil", MSG_ROPE_DELETE, modelEI, atoi(&gl.name[5]));
                     }
                     if (!strncmp(gl.name, "fal", 3))
                     {
                         if (ropeEI)
-                            api->Send_Message(ropeEI, "lil", MSG_ROPE_DELETE, modelEI, atoi(&gl.name[4]) + 1000);
+                            core.Send_Message(ropeEI, "lil", MSG_ROPE_DELETE, modelEI, atoi(&gl.name[4]) + 1000);
                     }
                     else if (!strncmp(gl.name, "sail", 4))
                     {
                         if (sailEI)
-                            api->Send_Message(sailEI, "liplii", MSG_SAIL_TO_NEWHOST, modelEI, nod,
+                            core.Send_Message(sailEI, "liplii", MSG_SAIL_TO_NEWHOST, modelEI, nod,
                                               atoi(&gl.group_name[5]), GetId(), model_id);
                     }
                     else if (!strncmp(gl.group_name, "flag", 4))
                     {
                         if (flagEI)
-                            api->Send_Message(flagEI, "lili", MSG_FLAG_TO_NEWHOST, modelEI, atoi(&gl.group_name[4]),
+                            core.Send_Message(flagEI, "lili", MSG_FLAG_TO_NEWHOST, modelEI, atoi(&gl.group_name[4]),
                                               model_id);
                     }
                 }
                 // валим также паруса связанные с данной мачтой
                 if (sailEI)
                 {
-                    api->Send_Message(sailEI, "liii", MSG_SAIL_CHECK, shipEI, GetId(), model_id);
-                    api->Send_Message(sailEI, "li", MSG_SAIL_FREE_GROUP, GetId());
+                    core.Send_Message(sailEI, "liii", MSG_SAIL_CHECK, shipEI, GetId(), model_id);
+                    core.Send_Message(sailEI, "li", MSG_SAIL_FREE_GROUP, GetId());
                 }
             }
         if (sailEI)
-            api->Send_Message(sailEI, "ll", MSG_SAIL_MAST_PROCESSING, -1);
+            core.Send_Message(sailEI, "ll", MSG_SAIL_MAST_PROCESSING, -1);
 
         // установим первоначальные параметры движения мачты
         SHIP_BASE *sb;
@@ -713,13 +713,13 @@ void MAST::AllRelease()
     }
 
     // удалить группу парусов
-    api->Send_Message(EntityManager::GetEntityId("sail"), "li", MSG_SAIL_DEL_GROUP, GetId());
+    core.Send_Message(EntityManager::GetEntityId("sail"), "li", MSG_SAIL_DEL_GROUP, GetId());
 
     // удалить группу флагов
-    api->Send_Message(EntityManager::GetEntityId("flag"), "li", MSG_FLAG_DEL_GROUP, model_id);
+    core.Send_Message(EntityManager::GetEntityId("flag"), "li", MSG_FLAG_DEL_GROUP, model_id);
 
     // объявим фларикам что мы сваливаем...
-    api->Send_Message(ship_id, "lp", MSG_MAST_DELGEOMETRY, m_pMastNode);
+    core.Send_Message(ship_id, "lp", MSG_MAST_DELGEOMETRY, m_pMastNode);
 
     // удалить модель
     EntityManager::EraseEntity(model_id);

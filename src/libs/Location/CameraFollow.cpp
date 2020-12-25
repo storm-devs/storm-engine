@@ -177,7 +177,8 @@ void CameraFollow::BornCamera()
     //Откуда смотрим
     CalcPosition(camay, camradius, 0.0f, camPos);
     //Проверяем на пересечение луч
-    const auto kp = 2.0f;
+    constexpr auto kp = 2.0f;
+    // ~!~
     lc->Trace(lookTo, camPos);
     if constexpr (kp < 1.0f)
         camPos = lookTo + (camPos - lookTo) * (kp * 0.9f);
@@ -361,7 +362,7 @@ float CameraFollow::FindRadius(float curAng) const
     numPoly1 = 0;
     camSteps = 0;
     //!!!
-    if (api->Controls->GetDebugAsyncKeyState('8') < 0)
+    if (core.Controls->GetDebugAsyncKeyState('8') < 0)
     {
         isFndTrg = true;
         numTrg = 0;
@@ -390,7 +391,7 @@ float CameraFollow::FindRadius(float curAng) const
     /////////////////////
     static CVECTOR ps(0.0f);
     static CVECTOR vv[5];
-    if (api->Controls->GetDebugAsyncKeyState('8') < 0)
+    if (core.Controls->GetDebugAsyncKeyState('8') < 0)
     {
         ps = pos;
         CVECTOR vvv;

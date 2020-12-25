@@ -9,7 +9,6 @@ add_executable(${PROJECT_NAME} WIN32
 	compiler.cpp
 	compiler.h
 	Core.cpp
-	Core.h
 	data.cpp
 	data.h
 	dstring_codec.h

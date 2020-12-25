@@ -32,7 +32,7 @@ bool AISeaGoods::Init()
 
 void AISeaGoods::SetDevice()
 {
-    pGeoService = static_cast<VGEOMETRY *>(api->CreateService("geometry"));
+    pGeoService = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
     Assert(pGeoService);
 }
 
@@ -87,7 +87,7 @@ void AISeaGoods::Execute(uint32_t dwDeltaTime)
                     const auto fDistance = sqrtf(~(pS->State.vPos - pI->vPos));
                     if (fDistance <= pS->State.vBoxSize.z * fDistanceMultiply)
                     {
-                        auto *pVData = api->Event(SHIP_EAT_SWIM_GOOD, "llsl", iCharacterIndex, pI->iCharIndex,
+                        auto *pVData = core.Event(SHIP_EAT_SWIM_GOOD, "llsl", iCharacterIndex, pI->iCharIndex,
                                                   pI->sGoodName, pI->iQuantity);
                         if (pVData->GetLong() || bDeleteGoodAnyway)
                         {

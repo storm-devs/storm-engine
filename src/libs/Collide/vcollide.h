@@ -13,10 +13,9 @@ class LCOLL : public LOCAL_COLLIDE
     CVECTOR boxCenter;
     float boxRadius;
     COLLIDE *col;
-    VAPI &api;
 
   public:
-    LCOLL(EntityManager::layer_index_t idx, VAPI &_ap);
+    LCOLL(EntityManager::layer_index_t idx);
     virtual ~LCOLL();
     virtual long SetBox(const CVECTOR &boxSize, const CMatrix &transform, bool testOnly = false);
     virtual const CVECTOR *GetFace(long &numVertices);

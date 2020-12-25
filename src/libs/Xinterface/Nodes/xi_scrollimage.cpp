@@ -70,7 +70,7 @@ void CXI_SCROLLIMAGE::Draw(bool bSelected, uint32_t Delta_Time)
                 m_bDoMove = false;
 
                 // Set new current image
-                auto *tmpAttr = api->Entity_GetAttributeClass(g_idInterface, m_nodeName);
+                auto *tmpAttr = core.Entity_GetAttributeClass(g_idInterface, m_nodeName);
                 if (tmpAttr != nullptr)
                     tmpAttr->SetAttributeUseDword("current", m_nCurImage);
 
@@ -415,7 +415,7 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
         m_nOneStrScale = GetIniFloat(ini1, name1, ini2, name2, "scale1", 1.f);
         if (ReadIniString(ini1, name1, ini2, name2, "font1", param, sizeof(param), ""))
             if ((m_nOneStrFont = m_rs->LoadFont(param)) == -1)
-                api->Trace("can not load font:'%s'", param);
+                core.Trace("can not load font:'%s'", param);
         m_lOneStrX = GetIniLong(ini1, name1, ini2, name2, "dwXOffset1", 0);
         if (m_lOneStrX > 0)
             m_nOneStrAlign = PR_ALIGN_RIGHT;
@@ -432,7 +432,7 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
         m_nTwoStrScale = GetIniFloat(ini1, name1, ini2, name2, "scale2", 1.f);
         if (ReadIniString(ini1, name1, ini2, name2, "font2", param, sizeof(param), ""))
             if ((m_nTwoStrFont = m_rs->LoadFont(param)) == -1)
-                api->Trace("can not load font:'%s'", param);
+                core.Trace("can not load font:'%s'", param);
         m_lTwoStrX = GetIniLong(ini1, name1, ini2, name2, "dwXOffset2", 0);
         if (m_lTwoStrX > 0)
             m_nTwoStrAlign = PR_ALIGN_RIGHT;
@@ -445,7 +445,7 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
         m_dwTwoStrBackColor = GetIniARGB(ini1, name1, ini2, name2, "dwBackColor2", 0);
     }
 
-    ATTRIBUTES *pAttribute = api->Entity_GetAttributeClass(g_idInterface, m_nodeName);
+    ATTRIBUTES *pAttribute = core.Entity_GetAttributeClass(g_idInterface, m_nodeName);
     if (pAttribute != nullptr)
     {
         // get special technique name and color
@@ -711,7 +711,7 @@ float CXI_SCROLLIMAGE::ChangeDinamicParameters(float fXDelta)
                 {
                     if (m_Image[curImage].ptex[n] == nullptr)
                     {
-                        m_Image[curImage].ptex[n] = GetTexFromEvent(api->Event(
+                        m_Image[curImage].ptex[n] = GetTexFromEvent(core.Event(
                             "GetInterfaceTexture", "sls", m_Image[curImage].saveName[n], curImage, m_nodeName));
                         break;
                     }
@@ -853,7 +853,7 @@ float CXI_SCROLLIMAGE::ChangeDinamicParameters(float fXDelta)
         {
             if (m_Image[curImage].saveName[n] != nullptr && m_Image[curImage].ptex[n] != nullptr)
             {
-                api->Event("DelInterfaceTexture", "ss", m_Image[curImage].saveName[n], m_nodeName);
+                core.Event("DelInterfaceTexture", "ss", m_Image[curImage].saveName[n], m_nodeName);
                 m_Image[curImage].ptex[n] = nullptr;
             }
         }
@@ -862,7 +862,7 @@ float CXI_SCROLLIMAGE::ChangeDinamicParameters(float fXDelta)
     if (newCurImage != m_nCurImage)
     {
         m_nCurImage = newCurImage;
-        api->Event("ChangeSelectScrollImage", "sl", m_nodeName, m_nCurImage);
+        core.Event("ChangeSelectScrollImage", "sl", m_nodeName, m_nCurImage);
         return fNewCurCenter - m_pCenter.x - fXDelta;
     }
 
@@ -1034,7 +1034,7 @@ void CXI_SCROLLIMAGE::SaveParametersToIni()
     INIFILE *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
-        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
+        core.Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
         return;
     }
 
@@ -1048,7 +1048,7 @@ void CXI_SCROLLIMAGE::SaveParametersToIni()
 
 void CXI_SCROLLIMAGE::ChangeScroll(int nScrollItemNum)
 {
-    ATTRIBUTES *pAttr = api->Entity_GetAttributeClass(g_idInterface, m_nodeName);
+    ATTRIBUTES *pAttr = core.Entity_GetAttributeClass(g_idInterface, m_nodeName);
     if (pAttr != nullptr)
     {
         // проверим может весь список надо мен€ть
@@ -1148,7 +1148,7 @@ void CXI_SCROLLIMAGE::ChangeScroll(int nScrollItemNum)
         m_nCurImage = m_nListSize - m_nNotUsedQuantity - 1;
     if (m_nCurImage < 0)
         m_nCurImage = 0;
-    ATTRIBUTES *pA = api->Entity_GetAttributeClass(g_idInterface, m_nodeName);
+    ATTRIBUTES *pA = core.Entity_GetAttributeClass(g_idInterface, m_nodeName);
     if (pA != nullptr)
     {
         pA->SetAttributeUseDword("current", m_nCurImage);
@@ -1184,7 +1184,7 @@ void CXI_SCROLLIMAGE::DeleteImage(int imgNum)
         m_nCurImage = m_nListSize - m_nNotUsedQuantity - 1;
     if (m_nCurImage < 0)
         m_nCurImage = 0;
-    ATTRIBUTES *pA = api->Entity_GetAttributeClass(g_idInterface, m_nodeName);
+    ATTRIBUTES *pA = core.Entity_GetAttributeClass(g_idInterface, m_nodeName);
     if (pA != nullptr)
     {
         pA->SetAttributeUseDword("current", m_nCurImage);
@@ -1237,7 +1237,7 @@ void CXI_SCROLLIMAGE::RefreshScroll()
     m_nListSize = 0;
     m_nNotUsedQuantity = 0;
 
-    ATTRIBUTES *pAttribute = api->Entity_GetAttributeClass(g_idInterface, m_nodeName);
+    ATTRIBUTES *pAttribute = core.Entity_GetAttributeClass(g_idInterface, m_nodeName);
     if (pAttribute != nullptr)
     {
         // get special technique name and color
@@ -1438,7 +1438,7 @@ void CXI_SCROLLIMAGE::RefreshScroll()
         m_nCurImage = m_nListSize - m_nNotUsedQuantity - 1;
     if (m_nCurImage < 0)
         m_nCurImage = 0;
-    ATTRIBUTES *pA = api->Entity_GetAttributeClass(g_idInterface, m_nodeName);
+    ATTRIBUTES *pA = core.Entity_GetAttributeClass(g_idInterface, m_nodeName);
     if (pA != nullptr)
     {
         pA->SetAttributeUseDword("current", m_nCurImage);
@@ -1614,7 +1614,7 @@ void CXI_SCROLLIMAGE::UpdateTexturesGroup()
     const int nPrevQ = m_nGroupQuantity;
 
     // get textures
-    ATTRIBUTES *pAttribute = api->Entity_GetAttributeClass(g_idInterface, m_nodeName);
+    ATTRIBUTES *pAttribute = core.Entity_GetAttributeClass(g_idInterface, m_nodeName);
     if (pAttribute == nullptr)
         return;
 
@@ -1738,7 +1738,7 @@ uint32_t CXI_SCROLLIMAGE::MessageProc(long msgcode, MESSAGE &message)
         m_bDoMove = false;
 
         // Set new current image
-        ATTRIBUTES *tmpAttr = api->Entity_GetAttributeClass(g_idInterface, m_nodeName);
+        ATTRIBUTES *tmpAttr = core.Entity_GetAttributeClass(g_idInterface, m_nodeName);
         if (tmpAttr != nullptr)
             tmpAttr->SetAttributeUseDword("current", m_nCurImage);
 

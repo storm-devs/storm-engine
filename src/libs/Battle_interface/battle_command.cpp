@@ -1,6 +1,7 @@
 #include "battle_command.h"
 #include "../../Shared/battle_interface/msg_control.h"
 #include "Utils.h"
+#include "core.h"
 #include "image/imgrender.h"
 #include "sea/ships_list.h"
 
@@ -37,14 +38,14 @@ void BICommandList::Draw()
 {
     if (m_aCooldownUpdate.size() > 0)
     {
-        const auto fDT = api->GetDeltaTime() * .001f;
+        const auto fDT = core.GetDeltaTime() * .001f;
         for (long n = 0; n < m_aCooldownUpdate.size(); n++)
         {
             m_aCooldownUpdate[n].fTime -= fDT;
             if (m_aCooldownUpdate[n].fTime < 0)
             {
                 m_aCooldownUpdate[n].fTime = m_aCooldownUpdate[n].fUpdateTime;
-                auto *pDat = api->Event("neGetCooldownFactor", "s",
+                auto *pDat = core.Event("neGetCooldownFactor", "s",
                                         m_aUsedCommand[m_aCooldownUpdate[n].nIconNum].sCommandName.c_str());
                 if (pDat)
                     m_aUsedCommand[m_aCooldownUpdate[n].nIconNum].fCooldownFactor = pDat->GetFloat();
@@ -110,7 +111,7 @@ long BICommandList::ExecuteConfirm()
     if (!m_aUsedCommand[m_nSelectedCommandIndex].sCommandName.empty())
     {
         m_sCurrentCommandName = m_aUsedCommand[m_nSelectedCommandIndex].sCommandName;
-        auto *pVD = api->Event("BI_CommandEndChecking", "s", m_sCurrentCommandName.c_str());
+        auto *pVD = core.Event("BI_CommandEndChecking", "s", m_sCurrentCommandName.c_str());
         if (pVD != nullptr)
             pVD->Get(endCode);
     }
@@ -121,12 +122,12 @@ long BICommandList::ExecuteConfirm()
         if (sLocName.empty() && m_aUsedCommand[m_nSelectedCommandIndex].nCharIndex >= 0)
             nTargIndex = m_aUsedCommand[m_nSelectedCommandIndex].nCharIndex;
     }
-    api->Event("evntBattleCommandSound", "s", "activate"); // boal 22.08.06
+    core.Event("evntBattleCommandSound", "s", "activate"); // boal 22.08.06
     switch (endCode)
     {
     case -1:
     case 0:
-        api->Event("BI_LaunchCommand", "lsls", m_nCurrentCommandCharacterIndex, m_sCurrentCommandName.c_str(),
+        core.Event("BI_LaunchCommand", "lsls", m_nCurrentCommandCharacterIndex, m_sCurrentCommandName.c_str(),
                    nTargIndex, sLocName.c_str());
         m_sCurrentCommandName = "";
         break;
@@ -145,7 +146,7 @@ long BICommandList::ExecuteLeft()
         {
             m_nStartUsedCommandIndex = m_nSelectedCommandIndex;
         }
-        api->Event("evntBattleCommandSound", "s", "left"); // boal 22.08.06
+        core.Event("evntBattleCommandSound", "s", "left"); // boal 22.08.06
         UpdateShowIcon();
     }
     return 0;
@@ -160,7 +161,7 @@ long BICommandList::ExecuteRight()
         {
             m_nStartUsedCommandIndex = m_nSelectedCommandIndex - m_nIconShowMaxQuantity + 1;
         }
-        api->Event("evntBattleCommandSound", "s", "right"); // boal 22.08.06
+        core.Event("evntBattleCommandSound", "s", "right"); // boal 22.08.06
         UpdateShowIcon();
     }
     return 0;
@@ -350,7 +351,7 @@ long BICommandList::AddToIconList(long nTextureNum, long nNormPictureNum, long n
 
     if (nCooldownPictureNum >= 0)
     {
-        auto *pDat = api->Event("neGetCooldownFactor", "s", pcCommandName);
+        auto *pDat = core.Event("neGetCooldownFactor", "s", pcCommandName);
         if (pDat)
             m_aUsedCommand[n].fCooldownFactor = pDat->GetFloat();
         CoolDownUpdateData data;
@@ -502,10 +503,10 @@ void BICommandList::UpdateShowIcon()
             auto *const pSD = g_ShipList.FindShip(m_aUsedCommand[n].nCharIndex);
             if (pSD)
             {
-                api->Event("evntBISelectShip", "ll", pSD->characterIndex, pSD->relation != BI_RELATION_ENEMY);
+                core.Event("evntBISelectShip", "ll", pSD->characterIndex, pSD->relation != BI_RELATION_ENEMY);
             }
             else
-                api->Event("evntBISelectShip", "ll", -1, true);
+                core.Event("evntBISelectShip", "ll", -1, true);
         }
         else
         {

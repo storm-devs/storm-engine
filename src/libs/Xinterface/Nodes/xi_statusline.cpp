@@ -1,6 +1,8 @@
 #include "xi_statusline.h"
 #include <stdio.h>
 
+#include "core.h"
+
 CXI_STATUSLINE::CXI_STATUSLINE()
 {
     m_rs = nullptr;
@@ -81,7 +83,7 @@ void CXI_STATUSLINE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, co
         // get lenght of filled status line
         m_fLineOffset = GetIniFloat(ini1, name1, ini2, name2, "lineOffset", 0.f);
         auto fMediumX = static_cast<float>(m_rect.right - m_rect.left) - m_fLineOffset * 2.f;
-        auto *pAttr = api->Entity_GetAttributeClass(g_idInterface, "StatusLine");
+        auto *pAttr = core.Entity_GetAttributeClass(g_idInterface, "StatusLine");
         if (pAttr != nullptr)
             pAttr = pAttr->GetAttributeClass(m_nodeName);
         if (pAttr != nullptr)
@@ -191,7 +193,7 @@ void CXI_STATUSLINE::SaveParametersToIni()
     auto *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
-        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
+        core.Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
         return;
     }
 
@@ -219,7 +221,7 @@ void CXI_STATUSLINE::Refresh() const
         return;
     auto *pVBuf = static_cast<XI_ONLYONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_vBuf));
 
-    auto *pAttr = api->Entity_GetAttributeClass(g_idInterface, "StatusLine");
+    auto *pAttr = core.Entity_GetAttributeClass(g_idInterface, "StatusLine");
     if (pAttr != nullptr)
         pAttr = pAttr->GetAttributeClass(m_nodeName);
     if (pAttr != nullptr)

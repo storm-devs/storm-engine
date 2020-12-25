@@ -31,7 +31,7 @@ uint32_t ParticleSystem::Execute(float DeltaTime)
     {
         if (DeleteIfNeed())
         {
-            // api->Trace("AUTO DELETE !!!!\n");
+            // core.Trace("AUTO DELETE !!!!\n");
             return 0;
         }
     }
@@ -74,7 +74,7 @@ void ParticleSystem::CreateFromDataSource(DataSource *pDataSource)
 
 IEmitter *ParticleSystem::CreatePointEmitter(DataSource::EmitterDesc *pEmitter)
 {
-    //	api->Trace("Create 'Point' emitter\n");
+    //	core.Trace("Create 'Point' emitter\n");
     auto *pNewEmitter = new PointEmitter(this);
     pNewEmitter->AttachToDataSource(pEmitter);
     pNewEmitter->SetGUID(EmitterID);

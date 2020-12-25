@@ -359,13 +359,13 @@ void LightProcessor::SmoothShadows()
               ov[numV++] = &vrt[n];
             }
           }
-          if (numVerts != numV) api->Trace("numVerts(%i) != numV(%i)", numVerts, numV);
+          if (numVerts != numV) core.Trace("numVerts(%i) != numV(%i)", numVerts, numV);
           for (n = 0; n < numVerts; n++)
           {
             long k;
             for (k = 0; k < numV; k++)
               if (verts[n].v == ov[k]) break;
-            if (k >= numV) api->Trace("k >= numV");
+            if (k >= numV) core.Trace("k >= numV");
           }
         }*/
         //		Assert(numVerts > 0);

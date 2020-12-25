@@ -1,9 +1,11 @@
 #include "Flag.h"
 #include "../../shared/sail_msg.h"
-#include "EntityManager.h"
+#include "Entity.h"
 #include "Weather_Base.h"
+#include "core.h"
 #include "defines.h"
 #include "ship_base.h"
+#include "vfile_service.h"
 
 FLAG::FLAG()
 {
@@ -49,7 +51,7 @@ bool FLAG::Init()
 void FLAG::SetDevice()
 {
     // получить сервис рендера
-    RenderService = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+    RenderService = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!RenderService)
     {
         throw std::exception("No service: dx9render");
@@ -156,7 +158,7 @@ uint64_t FLAG::ProcessMessage(MESSAGE &message)
         host_mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(eidModel));
         if (host_mdl == nullptr)
         {
-            api->Trace("Missing INIT message to FLAG: bad MODEL");
+            core.Trace("Missing INIT message to FLAG: bad MODEL");
         }
 
         if (groupQuantity == 0)
@@ -222,7 +224,7 @@ uint64_t FLAG::ProcessMessage(MESSAGE &message)
         host_mdl = (MODEL *)EntityManager::GetEntityPointer(eidModel);
         if (host_mdl == nullptr)
         {
-            api->Trace("Missing INIT message to FLAG: bad MODEL");
+            core.Trace("Missing INIT message to FLAG: bad MODEL");
         }
 
         if (groupQuantity == 0)
@@ -836,13 +838,13 @@ void FLAG::SetAdd(int flagNum)
             // установить номер текстуры
             if (flist[fn]->isShip) // корабль
             {
-                pvdat = api->Event("GetRiggingData", "sllla", "GetShipFlagTexNum", flist[fn]->triangle,
+                pvdat = core.Event("GetRiggingData", "sllla", "GetShipFlagTexNum", flist[fn]->triangle,
                                    gdata[flist[fn]->HostGroup].nation, flist[fn]->isSpecialFlag,
                                    gdata[flist[fn]->HostGroup].char_attributes);
             }
             else
             {
-                pvdat = api->Event("GetRiggingData", "slll", "GetTownFlagTexNum", flist[fn]->triangle,
+                pvdat = core.Event("GetRiggingData", "slll", "GetTownFlagTexNum", flist[fn]->triangle,
                                    gdata[flist[fn]->HostGroup].nation, flist[fn]->isSpecialFlag);
             }
             if (pvdat == nullptr)

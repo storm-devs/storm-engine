@@ -1,7 +1,6 @@
 #include "s_dbg_breaktable.h"
 #include "file_service.h"
 
-extern CORE Core;
 extern FILE_SERVICE File_Service;
 
 #define SECTION_NAME "breakpoints"

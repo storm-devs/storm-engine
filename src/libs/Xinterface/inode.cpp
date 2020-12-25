@@ -1,6 +1,8 @@
 #include "inode.h"
 #include <stdarg.h>
 
+#include "core.h"
+
 CINODE::CINODE()
 {
     m_bMouseWeelReaction = false;
@@ -80,14 +82,14 @@ void CINODE::FrameProcess(uint32_t DeltaTime)
             }
 
             if (m_pCommands[m_nCurrentCommandNumber].sEventName != nullptr)
-                api->Send_Message(g_idInterface, "lssl", MSG_INTERFACE_SET_EVENT,
+                core.Send_Message(g_idInterface, "lssl", MSG_INTERFACE_SET_EVENT,
                                   m_pCommands[m_nCurrentCommandNumber].sEventName, m_nodeName, m_nCurrentCommandNumber);
 
             if (m_pCommands[m_nCurrentCommandNumber].sRetControl)
             {
                 auto *const pTmpNod = ptrOwner->FindNode(m_pCommands[m_nCurrentCommandNumber].sRetControl, nullptr);
                 if (pTmpNod)
-                    api->Send_Message(g_idInterface, "lp", MSG_INTERFACE_SET_CURRENT_NODE, pTmpNod);
+                    core.Send_Message(g_idInterface, "lp", MSG_INTERFACE_SET_CURRENT_NODE, pTmpNod);
             }
 
             m_nCurrentCommandNumber = -1;
@@ -121,8 +123,8 @@ CINODE *CINODE::DoAction(int wActCode, bool &bBreakPress, bool bFirstPress)
     {
         // if(m_pCommands[i].nSound!=0)
         if (bFirstPress)
-            api->Event(ISOUND_EVENT, "l", 1);
-        // api->Event(ISOUND_EVENT,"l",m_pCommands[i].nSound);
+            core.Event(ISOUND_EVENT, "l", 1);
+        // core.Event(ISOUND_EVENT,"l",m_pCommands[i].nSound);
         // execute command
         while (n != COMMAND_QUANTITY)
         {
@@ -137,12 +139,12 @@ CINODE *CINODE::DoAction(int wActCode, bool &bBreakPress, bool bFirstPress)
         m_nDoDelay = m_pCommands[i].nActionDelay;
         if (n < COMMAND_QUANTITY)
         {
-            api->Event("ievnt_command", "ss", pCommandsList[n].sName, m_nodeName);
+            core.Event("ievnt_command", "ss", pCommandsList[n].sName, m_nodeName);
             m_nCurrentCommandNumber = n;
         }
         else
         {
-            api->Event("ievnt_command", "ss", pCommandsList[i].sName, m_nodeName);
+            core.Event("ievnt_command", "ss", pCommandsList[i].sName, m_nodeName);
             m_nCurrentCommandNumber = i;
         }
     }
@@ -365,7 +367,7 @@ bool CINODE::CheckByToolTip(float fX, float fY)
 {
     if (m_pToolTip)
     {
-        m_pToolTip->MousePos(api->GetDeltaTime() * .001f, static_cast<long>(fX), static_cast<long>(fY));
+        m_pToolTip->MousePos(core.GetDeltaTime() * .001f, static_cast<long>(fX), static_cast<long>(fY));
         return true;
     }
     return false;

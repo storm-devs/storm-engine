@@ -1,11 +1,10 @@
-#include "Core.h"
 #include "compiler.h"
+#include "core.h"
 
 #define INVALID_FA "Invalid function argument"
 #define BAD_FA "Bad function argument"
 #define MISSING_PARAMETER "Missing function parameter(s)"
 
-extern CORE Core;
 extern bool bSteam;
 
 //#define _TOFF
@@ -447,7 +446,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
     {
     case FUNC_GET_STEAM_ENABLED:
         pV = SStack.Push();
-        pV->Set((long)Core.isSteamEnabled());
+        pV->Set((long)core.isSteamEnabled());
         pVResult = pV;
         return pV;
         break;
@@ -465,7 +464,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
                 SetError("incorrect argument type");
                 break;
             }
-            TempBool = Core.isDLCActive(TempLong1);
+            TempBool = core.isDLCActive(TempLong1);
             pV = SStack.Push();
             if (TempBool)
                 pV->Set((long)1);
@@ -486,7 +485,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         pV = SStack.Push();
         if (bSteam)
         {
-            TempLong = Core.getDLCCount();
+            TempLong = core.getDLCCount();
             pV->Set(TempLong);
         }
         else
@@ -510,7 +509,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
                 SetError("incorrect argument type");
                 break;
             }
-            TempLong = Core.getDLCDataByIndex(TempLong1);
+            TempLong = core.getDLCDataByIndex(TempLong1);
             pV = SStack.Push();
             pV->Set(TempLong);
         }
@@ -536,7 +535,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
                 SetError("incorrect argument type");
                 break;
             }
-            TempBool = Core.activateGameOverlayDLC(TempLong1);
+            TempBool = core.activateGameOverlayDLC(TempLong1);
             pV = SStack.Push();
             if (TempBool)
                 pV->Set((long)1);
@@ -572,7 +571,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
                 SetError("invalid function");
                 return 0;
             }
-            Core.StartEvent(function_code);
+            core.StartEvent(function_code);
         }
         else
         {
@@ -621,12 +620,12 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         if (pV->GetType() == VAR_FLOAT)
         {
             pV->Get(TempFloat1);
-            api->SetTimeScale(TempFloat1);
+            core.SetTimeScale(TempFloat1);
         }
         else if (pV->GetType() == VAR_INTEGER)
         {
             pV->Get(TempLong1);
-            api->SetTimeScale(static_cast<float>(TempLong1));
+            core.SetTimeScale(static_cast<float>(TempLong1));
         }
         else
             SetError("incorrect argument type");
@@ -684,8 +683,8 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         }
         pV->Get(pChar);
         pV2->Get(TempLong1);
-        if (Core.Controls != nullptr)
-            Core.Controls->LockControl(pChar, TempLong1 != 0);
+        if (core.Controls != nullptr)
+            core.Controls->LockControl(pChar, TempLong1 != 0);
         break;
         /*case FUNC_SAVEVARIABLE:
             pV = SStack.Pop(); if(!pV){SetError(INVALID_FA); break;};	// var ref
@@ -845,7 +844,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         pV2 = pV2->GetVarPointer();
         pV2->Set(ent);
         pV2->SetType(VAR_AREFERENCE);
-        pV2->SetAReference(api->Entity_GetAttributePointer(ent));
+        pV2->SetAReference(core.Entity_GetAttributePointer(ent));
 
         if (EntityManager::GetEntityPointer(ent))
             TempLong1 = 1;
@@ -882,7 +881,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         pV2 = pV2->GetVarPointer();
         pV2->Set(ent);
         pV2->SetType(VAR_AREFERENCE);
-        pV2->SetAReference(api->Entity_GetAttributePointer(ent));
+        pV2->SetAReference(core.Entity_GetAttributePointer(ent));
 
         if (EntityManager::GetEntityPointer(ent))
             TempLong1 = 1;
@@ -907,7 +906,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         pV2 = pV2->GetVarPointer();
         pV2->Set(ent);
         pV2->SetType(VAR_AREFERENCE);
-        pV2->SetAReference(api->Entity_GetAttributePointer(ent));
+        pV2->SetAReference(core.Entity_GetAttributePointer(ent));
 
         if (EntityManager::GetEntityPointer(ent))
             TempLong1 = 1;
@@ -933,7 +932,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             break;
         }
         pV->Get(TempEid);
-        Core.Entity_SetAttributePointer(TempEid, nullptr);
+        core.Entity_SetAttributePointer(TempEid, nullptr);
         break;
     case FUNC_CREATE_CONTROL:
         pV = SStack.Pop();
@@ -943,8 +942,8 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             break;
         }
         pV->Get(pChar);
-        if (Core.Controls != nullptr)
-            TempLong1 = Core.Controls->CreateControl(pChar);
+        if (core.Controls != nullptr)
+            TempLong1 = core.Controls->CreateControl(pChar);
         else
             TempLong1 = -1;
         pV = SStack.Push();
@@ -980,7 +979,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         }
         pV->Get(TempLong2);
 
-        api->Controls->MapControl(TempLong2, TempLong1);
+        core.Controls->MapControl(TempLong2, TempLong1);
         break;
 
     case FUNC_SET_CONTROL_TRESHOLD:
@@ -1000,7 +999,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         }
         pV->Get(TempLong2);
 
-        api->Controls->SetControlTreshold(TempLong2, TempFloat1);
+        core.Controls->SetControlTreshold(TempLong2, TempFloat1);
 
         break;
 
@@ -1021,7 +1020,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         }
         pV->Get(TempLong2);
 
-        api->Controls->SetControlFlags(TempLong2, TempLong1);
+        core.Controls->SetControlFlags(TempLong2, TempLong1);
         break;
 
     case FUNC_DELETEENTITIESBYTYPE:
@@ -1137,7 +1136,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         break;
     case FUNC_GETDELTATIME:
         pV = SStack.Push();
-        pV->Set(static_cast<long>(Core.GetDeltaTime()));
+        pV->Set(static_cast<long>(core.GetDeltaTime()));
         pVResult = pV;
         return pV;
 
@@ -1339,7 +1338,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             pV->Get(ent);
             pV = SStack.Push();
             VMA * pClass;
-            pClass = Core.FindVMA(Core.GetEntityClassCode(ent));
+            pClass = core.FindVMA(core.GetEntityClassCode(ent));
             if(pClass) pV->Set(pClass->GetName());
             else pV->Set("unknown class");
             pVResult = pV;
@@ -1351,13 +1350,13 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             pV->Convert(VAR_STRING);
             pV->Get(pChar);
 
-            walker = api->LayerGetWalker(pChar);
+      walker = core.LayerGetWalker(pChar);
             ent = walker();
 
             pV2 = pV2->GetVarPointer();
             pV2->Set(ent);
             pV2->SetType(VAR_AREFERENCE);
-            pV2->SetAReference(api->Entity_GetAttributePointer(ent));
+      pV2->SetAReference(core.Entity_GetAttributePointer(ent));
 
             if(EntityManager::GetEntityPointer(ent)) TempLong1 = 1;
             else TempLong1 = 0;
@@ -1371,7 +1370,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             pV->GetVarPointer();
             pV->Set(ent);
             pV->SetType(VAR_AREFERENCE);
-            pV->SetAReference(api->Entity_GetAttributePointer(ent));
+      pV->SetAReference(core.Entity_GetAttributePointer(ent));
             if(EntityManager::GetEntityPointer(ent)) TempLong1 = 1;
             else TempLong1 = 0;
             pV = SStack.Push();
@@ -1530,18 +1529,18 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             pV = SStack.Pop(); if(!pV){SetError(INVALID_FA);break;};
             pV->Get(pChar);
             pV2->Get(TempLong1);
-            if(TempLong1 == 0) //api->LayerCreate(pChar,false,false);
-            else //api->LayerCreate(pChar,true,false);
+      if(TempLong1 == 0) //core.LayerCreate(pChar,false,false);
+      else //core.LayerCreate(pChar,true,false);
         break;*/
         /*case FUNC_LAYER_DELETE:
             pV = SStack.Pop(); if(!pV) {SetError(INVALID_FA); break;};
             pV->Get(pChar);
-            api->LayerDelete(pChar);
+      core.LayerDelete(pChar);
         break;
         case FUNC_LAYER_DELETE_CONTENT:
             pV = SStack.Pop(); if(!pV) {SetError(INVALID_FA); break;};
             pV->Get(pChar);
-            api->LayerDeleteContent(pChar);*/
+      core.LayerDeleteContent(pChar);*/
         break;
     case FUNC_LAYER_SET_REALIZE:
         // pV2 = SStack.Pop(); if(!pV2){SetError(INVALID_FA);break;};
@@ -1553,8 +1552,8 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         }
         pV->Get(TempLong1);
         // pV2->Get(TempLong1);
-        // if(TempLong1 == 0) api->LayerSetRealize(pChar,false);
-        // else api->LayerSetRealize(pChar,true);
+        // if(TempLong1 == 0) core.LayerSetRealize(pChar,false);
+        // else core.LayerSetRealize(pChar,true);
         EntityManager::SetLayerType(TempLong1, EntityManager::Layer::Type::realize);
         break;
     case FUNC_LAYER_SET_EXECUTE:
@@ -1567,8 +1566,8 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         }
         pV->Get(TempLong1);
         // pV2->Get(TempLong1);
-        // if(TempLong1 == 0) api->LayerSetExecute(pChar,false);
-        // else api->LayerSetExecute(pChar,true);
+        // if(TempLong1 == 0) core.LayerSetExecute(pChar,false);
+        // else core.LayerSetExecute(pChar,true);
         EntityManager::SetLayerType(TempLong1, EntityManager::Layer::Type::execute);
         break;
         /*case FUNC_LAYER_SET_MESSAGES:
@@ -1576,8 +1575,8 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             pV = SStack.Pop(); if(!pV){SetError(INVALID_FA);break;};
             pV->Get(pChar);
             pV2->Get(TempLong1);
-            if(TempLong1 == 0) api->LayerClrFlags(pChar,LRFLAG_SYS_MESSAGES);
-            else api->LayerSetFlags(pChar,LRFLAG_SYS_MESSAGES);
+      if(TempLong1 == 0) core.LayerClrFlags(pChar,LRFLAG_SYS_MESSAGES);
+      else core.LayerSetFlags(pChar,LRFLAG_SYS_MESSAGES);
         break;*/
     case FUNC_LAYER_ADDOBJECT:
         pV3 = SStack.Pop();
@@ -1715,7 +1714,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         pV2->Get(pChar);
         if (ent = EntityManager::CreateEntity(pChar, pV->GetAClass()))
         {
-            // api->Entity_SetAttributePointer(&entid_t,pV->GetAClass());
+            // core.Entity_SetAttributePointer(&entid_t,pV->GetAClass());
             pV->Set(ent);
             SStack.Pop();
             pV = SStack.Push();
@@ -1804,7 +1803,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         //
     case FUNC_EXIT_PROGRAM:
         ExitProgram();
-        // api->Exit();
+        // core.Exit();
         break;
         //
     case FUNC_GET_EVENTDATA:
@@ -1849,7 +1848,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             pResult->SetType(VAR_AREFERENCE);
             ent = pEventMessage->EntityID();
             pResult->Set(ent);
-            pResult->SetAReference(api->Entity_GetAttributePointer(ent));
+            pResult->SetAReference(core.Entity_GetAttributePointer(ent));
 
             pVResult = pResult;
             return pResult;
@@ -1868,7 +1867,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         /*case FUNC_EXECUTE:
             pV = SStack.Pop(); if(!pV){SetError(INVALID_FA);break;};
             pV->Get(pChar);
-            api->Execute(pChar);
+      core.Execute(pChar);
         break;*/
     case FUNC_LOAD_SEGMENT:
         pV = SStack.Pop();
@@ -2654,10 +2653,10 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         pVResult = pV;
         return pVResult;
     case FUNC_DELETE_ENTITIES:
-        Core.EraseEntities();
+        core.EraseEntities();
         break;
     case FUNC_CLEAR_EVENTS:
-        Core.ClearEvents();
+        core.ClearEvents();
         break;
     case FUNC_CLEAR_POST_EVENTS:
         // EventMsg.Release();
@@ -2672,7 +2671,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         }
         pV->Convert(VAR_STRING);
         pV->Get(pChar);
-        api->SaveState(pChar);
+        core.SaveState(pChar);
         break;
     case FUNC_LOADENGINESTATE:
         pV = SStack.Pop();
@@ -2683,7 +2682,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         }
         pV->Convert(VAR_STRING);
         pV->Get(pChar);
-        api->InitiateStateLoading(pChar);
+        core.InitiateStateLoading(pChar);
         break;
     }
     return nullptr;

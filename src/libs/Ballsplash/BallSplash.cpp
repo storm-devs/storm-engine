@@ -1,7 +1,11 @@
 #include "BallSplash.H"
 #include "../../Shared/messages.h"
-#include "EntityManager.h"
 #include <stdio.h>
+
+#include "core.h"
+
+#include "Entity.h"
+#include "vfile_service.h"
 
 //--------------------------------------------------------------------
 BALLSPLASH::BALLSPLASH() : renderer(nullptr), sea(nullptr)
@@ -23,10 +27,10 @@ bool BALLSPLASH::Init()
 
     sea = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(EntityManager::GetEntityId("sea")));
 
-    renderer = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+    renderer = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
 
     // EntityManager::CreateEntity(&arrowModel,"MODELR");
-    // api->Send_Message(arrowModel,"ls",MSG_MODEL_LOAD_GEO, "fish01");
+    // core.Send_Message(arrowModel,"ls",MSG_MODEL_LOAD_GEO, "fish01");
     InitializeSplashes();
 
     return true;

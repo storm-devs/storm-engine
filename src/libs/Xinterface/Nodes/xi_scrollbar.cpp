@@ -44,12 +44,12 @@ void CXI_SCROLLBAR::Draw(bool bSelected, uint32_t Delta_Time)
     if (m_MouseClickParam.bExecute)
     {
         CONTROL_STATE cs;
-        api->Controls->GetControlState("ILClick", cs);
+        core.Controls->GetControlState("ILClick", cs);
         if ((cs.state == CST_ACTIVE || cs.state == CST_ACTIVATED) &&
             (m_MouseClickParam.OldMousePoint.x == ptrOwner->GetMousePoint().x &&
              m_MouseClickParam.OldMousePoint.y == ptrOwner->GetMousePoint().y))
         {
-            m_MouseClickParam.fCurMouseTime += .001f * api->GetRDeltaTime();
+            m_MouseClickParam.fCurMouseTime += .001f * core.GetRDeltaTime();
             if (m_MouseClickParam.fCurMouseTime > m_MouseClickParam.fNextClickTime)
             {
                 m_MouseClickParam.fCurMouseTime = m_MouseClickParam.fDelayMouseTime;
@@ -154,7 +154,7 @@ void CXI_SCROLLBAR::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, con
     m_nFontID = -1;
     if (ReadIniString(ini1, name1, ini2, name2, "fontID", param, sizeof(param), ""))
         if ((m_nFontID = m_rs->LoadFont(param)) == -1)
-            api->Trace("can not load font:'%s'", param);
+            core.Trace("can not load font:'%s'", param);
     // get font color
     m_dwFontColor = GetIniARGB(ini1, name1, ini2, name2, "fontColor", 0xFFFFFFFF);
     // get font scale
@@ -370,7 +370,7 @@ void CXI_SCROLLBAR::SaveParametersToIni()
     auto *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
-        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
+        core.Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
         return;
     }
 

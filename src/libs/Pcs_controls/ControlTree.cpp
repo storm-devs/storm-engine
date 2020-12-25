@@ -1,5 +1,7 @@
 #include "ControlTree.h"
 
+#include "core.h"
+
 ControlTree::ControlChild::ControlChild()
 {
     index = -1;
@@ -34,7 +36,7 @@ void ControlTree::ControlChild::Process(float fDeltaTime, ControlTree *pControlT
     }
 
     CONTROL_STATE cs;
-    api->Controls->GetControlState((char *)sControlName.c_str(), cs);
+    core.Controls->GetControlState((char *)sControlName.c_str(), cs);
 
     // если узел уже активизирован, то считаем таймаут
     if (bActive)
@@ -147,7 +149,7 @@ void ControlTree::Process()
     }
 
     // работаем с деревом
-    m_RootControl.Process(api->GetDeltaTime() * 0.001f, this);
+    m_RootControl.Process(core.GetDeltaTime() * 0.001f, this);
 
     // удалим деактивированные контролы
     for (n = 0; n < m_aOutControlList.size(); n++)

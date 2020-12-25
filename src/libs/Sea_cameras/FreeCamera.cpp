@@ -34,7 +34,7 @@ FREE_CAMERA::~FREE_CAMERA()
 bool FREE_CAMERA::Init()
 {
     // GUARD(FREE_CAMERA::FREE_CAMERA())
-    // api->LayerCreate("realize",true,false);
+    // core.LayerCreate("realize",true,false);
     // EntityManager::AddToLayer("system_messages",GetId(),1);
     SetDevice();
     // UNGUARD
@@ -43,13 +43,13 @@ bool FREE_CAMERA::Init()
 
 void FREE_CAMERA::SetDevice()
 {
-    pRS = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+    pRS = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     Assert(pRS);
-    pCollide = static_cast<COLLIDE *>(api->CreateService("COLL"));
+    pCollide = static_cast<COLLIDE *>(core.CreateService("COLL"));
     Assert(pCollide);
 
     /*EntityManager::CreateEntity(&sphere,"modelr");
-    api->Send_Message(sphere,"ls",MSG_MODEL_LOAD_GEO,"mirror");
+    core.Send_Message(sphere,"ls",MSG_MODEL_LOAD_GEO,"mirror");
     EntityManager::AddToLayer(realize,sphere,10000);*/
 }
 
@@ -80,7 +80,7 @@ void FREE_CAMERA::Execute(uint32_t Delta_Time)
     if (!pIslandBase)
         return;
 
-    Move(api->GetDeltaTime());
+    Move(core.GetDeltaTime());
 }
 
 void FREE_CAMERA::Move(uint32_t DeltaTime)
@@ -96,9 +96,9 @@ void FREE_CAMERA::Move(uint32_t DeltaTime)
     CONTROL_STATE cs;
 
     {
-        api->Controls->GetControlState("FreeCamera_Turn_H", cs);
+        core.Controls->GetControlState("FreeCamera_Turn_H", cs);
         vAng.y += SENSITIVITY * static_cast<float>(cs.fValue);
-        api->Controls->GetControlState("FreeCamera_Turn_V", cs);
+        core.Controls->GetControlState("FreeCamera_Turn_V", cs);
         vAng.x += SENSITIVITY * static_cast<float>(cs.fValue);
         // SetCursorPos(iLockX,iLockY);
     }
@@ -120,10 +120,10 @@ void FREE_CAMERA::Move(uint32_t DeltaTime)
     if (GetAsyncKeyState(VK_CONTROL))
         speed *= 8.0f;
 
-    api->Controls->GetControlState("FreeCamera_Forward", cs);
+    core.Controls->GetControlState("FreeCamera_Forward", cs);
     if (cs.state == CST_ACTIVE)
         vPos += speed * CVECTOR(s0 * c1, -s1, c0 * c1);
-    api->Controls->GetControlState("FreeCamera_Backward", cs);
+    core.Controls->GetControlState("FreeCamera_Backward", cs);
     if (cs.state == CST_ACTIVE)
         vPos -= speed * CVECTOR(s0 * c1, -s1, c0 * c1);
 
@@ -139,7 +139,7 @@ void FREE_CAMERA::Move(uint32_t DeltaTime)
     /*CVECTOR vRes;
     CVECTOR vDst = vPos + 2000.0f*CVECTOR(s0*c1, -s1, c0*c1);
 
-    walker_tpVW = api->LayerGetWalker("sun_trace");
+    walker_tpVW = core.LayerGetWalker("sun_trace");
     float fRes = pCollide->Trace(*pVW,vPos,vDst,nullptr,0);
     if (fRes > 1.0f) vRes = vDst;
     else

@@ -7,6 +7,7 @@
 #include "dx9render.h"
 #include "stringService.h"
 #include "vxservice.h"
+#include <EntityManager.h>
 
 #define ALPHA(x) ((x) >> 24)
 #define RED(x) (((x) >> 16) & 0xFF)

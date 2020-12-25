@@ -1,6 +1,8 @@
 #include "LogAndAction.h"
 #include "../../Shared/battle_interface/log_msg.h"
-#include "vmodule_api.h"
+#include "controls.h"
+#include "core.h"
+#include "message.h"
 #include <stdio.h>
 
 static entid_t g_ILogAndActions;
@@ -40,13 +42,13 @@ ILogAndActions::~ILogAndActions()
 
 bool ILogAndActions::Init()
 {
-    if ((rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"))) == nullptr)
+    if ((rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"))) == nullptr)
     {
         throw std::exception("Can`t create render service");
     }
     D3DVIEWPORT9 vp;
     rs->GetViewport(&vp);
-    api->Event("SetWindowSize", "lll", vp.Width, vp.Height, false);
+    core.Event("SetWindowSize", "lll", vp.Width, vp.Height, false);
     g_ILogAndActions = GetId();
     return true;
 }
@@ -57,9 +59,9 @@ void ILogAndActions::Execute(uint32_t delta_time)
         return;
 
     CONTROL_STATE cs;
-    api->Controls->GetControlState(BI_FAST_COMMANDS, cs);
+    core.Controls->GetControlState(BI_FAST_COMMANDS, cs);
     if (cs.state == CST_ACTIVATED)
-        api->Event("BI_FastCommand", "s", m_sActionName);
+        core.Event("BI_FastCommand", "s", m_sActionName);
 
     // погасим строки
     const auto colDelta = delta_time * m_fBlendSpeed;
@@ -185,7 +187,7 @@ uint64_t ILogAndActions::ProcessMessage(MESSAGE &message)
         message.String(sizeof(param) - 1, param);
         if (_stricmp(param, "SetTimeScale") == 0)
         {
-            api->SetTimeScale(message.Float());
+            core.SetTimeScale(message.Float());
         }
     }
     break;
@@ -196,9 +198,9 @@ uint64_t ILogAndActions::ProcessMessage(MESSAGE &message)
 void ILogAndActions::Realize(uint32_t delta_time)
 {
 #ifdef SPECIAL_VERSION
-    if (api->Controls->GetDebugAsyncKeyState(VK_F8) >= 0)
+    if (core.Controls->GetDebugAsyncKeyState(VK_F8) >= 0)
     {
-        m_nTimeCounter += api->GetDeltaTime();
+        m_nTimeCounter += core.GetDeltaTime();
         if (m_nTimeCounter > 10000)
         {
             m_nTimeCounter = 0;
@@ -220,7 +222,7 @@ void ILogAndActions::Realize(uint32_t delta_time)
                      "¬≈–—»я ƒЋя ѕ–≈——џ");
     }
 #endif
-    if (api->Controls->GetDebugAsyncKeyState('K') < 0)
+    if (core.Controls->GetDebugAsyncKeyState('K') < 0)
         return;
     if (rs == nullptr)
         return;
@@ -284,7 +286,7 @@ void ILogAndActions::Create(bool bFastComShow, bool bLogStringShow)
     m_bShowLogStrings = bLogStringShow;
 
     // ”становить параметры дл€ иконки активного действи€
-    auto *pA = api->Entity_GetAttributeClass(g_ILogAndActions, "ActiveActions");
+    auto *pA = core.Entity_GetAttributeClass(g_ILogAndActions, "ActiveActions");
     if (pA != nullptr)
     {
         m_idIconTexture = rs->TextureCreate(pA->GetAttribute("TextureName"));
@@ -321,7 +323,7 @@ void ILogAndActions::Create(bool bFastComShow, bool bLogStringShow)
     m_IconVertex[1].tv = m_IconVertex[3].tv = 1.f / static_cast<float>(m_vertDiv);
 
     // установить параметры дл€ строк прошедших действий
-    pA = api->Entity_GetAttributeClass(g_ILogAndActions, "Log");
+    pA = core.Entity_GetAttributeClass(g_ILogAndActions, "Log");
     if (pA != nullptr)
     {
         m_nWindowWidth = pA->GetAttributeAsDword("width", 200);
@@ -363,7 +365,7 @@ void ILogAndActions::ActionChange(bool bFastComShow, bool bLogStringShow)
     TEXTURE_RELEASE(rs, m_idIconTexture);
 
     // ”становить параметры дл€ иконки активного действи€
-    ATTRIBUTES *pA = api->Entity_GetAttributeClass(g_ILogAndActions, "ActiveActions");
+    ATTRIBUTES *pA = core.Entity_GetAttributeClass(g_ILogAndActions, "ActiveActions");
     if (pA != nullptr)
     {
         m_idIconTexture = rs->TextureCreate(pA->GetAttribute("TextureName"));
@@ -491,10 +493,10 @@ void ILogAndActions::SetAction(char *actionName)
         return;
     if ((strlen(actionName) + 1) > sizeof(m_sActionName))
     {
-        api->Trace("Action name: %s  - overup size of name");
+        core.Trace("Action name: %s  - overup size of name");
         return;
     }
-    pA = api->Entity_GetAttributeClass(g_ILogAndActions, "ActiveActions");
+    pA = core.Entity_GetAttributeClass(g_ILogAndActions, "ActiveActions");
     if (pA != nullptr)
         pA = pA->GetAttributeClass(actionName);
     if (pA == nullptr)
@@ -515,7 +517,7 @@ void ILogAndActions::SetAction(char *actionName)
     m_IconVertex[0].tv = m_IconVertex[2].tv = texRect.top;
     m_IconVertex[1].tv = m_IconVertex[3].tv = texRect.bottom;
 
-    pA = api->Entity_GetAttributeClass(g_ILogAndActions, "ActiveActions");
+    pA = core.Entity_GetAttributeClass(g_ILogAndActions, "ActiveActions");
     if (pA)
     {
         m_ActionHint1.Init(rs, pA->GetAttributeClass("text1"));

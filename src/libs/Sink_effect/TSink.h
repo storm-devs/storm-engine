@@ -1,7 +1,5 @@
-#ifndef _TSINK_H_
-#define _TSINK_H_
+#pragma once
 
-#include "../SoundService/VSoundService.h"
 #include "Cvector.h"
 #include "IVBufferManager.h"
 #include "TFlotsam.h"
@@ -43,5 +41,3 @@ class TSink
     float radius;
     CVECTOR center;
 };
-
-#endif

@@ -1,7 +1,6 @@
 #ifndef _HELPCHOOSER_H_
 #define _HELPCHOOSER_H_
 
-#include "Entity.h"
 #include "dx9render.h"
 #include <defines.h>
 

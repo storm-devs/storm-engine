@@ -10,7 +10,8 @@
 
 #include "Window.h"
 #include "../../Shared/messages.h"
-#include "EntityManager.h"
+#include "Entity.h"
+#include "core.h"
 #include <cstdint>
 
 //============================================================================================
@@ -398,13 +399,13 @@ void Window::Draw(float dltTime)
         isActiveMouseState = false;
     //Обновим позицию курсора
     CONTROL_STATE cs;
-    api->Controls->GetControlState("Turn H", cs);
+    core.Controls->GetControlState("Turn H", cs);
     cursx += cs.lValue * 3.0f;
     if (cursx < 0.0f)
         cursx = 0.0f;
     if (cursx > sw - 5.0f)
         cursx = sw - 5.0f;
-    api->Controls->GetControlState("Turn V", cs);
+    core.Controls->GetControlState("Turn V", cs);
     cursy += cs.lValue * 3.0f;
     if (cursy < 0.0f)
         cursy = 0.0f;
@@ -672,7 +673,7 @@ void Window::Reset(bool isActive)
     isList = false;
     isVisible = isActive;
     entid_t loc;
-    api->Send_Message(EntityManager::GetEntityId("location"), "ll", MSG_LOCATION_PAUSE, static_cast<long>(isActive));
+    core.Send_Message(EntityManager::GetEntityId("location"), "ll", MSG_LOCATION_PAUSE, static_cast<long>(isActive));
     slidID = -1;
     isPikerActive = false;
     isActiveMouseState = false;

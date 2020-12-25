@@ -22,9 +22,9 @@ bool Astronomy::Init()
 
 void Astronomy::SetDevice()
 {
-    pRS = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+    pRS = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     Assert(pRS);
-    pGS = static_cast<VGEOMETRY *>(api->CreateService("geometry"));
+    pGS = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
 }
 
 void Astronomy::Realize(uint32_t Delta_Time)

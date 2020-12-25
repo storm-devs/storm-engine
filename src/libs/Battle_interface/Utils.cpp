@@ -1,4 +1,7 @@
 #include "Utils.h"
+
+#include "core.h"
+
 #include "image/imgrender.h"
 #include "vmodule_api.h"
 
@@ -548,7 +551,7 @@ void BIBorderInfo::Draw()
 
     if (bUp)
     {
-        fCur += fSpeed * api->GetDeltaTime();
+        fCur += fSpeed * core.GetDeltaTime();
         if (fCur > 1.f)
         {
             fCur = 1.f;
@@ -557,7 +560,7 @@ void BIBorderInfo::Draw()
     }
     else
     {
-        fCur -= fSpeed * api->GetDeltaTime();
+        fCur -= fSpeed * core.GetDeltaTime();
         if (fCur < 0.f)
         {
             fCur = 0.f;

@@ -9,8 +9,11 @@
 //============================================================================================
 
 #include "Blots.h"
+
+#include "core.h"
+
 #include "../../Shared/messages.h"
-#include "EntityManager.h"
+#include "Entity.h"
 
 #define BLOTS_RADIUS 0.6f
 
@@ -47,11 +50,11 @@ bool Blots::Init()
 {
     // GUARD(Blots::Init())
     // DX9 render
-    rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!rs)
         throw std::exception("No service: dx9render");
     // Layers
-    ////api->LayerCreate("realize", true, false);
+    ////core.LayerCreate("realize", true, false);
     // EntityManager::SetLayerType(realize, EntityManager::Layer::Type::realize);
     // EntityManager::AddToLayer(realize, GetId(), 1000);
     textureID = rs->TextureCreate("blot.tga");

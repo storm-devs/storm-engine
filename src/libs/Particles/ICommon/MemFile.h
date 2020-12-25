@@ -5,6 +5,7 @@
 
 #include <cstdint>
 #include <cstring>
+#include <storm_assert.h>
 
 #define VFSEEK_SET (0x00000000)
 #define VFSEEK_CURRENT (0x00000001)

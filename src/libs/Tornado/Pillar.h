@@ -15,6 +15,8 @@
 
 #define TRND_PI 3.141592654f
 
+struct CVECTOR;
+
 class Pillar
 {
     //Секция столба торнадо

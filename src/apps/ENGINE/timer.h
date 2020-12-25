@@ -5,6 +5,8 @@
 
 #define USE_HIGH_FREQUENCY
 #define FILTER_SIZE 16
+#include <cstdint>
+
 class TIMER
 {
   public:

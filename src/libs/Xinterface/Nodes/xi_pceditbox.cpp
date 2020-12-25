@@ -77,9 +77,9 @@ void CXI_PCEDITBOX::Draw(bool bSelected, uint32_t Delta_Time)
         ShowCursorPosition(sString);
 
     CONTROL_STATE cs;
-    api->Controls->GetControlState("IStartButton", cs);
+    core.Controls->GetControlState("IStartButton", cs);
     if (cs.state == CST_INACTIVATED)
-        api->Event("editexit", "s", m_nodeName);
+        core.Event("editexit", "s", m_nodeName);
 }
 
 bool CXI_PCEDITBOX::Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs,
@@ -155,7 +155,7 @@ void CXI_PCEDITBOX::SaveParametersToIni()
     auto *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
-        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
+        core.Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
         return;
     }
 
@@ -173,7 +173,7 @@ void CXI_PCEDITBOX::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, con
     // get font number
     if (ReadIniString(ini1, name1, ini2, name2, "strFont", param, sizeof(param), ""))
         if ((m_nFontID = m_rs->LoadFont(param)) == -1)
-            api->Trace("can`t load font:'%s'", param);
+            core.Trace("can`t load font:'%s'", param);
 
     // Get font scale
     m_fFontScale = GetIniFloat(ini1, name1, ini2, name2, "fontScale", 1.f);
@@ -283,11 +283,11 @@ void CXI_PCEDITBOX::UpdateString(std::string &str)
     str = "";
     m_nFirstShowCharacterIndex = 0;
 
-    ATTRIBUTES *pA = api->Entity_GetAttributeClass(g_idInterface, m_nodeName);
+    ATTRIBUTES *pA = core.Entity_GetAttributeClass(g_idInterface, m_nodeName);
     if (!pA)
     {
-        api->Entity_SetAttribute(g_idInterface, m_nodeName, "");
-        pA = api->Entity_GetAttributeClass(g_idInterface, m_nodeName);
+        core.Entity_SetAttribute(g_idInterface, m_nodeName, "");
+        pA = core.Entity_GetAttributeClass(g_idInterface, m_nodeName);
     }
     if (!pA)
         return;
@@ -298,13 +298,13 @@ void CXI_PCEDITBOX::UpdateString(std::string &str)
 
     if (IsEditMode())
     {
-        if (m_bWaitKeyRelease && api->Controls->GetKeyBufferLength() == 0)
+        if (m_bWaitKeyRelease && core.Controls->GetKeyBufferLength() == 0)
             m_bWaitKeyRelease = false;
 
         if (!m_bWaitKeyRelease)
         {
-            const KeyDescr *pKeys = api->Controls->GetKeyBuffer();
-            for (long n = 0; n < api->Controls->GetKeyBufferLength(); n++)
+            const KeyDescr *pKeys = core.Controls->GetKeyBuffer();
+            for (long n = 0; n < core.Controls->GetKeyBufferLength(); n++)
             {
                 if (pKeys[n].bSystem)
                 {

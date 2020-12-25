@@ -1,5 +1,8 @@
 #include "seafoam_ps.h"
-#include "EntityManager.h"
+
+#include "core.h"
+
+#include "Entity.h"
 #include "object.h"
 
 SEAFOAM_PS::SEAFOAM_PS() : enableEmit(true)
@@ -63,7 +66,7 @@ SEAFOAM_PS::~SEAFOAM_PS()
     {
         for (n = 0; n < TexturesNum; n++)
             RenderService->TextureRelease(TextureID[n]);
-        // api->FreeService("dx9render");
+        // core.FreeService("dx9render");
     }
     delete Particle;
     Particle = nullptr;
@@ -155,11 +158,11 @@ bool SEAFOAM_PS::Init(INIFILE *ini, const char *psname)
     bool bRes;
 
     // load render service -----------------------------------------------------
-    RenderService = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+    RenderService = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!RenderService)
         throw std::exception("No service: dx9render");
 
-    gs = static_cast<VGEOMETRY *>(api->CreateService("geometry"));
+    gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
     // if(!gs) return false;
 
     // read textures ------------------------------------------------------------
@@ -185,7 +188,7 @@ bool SEAFOAM_PS::Init(INIFILE *ini, const char *psname)
 
     if (!ini->ReadString(psname, PSKEY_TECHNIQUE, string, sizeof(string), ""))
     {
-        api->Trace("Particle system: %s", psname);
+        core.Trace("Particle system: %s", psname);
         throw std::exception("no technique for particle system");
     }
     const auto len = strlen(string) + 1;
@@ -642,7 +645,7 @@ void SEAFOAM_PS::ProcessParticles(uint32_t DeltaTime)
         // bComplete = false;	// still have particles to run
     }
 
-    // api->Trace("Delta: %d",DeltaTime);
+    // core.Trace("Delta: %d",DeltaTime);
 
     DeltaTimeSLE += DeltaTime;
     if (DeltaTimeSLE >= (EmissionTime + CurrentEmissionTimeRand))
@@ -887,7 +890,7 @@ void SEAFOAM_PS::SetFlowTrack(uint32_t index)
     {
         Particle[index].flow_track_index++;
     }
-    // if(index==0)api->Trace("track: %d",Particle[index].flow_track_index);
+    // if(index==0)core.Trace("track: %d",Particle[index].flow_track_index);
 }
 
 void SEAFOAM_PS::UseSurface(entid_t surface_id)

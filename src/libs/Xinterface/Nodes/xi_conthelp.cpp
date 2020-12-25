@@ -95,7 +95,7 @@ void CXI_CONTEXTHELP::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
 
     if (ReadIniString(ini1, name1, ini2, name2, "font", param, sizeof(param), ""))
         if ((m_idFont = m_rs->LoadFont(param)) == -1)
-            api->Trace("can not load font:'%s'", param);
+            core.Trace("can not load font:'%s'", param);
     m_offset = GetIniLong(ini1, name1, ini2, name2, "offset", 0);
 
     // Get help strings quantity
@@ -211,7 +211,7 @@ void CXI_CONTEXTHELP::SaveParametersToIni()
     auto *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
-        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
+        core.Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
         return;
     }
 

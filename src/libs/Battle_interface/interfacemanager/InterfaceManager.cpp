@@ -6,6 +6,7 @@
 #include "interfacegroup/SeaGroup.h"
 
 #include "../shared/bimanager/messages.h"
+#include "core.h"
 #include "vmodule_api.h"
 
 BI_InterfaceManager::BI_InterfaceManager()
@@ -28,7 +29,7 @@ BI_InterfaceManager::~BI_InterfaceManager()
 
 bool BI_InterfaceManager::Init()
 {
-    m_pRS = static_cast<VDX9RENDER *>(api->CreateService("DX9RENDER"));
+    m_pRS = static_cast<VDX9RENDER *>(core.CreateService("DX9RENDER"));
     Assert(m_pRS);
     m_pImgRender = new BIImageRender(m_pRS);
     Assert(m_pImgRender);

@@ -1,5 +1,7 @@
 #include "DataColor.h"
+
 #include "../../ICommon/GraphTime.h"
+#include "storm_assert.h"
 #include "vmodule_api.h"
 
 //конструктор/деструктор
@@ -134,7 +136,7 @@ void DataColor::Load(MemFile *File)
 
 void DataColor::SetName(const char *szName)
 {
-    // api->Trace("DataColor::SetName - '%s'", szName);
+    // core.Trace("DataColor::SetName - '%s'", szName);
     Name = szName;
 }
 

@@ -3,6 +3,9 @@
 #include "editor_defines.h"
 #include <defines.h>
 
+#include "controls.h"
+#include "core.h"
+
 GIEditorList::GIEditorList(GIEditor *pEditor)
 {
     m_pEditor = pEditor;
@@ -189,7 +192,7 @@ void GIEditorList::DoKeyChecking()
 {
     CONTROL_STATE cs;
 
-    api->Controls->GetControlState(INTERFACE_CONTROL_DOWN, cs);
+    core.Controls->GetControlState(INTERFACE_CONTROL_DOWN, cs);
     if (cs.state == CST_ACTIVATED)
     {
         IncrementSelectedLine(true);
@@ -199,7 +202,7 @@ void GIEditorList::DoKeyChecking()
     {
         if (m_fDownPressTime < m_fKeyRepeatDelay)
         {
-            m_fDownPressTime += api->GetDeltaTime() * .001f;
+            m_fDownPressTime += core.GetDeltaTime() * .001f;
         }
         else
         {
@@ -208,7 +211,7 @@ void GIEditorList::DoKeyChecking()
         }
     }
 
-    api->Controls->GetControlState(INTERFACE_CONTROL_UP, cs);
+    core.Controls->GetControlState(INTERFACE_CONTROL_UP, cs);
     if (cs.state == CST_ACTIVATED)
     {
         IncrementSelectedLine(false);
@@ -218,7 +221,7 @@ void GIEditorList::DoKeyChecking()
     {
         if (m_fUpPressTime < m_fKeyRepeatDelay)
         {
-            m_fUpPressTime += api->GetDeltaTime() * .001f;
+            m_fUpPressTime += core.GetDeltaTime() * .001f;
         }
         else
         {

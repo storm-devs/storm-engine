@@ -42,13 +42,13 @@ bool Shadow::Init()
 {
     // GUARD(Shadow::SHADOW())
 
-    col = static_cast<COLLIDE *>(api->CreateService("coll"));
+    col = static_cast<COLLIDE *>(core.CreateService("coll"));
     if (col == nullptr)
         throw std::exception("No service: COLLIDE");
 
     EntityManager::AddToLayer(REALIZE, GetId(), 900);
 
-    rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!rs)
         throw std::exception("No service: dx9render");
 
@@ -136,14 +136,14 @@ void Shadow::Realize(uint32_t Delta_Time)
     if (!obj)
         return;
 
-    auto *pV = api->Event("EWhr_GetShadowDensity");
+    auto *pV = core.Event("EWhr_GetShadowDensity");
     HEAD_DENSITY = ((VDATA *)pV->GetArrayElement(0))->GetLong();
     DENSITY = ((VDATA *)pV->GetArrayElement(1))->GetLong();
 
     D3DVIEWPORT9 vp;
     rs->GetViewport(&vp);
 
-    pV = api->Event("EWhr_GetFogDensity");
+    pV = core.Event("EWhr_GetFogDensity");
     auto fogDensity = pV->GetFloat();
 
     // MODEL *obj = (MODEL*)EntityManager::GetEntityPointer(entity);

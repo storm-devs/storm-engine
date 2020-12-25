@@ -11,9 +11,11 @@
 #include "LocLife.h"
 #include "../../Shared/messages.h"
 #include "Character.h"
-#include "EntityManager.h"
+#include "Entity.h"
 #include "Location.h"
+#include "core.h"
 #include "geometry.h"
+#include "model.h"
 
 //============================================================================================
 
@@ -39,21 +41,21 @@ bool LocLife::Init(Location *loc)
         return false;
     EntityManager::AddToLayer(REALIZE, model, 20);
     //Путь для текстур
-    auto *gs = static_cast<VGEOMETRY *>(api->CreateService("geometry"));
+    auto *gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
     if (!gs)
     {
-        api->Trace("Can't create geometry service!");
+        core.Trace("Can't create geometry service!");
         return false;
     }
     gs->SetTexturePath("Animals\\");
-    if (!api->Send_Message(model, "ls", MSG_MODEL_LOAD_GEO, GetModelName()))
+    if (!core.Send_Message(model, "ls", MSG_MODEL_LOAD_GEO, GetModelName()))
     {
         gs->SetTexturePath("");
         return false;
     }
     gs->SetTexturePath("");
     //Анимация
-    if (!api->Send_Message(model, "ls", MSG_MODEL_LOAD_ANI, GetAniName()))
+    if (!core.Send_Message(model, "ls", MSG_MODEL_LOAD_ANI, GetAniName()))
         return false;
     //Определям место положения
     location = loc;

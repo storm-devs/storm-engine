@@ -1,7 +1,10 @@
 #include "ships_list.h"
-#include "../shared/battle_interface/msg_control.h"
-#include <EntityManager.h>
 #include <cassert>
+
+#include "core.h"
+
+#include "../shared/battle_interface/msg_control.h"
+#include "Entity.h"
 //#include "battle_command.h"
 
 #define LOADING_MODE_MY_SHIP 0
@@ -50,7 +53,7 @@ void TMP_LONG_STACK::Push(long data)
     {
         if (sizeIncr <= 0)
         {
-            api->Trace("WARNING! push for TMP_LONG_STACK impossible - array grid <= 0");
+            core.Trace("WARNING! push for TMP_LONG_STACK impossible - array grid <= 0");
             return;
         }
         auto *const pold = ldat;
@@ -73,7 +76,7 @@ long TMP_LONG_STACK::GetFore()
 {
     if (ldat == nullptr || curidx <= 0)
     {
-        api->Trace("WARNING! GetFore from TMP_LONG_STACK is empty");
+        core.Trace("WARNING! GetFore from TMP_LONG_STACK is empty");
         return defReturn;
     }
     const auto retVal = ldat[0];
@@ -94,7 +97,7 @@ long TMP_LONG_STACK::Pop()
 {
     if (ldat == nullptr || curidx <= 0)
     {
-        api->Trace("WARNING! pop from TMP_LONG_STACK is empty");
+        core.Trace("WARNING! pop from TMP_LONG_STACK is empty");
         return defReturn;
     }
     const auto retVal = ldat[--curidx];
@@ -203,7 +206,7 @@ void SHIP_DESCRIBE_LIST::Add(long mainChrIndex, long chIdx, ATTRIBUTES *pChAttr,
     assert(pAttr != NULL);
     pr->pAttr = pAttr;
     long lTmp;
-    SetNLongData(api->Event(BI_EVENT_GET_DATA, "ll", BIDT_SHIPPICTURE, chIdx), 4, &pr->pictureNum, 0,
+    SetNLongData(core.Event(BI_EVENT_GET_DATA, "ll", BIDT_SHIPPICTURE, chIdx), 4, &pr->pictureNum, 0,
                  &pr->selectPictureNum, 0, &pr->textureNum, -1, &lTmp, 0); //&pr->isDead,false );
     pr->isDead = lTmp != 0;
 
@@ -304,7 +307,7 @@ void SHIP_DESCRIBE_LIST::Refresh()
 
     for (auto chrIdx = tls.GetFore(); chrIdx >= 0; chrIdx = tls.GetFore())
     {
-        api->Event("BI_CallUpdateShip", "l", chrIdx);
+        core.Event("BI_CallUpdateShip", "l", chrIdx);
     }
 
     // BATTLE_COMMAND::m_bMakeModeUpdate = true;

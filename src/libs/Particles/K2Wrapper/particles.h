@@ -1,8 +1,7 @@
 #ifndef _K2_PARTICLES_H_
 #define _K2_PARTICLES_H_
 
-#include "entity.h"
-#include "vmodule_api.h"
+#include "Entity.h"
 #include <string>
 #include <vector>
 

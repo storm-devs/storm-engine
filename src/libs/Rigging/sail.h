@@ -8,6 +8,8 @@
 #include "sail_base.h"
 #include "vmodule_api.h"
 
+class VDATA;
+
 struct SAILGROUP
 {
     uint32_t nVert, nIndx;

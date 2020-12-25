@@ -1,8 +1,9 @@
 #include "interface.h"
 #include "../shared/battle_interface/msg_control.h"
+#include "core.h"
+#include "message.h"
 #include "shipcommand.h"
 #include "shipsign.h"
-#include "vmodule_api.h"
 
 WM_INTERFACE::WM_INTERFACE() : rs(nullptr)
 {
@@ -24,7 +25,7 @@ WM_INTERFACE::~WM_INTERFACE()
 
 bool WM_INTERFACE::Init()
 {
-    rs = static_cast<VDX9RENDER *>(api->CreateService("DX9RENDER"));
+    rs = static_cast<VDX9RENDER *>(core.CreateService("DX9RENDER"));
     Assert(rs);
 
     LoadIniFile();
@@ -46,7 +47,7 @@ void WM_INTERFACE::Realize(uint32_t delta_time)
             if (!m_pCommandList->GetActive())
             {
                 CONTROL_STATE cs;
-                api->Controls->GetControlState(BI_COMMANDS_ACTIVATE_SEA, cs);
+                core.Controls->GetControlState(BI_COMMANDS_ACTIVATE_SEA, cs);
                 if (cs.state == CST_ACTIVATED)
                 {
                     m_pCommandList->SetActive(true);
@@ -109,27 +110,27 @@ void WM_INTERFACE::MakeControl()
 {
     CONTROL_STATE cs;
 
-    api->Controls->GetControlState(BI_COMMANDS_CONFIRM, cs);
+    core.Controls->GetControlState(BI_COMMANDS_CONFIRM, cs);
     if (cs.state == CST_ACTIVATED)
         ExecuteCommand(BI_MSG_COMMAND_ACTIVATE);
 
-    api->Controls->GetControlState(BI_COMMANDS_LEFTSTEP, cs);
+    core.Controls->GetControlState(BI_COMMANDS_LEFTSTEP, cs);
     if (cs.state == CST_ACTIVATED)
         ExecuteCommand(BI_MSG_COMMAND_LEFT);
 
-    api->Controls->GetControlState(BI_COMMANDS_RIGHTSTEP, cs);
+    core.Controls->GetControlState(BI_COMMANDS_RIGHTSTEP, cs);
     if (cs.state == CST_ACTIVATED)
         ExecuteCommand(BI_MSG_COMMAND_RIGHT);
 
-    api->Controls->GetControlState(BI_COMMANDS_UPSTEP, cs);
+    core.Controls->GetControlState(BI_COMMANDS_UPSTEP, cs);
     if (cs.state == CST_ACTIVATED)
         ExecuteCommand(BI_MSG_COMMAND_UP);
 
-    api->Controls->GetControlState(BI_COMMANDS_DOWNSTEP, cs);
+    core.Controls->GetControlState(BI_COMMANDS_DOWNSTEP, cs);
     if (cs.state == CST_ACTIVATED)
         ExecuteCommand(BI_MSG_COMMAND_DOWN);
 
-    api->Controls->GetControlState(BI_COMMANDS_CANCEL, cs);
+    core.Controls->GetControlState(BI_COMMANDS_CANCEL, cs);
     if (cs.state == CST_ACTIVATED)
         ExecuteCommand(BI_MSG_COMMAND_DEACTIVATE);
 }
@@ -183,7 +184,7 @@ void WM_INTERFACE::ExecuteCommand(long command)
         break;
 
     default:
-        api->Trace("Warning! Unknown executing command: %d", command);
+        core.Trace("Warning! Unknown executing command: %d", command);
     }
 }
 

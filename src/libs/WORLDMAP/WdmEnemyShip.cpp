@@ -9,6 +9,9 @@
 //============================================================================================
 
 #include "WdmEnemyShip.h"
+
+#include "core.h"
+
 #include "WdmIslands.h"
 
 //============================================================================================
@@ -52,7 +55,7 @@ WdmEnemyShip::~WdmEnemyShip()
     {
       ATTRIBUTES * atr = saveAttribute->GetParent();
       atr->DeleteAttributeClassX(saveAttribute);
-      api->Event("WorldMap_DeleteShipEncounter", "l", type);
+      core.Event("WorldMap_DeleteShipEncounter", "l", type);
     }*/
 }
 
@@ -113,7 +116,7 @@ void WdmEnemyShip::Update(float dltTime)
                 VDATA *pVDat = nullptr;
                 if (!killMe && delEnc && delEnc[0])
                 {
-                    pVDat = api->Event("WorldMap_EncounterDelete", "s", delEnc);
+                    pVDat = core.Event("WorldMap_EncounterDelete", "s", delEnc);
                 }
                 deleteAlpha = 0;
                 if (!pVDat || pVDat->GetLong() != 0)

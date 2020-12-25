@@ -1,6 +1,8 @@
 #include "LocationScriptLib.h"
-#include "EntityManager.h"
+#include "Entity.h"
 #include "Fader.h"
+#include "core.h"
+#include "s_import_func.h"
 #include "v_s_stack.h"
 
 //============================================================================================
@@ -219,7 +221,7 @@ uint32_t slNativeSetReloadBackImage(VS_STACK *pS)
     if (!pStr->Get(nm))
         return IFUNCRESULT_FAILED;
     //Устанавливаем картинку
-    VDX9RENDER *rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+    VDX9RENDER *rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (rs)
     {
         rs->SetProgressImage(nm);
@@ -229,7 +231,7 @@ uint32_t slNativeSetReloadBackImage(VS_STACK *pS)
 
 uint32_t slNativeReloadProgressStart(VS_STACK *pS)
 {
-    VDX9RENDER *rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+    VDX9RENDER *rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (rs)
         rs->StartProgressView();
     return IFUNCRESULT_OK;
@@ -237,7 +239,7 @@ uint32_t slNativeReloadProgressStart(VS_STACK *pS)
 
 uint32_t slNativeReloadProgressUpdate(VS_STACK *pS)
 {
-    VDX9RENDER *rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+    VDX9RENDER *rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (rs)
         rs->ProgressView();
     return IFUNCRESULT_OK;
@@ -245,7 +247,7 @@ uint32_t slNativeReloadProgressUpdate(VS_STACK *pS)
 
 uint32_t slNativeReloadProgressEnd(VS_STACK *pS)
 {
-    auto *rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+    auto *rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (rs)
         rs->EndProgressView();
     return IFUNCRESULT_OK;
@@ -274,7 +276,7 @@ uint32_t slNativeExecuteTechnique(VS_STACK *pS)
     //Исполить технику
     if (nm && nm[0])
     {
-        auto *rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+        auto *rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
         rs->TechniqueExecuteStart(nm);
         while (rs->TechniqueExecuteNext())
             ;
@@ -318,8 +320,8 @@ uint32_t slSetAchievement(VS_STACK *pS)
         if (!pReturn)
             return IFUNCRESULT_FAILED;
 
-        if (api->isSteamEnabled())
-            ret = api->SetAchievementState(nm);
+        if (core.isSteamEnabled())
+            ret = core.SetAchievementState(nm);
 
         else
             ret = 0;
@@ -344,8 +346,8 @@ uint32_t slGetAchievement(VS_STACK *pS)
         if (!pReturn)
             return IFUNCRESULT_FAILED;
 
-        if (api->isSteamEnabled())
-            ret = api->GetAchievementState(nm);
+        if (core.isSteamEnabled())
+            ret = core.GetAchievementState(nm);
 
         else
             ret = 0;
@@ -375,8 +377,8 @@ uint32_t slSetStat(VS_STACK *pS)
         if (!pReturn)
             return IFUNCRESULT_FAILED;
 
-        if (api->isSteamEnabled())
-            ret = api->SetStatValue(nm, val);
+        if (core.isSteamEnabled())
+            ret = core.SetStatValue(nm, val);
 
         else
             ret = 0;
@@ -400,8 +402,8 @@ uint32_t slGetStat(VS_STACK *pS)
         if (!pReturn)
             return IFUNCRESULT_FAILED;
 
-        if (api->isSteamEnabled())
-            ret = api->GetStatValue(nm);
+        if (core.isSteamEnabled())
+            ret = core.GetStatValue(nm);
 
         else
             ret = 0;
@@ -419,8 +421,8 @@ uint32_t slStoreStats(VS_STACK *pS)
     if (!pReturn)
         return IFUNCRESULT_FAILED;
 
-    if (api->isSteamEnabled())
-        ret = api->StoreStats();
+    if (core.isSteamEnabled())
+        ret = core.StoreStats();
 
     else
         ret = 0;
@@ -443,8 +445,8 @@ uint32_t slClearAchievement(VS_STACK *pS)
         if (!pReturn)
             return IFUNCRESULT_FAILED;
 
-        if (api->isSteamEnabled())
-            ret = api->ClearAchievement(nm);
+        if (core.isSteamEnabled())
+            ret = core.ClearAchievement(nm);
 
         else
             ret = 0;
@@ -467,8 +469,8 @@ uint32_t slResetStats(VS_STACK *pS)
     if (!pReturn)
         return IFUNCRESULT_FAILED;
 
-    if (api->isSteamEnabled())
-        ret = api->ResetStats(val);
+    if (core.isSteamEnabled())
+        ret = core.ResetStats(val);
 
     else
         ret = 0;
@@ -487,109 +489,109 @@ bool ScriptLocationLibrary::Init()
     sIFuncInfo.pFuncName = "NativeFindCharacter";
     sIFuncInfo.pReturnValueName = "int";
     sIFuncInfo.pFuncAddress = slNativeFindCharacter;
-    api->SetScriptFunction(&sIFuncInfo);
+    core.SetScriptFunction(&sIFuncInfo);
 
     sIFuncInfo.nArguments = 2;
     sIFuncInfo.pFuncName = "NativeFindLocation";
     sIFuncInfo.pReturnValueName = "int";
     sIFuncInfo.pFuncAddress = slNativeFindLocation;
-    api->SetScriptFunction(&sIFuncInfo);
+    core.SetScriptFunction(&sIFuncInfo);
 
     sIFuncInfo.nArguments = 0;
     sIFuncInfo.pFuncName = "NativeFindLoadCharacter";
     sIFuncInfo.pReturnValueName = "int";
     sIFuncInfo.pFuncAddress = slNativeFindLaodLocation;
-    api->SetScriptFunction(&sIFuncInfo);
+    core.SetScriptFunction(&sIFuncInfo);
 
     sIFuncInfo.nArguments = 1;
     sIFuncInfo.pFuncName = "SetReloadProgressBackImage";
     sIFuncInfo.pReturnValueName = "void";
     sIFuncInfo.pFuncAddress = slNativeSetReloadBackImage;
-    api->SetScriptFunction(&sIFuncInfo);
+    core.SetScriptFunction(&sIFuncInfo);
 
     sIFuncInfo.nArguments = 0;
     sIFuncInfo.pFuncName = "SetReloadNextTipsImage";
     sIFuncInfo.pReturnValueName = "void";
     sIFuncInfo.pFuncAddress = slNativeSetReloadNextTipsImage;
-    api->SetScriptFunction(&sIFuncInfo);
+    core.SetScriptFunction(&sIFuncInfo);
 
     sIFuncInfo.nArguments = 0;
     sIFuncInfo.pFuncName = "ReloadProgressStart";
     sIFuncInfo.pReturnValueName = "void";
     sIFuncInfo.pFuncAddress = slNativeReloadProgressStart;
-    api->SetScriptFunction(&sIFuncInfo);
+    core.SetScriptFunction(&sIFuncInfo);
 
     sIFuncInfo.nArguments = 0;
     sIFuncInfo.pFuncName = "ReloadProgressUpdate";
     sIFuncInfo.pReturnValueName = "void";
     sIFuncInfo.pFuncAddress = slNativeReloadProgressUpdate;
-    api->SetScriptFunction(&sIFuncInfo);
+    core.SetScriptFunction(&sIFuncInfo);
 
     sIFuncInfo.nArguments = 0;
     sIFuncInfo.pFuncName = "ReloadProgressEnd";
     sIFuncInfo.pReturnValueName = "void";
     sIFuncInfo.pFuncAddress = slNativeReloadProgressEnd;
-    api->SetScriptFunction(&sIFuncInfo);
+    core.SetScriptFunction(&sIFuncInfo);
 
     sIFuncInfo.nArguments = 1;
     sIFuncInfo.pFuncName = "SystemDelay";
     sIFuncInfo.pReturnValueName = "void";
     sIFuncInfo.pFuncAddress = slNativeSleep;
-    api->SetScriptFunction(&sIFuncInfo);
+    core.SetScriptFunction(&sIFuncInfo);
 
     sIFuncInfo.nArguments = 1;
     sIFuncInfo.pFuncName = "ExecuteTechnique";
     sIFuncInfo.pReturnValueName = "void";
     sIFuncInfo.pFuncAddress = slNativeExecuteTechnique;
-    api->SetScriptFunction(&sIFuncInfo);
+    core.SetScriptFunction(&sIFuncInfo);
 
     sIFuncInfo.nArguments = 0;
     sIFuncInfo.pFuncName = "GetNextLineString";
     sIFuncInfo.pReturnValueName = "string";
     sIFuncInfo.pFuncAddress = slGetNextLineString;
-    api->SetScriptFunction(&sIFuncInfo);
+    core.SetScriptFunction(&sIFuncInfo);
 
     sIFuncInfo.nArguments = 1;
     sIFuncInfo.pFuncName = "SetAchievement";
     sIFuncInfo.pReturnValueName = "int";
     sIFuncInfo.pFuncAddress = slSetAchievement;
-    api->SetScriptFunction(&sIFuncInfo);
+    core.SetScriptFunction(&sIFuncInfo);
 
     sIFuncInfo.nArguments = 1;
     sIFuncInfo.pFuncName = "GetAchievement";
     sIFuncInfo.pReturnValueName = "int";
     sIFuncInfo.pFuncAddress = slGetAchievement;
-    api->SetScriptFunction(&sIFuncInfo);
+    core.SetScriptFunction(&sIFuncInfo);
 
     sIFuncInfo.nArguments = 2;
     sIFuncInfo.pFuncName = "SetStat";
     sIFuncInfo.pReturnValueName = "int";
     sIFuncInfo.pFuncAddress = slSetStat;
-    api->SetScriptFunction(&sIFuncInfo);
+    core.SetScriptFunction(&sIFuncInfo);
 
     sIFuncInfo.nArguments = 1;
     sIFuncInfo.pFuncName = "GetStat";
     sIFuncInfo.pReturnValueName = "int";
     sIFuncInfo.pFuncAddress = slGetStat;
-    api->SetScriptFunction(&sIFuncInfo);
+    core.SetScriptFunction(&sIFuncInfo);
 
     sIFuncInfo.nArguments = 0;
     sIFuncInfo.pFuncName = "StoreStats";
     sIFuncInfo.pReturnValueName = "int";
     sIFuncInfo.pFuncAddress = slStoreStats;
-    api->SetScriptFunction(&sIFuncInfo);
+    core.SetScriptFunction(&sIFuncInfo);
 
     sIFuncInfo.nArguments = 1;
     sIFuncInfo.pFuncName = "ClearAchievement";
     sIFuncInfo.pReturnValueName = "int";
     sIFuncInfo.pFuncAddress = slClearAchievement;
-    api->SetScriptFunction(&sIFuncInfo);
+    core.SetScriptFunction(&sIFuncInfo);
 
     sIFuncInfo.nArguments = 1;
     sIFuncInfo.pFuncName = "ResetStats";
     sIFuncInfo.pReturnValueName = "int";
     sIFuncInfo.pFuncAddress = slResetStats;
-    api->SetScriptFunction(&sIFuncInfo);
+    core.SetScriptFunction(&sIFuncInfo);
 
     return true;
 }

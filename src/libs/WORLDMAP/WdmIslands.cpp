@@ -9,6 +9,9 @@
 //============================================================================================
 
 #include "WdmIslands.h"
+
+#include "core.h"
+
 #include "WdmCamera.h"
 #include "WdmShip.h"
 #include "WorldMap.h"
@@ -134,7 +137,7 @@ WdmIslands::WdmIslands()
                 wdmObjects->wm->CreateModel(new WdmRenderModel(), name.c_str(), false, false, false, 3));
             if (!isl.area)
             {
-                api->Trace("World map: can't load model of island's area: %s", name.c_str());
+                core.Trace("World map: can't load model of island's area: %s", name.c_str());
             }
             //Пальмы
             name = "islands\\";
@@ -156,7 +159,7 @@ WdmIslands::WdmIslands()
         }
         else
         {
-            api->Trace("World map: can't load model of island: %s", name.c_str());
+            core.Trace("World map: can't load model of island: %s", name.c_str());
         }
     }
     //Загрузка патча
@@ -378,7 +381,7 @@ void WdmIslands::SetIslandsData(ATTRIBUTES *apnt, bool isChange)
         //Проверяем на достаточность
         if (!id || !text || !locator || !locator[0])
         {
-            api->Trace("World map: label \"%s\" will be skipping...", apnt->GetAttributeName(i));
+            core.Trace("World map: label \"%s\" will be skipping...", apnt->GetAttributeName(i));
             continue;
         }
         //Ищим метку среди существующих
@@ -388,7 +391,7 @@ void WdmIslands::SetIslandsData(ATTRIBUTES *apnt, bool isChange)
         {
             if (!LabelsFindLocator(locator, pos))
             {
-                api->Trace("World map: locator \"%s\" in label \"%s\" not found...", locator,
+                core.Trace("World map: locator \"%s\" in label \"%s\" not found...", locator,
                            apnt->GetAttributeName(i));
                 continue;
             }
@@ -633,13 +636,13 @@ void WdmIslands::LRender(VDX9RENDER *rs)
     //Рисуем патч если надо
     if (wdmObjects->isDebug)
     {
-        if (patch && api->Controls->GetDebugAsyncKeyState('1') < 0)
+        if (patch && core.Controls->GetDebugAsyncKeyState('1') < 0)
         {
-            patch->DebugDraw(rs, api->GetDeltaTime() * 0.001f);
+            patch->DebugDraw(rs, core.GetDeltaTime() * 0.001f);
         }
     }
     //Обновим состояние картинок
-    icons.frame += api->GetDeltaTime() * 0.001f * icons.fps;
+    icons.frame += core.GetDeltaTime() * 0.001f * icons.fps;
     icons.frame = (icons.frame / icons.frames - static_cast<long>(icons.frame / icons.frames)) * icons.frames;
     if (icons.frame < 0.0f)
     {
@@ -675,7 +678,7 @@ void WdmIslands::LRender(VDX9RENDER *rs)
     const auto h = static_cast<float>(vp.Height);
     //Получим высоту камеры
     const float cameraHeight = wdmObjects->camera->realHeight;
-    const float dAlpha = api->GetDeltaTime() * (0.001f * 1.5f * 255.0f);
+    const float dAlpha = core.GetDeltaTime() * (0.001f * 1.5f * 255.0f);
     //Проецируем на экран
     labelSort.clear();
     MTX_PRJ_VECTOR prjVertex;

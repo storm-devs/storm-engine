@@ -2,7 +2,7 @@
 
 AIShipWar::AIShipWar() : AIShip(AIOBJ_SHIP_WAR)
 {
-    // api->Trace("Create war ship.");
+    // core.Trace("Create war ship.");
 }
 
 AIShipWar::~AIShipWar()

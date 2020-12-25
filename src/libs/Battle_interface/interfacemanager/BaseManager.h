@@ -2,7 +2,6 @@
 #define InterfaceBaseManager_h
 
 #include "../bi_defines.h"
-#include "Entity.h"
 #include "dx9render.h"
 
 class BIImageRender;

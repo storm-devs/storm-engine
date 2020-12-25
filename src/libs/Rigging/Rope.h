@@ -1,7 +1,6 @@
 #ifndef _ROPE_H_
 #define _ROPE_H_
 
-#include "Entity.h"
 #include "dx9render.h"
 #include "geos.h"
 #include "matrix.h"

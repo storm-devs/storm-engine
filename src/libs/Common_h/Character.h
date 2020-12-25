@@ -2,6 +2,7 @@
 #define CHARACTER_WORK_HPP
 
 #include "Attributes.h"
+#include "storm_assert.h"
 
 inline char *GetFirstName(ATTRIBUTES *pACharacter)
 {

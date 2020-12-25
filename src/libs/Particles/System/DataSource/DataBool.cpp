@@ -1,4 +1,6 @@
 #include "DataBool.h"
+
+#include "storm_assert.h"
 #include "vmodule_api.h"
 
 #pragma warning(disable : 4800)
@@ -42,7 +44,7 @@ void DataBool::Load(MemFile *File)
 
 void DataBool::SetName(const char *szName)
 {
-    // api->Trace("DataBool::SetName - '%s'", szName);
+    // core.Trace("DataBool::SetName - '%s'", szName);
     Name = szName;
 }
 

@@ -6,8 +6,11 @@
 #include "../shared/battle_interface/msg_control.h"
 #include "../shared/events.h"
 #include "../shared/messages.h"
-#include "EntityManager.h"
+#include "Entity.h"
+#include "controls.h"
+#include "core.h"
 #include "math3d/Sphere.h"
+#include "message.h"
 
 void ISPYGLASS::ImageParam::Release()
 {
@@ -88,7 +91,7 @@ ISPYGLASS::~ISPYGLASS()
 
 bool ISPYGLASS::Init()
 {
-    if ((rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"))) == nullptr)
+    if ((rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"))) == nullptr)
     {
         throw std::exception("Can`t create render service");
     }
@@ -162,12 +165,12 @@ bool ISPYGLASS::Init()
 void ISPYGLASS::Execute(uint32_t delta_time)
 {
     CONTROL_STATE cs;
-    api->Controls->GetControlState("TelescopeIn", cs);
+    core.Controls->GetControlState("TelescopeIn", cs);
     if (cs.state == CST_ACTIVATED)
-        api->Event("MSG_TELESCOPE_REQUEST", "l", 1);
-    api->Controls->GetControlState("TelescopeOut", cs);
+        core.Event("MSG_TELESCOPE_REQUEST", "l", 1);
+    core.Controls->GetControlState("TelescopeOut", cs);
     if (cs.state == CST_ACTIVATED)
-        api->Event("MSG_TELESCOPE_REQUEST", "l", 0);
+        core.Event("MSG_TELESCOPE_REQUEST", "l", 0);
 
     if (m_bIsOn)
     {
@@ -358,8 +361,8 @@ void ISPYGLASS::TurnOnTelescope(bool bTurnOn)
 
         m_pFortObj = nullptr;
 
-        api->Event(TELESCOPE_ACTIVE, "l", 1);
-        api->Event("BI_VISIBLE", "l", 0);
+        core.Event(TELESCOPE_ACTIVE, "l", 1);
+        core.Event("BI_VISIBLE", "l", 0);
     }
     else
     {
@@ -369,8 +372,8 @@ void ISPYGLASS::TurnOnTelescope(bool bTurnOn)
         m_Camera.bIsGrow = true;
         m_Camera.fCurUpdatingTime = 0.f;
 
-        api->Event(TELESCOPE_ACTIVE, "l", 0);
-        api->Event("BI_VISIBLE", "l", 1);
+        core.Event(TELESCOPE_ACTIVE, "l", 0);
+        core.Event("BI_VISIBLE", "l", 1);
     }
 }
 
@@ -383,7 +386,7 @@ void ISPYGLASS::SetShipInfo(long nCharIndex)
     else
         m_bIsPresentShipInfo = true;
 
-    api->Event("SetTelescopeInfo", "l", m_nInfoCharacterIndex);
+    core.Event("SetTelescopeInfo", "l", m_nInfoCharacterIndex);
 
     if (m_bIsPresentShipInfo)
     {
@@ -527,7 +530,7 @@ void ISPYGLASS::UpdateCamera()
 {
     if (!m_bIsOn)
         return;
-    const float fTime = api->GetDeltaTime() * .001f;
+    const float fTime = core.GetDeltaTime() * .001f;
     m_Camera.fCurUpdatingTime += fTime;
 
     if (!m_Camera.bIsActive)

@@ -45,6 +45,7 @@ set(PROJECT_SOURCES
 	Character.h
 	collide.h
 	controls.h
+	core.h
 	Cvector.h
 	CVector4.h
 	defines.h
@@ -84,7 +85,6 @@ set(PROJECT_SOURCES
 	types3d.h
 	utf8.h
 	v_s_stack.h
-	vapi.h	
 	vdata.h
 	vfile_service.h
 	VideoTexture.h

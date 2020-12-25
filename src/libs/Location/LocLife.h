@@ -12,7 +12,7 @@
 #define _LocLife_h_
 
 #include "Animation.h"
-#include "vmodule_api.h"
+#include "Entity.h"
 
 class Location;
 class Animation;

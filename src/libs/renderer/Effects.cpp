@@ -1,6 +1,8 @@
 #include "Effects.h"
-#include "vmodule_api.h"
+
+#include "core.h"
 #include <DxErr.h>
+#include <iterator>
 
 #define CHECKD3DERR(expr) ErrorHandler(expr, __FILE__, __LINE__, __func__, #expr)
 
@@ -8,7 +10,7 @@ inline bool Effects::ErrorHandler(HRESULT hr, const char *file, unsigned line, c
 {
     if (hr != D3D_OK && hr != S_FALSE)
     {
-        api->Trace("[%s:%s:%d] %s: %s (%s) (%.*s)", file, func, line, DXGetErrorString(hr), DXGetErrorDescription(hr),
+        core.Trace("[%s:%s:%d] %s: %s (%s) (%.*s)", file, func, line, DXGetErrorString(hr), DXGetErrorDescription(hr),
                    expr, debugMsg_.size(), debugMsg_.data());
         return true;
     }
@@ -41,7 +43,7 @@ void Effects::compile(const char *fxPath)
 
     if (errors)
     {
-        api->Trace(static_cast<const char *>(errors->GetBufferPointer()));
+        core.Trace(static_cast<const char *>(errors->GetBufferPointer()));
         return;
     }
 
@@ -62,7 +64,7 @@ void Effects::compile(const char *fxPath)
 
         if (techniques_.count(name_in_lowercase) > 0)
         {
-            api->Trace("Warning: duplicate technique (%s)", desc.Name);
+            core.Trace("Warning: duplicate technique (%s)", desc.Name);
         }
         else
         {
@@ -93,7 +95,7 @@ bool Effects::begin(const std::string &techniqueName)
     const auto technique = techniques_.find(name_in_lowercase);
     if (technique == techniques_.end())
     {
-        api->Trace("Warning: technique (%s) not found!", name_in_lowercase.c_str());
+        core.Trace("Warning: technique (%s) not found!", name_in_lowercase.c_str());
         return false;
     }
 
@@ -105,7 +107,7 @@ bool Effects::begin(const std::string &techniqueName)
     CHECKD3DERR(fx->Begin(&passes, 0));
     if (passes == 0)
     {
-        api->Trace("Warning: empty technique (%s)!", name_in_lowercase.c_str());
+        core.Trace("Warning: empty technique (%s)!", name_in_lowercase.c_str());
         return false;
     }
 

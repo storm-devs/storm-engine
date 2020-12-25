@@ -2,7 +2,6 @@
 #define _WM_INTERFACE_H_
 
 #include "../bi_defines.h"
-#include "Entity.h"
 
 class WMShipIcon;
 class WMShipCommandList;

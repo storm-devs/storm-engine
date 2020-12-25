@@ -11,9 +11,11 @@
 #ifndef _LocationEffects_H_
 #define _LocationEffects_H_
 
+#include "Entity.h"
 #include "Matrix.h"
 #include "vmodule_api.h"
 
+class MESSAGE;
 class VDX9RENDER;
 
 #define LFX_SPLASHES_SECT 16

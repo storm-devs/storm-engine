@@ -80,7 +80,7 @@ void AIFort::Execute(uint32_t Delta_Time)
                     pACannons = pF->GetACharacter()->CreateSubAClass(pF->GetACharacter(), "Ship.Cannons");
                 Assert(pACannons);
                 pACannons->SetAttributeUseDword("type", dwCurrentCannonType);
-                api->Event(CANNON_RECALCULATE_PARAMETERS, "l", GetIndex(pF->GetACharacter()));
+                core.Event(CANNON_RECALCULATE_PARAMETERS, "l", GetIndex(pF->GetACharacter()));
 
                 fSpeedV0 = GetSpeedV0(k);
             }
@@ -116,7 +116,7 @@ void AIFort::Realize(uint32_t Delta_Time)
 {
     /*entid_t eidIsland;
     float fCurrentImmersion = 0.0f;
-    if (api->FindClass(&eidIsland, "Island", 0))
+    if (core.FindClass(&eidIsland, "Island", 0))
     {
       ISLAND_BASE * pIsland = (ISLAND_BASE *)EntityManager::GetEntityPointer(eidIsland);
       fCurrentImmersion = pIsland->GetCurrentImmersion();
@@ -137,7 +137,7 @@ void AIFort::Realize(uint32_t Delta_Time)
 
     /*   // boal del_cheat
   #ifndef XBOX
-    if (api->Controls->GetDebugAsyncKeyState('X') < 0)
+    if (core.Controls->GetDebugAsyncKeyState('X') < 0)
     {
       CMatrix mI; mI.SetIdentity();
       AIHelper::pRS->SetTransform(D3DTS_WORLD, mI);
@@ -225,7 +225,7 @@ bool AIFort::AddFort(ATTRIBUTES *pIslandAP, ATTRIBUTES *pFortLabelAP, ATTRIBUTES
     pShipsLights->AddLights(&pFort->tmpObject, pFort->GetModel(), bLights, bFlares);
     pShipsLights->ProcessStage(Stage::execute, 0);
 
-    api->Event(FORT_CREATE, "al", pFortCharacter, pFort->GetAllCannonsNum());
+    core.Event(FORT_CREATE, "al", pFortCharacter, pFort->GetAllCannonsNum());
 
     return true;
 }
@@ -250,10 +250,10 @@ void AIFort::AddFortHit(long iCharacterIndex, CVECTOR &vHitPos)
             if (fDistance > fMinCannonDamageDistance)
                 continue;
 
-            // VDATA * pVData = api->Event(FORT_CANNON_DAMAGE, "llallfffff", iCharacterIndex,
+            // VDATA * pVData = core.Event(FORT_CANNON_DAMAGE, "llallfffff", iCharacterIndex,
             // GetIndex(pF->GetACharacter()), pF->pFortLabelAP, pF->GetAllCannonsNum(), pF->GetDamagedCannonsNum(),
             // vPos.x, vPos.y, vPos.z, fDistance, pC->GetDamage()); Assert(pVData);
-            auto *pVData = api->Event(FORT_CANNON_DAMAGE, "llallfffff", iCharacterIndex, GetIndex(pF->GetACharacter()),
+            auto *pVData = core.Event(FORT_CANNON_DAMAGE, "llallfffff", iCharacterIndex, GetIndex(pF->GetACharacter()),
                                       pF->pFortLabelAP, iMax, pF->GetDamagedCannonsNum(), vPos.x, vPos.y, vPos.z,
                                       fDistance, pC->GetDamage());
             Assert(pVData);
@@ -336,7 +336,7 @@ bool AIFort::ScanFortForCannons(AI_FORT *pFort, char *pModelsDir, char *pLocator
     // MessageBoxA(NULL, (LPCSTR)path.c_str(), "", MB_OK); //~!~
     // sLocatorsName.Format("%s\\%s", pModelsDir, pLocatorsName);
     model_id = EntityManager::CreateEntity("MODELR");
-    api->Send_Message(model_id, "ls", MSG_MODEL_LOAD_GEO, (char *)pathStr.c_str());
+    core.Send_Message(model_id, "ls", MSG_MODEL_LOAD_GEO, (char *)pathStr.c_str());
 
     auto *pModel = static_cast<MODEL *>(EntityManager::GetEntityPointer(model_id));
     Assert(pModel);
@@ -444,10 +444,10 @@ float AIFort::Cannon_Trace(long iBallOwner, const CVECTOR &vSrc, const CVECTOR &
         if (fRes <= 1.0f)
         {
             const CVECTOR vTemp = vSrc + (vDst - vSrc) * fRes;
-            api->Event(BALL_FORT_HIT, "lfff", iBallOwner, vTemp.x, vTemp.y, vTemp.z);
+            core.Event(BALL_FORT_HIT, "lfff", iBallOwner, vTemp.x, vTemp.y, vTemp.z);
 
             const CVECTOR vDir = !(vDst - vSrc);
-            api->Send_Message(GetFort(i)->GetBlotEID(), "lffffff", MSG_BLOTS_HIT, vTemp.x, vTemp.y, vTemp.z, vDir.x,
+            core.Send_Message(GetFort(i)->GetBlotEID(), "lffffff", MSG_BLOTS_HIT, vTemp.x, vTemp.y, vTemp.z, vDir.x,
                               vDir.y, vDir.z);
         }
     }
@@ -526,7 +526,7 @@ void AIFort::AI_FORT::Load(CSaveLoad *pSL, entid_t eid)
         if (aCannons[i].isDamaged())
         {
             const CVECTOR vPos = aCannons[i].GetPos();
-            api->Event(FORT_LOADDMGCANNON, "fff", vPos.x, vPos.y, vPos.z);
+            core.Event(FORT_LOADDMGCANNON, "fff", vPos.x, vPos.y, vPos.z);
         }
     }
 
@@ -536,7 +536,7 @@ void AIFort::AI_FORT::Load(CSaveLoad *pSL, entid_t eid)
         if (aCulverins[i].isDamaged())
         {
             const CVECTOR vPos = aCulverins[i].GetPos();
-            api->Event(FORT_LOADDMGCANNON, "fff", vPos.x, vPos.y, vPos.z);
+            core.Event(FORT_LOADDMGCANNON, "fff", vPos.x, vPos.y, vPos.z);
         }
     }
 
@@ -546,7 +546,7 @@ void AIFort::AI_FORT::Load(CSaveLoad *pSL, entid_t eid)
         if (aMortars[i].isDamaged())
         {
             const CVECTOR vPos = aMortars[i].GetPos();
-            api->Event(FORT_LOADDMGCANNON, "fff", vPos.x, vPos.y, vPos.z);
+            core.Event(FORT_LOADDMGCANNON, "fff", vPos.x, vPos.y, vPos.z);
         }
     }
 }

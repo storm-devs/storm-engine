@@ -1,11 +1,6 @@
 #pragma once
 
-#include "Core.h"
 #include "file_service.h"
-#include "vapi.h"
-
-extern CORE Core;
-extern VAPI *api;
 
 // extern uint32_t Exceptions_Mask;
 extern FILE_SERVICE File_Service;

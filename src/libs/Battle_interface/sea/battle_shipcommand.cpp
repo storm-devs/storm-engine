@@ -1,4 +1,7 @@
 #include "battle_shipcommand.h"
+
+#include "core.h"
+
 #include "../shared/battle_interface/msg_control.h"
 #include "island_descr.h"
 #include "ships_list.h"
@@ -157,7 +160,7 @@ long BIShipCommandList::ShipAdding(bool allLabel, bool bMyShip, bool bEnemy, boo
                 if (!m_sCurrentCommandName.empty())
                 {
                     auto *pvdat =
-                        api->Event("evntCheckEnableShip", "sl", m_sCurrentCommandName.c_str(), sd->characterIndex);
+                        core.Event("evntCheckEnableShip", "sl", m_sCurrentCommandName.c_str(), sd->characterIndex);
                     if (pvdat != nullptr && pvdat->GetLong() == 0)
                         continue;
                 }
@@ -214,7 +217,7 @@ long BIShipCommandList::FortAdding(bool allLabel, bool bFriend, bool bNeutral, b
             if (!allLabel)
                 if (SQR(pL->x - selX) + SQR(pL->z - selZ) > sqrRadius)
                     continue;
-            auto *pvdat = api->Event("evntCheckEnableLocator", "sa", m_sCurrentCommandName.c_str(), pL->pA);
+            auto *pvdat = core.Event("evntCheckEnableLocator", "sa", m_sCurrentCommandName.c_str(), pL->pA);
             if (pvdat != nullptr && pvdat->GetLong() == 0)
                 continue;
             char *pLocName = nullptr;
@@ -266,7 +269,7 @@ long BIShipCommandList::LandAdding(bool allLabel)
         if (!allLabel)
             if (SQR(pL->x - selX) + SQR(pL->z - selZ) > sqrRadius)
                 continue;
-        auto *pvdat = api->Event("evntCheckEnableLocator", "sa", m_sCurrentCommandName.c_str(), pL->pA);
+        auto *pvdat = core.Event("evntCheckEnableLocator", "sa", m_sCurrentCommandName.c_str(), pL->pA);
         if (pvdat != nullptr && pvdat->GetLong() == 0)
             continue;
         char *pLocName = nullptr;
@@ -280,7 +283,7 @@ long BIShipCommandList::LandAdding(bool allLabel)
 
 long BIShipCommandList::CommandAdding()
 {
-    api->Event("BI_SetPossibleCommands", "l", m_nCurrentCommandCharacterIndex);
+    core.Event("BI_SetPossibleCommands", "l", m_nCurrentCommandCharacterIndex);
     long retVal = 0;
     auto *pAttr = m_pARoot->GetAttributeClass("Commands");
     if (!pAttr)
@@ -309,7 +312,7 @@ long BIShipCommandList::CommandAdding()
 long BIShipCommandList::ChargeAdding()
 {
     // Определим количество каждого заряда на борту
-    auto *tmpDat = api->Event("BI_GetChargeQuantity", "l", m_nCurrentCommandCharacterIndex);
+    auto *tmpDat = core.Event("BI_GetChargeQuantity", "l", m_nCurrentCommandCharacterIndex);
     if (tmpDat == nullptr)
         return 0;
     long lIdx = 0; // количество типов заряда
@@ -363,7 +366,7 @@ long BIShipCommandList::UserIconsAdding()
 
 long BIShipCommandList::AbilityAdding()
 {
-    api->Event("evntSetUsingAbility", "l", m_nCurrentCommandCharacterIndex);
+    core.Event("evntSetUsingAbility", "l", m_nCurrentCommandCharacterIndex);
     long retVal = 0;
     auto *pAttr = m_pARoot->GetAttributeClass("AbilityIcons");
     if (!pAttr)
@@ -456,7 +459,7 @@ long BIShipCommandList::TownAdding(bool allLabel, bool bDiseased, bool bNotDisea
         if (!allLabel)
             if (SQR(pL->x - selX) + SQR(pL->z - selZ) > sqrRadius)
                 continue;
-        auto *pvdat = api->Event("evntCheckEnableLocator", "sa", m_sCurrentCommandName.c_str(), pL->pA);
+        auto *pvdat = core.Event("evntCheckEnableLocator", "sa", m_sCurrentCommandName.c_str(), pL->pA);
         if (pvdat != nullptr && pvdat->GetLong() == 0)
             continue;
         char *pLocName = nullptr;
@@ -470,7 +473,7 @@ long BIShipCommandList::TownAdding(bool allLabel, bool bDiseased, bool bNotDisea
 
 void BIShipCommandList::AddFlagPictureToIcon(long nCharIdx)
 {
-    auto *pvdat = api->Event("evntGetSmallFlagData", "l", nCharIdx);
+    auto *pvdat = core.Event("evntGetSmallFlagData", "l", nCharIdx);
     if (!pvdat)
         return;
     long nTex, nPic, nBackPic;

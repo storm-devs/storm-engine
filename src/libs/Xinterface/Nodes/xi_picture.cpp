@@ -1,5 +1,8 @@
 #include "xi_picture.h"
 
+#include "storm_assert.h"
+#include "vfile_service.h"
+
 CXI_PICTURE::CXI_PICTURE()
 {
     m_rs = nullptr;
@@ -164,7 +167,7 @@ void CXI_PICTURE::SaveParametersToIni()
     auto *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
-        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
+        core.Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
         return;
     }
 
@@ -344,7 +347,7 @@ uint32_t CXI_PICTURE::MessageProc(long msgcode, MESSAGE &message)
         auto *pNod = static_cast<CINODE *>(ptrOwner->FindNode(srcNodeName, nullptr));
         if (pNod->m_nNodeType != NODETYPE_PICTURE)
         {
-            api->Trace("Warning! XINTERFACE:: node with name %s have not picture type.", srcNodeName);
+            core.Trace("Warning! XINTERFACE:: node with name %s have not picture type.", srcNodeName);
         }
         else
         {

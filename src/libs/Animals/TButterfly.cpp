@@ -1,5 +1,6 @@
 #include "TButterfly.h"
 #include "Matrix.h"
+#include "core.h"
 #include "rands.h"
 
 #include "defines.h"

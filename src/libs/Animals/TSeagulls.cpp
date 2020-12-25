@@ -1,10 +1,11 @@
 #include "TSeagulls.h"
-
 #include "../../Shared/messages.h"
-#include "EntityManager.h"
+#include "Entity.h"
+#include "core.h"
 #include "defines.h"
 #include "model.h"
 #include "rands.h"
+#include "vfile_service.h"
 //#pragma warning (disable : 4244)
 
 //--------------------------------------------------------------------
@@ -58,8 +59,8 @@ void TSeagulls::Init()
     startY = 0.f;
     LoadSettings();
 
-    renderService = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
-    soundService = static_cast<VSoundService *>(api->CreateService("SoundService"));
+    renderService = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    soundService = static_cast<VSoundService *>(core.CreateService("SoundService"));
 
     if (!renderService)
         throw std::exception("!Seagulls: No service: dx9render");
@@ -67,7 +68,7 @@ void TSeagulls::Init()
     //	throw std::exception("!Seagulls: No service: sound");
 
     seagullModel = EntityManager::CreateEntity("MODELR");
-    api->Send_Message(seagullModel, "ls", MSG_MODEL_LOAD_GEO, ANIMALS_SEAGULL_FILENAME);
+    core.Send_Message(seagullModel, "ls", MSG_MODEL_LOAD_GEO, ANIMALS_SEAGULL_FILENAME);
 }
 
 //--------------------------------------------------------------------

@@ -9,7 +9,10 @@
 //============================================================================================
 
 #include "PtcData.h"
+#include "core.h"
 #include "dx9render.h"
+#include "storm_assert.h"
+#include "vfile_service.h"
 
 //============================================================================================
 //Конструирование, деструктурирование
@@ -60,26 +63,26 @@ bool PtcData::Load(const char *path)
     //Загружаем данные
     if (!fio->LoadFile(path, &buf, &size))
     {
-        api->Trace("Ptc(\"%s\") -> file not found", path);
+        core.Trace("Ptc(\"%s\") -> file not found", path);
         return false;
     }
     //Проверяем файл на корректность
     if (!buf || size < sizeof(PtcHeader))
     {
-        api->Trace("Ptc(\"%s\") -> invalide file size", path);
+        core.Trace("Ptc(\"%s\") -> invalide file size", path);
         delete buf;
         return false;
     }
     auto &hdr = *(PtcHeader *)buf;
     if (hdr.id != PTC_ID)
     {
-        api->Trace("Ptc(\"%s\") -> invalide file ID", path);
+        core.Trace("Ptc(\"%s\") -> invalide file ID", path);
         delete buf;
         return false;
     }
     if (hdr.ver != PTC_VERSION && hdr.ver != PTC_PREVERSION1)
     {
-        api->Trace("Ptc(\"%s\") -> invalide file version", path);
+        core.Trace("Ptc(\"%s\") -> invalide file version", path);
         delete buf;
         return false;
     }
@@ -94,14 +97,14 @@ bool PtcData::Load(const char *path)
         tsize += sizeof(PtcMaterials);
     if (tsize != size)
     {
-        api->Trace("Ptc(\"%s\") -> invalide file size", path);
+        core.Trace("Ptc(\"%s\") -> invalide file size", path);
         delete buf;
         return false;
     }
     if (hdr.numTriangles < 1 || hdr.numVerteces < 3 || hdr.numNormals < 1 || hdr.mapL < 1 || hdr.mapW < 1 ||
         hdr.numIndeces < 1 || hdr.lineSize < 1 || hdr.minX >= hdr.maxX || hdr.minY > hdr.maxY || hdr.minZ >= hdr.maxZ)
     {
-        api->Trace("Ptc(\"%s\") -> invalide file header", path);
+        core.Trace("Ptc(\"%s\") -> invalide file header", path);
         delete buf;
         return false;
     }
@@ -417,7 +420,7 @@ long PtcData::Move(long curNode, const CVECTOR &to, CVECTOR &pos, long depth)
             if (d == 0.0f)
             {
                 //Аномальная ситуация
-                api->Trace("Patch have some problem -> triangle edge by zero length");
+                core.Trace("Patch have some problem -> triangle edge by zero length");
                 //Просто залипаем
                 pos = pnt;
                 return curNode;

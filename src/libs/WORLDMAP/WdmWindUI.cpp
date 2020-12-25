@@ -9,6 +9,9 @@
 //============================================================================================
 
 #include "WdmWindUI.h"
+
+#include "core.h"
+
 #include "WdmPlayerShip.h"
 #include "WorldMap.h"
 
@@ -123,17 +126,17 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
 {
     if (wdmObjects->isNextDayUpdate)
     {
-        auto *data = api->Event("WorldMap_GetMoral");
+        auto *data = core.Event("WorldMap_GetMoral");
         if (data)
         {
             morale = data->GetFloat() * 0.02f - 1.0f;
         }
-        data = api->Event("WorldMap_GetFood");
+        data = core.Event("WorldMap_GetFood");
         if (data)
         {
             food = static_cast<long>(data->GetFloat() + 0.5f);
         }
-        data = api->Event("WorldMap_GetRum");
+        data = core.Event("WorldMap_GetRum");
         if (data)
         {
             rum = static_cast<long>(data->GetFloat() + 0.5f);

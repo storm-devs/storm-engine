@@ -1,7 +1,7 @@
 #include "TFlotsam.h"
-
 #include "../../Shared/messages.h"
-#include "EntityManager.h"
+#include "Entity.h"
+#include "core.h"
 #include "defines.h"
 #include "rands.h"
 
@@ -58,7 +58,7 @@ void TFlotsam::Initialize(SEA_BASE *_sea)
         for (auto i = 0; i < sink_effect::FLOTSAM_MODELS_COUNT; i++)
         {
             modelIDs[i] = EntityManager::CreateEntity("MODELR");
-            api->Send_Message(modelIDs[i], "ls", MSG_MODEL_LOAD_GEO, modelNames[i]);
+            core.Send_Message(modelIDs[i], "ls", MSG_MODEL_LOAD_GEO, modelNames[i]);
             models[i] = static_cast<MODEL *>(EntityManager::GetEntityPointer(modelIDs[i]));
         }
     }

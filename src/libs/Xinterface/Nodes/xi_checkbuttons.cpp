@@ -95,7 +95,7 @@ void CXI_CHECKBUTTONS::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
     if (ReadIniString(ini1, name1, ini2, name2, "font", param, sizeof(param), ""))
     {
         if ((m_nFontNum = m_rs->LoadFont(param)) == -1)
-            api->Trace("can not load font:'%s'", param);
+            core.Trace("can not load font:'%s'", param);
     }
     m_fFontScale = GetIniFloat(ini1, name1, ini2, name2, "fontScale", 1.f);
 
@@ -244,7 +244,7 @@ void CXI_CHECKBUTTONS::SaveParametersToIni()
     auto *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
-        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
+        core.Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
         return;
     }
 
@@ -512,7 +512,7 @@ void CXI_CHECKBUTTONS::SetCheckToButton(long nButtonNum, bool bCheck)
     else
         SetButtonOff(nButtonNum);
 
-    api->Event("CheckButtonChange", "sll", m_nodeName, nButtonNum + 1, (bCheck ? 1 : 0));
+    core.Event("CheckButtonChange", "sll", m_nodeName, nButtonNum + 1, (bCheck ? 1 : 0));
 }
 
 void CXI_CHECKBUTTONS::UpdateAllTextInfo()

@@ -1,7 +1,6 @@
 #ifndef _INFO_HANDLER_H_
 #define _INFO_HANDLER_H_
 
-#include "Entity.h"
 #include "dx9render.h"
 
 class InfoHandler : public Entity

@@ -5,6 +5,8 @@
 #include "geometry.h"
 #include "vmodule_api.h"
 
+class VDATA;
+
 class LOCATOR : public Entity
 {
     enum

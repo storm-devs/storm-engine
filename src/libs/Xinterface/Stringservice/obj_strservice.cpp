@@ -1,4 +1,7 @@
 #include "obj_strservice.h"
+
+#include "core.h"
+
 #include "../../../shared/interface/messages.h"
 
 OBJ_STRSERVICE::OBJ_STRSERVICE()
@@ -13,7 +16,7 @@ OBJ_STRSERVICE::~OBJ_STRSERVICE()
 
 bool OBJ_STRSERVICE::Init()
 {
-    m_pStrService = static_cast<VSTRSERVICE *>(api->CreateService("STRSERVICE"));
+    m_pStrService = static_cast<VSTRSERVICE *>(core.CreateService("STRSERVICE"));
     if (!m_pStrService)
         throw std::exception("No service: strservice");
 

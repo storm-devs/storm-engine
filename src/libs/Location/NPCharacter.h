@@ -12,7 +12,8 @@
 #define _NPCharacter_H_
 
 #include "AICharacter.h"
-#include "EntityManager.h"
+#include "Entity.h"
+#include "core.h"
 
 class NPCharacter : public AICharacter
 {

@@ -9,6 +9,9 @@
 //============================================================================================
 
 #include "Location.h"
+
+#include "core.h"
+
 #include "Character.h"
 #include "Grass.h"
 #include "Lights.h"
@@ -78,16 +81,16 @@ Location::~Location()
 bool Location::Init()
 {
     // DX9 render
-    rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!rs)
         throw std::exception("No service: dx9render");
     rs->SetRenderState(D3DRS_LIGHTING, FALSE);
 
-    // api->LayerCreate("execute", true, false);
+    // core.LayerCreate("execute", true, false);
     EntityManager::SetLayerType(EXECUTE, EntityManager::Layer::Type::execute);
     EntityManager::AddToLayer(EXECUTE, GetId(), 10);
 
-    // api->LayerCreate("realize", true, false);
+    // core.LayerCreate("realize", true, false);
     EntityManager::SetLayerType(REALIZE, EntityManager::Layer::Type::realize);
     EntityManager::AddToLayer(REALIZE, GetId(), 100000);
 
@@ -134,7 +137,7 @@ void Location::Execute(uint32_t delta_time)
     locationTimeUpdate += dltTime;
     if (locationTimeUpdate > 1.0f)
     {
-        api->Event("LocationTimeUpdate", "f", locationTimeUpdate);
+        core.Event("LocationTimeUpdate", "f", locationTimeUpdate);
         locationTimeUpdate = 0.0f;
     }
 }
@@ -320,7 +323,7 @@ uint64_t Location::ProcessMessage(MESSAGE &message)
         model.modelspath[sizeof(model.modelspath) - 1] = 0;
         model.UpdateModelsPath();
 
-        api->Send_Message(lighter, "ss", "ModelsPath", model.modelspath);
+        core.Send_Message(lighter, "ss", "ModelsPath", model.modelspath);
 
         return 1;
     case MSG_LOCATION_TEXTURESPATH:
@@ -332,7 +335,7 @@ uint64_t Location::ProcessMessage(MESSAGE &message)
         message.String(sizeof(model.lightpath), model.lightpath);
         model.lightpath[sizeof(model.lightpath) - 1] = 0;
         model.UpdateLightPath();
-        api->Send_Message(lighter, "ss", "LightPath", model.lightpath);
+        core.Send_Message(lighter, "ss", "LightPath", model.lightpath);
 
         return 1;
     case MSG_LOCATION_SHADOWPATH:
@@ -510,7 +513,7 @@ long Location::LoadStaticModel(const char *modelName, const char *tech, long lev
             for (long me = 0; me < 16; me++)
                 if (_isnan(mtxx.matrix[me]))
                 {
-                    api->Trace("Location: locator %s::%s in position have NaN value, reset it!", label.group_name,
+                    core.Trace("Location: locator %s::%s in position have NaN value, reset it!", label.group_name,
                                label.name);
                     mtxx.SetIdentity();
                     break;
@@ -523,7 +526,7 @@ long Location::LoadStaticModel(const char *modelName, const char *tech, long lev
         }
     }
 
-    api->Send_Message(lighter, "ssi", "AddModel", modelName, mdl->GetId());
+    core.Send_Message(lighter, "ssi", "AddModel", modelName, mdl->GetId());
 
     return im;
 }
@@ -539,7 +542,7 @@ bool Location::LoadCharacterPatch(const char *ptcName)
     //Загружаем патч
     const auto result = ptc.Load(path);
     if (!result)
-        api->Trace("Can't loaded patch data file %s.ptc for npc.", ptcName);
+        core.Trace("Can't loaded patch data file %s.ptc for npc.", ptcName);
     return result;
 }
 
@@ -573,7 +576,7 @@ bool Location::LoadGrass(const char *modelName, const char *texture)
     long ll = strlen(nm);
     if (grs->LoadData(nm))
         return true;
-    api->Trace("Can't load grass data file: %s", nm);
+    core.Trace("Can't load grass data file: %s", nm);
     EntityManager::EraseEntity(grass);
     return false;
 }
@@ -590,13 +593,13 @@ bool Location::MessageEx(const char *name, MESSAGE &message)
         const auto x = message.Float();
         const auto y = message.Float();
         const auto z = message.Float();
-        api->Send_Message(effects, "sfff", "AddFly", x, y, z);
+        core.Send_Message(effects, "sfff", "AddFly", x, y, z);
         return true;
     }
     else if (_stricmp(name, "DelFlys") == 0)
     {
         const auto effects = EntityManager::GetEntityId("LocationEffects");
-        api->Send_Message(effects, "s", "DelFlys");
+        core.Send_Message(effects, "s", "DelFlys");
         return true;
     }
     else if (_stricmp(name, "GetPatchMiddlePos") == 0)
@@ -628,7 +631,7 @@ bool Location::MessageEx(const char *name, MESSAGE &message)
     else if (_stricmp(name, "AddRats") == 0)
     {
         rats = EntityManager::CreateEntity("LocRats");
-        if (!api->Send_Message(rats, "l", message.Long()))
+        if (!core.Send_Message(rats, "l", message.Long()))
         {
             EntityManager::EraseEntity(rats);
             return false;
@@ -638,7 +641,7 @@ bool Location::MessageEx(const char *name, MESSAGE &message)
     else if (_stricmp(name, "AddCrabs") == 0)
     {
         crabs = EntityManager::CreateEntity("LocCrabs");
-        if (!api->Send_Message(crabs, "l", message.Long()))
+        if (!core.Send_Message(crabs, "l", message.Long()))
         {
             EntityManager::EraseEntity(crabs);
             return false;
@@ -658,7 +661,7 @@ bool Location::MessageEx(const char *name, MESSAGE &message)
         vPos.x = message.Float();
         vPos.y = message.Float();
         vPos.z = message.Float();
-        api->Send_Message(blood, "lfff", 2, vPos.x, vPos.y, vPos.z);
+        core.Send_Message(blood, "lfff", 2, vPos.x, vPos.y, vPos.z);
         return true;
     }
     else if (_stricmp(name, "TestLocatorsGroup") == 0)
@@ -681,8 +684,8 @@ bool Location::MessageEx(const char *name, MESSAGE &message)
         message.String(sizeof(modelname), modelname);
         const long n = model.FindModel(modelname);
         if (n >= 0)
-            // api->LayerDel("realize", model.RealizerID(n));
-            api->Send_Message(model.RealizerID(n), "ll", 2, 0);
+            // core.LayerDel("realize", model.RealizerID(n));
+            core.Send_Message(model.RealizerID(n), "ll", 2, 0);
     }
     else if (_stricmp(name, "ShowLocationModel") == 0)
     {
@@ -692,7 +695,7 @@ bool Location::MessageEx(const char *name, MESSAGE &message)
         const long n = model.FindModel(modelname);
         if (n >= 0)
             // EntityManager::AddToLayer(realize, model.RealizerID(n), layer);
-            api->Send_Message(model.RealizerID(n), "ll", 2, 1);
+            core.Send_Message(model.RealizerID(n), "ll", 2, 1);
     }
     else if (_stricmp(name, "SetGrassParams") == 0)
     {
@@ -702,7 +705,7 @@ bool Location::MessageEx(const char *name, MESSAGE &message)
         const float fMinVisibleDist = message.Float();
         const float fMaxVisibleDist = message.Float();
         const float fMinGrassLod = message.Float();
-        api->Send_Message(grass, "lffffff", MSG_GRASS_SET_PARAM, fScale, fMaxWidth, fMaxHeight, fMinVisibleDist,
+        core.Send_Message(grass, "lffffff", MSG_GRASS_SET_PARAM, fScale, fMaxWidth, fMaxHeight, fMinVisibleDist,
                           fMaxVisibleDist, fMinGrassLod);
     }
     else if (_stricmp(name, "LoadCaustic") == 0)
@@ -762,7 +765,7 @@ void Location::UpdateLocators()
                         }
                         else
                         {
-                            api->Trace("Location: Can't create attribute 'locators.%s.%s.vz'!", groupName,
+                            core.Trace("Location: Can't create attribute 'locators.%s.%s.vz'!", groupName,
                                        locators[i]->Name(j));
                         }
                         // vy
@@ -776,7 +779,7 @@ void Location::UpdateLocators()
                         }
                         else
                         {
-                            api->Trace("Location: Can't create attribute 'locators.%s.%s.vy'!", groupName,
+                            core.Trace("Location: Can't create attribute 'locators.%s.%s.vy'!", groupName,
                                        locators[i]->Name(j));
                         }
                         // vx
@@ -790,26 +793,26 @@ void Location::UpdateLocators()
                         }
                         else
                         {
-                            api->Trace("Location: Can't create attribute 'locators.%s.%s.vx'!", groupName,
+                            core.Trace("Location: Can't create attribute 'locators.%s.%s.vx'!", groupName,
                                        locators[i]->Name(j));
                         }
                     }
                     else
                     {
-                        api->Trace("Location: Can't create attribute 'locators.%s.%s'!", groupName,
+                        core.Trace("Location: Can't create attribute 'locators.%s.%s'!", groupName,
                                    locators[i]->Name(j));
                     }
                 }
             }
             else
             {
-                api->Trace("Location: Can't create attribute 'locators.%s'!", groupName);
+                core.Trace("Location: Can't create attribute 'locators.%s'!", groupName);
             }
         }
     }
     else
     {
-        api->Trace("Location: Can't create attribute 'locators'!");
+        core.Trace("Location: Can't create attribute 'locators'!");
     }
 }
 
@@ -992,12 +995,12 @@ void Location::CreateSphere()
 
 bool Location::IsExDebugView()
 {
-    return api->Controls->GetDebugAsyncKeyState('O') < 0;
+    return core.Controls->GetDebugAsyncKeyState('O') < 0;
 }
 
 bool Location::IsDebugView()
 {
-    return api->Controls->GetDebugAsyncKeyState('G') < 0 || api->Controls->GetDebugAsyncKeyState('O') < 0;
+    return core.Controls->GetDebugAsyncKeyState('G') < 0 || core.Controls->GetDebugAsyncKeyState('O') < 0;
 }
 
 //Написать текст
@@ -1104,7 +1107,7 @@ void Location::TestLocatorsInPatch(MESSAGE &message)
     {
         sprintf_s(buf + 2048, sizeof(buf) - 2048, "Warning: Locators group '%s' not found.", buf);
         buf[sizeof(buf) - 1] = 0;
-        api->Event("LocatorsEventTrace", "lsss", 0, buf + 2048, buf, "");
+        core.Event("LocatorsEventTrace", "lsss", 0, buf + 2048, buf, "");
         return;
     }
     const long num = la->Num();
@@ -1112,7 +1115,7 @@ void Location::TestLocatorsInPatch(MESSAGE &message)
     {
         sprintf_s(buf, sizeof(buf), "Warning: Locators group '%s' not contain locators.", la->GetGroupName());
         buf[sizeof(buf) - 1] = 0;
-        api->Event("LocatorsEventTrace", "lsss", 0, buf, la->GetGroupName(), "");
+        core.Event("LocatorsEventTrace", "lsss", 0, buf, la->GetGroupName(), "");
         return;
     }
     CVECTOR pos;
@@ -1125,7 +1128,7 @@ void Location::TestLocatorsInPatch(MESSAGE &message)
             sprintf_s(buf, sizeof(buf), "Error: Locator '%s':'%s' not in patch.", la->GetGroupName(),
                       la->LocatorName(i));
             buf[sizeof(buf) - 1] = 0;
-            api->Event("LocatorsEventTrace", "lsss", 1, buf, la->GetGroupName(), la->LocatorName(i));
+            core.Event("LocatorsEventTrace", "lsss", 1, buf, la->GetGroupName(), la->LocatorName(i));
         }
         else
         {
@@ -1135,7 +1138,7 @@ void Location::TestLocatorsInPatch(MESSAGE &message)
                 sprintf_s(buf, sizeof(buf), "Warning: Locator '%s':'%s' very far from patch: %fm", la->GetGroupName(),
                           la->LocatorName(i), ldist);
                 buf[sizeof(buf) - 1] = 0;
-                api->Event("LocatorsEventTrace", "lsss", 0, buf, la->GetGroupName(), la->LocatorName(i));
+                core.Event("LocatorsEventTrace", "lsss", 0, buf, la->GetGroupName(), la->LocatorName(i));
             }
         }
     }

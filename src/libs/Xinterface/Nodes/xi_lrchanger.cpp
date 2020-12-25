@@ -205,7 +205,7 @@ int CXI_LRCHANGER::CommandExecute(int wActCode)
         case ACTION_ACTIVATE:
         case ACTION_MOUSECLICK:
             nPressedDelay = nMaxDelay;
-            api->Event("IEvnt_MouseClick", "sl", m_nodeName, m_bLeftPress ? 0 : 1);
+            core.Event("IEvnt_MouseClick", "sl", m_nodeName, m_bLeftPress ? 0 : 1);
             break;
         case ACTION_LEFTSTEP:
         case ACTION_SPEEDLEFT:
@@ -267,7 +267,7 @@ void CXI_LRCHANGER::SaveParametersToIni()
     auto *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
-        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
+        core.Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
         return;
     }
 

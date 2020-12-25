@@ -1,4 +1,7 @@
 #include "editor.h"
+
+#include "core.h"
+
 #include "../Nodes/xi_image.h"
 #include "../xinterface.h"
 #include "list.h"
@@ -58,7 +61,7 @@ void GIEditor::Render() const
         m_pSubNameList->CheckMouseInside(pntMouse.x, pntMouse.y);
 
     CONTROL_STATE cs;
-    api->Controls->GetControlState(INTERFACE_CONTROL_LCLICK, cs);
+    core.Controls->GetControlState(INTERFACE_CONTROL_LCLICK, cs);
     if (cs.state == CST_ACTIVATED)
     {
         m_pNodeList->MakeMouseClick(pntMouse.x, pntMouse.y);
@@ -81,8 +84,8 @@ bool GIEditor::ProcessControl()
 {
     if (!m_bShowMode)
     {
-        if (api->Controls->GetDebugAsyncKeyState(VK_CONTROL) < 0 &&
-            api->Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0 && api->Controls->GetDebugAsyncKeyState('E') < 0)
+        if (core.Controls->GetDebugAsyncKeyState(VK_CONTROL) < 0 &&
+            core.Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0 && core.Controls->GetDebugAsyncKeyState('E') < 0)
         {
             m_bShowMode = true;
             m_bSubNameOn = false;
@@ -92,12 +95,12 @@ bool GIEditor::ProcessControl()
 
     if (m_bShowMode)
     {
-        if (api->Controls->GetDebugAsyncKeyState(VK_CONTROL) < 0 &&
-            api->Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0 && api->Controls->GetDebugAsyncKeyState('Q') < 0)
+        if (core.Controls->GetDebugAsyncKeyState(VK_CONTROL) < 0 &&
+            core.Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0 && core.Controls->GetDebugAsyncKeyState('Q') < 0)
             m_bShowMode = false;
 
         CONTROL_STATE cs;
-        api->Controls->GetControlState("IStartButton", cs);
+        core.Controls->GetControlState("IStartButton", cs);
         if (cs.state == CST_INACTIVATED)
         {
             m_bShowMode = false;
@@ -118,7 +121,7 @@ bool GIEditor::ProcessControl()
             }
         }
 
-        if (m_bSubNameOn && api->Controls->GetDebugAsyncKeyState(VK_ESCAPE) < 0)
+        if (m_bSubNameOn && core.Controls->GetDebugAsyncKeyState(VK_ESCAPE) < 0)
         {
             m_bSubNameOn = false;
         }
@@ -131,18 +134,18 @@ bool GIEditor::ProcessControl()
 
     auto bMove = false;
     auto bSize = false;
-    if (api->Controls->GetDebugAsyncKeyState(VK_CONTROL) < 0) // двигаем
+    if (core.Controls->GetDebugAsyncKeyState(VK_CONTROL) < 0) // двигаем
     {
         bMove = true;
-        if (api->Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0) // меняем размер
+        if (core.Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0) // меняем размер
         {
             bMove = false;
             bSize = true;
         }
     }
 
-    if (api->Controls->GetDebugAsyncKeyState(VK_CONTROL) < 0 && api->Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0 &&
-        api->Controls->GetDebugAsyncKeyState('S') < 0)
+    if (core.Controls->GetDebugAsyncKeyState(VK_CONTROL) < 0 && core.Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0 &&
+        core.Controls->GetDebugAsyncKeyState('S') < 0)
     {
         m_pEditableNode->SaveParametersToIni();
     }
@@ -150,24 +153,24 @@ bool GIEditor::ProcessControl()
     if (bMove || bSize)
     {
         long nHorz = 0;
-        if (api->Controls->GetDebugAsyncKeyState(VK_LEFT) < 0)
-            if (api->Controls->GetDebugAsyncKeyState(VK_MENU) < 0)
+        if (core.Controls->GetDebugAsyncKeyState(VK_LEFT) < 0)
+            if (core.Controls->GetDebugAsyncKeyState(VK_MENU) < 0)
                 nHorz -= 10;
             else
                 nHorz--;
-        if (api->Controls->GetDebugAsyncKeyState(VK_RIGHT) < 0)
-            if (api->Controls->GetDebugAsyncKeyState(VK_MENU) < 0)
+        if (core.Controls->GetDebugAsyncKeyState(VK_RIGHT) < 0)
+            if (core.Controls->GetDebugAsyncKeyState(VK_MENU) < 0)
                 nHorz += 10;
             else
                 nHorz++;
         long nVert = 0;
-        if (api->Controls->GetDebugAsyncKeyState(VK_UP) < 0)
-            if (api->Controls->GetDebugAsyncKeyState(VK_MENU) < 0)
+        if (core.Controls->GetDebugAsyncKeyState(VK_UP) < 0)
+            if (core.Controls->GetDebugAsyncKeyState(VK_MENU) < 0)
                 nVert -= 10;
             else
                 nVert--;
-        if (api->Controls->GetDebugAsyncKeyState(VK_DOWN) < 0)
-            if (api->Controls->GetDebugAsyncKeyState(VK_MENU) < 0)
+        if (core.Controls->GetDebugAsyncKeyState(VK_DOWN) < 0)
+            if (core.Controls->GetDebugAsyncKeyState(VK_MENU) < 0)
                 nVert += 10;
             else
                 nVert++;
@@ -178,7 +181,7 @@ bool GIEditor::ProcessControl()
                 m_fLastKeyPressTime = 0.f;
             else
             {
-                m_fLastKeyPressTime += api->GetDeltaTime() * .001f;
+                m_fLastKeyPressTime += core.GetDeltaTime() * .001f;
                 if (m_fLastKeyPressTime < 0.8f)
                     nHorz = nVert = 0;
             }
@@ -259,7 +262,7 @@ void GIEditor::DrawSizeBox() const
 {
     if (!m_pEditableNode)
         return;
-    if (api->Controls->GetDebugAsyncKeyState(VK_CONTROL) < 0) // показываем
+    if (core.Controls->GetDebugAsyncKeyState(VK_CONTROL) < 0) // показываем
     {
         RS_LINE rsl[8];
         for (long n = 0; n < 8; n++)

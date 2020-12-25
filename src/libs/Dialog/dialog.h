@@ -16,6 +16,8 @@
 #define TICK_SOUND "interface\\ok.wav"
 
 #define XI_TEX_FVF (D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2)
+class INIFILE;
+
 struct XI_TEX_VERTEX
 {
     CVECTOR pos;

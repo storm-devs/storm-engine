@@ -7,6 +7,7 @@
 #include "Entity.h"
 #include "Matrix.h"
 #include "service.h"
+#include "storm_assert.h"
 #include "types3d.h"
 #include "utf8.h"
 

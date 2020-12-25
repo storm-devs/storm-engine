@@ -24,7 +24,7 @@ void PARTICLE_SYSTEM::Stop()
 
 void PARTICLE_SYSTEM::SetEmitter(CVECTOR p, CVECTOR a)
 {
-    // api->Trace("K2 Particles Wrapper: SetEmitter (%3.2f, %3.2f, %3.2f, %3.2f, %3.2f, %3.2f)", p.x, p.y, p.z, a.x,
+    // core.Trace("K2 Particles Wrapper: SetEmitter (%3.2f, %3.2f, %3.2f, %3.2f, %3.2f, %3.2f)", p.x, p.y, p.z, a.x,
     // a.y, a.z);
     Vector pos, angles;
     pos.x = p.x;

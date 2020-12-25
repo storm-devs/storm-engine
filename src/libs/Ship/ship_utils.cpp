@@ -41,7 +41,7 @@ BOOL SHIP::BuildContour(CVECTOR *vContour, long &iNumVContour)
     }
     else
     {
-        api->Trace("SHIP: Up trace error, ship %s", GetAShip()->GetAttribute("Name"));
+        core.Trace("SHIP: Up trace error, ship %s", GetAShip()->GetAttribute("Name"));
         bDefaultContour = true;
         Beep(1000, 200);
     }
@@ -55,7 +55,7 @@ BOOL SHIP::BuildContour(CVECTOR *vContour, long &iNumVContour)
         vP2 = vSrc + fRes * (vDst - vSrc);
     else
     {
-        api->Trace("SHIP: Down trace error, ship %s", GetAShip()->GetAttribute("Name"));
+        core.Trace("SHIP: Down trace error, ship %s", GetAShip()->GetAttribute("Name"));
         bDefaultContour = true;
         Beep(1000, 200);
     }
@@ -79,7 +79,7 @@ BOOL SHIP::BuildContour(CVECTOR *vContour, long &iNumVContour)
 
             vSrc = CVECTOR(fLeft, fY, fZ);
             vDst = CVECTOR(0.0f, fY, fZ);
-            // api->SetEntityScanLayer("balls_trace");
+            // core.SetEntityScanLayer("balls_trace");
             fRes = pCollide->Trace(model_id, vSrc, vDst);
             Assert(fRes <= 1.0f);
             vP = vSrc + fRes * (vDst - vSrc);
@@ -216,7 +216,7 @@ bool SHIP::BuildMasts()
                 pM->bBroken = true;
                 entid_t ent;
                 ent = EntityManager::CreateEntity("mast");
-                api->Send_Message(ent, "lpii", MSG_MAST_SETGEOMETRY, pNode, GetId(), GetModelEID());
+                core.Send_Message(ent, "lpii", MSG_MAST_SETGEOMETRY, pNode, GetId(), GetModelEID());
                 EntityManager::EraseEntity(ent);
                 // iIdx--;
             }
@@ -284,7 +284,7 @@ bool SHIP::BuildHulls()
                 pM->bBroken = true;
                 entid_t ent;
                 ent = EntityManager::CreateEntity("hull");
-                api->Send_Message(ent, "lpii", MSG_HULL_SETGEOMETRY, pNode, GetId(), GetModelEID());
+                core.Send_Message(ent, "lpii", MSG_HULL_SETGEOMETRY, pNode, GetId(), GetModelEID());
                 EntityManager::EraseEntity(ent);
                 // iIdx--;
             }

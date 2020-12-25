@@ -3,6 +3,8 @@
 
 #include "../inode.h"
 
+class INIFILE;
+
 class CXI_KEYCHANGER : public CINODE
 {
   public:

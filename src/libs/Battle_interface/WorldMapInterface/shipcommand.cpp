@@ -1,5 +1,6 @@
 #include "shipcommand.h"
 #include "../shared/battle_interface/msg_control.h"
+#include "core.h"
 #include "vmodule_api.h"
 
 WMShipCommandList::WMShipCommandList(entid_t eid, ATTRIBUTES *pA, VDX9RENDER *rs) : BICommandList(eid, pA, rs)
@@ -31,7 +32,7 @@ void WMShipCommandList::Release()
 
 long WMShipCommandList::CommandAdding()
 {
-    api->Event("WM_SetPossibleCommands", "l", m_nCurrentCommandCharacterIndex);
+    core.Event("WM_SetPossibleCommands", "l", m_nCurrentCommandCharacterIndex);
     long retVal = 0;
     auto *pAttr = m_pARoot->GetAttributeClass("Commands");
     if (!pAttr)

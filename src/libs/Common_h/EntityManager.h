@@ -1,9 +1,12 @@
 #pragma once
+
 #include "../shared/layers.h"
 #include "Entity.h"
 #include "vmodule_api.h"
+
 #include <algorithm>
 #include <array>
+#include <cassert>
 #include <chrono>
 #include <cstdint>
 #include <vector>

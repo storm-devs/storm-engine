@@ -2,7 +2,6 @@
 #define _SPYGLASS_H_
 
 #include "../bi_defines.h"
-#include "Entity.h"
 #include <string>
 #include <vector>
 

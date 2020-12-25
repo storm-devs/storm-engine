@@ -1,5 +1,9 @@
 #include "vano_files.h"
+
+#include "core.h"
+
 #include "defines.h"
+#include "s_import_func.h"
 #include "v_s_stack.h"
 #include "vmodule_api.h"
 
@@ -91,35 +95,35 @@ void Vano_Init()
     sIFuncInfo.pFuncName = "Bring2Range";
     sIFuncInfo.pReturnValueName = "float";
     sIFuncInfo.pFuncAddress = _Bring2Range;
-    api->SetScriptFunction(&sIFuncInfo);
+    core.SetScriptFunction(&sIFuncInfo);
 
     sIFuncInfo.nArguments = 5;
     sIFuncInfo.pFuncName = "Bring2RangeNoCheck";
     sIFuncInfo.pReturnValueName = "float";
     sIFuncInfo.pFuncAddress = _Bring2RangeNoCheck;
-    api->SetScriptFunction(&sIFuncInfo);
+    core.SetScriptFunction(&sIFuncInfo);
 
     sIFuncInfo.nArguments = 1;
     sIFuncInfo.pFuncName = "Degree2Radian";
     sIFuncInfo.pReturnValueName = "float";
     sIFuncInfo.pFuncAddress = _Degree2Radian;
-    api->SetScriptFunction(&sIFuncInfo);
+    core.SetScriptFunction(&sIFuncInfo);
 
     sIFuncInfo.nArguments = 1;
     sIFuncInfo.pFuncName = "Clampf";
     sIFuncInfo.pReturnValueName = "float";
     sIFuncInfo.pFuncAddress = _Clampf;
-    api->SetScriptFunction(&sIFuncInfo);
+    core.SetScriptFunction(&sIFuncInfo);
 
     sIFuncInfo.nArguments = 0;
     sIFuncInfo.pFuncName = "rdtsc_b";
     sIFuncInfo.pReturnValueName = "int";
     sIFuncInfo.pFuncAddress = _RDTSC_B;
-    api->SetScriptFunction(&sIFuncInfo);
+    core.SetScriptFunction(&sIFuncInfo);
 
     sIFuncInfo.nArguments = 1;
     sIFuncInfo.pFuncName = "rdtsc_e";
     sIFuncInfo.pReturnValueName = "int";
     sIFuncInfo.pFuncAddress = _RDTSC_E;
-    api->SetScriptFunction(&sIFuncInfo);
+    core.SetScriptFunction(&sIFuncInfo);
 }

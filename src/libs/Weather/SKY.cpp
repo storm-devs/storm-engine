@@ -1,6 +1,7 @@
 #include "SKY.h"
 #include "SunGlow.h"
-#include "weather_base.h"
+#include "core.h"
+#include <attributes.h>
 
 SKY::SKY()
 {
@@ -60,7 +61,7 @@ bool SKY::Init()
 
 void SKY::SetDevice()
 {
-    pRS = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+    pRS = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     Assert(pRS);
 }
 
@@ -98,7 +99,7 @@ void SKY::CreateFogSphere()
             const auto fSin = sinf(static_cast<float>(x) / static_cast<float>(iNumAngles) * PIm2);
             const auto vPos = CVECTOR(R1 * fCos, h, R1 * fSin);
             pVerts[idx].pos = vPos;
-            auto *pvData = api->Event(WEATHER_CALC_FOG_COLOR, "fff", vPos.x, vPos.y, vPos.z);
+            auto *pvData = core.Event(WEATHER_CALC_FOG_COLOR, "fff", vPos.x, vPos.y, vPos.z);
             Assert(pvData);
             pVerts[idx].diffuse = static_cast<uint32_t>(pvData->GetLong());
             // pVerts[idx].diffuse = CalcFogDiffuse(pVerts[idx].pos);
@@ -124,7 +125,7 @@ void SKY::CreateFogSphere()
     }
     const auto vPos = CVECTOR(0.0f, R, 0.0f);
     pVerts[idx].pos = vPos;
-    auto *pvData = api->Event(WEATHER_CALC_FOG_COLOR, "fff", vPos.x, vPos.y, vPos.z);
+    auto *pvData = core.Event(WEATHER_CALC_FOG_COLOR, "fff", vPos.x, vPos.y, vPos.z);
     Assert(pvData);
     pVerts[idx].diffuse = static_cast<uint32_t>(pvData->GetLong());
     if (pVerts)
@@ -159,7 +160,7 @@ void SKY::UpdateFogSphere()
             const auto fSin = sinf(static_cast<float>(x) / static_cast<float>(iNumAngles) * PIm2);
             vPos = CVECTOR(R1 * fCos, h, R1 * fSin);
             pVertBuf[idx].pos = vPos;
-            auto *pvData = api->Event(WEATHER_CALC_FOG_COLOR, "fff", vPos.x, vPos.y, vPos.z);
+            auto *pvData = core.Event(WEATHER_CALC_FOG_COLOR, "fff", vPos.x, vPos.y, vPos.z);
             Assert(pvData);
             pVertBuf[idx].diffuse = static_cast<uint32_t>(pvData->GetLong());
 
@@ -168,7 +169,7 @@ void SKY::UpdateFogSphere()
     }
     vPos = CVECTOR(0.0f, R, 0.0f);
     pVertBuf[idx].pos = vPos;
-    auto *pvData = api->Event(WEATHER_CALC_FOG_COLOR, "fff", vPos.x, vPos.y, vPos.z);
+    auto *pvData = core.Event(WEATHER_CALC_FOG_COLOR, "fff", vPos.x, vPos.y, vPos.z);
     Assert(pvData);
     pVertBuf[idx].diffuse = static_cast<uint32_t>(pvData->GetLong());
     pRS->UnLockVertexBuffer(iFogVertsID);
@@ -566,7 +567,7 @@ void SKY::UpdateTimeFactor()
 {
     const auto nPrev = static_cast<long>(fTimeFactor);
 
-    // fTimeFactor += api->GetDeltaTime() * 0.00005f;
+    // fTimeFactor += core.GetDeltaTime() * 0.00005f;
     entid_t eid;
     if (!(eid = EntityManager::GetEntityId("weather")))
         return;

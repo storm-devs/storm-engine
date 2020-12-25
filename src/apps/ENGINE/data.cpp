@@ -1,5 +1,5 @@
 #include "data.h"
-#include "Core.h"
+#include "core.h"
 
 const char *UNINIT_REF = {"Using reference variable without initializing"};
 const char *INVALID_REF_OP = {"Invalid operation on reference object"};
@@ -10,8 +10,6 @@ const char *INCORRECT_TYPE_ASSIGMENT = {"Incorrect type assigment"};
 const char *INCORRECT_INDEX = {"Incorrect index"};
 const char *INVALID_TYPE = {"Invalid type"};
 const char *INVALID_STRING = {"Invalid string"};
-
-extern VAPI *api;
 
 extern void DumpError(const char *data_PTR, ...);
 

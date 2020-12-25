@@ -2,6 +2,10 @@
 #include "defines.h"
 #include "vmodule_api.h"
 
+#include "core.h"
+
+#include "vfile_service.h"
+
 #define FILE_PATH "TextureSequence\\%s.tga"
 static const char *INI_FILENAME = "resource\\ini\\TextureSequence.ini";
 
@@ -61,7 +65,7 @@ IDirect3DTexture9 *TextureSequence::Initialize(VDX9RENDER *pRS, const char *cTSf
     auto *ini = fio->OpenIniFile((char *)INI_FILENAME);
     if (!ini)
     {
-        api->Trace("ini file %s not found!", INI_FILENAME);
+        core.Trace("ini file %s not found!", INI_FILENAME);
         return nullptr;
     }
     m_dwDeltaTime = ini->GetLong((char *)cTSfileName, "timeDelay", 128);
@@ -101,7 +105,7 @@ IDirect3DTexture9 *TextureSequence::Initialize(VDX9RENDER *pRS, const char *cTSf
                                      D3DPOOL_DEFAULT, &m_pTexture))
     {
         m_pTexture = nullptr;
-        api->Trace("Can`t create texture");
+        core.Trace("Can`t create texture");
         delete ini;
         return nullptr;
     }
@@ -121,7 +125,7 @@ IDirect3DTexture9 *TextureSequence::Initialize(VDX9RENDER *pRS, const char *cTSf
 //-----------------------------------------------------------------------------
 bool TextureSequence::FrameUpdate()
 {
-    m_dwCurDeltaTime += api->GetRDeltaTime();
+    m_dwCurDeltaTime += core.GetRDeltaTime();
     while (m_dwCurDeltaTime > m_dwDeltaTime)
     {
         m_dwCurDeltaTime -= m_dwDeltaTime;

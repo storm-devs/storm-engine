@@ -1,4 +1,7 @@
 #include "ifs.h"
+
+#include "core.h"
+
 #include "vmodule_api.h"
 
 #define COMMENT ';'
@@ -867,7 +870,7 @@ bool IFS::ReadString(SEARCH_DATA *sd, const char *section_name, const char *key_
         sd->Section = nullptr;
         if (def_string == nullptr)
         {
-            api->Trace("Warning! IniFile Read String: section=%s, key=%s", section_name, key_name);
+            core.Trace("Warning! IniFile Read String: section=%s, key=%s", section_name, key_name);
             if (buffer)
                 buffer[0] = 0;
             // throw std::exception(string not found);

@@ -1,11 +1,14 @@
 #include "battle_navigator.h"
+#include <stdio.h>
+
+#include "core.h"
+
 #include "../Utils.h"
 #include "../shared/battle_interface/msg_control.h"
-#include "EntityManager.h"
+#include "Entity.h"
 #include "Island_Base.h"
 #include "ship_base.h"
 #include "ships_list.h"
-#include <stdio.h>
 
 #define NAVBACKGROUND_SIZESCALE 1.3f
 
@@ -453,13 +456,13 @@ void BATTLE_NAVIGATOR::Init(VDX9RENDER *RenderService, Entity *pOwnerEI)
     m_dwDamagedCannon = ARGB(255, 64, 64, 64);
 
     // максимальная скорость ветра
-    m_fWindMaxStrength = api->Entity_GetAttributeAsFloat(BIUtils::idBattleInterface, "MaxWind", 30.f);
+    m_fWindMaxStrength = core.Entity_GetAttributeAsFloat(BIUtils::idBattleInterface, "MaxWind", 30.f);
     // и корабля
-    m_fMaxShipSpeed = api->Entity_GetAttributeAsFloat(BIUtils::idBattleInterface, "MaxShipSpeed", 20.f);
+    m_fMaxShipSpeed = core.Entity_GetAttributeAsFloat(BIUtils::idBattleInterface, "MaxShipSpeed", 20.f);
     //
-    m_fShipSpeedScale = api->Entity_GetAttributeAsFloat(BIUtils::idBattleInterface, "ShipSpeedScaler", 1.f);
+    m_fShipSpeedScale = core.Entity_GetAttributeAsFloat(BIUtils::idBattleInterface, "ShipSpeedScaler", 1.f);
 
-    auto *const pARoot = api->Entity_GetAttributeClass(BIUtils::idBattleInterface, "navigation");
+    auto *const pARoot = core.Entity_GetAttributeClass(BIUtils::idBattleInterface, "navigation");
 
     m_fAspectRatio = BIUtils::GetFloatFromAttr(pARoot, "aspectRatio", 1.f);
 
@@ -1452,7 +1455,7 @@ void BATTLE_NAVIGATOR::UpdateMiniMap()
 
 void BATTLE_NAVIGATOR::UpdateCurrentCharge()
 {
-    VDATA *pVD = api->Event("GetCurrentCharge");
+    VDATA *pVD = core.Event("GetCurrentCharge");
     if (pVD == nullptr)
         return;
     long curCharge = m_curCharge;
@@ -1535,8 +1538,8 @@ void BATTLE_NAVIGATOR::UpdateWindParam()
     if (!m_wb && !m_pAWeather)
     {
         m_wb = static_cast<WEATHER_BASE *>(EntityManager::GetEntityPointer(EntityManager::GetEntityId("weather")));
-        /*if( api->IsNetActive() && !m_wb && m_pOwnerEI ) {
-          VDATA * pSVWeather = (VDATA*)api->GetScriptVariable((m_pOwnerEI->IsServer()) ? "NSWeather" : "NCWeather");
+        /*if( core.IsNetActive() && !m_wb && m_pOwnerEI ) {
+          VDATA * pSVWeather = (VDATA*)core.GetScriptVariable((m_pOwnerEI->IsServer()) ? "NSWeather" : "NCWeather");
         Assert(pSVWeather); m_pAWeather = pSVWeather->GetAClass(); Assert(m_pAWeather);
         }*/
     }

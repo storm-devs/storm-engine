@@ -1,8 +1,9 @@
 #ifndef SAVE_LOAD_HPP
 #define SAVE_LOAD_HPP
 
-#include "../defines.h"
 #include <string>
+
+#include "core.h"
 
 class CSaveLoad
 {
@@ -35,7 +36,7 @@ class CSaveLoad
             for (uint32_t i = 0; i < dwCurSize; i++)
                 sprintf_s(&pFFSave[8 + i * 2], 3, "%.2x", static_cast<uint8_t>(pSaveBuffer[i]));
 
-            auto *pV = api->Event("SeaLoad_GetPointer", "sl", "seasave", -1);
+            auto *pV = core.Event("SeaLoad_GetPointer", "sl", "seasave", -1);
             if (pV)
                 pV->GetAClass()->SetAttribute("save", pFFSave);
 
@@ -59,7 +60,7 @@ class CSaveLoad
         bLoad = true;
         dwCurSize = 0;
 
-        auto *pV = api->Event("SeaLoad_GetPointer", "sl", "seasave", -1);
+        auto *pV = core.Event("SeaLoad_GetPointer", "sl", "seasave", -1);
         auto *const pSave = pV->GetAClass()->GetAttribute("save");
         uint32_t dwSize;
         char str[256];
@@ -231,7 +232,7 @@ class CSaveLoad
         const auto str = LoadString();
         if (str == "character" && iIndex < 0)
             return nullptr;
-        auto *pV = api->Event("SeaLoad_GetPointer", "sl", pStr, iIndex);
+        auto *pV = core.Event("SeaLoad_GetPointer", "sl", pStr, iIndex);
         return (pV) ? pV->GetAClass() : nullptr;
     }
 };

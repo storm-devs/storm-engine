@@ -1,5 +1,10 @@
 #include "pcs_controls.h"
 
+#include "core.h"
+
+#include "../Animation/ActionInfo.h"
+#include "vfile_service.h"
+
 PCS_CONTROLS::PCS_CONTROLS()
 {
     m_bLockAll = false;
@@ -16,7 +21,7 @@ PCS_CONTROLS::PCS_CONTROLS()
 
     // nMouseXPrev = nMouseYPrev = 0;
     RECT r;
-    GetWindowRect(api->GetAppHWND(), &r);
+    GetWindowRect(core.GetAppHWND(), &r);
     nMouseXPrev = r.left + (r.right - r.left) / 2;
     nMouseYPrev = r.top + (r.bottom - r.top) / 2;
 
@@ -25,7 +30,7 @@ PCS_CONTROLS::PCS_CONTROLS()
     nMouseWheel = 0;
     memset(&ControlsTab[0], 0, sizeof(ControlsTab));
 
-    auto *pIni = fio->OpenIniFile(api->EngineIniFileName());
+    auto *pIni = fio->OpenIniFile(core.EngineIniFileName());
     if (pIni)
     {
         m_bIsOffDebugKeys = pIni->GetLong("controls", "ondebugkeys", 0) == 0;
@@ -33,7 +38,7 @@ PCS_CONTROLS::PCS_CONTROLS()
     }
 
     // RECT r;
-    // GetWindowRect(api->GetAppHWND(),&r);
+    // GetWindowRect(core.GetAppHWND(),&r);
     // ClipCursor(&r);
 }
 
@@ -48,7 +53,7 @@ void PCS_CONTROLS::AppState(bool state)
     if (state)
     {
         // RECT r;
-        // GetWindowRect(api->GetAppHWND(),&r);
+        // GetWindowRect(core.GetAppHWND(),&r);
         // ClipCursor(&r);
     }
     else
@@ -491,7 +496,7 @@ void PCS_CONTROLS::Update(uint32_t DeltaTime)
     nMouseWheel = 0;
 
     RECT r;
-    GetWindowRect(api->GetAppHWND(), &r);
+    GetWindowRect(core.GetAppHWND(), &r);
     nMouseXPrev = r.left + (r.right - r.left) / 2;
     nMouseYPrev = r.top + (r.bottom - r.top) / 2;
     SetCursorPos(nMouseXPrev, nMouseYPrev);

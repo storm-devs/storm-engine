@@ -1,7 +1,8 @@
 #include "battle_land.h"
 #include "../shared/battle_interface/msg_control.h"
 #include "battle_mansign.h"
-#include "vmodule_api.h"
+#include "core.h"
+#include "message.h"
 
 BATTLE_LAND_INTERFACE::BATTLE_LAND_INTERFACE() : m_bShowCommandos(false)
 {
@@ -16,7 +17,7 @@ BATTLE_LAND_INTERFACE::~BATTLE_LAND_INTERFACE()
 
 bool BATTLE_LAND_INTERFACE::Init()
 {
-    m_pRS = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+    m_pRS = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!m_pRS)
     {
         throw std::exception("Can`t create render service");
@@ -34,7 +35,7 @@ void BATTLE_LAND_INTERFACE::Execute(uint32_t delta_time) const
     {
         if (!m_pManSign->IsActive())
         {
-            api->Controls->GetControlState(BI_COMMANDS_ACTIVATE_LAND, cs);
+            core.Controls->GetControlState(BI_COMMANDS_ACTIVATE_LAND, cs);
             if (cs.state == CST_ACTIVATED)
             {
                 m_pManSign->SetActive(true);

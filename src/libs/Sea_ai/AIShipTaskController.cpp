@@ -113,7 +113,7 @@ void AIShipTaskController::FindRunAwayPoint()
         if (pAWind)
             fWindAngle = pAWind->GetAttributeAsFloat();
         const auto vWindDir = CVECTOR(cosf(fWindAngle), 0.0f, sinf(fWindAngle));
-        // api->Trace("fWindAngle = %.3f", fWindAngle);
+        // core.Trace("fWindAngle = %.3f", fWindAngle);
 
         vRAPoint = !((-vRAPoint) + (fWindK * vWindDir));
         // set destination point
@@ -122,7 +122,7 @@ void AIShipTaskController::FindRunAwayPoint()
     else
     {
         // Если из скрипта возвращается 1 - то используем скриптовую точку
-        auto *pV = api->Event(SHIP_GET_RUNAWAY_POINT, "aff", GetAIShip()->GetACharacter(), vRAPoint.x, vRAPoint.z);
+        auto *pV = core.Event(SHIP_GET_RUNAWAY_POINT, "aff", GetAIShip()->GetACharacter(), vRAPoint.x, vRAPoint.z);
         auto *pARAP = GetAIShip()->GetACharacter()->FindAClass(GetAIShip()->GetACharacter(), "SeaAI.RunAwayPnt");
         vRAPoint.y = 0.0f;
         vRAPoint.x = pARAP->GetAttributeAsFloat("x", 0.0f);
@@ -130,7 +130,7 @@ void AIShipTaskController::FindRunAwayPoint()
         SetDestinationPoint(vRAPoint);
     }
 
-    /*if (api->Controls->GetDebugAsyncKeyState('X') < 0)
+    /*if (core.Controls->GetDebugAsyncKeyState('X') < 0)
     {
       GetAIShip()->GetShipPointer()->Render().DrawVector(GetAIShip()->GetPos(), GetAIShip()->GetPos() + 20.0f *
     vRAPoint, 0xFFFFFFFF); GetAIShip()->GetShipPointer()->Render().DrawSphere(GetAIShip()->GetPos() + 50.0f *

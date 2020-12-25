@@ -1,5 +1,6 @@
 #include "enemystatshower.h"
 #include "../../../shared/messages.h"
+#include "core.h"
 #include "model.h"
 
 EnemyStatShower::EnemyStatShower()
@@ -54,10 +55,10 @@ void EnemyStatShower::Release()
 entid_t EnemyStatShower::GetModelEIDFromCharacterEID(entid_t chrEID)
 {
     entid_t eid;
-    auto *pvdat = static_cast<VDATA *>(api->GetScriptVariable("g_TmpModelVariable"));
+    auto *pvdat = static_cast<VDATA *>(core.GetScriptVariable("g_TmpModelVariable"));
     if (pvdat)
     {
-        api->Send_Message(chrEID, "le", MSG_CHARACTER_GETMODEL, pvdat);
+        core.Send_Message(chrEID, "le", MSG_CHARACTER_GETMODEL, pvdat);
         eid = pvdat->GetEntityID();
     }
     return eid;

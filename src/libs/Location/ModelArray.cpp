@@ -11,8 +11,9 @@
 #include "geometry.h"
 
 #include "../../Shared/messages.h"
-#include "EntityManager.h"
+#include "Entity.h"
 #include "ModelArray.h"
+#include "core.h"
 
 //============================================================================================
 //Конструирование, деструктурирование
@@ -43,10 +44,10 @@ long ModelArray::CreateModel(const char *modelName, const char *technique, long 
     strcpy_s(resPath, modelspath);
     strcat_s(resPath, modelName);
     //Путь для текстур
-    auto *gs = static_cast<VGEOMETRY *>(api->CreateService("geometry"));
+    auto *gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
     if (!gs)
     {
-        api->Trace("Can't create geometry service!");
+        core.Trace("Can't create geometry service!");
         return -1;
     }
     gs->SetTexturePath(texturespath);
@@ -65,10 +66,10 @@ long ModelArray::CreateModel(const char *modelName, const char *technique, long 
         EntityManager::EraseEntity(id);
         return -1;
     }
-    api->Send_Message(idModelRealizer, "lip", 1, id, pLights);
+    core.Send_Message(idModelRealizer, "lip", 1, id, pLights);
     // if(isVisible) EntityManager::AddToLayer(realize, idModelRealizer, level);
     EntityManager::AddToLayer(REALIZE, idModelRealizer, level);
-    api->Send_Message(idModelRealizer, "ll", 2, isVisible);
+    core.Send_Message(idModelRealizer, "ll", 2, isVisible);
     auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(id));
     if (!m)
     {
@@ -78,9 +79,9 @@ long ModelArray::CreateModel(const char *modelName, const char *technique, long 
         return -1;
     }
     //Загружаем
-    api->Send_Message(id, "ls", MSG_MODEL_SET_LIGHT_PATH, lightpath);
-    api->Send_Message(id, "ls", MSG_MODEL_SET_LIGHT_LMPATH, shadowpath);
-    if (!api->Send_Message(id, "ls", MSG_MODEL_LOAD_GEO, resPath))
+    core.Send_Message(id, "ls", MSG_MODEL_SET_LIGHT_PATH, lightpath);
+    core.Send_Message(id, "ls", MSG_MODEL_SET_LIGHT_LMPATH, shadowpath);
+    if (!core.Send_Message(id, "ls", MSG_MODEL_LOAD_GEO, resPath))
     {
         gs->SetTexturePath("");
         EntityManager::EraseEntity(id);
@@ -99,7 +100,7 @@ long ModelArray::CreateModel(const char *modelName, const char *technique, long 
     }
     else
     {
-        api->Trace("Model name %s is very long", maxModels);
+        core.Trace("Model name %s is very long", maxModels);
         memcpy(model[numModels].name, modelName, MA_MAX_NAME_LENGTH);
         model[numModels].name[MA_MAX_NAME_LENGTH - 1] = 0;
     }
@@ -151,7 +152,7 @@ void ModelArray::DeleteModel(long modelIndex)
 bool ModelArray::SetAnimation(long modelIndex, const char *modelAni)
 {
     Assert(modelIndex >= 0 && modelIndex < numModels);
-    return api->Send_Message(model[modelIndex].id, "ls", MSG_MODEL_LOAD_ANI, modelAni) != 0;
+    return core.Send_Message(model[modelIndex].id, "ls", MSG_MODEL_LOAD_ANI, modelAni) != 0;
 }
 
 //Найти индекс модели по имени
@@ -239,7 +240,7 @@ void ModelArray::SetUVSlide(long modelIndex, float u0, float v0, float u1, float
     if (mdl)
         mdl->SetRenderTuner(sl);
     else
-        api->Trace("Location: Can't get model pointer for set RenderTuner");
+        core.Trace("Location: Can't get model pointer for set RenderTuner");
 }
 
 //Установить модельке анимацию вращения
@@ -269,7 +270,7 @@ void ModelArray::SetReflection(long modelIndex, float scale)
     if (mdl)
         mdl->SetRenderTuner(model[modelIndex].reflection);
     else
-        api->Trace("Location: Can't get model pointer for set RenderTuner");
+        core.Trace("Location: Can't get model pointer for set RenderTuner");
 }
 
 //Анимировать текстурные координаты

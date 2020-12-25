@@ -1,11 +1,11 @@
 #include "s_dbg_sourceview.h"
-#include "Core.h"
+#include "core.h"
+#include "data.h"
 #include "defines.h"
 #include "resource.h"
 #include "s_debug.h"
 #include <algorithm>
 
-extern CORE Core;
 extern S_DEBUG CDebug;
 
 #define X_OFFSET 0 // 16
@@ -1125,7 +1125,7 @@ bool SOURCE_VIEW::SetVariableOnChange(const char *pString, bool bSet)
     pStr = GetToken(pStr, sVarName);
     if (!pStr)
     {
-        pObject = static_cast<VDATA *>(api->GetScriptVariable(sVarName.c_str(), nullptr));
+        pObject = static_cast<VDATA *>(core.GetScriptVariable(sVarName.c_str(), nullptr));
         if (!pObject)
             return false;
         // set VOC to alone variable
@@ -1140,7 +1140,7 @@ bool SOURCE_VIEW::SetVariableOnChange(const char *pString, bool bSet)
         {
             return false;
         }
-        auto *pV = static_cast<VDATA *>(api->GetScriptVariable(sVarName.c_str(), nullptr));
+        auto *pV = static_cast<VDATA *>(core.GetScriptVariable(sVarName.c_str(), nullptr));
         if (!pV)
             return false;
         sscanf(sDigit.c_str(), "%d", &iDigit);
@@ -1149,7 +1149,7 @@ bool SOURCE_VIEW::SetVariableOnChange(const char *pString, bool bSet)
     }
     else if (sToken == ".")
     {
-        pObject = static_cast<VDATA *>(api->GetScriptVariable(sVarName.c_str(), nullptr));
+        pObject = static_cast<VDATA *>(core.GetScriptVariable(sVarName.c_str(), nullptr));
     }
     else
         return false;

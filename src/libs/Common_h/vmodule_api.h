@@ -1,8 +1,4 @@
 #pragma once
-#include "message.h"
-#include "storm_assert.h"
-#include "vapi.h"
-#include "vfile_service.h"
 #include <vector>
 
 /* TODO: REMOVE THIS.... */
@@ -31,9 +27,7 @@ class VMA;
 
 // extern VMA* _pModuleClassRoot;
 inline std::vector<VMA *> _pModuleClassRoot;
-extern VAPI *api;
 // extern VSYSTEM_API* _VSYSTEM_API;
-extern VFILE_SERVICE *fio;
 
 class VMA
 {

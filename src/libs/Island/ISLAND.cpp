@@ -71,13 +71,13 @@ bool ISLAND::Init()
 
 void ISLAND::SetDevice()
 {
-    // api->LayerCreate("island_trace", true, false);
+    // core.LayerCreate("island_trace", true, false);
 
-    pCollide = static_cast<COLLIDE *>(api->CreateService("COLL"));
+    pCollide = static_cast<COLLIDE *>(core.CreateService("COLL"));
     Assert(pCollide);
-    pRS = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+    pRS = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     Assert(pRS);
-    pGS = static_cast<VGEOMETRY *>(api->CreateService("geometry"));
+    pGS = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
     Assert(pGS);
 }
 
@@ -166,9 +166,9 @@ void ISLAND::Realize(uint32_t Delta_Time)
             auto mOld = static_cast<MODEL *>(ent)->mtx;
             static_cast<MODEL *>(ent)->mtx = mOld * mTemp;
 
-            api->Send_Message(AIFortEID, "li", AI_MESSAGE_FORT_SET_LIGHTS, aForts[k]);
+            core.Send_Message(AIFortEID, "li", AI_MESSAGE_FORT_SET_LIGHTS, aForts[k]);
             static_cast<Entity *>(ent)->ProcessStage(Stage::realize, Delta_Time);
-            api->Send_Message(AIFortEID, "li", AI_MESSAGE_FORT_UNSET_LIGHTS, aForts[k]);
+            core.Send_Message(AIFortEID, "li", AI_MESSAGE_FORT_UNSET_LIGHTS, aForts[k]);
 
             static_cast<MODEL *>(ent)->mtx = mOld;
         }
@@ -205,7 +205,7 @@ void ISLAND::Realize(uint32_t Delta_Time)
             pModel->mtx.BuildPosition(vPos.x, 5.0f, vPos.z);
     }
 
-    if (api->Controls->GetDebugAsyncKeyState('O') < 0)
+    if (core.Controls->GetDebugAsyncKeyState('O') < 0)
         bView ^= 1;
     if (bView)
     {
@@ -260,7 +260,7 @@ uint64_t ISLAND::ProcessMessage(MESSAGE &message)
         bDrawReflections = false;
         break;
     case MSG_MODEL_SET_MAX_VIEW_DIST:
-        api->Send_Message(model_id, "lf", MSG_MODEL_SET_MAX_VIEW_DIST, message.Float());
+        core.Send_Message(model_id, "lf", MSG_MODEL_SET_MAX_VIEW_DIST, message.Float());
         break;
     }
     return 1;
@@ -647,14 +647,14 @@ bool ISLAND::CreateHeightMap(char *pDir, char *pName)
         sscanf(str_tmp, "%f,%f,%f", &vTmpBoxSize.x, &vTmpBoxSize.y, &vTmpBoxSize.z);
         if (~(vTmpBoxCenter - vBoxCenter) > 0.1f)
         {
-            api->Trace("Island: vBoxCenter not equal, foam error: %s, distance = %.3f", iniName.c_str(),
+            core.Trace("Island: vBoxCenter not equal, foam error: %s, distance = %.3f", iniName.c_str(),
                        sqrtf(~(vTmpBoxCenter - vBoxCenter)));
-            api->Trace("vBoxCenter = %f,%f,%f", vBoxCenter.x, vBoxCenter.y, vBoxCenter.z);
+            core.Trace("vBoxCenter = %f,%f,%f", vBoxCenter.x, vBoxCenter.y, vBoxCenter.z);
         }
         if (~(vTmpBoxSize - vBoxSize) > 0.1f)
         {
-            api->Trace("Island: vBoxSize not equal, foam error: %s", iniName.c_str());
-            api->Trace("vBoxSize = %f,%f,%f", vBoxSize.x, vBoxSize.y, vBoxSize.z);
+            core.Trace("Island: vBoxSize not equal, foam error: %s", iniName.c_str());
+            core.Trace("vBoxSize = %f,%f,%f", vBoxSize.x, vBoxSize.y, vBoxSize.z);
         }
 
         AIPath.Load(pI);
@@ -664,7 +664,7 @@ bool ISLAND::CreateHeightMap(char *pDir, char *pName)
         return true;
     }
 
-    api->Trace("WARN: FOAM: Can't find foam: %s", fileName.c_str());
+    core.Trace("WARN: FOAM: Can't find foam: %s", fileName.c_str());
 
     long iTestSize = static_cast<long>(vBoxSize.x / 1.5f);
     // fixed maximum depth map to 1024 size!!!!!!!
@@ -686,7 +686,7 @@ bool ISLAND::CreateHeightMap(char *pDir, char *pName)
     for (fZ = 0; fZ < static_cast<float>(iDMapSize); fZ += 1.0f)
     {
         if ((static_cast<long>(fZ) & 127) == 127)
-            api->Trace("Z = %.0f", fZ);
+            core.Trace("Z = %.0f", fZ);
         for (fX = 0; fX < static_cast<float>(iDMapSize); fX += 1.0f)
         {
             long iIdx = static_cast<long>(fX) + static_cast<long>(fZ) * iDMapSize;
@@ -770,7 +770,7 @@ bool ISLAND::SaveTga8(char *fname, uint8_t *pBuffer, uint32_t dwSizeX, uint32_t 
     const HANDLE hFile = fio->_CreateFile(fname, GENERIC_WRITE, FILE_SHARE_READ, OPEN_ALWAYS);
     if (INVALID_HANDLE_VALUE == hFile)
     {
-        api->Trace("Island: Can't create island file! %s", fname);
+        core.Trace("Island: Can't create island file! %s", fname);
         return false;
     }
     fio->_WriteFile(hFile, &tga_head, sizeof(tga_head), nullptr);
@@ -795,8 +795,8 @@ bool ISLAND::Mount(char *fname, char *fdir, entid_t *eID)
     // sRealFileName.Format("%s\\%s", fdir, fname); sRealFileName.CheckPath();
 
     model_id = EntityManager::CreateEntity("MODELR");
-    api->Send_Message(model_id, "ls", MSG_MODEL_SET_LIGHT_PATH, AttributesPointer->GetAttribute("LightingPath"));
-    api->Send_Message(model_id, "ls", MSG_MODEL_LOAD_GEO, (char *)pathStr.c_str());
+    core.Send_Message(model_id, "ls", MSG_MODEL_SET_LIGHT_PATH, AttributesPointer->GetAttribute("LightingPath"));
+    core.Send_Message(model_id, "ls", MSG_MODEL_LOAD_GEO, (char *)pathStr.c_str());
 
     // extract subobject(sea_bed) to another model
     auto *pModel = static_cast<MODEL *>(EntityManager::GetEntityPointer(model_id));
@@ -804,7 +804,7 @@ bool ISLAND::Mount(char *fname, char *fdir, entid_t *eID)
     if (pNode)
         seabed_id = pNode->Unlink2Model();
     else
-        api->Trace("Island: island %s has no sea bed, check me!", fname);
+        core.Trace("Island: island %s has no sea bed, check me!", fname);
 
     EntityManager::AddToLayer(ISLAND_TRACE, model_id, 10);
     EntityManager::AddToLayer(ISLAND_TRACE, seabed_id, 10);
@@ -817,14 +817,14 @@ bool ISLAND::Mount(char *fname, char *fdir, entid_t *eID)
         mSeaBedOld = pSeaBedModel->mtx;
 
     /*sModelPath.Format("islands\\%s\\", fname); sModelPath.CheckPath();
-    api->Send_Message(lighter_id, "ss", "ModelsPath", (char*)sModelPath);
+    core.Send_Message(lighter_id, "ss", "ModelsPath", (char*)sModelPath);
     sLightPath.Format("%s", AttributesPointer->GetAttribute("LightingPath")); sLightPath.CheckPath();
-    api->Send_Message(lighter_id, "ss", "LightPath", (char*)sLightPath);*/
+    core.Send_Message(lighter_id, "ss", "LightPath", (char*)sLightPath);*/
 
     const auto lighter_id = EntityManager::GetEntityId("lighter");
-    api->Send_Message(lighter_id, "ssi", "AddModel", fname, model_id);
+    core.Send_Message(lighter_id, "ssi", "AddModel", fname, model_id);
     const std::string sSeaBedName = std::string(fname) + "_seabed";
-    api->Send_Message(lighter_id, "ssi", "AddModel", (char *)sSeaBedName.c_str(), seabed_id);
+    core.Send_Message(lighter_id, "ssi", "AddModel", (char *)sSeaBedName.c_str(), seabed_id);
 
     fImmersionDistance = AttributesPointer->GetAttributeAsFloat("ImmersionDistance", 3000.0f);
     fImmersionDepth = AttributesPointer->GetAttributeAsFloat("ImmersionDepth", 25.0f);
@@ -837,7 +837,7 @@ bool ISLAND::Mount(char *fname, char *fdir, entid_t *eID)
     {
       entid_t eid;
       EntityManager::CreateEntity(&eid,"MODELR");
-      api->Send_Message(eid,"ls",MSG_MODEL_LOAD_GEO,"mirror");
+      core.Send_Message(eid,"ls",MSG_MODEL_LOAD_GEO,"mirror");
       EntityManager::AddToLayer("sea_realize",eid,10000);
       aSpheres.Add(eid);
     }*/
@@ -854,7 +854,7 @@ float ISLAND::Cannon_Trace(long iBallOwner, const CVECTOR &vSrc, const CVECTOR &
     if (fRes <= 1.0f)
     {
         const CVECTOR vTemp = vSrc + fRes * (vDst - vSrc);
-        api->Event(BALL_ISLAND_HIT, "lfff", iBallOwner, vTemp.x, vTemp.y, vTemp.z);
+        core.Event(BALL_ISLAND_HIT, "lfff", iBallOwner, vTemp.x, vTemp.y, vTemp.z);
     }
     return fRes;
 }

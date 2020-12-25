@@ -1,6 +1,7 @@
 #include "ActivePerkShower.h"
 #include "../../Shared/battle_interface/msg_control.h"
 #include "bi_defines.h"
+#include "core.h"
 #include "vmodule_api.h"
 #include <exception>
 
@@ -28,7 +29,7 @@ ActivePerkShower::~ActivePerkShower()
 
 bool ActivePerkShower::Init()
 {
-    if ((rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"))) == nullptr)
+    if ((rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"))) == nullptr)
     {
         throw std::exception("Can`t create render service");
     }

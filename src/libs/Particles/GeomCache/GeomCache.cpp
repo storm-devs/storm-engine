@@ -1,9 +1,13 @@
 #include "GeomCache.h"
 
+#include "core.h"
+
+#include "storm_assert.h"
+
 //Конструктор/деструктор
 GeomCache::GeomCache()
 {
-    pGS = static_cast<VGEOMETRY *>(api->CreateService("geometry"));
+    pGS = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
     Assert(pGS);
 }
 

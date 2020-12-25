@@ -138,4 +138,7 @@ class INIFILE
     virtual bool TestSection(const char *section_name) = 0;
 };
 
+//
+extern VFILE_SERVICE *fio;
+
 #endif

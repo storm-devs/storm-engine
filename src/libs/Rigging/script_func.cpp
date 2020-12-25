@@ -1,7 +1,9 @@
 #include "script_func.h"
+#include "Entity.h"
+#include "core.h"
+#include "s_import_func.h"
 #include "sail.h"
 #include "v_s_stack.h"
-#include <EntityManager.h>
 
 extern float g_fSailHoleDepend;
 // extern float GetSailSpeed(int holeQ,int holeMax,float maxSpeed,float fSailHoleDepend);
@@ -275,31 +277,31 @@ bool SCRIPT_RIGGING_FILES::Init()
     sIFuncInfo.pFuncName = "funcGetSailSpeed";
     sIFuncInfo.pReturnValueName = "float";
     sIFuncInfo.pFuncAddress = _funcGetSailSpeed;
-    api->SetScriptFunction(&sIFuncInfo);
+    core.SetScriptFunction(&sIFuncInfo);
 
     sIFuncInfo.nArguments = 6;
     sIFuncInfo.pFuncName = "RandomHole2Sail";
     sIFuncInfo.pReturnValueName = "int";
     sIFuncInfo.pFuncAddress = _RandomHole2Sail;
-    api->SetScriptFunction(&sIFuncInfo);
+    core.SetScriptFunction(&sIFuncInfo);
 
     sIFuncInfo.nArguments = 5;
     sIFuncInfo.pFuncName = "DeleteOneSailHole";
     sIFuncInfo.pReturnValueName = "int";
     sIFuncInfo.pFuncAddress = _DeleteOneSailHole;
-    api->SetScriptFunction(&sIFuncInfo);
+    core.SetScriptFunction(&sIFuncInfo);
 
     sIFuncInfo.nArguments = 2;
     sIFuncInfo.pFuncName = "GetAssembledString";
     sIFuncInfo.pReturnValueName = "string";
     sIFuncInfo.pFuncAddress = _GetAssembledString;
-    api->SetScriptFunction(&sIFuncInfo);
+    core.SetScriptFunction(&sIFuncInfo);
 
     sIFuncInfo.nArguments = 1;
     sIFuncInfo.pFuncName = "ShipSailState";
     sIFuncInfo.pReturnValueName = "float";
     sIFuncInfo.pFuncAddress = _ShipSailState;
-    api->SetScriptFunction(&sIFuncInfo);
+    core.SetScriptFunction(&sIFuncInfo);
 
     return true;
 }

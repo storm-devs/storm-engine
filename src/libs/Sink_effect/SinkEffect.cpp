@@ -1,6 +1,7 @@
 #include "SinkEffect.H"
 #include "../../Shared/messages.h"
-#include "EntityManager.h"
+#include "Entity.h"
+#include "core.h"
 #include "ship_base.h"
 #include <stdio.h>
 
@@ -24,7 +25,7 @@ bool SINKEFFECT::Init()
 
     sea = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(EntityManager::GetEntityId("sea")));
 
-    renderer = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+    renderer = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
 
     InitializeSinks();
 

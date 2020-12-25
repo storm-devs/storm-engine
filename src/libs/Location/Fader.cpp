@@ -10,7 +10,8 @@
 
 #include "Fader.h"
 #include "../../Shared/messages.h"
-#include "EntityManager.h"
+#include "Entity.h"
+#include "core.h"
 
 //============================================================================================
 //Конструирование, деструктурирование
@@ -68,7 +69,7 @@ bool Fader::Init()
 
         if (fadeIn == static_cast<Fader *>(EntityManager::GetEntityPointer(eid))->fadeIn)
         {
-            api->Trace("Fader::Init() -> Fader already created, %s", fadeIn ? "fade in phase" : "fade out phase");
+            core.Trace("Fader::Init() -> Fader already created, %s", fadeIn ? "fade in phase" : "fade out phase");
         }
         //!!!
         // return false;
@@ -80,7 +81,7 @@ bool Fader::Init()
     EntityManager::AddToLayer(FADER_EXECUTE, GetId(), -256);
 
     // DX9 render
-    rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!rs)
         throw std::exception("No service: dx9render");
     D3DVIEWPORT9 vp;
@@ -94,7 +95,7 @@ bool Fader::Init()
     //Зачитаем количество типсов, если надо
     if (!numberOfTips)
     {
-        auto *ini = fio->OpenIniFile(api->EngineIniFileName());
+        auto *ini = fio->OpenIniFile(core.EngineIniFileName());
         if (ini)
         {
             numberOfTips = ini->GetLong(nullptr, "ProgressFrame", 1);
@@ -199,7 +200,7 @@ uint64_t Fader::ProcessMessage(MESSAGE &message)
 //Работа
 void Fader::Execute(uint32_t delta_time)
 {
-    // api->Trace("fader frame");
+    // core.Trace("fader frame");
     if (deleteMe)
     {
         deleteMe++;
@@ -211,13 +212,13 @@ void Fader::Execute(uint32_t delta_time)
         eventStart = false;
         if (!fadeIn)
         {
-            api->PostEvent("FaderEvent_StartFade", 0, "li", fadeIn, GetId());
-            // api->Trace("FaderEvent_StartFade");
+            core.PostEvent("FaderEvent_StartFade", 0, "li", fadeIn, GetId());
+            // core.Trace("FaderEvent_StartFade");
         }
         else
         {
-            api->PostEvent("FaderEvent_StartFadeIn", 0, "li", fadeIn, GetId());
-            //	api->Trace("FaderEvent_StartFadeIn");
+            core.PostEvent("FaderEvent_StartFadeIn", 0, "li", fadeIn, GetId());
+            //	core.Trace("FaderEvent_StartFadeIn");
         }
     }
     if (eventEnd)
@@ -226,13 +227,13 @@ void Fader::Execute(uint32_t delta_time)
         deleteMe = isAutodelete;
         if (!fadeIn)
         {
-            api->PostEvent("FaderEvent_EndFade", 0, "li", fadeIn, GetId());
-            // api->Trace("FaderEvent_EndFade");
+            core.PostEvent("FaderEvent_EndFade", 0, "li", fadeIn, GetId());
+            // core.Trace("FaderEvent_EndFade");
         }
         else
         {
-            api->PostEvent("FaderEvent_EndFadeIn", 0, "li", fadeIn, GetId());
-            //	api->Trace("FaderEvent_EndFadeIn");
+            core.PostEvent("FaderEvent_EndFadeIn", 0, "li", fadeIn, GetId());
+            //	core.Trace("FaderEvent_EndFadeIn");
         }
     }
 }
@@ -264,14 +265,14 @@ void Fader::Realize(uint32_t delta_time)
                     }
                 }
                 if (!isOk)
-                    api->Trace("Screen shot for fader not created!");
+                    core.Trace("Screen shot for fader not created!");
             }
             else
             {
                 //Копируем шот
                 if (rs->UpdateSurface(surface, nullptr, 0, renderTarget, nullptr) != D3D_OK)
                 {
-                    api->Trace("Can't copy fader screen shot to render target!");
+                    core.Trace("Can't copy fader screen shot to render target!");
                 }
             }
         }

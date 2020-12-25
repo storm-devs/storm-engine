@@ -9,6 +9,9 @@
 //============================================================================================
 
 #include "AICharacter.h"
+
+#include "core.h"
+
 #include "Location.h"
 
 #define FALURE_GOTO 2.0f
@@ -153,7 +156,7 @@ void AICharacter::CharacterTeleport()
 {
     currentNode = FindNodeIndex(curPos);
     if (currentNode < 0)
-        api->Trace("Warning: NPCharacter <%s>-> trace node not found", characterID);
+        core.Trace("Warning: NPCharacter <%s>-> trace node not found", characterID);
 }
 
 //============================================================================================
@@ -331,7 +334,7 @@ void AICharacter::CmdProcessGotoPoint(float dltTime)
                     }
                     else
                     {
-                        api->Event("Location_CharacterBusyPos", "ifff", GetId(), command.pnt.x, command.pnt.y,
+                        core.Event("Location_CharacterBusyPos", "ifff", GetId(), command.pnt.x, command.pnt.y,
                                    command.pnt.z);
                         command.cnt++;
                         command.isWait = true;

@@ -3,6 +3,7 @@
 
 #include "../inode.h"
 
+class INIFILE;
 class XINTERFACE;
 
 // video

@@ -1,7 +1,5 @@
 #include "program.h"
 
-extern CORE Core;
-
 PROGRAM::PROGRAM() : ProgramBlock(nullptr)
 {
     ProgramDirectory = nullptr;

@@ -1,9 +1,9 @@
 #include "vcollide.h"
 
-LCOLL::LCOLL(EntityManager::layer_index_t idx, VAPI &_api) : boxRadius(0), api(_api)
+LCOLL::LCOLL(EntityManager::layer_index_t idx) : boxRadius(0)
 {
     layerIndex_ = idx;
-    col = static_cast<COLLIDE *>(api.CreateService("coll"));
+    col = static_cast<COLLIDE *>(core.CreateService("coll"));
     if (!col)
         throw std::exception("No service: collide");
 }

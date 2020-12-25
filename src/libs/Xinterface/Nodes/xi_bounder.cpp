@@ -1,6 +1,10 @@
 #include "xi_bounder.h"
 #include <stdio.h>
 
+#include "core.h"
+
+#include "vfile_service.h"
+
 CXI_BOUNDER::CXI_BOUNDER()
 {
     m_rs = nullptr;
@@ -523,7 +527,7 @@ void CXI_BOUNDER::SaveParametersToIni()
     auto *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
-        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
+        core.Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
         return;
     }
 

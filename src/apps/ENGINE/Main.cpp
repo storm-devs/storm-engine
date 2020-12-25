@@ -1,3 +1,5 @@
+#include <spdlog/spdlog.h>
+
 #include "externs.h"
 #include "fs.h"
 #include "s_debug.h"
@@ -22,7 +24,7 @@ bool _loopMain()
 
     //__try
     {
-        runResult = Core.Run();
+        runResult = core.Run();
     }
     //__except( CreateMiniDump( GetExceptionInformation() ), EXCEPTION_EXECUTE_HANDLER )
     {
@@ -51,7 +53,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     set_default_logger(system_log);
     system_log->set_level(spdlog::level::trace);
 
-    api = &Core;
     fio = &File_Service;
     //_VSYSTEM_API = &System_Api;
 
@@ -60,9 +61,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     auto *ini = File_Service.OpenIniFile(ENGINE_INI_FILE_NAME);
     if (ini)
     {
-        // MaxFPS = (uint32_t)ini->GetLong(nullptr, "max_fps", 0);
-        // bDebugWindow = ini->GetLong(nullptr, "DebugWindow", 0) == 1;
-        // acceleration = ini->GetLong(nullptr, "Acceleration", 0) == 1;
+        dwMaxFPS = static_cast<uint32_t>(ini->GetLong(nullptr, "max_fps", 0));
+        auto bDebugWindow = ini->GetLong(nullptr, "DebugWindow", 0) == 1;
+        auto bAcceleration = ini->GetLong(nullptr, "Acceleration", 0) == 1;
         if (!ini->GetLong(nullptr, "logs", 0))
         {
             system_log->set_level(spdlog::level::off);
@@ -93,8 +94,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
         }
         else
         {
-            api->InitAchievements();
-            api->InitSteamDLC();
+            core.InitAchievements();
+            core.InitSteamDLC();
         }
     }
 
@@ -120,7 +121,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     ShowWindow(hwnd, SW_SHOWNORMAL);
 
     /* Init stuff */
-    Core.InitBase();
+    core.InitBase();
 
     /* Message loop */
     auto dwOldTime = GetTickCount();
@@ -150,10 +151,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
 
                 bool runResult = _loopMain();
 
-                //				if (!isHold && !Core.Run())
+                //				if (!isHold && !core.Run())
                 if (!isHold && !runResult)
                 {
-                    Core.CleanUp();
+                    core.CleanUp();
                     isHold = true;
                     SendMessage(hwnd, WM_CLOSE, 0, 0L);
                 }
@@ -170,11 +171,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     {
         // Shutdown the SteamAPI
         SteamAPI_Shutdown();
-        api->DeleteAchievements();
-        api->DeleteSteamDLC();
+        core.DeleteAchievements();
+        core.DeleteSteamDLC();
     }
 
-    Core.ReleaseBase();
+    core.ReleaseBase();
     ClipCursor(nullptr);
 
     return msg.wParam;
@@ -185,7 +186,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     switch (iMsg)
     {
     case WM_CREATE:
-        Core.Set_Hwnd(hwnd);
+        core.Set_Hwnd(hwnd);
         break;
 
     case WM_CLOSE:
@@ -193,10 +194,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
         break;
 
     case WM_DESTROY:
-        Core.Event("DestroyWindow", nullptr);
-        Core.Event("ExitApplication", nullptr);
+        core.Event("DestroyWindow", nullptr);
+        core.Event("ExitApplication", nullptr);
         CDebug.Release();
-        Core.CleanUp();
+        core.CleanUp();
         File_Service.Close();
         CDebug.CloseDebugWindow();
 
@@ -206,14 +207,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
     case WM_ACTIVATE:
         bActive = LOWORD(wParam) == WA_CLICKACTIVE || LOWORD(wParam) == WA_ACTIVE;
-        Core.AppState(bActive);
+        core.AppState(bActive);
         break;
 
     case WM_KEYDOWN:
         if (wParam == VK_F5) // && bDebugWindow
         {
             if (!CDebug.IsDebug())
-                CDebug.OpenDebugWindow(Core.hInstance);
+                CDebug.OpenDebugWindow(core.hInstance);
             else
             {
                 ShowWindow(CDebug.GetWindowHandle(), SW_NORMAL);
@@ -227,18 +228,18 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     case WM_LBUTTONDOWN:
     case WM_MBUTTONDOWN:
     case WM_MBUTTONUP:
-    case MM_MCINOTIFY:
+        // case MM_MCINOTIFY:
     case WM_LBUTTONDBLCLK:
     case WM_CHAR:
     case WM_MOUSEMOVE:
-        if (Core.Controls)
-            Core.Controls->EngineMessage(iMsg, wParam, lParam);
+        if (core.Controls)
+            core.Controls->EngineMessage(iMsg, wParam, lParam);
         break;
 
     case WM_MOUSEWHEEL:
-        Core.Event("evMouseWeel", "l", static_cast<short>(HIWORD(wParam)));
-        if (Core.Controls)
-            Core.Controls->EngineMessage(iMsg, wParam, lParam);
+        core.Event("evMouseWeel", "l", static_cast<short>(HIWORD(wParam)));
+        if (core.Controls)
+            core.Controls->EngineMessage(iMsg, wParam, lParam);
         break;
 
     default:;

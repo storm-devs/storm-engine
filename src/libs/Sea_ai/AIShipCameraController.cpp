@@ -33,7 +33,7 @@ bool AIShipCameraController::Init()
         Colors[RELATION_NEUTRAL] = pAColors->GetAttributeAsDword("neutral");
     }
     else
-        api->Trace("AIShipCameraController:: Attributes Crosshair.Colors not found!");
+        core.Trace("AIShipCameraController:: Attributes Crosshair.Colors not found!");
     return true;
 }
 
@@ -121,7 +121,7 @@ void AIShipCameraController::Execute(float fDeltaTime)
             if (dwTarget != RELATION_UNKNOWN)
             {
                 const auto fRealDeltaTime =
-                    (api->GetDeltaTime() == 0) ? 0.0f : static_cast<float>(api->GetRDeltaTime()) * 0.001f;
+                    (core.GetDeltaTime() == 0) ? 0.0f : static_cast<float>(core.GetRDeltaTime()) * 0.001f;
                 fDelta += fRealDeltaTime * 5.0f;
                 while (fDelta > 2.0f)
                 {
@@ -147,7 +147,7 @@ bool AIShipCameraController::Fire()
     if (dwTarget != RELATION_UNKNOWN && pTargetAPointer)
     {
         auto *const pMainGroupCharacter = Helper.GetMainCharacter(pTargetAPointer);
-        api->Event(SHIP_FIRE_ACTION, "aal", pTargetAPointer, pMainGroupCharacter, dwTarget);
+        core.Event(SHIP_FIRE_ACTION, "aal", pTargetAPointer, pMainGroupCharacter, dwTarget);
     }
 
     // if (pTargetAPointer) AIGroup::GroupSetAttack(GetAIShip()->GetACharacter(), pTargetAPointer);

@@ -1,9 +1,12 @@
 #include "tm_list.h"
+
+#include "defines.h"
 #include "s_debug.h"
 
 #define MAX_STR_SIZE 1024
-extern CORE Core;
 extern S_DEBUG CDebug;
+
+static char TM_LIST_Buffer[MAX_STR_SIZE];
 
 TM_LIST::TM_LIST()
 {

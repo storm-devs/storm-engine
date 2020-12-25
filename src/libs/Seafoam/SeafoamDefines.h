@@ -21,8 +21,8 @@
 #define SEAFOAM_TRACE(a) true
 #define SEAFOAM_TRACE2(a, b) true
 #else
-#define SEAFOAM_TRACE(a) _VSYSTEM_API->Trace(a);
-#define SEAFOAM_TRACE2(a, b) _VSYSTEM_API->Trace(a, b);
+#define SEAFOAM_TRACE(a) _VSYSTEM_core.Trace(a);
+#define SEAFOAM_TRACE2(a, b) _VSYSTEM_core.Trace(a, b);
 #endif
 /*
 //--------------------------------------------------------------------

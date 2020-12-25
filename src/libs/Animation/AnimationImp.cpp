@@ -10,6 +10,7 @@
 
 #include "AnimationImp.h"
 #include "AnimationServiceImp.h"
+#include "core.h"
 
 //============================================================================================
 
@@ -318,7 +319,7 @@ void AnimationImp::BuildAnimationMatrices()
         }
         else
         {
-            api->Trace("AnimationImp::BuildAnimationMatrices -> Not support mode");
+            core.Trace("AnimationImp::BuildAnimationMatrices -> Not support mode");
             __debugbreak();
             /*_asm int 3;*/
             //	float frame = 0.0f;

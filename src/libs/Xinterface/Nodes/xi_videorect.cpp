@@ -1,6 +1,6 @@
 #include "xi_videorect.h"
 #include "../base_video.h"
-#include "EntityManager.h"
+#include "Entity.h"
 
 CXI_VIDEORECT::CXI_VIDEORECT()
 {
@@ -88,7 +88,7 @@ void CXI_VIDEORECT::SaveParametersToIni()
     auto *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
-        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
+        core.Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
         return;
     }
 
@@ -134,5 +134,5 @@ void CXI_VIDEORECT::StartVideoPlay(char *videoFileName)
     m_rectTex.top = 1.f - m_rectTex.top;
     if (auto *const ptr = EntityManager::GetEntityPointer(m_eiVideo))
         static_cast<xiBaseVideo *>(ptr)->SetShowVideo(false);
-    api->Send_Message(m_eiVideo, "ls", MSG_SET_VIDEO_PLAY, videoFileName);
+    core.Send_Message(m_eiVideo, "ls", MSG_SET_VIDEO_PLAY, videoFileName);
 }

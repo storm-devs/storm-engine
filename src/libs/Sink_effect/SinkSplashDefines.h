@@ -44,8 +44,8 @@ constexpr float FLOTSAM_DY = 0.3f;
 #define SINKSPLASH_TRACE(a) true
 #define SINKSPLASH_TRACE2(a, b) true
 #else
-#define SINKSPLASH_TRACE(a) _VSYSTEM_API->Trace(a);
-#define SINKSPLASH_TRACE2(a, b) _VSYSTEM_API->Trace(a, b);
+#define SINKSPLASH_TRACE(a) _VSYSTEM_core.Trace(a);
+#define SINKSPLASH_TRACE2(a, b) _VSYSTEM_core.Trace(a, b);
 #endif
 
 #endif

@@ -36,9 +36,9 @@ bool AIHelper::Uninit()
 
 bool AIHelper::SetDevice()
 {
-    pRS = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+    pRS = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     Assert(pRS);
-    pCollide = static_cast<COLLIDE *>(api->CreateService("COLL"));
+    pCollide = static_cast<COLLIDE *>(core.CreateService("COLL"));
     Assert(pCollide);
 
     return true;
@@ -91,7 +91,7 @@ void AIHelper::CalculateRelations()
             if (x != y)
             {
                 auto *pData =
-                    api->Event(GET_RELATION_EVENT, "ll", GetIndex(aMainCharacters[y]), GetIndex(aMainCharacters[x]));
+                    core.Event(GET_RELATION_EVENT, "ll", GetIndex(aMainCharacters[y]), GetIndex(aMainCharacters[x]));
                 Assert(pData);
                 *GetRelation(y, x) = static_cast<uint32_t>(pData->GetLong());
             }

@@ -1,6 +1,6 @@
 #include "xi_formttext.h"
 #include "../xinterface.h"
-#include "EntityManager.h"
+#include "Entity.h"
 #include "utf8.h"
 #include "xi_scroller.h"
 #include <stdio.h>
@@ -292,18 +292,18 @@ int CXI_FORMATEDTEXT::CommandExecute(int wActCode)
             case ACTION_MOUSECLICK:
             case ACTION_MOUSERCLICK:
                 if (!m_bFrized)
-                    api->Event("FormatedTextActivate", "sl", m_nodeName, m_nCurGroupNum);
+                    core.Event("FormatedTextActivate", "sl", m_nodeName, m_nCurGroupNum);
                 break;
             case ACTION_ACTIVATE:
-                api->Event("FormatedTextActivate", "sl", m_nodeName, m_nCurGroupNum);
+                core.Event("FormatedTextActivate", "sl", m_nodeName, m_nCurGroupNum);
                 break;
             }
             if (m_nStringGroupQuantity > 1)
-                api->Event("SetScrollerPos", "sf", m_nodeName,
+                core.Event("SetScrollerPos", "sf", m_nodeName,
                            static_cast<float>(m_nCurGroupNum) / static_cast<float>(m_nStringGroupQuantity - 1));
             else
-                api->Event("SetScrollerPos", "sf", m_nodeName, 0.f);
-            api->Event("FTChange", "sf", m_nodeName, GetCurPos());
+                core.Event("SetScrollerPos", "sf", m_nodeName, 0.f);
+            core.Event("FTChange", "sf", m_nodeName, GetCurPos());
             ScrollerUpdate();
             ControlSyncronouseNodes();
         }
@@ -352,11 +352,11 @@ bool CXI_FORMATEDTEXT::IsClick(int buttonID, long xPos, long yPos)
     if (pdescr != nullptr && m_nCurGroupNum != pdescr->strGroup)
         SetVertexToNewGroup(true, FindUpGroup(pdescr->strGroup), FindDownGroup(pdescr->strGroup));
     if (m_nStringGroupQuantity > 0)
-        api->Event("SetScrollerPos", "sf", m_nodeName,
+        core.Event("SetScrollerPos", "sf", m_nodeName,
                    static_cast<float>(m_nCurGroupNum) / static_cast<float>(m_nStringGroupQuantity));
     else
-        api->Event("SetScrollerPos", "sf", m_nodeName, 0.f);
-    api->Event("FTChange", "sf", m_nodeName, GetCurPos());
+        core.Event("SetScrollerPos", "sf", m_nodeName, 0.f);
+    core.Event("FTChange", "sf", m_nodeName, GetCurPos());
     ScrollerUpdate();
     ControlSyncronouseNodes();
     return true;
@@ -445,7 +445,7 @@ void CXI_FORMATEDTEXT::SaveParametersToIni()
     INIFILE *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
-        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
+        core.Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
         return;
     }
 
@@ -802,8 +802,8 @@ void CXI_FORMATEDTEXT::SetFormatedText(char *str)
     m_nAllTextStrings = 0;
     m_nVAlignmentOffset = 0;
     AddFormatedText(str);
-    api->Event("SetScrollerPos", "sf", m_nodeName, 0.f);
-    api->Event("FTChange", "sf", m_nodeName, GetCurPos());
+    core.Event("SetScrollerPos", "sf", m_nodeName, 0.f);
+    core.Event("FTChange", "sf", m_nodeName, GetCurPos());
     ScrollerUpdate();
 }
 
@@ -822,7 +822,7 @@ void CXI_FORMATEDTEXT::SetPointer(float fPos)
                 break;
     }
     CheckScrollButtons();
-    api->Event("FTChange", "sf", m_nodeName, GetCurPos());
+    core.Event("FTChange", "sf", m_nodeName, GetCurPos());
 }
 
 float CXI_FORMATEDTEXT::GetLineStep() const
@@ -933,7 +933,7 @@ long CXI_FORMATEDTEXT::AddFormatedText(const char *str)
     if (dscrTmp != nullptr)
     {
         m_nStringGroupQuantity++;
-        api->Event("DisableScroll", "sl", m_nodeName, m_nAllTextStrings < m_allStrings);
+        core.Event("DisableScroll", "sl", m_nodeName, m_nAllTextStrings < m_allStrings);
     }
 
     if (m_listCur == nullptr)
@@ -1315,8 +1315,8 @@ void CXI_FORMATEDTEXT::SetVertexToNewGroup(bool bUpDirect, long upIdx, long down
 
     if (bChange)
     {
-        api->Event("evntUpdateFormtText", "sll", m_nodeName, m_listCur->strGroup, m_listCur->strNum);
-        api->Event("FTChange", "sf", m_nodeName, GetCurPos());
+        core.Event("evntUpdateFormtText", "sll", m_nodeName, m_listCur->strGroup, m_listCur->strNum);
+        core.Event("FTChange", "sf", m_nodeName, GetCurPos());
         ScrollerUpdate();
     }
 }
@@ -1336,11 +1336,11 @@ void CXI_FORMATEDTEXT::MouseThis(float fX, float fY)
     if (pdescr != nullptr && m_nCurGroupNum != pdescr->strGroup)
         SetVertexToNewGroup(true, FindUpGroup(pdescr->strGroup), FindDownGroup(pdescr->strGroup));
     if (m_nStringGroupQuantity > 0)
-        api->Event("SetScrollerPos", "sf", m_nodeName,
+        core.Event("SetScrollerPos", "sf", m_nodeName,
                    static_cast<float>(m_nCurGroupNum) / static_cast<float>(m_nStringGroupQuantity));
     else
-        api->Event("SetScrollerPos", "sf", m_nodeName, 0.f);
-    api->Event("FTChange", "sf", m_nodeName, GetCurPos());
+        core.Event("SetScrollerPos", "sf", m_nodeName, 0.f);
+    core.Event("FTChange", "sf", m_nodeName, GetCurPos());
     ScrollerUpdate();
 }
 
@@ -1469,7 +1469,7 @@ void CXI_FORMATEDTEXT::ControlSyncronouseNodes()
             break;
 
         default:
-            api->Trace("Warning! Control %s owned not legal type of control (%s).", m_nodeName, pNode->m_nodeName);
+            core.Trace("Warning! Control %s owned not legal type of control (%s).", m_nodeName, pNode->m_nodeName);
         }
     }
 }
@@ -1511,7 +1511,7 @@ void CXI_FORMATEDTEXT::ReplaceString(long nGrpNum, const char *pSrcStr)
 
     if (!dscrCur)
     {
-        api->Trace("Can`t find text group %d into control: %s", nGrpNum, m_nodeName);
+        core.Trace("Can`t find text group %d into control: %s", nGrpNum, m_nodeName);
         return;
     }
 
@@ -1604,11 +1604,11 @@ void CXI_FORMATEDTEXT::SetCurLine(STRING_DESCRIBER *pNewCurLine)
     if (!m_bSelectableCursor)
     {
         if (m_nAllTextStrings > 0 && m_listCur != nullptr)
-            api->Event("SetScrollerPos", "sf", m_nodeName,
+            core.Event("SetScrollerPos", "sf", m_nodeName,
                        static_cast<float>(m_listCur->strNum) / static_cast<float>(m_nAllTextStrings));
         else
-            api->Event("SetScrollerPos", "sf", m_nodeName, 0.f);
-        api->Event("FTChange", "sf", m_nodeName, GetCurPos());
+            core.Event("SetScrollerPos", "sf", m_nodeName, 0.f);
+        core.Event("FTChange", "sf", m_nodeName, GetCurPos());
     }
     ScrollerUpdate();
 }
@@ -1624,7 +1624,7 @@ void CXI_FORMATEDTEXT::ScrollerUpdate()
 
     if (pNode->m_nNodeType != NODETYPE_SCROLLER)
     {
-        api->Trace("Warning! ScrollerUpdate call for not scroller control (%s).", pNode->m_nodeName);
+        core.Trace("Warning! ScrollerUpdate call for not scroller control (%s).", pNode->m_nodeName);
         return;
     }
     static_cast<CXI_SCROLLER *>(pNode)->LinkNodeChanged(GetCurPos());

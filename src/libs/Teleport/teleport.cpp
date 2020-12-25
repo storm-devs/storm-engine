@@ -1,6 +1,10 @@
 #include "teleport.h"
+
+#include "core.h"
+
 #include "../Pcs_controls/pcs_controls.h"
 #include "defines.h"
+#include "vfile_service.h"
 
 #define DELETE_PTR(x)                                                                                                  \
     if (x)                                                                                                             \
@@ -76,7 +80,7 @@ TMPTELEPORT::~TMPTELEPORT()
 
 bool TMPTELEPORT::Init()
 {
-    rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!rs)
         throw std::exception("No service: dx9render");
 
@@ -93,14 +97,14 @@ bool TMPTELEPORT::Init()
 void TMPTELEPORT::Execute(uint32_t Delta_Time)
 {
     CONTROL_STATE cs;
-    if (static_cast<PCS_CONTROLS *>(api->Controls)->m_bIsOffDebugKeys)
+    if (static_cast<PCS_CONTROLS *>(core.Controls)->m_bIsOffDebugKeys)
         return;
-    api->Controls->GetControlState("TeleportActive", cs);
+    core.Controls->GetControlState("TeleportActive", cs);
     if (cs.state == CST_ACTIVATED)
     {
         if (m_nShowType == 0)
         {
-            api->Event("TeleportStart", "");
+            core.Event("TeleportStart", "");
             m_nShowType = 1;
         }
         else
@@ -110,11 +114,11 @@ void TMPTELEPORT::Execute(uint32_t Delta_Time)
         }
     }
     long csVal;
-    if (api->Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0)
+    if (core.Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0)
         csVal = CST_ACTIVE;
     else
         csVal = CST_ACTIVATED;
-    api->Controls->GetControlState("TeleportUp", cs);
+    core.Controls->GetControlState("TeleportUp", cs);
     if (cs.state == csVal)
     {
         if (m_nStrQuantity > 0)
@@ -125,7 +129,7 @@ void TMPTELEPORT::Execute(uint32_t Delta_Time)
                 m_nCurStr--;
         }
     }
-    api->Controls->GetControlState("TeleportDown", cs);
+    core.Controls->GetControlState("TeleportDown", cs);
     if (cs.state == csVal)
     {
         if (m_nStrQuantity > 0)
@@ -137,14 +141,14 @@ void TMPTELEPORT::Execute(uint32_t Delta_Time)
                     m_nCurStr++;
         }
     }
-    api->Controls->GetControlState("TeleportSelect", cs);
+    core.Controls->GetControlState("TeleportSelect", cs);
     if (cs.state == CST_ACTIVATED)
     {
         if (m_nStrQuantity > 0)
         {
             const long n = m_descrArray[m_nCurStr + m_nCurShowPos].num;
             ReleaseAll();
-            api->Event("TeleportChoose", "l", n);
+            core.Event("TeleportChoose", "l", n);
         }
     }
 }
@@ -304,7 +308,7 @@ bool FINDFILESINTODIRECTORY::Init()
             fio->_FindClose(hdl);
         return true;
     }
-    api->Trace("Attributes Pointer into class FINDFILESINTODIRECTORY = NULL");
+    core.Trace("Attributes Pointer into class FINDFILESINTODIRECTORY = NULL");
     return false;
 }
 
@@ -319,14 +323,14 @@ bool FINDDIALOGNODES::Init()
             auto *const hfile = fio->_CreateFile(fileName, GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING);
             if (hfile == INVALID_HANDLE_VALUE)
             {
-                api->Trace("WARNING! Can`t dialog file %s", fileName);
+                core.Trace("WARNING! Can`t dialog file %s", fileName);
                 return false;
             }
 
             const long filesize = fio->_GetFileSize(hfile, nullptr);
             if (filesize == 0)
             {
-                api->Trace("Empty dialog file %s", fileName);
+                core.Trace("Empty dialog file %s", fileName);
                 fio->_CloseHandle(hfile);
                 return false;
             }
@@ -334,7 +338,7 @@ bool FINDDIALOGNODES::Init()
             auto *const fileBuf = new char[filesize + 1];
             if (fileBuf == nullptr)
             {
-                api->Trace("Can`t create buffer for read dialog file %s", fileName);
+                core.Trace("Can`t create buffer for read dialog file %s", fileName);
                 fio->_CloseHandle(hfile);
                 return false;
             }
@@ -343,7 +347,7 @@ bool FINDDIALOGNODES::Init()
             if (fio->_ReadFile(hfile, fileBuf, filesize, &readsize) == FALSE ||
                 readsize != static_cast<uint32_t>(filesize))
             {
-                api->Trace("Can`t read dialog file: %s", fileName);
+                core.Trace("Can`t read dialog file: %s", fileName);
                 fio->_CloseHandle(hfile);
                 delete[] fileBuf;
                 return false;
@@ -374,6 +378,6 @@ bool FINDDIALOGNODES::Init()
             return true;
         }
     }
-    api->Trace("Attributes Pointer into class FINDDIALOGNODES = NULL");
+    core.Trace("Attributes Pointer into class FINDDIALOGNODES = NULL");
     return false;
 }

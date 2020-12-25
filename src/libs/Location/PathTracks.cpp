@@ -7,7 +7,11 @@
 //============================================================================================
 
 #include "PathTracks.h"
+
+#include "core.h"
+
 #include "CameraTracksFile.h"
+#include "vfile_service.h"
 #include "vmodule_api.h"
 
 //============================================================================================
@@ -41,19 +45,19 @@ bool PathTracks::Load(const char *fileName)
     uint32_t size = 0;
     if (fio->LoadFile(fileName, &data, &size) == FALSE || !data)
     {
-        api->Trace("Camera tracks file %s not loaded...", fileName);
+        core.Trace("Camera tracks file %s not loaded...", fileName);
         return false;
     }
     //Проверяем заголовок
     if (((AntFileHeader *)data)->id != ANTFILE_ID)
     {
-        api->Trace("Camera tracks file %s is invalidate...", fileName);
+        core.Trace("Camera tracks file %s is invalidate...", fileName);
         delete data;
         return false;
     }
     if (((AntFileHeader *)data)->ver != ANTFILE_VER)
     {
-        api->Trace("Camera tracks file %s have incorrect version...", fileName);
+        core.Trace("Camera tracks file %s have incorrect version...", fileName);
         delete data;
         return false;
     }
@@ -64,7 +68,7 @@ bool PathTracks::Load(const char *fileName)
     if (size < sizeof(AntFileHeader) + sizeof(char) * nStringSize + sizeof(AntFileBone) * nBoneCount +
                    sizeof(AntFileTrackElement) * nPoints)
     {
-        api->Trace("Camera tracks file %s is invalidate...", fileName);
+        core.Trace("Camera tracks file %s is invalidate...", fileName);
         delete data;
         return false;
     }

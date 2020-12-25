@@ -1,6 +1,8 @@
 #include "xi_fourimg.h"
 #include <stdio.h>
 
+#include "core.h"
+
 CXI_FOURIMAGE::CXI_FOURIMAGE()
 {
     m_rs = nullptr;
@@ -36,7 +38,7 @@ int CXI_FOURIMAGE::CommandExecute(int wActCode)
             newSelectItem--;
             break;
         case ACTION_UPSTEP: {
-            auto *pvdat = api->Event("FI_UpCom", "l", m_nSelectItem);
+            auto *pvdat = core.Event("FI_UpCom", "l", m_nSelectItem);
             if (pvdat == nullptr || pvdat->GetLong() == 0)
                 newSelectItem -= 2;
         }
@@ -65,7 +67,7 @@ int CXI_FOURIMAGE::CommandExecute(int wActCode)
                 newSelectItem = i;
                 if (m_nSelectItem == newSelectItem && IsCurrentNode())
                 {
-                    /*api->Event("ievnt_command","ss","activate",m_nodeName);
+                    /*core.Event("ievnt_command","ss","activate",m_nodeName);
                     for(int n=0; n<COMMAND_QUANTITY; n++)
                       if(pCommandsList[n].code==wActCode) break;
                     if(n<COMMAND_QUANTITY) m_nCurrentCommandNumber = n;*/
@@ -84,7 +86,7 @@ int CXI_FOURIMAGE::CommandExecute(int wActCode)
             m_nSelectItem = newSelectItem;
 
         // set new current item
-        auto *tmpAttr = api->Entity_GetAttributeClass(g_idInterface, "FourImage");
+        auto *tmpAttr = core.Entity_GetAttributeClass(g_idInterface, "FourImage");
         tmpAttr->SetAttributeUseDword("current", m_nSelectItem);
     }
     return retVal;
@@ -245,7 +247,7 @@ void CXI_FOURIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, con
         m_oneStrFont = -1;
         if (GetMidStr(param, param1, sizeof(param1), "font:", ","))
             if ((m_oneStrFont = m_rs->LoadFont(param1)) == -1)
-                api->Trace("can not load font:'%s'", param1);
+                core.Trace("can not load font:'%s'", param1);
 
         m_xOneOffset = m_nOneStrOffset = 0;
         if (GetMidStr(param, param1, sizeof(param1), "off:(", ")"))
@@ -278,7 +280,7 @@ void CXI_FOURIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, con
         m_twoStrFont = -1;
         if (GetMidStr(param, param1, sizeof(param1), "font:", ","))
             if ((m_twoStrFont = m_rs->LoadFont(param1)) == -1)
-                api->Trace("can not load font:'%s'", param1);
+                core.Trace("can not load font:'%s'", param1);
 
         m_xTwoOffset = m_nTwoStrOffset = 0;
         if (GetMidStr(param, param1, sizeof(param1), "off:(", ")"))
@@ -304,7 +306,7 @@ void CXI_FOURIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, con
         m_xTwoOffset = 0;
     }
 
-    auto *pAttribute = api->Entity_GetAttributeClass(g_idInterface, "FourImage");
+    auto *pAttribute = core.Entity_GetAttributeClass(g_idInterface, "FourImage");
     if (pAttribute != nullptr)
     {
         m_nSelectItem = pAttribute->GetAttributeAsDword("current", 0);
@@ -685,7 +687,7 @@ void CXI_FOURIMAGE::SaveParametersToIni()
     auto *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
-        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
+        core.Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
         return;
     }
 
@@ -705,7 +707,7 @@ void CXI_FOURIMAGE::SaveParametersToIni()
 void CXI_FOURIMAGE::ChangeItem(int nItemNum)
 {
     char param[256];
-    auto *pAttribute = api->Entity_GetAttributeClass(g_idInterface, "FourImage");
+    auto *pAttribute = core.Entity_GetAttributeClass(g_idInterface, "FourImage");
     if (pAttribute != nullptr)
     {
         for (auto i = (nItemNum == -1 ? 0 : nItemNum); i < (nItemNum == -1 ? 4 : nItemNum + 1); i++)

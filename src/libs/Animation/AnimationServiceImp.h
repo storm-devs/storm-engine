@@ -17,6 +17,7 @@
 
 //============================================================================================
 
+class INIFILE;
 class AnimationImp;
 
 class AnimationServiceImp final : public AnimationService

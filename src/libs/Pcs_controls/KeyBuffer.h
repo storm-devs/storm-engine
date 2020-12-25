@@ -1,6 +1,7 @@
 #ifndef _CONTROL_KEYBUFFER_H_
 #define _CONTROL_KEYBUFFER_H_
 
+#include "../Animation/ActionInfo.h"
 #include "controls.h"
 #include "vmodule_api.h"
 

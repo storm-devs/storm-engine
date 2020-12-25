@@ -79,7 +79,7 @@ void Player::Move(float dltTime)
 
     const auto oldSGMode = shootgunMode;
     shootgunMode = false;
-    auto *vd = api->Event("EventSGMode", nullptr);
+    auto *vd = core.Event("EventSGMode", nullptr);
     if (vd)
     {
         long data = 0;
@@ -90,14 +90,14 @@ void Player::Move(float dltTime)
     {
         if (shootgunMode)
         {
-            api->Send_Message(effects, "s", "SGInited");
+            core.Send_Message(effects, "s", "SGInited");
             tuner.alpha = 0.0f;
             tuner.camAlpha = 0.0f;
             isFight = true;
         }
         else
         {
-            api->Send_Message(effects, "s", "SGRelease");
+            core.Send_Message(effects, "s", "SGRelease");
             tuner.alpha = 1.0f;
             tuner.camAlpha = 1.0f;
             isFight = false;
@@ -258,7 +258,7 @@ void Player::Update(float dltTime)
         if (!IsFight())
         {
             CONTROL_STATE cs;
-            api->Controls->GetControlState("ChrAction", cs);
+            core.Controls->GetControlState("ChrAction", cs);
             if (cs.state == CST_ACTIVATED)
                 aDialog = true;
             if (activatedDialog)
@@ -272,16 +272,16 @@ void Player::Update(float dltTime)
                     const long next = chr->AttributesPointer->GetAttributeAsDword("index", -1);
                     if (first >= 0 && next >= 0)
                     {
-                        api->Event("dlgReady", "ll", next, first);
+                        core.Event("dlgReady", "ll", next, first);
                     }
                     else
                     {
-                        api->Trace("Incorrect character index! Dialog not activated...");
+                        core.Trace("Incorrect character index! Dialog not activated...");
                     }
                 }
             }
 
-            api->Controls->GetControlState("ChrJump", cs);
+            core.Controls->GetControlState("ChrJump", cs);
             if (cs.state == CST_ACTIVATED)
             {
                 StartJump();
@@ -304,7 +304,7 @@ void Player::Update(float dltTime)
     // if(c) c->Select();
     NPCharacter::Update(dltTime);
     activatedDialog = aDialog;
-    api->Send_Message(baterfl, "lff", MSG_ANIMALS_BUTTERFLIES_XYZ, curPos.x, curPos.z);
+    core.Send_Message(baterfl, "lff", MSG_ANIMALS_BUTTERFLIES_XYZ, curPos.x, curPos.z);
     //Перебираем персонажей в поисках врагов к игроку
     if (const auto eid = EntityManager::GetEntityId("CharactersGroups"))
     {
@@ -314,7 +314,7 @@ void Player::Update(float dltTime)
             auto *const chr = location->supervisor.character[i].c;
             if (chr != this && chr)
             {
-                chr->isPlayerEnemy = (api->Send_Message(eid, "sii", "IsEnemy", GetId(), chr->GetId()) != 0);
+                chr->isPlayerEnemy = (core.Send_Message(eid, "sii", "IsEnemy", GetId(), chr->GetId()) != 0);
             }
         }
     }
@@ -356,11 +356,11 @@ void Player::Rotate(float dltTime)
         if (!lockRotate)
         {
             const auto dx = GetRotateH() * 0.067f;
-            api->Controls->GetControlState("ChrTurnV", cs);
+            core.Controls->GetControlState("ChrTurnV", cs);
             auto dz = cs.fValue * 0.067f;
-            if (api->Controls->GetControlState("ChrTurnV1", cs))
+            if (core.Controls->GetControlState("ChrTurnV1", cs))
                 dz += cs.fValue * 0.067f;
-            if (api->Controls->GetControlState("ChrTurnV2", cs))
+            if (core.Controls->GetControlState("ChrTurnV2", cs))
                 dz += cs.fValue * 0.067f;
             if (dx * dx + dz * dz > 0.1f)
             {
@@ -388,21 +388,21 @@ bool Player::GoForward(float dltTime)
     if (!isSpecialMode)
     {
         auto res = false;
-        api->Controls->GetControlState("ChrForward", cs);
+        core.Controls->GetControlState("ChrForward", cs);
         if (cs.lValue != 0)
             res = true;
-        if (api->Controls->GetControlState("ChrForward1", cs) && cs.lValue != 0)
+        if (core.Controls->GetControlState("ChrForward1", cs) && cs.lValue != 0)
             res = true;
-        if (api->Controls->GetControlState("ChrForward2", cs) && cs.lValue != 0)
+        if (core.Controls->GetControlState("ChrForward2", cs) && cs.lValue != 0)
             res = true;
         return res;
     }
     const auto dx = GetRotateH() * 0.067f;
-    api->Controls->GetControlState("ChrTurnV", cs);
+    core.Controls->GetControlState("ChrTurnV", cs);
     auto dz = cs.fValue * 0.067f;
-    if (api->Controls->GetControlState("ChrTurnV1", cs))
+    if (core.Controls->GetControlState("ChrTurnV1", cs))
         dz += cs.fValue * 0.067f;
-    if (api->Controls->GetControlState("ChrTurnV2", cs))
+    if (core.Controls->GetControlState("ChrTurnV2", cs))
         dz += cs.fValue * 0.067f;
     if (IsMove())
     {
@@ -417,12 +417,12 @@ bool Player::GoBack(float dltTime) const
     {
         CONTROL_STATE cs;
         auto res = false;
-        api->Controls->GetControlState("ChrBackward", cs);
+        core.Controls->GetControlState("ChrBackward", cs);
         if (cs.lValue != 0)
             res = true;
-        if (api->Controls->GetControlState("ChrBackward1", cs) && cs.lValue != 0)
+        if (core.Controls->GetControlState("ChrBackward1", cs) && cs.lValue != 0)
             res = true;
-        if (api->Controls->GetControlState("ChrBackward2", cs) && cs.lValue != 0)
+        if (core.Controls->GetControlState("ChrBackward2", cs) && cs.lValue != 0)
             res = true;
         return res;
     }
@@ -434,15 +434,15 @@ bool Player::IsRunMode(float dltTime)
     CONTROL_STATE cs;
     if (!isSpecialMode)
     {
-        api->Controls->GetControlState("ChrRun", cs);
+        core.Controls->GetControlState("ChrRun", cs);
         return !(cs.lValue != 0);
     }
     const auto dx = GetRotateH() * 0.067f;
-    api->Controls->GetControlState("ChrTurnV", cs);
+    core.Controls->GetControlState("ChrTurnV", cs);
     auto dz = cs.fValue * 0.067f;
-    if (api->Controls->GetControlState("ChrTurnV1", cs))
+    if (core.Controls->GetControlState("ChrTurnV1", cs))
         dz += cs.fValue * 0.067f;
-    if (api->Controls->GetControlState("ChrTurnV2", cs))
+    if (core.Controls->GetControlState("ChrTurnV2", cs))
         dz += cs.fValue * 0.067f;
     if (IsMove() && IsRun())
     {
@@ -465,14 +465,14 @@ void Player::StrafeWhenMove(float dltTime)
     if (!isSpecialMode)
     {
         CONTROL_STATE cs;
-        if (api->Controls->GetControlState("ChrStrafeLeft", cs))
+        if (core.Controls->GetControlState("ChrStrafeLeft", cs))
         {
             if (cs.lValue != 0)
             {
                 strafeMove += -1.0f;
             }
         }
-        if (api->Controls->GetControlState("ChrStrafeRight", cs))
+        if (core.Controls->GetControlState("ChrStrafeRight", cs))
         {
             if (cs.lValue != 0)
             {
@@ -507,7 +507,7 @@ bool Player::IsDoBlock()
 {
     //	return true;
     CONTROL_STATE cs;
-    api->Controls->GetControlState("ChrBlock", cs);
+    core.Controls->GetControlState("ChrBlock", cs);
     if (cs.state == CST_ACTIVATED)
     {
         isSetBlock = true;
@@ -518,7 +518,7 @@ bool Player::IsDoBlock()
     }
     else if (cs.state == CST_INACTIVE)
     {
-        api->Controls->GetControlState("ChrBlock2", cs);
+        core.Controls->GetControlState("ChrBlock2", cs);
         if (cs.state == CST_ACTIVATED)
         {
             isSetBlock = true;
@@ -539,10 +539,10 @@ bool Player::IsDoParry()
 {
     CONTROL_STATE cs;
     auto bPressed = false;
-    api->Controls->GetControlState("ChrParry", cs);
+    core.Controls->GetControlState("ChrParry", cs);
     if (cs.state == CST_ACTIVATED)
         bPressed = true;
-    api->Controls->GetControlState("ChrParry2", cs);
+    core.Controls->GetControlState("ChrParry2", cs);
     if (cs.state == CST_ACTIVATED)
         bPressed = true;
     return bPressed;
@@ -552,10 +552,10 @@ bool Player::IsDoAttackForce()
 {
     CONTROL_STATE cs;
     auto bPressed = false;
-    api->Controls->GetControlState("ChrAttackForce", cs);
+    core.Controls->GetControlState("ChrAttackForce", cs);
     if (cs.state == CST_ACTIVATED)
         bPressed = true;
-    api->Controls->GetControlState("ChrAttackForce2", cs);
+    core.Controls->GetControlState("ChrAttackForce2", cs);
     if (cs.state == CST_ACTIVATED)
         bPressed = true;
     return bPressed;
@@ -565,10 +565,10 @@ bool Player::IsDoAttackFast()
 {
     CONTROL_STATE cs;
     auto bPressed = false;
-    api->Controls->GetControlState("ChrAttackFast", cs);
+    core.Controls->GetControlState("ChrAttackFast", cs);
     if (cs.state == CST_ACTIVATED)
         bPressed = true;
-    api->Controls->GetControlState("ChrAttackFast2", cs);
+    core.Controls->GetControlState("ChrAttackFast2", cs);
     if (cs.state == CST_ACTIVATED)
         bPressed = true;
     return bPressed;
@@ -578,10 +578,10 @@ bool Player::IsDoAttackRound()
 {
     CONTROL_STATE cs;
     auto bPressed = false;
-    api->Controls->GetControlState("ChrAttackRound", cs);
+    core.Controls->GetControlState("ChrAttackRound", cs);
     if (cs.state == CST_ACTIVATED)
         bPressed = true;
-    api->Controls->GetControlState("ChrAttackRound2", cs);
+    core.Controls->GetControlState("ChrAttackRound2", cs);
     if (cs.state == CST_ACTIVATED)
         bPressed = true;
     return bPressed;
@@ -591,10 +591,10 @@ bool Player::IsDoAttackBreak()
 {
     CONTROL_STATE cs;
     auto bPressed = false;
-    api->Controls->GetControlState("ChrAttackBreak", cs);
+    core.Controls->GetControlState("ChrAttackBreak", cs);
     if (cs.state == CST_ACTIVATED)
         bPressed = true;
-    api->Controls->GetControlState("ChrAttackBreak2", cs);
+    core.Controls->GetControlState("ChrAttackBreak2", cs);
     if (cs.state == CST_ACTIVATED)
         bPressed = true;
     return bPressed;
@@ -604,10 +604,10 @@ bool Player::IsDoAttackFeint()
 {
     CONTROL_STATE cs;
     auto bPressed = false;
-    api->Controls->GetControlState("ChrAttackFient", cs);
+    core.Controls->GetControlState("ChrAttackFient", cs);
     if (cs.state == CST_ACTIVATED)
         bPressed = true;
-    api->Controls->GetControlState("ChrAttackFient2", cs);
+    core.Controls->GetControlState("ChrAttackFient2", cs);
     if (cs.state == CST_ACTIVATED)
         bPressed = true;
     return bPressed;
@@ -616,14 +616,14 @@ bool Player::IsDoAttackFeint()
 bool Player::IsFire()
 {
     CONTROL_STATE cs;
-    api->Controls->GetControlState("ChrFire", cs);
+    core.Controls->GetControlState("ChrFire", cs);
     return (cs.state == CST_ACTIVATED);
 }
 
 bool Player::IsChangeFightMode()
 {
     CONTROL_STATE cs;
-    api->Controls->GetControlState("ChrFightMode", cs);
+    core.Controls->GetControlState("ChrFightMode", cs);
     return (cs.state == CST_ACTIVATED);
 }
 
@@ -689,7 +689,7 @@ Player *Player::FindAttackCharacter()
         {
             if (const auto eid = EntityManager::GetEntityId("CharactersGroups"))
             {
-                if (!api->Send_Message(eid, "sii", "IsEnemy", GetId(), chr->GetId()))
+                if (!core.Send_Message(eid, "sii", "IsEnemy", GetId(), chr->GetId()))
                     continue;
             }
         }
@@ -726,7 +726,7 @@ void Player::FireFromShootgun()
     kSMReload = 0.0f;
     if (const auto peid = EntityManager::GetEntityId("sound"))
     {
-        api->Send_Message(peid, "lsllll", MSG_SOUND_PLAY, "OBJECTS\\sgboom.wav", 4, false, false, false);
+        core.Send_Message(peid, "lsllll", MSG_SOUND_PLAY, "OBJECTS\\sgboom.wav", 4, false, false, false);
     }
     //Получим позицию откуда стрелять
     auto dx = sinf(ay);
@@ -736,10 +736,10 @@ void Player::FireFromShootgun()
     location->GetRS()->GetTransform(D3DTS_VIEW, mtx);
     mtx.Transposition();
     const auto src = mtx.Pos() + mtx.Vz() * 0.7f;
-    api->Send_Message(effects, "sffffff", "SGFireParticles", src.x, src.y - 0.35f, src.z, mtx.Vz().x, mtx.Vz().y,
+    core.Send_Message(effects, "sffffff", "SGFireParticles", src.x, src.y - 0.35f, src.z, mtx.Vz().x, mtx.Vz().y,
                       mtx.Vz().z);
 
-    auto *collide = static_cast<COLLIDE *>(api->CreateService("COLL"));
+    auto *collide = static_cast<COLLIDE *>(core.CreateService("COLL"));
     if (!collide)
     {
         return;
@@ -777,7 +777,7 @@ void Player::FireFromShootgun()
                         auto *c = static_cast<Player *>(location->supervisor.character[n].c);
                         if (c->Model() == e)
                         {
-                            api->Send_Message(effects, "sffffff", "SGBloodParticles", dst.x, dst.y, dst.z, dir.x, dir.y,
+                            core.Send_Message(effects, "sffffff", "SGBloodParticles", dst.x, dst.y, dst.z, dir.x, dir.y,
                                               dir.z);
                             c->impulse -= dir * (1.5f + rand() * (1.0f / RAND_MAX));
                             c->impulse.y += 1.5f + rand() * (1.0f / RAND_MAX);
@@ -799,38 +799,38 @@ void Player::FireFromShootgun()
                         }
                     }
                     if (n >= nm)
-                        api->Send_Message(effects, "sffffff", "SGEnvParticles", dst.x, dst.y, dst.z, dir.x, dir.y,
+                        core.Send_Message(effects, "sffffff", "SGEnvParticles", dst.x, dst.y, dst.z, dir.x, dir.y,
                                           dir.z);
                 }
                 else
-                    api->Send_Message(effects, "sffffff", "SGEnvParticles", dst.x, dst.y, dst.z, dir.x, dir.y, dir.z);
+                    core.Send_Message(effects, "sffffff", "SGEnvParticles", dst.x, dst.y, dst.z, dir.x, dir.y, dir.z);
             }
         }
     }
     for (long i = 0; i < numChrs; i++)
     {
-        api->Event("Location_CharacterSGFire", "iif", GetId(), chrs[i].chr->GetId(), chrs[i].dmg);
+        core.Event("Location_CharacterSGFire", "iif", GetId(), chrs[i].chr->GetId(), chrs[i].dmg);
     }
 }
 
 float Player::GetRotateH()
 {
     CONTROL_STATE cs;
-    api->Controls->GetControlState("ChrCamSpecMode", cs);
+    core.Controls->GetControlState("ChrCamSpecMode", cs);
     auto dx = 0.f;
     if (cs.state != CST_ACTIVE)
     {
-        api->Controls->GetControlState("ChrTurnH", cs);
+        core.Controls->GetControlState("ChrTurnH", cs);
         dx = cs.fValue;
     }
-    if (api->Controls->GetControlState("ChrTurnH1", cs))
+    if (core.Controls->GetControlState("ChrTurnH1", cs))
         dx += cs.fValue;
-    if (api->Controls->GetControlState("ChrTurnHR", cs))
+    if (core.Controls->GetControlState("ChrTurnHR", cs))
     {
         if (cs.state == CST_ACTIVE)
             dx += 12.0f;
     }
-    if (api->Controls->GetControlState("ChrTurnHL", cs))
+    if (core.Controls->GetControlState("ChrTurnHL", cs))
     {
         if (cs.state == CST_ACTIVE)
             dx -= 12.0f;

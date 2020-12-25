@@ -9,7 +9,8 @@
 //============================================================================================
 
 #include "Tornado.h"
-#include "EntityManager.h"
+#include "Entity.h"
+#include "core.h"
 
 //============================================================================================
 //Конструирование, деструктурирование
@@ -51,15 +52,15 @@ Tornado::~Tornado()
 //Инициализация
 bool Tornado::Init()
 {
-    // api->LayerCreate("execute", true, false);
+    // core.LayerCreate("execute", true, false);
     EntityManager::SetLayerType(EXECUTE, EntityManager::Layer::Type::execute);
-    // api->LayerCreate("realize", true, false);
+    // core.LayerCreate("realize", true, false);
     EntityManager::SetLayerType(REALIZE, EntityManager::Layer::Type::realize);
     EntityManager::AddToLayer(EXECUTE, GetId(), 70000);
     EntityManager::AddToLayer(REALIZE, GetId(), 70000);
 
     // DX9 render
-    rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!rs)
         throw std::exception("No service: dx9render");
 
@@ -83,7 +84,7 @@ bool Tornado::Init()
     particles.Update(0.0f);
     debris.Init();
     //Создаём звук
-    soundService = static_cast<VSoundService *>(api->CreateService("SoundService"));
+    soundService = static_cast<VSoundService *>(core.CreateService("SoundService"));
     if (soundService)
     {
         const auto pos = CVECTOR(pillar.GetX(0.0f), 0.0f, pillar.GetZ(0.0f));
@@ -102,7 +103,7 @@ void Tornado::Execute(uint32_t delta_time)
     debris.Update(dltTime);
     eventCounter += dltTime;
     if (eventCounter > 1.0f)
-        api->Event("TornadoDamage", "fff", eventCounter, pillar.GetX(0.0f), pillar.GetZ(0.0f));
+        core.Event("TornadoDamage", "fff", eventCounter, pillar.GetX(0.0f), pillar.GetZ(0.0f));
     if (liveTime < 0.0f)
     {
         SetAlpha(galhpa);
@@ -110,7 +111,7 @@ void Tornado::Execute(uint32_t delta_time)
         if (galhpa < 0.0f)
         {
             galhpa = 0.0f;
-            api->Event("TornadoDelete", nullptr);
+            core.Event("TornadoDelete", nullptr);
             EntityManager::EraseEntity(GetId());
         }
     }

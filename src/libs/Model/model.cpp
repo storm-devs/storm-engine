@@ -1,5 +1,6 @@
 #include "../../Shared/messages.h"
-#include "EntityManager.h"
+#include "Entity.h"
+#include "core.h"
 #include "defines.h"
 #include "modelr.h"
 
@@ -39,11 +40,11 @@ bool MODELR::Init()
 {
     // GUARD(MODELR::Init)
 
-    rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!rs)
         throw std::exception("No service: dx9render");
 
-    GeometyService = static_cast<VGEOMETRY *>(api->CreateService("geometry"));
+    GeometyService = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
     if (!GeometyService)
         throw std::exception("No service: geometry");
 
@@ -258,7 +259,7 @@ uint64_t MODELR::ProcessMessage(MESSAGE &message)
         break;
     case MSG_MODEL_SET_PARENT: {
         /*entid_t ParentID = message.EntityID();
-        if (api->ValidateEntity(&ParentID))
+        if (core.ValidateEntity(&ParentID))
         {
           parent = (MODEL*)ParentID.pointer;
         }*/
@@ -319,7 +320,7 @@ uint64_t MODELR::ProcessMessage(MESSAGE &message)
     case MSG_MODEL_LOAD_ANI: // set animation
     {
         message.String(255, str);
-        AnimationService *asr = static_cast<AnimationService *>(api->CreateService("AnimationServiceImp"));
+        AnimationService *asr = static_cast<AnimationService *>(core.CreateService("AnimationServiceImp"));
         ani = asr->CreateAnimation(str);
         if (ani)
             return 1;

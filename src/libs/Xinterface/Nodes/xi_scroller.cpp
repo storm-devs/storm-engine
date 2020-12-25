@@ -1,6 +1,6 @@
 #include "xi_scroller.h"
 #include "../xinterface.h"
-#include "EntityManager.h"
+#include "Entity.h"
 #include "xi_formttext.h"
 #include "xi_questtexts.h"
 #include "xi_questtitles.h"
@@ -56,7 +56,7 @@ void CXI_SCROLLER::Draw(bool bSelected, uint32_t Delta_Time)
         if (m_bDragRoll)
         {
             CONTROL_STATE cs;
-            api->Controls->GetControlState("ILClick", cs);
+            core.Controls->GetControlState("ILClick", cs);
             if (cs.state == CST_INACTIVE || cs.state == CST_INACTIVATED)
                 m_bDragRoll = false;
             if (m_bDragRoll)
@@ -116,7 +116,7 @@ int CXI_SCROLLER::CommandExecute(int wActCode)
                 }
                 // середина
                 CONTROL_STATE cs;
-                api->Controls->GetControlState("ILClick", cs);
+                core.Controls->GetControlState("ILClick", cs);
                 if (cs.state == CST_ACTIVATED)
                     m_bDragRoll = true;
                 MouseMove();
@@ -186,14 +186,14 @@ void CXI_SCROLLER::MakeOwnedControl()
             break;
 
         default:
-            api->Trace("Warning! Control %s owned not legal type of control (%s).", m_nodeName, pNode->m_nodeName);
+            core.Trace("Warning! Control %s owned not legal type of control (%s).", m_nodeName, pNode->m_nodeName);
         }
     }
 }
 
 void CXI_SCROLLER::UpPress()
 {
-    api->Event("ScrollTopChange", "l", -1);
+    core.Event("ScrollTopChange", "l", -1);
     const auto fDelta = GetOwnedStep();
     if (fDelta != 0.f)
     {
@@ -204,7 +204,7 @@ void CXI_SCROLLER::UpPress()
 
 void CXI_SCROLLER::DownPress()
 {
-    api->Event("ScrollTopChange", "l", 1);
+    core.Event("ScrollTopChange", "l", 1);
     const auto fDelta = GetOwnedStep();
     if (fDelta != 0.f)
     {
@@ -241,7 +241,7 @@ float CXI_SCROLLER::GetOwnedStep()
         break;
 
     default:
-        api->Trace("Warning! Control %s owned not legal type of control (%s).", m_nodeName, pNode->m_nodeName);
+        core.Trace("Warning! Control %s owned not legal type of control (%s).", m_nodeName, pNode->m_nodeName);
     }
     return 0.f;
 }
@@ -279,7 +279,7 @@ void CXI_SCROLLER::SaveParametersToIni()
     auto *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
-        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
+        core.Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
         return;
     }
 
@@ -314,7 +314,7 @@ void CXI_SCROLLER::LinkNodeChanged(float fPos)
     if (m_fPos == fPos)
         return;
     SetRollerPos(fPos);
-    api->Event("ScrollPosChange", "fs", fPos, m_nodeName);
+    core.Event("ScrollPosChange", "fs", fPos, m_nodeName);
 }
 
 void CXI_SCROLLER::FillVertexBuffer()
@@ -395,7 +395,7 @@ void CXI_SCROLLER::MouseMove()
         const float newPos = (fY - m_rollerPlace.top - m_rollerHeight * .5f) /
                              (m_rollerPlace.bottom - m_rollerPlace.top - m_rollerHeight);
         SetRollerPos(newPos);
-        api->Event("ScrollPosChange", "fs", newPos, m_nodeName);
+        core.Event("ScrollPosChange", "fs", newPos, m_nodeName);
         MakeOwnedControl();
     }
 }

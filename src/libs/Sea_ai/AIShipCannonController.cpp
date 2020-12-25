@@ -38,7 +38,7 @@ bool AIShipCannonController::Fire2Position(uint32_t dwBort, const CVECTOR &vFire
 
     auto vTempFirePos = vFirePos + CVECTOR(0.0f, fFireHeight, 0.0f);
 
-    auto *pVData = api->Event(SHIP_GET_BORT_FIRE_DELTA, "afff", GetAIShip()->GetACharacter(), vTempFirePos.x,
+    auto *pVData = core.Event(SHIP_GET_BORT_FIRE_DELTA, "afff", GetAIShip()->GetACharacter(), vTempFirePos.x,
                               vTempFirePos.y, vTempFirePos.z);
     const auto fRadius = pVData->GetFloat();
     const auto fAng = FRAND(PIm2);
@@ -46,7 +46,7 @@ bool AIShipCannonController::Fire2Position(uint32_t dwBort, const CVECTOR &vFire
 
     const auto vTempFireDir = !(vTempFirePos - pOurAIShip->GetPos());
 
-    api->Event(SHIP_BORT_FIRE, "lisffffff", GetIndex(GetAIShip()->GetACharacter()), GetAIShip()->GetShipEID(),
+    core.Event(SHIP_BORT_FIRE, "lisffffff", GetIndex(GetAIShip()->GetACharacter()), GetAIShip()->GetShipEID(),
                (char *)aShipBorts[dwBort].sName.c_str(), vTempFirePos.x, vTempFirePos.y, vTempFirePos.z, vTempFireDir.x,
                vTempFireDir.y, vTempFireDir.z);
 
@@ -109,7 +109,7 @@ bool AIShipCannonController::Fire(AIShip *pEnemy)
 
     float fFireHeight;
 
-    VDATA *pVData = api->Event(CANNON_GET_FIRE_HEIGHT, "aa", pOurAIShip->GetACharacter(), pEnemy->GetACharacter());
+    VDATA *pVData = core.Event(CANNON_GET_FIRE_HEIGHT, "aa", pOurAIShip->GetACharacter(), pEnemy->GetACharacter());
     Assert(pVData);
     fFireHeight = pVData->GetFloat();
 
@@ -169,7 +169,7 @@ void AIShipCannonController::Execute(float fDeltaTime)
             bNotEnoughBalls = true;
             break;
         }
-        api->Event(SHIP_NOT_ENOUGH_BALLS, "l", bNotEnoughBalls);
+        core.Event(SHIP_NOT_ENOUGH_BALLS, "l", bNotEnoughBalls);
     }
 
     for (i = 0; i < aShipBorts.size(); i++)
@@ -211,8 +211,8 @@ void AIShipCannonController::Execute(float fDeltaTime)
             if (dwReadyCannonsBefore != dwReadyCannonsAfter && dwReadyCannonsAfter == GetBortIntactCannonsNum(i))
             // pBort->fChargePercent >= 0.999f)
             {
-                api->Event(SHIP_BORT_RELOADED, "as", GetAIShip()->GetACharacter(), pBort->sName.c_str());
-                // api->Trace("%s bort is reloaded", pBort->sName.c_str());
+                core.Event(SHIP_BORT_RELOADED, "as", GetAIShip()->GetACharacter(), pBort->sName.c_str());
+                // core.Trace("%s bort is reloaded", pBort->sName.c_str());
             }
 
             // update borts parameters for script
@@ -463,7 +463,7 @@ bool AIShipCannonController::isCanFireBort(uint32_t dwBort, const CVECTOR &vFire
     fY1 = (vFireDir ^ pBort->vAngleVectors[1]).y;
     if (bTempFlag)
     {
-      api->Trace("AIShipCannonController: bort = %d, fY0 = %.8f, fY1 = %.8f", dwBort, fY0, fY1);
+      core.Trace("AIShipCannonController: bort = %d, fY0 = %.8f, fY1 = %.8f", dwBort, fY0, fY1);
     }
     if ((SIGN(fY0) == SIGN(fY1)) || (SIGN(fY0) == 1)) return false;*/
 
@@ -577,7 +577,7 @@ void AIShipCannonController::Realize(float fDeltaTime)
       strcat_s(str,tmp);
     }
     pRS->Print(0,20,str);*/
-    if (api->Controls->GetDebugAsyncKeyState('H') < 0)
+    if (core.Controls->GetDebugAsyncKeyState('H') < 0)
     {
         Verts.clear();
         CMatrix m;
@@ -730,9 +730,9 @@ bool AIShipCannonController::ScanShipForCannons()
         }
 
     // TEST !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
-    /*api->Trace("NumBorts = %d",aShipBorts.size());
+    /*core.Trace("NumBorts = %d",aShipBorts.size());
     for (uint32_t i=0;i<aShipBorts.size();i++)
-      api->Trace("Bort = %s, Num cannons = %d",aShipBorts[i].sName.c_str(),aShipBorts[i].aCannons.size());*/
+      core.Trace("Bort = %s, Num cannons = %d",aShipBorts[i].sName.c_str(),aShipBorts[i].aCannons.size());*/
     // TEST !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
     return true;
 }
@@ -769,7 +769,7 @@ uint32_t AIShipCannonController::GetBortDisabledCannonsNum(uint32_t dwBortIdx)
 bool AIShipCannonController::isHaveEnoughtBallsForBort(uint32_t dwBortIdx)
 {
     Assert(dwBortIdx != INVALID_BORT_INDEX && dwBortIdx < aShipBorts.size());
-    VDATA *pvData = api->Event(SHIP_GET_CURRENT_BALLS_NUM, "a", GetAIShip()->GetACharacter());
+    VDATA *pvData = core.Event(SHIP_GET_CURRENT_BALLS_NUM, "a", GetAIShip()->GetACharacter());
     Assert(pvData);
     if (static_cast<long>(GetBortIntactCannonsNum(dwBortIdx)) > pvData->GetLong())
         return false;
@@ -825,7 +825,7 @@ void AIShipCannonController::CheckCannonsBoom(float fTmpCannonDamage, const CVEC
 
             if (fDistance > fMaxCannonDamageDistance)
                 continue;
-            VDATA *pVData = api->Event(CANNON_DAMAGE, "affffff", GetAIShip()->GetACharacter(), fTmpCannonDamage,
+            VDATA *pVData = core.Event(CANNON_DAMAGE, "affffff", GetAIShip()->GetACharacter(), fTmpCannonDamage,
                                        pC->GetDamage(), fDistance, vPnt.x, vPnt.y, vPnt.z);
 
             sprintf_s(str, "c%d", j);

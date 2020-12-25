@@ -1,8 +1,6 @@
 //============================================================================================
 #include "achievements.h"
-#include "vapi.h"
-
-extern VAPI *api;
+#include "core.h"
 
 #define _ACH_ID(id, name)                                                                                              \
     {                                                                                                                  \
@@ -420,7 +418,7 @@ void CSteamDLC::OnOverlayActivated(GameOverlayActivated_t *pCallback)
     {
         isOverlayActivated = false;
     }
-    VDATA *pvdat = api->Event("evntSteamOverlayActivated", "l", isOverlayActivated);
+    VDATA *pvdat = core.Event("evntSteamOverlayActivated", "l", isOverlayActivated);
 }
 
 uint32_t CSteamDLC::getDLCCount()

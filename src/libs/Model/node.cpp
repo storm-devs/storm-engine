@@ -1,6 +1,7 @@
 //#define SHOW_SPHERES 'Q'
 
-#include "EntityManager.h"
+#include "Entity.h"
+#include "core.h"
 #include "modelr.h"
 
 VGEOMETRY *NODER::gs = nullptr;
@@ -399,7 +400,7 @@ void NODER::Draw()
     {
         sphere = gs->CreateGeometry("sphere", 0, 0);
     }
-    if (api->Controls->GetDebugAsyncKeyState(SHOW_SPHERES) < 0)
+    if (core.Controls->GetDebugAsyncKeyState(SHOW_SPHERES) < 0)
     {
         CMatrix sm(0.0f, 0.0f, 0.0f, cnt.x, cnt.y, cnt.z);
         CMatrix sc;

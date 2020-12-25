@@ -4,6 +4,7 @@
 #include "../xdefines.h"
 #include "dx9render.h"
 
+class INIFILE;
 class VXSERVICE;
 
 class CXI_ToolTip

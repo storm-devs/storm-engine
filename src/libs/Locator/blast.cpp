@@ -1,6 +1,7 @@
 #include "blast.h"
 #include "../../Shared/messages.h"
-#include "EntityManager.h"
+#include "Entity.h"
+#include "core.h"
 
 #define ANGLESPEED_MUL 0.2f
 
@@ -22,10 +23,10 @@ BLAST::~BLAST()
 
 bool BLAST::Init()
 {
-    gs = static_cast<VGEOMETRY *>(api->CreateService("geometry"));
+    gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
     if (!gs)
         return false;
-    rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!rs)
         return false;
 
@@ -34,7 +35,7 @@ bool BLAST::Init()
     ini = fio->OpenIniFile("resource\\ini\\particles\\particles.ini");
     if (!ini)
     {
-        api->Trace("not found: resource\\ini\\particles\\particles.ini");
+        core.Trace("not found: resource\\ini\\particles\\particles.ini");
         return false;
     }
 
@@ -154,7 +155,7 @@ void BLAST::ProcessTime(uint32_t DT)
                 if (Item[n].pos.y < 0)
                 {
                     Item[n].bEffect = true;
-                    // api->Send_Message(Splash,"lfff",MSG_BALLSPLASH_ADD,Item[n].pos.x,Item[n].pos.y,Item[n].pos.z);
+                    // core.Send_Message(Splash,"lfff",MSG_BALLSPLASH_ADD,Item[n].pos.x,Item[n].pos.y,Item[n].pos.z);
                 }
             }
         }
@@ -163,7 +164,7 @@ void BLAST::ProcessTime(uint32_t DT)
         if(Item[n].pos.y < 0 && !Item[n].bEffect)
         {
           Item[n].bEffect = true;
-          //api->Send_Message(Splash,"lfff",MSG_BALLSPLASH_ADD,Item[n].pos.x,Item[n].pos.y,Item[n].pos.z);
+          //core.Send_Message(Splash,"lfff",MSG_BALLSPLASH_ADD,Item[n].pos.x,Item[n].pos.y,Item[n].pos.z);
 
         }*/
     }

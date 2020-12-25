@@ -12,7 +12,7 @@
 #define _LocatorArray_H_
 
 #include "Matrix.h"
-#include "vmodule_api.h"
+#include "storm_assert.h"
 
 class LocatorArray
 {

@@ -1,12 +1,16 @@
 #include "sail.h"
+
+#include "core.h"
+
 #include "../../Shared/battle_interface/msg_control.h"
 #include "../../Shared/sea_ai/Script_defines.h"
 #include "../../shared/mast_msg.h"
 #include "../../shared/sail_msg.h"
-#include "EntityManager.h"
+#include "Entity.h"
 #include "Weather_Base.h"
 #include "defines.h"
 #include "ship_base.h"
+#include "vfile_service.h"
 
 #define WIND_SPEED_MAX 12.f
 
@@ -212,7 +216,7 @@ void SAIL::SetDevice()
     mtx.SetIdentity();
 
     // получить сервис рендера
-    RenderService = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+    RenderService = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!RenderService)
     {
         throw std::exception("No service: dx9render");
@@ -250,25 +254,25 @@ void SAIL::Execute(uint32_t Delta_Time)
     int i;
 
     // тестовая убойка мачт
-    if (gdata && api->Controls->GetDebugAsyncKeyState(VK_MENU) < 0 &&
-        api->Controls->GetDebugAsyncKeyState(VK_CONTROL) < 0 && api->Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0)
+    if (gdata && core.Controls->GetDebugAsyncKeyState(VK_MENU) < 0 &&
+        core.Controls->GetDebugAsyncKeyState(VK_CONTROL) < 0 && core.Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0)
     {
         long nTmpMastNum = -1;
-        if (api->Controls->GetDebugAsyncKeyState('1') < 0)
+        if (core.Controls->GetDebugAsyncKeyState('1') < 0)
             nTmpMastNum = 1;
-        else if (api->Controls->GetDebugAsyncKeyState('2') < 0)
+        else if (core.Controls->GetDebugAsyncKeyState('2') < 0)
             nTmpMastNum = 2;
-        else if (api->Controls->GetDebugAsyncKeyState('3') < 0)
+        else if (core.Controls->GetDebugAsyncKeyState('3') < 0)
             nTmpMastNum = 3;
-        else if (api->Controls->GetDebugAsyncKeyState('4') < 0)
+        else if (core.Controls->GetDebugAsyncKeyState('4') < 0)
             nTmpMastNum = 4;
-        else if (api->Controls->GetDebugAsyncKeyState('5') < 0)
+        else if (core.Controls->GetDebugAsyncKeyState('5') < 0)
             nTmpMastNum = 5;
-        else if (api->Controls->GetDebugAsyncKeyState('6') < 0)
+        else if (core.Controls->GetDebugAsyncKeyState('6') < 0)
             nTmpMastNum = 6;
-        else if (api->Controls->GetDebugAsyncKeyState('7') < 0)
+        else if (core.Controls->GetDebugAsyncKeyState('7') < 0)
             nTmpMastNum = 7;
-        else if (api->Controls->GetDebugAsyncKeyState('0') < 0)
+        else if (core.Controls->GetDebugAsyncKeyState('0') < 0)
             nTmpMastNum = 0;
         if (nTmpMastNum >= 0)
         {
@@ -283,7 +287,7 @@ void SAIL::Execute(uint32_t Delta_Time)
                     entid_t eiMastTmp;
                     if (eiMastTmp = EntityManager::CreateEntity("MAST"))
                     {
-                        api->Send_Message(eiMastTmp, "lpii", MSG_MAST_SETGEOMETRY, nod, gdata[0].shipEI,
+                        core.Send_Message(eiMastTmp, "lpii", MSG_MAST_SETGEOMETRY, nod, gdata[0].shipEI,
                                           gdata[0].modelEI);
                     }
                 }
@@ -380,7 +384,7 @@ void SAIL::Execute(uint32_t Delta_Time)
             gdata[i].curHole = 0;
             gdata[i].bFinalSailDoOld = gdata[i].bFinalSailDo;
             gdata[i].bFinalSailDo = false;
-            VDATA *pvdat = api->Event("evntGetSRollSpeed", "l", GetCharacterForGroup(i));
+            VDATA *pvdat = core.Event("evntGetSRollSpeed", "l", GetCharacterForGroup(i));
             if (pvdat == nullptr)
                 gdata[i].fRollingSpeed = ROLLINGSPEED;
             else
@@ -465,7 +469,7 @@ void SAIL::Execute(uint32_t Delta_Time)
                 {
                     ATTRIBUTES *pA =
                         static_cast<VAI_OBJBASE *>(EntityManager::GetEntityPointer(gdata[i].shipEI))->GetACharacter();
-                    api->Event("Ship_SailsMoveSound", "al", pA, static_cast<long>(gdata[i].bFinalSailDo));
+                    core.Event("Ship_SailsMoveSound", "al", pA, static_cast<long>(gdata[i].bFinalSailDo));
                 }
             }
 
@@ -724,7 +728,7 @@ uint64_t SAIL::ProcessMessage(MESSAGE &message)
         }
         else
         {
-            api->Trace("WARNING! Can`t model class pointer for ShipModel");
+            core.Trace("WARNING! Can`t model class pointer for ShipModel");
         }
         // Set all getting sails
         SetAllSails(groupQuantity - 1);
@@ -1166,7 +1170,7 @@ void SAIL::SetAllSails(int groupNum)
             else
             {
                 // throw std::exception("SAIL: Null size");
-                api->Trace("SAIL: Can`t init sail");
+                core.Trace("SAIL: Can`t init sail");
                 STORM_DELETE(slist[i]);
                 sailQuantity--;
                 if (sailQuantity > 0)
@@ -1208,7 +1212,7 @@ void SAIL::SetAllSails(int groupNum)
                 static_cast<VAI_OBJBASE *>(EntityManager::GetEntityPointer(gdata[groupNum].shipEI))->GetACharacter();
             ATTRIBUTES *pA = nullptr;
             // Запустим установку текстур на паруса
-            SetSailTextures(groupNum, api->Event("GetSailTextureData", "l", pACh->GetAttributeAsDword("index", -1)));
+            SetSailTextures(groupNum, core.Event("GetSailTextureData", "l", pACh->GetAttributeAsDword("index", -1)));
             if (pACh != nullptr)
             {
                 pA = pACh->FindAClass(pA, "ship.sails");
@@ -1659,7 +1663,7 @@ float SAIL::Cannon_Trace(long iBallOwner, const CVECTOR &src, const CVECTOR &dst
             long charIdx = -1;
             if (pA != nullptr)
                 charIdx = pA->GetAttributeAsDword("index", -1);
-            api->Event(SHIP_SAIL_DAMAGE, "lfff", charIdx, damagePoint.x, damagePoint.y, damagePoint.z);
+            core.Event(SHIP_SAIL_DAMAGE, "lfff", charIdx, damagePoint.x, damagePoint.y, damagePoint.z);
         }
     }
 
@@ -1730,7 +1734,7 @@ void SAIL::DoSailToNewHost(entid_t newModelEI, entid_t newHostEI, int grNum, NOD
             break;
 
     if (m_nMastCreatedCharacter >= 0 && slist[sn] != nullptr)
-        api->Event("DoSailHole", "llssllllf", -1, m_nMastCreatedCharacter, (m_sMastName == nullptr ? "#" : m_sMastName),
+        core.Event("DoSailHole", "llssllllf", -1, m_nMastCreatedCharacter, (m_sMastName == nullptr ? "#" : m_sMastName),
                    slist[sn]->hostNode->GetName(), slist[sn]->groupNum, slist[sn]->GetMaxHoleCount(),
                    (1 << slist[sn]->GetMaxHoleCount()) - 1, slist[sn]->GetMaxHoleCount(),
                    static_cast<float>(slist[sn]->maxSpeed) / gdata[oldg].speed_m);
@@ -2308,7 +2312,7 @@ void SAIL::GetSailStatus(int chrIdx, int gn)
     for (int i = 0; i < gdata[gn].sailQuantity; i++)
     {
         int sn = gdata[gn].sailIdx[i];
-        VDATA *pvd = api->Event("evntGetSailStatus", "lslfll", chrIdx, slist[sn]->hostNode->GetName(),
+        VDATA *pvd = core.Event("evntGetSailStatus", "lslfll", chrIdx, slist[sn]->hostNode->GetName(),
                                 slist[sn]->groupNum, (float)slist[sn]->maxSpeed / gdata[gn].speed_m,
                                 slist[sn]->ss.holeCount, slist[sn]->GetMaxHoleCount());
     }
@@ -2341,13 +2345,13 @@ void SAIL::DoRandomsSailsDmg(int chrIdx, int gn, float fDmg)
         int nNewHoleCount = slist[sn]->ss.holeCount;
         if (!bOldHole)
             nNewHoleCount++;
-        VDATA *pvd = api->Event("evntRandomSailDmg", "lslfflll", chrIdx, slist[sn]->hostNode->GetName(),
+        VDATA *pvd = core.Event("evntRandomSailDmg", "lslfflll", chrIdx, slist[sn]->hostNode->GetName(),
                                 slist[sn]->groupNum, fDmg, static_cast<float>(slist[sn]->maxSpeed) / gdata[gn].speed_m,
                                 nNewHoleCount, slist[sn]->GetMaxHoleCount(), slist[sn]->GetHoleDword());
         slist[sn]->ss.hole[holeIdx] = bOldHole;
         if (pvd == nullptr)
         {
-            api->Trace("WARNING!!! Event evntRandomSailDmg not float return!");
+            core.Trace("WARNING!!! Event evntRandomSailDmg not float return!");
             return;
         }
         float fDoDmg = pvd->GetFloat();

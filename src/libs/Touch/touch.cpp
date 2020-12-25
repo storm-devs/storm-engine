@@ -1,10 +1,13 @@
 #include "touch.h"
+#include <crtdbg.h>
+
+#include "core.h"
+
 #include "../../Shared/messages.h"
 #include "../../Shared/sea_ai/Script_defines.h"
 #include "Character.h"
-#include "EntityManager.h"
+#include "Entity.h"
 #include "inlines.h"
-#include <crtdbg.h>
 
 #define ISLAND_CODE -1
 #define INVALID_SHIP_IDX 0xACACAC
@@ -14,7 +17,7 @@ void TOUCH::SetDevices()
 {
     entid_t ent;
 
-    pRS = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+    pRS = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
 }
 
 bool TOUCH::Init()
@@ -516,7 +519,7 @@ float TOUCH::Touch(long idx, long skip_idx, CVECTOR *vPos, CVECTOR *vAng, float 
 
         // script event initiate
 
-        api->Event(SHIP_SHIP2SHIP_COLLISION, "llfflfff", GetIndex(pOur->GetACharacter()),
+        core.Event(SHIP_SHIP2SHIP_COLLISION, "llfflfff", GetIndex(pOur->GetACharacter()),
                    GetIndex(pEnemy->GetACharacter()), fPowerApplied, fSlide, GetTouchPoint(idx, vPosTemp), vPos->x,
                    vPos->y, vPos->z);
 
@@ -544,7 +547,7 @@ float TOUCH::Touch(long idx, long skip_idx, CVECTOR *vPos, CVECTOR *vAng, float 
 
                 // script event initiate
                 const auto iEnemyCharacterIndex = (i == ISLAND_CODE) ? -1 : GetIndex(pShips[i]->pShip->GetACharacter());
-                api->Event((i != ISLAND_CODE) ? SHIP_SHIP2SHIP_COLLISION : SHIP_SHIP2ISLAND_COLLISION, "llfflfff",
+                core.Event((i != ISLAND_CODE) ? SHIP_SHIP2SHIP_COLLISION : SHIP_SHIP2ISLAND_COLLISION, "llfflfff",
                            GetIndex(pOur->GetACharacter()), iEnemyCharacterIndex, fPower1, fSlide1,
                            GetTouchPoint(idx, vPosTemp), vPos1.x, vPos1.y, vPos1.z);
 

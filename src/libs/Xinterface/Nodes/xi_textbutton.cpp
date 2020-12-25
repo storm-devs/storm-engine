@@ -285,7 +285,7 @@ void CXI_TEXTBUTTON::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, co
     // get string parameters
     if (ReadIniString(ini1, name1, ini2, name2, "font", param, sizeof(param), ""))
         if ((m_nFontNum = m_rs->LoadFont(param)) == -1)
-            api->Trace("can not load font:'%s'", param);
+            core.Trace("can not load font:'%s'", param);
     m_dwStrOffset = GetIniLong(ini1, name1, ini2, name2, "strOffset", 0);
 
     m_idString = -1;
@@ -577,7 +577,7 @@ void CXI_TEXTBUTTON::SaveParametersToIni()
     auto *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
-        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
+        core.Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
         return;
     }
 

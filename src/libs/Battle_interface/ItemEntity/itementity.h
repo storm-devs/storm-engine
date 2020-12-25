@@ -3,7 +3,6 @@
 
 #include "../bi_defines.h"
 #include "Animation.h"
-#include "Entity.h"
 #include "vparticle_system.h"
 #include <string>
 

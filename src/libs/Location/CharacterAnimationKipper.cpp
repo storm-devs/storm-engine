@@ -9,7 +9,8 @@
 //============================================================================================
 
 #include "CharacterAnimationKipper.h"
-#include "EntityManager.h"
+#include "Entity.h"
+#include "core.h"
 #include "dx9render.h"
 
 //============================================================================================
@@ -49,14 +50,14 @@ bool CharacterAnimationKipper::Init()
         if (EntityManager::GetEntityPointer(eid) == this)
             continue;
 
-        api->Trace("CharacterAnimationKipper::Init() -> CharacterAnimationKipper already created");
+        core.Trace("CharacterAnimationKipper::Init() -> CharacterAnimationKipper already created");
         return false;
     }
 
-    rs = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!rs)
         throw std::exception("No service: dx9render");
-    auto *asr = static_cast<AnimationService *>(api->CreateService("AnimationServiceImp"));
+    auto *asr = static_cast<AnimationService *>(core.CreateService("AnimationServiceImp"));
     if (!asr)
         throw std::exception("Anumation service not created!");
     aniMan = asr->CreateAnimation("man");

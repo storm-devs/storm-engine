@@ -2,6 +2,7 @@
 #include "../Utils.h"
 #include "../shared/battle_interface/msg_control.h"
 #include "battle_mancommand.h"
+#include "core.h"
 #include "vmodule_api.h"
 
 BIManSign::BIManSign(entid_t BIEntityID, VDX9RENDER *pRS)
@@ -325,27 +326,27 @@ void BIManSign::MakeControl()
 {
     CONTROL_STATE cs;
 
-    api->Controls->GetControlState(BI_COMMANDS_CONFIRM, cs);
+    core.Controls->GetControlState(BI_COMMANDS_CONFIRM, cs);
     if (cs.state == CST_ACTIVATED)
         ExecuteCommand(BI_MSG_COMMAND_ACTIVATE);
 
-    api->Controls->GetControlState(BI_COMMANDS_LEFTSTEP, cs);
+    core.Controls->GetControlState(BI_COMMANDS_LEFTSTEP, cs);
     if (cs.state == CST_ACTIVATED)
         ExecuteCommand(BI_MSG_COMMAND_LEFT);
 
-    api->Controls->GetControlState(BI_COMMANDS_RIGHTSTEP, cs);
+    core.Controls->GetControlState(BI_COMMANDS_RIGHTSTEP, cs);
     if (cs.state == CST_ACTIVATED)
         ExecuteCommand(BI_MSG_COMMAND_RIGHT);
 
-    api->Controls->GetControlState(BI_COMMANDS_UPSTEP, cs);
+    core.Controls->GetControlState(BI_COMMANDS_UPSTEP, cs);
     if (cs.state == CST_ACTIVATED)
         ExecuteCommand(BI_MSG_COMMAND_UP);
 
-    api->Controls->GetControlState(BI_COMMANDS_DOWNSTEP, cs);
+    core.Controls->GetControlState(BI_COMMANDS_DOWNSTEP, cs);
     if (cs.state == CST_ACTIVATED)
         ExecuteCommand(BI_MSG_COMMAND_DOWN);
 
-    api->Controls->GetControlState(BI_COMMANDS_CANCEL, cs);
+    core.Controls->GetControlState(BI_COMMANDS_CANCEL, cs);
     if (cs.state == CST_ACTIVATED)
         ExecuteCommand(BI_MSG_COMMAND_DEACTIVATE);
 }
@@ -390,7 +391,7 @@ void BIManSign::ExecuteCommand(long command)
         break;
 
     default:
-        api->Trace("Warning! Unknown executing command: %d", command);
+        core.Trace("Warning! Unknown executing command: %d", command);
     }
 }
 
@@ -762,7 +763,7 @@ void BIManSign::CheckDataChange()
         m_bMakeVertexFill = true;
         if (m_bAlarmUpDirection)
         {
-            m_fAlarmTime += api->GetDeltaTime() * .001f * m_fAlarmUpSpeed;
+            m_fAlarmTime += core.GetDeltaTime() * .001f * m_fAlarmUpSpeed;
             if (m_fAlarmTime >= 1.f)
             {
                 m_fAlarmTime = 1.f;
@@ -771,7 +772,7 @@ void BIManSign::CheckDataChange()
         }
         else
         {
-            m_fAlarmTime -= api->GetDeltaTime() * .001f * m_fAlarmDownSpeed;
+            m_fAlarmTime -= core.GetDeltaTime() * .001f * m_fAlarmDownSpeed;
             if (m_fAlarmTime <= 0.f)
             {
                 m_fAlarmTime = 0.f;

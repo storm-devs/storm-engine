@@ -2,7 +2,6 @@
 #include "s_debug.h"
 
 extern S_DEBUG CDebug;
-extern CORE Core;
 
 WATCHER_LIST::WATCHER_LIST(HWND hwnd, HINSTANCE hinst)
 {

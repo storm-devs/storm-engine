@@ -1,7 +1,7 @@
 #ifndef _SOURCE_VIEW_H_
 #define _SOURCE_VIEW_H_
 
-#include "Core.h"
+#include "core.h"
 #include <CommCtrl.h>
 #include <Windows.h>
 

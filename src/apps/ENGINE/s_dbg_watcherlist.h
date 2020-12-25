@@ -1,7 +1,7 @@
 #ifndef _S_WATCHERLIST_H_
 #define _S_WATCHERLIST_H_
 
-#include "Core.h"
+#include "core.h"
 #include "tm_list.h"
 
 class WATCHER_LIST : public TM_LIST

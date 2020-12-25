@@ -3,7 +3,8 @@
 
 #include "Cvector.h"
 
-#include "EntityManager.h"
+#include "Entity.h"
+#include "core.h"
 #include "object.h"
 #include "types3d.h"
 #include "vmodule_api.h"

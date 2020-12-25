@@ -1,4 +1,5 @@
 #include "Font.h"
+#include "core.h"
 #include "defines.h"
 #include "utf8.h"
 
@@ -36,7 +37,7 @@ FONT::~FONT()
     {
         if (TextureID >= 0)
             RenderService->TextureRelease(TextureID);
-        // api->FreeService("dx9render");
+        // core.FreeService("dx9render");
     }
 }
 
@@ -195,7 +196,7 @@ bool FONT::Init(const char *font_name, const char *iniName, IDirect3DDevice9 *_d
     TextureID = RenderService->TextureCreate(textureName);
     if (TextureID < 0)
     {
-        api->Trace("Not Found Texture: %s", textureName);
+        core.Trace("Not Found Texture: %s", textureName);
         return false;
     }
 
@@ -234,7 +235,7 @@ long FONT::GetStringWidth(const char *Text)
         return 0;
     float xoffset = 0;
     const long s_num = strlen(Text);
-    //  api->Trace("%s", Text);
+    //  core.Trace("%s", Text);
 
     for (long i = 0; i < s_num; i += utf8::u8_inc(Text + i))
     {

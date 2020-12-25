@@ -1,4 +1,7 @@
 #include "bb_processor.h"
+
+#include "core.h"
+
 #include "../../ICommon/IEmitter.h"
 #include "../../ICommon/Names.h"
 #include "../DataSource/DataColor.h"
@@ -37,7 +40,7 @@ BillBoardProcessor::BillBoardProcessor()
         pMemArray[n].Free = true;
     }
 
-    pRS = static_cast<VDX9RENDER *>(api->CreateService("DX9Render"));
+    pRS = static_cast<VDX9RENDER *>(core.CreateService("DX9Render"));
     Assert(pRS);
 
     CreateVertexDeclaration();
@@ -271,7 +274,7 @@ void BillBoardProcessor::Process(float DeltaTime)
     {
         if (Particles[n]->AttachedEmitter)
         {
-            //			api->Trace("%d, %3.2f, %3.2f, %3.2f", n, Particles[n]->RenderPos.x, Particles[n]->RenderPos.y,
+            //			core.Trace("%d, %3.2f, %3.2f, %3.2f", n, Particles[n]->RenderPos.x, Particles[n]->RenderPos.y,
             //Particles[n]->RenderPos.z); 			Particles[n]->AttachedEmitter->SaveTime();
             Particles[n]->AttachedEmitter->Teleport(Matrix(Particles[n]->OldRenderAngle, Particles[n]->OldRenderPos));
             Particles[n]->AttachedEmitter->SetTransform(Matrix(Particles[n]->RenderAngle, Particles[n]->RenderPos));
@@ -282,7 +285,7 @@ void BillBoardProcessor::Process(float DeltaTime)
     }
 
     // RDTSC_E (t);
-    // api->Trace("Time - %d", t);
+    // core.Trace("Time - %d", t);
 }
 
 //Считает расстояние до билбоардов
@@ -411,7 +414,7 @@ void BillBoardProcessor::Draw()
         dwColor = dwColor & 0x00FFFFFF;
         dwColor = dwColor | dwAlpha;
 
-        // if (j == 0)	api->Trace("fAngle[0]: %3.2f", fAngle);
+        // if (j == 0)	core.Trace("fAngle[0]: %3.2f", fAngle);
 
         pV[0].vRelativePos = Vector(-fSize, -fSize, 0.0f);
         pV[0].dwColor = dwColor;

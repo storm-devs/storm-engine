@@ -155,7 +155,7 @@ void AIGroup::Execute(float fDeltaTime)
     }*/
 
     if (!isDead() && dtCheckTask.Update(fDeltaTime))
-        api->Event(GROUP_CHECKTASKEVENT, "s", (char *)GetName().c_str());
+        core.Event(GROUP_CHECKTASKEVENT, "s", (char *)GetName().c_str());
 
     if (!isMainGroup())
     {
@@ -274,7 +274,7 @@ void AIGroup::SailMainGroup(CVECTOR vPos, float fAngle, ATTRIBUTES *pACharacter)
         pAIShip->CheckStartPosition();
 
         // clear foam
-        api->Send_Message(eidSea, "lic", MSG_SHIP_CREATE, pAIShip->GetShipEID(),
+        core.Send_Message(eidSea, "lic", MSG_SHIP_CREATE, pAIShip->GetShipEID(),
                           pAIShip->GetShipBasePointer()->State.vPos);
     }
 }
@@ -378,7 +378,7 @@ void AIGroup::ShipChangeGroup(ATTRIBUTES *pACharacter, const char *pGroupName)
     AIGroup *pGOld = FindGroup(pACharacter);
     if (!pGOld)
     {
-        api->Trace("AIGroup::ShipChangeGroup: Can't find group with character id = %s",
+        core.Trace("AIGroup::ShipChangeGroup: Can't find group with character id = %s",
                    pACharacter->GetAttribute("id"));
         return;
     }

@@ -127,7 +127,7 @@ void AICannon::RealFire()
 
     const auto vDirTemp = mRot * vDir;
     const auto fDirY = NormalizeAngle(atan2f(vDirTemp.x, vDirTemp.z));
-    api->Event(CANNON_FIRE, "affffffff", pAHolder->GetACharacter(), vPosTemp.x, vPosTemp.y, vPosTemp.z, fSpeedV0,
+    core.Event(CANNON_FIRE, "affffffff", pAHolder->GetACharacter(), vPosTemp.x, vPosTemp.y, vPosTemp.z, fSpeedV0,
                fFireDirection, fFireHeightAngle, fDirY, fMaxFireDistance);
 
     pAIObj->Fire(*pAIObj->GetMatrix() * (vPos + vDir));
@@ -160,7 +160,7 @@ bool AICannon::Fire(float _fSpeedV0, const CVECTOR &_vFirePos)
     fSpeedV0 = _fSpeedV0;
 
     // calculate in script timeout before real fire
-    auto *pVData = api->Event(CANNON_GET_FIRE_TIME, "a", pAHolder->GetACharacter());
+    auto *pVData = core.Event(CANNON_GET_FIRE_TIME, "a", pAHolder->GetACharacter());
     Assert(pVData);
     fTotalTime2Action = fTime2Action = pVData->GetFloat();
     return true;
@@ -171,7 +171,7 @@ void AICannon::Unload()
     // call script
     if (!isDamaged() && !isEmpty())
     {
-        api->Event(CANNON_UNLOAD, "a", pAHolder->GetACharacter());
+        core.Event(CANNON_UNLOAD, "a", pAHolder->GetACharacter());
     }
     bReady2Fire = false;
     bRecharged = false;
@@ -181,7 +181,7 @@ void AICannon::Unload()
 
 void AICannon::Load()
 {
-    auto *pVData = api->Event(CANNON_LOAD, "a", pAHolder->GetACharacter());
+    auto *pVData = core.Event(CANNON_LOAD, "a", pAHolder->GetACharacter());
     Assert(pVData);
     bEmpty = pVData->GetLong() == 0;
 }
@@ -198,7 +198,7 @@ void AICannon::Recharge()
     bRecharged = true;
 
     // calculate in script recharge time, and possibility of recharge
-    auto *pVData = api->Event(CANNON_GET_RECHARGE_TIME, "a", pAHolder->GetACharacter());
+    auto *pVData = core.Event(CANNON_GET_RECHARGE_TIME, "a", pAHolder->GetACharacter());
     Assert(pVData);
     fTotalTime2Action = fTime2Action = pVData->GetFloat();
 }

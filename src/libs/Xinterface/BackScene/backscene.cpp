@@ -32,7 +32,7 @@ void InterfaceBackScene::LightParam::UpdateParams(float fTime)
         jjj++;
         if (jjj > 10000)
         {
-            api->Trace("jjj: %f, %f", fColorTimer, fColorPeriod);
+            core.Trace("jjj: %f, %f", fColorTimer, fColorPeriod);
             __debugbreak();
         }
     }
@@ -81,7 +81,7 @@ void InterfaceBackScene::MenuDescr::Set(CMatrix *pMtx, const char *pcActiveName,
     if (!pcTechniqueName)
         pcTechniqueName = "InterfaceBackScene_Menu";
     sEventName = pcEvent;
-    auto *pGeo = static_cast<VGEOMETRY *>(api->CreateService("Geometry"));
+    auto *pGeo = static_cast<VGEOMETRY *>(core.CreateService("Geometry"));
     if (pGeo)
         if (pcPathName && pcPathName[0])
             pGeo->SetTexturePath((std::string("MainMenu\\") + pcPathName + "\\").c_str());
@@ -91,7 +91,7 @@ void InterfaceBackScene::MenuDescr::Set(CMatrix *pMtx, const char *pcActiveName,
     if (pcActiveName)
     {
         eiActive = EntityManager::CreateEntity("MODELR");
-        api->Send_Message(eiActive, "ls", MSG_MODEL_LOAD_GEO, pcActiveName);
+        core.Send_Message(eiActive, "ls", MSG_MODEL_LOAD_GEO, pcActiveName);
         pActive = static_cast<MODEL *>(EntityManager::GetEntityPointer(eiActive));
         if (pActive && pMtx)
         {
@@ -102,14 +102,14 @@ void InterfaceBackScene::MenuDescr::Set(CMatrix *pMtx, const char *pcActiveName,
         }
         else
         {
-            api->Trace("Warning! Interface Back Scene: invalid menu model %s or transform matrix", pcActiveName);
+            core.Trace("Warning! Interface Back Scene: invalid menu model %s or transform matrix", pcActiveName);
         }
     }
     // create passive model
     if (pcPassiveName)
     {
         eiPassive = EntityManager::CreateEntity("MODELR");
-        api->Send_Message(eiPassive, "ls", MSG_MODEL_LOAD_GEO, pcPassiveName);
+        core.Send_Message(eiPassive, "ls", MSG_MODEL_LOAD_GEO, pcPassiveName);
         pPassive = static_cast<MODEL *>(EntityManager::GetEntityPointer(eiPassive));
         if (pPassive && pMtx)
         {
@@ -120,7 +120,7 @@ void InterfaceBackScene::MenuDescr::Set(CMatrix *pMtx, const char *pcActiveName,
         }
         else
         {
-            api->Trace("Warning! Interface Back Scene: invalid menu model %s or transform matrix", pcPassiveName);
+            core.Trace("Warning! Interface Back Scene: invalid menu model %s or transform matrix", pcPassiveName);
         }
     }
     if (pGeo)
@@ -173,7 +173,7 @@ InterfaceBackScene::~InterfaceBackScene()
 
 bool InterfaceBackScene::Init()
 {
-    m_pRS = static_cast<VDX9RENDER *>(api->CreateService("dx9render"));
+    m_pRS = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     Assert(m_pRS);
     flyTex = m_pRS->TextureCreate("LocEfx\\firefly.tga");
     m_nFlareTexture = m_pRS->TextureCreate("ShipsFlares\\corona.tga");
@@ -194,28 +194,28 @@ void InterfaceBackScene::Execute(uint32_t Delta_Time)
     }
 
     CONTROL_STATE cs;
-    api->Controls->GetControlState("IUp", cs);
+    core.Controls->GetControlState("IUp", cs);
     if (cs.state == CST_ACTIVATED)
     {
         ChoosePrevMenu();
     }
-    api->Controls->GetControlState("IDown", cs);
+    core.Controls->GetControlState("IDown", cs);
     if (cs.state == CST_ACTIVATED)
     {
         ChooseNextMenu();
     }
-    api->Controls->GetControlState("ILClick", cs);
+    core.Controls->GetControlState("ILClick", cs);
     if (cs.state == CST_ACTIVATED)
     {
         ExecuteMenu(CheckMousePos(m_pntOldMouse.x, m_pntOldMouse.y));
     }
-    api->Controls->GetControlState("IAction", cs);
+    core.Controls->GetControlState("IAction", cs);
     if (cs.state == CST_ACTIVATED)
     {
         ExecuteMenu(m_nSelectMenuIndex);
     }
 
-    if (api->Controls->GetDebugAsyncKeyState(VK_CONTROL) < 0)
+    if (core.Controls->GetDebugAsyncKeyState(VK_CONTROL) < 0)
     {
         CMatrix mtx;
         mtx.BuildMatrix(m_vCamAng);
@@ -223,36 +223,36 @@ void InterfaceBackScene::Execute(uint32_t Delta_Time)
         const auto vx = mtx * CVECTOR(1.f, 0.f, 0.f);
 
         auto fForwardSpeed = 0.01f * Delta_Time;
-        if (api->Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0)
+        if (core.Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0)
             fForwardSpeed *= 10.f;
-        if (api->Controls->GetDebugAsyncKeyState(VK_MENU) < 0)
+        if (core.Controls->GetDebugAsyncKeyState(VK_MENU) < 0)
             fForwardSpeed *= 0.1f;
         const auto fSideSpeed = 0.5f * fForwardSpeed;
 
-        if (api->Controls->GetDebugAsyncKeyState('W') < 0)
+        if (core.Controls->GetDebugAsyncKeyState('W') < 0)
             m_vCamPos += vz * fForwardSpeed;
-        if (api->Controls->GetDebugAsyncKeyState('S') < 0)
+        if (core.Controls->GetDebugAsyncKeyState('S') < 0)
             m_vCamPos -= vz * fForwardSpeed;
-        if (api->Controls->GetDebugAsyncKeyState('D') < 0)
+        if (core.Controls->GetDebugAsyncKeyState('D') < 0)
             m_vCamPos += vx * fSideSpeed;
-        if (api->Controls->GetDebugAsyncKeyState('A') < 0)
+        if (core.Controls->GetDebugAsyncKeyState('A') < 0)
             m_vCamPos -= vx * fSideSpeed;
 
         const auto fRotateSpeed = 0.001f * Delta_Time;
-        if (api->Controls->GetDebugAsyncKeyState(VK_UP) < 0)
+        if (core.Controls->GetDebugAsyncKeyState(VK_UP) < 0)
             m_vCamAng.x += fRotateSpeed;
-        if (api->Controls->GetDebugAsyncKeyState(VK_DOWN) < 0)
+        if (core.Controls->GetDebugAsyncKeyState(VK_DOWN) < 0)
             m_vCamAng.x -= fRotateSpeed;
-        if (api->Controls->GetDebugAsyncKeyState(VK_LEFT) < 0)
+        if (core.Controls->GetDebugAsyncKeyState(VK_LEFT) < 0)
             m_vCamAng.y -= fRotateSpeed;
-        if (api->Controls->GetDebugAsyncKeyState(VK_RIGHT) < 0)
+        if (core.Controls->GetDebugAsyncKeyState(VK_RIGHT) < 0)
             m_vCamAng.y += fRotateSpeed;
     }
 
     m_pRS->SetCamera(m_vCamPos, m_vCamAng, m_fCamPerspective);
 
     if (nOldMenuIndex != m_nSelectMenuIndex)
-        api->Event(ISOUND_EVENT, "l", 2); // выбор нового нода
+        core.Event(ISOUND_EVENT, "l", 2); // выбор нового нода
 
     /*	for( long n=0; n<m_apAniModel; n++ )
       {
@@ -403,13 +403,13 @@ void InterfaceBackScene::LoadModel(const char *pcModelName)
         EntityManager::EraseEntity(m_eiLocators);
         m_pLocators = nullptr;
     }
-    auto *pGeo = static_cast<VGEOMETRY *>(api->CreateService("Geometry"));
+    auto *pGeo = static_cast<VGEOMETRY *>(core.CreateService("Geometry"));
     if (pGeo)
         pGeo->SetTexturePath(
             (std::string("MainMenu\\") + XINTERFACE::pThis->StringService()->GetLanguage() + "\\").c_str());
     // create model
     m_eiModel = EntityManager::CreateEntity("MODELR");
-    api->Send_Message(m_eiModel, "ls", MSG_MODEL_LOAD_GEO, pcModelName);
+    core.Send_Message(m_eiModel, "ls", MSG_MODEL_LOAD_GEO, pcModelName);
     m_pModel = static_cast<MODEL *>(EntityManager::GetEntityPointer(m_eiModel));
     if (pGeo)
         pGeo->SetTexturePath("");
@@ -418,7 +418,7 @@ void InterfaceBackScene::LoadModel(const char *pcModelName)
     // create locators
     m_eiLocators = EntityManager::CreateEntity("MODELR");
     const auto sLocName = std::string(pcModelName) + "_locators";
-    api->Send_Message(m_eiLocators, "ls", MSG_MODEL_LOAD_GEO, sLocName.c_str());
+    core.Send_Message(m_eiLocators, "ls", MSG_MODEL_LOAD_GEO, sLocName.c_str());
     m_pLocators = static_cast<MODEL *>(EntityManager::GetEntityPointer(m_eiLocators));
 }
 
@@ -554,7 +554,7 @@ void InterfaceBackScene::CreateMenuList(long nStartIndex, ATTRIBUTES *pAMenu)
             continue;
         if (!FindLocator(pA->GetAttribute("locname"), &mtx, nullptr, nullptr))
         {
-            api->Trace("Warning! Interface Back scene: Can`t find locator %s", pA->GetAttribute("locname"));
+            core.Trace("Warning! Interface Back scene: Can`t find locator %s", pA->GetAttribute("locname"));
         }
         auto *pMD = new MenuDescr;
         Assert(pMD);
@@ -611,7 +611,7 @@ void InterfaceBackScene::ExecuteMenu(long nMenuIndex)
 {
     if (nMenuIndex < 0 || nMenuIndex >= m_aMenuDescr.size())
         return;
-    api->PostEvent("backgroundcommand", 1, "s", m_aMenuDescr[nMenuIndex]->sEventName.c_str());
+    core.PostEvent("backgroundcommand", 1, "s", m_aMenuDescr[nMenuIndex]->sEventName.c_str());
 }
 
 long InterfaceBackScene::CheckMousePos(float fX, float fY)
@@ -694,12 +694,12 @@ void InterfaceBackScene::InitLight(ATTRIBUTES *pAParam)
     char *pcFonarModel = pAParam->GetAttribute("model");
     if (pcFonarModel)
     {
-        VGEOMETRY *pGeo = static_cast<VGEOMETRY *>(api->CreateService("Geometry"));
+        VGEOMETRY *pGeo = static_cast<VGEOMETRY *>(core.CreateService("Geometry"));
         if (pGeo)
             pGeo->SetTexturePath("MainMenu\\");
         // create model
         pLight->eiModel = EntityManager::CreateEntity("MODELR");
-        api->Send_Message(pLight->eiModel, "ls", MSG_MODEL_LOAD_GEO, pcFonarModel);
+        core.Send_Message(pLight->eiModel, "ls", MSG_MODEL_LOAD_GEO, pcFonarModel);
         pLight->pModel = static_cast<MODEL *>(EntityManager::GetEntityPointer(pLight->eiModel));
         if (pGeo)
             pGeo->SetTexturePath("");
@@ -733,7 +733,7 @@ void InterfaceBackScene::InitLight(ATTRIBUTES *pAParam)
         }
         else
         {
-            api->Trace("Warning! Interface Back Scene: invalid torchlight model %s", pcFonarModel);
+            core.Trace("Warning! Interface Back Scene: invalid torchlight model %s", pcFonarModel);
         }
     }
 }
@@ -758,7 +758,7 @@ void InterfaceBackScene::SetLight()
                 m_aLights[n]->indexLight = nFreeLightIndex;
                 m_pRS->GetLight(nFreeLightIndex, &m_aLights[n]->lightOldSource);
                 m_pRS->LightEnable(nFreeLightIndex, true);
-                m_aLights[n]->UpdateParams(api->GetDeltaTime() * .001f);
+                m_aLights[n]->UpdateParams(core.GetDeltaTime() * .001f);
                 m_pRS->SetLight(nFreeLightIndex, &m_aLights[n]->lightSource);
             }
             else
@@ -885,7 +885,7 @@ void InterfaceBackScene::InitAniModel(ATTRIBUTES *pAParam)
     const char *pcAniActionName = pAParam->GetAttribute("aniaction");
     if (!pcMdlName)
     {
-        api->Trace("Warning! Bad model name parameter for ani model into InterfaceBackScene.");
+        core.Trace("Warning! Bad model name parameter for ani model into InterfaceBackScene.");
         return;
     }
 
@@ -896,13 +896,13 @@ void InterfaceBackScene::InitAniModel(ATTRIBUTES *pAParam)
     auto *pObj = new AniModelDescr;
     Assert(pObj);
 
-    auto *pAniService = static_cast<ANIMATION *>(api->CreateService("AnimationServiceImp"));
-    auto *pGeo = static_cast<VGEOMETRY *>(api->CreateService("Geometry"));
+    auto *pAniService = static_cast<ANIMATION *>(core.CreateService("AnimationServiceImp"));
+    auto *pGeo = static_cast<VGEOMETRY *>(core.CreateService("Geometry"));
     if (pGeo)
         pGeo->SetTexturePath("MainMenu\\");
     // create model
     pObj->ei = EntityManager::CreateEntity("MODELR");
-    api->Send_Message(pObj->ei, "ls", MSG_MODEL_LOAD_GEO, pcMdlName);
+    core.Send_Message(pObj->ei, "ls", MSG_MODEL_LOAD_GEO, pcMdlName);
     pObj->pModel = static_cast<MODEL *>(EntityManager::GetEntityPointer(pObj->ei));
     if (pGeo)
         pGeo->SetTexturePath("");
@@ -913,7 +913,7 @@ void InterfaceBackScene::InitAniModel(ATTRIBUTES *pAParam)
         // pObj->pModel->Update();
         if (pcAniName)
         {
-            api->Send_Message(pObj->ei, "ls", MSG_MODEL_LOAD_ANI, pcAniName);
+            core.Send_Message(pObj->ei, "ls", MSG_MODEL_LOAD_ANI, pcAniName);
             if (pcAniActionName)
             {
                 pObj->pModel->GetAnimation()->Player(0).SetAction(pcAniActionName);
@@ -936,7 +936,7 @@ void InterfaceBackScene::InitStaticModel(ATTRIBUTES *pAParam)
     const char *pcTechniqueName = pAParam->GetAttribute("technique");
     if (!pcMdlName)
     {
-        api->Trace("Warning! Bad model name parameter for static model into InterfaceBackScene.");
+        core.Trace("Warning! Bad model name parameter for static model into InterfaceBackScene.");
         return;
     }
 
@@ -947,12 +947,12 @@ void InterfaceBackScene::InitStaticModel(ATTRIBUTES *pAParam)
     auto *pObj = new AniModelDescr;
     Assert(pObj);
 
-    auto *pGeo = static_cast<VGEOMETRY *>(api->CreateService("Geometry"));
+    auto *pGeo = static_cast<VGEOMETRY *>(core.CreateService("Geometry"));
     if (pGeo)
         pGeo->SetTexturePath("MainMenu\\");
     // create model
     pObj->ei = EntityManager::CreateEntity("MODELR");
-    api->Send_Message(pObj->ei, "ls", MSG_MODEL_LOAD_GEO, pcMdlName);
+    core.Send_Message(pObj->ei, "ls", MSG_MODEL_LOAD_GEO, pcMdlName);
     pObj->pModel = static_cast<MODEL *>(EntityManager::GetEntityPointer(pObj->ei));
     if (pGeo)
         pGeo->SetTexturePath("");

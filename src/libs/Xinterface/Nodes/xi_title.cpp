@@ -82,7 +82,7 @@ void CXI_TITLE::SaveParametersToIni()
     auto *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
-        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
+        core.Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
         return;
     }
 
@@ -110,7 +110,7 @@ void CXI_TITLE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const c
     // get font number
     if (ReadIniString(ini1, name1, ini2, name2, "font", param, sizeof(param), ""))
         if ((m_fontID = m_rs->LoadFont(param)) == -1)
-            api->Trace("can not load font:'%s'", param);
+            core.Trace("can not load font:'%s'", param);
 
     // get font scale
     m_fontScale = GetIniFloat(ini1, name1, ini2, name2, "fontScale", 1.f);
@@ -120,7 +120,7 @@ void CXI_TITLE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const c
     m_StringCenter.y = m_rect.top + GetIniLong(ini1, name1, ini2, name2, "stringOffset", 0);
 
     // get title string
-    auto *const pChar = api->Entity_GetAttribute(g_idInterface, "title");
+    auto *const pChar = core.Entity_GetAttribute(g_idInterface, "title");
     if (pChar != nullptr && pChar[0] != '#')
         m_idString = pStringService->GetStringNum(pChar);
     else

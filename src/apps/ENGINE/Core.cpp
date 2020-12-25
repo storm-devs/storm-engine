@@ -1,5 +1,8 @@
-#include "Core.h"
+#include "core.h"
 #include "VmaInit.h"
+#include "achievements.h"
+#include "compiler.h"
+#include "controls.h"
 #include "dx9render.h"
 #include "externs.h"
 
@@ -25,6 +28,7 @@ CORE::CORE()
     fTimeScale = 1.0f;
     // bNetActive = false;
     nSplitScreenshotGrid = 4;
+    Compiler = new COMPILER;
 
     /* TODO: place this outside CORE */
     EntityManager::SetLayerType(EXECUTE, EntityManager::Layer::Type::execute);
@@ -61,7 +65,7 @@ void CORE::CleanUp()
     Initialized = false;
     bEngineIniProcessed = false;
     ReleaseServices();
-    Compiler.Release();
+    Compiler->Release();
     Services_List.Release();
     Services_List.Release();
     delete State_file_name;
@@ -75,13 +79,13 @@ void CORE::InitBase()
 
 void CORE::ReleaseBase()
 {
-    Compiler.Token.Release();
+    Compiler->Token.Release();
 }
 
 bool CORE::Run()
 {
     const auto bDebugWindow = true;
-    if (bDebugWindow && api->Controls && api->Controls->GetDebugAsyncKeyState(VK_F7) < 0)
+    if (bDebugWindow && core.Controls && core.Controls->GetDebugAsyncKeyState(VK_F7) < 0)
         DumpEntitiesInfo();
     dwNumberScriptCommandsExecuted = 0;
 
@@ -90,16 +94,16 @@ bool CORE::Run()
 
     Timer.Run(); // calc delta time
 
-    auto *pVCTime = static_cast<VDATA *>(api->GetScriptVariable("iRealDeltaTime"));
+    auto *pVCTime = static_cast<VDATA *>(core.GetScriptVariable("iRealDeltaTime"));
     if (pVCTime)
         pVCTime->Set(static_cast<long>(GetRDeltaTime()));
 
     SYSTEMTIME st;
     GetLocalTime(&st);
 
-    auto *pVYear = static_cast<VDATA *>(api->GetScriptVariable("iRealYear"));
-    auto *pVMonth = static_cast<VDATA *>(api->GetScriptVariable("iRealMonth"));
-    auto *pVDay = static_cast<VDATA *>(api->GetScriptVariable("iRealDay"));
+    auto *pVYear = static_cast<VDATA *>(core.GetScriptVariable("iRealYear"));
+    auto *pVMonth = static_cast<VDATA *>(core.GetScriptVariable("iRealMonth"));
+    auto *pVDay = static_cast<VDATA *>(core.GetScriptVariable("iRealDay"));
 
     if (pVYear)
         pVYear->Set(static_cast<long>(st.wYear));
@@ -130,8 +134,8 @@ bool CORE::Run()
     if (!bEngineIniProcessed)
         ProcessEngineIniFile();
 
-    Compiler.ProcessFrame(Timer.GetDeltaTime());
-    Compiler.ProcessEvent("frame");
+    Compiler->ProcessFrame(Timer.GetDeltaTime());
+    Compiler->ProcessEvent("frame");
 
     ProcessStateLoading();
 
@@ -235,34 +239,34 @@ void CORE::ProcessEngineIniFile()
     auto res = engine_ini->ReadString(nullptr, "program_directory", String, sizeof(String), "");
     if (res)
     {
-        Compiler.SetProgramDirectory(String);
+        Compiler->SetProgramDirectory(String);
     }
 
     res = engine_ini->ReadString(nullptr, "controls", String, sizeof(String), "");
     if (res)
     {
-        api->Controls = static_cast<CONTROLS *>(MakeClass(String));
-        if (api->Controls == nullptr)
-            api->Controls = static_cast<CONTROLS *>(MakeClass("controls"));
+        core.Controls = static_cast<CONTROLS *>(MakeClass(String));
+        if (core.Controls == nullptr)
+            core.Controls = static_cast<CONTROLS *>(MakeClass("controls"));
     }
     else
     {
         delete Controls;
         Controls = nullptr;
 
-        api->Controls = new CONTROLS;
+        core.Controls = new CONTROLS;
     }
 
     res = engine_ini->ReadString(nullptr, "run", String, sizeof(String), "");
     if (res)
     {
-        if (!Compiler.CreateProgram(String))
+        if (!Compiler->CreateProgram(String))
             throw std::exception("fail to create program");
-        if (!Compiler.Run())
+        if (!Compiler->Run())
             throw std::exception("fail to run program");
         // Тест версии скрипта
         long iScriptVersion = 0xFFFFFFFF;
-        auto *pVScriptVersion = static_cast<VDATA *>(api->GetScriptVariable("iScriptVersion"));
+        auto *pVScriptVersion = static_cast<VDATA *>(core.GetScriptVariable("iScriptVersion"));
         if (pVScriptVersion)
             pVScriptVersion->Get(iScriptVersion);
 
@@ -270,7 +274,7 @@ void CORE::ProcessEngineIniFile()
         {
             ShowCursor(true);
             MessageBoxA(nullptr, "Wrong script version", "Error", MB_OK);
-            Compiler.ExitProgram();
+            Compiler->ExitProgram();
         }
     }
 
@@ -396,7 +400,7 @@ uint32_t CORE::PostEvent(const char *Event_name, uint32_t post_time, const char 
 
     auto *pEM = new S_EVENTMSG(Event_name, pMS, post_time);
     pEM->bProcess = true;
-    Compiler.AddPostEvent(pEM);
+    Compiler->AddPostEvent(pEM);
     return 0;
 }
 
@@ -405,14 +409,14 @@ VDATA *CORE::Event(const char *Event_name, const char *Format, ...)
     VDATA *pVD = nullptr;
     if (Format == nullptr)
     {
-        pVD = Compiler.ProcessEvent(Event_name);
+        pVD = Compiler->ProcessEvent(Event_name);
         return pVD;
     }
     MESSAGE message;
     va_start(message.args, Format); // 1
     message.Reset(Format);          // reset message class	// 2
     // ....
-    pVD = Compiler.ProcessEvent(Event_name, message);
+    pVD = Compiler->ProcessEvent(Event_name, message);
 
     va_end(message.args);
     return pVD;
@@ -551,7 +555,7 @@ bool CORE::SaveState(const char *file_name)
     if (fh == INVALID_HANDLE_VALUE)
         return false;
 
-    Compiler.SaveState(fh);
+    Compiler->SaveState(fh);
     fio->_CloseHandle(fh);
 
     return true;
@@ -589,7 +593,7 @@ void CORE::ProcessStateLoading()
     fio->SetDrive();
     if (fh == INVALID_HANDLE_VALUE)
         return;
-    Compiler.LoadState(fh);
+    Compiler->LoadState(fh);
     fio->_CloseHandle(fh);
 
     delete State_file_name;
@@ -748,7 +752,7 @@ void CORE::EraseEntities()
 
 void CORE::ClearEvents()
 {
-    Compiler.ClearEvents();
+    Compiler->ClearEvents();
 }
 
 void CORE::AppState(bool state)
@@ -849,17 +853,17 @@ void CORE::DumpEntitiesInfo()
 
 void *CORE::GetSaveData(const char *file_name, long &data_size)
 {
-    return Compiler.GetSaveData(file_name, data_size);
+    return Compiler->GetSaveData(file_name, data_size);
 }
 
 bool CORE::SetSaveData(const char *file_name, void *data_ptr, long data_size)
 {
-    return Compiler.SetSaveData(file_name, data_ptr, data_size);
+    return Compiler->SetSaveData(file_name, data_ptr, data_size);
 }
 
 uint32_t CORE::SetScriptFunction(IFUNCINFO *pFuncInfo)
 {
-    return Compiler.SetScriptFunction(pFuncInfo);
+    return Compiler->SetScriptFunction(pFuncInfo);
 }
 
 char *CORE::EngineIniFileName()
@@ -871,8 +875,8 @@ void *CORE::GetScriptVariable(const char *pVariableName, uint32_t *pdwVarIndex)
 {
     VARINFO vi;
 
-    const auto dwVarIndex = Compiler.VarTab.FindVar(pVariableName);
-    if (dwVarIndex == INVALID_VAR_CODE || !Compiler.VarTab.GetVar(vi, dwVarIndex))
+    const auto dwVarIndex = Compiler->VarTab.FindVar(pVariableName);
+    if (dwVarIndex == INVALID_VAR_CODE || !Compiler->VarTab.GetVar(vi, dwVarIndex))
         return nullptr;
 
     if (pdwVarIndex)
@@ -918,7 +922,7 @@ uint32_t CORE::Process()
         {
             EnterCriticalSection(&lock);
             function_code = thrQueue.Pop();
-            Compiler.BC_Execute(function_code, pResult);
+            Compiler->BC_Execute(function_code, pResult);
             LeaveCriticalSection(&lock);
         }
         //		if(Reset_flag) return 0;

@@ -3,7 +3,8 @@
 //============================================================================================
 
 #include "LocCrabs.h"
-#include "EntityManager.h"
+#include "Entity.h"
+#include "core.h"
 
 //============================================================================================
 
@@ -27,7 +28,7 @@ bool LocCrabs::Init()
     if (!location)
         return false;
     //Исполнение
-    // api->LayerCreate("realize", true, false);
+    // core.LayerCreate("realize", true, false);
     EntityManager::SetLayerType(REALIZE, EntityManager::Layer::Type::realize);
     EntityManager::AddToLayer(REALIZE, GetId(), 100000);
     return true;

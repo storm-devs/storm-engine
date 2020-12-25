@@ -9,7 +9,8 @@
 //============================================================================================
 
 #include "LGeometry.h"
-#include "EntityManager.h"
+#include "Entity.h"
+#include "core.h"
 
 //============================================================================================
 //Конструирование, деструктурирование
@@ -92,7 +93,7 @@ void LGeometry::AddObject(const char *name, entid_t model)
     object[numObjects].m = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
     if (!object[numObjects].m)
     {
-        api->Trace("Location lighter: can't get pointer to model %s", name);
+        core.Trace("Location lighter: can't get pointer to model %s", name);
     }
     else
         numObjects++;
@@ -110,12 +111,12 @@ bool LGeometry::Process(VDX9RENDER *rs, long numLights)
         //Проверочка
         if (object[i].m != static_cast<MODEL *>(EntityManager::GetEntityPointer(object[i].model)))
         {
-            api->Trace("Location lighter: lost model!!!");
+            core.Trace("Location lighter: lost model!!!");
             return false;
         }
         if (object[i].m->GetNode(1))
         {
-            api->Trace("Location lighter: incorrent model %s (nodes above 1)", object[i].nameReal);
+            core.Trace("Location lighter: incorrent model %s (nodes above 1)", object[i].nameReal);
             return false;
         }
         //Пересчитать матрицы
@@ -125,7 +126,7 @@ bool LGeometry::Process(VDX9RENDER *rs, long numLights)
         auto *g = node->geo;
         if (!g)
         {
-            api->Trace("Location lighter: incorrent model %s (node not include geos)", object[i].nameReal);
+            core.Trace("Location lighter: incorrent model %s (node not include geos)", object[i].nameReal);
             return false;
         }
         //Информация о геометрии
@@ -133,7 +134,7 @@ bool LGeometry::Process(VDX9RENDER *rs, long numLights)
         g->GetInfo(info);
         if (info.nvrtbuffs <= 0)
         {
-            api->Trace("Location lighter: incorrent model %s (not vertex buffers), skip it", object[i].nameReal);
+            core.Trace("Location lighter: incorrent model %s (not vertex buffers), skip it", object[i].nameReal);
             object[i].lBufSize = 0;
             continue;
         }
@@ -154,7 +155,7 @@ bool LGeometry::Process(VDX9RENDER *rs, long numLights)
             D3DVERTEXBUFFER_DESC desc;
             if (!vbuf || vbuf->GetDesc(&desc) != D3D_OK)
             {
-                api->Trace("Location lighter: vertex buffer error, model %s, vbID %i", object[i].nameReal, vbID);
+                core.Trace("Location lighter: vertex buffer error, model %s, vbID %i", object[i].nameReal, vbID);
                 return false;
             }
             //Анализируем тип
@@ -165,7 +166,7 @@ bool LGeometry::Process(VDX9RENDER *rs, long numLights)
             isEnabledType &= ((desc.FVF & D3DFVF_PSIZE) == 0);
             if (!isEnabledType)
             {
-                api->Trace("Location lighter: incorrect fvf of vertex buffer, model %s, vbID %i", object[i].nameReal,
+                core.Trace("Location lighter: incorrect fvf of vertex buffer, model %s, vbID %i", object[i].nameReal,
                            vbID);
                 return false;
             }
@@ -178,7 +179,7 @@ bool LGeometry::Process(VDX9RENDER *rs, long numLights)
             auto num = desc.Size / stride;
             if (num <= 0)
             {
-                api->Trace("Location lighter: incorrect number of verteces in vertex buffer, model %s, vbID %i",
+                core.Trace("Location lighter: incorrect number of verteces in vertex buffer, model %s, vbID %i",
                            object[i].nameReal, vbID);
                 return false;
             }
@@ -192,7 +193,7 @@ bool LGeometry::Process(VDX9RENDER *rs, long numLights)
             uint8_t *pnt = nullptr;
             if (vbuf->Lock(0, desc.Size, (VOID **)&pnt, 0) != D3D_OK)
             {
-                api->Trace("Location lighter: vertex buffer no locked, model %s, vbID %i", object[i].nameReal, vbID);
+                core.Trace("Location lighter: vertex buffer no locked, model %s, vbID %i", object[i].nameReal, vbID);
                 return false;
             }
             for (long v = 0; v < num; v++)
@@ -210,7 +211,7 @@ bool LGeometry::Process(VDX9RENDER *rs, long numLights)
                 }
                 else
                 {
-                    api->Trace("Location lighter: model %s, vbID %i, vrt: %i : normal have zero length",
+                    core.Trace("Location lighter: model %s, vbID %i, vrt: %i : normal have zero length",
                                object[i].nameReal, vbID, v);
                 }
                 vrt[numVrt].c = 0.0f;
@@ -240,7 +241,7 @@ bool LGeometry::Process(VDX9RENDER *rs, long numLights)
         auto *idx = static_cast<uint16_t *>(rs->LockIndexBuffer(ibID));
         if (!idx)
         {
-            api->Trace("Location lighter: index buffer no locked, model %s", object[i].nameReal);
+            core.Trace("Location lighter: index buffer no locked, model %s", object[i].nameReal);
             return false;
         }
         GEOS::OBJECT obj;
@@ -254,7 +255,7 @@ bool LGeometry::Process(VDX9RENDER *rs, long numLights)
                     break;
             if (vb >= numVBuffers)
             {
-                api->Trace("Location lighter: vertex buffer %i not found, model %s", obj.vertex_buff,
+                core.Trace("Location lighter: vertex buffer %i not found, model %s", obj.vertex_buff,
                            object[i].nameReal);
                 return false;
             }
@@ -269,7 +270,7 @@ bool LGeometry::Process(VDX9RENDER *rs, long numLights)
                 long i3 = triangles[t * 3 + 2];
                 if (i1 >= obj.num_vertices || i2 >= obj.num_vertices || i3 >= obj.num_vertices)
                 {
-                    api->Trace("Location lighter: model %s have incorrect vertex index, (obj: %i, trg: %i)",
+                    core.Trace("Location lighter: model %s have incorrect vertex index, (obj: %i, trg: %i)",
                                object[i].nameReal, n, t);
                     return false;
                 }
@@ -286,7 +287,7 @@ bool LGeometry::Process(VDX9RENDER *rs, long numLights)
                 //Пропустим пустой треугольник
                 if (sq <= 0.0f)
                 {
-                    api->Trace("Location lighter: model %s have zero triangle, (obj: %i, trg: %i)", object[i].nameReal,
+                    core.Trace("Location lighter: model %s have zero triangle, (obj: %i, trg: %i)", object[i].nameReal,
                                n, t);
                     continue;
                 }
@@ -309,7 +310,7 @@ bool LGeometry::Process(VDX9RENDER *rs, long numLights)
                     {
                         if (((vr.flags & Vertex::f_inv) != 0) != isInv)
                         {
-                            api->Trace("Location lighter: model %s have bug normals, (obj: %i, trg: %i)",
+                            core.Trace("Location lighter: model %s have bug normals, (obj: %i, trg: %i)",
                                        object[i].nameReal, n, t);
                             vr.flags |= Vertex::f_bug;
                         }
@@ -401,7 +402,7 @@ void LGeometry::UpdateColors(VDX9RENDER *rs)
             pnt = static_cast<uint8_t *>(rs->LockVertexBuffer(vrt[i].vbid));
             if (!pnt)
             {
-                api->Trace("Location lighter: no lock vertex buffer for update color");
+                core.Trace("Location lighter: no lock vertex buffer for update color");
                 continue;
             }
             lockedVB = vrt[i].vbid;

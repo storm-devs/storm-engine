@@ -1,6 +1,7 @@
 #ifndef _PCS_CONTROLS_H_
 #define _PCS_CONTROLS_H_
 
+#include "../Animation/ActionInfo.h"
 #include "ControlTree.h"
 #include "KeyBuffer.h"
 #include "vmodule_api.h"

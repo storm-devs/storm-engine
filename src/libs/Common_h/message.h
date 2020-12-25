@@ -1,10 +1,11 @@
 #ifndef _MESSAGE_H_
 #define _MESSAGE_H_
 
+#include <cstdarg>
+#include <cstring>
+
 #include "Cvector.h"
 #include "Entity.h"
-#include <cstdlib>
-#include <cstring>
 
 class VDATA;
 

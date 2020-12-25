@@ -11,6 +11,7 @@
 #pragma once
 
 #include "LTypes.h"
+#include "storm_assert.h"
 
 class LighterLights
 {

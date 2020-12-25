@@ -1,6 +1,10 @@
 #include "xi_keychanger.h"
 #include <stdio.h>
 
+#include "core.h"
+
+#include "vfile_service.h"
+
 #define KEYPRESS_DELAY 500
 
 CXI_KEYCHANGER::CXI_KEYCHANGER()
@@ -27,14 +31,14 @@ void CXI_KEYCHANGER::Draw(bool bSelected, uint32_t Delta_Time)
 
         for (i = 0; i < m_keysQuantity; i++)
         {
-            api->Controls->GetControlState(m_pControlsID[i], cs);
+            core.Controls->GetControlState(m_pControlsID[i], cs);
             if (m_bKeyCheck)
             {
                 if ((m_pbControlsStick[i] && cs.state == CST_INACTIVATED) ||
                     (!m_pbControlsStick[i] && (cs.fValue > 1.f || cs.fValue < -1.f)))
                 {
                     auto bAllowChange = false;
-                    auto *pdat = api->Event("evntKeyChoose", "ll", i, cs.fValue > 0);
+                    auto *pdat = core.Event("evntKeyChoose", "ll", i, cs.fValue > 0);
                     if (pdat != nullptr)
                         bAllowChange = pdat->GetLong() != 0;
                     if (bAllowChange)
@@ -70,7 +74,7 @@ void CXI_KEYCHANGER::SaveParametersToIni()
     auto *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
-        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
+        core.Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
         return;
     }
 
@@ -118,11 +122,11 @@ void CXI_KEYCHANGER::SetChoosingControls(ATTRIBUTES *pA)
     {
         sprintf_s(contrlName, "cntrl_%d", i);
         m_pbControlsStick[i] = false;
-        m_pControlsID[i] = api->Controls->CreateControl(contrlName);
+        m_pControlsID[i] = core.Controls->CreateControl(contrlName);
         auto *const keyCode = pA->GetAttribute(i);
         if (keyCode != nullptr)
         {
-            api->Controls->MapControl(m_pControlsID[i], atoi(keyCode));
+            core.Controls->MapControl(m_pControlsID[i], atoi(keyCode));
         }
         auto *pAttr = pA->GetAttributeClass(i);
         if (pAttr != nullptr)
