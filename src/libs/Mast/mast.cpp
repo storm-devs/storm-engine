@@ -713,7 +713,7 @@ void MAST::AllRelease()
     }
 
     // удалить группу парусов
-    api->Send_Message(EntityManager::GetEntityId("sea"), "li", MSG_SAIL_DEL_GROUP, GetId());
+    api->Send_Message(EntityManager::GetEntityId("sail"), "li", MSG_SAIL_DEL_GROUP, GetId());
 
     // удалить группу флагов
     api->Send_Message(EntityManager::GetEntityId("flag"), "li", MSG_FLAG_DEL_GROUP, model_id);
