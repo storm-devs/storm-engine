@@ -2350,6 +2350,7 @@ void DX9RENDER::RecompileEffects()
 {
     effects_.release();
 
+    fs::path cur_path = fs::current_path();
     fs::current_path(fio->_GetExecutableDirectory());
     for (const auto &p : fs::recursive_directory_iterator("resource/techniques"))
         if (is_regular_file(p) && p.path().extension() == ".fx")
@@ -2357,6 +2358,7 @@ void DX9RENDER::RecompileEffects()
             auto s = p.path().string(); // hug microsoft
             effects_.compile(s.c_str());
         }
+    fs::current_path(cur_path);
 }
 
 bool DX9RENDER::ResetDevice()
