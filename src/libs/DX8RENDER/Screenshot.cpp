@@ -129,7 +129,7 @@ void DX8RENDER::GetPngScreenshot()
 
     for (i = 0; i < 10000; i++)
     {
-        wsprintf(file_name, "CCS_%04d.png", i);
+        sprintf(file_name, "CCS_%04d.png", i);
         if (_access(file_name, 0) == -1)
             break;
     }

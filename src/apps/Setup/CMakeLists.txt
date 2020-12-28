@@ -16,4 +16,6 @@ target_include_directories(${PROJECT_NAME}
 	${Storm_RESOURCE_DIR}/setup
 	)
 
+target_link_options(${PROJECT_NAME} PRIVATE /ENTRY:"wWinMainCRTStartup")
+
 target_link_libraries(${PROJECT_NAME} PRIVATE ddraw.lib)

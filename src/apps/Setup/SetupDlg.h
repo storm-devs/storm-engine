@@ -37,7 +37,7 @@ typedef struct
 
 typedef struct
 {
-    char Name[256];
+    wchar_t Name[256];
     LPGUID lpGUID;
     DWORD numresolutions;
     DWORD currentresolution;
@@ -106,7 +106,7 @@ class CSetupDlg : public CDialog
     void Trace(char *data_PTR, ...);
 
     HICON m_hIcon;
-    char InstallLocation[2048], InstallLocationExe[2048];
+    wchar_t InstallLocationW[2048], InstallLocationExeW[2048];
 
     // Generated message map functions
     //{{AFX_MSG(CSetupDlg)

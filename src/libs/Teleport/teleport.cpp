@@ -297,7 +297,10 @@ bool FINDFILESINTODIRECTORY::Init()
             char sname[32];
             sprintf(sname, "id%d", file_idx);
             if (finddat.cFileName)
-                pA->SetAttribute(sname, finddat.cFileName);
+            {
+                std::string FileName = utf8::ConvertWideToUtf8(finddat.cFileName);
+                pA->SetAttribute(sname, FileName.c_str());
+            }
             if (!api->fio->_FindNextFile(hdl, &finddat))
                 break;
         }

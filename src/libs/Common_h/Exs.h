@@ -55,16 +55,16 @@ class _EXS
         _VSYSTEM_API->SetX();                                                                                          \
         _VSYSTEM_API->Trace(URE_MESSAGE);                                                                              \
         _VSYSTEM_API->Trace("%s line %d", __FILE__, __LINE__);                                                         \
-        _VSYSTEM_API->Trace(TEXT(#b));                                                                                 \
-        throw _EXS(FATAL, TEXT(#b));                                                                                   \
+        _VSYSTEM_API->Trace(#b);                                                                                       \
+        throw _EXS(FATAL, #b);                                                                                         \
     }
 #define SE_THROW_SEVERITY_MSG(a, b)                                                                                    \
     {                                                                                                                  \
         _VSYSTEM_API->SetXNF();                                                                                        \
         _VSYSTEM_API->Trace(URE_MESSAGE);                                                                              \
         _VSYSTEM_API->Trace("%s line %d", __FILE__, __LINE__);                                                         \
-        _VSYSTEM_API->Trace(TEXT(#b));                                                                                 \
-        throw _EXS(a, TEXT(#b));                                                                                       \
+        _VSYSTEM_API->Trace(#b);                                                                                       \
+        throw _EXS(a, #b);                                                                                             \
     }
 
 #ifdef EX_OFF

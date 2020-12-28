@@ -2,6 +2,9 @@
 #include "exs.h"
 #include "memop.h"
 #include "system_log.h"
+#include "utf8.h"
+
+#include <string>
 
 #ifdef _XBOX
 bool XProcessFile(const char *_srcDir, const char *_destDir, const char *_mask, const WIN32_FIND_DATA &_findData);
@@ -58,12 +61,14 @@ FILE_SERVICE::~FILE_SERVICE()
     Close();
 }
 
-HANDLE FILE_SERVICE::_CreateFile(LPCTSTR lpFileName, DWORD dwDesiriedAccess, DWORD dwShareMode,
+HANDLE FILE_SERVICE::_CreateFile(const char *lpFileName, DWORD dwDesiriedAccess, DWORD dwShareMode,
                                  DWORD dwCreationDisposition)
 {
     HANDLE fh;
 #ifndef _XBOX
-    fh = CreateFile(lpFileName, dwDesiriedAccess, dwShareMode, 0, dwCreationDisposition, FILE_ATTRIBUTE_NORMAL, 0);
+    std::wstring filePathW = utf8::ConvertUtf8ToWide(lpFileName);
+    fh = CreateFile(filePathW.c_str(), dwDesiriedAccess, dwShareMode, 0, dwCreationDisposition, FILE_ATTRIBUTE_NORMAL,
+                    0);
     // DWORD er = GetLastError();
 #else
     bool bCached;
@@ -140,7 +145,7 @@ long FILE_SERVICE::_GetFilePointer(HANDLE hFile)
     return SetFilePointer(hFile, 0, 0, FILE_CURRENT);
 }
 
-BOOL FILE_SERVICE::_DeleteFile(LPCTSTR lpFileName)
+BOOL FILE_SERVICE::_DeleteFile(const char *lpFileName)
 {
 #ifdef _XBOX
     char xbox_file_name[MAX_PATH];
@@ -153,7 +158,8 @@ BOOL FILE_SERVICE::_DeleteFile(LPCTSTR lpFileName)
         strcpy(xbox_file_name, lpFileName);
     return DeleteFile(xbox_file_name);
 #else
-    return DeleteFile(lpFileName);
+    std::wstring filePathW = utf8::ConvertUtf8ToWide(lpFileName);
+    return DeleteFile(filePathW.c_str());
 #endif
 }
 BOOL FILE_SERVICE::_WriteFile(HANDLE hFile, LPCVOID lpBuffer, DWORD nNumberOfBytesToWrite,
@@ -177,11 +183,12 @@ BOOL FILE_SERVICE::_ReadFile(HANDLE hFile, LPVOID lpBuffer, DWORD nNumberOfBytes
     //	if(dwR != nNumberOfBytesToRead) if(Exceptions_Mask & _X_NO_FILE_READ) SE_THROW_MSG(_X_NO_FILE_READ);
     return bRes;
 }
-HANDLE FILE_SERVICE::_FindFirstFile(LPCTSTR lpFileName, LPWIN32_FIND_DATA lpFindFileData)
+HANDLE FILE_SERVICE::_FindFirstFile(const char *lpFileName, LPWIN32_FIND_DATA lpFindFileData)
 {
     HANDLE hFile;
 #ifndef _XBOX
-    hFile = FindFirstFile(lpFileName, lpFindFileData);
+    std::wstring filePathW = utf8::ConvertUtf8ToWide(lpFileName);
+    hFile = FindFirstFile(filePathW.c_str(), lpFindFileData);
 #else
     char xbox_file_name[MAX_PATH];
     // strcpy(xbox_file_name,"d:\\");
@@ -203,10 +210,14 @@ BOOL FILE_SERVICE::_FlushFileBuffers(HANDLE hFile)
 {
     return FlushFileBuffers(hFile);
 }
-DWORD FILE_SERVICE::_GetCurrentDirectory(DWORD nBufferLength, LPTSTR lpBuffer)
+DWORD FILE_SERVICE::_GetCurrentDirectory(DWORD nBufferLength, char *lpBuffer)
 {
 #ifndef _XBOX
-    return GetCurrentDirectory(nBufferLength, lpBuffer);
+    wchar_t BufferW[MAX_PATH];
+    DWORD Res = GetCurrentDirectory(nBufferLength, BufferW);
+    std::string CurrentDirectory = utf8::ConvertWideToUtf8(BufferW);
+    strcpy_s(lpBuffer, nBufferLength, CurrentDirectory.c_str());
+    return Res;
 #else
     // if(nBufferLength > strlen("d:\\") && lpBuffer) strcpy(lpBuffer,"d:\\");
     // return strlen("d:\\");
@@ -217,16 +228,18 @@ DWORD FILE_SERVICE::_GetCurrentDirectory(DWORD nBufferLength, LPTSTR lpBuffer)
 
 #endif
 }
-BOOL FILE_SERVICE::_GetDiskFreeSpaceEx(LPCTSTR lpDirectoryName, PULARGE_INTEGER lpFreeBytesAvailableToCaller,
+BOOL FILE_SERVICE::_GetDiskFreeSpaceEx(const char *lpDirectoryName, PULARGE_INTEGER lpFreeBytesAvailableToCaller,
                                        PULARGE_INTEGER lpTotalNumberOfBytes, PULARGE_INTEGER lpTotalNumberOfFreeBytes)
 {
-    return GetDiskFreeSpaceEx(lpDirectoryName, lpFreeBytesAvailableToCaller, lpTotalNumberOfBytes,
+    std::wstring DirectoryNameW = utf8::ConvertUtf8ToWide(lpDirectoryName);
+    return GetDiskFreeSpaceEx(DirectoryNameW.c_str(), lpFreeBytesAvailableToCaller, lpTotalNumberOfBytes,
                               lpTotalNumberOfFreeBytes);
 }
-UINT FILE_SERVICE::_GetDriveType(LPCTSTR lpRootPathName)
+UINT FILE_SERVICE::_GetDriveType(const char *lpRootPathName)
 {
 #ifndef _XBOX
-    return GetDriveType(lpRootPathName);
+    std::wstring RootPathNameW = utf8::ConvertUtf8ToWide(lpRootPathName);
+    return GetDriveType(RootPathNameW.c_str());
 #else
     return 0;
 #endif
@@ -251,30 +264,36 @@ DWORD FILE_SERVICE::_GetLogicalDriveStrings(DWORD nBufferLength, LPTSTR lpBuffer
     return 0;
 #endif
 }
-BOOL FILE_SERVICE::_SetCurrentDirectory(LPCTSTR lpPathName)
+BOOL FILE_SERVICE::_SetCurrentDirectory(const char *lpPathName)
 {
 #ifndef _XBOX
-    return SetCurrentDirectory(lpPathName);
+    std::wstring PathNameW = utf8::ConvertUtf8ToWide(lpPathName);
+    return SetCurrentDirectory(PathNameW.c_str());
 #else
     return 0;
 #endif
 }
-BOOL FILE_SERVICE::_CreateDirectory(LPCTSTR lpPathName, LPSECURITY_ATTRIBUTES lpSecurityAttributes)
+BOOL FILE_SERVICE::_CreateDirectory(const char *lpPathName, LPSECURITY_ATTRIBUTES lpSecurityAttributes)
 {
-    return CreateDirectory(lpPathName, lpSecurityAttributes);
+    std::wstring PathNameW = utf8::ConvertUtf8ToWide(lpPathName);
+    return CreateDirectory(PathNameW.c_str(), lpSecurityAttributes);
 }
-BOOL FILE_SERVICE::_RemoveDirectory(LPCTSTR lpPathName)
+BOOL FILE_SERVICE::_RemoveDirectory(const char *lpPathName)
 {
-    return RemoveDirectory(lpPathName);
+    std::wstring PathNameW = utf8::ConvertUtf8ToWide(lpPathName);
+    return RemoveDirectory(PathNameW.c_str());
 }
-BOOL FILE_SERVICE::_CopyFile(LPCTSTR lpExistingFileName, LPCTSTR lpNewFileName, BOOL bFailIfExists)
+BOOL FILE_SERVICE::_CopyFile(const char *lpExistingFileName, const char *lpNewFileName, BOOL bFailIfExists)
 {
-    return CopyFile(lpExistingFileName, lpNewFileName, bFailIfExists);
+    std::wstring ExistingFileNameW = utf8::ConvertUtf8ToWide(lpExistingFileName);
+    std::wstring NewFileNameW = utf8::ConvertUtf8ToWide(lpNewFileName);
+    return CopyFile(ExistingFileNameW.c_str(), NewFileNameW.c_str(), bFailIfExists);
 }
 
-BOOL FILE_SERVICE::_SetFileAttributes(LPCTSTR lpFileName, DWORD dwFileAttributes)
+BOOL FILE_SERVICE::_SetFileAttributes(const char *lpFileName, DWORD dwFileAttributes)
 {
-    return SetFileAttributes(lpFileName, dwFileAttributes);
+    std::wstring FileNameW = utf8::ConvertUtf8ToWide(lpFileName);
+    return SetFileAttributes(FileNameW.c_str(), dwFileAttributes);
 }
 
 BOOL FILE_SERVICE::FileExist(const char *file_name)

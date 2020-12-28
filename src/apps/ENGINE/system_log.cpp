@@ -16,11 +16,12 @@ void trace(char *data_PTR, ...)
     static BOOL First = true;
     if (First)
     {
-        DeleteFile(LOG_FILENAME);
+        DeleteFile(TEXT(LOG_FILENAME));
         First = false;
     }
 
-    HANDLE file_h = CreateFile(LOG_FILENAME, GENERIC_WRITE, FILE_SHARE_READ, 0, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+    HANDLE file_h =
+        CreateFile(TEXT(LOG_FILENAME), GENERIC_WRITE, FILE_SHARE_READ, 0, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
     SetFilePointer(file_h, 0, 0, FILE_END);
     va_list args;
 

@@ -20,4 +20,8 @@ target_link_libraries(${PROJECT_NAME}
 	${DirectX_D3DX9_LIBRARY}
 	${DirectX_DXERR_LIBRARY}
 	gdiplus.lib
+	
+	# fixes unresolved external symbol __vsnwprintf referenced in function "long __stdcall StringVPrintfWorkerW
+	# caused by DXGetErrorString and DXGetErrorDescription
+	legacy_stdio_definitions.lib
 )

@@ -7,8 +7,8 @@ PROGRAM::PROGRAM()
 {
     ProgramDirectory = 0;
     ProgramNum = 0;
-    DeleteFile(COMPILER_LOG_FILENAME);
-    DeleteFile(COMPILER_ERRORLOG_FILENAME);
+    DeleteFile(TEXT(COMPILER_LOG_FILENAME));
+    DeleteFile(TEXT(COMPILER_ERRORLOG_FILENAME));
 }
 
 PROGRAM::~PROGRAM()

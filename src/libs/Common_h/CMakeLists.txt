@@ -87,6 +87,7 @@ set(PROJECT_SOURCES
 	templates.h
 	tga.h
 	types3d.h
+	utf8.h
 	v_s_stack.h
 	v_udp_transport.h
 	vapi.h

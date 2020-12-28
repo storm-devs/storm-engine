@@ -694,7 +694,8 @@ void ParticleManager::OpenDefaultProject()
         do
         {
             // api->Trace("Cache system - %s", findData.cFileName);
-            pDataCache->CacheSystem(findData.cFileName);
+            std::string FileName = utf8::ConvertWideToUtf8(findData.cFileName);
+            pDataCache->CacheSystem(FileName.c_str());
         } while (api->fio->_FindNextFile(foundFile, &findData) == TRUE);
     }
 

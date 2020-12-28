@@ -1,3 +1,5 @@
+add_definitions(-DUNICODE -D_UNICODE)
+
 if (MSVC)
     add_compile_options(/W1 /WX)
 else()

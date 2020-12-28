@@ -178,7 +178,7 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
 
     int i;
     INIFILE *ini;
-    char param[512];
+    char param[2048];
 
     if (sLanguage == null)
     {
@@ -1332,7 +1332,8 @@ DWORD __cdecl _InterfaceCreateFolder(VS_STACK *pS)
     {
         char tmpchr = pcCurPtr[0];
         ((char *)pcCurPtr)[0] = 0;
-        CreateDirectory(sFolderName, 0);
+        std::wstring FolderNameW = utf8::ConvertUtf8ToWide(sFolderName);
+        CreateDirectory(FolderNameW.c_str(), 0);
         ((char *)pcCurPtr)[0] = tmpchr;
         pcCurPtr++;
     }
@@ -1378,13 +1379,13 @@ BOOL DeleteFolderWithCantainment(const char *sFolderName)
         {
             string sFileName = sFolderName + string("\\");
             if (wfd.cAlternateFileName[0])
-                sFileName += wfd.cAlternateFileName;
+                sFileName += utf8::ConvertWideToUtf8(wfd.cAlternateFileName).c_str();
             else
-                sFileName += wfd.cFileName;
+                sFileName += utf8::ConvertWideToUtf8(wfd.cFileName).c_str();
 
             if (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
             {
-                if (wfd.cFileName[0] == '.')
+                if (wfd.cFileName[0] == L'.')
                     continue;
                 DeleteFolderWithCantainment(sFileName.GetBuffer());
             }
@@ -1433,11 +1434,12 @@ DWORD __cdecl _InterfaceFindFolders(VS_STACK *pS)
         {
             if (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
             {
-                if (wfd.cFileName[0] != '.')
+                if (wfd.cFileName[0] != L'.')
                 {
                     char pctmp[64];
                     sprintf(pctmp, "f%d", n++);
-                    pA->SetAttribute(pctmp, wfd.cFileName);
+                    std::string FileName = utf8::ConvertWideToUtf8(wfd.cFileName);
+                    pA->SetAttribute(pctmp, FileName.c_str());
                 }
             }
         } while (api->fio->_FindNextFile(h, &wfd));

@@ -94,7 +94,7 @@ bool MODULES_TABLE::AddModulesPath(char *_name)
     return true;
 }
 
-bool MODULES_TABLE::LoadModule(char *_mname, long path_code, MODULE_STATE &ms)
+bool MODULES_TABLE::LoadModule(const char *_mname, long path_code, MODULE_STATE &ms)
 {
     GUARD(MODULES_TABLE::LoadModule)
     HINSTANCE hInst;
@@ -113,13 +113,14 @@ bool MODULES_TABLE::LoadModule(char *_mname, long path_code, MODULE_STATE &ms)
     }
 
     if (strlen(GetPath(path_code)) > 0)
-        wsprintf(full_name, "%s\\%s", GetPath(path_code), _mname);
+        sprintf(full_name, "%s\\%s", GetPath(path_code), _mname);
     else
         strcpy(full_name, _mname);
 
     // gdi_display.Print("Load libriary: %s",full_name);
     // load library
-    hInst = LoadLibrary(full_name);
+    std::wstring FullNameW = utf8::ConvertUtf8ToWide(full_name);
+    hInst = LoadLibrary(FullNameW.c_str());
     if (hInst == null)
     {
         SET_ERROR("cant load libriary");
@@ -193,10 +194,11 @@ void __declspec(noinline) __declspec(dllexport) __cdecl MODULES_TABLE::Load_Modu
         {
             do
             {
-                gdi_display.Set_Text(find_data.cFileName);
+                std::string FileName = utf8::ConvertWideToUtf8(find_data.cFileName);
+                gdi_display.Set_Text(FileName.c_str());
 
                 ZeroMemory(&ms, sizeof(ms));
-                if (LoadModule(find_data.cFileName, path_code, ms))
+                if (LoadModule(FileName.c_str(), path_code, ms))
                 {
                     i = nModulesNum;
                     nModulesNum++;
@@ -208,7 +210,7 @@ void __declspec(noinline) __declspec(dllexport) __cdecl MODULES_TABLE::Load_Modu
                 }
                 else
                 {
-                    gdi_display.Print(CMS_MODULE_SKIPPED, find_data.cFileName);
+                    gdi_display.Print(CMS_MODULE_SKIPPED, FileName.c_str());
                     gdi_display.Print(GET_ERROR);
                     Sleep(ERROR_MESSAGE_DELAY);
                 }

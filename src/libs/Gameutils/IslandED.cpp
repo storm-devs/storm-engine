@@ -379,8 +379,9 @@ void IslandED::OpenNewFile()
     ZERO(ofn);
     ofn.lStructSize = sizeof(ofn);
     ofn.hwndOwner = null;
-    ofn.lpstrFilter = "Ini Files (*.ini)\0*.ini\0\0";
-    ofn.lpstrFile = &sFile[0];
+    ofn.lpstrFilter = TEXT("Ini Files (*.ini)\0*.ini\0\0");
+    std::wstring FileW = utf8::ConvertUtf8ToWide(sFile);
+    ofn.lpstrFile = const_cast<wchar_t *>(FileW.c_str());
     ofn.nMaxFile = 512;
     BOOL bRes = GetOpenFileName(&ofn);
     fio->_SetCurrentDirectory(sCurDir);

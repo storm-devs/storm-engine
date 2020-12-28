@@ -458,7 +458,7 @@ bool LGeometry::Save()
 {
     //Сохраняем текущий путь
     char *oldPath = NEW char[4096];
-    ::GetCurrentDirectory(4096, oldPath);
+    fio->_GetCurrentDirectory(4096, oldPath);
     char *dir = NEW char[4096];
     //Сохраняем объекты
     bool result = true;
@@ -469,7 +469,7 @@ bool LGeometry::Save()
         if (object[i].lBufSize <= 0)
             continue;
         //Создаём путь
-        ::SetCurrentDirectory(oldPath);
+        fio->_SetCurrentDirectory(oldPath);
         bool isCont = false;
         for (long c = 0, p = 0; true; c++, p++)
         {
@@ -479,13 +479,13 @@ bool LGeometry::Save()
                 dir[p] = 0;
                 if (_access(dir, 0) == -1)
                 {
-                    if (!CreateDirectory(dir, null))
+                    if (!fio->_CreateDirectory(dir, null))
                     {
                         isCont = true;
                         break;
                     }
                 }
-                ::SetCurrentDirectory(dir);
+                fio->_SetCurrentDirectory(dir);
                 p = -1;
                 continue;
             }
@@ -528,7 +528,7 @@ bool LGeometry::Save()
             result &= (fwrite(buf, sv * sizeof(dword), 1, fl) == 1);
         fclose(fl);
     }
-    ::SetCurrentDirectory(oldPath);
+    fio->_SetCurrentDirectory(oldPath);
     delete oldPath;
     delete dir;
     delete buf;

@@ -228,8 +228,8 @@ void COMPILER::Trace(char *data_PTR, ...)
     char LogBuffer[4096];
     if (data_PTR == 0)
         return;
-    HANDLE file_h =
-        CreateFile(COMPILER_LOG_FILENAME, GENERIC_WRITE, FILE_SHARE_READ, 0, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+    HANDLE file_h = CreateFile(TEXT(COMPILER_LOG_FILENAME), GENERIC_WRITE, FILE_SHARE_READ, 0, OPEN_ALWAYS,
+                               FILE_ATTRIBUTE_NORMAL, 0);
     SetFilePointer(file_h, 0, 0, FILE_END);
     va_list args;
     va_start(args, data_PTR);
@@ -317,18 +317,18 @@ void COMPILER::SetError(char *data_PTR, ...)
     switch (CompilerStage)
     {
     case CS_SYSTEM:
-        wsprintf(ErrorBuffer, "ERROR - file: %s; line: %d", DebugSourceFileName, DebugSourceLine + 1);
+        sprintf(ErrorBuffer, "ERROR - file: %s; line: %d", DebugSourceFileName, DebugSourceLine + 1);
         break;
     case CS_COMPILATION:
-        wsprintf(ErrorBuffer, "COMPILE ERROR - file: %s; line: %d", DebugSourceFileName, DebugSourceLine + 1);
+        sprintf(ErrorBuffer, "COMPILE ERROR - file: %s; line: %d", DebugSourceFileName, DebugSourceLine + 1);
         break;
     case CS_RUNTIME:
-        wsprintf(ErrorBuffer, "RUNTIME ERROR - file: %s; line: %d", DebugSourceFileName, DebugSourceLine + 1);
+        sprintf(ErrorBuffer, "RUNTIME ERROR - file: %s; line: %d", DebugSourceFileName, DebugSourceLine + 1);
         break;
     }
-    lstrcat(ErrorBuffer, "\x0d\x0a");
-    fio->_WriteFile(file_h, ErrorBuffer, lstrlen(ErrorBuffer), &bytes);
-    fio->_WriteFile(file_h, LogBuffer, lstrlen(LogBuffer), &bytes);
+    strcat(ErrorBuffer, "\x0d\x0a");
+    fio->_WriteFile(file_h, ErrorBuffer, strlen(ErrorBuffer), &bytes);
+    fio->_WriteFile(file_h, LogBuffer, strlen(LogBuffer), &bytes);
     va_end(args);
     fio->_FlushFileBuffers(file_h);
     fio->_CloseHandle(file_h);
@@ -358,10 +358,10 @@ void COMPILER::SetWarning(char *data_PTR, ...)
     DWORD bytes;
     FindErrorSource();
 
-    wsprintf(ErrorBuffer, "WARNING - file: %s; line: %d", DebugSourceFileName, DebugSourceLine + 1);
-    lstrcat(ErrorBuffer, "\x0d\x0a");
-    fio->_WriteFile(file_h, ErrorBuffer, lstrlen(ErrorBuffer), &bytes);
-    fio->_WriteFile(file_h, LogBuffer, lstrlen(LogBuffer), &bytes);
+    sprintf(ErrorBuffer, "WARNING - file: %s; line: %d", DebugSourceFileName, DebugSourceLine + 1);
+    strcat(ErrorBuffer, "\x0d\x0a");
+    fio->_WriteFile(file_h, ErrorBuffer, strlen(ErrorBuffer), &bytes);
+    fio->_WriteFile(file_h, LogBuffer, strlen(LogBuffer), &bytes);
     va_end(args);
     fio->_FlushFileBuffers(file_h);
     fio->_CloseHandle(file_h);
@@ -891,7 +891,7 @@ bool COMPILER::ProcessDebugExpression(char *pExpression, DATA &Result)
         pDebExpBuffer = (char *)RESIZE(pDebExpBuffer, nDataSize);
         nDebExpBufferSize = nDataSize;
     }
-    wsprintf(pDebExpBuffer, "return %s;", pExpression);
+    sprintf(pDebExpBuffer, "return %s;", pExpression);
     return ProcessDebugExpression0(pDebExpBuffer, Result);
 }
 
@@ -908,7 +908,7 @@ bool COMPILER::SetOnDebugExpression(char *pLValue, char *pRValue, DATA &Result)
         pDebExpBuffer = (char *)RESIZE(pDebExpBuffer, nDataSize);
         nDebExpBufferSize = nDataSize;
     }
-    wsprintf(pDebExpBuffer, "%s = %s;", pLValue, pRValue);
+    sprintf(pDebExpBuffer, "%s = %s;", pLValue, pRValue);
     return ProcessDebugExpression0(pDebExpBuffer, Result);
 }
 
@@ -1974,7 +1974,8 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, DWORD pIntern
     {
         _splitpath(Segment.name, 0, 0, file_name, 0);
         strcat(file_name, ".b");
-        fh = CreateFile(file_name, GENERIC_WRITE, FILE_SHARE_READ, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+        std::wstring FileNameW = utf8::ConvertUtf8ToWide(file_name);
+        fh = CreateFile(FileNameW.c_str(), GENERIC_WRITE, FILE_SHARE_READ, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
         if (fh != INVALID_HANDLE_VALUE)
         {
             WriteFile(fh, Segment.pCode, Segment.BCode_Program_size, &dwR, 0);
@@ -6144,20 +6145,21 @@ DATA *COMPILER::GetOperand(char *pCodeBase, DWORD &ip, S_TOKEN_TYPE *pTokenType)
     return 0;
 }
 
-void COMPILER::FormatAllDialog(char *directory_name)
+void COMPILER::FormatAllDialog(const char *directory_name)
 {
     HANDLE fh;
     WIN32_FIND_DATA ffd;
     char sFileName[MAX_PATH];
-    wsprintf(sFileName, "%s\\*.c", directory_name);
+    sprintf(sFileName, "%s\\*.c", directory_name);
     fh = Core.fio->_FindFirstFile(sFileName, &ffd);
     if (fh != INVALID_HANDLE_VALUE)
     {
-        wsprintf(sFileName, "%s\\%s", directory_name, ffd.cFileName);
+        std::string Utf8FileName = utf8::ConvertWideToUtf8(ffd.cFileName);
+        sprintf(sFileName, "%s\\%s", directory_name, Utf8FileName.c_str());
         FormatDialog(sFileName);
         while (Core.fio->_FindNextFile(fh, &ffd))
         {
-            wsprintf(sFileName, "%s\\%s", directory_name, ffd.cFileName);
+            sprintf(sFileName, "%s\\%s", directory_name, Utf8FileName.c_str());
             FormatDialog(sFileName);
         }
     }
@@ -6214,15 +6216,15 @@ void COMPILER::FormatDialog(char *file_name)
         if (file_name[n] == '\\')
             break;
     }
-    wsprintf(sFileName, "DIALOGS%s", (char *)(file_name + n));
+    sprintf(sFileName, "DIALOGS%s", (char *)(file_name + n));
     sFileName[strlen(sFileName) - 1] = 0;
     strcat(sFileName, "h");
-    wsprintf(buffer, "#include \"%s\"", sFileName);
+    sprintf(buffer, "#include \"%s\"", sFileName);
 
     Core.fio->_WriteFile(fh, buffer, strlen(buffer), &dwR);
     Core.fio->_WriteFile(fh, sNewLine, strlen(sNewLine), &dwR);
 
-    wsprintf(buffer, "string DLG_TEXT[0] = {        ");
+    sprintf(buffer, "string DLG_TEXT[0] = {        ");
     Core.fio->_WriteFile(fhH, buffer, strlen(buffer), &dwR);
     Core.fio->_WriteFile(fhH, sNewLine, strlen(sNewLine), &dwR);
 
@@ -6278,7 +6280,7 @@ void COMPILER::FormatDialog(char *file_name)
                                     Core.fio->_WriteFile(fhH, Token.GetData(), strlen(Token.GetData()), &dwR);
                                     Core.fio->_WriteFile(fhH, ",", strlen(","), &dwR);
                                     Core.fio->_WriteFile(fhH, sNewLine, strlen(sNewLine), &dwR);
-                                    wsprintf(sFileName, "DLG_TEXT[%d]", nTxt);
+                                    sprintf(sFileName, "DLG_TEXT[%d]", nTxt);
                                     Core.fio->_WriteFile(fh, sFileName, strlen(sFileName), &dwR);
                                     nTxt++;
                                 }
@@ -6356,7 +6358,7 @@ void COMPILER::FormatDialog(char *file_name)
                                             Core.fio->_WriteFile(fhH, Token.GetData(), strlen(Token.GetData()), &dwR);
                                             Core.fio->_WriteFile(fhH, ",", strlen(","), &dwR);
                                             Core.fio->_WriteFile(fhH, sNewLine, strlen(sNewLine), &dwR);
-                                            wsprintf(sFileName, "DLG_TEXT[%d]", nTxt);
+                                            sprintf(sFileName, "DLG_TEXT[%d]", nTxt);
                                             Core.fio->_WriteFile(fh, sFileName, strlen(sFileName), &dwR);
                                             nTxt++;
                                         }
@@ -6387,11 +6389,11 @@ void COMPILER::FormatDialog(char *file_name)
 
     delete pFileData;
 
-    wsprintf(buffer, "};");
+    sprintf(buffer, "};");
     Core.fio->_WriteFile(fhH, sNewLine, strlen(sNewLine), &dwR);
     Core.fio->_WriteFile(fhH, buffer, strlen(buffer), &dwR);
     Core.fio->_SetFilePointer(fhH, 0, 0, FILE_BEGIN);
-    wsprintf(buffer, "string DLG_TEXT[%d] = {", nTxt);
+    sprintf(buffer, "string DLG_TEXT[%d] = {", nTxt);
     Core.fio->_WriteFile(fhH, buffer, strlen(buffer), &dwR);
 
     Core.fio->_CloseHandle(fhH);

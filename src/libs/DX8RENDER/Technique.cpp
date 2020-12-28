@@ -1630,18 +1630,19 @@ void CTechnique::InnerDecodeFiles(char *sub_dir)
     {
         do
         {
+            std::string FileName = utf8::ConvertWideToUtf8(wfd.cFileName);
             if (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
             {
-                if (wfd.cFileName[0] == '.')
+                if (FileName[0] == '.')
                     continue;
-                sprintf(file_mask, "%s\\%s", (sub_dir) ? sub_dir : "", wfd.cFileName);
+                sprintf(file_mask, "%s\\%s", (sub_dir) ? sub_dir : "", FileName.c_str());
                 InnerDecodeFiles(file_mask);
             }
             else
             {
-                if (SkipToken(wfd.cFileName, SHA_EXT))
+                if (SkipToken(const_cast<char *>(FileName.c_str()), SHA_EXT))
                 {
-                    sprintf(file_mask, "%s\\%s", (sub_dir) ? sub_dir : "", wfd.cFileName);
+                    sprintf(file_mask, "%s\\%s", (sub_dir) ? sub_dir : "", FileName.c_str());
                     DecodeFile(file_mask);
                 }
             }

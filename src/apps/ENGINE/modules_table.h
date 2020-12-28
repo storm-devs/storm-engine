@@ -23,7 +23,7 @@ class MODULES_TABLE
     void Release();
     bool SetModulesPath(char *_name); // clear all paths and add first path
     bool AddModulesPath(char *_name); // add alternative search path
-    bool LoadModule(char *name, long path_code, MODULE_STATE &ms);
+    bool LoadModule(const char *name, long path_code, MODULE_STATE &ms);
     void __declspec(dllexport) __cdecl Load_ModulesTable();
     char *GetPath(dword code);
     dword GetModulesCount();

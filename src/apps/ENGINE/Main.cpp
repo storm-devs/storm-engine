@@ -19,7 +19,7 @@
 HWND hMain;
 HINSTANCE hInst;
 
-char AClass[] = "Corsairs:Cuique suum!";
+const wchar_t *AClass = L"Corsairs:Cuique suum!";
 
 MEMORY_SERVICE Memory_Service;
 FILE_SERVICE File_Service;
@@ -57,6 +57,73 @@ void ProcessKeys(HWND hwnd, int code, int Press);
 void EmergencyExit();
 int Alert(const char *lpCaption, const char *lpText);
 void CreateMiniDump(EXCEPTION_POINTERS *pep);
+
+void RunFrame()
+{
+#ifdef EX_OFF
+    __try
+#else
+    try
+#endif
+    {
+        if (bActive || bNetActive)
+        {
+            bool Run_result = true;
+            if (!System_Hold)
+                Run_result = Core.Run();
+
+            if (!Run_result)
+            {
+                Core.CleanUp();
+                gdi_display.Switch(true);
+                if (System_Api.Exceptions || System_Api.ExceptionsNF)
+                {
+                    gdi_display.Print("One or more exception(s) occuried on Run");
+                    gdi_display.Print("See log file for details");
+                    Sleep(ERROR_MESSAGE_DELAY);
+                }
+                if (Core.Memory_Leak_flag)
+                {
+                    gdi_display.Print("Memory leak detected");
+                    gdi_display.Print("See log file for details");
+                    Sleep(ERROR_MESSAGE_DELAY);
+                }
+                System_Hold = true;
+                SendMessage(hMain, WM_CLOSE, 0, 0L);
+            }
+        }
+        else
+        {
+            Sleep(50);
+        }
+    }
+#ifdef EX_OFF
+    __except (CreateMiniDump(GetExceptionInformation()), EXCEPTION_EXECUTE_HANDLER)
+    {
+    }
+#else
+    catch (_EXS xobj)
+    {
+        trace("");
+        switch (xobj.xtype)
+        {
+        case FATAL:
+            EmergencyExit();
+            break;
+        case NON_FATAL:
+            Core.TraceCurrent();
+            System_Api.SetXNF();
+            gdi_display.Print("EXCEPTION( non fatal ) : %s", xobj.string);
+            break;
+        }
+        trace("");
+    }
+    catch (...)
+    {
+        EmergencyExit();
+    }
+#endif
+}
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
 {
@@ -149,7 +216,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
         memset(&si, 0, sizeof(si));
         si.cb = sizeof(si);
 
-        BOOL bProcess = CreateProcess(InstallLocationExe, NULL, NULL, NULL, FALSE, NULL, NULL, NULL, &si, &pi);
+        std::wstring InstallLocationExeW = utf8::ConvertUtf8ToWide(InstallLocationExe);
+        BOOL bProcess = CreateProcess(InstallLocationExeW.c_str(), NULL, NULL, NULL, FALSE, NULL, NULL, NULL, &si, &pi);
         if (bProcess == TRUE)
         {
             CloseHandle(pi.hProcess);
@@ -173,8 +241,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     wndclass.cbClsExtra = 0;
     wndclass.cbWndExtra = sizeof(WORD);
     wndclass.hInstance = hInst;
-    wndclass.hIcon = LoadIcon(hInstance, "IDI_ICON1");
-    wndclass.hCursor = LoadCursor(hInstance, "NULL_CURSOR"); // LoadCursor(NULL,IDC_ARROW);
+    wndclass.hIcon = LoadIcon(hInstance, TEXT("IDI_ICON1"));
+    wndclass.hCursor = LoadCursor(hInstance, TEXT("NULL_CURSOR")); // LoadCursor(NULL,IDC_ARROW);
     wndclass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
     wndclass.lpszMenuName = NULL;
     wndclass.lpszClassName = AClass;
@@ -188,110 +256,34 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
 
     Core.InitBase();
 
-    // SetProcessAffinityMask(GetCurrentProcess(), 0x3);
-
-    bool Run_result;
-
     dword dwOldTime = GetTickCount();
-#ifndef EX_OFF
-    try
+    while (true)
     {
-#endif
-        while (true)
+        if (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
         {
-            if (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
+            if (WM_QUIT == msg.message)
             {
-                if (WM_QUIT == msg.message)
-                {
-                    break;
-                }
-                else
-                {
-                    TranslateMessage(&msg);
-                    DispatchMessage(&msg);
-                }
+                break;
             }
             else
             {
-#ifndef EX_OFF
-                try
-#else
-            __try
-#endif
-                {
-                    if (bActive || bNetActive)
-                    {
-                        if (dwMaxFPS)
-                        {
-                            dword dwMS = 1000 / dwMaxFPS;
-                            dword dwNewTime = GetTickCount();
-                            if (dwNewTime - dwOldTime < dwMS)
-                                continue;
-                            dwOldTime = dwNewTime;
-                        }
-                        if (!System_Hold)
-                            Run_result = Core.Run();
-                        if (!Run_result)
-                        {
-                            Core.CleanUp();
-                            gdi_display.Switch(true);
-                            if (System_Api.Exceptions || System_Api.ExceptionsNF)
-                            {
-                                gdi_display.Print("One or more exception(s) occuried on Run");
-                                gdi_display.Print("See log file for details");
-                                Sleep(ERROR_MESSAGE_DELAY);
-                            }
-                            if (Core.Memory_Leak_flag)
-                            {
-                                gdi_display.Print("Memory leak detected");
-                                gdi_display.Print("See log file for details");
-                                Sleep(ERROR_MESSAGE_DELAY);
-                            }
-                            System_Hold = true;
-                            SendMessage(hwnd, WM_CLOSE, 0, 0L);
-                        }
-                    }
-                    else
-                    {
-                        Sleep(50);
-                    }
-                }
-#ifdef EX_OFF
-                __except (CreateMiniDump(GetExceptionInformation()), EXCEPTION_EXECUTE_HANDLER)
-                {
-                }
-#else
-            catch (_EXS xobj)
-            {
-                trace("");
-                switch (xobj.xtype)
-                {
-                case FATAL:
-                    EmergencyExit();
-                    break;
-                case NON_FATAL:
-                    Core.TraceCurrent();
-                    System_Api.SetXNF();
-                    gdi_display.Print("EXCEPTION( non fatal ) : %s", xobj.string);
-                    break;
-                }
-                trace("");
-            }
-            catch (...)
-            {
-                EmergencyExit();
-            }
-#endif
+                TranslateMessage(&msg);
+                DispatchMessage(&msg);
             }
         }
-#ifndef EX_OFF
+        else
+        {
+            if (dwMaxFPS)
+            {
+                dword dwMS = 1000 / dwMaxFPS;
+                dword dwNewTime = GetTickCount();
+                if (dwNewTime - dwOldTime < dwMS)
+                    continue;
+                dwOldTime = dwNewTime;
+            }
+            RunFrame();
+        }
     }
-    catch (...)
-    {
-        trace("FATAL ERROR: %d", 0);
-        ExitProcess(0xFFBADBAD);
-    }
-#endif
 
     if (Memory_Service.bCollectInfo)
     {
@@ -378,7 +370,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
             if (Core.Controls)
                 Core.Controls->EngineMessage(iMsg, wParam, lParam);
             break;
-        case 0x20A:
+        case WM_MOUSEWHEEL:
             Core.Event("evMouseWeel", "l", (short)HIWORD(wParam));
             if (Core.Controls)
                 Core.Controls->EngineMessage(iMsg, wParam, lParam);
@@ -492,7 +484,9 @@ void EmergencyExit()
 
 int Alert(const char *lpCaption, const char *lpText)
 {
-    return ::MessageBox(NULL, lpText, lpCaption, MB_OK);
+    std::wstring CaptionW = utf8::ConvertUtf8ToWide(lpCaption);
+    std::wstring TextW = utf8::ConvertUtf8ToWide(lpText);
+    return ::MessageBox(NULL, TextW.c_str(), CaptionW.c_str(), MB_OK);
 }
 
 void CreateMiniDump(EXCEPTION_POINTERS *pep)
