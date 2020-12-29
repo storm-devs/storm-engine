@@ -14,7 +14,7 @@
     40002 // format "lipf" (msg_code, ship_id,&speed, maxSpeed) //speed<-[0.f,1.f], maxSpeed=[0.f,1.f];
 // поднять/убрать паруса
 //#define     MSG_SAIL_ROLL       40010 // format "lil" (msg_code, ship_id, sailSet) // sailSet=номер или
-//ROLLTYPE_NEXT,ROLLTYPE_PREV
+// ROLLTYPE_NEXT,ROLLTYPE_PREV
 // типы парусов по группам сворачивания
 #define ROLLTYPE_NONE 0
 #define ROLLTYPE_NORMAL 1

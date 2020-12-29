@@ -117,7 +117,8 @@ void TCarcass::RebuildLevels(tCarcassVertex *_vBuffer, bool _firstDraw, uint32_t
             else
                 heightK = 1.f + (1.f - levelK);
             // tempVertex->pos = sceneMatrix * (levelStarts[level] + CVECTOR((1.f +
-            // WIDEN_K*levelK)*measure.deltaPointX[measurePoint], 															  heightK*measure.deltaPointY[measurePoint], 0.f));
+            // WIDEN_K*levelK)*measure.deltaPointX[measurePoint],
+            // heightK*measure.deltaPointY[measurePoint], 0.f));
             tempVertex->pos =
                 (levelStarts[level] + CVECTOR((1.f + WIDEN_K * levelK) * measure.deltaPointX[measurePoint],
                                               heightK * measure.deltaPointY[measurePoint], 0.f));

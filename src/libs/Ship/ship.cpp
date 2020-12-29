@@ -914,8 +914,8 @@ void SHIP::MastFall(mast_t *pM)
         sprintf_s(cMastNodeName, "%s", pM->pNode->GetName());
         sscanf((char *)&cMastNodeName[_countof(MAST_IDENTIFY) - 1], "%d", &iNum);
         iBase = iNum / TOPMAST_BEGIN;
-        //		core.Trace("SHIP::MastFall : nodeName %s  iNum = %d base = %d iNumMasts = %d", cMastNodeName, iNum, iBase,
-        //iNumMasts );
+        //		core.Trace("SHIP::MastFall : nodeName %s  iNum = %d base = %d iNumMasts = %d", cMastNodeName, iNum,
+        // iBase, iNumMasts );
         for (long i = 0; i < iNumMasts; i++)
         {
             mast_t *pMast = &pMasts[i];
@@ -937,8 +937,8 @@ void SHIP::MastFall(mast_t *pM)
                     if (((iMastNum > iNum) && iMastNum < ((iBase + 1) * TOPMAST_BEGIN)) || iMastNum == iNum)
                         bOk = true;
                 }
-                //				core.Trace("SHIP::MastFall : i = %d nodeName %s  iMastNum = %d bOk = %d", i, str, iMastNum,
-                //bOk );
+                //				core.Trace("SHIP::MastFall : i = %d nodeName %s  iMastNum = %d bOk = %d", i, str,
+                // iMastNum, bOk );
                 if (bOk)
                 {
                     entid_t ent;

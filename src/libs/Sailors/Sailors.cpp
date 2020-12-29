@@ -11,8 +11,8 @@
 #include "../../Shared/sea_ai/Script_defines.h"
 
 //#define //GUARD_SAILORS(block)	{ static const TCHAR block_name[] = TEXT(#block); try {
-//#define //UN//GUARD_SAILORS			} catch(...) { core.Trace("ERROR in Sailors.dll : block '%s'", (char*)block_name);
-//throw _EXS(FATAL,"unknown"); }}
+//#define //UN//GUARD_SAILORS			} catch(...) { core.Trace("ERROR in Sailors.dll : block '%s'",
+//(char*)block_name); throw _EXS(FATAL,"unknown"); }}
 
 //------------------------------------------------------------------------------------
 ShipMan::ShipMan()
