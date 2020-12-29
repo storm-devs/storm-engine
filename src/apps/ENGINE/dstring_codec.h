@@ -3,6 +3,7 @@
 
 #include <cstring>
 #include <malloc.h>
+#include <stdint.h>
 
 #define DHASH_TABLE_SIZE 255
 #define DHASH_SINGLESYM DHASH_TABLE_SIZE

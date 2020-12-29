@@ -9,6 +9,8 @@
 
 #pragma pack(push, 1)
 
+#include <stdint.h>
+
 #include "../math3D.h"
 #include "Vector.h"
 #include "Vector4.h"

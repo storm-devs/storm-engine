@@ -1,6 +1,8 @@
 #ifndef SHIPLIGHTS_HPP
 #define SHIPLIGHTS_HPP
 
+#include "collide.h"
+#include "defines.h"
 #include "dx9render.h"
 #include "sea_base.h"
 #include <ShipLights.h>

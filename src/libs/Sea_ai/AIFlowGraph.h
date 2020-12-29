@@ -1,15 +1,17 @@
 #ifndef AI_FLOW_GRAPH_HPP
 #define AI_FLOW_GRAPH_HPP
 
+#include "Cvector.h"
 #include "defines.h"
+#include "storm_assert.h"
+#include "vfile_service.h"
 #include "vmodule_api.h"
+
 #include <algorithm>
 #include <string>
 #include <vector>
 
 #define INVALID_ARRAY_INDEX 0xFFFFFFFF
-
-class INIFILE;
 
 class AIFlowGraph
 {

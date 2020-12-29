@@ -3,6 +3,7 @@
 
 #include "../inode.h"
 #include "defines.h"
+#include "editor_defines.h"
 #include "font.h"
 
 class GIEditor;

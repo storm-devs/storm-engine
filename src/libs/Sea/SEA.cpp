@@ -500,11 +500,11 @@ void SEA::BuildVolumeTexture()
     {
         auto *pVectors = new CVECTOR[(XWIDTH >> j) * (YWIDTH >> j)];
 
-        for (i = 0; i<FRAMES> > j; i++)
+        for (i = 0; i < (FRAMES >> j); i++)
         {
             // calculate current pVectors
-            for (uint32_t y = 0; y<YWIDTH> > j; y++)
-                for (uint32_t x = 0; x<XWIDTH> > j; x++)
+            for (uint32_t y = 0; y < (YWIDTH >> j); y++)
+                for (uint32_t x = 0; x < (XWIDTH >> j); x++)
                 {
                     long iNumVectors = 0;
                     CVECTOR vVec = 0.0f;
@@ -523,8 +523,8 @@ void SEA::BuildVolumeTexture()
 
             //
             if (pVolumeTexture)
-                for (uint32_t y = 0; y<YWIDTH> > j; y++)
-                    for (uint32_t x = 0; x<XWIDTH> > j; x++)
+                for (uint32_t y = 0; y < (YWIDTH >> j); y++)
+                    for (uint32_t x = 0; x < (XWIDTH >> j); x++)
                     {
                         long red = fftol((pVectors[x + y * (XWIDTH >> j)].x * 0.5f + 0.5f) * 255.0f); // FIX-ME no ftol
                         long green = fftol((pVectors[x + y * (XWIDTH >> j)].y * 0.5f + 0.5f) * 255.0f);
