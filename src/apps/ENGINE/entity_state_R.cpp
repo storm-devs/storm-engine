@@ -347,7 +347,7 @@ void ENTITY_STATE_R::ValidateFormat(char c)
         return (*(t *)(Data_PTR - sizeof(t)));                                                                         \
     }
 //#define RETURN_DATA2(c,t) {ValidateFormat(#@c);Data_index += sizeof(t);if(Data_index > Data_size) SE_THROW_MSG(no
-//data);return (*(t *)(Buffer[Data_index - sizeof(t)]));}
+// data);return (*(t *)(Buffer[Data_index - sizeof(t)]));}
 byte ENTITY_STATE_R::Byte()
 {
     ValidateFormat('b');

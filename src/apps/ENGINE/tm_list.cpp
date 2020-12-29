@@ -1,7 +1,9 @@
-#include "tm_list.h"
+#include <Windows.h>
+
 #include "Core.h"
 #include "s_debug.h"
 #include "templates.h"
+#include "tm_list.h"
 
 #define MAX_STR_SIZE 1024
 extern CORE Core;

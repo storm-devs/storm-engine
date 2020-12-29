@@ -37,8 +37,8 @@ extern CONTROL_BLOCK Control_Block;
     }
 #define TST_ERROR Error_Flag
 //#define SET_CODE_STATE(a,b) {Code_State.ctp = (word)a; Code_State.class_code = b;
-//Memory_Service.SetState((word)a,b,0); } #define CODE_CORE {Code_State.ctp = (word)CTP_CORE; Code_State.class_code =
-//0xffffffff; Memory_Service.SetState((word)CTP_CORE,0xffffffff,0);}
+// Memory_Service.SetState((word)a,b,0); } #define CODE_CORE {Code_State.ctp = (word)CTP_CORE; Code_State.class_code =
+// 0xffffffff; Memory_Service.SetState((word)CTP_CORE,0xffffffff,0);}
 #define CTP_NAME(x) CTP_Name[x]
 
 #define PUSH_CONTROL(ptr, code, c)                                                                                     \

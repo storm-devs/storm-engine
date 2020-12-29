@@ -3,6 +3,8 @@
 
 #include <assert.h>
 
+#include "d_types.h"
+
 #define DYNAMIC_ARRAY_BLOCK_SIZE 100
 
 template <class T> class TDynamicArray

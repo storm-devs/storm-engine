@@ -6,11 +6,11 @@
 #include <stdlib.h>
 
 #ifndef _NOBLOOD_
-#include "vmodule_api.h"
-#include "memop.h"
-#include "d_types.h"
 #include "../common_defines.h"
 #include "Exs.h"
+#include "d_types.h"
+#include "memop.h"
+#include "vmodule_api.h"
 #else
 #include <memory.h>
 

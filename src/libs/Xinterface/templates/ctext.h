@@ -1,6 +1,10 @@
 #ifndef _TEMPLATES_TEXT_LIST_
 #define _TEMPLATES_TEXT_LIST_
 
+#include <cstring>
+
+#include <Windows.h>
+
 class CText
 {
     char *pString;

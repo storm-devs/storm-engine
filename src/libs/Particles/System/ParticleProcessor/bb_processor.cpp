@@ -268,7 +268,7 @@ void BillBoardProcessor::Process(float DeltaTime)
         if (Particles[n]->AttachedEmitter)
         {
             //			api->Trace("%d, %3.2f, %3.2f, %3.2f", n, Particles[n]->RenderPos.x, Particles[n]->RenderPos.y,
-            //Particles[n]->RenderPos.z); 			Particles[n]->AttachedEmitter->SaveTime();
+            // Particles[n]->RenderPos.z); 			Particles[n]->AttachedEmitter->SaveTime();
             Particles[n]->AttachedEmitter->Teleport(CMatrix(Particles[n]->OldRenderAngle, Particles[n]->OldRenderPos));
             Particles[n]->AttachedEmitter->SetTransform(CMatrix(Particles[n]->RenderAngle, Particles[n]->RenderPos));
             Particles[n]->AttachedEmitter->BornParticles(DeltaTime);

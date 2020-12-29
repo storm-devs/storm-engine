@@ -768,7 +768,7 @@ void COMPILER::UnloadSegment(char *segment_name)
         {
             // --> ugeen
             //			trace("...Unloading segment: %s id : %d pSize : %d dSize : %d SegmentsNum : %d", segment_name,
-            //SegmentTable[n].id, SegmentTable[n].BCode_Program_size, SegmentTable[n].BCode_Buffer_size,SegmentsNum);
+            // SegmentTable[n].id, SegmentTable[n].BCode_Program_size, SegmentTable[n].BCode_Buffer_size,SegmentsNum);
             //			Dump();
             // <-- ugeen
             segment_id = SegmentTable[n].id;
