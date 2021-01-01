@@ -1,8 +1,6 @@
 #ifndef _SOUNDSERVICE_H_
 #define _SOUNDSERVICE_H_
 
-//#include <mmreg.h>
-//#include <dxerr8.h>
 #include "Cvector.h"
 #include "SoundDefines.h"
 #include "VSoundService.h"
@@ -11,7 +9,7 @@
 #include <fmod.hpp>
 #include <string>
 
-#define MAX_SOUNDS_SLOTS 512
+#define MAX_SOUNDS_SLOTS 1024
 
 class INIFILE;
 // debug....
@@ -20,18 +18,18 @@ class SoundVisualisationEntity;
 ///////////////////////////////////////////////////////////////////
 // CLASS DEFINITION
 ///////////////////////////////////////////////////////////////////
+
 class SoundService : public VSoundService
 {
     static FMOD_RESULT ErrorHandler(FMOD_RESULT result, const char *file, unsigned line, const char *func,
                                     const char *expr);
+
     VDX9RENDER *rs = nullptr;
 
     bool bShowDebugInfo;
-
     bool initialized;
 
     FMOD::System *system;
-
     FMOD::Sound *OGG_sound[2];
 
     struct tSoundCache
@@ -105,7 +103,6 @@ class SoundService : public VSoundService
     void CreateEntityIfNeed();
 
     // Aliases ------------------------------------------------------------
-
     struct tAliasSound
     {
         std::string FileName;
@@ -203,23 +200,17 @@ class SoundService : public VSoundService
     void SetCameraPosition(const CVECTOR &_cameraPosition) override;
     void SetCameraOrientation(const CVECTOR &_nose, const CVECTOR &_head) override;
 
-    // schemes` routines
+    // Schemes routines
     void ResetScheme() override;
     bool SetScheme(const char *_schemeName) override;
     bool AddScheme(const char *_schemeName) override;
     void SetEnabled(bool _enabled) override;
 
     void DebugDraw();
-
     void DebugPrint3D(const CVECTOR &pos3D, float rad, long line, float alpha, uint32_t color, float scale,
                       const char *format, ...) const;
     void Draw2DCircle(const CVECTOR &center, uint32_t dwColor, float fRadius, uint32_t dwColor2, float fRadius2) const;
 
     void ProcessFader(int idx);
 };
-
-// API_SERVICE_START("sound service")
-//	DECLARE_MAIN_SERVICE(SoundService)
-// API_SERVICE_END(SoundService)
-
 #endif // !defined

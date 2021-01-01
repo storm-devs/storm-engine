@@ -1,10 +1,11 @@
 #ifndef _SEA_OPERATOR_H_
 #define _SEA_OPERATOR_H_
 
-#include "TFIFOBuffer.h"
 #include "dx9render.h"
 #include "sea_base.h"
 #include "ship_base.h"
+#include <queue>
+//#include "TFIFOBuffer.h"
 
 #define ACTION_TIME 1000
 #define TIME_BETWEEN_ACTIONS 1000
@@ -23,7 +24,9 @@ struct tAction
     void (SEA_OPERATOR::*actionMethod)(tAction *_action);
 };
 
-typedef TFIFOBuffer<tAction> TActionBuffer;
+// typedef TFIFOBuffer<tAction> TActionBuffer;
+
+typedef std::queue<tAction> TActionBuffer;
 
 enum BORT_TYPE
 {

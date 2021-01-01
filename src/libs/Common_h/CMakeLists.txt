@@ -69,6 +69,7 @@ set(PROJECT_SOURCES
 	PtcData.h
 	rands.h
 	s_import_func.h
+	safequeue.h
 	sail_base.h
 	script_libriary.h
 	sea_base.h

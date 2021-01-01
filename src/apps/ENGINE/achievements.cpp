@@ -194,7 +194,7 @@ bool CSteamStatsAchievements::GetConnected()
 bool CSteamStatsAchievements::RequestStats()
 {
     // Is Steam loaded? If not we can't get stats.
-    if (SteamUser() == NULL)
+    if (SteamUser() == nullptr)
     {
         return false;
     }
@@ -423,7 +423,7 @@ void CSteamDLC::OnOverlayActivated(GameOverlayActivated_t *pCallback)
 
 uint32_t CSteamDLC::getDLCCount()
 {
-    if (SteamUser() == NULL)
+    if (SteamUser() == nullptr)
     {
         return 0;
     }
@@ -435,7 +435,7 @@ uint32_t CSteamDLC::getDLCCount()
 
 uint32_t CSteamDLC::bGetDLCDataByIndex(uint32_t iDLC)
 {
-    if (SteamUser() == NULL)
+    if (SteamUser() == nullptr)
     {
         return 0;
     }
@@ -449,7 +449,7 @@ uint32_t CSteamDLC::bGetDLCDataByIndex(uint32_t iDLC)
 
 bool CSteamDLC::isDLCInstalled(uint32_t nDLC)
 {
-    if (SteamUser() == NULL)
+    if (SteamUser() == nullptr)
     {
         return false;
     }
@@ -461,7 +461,7 @@ bool CSteamDLC::isDLCInstalled(uint32_t nDLC)
 
 bool CSteamDLC::activateGameOverlay(uint32_t nAppId)
 {
-    if (SteamUser() == NULL)
+    if (SteamUser() == nullptr)
     {
         return false;
     }

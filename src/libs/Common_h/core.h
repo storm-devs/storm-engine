@@ -1,6 +1,5 @@
 #pragma once
 
-#include <process.h>
 #include <windows.h>
 // common includes
 #include "EntityManager.h"
@@ -12,7 +11,7 @@
 #include "../apps/engine/services_list.h"
 #include "../apps/engine/timer.h"
 //#include "achievements.h"
-#include "../apps/engine/safequeue.h"
+#include "safequeue.h"
 
 #define ENGINE_SCRIPT_VERSION 54128
 
@@ -87,15 +86,11 @@ class CORE
 
     TIMER Timer;
 
-    // INPUT * Input;
-
     COMPILER *Compiler;
-    // PROGRAM Program;
 
     void ProcessControls();
 
     float fTimeScale;
-    long nSplitScreenshotGrid;
 
     void DumpEntitiesInfo();
     void EraseEntities();
@@ -163,8 +158,6 @@ class CORE
     char *EngineIniFileName();
 
     void *GetScriptVariable(const char *pVariableName, uint32_t *pdwVarIndex = nullptr);
-
-    bool LoCheck();
 
     uint32_t Process();
     void StartEvent(uint32_t function_code);

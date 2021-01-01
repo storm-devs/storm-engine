@@ -6,11 +6,5 @@ FILE_SERVICE File_Service;
 
 VFILE_SERVICE *fio = nullptr;
 
-// bool bDebugWindow = false, bAcceleration = false;
 bool bActive = true;
 bool bSteam = true;
-
-// bool Error_Flag = false;
-// bool bNetActive;
-
-// uint32_t Exceptions_Mask;

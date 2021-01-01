@@ -516,7 +516,7 @@ void SAIL::Execute(uint32_t Delta_Time)
                 {
                     ATTRIBUTES *pA = pVai->GetACharacter()->GetAttributeClass("Ship");
                     if (pA != nullptr)
-                        pA->SetAttributeUseDword("SP", (long)curSP);
+                        pA->SetAttributeUseDword("SP", fftoi(curSP));
                     // pA->SetAttributeUseDword("SP", (long)fSP);
                 }
             }

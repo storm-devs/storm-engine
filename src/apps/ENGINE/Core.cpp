@@ -7,7 +7,6 @@
 #include "externs.h"
 
 uint32_t dwNumberScriptCommandsExecuted = 0;
-auto constexpr CORE_DEFAULT_ATOMS_SPACE = 128;
 
 typedef struct
 {
@@ -26,8 +25,6 @@ CORE::CORE()
     Memory_Leak_flag = false;
     Controls = nullptr;
     fTimeScale = 1.0f;
-    // bNetActive = false;
-    nSplitScreenshotGrid = 4;
     Compiler = new COMPILER;
 
     /* TODO: place this outside CORE */
@@ -112,16 +109,13 @@ bool CORE::Run()
     if (pVDay)
         pVDay->Set(static_cast<long>(st.wDay));
 
-    // if (!bNetActive)
-    {
-        if (Controls && Controls->GetDebugAsyncKeyState('R') < 0)
-            Timer.Delta_Time *= 10;
-        if (Controls && Controls->GetDebugAsyncKeyState('Y') < 0)
-            Timer.Delta_Time = static_cast<uint32_t>(Timer.Delta_Time * 0.2f);
+    if (Controls && Controls->GetDebugAsyncKeyState('R') < 0)
+        Timer.Delta_Time *= 10;
+    if (Controls && Controls->GetDebugAsyncKeyState('Y') < 0)
+        Timer.Delta_Time = static_cast<uint32_t>(Timer.Delta_Time * 0.2f);
 
-        Timer.Delta_Time = static_cast<uint32_t>(Timer.Delta_Time * fTimeScale);
-        Timer.fDeltaTime *= fTimeScale;
-    }
+    Timer.Delta_Time = static_cast<uint32_t>(Timer.Delta_Time * fTimeScale);
+    Timer.fDeltaTime *= fTimeScale;
 
     auto *pVData = static_cast<VDATA *>(GetScriptVariable("fHighPrecisionDeltaTime", nullptr));
     if (pVData)
@@ -155,34 +149,6 @@ bool CORE::Run()
     EntityManager::NewLifecycle();
 
     ProcessRunEnd(SECTION_ALL);
-
-    // ~!~
-    if (Controls && Controls->GetDebugAsyncKeyState(VK_F8) < 0 && Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0 &&
-        Controls->GetDebugAsyncKeyState(VK_CONTROL) < 0)
-    {
-        Timer.Delta_Time = 0;
-        Timer.fDeltaTime = 0.f;
-
-        auto *pRender = static_cast<VDX9RENDER *>(CreateService("DX9RENDER"));
-        CVECTOR pos, ang{};
-        float fPersp;
-        pRender->GetCamera(pos, ang, fPersp);
-
-        for (long y = 0; y < nSplitScreenshotGrid; y++)
-            for (long x = 0; x < nSplitScreenshotGrid; x++)
-            {
-                auto tmpang = ang;
-                tmpang.y +=
-                    (static_cast<float>(x) - (nSplitScreenshotGrid - 1) * 0.5f) * (fPersp / nSplitScreenshotGrid);
-                tmpang.x +=
-                    (static_cast<float>(y) - (nSplitScreenshotGrid - 1) * 0.5f) * (fPersp / nSplitScreenshotGrid);
-                pRender->SetCamera(pos, tmpang, fPersp / nSplitScreenshotGrid);
-                pRender->SaveShoot();
-                ProcessRealize();
-            }
-
-        pRender->SetCamera(pos, ang, fPersp);
-    }
 
     return true;
 }
@@ -885,19 +851,6 @@ void *CORE::GetScriptVariable(const char *pVariableName, uint32_t *pdwVarIndex)
     return vi.pDClass;
 }
 
-/*
-void CORE::SetNetActive(bool bActive)
-{
-    //bNetActive = bActive;
-}
-
-bool CORE::IsNetActive() const
-{
-    return false;
-    //return bNetActive;
-}
-*/
-
 void CORE::Start_CriticalSection()
 {
     EnterCriticalSection(&lock);
@@ -938,7 +891,7 @@ void CORE::StartEvent(uint32_t function_code)
 void CORE::StartThread()
 {
     hEvent = CreateEvent(nullptr, false, false, TEXT("thrEvent"));
-    if (hEvent == NULL)
+    if (hEvent == nullptr)
     {
         Trace("Error create event!!");
     }

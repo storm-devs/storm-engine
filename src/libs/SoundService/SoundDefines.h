@@ -4,13 +4,13 @@
 ///////////////////////////////////////////////////////////////////
 // CONSTANTS
 ///////////////////////////////////////////////////////////////////
-//#define TRACE_INFORMATION
+#define TRACE_INFORMATION 0
 #define FIO(a) fio->_##a
 #define MAX_CACHED_DATA (4 * 1024 * 1024)
 
 #define SOUND_INVALID_ID 0
-#define MAX_SOUND_DUPLICATES 50 // 8
-#define COMMON_STRING_LENGTH 256
+#define MAX_SOUND_DUPLICATES 50
+#define COMMON_STRING_LENGTH 2048
 #define MAX_SOUND_DRIVERS 5
 #define ERROR_POSITION -1.0f
 #define MIN_VOLUME 0.01f
@@ -58,12 +58,7 @@ enum eSoundMessage
 {
     SM_MAX_DISTANCE = 1,
     SM_MIN_DISTANCE = 2,
-    SM_POSITION = 3,
-    /*
-    SM_CONE_ANGELS,
-    SM_CONE_OUTSIDE_VOLUME,
-    SM_VELOCITY
-    */
+    SM_POSITION = 3
 };
 
 ///////////////////////////////////////////////////////////////////
