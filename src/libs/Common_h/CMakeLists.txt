@@ -58,9 +58,9 @@ set(PROJECT_SOURCES
 	geometry.h
 	geos.h
 	inlines.h
-	Intel.h	
+	Intel.h
 	Island_Base.h
-	math3D.h	
+	math3D.h
 	Matrix.h
 	message.h
 	model.h
@@ -75,7 +75,7 @@ set(PROJECT_SOURCES
 	sea_base.h
 	service.h
 	ship_base.h
-	ship_msg.h	
+	ship_msg.h
 	ShipLights.h
 	storm_assert.h
 	stringService.h

@@ -13,6 +13,8 @@
 //#include "achievements.h"
 #include "safequeue.h"
 
+#include <queue>
+
 #define ENGINE_SCRIPT_VERSION 54128
 
 template <typename T> struct tThrd
@@ -189,7 +191,7 @@ class CORE
     bool activateGameOverlayDLC(uint32_t nAppId);
 
   private:
-    SafeQueue<uint32_t> thrQueue;
+    std::queue<uint32_t> thrQueue;
     tThrd<CORE> MyThread;
     HANDLE hEvent;
 };

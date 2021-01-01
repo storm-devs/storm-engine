@@ -863,19 +863,19 @@ void CORE::Leave_CriticalSection()
 uint32_t CORE::Process()
 {
     DWORD dwWaitResult;
-    uint32_t function_code;
     DATA *pResult;
 
     while (1)
     {
-        if (!thrQueue.IsEmpty())
+        if (!thrQueue.empty())
             SetEvent(hEvent);
         dwWaitResult = WaitForSingleObject(hEvent, 1);
         if (dwWaitResult == WAIT_OBJECT_0)
         {
             EnterCriticalSection(&lock);
-            function_code = thrQueue.Pop();
+            uint32_t &function_code = thrQueue.front();
             Compiler->BC_Execute(function_code, pResult);
+            thrQueue.pop();
             LeaveCriticalSection(&lock);
         }
         //		if(Reset_flag) return 0;
@@ -885,7 +885,7 @@ uint32_t CORE::Process()
 
 void CORE::StartEvent(uint32_t function_code)
 {
-    thrQueue.Push(function_code);
+    thrQueue.push(function_code);
 }
 
 void CORE::StartThread()
@@ -894,6 +894,7 @@ void CORE::StartThread()
     if (hEvent == nullptr)
     {
         Trace("Error create event!!");
+        return;
     }
     MyThread.pThis = this;
     MyThread.pMethod = &CORE::Process;
