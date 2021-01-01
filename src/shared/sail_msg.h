@@ -10,8 +10,8 @@
 #define MSG_SAIL_GET_PARAMS 40024      // "lip" (msg_code, ship_id, &maxSpeed)
 #define MSG_SAIL_MAST_PROCESSING 40025 // "ll" (msg_code, charIdx)
 // получить коэффициент максимальной скорости для корабля
-#define MSG_SAIL_GET_SPEED                                                                                             \
-    40002 // format "lipf" (msg_code, ship_id,&speed, maxSpeed) //speed<-[0.f,1.f], maxSpeed=[0.f,1.f];
+// format "lipf" (msg_code, ship_id,&speed, maxSpeed) //speed<-[0.f,1.f], maxSpeed=[0.f,1.f];
+#define MSG_SAIL_GET_SPEED 40002
 // поднять/убрать паруса
 //#define     MSG_SAIL_ROLL       40010 // format "lil" (msg_code, ship_id, sailSet) // sailSet=номер или
 // ROLLTYPE_NEXT,ROLLTYPE_PREV

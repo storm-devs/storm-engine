@@ -84,17 +84,17 @@
 
 //Локация
 //Добавить модельку в локацию
-#define MSG_LOCATION_ADD_MODEL                                                                                         \
-    30100 //"lssl" загрузить статическую модельку, считать её локаторы, установить технику рендера и уровень рисования
+//"lssl" загрузить статическую модельку, считать её локаторы, установить технику рендера и уровень рисования
+#define MSG_LOCATION_ADD_MODEL 30100
 #define MSG_LOCATION_GET_MODEL 30101 //"le" получить идентификатор модельки
 //Установить последней добавленной модельке свойства
 #define MSG_LOCATION_MODEL_SET_POS 30110 //"lss" поместить в локатор последнюю загруженную модельку
 #define MSG_LOCATION_MODEL_SET_ROT 30111 //"lfff" установть скорость вращения последней загруженной модельке
-#define MSG_LOCATION_MODEL_SET_UVS                                                                                     \
-    30112 //установить эффект скольжения текстуры на последнюю загруженную модельку (ffff - скорости u0, v0, u1, v1)
+//установить эффект скольжения текстуры на последнюю загруженную модельку (ffff - скорости u0, v0, u1, v1)
+#define MSG_LOCATION_MODEL_SET_UVS 30112
 #define MSG_LOCATION_MODEL_LAMPS 30113 //"l" добавить текущую модельку с вписок игнорирования при трейсе лучей от ламп
-#define MSG_LOCATION_MODEL_REFLECTION                                                                                  \
-    30114 //"lf" установить эффект генерации матрицы для отражения, f - коэфициент масштабирования
+//"lf" установить эффект генерации матрицы для отражения, f - коэфициент масштабирования
+#define MSG_LOCATION_MODEL_REFLECTION 30114
 //Установить патчи
 #define MSG_LOCATION_SET_CHRS_PATCH 30120 //"ls" загрузить патч для персонажей
 #define MSG_LOCATION_SET_CAM_PATCH 30121  //"ls" загрузить патч для камеры
@@ -121,9 +121,9 @@
 #define MSG_LOCATION_EX_MSG 30155          //"ls" расширенная команда s, ...
 #define MSG_LOCATION_VIEWSTATEBARS 30156 // "ll" отображение состояния противника (HP, энергия)  <-- ugeen 24.05.12
 //Отладочные
-#define MSG_LOCATION_VIEWLGROUP                                                                                        \
-    30180 //"lsffl" показать группу локаторов в виде шариков с коэфициентом скалирования радиуса, дистанции видимости
-          //меток, цветом
+//"lsffl" показать группу локаторов в виде шариков с коэфициентом скалирования радиуса,
+// дистанции видимости меток, цветом
+#define MSG_LOCATION_VIEWLGROUP 30180
 #define MSG_LOCATION_HIDELGROUP 30181 //"ls" скрыть группу локаторов
 
 //Персонажи
@@ -137,8 +137,8 @@
 //Телепортация
 #define MSG_CHARACTER_TELEPORT 30210 //"lfff" переместить персонажа в точку x, y, z
 #define MSG_CHARACTER_TELEPORT_AY 30211 //"lffff" переместить персонажа в точку x, y, z и направить по ay
-#define MSG_CHARACTER_TELEPORT_TO_LOCATOR                                                                              \
-    30212 //"lss" переместить персонажа в локатор указанный как имя группы, имя локатора
+//"lss" переместить персонажа в локатор указанный как имя группы, имя локатора
+#define MSG_CHARACTER_TELEPORT_TO_LOCATOR 30212
 //Анализ локаторов
 #define MSG_CHARACTER_ADD_DETECTOR 30220 //"ls" добавить группу локаторов для анализа
 #define MSG_CHARACTER_DEL_DETECTOR 30221 //"ls" удалить группу локаторов для анализа
@@ -160,28 +160,27 @@
 #define MSG_CHARACTER_SETFTGLEVEL 30362 //"lf" установить уровень fighting'a
 
 //Поиск персонажей
-#define MSG_CHARACTER_FINDNEAR                                                                                         \
-    30370 //"leeffffll" установить саблю
-          // l - MSG_CHARACTER_FINDNEAR
-          // e - ссылка на массив из object который будет заполняться:
-          //    index - индекс персонажа
-          //    dist - дистанция между персонажами
-          //    dx, dy, dz - дельты в направлении персонажа
-          //    если понадобиться размеры массива будут увеличены
-          // e - ссылка на переменную int - количество найденных персонажей
-          //Условия поиска:
-          // f - радиус поиска
-          // f - угол теста по высоте -> sin(ax)*dist 0 на протяжении всего растояния пол персонажа
-          // f - угол анализа в горизонтальной плоскости, 0 не анализировать
-          // f - дистанция переднего режущего плана, если работает предыдущий тест
-          // l - 1 тестировать видимость, 0 нет
-          // l - 1 сортировать по дальности, 0 нет
+//"leeffffll" установить саблю
+// l - MSG_CHARACTER_FINDNEAR
+// e - ссылка на массив из object который будет заполняться:
+//    index - индекс персонажа
+//    dist - дистанция между персонажами
+//    dx, dy, dz - дельты в направлении персонажа
+//    если понадобиться размеры массива будут увеличены
+// e - ссылка на переменную int - количество найденных персонажей
+//Условия поиска:
+// f - радиус поиска
+// f - угол теста по высоте -> sin(ax)*dist 0 на протяжении всего растояния пол персонажа
+// f - угол анализа в горизонтальной плоскости, 0 не анализировать
+// f - дистанция переднего режущего плана, если работает предыдущий тест
+// l - 1 тестировать видимость, 0 нет
+// l - 1 сортировать по дальности, 0 нет
+#define MSG_CHARACTER_FINDNEAR 30370
 
 //Проверка видимости нами его
 #define MSG_CHARACTER_VISIBLE 30371 //"i"
-
-#define MSG_CHARACTER_VIEWDAMAGE                                                                                       \
-    30372 //"lfff"	вывести о повреждении нанесёному персонажу f - нанес. повр, f - текущее hp, f - всего hp
+//"lfff"	вывести о повреждении нанесёному персонажу f - нанес. повр, f - текущее hp, f - всего hp
+#define MSG_CHARACTER_VIEWDAMAGE 30372
 #define MSG_CHARACTER_EX_MSG 30373
 
 //Установка задач персонажу
@@ -195,8 +194,8 @@
 #define MSG_CAMERA_FOLLOW 30510 //"l" установить режим камеры - преследование персонажа
 #define MSG_CAMERA_LOOK 30511  //"l" установить режим камеры - вид из глаз
 #define MSG_CAMERA_TOPOS 30512 //"lfffl" установить режим камеры - находиться в точке и наблюдать за персонажем
-#define MSG_CAMERA_MOVE                                                                                                \
-    30513 //"lffff" установить режим камеры - перемещаться в точку с заданной скоростью и следить за персонажем
+//"lffff" установить режим камеры - перемещаться в точку с заданной скоростью и следить за персонажем
+#define MSG_CAMERA_MOVE 30513
 #define MSG_CAMERA_FREE 30514 //"l" свободный полёт камеры
 
 #define MSG_CAMERA_SLEEP 30520 //"ll" остановить работу камеры (1) или возобновить (0)
@@ -217,8 +216,8 @@
 #define MSG_WORLDMAP_CREATEENC_MER 31100 //"lsssff" type, nation, kSpeed (1.0f - player speed), island name  time
 // boal 04/10/06 новый метод
 #define MSG_WORLDMAP_CREATEENC_MER_XZ 31102 //"lsffffff"  sName, fx1, fz1, fx2, fz2, kSpeed, timeOut
-#define MSG_WORLDMAP_CREATEENC_MER_TIME                                                                                \
-    31101 // бутафория, не юзается //"lllsff" type, nation, kSpeed (1.0f - player speed), island name, live time in sec
+// бутафория, не юзается //"lllsff" type, nation, kSpeed (1.0f - player speed), island name, live time in sec
+#define MSG_WORLDMAP_CREATEENC_MER_TIME 31101
 // Follow - событийный корабль преследующий нас
 #define MSG_WORLDMAP_CREATEENC_FLW 31110      //"lllf" type, nation, kSpeed
 #define MSG_WORLDMAP_CREATEENC_FLW_TIME 31111 //"lllff" type, nation, kSpeed, live time in sec
@@ -281,14 +280,14 @@
 // Control functions
 #define MSG_SOUND_SET_ENABLED 77016         //"l"		  enabled
 #define MSG_SOUND_SET_CAMERA_POSITION 77001 //"fff"       vector_x, vector_ym, vector_z
-#define MSG_SOUND_SET_CAMERA_ORIENTATION                                                                               \
-    77002 //"ffffff"    nose_vector_x, nose_vector_ym, nose_vector_z, head_vector_x, head_vector_y, head_vector_z
+//"ffffff"    nose_vector_x, nose_vector_ym, nose_vector_z, head_vector_x, head_vector_y, head_vector_z
+#define MSG_SOUND_SET_CAMERA_ORIENTATION 77002
 #define MSG_SOUND_SET_MASTER_VOLUME 77021 //"fff"       FX, music, speech volumes
 #define MSG_SOUND_GET_MASTER_VOLUME 77022 //"eee"       FX, music, speech volumes
 
 // Sound management routines
-#define MSG_SOUND_PLAY                                                                                                 \
-    77003 //"sl[llllfff]" file_name, type, simple_cache?, looped?, cached?, fade_in_time, start_x, start_y, start_y
+//"sl[llllfff]" file_name, type, simple_cache?, looped?, cached?, fade_in_time, start_x, start_y, start_y
+#define MSG_SOUND_PLAY 77003
 #define MSG_SOUND_STOP 77004         //"ll"        id(0=all), fade_out_time
 #define MSG_SOUND_RELEASE 77005      //"l"         id(0=all)
 #define MSG_SOUND_DUPLICATE 77006    //"l"         id
