@@ -221,9 +221,9 @@ struct XI_THREETEX_VERTEX
     float tu3, tv3;
 };
 
-inline void PICTURE_TEXTURE_RELEASE(VXSERVICE *ps, const char *gn, long tex)
+inline void PICTURE_TEXTURE_RELEASE(VXSERVICE *ps, const char *gn, long &tex)
 {
-    if (tex != -1 && ps != NULL)
+    if (tex != -1 && ps != nullptr)
     {
         ps->ReleaseTextureID(gn);
         tex = -1;
@@ -232,10 +232,10 @@ inline void PICTURE_TEXTURE_RELEASE(VXSERVICE *ps, const char *gn, long tex)
 
 inline void VIDEOTEXTURE_RELEASE(VDX9RENDER *rs, CVideoTexture *tex)
 {
-    if (rs != NULL && tex != NULL)
+    if (rs != nullptr && tex != nullptr)
     {
         rs->ReleaseVideoTexture(tex);
-        tex = NULL;
+        tex = nullptr;
     }
 }
 
