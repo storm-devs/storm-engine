@@ -4,6 +4,8 @@ project(storm-engine)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
+option(STORM_ENABLE_STEAM "Enable Steam integration" ON)
+
 set(STORM_RESOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/res")
 set(STORM_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set(STORM_EXTERN_DIR "${CMAKE_CURRENT_SOURCE_DIR}/extern")
