@@ -11,7 +11,7 @@ path GetStashPath()
         wchar_t *str = nullptr;
         SHGetKnownFolderPath(FOLDERID_Documents, KF_FLAG_SIMPLE_IDLIST, nullptr, &str);
         path = str;
-        path = path / L"My Games" / L"Thunderstorm";
+        path = path / L"My Games" / L"Sea Dogs";
         CoTaskMemFree(str);
     }
     return path;

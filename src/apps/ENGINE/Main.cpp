@@ -100,7 +100,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     }
 
     /* Register and show window */
-    const auto *const windowName = L"Thunderstorm";
+    const auto *const windowName = L"Sea Dogs";
 
     WNDCLASSEX wndclass;
     wndclass.cbSize = sizeof(wndclass);
