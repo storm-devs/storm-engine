@@ -109,11 +109,11 @@ class IFS : public INIFILE
         throw std::logic_error("not implemented");                                                                     \
     }
     IFS_NOT_IMPLEMENTED(void ReadString(const char *section_name, const char *key_name, char *buffer,
-                                        uint32_t buffer_size))
+                                        size_t buffer_size))
     IFS_NOT_IMPLEMENTED(bool ReadString(const char *section_name, const char *key_name, char *buffer,
-                                        uint32_t buffer_size, const char *def_string))
+                                        size_t buffer_size, const char *def_string))
     IFS_NOT_IMPLEMENTED(bool ReadStringNext(const char *section_name, const char *key_name, char *buffer,
-                                            uint32_t buffer_size))
+                                            size_t buffer_size))
     IFS_NOT_IMPLEMENTED(long GetLong(const char *section_name, const char *key_name))
     IFS_NOT_IMPLEMENTED(long GetLong(const char *section_name, const char *key_name, long def_val))
     IFS_NOT_IMPLEMENTED(bool GetLongNext(const char *section_name, const char *key_name, long *val))

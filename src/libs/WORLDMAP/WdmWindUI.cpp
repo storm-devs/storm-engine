@@ -256,7 +256,7 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     //Пишем количество припасов
     sprintf_s(tbuf, sizeof(tbuf) - 1, "%i%s", food > 99999 ? 99999 : food, food > 99999 ? "+" : "");
     tbuf[sizeof(tbuf) - 1] = 0;
-    fw = rs->StringWidth(tbuf, font, resizeRatio, w);
+    fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<long>(w));
 
     // rs->Print(font, 0xffffffff, long(cx - 24.0f - fw*0.5f), long(cy + 30.0f), tbuf);
     rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, 0, resizeRatio, 0, 0, long(cx - 24.0f * resizeRatio),
@@ -265,7 +265,7 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     //Пишем количество рома --> ugeen 29.10.10
     _snprintf(tbuf, sizeof(tbuf) - 1, "%i", rum);
     tbuf[sizeof(tbuf) - 1] = 0;
-    fw = rs->StringWidth(tbuf, font, resizeRatio, w);
+    fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<long>(w));
 
     // rs->Print(font, 0xffffffff, long(cx + 24.0f - fw*0.5f), long(cy + 30.0f), tbuf);
     rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, 0, resizeRatio, 0, 0, long(cx + 24.0f * resizeRatio),
@@ -284,7 +284,7 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     // выводим строку с координатами
     _snprintf(tbuf, sizeof(tbuf) - 1, "%s", wdmObjects->coordinate);
     tbuf[sizeof(tbuf) - 1] = 0;
-    fw = rs->StringWidth(tbuf, font, resizeRatio, w);
+    fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<long>(w));
     fh = rs->CharHeight(font);
 
     // rs->Print(font, 0xffffffff, long(cx - fw*0.5f), long(cy + 64.0f + 44.0f- fh*0.5f), tbuf);
@@ -293,7 +293,7 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
 
     _snprintf(tbuf, sizeof(tbuf) - 1, "%s", wdmObjects->stCoordinate);
     tbuf[sizeof(tbuf) - 1] = 0;
-    fw = rs->StringWidth(tbuf, font, resizeRatio, w);
+    fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<long>(w));
     fh = rs->CharHeight(font);
 
     // rs->Print(font, 0xffffffff, long(cx - fw*0.5f), long(cy + 64.0f + 20.0f- fh*0.5f), tbuf);

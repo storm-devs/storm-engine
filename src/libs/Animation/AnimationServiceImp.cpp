@@ -188,7 +188,7 @@ long AnimationServiceImp::LoadAnimation(const char *animationName)
     }
     //Получаем имя jfa файла со скелетом
     strcpy_s(path, ASKW_PATH_JFA);
-    const int l = strlen(path);
+    const size_t l = strlen(path);
     if (!ani->ReadString(nullptr, ASKW_JFA_FILE, path + l, MAX_PATH - l - 1, nullptr))
     {
         core.Trace("Incorrect key \"%s\" in animation file %s.ani", ASKW_JFA_FILE, animationName);

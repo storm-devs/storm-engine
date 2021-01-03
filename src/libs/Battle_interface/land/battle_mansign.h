@@ -18,7 +18,7 @@ class BIManSign
     void Draw();
     void Init(ATTRIBUTES *pRoot, ATTRIBUTES *pA);
 
-    long AddTexture(const char *pcTextureName, long nCols, long nRows) const;
+    size_t AddTexture(const char *pcTextureName, long nCols, long nRows) const;
 
     void Recollect();
     void SetUpdate()

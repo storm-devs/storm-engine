@@ -89,15 +89,15 @@ class INIFILE
     virtual void WriteDouble(const char *section_name, const char *key_name, double value) = 0;
 
     // fill buffer with key value, throw EXS exception object if failed or if section or key doesnt exist
-    virtual void ReadString(const char *section_name, const char *key_name, char *buffer, uint32_t buffer_size) = 0;
+    virtual void ReadString(const char *section_name, const char *key_name, char *buffer, size_t buffer_size) = 0;
 
     // fill buffer with key value if section and key exist, otherwise fill with def_string and return false
-    virtual bool ReadString(const char *section_name, const char *key_name, char *buffer, uint32_t buffer_size,
+    virtual bool ReadString(const char *section_name, const char *key_name, char *buffer, size_t buffer_size,
                             const char *def_string) = 0;
 
     // continue search from key founded in previous call this function or to function ReadString
     // fill buffer with key value if section and key exist, otherwise return false
-    virtual bool ReadStringNext(const char *section_name, const char *key_name, char *buffer, uint32_t buffer_size) = 0;
+    virtual bool ReadStringNext(const char *section_name, const char *key_name, char *buffer, size_t buffer_size) = 0;
 
     // return long value of key in pointed section if section and key exist, throw EXS object otherwise
     virtual long GetLong(const char *section_name, const char *key_name) = 0;

@@ -1894,7 +1894,7 @@ bool DX9RENDER::GetLight(uint32_t dwIndex, D3DLIGHT9 *pLight)
 
 //################################################################################
 
-long DX9RENDER::CreateVertexBuffer(long type, long size, uint32_t dwUsage)
+long DX9RENDER::CreateVertexBuffer(long type, size_t size, uint32_t dwUsage)
 {
     if (size <= 0)
         return -1; // fix
@@ -1932,7 +1932,7 @@ long DX9RENDER::GetVertexBufferFVF(long id)
 }
 
 //################################################################################
-long DX9RENDER::CreateIndexBuffer(long size, uint32_t dwUsage)
+long DX9RENDER::CreateIndexBuffer(size_t size, uint32_t dwUsage)
 {
     long b;
     for (b = 0; b < MAX_BUFFERS; b++)
@@ -1954,7 +1954,7 @@ long DX9RENDER::CreateIndexBuffer(long size, uint32_t dwUsage)
 }
 
 //################################################################################
-void DX9RENDER::DrawBuffer(long vbuff, long stride, long ibuff, long minv, long numv, long startidx, long numtrg,
+void DX9RENDER::DrawBuffer(long vbuff, long stride, long ibuff, long minv, size_t numv, size_t startidx, size_t numtrg,
                            const char *cBlockName)
 {
     bool bDraw = true;
@@ -3286,7 +3286,7 @@ void DX9RENDER::DrawLines(RS_LINE *pRSL, uint32_t dwLinesNum, const char *cBlock
         } while (cBlockName && TechniqueExecuteNext());
 }
 
-void DX9RENDER::DrawLines2D(RS_LINE2D *pRSL2D, uint32_t dwLinesNum, const char *cBlockName)
+void DX9RENDER::DrawLines2D(RS_LINE2D *pRSL2D, size_t dwLinesNum, const char *cBlockName)
 {
     if (!pRSL2D || dwLinesNum == 0)
         return;

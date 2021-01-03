@@ -31,13 +31,13 @@ class INIFILE_T : public INIFILE
     void WriteDouble(const char *section_name, const char *key_name, double value) override;
 
     // fill buffer with key value, throw EXS exception object if failed or if section or key doesnt exist
-    void ReadString(const char *section_name, const char *key_name, char *buffer, uint32_t buffer_size) override;
+    void ReadString(const char *section_name, const char *key_name, char *buffer, size_t buffer_size) override;
     // fill buffer with key value if section and key exist, otherwise fill with def_string and return false
-    bool ReadString(const char *section_name, const char *key_name, char *buffer, uint32_t buffer_size,
+    bool ReadString(const char *section_name, const char *key_name, char *buffer, size_t buffer_size,
                     const char *def_string) override;
     // continue search from key founded in previous call this function or to function ReadString
     // fill buffer with key value if section and key exist, otherwise return false
-    bool ReadStringNext(const char *section_name, const char *key_name, char *buffer, uint32_t buffer_size) override;
+    bool ReadStringNext(const char *section_name, const char *key_name, char *buffer, size_t buffer_size) override;
 
     // return long value of key in pointed section if section and key exist, throw EXS object otherwise
     long GetLong(const char *section_name, const char *key_name) override;

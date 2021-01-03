@@ -269,7 +269,7 @@ void BIUtils::FillTextInfoArray(VDX9RENDER *pRS, ATTRIBUTES *pA, std::vector<BIT
         return;
     tia.clear();
 
-    const long q = pA->GetAttributesNum();
+    const size_t q = pA->GetAttributesNum();
     tia.reserve(q);
     for (long n = 0; n < q; n++)
     {
@@ -390,7 +390,7 @@ void BILinesInfo::Init(VDX9RENDER *rs, ATTRIBUTES *pA)
     if (!pA)
         return;
 
-    const long q = pA->GetAttributesNum();
+    const size_t q = pA->GetAttributesNum();
     for (long n = 0; n < q; n++)
     {
         ATTRIBUTES *pAttr = pA->GetAttributeClass(n);
@@ -464,7 +464,7 @@ void BIImagesInfo::Init(VDX9RENDER *rs, ATTRIBUTES *pA)
     if (!pImgRender)
         return;
 
-    const long q = pA->GetAttributesNum();
+    const size_t q = pA->GetAttributesNum();
     for (long n = 0; n < q; n++)
     {
         ATTRIBUTES *pAImg = pA->GetAttributeClass(n);

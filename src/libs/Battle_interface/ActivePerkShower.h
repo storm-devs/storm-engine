@@ -41,7 +41,7 @@ class ActivePerkShower : public Entity
     void FillVIBuffers();
     void FillRectData(void *vbuf, const FRECT &rectPos, const FRECT &rectTex);
 
-    int m_nTextureQ;
+    size_t m_nTextureQ;
 
     struct _TEXTURE_DESCR
     {
@@ -68,7 +68,7 @@ class ActivePerkShower : public Entity
     bool CreateShowPlaces(ATTRIBUTES *pAPlacesRoot);
     void RefreshShowPlaces(ATTRIBUTES *pAPlacesRoot);
 
-    int m_nIShowQ;
+    size_t m_nIShowQ;
 
     struct _PICTURE_DESCR
     {

@@ -414,13 +414,13 @@ void INIFILE_T::WriteDouble(const char *section_name, const char *key_name, doub
 }
 
 // fill buffer with key value, throw EXS exception object if failed or if section or key doesnt exist
-void INIFILE_T::ReadString(const char *section_name, const char *key_name, char *buffer, uint32_t buffer_size)
+void INIFILE_T::ReadString(const char *section_name, const char *key_name, char *buffer, size_t buffer_size)
 {
     ifs_PTR->ReadString(&Search, section_name, key_name, buffer, buffer_size);
 }
 
 // fill buffer with key value if section and key exist, otherwise fill with def_string and return false
-bool INIFILE_T::ReadString(const char *section_name, const char *key_name, char *buffer, uint32_t buffer_size,
+bool INIFILE_T::ReadString(const char *section_name, const char *key_name, char *buffer, size_t buffer_size,
                            const char *def_string)
 {
     return ifs_PTR->ReadString(&Search, section_name, key_name, buffer, buffer_size, def_string);
@@ -428,7 +428,7 @@ bool INIFILE_T::ReadString(const char *section_name, const char *key_name, char 
 
 // continue search from key founded in previous call this function or to function ReadString
 // fill buffer with key value if section and key exist, otherwise return false
-bool INIFILE_T::ReadStringNext(const char *section_name, const char *key_name, char *buffer, uint32_t buffer_size)
+bool INIFILE_T::ReadStringNext(const char *section_name, const char *key_name, char *buffer, size_t buffer_size)
 {
     return ifs_PTR->ReadStringNext(&Search, section_name, key_name, buffer, buffer_size);
 }

@@ -22,7 +22,7 @@ MESSAGE_ICONS::~MESSAGE_ICONS()
 
 void MESSAGE_ICONS::Update(uint32_t deltaTime)
 {
-    int i, j, n, q;
+    int i, j, n;
     if (m_bShowMsgIcon)
     {
         auto *pVBuf = static_cast<BI_COLOR_VERTEX *>(rs->LockVertexBuffer(m_vMsgIconBufID));
@@ -88,7 +88,7 @@ void MESSAGE_ICONS::Update(uint32_t deltaTime)
                     }
                 }
                 // пройдемс€ по иконкам
-                q = m_pIconsAttr[i]->GetAttributesNum();
+                size_t q = m_pIconsAttr[i]->GetAttributesNum();
                 for (n = 0; n < q; n++)
                 {
                     auto *pA = m_pIconsAttr[i]->GetAttributeClass(n);
@@ -160,7 +160,7 @@ void MESSAGE_ICONS::StartData(ATTRIBUTES *pAData[MESSAGE_ICONS_COLUMN_QUANTITY],
         if (!pAData[i] || !m_pMsgColumns[i].pRow)
             continue;
 
-        long q = pAData[i]->GetAttributesNum();
+        size_t q = pAData[i]->GetAttributesNum();
         if (q > m_nMsgIconRowQnt)
             q = m_nMsgIconRowQnt;
         for (j = 0; j < q; j++)

@@ -54,7 +54,7 @@ void MousePointer::InitMouseCursors()
     if (!pACursors)
         return;
 
-    const long q = pACursors->GetAttributesNum();
+    const size_t q = pACursors->GetAttributesNum();
     for (long n = 0; n < q; n++)
     {
         auto *pA = pACursors->GetAttributeClass(n);

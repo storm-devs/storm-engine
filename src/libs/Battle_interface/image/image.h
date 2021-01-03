@@ -12,15 +12,15 @@ class BIImage : public IBIImage
     BIImage(VDX9RENDER *rs, BIImageMaterial *pMaterial);
     ~BIImage();
 
-    long GetVertexQuantity() const
+    size_t GetVertexQuantity() const
     {
         return m_nVertexQuantity;
     }
-    long GetTriangleQuantity() const
+    size_t GetTriangleQuantity() const
     {
         return m_nTriangleQuantity;
     }
-    void FillBuffers(BI_IMAGE_VERTEX *pV, uint16_t *pT, long &nV, long &nT);
+    void FillBuffers(BI_IMAGE_VERTEX *pV, uint16_t *pT, size_t &nV, size_t &nT);
 
     void SetColor(uint32_t color) override;
     void SetPosition(long nLeft, long nTop, long nRight, long nBottom) override;
@@ -53,8 +53,8 @@ class BIImage : public IBIImage
     VDX9RENDER *m_pRS;
     BIImageMaterial *m_pMaterial;
 
-    long m_nVertexQuantity;
-    long m_nTriangleQuantity;
+    size_t m_nVertexQuantity;
+    size_t m_nTriangleQuantity;
 
     FRECT m_BasePos;
     FRECT m_BaseUV;

@@ -37,7 +37,7 @@ long WMShipCommandList::CommandAdding()
     auto *pAttr = m_pARoot->GetAttributeClass("Commands");
     if (!pAttr)
         return 0;
-    const long attrQuant = pAttr->GetAttributesNum();
+    const size_t attrQuant = pAttr->GetAttributesNum();
 
     for (long i = 0; i < attrQuant; i++)
     {

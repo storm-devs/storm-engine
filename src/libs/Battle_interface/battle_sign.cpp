@@ -164,7 +164,7 @@ void BISignIcon::Init(ATTRIBUTES *pRoot, ATTRIBUTES *pA)
 
         pcTmp = pA->GetAttribute("fontoffset");
         if (pcTmp)
-            sscanf(pcTmp, "%l,%l", &m_SignTextFontOffset.x, &m_SignTextFontOffset.y);
+            sscanf(pcTmp, "%ld,%ld", &m_SignTextFontOffset.x, &m_SignTextFontOffset.y);
 
         pcTmp = pA->GetAttribute("backtexturename");
         if (pcTmp)

@@ -59,7 +59,7 @@ long BIManCommandList::CommandAdding()
     auto *pAttr = m_pARoot->GetAttributeClass("Commands");
     if (!pAttr)
         return 0;
-    const long attrQuant = pAttr->GetAttributesNum();
+    const size_t attrQuant = pAttr->GetAttributesNum();
 
     for (long i = 0; i < attrQuant; i++)
     {
@@ -85,7 +85,7 @@ long BIManCommandList::UserIconsAdding()
     auto *pAttr = m_pARoot->GetAttributeClass("UserIcons");
     if (!pAttr)
         return 0;
-    const long attrQuant = pAttr->GetAttributesNum();
+    const size_t attrQuant = pAttr->GetAttributesNum();
 
     for (long i = 0; i < attrQuant; i++)
     {
@@ -112,7 +112,7 @@ long BIManCommandList::AbilityAdding()
     auto *pAttr = m_pARoot->GetAttributeClass("AbilityIcons");
     if (!pAttr)
         return 0;
-    const long attrQuant = pAttr->GetAttributesNum();
+    const size_t attrQuant = pAttr->GetAttributesNum();
 
     for (long i = 0; i < attrQuant; i++)
     {

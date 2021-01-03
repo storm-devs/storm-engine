@@ -55,14 +55,14 @@ class ISLAND_DESCRIBER
     void Refresh() const;
 
   protected:
-    LOCATOR_DESCR *FindLocator(LOCATOR_DESCR *p, int nMax);
+    LOCATOR_DESCR *FindLocator(LOCATOR_DESCR *p, size_t nMax);
 
     bool m_bYesIsland;
     ATTRIBUTES *m_pIslandAttributes;
     LOCATOR_DESCR *m_pLocators;
-    int m_nLocators;
+    size_t m_nLocators;
     // find data
-    int m_lastFindIdx;
+    size_t m_lastFindIdx;
     int m_nFindType;
 };
 

@@ -291,7 +291,7 @@ void BIManSign::Init(ATTRIBUTES *pRoot, ATTRIBUTES *pA)
     m_bMakeUpdate = true;
 }
 
-long BIManSign::AddTexture(const char *pcTextureName, long nCols, long nRows) const
+size_t BIManSign::AddTexture(const char *pcTextureName, long nCols, long nRows) const
 {
     if (m_pCommandList)
         return m_pCommandList->AddTexture(pcTextureName, nCols, nRows);

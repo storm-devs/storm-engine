@@ -89,7 +89,7 @@ void BICommandList::Update(long nTopLine, long nCharacterIndex, long nCommandMod
     UpdateShowIcon();
 }
 
-long BICommandList::AddTexture(const char *pcTextureName, uint32_t nCols, uint32_t nRows)
+size_t BICommandList::AddTexture(const char *pcTextureName, uint32_t nCols, uint32_t nRows)
 {
     m_aTexture.push_back(TextureDescr{pcTextureName, nCols, nRows});
     return m_aTexture.size() - 1;
@@ -204,7 +204,6 @@ void BICommandList::SetUpDown(bool bUp, bool bDown)
 void BICommandList::Init()
 {
     Assert(m_pImgRender);
-    long n, q;
     ATTRIBUTES *pAList, *pATextures;
 
     m_LeftTopPoint.x = 120;
@@ -292,8 +291,8 @@ void BICommandList::Init()
         pATextures = pAList->GetAttributeClass("list");
     if (pATextures)
     {
-        q = pATextures->GetAttributesNum();
-        for (n = 0; n < q; n++)
+        size_t q = pATextures->GetAttributesNum();
+        for (int n = 0; n < q; n++)
         {
             auto *pA = pATextures->GetAttributeClass(n);
             if (pA)
@@ -364,7 +363,7 @@ long BICommandList::AddToIconList(long nTextureNum, long nNormPictureNum, long n
 
 void BICommandList::AddAdditiveToIconList(long nTextureNum, long nPictureNum, float fDist, float fWidth, float fHeight)
 {
-    const long n = m_aUsedCommand.size() - 1;
+    const size_t n = m_aUsedCommand.size() - 1;
     if (n < 0)
         return;
 
@@ -557,7 +556,7 @@ ATTRIBUTES *BICommandList::GetCurrentCommandAttribute() const
     if (!pAR)
         return nullptr;
 
-    const long q = pAR->GetAttributesNum();
+    const size_t q = pAR->GetAttributesNum();
     for (long n = 0; n < q; n++)
     {
         auto *pA = pAR->GetAttributeClass(n);

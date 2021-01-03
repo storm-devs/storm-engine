@@ -15,7 +15,7 @@ BIImage::~BIImage()
     Release();
 }
 
-void BIImage::FillBuffers(BI_IMAGE_VERTEX *pV, uint16_t *pT, long &nV, long &nT)
+void BIImage::FillBuffers(BI_IMAGE_VERTEX *pV, uint16_t *pT, size_t &nV, size_t &nT)
 {
     long n;
     auto ni = nT * 3;

@@ -78,7 +78,7 @@ class MESSAGE_ICONS
             uint32_t color;
         };
 
-        long rowQ;
+        size_t rowQ;
         long startVertex;
         long leftPos;
         ROW_DESCR *pRow;

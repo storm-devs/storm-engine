@@ -100,7 +100,7 @@ bool ActivePerkShower::CreateTextures(ATTRIBUTES *pATextureRoot)
     if (pATextureRoot == nullptr)
         return false;
 
-    const int q = pATextureRoot->GetAttributesNum();
+    const size_t q = pATextureRoot->GetAttributesNum();
     if (q <= 0)
         return false;
 
@@ -215,7 +215,7 @@ bool ActivePerkShower::InitIconsList(ATTRIBUTES *pAIconsRoot)
     if (pAIconsRoot == nullptr)
         return true;
 
-    const int q = pAIconsRoot->GetAttributesNum();
+    const size_t q = pAIconsRoot->GetAttributesNum();
     m_nIShowQ = q;
     if (m_nIShowQ == 0)
         return true;

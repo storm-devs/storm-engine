@@ -344,9 +344,9 @@ class DX9RENDER : public VDX9RENDER
                    uint32_t dwSubTexturesY = 1, float fScaleX = 1.0f, float fScaleY = 1.0f) override;
     void DrawSprites(RS_SPRITE *pRSS, uint32_t dwSpritesNum, const char *cBlockName = nullptr) override;
     void DrawLines(RS_LINE *pRSL, uint32_t dwLinesNum, const char *cBlockName = nullptr) override;
-    void DrawLines2D(RS_LINE2D *pRSL2D, uint32_t dwLinesNum, const char *cBlockName = nullptr) override;
+    void DrawLines2D(RS_LINE2D *pRSL2D, size_t dwLinesNum, const char *cBlockName = nullptr) override;
 
-    void DrawBuffer(long vbuff, long stride, long ibuff, long minv, long numv, long startidx, long numtrg,
+    void DrawBuffer(long vbuff, long stride, long ibuff, long minv, size_t numv, size_t startidx, size_t numtrg,
                     const char *cBlockName = nullptr) override;
     void DrawIndexedPrimitiveNoVShader(D3DPRIMITIVETYPE dwPrimitiveType, long iVBuff, long iStride, long iIBuff,
                                        long iMinV, long iNumV, long iStartIdx, long iNumTrg,
@@ -366,8 +366,8 @@ class DX9RENDER : public VDX9RENDER
     void ReleaseVideoTexture(CVideoTexture *pVTexture) override;
 
     // DX9Render: Vertex/Index Buffers Section
-    long CreateVertexBuffer(long type, long nverts, uint32_t usage) override;
-    long CreateIndexBuffer(long ntrgs, uint32_t dwUsage = D3DUSAGE_WRITEONLY) override;
+    long CreateVertexBuffer(long type, size_t nverts, uint32_t usage) override;
+    long CreateIndexBuffer(size_t ntrgs, uint32_t dwUsage = D3DUSAGE_WRITEONLY) override;
 
     IDirect3DVertexBuffer9 *GetVertexBuffer(long id) override;
     long GetVertexBufferFVF(long id) override;

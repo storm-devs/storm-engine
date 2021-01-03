@@ -29,7 +29,7 @@ class BICommandList
     void Update(long nTopLine, long nCharacterIndex, long nCommandMode);
     virtual void FillIcons() = 0;
 
-    long AddTexture(const char *pcTextureName, uint32_t nCols, uint32_t nRows);
+    size_t AddTexture(const char *pcTextureName, uint32_t nCols, uint32_t nRows);
 
     // commands
     long ExecuteConfirm();

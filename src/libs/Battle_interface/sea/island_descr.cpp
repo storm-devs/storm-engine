@@ -156,7 +156,7 @@ ISLAND_DESCRIBER::LOCATOR_DESCR *ISLAND_DESCRIBER::GetNext()
     return FindLocator(&m_pLocators[m_lastFindIdx], m_nLocators - m_lastFindIdx);
 }
 
-ISLAND_DESCRIBER::LOCATOR_DESCR *ISLAND_DESCRIBER::FindLocator(LOCATOR_DESCR *p, int nMax)
+ISLAND_DESCRIBER::LOCATOR_DESCR *ISLAND_DESCRIBER::FindLocator(LOCATOR_DESCR *p, size_t nMax)
 {
     assert(p != NULL);
     if (nMax < 1)

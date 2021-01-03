@@ -30,10 +30,11 @@ template <typename T> struct tThrd
 };
 
 class COMPILER;
-class IFUNCINFO;
+struct IFUNCINFO;
 class VDATA;
 class CSteamStatsAchievements;
 class CSteamDLC;
+
 class CORE
 {
   public:

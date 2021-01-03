@@ -23,7 +23,7 @@ class BIImageRender
     void DeleteMaterial(BIImageMaterial *pMat);
 
     void ReleaseAllImages();
-    long GetImageQuantity();
+    size_t GetImageQuantity();
 
     void MaterialSorting();
     void ChangeMaterialPosByPrioritet(BIImageMaterial *pMat);
@@ -51,7 +51,7 @@ class BIImageRender
     VDX9RENDER *m_pRS;
     std::vector<BIImageMaterial *> m_apMaterial;
     std::vector<IBIString *> m_apStrings;
-    // bool m_bDeleteEverythink;
+    // bool m_bDeleteEverything;
 
     float m_fHScale, m_fVScale;
     float m_fHOffset, m_fVOffset;

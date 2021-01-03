@@ -74,7 +74,7 @@ BIImageMaterial *BIImageRender::CreateMaterial(const char *pcTextureName, const 
         pMaterial->UpdateFlagOn();
         long n;
         for (n = 0; n < m_apMaterial.size(); n++)
-            if (m_apMaterial[n]->GetMinPrioritet() > pMaterial->GetMinPrioritet())
+            if (m_apMaterial[n]->GetMinPriority() > pMaterial->GetMinPriority())
                 break;
         m_apMaterial.insert(m_apMaterial.begin() + n, pMaterial);
         // m_apMaterial.Insert(n);
@@ -99,9 +99,9 @@ void BIImageRender::ReleaseAllImages()
         m_apMaterial[n]->ReleaseAllImages();
 }
 
-long BIImageRender::GetImageQuantity()
+size_t BIImageRender::GetImageQuantity()
 {
-    long nRetVal = 0;
+    size_t nRetVal = 0;
     for (long n = 0; n < m_apMaterial.size(); n++)
         nRetVal += m_apMaterial[n]->GetImageQuantity();
     return nRetVal;
@@ -114,7 +114,7 @@ void BIImageRender::MaterialSorting()
         bContinue = false;
         for (long n = 1; n < m_apMaterial.size(); n++)
         {
-            if (m_apMaterial[n]->GetMinPrioritet() < m_apMaterial[n - 1]->GetMinPrioritet())
+            if (m_apMaterial[n]->GetMinPriority() < m_apMaterial[n - 1]->GetMinPriority())
             {
                 std::swap(m_apMaterial[n - 1], m_apMaterial[n]);
                 // m_apMaterial.Swap(n-1, n);
@@ -219,11 +219,11 @@ bool BIImageRender::GetFirstPrioritetRange()
 {
     if (m_apMaterial.size() == 0)
         return false;
-    m_nBeginOutputPrioritet = m_apMaterial[0]->GetMinPrioritet();
-    m_nEndOutputPrioritet = m_apMaterial[0]->GetMaxPrioritet();
+    m_nBeginOutputPrioritet = m_apMaterial[0]->GetMinPriority();
+    m_nEndOutputPrioritet = m_apMaterial[0]->GetMaxPriority();
 
-    if (m_apMaterial.size() > 1 && m_nEndOutputPrioritet > m_apMaterial[1]->GetMinPrioritet())
-        m_nEndOutputPrioritet = m_apMaterial[1]->GetMinPrioritet();
+    if (m_apMaterial.size() > 1 && m_nEndOutputPrioritet > m_apMaterial[1]->GetMinPriority())
+        m_nEndOutputPrioritet = m_apMaterial[1]->GetMinPriority();
     return true;
 }
 
@@ -233,12 +233,12 @@ bool BIImageRender::GetNextPrioritetRange()
     long n;
     for (n = 0; n < m_apMaterial.size(); n++)
     {
-        if (m_apMaterial[n]->GetMaxPrioritet() >= m_nBeginOutputPrioritet)
+        if (m_apMaterial[n]->GetMaxPriority() >= m_nBeginOutputPrioritet)
         {
-            m_nEndOutputPrioritet = m_apMaterial[n]->GetMaxPrioritet();
+            m_nEndOutputPrioritet = m_apMaterial[n]->GetMaxPriority();
             for (long i = n + 1; i < m_apMaterial.size(); i++)
-                if (m_nBeginOutputPrioritet < m_apMaterial[i]->GetMinPrioritet())
-                    m_nEndOutputPrioritet = m_apMaterial[i]->GetMinPrioritet();
+                if (m_nBeginOutputPrioritet < m_apMaterial[i]->GetMinPriority())
+                    m_nEndOutputPrioritet = m_apMaterial[i]->GetMinPriority();
             break;
         }
     }

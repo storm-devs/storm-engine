@@ -150,9 +150,9 @@ class VDX9RENDER : public SERVICE
     virtual void DrawLines(RS_LINE *pRSL, uint32_t dwLinesNum, const char *cBlockName = nullptr) = 0;
     virtual void DrawVector(const CVECTOR &v1, const CVECTOR &v2, uint32_t dwColor,
                             const char *pTechniqueName = "DXVector") = 0;
-    virtual void DrawLines2D(RS_LINE2D *pRSL2D, uint32_t dwLinesNum, const char *cBlockName = nullptr) = 0;
+    virtual void DrawLines2D(RS_LINE2D *pRSL2D, size_t dwLinesNum, const char *cBlockName = nullptr) = 0;
 
-    virtual void DrawBuffer(long vbuff, long stride, long ibuff, long minv, long numv, long startidx, long numtrg,
+    virtual void DrawBuffer(long vbuff, long stride, long ibuff, long minv, size_t numv, size_t startidx, size_t numtrg,
                             const char *cBlockName = nullptr) = 0;
     virtual void DrawIndexedPrimitiveNoVShader(D3DPRIMITIVETYPE dwPrimitiveType, long iVBuff, long iStride, long iIBuff,
                                                long iMinV, long iNumV, long iStartIdx, long iNumTrg,
@@ -172,8 +172,8 @@ class VDX9RENDER : public SERVICE
     virtual void ReleaseVideoTexture(CVideoTexture *pVTexture) = 0;
 
     // DX9Render: Vertex/Index Buffers Section
-    virtual long CreateVertexBuffer(long type, long nverts, uint32_t usage) = 0;
-    virtual long CreateIndexBuffer(long ntrgs, uint32_t dwUsage = D3DUSAGE_WRITEONLY) = 0;
+    virtual long CreateVertexBuffer(long type, size_t nverts, uint32_t usage) = 0;
+    virtual long CreateIndexBuffer(size_t ntrgs, uint32_t dwUsage = D3DUSAGE_WRITEONLY) = 0;
 
     virtual IDirect3DVertexBuffer9 *GetVertexBuffer(long id) = 0;
     virtual long GetVertexBufferFVF(long id) = 0;
