@@ -9,6 +9,8 @@
 #include "script_libriary.h"
 #include "texture.h"
 #include "v_s_stack.h"
+
+#include <corecrt_io.h>
 #include <DxErr.h>
 
 #define POST_PROCESS_FVF (D3DFVF_XYZRHW | D3DFVF_TEX4)
