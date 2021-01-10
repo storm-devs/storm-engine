@@ -2,6 +2,9 @@ add_definitions(-DUNICODE -D_UNICODE) # Use Unicode
 add_definitions(-DNOMINMAX) # Use std::max()/std::min()
 add_definitions(-D_CRT_SECURE_NO_WARNINGS) # Disable deprecation of unsafe functions
 
+# Select a multi-threaded statically-linked runtime library
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+
 if (STORM_ENABLE_STEAM)
     add_definitions(-DSTORM_ENABLE_STEAM=1)
 endif()

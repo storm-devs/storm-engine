@@ -4,6 +4,10 @@ project(storm-engine)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
+# Setup conan
+include(${CMAKE_BINARY_DIR}/conanbuildinfo_multi.cmake)
+conan_basic_setup(TARGETS)
+
 option(STORM_ENABLE_STEAM "Enable Steam integration" ON)
 
 set(STORM_RESOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/res")
