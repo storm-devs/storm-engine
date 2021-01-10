@@ -1,7 +1,6 @@
 project(engine)
 
 find_package(SteamSdk REQUIRED)
-find_package(Zlib REQUIRED)
 find_package(Fmod REQUIRED) # required to set ${Fmod_LIBRARY_PATHS}
 
 add_executable(${PROJECT_NAME} WIN32
@@ -76,10 +75,7 @@ target_include_directories(${PROJECT_NAME}
 	PRIVATE
 	${STORM_RESOURCE_DIR}/engine
 	${SteamSdk_INCLUDE_DIR}
-	${Zlib_INCLUDE_DIR}
 )
-
-target_compile_definitions(${PROJECT_NAME} PRIVATE _ENGINE_IN_)
 
 target_link_libraries(${PROJECT_NAME}
 	PRIVATE
@@ -126,7 +122,7 @@ target_link_libraries(${PROJECT_NAME}
 	xinterface
 
 	${SteamSdk_LIBRARY}
-	${Zlib_LIBRARY}
+	CONAN_PKG::zlib
 	comctl32.lib
 	dbghelp.lib
 )
@@ -135,11 +131,7 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${SteamSdk_LIBRARY_PATHS}/steam_api64.dll"
         "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>"
-		
-	COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${Zlib_LIBRARY_PATHS}/zlib1.dll"
-        "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>"
-		
+
 	COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${Fmod_LIBRARY_PATHS}/fmod.dll"
         "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>"

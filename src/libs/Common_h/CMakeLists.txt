@@ -1,7 +1,6 @@
 project(common_h)
 
 find_package(DirectX REQUIRED)
-find_package(Spdlog REQUIRED)
 
 add_library(${PROJECT_NAME} INTERFACE)
 
@@ -10,14 +9,13 @@ target_include_directories(${PROJECT_NAME} INTERFACE .)
 target_include_directories(${PROJECT_NAME}
 	INTERFACE
 	${DirectX_INCLUDE_DIR}
-	${Spdlog_INCLUDE_DIR}
 	${STORM_SOURCE_DIR}/shared
 )
 
 target_link_libraries(${PROJECT_NAME} 
 	INTERFACE 
 	${DirectX_D3DX9_LIBRARY}
-	${Spdlog_LIBRARY}
+	CONAN_PKG::spdlog
 )
 
 set(PROJECT_SOURCES
