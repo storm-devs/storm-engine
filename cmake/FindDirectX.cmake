@@ -17,11 +17,7 @@ if(DirectX_INCLUDE_DIR)
 endif()
 
 set(DirectX_LIBRARY_PATHS)
-if(CMAKE_CL_64)
-    set(DirectX_LIBRARY_PATHS "${DirectX_ROOT_DIR}/Lib/x64")
-else()
-    set(DirectX_LIBRARY_PATHS "${DirectX_ROOT_DIR}/Lib/x86" "${DirectX_ROOT_DIR}/lib")
-endif()
+set(DirectX_LIBRARY_PATHS "${DirectX_ROOT_DIR}/lib")
 
 find_library(DirectX_LIBRARY d3d9 ${DirectX_LIBRARY_PATHS} NO_DEFAULT_PATH)
 find_library(DirectX_D3DX9_LIBRARY d3dx9 ${DirectX_LIBRARY_PATHS} NO_DEFAULT_PATH)
