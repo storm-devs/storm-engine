@@ -143,7 +143,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CSetupDlg message handlers
 
-void CSetupDlg::Trace(char *data_PTR, ...)
+void CSetupDlg::Trace(const char *data_PTR, ...)
 {
     char buffer[4096];
     return;

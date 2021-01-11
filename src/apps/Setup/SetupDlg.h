@@ -23,7 +23,7 @@
 
 struct file_t
 {
-    char *pFile;
+    const char *pFile;
     FILE *file;
     BOOL bNoSpaces, bLn;
 };
@@ -103,7 +103,7 @@ class CSetupDlg : public CDialog
 
     void UpdateResolutions();
     void SaveParameters();
-    void Trace(char *data_PTR, ...);
+    void Trace(const char *data_PTR, ...);
 
     HICON m_hIcon;
     wchar_t InstallLocationW[2048], InstallLocationExeW[2048];
