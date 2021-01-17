@@ -146,13 +146,15 @@ END_MESSAGE_MAP()
 void CSetupDlg::Trace(const char *data_PTR, ...)
 {
     char buffer[4096];
-    return;
 
     va_list args;
     va_start(args, data_PTR);
     _vsnprintf(buffer, sizeof(buffer) - 4, data_PTR, args);
     va_end(args);
     strcat(buffer, "\x0d\x0a");
+
+    std::wstring wstr = ConvertUtf8ToWide(buffer);
+    OutputDebugString(wstr.c_str());
 
     HANDLE file_h =
         CreateFile(TEXT("config.log"), GENERIC_WRITE, FILE_SHARE_READ, 0, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
@@ -281,51 +283,6 @@ BOOL CSetupDlg::LoadSettings()
     int aTexQuality[3] = {IDS_TEXQUALITY_LOW, IDS_TEXQUALITY_MEDIUM, IDS_TEXQUALITY_HIGH};
 
     Trace("LoadSettings::Start");
-
-    /*RegOpenKeyEx(HKEY_LOCAL_MACHINE,
-                "Software\\Microsoft\\Windows\\CurrentVersion\\App Paths\\ENGINE.exe", 0, KEY_READ, &hKy);
-
-    LONG a;
-    if (hKy)
-    {
-        pData = _MAX_PATH;
-        a = RegQueryValueEx(hKy, "Path", NULL, NULL, (BYTE*)InstallLocationW, &pData);
-        RegCloseKey(hKy);
-    }
-    else
-    {
-        RegOpenKeyEx(HKEY_LOCAL_MACHINE,
-                    "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Seadogs2", 0, KEY_READ, &hKy);
-        if (hKy)
-        {
-            pData = _MAX_PATH;
-            a = RegQueryValueEx(hKy, "InstallLocationW", NULL, NULL, (BYTE*)InstallLocationW, &pData);
-            RegCloseKey(hKy);
-        }
-    }
-
-    if (a)
-    {
-        char title[256];
-        // key not found
-        ITEMIDLIST	*iil;
-        BROWSEINFO	bi;
-        ZeroMemory(&bi,sizeof(bi));
-        bi.hwndOwner = GetSafeHwnd();
-        bi.ulFlags = 0;
-        title[0] = 0;
-        //LPTSTR lps = MAKEINTRESOURCE(IDS_OPENFILE);
-        LoadString(AfxGetResourceHandle(),IDS_OPENFILE,&title[0],256);
-        bi.lpszTitle = &title[0];
-        iil = SHBrowseForFolder(&bi);
-        if (!iil) return false;
-        BOOL ret = SHGetPathFromIDList(iil,InstallLocationW);
-        if (!ret) return false;
-    }
-    else
-    {
-        //strcat(InstallLocationW, "\\engine.ini");
-    }*/
 
     Trace("LoadSettings::GetCurrentDirectory");
     GetCurrentDirectory(sizeof(InstallLocationW) - 1, InstallLocationW);
@@ -528,64 +485,34 @@ void CSetupDlg::UpdateResolutions()
     }
 }
 
-HRESULT WINAPI DDEnumModesCallback(LPDDSURFACEDESC lpDDSD, LPVOID lpContext)
-{
-    device_t *Device = (device_t *)lpContext;
-
-    DWORD dwWidth = lpDDSD->dwWidth;
-    DWORD dwHeight = lpDDSD->dwHeight;
-
-    if (lpDDSD->ddpfPixelFormat.dwRGBBitCount >= 32 && dwWidth >= 800 && dwHeight >= 600)
-    {
-        // if (fabsf(float(dwWidth) / float(dwHeight) - 4.0f / 3.0f) > 0.01f) return DDENUMRET_OK;
-        res_t *pR = &Device->Resolutions[Device->numresolutions];
-        pR->bpp = lpDDSD->ddpfPixelFormat.dwRGBBitCount;
-        pR->width = dwWidth;
-        pR->height = dwHeight;
-        Device->numresolutions++;
-    }
-
-    return DDENUMRET_OK;
-}
-
-BOOL WINAPI DDEnumCallback(LPGUID lpGUID, LPWSTR lpDriverDescription, LPWSTR lpDriverName, LPVOID lpContext)
-{
-    CSetupDlg *This = (CSetupDlg *)lpContext;
-    wcscpy(This->Devices[This->numdevices].Name, lpDriverDescription);
-    This->Devices[This->numdevices].lpGUID = lpGUID;
-
-    This->numdevices++;
-    return DDENUMRET_OK;
-}
-
 BOOL CSetupDlg::EnumerateDevicesAndResolutions()
 {
-    HRESULT err;
-
     ZeroMemory(Devices, sizeof(Devices));
+
+    DISPLAY_DEVICE dd;
+    dd.cb = sizeof(DISPLAY_DEVICE);
+
     numdevices = 0;
-    err = DirectDrawEnumerate(DDEnumCallback, this);
-    if (err != DD_OK)
-        return false;
-
-    BOOL flag = true;
-    for (long i = numdevices - 1; i >= 0; i--)
+    if (EnumDisplayDevices(NULL, numdevices, &dd, 0))
     {
-        LPDIRECTDRAW lpDD;
-        HRESULT err = DirectDrawCreate(Devices[i].lpGUID, &lpDD, NULL);
-        if (err != DD_OK)
-            continue;
+        wcscpy(Devices[numdevices].Name, dd.DeviceName);
 
-        err = lpDD->EnumDisplayModes(0, NULL, &Devices[i], DDEnumModesCallback);
+        DEVMODE dm = {0};
+        dm.dmSize = sizeof(dm);
+        for (int iModeNum = 0; EnumDisplaySettings(dd.DeviceName, iModeNum, &dm) != 0; iModeNum++)
+        {
+            if (dm.dmBitsPerPel >= 32 && dm.dmPelsWidth >= 800 && dm.dmPelsHeight >= 600 && dm.dmDisplayFrequency == 60 &&
+                dm.dmDisplayFixedOutput == DMDFO_DEFAULT)
+            {
+                res_t *pR = &Devices[numdevices].Resolutions[Devices[numdevices].numresolutions];
+                pR->bpp = dm.dmBitsPerPel;
+                pR->width = dm.dmPelsWidth;
+                pR->height = dm.dmPelsHeight;
+                Devices[numdevices].numresolutions++;
+            }
+        }
 
-        lpDD->Release();
-        lpDD = 0;
-        // CoUninitialize();
-        flag = false;
-    }
-    if (flag)
-    {
-        return false;
+        numdevices++;
     }
 
     return true;

@@ -38,7 +38,6 @@ typedef struct
 typedef struct
 {
     wchar_t Name[256];
-    LPGUID lpGUID;
     DWORD numresolutions;
     DWORD currentresolution;
     res_t Resolutions[MAX_RESOLUTIONS];
