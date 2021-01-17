@@ -6,9 +6,6 @@
 #include "../shared/interface/messages.h"
 #include "Entity.h"
 
-#pragma comment(lib, "amstrmid.lib")
-#pragma comment(lib, "ddraw.lib")
-
 #define IRELEASE(i)                                                                                                    \
     {                                                                                                                  \
         if (i)                                                                                                         \
