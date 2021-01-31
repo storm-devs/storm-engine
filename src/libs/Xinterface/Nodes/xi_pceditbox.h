@@ -1,7 +1,7 @@
 #ifndef _XI_PCEDITBOX_H_
 #define _XI_PCEDITBOX_H_
 
-#include "..\\inode.h"
+#include "..//inode.h"
 
 class CXI_IMAGE;
 
@@ -9,35 +9,38 @@ class CXI_IMAGE;
 class CXI_PCEDITBOX : public CINODE
 {
   public:
+    CXI_PCEDITBOX(CXI_PCEDITBOX &&) = delete;
+    CXI_PCEDITBOX(const CXI_PCEDITBOX &) = delete;
     CXI_PCEDITBOX();
     ~CXI_PCEDITBOX();
 
-    void ReleaseAll();
-    void Draw(bool bSelected, dword Delta_Time);
-    bool Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, VDX8RENDER *rs, XYRECT &hostRect,
-              XYPOINT &ScreenSize);
-    int CommandExecute(int wActCode);
-    bool IsClick(int buttonID, long xPos, long yPos);
-    void MouseThis(float fX, float fY){};
-    void ChangePosition(XYRECT &rNewPos);
-    void SaveParametersToIni();
+    void ReleaseAll() override;
+    void Draw(bool bSelected, uint32_t Delta_Time) override;
+    bool Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs, XYRECT &hostRect,
+              XYPOINT &ScreenSize) override;
+    int CommandExecute(int wActCode) override;
+    bool IsClick(int buttonID, long xPos, long yPos) override;
+
+    void MouseThis(float fX, float fY) override{};
+    void ChangePosition(XYRECT &rNewPos) override;
+    void SaveParametersToIni() override;
 
   protected:
-    void LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2);
-    void UpdateString(string &str);
+    void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
+    void UpdateString(std::string &str);
     char GetInputSymbol();
     bool IsEditMode()
     {
         return IsCurrentNode();
     }
-    void ShowCursorPosition(string &str);
-    void InsertSymbol(string &str, utf8::u8_char chr);
-    void DisguiseString(string &str);
-    bool IsExcludeChar(utf8::u8_char chr);
+    void ShowCursorPosition(std::string &str);
+    void InsertSymbol(std::string &str, utf8::u8_char chr);
+    void DisguiseString(std::string &str);
+    bool IsExcludeChar(utf8::u8_char chr) const;
 
   protected:
     long m_nFontID;          // font id
-    DWORD m_dwFontColor;     // color for font
+    uint32_t m_dwFontColor;  // color for font
     XYPOINT m_pntFontOffset; // string offset
     long m_nStringAlign;     // string alignment
     float m_fFontScale;      // font scale
@@ -55,7 +58,7 @@ class CXI_PCEDITBOX : public CINODE
     bool m_bWaitKeyRelease;
     bool m_bDisguiseString;
 
-    string m_sExcludeChars;
+    std::string m_sExcludeChars;
 };
 
 #endif

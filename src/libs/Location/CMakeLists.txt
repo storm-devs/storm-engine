@@ -1,6 +1,6 @@
 project(location)
 
-add_library(${PROJECT_NAME} MODULE
+add_library(${PROJECT_NAME} STATIC
 	AICharacter.cpp
 	AICharacter.h
 	Blood.cpp
@@ -18,12 +18,23 @@ add_library(${PROJECT_NAME} MODULE
 	Fader.h
 	Grass.cpp
 	Grass.h
+	grs.h
 	Lights.cpp
 	Lights.h
 	Lizard.cpp
 	Lizard.h
 	Lizards.cpp
 	Lizards.h
+	Location.cpp
+	Location.h
+	LocationCamera.cpp
+	LocationCamera.h
+	LocationEffects.cpp
+	LocationEffects.h
+	LocationScriptLib.cpp
+	LocationScriptLib.h
+	LocatorArray.cpp
+	LocatorArray.h
 	LocCrab.cpp
 	LocCrab.h
 	LocCrabs.cpp
@@ -36,17 +47,6 @@ add_library(${PROJECT_NAME} MODULE
 	LocRat.h
 	LocRats.cpp
 	LocRats.h
-	Location.cpp
-	Location.h
-	LocationCamera.cpp
-	LocationCamera.h
-	LocationEffects.cpp
-	LocationEffects.h
-	LocationMain.cpp
-	LocationScriptLib.cpp
-	LocationScriptLib.h
-	LocatorArray.cpp
-	LocatorArray.h
 	ModelArray.cpp
 	ModelArray.h
 	ModelRealizer.cpp
@@ -57,14 +57,12 @@ add_library(${PROJECT_NAME} MODULE
 	PathTracks.h
 	Player.cpp
 	Player.h
+	ptc.h
 	PtcData.cpp
-	PtcData.h
 	Supervisor.cpp
 	Supervisor.h
 	WideScreen.cpp
 	WideScreen.h
-	grs.h
-	ptc.h
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

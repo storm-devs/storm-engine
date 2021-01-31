@@ -1,50 +1,51 @@
 #include "script_func.h"
-//#include "net.h"
+#include "Entity.h"
+#include "core.h"
+#include "s_import_func.h"
 #include "sail.h"
-#include "sail_base.h"
+#include "v_s_stack.h"
 
 extern float g_fSailHoleDepend;
 // extern float GetSailSpeed(int holeQ,int holeMax,float maxSpeed,float fSailHoleDepend);
 
-DWORD __cdecl _ShipSailState(VS_STACK *pS)
+uint32_t _ShipSailState(VS_STACK *pS)
 {
-    VDATA *pChrIdx = (VDATA *)pS->Pop();
+    auto *pChrIdx = (VDATA *)pS->Pop();
     if (!pChrIdx)
         return IFUNCRESULT_FAILED;
-    long nChrIdx = pChrIdx->GetLong();
+    const auto nChrIdx = pChrIdx->GetLong();
 
-    VDATA *pVR = (VDATA *)pS->Push();
+    auto *pVR = (VDATA *)pS->Push();
     if (!pVR)
         return IFUNCRESULT_FAILED;
 
     // find sail class
-    ENTITY_ID eid;
-    if (api->FindClass(&eid, "SAIL", 0))
+    if (const auto eid = EntityManager::GetEntityId("SAIL"))
     {
-        long n = ((SAIL *)eid.pointer)->GetSailStateForCharacter(nChrIdx);
+        const long n = static_cast<SAIL *>(EntityManager::GetEntityPointer(eid))->GetSailStateForCharacter(nChrIdx);
         pVR->Set(n);
     }
     else
-        pVR->Set((long)0);
+        pVR->Set(static_cast<long>(0));
 
     return IFUNCRESULT_OK;
 }
 
-DWORD __cdecl _GetAssembledString(VS_STACK *pS)
+uint32_t _GetAssembledString(VS_STACK *pS)
 {
-    VDATA *pAttrPnt = (VDATA *)pS->Pop();
+    auto *pAttrPnt = (VDATA *)pS->Pop();
     if (!pAttrPnt)
         return IFUNCRESULT_FAILED;
-    ATTRIBUTES *pAttr = pAttrPnt->GetAClass();
+    auto *pAttr = pAttrPnt->GetAClass();
 
-    VDATA *pFormatStr = (VDATA *)pS->Pop();
+    auto *pFormatStr = (VDATA *)pS->Pop();
     if (!pFormatStr)
         return IFUNCRESULT_FAILED;
-    char *formatStr = pFormatStr->GetString();
+    auto *const formatStr = pFormatStr->GetString();
 
     char retString[1024];
     retString[0] = 0;
-    if (formatStr != null && pAttr != null)
+    if (formatStr != nullptr && pAttr != nullptr)
     {
         bool bBuildAccessString = false;
         char accessString[sizeof(retString)];
@@ -65,21 +66,21 @@ DWORD __cdecl _GetAssembledString(VS_STACK *pS)
                             nAttrNameStart = 3;
                         }
                         ATTRIBUTES *pA = pAttr->FindAClass(pAttr, &accessString[nAttrNameStart]);
-                        char *writeStr = null;
-                        if (pA != null)
+                        char *writeStr = nullptr;
+                        if (pA != nullptr)
                             writeStr = pA->GetThisAttr();
                         if (writeStr)
                             switch (accessString[0])
                             {
                             case 's':
-                                strcat(retString, writeStr);
+                                strcat_s(retString, writeStr);
                                 break;
                             case 'f': {
                                 char tmpp[256];
                                 float ftmp = 0.f;
                                 sscanf(writeStr, "%f", &ftmp);
                                 if (nAttrNameStart == 1)
-                                    sprintf(tmpp, "%f", ftmp);
+                                    sprintf_s(tmpp, "%f", ftmp);
                                 else
                                 {
                                     char tmpFmtStr[5];
@@ -88,24 +89,24 @@ DWORD __cdecl _GetAssembledString(VS_STACK *pS)
                                     tmpFmtStr[2] = accessString[2];
                                     tmpFmtStr[3] = 'f';
                                     tmpFmtStr[4] = 0;
-                                    sprintf(tmpp, tmpFmtStr, ftmp);
+                                    sprintf_s(tmpp, tmpFmtStr, ftmp);
                                 }
-                                strcat(retString, tmpp);
+                                strcat_s(retString, tmpp);
                             }
                             break;
                             case 'd': {
                                 char tmpp[256];
                                 int ntmp = 0;
                                 sscanf(writeStr, "%d", &ntmp);
-                                sprintf(tmpp, "%d", ntmp);
-                                strcat(retString, tmpp);
+                                sprintf_s(tmpp, "%d", ntmp);
+                                strcat_s(retString, tmpp);
                             }
                             break;
                             }
                     }
                 }
                 else
-                    strcat(retString, accessString);
+                    strcat_s(retString, accessString);
                 bBuildAccessString = !bBuildAccessString;
                 accessStrSize = 0;
             }
@@ -118,25 +119,25 @@ DWORD __cdecl _GetAssembledString(VS_STACK *pS)
         }
     }
 
-    VDATA *pVR = (VDATA *)pS->Push();
+    auto *pVR = (VDATA *)pS->Push();
     if (!pVR)
         return IFUNCRESULT_FAILED;
     pVR->Set(retString);
     return IFUNCRESULT_OK;
 }
 
-DWORD __cdecl _funcGetSailSpeed(VS_STACK *pS)
+uint32_t _funcGetSailSpeed(VS_STACK *pS)
 {
-    VDATA *pSailPow = (VDATA *)pS->Pop();
-    float fSailPow = pSailPow->GetFloat();
+    auto *pSailPow = (VDATA *)pS->Pop();
+    const float fSailPow = pSailPow->GetFloat();
 
-    VDATA *pHoleMax = (VDATA *)pS->Pop();
-    long nHoleMax = pHoleMax->GetLong();
+    auto *pHoleMax = (VDATA *)pS->Pop();
+    const long nHoleMax = pHoleMax->GetLong();
 
-    VDATA *pHoleQ = (VDATA *)pS->Pop();
-    long nHoleQ = pHoleQ->GetLong();
+    auto *pHoleQ = (VDATA *)pS->Pop();
+    const long nHoleQ = pHoleQ->GetLong();
 
-    VDATA *pVR = (VDATA *)pS->Push();
+    auto *pVR = (VDATA *)pS->Push();
     if (!pVR)
         return IFUNCRESULT_FAILED;
     pVR->Set(fSailPow - GetSailSpeed(nHoleQ, nHoleMax, fSailPow));
@@ -144,7 +145,7 @@ DWORD __cdecl _funcGetSailSpeed(VS_STACK *pS)
     return IFUNCRESULT_OK;
 }
 
-DWORD __cdecl _RandomHole2Sail(VS_STACK *pS)
+uint32_t _RandomHole2Sail(VS_STACK *pS)
 {
     VDATA *pData;
 
@@ -153,61 +154,60 @@ DWORD __cdecl _RandomHole2Sail(VS_STACK *pS)
     int _addHoleQ = pData->GetLong();
     if (!(pData = (VDATA *)pS->Pop()))
         return IFUNCRESULT_FAILED;
-    DWORD _holeData = pData->GetLong();
+    const uint32_t _holeData = pData->GetLong();
     if (!(pData = (VDATA *)pS->Pop()))
         return IFUNCRESULT_FAILED;
     int _maxHole = pData->GetLong();
     if (!(pData = (VDATA *)pS->Pop()))
         return IFUNCRESULT_FAILED;
-    int _groupNum = pData->GetLong();
+    const int _groupNum = pData->GetLong();
     if (!(pData = (VDATA *)pS->Pop()))
         return IFUNCRESULT_FAILED;
     char *_reyName = pData->GetString();
     if (!(pData = (VDATA *)pS->Pop()))
         return IFUNCRESULT_FAILED;
-    int _chrIdx = pData->GetLong();
+    const int _chrIdx = pData->GetLong();
 
-    VDATA *pVR = (VDATA *)pS->Push();
+    auto *pVR = (VDATA *)pS->Push();
     if (!pVR)
         return IFUNCRESULT_FAILED;
 
-    SAILONE_BASE *pSail = null;
-    ENTITY_ID ei;
-    if (api->FindClass(&ei, "sail", 0))
+    SAILONE_BASE *pSail = nullptr;
+    if (const auto ei = EntityManager::GetEntityId("sail"))
     {
-        pSail = ((SAIL_BASE *)api->GetEntityPointer(&ei))->FindSailForCharacter(_chrIdx, _reyName, _groupNum);
+        pSail = static_cast<SAIL_BASE *>(EntityManager::GetEntityPointer(ei))
+                    ->FindSailForCharacter(_chrIdx, _reyName, _groupNum);
     }
 
     int holeArraySize = 0;
     int holeIdx[20];
-    int i = 0;
-    DWORD holeMask = _holeData;
-    for (i = 0; holeMask > 0; i++, holeMask >>= 1)
+    uint32_t holeMask = _holeData;
+    for (int i = 0; holeMask > 0; i++, holeMask >>= 1)
         if (!(holeMask & 1))
             holeIdx[holeArraySize++] = i;
 
     holeMask = _holeData;
     while (holeArraySize > 0 && _addHoleQ > 0)
     {
-        i = rand() % holeArraySize;
+        const int i = rand() % holeArraySize;
         holeMask |= 1 << holeIdx[i];
         holeArraySize--;
         _addHoleQ--;
         holeIdx[i] = holeIdx[holeArraySize];
     }
 
-    if (pSail != null && holeMask != _holeData)
+    if (pSail != nullptr && holeMask != _holeData)
     {
         pSail->SetAllHole(holeMask);
         pSail->CalculateMirrorSailIndex();
     }
 
-    pVR->Set((long)holeMask);
+    pVR->Set(static_cast<long>(holeMask));
 
     return IFUNCRESULT_OK;
 }
 
-DWORD __cdecl _DeleteOneSailHole(VS_STACK *pS)
+uint32_t _DeleteOneSailHole(VS_STACK *pS)
 {
     VDATA *pData;
 
@@ -216,7 +216,7 @@ DWORD __cdecl _DeleteOneSailHole(VS_STACK *pS)
     int _delHoleQ = pData->GetLong();
     if (!(pData = (VDATA *)pS->Pop()))
         return IFUNCRESULT_FAILED;
-    DWORD _holeData = pData->GetLong();
+    const uint32_t _holeData = pData->GetLong();
     if (!(pData = (VDATA *)pS->Pop()))
         return IFUNCRESULT_FAILED;
     char *_reyName = pData->GetString();
@@ -225,47 +225,46 @@ DWORD __cdecl _DeleteOneSailHole(VS_STACK *pS)
     char *_groupName = pData->GetString();
     if (!(pData = (VDATA *)pS->Pop()))
         return IFUNCRESULT_FAILED;
-    int _chrIdx = pData->GetLong();
+    const int _chrIdx = pData->GetLong();
 
-    VDATA *pVR = (VDATA *)pS->Push();
+    auto *pVR = (VDATA *)pS->Push();
     if (!pVR)
         return IFUNCRESULT_FAILED;
 
     int _groupNum;
     sscanf(_groupName, "%d", &_groupNum);
 
-    SAILONE_BASE *pSail = null;
-    ENTITY_ID ei;
-    if (api->FindClass(&ei, "sail", 0))
+    SAILONE_BASE *pSail = nullptr;
+    if (const auto ei = EntityManager::GetEntityId("sail"))
     {
-        pSail = ((SAIL_BASE *)api->GetEntityPointer(&ei))->FindSailForCharacter(_chrIdx, _reyName, _groupNum);
+        pSail = static_cast<SAIL_BASE *>(EntityManager::GetEntityPointer(ei))
+                    ->FindSailForCharacter(_chrIdx, _reyName, _groupNum);
     }
 
     int holeArraySize = 0;
     int holeIdx[20];
-    DWORD holeMask = _holeData;
-    int i = 0;
-    for (i = 0; holeMask > 0; i++, holeMask >>= 1)
+    uint32_t holeMask = _holeData;
+    for (int i = 0; holeMask > 0; i++, holeMask >>= 1)
         if (holeMask & 1)
             holeIdx[holeArraySize++] = i;
 
     holeMask = _holeData;
     while (holeArraySize > 0 && _delHoleQ > 0)
     {
-        i = rand() % holeArraySize;
+        const int i = rand() % holeArraySize;
         holeMask &= ~(1 << holeIdx[i]);
         holeArraySize--;
         _delHoleQ--;
         holeIdx[i] = holeIdx[holeArraySize];
     }
 
-    if (pSail != null && holeMask != _holeData)
+    if (pSail != nullptr && holeMask != _holeData)
     {
         pSail->SetAllHole(holeMask);
         pSail->CalculateMirrorSailIndex();
     }
 
-    pVR->Set((long)holeMask);
+    pVR->Set(static_cast<long>(holeMask));
 
     return IFUNCRESULT_OK;
 }
@@ -278,31 +277,31 @@ bool SCRIPT_RIGGING_FILES::Init()
     sIFuncInfo.pFuncName = "funcGetSailSpeed";
     sIFuncInfo.pReturnValueName = "float";
     sIFuncInfo.pFuncAddress = _funcGetSailSpeed;
-    api->SetScriptFunction(&sIFuncInfo);
+    core.SetScriptFunction(&sIFuncInfo);
 
     sIFuncInfo.nArguments = 6;
     sIFuncInfo.pFuncName = "RandomHole2Sail";
     sIFuncInfo.pReturnValueName = "int";
     sIFuncInfo.pFuncAddress = _RandomHole2Sail;
-    api->SetScriptFunction(&sIFuncInfo);
+    core.SetScriptFunction(&sIFuncInfo);
 
     sIFuncInfo.nArguments = 5;
     sIFuncInfo.pFuncName = "DeleteOneSailHole";
     sIFuncInfo.pReturnValueName = "int";
     sIFuncInfo.pFuncAddress = _DeleteOneSailHole;
-    api->SetScriptFunction(&sIFuncInfo);
+    core.SetScriptFunction(&sIFuncInfo);
 
     sIFuncInfo.nArguments = 2;
     sIFuncInfo.pFuncName = "GetAssembledString";
     sIFuncInfo.pReturnValueName = "string";
     sIFuncInfo.pFuncAddress = _GetAssembledString;
-    api->SetScriptFunction(&sIFuncInfo);
+    core.SetScriptFunction(&sIFuncInfo);
 
     sIFuncInfo.nArguments = 1;
     sIFuncInfo.pFuncName = "ShipSailState";
     sIFuncInfo.pReturnValueName = "float";
     sIFuncInfo.pFuncAddress = _ShipSailState;
-    api->SetScriptFunction(&sIFuncInfo);
+    core.SetScriptFunction(&sIFuncInfo);
 
     return true;
 }

@@ -1,10 +1,10 @@
 #include "DataPosition.h"
-#include "..\..\icommon\memfile.h"
+#include "vmodule_api.h"
 
 //конструктор/деструктор
 DataPosition::DataPosition()
 {
-    Value = CVECTOR(0.0f, 0.0f, 0.0f);
+    Value = Vector(0, 0, 0);
 }
 
 DataPosition::~DataPosition()
@@ -12,28 +12,28 @@ DataPosition::~DataPosition()
 }
 
 //Получить значение (Текущее время, Коэфицент рандома[0..1])
-const CVECTOR &DataPosition::GetValue()
+const Vector &DataPosition::GetValue() const
 {
     return Value;
 }
 
 //Установить значение
-void DataPosition::SetValue(const CVECTOR &val)
+void DataPosition::SetValue(const Vector &val)
 {
     Value = val;
 }
 
 void DataPosition::Load(MemFile *File)
 {
-    CVECTOR vValue;
+    Vector vValue;
     File->ReadType(vValue.x);
     File->ReadType(vValue.y);
     File->ReadType(vValue.z);
-    // api->Trace("Read position %3.2f, %3.2f, %3.2f", vValue.x, vValue.y, vValue.z);
+    // core.Trace("Read position %3.2f, %3.2f, %3.2f", vValue.x, vValue.y, vValue.z);
     SetValue(vValue);
 
     static char AttribueName[128];
-    DWORD NameLength = 0;
+    uint32_t NameLength = 0;
     File->ReadType(NameLength);
     Assert(NameLength < 128);
     File->Read(AttribueName, NameLength);
@@ -43,28 +43,28 @@ void DataPosition::Load(MemFile *File)
 
 void DataPosition::SetName(const char *szName)
 {
-    // api->Trace("DataPosition::SetName - '%s'", szName);
+    // core.Trace("DataPosition::SetName - '%s'", szName);
     Name = szName;
 }
 
-const char *DataPosition::GetName()
+const char *DataPosition::GetName() const
 {
-    return Name.GetBuffer();
+    return Name.c_str();
 }
 
-void DataPosition::Write(MemFile *File)
+void DataPosition::Write(MemFile *File) const
 {
-    CVECTOR vValue = GetValue();
-    // api->Trace("Write position %3.2f, %3.2f, %3.2f", vValue.x, vValue.y, vValue.z);
+    auto vValue = GetValue();
+    // core.Trace("Write position %3.2f, %3.2f, %3.2f", vValue.x, vValue.y, vValue.z);
     File->WriteType(vValue.x);
     File->WriteType(vValue.y);
     File->WriteType(vValue.z);
 
     // save name
-    DWORD NameLength = Name.Len();
-    DWORD NameLengthPlusZero = NameLength + 1;
+    const uint32_t NameLength = Name.size();
+    auto NameLengthPlusZero = NameLength + 1;
     File->WriteType(NameLengthPlusZero);
     Assert(NameLength < 128);
-    File->Write(Name.GetBuffer(), NameLength);
+    File->Write(Name.c_str(), NameLength);
     File->WriteZeroByte();
 }

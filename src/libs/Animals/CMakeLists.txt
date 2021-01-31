@@ -1,6 +1,6 @@
 project(animals)
 
-add_library(${PROJECT_NAME} MODULE
+add_library(${PROJECT_NAME} STATIC
 	Animals.cpp
 	Animals.h
 	AnimalsDefines.cpp
@@ -15,13 +15,9 @@ add_library(${PROJECT_NAME} MODULE
 	TDynamicSystem.h
 	TFishSchools.cpp
 	TFishSchools.h
-	TIVBufferManager.cpp
-	TIVBufferManager.h
 	TSeagulls.cpp
 	TSeagulls.h
-	TSharks.cpp
-	TSharks.h
-	${Storm_SOURCE_DIR}/libs/Common_h/rands.cpp
+	${STORM_SOURCE_DIR}/libs/Common_h/rands.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

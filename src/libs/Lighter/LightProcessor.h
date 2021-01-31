@@ -12,11 +12,11 @@
 #define _LightProcessor_H_
 
 #include "LGeometry.h"
-#include "Lights.h"
+#include "LighterLights.h"
 #include "OctTree.h"
 #include "Window.h"
 
-class VDX8RENDER;
+class VDX9RENDER;
 
 class LightProcessor
 {
@@ -26,7 +26,7 @@ class LightProcessor
   public:
     LightProcessor();
     virtual ~LightProcessor();
-    void SetParams(LGeometry *g, Window *win, Lights *lit, OctTree *ot, VDX8RENDER *_rs);
+    void SetParams(LGeometry *g, Window *win, LighterLights *lit, OctTree *ot, VDX9RENDER *_rs);
     void UpdateLightsParam();
 
     //Выполнить шаг вычислений
@@ -45,13 +45,13 @@ class LightProcessor
     //Расчитать освещение
     void CalcLights(long lit = -1, bool isCos = true, bool isAtt = true, bool isSdw = true);
     //Распределить затенение с треугольника на вершины
-    void ApplyTriangleShadows(LighterTriangle &t);
+    void ApplyTriangleShadows(Triangle &t);
 
   private:
     LGeometry *geometry;
     Window *window;
-    Lights *lights;
-    VDX8RENDER *rs;
+    LighterLights *lights;
+    VDX9RENDER *rs;
     OctTree *octtree;
 
     long shadowTriangle;

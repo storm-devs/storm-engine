@@ -7,21 +7,21 @@
 
 class MESSAGE_ICONS
 {
-    VDX8RENDER *rs;
-    ENTITY_ID m_idHost;
+    VDX9RENDER *rs;
+    entid_t m_idHost;
 
   public:
     MESSAGE_ICONS();
     ~MESSAGE_ICONS();
 
-    void Update(DWORD deltaTime);
-    void Draw();
+    void Update(uint32_t deltaTime);
+    void Draw() const;
     void SetShowMsg(bool bShow)
     {
         m_bShowMsgIcon = m_vMsgIconBufID >= 0 ? bShow : false;
     }
     void StartData(ATTRIBUTES *pAData[MESSAGE_ICONS_COLUMN_QUANTITY], long pLeft[MESSAGE_ICONS_COLUMN_QUANTITY]);
-    bool InitData(ENTITY_ID &host_eid, VDX8RENDER *_rs, ATTRIBUTES *pARoot);
+    bool InitData(entid_t host_eid, VDX9RENDER *_rs, ATTRIBUTES *pARoot);
 
   protected:
     // иконки сообщений
@@ -50,21 +50,21 @@ class MESSAGE_ICONS
     float m_fCurBlindTime;  // Текущее время для мигания
     bool m_bBlindDirectUp;  // Этап повышения цвета для мигания
 
-    DWORD m_dwHighBlindColor; // Цвет мигания максимальный
-    DWORD m_dwLowBlindColor;  // Цвет мигания минимальный
-    DWORD m_dwNormalColor;    // Нормальный цвет
+    uint32_t m_dwHighBlindColor; // Цвет мигания максимальный
+    uint32_t m_dwLowBlindColor;  // Цвет мигания минимальный
+    uint32_t m_dwNormalColor;    // Нормальный цвет
 
     struct COLUMN_DESCRIBER
     {
         COLUMN_DESCRIBER()
         {
-            pRow = null;
+            pRow = nullptr;
         }
+
         ~COLUMN_DESCRIBER()
         {
-            if (pRow)
-                delete[] pRow;
-            pRow = null;
+            delete[] pRow;
+            pRow = nullptr;
         }
 
         struct ROW_DESCR
@@ -75,10 +75,10 @@ class MESSAGE_ICONS
 
             bool bDoBlend;
             bool bDoBlind;
-            DWORD color;
+            uint32_t color;
         };
 
-        long rowQ;
+        size_t rowQ;
         long startVertex;
         long leftPos;
         ROW_DESCR *pRow;

@@ -1,12 +1,16 @@
 #include "xi_bounder.h"
 #include <stdio.h>
 
+#include "core.h"
+
+#include "vfile_service.h"
+
 CXI_BOUNDER::CXI_BOUNDER()
 {
-    m_rs = NULL;
+    m_rs = nullptr;
 
     m_idTex = -1L;
-    m_sGroupName = NULL;
+    m_sGroupName = nullptr;
 
     m_idVBuf = -1L;
     m_idIBuf = -1L;
@@ -25,7 +29,7 @@ int CXI_BOUNDER::CommandExecute(int wActCode)
     return -1;
 }
 
-void CXI_BOUNDER::Draw(bool bSelected, dword Delta_Time)
+void CXI_BOUNDER::Draw(bool bSelected, uint32_t Delta_Time)
 {
     if (m_bUse)
     {
@@ -34,8 +38,8 @@ void CXI_BOUNDER::Draw(bool bSelected, dword Delta_Time)
     }
 }
 
-bool CXI_BOUNDER::Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, VDX8RENDER *rs, XYRECT &hostRect,
-                       XYPOINT &ScreenSize)
+bool CXI_BOUNDER::Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs,
+                       XYRECT &hostRect, XYPOINT &ScreenSize)
 {
     if (!CINODE::Init(ini1, name1, ini2, name2, rs, hostRect, ScreenSize))
         return false;
@@ -47,28 +51,29 @@ void CXI_BOUNDER::ReleaseAll()
     m_bUse = false;
 
     PICTURE_TEXTURE_RELEASE(pPictureService, m_sGroupName, m_idTex);
-    PTR_DELETE(m_sGroupName);
+    STORM_DELETE(m_sGroupName);
 
-    VERTEX_BUF_RELEASE(m_rs, m_idVBuf);
-    INDEX_BUF_RELEASE(m_rs, m_idIBuf);
+    VERTEX_BUFFER_RELEASE(m_rs, m_idVBuf);
+    INDEX_BUFFER_RELEASE(m_rs, m_idIBuf);
 }
 
-void CXI_BOUNDER::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2)
+void CXI_BOUNDER::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2)
 {
     int i;
     char param[256];
     char param2[256];
-    char *tmpstr;
+    const char *tmpstr;
 
     // get show color
     m_dwColor = GetIniARGB(ini1, name1, ini2, name2, "color", 0xFFFFFFFF);
 
     // Get texture name and load that texture
-    m_sGroupName = null;
+    m_sGroupName = nullptr;
     if (ReadIniString(ini1, name1, ini2, name2, "groupName", param, sizeof(param), ""))
     {
-        m_sGroupName = NEW char[strlen(param) + 1];
-        strcpy(m_sGroupName, param);
+        const auto len = strlen(param) + 1;
+        m_sGroupName = new char[len];
+        memcpy(m_sGroupName, param, len);
         m_idTex = pPictureService->GetTextureID(m_sGroupName);
     }
 
@@ -86,35 +91,35 @@ void CXI_BOUNDER::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2
     // get picture width & height
     XYRECT rectTmp;
     pPictureService->GetTexturePos(m_idAngle, rectTmp);
-    m_fAngleWidth = float(rectTmp.right - rectTmp.left + 1);
-    m_fAngleHeight = float(rectTmp.bottom - rectTmp.top + 1);
+    m_fAngleWidth = static_cast<float>(rectTmp.right - rectTmp.left + 1);
+    m_fAngleHeight = static_cast<float>(rectTmp.bottom - rectTmp.top + 1);
     pPictureService->GetTexturePos(m_idHorzLine, rectTmp);
-    float fLineWidth = float(rectTmp.right - rectTmp.left + 1);
+    auto fLineWidth = static_cast<float>(rectTmp.right - rectTmp.left + 1);
 
-    float fBoxWidth = float(m_rect.right - m_rect.left) - m_fAngleWidth * 2.f;
-    float fBoxHeight = float(m_rect.bottom - m_rect.top) - m_fAngleHeight * 2.f;
+    auto fBoxWidth = static_cast<float>(m_rect.right - m_rect.left) - m_fAngleWidth * 2.f;
+    auto fBoxHeight = static_cast<float>(m_rect.bottom - m_rect.top) - m_fAngleHeight * 2.f;
 
-    m_nHorzLineQuantity = int(fBoxWidth / fLineWidth);
+    m_nHorzLineQuantity = static_cast<int>(fBoxWidth / fLineWidth);
     if (m_nHorzLineQuantity * fLineWidth < fBoxWidth)
         m_nHorzLineQuantity++;
-    float fHorzLineWidth = fBoxWidth / m_nHorzLineQuantity;
+    auto fHorzLineWidth = fBoxWidth / m_nHorzLineQuantity;
 
-    m_nVertLineQuantity = int(fBoxHeight / fLineWidth);
+    m_nVertLineQuantity = static_cast<int>(fBoxHeight / fLineWidth);
     if (m_nVertLineQuantity * fLineWidth < fBoxHeight)
         m_nVertLineQuantity++;
-    float fVertLineWidth = fBoxHeight / m_nVertLineQuantity;
+    auto fVertLineWidth = fBoxHeight / m_nVertLineQuantity;
 
     // create index and vertex buffers
     m_nVert = 4 * 4 + m_nHorzLineQuantity * 4 * 2 + m_nVertLineQuantity * 4 * 2;
     m_nIndx = 2 * 4 + 2 * m_nHorzLineQuantity * 2 + 2 * m_nVertLineQuantity * 2;
-    m_idVBuf = m_rs->CreateVertexBufferManaged(XI_ONETEX_FVF, m_nVert * sizeof(XI_ONETEX_VERTEX), D3DUSAGE_WRITEONLY);
-    m_idIBuf = m_rs->CreateIndexBufferManaged(m_nIndx * 3 * 2);
+    m_idVBuf = m_rs->CreateVertexBuffer(XI_ONETEX_FVF, m_nVert * sizeof(XI_ONETEX_VERTEX), D3DUSAGE_WRITEONLY);
+    m_idIBuf = m_rs->CreateIndexBuffer(m_nIndx * 3 * 2);
 
     // Fill buffers
-    XI_ONETEX_VERTEX *pVert = (XI_ONETEX_VERTEX *)m_rs->LockVertexBuffer(m_idVBuf);
-    WORD *pIndx = (WORD *)m_rs->LockIndexBuffer(m_idIBuf);
-    if (pVert == NULL || pIndx == NULL)
-        SE_THROW_MSG("can not create the index&vertex buffers")
+    auto *pVert = static_cast<XI_ONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_idVBuf));
+    auto *pIndx = static_cast<uint16_t *>(m_rs->LockIndexBuffer(m_idIBuf));
+    if (pVert == nullptr || pIndx == nullptr)
+        throw std::exception("can not create the index&vertex buffers");
 
     for (i = 0; i < m_nVert; i++)
     {
@@ -122,8 +127,8 @@ void CXI_BOUNDER::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2
         pVert[i].pos.z = 1.f;
     }
 
-    int inum = 0;
-    int vnum = 0;
+    auto inum = 0;
+    auto vnum = 0;
     // fill angle rectangles
     FXYRECT texRectTmp;
     FXYRECT fRectTmp;
@@ -139,31 +144,31 @@ void CXI_BOUNDER::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2
         switch (i)
         {
         case 0:
-            fRectTmp.left = (float)m_rect.left;
-            fRectTmp.right = (float)m_rect.left + m_fAngleWidth;
-            fRectTmp.top = (float)m_rect.top;
-            fRectTmp.bottom = (float)m_rect.top + m_fAngleHeight;
+            fRectTmp.left = static_cast<float>(m_rect.left);
+            fRectTmp.right = static_cast<float>(m_rect.left) + m_fAngleWidth;
+            fRectTmp.top = static_cast<float>(m_rect.top);
+            fRectTmp.bottom = static_cast<float>(m_rect.top) + m_fAngleHeight;
             pPictureService->GetTexturePos(m_idAngle, texRectTmp);
             break;
         case 1:
-            fRectTmp.left = (float)m_rect.right - m_fAngleWidth;
-            fRectTmp.right = (float)m_rect.right;
-            fRectTmp.top = (float)m_rect.top;
-            fRectTmp.bottom = (float)m_rect.top + m_fAngleHeight;
+            fRectTmp.left = static_cast<float>(m_rect.right) - m_fAngleWidth;
+            fRectTmp.right = static_cast<float>(m_rect.right);
+            fRectTmp.top = static_cast<float>(m_rect.top);
+            fRectTmp.bottom = static_cast<float>(m_rect.top) + m_fAngleHeight;
             pPictureService->GetTexturePos(TEXTURE_MODIFY_HORZFLIP, m_idAngle, texRectTmp);
             break;
         case 2:
-            fRectTmp.left = (float)m_rect.left;
-            fRectTmp.right = (float)m_rect.left + m_fAngleWidth;
-            fRectTmp.top = (float)m_rect.bottom - m_fAngleHeight;
-            fRectTmp.bottom = (float)m_rect.bottom;
+            fRectTmp.left = static_cast<float>(m_rect.left);
+            fRectTmp.right = static_cast<float>(m_rect.left) + m_fAngleWidth;
+            fRectTmp.top = static_cast<float>(m_rect.bottom) - m_fAngleHeight;
+            fRectTmp.bottom = static_cast<float>(m_rect.bottom);
             pPictureService->GetTexturePos(TEXTURE_MODIFY_VERTFLIP, m_idAngle, texRectTmp);
             break;
         case 3:
-            fRectTmp.left = (float)m_rect.right - m_fAngleWidth;
-            fRectTmp.right = (float)m_rect.right;
-            fRectTmp.top = (float)m_rect.bottom - m_fAngleHeight;
-            fRectTmp.bottom = (float)m_rect.bottom;
+            fRectTmp.left = static_cast<float>(m_rect.right) - m_fAngleWidth;
+            fRectTmp.right = static_cast<float>(m_rect.right);
+            fRectTmp.top = static_cast<float>(m_rect.bottom) - m_fAngleHeight;
+            fRectTmp.bottom = static_cast<float>(m_rect.bottom);
             pPictureService->GetTexturePos(TEXTURE_MODIFY_HORZFLIP | TEXTURE_MODIFY_VERTFLIP, m_idAngle, texRectTmp);
             break;
         }
@@ -193,9 +198,9 @@ void CXI_BOUNDER::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2
     FXYRECT tmpRect1, tmpRect2;
     pPictureService->GetTexturePos(m_idHorzLine, tmpRect1);
     pPictureService->GetTexturePos(TEXTURE_MODIFY_VERTFLIP, m_idHorzLine, tmpRect2);
-    float fXTop = m_rect.left + m_fAngleWidth;
-    float fYTop = m_rect.bottom - m_fAngleHeight;
-    int lineType = 0; // top horizontal line
+    auto fXTop = m_rect.left + m_fAngleWidth;
+    auto fYTop = m_rect.bottom - m_fAngleHeight;
+    auto lineType = 0; // top horizontal line
     for (i = 0; i < m_nHorzLineQuantity * 2 + m_nVertLineQuantity * 2; i++)
     {
         if (i == m_nHorzLineQuantity)
@@ -250,24 +255,24 @@ void CXI_BOUNDER::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2
         case 0:
             fRectTmp.left = fXTop;
             fRectTmp.right = fXTop + fHorzLineWidth;
-            fRectTmp.top = (float)m_rect.top;
-            fRectTmp.bottom = (float)m_rect.top + m_fAngleHeight;
+            fRectTmp.top = static_cast<float>(m_rect.top);
+            fRectTmp.bottom = static_cast<float>(m_rect.top) + m_fAngleHeight;
             break;
         case 1:
             fRectTmp.left = fXTop;
             fRectTmp.right = fXTop + fHorzLineWidth;
-            fRectTmp.top = (float)m_rect.bottom - m_fAngleHeight;
-            fRectTmp.bottom = (float)m_rect.bottom;
+            fRectTmp.top = static_cast<float>(m_rect.bottom) - m_fAngleHeight;
+            fRectTmp.bottom = static_cast<float>(m_rect.bottom);
             break;
         case 2:
-            fRectTmp.left = (float)m_rect.left;
-            fRectTmp.right = (float)m_rect.left + m_fAngleWidth;
+            fRectTmp.left = static_cast<float>(m_rect.left);
+            fRectTmp.right = static_cast<float>(m_rect.left) + m_fAngleWidth;
             fRectTmp.top = fYTop - fVertLineWidth;
             fRectTmp.bottom = fYTop;
             break;
         case 3:
-            fRectTmp.left = (float)m_rect.right - m_fAngleWidth;
-            fRectTmp.right = (float)m_rect.right;
+            fRectTmp.left = static_cast<float>(m_rect.right) - m_fAngleWidth;
+            fRectTmp.right = static_cast<float>(m_rect.right);
             fRectTmp.top = fYTop - fVertLineWidth;
             fRectTmp.bottom = fYTop;
             break;
@@ -320,20 +325,20 @@ bool CXI_BOUNDER::IsClick(int buttonID, long xPos, long yPos)
 void CXI_BOUNDER::ChangePosition(XYRECT &rNewPos)
 {
     // Fill buffers
-    XI_ONETEX_VERTEX *pVert = (XI_ONETEX_VERTEX *)m_rs->LockVertexBuffer(m_idVBuf);
+    auto *pVert = static_cast<XI_ONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_idVBuf));
 
-    if (pVert == NULL)
-        SE_THROW_MSG("can not create the index&vertex buffers")
+    if (pVert == nullptr)
+        throw std::exception("can not create the index&vertex buffers");
 
     long i;
 
     m_rect = rNewPos;
 
-    float fBoxWidth = float(m_rect.right - m_rect.left) - m_fAngleWidth * 2.f;
-    float fBoxHeight = float(m_rect.bottom - m_rect.top) - m_fAngleHeight * 2.f;
-    float fHorzLineWidth = fBoxWidth / m_nHorzLineQuantity;
+    const auto fBoxWidth = static_cast<float>(m_rect.right - m_rect.left) - m_fAngleWidth * 2.f;
+    const auto fBoxHeight = static_cast<float>(m_rect.bottom - m_rect.top) - m_fAngleHeight * 2.f;
+    const auto fHorzLineWidth = fBoxWidth / m_nHorzLineQuantity;
 
-    float fVertLineWidth = fBoxHeight / m_nVertLineQuantity;
+    const auto fVertLineWidth = fBoxHeight / m_nVertLineQuantity;
 
     for (i = 0; i < m_nVert; i++)
     {
@@ -341,7 +346,7 @@ void CXI_BOUNDER::ChangePosition(XYRECT &rNewPos)
         pVert[i].pos.z = 1.f;
     }
 
-    int vnum = 0;
+    auto vnum = 0;
     // fill angle rectangles
     FXYRECT texRectTmp;
     FXYRECT fRectTmp;
@@ -350,31 +355,31 @@ void CXI_BOUNDER::ChangePosition(XYRECT &rNewPos)
         switch (i)
         {
         case 0:
-            fRectTmp.left = (float)m_rect.left;
-            fRectTmp.right = (float)m_rect.left + m_fAngleWidth;
-            fRectTmp.top = (float)m_rect.top;
-            fRectTmp.bottom = (float)m_rect.top + m_fAngleHeight;
+            fRectTmp.left = static_cast<float>(m_rect.left);
+            fRectTmp.right = static_cast<float>(m_rect.left) + m_fAngleWidth;
+            fRectTmp.top = static_cast<float>(m_rect.top);
+            fRectTmp.bottom = static_cast<float>(m_rect.top) + m_fAngleHeight;
             pPictureService->GetTexturePos(m_idAngle, texRectTmp);
             break;
         case 1:
-            fRectTmp.left = (float)m_rect.right - m_fAngleWidth;
-            fRectTmp.right = (float)m_rect.right;
-            fRectTmp.top = (float)m_rect.top;
-            fRectTmp.bottom = (float)m_rect.top + m_fAngleHeight;
+            fRectTmp.left = static_cast<float>(m_rect.right) - m_fAngleWidth;
+            fRectTmp.right = static_cast<float>(m_rect.right);
+            fRectTmp.top = static_cast<float>(m_rect.top);
+            fRectTmp.bottom = static_cast<float>(m_rect.top) + m_fAngleHeight;
             pPictureService->GetTexturePos(TEXTURE_MODIFY_HORZFLIP, m_idAngle, texRectTmp);
             break;
         case 2:
-            fRectTmp.left = (float)m_rect.left;
-            fRectTmp.right = (float)m_rect.left + m_fAngleWidth;
-            fRectTmp.top = (float)m_rect.bottom - m_fAngleHeight;
-            fRectTmp.bottom = (float)m_rect.bottom;
+            fRectTmp.left = static_cast<float>(m_rect.left);
+            fRectTmp.right = static_cast<float>(m_rect.left) + m_fAngleWidth;
+            fRectTmp.top = static_cast<float>(m_rect.bottom) - m_fAngleHeight;
+            fRectTmp.bottom = static_cast<float>(m_rect.bottom);
             pPictureService->GetTexturePos(TEXTURE_MODIFY_VERTFLIP, m_idAngle, texRectTmp);
             break;
         case 3:
-            fRectTmp.left = (float)m_rect.right - m_fAngleWidth;
-            fRectTmp.right = (float)m_rect.right;
-            fRectTmp.top = (float)m_rect.bottom - m_fAngleHeight;
-            fRectTmp.bottom = (float)m_rect.bottom;
+            fRectTmp.left = static_cast<float>(m_rect.right) - m_fAngleWidth;
+            fRectTmp.right = static_cast<float>(m_rect.right);
+            fRectTmp.top = static_cast<float>(m_rect.bottom) - m_fAngleHeight;
+            fRectTmp.bottom = static_cast<float>(m_rect.bottom);
             pPictureService->GetTexturePos(TEXTURE_MODIFY_HORZFLIP | TEXTURE_MODIFY_VERTFLIP, m_idAngle, texRectTmp);
             break;
         }
@@ -404,9 +409,9 @@ void CXI_BOUNDER::ChangePosition(XYRECT &rNewPos)
     FXYRECT tmpRect1, tmpRect2;
     pPictureService->GetTexturePos(m_idHorzLine, tmpRect1);
     pPictureService->GetTexturePos(TEXTURE_MODIFY_VERTFLIP, m_idHorzLine, tmpRect2);
-    float fXTop = m_rect.left + m_fAngleWidth;
-    float fYTop = m_rect.bottom - m_fAngleHeight;
-    int lineType = 0; // top horizontal line
+    auto fXTop = m_rect.left + m_fAngleWidth;
+    auto fYTop = m_rect.bottom - m_fAngleHeight;
+    auto lineType = 0; // top horizontal line
     for (i = 0; i < m_nHorzLineQuantity * 2 + m_nVertLineQuantity * 2; i++)
     {
         if (i == m_nHorzLineQuantity)
@@ -454,24 +459,24 @@ void CXI_BOUNDER::ChangePosition(XYRECT &rNewPos)
         case 0:
             fRectTmp.left = fXTop;
             fRectTmp.right = fXTop + fHorzLineWidth;
-            fRectTmp.top = (float)m_rect.top;
-            fRectTmp.bottom = (float)m_rect.top + m_fAngleHeight;
+            fRectTmp.top = static_cast<float>(m_rect.top);
+            fRectTmp.bottom = static_cast<float>(m_rect.top) + m_fAngleHeight;
             break;
         case 1:
             fRectTmp.left = fXTop;
             fRectTmp.right = fXTop + fHorzLineWidth;
-            fRectTmp.top = (float)m_rect.bottom - m_fAngleHeight;
-            fRectTmp.bottom = (float)m_rect.bottom;
+            fRectTmp.top = static_cast<float>(m_rect.bottom) - m_fAngleHeight;
+            fRectTmp.bottom = static_cast<float>(m_rect.bottom);
             break;
         case 2:
-            fRectTmp.left = (float)m_rect.left;
-            fRectTmp.right = (float)m_rect.left + m_fAngleWidth;
+            fRectTmp.left = static_cast<float>(m_rect.left);
+            fRectTmp.right = static_cast<float>(m_rect.left) + m_fAngleWidth;
             fRectTmp.top = fYTop - fVertLineWidth;
             fRectTmp.bottom = fYTop;
             break;
         case 3:
-            fRectTmp.left = (float)m_rect.right - m_fAngleWidth;
-            fRectTmp.right = (float)m_rect.right;
+            fRectTmp.left = static_cast<float>(m_rect.right) - m_fAngleWidth;
+            fRectTmp.right = static_cast<float>(m_rect.right);
             fRectTmp.top = fYTop - fVertLineWidth;
             fRectTmp.bottom = fYTop;
             break;
@@ -519,15 +524,15 @@ void CXI_BOUNDER::SaveParametersToIni()
 {
     char pcWriteParam[2048];
 
-    INIFILE *pIni = api->fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.GetBuffer());
+    auto *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
-        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.GetBuffer());
+        core.Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
         return;
     }
 
     // save position
-    _snprintf(pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rect.left, m_rect.top, m_rect.right, m_rect.bottom);
+    sprintf_s(pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rect.left, m_rect.top, m_rect.right, m_rect.bottom);
     pIni->WriteString(m_nodeName, "position", pcWriteParam);
 
     delete pIni;

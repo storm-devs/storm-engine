@@ -1,6 +1,6 @@
 project(collide)
 
-add_library(${PROJECT_NAME} MODULE
+add_library(${PROJECT_NAME} STATIC
 	coll.cpp
 	local_collide.cpp
 	vcollide.h

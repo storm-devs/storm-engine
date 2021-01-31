@@ -1,7 +1,7 @@
 #ifndef _XI_BORDER_H_
 #define _XI_BORDER_H_
 
-#include "..\inode.h"
+#include "../inode.h"
 
 class CXI_IMAGE;
 
@@ -11,26 +11,27 @@ class CXI_BORDER : public CINODE
     CXI_BORDER();
     ~CXI_BORDER();
 
-    void Draw(bool bSelected, dword Delta_Time);
-    bool Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, VDX8RENDER *rs, XYRECT &hostRect,
-              XYPOINT &ScreenSize);
-    void ReleaseAll();
-    int CommandExecute(int wActCode);
-    bool IsClick(int buttonID, long xPos, long yPos);
-    void MouseThis(float fX, float fY)
+    void Draw(bool bSelected, uint32_t Delta_Time) override;
+    bool Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs, XYRECT &hostRect,
+              XYPOINT &ScreenSize) override;
+    void ReleaseAll() override;
+    int CommandExecute(int wActCode) override;
+    bool IsClick(int buttonID, long xPos, long yPos) override;
+
+    void MouseThis(float fX, float fY) override
     {
     }
 
-    void ChangePosition(XYRECT &rNewPos);
-    void SaveParametersToIni();
+    void ChangePosition(XYRECT &rNewPos) override;
+    void SaveParametersToIni() override;
 
-    dword _cdecl MessageProc(long msgcode, MESSAGE &message);
+    uint32_t MessageProc(long msgcode, MESSAGE &message) override;
 
   protected:
-    void LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2);
-    void FillIndexBuffers();
+    void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
+    void FillIndexBuffers() const;
     void FillVertexBuffers();
-    void WriteVertexForSquare(XI_ONETEX_VERTEX *pV, FXYRECT &UVRect, dword dwColor, long left, long top, long right,
+    void WriteVertexForSquare(XI_ONETEX_VERTEX *pV, FXYRECT &UVRect, uint32_t dwColor, long left, long top, long right,
                               long bottom);
 
   protected:
@@ -43,9 +44,9 @@ class CXI_BORDER : public CINODE
     XYRECT m_rCapRect;
 
     // texture parameters
-    string m_sGroupName;
+    std::string m_sGroupName;
     long m_idTex;
-    DWORD m_dwColor;
+    uint32_t m_dwColor;
 
     // picture index & vertex buffers
     long m_idVBuf;   // identificator of the vertex buffer

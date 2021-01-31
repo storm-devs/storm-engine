@@ -11,22 +11,23 @@
 #ifndef _LocationEffects_H_
 #define _LocationEffects_H_
 
-#include "matrix.h"
+#include "Entity.h"
+#include "Matrix.h"
 #include "vmodule_api.h"
 
-class VDX8RENDER;
+class MESSAGE;
+class VDX9RENDER;
 
 #define LFX_SPLASHES_SECT 16
 
-class LocationEffects : public ENTITY
+class LocationEffects : public Entity
 {
-
 #pragma pack(push, 1)
 
     struct Vertex
     {
         CVECTOR pos;
-        dword color;
+        uint32_t color;
         float u, v;
     };
 
@@ -42,7 +43,7 @@ class LocationEffects : public ENTITY
 
     struct ParticleEx : public Particle
     {
-        dword color;
+        uint32_t color;
         float frame;
     };
 
@@ -84,32 +85,49 @@ class LocationEffects : public ENTITY
     };
 
     //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
+    // онструирование, деструктурирование
     //--------------------------------------------------------------------------------------------
   public:
     LocationEffects();
     virtual ~LocationEffects();
 
-    //Инициализация
-    bool Init();
-    //Исполнение
-    void Execute(dword delta_time);
-    void Realize(dword delta_time);
-    //Сообщения
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    //»нициализаци€
+    bool Init() override;
+    //»сполнение
+    void Execute(uint32_t delta_time);
+    void Realize(uint32_t delta_time);
+    //—ообщени€
+    uint64_t ProcessMessage(MESSAGE &message) override;
+
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
 
     //--------------------------------------------------------------------------------------------
-    //Инкапсуляция
+    //»нкапсул€ци€
     //--------------------------------------------------------------------------------------------
   private:
     void DrawParticles(void *prts, long num, long size, long texture, const char *tech, bool isEx = false,
                        long numU = 0);
 
   private:
-    VDX8RENDER *rs;
+    VDX9RENDER *rs;
 
     //---------------------------------------------------
-    //Брызги от персонажа
+    //Ѕрызги от персонажа
     //---------------------------------------------------
     void CreateSplash(const CVECTOR &pos, float power);
     void ProcessedChrSplash(float dltTime);
@@ -119,21 +137,21 @@ class LocationEffects : public ENTITY
     long splashesTxt;
 
     //---------------------------------------------------
-    //Мухи у фанарей
+    //ћухи у фанарей
     //---------------------------------------------------
 
     void AddLampFlys(CVECTOR &pos);
     void ProcessedFlys(float dltTime);
 
-    LampFlys *flys;
+    std::vector<LampFlys> flys;
     long numFlys;
     long maxFlys;
-    ParticleFly *fly;
+    std::vector<ParticleFly> fly;
     long numFly;
     long flyTex;
 
     //---------------------------------------------------
-    //Партиклы шотгана
+    //ѕартиклы шотгана
     //---------------------------------------------------
     void SGInited();
     void SGRelease();

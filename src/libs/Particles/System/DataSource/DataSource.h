@@ -1,15 +1,9 @@
 #ifndef _PARTICLE_DATA_SOURCE_H_
 #define _PARTICLE_DATA_SOURCE_H_
 
-#include "..\..\icommon\names.h"
-#include "..\..\icommon\types.h"
-#include "..\datadesc\data_desc.h"
-#include "exs.h"
+#include "../../icommon/types.h"
 #include "fieldlist.h"
-#include "templates.h"
-#include <stdarg.h>
-#include <stdio.h>
-#include <string.h>
+#include <vector>
 
 class DataObject;
 class DataColor;
@@ -27,7 +21,6 @@ class IParticleManager;
 //Источник данных для партиклов...
 class DataSource
 {
-
   public:
     //Описание партикла (используеться при создании системы)
     struct ParticleDesc
@@ -46,25 +39,25 @@ class DataSource
     {
         EmitterType Type;
         FieldList Fields;
-        array<ParticleDesc> Particles;
+        std::vector<ParticleDesc> Particles;
 
-        EmitterDesc() : Particles(_FL_)
+        EmitterDesc()
         {
             Type = UNKNOWN_EMITTER;
         }
     };
 
   private:
-    array<EmitterDesc> Emitters;
+    std::vector<EmitterDesc> Emitters;
 
     //Загрузить точечный эмиттер
     void CreatePointEmitter(MemFile *pMemFile);
 
     //Загрузить BillBoard партикл
-    void CreateBillBoardParticle(array<ParticleDesc> &Particles, MemFile *pMemFile);
+    void CreateBillBoardParticle(std::vector<ParticleDesc> &Particles, MemFile *pMemFile);
 
     //Загрузить Model партикл
-    void CreateModelParticle(array<ParticleDesc> &Particles, MemFile *pMemFile);
+    void CreateModelParticle(std::vector<ParticleDesc> &Particles, MemFile *pMemFile);
 
     int FindEmitter(const char *Name);
 
@@ -84,7 +77,7 @@ class DataSource
 
     //---------- Создание/удаление --------------------
     DataSource(IParticleManager *Master);
-    bool Release();
+    bool Release() const;
 
     // ========================= Load & Save =======================================
     //Сохранить/восстановить из файла
@@ -92,7 +85,7 @@ class DataSource
     virtual void Load(MemFile *pMemFile);
 
     virtual int GetEmitterCount();
-    DataSource::EmitterDesc *GetEmitterDesc(int Index);
+    EmitterDesc *GetEmitterDesc(int Index);
 };
 
 #endif

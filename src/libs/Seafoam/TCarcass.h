@@ -1,18 +1,10 @@
 #ifndef _TCARCASS_H_
 #define _TCARCASS_H_
 
-#include "CVECTOR.h"
-#include "MATRIX.h"
-#include "TIVBufferManager.h"
-#include "dx8render.h"
+#include "Cvector.h"
+#include "Matrix.h"
+#include "dx9render.h"
 #include "geometry.h"
-#include "geos.h"
-#include "matrix.h"
-#include "messages.h"
-#include "model.h"
-#include "object.h"
-#include "sea_base.h"
-#include "ship_base.h"
 
 #define MAX_MEASURE_POINTS 10
 #define MAX_LEVELS 20
@@ -25,7 +17,7 @@
 struct tCarcassVertex
 {
     CVECTOR pos;
-    DWORD color;
+    uint32_t color;
     float u, v;
 };
 
@@ -42,20 +34,20 @@ struct tMeasure
 class TCarcass
 {
   public:
-    TCarcass(int _levelsCount, int _measurePointsCount, VDX8RENDER *_renderer, bool _normalsInverted = false);
+    TCarcass(int _levelsCount, int _measurePointsCount, VDX9RENDER *_renderer, bool _normalsInverted = false);
     virtual ~TCarcass();
 
     void InitCircleMeasure(float _d, float _kx, float _ky);
     bool Initialize();
     void Uninitialize();
-    void Execute(dword _dTime, CMatrix &_mtx, const CVECTOR *_starts);
+    void Execute(uint32_t dTime, CMatrix &_mtx, const CVECTOR *_starts);
     void Realize(const char *_technique);
 
     void SetSpeed(float _uSpeed, float _vSpeed, float _speedA);
 
   private:
-    void RebuildLevels(tCarcassVertex *_vBuffer, bool _firstDraw, dword _dTime);
-    void RebuildIndexes(WORD *_iBuffer);
+    void RebuildLevels(tCarcassVertex *_vBuffer, bool _firstDraw, uint32_t dTime);
+    void RebuildIndexes(uint16_t *_iBuffer);
 
     bool normalsInverted;
     tMeasure measure;
@@ -64,10 +56,10 @@ class TCarcass
     CMatrix sceneMatrix;
     long ivElementIndex;
     bool indexesCreated;
-    dword time;
+    uint32_t time;
 
     float uSpeed, vSpeed, speedA;
-    VDX8RENDER *renderer;
+    VDX9RENDER *renderer;
     int iBuffer, vBuffer;
 };
 

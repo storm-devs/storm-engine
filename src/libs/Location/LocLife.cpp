@@ -9,15 +9,19 @@
 //============================================================================================
 
 #include "LocLife.h"
+#include "../../Shared/messages.h"
 #include "Character.h"
+#include "Entity.h"
 #include "Location.h"
+#include "core.h"
 #include "geometry.h"
+#include "model.h"
 
 //============================================================================================
 
 LocLife::LocLife()
 {
-    location = null;
+    location = nullptr;
     node = -1;
     kSpeed = 1.0f;
     speed = 0.6f;
@@ -25,7 +29,7 @@ LocLife::LocLife()
 
 LocLife::~LocLife()
 {
-    api->DeleteEntity(model);
+    EntityManager::EraseEntity(model);
 }
 
 //============================================================================================
@@ -33,54 +37,54 @@ LocLife::~LocLife()
 bool LocLife::Init(Location *loc)
 {
     Assert(loc);
-    if (!api->CreateEntity(&model, "modelr"))
+    if (!(model = EntityManager::CreateEntity("modelr")))
         return false;
-    _CORE_API->LayerAdd("realize", model, 20);
+    EntityManager::AddToLayer(REALIZE, model, 20);
     //Путь для текстур
-    VGEOMETRY *gs = (VGEOMETRY *)_CORE_API->CreateService("geometry");
+    auto *gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
     if (!gs)
     {
-        _CORE_API->Trace("Can't create geometry service!");
+        core.Trace("Can't create geometry service!");
         return false;
     }
     gs->SetTexturePath("Animals\\");
-    if (!api->Send_Message(model, "ls", MSG_MODEL_LOAD_GEO, GetModelName()))
+    if (!core.Send_Message(model, "ls", MSG_MODEL_LOAD_GEO, GetModelName()))
     {
         gs->SetTexturePath("");
         return false;
     }
     gs->SetTexturePath("");
     //Анимация
-    if (!api->Send_Message(model, "ls", MSG_MODEL_LOAD_ANI, GetAniName()))
+    if (!core.Send_Message(model, "ls", MSG_MODEL_LOAD_ANI, GetAniName()))
         return false;
     //Определям место положения
     location = loc;
     if (FindRandomPos(pos) < 0)
     {
-        location = null;
+        location = nullptr;
         return false;
     }
     FindPos();
     ay = rand() * (6.28f / RAND_MAX);
     //Анимация
-    MODEL *m = (MODEL *)_CORE_API->GetEntityPointer(&model);
+    auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
     if (!m)
     {
-        location = null;
+        location = nullptr;
         return false;
     }
-    NODE *node = m->GetNode(0);
+    auto *node = m->GetNode(0);
     if (node)
         node->SetTechnique("DLightModel");
-    Animation *ani = m->GetAnimation();
+    auto *const ani = m->GetAnimation();
     if (!ani)
     {
-        location = null;
+        location = nullptr;
         return false;
     }
     if (!PostInit(ani))
     {
-        location = null;
+        location = nullptr;
         return false;
     }
     return true;
@@ -96,14 +100,13 @@ void LocLife::Update(float dltTime)
         location->DrawLine(pos, 0xff00ff00, pos + CVECTOR(sinf(ay), 0.0f, cosf(ay)) * 0.5f, 0xff00ff00);
     }
     //Информация о модели и локации
-    MODEL *m = (MODEL *)_CORE_API->GetEntityPointer(&model);
+    auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
     if (!m)
         return;
-    Animation *ani = m->GetAnimation();
+    auto *const ani = m->GetAnimation();
     if (!ani)
         return;
-    PtcData &ptc = location->GetPtcData();
-
+    auto &ptc = location->GetPtcData();
     if (node < 0)
     {
         IdleProcess(ani, dltTime);
@@ -111,7 +114,7 @@ void LocLife::Update(float dltTime)
     else
     {
         //Перемещиемся
-        long cnode = FindPos();
+        auto cnode = FindPos();
         if (cnode < 0)
         {
             StopMove();
@@ -124,7 +127,7 @@ void LocLife::Update(float dltTime)
             return;
         }
         //Ищим направление
-        CVECTOR dir = pos;
+        auto dir = pos;
         if (!ptc.FindPathDir(cnode, pos, node, npos, cnode, dir))
         {
             StopMove();
@@ -134,9 +137,9 @@ void LocLife::Update(float dltTime)
             location->DrawLine(dir, 0xff00ff00, dir + CVECTOR(0.0f, 1.0f, 0.0f), 0xffff0000);
         dir -= pos;
         double dirl = ~dir;
-        double vx = dir.x;
+        const double vx = dir.x;
         double vz = dir.z;
-        double l = vx * vx + vz * vz;
+        const auto l = vx * vx + vz * vz;
         if (l <= 0.0)
         {
             StopMove();
@@ -145,7 +148,7 @@ void LocLife::Update(float dltTime)
         vz = acos(vz / sqrt(l));
         if (vx < 0)
             vz = -vz;
-        ay = float(vz);
+        ay = static_cast<float>(vz);
         //Двигаем
         pos.x += sinf(ay) * dltTime * speed * kSpeed;
         pos.z += cosf(ay) * dltTime * speed * kSpeed;
@@ -156,15 +159,15 @@ void LocLife::Update(float dltTime)
 
 long LocLife::FindPos()
 {
-    MODEL *m = (MODEL *)_CORE_API->GetEntityPointer(&model);
+    auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
     if (!m)
         return -1;
-    PtcData &ptc = location->GetPtcData();
+    auto &ptc = location->GetPtcData();
     //Направление
-    CVECTOR dir(sinf(ay), 0.0f, cosf(ay));
+    const CVECTOR dir(sinf(ay), 0.0f, cosf(ay));
     //Высоты
     float yf, yc, yb;
-    long curnode = ptc.FindNode(pos, yc);
+    const auto curnode = ptc.FindNode(pos, yc);
     if (curnode < 0)
     {
         FindRandomPos(pos);
@@ -172,13 +175,13 @@ long LocLife::FindPos()
         ay = rand() * (6.28f / RAND_MAX);
         return ptc.FindNode(pos, yc);
     }
-    CVECTOR p1 = pos + dir * 0.1f;
-    CVECTOR p2 = pos - dir * 0.1f;
+    auto p1 = pos + dir * 0.1f;
+    auto p2 = pos - dir * 0.1f;
     if (ptc.FindNode(p1, yf) < 0)
         yf = yc;
     if (ptc.FindNode(p2, yb) < 0)
         yb = yc;
-    pos.y = max(yf, max(yc, yb));
+    pos.y = std::max(yf, std::max(yc, yb));
     yc = location->Trace(pos + CVECTOR(0.0f, 0.2f, 0.0f), pos - CVECTOR(0.0f, 0.2f, 0.0f));
     if (yc <= 1.0f)
         pos.y += 0.2f - 0.4f * yc;
@@ -195,11 +198,11 @@ long LocLife::FindPos()
 void LocLife::StartMove()
 {
     //Модель
-    MODEL *m = (MODEL *)_CORE_API->GetEntityPointer(&model);
+    auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
     if (!m)
         return;
     //Запускаем проигрывание анимации
-    Animation *ani = m->GetAnimation();
+    auto *const ani = m->GetAnimation();
     if (!ani)
         return;
     node = FindRandomPos(npos);
@@ -209,17 +212,17 @@ void LocLife::StartMove()
 void LocLife::StopMove()
 {
     node = -1;
-    MODEL *m = (MODEL *)_CORE_API->GetEntityPointer(&model);
+    auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
     if (!m)
         return;
     //Запускаем проигрывание анимации
-    Animation *ani = m->GetAnimation();
+    auto *const ani = m->GetAnimation();
     if (!ani)
         return;
     IsStopMove(ani);
 }
 
-bool LocLife::IsNearPlayer(float radius)
+bool LocLife::IsNearPlayer(float radius) const
 {
     if (location->supervisor.player)
     {
@@ -230,19 +233,18 @@ bool LocLife::IsNearPlayer(float radius)
         if (~playerPos < radius * radius)
             return true;
     }
-
     return false;
 }
 
-long LocLife::FindRandomPos(CVECTOR &pos)
+long LocLife::FindRandomPos(CVECTOR &pos) const
 {
-    PtcData &ptc = location->GetPtcData();
+    auto &ptc = location->GetPtcData();
     if (!ptc.numTriangles)
         return -1;
-    long i = rand() % ptc.numTriangles;
-    long i1 = ptc.triangle[i].i[0];
-    long i2 = ptc.triangle[i].i[1];
-    long i3 = ptc.triangle[i].i[2];
+    const auto i = rand() % ptc.numTriangles;
+    const long i1 = ptc.triangle[i].i[0];
+    const long i2 = ptc.triangle[i].i[1];
+    const long i3 = ptc.triangle[i].i[2];
     pos.x = ptc.vertex[i1].x;
     pos.x += ptc.vertex[i2].x;
     pos.x += ptc.vertex[i3].x;

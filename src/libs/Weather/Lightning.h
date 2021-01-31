@@ -3,10 +3,11 @@
 
 #include "Typedef.h"
 #include "Weather_base.h"
+#include <vector>
 
 #define MAX_LIGHTNING_TEXTURES 2
 
-class LIGHTNING : public ENTITY
+class LIGHTNING : public Entity
 {
     struct flash_t
     {
@@ -18,8 +19,8 @@ class LIGHTNING : public ENTITY
     struct lightning_t
     {
         // script parameters
-        dword dwSubTexture;
-        dword dwFlickerTime;
+        uint32_t dwSubTexture;
+        uint32_t dwFlickerTime;
         float fTime;
         float fSize, fScaleX, fScaleY;
         CVECTOR vPos;
@@ -33,34 +34,50 @@ class LIGHTNING : public ENTITY
         flash_t Flash;
     };
 
-    array<lightning_t> aLightnings;
+    std::vector<lightning_t> aLightnings;
 
-    dword dwSubTexX, dwSubTexY;
+    uint32_t dwSubTexX, dwSubTexY;
     long iLightningTexture, iFlashTexture;
 
     float fKDist;
     long iFlickerTime;
 
     WEATHER_BASE *pWeather;
-    VDX8RENDER *pRS;
+    VDX9RENDER *pRS;
     COLLIDE *pCollide;
-    VIDWALKER *pVWSunTrace;
 
-    void Release();
-    void CalcFlashPower(lightning_t *pL);
+    void Release() const;
+    void CalcFlashPower(lightning_t *pL) const;
 
   public:
     LIGHTNING();
     ~LIGHTNING();
 
     void SetDevice();
-    bool Init();
-    void Realize(dword Delta_Time);
-    void Execute(dword Delta_Time);
+    bool Init() override;
+    void Realize(uint32_t Delta_Time);
+    void Execute(uint32_t Delta_Time);
     bool CreateState(ENTITY_STATE_GEN *state_gen);
     bool LoadState(ENTITY_STATE *state);
-    dword _cdecl ProcessMessage(MESSAGE &message);
-    dword AttributeChanged(ATTRIBUTES *pAttributeChanged);
+    uint64_t ProcessMessage(MESSAGE &message) override;
+    uint32_t AttributeChanged(ATTRIBUTES *pAttributeChanged) override;
+
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
 };
 
 #endif

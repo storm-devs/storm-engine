@@ -1,32 +1,22 @@
-#include "object.h"
 #include "vcollide.h"
 
-INTERFACE_FUNCTION
-CREATE_SERVICE(COLL)
-
-ENTITY_ID last_trace_eid;
-
-COLL::COLL()
-{
-}
-COLL::~COLL()
-{
-}
+entid_t last_trace_eid;
 
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
-LOCAL_COLLIDE *COLL::CreateLocalCollide(const char *layerName)
+LOCAL_COLLIDE *COLL::CreateLocalCollide(EntityManager::layer_index_t idx)
 {
-    return NEW LCOLL(layerName, *_CORE_API);
+    return new LCOLL(idx);
 }
+
 //----------------------------------------------------------------------------------
 // Ray tracing
 //----------------------------------------------------------------------------------
-float COLL::Trace(ENTITY_ID &entity, const CVECTOR &src, const CVECTOR &dst)
+float COLL::Trace(entid_t entity, const CVECTOR &src, const CVECTOR &dst)
 {
-    COLLISION_OBJECT *cob = static_cast<COLLISION_OBJECT *>(_CORE_API->GetEntityPointer(&entity));
-    if (static_cast<ENTITY *>(cob) == null)
+    auto *cob = static_cast<COLLISION_OBJECT *>(EntityManager::GetEntityPointer(entity));
+    if (static_cast<Entity *>(cob) == nullptr)
         return 2.0f;
 
     last_trace_eid = entity;
@@ -36,32 +26,32 @@ float COLL::Trace(ENTITY_ID &entity, const CVECTOR &src, const CVECTOR &dst)
 //----------------------------------------------------------------------------------
 // with enclusion list
 //----------------------------------------------------------------------------------
-float COLL::Trace(VIDWALKER &walker, const CVECTOR &src, const CVECTOR &dst, const ENTITY_ID *exclude_list,
-                  long entities)
+float COLL::Trace(EntityManager::LayerIterators its, const CVECTOR &src, const CVECTOR &dst,
+                  const entid_t *exclude_list, long entities)
 {
-    float best_res = 2.0f;
-    long e = 0;
-    ENTITY_ID *eid = walker.GetID();
-    while (eid != 0)
+    auto best_res = 2.0f;
+    for (auto it = its.first; it != its.second; ++it)
     {
+        const auto eid = it->second;
+
+        long e;
         for (e = 0; e < entities; e++)
-            if (*eid == exclude_list[e])
+            if (eid == exclude_list[e])
                 break;
+
         if (e == entities)
         {
-            COLLISION_OBJECT *cob = static_cast<COLLISION_OBJECT *>(_CORE_API->GetEntityPointer(eid));
-            if (cob != null)
+            auto *cob = static_cast<COLLISION_OBJECT *>(EntityManager::GetEntityPointer(eid));
+            if (cob != nullptr)
             {
-                float res = cob->Trace(src, dst);
+                const auto res = cob->Trace(src, dst);
                 if (res < best_res)
                 {
                     best_res = res;
-                    last_trace_eid = *eid;
+                    last_trace_eid = eid;
                 }
             }
         }
-
-        eid = walker.GetIDNext();
     }
 
     return best_res;
@@ -70,30 +60,30 @@ float COLL::Trace(VIDWALKER &walker, const CVECTOR &src, const CVECTOR &dst, con
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
-bool COLL::Clip(VIDWALKER &walker, const PLANE *planes, long nplanes, const CVECTOR &center, float radius,
-                ADD_POLYGON_FUNC addpoly, const ENTITY_ID *exclude_list, long entities)
+bool COLL::Clip(EntityManager::LayerIterators its, const PLANE *planes, long nplanes, const CVECTOR &center,
+                float radius, ADD_POLYGON_FUNC addpoly, const entid_t *exclude_list, long entities)
 {
-    bool retval = false;
-    long e = 0;
+    auto retval = false;
 
-    ENTITY_ID *eid = walker.GetID();
-    while (eid != 0)
+    for (auto it = its.first; it != its.second; ++it)
     {
+        const auto eid = it->second;
+
+        long e;
         for (e = 0; e < entities; e++)
-            if (*eid == exclude_list[e])
+            if (eid == exclude_list[e])
                 break;
+
         if (e == entities)
         {
-            COLLISION_OBJECT *cob = static_cast<COLLISION_OBJECT *>(_CORE_API->GetEntityPointer(eid));
-            if (cob != null)
+            auto *cob = static_cast<COLLISION_OBJECT *>(EntityManager::GetEntityPointer(eid));
+            if (cob != nullptr)
             {
-                last_trace_eid = *eid;
+                last_trace_eid = eid;
                 if (cob->Clip(planes, nplanes, center, radius, addpoly) == true)
                     retval = true;
             }
         }
-
-        eid = walker.GetIDNext();
     }
 
     return retval;
@@ -102,7 +92,7 @@ bool COLL::Clip(VIDWALKER &walker, const PLANE *planes, long nplanes, const CVEC
 //----------------------------------------------------------------------------------
 // get last trace entity id
 //----------------------------------------------------------------------------------
-ENTITY_ID COLL::GetObjectID()
+entid_t COLL::GetObjectID()
 {
     return last_trace_eid;
 }

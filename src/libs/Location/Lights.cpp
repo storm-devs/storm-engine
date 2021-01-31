@@ -9,24 +9,19 @@
 //============================================================================================
 
 #include "Lights.h"
-#include "Location.h"
 
 #define LIGHTS_DEBUG
-
-#define LIGHTS_TECHNIQ "Coronas"
 
 //============================================================================================
 //Конструирование, деструктурирование
 //============================================================================================
 
-Lights::Lights() : aMovingLight(_FL)
+Lights::Lights()
 {
-    rs = null;
-    collide = null;
-    types = null;
+    rs = nullptr;
+    collide = nullptr;
     numTypes = 0;
     maxTypes = 0;
-    lights = null;
     numLights = 0;
     maxLights = 0;
     for (long i = 0; i < 8; i++)
@@ -35,55 +30,48 @@ Lights::Lights() : aMovingLight(_FL)
         lt[i].set = false;
     }
     numLampModels = 0;
-    lighter_code = _CORE_API->Class_Name2Code("Lighter");
 }
 
 Lights::~Lights()
 {
-    aMovingLight.DelAll();
-    if (types)
+    aMovingLight.clear();
+    for (long i = 0; i < numTypes; i++)
     {
-        for (long i = 0; i < numTypes; i++)
-        {
-            if (types[i].corona >= 0 && rs)
-                rs->TextureRelease(types[i].corona);
-            delete types[i].name;
-        }
-        delete types;
+        if (types[i].corona >= 0 && rs)
+            rs->TextureRelease(types[i].corona);
+        delete types[i].name;
     }
     if (rs)
         for (long i = 1; i < 8; i++)
             rs->LightEnable(i, false);
-    if (lights)
-        delete lights;
 }
 
 //Инициализация
 bool Lights::Init()
 {
-    // DX8 render
-    rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
+    // DX9 render
+    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!rs)
-        SE_THROW_MSG("No service: dx8render");
-    collide = (COLLIDE *)_CORE_API->CreateService("COLL");
+        throw std::exception("No service: dx9render");
+    collide = static_cast<COLLIDE *>(core.CreateService("COLL"));
     //Зачитаем параметры
-    INIFILE *ini = _CORE_API->fio->OpenIniFile("RESOURCE\\Ini\\lights.ini");
+    auto *ini = fio->OpenIniFile("RESOURCE\\Ini\\lights.ini");
     if (!ini)
     {
-        _CORE_API->Trace("Location lights not inited -> RESOURCES\\Ini\\lights.ini not found");
+        core.Trace("Location lights not inited -> RESOURCES\\Ini\\lights.ini not found");
         return false;
     }
     char lName[256];
-    bool res = ini->GetSectionName(lName, sizeof(lName) - 1);
+    auto res = ini->GetSectionName(lName, sizeof(lName) - 1);
     while (res)
     {
         lName[sizeof(lName) - 1] = 0;
-        long i = 0;
+        long i;
         for (i = 0; i < numTypes; i++)
         {
-            if (stricmp(lName, types[i].name) == 0)
+            if (_stricmp(lName, types[i].name) == 0)
             {
-                _CORE_API->Trace("Location lights redefinition light: %s", lName);
+                core.Trace("Location lights redefinition light: %s", lName);
                 break;
             }
         }
@@ -93,13 +81,14 @@ bool Lights::Init()
             if (numTypes >= maxTypes)
             {
                 maxTypes += 16;
-                types = (LightType *)RESIZE(types, maxTypes * sizeof(LightType));
+                types.resize(maxTypes);
             }
             //Обнулим
             memset(&types[numTypes], 0, sizeof(types[numTypes]));
             //Сохраняем имя
-            types[numTypes].name = NEW char[strlen(lName) + 1];
-            strcpy(types[numTypes].name, lName);
+            const auto len = strlen(lName) + 1;
+            types[numTypes].name = new char[len];
+            memcpy(types[numTypes].name, lName, len);
             //Зачитываем параметры
             types[numTypes].color.b = ini->GetFloat(lName, "b", 1.0f);
             types[numTypes].color.g = ini->GetFloat(lName, "g", 1.0f);
@@ -154,39 +143,35 @@ bool Lights::Init()
     delete ini;
     if (numTypes == 0)
     {
-        _CORE_API->Trace("Location lights not inited -> 0 light types");
+        core.Trace("Location lights not inited -> 0 light types");
         return false;
     }
     //Начнём исполняться
-    _CORE_API->LayerCreate("execute", true, false);
-    _CORE_API->LayerSetFlags("execute", LRFLAG_EXECUTE);
-    _CORE_API->LayerAdd("execute", GetID(), 10);
-    _CORE_API->LayerCreate("realize", true, false);
-    _CORE_API->LayerSetFlags("realize", LRFLAG_REALIZE);
-    _CORE_API->LayerAdd("realize", GetID(), 1001000);
+    EntityManager::SetLayerType(EXECUTE, EntityManager::Layer::Type::execute);
+    EntityManager::AddToLayer(EXECUTE, GetId(), 10);
+    EntityManager::SetLayerType(REALIZE, EntityManager::Layer::Type::realize);
+    EntityManager::AddToLayer(REALIZE, GetId(), 1001000);
     return true;
 }
 
 //Исполнение
-void Lights::Execute(dword delta_time)
+void Lights::Execute(uint32_t delta_time)
 {
-#ifndef _XBOX
 #ifdef LIGHTS_DEBUG
-    if (api->Controls->GetDebugAsyncKeyState(VK_F11) < 0)
+    if (core.Controls->GetDebugAsyncKeyState(VK_F11) < 0)
     {
         for (long i = 0; i < numTypes; i++)
             UpdateLightTypes(i);
     }
 #endif
-#endif
     for (long i = 0; i < numLights; i++)
     {
         //Смотрим что есть
-        LightType &l = types[lights[i].type];
+        auto &l = types[lights[i].type];
         if (l.flicker == 0.0f && l.flickerSlow == 0.0f)
             continue;
         //Обновляем состояние
-        Light &ls = lights[i];
+        auto &ls = lights[i];
         //Частые мерцания
         ls.time += delta_time * 0.001f;
         if (ls.time > l.p)
@@ -196,7 +181,7 @@ void Lights::Execute(dword delta_time)
         }
         //Плавные мерцания
         ls.timeSlow += delta_time * 0.001f;
-        float k = ls.timeSlow * l.freqSlow;
+        auto k = ls.timeSlow * l.freqSlow;
         if (k < 0.0f)
             k = 0.0f;
         if (k >= 1.0f)
@@ -218,7 +203,7 @@ void Lights::Execute(dword delta_time)
 }
 
 //Рисование корон
-void Lights::Realize(dword delta_time)
+void Lights::Realize(uint32_t delta_time)
 {
     //Позиция камеры
     CVECTOR pos, ang;
@@ -227,33 +212,32 @@ void Lights::Realize(dword delta_time)
     rs->GetTransform(D3DTS_VIEW, camMtx);
     rs->SetTransform(D3DTS_VIEW, CMatrix());
     rs->SetTransform(D3DTS_WORLD, CMatrix());
-    float camPDist = -(pos.x * camMtx.Vx().z + pos.y * camMtx.Vy().z + pos.z * camMtx.Vz().z);
+    const auto camPDist = -(pos.x * camMtx.Vx().z + pos.y * camMtx.Vy().z + pos.z * camMtx.Vz().z);
     for (long i = 0, n = 0; i < numLights; i++)
     {
         //Источник
-        Light &ls = lights[i];
-        LightType &l = types[ls.type];
+        auto &ls = lights[i];
+        auto &l = types[ls.type];
         if (l.corona < 0)
             continue;
-        //Поподание в передний план
-        float dist = ls.pos.x * camMtx.Vx().z + ls.pos.y * camMtx.Vy().z + ls.pos.z * camMtx.Vz().z + camPDist;
+        //Попадание в передний план
+        auto dist = ls.pos.x * camMtx.Vx().z + ls.pos.y * camMtx.Vy().z + ls.pos.z * camMtx.Vz().z + camPDist;
         if (dist < -2.0f * l.coronaSize)
             continue;
         //Дистанция
-        float dx = ls.pos.x - pos.x;
-        float dy = ls.pos.y - pos.y;
-        float dz = ls.pos.z - pos.z;
-        float d = dx * dx + dy * dy + dz * dz;
-        bool isVisible = d < l.coronaRange2;
+        const auto dx = ls.pos.x - pos.x;
+        const auto dy = ls.pos.y - pos.y;
+        const auto dz = ls.pos.z - pos.z;
+        auto d = dx * dx + dy * dy + dz * dz;
+        auto isVisible = d < l.coronaRange2;
         if (!isVisible)
             continue;
         //Видимость
-        VIDWALKER *walker = _CORE_API->LayerGetWalker("sun_trace");
-        if (walker && collide)
+        if (collide)
         {
-            float dist = collide->Trace(*walker, pos, CVECTOR(ls.pos.x, ls.pos.y, ls.pos.z), lampModels, numLampModels);
+            const auto dist = collide->Trace(EntityManager::GetEntityIdIterators(SUN_TRACE), pos,
+                                             CVECTOR(ls.pos.x, ls.pos.y, ls.pos.z), lampModels, numLampModels);
             isVisible = dist > 1.0f;
-            delete walker;
         }
         ls.corona += isVisible ? 0.008f * delta_time : -0.008f * delta_time;
         if (ls.corona <= 0.0f)
@@ -268,7 +252,7 @@ void Lights::Realize(dword delta_time)
         d = dist * l.invCoronaRange;
         if (d > 1.0f)
             d = 1.0f;
-        float alpha = 1.0f;
+        auto alpha = 1.0f;
         if (d < 0.3f)
             alpha *= 0.2f + 0.8f * d / 0.3f;
         if (d > 0.4f)
@@ -285,7 +269,7 @@ void Lights::Realize(dword delta_time)
             d = 0.1f;
         d += 1.0f;
         //Текущий размер
-        float size = d * l.coronaSize;
+        const auto size = d * l.coronaSize;
         //Прозрачность
         alpha *= d;
         if (alpha < 0.0f)
@@ -293,17 +277,17 @@ void Lights::Realize(dword delta_time)
         if (alpha > 255.0f)
             alpha = 255.0f;
         //Позиция
-        CVECTOR pos = camMtx * CVECTOR(ls.pos.x, ls.pos.y, ls.pos.z);
+        auto pos = camMtx * CVECTOR(ls.pos.x, ls.pos.y, ls.pos.z);
         //Цвет
-        dword c = dword(alpha);
+        auto c = static_cast<uint32_t>(alpha);
         c |= (c << 24) | (c << 16) | (c << 8);
         //Угол поворота
         float cs, sn;
         if (dist > 0.0f)
         {
-            float _cs = (dx * camMtx.Vx().z + dz * camMtx.Vz().z);
-            float _sn = (dx * camMtx.Vz().z - dz * camMtx.Vx().z);
-            float kn = _cs * _cs + _sn * _sn;
+            auto _cs = (dx * camMtx.Vx().z + dz * camMtx.Vz().z);
+            auto _sn = (dx * camMtx.Vz().z - dz * camMtx.Vx().z);
+            auto kn = _cs * _cs + _sn * _sn;
             if (kn > 0.0f)
             {
                 kn = 1.0f / sqrtf(kn);
@@ -351,7 +335,7 @@ void Lights::Realize(dword delta_time)
         n++;
         rs->TextureSet(0, l.corona);
         rs->DrawPrimitiveUP(D3DPT_TRIANGLELIST, D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1, n * 2, buf, sizeof(Vertex),
-                            LIGHTS_TECHNIQ);
+                            "Coronas");
         n = 0;
     }
     rs->SetTransform(D3DTS_VIEW, camMtx);
@@ -363,7 +347,7 @@ long Lights::FindLight(const char *name)
     if (!name || !name[0])
         return -1;
     for (long i = 0; i < numTypes; i++)
-        if (stricmp(name, types[i].name) == 0)
+        if (_stricmp(name, types[i].name) == 0)
             return i;
     return -1;
 }
@@ -377,7 +361,7 @@ void Lights::AddLight(long index, const CVECTOR &pos)
     if (numLights >= maxLights)
     {
         maxLights += 32;
-        lights = (Light *)RESIZE(lights, maxLights * sizeof(Light));
+        lights.resize(maxLights);
     }
     lights[numLights].color = types[index].color;
     lights[numLights].pos.x = pos.x;
@@ -390,25 +374,22 @@ void Lights::AddLight(long index, const CVECTOR &pos)
     lights[numLights].timeSlow = 0.0f;
     lights[numLights].type = index;
 
-#ifndef _XBOX
     //Отправим сообщение лайтеру
-    ENTITY_ID eid;
-    if (api->FindClass(&eid, null, lighter_code))
+    if (const auto eid = EntityManager::GetEntityId("Lighter"))
     {
-        api->Send_Message(eid, "sffffffffffs", "AddLight", pos.x, pos.y, pos.z, types[index].color.r,
+        core.Send_Message(eid, "sffffffffffs", "AddLight", pos.x, pos.y, pos.z, types[index].color.r,
                           types[index].color.g, types[index].color.b, types[index].dxLight.Attenuation0,
                           types[index].dxLight.Attenuation1, types[index].dxLight.Attenuation2,
                           types[index].dxLight.Range, types[index].name);
     }
-#endif
 
     numLights++;
 }
 
 //Добавить модельку фонарей
-bool Lights::AddLampModel(const ENTITY_ID &lampModel)
+bool Lights::AddLampModel(const entid_t lampModel)
 {
-    if (numLampModels >= sizeof(lampModels) / sizeof(ENTITY_ID))
+    if (numLampModels >= sizeof(lampModels) / sizeof(entid_t))
         return false;
     lampModels[numLampModels++] = lampModel;
     return true;
@@ -416,33 +397,37 @@ bool Lights::AddLampModel(const ENTITY_ID &lampModel)
 
 void Lights::DelAllLights()
 {
-    aMovingLight.DelAll();
+    aMovingLight.clear();
     numLights = 0;
 }
 
 //Добавить переносной источник
 long Lights::AddMovingLight(const char *type, const CVECTOR &pos)
 {
-    long idx = 0;
+    long idx;
     for (idx = 0; idx < 1000; idx++)
     {
-        long n = 0;
-        for (n = 0; n < aMovingLight; n++)
+        long n;
+        for (n = 0; n < aMovingLight.size(); n++)
             if (aMovingLight[n].id == idx)
                 break;
-        if (n == aMovingLight.Size())
+        if (n == aMovingLight.size())
             break;
     }
     if (idx == 1000)
         return -1;
 
-    long nType = FindLight(type);
+    const auto nType = FindLight(type);
     if (nType < 0)
         return -1;
 
-    long i = aMovingLight.Add();
-    aMovingLight[i].id = idx;
-    aMovingLight[i].light = numLights;
+    MovingLight movingLight;
+    movingLight.id = idx;
+    movingLight.light = numLights;
+    aMovingLight.push_back(movingLight);
+    // long i = aMovingLight.Add();
+    // aMovingLight[i].id = idx;
+    // aMovingLight[i].light = numLights;
     AddLight(nType, pos);
     return idx;
 }
@@ -450,10 +435,10 @@ long Lights::AddMovingLight(const char *type, const CVECTOR &pos)
 //Поставить переносной источник в новую позицию
 void Lights::UpdateMovingLight(long id, const CVECTOR &pos)
 {
-    for (long n = 0; n < aMovingLight; n++)
+    for (long n = 0; n < aMovingLight.size(); n++)
         if (aMovingLight[n].id == id)
         {
-            long i = aMovingLight[n].light;
+            const auto i = aMovingLight[n].light;
             if (i >= 0 && i < numLights)
                 lights[i].pos = *(D3DVECTOR *)&pos;
             return;
@@ -463,67 +448,71 @@ void Lights::UpdateMovingLight(long id, const CVECTOR &pos)
 //Удалить переносной источник
 void Lights::DelMovingLight(long id)
 {
-    for (long n = 0; n < aMovingLight; n++)
+    for (long n = 0; n < aMovingLight.size(); n++)
         if (aMovingLight[n].id == id)
         {
             numLights--;
-            for (long i = aMovingLight[n].light; i < numLights; i++)
+            for (auto i = aMovingLight[n].light; i < numLights; i++)
                 lights[i] = lights[i + 1];
-            aMovingLight.DelIndex(n);
+            aMovingLight.erase(aMovingLight.begin() + n);
             return;
         }
 }
 
 //Установить для персонажа источники освещения
-void Lights::SetCharacterLights(const CVECTOR &pos)
+void Lights::SetCharacterLights(const CVECTOR *const pos)
 {
-    long i, n;
-    long num = 1;
-
-    array<long> aLightsSort(_FL);
-    array<lt_elem> aLightsDstSort(_FL);
-
-    for (i = 0; i < numLights; i++)
-        aLightsSort.Add(i);
-
-    for (i = 0; i < aMovingLight.Size(); i++)
+    //Заполняем исходный массив
+    long i;
+    long n;
+    if (pos)
     {
-        aLightsSort.Del(aMovingLight[i].light);
-        aLightsSort.Insert(aMovingLight[i].light, 0);
-    }
-    aLightsDstSort.DelAll();
-
-    for (n = 0; n < aLightsSort.Size(); n++)
-    {
-        i = aLightsSort[n];
-
-        //Смотрим дистанцию
-        float dx = (pos.x - lights[i].pos.x);
-        float dy = (pos.y - lights[i].pos.y);
-        float dz = (pos.z - lights[i].pos.z);
-        float dst = dx * dx + dy * dy + dz * dz + 2.0f;
-        float rng = types[lights[i].type].dxLight.Range;
-
-        if (dst <= rng * rng)
+        std::vector<long> aLightsSort;
+        for (i = 0; i < numLights; i++)
+            aLightsSort.push_back(i);
+        for (i = 0; i < aMovingLight.size(); i++)
         {
-            int j;
-            for (j = 0; j < aLightsDstSort.Size(); j++)
-            {
-                if (dst < aLightsDstSort[j].dst)
-                    break;
-            }
-            lt_elem le = {i, dst};
-            if (j == aLightsDstSort.Size())
-                aLightsDstSort.Add(le);
-            else
-                aLightsDstSort.Insert(le, j);
+            const auto it = std::find(aLightsSort.begin(), aLightsSort.end(), aMovingLight[i].light);
+            if (it != aLightsSort.end())
+                aLightsSort.erase(it);
+            aLightsSort.insert(aLightsSort.begin(), aMovingLight[i].light);
+        }
 
-            if (aLightsDstSort.Size() == 8)
-                aLightsDstSort.DelIndex(7);
+        //Сортируем по дистанции
+        aLightsDstSort.clear();
+        for (n = 0; n < aLightsSort.size(); n++)
+        {
+            i = aLightsSort[n];
+
+            //Смотрим дистанцию
+            const auto dx = (pos->x - lights[i].pos.x);
+            const auto dy = (pos->y - lights[i].pos.y);
+            const auto dz = (pos->z - lights[i].pos.z);
+            const auto dst = dx * dx + dy * dy + dz * dz + 2.0f;
+            const float rng = types[lights[i].type].dxLight.Range;
+
+            if (dst <= rng * rng)
+            {
+                int j;
+                for (j = 0; j < aLightsDstSort.size(); j++)
+                {
+                    if (dst < aLightsDstSort[j].dst)
+                        break;
+                }
+
+                lt_elem le = {i, dst};
+                if (j == aLightsDstSort.size())
+                    aLightsDstSort.push_back(le);
+                else
+                    aLightsDstSort.insert(aLightsDstSort.begin() + j, le);
+
+                if (aLightsDstSort.size() == 8)
+                    aLightsDstSort.erase(aLightsDstSort.begin() + 7);
+            }
         }
     }
 
-    for (n = 0; n < aLightsDstSort.Size(); n++)
+    for (n = 0; n < aLightsDstSort.size(); n++)
     {
         i = aLightsDstSort[n].idx;
 
@@ -557,32 +546,10 @@ void Lights::DelCharacterLights()
     }
 }
 
-//Установить те же источники что и для последнего расчета
-void Lights::SetCharacterLights()
-{
-    for (long n = 1; n < 8; n++)
-    {
-        if (lt[n].set)
-            continue;
-        if (lt[n].light < 0)
-            continue;
-
-        long i = lt[n].light;
-        //Устанавливаем источник
-        LightType &l = types[lights[i].type];
-        l.dxLight.Diffuse = lights[i].color;
-        l.dxLight.Position = lights[i].pos;
-        rs->SetLight(n, &l.dxLight);
-        rs->LightEnable(n, true);
-        lt[n].set = true;
-        n++;
-    }
-}
-
 //Обновить типы источников
 void Lights::UpdateLightTypes(long i)
 {
-    INIFILE *ini = _CORE_API->fio->OpenIniFile("RESOURCE\\Ini\\lights.ini");
+    INIFILE *ini = fio->OpenIniFile("RESOURCE\\Ini\\lights.ini");
     if (!ini)
         return;
     //Имя источника

@@ -10,9 +10,10 @@
 
 #include "geometry.h"
 
+#include "../../Shared/messages.h"
+#include "Entity.h"
 #include "ModelArray.h"
-#include "messages.h"
-#include "model.h"
+#include "core.h"
 
 //============================================================================================
 //Конструирование, деструктурирование
@@ -20,7 +21,6 @@
 
 ModelArray::ModelArray()
 {
-    model = null;
     numModels = 0;
     maxModels = 0;
     modelspath[0] = 0;
@@ -31,12 +31,8 @@ ModelArray::ModelArray()
 
 ModelArray::~ModelArray()
 {
-    if (model)
-    {
-        while (numModels)
-            DeleteModel(numModels - 1);
-        delete model;
-    }
+    while (numModels)
+        DeleteModel(numModels - 1);
 }
 
 //Создать модель
@@ -45,13 +41,13 @@ long ModelArray::CreateModel(const char *modelName, const char *technique, long 
     if (!modelName || !modelName[0])
         return -1;
     //Путь для модельки
-    strcpy(resPath, modelspath);
-    strcat(resPath, modelName);
+    strcpy_s(resPath, modelspath);
+    strcat_s(resPath, modelName);
     //Путь для текстур
-    VGEOMETRY *gs = (VGEOMETRY *)_CORE_API->CreateService("geometry");
+    auto *gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
     if (!gs)
     {
-        _CORE_API->Trace("Can't create geometry service!");
+        core.Trace("Can't create geometry service!");
         return -1;
     }
     gs->SetTexturePath(texturespath);
@@ -59,37 +55,37 @@ long ModelArray::CreateModel(const char *modelName, const char *technique, long 
     if (numModels == maxModels)
     {
         maxModels += 4;
-        model = (LocationModel *)RESIZE(model, maxModels * sizeof(LocationModel));
+        model.resize(maxModels);
     }
     //Создаём модельку
-    ENTITY_ID id, idModelRealizer;
-    if (!_CORE_API->CreateEntity(&id, "modelr"))
+    entid_t id, idModelRealizer;
+    if (!(id = EntityManager::CreateEntity("modelr")))
         return -1;
-    if (!_CORE_API->CreateEntity(&idModelRealizer, "LocModelRealizer"))
+    if (!(idModelRealizer = EntityManager::CreateEntity("LocModelRealizer")))
     {
-        _CORE_API->DeleteEntity(id);
+        EntityManager::EraseEntity(id);
         return -1;
     }
-    _CORE_API->Send_Message(idModelRealizer, "lil", 1, id, (long)pLights);
-    // if(isVisible) _CORE_API->LayerAdd("realize", idModelRealizer, level);
-    _CORE_API->LayerAdd("realize", idModelRealizer, level);
-    _CORE_API->Send_Message(idModelRealizer, "ll", 2, isVisible);
-    MODEL *m = (MODEL *)_CORE_API->GetEntityPointer(&id);
+    core.Send_Message(idModelRealizer, "lip", 1, id, pLights);
+    // if(isVisible) EntityManager::AddToLayer(realize, idModelRealizer, level);
+    EntityManager::AddToLayer(REALIZE, idModelRealizer, level);
+    core.Send_Message(idModelRealizer, "ll", 2, isVisible);
+    auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(id));
     if (!m)
     {
         gs->SetTexturePath("");
-        _CORE_API->DeleteEntity(id);
-        _CORE_API->DeleteEntity(idModelRealizer);
+        EntityManager::EraseEntity(id);
+        EntityManager::EraseEntity(idModelRealizer);
         return -1;
     }
     //Загружаем
-    _CORE_API->Send_Message(id, "ls", MSG_MODEL_SET_LIGHT_PATH, lightpath);
-    _CORE_API->Send_Message(id, "ls", MSG_MODEL_SET_LIGHT_LMPATH, shadowpath);
-    if (!_CORE_API->Send_Message(id, "ls", MSG_MODEL_LOAD_GEO, resPath))
+    core.Send_Message(id, "ls", MSG_MODEL_SET_LIGHT_PATH, lightpath);
+    core.Send_Message(id, "ls", MSG_MODEL_SET_LIGHT_LMPATH, shadowpath);
+    if (!core.Send_Message(id, "ls", MSG_MODEL_LOAD_GEO, resPath))
     {
         gs->SetTexturePath("");
-        _CORE_API->DeleteEntity(id);
-        _CORE_API->DeleteEntity(idModelRealizer);
+        EntityManager::EraseEntity(id);
+        EntityManager::EraseEntity(idModelRealizer);
         return -1;
     }
     gs->SetTexturePath("");
@@ -100,30 +96,30 @@ long ModelArray::CreateModel(const char *modelName, const char *technique, long 
     //Сохраняем имя модельки
     if (strlen(modelName) < MA_MAX_NAME_LENGTH)
     {
-        strcpy(model[numModels].name, modelName);
+        strcpy_s(model[numModels].name, modelName);
     }
     else
     {
-        _CORE_API->Trace("Model name %s is very long", maxModels);
+        core.Trace("Model name %s is very long", maxModels);
         memcpy(model[numModels].name, modelName, MA_MAX_NAME_LENGTH);
         model[numModels].name[MA_MAX_NAME_LENGTH - 1] = 0;
     }
     model[numModels].hash = CalcHashString(model[numModels].name);
-    model[numModels].slider = null;
-    model[numModels].rotator = null;
-    model[numModels].reflection = null;
+    model[numModels].slider = nullptr;
+    model[numModels].rotator = nullptr;
+    model[numModels].reflection = nullptr;
     model[numModels].flags = 0;
     model[numModels].isVisible = isVisible;
     //Устанавливаем технику модельки
     /*if(!technique || !technique[0])
     {
-        technique = "DLightModel";
+      technique = "DLightModel";
     }*/
     if (technique && technique[0])
     {
         for (long i = 0; i < 1024; i++)
         {
-            NODE *nd = m->GetNode(i);
+            auto *nd = m->GetNode(i);
             if (!nd)
                 break;
             nd->SetTechnique(technique);
@@ -138,18 +134,15 @@ void ModelArray::DeleteModel(long modelIndex)
 {
     Assert(modelIndex >= 0 && modelIndex < numModels);
     //Удаляем эфекты
-    if (model[modelIndex].slider)
-        delete model[modelIndex].slider;
-    model[modelIndex].slider = null;
-    if (model[modelIndex].rotator)
-        delete model[modelIndex].rotator;
-    model[modelIndex].rotator = null;
-    if (model[modelIndex].reflection)
-        delete model[modelIndex].reflection;
-    model[modelIndex].reflection = null;
+    delete model[modelIndex].slider;
+    model[modelIndex].slider = nullptr;
+    delete model[modelIndex].rotator;
+    model[modelIndex].rotator = nullptr;
+    delete model[modelIndex].reflection;
+    model[modelIndex].reflection = nullptr;
     //Удаляем модельку
-    _CORE_API->DeleteEntity(model[modelIndex].modelrealizer);
-    _CORE_API->DeleteEntity(model[modelIndex].id);
+    EntityManager::EraseEntity(model[modelIndex].modelrealizer);
+    EntityManager::EraseEntity(model[modelIndex].id);
     numModels--;
     if (modelIndex != numModels)
         model[modelIndex] = model[numModels];
@@ -159,7 +152,7 @@ void ModelArray::DeleteModel(long modelIndex)
 bool ModelArray::SetAnimation(long modelIndex, const char *modelAni)
 {
     Assert(modelIndex >= 0 && modelIndex < numModels);
-    return _CORE_API->Send_Message(model[modelIndex].id, "ls", MSG_MODEL_LOAD_ANI, modelAni) != 0;
+    return core.Send_Message(model[modelIndex].id, "ls", MSG_MODEL_LOAD_ANI, modelAni) != 0;
 }
 
 //Найти индекс модели по имени
@@ -171,7 +164,7 @@ long ModelArray::FindModel(const char *modelName)
     char buf[MA_MAX_NAME_LENGTH];
     if (strlen(modelName) < MA_MAX_NAME_LENGTH)
     {
-        strcpy(buf, modelName);
+        strcpy_s(buf, modelName);
     }
     else
     {
@@ -179,13 +172,13 @@ long ModelArray::FindModel(const char *modelName)
         buf[MA_MAX_NAME_LENGTH - 1] = 0;
     }
     //Ищем хэшь значение
-    dword hash = CalcHashString(buf);
+    const auto hash = CalcHashString(buf);
     //Ищем модельку
     for (long i = 0; i < numModels; i++)
     {
         if (model[i].hash == hash)
         {
-            if (stricmp(model[i].name, buf) == 0)
+            if (_stricmp(model[i].name, buf) == 0)
             {
                 return i;
             }
@@ -195,19 +188,19 @@ long ModelArray::FindModel(const char *modelName)
 }
 
 //Количество моделий
-long ModelArray::Models()
+long ModelArray::Models() const
 {
     return numModels;
 }
 
 //Получение ID модели по индексу
-ENTITY_ID &ModelArray::ID(long modelIndex)
+entid_t ModelArray::ID(long modelIndex)
 {
     Assert(modelIndex >= 0 && modelIndex < numModels);
     return model[modelIndex].id;
 }
 
-ENTITY_ID &ModelArray::RealizerID(long modelIndex)
+entid_t ModelArray::RealizerID(long modelIndex)
 {
     Assert(modelIndex >= 0 && modelIndex < numModels);
     return model[modelIndex].modelrealizer;
@@ -217,16 +210,16 @@ ENTITY_ID &ModelArray::RealizerID(long modelIndex)
 MODEL *ModelArray::operator[](long modelIndex)
 {
     Assert(modelIndex >= 0 && modelIndex < numModels);
-    return (MODEL *)_CORE_API->GetEntityPointer(&model[modelIndex].id);
+    return static_cast<MODEL *>(EntityManager::GetEntityPointer(model[modelIndex].id));
 }
 
 //Получение анимации по индексу
 Animation *ModelArray::GetAnimation(long modelIndex)
 {
     Assert(modelIndex >= 0 && modelIndex < numModels);
-    MODEL *m = (MODEL *)_CORE_API->GetEntityPointer(&model[modelIndex].id);
+    auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(model[modelIndex].id));
     if (!m)
-        return null;
+        return nullptr;
     return m->GetAnimation();
 }
 
@@ -235,19 +228,19 @@ void ModelArray::SetUVSlide(long modelIndex, float u0, float v0, float u1, float
 {
     Assert(modelIndex >= 0 && modelIndex < numModels);
     if (!model[modelIndex].slider)
-        model[modelIndex].slider = NEW UVSlider;
-    UVSlider *sl = model[modelIndex].slider;
+        model[modelIndex].slider = new UVSlider;
+    auto *const sl = model[modelIndex].slider;
     sl->u0 = sl->v0 = 0.0f;
     sl->u1 = sl->v1 = 0.0f;
     sl->us0 = u0;
     sl->vs0 = v0;
     sl->us1 = u1;
     sl->vs1 = v1;
-    MODEL *mdl = (*this)[modelIndex];
+    auto *mdl = (*this)[modelIndex];
     if (mdl)
         mdl->SetRenderTuner(sl);
     else
-        _CORE_API->Trace("Location: Can't get model pointer for set RenderTuner");
+        core.Trace("Location: Can't get model pointer for set RenderTuner");
 }
 
 //Установить модельке анимацию вращения
@@ -255,7 +248,7 @@ void ModelArray::SetRotation(long modelIndex, float rx, float ry, float rz)
 {
     Assert(modelIndex >= 0 && modelIndex < numModels);
     if (!model[modelIndex].rotator)
-        model[modelIndex].rotator = NEW Rotator;
+        model[modelIndex].rotator = new Rotator;
     model[modelIndex].rotator->rx = rx;
     model[modelIndex].rotator->ry = ry;
     model[modelIndex].rotator->rz = rz;
@@ -266,18 +259,18 @@ void ModelArray::SetReflection(long modelIndex, float scale)
 {
     Assert(modelIndex >= 0 && modelIndex < numModels);
     if (!model[modelIndex].reflection)
-        model[modelIndex].reflection = NEW Relection();
+        model[modelIndex].reflection = new Relection();
     if (scale < 0.0f)
         scale = 0.0f;
     if (scale > 1.0f)
         scale = 1.0f;
-    dword alpha = dword(scale * 255.0f);
+    const auto alpha = static_cast<uint32_t>(scale * 255.0f);
     model[modelIndex].reflection->tfactor = (alpha << 24) | 0x00ffffff;
-    MODEL *mdl = (*this)[modelIndex];
+    auto *mdl = (*this)[modelIndex];
     if (mdl)
         mdl->SetRenderTuner(model[modelIndex].reflection);
     else
-        _CORE_API->Trace("Location: Can't get model pointer for set RenderTuner");
+        core.Trace("Location: Can't get model pointer for set RenderTuner");
 }
 
 //Анимировать текстурные координаты
@@ -287,7 +280,7 @@ void ModelArray::Update(float dltTime)
     {
         if (model[i].slider)
         {
-            UVSlider *sl = model[i].slider;
+            auto *sl = model[i].slider;
             sl->u0 += dltTime * sl->us0;
             sl->v0 += dltTime * sl->vs0;
             sl->u1 += dltTime * sl->us1;
@@ -312,7 +305,7 @@ void ModelArray::Update(float dltTime)
         if (model[i].rotator)
         {
             CMatrix mtr(model[i].rotator->rx * dltTime, model[i].rotator->ry * dltTime, model[i].rotator->rz * dltTime);
-            MODEL *mdl = (MODEL *)_CORE_API->GetEntityPointer(&model[i].id);
+            auto *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(model[i].id));
             if (mdl)
                 mdl->mtx = CMatrix(mtr, mdl->mtx);
         }
@@ -322,13 +315,13 @@ void ModelArray::Update(float dltTime)
 void ModelArray::UpdateModelsPath()
 {
     UpdatePath(modelspath);
-    strcat(modelspath, "\\");
+    strcat_s(modelspath, "\\");
 }
 
 void ModelArray::UpdateTexturesPath()
 {
     UpdatePath(texturespath);
-    strcat(texturespath, "\\");
+    strcat_s(texturespath, "\\");
 }
 
 void ModelArray::UpdateLightPath()
@@ -341,16 +334,16 @@ void ModelArray::UpdateShadowPath()
     UpdatePath(shadowpath);
 };
 
-dword ModelArray::CalcHashString(const char *str)
+uint32_t ModelArray::CalcHashString(const char *str)
 {
     unsigned long hval = 0;
     while (*str != '\0')
     {
-        char c = *str++;
+        auto c = *str++;
         if (c >= 'A' && c <= 'Z')
             c += 'a' - 'A';
-        hval = (hval << 4) + (unsigned long int)c;
-        unsigned long g = hval & ((unsigned long int)0xf << (32 - 4));
+        hval = (hval << 4) + static_cast<unsigned long>(c);
+        const auto g = hval & (static_cast<unsigned long>(0xf) << (32 - 4));
         if (g != 0)
         {
             hval ^= g >> (32 - 8);
@@ -360,7 +353,7 @@ dword ModelArray::CalcHashString(const char *str)
     return hval;
 }
 
-void ModelArray::UVSlider::Set(MODEL *model, VDX8RENDER *rs)
+void ModelArray::UVSlider::Set(MODEL *model, VDX9RENDER *rs)
 {
     static CMatrix mtx;
     mtx.m[2][0] = u0;
@@ -373,7 +366,7 @@ void ModelArray::UVSlider::Set(MODEL *model, VDX8RENDER *rs)
     rs->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT2);
 }
 
-void ModelArray::UVSlider::Restore(MODEL *model, VDX8RENDER *rs)
+void ModelArray::UVSlider::Restore(MODEL *model, VDX9RENDER *rs)
 {
     static CMatrix mtx;
     rs->SetTransform(D3DTS_TEXTURE0, mtx);
@@ -382,7 +375,7 @@ void ModelArray::UVSlider::Restore(MODEL *model, VDX8RENDER *rs)
     rs->SetTextureStageState(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
 }
 
-void ModelArray::Relection::Set(MODEL *model, VDX8RENDER *rs)
+void ModelArray::Relection::Set(MODEL *model, VDX9RENDER *rs)
 {
     CMatrix mtx;
     rs->GetTransform(D3DTS_VIEW, mtx);
@@ -392,16 +385,16 @@ void ModelArray::Relection::Set(MODEL *model, VDX8RENDER *rs)
     rs->SetRenderState(D3DRS_TEXTUREFACTOR, tfactor);
 }
 
-void ModelArray::Relection::Restore(MODEL *model, VDX8RENDER *rs)
+void ModelArray::Relection::Restore(MODEL *model, VDX9RENDER *rs)
 {
-    CMatrix mtx;
+    const CMatrix mtx;
     rs->SetTransform(D3DTS_TEXTURE1, mtx);
 }
 
 void ModelArray::UpdatePath(char *path)
 {
-    long i = 0, j = 0;
-    for (i = 0, j = 0; path[i]; i++)
+    long j = 0;
+    for (long i = 0; path[i]; i++)
     {
         if (path[i] == '\\')
         {
@@ -425,7 +418,7 @@ bool ModelArray::VisibleTest(const CVECTOR &p1, const CVECTOR &p2)
     {
         if (model[i].isVisible)
         {
-            MODEL *mdl = (MODEL *)_CORE_API->GetEntityPointer(&model[i].id);
+            auto *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(model[i].id));
             if (mdl->Trace(p1, p2) < 1.0f)
                 return false;
         }
@@ -437,13 +430,13 @@ bool ModelArray::VisibleTest(const CVECTOR &p1, const CVECTOR &p2)
 float ModelArray::Trace(const CVECTOR &src, const CVECTOR &dst)
 {
     isHavecTrg = false;
-    float k = 2.0f;
+    auto k = 2.0f;
     for (long i = 0; i < numModels; i++)
     {
         if (model[i].isVisible)
         {
-            MODEL *mdl = (MODEL *)_CORE_API->GetEntityPointer(&model[i].id);
-            float km = mdl->Trace(src, dst);
+            auto *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(model[i].id));
+            const auto km = mdl->Trace(src, dst);
             if (k > km)
             {
                 k = km;
@@ -454,7 +447,7 @@ float ModelArray::Trace(const CVECTOR &src, const CVECTOR &dst)
     return k;
 }
 
-bool ModelArray::GetCollideTriangle(Triangle &trg)
+bool ModelArray::GetCollideTriangle(TRIANGLE &trg) const
 {
     trg = ctrg;
     return isHavecTrg;
@@ -466,7 +459,7 @@ void ModelArray::Clip(PLANE *p, long numPlanes, CVECTOR &cnt, float rad, bool (*
     {
         if (model[i].isVisible)
         {
-            MODEL *mdl = (MODEL *)_CORE_API->GetEntityPointer(&model[i].id);
+            auto *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(model[i].id));
             mdl->Clip(p, numPlanes, cnt, rad, fnc);
         }
     }

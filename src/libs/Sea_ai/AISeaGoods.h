@@ -2,11 +2,12 @@
 #define AI_SEA_GOODS_HPP
 
 #include "AIHelper.h"
+#include "dtimer.h"
 #include "geometry.h"
 #include "sea_base.h"
 #include "ship_base.h"
 
-class AISeaGoods : public ENTITY
+class AISeaGoods : public Entity
 {
   private:
     struct item_t
@@ -19,20 +20,20 @@ class AISeaGoods : public ENTITY
 
     struct goods_t
     {
-        string sModel;
-        array<item_t> aItems;
+        std::string sModel;
+        std::vector<item_t> aItems;
         GEOS *pGeo;
 
-        goods_t() : aItems(_FL_, 16){};
+        goods_t(){};
     };
 
-    array<goods_t *> aGoods;
-    array<SHIP_BASE *> aShips;
+    std::vector<goods_t *> aGoods;
+    std::vector<SHIP_BASE *> aShips;
 
     VGEOMETRY *pGeoService;
     SEA_BASE *pSea;
     item_t TmpItem;
-    string sModelPath, sTmpModel;
+    std::string sModelPath, sTmpModel;
     DTimer dtCheckShips;
     bool bDeleteGoodAnyway;
     float fDistanceMultiply;
@@ -41,13 +42,30 @@ class AISeaGoods : public ENTITY
     AISeaGoods();
     ~AISeaGoods();
 
-    bool Init();
+    bool Init() override;
     void SetDevice();
 
-    void Realize(dword Delta_Time);
-    void Execute(dword Delta_Time);
+    void Realize(uint32_t Delta_Time);
+    void Execute(uint32_t Delta_Time);
 
-    dword AttributeChanged(ATTRIBUTES *pAttributeChanged);
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
+
+    uint32_t AttributeChanged(ATTRIBUTES *pAttributeChanged) override;
 };
 
 #endif

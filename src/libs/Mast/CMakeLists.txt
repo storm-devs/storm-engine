@@ -1,6 +1,6 @@
 project(mast)
 
-add_library(${PROJECT_NAME} MODULE
+add_library(${PROJECT_NAME} STATIC
 	mast.cpp
 	mast.h
 )

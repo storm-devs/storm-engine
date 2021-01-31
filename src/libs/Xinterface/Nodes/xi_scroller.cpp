@@ -1,6 +1,6 @@
 #include "xi_scroller.h"
-#include "..\vxservice.h"
-#include "..\xinterface.h"
+#include "../xinterface.h"
+#include "Entity.h"
 #include "xi_formttext.h"
 #include "xi_questtexts.h"
 #include "xi_questtitles.h"
@@ -31,9 +31,9 @@ void SetVertexRectanglePos(XI_ONLYONETEX_VERTEX *pv, FXYRECT &posRect)
     pv[3].pos.y = posRect.bottom;
 }
 
-CXI_SCROLLER::CXI_SCROLLER() : m_asOwnedNodes(_FL)
+CXI_SCROLLER::CXI_SCROLLER()
 {
-    m_rs = NULL;
+    m_rs = nullptr;
     m_nNodeType = NODETYPE_SCROLLER;
 
     m_idBaseTex = -1;
@@ -49,14 +49,14 @@ CXI_SCROLLER::~CXI_SCROLLER()
     ReleaseAll();
 }
 
-void CXI_SCROLLER::Draw(bool bSelected, dword Delta_Time)
+void CXI_SCROLLER::Draw(bool bSelected, uint32_t Delta_Time)
 {
     if (m_bUse)
     {
         if (m_bDragRoll)
         {
             CONTROL_STATE cs;
-            api->Controls->GetControlState("ILClick", cs);
+            core.Controls->GetControlState("ILClick", cs);
             if (cs.state == CST_INACTIVE || cs.state == CST_INACTIVATED)
                 m_bDragRoll = false;
             if (m_bDragRoll)
@@ -72,8 +72,8 @@ void CXI_SCROLLER::Draw(bool bSelected, dword Delta_Time)
     }
 }
 
-bool CXI_SCROLLER::Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, VDX8RENDER *rs, XYRECT &hostRect,
-                        XYPOINT &ScreenSize)
+bool CXI_SCROLLER::Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs,
+                        XYRECT &hostRect, XYPOINT &ScreenSize)
 {
     if (!CINODE::Init(ini1, name1, ini2, name2, rs, hostRect, ScreenSize))
         return false;
@@ -88,8 +88,8 @@ void CXI_SCROLLER::ReleaseAll()
     m_bUse = false;
     TEXTURE_RELEASE(m_rs, m_idBaseTex);
     TEXTURE_RELEASE(m_rs, m_idRollerTex);
-    VERTEX_BUF_RELEASE(m_rs, m_idVBuf);
-    m_asOwnedNodes.DelAll();
+    VERTEX_BUFFER_RELEASE(m_rs, m_idVBuf);
+    m_asOwnedNodes.clear();
 }
 
 int CXI_SCROLLER::CommandExecute(int wActCode)
@@ -103,23 +103,23 @@ int CXI_SCROLLER::CommandExecute(int wActCode)
                 m_upButtonPos.top <= m_curMousePos.y && m_downButtonPos.bottom >= m_curMousePos.y)
             {
                 if (m_upButtonPos.bottom >= m_curMousePos.y)
-                { // верхняя кнопка
+                {
+                    // верхн€€ кнопка
                     UpPress();
                     break;
                 }
-                else if (m_downButtonPos.top <= m_curMousePos.y)
-                { // нижняя кнопка
+                if (m_downButtonPos.top <= m_curMousePos.y)
+                {
+                    // нижн€€ кнопка
                     DownPress();
                     break;
                 }
-                else
-                { // середина
-                    CONTROL_STATE cs;
-                    api->Controls->GetControlState("ILClick", cs);
-                    if (cs.state == CST_ACTIVATED)
-                        m_bDragRoll = true;
-                    MouseMove();
-                }
+                // середина
+                CONTROL_STATE cs;
+                core.Controls->GetControlState("ILClick", cs);
+                if (cs.state == CST_ACTIVATED)
+                    m_bDragRoll = true;
+                MouseMove();
             }
             break;
         }
@@ -127,7 +127,7 @@ int CXI_SCROLLER::CommandExecute(int wActCode)
     return -1;
 }
 
-void CXI_SCROLLER::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2)
+void CXI_SCROLLER::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2)
 {
     char param[2048];
 
@@ -150,51 +150,51 @@ void CXI_SCROLLER::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name
     m_fOffHeight = GetIniFloat(ini1, name1, ini2, name2, "begEndBaseSize", 0.f);
     m_rollerHeight = GetIniFloat(ini1, name1, ini2, name2, "rollerHeight", 0.f);
 
-    m_rollerPlace.left = (float)m_rect.left;
-    m_rollerPlace.right = (float)m_rect.right;
+    m_rollerPlace.left = static_cast<float>(m_rect.left);
+    m_rollerPlace.right = static_cast<float>(m_rect.right);
     m_rollerPlace.top = m_rect.top + m_fOffHeight;
     m_rollerPlace.bottom = m_rect.bottom - m_fOffHeight;
 
     m_ScrollTexRect = GetIniFloatRect(ini1, name1, ini2, name2, "scrollTexPos", FXYRECT(0.f, 0.f, 1.f, 1.f));
     m_RollTexRect = GetIniFloatRect(ini1, name1, ini2, name2, "rollTexPos", FXYRECT(0.f, 0.f, 1.f, 1.f));
 
-    m_idVBuf =
-        m_rs->CreateVertexBufferManaged(XI_ONLYONETEX_FVF, 16 * sizeof(XI_ONLYONETEX_VERTEX), D3DUSAGE_WRITEONLY);
+    m_idVBuf = m_rs->CreateVertexBuffer(XI_ONLYONETEX_FVF, 16 * sizeof(XI_ONLYONETEX_VERTEX), D3DUSAGE_WRITEONLY);
     FillVertexBuffer();
 }
 
 void CXI_SCROLLER::MakeOwnedControl()
 {
-    for (long n = 0; n < (long)m_asOwnedNodes.Size(); n++)
+    for (long n = 0; n < static_cast<long>(m_asOwnedNodes.size()); n++)
     {
-        CINODE *pNode = ((XINTERFACE *)g_idInterface.pointer)->FindNode(m_asOwnedNodes[n], 0);
+        auto *const pNode = static_cast<XINTERFACE *>(EntityManager::GetEntityPointer(g_idInterface))
+                                ->FindNode(m_asOwnedNodes[n].c_str(), nullptr);
         if (!pNode)
             continue;
         switch (pNode->m_nNodeType)
         {
         case NODETYPE_FORMATEDTEXTS:
-            ((CXI_FORMATEDTEXT *)pNode)->SetPointer(m_fPos);
+            static_cast<CXI_FORMATEDTEXT *>(pNode)->SetPointer(m_fPos);
             break;
         case NODETYPE_TABLE:
-            ((CXI_TABLE *)pNode)->ScrollerChanged(m_fPos);
+            static_cast<CXI_TABLE *>(pNode)->ScrollerChanged(m_fPos);
             break;
         case NODETYPE_QTEXTS:
-            ((CXI_QUESTTEXTS *)pNode)->ScrollerChanged(m_fPos);
+            static_cast<CXI_QUESTTEXTS *>(pNode)->ScrollerChanged(m_fPos);
             break;
         case NODETYPE_QTITLE:
-            ((CXI_QUESTTITLE *)pNode)->ScrollerChanged(m_fPos);
+            static_cast<CXI_QUESTTITLE *>(pNode)->ScrollerChanged(m_fPos);
             break;
 
         default:
-            api->Trace("Warning! Control %s owned not legal type of control (%s).", m_nodeName, pNode->m_nodeName);
+            core.Trace("Warning! Control %s owned not legal type of control (%s).", m_nodeName, pNode->m_nodeName);
         }
     }
 }
 
 void CXI_SCROLLER::UpPress()
 {
-    api->Event("ScrollTopChange", "l", -1);
-    float fDelta = GetOwnedStep();
+    core.Event("ScrollTopChange", "l", -1);
+    const auto fDelta = GetOwnedStep();
     if (fDelta != 0.f)
     {
         SetRollerPos(m_fPos - fDelta);
@@ -204,8 +204,8 @@ void CXI_SCROLLER::UpPress()
 
 void CXI_SCROLLER::DownPress()
 {
-    api->Event("ScrollTopChange", "l", 1);
-    float fDelta = GetOwnedStep();
+    core.Event("ScrollTopChange", "l", 1);
+    const auto fDelta = GetOwnedStep();
     if (fDelta != 0.f)
     {
         SetRollerPos(m_fPos + fDelta);
@@ -215,10 +215,11 @@ void CXI_SCROLLER::DownPress()
 
 float CXI_SCROLLER::GetOwnedStep()
 {
-    CINODE *pNode = 0;
-    for (long n = 0; n < (long)m_asOwnedNodes.Size(); n++)
+    CINODE *pNode = nullptr;
+    for (long n = 0; n < static_cast<long>(m_asOwnedNodes.size()); n++)
     {
-        pNode = ((XINTERFACE *)g_idInterface.pointer)->FindNode(m_asOwnedNodes[n], 0);
+        pNode = static_cast<XINTERFACE *>(EntityManager::GetEntityPointer(g_idInterface))
+                    ->FindNode(m_asOwnedNodes[n].c_str(), nullptr);
         if (pNode)
             break;
     }
@@ -227,20 +228,20 @@ float CXI_SCROLLER::GetOwnedStep()
     switch (pNode->m_nNodeType)
     {
     case NODETYPE_FORMATEDTEXTS:
-        return ((CXI_FORMATEDTEXT *)pNode)->GetLineStep();
+        return static_cast<CXI_FORMATEDTEXT *>(pNode)->GetLineStep();
         break;
     case NODETYPE_TABLE:
-        return ((CXI_TABLE *)pNode)->GetLineStep();
+        return static_cast<CXI_TABLE *>(pNode)->GetLineStep();
         break;
     case NODETYPE_QTEXTS:
-        return ((CXI_QUESTTEXTS *)pNode)->GetLineStep();
+        return static_cast<CXI_QUESTTEXTS *>(pNode)->GetLineStep();
         break;
     case NODETYPE_QTITLE:
-        return ((CXI_QUESTTITLE *)pNode)->GetLineStep();
+        return static_cast<CXI_QUESTTITLE *>(pNode)->GetLineStep();
         break;
 
     default:
-        api->Trace("Warning! Control %s owned not legal type of control (%s).", m_nodeName, pNode->m_nodeName);
+        core.Trace("Warning! Control %s owned not legal type of control (%s).", m_nodeName, pNode->m_nodeName);
     }
     return 0.f;
 }
@@ -251,8 +252,8 @@ bool CXI_SCROLLER::IsClick(int buttonID, long xPos, long yPos)
     {
         if (!m_bDragRoll)
         {
-            m_curMousePos.x = (float)xPos;
-            m_curMousePos.y = (float)yPos;
+            m_curMousePos.x = static_cast<float>(xPos);
+            m_curMousePos.y = static_cast<float>(yPos);
         }
         return true;
     }
@@ -263,8 +264,8 @@ void CXI_SCROLLER::ChangePosition(XYRECT &rNewPos)
 {
     m_rect = rNewPos;
 
-    m_rollerPlace.left = (float)m_rect.left;
-    m_rollerPlace.right = (float)m_rect.right;
+    m_rollerPlace.left = static_cast<float>(m_rect.left);
+    m_rollerPlace.right = static_cast<float>(m_rect.right);
     m_rollerPlace.top = m_rect.top + m_fOffHeight;
     m_rollerPlace.bottom = m_rect.bottom - m_fOffHeight;
 
@@ -275,15 +276,15 @@ void CXI_SCROLLER::SaveParametersToIni()
 {
     char pcWriteParam[2048];
 
-    INIFILE *pIni = api->fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.GetBuffer());
+    auto *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
-        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.GetBuffer());
+        core.Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
         return;
     }
 
     // save position
-    _snprintf(pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rect.left, m_rect.top, m_rect.right, m_rect.bottom);
+    sprintf_s(pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rect.left, m_rect.top, m_rect.right, m_rect.bottom);
     pIni->WriteString(m_nodeName, "position", pcWriteParam);
 
     delete pIni;
@@ -300,8 +301,8 @@ void CXI_SCROLLER::SetRollerPos(float pos)
     m_rollerCur.top = m_rollerPlace.top + m_fPos * (m_rollerPlace.bottom - m_rollerPlace.top - m_rollerHeight);
     m_rollerCur.bottom = m_rollerCur.top + m_rollerHeight;
 
-    XI_ONLYONETEX_VERTEX *pV = (XI_ONLYONETEX_VERTEX *)m_rs->LockVertexBuffer(m_idVBuf);
-    if (pV != NULL)
+    auto *pV = static_cast<XI_ONLYONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_idVBuf));
+    if (pV != nullptr)
     {
         SetVertexRectanglePos(&pV[12], m_rollerCur);
         m_rs->UnLockVertexBuffer(m_idVBuf);
@@ -313,15 +314,15 @@ void CXI_SCROLLER::LinkNodeChanged(float fPos)
     if (m_fPos == fPos)
         return;
     SetRollerPos(fPos);
-    api->Event("ScrollPosChange", "fs", fPos, m_nodeName);
+    core.Event("ScrollPosChange", "fs", fPos, m_nodeName);
 }
 
 void CXI_SCROLLER::FillVertexBuffer()
 {
-    XI_ONLYONETEX_VERTEX *pV = (XI_ONLYONETEX_VERTEX *)m_rs->LockVertexBuffer(m_idVBuf);
-    if (pV != NULL)
+    auto *pV = static_cast<XI_ONLYONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_idVBuf));
+    if (pV != nullptr)
     {
-        for (int i = 0; i < 16; i++)
+        for (auto i = 0; i < 16; i++)
             pV[i].pos.z = 1.f;
 
         FXYRECT texRect;
@@ -350,22 +351,22 @@ void CXI_SCROLLER::FillVertexBuffer()
         SetVertexRectangleTex(&pV[12], texRect);
 
         FXYRECT baseRect;
-        baseRect.left = (float)m_rect.left;
-        baseRect.top = (float)m_rect.top + m_fOffHeight;
-        baseRect.right = (float)m_rect.right;
-        baseRect.bottom = (float)m_rect.bottom - m_fOffHeight;
+        baseRect.left = static_cast<float>(m_rect.left);
+        baseRect.top = static_cast<float>(m_rect.top) + m_fOffHeight;
+        baseRect.right = static_cast<float>(m_rect.right);
+        baseRect.bottom = static_cast<float>(m_rect.bottom) - m_fOffHeight;
         SetVertexRectanglePos(&pV[0], baseRect);
 
-        m_upButtonPos.left = (float)m_rect.left;
-        m_upButtonPos.top = (float)m_rect.top;
-        m_upButtonPos.right = (float)m_rect.right;
-        m_upButtonPos.bottom = (float)m_rect.top + m_fOffHeight;
+        m_upButtonPos.left = static_cast<float>(m_rect.left);
+        m_upButtonPos.top = static_cast<float>(m_rect.top);
+        m_upButtonPos.right = static_cast<float>(m_rect.right);
+        m_upButtonPos.bottom = static_cast<float>(m_rect.top) + m_fOffHeight;
         SetVertexRectanglePos(&pV[4], m_upButtonPos);
 
-        m_downButtonPos.left = (float)m_rect.left;
-        m_downButtonPos.top = (float)m_rect.bottom - m_fOffHeight;
-        m_downButtonPos.right = (float)m_rect.right;
-        m_downButtonPos.bottom = (float)m_rect.bottom;
+        m_downButtonPos.left = static_cast<float>(m_rect.left);
+        m_downButtonPos.top = static_cast<float>(m_rect.bottom) - m_fOffHeight;
+        m_downButtonPos.right = static_cast<float>(m_rect.right);
+        m_downButtonPos.bottom = static_cast<float>(m_rect.bottom);
         SetVertexRectanglePos(&pV[8], m_downButtonPos);
 
         m_rollerCur.left = m_rollerPlace.left;
@@ -380,21 +381,21 @@ void CXI_SCROLLER::FillVertexBuffer()
 
 void CXI_SCROLLER::MouseMove()
 {
-    FXYPOINT pntMouse = ptrOwner->GetMousePoint();
+    const auto pntMouse = ptrOwner->GetMousePoint();
     if (pntMouse.y != m_curMousePos.y)
     {
         m_curMousePos = pntMouse;
 
-        float fY = pntMouse.y;
+        auto fY = pntMouse.y;
         if (fY < m_rollerPlace.top + m_rollerHeight * .5f)
             fY = m_rollerPlace.top + m_rollerHeight * .5f;
         if (fY > m_rollerPlace.bottom - m_rollerHeight * .5f)
             fY = m_rollerPlace.bottom - m_rollerHeight * .5f;
 
-        float newPos = (fY - m_rollerPlace.top - m_rollerHeight * .5f) /
-                       (m_rollerPlace.bottom - m_rollerPlace.top - m_rollerHeight);
+        const float newPos = (fY - m_rollerPlace.top - m_rollerHeight * .5f) /
+                             (m_rollerPlace.bottom - m_rollerPlace.top - m_rollerHeight);
         SetRollerPos(newPos);
-        api->Event("ScrollPosChange", "fs", newPos, m_nodeName);
+        core.Event("ScrollPosChange", "fs", newPos, m_nodeName);
         MakeOwnedControl();
     }
 }

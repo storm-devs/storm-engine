@@ -1,41 +1,28 @@
 #include <stdio.h>
 
+#include "ibattle.h"
+
+#include "core.h"
+
 #include "ShipPointer.h"
 #include "battle_shipsign.h"
-#include "ibattle.h"
 #include "island_descr.h"
-#include "ships_list.h"
 
-#include "..\land\IBoardingStatus.h"
-#include "..\land\battle_land.h"
+#include "../land/IBoardingStatus.h"
+#include "../land/battle_land.h"
 
-#include "..\ActivePerkShower.h"
-#include "..\LogAndAction.h"
-#include "..\WorldMapInterface\interface.h"
-#include "..\itementity\itementity.h"
-#include "..\spyglass\spyglass.h"
-#include "..\timer\timer.h"
-#include "..\utils.h"
+#include "../ActivePerkShower.h"
+#include "../ItemEntity/itementity.h"
+#include "../LogAndAction.h"
+#include "../WorldMapInterface/interface.h"
+#include "../spyglass/spyglass.h"
+#include "../timer/Timer.h"
 
-#include "..\msg_control.h"
+#include "../shared/battle_interface/msg_control.h"
 
-#include "..\InterfaceManager\InterfaceManager.h"
+#include "../interfacemanager/InterfaceManager.h"
 
 #include "ShipInfoImages.h"
-
-INTERFACE_FUNCTION
-CREATE_CLASS(BATTLE_INTERFACE)
-CREATE_CLASS(ILogAndActions)
-CREATE_CLASS(IBoardingStatus)
-CREATE_CLASS(BATTLE_LAND_INTERFACE)
-CREATE_CLASS(ISPYGLASS)
-CREATE_CLASS(SHIPPOINTER)
-CREATE_CLASS(ActivePerkShower)
-CREATE_CLASS(BITimer)
-CREATE_CLASS(ItemEntity)
-CREATE_CLASS(WM_INTERFACE)
-
-CREATE_CLASS(BI_InterfaceManager);
 
 SHIP_DESCRIBE_LIST g_ShipList;
 ISLAND_DESCRIBER g_IslandDescr;
@@ -43,14 +30,13 @@ ISLAND_DESCRIBER g_IslandDescr;
 #define MINIMAP_ZOOM_IN "MiniMapZoomIn"
 #define MINIMAP_ZOOM_OUT "MiniMapZoomOut"
 
-BATTLE_INTERFACE::BATTLE_INTERFACE() : m_TextArray(_FL_)
+BATTLE_INTERFACE::BATTLE_INTERFACE()
 {
     g_IslandDescr.ReleaseAll();
     g_ShipList.ReleaseAll();
     // m_pMessageIcons = null;
-    m_pShipIcon = null;
-    rs = NULL;
-    BIUtils::idBattleInterface = GetID();
+    m_pShipIcon = nullptr;
+    rs = nullptr;
     m_bShowCommandMenu = true;
     m_bShowBattleNavigator = true;
     m_bYesShowAll = false;
@@ -60,24 +46,26 @@ BATTLE_INTERFACE::BATTLE_INTERFACE() : m_TextArray(_FL_)
     m_bNeedIslandSet = true;
     m_bMyShipView = false;
     m_bShowBattleBorder = false;
-    m_pShipInfoImages = 0;
+    m_pShipInfoImages = nullptr;
 }
 
 BATTLE_INTERFACE::~BATTLE_INTERFACE()
 {
-    // SE_DELETE(m_pMessageIcons);
-    SE_DELETE(m_pShipIcon);
-    m_TextArray.DelAll();
+    // STORM_DELETE(m_pMessageIcons);
+    STORM_DELETE(m_pShipIcon);
+    m_TextArray.clear();
     m_LinesInfo.Release();
     m_ImagesInfo.Release();
-    SE_DELETE(m_pShipInfoImages);
+    STORM_DELETE(m_pShipInfoImages);
 }
 
 bool BATTLE_INTERFACE::Init()
 {
-    if ((rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render")) == NULL)
+    BIUtils::idBattleInterface = GetId();
+
+    if ((rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"))) == nullptr)
     {
-        SE_THROW_MSG("Can`t create render service");
+        throw std::exception("Can`t create render service");
     }
 
     LoadIniFile();
@@ -85,12 +73,12 @@ bool BATTLE_INTERFACE::Init()
     return true;
 }
 
-void BATTLE_INTERFACE::Execute(dword delta_time)
+void BATTLE_INTERFACE::Execute(uint32_t delta_time)
 {
     m_fCurBlinkTime += delta_time * m_fBlinkSpeed;
     if (m_fCurBlinkTime > PIm2)
         m_fCurBlinkTime -= PIm2;
-    BIUtils::g_dwBlinkColor = (DWORD)(255 * fabsf(sinf(m_fCurBlinkTime))) & 0xFF;
+    BIUtils::g_dwBlinkColor = static_cast<uint32_t>(255 * fabsf(sinf(m_fCurBlinkTime))) & 0xFF;
     CheckSeaState();
     if (m_bYesShowAll && m_bVisible)
     {
@@ -98,10 +86,10 @@ void BATTLE_INTERFACE::Execute(dword delta_time)
 
         if (m_bShowBattleNavigator)
         {
-            api->Controls->GetControlState(MINIMAP_ZOOM_IN, cs);
+            core.Controls->GetControlState(MINIMAP_ZOOM_IN, cs);
             if (cs.state == CST_ACTIVE)
                 BattleNavigator.DecrementScale();
-            api->Controls->GetControlState(MINIMAP_ZOOM_OUT, cs);
+            core.Controls->GetControlState(MINIMAP_ZOOM_OUT, cs);
             if (cs.state == CST_ACTIVE)
                 BattleNavigator.IncrementScale();
         }
@@ -110,7 +98,7 @@ void BATTLE_INTERFACE::Execute(dword delta_time)
         {
             if (!m_pShipIcon->IsActive())
             {
-                api->Controls->GetControlState(BI_COMMANDS_ACTIVATE_SEA, cs);
+                core.Controls->GetControlState(BI_COMMANDS_ACTIVATE_SEA, cs);
                 if (cs.state == CST_ACTIVATED)
                 {
                     m_pShipIcon->SetActive(true);
@@ -126,29 +114,28 @@ void BATTLE_INTERFACE::Execute(dword delta_time)
 
         /*if(m_pMessageIcons)
         {
-            if( !m_pShipIcon || !m_pShipIcon->IsActive() )
-            {
-                if(!m_bMyShipView) api->Event("blieGetMsgIconRoot");
-                m_bMyShipView = true;
-            }
-            else
-            {
-                if(m_bMyShipView) m_pMessageIcons->SetShowMsg(false);
-                m_bMyShipView = false;
-            }
+          if( !m_pShipIcon || !m_pShipIcon->IsActive() )
+          {
+            if(!m_bMyShipView) core.Event("blieGetMsgIconRoot");
+            m_bMyShipView = true;
+          }
+          else
+          {
+            if(m_bMyShipView) m_pMessageIcons->SetShowMsg(false);
+            m_bMyShipView = false;
+          }
         }*/
     }
     // if(m_pMessageIcons) m_pMessageIcons->Update(delta_time);
 }
 
-void BATTLE_INTERFACE::Realize(dword delta_time)
+void BATTLE_INTERFACE::Realize(uint32_t delta_time)
 {
-#ifndef _XBOX
-    if (api->Controls->GetDebugAsyncKeyState('K') < 0)
+    if (core.Controls->GetDebugAsyncKeyState('K') < 0)
         return;
-#endif
     if (m_bNeedIslandSet)
     {
+        core.Trace("Island Set");
         BattleNavigator.SetIsland();
         m_bNeedIslandSet = false;
     }
@@ -188,17 +175,15 @@ void BATTLE_INTERFACE::Realize(dword delta_time)
 
 void BATTLE_INTERFACE::LoadIniFile()
 {
-    GUARD(BATTLE_INTERFACE::LoadIniFile)
-
     m_fBlinkSpeed = .003f;
-    if (AttributesPointer != null)
+    if (AttributesPointer != nullptr)
         m_fBlinkSpeed = AttributesPointer->GetAttributeAsFloat("blindSpeed", m_fBlinkSpeed);
     m_fCurBlinkTime = 0;
 
     BattleNavigator.Init(rs, this);
 
-    ATTRIBUTES *pA = null;
-    if (AttributesPointer != null)
+    ATTRIBUTES *pA = nullptr;
+    if (AttributesPointer != nullptr)
     {
         m_bShowCommandMenu = AttributesPointer->GetAttributeAsDword("ShowCommands", 1) != 0;
         m_bShowBattleNavigator = AttributesPointer->GetAttributeAsDword("ShowNavigator", 1) != 0;
@@ -212,35 +197,34 @@ void BATTLE_INTERFACE::LoadIniFile()
         m_ImagesInfo.Init(rs, AttributesPointer->GetAttributeClass("imageslist"));
     }
 
-    /*SE_DELETE( m_pMessageIcons );
-    m_pMessageIcons = NEW MESSAGE_ICONS;
+    /*STORM_DELETE( m_pMessageIcons );
+    m_pMessageIcons = new MESSAGE_ICONS;
     if(m_pMessageIcons==NULL) {
-        SE_THROW("allocate memory error");
+      throw std::exception("allocate memory error");
     }
-    if(m_pMessageIcons)	m_pMessageIcons->InitData(GetID(),rs,pA);*/
+    if(m_pMessageIcons)	m_pMessageIcons->InitData(GetId(),rs,pA);*/
 
-    SE_DELETE(m_pShipIcon);
-    m_pShipIcon = NEW BIShipIcon(GetID(), rs);
+    STORM_DELETE(m_pShipIcon);
+    m_pShipIcon = new BIShipIcon(GetId(), rs);
     Assert(m_pShipIcon);
-    m_pShipIcon->Init(AttributesPointer, AttributesPointer ? AttributesPointer->GetAttributeClass("ShipIcon") : null);
+    m_pShipIcon->Init(AttributesPointer,
+                      AttributesPointer ? AttributesPointer->GetAttributeClass("ShipIcon") : nullptr);
 
     m_pShipInfoImages =
-        NEW ShipInfoImages(rs, AttributesPointer ? AttributesPointer->GetAttributeClass("ShipInfoImages") : null);
+        new ShipInfoImages(rs, AttributesPointer ? AttributesPointer->GetAttributeClass("ShipInfoImages") : nullptr);
     if (m_pShipInfoImages)
     {
         m_pShipInfoImages->SetVisible(
             AttributesPointer ? (AttributesPointer->GetAttributeAsDword("ShifInfoVisible", 0) != 0) : false);
     }
-
-    UNGUARD
 }
 
-dword BATTLE_INTERFACE::AttributeChanged(ATTRIBUTES *pAttr)
+uint32_t BATTLE_INTERFACE::AttributeChanged(ATTRIBUTES *pAttr)
 {
     return 0;
 }
 
-dword _cdecl BATTLE_INTERFACE::ProcessMessage(MESSAGE &message)
+uint64_t BATTLE_INTERFACE::ProcessMessage(MESSAGE &message)
 {
     switch (message.Long())
     {
@@ -251,12 +235,12 @@ dword _cdecl BATTLE_INTERFACE::ProcessMessage(MESSAGE &message)
         break;
     case BI_IN_CREATE_SHIP: // "laall"
     {
-        long chIdx = message.Long();
-        ATTRIBUTES *pChAttr = message.AttributePointer();
-        ATTRIBUTES *pShipAttr = message.AttributePointer();
-        bool bMyShip = (message.Long() != 0L);
-        long relation = message.Long();
-        dword dwShipColor = message.GetCurrentFormatType() ? message.Long() : 0;
+        const auto chIdx = message.Long();
+        auto *const pChAttr = message.AttributePointer();
+        auto *const pShipAttr = message.AttributePointer();
+        const auto bMyShip = (message.Long() != 0L);
+        const auto relation = message.Long();
+        const uint32_t dwShipColor = message.GetCurrentFormatType() ? message.Long() : 0;
         g_ShipList.Add(AttributesPointer ? AttributesPointer->GetAttributeAsDword("MainChrIndex", -1) : -1, chIdx,
                        pChAttr, pShipAttr, bMyShip, relation, dwShipColor);
         if (m_pShipIcon)
@@ -275,11 +259,11 @@ dword _cdecl BATTLE_INTERFACE::ProcessMessage(MESSAGE &message)
         break;
     case BI_IN_SET_COMMAND_MODE: // "lllll"
     {
-        long comMode = message.Long();
-        long startTextureNumber = message.Long();
-        long startPictureNumber = message.Long();
-        long characterNum = message.Long();
-        long commandState = message.Long();
+        auto comMode = message.Long();
+        auto startTextureNumber = message.Long();
+        auto startPictureNumber = message.Long();
+        auto characterNum = message.Long();
+        auto commandState = message.Long();
     }
     break;
     case BI_SET_VISIBLE: // "ll"
@@ -301,15 +285,15 @@ dword _cdecl BATTLE_INTERFACE::ProcessMessage(MESSAGE &message)
     case BI_MSG_SET_MSG_ICONS:
         /*if(m_pMessageIcons)
         {
-            EnableMessageIcons(message.ScriptVariablePointer());
+          EnableMessageIcons(message.ScriptVariablePointer());
         }*/
         break;
 
     case BI_MSG_ADD_NEWTEXTURE: {
         char param[256];
         message.String(sizeof(param) - 1, param);
-        int hQ = message.Long();
-        int vQ = message.Long();
+        const int hQ = message.Long();
+        const int vQ = message.Long();
         return m_pShipIcon->AddTexture(param, hQ, vQ);
     }
     break;
@@ -317,7 +301,7 @@ dword _cdecl BATTLE_INTERFACE::ProcessMessage(MESSAGE &message)
     case MSG_BATTLE_LAND_MAKE_COMMAND: {
         char param[256];
         message.String(sizeof(param) - 1, param);
-        if (stricmp(param, "cancel") == 0)
+        if (_stricmp(param, "cancel") == 0)
         {
             if (m_pShipIcon)
                 m_pShipIcon->ExecuteCommand(BIShipIcon::Command_cancel);
@@ -330,21 +314,21 @@ dword _cdecl BATTLE_INTERFACE::ProcessMessage(MESSAGE &message)
 
 void BATTLE_INTERFACE::CheckSeaState()
 {
-    SHIP_DESCRIBE_LIST::SHIP_DESCR *main_sd = g_ShipList.GetMainCharacterShip();
-    if (main_sd == NULL)
+    auto *main_sd = g_ShipList.GetMainCharacterShip();
+    if (main_sd == nullptr)
         return;
 
     long nReloadTargetIndex = -1;
-    float sqrRadius = api->Entity_GetAttributeAsFloat(&BIUtils::idBattleInterface, "boardRadius", 0.f);
+    auto sqrRadius = core.Entity_GetAttributeAsFloat(BIUtils::idBattleInterface, "boardRadius", 0.f);
     sqrRadius *= sqrRadius;
-    float minReloadRadius = sqrRadius;
-    float sqrFreeDistance = api->Entity_GetAttributeAsFloat(&BIUtils::idBattleInterface, "freeDistance", 500.f);
+    auto minReloadRadius = sqrRadius;
+    auto sqrFreeDistance = core.Entity_GetAttributeAsFloat(BIUtils::idBattleInterface, "freeDistance", 500.f);
     sqrFreeDistance *= sqrFreeDistance;
 
-    bool bSailTo = false, bLandTroops = false, bMap = true;
-    bool bAttack = false, bDefend = false, bReload = false;
+    auto bSailTo = false, bLandTroops = false, bMap = true;
+    auto bAttack = false, bDefend = false, bReload = false;
 
-    for (SHIP_DESCRIBE_LIST::SHIP_DESCR *ps = g_ShipList.GetShipRoot(); ps != NULL; ps = ps->next)
+    for (auto *ps = g_ShipList.GetShipRoot(); ps != nullptr; ps = ps->next)
     {
         if (ps == main_sd)
             continue;
@@ -378,13 +362,13 @@ void BATTLE_INTERFACE::CheckSeaState()
         }
     }
 
-    if (g_IslandDescr.GetFirstLocator() != null)
+    if (g_IslandDescr.GetFirstLocator() != nullptr)
         bSailTo = true;
 
-    if (g_IslandDescr.GetFirstEnemyFort() != null)
+    if (g_IslandDescr.GetFirstEnemyFort() != nullptr)
         bAttack = true;
 
-    api->Event(BI_EVENT_SET_SEA_STATE, "lllllll", bSailTo, bLandTroops, bMap, bAttack, bDefend, bReload,
+    core.Event(BI_EVENT_SET_SEA_STATE, "lllllll", bSailTo, bLandTroops, bMap, bAttack, bDefend, bReload,
                nReloadTargetIndex);
     m_bShowBattleBorder = !bMap;
 }
@@ -403,20 +387,9 @@ void BATTLE_INTERFACE::EnableMessageIcons(VDATA *pvdat)
 
     for(int i=0; i<4; i++)
     {
-        pAttr[i] = null;
-        if(i<nCommandos)	pAttr[i] = pvdat->GetAClass(i);
+      pAttr[i] = null;
+      if(i<nCommandos)	pAttr[i] = pvdat->GetAClass(i);
     }
 
     m_pMessageIcons->StartData( pAttr, pLeft );*/
-}
-
-void BATTLE_INTERFACE::LostRender()
-{
-    BattleNavigator.LostRender();
-}
-
-void BATTLE_INTERFACE::RestoreRender()
-{
-    m_bNeedIslandSet = true;
-    // BattleNavigator.RestoreRender();
 }

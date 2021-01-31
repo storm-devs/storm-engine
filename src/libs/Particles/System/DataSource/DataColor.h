@@ -1,21 +1,17 @@
-#ifndef _PARTICLE_DATA_COLOR_H_
-#define _PARTICLE_DATA_COLOR_H_
+#pragma once
 
-#include "../../../common_h/exs.h"
-#include "../../../common_h/templates.h"
-#include "..\..\icommon\colorvertex.h"
-#include "..\..\icommon\memfile.h"
-#include <stdarg.h>
-#include <stdio.h>
-#include <string.h>
+#include "../../ICommon/ColorVertex.h"
+#include "../../ICommon/MemFile.h"
+#include <string>
+#include <vector>
 
 class DataColor
 {
-    string Name;
+    std::string Name;
 
     const Color ZeroColor;
 
-    array<ColorVertex> ColorGraph;
+    std::vector<ColorVertex> ColorGraph;
 
   public:
     //конструктор/деструктор
@@ -30,24 +26,22 @@ class DataColor
     void SetDefaultValue(const Color &Value);
 
     //Установить значения
-    void SetValues(const ColorVertex *Values, DWORD Count);
+    void SetValues(const ColorVertex *Values, uint32_t Count);
 
     //Получить кол-во значений
-    DWORD GetValuesCount();
+    uint32_t GetValuesCount() const;
 
     //Получить мин. значение (по индексу)
-    const Color &GetMinValue(DWORD Index);
+    const Color &GetMinValue(uint32_t Index);
 
     //Получить макс. значение (по индексу)
-    const Color &GetMaxValue(DWORD Index);
+    const Color &GetMaxValue(uint32_t Index);
 
     void Load(MemFile *File);
     void Write(MemFile *File);
 
     void SetName(const char *szName);
-    const char *GetName();
+    const char *GetName() const;
 
-    const ColorVertex &GetByIndex(DWORD Index);
+    const ColorVertex &GetByIndex(uint32_t Index);
 };
-
-#endif

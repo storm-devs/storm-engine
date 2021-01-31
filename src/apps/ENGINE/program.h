@@ -5,7 +5,7 @@
 
 class PROGRAM
 {
-    DWORD ProgramNum;
+    uint32_t ProgramNum;
     COMPILER **ProgramBlock;
     char *ProgramDirectory;
 
@@ -18,7 +18,7 @@ class PROGRAM
     void SetProgramDirectory(char *dir_name);
     VDATA *ProcessEvent(char *event_name, MESSAGE message);
     VDATA *ProcessEvent(char *event_name);
-    void ProcessFrame(DWORD DeltaTime);
+    void ProcessFrame(uint32_t DeltaTime);
     bool Running(char *program_name);
     void ClearEvents();
     bool SaveState(HANDLE fh);

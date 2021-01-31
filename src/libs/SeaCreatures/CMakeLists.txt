@@ -1,7 +1,6 @@
 project(seacreatures)
 
-add_library(${PROJECT_NAME} MODULE
-	SeaCreaturesMain.cpp
+add_library(${PROJECT_NAME} STATIC
 	Sharks.cpp
 	Sharks.h
 )

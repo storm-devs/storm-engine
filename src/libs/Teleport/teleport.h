@@ -1,12 +1,12 @@
 #ifndef _TELEPORT_H_
 #define _TELEPORT_H_
 
-#include "dx8render.h"
+#include "dx9render.h"
 #include "vmodule_api.h"
 
-class TMPTELEPORT : public ENTITY
+class TMPTELEPORT : public Entity
 {
-    VDX8RENDER *rs;
+    VDX9RENDER *rs;
 
     struct TELEPORT_DESCR
     {
@@ -18,9 +18,25 @@ class TMPTELEPORT : public ENTITY
     TMPTELEPORT();
     ~TMPTELEPORT();
     bool Init();
-    void Execute(dword Delta_Time);
-    void Realize(dword Delta_Time);
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    void Execute(uint32_t Delta_Time);
+    void Realize(uint32_t Delta_Time);
+    uint64_t ProcessMessage(MESSAGE &message);
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+                LostRender(delta); break;
+            case Stage::restore_render:
+                RestoreRender(delta); break;*/
+        }
+    }
 
   protected:
     void ReleaseAll();
@@ -41,7 +57,7 @@ class TMPTELEPORT : public ENTITY
     long m_nShowType;
 };
 
-class FINDFILESINTODIRECTORY : public ENTITY
+class FINDFILESINTODIRECTORY : public Entity
 {
   public:
     FINDFILESINTODIRECTORY()
@@ -51,9 +67,12 @@ class FINDFILESINTODIRECTORY : public ENTITY
     {
     }
     bool Init();
+    void ProcessStage(Stage, uint32_t) override
+    {
+    }
 };
 
-class FINDDIALOGNODES : public ENTITY
+class FINDDIALOGNODES : public Entity
 {
   public:
     FINDDIALOGNODES()
@@ -63,6 +82,9 @@ class FINDDIALOGNODES : public ENTITY
     {
     }
     bool Init();
+    void ProcessStage(Stage, uint32_t) override
+    {
+    }
 };
 
 #endif

@@ -1,10 +1,10 @@
-//Компилировать в асемблерный файл с помощью тулза fxc.exe из dxsdk9
+//РљРѕРјРїРёР»РёСЂРѕРІР°С‚СЊ РІ Р°СЃРµРјР±Р»РµСЂРЅС‹Р№ С„Р°Р№Р» СЃ РїРѕРјРѕС‰СЊСЋ С‚СѓР»Р·Р° fxc.exe РёР· dxsdk9
 //
 //>fxc /T vs_1_1 /Fc asm.txt HLSL.fx
 //
-//Получившейся шейдер перенести в GrassEx.sha
-//все decl убить
-//все def перенести в cpp и убить из ams
+//РџРѕР»СѓС‡РёРІС€РµР№СЃСЏ С€РµР№РґРµСЂ РїРµСЂРµРЅРµСЃС‚Рё РІ GrassEx.sha
+//РІСЃРµ decl СѓР±РёС‚СЊ
+//РІСЃРµ def РїРµСЂРµРЅРµСЃС‚Рё РІ cpp Рё СѓР±РёС‚СЊ РёР· ams
 //
 
 //--------------------------------------------------------------------------------------
@@ -17,12 +17,12 @@ struct VS_OUTPUT
     float2 uv : TEXCOORD0;
 };
 
-//Таблицы
-float3 ang_table[16];	//Таблица углов (sin(ay), cos(ay), (fabsf(-cos(ay)*lDir.x + sin(ay)*lDir.z)*0.3f + 0.7f))
+//РўР°Р±Р»РёС†С‹
+float3 ang_table[16];	//РўР°Р±Р»РёС†Р° СѓРіР»РѕРІ (sin(ay), cos(ay), (fabsf(-cos(ay)*lDir.x + sin(ay)*lDir.z)*0.3f + 0.7f))
 float2 uv_table[16];
-//Матрица вид*проекцию
+//РњР°С‚СЂРёС†Р° РІРёРґ*РїСЂРѕРµРєС†РёСЋ
 float4x4 wpMatrix;
-//Параметры освещения
+//РџР°СЂР°РјРµС‚СЂС‹ РѕСЃРІРµС‰РµРЅРёСЏ
 float2 lDir;
 float kLitWF;
 float3 aColor;
@@ -35,28 +35,28 @@ VS_OUTPUT main(float3 pos : POSITION, float4 params : COLOR0, float4 offset : CO
 {
     VS_OUTPUT Output;	
 	
-	//Надо заменить из кода!!!
+	//РќР°РґРѕ Р·Р°РјРµРЅРёС‚СЊ РёР· РєРѕРґР°!!!
 	float kLitWF = 1.23456f;
 	
-	//Получим ориентацию травинки
+	//РџРѕР»СѓС‡РёРј РѕСЂРёРµРЅС‚Р°С†РёСЋ С‚СЂР°РІРёРЅРєРё
 	float3 ang = ang_table[params.z*15.0f];
-	//Освещение
+	//РћСЃРІРµС‰РµРЅРёРµ
 	float kClr = (wa.x*lDir.x + wa.y*lDir.y);
 	kClr = max(kClr, -0.2f/0.4f);
 	kClr = min(kClr, 0.4f/0.4f);
 	kClr = (kClr*0.4f + ang.z*0.2f)*kLitWF*offset.y;
 	Output.clr.xyz = aColor + lColor*kClr;
 	Output.clr.w = wa.z;
-	//Позиция
+	//РџРѕР·РёС†РёСЏ
 	float2 size = params.xy*float2(0.3f*0.6f, 0.4f*0.6f) + float2(0.7f*0.6f, 0.6f*0.6f);
 	float4 tmpPos;
 	tmpPos.xz = pos.xz - ang.xy*size.xx*(offset.xx - 0.5f) + wa.xy*offset.yy;
 	tmpPos.y = pos.y + sqrt(size.y - (wa.x*wa.x + wa.y*wa.y))*offset.y;
 	tmpPos.w = 1.0f;
 	Output.pos = mul(wpMatrix, tmpPos);
-	//Текстурные координаты
+	//РўРµРєСЃС‚СѓСЂРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹
 	Output.uv = uv_table[params.w*15.0f].xy + offset.xy*float2(0.245f, -0.245f);
-	//Всё
+	//Р’СЃС‘
     return Output;    
 }
 

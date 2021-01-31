@@ -6,16 +6,23 @@
 
 #include "Sea_Base.h"
 #include "cvector4.h"
-#include "dx8render.h"
-#include "templates.h"
+#include "dx9render.h"
 
-#include "common_defines.h"
+#include "defines.h"
 
 #include "Intel.h"
+#include <vector>
 
 class SEA : public SEA_BASE
 {
   private:
+    // uint32_t dwSkyCode = MakeHashValue("sky");
+    uint32_t dwIslandCode = MakeHashValue("island");
+    uint32_t dwShipCode = MakeHashValue("ship");
+    uint32_t dwSailCode = MakeHashValue("sail");
+
+    static IDirect3DVertexDeclaration9 *vertexDecl_;
+
     struct SeaVertex
     {
         CVECTOR vPos;
@@ -50,7 +57,7 @@ class SEA : public SEA_BASE
     {
         CVECTOR vPos;
         CVECTOR vSpeed;
-        dword dwSubTexture;
+        uint32_t dwSubTexture;
         float fTime;
         float fSize;
     };
@@ -59,13 +66,14 @@ class SEA : public SEA_BASE
     {
         CVECTOR vPos;
         CVECTOR vSpeed;
-        dword dwSubTexture;
+        uint32_t dwSubTexture;
         float fTime;
     };
 
+    VDX9RENDER *rs;
     static SEA *pSea;
 
-    dword dwMaxDim, dwMinDim;
+    uint32_t dwMaxDim, dwMinDim;
     float fMaxSeaHeight;
     float fGridStep;
     float fLodScale;
@@ -74,8 +82,7 @@ class SEA : public SEA_BASE
 
     CVECTOR vCamPos, vSeaCenterPos, vWorldOffset;
 
-    static bool bIntel, bSSE;
-    static bool bSeaDebug;
+    static bool bIntel, bSSE, bSeaDebug;
 
     bool bStarted;
     bool bUnderSea;
@@ -94,30 +101,30 @@ class SEA : public SEA_BASE
     bool bSimpleSea;
 
     SeaVertex *pVSea;
-    word *pTriangles;
-    dword *pIndices;
+    uint16_t *pTriangles;
+    uint32_t *pIndices;
     long iVStart, iTStart, iIStart;
 
     PLANE *pFrustumPlanes;
-    dword dwNumFrustumPlanes;
+    uint32_t dwNumFrustumPlanes;
 
     long iSeaTrashTexture;
     float fLastTrashTime;
-    array<SeaTrash> aSeaTrash;
-    array<RS_RECT> aTrashRects;
+    std::vector<SeaTrash> aSeaTrash;
+    std::vector<RS_RECT> aTrashRects;
 
     long iSeaLightTexture;
-    array<SeaLight> aSeaLights;
+    std::vector<SeaLight> aSeaLights;
     float fLastLightTime;
-    array<RS_RECT> aLightsRects;
+    std::vector<RS_RECT> aLightsRects;
 
-    array<dword *> aNormals;
-    array<byte *> aBumps;
-    array<SeaBlock> aBlocks;
+    std::vector<uint32_t *> aNormals;
+    std::vector<uint8_t *> aBumps;
+    std::vector<SeaBlock> aBlocks;
 
     CVECTOR4 v4SeaColor, v4SkyColor, v4SeaParameters;
 
-    array<IDirect3DTexture9 *> aBumpMaps;
+    std::vector<IDirect3DTexture9 *> aBumpMaps;
     IDirect3DTexture9 *pRenderTargetBumpMap;
 
     float *pSeaFrame1, *pSeaFrame2, *pSeaNormalsFrame1, *pSeaNormalsFrame2;
@@ -149,11 +156,11 @@ class SEA : public SEA_BASE
     CMatrix mTexProjection;
 
     void SSE_WaveXZ(SeaVertex **pArray);
-    float __fastcall WaveXZ(float x, float z, CVECTOR *pNormal = null);
+    float WaveXZ(float x, float z, CVECTOR *pNormal = nullptr) override;
 
     void AddBlock(long iTX, long iTY, long iSize, long iLOD);
     void BuildTree(long iTX, long iTY, long iLev);
-    void SetBlock(dword dwBlockIndex);
+    void SetBlock(uint32_t dwBlockIndex);
 
     bool isVisibleBBox(const CVECTOR &vCenter, const CVECTOR &v1, const CVECTOR &v2);
     void CalculateLOD(const CVECTOR &v1, const CVECTOR &v2, long &iMaxLOD, long &iMinLOD);
@@ -161,12 +168,12 @@ class SEA : public SEA_BASE
     void WaveXZBlock(SeaBlock *pB);
     void SSE_WaveXZBlock(SeaBlock *pB);
     SeaBlock *GetUndoneBlock();
-    void PrepareIndicesForBlock(dword dwBlockIndex);
+    void PrepareIndicesForBlock(uint32_t dwBlockIndex);
 
     long VisCode(const CVECTOR &vP);
 
-    void CalculateHeightMap(float fFrame, float fAmplitude, float *pfOut, array<byte *> &aFrames);
-    void CalculateNormalMap(float fFrame, float fAmplitude, float *pfOut, array<dword *> &aFrames);
+    void CalculateHeightMap(float fFrame, float fAmplitude, float *pfOut, std::vector<uint8_t *> &aFrames);
+    void CalculateNormalMap(float fFrame, float fAmplitude, float *pfOut, std::vector<uint32_t *> &aFrames);
 
     bool SunRoad_Render2();
     bool EnvMap_Render2();
@@ -177,15 +184,16 @@ class SEA : public SEA_BASE
     // HyperThreading
     Intel intel;
     HANDLE hEventCalcMaps;
-    array<HANDLE> aEventCalcBlock;
-    array<long> aThreadsTest;
-    array<HANDLE> aThreads;
+    std::vector<HANDLE> aEventCalcBlock;
+    std::vector<long> aThreadsTest;
+    std::vector<HANDLE> aThreads;
     static bool bHyperThreading;
     CRITICAL_SECTION cs, cs1;
     long iBlocksDoneNum;
 
-    static dword ThreadExecute(long iThreadIndex);
-    void __declspec(dllexport) __cdecl SFLB_CreateBuffers();
+    static uint32_t ThreadExecute(long iThreadIndex);
+    void SFLB_CreateBuffers();
+    void CreateVertexDeclaration();
 
   public:
     SEA();
@@ -193,7 +201,7 @@ class SEA : public SEA_BASE
 
     bool Init();
     void BuildVolumeTexture();
-    void Realize(dword dwDeltaTime);
+    void Realize(uint32_t dwDeltaTime);
 
     float Trace(const CVECTOR &vSrc, const CVECTOR &vDst);
     virtual float Cannon_Trace(long iBallOwner, const CVECTOR &src, const CVECTOR &dst);
@@ -204,24 +212,40 @@ class SEA : public SEA_BASE
     }
     virtual const char *GetCollideMaterialName()
     {
-        return null;
+        return nullptr;
     };
-    virtual bool GetCollideTriangle(Triangle &triangle)
+    virtual bool GetCollideTriangle(TRIANGLE &triangle)
     {
         return false;
     }
 
     bool EditMode_Update();
 
-    dword AttributeChanged(ATTRIBUTES *pAttribute);
-
+    uint32_t AttributeChanged(ATTRIBUTES *pAttribute);
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        // case Stage::execute:
+        //	Execute(delta); break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+        case Stage::lost_render:
+            LostRender();
+            break;
+        case Stage::restore_render:
+            RestoreRender();
+            break;
+        }
+    }
     void LostRender();
     void RestoreRender();
 
     // bool			Init();
-    // void			Realize(dword Delta_Time);
-    // void			Execute(dword Delta_Time);
-    // dword _cdecl	ProcessMessage(MESSAGE & message);
+    // void			Realize(uint32_t Delta_Time);
+    // void			Execute(uint32_t Delta_Time);
+    // uint32_t cdecl	ProcessMessage(MESSAGE & message);
 };
 
 #endif

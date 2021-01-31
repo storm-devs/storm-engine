@@ -1,14 +1,16 @@
 #include "xi_picture.h"
-#include <stdio.h>
+
+#include "storm_assert.h"
+#include "vfile_service.h"
 
 CXI_PICTURE::CXI_PICTURE()
 {
-    m_rs = 0;
+    m_rs = nullptr;
     m_idTex = -1;
-    m_pD3D8Texture = 0;
-    m_pTex = null;
+    m_pD3D8Texture = nullptr;
+    m_pTex = nullptr;
     m_nNodeType = NODETYPE_PICTURE;
-    m_pcGroupName = null;
+    m_pcGroupName = nullptr;
     m_bMakeBlind = false;
     m_fCurBlindTime = 0.f;
     m_bBlindUp = true;
@@ -23,7 +25,7 @@ CXI_PICTURE::~CXI_PICTURE()
     ReleaseAll();
 }
 
-void CXI_PICTURE::Draw(bool bSelected, dword Delta_Time)
+void CXI_PICTURE::Draw(bool bSelected, uint32_t Delta_Time)
 {
     if (m_bUse)
     {
@@ -57,34 +59,35 @@ void CXI_PICTURE::Draw(bool bSelected, dword Delta_Time)
             else if (m_pD3D8Texture)
                 m_rs->SetTexture(0, m_pD3D8Texture);
             else
-                m_rs->SetTexture(0, m_pTex ? m_pTex->m_pTexture : 0);
+                m_rs->SetTexture(0, m_pTex ? m_pTex->m_pTexture : nullptr);
             m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, m_v, sizeof(XI_ONETEX_VERTEX), "iVideo");
         }
     }
 }
 
-bool CXI_PICTURE::Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, VDX8RENDER *rs, XYRECT &hostRect,
-                       XYPOINT &ScreenSize)
+bool CXI_PICTURE::Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs,
+                       XYRECT &hostRect, XYPOINT &ScreenSize)
 {
     if (!CINODE::Init(ini1, name1, ini2, name2, rs, hostRect, ScreenSize))
         return false;
     return true;
 }
 
-void CXI_PICTURE::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2)
+void CXI_PICTURE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2)
 {
     char param[255];
 
     m_idTex = -1;
 
-    FXYRECT texRect = FXYRECT(0.f, 0.f, 1.f, 1.f);
+    auto texRect = FXYRECT(0.f, 0.f, 1.f, 1.f);
 
     if (ReadIniString(ini1, name1, ini2, name2, "groupName", param, sizeof(param), ""))
     {
         m_idTex = pPictureService->GetTextureID(param);
-        m_pcGroupName = NEW char[strlen(param) + 1];
+        const auto len = strlen(param) + 1;
+        m_pcGroupName = new char[len];
         Assert(m_pcGroupName);
-        strcpy(m_pcGroupName, param);
+        memcpy(m_pcGroupName, param, len);
 
         if (ReadIniString(ini1, name1, ini2, name2, "picName", param, sizeof(param), ""))
             pPictureService->GetTexturePos(m_pcGroupName, param, texRect);
@@ -96,16 +99,16 @@ void CXI_PICTURE::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2
         texRect = GetIniFloatRect(ini1, name1, ini2, name2, "textureRect", texRect);
     }
 
-    m_pTex = null;
+    m_pTex = nullptr;
     if (ReadIniString(ini1, name1, ini2, name2, "videoName", param, sizeof(param), ""))
         m_pTex = m_rs->GetVideoTexture(param);
 
-    DWORD color = GetIniARGB(ini1, name1, ini2, name2, "color", ARGB(255, 128, 128, 128));
+    const auto color = GetIniARGB(ini1, name1, ini2, name2, "color", ARGB(255, 128, 128, 128));
 
     // Create rectangle
     ChangePosition(m_rect);
     ChangeUV(texRect);
-    for (int i = 0; i < 4; i++)
+    for (auto i = 0; i < 4; i++)
     {
         m_v[i].color = color;
         m_v[i].pos.z = 1.f;
@@ -114,7 +117,7 @@ void CXI_PICTURE::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2
     m_bMakeBlind = GetIniBool(ini1, name1, ini2, name2, "blind", false);
     m_fCurBlindTime = 0.f;
     m_bBlindUp = true;
-    float fTmp = GetIniFloat(ini1, name1, ini2, name2, "blindUpTime", 1.f);
+    auto fTmp = GetIniFloat(ini1, name1, ini2, name2, "blindUpTime", 1.f);
     if (fTmp > 0.f)
         m_fBlindUpSpeed = 0.001f / fTmp;
     fTmp = GetIniFloat(ini1, name1, ini2, name2, "blindDownTime", 1.f);
@@ -147,29 +150,29 @@ bool CXI_PICTURE::IsClick(int buttonID, long xPos, long yPos)
 void CXI_PICTURE::ChangePosition(XYRECT &rNewPos)
 {
     m_rect = rNewPos;
-    m_v[0].pos.x = (float)m_rect.left;
-    m_v[0].pos.y = (float)m_rect.top;
-    m_v[1].pos.x = (float)m_rect.left;
-    m_v[1].pos.y = (float)m_rect.bottom;
-    m_v[2].pos.x = (float)m_rect.right;
-    m_v[2].pos.y = (float)m_rect.top;
-    m_v[3].pos.x = (float)m_rect.right;
-    m_v[3].pos.y = (float)m_rect.bottom;
+    m_v[0].pos.x = static_cast<float>(m_rect.left);
+    m_v[0].pos.y = static_cast<float>(m_rect.top);
+    m_v[1].pos.x = static_cast<float>(m_rect.left);
+    m_v[1].pos.y = static_cast<float>(m_rect.bottom);
+    m_v[2].pos.x = static_cast<float>(m_rect.right);
+    m_v[2].pos.y = static_cast<float>(m_rect.top);
+    m_v[3].pos.x = static_cast<float>(m_rect.right);
+    m_v[3].pos.y = static_cast<float>(m_rect.bottom);
 }
 
 void CXI_PICTURE::SaveParametersToIni()
 {
     char pcWriteParam[2048];
 
-    INIFILE *pIni = api->fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.GetBuffer());
+    auto *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
-        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.GetBuffer());
+        core.Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
         return;
     }
 
     // save position
-    _snprintf(pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rect.left, m_rect.top, m_rect.right, m_rect.bottom);
+    sprintf_s(pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rect.left, m_rect.top, m_rect.right, m_rect.bottom);
     pIni->WriteString(m_nodeName, "position", pcWriteParam);
 
     delete pIni;
@@ -195,34 +198,34 @@ void CXI_PICTURE::SetNewPictureFromDir(char *dirName)
     WIN32_FIND_DATA wfd;
     char param[512];
 
-    sprintf(param, "resource\\textures\\%s\\*.tx", dirName);
+    sprintf_s(param, "resource\\textures\\%s\\*.tx", dirName);
 
-    HANDLE h = api->fio->_FindFirstFile(param, &wfd);
+    auto *h = fio->_FindFirstFile(param, &wfd);
     for (findQ = 0; h != INVALID_HANDLE_VALUE;)
     {
         findQ++;
-        if (!api->fio->_FindNextFile(h, &wfd))
+        if (!fio->_FindNextFile(h, &wfd))
             break;
     }
     if (h != INVALID_HANDLE_VALUE)
-        api->fio->_FindClose(h);
+        fio->_FindClose(h);
 
     if (findQ > 0)
     {
         findQ = rand() % findQ;
-        h = api->fio->_FindFirstFile(param, &wfd);
+        h = fio->_FindFirstFile(param, &wfd);
         if (h != INVALID_HANDLE_VALUE)
             for (; findQ > 0; findQ--)
             {
-                if (!api->fio->_FindNextFile(h, &wfd))
+                if (!fio->_FindNextFile(h, &wfd))
                     break;
             }
         if (h != INVALID_HANDLE_VALUE)
         {
-            api->fio->_FindClose(h);
+            fio->_FindClose(h);
             std::string FileName = utf8::ConvertWideToUtf8(wfd.cFileName);
             sprintf(param, "%s\\%s", dirName, FileName.c_str());
-            int paramlen = strlen(param);
+            const int paramlen = strlen(param);
             if (paramlen < sizeof(param) && paramlen >= 3)
                 param[paramlen - 3] = 0;
             SetNewPicture(false, param);
@@ -232,14 +235,15 @@ void CXI_PICTURE::SetNewPictureFromDir(char *dirName)
 
 void CXI_PICTURE::SetNewPictureByGroup(char *groupName, char *picName)
 {
-    if (!m_pcGroupName || stricmp(m_pcGroupName, groupName) != 0)
+    if (!m_pcGroupName || _stricmp(m_pcGroupName, groupName) != 0)
     {
         ReleasePicture();
         if (groupName)
         {
-            m_pcGroupName = NEW char[strlen(groupName) + 1];
+            const auto len = strlen(groupName) + 1;
+            m_pcGroupName = new char[strlen(groupName) + 1];
             Assert(m_pcGroupName);
-            strcpy(m_pcGroupName, groupName);
+            memcpy(m_pcGroupName, groupName, len);
             m_idTex = pPictureService->GetTextureID(groupName);
         }
     }
@@ -252,11 +256,11 @@ void CXI_PICTURE::SetNewPictureByGroup(char *groupName, char *picName)
     }
 }
 
-dword _cdecl CXI_PICTURE::MessageProc(long msgcode, MESSAGE &message)
+uint32_t CXI_PICTURE::MessageProc(long msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
-    case 0: // Установить картинку на новую позицию
+    case 0: // ”становить картинку на новую позицию
     {
         m_rect.left = message.Long();
         m_rect.top = message.Long();
@@ -266,7 +270,7 @@ dword _cdecl CXI_PICTURE::MessageProc(long msgcode, MESSAGE &message)
     }
     break;
 
-    case 1: // Установить текстурные координаты картинки
+    case 1: // ”становить текстурные координаты картинки
     {
         FXYRECT texRect;
         texRect.left = message.Float();
@@ -277,16 +281,16 @@ dword _cdecl CXI_PICTURE::MessageProc(long msgcode, MESSAGE &message)
     }
     break;
 
-    case 2: // Установить новую картинку или видео картинку
+    case 2: // ”становить новую картинку или видео картинку
     {
-        bool bVideo = message.Long() != 0;
+        const auto bVideo = message.Long() != 0;
         char param[256];
         message.String(sizeof(param) - 1, param);
         SetNewPicture(bVideo, param);
     }
     break;
 
-    case 3: // Установить случайную картинку из директории
+    case 3: // ”становить случайную картинку из директории
     {
         char param[256];
         message.String(sizeof(param) - 1, param);
@@ -294,17 +298,17 @@ dword _cdecl CXI_PICTURE::MessageProc(long msgcode, MESSAGE &message)
     }
     break;
 
-    case 4: // Установить новый цвет
+    case 4: // ”становить новый цвет
     {
-        DWORD color = message.Long();
-        for (int i = 0; i < 4; i++)
+        const uint32_t color = message.Long();
+        for (auto i = 0; i < 4; i++)
             m_v[i].color = color;
     }
     break;
 
-    case 5: // установить/снять мигание
+    case 5: // установить/сн€ть мигание
     {
-        bool bBlind = message.Long() != 0;
+        const bool bBlind = message.Long() != 0;
         if (m_bMakeBlind != bBlind)
         {
             m_bMakeBlind = bBlind;
@@ -329,9 +333,9 @@ dword _cdecl CXI_PICTURE::MessageProc(long msgcode, MESSAGE &message)
     }
     break;
 
-    case 7: // set new picture by pointer to IDirect3DTexture8
+    case 7: // set new picture by pointer to IDirect3DTexture9
     {
-        IDirect3DBaseTexture9 *pTex = (IDirect3DBaseTexture9 *)message.Long();
+        auto *pTex = (IDirect3DBaseTexture9 *)message.Pointer();
         SetNewPictureByPointer(pTex);
     }
     break;
@@ -340,15 +344,15 @@ dword _cdecl CXI_PICTURE::MessageProc(long msgcode, MESSAGE &message)
     {
         char srcNodeName[256];
         message.String(sizeof(srcNodeName), srcNodeName);
-        CINODE *pNod = (CINODE *)ptrOwner->FindNode(srcNodeName, 0);
+        auto *pNod = static_cast<CINODE *>(ptrOwner->FindNode(srcNodeName, nullptr));
         if (pNod->m_nNodeType != NODETYPE_PICTURE)
         {
-            api->Trace("Warning! XINTERFACE:: node with name %s have not picture type.", srcNodeName);
+            core.Trace("Warning! XINTERFACE:: node with name %s have not picture type.", srcNodeName);
         }
         else
         {
             ReleasePicture();
-            CXI_PICTURE *pOtherPic = (CXI_PICTURE *)pNod;
+            auto *pOtherPic = static_cast<CXI_PICTURE *>(pNod);
             if (pOtherPic->m_pD3D8Texture)
             {
                 SetNewPictureByPointer(pOtherPic->m_pD3D8Texture);
@@ -356,7 +360,7 @@ dword _cdecl CXI_PICTURE::MessageProc(long msgcode, MESSAGE &message)
             if (pOtherPic->m_pcGroupName)
             {
                 m_pcGroupName = pOtherPic->m_pcGroupName;
-                pOtherPic->m_pcGroupName = 0;
+                pOtherPic->m_pcGroupName = nullptr;
             }
             if (pOtherPic->m_idTex != -1)
             {
@@ -389,7 +393,7 @@ void CXI_PICTURE::ChangeUV(FXYRECT &frNewUV)
     m_v[3].tv = frNewUV.bottom;
 }
 
-void CXI_PICTURE::ChangeColor(dword dwColor)
+void CXI_PICTURE::ChangeColor(uint32_t dwColor)
 {
     m_v[0].color = m_v[1].color = m_v[2].color = m_v[3].color = dwColor;
 }
@@ -404,11 +408,13 @@ void CXI_PICTURE::SetPictureSize(long &nWidth, long &nHeight)
     }
 
     if (nWidth <= 0)
-    { // найдем реальную ширину
+    {
+        // найдем реальную ширину
         nWidth = 128;
     }
     if (nHeight <= 0)
-    { // найдем реальную высоту
+    {
+        // найдем реальную высоту
         nHeight = 128;
     }
 
@@ -451,8 +457,8 @@ void CXI_PICTURE::ReleasePicture()
     PICTURE_TEXTURE_RELEASE(pPictureService, m_pcGroupName, m_idTex);
     if (m_pD3D8Texture)
         m_pD3D8Texture->Release();
-    m_pD3D8Texture = null;
-    SE_DELETE(m_pcGroupName);
+    m_pD3D8Texture = nullptr;
+    STORM_DELETE(m_pcGroupName);
     TEXTURE_RELEASE(m_rs, m_idTex);
     VIDEOTEXTURE_RELEASE(m_rs, m_pTex);
 }

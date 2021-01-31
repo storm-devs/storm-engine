@@ -1,7 +1,5 @@
 #include "xi_image.h"
-#include "..\xinterface.h"
-#include "xi_util.h"
-#include <stdio.h>
+#include "../xinterface.h"
 
 #define DEFAULT_IMAGE_OBJECT_WIDTH 32
 #define DEFAULT_IMAGE_OBJECT_HEIGHT 32
@@ -12,16 +10,16 @@ CXI_IMAGE::CXI_IMAGE()
     m_rs = XINTERFACE::GetRenderService();
     if (!m_rs)
     {
-        SE_THROW_MSG("No service: dx8render");
-    };
+        throw std::exception("No service: dx9render");
+    }
 
     m_bDisableDraw = false;
 
-    m_pcPictureListName = 0;
+    m_pcPictureListName = nullptr;
     m_nPictureNum = -1;
 
     m_nTextureID = -1;
-    m_pTexture = 0;
+    m_pTexture = nullptr;
 
     m_frUV.left = 0.f;
     m_frUV.top = 0.f;
@@ -57,12 +55,13 @@ void CXI_IMAGE::LoadFromBase(const char *sListName, const char *sPictureName, bo
 
     if (sListName)
     {
-        m_pcPictureListName = NEW char[strlen(sListName) + 1];
+        const auto len = strlen(sListName) + 1;
+        m_pcPictureListName = new char[len];
         if (!m_pcPictureListName)
         {
-            SE_THROW_MSG("allocate memory error");
+            throw std::exception("allocate memory error");
         }
-        strcpy(m_pcPictureListName, sListName);
+        memcpy(m_pcPictureListName, sListName, len);
     }
     m_nTextureID = XINTERFACE::GetPictureService()->GetTextureID(m_pcPictureListName);
     m_nPictureNum = XINTERFACE::GetPictureService()->GetImageNum(m_pcPictureListName, sPictureName);
@@ -87,13 +86,13 @@ void CXI_IMAGE::LoadAccordingToString(const char *pcImageParam)
         return;
     char tokenID[512];
     char tokenString[512];
-    bool bSetColor = false;
+    auto bSetColor = false;
     m_bThisIsColorRectangle = true;
-    for (char *pcParam = (char *)pcImageParam; pcParam && pcParam[0];)
+    for (auto *pcParam = (char *)pcImageParam; pcParam && pcParam[0];)
     {
-        if (0 == CXI_UTILS::StringGetTokenID(pcParam, tokenID, sizeof(tokenID)))
+        if (nullptr == CXI_UTILS::StringGetTokenID(pcParam, tokenID, sizeof(tokenID)))
             break;
-        long nTokenCode = CXI_UTILS::StringGetTokenCode(tokenID);
+        const auto nTokenCode = CXI_UTILS::StringGetTokenCode(tokenID);
         switch (nTokenCode)
         {
         case InterfaceToken_color:
@@ -129,8 +128,8 @@ void CXI_IMAGE::LoadAccordingToString(const char *pcImageParam)
             break;
         case InterfaceToken_picture_cut_uv:
             m_bThisIsColorRectangle = false;
-            m_nLeftTopCutUV.x = CXI_UTILS::StringGetFloat(pcParam);
-            m_nLeftTopCutUV.y = CXI_UTILS::StringGetFloat(pcParam);
+            m_nLeftTopCutUV.x = CXI_UTILS::StringGetFloat((const char *&)pcParam);
+            m_nLeftTopCutUV.y = CXI_UTILS::StringGetFloat((const char *&)pcParam);
             UpdateTexture();
             break;
         case InterfaceToken_size:
@@ -194,8 +193,8 @@ void CXI_IMAGE::Draw()
 
 void CXI_IMAGE::Draw(long nX, long nY, ImagePointType alignment)
 {
-    long nLeft = nX;
-    long nTop = nY;
+    auto nLeft = nX;
+    auto nTop = nY;
     if (alignment == IPType_Center)
     {
         nLeft -= m_pntSize.x / 2;
@@ -245,7 +244,7 @@ void CXI_IMAGE::SetPosition(long nX, long nY, ImagePointType ptype)
 
 void CXI_IMAGE::SetPosition(XYRECT &pos)
 {
-    bool bDoTextureUpdate = (m_pntSize.x != pos.right - pos.left) || (m_pntSize.y != pos.bottom - pos.top);
+    const auto bDoTextureUpdate = (m_pntSize.x != pos.right - pos.left) || (m_pntSize.y != pos.bottom - pos.top);
     if (m_pntLeftTop.x != pos.left || m_pntLeftTop.y != pos.top || bDoTextureUpdate)
     {
         m_pntLeftTop.x = pos.left;
@@ -273,7 +272,7 @@ void CXI_IMAGE::SetDifferentPosition(long nLeft, long nTop, long nWidth, long nH
         break;
     }
 
-    bool bDoTextureUpdate = (nWidth != m_pntSize.x || nHeight != m_pntSize.y);
+    const bool bDoTextureUpdate = (nWidth != m_pntSize.x || nHeight != m_pntSize.y);
     if (nX != m_pntLeftTop.x || nY != m_pntLeftTop.y || bDoTextureUpdate)
     {
         m_pntLeftTop.x = nX;
@@ -297,7 +296,7 @@ void CXI_IMAGE::SetUV(float fLeft, float fTop, float fRight, float fBottom)
     UpdateTexture();
 }
 
-void CXI_IMAGE::SetColor(DWORD dwColor)
+void CXI_IMAGE::SetColor(uint32_t dwColor)
 {
     m_dwImageColor = dwColor;
     for (long n = 0; n < 4; n++)
@@ -318,12 +317,11 @@ void CXI_IMAGE::Unload()
             TEXTURE_RELEASE(m_rs, m_nTextureID);
         }
     }
-    if (m_pTexture)
-        RELEASE(m_pTexture);
-    SE_DELETE(m_pcPictureListName);
+    RELEASE(m_pTexture);
+    STORM_DELETE(m_pcPictureListName);
 }
 
-bool CXI_IMAGE::IsPointInside(long nX, long nY)
+bool CXI_IMAGE::IsPointInside(long nX, long nY) const
 {
     if (nX < m_pntLeftTop.x || nY < m_pntLeftTop.y || nX > m_pntLeftTop.x + m_pntSize.x ||
         nY > m_pntLeftTop.y + m_pntSize.y)
@@ -357,19 +355,19 @@ void CXI_IMAGE::UpdateTexture()
 
 void CXI_IMAGE::UpdatePosition()
 {
-    m_vrtx[0].pos.x = (float)(m_pntLeftTop.x);
-    m_vrtx[0].pos.y = (float)(m_pntLeftTop.y);
+    m_vrtx[0].pos.x = static_cast<float>(m_pntLeftTop.x);
+    m_vrtx[0].pos.y = static_cast<float>(m_pntLeftTop.y);
     m_vrtx[0].pos.z = 1.f;
 
-    m_vrtx[1].pos.x = (float)(m_pntLeftTop.x);
-    m_vrtx[1].pos.y = (float)(m_pntLeftTop.y + m_pntSize.y);
+    m_vrtx[1].pos.x = static_cast<float>(m_pntLeftTop.x);
+    m_vrtx[1].pos.y = static_cast<float>(m_pntLeftTop.y + m_pntSize.y);
     m_vrtx[1].pos.z = 1.f;
 
-    m_vrtx[2].pos.x = (float)(m_pntLeftTop.x + m_pntSize.x);
-    m_vrtx[2].pos.y = (float)(m_pntLeftTop.y);
+    m_vrtx[2].pos.x = static_cast<float>(m_pntLeftTop.x + m_pntSize.x);
+    m_vrtx[2].pos.y = static_cast<float>(m_pntLeftTop.y);
     m_vrtx[2].pos.z = 1.f;
 
-    m_vrtx[3].pos.x = (float)(m_pntLeftTop.x + m_pntSize.x);
-    m_vrtx[3].pos.y = (float)(m_pntLeftTop.y + m_pntSize.y);
+    m_vrtx[3].pos.x = static_cast<float>(m_pntLeftTop.x + m_pntSize.x);
+    m_vrtx[3].pos.y = static_cast<float>(m_pntLeftTop.y + m_pntSize.y);
     m_vrtx[3].pos.z = 1.f;
 }

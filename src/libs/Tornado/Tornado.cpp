@@ -9,11 +9,8 @@
 //============================================================================================
 
 #include "Tornado.h"
-
-//============================================================================================
-
-INTERFACE_FUNCTION
-CREATE_CLASS(Tornado)
+#include "Entity.h"
+#include "core.h"
 
 //============================================================================================
 //Конструирование, деструктурирование
@@ -23,11 +20,11 @@ Tornado::Tornado() : particles(pillar), noiseCloud(pillar), debris(pillar)
 {
     ib = -1;
     vb = -1;
-    rs = null;
+    rs = nullptr;
     eventCounter = 0.0f;
     liveTime = 60.0f;
     galhpa = 1.0f;
-    soundService = null;
+    soundService = nullptr;
     sID = SOUND_INVALID_ID;
 }
 
@@ -55,27 +52,27 @@ Tornado::~Tornado()
 //Инициализация
 bool Tornado::Init()
 {
-    _CORE_API->LayerCreate("execute", true, false);
-    _CORE_API->LayerSetExecute("execute", true);
-    _CORE_API->LayerCreate("realize", true, false);
-    _CORE_API->LayerSetRealize("realize", true);
-    _CORE_API->LayerAdd("execute", GetID(), 70000);
-    _CORE_API->LayerAdd("realize", GetID(), 70000);
+    // core.LayerCreate("execute", true, false);
+    EntityManager::SetLayerType(EXECUTE, EntityManager::Layer::Type::execute);
+    // core.LayerCreate("realize", true, false);
+    EntityManager::SetLayerType(REALIZE, EntityManager::Layer::Type::realize);
+    EntityManager::AddToLayer(EXECUTE, GetId(), 70000);
+    EntityManager::AddToLayer(REALIZE, GetId(), 70000);
 
-    // DX8 render
-    rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
+    // DX9 render
+    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!rs)
-        SE_THROW_MSG("No service: dx8render");
+        throw std::exception("No service: dx9render");
 
     //Создаём буфера для столба
-    ib = rs->CreateIndexBufferManaged(pillar.GetNumTriangles() * 3 * sizeof(word));
+    ib = rs->CreateIndexBuffer(pillar.GetNumTriangles() * 3 * sizeof(uint16_t));
     if (ib < 0)
         return false;
-    vb = rs->CreateVertexBufferManaged(D3DFVF_XYZ | D3DFVF_DIFFUSE, pillar.GetNumVerteces() * sizeof(Pillar::Vertex),
-                                       D3DUSAGE_WRITEONLY);
+    vb = rs->CreateVertexBuffer(D3DFVF_XYZ | D3DFVF_DIFFUSE, pillar.GetNumVerteces() * sizeof(Pillar::Vertex),
+                                D3DUSAGE_WRITEONLY);
     if (vb < 0)
         return false;
-    word *ibpnt = (word *)rs->LockIndexBuffer(ib);
+    auto *ibpnt = static_cast<uint16_t *>(rs->LockIndexBuffer(ib));
     if (!ibpnt)
         return false;
     pillar.FillIndexBuffer(ibpnt);
@@ -87,26 +84,26 @@ bool Tornado::Init()
     particles.Update(0.0f);
     debris.Init();
     //Создаём звук
-    soundService = (VSoundService *)api->CreateService("SoundService");
+    soundService = static_cast<VSoundService *>(core.CreateService("SoundService"));
     if (soundService)
     {
-        sID = soundService->SoundPlay("tornado", PCM_3D, VOLUME_FX, false, true, false, 0,
-                                      &CVECTOR(pillar.GetX(0.0f), 0.0f, pillar.GetZ(0.0f)));
+        const auto pos = CVECTOR(pillar.GetX(0.0f), 0.0f, pillar.GetZ(0.0f));
+        sID = soundService->SoundPlay("tornado", PCM_3D, VOLUME_FX, false, true, false, 0, &pos);
     }
     return true;
 }
 
 //Исполнение
-void Tornado::Execute(dword delta_time)
+void Tornado::Execute(uint32_t delta_time)
 {
-    float dltTime = delta_time * 0.001f * 1.0f;
+    const auto dltTime = delta_time * 0.001f * 1.0f;
     pillar.Update(dltTime);
     particles.Update(dltTime);
     noiseCloud.Update(dltTime);
     debris.Update(dltTime);
     eventCounter += dltTime;
     if (eventCounter > 1.0f)
-        _CORE_API->Event("TornadoDamage", "fff", eventCounter, pillar.GetX(0.0f), pillar.GetZ(0.0f));
+        core.Event("TornadoDamage", "fff", eventCounter, pillar.GetX(0.0f), pillar.GetZ(0.0f));
     if (liveTime < 0.0f)
     {
         SetAlpha(galhpa);
@@ -114,19 +111,20 @@ void Tornado::Execute(dword delta_time)
         if (galhpa < 0.0f)
         {
             galhpa = 0.0f;
-            _CORE_API->Event("TornadoDelete", null);
-            _CORE_API->DeleteEntity(GetID());
+            core.Event("TornadoDelete", nullptr);
+            EntityManager::EraseEntity(GetId());
         }
     }
     else
         liveTime -= dltTime;
     if (soundService && sID != SOUND_INVALID_ID)
     {
-        soundService->SoundSet3DParam(sID, SM_POSITION, &CVECTOR(pillar.GetX(0.0f), 0.0f, pillar.GetZ(0.0f)));
+        const auto pos = CVECTOR(pillar.GetX(0.0f), 0.0f, pillar.GetZ(0.0f));
+        soundService->SoundSet3DParam(sID, SM_POSITION, &pos);
     }
 }
 
-void Tornado::Realize(dword delta_time)
+void Tornado::Realize(uint32_t delta_time)
 {
     liveTime = 1000.0f;
     //Обломки
@@ -136,7 +134,7 @@ void Tornado::Realize(dword delta_time)
     //Облака
     noiseCloud.Draw(rs);
     //Столб
-    Pillar::Vertex *vrt = (Pillar::Vertex *)rs->LockVertexBuffer(vb);
+    auto *vrt = static_cast<Pillar::Vertex *>(rs->LockVertexBuffer(vb));
     if (!vrt)
         return;
     rs->TextureSet(0, -1);
@@ -149,7 +147,7 @@ void Tornado::Realize(dword delta_time)
     particles.Draw(rs);
 }
 
-dword _cdecl Tornado::ProcessMessage(MESSAGE &message)
+uint64_t Tornado::ProcessMessage(MESSAGE &message)
 {
     liveTime = message.Float();
     if (liveTime < 5.0f)

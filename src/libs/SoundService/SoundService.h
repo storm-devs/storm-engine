@@ -1,40 +1,41 @@
 #ifndef _SOUNDSERVICE_H_
 #define _SOUNDSERVICE_H_
 
-//#include <mmreg.h>
-//#include <dxerr8.h>
-#include "CVECTOR.h"
+#include "Cvector.h"
 #include "SoundDefines.h"
 #include "VSoundService.h"
-#include "fmod.hpp"
-#include "fmod_errors.h"
-#include "templates.h"
 #include "vmodule_api.h"
-#include <dsound.h>
+#include <dx9render.h>
+#include <fmod.hpp>
+#include <string>
 
-#define MAX_SOUNDS_SLOTS 512
+#define MAX_SOUNDS_SLOTS 1024
 
+class INIFILE;
 // debug....
 class SoundVisualisationEntity;
 
 ///////////////////////////////////////////////////////////////////
 // CLASS DEFINITION
 ///////////////////////////////////////////////////////////////////
+
 class SoundService : public VSoundService
 {
+    static FMOD_RESULT ErrorHandler(FMOD_RESULT result, const char *file, unsigned line, const char *func,
+                                    const char *expr);
+
+    VDX9RENDER *rs = nullptr;
+
     bool bShowDebugInfo;
-    FMOD_RESULT status;
+    bool initialized;
 
-    bool bInited;
-
-    FMOD::System *fmod_system;
-
+    FMOD::System *system;
     FMOD::Sound *OGG_sound[2];
 
     struct tSoundCache
     {
-        DWORD dwNameHash;
-        string Name;
+        uint32_t dwNameHash;
+        std::string Name;
         FMOD::Sound *sound;
         float fTimeFromLastPlay;
         eSoundType type;
@@ -42,7 +43,7 @@ class SoundService : public VSoundService
         tSoundCache()
         {
             dwNameHash = 0;
-            sound = NULL;
+            sound = nullptr;
             fTimeFromLastPlay = 0.0f;
         }
     };
@@ -60,12 +61,12 @@ class SoundService : public VSoundService
         float fSoundVolume;
 
         // temp
-        string Name;
+        std::string Name;
 
         tPlayedSound()
         {
             bFree = true;
-            channel = NULL;
+            channel = nullptr;
             type = VOLUME_FX;
 
             fFaderNeedVolume = 0;
@@ -78,18 +79,18 @@ class SoundService : public VSoundService
 
     struct PlayedOGG
     {
-        string Name;
-        dword dwHash;
+        std::string Name;
+        uint32_t dwHash;
         unsigned int position;
     };
 
-    array<PlayedOGG> OGGPosition;
+    std::vector<PlayedOGG> OGGPosition;
 
     unsigned int GetOGGPosition(const char *szName);
     void SetOGGPosition(const char *szName, unsigned int pos);
     int GetOGGPositionIndex(const char *szName);
 
-    array<tSoundCache> SoundCache;
+    std::vector<tSoundCache> SoundCache;
 
     int GetFromCache(const char *szName, eSoundType _type);
 
@@ -100,45 +101,45 @@ class SoundService : public VSoundService
     FMOD_VECTOR vListenerTop;
 
     void CreateEntityIfNeed();
-    // Aliases ------------------------------------------------------------
 
+    // Aliases ------------------------------------------------------------
     struct tAliasSound
     {
-        string FileName;
+        std::string FileName;
         float fProbability;
     };
 
     struct tAlias
     {
-        string Name;
-        dword dwNameHash;
+        std::string Name;
+        uint32_t dwNameHash;
 
         float fMaxProbabilityValue;
         float fMinDistance;
         float fMaxDistance;
         long iPrior;
         float fVolume;
-        array<tAliasSound> SoundFiles;
+        std::vector<tAliasSound> SoundFiles;
 
-        tAlias() : SoundFiles(_FL_)
+        tAlias()
         {
         }
     };
 
-    array<tAlias> Aliases;
+    std::vector<tAlias> Aliases;
 
-    const char *GetRandomName(tAlias *_alias);
+    const char *GetRandomName(tAlias *_alias) const;
     int GetAliasIndexByName(const char *szAliasName);
-    void AnalyseNameStringAndAddToAlias(tAlias *_alias, const char *in_string);
+    void AnalyseNameStringAndAddToAlias(tAlias *_alias, const char *in_string) const;
     void AddAlias(INIFILE *_iniFile, char *_sectionName);
-    void LoadAliasFile(const char *_filename);
+    void LoadAliasFile(const char *_filename) override;
     void InitAliases();
 
     // Sound Schemes------------------------------------------------------------
     struct tSoundSchemeChannel
     {
         TSD_ID SoundID;
-        string soundName;
+        std::string soundName;
         long minDelayTime;
         long maxDelayTime;
         float volume;
@@ -151,14 +152,14 @@ class SoundService : public VSoundService
         }
     };
 
-    array<tSoundSchemeChannel> SoundSchemeChannels;
+    std::vector<tSoundSchemeChannel> SoundSchemeChannels;
 
     bool AddSoundSchemeChannel(char *in_string, bool _looped = false);
     void ProcessSoundSchemes();
 
     //----------------------------------------------------------------------------
 
-    int FindEmptySlot();
+    int FindEmptySlot() const;
 
     float fFXVolume;
     float fMusicVolume;
@@ -167,54 +168,49 @@ class SoundService : public VSoundService
   public:
     SoundService();
     virtual ~SoundService();
-    bool __declspec(dllexport) __cdecl SFLB_SetScheme(const char *_schemeName);
-    virtual bool Init();
-    virtual dword RunSection()
+    bool SFLB_SetScheme(const char *_schemeName);
+    bool Init() override;
+
+    uint32_t RunSection() override
     {
         return SECTION_EXECUTE;
     }
 
-    virtual void RunStart();
-    virtual void RunEnd();
+    void RunStart() override;
+    void RunEnd() override;
 
-    virtual TSD_ID SoundPlay(const char *_name, eSoundType _type, eVolumeType _volumeType, bool _simpleCache = false,
-                             bool _looped = false, bool _cached = false, long _time = 0, CVECTOR *_startPosition = 0,
-                             float _minDistance = -1.0f, float _maxDistance = -1.0f, long _loopPauseTime = 0,
-                             float _volume = 1.0f, long _prior = 128);
+    TSD_ID SoundPlay(const char *_name, eSoundType _type, eVolumeType _volumeType, bool _simpleCache = false,
+                     bool _looped = false, bool _cached = false, long _time = 0,
+                     const CVECTOR *_startPosition = nullptr, float _minDistance = -1.0f, float _maxDistance = -1.0f,
+                     long _loopPauseTime = 0, float _volume = 1.0f, long _prior = 128) override;
 
-    virtual TSD_ID SoundDuplicate(TSD_ID _sourceID);
-    virtual void SoundSet3DParam(TSD_ID _id, eSoundMessage _message, const void *_op);
-    virtual void SoundStop(TSD_ID _id, long _time = 0);
-    virtual void SoundRelease(TSD_ID _id);
-    virtual void SoundSetVolume(TSD_ID _id, float _volume);
-    virtual bool SoundIsPlaying(TSD_ID _id);
-    virtual float SoundGetPosition(TSD_ID _id);
-    virtual void SoundRestart(TSD_ID _id);
-    virtual void SoundResume(TSD_ID _id, long _time = 0);
+    TSD_ID SoundDuplicate(TSD_ID _sourceID) override;
+    void SoundSet3DParam(TSD_ID _id, eSoundMessage _message, const void *_op) override;
+    void SoundStop(TSD_ID _id, long _time = 0) override;
+    void SoundRelease(TSD_ID _id) override;
+    void SoundSetVolume(TSD_ID _id, float _volume) override;
+    bool SoundIsPlaying(TSD_ID _id) override;
+    float SoundGetPosition(TSD_ID _id) override;
+    void SoundRestart(TSD_ID _id) override;
+    void SoundResume(TSD_ID _id, long _time = 0) override;
 
     // Service functions
-    virtual void SetMasterVolume(float _fxVolume, float _musicVolume, float _speechVolume);
-    virtual void GetMasterVolume(float *_fxVolume, float *_musicVolume, float *_speechVolume);
-    virtual void SetCameraPosition(const CVECTOR &_cameraPosition);
-    virtual void SetCameraOrientation(const CVECTOR &_nose, const CVECTOR &_head);
+    void SetMasterVolume(float _fxVolume, float _musicVolume, float _speechVolume) override;
+    void GetMasterVolume(float *_fxVolume, float *_musicVolume, float *_speechVolume) override;
+    void SetCameraPosition(const CVECTOR &_cameraPosition) override;
+    void SetCameraOrientation(const CVECTOR &_nose, const CVECTOR &_head) override;
 
-    // schemes` routines
-    virtual void ResetScheme();
-    virtual bool SetScheme(const char *_schemeName);
-    virtual bool AddScheme(const char *_schemeName);
-    virtual void SetEnabled(bool _enabled);
+    // Schemes routines
+    void ResetScheme() override;
+    bool SetScheme(const char *_schemeName) override;
+    bool AddScheme(const char *_schemeName) override;
+    void SetEnabled(bool _enabled) override;
 
     void DebugDraw();
-
-    void _cdecl DebugPrint3D(const CVECTOR &pos3D, float rad, long line, float alpha, dword color, float scale,
-                             const char *format, ...);
-    void Draw2DCircle(const CVECTOR &center, DWORD dwColor, float fRadius, DWORD dwColor2, float fRadius2);
+    void DebugPrint3D(const CVECTOR &pos3D, float rad, long line, float alpha, uint32_t color, float scale,
+                      const char *format, ...) const;
+    void Draw2DCircle(const CVECTOR &center, uint32_t dwColor, float fRadius, uint32_t dwColor2, float fRadius2) const;
 
     void ProcessFader(int idx);
 };
-
-// API_SERVICE_START("sound service")
-//	DECLARE_MAIN_SERVICE(SoundService)
-// API_SERVICE_END(SoundService)
-
 #endif // !defined

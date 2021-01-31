@@ -1,7 +1,10 @@
 #include "xi_2picture.h"
-#include <stdio.h>
 
-void SetRectanglePos(XI_ONETEX_VERTEX v[4], FXYPOINT &center, FXYPOINT &size)
+#include "core.h"
+
+#include "vfile_service.h"
+
+void SetRectanglePos(XI_ONETEX_VERTEX v[4], const FXYPOINT &center, const FXYPOINT &size)
 {
     v[0].pos.x = v[1].pos.x = center.x - size.x / 2;
     v[2].pos.x = v[3].pos.x = center.x + size.x / 2;
@@ -9,7 +12,7 @@ void SetRectanglePos(XI_ONETEX_VERTEX v[4], FXYPOINT &center, FXYPOINT &size)
     v[1].pos.y = v[3].pos.y = center.y + size.y / 2;
 }
 
-void SetRectanglePos(XI_NOTEX_VERTEX v[4], FXYPOINT &center, FXYPOINT &size)
+void SetRectanglePos(XI_NOTEX_VERTEX v[4], const FXYPOINT &center, const FXYPOINT &size)
 {
     v[0].pos.x = v[1].pos.x = center.x - size.x / 2;
     v[2].pos.x = v[3].pos.x = center.x + size.x / 2;
@@ -17,15 +20,15 @@ void SetRectanglePos(XI_NOTEX_VERTEX v[4], FXYPOINT &center, FXYPOINT &size)
     v[1].pos.y = v[3].pos.y = center.y + size.y / 2;
 }
 
-void SetRectangleColor(XI_ONETEX_VERTEX v[4], DWORD color)
+void SetRectangleColor(XI_ONETEX_VERTEX v[4], uint32_t color)
 {
-    for (int i = 0; i < 4; i++)
+    for (auto i = 0; i < 4; i++)
         v[i].color = color;
 }
 
 CXI_TWOPICTURE::CXI_TWOPICTURE()
 {
-    m_rs = 0;
+    m_rs = nullptr;
     m_idOneTex = m_idTwoTex = -1L;
     m_nNodeType = NODETYPE_TWOPICTURE;
     m_bSelected = true;
@@ -37,7 +40,7 @@ CXI_TWOPICTURE::~CXI_TWOPICTURE()
     ReleaseAll();
 }
 
-void CXI_TWOPICTURE::Draw(bool bSelected, dword Delta_Time)
+void CXI_TWOPICTURE::Draw(bool bSelected, uint32_t Delta_Time)
 {
     if (m_bUse)
     {
@@ -48,21 +51,21 @@ void CXI_TWOPICTURE::Draw(bool bSelected, dword Delta_Time)
     }
 }
 
-bool CXI_TWOPICTURE::Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, VDX8RENDER *rs, XYRECT &hostRect,
-                          XYPOINT &ScreenSize)
+bool CXI_TWOPICTURE::Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs,
+                          XYRECT &hostRect, XYPOINT &ScreenSize)
 {
     if (!CINODE::Init(ini1, name1, ini2, name2, rs, hostRect, ScreenSize))
         return false;
     return true;
 }
 
-void CXI_TWOPICTURE::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2)
+void CXI_TWOPICTURE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2)
 {
     char param[255];
 
-    int pictSpace = GetIniLong(ini1, name1, ini2, name2, "pictureSpace", 10);
+    const int pictSpace = GetIniLong(ini1, name1, ini2, name2, "pictureSpace", 10);
     m_picSize.x = (m_rect.right - m_rect.left - pictSpace) / 2.f;
-    m_picSize.y = float(m_rect.bottom - m_rect.top);
+    m_picSize.y = static_cast<float>(m_rect.bottom - m_rect.top);
     m_leftPicCenter.x = m_rect.left + m_picSize.x / 2;
     m_leftPicCenter.y = (m_rect.bottom + m_rect.top) / 2.f;
     m_rightPicCenter.x = m_rect.right - m_picSize.x / 2;
@@ -92,7 +95,7 @@ void CXI_TWOPICTURE::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *na
     m_dwShadowColor = GetIniARGB(ini1, name1, ini2, name2, "argbShadowCol", ARGB(255, 48, 48, 48));
 
     // текстурные координаты
-    FXYRECT texRect = GetIniFloatRect(ini1, name1, ini2, name2, "texPos", FXYRECT(0.f, 0.f, 1.f, 1.f));
+    const auto texRect = GetIniFloatRect(ini1, name1, ini2, name2, "texPos", FXYRECT(0.f, 0.f, 1.f, 1.f));
 
     // Create rectangle
     m_vOne[0].tu = m_vTwo[0].tu = texRect.left;
@@ -103,7 +106,7 @@ void CXI_TWOPICTURE::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *na
     m_vOne[2].tv = m_vTwo[2].tv = texRect.top;
     m_vOne[3].tu = m_vTwo[3].tu = texRect.right;
     m_vOne[3].tv = m_vTwo[3].tv = texRect.bottom;
-    for (int i = 0; i < 4; i++)
+    for (auto i = 0; i < 4; i++)
     {
         m_vOne[i].pos.z = m_vTwo[i].pos.z = m_vSOne[i].pos.z = m_vSTwo[i].pos.z = 1.f;
         m_vSOne[i].color = m_vSTwo[i].color = m_dwShadowColor;
@@ -168,7 +171,7 @@ bool CXI_TWOPICTURE::IsClick(int buttonID, long xPos, long yPos)
 
 void CXI_TWOPICTURE::UpdateRectangles()
 {
-    ATTRIBUTES *pA = _CORE_API->Entity_GetAttributeClass(&g_idInterface, m_nodeName);
+    auto *pA = core.Entity_GetAttributeClass(g_idInterface, m_nodeName);
     if (m_bLeftSelect)
     {
         SetRectanglePos(m_vOne, m_leftPicCenter + m_PressOffset, m_picSize);
@@ -180,7 +183,7 @@ void CXI_TWOPICTURE::UpdateRectangles()
         SetRectangleColor(m_vOne, m_dwSelectColor);
         SetRectangleColor(m_vTwo, m_dwDarkColor);
 
-        if (pA != NULL)
+        if (pA != nullptr)
             pA->SetAttributeUseDword("current", 0);
     }
     else
@@ -194,7 +197,7 @@ void CXI_TWOPICTURE::UpdateRectangles()
         SetRectangleColor(m_vOne, m_dwDarkColor);
         SetRectangleColor(m_vTwo, m_dwSelectColor);
 
-        if (pA != NULL)
+        if (pA != nullptr)
             pA->SetAttributeUseDword("current", 1);
     }
 }
@@ -224,20 +227,19 @@ void CXI_TWOPICTURE::MouseThis(float fX, float fY)
             m_bLeftSelect = false;
             UpdateRectangles();
         }
-        return;
     }
 }
 
 void CXI_TWOPICTURE::ChangePosition(XYRECT &rNewPos)
 {
-    float pictSpace = m_rect.right - m_rect.left - 2.f * m_picSize.x;
+    auto pictSpace = m_rect.right - m_rect.left - 2.f * m_picSize.x;
     if (pictSpace < 0.f)
         pictSpace = 0.f;
 
     m_rect = rNewPos;
 
     m_picSize.x = (m_rect.right - m_rect.left - pictSpace) / 2.f;
-    m_picSize.y = float(m_rect.bottom - m_rect.top);
+    m_picSize.y = static_cast<float>(m_rect.bottom - m_rect.top);
     m_leftPicCenter.x = m_rect.left + m_picSize.x / 2;
     m_leftPicCenter.y = (m_rect.bottom + m_rect.top) / 2.f;
     m_rightPicCenter.x = m_rect.right - m_picSize.x / 2;
@@ -250,15 +252,15 @@ void CXI_TWOPICTURE::SaveParametersToIni()
 {
     char pcWriteParam[2048];
 
-    INIFILE *pIni = api->fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.GetBuffer());
+    auto *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
-        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.GetBuffer());
+        core.Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
         return;
     }
 
     // save position
-    _snprintf(pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rect.left, m_rect.top, m_rect.right, m_rect.bottom);
+    sprintf_s(pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rect.left, m_rect.top, m_rect.right, m_rect.bottom);
     pIni->WriteString(m_nodeName, "position", pcWriteParam);
 
     delete pIni;

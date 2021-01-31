@@ -11,7 +11,7 @@
 #ifndef _WdmCamera_H_
 #define _WdmCamera_H_
 
-#include "dx8render.h"
+#include "dx9render.h"
 
 class WdmCamera
 {
@@ -27,19 +27,19 @@ class WdmCamera
     //--------------------------------------------------------------------------------------------
   public:
     void Init(float defAy, float defHeight = -1.0f);
-    void Move(float dltTime, VDX8RENDER *rs);
+    void Move(float dltTime, VDX9RENDER *rs);
 
     //--------------------------------------------------------------------------------------------
     //Функции для управления
     //--------------------------------------------------------------------------------------------
   protected:
-    virtual void CtrlProcess(float dltTime) = null;
-    virtual float MoveLeftRight(float dltTime) = null;
-    virtual float MoveUpDown(float dltTime) = null;
-    virtual float RotLeftRight(float dltTime) = null;
-    virtual float ZoomInOut(float dltTime) = null;
-    virtual bool CurrentFreeMode() = null;
-    virtual bool GetHightHeight(float &height) = null;
+    virtual void CtrlProcess(float dltTime) = 0;
+    virtual float MoveLeftRight(float dltTime) = 0;
+    virtual float MoveUpDown(float dltTime) = 0;
+    virtual float RotLeftRight(float dltTime) = 0;
+    virtual float ZoomInOut(float dltTime) = 0;
+    virtual bool CurrentFreeMode() = 0;
+    virtual bool GetHightHeight(float &height) = 0;
 
     //--------------------------------------------------------------------------------------------
     //

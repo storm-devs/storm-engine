@@ -1,63 +1,58 @@
 #ifndef SIMPLE_GEOM_NAME_PARSER
 #define SIMPLE_GEOM_NAME_PARSER
 
-#include "exs.h"
-#include "templates.h"
-#include <stdarg.h>
-#include <stdio.h>
 #include <string.h>
 
 #define MAX_STRING_SIZE 8192
 
 class GeomNameParser
 {
-
-    array<char *> Tokens;
+    std::vector<char *> Tokens;
     char NamesString[MAX_STRING_SIZE];
 
   public:
-    GeomNameParser() : Tokens(_FL_){};
-    ~GeomNameParser(){};
+    // GeomNameParser () : Tokens(_FL_) {};
+    //~GeomNameParser () {};
 
-    __forceinline const char *GetRandomName(const char *names)
+    const char *GetRandomName(const char *names)
     {
         Tokenize(names);
-        if (Tokens.Size() == 0)
-            return NULL;
+        if (Tokens.size() == 0)
+            return nullptr;
 
-        return Tokens[(rand() % Tokens.Size())];
+        return Tokens[(rand() % Tokens.size())];
     }
 
-    __forceinline DWORD GetTokensCount()
+    uint32_t GetTokensCount() const
     {
-        return Tokens.Size();
+        return Tokens.size();
     }
 
-    __forceinline const char *GetTokenByIndex(DWORD Index)
+    const char *GetTokenByIndex(uint32_t Index)
     {
         return Tokens[Index];
     }
 
-    __forceinline void Tokenize(const char *names)
+    void Tokenize(const char *names)
     {
-        Tokens.DelAll();
-        strncpy(NamesString, names, MAX_STRING_SIZE);
+        Tokens.clear();
+        strncpy_s(NamesString, names, MAX_STRING_SIZE);
         int StrLen = strlen(NamesString);
-        if (NamesString[StrLen - 1] != ';')
-            strcat(NamesString, ";");
+        if (StrLen > 0 && NamesString[StrLen - 1] != ';')
+            strcat_s(NamesString, ";");
         StrLen = strlen(NamesString);
 
-        int FromChar = 0;
-        for (int n = 0; n < StrLen; n++)
+        auto FromChar = 0;
+        for (auto n = 0; n < StrLen; n++)
         {
             if (NamesString[n] == ';')
             {
                 NamesString[n] = 0;
 
-                char *ModelName = NamesString + FromChar;
-                if (strlen(ModelName) > 0)
+                auto *ModelName = NamesString + FromChar;
+                if (ModelName[0] != '\0')
                 {
-                    Tokens.Add(ModelName);
+                    Tokens.push_back(ModelName);
                 }
                 FromChar = n + 1;
             }

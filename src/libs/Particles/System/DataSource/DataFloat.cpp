@@ -1,5 +1,5 @@
 #include "DataFloat.h"
-#include "..\..\icommon\memfile.h"
+#include "vmodule_api.h"
 
 //конструктор/деструктор
 DataFloat::DataFloat()
@@ -12,7 +12,7 @@ DataFloat::~DataFloat()
 }
 
 //Получить значение
-float DataFloat::GetValue()
+float DataFloat::GetValue() const
 {
     return Value;
 }
@@ -25,12 +25,12 @@ void DataFloat::SetValue(float val)
 
 void DataFloat::Load(MemFile *File)
 {
-    float fValue = 0.0f;
+    auto fValue = 0.0f;
     File->ReadType(fValue);
     SetValue(fValue);
 
     static char AttribueName[128];
-    DWORD NameLength = 0;
+    uint32_t NameLength = 0;
     File->ReadType(NameLength);
     Assert(NameLength < 128);
     File->Read(AttribueName, NameLength);
@@ -40,25 +40,25 @@ void DataFloat::Load(MemFile *File)
 
 void DataFloat::SetName(const char *szName)
 {
-    // api->Trace("DataFloat::SetName - '%s'", szName);
+    // core.Trace("DataFloat::SetName - '%s'", szName);
     Name = szName;
 }
 
-const char *DataFloat::GetName()
+const char *DataFloat::GetName() const
 {
-    return Name.GetBuffer();
+    return Name.c_str();
 }
 
-void DataFloat::Write(MemFile *File)
+void DataFloat::Write(MemFile *File) const
 {
-    float fValue = GetValue();
+    auto fValue = GetValue();
     File->WriteType(fValue);
 
     // save name
-    DWORD NameLength = Name.Len();
-    DWORD NameLengthPlusZero = NameLength + 1;
+    const uint32_t NameLength = Name.size();
+    auto NameLengthPlusZero = NameLength + 1;
     File->WriteType(NameLengthPlusZero);
     Assert(NameLength < 128);
-    File->Write(Name.GetBuffer(), NameLength);
+    File->Write(Name.c_str(), NameLength);
     File->WriteZeroByte();
 }

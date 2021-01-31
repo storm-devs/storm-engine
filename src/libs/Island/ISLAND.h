@@ -1,60 +1,56 @@
 #ifndef _ISLAND_H_
 #define _ISLAND_H_
 
-#include "..\sea_ai\AIFlowGraph.h"
-#include "Island_base.h"
+#include "../Sea_ai/AIFlowGraph.h"
+#include "Island_Base.h"
 #include "collide.h"
-#include "dx8render.h"
+#include "dx9render.h"
 #include "geometry.h"
-#include "geos.h"
-#include "messages.h"
 #include "model.h"
-#include "sea_base.h"
-#include "tga.h"
 #include "vmodule_api.h"
 
 class MapZipper
 {
   private:
-    dword dwSizeX;
-    dword dwDX;
-    dword dwBlockSize, dwBlockShift;
-    dword dwShiftNumBlocksX;
-    dword dwNumRealBlocks;
+    uint32_t dwSizeX;
+    uint32_t dwDX;
+    uint32_t dwBlockSize, dwBlockShift;
+    uint32_t dwShiftNumBlocksX;
+    uint32_t dwNumRealBlocks;
 
-    word *pWordTable;
-    byte *pRealData;
+    uint16_t *pWordTable;
+    uint8_t *pRealData;
 
   public:
     MapZipper();
     ~MapZipper();
 
-    dword GetSizeX()
+    uint32_t GetSizeX()
     {
         return dwSizeX;
     };
 
     void UnInit();
-    void DoZip(byte *pSrc, dword dwSizeX);
-    byte Get(dword dwX, dword dwY);
+    void DoZip(uint8_t *pSrc, uint32_t dwSizeX);
+    uint8_t Get(uint32_t dwX, uint32_t dwY);
 
-    bool Save(string sFileName);
-    bool Load(string sFileName);
+    bool Save(std::string sFileName);
+    bool Load(std::string sFileName);
 
     bool isLoaded()
     {
-        return pRealData != null;
+        return pRealData != nullptr;
     }
 };
 
 class ISLAND : public ISLAND_BASE
 {
   private:
-    string sIslandName;
-    array<ENTITY_ID> aSpheres;
-    array<ENTITY_ID> aForts;
+    std::string sIslandName;
+    std::vector<entid_t> aSpheres;
+    std::vector<entid_t> aForts;
     AIFlowGraph AIPath;
-    ENTITY_ID AIFortEID;
+    entid_t AIFortEID;
 
     FRECT rIsland;
     bool bForeignModels;
@@ -62,8 +58,8 @@ class ISLAND : public ISLAND_BASE
     float fStepDX, fStepDZ, fStep1divDX, fStep1divDZ;
     float fShadowMapSize, fShadowMapStep;
     CVECTOR vBoxSize, vBoxCenter, vRealBoxSize;
-    dword iDMapSize, iDMapSizeShift;
-    ENTITY_ID model_id, seabed_id;
+    uint32_t iDMapSize, iDMapSizeShift;
+    entid_t model_id, seabed_id;
 
     bool bFirstRealize;
 
@@ -73,20 +69,19 @@ class ISLAND : public ISLAND_BASE
 
     MapZipper mzShadow, mzDepth;
 
-    byte *pDepthMap;
-    byte *pShadowMap;
+    uint8_t *pDepthMap;
+    uint8_t *pShadowMap;
 
-    VDX8RENDER *pRS;
+    VDX9RENDER *pRS;
     VGEOMETRY *pGS;
     COLLIDE *pCollide;
-    VIDWALKER *pIslandTraceWalker;
 
     CMatrix mIslandOld, mSeaBedOld;
     float fImmersionDepth, fImmersionDistance;
     float fCurrentImmersion;
 
-    void Blur8(byte **pBuffer, dword dwSize);
-    bool SaveTga8(char *fname, byte *pBuffer, dword dwSizeX, dword dwSizeY);
+    void Blur8(uint8_t **pBuffer, uint32_t dwSize);
+    bool SaveTga8(char *fname, uint8_t *pBuffer, uint32_t dwSizeX, uint32_t dwSizeY);
 
     // shadow map section
     bool CreateShadowMap(char *pDir, char *pName);
@@ -95,10 +90,10 @@ class ISLAND : public ISLAND_BASE
     // depth map section
     bool CreateHeightMap(char *pDir, char *pName);
     bool ActivateCamomileTrace(CVECTOR &vSrc);
-    inline float GetDepthCheck(DWORD iX, DWORD iZ);
-    inline float GetDepthNoCheck(DWORD iX, DWORD iZ);
+    inline float GetDepthCheck(uint32_t iX, uint32_t iZ);
+    inline float GetDepthNoCheck(uint32_t iX, uint32_t iZ);
 
-    bool Mount(char *fname, char *fdir, ENTITY_ID *eID);
+    bool Mount(char *fname, char *fdir, entid_t *eID);
     void Uninit();
 
     void CalcBoxParameters(CVECTOR &vBoxCenter, CVECTOR &vBoxSize);
@@ -111,22 +106,37 @@ class ISLAND : public ISLAND_BASE
     };
     char *GetName()
     {
-        return (char *)sIslandName.GetBuffer();
+        return (char *)sIslandName.c_str();
     };
 
-    void AddLocationModel(ENTITY_ID &eid, char *pIDStr, char *pStr);
+    void AddLocationModel(entid_t eid, char *pIDStr, char *pStr);
 
     // debug
     void DoZapSuperGenerator();
-    void DoZapSuperGeneratorInnerDecodeFiles(char *sub_dir, char *mask);
-    bool DoZapSuperGeneratorDecodeFile(char *sname);
+    void DoZapSuperGeneratorInnerDecodeFiles(const char *sub_dir, const char *mask);
+    bool DoZapSuperGeneratorDecodeFile(const char *sname);
 
   public:
     ISLAND();
     ~ISLAND();
     bool Init();
-    void Realize(dword Delta_Time);
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    void Realize(uint32_t Delta_Time);
+    uint64_t ProcessMessage(MESSAGE &message);
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        // case Stage::execute:
+        //	Execute(delta); break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+                LostRender(delta); break;
+            case Stage::restore_render:
+                RestoreRender(delta); break;*/
+        }
+    }
 
     void Move();
     void SetDevice();
@@ -140,9 +150,9 @@ class ISLAND : public ISLAND_BASE
 
     const char *GetCollideMaterialName()
     {
-        return 0;
+        return nullptr;
     };
-    bool GetCollideTriangle(Triangle &triangle)
+    bool GetCollideTriangle(TRIANGLE &triangle)
     {
         return false;
     };
@@ -153,21 +163,21 @@ class ISLAND : public ISLAND_BASE
     // inherit functions ISLAND_BASE
     bool GetMovePoint(CVECTOR &vSrc, CVECTOR &vDst, CVECTOR &vRes);
 
-    ENTITY_ID GetModelEID()
+    entid_t GetModelEID()
     {
         return model_id;
     };
-    ENTITY_ID GetSeabedEID()
+    entid_t GetSeabedEID()
     {
         return seabed_id;
     };
 
     bool Check2DBoxDepth(CVECTOR vPos, CVECTOR vSize, float fAngY, float fMinDepth);
-    bool GetDepth(float x, float z, float *fRes = 0);
-    bool GetDepthFast(float x, float z, float *fRes = 0);
+    bool GetDepth(float x, float z, float *fRes = nullptr);
+    bool GetDepthFast(float x, float z, float *fRes = nullptr);
     bool GetDepth(FRECT *pRect, float *fMinH, float *fMaxH);
 
-    bool GetShadow(float x, float z, float *fRes = 0);
+    bool GetShadow(float x, float z, float *fRes = nullptr);
 
     float GetCurrentImmersion()
     {

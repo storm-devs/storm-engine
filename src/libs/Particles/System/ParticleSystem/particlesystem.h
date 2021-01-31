@@ -1,16 +1,11 @@
 #ifndef _PARTICLE_SYSTEM_H_
 #define _PARTICLE_SYSTEM_H_
 
-#include "..\..\\icommon\types.h"
-#include "..\..\manager\particlemanager.h"
-#include "..\datasource\datasource.h"
-#include "exs.h"
-#include "particles\iparticlesystem.h"
-#include "templates.h"
+#include "../../ICommon/Types.h"
+#include "../../Manager/particlemanager.h"
+#include "../DataSource/DataSource.h"
+#include "particles/iparticlesystem.h"
 #include "vmodule_api.h"
-#include <stdarg.h>
-#include <stdio.h>
-#include <string.h>
 
 class IEmitter;
 
@@ -22,7 +17,7 @@ class ParticleSystem : public IParticleSystem
         IEmitter *pEmitter;
     };
 
-    array<EmitterDesc> Emitters;
+    std::vector<EmitterDesc> Emitters;
 
     //Автоудаляемая система или обычная
     bool AutoDeleted;
@@ -32,7 +27,7 @@ class ParticleSystem : public IParticleSystem
 
     bool DeleteIfNeed();
 
-    string SystemName;
+    std::string SystemName;
 
   protected:
     virtual ~ParticleSystem();
@@ -43,52 +38,52 @@ class ParticleSystem : public IParticleSystem
 
     ParticleManager *pMaster;
 
-    CMatrix matWorld;
+    Matrix matWorld;
 
   public:
     //Создание/удаление
     ParticleSystem(ParticleManager *serv);
-    virtual bool Release();
+    bool Release() override;
 
     //Отработать всем партиклам
-    virtual DWORD Execute(float DeltaTime);
+    uint32_t Execute(float DeltaTime) override;
 
     //Перезапустить партикловую систему
-    virtual void Restart(DWORD RandomSeed);
+    void Restart(uint32_t RandomSeed) override;
 
     //Запаузить испускание партиклов
-    virtual void PauseEmission(bool bPause);
+    void PauseEmission(bool bPause) override;
 
-    virtual void Stop();
+    void Stop() override;
     //Узнать на паузе эмиссия или нет
-    virtual bool IsEmissionPaused();
+    bool IsEmissionPaused() override;
 
     //Установить автоудаляемая система или обычная...
-    virtual void AutoDelete(bool Enabled);
+    void AutoDelete(bool Enabled) override;
     //Узнаять автоудаляемая система или нет
-    virtual bool IsAutoDeleted();
+    bool IsAutoDeleted() override;
     //Установить матрицу трансформации для системы
-    virtual void SetTransform(const CMatrix &transform);
-    virtual void GetTransform(CMatrix &_matWorld);
+    void SetTransform(const Matrix &transform) override;
+    void GetTransform(Matrix &_matWorld) override;
 
     void CreateFromDataSource(DataSource *pDataSource);
 
-    ParticleManager *GetMaster();
+    ParticleManager *GetMaster() const;
 
     IEmitter *FindEmitter(const char *name);
     IEmitter *FindEmitterByData(FieldList *Data);
 
-    void Teleport(const CMatrix &transform);
+    void Teleport(const Matrix &transform) override;
 
-    bool IsAlive();
+    bool IsAlive() override;
 
-    const char *GetName();
+    const char *GetName() override;
     void SetName(const char *Name);
 
   public:
-    DWORD GetEmittersCount();
-    IEmitter *GetEmitterByIndex(DWORD Index);
-    EmitterType GetEmitterTypeByIndex(DWORD Index);
+    uint32_t GetEmittersCount() const;
+    IEmitter *GetEmitterByIndex(uint32_t Index);
+    EmitterType GetEmitterTypeByIndex(uint32_t Index);
 
     void Editor_UpdateCachedData();
 };

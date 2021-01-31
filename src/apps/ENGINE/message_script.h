@@ -1,12 +1,14 @@
 #ifndef _MESSAGE_SCRIPT_H_
 #define _MESSAGE_SCRIPT_H_
 
-#include "cvector.h"
-#include "entity_id.h"
+#include "core.h"
+
+#include "Cvector.h"
+#include "Entity.h"
 #include "message.h"
-#include "vapi.h"
 #include "vdata.h"
 #include "vmodule_api.h"
+
 // Class for implementing function SendMessage from script in same way as
 // api function Send_Message (with variable number of arguments)
 
@@ -22,22 +24,18 @@ class MESSAGE_SCRIPT : public MESSAGE
   public:
     MESSAGE_SCRIPT()
     {
-        format = 0;
+        format = nullptr;
         index = 0;
-        pData = 0;
+        pData = nullptr;
         Data_size = 0;
-        ReadPointer = 0;
+        ReadPointer = nullptr;
     };
     ~MESSAGE_SCRIPT()
     {
-        if (format)
-            delete format;
-        format = 0;
-        if (pData)
-            delete pData;
-        pData = 0;
+        delete format;
+        free(pData);
     };
-    ENTITY_ID Sender_ID;
+    entid_t Sender_ID;
     void Move2Start()
     {
         ResetIndex();
@@ -51,17 +49,20 @@ class MESSAGE_SCRIPT : public MESSAGE
         case 'l':
             arg_size = sizeof(long);
             break;
+        case 'p':
+            arg_size = sizeof(uintptr_t);
+            break;
         case 'f':
             arg_size = sizeof(float);
             break;
         case 's':
-            if (data == 0)
+            if (data == nullptr)
                 arg_size = 1;
             else
                 arg_size = strlen(data) + 1;
             break;
         case 'i':
-            arg_size = sizeof(ENTITY_ID);
+            arg_size = sizeof(entid_t);
             break;
         case 'e':
             arg_size = sizeof(DATA *);
@@ -72,8 +73,8 @@ class MESSAGE_SCRIPT : public MESSAGE
         default:
             throw "Invalid MESSAGE_SCRIPT data type";
         }
-        pData = (char *)RESIZE(pData, Data_size + arg_size);
-        if (GetCurrentFormatType() == 's' && data == 0)
+        pData = (char *)realloc(pData, Data_size + arg_size);
+        if (GetCurrentFormatType() == 's' && data == nullptr)
         {
             char bf = 0;
             memcpy((char *)(pData + Data_size), &bf, 1);
@@ -84,11 +85,11 @@ class MESSAGE_SCRIPT : public MESSAGE
         index++;
         return true;
     };
-    byte Byte()
+    uint8_t Byte()
     {
         throw "Invalid MESSAGE_SCRIPT data type";
     }
-    word Word()
+    uint16_t Word()
     {
         throw "Invalid MESSAGE_SCRIPT data type";
     }
@@ -100,19 +101,16 @@ class MESSAGE_SCRIPT : public MESSAGE
     {
         throw "Invalid MESSAGE_SCRIPT data type";
     }
-    char *Pointer()
-    {
-        throw "Invalid MESSAGE_SCRIPT data type";
-    }
+    // char * Pointer()	{ throw "Invalid MESSAGE_SCRIPT data type"; }
     CVECTOR CVector()
     {
         throw "Invalid MESSAGE_SCRIPT data type";
     }
-    void MemoryBlock(dword memsize, char *buffer)
+    void MemoryBlock(uint32_t memsize, char *buffer)
     {
         throw "Invalid MESSAGE_SCRIPT data type";
     }
-    void Struct(dword sizeofstruct, char *s)
+    void Struct(uint32_t sizeofstruct, char *s)
     {
         throw "Invalid MESSAGE_SCRIPT data type";
     }
@@ -132,6 +130,14 @@ class MESSAGE_SCRIPT : public MESSAGE
         ReadPointer += sizeof(long);
         return tLong;
     }
+    char *Pointer()
+    {
+        char *tPtr;
+        ValidateFormat('p');
+        memcpy(&tPtr, ReadPointer, sizeof(tPtr));
+        ReadPointer += sizeof(tPtr);
+        return tPtr;
+    }
     float Float()
     {
         float tFloat;
@@ -140,12 +146,12 @@ class MESSAGE_SCRIPT : public MESSAGE
         ReadPointer += sizeof(float);
         return tFloat;
     }
-    ENTITY_ID EntityID()
+    entid_t EntityID()
     {
-        ENTITY_ID id;
+        entid_t id;
         ValidateFormat('i');
-        memcpy(&id, ReadPointer, sizeof(ENTITY_ID));
-        ReadPointer += sizeof(ENTITY_ID);
+        memcpy(&id, ReadPointer, sizeof(entid_t));
+        ReadPointer += sizeof(entid_t);
         return id;
     }
     VDATA *ScriptVariablePointer()
@@ -156,17 +162,16 @@ class MESSAGE_SCRIPT : public MESSAGE
         ReadPointer += sizeof(VDATA *);
         return ptr;
     }
-    void String(dword dest_buffer_size, char *buffer)
+    void String(uint32_t dest_buffer_size, char *buffer)
     {
-        dword size;
         ValidateFormat('s');
-        size = strlen(ReadPointer) + 1;
+        uint32_t size = strlen(ReadPointer) + 1;
         if (size >= dest_buffer_size)
         {
             memcpy(buffer, ReadPointer, dest_buffer_size);
             if (dest_buffer_size > 0)
                 buffer[dest_buffer_size - 1] = 0;
-            api->Trace("MESSAGE_SCRIPT::String() data clamped to %s ", buffer);
+            core.Trace("MESSAGE_SCRIPT::String() data clamped to %s ", buffer);
             return;
             // throw "insufficient string buffer";
         }
@@ -174,7 +179,7 @@ class MESSAGE_SCRIPT : public MESSAGE
         ReadPointer += size;
 
         /*char * mem_PTR;
-        dword size;
+        uint32_t size;
         if(!buffer) throw "zero string buffer";
         ValidateFormat('s');
         mem_PTR = va_arg(args,char*);
@@ -202,22 +207,22 @@ class MESSAGE_SCRIPT : public MESSAGE
         index = 0;
         ReadPointer = pData;
     };
-    void Reset(char *_format)
+    void Reset(const char *_format)
     {
         if (!_format)
             throw "MESSAGE_SCRIPT: cant reset with empty format string";
         if (format)
             delete format;
 
-        format = NEW char[strlen(_format) + 1];
+        const auto len = strlen(_format) + 1;
+        format = new char[len];
         index = 0;
-        strcpy(format, _format);
+        strcpy_s(format, len, _format);
         // format =  _format;
-        if (pData)
-            delete pData;
-        pData = 0;
+        free(pData);
+        pData = nullptr;
         Data_size = 0;
-        ReadPointer = 0;
+        ReadPointer = nullptr;
         index = 0;
     }
     char GetCurrentFormatType()

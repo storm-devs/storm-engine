@@ -1,6 +1,6 @@
-project(pcscontrols)
+project(pcs_controls)
 
-add_library(${PROJECT_NAME} MODULE
+add_library(${PROJECT_NAME} STATIC
 	ControlTree.cpp
 	ControlTree.h
 	KeyBuffer.cpp

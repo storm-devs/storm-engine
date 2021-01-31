@@ -1,16 +1,16 @@
 #ifndef _WM_SHIPCOMMAND_H_
 #define _WM_SHIPCOMMAND_H_
 
-#include "..\battle_command.h"
+#include "../battle_command.h"
 
 class WMShipCommandList : public BICommandList
 {
   public:
-    WMShipCommandList(ENTITY_ID &eid, ATTRIBUTES *pA, VDX8RENDER *rs);
+    WMShipCommandList(entid_t eid, ATTRIBUTES *pA, VDX9RENDER *rs);
     virtual ~WMShipCommandList();
 
-    virtual void FillIcons();
-    virtual void Init();
+    void FillIcons() override;
+    void Init() override;
 
   protected:
     void Release();

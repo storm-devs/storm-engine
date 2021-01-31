@@ -1,11 +1,15 @@
-#include "datacache.h"
-#include "..\icommon\memfile.h"
-#include "particles.h"
+#include "DataCache.h"
+
+#include "core.h"
+
+#include "filesystem.h"
+#include "vfile_service.h"
+#include "vmodule_api.h"
 
 bool ReadingAlreadyComplete;
 
 //Конструктор/деструктор
-DataCache::DataCache(IParticleManager *pManager) : Cache(_FL_)
+DataCache::DataCache(IParticleManager *pManager)
 {
     Master = pManager;
 }
@@ -18,95 +22,107 @@ DataCache::~DataCache()
 //Положить в кэш данные для системы
 void DataCache::CacheSystem(const char *FileName)
 {
-    string NameWithExt = FileName;
-    NameWithExt.AddExtention(".xps");
-    NameWithExt.Lower();
+    // NameWithExt.AddExtention(".xps");
+    // NameWithExt.Lower();
 
-    string LongFileName = "resource\\particles\\";
-    LongFileName += FileName;
-    LongFileName.AddExtention(".xps");
+    // std::string LongFileName = "resource\\particles\\";
+    // LongFileName+=FileName;
+    // LongFileName.AddExtention(".xps");
+    auto path = fs::path() / "resource" / "particles" / FileName;
+    auto pathStr = path.extension().string();
+    if (_stricmp(pathStr.c_str(), ".xps") != 0)
+        path += ".xps";
+    pathStr = path.string();
+    std::transform(pathStr.begin(), pathStr.end(), pathStr.begin(), tolower);
+    // MessageBoxA(NULL, (LPCSTR)path.c_str(), "", MB_OK); //~!~
 
-    HANDLE pSysFile = api->fio->_CreateFile(LongFileName.GetBuffer());
+    auto *const pSysFile = fio->_CreateFile(pathStr.c_str());
 
     if (pSysFile == INVALID_HANDLE_VALUE)
     {
-        api->Trace("Particles: '%s' File not found !!!", LongFileName);
+        core.Trace("Particles: '%s' File not found !!!", pathStr.c_str());
         return;
     }
 
-    DWORD FileSize = api->fio->_GetFileSize(pSysFile, 0);
+    const auto FileSize = fio->_GetFileSize(pSysFile, nullptr);
 
-    BYTE *pMemBuffer = NEW BYTE[FileSize];
-    api->fio->_ReadFile(pSysFile, pMemBuffer, FileSize, 0);
+    auto *pMemBuffer = new uint8_t[FileSize];
+    fio->_ReadFile(pSysFile, pMemBuffer, FileSize, nullptr);
 
     //Создаем данные из файла...
-    CreateDataSource(pMemBuffer, FileSize, LongFileName);
+    CreateDataSource(pMemBuffer, FileSize, pathStr.c_str());
 
-    delete pMemBuffer;
+    delete[] pMemBuffer;
 
-    api->fio->_CloseHandle(pSysFile);
+    fio->_CloseHandle(pSysFile);
 }
 
 //Сбросить кэш
 void DataCache::ResetCache()
 {
-    for (int n = 0; n < Cache; n++)
+    for (auto n = 0; n < Cache.size(); n++)
     {
         if (Cache[n].pData)
             Cache[n].pData->Release();
     }
 
-    Cache.DelAll();
+    Cache.clear();
 }
 
 //Получить указатель на данные для системы партиклов
 DataSource *DataCache::GetParticleSystemDataSource(const char *FileName)
 {
-    string NameWithExt = FileName;
-    NameWithExt.AddExtention(".xps");
-    NameWithExt.Lower();
+    // std::string NameWithExt = FileName;
+    // NameWithExt.AddExtention(".xps");
+    // NameWithExt.Lower();
+    fs::path path = FileName;
+    auto pathStr = path.extension().string();
+    if (_stricmp(pathStr.c_str(), ".xps") != 0)
+        path += ".xps";
+    pathStr = path.string();
+    std::transform(pathStr.begin(), pathStr.end(), pathStr.begin(), tolower);
 
-    for (int n = 0; n < Cache; n++)
+    for (auto n = 0; n < Cache.size(); n++)
     {
-        if (Cache[n].FileName == NameWithExt)
+        if (Cache[n].FileName == pathStr)
             return Cache[n].pData;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 //Проверить указатель на валидность
 bool DataCache::ValidatePointer(DataSource *pData)
 {
-    for (int n = 0; n < Cache; n++)
-        if (Cache[n].pData = pData)
+    for (auto n = 0; n < Cache.size(); n++)
+        if (Cache[n].pData == pData) // fix
             return true;
 
     return false;
 }
 
-void DataCache::CreateDataSource(void *pBuffer, DWORD BufferSize, const char *SourceFileName)
+void DataCache::CreateDataSource(void *pBuffer, uint32_t BufferSize, const char *SourceFileName)
 {
     LoadedDataSource NewDataSource;
     NewDataSource.FileName = SourceFileName;
-    NewDataSource.pData = NEW DataSource(Master);
-    Cache.Add(NewDataSource);
+    NewDataSource.pData = new DataSource(Master);
+    Cache.push_back(NewDataSource);
 
-    // api->Trace("\nCreate data source for file %s", SourceFileName);
+    // core.Trace("\nCreate data source for file %s", SourceFileName);
 
-    MemFile *ReadFile = NEW MemFile;
+    auto *ReadFile = new MemFile;
     ReadFile->OpenRead(pBuffer, BufferSize);
     NewDataSource.pData->Load(ReadFile);
     ReadFile->Close();
     delete ReadFile;
 }
 
-DWORD DataCache::GetCachedCount()
+uint32_t DataCache::GetCachedCount() const
 {
-    return Cache.Size();
+    return Cache.size();
 }
 
-const char *DataCache::GetCachedNameByIndex(DWORD Index)
+const char *DataCache::GetCachedNameByIndex(uint32_t Index)
 {
-    return Cache[Index].FileName;
+    return Cache[Index].FileName.c_str();
 }

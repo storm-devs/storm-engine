@@ -1,9 +1,8 @@
 #ifndef _S_CLASSTAB_H_
 #define _S_CLASSTAB_H_
 
-#include "d_types.h"
 #include "data.h"
-#include "memop.h"
+#include <vector>
 
 #define CLASS_BUFFER_BLOCK_SIZE 1024
 #define INVALID_CLASS_CODE 0xffffffff
@@ -18,23 +17,23 @@ struct CLASS_COMPONENT
 {
     CLASS_COMPONENT()
     {
-        name = 0;
+        name = nullptr;
         nFlags = 0;
         nID = 0xffffffff;
         nElements = 0;
     };
-    dword nID;
-    dword nFlags;
+    uint32_t nID;
+    uint32_t nFlags;
     char *name;
-    dword nElements;
+    uint32_t nElements;
 };
 
 struct CLASSINFO
 {
-    char *name;
-    dword hash;
-    dword segment_id;
-    dword nComponentsNum;
+    const char *name;
+    uint32_t hash;
+    uint32_t segment_id;
+    uint32_t nComponentsNum;
     CLASS_COMPONENT *pComponent;
     bool bClassRegistredOnly;
 };
@@ -44,32 +43,32 @@ class S_DEBUG;
 class S_CLASSTAB
 {
     friend S_DEBUG;
-    dword Buffer_size;
-    dword nClassesNum;
-    CLASSINFO *pTable;
+    uint32_t Buffer_size;
+    uint32_t nClassesNum;
+    std::vector<CLASSINFO> pTable;
     VIRTUAL_COMPILER *pVCompiler;
 
   public:
     S_CLASSTAB();
     ~S_CLASSTAB();
-    dword GetClassesNum()
+    uint32_t GetClassesNum()
     {
         return nClassesNum;
     };
-    dword AddClass(CLASSINFO &ci, bool bRegisterOnly = false);
+    uint32_t AddClass(CLASSINFO &ci, bool bRegisterOnly = false);
 
-    bool GetClass(CLASSINFO &ci, dword class_code);  // return true if class registred and loaded
-    bool GetClassX(CLASSINFO &ci, dword class_code); // return true if class registred
-    dword MakeHashValue(const char *string);
+    bool GetClass(CLASSINFO &ci, uint32_t class_code);  // return true if class registred and loaded
+    bool GetClassX(CLASSINFO &ci, uint32_t class_code); // return true if class registred
+    uint32_t MakeHashValue(const char *string);
     void Release();
-    void InvalidateBySegmentID(dword segment_id);
-    dword FindClass(const char *class_name);
+    void InvalidateBySegmentID(uint32_t segment_id);
+    uint32_t FindClass(const char *class_name);
     void SetVCompiler(VIRTUAL_COMPILER *pvc)
     {
         pVCompiler = pvc;
     }
     void InitSystemClasses();
-    bool IsClassDataSet(dword class_id);
+    bool IsClassDataSet(uint32_t class_id);
 };
 
 #endif

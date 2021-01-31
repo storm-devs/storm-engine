@@ -1,8 +1,6 @@
 #include "Blood.h"
 #include "Character.h"
-#include "Geometry.h"
-#include "Location.h"
-#include "matrix.h"
+#include "defines.h"
 
 #define BLOOD_RADIUS 1.f        // размер пятна крови
 #define BLOOD_LIVE_TIME 5.5f    // сек
@@ -13,7 +11,7 @@ Blood::ClipTriangle Blood::clipT[MAX_CLIPPING_TRIANGLES];
 long Blood::nClipTQ;
 CVECTOR Blood::normal;
 
-Blood::Blood() : aBlood(_FL), aModels(_FL)
+Blood::Blood()
 {
     texID = -1;
     nStartT = 0;
@@ -30,10 +28,10 @@ Blood::~Blood()
 //Инициализация
 bool Blood::Init()
 {
-    pRS = (VDX8RENDER *)api->CreateService("dx8render");
+    pRS = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     Assert(pRS);
 
-    pCol = (COLLIDE *)api->CreateService("coll");
+    pCol = static_cast<COLLIDE *>(core.CreateService("coll"));
     Assert(pCol);
 
     texID = pRS->TextureCreate("blood.tga");
@@ -42,24 +40,25 @@ bool Blood::Init()
 }
 
 //Работа
-void Blood::Execute(dword delta_time)
+void Blood::Execute(uint32_t delta_time)
 {
     if (nUsedTQ < ON_LIVETIME_BLOOD_TRIANGLES)
         return;
 
-    float fDeltaTime = delta_time * 0.001f;
-    for (long n = 0; n < aBlood; n++)
+    const auto fDeltaTime = delta_time * 0.001f;
+    for (long n = 0; n < aBlood.size(); n++)
     {
         aBlood[n].fLiveTime -= fDeltaTime;
         if (aBlood[n].fLiveTime <= 0.f)
         {
             if (aBlood[n].nStartIdx == nStartT)
-            { // удаляем кровь
+            {
+                // удаляем кровь
                 nStartT += aBlood[n].nIdxQ;
                 nUsedTQ -= aBlood[n].nIdxQ;
                 if (nStartT >= MAX_BLOOD_TRIANGLES)
                     nStartT -= MAX_BLOOD_TRIANGLES;
-                aBlood.DelIndex(n);
+                aBlood.erase(aBlood.begin() + n);
                 n--;
                 continue;
             }
@@ -67,7 +66,7 @@ void Blood::Execute(dword delta_time)
         }
         if (aBlood[n].fLiveTime < BLOOD_BLENDOUT_TIME)
         {
-            dword dwCol = (dword)(255.f / BLOOD_BLENDOUT_TIME * aBlood[n].fLiveTime);
+            auto dwCol = static_cast<uint32_t>(255.f / BLOOD_BLENDOUT_TIME * aBlood[n].fLiveTime);
             if (dwCol > 255)
                 dwCol = 255;
             dwCol = (dwCol << 24) | 0xFFFFFF;
@@ -85,18 +84,15 @@ void Blood::Execute(dword delta_time)
     }
 }
 
-void Blood::Realize(dword delta_time)
+void Blood::Realize(uint32_t delta_time)
 {
     if (nUsedTQ > 0)
     {
-        dword dwOldTF, dwAmbient;
+        uint32_t dwOldTF, dwAmbient;
 
         pRS->GetRenderState(D3DRS_TEXTUREFACTOR, &dwOldTF);
         pRS->GetRenderState(D3DRS_AMBIENT, &dwAmbient);
         pRS->SetRenderState(D3DRS_TEXTUREFACTOR, dwAmbient);
-
-        pRS->SetRenderState(D3DRS_DEPTHBIAS, F2DW(-0.0001f));
-        pRS->SetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, F2DW(0.0f));
 
         pRS->TextureSet(0, texID);
         CMatrix mtx;
@@ -106,35 +102,32 @@ void Blood::Realize(dword delta_time)
         if (nStartT + nUsedTQ <= MAX_BLOOD_TRIANGLES)
         {
             pRS->DrawPrimitiveUP(D3DPT_TRIANGLELIST, D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1, nUsedTQ,
-                                 (void *)&pvBloodT[nStartT], sizeof(BloodVertex), "blood");
+                                 static_cast<void *>(&pvBloodT[nStartT]), sizeof(BloodVertex), "Blood");
         }
         else
         {
             pRS->DrawPrimitiveUP(D3DPT_TRIANGLELIST, D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1,
-                                 MAX_BLOOD_TRIANGLES - nStartT, (void *)&pvBloodT[nStartT], sizeof(BloodVertex),
-                                 "blood");
+                                 MAX_BLOOD_TRIANGLES - nStartT, static_cast<void *>(&pvBloodT[nStartT]),
+                                 sizeof(BloodVertex), "Blood");
             pRS->DrawPrimitiveUP(D3DPT_TRIANGLELIST, D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1,
-                                 nStartT + nUsedTQ - MAX_BLOOD_TRIANGLES, (void *)pvBloodT, sizeof(BloodVertex),
-                                 "blood");
+                                 nStartT + nUsedTQ - MAX_BLOOD_TRIANGLES, static_cast<void *>(pvBloodT),
+                                 sizeof(BloodVertex), "Blood");
         }
 
         pRS->SetRenderState(D3DRS_TEXTUREFACTOR, dwOldTF);
-
-        pRS->SetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, F2DW(0.0f));
-        pRS->SetRenderState(D3DRS_DEPTHBIAS, F2DW(0.0f));
     }
 }
 
-dword _cdecl Blood::ProcessMessage(MESSAGE &message)
+uint64_t Blood::ProcessMessage(MESSAGE &message)
 {
-    ENTITY_ID eid;
+    entid_t eid;
     CVECTOR cv;
 
     switch (message.Long())
     {
     case 1: // Add model
         eid = message.EntityID();
-        aModels.Add(eid);
+        aModels.push_back(eid);
         break;
     case 2: // add blood
         cv.x = message.Float();
@@ -170,23 +163,22 @@ void Blood::AddBlood(const CVECTOR &pos)
     nClipTQ = 0;
     normal = CVECTOR(0.f, 1.f, 0.f);
 
-    CVECTOR cpos = pos;
-    VIDWALKER *walker = api->LayerGetWalker("blood");
-    if (!walker)
-        return;
+    auto cpos = pos;
 
-    CVECTOR src = pos;
+    const auto its = EntityManager::GetEntityIdIterators(BLOOD);
+
+    auto src = pos;
     src.y += 1.f;
-    CVECTOR dst = pos;
+    auto dst = pos;
     dst.y -= 10.f;
-    float fTrace = pCol->Trace(*walker, src, dst, 0, 0);
+    auto fTrace = pCol->Trace(its, src, dst, nullptr, 0);
     if (fTrace <= 1.f)
         cpos.y = src.y + (dst.y - src.y) * fTrace;
 
-    long nThisBloodQ = CheckBloodQuantityInRadius(cpos, BLOOD_RADIUS, 4);
+    const auto nThisBloodQ = CheckBloodQuantityInRadius(cpos, BLOOD_RADIUS, 4);
     if (nThisBloodQ >= 4)
-    { // уже много крови в этом месте
-        delete walker;
+    {
+        // уже много крови в этом месте
         return;
     }
     if (nThisBloodQ > 0)
@@ -199,7 +191,7 @@ void Blood::AddBlood(const CVECTOR &pos)
         src.y += 1.5f;
         dst = cpos;
         dst.y -= 10.f;
-        fTrace = pCol->Trace(*walker, src, dst, 0, 0);
+        fTrace = pCol->Trace(its, src, dst, nullptr, 0);
         if (fTrace <= 1.f)
             cpos.y = src.y + (dst.y - src.y) * fTrace;
     }
@@ -232,23 +224,22 @@ void Blood::AddBlood(const CVECTOR &pos)
     p[5].D = -(cpos.x - BLOOD_RADIUS);
 
     // бегаем по лееру
-    for (ENTITY_ID *pEID = walker->GetID(); pEID; pEID = walker->GetIDNext())
+    for (auto it = its.first; it != its.second; ++it)
     {
-        MODEL *m = (MODEL *)api->GetEntityPointer(pEID);
+        auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(it->second));
         if (!m)
             continue;
-        NODE *root = m->GetNode(0);
+        auto *root = m->GetNode(0);
         m->Clip(p, 6, cpos, BLOOD_RADIUS, AddClipPoligon);
     }
-    delete walker;
 
     // бегаем по массиву моделек
-    for (long n = 0; n < aModels; n++)
+    for (long n = 0; n < aModels.size(); n++)
     {
-        MODEL *m = (MODEL *)api->GetEntityPointer(&aModels[n]);
+        auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(aModels[n]));
         if (!m)
             continue;
-        NODE *root = m->GetNode(0);
+        auto *root = m->GetNode(0);
         m->Clip(p, 6, cpos, BLOOD_RADIUS, AddClipPoligon);
     }
 
@@ -277,11 +268,11 @@ void Blood::BuildBloodDataByCollision(const CVECTOR &cpos)
     }
     else
     {
-        api->Trace("Blood::BuildData() : can`t blood add - insufficient buffer space");
+        core.Trace("Blood::BuildData() : can`t blood add - insufficient buffer space");
         return;
     }
     nUsedTQ += nClipTQ;
-    aBlood.Add(curBlood);
+    aBlood.push_back(curBlood);
 
     // заполняем буффер
     float fU0, fV0;
@@ -353,9 +344,9 @@ void Blood::SetVertexByPos(BloodVertex &v, const CVECTOR &pos, const CVECTOR &vc
 
 long Blood::CheckBloodQuantityInRadius(const CVECTOR &cpos, float fDist, long nLimitQ)
 {
-    float fDistPow2 = fDist * fDist;
+    const auto fDistPow2 = fDist * fDist;
     long nCurQ = 0;
-    for (long n = 0; n < aBlood; n++)
+    for (long n = 0; n < aBlood.size(); n++)
     {
         if ((~(aBlood[n].cpos - cpos)) > fDistPow2)
             continue;

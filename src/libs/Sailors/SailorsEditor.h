@@ -1,27 +1,40 @@
-
-#include "dx8render.h"
-#include "messages.h"
+#include "dx9render.h"
 #include "model.h"
-#include "rands.h"
 #include "ship_base.h"
-#include "templates\array.h"
 
 #include "SailorsMenu.h"
 
-class SailorsEditor : public ENTITY
+class SailorsEditor : public Entity
 {
   public:
     SailorsEditor();
     virtual ~SailorsEditor();
 
-    virtual bool Init();
-    virtual void Execute(dword dltTime);
-    virtual void Realize(dword dltTime);
+    bool Init() override;
+    virtual void Execute(uint32_t dltTime);
+    virtual void Realize(uint32_t dltTime);
 
-    VDX8RENDER *rs;
-    ENTITY_ID sailors;
-    ENTITY_ID shipID;
-    ENTITY_ID pointID;
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
+
+    VDX9RENDER *rs;
+    entid_t sailors;
+    entid_t shipID;
+    entid_t pointID;
 
     MODEL *model;
 
@@ -32,8 +45,8 @@ class SailorsEditor : public ENTITY
     Menu menu;
     // SailorsPoints sailorsPoints;
 
-    string _shipName;
+    std::string _shipName;
 
-    void SetCamera(dword &dltTime);
-    void LoadFromIni(string fileName);
+    void SetCamera(uint32_t &dltTime);
+    void LoadFromIni(std::string fileName);
 };

@@ -1,64 +1,65 @@
 #include "obj_strservice.h"
-#include "..\xi_messages.h"
+
+#include "core.h"
+
+#include "../../../shared/interface/messages.h"
 
 OBJ_STRSERVICE::OBJ_STRSERVICE()
 {
-    m_pStrService = null;
+    m_pStrService = nullptr;
 }
 
 OBJ_STRSERVICE::~OBJ_STRSERVICE()
 {
-    m_pStrService = null;
+    m_pStrService = nullptr;
 }
 
 bool OBJ_STRSERVICE::Init()
 {
-    m_pStrService = (VSTRSERVICE *)_CORE_API->CreateService("STRSERVICE");
+    m_pStrService = static_cast<VSTRSERVICE *>(core.CreateService("STRSERVICE"));
     if (!m_pStrService)
-    {
-        SE_THROW_MSG("No service: strservice")
-    }
+        throw std::exception("No service: strservice");
 
     return true;
 }
 
-dword _cdecl OBJ_STRSERVICE::ProcessMessage(MESSAGE &message)
+uint64_t OBJ_STRSERVICE::ProcessMessage(MESSAGE &message)
 {
     switch (message.Long())
     {
     case MSG_STRSERVICE_OPEN_FILE: {
         char param[256];
         message.String(sizeof(param) - 1, param);
-        if (m_pStrService != null)
+        if (m_pStrService != nullptr)
             return m_pStrService->OpenUsersStringFile(param);
         return -1;
     }
     break;
     case MSG_STRSERVICE_CLOSE_FILE: {
-        long fileID = message.Long();
+        const auto fileID = message.Long();
         m_pStrService->CloseUsersStringFile(fileID);
     }
     break;
     case MSG_STRSERVICE_TRANSLATE_STRING: {
-        long nUsrID = message.Long();
-        VDATA *pvdat = message.ScriptVariablePointer();
-        char *inStr = pvdat == null ? null : pvdat->GetString();
+        const auto nUsrID = message.Long();
+        auto *pvdat = message.ScriptVariablePointer();
+        auto *const inStr = pvdat == nullptr ? nullptr : pvdat->GetString();
         pvdat = message.ScriptVariablePointer();
-        char *outStr = null;
-        if (m_pStrService != null)
+        char *outStr = nullptr;
+        if (m_pStrService != nullptr)
             outStr = m_pStrService->TranslateFromUsers(nUsrID, inStr);
-        if (outStr != null && pvdat != null)
+        if (outStr != nullptr && pvdat != nullptr)
             pvdat->Set(outStr);
         else
             pvdat->Set("");
     }
     break;
     case MSG_STRSERVICE_GET_LANGUAGE: {
-        VDATA *pvdat = message.ScriptVariablePointer();
-        char *outStr = null;
-        if (m_pStrService != null)
+        auto *pvdat = message.ScriptVariablePointer();
+        char *outStr = nullptr;
+        if (m_pStrService != nullptr)
             outStr = m_pStrService->GetLanguage();
-        if (outStr != null && pvdat != null)
+        if (outStr != nullptr && pvdat != nullptr)
             pvdat->Set(outStr);
         else
             pvdat->Set("");

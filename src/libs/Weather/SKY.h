@@ -2,20 +2,38 @@
 #define _SKY_H_
 
 #include "typedef.h"
+#include <string>
+#include <vector>
 
-class SKY : public ENTITY
+class SKY : public Entity
 {
   public:
     SKY();
     ~SKY();
 
-    bool Init();
+    bool Init() override;
     void SetDevice();
-    void Realize(dword Delta_Time);
+    void Realize(uint32_t Delta_Time);
     bool CreateState(ENTITY_STATE_GEN *state_gen);
     bool LoadState(ENTITY_STATE *state);
-    dword AttributeChanged(ATTRIBUTES *pAttribute);
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    uint32_t AttributeChanged(ATTRIBUTES *pAttribute) override;
+    uint64_t ProcessMessage(MESSAGE &message) override;
+
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+            // case Stage::execute:
+            //	Execute(delta); break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
 
     float CalculateAlphaForSun(const CVECTOR &vSunPos, float fSunSize);
 
@@ -33,7 +51,7 @@ class SKY : public ENTITY
     struct SKYVERTEX
     {
         CVECTOR pos;
-        dword diffuse;
+        uint32_t diffuse;
         float tu, tv;
         float tu2, tv2;
     };
@@ -41,15 +59,16 @@ class SKY : public ENTITY
     struct FOGVERTEX
     {
         CVECTOR pos;
-        dword diffuse;
+        uint32_t diffuse;
     };
 
     // string		sSkyDir;
-    array<string> aSkyDirArray;
-    dword dwSkyColor;
+    std::vector<std::string> aSkyDirArray;
+    uint32_t dwSkyColor;
     float fSkySpeedRotate, fSkySize, fAngleY, fSkyAngle;
+    std::string sTechSky, sTechSkyBlend, sTechSkyBlendAlpha, sTechSkyFog;
 
-    VDX8RENDER *pRS;
+    VDX9RENDER *pRS;
     long TexturesID[SKY_NUM_TEXTURES];
     long TexturesNextID[SKY_NUM_TEXTURES];
     float fTimeFactor;
@@ -57,8 +76,8 @@ class SKY : public ENTITY
     long iSkyVertsID, iSkyIndexID;
     long iFogVertsID, iFogIndexID, iFogNumVerts, iFogNumTrgs;
 
-    ENTITY *pAstronomy;
-    ENTITY *pSunGlow;
+    Entity *pAstronomy;
+    Entity *pSunGlow;
 
     // sky section
     void GenerateSky();
@@ -68,13 +87,13 @@ class SKY : public ENTITY
     // fog section
     void CreateFogSphere();
     void UpdateFogSphere();
-    dword CalcFogDiffuse(CVECTOR &vPos);
+    uint32_t CalcFogDiffuse(CVECTOR &vPos);
 
     void FillSkyDirArray(ATTRIBUTES *pAttribute);
-    void GetSkyDirStrings(string &sSkyDir, string &sSkyDirNext);
+    void GetSkyDirStrings(std::string &sSkyDir, std::string &sSkyDirNext);
     void UpdateTimeFactor();
 
-    DWORD GetPixelColor(IDirect3DTexture9 *pTex, float fu, float fv);
+    uint32_t GetPixelColor(IDirect3DTexture9 *pTex, float fu, float fv) const;
 };
 
 #endif

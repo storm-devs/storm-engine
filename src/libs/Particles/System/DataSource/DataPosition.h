@@ -1,20 +1,16 @@
 #ifndef _PARTICLE_DATA_POSITION_H_
 #define _PARTICLE_DATA_POSITION_H_
 
-#include "../../../common_h/exs.h"
-#include "../../../common_h/templates.h"
-#include "..\..\icommon\memfile.h"
-#include <stdarg.h>
-#include <stdio.h>
-#include <string.h>
+#include "../../ICommon/MemFile.h"
 
 #include "math3d.h"
+#include <string>
 
 class DataPosition
 {
-    string Name;
+    std::string Name;
 
-    CVECTOR Value;
+    Vector Value;
 
   public:
     //конструктор/деструктор
@@ -22,16 +18,16 @@ class DataPosition
     virtual ~DataPosition();
 
     //Получить значение (Текущее время, Коэфицент рандома[0..1])
-    const CVECTOR &GetValue();
+    const Vector &GetValue() const;
 
     //Установить значение
-    void SetValue(const CVECTOR &val);
+    void SetValue(const Vector &val);
 
     void Load(MemFile *File);
-    void Write(MemFile *File);
+    void Write(MemFile *File) const;
 
     void SetName(const char *szName);
-    const char *GetName();
+    const char *GetName() const;
 };
 
 #endif

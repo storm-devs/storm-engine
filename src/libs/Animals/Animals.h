@@ -2,14 +2,7 @@
 #define _ANIMALS_H_
 
 #include "TSeagulls.h"
-#include "animation.h"
-#include "dx8render.h"
 #include "geometry.h"
-#include "geos.h"
-#include "matrix.h"
-#include "messages.h"
-#include "model.h"
-#include "object.h"
 //#include "TSharks.h"
 #include "TButterflies.h"
 #include "TFishSchools.h"
@@ -21,19 +14,34 @@
 ///////////////////////////////////////////////////////////////////
 // CLASS DEFINITION
 ///////////////////////////////////////////////////////////////////
-class ANIMALS : public ENTITY
+class ANIMALS : public Entity
 {
   public:
     ANIMALS();
     virtual ~ANIMALS();
 
     virtual bool Init();
-    virtual dword _cdecl ProcessMessage(MESSAGE &message);
-    virtual void Realize(dword _dTime);
-    virtual void Execute(dword _dTime);
-    dword AttributeChanged(ATTRIBUTES *pA);
-    // virtual bool CreateState(ENTITY_STATE_GEN * state_gen);
-    // virtual bool LoadState(ENTITY_STATE * state);
+    virtual uint64_t ProcessMessage(MESSAGE &message);
+    virtual void Realize(uint32_t dTime);
+    virtual void Execute(uint32_t dTime);
+    uint32_t AttributeChanged(ATTRIBUTES *pA);
+
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+                LostRender(delta); break;
+            case Stage::restore_render:
+                RestoreRender(delta); break;*/
+        }
+    }
 
   private:
     TSeagulls *seagulls;
@@ -41,9 +49,5 @@ class ANIMALS : public ENTITY
     TFishSchools *fishSchools;
     TButterflies *butterflies;
 };
-
-// API_MODULE_START("Animals")
-//	CREATE_CLASS(ANIMALS)
-// API_MODULE_END
 
 #endif

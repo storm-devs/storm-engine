@@ -11,6 +11,7 @@
 #include <stdio.h>
 
 #include "WdmInterfaceObject.h"
+#include "WdmObjects.h"
 
 //============================================================================================
 
@@ -64,12 +65,12 @@ void WdmInterfaceObject::FillRectCoord(Vertex *vrt, float x, float y, float w, f
     else
     {
         //С поворотом
-        float sn = -0.5f * sinf(ang);
-        float cs = -0.5f * cosf(ang);
-        float dwx = cs * w;
-        float dwy = sn * w;
-        float dhx = -sn * h;
-        float dhy = cs * h;
+        const auto sn = -0.5f * sinf(ang);
+        const auto cs = -0.5f * cosf(ang);
+        const auto dwx = cs * w;
+        const auto dwy = sn * w;
+        const auto dhx = -sn * h;
+        const auto dhy = cs * h;
         x += 0.5f * w;
         y += 0.5f * h;
         vrt[0].x = x - dwx + dhx;
@@ -122,12 +123,12 @@ void WdmInterfaceObject::FillRectUV(Vertex *vrt, float tu, float tv, float tw, f
     else
     {
         //С поворотом
-        float sn = 0.5f * sinf(ang);
-        float cs = 0.5f * cosf(ang);
-        float dwu = cs * tw;
-        float dwv = sn * tw;
-        float dhu = -sn * th;
-        float dhv = cs * th;
+        const auto sn = 0.5f * sinf(ang);
+        const auto cs = 0.5f * cosf(ang);
+        const auto dwu = cs * tw;
+        const auto dwv = sn * tw;
+        const auto dhu = -sn * th;
+        const auto dhv = cs * th;
         tu += 0.5f * tw;
         tv += 0.5f * th;
         vrt[0].tu = tu - dwu + dhu;
@@ -168,12 +169,12 @@ void WdmInterfaceObject::FillRectUV1(Vertex *vrt, float tu, float tv, float tw, 
     else
     {
         //С поворотом
-        float sn = 0.5f * sinf(ang);
-        float cs = 0.5f * cosf(ang);
-        float dwu = cs * tw;
-        float dwv = sn * tw;
-        float dhu = -sn * th;
-        float dhv = cs * th;
+        const auto sn = 0.5f * sinf(ang);
+        const auto cs = 0.5f * cosf(ang);
+        const auto dwu = cs * tw;
+        const auto dwv = sn * tw;
+        const auto dhu = -sn * th;
+        const auto dhv = cs * th;
         tu += 0.5f * tw;
         tv += 0.5f * th;
         vrt[0].tu1 = tu - dwu + dhu;
@@ -192,7 +193,7 @@ void WdmInterfaceObject::FillRectUV1(Vertex *vrt, float tu, float tv, float tw, 
 }
 
 //Заполнить 6 вершин цветом
-void WdmInterfaceObject::FillRectColor(Vertex *vrt, dword color)
+void WdmInterfaceObject::FillRectColor(Vertex *vrt, uint32_t color)
 {
     if (!vrt)
         return;
@@ -205,7 +206,7 @@ void WdmInterfaceObject::FillRectColor(Vertex *vrt, dword color)
 }
 
 //Нарисовать буффер прямоугольников
-void WdmInterfaceObject::DrawRects(Vertex *vrt, long numRects, char *techName)
+void WdmInterfaceObject::DrawRects(Vertex *vrt, long numRects, const char *techName)
 {
     wdmObjects->rs->DrawPrimitiveUP(D3DPT_TRIANGLELIST, D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX2, numRects * 2, vrt,
                                     sizeof(Vertex), techName);
@@ -228,7 +229,7 @@ void WdmInterfaceObject::FillSRectUV(Vertex *vrt, float tu, float tv, float tw, 
 }
 
 //Заполнить 18 вершин цветом скалирующегося прямоугольника
-void WdmInterfaceObject::FillSRectColor(Vertex *vrt, dword color)
+void WdmInterfaceObject::FillSRectColor(Vertex *vrt, uint32_t color)
 {
     FillRectColor(vrt, color);
     FillRectColor(vrt + 6, color);
@@ -238,8 +239,8 @@ void WdmInterfaceObject::FillSRectColor(Vertex *vrt, dword color)
 //Вывести текст в заданную полоску по горизонтали и в заданной высоте
 void WdmInterfaceObject::Print(long font, long color, float xleft, float xright, float y, const char *format, ...)
 {
-    _vsnprintf(stringBuffer, sizeof(stringBuffer), format, ((char *)&format + sizeof(char *)));
-    long strw = wdmObjects->rs->StringWidth(stringBuffer, font);
-    float x = (xright + xleft - strw) * 0.5f;
-    wdmObjects->rs->Print(font, color, long(x), long(y), stringBuffer);
+    _vsnprintf_s(stringBuffer, sizeof(stringBuffer), format, ((char *)&format + sizeof(char *)));
+    const auto strw = wdmObjects->rs->StringWidth(stringBuffer, font);
+    const auto x = (xright + xleft - strw) * 0.5f;
+    wdmObjects->rs->Print(font, color, static_cast<long>(x), static_cast<long>(y), stringBuffer);
 }

@@ -24,27 +24,27 @@ class Player : public NPCharacter
     Player();
     virtual ~Player();
 
-    virtual bool PostInit();
+    bool PostInit() override;
 
-    virtual void Reset();
+    void Reset() override;
 
     //Перемещаем персонажа в желаемую позицию
-    virtual void Move(float dltTime);
-    virtual void Update(float dltTime);
+    void Move(float dltTime) override;
+    void Update(float dltTime) override;
 
     //Сохранить параметры
-    virtual void SetSaveData(ATTRIBUTES *sdata);
+    void SetSaveData(ATTRIBUTES *sdata) override;
     //Востанавить параметры
-    virtual void GetSaveData(ATTRIBUTES *sdata);
+    void GetSaveData(ATTRIBUTES *sdata) override;
 
-    virtual bool IsPlayer()
+    bool IsPlayer() override
     {
         return true;
     }
 
     void Rotate(float dltTime);
     bool GoForward(float dltTime);
-    bool GoBack(float dltTime);
+    bool GoBack(float dltTime) const;
     bool IsRunMode(float dltTime);
     void StrafeWhenMove(float dltTime);
     void StrafeWhenStop(float dltTime);
@@ -67,22 +67,19 @@ class Player : public NPCharacter
     //--------------------------------------------------------------------------------------------
   private:
     void FireFromShootgun();
-    void ShootParticles(const CVECTOR &pos, const CVECTOR &ndir, float size, dword color, long num);
+    void ShootParticles(const CVECTOR &pos, const CVECTOR &ndir, float size, uint32_t color, long num);
 
     float GetRotateH();
 
   private:
     float lastChange;
-    long chrGroups;
     bool activatedDialog;
     bool isSpecialMode;
     bool isSetBlock;
-    ENTITY_ID baterfl;
-#ifndef _XBOX
+    entid_t baterfl;
     bool shootgunMode;
     float kSMReload;
     LocationCamera *locCam;
-#endif
 };
 
 #endif

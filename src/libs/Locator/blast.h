@@ -1,10 +1,11 @@
 #ifndef _BLAST_H_
 #define _BLAST_H_
 
-#include "dx8render.h"
+#include "Matrix.h"
+#include "Sd2_h/CannonTrace.h"
+#include "blast.h"
+#include "dx9render.h"
 #include "geometry.h"
-#include "matrix.h"
-#include "sd2_h\cannontrace.h"
 #include "vmodule_api.h"
 
 typedef struct
@@ -19,27 +20,42 @@ typedef struct
     bool bEffect;
 } GEOPARTICLE;
 
-class BLAST : public ENTITY
+class BLAST : public Entity
 {
-    VDX8RENDER *rs;
+    VDX9RENDER *rs;
     VGEOMETRY *gs;
-    GEOPARTICLE *Item;
+    std::vector<GEOPARTICLE> Item;
     CANNON_TRACE_BASE *pSea;
-    ENTITY_ID sea_eid;
+    entid_t sea_eid;
     float AngleDeviation;
-    dword ItemsNum;
+    uint32_t ItemsNum;
     CMatrix Center;
-    ENTITY_ID Splash;
+    entid_t Splash;
 
   public:
     ~BLAST();
     BLAST();
     bool Init();
-    dword _cdecl ProcessMessage(MESSAGE &message);
-    dword AttributeChanged(ATTRIBUTES *);
-    void Realize(dword Delta_Time);
-    void ProcessTime(dword Delta_Time);
+    uint64_t ProcessMessage(MESSAGE &message);
+    uint32_t AttributeChanged(ATTRIBUTES *);
+    void Realize(uint32_t Delta_Time);
+    void ProcessTime(uint32_t Delta_Time);
     void SetBlastCenter(CVECTOR pos, CVECTOR ang);
     void AddGeometry(char *name, long num);
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        // case Stage::execute:
+        //	Execute(delta); break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+                LostRender(delta); break;
+            case Stage::restore_render:
+                RestoreRender(delta); break;*/
+        }
+    }
 };
 #endif

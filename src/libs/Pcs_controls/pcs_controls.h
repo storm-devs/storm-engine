@@ -1,14 +1,14 @@
 #ifndef _PCS_CONTROLS_H_
 #define _PCS_CONTROLS_H_
 
+#include "../Animation/ActionInfo.h"
 #include "ControlTree.h"
 #include "KeyBuffer.h"
-#include "templates\array.h"
 #include "vmodule_api.h"
 
 struct SYSTEM_CONTROL_ELEMENT
 {
-    DWORD update_frame;
+    uint32_t update_frame;
     CONTROL_STATE state;
 };
 
@@ -24,12 +24,11 @@ class PCS_CONTROLS : public CONTROLS
 
     float fMouseSensivityX;
     float fMouseSensivityY;
-    VAPI *api;
 
     long nSystemControlsNum;
-    USER_CONTROL *pUserControls;
+    std::vector<USER_CONTROL> pUserControls;
     long nControlsNum;
-    DWORD nFrameCounter;
+    uint32_t nFrameCounter;
     long nLastControlTime;
 
     long nMouseWheel;
@@ -46,17 +45,17 @@ class PCS_CONTROLS : public CONTROLS
     PCS_CONTROLS();
     ~PCS_CONTROLS();
 
-    void Update(DWORD DeltaTime);
+    void Update(uint32_t DeltaTime);
     long GetSystemControlsNum();
     bool GetSystemControlDesc(long code, SYSTEM_CONTROL_DESC &_control_desc_struct);
 
     void Release();
     void AddSystemControl(SYSTEM_CONTROL_DESC &_control_desc_struct);
 
-    long CreateControl(char *control_name);
+    long CreateControl(const char *control_name);
     long GetControlsNum();
     bool GetControlDesc(long code, USER_CONTROL &_user_desc_struct);
-    bool SetControlFlags(long code, DWORD _flags);
+    bool SetControlFlags(long code, uint32_t flags);
 
     long GetDevicesNum();
     bool GetDeviceDesc(long code, DEVICE_DESC &_device_desc);
@@ -65,12 +64,13 @@ class PCS_CONTROLS : public CONTROLS
 
     void MapControl(long control_code, long system_control_code);
     bool GetControlState(long control_code, CONTROL_STATE &_state_struct);
-    bool GetControlState(char *control_name, CONTROL_STATE &_state_struct);
-    bool SetControlState(char *control_name, CONTROL_STATE &_state_struct);
+    bool GetControlState(const char *control_name, CONTROL_STATE &_state_struct);
+    bool SetControlState(const char *control_name, CONTROL_STATE &_state_struct);
     bool SetControlState(long control_code, CONTROL_STATE &_state_struct);
     void AppState(bool state);
     long LastControlTime();
-    void LockControl(char *control_name, bool mode);
+    void SetControlTreshold(long control_code, float thval);
+    void LockControl(const char *control_name, bool mode);
 
     void SetMouseSensivityX(float);
     void SetMouseSensivityY(float);

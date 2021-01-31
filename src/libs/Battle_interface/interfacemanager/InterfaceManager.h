@@ -1,7 +1,9 @@
 #ifndef InterfaceManager_h
 #define InterfaceManager_h
 
+#include "../bi_defines.h"
 #include "BaseManager.h"
+#include <vector>
 
 class BI_BaseGroup;
 
@@ -11,16 +13,33 @@ class BI_InterfaceManager : public BI_ManagerBase
     BI_InterfaceManager();
     ~BI_InterfaceManager();
 
-    bool Init();
-    void Execute(dword delta_time);
-    void Realize(dword delta_time);
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    bool Init() override;
+    void Execute(uint32_t delta_time);
+    void Realize(uint32_t delta_time);
+    uint64_t ProcessMessage(MESSAGE &message) override;
 
-    virtual BI_ManagerNodeBase *CreateImageNode(const char *texture, const FRECT &uv, const RECT &pos, dword color,
-                                                long nPrioritet);
-    virtual BI_ManagerNodeBase *CreateStringNode(const char *text, const char *font, dword color, float scale,
-                                                 const RECT &pos, long nHAlign, long nVAlign, long prioritet);
-    virtual void DeleteNode(BI_ManagerNodeBase *pNod);
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
+
+    BI_ManagerNodeBase *CreateImageNode(const char *texture, const FRECT &uv, const RECT &pos, uint32_t color,
+                                        long nPrioritet) override;
+    BI_ManagerNodeBase *CreateStringNode(const char *text, const char *font, uint32_t color, float scale,
+                                         const RECT &pos, long nHAlign, long nVAlign, long prioritet) override;
+    void DeleteNode(BI_ManagerNodeBase *pNod) override;
 
   protected:
     long MsgLoadSheet(MESSAGE &message);
@@ -29,7 +48,7 @@ class BI_InterfaceManager : public BI_ManagerBase
     long MsgDeleteNode(MESSAGE &message);
     long MsgEvent(MESSAGE &message);
 
-    array<BI_ManagerNodeBase *> m_aNodes;
+    std::vector<BI_ManagerNodeBase *> m_aNodes;
 
     BI_BaseGroup *m_pInterfaceSheet;
 };

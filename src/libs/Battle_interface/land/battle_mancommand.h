@@ -1,16 +1,16 @@
 #ifndef _BATTLE_MANCOMMAND_H_
 #define _BATTLE_MANCOMMAND_H_
 
-#include "..\battle_command.h"
+#include "../battle_command.h"
 
 class BIManCommandList : public BICommandList
 {
   public:
-    BIManCommandList(ENTITY_ID &eid, ATTRIBUTES *pA, VDX8RENDER *rs);
+    BIManCommandList(entid_t eid, ATTRIBUTES *pA, VDX9RENDER *rs);
     virtual ~BIManCommandList();
 
-    virtual void FillIcons();
-    virtual void Init();
+    void FillIcons() override;
+    void Init() override;
 
   protected:
     void Release();

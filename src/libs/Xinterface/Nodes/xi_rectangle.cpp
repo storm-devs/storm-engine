@@ -1,5 +1,4 @@
 #include "xi_rectangle.h"
-#include <stdio.h>
 
 CXI_RECTANGLE::CXI_RECTANGLE()
 {
@@ -11,7 +10,7 @@ CXI_RECTANGLE::~CXI_RECTANGLE()
     ReleaseAll();
 }
 
-void CXI_RECTANGLE::Draw(bool bSelected, dword Delta_Time)
+void CXI_RECTANGLE::Draw(bool bSelected, uint32_t Delta_Time)
 {
     if (m_bUse)
     {
@@ -20,22 +19,24 @@ void CXI_RECTANGLE::Draw(bool bSelected, dword Delta_Time)
         if (m_bBorder)
         {
             RS_LINE pLines[8];
-            for (int i = 0; i < 8; i++)
+            for (auto i = 0; i < 8; i++)
             {
                 pLines[i].vPos.z = 1.f;
                 pLines[i].dwColor = m_dwBorderColor;
             }
-            pLines[0].vPos.x = pLines[1].vPos.x = pLines[2].vPos.x = pLines[7].vPos.x = (float)m_rect.left;
-            pLines[1].vPos.y = pLines[2].vPos.y = pLines[3].vPos.y = pLines[4].vPos.y = (float)m_rect.top;
-            pLines[3].vPos.x = pLines[4].vPos.x = pLines[5].vPos.x = pLines[6].vPos.x = (float)m_rect.right;
-            pLines[0].vPos.y = pLines[5].vPos.y = pLines[6].vPos.y = pLines[7].vPos.y = (float)m_rect.bottom;
+            pLines[0].vPos.x = pLines[1].vPos.x = pLines[2].vPos.x = pLines[7].vPos.x = static_cast<float>(m_rect.left);
+            pLines[1].vPos.y = pLines[2].vPos.y = pLines[3].vPos.y = pLines[4].vPos.y = static_cast<float>(m_rect.top);
+            pLines[3].vPos.x = pLines[4].vPos.x = pLines[5].vPos.x = pLines[6].vPos.x =
+                static_cast<float>(m_rect.right);
+            pLines[0].vPos.y = pLines[5].vPos.y = pLines[6].vPos.y = pLines[7].vPos.y =
+                static_cast<float>(m_rect.bottom);
             m_rs->DrawLines(pLines, 4, "iRectangle");
         }
     }
 }
 
-bool CXI_RECTANGLE::Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, VDX8RENDER *rs, XYRECT &hostRect,
-                         XYPOINT &ScreenSize)
+bool CXI_RECTANGLE::Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs,
+                         XYRECT &hostRect, XYPOINT &ScreenSize)
 {
     if (!CINODE::Init(ini1, name1, ini2, name2, rs, hostRect, ScreenSize))
         return false;
@@ -51,19 +52,19 @@ int CXI_RECTANGLE::CommandExecute(int wActCode)
     return -1;
 }
 
-void CXI_RECTANGLE::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2)
+void CXI_RECTANGLE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2)
 {
     // fill vertex positions
-    for (int i = 0; i < 4; i++)
+    for (auto i = 0; i < 4; i++)
         m_pVert[i].pos.z = 1.f;
-    m_pVert[0].pos.x = (float)m_rect.left;
-    m_pVert[0].pos.y = (float)m_rect.top;
-    m_pVert[1].pos.x = (float)m_rect.left;
-    m_pVert[1].pos.y = (float)m_rect.bottom;
-    m_pVert[2].pos.x = (float)m_rect.right;
-    m_pVert[2].pos.y = (float)m_rect.top;
-    m_pVert[3].pos.x = (float)m_rect.right;
-    m_pVert[3].pos.y = (float)m_rect.bottom;
+    m_pVert[0].pos.x = static_cast<float>(m_rect.left);
+    m_pVert[0].pos.y = static_cast<float>(m_rect.top);
+    m_pVert[1].pos.x = static_cast<float>(m_rect.left);
+    m_pVert[1].pos.y = static_cast<float>(m_rect.bottom);
+    m_pVert[2].pos.x = static_cast<float>(m_rect.right);
+    m_pVert[2].pos.y = static_cast<float>(m_rect.top);
+    m_pVert[3].pos.x = static_cast<float>(m_rect.right);
+    m_pVert[3].pos.y = static_cast<float>(m_rect.bottom);
 
     // Get rectangle left colors
     m_dwLeftColor = GetIniARGB(ini1, name1, ini2, name2, "leftColor", 0);
@@ -130,35 +131,35 @@ void CXI_RECTANGLE::ChangePosition(XYRECT &rNewPos)
 {
     m_rect = rNewPos;
 
-    m_pVert[0].pos.x = (float)m_rect.left;
-    m_pVert[0].pos.y = (float)m_rect.top;
-    m_pVert[1].pos.x = (float)m_rect.left;
-    m_pVert[1].pos.y = (float)m_rect.bottom;
-    m_pVert[2].pos.x = (float)m_rect.right;
-    m_pVert[2].pos.y = (float)m_rect.top;
-    m_pVert[3].pos.x = (float)m_rect.right;
-    m_pVert[3].pos.y = (float)m_rect.bottom;
+    m_pVert[0].pos.x = static_cast<float>(m_rect.left);
+    m_pVert[0].pos.y = static_cast<float>(m_rect.top);
+    m_pVert[1].pos.x = static_cast<float>(m_rect.left);
+    m_pVert[1].pos.y = static_cast<float>(m_rect.bottom);
+    m_pVert[2].pos.x = static_cast<float>(m_rect.right);
+    m_pVert[2].pos.y = static_cast<float>(m_rect.top);
+    m_pVert[3].pos.x = static_cast<float>(m_rect.right);
+    m_pVert[3].pos.y = static_cast<float>(m_rect.bottom);
 }
 
 void CXI_RECTANGLE::SaveParametersToIni()
 {
     char pcWriteParam[2048];
 
-    INIFILE *pIni = api->fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.GetBuffer());
+    auto *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
-        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.GetBuffer());
+        core.Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
         return;
     }
 
     // save position
-    _snprintf(pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rect.left, m_rect.top, m_rect.right, m_rect.bottom);
+    sprintf_s(pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rect.left, m_rect.top, m_rect.right, m_rect.bottom);
     pIni->WriteString(m_nodeName, "position", pcWriteParam);
 
     delete pIni;
 }
 
-dword _cdecl CXI_RECTANGLE::MessageProc(long msgcode, MESSAGE &message)
+uint32_t CXI_RECTANGLE::MessageProc(long msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {

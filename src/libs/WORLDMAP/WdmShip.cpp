@@ -58,12 +58,12 @@ WdmShip::~WdmShip()
     wdmObjects->DelShip(this);
     wdmObjects->rs->TextureRelease(wmtexture);
     if ((WdmShip *)wdmObjects->enemyShip == this)
-        wdmObjects->enemyShip = null;
+        wdmObjects->enemyShip = nullptr;
 }
 
 bool WdmShip::Load(const char *modelName)
 {
-    bool res = WdmRenderModel::Load(modelName);
+    const auto res = WdmRenderModel::Load(modelName);
     if (geo)
     {
         GEOS::INFO ginfo;
@@ -87,7 +87,7 @@ void WdmShip::Teleport(float x, float z, float ay)
     }
 }
 
-void WdmShip::GetPosition(float &x, float &z, float &ay)
+void WdmShip::GetPosition(float &x, float &z, float &ay) const
 {
     x = mtx.Pos().x;
     z = mtx.Pos().z;
@@ -116,12 +116,12 @@ void WdmShip::Update(float dltTime)
 //Расчёты
 void WdmShip::ShipUpdate(float dltTime)
 {
-    const float pi2 = 3.14159265f * 2.0f;
+    const auto pi2 = 3.14159265f * 2.0f;
     //Сбросим флажёк для рендера
     isWMRender = false;
     //Сохраним предыдущую позицию
-    float oay = ay;
-    CVECTOR opos = mtx.Pos();
+    const auto oay = ay;
+    auto opos = mtx.Pos();
     //Ограничем скорости
     if (speed > WDM_SHIP_MAX_SPEED * kMaxSpeed)
         speed = WDM_SHIP_MAX_SPEED * kMaxSpeed;
@@ -151,13 +151,13 @@ void WdmShip::ShipUpdate(float dltTime)
         az += pi2;
     //Коэфициент зависимости скорости от ветра
     CVECTOR windDir = 0.0f;
-    float kWind = wdmObjects->GetWind(mtx.Pos().x, mtx.Pos().z, windDir);
+    auto kWind = wdmObjects->GetWind(mtx.Pos().x, mtx.Pos().z, windDir);
     kWind *= (sinf(ay) * windDir.x + cosf(ay) * windDir.z) * 0.5f + 0.5f;
     kWind =
         wdmObjects->shipSpeedOppositeWind + (wdmObjects->shipSpeedOverWind - wdmObjects->shipSpeedOppositeWind) * kWind;
     //Найдём новую позицию
     CVECTOR pos = mtx.Pos();
-    float dltMove = speed * kWind * dltTime;
+    const float dltMove = speed * kWind * dltTime;
     pos += mtx.Vz() * dltMove + rspeed * dltTime;
     baseV -= dltMove * 0.04f;
     if (baseV < -1.0f)
@@ -245,7 +245,7 @@ void WdmShip::ShipUpdate(float dltTime)
     UpdateWaterMark(dltTime);
 }
 
-void WdmShip::LRender(VDX8RENDER *rs)
+void WdmShip::LRender(VDX9RENDER *rs)
 {
     if (wmtexture >= 0 && isWMRender)
     {
@@ -258,8 +258,9 @@ void WdmShip::LRender(VDX8RENDER *rs)
             al = 255.0f;
         //Вершины
         static Vertex vrt[WDM_SHIP_WMSZ * 2 + 1];
-        float y = 0.01f;
-        dword color = (dword(al) << 16) | (dword(al) << 8) | (dword(al) << 0) | 0xff000000;
+        const float y = 0.01f;
+        uint32_t color = (static_cast<uint32_t>(al) << 16) | (static_cast<uint32_t>(al) << 8) |
+                         (static_cast<uint32_t>(al) << 0) | 0xff000000;
         vrt[0].x = mtx.Pos().x + (lines[0].x - mtx.Pos().x) * 1.2f;
         vrt[0].y = y;
         vrt[0].z = mtx.Pos().z + (lines[0].z - mtx.Pos().z) * 1.2f;
@@ -269,15 +270,15 @@ void WdmShip::LRender(VDX8RENDER *rs)
         for (long i = 0; i < WDM_SHIP_WMSZ; i++)
         {
             float k = (WDM_SHIP_SPEED / 5.0f) * powf((i + 1) * 1.0f / WDM_SHIP_WMSZ, 0.4f) * lines[i].size;
-            float dx = -cosf(lines[i].ay) * k;
-            float dz = sinf(lines[i].ay) * k;
+            const float dx = -cosf(lines[i].ay) * k;
+            const float dz = sinf(lines[i].ay) * k;
             k = (1.0f - powf(i * 1.0f / (WDM_SHIP_WMSZ - 1.0f), 0.3f)); //*lines[i].size;
             k = al * k;
             if (k < 0.0f)
                 k = 0.0f;
             if (k > 255.0f)
                 k = 255.0f;
-            color = dword(k);
+            color = static_cast<uint32_t>(k);
             color |= 0xff000000 | (color << 16) | (color << 8) | color;
             vrt[i * 2 + 1].x = lines[i].x - dx;
             vrt[i * 2 + 1].y = y;
@@ -345,7 +346,7 @@ void WdmShip::UpdateWaterMark(float dltTime)
         while (lines[i - 1].ay - lines[i].ay < -pi)
             lines[i].ay -= 2 * pi;
         lines[i].ay += (lines[i - 1].ay - lines[i].ay) * ka;
-        float kSize = 1.0f - i / float(WDM_SHIP_WMSZ);
+        float kSize = 1.0f - i / static_cast<float>(WDM_SHIP_WMSZ);
         kSize = kSize * kSize * kSpeed * 0.6f;
         lines[i].size += (lines[i - 1].size - lines[i].size + kSize) * ks;
     }
@@ -364,20 +365,20 @@ bool WdmShip::CheckPosition(float x, float z, float objRadius)
     if (z + objRadius > 0.5f * wdmObjects->worldSizeZ)
         return false;
     //Корабли
-    long i = 0;
-    for (i = 0; i < wdmObjects->numShips; i++)
+    long i;
+    for (i = 0; i < wdmObjects->ships.size(); i++)
     {
         if (!wdmObjects->ships[i]->isLive)
             continue;
         if (wdmObjects->ships[i]->killMe)
             continue;
-        float dx = wdmObjects->ships[i]->mtx.Pos().x - x;
-        float dz = wdmObjects->ships[i]->mtx.Pos().z - z;
+        const float dx = wdmObjects->ships[i]->mtx.Pos().x - x;
+        const float dz = wdmObjects->ships[i]->mtx.Pos().z - z;
         if (dx * dx + dz * dz < wdmObjects->ships[i]->modelRadius2)
             return false;
     }
     //Острова
-    if (i >= wdmObjects->numShips)
+    if (i >= wdmObjects->ships.size())
     {
         if (wdmObjects->islands)
         {

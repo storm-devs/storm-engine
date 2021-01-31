@@ -1,13 +1,12 @@
 #ifndef SEA_COMMON_CAMERA_HPP
 #define SEA_COMMON_CAMERA_HPP
 
-#include "common_defines.h"
-#include "sd2_h\SaveLoad.h"
-#include "sd2_h\VAI_ObjBase.h"
-#include "templates.h"
+#include "Entity.h"
+#include "Sd2_h/VAI_ObjBase.h"
+#include "core.h"
 #include "vmodule_api.h"
 
-class COMMON_CAMERA : public ENTITY
+class COMMON_CAMERA : public Entity
 {
   private:
     bool bActive;
@@ -15,7 +14,7 @@ class COMMON_CAMERA : public ENTITY
 
     float fPerspective;
 
-    ENTITY_ID eidObject;
+    entid_t eidObject;
     VAI_OBJBASE *pAIObj;
 
   protected:
@@ -25,41 +24,39 @@ class COMMON_CAMERA : public ENTITY
     bool FindShip()
     {
         Assert(pACharacter);
-        ENTITY_ID eidTemp;
         // get entity id from loaded ships
-        if (api->FindClass(&eidTemp, "ship", 0))
-            do
+        const auto &entities = EntityManager::GetEntityIdVector("ship");
+        for (auto ship : entities)
+        {
+            auto *pObj = static_cast<VAI_OBJBASE *>(EntityManager::GetEntityPointer(ship));
+            if (pObj->GetACharacter() == pACharacter)
             {
-                VAI_OBJBASE *pObj = (VAI_OBJBASE *)api->GetEntityPointer(&eidTemp);
-                if (pObj->GetACharacter() == pACharacter)
-                {
-                    SetEID(&pObj->GetModelEID());
-                    SetAIObj(pObj);
-                    return true;
-                }
-            } while (api->FindClassNext(&eidTemp));
+                SetEID(pObj->GetModelEID());
+                SetAIObj(pObj);
+                return true;
+            }
+        }
         return false;
     }
 
-    MODEL *GetModelPointer()
+    MODEL *GetModelPointer() const
     {
-        Assert(_CORE_API->ValidateEntity(&eidObject));
-        Assert(eidObject.pointer);
-        return (MODEL *)eidObject.pointer;
+        return static_cast<MODEL *>(EntityManager::GetEntityPointer(eidObject));
     }
+
     void SetAIObj(VAI_OBJBASE *_pAIObj)
     {
         pAIObj = _pAIObj;
     }
-    VAI_OBJBASE *GetAIObj()
+    VAI_OBJBASE *GetAIObj() const
     {
         return pAIObj;
     }
-    void SetEID(ENTITY_ID *pEID)
+    void SetEID(entid_t pEID)
     {
-        eidObject = *pEID;
+        eidObject = pEID;
     };
-    ENTITY_ID GetEID()
+    entid_t GetEID() const
     {
         return eidObject;
     };
@@ -73,7 +70,7 @@ class COMMON_CAMERA : public ENTITY
     {
         fPerspective = _fPerspective;
     };
-    float GetPerspective()
+    float GetPerspective() const
     {
         return fPerspective;
     };
@@ -87,11 +84,11 @@ class COMMON_CAMERA : public ENTITY
         bActive = bNewActive;
     };
 
-    bool isOn()
+    bool isOn() const
     {
         return bOn;
     };
-    bool isActive()
+    bool isActive() const
     {
         return bActive;
     };
@@ -105,6 +102,7 @@ class COMMON_CAMERA : public ENTITY
         bActive = false;
         fPerspective = 1.285f;
     };
+
     virtual ~COMMON_CAMERA(){};
 };
 

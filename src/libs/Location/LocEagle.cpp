@@ -9,7 +9,10 @@
 //============================================================================================
 
 #include "LocEagle.h"
+#include "../../Shared/messages.h"
+#include "Entity.h"
 #include "Location.h"
+#include "core.h"
 #include "geometry.h"
 
 LocEagle::LocEagle()
@@ -27,45 +30,44 @@ LocEagle::LocEagle()
 
 LocEagle::~LocEagle()
 {
-    api->DeleteEntity(mdl);
+    EntityManager::EraseEntity(mdl);
 }
 
 //Инициализация
 bool LocEagle::Init()
 {
     //Точка, вокруг которой летаем
-    ENTITY_ID loc;
-    _CORE_API->FindClass(&loc, "location", 0);
-    Location *location = (Location *)_CORE_API->GetEntityPointer(&loc);
+    const auto loc = EntityManager::GetEntityId("location");
+    auto *location = static_cast<Location *>(EntityManager::GetEntityPointer(loc));
     if (!location)
         return false;
     cnt = location->GetPtcData().middle + CVECTOR(0.0f, 30.0f, 0.0f);
     //Путь для текстур
-    VGEOMETRY *gs = (VGEOMETRY *)_CORE_API->CreateService("geometry");
+    auto *gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
     if (!gs)
     {
-        _CORE_API->Trace("Can't create geometry service!");
+        core.Trace("Can't create geometry service!");
         return false;
     }
     //Моделька
-    if (!api->CreateEntity(&mdl, "modelr"))
+    if (!(mdl = EntityManager::CreateEntity("modelr")))
         return false;
-    _CORE_API->LayerAdd("realize", mdl, 20);
+    EntityManager::AddToLayer(REALIZE, mdl, 20);
     gs->SetTexturePath("Animals\\");
-    if (!api->Send_Message(mdl, "ls", MSG_MODEL_LOAD_GEO, "Animals\\eagle"))
+    if (!core.Send_Message(mdl, "ls", MSG_MODEL_LOAD_GEO, "Animals\\eagle"))
     {
         gs->SetTexturePath("");
         return false;
     }
     gs->SetTexturePath("");
     //Анимация
-    if (!api->Send_Message(mdl, "ls", MSG_MODEL_LOAD_ANI, "eagle"))
+    if (!core.Send_Message(mdl, "ls", MSG_MODEL_LOAD_ANI, "eagle"))
         return false;
     //Запускаем проигрывание анимации
-    MODEL *m = (MODEL *)_CORE_API->GetEntityPointer(&mdl);
+    auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(mdl));
     if (!m)
         return false;
-    Animation *ani = m->GetAnimation();
+    auto *ani = m->GetAnimation();
     if (!ani)
         return false;
     if (!ani->Player(0).SetAction("flight"))
@@ -73,21 +75,21 @@ bool LocEagle::Init()
     if (!ani->Player(0).Play())
         return false;
     //Включаем в список исполнения
-    _CORE_API->LayerCreate("execute", true, false);
-    _CORE_API->LayerSetFlags("execute", LRFLAG_EXECUTE);
-    _CORE_API->LayerAdd("execute", GetID(), 10);
+    // core.LayerCreate("execute", true, false);
+    EntityManager::SetLayerType(EXECUTE, EntityManager::Layer::Type::execute);
+    EntityManager::AddToLayer(EXECUTE, GetId(), 10);
     return true;
 }
 
 //Исполнение
-void LocEagle::Execute(dword delta_time)
+void LocEagle::Execute(uint32_t delta_time)
 {
     //Моделька
-    MODEL *m = (MODEL *)_CORE_API->GetEntityPointer(&mdl);
+    auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(mdl));
     if (!m)
         return;
     //Обновляем позицию
-    float dltTime = delta_time * 0.001f;
+    const auto dltTime = delta_time * 0.001f;
     time += kTime * dltTime;
     if (time >= 1.0f)
     {

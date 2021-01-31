@@ -3,7 +3,7 @@
 
 CXI_TABSECTION::CXI_TABSECTION()
 {
-    m_rs = null;
+    m_rs = nullptr;
     m_bClickable = true;
     m_nNodeType = NODETYPE_TABSECTION;
 
@@ -18,7 +18,7 @@ CXI_TABSECTION::~CXI_TABSECTION()
     ReleaseAll();
 }
 
-void CXI_TABSECTION::Draw(bool bSelected, dword Delta_Time)
+void CXI_TABSECTION::Draw(bool bSelected, uint32_t Delta_Time)
 {
     // Прорисовка
     if (m_idIconTexture != -1 && m_idVBuf != -1 && m_idIBuf != -1)
@@ -30,8 +30,8 @@ void CXI_TABSECTION::Draw(bool bSelected, dword Delta_Time)
     // Вывод заголовков
 }
 
-bool CXI_TABSECTION::Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, VDX8RENDER *rs, XYRECT &hostRect,
-                          XYPOINT &ScreenSize)
+bool CXI_TABSECTION::Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs,
+                          XYRECT &hostRect, XYPOINT &ScreenSize)
 {
     if (!CINODE::Init(ini1, name1, ini2, name2, rs, hostRect, ScreenSize))
         return false;
@@ -40,9 +40,9 @@ bool CXI_TABSECTION::Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2
 
 void CXI_TABSECTION::ReleaseAll()
 {
-    PICTURE_TEXTURE_RELEASE(pPictureService, m_sIconGroupName, m_idIconTexture);
-    VERTEX_BUF_RELEASE(m_rs, m_idVBuf);
-    INDEX_BUF_RELEASE(m_rs, m_idIBuf);
+    PICTURE_TEXTURE_RELEASE(pPictureService, m_sIconGroupName.c_str(), m_idIconTexture);
+    VERTEX_BUFFER_RELEASE(m_rs, m_idVBuf);
+    INDEX_BUFFER_RELEASE(m_rs, m_idIBuf);
     m_nSubQ = 0;
 }
 
@@ -78,21 +78,21 @@ void CXI_TABSECTION::SaveParametersToIni()
 {
     char pcWriteParam[2048];
 
-    INIFILE *pIni = api->fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.GetBuffer());
+    auto *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
-        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.GetBuffer());
+        core.Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
         return;
     }
 
     // save position
-    _snprintf(pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rect.left, m_rect.top, m_rect.right, m_rect.bottom);
+    sprintf_s(pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rect.left, m_rect.top, m_rect.right, m_rect.bottom);
     pIni->WriteString(m_nodeName, "position", pcWriteParam);
 
     delete pIni;
 }
 
-dword _cdecl CXI_TABSECTION::MessageProc(long msgcode, MESSAGE &message)
+uint32_t CXI_TABSECTION::MessageProc(long msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
@@ -103,7 +103,7 @@ dword _cdecl CXI_TABSECTION::MessageProc(long msgcode, MESSAGE &message)
     return 0;
 }
 
-void CXI_TABSECTION::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2)
+void CXI_TABSECTION::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2)
 {
     SetGlowCursor(false);
 }

@@ -5,13 +5,13 @@ SeaLocatorShow::SeaLocatorShow()
     fScale = 0.7f;
     bShow = false;
     sphereNumTrgs = 0;
-    sphereVertex = null;
-    pALocators = 0;
+    sphereVertex = nullptr;
+    pALocators = nullptr;
 }
 
 SeaLocatorShow::~SeaLocatorShow()
 {
-    SE_DELETE(sphereVertex);
+    STORM_DELETE(sphereVertex);
 }
 
 bool SeaLocatorShow::Init()
@@ -25,7 +25,7 @@ void SeaLocatorShow::SetDevice()
 
 bool SeaLocatorShow::isLocator(ATTRIBUTES *pA)
 {
-    return pA->FindAClass(pA, "z") != 0;
+    return pA->FindAClass(pA, "z") != nullptr;
 }
 
 CVECTOR SeaLocatorShow::GetLocatorPos(ATTRIBUTES *pA)
@@ -37,22 +37,22 @@ CVECTOR SeaLocatorShow::GetLocatorPos(ATTRIBUTES *pA)
     return v;
 }
 
-char *SeaLocatorShow::GetRealLocatorName(ATTRIBUTES *pA)
+const char *SeaLocatorShow::GetRealLocatorName(ATTRIBUTES *pA)
 {
     return pA->GetThisName();
 }
 
-char *SeaLocatorShow::GetLocatorName(ATTRIBUTES *pA)
+const char *SeaLocatorShow::GetLocatorName(ATTRIBUTES *pA)
 {
-    char *pName = pA->GetAttribute("name");
+    const char *pName = pA->GetAttribute("name");
     if (!pName)
         pName = pA->GetThisName();
     return pName;
 }
 
-char *SeaLocatorShow::GetLocatorGroupName(ATTRIBUTES *pA)
+const char *SeaLocatorShow::GetLocatorGroupName(ATTRIBUTES *pA)
 {
-    ATTRIBUTES *pAParent = pA->GetParent();
+    auto *const pAParent = pA->GetParent();
     Assert(pAParent);
     return pAParent->GetThisName();
 }
@@ -75,12 +75,12 @@ void SeaLocatorShow::PrintLocator(ATTRIBUTES *pA)
         CreateSphere();
     CMatrix mPos;
 
-    float d = view.Vz() | view.Pos();
+    auto d = view.Vz() | view.Pos();
 
-    long fh = long(AIHelper::pRS->CharHeight(FONT_DEFAULT) * fScale);
+    auto fh = static_cast<long>(AIHelper::pRS->CharHeight(FONT_DEFAULT) * fScale);
 
-    CVECTOR vPos = GetLocatorPos(pA);
-    float fAng = GetLocatorAng(pA);
+    auto vPos = GetLocatorPos(pA);
+    auto fAng = GetLocatorAng(pA);
     if ((vPos | view.Vz()) < d)
         return;
 
@@ -98,36 +98,37 @@ void SeaLocatorShow::PrintLocator(ATTRIBUTES *pA)
     mtx.Projection(&vPos, &vrt, 1, fWidth, fHeight, sizeof(CVECTOR), sizeof(MTX_PRJ_VECTOR));
     vPos = CVECTOR(vrt.x, vrt.y, vrt.z);
 
-    char *pName, *pGName;
+    const char *pName, *pGName;
 
     if (pGName = GetLocatorGroupName(pA))
         AIHelper::Print(vPos.x, vPos.y - fh * 0.8f, fScale, "grp: \"%s\"", pGName);
     if (pName = GetLocatorName(pA))
         AIHelper::Print(vPos.x, vPos.y, fScale, "loc: \"%s\"", pName);
-    float fRadius = GetLocatorRadius(pA);
+    auto fRadius = GetLocatorRadius(pA);
     AIHelper::Print(vPos.x, vPos.y + fh * 0.8f, fScale, "rad: %.2f", fRadius);
     if (fRadius > 0.0f)
     {
-        SphVertex *pVrt;
-        array<SphVertex> Vrts(_FL_);
-        CVECTOR vPos1 = GetLocatorPos(pA);
-        CVECTOR vCenter = CVECTOR(vPos1.x, 2.0f, vPos1.z);
+        std::vector<SphVertex> Vrts;
+        auto vPos1 = GetLocatorPos(pA);
+        auto vCenter = CVECTOR(vPos1.x, 2.0f, vPos1.z);
 
-        pVrt = &Vrts[Vrts.Add()];
-        pVrt->v = vCenter;
-        pVrt->c = 0x4F00FF00;
-
-        for (dword i = 0; i < 32; i++)
+        // SphVertex* pVrt = &Vrts[Vrts.Add()];
+        // pVrt->v = vCenter;
+        // pVrt->c = 0x4F00FF00;
+        Vrts.push_back(SphVertex{vCenter, 0x4F00FF00});
+        for (uint32_t i = 0; i < 32; i++)
         {
-            float fAngle = float(i) / 31.0f * PIm2;
-            pVrt = &Vrts[Vrts.Add()];
-            pVrt->v = vCenter + CVECTOR(sinf(fAngle) * fRadius, 0.0f, cosf(fAngle) * fRadius);
-            pVrt->c = 0x0F00FF00;
+            auto fAngle = static_cast<float>(i) / 31.0f * PIm2;
+            // pVrt = &Vrts[Vrts.Add()];
+            // pVrt->v = vCenter + CVECTOR(sinf(fAngle) * fRadius, 0.0f, cosf(fAngle) * fRadius);
+            // pVrt->c = 0x0F00FF00
+            Vrts.push_back(
+                SphVertex{vCenter + CVECTOR(sinf(fAngle) * fRadius, 0.0f, cosf(fAngle) * fRadius), 0x0F00FF00});
         }
         CMatrix m_ident;
         m_ident.SetIdentity();
         AIHelper::pRS->SetTransform(D3DTS_WORLD, m_ident);
-        AIHelper::pRS->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, D3DFVF_XYZ | D3DFVF_DIFFUSE, Vrts.Size() - 2, &Vrts[0],
+        AIHelper::pRS->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, D3DFVF_XYZ | D3DFVF_DIFFUSE, Vrts.size() - 2, &Vrts[0],
                                        sizeof(SphVertex), "SeaLocatorsShow");
     }
 }
@@ -138,26 +139,24 @@ void SeaLocatorShow::ProcessLocators(ATTRIBUTES *pA)
         return;
     if (isLocator(pA))
         PrintLocator(pA);
-    for (dword i = 0; i < pA->GetAttributesNum(); i++)
+    for (uint32_t i = 0; i < pA->GetAttributesNum(); i++)
         ProcessLocators(pA->GetAttributeClass(i));
 }
 
-void SeaLocatorShow::Realize(dword Delta_Time)
+void SeaLocatorShow::Realize(uint32_t Delta_Time)
 {
-#ifndef _XBOX
-    if (api->Controls->GetDebugAsyncKeyState('6') < 0)
-        fScale -= float(Delta_Time) * 0.001f * 0.5f;
-    if (api->Controls->GetDebugAsyncKeyState('7') < 0)
-        fScale += float(Delta_Time) * 0.001f * 0.5f;
-    if (api->Controls->GetDebugAsyncKeyState('5') < 0)
+    if (core.Controls->GetDebugAsyncKeyState('6') < 0)
+        fScale -= static_cast<float>(Delta_Time) * 0.001f * 0.5f;
+    if (core.Controls->GetDebugAsyncKeyState('7') < 0)
+        fScale += static_cast<float>(Delta_Time) * 0.001f * 0.5f;
+    if (core.Controls->GetDebugAsyncKeyState('5') < 0)
     {
         bShow ^= 1;
         Sleep(200);
     }
-#endif
     if (!bShow || !pALocators)
         return;
-    CMatrix prj;
+    const CMatrix prj;
     AIHelper::pRS->GetTransform(D3DTS_VIEW, view);
     AIHelper::pRS->GetTransform(D3DTS_PROJECTION, prj);
     mtx.EqMultiply(view, prj);
@@ -177,7 +176,7 @@ void SeaLocatorShow::Realize(dword Delta_Time)
     ProcessLocators(pALocators);
 }
 
-void SeaLocatorShow::Execute(dword Delta_Time)
+void SeaLocatorShow::Execute(uint32_t Delta_Time) const
 {
     if (!pALocators)
         return;
@@ -193,17 +192,17 @@ bool SeaLocatorShow::LoadState(ENTITY_STATE *state)
     return true;
 }
 
-void SeaLocatorShow::ProcessMessage(dword iMsg, dword wParam, dword lParam)
+void SeaLocatorShow::ProcessMessage(uint32_t iMsg, uint32_t wParam, uint32_t lParam)
 {
 }
 
-dword _cdecl SeaLocatorShow::ProcessMessage(MESSAGE &message)
+uint64_t SeaLocatorShow::ProcessMessage(MESSAGE &message)
 {
     pALocators = message.AttributePointer();
     return 0;
 }
 
-dword SeaLocatorShow::AttributeChanged(ATTRIBUTES *pAttribute)
+uint32_t SeaLocatorShow::AttributeChanged(ATTRIBUTES *pAttribute)
 {
     return 0;
 }
@@ -217,7 +216,7 @@ void SeaLocatorShow::CreateSphere()
         if (kColor < 0.0f)                                                                                             \
             kColor = 0.0f;                                                                                             \
     }
-#define CLerp(c, min) (dword(c * (kColor * (1.0f - min) + min)))
+#define CLerp(c, min) (uint32_t(c * (kColor * (1.0f - min) + min)))
 #define Color                                                                                                          \
     ((CLerp(255.0f, 0.5f) << 24) | (CLerp(255.0f, 0.7f) << 16) | (CLerp(255.0f, 0.7f) << 8) |                          \
      (CLerp(255.0f, 0.7f) << 0));
@@ -225,28 +224,28 @@ void SeaLocatorShow::CreateSphere()
     if (sphereVertex)
         return;
 
-    const float myPI = 3.1415926535897932f;
+    const auto myPI = 3.1415926535897932f;
     const long a1 = 32;
-    const long a2 = (a1 / 2);
+    const auto a2 = (a1 / 2);
 
     sphereNumTrgs = a1 * a2 * 2;
-    sphereVertex = NEW SphVertex[sphereNumTrgs * 6];
+    sphereVertex = new SphVertex[sphereNumTrgs * 6];
 
-    CVECTOR light = !CVECTOR(0.0f, 0.0f, 1.0f);
+    const auto light = !CVECTOR(0.0f, 0.0f, 1.0f);
     float kColor;
     //Заполняем вершины
     for (long i = 0, t = 0; i < a2; i++)
     {
-        float r1 = sinf(myPI * i / float(a2));
-        float y1 = cosf(myPI * i / float(a2));
-        float r2 = sinf(myPI * (i + 1) / float(a2));
-        float y2 = cosf(myPI * (i + 1) / float(a2));
+        const auto r1 = sinf(myPI * i / static_cast<float>(a2));
+        const auto y1 = cosf(myPI * i / static_cast<float>(a2));
+        const auto r2 = sinf(myPI * (i + 1) / static_cast<float>(a2));
+        const auto y2 = cosf(myPI * (i + 1) / static_cast<float>(a2));
         for (long j = 0; j < a1; j++)
         {
-            float x1 = sinf(2.0f * myPI * j / float(a1));
-            float z1 = cosf(2.0f * myPI * j / float(a1));
-            float x2 = sinf(2.0f * myPI * (j + 1) / float(a1));
-            float z2 = cosf(2.0f * myPI * (j + 1) / float(a1));
+            const auto x1 = sinf(2.0f * myPI * j / static_cast<float>(a1));
+            const auto z1 = cosf(2.0f * myPI * j / static_cast<float>(a1));
+            const auto x2 = sinf(2.0f * myPI * (j + 1) / static_cast<float>(a1));
+            const auto z2 = cosf(2.0f * myPI * (j + 1) / static_cast<float>(a1));
             // 0
             sphereVertex[t * 3 + 0].v.x = r1 * x1;
             sphereVertex[t * 3 + 0].v.y = y1;

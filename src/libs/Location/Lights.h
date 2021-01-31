@@ -8,17 +8,15 @@
 //
 //============================================================================================
 
-#ifndef _Lights_H_
-#define _Lights_H_
+#pragma once
 
-#include "LocationEffects.h"
+#include "Matrix.h"
 #include "collide.h"
-#include "dx8render.h"
-#include "matrix.h"
-#include "templates\array.h"
+#include "dx9render.h"
 #include "vmodule_api.h"
+#include <vector>
 
-class Lights : public ENTITY
+class Lights : public Entity
 {
     //Описание источника освещения
     struct LightType
@@ -64,10 +62,11 @@ class Lights : public ENTITY
     struct Vertex
     {
         CVECTOR pos;
-        dword color;
+        uint32_t color;
         float u, v;
     };
 
+    //Для сортировки для по дистанции
     struct lt_elem
     {
         long idx;
@@ -82,18 +81,35 @@ class Lights : public ENTITY
     virtual ~Lights();
 
     //Инициализация
-    bool Init();
+    bool Init() override;
     //Исполнение
-    void Execute(dword delta_time);
+    void Execute(uint32_t delta_time);
     //Рисование корон
-    void Realize(dword delta_time);
+    void Realize(uint32_t delta_time);
+
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
 
     //Найти индекс источника
     long FindLight(const char *name);
     //Добавить источник в локацию
     void AddLight(long index, const CVECTOR &pos);
     //Добавить модельку фонарей
-    bool AddLampModel(const ENTITY_ID &lampModel);
+    bool AddLampModel(entid_t lampModel);
     //
     void DelAllLights();
 
@@ -105,11 +121,10 @@ class Lights : public ENTITY
     void DelMovingLight(long id);
 
     //Установить для персонажа источники освещения
-    void SetCharacterLights(const CVECTOR &pos);
+    void SetCharacterLights(const CVECTOR *pos = nullptr);
+
     //Запретить установленные для персонажа источники освещения
     void DelCharacterLights();
-    //Установить те же источники что и для последнего расчета
-    void SetCharacterLights();
 
     //Обновить типы источников
     void UpdateLightTypes(long i);
@@ -118,32 +133,35 @@ class Lights : public ENTITY
     //Инкапсуляция
     //--------------------------------------------------------------------------------------------
   private:
-    VDX8RENDER *rs;
+    VDX9RENDER *rs;
     COLLIDE *collide;
+
     //Установленные источники освещения
     struct
     {
         bool set;
         long light;
     } lt[8];
+
     //Виды источников освещения
-    LightType *types;
+    std::vector<LightType> types;
     long numTypes;
     long maxTypes;
     //Существующие источники освещения
-    Light *lights;
+    std::vector<Light> lights;
     long numLights;
     long maxLights;
     long lighter_code;
 
     //переносные источники света
-    array<MovingLight> aMovingLight;
+    std::vector<MovingLight> aMovingLight;
 
     //Модельки фонарей
-    ENTITY_ID lampModels[16];
+    entid_t lampModels[16];
     long numLampModels;
 
     Vertex buf[6 * 1];
-};
 
-#endif
+    //Отсортированный массив источников для последнего расчета
+    std::vector<lt_elem> aLightsDstSort;
+};

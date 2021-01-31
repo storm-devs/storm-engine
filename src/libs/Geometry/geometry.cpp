@@ -1,33 +1,31 @@
-#include "geometry_r.h"
-#include "geos.h"
+#include "core.h"
 
-INTERFACE_FUNCTION
-CREATE_SERVICE(GEOMETRY)
+#include "geometry_R.h"
+
+IDirect3DVertexDeclaration9 *GEOM_SERVICE_R::vertexDecl_ = nullptr;
 
 char technique[256] = "";
-char RenderServiceName[] = "dx8render";
+char RenderServiceName[] = "dx9render";
 GEOM_SERVICE_R GSR;
 char texturePath[256];
 
 const long SHIFT_VALUE = 999999999;
-//#define AVB_MAX 1024
-#define AVB_MAX 8192
+#define AVB_MAX 1024
 VGEOMETRY::ANIMATION_VB avb[AVB_MAX]; //!!! temporary
 
 GEOMETRY::GEOMETRY()
 {
-    strcpy(texturePath, "");
+    strcpy_s(texturePath, "");
 }
-
-GEOMETRY::~GEOMETRY(){};
 
 const char *GEOMETRY::GetTexturePath()
 {
     return &texturePath[0];
 }
+
 void GEOMETRY::SetTexturePath(const char *path)
 {
-    strcpy(texturePath, path);
+    strcpy_s(texturePath, path);
 }
 
 //=================================================================================================
@@ -35,7 +33,7 @@ void GEOMETRY::SetTexturePath(const char *path)
 //=================================================================================================
 void GEOMETRY::SetTechnique(const char *name)
 {
-    strcpy(technique, name);
+    strcpy_s(technique, name);
 }
 
 GEOMETRY::ANIMATION_VB GEOMETRY::GetAnimationVBDesc(long vb)
@@ -43,27 +41,29 @@ GEOMETRY::ANIMATION_VB GEOMETRY::GetAnimationVBDesc(long vb)
     return avb[vb - SHIFT_VALUE];
 }
 
-VERTEX_TRANSFORM transform_func = 0;
+VERTEX_TRANSFORM transform_func = nullptr;
+
 void GEOMETRY::SetVBConvertFunc(VERTEX_TRANSFORM _transform_func)
 {
     transform_func = _transform_func;
 }
 
 static bool geoLog = false;
+
 bool GEOMETRY::Init()
 {
-    RenderService = (VDX8RENDER *)_CORE_API->CreateService(RenderServiceName);
+    RenderService = static_cast<VDX9RENDER *>(core.CreateService(RenderServiceName));
     if (!RenderService)
     {
-        _CORE_API->Trace("No service: %s", RenderServiceName);
+        core.Trace("No service: %s", RenderServiceName);
     }
     GSR.SetRenderService(RenderService);
 
     INIFILE *ini;
-    ini = api->fio->OpenIniFile(api->EngineIniFileName());
+    ini = fio->OpenIniFile(core.EngineIniFileName());
     if (ini)
     {
-        geoLog = ini->GetLong(0, "geometry_log", 0) == 1;
+        geoLog = ini->GetLong(nullptr, "geometry_log", 0) == 1;
         delete ini;
     }
 
@@ -80,64 +80,63 @@ bool GEOMETRY::LoadState(ENTITY_STATE *state)
     return true;
 }
 
-#include <stdio.h>
 char lightPath[256];
 int vrtSize;
+
 GEOS *GEOMETRY::CreateGeometry(const char *file_name, const char *light_file_name, long flags, const char *lmPath)
 {
     char fnt[256], lfn[256];
-    if (light_file_name != 0)
+    if (light_file_name != nullptr)
     {
-        sprintf(lightPath, "%s\\%s", lmPath, file_name);
-        // strcpy(lightPath, light_file_name);
-        char *bs = strrchr(lightPath, '\\');
-        if (bs != 0)
+        sprintf_s(lightPath, "%s\\%s", lmPath, file_name);
+        // strcpy_s(lightPath, light_file_name);
+        auto *const bs = strrchr(lightPath, '\\');
+        if (bs != nullptr)
             *bs = 0;
     }
 
-#ifndef _XBOX
-    static int first = 0;
+    static auto first = 0;
     FILE *fl;
-    //	if(geoLog)
-    //	{
-    vrtSize = 0;
-//		if(first==0)	fl = fopen("geoLoad.txt", "w");
-//		else	fl = fopen("geoLoad.txt", "aw");
-//	}
-#endif
+    if (geoLog)
+    {
+        vrtSize = 0;
+        if (first == 0)
+            fl = fopen("geoLoad.txt", "w");
+        else
+            fl = fopen("geoLoad.txt", "a");
+    }
 
     GEOS *gp;
     try
     {
-        sprintf(fnt, "resource\\models\\%s.gm", file_name);
-        if (light_file_name == 0 || strlen(light_file_name) == 0)
+        sprintf_s(fnt, "resource\\models\\%s.gm", file_name);
+        if (light_file_name == nullptr || strlen(light_file_name) == 0)
         {
-            gp = ::CreateGeometry(fnt, null, GSR, flags);
+            gp = ::CreateGeometry(fnt, nullptr, GSR, flags);
         }
         else
         {
-            // sprintf(lfn, "resource\\lighting\\%s.col", light_file_name);
-            const char *elf = light_file_name;
+            // sprintf_s(lfn, "resource\\lighting\\%s.col", light_file_name);
+            const auto *elf = light_file_name;
             if (elf[0] == '\\')
                 elf++;
             if (elf[0] == '\\')
                 elf++;
-            sprintf(lfn, "resource\\models\\%s_%s.col", file_name, elf);
+            sprintf_s(lfn, "resource\\models\\%s_%s.col", file_name, elf);
             gp = ::CreateGeometry(fnt, lfn, GSR, flags);
         }
     }
     catch (const char *ee)
     {
-        _CORE_API->Trace("%s: %s", fnt, ee);
-        return 0;
+        core.Trace("%s: %s", fnt, ee);
+        return nullptr;
     }
     catch (...)
     {
-        _CORE_API->Trace("Invalid model: %s", fnt);
-        return 0;
+        core.Trace("Invalid model: %s", fnt);
+        return nullptr;
     }
 
-#ifndef _XBOX
     if (geoLog)
     {
         //---------------------------------------------------------------
@@ -146,102 +145,98 @@ GEOS *GEOMETRY::CreateGeometry(const char *file_name, const char *light_file_nam
         GEOS::INFO gi;
         gp->GetInfo(gi);
         first += gi.ntriangles * 2 * 3 + vrtSize;
-        _CORE_API->Trace("%.2f, trgSize: %d, vrtSize: %d, tex: %d. obj: %d, %s\n", first / 1024.0f / 1024.0f,
-                         gi.ntriangles * 2 * 3, vrtSize, gi.ntextures, gi.nobjects, file_name);
-        //		fprintf(fl, "%.2f, trgSize: %d, vrtSize: %d, tex: %d. obj: %d, %s\n", first/1024.0f/1024.0f,
-        // gi.ntriangles*2*3, vrtSize, gi.ntextures, gi.nobjects, file_name); 		fclose(fl);
+        fprintf(fl, "%.2f, trgSize: %d, vrtSize: %d, tex: %d. obj: %d, %s\n", first / 1024.0f / 1024.0f,
+                gi.ntriangles * 2 * 3, vrtSize, gi.ntextures, gi.nobjects, file_name);
+        fclose(fl);
     }
-#endif
 
     return gp;
 }
 
 ANIMATION *GEOMETRY::LoadAnimation(const char *anim)
 {
-    return null;
+    return nullptr;
 }
 
 void GEOMETRY::DeleteGeometry(GEOS *gid)
 {
-    if (gid)
-        delete gid;
+    delete gid;
 }
 
 //=================================================================================================
 // Block 2
 //=================================================================================================
 
-void GEOM_SERVICE_R::SetRenderService(VDX8RENDER *render_service)
+void GEOM_SERVICE_R::SetRenderService(VDX9RENDER *render_service)
 {
     bCaustic = false;
     RenderService = render_service;
     CurentIndexBuffer = INVALID_BUFFER_ID;
     CurentVertexBuffer = INVALID_BUFFER_ID;
     CurentVertexBufferSize = 0;
+
+    const D3DVERTEXELEMENT9 VertexElements[] = {
+        {0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
+        {0, 12, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0},
+        {0, 24, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 0},
+        {0, 28, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 1},
+        D3DDECL_END()};
+    if (vertexDecl_ == nullptr)
+        RenderService->CreateVertexDeclaration(VertexElements, &vertexDecl_);
 }
 
-GEOM_SERVICE_R::~GEOM_SERVICE_R()
-{
-}
-
-GEOS::ID GEOM_SERVICE_R::OpenFile(const char *fname)
+HANDLE GEOM_SERVICE_R::OpenFile(const char *fname)
 {
     if (RenderService)
         RenderService->ProgressView();
-    HANDLE fl = _CORE_API->fio->_CreateFile(fname, GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING);
+    auto *const fl = fio->_CreateFile(fname, GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING);
     if (fl == INVALID_HANDLE_VALUE)
-        if (strcmpi(&fname[strlen(fname) - 4], ".col") == 0)
-            ; //	_CORE_API->Trace("geometry::can't open file %s", fname);
+        if (_strcmpi(&fname[strlen(fname) - 4], ".col") == 0)
+            ; //	core.Trace("geometry::can't open file %s", fname);
         else
             throw "can't open geometry file";
-    _CORE_API->fio->_SetFilePointer(fl, NULL, NULL, FILE_BEGIN);
-    return (GEOS::ID)fl;
+    return fl;
 }
 
-long GEOM_SERVICE_R::GetFilePointer(GEOS::ID file)
+int GEOM_SERVICE_R::FileSize(HANDLE file)
 {
-    return _CORE_API->fio->_GetFilePointer((HANDLE)file);
-}
-
-int GEOM_SERVICE_R::FileSize(GEOS::ID file)
-{
-    if ((HANDLE)file == INVALID_HANDLE_VALUE)
+    if (file == INVALID_HANDLE_VALUE)
         return 0;
-    dword sh;
-    return _CORE_API->fio->_GetFileSize((HANDLE)file, &sh);
-}
-void GEOM_SERVICE_R::ReadFile(GEOS::ID file, void *data, long bytes)
-{
-    _CORE_API->fio->_ReadFile((HANDLE)file, data, bytes, 0);
+    uint32_t sh;
+    return fio->_GetFileSize(file, &sh);
 }
 
-void GEOM_SERVICE_R::CloseFile(GEOS::ID file)
+void GEOM_SERVICE_R::ReadFile(HANDLE file, void *data, long bytes)
 {
-    _CORE_API->fio->_CloseHandle((HANDLE)file);
+    fio->_ReadFile(file, data, bytes, nullptr);
+}
+
+void GEOM_SERVICE_R::CloseFile(HANDLE file)
+{
+    fio->_CloseHandle(file);
 }
 
 void *GEOM_SERVICE_R::malloc(long bytes)
 {
-    return NEW char[bytes];
+    return new char[bytes];
 }
 
 void GEOM_SERVICE_R::free(void *ptr)
 {
-    if (ptr)
-        delete ptr;
+    delete ptr;
 }
 
 GEOS::ID GEOM_SERVICE_R::CreateTexture(const char *fname)
 {
     char tex[256];
-    if (strcmpi(fname, "shadow.tga") == 0)
+    if (_strcmpi(fname, "shadow.tga") == 0)
     {
-        sprintf(tex, "lighting\\%s\\%s", lightPath, fname);
+        sprintf_s(tex, "lighting\\%s\\%s", lightPath, fname);
     }
     else
     {
-        strcpy(tex, texturePath);
-        strcat(tex, fname);
+        strcpy_s(tex, texturePath);
+        strcat_s(tex, fname);
     }
     if (RenderService)
     {
@@ -314,34 +309,34 @@ void GEOM_SERVICE_R::SetMaterial(const GEOS::MATERIAL &mt)
     // блок для ВМЛ <--
     /*if(GetAsyncKeyState(0xc0)<0)
     {
-        //RenderService->TextureSet(0, 0);
-        RenderService->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTEXF_POINT);
-        RenderService->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTEXF_NONE);
-        RenderService->SetTextureStageState(0, D3DTSS_MIPFILTER, D3DTEXF_POINT);
+      //RenderService->TextureSet(0, 0);
+      RenderService->SetTextureStageState(0, D3DSAMP_COLOROPP_MAGFILTER, D3DTEXF_POINT);
+      RenderService->SetTextureStageState(0, D3DSAMP_COLOROPP_MINFILTER, D3DTEXF_NONE);
+      RenderService->SetTextureStageState(0, D3DSAMP_COLOROPP_MIPFILTER, D3DTEXF_POINT);
     }
     else
     {
-        RenderService->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
-        RenderService->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTEXF_ANISOTROPIC);
-        RenderService->SetTextureStageState(0, D3DTSS_MIPFILTER, D3DTEXF_LINEAR);
+      RenderService->SetTextureStageState(0, D3DSAMP_COLOROPP_MAGFILTER, D3DTEXF_LINEAR);
+      RenderService->SetTextureStageState(0, D3DSAMP_COLOROPP_MINFILTER, D3DTEXF_ANISOTROPIC);
+      RenderService->SetTextureStageState(0, D3DSAMP_COLOROPP_MIPFILTER, D3DTEXF_LINEAR);
     }*/
 
-    /*RenderService->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
-    RenderService->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTEXF_ANISOTROPIC);
-    RenderService->SetTextureStageState(0, D3DTSS_MIPFILTER, D3DTEXF_LINEAR);
-    RenderService->SetTextureStageState(0, D3DTSS_MAXANISOTROPY, 3);
+    /*RenderService->SetTextureStageState(0, D3DSAMP_COLOROPP_MAGFILTER, D3DTEXF_LINEAR);
+    RenderService->SetTextureStageState(0, D3DSAMP_COLOROPP_MINFILTER, D3DTEXF_ANISOTROPIC);
+    RenderService->SetTextureStageState(0, D3DSAMP_COLOROPP_MIPFILTER, D3DTEXF_LINEAR);
+    RenderService->SetTextureStageState(0, D3DSAMP_COLOROPP_MAXANISOTROPY, 3);
 
     //unchanged texture stage states - both for base and detal texture
-    RenderService->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_DIFFUSE);
-    RenderService->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_TEXTURE);
+    RenderService->SetTextureStageState(0, D3DSAMP_COLOROPP_COLORARG1, D3DTA_DIFFUSE);
+    RenderService->SetTextureStageState(0, D3DSAMP_COLOROPP_COLORARG2, D3DTA_TEXTURE);
     RenderService->SetTextureStageState(1, D3DTSS_COLORARG1, D3DTA_CURRENT);
     RenderService->SetTextureStageState(1, D3DTSS_COLORARG2, D3DTA_TEXTURE);
     RenderService->SetTextureStageState(2, D3DTSS_COLORARG1, D3DTA_CURRENT);
     RenderService->SetTextureStageState(2, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
 
-    RenderService->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_DIFFUSE);
-    RenderService->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_TEXTURE);
-    RenderService->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+    RenderService->SetTextureStageState(0, D3DSAMP_COLOROPP_ALPHAARG1, D3DTA_DIFFUSE);
+    RenderService->SetTextureStageState(0, D3DSAMP_COLOROPP_ALPHAARG2, D3DTA_TEXTURE);
+    RenderService->SetTextureStageState(0, D3DSAMP_COLOROPP_ALPHAOP, D3DTOP_DISABLE);
 
     //general
     RenderService->SetRenderState(D3DRS_FOGENABLE, false);
@@ -361,8 +356,8 @@ void GEOM_SERVICE_R::SetMaterial(const GEOS::MATERIAL &mt)
     RenderService->SetRenderState(D3DRS_SPECULARENABLE, FALSE);//TRUE);
 
     //path BASE texture through
-    RenderService->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_DIFFUSE);
-    RenderService->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
+    RenderService->SetTextureStageState(0, D3DSAMP_COLOROPP_COLORARG1, D3DTA_DIFFUSE);
+    RenderService->SetTextureStageState(0, D3DSAMP_COLOROPP_COLOROP, D3DTOP_SELECTARG1);
     RenderService->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);//*/
 
     D3DMATERIAL9 m;
@@ -380,7 +375,6 @@ void GEOM_SERVICE_R::SetMaterial(const GEOS::MATERIAL &mt)
 
 void GEOM_SERVICE_R::ReleaseTexture(GEOS::ID tex)
 {
-
     if (RenderService)
         RenderService->TextureRelease(tex);
 }
@@ -393,17 +387,17 @@ GEOS::ID GEOM_SERVICE_R::CreateVertexBuffer(long type, long size)
         return INVALID_BUFFER_ID;
 
     long texset[4] = {D3DFVF_TEX1, D3DFVF_TEX2, D3DFVF_TEX3, D3DFVF_TEX4};
-    long fvf = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEXTUREFORMAT2;
-    long FVF = fvf | texset[type & 3];
-    long a = 0;
+    const long fvf = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEXTUREFORMAT2;
+    const auto FVF = fvf | texset[type & 3];
 
     // animated vertices
     if (type & 4)
     {
+        long a;
         for (a = 0; a < AVB_MAX; a++)
             if (avb[a].nvertices == 0)
                 break;
-        avb[a].buff = NEW char[size];
+        avb[a].buff = new char[size];
         avb[a].stride = sizeof(GEOS::VERTEX0);
         avb[a].nvertices = size / sizeof(GEOS::AVERTEX0);
         avb[a].fvf = FVF;
@@ -411,15 +405,15 @@ GEOS::ID GEOM_SERVICE_R::CreateVertexBuffer(long type, long size)
     }
 
     vrtSize += size;
-    return RenderService->CreateVertexBufferManaged(FVF, size, D3DUSAGE_WRITEONLY);
+    return RenderService->CreateVertexBuffer(FVF, size, D3DUSAGE_WRITEONLY);
 }
 
 void *GEOM_SERVICE_R::LockVertexBuffer(GEOS::ID vb)
 {
     if (vb == INVALID_BUFFER_ID)
-        return 0;
-    if (RenderService == 0)
-        return 0;
+        return nullptr;
+    if (RenderService == nullptr)
+        return nullptr;
     if (vb >= SHIFT_VALUE)
         return avb[vb - SHIFT_VALUE].buff;
     return RenderService->LockVertexBuffer(vb);
@@ -454,17 +448,17 @@ GEOS::ID GEOM_SERVICE_R::CreateIndexBuffer(long size)
     if (size == 0)
         return INVALID_BUFFER_ID;
     if (RenderService)
-        return RenderService->CreateIndexBufferManaged(size);
+        return RenderService->CreateIndexBuffer(size);
     return INVALID_BUFFER_ID;
 }
 
 void *GEOM_SERVICE_R::LockIndexBuffer(GEOS::ID ib)
 {
     if (ib == INVALID_BUFFER_ID)
-        return 0;
+        return nullptr;
     if (RenderService)
         return RenderService->LockIndexBuffer(ib);
-    return 0;
+    return nullptr;
 }
 
 void GEOM_SERVICE_R::UnlockIndexBuffer(GEOS::ID ib)
@@ -499,7 +493,7 @@ void GEOM_SERVICE_R::DrawIndexedPrimitive(long minv, long numv, long vrtsize, lo
     if (!RenderService)
         return;
 
-    dword oldZBias;
+    // uint32_t oldZBias;
 
     if (bCaustic)
     {
@@ -508,7 +502,7 @@ void GEOM_SERVICE_R::DrawIndexedPrimitive(long minv, long numv, long vrtsize, lo
         RenderService->GetTransform(D3DTS_PROJECTION, mProjection);
         RenderService->GetTransform(D3DTS_VIEW, mView);
 
-        CMatrix mWVP = (mWorld * mView) * mProjection;
+        auto mWVP = (mWorld * mView) * mProjection;
 
         mWVP.Transposition4x4();
 
@@ -516,20 +510,23 @@ void GEOM_SERVICE_R::DrawIndexedPrimitive(long minv, long numv, long vrtsize, lo
         // 0 - World * View * Projection
         // 4 - World
 
-        RenderService->SetVertexShaderConstant(0, &mWVP, 4);
-        RenderService->SetVertexShaderConstant(4, &mWorld, 4);
-        RenderService->GetRenderState(D3DRS_DEPTHBIAS, &oldZBias);
-        RenderService->SetRenderStateFloat(D3DRS_DEPTHBIAS, -0.0001);
-        RenderService->SetRenderStateFloat(D3DRS_SLOPESCALEDEPTHBIAS, 0.0);
+        RenderService->SetVertexShaderConstantF(0, mWVP, 4);
+        RenderService->SetVertexShaderConstantF(4, mWorld, 4);
+
+        RenderService->SetVertexDeclaration(vertexDecl_);
+
+        // RenderService->GetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, &oldZBias);
+        // float SSBias = -0.6f;
+        // RenderService->SetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, *(int*)&SSBias);
     }
 
     // draw animation
-    if (transform_func != 0)
+    if (transform_func != nullptr)
     {
-        VGEOMETRY::ANIMATION_VB *cavb = &avb[CurentVertexBuffer - SHIFT_VALUE];
+        auto *cavb = &avb[CurentVertexBuffer - SHIFT_VALUE];
 
-        IDirect3DVertexBuffer9 *transformed_vb =
-            (IDirect3DVertexBuffer9 *)transform_func(cavb->buff, minv, numv, cavb->nvertices);
+        auto *transformed_vb =
+            static_cast<IDirect3DVertexBuffer9 *>(transform_func(cavb->buff, minv, numv, cavb->nvertices));
         if (!bCaustic)
         {
             RenderService->SetStreamSource(0, transformed_vb, cavb->stride);
@@ -541,7 +538,7 @@ void GEOM_SERVICE_R::DrawIndexedPrimitive(long minv, long numv, long vrtsize, lo
         {
             RenderService->SetStreamSource(0, transformed_vb, cavb->stride);
             RenderService->DrawIndexedPrimitiveNoVShader(D3DPT_TRIANGLELIST, CurentVertexBuffer, 0, CurentIndexBuffer,
-                                                         minv, numv, startidx, numtrg, "vano_caustic");
+                                                         minv, numv, startidx, numtrg, "caustic");
         }
         return;
     }
@@ -551,18 +548,14 @@ void GEOM_SERVICE_R::DrawIndexedPrimitive(long minv, long numv, long vrtsize, lo
             RenderService->DrawBuffer(CurentVertexBuffer, vrtsize, CurentIndexBuffer, minv, numv, startidx, numtrg,
                                       technique);
         else
-        {
             RenderService->DrawIndexedPrimitiveNoVShader(D3DPT_TRIANGLELIST, CurentVertexBuffer, vrtsize,
-                                                         CurentIndexBuffer, minv, numv, startidx, numtrg,
-                                                         "vano_caustic");
-        }
+                                                         CurentIndexBuffer, minv, numv, startidx, numtrg, "caustic");
     }
-    if (bCaustic)
-    {
-        RenderService->SetRenderStateFloat(D3DRS_DEPTHBIAS, -0.0001);
-        RenderService->SetRenderStateFloat(D3DRS_SLOPESCALEDEPTHBIAS, 0.0);
-        // RenderService->SetRenderState(D3DRS_DEPTHBIAS, oldZBias);
-    }
+
+    // if (bCaustic)
+    //{
+    //	RenderService->SetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, oldZBias);
+    //}
 }
 
 GEOS::ID GEOM_SERVICE_R::CreateLight(const GEOS::LIGHT)

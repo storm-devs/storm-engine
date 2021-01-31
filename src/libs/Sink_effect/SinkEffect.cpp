@@ -1,79 +1,69 @@
-#include "SINKEFFECT.h"
-#include "..\SoundService\VSoundService.h"
-#include "CVECTOR.h"
-#include "exs.h"
-#include "messages.h"
+#include "SinkEffect.H"
+#include "../../Shared/messages.h"
+#include "Entity.h"
+#include "core.h"
+#include "ship_base.h"
 #include <stdio.h>
-#include <stdlib.h>
-
-INTERFACE_FUNCTION
-CREATE_CLASS(SINKEFFECT)
 
 //--------------------------------------------------------------------
-SINKEFFECT::SINKEFFECT() : sea(0), renderer(0)
+SINKEFFECT::SINKEFFECT() : renderer(nullptr), sea(nullptr)
 {
 }
 
 //--------------------------------------------------------------------
 SINKEFFECT::~SINKEFFECT()
 {
-    GUARD(SINKEFFECT::~SINKEFFECT)
+    // GUARD(SINKEFFECT::~SINKEFFECT)
 
-    UNGUARD
+    // UNGUARD
 }
 
 //--------------------------------------------------------------------
 bool SINKEFFECT::Init()
 {
-    GUARD(SINKEFFECT::Init)
+    // GUARD(SINKEFFECT::Init)
 
-    ENTITY_ID seaID;
-    _CORE_API->FindClass(&seaID, "sea", 0);
-    sea = (SEA_BASE *)_CORE_API->GetEntityPointer(&seaID);
+    sea = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(EntityManager::GetEntityId("sea")));
 
-    renderer = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
+    renderer = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
 
     InitializeSinks();
 
     return true;
-    UNGUARD
+    // UNGUARD
 }
 
 //--------------------------------------------------------------------
-dword _cdecl SINKEFFECT::ProcessMessage(MESSAGE &message)
+uint64_t SINKEFFECT::ProcessMessage(MESSAGE &message)
 {
-    GUARD(SINKEFFECT::ProcessMessage)
+    // GUARD(SINKEFFECT::ProcessMessage)
 
-    ENTITY_ID shipID;
-    SHIP_BASE *shipBase;
-    long code = message.Long();
-    dword outValue = 0;
+    const auto code = message.Long();
+    const uint32_t outValue = 0;
 
     switch (code)
     {
     case MSG_SHIP_DELETE: {
-        ATTRIBUTES *attrs = message.AttributePointer();
+        auto *const attrs = message.AttributePointer();
         if (attrs)
         {
-            if (_CORE_API->FindClass(&shipID, "ship", 0))
+            const auto &entities = EntityManager::GetEntityIdVector("ship");
+            for (auto ent : entities)
             {
                 /*
-                shipBase = (SHIP_BASE *) _CORE_API->GetEntityPointer(&shipID);
+                shipBase = (SHIP_BASE *) EntityManager::GetEntityPointer(shipID);
                 if (shipBase->GetACharacter() == attrs)
                 {
-                    TryToAddSink(shipBase->GetPos(), shipBase->GetBoxSize().z / 2.0f);
-                    return outValue;
+                  TryToAddSink(shipBase->GetPos(), shipBase->GetBoxsize().z / 2.0f);
+                  return outValue;
                 }*/
 
-                do
+                auto *shipBase = static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(ent));
+                if (shipBase->GetACharacter() == attrs)
                 {
-                    shipBase = (SHIP_BASE *)_CORE_API->GetEntityPointer(&shipID);
-                    if (shipBase->GetACharacter() == attrs)
-                    {
-                        TryToAddSink(shipBase->GetPos(), shipBase->GetBoxSize().z / 2.0f);
-                        return outValue;
-                    }
-                } while (_CORE_API->FindClassNext(&shipID));
+                    TryToAddSink(shipBase->GetPos(), shipBase->GetBoxsize().z / 2.0f);
+                    return outValue;
+                }
             } // if (FindClass)
         }     // if (attrs)
     }         // case
@@ -81,61 +71,61 @@ dword _cdecl SINKEFFECT::ProcessMessage(MESSAGE &message)
     }
 
     return outValue;
-    UNGUARD
+    // UNGUARD
 }
 
 //--------------------------------------------------------------------
-void SINKEFFECT::Realize(dword _dTime)
+void SINKEFFECT::Realize(uint32_t _dTime)
 {
-    GUARD(SINKEFFECT::Realize)
+    // GUARD(SINKEFFECT::Realize)
 
-    for (int i = 0; i < MAX_SINKS; ++i)
+    for (auto i = 0; i < sink_effect::MAX_SINKS; ++i)
         sinks[i].Realize(_dTime);
 
-    UNGUARD
+    // UNGUARD
 }
 
 //--------------------------------------------------------------------
-void SINKEFFECT::Execute(dword _dTime)
+void SINKEFFECT::Execute(uint32_t _dTime)
 {
-    GUARD(SINKEFFECT::Execute)
+    // GUARD(SINKEFFECT::Execute)
     /*
-        if (GetAsyncKeyState('X'))
+      if (GetAsyncKeyState('X'))
+      {
+        if (renderer && sea)
         {
-            if (renderer && sea)
-            {
-                static CVECTOR pos, ang, nose, head;
-                static CMatrix view;
-                //CVECTOR dir(randCentered(2.0f), -1.0f, randCentered(2.0f));
-                CVECTOR dir(0.0f, -1.0f, 0.0f);
+          static CVECTOR pos, ang, nose, head;
+          static CMatrix view;
+          //CVECTOR dir(randCentered(2.0f), -1.0f, randCentered(2.0f));
+          CVECTOR dir(0.0f, -1.0f, 0.0f);
 
-                renderer->GetTransform(D3DTS_VIEW, view);
-                view.Transposition();
-                nose = view.Vz();
-                //head = view.Vy();
-                pos = view.Pos();
+          renderer->GetTransform(D3DTS_VIEW, view);
+          view.Transposition();
+          nose = view.Vz();
+          //head = view.Vy();
+          pos = view.Pos();
 
-                pos += 10.0f * !nose;
-                pos.y = sea->WaveXZ(pos.x, pos.y);
-                TSink *sinks= TryToAddSink(pos, 10.0f);
-            }
+          pos += 10.0f * !nose;
+          pos.y = sea->WaveXZ(pos.x, pos.y);
+          TSink *sinks= TryToAddSink(pos, 10.0f);
         }
+      }
     */
-    for (int i = 0; i < MAX_SINKS; ++i)
+    for (auto i = 0; i < sink_effect::MAX_SINKS; ++i)
         sinks[i].Process(_dTime);
 
-    UNGUARD
+    // UNGUARD
 }
 
 //--------------------------------------------------------------------
 void SINKEFFECT::InitializeSinks()
 {
-    INIFILE *psIni = _CORE_API->fio->OpenIniFile("resource\\ini\\particles.ini");
+    auto *const psIni = fio->OpenIniFile("resource\\ini\\particles.ini");
 
-    for (int i = 0; i < MAX_SINKS; ++i)
+    for (auto i = 0; i < sink_effect::MAX_SINKS; ++i)
     {
         sinks[i].Release();
-        sinks[i].Initialize(psIni, null, sea, renderer);
+        sinks[i].Initialize(psIni, nullptr, sea, renderer);
     }
 
     delete psIni;
@@ -144,7 +134,7 @@ void SINKEFFECT::InitializeSinks()
 //--------------------------------------------------------------------
 TSink *SINKEFFECT::TryToAddSink(const CVECTOR &_pos, float _r)
 {
-    for (int i = 0; i < MAX_SINKS; ++i)
+    for (auto i = 0; i < sink_effect::MAX_SINKS; ++i)
     {
         if (!sinks[i].Enabled())
         {
@@ -153,7 +143,7 @@ TSink *SINKEFFECT::TryToAddSink(const CVECTOR &_pos, float _r)
         }
     }
 
-    return 0;
+    return nullptr;
 }
 
 //--------------------------------------------------------------------

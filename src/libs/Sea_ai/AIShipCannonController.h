@@ -5,6 +5,7 @@
 
 class AIShip;
 class VAI_INNEROBJ;
+
 // ============================================================================
 // master class AIShipCannonController
 // Contain base virtual functions
@@ -25,7 +26,7 @@ class AIShipCannonController
   private:
     struct AISHIP_BORT
     {
-        string sName;                   // bort name(for compare with label name)
+        std::string sName;              // bort name(for compare with label name)
         float fFireZone;                // bort fire angle
         float fFireAngMin, fFireAngMax; // bort height fire angle
         float fFireDir;                 // bort fire direction
@@ -33,7 +34,7 @@ class AIShipCannonController
         float fChargePercent;           // Recharge percent
         float fCosFireZone;
 
-        dword dwNumDamagedCannons;
+        uint32_t dwNumDamagedCannons;
 
         // each frame parameters
         float fSpeedV0;         // current fire speed
@@ -41,79 +42,80 @@ class AIShipCannonController
         // CVECTOR				vAngleVectors[2];		// fire cone (2d(x,z))
         CVECTOR vDirection;
 
-        array<AICannon> aCannons; // cannons container for this bort
+        std::vector<AICannon> aCannons; // cannons container for this bort
 
         void ClearCharge()
         {
             fChargePercent = 0.0f;
         };
-        bool isCharged()
+        bool isCharged() const
         {
             return fChargePercent >= 1.0f;
         };
-        bool isBortDamaged()
+        bool isBortDamaged() const
         {
-            return dwNumDamagedCannons == aCannons.Size();
+            return dwNumDamagedCannons == aCannons.size();
         }
-        AISHIP_BORT() : aCannons(_FL_, 8), sName(8)
+
+        AISHIP_BORT()
         {
             ClearCharge();
             fOurBortFireHeight = 0.0f;
         };
-        string operator==(const char *pStr)
+
+        int operator==(const char *pStr) const
         {
             Assert(pStr && pStr[0]);
-            return (stricmp(sName.GetBuffer(), pStr) == 0);
+            return (_stricmp(sName.c_str(), pStr) == 0);
         }
     };
 
     // borts container
-    array<AISHIP_BORT> aShipBorts;
+    std::vector<AISHIP_BORT> aShipBorts;
 
     // update borts parameters
     bool UpdateParameters();
 
     bool ScanShipForCannons();
 
-    bool Fire2Position(dword dwBort, CVECTOR &vFirePos, float fFireHeight);
+    bool Fire2Position(uint32_t dwBort, const CVECTOR &vFirePos, float fFireHeight);
 
     float GetSpeedV0();
 
   public:
-    dword GetCannonsNum();
+    uint32_t GetCannonsNum();
 
     float GetFireDistance(bool bMaxFireDistance);
 
     // bort section
     float GetBortHeightAngle(long iBortIndex);
-    bool isCanFireBort(dword dwBort, CVECTOR &vFirePos, float *pfZapasDistance = null);
-    dword GetFirstFireBort(CVECTOR &vFirePos, float *pfZapasDistance = null);
-    bool isHaveEnoughtBallsForBort(dword dwBortIdx);
-    dword GetNextFireBort(dword dwPrevBort, CVECTOR &vFirePos, float *pfZapasDistance = null);
-    CVECTOR GetBortDirection(dword dwBort);
-    dword GetBestFireBortOnlyDistance(CVECTOR vFirePos, float fZapasDistance);
-    CVECTOR GetFirePos(CVECTOR &vFireDir);
-    CVECTOR GetFirePos(CVECTOR &vFireDir, float fDistance);
-    dword GetBortIntactCannonsNum(dword dwBortIdx);
-    dword GetBortDisabledCannonsNum(
-        dword dwBortIdx); // ugeen 01.12.10 - пересчет отсутствующих орудий - нужно для орудийного рэндома
+    bool isCanFireBort(uint32_t dwBort, const CVECTOR &vFirePos, float *pfZapasDistance = nullptr);
+    uint32_t GetFirstFireBort(const CVECTOR &vFirePos, float *pfZapasDistance = nullptr);
+    bool isHaveEnoughtBallsForBort(uint32_t dwBortIdx);
+    uint32_t GetNextFireBort(uint32_t dwPrevBort, const CVECTOR &vFirePos, float *pfZapasDistance = nullptr);
+    CVECTOR GetBortDirection(uint32_t dwBort);
+    uint32_t GetBestFireBortOnlyDistance(CVECTOR vFirePos, float fZapasDistance);
+    CVECTOR GetFirePos(const CVECTOR &vFireDir);
+    CVECTOR GetFirePos(const CVECTOR &vFireDir, float fDistance);
+    uint32_t GetBortIntactCannonsNum(uint32_t dwBortIdx);
+    uint32_t GetBortDisabledCannonsNum(uint32_t dwBortIdx);
 
     // fire test
-    bool isCanFirePos(CVECTOR &vFirePos); // is we can fire to position
-    bool isCanFire(AIShip *pEnemy);       // is we can fire to enemy ship
-    bool isCanFire(CVECTOR &vCamDir);     // is we can fire to camera direction
+    bool isCanFirePos(const CVECTOR &vFirePos); // is we can fire to position
+    bool isCanFire(AIShip *pEnemy);             // is we can fire to enemy ship
+    bool isCanFire(const CVECTOR &vCamDir);     // is we can fire to camera direction
 
     // fire section
-    bool Fire(CVECTOR &vFirePos);                       // fire to position
-    bool Fire(AIShip *pEnemy);                          // fire to ship
-    bool Fire(CVECTOR &vFireCamPos, CVECTOR &vFireDir); // manual fire
+    bool Fire(const CVECTOR &vFirePos);                             // fire to position
+    bool Fire(AIShip *pEnemy);                                      // fire to ship
+    bool Fire(const CVECTOR &vFireCamPos, const CVECTOR &vFireDir); // manual fire
 
     // reload section
     void Unload(); // unload cannons
     void Reload(); // set flag to reload
 
     // temp
-    void AddTrg(CVECTOR *pVerts, dword dwColor);
+    void AddTrg(CVECTOR *pVerts, uint32_t dwColor);
     // temp
 
     // Cannon boom check
@@ -131,7 +133,7 @@ class AIShipCannonController
     {
         pOurAIShip = pShip;
     }
-    AIShip *GetAIShip()
+    AIShip *GetAIShip() const
     {
         return pOurAIShip;
     }

@@ -19,10 +19,14 @@ class AICharacter : public Character
     enum AICommand
     {
         aicmd_unknow = 0,
-        aicmd_none,      //Нет команды, персонаж контролируется извне
-        aicmd_stay,      //Стоять на месте
-        aicmd_gotopoint, //Идти в точку
-        aicmd_escape,    //Уходить от точки
+        aicmd_none,
+        //Нет команды, персонаж контролируется извне
+        aicmd_stay,
+        //Стоять на месте
+        aicmd_gotopoint,
+        //Идти в точку
+        aicmd_escape,
+        //Уходить от точки
         aicmd_max
     };
 
@@ -47,9 +51,9 @@ class AICharacter : public Character
         //Флаги
         struct
         {
-            dword cnt : 8;    //Счётчик повторений
-            dword isWait : 1; //Находимся в ожидании
-            dword isBusy : 1; //Проверять на занятость точку
+            uint32_t cnt : 8;    //Счётчик повторений
+            uint32_t isWait : 1; //Находимся в ожидании
+            uint32_t isBusy : 1; //Проверять на занятость точку
         };
     };
 
@@ -65,13 +69,13 @@ class AICharacter : public Character
     //--------------------------------------------------------------------------------------------
   public:
     //Перемещаем персонажа в желаемую позицию
-    void Move(float dltTime);
+    void Move(float dltTime) override;
     //Провести дополнительные расчёты
-    void Calculate(float dltTime);
+    void Calculate(float dltTime) override;
     //Обновить позицию персонажа
-    void Update(float dltTime);
+    void Update(float dltTime) override;
     //Отметить перемещение персонажа
-    void CharacterTeleport();
+    void CharacterTeleport() override;
 
     //--------------------------------------------------------------------------------------------
     // AICharacter
@@ -114,7 +118,7 @@ class AICharacter : public Character
     void CmdUpdateEscape(float dltTime);
 
     //Найти индекс нода для данной координаты
-    long FindNodeIndex(const CVECTOR &pos, float *hy = null);
+    long FindNodeIndex(const CVECTOR &pos, float *hy = nullptr);
     //Найти направление куда идти (ориентация на местности)
     bool FindDirectional();
     //Найти расталкивающие силы

@@ -1,22 +1,17 @@
 #ifndef EMITTER_INTERFACE
 #define EMITTER_INTERFACE
 
-#include "../../common_h/exs.h"
-#include "../../common_h/math3d.h"
-#include "../../common_h/templates.h"
 #include "../system/DataSource/FieldList.h"
-#include <stdarg.h>
-#include <stdio.h>
-#include <string.h>
+#include "math3d/Matrix.h"
 
 class IParticleSystem;
 
 class IEmitter
 {
-
   public:
     // Конструктор / деструктор
     IEmitter(){};
+
     virtual ~IEmitter(){};
 
     //Родить партиклы, используеться при движении привязанного эмиттера
@@ -27,12 +22,12 @@ class IEmitter
 
     virtual void Restart() = 0;
 
-    virtual DWORD GetParticleCount() = 0;
+    virtual uint32_t GetParticleCount() = 0;
 
     virtual bool IsStoped() = 0;
 
-    virtual void SetTransform(const CMatrix &matWorld) = 0;
-    virtual void Teleport(const CMatrix &matWorld) = 0;
+    virtual void SetTransform(const Matrix &matWorld) = 0;
+    virtual void Teleport(const Matrix &matWorld) = 0;
 
     virtual const char *GetName() = 0;
 
@@ -45,9 +40,9 @@ class IEmitter
     virtual float GetTime() = 0;
     virtual void SetTime(float Time) = 0;
 
-    virtual DWORD GetParticleTypesCount() = 0;
-    virtual FieldList *GetParticleTypeDataByIndex(DWORD Index) = 0;
-    virtual ParticleType GetParticleTypeByIndex(DWORD Index) = 0;
+    virtual uint32_t GetParticleTypesCount() = 0;
+    virtual FieldList *GetParticleTypeDataByIndex(uint32_t Index) = 0;
+    virtual ParticleType GetParticleTypeByIndex(uint32_t Index) = 0;
 
     virtual FieldList *GetData() = 0;
 
@@ -56,8 +51,8 @@ class IEmitter
 
     //-1 если не нашли, иначе индекс
     virtual int GetParticleTypeIndex(FieldList *pFields) = 0;
-    virtual bool SetParticleTypeEnable(bool bVisible, DWORD Index) = 0;
-    virtual bool GetParticleTypeEnable(DWORD Index) = 0;
+    virtual bool SetParticleTypeEnable(bool bVisible, uint32_t Index) = 0;
+    virtual bool GetParticleTypeEnable(uint32_t Index) = 0;
 
     virtual void Editor_UpdateCachedData() = 0;
 

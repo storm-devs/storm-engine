@@ -9,12 +9,16 @@
 //============================================================================================
 
 #include "Location.h"
+
+#include "core.h"
+
 #include "Character.h"
 #include "Grass.h"
 #include "Lights.h"
 
-#include "cvector4.h"
-#include "model.h"
+#include "../../Shared/messages.h"
+#include "CVector4.h"
+#include "defines.h"
 
 float fCausticScale, fCausticDelta, fFogDensity, fCausticDistance;
 CVECTOR4 v4CausticColor;
@@ -31,15 +35,15 @@ Location::Location()
 {
     numLocators = 0;
     maxLocators = 16;
-    locators = NEW LocatorArray *[maxLocators];
+    locators.resize(maxLocators);
     patchJump = -1;
     isDebugView = true;
-    sphereVertex = null;
+    sphereVertex = nullptr;
     sphereNumTrgs = 0;
     lastLoadStaticModel = -1;
     srand(GetTickCount() | 1);
     isPause = false;
-    lights = null;
+    lights = nullptr;
     curMessage = 0;
     for (long i = 0; i < sizeof(message) / sizeof(DmgMessage); i++)
         message[i].alpha = 0.0f;
@@ -54,61 +58,54 @@ Location::~Location()
 {
     if (!AttributesPointer)
         return;
-    ATTRIBUTES *atr = AttributesPointer->FindAClass(AttributesPointer, "locators");
+    auto *const atr = AttributesPointer->FindAClass(AttributesPointer, "locators");
     if (atr)
         AttributesPointer->DeleteAttributeClassX(atr);
-#ifndef _XBOX
-    _CORE_API->DeleteEntity(cubeShotMaker);
-    _CORE_API->DeleteEntity(lighter);
-#endif
-    _CORE_API->DeleteEntity(lizards);
-    _CORE_API->DeleteEntity(rats);
-    _CORE_API->DeleteEntity(crabs);
-    _CORE_API->DeleteEntity(eagle);
-    _CORE_API->DeleteEntity(grass);
-    _CORE_API->DeleteEntity(lightsid);
-    _CORE_API->DeleteEntity(loceffectsid);
-    api->DeleteEntity(blood);
+    // EntityManager::EraseEntity(cubeShotMaker);
+    EntityManager::EraseEntity(lighter);
+    EntityManager::EraseEntity(lizards);
+    EntityManager::EraseEntity(rats);
+    EntityManager::EraseEntity(crabs);
+    EntityManager::EraseEntity(eagle);
+    EntityManager::EraseEntity(grass);
+    EntityManager::EraseEntity(lightsid);
+    EntityManager::EraseEntity(loceffectsid);
+    EntityManager::EraseEntity(blood);
 
     for (long i = 0; i < numLocators; i++)
         delete locators[i];
-    delete locators;
-    if (sphereVertex)
-        delete sphereVertex;
-    sphereVertex = null;
+    delete sphereVertex;
 }
 
 //Инициализация
 bool Location::Init()
 {
-    // DX8 render
-    rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
+    // DX9 render
+    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!rs)
-        SE_THROW_MSG("No service: dx8render");
+        throw std::exception("No service: dx9render");
     rs->SetRenderState(D3DRS_LIGHTING, FALSE);
 
-    _CORE_API->LayerCreate("execute", true, false);
-    _CORE_API->LayerSetFlags("execute", LRFLAG_EXECUTE);
-    _CORE_API->LayerAdd("execute", GetID(), 10);
+    // core.LayerCreate("execute", true, false);
+    EntityManager::SetLayerType(EXECUTE, EntityManager::Layer::Type::execute);
+    EntityManager::AddToLayer(EXECUTE, GetId(), 10);
 
-    _CORE_API->LayerCreate("realize", true, false);
-    _CORE_API->LayerSetFlags("realize", LRFLAG_REALIZE);
-    _CORE_API->LayerAdd("realize", GetID(), 100000);
+    // core.LayerCreate("realize", true, false);
+    EntityManager::SetLayerType(REALIZE, EntityManager::Layer::Type::realize);
+    EntityManager::AddToLayer(REALIZE, GetId(), 100000);
 
-    _CORE_API->CreateEntity(&lightsid, "Lights");
-    _CORE_API->CreateEntity(&loceffectsid, "LocationEffects");
+    lightsid = EntityManager::CreateEntity("Lights");
+    loceffectsid = EntityManager::CreateEntity("LocationEffects");
 
     enemyBarsTexture = rs->TextureCreate("LocEfx\\state_bars.tga");
 
-#ifndef _XBOX
-    _CORE_API->CreateEntity(&lighter, "Lighter");
-    _CORE_API->CreateEntity(&cubeShotMaker, "CubeShotMakerCam");
-#endif
+    lighter = EntityManager::CreateEntity("Lighter");
+    // cubeShotMaker = EntityManager::CreateEntity("CubeShotMakerCam");
     return true;
 }
 
 //Исполнение
-void Location::Execute(dword delta_time)
+void Location::Execute(uint32_t delta_time)
 {
     bSwimming = AttributesPointer->GetAttributeAsDword("swimming", 1) != 0;
 
@@ -116,7 +113,7 @@ void Location::Execute(dword delta_time)
     if (!isDebugView)
         Update(delta_time);
     //Обсчёт сообщений
-    float dltTime = delta_time * 0.001f;
+    const auto dltTime = delta_time * 0.001f;
     for (long i = 0; i < sizeof(message) / sizeof(DmgMessage); i++)
     {
         if (message[i].alpha <= 0.0f)
@@ -125,7 +122,7 @@ void Location::Execute(dword delta_time)
         message[i].alpha -= dltTime * 0.4f;
     }
     //Обновление данных для травы
-    Grass *grs = (Grass *)api->GetEntityPointer(&grass);
+    auto *grs = static_cast<Grass *>(EntityManager::GetEntityPointer(grass));
     if (grs)
     {
         for (long i = 0; i < supervisor.numCharacters; i++)
@@ -140,14 +137,14 @@ void Location::Execute(dword delta_time)
     locationTimeUpdate += dltTime;
     if (locationTimeUpdate > 1.0f)
     {
-        api->Event("LocationTimeUpdate", "f", locationTimeUpdate);
+        core.Event("LocationTimeUpdate", "f", locationTimeUpdate);
         locationTimeUpdate = 0.0f;
     }
 }
 
-void Location::Realize(dword delta_time)
+void Location::Realize(uint32_t delta_time)
 {
-    float fDeltaTime = float(delta_time) * 0.001f;
+    const auto fDeltaTime = static_cast<float>(delta_time) * 0.001f;
 
     fCausticFrame += fDeltaTime * fCausticSpeed;
 
@@ -155,8 +152,7 @@ void Location::Realize(dword delta_time)
         fCausticFrame -= 32.0f;
 
     //Отрисовка локаторов
-    long i = 0;
-    for (i = 0; i < numLocators; i++)
+    for (long i = 0; i < numLocators; i++)
         if (locators[i]->isVisible)
             DrawLocators(locators[i]);
     if (IsDebugView())
@@ -164,7 +160,7 @@ void Location::Realize(dword delta_time)
         //Отрисовка патча
         ptc.DebugDraw(rs, delta_time * 0.001f);
         //Информация о локации
-        const char *c = null;
+        const char *c = nullptr;
         if (AttributesPointer)
         {
             c = AttributesPointer->GetAttribute("id");
@@ -184,7 +180,7 @@ void Location::Realize(dword delta_time)
     if (isDebugView)
         Update(delta_time);
     //Отрисовка сообщений
-    i = curMessage;
+    auto i = curMessage;
     for (long c = 0; c < sizeof(message) / sizeof(DmgMessage); c++, i--)
     {
         if (i < 0)
@@ -196,20 +192,19 @@ void Location::Realize(dword delta_time)
         Print(message[i].p, 10.0f, 0, message[i].alpha, message[i].c, 0.8f, "%.0f", message[i].hit);
     }
     //Отрисовка полосок над персонажами
-    if (bDrawBars)
-        DrawEnemyBars();
+    DrawEnemyBars();
     enemyBarsCount = 0;
 }
 
-void Location::Update(dword delta_time)
+void Location::Update(uint32_t delta_time)
 {
-    lights = (Lights *)_CORE_API->GetEntityPointer(&lightsid);
+    lights = static_cast<Lights *>(EntityManager::GetEntityPointer(lightsid));
 
-    const dword max_delta_time = 500;
-    const float maxDltTime = 0.1f;
+    const uint32_t max_delta_time = 500;
+    const auto maxDltTime = 0.1f;
     if (delta_time > max_delta_time)
         delta_time = max_delta_time;
-    float dltTime = delta_time * 0.001f;
+    auto dltTime = delta_time * 0.001f;
     //Эффекты моделей
     model.Update(dltTime);
     //Персонажи
@@ -227,7 +222,7 @@ void Location::Update(dword delta_time)
 }
 
 //Сообщения
-dword _cdecl Location::ProcessMessage(MESSAGE &message)
+uint64_t Location::ProcessMessage(MESSAGE &message)
 {
     long i;
     float u0, v0, u1, v1;
@@ -243,7 +238,7 @@ dword _cdecl Location::ProcessMessage(MESSAGE &message)
         message.String(sizeof(tech), tech);
         tech[sizeof(tech) - 1] = 0;
         level = message.Long();
-        long dynamicLightsOn = message.Long();
+        const auto dynamicLightsOn = message.Long();
         lastLoadStaticModel = LoadStaticModel(name, tech, level, dynamicLightsOn == 1);
         return lastLoadStaticModel >= 0;
     }
@@ -252,7 +247,7 @@ dword _cdecl Location::ProcessMessage(MESSAGE &message)
             return 0;
         if (!model.IsValidateIndex(lastLoadStaticModel))
             return 0;
-        if (!_CORE_API->ValidateEntity(&model.ID(lastLoadStaticModel)))
+        if (!EntityManager::GetEntityPointer(model.ID(lastLoadStaticModel)))
             return 0;
         message.ScriptVariablePointer()->Set(model.ID(lastLoadStaticModel));
         return 1;
@@ -297,7 +292,7 @@ dword _cdecl Location::ProcessMessage(MESSAGE &message)
     case MSG_LOCATION_MODEL_LAMPS:
         if (lastLoadStaticModel < 0)
             return 0;
-        lights = (Lights *)_CORE_API->GetEntityPointer(&lightsid);
+        lights = static_cast<Lights *>(EntityManager::GetEntityPointer(lightsid));
         if (!lights)
             return 0;
         return lights->AddLampModel(model.ID(lastLoadStaticModel));
@@ -328,9 +323,7 @@ dword _cdecl Location::ProcessMessage(MESSAGE &message)
         model.modelspath[sizeof(model.modelspath) - 1] = 0;
         model.UpdateModelsPath();
 
-#ifndef _XBOX
-        _CORE_API->Send_Message(lighter, "ss", "ModelsPath", model.modelspath);
-#endif
+        core.Send_Message(lighter, "ss", "ModelsPath", model.modelspath);
 
         return 1;
     case MSG_LOCATION_TEXTURESPATH:
@@ -342,10 +335,7 @@ dword _cdecl Location::ProcessMessage(MESSAGE &message)
         message.String(sizeof(model.lightpath), model.lightpath);
         model.lightpath[sizeof(model.lightpath) - 1] = 0;
         model.UpdateLightPath();
-
-#ifndef _XBOX
-        _CORE_API->Send_Message(lighter, "ss", "LightPath", model.lightpath);
-#endif
+        core.Send_Message(lighter, "ss", "LightPath", model.lightpath);
 
         return 1;
     case MSG_LOCATION_SHADOWPATH:
@@ -411,7 +401,7 @@ dword _cdecl Location::ProcessMessage(MESSAGE &message)
         u0 = message.Float(); // x
         v0 = message.Float(); // y
         u1 = message.Float(); // z
-        return supervisor.CheckPosition(u0, v0, u1, null);
+        return supervisor.CheckPosition(u0, v0, u1, nullptr);
     case MSG_LOCATION_SETCHRPOSITIONS:
         supervisor.SetSavePositions();
         break;
@@ -422,7 +412,7 @@ dword _cdecl Location::ProcessMessage(MESSAGE &message)
         supervisor.DelSavePositions(false);
         break;
     case MSG_LOCATION_ADD_LIGHT:
-        lights = (Lights *)_CORE_API->GetEntityPointer(&lightsid);
+        lights = static_cast<Lights *>(EntityManager::GetEntityPointer(lightsid));
         if (!lights)
             return false;
         message.String(sizeof(name), name);
@@ -450,46 +440,46 @@ dword _cdecl Location::ProcessMessage(MESSAGE &message)
 LocatorArray *Location::FindLocatorsGroup(const char *gName)
 {
     if (!gName || !gName[0])
-        return null;
-    long hash = LocatorArray::CalcHashString(gName);
+        return nullptr;
+    const auto hash = LocatorArray::CalcHashString(gName);
     for (long i = 0; i < numLocators; i++)
     {
         if (locators[i]->CompareGroup(gName, hash))
             return locators[i];
     }
-    return null;
+    return nullptr;
 }
 
 long Location::LoadStaticModel(const char *modelName, const char *tech, long level, bool useDynamicLights)
 {
-    lights = (Lights *)_CORE_API->GetEntityPointer(&lightsid);
-    long im = model.CreateModel(modelName, tech, level, true, useDynamicLights ? GetLights() : 0);
+    lights = static_cast<Lights *>(EntityManager::GetEntityPointer(lightsid));
+    const auto im = model.CreateModel(modelName, tech, level, true, useDynamicLights ? GetLights() : nullptr);
     if (im < 0)
         return -1;
     //Указатель на геометрию
-    MODEL *mdl = model[im];
+    auto *mdl = model[im];
     if (!mdl)
     {
         model.DeleteModel(im);
         return -1;
     }
-    NODE *node = mdl->GetNode(0);
+    auto *const node = mdl->GetNode(0);
     if (!node)
     {
         model.DeleteModel(im);
         return -1;
     }
-    GEOS *g = node->geo;
+    auto *const g = node->geo;
     if (!g)
     {
         model.DeleteModel(im);
         return -1;
     }
     //Добавим модельку в специальные слои
-    _CORE_API->LayerAdd("shadow", mdl->GetID(), 10);
-    _CORE_API->LayerAdd("sun_trace", mdl->GetID(), 10);
-    api->LayerAdd("blood", mdl->GetID(), 100);
-    api->LayerAdd("rain_drops", mdl->GetID(), 100);
+    EntityManager::AddToLayer(SHADOW, mdl->GetId(), 10);
+    EntityManager::AddToLayer(SUN_TRACE, mdl->GetId(), 10);
+    EntityManager::AddToLayer(BLOOD, mdl->GetId(), 100);
+    EntityManager::AddToLayer(RAIN_DROPS, mdl->GetId(), 100);
     //Зачитываем все локаторы
     GEOS::INFO ginfo;
     GEOS::LABEL label;
@@ -499,8 +489,8 @@ long Location::LoadStaticModel(const char *modelName, const char *tech, long lev
         g->GetLabel(i, label);
         if (!label.group_name || !label.group_name[0])
             continue;
-        long hash = LocatorArray::CalcHashString(label.group_name);
-        long j = 0;
+        const auto hash = LocatorArray::CalcHashString(label.group_name);
+        long j;
         for (j = 0; j < numLocators; j++)
         {
             if (locators[j]->CompareGroup(label.group_name, hash))
@@ -511,25 +501,23 @@ long Location::LoadStaticModel(const char *modelName, const char *tech, long lev
             if (numLocators == maxLocators)
             {
                 maxLocators += 16;
-                locators = (LocatorArray **)RESIZE(locators, maxLocators * sizeof(LocatorArray *));
+                locators.resize(maxLocators);
             }
             numLocators++;
-            locators[j] = NEW LocatorArray(label.group_name);
+            locators[j] = new LocatorArray(label.group_name);
         }
-        long locIndex = locators[j]->FindByName(label.name);
+        const auto locIndex = locators[j]->FindByName(label.name);
         if (locIndex < 0)
         {
-            CMatrix &mtxx = *((CMatrix *)label.m);
-#ifndef _XBOX
+            auto &mtxx = *((CMatrix *)label.m);
             for (long me = 0; me < 16; me++)
                 if (_isnan(mtxx.matrix[me]))
                 {
-                    api->Trace("Location: locator %s::%s in position have NaN value, reset it!", label.group_name,
+                    core.Trace("Location: locator %s::%s in position have NaN value, reset it!", label.group_name,
                                label.name);
                     mtxx.SetIdentity();
                     break;
                 }
-#endif
             locators[j]->AddLocator(mtxx, label.name);
         }
         else
@@ -538,9 +526,7 @@ long Location::LoadStaticModel(const char *modelName, const char *tech, long lev
         }
     }
 
-#ifndef _XBOX
-    _CORE_API->Send_Message(lighter, "ssi", "AddModel", modelName, mdl->GetID());
-#endif
+    core.Send_Message(lighter, "ssi", "AddModel", modelName, mdl->GetId());
 
     return im;
 }
@@ -549,76 +535,74 @@ bool Location::LoadCharacterPatch(const char *ptcName)
 {
     //Формируем путь до файла
     char path[512];
-    strcpy(path, "resource\\models\\");
-    strcat(path, model.modelspath);
-    strcat(path, ptcName);
-    strcat(path, ".ptc");
+    strcpy_s(path, "resource\\models\\");
+    strcat_s(path, model.modelspath);
+    strcat_s(path, ptcName);
+    strcat_s(path, ".ptc");
     //Загружаем патч
-    bool result = ptc.Load(path);
+    const auto result = ptc.Load(path);
     if (!result)
-        _CORE_API->Trace("Can't loaded patch data file %s.ptc for npc.", ptcName);
+        core.Trace("Can't loaded patch data file %s.ptc for npc.", ptcName);
     return result;
 }
 
-bool __declspec(dllexport) __cdecl Location::LoadJumpPatch(const char *modelName)
+bool Location::LoadJumpPatch(const char *modelName)
 {
     if (patchJump >= 0)
         model.DeleteModel(patchJump);
     patchJump = -1;
     if (!modelName || !modelName[0])
         return false;
-    patchJump = model.CreateModel(modelName, "", 0, false, 0);
+    patchJump = model.CreateModel(modelName, "", 0, false, nullptr);
     return patchJump >= 0;
 }
 
-bool __declspec(dllexport) __cdecl Location::LoadGrass(const char *modelName, const char *texture)
+bool Location::LoadGrass(const char *modelName, const char *texture)
 {
-    _CORE_API->DeleteEntity(grass);
+    EntityManager::EraseEntity(grass);
     if (!modelName || !modelName[0])
         return true;
-    _CORE_API->CreateEntity(&grass, "Grass");
-    Grass *grs = (Grass *)_CORE_API->GetEntityPointer(&grass);
+    grass = EntityManager::CreateEntity("Grass");
+    auto *grs = static_cast<Grass *>(EntityManager::GetEntityPointer(grass));
     if (!grs)
         return false;
     if (texture && texture[0])
         grs->SetTexture(texture);
     char nm[512];
-    strcpy(nm, "resource\\models\\");
-    strcat(nm, model.modelspath);
-    strcat(nm, modelName);
-    strcat(nm, ".grs");
+    strcpy_s(nm, "resource\\models\\");
+    strcat_s(nm, model.modelspath);
+    strcat_s(nm, modelName);
+    strcat_s(nm, ".grs");
     long ll = strlen(nm);
     if (grs->LoadData(nm))
         return true;
-    _CORE_API->Trace("Can't load grass data file: %s", nm);
-    _CORE_API->DeleteEntity(grass);
+    core.Trace("Can't load grass data file: %s", nm);
+    EntityManager::EraseEntity(grass);
     return false;
 }
 
 bool Location::MessageEx(const char *name, MESSAGE &message)
 {
-    if (stricmp(name, "DelAllLights") == 0)
+    if (_stricmp(name, "DelAllLights") == 0)
     {
         lights->DelAllLights();
     }
-    else if (stricmp(name, "AddFlys") == 0)
+    else if (_stricmp(name, "AddFlys") == 0)
     {
-        ENTITY_ID effects;
-        _CORE_API->FindClass(&effects, "LocationEffects", 0);
-        float x = message.Float();
-        float y = message.Float();
-        float z = message.Float();
-        api->Send_Message(effects, "sfff", "AddFly", x, y, z);
+        const auto effects = EntityManager::GetEntityId("LocationEffects");
+        const auto x = message.Float();
+        const auto y = message.Float();
+        const auto z = message.Float();
+        core.Send_Message(effects, "sfff", "AddFly", x, y, z);
         return true;
     }
-    else if (stricmp(name, "DelFlys") == 0)
+    else if (_stricmp(name, "DelFlys") == 0)
     {
-        ENTITY_ID effects;
-        _CORE_API->FindClass(&effects, "LocationEffects", 0);
-        api->Send_Message(effects, "s", "DelFlys");
+        const auto effects = EntityManager::GetEntityId("LocationEffects");
+        core.Send_Message(effects, "s", "DelFlys");
         return true;
     }
-    else if (stricmp(name, "GetPatchMiddlePos") == 0)
+    else if (_stricmp(name, "GetPatchMiddlePos") == 0)
     {
         VDATA *vx = message.ScriptVariablePointer();
         if (!vx)
@@ -634,102 +618,101 @@ bool Location::MessageEx(const char *name, MESSAGE &message)
         vz->Set(ptc.middle.z);
         return true;
     }
-    else if (stricmp(name, "AddEagle") == 0)
+    else if (_stricmp(name, "AddEagle") == 0)
     {
-        _CORE_API->CreateEntity(&eagle, "LocEagle");
+        eagle = EntityManager::CreateEntity("LocEagle");
         return true;
     }
-    else if (stricmp(name, "AddLizards") == 0)
+    else if (_stricmp(name, "AddLizards") == 0)
     {
-        _CORE_API->CreateEntity(&lizards, "Lizards");
+        lizards = EntityManager::CreateEntity("Lizards");
         return true;
     }
-    else if (stricmp(name, "AddRats") == 0)
+    else if (_stricmp(name, "AddRats") == 0)
     {
-        _CORE_API->CreateEntity(&rats, "LocRats");
-        if (!_CORE_API->Send_Message(rats, "l", message.Long()))
+        rats = EntityManager::CreateEntity("LocRats");
+        if (!core.Send_Message(rats, "l", message.Long()))
         {
-            _CORE_API->DeleteEntity(rats);
+            EntityManager::EraseEntity(rats);
             return false;
         }
         return true;
     }
-    else if (stricmp(name, "AddCrabs") == 0)
+    else if (_stricmp(name, "AddCrabs") == 0)
     {
-        _CORE_API->CreateEntity(&crabs, "LocCrabs");
-
-        if (!_CORE_API->Send_Message(crabs, "l", message.Long()))
+        crabs = EntityManager::CreateEntity("LocCrabs");
+        if (!core.Send_Message(crabs, "l", message.Long()))
         {
-            _CORE_API->DeleteEntity(crabs);
+            EntityManager::EraseEntity(crabs);
             return false;
         }
 
         return true;
     }
-    else if (stricmp(name, "AddBlood") == 0)
+    else if (_stricmp(name, "AddBlood") == 0)
     {
-        if (!api->ValidateEntity(&blood))
+        if (!EntityManager::GetEntityPointer(blood))
         {
-            api->CreateEntity(&blood, "Blood");
-            api->LayerAdd("execute", blood, 65540);
-            api->LayerAdd("realize", blood, 65540);
+            blood = EntityManager::CreateEntity("Blood");
+            EntityManager::AddToLayer(EXECUTE, blood, 65540);
+            EntityManager::AddToLayer(REALIZE, blood, 65540);
         }
         CVECTOR vPos;
         vPos.x = message.Float();
         vPos.y = message.Float();
         vPos.z = message.Float();
-        api->Send_Message(blood, "lfff", 2, vPos.x, vPos.y, vPos.z);
+        core.Send_Message(blood, "lfff", 2, vPos.x, vPos.y, vPos.z);
         return true;
     }
-    else if (stricmp(name, "TestLocatorsGroup") == 0)
+    else if (_stricmp(name, "TestLocatorsGroup") == 0)
     {
         TestLocatorsInPatch(message);
         return true;
     }
-    else if (stricmp(name, "DeleteLocationModel") == 0)
+    else if (_stricmp(name, "DeleteLocationModel") == 0)
     {
         char modelname[MAX_PATH];
         message.String(sizeof(modelname), modelname);
-        long n = model.FindModel(modelname);
+        const long n = model.FindModel(modelname);
         if (n >= 0)
             model.DeleteModel(n);
         return true;
     }
-    else if (stricmp(name, "HideLocationModel") == 0)
+    else if (_stricmp(name, "HideLocationModel") == 0)
     {
         char modelname[MAX_PATH];
         message.String(sizeof(modelname), modelname);
-        long n = model.FindModel(modelname);
+        const long n = model.FindModel(modelname);
         if (n >= 0)
-            // api->LayerDel("realize", model.RealizerID(n));
-            _CORE_API->Send_Message(model.RealizerID(n), "ll", 2, 0);
+            // core.LayerDel("realize", model.RealizerID(n));
+            core.Send_Message(model.RealizerID(n), "ll", 2, 0);
     }
-    else if (stricmp(name, "ShowLocationModel") == 0)
+    else if (_stricmp(name, "ShowLocationModel") == 0)
     {
         char modelname[MAX_PATH];
         message.String(sizeof(modelname), modelname);
         long layer = message.Long();
-        long n = model.FindModel(modelname);
+        const long n = model.FindModel(modelname);
         if (n >= 0)
-            // api->LayerAdd("realize", model.RealizerID(n), layer);
-            _CORE_API->Send_Message(model.RealizerID(n), "ll", 2, 1);
+            // EntityManager::AddToLayer(realize, model.RealizerID(n), layer);
+            core.Send_Message(model.RealizerID(n), "ll", 2, 1);
     }
-    else if (stricmp(name, "SetGrassParams") == 0)
+    else if (_stricmp(name, "SetGrassParams") == 0)
     {
-        float fScale = message.Float();
-        float fMaxWidth = message.Float();
-        float fMaxHeight = message.Float();
-        float fMinVisibleDist = message.Float();
-        float fMaxVisibleDist = message.Float();
-        float fMinGrassLod = message.Float();
-        api->Send_Message(grass, "lffffff", MSG_GRASS_SET_PARAM, fScale, fMaxWidth, fMaxHeight, fMinVisibleDist,
+        const float fScale = message.Float();
+        const float fMaxWidth = message.Float();
+        const float fMaxHeight = message.Float();
+        const float fMinVisibleDist = message.Float();
+        const float fMaxVisibleDist = message.Float();
+        const float fMinGrassLod = message.Float();
+        core.Send_Message(grass, "lffffff", MSG_GRASS_SET_PARAM, fScale, fMaxWidth, fMaxHeight, fMinVisibleDist,
                           fMaxVisibleDist, fMinGrassLod);
     }
-    else if (stricmp(name, "LoadCaustic") == 0)
+    else if (_stricmp(name, "LoadCaustic") == 0)
     {
         LoadCaustic();
     }
-    else if (stricmp(name, "EnableCaustic") == 0)
+    else if (_stricmp(name, "EnableCaustic") == 0)
     {
         bCausticEnable = message.Long() != 0;
     }
@@ -782,8 +765,8 @@ void Location::UpdateLocators()
                         }
                         else
                         {
-                            _CORE_API->Trace("Location: Can't create attribute 'locators.%s.%s.vz'!", groupName,
-                                             locators[i]->Name(j));
+                            core.Trace("Location: Can't create attribute 'locators.%s.%s.vz'!", groupName,
+                                       locators[i]->Name(j));
                         }
                         // vy
                         a->CreateSubAClass(a, "vy");
@@ -796,8 +779,8 @@ void Location::UpdateLocators()
                         }
                         else
                         {
-                            _CORE_API->Trace("Location: Can't create attribute 'locators.%s.%s.vy'!", groupName,
-                                             locators[i]->Name(j));
+                            core.Trace("Location: Can't create attribute 'locators.%s.%s.vy'!", groupName,
+                                       locators[i]->Name(j));
                         }
                         // vx
                         a->CreateSubAClass(a, "vx");
@@ -810,26 +793,26 @@ void Location::UpdateLocators()
                         }
                         else
                         {
-                            _CORE_API->Trace("Location: Can't create attribute 'locators.%s.%s.vx'!", groupName,
-                                             locators[i]->Name(j));
+                            core.Trace("Location: Can't create attribute 'locators.%s.%s.vx'!", groupName,
+                                       locators[i]->Name(j));
                         }
                     }
                     else
                     {
-                        _CORE_API->Trace("Location: Can't create attribute 'locators.%s.%s'!", groupName,
-                                         locators[i]->Name(j));
+                        core.Trace("Location: Can't create attribute 'locators.%s.%s'!", groupName,
+                                   locators[i]->Name(j));
                     }
                 }
             }
             else
             {
-                _CORE_API->Trace("Location: Can't create attribute 'locators.%s'!", groupName);
+                core.Trace("Location: Can't create attribute 'locators.%s'!", groupName);
             }
         }
     }
     else
     {
-        _CORE_API->Trace("Location: Can't create attribute 'locators'!");
+        core.Trace("Location: Can't create attribute 'locators'!");
     }
 }
 
@@ -845,14 +828,14 @@ void Location::DrawLocators(LocatorArray *la)
         rs->TextureSet(0, -1);
         rs->TextureSet(1, -1);
         //Стартуем технику
-        bool isSet = rs->TechniqueExecuteStart("DbgDrawLocators");
+        const bool isSet = rs->TechniqueExecuteStart("DbgDrawLocators");
         rs->SetRenderState(D3DRS_TEXTUREFACTOR, la->color);
         //Рисуем
         for (long i = 0; i < la->Num(); i++)
         {
             //Рисуем шарик
             la->GetLocatorPos(i, mPos);
-            float rad = la->GetLocatorRadius(i) * la->kViewRadius;
+            const float rad = la->GetLocatorRadius(i) * la->kViewRadius;
             if (rad <= 0.0f)
                 continue;
             mPos.m[0][0] *= rad;
@@ -866,12 +849,12 @@ void Location::DrawLocators(LocatorArray *la)
             mPos.m[2][2] *= rad;
             rs->SetTransform(D3DTS_WORLD, mPos);
             rs->DrawPrimitiveUP(D3DPT_TRIANGLELIST, D3DFVF_XYZ | D3DFVF_DIFFUSE, sphereNumTrgs, sphereVertex,
-                                sizeof(SphVertex), null);
+                                sizeof(SphVertex), nullptr);
         }
         if (isSet)
             while (rs->TechniqueExecuteNext())
             {
-            };
+            }
     }
     //Подписываем
     static CMatrix mtx, view, prj;
@@ -881,15 +864,15 @@ void Location::DrawLocators(LocatorArray *la)
     //Получим текущие размеры vp
     static D3DVIEWPORT9 vp;
     rs->GetViewport(&vp);
-    float w = vp.Width * 0.5f;
-    float h = vp.Height * 0.5f;
+    const float w = vp.Width * 0.5f;
+    const float h = vp.Height * 0.5f;
     CVECTOR lvrt;
     MTX_PRJ_VECTOR vrt;
-    long fh = rs->CharHeight(FONT_DEFAULT);
-    long gw = rs->StringWidth(la->GetGroupName()) / 2;
+    const long fh = rs->CharHeight(FONT_DEFAULT);
+    const long gw = rs->StringWidth(la->GetGroupName()) / 2;
     view.Transposition();
-    float d = view.Vz() | view.Pos();
-    float viewDst = la->viewDist * la->viewDist;
+    const float d = view.Vz() | view.Pos();
+    const float viewDst = la->viewDist * la->viewDist;
     //Рисуем
     for (long i = 0; i < la->Num(); i++)
     {
@@ -906,14 +889,14 @@ void Location::DrawLocators(LocatorArray *la)
             continue;
         lvrt.y += lbh;
         mtx.Projection(&lvrt, &vrt, 1, w, h, sizeof(CVECTOR), sizeof(MTX_PRJ_VECTOR));
-        rs->Print(long(vrt.x - gw), long(vrt.y - fh), la->GetGroupName());
-        long lw = rs->StringWidth((char *)la->LocatorName(i)) / 2;
-        rs->Print(long(vrt.x - lw), long(vrt.y), (char *)la->LocatorName(i));
+        rs->Print(static_cast<long>(vrt.x - gw), static_cast<long>(vrt.y - fh), la->GetGroupName());
+        const long lw = rs->StringWidth((char *)la->LocatorName(i)) / 2;
+        rs->Print(static_cast<long>(vrt.x - lw), static_cast<long>(vrt.y), (char *)la->LocatorName(i));
     }
     rs->SetTransform(D3DTS_WORLD, CMatrix());
 }
 
-void Location::DrawLine(const CVECTOR &s, dword cs, const CVECTOR &d, dword cd, bool useZ)
+void Location::DrawLine(const CVECTOR &s, uint32_t cs, const CVECTOR &d, uint32_t cd, bool useZ) const
 {
     SphVertex lineVertex[2];
     lineVertex[0].v = s;
@@ -925,7 +908,7 @@ void Location::DrawLine(const CVECTOR &s, dword cs, const CVECTOR &d, dword cd, 
     rs->TextureSet(0, -1);
     rs->TextureSet(1, -1);
     //Установим Z
-    dword oldZState = 1;
+    uint32_t oldZState = 1;
     rs->GetRenderState(D3DRS_ZENABLE, &oldZState);
     rs->SetRenderState(D3DRS_ZENABLE, useZ);
     //Рисуем
@@ -944,7 +927,7 @@ void Location::CreateSphere()
         if (kColor < 0.0f)                                                                                             \
             kColor = 0.0f;                                                                                             \
     }
-#define CLerp(c, min) (dword(c * (kColor * (1.0f - min) + min)))
+#define CLerp(c, min) (uint32_t(c * (kColor * (1.0f - min) + min)))
 #define Color                                                                                                          \
     ((CLerp(255.0f, 0.5f) << 24) | (CLerp(255.0f, 0.7f) << 16) | (CLerp(255.0f, 0.7f) << 8) |                          \
      (CLerp(255.0f, 0.7f) << 0));
@@ -957,24 +940,24 @@ void Location::CreateSphere()
     const long a2 = (a1 / 2);
 
     sphereNumTrgs = a1 * a2 * 2;
-    sphereVertex = NEW SphVertex[sphereNumTrgs * 6];
+    sphereVertex = new SphVertex[sphereNumTrgs * 6];
 
-    CVECTOR light = !CVECTOR(0.0f, 0.0f, 1.0f);
+    const CVECTOR light = !CVECTOR(0.0f, 0.0f, 1.0f);
     float kColor;
     //Заполняем вершины
-    long i = 0, t = 0;
-    for (i = 0, t = 0; i < a2; i++)
+    long t = 0;
+    for (long i = 0; i < a2; i++)
     {
-        float r1 = sinf(myPI * i / float(a2));
-        float y1 = cosf(myPI * i / float(a2));
-        float r2 = sinf(myPI * (i + 1) / float(a2));
-        float y2 = cosf(myPI * (i + 1) / float(a2));
+        const float r1 = sinf(myPI * i / static_cast<float>(a2));
+        const float y1 = cosf(myPI * i / static_cast<float>(a2));
+        const float r2 = sinf(myPI * (i + 1) / static_cast<float>(a2));
+        const float y2 = cosf(myPI * (i + 1) / static_cast<float>(a2));
         for (long j = 0; j < a1; j++)
         {
-            float x1 = sinf(2.0f * myPI * j / float(a1));
-            float z1 = cosf(2.0f * myPI * j / float(a1));
-            float x2 = sinf(2.0f * myPI * (j + 1) / float(a1));
-            float z2 = cosf(2.0f * myPI * (j + 1) / float(a1));
+            const float x1 = sinf(2.0f * myPI * j / static_cast<float>(a1));
+            const float z1 = cosf(2.0f * myPI * j / static_cast<float>(a1));
+            const float x2 = sinf(2.0f * myPI * (j + 1) / static_cast<float>(a1));
+            const float z2 = cosf(2.0f * myPI * (j + 1) / static_cast<float>(a1));
             // 0
             sphereVertex[t * 3 + 0].v.x = r1 * x1;
             sphereVertex[t * 3 + 0].v.y = y1;
@@ -1012,38 +995,22 @@ void Location::CreateSphere()
 
 bool Location::IsExDebugView()
 {
-#ifndef _XBOX
-    return api->Controls->GetDebugAsyncKeyState('O') < 0;
-#else
-    return false;
-#endif
+    return core.Controls->GetDebugAsyncKeyState('O') < 0;
 }
 
 bool Location::IsDebugView()
 {
-#ifndef _XBOX
-    /*if(api->Controls->GetDebugAsyncKeyState('Y') < 0)
-    {
-        api->SetTimeScale(0.1f);
-    }else{
-        api->SetTimeScale(1.0f);
-    }*/
-    return api->Controls->GetDebugAsyncKeyState('G') < 0 || api->Controls->GetDebugAsyncKeyState('O') < 0;
-#else
-    return false;
-#endif
+    return core.Controls->GetDebugAsyncKeyState('G') < 0 || core.Controls->GetDebugAsyncKeyState('O') < 0;
 }
 
-#include <stdio.h>
-
 //Написать текст
-void _cdecl Location::Print(const CVECTOR &pos3D, float rad, long line, float alpha, dword color, float scale,
-                            const char *format, ...)
+void Location::Print(const CVECTOR &pos3D, float rad, long line, float alpha, uint32_t color, float scale,
+                     const char *format, ...) const
 {
     static char buf[256];
     scale *= 2.0f;
     //Печатаем в буфер
-    long len = _vsnprintf(buf, sizeof(buf) - 1, format, (char *)(&format + 1));
+    long len = _vsnprintf_s(buf, sizeof(buf) - 1, format, (char *)(&format + 1));
     buf[sizeof(buf) - 1] = 0;
     //Ищем позицию точки на экране
     static CMatrix mtx, view, prj;
@@ -1056,14 +1023,14 @@ void _cdecl Location::Print(const CVECTOR &pos3D, float rad, long line, float al
     float dist = ~(pos3D - view.Pos());
     if (dist >= rad * rad)
         return;
-    float d = view.Vz() | view.Pos();
+    const float d = view.Vz() | view.Pos();
     if ((pos3D | view.Vz()) < d)
         return;
     rs->GetViewport(&vp);
     mtx.Projection((CVECTOR *)&pos3D, &vrt, 1, vp.Width * 0.5f, vp.Height * 0.5f, sizeof(CVECTOR),
                    sizeof(MTX_PRJ_VECTOR));
     //Ищем позицию
-    float fh = rs->CharHeight(FONT_DEFAULT) * 0.8f;
+    const float fh = rs->CharHeight(FONT_DEFAULT) * 0.8f;
     vrt.y -= (line + 0.5f) * fh * scale;
     //Прозрачность
     const float kDist = 0.75f;
@@ -1078,9 +1045,10 @@ void _cdecl Location::Print(const CVECTOR &pos3D, float rad, long line, float al
     }
     if (alpha <= 0.0f)
         return;
-    color = (dword(alpha * 255.0f) << 24) | (color & 0xffffff);
+    color = (static_cast<uint32_t>(alpha * 255.0f) << 24) | (color & 0xffffff);
     //Печатаем текст
-    rs->ExtPrint(FONT_DEFAULT, color, 0x00000000, ALIGN_CENTER, 0, scale, 0, 0, long(vrt.x), long(vrt.y), buf);
+    rs->ExtPrint(FONT_DEFAULT, color, 0x00000000, PR_ALIGN_CENTER, false, scale, 0, 0, static_cast<long>(vrt.x),
+                 static_cast<long>(vrt.y), buf);
 }
 
 //Добавить сообщение о повреждении
@@ -1100,12 +1068,13 @@ void Location::AddDamageMessage(const CVECTOR &pos3D, float hit, float curhp, fl
         k = 0.0f;
     if (k > 1.0f)
         k = 1.0f;
-    float r1 = 0.2f, g1 = 1.0f, b1 = 0.2f;
-    float r2 = 1.0f, g2 = 0.2f, b2 = 0.2f;
-    float r = r2 + (r1 - r2) * k;
-    float g = g2 + (g1 - g2) * k;
-    float b = b2 + (b1 - b2) * k;
-    message[curMessage].c = (long(r * 255.0f) << 16) | (long(g * 255.0f) << 8) | long(b * 255.0f);
+    const float r1 = 0.2f, g1 = 1.0f, b1 = 0.2f;
+    const float r2 = 1.0f, g2 = 0.2f, b2 = 0.2f;
+    const float r = r2 + (r1 - r2) * k;
+    const float g = g2 + (g1 - g2) * k;
+    const float b = b2 + (b1 - b2) * k;
+    message[curMessage].c =
+        (static_cast<long>(r * 255.0f) << 16) | (static_cast<long>(g * 255.0f) << 8) | static_cast<long>(b * 255.0f);
 }
 
 //Нарисовать на данном кадре полоски над врагом
@@ -1136,17 +1105,17 @@ void Location::TestLocatorsInPatch(MESSAGE &message)
     LocatorArray *la = FindLocatorsGroup(buf);
     if (!la)
     {
-        _snprintf(buf + 2048, sizeof(buf) - 2048, "Warning: Locators group '%s' not found.", buf);
+        sprintf_s(buf + 2048, sizeof(buf) - 2048, "Warning: Locators group '%s' not found.", buf);
         buf[sizeof(buf) - 1] = 0;
-        api->Event("LocatorsEventTrace", "lsss", 0, buf + 2048, buf, "");
+        core.Event("LocatorsEventTrace", "lsss", 0, buf + 2048, buf, "");
         return;
     }
-    long num = la->Num();
+    const long num = la->Num();
     if (num <= 0)
     {
-        _snprintf(buf, sizeof(buf), "Warning: Locators group '%s' not contain locators.", la->GetGroupName());
+        sprintf_s(buf, sizeof(buf), "Warning: Locators group '%s' not contain locators.", la->GetGroupName());
         buf[sizeof(buf) - 1] = 0;
-        api->Event("LocatorsEventTrace", "lsss", 0, buf, la->GetGroupName(), "");
+        core.Event("LocatorsEventTrace", "lsss", 0, buf, la->GetGroupName(), "");
         return;
     }
     CVECTOR pos;
@@ -1156,20 +1125,20 @@ void Location::TestLocatorsInPatch(MESSAGE &message)
         float y = 0.0f;
         if (ptc.FindNode(pos, y) < 0)
         {
-            _snprintf(buf, sizeof(buf), "Error: Locator '%s':'%s' not in patch.", la->GetGroupName(),
+            sprintf_s(buf, sizeof(buf), "Error: Locator '%s':'%s' not in patch.", la->GetGroupName(),
                       la->LocatorName(i));
             buf[sizeof(buf) - 1] = 0;
-            api->Event("LocatorsEventTrace", "lsss", 1, buf, la->GetGroupName(), la->LocatorName(i));
+            core.Event("LocatorsEventTrace", "lsss", 1, buf, la->GetGroupName(), la->LocatorName(i));
         }
         else
         {
-            float ldist = pos.y - y;
+            const float ldist = pos.y - y;
             if (fabsf(ldist) > 0.2f)
             {
-                _snprintf(buf, sizeof(buf), "Warning: Locator '%s':'%s' very far from patch: %fm", la->GetGroupName(),
+                sprintf_s(buf, sizeof(buf), "Warning: Locator '%s':'%s' very far from patch: %fm", la->GetGroupName(),
                           la->LocatorName(i), ldist);
                 buf[sizeof(buf) - 1] = 0;
-                api->Event("LocatorsEventTrace", "lsss", 0, buf, la->GetGroupName(), la->LocatorName(i));
+                core.Event("LocatorsEventTrace", "lsss", 0, buf, la->GetGroupName(), la->LocatorName(i));
             }
         }
     }
@@ -1186,7 +1155,7 @@ void Location::DrawEnemyBars()
     struct SortElement
     {
         MTX_PRJ_VECTOR vrt;
-        dword color;
+        uint32_t color;
         float hp;
         float energy;
     } sort[sizeof(enemyBar) / sizeof(enemyBar[0])];
@@ -1202,14 +1171,14 @@ void Location::DrawEnemyBars()
     {
         //Ищем позицию точки на экране
         CVECTOR &pos3D = enemyBar[i].p;
-        float dist = ~(pos3D - view.Pos());
+        const float dist = ~(pos3D - view.Pos());
         if (dist >= maxViewDist * maxViewDist)
             continue;
-        float d = view.Vz() | view.Pos();
+        const float d = view.Vz() | view.Pos();
         if ((pos3D | view.Vz()) < d)
             continue;
         MTX_PRJ_VECTOR vrt;
-        mtx.Projection((CVECTOR *)&pos3D, &vrt, 1, vp.Width * 0.5f, vp.Height * 0.5f, sizeof(CVECTOR),
+        mtx.Projection(static_cast<CVECTOR *>(&pos3D), &vrt, 1, vp.Width * 0.5f, vp.Height * 0.5f, sizeof(CVECTOR),
                        sizeof(MTX_PRJ_VECTOR));
         //Определяем прозрачность
         float k = sqrtf(dist) / maxViewDist;
@@ -1221,7 +1190,7 @@ void Location::DrawEnemyBars()
         {
             k = 1.0f;
         }
-        dword color = long(k * enemyBar[i].alpha);
+        uint32_t color = static_cast<long>(k * enemyBar[i].alpha);
         if (!color)
             continue;
         color = (color << 24) | 0x007f7f7f;
@@ -1230,7 +1199,8 @@ void Location::DrawEnemyBars()
         sort[sortCount].color = color;
         sort[sortCount].hp = enemyBar[i].hp;
         sort[sortCount].energy = enemyBar[i].energy;
-        selements[sortCount++] = &sort[sortCount];
+        selements[sortCount] = &sort[sortCount];
+        sortCount++;
     }
     // Cортировка по дистанции
     for (long i = 0; i < sortCount - 1; i++)
@@ -1249,13 +1219,13 @@ void Location::DrawEnemyBars()
     for (long i = 0; i < sortCount; i++)
     {
         MTX_PRJ_VECTOR &vrt = selements[i]->vrt;
-        dword &color = selements[i]->color;
+        uint32_t &color = selements[i]->color;
         static BarVertex bar[18];
         float width = (256.0f * vrt.rhw) * 0.5f;
         float height = (64.0f * vrt.rhw) * 0.5f;
         if (width > vp.Width * 0.1f)
         {
-            float k = vp.Width * 0.1f / width;
+            const float k = vp.Width * 0.1f / width;
             width *= k;
             height *= k;
         }
@@ -1336,12 +1306,12 @@ void Location::DrawEnemyBars()
 void Location::CorrectBar(float v, float start, float end, BarVertex *vrt)
 {
     end = start + (end - start) * v;
-    float dx = vrt[1].p.x - vrt[0].p.x;
-    float du = vrt[1].u - vrt[0].u;
-    float startX = vrt[0].p.x + dx * start;
-    float startU = vrt[0].u + du * start;
-    float endX = vrt[0].p.x + dx * end;
-    float endU = vrt[0].u + du * end;
+    const float dx = vrt[1].p.x - vrt[0].p.x;
+    const float du = vrt[1].u - vrt[0].u;
+    const float startX = vrt[0].p.x + dx * start;
+    const float startU = vrt[0].u + du * start;
+    const float endX = vrt[0].p.x + dx * end;
+    const float endU = vrt[0].u + du * end;
     vrt[0].p.x = startX;
     vrt[0].u = startU;
     vrt[1].p.x = endX;
@@ -1356,12 +1326,12 @@ void Location::CorrectBar(float v, float start, float end, BarVertex *vrt)
     vrt[5].u = endU;
 }
 
-bool Location::IsSwimming()
+bool Location::IsSwimming() const
 {
     return bSwimming;
 }
 
-void Location::LoadCaustic()
+void Location::LoadCaustic() const
 {
     bCausticEnable = false;
 
@@ -1381,7 +1351,7 @@ void Location::LoadCaustic()
     char tex[256];
     for (long i = 0; i < 32; i++)
     {
-        sprintf(tex, "weather\\caustic\\caustic%.2d.tga", i);
-        iCausticTex[i] = Render().TextureCreate(tex);
+        sprintf_s(tex, "weather\\caustic\\caustic%.2d.tga", i);
+        iCausticTex[i] = rs->TextureCreate(tex);
     }
 }

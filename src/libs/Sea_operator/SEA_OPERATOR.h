@@ -1,11 +1,11 @@
 #ifndef _SEA_OPERATOR_H_
 #define _SEA_OPERATOR_H_
 
-#include "TFIFOBuffer.h"
-#include "dx8render.h"
-#include "model.h"
+#include "dx9render.h"
 #include "sea_base.h"
 #include "ship_base.h"
+#include <queue>
+//#include "TFIFOBuffer.h"
 
 #define ACTION_TIME 1000
 #define TIME_BETWEEN_ACTIONS 1000
@@ -24,7 +24,9 @@ struct tAction
     void (SEA_OPERATOR::*actionMethod)(tAction *_action);
 };
 
-typedef TFIFOBuffer<tAction> TActionBuffer;
+// typedef TFIFOBuffer<tAction> TActionBuffer;
+
+typedef std::queue<tAction> TActionBuffer;
 
 enum BORT_TYPE
 {
@@ -35,17 +37,33 @@ enum BORT_TYPE
 };
 
 //--------------------------------------------------------------------
-class SEA_OPERATOR : public ENTITY
+class SEA_OPERATOR : public Entity
 {
   public:
     SEA_OPERATOR();
     virtual ~SEA_OPERATOR();
 
     virtual bool Init();
-    virtual dword _cdecl ProcessMessage(MESSAGE &message);
-    virtual void Realize(dword _dTime);
-    virtual void Execute(dword _dTime);
-    virtual dword AttributeChanged(ATTRIBUTES *_newAttr);
+    virtual uint64_t ProcessMessage(MESSAGE &message);
+    virtual void Realize(uint32_t dTime);
+    virtual void Execute(uint32_t dTime);
+    virtual uint32_t AttributeChanged(ATTRIBUTES *_newAttr);
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+                LostRender(delta); break;
+            case Stage::restore_render:
+                RestoreRender(delta); break;*/
+        }
+    }
 
   protected:
     void ShowAttackerBort(tAction *_action);
@@ -57,22 +75,22 @@ class SEA_OPERATOR : public ENTITY
   private:
     void FirstInit();
     bool IsTimeToActivate(bool _testControls = true);
-    void SetIfMyShip(ENTITY_ID &_shipID);
-    void HandleShipFire(ENTITY_ID &_shipID, char *_bortName, const CVECTOR &_destination, const CVECTOR &_direction);
+    void SetIfMyShip(entid_t _shipID);
+    void HandleShipFire(entid_t _shipID, char *_bortName, const CVECTOR &_destination, const CVECTOR &_direction);
     void HandleShipHit();
     void HandleShipIdle();
     void StartNewAction();
-    void ProcessActions(dword _dTime);
+    void ProcessActions(uint32_t dTime);
 
     bool enabled, active;
     SEA_BASE *sea;
-    VDX8RENDER *renderer;
+    VDX9RENDER *renderer;
     SHIP_BASE *myShip, *enemyShip;
     long actionTime;
     bool ballTracked;
     CVECTOR ballPosition, lastBallPosition, finalBallPosition;
 
-    dword idleTime, sinceLastActionTime;
+    uint32_t idleTime, sinceLastActionTime;
     TActionBuffer actionBuffer;
     CVECTOR cameraPos, cameraTargetPos;
 };

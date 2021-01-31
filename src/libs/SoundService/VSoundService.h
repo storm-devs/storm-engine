@@ -1,13 +1,11 @@
 #ifndef _VSOUND_H_
 #define _VSOUND_H_
 
-#include "CVECTOR.h"
+#include "Cvector.h"
 #include "SoundDefines.h"
 #include "VSoundService.h"
 #include "service.h"
-#include "templates.h"
-#include "vmodule_api.h"
-#include <dsound.h>
+#include <vector>
 
 ///////////////////////////////////////////////////////////////////
 // DEFINES & TYPES
@@ -20,12 +18,11 @@ typedef struct
     char driverName[COMMON_STRING_LENGTH];
 } tSoundDriverDescriptor;
 
-typedef DWORD TSD_ID;
+typedef uint32_t TSD_ID;
 
 typedef struct
 {
     long soundsCount, maxSoundsCount, bytesInBuffers, maxBytesInBuffers, bytesCached, maxBytesCached, totalMem, freeMem;
-
 } tSoundStatistics;
 
 ///////////////////////////////////////////////////////////////////
@@ -36,9 +33,9 @@ class VSoundService : public SERVICE
   public:
     VSoundService();
     virtual ~VSoundService();
-    virtual bool Init() = 0;
-    virtual dword RunSection() = 0;
-    virtual void RunStart() = 0;
+    bool Init() override = 0;
+    uint32_t RunSection() override = 0;
+    void RunStart() override = 0;
 
     // Sound entries functions
     //
@@ -54,8 +51,9 @@ class VSoundService : public SERVICE
                              bool _looped = false,      // looped?
                              bool _cached = false,      // unload after stoppping?
                              long _time = 0,            // fade in, if _time > 0
-                             CVECTOR *_startPosition = 0, float _minDistance = -1.0f, float _maxDistance = -1.0f,
-                             long _loopPauseTime = 0, float _volume = 1.0f, long _prior = 128) = 0;
+                             const CVECTOR *_startPosition = nullptr, float _minDistance = -1.0f,
+                             float _maxDistance = -1.0f, long _loopPauseTime = 0, float _volume = 1.0f,
+                             long _prior = 128) = 0;
 
     virtual TSD_ID SoundDuplicate(TSD_ID _sourceID) = 0;
     virtual void SoundSet3DParam(TSD_ID _id, eSoundMessage _message, const void *_op) = 0;

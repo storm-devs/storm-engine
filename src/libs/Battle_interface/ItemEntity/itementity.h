@@ -1,67 +1,83 @@
-#ifndef _BI_ITEM_ENTITY_H_
-#define _BI_ITEM_ENTITY_H_
+#ifndef _BI_ITEM_Entity_H_
+#define _BI_ITEM_Entity_H_
 
-#include "animation.h"
-#include "common_defines.h"
-#include "dx8render.h"
-#include "templates\string.h"
+#include "../bi_defines.h"
+#include "Animation.h"
 #include "vparticle_system.h"
+#include <string>
 
 class MODEL;
 class NODE;
 
-class ItemEntity : public ENTITY
+class ItemEntity : public Entity
 {
   public:
     ItemEntity();
     ~ItemEntity();
 
-    bool Init();
-    void Realize(dword delta_time);
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    bool Init() override;
+    void Realize(uint32_t delta_time);
+    uint64_t ProcessMessage(MESSAGE &message) override;
+
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+            // case Stage::execute:
+            //	Execute(delta); break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
 
   protected:
     bool ReadAndCreate();
     void SetBeginData();
     void Release();
 
-    void SetModelToPosition(const CMatrix &mtx);
-    void SetTechnique(const char *pcTechnique);
-    bool TieToLocator(ENTITY_ID &mdlEID, const char *pcLocName);
+    void SetModelToPosition(const CMatrix &mtx) const;
+    void SetTechnique(const char *pcTechnique) const;
+    bool TieToLocator(entid_t mdlEID, const char *pcLocName);
     void UnTieFromLocator();
     void EndEventProcess();
 
     void DrawIntoLocator();
 
-    void SetEventListener(ENTITY_ID &mdlEID, ENTITY_ID &mdlToTieEID, const char *pcLocName, const char *pcStartEvent,
+    void SetEventListener(entid_t mdlEID, entid_t mdlToTieEID, const char *pcLocName, const char *pcStartEvent,
                           const char *pcEndEvent);
-    ENTITY_ID GetModelEIDFromCharacterEID(ENTITY_ID &chrEID);
+    entid_t GetModelEIDFromCharacterEID(entid_t chrEID);
 
   protected: // data
     bool m_bVisible;
-    ENTITY_ID m_eidModel;
+    entid_t m_eidModel;
     MODEL *m_pModel;
     CMatrix m_mtxpos;
 
     bool m_bTieToLocator;
-    ENTITY_ID m_eidTieModel;
+    entid_t m_eidTieModel;
     NODE *m_pMdlNode;
-    string m_sTieLocName;
+    std::string m_sTieLocName;
 
     class EventListener : public AnimationEventListener
     {
       public:
         //Принять событие
-        virtual void Event(Animation *animation, long playerIndex, const char *eventName);
+        void Event(Animation *animation, long playerIndex, const char *eventName) override;
 
         ItemEntity *item;
-        string m_sStartEvent;
-        string m_sEndEvent;
+        std::string m_sStartEvent;
+        std::string m_sEndEvent;
         bool m_bStartWaiting;
-        ENTITY_ID m_eidListenedModel;
-        ENTITY_ID m_eidToTieModel;
-        string m_sToTieLocator;
+        entid_t m_eidListenedModel;
+        entid_t m_eidToTieModel;
+        std::string m_sToTieLocator;
     };
+
     friend EventListener;
     EventListener m_eventListener;
 

@@ -9,8 +9,6 @@
 //============================================================================================
 
 #include "AnimationImp.h"
-#include "AnimationInfo.h"
-#include "AnimationServiceImp.h"
 
 //============================================================================================
 //Конструирование, деструктурирование
@@ -18,9 +16,9 @@
 
 ActionPlayerImp::ActionPlayerImp()
 {
-    ani = null;
+    ani = nullptr;
     playerIndex = -1;
-    action = null;
+    action = nullptr;
     isPlay = false;
     isPause = false;
     isAutostop = true;
@@ -52,9 +50,9 @@ void ActionPlayerImp::SetAnimation(AnimationImp *animation, long index)
 //Установить текущие действие
 bool ActionPlayerImp::SetAction(const char *actionName)
 {
-    if (actionName && action && stricmp(action->GetName(), actionName) == null)
+    if (actionName && action && _stricmp(action->GetName(), actionName) == 0)
         return true;
-    action = null;
+    action = nullptr;
     isPlay = isPause = false;
     isAutostop = true;
     kBlendTimer = 1.0f;
@@ -65,7 +63,7 @@ bool ActionPlayerImp::SetAction(const char *actionName)
         return false;
     }
     action = ani->GetActionInfo(actionName);
-    if (action == null)
+    if (action == nullptr)
     {
         ani->ApeSetnewaction(playerIndex);
         return false;
@@ -89,7 +87,7 @@ const char *ActionPlayerImp::GetAction() const
 {
     if (action)
         return action->GetName();
-    return null;
+    return nullptr;
 }
 
 //Управление проигрыванием
@@ -100,7 +98,7 @@ bool ActionPlayerImp::Play()
     if (isPlay && !isPause)
         return true;
     isPlay = true;
-    bool p = isPause;
+    auto p = isPause;
     if (!isPause)
     {
         ani->ApePlay(playerIndex);
@@ -153,7 +151,7 @@ bool ActionPlayerImp::IsPause() const
 //Автоостановка при завершении работы таймера
 bool ActionPlayerImp::SetAutoStop(bool isStop)
 {
-    bool old = isAutostop;
+    const auto old = isAutostop;
     isAutostop = isStop;
     return old;
 }
@@ -166,7 +164,7 @@ bool ActionPlayerImp::IsAutoStop() const
 //Текущая позиция проигрывания
 float ActionPlayerImp::SetPosition(float position)
 {
-    float pos = this->position;
+    const auto pos = this->position;
     if (position < 0.0f)
         position = 0.0f;
     if (position > 1.0f)
@@ -198,7 +196,7 @@ float ActionPlayerImp::SetSpeed(float kSpeed)
         kSpeed = 0.0f;
     if (kSpeed > 10.0f)
         kSpeed = 10.0f;
-    float ks = kspeed;
+    const auto ks = kspeed;
     kspeed = kSpeed;
     return ks;
 }
@@ -243,8 +241,10 @@ float ActionPlayerImp::GetBlend()
 const char *ActionPlayerImp::GetData(const char *dataName) const
 {
     if (!action)
-        return null;
-    return action->GetUserData().GetData(dataName);
+        return nullptr;
+    const auto &userData = action->GetUserData();
+    const auto it = userData.find(dataName);
+    return it != userData.end() ? it->second.c_str() : nullptr;
 }
 
 //--------------------------------------------------------------------------------------------
@@ -257,7 +257,7 @@ void ActionPlayerImp::Execute(long dltTime)
     kBlendTimer = 1.0f;
     if (!action || !isPlay || isPause || anitype == at_static)
         return;
-    float dlt = dltTime * speed * kspeed;
+    const auto dlt = dltTime * speed * kspeed;
     switch (anitype)
     {
     case at_static:
@@ -349,7 +349,7 @@ void ActionPlayerImp::MoveNormal(float dlt)
         if (isLoop)
         {
             ResetEventsMask();
-            position -= float(long(position));
+            position -= static_cast<float>(static_cast<long>(position));
             ani->ApeStart(playerIndex);
         }
         else
@@ -366,7 +366,7 @@ void ActionPlayerImp::MoveReverse(float dlt)
         if (isLoop)
         {
             ResetEventsMask();
-            position -= long(position) - 1.0f;
+            position -= static_cast<long>(position) - 1.0f;
             ani->ApeStart(playerIndex);
         }
         else
@@ -383,7 +383,7 @@ void ActionPlayerImp::MovePingpong(float dlt)
         if (position >= 1.0f)
         {
             //Сменим направление
-            position = 1.0f - (position - float(long(position)));
+            position = 1.0f - (position - static_cast<float>(static_cast<long>(position)));
             dir = false;
             ani->ApeChange(playerIndex);
         }
@@ -399,7 +399,7 @@ void ActionPlayerImp::MovePingpong(float dlt)
             {
                 //Сменим направление
                 ResetEventsMask();
-                position = -(position - long(position));
+                position = -(position - static_cast<long>(position));
                 dir = true;
                 ani->ApeStart(playerIndex);
             }
@@ -419,7 +419,7 @@ void ActionPlayerImp::MoveRPingpong(float dlt)
         {
             ResetEventsMask();
             //Сменим направление
-            position = -(position - long(position));
+            position = -(position - static_cast<long>(position));
             dir = true;
             ani->ApeChange(playerIndex);
         }
@@ -435,7 +435,7 @@ void ActionPlayerImp::MoveRPingpong(float dlt)
             {
                 ResetEventsMask();
                 //Сменим направление
-                position = 1.0f - (position - float(long(position)));
+                position = 1.0f - (position - static_cast<float>(static_cast<long>(position)));
                 dir = false;
                 ani->ApeStart(playerIndex);
             }
@@ -450,10 +450,10 @@ void ActionPlayerImp::CheckEvents()
 {
     if (!action)
         return;
-    long num = action->GetNumEvents();
+    const auto num = action->GetNumEvents();
     for (long i = 0; i < num; i++)
     {
-        long mask = 1 << (i & 31);
+        const long mask = 1 << (i & 31);
         if (eventsMask[i >> 5] & mask)
             continue;
         if (action->CheckEvent(i, position, dir))

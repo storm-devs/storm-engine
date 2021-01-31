@@ -9,6 +9,8 @@
 //============================================================================================
 
 #include "WideScreen.h"
+#include "Entity.h"
+#include "core.h"
 
 //============================================================================================
 //Конструирование, деструктурирование
@@ -28,36 +30,36 @@ WideScreen::~WideScreen()
 bool WideScreen::Init()
 {
     // Layers
-    _CORE_API->LayerCreate("realize", true, false);
-    _CORE_API->LayerSetRealize("realize", true);
-    _CORE_API->LayerAdd("realize", GetID(), -257);
-    rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
+    // core.LayerCreate("realize", true, false);
+    EntityManager::SetLayerType(REALIZE, EntityManager::Layer::Type::realize);
+    EntityManager::AddToLayer(REALIZE, GetId(), -257);
+    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!rs)
-        SE_THROW_MSG("No service: dx8render");
+        throw std::exception("No service: dx9render");
     D3DVIEWPORT9 vp;
     rs->GetViewport(&vp);
-    w = float(vp.Width);
-    h = float(vp.Height);
+    w = static_cast<float>(vp.Width);
+    h = static_cast<float>(vp.Height);
     if (w <= 0 || h <= 0)
         return false;
     return true;
 }
 
 //Сообщения
-dword _cdecl WideScreen::ProcessMessage(MESSAGE &message)
+uint64_t WideScreen::ProcessMessage(MESSAGE &message)
 {
     dlt = -1.0f;
     return 0;
 }
 
 //Работа
-void WideScreen::Realize(dword delta_time)
+void WideScreen::Realize(uint32_t delta_time)
 {
     //Текущее состояние
     state += dlt * delta_time * 0.001f;
     if (state < 0.0f)
     {
-        _CORE_API->DeleteEntity(GetID());
+        EntityManager::EraseEntity(GetId());
         return;
     }
     if (state > 1.0f)
@@ -70,7 +72,7 @@ void WideScreen::Realize(dword delta_time)
     {
         float x, y, z, rhw;
     } buf[12];
-    const float hg = state * h * 0.1f;
+    const auto hg = state * h * 0.1f;
     buf[0].x = 0.0f;
     buf[0].y = 0.0f;
     buf[0].z = 0.5f;

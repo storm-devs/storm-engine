@@ -1,68 +1,37 @@
-#include "messages.h"
-#include <stdio.h>
-//#include "defines.h"
-#include "..\SoundService\VSoundService.h"
-#include "CVECTOR.h"
-#include "exs.h"
+#include "../../Shared/messages.h"
 
-#include "ANIMALS.h"
+#include "Animals.H"
 
-INTERFACE_FUNCTION
-CREATE_CLASS(ANIMALS)
-//--------------------------------------------------------------------
-ANIMALS::ANIMALS()
-    : seagulls(0)
-      //,sharks(0)
-      ,
-      fishSchools(0), butterflies(0)
+ANIMALS::ANIMALS() : seagulls(nullptr), fishSchools(nullptr), butterflies(nullptr)
 {
-    seagulls = NEW TSeagulls();
-    // sharks = NEW TSharks();
-    fishSchools = NEW TFishSchools();
-    butterflies = NEW TButterflies();
+    seagulls = new TSeagulls();
+    fishSchools = new TFishSchools();
+    butterflies = new TButterflies();
 }
 
-//--------------------------------------------------------------------
 ANIMALS::~ANIMALS()
 {
-    GUARD(ANIMALS::~ANIMALS)
-
-    if (seagulls)
-        delete seagulls;
-    // if (sharks)
-    //	delete sharks;
-    if (fishSchools)
-        delete fishSchools;
-    if (butterflies)
-        delete butterflies;
-
-    UNGUARD
+    delete seagulls;
+    delete fishSchools;
+    delete butterflies;
 }
 
-//--------------------------------------------------------------------
 bool ANIMALS::Init()
 {
-    GUARD(ANIMALS::Init)
-
-    _CORE_API->LayerAdd("realize", GetID(), 77);
-    _CORE_API->LayerAdd("execute", GetID(), 77);
+    EntityManager::AddToLayer(REALIZE, GetId(), 77);
+    EntityManager::AddToLayer(EXECUTE, GetId(), 77);
 
     seagulls->Init();
-    // sharks->Init();
     fishSchools->Init();
     butterflies->Init();
 
     return true;
-    UNGUARD
 }
 
-//--------------------------------------------------------------------
-dword _cdecl ANIMALS::ProcessMessage(MESSAGE &message)
+uint64_t ANIMALS::ProcessMessage(MESSAGE &message)
 {
-    GUARD(ANIMALS::ProcessMessage)
-
-    long code = message.Long();
-    dword outValue = 0;
+    const auto code = message.Long();
+    uint64_t outValue = 0;
 
     switch (code)
     {
@@ -75,9 +44,6 @@ dword _cdecl ANIMALS::ProcessMessage(MESSAGE &message)
         outValue = fishSchools->ProcessMessage(code, message);
         if (outValue)
             return outValue;
-        // outValue = sharks->ProcessMessage(code, message);
-        // if (outValue)
-        //	return outValue;
         outValue = butterflies->ProcessMessage(code, message);
         if (outValue)
             return outValue;
@@ -86,37 +52,23 @@ dword _cdecl ANIMALS::ProcessMessage(MESSAGE &message)
     }
 
     return outValue;
-    UNGUARD
 }
 
-//--------------------------------------------------------------------
-void ANIMALS::Realize(dword _dTime)
+void ANIMALS::Realize(uint32_t _dTime)
 {
-    GUARD(ANIMALS::Realize)
-
     seagulls->Realize(_dTime);
-    // sharks->Realize(_dTime);
     fishSchools->Realize(_dTime);
     butterflies->Realize(_dTime);
-
-    UNGUARD
 }
 
-//--------------------------------------------------------------------
-void ANIMALS::Execute(dword _dTime)
+void ANIMALS::Execute(uint32_t _dTime)
 {
-    GUARD(ANIMALS::Execute)
-
     seagulls->Execute(_dTime);
-    // sharks->Execute(_dTime);
     fishSchools->Execute(_dTime);
     butterflies->Execute(_dTime);
-
-    UNGUARD
 }
 
-//--------------------------------------------------------------------
-dword ANIMALS::AttributeChanged(ATTRIBUTES *_pA)
+uint32_t ANIMALS::AttributeChanged(ATTRIBUTES *_pA)
 {
     if (*_pA == "midY")
     {
@@ -125,7 +77,3 @@ dword ANIMALS::AttributeChanged(ATTRIBUTES *_pA)
 
     return 0;
 }
-
-//--------------------------------------------------------------------
-//--------------------------------------------------------------------
-//--------------------------------------------------------------------

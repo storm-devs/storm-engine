@@ -16,19 +16,18 @@
 
 LocatorArray::LocatorArray(const char *groupName)
 {
-    locator = null;
     numLocators = 0;
-    locatorNames = null;
+    locatorNames = nullptr;
     bytesInLNArray = 0;
     if (groupName)
     {
-        long l = strlen(groupName) + 1;
-        group = NEW char[l];
+        const long l = strlen(groupName) + 1;
+        group = new char[l];
         memcpy(group, groupName, l);
     }
     else
     {
-        group = NEW char[1];
+        group = new char[1];
         group[0] = 0;
     }
     hash = CalcHashString(group);
@@ -39,12 +38,8 @@ LocatorArray::LocatorArray(const char *groupName)
 
 LocatorArray::~LocatorArray()
 {
-    if (group)
-        delete group;
-    if (locator)
-        delete locator;
-    if (locatorNames)
-        delete locatorNames;
+    delete group;
+    free(locatorNames);
 }
 
 //============================================================================================
@@ -54,14 +49,14 @@ LocatorArray::~LocatorArray()
 //Добавить локатор
 void LocatorArray::AddLocator(CMatrix &mtx, const char *name)
 {
-    locator = (LocatorInfro *)RESIZE(locator, (numLocators + 1) * sizeof(LocatorInfro));
+    locator.resize(numLocators + 1);
     locator[numLocators].mtx = mtx;
     locator[numLocators].radius = -1.0f;
     long slen = 0;
     if (name && name[0])
     {
         slen = strlen(name) + 1;
-        locatorNames = (char *)RESIZE(locatorNames, bytesInLNArray + slen);
+        locatorNames = static_cast<char *>(realloc(locatorNames, bytesInLNArray + slen));
         locator[numLocators].name = bytesInLNArray;
         memcpy(locatorNames + bytesInLNArray, name, slen);
         locator[numLocators].hash = CalcHashString(locatorNames + bytesInLNArray);
@@ -85,11 +80,11 @@ float LocatorArray::FindNearesLocator(float x, float y, float z, long *locIndex)
 {
     if (locIndex)
         *locIndex = -1;
-    float dist = 1000000000.0f;
-    CVECTOR v(x, y, z);
+    auto dist = 1000000000.0f;
+    const CVECTOR v(x, y, z);
     for (long i = 0; i < numLocators; i++)
     {
-        float d = ~(locator[i].mtx.Pos() - v);
+        const auto d = ~(locator[i].mtx.Pos() - v);
         if (dist > d)
         {
             if (locIndex)
@@ -107,16 +102,16 @@ long LocatorArray::FindNearesLocatorCl(float x, float y, float z, float height2,
     for (long i = 0; i < numLocators; i++)
     {
         // if(fabsf(y - locator[i].mtx.Pos().y) > height2) continue;
-        float r = GetLocatorRadius(i);
+        const auto r = GetLocatorRadius(i);
 
         if (fabsf(y - locator[i].mtx.Pos().y) > r)
             continue;
 
         if (r <= 0.0f)
             continue;
-        float vx = locator[i].mtx.Pos().x - x;
-        float vz = locator[i].mtx.Pos().z - z;
-        float d = vx * vx + vz * vz;
+        const auto vx = locator[i].mtx.Pos().x - x;
+        const auto vz = locator[i].mtx.Pos().z - z;
+        const auto d = vx * vx + vz * vz;
         if (r * r <= d)
             continue;
         if (locIndex >= 0)
@@ -141,13 +136,13 @@ long LocatorArray::FindByName(const char *locName)
 {
     if (!locName)
         return -1;
-    long hash = CalcHashString(locName);
+    const auto hash = CalcHashString(locName);
     for (long i = 0; i < numLocators; i++)
     {
         if (locator[i].name >= 0)
         {
             if (locator[i].hash == hash)
-                if (stricmp(locatorNames + locator[i].name, locName) == 0)
+                if (_stricmp(locatorNames + locator[i].name, locName) == 0)
                 {
                     return i;
                 }
@@ -161,26 +156,26 @@ long LocatorArray::CalcHashString(const char *str)
     unsigned long hval = 0;
     while (*str != '\0')
     {
-        char c = *str++;
+        auto c = *str++;
         if (c >= 'A' && c <= 'Z')
             c += 'a' - 'A';
-        hval = (hval << 4) + (unsigned long int)c;
-        unsigned long g = hval & ((unsigned long int)0xf << (32 - 4));
+        hval = (hval << 4) + static_cast<unsigned long>(c);
+        const auto g = hval & (static_cast<unsigned long>(0xf) << (32 - 4));
         if (g != 0)
         {
             hval ^= g >> (32 - 8);
             hval ^= g;
         }
     }
-    return long(hval);
+    return static_cast<long>(hval);
 }
 
 //Сравнить имена групп
-bool LocatorArray::CompareGroup(const char *groupName, long ghash)
+bool LocatorArray::CompareGroup(const char *groupName, long ghash) const
 {
     if (hash != ghash)
         return false;
     if (!groupName)
         return group[0] == 0;
-    return stricmp(group, groupName) == 0;
+    return _stricmp(group, groupName) == 0;
 }

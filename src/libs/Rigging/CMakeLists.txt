@@ -1,6 +1,6 @@
 project(rigging)
 
-add_library(${PROJECT_NAME} MODULE
+add_library(${PROJECT_NAME} STATIC
 	Flag.cpp
 	Flag.h
 	Rope.cpp
@@ -9,8 +9,6 @@ add_library(${PROJECT_NAME} MODULE
 	SAILONE.h
 	Vant.cpp
 	Vant.h
-	rigging_define.h
-	rigging_main.cpp
 	sail.cpp
 	sail.h
 	script_func.cpp

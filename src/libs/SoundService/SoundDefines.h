@@ -1,27 +1,16 @@
 #ifndef _SOUNDDEFINES_H_
 #define _SOUNDDEFINES_H_
 
-#include "d_types.h"
-#include "memop.h"
 ///////////////////////////////////////////////////////////////////
 // CONSTANTS
 ///////////////////////////////////////////////////////////////////
-//#define TRACE_INFORMATION
-#ifndef _XBOX
-#define FIO(a) api->fio->_##a
-#else
-#define FIO(a) a
-#endif
-
-#ifndef _XBOX
+#define TRACE_INFORMATION 0
+#define FIO(a) fio->_##a
 #define MAX_CACHED_DATA (4 * 1024 * 1024)
-#else
-#define MAX_CACHED_DATA (2 * 1024 * 1024)
-#endif
 
 #define SOUND_INVALID_ID 0
-#define MAX_SOUND_DUPLICATES 50 // 8
-#define COMMON_STRING_LENGTH 256
+#define MAX_SOUND_DUPLICATES 50
+#define COMMON_STRING_LENGTH 2048
 #define MAX_SOUND_DRIVERS 5
 #define ERROR_POSITION -1.0f
 #define MIN_VOLUME 0.01f
@@ -57,37 +46,21 @@ enum eSoundType
     MP3_3D = 3,
     PCM_STEREO = 4
 };
+
 enum eVolumeType
 {
     VOLUME_FX = 1,
     VOLUME_MUSIC = 2,
     VOLUME_SPEECH = 3
 };
+
 enum eSoundMessage
 {
     SM_MAX_DISTANCE = 1,
     SM_MIN_DISTANCE = 2,
-    SM_POSITION = 3,
-    /*
-    SM_CONE_ANGELS,
-    SM_CONE_OUTSIDE_VOLUME,
-    SM_VELOCITY
-    */
+    SM_POSITION = 3
 };
 
-#ifdef _XBOX
-typedef unsigned long FOURCC;
-#define D3DVALUE float
-
-typedef struct
-{
-    FOURCC ckid;
-    dword cksize;
-    FOURCC fccType;
-    dword dwDataOffset;
-    dword dwFlags;
-} MMCKINFO;
-#endif
 ///////////////////////////////////////////////////////////////////
 // DEFINES
 ///////////////////////////////////////////////////////////////////
@@ -102,9 +75,7 @@ typedef struct
 #define THROW_STRING(s, p)                                                                                             \
     {                                                                                                                  \
         static char _tmpString[2048];                                                                                  \
-                                                                                                                       \
-        sprintf(_tmpString, s, p);                                                                                     \
-        _VSYSTEM_API->Trace(_tmpString);                                                                               \
+        sprintf_s(_tmpString, s, p);                                                                                   \
         throw _tmpString;                                                                                              \
     }
 

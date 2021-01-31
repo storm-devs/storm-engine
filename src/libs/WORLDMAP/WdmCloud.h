@@ -11,11 +11,14 @@
 #ifndef _WdmCloud_H_
 #define _WdmCloud_H_
 
+#include "Matrix.h"
 #include "WdmRenderObject.h"
-#include "matrix.h"
 
 class WdmCloud : public WdmRenderObject
 {
+    static IDirect3DVertexDeclaration9 *vertexDecl_;
+    void CreateVertexDeclaration(VDX9RENDER *rs);
+
     struct MoveInfo
     {
         CVECTOR pos;
@@ -29,7 +32,7 @@ class WdmCloud : public WdmRenderObject
 
     struct Rain
     {
-        dword isLive;
+        uint32_t isLive;
         CVECTOR pos;
         float alpha;
         float vy;
@@ -40,7 +43,7 @@ class WdmCloud : public WdmRenderObject
     struct Vertex
     {
         CVECTOR pos;
-        dword c;
+        uint32_t c;
         float u, v;
     };
 
@@ -52,10 +55,10 @@ class WdmCloud : public WdmRenderObject
     virtual ~WdmCloud();
 
     //Расчёты
-    virtual void Update(float dltTime);
+    void Update(float dltTime) override;
     //Отрисовка
-    virtual void PRender(VDX8RENDER *rs);
-    virtual void LRender(VDX8RENDER *rs);
+    void PRender(VDX9RENDER *rs) override;
+    void LRender(VDX9RENDER *rs) override;
 
     virtual void Move(float dltTime);
 
@@ -92,7 +95,7 @@ class WdmCloud : public WdmRenderObject
     float rainBurnTime;
 
   private:
-    void Render(VDX8RENDER *rs);
+    void Render(VDX9RENDER *rs);
     void FindPartPos(CVECTOR &v);
     float Rnd();
 };

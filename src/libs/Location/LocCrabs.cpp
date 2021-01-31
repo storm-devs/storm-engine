@@ -3,6 +3,8 @@
 //============================================================================================
 
 #include "LocCrabs.h"
+#include "Entity.h"
+#include "core.h"
 
 //============================================================================================
 
@@ -21,20 +23,19 @@ LocCrabs::~LocCrabs()
 bool LocCrabs::Init()
 {
     //Указатель на локацию
-    ENTITY_ID loc;
-    _CORE_API->FindClass(&loc, "location", 0);
-    Location *location = (Location *)_CORE_API->GetEntityPointer(&loc);
+    const auto loc = EntityManager::GetEntityId("location");
+    auto *location = (Location *)EntityManager::GetEntityPointer(loc);
     if (!location)
         return false;
     //Исполнение
-    _CORE_API->LayerCreate("realize", true, false);
-    _CORE_API->LayerSetFlags("realize", LRFLAG_REALIZE);
-    _CORE_API->LayerAdd("realize", GetID(), 100001);
+    // core.LayerCreate("realize", true, false);
+    EntityManager::SetLayerType(REALIZE, EntityManager::Layer::Type::realize);
+    EntityManager::AddToLayer(REALIZE, GetId(), 100000);
     return true;
 }
 
 //Сообщения
-dword _cdecl LocCrabs::ProcessMessage(MESSAGE &message)
+uint64_t LocCrabs::ProcessMessage(MESSAGE &message)
 {
     long num = message.Long();
     if (num < 1)
@@ -42,9 +43,8 @@ dword _cdecl LocCrabs::ProcessMessage(MESSAGE &message)
     if (num > sizeof(crab) / sizeof(LocCrab))
         num = sizeof(crab) / sizeof(LocCrab);
     //Указатель на локацию
-    ENTITY_ID loc;
-    _CORE_API->FindClass(&loc, "location", 0);
-    Location *location = (Location *)_CORE_API->GetEntityPointer(&loc);
+    const auto loc = EntityManager::GetEntityId("location");
+    auto *location = (Location *)EntityManager::GetEntityPointer(loc);
     if (!location)
         return 0;
     //Заводим крабов
@@ -54,12 +54,12 @@ dword _cdecl LocCrabs::ProcessMessage(MESSAGE &message)
 }
 
 //Исполнение
-void LocCrabs::Execute(dword delta_time)
+void LocCrabs::Execute(uint32_t delta_time)
 {
 }
 
 //Рисование
-void LocCrabs::Realize(dword delta_time)
+void LocCrabs::Realize(uint32_t delta_time)
 {
     float dltTime = delta_time * 0.001f;
     for (long i = 0; i < num; i++)

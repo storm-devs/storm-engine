@@ -1,22 +1,25 @@
 #include "ActivePerkShower.h"
+#include "../../Shared/battle_interface/msg_control.h"
 #include "bi_defines.h"
-#include "msg_control.h"
+#include "core.h"
+#include "vmodule_api.h"
+#include <exception>
 
 ActivePerkShower::ActivePerkShower()
 {
-    rs = null;
+    rs = nullptr;
 
     m_idVBuf = -1;
     m_idIBuf = -1;
 
     m_nTextureQ = 0;
-    m_pTexDescr = null;
+    m_pTexDescr = nullptr;
 
     m_nShowPlaceQ = 0;
-    m_pShowPlaces = null;
+    m_pShowPlaces = nullptr;
 
     m_nIShowQ = 0;
-    m_pIconsList = null;
+    m_pIconsList = nullptr;
 }
 
 ActivePerkShower::~ActivePerkShower()
@@ -26,15 +29,17 @@ ActivePerkShower::~ActivePerkShower()
 
 bool ActivePerkShower::Init()
 {
-    if ((rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render")) == NULL)
+    if ((rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"))) == nullptr)
     {
-        SE_THROW_MSG("Can`t create render service");
+        throw std::exception("Can`t create render service");
     }
 
-    if (AttributesPointer == null)
+    if (AttributesPointer == nullptr)
         return false;
+
     if (!CreateTextures(AttributesPointer->GetAttributeClass("Textures")))
         return false;
+
     if (!CreateShowPlaces(AttributesPointer->GetAttributeClass("ShowParam")))
     {
         ReleaseAll();
@@ -48,17 +53,17 @@ bool ActivePerkShower::Init()
     return true;
 }
 
-void ActivePerkShower::Execute(dword delta_time)
+void ActivePerkShower::Execute(uint32_t delta_time)
 {
 }
 
-void ActivePerkShower::Realize(dword delta_time)
+void ActivePerkShower::Realize(uint32_t delta_time) const
 {
-    if (m_pTexDescr == null)
+    if (m_pTexDescr == nullptr)
         return;
     rs->MakePostProcess();
 
-    for (int i = 0; i < m_nTextureQ; i++)
+    for (auto i = 0; i < m_nTextureQ; i++)
     {
         if (m_pTexDescr[i].m_nPicsQ == 0)
             continue;
@@ -69,17 +74,17 @@ void ActivePerkShower::Realize(dword delta_time)
     }
 }
 
-dword _cdecl ActivePerkShower::ProcessMessage(MESSAGE &message)
+uint64_t ActivePerkShower::ProcessMessage(MESSAGE &message)
 {
     switch (message.Long())
     {
     case MSG_ACTIVE_PERK_LIST_REFRESH: {
         char param[256];
         message.String(sizeof(param), param);
-        ATTRIBUTES *pA = message.AttributePointer();
-        if (stricmp(param, "add") == 0)
+        auto *const pA = message.AttributePointer();
+        if (_stricmp(param, "add") == 0)
             AddIconToList(pA);
-        else if (stricmp(param, "del") == 0)
+        else if (_stricmp(param, "del") == 0)
             DelIconFromList(pA);
     }
     break;
@@ -92,23 +97,23 @@ dword _cdecl ActivePerkShower::ProcessMessage(MESSAGE &message)
 
 bool ActivePerkShower::CreateTextures(ATTRIBUTES *pATextureRoot)
 {
-    if (pATextureRoot == null)
+    if (pATextureRoot == nullptr)
         return false;
 
-    int q = pATextureRoot->GetAttributesNum();
+    const size_t q = pATextureRoot->GetAttributesNum();
     if (q <= 0)
         return false;
 
-    m_pTexDescr = NEW _TEXTURE_DESCR[q];
-    if (m_pTexDescr == null)
+    m_pTexDescr = new _TEXTURE_DESCR[q];
+    if (m_pTexDescr == nullptr)
     {
-        SE_THROW("allocate memory error");
+        throw std::exception("allocate memory error");
     }
 
-    for (int i = 0; i < q; i++)
+    for (auto i = 0; i < q; i++)
     {
-        ATTRIBUTES *pA = pATextureRoot->GetAttributeClass(i);
-        if (pA == null)
+        auto *pA = pATextureRoot->GetAttributeClass(i);
+        if (pA == nullptr)
         {
             m_pTexDescr[i].m_idTexture = -1;
             m_pTexDescr[i].m_nCol = 1;
@@ -131,7 +136,7 @@ bool ActivePerkShower::CreateTextures(ATTRIBUTES *pATextureRoot)
 
 bool ActivePerkShower::CreateShowPlaces(ATTRIBUTES *pAPlacesRoot)
 {
-    if (pAPlacesRoot == null)
+    if (pAPlacesRoot == nullptr)
         return false;
 
     RefreshShowPlaces(pAPlacesRoot);
@@ -144,12 +149,12 @@ void ActivePerkShower::RefreshShowPlaces(ATTRIBUTES *pAPlacesRoot)
     ATTRIBUTES *pAttr;
 
     if (m_pShowPlaces)
-        SE_DELETE(m_pShowPlaces);
+        STORM_DELETE(m_pShowPlaces);
 
     m_nIconWidth = 64;
     m_nIconHeight = 64;
     pAttr = pAPlacesRoot->GetAttributeClass("IconSize");
-    if (pAttr != null)
+    if (pAttr != nullptr)
     {
         m_nIconWidth = pAttr->GetAttributeAsDword("horz", 64);
         m_nIconHeight = pAttr->GetAttributeAsDword("vert", 64);
@@ -158,7 +163,7 @@ void ActivePerkShower::RefreshShowPlaces(ATTRIBUTES *pAPlacesRoot)
     m_nSpaceHorz = 4;
     m_nSpaceVert = 4;
     pAttr = pAPlacesRoot->GetAttributeClass("IconSpace");
-    if (pAttr != null)
+    if (pAttr != nullptr)
     {
         m_nSpaceHorz = pAttr->GetAttributeAsDword("horz", 4);
         m_nSpaceVert = pAttr->GetAttributeAsDword("vert", 4);
@@ -170,7 +175,7 @@ void ActivePerkShower::RefreshShowPlaces(ATTRIBUTES *pAPlacesRoot)
     rectBound.right = 624;
     rectBound.bottom = 464;
     pAttr = pAPlacesRoot->GetAttributeClass("PosRect");
-    if (pAttr != null)
+    if (pAttr != nullptr)
     {
         rectBound.left = pAttr->GetAttributeAsDword("left", rectBound.left);
         rectBound.top = pAttr->GetAttributeAsDword("top", rectBound.top);
@@ -186,45 +191,45 @@ void ActivePerkShower::RefreshShowPlaces(ATTRIBUTES *pAPlacesRoot)
         nVertQ = 1;
 
     m_nShowPlaceQ = nHorzQ * nVertQ;
-    m_pShowPlaces = NEW _SHOW_PLACE[m_nShowPlaceQ];
-    if (m_pShowPlaces == null)
+    m_pShowPlaces = new _SHOW_PLACE[m_nShowPlaceQ];
+    if (m_pShowPlaces == nullptr)
     {
-        SE_THROW("allocate memory error");
+        throw std::exception("allocate memory error");
     }
 
-    for (int ih = 0; ih < nHorzQ; ih++)
+    for (auto ih = 0; ih < nHorzQ; ih++)
     {
-        for (int iv = 0; iv < nVertQ; iv++)
+        for (auto iv = 0; iv < nVertQ; iv++)
         {
-            int idx = iv + ih * nVertQ;
-            m_pShowPlaces[idx].right = (float)(rectBound.right - ih * (m_nIconWidth + m_nSpaceHorz));
-            m_pShowPlaces[idx].left = (float)(m_pShowPlaces[idx].right - m_nIconWidth);
-            m_pShowPlaces[idx].top = (float)(rectBound.top + iv * (m_nIconHeight + m_nSpaceVert));
-            m_pShowPlaces[idx].bottom = (float)(m_pShowPlaces[idx].top + m_nIconHeight);
+            const auto idx = iv + ih * nVertQ;
+            m_pShowPlaces[idx].right = static_cast<float>(rectBound.right - ih * (m_nIconWidth + m_nSpaceHorz));
+            m_pShowPlaces[idx].left = static_cast<float>(m_pShowPlaces[idx].right - m_nIconWidth);
+            m_pShowPlaces[idx].top = static_cast<float>(rectBound.top + iv * (m_nIconHeight + m_nSpaceVert));
+            m_pShowPlaces[idx].bottom = static_cast<float>(m_pShowPlaces[idx].top + m_nIconHeight);
         }
     }
 }
 
 bool ActivePerkShower::InitIconsList(ATTRIBUTES *pAIconsRoot)
 {
-    if (pAIconsRoot == null)
+    if (pAIconsRoot == nullptr)
         return true;
 
-    int q = pAIconsRoot->GetAttributesNum();
+    const size_t q = pAIconsRoot->GetAttributesNum();
     m_nIShowQ = q;
     if (m_nIShowQ == 0)
         return true;
-    m_pIconsList = NEW _PICTURE_DESCR[q];
-    if (m_pIconsList == null)
+    m_pIconsList = new _PICTURE_DESCR[q];
+    if (m_pIconsList == nullptr)
     {
-        SE_THROW("allocate memory error");
+        throw std::exception("allocate memory error");
     }
-    for (int i = 0; i < q; i++)
+    for (auto i = 0; i < q; i++)
     {
         m_pIconsList[i].m_nPicNum = 0;
         m_pIconsList[i].m_nPicTexIdx = 0;
-        ATTRIBUTES *pA = pAIconsRoot->GetAttributeClass(i);
-        if (pA != null)
+        auto *pA = pAIconsRoot->GetAttributeClass(i);
+        if (pA != nullptr)
         {
             m_pIconsList[i].m_nPicNum = pA->GetAttributeAsDword("texture", 0);
             m_pIconsList[i].m_nPicTexIdx = pA->GetAttributeAsDword("pic_idx", 0);
@@ -237,33 +242,38 @@ bool ActivePerkShower::InitIconsList(ATTRIBUTES *pAIconsRoot)
 
 void ActivePerkShower::AddIconToList(ATTRIBUTES *pAItemDescr)
 {
-    if (pAItemDescr == null)
+    if (pAItemDescr == nullptr)
         return;
-    int picNum = pAItemDescr->GetAttributeAsDword("pic_idx");
-    int texNum = pAItemDescr->GetAttributeAsDword("texture");
+    const int picNum = pAItemDescr->GetAttributeAsDword("pic_idx");
+    const int texNum = pAItemDescr->GetAttributeAsDword("texture");
 
-    for (int i = 0; i < m_nIShowQ; i++)
+    if (m_pIconsList != nullptr)
     {
-        if (texNum == m_pIconsList[i].m_nPicTexIdx && picNum == m_pIconsList[i].m_nPicNum)
-            return; // уже есть такая абилити
+        for (auto i = 0; i < m_nIShowQ; i++)
+        {
+            if (texNum == m_pIconsList[i].m_nPicTexIdx && picNum == m_pIconsList[i].m_nPicNum)
+                return; // уже есть такая абилити
+        }
     }
 
     m_nIShowQ++;
-    if (m_pIconsList == null)
-        m_pIconsList = NEW _PICTURE_DESCR[m_nIShowQ];
+    if (m_pIconsList == nullptr)
+    {
+        m_pIconsList = new _PICTURE_DESCR[m_nIShowQ];
+    }
     else
     {
-        _PICTURE_DESCR *old_pIconsList = m_pIconsList;
-        m_pIconsList = NEW _PICTURE_DESCR[m_nIShowQ];
-        if (m_pIconsList != null)
+        auto *const old_pIconsList = m_pIconsList;
+        m_pIconsList = new _PICTURE_DESCR[m_nIShowQ];
+        if (m_pIconsList != nullptr)
         {
             memcpy(m_pIconsList, old_pIconsList, sizeof(_PICTURE_DESCR) * (m_nIShowQ - 1));
         }
         delete old_pIconsList;
     }
-    if (m_pIconsList == null)
+    if (m_pIconsList == nullptr)
     {
-        SE_THROW("allocate memory error");
+        throw std::exception("allocate memory error");
     }
     m_pIconsList[m_nIShowQ - 1].m_nPicTexIdx = texNum;
     m_pIconsList[m_nIShowQ - 1].m_nPicNum = picNum;
@@ -273,13 +283,13 @@ void ActivePerkShower::AddIconToList(ATTRIBUTES *pAItemDescr)
 
 void ActivePerkShower::DelIconFromList(ATTRIBUTES *pAIconDescr)
 {
-    if (pAIconDescr == null)
+    if (pAIconDescr == nullptr)
         return;
-    int picNum = pAIconDescr->GetAttributeAsDword("pic_idx");
-    int texNum = pAIconDescr->GetAttributeAsDword("texture");
+    const int picNum = pAIconDescr->GetAttributeAsDword("pic_idx");
+    const int texNum = pAIconDescr->GetAttributeAsDword("texture");
 
-    int del_idx = m_nIShowQ;
-    for (int i = 0; i < m_nIShowQ; i++)
+    auto del_idx = m_nIShowQ;
+    for (auto i = 0; i < m_nIShowQ; i++)
     {
         if (i > del_idx)
         {
@@ -301,8 +311,8 @@ void ActivePerkShower::FillVIBuffers()
 {
     int pi, ti, start_idx;
 
-    BI_ONETEXTURE_VERTEX *pvb = (BI_ONETEXTURE_VERTEX *)rs->LockVertexBuffer(m_idVBuf);
-    if (pvb == null)
+    auto *pvb = static_cast<BI_ONETEXTURE_VERTEX *>(rs->LockVertexBuffer(m_idVBuf));
+    if (pvb == nullptr)
         return;
 
     start_idx = 0;
@@ -323,11 +333,11 @@ void ActivePerkShower::FillVIBuffers()
     rs->UnLockVertexBuffer(m_idVBuf);
 }
 
-void ActivePerkShower::FillRectData(void *vbuf, FRECT &rectPos, FRECT &rectTex)
+void ActivePerkShower::FillRectData(void *vbuf, const FRECT &rectPos, const FRECT &rectTex)
 {
-    if (vbuf == null)
+    if (vbuf == nullptr)
         return;
-    BI_ONETEXTURE_VERTEX *ptmp = (BI_ONETEXTURE_VERTEX *)vbuf;
+    auto *ptmp = static_cast<BI_ONETEXTURE_VERTEX *>(vbuf);
     ptmp[0].pos.x = rectPos.left;
     ptmp[0].pos.y = rectPos.top;
     ptmp[1].pos.x = rectPos.left;
@@ -347,31 +357,31 @@ void ActivePerkShower::FillRectData(void *vbuf, FRECT &rectPos, FRECT &rectTex)
     ptmp[3].tv = rectTex.bottom;
 }
 
-FRECT ActivePerkShower::GetTextureRect(int textIdx, int picIdx)
+FRECT ActivePerkShower::GetTextureRect(int textIdx, int picIdx) const
 {
     FRECT retRect;
 
-    int vIdx = picIdx / m_pTexDescr[textIdx].m_nCol;
-    int hIdx = picIdx - vIdx * m_pTexDescr[textIdx].m_nCol;
+    const int vIdx = picIdx / m_pTexDescr[textIdx].m_nCol;
+    const int hIdx = picIdx - vIdx * m_pTexDescr[textIdx].m_nCol;
 
-    retRect.left = (float)hIdx / m_pTexDescr[textIdx].m_nCol;
-    retRect.top = (float)vIdx / m_pTexDescr[textIdx].m_nRow;
-    retRect.right = (float)(hIdx + 1.f) / m_pTexDescr[textIdx].m_nCol;
-    retRect.bottom = (float)(vIdx + 1.f) / m_pTexDescr[textIdx].m_nRow;
+    retRect.left = static_cast<float>(hIdx) / m_pTexDescr[textIdx].m_nCol;
+    retRect.top = static_cast<float>(vIdx) / m_pTexDescr[textIdx].m_nRow;
+    retRect.right = static_cast<float>(hIdx + 1.f) / m_pTexDescr[textIdx].m_nCol;
+    retRect.bottom = static_cast<float>(vIdx + 1.f) / m_pTexDescr[textIdx].m_nRow;
 
     return retRect;
 }
 
 bool ActivePerkShower::InitCommonBuffers()
 {
-    m_idVBuf = rs->CreateVertexBufferManaged(BI_ONETEX_VERTEX_FORMAT, m_nShowPlaceQ * 4 * sizeof(BI_ONETEXTURE_VERTEX),
-                                             D3DUSAGE_WRITEONLY);
-    m_idIBuf = rs->CreateIndexBufferManaged(m_nShowPlaceQ * 6 * 2);
+    m_idVBuf = rs->CreateVertexBuffer(BI_ONETEX_VERTEX_FORMAT, m_nShowPlaceQ * 4 * sizeof(BI_ONETEXTURE_VERTEX),
+                                      D3DUSAGE_WRITEONLY);
+    m_idIBuf = rs->CreateIndexBuffer(m_nShowPlaceQ * 6 * 2);
     if (m_idIBuf == -1 || m_idVBuf == -1)
         return false;
 
     int i;
-    WORD *pibuf = (WORD *)rs->LockIndexBuffer(m_idIBuf);
+    auto *pibuf = static_cast<uint16_t *>(rs->LockIndexBuffer(m_idIBuf));
     for (i = 0; i < m_nShowPlaceQ; i++)
     {
         pibuf[i * 6 + 0] = i * 4 + 0;
@@ -383,7 +393,7 @@ bool ActivePerkShower::InitCommonBuffers()
     }
     rs->UnLockIndexBuffer(m_idIBuf);
 
-    BI_ONETEXTURE_VERTEX *pvbuf = (BI_ONETEXTURE_VERTEX *)rs->LockVertexBuffer(m_idVBuf);
+    auto *pvbuf = static_cast<BI_ONETEXTURE_VERTEX *>(rs->LockVertexBuffer(m_idVBuf));
     for (i = 0; i < m_nShowPlaceQ * 4; i++)
     {
         pvbuf[i].pos.z = 1.f;
@@ -403,12 +413,12 @@ void ActivePerkShower::ReleaseAll()
 
     for (i = 0; i < m_nTextureQ; i++)
         TEXTURE_RELEASE(rs, m_pTexDescr[i].m_idTexture);
-    SE_DELETE(m_pTexDescr);
+    STORM_DELETE(m_pTexDescr);
     m_nTextureQ = 0;
 
-    SE_DELETE(m_pShowPlaces);
+    STORM_DELETE(m_pShowPlaces);
     m_nShowPlaceQ = 0;
 
-    SE_DELETE(m_pIconsList);
+    STORM_DELETE(m_pIconsList);
     m_nIShowQ = 0;
 }

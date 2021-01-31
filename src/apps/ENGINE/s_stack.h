@@ -9,20 +9,20 @@
 
 class S_STACK : public VS_STACK
 {
-    DATA **pStackData;
-    DWORD Buffer_size;
-    DWORD Data_num;
+    std::vector<DATA *> pStackData;
+    uint32_t Buffer_size;
+    uint32_t Data_num;
     VIRTUAL_COMPILER *pVCompiler;
 
   public:
     S_STACK();
     ~S_STACK();
     void Release();
-    DATA *Push(DATA *pdataclass = 0);
+    DATA *Push(DATA *pdataclass = nullptr);
     DATA *Pop();
-    DATA *Read(DWORD offset, DWORD index);
+    DATA *Read(uint32_t offset, uint32_t index);
     DATA *Read();
-    DWORD GetDataNum()
+    uint32_t GetDataNum()
     {
         return Data_num;
     };
@@ -30,7 +30,7 @@ class S_STACK : public VS_STACK
     {
         pVCompiler = pvc;
     }
-    void InvalidateFrom(DWORD index);
+    void InvalidateFrom(uint32_t index);
 };
 
 #endif

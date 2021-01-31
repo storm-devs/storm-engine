@@ -1,9 +1,9 @@
 #ifndef _SEPS_H_
 #define _SEPS_H_
 
-#include "dx8render.h"
+#include "Matrix.h"
+#include "dx9render.h"
 #include "geometry.h"
-#include "matrix.h"
 #include "vfile_service.h"
 #include "vmodule_api.h"
 
@@ -45,10 +45,12 @@
 #define PSKEY_PANGLEKEY "key_angle"
 #define PSKEY_WINDEFFECTKEY "key_windeffect"
 
+namespace sink_effect
+{
 struct PARTICLE_VERTEX
 {
     CVECTOR pos;
-    DWORD color;
+    uint32_t color;
     float tu, tv;
 };
 
@@ -77,11 +79,11 @@ struct PARTICLE
 
     long lifetime;
     long time;
-    dword color;
+    uint32_t color;
     bool live;
     bool done;
 
-    dword flow_track_index;
+    uint32_t flow_track_index;
 };
 
 #define TRACK_EVENT_MAX 16
@@ -91,30 +93,30 @@ struct TRACK_EVENT
     long time;
     float value;
 };
+} // namespace sink_effect
 
 class PARTICLES;
 
 class SEPS_PS
 {
     friend PARTICLES;
-    TRACK_EVENT Visibility[TRACK_EVENT_MAX];
-    TRACK_EVENT ParticleSize[TRACK_EVENT_MAX];
-    TRACK_EVENT ParticleSpeed[TRACK_EVENT_MAX];
-    TRACK_EVENT ParticleSpin[TRACK_EVENT_MAX];
-    TRACK_EVENT ParticleAngle[TRACK_EVENT_MAX];
-    TRACK_EVENT WindEffect[TRACK_EVENT_MAX];
+    sink_effect::TRACK_EVENT Visibility[TRACK_EVENT_MAX];
+    sink_effect::TRACK_EVENT ParticleSize[TRACK_EVENT_MAX];
+    sink_effect::TRACK_EVENT ParticleSpeed[TRACK_EVENT_MAX];
+    sink_effect::TRACK_EVENT ParticleSpin[TRACK_EVENT_MAX];
+    sink_effect::TRACK_EVENT ParticleAngle[TRACK_EVENT_MAX];
+    sink_effect::TRACK_EVENT WindEffect[TRACK_EVENT_MAX];
 
     bool bTrackAngle;
 
-    VAPI *api;
-    VDX8RENDER *RenderService;
+    VDX9RENDER *RenderService;
     VGEOMETRY *gs;
 
     long TextureID[MAX_PS_TEXTURES];
     long TexturesNum;
 
     long ParticlesNum;
-    PARTICLE *Particle;
+    sink_effect::PARTICLE *Particle;
 
     IDirect3DVertexBuffer9 *VBuffer;
 
@@ -142,26 +144,26 @@ class SEPS_PS
 
     //---------------------------------
 
-    dword nEmitted;
+    uint32_t nEmitted;
     float EmissionTime; // time for emitting one particle
     long DeltaTimeSLE;  // SinceLastEmission
     bool EmitParticle();
     long nSystemLifeTime;
-    void AddTrackPoint(CVECTOR pos);
+    // void  AddTrackPoint(CVECTOR pos);
     CVECTOR *pFlowTrack;
-    dword nFlowTrackSize;
+    uint32_t nFlowTrackSize;
     bool bUseFlowTrack;
-    void SetFlowTrack(dword index);
+    void SetFlowTrack(uint32_t index);
     float fTrackPointRadius;
     float EmissionTimeRand;
     float CurrentEmissionTimeRand;
     bool bLayOnSurface;
-    void LayOnSurface(dword index);
-    ENTITY_ID SurfaceID;
-    void UseSurface(ENTITY_ID surface_id);
+    void LayOnSurface(uint32_t index);
+    entid_t SurfaceID;
+    void UseSurface(entid_t surface_id);
     float fSurfaceOffset;
     char *TechniqueName;
-    dword ParticleColor;
+    uint32_t ParticleColor;
 
     //---------------------------------
 
@@ -182,7 +184,7 @@ class SEPS_PS
     SEPS_PS *l_PTR;
     SEPS_PS *r_PTR;
 
-    ENTITY_ID LinkObject;
+    entid_t LinkObject;
     CVECTOR LinkPos;
     CVECTOR LinkDir;
     CVECTOR LinkDirPos;
@@ -195,18 +197,18 @@ class SEPS_PS
     ~SEPS_PS();
     bool Init(INIFILE *ini, char *psname);
     void UpdateVertexBuffer();
-    void Realize(dword DeltaTime);
-    void Execute(dword DeltaTime);
-    void ProcessParticles(dword DeltaTime);
+    void Realize(uint32_t DeltaTime);
+    void Execute(uint32_t DeltaTime);
+    void ProcessParticles(uint32_t DeltaTime);
     bool Complete();
     void Reset();
 
-    void SetParticlesTracks(dword DeltaTime);
+    void SetParticlesTracks(uint32_t DeltaTime);
 
-    float GetTrackValue(TRACK_EVENT *Track, long Time);
-    bool BuildTrack(INIFILE *ini, TRACK_EVENT *Track, char *psname, char *key_name);
+    float GetTrackValue(sink_effect::TRACK_EVENT *Track, long Time);
+    bool BuildTrack(INIFILE *ini, sink_effect::TRACK_EVENT *Track, const char *psname, const char *key_name);
     void SetEmitter(CVECTOR p, CVECTOR a);
-    void LinkToObject(ENTITY_ID id, CVECTOR _LinkPos);
+    void LinkToObject(entid_t id, CVECTOR _LinkPos);
     void SetDelay(long _delay);
     void TryEmitParticle();
 
@@ -221,7 +223,7 @@ class SEPS_PS
     void ProcessOrder(SEPS_PS **Root, SEPS_PS **Top);
     //---------------------------------------------------------------
 
-    void SetLifeTime(dword time)
+    void SetLifeTime(uint32_t time)
     {
         nSystemLifeTime = time;
     }

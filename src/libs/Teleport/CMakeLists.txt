@@ -1,6 +1,6 @@
 project(teleport)
 
-add_library(${PROJECT_NAME} MODULE
+add_library(${PROJECT_NAME} STATIC
 	teleport.cpp
 	teleport.h
 )

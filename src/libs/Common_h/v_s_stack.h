@@ -9,13 +9,14 @@ class VS_STACK
 {
   public:
     VS_STACK(){};
+
     virtual ~VS_STACK(){};
-    virtual DATA *Push(DATA *pdataclass = 0) = 0;
+    virtual DATA *Push(DATA *pdataclass = nullptr) = 0;
     virtual DATA *Pop() = 0;
-    virtual DATA *Read(DWORD offset, DWORD index) = 0;
+    virtual DATA *Read(uint32_t offset, uint32_t index) = 0;
     virtual DATA *Read() = 0;
-    virtual DWORD GetDataNum() = 0;
-    virtual void InvalidateFrom(DWORD index) = 0;
+    virtual uint32_t GetDataNum() = 0;
+    virtual void InvalidateFrom(uint32_t index) = 0;
 };
 
 #endif

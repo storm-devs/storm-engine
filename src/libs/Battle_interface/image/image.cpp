@@ -1,8 +1,7 @@
 #include "image.h"
 #include "imgrender.h"
-#include "material.h"
 
-BIImage::BIImage(VDX8RENDER *rs, BIImageMaterial *pMaterial) : m_aRelPos(_FL)
+BIImage::BIImage(VDX9RENDER *rs, BIImageMaterial *pMaterial)
 {
     m_pRS = rs;
     m_pMaterial = pMaterial;
@@ -16,30 +15,31 @@ BIImage::~BIImage()
     Release();
 }
 
-void BIImage::FillBuffers(BI_IMAGE_VERTEX *pV, word *pT, long &nV, long &nT)
+void BIImage::FillBuffers(BI_IMAGE_VERTEX *pV, uint16_t *pT, size_t &nV, size_t &nT)
 {
     long n;
-    long ni = nT * 3;
-    long nv = nV;
+    auto ni = nT * 3;
+    auto nv = nV;
 
     // index buffer
     if (m_eType == BIType_square)
     {
-        for (n = 2; n < m_aRelPos; n++) // квадратик делается по принципу Triangle Strip
+        for (n = 2; n < m_aRelPos.size(); n++) // квадратик делается по принципу Triangle Strip
         {
-            pT[ni++] = (word)(nv + n - 2);
-            pT[ni++] = (word)(nv + n - 1);
-            pT[ni++] = (word)(nv + n);
+            pT[ni++] = static_cast<uint16_t>(nv + n - 2);
+            pT[ni++] = static_cast<uint16_t>(nv + n - 1);
+            pT[ni++] = static_cast<uint16_t>(nv + n);
         }
         nT += n - 2;
     }
     else if (m_eType == BIType_clocksquare)
-    { // квадратные "часы" делаются по принципу Triangle Fan
-        for (n = 2; n < m_aRelPos; n++)
+    {
+        // квадратные "часы" делаются по принципу Triangle Fan
+        for (n = 2; n < m_aRelPos.size(); n++)
         {
-            pT[ni++] = (word)(nv);
-            pT[ni++] = (word)(nv + n - 1);
-            pT[ni++] = (word)(nv + n);
+            pT[ni++] = static_cast<uint16_t>(nv);
+            pT[ni++] = static_cast<uint16_t>(nv + n - 1);
+            pT[ni++] = static_cast<uint16_t>(nv + n);
         }
         nT += n - 2;
     }
@@ -47,7 +47,7 @@ void BIImage::FillBuffers(BI_IMAGE_VERTEX *pV, word *pT, long &nV, long &nT)
         return;
 
     // vertex buffer
-    for (n = 0; n < m_aRelPos; n++)
+    for (n = 0; n < m_aRelPos.size(); n++)
     {
         pV[nv].pos.x = CalculateMidPos(m_BasePos.left, m_BasePos.right, m_aRelPos[n].x);
         pV[nv].pos.y = CalculateMidPos(m_BasePos.top, m_BasePos.bottom, m_aRelPos[n].y);
@@ -61,7 +61,7 @@ void BIImage::FillBuffers(BI_IMAGE_VERTEX *pV, word *pT, long &nV, long &nT)
     nV += n;
 }
 
-void BIImage::SetColor(dword color)
+void BIImage::SetColor(uint32_t color)
 {
     m_dwColor = color;
     m_pMaterial->UpdateFlagOn();
@@ -69,9 +69,10 @@ void BIImage::SetColor(dword color)
 
 void BIImage::SetPosition(long nLeft, long nTop, long nRight, long nBottom)
 {
-    m_pMaterial->GetImgRender()->TranslateBasePosToRealPos((float)nLeft, (float)nTop, m_BasePos.left, m_BasePos.top);
-    m_pMaterial->GetImgRender()->TranslateBasePosToRealPos((float)nRight, (float)nBottom, m_BasePos.right,
-                                                           m_BasePos.bottom);
+    m_pMaterial->GetImgRender()->TranslateBasePosToRealPos(static_cast<float>(nLeft), static_cast<float>(nTop),
+                                                           m_BasePos.left, m_BasePos.top);
+    m_pMaterial->GetImgRender()->TranslateBasePosToRealPos(static_cast<float>(nRight), static_cast<float>(nBottom),
+                                                           m_BasePos.right, m_BasePos.bottom);
     m_pMaterial->UpdateFlagOn();
 }
 
@@ -107,20 +108,20 @@ void BIImage::CutSide(float fleft, float fright, float ftop, float fbottom)
 {
     if (m_eType != BIType_square)
         return;
-    m_aRelPos.DelAll();
+    m_aRelPos.clear();
     FPOINT fp;
     fp.x = fleft;
     fp.y = 1.f - fbottom;
-    m_aRelPos.Add(fp);
+    m_aRelPos.push_back(fp);
     fp.x = fleft;
     fp.y = ftop;
-    m_aRelPos.Add(fp);
+    m_aRelPos.push_back(fp);
     fp.x = 1.f - fright;
     fp.y = 1.f - fbottom;
-    m_aRelPos.Add(fp);
+    m_aRelPos.push_back(fp);
     fp.x = 1.f - fright;
     fp.y = ftop;
-    m_aRelPos.Add(fp);
+    m_aRelPos.push_back(fp);
     m_pMaterial->UpdateFlagOn();
 }
 
@@ -128,24 +129,24 @@ void BIImage::CutClock(float fBegin, float fEnd, float fFactor)
 {
     if (m_eType != BIType_clocksquare)
         return;
-    m_aRelPos.DelAll();
+    m_aRelPos.clear();
     FPOINT fp;
     fp.x = 0.5f;
     fp.y = 0.5f;
-    m_aRelPos.Add(fp);
-    float fEndAng = fBegin + (fEnd - fBegin) * fFactor;
+    m_aRelPos.push_back(fp);
+    const auto fEndAng = fBegin + (fEnd - fBegin) * fFactor;
     // первая/начальная точка на часах
-    m_aRelPos.Add(GetClockPoint(fBegin, fp));
+    m_aRelPos.push_back(GetClockPoint(fBegin, fp));
     // следующие углы
     if (fBegin < fEndAng)
-        for (float fAng = GetNextClockCorner(fBegin); fAng < fEndAng; fAng = GetNextClockCorner(fAng))
-            m_aRelPos.Add(GetClockPoint(fAng, fp));
+        for (auto fAng = GetNextClockCorner(fBegin); fAng < fEndAng; fAng = GetNextClockCorner(fAng))
+            m_aRelPos.push_back(GetClockPoint(fAng, fp));
     else if (fBegin > fEndAng)
-        for (float fAng = GetPrevClockCorner(fBegin); fAng > fEndAng; fAng = GetPrevClockCorner(fAng))
-            m_aRelPos.Add(GetClockPoint(fAng, fp));
+        for (auto fAng = GetPrevClockCorner(fBegin); fAng > fEndAng; fAng = GetPrevClockCorner(fAng))
+            m_aRelPos.push_back(GetClockPoint(fAng, fp));
     // последняя/конечная точка на часах
-    m_aRelPos.Add(GetClockPoint(fEndAng, fp));
-    m_nVertexQuantity = m_aRelPos.Size();
+    m_aRelPos.push_back(GetClockPoint(fEndAng, fp));
+    m_nVertexQuantity = m_aRelPos.size();
     m_nTriangleQuantity = m_nVertexQuantity - 2;
     m_pMaterial->UpdateFlagOn();
 }
@@ -213,7 +214,7 @@ FPOINT &BIImage::GetClockPoint(float fAng, FPOINT &fp)
 
 float BIImage::GetNextClockCorner(float fAng)
 {
-    for (float f = -0.875f; f < 1.f; f += 0.25f)
+    for (auto f = -0.875f; f < 1.f; f += 0.25f)
         if (fAng < f)
             return f;
     return fAng + .25f;
@@ -221,14 +222,13 @@ float BIImage::GetNextClockCorner(float fAng)
 
 float BIImage::GetPrevClockCorner(float fAng)
 {
-    for (float f = 0.875f; f > -1.f; f -= 0.25f)
+    for (auto f = 0.875f; f > -1.f; f -= 0.25f)
         if (fAng > f)
             return f;
     return fAng - .25f;
 }
 
-void BIImage::Release()
+void BIImage::Release() const
 {
-    if (m_pMaterial)
-        m_pMaterial->DeleteImage(this);
+    m_pMaterial->DeleteImage(this);
 }

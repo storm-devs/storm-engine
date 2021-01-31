@@ -1,20 +1,37 @@
 #ifndef _ACTIVEPERKSHOWER_H_
 #define _ACTIVEPERKSHOWER_H_
 
-#include "bi_defines.h"
-#include "dx8render.h"
+#include "defines.h"
+#include "dx9render.h"
 
-class ActivePerkShower : public ENTITY
+class ActivePerkShower : public Entity
 {
-    VDX8RENDER *rs;
+    VDX9RENDER *rs;
 
   public:
     ActivePerkShower();
     ~ActivePerkShower();
-    bool Init();
-    void Execute(dword delta_time);
-    void Realize(dword delta_time);
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    bool Init() override;
+    void Execute(uint32_t delta_time);
+    void Realize(uint32_t delta_time) const;
+    uint64_t ProcessMessage(MESSAGE &message) override;
+
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
 
   protected:
     void ReleaseAll();
@@ -22,9 +39,10 @@ class ActivePerkShower : public ENTITY
     long m_idVBuf;
     long m_idIBuf;
     void FillVIBuffers();
-    void FillRectData(void *vbuf, FRECT &rectPos, FRECT &rectTex);
+    void FillRectData(void *vbuf, const FRECT &rectPos, const FRECT &rectTex);
 
-    int m_nTextureQ;
+    size_t m_nTextureQ;
+
     struct _TEXTURE_DESCR
     {
         long m_idTexture;
@@ -35,8 +53,9 @@ class ActivePerkShower : public ENTITY
         long m_nVertStart;
         long m_nIndxStart;
     } * m_pTexDescr;
+
     bool CreateTextures(ATTRIBUTES *pATextureRoot);
-    FRECT GetTextureRect(int textIdx, int picIdx);
+    FRECT GetTextureRect(int textIdx, int picIdx) const;
 
     int m_nIconWidth;
     int m_nIconHeight;
@@ -49,12 +68,14 @@ class ActivePerkShower : public ENTITY
     bool CreateShowPlaces(ATTRIBUTES *pAPlacesRoot);
     void RefreshShowPlaces(ATTRIBUTES *pAPlacesRoot);
 
-    int m_nIShowQ;
+    size_t m_nIShowQ;
+
     struct _PICTURE_DESCR
     {
         long m_nPicNum;
         long m_nPicTexIdx;
     } * m_pIconsList;
+
     bool InitIconsList(ATTRIBUTES *pAIconsRoot);
     void AddIconToList(ATTRIBUTES *pAIconDescr);
     void DelIconFromList(ATTRIBUTES *pAIconDescr);

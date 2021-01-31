@@ -1,9 +1,13 @@
 #include "DebugEntity.h"
+#include "Entity.h"
 #include "SoundService.h"
+#include "core.h"
+
+#include "../../shared/layers.h"
 
 SoundVisualisationEntity::SoundVisualisationEntity()
 {
-    pSound = NULL;
+    pSound = nullptr;
 }
 
 SoundVisualisationEntity::~SoundVisualisationEntity()
@@ -15,14 +19,14 @@ bool SoundVisualisationEntity::Init()
     return true;
 }
 
-void SoundVisualisationEntity::Realize(dword _dTime)
+void SoundVisualisationEntity::Realize(uint32_t dTime)
 {
     if (!pSound)
         return;
     pSound->DebugDraw();
 }
 
-void SoundVisualisationEntity::Execute(dword _dTime)
+void SoundVisualisationEntity::Execute(uint32_t dTime)
 {
 }
 
@@ -31,9 +35,9 @@ void SoundVisualisationEntity::SetMasterSoundService(SoundService *pSoundService
     pSound = pSoundService;
 }
 
-void SoundVisualisationEntity::Wakeup()
+void SoundVisualisationEntity::Wakeup() const
 {
-    api->LayerCreate("sound_debug_realize", true, false);
-    api->LayerSetRealize("sound_debug_realize", true);
-    api->LayerAdd("sound_debug_realize", GetID(), -1);
+    // core.LayerCreate("sound_debug_realize", true , false);
+    EntityManager::SetLayerType(SOUND_DEBUG_REALIZE, EntityManager::Layer::Type::realize);
+    EntityManager::AddToLayer(SOUND_DEBUG_REALIZE, GetId(), -1);
 }

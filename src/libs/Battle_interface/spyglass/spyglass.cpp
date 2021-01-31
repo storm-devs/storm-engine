@@ -1,15 +1,20 @@
 #include "spyglass.h"
-#include "../msg_control.h"
-#include "..\events.h"
-#include "..\image\image.h"
-#include "..\image\imgrender.h"
-#include "..\sea\ships_list.h"
-#include "..\utils.h"
-#include "messages.h"
+#include "../Utils.h"
+#include "../image/image.h"
+#include "../image/imgrender.h"
+#include "../sea/ships_list.h"
+#include "../shared/battle_interface/msg_control.h"
+#include "../shared/events.h"
+#include "../shared/messages.h"
+#include "Entity.h"
+#include "controls.h"
+#include "core.h"
+#include "math3d/Sphere.h"
+#include "message.h"
 
 void ISPYGLASS::ImageParam::Release()
 {
-    SE_DELETE(pImage);
+    STORM_DELETE(pImage);
 }
 
 void ISPYGLASS::ImageParam::LoadFromAttr(BIImageRender *pImgRender, ATTRIBUTES *pA, const char *pcDefName,
@@ -25,7 +30,8 @@ void ISPYGLASS::ImageParam::LoadFromAttr(BIImageRender *pImgRender, ATTRIBUTES *
     rPos.right = nDefRightPos;
     rPos.bottom = nDefBottomPos;
     BIUtils::ReadRectFromAttr(pA, "pos", rPos, rPos);
-    pImage = (BIImage *)pImgRender->CreateImage(BIType_square, sTextureName.GetBuffer(), dwColor, rUV, rPos, nPrior);
+    pImage = static_cast<BIImage *>(
+        pImgRender->CreateImage(BIType_square, sTextureName.c_str(), dwColor, rUV, rPos, nPrior));
     Assert(pImage);
 }
 
@@ -38,15 +44,15 @@ void ISPYGLASS::ImageParam::ChangeIcon(BIImageRender *pImgRender, const char *pc
     }
     else
     {
-        long nPrior = pImage ? pImage->GetPrioritet() : ImagePrioritet_DefaultValue;
-        SE_DELETE(pImage);
+        const auto nPrior = pImage ? pImage->GetPrioritet() : ImagePrioritet_DefaultValue;
+        STORM_DELETE(pImage);
         sTextureName = pcTextureName;
-        pImage =
-            (BIImage *)pImgRender->CreateImage(BIType_square, sTextureName.GetBuffer(), dwColor, rUV, rPos, nPrior);
+        pImage = static_cast<BIImage *>(
+            pImgRender->CreateImage(BIType_square, sTextureName.c_str(), dwColor, rUV, rPos, nPrior));
     }
 }
 
-void ISPYGLASS::TextParam::LoadFromAttr(VDX8RENDER *rs, ATTRIBUTES *pA, const char *pcDefText, long nDefXPos,
+void ISPYGLASS::TextParam::LoadFromAttr(VDX9RENDER *rs, ATTRIBUTES *pA, const char *pcDefText, long nDefXPos,
                                         long nDefYPos)
 {
     this->rs = rs;
@@ -54,25 +60,25 @@ void ISPYGLASS::TextParam::LoadFromAttr(VDX8RENDER *rs, ATTRIBUTES *pA, const ch
     BIUtils::ReadPosFromAttr(pA, "pos", pos.x, pos.y, nDefXPos, nDefYPos);
     fScale = BIUtils::GetFloatFromAttr(pA, "scale", 1.f);
     dwColor = BIUtils::GetLongFromAttr(pA, "color", 0xFFFFFFFF);
-    nAlign = BIUtils::GetAlignmentFromAttr(pA, "align", ALIGN_LEFT);
+    nAlign = BIUtils::GetAlignmentFromAttr(pA, "align", PR_ALIGN_LEFT);
     sText = BIUtils::GetStringFromAttr(pA, "text", pcDefText);
 }
 
-void ISPYGLASS::TextParam::Print()
+void ISPYGLASS::TextParam::Print() const
 {
-    if (rs && !sText.IsEmpty())
-        rs->ExtPrint(nFontID, dwColor, 0, nAlign, true, fScale, 0, 0, pos.x, pos.y, "%s", sText.GetBuffer());
+    if (rs && !sText.empty())
+        rs->ExtPrint(nFontID, dwColor, 0, nAlign, true, fScale, 0, 0, pos.x, pos.y, "%s", sText.c_str());
 }
 
-ISPYGLASS::ISPYGLASS() : m_aNationUV(_FL), m_aChargeUV(_FL), m_aSailUV(_FL)
+ISPYGLASS::ISPYGLASS()
 {
-    rs = null;
-    m_pImgRender = null;
+    rs = nullptr;
+    m_pImgRender = nullptr;
     m_bIsOn = false;
     m_bIsPresentShipInfo = false;
     m_nInfoCharacterIndex = -1;
 
-    m_pFortObj = 0;
+    m_pFortObj = nullptr;
 
     m_fInfoKeepDelay = 0.f;
     m_fMaxInfoKeepDelay = 1.5f;
@@ -85,12 +91,12 @@ ISPYGLASS::~ISPYGLASS()
 
 bool ISPYGLASS::Init()
 {
-    if ((rs = (VDX8RENDER *)api->CreateService("dx8render")) == null)
+    if ((rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"))) == nullptr)
     {
-        SE_THROW_MSG("Can`t create render service");
+        throw std::exception("Can`t create render service");
     }
 
-    m_pImgRender = NEW BIImageRender(rs);
+    m_pImgRender = new BIImageRender(rs);
     Assert(m_pImgRender);
 
     m_Lens.LoadFromAttr(m_pImgRender, GetAttr("lens"), "battle_interface\\spyglass\\eye_badTub.tga", 0, 0, 1024, 768,
@@ -156,20 +162,20 @@ bool ISPYGLASS::Init()
     return true;
 }
 
-void ISPYGLASS::Execute(dword delta_time)
+void ISPYGLASS::Execute(uint32_t delta_time)
 {
     CONTROL_STATE cs;
-    api->Controls->GetControlState("TelescopeIn", cs);
+    core.Controls->GetControlState("TelescopeIn", cs);
     if (cs.state == CST_ACTIVATED)
-        api->Event("MSG_TELESCOPE_REQUEST", "l", 1);
-    api->Controls->GetControlState("TelescopeOut", cs);
+        core.Event("MSG_TELESCOPE_REQUEST", "l", 1);
+    core.Controls->GetControlState("TelescopeOut", cs);
     if (cs.state == CST_ACTIVATED)
-        api->Event("MSG_TELESCOPE_REQUEST", "l", 0);
+        core.Event("MSG_TELESCOPE_REQUEST", "l", 0);
 
     if (m_bIsOn)
     {
         UpdateCamera();
-        bool bFindNewTarget = false;
+        auto bFindNewTarget = false;
         if (m_Camera.fCurUpdatingTime >= m_Camera.fUpdateTime)
             bFindNewTarget = true;
         if (m_nInfoCharacterIndex >= 0 && m_fInfoKeepDelay > 0.f)
@@ -186,7 +192,7 @@ void ISPYGLASS::Execute(dword delta_time)
     }
 }
 
-void ISPYGLASS::Realize(dword delta_time)
+void ISPYGLASS::Realize(uint32_t delta_time) const
 {
     if (m_bIsOn)
     {
@@ -213,15 +219,15 @@ void ISPYGLASS::Realize(dword delta_time)
     }
 }
 
-dword _cdecl ISPYGLASS::ProcessMessage(MESSAGE &message)
+uint64_t ISPYGLASS::ProcessMessage(MESSAGE &message)
 {
     char param[512];
-    long nMsgCode = message.Long();
+    auto nMsgCode = message.Long();
 
     switch (nMsgCode)
     {
     case MSG_TELESCOPE_REQUEST: {
-        long nIsOn = message.Long();
+        auto nIsOn = message.Long();
         TurnOnTelescope(nIsOn != 0);
     }
     break;
@@ -229,11 +235,11 @@ dword _cdecl ISPYGLASS::ProcessMessage(MESSAGE &message)
     case MSG_TELESCOPE_SET_TYPE: // "lsfll"
     {
         message.String(sizeof(param), param);
-        float fZoomScale = message.Float();
-        float fActivateTime = message.Long() * .001f;
-        float fUpdateTime = message.Long() * .001f;
+        auto fZoomScale = message.Float();
+        auto fActivateTime = message.Long() * .001f;
+        auto fUpdateTime = message.Long() * .001f;
         ChangeTelescopeType(param, fZoomScale, fActivateTime, fUpdateTime);
-        m_pFortObj = 0;
+        m_pFortObj = nullptr;
     }
     break;
 
@@ -242,26 +248,26 @@ dword _cdecl ISPYGLASS::ProcessMessage(MESSAGE &message)
         char shipname[512], shiptype[512], captainname[1024], facetexture[1024];
         message.String(sizeof(shipname), shipname); // ship name
         message.String(sizeof(shiptype), shiptype); // ship type
-        float fRelativeHP = message.Long() * .01f;
-        float fRelativeSP = message.Long() * .01f;
-        long nShipCrew = message.Long();
-        float fShipSpeed = message.Float();
-        float fSailTo = message.Float(); // boal
-        long nCurCannons = message.Long();
-        long nMaxCannons = message.Long();
-        long nCharge = message.Long();
-        long nNation = message.Long();
+        auto fRelativeHP = message.Long() * .01f;
+        auto fRelativeSP = message.Long() * .01f;
+        auto nShipCrew = message.Long();
+        auto fShipSpeed = message.Float();
+        auto fSailTo = message.Float(); // boal
+        auto nCurCannons = message.Long();
+        auto nMaxCannons = message.Long();
+        auto nCharge = message.Long();
+        auto nNation = message.Long();
 
-        long nSailState = message.Long();
-        long nFace = message.Long();
-        long nFencingSkl = message.Long();
-        long nCannonSkl = message.Long();
-        long nAccuracySkl = message.Long();
-        long nNavigationSkl = message.Long();
-        long nBoardingSkl = message.Long();
+        auto nSailState = message.Long();
+        auto nFace = message.Long();
+        auto nFencingSkl = message.Long();
+        auto nCannonSkl = message.Long();
+        auto nAccuracySkl = message.Long();
+        auto nNavigationSkl = message.Long();
+        auto nBoardingSkl = message.Long();
         message.String(sizeof(captainname), captainname); // ship type
         message.String(sizeof(facetexture), facetexture); // face texture
-        long nShipClass = message.Long();
+        auto nShipClass = message.Long();
         ChangeTargetData(shipname, shiptype, fRelativeHP, fRelativeSP, nShipCrew, fShipSpeed, fSailTo, nCurCannons,
                          nMaxCannons, nCharge, nNation, nSailState, nFace, nFencingSkl, nCannonSkl, nAccuracySkl,
                          nNavigationSkl, nBoardingSkl, captainname, facetexture, nShipClass);
@@ -280,7 +286,6 @@ dword _cdecl ISPYGLASS::ProcessMessage(MESSAGE &message)
         m_ShipImage.ChangeIcon(m_pImgRender, texturename, frUV);
     }
     break;
-
     case MSG_ISG_SET_CHARICON: // "sffff"
     {
         char captexturename[1024];
@@ -332,14 +337,14 @@ void ISPYGLASS::Release()
     m_ImgCaptainBoarding.Release();
     m_TextCaptainBoarding.Release();
 
-    SE_DELETE(m_pImgRender);
+    STORM_DELETE(m_pImgRender);
 }
 
-ATTRIBUTES *ISPYGLASS::GetAttr(const char *pcAttrName)
+ATTRIBUTES *ISPYGLASS::GetAttr(const char *pcAttrName) const
 {
     if (AttributesPointer)
         return AttributesPointer->FindAClass(AttributesPointer, pcAttrName);
-    return 0;
+    return nullptr;
 }
 
 void ISPYGLASS::TurnOnTelescope(bool bTurnOn)
@@ -354,10 +359,10 @@ void ISPYGLASS::TurnOnTelescope(bool bTurnOn)
         m_Camera.fCurActivateTime = 0.f;
         m_Camera.fCurUpdatingTime = m_Camera.fUpdateTime;
 
-        m_pFortObj = 0;
+        m_pFortObj = nullptr;
 
-        api->Event(TELESCOPE_ACTIVE, "l", 1);
-        api->Event("BI_VISIBLE", "l", 0);
+        core.Event(TELESCOPE_ACTIVE, "l", 1);
+        core.Event("BI_VISIBLE", "l", 0);
     }
     else
     {
@@ -367,8 +372,8 @@ void ISPYGLASS::TurnOnTelescope(bool bTurnOn)
         m_Camera.bIsGrow = true;
         m_Camera.fCurUpdatingTime = 0.f;
 
-        api->Event(TELESCOPE_ACTIVE, "l", 0);
-        api->Event("BI_VISIBLE", "l", 1);
+        core.Event(TELESCOPE_ACTIVE, "l", 0);
+        core.Event("BI_VISIBLE", "l", 1);
     }
 }
 
@@ -381,7 +386,7 @@ void ISPYGLASS::SetShipInfo(long nCharIndex)
     else
         m_bIsPresentShipInfo = true;
 
-    api->Event("SetTelescopeInfo", "l", m_nInfoCharacterIndex);
+    core.Event("SetTelescopeInfo", "l", m_nInfoCharacterIndex);
 
     if (m_bIsPresentShipInfo)
     {
@@ -438,13 +443,13 @@ void ISPYGLASS::FindNewTargetShip()
 
     // find ships
     long nFindedCharIndex = -1;
-    float fFindedDistance = 2.f;
-    SHIP_DESCRIBE_LIST::SHIP_DESCR *pMainSD = g_ShipList.GetMainCharacterShip();
-    for (SHIP_DESCRIBE_LIST::SHIP_DESCR *pSD = g_ShipList.GetShipRoot(); pSD; pSD = pSD->next)
+    auto fFindedDistance = 2.f;
+    auto *pMainSD = g_ShipList.GetMainCharacterShip();
+    for (auto *pSD = g_ShipList.GetShipRoot(); pSD; pSD = pSD->next)
     {
         if (pMainSD == pSD)
             continue;
-        float fTrace = pSD->pShip->Trace(src, dst);
+        auto fTrace = pSD->pShip->Trace(src, dst);
         if (fTrace <= 1.f && fTrace < fFindedDistance)
         {
             nFindedCharIndex = pSD->characterIndex;
@@ -453,7 +458,7 @@ void ISPYGLASS::FindNewTargetShip()
     }
 
     // find fort
-    VAI_OBJBASE *pFort = GetFort();
+    auto *pFort = GetFort();
     if (pFort)
     {
         float fTrace = pFort->Trace(src, dst);
@@ -477,14 +482,15 @@ void ISPYGLASS::FindNewTargetShip()
         {
             // find by ship sphere
             fFindedDistance = -1.f;
-            CVECTOR vsrc = *(CVECTOR *)&src;
-            CVECTOR vdst = *(CVECTOR *)&dst;
+            Vector vsrc = *(Vector *)&src;
+            Vector vdst = *(Vector *)&dst;
             for (SHIP_DESCRIBE_LIST::SHIP_DESCR *pSD = g_ShipList.GetShipRoot(); pSD; pSD = pSD->next)
             {
                 if (pMainSD == pSD)
                     continue;
                 Sphere sph;
-                sph.pos = *(CVECTOR *)&pSD->pShip->GetPos();
+                const auto &vec = pSD->pShip->GetPos();
+                sph.pos = {vec.x, vec.y, vec.z};
                 sph.r = 40.f;
                 if (sph.Intersection(vsrc, vdst))
                 {
@@ -524,7 +530,7 @@ void ISPYGLASS::UpdateCamera()
 {
     if (!m_bIsOn)
         return;
-    float fTime = api->GetDeltaTime() * .001f;
+    const float fTime = core.GetDeltaTime() * .001f;
     m_Camera.fCurUpdatingTime += fTime;
 
     if (!m_Camera.bIsActive)
@@ -572,7 +578,7 @@ void ISPYGLASS::ChangeTargetData(const char *pcShipName, const char *pcShipType,
     // boal дистанция до -->
     if (fSailTo >= 0.f)
     {
-        _snprintf(param, sizeof(param), "%.1f", fSailTo);
+        sprintf_s(param, sizeof(param), "%.1f", fSailTo);
         m_txtSailTo.sText = param;
     }
     else
@@ -582,7 +588,7 @@ void ISPYGLASS::ChangeTargetData(const char *pcShipName, const char *pcShipType,
     // boal <--
     if (fShipSpeed >= 0.f)
     {
-        _snprintf(param, sizeof(param), "%.1f", fShipSpeed);
+        sprintf_s(param, sizeof(param), "%.1f", fShipSpeed);
         m_txtShipSpeed.sText = param;
     }
     else
@@ -592,7 +598,7 @@ void ISPYGLASS::ChangeTargetData(const char *pcShipName, const char *pcShipType,
 
     if (nCurCannons >= 0 && nMaxCannons >= 0)
     {
-        _snprintf(param, sizeof(param), "%d/%d", nCurCannons, nMaxCannons);
+        sprintf_s(param, sizeof(param), "%d/%d", nCurCannons, nMaxCannons);
         m_txtCannons.sText = param;
         if (m_Cannon.pImage)
             m_Cannon.pImage->CutSide(0.f, 0.f, 0.f, 0.f); // покажем boal
@@ -642,7 +648,7 @@ void ISPYGLASS::ChangeTargetData(const char *pcShipName, const char *pcShipType,
 
     if (nShipCrew >= 0)
     {
-        _snprintf(param, sizeof(param), "%d", nShipCrew);
+        sprintf_s(param, sizeof(param), "%d", nShipCrew);
         m_txtShipCrew.sText = param;
     }
     else
@@ -659,13 +665,13 @@ void ISPYGLASS::ChangeTargetData(const char *pcShipName, const char *pcShipType,
     if (m_ShipSP.pImage)
         m_ShipSP.pImage->CutSide(0.f, 0.f, 1.f - fRelativeSP, 0.f);
 
-    if (nNation >= 0 && nNation < m_aNationUV)
+    if (nNation >= 0 && nNation < m_aNationUV.size())
     {
         if (m_Nation.pImage)
             m_Nation.pImage->SetUV(m_aNationUV[nNation]);
     }
 
-    if (nCharge >= 0 && nCharge < m_aChargeUV)
+    if (nCharge >= 0 && nCharge < m_aChargeUV.size())
     {
         if (m_Charge.pImage)
         {
@@ -679,7 +685,7 @@ void ISPYGLASS::ChangeTargetData(const char *pcShipName, const char *pcShipType,
             m_Charge.pImage->CutSide(0.f, 1.f, 0.f, 0.f); // прячем boal
     }
 
-    if (nSailState >= 0 && nSailState < m_aSailUV)
+    if (nSailState >= 0 && nSailState < m_aSailUV.size())
     {
         if (m_Sail.pImage)
         {
@@ -696,9 +702,9 @@ void ISPYGLASS::ChangeTargetData(const char *pcShipName, const char *pcShipType,
     if (m_CaptainFace.pImage)
     {
         if (nFace >= 0)
-            _snprintf(param, sizeof(param), "battle_interface\\portraits\\face_%d.tga", nFace);
+            sprintf_s(param, sizeof(param), "battle_interface\\portraits\\face_%d.tga", nFace);
         else
-            _snprintf(param, sizeof(param), "%s", pcFaceTexture);
+            sprintf_s(param, sizeof(param), "%s", pcFaceTexture);
         FRECT frUV;
         frUV.left = 0.f;
         frUV.right = 1.f;
@@ -709,7 +715,7 @@ void ISPYGLASS::ChangeTargetData(const char *pcShipName, const char *pcShipType,
     // boal далее правлю иконки скилов, чтоб скрывались/показывались
     if (nFencing >= 0)
     {
-        _snprintf(param, sizeof(param), "%d", nFencing);
+        sprintf_s(param, sizeof(param), "%d", nFencing);
         m_TextCaptainFencing.sText = param;
         if (m_ImgCaptainFencing.pImage)
             m_ImgCaptainFencing.pImage->CutSide(0.f, 0.f, 0.f, 0.f);
@@ -722,7 +728,7 @@ void ISPYGLASS::ChangeTargetData(const char *pcShipName, const char *pcShipType,
 
     if (nCannon >= 0)
     {
-        _snprintf(param, sizeof(param), "%d", nCannon);
+        sprintf_s(param, sizeof(param), "%d", nCannon);
         m_TextCaptainCannon.sText = param;
         if (m_ImgCaptainCannon.pImage)
             m_ImgCaptainCannon.pImage->CutSide(0.f, 0.f, 0.f, 0.f);
@@ -734,7 +740,7 @@ void ISPYGLASS::ChangeTargetData(const char *pcShipName, const char *pcShipType,
     }
     if (nAccuracy >= 0)
     {
-        _snprintf(param, sizeof(param), "%d", nAccuracy);
+        sprintf_s(param, sizeof(param), "%d", nAccuracy);
         m_TextCaptainAccuracy.sText = param;
         if (m_ImgCaptainAccuracy.pImage)
             m_ImgCaptainAccuracy.pImage->CutSide(0.f, 0.f, 0.f, 0.f);
@@ -746,7 +752,7 @@ void ISPYGLASS::ChangeTargetData(const char *pcShipName, const char *pcShipType,
     }
     if (nNavigation >= 0)
     {
-        _snprintf(param, sizeof(param), "%d", nNavigation);
+        sprintf_s(param, sizeof(param), "%d", nNavigation);
         m_TextCaptainNavigation.sText = param;
         if (m_ImgCaptainNavigation.pImage)
             m_ImgCaptainNavigation.pImage->CutSide(0.f, 0.f, 0.f, 0.f);
@@ -758,7 +764,7 @@ void ISPYGLASS::ChangeTargetData(const char *pcShipName, const char *pcShipType,
     }
     if (nBoarding >= 0)
     {
-        _snprintf(param, sizeof(param), "%d", nBoarding);
+        sprintf_s(param, sizeof(param), "%d", nBoarding);
         m_TextCaptainBoarding.sText = param;
         if (m_ImgCaptainBoarding.pImage)
             m_ImgCaptainBoarding.pImage->CutSide(0.f, 0.f, 0.f, 0.f);
@@ -771,18 +777,18 @@ void ISPYGLASS::ChangeTargetData(const char *pcShipName, const char *pcShipType,
     m_TextCaptainName.sText = pcCaptainName;
 }
 
-void ISPYGLASS::FillUVArrayFromAttributes(array<FRECT> &m_aUV, ATTRIBUTES *pA)
+void ISPYGLASS::FillUVArrayFromAttributes(std::vector<FRECT> &m_aUV, ATTRIBUTES *pA) const
 {
-    m_aUV.DelAll();
+    m_aUV.clear();
     if (!pA)
         return;
-    for (long n = 0; n < (long)pA->GetAttributesNum(); n++)
+    for (long n = 0; n < static_cast<long>(pA->GetAttributesNum()); n++)
     {
         FRECT rUV;
         rUV.left = rUV.top = 0.f;
         rUV.right = rUV.bottom = 1.f;
         BIUtils::ReadRectFromAttr(pA, pA->GetAttributeName(n), rUV, rUV);
-        m_aUV.Add(rUV);
+        m_aUV.push_back(rUV);
     }
 }
 
@@ -790,9 +796,7 @@ VAI_OBJBASE *ISPYGLASS::GetFort()
 {
     if (!m_pFortObj)
     {
-        ENTITY_ID ei;
-        api->FindClass(&ei, "AIFORT", 0);
-        m_pFortObj = (VAI_OBJBASE *)api->GetEntityPointer(&ei);
+        m_pFortObj = static_cast<VAI_OBJBASE *>(EntityManager::GetEntityPointer(EntityManager::GetEntityId("AIFORT")));
     }
     return m_pFortObj;
 }

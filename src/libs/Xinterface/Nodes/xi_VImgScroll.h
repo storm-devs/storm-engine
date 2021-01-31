@@ -1,21 +1,23 @@
 #ifndef _XI_V_IMAGE_SCROLL_H
 #define _XI_V_IMAGE_SCROLL_H
 
-#include "..\\inode.h"
+#include "..//inode.h"
 
 // scroll image
 class CXI_VIMAGESCROLL : public CINODE
 {
-    struct SCROLLENTITY
+    struct SCROLLEntity
     {
         bool bCurNotUse;
         FXYPOINT pCenter;
         float fCurScale;
         int imageNum;
         float colorMul;
-        SCROLLENTITY *next;
+        SCROLLEntity *next;
     };
+
     long m_nSlotsQnt;
+
     struct IMAGEDESCRIBE
     {
         bool *bUseSpecTechnique;
@@ -31,39 +33,43 @@ class CXI_VIMAGESCROLL : public CINODE
 
         void SetStringData(int nStr);
         void Release(int nQnt, int nStr);
-        void Clear(int nQnt, int nStr);
+        void Clear(int nQnt, int nStr) const;
     };
 
   public:
+    CXI_VIMAGESCROLL(CXI_VIMAGESCROLL &&) = delete;
+    CXI_VIMAGESCROLL(const CXI_VIMAGESCROLL &) = delete;
     CXI_VIMAGESCROLL();
     ~CXI_VIMAGESCROLL();
 
-    void Draw(bool bSelected, dword Delta_Time);
-    bool Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, VDX8RENDER *rs, XYRECT &hostRect,
-              XYPOINT &ScreenSize);
-    void ReleaseAll();
+    void Draw(bool bSelected, uint32_t Delta_Time) override;
+    bool Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs, XYRECT &hostRect,
+              XYPOINT &ScreenSize) override;
+    void ReleaseAll() override;
 
-    int CommandExecute(int wActCode);
-    bool IsClick(int buttonID, long xPos, long yPos);
-    void MouseThis(float fX, float fY)
+    int CommandExecute(int wActCode) override;
+    bool IsClick(int buttonID, long xPos, long yPos) override;
+
+    void MouseThis(float fX, float fY) override
     {
     }
-    void ChangePosition(XYRECT &rNewPos);
-    void SaveParametersToIni();
-    XYRECT GetCursorRect();
-    dword _cdecl MessageProc(long msgcode, MESSAGE &message);
+
+    void ChangePosition(XYRECT &rNewPos) override;
+    void SaveParametersToIni() override;
+    XYRECT GetCursorRect() override;
+    uint32_t MessageProc(long msgcode, MESSAGE &message) override;
 
     void ChangeScroll(int nScrollItemNum);
     void DeleteImage(int imgNum);
     void RefreshScroll();
 
   protected:
-    void LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2);
+    void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     float ChangeDinamicParameters(float fYDelta);
-    int FindClickedImageNum();
-    int GetTopQuantity();
-    int GetBottomQuantity();
-    float GetShiftDistance(int shiftIdx);
+    int FindClickedImageNum() const;
+    int GetTopQuantity() const;
+    int GetBottomQuantity() const;
+    float GetShiftDistance(int shiftIdx) const;
     void UpdateTexturesGroup();
     int FindTexGroupFromOld(char **pGroupList, char *groupName, int listSize);
     long GetMousePointedPictureNum();
@@ -88,16 +94,16 @@ class CXI_VIMAGESCROLL : public CINODE
     XYPOINT m_ImageSize;
     float m_fScale;
     long m_nVDelta;
-    DWORD *m_dwNormalColor;
-    DWORD *m_dwSelectColor;
-    DWORD m_dwBlendColor;
+    uint32_t *m_dwNormalColor;
+    uint32_t *m_dwSelectColor;
+    uint32_t m_dwBlendColor;
 
     // blind parameters
     bool m_bDoBlind;        // blind flag
     bool m_bColorType;      // current type of color for blind (true - ligth, false - dark)
     int m_nBlindCounter;    // last time counter for change of color type
     int m_nMaxBlindCounter; // maximum time counter for change of color type
-    DWORD *m_dwCurColor;    // current color for select item show
+    uint32_t *m_dwCurColor; // current color for select item show
 
     // textures parameters
     char **m_sGroupName;
@@ -110,17 +116,17 @@ class CXI_VIMAGESCROLL : public CINODE
     long *m_idBadPic;         // картинка для замены несуществующих
 
     char *m_sSpecTechniqueName;
-    DWORD m_dwSpecTechniqueARGB;
+    uint32_t m_dwSpecTechniqueARGB;
 
     struct StringParams
     {
         float m_fScale;
         int m_nFont;
-        int m_nAlign;        // alignment string
-        long m_nStrX;        // Offset from rectangle center for X coordinate
-        long m_nStrY;        // Offset from top rectangle of list for Y coordinate of string1
-        DWORD m_dwForeColor; // Font foreground color for first string
-        DWORD m_dwBackColor; // Font background color for first string
+        int m_nAlign;           // alignment string
+        long m_nStrX;           // Offset from rectangle center for X coordinate
+        long m_nStrY;           // Offset from top rectangle of list for Y coordinate of string1
+        uint32_t m_dwForeColor; // Font foreground color for first string
+        uint32_t m_dwBackColor; // Font background color for first string
     };
 
     long m_nStringQuantity;
@@ -145,7 +151,7 @@ class CXI_VIMAGESCROLL : public CINODE
     DWORD    m_dwTwoStrForeColor; // Font foreground color for second string
     DWORD    m_dwTwoStrBackColor; // Font background color for second string*/
 
-    SCROLLENTITY *m_pScroll;
+    SCROLLEntity *m_pScroll;
     int m_nCurImage;
     int m_nListSize;
     IMAGEDESCRIBE *m_Image;

@@ -1,9 +1,8 @@
 #ifndef _S_DEFTAB_H_
 #define _S_DEFTAB_H_
 
-#include "d_types.h"
 #include "data.h"
-#include "memop.h"
+#include <vector>
 
 // when segment_id is INVALID_SEGMENT_ID, variable segment is unloaded
 // and variable value and type undefined
@@ -15,10 +14,10 @@
 struct DEFINFO
 {
     char *name;
-    dword segment_id;
-    dword hash;
-    dword data4b;
-    dword deftype;
+    uint32_t segment_id;
+    uint32_t hash;
+    uintptr_t data4b;
+    uint32_t deftype;
 };
 
 #define DTHASHT_SIZE 256
@@ -28,36 +27,35 @@ struct DTHASHLINE
     DTHASHLINE()
     {
         nNumElements = 0;
-        pElements = 0;
     };
-    DWORD nNumElements;
-    DWORD *pElements;
+    uint32_t nNumElements;
+    std::vector<uint32_t> pElements;
 };
 
 class S_DEFTAB
 {
-    dword Buffer_size;
-    dword Def_num;
-    DEFINFO *pTable;
+    uint32_t Buffer_size;
+    uint32_t Def_num;
+    std::vector<DEFINFO> pTable;
     // bool bKeepName;
     DTHASHLINE HashLine[DTHASHT_SIZE];
 
   public:
     S_DEFTAB();
     ~S_DEFTAB();
-    dword GetDefNum()
+    uint32_t GetDefNum()
     {
         return Def_num;
     };
-    dword AddDef(DEFINFO &di);
-    bool GetDef(DEFINFO &di, dword def_code);
-    bool GetDefX(DEFINFO &vi, dword def_code);
-    dword MakeHashValue(const char *string);
+    uint32_t AddDef(DEFINFO &di);
+    bool GetDef(DEFINFO &di, uint32_t def_code);
+    bool GetDefX(DEFINFO &vi, uint32_t def_code);
+    uint32_t MakeHashValue(const char *string);
     //	void  KeepNameMode(bool on){bKeepName = on;};
     void Release();
-    void InvalidateBySegmentID(dword segment_id);
-    dword FindDef(char *def_name);
-    void UpdateHashTable(DWORD code, DWORD hash, bool in);
+    void InvalidateBySegmentID(uint32_t segment_id);
+    uint32_t FindDef(const char *def_name);
+    void UpdateHashTable(uint32_t code, uint32_t hash, bool in);
 };
 
 #endif

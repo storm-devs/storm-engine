@@ -33,7 +33,7 @@ template <class tEType> class TFIFOBuffer
         return true;
     }
 
-    bool Pop(tEType *_op = 0)
+    bool Pop(tEType *_op = nullptr)
     {
         if (Free())
             return false;
@@ -60,7 +60,7 @@ template <class tEType> class TFIFOBuffer
     tEType *TopElement()
     {
         if (Free())
-            return 0;
+            return nullptr;
 
         return &elements[firstElement];
     }

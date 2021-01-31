@@ -1,6 +1,6 @@
 #include "BaseNode.h"
 
-BI_BaseNode::BI_BaseNode(BI_ManagerBase *pManager)
+BI_BaseNode::BI_BaseNode(BI_ManagerBase *pManager) : m_pRS(nullptr)
 {
     Assert(pManager);
     m_pManager = pManager;

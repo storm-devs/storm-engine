@@ -1,44 +1,51 @@
 #ifndef _SINKEFFECT_H_
 #define _SINKEFFECT_H_
 
-#include "object.h"
-#include "matrix.h"
-#include "animation.h"
-#include "messages.h"
-#include "geos.h"
-#include "geometry.h"
-#include "dx8render.h"
-#include "ship_base.h"
-#include "model.h"
-#include "geos.h"
-#include "sea_base.h"
 #include "CVECTOR.h"
-#include "dx8render.h"
 #include "SinkSplashDefines.h"
 #include "TSink.h"
+#include "dx9render.h"
+#include "geometry.h"
+#include "sea_base.h"
 
 ///////////////////////////////////////////////////////////////////
 // CLASS DEFINITION
 ///////////////////////////////////////////////////////////////////
 
-class SINKEFFECT: public ENTITY
+class SINKEFFECT : public Entity
 {
-public:
-	SINKEFFECT();
-	virtual ~SINKEFFECT();
+  public:
+    SINKEFFECT();
+    virtual ~SINKEFFECT();
 
-	virtual bool Init();
-	virtual dword _cdecl ProcessMessage(MESSAGE & message);
-	virtual void Realize(dword _dTime);
-	virtual void Execute(dword _dTime);
+    virtual bool Init();
+    virtual uint64_t ProcessMessage(MESSAGE &message);
+    virtual void Realize(uint32_t dTime);
+    virtual void Execute(uint32_t dTime);
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+                LostRender(delta); break;
+            case Stage::restore_render:
+                RestoreRender(delta); break;*/
+        }
+    }
 
-private:
-	void InitializeSinks();
-	TSink *TryToAddSink(const CVECTOR &_pos, float _r);
+  private:
+    void InitializeSinks();
+    TSink *TryToAddSink(const CVECTOR &_pos, float _r);
 
-	TSink    sinks[MAX_SINKS];
-	VDX8RENDER *renderer;
-	SEA_BASE *sea;
+    TSink sinks[sink_effect::MAX_SINKS];
+    VDX9RENDER *renderer;
+    SEA_BASE *sea;
 };
 
 #endif

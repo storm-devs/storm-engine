@@ -1,6 +1,6 @@
 project(tornado)
 
-add_library(${PROJECT_NAME} MODULE
+add_library(${PROJECT_NAME} STATIC
 	Debris.cpp
 	Debris.h
 	NoiseCloud.cpp

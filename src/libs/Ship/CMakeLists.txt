@@ -1,6 +1,6 @@
 project(ship)
 
-add_library(${PROJECT_NAME} MODULE
+add_library(${PROJECT_NAME} STATIC
 	FirePlace.cpp
 	FirePlace.h
 	ShipLights.cpp
@@ -10,9 +10,6 @@ add_library(${PROJECT_NAME} MODULE
 	ship.cpp
 	ship.h
 	ship_utils.cpp
-
-	#copied from scripts
-	sound.h
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

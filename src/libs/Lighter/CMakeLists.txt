@@ -1,18 +1,17 @@
 project(lighter)
 
-add_library(${PROJECT_NAME} MODULE
+add_library(${PROJECT_NAME} STATIC
 	LGeometry.cpp
 	LGeometry.h
+	Lighter.cpp
+	Lighter.h
+	LighterLights.cpp
+	LighterLights.h
+	LightProcessor.cpp
+	LightProcessor.h
 	LObject.cpp
 	LObject.h
 	LTypes.h
-	LightProcessor.cpp
-	LightProcessor.h
-	Lighter.cpp
-	Lighter.h
-	LighterMain.cpp
-	Lights.cpp
-	Lights.h
 	OctTree.cpp
 	OctTree.h
 	Window.cpp

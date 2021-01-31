@@ -1,7 +1,7 @@
 #ifndef __XI_GLOWCURSOR_H__
 #define __XI_GLOWCURSOR_H__
 
-#include "..\\inode.h"
+#include "..//inode.h"
 
 // picture
 class CXI_GLOWCURSOR : public CINODE
@@ -10,35 +10,37 @@ class CXI_GLOWCURSOR : public CINODE
     CXI_GLOWCURSOR();
     ~CXI_GLOWCURSOR();
 
-    void Draw(bool bSelected, dword Delta_Time);
-    bool Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, VDX8RENDER *rs, XYRECT &hostRect,
-              XYPOINT &ScreenSize);
-    void ReleaseAll();
-    int CommandExecute(int wActCode)
+    void Draw(bool bSelected, uint32_t Delta_Time) override;
+    bool Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs, XYRECT &hostRect,
+              XYPOINT &ScreenSize) override;
+    void ReleaseAll() override;
+    int CommandExecute(int wActCode) override
     {
         return 0;
     }
-    bool IsClick(int buttonID, long xPos, long yPos)
+    bool IsClick(int buttonID, long xPos, long yPos) override
     {
         return false;
     }
-    void MouseThis(float fX, float fY)
+
+    void MouseThis(float fX, float fY) override
     {
     }
-    void ChangePosition(XYRECT &rNewPos);
-    void SaveParametersToIni();
+
+    void ChangePosition(XYRECT &rNewPos) override;
+    void SaveParametersToIni() override;
 
   protected:
-    void LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2);
-    void SetRectanglesToPosition(XYRECT &rectXY);
+    void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
+    void SetRectanglesToPosition(const XYRECT &rectXY);
 
     bool m_bShowGlow;
     bool m_bGlowToBack;
 
     bool m_bUseBlind;
-    DWORD m_dwFoneColor;
-    DWORD m_dwBlindColor;
-    DWORD m_dwCurColor;
+    uint32_t m_dwFoneColor;
+    uint32_t m_dwBlindColor;
+    uint32_t m_dwCurColor;
 
     bool m_bUpBlind;
     float m_fCurM;

@@ -9,16 +9,11 @@
 //============================================================================================
 
 #include "Blots.h"
-#include "Script_Defines.h"
-#include "common_defines.h"
-#include "messages.h"
 
-//============================================================================================
+#include "core.h"
 
-INTERFACE_FUNCTION
-CREATE_CLASS(Blots)
-
-//============================================================================================
+#include "../../Shared/messages.h"
+#include "Entity.h"
 
 #define BLOTS_RADIUS 0.6f
 
@@ -36,11 +31,11 @@ Blots::Blots()
 {
     for (long i = 0; i < BLOTS_MAX; i++)
         blot[i].isUsed = 0;
-    rs = null;
+    rs = nullptr;
     textureID = -1;
     useVrt = 0;
-    blotsInfo = null;
-    pCharAttributeRoot = null;
+    blotsInfo = nullptr;
+    pCharAttributeRoot = nullptr;
     updateBlot = 0;
 }
 
@@ -53,22 +48,22 @@ Blots::~Blots()
 //Инициализация
 bool Blots::Init()
 {
-    GUARD(Blots::Init())
-    // DX8 render
-    rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
+    // GUARD(Blots::Init())
+    // DX9 render
+    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!rs)
-        SE_THROW_MSG("No service: dx8render");
+        throw std::exception("No service: dx9render");
     // Layers
-    //_CORE_API->LayerCreate("realize", true, false);
-    //_CORE_API->LayerSetRealize("realize", true);
-    //_CORE_API->LayerAdd("realize", GetID(), 1000);
+    ////core.LayerCreate("realize", true, false);
+    // EntityManager::SetLayerType(realize, EntityManager::Layer::Type::realize);
+    // EntityManager::AddToLayer(realize, GetId(), 1000);
     textureID = rs->TextureCreate("blot.tga");
     return true;
-    UNGUARD
+    // UNGUARD
 }
 
 //Сообщения
-dword _cdecl Blots::ProcessMessage(MESSAGE &message)
+uint64_t Blots::ProcessMessage(MESSAGE &message)
 {
     switch (message.Long())
     {
@@ -79,7 +74,7 @@ dword _cdecl Blots::ProcessMessage(MESSAGE &message)
         {
             blotsInfo = pCharAttributeRoot->CreateSubAClass(pCharAttributeRoot, "ship.blots");
             char buf[32];
-            sprintf(buf, "%i", BLOTS_MAX);
+            sprintf_s(buf, "%i", BLOTS_MAX);
             blotsInfo->SetValue(buf);
             for (long i = 0; i < BLOTS_MAX; i++)
                 LoadBlot(i);
@@ -95,7 +90,7 @@ dword _cdecl Blots::ProcessMessage(MESSAGE &message)
 void Blots::Hit(MESSAGE &message)
 {
     //Моделька коробля
-    MODEL *m = (MODEL *)_CORE_API->GetEntityPointer(&model);
+    auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
     if (!m)
         return;
     //Позиция
@@ -106,8 +101,8 @@ void Blots::Hit(MESSAGE &message)
     //Ищем наличие свободного пятна и близость от других
     CVECTOR lpos;
     m->mtx.MulToInv(pos, lpos);
-    long i = 0, j = 0;
-    for (i = 0, j = -1; i < BLOTS_MAX; i++)
+    long i, j = -1;
+    for (i = 0; i < BLOTS_MAX; i++)
     {
         if (blot[i].isUsed)
         {
@@ -136,11 +131,11 @@ void Blots::Hit(MESSAGE &message)
 void Blots::AddBlot(long i, long rnd, const CVECTOR &lpos, const CVECTOR &dir, float time)
 {
     //Моделька коробля
-    MODEL *m = (MODEL *)_CORE_API->GetEntityPointer(&model);
+    auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
     if (!m)
         return;
     blot[i].isUsed = false;
-    CVECTOR pos = m->mtx * CVECTOR(lpos);
+    auto pos = m->mtx * CVECTOR(lpos);
     this->dir = m->mtx * CVECTOR(dir) - m->mtx.Pos();
     //Описываюищй ящик
     static PLANE p[6];
@@ -170,9 +165,9 @@ void Blots::AddBlot(long i, long rnd, const CVECTOR &lpos, const CVECTOR &dir, f
     p[5].D = -(pos.x - BLOTS_RADIUS);
     //Вырезаем треугольники лежащии в ящике
     numClipTriangles = 0;
-    normal = CVECTOR(-0.1f) * dir;
+    normal = -0.1f * dir;
     //Неколизимся с патчём и мачтами
-    NODE *root = m->GetNode(0);
+    auto *root = m->GetNode(0);
     SetNodesCollision(root, true);
     m->Clip(p, 6, pos, BLOTS_RADIUS, AddPolygon);
     SetNodesCollision(root, false);
@@ -191,7 +186,7 @@ void Blots::AddBlot(long i, long rnd, const CVECTOR &lpos, const CVECTOR &dir, f
     //Информация о пятне
     blot[i].isUsed = true;
     blot[i].lastAlpha = 0xff;
-    blot[i].numTrgs = word(numClipTriangles);
+    blot[i].numTrgs = static_cast<uint16_t>(numClipTriangles);
     blot[i].liveTime = time;
     blot[i].pos = lpos;
     blot[i].dir = dir;
@@ -200,16 +195,12 @@ void Blots::AddBlot(long i, long rnd, const CVECTOR &lpos, const CVECTOR &dir, f
     useVrt += numClipTriangles * 3;
     Assert(useVrt < sizeof(vrt) / sizeof(Vertex));
     //Преобразуем треугольники в локальную систему координат корабля
-
-    rs->SetRenderState(D3DRS_DEPTHBIAS, F2DW(-0001.1f));
-    rs->SetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, F2DW(0.0f));
-
-    CMatrix mtx(m->mtx);
+    auto mtx(m->mtx);
     mtx.Transposition();
-    Vertex *v = vrt + blot[i].startIndex;
+    auto *v = vrt + blot[i].startIndex;
     numClipTriangles *= 3;
-    float baseU = 0.0f;
-    float baseV = 0.0f;
+    auto baseU = 0.0f;
+    auto baseV = 0.0f;
     if (rnd & 1)
         baseU += 0.5f;
     if (rnd & 2)
@@ -218,7 +209,7 @@ void Blots::AddBlot(long i, long rnd, const CVECTOR &lpos, const CVECTOR &dir, f
     {
         v[n].pos = mtx * clipTriangles[n];
         v[n].c = 0xffffffff;
-        CVECTOR uv = uvmtx * clipTriangles[n];
+        auto uv = uvmtx * clipTriangles[n];
         uv.x = (0.5f + uv.x * 0.5f / BLOTS_RADIUS);
         uv.y = (0.5f + uv.y * 0.5f / BLOTS_RADIUS);
         if (uv.x < 0.0f)
@@ -238,12 +229,6 @@ void Blots::AddBlot(long i, long rnd, const CVECTOR &lpos, const CVECTOR &dir, f
     }
     //Записываем состояние
     SaveBlot(i);
-    if (pCharAttributeRoot)
-    {
-        api->Event(SHIP_SET_BLOT, "a", pCharAttributeRoot);
-    }
-    rs->SetRenderState(D3DRS_DEPTHBIAS, F2DW(0.0f));
-    rs->SetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, F2DW(0.0f));
 }
 
 void Blots::SetNodesCollision(NODE *n, bool isSet)
@@ -254,7 +239,7 @@ void Blots::SetNodesCollision(NODE *n, bool isSet)
     {
         n->flags &= 0x00ffffff;
         n->flags |= n->flags << 24;
-        const char *name = n->GetName();
+        const auto *const name = n->GetName();
         if (name && name[0])
         {
             if (name[0] == 'r' || name[0] == 'R')
@@ -306,10 +291,10 @@ void Blots::SaveBlot(long i)
         return;
     //Имя атрибута
     char name[16];
-    sprintf(name, "b%.3i", i);
+    sprintf_s(name, "b%.3i", i);
     if (blot[i].isUsed)
     {
-        ATTRIBUTES *blt = blotsInfo->CreateSubAClass(blotsInfo, name);
+        auto *blt = blotsInfo->CreateSubAClass(blotsInfo, name);
         blt->SetAttributeUseDword("rnd", blot[i].rnd);
         blt->SetAttributeUseFloat("x", blot[i].pos.x);
         blt->SetAttributeUseFloat("y", blot[i].pos.y);
@@ -332,8 +317,8 @@ void Blots::LoadBlot(long i)
         return;
     //Имя атрибута
     char name[16];
-    sprintf(name, "b%.3i", i);
-    ATTRIBUTES *blt = blotsInfo->FindAClass(blotsInfo, name);
+    sprintf_s(name, "b%.3i", i);
+    auto *blt = blotsInfo->FindAClass(blotsInfo, name);
     if (blt)
     {
         if (!blt->GetAttribute("rnd"))
@@ -352,20 +337,20 @@ void Blots::LoadBlot(long i)
             return;
         if (!blt->GetAttribute("time"))
             return;
-        long rnd = blt->GetAttributeAsDword("rnd");
-        float x = blt->GetAttributeAsFloat("x");
-        float y = blt->GetAttributeAsFloat("y");
-        float z = blt->GetAttributeAsFloat("z");
-        float vx = blt->GetAttributeAsFloat("vx");
-        float vy = blt->GetAttributeAsFloat("vy");
-        float vz = blt->GetAttributeAsFloat("vz");
-        float time = blt->GetAttributeAsFloat("time");
+        const long rnd = blt->GetAttributeAsDword("rnd");
+        const auto x = blt->GetAttributeAsFloat("x");
+        const auto y = blt->GetAttributeAsFloat("y");
+        const auto z = blt->GetAttributeAsFloat("z");
+        const auto vx = blt->GetAttributeAsFloat("vx");
+        const auto vy = blt->GetAttributeAsFloat("vy");
+        const auto vz = blt->GetAttributeAsFloat("vz");
+        const auto time = blt->GetAttributeAsFloat("time");
         AddBlot(i, rnd, CVECTOR(x, y, z), CVECTOR(vx, vy, vz), time);
     }
 }
 
 //Работа
-void Blots::Realize(dword delta_time)
+void Blots::Realize(uint32_t delta_time)
 {
     //Обновляем состояние
     blotsInfo = pCharAttributeRoot->FindAClass(pCharAttributeRoot, "ship.blots");
@@ -374,13 +359,13 @@ void Blots::Realize(dword delta_time)
         updateBlot = 0;
     SaveBlot(updateBlot);
     //Моделька коробля
-    MODEL *m = (MODEL *)_CORE_API->GetEntityPointer(&model);
+    auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
     if (!m)
         return;
     //Расстояние от камеры
     CVECTOR pos, ang;
     rs->GetCamera(pos, ang, ang.x);
-    float dist = ~(pos - m->mtx.Pos());
+    auto dist = ~(pos - m->mtx.Pos());
     if (dist >= BLOTS_DIST * BLOTS_DIST)
         return;
     //Прозрачность от расстояния до корабля
@@ -388,7 +373,7 @@ void Blots::Realize(dword delta_time)
     if (dist <= 0.0f)
         dist = 0.0f;
     dist = (1.0f - dist) * 255.0f;
-    long color = long(dist);
+    auto color = static_cast<long>(dist);
     rs->SetRenderState(D3DRS_TEXTUREFACTOR, (color << 24) | (color << 16) | (color << 8) | color);
     //Настройки
     rs->SetTransform(D3DTS_WORLD, m->mtx);
@@ -407,8 +392,8 @@ void Blots::Realize(dword delta_time)
         if (blot[i].liveTime >= BLOTS_TIME)
         {
             blot[i].isUsed = false;
-            long startIndex = blot[i].startIndex;
-            long numDelVerts = blot[i].numTrgs * 3;
+            const auto startIndex = blot[i].startIndex;
+            const long numDelVerts = blot[i].numTrgs * 3;
 
             //-----------------------------------------------
             //!!! begin Проверки
@@ -419,8 +404,8 @@ void Blots::Realize(dword delta_time)
             {
                 if (!blot[n].isUsed)
                     continue;
-                Vertex *v1 = vr + n * BLOTS_NTRGS * 3;
-                Vertex *v2 = vrt + blot[n].startIndex;
+                auto *const v1 = vr + n * BLOTS_NTRGS * 3;
+                auto *const v2 = vrt + blot[n].startIndex;
                 for (long v = 0; v < blot[n].numTrgs * 3; v++)
                     v1[v] = v2[v];
             }
@@ -428,7 +413,7 @@ void Blots::Realize(dword delta_time)
             //-----------------------------------------------
 
             //Удаляем из массива треугольники
-            long j = 0;
+            long j;
             for (j = 0; j < BLOTS_MAX; j++)
             {
                 if (!blot[j].isUsed)
@@ -458,8 +443,8 @@ void Blots::Realize(dword delta_time)
             {
                 if (!blot[n].isUsed)
                     continue;
-                Vertex *v1 = vr + n * BLOTS_NTRGS * 3;
-                Vertex *v2 = vrt + blot[n].startIndex;
+                auto *const v1 = vr + n * BLOTS_NTRGS * 3;
+                auto *const v2 = vrt + blot[n].startIndex;
                 for (long v = 0; v < blot[n].numTrgs * 3; v++)
                 {
                     Assert(v1[v].pos.x == v2[v].pos.x);
@@ -476,35 +461,30 @@ void Blots::Realize(dword delta_time)
             continue;
         }
         //Прозрачность от времени
-        float k = blot[i].liveTime / BLOTS_TIME;
+        auto k = blot[i].liveTime / BLOTS_TIME;
         k = (k - 0.5f) / 0.5f;
         if (k < 0.0f)
             k = 0.0f;
         if (k > 1.0f)
             k = 1.0f;
-        color = long((1.0f - k) * 255.0f);
+        color = static_cast<long>((1.0f - k) * 255.0f);
         if (color != blot[i].lastAlpha)
         {
             //Обновим вершины
             //Цвет
             color = 0xff000000 | (color << 16) | (color << 8) | color;
             //Количество
-            long numVrt = blot[i].numTrgs * 3;
+            const long numVrt = blot[i].numTrgs * 3;
             //Массив
-            Vertex *v = vrt + blot[i].startIndex;
+            auto *const v = vrt + blot[i].startIndex;
             for (long j = 0; j < numVrt; j++)
                 v[j].c = color;
         }
     }
-    rs->SetTransform(D3DTS_WORLD, m->mtx);
-    rs->SetRenderState(D3DRS_DEPTHBIAS, F2DW(-0.0001f));
-    rs->SetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, F2DW(0.0f));
     //Рисуем
     if (useVrt > 3)
         rs->DrawPrimitiveUP(D3DPT_TRIANGLELIST, D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1, useVrt / 3, vrt,
                             sizeof(Vertex), "Blot");
-    rs->SetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, F2DW(0.0f));
-    rs->SetRenderState(D3DRS_DEPTHBIAS, F2DW(0.0f));
 }
 
 bool Blots::AddPolygon(const CVECTOR *v, long nv)
@@ -514,10 +494,10 @@ bool Blots::AddPolygon(const CVECTOR *v, long nv)
     if (nv < 3)
         return true;
     //Нормаль
-    CVECTOR norm = (v[0] - v[1]) ^ (v[0] - v[2]);
+    const auto norm = (v[0] - v[1]) ^ (v[0] - v[2]);
     if ((norm | dir) >= 0.0f)
         return true;
-    normal += CVECTOR(100.0f) * norm;
+    normal += 100.0f * norm;
     //Добавляем
     for (long i = 2; i < nv; i++)
     {

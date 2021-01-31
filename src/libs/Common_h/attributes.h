@@ -1,151 +1,157 @@
 #ifndef _ATTRIBUTES_H_
 #define _ATTRIBUTES_H_
 
-#include "d_types.h"
-#include "memop.h"
-#include "vstring_codec.h"
-#include <stdio.h>
+#include <Windows.h>
+#include <cstdint>
+#include <cstdio>
+#include <vector>
+
+class VSTRING_CODEC
+{
+  public:
+    VSTRING_CODEC(){};
+
+    virtual ~VSTRING_CODEC(){};
+    virtual uint32_t GetNum() = 0;
+    virtual uint32_t Convert(const char *pString) = 0;
+    virtual uint32_t Convert(const char *pString, long iLen) = 0;
+    virtual const char *Convert(uint32_t code) = 0;
+
+    virtual void VariableChanged() = 0;
+};
+
+// пока тут
+constexpr size_t TSE_MAX_EVENT_LENGTH = 64;
 
 #define INVALID_ATTRIBUTE_HANDLE 0xffffffff
+
 //--------------------------------------------------------------------------------------------------------------
 // Each attribute is a class with Name and Attribute string values. Class can contain list of ... later
 //
 // GetAttributeClass(attribute_name) - return class ATTRIBUTES pointer for specified attribute
 // GetAttribute(attribute_name) - return string value of specified attribute
 // SetAttribute(attribute_name,attribute) - create or modify attribute in attributes set
-// GetAttributeAsDword(attribute_name, DWORD def = 0) - return attribute value, converted from string to dword
+// GetAttributeAsDword(attribute_name, DWORD def = 0) - return attribute value, converted from string to uint32_t
 // GetAttributeAsFloat(attribute_name, DWORD def = 0) - return attribute value, converted from string to float
-// SetAttributeUseDword(attribute_name, DWORD val) - create or modify attribute, converted from dword to string
+// SetAttributeUseDword(attribute_name, DWORD val) - create or modify attribute, converted from uint32_t to string
 // SetAttributeUseFloat(attribute_name, FLOAT val) - create or modify attribute, converted from float to string
-
-#define RDTSC_B(x)                                                                                                     \
-    {                                                                                                                  \
-        _asm rdtsc _asm mov x, eax                                                                                     \
-    }
-#define RDTSC_E(x)                                                                                                     \
-    {                                                                                                                  \
-        _asm rdtsc _asm sub eax, x _asm mov x, eax                                                                     \
-    }
 
 class ATTRIBUTES
 {
-    void xtrace(const char *data_PTR, ...)
+    void xtrace(const char *data_PTR, ...) const
     {
+
         char xBuffer_4k[4096];
-        if (data_PTR == 0)
+        if (data_PTR == nullptr)
             return;
 
-        HANDLE file_h = CreateFile(TEXT("attributes.log"), GENERIC_WRITE, FILE_SHARE_READ, 0, OPEN_ALWAYS,
-                                   FILE_ATTRIBUTE_NORMAL, 0);
-        SetFilePointer(file_h, 0, 0, FILE_END);
+        auto *const file_h = CreateFile(TEXT("attributes.log"), GENERIC_WRITE, FILE_SHARE_READ, nullptr, OPEN_ALWAYS,
+                                        FILE_ATTRIBUTE_NORMAL, nullptr);
+        SetFilePointer(file_h, 0, nullptr, FILE_END);
         va_list args;
 
         va_start(args, data_PTR);
-        _vsnprintf(xBuffer_4k, sizeof(xBuffer_4k) - 4, data_PTR, args);
-        strcat(xBuffer_4k, "\x0d\x0a");
-        DWORD bytes;
-        WriteFile(file_h, xBuffer_4k, strlen(xBuffer_4k), &bytes, 0);
+        _vsnprintf_s(xBuffer_4k, sizeof(xBuffer_4k) - 4, data_PTR, args);
+        strcat_s(xBuffer_4k, "\x0d\x0a");
+        uint32_t bytes;
+        WriteFile(file_h, xBuffer_4k, static_cast<DWORD>(strlen(xBuffer_4k)), (LPDWORD)&bytes, nullptr);
         va_end(args);
         CloseHandle(file_h);
         _flushall();
     }
 
-#ifdef _XBOX
-    static VSTRING_CODEC *pVStringCodec;
-#else
     VSTRING_CODEC *pVStringCodec;
-#endif
-    DWORD Attributes_num;
-    DWORD nNameCode;
+    uint32_t nNameCode;
     char *Attribute;
-    ATTRIBUTES **pAttributes;
+    std::vector<ATTRIBUTES *> pAttributes;
     ATTRIBUTES *pParent;
     bool bBreak;
 
-    inline void SetParent(ATTRIBUTES *pP)
+    void SetParent(ATTRIBUTES *pP)
     {
         pParent = pP;
     };
 
-    ATTRIBUTES *CreateNewAttribute(dword name_code)
+    ATTRIBUTES *CreateNewAttribute(uint32_t name_code)
     {
-        pAttributes = (ATTRIBUTES **)RESIZE(pAttributes, GetALen(Attributes_num + 1) * sizeof(ATTRIBUTES *));
+        auto *attr = pAttributes.emplace_back(new ATTRIBUTES(pVStringCodec));
 
-        pAttributes[Attributes_num] = NEW ATTRIBUTES(pVStringCodec);
-        pAttributes[Attributes_num]->SetParent(this);
-        pAttributes[Attributes_num]->nNameCode = name_code;
-        pAttributes[Attributes_num]->Attribute = 0;
-        Attributes_num++;
+        attr->SetParent(this);
+        attr->nNameCode = name_code;
 
-        return pAttributes[Attributes_num - 1];
+        return attr;
     }
 
   public:
     ATTRIBUTES(VSTRING_CODEC *p)
     {
         pVStringCodec = p;
-        pAttributes = 0;
-        Attributes_num = 0;
-        Attribute = 0;
-        pParent = 0;
+        Attribute = nullptr;
+        pParent = nullptr;
         bBreak = false;
         nNameCode = pVStringCodec->Convert("root");
-    };
+    }
+
+    ATTRIBUTES(const ATTRIBUTES &) = delete;
+    ATTRIBUTES(ATTRIBUTES &&) = delete;
+    ATTRIBUTES &operator=(const ATTRIBUTES &) = delete;
 
     ~ATTRIBUTES()
     {
         Release();
     };
 
-    __forceinline void SetBreak(bool bBreak)
+    void SetBreak(bool bBreak)
     {
         this->bBreak = bBreak;
     }
 
-    __forceinline ATTRIBUTES *GetParent()
+    auto GetParent() const
     {
         return pParent;
     };
 
-    inline bool operator==(const char *str)
+    bool operator==(const char *str) const
     {
         if (!str || !str[0])
             return false;
-        return stricmp(pVStringCodec->Convert(nNameCode), str) == 0;
+        return _stricmp(pVStringCodec->Convert(nNameCode), str) == 0;
     };
 
-    __forceinline char *GetThisName()
+    auto GetThisName() const
     {
         return pVStringCodec->Convert(nNameCode);
     }
 
-    __forceinline char *GetThisAttr()
+    auto GetThisAttr() const
     {
         return Attribute;
     };
 
-    __forceinline void SetName(const char *_name)
+    void SetName(const char *_name)
     {
         if (_name)
             nNameCode = pVStringCodec->Convert(_name);
-    };
+    }
 
     void SetValue(const char *_val)
     {
-        if (_val == 0)
+        if (_val == nullptr)
         {
-            if (Attribute)
-                delete Attribute;
-            Attribute = 0;
+            delete Attribute;
+            Attribute = nullptr;
             return;
         }
 
-        Attribute = (char *)RESIZE(Attribute, GetLen(strlen(_val) + 1));
-        strcpy(Attribute, _val);
+        const auto len = GetLen(strlen(_val) + 1);
+        auto *const oldPtr = Attribute;
+        Attribute = new char[len];
+        strcpy_s(Attribute, len, _val);
+        delete[] oldPtr;
 
         if (bBreak)
             pVStringCodec->VariableChanged();
-    };
+    }
 
     void Release()
     {
@@ -154,79 +160,72 @@ class ATTRIBUTES
         Attribute = 0;
         if(pAttributes)
         {
-            for(n=0;n<Attributes_num;n++) delete pAttributes[n];
-            delete pAttributes;
+          for(n=0;n<Attributes_num;n++) delete pAttributes[n];
+          delete pAttributes;
         }
         pAttributes = 0;
         Attributes_num = 0;*/
         if (bBreak)
             pVStringCodec->VariableChanged();
         ReleaseLeafs();
-        if (Attribute)
-            delete Attribute;
-        Attribute = 0;
+        delete Attribute;
+        Attribute = nullptr;
     };
 
     void ReleaseLeafs()
     {
-        DWORD n;
-        if (pAttributes)
-        {
-            for (n = 0; n < Attributes_num; n++)
-                delete pAttributes[n];
-            delete pAttributes;
-        }
-        pAttributes = 0;
-        Attributes_num = 0;
+        for (const auto &attribute : pAttributes)
+            delete attribute;
+        pAttributes.clear();
     };
 
-    __forceinline DWORD GetAttributesNum()
+    auto GetAttributesNum() const
     {
-        return Attributes_num;
+        return pAttributes.size();
     }
 
     ATTRIBUTES *GetAttributeClass(const char *name)
     {
-        for (dword n = 0; n < Attributes_num; n++)
-            if (stricmp(name, pAttributes[n]->GetThisName()) == 0)
-                return pAttributes[n];
-        return null;
+        for (const auto &attribute : pAttributes)
+            if (_stricmp(name, attribute->GetThisName()) == 0)
+                return attribute;
+        return nullptr;
     };
 
-    __forceinline ATTRIBUTES *GetAttributeClass(DWORD n)
+    ATTRIBUTES *GetAttributeClass(uint32_t n)
     {
-        return (n >= Attributes_num) ? null : pAttributes[n];
+        return n >= pAttributes.size() ? nullptr : pAttributes[n];
     };
 
-    ATTRIBUTES *VerifyAttributeClass(const char *name)
+    auto VerifyAttributeClass(const char *name)
     {
-        ATTRIBUTES *pTemp = GetAttributeClass(name);
+        auto *const pTemp = GetAttributeClass(name);
         return (pTemp) ? pTemp : CreateAttribute(name, "");
     };
 
-    __forceinline char *GetAttribute(DWORD n)
+    char *GetAttribute(size_t n)
     {
-        return (n >= Attributes_num) ? null : pAttributes[n]->Attribute;
+        return n >= pAttributes.size() ? nullptr : pAttributes[n]->Attribute;
     };
 
-    __forceinline char *GetAttributeName(DWORD n)
+    const char *GetAttributeName(size_t n)
     {
-        return (n >= Attributes_num) ? null : pAttributes[n]->GetThisName();
+        return n >= pAttributes.size() ? nullptr : pAttributes[n]->GetThisName();
     };
 
     char *GetAttribute(const char *name)
     {
-        if (name == 0)
-            return null;
-        for (dword n = 0; n < Attributes_num; n++)
-            if (stricmp(name, pAttributes[n]->GetThisName()) == 0)
-                return pAttributes[n]->Attribute;
-        return 0;
-    };
+        if (name == nullptr)
+            return nullptr;
+        for (const auto &attribute : pAttributes)
+            if (_stricmp(name, attribute->GetThisName()) == 0)
+                return attribute->Attribute;
+        return nullptr;
+    }
 
-    DWORD GetAttributeAsDword(const char *name = 0, DWORD def = 0)
+    auto GetAttributeAsDword(const char *name = nullptr, uint32_t def = 0)
     {
-        DWORD vDword;
+        uint32_t vDword;
         char *pAttribute;
         vDword = def;
         if (name)
@@ -240,120 +239,122 @@ class ATTRIBUTES
             vDword = atol(Attribute);
         }
         return vDword;
-    };
+    }
 
-    FLOAT GetAttributeAsFloat(const char *name = 0, FLOAT def = 0)
+    auto GetAttributeAsPointer(const char *name = nullptr, uintptr_t def = 0)
     {
-        FLOAT vFloat;
+        uintptr_t ptr;
+        char *pAttribute;
+        ptr = def;
+        if (name)
+        {
+            pAttribute = GetAttribute(name);
+            if (pAttribute)
+                ptr = atoll(pAttribute);
+        }
+        else
+        {
+            ptr = atoll(Attribute);
+        }
+        return ptr;
+    }
+
+    auto GetAttributeAsFloat(const char *name = nullptr, float def = 0)
+    {
+        float vFloat;
         char *pAttribute;
         vFloat = def;
         if (name)
         {
             pAttribute = GetAttribute(name);
             if (pAttribute)
-                vFloat = (FLOAT)atof(pAttribute);
+                vFloat = static_cast<float>(atof(pAttribute));
         }
         else
         {
-            vFloat = (FLOAT)atof(Attribute);
+            vFloat = static_cast<float>(atof(Attribute));
         }
         return vFloat;
     };
 
-    BOOL SetAttributeUseDword(const char *name, DWORD val)
+    auto SetAttributeUseDword(const char *name, uint32_t val)
     {
         char buffer[128];
-        ultoa(val, buffer, 10);
+        _ultoa_s(val, buffer, 10);
         if (name)
-            return SetAttribute(name, buffer);
-        else
-            SetValue(buffer);
+            return SetAttribute(name, buffer) != 0;
+        SetValue(buffer);
         return true;
     };
 
-    BOOL SetAttributeUseFloat(const char *name, FLOAT val)
+    auto SetAttributeUseFloat(const char *name, FLOAT val)
     {
         char buffer[128];
-        sprintf(buffer, "%g", val);
+        sprintf_s(buffer, "%g", val);
         if (name)
-            return SetAttribute(name, buffer);
-        else
-            SetValue(buffer);
+            return SetAttribute(name, buffer) != 0;
+        SetValue(buffer);
 
         return true;
     };
 
     ATTRIBUTES *CreateAttribute(const char *name, const char *attribute)
     {
-        DWORD len;
-        if (name == 0)
-            return 0;
-        pAttributes = (ATTRIBUTES **)RESIZE(pAttributes, GetALen(Attributes_num + 1) * sizeof(ATTRIBUTES *));
+        if (name == nullptr)
+            return nullptr;
+        auto *attr = pAttributes.emplace_back(new ATTRIBUTES(pVStringCodec));
 
-        pAttributes[Attributes_num] = NEW ATTRIBUTES(pVStringCodec);
-        pAttributes[Attributes_num]->SetParent(this);
-        pAttributes[Attributes_num]->SetName(name);
+        attr->SetParent(this);
+        attr->SetName(name);
 
         if (attribute)
         {
-            len = strlen(attribute);
-            pAttributes[Attributes_num]->Attribute = NEW char[GetLen(len + 1)];
-            strcpy(pAttributes[Attributes_num]->Attribute, attribute);
+            const auto len = GetLen(strlen(attribute) + 1);
+            attr->Attribute = new char[len];
+            strcpy_s(attr->Attribute, len, attribute);
         }
-        else
-            pAttributes[Attributes_num]->Attribute = 0;
-        Attributes_num++;
-        return pAttributes[Attributes_num - 1];
+
+        return attr;
     };
 
-    inline DWORD SetAttribute(const char *name, const char *attribute)
+    size_t SetAttribute(const char *name, const char *attribute)
     {
         return SetAttribute(pVStringCodec->Convert(name), attribute);
     };
 
     void Copy(ATTRIBUTES *pASource)
     {
-        DWORD n, ah;
-        if (pASource == 0)
+        if (pASource == nullptr)
             return;
         ReleaseLeafs();
-        for (n = 0; n < pASource->Attributes_num; n++)
+        for (const auto &attribute : pASource->pAttributes)
         {
-            ah = SetAttribute(pASource->pAttributes[n]->GetThisName(), pASource->pAttributes[n]->Attribute);
-            pAttributes[ah]->Copy(pASource->pAttributes[n]);
+            const auto i = SetAttribute(attribute->GetThisName(), attribute->Attribute);
+            pAttributes[i]->Copy(attribute);
         }
     };
 
     BOOL DeleteAttributeClassX(ATTRIBUTES *pA)
     {
-        DWORD n, i;
-        if (pA == 0)
+        if (pA == nullptr)
             return false;
         if (pA == this)
         {
-            if (pAttributes)
-            {
-                for (n = 0; n < Attributes_num; n++)
-                    delete pAttributes[n];
-                delete pAttributes;
-                pAttributes = 0;
-                Attributes_num = 0;
-            }
+            for (const auto &attribute : pAttributes)
+                delete attribute;
+            pAttributes.clear();
         }
         else
         {
-            for (n = 0; n < Attributes_num; n++)
+            for (uint32_t n = 0; n < pAttributes.size(); n++)
             {
                 if (pAttributes[n] == pA)
                 {
                     delete pA;
-                    for (i = n; i < (Attributes_num - 1); i++)
-                    {
+                    for (auto i = n; i < pAttributes.size() - 1; i++)
                         pAttributes[i] = pAttributes[i + 1];
-                    }
 
-                    Attributes_num--;
-                    pAttributes = (ATTRIBUTES **)RESIZE(pAttributes, GetALen(Attributes_num) * sizeof(ATTRIBUTES *));
+                    pAttributes.pop_back();
                     return true;
                 }
                 if (pAttributes[n]->DeleteAttributeClassX(pA))
@@ -365,14 +366,14 @@ class ATTRIBUTES
 
     ATTRIBUTES *CreateSubAClass(ATTRIBUTES *pRoot, const char *access_string)
     {
-        dword dwNameCode;
-        dword n = 0;
-        ATTRIBUTES *pResult = null;
+        uint32_t dwNameCode;
+        uint32_t n = 0;
+        ATTRIBUTES *pResult = nullptr;
         ATTRIBUTES *pTemp;
-        if (pRoot == 0)
-            return 0;
-        if (access_string == 0)
-            return 0;
+        if (pRoot == nullptr)
+            return nullptr;
+        if (access_string == nullptr)
+            return nullptr;
 
         while (true)
         {
@@ -393,17 +394,17 @@ class ATTRIBUTES
             }
             n++;
         }
-        return 0;
+        return nullptr;
     };
 
     ATTRIBUTES *FindAClass(ATTRIBUTES *pRoot, const char *access_string)
     {
-        DWORD n = 0;
-        ATTRIBUTES *pResult = null;
-        ATTRIBUTES *pTemp = null;
+        uint32_t n = 0;
+        ATTRIBUTES *pResult = nullptr;
+        ATTRIBUTES *pTemp = nullptr;
 
         if (!pRoot || !access_string)
-            return null;
+            return nullptr;
         if (!access_string[0])
             return pRoot;
 
@@ -414,7 +415,7 @@ class ATTRIBUTES
             case '.':
                 pTemp = pRoot->GetAttributeClassByCode(pVStringCodec->Convert(access_string, n));
                 if (!pTemp)
-                    return null;
+                    return nullptr;
                 pResult = FindAClass(pTemp, &access_string[n + 1]);
                 return pResult;
             case 0:
@@ -423,18 +424,18 @@ class ATTRIBUTES
             }
             n++;
         }
-        return 0;
+        return nullptr;
     };
 
-    __forceinline ATTRIBUTES *GetAttributeClassByCode(DWORD name_code)
+    ATTRIBUTES *GetAttributeClassByCode(uint32_t name_code)
     {
-        for (dword n = 0; n < Attributes_num; n++)
-            if (name_code == pAttributes[n]->nNameCode)
-                return pAttributes[n];
-        return 0;
+        for (const auto &attribute : pAttributes)
+            if (name_code == attribute->nNameCode)
+                return attribute;
+        return nullptr;
     };
 
-    ATTRIBUTES *VerifyAttributeClassByCode(DWORD name_code)
+    ATTRIBUTES *VerifyAttributeClassByCode(uint32_t name_code)
     {
         ATTRIBUTES *pTemp;
         pTemp = GetAttributeClassByCode(name_code);
@@ -443,93 +444,79 @@ class ATTRIBUTES
         return CreateAttribute(name_code, "");
     };
 
-    ATTRIBUTES *CreateAttribute(DWORD name_code, const char *attribute)
+    ATTRIBUTES *CreateAttribute(uint32_t name_code, const char *attribute)
     {
-        DWORD len;
-        pAttributes = (ATTRIBUTES **)RESIZE(pAttributes, GetALen(Attributes_num + 1) * sizeof(ATTRIBUTES *));
+        auto *attr = pAttributes.emplace_back(new ATTRIBUTES(pVStringCodec));
 
-        pAttributes[Attributes_num] = NEW ATTRIBUTES(pVStringCodec);
-        pAttributes[Attributes_num]->SetParent(this);
-        pAttributes[Attributes_num]->nNameCode = name_code;
+        attr->SetParent(this);
+        attr->nNameCode = name_code;
         if (attribute)
         {
-            len = strlen(attribute);
-            pAttributes[Attributes_num]->Attribute = NEW char[GetLen(len + 1)];
-            strcpy(pAttributes[Attributes_num]->Attribute, attribute);
+            const auto len = GetLen(strlen(attribute) + 1);
+            attr->Attribute = new char[len];
+            strcpy_s(attr->Attribute, len, attribute);
         }
-        else
-            pAttributes[Attributes_num]->Attribute = 0;
-        Attributes_num++;
-        return pAttributes[Attributes_num - 1];
+
+        return attr;
     };
 
-    __forceinline dword GetALen(dword dwLen)
+    size_t GetALen(size_t dwLen)
     {
         return (pParent) ? (1 + dwLen / 2) * 2 : (1 + dwLen / 8) * 8;
     }
 
-    __forceinline dword GetLen(dword dwLen, dword dwAlign = 8)
+    size_t GetLen(size_t dwLen, uint8_t dwAlign = 8)
     {
         return (1 + dwLen / dwAlign) * dwAlign;
     }
 
-    DWORD SetAttribute(DWORD name_code, const char *attribute)
+    size_t SetAttribute(uint32_t name_code, const char *attribute)
     {
-        DWORD n;
-        DWORD len;
-        // xtrace("1");
+        size_t len = 0;
+        if (attribute)
+            len = GetLen(strlen(attribute) + 1);
 
-        //		dword dw1;
-        //		RDTSC_B(dw1);
-
-        for (n = 0; n < Attributes_num; n++)
+        size_t n;
+        for (n = 0; n < pAttributes.size(); n++)
         {
             if (pAttributes[n]->nNameCode == name_code)
             {
                 if (attribute)
                 {
-                    len = strlen(attribute);
-                    pAttributes[n]->Attribute = (char *)RESIZE(pAttributes[n]->Attribute, GetLen(len + 1));
-                    strcpy(pAttributes[n]->Attribute, attribute);
+                    auto *const oldPtr = pAttributes[n]->Attribute;
+                    pAttributes[n]->Attribute = new char[len];
+                    strcpy_s(pAttributes[n]->Attribute, len, attribute);
+                    delete[] oldPtr;
                 }
                 else
                 {
-                    if (pAttributes[n]->Attribute)
-                    {
-                        delete pAttributes[n]->Attribute;
-                    }
-                    pAttributes[n]->Attribute = 0;
+                    delete[] pAttributes[n]->Attribute;
+
+                    pAttributes[n]->Attribute = nullptr;
                 }
                 return n;
             }
         }
 
-        pAttributes = (ATTRIBUTES **)RESIZE(pAttributes, GetALen(Attributes_num + 1) * sizeof(ATTRIBUTES *));
+        auto *attr = pAttributes.emplace_back(new ATTRIBUTES(pVStringCodec));
 
-        pAttributes[Attributes_num] = NEW ATTRIBUTES(pVStringCodec);
-        pAttributes[Attributes_num]->SetParent(this);
-        pAttributes[Attributes_num]->nNameCode = name_code;
+        attr->SetParent(this);
+        attr->nNameCode = name_code;
         if (attribute)
         {
-            len = strlen(attribute);
-            pAttributes[n]->Attribute = NEW char[GetLen(len + 1)];
-            strcpy(pAttributes[n]->Attribute, attribute);
+            pAttributes[n]->Attribute = new char[len];
+            strcpy_s(pAttributes[n]->Attribute, len, attribute);
         }
-        else
-            pAttributes[Attributes_num]->Attribute = 0;
-        Attributes_num++;
 
-        //		RDTSC_E(dw1);
-        //		xtrace("SA = %d", dw1);
-
-        return (Attributes_num - 1);
+        return pAttributes.size() - 1;
     };
 
-    __forceinline DWORD GetThisNameCode()
+    uint32_t GetThisNameCode()
     {
         return nNameCode;
     }
-    __forceinline void SetNameCode(DWORD n)
+
+    void SetNameCode(uint32_t n)
     {
         nNameCode = n;
     }
@@ -537,8 +524,7 @@ class ATTRIBUTES
     void Dump(ATTRIBUTES *pA, long level)
     {
         char buffer[128];
-        DWORD n;
-        if (pA == 0)
+        if (pA == nullptr)
             return;
 
         if (level >= 128)
@@ -547,8 +533,9 @@ class ATTRIBUTES
             memset(buffer, ' ', level);
         buffer[level] = 0;
 
-        for (n = 0; n < pA->GetAttributesNum(); n++)
+        for (uint32_t n = 0; n < pA->GetAttributesNum(); n++)
         {
+            //~!~
             xtrace("%s%s = %s", buffer, pA->GetAttributeName(n), pA->GetAttribute(n));
             Dump(pA->GetAttributeClass(pA->GetAttributeName(n)), level + 2);
         }

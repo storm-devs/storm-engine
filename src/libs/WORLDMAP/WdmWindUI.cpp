@@ -9,6 +9,9 @@
 //============================================================================================
 
 #include "WdmWindUI.h"
+
+#include "core.h"
+
 #include "WdmPlayerShip.h"
 #include "WorldMap.h"
 
@@ -18,18 +21,18 @@
 
 WdmWindUI::WdmWindUI()
 {
-    strcpy(month[0], "january");
-    strcpy(month[1], "february");
-    strcpy(month[2], "march");
-    strcpy(month[3], "april");
-    strcpy(month[4], "may");
-    strcpy(month[5], "june");
-    strcpy(month[6], "july");
-    strcpy(month[7], "august");
-    strcpy(month[8], "september");
-    strcpy(month[9], "october");
-    strcpy(month[10], "november");
-    strcpy(month[11], "december");
+    strcpy_s(month[0], "january");
+    strcpy_s(month[1], "february");
+    strcpy_s(month[2], "march");
+    strcpy_s(month[3], "april");
+    strcpy_s(month[4], "may");
+    strcpy_s(month[5], "june");
+    strcpy_s(month[6], "july");
+    strcpy_s(month[7], "august");
+    strcpy_s(month[8], "september");
+    strcpy_s(month[9], "october");
+    strcpy_s(month[10], "november");
+    strcpy_s(month[11], "december");
     txBack = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\back.tga");
     txSky = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\sky.tga");
     txSkyMask = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\sky_mask.tga");
@@ -83,15 +86,15 @@ void WdmWindUI::SetAttributes(ATTRIBUTES *apnt)
 {
     if (!apnt)
         return;
-    ATTRIBUTES *ap = apnt->FindAClass(apnt, "date");
+    auto *ap = apnt->FindAClass(apnt, "date");
     if (ap)
     {
         // Font
-        char *s = ap->GetAttribute("font");
+        auto *s = ap->GetAttribute("font");
         if (s && s[0])
             dateFont = wdmObjects->wm->GetRS()->LoadFont(s);
-        strcpy(wdmObjects->stCoordinate, ap->GetAttribute("coordinate"));
-        ATTRIBUTES *a = ap->FindAClass(ap, "monthnames");
+        strcpy_s(wdmObjects->stCoordinate, ap->GetAttribute("coordinate"));
+        auto *a = ap->FindAClass(ap, "monthnames");
         if (a)
         {
             char buf[4];
@@ -103,7 +106,7 @@ void WdmWindUI::SetAttributes(ATTRIBUTES *apnt)
                     buf[1] = '0';
                 else
                     buf[1] = '1';
-                buf[2] = char('0' + (i % 10));
+                buf[2] = static_cast<char>('0' + (i % 10));
                 s = a->GetAttribute(buf);
                 if (s && s[0])
                 {
@@ -119,25 +122,24 @@ void WdmWindUI::SetAttributes(ATTRIBUTES *apnt)
 }
 
 //Отрисовка
-void WdmWindUI::LRender(VDX8RENDER *rs)
+void WdmWindUI::LRender(VDX9RENDER *rs)
 {
-    VDATA *data;
     if (wdmObjects->isNextDayUpdate)
     {
-        data = api->Event("WorldMap_GetMoral");
+        auto *data = core.Event("WorldMap_GetMoral");
         if (data)
         {
             morale = data->GetFloat() * 0.02f - 1.0f;
         }
-        data = api->Event("WorldMap_GetFood");
+        data = core.Event("WorldMap_GetFood");
         if (data)
         {
-            food = long(data->GetFloat() + 0.5f);
+            food = static_cast<long>(data->GetFloat() + 0.5f);
         }
-        data = api->Event("WorldMap_GetRum");
+        data = core.Event("WorldMap_GetRum");
         if (data)
         {
-            rum = long(data->GetFloat() + 0.5f);
+            rum = static_cast<long>(data->GetFloat() + 0.5f);
         }
         if (morale < -1.0f)
             morale = -1.0f;
@@ -145,24 +147,20 @@ void WdmWindUI::LRender(VDX8RENDER *rs)
             morale = 1.0f;
         if (food < 0)
             food = 0;
-        if (food > 1000000000)
-            food = 1000000000;
         if (rum < 0)
             rum = 0;
-        if (rum > 1000000000)
-            rum = 1000000000;
     }
     //Параметры ветра у игрока
     float x, y, ay;
     wdmObjects->playerShip->GetPosition(x, y, ay);
     CVECTOR windDir;
     resizeRatio = wdmObjects->resizeRatio;
-    float widForce = wdmObjects->GetWind(x, y, windDir);
-    float ang = (float)atan2(windDir.x, windDir.z);
+    const auto widForce = wdmObjects->GetWind(x, y, windDir);
+    const auto ang = static_cast<float>(atan2(windDir.x, windDir.z));
     //Параметры экрана
     float w, h;
     wdmObjects->GetVPSize(w, h);
-    float kDef = rs->GetHeightDeformator();
+    auto kDef = rs->GetHeightDeformator();
     //Центр штуки
     // float cx = (w - 128.0f - 16.0f) + 64.0f;
     float cx = w - (128.0f) * resizeRatio - 16.0f + 64.0f;
@@ -205,7 +203,7 @@ void WdmWindUI::LRender(VDX8RENDER *rs)
     for (long i = 0; i < 6; i++)
     {
         CVECTOR v(buf[i].tu1, 0.0f, buf[i].tv1);
-        CVECTOR vrot = rot * v;
+        const auto vrot = rot * v;
         buf[i].tu1 = vrot.x;
         buf[i].tv1 = vrot.z;
     }
@@ -222,7 +220,7 @@ void WdmWindUI::LRender(VDX8RENDER *rs)
     DrawRects(buf, 1, "WdmDrawMapBlend");
     //Пишем дату
     char tbuf[128];
-    _snprintf(tbuf, sizeof(tbuf) - 1, "%i %s %i", wdmObjects->wm->day, month[wdmObjects->wm->mon - 1],
+    sprintf_s(tbuf, sizeof(tbuf) - 1, "%i %s %i", wdmObjects->wm->day, month[wdmObjects->wm->mon - 1],
               wdmObjects->wm->year);
     tbuf[sizeof(tbuf) - 1] = 0;
     long font = dateFont >= 0 ? dateFont : FONT_DEFAULT;
@@ -230,12 +228,11 @@ void WdmWindUI::LRender(VDX8RENDER *rs)
     long fh = rs->CharHeight(font);
 
     // rs->Print(font, 0xffffffff, long(cx - fw*0.5f), long(cy + 98.0f - fh*0.5f), tbuf);
-    rs->ExtPrint(font, 0xffffffff, 0x00000000, ALIGN_CENTER, 0, resizeRatio, 0, 0, long(cx),
+    rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, 0, resizeRatio, 0, 0, long(cx),
                  long(cy + (98.0f - fh * 0.5f) * resizeRatio), tbuf);
 
     //Центр
-    // cy += 128.0f + 32.0f;
-    cy += 128.0f * resizeRatio + 32.0f;
+    cy += 128.0f + 32.0f;
     //Рисуем моральную бару
     rs->TextureSet(0, txMoraleBar);
     rs->TextureSet(1, txMoraleMask);
@@ -257,21 +254,21 @@ void WdmWindUI::LRender(VDX8RENDER *rs)
     FillRectColor(buf, 0xffffffff);
     DrawRects(buf, 1, "WdmDrawMapBlend");
     //Пишем количество припасов
-    _snprintf(tbuf, sizeof(tbuf) - 1, "%i", food);
+    sprintf_s(tbuf, sizeof(tbuf) - 1, "%i%s", food > 99999 ? 99999 : food, food > 99999 ? "+" : "");
     tbuf[sizeof(tbuf) - 1] = 0;
-    fw = rs->StringWidth(tbuf, font, resizeRatio, w);
+    fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<long>(w));
 
     // rs->Print(font, 0xffffffff, long(cx - 24.0f - fw*0.5f), long(cy + 30.0f), tbuf);
-    rs->ExtPrint(font, 0xffffffff, 0x00000000, ALIGN_CENTER, 0, resizeRatio, 0, 0, long(cx - 24.0f * resizeRatio),
+    rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, 0, resizeRatio, 0, 0, long(cx - 24.0f * resizeRatio),
                  long(cy + 30.0f * resizeRatio), tbuf);
 
     //Пишем количество рома --> ugeen 29.10.10
     _snprintf(tbuf, sizeof(tbuf) - 1, "%i", rum);
     tbuf[sizeof(tbuf) - 1] = 0;
-    fw = rs->StringWidth(tbuf, font, resizeRatio, w);
+    fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<long>(w));
 
     // rs->Print(font, 0xffffffff, long(cx + 24.0f - fw*0.5f), long(cy + 30.0f), tbuf);
-    rs->ExtPrint(font, 0xffffffff, 0x00000000, ALIGN_CENTER, 0, resizeRatio, 0, 0, long(cx + 24.0f * resizeRatio),
+    rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, 0, resizeRatio, 0, 0, long(cx + 24.0f * resizeRatio),
                  long(cy + 30.0f * resizeRatio), tbuf);
 
     //Рамка с координатами
@@ -287,20 +284,20 @@ void WdmWindUI::LRender(VDX8RENDER *rs)
     // выводим строку с координатами
     _snprintf(tbuf, sizeof(tbuf) - 1, "%s", wdmObjects->coordinate);
     tbuf[sizeof(tbuf) - 1] = 0;
-    fw = rs->StringWidth(tbuf, font, resizeRatio, w);
+    fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<long>(w));
     fh = rs->CharHeight(font);
 
     // rs->Print(font, 0xffffffff, long(cx - fw*0.5f), long(cy + 64.0f + 44.0f- fh*0.5f), tbuf);
-    rs->ExtPrint(font, 0xffffffff, 0x00000000, ALIGN_CENTER, 0, resizeRatio, 0, 0, long(cx),
+    rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, 0, resizeRatio, 0, 0, long(cx),
                  long(cy + (64.0f + 32.0f) * resizeRatio), tbuf);
 
     _snprintf(tbuf, sizeof(tbuf) - 1, "%s", wdmObjects->stCoordinate);
     tbuf[sizeof(tbuf) - 1] = 0;
-    fw = rs->StringWidth(tbuf, font, resizeRatio, w);
+    fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<long>(w));
     fh = rs->CharHeight(font);
 
     // rs->Print(font, 0xffffffff, long(cx - fw*0.5f), long(cy + 64.0f + 20.0f- fh*0.5f), tbuf);
-    rs->ExtPrint(font, 0xffffffff, 0x00000000, ALIGN_CENTER, 0, resizeRatio, 0, 0, long(cx),
+    rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, 0, resizeRatio, 0, 0, long(cx),
                  long(cy + (64.0f + 13.0f) * resizeRatio), tbuf);
 
     // национальный флаг

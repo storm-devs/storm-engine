@@ -2,29 +2,29 @@
 #define _MAST_H_
 
 #include "collide.h"
-#include "dx8render.h"
+#include "dx9render.h"
 #include "model.h"
 
 #define SR_MOVE 1
 #define SR_STOPROTATE 2
 #define SR_YROTATE 4
 
-class MAST : public ENTITY
+class MAST : public Entity
 {
     struct MountData
     {
         NODE *pNode;
-        ENTITY_ID shipEI;
-        ENTITY_ID modelEI;
+        entid_t shipEI;
+        entid_t modelEI;
     } m_mount_param;
     bool bUse;
     bool bFallUnderWater;
     int wMoveCounter;
-    VDX8RENDER *RenderService;
+    VDX9RENDER *RenderService;
     COLLIDE *pCollide;
     bool bModel;
-    ENTITY_ID model_id, oldmodel_id;
-    ENTITY_ID ship_id;
+    entid_t model_id, oldmodel_id;
+    entid_t ship_id;
     FILETIME ft_old;
     NODE *m_pMastNode;
 
@@ -34,18 +34,35 @@ class MAST : public ENTITY
     void SetDevice();
     bool Init();
     void Move();
-    void Execute(dword Delta_Time);
-    void Realize(dword Delta_Time);
+    void Execute(uint32_t Delta_Time);
+    void Realize(uint32_t Delta_Time);
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+                LostRender(delta); break;
+            case Stage::restore_render:
+                RestoreRender(delta); break;*/
+        }
+    }
+
     bool CreateState(ENTITY_STATE_GEN *state_gen);
     bool LoadState(ENTITY_STATE *state);
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    uint64_t ProcessMessage(MESSAGE &message);
 
   protected:
     void AllRelease();
-    void _cdecl Mount(ENTITY_ID modelEI, ENTITY_ID shipEI, NODE *mastNodePointer);
+    void Mount(entid_t modelEI, entid_t shipEI, NODE *mastNodePointer);
     void LoadIni();
-    void doMove(dword DeltaTime);
-    int GetSlide(ENTITY_ID &mod, CVECTOR &pbeg, CVECTOR &pend, CVECTOR &dp, CVECTOR &lrey, CVECTOR &rrey, float &angl);
+    void doMove(uint32_t DeltaTime);
+    int GetSlide(entid_t mod, CVECTOR &pbeg, CVECTOR &pend, CVECTOR &dp, CVECTOR &lrey, CVECTOR &rrey, float &angl);
     struct MASTMOVE
     {
         CVECTOR bp, ep;     // координаты мачты
@@ -57,40 +74,4 @@ class MAST : public ENTITY
     MASTMOVE mm;
 };
 
-class HULL : public ENTITY
-{
-    struct MountData
-    {
-        NODE *pNode;
-        ENTITY_ID shipEI;
-        ENTITY_ID modelEI;
-    } m_mount_param;
-
-    VDX8RENDER *RenderService;
-    COLLIDE *pCollide;
-    NODE *m_pHullNode;
-    bool bModel;
-
-    bool bUse;
-    int wMoveCounter;
-
-    ENTITY_ID model_id, oldmodel_id;
-    ENTITY_ID ship_id;
-
-  public:
-    HULL();
-    ~HULL();
-    void SetDevice();
-    bool Init();
-    bool CreateState(ENTITY_STATE_GEN *state_gen);
-    bool LoadState(ENTITY_STATE *state);
-    dword _cdecl ProcessMessage(MESSAGE &message);
-
-    void Execute(dword Delta_Time);
-    void Realize(dword Delta_Time);
-
-  protected:
-    void AllRelease();
-    void _cdecl Mount(ENTITY_ID modelEI, ENTITY_ID shipEI, NODE *hullNodePointer);
-};
 #endif

@@ -1,9 +1,9 @@
 #ifndef _MATRIX_H_
 #define _MATRIX_H_
 
-#include "cvector.h"
-
-#include <cstring>
+#include "Cvector.h"
+#include <d3d9.h>
+#include <d3dx9.h>
 
 //============================================================================================
 
@@ -22,16 +22,15 @@ struct MTX_PRJ_VECTOR
     float rhw;
 };
 
-struct D3DXMATRIX;
-
 //============================================================================================
 
 class CMatrix
 {
   public:
     union {
-        float matrix[16];
+        alignas(16) float matrix[16]; // espkk # remove inline asm # 30/Dec/2017
         float m[4][4];
+
         struct
         {
             ///Направление по X
@@ -60,11 +59,11 @@ class CMatrix
     CMatrix(float angX, float angY, float angZ, float x, float y, float z);
     CMatrix(float angX, float angY, float angZ);
     CMatrix(const CVECTOR &ang, const CVECTOR &pos);
-    CMatrix(CVECTOR &ang);
+    CMatrix(const CVECTOR &ang);
     CMatrix(const CMatrix &matrix);
-    CMatrix(CMatrix *matrix);
+    CMatrix(const CMatrix *matrix);
     // this = m1*m2
-    CMatrix(CMatrix &m1, CMatrix &m2);
+    CMatrix(const CMatrix &m1, const CMatrix &m2);
 
     //-----------------------------------------------------------
     // Main
@@ -76,8 +75,8 @@ class CMatrix
     // M = rotZ*rotX*rotY*Pos
     void BuildMatrix(float angX, float angY, float angZ, float x, float y, float z);
     void BuildMatrix(float angX, float angY, float angZ);
-    void BuildMatrix(CVECTOR &ang, CVECTOR &pos);
-    void BuildMatrix(CVECTOR &ang);
+    void BuildMatrix(const CVECTOR &ang, const CVECTOR &pos);
+    void BuildMatrix(const CVECTOR &ang);
     // M = rotX*rotY*rotZ*Pos
     void BuildMatrixXYZ(float angX, float angY, float angZ, float x, float y, float z);
 
@@ -101,24 +100,20 @@ class CMatrix
     // Multiply
     void operator*=(CMatrix &matrix);
     void operator*=(float k);
-    CMatrix operator*(CMatrix &matrix);
-    CVECTOR operator*(CVECTOR &vector);
+    CMatrix operator*(const CMatrix &matrix) const;
+    CVECTOR operator*(const CVECTOR &vector);
 
     // this = m1*m2, (m1 != this, m2 != this)
-    void EqMultiply(CMatrix &m1, CMatrix &m2);
+    void EqMultiply(const CMatrix &m1, const CMatrix &m2);
     // Transform vertex to local coordinate system
     void MulToInv(const CVECTOR &srcVrt, CVECTOR &resVrt);
     // Transform normal to local coordinate system
-    void MulToInvNorm(CVECTOR &srcNorm, CVECTOR &resNorm);
-
-    CMatrix &Inverse();
+    void MulToInvNorm(const CVECTOR &srcNorm, CVECTOR &resNorm);
 
     // Transposition
     void Transposition();
     void Transposition3X3();
-    ///Транспанирование матрицы
-    CMatrix &TranspositionX();
-    CMatrix &__fastcall Transposition4x4();
+    CMatrix &Transposition4x4();
 
     // Rotate
     void RotateX(float ang);
@@ -130,7 +125,7 @@ class CMatrix
     void MoveInversePosition(float x, float y, float z);
     // Set new position
     void SetPosition(float x, float y, float z);
-    void SetPosition(CVECTOR &pos);
+    void SetPosition(const CVECTOR &pos);
     // SetPosition(-(pos * this))
     void SetInversePosition(float x, float y, float z);
 
@@ -164,95 +159,51 @@ class CMatrix
 
     // D3D extends (return (D3DXMATRIX *)pointer)
     operator D3DXMATRIX *() const;
-
-    //Получить углы из нескалированной матрицы поворота
-    __forceinline void GetAngles(float &ax, float &ay, float &az)
-    {
-        if (vz.y < 1.0f)
-        {
-            if (vz.y > -1.0f)
-            {
-                ax = (float)asin(-vz.y);
-                ay = (float)atan2(vz.x, vz.z);
-                az = (float)atan2(vx.y, vy.y);
-                return;
-            }
-            else
-            {
-                ax = 3.141592654f * 0.5f;
-                ay = 0.0f;
-                az = (float)atan2(vx.z, vx.x);
-            }
-        }
-        else
-        {
-            ax = -3.141592654f * 0.5f;
-            ay = 0.0f;
-            az = (float)-atan2(vx.z, vx.x);
-        }
-    }
-
-    //Умножить нормаль на матрицу
-    __forceinline CVECTOR MulNormal(const CVECTOR &v) const
-    {
-        CVECTOR tv;
-        tv.x = m[0][0] * v.x + m[1][0] * v.y + m[2][0] * v.z;
-        tv.y = m[0][1] * v.x + m[1][1] * v.y + m[2][1] * v.z;
-        tv.z = m[0][2] * v.x + m[1][2] * v.y + m[2][2] * v.z;
-        return tv;
-    }
+    operator D3DMATRIX *() const;
+    operator const float *() const;
 };
-
-__forceinline CVECTOR operator*(const CVECTOR &v, const CMatrix &mtx)
-{
-    CVECTOR tv;
-    tv.x = mtx.m[0][0] * v.x + mtx.m[1][0] * v.y + mtx.m[2][0] * v.z + mtx.m[3][0];
-    tv.y = mtx.m[0][1] * v.x + mtx.m[1][1] * v.y + mtx.m[2][1] * v.z + mtx.m[3][1];
-    tv.z = mtx.m[0][2] * v.x + mtx.m[1][2] * v.y + mtx.m[2][2] * v.z + mtx.m[3][2];
-    return tv;
-}
 
 //============================================================================================
 // Constructors
 //============================================================================================
 
-__forceinline CMatrix::CMatrix()
+inline CMatrix::CMatrix()
 {
     SetIdentity();
 }
 
-__forceinline CMatrix::CMatrix(float angX, float angY, float angZ)
+inline CMatrix::CMatrix(float angX, float angY, float angZ)
 {
     BuildMatrix(angX, angY, angZ, 0.0f, 0.0f, 0.0f);
 }
 
-__forceinline CMatrix::CMatrix(float angX, float angY, float angZ, float x, float y, float z)
+inline CMatrix::CMatrix(float angX, float angY, float angZ, float x, float y, float z)
 {
     BuildMatrix(angX, angY, angZ, x, y, z);
 }
 
-__forceinline CMatrix::CMatrix(const CVECTOR &ang, const CVECTOR &pos)
+inline CMatrix::CMatrix(const CVECTOR &ang, const CVECTOR &pos)
 {
     BuildMatrix(ang.x, ang.y, ang.z, pos.x, pos.y, pos.z);
 }
 
-__forceinline CMatrix::CMatrix(CVECTOR &ang)
+inline CMatrix::CMatrix(const CVECTOR &ang)
 {
     BuildMatrix(ang.x, ang.y, ang.z, 0.0f, 0.0f, 0.0f);
 }
 
-__forceinline CMatrix::CMatrix(const CMatrix &matrix)
+inline CMatrix::CMatrix(const CMatrix &matrix)
 {
     *this = matrix;
 }
 
-__forceinline CMatrix::CMatrix(CMatrix *matrix)
+inline CMatrix::CMatrix(const CMatrix *matrix)
 {
     *this = *matrix;
 }
 
 // this = m1*m2
-__forceinline CMatrix::CMatrix(CMatrix &m1, CMatrix &m2)
+inline CMatrix::CMatrix(const CMatrix &m1, const CMatrix &m2)
 {
     EqMultiply(m1, m2);
 }
@@ -262,38 +213,58 @@ __forceinline CMatrix::CMatrix(CMatrix &m1, CMatrix &m2)
 //============================================================================================
 
 // Create identity matrix
-__forceinline void CMatrix::SetIdentity()
+inline void CMatrix::SetIdentity()
 {
-    m[0][0] = 1.0f;
-    m[1][0] = 0.0f;
-    m[2][0] = 0.0f;
-    m[3][0] = 0.0f;
+    matrix[0] = 1.f;
+    matrix[1] = 0;
+    matrix[2] = 0;
+    matrix[3] = 0;
+    matrix[4] = 0;
+    matrix[5] = 1.f;
+    matrix[6] = 0;
+    matrix[7] = 0;
+    matrix[8] = 0;
+    matrix[9] = 0;
+    matrix[10] = 1.f;
+    matrix[11] = 0;
+    matrix[12] = 0;
+    matrix[13] = 0;
+    matrix[14] = 0;
+    matrix[15] = 1.f;
 
-    m[0][1] = 0.0f;
-    m[1][1] = 1.0f;
-    m[2][1] = 0.0f;
-    m[3][1] = 0.0f;
-
-    m[0][2] = 0.0f;
-    m[1][2] = 0.0f;
-    m[2][2] = 1.0f;
-    m[3][2] = 0.0f;
-
-    m[0][3] = 0.0f;
-    m[1][3] = 0.0f;
-    m[2][3] = 0.0f;
-    m[3][3] = 1.0f;
+    /*_asm
+    {
+      mov		eax, this
+      mov		ecx, 0x3f800000
+      xor ebx, ebx
+      mov[eax + 0 * 4], ecx
+      mov[eax + 1 * 4], ebx
+      mov[eax + 2 * 4], ebx
+      mov[eax + 3 * 4], ebx
+      mov[eax + 4 * 4], ebx
+      mov[eax + 5 * 4], ecx
+      mov[eax + 6 * 4], ebx
+      mov[eax + 7 * 4], ebx
+      mov[eax + 8 * 4], ebx
+      mov[eax + 9 * 4], ebx
+      mov[eax + 10 * 4], ecx
+      mov[eax + 11 * 4], ebx
+      mov[eax + 12 * 4], ebx
+      mov[eax + 13 * 4], ebx
+      mov[eax + 14 * 4], ebx
+      mov[eax + 15 * 4], ecx
+    }*/
 }
 
 // Build matrix
-__forceinline void CMatrix::BuildMatrix(float angX, float angY, float angZ, float x, float y, float z)
+inline void CMatrix::BuildMatrix(float angX, float angY, float angZ, float x, float y, float z)
 {
-    float sinAx = sinf(angX);
-    float cosAx = cosf(angX);
-    float sinAy = sinf(angY);
-    float cosAy = cosf(angY);
-    float sinAz = sinf(angZ);
-    float cosAz = cosf(angZ);
+    const auto sinAx = sinf(angX);
+    const auto cosAx = cosf(angX);
+    const auto sinAy = sinf(angY);
+    const auto cosAy = cosf(angY);
+    const auto sinAz = sinf(angZ);
+    const auto cosAz = cosf(angZ);
 
     //Создаём матрицу с порядком вращений rz*rx*ry
     m[0][0] = cosAz * cosAy + sinAz * sinAx * sinAy;
@@ -317,14 +288,14 @@ __forceinline void CMatrix::BuildMatrix(float angX, float angY, float angZ, floa
     m[3][3] = 1.0f;
 }
 
-__forceinline void CMatrix::BuildMatrixXYZ(float angX, float angY, float angZ, float x, float y, float z)
+inline void CMatrix::BuildMatrixXYZ(float angX, float angY, float angZ, float x, float y, float z)
 {
-    float sinAx = sinf(angX);
-    float cosAx = cosf(angX);
-    float sinAy = sinf(angY);
-    float cosAy = cosf(angY);
-    float sinAz = sinf(angZ);
-    float cosAz = cosf(angZ);
+    const auto sinAx = sinf(angX);
+    const auto cosAx = cosf(angX);
+    const auto sinAy = sinf(angY);
+    const auto cosAy = cosf(angY);
+    const auto sinAz = sinf(angZ);
+    const auto cosAz = cosf(angZ);
 
     m[0][0] = cosAy * cosAz;
     m[1][0] = sinAx * sinAy * cosAz - cosAx * sinAz;
@@ -347,23 +318,23 @@ __forceinline void CMatrix::BuildMatrixXYZ(float angX, float angY, float angZ, f
     m[3][3] = 1.0f;
 }
 
-__forceinline void CMatrix::BuildMatrix(float angX, float angY, float angZ)
+inline void CMatrix::BuildMatrix(float angX, float angY, float angZ)
 {
     BuildMatrix(angX, angY, angZ, 0.0f, 0.0f, 0.0f);
 }
 
-__forceinline void CMatrix::BuildMatrix(CVECTOR &ang, CVECTOR &pos)
+inline void CMatrix::BuildMatrix(const CVECTOR &ang, const CVECTOR &pos)
 {
     BuildMatrix(ang.x, ang.y, ang.z, pos.x, pos.y, pos.z);
 }
 
-__forceinline void CMatrix::BuildMatrix(CVECTOR &ang)
+inline void CMatrix::BuildMatrix(const CVECTOR &ang)
 {
     BuildMatrix(ang.x, ang.y, ang.z, 0.0f, 0.0f, 0.0f);
 }
 
 // Build rotate matrix
-__forceinline void CMatrix::BuildRotateX(float ang)
+inline void CMatrix::BuildRotateX(float ang)
 {
     SetIdentity();
     m[1][1] = cosf(ang);
@@ -372,7 +343,7 @@ __forceinline void CMatrix::BuildRotateX(float ang)
     m[2][2] = cosf(ang);
 }
 
-__forceinline void CMatrix::BuildRotateY(float ang)
+inline void CMatrix::BuildRotateY(float ang)
 {
     SetIdentity();
     m[0][0] = cosf(ang);
@@ -381,7 +352,7 @@ __forceinline void CMatrix::BuildRotateY(float ang)
     m[2][2] = cosf(ang);
 }
 
-__forceinline void CMatrix::BuildRotateZ(float ang)
+inline void CMatrix::BuildRotateZ(float ang)
 {
     SetIdentity();
     m[0][0] = cosf(ang);
@@ -391,7 +362,7 @@ __forceinline void CMatrix::BuildRotateZ(float ang)
 }
 
 // Build position matrix
-__forceinline void CMatrix::BuildPosition(float x, float y, float z)
+inline void CMatrix::BuildPosition(float x, float y, float z)
 {
     SetIdentity();
     matrix[12] = x;
@@ -400,20 +371,44 @@ __forceinline void CMatrix::BuildPosition(float x, float y, float z)
 }
 
 // Equal
-__forceinline void CMatrix::operator=(const CMatrix &matrix)
+inline void CMatrix::operator=(const CMatrix &matrix)
 {
-    memcpy(this->matrix, matrix.matrix, sizeof(this->matrix));
+    this->matrix[0] = matrix.matrix[0];
+    this->matrix[1] = matrix.matrix[1];
+    this->matrix[2] = matrix.matrix[2];
+    this->matrix[3] = matrix.matrix[3];
+    this->matrix[4] = matrix.matrix[4];
+    this->matrix[5] = matrix.matrix[5];
+    this->matrix[6] = matrix.matrix[6];
+    this->matrix[7] = matrix.matrix[7];
+    this->matrix[8] = matrix.matrix[8];
+    this->matrix[9] = matrix.matrix[9];
+    this->matrix[10] = matrix.matrix[10];
+    this->matrix[11] = matrix.matrix[11];
+    this->matrix[12] = matrix.matrix[12];
+    this->matrix[13] = matrix.matrix[13];
+    this->matrix[14] = matrix.matrix[14];
+    this->matrix[15] = matrix.matrix[15];
+
+    /*_asm
+    {
+      cld
+      mov		edi, this
+      mov		esi, uint32_t ptr matrix
+      mov		ecx, 16
+      rep		movsd
+    }*/
 }
 
 // Multiply
-__forceinline void CMatrix::operator*=(CMatrix &matrix)
+inline void CMatrix::operator*=(CMatrix &matrix)
 {
     CMatrix tmp;
     tmp.EqMultiply(*this, matrix);
     *this = tmp;
 }
 
-__forceinline void CMatrix::operator*=(float k)
+inline void CMatrix::operator*=(float k)
 {
     m[0][0] *= k;
     m[1][0] *= k;
@@ -433,14 +428,14 @@ __forceinline void CMatrix::operator*=(float k)
     m[3][3] *= k;
 }
 
-__forceinline CMatrix CMatrix::operator*(CMatrix &matrix)
+inline CMatrix CMatrix::operator*(const CMatrix &matrix) const
 {
     CMatrix tmp;
     tmp.EqMultiply(*this, matrix);
     return tmp;
 }
 
-__forceinline CVECTOR CMatrix::operator*(CVECTOR &vector)
+inline CVECTOR CMatrix::operator*(const CVECTOR &vector)
 {
     CVECTOR tmp;
     tmp.x = matrix[0] * vector.x + matrix[4] * vector.y + matrix[8] * vector.z + matrix[12];
@@ -449,17 +444,8 @@ __forceinline CVECTOR CMatrix::operator*(CVECTOR &vector)
     return tmp;
 }
 
-__forceinline CVECTOR operator*(const CMatrix &mtx, const CVECTOR &vector)
-{
-    CVECTOR tmp;
-    tmp.x = mtx.matrix[0] * vector.x + mtx.matrix[4] * vector.y + mtx.matrix[8] * vector.z + mtx.matrix[12];
-    tmp.y = mtx.matrix[1] * vector.x + mtx.matrix[5] * vector.y + mtx.matrix[9] * vector.z + mtx.matrix[13];
-    tmp.z = mtx.matrix[2] * vector.x + mtx.matrix[6] * vector.y + mtx.matrix[10] * vector.z + mtx.matrix[14];
-    return tmp;
-}
-
 // this = m1*m2, (m1 != this, m2 != this)
-__forceinline void CMatrix::EqMultiply(CMatrix &m1, CMatrix &m2)
+inline void CMatrix::EqMultiply(const CMatrix &m1, const CMatrix &m2)
 {
     matrix[0] = m2.matrix[0] * m1.matrix[0] + m2.matrix[4] * m1.matrix[1] + m2.matrix[8] * m1.matrix[2] +
                 m2.matrix[12] * m1.matrix[3];
@@ -499,7 +485,7 @@ __forceinline void CMatrix::EqMultiply(CMatrix &m1, CMatrix &m2)
 }
 
 // Transform vertex to local coordinate system
-__forceinline void CMatrix::MulToInv(const CVECTOR &src, CVECTOR &res)
+inline void CMatrix::MulToInv(const CVECTOR &src, CVECTOR &res)
 {
     res.x = (src.x - matrix[12]) * matrix[0] + (src.y - matrix[13]) * matrix[1] + (src.z - matrix[14]) * matrix[2];
     res.y = (src.x - matrix[12]) * matrix[4] + (src.y - matrix[13]) * matrix[5] + (src.z - matrix[14]) * matrix[6];
@@ -507,7 +493,7 @@ __forceinline void CMatrix::MulToInv(const CVECTOR &src, CVECTOR &res)
 }
 
 // Transform normal to local coordinate system
-__forceinline void CMatrix::MulToInvNorm(CVECTOR &src, CVECTOR &res)
+inline void CMatrix::MulToInvNorm(const CVECTOR &src, CVECTOR &res)
 {
     res.x = src.x * matrix[0] + src.y * matrix[1] + src.z * matrix[2];
     res.y = src.x * matrix[4] + src.y * matrix[5] + src.z * matrix[6];
@@ -515,115 +501,117 @@ __forceinline void CMatrix::MulToInvNorm(CVECTOR &src, CVECTOR &res)
 }
 
 // Transposition
-__forceinline void CMatrix::Transposition()
+inline void CMatrix::Transposition()
 {
-    float x = Pos() | Vx();
-    float y = Pos() | Vy();
-    float z = Pos() | Vz();
+    const auto x = Pos() | Vx();
+    const auto y = Pos() | Vy();
+    const auto z = Pos() | Vz();
     Pos().x = -x;
     Pos().y = -y;
     Pos().z = -z;
     Transposition3X3();
 }
 
-//Транспанирование матрицы
-__forceinline CMatrix &CMatrix::TranspositionX()
+inline void CMatrix::Transposition3X3()
 {
-    float ebx = matrix[1];
-    float ecx = matrix[2];
-    float esi = matrix[4];
-    float edi = matrix[8];
-    matrix[4] = ebx;
-    matrix[8] = ecx;
-    matrix[1] = esi;
-    matrix[2] = edi;
+    float tmp;
+    tmp = matrix[1];
+    matrix[1] = matrix[4];
+    matrix[4] = tmp;
+    tmp = matrix[2];
+    matrix[2] = matrix[8];
+    matrix[8] = tmp;
+    tmp = matrix[6];
+    matrix[6] = matrix[9];
+    matrix[9] = tmp;
 
-    ebx = matrix[3];
-    ecx = matrix[6];
-    esi = matrix[12];
-    edi = matrix[9];
-    matrix[12] = ebx;
-    matrix[9] = ecx;
-    matrix[3] = esi;
-    matrix[6] = edi;
-
-    ebx = matrix[7];
-    ecx = matrix[11];
-    esi = matrix[13];
-    edi = matrix[14];
-    matrix[13] = ebx;
-    matrix[14] = ecx;
-    matrix[7] = esi;
-    matrix[11] = edi;
-
-    return *this;
+    /*_asm
+    {
+      mov		eax, this
+      mov		ebx, [eax + 4*4]
+      mov		ecx, [eax + 8*4]
+      mov		esi, [eax + 1*4]
+      mov		edi, [eax + 2*4]
+      mov		[eax + 4*4], esi
+      mov		[eax + 8*4], edi
+      mov		[eax + 1*4], ebx
+      mov		[eax + 2*4], ecx
+      mov		ebx, [eax + 6*4]
+      mov		esi, [eax + 9*4]
+      mov		[eax + 6*4], esi
+      mov		[eax + 9*4], ebx
+    }*/
 }
 
-//Расчёт обратной матрицы
-__forceinline CMatrix &CMatrix::Inverse()
+inline CMatrix &CMatrix::Transposition4x4()
 {
-    pos = CVECTOR(-(pos | vx), -(pos | vy), -(pos | vz));
-    Transposition3X3();
-    return *this;
-}
+    float tmp;
+    tmp = matrix[1];
+    matrix[1] = matrix[4];
+    matrix[4] = tmp;
+    tmp = matrix[2];
+    matrix[2] = matrix[8];
+    matrix[8] = tmp;
+    tmp = matrix[3];
+    matrix[3] = matrix[12];
+    matrix[12] = tmp;
+    tmp = matrix[6];
+    matrix[6] = matrix[9];
+    matrix[9] = tmp;
+    tmp = matrix[7];
+    matrix[7] = matrix[13];
+    matrix[13] = tmp;
+    tmp = matrix[11];
+    matrix[11] = matrix[14];
+    matrix[14] = tmp;
 
-__forceinline void CMatrix::Transposition3X3()
-{
-    float m01 = m[0][1];
-    float m02 = m[0][2];
-    float m12 = m[1][2];
-
-    m[0][1] = m[1][0];
-    m[0][2] = m[2][0];
-    m[1][2] = m[2][1];
-
-    m[1][0] = m01;
-    m[2][0] = m02;
-    m[2][1] = m12;
-}
-
-__forceinline CMatrix &__fastcall CMatrix::Transposition4x4()
-{
-    float m01 = m[0][1];
-    float m02 = m[0][2];
-    float m03 = m[0][3];
-    float m12 = m[1][2];
-    float m13 = m[1][3];
-    float m23 = m[2][3];
-
-    m[0][1] = m[1][0];
-    m[0][2] = m[2][0];
-    m[0][3] = m[3][0];
-    m[1][2] = m[2][1];
-    m[1][3] = m[3][1];
-    m[2][3] = m[3][2];
-
-    m[1][0] = m01;
-    m[2][0] = m02;
-    m[3][0] = m03;
-    m[2][1] = m12;
-    m[3][1] = m13;
-    m[3][2] = m23;
-
+    /*_asm
+    {
+      mov		eax, this
+      mov		ebx, [eax + 1*4]
+      mov		ecx, [eax + 2*4]
+      mov		esi, [eax + 4*4]
+      mov		edi, [eax + 8*4]
+      mov		[eax + 4*4], ebx
+      mov		[eax + 8*4], ecx
+      mov		[eax + 1*4], esi
+      mov		[eax + 2*4], edi
+      mov		ebx, [eax + 3*4]
+      mov		ecx, [eax + 6*4]
+      mov		esi, [eax + 12*4]
+      mov		edi, [eax + 9*4]
+      mov		[eax + 12*4], ebx
+      mov		[eax + 9*4], ecx
+      mov		[eax + 3*4], esi
+      mov		[eax + 6*4], edi
+      mov		ebx, [eax + 7*4]
+      mov		ecx, [eax + 11*4]
+      mov		esi, [eax + 13*4]
+      mov		edi, [eax + 14*4]
+      mov		[eax + 13*4], ebx
+      mov		[eax + 14*4], ecx
+      mov		[eax + 7*4], esi
+      mov		[eax + 11*4], edi
+    }*/
     return *this;
 }
 
 // Rotate
-__forceinline void CMatrix::RotateX(float ang)
+inline void CMatrix::RotateX(float ang)
 {
     CMatrix mtr;
     mtr.BuildRotateX(ang);
     *this *= mtr;
 }
 
-__forceinline void CMatrix::RotateY(float ang)
+inline void CMatrix::RotateY(float ang)
 {
     CMatrix mtr;
     mtr.BuildRotateY(ang);
     *this *= mtr;
 }
 
-__forceinline void CMatrix::RotateZ(float ang)
+inline void CMatrix::RotateZ(float ang)
 {
     CMatrix mtr;
     mtr.BuildRotateZ(ang);
@@ -631,7 +619,7 @@ __forceinline void CMatrix::RotateZ(float ang)
 }
 
 // Move
-__forceinline void CMatrix::Move(float dX, float dY, float dZ)
+inline void CMatrix::Move(float dX, float dY, float dZ)
 {
     matrix[12] += dX;
     matrix[13] += dY;
@@ -639,7 +627,7 @@ __forceinline void CMatrix::Move(float dX, float dY, float dZ)
 }
 
 // Move(-(pos * this))
-__forceinline void CMatrix::MoveInversePosition(float x, float y, float z)
+inline void CMatrix::MoveInversePosition(float x, float y, float z)
 {
     m[3][0] -= m[0][0] * x + m[1][0] * y + m[2][0] * z;
     m[3][1] -= m[0][1] * x + m[1][1] * y + m[2][1] * z;
@@ -647,14 +635,14 @@ __forceinline void CMatrix::MoveInversePosition(float x, float y, float z)
 }
 
 // Set new position
-__forceinline void CMatrix::SetPosition(float x, float y, float z)
+inline void CMatrix::SetPosition(float x, float y, float z)
 {
     matrix[12] = x;
     matrix[13] = y;
     matrix[14] = z;
 }
 
-__forceinline void CMatrix::SetPosition(CVECTOR &pos)
+inline void CMatrix::SetPosition(const CVECTOR &pos)
 {
     matrix[12] = pos.x;
     matrix[13] = pos.y;
@@ -662,7 +650,7 @@ __forceinline void CMatrix::SetPosition(CVECTOR &pos)
 }
 
 // SetPosition(-(pos * this))
-__forceinline void CMatrix::SetInversePosition(float x, float y, float z)
+inline void CMatrix::SetInversePosition(float x, float y, float z)
 {
     m[3][0] = -(m[0][0] * x + m[1][0] * y + m[2][0] * z);
     m[3][1] = -(m[0][1] * x + m[1][1] * y + m[2][1] * z);
@@ -674,78 +662,118 @@ __forceinline void CMatrix::SetInversePosition(float x, float y, float z)
 //============================================================================================
 
 // Access to axis vectors
-__forceinline CVECTOR &CMatrix::Vx() const
+inline CVECTOR &CMatrix::Vx() const
 {
     return *(CVECTOR *)(matrix);
 }
 
-__forceinline CVECTOR &CMatrix::Vy() const
+inline CVECTOR &CMatrix::Vy() const
 {
     return *(CVECTOR *)(matrix + 4);
 }
 
-__forceinline CVECTOR &CMatrix::Vz() const
+inline CVECTOR &CMatrix::Vz() const
 {
     return *(CVECTOR *)(matrix + 8);
 }
 
-__forceinline CVECTOR &CMatrix::Pos() const
+inline CVECTOR &CMatrix::Pos() const
 {
     return *(CVECTOR *)(matrix + 12);
 }
 
 // Access to matrix element
-__forceinline float &CMatrix::operator()(long i, long j)
+inline float &CMatrix::operator()(long i, long j)
 {
     return m[i][j];
 }
 
 // Create only rotate matrix
-__forceinline void CMatrix::Get3X3(CMatrix &mtr)
+inline void CMatrix::Get3X3(CMatrix &mtr)
 {
-    float ebx = matrix[0];
-    float ecx = matrix[1];
-    float edx = matrix[2];
-    mtr.matrix[0] = ebx;
-    mtr.matrix[1] = ecx;
-    mtr.matrix[2] = edx;
+    mtr.matrix[0] = matrix[0];
+    mtr.matrix[1] = matrix[1];
+    mtr.matrix[2] = matrix[2];
+    mtr.matrix[4] = matrix[4];
+    mtr.matrix[5] = matrix[5];
+    mtr.matrix[6] = matrix[6];
+    mtr.matrix[8] = matrix[8];
+    mtr.matrix[9] = matrix[9];
+    mtr.matrix[10] = matrix[10];
 
-    ebx = matrix[4];
-    ecx = matrix[5];
-    edx = matrix[6];
-    mtr.matrix[4] = ebx;
-    mtr.matrix[5] = ecx;
-    mtr.matrix[6] = edx;
+    /*_asm
+    {
+      mov		esi, this
+      mov		edi, uint32_t ptr mtr
+      mov		ebx, [esi + 0*4]
+      mov		ecx, [esi + 1*4]
+      mov		edx, [esi + 2*4]
+      mov		[edi + 0*4], ebx
+      mov		[edi + 1*4], ecx
+      mov		[edi + 2*4], edx
+      mov		ebx, [esi + 4*4]
+      mov		ecx, [esi + 5*4]
+      mov		edx, [esi + 6*4]
+      mov		[edi + 4*4], ebx
+      mov		[edi + 5*4], ecx
+      mov		[edi + 6*4], edx
+      mov		ebx, [esi + 8*4]
+      mov		ecx, [esi + 9*4]
+      mov		edx, [esi + 10*4]
+      mov		[edi + 8*4], ebx
+      mov		[edi + 9*4], ecx
+      mov		[edi + 10*4], edx
+    }*/
+}
 
-    ebx = matrix[8];
-    ecx = matrix[9];
-    edx = matrix[10];
-    mtr.matrix[8] = ebx;
-    mtr.matrix[9] = ecx;
-    mtr.matrix[10] = edx;
+inline void CMatrix::Get3X3(CMatrix *mtr)
+{
+    Get3X3(*mtr);
 }
 
 // Projection
-__forceinline CMatrix &CMatrix::BuildProjectionMatrix(float viewAngle, float vpWidth, float vpHeight, float zNear,
-                                                      float zFar)
+inline CMatrix &CMatrix::BuildProjectionMatrix(float viewAngle, float vpWidth, float vpHeight, float zNear, float zFar)
 {
-    memset(matrix, 0, sizeof(matrix));
+    matrix[0] = 0;
+    matrix[1] = 0;
+    matrix[2] = 0;
+    matrix[3] = 0;
+    matrix[4] = 0;
+    matrix[5] = 0;
+    matrix[6] = 0;
+    matrix[7] = 0;
+    matrix[8] = 0;
+    matrix[9] = 0;
+    matrix[10] = 0;
+    matrix[11] = 0;
+    matrix[12] = 0;
+    matrix[13] = 0;
+    matrix[14] = 0;
+    matrix[15] = 0;
 
-    float cs = cosf(viewAngle * 0.5f);
-    float sn = sinf(viewAngle * 0.5f);
-    double Q = (double)zFar / (double)(zFar - zNear);
+    /*_asm
+    {
+      cld
+      xor		eax, eax
+      mov		edi, this
+      mov		ecx, 16
+      rep		stosd
+    }*/
+    // auto cs = cosf(viewAngle * 0.5f);
+    // auto sn = sinf(viewAngle * 0.5f);
+    const auto Q = static_cast<double>(zFar) / static_cast<double>(zFar - zNear);
 
     matrix[0] = 1.0f / tanf(viewAngle * 0.5f);
     matrix[5] = 1.0f / tanf((vpHeight / vpWidth) * viewAngle * 0.5f);
-    matrix[10] = (float)Q;
+    matrix[10] = static_cast<float>(Q);
     matrix[11] = 1.0f;
-    matrix[14] = -(float)Q * zNear;
+    matrix[14] = -static_cast<float>(Q) * zNear;
 
     return (*this);
 }
 
-__forceinline void CMatrix::Projection(CVECTOR *srcArray, MTX_PRJ_VECTOR *dstArray, long num, float vphWidth05,
-                                       float vphHeight05, long srcStrcSize, long dstStrcSize)
+inline void CMatrix::Projection(CVECTOR *srcArray, MTX_PRJ_VECTOR *dstArray, long num, float vphWidth05,
+                                float vphHeight05, long srcStrcSize, long dstStrcSize)
 {
     float k;
     for (; num > 0; num--)
@@ -763,18 +791,18 @@ __forceinline void CMatrix::Projection(CVECTOR *srcArray, MTX_PRJ_VECTOR *dstArr
 
         dstArray->rhw = k;
 
-        srcArray = (CVECTOR *)((long)srcArray + srcStrcSize);
-        dstArray = (MTX_PRJ_VECTOR *)((long)dstArray + dstStrcSize);
+        srcArray = (CVECTOR *)((char *)(srcArray) + srcStrcSize);
+        dstArray = (MTX_PRJ_VECTOR *)((char *)(dstArray) + dstStrcSize);
     }
 }
 
 // View
-__forceinline bool CMatrix::BuildViewMatrix(CVECTOR lookFrom, CVECTOR lookTo, CVECTOR upVector)
+inline bool CMatrix::BuildViewMatrix(CVECTOR lookFrom, CVECTOR lookTo, CVECTOR upVector)
 {
     SetIdentity();
     //Нормализуем вектор смотрения
     lookTo -= lookFrom;
-    float l = ~lookTo;
+    auto l = ~lookTo;
     if (l == 0.0f)
     {
         //Ставим позицию для неповёрнутой матрици
@@ -818,7 +846,7 @@ __forceinline bool CMatrix::BuildViewMatrix(CVECTOR lookFrom, CVECTOR lookTo, CV
 
 // Mirror
 //Формирование матрицы отражение по плану
-__forceinline void CMatrix::BuildMirrorMatrix(float Nx, float Ny, float Nz, float D)
+inline void CMatrix::BuildMirrorMatrix(float Nx, float Ny, float Nz, float D)
 {
     m[0][0] = -Nx * 2.0f * Nx + 1.0f;
     m[1][0] = -Nx * 2.0f * Ny;
@@ -842,14 +870,24 @@ __forceinline void CMatrix::BuildMirrorMatrix(float Nx, float Ny, float Nz, floa
 }
 
 // D3D extends (return (D3DXMATRIX *)pointer)
-__forceinline CMatrix::operator D3DXMATRIX *() const
+inline CMatrix::operator D3DXMATRIX *() const
 {
     return ((D3DXMATRIX *)matrix);
 };
 
+// D3D extends (return (D3DMATRIX *)pointer)
+inline CMatrix::operator D3DMATRIX *() const
+{
+    return ((D3DMATRIX *)matrix);
+};
+
+inline CMatrix::operator const float *() const
+{
+    return static_cast<const float *>(matrix);
+};
 //============================================================================================
 
-__forceinline CMatrix &CMatrix::BuildScale(float scale)
+inline CMatrix &CMatrix::BuildScale(float scale)
 {
     SetIdentity();
     m[0][0] = scale;
@@ -859,7 +897,7 @@ __forceinline CMatrix &CMatrix::BuildScale(float scale)
 }
 
 //Посчитать матрицу масштабирования
-__forceinline CMatrix &CMatrix::BuildScale(float scaleX, float scaleY, float scaleZ)
+inline CMatrix &CMatrix::BuildScale(float scaleX, float scaleY, float scaleZ)
 {
     SetIdentity();
     m[0][0] = scaleX;
@@ -869,7 +907,7 @@ __forceinline CMatrix &CMatrix::BuildScale(float scaleX, float scaleY, float sca
 }
 
 //Посчитать матрицу масштабирования
-__forceinline CMatrix &CMatrix::BuildScale(const CVECTOR &scale)
+inline CMatrix &CMatrix::BuildScale(const CVECTOR &scale)
 {
     BuildScale(scale.x, scale.y, scale.z);
     return *this;

@@ -1,7 +1,7 @@
 BasedOnStyle: Microsoft
 
 # To apply code style please run:
-# clang-format -i **/*.cpp **/*.h
+# find ./src -iname *.h -o -iname *.cpp | xargs clang-format -i
 
 # To dump Microsoft style options run:
 # clang-format -style=microsoft -dump-config > .clang-format

@@ -1,8 +1,9 @@
 #include "material.h"
+#include "../bi_defines.h"
 #include "image.h"
 #include "imgrender.h"
 
-BIImageMaterial::BIImageMaterial(VDX8RENDER *pRS, BIImageRender *pImgRender) : m_apImage(_FL)
+BIImageMaterial::BIImageMaterial(VDX9RENDER *pRS, BIImageRender *pImgRender)
 {
     m_pRS = pRS;
     m_pImageRender = pImgRender;
@@ -15,10 +16,10 @@ BIImageMaterial::BIImageMaterial(VDX8RENDER *pRS, BIImageRender *pImgRender) : m
     m_nTriangleQuantity = 0;
 
     m_bMakeBufferUpdate = false;
-    m_bDeleteEverythink = false;
+    m_bDeleteEverything = false;
 
-    m_nMinPrioritet = ImagePrioritet_DefaultValue;
-    m_nMaxPrioritet = ImagePrioritet_DefaultValue;
+    m_nMinPriority = ImagePrioritet_DefaultValue;
+    m_nMaxPriority = ImagePrioritet_DefaultValue;
 }
 
 BIImageMaterial::~BIImageMaterial()
@@ -31,23 +32,23 @@ void BIImageMaterial::Render(long nBegPrior, long nEndPrior)
     if (m_bMakeBufferUpdate)
         RemakeBuffers();
 
-    long nStartIndex = 0;
-    long nTriangleQuantity = m_nTriangleQuantity;
-    if (!GetOutputRangeByPrioritet(nBegPrior, nEndPrior, nStartIndex, nTriangleQuantity))
+    size_t nStartIndex = 0;
+    size_t nTriangleQuantity = m_nTriangleQuantity;
+    if (!GetOutputRangeByPriority(nBegPrior, nEndPrior, nStartIndex, nTriangleQuantity))
         return;
 
     if (m_nTextureID >= 0 && m_nVBufID >= 0 && m_nIBufID >= 0)
     {
         m_pRS->TextureSet(0, m_nTextureID);
         m_pRS->DrawBuffer(m_nVBufID, sizeof(BI_IMAGE_VERTEX), m_nIBufID, 0, m_nVertexQuantity, nStartIndex,
-                          nTriangleQuantity, m_sTechniqueName);
+                          nTriangleQuantity, m_sTechniqueName.c_str());
     }
 }
 
-const BIImage *BIImageMaterial::CreateImage(BIImageType type, dword color, FRECT &uv, long nLeft, long nTop,
+const BIImage *BIImageMaterial::CreateImage(BIImageType type, uint32_t color, const FRECT &uv, long nLeft, long nTop,
                                             long nRight, long nBottom, long nPrior)
 {
-    BIImage *pImg = NEW BIImage(m_pRS, this);
+    auto *pImg = new BIImage(m_pRS, this);
     Assert(pImg);
     pImg->SetColor(color);
     pImg->SetPosition(nLeft, nTop, nRight, nBottom);
@@ -57,20 +58,20 @@ const BIImage *BIImageMaterial::CreateImage(BIImageType type, dword color, FRECT
     InsertImageToList(pImg);
     // m_apImage.Add( pImg );
     m_bMakeBufferUpdate = true;
-    RecalculatePrioritetRange();
+    RecalculatePriorityRange();
     return pImg;
 }
 
 void BIImageMaterial::DeleteImage(const BIImage *pImg)
 {
-    if (m_bDeleteEverythink)
+    if (m_bDeleteEverything)
         return;
-    for (long n = 0; n < m_apImage; n++)
+    for (long n = 0; n < m_apImage.size(); n++)
         if (m_apImage[n] == pImg)
         {
-            m_apImage.DelIndex(n);
+            m_apImage.erase(m_apImage.begin() + n);
             m_bMakeBufferUpdate = true;
-            RecalculatePrioritetRange();
+            RecalculatePriorityRange();
             break;
         }
 }
@@ -80,24 +81,28 @@ void BIImageMaterial::SetTexture(const char *pcTextureName)
     if (pcTextureName == m_sTextureName)
         return; // уже стоит эта текстура
     m_sTextureName = pcTextureName;
-    TEXTURE_RELEASE(m_pRS, m_nTextureID);
+    m_pRS->TextureRelease(m_nTextureID);
     m_nTextureID = m_pRS->TextureCreate(pcTextureName);
 }
 
 void BIImageMaterial::ReleaseAllImages()
 {
-    m_bDeleteEverythink = true;
-    m_apImage.DelAllWithPointers();
-    m_bDeleteEverythink = false;
+    m_bDeleteEverything = true;
+    for (auto const &image : m_apImage)
+        delete image;
+    m_apImage.clear();
+    // m_apImage.DelAllWithPointers();
+    m_bDeleteEverything = false;
     m_bMakeBufferUpdate = true;
 }
 
 void BIImageMaterial::Release()
 {
-    m_bDeleteEverythink = true;
+    m_bDeleteEverything = true;
     m_pImageRender->DeleteMaterial(this);
-    m_apImage.DelAllWithPointers();
-
+    for (auto const &image : m_apImage)
+        delete image;
+    // m_apImage.DelAllWithPointers();
     TEXTURE_RELEASE(m_pRS, m_nTextureID);
     VERTEX_BUFFER_RELEASE(m_pRS, m_nVBufID);
     INDEX_BUFFER_RELEASE(m_pRS, m_nVBufID);
@@ -106,23 +111,23 @@ void BIImageMaterial::Release()
     m_nTriangleQuantity = 0;
 }
 
-void BIImageMaterial::UpdateImageBuffers(long nStartIdx, long nEndIdx)
+void BIImageMaterial::UpdateImageBuffers(long nStartIdx, size_t nEndIdx)
 {
     // fool check
     if (m_nIBufID < 0 || m_nVBufID < 0)
         return;
-    if (nStartIdx >= (long)m_apImage.Size())
+    if (nStartIdx >= static_cast<long>(m_apImage.size()))
         return;
-    if (nEndIdx >= (long)m_apImage.Size())
-        nEndIdx = m_apImage.Size() - 1;
+    if (nEndIdx >= static_cast<long>(m_apImage.size()))
+        nEndIdx = m_apImage.size() - 1;
 
-    word *pT = (word *)m_pRS->LockIndexBuffer(m_nIBufID);
-    BI_IMAGE_VERTEX *pV = (BI_IMAGE_VERTEX *)m_pRS->LockVertexBuffer(m_nVBufID);
+    auto *pT = static_cast<uint16_t *>(m_pRS->LockIndexBuffer(m_nIBufID));
+    auto *pV = static_cast<BI_IMAGE_VERTEX *>(m_pRS->LockVertexBuffer(m_nVBufID));
 
     // get before
-    long nV = 0;
-    long nT = 0;
-    long n = 0;
+    size_t nV = 0;
+    size_t nT = 0;
+    long n;
     for (n = 0; n < nStartIdx; n++)
     {
         nV += m_apImage[n]->GetVertexQuantity();
@@ -140,41 +145,45 @@ void BIImageMaterial::UpdateImageBuffers(long nStartIdx, long nEndIdx)
 
 void BIImageMaterial::RemakeBuffers()
 {
-    long nVQ = 0;
-    long nTQ = 0;
-    for (long n = 0; n < m_apImage; n++)
+    size_t nVQ = 0;
+    size_t nTQ = 0;
+    for (long n = 0; n < m_apImage.size(); n++)
     {
         nVQ += m_apImage[n]->GetVertexQuantity();
         nTQ += m_apImage[n]->GetTriangleQuantity();
     }
+
+    if (nVQ == 0 || nTQ == 0)
+        return;
+
     if (m_nVertexQuantity != nVQ)
     {
         m_pRS->ReleaseVertexBuffer(m_nVBufID);
         m_nVBufID =
-            m_pRS->CreateVertexBufferManaged(BI_IMAGE_VERTEX_FORMAT, nVQ * sizeof(BI_IMAGE_VERTEX), D3DUSAGE_WRITEONLY);
+            m_pRS->CreateVertexBuffer(BI_IMAGE_VERTEX_FORMAT, nVQ * sizeof(BI_IMAGE_VERTEX), D3DUSAGE_WRITEONLY);
         m_nVertexQuantity = nVQ;
     }
     if (m_nTriangleQuantity != nTQ)
     {
         m_pRS->ReleaseIndexBuffer(m_nIBufID);
-        m_nIBufID = m_pRS->CreateIndexBufferManaged(nTQ * 3 * sizeof(word));
+        m_nIBufID = m_pRS->CreateIndexBuffer(nTQ * 3 * sizeof(uint16_t));
         m_nTriangleQuantity = nTQ;
     }
-    UpdateImageBuffers(0, m_apImage.Size() - 1);
+    UpdateImageBuffers(0, m_apImage.size() - 1);
     m_bMakeBufferUpdate = false;
 }
 
-bool BIImageMaterial::GetOutputRangeByPrioritet(long nBegPrior, long nEndPrior, long &nStartIndex,
-                                                long &nTriangleQuantity)
+bool BIImageMaterial::GetOutputRangeByPriority(long nBegPrior, long nEndPrior, size_t &nStartIndex,
+                                               size_t &nTriangleQuantity)
 {
-    if (m_apImage.Size() == 0)
+    if (m_apImage.size() == 0)
         return false;
-    if (m_apImage[0]->GetPrioritet() > nEndPrior || m_apImage.LastE()->GetPrioritet() < nBegPrior)
+    if (m_apImage[0]->GetPrioritet() > nEndPrior || m_apImage.back()->GetPrioritet() < nBegPrior)
         return false;
 
     nStartIndex = 0;
-    long n = 0;
-    for (n = 0; n < m_apImage; n++)
+    long n;
+    for (n = 0; n < m_apImage.size(); n++)
     {
         if (m_apImage[n]->GetPrioritet() >= nBegPrior)
             break;
@@ -182,7 +191,7 @@ bool BIImageMaterial::GetOutputRangeByPrioritet(long nBegPrior, long nEndPrior, 
     }
 
     nTriangleQuantity = 0;
-    for (; n < m_apImage; n++)
+    for (; n < m_apImage.size(); n++)
     {
         if (m_apImage[n]->GetPrioritet() > nEndPrior)
             break;
@@ -192,33 +201,35 @@ bool BIImageMaterial::GetOutputRangeByPrioritet(long nBegPrior, long nEndPrior, 
     return (nTriangleQuantity != 0);
 }
 
-void BIImageMaterial::RecalculatePrioritetRange()
+void BIImageMaterial::RecalculatePriorityRange()
 {
-    if (m_apImage.Size() == 0)
+    if (m_apImage.size() == 0)
         return;
-    long oldMin = m_nMinPrioritet;
-    long oldMax = m_nMaxPrioritet;
-    m_nMinPrioritet = m_nMaxPrioritet = m_apImage[0]->GetPrioritet();
-    for (long n = 1; n < m_apImage; n++)
+    const auto oldMin = m_nMinPriority;
+    const auto oldMax = m_nMaxPriority;
+    m_nMinPriority = m_nMaxPriority = m_apImage[0]->GetPrioritet();
+    for (long n = 1; n < m_apImage.size(); n++)
     {
-        long p = m_apImage[n]->GetPrioritet();
-        if (p < m_nMinPrioritet)
-            m_nMinPrioritet = p;
-        else if (p > m_nMaxPrioritet)
-            m_nMaxPrioritet = p;
+        const auto p = m_apImage[n]->GetPrioritet();
+        if (p < m_nMinPriority)
+            m_nMinPriority = p;
+        else if (p > m_nMaxPriority)
+            m_nMaxPriority = p;
     }
-    if (oldMin != m_nMinPrioritet || oldMax != m_nMaxPrioritet)
+    if (oldMin != m_nMinPriority || oldMax != m_nMaxPriority)
         m_pImageRender->MaterialSorting();
 }
 
 void BIImageMaterial::InsertImageToList(BIImage *pImg)
 {
     Assert(pImg);
-    long nPrior = pImg->GetPrioritet();
-    long n = 0;
-    for (n = 0; n < m_apImage; n++)
+    const auto nPrior = pImg->GetPrioritet();
+    long n;
+    for (n = 0; n < m_apImage.size(); n++)
         if (m_apImage[n]->GetPrioritet() > nPrior)
             break;
-    m_apImage.Insert(n);
-    m_apImage[n] = pImg;
+
+    m_apImage.insert(m_apImage.begin() + n, pImg);
+    // m_apImage.Insert( n );
+    // m_apImage[n] = pImg;
 }

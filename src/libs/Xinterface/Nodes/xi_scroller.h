@@ -1,7 +1,7 @@
 #ifndef _XI_SCROLLER_H
 #define _XI_SCROLLER_H
 
-#include "..\\inode.h"
+#include "..//inode.h"
 
 // static inactive images into one object
 class CXI_SCROLLER : public CINODE
@@ -10,25 +10,27 @@ class CXI_SCROLLER : public CINODE
     CXI_SCROLLER();
     ~CXI_SCROLLER();
 
-    void Draw(bool bSelected, dword Delta_Time);
-    bool Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, VDX8RENDER *rs, XYRECT &hostRect,
-              XYPOINT &ScreenSize);
-    void ReleaseAll();
-    int CommandExecute(int wActCode);
-    bool IsClick(int buttonID, long xPos, long yPos);
-    void MouseThis(float fX, float fY)
+    void Draw(bool bSelected, uint32_t Delta_Time) override;
+    bool Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs, XYRECT &hostRect,
+              XYPOINT &ScreenSize) override;
+    void ReleaseAll() override;
+    int CommandExecute(int wActCode) override;
+    bool IsClick(int buttonID, long xPos, long yPos) override;
+
+    void MouseThis(float fX, float fY) override
     {
     }
-    void ChangePosition(XYRECT &rNewPos);
-    void SaveParametersToIni();
+
+    void ChangePosition(XYRECT &rNewPos) override;
+    void SaveParametersToIni() override;
 
     void SetRollerPos(float pos);
     void LinkNodeChanged(float fPos);
 
-    array<string> m_asOwnedNodes;
+    std::vector<std::string> m_asOwnedNodes;
 
   protected:
-    void LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2);
+    void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void MakeOwnedControl();
     void UpPress();
     void DownPress();

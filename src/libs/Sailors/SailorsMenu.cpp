@@ -1,18 +1,15 @@
-
 #include "SailorsMenu.h"
-#include "Script_Defines.h"
 
-void Menu ::Draw(VDX8RENDER *rs, SailorsPoints &sailorsPoints)
+void Menu::Draw(VDX9RENDER *rs, SailorsPoints &sailorsPoints) const
 {
-
-    for (int i = 0; i < count; i++)
+    for (auto i = 0; i < count; i++)
         if (i != selected && i != blocked)
-            rs->Print(rs->GetCurFont(), D3DCOLOR_XRGB(100, 100, 100), 10, 20 + 20 * i, "%s", line[i]);
+            rs->Print(rs->GetCurFont(), D3DCOLOR_XRGB(100, 100, 100), 10, 20 + 20 * i, "%s", line[i].c_str());
 
-    rs->Print(rs->GetCurFont(), D3DCOLOR_XRGB(255, 200, 100), 10, 20 + 20 * selected, "%s", line[selected]);
+    rs->Print(rs->GetCurFont(), D3DCOLOR_XRGB(255, 200, 100), 10, 20 + 20 * selected, "%s", line[selected].c_str());
 
     if (blocked >= 0)
-        rs->Print(rs->GetCurFont(), D3DCOLOR_XRGB(255, 255, 255), 10, 20 + 20 * blocked, "%s", line[blocked]);
+        rs->Print(rs->GetCurFont(), D3DCOLOR_XRGB(255, 255, 255), 10, 20 + 20 * blocked, "%s", line[blocked].c_str());
 
     if (selected == 1 && blocked == 1)
     {
@@ -21,10 +18,8 @@ void Menu ::Draw(VDX8RENDER *rs, SailorsPoints &sailorsPoints)
 
         if (sailorsPoints.points.selected >= 0 && sailorsPoints.points.selected < sailorsPoints.points.count)
         {
-
             switch (sailorsPoints.points.point[sailorsPoints.points.selected].pointType)
             {
-
             case (PT_TYPE_NORMAL):
                 rs->Print(rs->GetCurFont(), D3DCOLOR_XRGB(200, 200, 200), 10, 160, "%s", "type: PT_TYPE_NORMAL('F9')");
                 break;
@@ -70,7 +65,7 @@ void Menu ::Draw(VDX8RENDER *rs, SailorsPoints &sailorsPoints)
                 rs->Print(rs->GetCurFont(), D3DCOLOR_XRGB(200, 200, 200), 10, 160, "%s",
                           "type: PT_TYPE_NOT_TARGETPOINT('F9')");
                 break;
-            };
+            }
         }
         else
             rs->Print(rs->GetCurFont(), D3DCOLOR_XRGB(200, 200, 200), 10, 160, "%s", "type: ('F9')");
@@ -81,7 +76,7 @@ void Menu ::Draw(VDX8RENDER *rs, SailorsPoints &sailorsPoints)
                 rs->Print(rs->GetCurFont(), D3DCOLOR_XRGB(200, 200, 200), 10, 180, "%s", "buisy= true");
             else
                 rs->Print(rs->GetCurFont(), D3DCOLOR_XRGB(200, 200, 200), 10, 180, "%s", "buisy= false");
-    };
+    }
 
     if (selected == 2 && blocked == 2)
     {
@@ -90,53 +85,50 @@ void Menu ::Draw(VDX8RENDER *rs, SailorsPoints &sailorsPoints)
 
         if (sailorsPoints.links.selected >= 0 && sailorsPoints.links.selected < sailorsPoints.links.count)
         {
-
-            string s1 = "point 1= ";
-            s1 += long(sailorsPoints.links.link[sailorsPoints.links.selected].first);
+            std::string s1 = "point 1= ";
+            s1 += static_cast<long>(sailorsPoints.links.link[sailorsPoints.links.selected].first);
             s1 += "('F2')";
 
-            rs->Print(rs->GetCurFont(), D3DCOLOR_XRGB(200, 200, 200), 10, 140, "%s", s1);
+            rs->Print(rs->GetCurFont(), D3DCOLOR_XRGB(200, 200, 200), 10, 140, "%s", s1.c_str());
 
             s1 = "point 2= ";
-            s1 += long(sailorsPoints.links.link[sailorsPoints.links.selected].next);
+            s1 += static_cast<long>(sailorsPoints.links.link[sailorsPoints.links.selected].next);
             s1 += "('F3')";
 
-            rs->Print(rs->GetCurFont(), D3DCOLOR_XRGB(200, 200, 200), 10, 160, "%s", s1);
+            rs->Print(rs->GetCurFont(), D3DCOLOR_XRGB(200, 200, 200), 10, 160, "%s", s1.c_str());
 
             sailorsPoints.DrawLinks(rs);
         }
         else
         {
-
             rs->Print(rs->GetCurFont(), D3DCOLOR_XRGB(200, 200, 200), 10, 140, "%s", "point 1=-1 ('F2')");
             rs->Print(rs->GetCurFont(), D3DCOLOR_XRGB(200, 200, 200), 10, 160, "%s", "point 2=-1 ('F3')");
             sailorsPoints.DrawLinks(rs);
-        };
-    };
+        }
+    }
 
-    int count = 0;
-    int reloaded = 0;
+    auto count = 0;
+    auto reloaded = 0;
 
-    for (int i = 0; i < sailrs->shipWalk[0].sailorsPoints.points.count; i++)
+    for (auto i = 0; i < sailrs->shipWalk[0].sailorsPoints.points.count; i++)
         if (sailrs->shipWalk[0].sailorsPoints.points.point[i].pointType == PT_TYPE_CANNON_L ||
             sailrs->shipWalk[0].sailorsPoints.points.point[i].pointType == PT_TYPE_CANNON_R ||
             sailrs->shipWalk[0].sailorsPoints.points.point[i].pointType == PT_TYPE_CANNON_F ||
             sailrs->shipWalk[0].sailorsPoints.points.point[i].pointType == PT_TYPE_CANNON_B)
         {
-
             if (sailrs->shipWalk[0].sailorsPoints.points.point[i].cannonReloaded)
                 reloaded++;
 
             count++;
-        };
+        }
 
-    string s1 = "F10 - Reload cannons(";
-    s1 += long(reloaded);
+    std::string s1 = "F10 - Reload cannons(";
+    s1 += static_cast<long>(reloaded);
     s1 += "/";
-    s1 += long(count);
+    s1 += static_cast<long>(count);
     s1 += ")";
 
-    rs->Print(rs->GetCurFont(), D3DCOLOR_XRGB(200, 200, 200), 10, 470, "%s", s1);
+    rs->Print(rs->GetCurFont(), D3DCOLOR_XRGB(200, 200, 200), 10, 470, "%s", s1.c_str());
 
     // rs->Print(rs->GetCurFont(), D3DCOLOR_XRGB(200,200,200) ,10, 500,"%s" , "F1 - Send points to Sailors");
     rs->Print(rs->GetCurFont(), D3DCOLOR_XRGB(200, 200, 200), 10, 520, "%s", "F5 - Save to file");
@@ -149,45 +141,42 @@ void Menu ::Draw(VDX8RENDER *rs, SailorsPoints &sailorsPoints)
 
 //--------------------------------------------------------------------------------------------------------------
 
-void Menu ::Update(SailorsPoints &sailorsPoints)
+void Menu::Update(SailorsPoints &sailorsPoints)
 {
-
     line[0] = "people count <";
-    line[0] += (long)sailrs->shipWalk[0].crewCount;
+    line[0] += static_cast<long>(sailrs->shipWalk[0].crewCount);
     line[0] += ">";
 
     line[1] = "selected point <";
-    line[1] += (long)sailorsPoints.points.selected;
+    line[1] += static_cast<long>(sailorsPoints.points.selected);
     line[1] += ">(";
-    line[1] += (long)sailorsPoints.points.count;
+    line[1] += static_cast<long>(sailorsPoints.points.count);
     line[1] += ")";
 
     line[2] = "selected path <";
-    line[2] += (long)sailorsPoints.links.selected;
+    line[2] += static_cast<long>(sailorsPoints.links.selected);
     line[2] += ">(";
-    line[2] += (long)sailorsPoints.links.count;
+    line[2] += static_cast<long>(sailorsPoints.links.count);
     line[2] += ")";
 };
 
 //--------------------------------------------------------------------------------------------------------------
 
-void Menu ::ChangeControl1(int key, SailorsPoints &sailorsPoints) // Change people count
+void Menu::ChangeControl1(int key, SailorsPoints &sailorsPoints) // Change people count
 {
-
     if (key == VK_RIGHT)
         sailrs->shipWalk[0].CreateNewMan(sailrs->shipWalk[0].sailorsPoints);
 
     if (key == VK_LEFT)
     {
-
         if (!sailrs->shipWalk[0].crewCount)
         {
-            for (int i = 0; i < 50; i++)
+            for (auto i = 0; i < 50; i++)
                 sailrs->shipWalk[0].CreateNewMan(sailrs->shipWalk[0].sailorsPoints);
             Update(sailorsPoints);
             return;
-        };
-        //Освободить занятые точки
+        }
+        //ќсвободить зан€тые точки
         if (sailrs->shipWalk[0].shipMan[0].mode == MAN_CLIMB_UP)
             sailrs->shipWalk[0].sailorsPoints.points.point[sailrs->shipWalk[0].shipMan[0].targetWayPoint].buisy = false;
 
@@ -197,22 +186,19 @@ void Menu ::ChangeControl1(int key, SailorsPoints &sailorsPoints) // Change peop
         sailrs->shipWalk[0].sailorsPoints.points.point[sailrs->shipWalk[0].shipMan[0].targetWayPoint].buisy = false;
 
         sailrs->shipWalk[0].DeleteMan(0);
-    };
+    }
 
     Update(sailorsPoints);
 };
 
 //--------------------------------------------------------------------------------------------------------------
 
-void Menu ::ChangeControl2(int key, SailorsPoints &sailorsPoints) // Change points
+void Menu::ChangeControl2(int key, SailorsPoints &sailorsPoints) // Change points
 {
-
     if (shiftKey && sailorsPoints.points.selected >= 0 && sailorsPoints.points.selected < sailorsPoints.points.count)
     {
-
         switch (key)
         {
-
         case VK_UP:
             sailorsPoints.points.point[sailorsPoints.points.selected].y += 0.025f * dltTime / 10.0f;
             return;
@@ -224,15 +210,13 @@ void Menu ::ChangeControl2(int key, SailorsPoints &sailorsPoints) // Change poin
         case VK_LEFT:
         case VK_RIGHT:
             return;
-        };
-    };
+        }
+    }
 
     if (sailorsPoints.points.selected >= 0 && sailorsPoints.points.selected < sailorsPoints.points.count)
     {
-
         switch (key)
         {
-
         case VK_UP:
             sailorsPoints.points.point[sailorsPoints.points.selected].x -= 0.025f * sin(cameraAng.y) * dltTime / 10.0f;
             sailorsPoints.points.point[sailorsPoints.points.selected].z -= 0.025f * cos(cameraAng.y) * dltTime / 10.0f;
@@ -256,15 +240,13 @@ void Menu ::ChangeControl2(int key, SailorsPoints &sailorsPoints) // Change poin
             sailorsPoints.points.point[sailorsPoints.points.selected].z -=
                 0.025f * cos(cameraAng.y + PI / 2) * dltTime / 10.0f;
             break;
-        };
-    };
+        }
+    }
 
     if (key == VK_SPACE)
     {
-
         if (shiftKey)
         {
-
             if (sailorsPoints.points.selected)
                 sailorsPoints.points.selected--;
             else if (sailorsPoints.points.count)
@@ -274,29 +256,25 @@ void Menu ::ChangeControl2(int key, SailorsPoints &sailorsPoints) // Change poin
         }
         else
         {
-
             if (sailorsPoints.points.selected < sailorsPoints.points.count - 1)
                 sailorsPoints.points.selected++;
             else if (sailorsPoints.points.count)
                 sailorsPoints.points.selected = 0;
             else
                 sailorsPoints.points.selected = -1;
-        };
+        }
 
         if (sailorsPoints.points.selected < 0)
             sailorsPoints.points.selected = 0;
         Update(sailorsPoints);
-    };
+    }
 
     if (key == VK_F9)
     {
-
         if (sailorsPoints.points.selected >= 0 && sailorsPoints.points.selected < sailorsPoints.points.count)
         {
-
             switch (sailorsPoints.points.point[sailorsPoints.points.selected].pointType)
             {
-
             case PT_TYPE_NORMAL:
                 sailorsPoints.points.point[sailorsPoints.points.selected].pointType = PT_TYPE_CANNON_L;
                 break;
@@ -336,92 +314,82 @@ void Menu ::ChangeControl2(int key, SailorsPoints &sailorsPoints) // Change poin
             case PT_TYPE_NOT_TARGETPOINT:
                 sailorsPoints.points.point[sailorsPoints.points.selected].pointType = PT_TYPE_NORMAL;
                 break;
-            };
-        };
+            }
+        }
         Update(sailorsPoints);
-    };
+    }
 
     if (key == VK_INSERT && sailorsPoints.points.count < MAX_POINTS)
     {
-
         sailorsPoints.points.Add();
 
-        sailorsPoints.points.point[sailorsPoints.points.count - 1].x += rand() / float(RAND_MAX);
-        sailorsPoints.points.point[sailorsPoints.points.count - 1].z += rand() / float(RAND_MAX);
+        sailorsPoints.points.point[sailorsPoints.points.count - 1].x += rand() / static_cast<float>(RAND_MAX);
+        sailorsPoints.points.point[sailorsPoints.points.count - 1].z += rand() / static_cast<float>(RAND_MAX);
 
         sailorsPoints.points.selected = sailorsPoints.points.count - 1;
 
         Update(sailorsPoints);
-    };
+    }
 
     if (key == VK_DELETE)
     {
-
-        for (int i = 0; i < sailorsPoints.links.count; i++)
+        for (auto i = 0; i < sailorsPoints.links.count; i++)
         {
-
             if (sailorsPoints.links.link[i].first > sailorsPoints.points.selected)
                 sailorsPoints.links.link[i].first--;
 
             if (sailorsPoints.links.link[i].next > sailorsPoints.points.selected)
                 sailorsPoints.links.link[i].next--;
-        };
+        }
 
         sailorsPoints.points.Delete(sailorsPoints.points.selected);
         Update(sailorsPoints);
-    };
+    }
 };
 
 //--------------------------------------------------------------------------------------------------------------
 
-void Menu ::ChangeControl3(int key, SailorsPoints &sailorsPoints) // Change links
+void Menu::ChangeControl3(int key, SailorsPoints &sailorsPoints) // Change links
 {
-
     if (key == VK_INSERT)
     {
-
         sailorsPoints.links.Add();
 
         if (sailorsPoints.links.selected >= 0 && sailorsPoints.links.selected < sailorsPoints.links.count)
         {
-
             sailorsPoints.links.link[sailorsPoints.links.count - 1] =
                 sailorsPoints.links.link[sailorsPoints.links.selected];
         }
         else
         {
-
             sailorsPoints.links.link[sailorsPoints.links.count - 1].first = 0;
             sailorsPoints.links.link[sailorsPoints.links.count - 1].next = 0;
-        };
+        }
 
         sailorsPoints.links.selected = sailorsPoints.links.count - 1;
         Update(sailorsPoints);
-    };
+    }
 
     if (key == VK_DELETE)
     {
-
         sailorsPoints.links.Delete(sailorsPoints.links.selected);
         Update(sailorsPoints);
-    };
+    }
 
     /*
-        if (key== VK_F11)
-        if(sailorsPoints.links.selected>= 0 && sailorsPoints.links.selected< sailorsPoints.links.count)
-        {
-            sailorsPoints.links.link[sailorsPoints.links.selected].disabled=
-            !sailorsPoints.links.link[sailorsPoints.links.selected].disabled;
-            sailorsPoints.UpdateLinks();
-        };
-    */
+    if (key== VK_F11)
+    if(sailorsPoints.links.selected>= 0 && sailorsPoints.links.selected< sailorsPoints.links.count)
+    {
+      sailorsPoints.links.link[sailorsPoints.links.selected].disabled=
+      !sailorsPoints.links.link[sailorsPoints.links.selected].disabled;
+      sailorsPoints.UpdateLinks();
+    };
+  */
 
     if (key == VK_SPACE)
     {
-
         if (shiftKey)
         {
-
             if (sailorsPoints.links.selected)
                 sailorsPoints.links.selected--;
             else if (sailorsPoints.links.count)
@@ -431,26 +399,24 @@ void Menu ::ChangeControl3(int key, SailorsPoints &sailorsPoints) // Change link
         }
         else
         {
-
             if (sailorsPoints.links.selected < sailorsPoints.links.count - 1)
                 sailorsPoints.links.selected++;
             else if (sailorsPoints.links.count)
                 sailorsPoints.links.selected = 0;
             else
                 sailorsPoints.links.selected = -1;
-        };
+        }
 
         if (sailorsPoints.links.selected < 0)
             sailorsPoints.links.selected = 0;
-    };
+    }
 
     if (key == VK_F2)
     {
-        int selLnk = sailorsPoints.links.selected;
+        const auto selLnk = sailorsPoints.links.selected;
 
         if (selLnk < sailorsPoints.links.count && selLnk >= 0)
         {
-
             if (shiftKey)
                 sailorsPoints.links.link[selLnk].first--;
             else
@@ -461,16 +427,15 @@ void Menu ::ChangeControl3(int key, SailorsPoints &sailorsPoints) // Change link
 
             if (sailorsPoints.links.link[selLnk].first < 0)
                 sailorsPoints.links.link[selLnk].first = sailorsPoints.points.count - 1;
-        };
-    };
+        }
+    }
 
     if (key == VK_F3)
     {
-        int selLnk = sailorsPoints.links.selected;
+        const auto selLnk = sailorsPoints.links.selected;
 
         if (selLnk < sailorsPoints.links.count && selLnk >= 0)
         {
-
             if (shiftKey)
                 sailorsPoints.links.link[selLnk].next--;
             else
@@ -481,8 +446,8 @@ void Menu ::ChangeControl3(int key, SailorsPoints &sailorsPoints) // Change link
 
             if (sailorsPoints.links.link[selLnk].next < 0)
                 sailorsPoints.links.link[selLnk].next = sailorsPoints.points.count - 1;
-        };
-    };
+        }
+    }
 
     sailrs->shipWalk[0].sailorsPoints.UpdateLinks();
     Update(sailorsPoints);
@@ -490,83 +455,80 @@ void Menu ::ChangeControl3(int key, SailorsPoints &sailorsPoints) // Change link
 
 //--------------------------------------------------------------------------------------------------------------
 
-void Menu ::ChangeControl(int key, SailorsPoints &sailorsPoints)
+void Menu::ChangeControl(int key, SailorsPoints &sailorsPoints)
 {
-
     if (key == VK_F10)
     {
         sailrs->shipWalk[0].ReloadCannons(0);
-    };
+    }
 
     if (key == VK_F4)
     {
-
         if (sailrs->shipWalk[0].shipState.mode == SHIP_SAIL)
             sailrs->shipWalk[0].shipState.mode = SHIP_WAR;
         else if (sailrs->shipWalk[0].shipState.mode == SHIP_WAR)
             sailrs->shipWalk[0].shipState.mode = SHIP_STORM;
         else
             sailrs->shipWalk[0].shipState.mode = SHIP_SAIL;
-    };
+    }
 
     if (key == VK_F5)
     {
         sailorsPoints.WriteToFile(_fileName_save);
-    };
+    }
 
     if (key == VK_F6)
     {
         sailorsPoints.ReadFromFile(_fileName_load);
         Update(sailorsPoints); // update menu
-    };
+    }
 
     if (key == VK_F1)
     {
         /*
-    // Refresh Sailors points
+      // Refresh Sailors points
 
-    for (int i= sailrs->shipWalk[0].sailorsPoints.points.count;
+      for (int i= sailrs->shipWalk[0].sailorsPoints.points.count;
          i< sailorsPoints.points.count; i++)
          sailrs->shipWalk[0].sailorsPoints.points.Add();
 
-    for (int i= sailorsPoints.points.count;
+      for (int i= sailorsPoints.points.count;
          i< sailrs->shipWalk[0].sailorsPoints.points.count; i++)
-         sailrs->shipWalk[0].sailorsPoints.points.Delete(sailrs->shipWalk[0].sailorsPoints.points.count- 1);
+         sailrs->shipWalk[0].sailorsPoints.points.STORM_DELETE(sailrs->shipWalk[0].sailorsPoints.points.count- 1);
 
 
 
-    for (int i= 0; i< sailorsPoints.points.count; i++){
+      for (int i= 0; i< sailorsPoints.points.count; i++){
 
         sailrs->shipWalk[0].sailorsPoints.points.point[i].x= sailorsPoints.points.point[i].x;
         sailrs->shipWalk[0].sailorsPoints.points.point[i].y= sailorsPoints.points.point[i].y;
         sailrs->shipWalk[0].sailorsPoints.points.point[i].z= sailorsPoints.points.point[i].z;
         sailrs->shipWalk[0].sailorsPoints.points.point[i].pointType= sailorsPoints.points.point[i].pointType;
 
-    };
+      };
 
         // Refresh Sailors links
 
-    sailrs->shipWalk[0].sailorsPoints.links.count=
-    sailorsPoints.links.count;
+      sailrs->shipWalk[0].sailorsPoints.links.count=
+      sailorsPoints.links.count;
 
-    sailrs->shipWalk[0].sailorsPoints.links.link.DelAll();
+      sailrs->shipWalk[0].sailorsPoints.links.link.clear();
 
 
-    for (int i= 0; i< sailorsPoints.links.count; i++){
+      for (int i= 0; i< sailorsPoints.links.count; i++){
 
         sailrs->shipWalk[0].sailorsPoints.links.link.Add();
         sailrs->shipWalk[0].sailorsPoints.links.link[i]=
         sailorsPoints.links.link[i];
-    };
-    sailrs->shipWalk[0].sailorsPoints.UpdateLinks();*/
-    };
+      };
+      sailrs->shipWalk[0].sailorsPoints.UpdateLinks();*/
+    }
 
     if (blocked != selected)
         return;
 
     switch (selected)
     {
-
     case 0:
 
         ChangeControl1(key, sailorsPoints);
@@ -579,12 +541,12 @@ void Menu ::ChangeControl(int key, SailorsPoints &sailorsPoints)
 
         ChangeControl3(key, sailorsPoints);
         break;
-    };
+    }
 };
 
 //--------------------------------------------------------------------------------------------------------------
 
-void Menu ::OnKeyPress(SailorsPoints &sailorsPoints)
+void Menu::OnKeyPress(SailorsPoints &sailorsPoints)
 {
     key = 0;
     shiftKey = 0;
@@ -684,7 +646,7 @@ void Menu ::OnKeyPress(SailorsPoints &sailorsPoints)
 
         ChangeControl(key, sailorsPoints);
         break;
-    };
+    }
 
     keyPressed = true;
 };

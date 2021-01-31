@@ -1,7 +1,6 @@
 #include "ModelRealizer.h"
-#include "cvector4.h"
-#include "lights.h"
-#include "messages.h"
+#include "CVector4.h"
+#include "Lights.h"
 
 //============================================================================================
 //Конструирование, деструктурирование
@@ -15,7 +14,7 @@ extern long iCausticTex[32];
 
 LocModelRealizer::LocModelRealizer()
 {
-    lights = 0;
+    lights = nullptr;
     bShow = true;
 }
 
@@ -26,41 +25,40 @@ LocModelRealizer::~LocModelRealizer()
 //Инициализация
 bool LocModelRealizer::Init()
 {
-    rs = (VDX8RENDER *)api->CreateService("dx8render");
-    gs = (VGEOMETRY *)api->CreateService("geometry");
+    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
     return true;
 }
 
 //Исполнение
-void LocModelRealizer::Execute(dword delta_time)
+void LocModelRealizer::Execute(uint32_t delta_time)
 {
 }
 
-void LocModelRealizer::Realize(dword delta_time)
+void LocModelRealizer::Realize(uint32_t delta_time) const
 {
     if (!bShow)
         return;
-    ENTITY *pE = api->GetEntityPointer(&eid_model);
+    auto *pE = EntityManager::GetEntityPointer(eid_model);
     if (pE)
     {
-        BOOL bLight0Enable = TRUE;
-        dword dwLighting = TRUE;
+        BOOL bLight0Enable;
+        uint32_t dwLighting;
         if (lights)
         {
-            lights->SetCharacterLights();
             rs->GetRenderState(D3DRS_LIGHTING, &dwLighting);
-            rs->SetRenderState(D3DRS_LIGHTING, TRUE);
             rs->GetLightEnable(0, &bLight0Enable);
-            rs->LightEnable(0, true);
+            lights->SetCharacterLights();
+            rs->SetRenderState(D3DRS_LIGHTING, TRUE);
+            rs->LightEnable(0, TRUE);
         }
 
-        pE->Realize(delta_time);
-
+        pE->ProcessStage(Stage::realize, delta_time);
         if (lights)
         {
-            rs->SetRenderState(D3DRS_LIGHTING, dwLighting);
-            rs->LightEnable(0, bLight0Enable == TRUE);
             lights->DelCharacterLights();
+            rs->SetRenderState(D3DRS_LIGHTING, dwLighting);
+            rs->LightEnable(0, bLight0Enable);
         }
 
         if (bCausticEnable)
@@ -71,33 +69,38 @@ void LocModelRealizer::Realize(dword delta_time)
             // 12 - (fog density, fog_start, 0, 0)
             // 13 - (0, 0, 0, 0)
 
-            fCausticDelta = fCausticFrame - long(fCausticFrame);
-            Render().SetVertexShaderConstant(10, &CVECTOR4(fCausticScale, fCausticDelta, 0.0f, 0.0f), 1);
-            Render().SetVertexShaderConstant(11, &v4CausticColor, 1);
-            Render().SetVertexShaderConstant(12, &CVECTOR4(fFogDensity, 0.0f, 0.0f, 0.0f), 1);
-            Render().SetVertexShaderConstant(13, &CVECTOR4(0.0f, 0.0f, 0.0f, 0.0f), 1);
-            Render().SetVertexShaderConstant(14, &CVECTOR4(0.0f, 1.0f, 0.0f, 0.0f), 1);
-            Render().SetVertexShaderConstant(15, &CVECTOR4(1.0f / fCausticDistance, 1.0f, 0.0f, 0.0f), 1);
+            fCausticDelta = fCausticFrame - static_cast<long>(fCausticFrame);
+            const auto vec1 = CVECTOR4(fCausticScale, fCausticDelta, 0.0f, 0.0f);
+            const auto vec2 = CVECTOR4(fFogDensity, 0.0f, 0.0f, 0.0f);
+            const auto vec3 = CVECTOR4(0.0f, 0.0f, 0.0f, 0.0f);
+            const auto vec4 = CVECTOR4(0.0f, 1.0f, 0.0f, 0.0f);
+            const auto vec5 = CVECTOR4(1.0f / fCausticDistance, 1.0f, 0.0f, 0.0f);
+            rs->SetVertexShaderConstantF(10, reinterpret_cast<const float *>(&vec1), 1);
+            rs->SetVertexShaderConstantF(11, reinterpret_cast<const float *>(&v4CausticColor), 1);
+            rs->SetVertexShaderConstantF(12, reinterpret_cast<const float *>(&vec2), 1);
+            rs->SetVertexShaderConstantF(13, reinterpret_cast<const float *>(&vec3), 1);
+            rs->SetVertexShaderConstantF(14, reinterpret_cast<const float *>(&vec4), 1);
+            rs->SetVertexShaderConstantF(15, reinterpret_cast<const float *>(&vec5), 1);
 
-            Render().TextureSet(1, iCausticTex[long(fCausticFrame) % 32]);
-            Render().TextureSet(2, iCausticTex[(long(fCausticFrame) + 1) % 32]);
+            rs->TextureSet(1, iCausticTex[static_cast<long>(fCausticFrame) % 32]);
+            rs->TextureSet(2, iCausticTex[(static_cast<long>(fCausticFrame) + 1) % 32]);
 
             // рисуем каустики
-            Geometry().SetCausticMode(true);
-            pE->Realize(0);
-            Geometry().SetCausticMode(false);
+            gs->SetCausticMode(true);
+            pE->ProcessStage(Stage::realize, 0);
+            gs->SetCausticMode(false);
         }
     }
 }
 
 //Сообщения
-dword _cdecl LocModelRealizer::ProcessMessage(MESSAGE &message)
+uint64_t LocModelRealizer::ProcessMessage(MESSAGE &message)
 {
     switch (message.Long())
     {
     case 1:
         eid_model = message.EntityID();
-        lights = (Lights *)message.Long();
+        lights = (Lights *)message.Pointer();
         break;
     case 2:
         bShow = message.Long() != 0;

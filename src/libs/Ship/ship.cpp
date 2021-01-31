@@ -1,26 +1,22 @@
 #include "ship.h"
-#include "Script_Defines.h"
-#include "ShipLights.h"
+#include "../../Shared/messages.h"
+#include "../../Shared/sea_ai/Script_defines.h"
+#include "../../Shared/sound.h"
+#include "../../shared/mast_msg.h"
+#include "../../shared/sail_msg.h"
+#include "../Sea_ai/AIFlowGraph.h"
 #include "Track.h"
-#include "sound.h"
+#include "inlines.h"
 
-INTERFACE_FUNCTION
-CREATE_CLASS(SHIP)
-CREATE_CLASS(ShipLights)
-CREATE_CLASS(ShipTracks)
+VDX9RENDER *SHIP::pRS = nullptr;
+SEA_BASE *SHIP::pSea = nullptr;
+ISLAND_BASE *SHIP::pIsland = nullptr;
+COLLIDE *SHIP::pCollide = nullptr;
+VGEOMETRY *SHIP::pGS = nullptr;
 
-string SHIP::sExecuteLayer;
-string SHIP::sRealizeLayer;
-
-VDX8RENDER *SHIP::pRS = null;
-SEA_BASE *SHIP::pSea = null;
-ISLAND_BASE *SHIP::pIsland = null;
-COLLIDE *SHIP::pCollide = null;
-VGEOMETRY *SHIP::pGS = null;
-
-SHIP::SHIP() : aFirePlaces(_FL_, 16)
+SHIP::SHIP()
 {
-    pShipsLights = null;
+    pShipsLights = nullptr;
     vSpeedAccel = 0.0f;
     uniIDX = 0;
     bUse = false;
@@ -44,9 +40,6 @@ SHIP::SHIP() : aFirePlaces(_FL_, 16)
     State.vPos = 0.0f;
     fXOffset = fZOffset = 0.f;
 
-    fXHeel = 0.0f;
-    fZHeel = 0.0f;
-
     vSpeed = 0.0f;
     vSpeedsA = 0.0f;
     fMinusVolume = 0.0f;
@@ -61,35 +54,29 @@ SHIP::SHIP() : aFirePlaces(_FL_, 16)
     fRockingY = 1.0f;
     fRockingAZ = 1.0f;
 
-    pMasts = null;
-    pHulls = null;
-
     bModelUpperShip = false;
-    pModelUpperShip = null;
+    pModelUpperShip = nullptr;
 }
 
 SHIP::~SHIP()
 {
-    api->DeleteEntity(GetModelEID());
-    api->Send_Message(sail_id, "li", MSG_SAIL_DEL_GROUP, GetID());
-    api->Send_Message(rope_id, "li", MSG_ROPE_DEL_GROUP, GetModelEID());
-    api->Send_Message(flag_id, "li", MSG_FLAG_DEL_GROUP, GetModelEID());
-    api->Send_Message(vant_id, "li", MSG_VANT_DEL_GROUP, GetModelEID());
-    api->Send_Message(vantl_id, "li", MSG_VANT_DEL_GROUP, GetModelEID());
-    api->Send_Message(vantz_id, "li", MSG_VANT_DEL_GROUP, GetModelEID());
-    api->DeleteEntity(blots_id);
-    SE_DELETE(pMasts);
-    SE_DELETE(pHulls);
+    EntityManager::EraseEntity(GetModelEID());
+    core.Send_Message(sail_id, "li", MSG_SAIL_DEL_GROUP, GetId());
+    core.Send_Message(rope_id, "li", MSG_ROPE_DEL_GROUP, GetModelEID());
+    core.Send_Message(flag_id, "li", MSG_FLAG_DEL_GROUP, GetModelEID());
+    core.Send_Message(vant_id, "li", MSG_VANT_DEL_GROUP, GetModelEID());
+    core.Send_Message(vantl_id, "li", MSG_VANT_DEL_GROUP, GetModelEID());
+    core.Send_Message(vantz_id, "li", MSG_VANT_DEL_GROUP, GetModelEID());
+    EntityManager::EraseEntity(blots_id);
 
-    ENTITY_ID eidTmp;
-    if (api->FindClass(&eidTmp, "ShipTracks", 0))
+    if (const auto eidTmp = EntityManager::GetEntityId("ShipTracks"))
     {
-        ShipTracks *pST = (ShipTracks *)api->GetEntityPointer(&eidTmp);
+        auto *pST = static_cast<ShipTracks *>(EntityManager::GetEntityPointer(eidTmp));
         if (pST)
             pST->DelShip(this);
     }
 
-    // aFirePlaces.DelAll();
+    // aFirePlaces.clear();
 }
 
 //##################################################################
@@ -107,38 +94,33 @@ bool SHIP::Init()
 
     LoadServices();
 
-    iShipPriorityExecute = ((VDATA *)api->GetScriptVariable("iShipPriorityExecute"))->GetLong();
-    iShipPriorityRealize = ((VDATA *)api->GetScriptVariable("iShipPriorityRealize"))->GetLong();
+    iShipPriorityExecute = static_cast<VDATA *>(core.GetScriptVariable("iShipPriorityExecute"))->GetLong();
+    iShipPriorityRealize = static_cast<VDATA *>(core.GetScriptVariable("iShipPriorityRealize"))->GetLong();
 
     return true;
 }
 
 void SHIP::LoadServices()
 {
-    ENTITY_ID ent;
+    pIsland = nullptr;
+    pSea = nullptr;
+    pRS = nullptr;
+    pGS = nullptr;
 
-    // api->LayerDel(sRealizeLayer,model_id);		// delete from realize
-
-    pIsland = null;
-    pSea = null;
-    pRS = null;
-    pGS = null;
-
-    pGS = (VGEOMETRY *)api->CreateService("geometry");
+    pGS = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
     Assert(pGS);
-    pRS = (VDX8RENDER *)api->CreateService("dx8render");
+    pRS = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     Assert(pRS);
-    pCollide = (COLLIDE *)api->CreateService("coll");
+    pCollide = static_cast<COLLIDE *>(core.CreateService("coll"));
     Assert(pCollide);
 
-    api->FindClass(&touch_id, "touch", 0);
+    touch_id = EntityManager::GetEntityId("touch");
 
-    if (api->FindClass(&ent, "island", 0))
-        pIsland = (ISLAND_BASE *)api->GetEntityPointer(&ent);
-    if (api->FindClass(&sea_id, "sea", 0))
-        pSea = (SEA_BASE *)api->GetEntityPointer(&sea_id);
+    pIsland = static_cast<ISLAND_BASE *>(EntityManager::GetEntityPointer(EntityManager::GetEntityId("island")));
+    if (sea_id = EntityManager::GetEntityId("sea"))
+        pSea = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(sea_id));
 
-    api->FindClass(&FirePlace::eidSound, "sound", 0);
+    FirePlace::eidSound = EntityManager::GetEntityId("sound");
 }
 
 CVECTOR SHIP::ShipRocking(float fDeltaTime)
@@ -147,41 +129,41 @@ CVECTOR SHIP::ShipRocking(float fDeltaTime)
     mat = *GetMatrix();
 
     fDeltaTime = Min(fDeltaTime, 0.1f);
-    float fDelta = (fDeltaTime / 0.025f);
+    auto fDelta = (fDeltaTime / 0.025f);
 
     if (!pSea)
         return vAng;
-    // api->Send_Message(model,"ll",2,(long)&mat);
+    // core.Send_Message(model,"ll",2,(long)&mat);
 
-    CVECTOR vAng2 = State.vAng;
+    auto vAng2 = State.vAng;
 
-    CVECTOR point, fang, fpos;
+    CVECTOR point, fang;
     fang.x = 0.0f;
     fang.y = 0.0f;
     fang.z = 0.0f;
-    float fFullY = 0.0f, fup = 0.0f;
+    auto fFullY = 0.0f, fup = 0.0f;
 
     long ix, iz;
 
-    float fCos = cosf(State.vAng.y);
-    float fSin = sinf(State.vAng.y);
+    auto fCos = cosf(State.vAng.y);
+    auto fSin = sinf(State.vAng.y);
 
     for (ix = 0; ix < 6; ix++)
     {
-        float x = (float(ix) * State.vBoxSize.x * 0.2f - 0.5f * State.vBoxSize.x);
+        auto x = (static_cast<float>(ix) * State.vBoxSize.x * 0.2f - 0.5f * State.vBoxSize.x);
         for (iz = 0; iz < 6; iz++)
         {
-            ship_point_t *pspt = &ShipPoints[ix][iz];
-            float z = (float(iz) * State.vBoxSize.z * 0.2f - 0.5f * State.vBoxSize.z);
+            auto *pspt = &ShipPoints[ix][iz];
+            auto z = (static_cast<float>(iz) * State.vBoxSize.z * 0.2f - 0.5f * State.vBoxSize.z);
 
-            float xx = x, zz = z;
+            auto xx = x, zz = z;
             RotateAroundY(xx, zz, fCos, fSin);
             point.x = xx + State.vPos.x + fXOffset;
             point.y = mat.m[0][1] * x + mat.m[2][1] * z + State.vPos.y;
             point.z = zz + State.vPos.z + fZOffset;
 
-            float wave_y = pSea->WaveXZ(point.x, point.z);
-            float f = (wave_y - point.y);
+            auto wave_y = pSea->WaveXZ(point.x, point.z);
+            auto f = (wave_y - point.y);
 
             pspt->fY = wave_y;
 
@@ -189,16 +171,15 @@ CVECTOR SHIP::ShipRocking(float fDeltaTime)
         }
     }
 
-    float fNewPos =
-        fFullY /
-        36.0f; //(ShipPoints[2][2].fY + ShipPoints[3][2].fY + ShipPoints[2][3].fY + ShipPoints[3][3].fY) / 4.0f;
+    auto fNewPos = fFullY / 36.0f;
+    //(ShipPoints[2][2].fY + ShipPoints[3][2].fY + ShipPoints[2][3].fY + ShipPoints[3][3].fY) / 4.0f;
     State.vPos.y = State.vPos.y + Min(fDelta * fRockingY, 1.0f) * (fNewPos - State.vPos.y);
 
     // calculate ang.x and ang.z
-    float fAng = 0.0f + fXHeel;
+    auto fAng = 0.0f;
     for (iz = 0; iz < 3; iz++)
     {
-        float fHeight = 0.0f, fHeight1 = 0.0f;
+        auto fHeight = 0.0f, fHeight1 = 0.0f;
         for (ix = 0; ix < 6; ix++)
         {
             fHeight += ShipPoints[ix][iz].fY;
@@ -207,15 +188,15 @@ CVECTOR SHIP::ShipRocking(float fDeltaTime)
         fHeight /= 6.0f;
         fHeight1 /= 6.0f;
 
-        float z = 1.0f / (0.5f * State.vBoxSize.z - float(iz) * State.vBoxSize.z * 0.2f);
-        fAng += (float)atan((fHeight - fHeight1) / 2.0f * z);
+        auto z = 1.0f / (0.5f * State.vBoxSize.z - static_cast<float>(iz) * State.vBoxSize.z * 0.2f);
+        fAng += static_cast<float>(atan((fHeight - fHeight1) / 2.0f * z));
     }
     vAng2.x = fAng / 3.0f;
 
-    fAng = 0.0f + fZHeel;
+    fAng = 0.0f;
     for (ix = 0; ix < 3; ix++)
     {
-        float fHeight = 0.0f, fHeight1 = 0.0f;
+        auto fHeight = 0.0f, fHeight1 = 0.0f;
         for (iz = 0; iz < 6; iz++)
         {
             fHeight += ShipPoints[ix][iz].fY;
@@ -224,8 +205,8 @@ CVECTOR SHIP::ShipRocking(float fDeltaTime)
         fHeight /= 6.0f;
         fHeight1 /= 6.0f;
 
-        float x = 1.0f / (0.5f * State.vBoxSize.x - float(ix) * State.vBoxSize.x * 0.2f);
-        fAng += (float)atan((fHeight - fHeight1) / 2.0f * x);
+        auto x = 1.0f / (0.5f * State.vBoxSize.x - static_cast<float>(ix) * State.vBoxSize.x * 0.2f);
+        fAng += static_cast<float>(atan((fHeight - fHeight1) / 2.0f * x));
     }
     vAng2.z = -fAng / 3.0f;
 
@@ -276,7 +257,7 @@ BOOL SHIP::ApplyStrength(float dtime, BOOL bCollision)
     if (State.vRotate.y<-0.1f) State.vRotate.y = -0.1f; */
 
     // calculate new speed,rotate vector
-    CVECTOR new_speed = CVECTOR(0.0f, 0.0f, 0.0f), new_rotate = CVECTOR(0.0f, 0.0f, 0.0f);
+    auto new_speed = CVECTOR(0.0f, 0.0f, 0.0f), new_rotate = CVECTOR(0.0f, 0.0f, 0.0f);
 
     CalculateNewSpeedVector(&new_speed, &new_rotate);
     if (bPerkTurnActive)
@@ -290,7 +271,7 @@ BOOL SHIP::ApplyStrength(float dtime, BOOL bCollision)
         fK = dtime * State.fMassInertia;
         if (i == 0) // x moving
         {
-            float force = new_speed.v[i] - State.vSpeed.v[i];
+            const auto force = new_speed.v[i] - State.vSpeed.v[i];
             if (SMALL_DELTA(new_speed.v[i]))
                 State.vSpeed.v[i] += fK * force * State.vInertiaAccel.x;
             else
@@ -300,7 +281,7 @@ BOOL SHIP::ApplyStrength(float dtime, BOOL bCollision)
         {
             vSpeedAccel.z = State.vSpeed.v[i];
 
-            float force = new_speed.v[i] - State.vSpeed.v[i];
+            const auto force = new_speed.v[i] - State.vSpeed.v[i];
             if (SMALL_DELTA(new_speed.v[i]))
                 State.vSpeed.v[i] += fK * force * State.vInertiaAccel.z;
             else
@@ -316,8 +297,8 @@ BOOL SHIP::ApplyStrength(float dtime, BOOL bCollision)
         sign = SIGNZ(new_rotate.v[i]);
         if (i == 1) // y rotating
         {
-            float prev_rot = State.vRotate.v[i];
-            float force = new_rotate.v[i] - State.vRotate.v[i];
+            auto prev_rot = State.vRotate.v[i];
+            const auto force = new_rotate.v[i] - State.vRotate.v[i];
 
             if (SMALL_DELTA(new_rotate.v[i]))
                 State.vRotate.v[i] += fK * force * State.vInertiaAccel.y;
@@ -329,11 +310,11 @@ BOOL SHIP::ApplyStrength(float dtime, BOOL bCollision)
     return true;
 }
 
-BOOL SHIP::TouchMove(DWORD DeltaTime, TOUCH_PARAMS *pTPOld, TOUCH_PARAMS *pTPNew)
+BOOL SHIP::TouchMove(uint32_t DeltaTime, TOUCH_PARAMS *pTPOld, TOUCH_PARAMS *pTPNew)
 {
     if (!pTPOld && !pTPNew)
         return false;
-    SHIP_STATE old_state = State;
+    const auto old_state = State;
 
     if (pTPOld)
     {
@@ -362,9 +343,9 @@ BOOL SHIP::TouchMove(DWORD DeltaTime, TOUCH_PARAMS *pTPOld, TOUCH_PARAMS *pTPNew
     return true;
 }
 
-BOOL SHIP::Move(DWORD DeltaTime, BOOL bCollision)
+BOOL SHIP::Move(uint32_t DeltaTime, BOOL bCollision)
 {
-    float dtime = DELTA_TIME(DeltaTime);
+    const auto dtime = DELTA_TIME(DeltaTime);
     ApplyStrength(dtime, bCollision);
     if (!bCollision && !isDead())
     {
@@ -374,7 +355,7 @@ BOOL SHIP::Move(DWORD DeltaTime, BOOL bCollision)
     // Update position
     // if (!isDead())
     {
-        float k = KNOTS2METERS(((bSetFixed) ? fFixedSpeed : State.vSpeed.z)) * dtime;
+        auto k = KNOTS2METERS(((bSetFixed) ? fFixedSpeed : State.vSpeed.z)) * dtime;
         State.vPos.z += k * cosf(State.vAng.y);
         State.vPos.x += k * sinf(State.vAng.y);
 
@@ -397,11 +378,11 @@ float SHIP::GetRotationAngle(float *pfTime)
         *pfTime = 0.0f;
     if (fabsf(State.vRotate.y) < 0.001f)
         return 0.0f;
-    float fAngle = 0.0f;
+    auto fAngle = 0.0f;
 
-    float fDist = 0.0f, fTime = SHIP_TEST_Y_TIME;
-    float fSpeedY = State.vRotate.y;
-    float fK = SHIP_TEST_Y_TIME * State.fMassInertia * State.vInertiaBrake.y;
+    auto fDist = 0.0f, fTime = SHIP_TEST_Y_TIME;
+    auto fSpeedY = State.vRotate.y;
+    const auto fK = SHIP_TEST_Y_TIME * State.fMassInertia * State.vInertiaBrake.y;
 
     while (true) // not funny!!! IT'S SLOW!!!!
     {
@@ -422,9 +403,9 @@ float SHIP::GetBrakingDistance(float *pfTime)
         *pfTime = 0.0f;
     if (State.vSpeed.z < 0.01f)
         return 0.0f;
-    float fDist = 0.0f, fTime = SHIP_TEST_Z_TIME;
-    float fSpeedZ = State.vSpeed.z;
-    float fK = SHIP_TEST_Z_TIME * State.fMassInertia * State.vInertiaBrake.z;
+    auto fDist = 0.0f, fTime = SHIP_TEST_Z_TIME;
+    auto fSpeedZ = State.vSpeed.z;
+    const auto fK = SHIP_TEST_Z_TIME * State.fMassInertia * State.vInertiaBrake.z;
 
     while (true) // not funny!!! IT'S SLOW!!!!
     {
@@ -442,7 +423,7 @@ float SHIP::GetBrakingDistance(float *pfTime)
 // calculate ship immersion
 void SHIP::CalculateImmersion()
 {
-    ATTRIBUTES *pAShipImmersion = GetACharacter()->FindAClass(GetACharacter(), "Ship.Immersion");
+    auto *pAShipImmersion = GetACharacter()->FindAClass(GetACharacter(), "Ship.Immersion");
     State.fShipImmersion = (pAShipImmersion) ? pAShipImmersion->GetAttributeAsFloat() : 0.0f;
     // return State.fShipImmersion;
 }
@@ -451,13 +432,13 @@ void SHIP::CheckShip2Strand(float fDeltaTime)
 {
     if (!pIsland)
         return;
-    MODEL *pModel = GetModel();
+    auto *pModel = GetModel();
     Assert(pModel);
-    bool bNewShip2Strand = false;
+    auto bNewShip2Strand = false;
     for (long i = 0; i < MAX_KEEL_POINTS; i++)
     {
         float fRes;
-        CVECTOR vTmp = pModel->mtx * vKeelContour[i];
+        const auto vTmp = pModel->mtx * vKeelContour[i];
         if (!pIsland->GetDepth(vTmp.x, vTmp.z, &fRes))
             continue;
         if (fRes < -10.0f && (fRes + 10.0f) >= vTmp.y)
@@ -469,7 +450,7 @@ void SHIP::CheckShip2Strand(float fDeltaTime)
     if (bShip2Strand != bNewShip2Strand)
     {
         bShip2Strand = bNewShip2Strand;
-        api->Event(SHIP_TO_STRAND, "ll", GetIndex(GetACharacter()), bShip2Strand);
+        core.Event(SHIP_TO_STRAND, "ll", GetIndex(GetACharacter()), bShip2Strand);
     }
 }
 
@@ -482,17 +463,17 @@ void SHIP::SetDead()
         vOldAng = State.vAng;
         vOldPos = State.vPos;
 
-        ATTRIBUTES *pASinkSpeed = GetACharacter()->FindAClass(GetACharacter(), "ship.sink.speed");
+        auto *pASinkSpeed = GetACharacter()->FindAClass(GetACharacter(), "ship.sink.speed");
 
         // aref aSink; makearef(aSink, rDead.Ship.Sink);
         if (!pASinkSpeed)
         {
             pASinkSpeed = GetACharacter()->CreateSubAClass(GetACharacter(), "ship.sink.speed");
             pASinkSpeed->SetAttributeUseFloat("y", 0.35f); // speed of sink y
-            pASinkSpeed->SetAttributeUseFloat("x",
-                                              0.017f * (FRAND(1.0f) * 2.0f - 1.0f)); // speed sink angle rotate around x
-            pASinkSpeed->SetAttributeUseFloat("z",
-                                              0.017f * (FRAND(1.0f) * 2.0f - 1.0f)); // speed sink angle rotate around z
+            pASinkSpeed->SetAttributeUseFloat("x", 0.017f * (FRAND(1.0f) * 2.0f - 1.0f));
+            // speed sink angle rotate around x
+            pASinkSpeed->SetAttributeUseFloat("z", 0.017f * (FRAND(1.0f) * 2.0f - 1.0f));
+            // speed sink angle rotate around z
         }
 
         // Assert(pASinkSpeed);
@@ -504,18 +485,18 @@ void SHIP::SetDead()
         vCurDeadDir = 0.0f;
 
         bDead = true;
-        api->LayerDel("sea_reflection2", GetID());
+        EntityManager::RemoveFromLayer(SEA_REFLECTION2, GetId());
 
         if (pShipsLights)
             pShipsLights->SetDead(this);
     }
 }
 
-void SHIP::Execute(DWORD DeltaTime)
+void SHIP::Execute(uint32_t DeltaTime)
 {
-    ATTRIBUTES *pAPerks = GetACharacter()->FindAClass(GetACharacter(), "TmpPerks");
+    auto *pAPerks = GetACharacter()->FindAClass(GetACharacter(), "TmpPerks");
 
-    ATTRIBUTES *pARocking = GetAShip()->GetAttributeClass("Rocking");
+    auto *pARocking = GetAShip()->GetAttributeClass("Rocking");
 
     if (pARocking)
     {
@@ -537,8 +518,8 @@ void SHIP::Execute(DWORD DeltaTime)
     // check for end of fast turn perk
     if (bPerkTurnActive)
     {
-        CVECTOR vCurDir = CVECTOR(sinf(State.vAng.y), 0.0f, cosf(State.vAng.y));
-        CVECTOR vResDir = CVECTOR(sinf(fResultPerkAngle), 0.0f, cosf(fResultPerkAngle));
+        auto vCurDir = CVECTOR(sinf(State.vAng.y), 0.0f, cosf(State.vAng.y));
+        auto vResDir = CVECTOR(sinf(fResultPerkAngle), 0.0f, cosf(fResultPerkAngle));
         if ((vResDir | vCurDir) >= 0.9f)
         {
             bPerkTurnActive = false;
@@ -551,28 +532,28 @@ void SHIP::Execute(DWORD DeltaTime)
     if (uniIDX >= 900)
         uniIDX = uniIDX - 900 + 2;
 
-    float fDeltaTime = Min(0.1f, float(DeltaTime) * 0.001f);
+    auto fDeltaTime = Min(0.1f, static_cast<float>(DeltaTime) * 0.001f);
 
     if (!bMounted)
         return;
 
-    ATTRIBUTES *pAShipStopped = GetACharacter()->FindAClass(GetACharacter(), "ship.stopped");
-    bool bMainCharacter = GetACharacter()->GetAttributeAsDword("MainCharacter", 0) != 0;
+    auto *pAShipStopped = GetACharacter()->FindAClass(GetACharacter(), "ship.stopped");
+    auto bMainCharacter = GetACharacter()->GetAttributeAsDword("MainCharacter", 0) != 0;
 
     if (dtUpdateParameters.Update(fDeltaTime))
     {
         if (!pAShipStopped || pAShipStopped->GetAttributeAsDword() == 0)
         {
-            api->Event(SHIP_UPDATE_PARAMETERS, "lf", GetIndex(GetACharacter()), fSailState);
+            core.Event(SHIP_UPDATE_PARAMETERS, "lf", GetIndex(GetACharacter()), fSailState);
         }
     }
     // check impulse
-    ATTRIBUTES *pAImpulse = GetACharacter()->FindAClass(GetACharacter(), "Ship.Impulse");
+    auto *pAImpulse = GetACharacter()->FindAClass(GetACharacter(), "Ship.Impulse");
     if (pAImpulse && !isDead())
     {
         CVECTOR vRotate = 0.0f, vXSpeed = 0.0f;
-        ATTRIBUTES *pARotate = pAImpulse->FindAClass(pAImpulse, "Rotate");
-        ATTRIBUTES *pASpeed = pAImpulse->FindAClass(pAImpulse, "Speed");
+        auto *pARotate = pAImpulse->FindAClass(pAImpulse, "Rotate");
+        auto *pASpeed = pAImpulse->FindAClass(pAImpulse, "Speed");
         if (pARotate)
         {
             vRotate.x = pARotate->GetAttributeAsFloat("x", 0.0f);
@@ -599,7 +580,7 @@ void SHIP::Execute(DWORD DeltaTime)
     // if (DeltaTime==0) _asm int 3
     CalculateImmersion(); //
 
-    api->Send_Message(sail_id, "lipf", MSG_SAIL_GET_SPEED, GetID(), &Strength[STRENGTH_MAIN].vSpeed.z, fSailState);
+    core.Send_Message(sail_id, "lipf", MSG_SAIL_GET_SPEED, GetId(), &Strength[STRENGTH_MAIN].vSpeed.z, fSailState);
     if (isDead())
         Strength[STRENGTH_MAIN].vSpeed.z = 0.0f;
 
@@ -610,7 +591,7 @@ void SHIP::Execute(DWORD DeltaTime)
 
     if (!isDead())
     {
-        float fRotate = State.vRotate.y;
+        auto fRotate = State.vRotate.y;
         if (fRotate > 0.25f)
             fRotate = 0.25f;
         if (fRotate < -0.25f)
@@ -618,7 +599,7 @@ void SHIP::Execute(DWORD DeltaTime)
         vAng.z += fRotate;
     }
 
-    ATTRIBUTES *pASpeed = GetACharacter()->FindAClass(GetACharacter(), "ship.speed");
+    auto *pASpeed = GetACharacter()->FindAClass(GetACharacter(), "ship.speed");
     if (!pASpeed)
     {
         pASpeed = GetACharacter()->CreateSubAClass(GetACharacter(), "ship.speed");
@@ -630,40 +611,40 @@ void SHIP::Execute(DWORD DeltaTime)
 
     /*if (isDead())
     {
-        CVECTOR vAng2 = ShipRocking(fDeltaTime);
+      CVECTOR vAng2 = ShipRocking(fDeltaTime);
 
-        float fScale = Bring2Range(8.0f, 22.0f, -5.0f, 0.0f, vPos.y);
-        fMinusVolume += fScale * fDeltaTime * 0.5f;
-        State.vAng = vAng2;
+      float fScale = Bring2Range(8.0f, 22.0f, -5.0f, 0.0f, vPos.y);
+      fMinusVolume += fScale * fDeltaTime * 0.5f;
+      State.vAng = vAng2;
 
-        vCurDeadDir += vDeadDir * fDeltaTime;
+      vCurDeadDir += vDeadDir * fDeltaTime;
 
-        State.vSpeed.z -= State.vSpeed.z * 0.3f * fDeltaTime;
+      State.vSpeed.z -= State.vSpeed.z * 0.3f * fDeltaTime;
 
-        if (isVisible() && vPos.y < -80.0f)
-        {
-            bVisible = false;
+      if (isVisible() && vPos.y < -80.0f)
+      {
+        bVisible = false;
 
-            // stop all fireplaces
-            for (dword i=0; i<aFirePlaces.Size(); i++) aFirePlaces[i].Stop();
+        // stop all fireplaces
+        for (uint32_t i=0; i<aFirePlaces.size(); i++) aFirePlaces[i].Stop();
 
-            // del vant,flags,sail and ropes
-            api->Send_Message(sail_id, "li", MSG_SAIL_DEL_GROUP, GetID());
-            api->Send_Message(rope_id, "li", MSG_ROPE_DEL_GROUP, GetModelEID());
-            api->Send_Message(flag_id, "li", MSG_FLAG_DEL_GROUP, GetModelEID());
-            api->Send_Message(vant_id, "li", MSG_VANT_DEL_GROUP, GetModelEID());
+        // del vant,flags,sail and ropes
+        core.Send_Message(sail_id, "li", MSG_SAIL_DEL_GROUP, GetId());
+        core.Send_Message(rope_id, "li", MSG_ROPE_DEL_GROUP, GetModelEID());
+        core.Send_Message(flag_id, "li", MSG_FLAG_DEL_GROUP, GetModelEID());
+        core.Send_Message(vant_id, "li", MSG_VANT_DEL_GROUP, GetModelEID());
 
-            api->LayerDel((char*)sRealizeLayer.GetBuffer(), GetID());
-            api->LayerDel("ship_cannon_trace", GetID());
-            api->Event(SHIP_DELETE, "li", GetIndex(GetACharacter()), GetID());
-        }
+        core.LayerDel((char*)sRealizeLayer.c_str(), GetId());
+        core.LayerDel("ship_cannon_trace", GetId());
+        core.Event(SHIP_DELETE, "li", GetIndex(GetACharacter()), GetId());
+      }
 
-        if (vPos.y < -100.0f) vPos.y = -1000.0f;
+      if (vPos.y < -100.0f) vPos.y = -1000.0f;
     }*/
 
     if (isDead())
     {
-        float fScale = Bring2Range(0.0f, 1.0f, -15.0f, 0.0f, vPos.y);
+        auto fScale = Bring2Range(0.0f, 1.0f, -15.0f, 0.0f, vPos.y);
 
         // State.vPos.y = 0.0f;
         // State.vAng.x = 0.0f;
@@ -698,20 +679,20 @@ void SHIP::Execute(DWORD DeltaTime)
             bVisible = false;
 
             // stop all fireplaces
-            for (dword i = 0; i < aFirePlaces.Size(); i++)
+            for (uint32_t i = 0; i < aFirePlaces.size(); i++)
                 aFirePlaces[i].Stop();
 
             // del vant,flags,sail and ropes
-            api->Send_Message(sail_id, "li", MSG_SAIL_DEL_GROUP, GetID());
-            api->Send_Message(rope_id, "li", MSG_ROPE_DEL_GROUP, GetModelEID());
-            api->Send_Message(flag_id, "li", MSG_FLAG_DEL_GROUP, GetModelEID());
-            api->Send_Message(vant_id, "li", MSG_VANT_DEL_GROUP, GetModelEID());
-            api->Send_Message(vantl_id, "li", MSG_VANT_DEL_GROUP, GetModelEID());
-            api->Send_Message(vantz_id, "li", MSG_VANT_DEL_GROUP, GetModelEID());
+            core.Send_Message(sail_id, "li", MSG_SAIL_DEL_GROUP, GetId());
+            core.Send_Message(rope_id, "li", MSG_ROPE_DEL_GROUP, GetModelEID());
+            core.Send_Message(flag_id, "li", MSG_FLAG_DEL_GROUP, GetModelEID());
+            core.Send_Message(vant_id, "li", MSG_VANT_DEL_GROUP, GetModelEID());
+            core.Send_Message(vantl_id, "li", MSG_VANT_DEL_GROUP, GetModelEID());
+            core.Send_Message(vantz_id, "li", MSG_VANT_DEL_GROUP, GetModelEID());
 
-            api->LayerDel((char *)sRealizeLayer.GetBuffer(), GetID());
-            api->LayerDel("ship_cannon_trace", GetID());
-            api->Event(SHIP_DELETE, "li", GetIndex(GetACharacter()), GetID());
+            EntityManager::RemoveFromLayer(RealizeLayer, GetId());
+            EntityManager::RemoveFromLayer(SHIP_CANNON_TRACE, GetId());
+            core.Event(SHIP_DELETE, "li", GetIndex(GetACharacter()), GetId());
         }
     }
     else
@@ -719,8 +700,8 @@ void SHIP::Execute(DWORD DeltaTime)
     }
 
     // set attributes for script
-    ATTRIBUTES *pAPos = GetACharacter()->FindAClass(GetACharacter(), "ship.pos");
-    ATTRIBUTES *pAAng = GetACharacter()->FindAClass(GetACharacter(), "ship.ang");
+    auto *pAPos = GetACharacter()->FindAClass(GetACharacter(), "ship.pos");
+    auto *pAAng = GetACharacter()->FindAClass(GetACharacter(), "ship.ang");
     if (!pAPos)
     {
         pAPos = GetACharacter()->CreateSubAClass(GetACharacter(), "ship.pos");
@@ -747,56 +728,46 @@ void SHIP::Execute(DWORD DeltaTime)
                     vPos.y - State.fShipImmersion - SP.fWaterLine, vPos.z + fZOffset);
     SetMatrix(mRoot);
 
-    CMatrix matrix = UpdateModelMatrix();
+    auto matrix = UpdateModelMatrix();
 
     // activate mast tracer
     if (dtMastTrace.Update(fDeltaTime))
     {
-        VIDWALKER *pVWShip = api->LayerGetWalker("mast_ship_trace");
-        VIDWALKER *pVWIsland = api->LayerGetWalker("mast_island_trace");
-        if (pVWShip || pVWIsland)
-        {
-            for (long i = 0; i < iNumMasts; i++)
-                if (!pMasts[i].bBroken)
+        for (long i = 0; i < iNumMasts; i++)
+            if (!pMasts[i].bBroken)
+            {
+                CVECTOR v1, v2;
+                VDATA *pV;
+                auto fShipRes = 2.0f, fIslRes = 2.0f;
+
+                auto *pM = &pMasts[i];
+                v1 = matrix * pM->vSrc;
+                v2 = matrix * pM->vDst;
+
+                auto id = GetId();
+                fShipRes = pCollide->Trace(EntityManager::GetEntityIdIterators(MAST_SHIP_TRACE), v1, v2, &id, 1);
+                if (fShipRes <= 1.0f)
                 {
-                    CVECTOR v1, v2;
-                    VDATA *pV;
-                    float fShipRes = 2.0f, fIslRes = 2.0f;
-
-                    mast_t *pM = &pMasts[i];
-                    v1 = matrix * pM->vSrc;
-                    v2 = matrix * pM->vDst;
-
-                    if (pVWShip) // from ship damage
-                    {
-                        fShipRes = pCollide->Trace(*pVWShip, v1, v2, &GetID(), 1);
-                        if (fShipRes <= 1.0f)
-                        {
-                            ATTRIBUTES *pACollideCharacter = GetACharacter();
-                            SHIP *pShip = (SHIP *)api->GetEntityPointer(&pCollide->GetObjectID());
-                            if (pShip)
-                                pACollideCharacter = pShip->GetACharacter();
-                            pV = api->Event(SHIP_MAST_DAMAGE, "llffffaa", SHIP_MAST_TOUCH_SHIP, pM->iMastNum, v1.x,
-                                            v1.y, v1.z, pM->fDamage, GetACharacter(), pACollideCharacter);
-                            pM->fDamage = Clamp(pV->GetFloat());
-                        }
-                    }
-                    if (pVWIsland) // from island damage
-                    {
-                        fIslRes = pCollide->Trace(*pVWIsland, v1, v2, &GetModelEID(), 1);
-                        if (fIslRes <= 1.0f)
-                        {
-                            pV = api->Event(SHIP_MAST_DAMAGE, "llffffa", SHIP_MAST_TOUCH_ISLAND, pM->iMastNum, v1.x,
-                                            v1.y, v1.z, pM->fDamage, GetACharacter());
-                            pM->fDamage = Clamp(pV->GetFloat());
-                        }
-                    }
-
-                    MastFall(pM);
+                    auto *pACollideCharacter = GetACharacter();
+                    auto *pShip = static_cast<SHIP *>(EntityManager::GetEntityPointer(pCollide->GetObjectID()));
+                    if (pShip)
+                        pACollideCharacter = pShip->GetACharacter();
+                    pV = core.Event(SHIP_MAST_DAMAGE, "llffffaa", SHIP_MAST_TOUCH_SHIP, pM->iMastNum, v1.x, v1.y, v1.z,
+                                    pM->fDamage, GetACharacter(), pACollideCharacter);
+                    pM->fDamage = Clamp(pV->GetFloat());
                 }
-        }
-        SE_DELETE(pVWShip);
-        SE_DELETE(pVWIsland);
+
+                id = GetModelEID();
+                fIslRes = pCollide->Trace(EntityManager::GetEntityIdIterators(MAST_ISLAND_TRACE), v1, v2, &id, 1);
+                if (fIslRes <= 1.0f)
+                {
+                    pV = core.Event(SHIP_MAST_DAMAGE, "llffffa", SHIP_MAST_TOUCH_ISLAND, pM->iMastNum, v1.x, v1.y, v1.z,
+                                    pM->fDamage, GetACharacter());
+                    pM->fDamage = Clamp(pV->GetFloat());
+                }
+
+                MastFall(pM);
+            }
     }
 
     // key states
@@ -805,20 +776,20 @@ void SHIP::Execute(DWORD DeltaTime)
     if (bMainCharacter && (!pAShipStopped || pAShipStopped->GetAttributeAsDword() == 0))
     {
         CONTROL_STATE cs, cs1;
-        api->Controls->GetControlState("Ship_TurnLeft", cs);
-        api->Controls->GetControlState("Ship_TurnLeft1", cs1);
+        core.Controls->GetControlState("Ship_TurnLeft", cs);
+        core.Controls->GetControlState("Ship_TurnLeft1", cs1);
         if (cs.state == CST_ACTIVE || cs1.state == CST_ACTIVE)
             Strength[STRENGTH_MAIN].vRotate.y = -1.0f;
-        api->Controls->GetControlState("Ship_TurnRight", cs);
-        api->Controls->GetControlState("Ship_TurnRight1", cs1);
+        core.Controls->GetControlState("Ship_TurnRight", cs);
+        core.Controls->GetControlState("Ship_TurnRight1", cs1);
         if (cs.state == CST_ACTIVE || cs1.state == CST_ACTIVE)
             Strength[STRENGTH_MAIN].vRotate.y = 1.0f;
-        api->Controls->GetControlState("Ship_SailUp", cs);
-        api->Controls->GetControlState("Ship_SailUp1", cs1);
+        core.Controls->GetControlState("Ship_SailUp", cs);
+        core.Controls->GetControlState("Ship_SailUp1", cs1);
         if (cs.state == CST_ACTIVATED || cs1.state == CST_ACTIVATED)
             fSailState += 0.5f;
-        api->Controls->GetControlState("Ship_SailDown", cs);
-        api->Controls->GetControlState("Ship_SailDown1", cs1);
+        core.Controls->GetControlState("Ship_SailDown", cs);
+        core.Controls->GetControlState("Ship_SailDown1", cs1);
         if (cs.state == CST_ACTIVATED || cs1.state == CST_ACTIVATED)
             fSailState -= 0.5f;
 
@@ -830,182 +801,120 @@ void SHIP::Execute(DWORD DeltaTime)
 
     /*if (isDead())
     {
-        fSailState = 0.0f;
+      fSailState = 0.0f;
     }*/
 
     // execute fire places
-    for (dword i = 0; i < aFirePlaces.Size(); i++)
+    for (uint32_t i = 0; i < aFirePlaces.size(); i++)
         aFirePlaces[i].Execute(fDeltaTime);
 
-    /*  // boal del_cheat
-#ifndef _XBOX
-    if (api->Controls->GetDebugAsyncKeyState('L') < 0)
-        if (GetAsyncKeyState('K') < 0)
-        {
-            // for test only
-            if (GetAsyncKeyState('0') < 0) bUse = (uniIDX == 0);
-            if (GetAsyncKeyState('1') < 0) bUse = (uniIDX == 1);
-            if (GetAsyncKeyState('2') < 0) bUse = (uniIDX == 2);
-            if (GetAsyncKeyState('3') < 0) bUse = (uniIDX == 3);
-            if (GetAsyncKeyState('4') < 0) bUse = (uniIDX == 4);
-            if (GetAsyncKeyState('5') < 0) bUse = (uniIDX == 5);
-            if (GetAsyncKeyState('6') < 0) bUse = (uniIDX == 6);
-            if (GetAsyncKeyState('7') < 0) bUse = (uniIDX == 7);
-            if (GetAsyncKeyState('8') < 0) bUse = (uniIDX == 8);
-            if (GetAsyncKeyState('9') < 0) bUse = (uniIDX == 9);
-
-            if (GetAsyncKeyState('J')<0 && bUse)
-            {
-                float fov;
-                CVECTOR cpos,cang;
-                pRS->GetCamera(cpos,cang,fov);
-                State.vPos = cpos;
-                fXOffset = fZOffset = 0.f;
-                RecalculateWorldOffset();
-                State.vAng = cang;
-            }
-        }
-#endif
-     */
     // water sound: set position and volume
-    ATTRIBUTES *pASounds = AttributesPointer->FindAClass(AttributesPointer, "Ship.Sounds");
+    auto *pASounds = AttributesPointer->FindAClass(AttributesPointer, "Ship.Sounds");
 
     if (pASounds)
     {
-        ATTRIBUTES *pAWaterID = pASounds->GetAttributeClass("WaterID");
-        ATTRIBUTES *pATurnID = pASounds->GetAttributeClass("TurnID");
-        ATTRIBUTES *pASailsID = pASounds->GetAttributeClass("SailsID");
+        auto *pAWaterID = pASounds->GetAttributeClass("WaterID");
+        auto *pATurnID = pASounds->GetAttributeClass("TurnID");
+        auto *pASailsID = pASounds->GetAttributeClass("SailsID");
 
         CMatrix mRotate;
         mRoot.Get3X3(mRotate);
-        CVECTOR vBoxSize = State.vBoxSize / 2.0f;
+        auto vBoxSize = State.vBoxSize / 2.0f;
 
-        float fWaterSpeed = pASounds->GetAttributeAsFloat("WaterSpeed", 40.0f);
-        long iWaterSound = long(pASounds->GetAttributeAsDword("WaterID", -1));
+        auto fWaterSpeed = pASounds->GetAttributeAsFloat("WaterSpeed", 40.0f);
+        auto iWaterSound = static_cast<long>(pASounds->GetAttributeAsDword("WaterID", -1));
         if (iWaterSound > 0)
         {
-            float x = pAWaterID->GetAttributeAsFloat("x", 0.0f);
-            float y = pAWaterID->GetAttributeAsFloat("y", 0.0f);
-            float z = pAWaterID->GetAttributeAsFloat("z", 0.0f);
-            CVECTOR vPos = State.vPos + (mRotate * CVECTOR(vBoxSize.x * x, vBoxSize.y * y, vBoxSize.z * z));
-            float fWaterSoundVolume = Min(KNOTS2METERS(fabsf(State.vSpeed.z)), fWaterSpeed) / fWaterSpeed;
-            api->Send_Message(FirePlace::eidSound, "llf", MSG_SOUND_SET_VOLUME, iWaterSound, fWaterSoundVolume);
-            api->Send_Message(FirePlace::eidSound, "lllfff", MSG_SOUND_SET_3D_PARAM, iWaterSound, SOUND_PARAM_POSITION,
+            auto x = pAWaterID->GetAttributeAsFloat("x", 0.0f);
+            auto y = pAWaterID->GetAttributeAsFloat("y", 0.0f);
+            auto z = pAWaterID->GetAttributeAsFloat("z", 0.0f);
+            auto vPos = State.vPos + (mRotate * CVECTOR(vBoxSize.x * x, vBoxSize.y * y, vBoxSize.z * z));
+            auto fWaterSoundVolume = Min(KNOTS2METERS(fabsf(State.vSpeed.z)), fWaterSpeed) / fWaterSpeed;
+            core.Send_Message(FirePlace::eidSound, "llf", MSG_SOUND_SET_VOLUME, iWaterSound, fWaterSoundVolume);
+            core.Send_Message(FirePlace::eidSound, "lllfff", MSG_SOUND_SET_3D_PARAM, iWaterSound, SOUND_PARAM_POSITION,
                               vPos.x + fXOffset, vPos.y, vPos.z + fZOffset);
         }
 
-        float fTurnSpeed = pASounds->GetAttributeAsFloat("TurnSpeed", 20.0f);
-        long iTurnSound = long(pASounds->GetAttributeAsDword("TurnID", -1));
+        auto fTurnSpeed = pASounds->GetAttributeAsFloat("TurnSpeed", 20.0f);
+        auto iTurnSound = static_cast<long>(pASounds->GetAttributeAsDword("TurnID", -1));
         if (iTurnSound > 0)
         {
-            float x = pATurnID->GetAttributeAsFloat("x", 0.0f);
-            float y = pATurnID->GetAttributeAsFloat("y", 0.0f);
-            float z = pATurnID->GetAttributeAsFloat("z", 0.0f);
-            CVECTOR vPos = State.vPos + (mRotate * CVECTOR(vBoxSize.x * x, vBoxSize.y * y, vBoxSize.z * z));
-            float fTurnSoundVolume = Min(fabsf(State.vRotate.y), fTurnSpeed) / fTurnSpeed;
-            api->Send_Message(FirePlace::eidSound, "llf", MSG_SOUND_SET_VOLUME, iTurnSound, fTurnSoundVolume);
-            api->Send_Message(FirePlace::eidSound, "lllfff", MSG_SOUND_SET_3D_PARAM, iTurnSound, SOUND_PARAM_POSITION,
+            auto x = pATurnID->GetAttributeAsFloat("x", 0.0f);
+            auto y = pATurnID->GetAttributeAsFloat("y", 0.0f);
+            auto z = pATurnID->GetAttributeAsFloat("z", 0.0f);
+            auto vPos = State.vPos + (mRotate * CVECTOR(vBoxSize.x * x, vBoxSize.y * y, vBoxSize.z * z));
+            auto fTurnSoundVolume = Min(fabsf(State.vRotate.y), fTurnSpeed) / fTurnSpeed;
+            core.Send_Message(FirePlace::eidSound, "llf", MSG_SOUND_SET_VOLUME, iTurnSound, fTurnSoundVolume);
+            core.Send_Message(FirePlace::eidSound, "lllfff", MSG_SOUND_SET_3D_PARAM, iTurnSound, SOUND_PARAM_POSITION,
                               vPos.x + fXOffset, vPos.y, vPos.z + fZOffset);
         }
 
-        long iSailSound = long(pASounds->GetAttributeAsDword("SailsID", -1));
+        auto iSailSound = static_cast<long>(pASounds->GetAttributeAsDword("SailsID", -1));
         if (iSailSound > 0)
         {
-            float x = pASailsID->GetAttributeAsFloat("x", 0.0f);
-            float y = pASailsID->GetAttributeAsFloat("y", 0.0f);
-            float z = pASailsID->GetAttributeAsFloat("z", 0.0f);
-            CVECTOR vPos = State.vPos + (mRotate * CVECTOR(vBoxSize.x * x, vBoxSize.y * y, vBoxSize.z * z));
-            api->Send_Message(FirePlace::eidSound, "lllfff", MSG_SOUND_SET_3D_PARAM, iSailSound, SOUND_PARAM_POSITION,
+            auto x = pASailsID->GetAttributeAsFloat("x", 0.0f);
+            auto y = pASailsID->GetAttributeAsFloat("y", 0.0f);
+            auto z = pASailsID->GetAttributeAsFloat("z", 0.0f);
+            auto vPos = State.vPos + (mRotate * CVECTOR(vBoxSize.x * x, vBoxSize.y * y, vBoxSize.z * z));
+            core.Send_Message(FirePlace::eidSound, "lllfff", MSG_SOUND_SET_3D_PARAM, iSailSound, SOUND_PARAM_POSITION,
                               vPos.x + fXOffset, vPos.y, vPos.z + fZOffset);
         }
     }
 }
 /*
-void SHIP::MastFall(mast_t * pM)
+void SHIP::MastFall(mast_t* pM) {
+  if (pM && pM->pNode && pM->fDamage >= 1.0f) {
+    entid_t ent;
+    ent = EntityManager::CreateEntity("mast");
+    core.Send_Message(ent, "lpii", MSG_MAST_SETGEOMETRY, pM->pNode, GetId(), GetModelEID());
+    EntityManager::AddToLayer(ExecuteLayer, ent, iShipPriorityExecute + 1);
+    EntityManager::AddToLayer(RealizeLayer, ent, iShipPriorityRealize + 1);
+
+    pShipsLights->KillMast(this, pM->pNode, false);
+
+    char str[256];
+    sprintf_s(str, "%s", pM->pNode->GetName());
+    auto* pAMasts = GetACharacter()->FindAClass(GetACharacter(), "Ship.Masts");
+    if (!pAMasts)
+      pAMasts = GetACharacter()->CreateSubAClass(GetACharacter(), "Ship.Masts");
+    Assert(pAMasts);
+    pAMasts->SetAttributeUseFloat(str, 1.0f);
+    pM->bBroken = true;
+  }
+}
+*/
+
+void SHIP::HullFall(hull_t *pM)
 {
     if (pM && pM->pNode && pM->fDamage >= 1.0f)
     {
-        ENTITY_ID ent;
-        api->CreateEntity(&ent, "mast");
-        api->Send_Message(ent, "lpii", MSG_MAST_SETGEOMETRY, pM->pNode, GetID(), GetModelEID());
-        api->LayerAdd((char*)sExecuteLayer.GetBuffer(), ent, iShipPriorityExecute+1);
-        api->LayerAdd((char*)sRealizeLayer.GetBuffer(), ent, iShipPriorityRealize+1);
-
-        pShipsLights->KillMast(this, pM->pNode, false);
+        entid_t ent;
+        ent = EntityManager::CreateEntity("hull");
+        core.Send_Message(ent, "lpii", MSG_HULL_SETGEOMETRY, pM->pNode, GetId(), GetModelEID());
+        EntityManager::AddToLayer(ExecuteLayer, ent, iShipPriorityExecute + 1);
+        EntityManager::AddToLayer(RealizeLayer, ent, iShipPriorityRealize + 1);
 
         char str[256];
-        sprintf(str, "%s", pM->pNode->GetName());
-        ATTRIBUTES * pAMasts = GetACharacter()->FindAClass(GetACharacter(),"Ship.Masts");
-        if (!pAMasts)
-            pAMasts = GetACharacter()->CreateSubAClass(GetACharacter(),"Ship.Masts");
-        Assert(pAMasts);
-        pAMasts->SetAttributeUseFloat(str, 1.0f);
+        sprintf_s(str, "%s", pM->pNode->GetName());
+        auto *pAHulls = GetACharacter()->FindAClass(GetACharacter(), "Ship.Hulls");
+        if (!pAHulls)
+            pAHulls = GetACharacter()->CreateSubAClass(GetACharacter(), "Ship.Hulls");
+        Assert(pAHulls);
+        pAHulls->SetAttributeUseFloat(str, 1.0f);
         pM->bBroken = true;
-
-        long iNum;
-        sscanf((char*)&str[strlen(MAST_IDENTIFY)],"%d",&iNum);
-
-        // если мачта  (0..100) -> ломаем стеньгу (если есть)
-        if(iNum < TOPMAST_BEGIN)
-        {
-            api->Trace("SHIP::MastFall(1) : iNum = %d", iNum);
-            MastFallChild(pM);
-        }
-        else // если сломана стеньга и мачта состоит из более чем двух компонентов
-        {
-            api->Trace("SHIP::MastFall(2) : iNum = %d", iNum);
-        }
     }
 }
 
-void SHIP::MastFallChild(mast_t * parentMast)
-{
-    long iNum, iChildNum;
-    NODE * mastNodePointer = parentMast->pNode;
-    const char *cNodeName = parentMast->pNode->GetName();
-    sscanf((const char*)&cNodeName[strlen(MAST_IDENTIFY)],"%d",&iNum);
-
-    // ищем неломаные стеньги, принадлежащие данной мачте
-    for (long i = 0; i < iNumMasts; i++) if (!pMasts[i].bBroken)
-    {
-        mast_t * pM = &pMasts[i];
-        char cMastNodeName[256];
-        sprintf(cMastNodeName, "%s", pM->pNode->GetName());
-        sscanf((char*)&cMastNodeName[strlen(MAST_IDENTIFY)],"%d",&iChildNum);
-
-        //нашли стеньгу, относящуюся к даной мачте - ломаем ее
-        for(long j = 0; j < 5; j++)
-        {
-            if(iChildNum == iNum * TOPMAST_BEGIN + (j + 1))
-            {
-                ENTITY_ID ent;
-                api->CreateEntity(&ent, "mast");
-                api->Send_Message(ent, "lpii", MSG_MAST_SETGEOMETRY, pM->pNode, GetID(), GetModelEID());
-                api->LayerAdd((char*)sExecuteLayer.GetBuffer(), ent, iShipPriorityExecute+1);
-                api->LayerAdd((char*)sRealizeLayer.GetBuffer(), ent, iShipPriorityRealize+1);
-                pShipsLights->KillMast(this, pM->pNode, false);
-                ATTRIBUTES * pAMasts = GetACharacter()->FindAClass(GetACharacter(),"Ship.Masts");
-                if (!pAMasts)
-                    pAMasts = GetACharacter()->CreateSubAClass(GetACharacter(),"Ship.Masts");
-                Assert(pAMasts);
-                pAMasts->SetAttributeUseFloat(cMastNodeName, 1.0f);
-                pM->bBroken = true;
-                pM->fDamage = 1.0f;
-            }
-        }
-    }
-}
-*/
 void SHIP::MastFall(mast_t *pM)
 {
     if (pM && pM->pNode && pM->fDamage >= 1.0f)
     {
         long iNum, iBase;
         char cMastNodeName[256];
-        sprintf(cMastNodeName, "%s", pM->pNode->GetName());
-        sscanf((char *)&cMastNodeName[strlen(MAST_IDENTIFY)], "%d", &iNum);
+        sprintf_s(cMastNodeName, "%s", pM->pNode->GetName());
+        sscanf((char *)&cMastNodeName[_countof(MAST_IDENTIFY) - 1], "%d", &iNum);
         iBase = iNum / TOPMAST_BEGIN;
-        //		api->Trace("SHIP::MastFall : nodeName %s  iNum = %d base = %d iNumMasts = %d", cMastNodeName, iNum,
+        //		core.Trace("SHIP::MastFall : nodeName %s  iNum = %d base = %d iNumMasts = %d", cMastNodeName, iNum,
         // iBase, iNumMasts );
         for (long i = 0; i < iNumMasts; i++)
         {
@@ -1014,8 +923,8 @@ void SHIP::MastFall(mast_t *pM)
             long iMastNum;
             if (pMast && pMast->pNode && !pMasts[i].bBroken)
             {
-                sprintf(str, "%s", pMast->pNode->GetName());
-                sscanf((char *)&str[strlen(MAST_IDENTIFY)], "%d", &iMastNum);
+                sprintf_s(str, "%s", pMast->pNode->GetName());
+                sscanf((char *)&str[_countof(MAST_IDENTIFY) - 1], "%d", &iMastNum);
                 bool bOk = false;
                 if (iNum < TOPMAST_BEGIN) // мачта, валим все стеньги
                 {
@@ -1028,15 +937,15 @@ void SHIP::MastFall(mast_t *pM)
                     if (((iMastNum > iNum) && iMastNum < ((iBase + 1) * TOPMAST_BEGIN)) || iMastNum == iNum)
                         bOk = true;
                 }
-                //				api->Trace("SHIP::MastFall : i = %d nodeName %s  iMastNum = %d bOk = %d", i, str,
+                //				core.Trace("SHIP::MastFall : i = %d nodeName %s  iMastNum = %d bOk = %d", i, str,
                 // iMastNum, bOk );
                 if (bOk)
                 {
-                    ENTITY_ID ent;
-                    api->CreateEntity(&ent, "mast");
-                    api->Send_Message(ent, "lpii", MSG_MAST_SETGEOMETRY, pMast->pNode, GetID(), GetModelEID());
-                    api->LayerAdd((char *)sExecuteLayer.GetBuffer(), ent, iShipPriorityExecute + 1);
-                    api->LayerAdd((char *)sRealizeLayer.GetBuffer(), ent, iShipPriorityRealize + 1);
+                    entid_t ent;
+                    ent = EntityManager::CreateEntity("mast");
+                    core.Send_Message(ent, "lpii", MSG_MAST_SETGEOMETRY, pM->pNode, GetId(), GetModelEID());
+                    EntityManager::AddToLayer(ExecuteLayer, ent, iShipPriorityExecute + 1);
+                    EntityManager::AddToLayer(RealizeLayer, ent, iShipPriorityRealize + 1);
                     pShipsLights->KillMast(this, pMast->pNode, false);
                     ATTRIBUTES *pAMasts = GetACharacter()->FindAClass(GetACharacter(), "Ship.Masts");
                     if (!pAMasts)
@@ -1051,80 +960,9 @@ void SHIP::MastFall(mast_t *pM)
     }
 }
 
-void SHIP::TestMastFall(long iMast)
-{
-    long iNum;
-    long iBase;
-    mast_t *parentMast = &pMasts[iMast];
-    char cMastNodeName[256];
-    sprintf(cMastNodeName, "%s", parentMast->pNode->GetName());
-    sscanf((char *)&cMastNodeName[strlen(MAST_IDENTIFY)], "%d", &iNum);
-    iBase = iNum / TOPMAST_BEGIN;
-    api->Trace("SHIP::TestMastFall : iMast = %d nodeName %s  iNum = %d base = %d", iMast, cMastNodeName, iNum, iBase);
-
-    for (long i = 0; i < iNumMasts; i++)
-    {
-        mast_t *pM = &pMasts[i];
-        char str[256];
-        long iMastNum;
-        sprintf(str, "%s", pM->pNode->GetName());
-        sscanf((char *)&str[strlen(MAST_IDENTIFY)], "%d", &iMastNum);
-        bool bOk = false;
-        if (iNum < TOPMAST_BEGIN) // мачта, валим все стеньги
-        {
-            if (iMastNum > iNum * TOPMAST_BEGIN && iMastNum < ((iNum + 1) * TOPMAST_BEGIN))
-                bOk = true;
-        }
-        else // стеньга, валим все что выше
-        {
-            if ((iMastNum > iNum) && iMastNum < ((iBase + 1) * TOPMAST_BEGIN))
-                bOk = true;
-        }
-        api->Trace("SHIP::TestMastFall : i = %d nodeName %s  iMastNum = %d bOk = %d", i, str, iMastNum, bOk);
-
-        if ((i == iMast || bOk) && !pMasts[i].bBroken && pM && pM->pNode)
-        {
-            ENTITY_ID ent;
-            api->CreateEntity(&ent, "mast");
-            api->Send_Message(ent, "lpii", MSG_MAST_SETGEOMETRY, pM->pNode, GetID(), GetModelEID());
-            api->LayerAdd((char *)sExecuteLayer.GetBuffer(), ent, iShipPriorityExecute + 1);
-            api->LayerAdd((char *)sRealizeLayer.GetBuffer(), ent, iShipPriorityRealize + 1);
-            pShipsLights->KillMast(this, pM->pNode, false);
-            ATTRIBUTES *pAMasts = GetACharacter()->FindAClass(GetACharacter(), "Ship.Masts");
-            if (!pAMasts)
-                pAMasts = GetACharacter()->CreateSubAClass(GetACharacter(), "Ship.Masts");
-            Assert(pAMasts);
-            pAMasts->SetAttributeUseFloat(str, 1.0f);
-            pM->bBroken = true;
-            pM->fDamage = 1.0f;
-        }
-    }
-}
-
-void SHIP::HullFall(hull_t *pM)
-{
-    if (pM && pM->pNode && pM->fDamage >= 1.0f)
-    {
-        ENTITY_ID ent;
-        api->CreateEntity(&ent, "hull");
-        api->Send_Message(ent, "lpii", MSG_HULL_SETGEOMETRY, pM->pNode, GetID(), GetModelEID());
-        api->LayerAdd((char *)sExecuteLayer.GetBuffer(), ent, iShipPriorityExecute + 1);
-        api->LayerAdd((char *)sRealizeLayer.GetBuffer(), ent, iShipPriorityRealize + 1);
-
-        char str[256];
-        sprintf(str, "%s", pM->pNode->GetName());
-        ATTRIBUTES *pAHulls = GetACharacter()->FindAClass(GetACharacter(), "Ship.Hulls");
-        if (!pAHulls)
-            pAHulls = GetACharacter()->CreateSubAClass(GetACharacter(), "Ship.Hulls");
-        Assert(pAHulls);
-        pAHulls->SetAttributeUseFloat(str, 1.0f);
-        pM->bBroken = true;
-    }
-}
-
 CMatrix SHIP::UpdateModelMatrix()
 {
-    MODEL *pModel = GetModel();
+    auto *pModel = GetModel();
     Assert(pModel);
     pModel->Update();
     return pModel->mtx;
@@ -1136,17 +974,17 @@ void SHIP::RecalculateWorldOffset()
     /*long nTmp = (long)((State.vPos.x + fXOffset) * 0.001f) * 1000;
     float fTmp = fXOffset - (float)nTmp;
     if( fTmp != 0.f ) {
-        fXOffset = (float)nTmp;
-        State.vPos.x += fTmp;
-        vPos.x = State.vPos.x;
+      fXOffset = (float)nTmp;
+      State.vPos.x += fTmp;
+      vPos.x = State.vPos.x;
     }
     // calculate Z offset
     nTmp = (long)((State.vPos.z + fZOffset) * 0.001f) * 1000;
     fTmp = fZOffset - (float)nTmp;
     if( fTmp != 0.f ) {
-        fZOffset = (float)nTmp;
-        State.vPos.z += fTmp;
-        vPos.z = State.vPos.z;
+      fZOffset = (float)nTmp;
+      State.vPos.z += fTmp;
+      vPos.z = State.vPos.z;
     }*/
 }
 
@@ -1159,9 +997,9 @@ void SHIP::SetLightAndFog(bool bSetLight)
         bSetLightAndFog = true;
 
         // ambient
-        float fScale = Bring2Range(0.0f, 1.0f, -35.0f, 0.0f, State.vPos.y);
+        const auto fScale = Bring2Range(0.0f, 1.0f, -35.0f, 0.0f, State.vPos.y);
         pRS->GetRenderState(D3DRS_AMBIENT, &dwSaveAmbient);
-        CVECTOR vAmbient = fScale * COLOR2VECTOR(dwSaveAmbient);
+        const CVECTOR vAmbient = fScale * COLOR2VECTOR(dwSaveAmbient);
         pRS->SetRenderState(D3DRS_AMBIENT, ARGB((dwSaveAmbient >> 24L), vAmbient.x, vAmbient.y, vAmbient.z));
 
         // light
@@ -1183,9 +1021,9 @@ void SHIP::SetLightAndFog(bool bSetLight)
         pRS->SetLight(0, &newLight);
 
         // fog
-        float fFogScale = Bring2Range(0.0f, 1.0f, -30.0f, 0.0f, State.vPos.y);
+        const auto fFogScale = Bring2Range(0.0f, 1.0f, -30.0f, 0.0f, State.vPos.y);
         pRS->GetRenderState(D3DRS_FOGCOLOR, &dwSaveFogColor);
-        CVECTOR vFogColor = fFogScale * COLOR2VECTOR(dwSaveFogColor);
+        const CVECTOR vFogColor = fFogScale * COLOR2VECTOR(dwSaveFogColor);
         pRS->SetRenderState(D3DRS_FOGCOLOR, ARGB((dwSaveFogColor >> 24L), vFogColor.x, vFogColor.y, vFogColor.z));
     }
 }
@@ -1201,7 +1039,7 @@ void SHIP::RestoreLightAndFog()
     }
 }
 
-void SHIP::Realize(DWORD dtime)
+void SHIP::Realize(uint32_t dtime)
 {
     if (!bMounted)
         return;
@@ -1209,7 +1047,7 @@ void SHIP::Realize(DWORD dtime)
     // if (dtime)
     //	ShipRocking2(float(dtime) * 0.001f);
 
-    MODEL *pM = GetModel();
+    auto *pM = GetModel();
     Assert(pM);
 
     bSetLightAndFog = false;
@@ -1218,7 +1056,7 @@ void SHIP::Realize(DWORD dtime)
     SetLights();
 
     pRS->SetRenderState(D3DRS_LIGHTING, true);
-    pM->Realize(dtime);
+    pM->ProcessStage(Stage::realize, dtime);
     pRS->SetRenderState(D3DRS_LIGHTING, false);
 
     UnSetLights();
@@ -1231,13 +1069,13 @@ void SHIP::Realize(DWORD dtime)
         m1.BuildMatrix(0.0f, fUpperShipAY, 0.0f, State.vPos.x + fXOffset, State.vPos.y + fUpperShipY,
                        State.vPos.z + fZOffset);
         pModelUpperShip->mtx = m1;
-        pModelUpperShip->Realize(dtime);
+        pModelUpperShip->ProcessStage(Stage::realize, dtime);
     }
 
     if (bMassaShow)
     {
-        Render().Print(0, 120, "Massa: %.2f", GetAShip()->GetAttributeAsFloat("Massa"));
-        Render().Print(0, 140, "Volume: %.2f", GetAShip()->GetAttributeAsFloat("Volume"));
+        pRS->Print(0, 120, "Massa: %.2f", GetAShip()->GetAttributeAsFloat("Massa"));
+        pRS->Print(0, 140, "Volume: %.2f", GetAShip()->GetAttributeAsFloat("Volume"));
     }
 }
 
@@ -1258,20 +1096,20 @@ void SHIP::Fire(const CVECTOR &vPos)
 
 float SHIP::GetMaxSpeedZ()
 {
-    ATTRIBUTES *pAMaxSpeedZ = GetACharacter()->FindAClass(GetACharacter(), "Ship.MaxSpeedZ");
+    auto *pAMaxSpeedZ = GetACharacter()->FindAClass(GetACharacter(), "Ship.MaxSpeedZ");
     return (pAMaxSpeedZ) ? pAMaxSpeedZ->GetAttributeAsFloat() : 0.0f;
-}
-
-float SHIP::GetWindAgainst()
-{
-    ATTRIBUTES *pAWindAgainst = GetACharacter()->FindAClass(GetACharacter(), "Ship.WindAgainstSpeed");
-    return (pAWindAgainst) ? pAWindAgainst->GetAttributeAsFloat() : 0.0f;
 }
 
 float SHIP::GetMaxSpeedY()
 {
-    ATTRIBUTES *pAMaxSpeedY = GetACharacter()->FindAClass(GetACharacter(), "Ship.MaxSpeedY");
+    auto *pAMaxSpeedY = GetACharacter()->FindAClass(GetACharacter(), "Ship.MaxSpeedY");
     return (pAMaxSpeedY) ? pAMaxSpeedY->GetAttributeAsFloat() : 0.0f;
+}
+
+float SHIP::GetWindAgainst()
+{
+    auto *pAWindAgainst = GetACharacter()->FindAClass(GetACharacter(), "Ship.WindAgainstSpeed");
+    return (pAWindAgainst) ? pAWindAgainst->GetAttributeAsFloat() : 0.0f;
 }
 
 bool SHIP::DelStrength(long iIdx)
@@ -1295,12 +1133,12 @@ long SHIP::AddStrength(STRENGTH *strength)
     return -1;
 }
 
-dword _cdecl SHIP::ProcessMessage(MESSAGE &message)
+uint64_t SHIP::ProcessMessage(MESSAGE &message)
 {
-    ENTITY_ID entity_id;
+    entid_t entity;
     CVECTOR cpos, cang;
     float fov;
-    long code = message.Long();
+    const auto code = message.Long();
     char str[256], str1[256], str2[256];
 
     switch (code)
@@ -1309,10 +1147,8 @@ dword _cdecl SHIP::ProcessMessage(MESSAGE &message)
         Realize(0);
         break;
     case AI_MESSAGE_SET_LAYERS:
-        message.String(sizeof(str), str);
-        sExecuteLayer = str;
-        message.String(sizeof(str), str);
-        sRealizeLayer = str;
+        ExecuteLayer = message.Long();
+        RealizeLayer = message.Long();
         break;
     case MSG_SHIP_CREATE:
         SetACharacter(message.AttributePointer());
@@ -1323,7 +1159,7 @@ dword _cdecl SHIP::ProcessMessage(MESSAGE &message)
         SetSpeed(message.Float());
         break;
     case MSG_SHIP_GET_SAIL_STATE: {
-        VDATA *pV = message.ScriptVariablePointer();
+        auto *pV = message.ScriptVariablePointer();
         pV->Set(GetSpeed());
     }
     break;
@@ -1337,32 +1173,31 @@ dword _cdecl SHIP::ProcessMessage(MESSAGE &message)
         RecalculateWorldOffset();
         break;
     case MSG_SHIP_ACTIVATE_FIRE_PLACE: {
-        dword dwFPIndex = dword(message.Long());
+        const auto dwFPIndex = static_cast<uint32_t>(message.Long());
         message.String(sizeof(str), str);
         message.String(sizeof(str1), str1);
         message.String(sizeof(str2), str2);
         // long iSoundID = message.Long();
-        float fRunTime = message.Float();
-        long iBallCharacterIndex = message.Long();
-        Assert(dwFPIndex != INVALID_ARRAY_INDEX && dwFPIndex < aFirePlaces.Size());
+        const auto fRunTime = message.Float();
+        const auto iBallCharacterIndex = message.Long();
+        Assert(dwFPIndex != INVALID_ARRAY_INDEX && dwFPIndex < aFirePlaces.size());
         aFirePlaces[dwFPIndex].Run(str, str1, iBallCharacterIndex, str2, fRunTime);
     }
     break;
     case MSG_SHIP_GET_CHARACTER_INDEX: {
-        VDATA *pVData = message.ScriptVariablePointer();
-        pVData->Set((long)GetIndex(GetACharacter()));
+        auto *pVData = message.ScriptVariablePointer();
+        pVData->Set(static_cast<long>(GetIndex(GetACharacter())));
     }
     break;
     case MSG_SHIP_GET_NUM_FIRE_PLACES: {
-        VDATA *pVData = message.ScriptVariablePointer();
-        pVData->Set((long)aFirePlaces.Size());
+        auto *pVData = message.ScriptVariablePointer();
+        pVData->Set(static_cast<long>(aFirePlaces.size()));
     }
     break;
     case MSG_SHIP_RESET_TRACK: {
-        ENTITY_ID eidTmp;
-        if (api->FindClass(&eidTmp, "ShipTracks", 0))
+        if (const auto eidTmp = EntityManager::GetEntityId("ShipTracks"))
         {
-            ShipTracks *pST = (ShipTracks *)api->GetEntityPointer(&eidTmp);
+            auto *pST = static_cast<ShipTracks *>(EntityManager::GetEntityPointer(eidTmp));
             pST->ResetTrack(this);
         }
     }
@@ -1390,48 +1225,48 @@ dword _cdecl SHIP::ProcessMessage(MESSAGE &message)
     }
     break;
     case MSG_SHIP_SETLIGHTSOFF: {
-        float fTime = message.Float();
-        bool bLigths = message.Long() != 0;
-        bool bFlares = message.Long() != 0;
-        bool bNow = message.Long() != 0;
+        const auto fTime = message.Float();
+        const auto bLigths = message.Long() != 0;
+        const auto bFlares = message.Long() != 0;
+        const auto bNow = message.Long() != 0;
         if (pShipsLights)
             pShipsLights->SetLightsOff(this, fTime, bLigths, bFlares, bNow);
     }
     break;
     case MSG_MAST_DELGEOMETRY: {
-        NODE *pNode = (NODE *)message.Pointer();
+        auto *const pNode = (NODE *)message.Pointer();
         pShipsLights->KillMast(this, pNode, true);
     }
     break;
     case MSG_SHIP_SAFE_DELETE:
         // all system which have particles - must be deleted here
-        aFirePlaces.DelAll();
+        aFirePlaces.clear();
         break;
-    // boal 20.08.06 перерисовка флага -->
+        // boal 20.08.06 перерисовка флага -->
     case MSG_SHIP_FLAG_REFRESH:
-        api->Send_Message(flag_id, "li", MSG_FLAG_DEL_GROUP, GetModelEID());
-        if (api->FindClass(&flag_id, "flag", 0))
-            api->Send_Message(flag_id, "lili", MSG_FLAG_INIT, GetModelEID(), GetNation(GetACharacter()), GetID());
+        core.Send_Message(flag_id, "li", MSG_FLAG_DEL_GROUP, GetModelEID());
+        if (flag_id = EntityManager::GetEntityId("flag"))
+            core.Send_Message(flag_id, "lili", MSG_FLAG_INIT, GetModelEID(), GetNation(GetACharacter()), GetId());
         break;
-    // boal 20.08.06 перерисовка флага <--
-    // ugeen 29.11.10 установка крена корабля по осям X и Z ->
-    case MSG_SHIP_SET_HEEL_XZ:
-        fXHeel = message.Float();
-        fZHeel = message.Float();
-        break;
-    // ugeen 29.11.10 <-- установка крена корабля по осям X и Z
-    case MSG_SHIP_TEST_MAST_FALL:
-        //			TestMastFall(message.Long());
-        break;
+        // boal 20.08.06 перерисовка флага <--
     case MSG_SHIP_LIGHTSRESET:
         UnSetLights();
         break;
-    case MSG_SHIP_DO_FAKE_FIRE:
+    case MSG_SHIP_DO_FAKE_FIRE: {
         char cBort[256];
         message.String(sizeof(cBort), cBort);
         float fRandTime = message.Float();
         FakeFire(cBort, fRandTime);
-        break;
+    }
+    break;
+    case MSG_MODEL_SET_TECHNIQUE: {
+        char sTech[256];
+        message.String(sizeof(sTech), sTech);
+        core.Send_Message(GetModelEID(), "ls", MSG_MODEL_SET_TECHNIQUE, sTech);
+        //	   MODEL * pModel = GetModel();
+        //	   NODE* pNode = pModel->GetNode(0);
+    }
+    break;
     }
     return 0;
 }
@@ -1446,11 +1281,11 @@ void SHIP::FakeFire(char *sBort, float fRandTime)
     Assert(pModel);
 
     // search cannons
-    dword dwIdx = 0;
+    uint32_t dwIdx = 0;
     while (pNode = pModel->GetNode(dwIdx))
     {
         pNode->geo->GetInfo(info);
-        for (dword i = 0; i < dword(info.nlabels); i++)
+        for (uint32_t i = 0; i < (uint32_t)info.nlabels; i++)
         {
             pNode->geo->GetLabel(i, label);
             if (strcmp(sBort, label.group_name) == 0)
@@ -1470,16 +1305,17 @@ void SHIP::FakeFire(char *sBort, float fRandTime)
                 CVECTOR vDirTemp = mRot * vDir;
                 float fDir = NormalizeAngle(atan2f(vDirTemp.x, vDirTemp.z));
 
-                api->Event("Ship_FakeFire", "ffff", vCurPos.x, vCurPos.y, vCurPos.z, fDir);
+                core.Event("Ship_FakeFire", "ffff", vCurPos.x, vCurPos.y, vCurPos.z, fDir);
             }
         }
         dwIdx++;
     }
 }
+
 void SHIP::LoadPositionFromAttributes()
 {
-    ATTRIBUTES *pAPos = GetACharacter()->FindAClass(GetACharacter(), "ship.pos");
-    ATTRIBUTES *pAAng = GetACharacter()->FindAClass(GetACharacter(), "ship.ang");
+    auto *pAPos = GetACharacter()->FindAClass(GetACharacter(), "ship.pos");
+    auto *pAAng = GetACharacter()->FindAClass(GetACharacter(), "ship.ang");
     Assert(pAPos && pAAng);
     State.vPos.x = pAPos->GetAttributeAsFloat("x");
     State.vPos.z = pAPos->GetAttributeAsFloat("z");
@@ -1493,24 +1329,23 @@ bool SHIP::Mount(ATTRIBUTES *_pAShip)
     Assert(_pAShip);
     pAShip = _pAShip;
 
-    long iIndex = GetIndex(pAShip);
+    auto iIndex = GetIndex(pAShip);
 
-    api->Event("Ship_StartLoad", "a", GetACharacter());
-    api->Event(SEA_GET_LAYERS, "i", GetID());
-    Assert(sRealizeLayer.Len() != 0 && sExecuteLayer.Len() != 0);
+    core.Event("Ship_StartLoad", "a", GetACharacter());
+    core.Event(SEA_GET_LAYERS, "i", GetId());
 
-    api->LayerAdd("sea_reflection2", GetID(), 100);
-    api->LayerAdd("rain_drops", GetID(), 100);
+    EntityManager::AddToLayer(SEA_REFLECTION2, GetId(), 100);
+    EntityManager::AddToLayer(RAIN_DROPS, GetId(), 100);
 
-    api->LayerAdd((char *)sRealizeLayer.GetBuffer(), GetID(), iShipPriorityRealize);
-    api->LayerAdd((char *)sExecuteLayer.GetBuffer(), GetID(), iShipPriorityExecute);
+    EntityManager::AddToLayer(RealizeLayer, GetId(), iShipPriorityRealize);
+    EntityManager::AddToLayer(ExecuteLayer, GetId(), iShipPriorityExecute);
 
-    api->LayerAdd("ship_cannon_trace", GetID(), iShipPriorityExecute);
+    EntityManager::AddToLayer(SHIP_CANNON_TRACE, GetId(), iShipPriorityExecute);
 
-    char *pName = GetAShip()->GetAttribute("Name");
+    auto *const pName = GetAShip()->GetAttribute("Name");
     if (!pName)
     {
-        api->Trace("SHIP::Mount : Can't find attribute name in ShipsTypes %d, char: %d, %s, %s, %s",
+        core.Trace("SHIP::Mount : Can't find attribute name in ShipsTypes %d, char: %d, %s, %s, %s",
                    GetAShip()->GetAttributeAsDword("index"), GetACharacter()->GetAttributeAsDword("index"),
                    GetACharacter()->GetAttribute("name"), GetACharacter()->GetAttribute("lastname"),
                    GetACharacter()->GetAttribute("id"));
@@ -1519,11 +1354,11 @@ bool SHIP::Mount(ATTRIBUTES *_pAShip)
         return false;
     }
 
-    strcpy(cShipIniName, pName);
+    strcpy_s(cShipIniName, pName);
 
-    // api->Trace("Create ship with type = %s", cShipIniName);
+    // core.Trace("Create ship with type = %s", cShipIniName);
 
-    ATTRIBUTES *pASpeedZ = GetACharacter()->FindAClass(GetACharacter(), "Ship.Speed.z");
+    auto *pASpeedZ = GetACharacter()->FindAClass(GetACharacter(), "Ship.Speed.z");
     float fNewSailState = (pASpeedZ) ? pASpeedZ->GetAttributeAsFloat() : 0.0f;
     ATTRIBUTES *pAShipStopped = GetACharacter()->FindAClass(GetACharacter(), "ship.stopped");
     if (pAShipStopped && pAShipStopped->GetAttributeAsDword())
@@ -1540,50 +1375,50 @@ bool SHIP::Mount(ATTRIBUTES *_pAShip)
     RecalculateWorldOffset();
     bUse = uniIDX == 0;
 
-    char temp_str[256];
-    sprintf(temp_str, "ships\\%s\\%s", cShipIniName, cShipIniName);
+    char temp_str[1024];
+    sprintf_s(temp_str, "ships\\%s\\%s", cShipIniName, cShipIniName);
 
-    api->CreateEntity(&model_id, "MODELR");
-    api->Send_Message(GetModelEID(), "ls", MSG_MODEL_LOAD_GEO, temp_str);
-    api->LayerAdd("hull_trace", GetModelEID(), 10);
-    api->LayerAdd("sun_trace", GetModelEID(), 10);
-    api->LayerAdd("mast_ship_trace", GetID(), 10);
+    model_id = EntityManager::CreateEntity("MODELR");
+    core.Send_Message(GetModelEID(), "ls", MSG_MODEL_LOAD_GEO, temp_str);
+    EntityManager::AddToLayer(HULL_TRACE, GetModelEID(), 10);
+    EntityManager::AddToLayer(SUN_TRACE, GetModelEID(), 10);
+    EntityManager::AddToLayer(MAST_SHIP_TRACE, GetId(), 10);
 
     // sails
-    if (api->FindClass(&sail_id, "sail", 0))
-        api->Send_Message(sail_id, "liil", MSG_SAIL_INIT, GetID(), GetModelEID(), GetSpeed() ? 1 : 0);
+    if (sail_id = EntityManager::GetEntityId("sail"))
+        core.Send_Message(sail_id, "liil", MSG_SAIL_INIT, GetId(), GetModelEID(), GetSpeed() ? 1 : 0);
 
     // ropes
-    if (api->FindClass(&rope_id, "rope", 0))
-        api->Send_Message(rope_id, "lii", MSG_ROPE_INIT, GetID(), GetModelEID());
+    if (rope_id = EntityManager::GetEntityId("rope"))
+        core.Send_Message(rope_id, "lii", MSG_ROPE_INIT, GetId(), GetModelEID());
 
     // flags
-    if (api->FindClass(&flag_id, "flag", 0))
-        api->Send_Message(flag_id, "lili", MSG_FLAG_INIT, GetModelEID(), GetNation(GetACharacter()), GetID());
+    if (flag_id = EntityManager::GetEntityId("flag"))
+        core.Send_Message(flag_id, "lili", MSG_FLAG_INIT, GetModelEID(), GetNation(GetACharacter()), GetId());
 
     // vants
-    if (api->FindClass(&vant_id, "vant", 0))
-        api->Send_Message(vant_id, "lii", MSG_VANT_INIT, GetID(), GetModelEID());
+    if (vant_id = EntityManager::GetEntityId("vant"))
+        core.Send_Message(vant_id, "lii", MSG_VANT_INIT, GetId(), GetModelEID());
 
-    if (api->FindClass(&vantl_id, "vantl", 0))
-        api->Send_Message(vantl_id, "lii", MSG_VANT_INIT, GetID(), GetModelEID());
+    if (vantl_id = EntityManager::GetEntityId("vantl"))
+        core.Send_Message(vantl_id, "lii", MSG_VANT_INIT, GetId(), GetModelEID());
 
-    if (api->FindClass(&vantz_id, "vantz", 0))
-        api->Send_Message(vantz_id, "lii", MSG_VANT_INIT, GetID(), GetModelEID());
+    if (vantz_id = EntityManager::GetEntityId("vantz"))
+        core.Send_Message(vantz_id, "lii", MSG_VANT_INIT, GetId(), GetModelEID());
 
     // blots
-    if (api->CreateEntity(&blots_id, "blots"))
+    if (blots_id = EntityManager::CreateEntity("blots"))
     {
-        api->Send_Message(blots_id, "lia", MSG_BLOTS_SETMODEL, GetModelEID(), GetACharacter());
-        api->LayerAdd(sRealizeLayer, blots_id, iShipPriorityRealize + 4);
-        api->LayerAdd(sExecuteLayer, blots_id, iShipPriorityExecute + 4);
+        core.Send_Message(blots_id, "lia", MSG_BLOTS_SETMODEL, GetModelEID(), GetACharacter());
+        EntityManager::AddToLayer(RealizeLayer, blots_id, iShipPriorityRealize + 4);
+        EntityManager::AddToLayer(ExecuteLayer, blots_id, iShipPriorityExecute + 4);
     }
 
     LoadShipParameters();
 
-    ENTITY_ID temp_id = GetID();
-    api->Send_Message(touch_id, "li", MSG_SHIP_CREATE, temp_id);
-    api->Send_Message(sea_id, "lic", MSG_SHIP_CREATE, temp_id,
+    const entid_t temp_id = GetId();
+    core.Send_Message(touch_id, "li", MSG_SHIP_CREATE, temp_id);
+    core.Send_Message(sea_id, "lic", MSG_SHIP_CREATE, temp_id,
                       CVECTOR(State.vPos.x + fXOffset, State.vPos.y, State.vPos.z + fZOffset));
 
     GEOS::INFO ginfo;
@@ -1593,7 +1428,7 @@ bool SHIP::Mount(ATTRIBUTES *_pAShip)
     Assert(pNode);
     pNode->geo->GetInfo(ginfo);
 
-    CalcRealBoxSize();
+    CalcRealBoxsize();
 
     State.vBoxSize.x = ginfo.boxsize.x;
     State.vBoxSize.y = ginfo.boxsize.y;
@@ -1603,10 +1438,10 @@ bool SHIP::Mount(ATTRIBUTES *_pAShip)
     SP.fWidth = State.vBoxSize.x;
     fGravity = 9.81f;
 
-    float fCapacity = (float)SP.iCapacity;
-    float fLength = (float)30;
+    const auto fCapacity = static_cast<float>(SP.iCapacity);
+    auto fLength = static_cast<float>(30);
 
-    float maxw = 10000.0f;
+    const float maxw = 10000.0f;
     float min_inertia = 0.28f;
     float max_inertia = 0.003f;
 
@@ -1622,8 +1457,8 @@ bool SHIP::Mount(ATTRIBUTES *_pAShip)
     ATTRIBUTES *pALights = GetACharacter()->FindAClass(GetACharacter(), "ship.lights");
     ATTRIBUTES *pAFlares = GetACharacter()->FindAClass(GetACharacter(), "ship.flares");
 
-    bool bLights = (pALights) ? pALights->GetAttributeAsDword() != 0 : false;
-    bool bFlares = (pAFlares) ? pAFlares->GetAttributeAsDword() != 0 : false;
+    const bool bLights = (pALights) ? pALights->GetAttributeAsDword() != 0 : false;
+    const bool bFlares = (pAFlares) ? pAFlares->GetAttributeAsDword() != 0 : false;
 
     NODE *pFonarDay = pModel->FindNode("fd");
     NODE *pFonarNight = pModel->FindNode("fn");
@@ -1644,13 +1479,12 @@ bool SHIP::Mount(ATTRIBUTES *_pAShip)
     }
 
     // Add lights and flares
-    ENTITY_ID eidTmp;
-    if (api->FindClass(&eidTmp, "shiplights", 0))
+    if (const auto eidTmp = EntityManager::GetEntityId("shiplights"))
     {
-        pShipsLights = (IShipLights *)api->GetEntityPointer(&eidTmp);
+        pShipsLights = static_cast<IShipLights *>(EntityManager::GetEntityPointer(eidTmp));
 
         pShipsLights->AddLights(this, GetModel(), bLights, bFlares);
-        pShipsLights->Execute(0);
+        pShipsLights->ProcessStage(Stage::execute, 0);
     }
     Assert(pShipsLights);
 
@@ -1674,29 +1508,29 @@ bool SHIP::Mount(ATTRIBUTES *_pAShip)
     BuildHulls();
 
     // create model upper ship if needed
-    ENTITY_ID model_uppership_id;
+    entid_t model_uppership_id;
     ATTRIBUTES *pAUpperShipModel = GetACharacter()->FindAClass(GetACharacter(), "ship.upper_model");
     if (pAUpperShipModel)
     {
         fUpperShipAY = pAUpperShipModel->GetAttributeAsFloat("ay", 0.0f);
         fUpperShipY = pAUpperShipModel->GetAttributeAsFloat("y", State.vBoxSize.y * 2.0f + 10.0f);
 
-        strcpy(temp_str, pAUpperShipModel->GetThisAttr());
+        strcpy_s(temp_str, pAUpperShipModel->GetThisAttr());
 
         bModelUpperShip = true;
-        api->CreateEntity(&model_uppership_id, "MODELR");
-        api->Send_Message(model_uppership_id, "ls", MSG_MODEL_LOAD_GEO, temp_str);
-        pModelUpperShip = (MODEL *)api->GetEntityPointer(&model_uppership_id);
+        model_uppership_id = EntityManager::CreateEntity("MODELR");
+        core.Send_Message(model_uppership_id, "ls", MSG_MODEL_LOAD_GEO, temp_str);
+        pModelUpperShip = static_cast<MODEL *>(EntityManager::GetEntityPointer(model_uppership_id));
     }
 
     // event to script
-    api->Event(SHIP_CREATE, "li", GetACharacter()->GetAttributeAsDword("index"), GetID());
-    api->Event("Ship_EndLoad", "a", GetACharacter());
+    core.Event(SHIP_CREATE, "li", GetACharacter()->GetAttributeAsDword("index"), GetId());
+    core.Event("Ship_EndLoad", "a", GetACharacter());
 
     // add to ship tracks
-    if (api->FindClass(&eidTmp, "ShipTracks", 0))
+    if (const auto eidTmp = EntityManager::GetEntityId("ShipTracks"))
     {
-        ShipTracks *pST = (ShipTracks *)api->GetEntityPointer(&eidTmp);
+        auto *pST = static_cast<ShipTracks *>(EntityManager::GetEntityPointer(eidTmp));
         if (pST)
             pST->AddShip(this);
     }
@@ -1718,7 +1552,7 @@ bool SHIP::Mount(ATTRIBUTES *_pAShip)
     return true;
 }
 
-void SHIP::CalcRealBoxSize()
+void SHIP::CalcRealBoxsize()
 {
     GEOS::INFO ginfo;
     float x1 = 1e+8f, x2 = -1e+8f, y1 = 1e+8f, y2 = -1e+8f, z1 = 1e+8f, z2 = -1e+8f;
@@ -1734,8 +1568,8 @@ void SHIP::CalcRealBoxSize()
             break;
         pN->geo->GetInfo(ginfo);
         CVECTOR vGlobPos = pN->glob_mtx.Pos();
-        CVECTOR vBC = vGlobPos + CVECTOR(ginfo.boxcenter.x, ginfo.boxcenter.y, ginfo.boxcenter.z);
-        CVECTOR vBS = CVECTOR(ginfo.boxsize.x, ginfo.boxsize.y, ginfo.boxsize.z) / 2.0f;
+        const CVECTOR vBC = vGlobPos + CVECTOR(ginfo.boxcenter.x, ginfo.boxcenter.y, ginfo.boxcenter.z);
+        const CVECTOR vBS = CVECTOR(ginfo.boxsize.x, ginfo.boxsize.y, ginfo.boxsize.z) / 2.0f;
         if (vBC.x - vBS.x < x1)
             x1 = vBC.x - vBS.x;
         if (vBC.x + vBS.x > x2)
@@ -1763,26 +1597,26 @@ void SHIP::ScanShipForFirePlaces()
     Assert(pModel);
 
     // search and add fire places
-    string sFirePlace = "fireplace";
-    string sFirePlaces = "fireplaces";
-    dword dwIdx = 0;
+    const std::string sFirePlace = "fireplace";
+    const std::string sFirePlaces = "fireplaces";
+    uint32_t dwIdx = 0;
     while (pNode = pModel->GetNode(dwIdx))
     {
         pNode->geo->GetInfo(info);
-        for (dword i = 0; i < dword(info.nlabels); i++)
+        for (uint32_t i = 0; i < static_cast<uint32_t>(info.nlabels); i++)
         {
             pNode->geo->GetLabel(i, label);
             if (sFirePlace == label.group_name || sFirePlaces == label.group_name)
             {
-                FirePlace *pFP = &aFirePlaces[aFirePlaces.Add()];
-                pFP->Init(pSea, this, label);
+                aFirePlaces.push_back(FirePlace{});
+                aFirePlaces.back().Init(pSea, this, label);
             }
         }
         dwIdx++;
     }
-    if (aFirePlaces.Size() == 0)
+    if (aFirePlaces.size() == 0)
     {
-        api->Trace("Ship %s doesn't have fire places", cShipIniName);
+        core.Trace("Ship %s doesn't have fire places", cShipIniName);
     }
 }
 
@@ -1830,7 +1664,7 @@ float SHIP::Cannon_Trace(long iBallOwner, const CVECTOR &vSrc, const CVECTOR &vD
     MODEL *pModel = GetModel();
     Assert(pModel);
 
-    long iOurIndex = GetIndex(GetACharacter());
+    const long iOurIndex = GetIndex(GetACharacter());
     if (iBallOwner == iOurIndex)
         return 2.0f;
 
@@ -1838,12 +1672,12 @@ float SHIP::Cannon_Trace(long iBallOwner, const CVECTOR &vSrc, const CVECTOR &vD
         if (!pMasts[i].bBroken)
         {
             mast_t *pM = &pMasts[i];
-            float fRes = pM->pNode->Trace(vSrc, vDst);
+            const float fRes = pM->pNode->Trace(vSrc, vDst);
 
             if (fRes <= 1.0f)
             {
-                CVECTOR v1 = vSrc + fRes * (vDst - vSrc);
-                VDATA *pV = api->Event(SHIP_MAST_DAMAGE, "llffffal", SHIP_MAST_TOUCH_BALL, pM->iMastNum, v1.x, v1.y,
+                const CVECTOR v1 = vSrc + fRes * (vDst - vSrc);
+                VDATA *pV = core.Event(SHIP_MAST_DAMAGE, "llffffaa", SHIP_MAST_TOUCH_BALL, pM->iMastNum, v1.x, v1.y,
                                        v1.z, pM->fDamage, GetACharacter(), iBallOwner);
                 pM->fDamage = Clamp(pV->GetFloat());
                 MastFall(pM);
@@ -1854,12 +1688,12 @@ float SHIP::Cannon_Trace(long iBallOwner, const CVECTOR &vSrc, const CVECTOR &vD
         if (!pHulls[i].bBroken)
         {
             hull_t *pM = &pHulls[i];
-            float fRes = pM->pNode->Trace(vSrc, vDst);
+            const float fRes = pM->pNode->Trace(vSrc, vDst);
 
             if (fRes <= 1.0f)
             {
-                CVECTOR v1 = vSrc + fRes * (vDst - vSrc);
-                VDATA *pV = api->Event(SHIP_HULL_DAMAGE, "llffffaas", SHIP_HULL_TOUCH_BALL, pM->iHullNum, v1.x, v1.y,
+                const CVECTOR v1 = vSrc + fRes * (vDst - vSrc);
+                VDATA *pV = core.Event(SHIP_HULL_DAMAGE, "llffffaas", SHIP_HULL_TOUCH_BALL, pM->iHullNum, v1.x, v1.y,
                                        v1.z, pM->fDamage, GetACharacter(), iBallOwner, pM->pNode->GetName());
                 pM->fDamage = Clamp(pV->GetFloat());
                 HullFall(pM);
@@ -1874,40 +1708,39 @@ float SHIP::Cannon_Trace(long iBallOwner, const CVECTOR &vSrc, const CVECTOR &vD
         // search nearest fire place
         float fMinDistance = 1e8f;
         long iBestIndex = -1;
-        for (dword i = 0; i < aFirePlaces.Size(); i++)
+        for (uint32_t i = 0; i < aFirePlaces.size(); i++)
             if (!aFirePlaces[i].isActive())
             {
-                float fDistance = aFirePlaces[i].GetDistance(vTemp);
+                const float fDistance = aFirePlaces[i].GetDistance(vTemp);
                 if (fDistance < fMinDistance)
                 {
                     fMinDistance = fDistance;
                     iBestIndex = i;
                 }
             }
-        api->Event(SHIP_HULL_HIT, "illffflf", GetID(), iBallOwner, iOurIndex, vTemp.x, vTemp.y, vTemp.z, iBestIndex,
+        core.Event(SHIP_HULL_HIT, "illffflf", GetId(), iBallOwner, iOurIndex, vTemp.x, vTemp.y, vTemp.z, iBestIndex,
                    fMinDistance);
-        api->Send_Message(blots_id, "lffffff", MSG_BLOTS_HIT, vTemp.x, vTemp.y, vTemp.z, vDir.x, vDir.y, vDir.z);
+        core.Send_Message(blots_id, "lffffff", MSG_BLOTS_HIT, vTemp.x, vTemp.y, vTemp.z, vDir.x, vDir.y, vDir.z);
     }
     return fRes;
 }
 
-dword SHIP::AttributeChanged(ATTRIBUTES *pAttribute)
+uint32_t SHIP::AttributeChanged(ATTRIBUTES *pAttribute)
 {
     return 0;
 }
 
-CVECTOR SHIP::GetBoxSize()
+CVECTOR SHIP::GetBoxsize() const
 {
     return State.vBoxSize;
 };
-ENTITY_ID SHIP::GetModelEID()
+entid_t SHIP::GetModelEID() const
 {
     return model_id;
 }
-MODEL *SHIP::GetModel()
+MODEL *SHIP::GetModel() const
 {
-    Assert(api->ValidateEntity(&GetModelEID()));
-    return (MODEL *)api->GetEntityPointer(&GetModelEID());
+    return static_cast<MODEL *>(EntityManager::GetEntityPointer(GetModelEID()));
 }
 CMatrix *SHIP::GetMatrix()
 {
@@ -1917,15 +1750,16 @@ void SHIP::SetMatrix(CMatrix &mtx)
 {
     GetModel()->mtx = mtx;
 }
-CVECTOR SHIP::GetAng()
+CVECTOR SHIP::GetAng() const
 {
     return State.vAng;
 }
-CVECTOR SHIP::GetPos()
+CVECTOR SHIP::GetPos() const
 {
     return CVECTOR(State.vPos.x + fXOffset, State.vPos.y, State.vPos.z + fZOffset);
 }
-void SHIP::SetPos(CVECTOR &vNewPos)
+
+void SHIP::SetPos(const CVECTOR &vNewPos)
 {
     State.vPos = vNewPos;
     if (pSea)
@@ -1963,30 +1797,30 @@ void SHIP::SetACharacter(ATTRIBUTES *pAP)
 
     if (pAP && pAP->GetAttributeAsDword("index", -1) >= 0)
     {
-        VDATA *pVDat = (VDATA *)api->GetScriptVariable("Characters");
+        VDATA *pVDat = static_cast<VDATA *>(core.GetScriptVariable("Characters"));
         if (pVDat)
-            pVDat->Set(GetID(), pAP->GetAttributeAsDword("index", 0));
+            pVDat->Set(GetId(), pAP->GetAttributeAsDword("index", 0));
     }
 
     if (bMounted)
     {
-        api->DeleteEntity(blots_id);
-        api->CreateEntity(&blots_id, "blots");
-        api->Send_Message(blots_id, "lia", MSG_BLOTS_SETMODEL, GetModelEID(), GetACharacter());
-        api->LayerAdd((char *)sRealizeLayer.GetBuffer(), blots_id, iShipPriorityRealize + 4);
-        api->LayerAdd((char *)sExecuteLayer.GetBuffer(), blots_id, iShipPriorityExecute + 4);
+        EntityManager::EraseEntity(blots_id);
+        blots_id = EntityManager::CreateEntity("blots");
+        core.Send_Message(blots_id, "lia", MSG_BLOTS_SETMODEL, GetModelEID(), GetACharacter());
+        EntityManager::AddToLayer(RealizeLayer, blots_id, iShipPriorityRealize + 4);
+        EntityManager::AddToLayer(ExecuteLayer, blots_id, iShipPriorityExecute + 4);
     }
 }
 
 void SHIP::Save(CSaveLoad *pSL)
 {
-    dword i;
+    uint32_t i;
 
     pSL->SaveAPointer("character", GetACharacter());
     pSL->SaveAPointer("ship", pAShip);
-    pSL->SaveString(sRealizeLayer);
-    pSL->SaveString(sExecuteLayer);
-    pSL->SaveString(string(cShipIniName));
+    pSL->SaveDword(RealizeLayer);
+    pSL->SaveDword(ExecuteLayer);
+    pSL->SaveString(std::string(cShipIniName));
     pSL->SaveLong(iShipPriorityExecute);
     pSL->SaveFloat(fGravity);
     pSL->SaveFloat(fSailState);
@@ -2018,7 +1852,7 @@ void SHIP::Save(CSaveLoad *pSL)
     pSL->SaveBuffer((const char *)&State, sizeof(State));
 
     pSL->SaveLong(iNumMasts);
-    for (i = 0; i < (dword)iNumMasts; i++)
+    for (i = 0; i < static_cast<uint32_t>(iNumMasts); i++)
     {
         pSL->SaveVector(pMasts[i].vSrc);
         pSL->SaveVector(pMasts[i].vDst);
@@ -2028,7 +1862,7 @@ void SHIP::Save(CSaveLoad *pSL)
     }
 
     pSL->SaveLong(iNumHulls);
-    for (i = 0; i < (dword)iNumHulls; i++)
+    for (i = 0; i < (uint32_t)iNumHulls; i++)
     {
         pSL->SaveVector(pHulls[i].vSrc);
         pSL->SaveVector(pHulls[i].vDst);
@@ -2037,24 +1871,22 @@ void SHIP::Save(CSaveLoad *pSL)
         pSL->SaveFloat(pHulls[i].fDamage);
     }
 
-    pSL->SaveDword(aFirePlaces.Size());
-    for (i = 0; i < aFirePlaces.Size(); i++)
+    pSL->SaveDword(aFirePlaces.size());
+    for (i = 0; i < aFirePlaces.size(); i++)
         aFirePlaces[i].Save(pSL);
-    pSL->SaveFloat(fXHeel);
-    pSL->SaveFloat(fZHeel);
 }
 
 void SHIP::Load(CSaveLoad *pSL)
 {
-    dword i;
+    uint32_t i;
 
     SetACharacter(pSL->LoadAPointer("character"));
     pAShip = pSL->LoadAPointer("ship");
 
-    sRealizeLayer = pSL->LoadString();
-    sExecuteLayer = pSL->LoadString();
-    string sTmp = pSL->LoadString();
-    strcpy(cShipIniName, sTmp.GetBuffer());
+    RealizeLayer = pSL->LoadDword();
+    ExecuteLayer = pSL->LoadDword();
+    const std::string sTmp = pSL->LoadString();
+    strcpy_s(cShipIniName, sTmp.c_str());
     pSL->LoadLong();
     fGravity = pSL->LoadFloat();
     fSailState = pSL->LoadFloat();
@@ -2063,9 +1895,9 @@ void SHIP::Load(CSaveLoad *pSL)
 
     uniIDX = pSL->LoadLong();
     bUse = pSL->LoadDword() != 0;
-    pSL->Load2Buffer((char *)&ShipPoints[0][0]);
+    pSL->Load2Buffer(&ShipPoints[0][0]);
     vSpeedAccel = pSL->LoadVector();
-    pSL->Load2Buffer((char *)&SP);
+    pSL->Load2Buffer(&SP);
     vPos = pSL->LoadVector();
     vAng = pSL->LoadVector();
     fWaterLine = pSL->LoadFloat();
@@ -2084,23 +1916,23 @@ void SHIP::Load(CSaveLoad *pSL)
     bVisible = pSL->LoadDword() != 0;
     vDeadDir = pSL->LoadVector();
     vCurDeadDir = pSL->LoadVector();
-    pSL->Load2Buffer((char *)&vKeelContour[0]);
+    pSL->Load2Buffer(&vKeelContour[0]);
     bShip2Strand = pSL->LoadDword() != 0;
     bMounted = pSL->LoadDword() != 0;
     bKeelContour = pSL->LoadDword() != 0;
     bPerkTurnActive = pSL->LoadDword() != 0;
     fInitialPerkAngle = pSL->LoadFloat();
     fResultPerkAngle = pSL->LoadFloat();
-    pSL->Load2Buffer((char *)&Strength[0]);
+    pSL->Load2Buffer(&Strength[0]);
     bSetLightAndFog = pSL->LoadDword() != 0;
     dwSaveAmbient = pSL->LoadDword();
     dwSaveFogColor = pSL->LoadDword();
-    pSL->Load2Buffer((char *)&saveLight);
-    pSL->Load2Buffer((char *)&State);
+    pSL->Load2Buffer(&saveLight);
+    pSL->Load2Buffer(&State);
 
     iNumMasts = pSL->LoadLong();
-    // pMasts = NEW mast_t[iNumMasts];
-    for (i = 0; i < (dword)iNumMasts; i++)
+    // pMasts = new mast_t[iNumMasts];
+    for (i = 0; i < static_cast<uint32_t>(iNumMasts); i++)
     {
         pMasts[i].vSrc = pSL->LoadVector();
         pMasts[i].vDst = pSL->LoadVector();
@@ -2110,7 +1942,7 @@ void SHIP::Load(CSaveLoad *pSL)
     }
 
     iNumHulls = pSL->LoadLong();
-    for (i = 0; i < (dword)iNumHulls; i++)
+    for (i = 0; i < (uint32_t)iNumHulls; i++)
     {
         pHulls[i].vSrc = pSL->LoadVector();
         pHulls[i].vDst = pSL->LoadVector();
@@ -2119,16 +1951,14 @@ void SHIP::Load(CSaveLoad *pSL)
         pHulls[i].fDamage = pSL->LoadFloat();
     }
 
-    dword dwNum = pSL->LoadDword();
+    uint32_t dwNum = pSL->LoadDword();
     for (i = 0; i < dwNum; i++)
     {
         aFirePlaces[i].Load(pSL);
         if (aFirePlaces[i].isActive())
-            api->Event(SHIP_LOAD_SHIPACTIVATEFIREPLACE, "lllf", GetIndex(GetACharacter()),
+            core.Event(SHIP_LOAD_SHIPACTIVATEFIREPLACE, "lllf", GetIndex(GetACharacter()),
                        aFirePlaces[i].GetBallCharacterIndex(), i, aFirePlaces[i].GetRunTime());
     }
-    fXHeel = pSL->LoadFloat();
-    fZHeel = pSL->LoadFloat();
 
     ZERO(ShipPoints);
 }

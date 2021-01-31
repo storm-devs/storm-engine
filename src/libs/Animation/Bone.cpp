@@ -9,8 +9,9 @@
 //============================================================================================
 
 #include "Bone.h"
-#include <memory.h>
 
+#include "core.h"
+#include "storm_assert.h"
 #include "vmodule_api.h"
 
 //============================================================================================
@@ -19,29 +20,25 @@
 
 Bone::Bone()
 {
-    parent = null;
-    ang = null;
-    pos = null;
+    parent = nullptr;
+    ang = nullptr;
+    pos = nullptr;
     numFrames = 0;
 }
 
 Bone::~Bone()
 {
-    if (ang)
-        delete ang;
-    if (pos)
-        delete pos;
+    delete ang;
+    delete pos;
 }
 
 //Сказать сколько будет кадров анимации
 void Bone::SetNumFrames(long num, CVECTOR &sPos, bool isRoot)
 {
-    if (ang)
-        delete ang;
-    if (pos)
-        delete pos;
-    ang = null;
-    pos = null;
+    delete ang;
+    delete pos;
+    ang = nullptr;
+    pos = nullptr;
     numFrames = num;
     if (numFrames <= 0)
     {
@@ -49,16 +46,16 @@ void Bone::SetNumFrames(long num, CVECTOR &sPos, bool isRoot)
         return;
     }
 #ifdef ANI_COMPRESS_ENABLE
-    ang = NEW COMP_QUATERNION[num];
+    ang = new COMP_QUATERNION[num];
     memset(ang, 0, numFrames * sizeof(ang[0]));
 #else
-    ang = NEW D3DXQUATERNION[num];
+    ang = new D3DXQUATERNION[num];
     memset(ang, 0, numFrames * sizeof(ang[0]));
 #endif
 
     if (isRoot)
     {
-        pos = NEW CVECTOR[num];
+        pos = new CVECTOR[num];
         memset(pos, 0, numFrames * sizeof(CVECTOR));
     }
     pos0 = sPos;
@@ -89,18 +86,18 @@ void Bone::SetAngles(const D3DXQUATERNION *aArray, long numAng)
     Assert(ang);
     for (long i = 0; i < numAng; i++)
     {
-        float x = Clamp(aArray[i].x, "Animation is break: qt.x < -1.0f or qt.x > 1.0f !!!");
-        float y = Clamp(aArray[i].y, "Animation is break: qt.y < -1.0f or qt.y > 1.0f !!!");
-        float z = Clamp(aArray[i].z, "Animation is break: qt.z < -1.0f or qt.z > 1.0f !!!");
-        float w = Clamp(aArray[i].w, "Animation is break: qt.w < -1.0f or qt.w > 1.0f !!!");
-        x = float(asin(x) / (PI * 0.5)) * 32767.0f;
-        y = float(asin(y) / (PI * 0.5)) * 32767.0f;
-        z = float(asin(z) / (PI * 0.5)) * 32767.0f;
-        w = float(asin(w) / (PI * 0.5)) * 32767.0f;
-        ang[i].x = short(long(x));
-        ang[i].y = short(long(y));
-        ang[i].z = short(long(z));
-        ang[i].w = short(long(w));
+        auto x = Clamp(aArray[i].x, "Animation is break: qt.x < -1.0f or qt.x > 1.0f !!!");
+        auto y = Clamp(aArray[i].y, "Animation is break: qt.y < -1.0f or qt.y > 1.0f !!!");
+        auto z = Clamp(aArray[i].z, "Animation is break: qt.z < -1.0f or qt.z > 1.0f !!!");
+        auto w = Clamp(aArray[i].w, "Animation is break: qt.w < -1.0f or qt.w > 1.0f !!!");
+        x = static_cast<float>(asin(x) / (PI * 0.5)) * 32767.0f;
+        y = static_cast<float>(asin(y) / (PI * 0.5)) * 32767.0f;
+        z = static_cast<float>(asin(z) / (PI * 0.5)) * 32767.0f;
+        w = static_cast<float>(asin(w) / (PI * 0.5)) * 32767.0f;
+        ang[i].x = static_cast<short>(static_cast<long>(x));
+        ang[i].y = static_cast<short>(static_cast<long>(y));
+        ang[i].z = static_cast<short>(static_cast<long>(z));
+        ang[i].w = static_cast<short>(static_cast<long>(w));
     }
 }
 
@@ -136,7 +133,7 @@ inline void Bone::GetFrame(long f, D3DXQUATERNION &qt)
 
 inline float Bone::Clamp(float v, const char *str)
 {
-    bool isErr = false;
+    auto isErr = false;
     if (v < -1.0f)
     {
         v = -1.0f;
@@ -148,7 +145,7 @@ inline float Bone::Clamp(float v, const char *str)
         isErr = true;
     }
     if (isErr && str)
-        _CORE_API->Trace(str);
+        core.Trace(str);
     return v;
 }
 
@@ -159,7 +156,7 @@ void Bone::BuildStartMatrix()
 {
     if (numFrames == 0 || !ang)
         return;
-    CMatrix inmtx;
+    const CMatrix inmtx;
     D3DXQUATERNION a;
     GetFrame(0, a);
     D3DXMatrixRotationQuaternion(inmtx, &a);
@@ -174,15 +171,13 @@ void Bone::BuildStartMatrix()
 //Работа с костью
 //--------------------------------------------------------------------------------------------
 
-#include "AnimationServiceImp.h"
-
 //Добавить кадры анимации
 void Bone::BlendFrame(long frame, float kBlend, D3DXQUATERNION &res)
 {
     if (numFrames <= 0)
         return;
-    long f0 = frame;
-    long f1 = frame + 1;
+    const auto f0 = frame;
+    const auto f1 = frame + 1;
     if (f0 >= numFrames || f1 >= numFrames)
     {
         GetFrame(numFrames - 1, res);

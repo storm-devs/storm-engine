@@ -2,6 +2,7 @@
 #define __GEOMETRY_H__
 
 #include "geos.h"
+#include "service.h"
 #include "vmodule_api.h"
 
 class ANIMATION
@@ -13,6 +14,7 @@ class ANIMATION
 };
 
 typedef void *(*VERTEX_TRANSFORM)(void *vb, long startVrt, long nVerts, long totVerts);
+
 class VGEOMETRY : public SERVICE
 {
   public:
@@ -27,7 +29,7 @@ class VGEOMETRY : public SERVICE
 
     virtual ~VGEOMETRY(){};
     virtual GEOS *CreateGeometry(const char *file_name, const char *light_file_name, long flags,
-                                 const char *lmPath = 0) = 0;
+                                 const char *lmPath = nullptr) = 0;
     virtual void DeleteGeometry(GEOS *) = 0;
     virtual ANIMATION *LoadAnimation(const char *anim) = 0;
     virtual void SetTechnique(const char *name) = 0;

@@ -1,26 +1,25 @@
 #ifndef _TIMER_H_
 #define _TIMER_H_
 
-#ifndef _XBOX
-#include <windows.h>
-#else
-#include <xtl.h>
-#endif
+#include <Windows.h>
 
+#define USE_HIGH_FREQUENCY
 #define FILTER_SIZE 16
+#include <cstdint>
+
 class TIMER
 {
   public:
-    TIMER()
+    TIMER() : FixedDeltaValue(0), Previous_Time(0), fDeltaTime(0)
     {
+#ifdef USE_HIGH_FREQUENCY
         LARGE_INTEGER liFreq;
         QueryPerformanceFrequency(&liFreq);
         fSecondsPerTick = 1.0f / liFreq.QuadPart;
         QueryPerformanceCounter(&liPrevTime);
-
-        PCFreq = 0.0;
-        CounterStart = 0;
-
+#else
+        Previous_Time = GetTickCount();
+#endif
         Delta_Time = 20;
         rDelta_Time = Delta_Time;
         fps = 0;
@@ -32,34 +31,36 @@ class TIMER
         ADT_ON = true;
         ADT_val = 10;
     };
-
     bool FixedDelta;
-    dword FixedDeltaValue;
+    uint32_t FixedDeltaValue;
     bool Ring;
+#ifdef USE_HIGH_FREQUENCY
     float fSecondsPerTick;
     LARGE_INTEGER liPrevTime;
-
-    dword Previous_Time;
-    dword Delta_Time;
+#endif
+    uint32_t Previous_Time;
+    uint32_t Delta_Time;
     float fDeltaTime;
-    dword rDelta_Time;
-    dword fps;
-    dword fps_count;
-    dword fps_time;
-    dword ADT;
+    uint32_t rDelta_Time;
+    uint32_t fps;
+    uint32_t fps_count;
+    uint32_t fps_time;
+    uint32_t ADT;
     float ADT_val;
     bool ADT_ON;
-
-    double PCFreq;
-    __int64 CounterStart;
-
-    dword Run()
+    uint32_t Run()
     {
+#ifdef USE_HIGH_FREQUENCY
         LARGE_INTEGER liCurTime;
         QueryPerformanceCounter(&liCurTime);
         fDeltaTime = 1000.0f * (liCurTime.QuadPart - liPrevTime.QuadPart) * fSecondsPerTick;
         Delta_Time = long(fDeltaTime);
-
+#else
+        uint32_t Current_Time;
+        Current_Time = GetTickCount();
+        Delta_Time = Current_Time - Previous_Time;
+        rDelta_Time = Delta_Time;
+#endif
         rDelta_Time = Delta_Time;
         if (Delta_Time > 100)
         {
@@ -77,8 +78,11 @@ class TIMER
         }
         else
             Ring = false;
-
+#ifdef USE_HIGH_FREQUENCY
         liPrevTime = liCurTime;
+#else
+        Previous_Time = Current_Time;
+#endif
 
         if (Delta_Time == 0)
             Delta_Time = 1;
@@ -87,7 +91,7 @@ class TIMER
         return Delta_Time;
     };
 
-    dword GetDeltaTime()
+    uint32_t GetDeltaTime()
     {
         if (FixedDelta)
             return FixedDeltaValue;
@@ -105,24 +109,6 @@ class TIMER
             FixedDeltaValue = DeltaTime;
             FixedDelta = true;
         }
-    }
-
-    void StartCounter()
-    {
-        LARGE_INTEGER li;
-        QueryPerformanceFrequency(&li);
-
-        PCFreq = double(li.QuadPart) / 1000000.0; // in microseconds
-
-        QueryPerformanceCounter(&li);
-        CounterStart = li.QuadPart;
-    }
-
-    double GetCounter()
-    {
-        LARGE_INTEGER li;
-        QueryPerformanceCounter(&li);
-        return double(li.QuadPart - CounterStart) / PCFreq;
     }
 };
 #endif

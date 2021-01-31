@@ -1,7 +1,7 @@
 #ifndef _MODELR_H_
 #define _MODELR_H_
 
-#include "dx8render.h"
+#include "dx9render.h"
 #include "geometry.h"
 #include "model.h"
 
@@ -14,7 +14,7 @@ class NODER : public NODE
     bool isReleaed;
 
     static long depth, node;
-    long idGeoGroup; // id of "geometry" string
+    uintptr_t idGeoGroup; // id of "geometry" string
     char technique[256], name[256];
 
     // local radius and center of geometry
@@ -30,10 +30,10 @@ class NODER : public NODE
     CVECTOR center;
 
     static VGEOMETRY *gs;
-    static VDX8RENDER *rs;
+    static VDX9RENDER *rs;
 
-    bool Init(const char *lightPath, const char *pname, const char *oname, CMatrix &m, CMatrix &globm, NODER *par,
-              const char *lmPath);
+    bool Init(const char *lightPath, const char *pname, const char *oname, const CMatrix &m, const CMatrix &globm,
+              NODER *par, const char *lmPath) override;
     NODER();
     ~NODER();
     void Draw();
@@ -47,11 +47,11 @@ class NODER : public NODE
     // unlink node
     NODE *Unlink();
     // unlink node to model
-    ENTITY_ID Unlink2Model();
+    entid_t Unlink2Model();
     // link node to node
     void Link(NODE *node);
     // link model to node
-    void Link(ENTITY_ID model, bool transform = true);
+    void Link(entid_t model, bool transform = true);
 
     void SetTechnique(const char *name);
     const char *GetTechnique();
@@ -62,8 +62,7 @@ class NODER : public NODE
     void SetMaxViewDist(float fDist);
 };
 
-//#define MODEL_ANI_MAXBUFFERS	16
-#define MODEL_ANI_MAXBUFFERS 64
+#define MODEL_ANI_MAXBUFFERS 16
 
 class MODELR : public MODEL
 {
@@ -75,7 +74,7 @@ class MODELR : public MODEL
         long vb;
     };
 
-    VDX8RENDER *rs;
+    VDX9RENDER *rs;
     VGEOMETRY *GeometyService;
     Animation *ani;
     float aniPos[ANI_MAX_ACTIONS];
@@ -100,10 +99,27 @@ class MODELR : public MODEL
     MODELR();
     virtual ~MODELR();
     bool Init();
-    void Realize(dword Delta_Time);
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    void Realize(uint32_t Delta_Time);
+    uint64_t ProcessMessage(MESSAGE &message);
     void LostRender();
     void RestoreRender();
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        // case Stage::execute:
+        //	Execute(delta); break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+        case Stage::lost_render:
+            LostRender();
+            break;
+        case Stage::restore_render:
+            RestoreRender();
+            break;
+        }
+    }
 
     virtual NODE *GetNode(long n);
     virtual NODE *FindNode(const char *cNodeName);
@@ -112,20 +128,16 @@ class MODELR : public MODEL
 
     virtual float Trace(const CVECTOR &src, const CVECTOR &dst);
     virtual const char *GetCollideMaterialName();
-    virtual bool GetCollideTriangle(Triangle &triangle);
+    virtual bool GetCollideTriangle(TRIANGLE &triangle);
     virtual bool Clip(const PLANE *planes, long nplanes, const CVECTOR &center, float radius, ADD_POLYGON_FUNC addpoly);
 
     virtual NODE *GetCollideNode();
 
   protected:
     bool useBlend;
-    dword blendTime, passedTime;
+    uint32_t blendTime, passedTime;
     char blendTechnique[128];
     float alpha1, alpha2;
 };
-
-// API_MODULE_START("geometry")
-//	CREATE_CLASS(0,MODELR)
-// API_MODULE_END
 
 #endif

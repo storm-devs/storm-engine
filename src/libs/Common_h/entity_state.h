@@ -1,57 +1,36 @@
 #ifndef _ENTITY_STATE_H_
 #define _ENTITY_STATE_H_
 
-#ifndef _XBOX
-#include <windows.h>
-#else
-#include <xtl.h>
-#endif
-#include "d_types.h"
+#include <Windows.h>
+#include <cstdint>
 
 class ENTITY_STATE_GEN
 {
   public:
-    ENTITY_STATE_GEN(){};
-    virtual ~ENTITY_STATE_GEN(){};
-    virtual void _cdecl SetState(char *Format, ...){};
+    virtual ~ENTITY_STATE_GEN() = default;
+
+    virtual void _cdecl SetState(const char *Format, ...) = 0;
 };
 
 class ENTITY_STATE
 {
   public:
     ENTITY_STATE(){};
+
     virtual ~ENTITY_STATE(){};
-    virtual byte Byte()
-    {
-        return 0;
-    };
-    virtual word Word()
-    {
-        return 0;
-    };
-    virtual long Long()
-    {
-        return 0;
-    };
-    virtual dword Dword()
-    {
-        return 0;
-    };
-    virtual float Float()
-    {
-        return 0;
-    };
-    virtual double Double()
-    {
-        return 0;
-    };
-    virtual char *Pointer()
-    {
-        return null;
-    };
-    virtual void String(dword buffer_size, char *buffer){};
-    virtual void MemoryBlock(dword memsize, char *buffer){};
-    virtual void Struct(dword sizeofstruct, char *s){};
+    virtual uint8_t Byte() = 0;
+    virtual uint16_t Word() = 0;
+    virtual long Long() = 0;
+    virtual uint32_t Dword() = 0;
+    virtual float Float() = 0;
+    virtual double Double() = 0;
+    virtual char *Pointer() = 0;
+
+    virtual void String(uint32_t buffer_size, char *buffer) = 0;
+
+    virtual void MemoryBlock(uint32_t memsize, char *buffer) = 0;
+
+    virtual void Struct(uint32_t sizeofstruct, char *s) = 0;
 };
 
 #endif

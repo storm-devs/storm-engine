@@ -6,8 +6,8 @@
 class S_EVENTMSG
 {
   public:
-    DWORD nTime;
-    DWORD nPeriod;
+    uint32_t nTime;
+    uint32_t nPeriod;
 
   public:
     MESSAGE_SCRIPT *pMessageClass;
@@ -18,12 +18,12 @@ class S_EVENTMSG
     {
         bInvalide = false;
         bProcess = false;
-        pMessageClass = 0;
+        pMessageClass = nullptr;
         nTime = 0;
         nPeriod = 0;
-        pEventName = 0;
+        pEventName = nullptr;
     };
-    S_EVENTMSG(char *_name, MESSAGE_SCRIPT *_pc, DWORD _period)
+    S_EVENTMSG(const char *_name, MESSAGE_SCRIPT *_pc, uint32_t _period)
     {
         bInvalide = false;
         bProcess = false;
@@ -31,8 +31,9 @@ class S_EVENTMSG
         nTime = 0;
         nPeriod = _period;
 
-        pEventName = NEW char[strlen(_name) + 1];
-        strcpy(pEventName, _name);
+        const auto len = strlen(_name) + 1;
+        pEventName = new char[len];
+        strcpy_s(pEventName, len, _name);
     };
     ~S_EVENTMSG()
     {
@@ -41,7 +42,7 @@ class S_EVENTMSG
         if (pEventName)
             delete pEventName;
     };
-    bool ProcessTime(DWORD _DeltaTime)
+    bool ProcessTime(uint32_t _DeltaTime)
     {
         nTime += _DeltaTime;
         bProcess = true;

@@ -1,6 +1,6 @@
 project(island)
 
-add_library(${PROJECT_NAME} MODULE
+add_library(${PROJECT_NAME} STATIC
 	Foam.cpp
 	Foam.h
 	ISLAND.cpp

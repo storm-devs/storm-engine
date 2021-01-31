@@ -1,32 +1,33 @@
-#ifndef _VMODULE_API_H_
-#define _VMODULE_API_H_
+#pragma once
+#include <vector>
 
-#include "exs.h"
-#include "memop.h"
-#include "vapi.h"
+/* TODO: REMOVE THIS.... */
+constexpr uint32_t MakeHashValue(const char *string)
+{
+    uint32_t hval = 0;
+
+    while (*string != 0)
+    {
+        auto v = *string++;
+        if ('A' <= v && v <= 'Z')
+            v += 'a' - 'A';
+
+        hval = (hval << 4) + static_cast<unsigned long>(v);
+        const uint32_t g = hval & (static_cast<unsigned long>(0xf) << (32 - 4));
+        if (g != 0)
+        {
+            hval ^= g >> (32 - 8);
+            hval ^= g;
+        }
+    }
+    return hval;
+}
 
 class VMA;
 
-// dll import func definition
-#define DLL_MODULE_API_FUNCTION __declspec(dllexport) VMA *_cdecl
-typedef VMA *(__cdecl *DLLAPIFUNC)(VAPI *, VSYSTEM_API *);
-
-#ifdef _ENGINE_IN_
-
-extern VMA *_pModuleClassRoot;
-extern VAPI *_CORE_API;
-extern VSYSTEM_API *_VSYSTEM_API;
-extern VAPI *api;
-extern VFILE_SERVICE *fio;
-#else
-
-DLL_MODULE_API_FUNCTION DMAInterface(); // import func declaration for dll module
-extern VAPI *_CORE_API;
-extern VAPI *api;
-extern VSYSTEM_API *_VSYSTEM_API;
-extern VFILE_SERVICE *fio;
-
-#endif
+// extern VMA* _pModuleClassRoot;
+inline std::vector<VMA *> _pModuleClassRoot;
+// extern VSYSTEM_API* _VSYSTEM_API;
 
 class VMA
 {
@@ -36,27 +37,29 @@ class VMA
     long nReference;
 
   public:
-    VMA()
+    VMA() : pNext(nullptr)
     {
         nReference = 0;
         nHash = 0;
+        _pModuleClassRoot.push_back(this);
         // pNext = _pModuleClassRoot;
         //_pModuleClassRoot = this;
     };
-    VMA *Next()
+    VMA *Next() const
     {
         return pNext;
     }
+
     virtual ~VMA(){};
     long Build_Version()
     {
-        return ENGINE_VERSION;
+        return -1;
     };
     void SetHash(long _hash)
     {
         nHash = _hash;
     }
-    long GetHash()
+    long GetHash() const
     {
         return nHash;
     }
@@ -68,13 +71,13 @@ class VMA
     {
         return false;
     }
-    virtual char *GetName()
+    virtual const char *GetName()
     {
-        return null;
+        return nullptr;
     }
     virtual void *CreateClass()
     {
-        return null;
+        return nullptr;
     }
     virtual void RefDec()
     {
@@ -94,87 +97,33 @@ class VMA
     }
 };
 
-#ifndef _ENGINE_IN_
-#define INTERFACE_FUNCTION                                                                                             \
-    VMA *_pModuleClassRoot = 0;                                                                                        \
-    VAPI *_CORE_API;                                                                                                   \
-    VAPI *api;                                                                                                         \
-    VFILE_SERVICE *fio;                                                                                                \
-    VSYSTEM_API *_VSYSTEM_API;                                                                                         \
-    extern "C" DLL_MODULE_API_FUNCTION _cdecl DMAInterface(VAPI *api_PTR, VSYSTEM_API *sapi_PTR)                       \
-    {                                                                                                                  \
-        _CORE_API = api_PTR;                                                                                           \
-        api = api_PTR;                                                                                                 \
-        fio = api_PTR->fio;                                                                                            \
-        _VSYSTEM_API = sapi_PTR;                                                                                       \
-        return _pModuleClassRoot;                                                                                      \
-    }                                                                                                                  \
-    void *_cdecl operator new(size_t size)                                                                             \
-    {                                                                                                                  \
-        return _CORE_API->MemAllocate(size);                                                                           \
-    }                                                                                                                  \
-    void _cdecl operator delete(void *block_ptr)                                                                       \
-    {                                                                                                                  \
-        _CORE_API->MemFree(block_ptr);                                                                                 \
-    }                                                                                                                  \
-    void *_cdecl resize(void *block_ptr, size_t size)                                                                  \
-    {                                                                                                                  \
-        return _CORE_API->MemReallocate(block_ptr, size);                                                              \
-    } /**/                                                                                                             \
-    void *_cdecl operator new(size_t size, char *p, unsigned long n)                                                   \
-    {                                                                                                                  \
-        return _CORE_API->MemAllocate(size, p, n);                                                                     \
-    }                                                                                                                  \
-    void _cdecl operator delete(void *block_ptr, char *p, unsigned long n)                                             \
-    {                                                                                                                  \
-        _CORE_API->MemFree(block_ptr);                                                                                 \
-    }                                                                                                                  \
-    void *_cdecl resize(void *block_ptr, size_t size, char *p, unsigned long n)                                        \
-    {                                                                                                                  \
-        return _CORE_API->MemReallocate(block_ptr, size, p, n);                                                        \
-    }
-#else
-#define INTERFACE_FUNCTION
-#endif
 #define CREATE_CLASS(a)                                                                                                \
     class a##vmacd : public VMA                                                                                        \
     {                                                                                                                  \
       public:                                                                                                          \
-        a##vmacd(VMA *&_pR)                                                                                            \
-        {                                                                                                              \
-            pNext = _pR;                                                                                               \
-            _pR = this;                                                                                                \
-        };                                                                                                             \
-        char *GetName()                                                                                                \
+        const char *GetName()                                                                                          \
         {                                                                                                              \
             return #a;                                                                                                 \
         }                                                                                                              \
         void *CreateClass()                                                                                            \
         {                                                                                                              \
             nReference++;                                                                                              \
-            return NEW a;                                                                                              \
+            return new a;                                                                                              \
         }                                                                                                              \
-    };                                                                                                                 \
-    a##vmacd a##vmaci(_pModuleClassRoot);
+    } a##vmaci;
 #define CREATE_SERVICE(a)                                                                                              \
     class a##vmacd : public VMA                                                                                        \
     {                                                                                                                  \
       public:                                                                                                          \
-        a *pService;                                                                                                   \
-        a##vmacd(VMA *&_pR)                                                                                            \
-        {                                                                                                              \
-            pNext = _pR;                                                                                               \
-            _pR = this;                                                                                                \
-            pService = 0;                                                                                              \
-        };                                                                                                             \
-        char *GetName()                                                                                                \
+        a *pService = 0;                                                                                               \
+        const char *GetName()                                                                                          \
         {                                                                                                              \
             return #a;                                                                                                 \
         }                                                                                                              \
         void *CreateClass()                                                                                            \
         {                                                                                                              \
             if (pService == 0)                                                                                         \
-                pService = NEW a;                                                                                      \
+                pService = new a;                                                                                      \
             nReference++;                                                                                              \
             return pService;                                                                                           \
         }                                                                                                              \
@@ -189,29 +138,21 @@ class VMA
                 delete pService;                                                                                       \
             pService = 0;                                                                                              \
         };                                                                                                             \
-    };                                                                                                                 \
-    a##vmacd a##vmaci(_pModuleClassRoot);
+    } a##vmaci;
 #define CREATE_SCRIPTLIBRIARY(a)                                                                                       \
     class a##vmacd : public VMA                                                                                        \
     {                                                                                                                  \
       public: /*a * pLibraryInitClass;*/                                                                               \
-        a##vmacd(VMA *&_pR)                                                                                            \
-        {                                                                                                              \
-            pNext = _pR;                                                                                               \
-            _pR = this; /*pLibraryInitClass = 0;*/                                                                     \
-        };                                                                                                             \
-        char *GetName()                                                                                                \
+        const char *GetName()                                                                                          \
         {                                                                                                              \
             return #a;                                                                                                 \
         }                                                                                                              \
         void *CreateClass()                                                                                            \
-        { /*if(pLibraryInitClass == 0) pLibraryInitClass = NEW a; nReference++; return pLibraryInitClass;*/            \
-            return NEW a;                                                                                              \
+        { /*if(pLibraryInitClass == 0) pLibraryInitClass = new a; nReference++; return pLibraryInitClass;*/            \
+            return new a;                                                                                              \
         }                                                                                                              \
         bool ScriptLibriary()                                                                                          \
         {                                                                                                              \
             return true;                                                                                               \
         } /*void Clear(){nReference = 0; if(pLibraryInitClass) delete pLibraryInitClass; pLibraryInitClass = 0;}*/;    \
-    };                                                                                                                 \
-    a##vmacd a##vmaci(_pModuleClassRoot);
-#endif
+    } a##vmaci;

@@ -1,9 +1,9 @@
 #ifndef _BATTLE_MANSIGN_H
 #define _BATTLE_MANSIGN_H
 
-#include "..\bi_defines.h"
-#include "templates\array.h"
-#include "templates\string.h"
+#include "../bi_defines.h"
+#include <string>
+#include <vector>
 
 #define MAX_MAN_QUANTITY 4
 
@@ -12,20 +12,20 @@ class BIManCommandList;
 class BIManSign
 {
   public:
-    BIManSign(ENTITY_ID &BIEntityID, VDX8RENDER *pRS);
+    BIManSign(entid_t BIEntityID, VDX9RENDER *pRS);
     ~BIManSign();
 
     void Draw();
     void Init(ATTRIBUTES *pRoot, ATTRIBUTES *pA);
 
-    long AddTexture(const char *pcTextureName, long nCols, long nRows);
+    size_t AddTexture(const char *pcTextureName, long nCols, long nRows) const;
 
     void Recollect();
     void SetUpdate()
     {
         m_bMakeUpdate = true;
     }
-    bool IsActive();
+    bool IsActive() const;
     void SetActive(bool bActive);
     void MakeControl();
     void ExecuteCommand(long command);
@@ -34,19 +34,21 @@ class BIManSign
     void Release();
     long CalculateManQuantity();
     void UpdateBuffers(long nShipQ);
-    void FillIndexBuffer();
+    void FillIndexBuffer() const;
     void FillVertexBuffer();
-    long WriteSquareToVBuff(BI_COLOR_VERTEX *pv, FRECT &uv, dword color, BIFPOINT &center, FPOINT &size);
-    long WriteSquareToVBuffWithProgress(BI_COLOR_VERTEX *pv, FRECT &uv, dword color, BIFPOINT &center, FPOINT &size,
-                                        float fClampUp, float fClampDown, float fClampLeft, float fClampRight);
-    void UpdateCommandList();
+    long WriteSquareToVBuff(BI_COLOR_VERTEX *pv, const FRECT &uv, uint32_t color, const BIFPOINT &center,
+                            const FPOINT &size);
+    long WriteSquareToVBuffWithProgress(BI_COLOR_VERTEX *pv, const FRECT &uv, uint32_t color, const BIFPOINT &center,
+                                        const FPOINT &size, float fClampUp, float fClampDown, float fClampLeft,
+                                        float fClampRight);
+    void UpdateCommandList() const;
 
-    long GetCurrentCommandTopLine();
-    long GetCurrentCommandCharacterIndex();
-    long GetCurrentCommandMode();
+    long GetCurrentCommandTopLine() const;
+    long GetCurrentCommandCharacterIndex() const;
+    long GetCurrentCommandMode() const;
 
-    float GetProgressManHP(long nIdx);
-    float GetProgressManEnergy(long nIdx);
+    float GetProgressManHP(long nIdx) const;
+    float GetProgressManEnergy(long nIdx) const;
     float GetProgressGunChargeMax(long nIdx);
     float GetProgressGunCharge(long nIdx);
 
@@ -54,17 +56,17 @@ class BIManSign
 
     void CheckDataChange();
 
-    __forceinline bool LongACompare(ATTRIBUTES *pA, const char *attrName, long &nCompareVal);
-    __forceinline bool FloatACompare(ATTRIBUTES *pA, const char *attrName, float &fCompareVal);
-    __forceinline bool StringACompare(ATTRIBUTES *pA, const char *attrName, string &sCompareVal);
-    __forceinline bool FRectACompare(ATTRIBUTES *pA, const char *attrName, FRECT &rCompareVal);
-    __forceinline bool BoolACompare(ATTRIBUTES *pA, const char *attrName, bool &bCompareVal);
-    __forceinline dword GetColorByFactor(dword dwLowColor, dword dwHighColor, float fFactor);
+    bool LongACompare(ATTRIBUTES *pA, const char *attrName, long &nCompareVal);
+    bool FloatACompare(ATTRIBUTES *pA, const char *attrName, float &fCompareVal);
+    bool StringACompare(ATTRIBUTES *pA, const char *attrName, std::string &sCompareVal);
+    bool FRectACompare(ATTRIBUTES *pA, const char *attrName, FRECT &rCompareVal);
+    bool BoolACompare(ATTRIBUTES *pA, const char *attrName, bool &bCompareVal);
+    uint32_t GetColorByFactor(uint32_t dwLowColor, uint32_t dwHighColor, float fFactor);
 
-    VDX8RENDER *m_pRS;
+    VDX9RENDER *m_pRS;
     ATTRIBUTES *m_pARoot;
     BIManCommandList *m_pCommandList;
-    ENTITY_ID m_idHostEntity;
+    entid_t m_idHostEntity;
     long m_nCommandMode;
 
     long m_nVBufID;
@@ -75,7 +77,7 @@ class BIManSign
 
     long m_nBackTextureID;
     long m_nBackSquareQ;
-    dword m_dwBackColor;
+    uint32_t m_dwBackColor;
     FRECT m_rBackUV;
     BIFPOINT m_pntBackOffset;
     FPOINT m_pntBackIconSize;
@@ -83,8 +85,8 @@ class BIManSign
     bool m_bIsAlarmOn;
     long m_nAlarmSquareQ;
     long m_nAlarmTextureID;
-    dword m_dwAlarmHighColor;
-    dword m_dwAlarmLowColor;
+    uint32_t m_dwAlarmHighColor;
+    uint32_t m_dwAlarmLowColor;
     FRECT m_rAlarmUV;
     BIFPOINT m_pntAlarmOffset;
     FPOINT m_pntAlarmIconSize;
@@ -95,7 +97,7 @@ class BIManSign
 
     long m_nManStateTextureID;
     long m_nManStateSquareQ;
-    dword m_dwManStateColor;
+    uint32_t m_dwManStateColor;
     FRECT m_rManHPUV;
     BIFPOINT m_pntManHPOffset;
     FPOINT m_pntManHPIconSize;
@@ -105,23 +107,23 @@ class BIManSign
 
     long m_nGunChargeTextureID;
     long m_nGunChargeSquareQ;
-    dword m_dwGunChargeColor;
-    dword m_dwGunChargeBackColor;
+    uint32_t m_dwGunChargeColor;
+    uint32_t m_dwGunChargeBackColor;
     FRECT m_rGunChargeUV;
     BIFPOINT m_pntGunChargeOffset;
     FPOINT m_pntGunChargeIconSize;
 
-    array<float> m_aChargeProgress;
+    std::vector<float> m_aChargeProgress;
 
     FRECT m_rManPicUV;
     BIFPOINT m_pntManPicOffset;
     FPOINT m_pntManPicIconSize;
-    DWORD m_dwManFaceColor;
+    uint32_t m_dwManFaceColor;
 
     struct ManDescr
     {
         FPOINT pntPos; // center
-        string sTexture;
+        std::string sTexture;
         long nTexture;
         FRECT rUV;
 
@@ -133,6 +135,7 @@ class BIManSign
         long nShootMax;
         long nShootCurrent;
     } m_Man[MAX_MAN_QUANTITY];
+
     long m_nManQuantity;
     long m_nCurrentManIndex;
     long m_nCommandListVerticalOffset;
@@ -142,32 +145,32 @@ class BIManSign
     bool m_bActive;
 };
 
-__forceinline bool BIManSign::LongACompare(ATTRIBUTES *pA, const char *attrName, long &nCompareVal)
+inline bool BIManSign::LongACompare(ATTRIBUTES *pA, const char *attrName, long &nCompareVal)
 {
-    long tmp = nCompareVal;
+    const auto tmp = nCompareVal;
     nCompareVal = pA->GetAttributeAsDword(attrName);
     return (nCompareVal != tmp);
 }
 
-__forceinline bool BIManSign::FloatACompare(ATTRIBUTES *pA, const char *attrName, float &fCompareVal)
+inline bool BIManSign::FloatACompare(ATTRIBUTES *pA, const char *attrName, float &fCompareVal)
 {
-    float tmp = fCompareVal;
+    const auto tmp = fCompareVal;
     fCompareVal = pA->GetAttributeAsFloat(attrName);
     return (fCompareVal != tmp);
 }
 
-__forceinline bool BIManSign::StringACompare(ATTRIBUTES *pA, const char *attrName, string &sCompareVal)
+inline bool BIManSign::StringACompare(ATTRIBUTES *pA, const char *attrName, std::string &sCompareVal)
 {
-    char *pVal = pA->GetAttribute(attrName);
+    auto *const pVal = pA->GetAttribute(attrName);
     if (sCompareVal == pVal)
         return false;
     sCompareVal = pVal;
     return true;
 }
 
-__forceinline bool BIManSign::FRectACompare(ATTRIBUTES *pA, const char *attrName, FRECT &rCompareVal)
+inline bool BIManSign::FRectACompare(ATTRIBUTES *pA, const char *attrName, FRECT &rCompareVal)
 {
-    char *pVal = pA->GetAttribute(attrName);
+    auto *const pVal = pA->GetAttribute(attrName);
     if (!pVal)
         return false;
     FRECT rTmp;
@@ -182,29 +185,29 @@ __forceinline bool BIManSign::FRectACompare(ATTRIBUTES *pA, const char *attrName
     return true;
 }
 
-__forceinline bool BIManSign::BoolACompare(ATTRIBUTES *pA, const char *attrName, bool &bCompareVal)
+inline bool BIManSign::BoolACompare(ATTRIBUTES *pA, const char *attrName, bool &bCompareVal)
 {
-    bool tmp = bCompareVal;
+    const auto tmp = bCompareVal;
     bCompareVal = pA->GetAttributeAsDword(attrName, bCompareVal ? 1 : 0) != 0;
     return (bCompareVal != tmp);
 }
 
-__forceinline dword BIManSign::GetColorByFactor(dword dwLowColor, dword dwHighColor, float fFactor)
+inline uint32_t BIManSign::GetColorByFactor(uint32_t dwLowColor, uint32_t dwHighColor, float fFactor)
 {
     long asrc = (dwLowColor >> 24) & 0xFF;
     long rsrc = (dwLowColor >> 16) & 0xFF;
     long gsrc = (dwLowColor >> 8) & 0xFF;
     long bsrc = dwLowColor & 0xFF;
     //
-    long adst = (dwHighColor >> 24) & 0xFF;
-    long rdst = (dwHighColor >> 16) & 0xFF;
-    long gdst = (dwHighColor >> 8) & 0xFF;
-    long bdst = dwHighColor & 0xFF;
+    const long adst = (dwHighColor >> 24) & 0xFF;
+    const long rdst = (dwHighColor >> 16) & 0xFF;
+    const long gdst = (dwHighColor >> 8) & 0xFF;
+    const long bdst = dwHighColor & 0xFF;
     //
-    asrc += ((long)((adst - asrc) * fFactor)) & 0xFF;
-    rsrc += ((long)((rdst - rsrc) * fFactor)) & 0xFF;
-    gsrc += ((long)((gdst - gsrc) * fFactor)) & 0xFF;
-    bsrc += ((long)((bdst - bsrc) * fFactor)) & 0xFF;
+    asrc += static_cast<long>((adst - asrc) * fFactor) & 0xFF;
+    rsrc += static_cast<long>((rdst - rsrc) * fFactor) & 0xFF;
+    gsrc += static_cast<long>((gdst - gsrc) * fFactor) & 0xFF;
+    bsrc += static_cast<long>((bdst - bsrc) * fFactor) & 0xFF;
     //
     return ARGB(asrc, rsrc, gsrc, bsrc);
 }

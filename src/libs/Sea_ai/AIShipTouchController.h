@@ -1,13 +1,11 @@
 #ifndef AISHIPTOUCHCONTROLLER_HPP
 #define AISHIPTOUCHCONTROLLER_HPP
 
-#include "character.h"
-#include "dx8render.h"
-#include "templates\array.h"
-#include "templates\string.h"
+#include "dtimer.h"
 #include "vmodule_api.h"
 
 class AIShip;
+
 class AIShipTouchController
 {
   private:
@@ -19,7 +17,7 @@ class AIShipTouchController
 
     DTimer dtTouchTime;
     AIShip *pOurAIShip;                  // our AI ship pointer
-    array<ray_t> aTouchRays;             // touch rays
+    std::vector<ray_t> aTouchRays;       // touch rays
     float fLeftRaysFree, fRightRaysFree; //
     float fRaySize;                      // ray size
     float fSpeedFactor, fRotateFactor;
@@ -43,7 +41,7 @@ class AIShipTouchController
     {
         pOurAIShip = pShip;
     }
-    AIShip *GetAIShip()
+    AIShip *GetAIShip() const
     {
         return pOurAIShip;
     }

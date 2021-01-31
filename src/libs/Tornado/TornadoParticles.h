@@ -11,9 +11,8 @@
 #ifndef _TornadoParticles_H_
 #define _TornadoParticles_H_
 
+#include "Matrix.h"
 #include "Pillar.h"
-#include "dx8render.h"
-#include "matrix.h"
 #include "sea_base.h"
 
 class TornadoParticles
@@ -45,7 +44,7 @@ class TornadoParticles
     struct Vertex
     {
         CVECTOR pos;
-        dword color;
+        uint32_t color;
         float u, v;
     };
 
@@ -59,7 +58,7 @@ class TornadoParticles
     void SetSea();
 
     void Update(float dltTime);
-    void Draw(VDX8RENDER *rs);
+    void Draw(VDX9RENDER *rs);
 
     long txtPillarPrts;
     long txtGroundPrts;
@@ -70,12 +69,12 @@ class TornadoParticles
     //Инкапсуляция
     //--------------------------------------------------------------------------------------------
   private:
-    void DrawParticles(VDX8RENDER *rs, void *prts, long num, long size, long texture, const char *tech);
+    void DrawParticles(VDX9RENDER *rs, void *prts, long num, long size, long texture, const char *tech);
     static float GetRand(float r, float dev = 0.5f); // dev = 0..1, return 0..r
 
   private:
     Pillar &pillar;
-    ENTITY_ID seaID;
+    entid_t seaID;
     float galpha;
     CMatrix camMtx;
     GroundParticle groundPrt[128];

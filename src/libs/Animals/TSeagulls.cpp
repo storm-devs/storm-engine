@@ -1,23 +1,28 @@
 #include "TSeagulls.h"
+#include "../../Shared/messages.h"
+#include "Entity.h"
+#include "core.h"
+#include "defines.h"
+#include "model.h"
 #include "rands.h"
-
+#include "vfile_service.h"
 //#pragma warning (disable : 4244)
 
 //--------------------------------------------------------------------
-TSeagulls::TSeagulls() : enabled(true), frightened(false), count(0)
+TSeagulls::TSeagulls() : enabled(true), count(0), frightened(false)
 {
 }
 
 //--------------------------------------------------------------------
 TSeagulls::~TSeagulls()
 {
-    _CORE_API->DeleteEntity(seagullModel);
+    EntityManager::EraseEntity(seagullModel);
 }
 
 //--------------------------------------------------------------------
 void TSeagulls::LoadSettings()
 {
-    INIFILE *ini = _CORE_API->fio->OpenIniFile(ANIMALS_INI_FILENAME);
+    auto *ini = fio->OpenIniFile(ANIMALS_INI_FILENAME);
     if (!ini)
     {
         countAdd = SEAGULL_ADD_COUNT;
@@ -29,7 +34,7 @@ void TSeagulls::LoadSettings()
         maxDistance = SEAGULL_DISTANCE;
         relaxTime = SEAGULL_RELAX_TIME;
         screamTime = SEAGULL_SCREAM_TIME;
-        strcpy(screamFilename, ANIMALS_SEAGULLS_SCREAM_FILENAME);
+        strcpy_s(screamFilename, ANIMALS_SEAGULLS_SCREAM_FILENAME);
 
         return;
     }
@@ -54,24 +59,22 @@ void TSeagulls::Init()
     startY = 0.f;
     LoadSettings();
 
-    renderService = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
-    soundService = (VSoundService *)_CORE_API->CreateService("SoundService");
+    renderService = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    soundService = static_cast<VSoundService *>(core.CreateService("SoundService"));
 
     if (!renderService)
-        SE_THROW_MSG("!Seagulls: No service: dx8render");
+        throw std::exception("!Seagulls: No service: dx9render");
     // if(!soundService)
-    //	SE_THROW_MSG("!Seagulls: No service: sound");
+    //	throw std::exception("!Seagulls: No service: sound");
 
-    _CORE_API->CreateEntity(&seagullModel, "MODELR");
-    _CORE_API->Send_Message(seagullModel, "ls", MSG_MODEL_LOAD_GEO, ANIMALS_SEAGULL_FILENAME);
+    seagullModel = EntityManager::CreateEntity("MODELR");
+    core.Send_Message(seagullModel, "ls", MSG_MODEL_LOAD_GEO, ANIMALS_SEAGULL_FILENAME);
 }
 
 //--------------------------------------------------------------------
-dword TSeagulls::ProcessMessage(long _code, MESSAGE &message)
+uint64_t TSeagulls::ProcessMessage(long _code, MESSAGE &message)
 {
-    GUARD(TSeagulls::ProcessMessage)
-
-    dword outValue = 0;
+    const uint32_t outValue = 0;
 
     switch (_code)
     {
@@ -94,14 +97,11 @@ dword TSeagulls::ProcessMessage(long _code, MESSAGE &message)
     }
 
     return outValue;
-    UNGUARD
 }
 
 //--------------------------------------------------------------------
-void TSeagulls::Execute(dword _dTime)
+void TSeagulls::Execute(uint32_t _dTime)
 {
-    GUARD(ANIMALS::Execute)
-
     if (!enabled)
         return;
 
@@ -113,7 +113,7 @@ void TSeagulls::Execute(dword _dTime)
         {
             frightened = false;
             screamTime <<= 1;
-            for (int i = 0; i < count; i++)
+            for (auto i = 0; i < count; i++)
             {
                 seagulls[i].va /= 2.0f;
                 // seagulls[i].circleTimePassed += _dTime;
@@ -122,7 +122,7 @@ void TSeagulls::Execute(dword _dTime)
     }
 
     // <all_movements>
-    for (int i = 0; i < count; i++)
+    for (auto i = 0; i < count; i++)
     {
         // <scream>
         if (seagulls[i].screamTime > 0)
@@ -130,9 +130,9 @@ void TSeagulls::Execute(dword _dTime)
         else
         {
             seagulls[i].screamTime = (rand() % (screamTime >> 1)) + (screamTime >> 1);
-            CVECTOR pos((float)(seagulls[i].center.x + sin(seagulls[i].a) * seagulls[i].radius),
-                        (float)(seagulls[i].center.z + cos(seagulls[i].a) * seagulls[i].radius),
-                        (float)(seagulls[i].height));
+            CVECTOR pos(static_cast<float>(seagulls[i].center.x + sin(seagulls[i].a) * seagulls[i].radius),
+                        static_cast<float>(seagulls[i].center.z + cos(seagulls[i].a) * seagulls[i].radius),
+                        static_cast<float>(seagulls[i].height));
 
             // if(soundService) soundService->SoundPlay(screamFilename, PCM_3D, VOLUME_FX, false, false, true, 0, &pos);
         }
@@ -145,30 +145,30 @@ void TSeagulls::Execute(dword _dTime)
             seagulls[i].circleTimePassed += _dTime;
         else
         {
-            float oldR = seagulls[i].radius;
+            const auto oldR = seagulls[i].radius;
             seagulls[i].radius = SEAGULL_MIN_RADIUS + rand(maxRadius);
             seagulls[i].circleTimePassed = 0;
-            seagulls[i].circleTime = (long)rand((float)maxCircleTime);
+            seagulls[i].circleTime = static_cast<long>(rand(static_cast<float>(maxCircleTime)));
             if ((seagulls[i].circleTime) < (maxCircleTime / 20))
                 seagulls[i].circleTime = maxCircleTime / 20;
-            float sinA = sinf(seagulls[i].a);
-            float cosA = cosf(seagulls[i].a);
-            float newX1 = seagulls[i].center.x + sinA * (seagulls[i].radius + oldR);
-            float newZ1 = seagulls[i].center.z + cosA * (seagulls[i].radius + oldR);
-            float newX2 = seagulls[i].center.x + sinA * (oldR - seagulls[i].radius);
-            float newZ2 = seagulls[i].center.z + cosA * (oldR - seagulls[i].radius);
-            float distance1 = fabsf(cameraPos.x - newX1) + fabsf(cameraPos.z - newZ1);
-            float distance2 = fabsf(cameraPos.x - newX2) + fabsf(cameraPos.z - newZ2);
-            float oldVa = seagulls[i].va;
+            const auto sinA = sinf(seagulls[i].a);
+            const auto cosA = cosf(seagulls[i].a);
+            const auto newX1 = seagulls[i].center.x + sinA * (seagulls[i].radius + oldR);
+            const auto newZ1 = seagulls[i].center.z + cosA * (seagulls[i].radius + oldR);
+            const auto newX2 = seagulls[i].center.x + sinA * (oldR - seagulls[i].radius);
+            const auto newZ2 = seagulls[i].center.z + cosA * (oldR - seagulls[i].radius);
+            const auto distance1 = fabsf(cameraPos.x - newX1) + fabsf(cameraPos.z - newZ1);
+            const auto distance2 = fabsf(cameraPos.x - newX2) + fabsf(cameraPos.z - newZ2);
+            auto oldVa = seagulls[i].va;
 
             seagulls[i].va *= oldR / seagulls[i].radius;
-            float deltaVa = randCentered(maxAngleSpeed / 5.0f);
+            const auto deltaVa = randCentered(maxAngleSpeed / 5.0f);
             if (((seagulls[i].va + deltaVa) * seagulls[i].va) < 0)
                 seagulls[i].va -= deltaVa;
             else
                 seagulls[i].va += deltaVa;
 
-            float minRadius = maxRadius * maxAngleSpeed / seagulls[i].radius;
+            const auto minRadius = maxRadius * maxAngleSpeed / seagulls[i].radius;
             if (fabs(seagulls[i].va) < (minRadius / 2.0f))
             {
                 if (seagulls[i].va > 0.0f)
@@ -192,15 +192,11 @@ void TSeagulls::Execute(dword _dTime)
             }
         }
     }
-
-    UNGUARD
 }
 
 //--------------------------------------------------------------------
-void TSeagulls::Realize(dword _dTime)
+void TSeagulls::Realize(uint32_t _dTime)
 {
-    GUARD(ANIMALS::Realize)
-
     if (!enabled)
         return;
 
@@ -209,16 +205,16 @@ void TSeagulls::Realize(dword _dTime)
     if (!count)
         Add(cameraPos.x, cameraPos.y, cameraPos.z);
 
-    MODEL *seagull = (MODEL *)_CORE_API->GetEntityPointer(&seagullModel);
+    auto *seagull = static_cast<MODEL *>(EntityManager::GetEntityPointer(seagullModel));
     if (!seagull)
         return;
 
-    for (int i = 0; i < count; i++)
+    for (auto i = 0; i < count; i++)
     {
         CVECTOR ang, pos;
         ang.x = 0.0f;
         ang.z = 0.0f;
-        float angle = seagulls[i].a;
+        auto angle = seagulls[i].a;
         if (seagulls[i].va > 0.0f)
             ang.y = seagulls[i].a + PI / 2;
         else
@@ -227,10 +223,8 @@ void TSeagulls::Realize(dword _dTime)
         pos.z = seagulls[i].center.z + cosf(seagulls[i].a) * seagulls[i].radius;
         pos.y = seagulls[i].height;
         seagull->mtx = CMatrix(ang, pos);
-        seagull->Realize(_dTime);
+        seagull->ProcessStage(Entity::Stage::realize, _dTime);
     }
-
-    UNGUARD
 }
 
 //--------------------------------------------------------------------
@@ -242,7 +236,7 @@ void TSeagulls::Frighten()
     frightened = true;
     frightenTime = relaxTime;
 
-    for (int i = 0; i < count; i++)
+    for (auto i = 0; i < count; i++)
     {
         seagulls[i].va *= 2.0f;
         seagulls[i].screamTime >>= 2;
@@ -272,4 +266,5 @@ void TSeagulls::Add(float _x, float _y, float _z)
     }
     count += countAdd;
 }
+
 //--------------------------------------------------------------------

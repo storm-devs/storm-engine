@@ -1,5 +1,5 @@
 #include "DataString.h"
-#include "..\..\icommon\memfile.h"
+#include "vmodule_api.h"
 
 //конструктор/деструктор
 DataString::DataString()
@@ -11,9 +11,9 @@ DataString::~DataString()
 }
 
 //Получить значение
-const char *DataString::GetValue()
+const char *DataString::GetValue() const
 {
-    return Value.GetBuffer();
+    return Value.c_str();
 }
 
 //Установить значение
@@ -29,7 +29,7 @@ void DataString::Load(MemFile *File)
     SetValue(TempString);
 
     static char AttribueName[128];
-    DWORD NameLength = 0;
+    uint32_t NameLength = 0;
     File->ReadType(NameLength);
     Assert(NameLength < 128);
     File->Read(AttribueName, NameLength);
@@ -39,27 +39,27 @@ void DataString::Load(MemFile *File)
 
 void DataString::SetName(const char *szName)
 {
-    // api->Trace("DataString::SetName - '%s'", szName);
+    // core.Trace("DataString::SetName - '%s'", szName);
     Name = szName;
 }
 
-const char *DataString::GetName()
+const char *DataString::GetName() const
 {
-    return Name.GetBuffer();
+    return Name.c_str();
 }
 
-void DataString::Write(MemFile *File)
+void DataString::Write(MemFile *File) const
 {
     static char WriteTempString[128];
     memset(WriteTempString, 0, 128);
-    strncpy(WriteTempString, GetValue(), 128);
+    strncpy_s(WriteTempString, GetValue(), 128);
     File->Write(WriteTempString, 128);
 
     // save name
-    DWORD NameLength = Name.Len();
-    DWORD NameLengthPlusZero = NameLength + 1;
+    const uint32_t NameLength = Name.size();
+    auto NameLengthPlusZero = NameLength + 1;
     File->WriteType(NameLengthPlusZero);
     Assert(NameLength < 128);
-    File->Write(Name.GetBuffer(), NameLength);
+    File->Write(Name.c_str(), NameLength);
     File->WriteZeroByte();
 }

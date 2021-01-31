@@ -11,12 +11,13 @@
 #ifndef _CharacterAnimationKipper_H_
 #define _CharacterAnimationKipper_H_
 
-#include "animation.h"
+#include "Animation.h"
+#include "Entity.h"
 #include "vmodule_api.h"
 
-class VDX8RENDER;
+class VDX9RENDER;
 
-class CharacterAnimationKipper : public ENTITY
+class CharacterAnimationKipper : public Entity
 {
     //--------------------------------------------------------------------------------------------
     //Конструирование, деструктурирование
@@ -26,14 +27,18 @@ class CharacterAnimationKipper : public ENTITY
     virtual ~CharacterAnimationKipper();
 
     //Инициализация
-    bool Init();
+    bool Init() override;
     void LockTexture(const char *texture);
+
+    void ProcessStage(Stage, uint32_t) override
+    {
+    }
 
     //--------------------------------------------------------------------------------------------
     //Инкапсуляция
     //--------------------------------------------------------------------------------------------
   private:
-    VDX8RENDER *rs;
+    VDX9RENDER *rs;
 
     AnimationService *asr;
     Animation *aniMan;

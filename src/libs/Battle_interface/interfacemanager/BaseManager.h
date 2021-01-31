@@ -1,10 +1,8 @@
 #ifndef InterfaceBaseManager_h
 #define InterfaceBaseManager_h
 
-#include "common_defines.h"
-#include "dx8render.h"
-#include "templates\array.h"
-#include "templates\string.h"
+#include "../bi_defines.h"
+#include "dx9render.h"
 
 class BIImageRender;
 class BI_ManagerBase;
@@ -12,12 +10,8 @@ class BI_ManagerBase;
 class BI_MousePointerBase
 {
   public:
-    BI_MousePointerBase()
-    {
-    }
-    ~BI_MousePointerBase()
-    {
-    }
+    BI_MousePointerBase() = default;
+    virtual ~BI_MousePointerBase() = default;
 
     virtual void Update() = 0;
 };
@@ -28,6 +22,7 @@ class BI_ManagerNodeBase
     BI_ManagerNodeBase()
     {
     }
+
     virtual ~BI_ManagerNodeBase()
     {
     }
@@ -41,37 +36,38 @@ class BI_ManagerNodeBase
     virtual bool IsMouseMoveReaction() = 0;
 };
 
-class BI_ManagerBase : public ENTITY
+class BI_ManagerBase : public Entity
 {
   public:
     BI_ManagerBase()
     {
     }
+
     ~BI_ManagerBase()
     {
     }
 
-    VDX8RENDER *GetDX8Render()
+    VDX9RENDER *GetDX9Render() const
     {
         return m_pRS;
     }
-    BIImageRender *GetImageRender()
+    BIImageRender *GetImageRender() const
     {
         return m_pImgRender;
     }
-    BI_MousePointerBase *GetMouse()
+    BI_MousePointerBase *GetMouse() const
     {
         return m_pMouse;
     }
 
-    virtual BI_ManagerNodeBase *CreateImageNode(const char *texture, const FRECT &uv, const RECT &pos, dword color,
+    virtual BI_ManagerNodeBase *CreateImageNode(const char *texture, const FRECT &uv, const RECT &pos, uint32_t color,
                                                 long nPrioritet) = 0;
-    virtual BI_ManagerNodeBase *CreateStringNode(const char *text, const char *font, dword color, float scale,
+    virtual BI_ManagerNodeBase *CreateStringNode(const char *text, const char *font, uint32_t color, float scale,
                                                  const RECT &pos, long nHAlign, long nVAlign, long prioritet) = 0;
     virtual void DeleteNode(BI_ManagerNodeBase *pNod) = 0;
 
   protected:
-    VDX8RENDER *m_pRS;
+    VDX9RENDER *m_pRS;
     BIImageRender *m_pImgRender;
     BI_MousePointerBase *m_pMouse;
 };

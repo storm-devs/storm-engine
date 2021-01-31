@@ -8,32 +8,33 @@
 #ifndef BILLBOARD_PARTICLE_PROCESSOR
 #define BILLBOARD_PARTICLE_PROCESSOR
 
-#include "particles\gmx_QSort.h"
-#include <stdarg.h>
-#include <stdio.h>
-#include <string.h>
+#include "dx9render.h"
+#include "math3d/Matrix.h"
+#include "particles/gmx_QSort.h"
 
-#include "..\..\icommon\particle.h"
-#include "..\datasource\fieldlist.h"
+#include "../../ICommon/Particle.h"
+#include "../DataSource/FieldList.h"
 
 class ParticleSystem;
 
 class BillBoardProcessor
 {
+    static IDirect3DVertexDeclaration9 *vertexDecl_;
+    void CreateVertexDeclaration() const;
 
     struct RECT_VERTEX
     {
-        CVECTOR vRelativePos;
-        dword dwColor;
+        Vector vRelativePos;
+        uint32_t dwColor;
         float tu1, tv1;
         float tu2, tv2;
         float angle;
         float BlendK;
-        CVECTOR vParticlePos;
+        Vector vParticlePos;
         float AddPowerK;
     };
 
-    VDX8RENDER *pRS;
+    VDX9RENDER *pRS;
     //Буферы для рендера билбордов
     long pVBuffer;
     long pIBuffer;
@@ -51,32 +52,33 @@ class BillBoardProcessor
 
     MemArrayItem *pMemArray;
 
-    array<BB_ParticleData *> Particles;
+    std::vector<BB_ParticleData *> Particles;
 
     GMXQSort<BB_ParticleData *> ParticleSorter;
 
     //Считает расстояние до билбоардов
-    DWORD CalcDistanceToCamera();
+    uint32_t CalcDistanceToCamera();
 
     //Функция сравнения при сортировке
     static BOOL CompareFunction(BB_ParticleData *e1, BB_ParticleData *e2);
 
-    BB_ParticleData *AllocParticle();
-    void FreeParticle(BB_ParticleData *pItem);
+    BB_ParticleData *AllocParticle() const;
+    void FreeParticle(BB_ParticleData *pItem) const;
 
   public:
     BillBoardProcessor();
     ~BillBoardProcessor();
 
-    void AddParticle(ParticleSystem *pSystem, const CVECTOR &velocity_dir, const CVECTOR &pos, const CMatrix &matWorld,
-                     float EmitterTime, float EmitterLifeTime, FieldList *pFields, DWORD *pActiveCount, DWORD dwGUID);
+    void AddParticle(ParticleSystem *pSystem, const Vector &velocity_dir, const Vector &pos, const Matrix &matWorld,
+                     float EmitterTime, float EmitterLifeTime, FieldList *pFields, uint32_t *pActiveCount,
+                     uint32_t dwGUID);
 
     void Process(float DeltaTime);
     void Draw();
 
-    DWORD GetCount();
+    uint32_t GetCount() const;
 
-    void DeleteWithGUID(DWORD dwGUID, DWORD GUIDRange = GUIDSTEP);
+    void DeleteWithGUID(uint32_t dwGUID, uint32_t GUIDRange = GUIDSTEP);
 
     void Clear();
 };

@@ -1,21 +1,20 @@
-#include "SAIL.h"
-#include "Weather_base.h"
-#include "common_defines.h"
-#include "mast_msg.h"
-#include "model.h"
-#include "rigging_define.h"
-#include "sail_msg.h"
-#include "sd2_h\VAI_ObjBase.h"
-#include "ship_base.h"
-#include "ship_msg.h"
-#include <stdio.h>
+#include "sail.h"
 
-#include "..\\battle_interface\\msg_control.h"
-#include "script_defines.h"
+#include "core.h"
+
+#include "../../Shared/battle_interface/msg_control.h"
+#include "../../Shared/sea_ai/Script_defines.h"
+#include "../../shared/mast_msg.h"
+#include "../../shared/sail_msg.h"
+#include "Entity.h"
+#include "Weather_Base.h"
+#include "defines.h"
+#include "ship_base.h"
+#include "vfile_service.h"
 
 #define WIND_SPEED_MAX 12.f
 
-void _cdecl sailPrint(VDX8RENDER *rs, const CVECTOR &pos3D, float rad, long line, const char *format, ...);
+void sailPrint(VDX9RENDER *rs, const CVECTOR &pos3D, float rad, long line, const char *format, ...);
 int traceSail = -1;
 long g_iBallOwnerIdx = -1;
 
@@ -27,7 +26,7 @@ float GetSailSpeed(int holeQ, int holeMax, float maxSpeed, float fSailHoleDepend
         holeMax = 1;
     if (holeQ <= 0)
         return maxSpeed;
-    float curSpeed = maxSpeed * (1.f - (float)holeQ / holeMax * fSailHoleDepend);
+    auto curSpeed = maxSpeed * (1.f - static_cast<float>(holeQ) / holeMax * fSailHoleDepend);
     if (curSpeed < 0.f)
         curSpeed = 0.f;
     return curSpeed;
@@ -143,7 +142,7 @@ SAIL::SAIL()
     globalWind.ang.x = 0.f;
     globalWind.ang.y = 0.f;
     globalWind.ang.z = 1.f;
-    WindVect = null;
+    WindVect = nullptr;
 
     texl = -1;
     m_nEmptyGerbTex = -1;
@@ -151,18 +150,18 @@ SAIL::SAIL()
     bFirstRun = true;
     wFirstIndx = 0;
     bDeleteState = false;
-    RenderService = 0;
+    RenderService = nullptr;
 
     bCannonTrace = false;
 
     groupQuantity = 0;
-    gdata = 0;
+    gdata = nullptr;
     sailQuantity = 0;
-    slist = 0;
+    slist = nullptr;
     bUse = false;
 
     m_nMastCreatedCharacter = -1;
-    m_sMastName = null;
+    m_sMastName = nullptr;
 
     sg.indxBuf = -1;
     sg.vertBuf = -1;
@@ -174,37 +173,38 @@ SAIL::SAIL()
 
 SAIL::~SAIL()
 {
-    if (slist != null)
+    if (slist != nullptr)
     {
-        for (int i = 0; i < sailQuantity; i++)
-            PTR_DELETE(slist[i]);
-        PTR_DELETE(slist);
+        for (auto i = 0; i < sailQuantity; i++)
+            STORM_DELETE(slist[i]);
+        STORM_DELETE(slist);
     }
-    if (gdata != null)
+    if (gdata != nullptr)
     {
-        for (int i = 0; i < groupQuantity; i++)
+        for (auto i = 0; i < groupQuantity; i++)
         {
-            PTR_DELETE(gdata[i].sailIdx);
+            STORM_DELETE(gdata[i].sailIdx);
         }
-        VOIDPTR_DELETE(gdata);
+        delete (char *)gdata;
+        gdata = nullptr;
     }
 
     VERTEX_BUFFER_RELEASE(RenderService, sg.vertBuf);
     INDEX_BUFFER_RELEASE(RenderService, sg.indxBuf);
     TEXTURE_RELEASE(RenderService, texl);
     TEXTURE_RELEASE(RenderService, m_nEmptyGerbTex);
-    PTR_DELETE(WindVect);
+    STORM_DELETE(WindVect);
     m_nMastCreatedCharacter = -1;
-    PTR_DELETE(m_sMastName);
+    STORM_DELETE(m_sMastName);
 }
 
 bool SAIL::Init()
 {
-    GUARD(SAIL::SAIL())
+    // GUARD(SAIL::SAIL())
 
     SetDevice();
 
-    UNGUARD
+    // UNGUARD
     return true;
 }
 
@@ -216,24 +216,24 @@ void SAIL::SetDevice()
     mtx.SetIdentity();
 
     // получить сервис рендера
-    RenderService = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
+    RenderService = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!RenderService)
     {
-        SE_THROW_MSG("No service: dx8render");
+        throw std::exception("No service: dx9render");
     }
 
     LoadSailIni();
 
-    if (WindVect == null)
+    if (WindVect == nullptr)
     {
-        WindVect = NEW float[WINDVECTOR_QUANTITY];
+        WindVect = new float[WINDVECTOR_QUANTITY];
         if (WindVect)
             // расчет таблицы векторов ветра
             for (i = 0; i < WINDVECTOR_QUANTITY; i++)
-                WindVect[i] = sinf((float)i / (float)(WINDVECTOR_QUANTITY)*2.f * PI);
+                WindVect[i] = sinf(static_cast<float>(i) / static_cast<float>(WINDVECTOR_QUANTITY) * 2.f * PI);
         else
         {
-            SE_THROW_MSG("No memory allocation: WindVect");
+            throw std::exception("No memory allocation: WindVect");
         }
     }
 }
@@ -248,46 +248,46 @@ bool SAIL::LoadState(ENTITY_STATE *state)
     return true;
 }
 
-void SAIL::Execute(dword Delta_Time)
+void SAIL::Execute(uint32_t Delta_Time)
 {
-    DWORD rtime;
+    uint64_t rtime;
     int i;
 
     // тестовая убойка мачт
-    if (gdata && api->Controls->GetDebugAsyncKeyState(VK_MENU) < 0 &&
-        api->Controls->GetDebugAsyncKeyState(VK_CONTROL) < 0 && api->Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0)
+    if (gdata && core.Controls->GetDebugAsyncKeyState(VK_MENU) < 0 &&
+        core.Controls->GetDebugAsyncKeyState(VK_CONTROL) < 0 && core.Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0)
     {
         long nTmpMastNum = -1;
-        if (api->Controls->GetDebugAsyncKeyState('1') < 0)
+        if (core.Controls->GetDebugAsyncKeyState('1') < 0)
             nTmpMastNum = 1;
-        else if (api->Controls->GetDebugAsyncKeyState('2') < 0)
+        else if (core.Controls->GetDebugAsyncKeyState('2') < 0)
             nTmpMastNum = 2;
-        else if (api->Controls->GetDebugAsyncKeyState('3') < 0)
+        else if (core.Controls->GetDebugAsyncKeyState('3') < 0)
             nTmpMastNum = 3;
-        else if (api->Controls->GetDebugAsyncKeyState('4') < 0)
+        else if (core.Controls->GetDebugAsyncKeyState('4') < 0)
             nTmpMastNum = 4;
-        else if (api->Controls->GetDebugAsyncKeyState('5') < 0)
+        else if (core.Controls->GetDebugAsyncKeyState('5') < 0)
             nTmpMastNum = 5;
-        else if (api->Controls->GetDebugAsyncKeyState('6') < 0)
+        else if (core.Controls->GetDebugAsyncKeyState('6') < 0)
             nTmpMastNum = 6;
-        else if (api->Controls->GetDebugAsyncKeyState('7') < 0)
+        else if (core.Controls->GetDebugAsyncKeyState('7') < 0)
             nTmpMastNum = 7;
-        else if (api->Controls->GetDebugAsyncKeyState('0') < 0)
+        else if (core.Controls->GetDebugAsyncKeyState('0') < 0)
             nTmpMastNum = 0;
         if (nTmpMastNum >= 0)
         {
-            MODEL *pTmpMdl = 0;
-            if ((pTmpMdl = (MODEL *)api->GetEntityPointer(&gdata[0].modelEI)) != 0)
+            MODEL *pTmpMdl = nullptr;
+            if ((pTmpMdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(gdata[0].modelEI))) != nullptr)
             {
                 char pcTmpMastName[256];
-                sprintf(pcTmpMastName, "mast%d", nTmpMastNum);
-                NODE *nod = pTmpMdl->FindNode(pcTmpMastName);
+                sprintf_s(pcTmpMastName, "mast%d", nTmpMastNum);
+                auto *nod = pTmpMdl->FindNode(pcTmpMastName);
                 if (nod)
                 {
-                    ENTITY_ID eiMastTmp;
-                    if (api->CreateEntity(&eiMastTmp, "MAST"))
+                    entid_t eiMastTmp;
+                    if (eiMastTmp = EntityManager::CreateEntity("MAST"))
                     {
-                        api->Send_Message(eiMastTmp, "lpii", MSG_MAST_SETGEOMETRY, nod, gdata[0].shipEI,
+                        core.Send_Message(eiMastTmp, "lpii", MSG_MAST_SETGEOMETRY, nod, gdata[0].shipEI,
                                           gdata[0].modelEI);
                     }
                 }
@@ -306,9 +306,9 @@ void SAIL::Execute(dword Delta_Time)
         wFirstIndx = sailQuantity;
     }
 
-    float fMaxTurnAngl = Delta_Time * TURNSTEPANGL;
+    auto fMaxTurnAngl = Delta_Time * TURNSTEPANGL;
 
-    bool bSailUpdate = false;
+    auto bSailUpdate = false;
     m_nLastUpdate -= Delta_Time;
     if (m_nLastUpdate <= 0)
     {
@@ -321,11 +321,11 @@ void SAIL::Execute(dword Delta_Time)
         //====================================================
         // Если был изменен ини-файл, то считать инфо из него
         WIN32_FIND_DATA wfd;
-        HANDLE h = _CORE_API->fio->_FindFirstFile("resource\\ini\\rigging.ini", &wfd);
+        auto *h = fio->_FindFirstFile("resource\\ini\\rigging.ini", &wfd);
         if (INVALID_HANDLE_VALUE != h)
         {
-            FILETIME ft_new = wfd.ftLastWriteTime;
-            _CORE_API->fio->_FindClose(h);
+            auto ft_new = wfd.ftLastWriteTime;
+            fio->_FindClose(h);
 
             if (CompareFileTime(&ft_old, &ft_new) != 0)
             {
@@ -333,14 +333,15 @@ void SAIL::Execute(dword Delta_Time)
                 LoadSailIni();
                 if (oldWindQnt != WINDVECTOR_QUANTITY) // если изменили размер таблицы ветров
                 {
-                    PTR_DELETE(WindVect);
-                    WindVect = NEW float[WINDVECTOR_QUANTITY];
+                    STORM_DELETE(WindVect);
+                    WindVect = new float[WINDVECTOR_QUANTITY];
                     if (WindVect) // расчет таблицы векторов ветра
                         for (i = 0; i < WINDVECTOR_QUANTITY; i++)
-                            WindVect[i] = sinf((float)i / (float)(WINDVECTOR_QUANTITY)*2.f * PI);
+                            WindVect[i] =
+                                sinf(static_cast<float>(i) / static_cast<float>(WINDVECTOR_QUANTITY) * 2.f * PI);
                     else
                     {
-                        SE_THROW_MSG("No memory allocation: WindVect");
+                        throw std::exception("No memory allocation: WindVect");
                     }
                 }
                 for (i = 0; i < sailQuantity; i++)
@@ -356,10 +357,9 @@ void SAIL::Execute(dword Delta_Time)
         }
 
         // получим значение ветра
-        ENTITY_ID ei;
-        if (_CORE_API->FindClass(&ei, "weather", 0))
+        if (const auto ei = EntityManager::GetEntityId("weather"))
         {
-            WEATHER_BASE *wb = (WEATHER_BASE *)_CORE_API->GetEntityPointer(&ei);
+            WEATHER_BASE *wb = static_cast<WEATHER_BASE *>(EntityManager::GetEntityPointer(ei));
             globalWind.ang.x = wb->GetFloat(whf_wind_angle);
             globalWind.ang.z = cosf(globalWind.ang.x);
             globalWind.ang.x = sinf(globalWind.ang.x);
@@ -374,18 +374,18 @@ void SAIL::Execute(dword Delta_Time)
             if (gdata[i].bDeleted)
                 continue;
             MODEL *cmod;
-            cmod = (MODEL *)_CORE_API->GetEntityPointer(&gdata[i].modelEI);
-            if (cmod == 0)
+            cmod = static_cast<MODEL *>(EntityManager::GetEntityPointer(gdata[i].modelEI));
+            if (cmod == nullptr)
                 continue;
-            gdata[i].boxCenter = gdata[i].boxSize =
-                slist[gdata[i].sailIdx[0]]->ss.boundSphere.rc; // CVECTOR(0.f,0.f,0.f);
+            gdata[i].boxCenter = gdata[i].boxSize = slist[gdata[i].sailIdx[0]]->ss.boundSphere.rc;
+            // CVECTOR(0.f,0.f,0.f);
             gdata[i].speed_c = 0.f;
             gdata[i].maxSpeed = 0.f;
             gdata[i].curHole = 0;
             gdata[i].bFinalSailDoOld = gdata[i].bFinalSailDo;
             gdata[i].bFinalSailDo = false;
-            VDATA *pvdat = api->Event("evntGetSRollSpeed", "l", GetCharacterForGroup(i));
-            if (pvdat == null)
+            VDATA *pvdat = core.Event("evntGetSRollSpeed", "l", GetCharacterForGroup(i));
+            if (pvdat == nullptr)
                 gdata[i].fRollingSpeed = ROLLINGSPEED;
             else
                 gdata[i].fRollingSpeed = pvdat->GetFloat() * ROLLINGSPEED;
@@ -393,8 +393,7 @@ void SAIL::Execute(dword Delta_Time)
 
         CVECTOR pos, ang;
         float perspect;
-        _asm rdtsc;
-        _asm mov rtime, eax;
+        RDTSC_B(rtime);
         RenderService->GetCamera(pos, ang, perspect);
         CMatrix tmpMtx;
         tmpMtx.BuildMatrix(ang);
@@ -422,7 +421,7 @@ void SAIL::Execute(dword Delta_Time)
             gdata[slist[i]->HostNum].curHole += slist[i]->GetMaxHoleCount() - slist[i]->ss.holeCount;
         }
 
-        SAILVERTEX *pv = (SAILVERTEX *)RenderService->LockVertexBuffer(sg.vertBuf);
+        auto *pv = static_cast<SAILVERTEX *>(RenderService->LockVertexBuffer(sg.vertBuf));
         if (pv)
         {
             for (i = 0; i < sailQuantity; i++)
@@ -436,7 +435,7 @@ void SAIL::Execute(dword Delta_Time)
                 //                    if(!slist[i]->ss.rollingSail)
                 //                        slist[i]->SetRolling(gdata[slist[i]->HostNum].bFinalSailUp);
                 // расчет бокса ограничивающего паруса
-                CVECTOR vtmp = slist[i]->ss.boundSphere.rc - CVECTOR(slist[i]->ss.boundSphere.r);
+                CVECTOR vtmp = slist[i]->ss.boundSphere.rc - slist[i]->ss.boundSphere.r;
                 int itmp = slist[i]->HostNum;
                 if (gdata[itmp].boxCenter.x > vtmp.x)
                     gdata[itmp].boxCenter.x = vtmp.x;
@@ -445,7 +444,7 @@ void SAIL::Execute(dword Delta_Time)
                 if (gdata[itmp].boxCenter.z > vtmp.z)
                     gdata[itmp].boxCenter.z = vtmp.z;
 
-                vtmp = slist[i]->ss.boundSphere.rc + CVECTOR(slist[i]->ss.boundSphere.r);
+                vtmp = slist[i]->ss.boundSphere.rc + slist[i]->ss.boundSphere.r;
                 if (gdata[itmp].boxSize.x < vtmp.x)
                     gdata[itmp].boxSize.x = vtmp.x;
                 if (gdata[itmp].boxSize.y < vtmp.y)
@@ -468,16 +467,16 @@ void SAIL::Execute(dword Delta_Time)
             {
                 if (gdata[i].bYesShip)
                 {
-                    ATTRIBUTES *pA = ((VAI_OBJBASE *)gdata[i].shipEI.pointer)->GetACharacter();
-                    api->Event("Ship_SailsMoveSound", "al", pA, (long)gdata[i].bFinalSailDo);
+                    ATTRIBUTES *pA =
+                        static_cast<VAI_OBJBASE *>(EntityManager::GetEntityPointer(gdata[i].shipEI))->GetACharacter();
+                    core.Event("Ship_SailsMoveSound", "al", pA, static_cast<long>(gdata[i].bFinalSailDo));
                 }
             }
 
-            float fSP = (float)gdata[i].maxSP;
+            float fSP = static_cast<float>(gdata[i].maxSP);
             float curSP = (float)gdata[i].maxSP;
             float fSDmg = 0.0;
             float fSPow = 0.0;
-
             if (gdata[i].speed_m < 0.001f)
             {
                 gdata[i].shipSpeed = 0.f;
@@ -512,38 +511,29 @@ void SAIL::Execute(dword Delta_Time)
 
             if (gdata[i].bYesShip)
             {
-                VAI_OBJBASE *pVai = (VAI_OBJBASE *)_CORE_API->GetEntityPointer(&gdata[i].shipEI);
-                if (pVai != null && pVai->GetACharacter() != null)
+                auto *pVai = static_cast<VAI_OBJBASE *>(EntityManager::GetEntityPointer(gdata[i].shipEI));
+                if (pVai != nullptr && pVai->GetACharacter() != nullptr)
                 {
                     ATTRIBUTES *pA = pVai->GetACharacter()->GetAttributeClass("Ship");
-                    if (pA != null)
-                    {
-                        //						pA->SetAttributeUseDword("SP",(long)fSP);
-                        //						pA->SetAttributeUseDword("curSP",(long)curSP);
-                        pA->SetAttributeUseDword("SP", (long)curSP);
-                    }
+                    if (pA != nullptr)
+                        pA->SetAttributeUseDword("SP", fftoi(curSP));
+                    // pA->SetAttributeUseDword("SP", (long)fSP);
                 }
             }
         }
         // инициализация параметров трассировки луча
         LastTraceGroup = 0;
-        _asm rdtsc;
-        _asm sub eax, rtime;
-        _asm mov rtime, eax;
+        RDTSC_E(rtime);
         tm.idx = rtime;
     }
 }
 
-void SAIL::Realize(dword Delta_Time)
+void SAIL::Realize(uint32_t Delta_Time)
 {
-    dword dwOldTextureFactor;
+    uint32_t dwOldTextureFactor;
     int i, j, idx;
     if (bUse)
     {
-        DWORD tm_draw;
-
-        _asm rdtsc;
-        _asm mov tm_draw, eax;
         bool bDraw = RenderService->TechniqueExecuteStart("ShipSail");
         if (!bDraw)
             return;
@@ -553,7 +543,7 @@ void SAIL::Realize(dword Delta_Time)
         RenderService->GetTransform(D3DTS_VIEW, (D3DXMATRIX *)&matv);
         RenderService->GetTransform(D3DTS_PROJECTION, (D3DXMATRIX *)&matp);
         matc = matv * matp;
-        if (false) // Delta_Time==0 )
+        if constexpr (false) // Delta_Time==0 )
         {
             for (j = 0; j < groupQuantity; j++)
             {
@@ -618,22 +608,19 @@ void SAIL::Realize(dword Delta_Time)
                     else
                         RenderService->TextureSet(1, m_nEmptyGerbTex);
                     // Draw hole texture sail
-                    dword dwOld;
+                    uint32_t dwOld;
                     RenderService->GetSamplerState(2, D3DSAMP_ADDRESSU, &dwOld);
                     RenderService->SetSamplerState(2, D3DSAMP_ADDRESSU, D3DTADDRESS_MIRROR);
-// slist[i]->FillIndex(pt);
-#ifndef _XBOX
-                    WORD *pt = (WORD *)RenderService->LockIndexBuffer(sg.indxBuf, D3DLOCK_DISCARD);
-#else
-                    WORD *pt = (WORD *)RenderService->LockIndexBuffer(sg.indxBuf, 0);
-#endif
+                    // slist[i]->FillIndex(pt);
+                    auto *pt = static_cast<uint16_t *>(RenderService->LockIndexBuffer(sg.indxBuf, D3DLOCK_DISCARD));
                     if (pt)
                         slist[i]->FillIndex(pt);
                     RenderService->UnLockIndexBuffer(sg.indxBuf);
                     if (gdata[j].bYesShip)
                     {
-                        ((SHIP_BASE *)gdata[j].shipEI.pointer)->SetLightAndFog(true);
-                        ((SHIP_BASE *)gdata[j].shipEI.pointer)->SetLights();
+                        static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(gdata[j].shipEI))
+                            ->SetLightAndFog(true);
+                        static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(gdata[j].shipEI))->SetLights();
                     }
                     if (slist[i]->ss.nholeIndx != 0)
                     {
@@ -649,25 +636,26 @@ void SAIL::Realize(dword Delta_Time)
                     }
                     if (gdata[j].bYesShip)
                     {
-                        ((SHIP_BASE *)gdata[j].shipEI.pointer)->UnSetLights();
-                        ((SHIP_BASE *)gdata[j].shipEI.pointer)->RestoreLightAndFog();
+                        static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(gdata[j].shipEI))->UnSetLights();
+                        static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(gdata[j].shipEI))
+                            ->RestoreLightAndFog();
                     }
                 }
                 RenderService->SetRenderState(D3DRS_TEXTUREFACTOR, dwOldTextureFactor);
             }
 
-            _asm rdtsc _asm sub eax, tm_draw _asm mov tm_draw, eax
+            //_asm rdtsc	_asm sub eax,tm_draw _asm mov tm_draw,eax
         }
         while (RenderService->TechniqueExecuteNext())
         {
-        };
+        }
     }
 }
 
-dword _cdecl SAIL::ProcessMessage(MESSAGE &message)
+uint64_t SAIL::ProcessMessage(MESSAGE &message)
 {
-    GUARD(dword _cdecl SAIL::ProcessMessage(MESSAGE message))
-    ENTITY_ID tmpEI;
+    // GUARD(uint32_t SAIL::ProcessMessage(MESSAGE message))
+    entid_t tmpEI;
     int i;
 
     switch (message.Long())
@@ -678,17 +666,18 @@ dword _cdecl SAIL::ProcessMessage(MESSAGE &message)
         if (gdata)
         {
             GROUPDATA *oldgdata = gdata;
-            gdata = NEW GROUPDATA[groupQuantity + 1];
+            gdata = new GROUPDATA[groupQuantity + 1];
             memcpy(gdata, oldgdata, sizeof(GROUPDATA) * groupQuantity);
-            VOIDPTR_DELETE(oldgdata);
+            delete oldgdata;
+            oldgdata = nullptr;
             groupQuantity++;
         }
         else
         {
-            gdata = NEW GROUPDATA[1];
+            gdata = new GROUPDATA[1];
             groupQuantity = 1;
             sailQuantity = 0;
-            slist = 0;
+            slist = nullptr;
         }
         // Set new data into buffer
         gdata[groupQuantity - 1].bDeleted = false;
@@ -717,14 +706,14 @@ dword _cdecl SAIL::ProcessMessage(MESSAGE &message)
         }
 
         MODEL *mdl;
-        if ((mdl = (MODEL *)_CORE_API->GetEntityPointer(&gdata[groupQuantity - 1].modelEI)) != 0)
+        if ((mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(gdata[groupQuantity - 1].modelEI))) != nullptr)
         {
             GEOS::INFO gi;
             GEOS::LABEL gl;
             for (int j = 0; true; j++)
             {
                 NODE *nod = mdl->GetNode(j);
-                if (nod == null || nod->geo == null)
+                if (nod == nullptr || nod->geo == nullptr)
                     break;
 
                 nod->geo->GetInfo(gi);
@@ -739,7 +728,7 @@ dword _cdecl SAIL::ProcessMessage(MESSAGE &message)
         }
         else
         {
-            api->Trace("WARNING! Can`t model class pointer for ShipModel");
+            core.Trace("WARNING! Can`t model class pointer for ShipModel");
         }
         // Set all getting sails
         SetAllSails(groupQuantity - 1);
@@ -747,7 +736,7 @@ dword _cdecl SAIL::ProcessMessage(MESSAGE &message)
     }
     break;
 
-    // Do rope tie
+        // Do rope tie
     case MSG_SAIL_ROPE_TIE: // format "lplpl" (code,&NODE,groupNum,&position,ropenum)
         int iMax, posNum;
         float posDelta, curDelta;
@@ -757,7 +746,7 @@ dword _cdecl SAIL::ProcessMessage(MESSAGE &message)
         gNum = message.Long();
         CVECTOR *pos;
         pos = (CVECTOR *)message.Pointer();
-        if (pos == 0)
+        if (pos == nullptr)
             break;
         int ropenum;
         ropenum = message.Long();
@@ -786,10 +775,10 @@ dword _cdecl SAIL::ProcessMessage(MESSAGE &message)
 
                 CVECTOR epos;
                 if (so->ss.turningSail && posNum != 0) // установка только для поворачивающихся парусов
-                    if (_CORE_API->FindClass(&tmpEI, "rope", 0))
-                        if (so->sailtrope.rrs[0] == 0)
+                    if (tmpEI = EntityManager::GetEntityId("rope"))
+                        if (so->sailtrope.rrs[0] == nullptr)
                         {
-                            so->sailtrope.rrs[0] = NEW ROTATEROPEDSAIL;
+                            so->sailtrope.rrs[0] = new ROTATEROPEDSAIL;
                             so->sailtrope.rrs[0]->ropenum = ropenum;
                             so->sailtrope.rrs[0]->tiePoint = posNum;
                             CVECTOR bpos;
@@ -805,24 +794,24 @@ dword _cdecl SAIL::ProcessMessage(MESSAGE &message)
                                 bpos = so->ss.hardPoints[1];
                                 break;
                             }
-                            ((ROPE_BASE *)_CORE_API->GetEntityPointer(&tmpEI))
+                            static_cast<ROPE_BASE *>(EntityManager::GetEntityPointer(tmpEI))
                                 ->GetEndPoint(&epos, so->sailtrope.rrs[0]->ropenum, gdata[so->HostNum].modelEI);
                             so->sailtrope.rrs[0]->r1 = sqrtf(~(*pos - bpos));
                             so->sailtrope.rrs[0]->r2 = sqrtf(~(*pos - epos));
                             if (so->ss.eSailType != SAIL_TREANGLE)
                             {
                                 CVECTOR tmpv;
-                                tmpv = so->sgeo.dVv + so->sgeo.ddVv * (float)SAIL_ROW_MAX;
-                                tmpv = so->sgeo.dVv + so->sgeo.ddVv * (float)SAIL_ROW_MAX;
+                                tmpv = so->sgeo.dVv + so->sgeo.ddVv * static_cast<float>(SAIL_ROW_MAX);
+                                tmpv = so->sgeo.dVv + so->sgeo.ddVv * static_cast<float>(SAIL_ROW_MAX);
                                 tmpv = (so->sailtrope.rrs[0]->r1) * (!tmpv);
                                 tmpv = *pos - tmpv;
 
                                 so->sailtrope.rrs[0]->b = tmpv;
                             }
                         }
-                        else if (so->sailtrope.rrs[1] == 0)
+                        else if (so->sailtrope.rrs[1] == nullptr)
                         {
-                            so->sailtrope.rrs[1] = NEW ROTATEROPEDSAIL;
+                            so->sailtrope.rrs[1] = new ROTATEROPEDSAIL;
                             so->sailtrope.rrs[1]->ropenum = ropenum;
                             so->sailtrope.rrs[1]->tiePoint = posNum;
                             CVECTOR bpos;
@@ -839,13 +828,13 @@ dword _cdecl SAIL::ProcessMessage(MESSAGE &message)
                                 break;
                             }
                             so->sailtrope.rrs[1]->r1 = sqrtf(~(*pos - bpos));
-                            ((ROPE_BASE *)_CORE_API->GetEntityPointer(&tmpEI))
+                            static_cast<ROPE_BASE *>(EntityManager::GetEntityPointer(tmpEI))
                                 ->GetEndPoint(&epos, so->sailtrope.rrs[1]->ropenum, gdata[so->HostNum].modelEI);
                             so->sailtrope.rrs[1]->r2 = sqrtf(~(*pos - epos));
                             if (so->ss.eSailType != SAIL_TREANGLE)
                             {
                                 CVECTOR tmpv;
-                                tmpv = so->sgeo.dVv + so->sgeo.ddVv * (float)SAIL_ROW_MAX;
+                                tmpv = so->sgeo.dVv + so->sgeo.ddVv * static_cast<float>(SAIL_ROW_MAX);
                                 tmpv = (so->sailtrope.rrs[1]->r1) * (!tmpv);
                                 tmpv = *pos - tmpv;
 
@@ -856,7 +845,7 @@ dword _cdecl SAIL::ProcessMessage(MESSAGE &message)
         }
         break;
 
-    // получить от парусов скорость перемещения корабля
+        // получить от парусов скорость перемещения корабля
     case MSG_SAIL_GET_SPEED:
         tmpEI = message.EntityID();
         float *speedPtr;
@@ -938,10 +927,10 @@ dword _cdecl SAIL::ProcessMessage(MESSAGE &message)
 
     case MSG_SAIL_GET_PARAMS: // "lip"
     {
-        ENTITY_ID shipEI = message.EntityID();
+        entid_t shipEI = message.EntityID();
         float *pMaxSpeed = (float *)message.Pointer();
         // найдем нужную группу парусов
-        int gn = 0;
+        int gn;
         for (gn = 0; gn < groupQuantity; gn++)
             if (gdata[gn].shipEI == shipEI)
                 break;
@@ -954,27 +943,27 @@ dword _cdecl SAIL::ProcessMessage(MESSAGE &message)
     }
     break;
 
-    // перебросить парус в другую группу
+        // перебросить парус в другую группу
     case MSG_SAIL_TO_NEWHOST: {
-        ENTITY_ID oldModelEI = message.EntityID();
+        entid_t oldModelEI = message.EntityID();
         NODE *nod = (NODE *)message.Pointer();
         long groupNum = message.Long();
-        ENTITY_ID newHostEI = message.EntityID();
-        ENTITY_ID newModelEI = message.EntityID();
+        entid_t newHostEI = message.EntityID();
+        entid_t newModelEI = message.EntityID();
         DoSailToNewHost(newModelEI, newHostEI, groupNum, nod, oldModelEI);
     }
     break;
     case MSG_SAIL_CHECK: {
-        ENTITY_ID oldHostEI = message.EntityID();
-        ENTITY_ID newHostEI = message.EntityID();
-        ENTITY_ID newModelEI = message.EntityID();
+        entid_t oldHostEI = message.EntityID();
+        entid_t newHostEI = message.EntityID();
+        entid_t newModelEI = message.EntityID();
         DoNoRopeSailToNewHost(newModelEI, newHostEI, oldHostEI);
     }
     break;
 
-    // удалить группу парусов
+        // удалить группу парусов
     case MSG_SAIL_DEL_GROUP:
-        tmpEI = message.EntityID(); // получим ENTITY хозяина группы
+        tmpEI = message.EntityID(); // получим Entity хозяина группы
         for (i = 0; i < groupQuantity; i++)
             if (tmpEI == gdata[i].shipEI)
             {
@@ -984,9 +973,9 @@ dword _cdecl SAIL::ProcessMessage(MESSAGE &message)
             }
         break;
 
-    // освоботить от стандартного надувания группу парусов
+        // освоботить от стандартного надувания группу парусов
     case MSG_SAIL_FREE_GROUP:
-        tmpEI = message.EntityID(); // ENTITY хозяина группы
+        tmpEI = message.EntityID(); // Entity хозяина группы
         for (i = 0; i < groupQuantity; i++)
             if (tmpEI == gdata[i].shipEI)
             {
@@ -1001,9 +990,9 @@ dword _cdecl SAIL::ProcessMessage(MESSAGE &message)
             }
         break;
 
-    // начать/закончить присоединение парусов к падающей мачте
+        // начать/закончить присоединение парусов к падающей мачте
     case MSG_SAIL_MAST_PROCESSING:
-        PTR_DELETE(m_sMastName);
+        STORM_DELETE(m_sMastName);
         m_nMastCreatedCharacter = message.Long();
         if (m_nMastCreatedCharacter != -1)
         {
@@ -1012,16 +1001,17 @@ dword _cdecl SAIL::ProcessMessage(MESSAGE &message)
             param[sizeof(param) - 1] = 0;
             int slen = strlen(param);
             if (slen > 0)
-                if ((m_sMastName = NEW char[slen + 1]) == null)
+            {
+                if ((m_sMastName = new char[slen + 1]) == nullptr)
                 {
-                    SE_THROW_MSG("allocate memory error");
+                    throw std::exception("allocate memory error");
                 }
-                else
-                    strcpy(m_sMastName, param);
+                strcpy_s(m_sMastName, slen + 1, param);
+            }
         }
         break;
 
-    // скриптовое сообщение
+        // скриптовое сообщение
     case MSG_SAIL_SCRIPT_PROCESSING: {
         char param[256];
         param[0] = 0;
@@ -1031,7 +1021,7 @@ dword _cdecl SAIL::ProcessMessage(MESSAGE &message)
     break;
     }
 
-    UNGUARD
+    // UNGUARD
     return 0;
 }
 
@@ -1053,13 +1043,13 @@ void SAIL::AddSailLabel(GEOS::LABEL &lbl, NODE *nod, bool bSailUp)
         if (slist)
         {
             SAILONE **oldslist = slist;
-            slist = NEW SAILONE * [sailQuantity + 1];
+            slist = new SAILONE *[sailQuantity + 1];
             memcpy(slist, oldslist, sizeof(SAILONE *) * sailQuantity);
             delete oldslist;
         }
         else
-            slist = NEW SAILONE *[1];
-        cs = slist[sailQuantity] = NEW SAILONE;
+            slist = new SAILONE *[1];
+        cs = slist[sailQuantity] = new SAILONE;
         sailQuantity++;
         cs->pp = this;
         cs->HostNum = groupQuantity - 1;
@@ -1114,7 +1104,7 @@ void SAIL::AddSailLabel(GEOS::LABEL &lbl, NODE *nod, bool bSailUp)
             cs->ss.rollingSail = true;
             cs->ss.texNum = 2;
             break;
-        // --> ugeen 08.11.10
+            // --> ugeen 08.11.10
         case 'v': // triangle sail
             cs->ss.eSailType = SAIL_TREANGLE;
             cs->ss.texNum = 1;
@@ -1129,7 +1119,6 @@ void SAIL::AddSailLabel(GEOS::LABEL &lbl, NODE *nod, bool bSailUp)
             break;
             // <-- ugeen
         }
-
         cs->ss.turningSail = !strncmp(nod->GetName(), "rey_", 4);
     }
 
@@ -1176,32 +1165,32 @@ void SAIL::SetAllSails(int groupNum)
                 gdata[groupNum].sailQuantity++;
                 slist[i]->SetGeometry();
                 gdata[groupNum].speed_m += slist[i]->maxSpeed;
-                gdata[groupNum].maxHole += (int)slist[i]->GetMaxHoleCount();
+                gdata[groupNum].maxHole += static_cast<int>(slist[i]->GetMaxHoleCount());
             }
             else
             {
-                // SE_THROW_MSG("SAIL: Null size");
-                api->Trace("SAIL: Can`t init sail");
-                PTR_DELETE(slist[i]);
+                // throw std::exception("SAIL: Null size");
+                core.Trace("SAIL: Can`t init sail");
+                STORM_DELETE(slist[i]);
                 sailQuantity--;
                 if (sailQuantity > 0)
                 {
                     SAILONE **oldslist = slist;
-                    slist = NEW SAILONE *[sailQuantity];
+                    slist = new SAILONE *[sailQuantity];
                     if (!slist)
                     {
                         slist = oldslist;
-                        oldslist = 0;
+                        oldslist = nullptr;
                     }
                     if (i > 0)
                         memcpy(slist, oldslist, sizeof(SAILONE *) * i);
                     if (i < sailQuantity)
                         memcpy(&slist[i], &oldslist[i + 1], sizeof(SAILONE *) * (sailQuantity - i));
-                    PTR_DELETE(oldslist);
+                    STORM_DELETE(oldslist);
                 }
                 else
                 {
-                    PTR_DELETE(slist);
+                    STORM_DELETE(slist);
                 }
                 i--;
             }
@@ -1209,7 +1198,7 @@ void SAIL::SetAllSails(int groupNum)
 
     if (gdata[groupNum].sailQuantity > 0)
     {
-        gdata[groupNum].sailIdx = NEW int[gdata[groupNum].sailQuantity];
+        gdata[groupNum].sailIdx = new int[gdata[groupNum].sailQuantity];
         int idx = 0;
         for (int i = 0; i < sailQuantity; i++)
             if (slist[i]->HostNum == groupNum)
@@ -1219,38 +1208,39 @@ void SAIL::SetAllSails(int groupNum)
         // Посмотрим наличие дырочек
         if (gdata[groupNum].bYesShip && !gdata[groupNum].bDeleted)
         {
-            ATTRIBUTES *pACh = ((VAI_OBJBASE *)gdata[groupNum].shipEI.pointer)->GetACharacter();
-            ATTRIBUTES *pA = null;
+            ATTRIBUTES *pACh =
+                static_cast<VAI_OBJBASE *>(EntityManager::GetEntityPointer(gdata[groupNum].shipEI))->GetACharacter();
+            ATTRIBUTES *pA = nullptr;
             // Запустим установку текстур на паруса
-            SetSailTextures(groupNum, api->Event("GetSailTextureData", "l", pACh->GetAttributeAsDword("index", -1)));
-            if (pACh != null)
+            SetSailTextures(groupNum, core.Event("GetSailTextureData", "l", pACh->GetAttributeAsDword("index", -1)));
+            if (pACh != nullptr)
             {
                 pA = pACh->FindAClass(pA, "ship.sails");
-                if (pA == null)
+                if (pA == nullptr)
                     pA = pACh->CreateSubAClass(pACh, "ship.sails");
             }
-            if (pA != null)
+            if (pA != nullptr)
             {
                 char param[256];
-                sprintf(param, "%d", gdata[groupNum].maxHole);
+                sprintf_s(param, "%d", gdata[groupNum].maxHole);
                 pA->SetValue(param);
-                for (int i = 0; i < (int)pA->GetAttributesNum(); i++)
+                for (int i = 0; i < static_cast<int>(pA->GetAttributesNum()); i++)
                 {
                     ATTRIBUTES *pAttr = pA->GetAttributeClass(i);
-                    if (pAttr != null)
-                        for (int j = 0; j < (int)pAttr->GetAttributesNum(); j++)
+                    if (pAttr != nullptr)
+                        for (int j = 0; j < static_cast<int>(pAttr->GetAttributesNum()); j++)
                         {
                             ATTRIBUTES *pASail = pAttr->GetAttributeClass(j);
-                            if (pASail != null)
+                            if (pASail != nullptr)
                             {
                                 SAILONE *ps = FindSailFromData(groupNum, pAttr->GetThisName(), pASail->GetThisName());
-                                if (ps != null)
+                                if (ps != nullptr)
                                 {
                                     ps->SetAllHole(pASail->GetAttributeAsDword("hd"));
                                     /*if( (ps->ss.eSailType==SAIL_TREANGLE?10:12) == (int)ps->ss.holeCount )
                                     { // весь парус подпорчен - нафиг он нужен
-                                        ps->bDeleted = true;
-                                        bDeleteState = true;
+                                      ps->bDeleted = true;
+                                      bDeleteState = true;
                                     }*/
                                 }
                             }
@@ -1265,18 +1255,20 @@ void SAIL::SetAllSails(int groupNum)
         if (groupQuantity > 0)
         {
             GROUPDATA *oldgdata = gdata;
-            gdata = NEW GROUPDATA[groupQuantity];
+            gdata = new GROUPDATA[groupQuantity];
             if (gdata)
             {
                 memcpy(gdata, oldgdata, sizeof(GROUPDATA) * groupQuantity);
-                VOIDPTR_DELETE(oldgdata);
+                delete oldgdata;
+                oldgdata = nullptr;
             }
             else
                 gdata = oldgdata;
         }
         else
         {
-            VOIDPTR_DELETE(gdata);
+            delete gdata;
+            gdata = nullptr;
         }
     }
 }
@@ -1303,12 +1295,12 @@ void SAIL::SetAllSails()
     if (m_nEmptyGerbTex == -1)
         m_nEmptyGerbTex = RenderService->TextureCreate("ships\\emptygerald.tga");
 
-    sg.vertBuf =
-        RenderService->CreateVertexBufferManaged(SAILVERTEX_FORMAT, sg.nVert * sizeof(SAILVERTEX), D3DUSAGE_WRITEONLY);
-    sg.indxBuf = RenderService->CreateIndexBufferManaged(sg.nIndx * 2);
+    sg.vertBuf = RenderService->CreateVertexBuffer(SAILVERTEX_FORMAT, sg.nVert * sizeof(SAILVERTEX),
+                                                   D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY);
+    sg.indxBuf = RenderService->CreateIndexBuffer(sg.nIndx * 2, D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY);
 
     SAILVERTEX *pv;
-    pv = (SAILVERTEX *)RenderService->LockVertexBuffer(sg.vertBuf);
+    pv = static_cast<SAILVERTEX *>(RenderService->LockVertexBuffer(sg.vertBuf));
     if (pv)
     {
         for (int i = 0; i < sailQuantity; i++)
@@ -1320,8 +1312,8 @@ void SAIL::SetAllSails()
     }
 
     // Set triangle buffer for sea mirror
-    WORD *pt;
-    pt = (WORD *)RenderService->LockIndexBuffer(sg.indxBuf);
+    uint16_t *pt;
+    pt = static_cast<uint16_t *>(RenderService->LockIndexBuffer(sg.indxBuf));
     if (pt)
     {
         for (int i = 0; i < sailQuantity; i++)
@@ -1352,30 +1344,30 @@ void SAIL::SetAllSails()
 
 void SAIL::LoadSailIni()
 {
-    GUARD(SAIL::LoadSailIni());
+    // GUARD(SAIL::LoadSailIni());
     char section[256], param[256];
 
     INIFILE *ini;
     WIN32_FIND_DATA wfd;
-    HANDLE h = _CORE_API->fio->_FindFirstFile("resource\\ini\\rigging.ini", &wfd);
+    const HANDLE h = fio->_FindFirstFile("resource\\ini\\rigging.ini", &wfd);
     if (INVALID_HANDLE_VALUE != h)
     {
         ft_old = wfd.ftLastWriteTime;
-        _CORE_API->fio->_FindClose(h);
+        fio->_FindClose(h);
     }
-    ini = _CORE_API->fio->OpenIniFile("resource\\ini\\rigging.ini");
+    ini = fio->OpenIniFile("resource\\ini\\rigging.ini");
     if (!ini)
-        SE_THROW("rigging.ini file not found!");
+        throw std::exception("rigging.ini file not found!");
 
-    sprintf(section, "SAILS");
+    sprintf_s(section, "SAILS");
 
     // load texture names
-    texQuantity = (int)ini->GetLong(section, "TextureCount", 1);
+    texQuantity = static_cast<int>(ini->GetLong(section, "TextureCount", 1));
     if (texQuantity == 0)
         texQuantity = 1;
-    texNumCommon = (float)ini->GetLong(section, "TexNumCommon", 0) / (float)texQuantity;
-    texNumEnglish = (float)ini->GetLong(section, "TexNumEnglish", 0) / (float)texQuantity;
-    texNumTreangle = (float)ini->GetLong(section, "TexNumTreangle", 0) / (float)texQuantity;
+    texNumCommon = static_cast<float>(ini->GetLong(section, "TexNumCommon", 0)) / static_cast<float>(texQuantity);
+    texNumEnglish = static_cast<float>(ini->GetLong(section, "TexNumEnglish", 0)) / static_cast<float>(texQuantity);
+    texNumTreangle = static_cast<float>(ini->GetLong(section, "TexNumTreangle", 0)) / static_cast<float>(texQuantity);
 
     // load speed calculate parameters:
     g_fSailHoleDepend = ini->GetFloat(section, "fHoleDepend", 1.0f);
@@ -1392,11 +1384,11 @@ void SAIL::LoadSailIni()
     fWindAdding = ini->GetFloat(section, "fWindAdding", .3f);
     FLEXSPEED = ini->GetFloat(section, "FLEXSPEED", .001f);
     MAXSUMWIND = ini->GetFloat(section, "MAXSUMWIND", .02f);
-    WINDVECTOR_QUANTITY = (int)ini->GetLong(section, "WINDVECTOR_QNT", 60);
-    WINDVECTOR_TINCR = (int)ini->GetLong(section, "WINDVECTOR_TINCR", 3);
-    WINDVECTOR_TADD = (int)ini->GetLong(section, "WINDVECTOR_TADD", 3);
-    WINDVECTOR_SINCR = (int)ini->GetLong(section, "WINDVECTOR_SINCR", 6);
-    WINDVECTOR_SADD = (int)ini->GetLong(section, "WINDVECTOR_SADD", 3);
+    WINDVECTOR_QUANTITY = static_cast<int>(ini->GetLong(section, "WINDVECTOR_QNT", 60));
+    WINDVECTOR_TINCR = static_cast<int>(ini->GetLong(section, "WINDVECTOR_TINCR", 3));
+    WINDVECTOR_TADD = static_cast<int>(ini->GetLong(section, "WINDVECTOR_TADD", 3));
+    WINDVECTOR_SINCR = static_cast<int>(ini->GetLong(section, "WINDVECTOR_SINCR", 6));
+    WINDVECTOR_SADD = static_cast<int>(ini->GetLong(section, "WINDVECTOR_SADD", 3));
 
     // load rolling sail parameters
     ROLL_Z_VAL = ini->GetFloat(section, "ROLL_Z_VAL", .01f);
@@ -1425,7 +1417,7 @@ void SAIL::LoadSailIni()
     // load square sail form
     ini->ReadString(section, "rollSSailForm", param, sizeof(param) - 1,
                     "0.2,0.8,1.0,0.8,0.4,1.0,1.3,1.0,0.4,0.8,1.0,0.8,0.2");
-    sscanf(param, "%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f", &SSailRollForm[0], &SSailRollForm[1], &SSailRollForm[2],
+    sscanf(param, "%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f", &SSailRollForm[0], &SSailRollForm[1], &SSailRollForm[2],
            &SSailRollForm[3], &SSailRollForm[4], &SSailRollForm[5], &SSailRollForm[6], &SSailRollForm[7],
            &SSailRollForm[8], &SSailRollForm[9], &SSailRollForm[10], &SSailRollForm[11], &SSailRollForm[12]);
     // load treangle sail form
@@ -1454,7 +1446,7 @@ void SAIL::LoadSailIni()
 
     delete ini;
 
-    UNGUARD
+    // UNGUARD
 }
 
 float SAIL::Trace(const CVECTOR &src, const CVECTOR &dst)
@@ -1467,8 +1459,8 @@ float SAIL::Trace(const CVECTOR &src, const CVECTOR &dst)
     {
         if (gdata[i].bDeleted)
             continue;
-        CVECTOR minp = gdata[i].boxCenter - gdata[i].boxSize;
-        CVECTOR maxp = gdata[i].boxCenter + gdata[i].boxSize;
+        const CVECTOR minp = gdata[i].boxCenter - gdata[i].boxSize;
+        const CVECTOR maxp = gdata[i].boxCenter + gdata[i].boxSize;
 
         if (!(src.x <= maxp.x && src.x >= minp.x && src.y <= maxp.y && src.y >= minp.y && src.z <= maxp.z &&
               src.z >= minp.z) &&
@@ -1479,52 +1471,47 @@ float SAIL::Trace(const CVECTOR &src, const CVECTOR &dst)
             CVECTOR vmed;
             // сечение по X:
             if (src.x < minp.x)
+            {
                 if (dst.x < minp.x)
                     continue;
-                else
-                {
-                    vmed = src + (dst - src) * (minp.x - src.x) / (dst.x - src.x);
-                    if (vmed.y >= minp.y && vmed.y <= maxp.y && vmed.z >= minp.z && vmed.z <= maxp.z)
-                        bYesTrace = true;
-                }
+                vmed = src + (dst - src) * (minp.x - src.x) / (dst.x - src.x);
+                if (vmed.y >= minp.y && vmed.y <= maxp.y && vmed.z >= minp.z && vmed.z <= maxp.z)
+                    bYesTrace = true;
+            }
             if (!bYesTrace && src.x > maxp.x)
+            {
                 if (dst.x > maxp.x)
                     continue;
-                else
-                {
-                    vmed = src + (dst - src) * (maxp.x - src.x) / (dst.x - src.x);
-                    if (vmed.y >= minp.y && vmed.y <= maxp.y && vmed.z >= minp.z && vmed.z <= maxp.z)
-                        bYesTrace = true;
-                }
+                vmed = src + (dst - src) * (maxp.x - src.x) / (dst.x - src.x);
+                if (vmed.y >= minp.y && vmed.y <= maxp.y && vmed.z >= minp.z && vmed.z <= maxp.z)
+                    bYesTrace = true;
+            }
             // сечение по Z:
             if (!bYesTrace && src.z < minp.z)
+            {
                 if (dst.z < minp.z)
                     continue;
-                else
-                {
-                    vmed = src + (dst - src) * (minp.z - src.z) / (dst.z - src.z);
-                    if (vmed.y >= minp.y && vmed.y <= maxp.y && vmed.x >= minp.x && vmed.x <= maxp.x)
-                        bYesTrace = true;
-                }
+                vmed = src + (dst - src) * (minp.z - src.z) / (dst.z - src.z);
+                if (vmed.y >= minp.y && vmed.y <= maxp.y && vmed.x >= minp.x && vmed.x <= maxp.x)
+                    bYesTrace = true;
+            }
             if (!bYesTrace && src.z > maxp.z)
+            {
                 if (dst.z > maxp.z)
                     continue;
-                else
-                {
-                    vmed = src + (dst - src) * (maxp.z - src.z) / (dst.z - src.z);
-                    if (vmed.y >= minp.y && vmed.y <= maxp.y && vmed.x >= minp.x && vmed.x <= maxp.x)
-                        bYesTrace = true;
-                }
+                vmed = src + (dst - src) * (maxp.z - src.z) / (dst.z - src.z);
+                if (vmed.y >= minp.y && vmed.y <= maxp.y && vmed.x >= minp.x && vmed.x <= maxp.x)
+                    bYesTrace = true;
+            }
             // сечение по Y:
             if (!bYesTrace && src.y < minp.y)
+            {
                 if (dst.y < minp.y)
                     continue;
-                else
-                {
-                    vmed = src + (dst - src) * (minp.y - src.y) / (dst.y - src.y);
-                    if (vmed.z >= minp.z && vmed.z <= maxp.z && vmed.x >= minp.x && vmed.x <= maxp.x)
-                        bYesTrace = true;
-                }
+                vmed = src + (dst - src) * (minp.y - src.y) / (dst.y - src.y);
+                if (vmed.z >= minp.z && vmed.z <= maxp.z && vmed.x >= minp.x && vmed.x <= maxp.x)
+                    bYesTrace = true;
+            }
 
             if (!bYesTrace)
                 continue;
@@ -1569,7 +1556,7 @@ const char *SAIL::GetCollideMaterialName()
     return "sail";
 }
 
-bool SAIL::GetCollideTriangle(struct Triangle &trg)
+bool SAIL::GetCollideTriangle(struct TRIANGLE &trg)
 {
     return false;
 }
@@ -1588,20 +1575,20 @@ void SAIL::FirstRun()
     else
         SetAllSails();
 
-    ENTITY_ID ropeEI;
-    if (_CORE_API->FindClass(&ropeEI, "rope", 0))
+    entid_t ropeEI;
+    if (ropeEI = EntityManager::GetEntityId("rope"))
         // расчет позиции согласно положения веревок
         for (sn = wFirstIndx; sn < sailQuantity; sn++)
         {
             bool bChange = false;
-            if (slist[sn]->sroll == 0 &&
-                !slist[sn]->bRolling) // производим перерасчет натяжения веревки если парус не в режиме поднятия
+            if (slist[sn]->sroll == nullptr && !slist[sn]->bRolling)
+                // производим перерасчет натяжения веревки если парус не в режиме поднятия
                 for (i = 0; i < 2; i++)
                     if (slist[sn]->sailtrope.rrs[i])
                     {
-                        int tieNum = slist[sn]->sailtrope.rrs[i]->tiePoint;
+                        const int tieNum = slist[sn]->sailtrope.rrs[i]->tiePoint;
                         CVECTOR endVect;
-                        ((ROPE_BASE *)_CORE_API->GetEntityPointer(&ropeEI))
+                        static_cast<ROPE_BASE *>(EntityManager::GetEntityPointer(ropeEI))
                             ->GetEndPoint(&endVect, slist[sn]->sailtrope.rrs[i]->ropenum,
                                           gdata[slist[sn]->HostNum].modelEI);
                         CVECTOR medVect;
@@ -1658,7 +1645,7 @@ float SAIL::Cannon_Trace(long iBallOwner, const CVECTOR &src, const CVECTOR &dst
     bCannonTrace = true;
     g_iBallOwnerIdx = iBallOwner;
 
-    float retVal = Trace(src, dst);
+    const float retVal = Trace(src, dst);
 
     bCannonTrace = false;
     g_iBallOwnerIdx = -1;
@@ -1667,27 +1654,29 @@ float SAIL::Cannon_Trace(long iBallOwner, const CVECTOR &src, const CVECTOR &dst
     {
         if (!slist[traceSail]->bFreeSail && !gdata[slist[traceSail]->HostNum].bDeleted)
         {
-            CVECTOR damagePoint = src + (dst - src) * retVal;
-            VAI_OBJBASE *pvai = (VAI_OBJBASE *)_CORE_API->GetEntityPointer(&gdata[slist[traceSail]->HostNum].shipEI);
-            ATTRIBUTES *pA;
-            if (pvai != null)
+            const CVECTOR damagePoint = src + (dst - src) * retVal;
+            auto *pvai =
+                static_cast<VAI_OBJBASE *>(EntityManager::GetEntityPointer(gdata[slist[traceSail]->HostNum].shipEI));
+            ATTRIBUTES *pA = nullptr;
+            if (pvai != nullptr)
                 pA = pvai->GetACharacter();
             long charIdx = -1;
-            if (pA != null)
+            if (pA != nullptr)
                 charIdx = pA->GetAttributeAsDword("index", -1);
-            api->Event(SHIP_SAIL_DAMAGE, "llfff", charIdx, iBallOwner, damagePoint.x, damagePoint.y, damagePoint.z);
+            core.Event(SHIP_SAIL_DAMAGE, "lfff", charIdx, damagePoint.x, damagePoint.y, damagePoint.z);
         }
     }
 
     return retVal;
 }
 
-void SAIL::DoSailToNewHost(ENTITY_ID newModelEI, ENTITY_ID newHostEI, int grNum, NODE *nod, ENTITY_ID oldModelEI)
+void SAIL::DoSailToNewHost(entid_t newModelEI, entid_t newHostEI, int grNum, NODE *nod, entid_t oldModelEI)
 {
     if (groupQuantity < 1 || sailQuantity < 1)
         return;
-    int oldg = 0, sn = 0;
+
     // найдем старого хозяина
+    int oldg;
     for (oldg = 0; oldg < groupQuantity; oldg++)
         if (gdata[oldg].modelEI == oldModelEI && !gdata[oldg].bDeleted)
             break;
@@ -1695,6 +1684,7 @@ void SAIL::DoSailToNewHost(ENTITY_ID newModelEI, ENTITY_ID newHostEI, int grNum,
         return; // нет старой модели - возвращаемся ничего не сделав
 
     // найдем парус
+    int sn;
     for (sn = 0; sn < sailQuantity; sn++)
         if (slist[sn]->hostNode == nod && slist[sn]->HostNum == oldg && (grNum == 0 || slist[sn]->groupNum == grNum))
             break;
@@ -1702,7 +1692,7 @@ void SAIL::DoSailToNewHost(ENTITY_ID newModelEI, ENTITY_ID newHostEI, int grNum,
         return; // нет такого паруса - возвращаемся без результата
 
     // в старом хозяине найдем ссылку на наш парус
-    int idx = 0, gn = 0;
+    int idx;
     for (idx = 0; idx < gdata[oldg].sailQuantity; idx++)
         if (gdata[oldg].sailIdx[idx] == sn)
             break;
@@ -1710,15 +1700,16 @@ void SAIL::DoSailToNewHost(ENTITY_ID newModelEI, ENTITY_ID newHostEI, int grNum,
         return; // нет паруса в группе - возврат без результата
 
     // найдем нового хозяина
+    int gn;
     for (gn = 0; gn < groupQuantity; gn++)
         if (gdata[gn].modelEI == newModelEI)
             break;
     if (gn == groupQuantity) // нет такого хозяина - создаем нового
     {
         GROUPDATA *oldgdata = gdata;
-        gdata = NEW GROUPDATA[groupQuantity + 1];
-        if (gdata == 0)
-            SE_THROW_MSG("Not memory allocation");
+        gdata = new GROUPDATA[groupQuantity + 1];
+        if (gdata == nullptr)
+            throw std::exception("Not memory allocation");
         memcpy(gdata, oldgdata, sizeof(GROUPDATA) * groupQuantity);
         gdata[gn].bYesShip = false;
         gdata[gn].bDeleted = false;
@@ -1730,37 +1721,38 @@ void SAIL::DoSailToNewHost(ENTITY_ID newModelEI, ENTITY_ID newHostEI, int grNum,
         gdata[gn].modelEI = newModelEI;
         gdata[gn].dwSailsColor = 0xFFFFFFFF;
         gdata[gn].maxSP = 100;
-        VOIDPTR_DELETE(oldgdata);
+        delete oldgdata;
+        oldgdata = nullptr;
         groupQuantity++;
         bDeleteState = true;
     }
 
     // поищем новый парус в новой группе
-    int i = 0;
+    int i;
     for (i = 0; i < gdata[gn].sailQuantity; i++)
         if (gdata[gn].sailIdx[i] == sn)
             break;
 
-    if (m_nMastCreatedCharacter >= 0 && slist[sn] != null)
-        api->Event("DoSailHole", "llssllllf", -1, m_nMastCreatedCharacter, (m_sMastName == null ? "#" : m_sMastName),
+    if (m_nMastCreatedCharacter >= 0 && slist[sn] != nullptr)
+        core.Event("DoSailHole", "llssllllf", -1, m_nMastCreatedCharacter, (m_sMastName == nullptr ? "#" : m_sMastName),
                    slist[sn]->hostNode->GetName(), slist[sn]->groupNum, slist[sn]->GetMaxHoleCount(),
                    (1 << slist[sn]->GetMaxHoleCount()) - 1, slist[sn]->GetMaxHoleCount(),
-                   (float)slist[sn]->maxSpeed / gdata[oldg].speed_m);
+                   static_cast<float>(slist[sn]->maxSpeed) / gdata[oldg].speed_m);
 
     if (i == gdata[gn].sailQuantity)
     {
         // добавим найденный парус в новую группу
         if (gdata[gn].sailQuantity == 0)
         {
-            gdata[gn].sailIdx = NEW int[1];
+            gdata[gn].sailIdx = new int[1];
             gdata[gn].sailQuantity = 1;
         }
         else
         {
             int *oldIdx = gdata[gn].sailIdx;
-            if ((gdata[gn].sailIdx = NEW int[gdata[gn].sailQuantity + 1]) == 0)
+            if ((gdata[gn].sailIdx = new int[gdata[gn].sailQuantity + 1]) == nullptr)
             {
-                SE_THROW_MSG("Not memory allocation");
+                throw std::exception("Not memory allocation");
             }
             memcpy(gdata[gn].sailIdx, oldIdx, sizeof(int) * gdata[gn].sailQuantity);
             delete oldIdx;
@@ -1776,14 +1768,14 @@ void SAIL::DoSailToNewHost(ENTITY_ID newModelEI, ENTITY_ID newHostEI, int grNum,
     // единственный парус убираем вместе с группой
     {
         // для корабля записываем значение состояния парусов = 0
-        VAI_OBJBASE *pVai = (VAI_OBJBASE *)api->GetEntityPointer(&gdata[oldg].shipEI);
+        auto *pVai = static_cast<VAI_OBJBASE *>(EntityManager::GetEntityPointer(gdata[oldg].shipEI));
         if (pVai && pVai->GetACharacter())
         {
             ATTRIBUTES *pA = pVai->GetACharacter()->GetAttributeClass("Ship");
             if (pA)
                 pA->SetAttributeUseDword("SP", 0);
         }
-        PTR_DELETE(gdata[oldg].sailIdx);
+        STORM_DELETE(gdata[oldg].sailIdx);
         gdata[oldg].sailQuantity = 0;
         gdata[oldg].bDeleted = true;
     }
@@ -1795,12 +1787,12 @@ void SAIL::DoSailToNewHost(ENTITY_ID newModelEI, ENTITY_ID newHostEI, int grNum,
     bDeleteState = true;
 
     // изменим некоторые значения для нашего паруса
-    PTR_DELETE(slist[sn]->sailtrope.rrs[0]);
-    PTR_DELETE(slist[sn]->sailtrope.rrs[1]);
+    STORM_DELETE(slist[sn]->sailtrope.rrs[0]);
+    STORM_DELETE(slist[sn]->sailtrope.rrs[1]);
     slist[sn]->sailtrope.pnttie[0] = slist[sn]->sailtrope.pnttie[1] = slist[sn]->sailtrope.pnttie[2] =
         slist[sn]->sailtrope.pnttie[3] = false;
     slist[sn]->sailtrope.pPos[0] = slist[sn]->sailtrope.pPos[1] = slist[sn]->sailtrope.pPos[2] =
-        slist[sn]->sailtrope.pPos[3] = null;
+        slist[sn]->sailtrope.pPos[3] = nullptr;
     slist[sn]->ss.turningSail = false;
 }
 
@@ -1809,15 +1801,15 @@ void SAIL::DeleteSailGroup()
     bUse = false;
     int gn, sn, i;
 
-    int old_sailQuantity = sailQuantity;
-    int old_groupQuantity = groupQuantity;
+    const int old_sailQuantity = sailQuantity;
+    const int old_groupQuantity = groupQuantity;
 
     // удалим все паруса из удаленных группы //
     //---------------------------------------//
     for (sn = 0, sailQuantity = 0; sn < old_sailQuantity; sn++)
         if (gdata[slist[sn]->HostNum].bDeleted || slist[sn]->bDeleted)
         {
-            PTR_DELETE(slist[sn]);
+            STORM_DELETE(slist[sn]);
         }
         else
             sailQuantity++;
@@ -1831,7 +1823,7 @@ void SAIL::DeleteSailGroup()
             groupQuantity++;
         else
         {
-            PTR_DELETE(gdata[gn].sailIdx);
+            STORM_DELETE(gdata[gn].sailIdx);
             gdata[gn].sailQuantity = 0;
         }
 
@@ -1842,48 +1834,48 @@ void SAIL::DeleteSailGroup()
     {
         for (i = 0; i < old_sailQuantity; i++)
         {
-            PTR_DELETE(oldslist[i]);
+            STORM_DELETE(oldslist[i]);
         }
-        slist = null;
+        slist = nullptr;
         for (i = 0; i < old_groupQuantity; i++)
         {
-            PTR_DELETE(oldgdata[i].sailIdx);
+            STORM_DELETE(oldgdata[i].sailIdx);
         }
-        gdata = null;
+        gdata = nullptr;
         sailQuantity = 0;
         groupQuantity = 0;
     }
     else
     {
-        slist = NEW SAILONE *[sailQuantity];
-        gdata = NEW GROUPDATA[groupQuantity];
-        if (slist == null || gdata == null)
+        slist = new SAILONE *[sailQuantity];
+        gdata = new GROUPDATA[groupQuantity];
+        if (slist == nullptr || gdata == nullptr)
         {
-            SE_THROW_MSG("allocate memory error");
+            throw std::exception("allocate memory error");
         }
 
         groupQuantity = 0;
         sailQuantity = 0;
         for (gn = 0; gn < old_groupQuantity; gn++)
         {
-            PTR_DELETE(oldgdata[gn].sailIdx);
+            STORM_DELETE(oldgdata[gn].sailIdx);
             // подсчет число парусов в группе
             int nsn = 0;
             for (sn = 0; sn < old_sailQuantity; sn++)
-                if (oldslist[sn] != null && oldslist[sn]->HostNum == gn)
+                if (oldslist[sn] != nullptr && oldslist[sn]->HostNum == gn)
                     nsn++;
             if (nsn == 0)
                 continue;
             //  в новом месте создаем запись о группе парусов
             memcpy(&gdata[groupQuantity], &oldgdata[gn], sizeof(GROUPDATA));
-            if ((gdata[groupQuantity].sailIdx = NEW int[nsn]) == null)
+            if ((gdata[groupQuantity].sailIdx = new int[nsn]) == nullptr)
             {
-                SE_THROW_MSG("allocate memory error");
+                throw std::exception("allocate memory error");
             }
             gdata[groupQuantity].sailQuantity = nsn;
             // заполняем список парусов для группы и общий
             for (sn = 0, nsn = 0; sn < old_sailQuantity; sn++)
-                if (oldslist[sn] != null && oldslist[sn]->HostNum == gn)
+                if (oldslist[sn] != nullptr && oldslist[sn]->HostNum == gn)
                 {
                     gdata[groupQuantity].sailIdx[nsn++] = sailQuantity;
                     slist[sailQuantity] = oldslist[sn];
@@ -1894,8 +1886,9 @@ void SAIL::DeleteSailGroup()
             groupQuantity++;
         }
     }
-    VOIDPTR_DELETE(oldgdata);
-    PTR_DELETE(oldslist);
+    delete oldgdata;
+    oldgdata = nullptr;
+    STORM_DELETE(oldslist);
 
     //подсчет новых параметров буферов вертексов и индексов
     long vIndx = 0; // индекс на вертекс буфер
@@ -1916,11 +1909,11 @@ void SAIL::DeleteSailGroup()
     if (sg.nVert > 0)
     {
         // создадим новые буферы
-        sg.vertBuf = RenderService->CreateVertexBufferManaged(SAILVERTEX_FORMAT, sg.nVert * sizeof(SAILVERTEX),
-                                                              D3DUSAGE_WRITEONLY);
+        sg.vertBuf = RenderService->CreateVertexBuffer(SAILVERTEX_FORMAT, sg.nVert * sizeof(SAILVERTEX),
+                                                       D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY);
 
         SAILVERTEX *pv;
-        pv = (SAILVERTEX *)RenderService->LockVertexBuffer(sg.vertBuf);
+        pv = static_cast<SAILVERTEX *>(RenderService->LockVertexBuffer(sg.vertBuf));
         if (pv)
         {
             for (i = 0; i < sailQuantity; i++)
@@ -1951,12 +1944,12 @@ void SAIL::SetAddSails(int firstSail)
     // удалим старые буферы
     VERTEX_BUFFER_RELEASE(RenderService, sg.vertBuf);
     // создадим новые буферы
-    sg.vertBuf =
-        RenderService->CreateVertexBufferManaged(SAILVERTEX_FORMAT, sg.nVert * sizeof(SAILVERTEX), D3DUSAGE_WRITEONLY);
+    sg.vertBuf = RenderService->CreateVertexBuffer(SAILVERTEX_FORMAT, sg.nVert * sizeof(SAILVERTEX),
+                                                   D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY);
 
     // заполним вертекс буфер и установим текстурные координаты
     SAILVERTEX *pv;
-    pv = (SAILVERTEX *)RenderService->LockVertexBuffer(sg.vertBuf);
+    pv = static_cast<SAILVERTEX *>(RenderService->LockVertexBuffer(sg.vertBuf));
     if (pv)
     {
         for (int i = 0; i < sailQuantity; i++)
@@ -1967,52 +1960,52 @@ void SAIL::SetAddSails(int firstSail)
         RenderService->UnLockVertexBuffer(sg.vertBuf);
     }
     else
-        SE_THROW_MSG("Vertex buffer error");
+        throw std::exception("Vertex buffer error");
 }
 
-void SAIL::DoNoRopeSailToNewHost(ENTITY_ID newModel, ENTITY_ID newHost, ENTITY_ID oldHost)
+void SAIL::DoNoRopeSailToNewHost(entid_t newModel, entid_t newHost, entid_t oldHost)
 {
-    ENTITY_ID rope_id;
-    if (!_CORE_API->FindClass(&rope_id, "rope", 0))
+    entid_t rope_id;
+    if (!(rope_id = EntityManager::GetEntityId("rope")))
         return; // нет веревок нет концерта
-    ROPE_BASE *rb = (ROPE_BASE *)_CORE_API->GetEntityPointer(&rope_id);
-    if (rb == null)
+    auto *rb = static_cast<ROPE_BASE *>(EntityManager::GetEntityPointer(rope_id));
+    if (rb == nullptr)
         return;
 
     // найдем группу старого хозяина
-    int ogn = 0;
-    for (int ogn = 0; ogn < groupQuantity; ogn++)
+    int ogn;
+    for (ogn = 0; ogn < groupQuantity; ogn++)
         if (gdata[ogn].bYesShip && gdata[ogn].shipEI == oldHost && !gdata[ogn].bDeleted)
             break;
     if (ogn == groupQuantity)
         return;
 
     // новый root NODE
-    MODEL *nmdl = (MODEL *)api->GetEntityPointer(&newModel);
-    if (nmdl == null)
+    MODEL *nmdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(newModel));
+    if (nmdl == nullptr)
         return;
     NODE *nroot = nmdl->GetNode(0);
-    if (nroot == null)
+    if (nroot == nullptr)
         return;
 
-    MODEL *omdl = (MODEL *)api->GetEntityPointer(&gdata[ogn].modelEI);
-    if (omdl == null)
+    auto *omdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(gdata[ogn].modelEI));
+    if (omdl == nullptr)
         return;
 
     // в найденной группе пройдемся по парусам
     for (int si = 0; si < gdata[ogn].sailQuantity; si++)
     {
-        int sn = gdata[ogn].sailIdx[si];
-        NODE *nod = null;
+        const int sn = gdata[ogn].sailIdx[si];
+        NODE *nod = nullptr;
         for (int k = 0; k < 1000; k++)
         {
             nod = omdl->GetNode(k);
-            if (nod == null)
+            if (nod == nullptr)
                 break;
             if (nod == slist[sn]->hostNode)
                 break;
         }
-        if (nod == null)
+        if (nod == nullptr)
             continue;
 
         GEOS *tgeo = slist[sn]->hostNode->geo;
@@ -2057,11 +2050,11 @@ void SAIL::DoNoRopeSailToNewHost(ENTITY_ID newModel, ENTITY_ID newHost, ENTITY_I
     }
 }
 
-void _cdecl sailPrint(VDX8RENDER *rs, const CVECTOR &pos3D, float rad, long line, const char *format, ...)
+void sailPrint(VDX9RENDER *rs, const CVECTOR &pos3D, float rad, long line, const char *format, ...)
 {
     static char buf[256];
     //Печатаем в буфер
-    long len = _vsnprintf(buf, sizeof(buf) - 1, format, (char *)(&format + 1));
+    long len = _vsnprintf_s(buf, sizeof(buf) - 1, format, (char *)(&format + 1));
     buf[sizeof(buf) - 1] = 0;
     //Ищем позицию точки на экране
     static CMatrix mtx, view, prj;
@@ -2074,14 +2067,14 @@ void _cdecl sailPrint(VDX8RENDER *rs, const CVECTOR &pos3D, float rad, long line
     float dist = ~(pos3D - view.Pos());
     if (dist >= rad * rad)
         return;
-    float d = view.Vz() | view.Pos();
+    const float d = view.Vz() | view.Pos();
     if ((pos3D | view.Vz()) < d)
         return;
     rs->GetViewport(&vp);
     mtx.Projection((CVECTOR *)&pos3D, &vrt, 1, vp.Width * 0.5f, vp.Height * 0.5f, sizeof(CVECTOR),
                    sizeof(MTX_PRJ_VECTOR));
     //Ищем позицию
-    long fh = rs->CharHeight(FONT_DEFAULT) / 2;
+    const long fh = rs->CharHeight(FONT_DEFAULT) / 2;
     vrt.y -= (line + 0.5f) * fh;
     //Прозрачность
     long color = 0xffffffff;
@@ -2089,34 +2082,35 @@ void _cdecl sailPrint(VDX8RENDER *rs, const CVECTOR &pos3D, float rad, long line
     if (dist > kDist * kDist * rad * rad)
     {
         dist = 1.0f - (sqrtf(dist) - kDist * rad) / (rad - kDist * rad);
-        color = (dword(dist * 255.0f) << 24) | 0xffffff;
+        color = (static_cast<uint32_t>(dist * 255.0f) << 24) | 0xffffff;
     }
-    rs->ExtPrint(FONT_DEFAULT, color, 0x00000000, ALIGN_CENTER, 0, 1.0f, 0, 0, long(vrt.x), long(vrt.y), buf);
+    rs->ExtPrint(FONT_DEFAULT, color, 0x00000000, PR_ALIGN_CENTER, false, 1.0f, 0, 0, static_cast<long>(vrt.x),
+                 static_cast<long>(vrt.y), buf);
 }
 
-SAILONE *SAIL::FindSailFromData(int gn, char *nodeName, char *grName)
+SAILONE *SAIL::FindSailFromData(int gn, const char *nodeName, const char *grName) const
 {
-    if (nodeName == null || grName == null)
-        return null;
+    if (nodeName == nullptr || grName == nullptr)
+        return nullptr;
     int grNum;
     sscanf(grName, "%d", &grNum);
     for (int i = 0; i < gdata[gn].sailQuantity; i++)
     {
-        int sn = gdata[gn].sailIdx[i];
-        if (slist[sn]->hostNode != null && strcmp(slist[sn]->hostNode->GetName(), nodeName) == 0 &&
+        const int sn = gdata[gn].sailIdx[i];
+        if (slist[sn]->hostNode != nullptr && strcmp(slist[sn]->hostNode->GetName(), nodeName) == 0 &&
             slist[sn]->groupNum == grNum)
             return slist[sn];
     }
-    return null;
+    return nullptr;
 }
 
-void SAIL::SetSailTextures(long grNum, VDATA *pvd)
+void SAIL::SetSailTextures(long grNum, VDATA *pvd) const
 {
-    if (grNum < 0 || grNum >= groupQuantity || pvd == null)
+    if (grNum < 0 || grNum >= groupQuantity || pvd == nullptr)
         return;
 
     ATTRIBUTES *pA = pvd->GetAClass();
-    if (pA == null)
+    if (pA == nullptr)
         return;
 
     gdata[grNum].maxSP = pA->GetAttributeAsDword("MaxSP", gdata[grNum].maxSP);
@@ -2124,7 +2118,7 @@ void SAIL::SetSailTextures(long grNum, VDATA *pvd)
     // основная текстура
     char *pcNormalName = pA->GetAttribute("normalTex");
     // герб текстуры
-    IDirect3DTexture9 *pGeraldTexture = (IDirect3DTexture9 *)pA->GetAttributeAsDword("geraldTexPointer", 0);
+    auto *pGeraldTexture = (IDirect3DTexture9 *)pA->GetAttributeAsPointer("geraldTexPointer", 0);
     char *pcGeraldName = pA->GetAttribute("geraldTex");
     //
     gdata[grNum].dwSailsColor = pA->GetAttributeAsDword("sailscolor", 0xFFFFFFFF);
@@ -2132,10 +2126,10 @@ void SAIL::SetSailTextures(long grNum, VDATA *pvd)
     for (int i = 0; i < gdata[grNum].sailQuantity; i++)
     {
         SAILONE *so = slist[gdata[grNum].sailIdx[i]];
-        if (so == null || so->hostNode == null)
+        if (so == nullptr || so->hostNode == nullptr)
             continue;
         char param[256];
-        sprintf(param, "%s", so->hostNode->GetName());
+        sprintf_s(param, "%s", so->hostNode->GetName());
         ATTRIBUTES *pAGerald = pA->GetAttributeClass(param);
         if (pAGerald)
         {
@@ -2148,7 +2142,7 @@ void SAIL::SetSailTextures(long grNum, VDATA *pvd)
                 pGeraldTexture->AddRef();
                 so->m_pGeraldTex = pGeraldTexture;
             }
-            if (so->m_nGeraldTex != -1 || so->m_pGeraldTex != 0)
+            if (so->m_nGeraldTex != -1 || so->m_pGeraldTex != nullptr)
             {
                 so->m_bIsGerald = true;
                 so->m_fHorzGeraldScale = pAGerald->GetAttributeAsFloat("hscale", 0.5f);
@@ -2168,49 +2162,49 @@ void SAIL::SetSailTextures(long grNum, VDATA *pvd)
     }
 }
 
-int SAIL::FindGroupForCharacter(int chrIdx)
+int SAIL::FindGroupForCharacter(int chrIdx) const
 {
     for (int gn = 0; gn < groupQuantity; gn++)
     {
         if (gdata[gn].bDeleted || !gdata[gn].bYesShip)
             continue;
-        ATTRIBUTES *pA = ((VAI_OBJBASE *)gdata[gn].shipEI.pointer)->GetACharacter();
-        if (pA != null)
-            if ((int)pA->GetAttributeAsDword("index", -1) == chrIdx)
+        ATTRIBUTES *pA = static_cast<VAI_OBJBASE *>(EntityManager::GetEntityPointer(gdata[gn].shipEI))->GetACharacter();
+        if (pA != nullptr)
+            if (static_cast<int>(pA->GetAttributeAsDword("index", -1)) == chrIdx)
                 return gn;
     }
     return -1;
 }
 
-int SAIL::GetCharacterForGroup(int grNum)
+int SAIL::GetCharacterForGroup(int grNum) const
 {
-    ATTRIBUTES *pA = null;
+    ATTRIBUTES *pA = nullptr;
     if (gdata[grNum].bYesShip)
-        pA = ((VAI_OBJBASE *)gdata[grNum].shipEI.pointer)->GetACharacter();
-    if (pA != null)
-        return (int)pA->GetAttributeAsDword("index", -1);
+        pA = static_cast<VAI_OBJBASE *>(EntityManager::GetEntityPointer(gdata[grNum].shipEI))->GetACharacter();
+    if (pA != nullptr)
+        return static_cast<int>(pA->GetAttributeAsDword("index", -1));
     return -1;
 }
 
 SAILONE_BASE *SAIL::FindSailForCharacter(int chrIdx, char *nodeName, int grNum)
 {
-    if (nodeName == null)
-        return null;
+    if (nodeName == nullptr)
+        return nullptr;
 
-    int gn = FindGroupForCharacter(chrIdx);
+    const int gn = FindGroupForCharacter(chrIdx);
 
     if (gn >= 0 && gn < groupQuantity)
     {
         for (int idx = 0; idx < gdata[gn].sailQuantity; idx++)
         {
-            int sn = gdata[gn].sailIdx[idx];
-            if (slist[sn]->hostNode != null && slist[sn]->groupNum == grNum &&
+            const int sn = gdata[gn].sailIdx[idx];
+            if (slist[sn]->hostNode != nullptr && slist[sn]->groupNum == grNum &&
                 strcmp(slist[sn]->hostNode->GetName(), nodeName) == 0)
                 return slist[sn];
         }
     }
 
-    return null;
+    return nullptr;
 }
 
 void SAIL::LostRender()
@@ -2224,10 +2218,10 @@ void SAIL::RestoreRender()
 {
     if (sg.nVert == 0)
         return;
-    sg.indxBuf = RenderService->CreateIndexBufferManaged(sg.nIndx * 2);
+    sg.indxBuf = RenderService->CreateIndexBuffer(sg.nIndx * 2, D3DUSAGE_DYNAMIC);
 
     // Set triangle buffer for sea mirror
-    WORD *pt = (WORD *)RenderService->LockIndexBuffer(sg.indxBuf);
+    auto *pt = static_cast<uint16_t *>(RenderService->LockIndexBuffer(sg.indxBuf));
     if (pt)
     {
         for (int i = 0; i < sailQuantity; i++)
@@ -2256,9 +2250,9 @@ void SAIL::RestoreRender()
     }
 }
 
-int SAIL::GetSailStateForCharacter(int chrIdx)
+int SAIL::GetSailStateForCharacter(int chrIdx) const
 {
-    int gn = FindGroupForCharacter(chrIdx);
+    const int gn = FindGroupForCharacter(chrIdx);
     if (gn < 0 || gn >= groupQuantity)
         return 0;
     switch (gdata[gn].curSailSet)
@@ -2276,35 +2270,35 @@ int SAIL::GetSailStateForCharacter(int chrIdx)
     return 0;
 }
 
-dword _cdecl SAIL::ScriptProcessing(char *name, MESSAGE &message)
+uint32_t SAIL::ScriptProcessing(const char *name, MESSAGE &message)
 {
-    if (name == null)
+    if (name == nullptr)
         return 0;
 
-    if (stricmp(name, "RandomSailsDmg") == 0)
+    if (_stricmp(name, "RandomSailsDmg") == 0)
     {
-        long chrIdx = message.Long();
-        float fDmg = message.Float();
-        int gn = FindGroupForCharacter(chrIdx);
+        const long chrIdx = message.Long();
+        const float fDmg = message.Float();
+        const int gn = FindGroupForCharacter(chrIdx);
         if (gn >= 0 && gn < groupQuantity)
             DoRandomsSailsDmg(chrIdx, gn, fDmg);
     }
 
-    if (stricmp(name, "GetSailStatus") == 0)
+    if (_stricmp(name, "SailRollSpeed") == 0)
+    {
+        const long chrIdx = message.Long();
+        const float fSpeed = message.Float();
+        const int gn = FindGroupForCharacter(chrIdx);
+        if (gn >= 0 && gn < groupQuantity)
+            gdata[gn].fRollingSpeed = fSpeed * ROLLINGSPEED;
+    }
+
+    if (_stricmp(name, "GetSailStatus") == 0)
     {
         long chrIdx = message.Long();
         int gn = FindGroupForCharacter(chrIdx);
         if (gn >= 0 && gn < groupQuantity)
             GetSailStatus(chrIdx, gn);
-    }
-
-    if (stricmp(name, "SailRollSpeed") == 0)
-    {
-        long chrIdx = message.Long();
-        float fSpeed = message.Float();
-        int gn = FindGroupForCharacter(chrIdx);
-        if (gn >= 0 && gn < groupQuantity)
-            gdata[gn].fRollingSpeed = fSpeed * ROLLINGSPEED;
     }
 
     return 0;
@@ -2318,7 +2312,7 @@ void SAIL::GetSailStatus(int chrIdx, int gn)
     for (int i = 0; i < gdata[gn].sailQuantity; i++)
     {
         int sn = gdata[gn].sailIdx[i];
-        VDATA *pvd = api->Event("evntGetSailStatus", "lslfll", chrIdx, slist[sn]->hostNode->GetName(),
+        VDATA *pvd = core.Event("evntGetSailStatus", "lslfll", chrIdx, slist[sn]->hostNode->GetName(),
                                 slist[sn]->groupNum, (float)slist[sn]->maxSpeed / gdata[gn].speed_m,
                                 slist[sn]->ss.holeCount, slist[sn]->GetMaxHoleCount());
     }
@@ -2336,28 +2330,28 @@ void SAIL::DoRandomsSailsDmg(int chrIdx, int gn, float fDmg)
 
     for (int _sailsQnt = gdata[gn].sailQuantity; _sailsQnt > 0;)
     {
-        int tmp = rand() % _sailsQnt;
-        int sn = _sailsIdx[tmp];
+        const int tmp = rand() % _sailsQnt;
+        const int sn = _sailsIdx[tmp];
 
         int holeIdx = rand() % slist[sn]->GetMaxHoleCount();
         for (int j = 0; j < 14 && slist[sn]->ss.hole[holeIdx]; j++)
-            if (holeIdx < (int)slist[sn]->GetMaxHoleCount() - 1)
+            if (holeIdx < static_cast<int>(slist[sn]->GetMaxHoleCount()) - 1)
                 holeIdx++;
             else
                 holeIdx = 0;
 
-        bool bOldHole = slist[sn]->ss.hole[holeIdx];
+        const bool bOldHole = slist[sn]->ss.hole[holeIdx];
         slist[sn]->ss.hole[holeIdx] = true;
         int nNewHoleCount = slist[sn]->ss.holeCount;
         if (!bOldHole)
             nNewHoleCount++;
-        VDATA *pvd = api->Event("evntRandomSailDmg", "lslfflll", chrIdx, slist[sn]->hostNode->GetName(),
-                                slist[sn]->groupNum, fDmg, (float)slist[sn]->maxSpeed / gdata[gn].speed_m,
+        VDATA *pvd = core.Event("evntRandomSailDmg", "lslfflll", chrIdx, slist[sn]->hostNode->GetName(),
+                                slist[sn]->groupNum, fDmg, static_cast<float>(slist[sn]->maxSpeed) / gdata[gn].speed_m,
                                 nNewHoleCount, slist[sn]->GetMaxHoleCount(), slist[sn]->GetHoleDword());
         slist[sn]->ss.hole[holeIdx] = bOldHole;
-        if (pvd == null)
+        if (pvd == nullptr)
         {
-            api->Trace("WARNING!!! Event evntRandomSailDmg not float return!");
+            core.Trace("WARNING!!! Event evntRandomSailDmg not float return!");
             return;
         }
         float fDoDmg = pvd->GetFloat();
@@ -2386,9 +2380,9 @@ void SAIL::DoRandomsSailsDmg(int chrIdx, int gn, float fDmg)
     }
 }
 
-dword SAIL::AttributeChanged(ATTRIBUTES *pAttr)
+uint32_t SAIL::AttributeChanged(ATTRIBUTES *pAttr)
 {
-    if (pAttr == null)
+    if (pAttr == nullptr)
         return 0;
     if (*pAttr == "MinSpeed")
         m_fMinSpeedVal = pAttr->GetAttributeAsFloat();

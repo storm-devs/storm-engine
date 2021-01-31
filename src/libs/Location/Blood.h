@@ -1,28 +1,29 @@
-
 #ifndef _Blood_H_
 #define _Blood_H_
 
 #include "collide.h"
-#include "dx8render.h"
-#include "templates\array.h"
+#include "dx9render.h"
 #include "vmodule_api.h"
+#include <vector>
 
 #define MAX_BLOOD_TRIANGLES 10000
 #define ON_LIVETIME_BLOOD_TRIANGLES (MAX_BLOOD_TRIANGLES * 3 / 4)
 #define MAX_CLIPPING_TRIANGLES 64
 
-class Blood : public ENTITY
+class Blood : public Entity
 {
     struct BloodVertex
     {
         CVECTOR pos;
-        dword dwCol;
+        uint32_t dwCol;
         float u, v;
     };
+
     struct BloodTriangle
     {
         BloodVertex v[3];
     };
+
     struct BloodInfo
     {
         long nStartIdx;
@@ -30,10 +31,12 @@ class Blood : public ENTITY
         float fLiveTime;
         CVECTOR cpos;
     };
+
     struct ClipTriangle
     {
         CVECTOR v[3];
     };
+
     //--------------------------------------------------------------------------------------------
     //Конструирование, деструктурирование
     //--------------------------------------------------------------------------------------------
@@ -42,17 +45,34 @@ class Blood : public ENTITY
     virtual ~Blood();
 
     //Инициализация
-    bool Init();
+    bool Init() override;
     //Работа
-    void Execute(dword delta_time);
-    void Realize(dword delta_time);
+    void Execute(uint32_t delta_time);
+    void Realize(uint32_t delta_time);
     //
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    uint64_t ProcessMessage(MESSAGE &message) override;
+
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
 
     static bool AddClipPoligon(const CVECTOR *v, long nv);
 
   protected:
-    VDX8RENDER *pRS;
+    VDX9RENDER *pRS;
     COLLIDE *pCol;
     long texID;
 
@@ -60,9 +80,9 @@ class Blood : public ENTITY
     long nStartT;
     long nUsedTQ;
 
-    array<BloodInfo> aBlood;
+    std::vector<BloodInfo> aBlood;
 
-    array<ENTITY_ID> aModels;
+    std::vector<entid_t> aModels;
 
     static ClipTriangle clipT[MAX_CLIPPING_TRIANGLES];
     static long nClipTQ;

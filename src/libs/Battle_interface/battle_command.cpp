@@ -1,17 +1,17 @@
 #include "battle_command.h"
-#include "image\imgrender.h"
-#include "msg_control.h"
-#include "sea\ships_list.h"
-#include "utils.h"
+#include "../../Shared/battle_interface/msg_control.h"
+#include "Utils.h"
+#include "core.h"
+#include "image/imgrender.h"
+#include "sea/ships_list.h"
 
-BICommandList::BICommandList(ENTITY_ID &eid, ATTRIBUTES *pA, VDX8RENDER *rs)
-    : m_aTexture(_FL), m_aUsedCommand(_FL), m_aCooldownUpdate(_FL)
+BICommandList::BICommandList(entid_t eid, ATTRIBUTES *pA, VDX9RENDER *rs)
 {
     m_idHostObj = eid;
     m_pARoot = pA;
     m_pRS = rs;
 
-    m_pImgRender = NEW BIImageRender(rs);
+    m_pImgRender = new BIImageRender(rs);
     Assert(m_pImgRender);
 
     m_nStartUsedCommandIndex = 0;
@@ -36,32 +36,29 @@ BICommandList::~BICommandList()
 
 void BICommandList::Draw()
 {
-    if (m_aCooldownUpdate.Size() > 0)
+    if (m_aCooldownUpdate.size() > 0)
     {
-        float fDT = api->GetDeltaTime() * .001f;
-        for (long n = 0; n < m_aCooldownUpdate; n++)
+        const auto fDT = core.GetDeltaTime() * .001f;
+        for (long n = 0; n < m_aCooldownUpdate.size(); n++)
         {
             m_aCooldownUpdate[n].fTime -= fDT;
             if (m_aCooldownUpdate[n].fTime < 0)
             {
                 m_aCooldownUpdate[n].fTime = m_aCooldownUpdate[n].fUpdateTime;
-                VDATA *pDat = api->Event("neGetCooldownFactor", "s",
-                                         m_aUsedCommand[m_aCooldownUpdate[n].nIconNum].sCommandName.GetBuffer());
+                auto *pDat = core.Event("neGetCooldownFactor", "s",
+                                        m_aUsedCommand[m_aCooldownUpdate[n].nIconNum].sCommandName.c_str());
                 if (pDat)
                     m_aUsedCommand[m_aCooldownUpdate[n].nIconNum].fCooldownFactor = pDat->GetFloat();
                 UpdateShowIcon();
             }
         }
     }
-
     if (m_pImgRender)
         m_pImgRender->Render();
 
-    if (!m_NoteText.IsEmpty())
-    {
-        m_pRS->ExtPrint(m_NoteFontID, m_NoteFontColor, 0, ALIGN_CENTER, true, m_NoteFontScale, 0, 0, m_NotePos.x,
-                        m_NotePos.y, "%s", m_NoteText.GetBuffer());
-    }
+    if (!m_NoteText.empty())
+        m_pRS->ExtPrint(m_NoteFontID, m_NoteFontColor, 0, PR_ALIGN_CENTER, true, m_NoteFontScale, 0, 0, m_NotePos.x,
+                        m_NotePos.y, "%s", m_NoteText.c_str());
 }
 
 void BICommandList::Update(long nTopLine, long nCharacterIndex, long nCommandMode)
@@ -79,68 +76,63 @@ void BICommandList::Update(long nTopLine, long nCharacterIndex, long nCommandMod
 
     m_nStartUsedCommandIndex = 0;
     m_nSelectedCommandIndex = 0;
-    m_aUsedCommand.DelAll();
-    m_aCooldownUpdate.DelAll();
+    m_aUsedCommand.clear();
+    m_aCooldownUpdate.clear();
 
-    m_NoteText.Empty();
+    m_NoteText.clear();
 
     FillIcons();
 
-    if (nOldSelIndex > 0 && nOldSelIndex < m_aUsedCommand)
+    if (nOldSelIndex > 0 && nOldSelIndex < m_aUsedCommand.size())
         m_nSelectedCommandIndex = nOldSelIndex;
 
     UpdateShowIcon();
 }
 
-long BICommandList::AddTexture(const char *pcTextureName, long nCols, long nRows)
+size_t BICommandList::AddTexture(const char *pcTextureName, uint32_t nCols, uint32_t nRows)
 {
-    long n = m_aTexture.Add();
-    m_aTexture[n].sFileName = pcTextureName;
-    m_aTexture[n].nCols = nCols;
-    m_aTexture[n].nRows = nRows;
-    return n;
+    m_aTexture.push_back(TextureDescr{pcTextureName, nCols, nRows});
+    return m_aTexture.size() - 1;
 }
 
 long BICommandList::ExecuteConfirm()
 {
-    if (m_nSelectedCommandIndex >= m_aUsedCommand)
+    if (m_nSelectedCommandIndex >= m_aUsedCommand.size())
         return 0; // error!
 
     long endCode = 0;
     long nTargIndex = 0;
-    string sLocName;
+    std::string sLocName;
 
     if (m_aUsedCommand[m_nSelectedCommandIndex].nCooldownPictureIndex >= 0 &&
         m_aUsedCommand[m_nSelectedCommandIndex].fCooldownFactor < 1.f)
         return -1;
 
-    if (!m_aUsedCommand[m_nSelectedCommandIndex].sCommandName.IsEmpty())
+    if (!m_aUsedCommand[m_nSelectedCommandIndex].sCommandName.empty())
     {
         m_sCurrentCommandName = m_aUsedCommand[m_nSelectedCommandIndex].sCommandName;
-        VDATA *pVD = api->Event("BI_CommandEndChecking", "s", m_sCurrentCommandName.GetBuffer());
-        if (pVD != null)
+        auto *pVD = core.Event("BI_CommandEndChecking", "s", m_sCurrentCommandName.c_str());
+        if (pVD != nullptr)
             pVD->Get(endCode);
     }
     else
     {
         sLocName = m_aUsedCommand[m_nSelectedCommandIndex].sLocName;
         nTargIndex = m_aUsedCommand[m_nSelectedCommandIndex].nTargetIndex;
-        if (sLocName.IsEmpty() && m_aUsedCommand[m_nSelectedCommandIndex].nCharIndex >= 0)
+        if (sLocName.empty() && m_aUsedCommand[m_nSelectedCommandIndex].nCharIndex >= 0)
             nTargIndex = m_aUsedCommand[m_nSelectedCommandIndex].nCharIndex;
     }
-    api->Event("evntBattleCommandSound", "s", "activate"); // boal 22.08.06
+    core.Event("evntBattleCommandSound", "s", "activate"); // boal 22.08.06
     switch (endCode)
     {
     case -1:
-    case 0: {
-        api->Event("BI_LaunchCommand", "lsls", m_nCurrentCommandCharacterIndex, m_sCurrentCommandName.GetBuffer(),
-                   nTargIndex, sLocName.GetBuffer());
+    case 0:
+        core.Event("BI_LaunchCommand", "lsls", m_nCurrentCommandCharacterIndex, m_sCurrentCommandName.c_str(),
+                   nTargIndex, sLocName.c_str());
         m_sCurrentCommandName = "";
-    }
-    break;
-    default: {
+        break;
+    default:
         Update(m_LeftTopPoint.y, m_nCurrentCommandCharacterIndex, endCode);
-    }
     }
     return endCode;
 }
@@ -154,7 +146,7 @@ long BICommandList::ExecuteLeft()
         {
             m_nStartUsedCommandIndex = m_nSelectedCommandIndex;
         }
-        api->Event("evntBattleCommandSound", "s", "left"); // boal 22.08.06
+        core.Event("evntBattleCommandSound", "s", "left"); // boal 22.08.06
         UpdateShowIcon();
     }
     return 0;
@@ -162,14 +154,14 @@ long BICommandList::ExecuteLeft()
 
 long BICommandList::ExecuteRight()
 {
-    if (m_nSelectedCommandIndex < (long)m_aUsedCommand.Size() - 1)
+    if (m_nSelectedCommandIndex < static_cast<long>(m_aUsedCommand.size()) - 1)
     {
         m_nSelectedCommandIndex++;
         if (m_nSelectedCommandIndex >= m_nStartUsedCommandIndex + m_nIconShowMaxQuantity)
         {
             m_nStartUsedCommandIndex = m_nSelectedCommandIndex - m_nIconShowMaxQuantity + 1;
         }
-        api->Event("evntBattleCommandSound", "s", "right"); // boal 22.08.06
+        core.Event("evntBattleCommandSound", "s", "right"); // boal 22.08.06
         UpdateShowIcon();
     }
     return 0;
@@ -179,7 +171,7 @@ long BICommandList::ExecuteCancel()
 {
     m_nSelectedCommandIndex = 0;
     m_nStartUsedCommandIndex = 0;
-    if (m_sCurrentCommandName.IsEmpty())
+    if (m_sCurrentCommandName.empty())
         return 0;
     m_sCurrentCommandName = "";
     if (m_nCurrentCommandMode == BI_COMMODE_COMMAND_SELECT)
@@ -212,7 +204,6 @@ void BICommandList::SetUpDown(bool bUp, bool bDown)
 void BICommandList::Init()
 {
     Assert(m_pImgRender);
-    long n, q, i;
     ATTRIBUTES *pAList, *pATextures;
 
     m_LeftTopPoint.x = 120;
@@ -245,7 +236,7 @@ void BICommandList::Init()
     FULLRECT(m_frActiveIconUV2);
     m_sActiveIconNote = "";
 
-    pAList = 0;
+    pAList = nullptr;
     if (m_pARoot)
         pAList = m_pARoot->GetAttributeClass("CommandList");
     if (pAList)
@@ -256,6 +247,8 @@ void BICommandList::Init()
         m_IconSize.x = pAList->GetAttributeAsDword("CommandIconWidth", m_IconSize.x);
         m_IconSize.y = pAList->GetAttributeAsDword("CommandIconHeight", m_IconSize.y);
 
+        const char *attr = nullptr;
+
         // get note font parameters
         if (pAList->GetAttribute("CommandNoteFont"))
             m_NoteFontID = m_pRS->LoadFont(pAList->GetAttribute("CommandNoteFont"));
@@ -265,7 +258,8 @@ void BICommandList::Init()
             sscanf(pAList->GetAttribute("CommandNoteOffset"), "%d,%d", &m_NoteOffset.x, &m_NoteOffset.y);
 
         // Устанавливаем значения для стрелок (вверх/вниз)
-        m_sUpDownArrowTexture = pAList->GetAttribute("UDArrow_Texture");
+        if (attr = pAList->GetAttribute("UDArrow_Texture"))
+            m_sUpDownArrowTexture = attr;
         BIUtils::ReadRectFromAttr(pAList, "UDArrow_UV_Up", m_frUpArrowUV, m_frUpArrowUV);
         BIUtils::ReadRectFromAttr(pAList, "UDArrow_UV_Down", m_frDownArrowUV, m_frDownArrowUV);
         BIUtils::ReadPosFromAttr(pAList, "UDArrow_Size", m_pntUpDownArrowSize.x, m_pntUpDownArrowSize.y,
@@ -276,43 +270,44 @@ void BICommandList::Init()
                                  m_pntDownArrowOffset.x, m_pntDownArrowOffset.y);
 
         // устанавливаем значения для иконки активности меню
-        m_sActiveIconTexture = pAList->GetAttribute("ActiveIcon_Texture");
+        if (attr = pAList->GetAttribute("ActiveIcon_Texture"))
+            m_sActiveIconTexture = attr;
         BIUtils::ReadPosFromAttr(pAList, "ActiveIcon_Offset", m_pntActiveIconOffset.x, m_pntActiveIconOffset.y,
                                  m_pntActiveIconOffset.x, m_pntActiveIconOffset.y);
         BIUtils::ReadPosFromAttr(pAList, "ActiveIcon_Size", m_pntActiveIconSize.x, m_pntActiveIconSize.y,
                                  m_pntActiveIconSize.x, m_pntActiveIconSize.y);
         BIUtils::ReadRectFromAttr(pAList, "ActiveIcon_UV1", m_frActiveIconUV1, m_frActiveIconUV1);
         BIUtils::ReadRectFromAttr(pAList, "ActiveIcon_UV2", m_frActiveIconUV2, m_frActiveIconUV2);
-        m_sActiveIconNote = pAList->GetAttribute("ActiveIcon_Note");
+        if (attr = pAList->GetAttribute("ActiveIcon_Note"))
+            m_sActiveIconNote = attr;
     }
 
-    pAList = 0;
+    pAList = nullptr;
     if (m_pARoot)
         pAList = m_pARoot->GetAttributeClass("CommandTextures");
 
-    pATextures = 0;
+    pATextures = nullptr;
     if (pAList)
         pATextures = pAList->GetAttributeClass("list");
     if (pATextures)
     {
-        q = pATextures->GetAttributesNum();
-        for (n = 0; n < q; n++)
+        size_t q = pATextures->GetAttributesNum();
+        for (int n = 0; n < q; n++)
         {
-            ATTRIBUTES *pA = pATextures->GetAttributeClass(n);
+            auto *pA = pATextures->GetAttributeClass(n);
             if (pA)
             {
-                i = m_aTexture.Add();
-                m_aTexture[i].sFileName = pA->GetAttribute("name");
-                m_aTexture[i].nCols = pA->GetAttributeAsDword("xsize", 1);
-                m_aTexture[i].nRows = pA->GetAttributeAsDword("ysize", 1);
+                TextureDescr td = {pA->GetAttribute("name") ? pA->GetAttribute("name") : std::string(),
+                                   pA->GetAttributeAsDword("xsize", 1), pA->GetAttributeAsDword("ysize", 1)};
 
-                if (m_aTexture[i].nCols < 1)
-                    m_aTexture[i].nCols = 1;
-                if (m_aTexture[i].nRows < 1)
-                    m_aTexture[i].nRows = 1;
+                if (td.nCols < 1)
+                    td.nCols = 1;
+                if (td.nRows < 1)
+                    td.nRows = 1;
 
-                BIImageMaterial *pMat = m_pImgRender->CreateMaterial(m_aTexture[i].sFileName);
-                Assert(pMat);
+                m_pImgRender->CreateMaterial(td.sFileName.c_str());
+
+                m_aTexture.push_back(td);
             }
         }
     }
@@ -325,15 +320,10 @@ long BICommandList::AddToIconList(long nTextureNum, long nNormPictureNum, long n
 {
     long n;
     // отсев уже подключенных объектов
-    for (n = 0; n < m_aUsedCommand; n++)
+    for (n = 0; n < m_aUsedCommand.size(); n++)
     {
-
         if (nCharacterIndex != -1 && m_aUsedCommand[n].nCharIndex == nCharacterIndex)
-        {
-            //			api->Trace("AddToIconList %d  m_aUsedCommand.nCharIndex %d nCharacterIndex %d", n,
-            // m_aUsedCommand[n].nCharIndex, nCharacterIndex ); 			return 0;
-        }
-
+            return 0;
         if (pcCommandName && m_aUsedCommand[n].sCommandName == pcCommandName)
             return 0;
         if (pcLocName && m_aUsedCommand[n].sLocName == pcLocName)
@@ -341,57 +331,66 @@ long BICommandList::AddToIconList(long nTextureNum, long nNormPictureNum, long n
         if (nTargetIndex != -1 && m_aUsedCommand[n].nTargetIndex == nTargetIndex)
             return 0;
     }
-    n = m_aUsedCommand.Add();
-    m_aUsedCommand[n].fCooldownFactor = 1.f;
-    m_aUsedCommand[n].nCharIndex = nCharacterIndex;
-    m_aUsedCommand[n].nCooldownPictureIndex = nCooldownPictureNum;
-    m_aUsedCommand[n].nNormPictureIndex = nNormPictureNum;
-    m_aUsedCommand[n].nSelPictureIndex = nSelPictureNum;
-    m_aUsedCommand[n].nTargetIndex = nTargetIndex;
-    m_aUsedCommand[n].nTextureIndex = nTextureNum;
-    m_aUsedCommand[n].sCommandName = pcCommandName;
-    m_aUsedCommand[n].sLocName = pcLocName;
-    m_aUsedCommand[n].sNote = pcNoteName;
+
+    UsedCommand uc;
+    uc.fCooldownFactor = 1.f;
+    uc.nCharIndex = nCharacterIndex;
+    uc.nCooldownPictureIndex = nCooldownPictureNum;
+    uc.nNormPictureIndex = nNormPictureNum;
+    uc.nSelPictureIndex = nSelPictureNum;
+    uc.nTargetIndex = nTargetIndex;
+    uc.nTextureIndex = nTextureNum;
+    if (pcCommandName)
+        uc.sCommandName = pcCommandName;
+    if (pcLocName)
+        uc.sLocName = pcLocName;
+    if (pcNoteName)
+        uc.sNote = pcNoteName;
+    m_aUsedCommand.push_back(uc);
+
     if (nCooldownPictureNum >= 0)
     {
-        VDATA *pDat = api->Event("neGetCooldownFactor", "s", pcCommandName);
+        auto *pDat = core.Event("neGetCooldownFactor", "s", pcCommandName);
         if (pDat)
             m_aUsedCommand[n].fCooldownFactor = pDat->GetFloat();
-        long i = m_aCooldownUpdate.Add();
-        m_aCooldownUpdate[i].fUpdateTime = 1.f;
-        m_aCooldownUpdate[i].fTime = m_aCooldownUpdate[i].fUpdateTime;
-        m_aCooldownUpdate[i].nIconNum = n;
+        CoolDownUpdateData data;
+        data.fUpdateTime = data.fTime = 1.f;
+        data.nIconNum = n;
+        m_aCooldownUpdate.push_back(data);
     }
     return 1;
 }
 
 void BICommandList::AddAdditiveToIconList(long nTextureNum, long nPictureNum, float fDist, float fWidth, float fHeight)
 {
-    long n = m_aUsedCommand.Size() - 1;
+    const size_t n = m_aUsedCommand.size() - 1;
     if (n < 0)
         return;
-    long i = m_aUsedCommand[n].aAddPicList.Add();
-    m_aUsedCommand[n].aAddPicList[i].fDelta = fDist;
-    m_aUsedCommand[n].aAddPicList[i].fpSize.x = fWidth;
-    m_aUsedCommand[n].aAddPicList[i].fpSize.y = fHeight;
-    m_aUsedCommand[n].aAddPicList[i].nPic = nPictureNum;
-    m_aUsedCommand[n].aAddPicList[i].nTex = nTextureNum;
+
+    UsedCommand::AdditiveIcon icon;
+    icon.fDelta = fDist;
+    icon.fpSize.x = fWidth;
+    icon.fpSize.y = fHeight;
+    icon.nPic = nPictureNum;
+    icon.nTex = nTextureNum;
+
+    m_aUsedCommand[n].aAddPicList.push_back(icon);
 }
 
 void BICommandList::Release()
 {
-    SE_DELETE(m_pImgRender);
+    STORM_DELETE(m_pImgRender);
     FONT_RELEASE(m_pRS, m_NoteFontID);
 }
 
 long BICommandList::IconAdd(long nPictureNum, long nTextureNum, RECT &rpos)
 {
-    if (nTextureNum < 0 || nTextureNum >= m_aTexture || nPictureNum < 0 ||
+    if (nTextureNum < 0 || nTextureNum >= m_aTexture.size() || nPictureNum < 0 ||
         nPictureNum >= m_aTexture[nTextureNum].nCols * m_aTexture[nTextureNum].nRows)
         return 0;
 
     FRECT uv;
-    m_pImgRender->CreateImage(BIType_square, m_aTexture[nTextureNum].sFileName, 0xFF808080,
+    m_pImgRender->CreateImage(BIType_square, m_aTexture[nTextureNum].sFileName.c_str(), 0xFF808080,
                               GetPictureUV(nTextureNum, nPictureNum, uv), rpos);
     return 1;
 }
@@ -399,41 +398,41 @@ long BICommandList::IconAdd(long nPictureNum, long nTextureNum, RECT &rpos)
 long BICommandList::ClockIconAdd(long nForePictureNum, long nBackPictureNum, long nTextureNum, RECT &rpos,
                                  float fFactor)
 {
-    if (nTextureNum < 0 || nTextureNum >= m_aTexture || nForePictureNum < 0 ||
+    if (nTextureNum < 0 || nTextureNum >= m_aTexture.size() || nForePictureNum < 0 ||
         nForePictureNum >= m_aTexture[nTextureNum].nCols * m_aTexture[nTextureNum].nRows)
         return 0;
 
     FRECT uv;
-    m_pImgRender->CreateImage(BIType_square, m_aTexture[nTextureNum].sFileName, 0xFF808080,
+    m_pImgRender->CreateImage(BIType_square, m_aTexture[nTextureNum].sFileName.c_str(), 0xFF808080,
                               GetPictureUV(nTextureNum, nBackPictureNum, uv), rpos);
-    IBIImage *pImg = m_pImgRender->CreateImage(BIType_clocksquare, m_aTexture[nTextureNum].sFileName, 0xFF808080,
-                                               GetPictureUV(nTextureNum, nForePictureNum, uv), rpos);
+    auto *pImg = m_pImgRender->CreateImage(BIType_clocksquare, m_aTexture[nTextureNum].sFileName.c_str(), 0xFF808080,
+                                           GetPictureUV(nTextureNum, nForePictureNum, uv), rpos);
     if (pImg)
         pImg->CutClock(0.f, 1.f, fFactor);
     return 1;
 }
 
-void BICommandList::AdditiveIconAdd(float fX, float fY, array<UsedCommand::AdditiveIcon> &aList)
+void BICommandList::AdditiveIconAdd(float fX, float fY, std::vector<UsedCommand::AdditiveIcon> &aList)
 {
-    if (aList.Size() <= 0)
+    if (aList.size() <= 0)
         return;
     RECT rCur;
-    for (long n = 0; n < aList; n++)
+    for (long n = 0; n < aList.size(); n++)
     {
-        rCur.top = (long)(fY + aList[n].fDelta);
-        rCur.bottom = rCur.top + (long)aList[n].fpSize.y;
-        rCur.left = (long)(fX - .5f * aList[n].fpSize.x);
-        rCur.right = rCur.left + (long)aList[n].fpSize.x;
+        rCur.top = static_cast<long>(fY + aList[n].fDelta);
+        rCur.bottom = rCur.top + static_cast<long>(aList[n].fpSize.y);
+        rCur.left = static_cast<long>(fX - .5f * aList[n].fpSize.x);
+        rCur.right = rCur.left + static_cast<long>(aList[n].fpSize.x);
         if (IconAdd(aList[n].nPic, aList[n].nTex, rCur) > 0)
         {
-            fY = (float)rCur.bottom;
+            fY = static_cast<float>(rCur.bottom);
         }
     }
 }
 
 FRECT &BICommandList::GetPictureUV(long nTextureNum, long nPictureNum, FRECT &uv)
 {
-    if (nTextureNum < 0 || nTextureNum >= m_aTexture || nPictureNum < 0 ||
+    if (nTextureNum < 0 || nTextureNum >= m_aTexture.size() || nPictureNum < 0 ||
         nPictureNum >= m_aTexture[nTextureNum].nCols * m_aTexture[nTextureNum].nRows)
     {
         uv.left = uv.top = 0.f;
@@ -441,10 +440,10 @@ FRECT &BICommandList::GetPictureUV(long nTextureNum, long nPictureNum, FRECT &uv
     }
     else
     {
-        float fDU = 1.f / m_aTexture[nTextureNum].nCols;
-        float fDV = 1.f / m_aTexture[nTextureNum].nRows;
-        long ny = nPictureNum / m_aTexture[nTextureNum].nCols;
-        long nx = nPictureNum - ny * m_aTexture[nTextureNum].nCols;
+        const auto fDU = 1.f / m_aTexture[nTextureNum].nCols;
+        const auto fDV = 1.f / m_aTexture[nTextureNum].nRows;
+        const auto ny = nPictureNum / m_aTexture[nTextureNum].nCols;
+        const auto nx = nPictureNum - ny * m_aTexture[nTextureNum].nCols;
         uv.left = nx * fDU;
         uv.right = uv.left + fDU;
         uv.top = ny * fDV;
@@ -453,7 +452,7 @@ FRECT &BICommandList::GetPictureUV(long nTextureNum, long nPictureNum, FRECT &uv
     return uv;
 }
 
-RECT &BICommandList::GetCurrentPos(long num, RECT &rpos)
+RECT &BICommandList::GetCurrentPos(long num, RECT &rpos) const
 {
     rpos.left = m_LeftTopPoint.x + num * (m_IconSize.x + m_nIconSpace);
     rpos.right = rpos.left + m_IconSize.x;
@@ -474,27 +473,24 @@ void BICommandList::UpdateShowIcon()
         rPos.top = m_LeftTopPoint.y + m_pntActiveIconOffset.y;
         rPos.right = rPos.left + m_pntActiveIconSize.x;
         rPos.bottom = rPos.top + m_pntActiveIconSize.y;
-        m_pImgRender->CreateImage(BIType_square, m_sActiveIconTexture, 0xFF808080, m_frActiveIconUV1, rPos);
-        SetNote(m_sActiveIconNote, (rPos.left + rPos.right) / 2, (rPos.top + rPos.bottom) / 2);
+        m_pImgRender->CreateImage(BIType_square, m_sActiveIconTexture.c_str(), 0xFF808080, m_frActiveIconUV1, rPos);
+        SetNote(m_sActiveIconNote.c_str(), (rPos.left + rPos.right) / 2, (rPos.top + rPos.bottom) / 2);
         return;
     }
-    else
-    {
-        rPos.left = m_LeftTopPoint.x + m_pntActiveIconOffset.x;
-        rPos.top = m_LeftTopPoint.y + m_pntActiveIconOffset.y;
-        rPos.right = rPos.left + m_pntActiveIconSize.x;
-        rPos.bottom = rPos.top + m_pntActiveIconSize.y;
-        m_pImgRender->CreateImage(BIType_square, m_sActiveIconTexture, 0xFF808080, m_frActiveIconUV2, rPos);
-    }
+    rPos.left = m_LeftTopPoint.x + m_pntActiveIconOffset.x;
+    rPos.top = m_LeftTopPoint.y + m_pntActiveIconOffset.y;
+    rPos.right = rPos.left + m_pntActiveIconSize.x;
+    rPos.bottom = rPos.top + m_pntActiveIconSize.y;
+    m_pImgRender->CreateImage(BIType_square, m_sActiveIconTexture.c_str(), 0xFF808080, m_frActiveIconUV2, rPos);
 
     m_bLeftArrow = m_nStartUsedCommandIndex > 0;
     m_bRightArrow = false;
 
     long i = 0;
-    for (long n = m_nStartUsedCommandIndex; n < m_aUsedCommand && i < m_nIconShowMaxQuantity; n++)
+    for (auto n = m_nStartUsedCommandIndex; n < m_aUsedCommand.size() && i < m_nIconShowMaxQuantity; n++)
     {
         GetCurrentPos(i, rPos);
-        AdditiveIconAdd(.5f * (rPos.left + rPos.right), (float)rPos.bottom, m_aUsedCommand[n].aAddPicList);
+        AdditiveIconAdd(.5f * (rPos.left + rPos.right), static_cast<float>(rPos.bottom), m_aUsedCommand[n].aAddPicList);
         if (n == m_nSelectedCommandIndex)
         {
             if (m_aUsedCommand[n].nCooldownPictureIndex < 0)
@@ -502,14 +498,14 @@ void BICommandList::UpdateShowIcon()
             else
                 i += ClockIconAdd(m_aUsedCommand[n].nSelPictureIndex, m_aUsedCommand[n].nCooldownPictureIndex,
                                   m_aUsedCommand[n].nTextureIndex, rPos, m_aUsedCommand[n].fCooldownFactor);
-            SetNote(m_aUsedCommand[n].sNote, (rPos.left + rPos.right) / 2, (rPos.top + rPos.bottom) / 2);
-            SHIP_DESCRIBE_LIST::SHIP_DESCR *pSD = g_ShipList.FindShip(m_aUsedCommand[n].nCharIndex);
+            SetNote(m_aUsedCommand[n].sNote.c_str(), (rPos.left + rPos.right) / 2, (rPos.top + rPos.bottom) / 2);
+            auto *const pSD = g_ShipList.FindShip(m_aUsedCommand[n].nCharIndex);
             if (pSD)
             {
-                api->Event("evntBISelectShip", "ll", pSD->characterIndex, pSD->relation != BI_RELATION_ENEMY);
+                core.Event("evntBISelectShip", "ll", pSD->characterIndex, pSD->relation != BI_RELATION_ENEMY);
             }
             else
-                api->Event("evntBISelectShip", "ll", -1, true);
+                core.Event("evntBISelectShip", "ll", -1, true);
         }
         else
         {
@@ -528,7 +524,7 @@ void BICommandList::UpdateShowIcon()
         rPos.top = m_LeftTopPoint.y + m_pntUpArrowOffset.y;
         rPos.right = rPos.left + m_pntUpDownArrowSize.x;
         rPos.bottom = rPos.top + m_pntUpDownArrowSize.y;
-        m_pImgRender->CreateImage(BIType_square, m_sUpDownArrowTexture, 0xFF808080, m_frUpArrowUV, rPos);
+        m_pImgRender->CreateImage(BIType_square, m_sUpDownArrowTexture.c_str(), 0xFF808080, m_frUpArrowUV, rPos);
     }
     if (m_bDownArrow)
     {
@@ -536,7 +532,7 @@ void BICommandList::UpdateShowIcon()
         rPos.top = m_LeftTopPoint.y + m_pntDownArrowOffset.y;
         rPos.right = rPos.left + m_pntUpDownArrowSize.x;
         rPos.bottom = rPos.top + m_pntUpDownArrowSize.y;
-        m_pImgRender->CreateImage(BIType_square, m_sUpDownArrowTexture, 0xFF808080, m_frDownArrowUV, rPos);
+        m_pImgRender->CreateImage(BIType_square, m_sUpDownArrowTexture.c_str(), 0xFF808080, m_frDownArrowUV, rPos);
     }
 }
 
@@ -547,28 +543,28 @@ void BICommandList::SetNote(const char *pcNote, long nX, long nY)
     m_NotePos.y = nY + m_NoteOffset.y;
 }
 
-ATTRIBUTES *BICommandList::GetCurrentCommandAttribute()
+ATTRIBUTES *BICommandList::GetCurrentCommandAttribute() const
 {
-    if (m_sCurrentCommandName.IsEmpty())
-        return null;
+    if (m_sCurrentCommandName.empty())
+        return nullptr;
 
-    ATTRIBUTES *pAR = null;
+    ATTRIBUTES *pAR = nullptr;
     if (m_nCurrentCommandMode & BI_COMMODE_ABILITY_ICONS)
         pAR = m_pARoot->GetAttributeClass("AbilityIcons");
     else
         pAR = m_pARoot->GetAttributeClass("Commands");
     if (!pAR)
-        return null;
+        return nullptr;
 
-    long q = pAR->GetAttributesNum();
+    const size_t q = pAR->GetAttributesNum();
     for (long n = 0; n < q; n++)
     {
-        ATTRIBUTES *pA = pAR->GetAttributeClass(n);
+        auto *pA = pAR->GetAttributeClass(n);
         if (!pA)
             continue;
-        char *pcCommName = pA->GetAttribute("event");
+        auto *const pcCommName = pA->GetAttribute("event");
         if (m_sCurrentCommandName == pcCommName)
             return pA;
     }
-    return 0;
+    return nullptr;
 }

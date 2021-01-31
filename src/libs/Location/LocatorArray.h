@@ -11,8 +11,8 @@
 #ifndef _LocatorArray_H_
 #define _LocatorArray_H_
 
-#include "matrix.h"
-#include "vmodule_api.h"
+#include "Matrix.h"
+#include "storm_assert.h"
 
 class LocatorArray
 {
@@ -23,6 +23,7 @@ class LocatorArray
         long hash;
         float radius;
     };
+
     //--------------------------------------------------------------------------------------------
     //Конструирование, деструктурирование
     //--------------------------------------------------------------------------------------------
@@ -35,11 +36,11 @@ class LocatorArray
     //--------------------------------------------------------------------------------------------
   public:
     //Добавить локатор
-    void AddLocator(CMatrix &mtx, const char *name = null);
+    void AddLocator(CMatrix &mtx, const char *name = nullptr);
     //Изменить матрицу локатора
     void SetNewMatrix(long locIndex, CMatrix &mtx);
     //Найти ближайший локатор по шарику
-    float FindNearesLocator(float x, float y, float z, long *locIndex = null);
+    float FindNearesLocator(float x, float y, float z, long *locIndex = nullptr);
     //Найти ближайший локатор по цилиндру
     long FindNearesLocatorCl(float x, float y, float z, float height2, float &dist);
     //Найти локатор по имени
@@ -51,15 +52,15 @@ class LocatorArray
     //Получить матрицу локатора
     bool GetLocatorPos(long locIndex, CMatrix &mtx);
     //Проверить индекс на правильность
-    bool IsValidateIndex(long locIndex);
+    bool IsValidateIndex(long locIndex) const;
     //Количество локаторов
-    long Num();
+    long Num() const;
     //Имя локатора
     char *Name(long locIndex);
     //Сравнить имена груп
-    bool CompareGroup(const char *groupName, long ghash);
+    bool CompareGroup(const char *groupName, long ghash) const;
     //Получить имя группы
-    char *GetGroupName();
+    char *GetGroupName() const;
 
     //Установить локатору радиус
     void SetLocatorRadius(long locIndex, float radius);
@@ -77,7 +78,7 @@ class LocatorArray
     char *group;
     long hash;
     //Локаторы
-    LocatorInfro *locator;
+    std::vector<LocatorInfro> locator;
     long numLocators;
     //Имена локаторов
     char *locatorNames;
@@ -87,7 +88,7 @@ class LocatorArray
     bool isVisible;
     float radius;
     float kViewRadius;
-    dword color;
+    uint32_t color;
     float viewDist;
 };
 
@@ -95,9 +96,9 @@ class LocatorArray
 inline const char *LocatorArray::LocatorName(long locIndex)
 {
     if (locIndex < 0 || locIndex >= numLocators)
-        return null;
+        return nullptr;
     if (locator[locIndex].name < 0)
-        return null;
+        return nullptr;
     return locatorNames + locator[locIndex].name;
 }
 
@@ -122,13 +123,13 @@ inline bool LocatorArray::GetLocatorPos(long locIndex, CMatrix &mtx)
 }
 
 //Проверить индекс на правильность
-inline bool LocatorArray::IsValidateIndex(long locIndex)
+inline bool LocatorArray::IsValidateIndex(long locIndex) const
 {
     return (locIndex < 0 || locIndex >= numLocators);
 }
 
 //Количество локаторов
-inline long LocatorArray::Num()
+inline long LocatorArray::Num() const
 {
     return numLocators;
 }
@@ -141,7 +142,7 @@ inline char *LocatorArray::Name(long locIndex)
 }
 
 //Получить имя группы
-inline char *LocatorArray::GetGroupName()
+inline char *LocatorArray::GetGroupName() const
 {
     return group;
 }

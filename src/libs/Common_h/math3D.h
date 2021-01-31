@@ -7,104 +7,103 @@
 #ifndef _Math3D_h_
 #define _Math3D_h_
 
-#include "d_types.h"
+#include <xmmintrin.h> // espkk # remove inline asm # 30/Dec/2017
 
-#include "CVector.h"
-#include "CVector4.h"
-#include "Math3D\Box.h"
-#include "Math3D\Capsule.h"
-#include "Math3D\Color.h"
-#include "Math3D\Line.h"
-#include "Math3D\Plane.h"
-#include "Math3D\Quaternion.h"
-#include "Math3D\Sphere.h"
-#include "Math3D\Triangle.h"
-#include "Matrix.h"
-#include <cstdlib>
+//#define inline __forceinline
+
+#include "Math3D/Vector.h"
 
 ///Быстрое приведение числа с плавающей точкой к целому с отбрасыванием дробной части
-__forceinline long fftol(float f)
+inline long fftol(float f)
 {
-    long l;
+    return _mm_cvttss_si32(_mm_load_ss(&f));
+
+    /*long l;
     static const float cnt[2] = {-0.4999999f, 0.4999999f};
     _asm
     {
-		mov		eax, f
-		fld		f
-		shr		eax, 31
-		fadd	dword ptr [cnt + eax*4]
-		fistp	l
+      mov		eax, f
+      fld		f
+      shr		eax, 31
+      fadd	uint32_t ptr [cnt + eax*4]
+      fistp	l
     }
-    return l;
+    return l;*/
 }
 
 ///Быстрое приведение числа с плавающей точкой к целому с округлением к ближайшему
-__forceinline long fftoi(float f)
+inline long fftoi(float f)
 {
-    long l;
+    return _mm_cvtss_si32(_mm_load_ss(&f));
+
+    /*long l;
     _asm
     {
-		fld		f
-		fistp	l
+      fld		f
+      fistp	l
     }
-    return l;
+    return l;*/
 }
 
 /// Fast floor
-__forceinline long ffloor(float f)
+inline long ffloor(float f)
 {
-    long l;
+    return _mm_cvtss_si32(_mm_add_ss(_mm_load_ss(&f), _mm_set_ss(-0.5f)));
+
+    /*long l;
     static const float c = -0.5f;
     _asm
     {
-		fld		f
-		fadd	c
-		fistp	l
+      fld		f
+      fadd	c
+      fistp	l
     }
-    return l;
+    return l;*/
 }
 
 /// Fast ceil
-__forceinline long fceil(float f)
+inline long fceil(float f)
 {
-    long l;
+    return _mm_cvtss_si32(_mm_add_ss(_mm_load_ss(&f), _mm_set_ss(0.5f)));
+
+    /*long l;
     static const float c = 0.5f;
     _asm
     {
-		fld		f
-		fadd	c
-		fistp	l
+      fld		f
+      fadd	c
+      fistp	l
     }
-    return l;
+    return l;*/
 }
 
 /// Fast fasb in memory
-__forceinline float &ffabs(float &f)
+inline float &ffabs(float &f)
 {
     *(unsigned long *)&f &= 0x7fffffff;
     return f;
 }
 
 //Возвести в квадрат
-__forceinline float sqrf(float f)
+inline float sqrf(float f)
 {
     return f * f;
 }
 
 //Случайное число
-__forceinline float Rnd(float max = 1.0f)
+inline float Rnd(float max = 1.0f)
 {
     return rand() * (max * (1.0f / RAND_MAX));
 }
 
 //Случайное число
-__forceinline float RRnd(float min, float max)
+inline float RRnd(float min, float max)
 {
     return min + rand() * ((max - min) * (1.0f / RAND_MAX));
 }
 
 //Ограничить float
-__forceinline float Clampf(float v, float min = 0.0f, float max = 1.0f)
+inline float Clampf(float v, float min = 0.0f, float max = 1.0f)
 {
     if (v < min)
         v = min;
@@ -114,7 +113,7 @@ __forceinline float Clampf(float v, float min = 0.0f, float max = 1.0f)
 }
 
 //Ограничить float
-__forceinline float Clampfr(float &v, float min = 0.0f, float max = 1.0f)
+inline float Clampfr(float &v, float min = 0.0f, float max = 1.0f)
 {
     if (v < min)
         v = min;
@@ -124,47 +123,49 @@ __forceinline float Clampfr(float &v, float min = 0.0f, float max = 1.0f)
 }
 
 //Привести угол к диапазону 0..2PI
-__forceinline float NormAngle2PI(float angle)
+inline float NormAngle2PI(float angle)
 {
-    static const float pi = 3.14159265358979323846f;
+    static const auto pi = 3.14159265358979323846f;
     if (angle >= 0.0f && angle <= 2 * pi)
         return angle;
-    return (angle / (2.0f * pi) - long(angle / (2.0f * pi))) * 2.0f * pi;
+    return (angle / (2.0f * pi) - static_cast<long>(angle / (2.0f * pi))) * 2.0f * pi;
 }
 
 //Привести угол к диапазону -PI..PI
-__forceinline float NormAnglePI(float angle)
+inline float NormAnglePI(float angle)
 {
-    static const float pi = 3.14159265358979323846f;
+    static const auto pi = 3.14159265358979323846f;
     if (angle >= -pi && angle <= pi)
         return angle;
-    return (angle / (2.0f * pi) - long(angle / (2.0f * pi))) * 2.0f * pi - pi;
+    return (angle / (2.0f * pi) - static_cast<long>(angle / (2.0f * pi))) * 2.0f * pi - pi;
 }
 
 //Посчитать acos с ограничением диапазона
-__forceinline float safeACos(float ang)
+inline float safeACos(float ang)
 {
-    double d = (double)ang;
+    auto d = static_cast<double>(ang);
     if (d < -1.0)
         d = -1.0;
     if (d > 1.0)
         d = 1.0;
     d = acos(d);
-    return (float)d;
+    return static_cast<float>(d);
 }
 
 //Посчитать asin с ограничением диапазона
-__forceinline float safeASin(float ang)
+inline float safeASin(float ang)
 {
-    double d = (double)ang;
+    auto d = static_cast<double>(ang);
     if (d < -1.0)
         d = -1.0;
     if (d > 1.0)
         d = 1.0;
     d = acos(d);
-    return (float)d;
+    return static_cast<float>(d);
 }
 
 #define ARRSIZE(ar) (sizeof(ar) / sizeof(ar[0]))
+
+#include "Math3D/Vector4.h"
 
 #endif

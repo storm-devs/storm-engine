@@ -1,13 +1,11 @@
 #ifndef SHIPLIGHTS_HPP
 #define SHIPLIGHTS_HPP
 
-#include "IShipLights.h"
-#include "dx8render.h"
+#include "collide.h"
+#include "defines.h"
+#include "dx9render.h"
 #include "sea_base.h"
-
-#include "templates\array.h"
-#include "templates\dtimer.h"
-#include "templates\string.h"
+#include <ShipLights.h>
 
 class ShipLights : public IShipLights
 {
@@ -48,7 +46,7 @@ class ShipLights : public IShipLights
 
     struct LightType
     {
-        string sLightType;
+        std::string sLightType;
         Color cLightColor;
         Color cCoronaColor;
         float fRange;
@@ -92,7 +90,7 @@ class ShipLights : public IShipLights
     struct SelectedLight
     {
         float fDistance;
-        dword dwIndex;
+        uint32_t dwIndex;
 
         bool operator<(const SelectedLight &other) const
         {
@@ -100,29 +98,29 @@ class ShipLights : public IShipLights
         };
     };
 
-    array<ShipLight> aLights;
-    array<SelectedLight> aSelectedLights;
-    array<LightType> aLightTypes;
+    std::vector<ShipLight> aLights;
+    std::vector<SelectedLight> aSelectedLights;
+    std::vector<LightType> aLightTypes;
     long iMinLight, iMaxLight;
-    dword dwMaxD3DLights;
+    uint32_t dwMaxD3DLights;
     bool bLoadLights;
     bool bReflection;
     float fSunRoadFlareSize;
 
     long iCoronaTex, iFlareSunRoadTex;
-    string sCoronaTechnique;
-    dword dwCoronaSubTexX, dwCoronaSubTexY;
+    std::string sCoronaTechnique;
+    uint32_t dwCoronaSubTexX, dwCoronaSubTexY;
 
     SEA_BASE *pSea;
 
     bool LoadLights();
-    LightType *FindLightType(string sLightType);
+    LightType *FindLightType(std::string sLightType);
     float GetAttributeAsFloat(ATTRIBUTES *pA, const char *pName, float fDefault);
     void AddFlare(VAI_OBJBASE *pObject, bool bLight, MODEL *pModel, const GEOS::LABEL &label);
     bool SetLabel(ShipLight *pL, MODEL *pModel, const char *pStr);
 
   public:
-    static VDX8RENDER *pRS;
+    static VDX9RENDER *pRS;
     static COLLIDE *pCollide;
 
     ShipLights();
@@ -140,9 +138,21 @@ class ShipLights : public IShipLights
     virtual void SetDead(VAI_OBJBASE *pObject);
 
     bool Init();
-    void Execute(dword dwDeltaTime);
-    void Realize(dword dwDeltaTime);
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    void Execute(uint32_t dwDeltaTime);
+    void Realize(uint32_t dwDeltaTime);
+    uint64_t ProcessMessage(MESSAGE &message);
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+        }
+    }
 };
 
 #endif

@@ -1,7 +1,9 @@
 #ifndef BI_IMAGEMATERIAL_H
 #define BI_IMAGEMATERIAL_H
 
-#include "bi_image_defines.h"
+#include "image_defines.h"
+#include <string>
+#include <vector>
 
 class BIImage;
 class BIImageRender;
@@ -9,21 +11,21 @@ class BIImageRender;
 class BIImageMaterial
 {
   public:
-    BIImageMaterial(VDX8RENDER *pRS, BIImageRender *pImgRender);
+    BIImageMaterial(VDX9RENDER *pRS, BIImageRender *pImgRender);
     ~BIImageMaterial();
 
     void Render(long nBegPrior, long nEndPrior);
 
-    bool IsUseTexture(const char *pcTextureName)
+    bool IsUseTexture(const char *pcTextureName) const
     {
         return (m_sTextureName == pcTextureName);
     }
-    bool IsUseTechnique(const char *pcTechniqueName)
+    bool IsUseTechnique(const char *pcTechniqueName) const
     {
         return (m_sTechniqueName == pcTechniqueName);
     }
 
-    const BIImage *CreateImage(BIImageType type, dword color, FRECT &uv, long nLeft, long nTop, long nRight,
+    const BIImage *CreateImage(BIImageType type, uint32_t color, const FRECT &uv, long nLeft, long nTop, long nRight,
                                long nBottom, long nPrior);
     void DeleteImage(const BIImage *pImg);
 
@@ -39,53 +41,53 @@ class BIImageMaterial
         m_bMakeBufferUpdate = true;
     }
 
-    long GetImageQuantity()
+    size_t GetImageQuantity() const
     {
-        return m_apImage.Size();
+        return m_apImage.size();
     }
     void ReleaseAllImages();
 
-    long GetMinPrioritet()
+    long GetMinPriority() const
     {
-        return m_nMinPrioritet;
+        return m_nMinPriority;
     }
-    long GetMaxPrioritet()
+    long GetMaxPriority() const
     {
-        return m_nMaxPrioritet;
+        return m_nMaxPriority;
     }
 
-    BIImageRender *GetImgRender()
+    BIImageRender *GetImgRender() const
     {
         return m_pImageRender;
     }
 
   protected:
     void Release();
-    void UpdateImageBuffers(long nStartIdx, long nEndIdx);
+    void UpdateImageBuffers(long nStartIdx, size_t nEndIdx);
     void RemakeBuffers();
-    bool GetOutputRangeByPrioritet(long nBegPrior, long nEndPrior, long &nStartIndex, long &nTriangleQuantity);
-    void RecalculatePrioritetRange();
+    bool GetOutputRangeByPriority(long nBegPrior, long nEndPrior, size_t &nStartIndex, size_t &nTriangleQuantity);
+    void RecalculatePriorityRange();
     void InsertImageToList(BIImage *pImg);
 
-    VDX8RENDER *m_pRS;
+    VDX9RENDER *m_pRS;
     BIImageRender *m_pImageRender;
 
-    string m_sTextureName;
-    string m_sTechniqueName;
+    std::string m_sTextureName;
+    std::string m_sTechniqueName;
 
     long m_nTextureID;
     long m_nVBufID;
     long m_nIBufID;
-    long m_nVertexQuantity;
-    long m_nTriangleQuantity;
+    size_t m_nVertexQuantity;
+    size_t m_nTriangleQuantity;
 
-    array<BIImage *> m_apImage;
+    std::vector<BIImage *> m_apImage;
 
-    long m_nMinPrioritet;
-    long m_nMaxPrioritet;
+    long m_nMinPriority;
+    long m_nMaxPriority;
 
     bool m_bMakeBufferUpdate;
-    bool m_bDeleteEverythink;
+    bool m_bDeleteEverything;
 };
 
 #endif

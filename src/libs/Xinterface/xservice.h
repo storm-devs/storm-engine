@@ -1,7 +1,8 @@
 #ifndef _XISERVICE_H
 #define _XISERVICE_H
 
-#include "xi_defines.h"
+#include "vxservice.h"
+#include "xdefines.h"
 
 class XSERVICE : public VXSERVICE
 {
@@ -29,33 +30,34 @@ class XSERVICE : public VXSERVICE
     ~XSERVICE();
 
     // initialization of service
-    void Init(VDX8RENDER *pRS, long lWidth, long lHight);
+    void Init(VDX9RENDER *pRS, long lWidth, long lHight) override;
 
     // get texture identificator for image group
-    long GetTextureID(const char *sImageListName);
-    long FindGroup(const char *sImageListName);
-    bool ReleaseTextureID(const char *sImageListName);
+    long GetTextureID(const char *sImageListName) override;
+    long FindGroup(const char *sImageListName) const;
+    bool ReleaseTextureID(const char *sImageListName) override;
 
     // get texture positon for select picture
-    bool GetTexturePos(long pictureNum, FXYRECT &texRect);
-    bool GetTexturePos(long pictureNum, XYRECT &texRect);
-    bool GetTexturePos(const char *sImageListName, const char *sImageName, FXYRECT &texRect);
-    bool GetTexturePos(const char *sImageListName, const char *sImageName, XYRECT &texRect);
-    bool GetTexturePos(int nTextureModify, long pictureNum, FXYRECT &texRect);
-    bool GetTexturePos(int nTextureModify, const char *sImageListName, const char *sImageName, FXYRECT &texRect);
+    bool GetTexturePos(long pictureNum, FXYRECT &texRect) override;
+    bool GetTexturePos(long pictureNum, XYRECT &texRect) override;
+    bool GetTexturePos(const char *sImageListName, const char *sImageName, FXYRECT &texRect) override;
+    bool GetTexturePos(const char *sImageListName, const char *sImageName, XYRECT &texRect) override;
+    bool GetTexturePos(int nTextureModify, long pictureNum, FXYRECT &texRect) override;
+    bool GetTexturePos(int nTextureModify, const char *sImageListName, const char *sImageName,
+                       FXYRECT &texRect) override;
 
     void GetTextureCutForSize(const char *pcImageListName, const FXYPOINT &pntLeftTopUV, const XYPOINT &pntSize,
-                              long nSrcWidth, long nSrcHeight, FXYRECT &outUV);
+                              long nSrcWidth, long nSrcHeight, FXYRECT &outUV) override;
 
-    long GetImageNum(const char *sImageListName, const char *sImageName);
+    long GetImageNum(const char *sImageListName, const char *sImageName) override;
 
-    void ReleaseAll();
+    void ReleaseAll() override;
 
   protected:
     void LoadAllPicturesInfo();
 
   protected:
-    VDX8RENDER *m_pRS;
+    VDX9RENDER *m_pRS;
 
     long m_dwListQuantity;
     long m_dwImageQuantity;
@@ -72,7 +74,7 @@ class XSERVICE : public VXSERVICE
 
 class ComboString
 {
-    VDX8RENDER *m_pRS;
+    VDX9RENDER *m_pRS;
 
     struct STRING_DESCR
     {
@@ -80,12 +82,14 @@ class ComboString
         int idFont;
         char *str;
     };
+
     struct PICS_DESCR
     {
         XYRECT pos;
         int idTex;
         FXYRECT texUV;
     };
+
     struct STRING_COMBINE
     {
         int *pFontsID;

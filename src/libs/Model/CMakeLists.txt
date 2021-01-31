@@ -1,6 +1,6 @@
 project(model)
 
-add_library(${PROJECT_NAME} MODULE
+add_library(${PROJECT_NAME} STATIC
 	model.cpp
 	modelr.h
 	node.cpp

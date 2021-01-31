@@ -9,15 +9,17 @@
 //============================================================================================
 
 #include "Lighter.h"
-#include "messages.h"
 
+#include "core.h"
+
+#include "Entity.h"
 //============================================================================================
 //Конструирование, деструктурирование
 //============================================================================================
 
 Lighter::Lighter()
 {
-    rs = null;
+    rs = nullptr;
     initCounter = 10;
     isInited = false;
     waitChange = 0.0f;
@@ -31,28 +33,26 @@ Lighter::~Lighter()
 bool Lighter::Init()
 {
     //Проверяем, будем ли работать
-    INIFILE *ini = api->fio->OpenIniFile("resource\\ini\\loclighter.ini");
+    auto *ini = fio->OpenIniFile("resource\\ini\\loclighter.ini");
     if (!ini)
         return false;
-    long isLoading = ini->GetLong(null, "loading", 0);
-    autoTrace = ini->GetLong(null, "autotrace", 0) != 0;
-    autoSmooth = ini->GetLong(null, "autosmooth", 0) != 0;
-    window.isSmallSlider = ini->GetLong(null, "smallslider", 0) != 0;
-    geometry.useColor = ini->GetLong(null, "usecolor", 0) != 0;
+    const auto isLoading = ini->GetLong(nullptr, "loading", 0);
+    autoTrace = ini->GetLong(nullptr, "autotrace", 0) != 0;
+    autoSmooth = ini->GetLong(nullptr, "autosmooth", 0) != 0;
+    window.isSmallSlider = ini->GetLong(nullptr, "smallslider", 0) != 0;
+    geometry.useColor = ini->GetLong(nullptr, "usecolor", 0) != 0;
     delete ini;
     if (!isLoading)
         return false;
-    // DX8 render
-    rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
+    // DX9 render
+    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!rs)
-        SE_THROW_MSG("No service: dx8render");
+        throw std::exception("No service: dx9render");
     //
-    _CORE_API->LayerCreate("lighter_execute", true, false);
-    _CORE_API->LayerSetFlags("lighter_execute", LRFLAG_EXECUTE);
-    _CORE_API->LayerAdd("lighter_execute", GetID(), 1000);
-    _CORE_API->LayerCreate("lighter_realize", true, false);
-    _CORE_API->LayerSetFlags("lighter_realize", LRFLAG_REALIZE);
-    _CORE_API->LayerAdd("lighter_realize", GetID(), 1000);
+    EntityManager::SetLayerType(LIGHTER_EXECUTE, EntityManager::Layer::Type::execute);
+    EntityManager::AddToLayer(LIGHTER_EXECUTE, GetId(), 1000);
+    EntityManager::SetLayerType(LIGHTER_REALIZE, EntityManager::Layer::Type::realize);
+    EntityManager::AddToLayer(LIGHTER_REALIZE, GetId(), 1000);
     //
     lightProcessor.SetParams(&geometry, &window, &lights, &octTree, rs);
     //оконная система
@@ -63,9 +63,9 @@ bool Lighter::Init()
 }
 
 //Исполнение
-void Lighter::Execute(dword delta_time)
+void Lighter::Execute(uint32_t delta_time)
 {
-    float dltTime = delta_time * 0.001f;
+    const auto dltTime = delta_time * 0.001f;
     if (window.isSaveLight)
     {
         window.isSaveLight = false;
@@ -109,13 +109,13 @@ void Lighter::PreparingData()
 {
     //Освещение
     //Рассеяное
-    dword amb = 0xff404040;
+    auto amb = 0xff404040;
     rs->GetRenderState(D3DRS_AMBIENT, &amb);
     CVECTOR clr;
     clr.x = ((amb >> 16) & 0xff) / 255.0f;
     clr.y = ((amb >> 8) & 0xff) / 255.0f;
     clr.z = ((amb >> 0) & 0xff) / 255.0f;
-    float mx = clr.x > clr.y ? clr.x : clr.y;
+    auto mx = clr.x > clr.y ? clr.x : clr.y;
     mx = mx > clr.z ? mx : clr.z;
     if (mx > 0.0f)
         clr *= 1.0f / mx;
@@ -125,7 +125,7 @@ void Lighter::PreparingData()
     //Солнце
     if (rs)
     {
-        BOOL isLight = FALSE;
+        auto isLight = FALSE;
         rs->GetLightEnable(0, &isLight);
         D3DLIGHT9 lit;
         if (isLight && rs->GetLight(0, &lit))
@@ -140,7 +140,7 @@ void Lighter::PreparingData()
                 dir.y = -lit.Direction.y;
                 dir.z = -lit.Direction.z;
             }
-            float mx = dir.x > dir.y ? dir.x : dir.y;
+            auto mx = dir.x > dir.y ? dir.x : dir.y;
             mx = mx > dir.z ? mx : dir.z;
             if (mx > 0.0f)
                 dir *= 1.0f / mx;
@@ -165,7 +165,7 @@ void Lighter::PreparingData()
     window.isSmoothShadows = autoSmooth;
 }
 
-void Lighter::Realize(dword delta_time)
+void Lighter::Realize(uint32_t delta_time)
 {
     if (GetAsyncKeyState(VK_DECIMAL) < 0)
     {
@@ -178,30 +178,30 @@ void Lighter::Realize(dword delta_time)
 }
 
 //Сообщения
-dword _cdecl Lighter::ProcessMessage(MESSAGE &message)
+uint64_t Lighter::ProcessMessage(MESSAGE &message)
 {
     char command[32];
     message.String(31, command);
     command[31] = 0;
-    if (stricmp(command, "AddModel") == 0)
+    if (_stricmp(command, "AddModel") == 0)
     {
         //Добавляем модельку
         MsgAddModel(message);
         return true;
     }
-    else if (stricmp(command, "ModelsPath") == 0)
+    if (_stricmp(command, "ModelsPath") == 0)
     {
         //Добавляем модельку
         MsgModelsPath(message);
         return true;
     }
-    else if (stricmp(command, "LightPath") == 0)
+    if (_stricmp(command, "LightPath") == 0)
     {
         //Добавляем модельку
         MsgLightPath(message);
         return true;
     }
-    else if (stricmp(command, "AddLight") == 0)
+    if (_stricmp(command, "AddLight") == 0)
     {
         //Добавляем модельку
         MsgAddLight(message);
@@ -217,10 +217,10 @@ void Lighter::MsgAddModel(MESSAGE &message)
     name[511] = 0;
     if (!name[0])
     {
-        api->Trace("Location lighter: no model name, skip it!");
+        core.Trace("Location lighter: no model name, skip it!");
         return;
     }
-    ENTITY_ID model = message.EntityID();
+    const auto model = message.EntityID();
     geometry.AddObject(name, model);
 }
 
@@ -252,11 +252,11 @@ void Lighter::MsgAddLight(MESSAGE &message)
     clr.y = message.Float();
     clr.z = message.Float();
     //Затухание
-    float att0 = message.Float();
-    float att1 = message.Float();
-    float att2 = message.Float();
+    const auto att0 = message.Float();
+    const auto att1 = message.Float();
+    const auto att2 = message.Float();
     //Дистанция
-    float range = message.Float();
+    const auto range = message.Float();
     //Имя группы
     char group[512];
     message.String(511, group);

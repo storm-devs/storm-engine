@@ -1,9 +1,7 @@
 #ifndef _XI_IMAGECOLLECTION_H
 #define _XI_IMAGECOLLECTION_H
 
-#include "..\inode.h"
-#include "templates\array.h"
-#include "templates\string.h"
+#include "../inode.h"
 #include "vmodule_api.h"
 
 // static inactive images into one object
@@ -13,28 +11,30 @@ class CXI_IMGCOLLECTION : public CINODE
     CXI_IMGCOLLECTION();
     ~CXI_IMGCOLLECTION();
 
-    void Draw(bool bSelected, dword Delta_Time);
-    bool Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, VDX8RENDER *rs, XYRECT &hostRect,
-              XYPOINT &ScreenSize);
-    void ReleaseAll();
-    int CommandExecute(int wActCode);
-    bool IsClick(int buttonID, long xPos, long yPos);
-    void MouseThis(float fX, float fY)
+    void Draw(bool bSelected, uint32_t Delta_Time) override;
+    bool Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs, XYRECT &hostRect,
+              XYPOINT &ScreenSize) override;
+    void ReleaseAll() override;
+    int CommandExecute(int wActCode) override;
+    bool IsClick(int buttonID, long xPos, long yPos) override;
+
+    void MouseThis(float fX, float fY) override
     {
     }
-    void ChangePosition(XYRECT &rNewPos);
-    void SaveParametersToIni();
-    dword _cdecl MessageProc(long msgcode, MESSAGE &message);
-    bool GetInternalNameList(array<string> &aStr);
-    void SetInternalName(string &sName);
 
-    void AddImage(const char *pcPicName, dword dwColor, XYRECT pos);
+    void ChangePosition(XYRECT &rNewPos) override;
+    void SaveParametersToIni() override;
+    uint32_t MessageProc(long msgcode, MESSAGE &message) override;
+    bool GetInternalNameList(std::vector<std::string> &aStr) override;
+    void SetInternalName(std::string &sName) override;
+
+    void AddImage(const char *pcPicName, uint32_t dwColor, XYRECT pos);
 
   protected:
-    void LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2);
+    void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     // set into vertex&index buffers value for image number <rectNum> : screen&texture position
-    void SetBuffers(XI_ONETEX_VERTEX *pVBuf, WORD *pIBuf, int rectNum, XYRECT &scrRect, FXYRECT &texRect,
-                    DWORD dwColor);
+    void SetBuffers(XI_ONETEX_VERTEX *pVBuf, uint16_t *pIBuf, int rectNum, XYRECT &scrRect, FXYRECT &texRect,
+                    uint32_t dwColor);
     void UpdateBuffers();
 
   protected:
@@ -48,20 +48,22 @@ class CXI_IMGCOLLECTION : public CINODE
 
     struct PicEditInfo
     {
-        string sName;
+        std::string sName;
         long nLeft, nTop, nRight, nBottom;
-        dword dwColor;
+        uint32_t dwColor;
         bool bNative;
     };
-    array<PicEditInfo> m_aEditInfo;
+
+    std::vector<PicEditInfo> m_aEditInfo;
 
     struct PicEditSection
     {
-        string sName;
+        std::string sName;
         long nStartNum;
         long nQuantity;
     };
-    array<PicEditSection> m_aSections;
+
+    std::vector<PicEditSection> m_aSections;
     long m_nCurSection;
 
     XYPOINT m_xyCommonOffset;

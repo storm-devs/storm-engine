@@ -9,7 +9,10 @@
 //============================================================================================
 
 #include "Window.h"
-#include "Lights.h"
+#include "../../Shared/messages.h"
+#include "Entity.h"
+#include "core.h"
+#include <cstdint>
 
 //============================================================================================
 //Конструирование, деструктурирование
@@ -17,7 +20,7 @@
 
 Window::Window()
 {
-    rs = null;
+    rs = nullptr;
     sw = sh = 0.0f;
     isNeedInit = false;
     isNoPrepared = false;
@@ -30,7 +33,7 @@ Window::Window()
     isTraceBlur = true;
     isLockCtrl = false;
     font = FONT_DEFAULT;
-    list = null;
+    list = nullptr;
     numElements = 0;
     selected = -1;
     listPos = 0.0f;
@@ -38,7 +41,7 @@ Window::Window()
     isPikerActive = false;
     listWait = 0.0f;
     pikerWait = 0.0f;
-    pickerTexture = null;
+    pickerTexture = nullptr;
     tracePrc = 0.0f;
     smoothPrc = 0.0f;
     smoothRad = 0.2f;
@@ -60,7 +63,7 @@ Window::Window()
     lastPreset = -1;
     prsComment[0] = 0;
     slidDltX = 0.0f;
-    strcpy(ver, "Location lighter v1.03");
+    strcpy_s(ver, "Location lighter v1.03");
 }
 
 Window::~Window()
@@ -77,19 +80,19 @@ Window::~Window()
     }
 }
 
-bool Window::Init(VDX8RENDER *rs)
+bool Window::Init(VDX9RENDER *rs)
 {
     this->rs = rs;
     Assert(rs);
     font = rs->LoadFont("Lighter");
     if (font < 0)
         font = FONT_DEFAULT;
-    fontHeight = float(rs->CharHeight(font));
+    fontHeight = static_cast<float>(rs->CharHeight(font));
     //Получим текущие размеры vp
     D3DVIEWPORT9 vp;
     rs->GetViewport(&vp);
-    sw = float(vp.Width);
-    sh = float(vp.Height);
+    sw = static_cast<float>(vp.Width);
+    sh = static_cast<float>(vp.Height);
     cursx = sw * 0.5f;
     cursy = sh * 0.5f;
     winw = 300.0f;
@@ -105,22 +108,22 @@ bool Window::Init(VDX8RENDER *rs)
     if (rs->CreateTexture(256, 256, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pickerTexture) == D3D_OK && pickerTexture)
     {
         D3DLOCKED_RECT lockedRect;
-        if (rs->LockRect(pickerTexture, 0, &lockedRect, null, 0) == D3D_OK)
+        if (rs->LockRect(pickerTexture, 0, &lockedRect, nullptr, 0) == D3D_OK)
         {
-            byte *pnt = (byte *)lockedRect.pBits;
+            auto *pnt = static_cast<uint8_t *>(lockedRect.pBits);
             for (long y = 0; y < 256; y++)
                 for (long x = 0; x < 256; x++, pnt += 4)
                 {
-                    float r = float(x);
-                    float g = float(y);
-                    float b = float(255 - x);
-                    float k = r > g ? r : g;
+                    auto r = static_cast<float>(x);
+                    auto g = static_cast<float>(y);
+                    const auto b = static_cast<float>(255 - x);
+                    auto k = r > g ? r : g;
                     if (k < b)
                         k = b;
                     k = 255.0f / k;
-                    pnt[0] = byte(b * k);
-                    pnt[1] = byte(g * k);
-                    pnt[2] = byte(r * k);
+                    pnt[0] = static_cast<uint8_t>(b * k);
+                    pnt[1] = static_cast<uint8_t>(g * k);
+                    pnt[2] = static_cast<uint8_t>(r * k);
                     pnt[3] = 255;
                 }
             rs->UnlockRect(pickerTexture, 0);
@@ -130,43 +133,36 @@ bool Window::Init(VDX8RENDER *rs)
     return true;
 }
 
-void Window::InitList(Lights &ls)
+void Window::InitList(LighterLights &ls)
 {
-    long maxSize = ls.Num();
+    const auto maxSize = ls.Num();
     numElements = 7;
-    list = NEW ListElement[numElements + maxSize];
+    list = new ListElement[numElements + maxSize];
     memset(list, 0, (numElements + maxSize) * sizeof(ListElement));
-    const char *str = "Quick process";
-    list[0].name = NEW char[strlen(str) + 1];
-    strcpy(list[0].name, str);
+    list[0].name = new char[sizeof "Quick process"];
+    strcpy_s(list[0].name, sizeof "Quick process", "Quick process");
     list[0].type = ListElement::t_quick;
     list[0].h = 200.0f;
-    str = "Trace shadows";
-    list[1].name = NEW char[strlen(str) + 1];
-    strcpy(list[1].name, str);
+    list[1].name = new char[sizeof "Trace shadows"];
+    strcpy_s(list[1].name, sizeof "Trace shadows", "Trace shadows");
     list[1].type = ListElement::t_trace;
-    str = "Smooth shadows";
-    list[2].name = NEW char[strlen(str) + 1];
-    strcpy(list[2].name, str);
+    list[2].name = new char[sizeof "Smooth shadows"];
+    strcpy_s(list[2].name, sizeof "Smooth shadows", "Smooth shadows");
     list[2].type = ListElement::t_smooth;
-    str = "Blur light";
-    list[3].name = NEW char[strlen(str) + 1];
-    strcpy(list[3].name, str);
+    list[3].name = new char[sizeof "Blur light"];
+    strcpy_s(list[3].name, sizeof "Blur light", "Blur light");
     list[3].type = ListElement::t_blur;
     list[3].h = 100.0f;
-    str = "Save presets";
-    list[4].name = NEW char[strlen(str) + 1];
-    strcpy(list[4].name, str);
+    list[4].name = new char[sizeof "Save presets"];
+    strcpy_s(list[4].name, sizeof "Save presets", "Save presets");
     list[4].type = ListElement::t_save;
     list[4].h = 180.0f;
-    str = "Load presets";
-    list[5].name = NEW char[strlen(str) + 1];
-    strcpy(list[5].name, str);
+    list[5].name = new char[sizeof "Load presets"];
+    strcpy_s(list[5].name, sizeof "Load presets", "Load presets");
     list[5].type = ListElement::t_load;
     list[5].h = 180.0f;
-    str = "Save lights";
-    list[6].name = NEW char[strlen(str) + 1];
-    strcpy(list[6].name, str);
+    list[6].name = new char[sizeof "Save lights"];
+    strcpy_s(list[6].name, sizeof "Save lights", "Save lights");
     list[6].type = ListElement::t_savelight;
     for (long i = 0; i < maxSize; i++)
         ls[i].isMark = false;
@@ -179,9 +175,8 @@ void Window::InitList(Lights &ls)
         case Light::t_none:
             break;
         case Light::t_amb: {
-            str = "Ambient light";
-            list[numElements].name = NEW char[strlen(str) + 1];
-            strcpy(list[numElements].name, str);
+            list[numElements].name = new char[sizeof "Ambient light"];
+            strcpy_s(list[numElements].name, sizeof "Ambient light", "Ambient light");
             list[numElements].type = ListElement::t_amb;
             list[numElements].c = ls[i].color;
             list[numElements].st = 0.0f;
@@ -199,9 +194,8 @@ void Window::InitList(Lights &ls)
         }
         break;
         case Light::t_sun: {
-            str = "Sun light";
-            list[numElements].name = NEW char[strlen(str) + 1];
-            strcpy(list[numElements].name, str);
+            list[numElements].name = new char[sizeof "Sun light"];
+            strcpy_s(list[numElements].name, sizeof "Sun light", "Sun light");
             list[numElements].type = ListElement::t_light;
             list[numElements].c = ls[i].color;
             list[numElements].st = 0.0f;
@@ -219,9 +213,8 @@ void Window::InitList(Lights &ls)
         }
         break;
         case Light::t_sky: {
-            str = "Sky light";
-            list[numElements].name = NEW char[strlen(str) + 1];
-            strcpy(list[numElements].name, str);
+            list[numElements].name = new char[sizeof "Sky light"];
+            strcpy_s(list[numElements].name, sizeof "Sky light", "Sky light");
             list[numElements].type = ListElement::t_light;
             list[numElements].c = ls[i].color;
             list[numElements].st = 0.0f;
@@ -239,11 +232,11 @@ void Window::InitList(Lights &ls)
         }
         break;
         case Light::t_group: {
-            str = "Group ";
-            list[numElements].name = NEW char[strlen(ls[i].group) + strlen(str) + 1];
+            const auto len = strlen(ls[i].group) + sizeof "Group ";
+            list[numElements].name = new char[len];
             list[numElements].name[0] = 0;
-            strcat(list[numElements].name, str);
-            strcat(list[numElements].name, ls[i].group);
+            strcat_s(list[numElements].name, len, "Group ");
+            strcat_s(list[numElements].name, len, ls[i].group);
             list[numElements].type = ListElement::t_glight;
             list[numElements].c = ls[i].color;
             list[numElements].st = 0.0f;
@@ -406,13 +399,13 @@ void Window::Draw(float dltTime)
         isActiveMouseState = false;
     //Обновим позицию курсора
     CONTROL_STATE cs;
-    _CORE_API->Controls->GetControlState("Turn H", cs);
+    core.Controls->GetControlState("Turn H", cs);
     cursx += cs.lValue * 3.0f;
     if (cursx < 0.0f)
         cursx = 0.0f;
     if (cursx > sw - 5.0f)
         cursx = sw - 5.0f;
-    _CORE_API->Controls->GetControlState("Turn V", cs);
+    core.Controls->GetControlState("Turn V", cs);
     cursy += cs.lValue * 3.0f;
     if (cursy < 0.0f)
         cursy = 0.0f;
@@ -421,12 +414,12 @@ void Window::Draw(float dltTime)
     //Подложка
     DrawLRect(winx, winy, winx + winw, winy + winh + (selected >= 0 ? list[selected].h : 0), bkgColor, frmColor);
     //Кнопка закрывашка
-    float clsx = winx + winw - 20.0f;
-    float clsy = winy + 5.0f;
-    float clsw = 15.0f;
-    float clsh = 15.0f;
-    dword c = selColor;
-    dword cl = frmColor;
+    const auto clsx = winx + winw - 20.0f;
+    const auto clsy = winy + 5.0f;
+    const auto clsw = 15.0f;
+    const auto clsh = 15.0f;
+    auto c = selColor;
+    auto cl = frmColor;
     if (cursx >= clsx && cursx < clsx + clsw && cursy >= clsy && cursy < clsy + clsh)
     {
         c |= 0xff000000;
@@ -438,12 +431,12 @@ void Window::Draw(float dltTime)
     DrawLine(clsx + 2.0f, clsy + 2.0f, clsx + clsw - 1.0f, clsy + clsh - 1.0f, cl);
     DrawLine(clsx + clsw - 2.0f, clsy + 2.0f, clsx + 1.0f, clsy + clsh - 1.0f, cl);
     //Заголовок списка
-    float lstx = winx + 5.0f;
-    float lsty = winy + 5.0f;
-    float lstw = 240.0f;
-    float lsth = 22.0f;
-    float lstbx = lstx + lstw;
-    float lstbw = lsth;
+    const auto lstx = winx + 5.0f;
+    auto lsty = winy + 5.0f;
+    const auto lstw = 240.0f;
+    auto lsth = 22.0f;
+    const auto lstbx = lstx + lstw;
+    const auto lstbw = lsth;
     c = selColor;
     cl = frmColor;
     if (listWait <= 0.0f)
@@ -475,7 +468,7 @@ void Window::Draw(float dltTime)
     long prs;
     if (selected >= 0)
     {
-        ListElement &le = list[selected];
+        auto &le = list[selected];
         bool isOn;
         updateLightCos = updateLightAtt = updateLightSdw = false;
         switch (le.type)
@@ -590,12 +583,12 @@ void Window::Draw(float dltTime)
     //Список
     if (isList)
     {
-        long numLines = 16;
+        const long numLines = 16;
         lsty += lsth;
         lsth = lsth * numLines;
         DrawLRect(lstx, lsty, lstx + lstw + lstbw, lsty + lsth, 0xe0000000, frmColor);
         DrawLine(lstbx, lsty, lstbx, lsty + lsth, frmColor);
-        bool isCheck = (cursx >= lstbx && cursx < lstbx + lstbw && cursy >= lsty && cursy < lsty + lsth);
+        const auto isCheck = (cursx >= lstbx && cursx < lstbx + lstbw && cursy >= lsty && cursy < lsty + lsth);
         c = selColor;
         cl = frmColor;
         if (isCheck && cursy <= lsty + lstbw)
@@ -634,15 +627,15 @@ void Window::Draw(float dltTime)
         DrawLine(lstbx + 6.0f, lsty + lsth - lstbw + 6.0f, lstbx + lstbw - 4.0f, lsty + lsth - lstbw + 6.0f, cl);
         //Цикл отрисовки
         if (listPos > numElements - numLines / 2)
-            listPos = float(numElements - numLines / 2);
+            listPos = static_cast<float>(numElements - numLines / 2);
         if (listPos < 0.0f)
             listPos = 0.0f;
-        long str = long(listPos);
+        const auto str = static_cast<long>(listPos);
         long sel = -1;
         if (cursx >= lstx && cursx < lstx + lstw && cursy >= lsty && cursy < lsty + lsth)
         {
             //Ищем выделенную область
-            sel = long((cursy - lsty) / lstbw);
+            sel = static_cast<long>((cursy - lsty) / lstbw);
             if (sel < 0)
                 sel = 0;
             if (sel >= numLines)
@@ -652,7 +645,7 @@ void Window::Draw(float dltTime)
         y = lsty;
         for (long i = str, cnt = 0; i < numElements && cnt < numLines; i++, cnt++)
         {
-            dword clr = textColor;
+            const auto clr = textColor;
             if (cnt == sel)
             {
                 DrawLRect(lstx + 3, y, lstx + lstw - 3, y + lstbw, 0xff808080, 0);
@@ -679,11 +672,8 @@ void Window::Reset(bool isActive)
 {
     isList = false;
     isVisible = isActive;
-    ENTITY_ID loc;
-    if (api->FindClass(&loc, "Location", 0))
-    {
-        api->Send_Message(loc, "ll", MSG_LOCATION_PAUSE, long(isActive));
-    }
+    entid_t loc;
+    core.Send_Message(EntityManager::GetEntityId("location"), "ll", MSG_LOCATION_PAUSE, static_cast<long>(isActive));
     slidID = -1;
     isPikerActive = false;
     isActiveMouseState = false;
@@ -691,7 +681,7 @@ void Window::Reset(bool isActive)
     isOldMouseState = false;
 }
 
-void Window::DrawRect(float x1, float y1, float x2, float y2, dword color)
+void Window::DrawRect(float x1, float y1, float x2, float y2, uint32_t color)
 {
     Vertex v[4];
     v[0].x = x1;
@@ -714,7 +704,7 @@ void Window::DrawRect(float x1, float y1, float x2, float y2, dword color)
     rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, D3DFVF_XYZRHW, 2, v, sizeof(Vertex), "DbgDraw2DTFColor");
 }
 
-void Window::DrawLine(float x1, float y1, float x2, float y2, dword color)
+void Window::DrawLine(float x1, float y1, float x2, float y2, uint32_t color)
 {
     Vertex v[2];
     v[0].x = x1;
@@ -729,7 +719,7 @@ void Window::DrawLine(float x1, float y1, float x2, float y2, dword color)
     rs->DrawPrimitiveUP(D3DPT_LINELIST, D3DFVF_XYZRHW, 1, v, sizeof(Vertex), "DbgDraw2DTFColor");
 }
 
-void Window::DrawLRect(float x1, float y1, float x2, float y2, dword bkgColor, dword lnColor)
+void Window::DrawLRect(float x1, float y1, float x2, float y2, uint32_t bkgColor, uint32_t lnColor)
 {
     if (bkgColor & 0xff000000)
         DrawRect(x1, y1, x2, y2, bkgColor);
@@ -744,22 +734,22 @@ void Window::DrawLRect(float x1, float y1, float x2, float y2, dword bkgColor, d
 
 void Window::Print(long color, float xleft, float xright, float y, float scale, bool isAlign, const char *format, ...)
 {
-    _vsnprintf(stringBuffer, sizeof(stringBuffer), format, ((char *)&format + sizeof(char *)));
-    float x = xleft;
+    _vsnprintf_s(stringBuffer, sizeof(stringBuffer), format, ((char *)&format + sizeof(char *)));
+    auto x = xleft;
     if (isAlign)
     {
-        float strw = rs->StringWidth(stringBuffer, font) * scale;
+        const auto strw = rs->StringWidth(stringBuffer, font) * scale;
         x = (xright + xleft - strw) * 0.5f;
     }
-    rs->ExtPrint(font, color, 0, 0, false, scale, 0, 0, long(x), long(y), stringBuffer);
+    rs->ExtPrint(font, color, 0, 0, false, scale, 0, 0, static_cast<long>(x), static_cast<long>(y), stringBuffer);
 }
 
 void Window::DrawCursor()
 {
     Vertex v[3];
-    float p1x = cursx + 15.0f, p1y = cursy + 20.0f;
-    float p2x = cursx + 15.0f * 1.2f - 20.0f * 0.4f, p2y = cursy + 20.0f * 1.2f + 15.0f * 0.4f;
-    float p3x = cursx + 15.0f * 1.2f + 20.0f * 0.4f, p3y = cursy + 20.0f * 1.2f - 15.0f * 0.4f;
+    const auto p1x = cursx + 15.0f, p1y = cursy + 20.0f;
+    const auto p2x = cursx + 15.0f * 1.2f - 20.0f * 0.4f, p2y = cursy + 20.0f * 1.2f + 15.0f * 0.4f;
+    const float p3x = cursx + 15.0f * 1.2f + 20.0f * 0.4f, p3y = cursy + 20.0f * 1.2f - 15.0f * 0.4f;
     v[0].x = cursx;
     v[0].y = cursy;
     v[0].z = 0.5f;
@@ -799,11 +789,11 @@ bool Window::Slider(long id, float y, const char *text, float &value, float min,
     x += 40.0f;
     y += 1.0f;
     DrawLRect(x, winy + y, x + sldLen, winy + y + 5.0f, 0, frmColor);
-    float szx = isSmallSlider ? 3.0f : 8.0f;
-    float szy = isSmallSlider ? 3.0f : 5.0f;
+    const float szx = isSmallSlider ? 3.0f : 8.0f;
+    const float szy = isSmallSlider ? 3.0f : 5.0f;
     //Движёк
-    dword c = 0xcc000000;
-    float oldv = v;
+    uint32_t c = 0xcc000000;
+    const float oldv = v;
     if (!isPikerActive && !isList)
     {
         if (isActiveMouseState)
@@ -854,9 +844,9 @@ bool Window::ColorPicker(long id, float y, CVECTOR &ref, float st, CVECTOR &res)
     //Расчитываем цвет
     UpdateColors();
     //Рисуем прямоугольник
-    float x = winx + 60.0f + sldLen;
-    float w = 50.0f;
-    float h = 50.0f;
+    const float x = winx + 60.0f + sldLen;
+    const float w = 50.0f;
+    const float h = 50.0f;
     if (res.x < 0.0f)
         res.x = 0.0f;
     if (res.y < 0.0f)
@@ -869,7 +859,8 @@ bool Window::ColorPicker(long id, float y, CVECTOR &ref, float st, CVECTOR &res)
     if (knrm <= 1.0f)
         knrm = 1.0f;
     knrm = 255.0f / knrm;
-    dword color = (dword(res.x * knrm) << 16) | (dword(res.y * knrm) << 8) | (dword(res.z * knrm) << 0);
+    const uint32_t color = (static_cast<uint32_t>(res.x * knrm) << 16) | (static_cast<uint32_t>(res.y * knrm) << 8) |
+                           (static_cast<uint32_t>(res.z * knrm) << 0);
     DrawLRect(x, winy + y, x + w, winy + y + h, 0xff000000 | color, frmColor);
     //Рисуем пикер
     if (isPikerActive)
@@ -879,8 +870,8 @@ bool Window::ColorPicker(long id, float y, CVECTOR &ref, float st, CVECTOR &res)
         //Цветовой квадрат
         float x1 = x - 256.0f - 4.0f;
         float y1 = winy + y + 3.0f;
-        float x2 = x - 4.0f;
-        float y2 = winy + y + 256.0f + 3.0f;
+        const float x2 = x - 4.0f;
+        const float y2 = winy + y + 256.0f + 3.0f;
         struct Vrt
         {
             float x, y;
@@ -914,7 +905,7 @@ bool Window::ColorPicker(long id, float y, CVECTOR &ref, float st, CVECTOR &res)
         rs->TextureSet(0, -1);
         rs->SetTexture(0, pickerTexture);
         rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, D3DFVF_XYZRHW | D3DFVF_TEX1, 2, v, sizeof(v[0]), "DbgDraw2DTexture");
-        rs->SetTexture(0, null);
+        rs->SetTexture(0, nullptr);
         //
         if (pikerWait < 0.0f && isMouseDown)
         {
@@ -963,7 +954,7 @@ bool Window::ColorPicker(long id, float y, CVECTOR &ref, float st, CVECTOR &res)
 bool Window::Button(float x, float y, float w, float h, const char *text, long *act, long init)
 {
     bool isInside = false;
-    dword c = selColor;
+    uint32_t c = selColor;
     if (cursx >= winx + x && cursx <= winx + x + w)
     {
         if (cursy >= winy + y && cursy <= winy + y + h)
@@ -981,9 +972,9 @@ bool Window::Button(float x, float y, float w, float h, const char *text, long *
 
 void Window::Checker(float x, float y, const char *text, bool &res)
 {
-    dword c = selColor;
-    float s = 10.0f;
-    float h = 20.0f;
+    uint32_t c = selColor;
+    const float s = 10.0f;
+    const float h = 20.0f;
     //Проверим на изменение
     if (cursx >= winx + x && cursx <= winx + x + s)
     {
@@ -1144,11 +1135,11 @@ long Window::SelPreset()
         if (lastPreset != ins)
         {
             //Подгружаем имя
-            INIFILE *ini = api->fio->OpenIniFile("resource\\ini\\loclighter.ini");
+            INIFILE *ini = fio->OpenIniFile("resource\\ini\\loclighter.ini");
             if (ini)
             {
                 char sect[32];
-                sprintf(sect, "prs%i", ins);
+                sprintf_s(sect, "prs%i", ins);
                 prsComment[0] = 0;
                 if (!ini->ReadString(sect, "comment", prsComment, 64, ""))
                     prsComment[0] = 0;
@@ -1172,21 +1163,21 @@ void Window::SavePreset(long prs)
     if (prs < 0)
         return;
     //Проверяем, будем ли работать
-    INIFILE *ini = api->fio->OpenIniFile("resource\\ini\\loclighter.ini");
+    INIFILE *ini = fio->OpenIniFile("resource\\ini\\loclighter.ini");
     if (!ini)
         return;
     char sect[32];
-    sprintf(sect, "prs%i", prs);
+    sprintf_s(sect, "prs%i", prs);
     for (long i = 0; i < numElements; i++)
     {
         switch (list[i].type)
         {
         case ListElement::t_smooth:
-            ini->WriteLong(sect, "smoothUseNormals", long(smoothNorm));
+            ini->WriteLong(sect, "smoothUseNormals", static_cast<long>(smoothNorm));
             ini->WriteDouble(sect, "smoothRadius", smoothRad);
             break;
         case ListElement::t_blur:
-            ini->WriteLong(sect, "blurTrace", long(isTraceBlur));
+            ini->WriteLong(sect, "blurTrace", static_cast<long>(isTraceBlur));
             ini->WriteDouble(sect, "blurRadius", blurRad);
             ini->WriteDouble(sect, "blurAtt", blurAtt);
             ini->WriteDouble(sect, "blurCos", blurCos);
@@ -1208,7 +1199,7 @@ void Window::SavePreset(long prs)
             ini->WriteDouble(sect, GenerateName(list[i].name, "_bright"), *list[i].bright);
             ini->WriteDouble(sect, GenerateName(list[i].name, "_contr"), *list[i].contr);
             ini->WriteDouble(sect, GenerateName(list[i].name, "_gamma"), *list[i].gamma);
-            ini->WriteLong(sect, GenerateName(list[i].name, "_isOn"), long(*list[i].isOn));
+            ini->WriteLong(sect, GenerateName(list[i].name, "_isOn"), static_cast<long>(*list[i].isOn));
             break;
         case ListElement::t_glight:
             ini->WriteDouble(sect, GenerateName(list[i].name, "_intens"), list[i].st);
@@ -1224,7 +1215,7 @@ void Window::SavePreset(long prs)
             ini->WriteDouble(sect, GenerateName(list[i].name, "_att1"), *list[i].att1);
             ini->WriteDouble(sect, GenerateName(list[i].name, "_att2"), *list[i].att2);
             ini->WriteDouble(sect, GenerateName(list[i].name, "_range"), *list[i].range);
-            ini->WriteLong(sect, GenerateName(list[i].name, "_isOn"), long(*list[i].isOn));
+            ini->WriteLong(sect, GenerateName(list[i].name, "_isOn"), static_cast<long>(*list[i].isOn));
             break;
         }
     }
@@ -1236,59 +1227,75 @@ void Window::LoadPreset(long prs)
     if (prs < 0)
         return;
     //Проверяем, будем ли работать
-    INIFILE *ini = api->fio->OpenIniFile("resource\\ini\\loclighter.ini");
+    INIFILE *ini = fio->OpenIniFile("resource\\ini\\loclighter.ini");
     if (!ini)
         return;
     char sect[32];
-    sprintf(sect, "prs%i", prs);
+    sprintf_s(sect, "prs%i", prs);
     for (long i = 0; i < numElements; i++)
     {
         switch (list[i].type)
         {
         case ListElement::t_smooth:
-            smoothNorm = ini->GetLong(sect, "smoothUseNormals", long(smoothNorm)) != 0;
-            smoothRad = float(ini->GetDouble(sect, "smoothRadius", smoothRad));
+            smoothNorm = ini->GetLong(sect, "smoothUseNormals", static_cast<long>(smoothNorm)) != 0;
+            smoothRad = static_cast<float>(ini->GetDouble(sect, "smoothRadius", smoothRad));
             break;
         case ListElement::t_blur:
-            isTraceBlur = ini->GetLong(sect, "blurTrace", long(isTraceBlur)) != 0;
-            blurRad = float(ini->GetDouble(sect, "blurRadius", blurRad));
-            blurAtt = float(ini->GetDouble(sect, "blurAtt", blurAtt));
-            blurCos = float(ini->GetDouble(sect, "blurCos", blurCos));
-            kBlur = float(ini->GetDouble(sect, "blurKf", kBlur));
+            isTraceBlur = ini->GetLong(sect, "blurTrace", static_cast<long>(isTraceBlur)) != 0;
+            blurRad = static_cast<float>(ini->GetDouble(sect, "blurRadius", blurRad));
+            blurAtt = static_cast<float>(ini->GetDouble(sect, "blurAtt", blurAtt));
+            blurCos = static_cast<float>(ini->GetDouble(sect, "blurCos", blurCos));
+            kBlur = static_cast<float>(ini->GetDouble(sect, "blurKf", kBlur));
             break;
         case ListElement::t_amb:
-            list[i].st = float(ini->GetDouble(sect, "ambient_intens", list[i].st));
-            list[i].c.x = float(ini->GetDouble(sect, "ambient_clrR", list[i].c.x));
-            list[i].c.y = float(ini->GetDouble(sect, "ambient_clrG", list[i].c.y));
-            list[i].c.z = float(ini->GetDouble(sect, "ambient_clrB", list[i].c.z));
+            list[i].st = static_cast<float>(ini->GetDouble(sect, "ambient_intens", list[i].st));
+            list[i].c.x = static_cast<float>(ini->GetDouble(sect, "ambient_clrR", list[i].c.x));
+            list[i].c.y = static_cast<float>(ini->GetDouble(sect, "ambient_clrG", list[i].c.y));
+            list[i].c.z = static_cast<float>(ini->GetDouble(sect, "ambient_clrB", list[i].c.z));
             break;
         case ListElement::t_light:
-            list[i].st = float(ini->GetDouble(sect, GenerateName(list[i].name, "_intens"), list[i].st));
-            list[i].c.x = float(ini->GetDouble(sect, GenerateName(list[i].name, "_clrR"), list[i].c.x));
-            list[i].c.y = float(ini->GetDouble(sect, GenerateName(list[i].name, "_clrG"), list[i].c.y));
-            list[i].c.z = float(ini->GetDouble(sect, GenerateName(list[i].name, "_clrB"), list[i].c.z));
-            *list[i].cosine = float(ini->GetDouble(sect, GenerateName(list[i].name, "_cosine"), *list[i].cosine));
-            *list[i].shadow = float(ini->GetDouble(sect, GenerateName(list[i].name, "_shadow"), *list[i].shadow));
-            *list[i].bright = float(ini->GetDouble(sect, GenerateName(list[i].name, "_bright"), *list[i].bright));
-            *list[i].contr = float(ini->GetDouble(sect, GenerateName(list[i].name, "_contr"), *list[i].contr));
-            *list[i].gamma = float(ini->GetDouble(sect, GenerateName(list[i].name, "_gamma"), *list[i].gamma));
-            *list[i].isOn = ini->GetLong(sect, GenerateName(list[i].name, "_isOn"), long(*list[i].isOn)) != 0;
+            list[i].st = static_cast<float>(ini->GetDouble(sect, GenerateName(list[i].name, "_intens"), list[i].st));
+            list[i].c.x = static_cast<float>(ini->GetDouble(sect, GenerateName(list[i].name, "_clrR"), list[i].c.x));
+            list[i].c.y = static_cast<float>(ini->GetDouble(sect, GenerateName(list[i].name, "_clrG"), list[i].c.y));
+            list[i].c.z = static_cast<float>(ini->GetDouble(sect, GenerateName(list[i].name, "_clrB"), list[i].c.z));
+            *list[i].cosine =
+                static_cast<float>(ini->GetDouble(sect, GenerateName(list[i].name, "_cosine"), *list[i].cosine));
+            *list[i].shadow =
+                static_cast<float>(ini->GetDouble(sect, GenerateName(list[i].name, "_shadow"), *list[i].shadow));
+            *list[i].bright =
+                static_cast<float>(ini->GetDouble(sect, GenerateName(list[i].name, "_bright"), *list[i].bright));
+            *list[i].contr =
+                static_cast<float>(ini->GetDouble(sect, GenerateName(list[i].name, "_contr"), *list[i].contr));
+            *list[i].gamma =
+                static_cast<float>(ini->GetDouble(sect, GenerateName(list[i].name, "_gamma"), *list[i].gamma));
+            *list[i].isOn =
+                ini->GetLong(sect, GenerateName(list[i].name, "_isOn"), static_cast<long>(*list[i].isOn)) != 0;
             break;
         case ListElement::t_glight:
-            list[i].st = float(ini->GetDouble(sect, GenerateName(list[i].name, "_intens"), list[i].st));
-            list[i].c.x = float(ini->GetDouble(sect, GenerateName(list[i].name, "_clrR"), list[i].c.x));
-            list[i].c.y = float(ini->GetDouble(sect, GenerateName(list[i].name, "_clrG"), list[i].c.y));
-            list[i].c.z = float(ini->GetDouble(sect, GenerateName(list[i].name, "_clrB"), list[i].c.z));
-            *list[i].cosine = float(ini->GetDouble(sect, GenerateName(list[i].name, "_cosine"), *list[i].cosine));
-            *list[i].shadow = float(ini->GetDouble(sect, GenerateName(list[i].name, "_shadow"), *list[i].shadow));
-            *list[i].bright = float(ini->GetDouble(sect, GenerateName(list[i].name, "_bright"), *list[i].bright));
-            *list[i].contr = float(ini->GetDouble(sect, GenerateName(list[i].name, "_contr"), *list[i].contr));
-            *list[i].gamma = float(ini->GetDouble(sect, GenerateName(list[i].name, "_gamma"), *list[i].gamma));
-            *list[i].att0 = float(ini->GetDouble(sect, GenerateName(list[i].name, "_att0"), *list[i].att0));
-            *list[i].att1 = float(ini->GetDouble(sect, GenerateName(list[i].name, "_att1"), *list[i].att1));
-            *list[i].att2 = float(ini->GetDouble(sect, GenerateName(list[i].name, "_att2"), *list[i].att2));
-            *list[i].range = float(ini->GetDouble(sect, GenerateName(list[i].name, "_range"), *list[i].range));
-            *list[i].isOn = ini->GetLong(sect, GenerateName(list[i].name, "_isOn"), long(*list[i].isOn)) != 0;
+            list[i].st = static_cast<float>(ini->GetDouble(sect, GenerateName(list[i].name, "_intens"), list[i].st));
+            list[i].c.x = static_cast<float>(ini->GetDouble(sect, GenerateName(list[i].name, "_clrR"), list[i].c.x));
+            list[i].c.y = static_cast<float>(ini->GetDouble(sect, GenerateName(list[i].name, "_clrG"), list[i].c.y));
+            list[i].c.z = static_cast<float>(ini->GetDouble(sect, GenerateName(list[i].name, "_clrB"), list[i].c.z));
+            *list[i].cosine =
+                static_cast<float>(ini->GetDouble(sect, GenerateName(list[i].name, "_cosine"), *list[i].cosine));
+            *list[i].shadow =
+                static_cast<float>(ini->GetDouble(sect, GenerateName(list[i].name, "_shadow"), *list[i].shadow));
+            *list[i].bright =
+                static_cast<float>(ini->GetDouble(sect, GenerateName(list[i].name, "_bright"), *list[i].bright));
+            *list[i].contr =
+                static_cast<float>(ini->GetDouble(sect, GenerateName(list[i].name, "_contr"), *list[i].contr));
+            *list[i].gamma =
+                static_cast<float>(ini->GetDouble(sect, GenerateName(list[i].name, "_gamma"), *list[i].gamma));
+            *list[i].att0 =
+                static_cast<float>(ini->GetDouble(sect, GenerateName(list[i].name, "_att0"), *list[i].att0));
+            *list[i].att1 =
+                static_cast<float>(ini->GetDouble(sect, GenerateName(list[i].name, "_att1"), *list[i].att1));
+            *list[i].att2 =
+                static_cast<float>(ini->GetDouble(sect, GenerateName(list[i].name, "_att2"), *list[i].att2));
+            *list[i].range =
+                static_cast<float>(ini->GetDouble(sect, GenerateName(list[i].name, "_range"), *list[i].range));
+            *list[i].isOn =
+                ini->GetLong(sect, GenerateName(list[i].name, "_isOn"), static_cast<long>(*list[i].isOn)) != 0;
             break;
         }
     }
@@ -1299,8 +1306,8 @@ void Window::LoadPreset(long prs)
 
 char *Window::GenerateName(const char *f, const char *n)
 {
-    strcpy(stringBuffer, f);
-    strcat(stringBuffer, n);
+    strcpy_s(stringBuffer, f);
+    strcat_s(stringBuffer, n);
     for (long i = 0; stringBuffer[i]; i++)
         if (stringBuffer[i] == ' ')
             stringBuffer[i] = '_';

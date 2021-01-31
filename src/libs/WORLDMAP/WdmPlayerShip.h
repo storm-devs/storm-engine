@@ -27,15 +27,15 @@ class WdmPlayerShip : public WdmShip
     void SetActionRadius(float radius);
 
     //Расчёты
-    virtual void Update(float dltTime);
-    virtual void LRender(VDX8RENDER *rs);
+    void Update(float dltTime) override;
+    void LRender(VDX9RENDER *rs) override;
 
     //Проверка при выходе из карты
     bool ExitFromMap();
     //Проверка на нахождении кораблика в шторме
-    long TestInStorm();
+    long TestInStorm() const;
 
-    float GetAy();
+    float GetAy() const;
 
     bool canSkip;
 
@@ -43,7 +43,7 @@ class WdmPlayerShip : public WdmShip
     //Переместить кораблик
     virtual void Move(float dltTime);
 
-    virtual void Collide();
+    void Collide() override;
 
     //--------------------------------------------------------------------------------------------
     //Инкапсуляция
@@ -54,7 +54,7 @@ class WdmPlayerShip : public WdmShip
     float stormEventTime;
 };
 
-inline float WdmPlayerShip::GetAy()
+inline float WdmPlayerShip::GetAy() const
 {
     return ay;
 }

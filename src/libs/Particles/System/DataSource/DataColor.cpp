@@ -1,9 +1,11 @@
 #include "DataColor.h"
-#include "..\..\icommon\graphtime.h"
-#include "..\..\icommon\memfile.h"
+
+#include "../../ICommon/GraphTime.h"
+#include "storm_assert.h"
+#include "vmodule_api.h"
 
 //конструктор/деструктор
-DataColor::DataColor() : ColorGraph(_FL_, 128), ZeroColor(0xFFFFFFFFL)
+DataColor::DataColor() : ZeroColor(0xFFFFFFFF)
 {
 }
 
@@ -17,26 +19,26 @@ Color DataColor::GetValue(float Time, float LifeTime, float K_rand)
     //Время у графика цвета всегда относительное...
     Time = (Time / LifeTime);
 
-    DWORD Count = ColorGraph.Size();
-    DWORD StartIndex = 0;
-    for (DWORD n = StartIndex; n < (Count - 1); n++)
+    uint32_t Count = ColorGraph.size();
+    uint32_t StartIndex = 0;
+    for (auto n = StartIndex; n < (Count - 1); n++)
     {
-        float FromTime = ColorGraph[n].Time;
-        float ToTime = ColorGraph[n + 1].Time;
+        auto FromTime = ColorGraph[n].Time;
+        auto ToTime = ColorGraph[n + 1].Time;
 
         //Если время в нужном диапазоне...
         if ((Time >= FromTime) && (Time <= ToTime))
         {
-            float SegmentDeltaTime = ColorGraph[n + 1].Time - ColorGraph[n].Time;
-            float ValueDeltaTime = Time - ColorGraph[n].Time;
-            float blend_k = 0.0f;
+            auto SegmentDeltaTime = ColorGraph[n + 1].Time - ColorGraph[n].Time;
+            auto ValueDeltaTime = Time - ColorGraph[n].Time;
+            auto blend_k = 0.0f;
             if (SegmentDeltaTime > 0.001f)
                 blend_k = ValueDeltaTime / SegmentDeltaTime;
 
-            Color ValueFirstMax = ColorGraph[n].MaxValue;
-            Color ValueSecondMax = ColorGraph[n + 1].MaxValue;
-            Color ValueFirstMin = ColorGraph[n].MinValue;
-            Color ValueSecondMin = ColorGraph[n + 1].MinValue;
+            auto ValueFirstMax = ColorGraph[n].MaxValue;
+            auto ValueSecondMax = ColorGraph[n + 1].MaxValue;
+            auto ValueFirstMin = ColorGraph[n].MinValue;
+            auto ValueSecondMin = ColorGraph[n + 1].MinValue;
 
             Color MaxVal;
             MaxVal.Lerp(ValueFirstMax, ValueSecondMax, blend_k);
@@ -57,57 +59,57 @@ Color DataColor::GetValue(float Time, float LifeTime, float K_rand)
 //два индекса, Min=Max=Value
 void DataColor::SetDefaultValue(const Color &Value)
 {
-    ColorGraph.DelAll();
+    ColorGraph.clear();
 
     ColorVertex pMinVertex;
     pMinVertex.Time = MIN_GRAPH_TIME;
     pMinVertex.MinValue = Value;
     pMinVertex.MaxValue = Value;
-    ColorGraph.Add(pMinVertex);
+    ColorGraph.push_back(pMinVertex);
 
     ColorVertex pMaxVertex;
     pMinVertex.Time = 1.0f;
     pMinVertex.MinValue = Value;
     pMinVertex.MaxValue = Value;
-    ColorGraph.Add(pMinVertex);
+    ColorGraph.push_back(pMinVertex);
 }
 
 //Установить значения
-void DataColor::SetValues(const ColorVertex *Values, DWORD Count)
+void DataColor::SetValues(const ColorVertex *Values, uint32_t Count)
 {
-    ColorGraph.DelAll();
-    for (DWORD n = 0; n < Count; n++)
+    ColorGraph.clear();
+    for (uint32_t n = 0; n < Count; n++)
     {
-        ColorGraph.Add(Values[n]);
+        ColorGraph.push_back(Values[n]);
     }
 }
 
 //Получить кол-во значений
-DWORD DataColor::GetValuesCount()
+uint32_t DataColor::GetValuesCount() const
 {
-    return ColorGraph.Size();
+    return ColorGraph.size();
 }
 
 //Получить мин. значение (по индексу)
-const Color &DataColor::GetMinValue(DWORD Index)
+const Color &DataColor::GetMinValue(uint32_t Index)
 {
     return ColorGraph[Index].MinValue;
 }
 
 //Получить макс. значение (по индексу)
-const Color &DataColor::GetMaxValue(DWORD Index)
+const Color &DataColor::GetMaxValue(uint32_t Index)
 {
     return ColorGraph[Index].MaxValue;
 }
 
 void DataColor::Load(MemFile *File)
 {
-    DWORD dwColorCount = 0;
+    uint32_t dwColorCount = 0;
     File->ReadType(dwColorCount);
 
-    for (DWORD n = 0; n < dwColorCount; n++)
+    for (uint32_t n = 0; n < dwColorCount; n++)
     {
-        float Time = 0.0f;
+        auto Time = 0.0f;
         File->ReadType(Time);
 
         Color clrMax;
@@ -120,11 +122,11 @@ void DataColor::Load(MemFile *File)
         pColor.Time = Time;
         pColor.MinValue = clrMin;
         pColor.MaxValue = clrMax;
-        ColorGraph.Add(pColor);
+        ColorGraph.push_back(pColor);
     }
 
     static char AttribueName[128];
-    DWORD NameLength = 0;
+    uint32_t NameLength = 0;
     File->ReadType(NameLength);
     Assert(NameLength < 128);
     File->Read(AttribueName, NameLength);
@@ -134,42 +136,42 @@ void DataColor::Load(MemFile *File)
 
 void DataColor::SetName(const char *szName)
 {
-    // api->Trace("DataColor::SetName - '%s'", szName);
+    // core.Trace("DataColor::SetName - '%s'", szName);
     Name = szName;
 }
 
-const char *DataColor::GetName()
+const char *DataColor::GetName() const
 {
-    return Name.GetBuffer();
+    return Name.c_str();
 }
 
-const ColorVertex &DataColor::GetByIndex(DWORD Index)
+const ColorVertex &DataColor::GetByIndex(uint32_t Index)
 {
     return ColorGraph[Index];
 }
 
 void DataColor::Write(MemFile *File)
 {
-    DWORD dwColorCount = ColorGraph.Size();
+    uint32_t dwColorCount = ColorGraph.size();
     File->WriteType(dwColorCount);
 
-    for (DWORD n = 0; n < dwColorCount; n++)
+    for (uint32_t n = 0; n < dwColorCount; n++)
     {
-        float Time = ColorGraph[n].Time;
+        auto Time = ColorGraph[n].Time;
         File->WriteType(Time);
 
-        Color clrMax = ColorGraph[n].MaxValue;
+        auto clrMax = ColorGraph[n].MaxValue;
         File->WriteType(clrMax);
 
-        Color clrMin = ColorGraph[n].MinValue;
+        auto clrMin = ColorGraph[n].MinValue;
         File->WriteType(clrMin);
     }
 
     // save name
-    DWORD NameLength = Name.Len();
-    DWORD NameLengthPlusZero = NameLength + 1;
+    uint32_t NameLength = Name.size();
+    auto NameLengthPlusZero = NameLength + 1;
     File->WriteType(NameLengthPlusZero);
     Assert(NameLength < 128);
-    File->Write(Name.GetBuffer(), NameLength);
+    File->Write(Name.c_str(), NameLength);
     File->WriteZeroByte();
 }

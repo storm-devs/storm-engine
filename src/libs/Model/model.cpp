@@ -1,10 +1,8 @@
-#include "common_defines.h"
-#include "messages.h"
+#include "../../Shared/messages.h"
+#include "Entity.h"
+#include "core.h"
+#include "defines.h"
 #include "modelr.h"
-#include <stdio.h>
-
-INTERFACE_FUNCTION
-CREATE_CLASS(MODELR)
 
 IDirect3DVertexBuffer9 *dest_vb;
 
@@ -13,14 +11,14 @@ MODELR::MODELR()
     bSetupFog = false;
     LightPath[0] = 0;
     lmPath[0] = 0;
-    ani = null;
+    ani = nullptr;
     memset(aniVerts, 0, sizeof(aniVerts));
-    d3dDestVB = 0;
+    d3dDestVB = nullptr;
     for (long i = 0; i < ANI_MAX_ACTIONS; i++)
         aniPos[i] = -1.0f;
-    root = null;
+    root = nullptr;
     useBlend = false;
-    idxBuff = 0;
+    idxBuff = nullptr;
     nAniVerts = 0;
 }
 
@@ -28,37 +26,34 @@ CMatrix *bones;
 
 MODELR::~MODELR()
 {
-    if (d3dDestVB != 0)
+    if (d3dDestVB != nullptr)
         d3dDestVB->Release();
-    if (root)
-        delete root;
-    for (int i = 0; i < MODEL_ANI_MAXBUFFERS; i++)
-        if (aniVerts[i].v)
-            delete aniVerts[i].v;
-    if (ani)
-        delete ani;
+    delete root;
+    for (auto i = 0; i < MODEL_ANI_MAXBUFFERS; i++)
+        delete aniVerts[i].v;
+    delete ani;
 
-    if (idxBuff != 0)
-        delete idxBuff;
+    delete idxBuff;
 }
 
 bool MODELR::Init()
 {
-    GUARD(MODELR::Init)
+    // GUARD(MODELR::Init)
 
-    rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
+    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!rs)
-        SE_THROW_MSG("No service: dx8render");
+        throw std::exception("No service: dx9render");
 
-    GeometyService = (VGEOMETRY *)_CORE_API->CreateService("geometry");
+    GeometyService = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
     if (!GeometyService)
-        SE_THROW_MSG("No service: geometry");
+        throw std::exception("No service: geometry");
 
-    UNGUARD
+    // UNGUARD
     return true;
 }
 
 bool alreadyTransformed;
+
 void *VBTransform(void *vb, long startVrt, long nVerts, long totVerts)
 {
     if (alreadyTransformed)
@@ -67,115 +62,22 @@ void *VBTransform(void *vb, long startVrt, long nVerts, long totVerts)
     if (!totVerts)
         return dest_vb;
 
-    GEOS::AVERTEX0 *src = (GEOS::AVERTEX0 *)vb;
+    auto *src = static_cast<GEOS::AVERTEX0 *>(vb);
 
     GEOS::VERTEX0 *dst;
-#ifndef _XBOX
-    dest_vb->Lock(0, 0, (void **)&dst, D3DLOCK_DISCARD | D3DLOCK_NOSYSLOCK);
-#else
-    dest_vb->Lock(0, 0, (unsigned char **)&dst, 0);
-#endif
-
-    // dest_vb->Lock(sizeof(GEOS::VERTEX0)*startVrt, sizeof(GEOS::VERTEX0)*nVerts, (unsigned char**)&dst,
-    // D3DLOCK_DISCARD|D3DLOCK_NOSYSLOCK); src += startVrt; for(long v=0; v<nVerts; v++)
-    // if(GetAsyncKeyState('8') < 0)
-    //{
-    /*
-        //Коэфициент блендинга
-        static float one = 1.0f;
-        //Позиция
-        _asm
-        {
-            mov eax, src
-            mov ebx, dst
-vrt_loop:	prefetcht0 [eax]
-            prefetcht0 [eax + 32]
-            xor ecx, ecx
-            xor edx, edx
-            mov esi, bones
-            mov cl, [eax + 16]
-            mov dl, [eax + 17]
-            mov edi, esi
-            shl ecx, 6
-            shl edx, 6
-            add esi, ecx
-            add edi, edx
-            movss  xmm0, [eax + 12]				//000w
-            movss  xmm1, one					//0001
-            shufps xmm0, xmm0, 00000000b		//xmm0 = wwww
-            shufps xmm1, xmm1, 00000000b		//1111
-            movups xmm4, [esi + 0]				//m1.vx
-            movups xmm6, [edi + 0]				//m2.vx
-            subps  xmm1, xmm0					//xmm1 = (1 - w)(1 - w)(1 - w)(1 - w)
-            movups xmm5, [esi + 16]				//m1.vy
-            movups xmm7, [edi + 16]				//m2.vy
-            mulps  xmm4, xmm0					//m1.vx*w
-            mulps  xmm6, xmm1					//m2.vx*(1 - w)
-            mulps  xmm5, xmm0					//m1.vy*w
-            mulps  xmm7, xmm1					//m2.vy*(1 - w)
-            addps  xmm4, xmm6					//m1.vx*w + m2.vx*(1 - w)
-            addps  xmm5, xmm7					//m1.vy*w + m2.vy*(1 - w)
-            movups xmm6, [esi + 32]				//m1.vz
-            movups xmm2, [edi + 32]				//m2.vz
-            movups xmm7, [esi + 48]				//m1.pos
-            movups xmm3, [edi + 48]				//m2.pos
-            mulps  xmm6, xmm0					//m1.vz*w
-            mulps  xmm2, xmm1					//m2.vz*(1 - w)
-            mulps  xmm7, xmm0					//m1.pos*w
-            mulps  xmm3, xmm1					//m2.pos*(1 - w)
-            addps  xmm6, xmm2					//m1.vx*w + m2.vx*(1 - w)
-            addps  xmm7, xmm3					//m1.vy*w + m2.vy*(1 - w)
-            movss  xmm0, [eax + 0]				//000x
-            movss  xmm1, [eax + 4]				//000y
-            movss  xmm2, [eax + 8]				//000z
-            shufps xmm0, xmm0, 01000000b		//0xxx
-            shufps xmm1, xmm1, 01000000b		//0yyy
-            shufps xmm2, xmm2, 01000000b		//0zzz
-            mulps  xmm0, xmm4					//0xxx*m.vx
-            mulps  xmm1, xmm5					//0yyy*m.vy
-            mulps  xmm2, xmm6					//0zzz*m.vz
-            addps  xmm0, xmm7					//0xxx*m.vx + m.pos
-            addps  xmm1, xmm2					//0yyy*m.vx + 0zzz*m.vx
-            movss  xmm2, [eax + 28]				//000z
-            addps  xmm0, xmm1					//0xxx*m.vx + m.pos + 0yyy*m.vx + 0zzz*m.vx
-            movups [ebx + 0], xmm0				//Сохраняем позицию
-            shufps xmm2, xmm2, 01000000b		//0zzz
-            movss  xmm0, [eax + 20]				//000x
-            movss  xmm1, [eax + 24]				//000y
-            mov    ecx, [eax + 36]				//vrt.tu0
-            mov    edx, [eax + 40]				//vrt.tv0
-            shufps xmm0, xmm0, 01000000b		//0xxx
-            shufps xmm1, xmm1, 01000000b		//0yyy
-            mov    [ebx + 28], ecx				//Сохраняем u
-            mulps  xmm0, xmm4					//0xxx*m.vx
-            mov    [ebx + 32], edx				//Сохраняем v
-            mulps  xmm1, xmm5					//0yyy*m.vy
-            mulps  xmm2, xmm6					//0zzz*m.vz
-            addps  xmm0, xmm7					//0xxx*m.vx + m.pos
-            addps  xmm1, xmm2					//0yyy*m.vx + 0zzz*m.vx
-            mov    ecx, [eax + 32]				//vrt.color
-            addps  xmm0, xmm1					//0xxx*m.vx + m.pos + 0yyy*m.vx + 0zzz*m.vx
-            movups [ebx + 12], xmm0				//Сохраняем нормаль
-            mov    [ebx + 24], ecx				//Сохраняем color
-            add    eax, 44
-            add    ebx, 36
-            dec    totVerts
-            jnz    vrt_loop
-        };
-*/
-    //}else{
+    dest_vb->Lock(0, 0, (VOID **)&dst, D3DLOCK_DISCARD | D3DLOCK_NOSYSLOCK);
 
     CMatrix mtx;
     for (long v = 0; v < totVerts; v++)
     {
         //Вершина
-        GEOS::AVERTEX0 &vrt = src[v];
-        GEOS::VERTEX0 &dstVrt = dst[v];
+        auto &vrt = src[v];
+        auto &dstVrt = dst[v];
         //Метрицы
-        CMatrix &m1 = bones[vrt.boneid & 0xff];
-        CMatrix &m2 = bones[(vrt.boneid >> 8) & 0xff];
+        auto &m1 = bones[vrt.boneid & 0xff];
+        auto &m2 = bones[(vrt.boneid >> 8) & 0xff];
         //Инверсный коэфициент блендинга
-        float wNeg = 1.0f - vrt.weight;
+        const auto wNeg = 1.0f - vrt.weight;
         mtx.matrix[0] = -(m1.matrix[0] * vrt.weight + m2.matrix[0] * wNeg);
         mtx.matrix[1] = m1.matrix[1] * vrt.weight + m2.matrix[1] * wNeg;
         mtx.matrix[2] = m1.matrix[2] * vrt.weight + m2.matrix[2] * wNeg;
@@ -215,18 +117,19 @@ void SetChildrenTechnique(NODE *_root, const char *_name)
 // realize
 //-----------------------------------------------------------------------------------
 GEOS::PLANE ViewPlane[4];
-void MODELR::Realize(dword Delta_Time)
+
+void MODELR::Realize(uint32_t Delta_Time)
 {
-    GUARD(MODELR::Realize)
+    // GUARD(MODELR::Realize)
     if (!root)
         return;
 
-    dword dwOldFogEnable;
+    uint32_t dwOldFogEnable;
     float fOldFogDensity;
     if (bSetupFog)
     {
         rs->GetRenderState(D3DRS_FOGENABLE, &dwOldFogEnable);
-        rs->GetRenderState(D3DRS_FOGDENSITY, (dword *)&fOldFogDensity);
+        rs->GetRenderState(D3DRS_FOGDENSITY, (uint32_t *)&fOldFogDensity);
 
         rs->SetRenderState(D3DRS_FOGENABLE, (bFogEnable) ? true : false);
         rs->SetRenderState(D3DRS_FOGDENSITY, F2DW(fFogDensity));
@@ -243,18 +146,18 @@ void MODELR::Realize(dword Delta_Time)
         passedTime += Delta_Time;
         /*
         if (passedTime > blendTime)
-            useBlend = false;
+          useBlend = false;
         else
         */
         {
-            static dword ambient;
+            static uint32_t ambient;
             rs->GetRenderState(D3DRS_AMBIENT, &ambient);
             ambient &= 0x00FFFFFF;
-            float timeK = ((float)passedTime) / blendTime;
+            float timeK = static_cast<float>(passedTime) / blendTime;
             if (timeK > 1.0f)
                 timeK = 1.0f;
             float alpha = alpha1 + (alpha2 - alpha1) * timeK;
-            ambient |= ((unsigned char)(255.0 * alpha)) << 24;
+            ambient |= static_cast<unsigned char>(255.0 * alpha) << 24;
             // ambient |= 0x05 << 24;
             rs->SetRenderState(D3DRS_TEXTUREFACTOR, ambient);
         }
@@ -272,7 +175,7 @@ void MODELR::Realize(dword Delta_Time)
     if (ani)
     {
         // create VB
-        if (d3dDestVB == 0)
+        if (d3dDestVB == nullptr)
         {
             // calculate total number of vertices
             GEOS::INFO gi;
@@ -284,11 +187,10 @@ void MODELR::Realize(dword Delta_Time)
                 VGEOMETRY::ANIMATION_VB gavb = GeometyService->GetAnimationVBDesc(avb);
                 nAniVerts += gavb.nvertices;
             }
+
             long fvf = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEXTUREFORMAT2 | D3DFVF_TEX1;
             rs->CreateVertexBuffer(sizeof(GEOS::VERTEX0) * nAniVerts, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, fvf,
                                    D3DPOOL_DEFAULT, &d3dDestVB);
-
-            //			_CORE_API->Trace("nAniVerts : %d", sizeof(GEOS::VERTEX0)*nAniVerts);
         }
         dest_vb = d3dDestVB;
 
@@ -314,7 +216,7 @@ void MODELR::Realize(dword Delta_Time)
 
         bones = &ani->GetAnimationMatrix(0);
         root->Draw();
-        GeometyService->SetVBConvertFunc(0);
+        GeometyService->SetVBConvertFunc(nullptr);
         if (!alreadyTransformed)
         {
             aniPos[0] = -2.0f;
@@ -333,7 +235,7 @@ void MODELR::Realize(dword Delta_Time)
         rs->SetRenderState(D3DRS_FOGDENSITY, F2DW(fOldFogDensity));
     }
 
-    UNGUARD
+    // UNGUARD
 }
 
 Animation *MODELR::GetAnimation()
@@ -345,10 +247,10 @@ void MODELR::AniRender()
 {
 }
 
-dword _cdecl MODELR::ProcessMessage(MESSAGE &message)
+uint64_t MODELR::ProcessMessage(MESSAGE &message)
 {
     char str[256];
-    long code = message.Long();
+    const long code = message.Long();
     CVECTOR tmp;
     switch (code)
     {
@@ -356,14 +258,15 @@ dword _cdecl MODELR::ProcessMessage(MESSAGE &message)
         Realize(0);
         break;
     case MSG_MODEL_SET_PARENT: {
-        /*ENTITY_ID ParentID = message.EntityID();
-        if (_CORE_API->ValidateEntity(&ParentID))
+        /*entid_t ParentID = message.EntityID();
+        if (core.ValidateEntity(&ParentID))
         {
-            parent = (MODEL*)ParentID.pointer;
+          parent = (MODEL*)ParentID.pointer;
         }*/
     }
     break;
-    case MSG_MODEL_SET_POSITION: { // Pos,vx,vy,vz
+    case MSG_MODEL_SET_POSITION: {
+        // Pos,vx,vy,vz
         CVECTOR &vx = mtx.Vx();
         CVECTOR &vy = mtx.Vy();
         CVECTOR &vz = mtx.Vz();
@@ -396,55 +299,28 @@ dword _cdecl MODELR::ProcessMessage(MESSAGE &message)
         alpha2 = message.Float();
         break;
     case MSG_MODEL_LOAD_GEO: // set geometry
-        GUARD(MSG_MODEL_LOAD_GEO)
-
-#ifndef _XBOX
+        // GUARD(MSG_MODEL_LOAD_GEO)
         message.String(255, str);
         NODER::gs = GeometyService;
         NODER::rs = rs;
-        root = NEW NODER();
-        if (!root->Init(LightPath, str, "", CMatrix(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), mtx, null, lmPath))
+        root = new NODER();
+        if (!root->Init(LightPath, str, "", CMatrix(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), mtx, nullptr, lmPath))
         {
             delete root;
-            root = null;
-            api->DeleteEntity(GetID());
-            api->fio->SetDrive();
+            root = nullptr;
+            EntityManager::EraseEntity(GetId());
+            fio->SetDrive();
             return 0;
         }
         // CVECTOR tmp;
         root->Update(mtx, tmp);
         return 1;
-#else
-        // api->fio->SetDrive(XBOXDRIVE_CACHE);	// look in cache
-        message.String(255, str);
-        NODER::gs = GeometyService;
-        NODER::rs = rs;
-        root = NEW NODER();
-
-        if (!root->Init(LightPath, str, "", CMatrix(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), mtx, null, lmPath))
-        {
-            api->fio->SetDrive(); // try on dvd
-            if (!root->Init(LightPath, str, "", CMatrix(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), mtx, null, lmPath))
-            {
-                delete root;
-                root = null;
-                api->DeleteEntity(GetID());
-                api->fio->SetDrive();
-                return 0;
-            }
-        }
-
-        root->Update(mtx, tmp);
-        api->fio->SetDrive();
-        return 1;
-
-#endif
-        UNGUARD
+        // UNGUARD
         break;
     case MSG_MODEL_LOAD_ANI: // set animation
     {
         message.String(255, str);
-        AnimationService *asr = (AnimationService *)_CORE_API->CreateService("AnimationServiceImp");
+        AnimationService *asr = static_cast<AnimationService *>(core.CreateService("AnimationServiceImp"));
         ani = asr->CreateAnimation(str);
         if (ani)
             return 1;
@@ -457,26 +333,26 @@ dword _cdecl MODELR::ProcessMessage(MESSAGE &message)
         fFogDensity = message.Float();
         break;
     case MSG_MODEL_SET_LIGHT_PATH:
-        GUARD(MSG_MODEL_SET_LIGHT_PATH)
+        // GUARD(MSG_MODEL_SET_LIGHT_PATH)
         message.String(255, LightPath);
-        UNGUARD
+        // UNGUARD
         break;
     case MSG_MODEL_SET_LIGHT_LMPATH:
-        GUARD(MSG_MODEL_SET_LIGHT_LMPATH)
+        // GUARD(MSG_MODEL_SET_LIGHT_LMPATH)
         message.String(255, lmPath);
-        UNGUARD
+        // UNGUARD
         break;
     case MSG_MODEL_RELEASE:
-        GUARD(MSG_MODEL_RELEASE)
+        // GUARD(MSG_MODEL_RELEASE)
         if (root)
             root->ReleaseGeometry();
-        UNGUARD
+        // UNGUARD
         break;
     case MSG_MODEL_RESTORE:
-        GUARD(MSG_MODEL_RESTORE)
+        // GUARD(MSG_MODEL_RESTORE)
         if (root)
             root->RestoreGeometry();
-        UNGUARD
+        // UNGUARD
         break;
     case MSG_MODEL_SET_DIRPATH: {
         message.String(255, str);
@@ -501,6 +377,7 @@ NODE *MODELR::GetNode(long n)
 {
     return root->GetNode(n);
 }
+
 NODE *MODELR::FindNode(const char *cNodeName)
 {
     return root->FindNode(cNodeName);
@@ -522,7 +399,7 @@ ADD_POLYGON_FUNC clip_ap;
 GEOS::ADD_POLYGON_FUNC clip_geosap;
 long clip_nps;
 
-bool _cdecl AddPolygon(const GEOS::VERTEX *vr, long nv);
+bool AddPolygon(const GEOS::VERTEX *vr, long nv);
 //-------------------------------------------------------------------
 bool MODELR::Clip(const PLANE *planes, long nplanes, const CVECTOR &center, float radius, ADD_POLYGON_FUNC addpoly)
 {
@@ -531,12 +408,13 @@ bool MODELR::Clip(const PLANE *planes, long nplanes, const CVECTOR &center, floa
     clip_c = &center;
     clip_r = radius;
     clip_ap = addpoly;
-    if (clip_ap == 0)
-        clip_geosap = 0;
+    if (clip_ap == nullptr)
+        clip_geosap = nullptr;
     else
         clip_geosap = AddPolygon;
     return root->Clip();
 }
+
 extern NODE *bestTraceNode;
 //-------------------------------------------------------------------
 const char *MODELR::GetCollideMaterialName()
@@ -550,20 +428,22 @@ const char *MODELR::GetCollideMaterialName()
     colideNode->geo->GetMaterial(go.material, gm);
     return gm.name;
 }
+
 //-------------------------------------------------------------------
-bool MODELR::GetCollideTriangle(Triangle &triangle)
+bool MODELR::GetCollideTriangle(TRIANGLE &triangle)
 {
     GEOS::TRACE_INFO ti;
     if (colideNode->geo->GetCollisionDetails(ti) == false)
         return false;
-    triangle.p[0] = colideNode->glob_mtx * CVECTOR(ti.vrt[0].x, ti.vrt[0].y, ti.vrt[0].z);
-    triangle.p[1] = colideNode->glob_mtx * CVECTOR(ti.vrt[1].x, ti.vrt[1].y, ti.vrt[1].z);
-    triangle.p[2] = colideNode->glob_mtx * CVECTOR(ti.vrt[2].x, ti.vrt[2].y, ti.vrt[2].z);
+    triangle.vrt[0] = colideNode->glob_mtx * CVECTOR(ti.vrt[0].x, ti.vrt[0].y, ti.vrt[0].z);
+    triangle.vrt[1] = colideNode->glob_mtx * CVECTOR(ti.vrt[1].x, ti.vrt[1].y, ti.vrt[1].z);
+    triangle.vrt[2] = colideNode->glob_mtx * CVECTOR(ti.vrt[2].x, ti.vrt[2].y, ti.vrt[2].z);
     return true;
 }
 
 //-------------------------------------------------------------------
-CVECTOR cold[16384];
+CVECTOR cold[1024 * 1024];
+
 float MODELR::Trace(const CVECTOR &src, const CVECTOR &dst)
 {
     // collision with skinned geometry
@@ -591,9 +471,11 @@ float MODELR::Trace(const CVECTOR &src, const CVECTOR &dst)
         GEOS::INFO gi;
 
         // load indices
-        if (idxBuff == 0)
+        if (idxBuff == nullptr)
         {
-            unsigned short *idx = (unsigned short *)rs->LockIndexBuffer(root->geo->GetIndexBuffer());
+            auto *idx = static_cast<unsigned short *>(rs->LockIndexBuffer(root->geo->GetIndexBuffer()));
+            if (idx == nullptr)
+                return 0.;
 
             int nt = 0;
             root->geo->GetInfo(gi);
@@ -601,33 +483,33 @@ float MODELR::Trace(const CVECTOR &src, const CVECTOR &dst)
             {
                 long avb = root->geo->GetVertexBuffer(vb);
                 VGEOMETRY::ANIMATION_VB gavb = GeometyService->GetAnimationVBDesc(avb);
-                GEOS::AVERTEX0 *gsrc = (GEOS::AVERTEX0 *)gavb.buff;
+                auto *gsrc = static_cast<GEOS::AVERTEX0 *>(gavb.buff);
 
                 // for all objects that refers to this vertexBuffer
                 for (long o = 0; o < gi.nobjects; o++)
                 {
                     GEOS::OBJECT go;
                     root->geo->GetObj(o, go);
-                    if (go.vertex_buff != (unsigned long)avb)
+                    if (go.vertex_buff != static_cast<unsigned long>(avb))
                         continue;
 
                     nt += go.ntriangles;
                 }
             }
 
-            idxBuff = NEW unsigned short[nt * 3];
+            idxBuff = new unsigned short[nt * 3];
             for (long vb = 0; vb < gi.nvrtbuffs; vb++)
             {
                 long avb = root->geo->GetVertexBuffer(vb);
                 VGEOMETRY::ANIMATION_VB gavb = GeometyService->GetAnimationVBDesc(avb);
-                GEOS::AVERTEX0 *gsrc = (GEOS::AVERTEX0 *)gavb.buff;
+                auto *gsrc = static_cast<GEOS::AVERTEX0 *>(gavb.buff);
 
                 // for all objects that refers to this vertexBuffer
                 for (long o = 0; o < gi.nobjects; o++)
                 {
                     GEOS::OBJECT go;
                     root->geo->GetObj(o, go);
-                    if (go.vertex_buff != (unsigned long)avb)
+                    if (go.vertex_buff != static_cast<unsigned long>(avb))
                         continue;
 
                     // for all triangles in object
@@ -649,7 +531,7 @@ float MODELR::Trace(const CVECTOR &src, const CVECTOR &dst)
         {
             long avb = root->geo->GetVertexBuffer(vb);
             VGEOMETRY::ANIMATION_VB gavb = GeometyService->GetAnimationVBDesc(avb);
-            GEOS::AVERTEX0 *gsrc = (GEOS::AVERTEX0 *)gavb.buff;
+            auto *gsrc = static_cast<GEOS::AVERTEX0 *>(gavb.buff);
 
             // transform vertices and trace
             for (long v = 0; v < gavb.nvertices; v++)
@@ -672,7 +554,7 @@ float MODELR::Trace(const CVECTOR &src, const CVECTOR &dst)
             {
                 GEOS::OBJECT go;
                 root->geo->GetObj(o, go);
-                if (go.vertex_buff != (unsigned long)avb)
+                if (go.vertex_buff != static_cast<unsigned long>(avb))
                     continue;
 
                 // for all triangles in object
@@ -785,13 +667,12 @@ void MODELR::FindPlanes(const CMatrix &view, const CMatrix &proj)
 
 void MODELR::LostRender()
 {
-    if (d3dDestVB != 0)
-        d3dDestVB->Release();
+    rs->Release(d3dDestVB);
 }
 
 void MODELR::RestoreRender()
 {
-    long fvf = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEXTUREFORMAT2 | D3DFVF_TEX1;
+    const long fvf = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEXTUREFORMAT2 | D3DFVF_TEX1;
     if (nAniVerts)
         rs->CreateVertexBuffer(sizeof(GEOS::VERTEX0) * nAniVerts, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, fvf,
                                D3DPOOL_DEFAULT, &d3dDestVB);

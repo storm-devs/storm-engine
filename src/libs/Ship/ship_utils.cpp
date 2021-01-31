@@ -1,17 +1,21 @@
+#include "../../shared/mast_msg.h"
 #include "ship.h"
+
+#define MAST_IDENTIFY "mast"
+#define MAST_FIRST 1
 
 BOOL SHIP::BuildContour(CVECTOR *vContour, long &iNumVContour)
 {
     iNumVContour = 0;
 
-    MODEL *pEnt = GetModel();
+    auto *pEnt = GetModel();
     Assert(pEnt);
 
     CVECTOR vSrc, vDst, vP, vP1, vP2;
     float fY, fRight, fLeft, fUp, fDown, fRes, fZMax, fZMin, fZStep, fZMinStep;
 
-    bool bDefaultContour = false;
-    bool bRes = api->ValidateEntity(&model_id);
+    auto bDefaultContour = false;
+    bool bRes = EntityManager::GetEntityPointer(model_id);
     Assert(bRes);
 
     CMatrix mTemp;
@@ -37,11 +41,9 @@ BOOL SHIP::BuildContour(CVECTOR *vContour, long &iNumVContour)
     }
     else
     {
-        api->Trace("SHIP: Up trace error, ship %s", GetAShip()->GetAttribute("Name"));
+        core.Trace("SHIP: Up trace error, ship %s", GetAShip()->GetAttribute("Name"));
         bDefaultContour = true;
-#ifndef _XBOX
         Beep(1000, 200);
-#endif
     }
     // Assert(fRes<=1.0f);
 
@@ -53,11 +55,9 @@ BOOL SHIP::BuildContour(CVECTOR *vContour, long &iNumVContour)
         vP2 = vSrc + fRes * (vDst - vSrc);
     else
     {
-        api->Trace("SHIP: Down trace error, ship %s", GetAShip()->GetAttribute("Name"));
+        core.Trace("SHIP: Down trace error, ship %s", GetAShip()->GetAttribute("Name"));
         bDefaultContour = true;
-#ifndef _XBOX
         Beep(1000, 200);
-#endif
     }
     // Assert(fRes<=1.0f);
 
@@ -68,18 +68,18 @@ BOOL SHIP::BuildContour(CVECTOR *vContour, long &iNumVContour)
         fZMax = vP1.z;
         fZMin = vP2.z;
         fZMinStep = 2.0f;
-        fZStep = (fZMax - fZMin) / float(long((fZMax - fZMin) / fZMinStep));
-        long iNumSteps = long((fZMax - fZMin) / fZStep);
+        fZStep = (fZMax - fZMin) / static_cast<float>(static_cast<long>((fZMax - fZMin) / fZMinStep));
+        auto iNumSteps = static_cast<long>((fZMax - fZMin) / fZStep);
 
         // trace left and right sides of ship
         for (long i = 1; i < iNumSteps - 1; i++)
         {
             // left trace
-            float fZ = fZMax - float(i) * fZStep;
+            auto fZ = fZMax - static_cast<float>(i) * fZStep;
 
             vSrc = CVECTOR(fLeft, fY, fZ);
             vDst = CVECTOR(0.0f, fY, fZ);
-            // api->SetEntityScanLayer("balls_trace");
+            // core.SetEntityScanLayer("balls_trace");
             fRes = pCollide->Trace(model_id, vSrc, vDst);
             Assert(fRes <= 1.0f);
             vP = vSrc + fRes * (vDst - vSrc);
@@ -97,8 +97,8 @@ BOOL SHIP::BuildContour(CVECTOR *vContour, long &iNumVContour)
     }
     else // setup default contour - wrong situation
     {
-        float fDZ = State.vBoxSize.z / 2.0f;
-        float fDX = State.vBoxSize.x / 2.0f;
+        auto fDZ = State.vBoxSize.z / 2.0f;
+        auto fDX = State.vBoxSize.x / 2.0f;
         vContour[0] = CVECTOR(0.0f, 0.0f, fDZ);
         vContour[1] = CVECTOR(fDX * 0.8f, 0.0f, fDZ * 0.6f);
         vContour[2] = CVECTOR(fDX * 1.0f, 0.0f, 0.0f);
@@ -119,16 +119,16 @@ BOOL SHIP::BuildContour(CVECTOR *vContour, long &iNumVContour)
     {
         // build keel contour
         long iDZ = MAX_KEEL_POINTS / 2;
-        float fDZ = iDZ + 1.0f;
+        auto fDZ = iDZ + 1.0f;
         for (long i = 0; i < MAX_KEEL_POINTS; i++)
         {
             float fZ;
             if (i == iDZ)
                 fZ = 0.0f;
             if (i < iDZ)
-                fZ = fZMax / fDZ * float(iDZ - i);
+                fZ = fZMax / fDZ * static_cast<float>(iDZ - i);
             if (i > iDZ)
-                fZ = fZMin / fDZ * float(i - iDZ);
+                fZ = fZMin / fDZ * static_cast<float>(i - iDZ);
 
             vSrc = CVECTOR(0.0f, -100.0f, fZ);
             vDst = CVECTOR(0.001f, 10.0f, fZ);
@@ -147,39 +147,40 @@ bool SHIP::BuildMasts()
 {
     char str[256];
 
-    MODEL *pEnt = GetModel();
+    auto *pEnt = GetModel();
     Assert(pEnt);
 
     // build mast list
     long iNum, iIdx = 0;
     while (true)
     {
-        NODE *pNode = (NODE *)pEnt->GetNode(iIdx);
+        auto *pNode = static_cast<NODE *>(pEnt->GetNode(iIdx));
+
         if (!pNode)
         {
             if (iNumMasts)
             {
-                ATTRIBUTES *pAQMasts = GetACharacter()->FindAClass(GetACharacter(), "Ship.MastsQty");
+                auto *pAQMasts = GetACharacter()->FindAClass(GetACharacter(), "Ship.MastsQty");
                 if (!pAQMasts)
                     pAQMasts = GetACharacter()->CreateSubAClass(GetACharacter(), "Ship.MastsQty");
-
-                pAQMasts->SetAttributeUseDword(NULL, iNumMasts);
+                pAQMasts->SetAttributeUseDword(nullptr, iNumMasts);
             }
             break;
         }
-        const char *cNodeName = pNode->GetName();
-        if (strnicmp(cNodeName, MAST_IDENTIFY, strlen(MAST_IDENTIFY)) == 0)
+        const auto *const cNodeName = pNode->GetName();
+
+        if (_strnicmp(cNodeName, MAST_IDENTIFY, _countof(MAST_IDENTIFY) - 1) == 0)
         {
             CVECTOR vBSize, vBCenter, vUp, vDown, vTemp;
 
-            ATTRIBUTES *pAMasts = GetACharacter()->FindAClass(GetACharacter(), "Ship.Masts");
+            auto *pAMasts = GetACharacter()->FindAClass(GetACharacter(), "Ship.Masts");
             if (!pAMasts)
                 pAMasts = GetACharacter()->CreateSubAClass(GetACharacter(), "Ship.Masts");
 
-            sscanf((const char *)&cNodeName[strlen(MAST_IDENTIFY)], "%d", &iNum);
-            pMasts = (mast_t *)RESIZE(pMasts, sizeof(mast_t) * (iNumMasts + 1));
+            sscanf(static_cast<const char *>(&cNodeName[_countof(MAST_IDENTIFY) - 1]), "%d", &iNum);
+            pMasts.resize(iNumMasts + 1);
 
-            mast_t *pM = &pMasts[iNumMasts];
+            auto *pM = &pMasts[iNumMasts];
             pM->iMastNum = iNum;
             pM->bBroken = false;
             pM->fDamage = 0.0f;
@@ -207,22 +208,21 @@ bool SHIP::BuildMasts()
                 pM->vDst = CVECTOR(vTemp.x, vUp.y, vTemp.z);
             }
 
-            sprintf(str, "%s", pNode->GetName());
-            ATTRIBUTES *pAMast = pAMasts->FindAClass(pAMasts, str);
+            sprintf_s(str, "%s", pNode->GetName());
+            auto *pAMast = pAMasts->FindAClass(pAMasts, str);
             if (pAMast && pAMast->GetAttributeAsFloat() >= 1.0f)
             {
                 pM->fDamage = 1.0f;
                 pM->bBroken = true;
-                ENTITY_ID ent;
-                api->CreateEntity(&ent, "mast");
-                api->Send_Message(ent, "lpii", MSG_MAST_SETGEOMETRY, pNode, GetID(), GetModelEID());
-                api->DeleteEntity(ent);
+                entid_t ent;
+                ent = EntityManager::CreateEntity("mast");
+                core.Send_Message(ent, "lpii", MSG_MAST_SETGEOMETRY, pNode, GetId(), GetModelEID());
+                EntityManager::EraseEntity(ent);
                 // iIdx--;
             }
             else
-            {
                 pAMasts->SetAttributeUseFloat(str, 0.0f);
-            }
+
             iNumMasts++;
         }
         iIdx++;
@@ -234,27 +234,27 @@ bool SHIP::BuildHulls()
 {
     char str[256];
 
-    MODEL *pEnt = GetModel();
+    auto *pEnt = GetModel();
     Assert(pEnt);
 
     // build hull list
     long iNum, iIdx = 0;
     while (true)
     {
-        NODE *pNode = (NODE *)pEnt->GetNode(iIdx);
+        auto *pNode = (NODE *)pEnt->GetNode(iIdx);
         if (!pNode)
             break;
-        const char *cNodeName = pNode->GetName();
-        if (strnicmp(cNodeName, HULL_IDENTIFY, strlen(HULL_IDENTIFY)) == 0)
+        const auto *const cNodeName = pNode->GetName();
+        if (_strnicmp(cNodeName, HULL_IDENTIFY, _countof(HULL_IDENTIFY) - 1) == 0)
         {
             CVECTOR vBSize, vBCenter, vUp, vDown, vTemp;
 
-            ATTRIBUTES *pAHulls = GetACharacter()->FindAClass(GetACharacter(), "Ship.Hulls");
+            auto *pAHulls = GetACharacter()->FindAClass(GetACharacter(), "Ship.Hulls");
             if (!pAHulls)
                 pAHulls = GetACharacter()->CreateSubAClass(GetACharacter(), "Ship.Hulls");
 
-            sscanf((const char *)&cNodeName[strlen(HULL_IDENTIFY)], "%d", &iNum);
-            pHulls = (hull_t *)RESIZE(pHulls, sizeof(hull_t) * (iNumHulls + 1));
+            sscanf((const char *)&cNodeName[_countof(HULL_IDENTIFY) - 1], "%d", &iNum);
+            pHulls.resize(iNumHulls + 1);
 
             hull_t *pM = &pHulls[iNumHulls];
             pM->iHullNum = iNum;
@@ -276,16 +276,16 @@ bool SHIP::BuildHulls()
             pM->vSrc = CVECTOR(vTemp.x, vDown.y, vTemp.z);
             pM->vDst = CVECTOR(vTemp.x, vUp.y, vTemp.z);
 
-            sprintf(str, "%s", pNode->GetName());
-            ATTRIBUTES *pAHull = pAHulls->FindAClass(pAHulls, str);
+            sprintf_s(str, "%s", pNode->GetName());
+            auto *pAHull = pAHulls->FindAClass(pAHulls, str);
             if (pAHull && pAHull->GetAttributeAsFloat() >= 1.0f)
             {
                 pM->fDamage = 1.0f;
                 pM->bBroken = true;
-                ENTITY_ID ent;
-                api->CreateEntity(&ent, "hull");
-                api->Send_Message(ent, "lpii", MSG_HULL_SETGEOMETRY, pNode, GetID(), GetModelEID());
-                api->DeleteEntity(ent);
+                entid_t ent;
+                ent = EntityManager::CreateEntity("hull");
+                core.Send_Message(ent, "lpii", MSG_HULL_SETGEOMETRY, pNode, GetId(), GetModelEID());
+                EntityManager::EraseEntity(ent);
                 // iIdx--;
             }
             else

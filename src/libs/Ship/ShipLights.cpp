@@ -1,10 +1,11 @@
 #include "ShipLights.h"
-#include "Ship.h"
+#include "../../Shared/messages.h"
+#include "ship.h"
 
-VDX8RENDER *ShipLights::pRS = null;
-COLLIDE *ShipLights::pCollide = null;
+VDX9RENDER *ShipLights::pRS = nullptr;
+COLLIDE *ShipLights::pCollide = nullptr;
 
-ShipLights::ShipLights() : aLights(_FL_, 128), aLightTypes(_FL_), aSelectedLights(_FL_)
+ShipLights::ShipLights()
 {
     bLoadLights = false;
     bReflection = false;
@@ -17,7 +18,7 @@ ShipLights::ShipLights() : aLights(_FL_, 128), aLightTypes(_FL_), aSelectedLight
     iMinLight = 1000;
     iMaxLight = -1;
 
-    pSea = null;
+    pSea = nullptr;
 }
 
 ShipLights::~ShipLights()
@@ -27,23 +28,20 @@ ShipLights::~ShipLights()
     if (iFlareSunRoadTex >= 0)
         pRS->TextureRelease(iFlareSunRoadTex);
 
-    aLights.DelAll();
-    aSelectedLights.DelAll();
-    aLightTypes.DelAll();
+    aLights.clear();
+    aSelectedLights.clear();
+    aLightTypes.clear();
 
     bLoadLights = false;
 }
 
 bool ShipLights::Init()
 {
-    ENTITY_ID sea_id;
-
-    pRS = (VDX8RENDER *)api->CreateService("dx8render");
+    pRS = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     Assert(pRS);
-    pCollide = (COLLIDE *)api->CreateService("coll");
+    pCollide = static_cast<COLLIDE *>(core.CreateService("coll"));
     Assert(pCollide);
-    if (api->FindClass(&sea_id, "sea", 0))
-        pSea = (SEA_BASE *)api->GetEntityPointer(&sea_id);
+    pSea = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(EntityManager::GetEntityId("sea")));
     return true;
 }
 
@@ -55,51 +53,52 @@ float ShipLights::GetAttributeAsFloat(ATTRIBUTES *pA, const char *pName, float f
 {
     if (!pName)
         return fDefault;
-    ATTRIBUTES *pAF = pA->FindAClass(pA, (char *)pName);
+    auto *pAF = pA->FindAClass(pA, (char *)pName);
     return pAF ? pAF->GetAttributeAsFloat() : fDefault;
 }
 
 bool ShipLights::LoadLights()
 {
-    aLightTypes.DelAll();
+    aLightTypes.clear();
 
     bLoadLights = false;
 
-    ATTRIBUTES *pA = this->AttributesPointer;
-    ATTRIBUTES *pALights = pA->FindAClass(pA, "LightTypes");
+    auto *pA = this->AttributesPointer;
+    auto *pALights = pA->FindAClass(pA, "LightTypes");
     if (!pALights)
         return false;
 
-    for (dword i = 0; i < pALights->GetAttributesNum(); i++)
+    for (uint32_t i = 0; i < pALights->GetAttributesNum(); i++)
     {
-        ATTRIBUTES *pAL = pALights->GetAttributeClass(i);
+        auto *const pAL = pALights->GetAttributeClass(i);
 
-        LightType *pLT = &aLightTypes[aLightTypes.Add()];
-        pLT->sLightType = pAL->GetThisName();
-        pLT->cLightColor.r = GetAttributeAsFloat(pAL, "light.r", 1.0f);
-        pLT->cLightColor.g = GetAttributeAsFloat(pAL, "light.g", 1.0f);
-        pLT->cLightColor.b = GetAttributeAsFloat(pAL, "light.b", 1.0f);
-        pLT->cLightColor.a = 1.0f;
-        pLT->cCoronaColor.r = GetAttributeAsFloat(pAL, "corona.r", 1.0f);
-        pLT->cCoronaColor.g = GetAttributeAsFloat(pAL, "corona.g", 1.0f);
-        pLT->cCoronaColor.b = GetAttributeAsFloat(pAL, "corona.b", 1.0f);
-        pLT->cCoronaColor.a = 1.0f;
-        pLT->fCoronaRange = GetAttributeAsFloat(pAL, "corona.Range", 20.0f);
-        pLT->fCoronaSize = GetAttributeAsFloat(pAL, "corona.Size", 1.0f);
-        pLT->fRange = GetAttributeAsFloat(pAL, "light.range", 10.0f);
-        pLT->fAttenuation0 = GetAttributeAsFloat(pAL, "light.Attenuation0", 1.0f);
-        pLT->fAttenuation1 = GetAttributeAsFloat(pAL, "light.Attenuation1", 0.0f);
-        pLT->fAttenuation2 = GetAttributeAsFloat(pAL, "light.Attenuation2", 0.0f);
-        pLT->fFlicker = GetAttributeAsFloat(pAL, "Oscillator1.Flicker", 0.1f);
-        pLT->fFreq = GetAttributeAsFloat(pAL, "Oscillator1.Freq", 15.0f);
-        pLT->fFlickerSlow = GetAttributeAsFloat(pAL, "Oscillator2.Flicker", 0.5f);
-        pLT->fFreqSlow = GetAttributeAsFloat(pAL, "Oscillator2.Freq", 1.0f);
-        pLT->fLifeTime = GetAttributeAsFloat(pAL, "LifeTime", 0.5f);
-        pLT->fUpTime = GetAttributeAsFloat(pAL, "UpTime", 0.2f);
-        pLT->fSunRoadFlareFadeDistance = GetAttributeAsFloat(pAL, "SunRoadFlareFadeDistance", 100.0f);
+        LightType lightType;
+        lightType.sLightType = pAL->GetThisName();
+        lightType.cLightColor.r = GetAttributeAsFloat(pAL, "light.r", 1.0f);
+        lightType.cLightColor.g = GetAttributeAsFloat(pAL, "light.g", 1.0f);
+        lightType.cLightColor.b = GetAttributeAsFloat(pAL, "light.b", 1.0f);
+        lightType.cLightColor.a = 1.0f;
+        lightType.cCoronaColor.r = GetAttributeAsFloat(pAL, "corona.r", 1.0f);
+        lightType.cCoronaColor.g = GetAttributeAsFloat(pAL, "corona.g", 1.0f);
+        lightType.cCoronaColor.b = GetAttributeAsFloat(pAL, "corona.b", 1.0f);
+        lightType.cCoronaColor.a = 1.0f;
+        lightType.fCoronaRange = GetAttributeAsFloat(pAL, "corona.Range", 20.0f);
+        lightType.fCoronaSize = GetAttributeAsFloat(pAL, "corona.Size", 1.0f);
+        lightType.fRange = GetAttributeAsFloat(pAL, "light.range", 10.0f);
+        lightType.fAttenuation0 = GetAttributeAsFloat(pAL, "light.Attenuation0", 1.0f);
+        lightType.fAttenuation1 = GetAttributeAsFloat(pAL, "light.Attenuation1", 0.0f);
+        lightType.fAttenuation2 = GetAttributeAsFloat(pAL, "light.Attenuation2", 0.0f);
+        lightType.fFlicker = GetAttributeAsFloat(pAL, "Oscillator1.Flicker", 0.1f);
+        lightType.fFreq = GetAttributeAsFloat(pAL, "Oscillator1.Freq", 15.0f);
+        lightType.fFlickerSlow = GetAttributeAsFloat(pAL, "Oscillator2.Flicker", 0.5f);
+        lightType.fFreqSlow = GetAttributeAsFloat(pAL, "Oscillator2.Freq", 1.0f);
+        lightType.fLifeTime = GetAttributeAsFloat(pAL, "LifeTime", 0.5f);
+        lightType.fUpTime = GetAttributeAsFloat(pAL, "UpTime", 0.2f);
+        lightType.fSunRoadFlareFadeDistance = GetAttributeAsFloat(pAL, "SunRoadFlareFadeDistance", 100.0f);
+        aLightTypes.push_back(lightType);
     }
 
-    dwMaxD3DLights = Min(dword(7), pA->GetAttributeAsDword("MaxD3DLights", 7));
+    dwMaxD3DLights = Min(static_cast<uint32_t>(7), pA->GetAttributeAsDword("MaxD3DLights", 7));
 
     sCoronaTechnique = (pA->GetAttribute("CoronaTechnique")) ? pA->GetAttribute("CoronaTechnique") : "";
     iCoronaTex = (pA->GetAttribute("CoronaTexture")) ? pRS->TextureCreate(pA->GetAttribute("CoronaTexture")) : -1;
@@ -113,13 +112,13 @@ bool ShipLights::LoadLights()
     return true;
 }
 
-ShipLights::LightType *ShipLights::FindLightType(string sLightType)
+ShipLights::LightType *ShipLights::FindLightType(std::string sLightType)
 {
-    for (dword i = 0; i < aLightTypes.Size(); i++)
+    for (uint32_t i = 0; i < aLightTypes.size(); i++)
         if (aLightTypes[i].sLightType == sLightType)
             return &aLightTypes[i];
 
-    return null;
+    return nullptr;
 }
 
 void ShipLights::AddDynamicLights(VAI_OBJBASE *pObject, const CVECTOR &vPos)
@@ -127,52 +126,50 @@ void ShipLights::AddDynamicLights(VAI_OBJBASE *pObject, const CVECTOR &vPos)
     if (!bLoadLights && !LoadLights())
         return;
 
-    dword dwNum = 0;
-    for (dword i = 0; i < aLights.Size(); i++)
+    uint32_t dwNum = 0;
+    for (uint32_t i = 0; i < aLights.size(); i++)
         if (aLights[i].pObject == pObject && aLights[i].bDynamicLight)
             dwNum++;
     if (dwNum >= 4)
         return;
 
-    ShipLight *pL;
-    string sLightType = "cannondefault";
-    LightType *pLT = FindLightType(sLightType);
+    std::string sLightType = "cannondefault";
+    auto *pLT = FindLightType(sLightType);
     if (!pLT)
     {
-        api->Trace("Can find ship light \"%s\"", (const char *)sLightType);
+        core.Trace("Can find ship light \"%s\"", sLightType.c_str());
         return;
     }
 
-    pL = &aLights[aLights.Add()];
-    pL->bDynamicLight = true;
-    pL->pObject = pObject;
-    pL->vPos = vPos;
-    pL->bOff = false;
-    pL->bBrokenTimeOff = false;
-    pL->fCurTime = 0.0;
-    pL->fTotalTime = pLT->fLifeTime;
-    pL->fUpTime = pLT->fUpTime;
-    pL->vCurPos = vPos;
-    pL->bCoronaOnly = false;
-    pL->fFlareAlpha = 0.0f;
-    pL->fFlareAlphaMax = 1.0f;
-    pL->bVisible = false;
-    pL->fBrokenTime = 0.0f;
-    pL->bDead = false;
-    pL->fTotalBrokenTime = 0.0f;
-
-    ZERO(pL->Light);
-    pL->Light.Type = D3DLIGHT_POINT;
-    pL->Light.Diffuse.r = pLT->cLightColor.r;
-    pL->Light.Diffuse.g = pLT->cLightColor.g;
-    pL->Light.Diffuse.b = pLT->cLightColor.b;
-    pL->Light.Diffuse.a = 1.0f;
-    pL->Light.Range = pLT->fRange;
-    pL->Light.Attenuation0 = pLT->fAttenuation0;
-    pL->Light.Attenuation1 = pLT->fAttenuation1;
-    pL->Light.Attenuation2 = pLT->fAttenuation2;
-
-    pL->pLT = pLT;
+    ShipLight light;
+    light.bDynamicLight = true;
+    light.pObject = pObject;
+    light.vPos = vPos;
+    light.bOff = false;
+    light.bBrokenTimeOff = false;
+    light.fCurTime = 0.0;
+    light.fTotalTime = pLT->fLifeTime;
+    light.fUpTime = pLT->fUpTime;
+    light.vCurPos = vPos;
+    light.bCoronaOnly = false;
+    light.fFlareAlpha = 0.0f;
+    light.fFlareAlphaMax = 1.0f;
+    light.bVisible = false;
+    light.fBrokenTime = 0.0f;
+    light.bDead = false;
+    light.fTotalBrokenTime = 0.0f;
+    ZERO(light.Light);
+    light.Light.Type = D3DLIGHT_POINT;
+    light.Light.Diffuse.r = pLT->cLightColor.r;
+    light.Light.Diffuse.g = pLT->cLightColor.g;
+    light.Light.Diffuse.b = pLT->cLightColor.b;
+    light.Light.Diffuse.a = 1.0f;
+    light.Light.Range = pLT->fRange;
+    light.Light.Attenuation0 = pLT->fAttenuation0;
+    light.Light.Attenuation1 = pLT->fAttenuation1;
+    light.Light.Attenuation2 = pLT->fAttenuation2;
+    light.pLT = pLT;
+    aLights.push_back(light);
 }
 
 bool ShipLights::SetLabel(ShipLight *pL, MODEL *pModel, const char *pStr)
@@ -194,13 +191,15 @@ void ShipLights::AddFlare(VAI_OBJBASE *pObject, bool bLight, MODEL *pModel, cons
     ZERO(str);
     if (!label.name)
         return;
-    strcpy(str, label.name);
-    strlwr(str);
+    strcpy_s(str, label.name);
+    _strlwr(str);
 
-    ShipLight *pL = &aLights[aLights.Add()];
+    aLights.push_back(ShipLight{});
+    // ShipLight * pL = &aLights[aLights.Add()];
+    ShipLight *pL = &aLights.back();
     memcpy(m, label.m, sizeof(m));
 
-    pL->pNode = null;
+    pL->pNode = nullptr;
     pL->vPos = m.Pos();
 
     if (str[0] != 'f' && !bLight)
@@ -225,26 +224,26 @@ void ShipLights::AddFlare(VAI_OBJBASE *pObject, bool bLight, MODEL *pModel, cons
         }
         int iMastIndex = atoi(str2);
 
-        sprintf(str2, "mast%d", iMastIndex);
+        sprintf_s(str2, "mast%d", iMastIndex);
         // rey found
         if (str[1] == 'm')
         {
             if (str[3] >= 'a' && str[3] <= 'z')
             {
-                sprintf(str2, "rey_%c%d", str[3], iMastIndex);
+                sprintf_s(str2, "rey_%c%d", str[3], iMastIndex);
             }
         }
         else
         {
             if (str[5] >= 'a' && str[5] <= 'z')
             {
-                sprintf(str2, "rey_%c%d", str[5], iMastIndex);
+                sprintf_s(str2, "rey_%c%d", str[5], iMastIndex);
             }
         }
 
         if (!SetLabel(pL, pModel, str2))
         {
-            aLights.DelIndex(aLights.Last());
+            aLights.pop_back();
             return;
         }
     }
@@ -300,7 +299,7 @@ void ShipLights::AddFlare(VAI_OBJBASE *pObject, bool bLight, MODEL *pModel, cons
 
 void ShipLights::SetLightsOff(VAI_OBJBASE *pObject, float fTime, bool bLights, bool bFlares, bool bNow)
 {
-    for (dword i = 0; i < aLights.Size(); i++)
+    for (uint32_t i = 0; i < aLights.size(); i++)
         if (aLights[i].pObject == pObject && !aLights[i].bOff)
         {
             if (aLights[i].bCoronaOnly)
@@ -331,7 +330,7 @@ void ShipLights::SetLightsOff(VAI_OBJBASE *pObject, float fTime, bool bLights, b
 
 void ShipLights::KillMast(VAI_OBJBASE *pObject, NODE *pNode, bool bNow)
 {
-    for (dword i = 0; i < aLights.Size(); i++)
+    for (uint32_t i = 0; i < aLights.size(); i++)
         if (aLights[i].pObject == pObject && aLights[i].pNode)
         {
             if (aLights[i].bOff)
@@ -340,7 +339,7 @@ void ShipLights::KillMast(VAI_OBJBASE *pObject, NODE *pNode, bool bNow)
                 continue;
             if (bNow)
             {
-                aLights[i].pNode = null;
+                aLights[i].pNode = nullptr;
                 aLights[i].bOff = true;
                 aLights[i].bBrokenTimeOff = true;
                 // aLights.ExtractNoShift(i);
@@ -361,12 +360,12 @@ void ShipLights::AddLights(VAI_OBJBASE *pObject, MODEL *pModel, bool bLights, bo
     if (!bLoadLights && !LoadLights())
         return;
 
-    string sLightType = "default";
+    const std::string sLightType = "default";
 
     LightType *pLT = FindLightType(sLightType);
     if (!pLT)
     {
-        api->Trace("Can't find ship light \"%s\"", (const char *)sLightType);
+        core.Trace("Can't find ship light \"%s\"", sLightType.c_str());
         return;
     }
 
@@ -376,14 +375,14 @@ void ShipLights::AddLights(VAI_OBJBASE *pObject, MODEL *pModel, bool bLights, bo
 
     NODE *pRoot = pModel->GetNode(0);
 
-    string sFlares = "flares";
-    string sLights = "lights";
-    dword dwIdx = 0;
+    const std::string sFlares = "flares";
+    const std::string sLights = "lights";
+    uint32_t dwIdx = 0;
     while (pNode = pModel->GetNode(dwIdx))
     {
         pNode->geo->GetInfo(info);
 
-        for (dword i = 0; i < dword(info.nlabels); i++)
+        for (uint32_t i = 0; i < static_cast<uint32_t>(info.nlabels); i++)
         {
             pNode->geo->GetLabel(i, label);
 
@@ -396,7 +395,6 @@ void ShipLights::AddLights(VAI_OBJBASE *pObject, MODEL *pModel, bool bLights, bo
             if (bLights && sLights == label.group_name)
             {
                 AddFlare(pObject, true, pModel, label);
-                continue;
             }
         }
         dwIdx++;
@@ -405,10 +403,10 @@ void ShipLights::AddLights(VAI_OBJBASE *pObject, MODEL *pModel, bool bLights, bo
 
 void ShipLights::SetLights(VAI_OBJBASE *pObject)
 {
-    dword i;
-    aSelectedLights.Empty();
+    uint32_t i;
+    aSelectedLights.clear();
 
-    for (i = 0; i < aLights.Size(); i++)
+    for (i = 0; i < aLights.size(); i++)
     {
         if (aLights[i].bOff)
             continue;
@@ -431,25 +429,21 @@ void ShipLights::SetLights(VAI_OBJBASE *pObject)
         if (pObject == aLights[i].pObject || aLights[i].bCoronaOnly)
             continue;
 
-        SelectedLight *pSL = &aSelectedLights[aSelectedLights.Add()];
-
-        pSL->fDistance = aLights[i].fCurDistance;
-        pSL->dwIndex = i;
+        aSelectedLights.push_back(SelectedLight{aLights[i].fCurDistance, i});
     }
 
-    aSelectedLights.Sort();
+    // aSelectedLights.Sort();
+    std::sort(aSelectedLights.begin(), aSelectedLights.end());
 
-    for (i = 0; i < aLights.Size(); i++)
+    for (i = 0; i < aLights.size(); i++)
         if (!aLights[i].bOff && aLights[i].pObject == pObject && !aLights[i].bCoronaOnly)
         {
-            aSelectedLights.Insert(SelectedLight(), 0);
-            aSelectedLights[0].dwIndex = i;
-            aSelectedLights[0].fDistance = aLights[i].fCurDistance;
+            aSelectedLights.insert(aSelectedLights.begin(), SelectedLight{aLights[i].fCurDistance, i});
         }
 
     for (i = 0; i < dwMaxD3DLights; i++)
     {
-        if (i >= aSelectedLights.Size())
+        if (i >= aSelectedLights.size())
             break;
 
         ShipLight *pL = &aLights[aSelectedLights[i].dwIndex];
@@ -457,24 +451,21 @@ void ShipLights::SetLights(VAI_OBJBASE *pObject)
         pRS->SetLight(i + 1, &pL->Light);
         pRS->LightEnable(i + 1, true);
 
-        iMinLight = Min(iMinLight, long(i + 1));
-        iMaxLight = Max(iMaxLight, long(i + 1));
+        iMinLight = Min(iMinLight, static_cast<long>(i + 1));
+        iMaxLight = Max(iMaxLight, static_cast<long>(i + 1));
     }
 }
 
 // update lights/flares parameters
-void ShipLights::Execute(dword dwDeltaTime)
+void ShipLights::Execute(uint32_t dwDeltaTime)
 {
-    float fDeltaTime = float(dwDeltaTime) * 0.001f;
-
-    VIDWALKER *vwSunTrace = api->LayerGetWalker("sun_trace");
-    VIDWALKER *vwSailsTrace = api->LayerGetWalker("sails_trace");
+    const float fDeltaTime = static_cast<float>(dwDeltaTime) * 0.001f;
 
     float fFov;
     CVECTOR vCamPos, vCamAng;
     pRS->GetCamera(vCamPos, vCamAng, fFov);
 
-    for (dword i = 0; i < aLights.Size(); i++)
+    for (uint32_t i = 0; i < aLights.size(); i++)
     {
         ShipLight &L = aLights[i];
 
@@ -518,25 +509,21 @@ void ShipLights::Execute(dword dwDeltaTime)
         {
             L.bVisible = true;
 
-            if (vwSailsTrace)
+            float fDistance =
+                pCollide->Trace(EntityManager::GetEntityIdIterators(SAILS_TRACE), L.vCurPos, vCamPos, nullptr, 0);
+            L.fFlareAlphaMax = (fDistance >= 1.0f) ? 1.0f : 0.2f;
+
+            const auto its = EntityManager::GetEntityIdIterators(SUN_TRACE);
+            fDistance = pCollide->Trace(its, L.vCurPos, vCamPos, nullptr, 0);
+            const float fLen = fDistance * sqrtf(~(vCamPos - L.vCurPos));
+            L.bVisible = fDistance >= 1.0f || (fLen < 0.6f);
+
+            if (!L.bOff && L.bVisible)
             {
-                float fDistance = pCollide->Trace(*vwSailsTrace, L.vCurPos, vCamPos, null, 0);
-                L.fFlareAlphaMax = (fDistance >= 1.0f) ? 1.0f : 0.2f;
-            }
+                const float fDistance = pCollide->Trace(its, vCamPos, L.vCurPos, nullptr, 0);
+                const float fLen = (1.0f - fDistance) * sqrtf(~(vCamPos - L.vCurPos));
 
-            if (vwSunTrace)
-            {
-                float fDistance = pCollide->Trace(*vwSunTrace, L.vCurPos, vCamPos, null, 0);
-                float fLen = fDistance * sqrtf(~(vCamPos - L.vCurPos));
-                L.bVisible = fDistance >= 1.0f || (fLen < 0.6f);
-
-                if (!L.bOff && L.bVisible)
-                {
-                    float fDistance = pCollide->Trace(*vwSunTrace, vCamPos, L.vCurPos, null, 0);
-                    float fLen = (1.0f - fDistance) * sqrtf(~(vCamPos - L.vCurPos));
-
-                    L.bVisible = fLen < 0.6f;
-                }
+                L.bVisible = fLen < 0.6f;
             }
         }
 
@@ -546,7 +533,7 @@ void ShipLights::Execute(dword dwDeltaTime)
         {
             float fIntensity = 0.0f;
             float fKAmp = 1.0f;
-            for (dword j = 0; j < 2; j++)
+            for (uint32_t j = 0; j < 2; j++)
             {
                 Oscillator &o = L.Osc[j];
                 o.fK += o.fStep * fDeltaTime;
@@ -565,7 +552,7 @@ void ShipLights::Execute(dword dwDeltaTime)
                         o.fNewValue = RRnd(-o.fAmp, o.fAmp);
                     }
                 }
-                float fIns = o.fOldValue + (o.fNewValue - o.fOldValue) * o.fK;
+                const float fIns = o.fOldValue + (o.fNewValue - o.fOldValue) * o.fK;
                 fIntensity += fIns * fKAmp;
                 fKAmp -= fIns * o.fOneDivAmp;
                 if (fKAmp < 0.0f)
@@ -584,7 +571,9 @@ void ShipLights::Execute(dword dwDeltaTime)
             L.fCurTime += fDeltaTime;
             if (L.fCurTime >= L.fTotalTime)
             {
-                aLights.ExtractNoShift(i);
+                // aLights.ExtractNoShift(i);
+                aLights[i] = aLights.back();
+                aLights.pop_back();
                 i--;
                 continue;
             }
@@ -598,26 +587,23 @@ void ShipLights::Execute(dword dwDeltaTime)
             L.Light.Diffuse.b = L.pLT->cLightColor.b * fIntensity;
         }
     }
-
-    SE_DELETE(vwSunTrace);
-    SE_DELETE(vwSailsTrace);
 }
 
 // draw flares
-void ShipLights::Realize(dword dwDeltaTime)
+void ShipLights::Realize(uint32_t dwDeltaTime)
 {
-    float fDeltaTime = float(dwDeltaTime) * 0.001f;
+    float fDeltaTime = static_cast<float>(dwDeltaTime) * 0.001f;
 
     float fFov;
     CVECTOR vCamPos, vCamAng;
     pRS->GetCamera(vCamPos, vCamAng, fFov);
 
-    static array<RS_RECT> aRects(_FL_, 32);
-    aRects.Empty();
+    static std::vector<RS_RECT> aRects;
+    aRects.clear();
 
-    float fReflSize = (bReflection) ? fSunRoadFlareSize : 1.0f;
+    const float fReflSize = (bReflection) ? fSunRoadFlareSize : 1.0f;
 
-    for (dword i = 0; i < aLights.Size(); i++)
+    for (uint32_t i = 0; i < aLights.size(); i++)
     {
         ShipLight &L = aLights[i];
 
@@ -628,22 +614,25 @@ void ShipLights::Realize(dword dwDeltaTime)
 
         if (bReflection)
         {
-            float fDistance = sqrtf(~(L.vCurPos - vCamPos));
+            const float fDistance = sqrtf(~(L.vCurPos - vCamPos));
             fDistanceFade = 1.0f - Clamp(fDistance / L.pLT->fSunRoadFlareFadeDistance);
         }
 
         if (L.bDynamicLight && bReflection)
         {
-            RS_RECT &r = aRects[aRects.Add()];
+            // RS_RECT & r = aRects[aRects.Add()];
+            RS_RECT r;
             r.vPos = L.vCurPos;
             r.fAngle = 0.0f;
             r.dwSubTexture = 0;
             r.fSize = 10.0f;
             r.dwColor = ARGB(255, 255, 255, 255);
+            aRects.push_back(r);
             continue;
         }
 
-        RS_RECT &r = aRects[aRects.Add()];
+        // RS_RECT & r = aRects[aRects.Add()];
+        RS_RECT r;
         r.vPos = L.vCurPos;
         r.fSize = L.pLT->fCoronaSize * L.fCoronaIntensity * fReflSize;
         r.fAngle = 0.0f;
@@ -653,12 +642,13 @@ void ShipLights::Realize(dword dwDeltaTime)
         cColor = cColor * 255.0f * L.fFlareAlpha;
         cColor.a = Clamp(L.fFlareAlpha * fReflSize);
         r.dwColor = ARGB(cColor.a, cColor.r, cColor.g, cColor.b);
+        aRects.push_back(r);
     }
 
-    if (aRects.Size())
+    if (aRects.size())
     {
         pRS->TextureSet(0, (bReflection) ? iFlareSunRoadTex : iCoronaTex);
-        pRS->DrawRects(&aRects[0], aRects.Size(), sCoronaTechnique, dwCoronaSubTexX, dwCoronaSubTexY);
+        pRS->DrawRects(&aRects[0], aRects.size(), sCoronaTechnique.c_str(), dwCoronaSubTexX, dwCoronaSubTexY);
     }
 }
 
@@ -671,7 +661,7 @@ void ShipLights::UnSetLights(VAI_OBJBASE *pObject)
     iMaxLight = -1;
 }
 
-dword _cdecl ShipLights::ProcessMessage(MESSAGE &message)
+uint64_t ShipLights::ProcessMessage(MESSAGE &message)
 {
     switch (message.Long())
     {
@@ -687,7 +677,7 @@ dword _cdecl ShipLights::ProcessMessage(MESSAGE &message)
 
 void ShipLights::SetDead(VAI_OBJBASE *pObject)
 {
-    for (dword i = 0; i < aLights.Size(); i++)
+    for (uint32_t i = 0; i < aLights.size(); i++)
         if (aLights[i].pObject == pObject)
             aLights[i].bDead = true;
 }

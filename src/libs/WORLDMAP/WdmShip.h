@@ -36,7 +36,7 @@ class WdmShip : public WdmRenderModel
     struct Vertex
     {
         float x, y, z;
-        dword color;
+        uint32_t color;
         float tu, tv;
     };
 
@@ -48,13 +48,13 @@ class WdmShip : public WdmRenderModel
     virtual ~WdmShip();
 
     void Teleport(float x, float z, float ay);
-    void GetPosition(float &x, float &z, float &ay);
+    void GetPosition(float &x, float &z, float &ay) const;
     void SetMaxSpeed(float k);
 
-    virtual bool Load(const char *modelName);
+    bool Load(const char *modelName) override;
     //Расчёты
-    virtual void Update(float dltTime);
-    virtual void LRender(VDX8RENDER *rs);
+    void Update(float dltTime) override;
+    void LRender(VDX9RENDER *rs) override;
 
     // true если свободно
     static bool CheckPosition(float x, float z, float objRadius);
@@ -68,6 +68,7 @@ class WdmShip : public WdmRenderModel
   protected:
     void ShipUpdate(float dltTime);
     void UpdateWaterMark(float dltTime);
+
     virtual void Collide(){};
 
   public:

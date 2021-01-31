@@ -1,12 +1,7 @@
 #ifndef AISHIPSPEEDCONTROLLER_HPP
 #define AISHIPSPEEDCONTROLLER_HPP
 
-#include "Script_Defines.h"
-#include "character.h"
-#include "sd2_h\CannonTrace.h"
-#include "sd2_h\VAI_ObjBase.h"
-#include "templates\array.h"
-#include "templates\string.h"
+#include "Sd2_h/VAI_ObjBase.h"
 #include "vmodule_api.h"
 
 // ============================================================================
@@ -14,12 +9,13 @@
 // Contain base virtual functions
 // ============================================================================
 class AIShip;
+
 class AIShipSpeedController
 {
   private:
     AIShip *pOurAIShip; // our AI ship pointer
 
-    dword dwSpeedNum;
+    uint32_t dwSpeedNum;
     float fSpeedSmooth, fSpeed, fSpeedTime, fTopSpeed;
     float fGlobalMultiply;
 
@@ -39,7 +35,7 @@ class AIShipSpeedController
     {
         pOurAIShip = pShip;
     }
-    AIShip *GetAIShip()
+    AIShip *GetAIShip() const
     {
         return pOurAIShip;
     }
@@ -47,7 +43,7 @@ class AIShipSpeedController
     AIShipSpeedController(AIShip *pShip);
     virtual ~AIShipSpeedController();
 
-    void Save(CSaveLoad *pSL);
+    void Save(CSaveLoad *pSL) const;
     void Load(CSaveLoad *pSL);
 };
 

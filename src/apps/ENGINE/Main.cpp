@@ -1,173 +1,74 @@
-#include "core.h"
-#include "exs.h"
-#include "gdi_display.h"
-#include "s_debug.h"
-#include "system_log.h"
-#include <windows.h>
+#include <spdlog/spdlog.h>
 
+#include "externs.h"
+#include "fs.h"
+#include "s_debug.h"
+#include "steam_api.h"
 #include <crtdbg.h>
 #include <dbghelp.h>
+#include <spdlog/sinks/basic_file_sink.h>
 #include <stdio.h>
 #include <tchar.h>
 
-#define def_width 600
-#define def_height 400
-
-#include "common_h.h"
-#include "steam_api.h"
-
-HWND hMain;
-HINSTANCE hInst;
-
-const wchar_t *AClass = L"Corsairs:Cuique suum!";
-
-MEMORY_SERVICE Memory_Service;
-FILE_SERVICE File_Service;
-GDI_DISPLAY gdi_display;
-CORE Core;
-VAPI *_CORE_API;
-VMA *_pModuleClassRoot = 0;
-VAPI *api = 0;
-VFILE_SERVICE *fio = 0;
-
-bool bBackspaceExit = false;
-bool bDebugWindow = false;
-bool bAcceleration = false;
-bool bActive = true;
-bool bSteam = true;
-bool bNetActive = false;
-bool System_Hold = false;
-bool Error_Flag = false;
-char Last_Error[512];
-CONTROL_STACK Control_Stack;
-CONTROL_BLOCK Control_Block;
-SYSTEM_API System_Api;
-VSYSTEM_API *_VSYSTEM_API;
-
 S_DEBUG CDebug;
-
-CODESOURCE CodeSource;
-
-dword Exceptions_Mask;
-char ENGINE_INI_FILE_NAME[256] = "engine.ini";
-extern bool bTraceFilesOff;
+bool isHold = false;
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-void ProcessKeys(HWND hwnd, int code, int Press);
-void EmergencyExit();
 int Alert(const char *lpCaption, const char *lpText);
 void CreateMiniDump(EXCEPTION_POINTERS *pep);
+bool _loopMain();
 
-void RunFrame()
+bool _loopMain()
 {
-#ifdef EX_OFF
-    __try
-#else
-    try
-#endif
-    {
-        if (bActive || bNetActive)
-        {
-            bool Run_result = true;
-            if (!System_Hold)
-                Run_result = Core.Run();
+    bool runResult = false;
 
-            if (!Run_result)
-            {
-                Core.CleanUp();
-                gdi_display.Switch(true);
-                if (System_Api.Exceptions || System_Api.ExceptionsNF)
-                {
-                    gdi_display.Print("One or more exception(s) occuried on Run");
-                    gdi_display.Print("See log file for details");
-                    Sleep(ERROR_MESSAGE_DELAY);
-                }
-                if (Core.Memory_Leak_flag)
-                {
-                    gdi_display.Print("Memory leak detected");
-                    gdi_display.Print("See log file for details");
-                    Sleep(ERROR_MESSAGE_DELAY);
-                }
-                System_Hold = true;
-                SendMessage(hMain, WM_CLOSE, 0, 0L);
-            }
-        }
-        else
-        {
-            Sleep(50);
-        }
+    //__try
+    {
+        runResult = core.Run();
     }
-#ifdef EX_OFF
-    __except (CreateMiniDump(GetExceptionInformation()), EXCEPTION_EXECUTE_HANDLER)
+    //__except( CreateMiniDump( GetExceptionInformation() ), EXCEPTION_EXECUTE_HANDLER )
     {
     }
-#else
-    catch (_EXS xobj)
-    {
-        trace("");
-        switch (xobj.xtype)
-        {
-        case FATAL:
-            EmergencyExit();
-            break;
-        case NON_FATAL:
-            Core.TraceCurrent();
-            System_Api.SetXNF();
-            gdi_display.Print("EXCEPTION( non fatal ) : %s", xobj.string);
-            break;
-        }
-        trace("");
-    }
-    catch (...)
-    {
-        EmergencyExit();
-    }
-#endif
+
+    return runResult;
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
 {
-    HWND hFndWnd = FindWindow(AClass, AClass);
-    if (hFndWnd != NULL)
-        return 0;
-
-    Core.hInstance = hInstance;
-    _CORE_API = &Core;
-    api = &Core;
-    fio = &File_Service;
-    _CORE_API->fio = &File_Service;
-    _VSYSTEM_API = &System_Api;
-
-    if (szCmdLine)
+    /* Prevent multiple instances */
+    if (!CreateEventA(nullptr, false, false, "Global\\FBBD2286-A9F1-4303-B60C-743C3D7AA7BE") ||
+        GetLastError() == ERROR_ALREADY_EXISTS)
     {
-        if (szCmdLine[0])
-        {
-            strcpy(ENGINE_INI_FILE_NAME, szCmdLine);
-        }
+        MessageBoxA(nullptr, "Another instance is already running!", "Error", MB_ICONERROR);
+        return 0;
     }
-    INIFILE *ini;
-    bool bValue = false;
-    char sMemProfileFileName[MAX_PATH] = "";
-    ini = File_Service.OpenIniFile(ENGINE_INI_FILE_NAME);
-    bool bFirstLaunch = true;
-    dword dwMaxFPS = 0;
+
+    /* Init stash */
+    create_directories(fs::GetLogsPath());
+    create_directories(fs::GetSaveDataPath());
+
+    /* Init system log */
+    const auto log_path = fs::GetLogsPath() / "system.log";
+    const auto system_log = spdlog::basic_logger_mt("system", log_path.string(), true);
+    set_default_logger(system_log);
+    system_log->set_level(spdlog::level::trace);
+
+    fio = &File_Service;
+    //_VSYSTEM_API = &System_Api;
+
+    /* Read config */
+    uint32_t dwMaxFPS = 0;
+    auto *ini = File_Service.OpenIniFile(ENGINE_INI_FILE_NAME);
     if (ini)
     {
-        if (ini->GetLong("stats", "memory_stats", 0) != 0)
-            bValue = true;
-        else
-            bValue = false;
-        ini->ReadString(0, "mem_profile", sMemProfileFileName, sizeof(sMemProfileFileName), "");
-
-        dwMaxFPS = (dword)ini->GetLong(0, "max_fps", 0);
-
-        // eddy. уберем читы
-        // bDebugWindow = ini->GetLong(0, "DebugWindow", 0) == 1;
-        // bAcceleration = ini->GetLong(0, "Acceleration", 0) == 1;
-        // bBackspaceExit = ini->GetLong(0, "BackSpaceExit", 0) == 1;
-
-        bTraceFilesOff = ini->GetLong(0, "tracefilesoff", 0) == 1;
-        if (ini->GetLong(0, "Steam", 1) != 0)
+        dwMaxFPS = static_cast<uint32_t>(ini->GetLong(nullptr, "max_fps", 0));
+        auto bDebugWindow = ini->GetLong(nullptr, "DebugWindow", 0) == 1;
+        auto bAcceleration = ini->GetLong(nullptr, "Acceleration", 0) == 1;
+        if (!ini->GetLong(nullptr, "logs", 0))
+        {
+            system_log->set_level(spdlog::level::off);
+        }
+        if (ini->GetLong(nullptr, "Steam", 1) != 0)
         {
             bSteam = true;
         }
@@ -176,16 +77,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
             bSteam = false;
         }
 
-        bFirstLaunch = ini->GetLong(0, "firstlaunch", 1) != 0;
-        if (bFirstLaunch)
-        {
-            ini->WriteLong(0, "firstlaunch", 0);
-        }
-
         delete ini;
     }
-    Memory_Service.CollectInfo(bValue);
-    Memory_Service.ProcessMemProfile(sMemProfileFileName);
 
     if (bSteam)
     {
@@ -201,298 +94,164 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
         }
         else
         {
-            _CORE_API->InitAchievements();
-            _CORE_API->InitSteamDLC();
+            core.InitAchievements();
+            core.InitSteamDLC();
         }
     }
 
-    if (bFirstLaunch)
-    {
-        char InstallLocationExe[MAX_PATH];
-        _snprintf(InstallLocationExe, sizeof(InstallLocationExe), "config.exe");
+    /* Register and show window */
+    const auto *const windowName = L"Sea Dogs";
 
-        PROCESS_INFORMATION pi;
-        STARTUPINFO si;
-        memset(&si, 0, sizeof(si));
-        si.cb = sizeof(si);
-
-        std::wstring InstallLocationExeW = utf8::ConvertUtf8ToWide(InstallLocationExe);
-        BOOL bProcess = CreateProcess(InstallLocationExeW.c_str(), NULL, NULL, NULL, FALSE, NULL, NULL, NULL, &si, &pi);
-        if (bProcess == TRUE)
-        {
-            CloseHandle(pi.hProcess);
-            CloseHandle(pi.hThread);
-            return 0;
-        }
-    }
-
-    _CORE_API->SetExceptions(_X_NO_MEM | _X_NO_FILE_READ);
-
-    Control_Stack.Init();
-
-    HWND hwnd;
-    MSG msg;
     WNDCLASSEX wndclass;
-    hInst = hInstance;
-
     wndclass.cbSize = sizeof(wndclass);
     wndclass.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
     wndclass.lpfnWndProc = WndProc;
     wndclass.cbClsExtra = 0;
-    wndclass.cbWndExtra = sizeof(WORD);
-    wndclass.hInstance = hInst;
+    wndclass.cbWndExtra = sizeof(uint16_t);
+    wndclass.hInstance = hInstance;
     wndclass.hIcon = LoadIcon(hInstance, TEXT("IDI_ICON1"));
     wndclass.hCursor = LoadCursor(hInstance, TEXT("NULL_CURSOR")); // LoadCursor(NULL,IDC_ARROW);
-    wndclass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
-    wndclass.lpszMenuName = NULL;
-    wndclass.lpszClassName = AClass;
-    wndclass.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
+    wndclass.hbrBackground = static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH));
+    wndclass.lpszMenuName = nullptr;
+    wndclass.lpszClassName = windowName;
+    wndclass.hIconSm = LoadIcon(nullptr, IDI_APPLICATION);
     RegisterClassEx(&wndclass);
 
-    hwnd = CreateWindow(AClass, AClass, WS_POPUP, 0, 0, def_width, def_height, NULL, NULL, hInstance, NULL);
-    hMain = hwnd;
+    auto *const hwnd = CreateWindow(windowName, windowName, WS_POPUP, 0, 0, 0, 0, NULL, NULL, hInstance, NULL);
+    ShowWindow(hwnd, SW_SHOWNORMAL);
 
-    gdi_display.Init(hInstance, hwnd, def_width, def_height);
+    /* Init stuff */
+    core.InitBase();
 
-    Core.InitBase();
+    /* Message loop */
+    auto dwOldTime = GetTickCount();
+    MSG msg;
 
-    dword dwOldTime = GetTickCount();
     while (true)
     {
-        if (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
+        if (PeekMessage(&msg, nullptr, 0U, 0U, PM_REMOVE))
         {
-            if (WM_QUIT == msg.message)
-            {
+            if (msg.message == WM_QUIT)
                 break;
-            }
-            else
-            {
-                TranslateMessage(&msg);
-                DispatchMessage(&msg);
-            }
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
         }
         else
         {
-            if (dwMaxFPS)
+            if (bActive)
             {
-                dword dwMS = 1000 / dwMaxFPS;
-                dword dwNewTime = GetTickCount();
-                if (dwNewTime - dwOldTime < dwMS)
-                    continue;
-                dwOldTime = dwNewTime;
+                if (dwMaxFPS)
+                {
+                    const auto dwMS = 1000u / dwMaxFPS;
+                    const auto dwNewTime = GetTickCount();
+                    if (dwNewTime - dwOldTime < dwMS)
+                        continue;
+                    dwOldTime = dwNewTime;
+                }
+
+                bool runResult = _loopMain();
+
+                //				if (!isHold && !core.Run())
+                if (!isHold && !runResult)
+                {
+                    core.CleanUp();
+                    isHold = true;
+                    SendMessage(hwnd, WM_CLOSE, 0, 0L);
+                }
             }
-            RunFrame();
+            else
+            {
+                Sleep(50);
+            }
         }
     }
 
-    if (Memory_Service.bCollectInfo)
-    {
-        Memory_Service.MemStat.Report();
-        ini = File_Service.OpenIniFile(ENGINE_INI_FILE_NAME);
-        if (ini)
-        {
-            if (ini->GetLong("stats", "update_mem_profile", 0) == 1)
-            {
-                Memory_Service.MemStat.UpdateMemoryProfile("memory.mp");
-            }
-            delete ini;
-        }
-    }
+    /* Release */
     if (bSteam)
     {
         // Shutdown the SteamAPI
         SteamAPI_Shutdown();
-        _CORE_API->DeleteAchievements();
-        _CORE_API->DeleteSteamDLC();
+        core.DeleteAchievements();
+        core.DeleteSteamDLC();
     }
-    Core.ReleaseBase();
 
-    ClipCursor(0);
-    trace("System exit and cleanup :");
-    trace("Mem state: User memory: %d  MSSystem: %d  Blocks: %d", Memory_Service.Allocated_memory_user,
-          Memory_Service.Allocated_memory_system, Memory_Service.Blocks);
-
-    Memory_Service.GlobalFree();
+    core.ReleaseBase();
+    ClipCursor(nullptr);
 
     return msg.wParam;
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
-    ENTITY_ID eidNET;
-    WORD wActive;
-#ifndef EX_OFF
-    try
+    switch (iMsg)
     {
-#endif
+    case WM_CREATE:
+        core.Set_Hwnd(hwnd);
+        break;
 
-        switch (iMsg)
+    case WM_CLOSE:
+        DestroyWindow(hwnd);
+        break;
+
+    case WM_DESTROY:
+        core.Event("DestroyWindow", nullptr);
+        core.Event("ExitApplication", nullptr);
+        CDebug.Release();
+        core.CleanUp();
+        File_Service.Close();
+        CDebug.CloseDebugWindow();
+
+        InvalidateRect(nullptr, nullptr, 0);
+        PostQuitMessage(0);
+        break;
+
+    case WM_ACTIVATE:
+        bActive = LOWORD(wParam) == WA_CLICKACTIVE || LOWORD(wParam) == WA_ACTIVE;
+        core.AppState(bActive);
+        break;
+
+    case WM_KEYDOWN:
+        if (wParam == VK_F5) // && bDebugWindow
         {
-        case WM_CREATE:
-            Core.Set_Hwnd(hwnd);
-            return 0;
-        case WM_PAINT:
-            gdi_display.On_Paint(hwnd);
-            break;
-
-        case WM_SYSKEYUP:
-        case WM_SYSKEYDOWN:
-            if (wParam == VK_F6)
+            if (!CDebug.IsDebug())
+                CDebug.OpenDebugWindow(core.hInstance);
+            else
             {
-                return 0;
+                ShowWindow(CDebug.GetWindowHandle(), SW_NORMAL);
+                SetFocus(CDebug.SourceView->hOwn);
             }
-
-            break;
-        case WM_ACTIVATE:
-            wActive = LOWORD(wParam);
-            bActive = (wActive == WA_CLICKACTIVE || wActive == WA_ACTIVE);
-            Core.AppState(bActive);
-            break;
-
-        case WM_ACTIVATEAPP:
-            break;
-
-        case WM_KEYDOWN:
-            if (bDebugWindow)
-                ProcessKeys(hwnd, (int)wParam, 0);
-
-        case WM_KEYUP:
-        case WM_RBUTTONUP:
-        case WM_RBUTTONDOWN:
-        case WM_LBUTTONUP:
-        case WM_LBUTTONDOWN:
-        case WM_MBUTTONDOWN:
-        case WM_MBUTTONUP:
-        case MM_MCINOTIFY:
-        case WM_LBUTTONDBLCLK:
-        case WM_CHAR:
-        case WM_MOUSEMOVE:
-            if (Core.Controls)
-                Core.Controls->EngineMessage(iMsg, wParam, lParam);
-            break;
-        case WM_MOUSEWHEEL:
-            Core.Event("evMouseWeel", "l", (short)HIWORD(wParam));
-            if (Core.Controls)
-                Core.Controls->EngineMessage(iMsg, wParam, lParam);
-            break;
-        case WM_CLOSE:
-            DestroyWindow(hwnd);
-            return 0;
-        case WM_DESTROY:
-            gdi_display.Print("DestroyWindow");
-            Core.Event("DestroyWindow", null);
-            Core.Event("ExitApplication", null);
-            CDebug.Release();
-            Core.CleanUp();
-            gdi_display.Release();
-            Control_Stack.Release();
-            File_Service.Close();
-            CDebug.CloseDebugWindow();
-            InvalidateRect(0, 0, 0);
-            PostQuitMessage(0);
-            break;
-        case SD_SERVERMESSAGE:
-        case SD_CLIENTMESSAGE:
-            if (Core.FindClass(&eidNET, "Net", 0))
-            {
-                Core.Send_Message(eidNET, "luu", iMsg, wParam, lParam);
-            }
-            break;
         }
+    case WM_KEYUP:
+    case WM_RBUTTONUP:
+    case WM_RBUTTONDOWN:
+    case WM_LBUTTONUP:
+    case WM_LBUTTONDOWN:
+    case WM_MBUTTONDOWN:
+    case WM_MBUTTONUP:
+        // case MM_MCINOTIFY:
+    case WM_LBUTTONDBLCLK:
+    case WM_CHAR:
+    case WM_MOUSEMOVE:
+        if (core.Controls)
+            core.Controls->EngineMessage(iMsg, wParam, lParam);
+        break;
 
-#ifndef EX_OFF
+    case WM_MOUSEWHEEL:
+        core.Event("evMouseWeel", "l", static_cast<short>(HIWORD(wParam)));
+        if (core.Controls)
+            core.Controls->EngineMessage(iMsg, wParam, lParam);
+        break;
+
+    default:;
     }
-    catch (...)
-    {
-        gdi_display.Print("ERROR in WndProc: System halted");
-        System_Hold = true;
-    }
-#endif
 
     return DefWindowProc(hwnd, iMsg, wParam, lParam);
-}
-
-void ProcessKeys(HWND hwnd, int code, int Press)
-{
-    switch (code)
-    {
-    case VK_BACK:
-        if (bBackspaceExit)
-        {
-            Core.Exit();
-            System_Hold = false;
-        }
-        break;
-    case VK_F5:
-        if (!CDebug.IsDebug())
-            CDebug.OpenDebugWindow(hInst);
-        else
-        {
-            ShowWindow(CDebug.GetWindowHandle(), SW_NORMAL);
-            SetFocus(CDebug.SourceView->hOwn);
-        }
-        break;
-    default:
-        break;
-    }
-}
-
-void *_cdecl operator new(size_t size)
-{
-    return Memory_Service.Allocate(size);
-}
-
-void *_cdecl operator new(size_t size, char *pFileName, DWORD nLine)
-{
-    CodeSource.pFileName = pFileName;
-    CodeSource.line = nLine;
-    return Memory_Service.Allocate(size);
-}
-
-void _cdecl operator delete(void *block_ptr)
-{
-    Memory_Service.Free(block_ptr);
-}
-
-void _cdecl operator delete(void *block_ptr, char *pFileName, DWORD nLine)
-{
-    Memory_Service.Free(block_ptr);
-}
-
-void *_cdecl resize(void *block_ptr, size_t size)
-{
-    return Memory_Service.Reallocate(block_ptr, size);
-}
-
-void *_cdecl resize(void *block_ptr, size_t size, char *pFileName, DWORD nLine)
-{
-    CodeSource.pFileName = pFileName;
-    CodeSource.line = nLine;
-    return Memory_Service.Reallocate(block_ptr, size);
-}
-
-void EmergencyExit()
-{
-    System_Api.SetX();
-    gdi_display.Switch(true);
-    Core.TraceCurrent();
-    gdi_display.Print("FATAL EXCEPTION : System halted");
-    System_Hold = true;
-    Sleep(ERROR_MESSAGE_DELAY);
-    ExitProcess(0xFFBADBAD);
-}
-
-int Alert(const char *lpCaption, const char *lpText)
-{
-    std::wstring CaptionW = utf8::ConvertUtf8ToWide(lpCaption);
-    std::wstring TextW = utf8::ConvertUtf8ToWide(lpText);
-    return ::MessageBox(NULL, TextW.c_str(), CaptionW.c_str(), MB_OK);
 }
 
 void CreateMiniDump(EXCEPTION_POINTERS *pep)
 {
     // Open the file
-    HANDLE hFile = CreateFile(_T("CCS_dump.dmp"), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS,
+    HANDLE hFile = CreateFile(_T("engine_dump.dmp"), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS,
                               FILE_ATTRIBUTE_NORMAL, NULL);
 
     if ((hFile != NULL) && (hFile != INVALID_HANDLE_VALUE))
@@ -523,4 +282,11 @@ void CreateMiniDump(EXCEPTION_POINTERS *pep)
     {
         _tprintf(_T("CreateFile failed. Error: %u \n"), GetLastError());
     }
+}
+
+int Alert(const char *lpCaption, const char *lpText)
+{
+    std::wstring CaptionW = utf8::ConvertUtf8ToWide(lpCaption);
+    std::wstring TextW = utf8::ConvertUtf8ToWide(lpText);
+    return ::MessageBox(NULL, TextW.c_str(), CaptionW.c_str(), MB_OK);
 }

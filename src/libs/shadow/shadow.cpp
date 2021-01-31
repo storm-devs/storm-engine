@@ -7,31 +7,27 @@ Copyright (C) 2000, 2001 Nick Chirkov
 Comments:
 dynamic shadow cpp file
 ******************************************************************************/
-#include "SHADOW.h"
-#include "common_defines.h"
-#include "model.h"
+#include "shadow.h"
+#include "../../Shared/messages.h"
 
 static unsigned long HEAD_DENSITY = 0xFF606060;
 static unsigned long DENSITY = 0xFF606040;
 static const float nearBlend = 8.0f;
 static const float farBlend = 16.0f;
 
-INTERFACE_FUNCTION
-CREATE_CLASS(SHADOW)
-
 static const long vbuff_size = 1024;
 static long ref = 0;
 #define TEXTURE_SIZE 128
-IDirect3DTexture9 *shTex = null, *blurTex = null;
+IDirect3DTexture9 *shTex = nullptr, *blurTex = nullptr;
 IDirect3DVertexBuffer9 *vbuff;
 
-SHADOW::SHADOW()
+Shadow::Shadow()
 {
     shading = 1.0f;
     blendValue = 0xFFFFFFFF;
 }
 
-SHADOW::~SHADOW()
+Shadow::~Shadow()
 {
     ref--;
     if (ref == 0)
@@ -42,30 +38,30 @@ SHADOW::~SHADOW()
     }
 }
 
-bool SHADOW::Init()
+bool Shadow::Init()
 {
-    GUARD(SHADOW::SHADOW())
+    // GUARD(Shadow::SHADOW())
 
-    col = (COLLIDE *)_CORE_API->CreateService("coll");
-    if (col == null)
-        SE_THROW_MSG("No service: COLLIDE");
+    col = static_cast<COLLIDE *>(core.CreateService("coll"));
+    if (col == nullptr)
+        throw std::exception("No service: COLLIDE");
 
-    _CORE_API->LayerAdd("realize", GetID(), 900);
+    EntityManager::AddToLayer(REALIZE, GetId(), 900);
 
-    rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
+    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!rs)
-        SE_THROW_MSG("No service: dx8render");
+        throw std::exception("No service: dx9render");
 
     if (ref == 0)
     {
         rs->CreateTexture(TEXTURE_SIZE, TEXTURE_SIZE, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &shTex);
-        if (shTex == 0)
+        if (shTex == nullptr)
             rs->CreateTexture(TEXTURE_SIZE, TEXTURE_SIZE, 1, D3DUSAGE_RENDERTARGET, D3DFMT_X8R8G8B8, D3DPOOL_DEFAULT,
                               &shTex);
 
         rs->CreateTexture(TEXTURE_SIZE, TEXTURE_SIZE, 1, D3DUSAGE_RENDERTARGET, D3DFMT_X8R8G8B8, D3DPOOL_DEFAULT,
                           &blurTex);
-        if (blurTex == 0)
+        if (blurTex == nullptr)
             rs->CreateTexture(TEXTURE_SIZE, TEXTURE_SIZE, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT,
                               &blurTex);
 
@@ -74,54 +70,54 @@ bool SHADOW::Init()
     }
     ref++;
 
-    UNGUARD
+    // UNGUARD
     return true;
 }
 
 CMatrix trans;
 float perspective, atten_start, atten_end;
-SHADOW::SHADOW_VERTEX *shadvert;
+Shadow::SHADOW_VERTEX *shadvert;
 long tot_verts;
 CVECTOR lightPos, ObjPos, objPos;
 CVECTOR camPos;
 
 bool AddPoly(const CVECTOR *vr, long nverts)
 {
-    CVECTOR norm = !((vr[1] - vr[0]) ^ (vr[2] - vr[0]));
+    const auto norm = !((vr[1] - vr[0]) ^ (vr[2] - vr[0]));
 
-    float d = (norm | vr[0]);
-    float dc = (norm | camPos) - d;
-    float dl = (norm | lightPos) - d;
+    const auto d = (norm | vr[0]);
+    const auto dc = (norm | camPos) - d;
+    const auto dl = (norm | lightPos) - d;
     if (dc * dl < 0.0f)
         return true;
 
-    float d0 = (norm | objPos) - d;
+    const auto d0 = (norm | objPos) - d;
     if (d0 * dl < 0.0f)
         return true;
 
     if (tot_verts + (nverts - 2) * 3 > vbuff_size)
         return false;
-    long v = 0;
+    long v;
     for (v = 0; v < 3; v++)
     {
         shadvert[tot_verts].pos = vr[v];
-        float z = (trans.m[0][2] * vr[v].x + trans.m[1][2] * vr[v].y + trans.m[2][2] * vr[v].z + trans.m[3][2]);
-        float rhw = perspective * 0.5f / z;
+        const auto z = (trans.m[0][2] * vr[v].x + trans.m[1][2] * vr[v].y + trans.m[2][2] * vr[v].z + trans.m[3][2]);
+        const auto rhw = perspective * 0.5f / z;
         shadvert[tot_verts].tu =
             rhw * (trans.m[0][0] * vr[v].x + trans.m[1][0] * vr[v].y + trans.m[2][0] * vr[v].z + trans.m[3][0]) + 0.5f;
         shadvert[tot_verts].tv =
             -rhw * (trans.m[0][1] * vr[v].x + trans.m[1][1] * vr[v].y + trans.m[2][1] * vr[v].z + trans.m[3][1]) + 0.5f;
         tot_verts++;
     }
-    long start = tot_verts - 3;
+    const auto start = tot_verts - 3;
     for (; v < nverts; v++)
     {
         shadvert[tot_verts + 0] = shadvert[start];
         shadvert[tot_verts + 1] = shadvert[tot_verts - 1];
         tot_verts += 2;
         shadvert[tot_verts].pos = vr[v];
-        float z = (trans.m[0][2] * vr[v].x + trans.m[1][2] * vr[v].y + trans.m[2][2] * vr[v].z + trans.m[3][2]);
-        float rhw = perspective * 0.5f / z;
+        const auto z = (trans.m[0][2] * vr[v].x + trans.m[1][2] * vr[v].y + trans.m[2][2] * vr[v].z + trans.m[3][2]);
+        const auto rhw = perspective * 0.5f / z;
         shadvert[tot_verts].tu =
             rhw * (trans.m[0][0] * vr[v].x + trans.m[1][0] * vr[v].y + trans.m[2][0] * vr[v].z + trans.m[3][0]) + 0.5f;
         shadvert[tot_verts].tv =
@@ -134,30 +130,30 @@ bool AddPoly(const CVECTOR *vr, long nverts)
 //------------------------------------------------------------------------------------
 // realize
 //------------------------------------------------------------------------------------
-void SHADOW::Realize(dword Delta_Time)
+void Shadow::Realize(uint32_t Delta_Time)
 {
-    MODEL *obj = (MODEL *)_CORE_API->GetEntityPointer(&entity);
+    auto *obj = static_cast<MODEL *>(EntityManager::GetEntityPointer(entity));
     if (!obj)
         return;
 
-    VDATA *pV = api->Event("EWhr_GetShadowDensity");
+    auto *pV = core.Event("EWhr_GetShadowDensity");
     HEAD_DENSITY = ((VDATA *)pV->GetArrayElement(0))->GetLong();
     DENSITY = ((VDATA *)pV->GetArrayElement(1))->GetLong();
 
     D3DVIEWPORT9 vp;
     rs->GetViewport(&vp);
 
-    pV = api->Event("EWhr_GetFogDensity");
-    float fogDensity = pV->GetFloat();
+    pV = core.Event("EWhr_GetFogDensity");
+    auto fogDensity = pV->GetFloat();
 
-    // MODEL *obj = (MODEL*)_CORE_API->GetEntityPointer(&entity);
-    NODE *node = obj->GetNode(0);
+    // MODEL *obj = (MODEL*)EntityManager::GetEntityPointer(entity);
+    auto *node = obj->GetNode(0);
     GEOS::INFO gi;
     node->geo->GetInfo(gi);
     objPos = obj->mtx.Pos();
     ObjPos = objPos;
     objPos.y += gi.radius;
-    CVECTOR headPos = objPos;
+    auto headPos = objPos;
     headPos.y += gi.radius;
 
     D3DLIGHT9 dLight;
@@ -170,7 +166,7 @@ void SHADOW::Realize(dword Delta_Time)
 
     dLight.Position.y = lightPos.y;
 
-    CVECTOR light_pos = !CVECTOR(dLight.Direction.x, dLight.Direction.y, dLight.Direction.z);
+    auto light_pos = !CVECTOR(dLight.Direction.x, dLight.Direction.y, dLight.Direction.z);
     if (light_pos.y > -0.6f)
         light_pos.y = -0.6f;
     light_pos = -1000.0f * (!light_pos);
@@ -193,9 +189,10 @@ void SHADOW::Realize(dword Delta_Time)
     rs->GetTransform(D3DTS_PROJECTION, visPoj);
     FindPlanes(visView, visPoj);
 
+    const auto its = EntityManager::GetEntityIdIterators(SHADOW);
+
     CVECTOR hdest = headPos + !(headPos - light_pos) * 100.0f;
-    VIDWALKER *walker = _CORE_API->LayerGetWalker("shadow");
-    float ray = col->Trace(*walker, headPos, hdest, 0, 0);
+    float ray = col->Trace(its, headPos, hdest, nullptr, 0);
     CVECTOR cen;
     float radius;
     if (ray <= 1.0f)
@@ -212,7 +209,8 @@ void SHADOW::Realize(dword Delta_Time)
         cen = headPos + 4.0f * !(hdest - headPos);
         radius = 8.0f;
     }
-    long p = 0;
+
+    long p;
     for (p = 0; p < 4; p++)
     {
         float dist = cen.x * planes[p].Nx + cen.y * planes[p].Ny + cen.z * planes[p].Nz - planes[p].D;
@@ -221,7 +219,6 @@ void SHADOW::Realize(dword Delta_Time)
     }
     if (p < 4)
     {
-        delete walker;
         return;
     }
 
@@ -229,8 +226,8 @@ void SHADOW::Realize(dword Delta_Time)
     for (long it = 0; it < 10; it++)
     {
         CVECTOR ps = ObjPos;
-        ps.y += gi.radius * 0.111f * float(it);
-        if (col->Trace(*walker, ps, lightPos, 0, 0) > 1.0f)
+        ps.y += gi.radius * 0.111f * static_cast<float>(it);
+        if (col->Trace(its, ps, lightPos, nullptr, 0) > 1.0f)
             minVal += 0.1f;
     }
 
@@ -240,7 +237,7 @@ void SHADOW::Realize(dword Delta_Time)
     else
         shading += dtime;
 
-    shading = max(0.2f, max(minVal, min(shading, 1.0f)));
+    shading = std::max(0.2f, std::max(minVal, std::min(shading, 1.0f)));
     shading *= (blendValue >> 24) / 255.0f;
 
     // if(GetAsyncKeyState(0xc0)<0)
@@ -248,10 +245,9 @@ void SHADOW::Realize(dword Delta_Time)
         float dist = sqrtf(~(cen - camPos));
         if (dist > farBlend) // too far
         {
-            delete walker;
             return;
         }
-        else if (dist > nearBlend) // blend
+        if (dist > nearBlend) // blend
             shading *= 1.0f - (dist - nearBlend) / (farBlend - nearBlend);
     }
 
@@ -268,7 +264,7 @@ void SHADOW::Realize(dword Delta_Time)
 
     // general params-------------------------------------
     trans = lightmtx;
-    perspective = max(proj.m[0][0], proj.m[1][1]);
+    perspective = std::max(proj.m[0][0], proj.m[1][1]);
     atten_start = 1200.0f;
     atten_end = 1300.0f;
     //---------------------------------------------------------------
@@ -292,20 +288,20 @@ void SHADOW::Realize(dword Delta_Time)
 
     IDirect3DSurface9 *texsurf;
     shTex->GetSurfaceLevel(0, &texsurf);
-    rs->SetRenderTarget(texsurf, 0);
+    rs->SetRenderTarget(texsurf, nullptr);
     rs->Release(texsurf);
 
-    rs->Clear(0L, NULL, D3DCLEAR_TARGET, 0, 0.0f, 0L);
+    rs->Clear(0L, nullptr, D3DCLEAR_TARGET, 0, 0.0f, 0L);
     rs->BeginScene();
 
     rs->SetRenderState(D3DRS_TEXTUREFACTOR, DENSITY);
     char tech[256];
-    strcpy(tech, node->GetTechnique());
+    strcpy_s(tech, node->GetTechnique());
     node->SetTechnique("shadow_model");
     node->flags &= ~NODE::VISIBLE_TREE;
 
     rs->SetRenderState(D3DRS_ZENABLE, FALSE);
-    obj->Realize(0);
+    obj->ProcessStage(Stage::realize, 0);
     rs->SetRenderState(D3DRS_ZENABLE, TRUE);
 
     node->flags |= NODE::VISIBLE_TREE;
@@ -338,31 +334,22 @@ void SHADOW::Realize(dword Delta_Time)
     planes[5].D = -pdir | (objPos - 3.5f * pdir);
 
     rs->SetTexture(0, blurTex);
-
-    rs->SetRenderState(D3DRS_DEPTHBIAS, F2DW(-0.0001f));
-    rs->SetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, F2DW(0.0f));
-
     rs->SetTransform(D3DTS_WORLD, CMatrix());
 
     float dist = 3.0f * sqrtf(~(cen - camPos));
     shading *= powf(2.71f, -fogDensity * dist);
 
-    long shade = long(fabsf(shading * 255.0f));
+    long shade = static_cast<long>(fabsf(shading * 255.0f));
 
     rs->SetRenderState(D3DRS_TEXTUREFACTOR, (shade << 16) | (shade << 8) | (shade << 0));
-    rs->SetStreamSource(0, vbuff, sizeof(SHADOW_VERTEX));
-    rs->SetIndices(0, 0);
     rs->SetFVF(SHADOW_FVF);
+    // rs->SetIndices(0,0);
+    rs->SetStreamSource(0, vbuff, sizeof(SHADOW_VERTEX));
 
     tot_verts = 0;
-#ifndef _XBOX
-    rs->VBLock(vbuff, 0, 0, (byte **)&shadvert, D3DLOCK_DISCARD | D3DLOCK_NOSYSLOCK);
-#else
-    rs->VBLock(vbuff, 0, 0, (byte **)&shadvert, 0);
-#endif
-    col->Clip(*walker, &planes[0], 5, cen, radius, AddPoly, &entity, 1);
+    rs->VBLock(vbuff, 0, 0, (uint8_t **)&shadvert, D3DLOCK_DISCARD | D3DLOCK_NOSYSLOCK);
+    col->Clip(its, &planes[0], 5, cen, radius, AddPoly, &entity, 1);
 
-    delete walker;
     rs->VBUnlock(vbuff);
 
     if (tot_verts >= 3 && rs->TechniqueExecuteStart("shadow_draw"))
@@ -370,14 +357,10 @@ void SHADOW::Realize(dword Delta_Time)
         {
             rs->DrawPrimitive(D3DPT_TRIANGLELIST, 0, tot_verts / 3);
         } while (rs->TechniqueExecuteNext());
-
-    rs->SetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, F2DW(0.0f));
-    rs->SetRenderState(D3DRS_DEPTHBIAS, F2DW(0.0f));
-
     rs->SetViewport(&vp);
 }
 
-void SHADOW::FindPlanes(const CMatrix &view, const CMatrix &proj)
+void Shadow::FindPlanes(const CMatrix &view, const CMatrix &proj)
 {
     CVECTOR v[4];
     // left
@@ -442,7 +425,7 @@ void SHADOW::FindPlanes(const CMatrix &view, const CMatrix &proj)
     planes[3].D = (pos.x * planes[3].Nx + pos.y * planes[3].Ny + pos.z * planes[3].Nz);
 }
 
-void SHADOW::Smooth()
+void Shadow::Smooth()
 {
     struct SMOOTHVRT
     {
@@ -482,10 +465,10 @@ void SHADOW::Smooth()
 
     IDirect3DSurface9 *texsurf;
     blurTex->GetSurfaceLevel(0, &texsurf);
-    rs->SetRenderTarget(texsurf, 0);
+    rs->SetRenderTarget(texsurf, nullptr);
     rs->Release(texsurf);
 
-    rs->Clear(0L, NULL, D3DCLEAR_TARGET, 0, 0.0f, 0L);
+    rs->Clear(0L, nullptr, D3DCLEAR_TARGET, 0, 0.0f, 0L);
     rs->BeginScene();
 
     rs->SetTexture(0, shTex);
@@ -498,8 +481,8 @@ void SHADOW::Smooth()
             for (long u = 0; u < nIterations; u++)
                 for (long v = 0; v < nIterations; v++)
                 {
-                    float ud = 1.5f * (u / (nIterations - 1.0f) - 0.5f) / (TEXTURE_SIZE - 1.0f) * 2.0f;
-                    float vd = 1.5f * (v / (nIterations - 1.0f) - 0.5f) / (TEXTURE_SIZE - 1.0f) * 2.0f;
+                    const float ud = 1.5f * (u / (nIterations - 1.0f) - 0.5f) / (TEXTURE_SIZE - 1.0f) * 2.0f;
+                    const float vd = 1.5f * (v / (nIterations - 1.0f) - 0.5f) / (TEXTURE_SIZE - 1.0f) * 2.0f;
                     vrt[0].tu = 0.0f + ud;
                     vrt[0].tv = 0.0f + vd;
                     vrt[1].tu = 0.0f + ud;
@@ -508,7 +491,7 @@ void SHADOW::Smooth()
                     vrt[2].tv = 1.0f + vd;
                     vrt[3].tu = 1.0f + ud;
                     vrt[3].tv = 0.0f + vd;
-                    long col = long(1.0f / (nIterations * nIterations) * 255.0f);
+                    const long col = static_cast<long>(1.0f / (nIterations * nIterations) * 255.0f);
                     rs->SetRenderState(D3DRS_TEXTUREFACTOR, 0xFF000000 | (col << 16) | (col << 8) | (col << 0));
                     rs->DrawPrimitiveUP(D3DPT_TRIANGLEFAN,
                                         D3DFVF_XYZRHW | D3DFVF_TEX1 | D3DFVF_DIFFUSE | D3DFVF_TEXTUREFORMAT2, 2, &vrt,
@@ -519,9 +502,9 @@ void SHADOW::Smooth()
     rs->EndScene();
 }
 
-dword _cdecl SHADOW::ProcessMessage(MESSAGE &message)
+uint64_t Shadow::ProcessMessage(MESSAGE &message)
 {
-    long code = message.Long();
+    const long code = message.Long();
     switch (code)
     {
     case 0:
@@ -535,28 +518,32 @@ dword _cdecl SHADOW::ProcessMessage(MESSAGE &message)
     return 0;
 }
 
-void SHADOW::LostRender()
+void Shadow::LostRender()
 {
-    rs->Release(vbuff);
-    vbuff = NULL;
-    rs->Release(shTex);
-    shTex = NULL;
-    rs->Release(blurTex);
-    blurTex = NULL;
+    if (--ref == 0)
+    {
+        rs->Release(shTex);
+        rs->Release(blurTex);
+        rs->Release(vbuff);
+    }
 }
 
-void SHADOW::RestoreRender()
+void Shadow::RestoreRender()
 {
-    rs->CreateTexture(TEXTURE_SIZE, TEXTURE_SIZE, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &shTex);
-    if (shTex == 0)
+    if (ref++ == 0)
+    {
+        rs->CreateTexture(TEXTURE_SIZE, TEXTURE_SIZE, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &shTex);
+        if (shTex == nullptr)
+            rs->CreateTexture(TEXTURE_SIZE, TEXTURE_SIZE, 1, D3DUSAGE_RENDERTARGET, D3DFMT_X8R8G8B8, D3DPOOL_DEFAULT,
+                              &shTex);
+
         rs->CreateTexture(TEXTURE_SIZE, TEXTURE_SIZE, 1, D3DUSAGE_RENDERTARGET, D3DFMT_X8R8G8B8, D3DPOOL_DEFAULT,
-                          &shTex);
-
-    rs->CreateTexture(TEXTURE_SIZE, TEXTURE_SIZE, 1, D3DUSAGE_RENDERTARGET, D3DFMT_X8R8G8B8, D3DPOOL_DEFAULT, &blurTex);
-    if (blurTex == 0)
-        rs->CreateTexture(TEXTURE_SIZE, TEXTURE_SIZE, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT,
                           &blurTex);
+        if (blurTex == nullptr)
+            rs->CreateTexture(TEXTURE_SIZE, TEXTURE_SIZE, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT,
+                              &blurTex);
 
-    rs->CreateVertexBuffer(sizeof(SHADOW_VERTEX) * (vbuff_size + 128), D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC,
-                           SHADOW_FVF, D3DPOOL_DEFAULT, &vbuff);
+        rs->CreateVertexBuffer(sizeof(SHADOW_VERTEX) * (vbuff_size + 128), D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC,
+                               SHADOW_FVF, D3DPOOL_DEFAULT, &vbuff);
+    }
 }

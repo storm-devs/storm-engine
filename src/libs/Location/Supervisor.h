@@ -52,23 +52,23 @@ class Supervisor
     virtual ~Supervisor();
 
     //Проверить на свободность позицию
-    bool CheckPosition(float x, float y, float z, Character *c);
+    bool CheckPosition(float x, float y, float z, Character *c) const;
     //Найти по радиусу персонажей
     bool FindCharacters(FindCharacter fndCharacter[MAX_CHARACTERS], long &numFndCharacters, Character *chr,
                         float radius, float angTest = 0.0f, float nearPlane = 0.4f, float ax = 0.0f,
-                        bool isSort = false, bool lookCenter = false);
+                        bool isSort = false, bool lookCenter = false) const;
 
     void Update(float dltTime);
-    void PreUpdate(float dltTime);
+    void PreUpdate(float dltTime) const;
     void PostUpdate(float dltTime);
 
     //Установить позиции для загрузки
-    void SetSavePositions();
+    void SetSavePositions() const;
     //Удалить позиции для загрузки
-    void DelSavePositions(bool isTeleport);
+    void DelSavePositions(bool isTeleport) const;
 
     //Найти оптимальный локатор для продолжения прогулки персонажа
-    long FindForvardLocator(LocatorArray *la, const CVECTOR &pos, const CVECTOR &norm, bool lookChr = false);
+    long FindForvardLocator(LocatorArray *la, const CVECTOR &pos, const CVECTOR &norm, bool lookChr = false) const;
 
     //--------------------------------------------------------------------------------------------
     //Инкапсуляция

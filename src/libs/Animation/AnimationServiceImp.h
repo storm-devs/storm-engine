@@ -17,19 +17,20 @@
 
 //============================================================================================
 
+class INIFILE;
 class AnimationImp;
 
-class AnimationServiceImp : public AnimationService
+class AnimationServiceImp final : public AnimationService
 {
     //--------------------------------------------------------------------------------------------
     //Конструирование, деструктурирование
     //--------------------------------------------------------------------------------------------
   public:
     AnimationServiceImp();
-    virtual ~AnimationServiceImp();
+    ~AnimationServiceImp();
 
     //Место исполнения
-    virtual dword RunSection();
+    virtual uint32_t RunSection();
     //Функции исполнения
     virtual void RunStart();
     virtual void RunEnd();
@@ -51,15 +52,13 @@ class AnimationServiceImp : public AnimationService
     //Загрузить анимацию
     long LoadAnimation(const char *animationName);
     //Загрузить из текущей секции пользовательские данные
-    void LoadUserData(INIFILE *ani, const char *sectionName, UserData &data, const char *animationName);
+    void LoadUserData(INIFILE *ani, const char *sectionName, std::unordered_map<std::string, std::string> &data,
+                      const char *animationName);
     //Загрузить AN
     bool LoadAN(const char *fname, AnimationInfo *info);
 
-    AnimationInfo **ainfo;
-    long numInfos;
-
-    AnimationImp **animation;
-    long numAnimations;
+    std::vector<AnimationInfo *> ainfo;
+    std::vector<AnimationImp *> animations;
 
     static char key[1024];
 };

@@ -1,6 +1,6 @@
 project(dialog)
 
-add_library(${PROJECT_NAME} MODULE
+add_library(${PROJECT_NAME} STATIC
 	dialog.cpp
 	dialog.h
 )

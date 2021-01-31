@@ -4,7 +4,6 @@
 
 COMPRESS::COMPRESS()
 {
-    pBTCompressionTable = 0;
     dwBTCompressionTableSize = 0;
 }
 
@@ -15,59 +14,47 @@ COMPRESS::~COMPRESS()
 
 void COMPRESS::Release()
 {
-    if (pBTCompressionTable)
-        delete pBTCompressionTable;
-    pBTCompressionTable = 0;
     dwBTCompressionTableSize = 0;
 }
 
-void COMPRESS::SetBitsChange(DWORD dwChangeOffset, DWORD dwBits)
+void COMPRESS::SetBitsChange(uint32_t dwChangeOffset, uint32_t dwBits)
 {
-    DWORD n;
-    n = dwBTCompressionTableSize;
+    const auto n = dwBTCompressionTableSize;
     dwBTCompressionTableSize++;
 
-    if (!pBTCompressionTable)
-        pBTCompressionTable = (BITSCHANGE *)NEW char[dwBTCompressionTableSize * sizeof(BITSCHANGE)];
-    else
-        pBTCompressionTable = (BITSCHANGE *)RESIZE(pBTCompressionTable, dwBTCompressionTableSize * sizeof(BITSCHANGE));
+    pBTCompressionTable.resize(dwBTCompressionTableSize);
 
     pBTCompressionTable[n].dwBits = dwBits;
     pBTCompressionTable[n].dwChangeOffset = dwChangeOffset;
 }
 
-bool COMPRESS::Pack(const char *pSource, DWORD nSourceSize, char *&pDestination, DWORD &nPackedSize)
+bool COMPRESS::Pack(const char *pSource, uint32_t nSourceSize, char *&pDestination, uint32_t &nPackedSize)
 {
     // return APack(pSource,nSourceSize,pDestination,nPackedSize);
 
-    DWORD n;
-    DWORD nCode;
-    char *pDataBuffer;
-    DWORD nBufferSize;
-    DWORD nDataSize;
+    uint32_t nCode;
     bool bNew;
 
     SCodec.Release();
 
-    if (pSource == 0)
+    if (pSource == nullptr)
         return false;
 
-    DWORD nOldCode;
-    nBufferSize = 1024;
-    pDataBuffer = (char *)malloc(nBufferSize);
+    uint32_t nBufferSize = 1024;
+    auto *pDataBuffer = static_cast<char *>(malloc(nBufferSize));
     memset(pDataBuffer, 0, nBufferSize);
 
     pDataBuffer[0] = pSource[0];
-    nDataSize = 1;
-    nOldCode = SCodec.Convert(pDataBuffer, nDataSize, bNew);
-    for (n = 1; n < nSourceSize; n++)
+    uint32_t nDataSize = 1;
+    auto nOldCode = SCodec.Convert(pDataBuffer, nDataSize, bNew);
+    for (uint32_t n = 1; n < nSourceSize; n++)
     {
         pDataBuffer[nDataSize] = pSource[n];
         nDataSize++;
         if (nDataSize >= nBufferSize)
         {
             nBufferSize = nBufferSize * 2;
-            pDataBuffer = (char *)realloc(pDataBuffer, nBufferSize);
+            pDataBuffer = static_cast<char *>(realloc(pDataBuffer, nBufferSize));
         }
         nCode = SCodec.Convert(pDataBuffer, nDataSize, bNew);
         if (!bNew)
@@ -87,58 +74,49 @@ bool COMPRESS::Pack(const char *pSource, DWORD nSourceSize, char *&pDestination,
 
     if (pDataBuffer)
         free(pDataBuffer);
-    pDataBuffer = 0;
+    pDataBuffer = nullptr;
 
     return true;
 }
 
-bool COMPRESS::APack(const char *pSource, DWORD nSourceSize, char *&pDestination, DWORD &nPackedSize)
+bool COMPRESS::APack(const char *pSource, uint32_t nSourceSize, char *&pDestination, uint32_t &nPackedSize)
 {
-    DWORD n;
-    DWORD nCode;
-    char *pDataBuffer;
-    DWORD nBufferSize;
-    DWORD nDataSize;
+    uint32_t nCode;
     bool bNew;
-    DWORD nOldCode;
-    char *pCodedData;
-
-    DWORD dwBitsOnCode;
-    DWORD dwBitsCoded;
 
     // release words table
     Release();
     SCodec.Release();
 
-    if (pSource == 0)
+    if (pSource == nullptr)
         return false;
 
-    pCodedData = 0;
+    char *pCodedData = nullptr;
 
     // set buffer for accumulating word
-    nBufferSize = 1024;
-    pDataBuffer = (char *)malloc(nBufferSize);
+    uint32_t nBufferSize = 1024;
+    auto *pDataBuffer = static_cast<char *>(malloc(nBufferSize));
     memset(pDataBuffer, 0, nBufferSize);
 
     // initial value bits on code is 8
-    dwBitsOnCode = 8;
+    uint32_t dwBitsOnCode = 8;
     // no coded data yet
-    dwBitsCoded = 0;
+    uint32_t dwBitsCoded = 0;
 
     SetBitsChange(0, 8);
 
     pDataBuffer[0] = pSource[0];
-    nDataSize = 1;
+    uint32_t nDataSize = 1;
 
-    nOldCode = SCodec.Convert(pDataBuffer, nDataSize, bNew);
-    for (n = 1; n < nSourceSize; n++)
+    auto nOldCode = SCodec.Convert(pDataBuffer, nDataSize, bNew);
+    for (uint32_t n = 1; n < nSourceSize; n++)
     {
         pDataBuffer[nDataSize] = pSource[n];
         nDataSize++;
         if (nDataSize >= nBufferSize)
         {
             nBufferSize = nBufferSize * 2;
-            pDataBuffer = (char *)realloc(pDataBuffer, nBufferSize);
+            pDataBuffer = static_cast<char *>(realloc(pDataBuffer, nBufferSize));
         }
         nCode = SCodec.Convert(pDataBuffer, nDataSize, bNew);
         if (!bNew)
@@ -158,46 +136,38 @@ bool COMPRESS::APack(const char *pSource, DWORD nSourceSize, char *&pDestination
 
     if (pDataBuffer)
         free(pDataBuffer);
-    pDataBuffer = 0;
+    pDataBuffer = nullptr;
 
     pDestination = pCodedData;
     return true;
 }
 
-bool COMPRESS::AppendCode(char *&pDestination, DWORD &nPackedSize, DWORD nCode)
+bool COMPRESS::AppendCode(char *&pDestination, uint32_t &nPackedSize, uint32_t nCode)
 {
-    DWORD nBSize;
-    char *pB;
-    nBSize = 3;
-    if (pDestination == 0)
-        pDestination = (char *)malloc(nBSize);
+    const uint32_t nBSize = 3;
+    if (pDestination == nullptr)
+        pDestination = static_cast<char *>(malloc(nBSize));
     else
-        pDestination = (char *)realloc(pDestination, nPackedSize + nBSize);
-    if (pDestination == 0)
+        pDestination = static_cast<char *>(realloc(pDestination, nPackedSize + nBSize));
+    if (pDestination == nullptr)
         return false;
-    pB = (char *)&nCode;
-    *((char *)(pDestination + nPackedSize)) = pB[0];
+    auto *const pB = (char *)&nCode;
+    *static_cast<char *>(pDestination + nPackedSize) = pB[0];
     nPackedSize++;
-    *((char *)(pDestination + nPackedSize)) = pB[1];
+    *static_cast<char *>(pDestination + nPackedSize) = pB[1];
     nPackedSize++;
-    *((char *)(pDestination + nPackedSize)) = pB[2];
+    *static_cast<char *>(pDestination + nPackedSize) = pB[2];
     nPackedSize++;
     return true;
 }
 
-bool COMPRESS::AAppendCode(char *&pDest, DWORD &dwDestinationBufferSize, DWORD dwCode, DWORD &dwBitsOnCode,
-                           DWORD &dwBitsCoded)
+bool COMPRESS::AAppendCode(char *&pDest, uint32_t &dwDestinationBufferSize, uint32_t dwCode, uint32_t &dwBitsOnCode,
+                           uint32_t &dwBitsCoded)
 {
-    DWORD n;
-    DWORD dwByteOffset;
-    DWORD dwSrcMask;
-    unsigned char DestMask;
-    bool bBitsChanged;
-
     // verify - there must be enough bits for code
-    DWORD dwMaxCodeValue = (1 << dwBitsOnCode) - 1;
+    uint32_t dwMaxCodeValue = (1 << dwBitsOnCode) - 1;
 
-    bBitsChanged = false;
+    auto bBitsChanged = false;
     while (dwCode >= dwMaxCodeValue)
     {
         dwBitsOnCode++;
@@ -212,18 +182,18 @@ bool COMPRESS::AAppendCode(char *&pDest, DWORD &dwDestinationBufferSize, DWORD d
     if (bBitsChanged)
         SetBitsChange(dwBitsCoded, dwBitsOnCode);
 
-    dwByteOffset = dwBitsCoded / BYTEBITS;
+    auto dwByteOffset = dwBitsCoded / BYTEBITS;
 
-    DestMask = 0x80 >> (dwBitsCoded % BYTEBITS);
-    dwSrcMask = 0x1 << dwBitsOnCode;
+    unsigned char DestMask = 0x80 >> (dwBitsCoded % BYTEBITS);
+    uint32_t dwSrcMask = 0x1 << dwBitsOnCode;
 
-    if (pDest == 0)
+    if (pDest == nullptr)
     {
         dwDestinationBufferSize = 1;
-        pDest = (char *)malloc(dwDestinationBufferSize);
+        pDest = static_cast<char *>(malloc(dwDestinationBufferSize));
     }
 
-    for (n = 0; n < dwBitsOnCode; n++)
+    for (uint32_t n = 0; n < dwBitsOnCode; n++)
     {
         if (dwCode & dwSrcMask)
             pDest[dwByteOffset] |= DestMask; // set bit
@@ -236,10 +206,10 @@ bool COMPRESS::AAppendCode(char *&pDest, DWORD &dwDestinationBufferSize, DWORD d
         if (DestMask == 0)
         {
             dwDestinationBufferSize++;
-            if (pDest == 0)
-                pDest = (char *)malloc(dwDestinationBufferSize);
+            if (pDest == nullptr)
+                pDest = static_cast<char *>(malloc(dwDestinationBufferSize));
             else
-                pDest = (char *)realloc(pDest, dwDestinationBufferSize);
+                pDest = static_cast<char *>(realloc(pDest, dwDestinationBufferSize));
 
             dwByteOffset++;
             DestMask = 0x80; // bin 10000000
@@ -250,36 +220,35 @@ bool COMPRESS::AAppendCode(char *&pDest, DWORD &dwDestinationBufferSize, DWORD d
 
     return true;
     /*	DWORD nBSize;
-        char * pB;
-        nBSize = 3;
-        if(pDestination == 0) pDestination = (char *)malloc(nBSize);
-        else pDestination = (char *)realloc(pDestination,nPackedSize + nBSize);
-        if(pDestination == 0) return false;
-        pB = (char *)&nCode;
-        *((char *)(pDestination + nPackedSize)) = pB[0]; nPackedSize++;
-        *((char *)(pDestination + nPackedSize)) = pB[1]; nPackedSize++;
-        *((char *)(pDestination + nPackedSize)) = pB[2]; nPackedSize++;
-        return true;
+      char * pB;
+      nBSize = 3;
+      if(pDestination == 0) pDestination = (char *)malloc(nBSize);
+      else pDestination = (char *)realloc(pDestination,nPackedSize + nBSize);
+      if(pDestination == 0) return false;
+      pB = (char *)&nCode;
+      *((char *)(pDestination + nPackedSize)) = pB[0]; nPackedSize++;
+      *((char *)(pDestination + nPackedSize)) = pB[1]; nPackedSize++;
+      *((char *)(pDestination + nPackedSize)) = pB[2]; nPackedSize++;
+      return true;
     */
 }
 
-bool COMPRESS::AppendData(char *&pDestination, DWORD &nUnpackedSize, char *pData, DWORD nSize)
+bool COMPRESS::AppendData(char *&pDestination, uint32_t &nUnpackedSize, char *pData, uint32_t nSize)
 {
-    if (pDestination == 0)
-        pDestination = (char *)malloc(nSize);
+    if (pDestination == nullptr)
+        pDestination = static_cast<char *>(malloc(nSize));
     else
-        pDestination = (char *)realloc(pDestination, nUnpackedSize + nSize);
-    if (pDestination == 0)
+        pDestination = static_cast<char *>(realloc(pDestination, nUnpackedSize + nSize));
+    if (pDestination == nullptr)
         return false;
     memcpy(pDestination + nUnpackedSize, pData, nSize);
     nUnpackedSize += nSize;
     return true;
 }
 
-bool COMPRESS::ReadCode(const char *pSource, DWORD nSourceSize, DWORD &nOffset, DWORD &nResult)
+bool COMPRESS::ReadCode(const char *pSource, uint32_t nSourceSize, uint32_t &nOffset, uint32_t &nResult)
 {
-    char *pB;
-    pB = (char *)&nResult;
+    auto *const pB = (char *)&nResult;
     nResult = 0;
     pB[0] = *((char *)(pSource + nOffset));
     nOffset++;
@@ -290,24 +259,23 @@ bool COMPRESS::ReadCode(const char *pSource, DWORD nSourceSize, DWORD &nOffset, 
     return true;
 }
 
-bool COMPRESS::TranslateCode(DWORD code, char *&pDataBuffer, DWORD &nBufferSize, DWORD &nDataSize)
+bool COMPRESS::TranslateCode(uint32_t code, char *&pDataBuffer, uint32_t &nBufferSize, uint32_t &nDataSize)
 {
-    DWORD nSize;
-    char *pData;
-    pData = SCodec.Convert(code, nSize);
-    if (pData == 0)
+    uint32_t nSize;
+    char *pData = SCodec.Convert(code, nSize);
+    if (pData == nullptr)
         return false;
-    if (pDataBuffer == 0)
+    if (pDataBuffer == nullptr)
     {
         nBufferSize = nSize;
         nDataSize = nSize;
-        pDataBuffer = (char *)malloc(nSize);
+        pDataBuffer = static_cast<char *>(malloc(nSize));
     }
     else
     {
         if (nSize > nBufferSize)
         {
-            pDataBuffer = (char *)realloc(pDataBuffer, nSize);
+            pDataBuffer = static_cast<char *>(realloc(pDataBuffer, nSize));
             nBufferSize = nSize;
             nDataSize = nSize;
         }
@@ -320,33 +288,28 @@ bool COMPRESS::TranslateCode(DWORD code, char *&pDataBuffer, DWORD &nBufferSize,
     return true;
 }
 
-bool COMPRESS::Unpack(const char *pSource, DWORD nSourceSize, char *&pDestination, DWORD &nUnpackedSize)
+bool COMPRESS::Unpack(const char *pSource, uint32_t nSourceSize, char *&pDestination, uint32_t &nUnpackedSize)
 {
-    DWORD nOffset;
-    DWORD n;
-    DWORD nOldCode;
-    DWORD nNewCode;
-    char Symbol;
+    uint32_t nOldCode;
+    uint32_t nNewCode;
     bool bNew;
 
-    char *pDataBuffer;
-    DWORD nBufferSize;
-    DWORD nDataSize;
+    uint32_t nDataSize;
 
     SCodec.Release();
 
-    nOffset = 0;
+    uint32_t nOffset = 0;
 
-    nBufferSize = 1024;
-    pDataBuffer = (char *)malloc(nBufferSize);
+    uint32_t nBufferSize = 1024;
+    char *pDataBuffer = static_cast<char *>(malloc(nBufferSize));
     memset(pDataBuffer, 0, nBufferSize);
 
-    n = 0;
+    uint32_t n = 0;
     nOffset = 0;
     ReadCode(pSource, nSourceSize, nOffset, nOldCode);
     TranslateCode(nOldCode, pDataBuffer, nBufferSize, nDataSize);
     AppendData(pDestination, nUnpackedSize, pDataBuffer, nDataSize);
-    Symbol = pDataBuffer[0];
+    char Symbol = pDataBuffer[0];
 
     while (nOffset < nSourceSize)
     {
@@ -357,7 +320,7 @@ bool COMPRESS::Unpack(const char *pSource, DWORD nSourceSize, char *&pDestinatio
             if (nBufferSize < (nDataSize + 1))
             {
                 nBufferSize = nBufferSize * 2;
-                pDataBuffer = (char *)realloc(pDataBuffer, nBufferSize);
+                pDataBuffer = static_cast<char *>(realloc(pDataBuffer, nBufferSize));
             }
             pDataBuffer[nDataSize] = Symbol;
             nDataSize++;

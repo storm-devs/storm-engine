@@ -1,22 +1,20 @@
 project(xinterface)
 
-add_library(${PROJECT_NAME} MODULE
-	InfoHandler.cpp
-	InfoHandler.h
-	base_video.h
-    xi_defines.h
-	inode.cpp
-	inode.h
-	vxservice.h
-	xinterface.cpp
-	xinterface.h
-	xiutil.cpp
-	xpictures.h
-	xservice.cpp
-	xservice.h
+add_library(${PROJECT_NAME} STATIC
+	aviplayer/aviplayer.cpp
+	aviplayer/aviplayer.h
 
 	BackScene/backscene.cpp
 	BackScene/backscene.h
+
+	editor/editor_defines.cpp
+	editor/editor_defines.h
+	editor/editor.cpp
+	editor/editor.h
+	editor/font.h
+	editor/list.cpp
+	editor/list.h
+	editor/xfont.cpp
 
 	HelpChooser/HelpChooser.cpp
 	HelpChooser/HelpChooser.h
@@ -119,23 +117,19 @@ add_library(${PROJECT_NAME} MODULE
 	TextureSequence/TextureSequence.cpp
 	TextureSequence/TextureSequence.h
 
-	aviplayer/aviplayer.cpp
-	aviplayer/aviplayer.h
-
-	editor/xi_editor_defines.cpp
-	editor/xi_editor_defines.h
-	editor/editor.cpp
-	editor/editor.h
-	editor/font.cpp
-	editor/font.h
-	editor/list.cpp
-	editor/list.h
-
-	templates/TDynArray.h
-	templates/ctext.h
-
-	#copied from scripts
-	xi_messages.h
+	base_video.h
+    InfoHandler.cpp
+	InfoHandler.h
+	inode.cpp
+	inode.h
+	vxservice.h
+	xdefines.h
+	xinterface.cpp
+	xinterface.h
+	xiutil.cpp
+	xpictures.h
+	xservice.cpp
+	xservice.h
 )
 
 target_link_libraries(${PROJECT_NAME}

@@ -1,10 +1,11 @@
-#include "vmodule_api.h"
+#include "script_libriary.h"
 
 class ScriptLocationLibrary : public SCRIPT_LIBRIARY
 {
   public:
     ScriptLocationLibrary(){};
+
     ~ScriptLocationLibrary(){};
 
-    virtual bool Init();
+    bool Init() override;
 };

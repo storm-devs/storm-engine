@@ -1,5 +1,4 @@
 #include "steam_api.h"
-#include "vmodule_api.h"
 
 #define ACHIEVEMENTS_NUM 71
 
@@ -119,7 +118,7 @@ class CSteamStatsAchievements
   private:
     int64 m_iAppID;                 // Our current AppID
     Achievement_t *m_pAchievements; // Achievements data
-    long m_iNumAchievements;        // The number of Achievements
+    uint32_t m_iNumAchievements;    // The number of Achievements
     bool m_bInitialized;            // Have we called Request stats and received the callback?
     Stat_t *m_pStats;
 
@@ -130,8 +129,8 @@ class CSteamStatsAchievements
     bool RequestStats();
     bool SetAchievement(const char *ID);
     bool GetAchievement(const char *ID);
-    bool SetStat(const char *ID, long value);
-    long GetStat(const char *ID);
+    bool SetStat(const char *ID, uint32_t value);
+    uint32_t GetStat(const char *ID);
     bool StoreStats();
     bool GetConnected();
     bool ResetStats(bool bAchievementsToo);
@@ -146,7 +145,7 @@ class CSteamDLC
 {
   private:
     bool m_bInitialized;
-    long m_DLCcount;
+    uint32_t m_DLCcount;
     char pchName[128];
     bool pbAvailable;
     AppId_t pAppID;
@@ -156,10 +155,10 @@ class CSteamDLC
     CSteamDLC();
     ~CSteamDLC();
 
-    bool isDLCInstalled(long nDLC);
-    long bGetDLCDataByIndex(long iDLC);
-    long getDLCCount();
-    bool activateGameOverlay(long nAppId);
+    bool isDLCInstalled(uint32_t nDLC);
+    uint32_t bGetDLCDataByIndex(uint32_t iDLC);
+    uint32_t getDLCCount();
+    bool activateGameOverlay(uint32_t nAppId);
 
     STEAM_CALLBACK(CSteamDLC, OnOverlayActivated, GameOverlayActivated_t, m_CallbackOverlayActivated);
 };

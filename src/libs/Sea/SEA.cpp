@@ -1,7 +1,12 @@
-#include "Sea.h"
+#include "sea.h"
+
+#include "core.h"
+
+#include "../../Shared/sea_ai/Script_defines.h"
 #include "SSE.h"
-#include "Script_Defines.h"
+#include "inlines.h"
 #include "tga.h"
+#include "vfile_service.h"
 
 //#define OLD_WORLD_POS
 
@@ -30,19 +35,23 @@
 
 #define GC_FREE 28
 
-INTERFACE_FUNCTION
-CREATE_CLASS(SEA)
-
-SEA *SEA::pSea = null;
+SEA *SEA::pSea = nullptr;
 bool SEA::bIntel = false;
 bool SEA::bSSE = false;
 bool SEA::bHyperThreading = false;
 bool SEA::bSeaDebug = false;
+IDirect3DVertexDeclaration9 *SEA::vertexDecl_ = nullptr;
 
 SEA::SEA()
-    : aBlocks(_FL_, 128), aBumps(_FL_), aNormals(_FL_), aThreads(_FL_), aEventCalcBlock(_FL_), aThreadsTest(_FL_),
-      aBumpMaps(_FL_), aSeaTrash(_FL_, 512), aTrashRects(_FL_, 512), aSeaLights(_FL_, 512), aLightsRects(_FL_, 512)
 {
+    aBlocks.reserve(128);
+    aSeaTrash.reserve(512);
+    aTrashRects.reserve(512);
+    aSeaLights.reserve(512);
+    aLightsRects.reserve(512);
+    aBumpMaps.reserve(FRAMES);
+    aNormals.reserve(FRAMES);
+
     dwMaxDim = 65536 * 2;
     dwMinDim = 128;
 
@@ -88,10 +97,10 @@ SEA::SEA()
     vFogColor = 0.0f;
     bFogEnable = false;
 
-    pSeaFrame1 = NEW float[XWIDTH * YWIDTH];
-    pSeaFrame2 = NEW float[XWIDTH * YWIDTH];
-    pSeaNormalsFrame1 = NEW float[2 * XWIDTH * YWIDTH];
-    pSeaNormalsFrame2 = NEW float[2 * XWIDTH * YWIDTH];
+    pSeaFrame1 = new float[XWIDTH * YWIDTH];
+    pSeaFrame2 = new float[XWIDTH * YWIDTH];
+    pSeaNormalsFrame1 = new float[2 * XWIDTH * YWIDTH];
+    pSeaNormalsFrame2 = new float[2 * XWIDTH * YWIDTH];
 
     iVSeaBuffer = -1;
     iISeaBuffer = -1;
@@ -99,7 +108,7 @@ SEA::SEA()
     bTempFullMode = false;
 
     // HyperThreading section
-    hEventCalcMaps = CreateEvent(null, false, false, null);
+    hEventCalcMaps = CreateEvent(nullptr, false, false, nullptr);
 
     InitializeCriticalSection(&cs);
     InitializeCriticalSection(&cs1);
@@ -112,7 +121,7 @@ SEA::SEA()
 
     vWorldOffset = 0.f;
 
-    pRenderTargetBumpMap = null;
+    pRenderTargetBumpMap = nullptr;
 }
 
 SEA::~SEA()
@@ -120,7 +129,7 @@ SEA::~SEA()
     DeleteCriticalSection(&cs);
     DeleteCriticalSection(&cs1);
 
-    for (long i = 0; i < aThreads; i++)
+    for (long i = 0; i < aThreads.size(); i++)
     {
         if (aThreads[i])
             TerminateThread(aThreads[i], 0);
@@ -131,66 +140,79 @@ SEA::~SEA()
     if (hEventCalcMaps)
         CloseHandle(hEventCalcMaps);
 
-    Render().Release(pReflection);
-    Render().Release(pReflectionSunroad);
-    Render().Release(pEnvMap);
-    Render().Release(pSunRoadMap);
-    Render().Release(pZStencil);
-    Render().Release(pReflectionSurfaceDepth);
-    Render().Release(pVolumeTexture);
-    Render().Release(pRenderTargetBumpMap);
+    rs->Release(pReflection);
+    rs->Release(pReflectionSunroad);
+    rs->Release(pEnvMap);
+    rs->Release(pSunRoadMap);
+    rs->Release(pZStencil);
+    rs->Release(pReflectionSurfaceDepth);
+    rs->Release(pVolumeTexture);
+    rs->Release(pRenderTargetBumpMap);
 
-    Render().TextureRelease(iSeaTrashTexture);
-    Render().TextureRelease(iSeaLightTexture);
+    rs->TextureRelease(iSeaTrashTexture);
+    rs->TextureRelease(iSeaLightTexture);
 
     if (iVSeaBuffer >= 0)
-        Render().ReleaseVertexBuffer(iVSeaBuffer);
+        rs->ReleaseVertexBuffer(iVSeaBuffer);
     iVSeaBuffer = -1;
     if (iISeaBuffer >= 0)
-        Render().ReleaseIndexBuffer(iISeaBuffer);
+        rs->ReleaseIndexBuffer(iISeaBuffer);
     iISeaBuffer = -1;
 
     if (iFoamTexture >= 0)
-        Render().TextureRelease(iFoamTexture);
+        rs->TextureRelease(iFoamTexture);
     iFoamTexture = -1;
 
-    SE_DELETE(pIndices);
-    SE_DELETE(pVSea);
+    STORM_DELETE(pIndices);
+    STORM_DELETE(pVSea);
 
-    for (long i = 0; i < aBumpMaps.Size(); i++)
-        Render().Release(aBumpMaps[i]);
+    for (long i = 0; i < aBumpMaps.size(); i++)
+        rs->Release(aBumpMaps[i]);
 
-    for (long i = 0; i < aBumps; i++)
-        SE_DELETE(aBumps[i]);
-    for (long i = 0; i < aNormals; i++)
-        SE_DELETE(aNormals[i]);
+    for (long i = 0; i < aBumps.size(); i++)
+        STORM_DELETE(aBumps[i]);
+    for (long i = 0; i < aNormals.size(); i++)
+        STORM_DELETE(aNormals[i]);
 
-    SE_DELETE(pSeaFrame1);
-    SE_DELETE(pSeaFrame2);
-    SE_DELETE(pSeaNormalsFrame1);
-    SE_DELETE(pSeaNormalsFrame2);
+    STORM_DELETE(pSeaFrame1);
+    STORM_DELETE(pSeaFrame2);
+    STORM_DELETE(pSeaNormalsFrame1);
+    STORM_DELETE(pSeaNormalsFrame2);
 }
 
 void SEA::SFLB_CreateBuffers()
 {
-    iVSeaBuffer =
-        Render().CreateVertexBuffer(0, NUM_VERTEXS * sizeof(SeaVertex), D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC);
-    iISeaBuffer = Render().CreateIndexBuffer(NUM_INDICES * 3 * sizeof(word), D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC);
+    iVSeaBuffer = rs->CreateVertexBuffer(0, NUM_VERTEXS * sizeof(SeaVertex), D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC);
+    iISeaBuffer = rs->CreateIndexBuffer(NUM_INDICES * 3 * sizeof(uint16_t), D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC);
 
-    pIndices = NEW dword[NUM_VERTEXS * 3];
-    pVSea = NEW SeaVertex[NUM_VERTEXS];
+    pIndices = new uint32_t[NUM_VERTEXS * 3];
+    pVSea = new SeaVertex[NUM_VERTEXS];
+}
+
+void SEA::CreateVertexDeclaration()
+{
+    if (vertexDecl_ != nullptr)
+        return;
+
+    const D3DVERTEXELEMENT9 VertexElements[] = {
+        {0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
+        {0, 12, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_NORMAL, 0},
+        {0, 24, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0},
+        D3DDECL_END()};
+
+    rs->CreateVertexDeclaration(VertexElements, &vertexDecl_);
 }
 
 bool SEA::Init()
 {
-    INIFILE *pEngineIni = fio->OpenIniFile(api->EngineIniFileName());
-
-    bHyperThreading = (pEngineIni) ? pEngineIni->GetLong(null, "HyperThreading", 1) != 0 : false;
+    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    CreateVertexDeclaration();
+    INIFILE *pEngineIni = fio->OpenIniFile(core.EngineIniFileName());
+    bHyperThreading = (pEngineIni) ? pEngineIni->GetLong(nullptr, "HyperThreading", 1) != 0 : false;
     bIniFoamEnable = (pEngineIni) ? pEngineIni->GetLong("Sea", "FoamEnable", 1) != 0 : false;
-    bool bEnableSSE = (pEngineIni) ? pEngineIni->GetLong(null, "EnableSSE", 1) != 0 : false; // boal
+    bool bEnableSSE = (pEngineIni) ? pEngineIni->GetLong(nullptr, "EnableSSE", 0) != 0 : false; // boal
     bSeaDebug = (pEngineIni) ? pEngineIni->GetLong("Sea", "SeaDebug", 1) != 0 : false;
-    SE_DELETE(pEngineIni);
-
+    STORM_DELETE(pEngineIni);
     if (bEnableSSE)
     {
         bSSE = true; // boal
@@ -199,130 +221,126 @@ bool SEA::Init()
     if (!bIntel)
         bHyperThreading = false;
 
-    dword dwLogicals, dwCores, dwPhysicals, dwNumThreads;
     if (bHyperThreading)
     {
+        uint32_t dwLogicals, dwCores, dwPhysicals;
         intel.CPUCount(&dwLogicals, &dwCores, &dwPhysicals);
+        core.Trace("Total logical: %d, Total cores: %d, Total physical: %d", dwLogicals, dwCores, dwPhysicals);
 
-        dwNumThreads = dwLogicals * dwCores - 1;
-        api->Trace("HyperThreading = ON Total logical: %d, Total cores: %d, Total physical: %d NumThreads: %d",
-                   dwLogicals, dwCores, dwPhysicals, dwNumThreads);
+        const auto dwNumThreads = dwLogicals * dwCores - 1;
 
-        for (dword i = 0; i < dwNumThreads; i++)
+        for (size_t i = 0; i < dwNumThreads; i++)
         {
-            HANDLE &hEvent = aEventCalcBlock[aEventCalcBlock.Add()];
-            hEvent = CreateEvent(null, false, false, null);
+            // HANDLE & hEvent = aEventCalcBlock[aEventCalcBlock.Add()];
+            // hEvent = CreateEvent(null, false, false, null);
+            aEventCalcBlock.push_back(CreateEvent(nullptr, false, false, nullptr));
 
-            HANDLE &hThread = aThreads[aThreads.Add()];
-            hThread =
-                CreateThread(null, 0, (LPTHREAD_START_ROUTINE)SEA::ThreadExecute, (void *)i, CREATE_SUSPENDED, null);
+            aThreads.push_back(HANDLE{});
+            auto &hThread = aThreads.back();
+            hThread = CreateThread(nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(ThreadExecute),
+                                   reinterpret_cast<void *>(i), CREATE_SUSPENDED, nullptr);
             SetThreadPriority(hThread, THREAD_PRIORITY_NORMAL);
             ResumeThread(hThread);
 
-            aThreadsTest.Add();
+            aThreadsTest.push_back(long{});
         }
 
         bHyperThreading = dwNumThreads > 0;
     }
-    else
-    {
-        intel.CPUCount(&dwLogicals, &dwCores, &dwPhysicals);
-        dwNumThreads = dwLogicals * dwCores - 1;
-        api->Trace("HyperThreading = OFF Total logical: %d, Total cores: %d, Total physical: %d NumThreads: %d",
-                   dwLogicals, dwCores, dwPhysicals, dwNumThreads);
-    }
 
-    iFoamTexture = Render().TextureCreate("weather\\sea\\pena\\pena.tga");
+    iFoamTexture = rs->TextureCreate("weather\\sea\\pena\\pena.tga");
 
-    Render().CreateTexture(XWIDTH, YWIDTH, MIPSLVLS, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT,
-                           &pRenderTargetBumpMap);
+    rs->CreateTexture(XWIDTH, YWIDTH, MIPSLVLS, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT,
+                      &pRenderTargetBumpMap);
 
     SFLB_CreateBuffers();
 
-    pVolumeTexture = Render().CreateVolumeTexture(XWIDTH, YWIDTH, FRAMES, 4, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED);
-    /*pAnimTexture = Render().CreateAnimationTexture(pVolumeTexture, _FL_);
+    pVolumeTexture = rs->CreateVolumeTexture(XWIDTH, YWIDTH, FRAMES, 4, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED);
+    /*pAnimTexture = rs->CreateAnimationTexture(pVolumeTexture, _FL_);
     pAnimTexture->SetAnimSpeed(20.0f);*/
 
-    Render().CreateCubeTexture(128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pEnvMap);
-    Render().CreateCubeTexture(128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pSunRoadMap);
-    Render().CreateDepthStencilSurface(128, 128, D3DFMT_D24S8, D3DMULTISAMPLE_NONE, &pZStencil);
+    rs->CreateCubeTexture(128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pEnvMap);
+    rs->CreateCubeTexture(128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pSunRoadMap);
+    rs->CreateDepthStencilSurface(128, 128, D3DFMT_D24S8, D3DMULTISAMPLE_NONE, &pZStencil);
 
-    Render().CreateTexture(128, 128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pReflection);
-    Render().CreateTexture(128, 128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pReflectionSunroad);
-    Render().CreateDepthStencilSurface(128, 128, D3DFMT_D24S8, D3DMULTISAMPLE_NONE, &pReflectionSurfaceDepth);
+    rs->CreateTexture(128, 128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pReflection);
+    rs->CreateTexture(128, 128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pReflectionSunroad);
+    rs->CreateDepthStencilSurface(128, 128, D3DFMT_D24S8, D3DMULTISAMPLE_NONE, &pReflectionSurfaceDepth);
 
-    iSeaTrashTexture = Render().TextureCreate("seatrash.tga");
-    iSeaLightTexture = Render().TextureCreate("sealight.tga");
+    iSeaTrashTexture = rs->TextureCreate("seatrash.tga");
+    iSeaLightTexture = rs->TextureCreate("sealight.tga");
 
-    byte bMin = 0xFF;
-    byte bMax = 0;
+    uint8_t bMin = 0xFF;
+    uint8_t bMax = 0;
 
-    array<byte *> aTmpBumps(_FL_);
+    std::vector<uint8_t *> aTmpBumps;
 
-    dword i;
+    uint32_t i;
 
     for (i = 0; i < FRAMES; i++)
     {
         char str[256];
-        char *pFBuffer = null;
-        dword dwSize;
-        sprintf(str, "resource\\sea\\sea%.4d.tga", i);
+        char *pFBuffer = nullptr;
+        uint32_t dwSize;
+        sprintf_s(str, "resource\\sea\\sea%.4d.tga", i);
+        // sprintf_s(str, "resource\\sea\\sea0000.tga", i);
         fio->LoadFile(str, &pFBuffer, &dwSize);
         if (!pFBuffer)
         {
-            api->Trace("Sea: Can't load %s", str);
+            core.Trace("Sea: Can't load %s", str);
             return false;
         }
 
-        char *pFB = pFBuffer + sizeof(TGA_H);
+        auto *pFB = pFBuffer + sizeof(TGA_H);
 
-        byte *pBuffer = NEW byte[XWIDTH * YWIDTH];
-        aTmpBumps.Add(pBuffer);
+        auto *pBuffer = new uint8_t[XWIDTH * YWIDTH];
+        aTmpBumps.push_back(pBuffer);
 
-        for (dword y = 0; y < YWIDTH; y++)
-            for (dword x = 0; x < XWIDTH; x++)
+        for (uint32_t y = 0; y < YWIDTH; y++)
+            for (uint32_t x = 0; x < XWIDTH; x++)
             {
-                byte bB = (*pFB);
+                const uint8_t bB = (*pFB);
+                // bB = byte(float(bB - 79.0f) * 255.0f / (139.0f - 79.0f));
                 if (bB < bMin)
                     bMin = bB;
                 if (bB > bMax)
                     bMax = bB;
                 pBuffer[x + y * XWIDTH] = bB & 0xFF;
-                pFB += sizeof(dword);
+                pFB += sizeof(uint32_t);
             }
 
-        SE_DELETE(pFBuffer);
+        STORM_DELETE(pFBuffer);
     }
 
     for (i = 0; i < FRAMES; i++)
     {
-        byte *pBuffer = NEW byte[XWIDTH * YWIDTH];
-        aBumps.Add(pBuffer);
+        auto *pBuffer = new uint8_t[XWIDTH * YWIDTH];
+        aBumps.push_back(pBuffer);
 
-        for (dword y = 0; y < YWIDTH; y++)
-            for (dword x = 0; x < XWIDTH; x++)
+        for (uint32_t y = 0; y < YWIDTH; y++)
+            for (uint32_t x = 0; x < XWIDTH; x++)
             {
-                dword dwAddress = x + y * YWIDTH;
+                const auto dwAddress = x + y * YWIDTH;
                 float b1, b2, b3, b4, b5; // -2 -1 0 1 2
 
-                b1 = 0.08f * float(aTmpBumps[(i - 2) & (FRAMES - 1)][dwAddress]);
-                b2 = 0.17f * float(aTmpBumps[(i - 1) & (FRAMES - 1)][dwAddress]);
-                b3 = 0.50f * float(aTmpBumps[(i - 0) & (FRAMES - 1)][dwAddress]);
-                b4 = 0.17f * float(aTmpBumps[(i + 1) & (FRAMES - 1)][dwAddress]);
-                b5 = 0.08f * float(aTmpBumps[(i + 2) & (FRAMES - 1)][dwAddress]);
+                b1 = 0.08f * static_cast<float>(aTmpBumps[(i - 2) & (FRAMES - 1)][dwAddress]);
+                b2 = 0.17f * static_cast<float>(aTmpBumps[(i - 1) & (FRAMES - 1)][dwAddress]);
+                b3 = 0.50f * static_cast<float>(aTmpBumps[(i - 0) & (FRAMES - 1)][dwAddress]);
+                b4 = 0.17f * static_cast<float>(aTmpBumps[(i + 1) & (FRAMES - 1)][dwAddress]);
+                b5 = 0.08f * static_cast<float>(aTmpBumps[(i + 2) & (FRAMES - 1)][dwAddress]);
 
                 pBuffer[dwAddress] = aTmpBumps[(i - 0) & (FRAMES - 1)][dwAddress];
             }
     }
 
-    for (i = 0; i < aTmpBumps(); i++)
-        SE_DELETE(aTmpBumps[i]);
+    for (i = 0; i < aTmpBumps.size(); i++)
+        STORM_DELETE(aTmpBumps[i]);
 
     BuildVolumeTexture();
 
     EditMode_Update();
 
-    api->Trace("SEA Init : Intel CPU: %s, SSE: %s, HyperThreading: %s", (bIntel) ? "Yes" : "No", (bSSE) ? "On" : "Off",
+    core.Trace("Intel CPU: %s, SSE: %s, HyperThreading: %s", (bIntel) ? "Yes" : "No", (bSSE) ? "On" : "Off",
                (bHyperThreading) ? "On" : "Off");
 
     return true;
@@ -330,39 +348,43 @@ bool SEA::Init()
 
 void SEA::BuildVolumeTexture()
 {
-    array<CVECTOR *> aVectors(_FL_);
-    dword i, j;
+    std::vector<CVECTOR *> aVectors;
+    uint32_t i, j;
 
-    aNormals.DelAllWithPointers();
+    for (const auto &normal : aNormals)
+        delete normal;
+    aNormals.clear();
 
     D3DLOCKED_BOX box[4];
 
     if (pVolumeTexture)
         for (i = 0; i < 4; i++)
-            pVolumeTexture->LockBox(i, &box[i], 0, 0);
+            pVolumeTexture->LockBox(i, &box[i], nullptr, 0);
 
-    for (i = 0; i < aBumpMaps.Size(); i++)
-        Render().Release(aBumpMaps[i]);
-    aBumpMaps.DelAll();
+    for (i = 0; i < aBumpMaps.size(); i++)
+        rs->Release(aBumpMaps[i]);
+    aBumpMaps.clear();
 
-    dword dwTexelSize = 4;
-    char *pDst = (char *)NEW char[XWIDTH * YWIDTH * dwTexelSize];
+    uint32_t dwTexelSize = 4;
+    auto *pDst = static_cast<char *>(new char[XWIDTH * YWIDTH * dwTexelSize]);
 
     // build normals
+
+    aVectors.reserve(FRAMES);
     for (i = 0; i < FRAMES; i++)
     {
-        dword *pBuffer = NEW dword[XWIDTH * YWIDTH];
-        aNormals.Add(pBuffer);
+        uint32_t *pBuffer = new uint32_t[XWIDTH * YWIDTH];
+        aNormals.push_back(pBuffer);
 
-        CVECTOR *pVectors = NEW CVECTOR[XWIDTH * YWIDTH];
-        aVectors.Add(pVectors);
+        auto *pVectors = new CVECTOR[XWIDTH * YWIDTH];
+        aVectors.push_back(pVectors);
 
-        for (dword y = 0; y < YWIDTH; y++)
-            for (dword x = 0; x < XWIDTH; x++)
+        for (uint32_t y = 0; y < YWIDTH; y++)
+            for (uint32_t x = 0; x < XWIDTH; x++)
             {
 #define GET_MASSIVE(dx, dy)                                                                                            \
     (float(pMassive[((x + dx) & (XWIDTH - 1)) + ((y + dy) & (XWIDTH - 1)) * XWIDTH] & 0xFF) / 255.0f)
-                byte *pMassive = aBumps[i];
+                uint8_t *pMassive = aBumps[i];
 
                 float fCenter = GET_MASSIVE(0, 0);
 
@@ -371,9 +393,9 @@ void SEA::BuildVolumeTexture()
                 float fTop = GET_MASSIVE(0, -1) - fCenter;
                 float fBottom = GET_MASSIVE(0, 1) - fCenter;
 
-                CVECTOR vRes, vRes1, d0, d1, d2, d3, d4, d5, d6, d7;
+                CVECTOR vRes, vRes1, d0, d1, d2, d3;
 
-                dword dwNums = 0;
+                uint32_t dwNums = 0;
                 if (fLeft < 0.0f)
                     dwNums++;
                 if (fRight < 0.0f)
@@ -402,7 +424,7 @@ void SEA::BuildVolumeTexture()
                     vRes1 = !(vRes * CVECTOR(100.0f, 1.0f, 100.0f));
                 }
                 // CVECTOR vRes1 = !(vRes * CVECTOR(100.0f, 1.0f, 100.0f));
-                dword dwRes = MAKELONG(short(vRes.x * 32767.5f), short(vRes.z * 32767.5f));
+                uint32_t dwRes = MAKELONG(static_cast<short>(vRes.x * 32767.5f), static_cast<short>(vRes.z * 32767.5f));
 
                 aNormals[i][x + y * XWIDTH] = dwRes;
                 aVectors[i][x + y * XWIDTH] = vRes1;
@@ -414,10 +436,12 @@ void SEA::BuildVolumeTexture()
                 if (pVolumeTexture)
                 {
                     if (bSimpleSea)
-                        *(dword *)&(((char *)box[0].pBits)[i * box[0].SlicePitch + y * box[0].RowPitch + x * 4]) =
+                        *(uint32_t *)&(
+                            static_cast<char *>(box[0].pBits)[i * box[0].SlicePitch + y * box[0].RowPitch + x * 4]) =
                             ARGB(0x80, blue, blue, red);
                     else
-                        *(dword *)&(((char *)box[0].pBits)[i * box[0].SlicePitch + y * box[0].RowPitch + x * 4]) =
+                        *(uint32_t *)&(
+                            static_cast<char *>(box[0].pBits)[i * box[0].SlicePitch + y * box[0].RowPitch + x * 4]) =
                             ARGB(0x80, blue, green, red);
                 }
             }
@@ -426,44 +450,45 @@ void SEA::BuildVolumeTexture()
         {
             D3DSURFACE_DESC d3dsd;
             D3DLOCKED_RECT d3dlr;
-            IDirect3DTexture9 **pBumpMap;
             HRESULT hr;
 
-            pBumpMap = &aBumpMaps[aBumpMaps.Add()];
-            hr = Render().CreateTexture(XWIDTH, YWIDTH, MIPSLVLS, 0, D3DFMT_X8R8G8B8, D3DPOOL_MANAGED, pBumpMap);
+            aBumpMaps.push_back(nullptr);
+            // pBumpMap = &aBumpMaps[aBumpMaps.Add()];
+            IDirect3DTexture9 **pBumpMap = &aBumpMaps.back();
+            hr = rs->CreateTexture(XWIDTH, YWIDTH, MIPSLVLS, 0, D3DFMT_X8R8G8B8, D3DPOOL_MANAGED, pBumpMap);
 
             // generate mip levels for random bump
-            for (dword lev = 0; lev < MIPSLVLS; lev++)
+            for (uint32_t lev = 0; lev < MIPSLVLS; lev++)
             {
                 (*pBumpMap)->GetLevelDesc(lev, &d3dsd);
-                (*pBumpMap)->LockRect(lev, &d3dlr, 0, 0);
+                (*pBumpMap)->LockRect(lev, &d3dlr, nullptr, 0);
 
-                dword *pDstT = (dword *)pDst;
-                for (dword y = 0; y < d3dsd.Height; y++)
+                auto *pDstT = (uint32_t *)pDst;
+                for (uint32_t y = 0; y < d3dsd.Height; y++)
                 {
-                    for (dword x = 0; x < d3dsd.Width; x++)
+                    for (uint32_t x = 0; x < d3dsd.Width; x++)
                     {
                         CVECTOR vTmp = 0.0f;
                         long dwMult = 1 << (lev);
-                        for (dword y1 = y * dwMult; y1 < (y + 1) * dwMult; y1++)
-                            for (dword x1 = x * dwMult; x1 < (x + 1) * dwMult; x1++)
+                        for (uint32_t y1 = y * dwMult; y1 < (y + 1) * dwMult; y1++)
+                            for (uint32_t x1 = x * dwMult; x1 < (x + 1) * dwMult; x1++)
                                 vTmp += aVectors[i][(x1 & (XWIDTH - 1)) + (y1 & (YWIDTH - 1)) * XWIDTH];
 
-                        vTmp *= (1.0f / float(dwMult * dwMult));
+                        vTmp *= (1.0f / static_cast<float>(dwMult * dwMult));
 
-                        int red = int((vTmp.x * 0.5f + 0.5f) * 255.0f);   // FIX-ME no ftol
-                        int green = int((vTmp.y * 0.5f + 0.5f) * 255.0f); // FIX-ME no ftol
-                        int blue = int((vTmp.z * 0.5f + 0.5f) * 255.0f);  // FIX-ME no ftol
+                        int red = static_cast<int>((vTmp.x * 0.5f + 0.5f) * 255.0f);   // FIX-ME no ftol
+                        int green = static_cast<int>((vTmp.y * 0.5f + 0.5f) * 255.0f); // FIX-ME no ftol
+                        int blue = static_cast<int>((vTmp.z * 0.5f + 0.5f) * 255.0f);  // FIX-ME no ftol
                         *pDstT++ = ARGB(255, blue, green, red);
                     }
                 }
 
                 // simple copy
-                BYTE *pDstTemp = (BYTE *)d3dlr.pBits;
-                for (dword y = 0; y < d3dsd.Height; y++)
+                uint8_t *pDstTemp = static_cast<uint8_t *>(d3dlr.pBits);
+                for (uint32_t y = 0; y < d3dsd.Height; y++)
                 {
                     memcpy(pDstTemp, &pDst[y * d3dsd.Width * dwTexelSize], d3dsd.Width * dwTexelSize);
-                    pDstTemp += (dword)d3dlr.Pitch;
+                    pDstTemp += static_cast<uint32_t>(d3dlr.Pitch);
                 }
 
                 (*pBumpMap)->UnlockRect(lev);
@@ -473,56 +498,61 @@ void SEA::BuildVolumeTexture()
 
     for (j = 1; j < 4; j++)
     {
-        CVECTOR *pVectors = NEW CVECTOR[(XWIDTH >> j) * (YWIDTH >> j)];
+        auto *pVectors = new CVECTOR[(XWIDTH >> j) * (YWIDTH >> j)];
 
         for (i = 0; i < (FRAMES >> j); i++)
         {
             // calculate current pVectors
-            for (dword y = 0; y < (YWIDTH >> j); y++)
-                for (dword x = 0; x < (XWIDTH >> j); x++)
+            for (uint32_t y = 0; y < (YWIDTH >> j); y++)
+                for (uint32_t x = 0; x < (XWIDTH >> j); x++)
                 {
                     long iNumVectors = 0;
                     CVECTOR vVec = 0.0f;
-                    dword dwW = 1 << j;
-                    for (dword k = i * dwW; k < (i + 1) * dwW; k++)
+                    uint32_t dwW = 1 << j;
+                    for (uint32_t k = i * dwW; k < (i + 1) * dwW; k++)
                     {
-                        for (dword yy = y * dwW; yy < (y + 1) * dwW; yy++)
-                            for (dword xx = x * dwW; xx < (x + 1) * dwW; xx++)
+                        for (uint32_t yy = y * dwW; yy < (y + 1) * dwW; yy++)
+                            for (uint32_t xx = x * dwW; xx < (x + 1) * dwW; xx++)
                             {
                                 iNumVectors++;
                                 vVec += aVectors[k][xx + yy * XWIDTH];
                             }
                     }
-                    pVectors[x + y * (XWIDTH >> j)] = vVec / float(iNumVectors);
+                    pVectors[x + y * (XWIDTH >> j)] = vVec / static_cast<float>(iNumVectors);
                 }
 
             //
             if (pVolumeTexture)
-                for (dword y = 0; y < (YWIDTH >> j); y++)
-                    for (dword x = 0; x < (XWIDTH >> j); x++)
+                for (uint32_t y = 0; y < (YWIDTH >> j); y++)
+                    for (uint32_t x = 0; x < (XWIDTH >> j); x++)
                     {
                         long red = fftol((pVectors[x + y * (XWIDTH >> j)].x * 0.5f + 0.5f) * 255.0f); // FIX-ME no ftol
-                        long green =
-                            fftol((pVectors[x + y * (XWIDTH >> j)].y * 0.5f + 0.5f) * 255.0f);         // FIX-ME no ftol
+                        long green = fftol((pVectors[x + y * (XWIDTH >> j)].y * 0.5f + 0.5f) * 255.0f);
+                        // FIX-ME no ftol
                         long blue = fftol((pVectors[x + y * (XWIDTH >> j)].z * 0.5f + 0.5f) * 255.0f); // FIX-ME no ftol
 
                         if (bSimpleSea)
-                            *(dword *)&(((char *)box[j].pBits)[i * box[j].SlicePitch + y * box[j].RowPitch + x * 4]) =
+                            *(uint32_t *)&(static_cast<char *>(
+                                box[j].pBits)[i * box[j].SlicePitch + y * box[j].RowPitch + x * 4]) =
                                 ARGB(0x80, blue, blue, red);
                         else
-                            *(dword *)&(((char *)box[j].pBits)[i * box[j].SlicePitch + y * box[j].RowPitch + x * 4]) =
+                            *(uint32_t *)&(static_cast<char *>(
+                                box[j].pBits)[i * box[j].SlicePitch + y * box[j].RowPitch + x * 4]) =
                                 ARGB(0x80, blue, green, red);
                     }
         }
-        SE_DELETE(pVectors);
+        STORM_DELETE(pVectors);
     }
 
     if (pVolumeTexture)
         for (i = 0; i < 4; i++)
             pVolumeTexture->UnlockBox(i);
 
-    aVectors.DelAllWithPointers();
-    SE_DELETE(pDst);
+    for (const auto &vector : aVectors)
+        delete vector;
+    aVectors.clear();
+    // aVectors.DelAllWithPointers();
+    STORM_DELETE(pDst);
 }
 
 bool SEA::EditMode_Update()
@@ -531,10 +561,10 @@ bool SEA::EditMode_Update()
     v4SeaColor = CVECTOR4(10.0f / 255.0f, 55.0f / 255.0f, 100.0f / 255.0f, 1.0f);
     v4SkyColor = CVECTOR4(1.0f, 1.0f, 1.0f, 1.0f);
 
-    float fReflection = 0.8f;
-    float fTransparency = 0.7f;
+    const float fReflection = 0.8f;
+    const float fTransparency = 0.7f;
     float fFrenel = 0.75f;
-    float fAttenuation = 0.9f;
+    const float fAttenuation = 0.9f;
     v4SeaParameters = CVECTOR4(fAttenuation, fReflection, fTransparency, 0.0f);
 
     fAmp1 = _fAmp1 = 8.0f;
@@ -604,7 +634,7 @@ bool SEA::isVisibleBBox(const CVECTOR &vCenter, const CVECTOR &v1, const CVECTOR
     float fR2 = sqrtf(Sqr((vp1.x - vp2.x) * 0.5f) + Sqr((vp1.z - vp2.z)) * 0.5f);*/
 
     // if sphere not visible - return
-    //	for (dword i=0; i<dwNumFrustumPlanes; i++)
+    //	for (uint32_t i=0; i<dwNumFrustumPlanes; i++)
     //		if ((pFrustumPlanes[i].n | vc) - pFrustumPlanes[i].d < -fR2) return false;
 
     // check box visible
@@ -674,17 +704,19 @@ void SEA::CalculateLOD(const CVECTOR &v1, const CVECTOR &v2, long &iMaxLOD, long
             fMin = CalcLod(vCamPos.x, vSeaCenterPos.y, vCamPos.z);
     }
 
-    iMaxLOD = int(0.5f * logf(fLodScale * fMax) / logf(2));
+    iMaxLOD = static_cast<int>(0.5f * logf(fLodScale * fMax) / logf(2));
     if (iMaxLOD < 4)
         iMaxLOD = 4;
-    iMinLOD = int(0.5f * logf(fLodScale * fMin) / logf(2));
+    iMinLOD = static_cast<int>(0.5f * logf(fLodScale * fMin) / logf(2));
     if (iMinLOD < 4)
         iMinLOD = 4;
 }
 
 void SEA::AddBlock(long iTX, long iTY, long iSize, long iLOD)
 {
-    SeaBlock *pB = &aBlocks[aBlocks.Add()];
+    aBlocks.push_back(SeaBlock{});
+    // SeaBlock * pB = &aBlocks[aBlocks.Add()];
+    SeaBlock *pB = &aBlocks.back();
 
     pB->iTX = iTX;
     pB->iTY = iTY;
@@ -700,18 +732,18 @@ void SEA::AddBlock(long iTX, long iTY, long iSize, long iLOD)
 void SEA::BuildTree(long iTX, long iTY, long iLev)
 {
     long iMaxLOD, iMinLOD;
-    long iSize = long(dwMaxDim >> iLev);
-    float fGSize = fGridStep * iSize;
+    const long iSize = static_cast<long>(dwMaxDim >> iLev);
+    const float fGSize = fGridStep * iSize;
 
-    CVECTOR v1 = vSeaCenterPos + CVECTOR(iTX * fGSize, -fMaxSeaHeight / 2.0f, iTY * fGSize);
-    CVECTOR v2 = v1 + CVECTOR(fGSize, fMaxSeaHeight, fGSize);
+    const CVECTOR v1 = vSeaCenterPos + CVECTOR(iTX * fGSize, -fMaxSeaHeight / 2.0f, iTY * fGSize);
+    const CVECTOR v2 = v1 + CVECTOR(fGSize, fMaxSeaHeight, fGSize);
 
     if (!isVisibleBBox(vSeaCenterPos, v1, v2))
         return;
 
     CalculateLOD(v1, v2, iMaxLOD, iMinLOD);
 
-    if (iSize <= long(dwMinDim) || iMaxLOD - iMinLOD <= 1)
+    if (iSize <= static_cast<long>(dwMinDim) || iMaxLOD - iMinLOD <= 1)
     {
         AddBlock(iTX, iTY, iSize, iMinLOD);
         return;
@@ -727,14 +759,14 @@ void SEA::BuildTree(long iTX, long iTY, long iLev)
     BuildTree(iTX + 1, iTY + 1, iLev);
 }
 
-inline void PrefetchNTA(dword dwAddress)
+inline void PrefetchNTA(uint32_t dwAddress)
 {
     /*_asm
     {
-        mov	eax, dwAddress
-        and esi, ~15d
-        //add esi, 128d
-        prefetchnta [esi]
+      mov	eax, dwAddress
+      and esi, ~15d
+      //add esi, 128d
+      prefetchnta [esi]
     }*/
 }
 
@@ -879,11 +911,11 @@ void SEA::SSE_WaveXZ(SeaVertex **pArray)
     }
 }
 
-float __fastcall SEA::WaveXZ(float x, float z, CVECTOR *pNormal)
+float SEA::WaveXZ(float x, float z, CVECTOR *pNormal)
 {
     long iX11, iX12, iX21, iX22, iY11, iY12, iY21, iY22;
 
-    float fDistance = Sqr(x - vCamPos.x) + Sqr(z - vCamPos.z);
+    const float fDistance = Sqr(x - vCamPos.x) + Sqr(z - vCamPos.z);
     if (fDistance > 1600.0f * 1600.0f)
     {
         if (pNormal)
@@ -891,23 +923,23 @@ float __fastcall SEA::WaveXZ(float x, float z, CVECTOR *pNormal)
         return 0.0f;
     }
 
-    float x1 = (x + vMove1.x) * fScale1;
-    float z1 = (z + vMove1.z) * fScale1;
+    const float x1 = (x + vMove1.x) * fScale1;
+    const float z1 = (z + vMove1.z) * fScale1;
     iX11 = ffloor(x1 + 0.0f), iX12 = iX11 + 1;
     iY11 = ffloor(z1 + 0.0f), iY12 = iY11 + 1;
-    float fX1 = (x1 - iX11);
-    float fZ1 = (z1 - iY11);
+    const float fX1 = (x1 - iX11);
+    const float fZ1 = (z1 - iY11);
     iX11 &= (XWIDTH - 1);
     iX12 &= (XWIDTH - 1);
     iY11 &= (XWIDTH - 1);
     iY12 &= (XWIDTH - 1);
 
-    float x2 = (x + vMove2.x) * fScale2;
-    float z2 = (z + vMove2.z) * fScale2;
+    const float x2 = (x + vMove2.x) * fScale2;
+    const float z2 = (z + vMove2.z) * fScale2;
     iX21 = ffloor(x2 + 0.0f), iX22 = iX21 + 1;
     iY21 = ffloor(z2 + 0.0f), iY22 = iY21 + 1;
-    float fX2 = (x2 - iX21);
-    float fZ2 = (z2 - iY21);
+    const float fX2 = (x2 - iX21);
+    const float fZ2 = (z2 - iY21);
     iX21 &= (XWIDTH - 1);
     iX22 &= (XWIDTH - 1);
     iY21 &= (XWIDTH - 1);
@@ -938,8 +970,8 @@ float __fastcall SEA::WaveXZ(float x, float z, CVECTOR *pNormal)
     nx4 = pSeaNormalsFrame1[2 * (iX12 + iY12 * XWIDTH) + 0];
     nz4 = pSeaNormalsFrame1[2 * (iX12 + iY12 * XWIDTH) + 1];
 
-    float nX1 = (nx1 + fX1 * (nx2 - nx1) + fZ1 * (nx3 - nx1) + fX1 * fZ1 * (nx4 + nx1 - nx2 - nx3));
-    float nZ1 = (nz1 + fX1 * (nz2 - nz1) + fZ1 * (nz3 - nz1) + fX1 * fZ1 * (nz4 + nz1 - nz2 - nz3));
+    const float nX1 = (nx1 + fX1 * (nx2 - nx1) + fZ1 * (nx3 - nx1) + fX1 * fZ1 * (nx4 + nx1 - nx2 - nx3));
+    const float nZ1 = (nz1 + fX1 * (nz2 - nz1) + fZ1 * (nz3 - nz1) + fX1 * fZ1 * (nz4 + nz1 - nz2 - nz3));
 
     nx1 = pSeaNormalsFrame2[2 * (iX21 + iY21 * XWIDTH) + 0];
     nz1 = pSeaNormalsFrame2[2 * (iX21 + iY21 * XWIDTH) + 1];
@@ -950,23 +982,23 @@ float __fastcall SEA::WaveXZ(float x, float z, CVECTOR *pNormal)
     nx4 = pSeaNormalsFrame2[2 * (iX22 + iY22 * XWIDTH) + 0];
     nz4 = pSeaNormalsFrame2[2 * (iX22 + iY22 * XWIDTH) + 1];
 
-    float nX2 = (nx1 + fX2 * (nx2 - nx1) + fZ2 * (nx3 - nx1) + fX2 * fZ2 * (nx4 + nx1 - nx2 - nx3));
-    float nZ2 = (nz1 + fX2 * (nz2 - nz1) + fZ2 * (nz3 - nz1) + fX2 * fZ2 * (nz4 + nz1 - nz2 - nz3));
+    const float nX2 = (nx1 + fX2 * (nx2 - nx1) + fZ2 * (nx3 - nx1) + fX2 * fZ2 * (nx4 + nx1 - nx2 - nx3));
+    const float nZ2 = (nz1 + fX2 * (nz2 - nz1) + fZ2 * (nz3 - nz1) + fX2 * fZ2 * (nz4 + nz1 - nz2 - nz3));
     // float nX2 = 0.0f;
     // float nZ2 = 0.0f;
 
     /*float fDistance = sqrt_ss(Sqr(x - vCamPos.x) + Sqr(fRes - vCamPos.y) + Sqr(z - vCamPos.z));
     {
-        float distance_mul = 1.0f - fDistance / 1900.0f;
-        if (distance_mul < 0.0f) distance_mul = 0.0f;
+      float distance_mul = 1.0f - fDistance / 1900.0f;
+      if (distance_mul < 0.0f) distance_mul = 0.0f;
 
-        fRes *= distance_mul;
+      fRes *= distance_mul;
 
-        nX1 *= distance_mul;
-        nZ1 *= distance_mul;
+      nX1 *= distance_mul;
+      nZ1 *= distance_mul;
 
-        nX2 *= distance_mul;
-        nZ2 *= distance_mul;
+      nX2 *= distance_mul;
+      nZ2 *= distance_mul;
     }*/
 
     if (pNormal)
@@ -974,8 +1006,8 @@ float __fastcall SEA::WaveXZ(float x, float z, CVECTOR *pNormal)
         /*pNormal->x = 0.0f;
         pNormal->y = 1.0f;
         pNormal->z = 0.0f;*/
-        float nY1 = sqrtf(1.0f - (Sqr(nX1) + Sqr(nZ1)));
-        float nY2 = sqrtf(1.0f - (Sqr(nX2) + Sqr(nZ2)));
+        const float nY1 = sqrtf(1.0f - (Sqr(nX1) + Sqr(nZ1)));
+        const float nY2 = sqrtf(1.0f - (Sqr(nX2) + Sqr(nZ2)));
 
         CVECTOR vNormal;
 
@@ -993,20 +1025,20 @@ float __fastcall SEA::WaveXZ(float x, float z, CVECTOR *pNormal)
     return fRes;
 }
 
-void SEA::PrepareIndicesForBlock(dword dwBlockIndex)
+void SEA::PrepareIndicesForBlock(uint32_t dwBlockIndex)
 {
     SeaBlock *pB = &aBlocks[dwBlockIndex];
 
-    float fStep = fGridStep * float(1 << pB->iLOD);
+    const float fStep = fGridStep * static_cast<float>(1 << pB->iLOD);
     float fSize = fGridStep * pB->iSize;
     long x, y, size0 = pB->iSize >> pB->iLOD;
 
     pB->iIStart = iIStart;
 
-    float x1 = float(pB->iTX * pB->iSize) * fGridStep;
-    float y1 = float(pB->iTY * pB->iSize) * fGridStep;
-    float x2 = x1 + float(size0) * fStep;
-    float y2 = y1 + float(size0) * fStep;
+    const float x1 = static_cast<float>(pB->iTX * pB->iSize) * fGridStep;
+    const float y1 = static_cast<float>(pB->iTY * pB->iSize) * fGridStep;
+    const float x2 = x1 + static_cast<float>(size0) * fStep;
+    const float y2 = y1 + static_cast<float>(size0) * fStep;
 
     pB->iX1 = fftoi(x1 / fGridStep);
     pB->iX2 = fftoi(x2 / fGridStep);
@@ -1015,29 +1047,29 @@ void SEA::PrepareIndicesForBlock(dword dwBlockIndex)
 
     // analyse
     long i, j;
-    for (i = 0; i < long(dwBlockIndex); i++) // if (i == 6)
+    for (i = 0; i < static_cast<long>(dwBlockIndex); i++) // if (i == 6)
     {
         SeaBlock *pB2 = &aBlocks[i];
 
         // Test Up & Down
-        bool bTestedUp = pB->iY1 == pB2->iY2;
-        bool bTestedDown = pB->iY2 == pB2->iY1;
+        const bool bTestedUp = pB->iY1 == pB2->iY2;
+        const bool bTestedDown = pB->iY2 == pB2->iY1;
 
         // if (!(GetAsyncKeyState('5')<0))
         if (bTestedUp || bTestedDown)
         {
-            long iAddSrc = pB2->iIStart + ((bTestedUp) ? (pB2->iSize0 + 1) * pB2->iSize0 : 0);
-            long iAddDst = pB->iIStart + ((bTestedUp) ? 0 : (pB->iSize0 + 1) * pB->iSize0);
+            const long iAddSrc = pB2->iIStart + ((bTestedUp) ? (pB2->iSize0 + 1) * pB2->iSize0 : 0);
+            const long iAddDst = pB->iIStart + ((bTestedUp) ? 0 : (pB->iSize0 + 1) * pB->iSize0);
 
             if ((pB->iX1 >= pB2->iX1 && pB->iX2 <= pB2->iX2) || (pB->iX1 <= pB2->iX1 && pB->iX2 >= pB2->iX2))
             {
-                long iMinX = Max(pB->iX1, pB2->iX1);
-                long iMaxX = Min(pB->iX2, pB2->iX2);
+                const long iMinX = Max(pB->iX1, pB2->iX1);
+                const long iMaxX = Min(pB->iX2, pB2->iX2);
 
-                long iStartDstX = pB->iSize0 * (iMinX - pB->iX1) / (pB->iX2 - pB->iX1);
-                long iStartSrcX = pB2->iSize0 * (iMinX - pB2->iX1) / (pB2->iX2 - pB2->iX1);
+                const long iStartDstX = pB->iSize0 * (iMinX - pB->iX1) / (pB->iX2 - pB->iX1);
+                const long iStartSrcX = pB2->iSize0 * (iMinX - pB2->iX1) / (pB2->iX2 - pB2->iX1);
 
-                long iEndDstX = pB->iSize0 * (iMaxX - pB->iX1) / (pB->iX2 - pB->iX1);
+                const long iEndDstX = pB->iSize0 * (iMaxX - pB->iX1) / (pB->iX2 - pB->iX1);
                 long iEndSrcX = pB2->iSize0 * (iMaxX - pB2->iX1) / (pB2->iX2 - pB2->iX1);
 
                 if (pB->iLOD == pB2->iLOD)
@@ -1052,23 +1084,23 @@ void SEA::PrepareIndicesForBlock(dword dwBlockIndex)
         }
 
         // Test Left & Right
-        bool bTestedLeft = pB->iX1 == pB2->iX2;
-        bool bTestedRight = pB->iX2 == pB2->iX1;
+        const bool bTestedLeft = pB->iX1 == pB2->iX2;
+        const bool bTestedRight = pB->iX2 == pB2->iX1;
         // if ((GetAsyncKeyState('6')<0))
         if (bTestedLeft || bTestedRight)
         {
-            long iAddSrc = pB2->iIStart + ((bTestedLeft) ? (pB2->iSize0) : 0);
-            long iAddDst = pB->iIStart + ((bTestedLeft) ? 0 : (pB->iSize0));
+            const long iAddSrc = pB2->iIStart + ((bTestedLeft) ? (pB2->iSize0) : 0);
+            const long iAddDst = pB->iIStart + ((bTestedLeft) ? 0 : (pB->iSize0));
 
             if ((pB->iY1 >= pB2->iY1 && pB->iY2 <= pB2->iY2) || (pB->iY1 <= pB2->iY1 && pB->iY2 >= pB2->iY2))
             {
-                long iMinY = Max(pB->iY1, pB2->iY1);
-                long iMaxY = Min(pB->iY2, pB2->iY2);
+                const long iMinY = Max(pB->iY1, pB2->iY1);
+                const long iMaxY = Min(pB->iY2, pB2->iY2);
 
-                long iStartDstY = pB->iSize0 * (iMinY - pB->iY1) / (pB->iY2 - pB->iY1);
-                long iStartSrcY = pB2->iSize0 * (iMinY - pB2->iY1) / (pB2->iY2 - pB2->iY1);
+                const long iStartDstY = pB->iSize0 * (iMinY - pB->iY1) / (pB->iY2 - pB->iY1);
+                const long iStartSrcY = pB2->iSize0 * (iMinY - pB2->iY1) / (pB2->iY2 - pB2->iY1);
 
-                long iEndDstY = pB->iSize0 * (iMaxY - pB->iY1) / (pB->iY2 - pB->iY1);
+                const long iEndDstY = pB->iSize0 * (iMaxY - pB->iY1) / (pB->iY2 - pB->iY1);
                 long iEndSrcY = pB2->iSize0 * (iMaxY - pB2->iY1) / (pB2->iY2 - pB2->iY1);
 
                 if (pB->iLOD == pB2->iLOD)
@@ -1079,8 +1111,6 @@ void SEA::PrepareIndicesForBlock(dword dwBlockIndex)
                     for (j = iStartDstY; j <= iEndDstY; j++)
                         pIndices[iAddDst + j * (pB->iSize0 + 1)] =
                             pIndices[iAddSrc + (iStartSrcY + (j - iStartDstY) / 2) * (pB2->iSize0 + 1)];
-
-                continue;
             }
         }
     }
@@ -1090,7 +1120,7 @@ void SEA::PrepareIndicesForBlock(dword dwBlockIndex)
     for (y = 0; y <= size0; y++)
         for (x = 0; x <= size0; x++)
         {
-            if (pIndices[iIStart] != dword(-1))
+            if (pIndices[iIStart] != static_cast<uint32_t>(-1))
             {
                 iIStart++;
                 continue;
@@ -1101,7 +1131,7 @@ void SEA::PrepareIndicesForBlock(dword dwBlockIndex)
             if (iVStart > iILast)
                 iILast = iVStart;
 
-            pIndices[iIStart++] = dword(iVStart);
+            pIndices[iIStart++] = static_cast<uint32_t>(iVStart);
             iVStart++;
         }
 
@@ -1114,13 +1144,13 @@ void SEA::PrepareIndicesForBlock(dword dwBlockIndex)
         for (x = 0; x < size0; x++)
         {
             // first triangle
-            *pTriangles++ = (word)pIndices[pB->iIStart + dword(x + yy + dyy + 1)];
-            *pTriangles++ = (word)pIndices[pB->iIStart + dword(x + yy + 1)];
-            *pTriangles++ = (word)pIndices[pB->iIStart + dword(x + yy)];
+            *pTriangles++ = static_cast<uint16_t>(pIndices[pB->iIStart + static_cast<uint32_t>(x + yy + dyy + 1)]);
+            *pTriangles++ = static_cast<uint16_t>(pIndices[pB->iIStart + static_cast<uint32_t>(x + yy + 1)]);
+            *pTriangles++ = static_cast<uint16_t>(pIndices[pB->iIStart + static_cast<uint32_t>(x + yy)]);
             // second triangle
-            *pTriangles++ = (word)pIndices[pB->iIStart + dword(x + yy + dyy)];
-            *pTriangles++ = (word)pIndices[pB->iIStart + dword(x + yy + dyy + 1)];
-            *pTriangles++ = (word)pIndices[pB->iIStart + dword(x + yy)];
+            *pTriangles++ = static_cast<uint16_t>(pIndices[pB->iIStart + static_cast<uint32_t>(x + yy + dyy)]);
+            *pTriangles++ = static_cast<uint16_t>(pIndices[pB->iIStart + static_cast<uint32_t>(x + yy + dyy + 1)]);
+            *pTriangles++ = static_cast<uint16_t>(pIndices[pB->iIStart + static_cast<uint32_t>(x + yy)]);
 
             iTStart += 2;
         }
@@ -1138,14 +1168,14 @@ void SEA::SSE_WaveXZBlock(SeaBlock *pB)
     vFake.vPos.x = vCamPos.x + 1e+5f;
     vFake.vPos.z = vCamPos.z + 1e+5f;
 
-    float cx, cz, fStep = fGridStep * float(1 << pB->iLOD);
+    float cx, cz, fStep = fGridStep * static_cast<float>(1 << pB->iLOD);
     float fSize = fGridStep * pB->iSize;
     long x, y, size0 = pB->iSize >> pB->iLOD;
 
-    float x1 = float(pB->iTX * pB->iSize) * fGridStep;
-    float y1 = float(pB->iTY * pB->iSize) * fGridStep;
-    float x2 = x1 + float(size0) * fStep;
-    float y2 = y1 + float(size0) * fStep;
+    float x1 = static_cast<float>(pB->iTX * pB->iSize) * fGridStep;
+    float y1 = static_cast<float>(pB->iTY * pB->iSize) * fGridStep;
+    float x2 = x1 + static_cast<float>(size0) * fStep;
+    float y2 = y1 + static_cast<float>(size0) * fStep;
 
     pB->iX1 = fftoi(x1 / fGridStep);
     pB->iX2 = fftoi(x2 / fGridStep);
@@ -1161,17 +1191,17 @@ void SEA::SSE_WaveXZBlock(SeaBlock *pB)
     long iCurrentV = 0;
 
     long iIStart1 = pB->iIStart;
-    long iIFirst = pB->iIFirst;
-    long iILast = pB->iILast;
+    const long iIFirst = pB->iIFirst;
+    const long iILast = pB->iILast;
 
     // calculate
     for (cz = y1, y = 0; y <= size0; y++, cz += fStep)
     {
         for (cx = x1, x = 0; x <= size0; x++, cx += fStep)
         {
-            dword dwVIndex = pIndices[iIStart1];
+            const uint32_t dwVIndex = pIndices[iIStart1];
 
-            if (long(dwVIndex) < iIFirst || long(dwVIndex) > iILast)
+            if (static_cast<long>(dwVIndex) < iIFirst || static_cast<long>(dwVIndex) > iILast)
             {
                 iIStart1++;
                 continue;
@@ -1240,14 +1270,14 @@ void SEA::WaveXZBlock(SeaBlock *pB)
     if (!pB)
         return;
 
-    float cx, cz, fStep = fGridStep * float(1 << pB->iLOD);
+    float cx, cz, fStep = fGridStep * static_cast<float>(1 << pB->iLOD);
     float fSize = fGridStep * pB->iSize;
     long x, y, size0 = pB->iSize >> pB->iLOD;
 
-    float x1 = float(pB->iTX * pB->iSize) * fGridStep;
-    float y1 = float(pB->iTY * pB->iSize) * fGridStep;
-    float x2 = x1 + float(size0) * fStep;
-    float y2 = y1 + float(size0) * fStep;
+    float x1 = static_cast<float>(pB->iTX * pB->iSize) * fGridStep;
+    float y1 = static_cast<float>(pB->iTY * pB->iSize) * fGridStep;
+    float x2 = x1 + static_cast<float>(size0) * fStep;
+    float y2 = y1 + static_cast<float>(size0) * fStep;
 
     pB->iX1 = fftoi(x1 / fGridStep);
     pB->iX2 = fftoi(x2 / fGridStep);
@@ -1262,17 +1292,17 @@ void SEA::WaveXZBlock(SeaBlock *pB)
     CVECTOR vNormal, vTmp;
 
     long iIStart1 = pB->iIStart;
-    long iIFirst = pB->iIFirst;
-    long iILast = pB->iILast;
+    const long iIFirst = pB->iIFirst;
+    const long iILast = pB->iILast;
 
     // calculate
     for (cz = y1, y = 0; y <= size0; y++, cz += fStep)
     {
         for (cx = x1, x = 0; x <= size0; x++, cx += fStep)
         {
-            dword dwVIndex = pIndices[iIStart1];
+            const uint32_t dwVIndex = pIndices[iIStart1];
 
-            if (long(dwVIndex) < iIFirst || long(dwVIndex) > iILast)
+            if (static_cast<long>(dwVIndex) < iIFirst || static_cast<long>(dwVIndex) > iILast)
             {
                 iIStart1++;
                 continue;
@@ -1301,8 +1331,8 @@ void SEA::WaveXZBlock(SeaBlock *pB)
 
 SEA::SeaBlock *SEA::GetUndoneBlock()
 {
-    SeaBlock *pB = null;
-    for (long i = 0; i < aBlocks; i++)
+    SeaBlock *pB = nullptr;
+    for (long i = 0; i < aBlocks.size(); i++)
         if (!aBlocks[i].bInProgress)
         {
             pB = &aBlocks[i];
@@ -1312,97 +1342,97 @@ SEA::SeaBlock *SEA::GetUndoneBlock()
     return pB;
 }
 
-dword SEA::ThreadExecute(long iThreadIndex)
+uint32_t SEA::ThreadExecute(long iThreadIndex)
 {
-    HANDLE hHandles[] = {SEA::pSea->hEventCalcMaps, SEA::pSea->aEventCalcBlock[iThreadIndex]};
+    HANDLE hHandles[] = {pSea->hEventCalcMaps, pSea->aEventCalcBlock[iThreadIndex]};
 
     while (true)
     {
-        dword dwValue = WaitForMultipleObjects(ARRSIZE(hHandles), hHandles, false, INFINITE);
+        const uint32_t dwValue = WaitForMultipleObjects(ARRSIZE(hHandles), hHandles, false, INFINITE);
 
         if (dwValue >= WAIT_OBJECT_0 && dwValue < WAIT_OBJECT_0 + ARRSIZE(hHandles))
         {
-            HANDLE hValue = hHandles[dwValue - WAIT_OBJECT_0];
+            const HANDLE hValue = hHandles[dwValue - WAIT_OBJECT_0];
 
-            if (hValue == SEA::pSea->hEventCalcMaps)
+            if (hValue == pSea->hEventCalcMaps)
             {
             }
 
-            if (hValue == SEA::pSea->aEventCalcBlock[iThreadIndex])
+            if (hValue == pSea->aEventCalcBlock[iThreadIndex])
             {
                 while (true)
                 {
-                    EnterCriticalSection(&SEA::pSea->cs);
-                    SeaBlock *pB = SEA::pSea->GetUndoneBlock();
-                    LeaveCriticalSection(&SEA::pSea->cs);
+                    EnterCriticalSection(&pSea->cs);
+                    SeaBlock *pB = pSea->GetUndoneBlock();
+                    LeaveCriticalSection(&pSea->cs);
 
                     if (!pB)
                         break;
 
                     // if (SEA::bIntel && SEA::bSSE) // fix AMD
-                    if (SEA::bSSE)
-                        SEA::pSea->SSE_WaveXZBlock(pB);
+                    if (bSSE)
+                        pSea->SSE_WaveXZBlock(pB);
                     else
-                        SEA::pSea->WaveXZBlock(pB);
+                        pSea->WaveXZBlock(pB);
 
-                    SEA::pSea->iB2++;
-                    SEA::pSea->aThreadsTest[iThreadIndex]++;
+                    pSea->iB2++;
+                    pSea->aThreadsTest[iThreadIndex]++;
                 }
             }
         }
     }
 }
 
-void SEA::CalculateNormalMap(float fFrame, float fAmplitude, float *pfOut, array<dword *> &aFrames)
+void SEA::CalculateNormalMap(float fFrame, float fAmplitude, float *pfOut, std::vector<uint32_t *> &aFrames)
 {
-    long iFrame1 = fftol(fFrame) % aFrames.Len();
-    long iFrame2 = (iFrame1 + 1) % aFrames.Len();
+    const long iFrame1 = fftol(fFrame) % aFrames.size();
+    const long iFrame2 = (iFrame1 + 1) % aFrames.size();
 
-    float fDelta = fFrame - iFrame1;
+    const float fDelta = fFrame - iFrame1;
 
-    dword *pB1 = aFrames[iFrame1];
-    dword *pB2 = aFrames[iFrame2];
+    uint32_t *pB1 = aFrames[iFrame1];
+    uint32_t *pB2 = aFrames[iFrame2];
 
     for (long y = 0; y < YWIDTH; y++)
         for (long x = 0; x < XWIDTH; x++)
         {
-            dword dw1 = pB1[x + y * XWIDTH];
-            dword dw2 = pB2[x + y * XWIDTH];
-            float nx1 = float(short(dw1)) / 32767.5f;
-            float nx2 = float(short(dw2)) / 32767.5f;
-            float nz1 = float(short(dw1 >> 0x10)) / 32767.5f;
-            float nz2 = float(short(dw2 >> 0x10)) / 32767.5f;
+            const uint32_t dw1 = pB1[x + y * XWIDTH];
+            const uint32_t dw2 = pB2[x + y * XWIDTH];
+            const float nx1 = static_cast<float>(static_cast<short>(dw1)) / 32767.5f;
+            const float nx2 = static_cast<float>(static_cast<short>(dw2)) / 32767.5f;
+            const float nz1 = static_cast<float>(static_cast<short>(dw1 >> 0x10)) / 32767.5f;
+            const float nz2 = static_cast<float>(static_cast<short>(dw2 >> 0x10)) / 32767.5f;
 
             pfOut[2 * (x + y * XWIDTH) + 0] = (nx1 + (nx2 - nx1) * fDelta);
             pfOut[2 * (x + y * XWIDTH) + 1] = (nz1 + (nz2 - nz1) * fDelta);
         }
 }
 
-void SEA::CalculateHeightMap(float fFrame, float fAmplitude, float *pfOut, array<byte *> &aFrames)
+void SEA::CalculateHeightMap(float fFrame, float fAmplitude, float *pfOut, std::vector<uint8_t *> &aFrames)
 {
-    long iFrame1 = fftol(fFrame) % aFrames.Len();
-    long iFrame2 = (iFrame1 + 1) % aFrames.Len();
+    const long iFrame1 = fftol(fFrame) % aFrames.size();
+    const long iFrame2 = (iFrame1 + 1) % aFrames.size();
 
-    float fDelta = fFrame - iFrame1;
+    const float fDelta = fFrame - iFrame1;
 
-    byte *pB1 = aFrames[iFrame1];
-    byte *pB2 = aFrames[iFrame2];
+    uint8_t *pB1 = aFrames[iFrame1];
+    uint8_t *pB2 = aFrames[iFrame2];
 
     for (long y = 0; y < YWIDTH; y++)
         for (long x = 0; x < XWIDTH; x++)
         {
-            float f1 = pB1[x + y * XWIDTH];
-            float f2 = pB2[x + y * XWIDTH];
+            const float f1 = pB1[x + y * XWIDTH];
+            const float f2 = pB2[x + y * XWIDTH];
 
             pfOut[x + y * XWIDTH] = fAmplitude * (f1 + (f2 - f1) * fDelta);
         }
 }
 
-void SEA::Realize(dword dwDeltaTime)
+void SEA::Realize(uint32_t dwDeltaTime)
 {
     static float fTmp = 0.0f;
 
-    if (api->Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0 && api->Controls->GetDebugAsyncKeyState('S') < 0)
+    if (core.Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0 && core.Controls->GetDebugAsyncKeyState('S') < 0)
     {
         if (bTempFullMode)
         {
@@ -1426,7 +1456,7 @@ void SEA::Realize(dword dwDeltaTime)
     if (bStop)
         return;
 
-    float fDeltaTime = float(dwDeltaTime) * 0.001f;
+    float fDeltaTime = static_cast<float>(dwDeltaTime) * 0.001f;
 
     vMove1 += fDeltaTime * vMoveSpeed1;
     vMove2 += fDeltaTime * vMoveSpeed2;
@@ -1440,11 +1470,11 @@ void SEA::Realize(dword dwDeltaTime)
 
     // pSeaParameters->SetTexture(0, pAnimTexture);
 
-    dword dwTotalRDTSC;
+    uint64_t dwTotalRDTSC;
     RDTSC_B(dwTotalRDTSC);
 
     CMatrix mView, mIView;
-    Render().GetTransform(D3DTS_VIEW, mView);
+    rs->GetTransform(D3DTS_VIEW, mView);
     mIView = mView;
     mIView.Transposition();
 
@@ -1478,12 +1508,12 @@ void SEA::Realize(dword dwDeltaTime)
         SunRoad_Render();
     }
 
-    pFrustumPlanes = Render().GetPlanes();
+    pFrustumPlanes = rs->GetPlanes();
 
     float fBlockSize = 256.0f * fGridStep;
-    long iNumBlocks = (long)dwMaxDim / (256 * 2);
-    vSeaCenterPos = CVECTOR(fBlockSize * (long(vCamPos.x / fBlockSize) - iNumBlocks), fMaxSeaHeight * 0.5f,
-                            fBlockSize * (long(vCamPos.z / fBlockSize) - iNumBlocks));
+    long iNumBlocks = static_cast<long>(dwMaxDim) / (256 * 2);
+    vSeaCenterPos = CVECTOR(fBlockSize * (static_cast<long>(vCamPos.x / fBlockSize) - iNumBlocks), fMaxSeaHeight * 0.5f,
+                            fBlockSize * (static_cast<long>(vCamPos.z / fBlockSize) - iNumBlocks));
 
     iB1 = 0;
     iB2 = 0;
@@ -1492,33 +1522,33 @@ void SEA::Realize(dword dwDeltaTime)
     iTStart = 0;
     iIStart = 0;
 
-    if (!pVolumeTexture && aBumpMaps.Size())
+    if (!pVolumeTexture && aBumpMaps.size())
     {
         IDirect3DSurface9 *pFace;
 
         static float fBumpMapFrame = 0.0f;
-        fBumpMapFrame += float(fDeltaTime) * fBumpSpeed * 48.0f;
+        fBumpMapFrame += static_cast<float>(fDeltaTime) * fBumpSpeed * 48.0f;
 
-        dword dw1 = long(fBumpMapFrame) % aBumpMaps.Size();
-        dword dw2 = long(fBumpMapFrame + 1.0f) % aBumpMaps.Size();
+        uint32_t dw1 = static_cast<long>(fBumpMapFrame) % aBumpMaps.size();
+        uint32_t dw2 = static_cast<long>(fBumpMapFrame + 1.0f) % aBumpMaps.size();
 
-        float fAlpha = 255.0f * (fBumpMapFrame - float(long(fBumpMapFrame)));
-        Render().SetRenderState(D3DRS_TEXTUREFACTOR, ARGB(fAlpha, 0, 0, 0));
+        float fAlpha = 255.0f * (fBumpMapFrame - static_cast<float>(static_cast<long>(fBumpMapFrame)));
+        rs->SetRenderState(D3DRS_TEXTUREFACTOR, ARGB(fAlpha, 0, 0, 0));
 
-        Render().SetTexture(0, aBumpMaps[dw1]);
-        Render().SetTexture(1, aBumpMaps[dw2]);
+        rs->SetTexture(0, aBumpMaps[dw1]);
+        rs->SetTexture(1, aBumpMaps[dw2]);
 
-        Render().EndScene();
-        Render().PushRenderTarget();
-        for (dword i = 0; i < MIPSLVLS; i++)
+        rs->EndScene();
+        rs->PushRenderTarget();
+        for (uint32_t i = 0; i < MIPSLVLS; i++)
         {
             HRESULT hr = pRenderTargetBumpMap->GetSurfaceLevel(i, &pFace);
-            Render().SetRenderTarget(pFace, null);
+            rs->SetRenderTarget(pFace, nullptr);
             pFace->Release();
             float w, h;
-            w = h = float(XWIDTH >> i);
+            w = h = static_cast<float>(XWIDTH >> i);
 
-            Render().BeginScene();
+            rs->BeginScene();
 
             RS_SPRITE spr[4];
             FillSpriteVertex(spr[0], 0, 0, 0.1f, 0xFFFFFFFF, 0.0f, 0.0f);
@@ -1526,17 +1556,17 @@ void SEA::Realize(dword dwDeltaTime)
             FillSpriteVertex(spr[2], w, h, 0.1f, 0xFFFFFFFF, 1.0f, 1.0f);
             FillSpriteVertex(spr[3], w, 0, 0.1f, 0xFFFFFFFF, 1.0f, 0.0f);
 
-            Render().DrawSprites(spr, 1, "bump_interpolate");
+            rs->DrawSprites(spr, 1, "bump_interpolate");
 
-            Render().EndScene();
+            rs->EndScene();
         }
-        Render().PopRenderTarget();
-        Render().BeginScene();
+        rs->PopRenderTarget();
+        rs->BeginScene();
     }
 
     memset(pIndices, 0xFF, NUM_VERTEXS * sizeof(pIndices[0]) * 3);
 
-    dword dwX;
+    uint64_t dwX;
     RDTSC_B(dwX);
     // SetEvent(hEventCalcMaps);
     CalculateHeightMap(fFrame1, 1.0f / 255.0f, pSeaFrame1, aBumps);
@@ -1545,28 +1575,30 @@ void SEA::Realize(dword dwDeltaTime)
     CalculateHeightMap(fFrame2, 1.0f / 255.0f, pSeaFrame2, aBumps);
     CalculateNormalMap(fFrame2, 1.0f / 255.0f, pSeaNormalsFrame2, aNormals);
     RDTSC_E(dwX);
-    // api->Trace("dwX = %d", dwX);
+    // core.Trace("dwX = %d", dwX);
 
-    aBlocks.Empty();
+    aBlocks.clear();
     BuildTree(0, 0, 0);
-    aBlocks.QSort(SeaBlock::QSort);
+    // aBlocks.QSort(SeaBlock::QSort);
+    std::sort(aBlocks.begin(), aBlocks.end(), SeaBlock::QSort);
 
-    dword i;
+    uint32_t i;
     long iNumVPoints = 0;
-    for (i = 0; i < aBlocks(); i++)
+    for (i = 0; i < aBlocks.size(); i++)
     {
         iNumVPoints += aBlocks[i].iSize0 * aBlocks[i].iSize0;
         if (iNumVPoints >= NUM_VERTEXS)
         {
-            aBlocks.DelRange(i, aBlocks.Last());
+            aBlocks.erase(aBlocks.begin() + i, aBlocks.end());
             break;
         }
     }
 
-    SeaVertex *pVSea2 = (SeaVertex *)Render().LockVertexBuffer(iVSeaBuffer, D3DLOCK_DISCARD | D3DLOCK_NOSYSLOCK);
-    pTriangles = (word *)Render().LockIndexBuffer(iISeaBuffer, D3DLOCK_DISCARD | D3DLOCK_NOSYSLOCK);
+    SeaVertex *pVSea2 =
+        static_cast<SeaVertex *>(rs->LockVertexBuffer(iVSeaBuffer, D3DLOCK_DISCARD | D3DLOCK_NOSYSLOCK));
+    pTriangles = static_cast<uint16_t *>(rs->LockIndexBuffer(iISeaBuffer, D3DLOCK_DISCARD | D3DLOCK_NOSYSLOCK));
 
-    for (i = 0; i < aBlocks(); i++)
+    for (i = 0; i < aBlocks.size(); i++)
         PrepareIndicesForBlock(i);
     // for (i=0; i<aBlocks(); i++) SetBlock(i);
 
@@ -1574,14 +1606,14 @@ void SEA::Realize(dword dwDeltaTime)
 
     bool bHT = false;
 
-    dword dwBlockRDTSC;
+    uint64_t dwBlockRDTSC;
     RDTSC_B(dwBlockRDTSC);
 
     if (bHyperThreading) // P4 / PRESCOTT Version
     {
         bHT = true;
 
-        for (long i = 0; i < aEventCalcBlock; i++)
+        for (long i = 0; i < aEventCalcBlock.size(); i++)
         {
             aThreadsTest[i] = 0;
             SetEvent(aEventCalcBlock[i]);
@@ -1602,7 +1634,7 @@ void SEA::Realize(dword dwDeltaTime)
             iB1++;
         }
 
-        while (iBlocksDoneNum < aBlocks)
+        while (iBlocksDoneNum < aBlocks.size())
             _mm_pause();
     }
     else
@@ -1625,17 +1657,17 @@ void SEA::Realize(dword dwDeltaTime)
     if (iVStart && iTStart)
         memcpy(pVSea2, pVSea, iVStart * sizeof(SeaVertex));
 
-    Render().UnLockVertexBuffer(iVSeaBuffer);
-    Render().UnLockIndexBuffer(iISeaBuffer);
+    rs->UnLockVertexBuffer(iVSeaBuffer);
+    rs->UnLockIndexBuffer(iISeaBuffer);
 
     if (iVStart && iTStart)
     {
         CMatrix mWorldView, mWorldViewProj;
 
-        CMatrix mView = Render().GetView();
+        CMatrix mView = rs->GetView();
         CMatrix mWorld;
-        mWorld.SetIdentity(); // = Render().GetWorld();
-        CMatrix mProjection = Render().GetProjection();
+        mWorld.SetIdentity(); // = rs->GetWorld();
+        CMatrix mProjection = rs->GetProjection();
 
 #ifndef OLD_WORLD_POS
         mView.MoveInversePosition(-vWorldOffset.x, 0.f, -vWorldOffset.z);
@@ -1650,105 +1682,105 @@ void SEA::Realize(dword dwDeltaTime)
         while (fTmp >= 1.0f)
             fTmp -= 1.0f;
 
-        Render().SetVertexShaderConstant(GC_CONSTANT, &CVECTOR4(0.0f, 1.0f, 0.5f, -0.04f), 1);
-        Render().SetVertexShaderConstant(
-            GC_CONSTANT2, &CVECTOR4(2.0f, -1.0f, 0.00036621652552071f, (bFogEnable) ? fFogSeaDensity : 0.0f), 1);
-        Render().SetVertexShaderConstant(GC_SHADOW_CONST1, &CVECTOR4(fFoamV, fFoamK, fFoamUV, 6.0f), 1);
-        Render().SetVertexShaderConstant(GC_ANIMATION, &CVECTOR4(fTmp, fTmp, fTmp, fTmp), 1);
-        Render().SetVertexShaderConstant(
-            GC_CAMERA_POS, &CVECTOR4(vCamPos.x - vWorldOffset.x, vCamPos.y, vCamPos.z - vWorldOffset.z, 1.0f), 1);
-        Render().SetVertexShaderConstant(GC_MTX_WVP, &mWorldViewProj, 4);
+        rs->SetVertexDeclaration(vertexDecl_);
 
-        Render().SetVertexShaderConstant(GC_FREE, &v4SeaParameters, 1);
-        Render().SetVertexShaderConstant(GC_FREE + 1, &v4SeaColor, 1);
-        Render().SetVertexShaderConstant(GC_FREE + 2, &v4SkyColor, 1);
-
-        Render().SetVertexShaderConstant(GC_FREE + 5, &CVECTOR4(1.0f, 0.0f, 0.0f, 1.0f), 1);
-        Render().SetVertexShaderConstant(GC_FREE + 6, &CVECTOR4(fFrenel, 1.0f, 0.5f, 1.0f), 1); // Frenel K, Frenel Max
-        Render().SetVertexShaderConstant(GC_FREE + 7, &CVECTOR4(1.0f, 0.0f, 0.0f, 1.0f), 1);
-
+        const auto vec1 = CVECTOR4(0.0f, 1.0f, 0.5f, -0.04f);
+        const auto vec2 = CVECTOR4(2.0f, -1.0f, 0.00036621652552071f, (bFogEnable) ? fFogSeaDensity : 0.0f);
+        const auto vec3 = CVECTOR4(fFoamV, fFoamK, fFoamUV, 6.0f);
+        const auto vec4 = CVECTOR4(fTmp, fTmp, fTmp, fTmp);
+        const auto vec5 = CVECTOR4(vCamPos.x - vWorldOffset.x, vCamPos.y, vCamPos.z - vWorldOffset.z, 1.0f);
+        const auto vec6 = CVECTOR4(1.0f, 0.0f, 0.0f, 1.0f);
+        const auto vec7 = CVECTOR4(fFrenel, 1.0f, 0.5f, 1.0f);
+        const auto vec8 = CVECTOR4(1.0f, 0.0f, 0.0f, 1.0f);
         CVECTOR vTmp = !CVECTOR(0.0f, 1.0f, 0.0f);
-        Render().SetVertexShaderConstant(GC_FREE + 30, &CVECTOR4(vTmp.x, vTmp.y, vTmp.z, 1.0f), 1);
+        const auto vec9 = CVECTOR4(vTmp.x, vTmp.y, vTmp.z, 1.0f);
+        rs->SetVertexShaderConstantF(GC_CONSTANT, (const float *)&vec1, 1);
+        rs->SetVertexShaderConstantF(GC_CONSTANT2, (const float *)&vec2, 1);
+        rs->SetVertexShaderConstantF(GC_SHADOW_CONST1, (const float *)&vec3, 1);
+        rs->SetVertexShaderConstantF(GC_ANIMATION, (const float *)&vec4, 1);
+        rs->SetVertexShaderConstantF(GC_CAMERA_POS, (const float *)&vec5, 1);
+        rs->SetVertexShaderConstantF(GC_MTX_WVP, (const float *)&mWorldViewProj, 4);
+
+        rs->SetVertexShaderConstantF(GC_FREE, (const float *)&v4SeaParameters, 1);
+        rs->SetVertexShaderConstantF(GC_FREE + 1, (const float *)&v4SeaColor, 1);
+        rs->SetVertexShaderConstantF(GC_FREE + 2, (const float *)&v4SkyColor, 1);
+
+        rs->SetVertexShaderConstantF(GC_FREE + 5, (const float *)&vec6, 1);
+        rs->SetVertexShaderConstantF(GC_FREE + 6, (const float *)&vec7, 1);
+        // Frenel K, Frenel Max
+        rs->SetVertexShaderConstantF(GC_FREE + 7, (const float *)&vec8, 1);
+        rs->SetVertexShaderConstantF(GC_FREE + 30, (const float *)&vec9, 1);
 
         if (bSimpleSea)
         {
-            Render().SetVertexShaderConstant(GC_FREE + 8, &mTexProjection, 4); // Matrix!!
+            rs->SetVertexShaderConstantF(GC_FREE + 8, (const float *)&mTexProjection, 4); // Matrix!!
 
-            // Render().SetTexture(0, pVolumeTexture);
-            Render().SetTexture(0, (pVolumeTexture) ? (IDirect3DBaseTexture9 *)pVolumeTexture
-                                                    : (IDirect3DBaseTexture9 *)pRenderTargetBumpMap);
-            Render().SetTexture(1, pReflection);
-            // Render().SetTexture(2, pVolumeTexture);
-            Render().SetTexture(2, (pVolumeTexture) ? (IDirect3DBaseTexture9 *)pVolumeTexture
-                                                    : (IDirect3DBaseTexture9 *)pRenderTargetBumpMap);
-            Render().SetTexture(3, pReflectionSunroad);
+            // rs->SetTexture(0, pVolumeTexture);
+            rs->SetTexture(0, (pVolumeTexture) ? static_cast<IDirect3DBaseTexture9 *>(pVolumeTexture)
+                                               : static_cast<IDirect3DBaseTexture9 *>(pRenderTargetBumpMap));
+            rs->SetTexture(1, pReflection);
+            // rs->SetTexture(2, pVolumeTexture);
+            rs->SetTexture(2, (pVolumeTexture) ? static_cast<IDirect3DBaseTexture9 *>(pVolumeTexture)
+                                               : static_cast<IDirect3DBaseTexture9 *>(pRenderTargetBumpMap));
+            rs->SetTexture(3, pReflectionSunroad);
 
-            Render().SetTextureStageState(1, D3DTSS_BUMPENVMAT00, F2DW(0.08f));
-            Render().SetTextureStageState(1, D3DTSS_BUMPENVMAT10, F2DW(0.0f));
-            Render().SetTextureStageState(1, D3DTSS_BUMPENVMAT01, F2DW(0.0f));
-            Render().SetTextureStageState(1, D3DTSS_BUMPENVMAT11, F2DW(0.08f));
+            rs->SetTextureStageState(1, D3DTSS_BUMPENVMAT00, F2DW(0.08f));
+            rs->SetTextureStageState(1, D3DTSS_BUMPENVMAT10, F2DW(0.0f));
+            rs->SetTextureStageState(1, D3DTSS_BUMPENVMAT01, F2DW(0.0f));
+            rs->SetTextureStageState(1, D3DTSS_BUMPENVMAT11, F2DW(0.08f));
 
-            Render().SetTextureStageState(3, D3DTSS_BUMPENVMAT00, F2DW(0.05f));
-            Render().SetTextureStageState(3, D3DTSS_BUMPENVMAT10, F2DW(0.0f));
-            Render().SetTextureStageState(3, D3DTSS_BUMPENVMAT01, F2DW(0.0f));
-            Render().SetTextureStageState(3, D3DTSS_BUMPENVMAT11, F2DW(0.05f));
+            rs->SetTextureStageState(3, D3DTSS_BUMPENVMAT00, F2DW(0.05f));
+            rs->SetTextureStageState(3, D3DTSS_BUMPENVMAT10, F2DW(0.0f));
+            rs->SetTextureStageState(3, D3DTSS_BUMPENVMAT01, F2DW(0.0f));
+            rs->SetTextureStageState(3, D3DTSS_BUMPENVMAT11, F2DW(0.05f));
 
-            Render().DrawIndexedPrimitiveNoVShader(D3DPT_TRIANGLELIST, iVSeaBuffer, sizeof(SeaVertex), iISeaBuffer, 0,
-                                                   iVStart, 0, iTStart, "Sea3");
+            rs->DrawIndexedPrimitiveNoVShader(D3DPT_TRIANGLELIST, iVSeaBuffer, sizeof(SeaVertex), iISeaBuffer, 0,
+                                              iVStart, 0, iTStart, "Sea3");
         }
         else
         {
-            D3DCAPS9 d3dCaps;
-            Render().GetDeviceCaps(&d3dCaps);
-            dword dwPSVersionLo = LOBYTE(d3dCaps.PixelShaderVersion);
-            dword dwPSVersionHi = HIBYTE(d3dCaps.PixelShaderVersion);
+            const auto vec1 = CMatrix(0.0f, 0.0f, PId2);
+            rs->SetVertexShaderConstantF(GC_FREE + 8, (const float *)&vec1, 4); // Matrix!!
 
-            Render().SetVertexShaderConstant(GC_FREE + 8, &CMatrix(0.0f, 0.0f, PId2), 4); // Matrix!!
+            rs->SetTexture(0, (pVolumeTexture) ? static_cast<IDirect3DBaseTexture9 *>(pVolumeTexture)
+                                               : static_cast<IDirect3DBaseTexture9 *>(pRenderTargetBumpMap));
+            rs->SetTexture(3, pEnvMap);
+            rs->DrawIndexedPrimitiveNoVShader(D3DPT_TRIANGLELIST, iVSeaBuffer, sizeof(SeaVertex), iISeaBuffer, 0,
+                                              iVStart, 0, iTStart, "Sea2");
 
-            Render().SetTexture(0, (pVolumeTexture) ? (IDirect3DBaseTexture9 *)pVolumeTexture
-                                                    : (IDirect3DBaseTexture9 *)pRenderTargetBumpMap);
-            Render().SetTexture(3, pEnvMap);
-            Render().DrawIndexedPrimitiveNoVShader(D3DPT_TRIANGLELIST, iVSeaBuffer, sizeof(SeaVertex), iISeaBuffer, 0,
-                                                   iVStart, 0, iTStart, "Sea2");
-
-            // if (fFoamK > 0.0f && bFoamEnable && bIniFoamEnable && dwPSVersionHi >= 1 && dwPSVersionLo >= 4)
-            if (fFoamK > 0.0f && bFoamEnable)
+            if (fFoamK > 0.0f && bFoamEnable && bIniFoamEnable)
             {
                 // Render sea foam
-                Render().SetPixelShaderConstant(0, &CVECTOR4(fFoamTextureDisturb, 0.0f, 0.0f, 0.0f), 1);
+                const auto vec2 = CVECTOR4(fFoamTextureDisturb, 0.0f, 0.0f, 0.0f);
+                rs->SetPixelShaderConstantF(0, (const float *)&vec2, 1);
 
-                Render().TextureSet(0, iFoamTexture);
-                Render().SetTexture(4, (pVolumeTexture) ? (IDirect3DBaseTexture9 *)pVolumeTexture
-                                                        : (IDirect3DBaseTexture9 *)pRenderTargetBumpMap);
-                Render().DrawIndexedPrimitiveNoVShader(D3DPT_TRIANGLELIST, iVSeaBuffer, sizeof(SeaVertex), iISeaBuffer,
-                                                       0, iVStart, 0, iTStart, "Foam_14");
+                rs->TextureSet(0, iFoamTexture);
+                rs->SetTexture(4, (pVolumeTexture) ? static_cast<IDirect3DBaseTexture9 *>(pVolumeTexture)
+                                                   : static_cast<IDirect3DBaseTexture9 *>(pRenderTargetBumpMap));
+                rs->DrawIndexedPrimitiveNoVShader(D3DPT_TRIANGLELIST, iVSeaBuffer, sizeof(SeaVertex), iISeaBuffer, 0,
+                                                  iVStart, 0, iTStart, "Sea2_Foam");
             }
 
-            Render().SetTexture(0, (pVolumeTexture) ? (IDirect3DBaseTexture9 *)pVolumeTexture
-                                                    : (IDirect3DBaseTexture9 *)pRenderTargetBumpMap);
-            Render().SetTexture(3, pSunRoadMap);
-            Render().DrawIndexedPrimitiveNoVShader(D3DPT_TRIANGLELIST, iVSeaBuffer, sizeof(SeaVertex), iISeaBuffer, 0,
-                                                   iVStart, 0, iTStart, "Sea2_SunRoad");
+            rs->SetTexture(0, (pVolumeTexture) ? static_cast<IDirect3DBaseTexture9 *>(pVolumeTexture)
+                                               : static_cast<IDirect3DBaseTexture9 *>(pRenderTargetBumpMap));
+            rs->SetTexture(3, pSunRoadMap);
+            rs->DrawIndexedPrimitiveNoVShader(D3DPT_TRIANGLELIST, iVSeaBuffer, sizeof(SeaVertex), iISeaBuffer, 0,
+                                              iVStart, 0, iTStart, "Sea2_SunRoad");
         }
     }
 
     RDTSC_E(dwTotalRDTSC);
+    // rs->Print(50, 300, "Total ticks with rendering %d", /*iVStart, iTStart, */dwTotalRDTSC);
+    /*rs->Print(50, 320, "calc blk%s: %d", (bHT) ? " (HT)" : "", dwBlockRDTSC);
+    rs->Print(50, 340, "Blocks in 1st thread: %d", iB1);
+    for (long i=0; i<aThreadsTest; i++)
+      rs->Print(50, 360 + 20 * i, "Blocks in thread %d: %d", i + 1, aThreadsTest[i]);
+    */
+    // rs->Print(30, 140, "rdtsc = %d", dwBlockRDTSC);
+    // rs->Print(30, 160, "Intel CPU: %s, SSE: %s, HyperThreading: %s", (bIntel) ? "Yes" : "No", (bSSE) ? "On" : "Off",
+    // (bHyperThreading) ? "On" : "Off");
 
-    if (bSeaDebug)
-    {
-        Render().Print(50, 300, "Total ticks with rendering %d", /*iVStart, iTStart, */ dwTotalRDTSC);
-
-        Render().Print(50, 320, "calc blk%s: %d", (bHT) ? " (HT)" : "", dwBlockRDTSC);
-        Render().Print(50, 340, "Blocks in 1st thread: %d", iB1);
-        for (long i = 0; i < aThreadsTest; i++)
-            Render().Print(50, 360 + 20 * i, "Blocks in thread %d: %d", i + 1, aThreadsTest[i]);
-
-        Render().Print(30, 140, "rdtsc = %d", dwBlockRDTSC);
-        Render().Print(30, 160, "Intel CPU: %s, SSE: %s, HyperThreading: %s", (bIntel) ? "Yes" : "No",
-                       (bSSE) ? "On" : "Off", (bHyperThreading) ? "On" : "Off");
-    }
-
-    /*D3DVIEWPORT9 vp; Render().GetViewport(&vp);
+    /*D3DVIEWPORT9 vp; rs->GetViewport(&vp);
     float w = 256;
     float h = 256;
     RS_SPRITE spr[4];
@@ -1756,9 +1788,9 @@ void SEA::Realize(dword dwDeltaTime)
     FillSpriteVertex(spr[1], 0, h, 0.1f, 0xFFFFFFFF, 0.0f, 1.0f);
     FillSpriteVertex(spr[2], w, h, 0.1f, 0xFFFFFFFF, 1.0f, 1.0f);
     FillSpriteVertex(spr[3], w, 0, 0.1f, 0xFFFFFFFF, 1.0f, 0.0f);
-    //Render().SetTexture(0, pReflection);
-    Render().SetTexture(0, pReflectionSunroad);
-    Render().DrawSprites(spr, 1, "Telescope");*/
+    //rs->SetTexture(0, pReflection);
+    rs->SetTexture(0, pReflectionSunroad);
+    rs->DrawSprites(spr, 1, "Telescope");*/
 
     if (bUnderSea && bUnderSeaEnable)
     {
@@ -1767,36 +1799,42 @@ void SEA::Realize(dword dwDeltaTime)
         if (!bUnderSeaStarted)
         {
             // делаем кучку планктона первый раз
-            aSeaTrash.Empty();
+            aSeaTrash.clear();
             for (long i = 0; i < 1000; i++)
             {
-                SeaTrash &st = aSeaTrash[aSeaTrash.Add()];
+                aSeaTrash.push_back(SeaTrash{});
+                // SeaTrash & st = aSeaTrash[aSeaTrash.Add()];
+                SeaTrash &st = aSeaTrash.back();
                 st.vPos = vCamPos + CVECTOR(RRnd(-d.x, d.x), RRnd(-d.y, d.y), RRnd(-d.z, d.z));
                 st.vSpeed = CVECTOR(0.1f, 0.0f, 0.0f);
                 st.dwSubTexture = rand() % 4;
                 st.fSize = RRnd(0.01f, 0.05f);
-                st.fTime = float(i) * 0.02f;
+                st.fTime = static_cast<float>(i) * 0.02f;
             }
 
             // делаем кучку световых столбов первый раз
-            aSeaLights.Empty();
+            aSeaLights.clear();
             for (long i = 0; i < 50; i++)
             {
-                SeaLight &sl = aSeaLights[aSeaLights.Add()];
+                aSeaLights.push_back(SeaLight{});
+                // SeaLight & sl = aSeaLights[aSeaLights.Add()];
+                SeaLight &sl = aSeaLights.back();
                 sl.vPos = vCamPos + CVECTOR(RRnd(-d2.x, d2.x), RRnd(-d2.y, d2.y), RRnd(-d2.z, d2.z));
                 sl.vSpeed = CVECTOR(0.1f, 0.0f, 0.0f);
                 sl.dwSubTexture = rand() % 4;
-                sl.fTime = float(i);
+                sl.fTime = static_cast<float>(i);
             }
         }
 
-        // добавляем 1 плактонинку каждую секунду
+        // добавл€ем 1 плактонинку каждую секунду
         fLastTrashTime += fDeltaTime;
         while (fLastTrashTime >= 0.03f)
         {
             fLastTrashTime -= 0.03f;
 
-            SeaTrash &st = aSeaTrash[aSeaTrash.Add()];
+            aSeaTrash.push_back(SeaTrash{});
+            // SeaTrash & st = aSeaTrash[aSeaTrash.Add()];
+            SeaTrash &st = aSeaTrash.back();
             st.vPos = vCamPos + CVECTOR(RRnd(-d.x, d.x), RRnd(-d.y, d.y), RRnd(-d.z, d.z));
             st.vSpeed = CVECTOR(0.1f, 0.0f, 0.0f);
             st.dwSubTexture = rand() % 4;
@@ -1804,23 +1842,27 @@ void SEA::Realize(dword dwDeltaTime)
             st.fSize = RRnd(0.01f, 0.05f);
         }
 
-        // Уничтожаем старые плактонинки
-        for (long i = 0; i < aSeaTrash.Len(); i++)
+        // ”ничтожаем старые плактонинки
+        for (long i = 0; i < aSeaTrash.size(); i++)
         {
             aSeaTrash[i].fTime -= fDeltaTime;
             if (aSeaTrash[i].fTime <= 0.0f)
             {
-                aSeaTrash.ExtractNoShift(i);
+                // aSeaTrash.ExtractNoShift(i);
+                aSeaTrash[i] = aSeaTrash.back();
+                aSeaTrash.pop_back();
                 i--;
                 continue;
             }
             aSeaTrash[i].vPos += aSeaTrash[i].vSpeed * fDeltaTime;
         }
-        // Рисуем планктон
-        aTrashRects.Empty();
-        for (long i = 0; i < aSeaTrash.Len(); i++)
+        // –исуем планктон
+        aTrashRects.clear();
+        for (long i = 0; i < aSeaTrash.size(); i++)
         {
-            RS_RECT &r = aTrashRects[aTrashRects.Add()];
+            //	RS_RECT & r = aTrashRects[aTrashRects.Add()];
+            aTrashRects.push_back(RS_RECT{});
+            RS_RECT &r = aTrashRects.back();
 
             float fAlpha = 1.0f;
             if (aSeaTrash[i].fTime >= 45.0f)
@@ -1835,35 +1877,38 @@ void SEA::Realize(dword dwDeltaTime)
             r.dwSubTexture = aSeaTrash[i].dwSubTexture;
         }
 
-        if (aTrashRects.Len())
+        if (aTrashRects.size())
         {
-            Render().TextureSet(0, iSeaTrashTexture);
-            Render().DrawRects(&aTrashRects[0], aTrashRects.Size(), "seatrash", 2, 2);
+            rs->TextureSet(0, iSeaTrashTexture);
+            rs->DrawRects(&aTrashRects[0], aTrashRects.size(), "seatrash", 2, 2);
         }
 
-        // Рисуем стаи рыб
+        // –исуем стаи рыб
 
-        // Рисуем световые столбы
-        // добавляем 1 световой столб каждую секунду
+        // –исуем световые столбы
+        // добавл€ем 1 световой столб каждую секунду
         fLastLightTime += fDeltaTime;
         while (fLastLightTime >= 1.0f)
         {
             fLastLightTime -= 1.0f;
 
-            SeaLight &sl = aSeaLights[aSeaLights.Add()];
+            aSeaLights.push_back(SeaLight{});
+            // SeaLight & sl = aSeaLights[aSeaLights.Add()];
+            SeaLight &sl = aSeaLights.back();
             sl.vPos = vCamPos + CVECTOR(RRnd(-d2.x, d2.x), RRnd(-d2.y, d2.y), RRnd(-d2.z, d2.z));
             sl.vSpeed = CVECTOR(0.1f, 0.0f, 0.0f);
             sl.dwSubTexture = rand() % 4;
             sl.fTime = 50.0f;
         }
 
-        // Уничтожаем старые световые столбики
-        for (long i = 0; i < aSeaLights.Len(); i++)
+        // ”ничтожаем старые световые столбики
+        for (long i = 0; i < aSeaLights.size(); i++)
         {
             aSeaLights[i].fTime -= fDeltaTime;
             if (aSeaLights[i].fTime <= 0.0f)
             {
-                aSeaLights.ExtractNoShift(i);
+                aSeaLights[i] = aSeaLights.back();
+                aSeaLights.pop_back();
                 i--;
                 continue;
             }
@@ -1872,12 +1917,13 @@ void SEA::Realize(dword dwDeltaTime)
 
         float fAlphaK = (vCamPos.y < 0.0f) ? Max(0.0f, 1.0f + vCamPos.y / 30.0f) : 1.0f;
 
-        // Рисуем световые столбики
-        aLightsRects.Empty();
-        for (long i = 0; i < aSeaLights.Len(); i++)
+        // –исуем световые столбики
+        aLightsRects.clear();
+        for (long i = 0; i < aSeaLights.size(); i++)
         {
-            RS_RECT &r = aLightsRects[aLightsRects.Add()];
-
+            aLightsRects.push_back(RS_RECT{});
+            // RS_RECT & r = aLightsRects[aLightsRects.Add()];
+            RS_RECT &r = aLightsRects.back();
             float fAlpha = 1.0f;
             if (aSeaLights[i].fTime >= 45.0f)
                 fAlpha = 1.0f - (aSeaLights[i].fTime - 45.0f) / 5.0f;
@@ -1892,10 +1938,10 @@ void SEA::Realize(dword dwDeltaTime)
             r.dwSubTexture = aSeaLights[i].dwSubTexture;
         }
 
-        if (aLightsRects.Len())
+        if (aLightsRects.size())
         {
-            Render().TextureSet(0, iSeaLightTexture);
-            Render().DrawRects(&aLightsRects[0], aLightsRects.Size(), "seatrash", 2, 2, 0.5f);
+            rs->TextureSet(0, iSeaLightTexture);
+            rs->DrawRects(&aLightsRects[0], aLightsRects.size(), "seatrash", 2, 2, 0.5f);
         }
 
         bUnderSeaStarted = true;
@@ -1906,20 +1952,20 @@ void SEA::Realize(dword dwDeltaTime)
 
 float SEA::Trace(const CVECTOR &vSrc, const CVECTOR &vDst)
 {
-    long iNumTests = 5;
+    const long iNumTests = 5;
     float fRes = 2.0f;
-    float fDV = 1.0f / float(iNumTests - 1);
+    const float fDV = 1.0f / static_cast<float>(iNumTests - 1);
 
     if (vSrc.y > fMaxSeaHeight && vDst.y > fMaxSeaHeight)
         return 2.0f;
 
     for (long i = 0; i < iNumTests; i++)
     {
-        CVECTOR vTemp = vSrc + float(i) * fDV * (vDst - vSrc);
-        float fWaveY = WaveXZ(vTemp.x, vTemp.z, null);
+        const CVECTOR vTemp = vSrc + static_cast<float>(i) * fDV * (vDst - vSrc);
+        const float fWaveY = WaveXZ(vTemp.x, vTemp.z, nullptr);
 
         if (fWaveY > vTemp.y)
-            return float(i) * fDV;
+            return static_cast<float>(i) * fDV;
     }
 
     return 2.0f;
@@ -1927,25 +1973,25 @@ float SEA::Trace(const CVECTOR &vSrc, const CVECTOR &vDst)
 
 float SEA::Cannon_Trace(long iBallOwner, const CVECTOR &vSrc, const CVECTOR &vDst)
 {
-    float fRes = Trace(vSrc, vDst);
+    const float fRes = Trace(vSrc, vDst);
 
     if (fRes <= 1.0f)
     {
-        CVECTOR vTemp = vSrc + fRes * (vDst - vSrc);
-        float fTmpY = WaveXZ(vTemp.x, vTemp.z, null);
-        api->Event(BALL_WATER_HIT, "lfff", iBallOwner, vTemp.x, fTmpY, vTemp.z);
+        const CVECTOR vTemp = vSrc + fRes * (vDst - vSrc);
+        const float fTmpY = WaveXZ(vTemp.x, vTemp.z, nullptr);
+        core.Event(BALL_WATER_HIT, "lfff", iBallOwner, vTemp.x, fTmpY, vTemp.z);
     }
 
     return fRes;
 }
 
-dword SEA::AttributeChanged(ATTRIBUTES *pAttribute)
+uint32_t SEA::AttributeChanged(ATTRIBUTES *pAttribute)
 {
     ATTRIBUTES *pParent = pAttribute->GetParent();
-    ATTRIBUTES *pParent2 = (pParent) ? pParent->GetParent() : null;
+    ATTRIBUTES *pParent2 = (pParent) ? pParent->GetParent() : nullptr;
 
-    char *sName = pAttribute->GetThisName();
-    char *sValue = pAttribute->GetThisAttr();
+    const char *sName = pAttribute->GetThisName();
+    const char *sValue = pAttribute->GetThisAttr();
 
     if (*pParent == "isDone")
     {
@@ -2078,7 +2124,7 @@ dword SEA::AttributeChanged(ATTRIBUTES *pAttribute)
         }
         if (*pAttribute == "FoamEnable")
         {
-            bFoamEnable = pAttribute->GetAttributeAsDword();
+            bFoamEnable = pAttribute->GetAttributeAsDword() != 0;
             return 0;
         }
 
@@ -2130,7 +2176,7 @@ dword SEA::AttributeChanged(ATTRIBUTES *pAttribute)
     {
         fMaxSeaHeight = AttributesPointer->GetAttributeAsFloat("MaxSeaHeight", 50.0f);
 
-        float fScale = (fMaxSeaHeight >= _fAmp1 + _fAmp2) ? 1.0f : fMaxSeaHeight / (_fAmp1 + _fAmp2);
+        const float fScale = (fMaxSeaHeight >= _fAmp1 + _fAmp2) ? 1.0f : fMaxSeaHeight / (_fAmp1 + _fAmp2);
 
         fAmp1 = _fAmp1 * fScale;
         fAmp2 = _fAmp2 * fScale;
@@ -2141,34 +2187,26 @@ dword SEA::AttributeChanged(ATTRIBUTES *pAttribute)
 
 void SEA::LostRender()
 {
-    Render().Release(pRenderTargetBumpMap);
-    pRenderTargetBumpMap = NULL;
-    Render().Release(pEnvMap);
-    pEnvMap = NULL;
-    Render().Release(pSunRoadMap);
-    pSunRoadMap = NULL;
-    Render().Release(pReflection);
-    pReflection = NULL;
-    Render().Release(pReflectionSunroad);
-    pReflectionSunroad = NULL;
+    rs->Release(pReflection);
+    rs->Release(pReflectionSunroad);
+    rs->Release(pEnvMap);
+    rs->Release(pSunRoadMap);
+    rs->Release(pRenderTargetBumpMap);
 
-    Render().Release(pZStencil);
-    pZStencil = NULL;
-    Render().Release(pReflectionSurfaceDepth);
-    pReflectionSurfaceDepth = NULL;
+    rs->Release(pZStencil);
+    rs->Release(pReflectionSurfaceDepth);
 }
 
 void SEA::RestoreRender()
 {
-    Render().CreateTexture(XWIDTH, YWIDTH, MIPSLVLS, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT,
-                           &pRenderTargetBumpMap);
+    rs->CreateTexture(XWIDTH, YWIDTH, MIPSLVLS, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT,
+                      &pRenderTargetBumpMap);
 
-    Render().CreateCubeTexture(128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pEnvMap);
-    Render().CreateCubeTexture(128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pSunRoadMap);
+    rs->CreateCubeTexture(128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pEnvMap);
+    rs->CreateCubeTexture(128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pSunRoadMap);
+    rs->CreateDepthStencilSurface(128, 128, D3DFMT_D24S8, D3DMULTISAMPLE_NONE, &pZStencil);
 
-    Render().CreateTexture(128, 128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pReflection);
-    Render().CreateTexture(128, 128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pReflectionSunroad);
-
-    Render().CreateDepthStencilSurface(128, 128, D3DFMT_D24S8, D3DMULTISAMPLE_NONE, &pZStencil);
-    Render().CreateDepthStencilSurface(128, 128, D3DFMT_D24S8, D3DMULTISAMPLE_NONE, &pReflectionSurfaceDepth);
+    rs->CreateTexture(128, 128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pReflection);
+    rs->CreateTexture(128, 128, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &pReflectionSunroad);
+    rs->CreateDepthStencilSurface(128, 128, D3DFMT_D24S8, D3DMULTISAMPLE_NONE, &pReflectionSurfaceDepth);
 }

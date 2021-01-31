@@ -11,10 +11,10 @@
 #ifndef _Fader_H_
 #define _Fader_H_
 
-#include "dx8render.h"
+#include "dx9render.h"
 #include "vmodule_api.h"
 
-class Fader : public ENTITY
+class Fader : public Entity
 {
     //--------------------------------------------------------------------------------------------
     //Конструирование, деструктурирование
@@ -24,18 +24,36 @@ class Fader : public ENTITY
     virtual ~Fader();
 
     //Инициализация
-    bool Init();
+    bool Init() override;
     //Сообщения
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    uint64_t ProcessMessage(MESSAGE &message) override;
+
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
+
     //Работа
-    void Execute(dword delta_time);
-    void Realize(dword delta_time);
+    void Execute(uint32_t delta_time);
+    void Realize(uint32_t delta_time);
 
     //--------------------------------------------------------------------------------------------
     //Инкапсуляция
     //--------------------------------------------------------------------------------------------
   private:
-    VDX8RENDER *rs;
+    VDX9RENDER *rs;
     IDirect3DSurface9 *renderTarget;
     IDirect3DSurface9 *surface;
 

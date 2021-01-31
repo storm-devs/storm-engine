@@ -1,7 +1,7 @@
 #ifndef _XI_IMAGE_OBJECT_H
 #define _XI_IMAGE_OBJECT_H
 
-#include "..\inode.h"
+#include "../inode.h"
 
 enum ImagePointType
 {
@@ -32,17 +32,17 @@ class CXI_IMAGE
     void SetUV(float fLeft, float fTop, float fRight, float fBottom);
     void SetDifferentPosition(long nLeft, long nTop, long nWidth, long nHeight, ImagePointType ptype = IPType_LeftTop);
 
-    void SetColor(DWORD dwColor);
-    DWORD GetColor()
+    void SetColor(uint32_t dwColor);
+    uint32_t GetColor() const
     {
         return m_dwImageColor;
     }
 
-    long GetWidth()
+    long GetWidth() const
     {
         return m_pntSize.x;
     }
-    long GetHeight()
+    long GetHeight() const
     {
         return m_pntSize.y;
     }
@@ -54,12 +54,12 @@ class CXI_IMAGE
         m_bThisIsColorRectangle = bUseOnlyColor;
     }
 
-    bool IsImagePresent()
+    bool IsImagePresent() const
     {
         return (m_nTextureID >= 0 || m_pTexture);
     }
 
-    bool IsPointInside(long nX, long nY);
+    bool IsPointInside(long nX, long nY) const;
 
     void DisableDraw(bool bDisable)
     {
@@ -67,7 +67,7 @@ class CXI_IMAGE
     }
 
   protected:
-    VDX8RENDER *m_rs;
+    VDX9RENDER *m_rs;
 
     bool m_bDisableDraw;
     char *m_pcPictureListName;
@@ -80,7 +80,7 @@ class CXI_IMAGE
     FXYRECT m_frUV;
 
     XI_ONETEX_VERTEX m_vrtx[4];
-    DWORD m_dwImageColor;
+    uint32_t m_dwImageColor;
 
     XYPOINT m_pntSize;
     XYPOINT m_pntLeftTop;

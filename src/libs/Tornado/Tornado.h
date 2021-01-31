@@ -15,7 +15,7 @@
 #include "NoiseCloud.h"
 #include "TornadoParticles.h"
 
-class Tornado : public ENTITY
+class Tornado : public Entity
 {
     //--------------------------------------------------------------------------------------------
     //Конструирование, деструктурирование
@@ -27,9 +27,25 @@ class Tornado : public ENTITY
     //Инициализация
     bool Init();
     //Исполнение
-    void Execute(dword delta_time);
-    void Realize(dword delta_time);
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    void Execute(uint32_t delta_time);
+    void Realize(uint32_t delta_time);
+    uint64_t ProcessMessage(MESSAGE &message);
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+                LostRender(delta); break;
+            case Stage::restore_render:
+                RestoreRender(delta); break;*/
+        }
+    }
 
     void SetAlpha(float a);
 
@@ -37,7 +53,7 @@ class Tornado : public ENTITY
     //Инкапсуляция
     //--------------------------------------------------------------------------------------------
   private:
-    VDX8RENDER *rs;
+    VDX9RENDER *rs;
 
     VSoundService *soundService;
     long sID;

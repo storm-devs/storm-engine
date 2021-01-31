@@ -1,11 +1,8 @@
 #include "SEA_AI.h"
-
-INTERFACE_FUNCTION
-CREATE_CLASS(SEA_AI)
-CREATE_CLASS(AIFort)
-CREATE_CLASS(AIBalls)
-CREATE_CLASS(AISeaGoods)
-CREATE_CLASS(SeaLocatorShow)
+#include "../../Shared/messages.h"
+#include "AIGroup.h"
+#include "AISeaGoods.h"
+#include "LocatorShow.h"
 
 SEA_AI::SEA_AI()
 {
@@ -14,10 +11,10 @@ SEA_AI::SEA_AI()
 
 SEA_AI::~SEA_AI()
 {
-    for (dword i = 0; i < AIGroup::AIGroups.Size(); i++)
-        SE_DELETE(AIGroup::AIGroups[i]);
-    AIGroup::AIGroups.DelAll();
-    AIShip::AIShips.DelAll();
+    for (uint32_t i = 0; i < AIGroup::AIGroups.size(); i++)
+        STORM_DELETE(AIGroup::AIGroups[i]);
+    AIGroup::AIGroups.clear();
+    AIShip::AIShips.clear();
     Helper.Uninit();
 }
 
@@ -31,12 +28,12 @@ void SEA_AI::SetDevice()
 {
 }
 
-dword dwRDTSC;
+uint64_t dwRDTSC;
 
-void SEA_AI::Execute(dword Delta_Time)
+void SEA_AI::Execute(uint32_t Delta_Time)
 {
     RDTSC_B(dwRDTSC);
-    float fDeltaTime = 0.001f * float(Delta_Time);
+    const auto fDeltaTime = 0.001f * static_cast<float>(Delta_Time);
 
     if (bFirstInit)
     {
@@ -44,7 +41,7 @@ void SEA_AI::Execute(dword Delta_Time)
         bFirstInit = false;
     }
 
-    for (dword i = 0; i < AIGroup::AIGroups.Size(); i++)
+    for (uint32_t i = 0; i < AIGroup::AIGroups.size(); i++)
     {
         AIGroup::AIGroups[i]->Execute(fDeltaTime);
     }
@@ -52,16 +49,16 @@ void SEA_AI::Execute(dword Delta_Time)
     RDTSC_E(dwRDTSC);
 }
 
-extern dword dwTotal;
+extern uint32_t dwTotal;
 
-void SEA_AI::Realize(dword Delta_Time)
+void SEA_AI::Realize(uint32_t Delta_Time)
 {
-    float fDeltaTime = 0.001f * float(Delta_Time);
-    for (dword i = 0; i < AIGroup::AIGroups.Size(); i++)
+    const auto fDeltaTime = 0.001f * static_cast<float>(Delta_Time);
+    for (uint32_t i = 0; i < AIGroup::AIGroups.size(); i++)
     {
         AIGroup::AIGroups[i]->Realize(fDeltaTime);
     }
-    // api->Trace("%d",dwTotal);
+    // core.Trace("%d",dwTotal);
     // AIHelper::pRS->Print(0,90,"%d",dwRDTSC);//dwTotal);
 }
 
@@ -75,22 +72,22 @@ bool SEA_AI::LoadState(ENTITY_STATE *state)
     return true;
 }
 
-void SEA_AI::ProcessMessage(dword iMsg, dword wParam, dword lParam)
+void SEA_AI::ProcessMessage(uint32_t iMsg, uint32_t wParam, uint32_t lParam)
 {
 }
 
-dword _cdecl SEA_AI::ProcessMessage(MESSAGE &message)
+uint64_t SEA_AI::ProcessMessage(MESSAGE &message)
 {
     char cGroupName[256], cOtherGroupName[256], cTemp[256];
 
-    long iCode = message.Long();
+    auto iCode = message.Long();
     switch (iCode)
     {
     case AI_MESSAGE_UNLOAD: {
-        dword i;
-        for (i = 0; i < AIGroup::AIGroups.Size(); i++)
+        uint32_t i;
+        for (i = 0; i < AIGroup::AIGroups.size(); i++)
             AIGroup::AIGroups[i]->Unload();
-        for (i = 0; i < AIShip::AIShips.Size(); i++)
+        for (i = 0; i < AIShip::AIShips.size(); i++)
             AIShip::AIShips[i]->Unload();
     }
     break;
@@ -101,9 +98,9 @@ dword _cdecl SEA_AI::ProcessMessage(MESSAGE &message)
         AIHelper::pASeaCameras = message.AttributePointer();
         break;
     case AI_MESSAGE_ADD_SHIP: {
-        ENTITY_ID eidShip = message.EntityID();
-        ATTRIBUTES *pACharacter = message.AttributePointer();
-        ATTRIBUTES *pAShip = message.AttributePointer();
+        auto eidShip = message.EntityID();
+        auto *pACharacter = message.AttributePointer();
+        auto *pAShip = message.AttributePointer();
         AddShip(eidShip, pACharacter, pAShip);
     }
     break;
@@ -119,14 +116,14 @@ dword _cdecl SEA_AI::ProcessMessage(MESSAGE &message)
         break;
     case AI_MESSAGE_GROUP_SET_COMMANDER: {
         message.String(sizeof(cGroupName), cGroupName);
-        ATTRIBUTES *pCharacter = message.AttributePointer();
+        auto *pCharacter = message.AttributePointer();
         AIGroup::GroupSetCommander(cGroupName, pCharacter);
     }
     break;
     case AI_MESSAGE_GROUP_GET_ATTACK_HP: {
         message.String(sizeof(cGroupName), cGroupName);
-        float fDistance = message.Float();
-        VDATA *pVData = message.ScriptVariablePointer();
+        auto fDistance = message.Float();
+        auto *pVData = message.ScriptVariablePointer();
         pVData->Set(AIGroup::GetAttackHP(cGroupName, fDistance));
     }
     break;
@@ -141,32 +138,21 @@ dword _cdecl SEA_AI::ProcessMessage(MESSAGE &message)
     }
     break;
     case AI_MESSAGE_SHIP_SET_SAIL_STATE: {
-        ATTRIBUTES *pCharacter = message.AttributePointer();
-        float fSailState = message.Float();
-        AIShip *pAIShip = AIShip::FindShip(pCharacter);
+        auto *pCharacter = message.AttributePointer();
+        auto fSailState = message.Float();
+        auto *pAIShip = AIShip::FindShip(pCharacter);
         if (!pAIShip)
         {
-            api->BTrace("SeaAI err: SetSailState, can't find ship for character = %s", pCharacter->GetAttribute("id"));
+            core.Trace("SeaAI err: SetSailState, can't find ship for character = %s", pCharacter->GetAttribute("id"));
             return 0;
         }
-        api->Send_Message(pAIShip->GetShipEID(), "lf", MSG_SHIP_SET_SAIL_STATE, fSailState);
+        core.Send_Message(pAIShip->GetShipEID(), "lf", MSG_SHIP_SET_SAIL_STATE, fSailState);
     }
     break;
-        //    case AI_MESSAGE_DO_FAKE_FIRE:
-        //    {
-        //	char	cBort[256];
-        //	ATTRIBUTES * pCharacter = message.AttributePointer();
-        //	message.String(sizeof(cBort),cBort);
-        //	float fRandTime = message.Float();
-        //	float fAng		= message.Float();
-        //	api->Trace("AI_MESSAGE_DO_FAKE_FIRE  %s %f %f", cBort, fRandTime, fAng);
-        //	AIShip::ShipFire(pCharacter, true);
-        //    }
-        break;
     case AI_MESSAGE_SHIP_SET_TASK: {
         ATTRIBUTES *pCharacter1, *pCharacter2;
-        dword dwCommand = message.Long();
-        dword dwTaskPriority = message.Long();
+        uint32_t dwCommand = message.Long();
+        uint32_t dwTaskPriority = message.Long();
         switch (dwCommand)
         {
         case AITASK_ATTACK:
@@ -218,7 +204,7 @@ dword _cdecl SEA_AI::ProcessMessage(MESSAGE &message)
     case AI_MESSAGE_GROUP_SET_TASK: {
         CVECTOR vPnt;
         char cGroupAttackingName[256];
-        dword dwCommand = message.Long();
+        uint32_t dwCommand = message.Long();
         switch (dwCommand)
         {
         case AITASK_MOVE:
@@ -244,33 +230,33 @@ dword _cdecl SEA_AI::ProcessMessage(MESSAGE &message)
         Helper.CalculateRelations();
         break;
     case AI_MESSAGE_SHIP_GET_ATTACK_HP: {
-        ATTRIBUTES *pACharacter = message.AttributePointer();
-        float fDistance = message.Float();
-        VDATA *pVD = message.ScriptVariablePointer();
+        auto *pACharacter = message.AttributePointer();
+        auto fDistance = message.Float();
+        auto *pVD = message.ScriptVariablePointer();
         pVD->Set(AIShip::FindShip(pACharacter)->GetAttackHP(fDistance));
     }
     break;
     case AI_MESSAGE_SHIP_CHANGE_GROUP: {
-        ATTRIBUTES *pACharacter = message.AttributePointer();
+        auto *pACharacter = message.AttributePointer();
         message.String(sizeof(cGroupName), cGroupName);
         AIGroup::ShipChangeGroup(pACharacter, cGroupName);
     }
     break;
     case AI_MESSAGE_CANNON_FIRE: {
-        ATTRIBUTES *pACharacter = message.AttributePointer();
-        bool bCameraOutside = (message.Long() == 1);
+        auto *pACharacter = message.AttributePointer();
+        auto bCameraOutside = (message.Long() == 1);
         AIShip::ShipFire(pACharacter, bCameraOutside);
     }
     break;
     case AI_MESSAGE_SET_OFFICER_2_SHIP: {
-        ATTRIBUTES *pACharacter1 = message.AttributePointer();
-        ATTRIBUTES *pACharacter2 = message.AttributePointer();
+        auto *pACharacter1 = message.AttributePointer();
+        auto *pACharacter2 = message.AttributePointer();
         AIGroup::SetOfficerCharacter2Ship(pACharacter1, pACharacter2);
     }
     break;
     case AI_MESSAGE_SWAP_SHIPS: {
-        ATTRIBUTES *pACharacter1 = message.AttributePointer();
-        ATTRIBUTES *pACharacter2 = message.AttributePointer();
+        auto *pACharacter1 = message.AttributePointer();
+        auto *pACharacter2 = message.AttributePointer();
         AIGroup::SwapCharactersShips(pACharacter1, pACharacter2);
     }
     break;
@@ -281,39 +267,39 @@ dword _cdecl SEA_AI::ProcessMessage(MESSAGE &message)
         z = message.Float();
         ay = message.Float();
 
-        AIGroup::SailMainGroup(CVECTOR(x, y, z), ay, null);
+        AIGroup::SailMainGroup(CVECTOR(x, y, z), ay, nullptr);
     }
     break;
     case AI_MESSAGE_SAIL_2_CHARACTER: {
-        ATTRIBUTES *pACharacter = message.AttributePointer();
-        float fDistance = message.Float();
-        float fAngle = message.Float();
-        AIShip *pAIShip = AIShip::FindShip(pACharacter);
+        auto *pACharacter = message.AttributePointer();
+        auto fDistance = message.Float();
+        auto fAngle = message.Float();
+        auto *pAIShip = AIShip::FindShip(pACharacter);
         Assert(pAIShip);
-        CVECTOR vPos = pAIShip->GetPos() + (fDistance * CVECTOR(sinf(fAngle), 0.0f, cosf(fAngle)));
+        auto vPos = pAIShip->GetPos() + (fDistance * CVECTOR(sinf(fAngle), 0.0f, cosf(fAngle)));
 
         AIGroup::SailMainGroup(vPos, -10000.0f, pACharacter);
     }
     break;
     case AI_MESSAGE_CHARACTER_DEAD: {
-        VAI_INNEROBJ *pAIObj = AIHelper::FindAIInnerObj(message.AttributePointer());
+        auto *pAIObj = AIHelper::FindAIInnerObj(message.AttributePointer());
         if (pAIObj)
         {
             pAIObj->SetDead(true);
             if (pAIObj->GetObjType() != AIOBJ_FORT)
-                ((AIShip *)pAIObj)->GetShipBasePointer()->SetDead();
+                static_cast<AIShip *>(pAIObj)->GetShipBasePointer()->SetDead();
         }
     }
     break;
     case AI_MESSAGE_GET_RELATION: {
-        ATTRIBUTES *pACharacter1 = message.AttributePointer();
-        ATTRIBUTES *pACharacter2 = message.AttributePointer();
-        VDATA *pVData = message.ScriptVariablePointer();
-        pVData->Set((long)Helper.GetRelationSafe(pACharacter1, pACharacter2));
+        auto *pACharacter1 = message.AttributePointer();
+        auto *pACharacter2 = message.AttributePointer();
+        auto *pVData = message.ScriptVariablePointer();
+        pVData->Set(static_cast<long>(Helper.GetRelationSafe(pACharacter1, pACharacter2)));
     }
     break;
     case AI_MESSAGE_SET_COMPANION_ENEMY: {
-        ATTRIBUTES *pACharacter = message.AttributePointer();
+        auto *pACharacter = message.AttributePointer();
         SetCompanionEnemy(pACharacter);
     }
     break;
@@ -324,28 +310,29 @@ dword _cdecl SEA_AI::ProcessMessage(MESSAGE &message)
     case AI_MESSAGE_CANNONS_BOOM_CHECK: {
         float fTmpCannonDamage, x, y, z;
 
-        ATTRIBUTES *pACharacter = message.AttributePointer();
+        auto *pACharacter = message.AttributePointer();
         fTmpCannonDamage = message.Float();
         x = message.Float();
         y = message.Float();
         z = message.Float();
 
-        AIShip *pAIShip = AIShip::FindShip(pACharacter);
+        auto *pAIShip = AIShip::FindShip(pACharacter);
         Assert(pAIShip);
         pAIShip->GetCannonController()->CheckCannonsBoom(fTmpCannonDamage, CVECTOR(x, y, z));
     }
     break;
-    // boal 08.08.06 метод пересчета орудий на корабле -->
+        // boal 08.08.06 метод пересчета орудий на корабле -->
     case AI_MESSAGE_RESEARCH_CANNONS: {
-        ATTRIBUTES *pACharacter = message.AttributePointer();
+        auto *pACharacter = message.AttributePointer();
 
-        AIShip *pAIShip = AIShip::FindShip(pACharacter);
+        auto *pAIShip = AIShip::FindShip(pACharacter);
         Assert(pAIShip);
         pAIShip->GetCannonController()->ResearchCannons();
     }
     break;
-    // boal 08.08.06 метод пересчета орудий на корабле <--
-    case AI_MESSAGE_SEASAVE: {
+        // boal 08.08.06 метод пересчета орудий на корабле <--
+    case AI_MESSAGE_SEASAVE: //~!~
+    {
         char str[256];
         Save(str);
     }
@@ -366,14 +353,12 @@ void SEA_AI::Save(const char *pStr)
     SL.CreateWrite();
 
     Helper.Save(&SL);
-    ENTITY_ID eidCamera;
-    api->FindClass(&eidCamera, "SEA_CAMERAS", 0);
-    api->Send_Message(eidCamera, "lp", AI_MESSAGE_SEASAVE, &SL);
+    core.Send_Message(EntityManager::GetEntityId("SEA_CAMERAS"), "lp", AI_MESSAGE_SEASAVE, &SL);
 
     AIBalls::pAIBalls->Save(&SL);
 
-    SL.SaveDword(AIGroup::AIGroups.Size());
-    for (dword i = 0; i < AIGroup::AIGroups.Size(); i++)
+    SL.SaveDword(AIGroup::AIGroups.size());
+    for (uint32_t i = 0; i < AIGroup::AIGroups.size(); i++)
         AIGroup::AIGroups[i]->Save(&SL);
 
     if (AIFort::pAIFort)
@@ -389,17 +374,15 @@ void SEA_AI::Load(const char *pStr)
     SL.CreateLoad();
 
     Helper.Load(&SL);
-    ENTITY_ID eidCamera;
-    api->FindClass(&eidCamera, "SEA_CAMERAS", 0);
-    api->Send_Message(eidCamera, "lp", AI_MESSAGE_SEALOAD, &SL);
+    core.Send_Message(EntityManager::GetEntityId("SEA_CAMERAS"), "lp", AI_MESSAGE_SEALOAD, &SL);
 
     AIBalls::pAIBalls->Load(&SL);
 
-    dword dwNumGroups = SL.LoadDword();
-    for (dword i = 0; i < dwNumGroups; i++)
+    const auto dwNumGroups = SL.LoadDword();
+    for (uint32_t i = 0; i < dwNumGroups; i++)
     {
-        AIGroup *pG = AIGroup::AIGroups[AIGroup::AIGroups.Add(NEW AIGroup)];
-        pG->Load(&SL);
+        AIGroup::AIGroups.push_back(new AIGroup());
+        AIGroup::AIGroups.back()->Load(&SL);
     }
 
     if (AIFort::pAIFort)
@@ -407,16 +390,16 @@ void SEA_AI::Load(const char *pStr)
     Helper.Init();
 }
 
-dword SEA_AI::AttributeChanged(ATTRIBUTES *pAttribute)
+uint32_t SEA_AI::AttributeChanged(ATTRIBUTES *pAttribute)
 {
-    dword i;
+    uint32_t i;
 
     if (*pAttribute == "isDone")
     {
         // delete all old groups and ships
         Helper.Init();
 
-        for (i = 0; i < AIShip::AIShips.Size(); i++)
+        for (i = 0; i < AIShip::AIShips.size(); i++)
             AIShip::AIShips[i]->CheckStartPosition();
     }
 
@@ -428,14 +411,14 @@ dword SEA_AI::AttributeChanged(ATTRIBUTES *pAttribute)
     return 0;
 }
 
-void SEA_AI::AddShip(ENTITY_ID eidShip, ATTRIBUTES *pCharacter, ATTRIBUTES *pAShip)
+void SEA_AI::AddShip(entid_t eidShip, ATTRIBUTES *pCharacter, ATTRIBUTES *pAShip)
 {
     Assert(pCharacter && pAShip);
-    ATTRIBUTES *pG = pCharacter->FindAClass(pCharacter, "SeaAI.Group");
+    auto *pG = pCharacter->FindAClass(pCharacter, "SeaAI.Group");
     Assert(pG);
 
     // search group
-    char *pGName = pG->GetAttribute("Name");
+    auto *const pGName = pG->GetAttribute("Name");
     Assert(pGName);
 
     AIGroup::FindOrCreateGroup(pGName)->AddShip(eidShip, pCharacter, pAShip);
@@ -446,14 +429,14 @@ void SEA_AI::SetCompanionEnemy(ATTRIBUTES *pACharacter)
     Assert(pACharacter);
 
     // delete from old group
-    AIGroup *pG = AIGroup::FindGroup(pACharacter);
+    auto *pG = AIGroup::FindGroup(pACharacter);
     Assert(pG);
-    AIShip *pS = pG->ExtractShip(pACharacter);
+    auto *const pS = pG->ExtractShip(pACharacter);
 
     // create and add to new group
-    ATTRIBUTES *pSeaAIG = pACharacter->FindAClass(pACharacter, "SeaAI.Group");
+    auto *pSeaAIG = pACharacter->FindAClass(pACharacter, "SeaAI.Group");
     Assert(pSeaAIG);
-    char *pGName = pSeaAIG->GetAttribute("Name");
+    auto *const pGName = pSeaAIG->GetAttribute("Name");
     Assert(pGName);
 
     AIGroup::FindOrCreateGroup(pGName)->InsertShip(pS);

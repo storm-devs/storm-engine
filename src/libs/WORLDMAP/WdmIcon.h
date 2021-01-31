@@ -31,9 +31,9 @@ class WdmIcon : public WdmInterfaceObject
     virtual ~WdmIcon();
 
     //Расчёты
-    virtual void Update(float dltTime);
+    void Update(float dltTime) override;
     //Отрисовка
-    virtual void LRender(VDX8RENDER *rs);
+    void LRender(VDX9RENDER *rs) override;
 
     //--------------------------------------------------------------------------------------------
     //Инкапсуляция

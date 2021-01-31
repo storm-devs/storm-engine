@@ -1,26 +1,25 @@
-
 #include "Sailors.h"
+#include <string>
 
 class Menu
 {
-
   public:
-    string line[10];
+    std::string line[10];
     int selected;
     int blocked;
     int count;
     CVECTOR cameraAng;
     CVECTOR cameraPos;
-    DWORD dltTime;
+    uint32_t dltTime;
 
     bool keyPressed;
     int key, shiftKey;
 
     Sailors *sailrs;
-    string _fileName_save;
-    string _fileName_load;
+    std::string _fileName_save;
+    std::string _fileName_load;
 
-    Menu()
+    Menu() : dltTime(0), key(0), shiftKey(0), sailrs(nullptr)
     {
         count = 3;
         selected = 0;
@@ -28,7 +27,7 @@ class Menu
         keyPressed = false;
     };
 
-    void Draw(VDX8RENDER *rs, SailorsPoints &sailorsPoints);
+    void Draw(VDX9RENDER *rs, SailorsPoints &sailorsPoints) const;
     void OnKeyPress(SailorsPoints &sailorsPoints);
     void ChangeControl(int key, SailorsPoints &sailorsPoints);
 

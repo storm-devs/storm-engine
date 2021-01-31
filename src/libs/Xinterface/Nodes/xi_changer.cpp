@@ -1,17 +1,20 @@
 #include "xi_changer.h"
-#include <stdio.h>
+
+#include "core.h"
+
+#include "vfile_service.h"
 
 CXI_CHANGER::CXI_CHANGER()
 {
     m_nPlaceQuantity = 0;
-    m_pPlace = NULL;
+    m_pPlace = nullptr;
 
     m_dwFoneColor = ARGB(255, 0, 0, 0);
     m_xOffset = 0.f;
     m_yOffset = 0.f;
 
     m_idBackTex = -1;
-    IDirect3DTexture9 *m_pTex = NULL;
+    IDirect3DTexture9 *m_pTex = nullptr;
 
     m_bClickable = true;
     m_nNodeType = NODETYPE_CHANGER;
@@ -22,7 +25,7 @@ CXI_CHANGER::~CXI_CHANGER()
     ReleaseAll();
 }
 
-void CXI_CHANGER::Draw(bool bSelected, dword Delta_Time)
+void CXI_CHANGER::Draw(bool bSelected, uint32_t Delta_Time)
 {
     if (m_bUse)
     {
@@ -61,26 +64,26 @@ void CXI_CHANGER::Draw(bool bSelected, dword Delta_Time)
             m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, &m_pTexVert[4], sizeof(XI_ONETEX_VERTEX),
                                   "iRectangle");
         }
-        m_rs->SetTexture(0, m_pTex ? m_pTex->m_pTexture : 0);
+        m_rs->SetTexture(0, m_pTex ? m_pTex->m_pTexture : nullptr);
         m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, m_pTexVert, sizeof(XI_ONETEX_VERTEX), "iChanger");
     }
 }
 
-bool CXI_CHANGER::Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, VDX8RENDER *rs, XYRECT &hostRect,
-                       XYPOINT &ScreenSize)
+bool CXI_CHANGER::Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs,
+                       XYRECT &hostRect, XYPOINT &ScreenSize)
 {
     if (!CINODE::Init(ini1, name1, ini2, name2, rs, hostRect, ScreenSize))
         return false;
     return true;
 }
 
-void CXI_CHANGER::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2)
+void CXI_CHANGER::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2)
 {
     int i;
     char param[255];
     FXYPOINT fPnt;
 
-    bool bRelativeRect = !GetIniLong(ini1, name1, ini2, name2, "bAbsoluteRectangle", 0);
+    const auto bRelativeRect = !GetIniLong(ini1, name1, ini2, name2, "bAbsoluteRectangle", 0);
 
     // get position quantity
     m_nPlaceQuantity = 0;
@@ -92,10 +95,10 @@ void CXI_CHANGER::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2
     // create position array
     if (m_nPlaceQuantity > 0)
     {
-        m_pPlace = NEW XYRECT[m_nPlaceQuantity];
-        if (m_pPlace == NULL)
-            SE_THROW_MSG("Allocate memory error")
-        ZeroMemory(m_pPlace, sizeof(XYRECT) * m_nPlaceQuantity);
+        m_pPlace = new XYRECT[m_nPlaceQuantity];
+        if (m_pPlace == nullptr)
+            throw std::exception("Allocate memory error");
+        PZERO(m_pPlace, sizeof(XYRECT) * m_nPlaceQuantity);
     }
 
     // get rectangle positions
@@ -136,7 +139,7 @@ void CXI_CHANGER::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2
     m_yOffset = fPnt.y;
 
     // get video texture (for inside picture)
-    m_pTex = null;
+    m_pTex = nullptr;
     if (ReadIniString(ini1, name1, ini2, name2, "videoTexture", param, sizeof(param), ""))
         m_pTex = m_rs->GetVideoTexture(param);
 
@@ -155,8 +158,8 @@ void CXI_CHANGER::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2
     m_pTexVert[6].tv = m_pTexVert[7].tv = m_pTexVert[2].tv = m_pTexVert[3].tv = 0.f;
 
     m_nCurrentPos = 0;
-    ATTRIBUTES *pAttr = api->Entity_GetAttributeClass(&g_idInterface, m_nodeName);
-    if (pAttr != NULL)
+    auto *pAttr = core.Entity_GetAttributeClass(g_idInterface, m_nodeName);
+    if (pAttr != nullptr)
         m_nCurrentPos = pAttr->GetAttributeAsDword("current", 0);
 
     SetRectanglesToPosition(0);
@@ -164,7 +167,7 @@ void CXI_CHANGER::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2
 
 void CXI_CHANGER::ReleaseAll()
 {
-    PTR_DELETE(m_pPlace);
+    STORM_DELETE(m_pPlace);
     TEXTURE_RELEASE(m_rs, m_idBackTex);
     VIDEOTEXTURE_RELEASE(m_rs, m_pTex);
 }
@@ -173,7 +176,7 @@ int CXI_CHANGER::CommandExecute(int wActCode)
 {
     if (m_bUse)
     {
-        bool bChangePosition = false;
+        auto bChangePosition = false;
         switch (wActCode)
         {
         case ACTION_MOUSECLICK:
@@ -215,8 +218,8 @@ int CXI_CHANGER::CommandExecute(int wActCode)
         {
             SetRectanglesToPosition(m_nCurrentPos);
             // set attribute to new position
-            ATTRIBUTES *pAttr = _CORE_API->Entity_GetAttributeClass(&g_idInterface, m_nodeName);
-            if (pAttr != NULL)
+            auto *pAttr = core.Entity_GetAttributeClass(g_idInterface, m_nodeName);
+            if (pAttr != nullptr)
                 pAttr->SetAttributeUseDword("current", m_nCurrentPos);
         }
     }
@@ -227,10 +230,10 @@ void CXI_CHANGER::SetRectanglesToPosition(int nPos)
 {
     float left, top, right, bottom;
 
-    left = (float)m_pPlace[nPos].left;
-    top = (float)m_pPlace[nPos].top;
-    right = (float)m_pPlace[nPos].right;
-    bottom = (float)m_pPlace[nPos].bottom;
+    left = static_cast<float>(m_pPlace[nPos].left);
+    top = static_cast<float>(m_pPlace[nPos].top);
+    right = static_cast<float>(m_pPlace[nPos].right);
+    bottom = static_cast<float>(m_pPlace[nPos].bottom);
 
     // set background rectangle position
     m_pTexVert[4].pos.x = left - m_xOffset;
@@ -256,7 +259,7 @@ bool CXI_CHANGER::IsClick(int buttonID, long xPos, long yPos)
 {
     if (m_bClickable && m_bUse)
     {
-        for (int i = 0; i < m_nPlaceQuantity; i++)
+        for (auto i = 0; i < m_nPlaceQuantity; i++)
             if (xPos > m_pPlace[i].left && xPos < m_pPlace[i].right && yPos > m_pPlace[i].top &&
                 yPos < m_pPlace[i].bottom)
             {
@@ -282,15 +285,15 @@ void CXI_CHANGER::SaveParametersToIni()
 {
     char pcWriteParam[2048];
 
-    INIFILE *pIni = api->fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.GetBuffer());
+    auto *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
-        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.GetBuffer());
+        core.Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
         return;
     }
 
     // save position
-    _snprintf(pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rect.left, m_rect.top, m_rect.right, m_rect.bottom);
+    sprintf_s(pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rect.left, m_rect.top, m_rect.right, m_rect.bottom);
     pIni->WriteString(m_nodeName, "position", pcWriteParam);
 
     delete pIni;
@@ -314,20 +317,20 @@ XYRECT CXI_CHANGER::GetCursorRect()
     return rectPos;
 }
 
-dword _cdecl CXI_CHANGER::MessageProc(long msgcode, MESSAGE &message)
+uint32_t CXI_CHANGER::MessageProc(long msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
     case 0: // Set position to N
     {
-        int n = message.Long();
+        const int n = message.Long();
         if (n >= 0 && n < m_nPlaceQuantity && n != m_nCurrentPos)
         {
             m_nCurrentPos = n;
             SetRectanglesToPosition(m_nCurrentPos);
             // set attribute to new position
-            ATTRIBUTES *pAttr = api->Entity_GetAttributeClass(&g_idInterface, m_nodeName);
-            if (pAttr != null)
+            auto *pAttr = core.Entity_GetAttributeClass(g_idInterface, m_nodeName);
+            if (pAttr != nullptr)
                 pAttr->SetAttributeUseDword("current", m_nCurrentPos);
         }
     }

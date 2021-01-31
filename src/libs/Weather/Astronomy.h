@@ -2,20 +2,38 @@
 #define ASTRONOMY_HPP
 
 #include "typedef.h"
+#include <vector>
 
-class Astronomy : public ENTITY
+class Astronomy : public Entity
 {
   public:
-    static VDX8RENDER *pRS;
+    static VDX9RENDER *pRS;
     static VGEOMETRY *pGS;
 
     Astronomy();
     ~Astronomy();
 
-    bool Init();
+    bool Init() override;
     void SetDevice();
-    void Realize(dword Delta_Time);
-    dword AttributeChanged(ATTRIBUTES *pAttribute);
+    void Realize(uint32_t Delta_Time);
+    uint32_t AttributeChanged(ATTRIBUTES *pAttribute) override;
+
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+            // case Stage::execute:
+            //	Execute(delta); break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
+
     ATTRIBUTES *GetRoot(ATTRIBUTES *pA);
 
   private:
@@ -35,7 +53,7 @@ class Astronomy : public ENTITY
             float fMagMax, fMagMin;
         };
 
-        array<Planet> aPlanets;
+        std::vector<Planet> aPlanets;
         float fPlanetScale;
 
         float fPlanetFade;
@@ -63,25 +81,22 @@ class Astronomy : public ENTITY
         void Execute(double dDeltaTime, double dHour);
         void Realize(double dDeltaTime, double dHour);
 
-        dword AttributeChanged(ATTRIBUTES *pAttribute);
+        uint32_t AttributeChanged(ATTRIBUTES *pAttribute);
         void TimeUpdate(ATTRIBUTES *pAP);
 
-        inline bool IsEnable()
+        bool IsEnable() const
         {
             return bEnable;
         };
 
       private:
-        IDirect3DVertexDeclaration9 *vDecl;
-        IDirect3DVertexShader9 *sShader;
-
-        string sCatalog, sTexture;
+        const char *sCatalog, *sTexture;
         float fRadius, fSize, fHeightFade, fSunFade;
         float fVisualMagnitude, fTelescopeMagnitude;
         long iTexture;
         bool bEnable;
         long iVertexBuffer, iVertexBufferColors;
-        dword dwShader;
+        IDirect3DVertexDeclaration9 *pDecl;
         float fPrevFov;
 
         struct Star
@@ -90,13 +105,13 @@ class Astronomy : public ENTITY
             float fDec;
             float fMag;
             char cSpectr[2];
-            dword dwColor;
+            uint32_t dwColor;
             float fAlpha;
             CVECTOR vPos;
         };
 
-        dword Spectr[256];
-        array<Star> aStars;
+        uint32_t Spectr[256];
+        std::vector<Star> aStars;
 
         float fFadeValue;
         float fFadeTimeStart;

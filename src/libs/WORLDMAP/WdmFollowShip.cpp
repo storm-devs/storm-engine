@@ -38,9 +38,9 @@ bool WdmFollowShip::Load(const char *modelName)
     if (wdmObjects->playerShip)
     {
         //Определяем угл
-        double sn = wdmObjects->playerShip->mtx.Pos().x - mtx.Pos().x;
+        const double sn = wdmObjects->playerShip->mtx.Pos().x - mtx.Pos().x;
         double cs = wdmObjects->playerShip->mtx.Pos().z - mtx.Pos().z;
-        double l = sn * sn + cs * cs;
+        const auto l = sn * sn + cs * cs;
         if (l > 0.0)
             cs /= sqrt(l);
         if (cs > 1.0)
@@ -50,7 +50,7 @@ bool WdmFollowShip::Load(const char *modelName)
         cs = acos(cs);
         if (sn < 0.0)
             cs = -cs;
-        ay = float(cs);
+        ay = static_cast<float>(cs);
     }
     //Ставим кораблик
     Teleport(x, z, ay);
@@ -63,17 +63,17 @@ void WdmFollowShip::FindMoveForce()
     CVECTOR dir;
     if (wdmObjects->islands)
     {
-        wdmObjects->islands->FindDirection(mtx.Pos(), ((WdmShip *)wdmObjects->playerShip)->mtx.Pos(), dir);
+        wdmObjects->islands->FindDirection(mtx.Pos(), static_cast<WdmShip *>(wdmObjects->playerShip)->mtx.Pos(), dir);
     }
     else
     {
         //Позиция игрока
-        dir.x = ((WdmShip *)wdmObjects->playerShip)->mtx.Pos().x;
-        dir.z = ((WdmShip *)wdmObjects->playerShip)->mtx.Pos().z;
+        dir.x = static_cast<WdmShip *>(wdmObjects->playerShip)->mtx.Pos().x;
+        dir.z = static_cast<WdmShip *>(wdmObjects->playerShip)->mtx.Pos().z;
         //Направление на игрока
         dir.x -= mtx.Pos().x;
         dir.z -= mtx.Pos().z;
-        float dl = dir.x * dir.x + dir.z * dir.z;
+        auto dl = dir.x * dir.x + dir.z * dir.z;
         if (dl > 1.0f)
         {
             dl = 1.0f / sqrtf(dl);

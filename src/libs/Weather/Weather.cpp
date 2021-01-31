@@ -1,13 +1,9 @@
 #include "Weather.h"
-
-INTERFACE_FUNCTION
-CREATE_CLASS(WEATHER)
-CREATE_CLASS(RAIN)
-CREATE_CLASS(SUNGLOW)
-CREATE_CLASS(LIGHTNING)
-CREATE_CLASS(SKY)
-CREATE_CLASS(WATERFLARE)
-CREATE_CLASS(Astronomy)
+#include "Astronomy.h"
+#include "Lightning.h"
+#include "SunGlow.h"
+#include "WaterFlare.h"
+#include "inlines.h"
 
 WEATHER::WEATHER()
 {
@@ -20,7 +16,7 @@ WEATHER::~WEATHER()
 
 void WEATHER::SetDevice()
 {
-    pRS = (VDX8RENDER *)api->CreateService("dx8render");
+    pRS = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     Assert(pRS);
 
     // LoadWeatherIni();
@@ -59,39 +55,40 @@ void WEATHER::Move()
 {
 }
 
-void WEATHER::Realize(dword Delta_Time)
+void WEATHER::Realize(uint32_t Delta_Time)
 {
 }
 
-void WEATHER::Execute(dword Delta_Time)
+void WEATHER::Execute(uint32_t Delta_Time)
 {
     /*	if (dwFrames) SetLong(whi_weather_update,0);
 
-        WIN32_FIND_DATA	wfd;
-        HANDLE h = fio->_FindFirstFile(WHT_INI_FILE,&wfd);
-        if (INVALID_HANDLE_VALUE != h)
-        {
-            FILETIME ft_new = wfd.ftLastWriteTime;
-            fio->_FindClose(h);
+      WIN32_FIND_DATA	wfd;
+      HANDLE h = fio->_FindFirstFile(WHT_INI_FILE,&wfd);
+      if (INVALID_HANDLE_VALUE != h)
+      {
+        FILETIME ft_new = wfd.ftLastWriteTime;
+        fio->_FindClose(h);
 
-            if (CompareFileTime(&ft_old,&ft_new)!=0) LoadWeatherIni();
-        }
+        if (CompareFileTime(&ft_old,&ft_new)!=0) LoadWeatherIni();
+      }
 
-        dwFrames--;
+      dwFrames--;
     */
     if (fFloats[whf_time_speed] != 0.f)
     {
-        float fOldTimer = fFloats[whf_time_counter];
-        fFloats[whf_time_counter] += api->GetDeltaTime() * fFloats[whf_time_speed];
+        const auto fOldTimer = fFloats[whf_time_counter];
+        fFloats[whf_time_counter] += core.GetDeltaTime() * fFloats[whf_time_speed];
         // смена дня
         if (fFloats[whf_time_counter] > 24.f)
             fFloats[whf_time_counter] -= 24.f;
 
         UpdateSunMoonPos();
 
-        if ((long)(fFloats[whf_time_counter] * fUpdateFrequence) != (long)(fOldTimer * fUpdateFrequence))
+        if (static_cast<long>(fFloats[whf_time_counter] * fUpdateFrequence) !=
+            static_cast<long>(fOldTimer * fUpdateFrequence))
         {
-            api->Event("WeatherTimeUpdate", "f", fFloats[whf_time_counter]);
+            core.Event("WeatherTimeUpdate", "f", fFloats[whf_time_counter]);
         }
         // обновление даты в скриптах
         // if( fFloats[whf_time_counter] fOldTimer
@@ -101,7 +98,7 @@ void WEATHER::Execute(dword Delta_Time)
 void WEATHER::UpdateSunMoonPos()
 {
     // sun
-    float fK = (fFloats[whf_time_counter] - fSunBegTime) / (fSunEndTime - fSunBegTime);
+    auto fK = (fFloats[whf_time_counter] - fSunBegTime) / (fSunEndTime - fSunBegTime);
     if (fK < 0.f || fK > 1.f)
     {
         bSunPresent = false;
@@ -179,7 +176,7 @@ void WEATHER::CleanUP()
 {
     char	section[256],param[256],str[256];
     long	i;
-    dword	r,g,b;
+    uint32_t	r,g,b;
 
     CleanUP();
 
@@ -192,12 +189,12 @@ void WEATHER::CleanUP()
         fio->_FindClose(h);
     }
     ini = fio->OpenIniFile(WHT_INI_FILE);
-    if(!ini) SE_THROW_MSG("weather.ini file not found!");
+    if(!ini) throw std::exception("weather.ini file not found!");
 
     //iHour = ini->GetLong(0,"iCurHour",0);
-    iHour = AttributesPointer->GetAttributeAsdword("Hour",0);
+    iHour = AttributesPointer->GetAttributeAsuint32_t("Hour",0);
 
-    sprintf(section,"%s%d:00",(iHour<10) ? "0" : "", iHour);
+    sprintf_s(section,"%s%d:00",(iHour<10) ? "0" : "", iHour);
 
     ZERO4(fFloats,iLongs,dwColors,vVectors);
 
@@ -231,7 +228,7 @@ void WEATHER::CleanUP()
         for (i=0;i<iLongs[whi_harmonics_num];i++)
         {
             str[0] = 0;
-            sprintf(param,"Harmonic%d",i);
+            sprintf_s(param,"Harmonic%d",i);
             ini->ReadString(section,param,str,sizeof(str)-1,"1,0.0,20.0,0.1202,80.87,-28.00");
             sea_harmonic_t *pH = &pHarmonics[i];
             pH->bUse = true;
@@ -244,7 +241,7 @@ void WEATHER::CleanUP()
         str[0] = 0;
         ini->ReadString(section,StringNames[i].name,str,sizeof(str)-1,"");
         pStrings[StringNames[i].dwCode] = (char*)new char[strlen(str)+1];
-        strcpy(pStrings[StringNames[i].dwCode],str);
+        strcpy_s(pStrings[StringNames[i].dwCode],str);
     }
 
     SetLong(whi_weather_update,1);
@@ -254,23 +251,23 @@ void WEATHER::CleanUP()
 
     SetCommonStates();
 
-    api->Trace("Weather: Load ini complete");
+    core.Trace("Weather: Load ini complete");
 }*/
 
 void WEATHER::SetCommonStates()
 {
     pRS->SetRenderState(D3DRS_FOGENABLE, GetLong(whi_fog_enable));
 
-    float fDensity = GetFloat(whf_fog_density);
+    auto fDensity = GetFloat(whf_fog_density);
     pRS->SetRenderState(D3DRS_FOGCOLOR, GetColor(whc_fog_color));
-    pRS->SetRenderState(D3DRS_FOGDENSITY, *((dword *)&fDensity));
+    pRS->SetRenderState(D3DRS_FOGDENSITY, *((uint32_t *)&fDensity));
 
-    dword dwAmbient = GetColor(whc_sun_ambient);
+    const auto dwAmbient = GetColor(whc_sun_ambient);
     pRS->SetRenderState(D3DRS_AMBIENT, dwAmbient);
 
     // setup sun light
-    float fSunHeightAngle = GetFloat(whf_sun_height_angle);
-    float fSunAzimuthAngle = GetFloat(whf_sun_azimuth_angle);
+    const auto fSunHeightAngle = GetFloat(whf_sun_height_angle);
+    const auto fSunAzimuthAngle = GetFloat(whf_sun_azimuth_angle);
     CVECTOR vSun, vSunColor, vSunLight;
     D3DLIGHT9 sun;
 
@@ -327,47 +324,47 @@ void WEATHER::SetCommonStates()
     iHour = hour;
 
     INIFILE *ini = fio->OpenIniFile(WHT_INI_FILE);
-    if(!ini) SE_THROW_MSG("weather.ini file not found!");
+    if(!ini) throw std::exception("weather.ini file not found!");
     ini->WriteLong(0,"iCurHour",iHour);
     delete ini;
 
-    AttributesPointer->SetAttributeUsedword("Hour",iHour);
+    AttributesPointer->SetAttributeUseuint32_t("Hour",iHour);
 
     LoadWeatherIni();
     return true;
 }*/
 
-long WEATHER::GetLong(dword dwCode)
+long WEATHER::GetLong(uint32_t dwCode)
 {
     return iLongs[dwCode];
 }
 
-dword WEATHER::GetColor(dword dwCode, CVECTOR *vOut)
+uint32_t WEATHER::GetColor(uint32_t dwCode, CVECTOR *vOut)
 {
-    vOut->x = float((dwColors[dwCode] >> 0x10) & 0xFF) / 255.0f;
-    vOut->y = float((dwColors[dwCode] >> 0x8) & 0xFF) / 255.0f;
-    vOut->z = float((dwColors[dwCode]) & 0xFF) / 255.0f;
+    vOut->x = static_cast<float>((dwColors[dwCode] >> 0x10) & 0xFF) / 255.0f;
+    vOut->y = static_cast<float>((dwColors[dwCode] >> 0x8) & 0xFF) / 255.0f;
+    vOut->z = static_cast<float>((dwColors[dwCode]) & 0xFF) / 255.0f;
     return dwColors[dwCode];
 }
 
-dword WEATHER::GetColor(dword dwCode)
+uint32_t WEATHER::GetColor(uint32_t dwCode)
 {
     return dwColors[dwCode];
 }
 
-float WEATHER::GetFloat(dword dwCode)
+float WEATHER::GetFloat(uint32_t dwCode)
 {
     return fFloats[dwCode];
 }
 
-void WEATHER::GetVector(dword dwCode, CVECTOR *vOut)
+void WEATHER::GetVector(uint32_t dwCode, CVECTOR *vOut)
 {
     *vOut = vVectors[dwCode];
 }
 
-dword WEATHER::AttributeChanged(ATTRIBUTES *pAttribute)
+uint32_t WEATHER::AttributeChanged(ATTRIBUTES *pAttribute)
 {
-    ATTRIBUTES *pParent = pAttribute->GetParent(); // if (*pAttribute == "Hour")
+    auto *const pParent = pAttribute->GetParent(); // if (*pAttribute == "Hour")
     if (*pParent == "fog")
     {
         if (*pAttribute == "Enable")
@@ -407,6 +404,31 @@ dword WEATHER::AttributeChanged(ATTRIBUTES *pAttribute)
     }
     if (*pParent == "sun")
     {
+        if (*pAttribute == "Height")
+        {
+            fSunHeight = pAttribute->GetAttributeAsFloat();
+            return 0;
+        }
+        if (*pAttribute == "BegAngle")
+        {
+            fSunBegAngle = pAttribute->GetAttributeAsFloat();
+            return 0;
+        }
+        if (*pAttribute == "BegTime")
+        {
+            fSunBegTime = pAttribute->GetAttributeAsFloat();
+            return 0;
+        }
+        if (*pAttribute == "EndAngle")
+        {
+            fSunEndAngle = pAttribute->GetAttributeAsFloat();
+            return 0;
+        }
+        if (*pAttribute == "EndTime")
+        {
+            fSunEndTime = pAttribute->GetAttributeAsFloat();
+            return 0;
+        }
         if (*pAttribute == "Color")
         {
             dwColors[whc_sun_color] = pAttribute->GetAttributeAsDword();
@@ -431,7 +453,35 @@ dword WEATHER::AttributeChanged(ATTRIBUTES *pAttribute)
             }
         }
     }
-    if (*pParent == "Time")
+    if (*pParent == "moon")
+    {
+        if (*pAttribute == "Height")
+        {
+            fMoonHeight = pAttribute->GetAttributeAsFloat();
+            return 0;
+        }
+        if (*pAttribute == "BegAngle")
+        {
+            fMoonBegAngle = pAttribute->GetAttributeAsFloat();
+            return 0;
+        }
+        if (*pAttribute == "BegTime")
+        {
+            fMoonBegTime = pAttribute->GetAttributeAsFloat();
+            return 0;
+        }
+        if (*pAttribute == "EndAngle")
+        {
+            fMoonEndAngle = pAttribute->GetAttributeAsFloat();
+            return 0;
+        }
+        if (*pAttribute == "EndTime")
+        {
+            fMoonEndTime = pAttribute->GetAttributeAsFloat();
+            return 0;
+        }
+    }
+    if (*pParent == "time")
     {
         if (*pAttribute == "time")
         {

@@ -38,12 +38,12 @@ CXI_EDITBOX::~CXI_EDITBOX()
     ReleaseAll();
 }
 
-void CXI_EDITBOX::Draw(bool bSelected, dword Delta_Time)
+void CXI_EDITBOX::Draw(bool bSelected, uint32_t Delta_Time)
 {
     if (!bSelected && m_bOldSelected)
     {
         m_bUse = false;
-        api->Event("editbox_exit");
+        core.Event("editbox_exit");
     }
     m_bOldSelected = bSelected;
     if (!m_bUse || !bSelected)
@@ -66,35 +66,36 @@ void CXI_EDITBOX::Draw(bool bSelected, dword Delta_Time)
 
     // Print buttons symbol
     int i, j, idx;
-    float top = m_nTopOffset + m_fChrTopOffset;
+    auto top = m_nTopOffset + m_fChrTopOffset;
     for (idx = j = 0; j < m_nVert; j++)
     {
-        float left = float(m_rect.left + m_nLeftOffset) + m_fHAdd * .5f;
+        auto left = static_cast<float>(m_rect.left + m_nLeftOffset) + m_fHAdd * .5f;
         for (i = 0; i < m_nHorz; i++)
         {
             switch (m_alpha[m_bUpChrRegistrOffset + idx])
             {
             case '*':
-                m_rs->ExtPrint(m_nChrFontNum, 0xFFFFFFFF, 0, ALIGN_CENTER, true, m_fChrScale * .7f, m_screenSize.x,
-                               m_screenSize.y, (long)left, (long)top + 3, "Del");
+                m_rs->ExtPrint(m_nChrFontNum, 0xFFFFFFFF, 0, PR_ALIGN_CENTER, true, m_fChrScale * .7f, m_screenSize.x,
+                               m_screenSize.y, static_cast<long>(left), static_cast<long>(top) + 3, "Del");
                 break;
             case '^':
                 break;
             case '~':
-                m_rs->ExtPrint(m_nChrFontNum, 0xFFFFFFFF, 0, ALIGN_CENTER, true, m_fChrScale * .7f, m_screenSize.x,
-                               m_screenSize.y, (long)left, (long)top + 3, "Ok");
+                m_rs->ExtPrint(m_nChrFontNum, 0xFFFFFFFF, 0, PR_ALIGN_CENTER, true, m_fChrScale * .7f, m_screenSize.x,
+                               m_screenSize.y, static_cast<long>(left), static_cast<long>(top) + 3, "Ok");
                 break;
             case '`':
-                m_rs->ExtPrint(m_nChrFontNum, 0xFFFFFFFF, 0, ALIGN_CENTER, true, m_fChrScale * .7f, m_screenSize.x,
-                               m_screenSize.y, (long)left, (long)top + 3, "Esc");
+                m_rs->ExtPrint(m_nChrFontNum, 0xFFFFFFFF, 0, PR_ALIGN_CENTER, true, m_fChrScale * .7f, m_screenSize.x,
+                               m_screenSize.y, static_cast<long>(left), static_cast<long>(top) + 3, "Esc");
                 break;
             case '|':
-                m_rs->ExtPrint(m_nChrFontNum, 0xFFFFFFFF, 0, ALIGN_CENTER, true, m_fChrScale * .6f, m_screenSize.x,
-                               m_screenSize.y, (long)left, (long)top + 4, "Caps");
+                m_rs->ExtPrint(m_nChrFontNum, 0xFFFFFFFF, 0, PR_ALIGN_CENTER, true, m_fChrScale * .6f, m_screenSize.x,
+                               m_screenSize.y, static_cast<long>(left), static_cast<long>(top) + 4, "Caps");
                 break;
             default:
-                m_rs->ExtPrint(m_nChrFontNum, 0xFFFFFFFF, 0, ALIGN_CENTER, true, m_fChrScale, m_screenSize.x,
-                               m_screenSize.y, (long)left, (long)top, "%c", m_alpha[m_bUpChrRegistrOffset + idx]);
+                m_rs->ExtPrint(m_nChrFontNum, 0xFFFFFFFF, 0, PR_ALIGN_CENTER, true, m_fChrScale, m_screenSize.x,
+                               m_screenSize.y, static_cast<long>(left), static_cast<long>(top), "%c",
+                               m_alpha[m_bUpChrRegistrOffset + idx]);
             }
             left += m_fHAdd;
             idx++;
@@ -107,17 +108,17 @@ void CXI_EDITBOX::Draw(bool bSelected, dword Delta_Time)
     }
 
     // show out string
-    ATTRIBUTES *pA = api->Entity_GetAttributeClass(&g_idInterface, m_nodeName);
-    char *tmpstr = null;
+    auto *pA = core.Entity_GetAttributeClass(g_idInterface, m_nodeName);
+    char *tmpstr = nullptr;
     if (pA)
         tmpstr = pA->GetAttribute("strdata");
     if (tmpstr)
-        m_rs->ExtPrint(m_nStrFontNum, 0xFFFFFFFF, 0, ALIGN_CENTER, true, m_fStrScale, m_screenSize.x, m_screenSize.y,
+        m_rs->ExtPrint(m_nStrFontNum, 0xFFFFFFFF, 0, PR_ALIGN_CENTER, true, m_fStrScale, m_screenSize.x, m_screenSize.y,
                        (m_rect.left + m_rect.right) / 2, m_nTopStringPos, "%s", tmpstr);
 }
 
-bool CXI_EDITBOX::Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, VDX8RENDER *rs, XYRECT &hostRect,
-                       XYPOINT &ScreenSize)
+bool CXI_EDITBOX::Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs,
+                       XYRECT &hostRect, XYPOINT &ScreenSize)
 {
     if (!CINODE::Init(ini1, name1, ini2, name2, rs, hostRect, ScreenSize))
         return false;
@@ -135,9 +136,9 @@ void CXI_EDITBOX::ReleaseAll()
 
     TEXTURE_RELEASE(m_rs, m_idBtnTex);
 
-    VERTEX_BUF_RELEASE(m_rs, m_idVBRect);
-    VERTEX_BUF_RELEASE(m_rs, m_idVB);
-    INDEX_BUF_RELEASE(m_rs, m_idIB);
+    VERTEX_BUFFER_RELEASE(m_rs, m_idVBRect);
+    VERTEX_BUFFER_RELEASE(m_rs, m_idVB);
+    INDEX_BUFFER_RELEASE(m_rs, m_idIB);
 
     FONT_RELEASE(m_rs, m_nChrFontNum);
     FONT_RELEASE(m_rs, m_nStrFontNum);
@@ -147,24 +148,24 @@ int CXI_EDITBOX::CommandExecute(int wActCode)
 {
     if (m_bUse)
     {
-        int newNum = m_nCurAlphaNum;
+        auto newNum = m_nCurAlphaNum;
         switch (wActCode)
         {
         case ACTION_ACTIVATE:
         case ACTION_MOUSECLICK: {
             if (m_nCurAlphaNum < 0 || m_nCurAlphaNum >= m_nAlphaQuantity)
                 break;
-            ATTRIBUTES *pA = api->Entity_GetAttributeClass(&g_idInterface, m_nodeName);
-            if (pA == null)
+            auto *pA = core.Entity_GetAttributeClass(g_idInterface, m_nodeName);
+            if (pA == nullptr)
                 break;
             char param[256];
             param[0] = 0;
-            char *tmpstr = pA->GetAttribute("strdata");
+            auto *const tmpstr = pA->GetAttribute("strdata");
             switch (m_alpha[m_bUpChrRegistrOffset + m_nCurAlphaNum])
             {
             case '*':
                 if (tmpstr)
-                    sprintf(param, "%s", tmpstr);
+                    sprintf_s(param, "%s", tmpstr);
                 if (strlen(param) > 0)
                     param[strlen(param) - 1] = 0;
                 pA->SetAttribute("strdata", param);
@@ -172,16 +173,16 @@ int CXI_EDITBOX::CommandExecute(int wActCode)
                 break;
             case '^':
                 if (tmpstr)
-                    sprintf(param, "%s ", tmpstr);
+                    sprintf_s(param, "%s ", tmpstr);
                 else
-                    sprintf(param, " ");
+                    sprintf_s(param, " ");
                 break;
             case '~':
-                api->Event("NodeOk", "s", m_nodeName);
+                core.Event("NodeOk", "s", m_nodeName);
                 return -1;
                 break;
             case '`':
-                api->Event("NodeCancel", "s", m_nodeName);
+                core.Event("NodeCancel", "s", m_nodeName);
                 return -1;
                 break;
             case '|':
@@ -190,12 +191,12 @@ int CXI_EDITBOX::CommandExecute(int wActCode)
                 break;
             default:
                 if (tmpstr)
-                    sprintf(param, "%s%c", tmpstr, m_alpha[m_bUpChrRegistrOffset + m_nCurAlphaNum]);
+                    sprintf_s(param, "%s%c", tmpstr, m_alpha[m_bUpChrRegistrOffset + m_nCurAlphaNum]);
                 else
-                    sprintf(param, "%c", m_alpha[m_bUpChrRegistrOffset + m_nCurAlphaNum]);
+                    sprintf_s(param, "%c", m_alpha[m_bUpChrRegistrOffset + m_nCurAlphaNum]);
             }
             int nLimit = pA->GetAttributeAsDword("maxlen", 0);
-            if (nLimit > 0 && (int)strlen(param) > nLimit)
+            if (nLimit > 0 && static_cast<int>(strlen(param)) > nLimit)
                 return -1;
             nLimit = pA->GetAttributeAsDword("maxwidth", 0);
             if (nLimit > 0 && m_rs->StringWidth(param, m_nStrFontNum, m_fStrScale) > nLimit)
@@ -257,10 +258,10 @@ bool CXI_EDITBOX::IsClick(int buttonID, long xPos, long yPos)
         return false;
     if (yPos < m_nTopOffset)
         return false;
-    int y = int((yPos - m_nTopOffset) / m_fVAdd);
+    const auto y = static_cast<int>((yPos - m_nTopOffset) / m_fVAdd);
     if (y >= m_nVert)
         return false;
-    int x = int((xPos - m_rect.left - m_nLeftOffset) / m_fHAdd);
+    const auto x = static_cast<int>((xPos - m_rect.left - m_nLeftOffset) / m_fHAdd);
     if (x >= m_nHorz)
         return false;
     if (x + y * m_nHorz >= m_nAlphaQuantity)
@@ -276,10 +277,10 @@ void CXI_EDITBOX::MouseThis(float fX, float fY)
         return;
     if (fY < m_nTopOffset)
         return;
-    int y = int((fY - m_nTopOffset) / m_fVAdd);
+    const auto y = static_cast<int>((fY - m_nTopOffset) / m_fVAdd);
     if (y >= m_nVert)
         return;
-    int x = int((fX - m_rect.left - m_nLeftOffset) / m_fHAdd);
+    const auto x = static_cast<int>((fX - m_rect.left - m_nLeftOffset) / m_fHAdd);
     if (x >= m_nHorz)
         return;
     if (x + y * m_nHorz >= m_nAlphaQuantity)
@@ -293,30 +294,30 @@ void CXI_EDITBOX::ChangePosition(XYRECT &rNewPos)
     m_rect = rNewPos;
 
     // fills this buffers
-    float fBottomOff = (float)m_nTopOffset;
+    auto fBottomOff = static_cast<float>(m_nTopOffset);
     m_nTopStringPos = m_rect.top + m_nTopOffset;
-    XI_NOTEX_VERTEX *pv = (XI_NOTEX_VERTEX *)m_rs->LockVertexBuffer(m_idVBRect);
+    auto *pv = static_cast<XI_NOTEX_VERTEX *>(m_rs->LockVertexBuffer(m_idVBRect));
     pv[0].color = pv[1].color = pv[2].color = pv[3].color = m_dwBorderColor;
     pv[4].color = pv[5].color = pv[6].color = pv[7].color = m_dwEditBoxColor;
     pv[0].pos.z = pv[1].pos.z = pv[2].pos.z = pv[3].pos.z = pv[4].pos.z = pv[5].pos.z = pv[6].pos.z = pv[7].pos.z = 1.f;
-    pv[0].pos.x = pv[1].pos.x = (float)m_rect.left;
-    pv[2].pos.x = pv[3].pos.x = (float)m_rect.right;
-    pv[0].pos.y = pv[2].pos.y = (float)m_rect.top;
-    pv[1].pos.y = pv[3].pos.y = (float)m_rect.bottom;
-    pv[4].pos.x = pv[5].pos.x = (float)m_rect.left + m_nLeftOffset;
-    pv[6].pos.x = pv[7].pos.x = (float)m_rect.right - m_nLeftOffset;
-    pv[4].pos.y = pv[6].pos.y = (float)m_nTopStringPos;
-    m_nTopOffset =
-        long(pv[5].pos.y = pv[7].pos.y = (float)m_rect.top + m_nTopOffset + m_rs->CharHeight(m_nStrFontNum) * 1.06f) +
-        4;
+    pv[0].pos.x = pv[1].pos.x = static_cast<float>(m_rect.left);
+    pv[2].pos.x = pv[3].pos.x = static_cast<float>(m_rect.right);
+    pv[0].pos.y = pv[2].pos.y = static_cast<float>(m_rect.top);
+    pv[1].pos.y = pv[3].pos.y = static_cast<float>(m_rect.bottom);
+    pv[4].pos.x = pv[5].pos.x = static_cast<float>(m_rect.left) + m_nLeftOffset;
+    pv[6].pos.x = pv[7].pos.x = static_cast<float>(m_rect.right) - m_nLeftOffset;
+    pv[4].pos.y = pv[6].pos.y = static_cast<float>(m_nTopStringPos);
+    m_nTopOffset = static_cast<long>(pv[5].pos.y = pv[7].pos.y = static_cast<float>(m_rect.top) + m_nTopOffset +
+                                                                 m_rs->CharHeight(m_nStrFontNum) * 1.06f) +
+                   4;
     m_rs->UnLockVertexBuffer(m_idVBRect);
 
-    XI_ONLYONETEX_VERTEX *pvt = (XI_ONLYONETEX_VERTEX *)m_rs->LockVertexBuffer(m_idVB);
-    float topButtons = (float)m_nTopOffset;
+    auto *pvt = static_cast<XI_ONLYONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_idVB));
+    auto topButtons = static_cast<float>(m_nTopOffset);
     idx = 0;
     for (j = 0; j < m_nVert; j++)
     {
-        float left = float(m_rect.left + m_nLeftOffset);
+        auto left = static_cast<float>(m_rect.left + m_nLeftOffset);
         for (i = 0; i < m_nHorz; i++)
         {
             pvt[idx].pos.z = pvt[idx + 1].pos.z = pvt[idx + 2].pos.z = pvt[idx + 3].pos.z = 1.f;
@@ -344,21 +345,21 @@ void CXI_EDITBOX::SaveParametersToIni()
 {
     char pcWriteParam[2048];
 
-    INIFILE *pIni = api->fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.GetBuffer());
+    auto *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
-        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.GetBuffer());
+        core.Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
         return;
     }
 
     // save position
-    _snprintf(pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rect.left, m_rect.top, m_rect.right, m_rect.bottom);
+    sprintf_s(pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rect.left, m_rect.top, m_rect.right, m_rect.bottom);
     pIni->WriteString(m_nodeName, "position", pcWriteParam);
 
     delete pIni;
 }
 
-void CXI_EDITBOX::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2)
+void CXI_EDITBOX::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2)
 {
     int i, j, idx;
     char param[512];
@@ -369,10 +370,10 @@ void CXI_EDITBOX::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2
     // get font number
     if (ReadIniString(ini1, name1, ini2, name2, "chrFont", param, sizeof(param), ""))
         if ((m_nChrFontNum = m_rs->LoadFont(param)) == -1)
-            api->Trace("can`t load font:'%s'", param);
+            core.Trace("can`t load font:'%s'", param);
     if (ReadIniString(ini1, name1, ini2, name2, "strFont", param, sizeof(param), ""))
         if ((m_nStrFontNum = m_rs->LoadFont(param)) == -1)
-            api->Trace("can`t load font:'%s'", param);
+            core.Trace("can`t load font:'%s'", param);
 
     // Get font scale
     m_fChrScale = GetIniFloat(ini1, name1, ini2, name2, "chrScale", 1.f);
@@ -384,7 +385,7 @@ void CXI_EDITBOX::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2
     // get texture
     if (ReadIniString(ini1, name1, ini2, name2, "chrTexture", param, sizeof(param), ""))
         if ((m_idBtnTex = m_rs->TextureCreate(param)) == -1)
-            api->Trace("can`t load texture:'%s'", param);
+            core.Trace("can`t load texture:'%s'", param);
 
     // Get rectangle color
     m_dwEditBoxColor = GetIniARGB(ini1, name1, ini2, name2, "argbBoxColor", 0);
@@ -400,30 +401,30 @@ void CXI_EDITBOX::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2
 
     if (ReadIniString(ini1, name1, ini2, name2, "alphabet", param, sizeof(param) - 1, ""))
     {
-        char *pTmpStr = pStringService->GetString(pStringService->GetStringNum(param));
-        if (pTmpStr == null)
+        auto *pTmpStr = pStringService->GetString(pStringService->GetStringNum(param));
+        if (pTmpStr == nullptr)
             pTmpStr = param;
         int nLen = strlen(pTmpStr);
         if (nLen > sizeof(m_alpha) / 2 - 1)
             nLen = sizeof(m_alpha) / 2 - 1;
-        strncpy(m_alpha, pTmpStr, nLen);
-        m_alpha[nLen] = 0;
+        strncpy_s(m_alpha, pTmpStr, nLen);
+        // m_alpha[nLen] = 0;
         m_nAlphaQuantity = strlen(m_alpha);
     }
     if (ReadIniString(ini1, name1, ini2, name2, "alphabetUP", param, sizeof(param) - 1, ""))
     {
-        char *pTmpStr = pStringService->GetString(pStringService->GetStringNum(param));
-        if (pTmpStr == null)
+        auto *pTmpStr = pStringService->GetString(pStringService->GetStringNum(param));
+        if (pTmpStr == nullptr)
             pTmpStr = param;
-        int nLen = strlen(pTmpStr);
-        if (nLen > sizeof(m_alpha) / 2 - 1)
-            nLen = sizeof(m_alpha) / 2 - 1;
-        strncpy(&m_alpha[sizeof(m_alpha) / 2], pTmpStr, nLen);
-        m_alpha[nLen + sizeof(m_alpha) / 2] = 0;
+        auto len = strlen(pTmpStr) + 1;
+        if (len > sizeof(m_alpha) / 2 - 1)
+            len = sizeof(m_alpha) / 2 - 1;
+        strcpy_s(&m_alpha[sizeof(m_alpha) / 2], len, pTmpStr);
+        // m_alpha[len+sizeof(m_alpha)/2] = 0;
 
-        if ((size_t)m_nAlphaQuantity != strlen(&m_alpha[sizeof(m_alpha) / 2]))
+        if (static_cast<size_t>(m_nAlphaQuantity) != strlen(&m_alpha[sizeof(m_alpha) / 2]))
         {
-            api->Trace("WARNING!!! parameters alphabet & alphabetUP is different");
+            core.Trace("WARNING!!! parameters alphabet & alphabetUP is different");
         }
     }
 
@@ -437,45 +438,45 @@ void CXI_EDITBOX::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2
     m_nMaxSize = GetIniLong(ini1, name1, ini2, name2, "stringLength", -1);
 
     // Create buffers
-    m_idVBRect = m_rs->CreateVertexBufferManaged(XI_NOTEX_FVF, 8 * sizeof(XI_NOTEX_VERTEX), D3DUSAGE_WRITEONLY);
-    m_idVB = m_rs->CreateVertexBufferManaged(XI_ONLYONETEX_FVF, sizeof(XI_ONLYONETEX_VERTEX) * m_nAlphaQuantity * 4,
-                                             D3DUSAGE_WRITEONLY);
-    m_idIB = m_rs->CreateIndexBufferManaged(m_nAlphaQuantity * 6 * sizeof(WORD));
+    m_idVBRect = m_rs->CreateVertexBuffer(XI_NOTEX_FVF, 8 * sizeof(XI_NOTEX_VERTEX), D3DUSAGE_WRITEONLY);
+    m_idVB = m_rs->CreateVertexBuffer(XI_ONLYONETEX_FVF, sizeof(XI_ONLYONETEX_VERTEX) * m_nAlphaQuantity * 4,
+                                      D3DUSAGE_WRITEONLY);
+    m_idIB = m_rs->CreateIndexBuffer(m_nAlphaQuantity * 6 * sizeof(uint16_t));
     if (m_idVBRect == -1 || m_idVB == -1 || m_idIB == -1)
-        SE_THROW_MSG("Can't create buffers");
+        throw std::exception("Can't create buffers");
 
     // fills this buffers
-    float fBottomOff = (float)m_nTopOffset;
+    const auto fBottomOff = static_cast<float>(m_nTopOffset);
     m_nTopStringPos = m_rect.top + m_nTopOffset;
-    XI_NOTEX_VERTEX *pv = (XI_NOTEX_VERTEX *)m_rs->LockVertexBuffer(m_idVBRect);
+    auto *pv = static_cast<XI_NOTEX_VERTEX *>(m_rs->LockVertexBuffer(m_idVBRect));
     pv[0].color = pv[1].color = pv[2].color = pv[3].color = m_dwBorderColor;
     pv[4].color = pv[5].color = pv[6].color = pv[7].color = m_dwEditBoxColor;
     pv[0].pos.z = pv[1].pos.z = pv[2].pos.z = pv[3].pos.z = pv[4].pos.z = pv[5].pos.z = pv[6].pos.z = pv[7].pos.z = 1.f;
-    pv[0].pos.x = pv[1].pos.x = (float)m_rect.left;
-    pv[2].pos.x = pv[3].pos.x = (float)m_rect.right;
-    pv[0].pos.y = pv[2].pos.y = (float)m_rect.top;
-    pv[1].pos.y = pv[3].pos.y = (float)m_rect.bottom;
-    pv[4].pos.x = pv[5].pos.x = (float)m_rect.left + m_nLeftOffset;
-    pv[6].pos.x = pv[7].pos.x = (float)m_rect.right - m_nLeftOffset;
-    pv[4].pos.y = pv[6].pos.y = (float)m_nTopStringPos;
-    m_nTopOffset =
-        long(pv[5].pos.y = pv[7].pos.y = (float)m_rect.top + m_nTopOffset + m_rs->CharHeight(m_nStrFontNum) * 1.06f) +
-        4;
+    pv[0].pos.x = pv[1].pos.x = static_cast<float>(m_rect.left);
+    pv[2].pos.x = pv[3].pos.x = static_cast<float>(m_rect.right);
+    pv[0].pos.y = pv[2].pos.y = static_cast<float>(m_rect.top);
+    pv[1].pos.y = pv[3].pos.y = static_cast<float>(m_rect.bottom);
+    pv[4].pos.x = pv[5].pos.x = static_cast<float>(m_rect.left) + m_nLeftOffset;
+    pv[6].pos.x = pv[7].pos.x = static_cast<float>(m_rect.right) - m_nLeftOffset;
+    pv[4].pos.y = pv[6].pos.y = static_cast<float>(m_nTopStringPos);
+    m_nTopOffset = static_cast<long>(pv[5].pos.y = pv[7].pos.y = static_cast<float>(m_rect.top) + m_nTopOffset +
+                                                                 m_rs->CharHeight(m_nStrFontNum) * 1.06f) +
+                   4;
     m_rs->UnLockVertexBuffer(m_idVBRect);
 
     // buttons buffers
-    m_fVAdd = ((float)m_rect.bottom - m_nTopOffset - fBottomOff) / m_nVert;
+    m_fVAdd = (static_cast<float>(m_rect.bottom) - m_nTopOffset - fBottomOff) / m_nVert;
     if (m_rs->CharHeight(m_nChrFontNum) * m_fChrScale > m_fVAdd * HEIGHT_SCALE_USED)
         m_fChrScale = m_fVAdd * HEIGHT_SCALE_USED / m_rs->CharHeight(m_nChrFontNum);
     m_fChrTopOffset = .5f * (m_fVAdd * HEIGHT_SCALE_USED - m_rs->CharHeight(m_nChrFontNum) * m_fChrScale);
-    m_fHAdd = (float)(m_rect.right - m_rect.left - m_nLeftOffset * 2) / m_nHorz;
+    m_fHAdd = static_cast<float>(m_rect.right - m_rect.left - m_nLeftOffset * 2) / m_nHorz;
 
-    XI_ONLYONETEX_VERTEX *pvt = (XI_ONLYONETEX_VERTEX *)m_rs->LockVertexBuffer(m_idVB);
-    float topButtons = (float)m_nTopOffset;
+    auto *const pvt = static_cast<XI_ONLYONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_idVB));
+    auto topButtons = static_cast<float>(m_nTopOffset);
     idx = 0;
     for (j = 0; j < m_nVert; j++)
     {
-        float left = float(m_rect.left + m_nLeftOffset);
+        auto left = static_cast<float>(m_rect.left + m_nLeftOffset);
         for (i = 0; i < m_nHorz; i++)
         {
             pvt[idx].pos.z = pvt[idx + 1].pos.z = pvt[idx + 2].pos.z = pvt[idx + 3].pos.z = 1.f;
@@ -498,7 +499,7 @@ void CXI_EDITBOX::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2
     }
     m_rs->UnLockVertexBuffer(m_idVB);
 
-    WORD *pt = (WORD *)m_rs->LockIndexBuffer(m_idIB);
+    auto *pt = static_cast<uint16_t *>(m_rs->LockIndexBuffer(m_idIB));
     for (j = i = 0; i < idx; i += 4, j += 6)
     {
         pt[j] = i;
@@ -519,14 +520,14 @@ void CXI_EDITBOX::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2
 
 void CXI_EDITBOX::SetNewCurSymbol(int h, int v)
 {
-    int newNum = h + v * m_nHorz;
+    auto newNum = h + v * m_nHorz;
     if (newNum >= m_nAlphaQuantity)
         newNum = h;
     if (newNum >= m_nAlphaQuantity)
         newNum = -1;
     if (m_nCurAlphaNum == newNum)
         return;
-    XI_ONLYONETEX_VERTEX *pvt = (XI_ONLYONETEX_VERTEX *)m_rs->LockVertexBuffer(m_idVB);
+    auto *pvt = static_cast<XI_ONLYONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_idVB));
     int idx;
     if (m_nCurAlphaNum >= 0)
     {

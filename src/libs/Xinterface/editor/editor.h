@@ -1,35 +1,37 @@
 #ifndef _GI_EDITOR_H
 #define _GI_EDITOR_H
 
-#include "..\inode.h"
-#include "dx8render.h"
-#include "xi_editor_defines.h"
+#include "editor_defines.h"
 
 class XINTERFACE;
 class CXI_IMAGE;
 class GIEditorList;
+class CINODE;
+class VDX9RENDER;
 
 class GIEditor : public GIEditorObject
 {
   public:
+    GIEditor(GIEditor &&) = delete;
+    GIEditor(const GIEditor &) = delete;
     GIEditor(XINTERFACE *pInterface);
     ~GIEditor();
 
     void Release();
 
-    void Render();
+    void Render() const;
     bool ProcessControl();
 
-    bool IsShowMode();
+    bool IsShowMode() const;
     void MakeShowMode(bool bShow);
 
     void SetEditNode(CINODE *pNode);
 
-    void ReCreate();
-    void AddNode(CINODE *pNode);
-    void DelNode(CINODE *pNode);
+    void ReCreate() const;
+    void AddNode(CINODE *pNode) const;
+    void DelNode(CINODE *pNode) const;
 
-    void DrawSizeBox();
+    void DrawSizeBox() const;
 
   protected:
     bool m_bShowMode;
@@ -43,11 +45,11 @@ class GIEditor : public GIEditorObject
     GIEditorList *m_pSubNameList;
 
   public:
-    VDX8RENDER *m_pRS;
+    VDX9RENDER *m_pRS;
     XINTERFACE *m_pGIOwner;
 
-    void _cdecl ChangeNodeName();
-    void _cdecl ChangeSubNodeName();
+    void ChangeNodeName();
+    void ChangeSubNodeName() const;
 };
 
 #endif

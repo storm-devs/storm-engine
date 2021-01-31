@@ -2,15 +2,17 @@
 #define _SAIL_H_
 
 #include "SAILONE.h"
-#include "dx8render.h"
+#include "dx9render.h"
 #include "geos.h"
 #include "model.h"
 #include "sail_base.h"
 #include "vmodule_api.h"
 
+class VDATA;
+
 struct SAILGROUP
 {
-    DWORD nVert, nIndx;
+    uint32_t nVert, nIndx;
     long vertBuf, indxBuf;
 };
 
@@ -62,8 +64,8 @@ class SAIL : public SAIL_BASE
 
     long GROUP_UPDATE_TIME;
 
-    WORD SailQuantity;
-    WORD SailCurNum;
+    uint16_t SailQuantity;
+    uint16_t SailCurNum;
 
     float m_fMinSpeedVal; // минимальная скорость даваемая парусами
 
@@ -74,7 +76,7 @@ class SAIL : public SAIL_BASE
 
     friend SAILONE;
     bool bUse;
-    VDX8RENDER *RenderService;
+    VDX9RENDER *RenderService;
     D3DMATERIAL9 mat;
     FILETIME ft_old;
     long texl;
@@ -84,31 +86,51 @@ class SAIL : public SAIL_BASE
     SAIL();
     ~SAIL();
     // Entity func
-    bool Init();
-    void Realize(dword Delta_Time);
-    void Execute(dword Delta_Time);
+    bool Init() override;
+    void Realize(uint32_t Delta_Time);
+    void Execute(uint32_t Delta_Time);
     bool CreateState(ENTITY_STATE_GEN *state_gen);
     bool LoadState(ENTITY_STATE *state);
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    uint64_t ProcessMessage(MESSAGE &message) override;
     void SetDevice();
     // Collision func
     int LastTraceGroup;
-    float Trace(const CVECTOR &src, const CVECTOR &dst);
-    const char *GetCollideMaterialName();
-    bool GetCollideTriangle(Triangle &triangle);
-    bool Clip(const PLANE *planes, long nplanes, const CVECTOR &center, float radius, ADD_POLYGON_FUNC addpoly);
-    float Cannon_Trace(long iBallOwner, const CVECTOR &src, const CVECTOR &dst);
-    ENTITY_ID GetShipID()
+    float Trace(const CVECTOR &src, const CVECTOR &dst) override;
+    const char *GetCollideMaterialName() override;
+    bool GetCollideTriangle(TRIANGLE &triangle) override;
+    bool Clip(const PLANE *planes, long nplanes, const CVECTOR &center, float radius,
+              ADD_POLYGON_FUNC addpoly) override;
+    float Cannon_Trace(long iBallOwner, const CVECTOR &src, const CVECTOR &dst) override;
+    entid_t GetShipID() override
     {
         return gdata[LastTraceGroup].shipEI;
     }
-    SAILONE_BASE *FindSailForCharacter(int chrIdx, char *nodeName, int grNum);
-    dword AttributeChanged(ATTRIBUTES *pAttr);
+    SAILONE_BASE *FindSailForCharacter(int chrIdx, char *nodeName, int grNum) override;
+    uint32_t AttributeChanged(ATTRIBUTES *pAttr) override;
 
     void LostRender();
     void RestoreRender();
 
-    int GetSailStateForCharacter(int chrIdx);
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+        case Stage::lost_render:
+            LostRender();
+            break;
+        case Stage::restore_render:
+            RestoreRender();
+            break;
+        }
+    }
+
+    int GetSailStateForCharacter(int chrIdx) const;
 
     SAILGROUP sg;
 
@@ -119,12 +141,13 @@ class SAIL : public SAIL_BASE
     SAILONE **slist;
     // список всех групп парусов
     int groupQuantity;
+
     struct GROUPDATA
     {
         bool bDeleted;
         bool bYesShip;
-        ENTITY_ID shipEI;
-        ENTITY_ID modelEI;
+        entid_t shipEI;
+        entid_t modelEI;
         int sailQuantity;
         int *sailIdx;
         // ограничительный гробик
@@ -144,8 +167,9 @@ class SAIL : public SAIL_BASE
         float fSpeedMul;
         float fRollingSpeed;
         // цвет парусов
-        dword dwSailsColor;
+        uint32_t dwSailsColor;
     };
+
     GROUPDATA *gdata;
     void FirstRun();
 
@@ -155,18 +179,18 @@ class SAIL : public SAIL_BASE
     void SetAllSails();
     void SetAddSails(int firstSail);
     void LoadSailIni();
-    void DoSailToNewHost(ENTITY_ID newMdlEI, ENTITY_ID hewHostEI, int grNum, NODE *nod, ENTITY_ID oldmodelEI);
-    void DoNoRopeSailToNewHost(ENTITY_ID newModel, ENTITY_ID newHost, ENTITY_ID oldHost);
+    void DoSailToNewHost(entid_t newMdlEI, entid_t hewHostEI, int grNum, NODE *nod, entid_t oldmodelEI);
+    void DoNoRopeSailToNewHost(entid_t newModel, entid_t newHost, entid_t oldHost);
     void DeleteSailGroup();
-    int FindGroupForCharacter(int chrIdx);
-    int GetCharacterForGroup(int grNum);
-    SAILONE *FindSailFromData(int gn, char *nodeName, char *grName);
-    void SetSailTextures(long grNum, VDATA *pvd);
+    int FindGroupForCharacter(int chrIdx) const;
+    int GetCharacterForGroup(int grNum) const;
+    SAILONE *FindSailFromData(int gn, const char *nodeName, const char *grName) const;
+    void SetSailTextures(long grNum, VDATA *pvd) const;
     void DoRandomsSailsDmg(int chrIdx, int gn, float fDmg);
     void GetSailStatus(int chrIdx, int gn);
 
     // обработка скриптовых запросов
-    dword _cdecl ScriptProcessing(char *name, MESSAGE &message);
+    uint32_t ScriptProcessing(const char *name, MESSAGE &message);
 
     bool bFirstRun;
     int wFirstIndx;

@@ -1,8 +1,8 @@
 #include "MousePointer.h"
-#include "..\image\image.h"
-#include "..\image\imgrender.h"
-#include "..\utils.h"
-#include "BaseManager.h"
+#include "../Utils.h"
+#include "../image/imgrender.h"
+#include "core.h"
+#include "vmodule_api.h"
 
 #define BI_MOUSECURSOR_ICON_ORDER 35000
 
@@ -13,7 +13,7 @@ MousePointer::MousePointer(BI_ManagerBase *pManager, ATTRIBUTES *pARoot)
     m_pManager = pManager;
     m_pARoot = pARoot;
 
-    m_pIcon = 0;
+    m_pIcon = nullptr;
     m_mousepos.x = 0.f;
     m_mousepos.y = 0.f;
     m_mousesensivity.x = 1.f;
@@ -29,7 +29,7 @@ MousePointer::MousePointer(BI_ManagerBase *pManager, ATTRIBUTES *pARoot)
 
 MousePointer::~MousePointer()
 {
-    SE_DELETE(m_pIcon);
+    STORM_DELETE(m_pIcon);
 }
 
 void MousePointer::Update()
@@ -41,7 +41,7 @@ void MousePointer::Update()
 void MousePointer::InitMouseCursors()
 {
     m_nCurrentCursor = -1;
-    ATTRIBUTES *pACursors = m_pARoot ? m_pARoot->GetAttributeClass("cursors") : 0;
+    auto *pACursors = m_pARoot ? m_pARoot->GetAttributeClass("cursors") : nullptr;
     if (!pACursors)
         return;
 
@@ -54,13 +54,13 @@ void MousePointer::InitMouseCursors()
     if (!pACursors)
         return;
 
-    long q = pACursors->GetAttributesNum();
+    const size_t q = pACursors->GetAttributesNum();
     for (long n = 0; n < q; n++)
     {
-        ATTRIBUTES *pA = pACursors->GetAttributeClass(n);
+        auto *pA = pACursors->GetAttributeClass(n);
         if (pA)
         {
-            long i = pA->GetAttributeAsDword("index", -1);
+            const long i = pA->GetAttributeAsDword("index", -1);
             if (i >= 0 && i < BI_CURSORS_QUANTITY)
             {
                 m_aCursors[i].offset.x = pA->GetAttributeAsDword("xoffset", 0);
@@ -73,63 +73,60 @@ void MousePointer::InitMouseCursors()
     }
 
     m_nCurrentCursor = BI_CURSOR_COMMON;
-    m_pIcon = m_pManager->GetImageRender()->CreateImage(BIType_square, m_aCursors[BI_CURSOR_COMMON].texture, 0xFF808080,
-                                                        m_aCursors[BI_CURSOR_COMMON].uv, GetCurrentCursorIconPos(),
-                                                        BI_MOUSECURSOR_ICON_ORDER);
+    m_pIcon = m_pManager->GetImageRender()->CreateImage(BIType_square, m_aCursors[BI_CURSOR_COMMON].texture.c_str(),
+                                                        0xFF808080, m_aCursors[BI_CURSOR_COMMON].uv,
+                                                        GetCurrentCursorIconPos(), BI_MOUSECURSOR_ICON_ORDER);
 }
 
 void MousePointer::MoveCursor()
 {
     CONTROL_STATE cs;
-    float fDeltaTime = api->GetDeltaTime() * 0.001f;
+    const auto fDeltaTime = core.GetDeltaTime() * 0.001f;
 
-    api->Controls->GetControlState("ITurnH", cs);
+    core.Controls->GetControlState("ITurnH", cs);
     m_mousepos.x += m_mousesensivity.x * fDeltaTime * cs.fValue;
 
-    api->Controls->GetControlState("ITurnV", cs);
+    core.Controls->GetControlState("ITurnV", cs);
     m_mousepos.y -= m_mousesensivity.y * fDeltaTime * cs.fValue;
 
-    if (m_mousepos.x < (float)m_cursorzone.left)
-        m_mousepos.x = (float)m_cursorzone.left;
-    if (m_mousepos.x > (float)m_cursorzone.right)
-        m_mousepos.x = (float)m_cursorzone.right;
-    if (m_mousepos.y < (float)m_cursorzone.top)
-        m_mousepos.y = (float)m_cursorzone.top;
-    if (m_mousepos.y > (float)m_cursorzone.bottom)
-        m_mousepos.y = (float)m_cursorzone.bottom;
+    if (m_mousepos.x < static_cast<float>(m_cursorzone.left))
+        m_mousepos.x = static_cast<float>(m_cursorzone.left);
+    if (m_mousepos.x > static_cast<float>(m_cursorzone.right))
+        m_mousepos.x = static_cast<float>(m_cursorzone.right);
+    if (m_mousepos.y < static_cast<float>(m_cursorzone.top))
+        m_mousepos.y = static_cast<float>(m_cursorzone.top);
+    if (m_mousepos.y > static_cast<float>(m_cursorzone.bottom))
+        m_mousepos.y = static_cast<float>(m_cursorzone.bottom);
 }
 
 void MousePointer::SetCurrentCursor()
 {
-    long nNewCursor = BI_CURSOR_COMMON;
+    const long nNewCursor = BI_CURSOR_COMMON;
 
     if (nNewCursor != m_nCurrentCursor)
     {
         if (!m_pIcon || m_aCursors[m_nCurrentCursor].texture != m_aCursors[nNewCursor].texture)
         {
-            SE_DELETE(m_pIcon);
+            STORM_DELETE(m_pIcon);
             m_nCurrentCursor = nNewCursor;
-            m_pIcon = m_pManager->GetImageRender()->CreateImage(BIType_square, m_aCursors[nNewCursor].texture,
+            m_pIcon = m_pManager->GetImageRender()->CreateImage(BIType_square, m_aCursors[nNewCursor].texture.c_str(),
                                                                 0xFF808080, m_aCursors[nNewCursor].uv,
                                                                 GetCurrentCursorIconPos(), BI_MOUSECURSOR_ICON_ORDER);
             return;
         }
-        else
-        {
-            m_nCurrentCursor = nNewCursor;
-            m_pIcon->SetUV(m_aCursors[nNewCursor].uv);
-        }
+        m_nCurrentCursor = nNewCursor;
+        m_pIcon->SetUV(m_aCursors[nNewCursor].uv);
     }
 
-    RECT pos = GetCurrentCursorIconPos();
+    const auto pos = GetCurrentCursorIconPos();
     m_pIcon->SetPosition(pos.left, pos.top, pos.right, pos.bottom);
 }
 
-RECT MousePointer::GetCurrentCursorIconPos()
+RECT MousePointer::GetCurrentCursorIconPos() const
 {
     RECT pos;
-    pos.left = (long)m_mousepos.x + m_aCursors[m_nCurrentCursor].offset.x;
-    pos.top = (long)m_mousepos.y + m_aCursors[m_nCurrentCursor].offset.y;
+    pos.left = static_cast<long>(m_mousepos.x) + m_aCursors[m_nCurrentCursor].offset.x;
+    pos.top = static_cast<long>(m_mousepos.y) + m_aCursors[m_nCurrentCursor].offset.y;
     pos.right = pos.left + m_cursorsize.x;
     pos.bottom = pos.top + m_cursorsize.y;
     return pos;

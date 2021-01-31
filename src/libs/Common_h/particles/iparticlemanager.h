@@ -8,8 +8,7 @@
 #ifndef PARTICLES_MANAGER_INTERFACE
 #define PARTICLES_MANAGER_INTERFACE
 
-#include "..\dx8render.h"
-#include <d3d9.h>
+#include "../dx9render.h"
 
 class ParticleService;
 class IParticleSystem;
@@ -23,7 +22,6 @@ class IParticleSystem;
 //Менеджер партикловых систем
 class IParticleManager
 {
-
   protected:
     virtual ~IParticleManager(){};
 
@@ -33,7 +31,7 @@ class IParticleManager
     virtual bool Release() = 0;
 
     //Получить указатель на Render/FileService
-    virtual VDX8RENDER *Render() = 0;
+    virtual VDX9RENDER *Render() = 0;
 
     //Открыть проект
     virtual bool OpenProject(const char *FileName) = 0;
@@ -53,7 +51,7 @@ class IParticleManager
     virtual long GetProjectTexture() = 0;
 
     //Установить текстуру проекта
-    virtual void SetProjectTexture(const char *FileName = NULL) = 0;
+    virtual void SetProjectTexture(const char *FileName = nullptr) = 0;
 
     //Получить имя проекта
     virtual const char *GetProjectFileName() = 0;

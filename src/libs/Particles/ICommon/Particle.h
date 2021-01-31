@@ -1,8 +1,6 @@
 #ifndef PARTICLE_STRUCT
 #define PARTICLE_STRUCT
 
-#include <Windows.h>
-
 #include "math3d.h"
 
 class DataGraph;
@@ -16,10 +14,10 @@ struct BB_ParticleData
     bool SpeedOriented; //Поворачиваються по вектору скорости...
 
     //Указатель на кол-во партиклов данного типа, при удалении партикла нужно уменьшать !!!
-    DWORD *ActiveCount;
+    uint32_t *ActiveCount;
 
     //Физическая позиция
-    CVECTOR PhysPos;
+    Vector PhysPos;
 
     //Угол поворота
     float Angle;
@@ -28,10 +26,10 @@ struct BB_ParticleData
     float Spin;
 
     //Направление и "сила" скорости (НЕ Нормализованная)
-    CVECTOR Velocity;
+    Vector Velocity;
 
     //Внешняя сила (для прикладывания ее к партиклу)
-    CVECTOR ExternalForce;
+    Vector ExternalForce;
 
     //Время жизни
     float LifeTime;
@@ -40,7 +38,7 @@ struct BB_ParticleData
     float ElapsedTime;
 
     //Матрица трансформации, при рождении партикла (для трека)
-    CMatrix matWorld;
+    Matrix matWorld;
 
     //Масса
     float Mass;
@@ -50,9 +48,9 @@ struct BB_ParticleData
 
     //===========================================================================
     //Финальная позиция/угол для рендера
-    CVECTOR RenderPos;
+    Vector RenderPos;
     float RenderAngle;
-    CVECTOR OldRenderPos;
+    Vector OldRenderPos;
     float OldRenderAngle;
 
     //===========================================================================
@@ -98,29 +96,28 @@ struct BB_ParticleData
 
     //===============================================
     // ID эмиттера которому принадлежит партикл
-    DWORD EmitterGUID;
+    uint32_t EmitterGUID;
 };
 
 struct MDL_ParticleData
 {
-
     //Указатель на кол-во партиклов данного типа, при удалении партикла нужно уменьшать !!!
-    DWORD *ActiveCount;
+    uint32_t *ActiveCount;
 
     //Физическая позиция
-    CVECTOR PhysPos;
+    Vector PhysPos;
 
     //Угол поворота
-    CVECTOR Angle;
+    Vector Angle;
 
     //Скорость закручивания, радиан в сек.
-    CVECTOR Spin;
+    Vector Spin;
 
     //Направление и "сила" скорости (НЕ Нормализованная)
-    CVECTOR Velocity;
+    Vector Velocity;
 
     //Внешняя сила (для прикладывания ее к партиклу)
-    CVECTOR ExternalForce;
+    Vector ExternalForce;
 
     //Время жизни
     float LifeTime;
@@ -129,7 +126,7 @@ struct MDL_ParticleData
     float ElapsedTime;
 
     //Матрица трансформации, при рождении партикла (для трека)
-    CMatrix matWorld;
+    Matrix matWorld;
 
     //Масса
     float Mass;
@@ -139,10 +136,10 @@ struct MDL_ParticleData
 
     //===========================================================================
     //Финальная позиция/угол для рендера
-    CVECTOR RenderPos;
-    CVECTOR RenderAngle;
-    CVECTOR OldRenderPos;
-    CVECTOR OldRenderAngle;
+    Vector RenderPos;
+    Vector RenderAngle;
+    Vector OldRenderPos;
+    Vector OldRenderAngle;
 
     //===========================================================================
     //Графики.........
@@ -179,7 +176,7 @@ struct MDL_ParticleData
 
     //===============================================
     // ID эмиттера которому принадлежит партикл
-    DWORD EmitterGUID;
+    uint32_t EmitterGUID;
 };
 
 #endif

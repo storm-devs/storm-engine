@@ -4,8 +4,8 @@
 #ifndef _DECK_CAMERA_H_
 #define _DECK_CAMERA_H_
 
-#include "common_camera.h"
-#include "dx8render.h"
+#include "Common_Camera.h"
+#include "dx9render.h"
 #include "model.h"
 #include "vmodule_api.h"
 
@@ -16,7 +16,7 @@ class DECK_CAMERA : public COMMON_CAMERA
 {
     struct VERTEX
     {
-        D3DXVECTOR3 v;
+        D3DVECTOR v;
         D3DCOLOR color;
         float tu;
         float tv;
@@ -41,7 +41,7 @@ class DECK_CAMERA : public COMMON_CAMERA
     CVECTOR g_gv0, g_gv1, g_gv2;
 
     MODEL *pModel;
-    VDX8RENDER *RenderService;
+    VDX9RENDER *RenderService;
     CVECTOR camera_pos, camera_ang;
     float h_eye;
     RECT Screen_Rect;
@@ -60,20 +60,37 @@ class DECK_CAMERA : public COMMON_CAMERA
     DECK_CAMERA();
     ~DECK_CAMERA();
 
-    void SetCharacter(ATTRIBUTES *_pACharacter);
+    void SetCharacter(ATTRIBUTES *_pACharacter) override;
 
     void SetDevice();
-    bool Init();
-    void Move(DWORD DeltaTime);
-    void Realize(dword Delta_Time);
-    void Execute(dword Delta_Time);
+    bool Init() override;
+    void Move(uint32_t DeltaTime);
+    void Realize(uint32_t Delta_Time);
+    void Execute(uint32_t Delta_Time);
     bool CreateState(ENTITY_STATE_GEN *state_gen);
     bool LoadState(ENTITY_STATE *state);
-    dword AttributeChanged(ATTRIBUTES *pAttr);
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    uint32_t AttributeChanged(ATTRIBUTES *pAttr) override;
+    uint64_t ProcessMessage(MESSAGE &message) override;
 
-    void Save(CSaveLoad *pSL);
-    void Load(CSaveLoad *pSL);
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
+
+    void Save(CSaveLoad *pSL) override;
+    void Load(CSaveLoad *pSL) override;
 };
 
 #endif

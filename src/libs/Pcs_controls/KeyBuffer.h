@@ -1,8 +1,8 @@
 #ifndef _CONTROL_KEYBUFFER_H_
 #define _CONTROL_KEYBUFFER_H_
 
+#include "../Animation/ActionInfo.h"
 #include "controls.h"
-#include "templates\string.h"
 #include "vmodule_api.h"
 
 struct ControlKeyBuffer
@@ -18,7 +18,7 @@ struct ControlKeyBuffer
     {
         return m_nBufLen;
     }
-    const KeyDescr *GetBuffer()
+    const KeyDescr *c_str()
     {
         return m_pcBuffer;
     }

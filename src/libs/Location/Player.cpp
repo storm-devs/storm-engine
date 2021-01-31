@@ -10,10 +10,10 @@
 
 #include "Player.h"
 
+#include "../../Shared/messages.h"
 #include "Location.h"
 #include "LocationCamera.h"
 #include "collide.h"
-#include "messages.h"
 
 //============================================================================================
 //Конструирование, деструктурирование
@@ -21,36 +21,31 @@
 
 Player::Player()
 {
-    chrGroups = -1;
     lastChange = 10.0f;
     task.task = npct_none;
     activatedDialog = false;
     CmdNone();
     isSpecialMode = false;
     isSetBlock = false;
-#ifndef _XBOX
     kSMReload = 1.0f;
-    locCam = null;
+    locCam = nullptr;
     shootgunMode = false;
     // shootgunMode = false;
-#endif
 }
 
 Player::~Player()
 {
-#ifndef _XBOX
-    ENTITY_ID peid;
-    if (api->FindClass(&peid, "ShootGunParticles", 0))
-        api->DeleteEntity(peid);
-#endif
+    entid_t peid;
+    if (peid = EntityManager::GetEntityId("ShootGunParticles"))
+        EntityManager::EraseEntity(peid);
 }
 
 bool Player::PostInit()
 {
-    chrGroups = api->Class_Name2Code("CharactersGroups");
+    auto *const location = GetLocation();
     if (!location->supervisor.player)
         location->supervisor.player = this;
-    api->FindClass(&baterfl, "Animals", 0);
+    baterfl = EntityManager::GetEntityId("Animals");
     return NPCharacter::PostInit();
 }
 
@@ -64,17 +59,16 @@ void Player::Reset()
 //Перемещаем персонажа в желаемую позицию
 void Player::Move(float dltTime)
 {
-#ifndef _XBOX
 
     kSMReload += dltTime * 0.7f;
     if (kSMReload > 1.0f)
         kSMReload = 1.0f;
     if (!locCam)
     {
-        ENTITY_ID lcam;
-        if (api->FindClass(&lcam, "LocationCamera", 0))
+        entid_t lcam;
+        if (lcam = EntityManager::GetEntityId("LocationCamera"))
         {
-            locCam = (LocationCamera *)api->GetEntityPointer(&lcam);
+            locCam = static_cast<LocationCamera *>(EntityManager::GetEntityPointer(lcam));
         }
     }
     else
@@ -83,9 +77,9 @@ void Player::Move(float dltTime)
     }
     // tuner.isVisible = !shootgunMode;
 
-    bool oldSGMode = shootgunMode;
+    const auto oldSGMode = shootgunMode;
     shootgunMode = false;
-    VDATA *vd = api->Event("EventSGMode", 0);
+    auto *vd = core.Event("EventSGMode", nullptr);
     if (vd)
     {
         long data = 0;
@@ -96,27 +90,25 @@ void Player::Move(float dltTime)
     {
         if (shootgunMode)
         {
-            api->Send_Message(effects, "s", "SGInited");
+            core.Send_Message(effects, "s", "SGInited");
             tuner.alpha = 0.0f;
             tuner.camAlpha = 0.0f;
             isFight = true;
         }
         else
         {
-            api->Send_Message(effects, "s", "SGRelease");
+            core.Send_Message(effects, "s", "SGRelease");
             tuner.alpha = 1.0f;
             tuner.camAlpha = 1.0f;
             isFight = false;
         }
     }
 
-#endif
-
     /*
     if(GetAsyncKeyState(VK_SPACE) < 0)
     {
-        impulse.y += 5.0f;
-        impulse.y *= 2;
+      impulse.y += 5.0f;
+      impulse.y *= 2;
     }*/
 
     if (task.task == npct_none)
@@ -154,11 +146,9 @@ void Player::Move(float dltTime)
         }
         else
             lastChange += dltTime;
-            //------------------------------------
-#ifndef _XBOX
+        //------------------------------------
         if (!shootgunMode)
         {
-#endif
             if (IsChangeFightMode())
             {
                 isSetBlock = false;
@@ -243,7 +233,6 @@ void Player::Move(float dltTime)
                     Fire();
                 }
             }
-#ifndef _XBOX
         }
         else
         {
@@ -254,7 +243,6 @@ void Player::Move(float dltTime)
                 if (IsFire())
                     FireFromShootgun();
         }
-#endif
         //------------------------------------
     }
     else
@@ -264,50 +252,36 @@ void Player::Move(float dltTime)
 
 void Player::Update(float dltTime)
 {
-#ifdef _XBOX
-    isSpecialMode = false;
-    VDATA *vd = api->Event("EventGetSpecialMode", 0);
-    if (vd)
-    {
-        long isSpec = 0;
-        if (vd->Get(isSpec))
-        {
-            isSpecialMode = (isSpec != 0);
-            if (isLookFromEyes)
-                isSpecialMode = false;
-        }
-    }
-#endif
-    bool aDialog = false;
+    auto aDialog = false;
     if (task.task == npct_none)
     {
         if (!IsFight())
         {
             CONTROL_STATE cs;
-            _CORE_API->Controls->GetControlState("ChrAction", cs);
+            core.Controls->GetControlState("ChrAction", cs);
             if (cs.state == CST_ACTIVATED)
                 aDialog = true;
             if (activatedDialog)
             {
-                Character *chr = FindDialogCharacter();
+                auto *chr = FindDialogCharacter();
                 if (chr)
                 {
                     Assert(AttributesPointer);
                     Assert(chr->AttributesPointer);
-                    long first = AttributesPointer->GetAttributeAsDword("index", -1);
-                    long next = chr->AttributesPointer->GetAttributeAsDword("index", -1);
+                    const long first = AttributesPointer->GetAttributeAsDword("index", -1);
+                    const long next = chr->AttributesPointer->GetAttributeAsDword("index", -1);
                     if (first >= 0 && next >= 0)
                     {
-                        _CORE_API->Event("dlgReady", "ll", next, first);
+                        core.Event("dlgReady", "ll", next, first);
                     }
                     else
                     {
-                        _CORE_API->Trace("Incorrect character index! Dialog not activated...");
+                        core.Trace("Incorrect character index! Dialog not activated...");
                     }
                 }
             }
 
-            _CORE_API->Controls->GetControlState("ChrJump", cs);
+            core.Controls->GetControlState("ChrJump", cs);
             if (cs.state == CST_ACTIVATED)
             {
                 StartJump();
@@ -318,7 +292,7 @@ void Player::Update(float dltTime)
             if (IsFireFindTarget())
             {
                 float kDist;
-                Character *c = FindGunTarget(kDist);
+                auto *c = FindGunTarget(kDist);
                 if (c)
                     c->Select();
             }
@@ -330,17 +304,17 @@ void Player::Update(float dltTime)
     // if(c) c->Select();
     NPCharacter::Update(dltTime);
     activatedDialog = aDialog;
-    api->Send_Message(baterfl, "lff", MSG_ANIMALS_BUTTERFLIES_XYZ, curPos.x, curPos.z);
+    core.Send_Message(baterfl, "lff", MSG_ANIMALS_BUTTERFLIES_XYZ, curPos.x, curPos.z);
     //Перебираем персонажей в поисках врагов к игроку
-    ENTITY_ID eid;
-    if (api->FindClass(&eid, null, chrGroups))
+    if (const auto eid = EntityManager::GetEntityId("CharactersGroups"))
     {
+        auto *const location = GetLocation();
         for (long i = 0; i < location->supervisor.numCharacters; i++)
         {
-            Character *chr = location->supervisor.character[i].c;
+            auto *const chr = location->supervisor.character[i].c;
             if (chr != this && chr)
             {
-                chr->isPlayerEnemy = (api->Send_Message(eid, "sii", "IsEnemy", GetID(), chr->GetID()) != 0);
+                chr->isPlayerEnemy = (core.Send_Message(eid, "sii", "IsEnemy", GetId(), chr->GetId()) != 0);
             }
         }
     }
@@ -370,7 +344,7 @@ void Player::Rotate(float dltTime)
     CONTROL_STATE cs;
     if (!isSpecialMode)
     {
-        float a = GetRotateH() * 0.01f;
+        auto a = GetRotateH() * 0.01f;
         if (a > 0.3f)
             a = 0.3f;
         if (a < -0.3f)
@@ -381,17 +355,18 @@ void Player::Rotate(float dltTime)
     {
         if (!lockRotate)
         {
-            float dx = GetRotateH() * 0.067f;
-            _CORE_API->Controls->GetControlState("ChrTurnV", cs);
-            float dz = cs.fValue * 0.067f;
-            if (_CORE_API->Controls->GetControlState("ChrTurnV1", cs))
+            const auto dx = GetRotateH() * 0.067f;
+            core.Controls->GetControlState("ChrTurnV", cs);
+            auto dz = cs.fValue * 0.067f;
+            if (core.Controls->GetControlState("ChrTurnV1", cs))
                 dz += cs.fValue * 0.067f;
-            if (_CORE_API->Controls->GetControlState("ChrTurnV2", cs))
+            if (core.Controls->GetControlState("ChrTurnV2", cs))
                 dz += cs.fValue * 0.067f;
             if (dx * dx + dz * dz > 0.1f)
             {
                 //Повернём вектор относительно камеры
                 CMatrix mtx;
+                auto *const location = GetLocation();
                 location->GetRS()->GetTransform(D3DTS_VIEW, mtx);
                 mtx.Transposition3X3();
                 mtx.Vy() = CVECTOR(0.0f, 1.0f, 0.0f);
@@ -400,7 +375,7 @@ void Player::Rotate(float dltTime)
                 mtx.Vx() = !CVECTOR(mtx.Vx());
                 mtx.Vz() = !CVECTOR(mtx.Vz());
                 mtx.Pos() = 0.0f;
-                CVECTOR res = mtx * CVECTOR(dx, 0.0f, dz);
+                const auto res = mtx * CVECTOR(dx, 0.0f, dz);
                 Turn(res.x, res.z);
             }
         }
@@ -412,45 +387,42 @@ bool Player::GoForward(float dltTime)
     CONTROL_STATE cs;
     if (!isSpecialMode)
     {
-        bool res = false;
-        _CORE_API->Controls->GetControlState("ChrForward", cs);
+        auto res = false;
+        core.Controls->GetControlState("ChrForward", cs);
         if (cs.lValue != 0)
             res = true;
-        if (_CORE_API->Controls->GetControlState("ChrForward1", cs) && cs.lValue != 0)
+        if (core.Controls->GetControlState("ChrForward1", cs) && cs.lValue != 0)
             res = true;
-        if (_CORE_API->Controls->GetControlState("ChrForward2", cs) && cs.lValue != 0)
+        if (core.Controls->GetControlState("ChrForward2", cs) && cs.lValue != 0)
             res = true;
         return res;
     }
-    else
+    const auto dx = GetRotateH() * 0.067f;
+    core.Controls->GetControlState("ChrTurnV", cs);
+    auto dz = cs.fValue * 0.067f;
+    if (core.Controls->GetControlState("ChrTurnV1", cs))
+        dz += cs.fValue * 0.067f;
+    if (core.Controls->GetControlState("ChrTurnV2", cs))
+        dz += cs.fValue * 0.067f;
+    if (IsMove())
     {
-        float dx = GetRotateH() * 0.067f;
-        _CORE_API->Controls->GetControlState("ChrTurnV", cs);
-        float dz = cs.fValue * 0.067f;
-        if (_CORE_API->Controls->GetControlState("ChrTurnV1", cs))
-            dz += cs.fValue * 0.067f;
-        if (_CORE_API->Controls->GetControlState("ChrTurnV2", cs))
-            dz += cs.fValue * 0.067f;
-        if (IsMove())
-        {
-            return dx * dx + dz * dz > 0.1f;
-        }
-        return dx * dx + dz * dz > 0.2f;
+        return dx * dx + dz * dz > 0.1f;
     }
+    return dx * dx + dz * dz > 0.2f;
 }
 
-bool Player::GoBack(float dltTime)
+bool Player::GoBack(float dltTime) const
 {
     if (!isSpecialMode)
     {
         CONTROL_STATE cs;
-        bool res = false;
-        _CORE_API->Controls->GetControlState("ChrBackward", cs);
+        auto res = false;
+        core.Controls->GetControlState("ChrBackward", cs);
         if (cs.lValue != 0)
             res = true;
-        if (_CORE_API->Controls->GetControlState("ChrBackward1", cs) && cs.lValue != 0)
+        if (core.Controls->GetControlState("ChrBackward1", cs) && cs.lValue != 0)
             res = true;
-        if (_CORE_API->Controls->GetControlState("ChrBackward2", cs) && cs.lValue != 0)
+        if (core.Controls->GetControlState("ChrBackward2", cs) && cs.lValue != 0)
             res = true;
         return res;
     }
@@ -462,24 +434,21 @@ bool Player::IsRunMode(float dltTime)
     CONTROL_STATE cs;
     if (!isSpecialMode)
     {
-        _CORE_API->Controls->GetControlState("ChrRun", cs);
+        core.Controls->GetControlState("ChrRun", cs);
         return !(cs.lValue != 0);
     }
-    else
+    const auto dx = GetRotateH() * 0.067f;
+    core.Controls->GetControlState("ChrTurnV", cs);
+    auto dz = cs.fValue * 0.067f;
+    if (core.Controls->GetControlState("ChrTurnV1", cs))
+        dz += cs.fValue * 0.067f;
+    if (core.Controls->GetControlState("ChrTurnV2", cs))
+        dz += cs.fValue * 0.067f;
+    if (IsMove() && IsRun())
     {
-        float dx = GetRotateH() * 0.067f;
-        _CORE_API->Controls->GetControlState("ChrTurnV", cs);
-        float dz = cs.fValue * 0.067f;
-        if (_CORE_API->Controls->GetControlState("ChrTurnV1", cs))
-            dz += cs.fValue * 0.067f;
-        if (_CORE_API->Controls->GetControlState("ChrTurnV2", cs))
-            dz += cs.fValue * 0.067f;
-        if (IsMove() && IsRun())
-        {
-            return dx * dx + dz * dz > 0.4f;
-        }
-        return dx * dx + dz * dz > 0.6f;
+        return dx * dx + dz * dz > 0.4f;
     }
+    return dx * dx + dz * dz > 0.6f;
 }
 
 void Player::StrafeWhenMove(float dltTime)
@@ -496,14 +465,14 @@ void Player::StrafeWhenMove(float dltTime)
     if (!isSpecialMode)
     {
         CONTROL_STATE cs;
-        if (_CORE_API->Controls->GetControlState("ChrStrafeLeft", cs))
+        if (core.Controls->GetControlState("ChrStrafeLeft", cs))
         {
             if (cs.lValue != 0)
             {
                 strafeMove += -1.0f;
             }
         }
-        if (_CORE_API->Controls->GetControlState("ChrStrafeRight", cs))
+        if (core.Controls->GetControlState("ChrStrafeRight", cs))
         {
             if (cs.lValue != 0)
             {
@@ -538,7 +507,7 @@ bool Player::IsDoBlock()
 {
     //	return true;
     CONTROL_STATE cs;
-    _CORE_API->Controls->GetControlState("ChrBlock", cs);
+    core.Controls->GetControlState("ChrBlock", cs);
     if (cs.state == CST_ACTIVATED)
     {
         isSetBlock = true;
@@ -549,7 +518,7 @@ bool Player::IsDoBlock()
     }
     else if (cs.state == CST_INACTIVE)
     {
-        _CORE_API->Controls->GetControlState("ChrBlock2", cs);
+        core.Controls->GetControlState("ChrBlock2", cs);
         if (cs.state == CST_ACTIVATED)
         {
             isSetBlock = true;
@@ -569,11 +538,11 @@ bool Player::IsDoBlock()
 bool Player::IsDoParry()
 {
     CONTROL_STATE cs;
-    bool bPressed = false;
-    _CORE_API->Controls->GetControlState("ChrParry", cs);
+    auto bPressed = false;
+    core.Controls->GetControlState("ChrParry", cs);
     if (cs.state == CST_ACTIVATED)
         bPressed = true;
-    _CORE_API->Controls->GetControlState("ChrParry2", cs);
+    core.Controls->GetControlState("ChrParry2", cs);
     if (cs.state == CST_ACTIVATED)
         bPressed = true;
     return bPressed;
@@ -582,11 +551,11 @@ bool Player::IsDoParry()
 bool Player::IsDoAttackForce()
 {
     CONTROL_STATE cs;
-    bool bPressed = false;
-    _CORE_API->Controls->GetControlState("ChrAttackForce", cs);
+    auto bPressed = false;
+    core.Controls->GetControlState("ChrAttackForce", cs);
     if (cs.state == CST_ACTIVATED)
         bPressed = true;
-    _CORE_API->Controls->GetControlState("ChrAttackForce2", cs);
+    core.Controls->GetControlState("ChrAttackForce2", cs);
     if (cs.state == CST_ACTIVATED)
         bPressed = true;
     return bPressed;
@@ -595,11 +564,11 @@ bool Player::IsDoAttackForce()
 bool Player::IsDoAttackFast()
 {
     CONTROL_STATE cs;
-    bool bPressed = false;
-    _CORE_API->Controls->GetControlState("ChrAttackFast", cs);
+    auto bPressed = false;
+    core.Controls->GetControlState("ChrAttackFast", cs);
     if (cs.state == CST_ACTIVATED)
         bPressed = true;
-    _CORE_API->Controls->GetControlState("ChrAttackFast2", cs);
+    core.Controls->GetControlState("ChrAttackFast2", cs);
     if (cs.state == CST_ACTIVATED)
         bPressed = true;
     return bPressed;
@@ -608,11 +577,11 @@ bool Player::IsDoAttackFast()
 bool Player::IsDoAttackRound()
 {
     CONTROL_STATE cs;
-    bool bPressed = false;
-    _CORE_API->Controls->GetControlState("ChrAttackRound", cs);
+    auto bPressed = false;
+    core.Controls->GetControlState("ChrAttackRound", cs);
     if (cs.state == CST_ACTIVATED)
         bPressed = true;
-    _CORE_API->Controls->GetControlState("ChrAttackRound2", cs);
+    core.Controls->GetControlState("ChrAttackRound2", cs);
     if (cs.state == CST_ACTIVATED)
         bPressed = true;
     return bPressed;
@@ -621,11 +590,11 @@ bool Player::IsDoAttackRound()
 bool Player::IsDoAttackBreak()
 {
     CONTROL_STATE cs;
-    bool bPressed = false;
-    _CORE_API->Controls->GetControlState("ChrAttackBreak", cs);
+    auto bPressed = false;
+    core.Controls->GetControlState("ChrAttackBreak", cs);
     if (cs.state == CST_ACTIVATED)
         bPressed = true;
-    _CORE_API->Controls->GetControlState("ChrAttackBreak2", cs);
+    core.Controls->GetControlState("ChrAttackBreak2", cs);
     if (cs.state == CST_ACTIVATED)
         bPressed = true;
     return bPressed;
@@ -634,11 +603,11 @@ bool Player::IsDoAttackBreak()
 bool Player::IsDoAttackFeint()
 {
     CONTROL_STATE cs;
-    bool bPressed = false;
-    _CORE_API->Controls->GetControlState("ChrAttackFient", cs);
+    auto bPressed = false;
+    core.Controls->GetControlState("ChrAttackFient", cs);
     if (cs.state == CST_ACTIVATED)
         bPressed = true;
-    _CORE_API->Controls->GetControlState("ChrAttackFient2", cs);
+    core.Controls->GetControlState("ChrAttackFient2", cs);
     if (cs.state == CST_ACTIVATED)
         bPressed = true;
     return bPressed;
@@ -647,90 +616,87 @@ bool Player::IsDoAttackFeint()
 bool Player::IsFire()
 {
     CONTROL_STATE cs;
-    _CORE_API->Controls->GetControlState("ChrFire", cs);
+    core.Controls->GetControlState("ChrFire", cs);
     return (cs.state == CST_ACTIVATED);
 }
 
 bool Player::IsChangeFightMode()
 {
     CONTROL_STATE cs;
-    _CORE_API->Controls->GetControlState("ChrFightMode", cs);
+    core.Controls->GetControlState("ChrFightMode", cs);
     return (cs.state == CST_ACTIVATED);
 }
 
 //Найти атакующего противника
 Player *Player::FindAttackCharacter()
 {
+    auto *const location = GetLocation();
     //Найдём окружающих персонажей
     static Supervisor::FindCharacter fndCharacter[MAX_CHARACTERS];
     static long num = 0;
     if (!location->supervisor.FindCharacters(fndCharacter, num, this, CHARACTER_ATTACK_DIST * 1.1f))
-        return null;
+        return nullptr;
     //Выбираем лутшего
     float minDst;
     long task = -1;
-    bool isFgt = false;
-    bool isEnemy = false;
-    float enemyCos = -1.0f;
-    float cdx = sinf(ay);
-    float cdz = cosf(ay);
-    long i = 0, j = 0;
-    for (i = 0, j = -1; i < num; i++)
+    auto isFgt = false;
+    const auto isEnemy = false;
+    auto enemyCos = -1.0f;
+    const auto cdx = sinf(ay);
+    const auto cdz = cosf(ay);
+    long j = -1;
+    for (long i = 0; i < num; i++)
     {
         //Персонаж
-        Supervisor::FindCharacter &fc = fndCharacter[i];
+        auto &fc = fndCharacter[i];
         //Невоюющих не смотрим
         // if(!fc.c->IsFight()) continue;
-        Player *chr = (Player *)fc.c;
+        auto *chr = static_cast<Player *>(fc.c);
         if (chr == this)
             continue;
         //Мёртвых пропускаем
         if (chr->liveValue < 0 || chr->deadName)
             continue;
         //Отсеиваем неинтересных
-        if (isEnemy)
+        if (isEnemy) //~!~
         {
-            if (chr->task.task != npct_fight || api->GetEntityPointer(&chr->task.target) != this)
+            if (chr->task.task != npct_fight || EntityManager::GetEntityPointer(chr->task.target) != this)
+                continue;
+        }
+        if (isFgt)
+        {
+            if (!chr->isFight)
                 continue;
         }
         else
         {
-            if (isFgt)
-            {
-                if (!chr->isFight)
-                    continue;
-            }
-            else
-            {
-                if (chr->isFight)
-                {
-                    j = -1;
-                    isFgt = true;
-                }
-            }
-            /*
-            if(chr->task.task == npct_fight &&
-                api->GetEntityPointer(&chr->task.target) == this)
+            if (chr->isFight)
             {
                 j = -1;
-                isEnemy = true;
+                isFgt = true;
             }
-            */
         }
+        /*
+                if(chr->task.task == npct_fight &&
+                    EntityManager::GetEntityPointer(chr->task.target) == this)
+                {
+                    j = -1;
+                    isEnemy = true;
+                }
+                */
         //Невражеских пропускаем
-        if (!isEnemy)
+        if constexpr (!isEnemy) //~!~
         {
-            ENTITY_ID eid;
-            if (api->FindClass(&eid, null, chrGroups))
+            if (const auto eid = EntityManager::GetEntityId("CharactersGroups"))
             {
-                if (!api->Send_Message(eid, "sii", "IsEnemy", GetID(), chr->GetID()))
+                if (!core.Send_Message(eid, "sii", "IsEnemy", GetId(), chr->GetId()))
                     continue;
             }
         }
         //Этот гад на нас лезет
         if (j >= 0)
         {
-            float cs = -1.0f;
+            auto cs = -1.0f;
             if (fc.d2 > 0.0f)
                 cs = (fc.dx * cdx + fc.dz * cdz) / sqrtf(fc.d2);
             if (cs > enemyCos)
@@ -751,35 +717,31 @@ Player *Player::FindAttackCharacter()
         }
     }
     if (j >= 0)
-        return (Player *)fndCharacter[j].c;
-    return null;
+        return static_cast<Player *>(fndCharacter[j].c);
+    return nullptr;
 }
 
 void Player::FireFromShootgun()
 {
-#ifndef _XBOX
     kSMReload = 0.0f;
-    ENTITY_ID peid;
-    if (api->FindClass(&peid, "sound", 0))
+    if (const auto peid = EntityManager::GetEntityId("sound"))
     {
-        api->Send_Message(peid, "lsllll", MSG_SOUND_PLAY, "OBJECTS\\sgboom.wav", 4, false, false, false);
+        core.Send_Message(peid, "lsllll", MSG_SOUND_PLAY, "OBJECTS\\sgboom.wav", 4, false, false, false);
     }
     //Получим позицию откуда стрелять
-    float dx = sinf(ay);
-    float dz = cosf(ay);
+    auto dx = sinf(ay);
+    auto dz = cosf(ay);
     CMatrix mtx;
+    auto *const location = GetLocation();
     location->GetRS()->GetTransform(D3DTS_VIEW, mtx);
     mtx.Transposition();
-    CVECTOR src = mtx.Pos() + mtx.Vz() * 0.7f;
-    api->Send_Message(effects, "sffffff", "SGFireParticles", src.x, src.y - 0.35f, src.z, mtx.Vz().x, mtx.Vz().y,
+    const auto src = mtx.Pos() + mtx.Vz() * 0.7f;
+    core.Send_Message(effects, "sffffff", "SGFireParticles", src.x, src.y - 0.35f, src.z, mtx.Vz().x, mtx.Vz().y,
                       mtx.Vz().z);
-    VIDWALKER *walker = _CORE_API->LayerGetWalker("sun_trace");
-    COLLIDE *collide = (COLLIDE *)_CORE_API->CreateService("COLL");
-    if (!walker)
-        return;
+
+    auto *collide = static_cast<COLLIDE *>(core.CreateService("COLL"));
     if (!collide)
     {
-        delete walker;
         return;
     }
     struct ChrsDmg
@@ -789,34 +751,37 @@ void Player::FireFromShootgun()
     };
     ChrsDmg chrs[16];
     long numChrs = 0;
+
+    const auto ids = EntityManager::GetEntityIdIterators(SUN_TRACE);
     for (long i = 0; i < 6; i++)
     {
         //Получим позицию куда попадёт картечина
-        float r = rand() * 3.0f / RAND_MAX;
-        float a = rand() * 6.283185307f / (RAND_MAX + 1);
-        CVECTOR dst = mtx * CVECTOR(r * sinf(a), r * cosf(a), 25.0f);
-        if (walker && collide)
+        const auto r = rand() * 3.0f / RAND_MAX;
+        const auto a = rand() * 6.283185307f / (RAND_MAX + 1);
+        auto dst = mtx * CVECTOR(r * sinf(a), r * cosf(a), 25.0f);
+        if (collide)
         {
-            float dist = collide->Trace(*walker, src, dst, &GetID(), 0);
+            auto id = GetId();
+            const auto dist = collide->Trace(ids, src, dst, &id, 0);
             if (dist <= 1.0f && dist > (0.2f / 25.0f))
             {
-                CVECTOR dir = !(src - dst);
+                auto dir = !(src - dst);
                 dst = src + (dst - src) * dist;
                 //Куда то попали
-                ENTITY *e = api->GetEntityPointer(&collide->GetObjectID());
+                auto *const e = EntityManager::GetEntityPointer(collide->GetObjectID());
                 if (e && e != this)
                 {
-                    long n = 0, nm = 0;
+                    long n, nm;
                     for (n = 0, nm = location->supervisor.numCharacters; n < nm; n++)
                     {
-                        Player *c = (Player *)location->supervisor.character[n].c;
+                        auto *c = static_cast<Player *>(location->supervisor.character[n].c);
                         if (c->Model() == e)
                         {
-                            api->Send_Message(effects, "sffffff", "SGBloodParticles", dst.x, dst.y, dst.z, dir.x, dir.y,
+                            core.Send_Message(effects, "sffffff", "SGBloodParticles", dst.x, dst.y, dst.z, dir.x, dir.y,
                                               dir.z);
                             c->impulse -= dir * (1.5f + rand() * (1.0f / RAND_MAX));
                             c->impulse.y += 1.5f + rand() * (1.0f / RAND_MAX);
-                            long j = 0;
+                            long j;
                             for (j = 0; j < numChrs; j++)
                             {
                                 if (chrs[j].chr == c)
@@ -834,40 +799,38 @@ void Player::FireFromShootgun()
                         }
                     }
                     if (n >= nm)
-                        api->Send_Message(effects, "sffffff", "SGEnvParticles", dst.x, dst.y, dst.z, dir.x, dir.y,
+                        core.Send_Message(effects, "sffffff", "SGEnvParticles", dst.x, dst.y, dst.z, dir.x, dir.y,
                                           dir.z);
                 }
                 else
-                    api->Send_Message(effects, "sffffff", "SGEnvParticles", dst.x, dst.y, dst.z, dir.x, dir.y, dir.z);
+                    core.Send_Message(effects, "sffffff", "SGEnvParticles", dst.x, dst.y, dst.z, dir.x, dir.y, dir.z);
             }
         }
     }
-    delete walker;
     for (long i = 0; i < numChrs; i++)
     {
-        api->Event("Location_CharacterSGFire", "iif", GetID(), chrs[i].chr->GetID(), chrs[i].dmg);
+        core.Event("Location_CharacterSGFire", "iif", GetId(), chrs[i].chr->GetId(), chrs[i].dmg);
     }
-#endif
 }
 
 float Player::GetRotateH()
 {
     CONTROL_STATE cs;
-    api->Controls->GetControlState("ChrCamSpecMode", cs);
-    float dx = 0.f;
+    core.Controls->GetControlState("ChrCamSpecMode", cs);
+    auto dx = 0.f;
     if (cs.state != CST_ACTIVE)
     {
-        _CORE_API->Controls->GetControlState("ChrTurnH", cs);
+        core.Controls->GetControlState("ChrTurnH", cs);
         dx = cs.fValue;
     }
-    if (_CORE_API->Controls->GetControlState("ChrTurnH1", cs))
+    if (core.Controls->GetControlState("ChrTurnH1", cs))
         dx += cs.fValue;
-    if (_CORE_API->Controls->GetControlState("ChrTurnHR", cs))
+    if (core.Controls->GetControlState("ChrTurnHR", cs))
     {
         if (cs.state == CST_ACTIVE)
             dx += 12.0f;
     }
-    if (_CORE_API->Controls->GetControlState("ChrTurnHL", cs))
+    if (core.Controls->GetControlState("ChrTurnHL", cs))
     {
         if (cs.state == CST_ACTIVE)
             dx -= 12.0f;

@@ -2,17 +2,13 @@
 #define _TBUTTERFLIES_H_
 
 #include "AnimalsDefines.h"
+#include "Animation.h"
+#include "IVBufferManager.h"
+#include "Matrix.h"
 #include "TButterfly.h"
-#include "TIVBufferManager.h"
-#include "animation.h"
 #include "collide.h"
-#include "dx8render.h"
+#include "dx9render.h"
 #include "geometry.h"
-#include "geos.h"
-#include "matrix.h"
-#include "messages.h"
-#include "model.h"
-#include "object.h"
 
 #define Y_REDEFINE_TIME 250
 
@@ -25,19 +21,18 @@ class TButterflies
     TButterflies();
     virtual ~TButterflies();
 
-    dword ProcessMessage(long _code, MESSAGE &message);
+    uint64_t ProcessMessage(long _code, MESSAGE &message);
     void Init();
-    void Realize(dword _dTime);
-    void Execute(dword _dTime);
+    void Realize(uint32_t dTime);
+    void Execute(uint32_t dTime);
 
   private:
     void LoadSettings();
 
-    VDX8RENDER *renderService;
+    VDX9RENDER *renderService;
     COLLIDE *collide;
-    VIDWALKER *walker;
-    TIVBufferManager *ivManager;
-    ENTITY_ID butterflyModel;
+    IVBufferManager *ivManager;
+    entid_t butterflyModel;
     TButterfly butterflies[BUTTERFLY_COUNT];
     long butterfliesCount;
 

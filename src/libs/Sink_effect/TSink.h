@@ -1,17 +1,10 @@
-#ifndef _TSINK_H_
-#define _TSINK_H_
+#pragma once
 
-#include "..\SoundService\VSoundService.h"
-#include "CVECTOR.h"
+#include "Cvector.h"
+#include "IVBufferManager.h"
 #include "TFlotsam.h"
-#include "TIVBufferManager.h"
 #include "TSinkSplash.h"
-#include "dx8render.h"
-#include "exs.h"
-#include "geos.h"
-#include "matrix.h"
-#include "messages.h"
-#include "model.h"
+#include "dx9render.h"
 #include "sea_base.h"
 
 ///////////////////////////////////////////////////////////////////
@@ -23,30 +16,28 @@ class TSink
     TSink();
     virtual ~TSink();
 
-    void Initialize(INIFILE *_ini, IDirect3DDevice9 *_device, SEA_BASE *sea, VDX8RENDER *_renderer);
+    void Initialize(INIFILE *_ini, IDirect3DDevice9 *_device, SEA_BASE *sea, VDX9RENDER *_renderer);
     void Release();
     void Start(const CVECTOR &_pos, float _radius);
-    void Process(dword _dTime);
-    void Realize(dword _dTime);
+    void Process(uint32_t dTime);
+    void Realize(uint32_t dTime);
     bool Enabled();
 
   private:
     bool enabled;
 
-    VDX8RENDER *renderer;
+    VDX9RENDER *renderer;
     SEA_BASE *sea;
     long texture;
-    TIVBufferManager *ivManager;
-    dword time;
+    IVBufferManager *ivManager;
+    uint32_t time;
 
-    TSinkSplash splashes[MAX_SPLASHES];
-    long times[MAX_SPLASHES];
-    long ivIndexes[MAX_SPLASHES];
-    long flotsamTimes[MAX_FLOTSAMS];
-    TFlotsam flotsams[MAX_FLOTSAMS];
+    TSinkSplash splashes[sink_effect::MAX_SPLASHES];
+    long times[sink_effect::MAX_SPLASHES];
+    long ivIndexes[sink_effect::MAX_SPLASHES];
+    long flotsamTimes[sink_effect::MAX_FLOTSAMS];
+    TFlotsam flotsams[sink_effect::MAX_FLOTSAMS];
     float distortDivider;
     float radius;
     CVECTOR center;
 };
-
-#endif

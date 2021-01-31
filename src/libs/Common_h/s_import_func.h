@@ -1,31 +1,32 @@
 #ifndef _S_IMPORT_FUNC_H_
 #define _S_IMPORT_FUNC_H_
 
-#include "v_s_stack.h"
-
 #define IFUNCRESULT_OK 0
 #define IFUNCRESULT_FAILED 0xffffffff
 
 #define INVALID_FUNCHANDLE 0xffffffff
 
-typedef DWORD(__cdecl *SIMPORTFUNC)(VS_STACK *);
+#include <cstdint>
+
+class VS_STACK;
+typedef uint32_t (*SIMPORTFUNC)(VS_STACK *);
 
 struct IFUNCINFO
 {
-    IFUNCINFO()
+    IFUNCINFO() : nArguments(0)
     {
-        pFuncName = 0;
-        pReturnValueName = 0;
-        pFuncAddress = 0;
-        pDeclFileName = 0;
+        pFuncName = nullptr;
+        pReturnValueName = nullptr;
+        pFuncAddress = nullptr;
+        pDeclFileName = nullptr;
         nDeclLine = 0;
     };
-    char *pFuncName;
-    char *pReturnValueName;
-    DWORD nArguments;
+    const char *pFuncName;
+    const char *pReturnValueName;
+    uint32_t nArguments;
     SIMPORTFUNC pFuncAddress;
-    char *pDeclFileName;
-    DWORD nDeclLine;
+    const char *pDeclFileName;
+    uint32_t nDeclLine;
 };
 
 #endif

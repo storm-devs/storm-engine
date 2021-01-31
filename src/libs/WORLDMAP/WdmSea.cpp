@@ -9,9 +9,10 @@
 //============================================================================================
 
 #include "WdmSea.h"
+#include "Matrix.h"
 #include "WdmShip.h"
-#include "matrix.h"
-#include <stdio.h>
+#include "defines.h"
+#include "storm_assert.h"
 
 //============================================================================================
 
@@ -31,7 +32,7 @@
 
 //============================================================================================
 
-#define WDM_SEA_CLR(a, c) (((dword(a)) << 24) | ((dword(c)) << 16) | ((dword(c)) << 8) | ((dword(c)) << 0))
+#define WDM_SEA_CLR(a, c) (((uint32_t(a)) << 24) | ((uint32_t(c)) << 16) | ((uint32_t(c)) << 8) | ((uint32_t(c)) << 0))
 
 //============================================================================================
 //Конструирование, деструктурирование
@@ -56,44 +57,44 @@ WdmSea::WdmSea()
         whiteHorses[i] = -1;
     // Init
     //Создаём буфер для индексов
-    ib = wdmObjects->rs->CreateIndexBufferManaged(WDM_SEA_NT * 3 * 2);
+    ib = wdmObjects->rs->CreateIndexBuffer(WDM_SEA_NT * 3 * 2);
     //Создаём буфер для вершин
-    vb = wdmObjects->rs->CreateVertexBufferManaged(D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1,
-                                                   (WDM_SEA_NV + 4) * sizeof(Vertex), D3DUSAGE_WRITEONLY);
+    vb = wdmObjects->rs->CreateVertexBuffer(D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1,
+                                            (WDM_SEA_NV + 4) * sizeof(Vertex), D3DUSAGE_WRITEONLY);
     Assert(ib >= 0 && vb >= 0);
     //Индексы
-    Triangle *triangle = (Triangle *)wdmObjects->rs->LockIndexBuffer(ib);
+    auto *triangle = static_cast<Triangle *>(wdmObjects->rs->LockIndexBuffer(ib));
     Assert(triangle);
     for (long j = 0, p = 0; j < WDM_SEA_SECTIONS_Z; j++)
     {
-        Triangle *trg = triangle + j * WDM_SEA_SECTIONS_X * 2;
-        long base = j * (WDM_SEA_SECTIONS_X + 1);
+        auto *const trg = triangle + j * WDM_SEA_SECTIONS_X * 2;
+        const auto base = j * (WDM_SEA_SECTIONS_X + 1);
         for (long i = 0; i < WDM_SEA_SECTIONS_X; i++)
         {
-            trg[i * 2 + 0].index[0] = word(base + i);
-            trg[i * 2 + 0].index[1] = word(base + WDM_SEA_SECTIONS_X + 1 + i + 1);
-            trg[i * 2 + 0].index[2] = word(base + WDM_SEA_SECTIONS_X + 1 + i);
-            trg[i * 2 + 1].index[0] = word(base + i);
-            trg[i * 2 + 1].index[1] = word(base + i + 1);
-            trg[i * 2 + 1].index[2] = word(base + WDM_SEA_SECTIONS_X + 1 + i + 1);
+            trg[i * 2 + 0].index[0] = static_cast<uint16_t>(base + i);
+            trg[i * 2 + 0].index[1] = static_cast<uint16_t>(base + WDM_SEA_SECTIONS_X + 1 + i + 1);
+            trg[i * 2 + 0].index[2] = static_cast<uint16_t>(base + WDM_SEA_SECTIONS_X + 1 + i);
+            trg[i * 2 + 1].index[0] = static_cast<uint16_t>(base + i);
+            trg[i * 2 + 1].index[1] = static_cast<uint16_t>(base + i + 1);
+            trg[i * 2 + 1].index[2] = static_cast<uint16_t>(base + WDM_SEA_SECTIONS_X + 1 + i + 1);
         }
     }
     wdmObjects->rs->UnLockIndexBuffer(ib);
     //Вершины
-    Vertex *vertex = (Vertex *)wdmObjects->rs->LockVertexBuffer(vb);
+    auto *vertex = static_cast<Vertex *>(wdmObjects->rs->LockVertexBuffer(vb));
     Assert(vertex);
     //Море
     for (long z = 0, p = 0; z <= WDM_SEA_SECTIONS_Z; z++)
     {
         for (long x = 0; x <= WDM_SEA_SECTIONS_X; x++, p++)
         {
-            Vertex &v = vertex[p];
-            v.x = (x / float(WDM_SEA_SECTIONS_X) - 0.5f) * seaSizeX;
+            auto &v = vertex[p];
+            v.x = (x / static_cast<float>(WDM_SEA_SECTIONS_X) - 0.5f) * seaSizeX;
             v.y = 0.0f;
-            v.z = (0.5f - z / float(WDM_SEA_SECTIONS_Z)) * seaSizeZ;
+            v.z = (0.5f - z / static_cast<float>(WDM_SEA_SECTIONS_Z)) * seaSizeZ;
             v.color = 0xffffffff;
-            v.tu = x / float(WDM_SEA_SECTIONS_X);
-            v.tv = z / float(WDM_SEA_SECTIONS_Z);
+            v.tu = x / static_cast<float>(WDM_SEA_SECTIONS_X);
+            v.tv = z / static_cast<float>(WDM_SEA_SECTIONS_Z);
         }
     }
     //Для барашков
@@ -127,12 +128,12 @@ WdmSea::WdmSea()
     baseTexture = wdmObjects->rs->TextureCreate("\\WorldMap\\Sea\\sea.tga");
     for (long i = 0; i < sizeof(aniTextures) / sizeof(long); i++)
     {
-        sprintf(buf, "\\WorldMap\\Sea\\Ani\\wave_%.4i.tga", i);
+        sprintf_s(buf, "\\WorldMap\\Sea\\Ani\\wave_%.4i.tga", i);
         aniTextures[i] = wdmObjects->rs->TextureCreate(buf);
     }
     for (long i = 0; i < sizeof(whiteHorses) / sizeof(long); i++)
     {
-        sprintf(buf, "\\WorldMap\\Sea\\WhiteHorses\\wh%.3i.tga", i);
+        sprintf_s(buf, "\\WorldMap\\Sea\\WhiteHorses\\wh%.3i.tga", i);
         whiteHorses[i] = -1; // wdmObjects->rs->TextureCreate(buf);
     }
     for (long i = 0; i < sizeof(flare) / sizeof(flare[0]); i++)
@@ -171,12 +172,12 @@ WdmSea::~WdmSea()
 
 void WdmSea::Update(float dltTime)
 {
-    dltTime = 1.0f / 80.0f;
+    dltTime = 1.0f / 80.0f; //~!~
     //Анимированная текстура
     aniFrame += dltTime * WDM_SEA_ANIFPS;
-    float maxAni = sizeof(aniTextures) / sizeof(long);
+    const float maxAni = sizeof(aniTextures) / sizeof(long);
     aniFrame /= maxAni;
-    aniFrame = (aniFrame - long(aniFrame)) * maxAni;
+    aniFrame = (aniFrame - static_cast<long>(aniFrame)) * maxAni;
     Assert(aniFrame < maxAni);
     //Барашки
     for (long i = 0; i < sizeof(wh) / sizeof(WhiteHorses); i++)
@@ -215,9 +216,10 @@ void WdmSea::Update(float dltTime)
         }
     }
     //Блёстки
-    for (long i = 0; i < sizeof(flare) / sizeof(flare[0]); i++)
+    long i;
+    for (i = 0; i < sizeof(flare) / sizeof(flare[0]); i++)
     {
-        Flare &f = flare[i];
+        auto &f = flare[i];
         if (f.index < 0)
             continue;
         f.time += dltTime * f.k;
@@ -225,7 +227,7 @@ void WdmSea::Update(float dltTime)
         {
             //Отжил своё, удаляем
             flareCount--;
-            for (long j = f.index; j < flareCount; j++)
+            for (auto j = f.index; j < flareCount; j++)
             {
                 flare[flareRect[j + 1].dwColor & 0xffff].index--;
                 flareRect[j] = flareRect[j + 1];
@@ -234,22 +236,22 @@ void WdmSea::Update(float dltTime)
             continue;
         }
         //Обновляем параметры
-        RS_RECT &r = flareRect[f.index];
-        float k = 1.0f - (f.time - 0.5f) * (f.time - 0.5f) * 4.0f;
+        auto &r = flareRect[f.index];
+        const auto k = 1.0f - (f.time - 0.5f) * (f.time - 0.5f) * 4.0f;
         r.fSize = k * 0.3f;
-        r.dwColor = (r.dwColor & 0xffff) | (long(k * k * k * k * k * k * 255.0f) << 24);
+        r.dwColor = (r.dwColor & 0xffff) | (static_cast<long>(k * k * k * k * k * k * 255.0f) << 24);
         r.fAngle += dltTime * 8.0f * sinf(f.phase + f.time * 6.0f);
     }
     Assert(wdmObjects->playerShip);
     float playerX, playerZ, playerAng;
     wdmObjects->playerShip->GetPosition(playerX, playerZ, playerAng);
-    const float flareBurnTime = 0.0005f;
+    const auto flareBurnTime = 0.0005f;
     for (flareCerateCounter += dltTime; flareCerateCounter > flareBurnTime; flareCerateCounter -= flareBurnTime)
     {
         if (rand() & 1)
         {
             //Добавляем новый
-            long i = 0;
+            unsigned int i;
             for (i = 0; i < sizeof(flare) / sizeof(flare[0]); i++)
             {
                 if (flare[i].index < 0)
@@ -259,14 +261,14 @@ void WdmSea::Update(float dltTime)
                 break;
             Assert(flareCount < sizeof(flareRect) / sizeof(flareRect[0]));
             //Заполняем новыми параметрами
-            Flare &f = flare[i];
+            auto &f = flare[i];
             f.index = flareCount++;
             f.time = 0.0f;
             f.k = 1.0f / (0.8f + 0.5f * rand() * (1.0f / RAND_MAX));
             f.phase = rand() * (2.0f * PI / RAND_MAX);
-            RS_RECT &r = flareRect[f.index];
-            float pang = rand() * (2.0f * PI / RAND_MAX);
-            float prad = rand() * (300.0f / RAND_MAX);
+            auto &r = flareRect[f.index];
+            const auto pang = rand() * (2.0f * PI / RAND_MAX);
+            const auto prad = rand() * (300.0f / RAND_MAX);
             r.vPos.x = playerX + prad * sinf(pang);
             r.vPos.y = 0.0f;
             r.vPos.z = playerZ + prad * cosf(pang);
@@ -278,7 +280,7 @@ void WdmSea::Update(float dltTime)
     }
 }
 
-void WdmSea::PRender(VDX8RENDER *rs)
+void WdmSea::PRender(VDX9RENDER *rs)
 {
     //Предворительная отрисовка подложки
     // Textures
@@ -288,7 +290,7 @@ void WdmSea::PRender(VDX8RENDER *rs)
     Render(rs, "WdmSeaDraw1");
 }
 
-void WdmSea::LRender(VDX8RENDER *rs)
+void WdmSea::LRender(VDX9RENDER *rs)
 {
     //Дорисовка подложки
     // Textures
@@ -300,11 +302,11 @@ void WdmSea::LRender(VDX8RENDER *rs)
     Render(rs, "WdmSeaDraw2");
     //Рисование анимированной текстуры
     //Определяем пару кадров и коэфициент блендинга между ними
-    long curFrame = long(aniFrame);
-    long nextFrame = curFrame + 1;
+    const auto curFrame = static_cast<long>(aniFrame);
+    auto nextFrame = curFrame + 1;
     if (nextFrame >= sizeof(aniTextures) / sizeof(long))
         nextFrame = 0;
-    float k = 255.0f * (aniFrame - long(aniFrame));
+    auto k = 255.0f * (aniFrame - static_cast<long>(aniFrame));
     if (k < 0.0f)
         k = 0.0f;
     if (k > 255.0f)
@@ -328,16 +330,16 @@ void WdmSea::LRender(VDX8RENDER *rs)
         CMatrix view;
         rs->GetTransform(D3DTS_VIEW, view);
         view.Transposition();
-        float y = view.Pos().y;
-        const float maxy = 130.0f;
-        const float miny = 80.0f;
+        auto y = view.Pos().y;
+        const auto maxy = 130.0f;
+        const auto miny = 80.0f;
         if (y < maxy)
         {
             y = (y - miny) / (maxy - miny);
             if (y < 0.0f)
                 y = 0.0f;
             y = (1.0f - y) * (1.0f - y);
-            long c = long(y * 255.0f) << 24;
+            const auto c = static_cast<long>(y * 255.0f) << 24;
             rs->TextureSet(0, flareTexture);
             rs->SetRenderState(D3DRS_TEXTUREFACTOR, (c << 24) | (c << 16) | (c << 8) | c);
             rs->DrawRects(flareRect, flareCount, "WdmSeaDrawFlare");
@@ -345,7 +347,7 @@ void WdmSea::LRender(VDX8RENDER *rs)
     }
 }
 
-void WdmSea::Render(VDX8RENDER *rs, const char *tech)
+void WdmSea::Render(VDX9RENDER *rs, const char *tech) const
 {
     static CMatrix identity;
     if (vb < 0 || ib < 0)
@@ -355,7 +357,7 @@ void WdmSea::Render(VDX8RENDER *rs, const char *tech)
 }
 
 //Настроить преобразования текстурных координат
-void WdmSea::PresetMain(VDX8RENDER *rs)
+void WdmSea::PresetMain(VDX9RENDER *rs) const
 {
     //Матрица для текстур
     CMatrix mtx;

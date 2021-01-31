@@ -1,5 +1,6 @@
-#include "EnemyStatShower.h"
-#include "..\utils.h"
+#include "enemystatshower.h"
+#include "../../../shared/messages.h"
+#include "core.h"
 #include "model.h"
 
 EnemyStatShower::EnemyStatShower()
@@ -19,18 +20,18 @@ bool EnemyStatShower::Init()
     return true;
 }
 
-void EnemyStatShower::Realize(dword delta_time)
+void EnemyStatShower::Realize(uint32_t delta_time)
 {
 }
 
-dword _cdecl EnemyStatShower::ProcessMessage(MESSAGE &message)
+uint64_t EnemyStatShower::ProcessMessage(MESSAGE &message)
 {
-    long nMsgCod = message.Long();
+    const auto nMsgCod = message.Long();
     switch (nMsgCod)
     {
     case 0: // add character for shower
     {
-        // ENTITY_ID mdlEID = GetModelEIDFromCharacterEID( message.EntityID() );
+        // entid_t mdlEID = GetModelEIDFromCharacterEID( message.EntityID() );
     }
     break;
     }
@@ -51,13 +52,13 @@ void EnemyStatShower::Release()
 {
 }
 
-ENTITY_ID EnemyStatShower::GetModelEIDFromCharacterEID(ENTITY_ID &chrEID)
+entid_t EnemyStatShower::GetModelEIDFromCharacterEID(entid_t chrEID)
 {
-    ENTITY_ID eid;
-    VDATA *pvdat = (VDATA *)api->GetScriptVariable("g_TmpModelVariable");
+    entid_t eid;
+    auto *pvdat = static_cast<VDATA *>(core.GetScriptVariable("g_TmpModelVariable"));
     if (pvdat)
     {
-        api->Send_Message(chrEID, "le", MSG_CHARACTER_GETMODEL, pvdat);
+        core.Send_Message(chrEID, "le", MSG_CHARACTER_GETMODEL, pvdat);
         eid = pvdat->GetEntityID();
     }
     return eid;

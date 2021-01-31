@@ -5,10 +5,9 @@
 
 class PointEmitter : public BaseEmitter
 {
-
   protected:
     //Получить позицию для рождения новых партиклов
-    virtual CVECTOR GetNewParticlePosition(float DeltaTime);
+    Vector GetNewParticlePosition(float DeltaTime) override;
 
   public:
     // Конструктор / деструктор

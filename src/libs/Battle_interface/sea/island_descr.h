@@ -1,7 +1,7 @@
 #ifndef _ISLAND_DESCR_H_
 #define _ISLAND_DESCR_H_
 
-#include "..\bi_defines.h"
+#include "../bi_defines.h"
 
 // тип локации - места высадки
 #define ISLAND_LOCATOR_LAND 1
@@ -37,7 +37,7 @@ class ISLAND_DESCRIBER
     };
 
     void ReleaseAll();
-    bool YesIsland()
+    bool YesIsland() const
     {
         return m_bYesIsland;
     }
@@ -50,19 +50,19 @@ class ISLAND_DESCRIBER
     LOCATOR_DESCR *GetFirstEnemyFort();
     LOCATOR_DESCR *GetFirstBrokenFort();
     LOCATOR_DESCR *GetNext();
-    LOCATOR_DESCR *FindLocatorByName(char *name);
+    LOCATOR_DESCR *FindLocatorByName(char *name) const;
 
-    void Refresh();
+    void Refresh() const;
 
   protected:
-    LOCATOR_DESCR *FindLocator(LOCATOR_DESCR *p, int nMax);
+    LOCATOR_DESCR *FindLocator(LOCATOR_DESCR *p, size_t nMax);
 
     bool m_bYesIsland;
     ATTRIBUTES *m_pIslandAttributes;
     LOCATOR_DESCR *m_pLocators;
-    int m_nLocators;
+    size_t m_nLocators;
     // find data
-    int m_lastFindIdx;
+    size_t m_lastFindIdx;
     int m_nFindType;
 };
 

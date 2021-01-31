@@ -1,7 +1,7 @@
 #include "Astronomy.h"
 
-VDX8RENDER *Astronomy::pRS = null;
-VGEOMETRY *Astronomy::pGS = null;
+VDX9RENDER *Astronomy::pRS = nullptr;
+VGEOMETRY *Astronomy::pGS = nullptr;
 
 Astronomy::Astronomy()
 {
@@ -22,21 +22,21 @@ bool Astronomy::Init()
 
 void Astronomy::SetDevice()
 {
-    pRS = (VDX8RENDER *)api->CreateService("dx8render");
+    pRS = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     Assert(pRS);
-    pGS = (VGEOMETRY *)api->CreateService("geometry");
+    pGS = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
 }
 
-void Astronomy::Realize(dword Delta_Time)
+void Astronomy::Realize(uint32_t Delta_Time)
 {
-    double dDeltaTime = double(Delta_Time) * 0.001;
+    const auto dDeltaTime = static_cast<double>(Delta_Time) * 0.001;
     dHour += dDeltaTime / (60.0 * 60.0);
 
     Stars.Realize(dDeltaTime, dHour);
     Planets.Realize(dDeltaTime, dHour);
 }
 
-dword Astronomy::AttributeChanged(ATTRIBUTES *pA)
+uint32_t Astronomy::AttributeChanged(ATTRIBUTES *pA)
 {
     if (*pA == "isDone")
     {
@@ -47,7 +47,7 @@ dword Astronomy::AttributeChanged(ATTRIBUTES *pA)
 
     if (*pA == "TimeScale")
     {
-        dTimeScale = double(pA->GetAttributeAsFloat());
+        dTimeScale = static_cast<double>(pA->GetAttributeAsFloat());
         return 0;
     }
 

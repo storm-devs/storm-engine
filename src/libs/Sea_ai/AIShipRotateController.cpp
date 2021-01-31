@@ -34,7 +34,7 @@ void AIShipRotateController::Execute(float fDeltaTime)
     fRotateSmooth += fRotate;
     if (fRotateTime >= 1.0f)
     {
-        fRotateMode = fRotateSmooth / float(dwRotateNum);
+        fRotateMode = fRotateSmooth / static_cast<float>(dwRotateNum);
         fRotateTime = 0.0f;
         fRotateSmooth = 0.0f;
         dwRotateNum = 0;
@@ -62,7 +62,7 @@ void AIShipRotateController::SetGlobalMultiply(float _fGlobalMultiply)
         fGlobalMultiply = _fGlobalMultiply;
 }
 
-void AIShipRotateController::Save(CSaveLoad *pSL)
+void AIShipRotateController::Save(CSaveLoad *pSL) const
 {
     pSL->SaveDword(dwRotateNum);
     pSL->SaveFloat(fRotateMode);

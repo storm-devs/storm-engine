@@ -11,26 +11,25 @@
 #ifndef _Sharks_H_
 #define _Sharks_H_
 
-#include "animation.h"
-#include "dx8render.h"
-#include "island_base.h"
-#include "matrix.h"
+#include "Animation.h"
+#include "Island_Base.h"
+#include "Matrix.h"
+#include "dx9render.h"
 #include "sea_base.h"
 #include "ship_base.h"
-#include "vmodule_api.h"
 
-class Sharks : public ENTITY
+class Sharks : public Entity
 {
     struct Vertex
     {
         CVECTOR pos;
-        dword color;
+        uint32_t color;
         float u, v;
     };
 
     class Shark : public AnimationEventListener
     {
-        static word indeces[];
+        static uint16_t indeces[];
 
       public:
         Shark();
@@ -43,8 +42,8 @@ class Sharks : public ENTITY
         void ShipApply(float x, float z, float r2);
         void Coordination(float cam_x, float cam_z, float dltTime, SEA_BASE *sb, ISLAND_BASE *ib);
         void IslandCollision(ISLAND_BASE *ib, long numPnt, float rad, float frc);
-        virtual void Event(Animation *animation, long index, long eventID, AnimationEvent event);
-        long GenerateTrack(word *inds, Vertex *vrt, word base, SEA_BASE *sb);
+        void Event(Animation *animation, long index, long eventID, AnimationEvent event) override;
+        long GenerateTrack(uint16_t *inds, Vertex *vrt, uint16_t base, SEA_BASE *sb);
 
         //Точка следования
         CVECTOR pos;    //Позиция точки следования
@@ -56,15 +55,15 @@ class Sharks : public ENTITY
         CVECTOR rForce; //Случайная сторонния сила
         float rTime;
         //Акула
-        CVECTOR fforce;  //Сила направления движения
-        CVECTOR spos;    //Позиция модельки
-        CVECTOR angs;    //Углы модельки
-        float turn;      //Скорость изменения угла
-        float imspd;     //Скорость погружения
-        float speed;     //Скорость перемещения
-        float shipY;     //Ограничение кораблём
-        float vBase;     //Смещение трека акулы
-        ENTITY_ID model; //Моделька акулы
+        CVECTOR fforce; //Сила направления движения
+        CVECTOR spos;   //Позиция модельки
+        CVECTOR angs;   //Углы модельки
+        float turn;     //Скорость изменения угла
+        float imspd;    //Скорость погружения
+        float speed;    //Скорость перемещения
+        float shipY;    //Ограничение кораблём
+        float vBase;    //Смещение трека акулы
+        entid_t model;  //Моделька акулы
         //Анимация
         float aniTime;  //Время проигрывания текущей анимации
         float jumpTime; //Время до следующего выпрыгивания
@@ -78,7 +77,7 @@ class Sharks : public ENTITY
         CVECTOR pos;
         float ay;
         float time;
-        ENTITY_ID model;
+        entid_t model;
     };
 
     //--------------------------------------------------------------------------------------------
@@ -91,8 +90,24 @@ class Sharks : public ENTITY
     //Инициализация
     bool Init();
     //Исполнение
-    void Execute(dword delta_time);
-    void Realize(dword delta_time);
+    void Execute(uint32_t delta_time);
+    void Realize(uint32_t delta_time);
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+                LostRender(delta); break;
+            case Stage::restore_render:
+                RestoreRender(delta); break;*/
+        }
+    }
 
     //--------------------------------------------------------------------------------------------
     //Инкапсуляция
@@ -101,17 +116,16 @@ class Sharks : public ENTITY
     bool LoadPeriscopeModel();
 
   private:
-    VDX8RENDER *rs;
+    VDX9RENDER *rs;
     Shark shark[6];
     long numShakes;
     Periscope periscope;
     float waitPTime;
     CVECTOR camPos;
-    long shipcode;
-    ENTITY_ID sea;
-    ENTITY_ID island;
+    entid_t sea;
+    entid_t island;
     long trackTx;
-    word indeces[7 * 10 * 3];
+    uint16_t indeces[7 * 10 * 3];
     Vertex vrt[7 * 10];
 };
 

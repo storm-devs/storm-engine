@@ -10,11 +10,11 @@ set(Fmod_FOUND false)
 
 if(WIN32)
   find_path(Fmod_INCLUDE_DIR fmod.h
-    "${Storm_EXTERN_DIR}/fmod/api/inc"
+    "${STORM_EXTERN_DIR}/fmod/api/inc"
     )
   mark_as_advanced(Fmod_INCLUDE_DIR)
   if(Fmod_INCLUDE_DIR)
-    set(Fmod_ROOT_DIR "${Storm_EXTERN_DIR}/fmod")
+    set(Fmod_ROOT_DIR "${STORM_EXTERN_DIR}/fmod")
   endif()
 
   set(Fmod_LIBRARY_PATHS)

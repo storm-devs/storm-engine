@@ -1,12 +1,8 @@
 #ifndef _SHIP_BASE_H_
 #define _SHIP_BASE_H_
 
-#include "common_defines.h"
 #include "cvector.h"
-#include "messages.h"
-#include "sail_msg.h"
-#include "sd2_h\VAI_ObjBase.h"
-#include "ship_msg.h"
+#include "sd2_h/VAI_ObjBase.h"
 #include "vmodule_api.h"
 
 struct SHIP_STATE
@@ -49,7 +45,7 @@ class SHIP_BASE : public VAI_OBJBASE
   public:
     SHIP_STATE State;
 
-    virtual ~SHIP_BASE(){};
+    virtual ~SHIP_BASE() = default;
 
     virtual ATTRIBUTES *GetAShip()
     {
@@ -58,7 +54,7 @@ class SHIP_BASE : public VAI_OBJBASE
 
     virtual BOOL BuildContour(CVECTOR *vContour, long &iNumVContour) = 0;
 
-    virtual BOOL TouchMove(DWORD DeltaTime, TOUCH_PARAMS *pTPOld, TOUCH_PARAMS *pTPNew) = 0;
+    virtual BOOL TouchMove(uint32_t DeltaTime, TOUCH_PARAMS *pTPOld, TOUCH_PARAMS *pTPNew) = 0;
     virtual long AddStrength(STRENGTH *strength) = 0;
     virtual bool DelStrength(long iIdx) = 0;
 
@@ -72,8 +68,8 @@ class SHIP_BASE : public VAI_OBJBASE
     virtual void SetRotate(float fRotSpeed) = 0;
     virtual float GetRotate() = 0;
 
-    virtual float GetBrakingDistance(float *pfTime = 0) = 0;
-    virtual float GetRotationAngle(float *pfTime = 0) = 0;
+    virtual float GetBrakingDistance(float *pfTime = nullptr) = 0;
+    virtual float GetRotationAngle(float *pfTime = nullptr) = 0;
 
     virtual float GetCurrentSpeed() = 0;
 
@@ -86,7 +82,7 @@ class SHIP_BASE : public VAI_OBJBASE
     // set ship lights
     virtual void SetLights() = 0;
     virtual void UnSetLights() = 0;
-    virtual void Fire(const CVECTOR &vPos) = 0;
+    void Fire(const CVECTOR &vPos) override = 0;
 
     virtual void SetFixedSpeed(bool bSetFixed, float fFixedSpeed) = 0;
 };

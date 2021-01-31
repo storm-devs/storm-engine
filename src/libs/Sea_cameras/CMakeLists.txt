@@ -1,6 +1,6 @@
-project(seacameras)
+project(sea_cameras)
 
-add_library(${PROJECT_NAME} MODULE
+add_library(${PROJECT_NAME} STATIC
 	Common_Camera.h
 	DeckCamera.cpp
 	DeckCamera.h

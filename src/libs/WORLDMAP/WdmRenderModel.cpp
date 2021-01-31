@@ -21,7 +21,7 @@
 
 WdmRenderModel::WdmRenderModel()
 {
-    geo = null;
+    geo = nullptr;
     alpha = 1.0f;
     tech = WDM_MODEL_TECH;
     techa = WDM_MODEL_TECHA;
@@ -49,14 +49,14 @@ bool WdmRenderModel::Load(const char *modelName)
     return false;
 }
 
-void WdmRenderModel::PRender(VDX8RENDER *rs)
+void WdmRenderModel::PRender(VDX9RENDER *rs)
 {
     LRender(rs);
 }
 
-void WdmRenderModel::MRender(VDX8RENDER *rs)
+void WdmRenderModel::MRender(VDX9RENDER *rs)
 {
-    CMatrix m(mtx);
+    auto m(mtx);
     m.m[0][1] = -m.m[0][1];
     m.m[1][1] = -m.m[1][1];
     m.m[2][1] = -m.m[2][1];
@@ -65,7 +65,7 @@ void WdmRenderModel::MRender(VDX8RENDER *rs)
     Render(rs);
 }
 
-void WdmRenderModel::LRender(VDX8RENDER *rs)
+void WdmRenderModel::LRender(VDX9RENDER *rs)
 {
     rs->SetTransform(D3DTS_WORLD, mtx);
     Render(rs);
@@ -73,10 +73,10 @@ void WdmRenderModel::LRender(VDX8RENDER *rs)
     /*
     if(drawCircle)
     {
-        CMatrix m(mtx);
-        m.Pos() = m*center;
-        wdmObjects->DrawCircle(m, radius, 0x2f0fffff);
-        //wdmObjects->DrawCircle(mtx, modelRadius, 0x2fffff0f);
+      CMatrix m(mtx);
+      m.Pos() = m*center;
+      wdmObjects->DrawCircle(m, radius, 0x2f0fffff);
+      //wdmObjects->DrawCircle(mtx, modelRadius, 0x2fffff0f);
     }*/
 }
 
@@ -92,7 +92,7 @@ void WdmRenderModel::SetTech(const char *t, const char *ta)
         techa = WDM_MODEL_TECHA;
 }
 
-long WdmRenderModel::GetTexture(long stage)
+long WdmRenderModel::GetTexture(long stage) const
 {
     if (stage >= 4 || stage < 0 || !geo)
         return -1;
@@ -101,7 +101,7 @@ long WdmRenderModel::GetTexture(long stage)
     return mtl.texture[stage];
 }
 
-void WdmRenderModel::SetTexture(long stage, long id)
+void WdmRenderModel::SetTexture(long stage, long id) const
 {
     if (stage >= 4 || stage < 0 || !geo)
         return;
@@ -111,11 +111,11 @@ void WdmRenderModel::SetTexture(long stage, long id)
     geo->SetMaterial(0, mtl);
 }
 
-void WdmRenderModel::Render(VDX8RENDER *rs)
+void WdmRenderModel::Render(VDX9RENDER *rs) const
 {
     if (!geo)
         return;
-    float a = alpha * 255.0f;
+    auto a = alpha * 255.0f;
     if (wdmObjects->isDebug && a < 80.0f)
         a = 80.0f;
     if (a < 1.0f)
@@ -129,20 +129,20 @@ void WdmRenderModel::Render(VDX8RENDER *rs)
     else
     {
         wdmObjects->gs->SetTechnique(techa);
-        rs->SetRenderState(D3DRS_TEXTUREFACTOR, (long(a) << 24) | 0xffffff);
+        rs->SetRenderState(D3DRS_TEXTUREFACTOR, (static_cast<long>(a) << 24) | 0xffffff);
     }
     //Проверим на видимость
-    PLANE *plane = rs->GetPlanes();
+    auto *const plane = rs->GetPlanes();
     static CMatrix mtx;
     rs->GetTransform(D3DTS_WORLD, mtx);
-    CVECTOR v = mtx * center;
+    const auto v = mtx * center;
     for (long i = 0; i < 4; i++)
     {
-        PLANE &p = plane[i];
-        float dist = v.x * p.Nx + v.y * p.Ny + v.z * p.Nz - p.D;
+        auto &p = plane[i];
+        const auto dist = v.x * p.Nx + v.y * p.Ny + v.z * p.Nz - p.D;
         if (dist < -radius)
             return;
     }
-    geo->Draw(null, 0, null);
+    geo->Draw(nullptr, 0, nullptr);
     wdmObjects->gs->SetTechnique("");
 }

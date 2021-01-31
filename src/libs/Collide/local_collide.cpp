@@ -1,30 +1,28 @@
 #include "vcollide.h"
 
-LCOLL::LCOLL(const char *layerName, VAPI &_api) : api(_api)
+LCOLL::LCOLL(EntityManager::layer_index_t idx) : boxRadius(0)
 {
-    walker = api.LayerGetWalker((char *)layerName);
-    col = (COLLIDE *)api.CreateService("coll");
+    layerIndex_ = idx;
+    col = static_cast<COLLIDE *>(core.CreateService("coll"));
     if (!col)
-        SE_THROW_MSG("No service: collide");
+        throw std::exception("No service: collide");
 }
 
 LCOLL::~LCOLL()
 {
-    delete walker;
 }
 
 #define REALLOC_QUANT 1024 // mast be power of to due to AND
 
-VAPI *GlobApi;
 long addedFaces;
-long *sVrt;
-CVECTOR *addVerts;
+long *sVrt = nullptr;
+CVECTOR *addVerts = nullptr;
 
 bool AddPolyColl(const CVECTOR *vr, long nverts)
 {
     // start vertex of face, max faces is REALLOC_QUANT
     if ((addedFaces & (REALLOC_QUANT - 1)) == 0)
-        sVrt = (long *)GlobApi->MemReallocate(sVrt, sizeof(long) * (addedFaces + REALLOC_QUANT));
+        sVrt = static_cast<long *>(realloc(sVrt, sizeof(long) * (addedFaces + REALLOC_QUANT)));
 
     if (addedFaces == 0)
         sVrt[addedFaces] = nverts;
@@ -33,8 +31,8 @@ bool AddPolyColl(const CVECTOR *vr, long nverts)
 
     // F0(v0,v1,v2), F1(v0,v1,v2,v3)...
     if (addedFaces == 0 || (sVrt[addedFaces - 1] & (REALLOC_QUANT - 1)) + nverts > REALLOC_QUANT)
-        addVerts = (CVECTOR *)GlobApi->MemReallocate(addVerts,
-                                                     sizeof(long) * (sVrt[addedFaces] / REALLOC_QUANT + REALLOC_QUANT));
+        addVerts = static_cast<CVECTOR *>(
+            realloc(addVerts, sizeof(long) * (sVrt[addedFaces] / REALLOC_QUANT + REALLOC_QUANT)));
 
     for (long v = 0; v < nverts; v++)
     {
@@ -64,18 +62,18 @@ long LCOLL::SetBox(const CVECTOR &boxSize, const CMatrix &transform, bool testOn
     // transform planes
     for (long p = 0; p < 6; p++)
     {
-        float x = clip_p[p].D * clip_p[p].Nx - transform.m[3][0];
-        float y = clip_p[p].D * clip_p[p].Ny - transform.m[3][1];
-        float z = clip_p[p].D * clip_p[p].Nz - transform.m[3][2];
-        float Nx =
+        const auto x = clip_p[p].D * clip_p[p].Nx - transform.m[3][0];
+        const auto y = clip_p[p].D * clip_p[p].Ny - transform.m[3][1];
+        const auto z = clip_p[p].D * clip_p[p].Nz - transform.m[3][2];
+        const auto Nx =
             transform.m[0][0] * clip_p[p].Nx + transform.m[0][1] * clip_p[p].Ny + transform.m[0][2] * clip_p[p].Nz;
-        float Ny =
+        const auto Ny =
             transform.m[1][0] * clip_p[p].Nx + transform.m[1][1] * clip_p[p].Ny + transform.m[1][2] * clip_p[p].Nz;
-        float Nz =
+        const auto Nz =
             transform.m[2][0] * clip_p[p].Nx + transform.m[2][1] * clip_p[p].Ny + transform.m[2][2] * clip_p[p].Nz;
-        float lx = transform.m[0][0] * x + transform.m[0][1] * y + transform.m[0][2] * z;
-        float ly = transform.m[1][0] * x + transform.m[1][1] * y + transform.m[1][2] * z;
-        float lz = transform.m[2][0] * x + transform.m[2][1] * y + transform.m[2][2] * z;
+        const auto lx = transform.m[0][0] * x + transform.m[0][1] * y + transform.m[0][2] * z;
+        const auto ly = transform.m[1][0] * x + transform.m[1][1] * y + transform.m[1][2] * z;
+        const auto lz = transform.m[2][0] * x + transform.m[2][1] * y + transform.m[2][2] * z;
         plane[p].Nx = Nx;
         plane[p].Ny = Ny;
         plane[p].Nz = Nz;
@@ -85,23 +83,22 @@ long LCOLL::SetBox(const CVECTOR &boxSize, const CMatrix &transform, bool testOn
     boxCenter = transform.Pos();
     boxRadius = sqrtf(~boxSize);
 
-    // we needs api to have resize function
-    GlobApi = &api;
     // added faces
     addedFaces = 0;
     // start vertex of face
-    sVrt = 0;
+    sVrt = nullptr;
     // F0(v0,v1,v2), F1(v0,v1,v2,v3)...
-    addVerts = 0;
+    addVerts = nullptr;
 
-    col->Clip(*walker, &plane[0], 6, boxCenter, boxRadius, AddPolyColl, 0, 0);
+    const auto its = EntityManager::GetEntityIdIterators(layerIndex_);
+    col->Clip(its, &plane[0], 6, boxCenter, boxRadius, AddPolyColl, nullptr, 0);
     return 0;
 }
 
 const CVECTOR *LCOLL::GetFace(long &numVertices)
 {
     numVertices = 0;
-    return 0;
+    return nullptr;
 }
 
 float LCOLL::Trace(const CVECTOR &src, const CVECTOR &dst)

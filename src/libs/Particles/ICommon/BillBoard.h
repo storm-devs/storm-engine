@@ -1,7 +1,7 @@
 #ifndef _BILLBOARD_H_
 #define _BILLBOARD_H_
 
-#include "math3d.h"
+#include "../math3D.h"
 
 //Партикл
 struct ParticleBillboard
@@ -9,7 +9,7 @@ struct ParticleBillboard
     Vector vPos;
     float fSizeX, fSizeY;
     float fAngle;
-    dword dwColor;
+    uint32_t dwColor;
     float DistanceToCamera;
     bool Visible;
 

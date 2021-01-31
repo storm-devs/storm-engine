@@ -10,7 +10,6 @@
 
 #include "WdmIcon.h"
 #include "WdmEnemyShip.h"
-#include "WdmObjects.h"
 
 //============================================================================================
 //Конструирование, деструктурирование
@@ -18,7 +17,7 @@
 
 WdmIcon::WdmIcon()
 {
-    lastShip = null;
+    lastShip = nullptr;
     icon[0].u = -1.0f;
     icon[1].u = -1.0f;
     texture = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\BigIcons.tga");
@@ -40,7 +39,7 @@ void WdmIcon::Update(float dltTime)
     {
         lastShip = wdmObjects->enemyShip;
         icon[1] = icon[0];
-        if (lastShip != null)
+        if (lastShip != nullptr)
         {
             icon[0].alpha = 0.0f;
             switch (lastShip->shipType)
@@ -111,32 +110,28 @@ void WdmIcon::Update(float dltTime)
 }
 
 //Отрисовка
-void WdmIcon::LRender(VDX8RENDER *rs)
+void WdmIcon::LRender(VDX9RENDER *rs)
 {
-    return;
+    return; //~!~
     Vertex vrt[6];
     rs->TextureSet(0, texture);
     float w, h;
     wdmObjects->GetVPSize(w, h);
     //Иконка в верхнем углу
-    float kDef = rs->GetHeightDeformator();
-#ifndef _XBOX
+    auto kDef = rs->GetHeightDeformator();
     FillRectCoord(vrt, 8.0f, 8.0f, 64.0f, 64.0f * kDef);
-#else
-    FillRectCoord(vrt, 50.0f, 50.0f, 64.0f, 64.0f * kDef);
-#endif
     FillRectUV1(vrt, 0.0f, 0.0f, 1.0f, 1.0f);
     long alpha;
     if (icon[1].u >= 0.0f)
     {
-        alpha = long(255.0f * icon[1].alpha);
+        alpha = static_cast<long>(255.0f * icon[1].alpha);
         FillRectUV(vrt, icon[1].u, 0.0f, 1.0f / 8.0f, 1.0f);
         FillRectColor(vrt, (alpha << 24) | 0xffffff);
         DrawRects(vrt, 1, "WdmDrawIcon");
     }
     if (icon[0].u >= 0.0f)
     {
-        alpha = long(255.0f * icon[0].alpha);
+        alpha = static_cast<long>(255.0f * icon[0].alpha);
         FillRectUV(vrt, icon[0].u, 0.0f, 1.0f / 8.0f, 1.0f);
         FillRectColor(vrt, (alpha << 24) | 0xffffff);
         DrawRects(vrt, 1, "WdmDrawIcon");
@@ -144,28 +139,19 @@ void WdmIcon::LRender(VDX8RENDER *rs)
     //Иконка в нижнем углу
     if (islandAlpha > 0.0f)
     {
-#ifndef _XBOX
         FillRectCoord(vrt, 8.0f + 8.0f, h - 64.0f * kDef - 8.0f, 64.0f, 64.0f * kDef);
-#else
-        FillRectCoord(vrt, 50.0f, h - 64.0f * kDef - 50.0f, 64.0f, 64.0f * kDef);
-#endif
-
         FillRectUV(vrt, 0.0f, 0.0f, 1.0f / 8.0f, 1.0f);
         FillRectUV1(vrt, 0.0f, 0.0f, 1.0f, 1.0f);
-        FillRectColor(vrt, (long(islandAlpha * 255.0f) << 24) | 0xffffff);
+        FillRectColor(vrt, (static_cast<long>(islandAlpha * 255.0f) << 24) | 0xffffff);
         DrawRects(vrt, 1, "WdmDrawIcon");
     }
     //Иконка скипанья энкоунтера
     if (skipAlpha > 0.0f)
     {
-#ifndef _XBOX
         FillRectCoord(vrt, 8.0f + 64.0f + 8.0f, 8.0f, 64.0f, 64.0f * kDef);
-#else
-        FillRectCoord(vrt, 50.0f + 64.0f + 8.0f, 50.0f, 64.0f, 64.0f * kDef);
-#endif
         FillRectUV(vrt, 4.0f / 8.0f, 0.0f, 1.0f / 8.0f, 1.0f);
         FillRectUV1(vrt, 0.0f, 0.0f, 1.0f, 1.0f);
-        FillRectColor(vrt, (long(skipAlpha * 255.0f) << 24) | 0xffffff);
+        FillRectColor(vrt, (static_cast<long>(skipAlpha * 255.0f) << 24) | 0xffffff);
         DrawRects(vrt, 1, "WdmDrawIcon");
     }
     //Иконка шторма
@@ -192,14 +178,10 @@ void WdmIcon::LRender(VDX8RENDER *rs)
         move += m;
         move *= 64.0f + 8.0f;
 
-#ifndef _XBOX
         FillRectCoord(vrt, 8.0f + move, 8.0f, 64.0f, 64.0f * kDef);
-#else
-        FillRectCoord(vrt, 50.0f + move, 50.0f, 64.0f, 64.0f * kDef);
-#endif
         FillRectUV(vrt, 5.0f / 8.0f, 0.0f, 1.0f / 8.0f, 1.0f);
         FillRectUV1(vrt, 0.0f, 0.0f, 1.0f, 1.0f);
-        FillRectColor(vrt, (long(stormAlpha * 255.0f) << 24) | 0xffffff);
+        FillRectColor(vrt, (static_cast<long>(stormAlpha * 255.0f) << 24) | 0xffffff);
         DrawRects(vrt, 1, "WdmDrawIcon");
     }
 }

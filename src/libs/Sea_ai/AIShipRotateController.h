@@ -1,12 +1,7 @@
 #ifndef AISHIPROTATECONTROLLER_HPP
 #define AISHIPROTATECONTROLLER_HPP
 
-#include "Script_Defines.h"
-#include "character.h"
-#include "sd2_h\CannonTrace.h"
-#include "sd2_h\VAI_ObjBase.h"
-#include "templates\array.h"
-#include "templates\string.h"
+#include "Sd2_h/VAI_ObjBase.h"
 #include "vmodule_api.h"
 
 // ============================================================================
@@ -14,12 +9,13 @@
 // Contain base virtual functions
 // ============================================================================
 class AIShip;
+
 class AIShipRotateController
 {
   private:
     AIShip *pOurAIShip; // our AI ship pointer
 
-    dword dwRotateNum;
+    uint32_t dwRotateNum;
     float fRotateMode, fRotateTime, fRotateSmooth, fRotate;
     float fGlobalMultiply;
 
@@ -37,7 +33,7 @@ class AIShipRotateController
     {
         pOurAIShip = pShip;
     }
-    AIShip *GetAIShip()
+    AIShip *GetAIShip() const
     {
         return pOurAIShip;
     }
@@ -45,7 +41,7 @@ class AIShipRotateController
     AIShipRotateController(AIShip *pShip);
     virtual ~AIShipRotateController();
 
-    void Save(CSaveLoad *pSL);
+    void Save(CSaveLoad *pSL) const;
     void Load(CSaveLoad *pSL);
 };
 

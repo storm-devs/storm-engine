@@ -19,13 +19,13 @@ class WdmSea : public WdmRenderObject
 
     struct Triangle
     {
-        word index[3];
+        uint16_t index[3];
     };
 
     struct Vertex
     {
         float x, y, z;
-        dword color;
+        uint32_t color;
         float tu, tv;
     };
 
@@ -58,19 +58,19 @@ class WdmSea : public WdmRenderObject
     WdmSea();
     virtual ~WdmSea();
 
-    void Update(float dltTime);
+    void Update(float dltTime) override;
 
-    virtual void PRender(VDX8RENDER *rs);
-    virtual void LRender(VDX8RENDER *rs);
+    void PRender(VDX9RENDER *rs) override;
+    void LRender(VDX9RENDER *rs) override;
 
     //--------------------------------------------------------------------------------------------
     //Инкапсуляция
     //--------------------------------------------------------------------------------------------
   private:
     //Нарисовать
-    void Render(VDX8RENDER *rs, const char *tech = null);
+    void Render(VDX9RENDER *rs, const char *tech = nullptr) const;
     //Настроить преобразования текстурных координат
-    void PresetMain(VDX8RENDER *rs);
+    void PresetMain(VDX9RENDER *rs) const;
 
   private:
     //Буфера для геометрии

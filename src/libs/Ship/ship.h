@@ -1,27 +1,22 @@
 #ifndef _SHIP_H_
 #define _SHIP_H_
 
+#include "Character.h"
 #include "Island_Base.h"
-#include "character.h"
 #include "collide.h"
-#include "dx8render.h"
+#include "dx9render.h"
 #include "geometry.h"
-#include "geos.h"
-#include "mast_msg.h"
 #include "model.h"
 #include "sea_base.h"
 #include "ship_base.h"
-#include "vdata.h"
-#include <stdio.h>
 
+#include "FirePlace.h"
 #include "ShipLights.h"
-#include "fireplace.h"
 
-#include "templates\array.h"
-#include "templates\dtimer.h"
-#include "templates\string.h"
-
-#include "sd2_h\SaveLoad.h"
+#include "Sd2_h/SaveLoad.h"
+#include "dtimer.h"
+#include "ship_msg.h"
+#include <vector>
 
 #define DELTA_TIME(x) ((x)*0.001f)
 #define DELTA_TIME_ROTATE(x) ((x)*1.0f / 10.0f)
@@ -72,18 +67,18 @@ class SHIP : public SHIP_BASE
     };
 
     // init parameters
-    static string sRealizeLayer, sExecuteLayer;
+    inline static EntityManager::layer_index_t RealizeLayer, ExecuteLayer;
     char cShipIniName[256];
     long iShipPriorityExecute, iShipPriorityRealize;
     float fGravity;
 
     float fRockingY, fRockingAZ;
 
-    // entity_id section
-    ENTITY_ID model_id, sphere[36];
-    ENTITY_ID sail_id, rope_id, flag_id, cannon_id, vant_id, vantl_id, vantz_id, touch_id, sea_id, blots_id;
+    // entid_t section
+    entid_t model_id, sphere[36];
+    entid_t sail_id, rope_id, flag_id, cannon_id, vant_id, vantl_id, vantz_id, touch_id, sea_id, blots_id;
 
-    static VDX8RENDER *pRS;
+    static VDX9RENDER *pRS;
     static SEA_BASE *pSea;
     static ISLAND_BASE *pIsland;
     static COLLIDE *pCollide;
@@ -93,7 +88,6 @@ class SHIP : public SHIP_BASE
     CVECTOR vSpeed, vSpeedsA;
     float fMinusVolume;
     float fXOffset, fZOffset;
-    float fXHeel, fZHeel;
 
     bool bModelUpperShip;
     MODEL *pModelUpperShip;
@@ -103,7 +97,7 @@ class SHIP : public SHIP_BASE
     IShipLights *pShipsLights;
 
     // Fire places
-    array<FirePlace> aFirePlaces;
+    std::vector<FirePlace> aFirePlaces;
 
     // Sound section
 
@@ -124,8 +118,8 @@ class SHIP : public SHIP_BASE
     CVECTOR vKeelContour[MAX_KEEL_POINTS];
     long iNumMasts;
     long iNumHulls;
-    mast_t *pMasts;
-    hull_t *pHulls;
+    std::vector<mast_t> pMasts;
+    std::vector<hull_t> pHulls;
     bool bShip2Strand;
     bool bMounted;
     bool bKeelContour;
@@ -148,8 +142,6 @@ class SHIP : public SHIP_BASE
     void CalculateImmersion(); //
     void CheckShip2Strand(float fDeltaTime);
     void MastFall(mast_t *pM);
-    //	void 		MastFallChild(mast_t * pM);
-    void TestMastFall(long iMast);
     void HullFall(hull_t *pM);
     void FakeFire(char *sBort, float fRandTime);
 
@@ -160,7 +152,7 @@ class SHIP : public SHIP_BASE
     void ScanShipForFirePlaces();
     void LoadPositionFromAttributes();
     BOOL LoadShipParameters();
-    void CalcRealBoxSize();
+    void CalcRealBoxsize();
 
     void SetDead();
     bool isDead()
@@ -183,17 +175,16 @@ class SHIP : public SHIP_BASE
     bool DelStrength(long iIdx);
 
     BOOL BuildContour(CVECTOR *vContour, long &iNumVContour);
-    bool BuildMasts(); // создаем мачты
+    bool BuildMasts();
     bool BuildHulls();
-
-    BOOL Move(DWORD DeltaTime, BOOL bCollision);
-    BOOL TouchMove(DWORD DeltaTime, TOUCH_PARAMS *pTPOld, TOUCH_PARAMS *pTPNew);
+    BOOL Move(uint32_t DeltaTime, BOOL bCollision);
+    BOOL TouchMove(uint32_t DeltaTime, TOUCH_PARAMS *pTPOld, TOUCH_PARAMS *pTPNew);
 
     void LoadServices();
 
     // inherit functions SHIP_BASE
     bool bSetLightAndFog;
-    dword dwSaveAmbient, dwSaveFogColor;
+    uint32_t dwSaveAmbient, dwSaveFogColor;
     D3DLIGHT9 saveLight;
 
     virtual void SetLightAndFog(bool bSetLight);
@@ -205,8 +196,8 @@ class SHIP : public SHIP_BASE
     virtual void SetRotate(float fRotSpeed);
     virtual float GetRotate();
 
-    virtual float GetBrakingDistance(float *pfTime = 0);
-    virtual float GetRotationAngle(float *pfTime = 0);
+    virtual float GetBrakingDistance(float *pfTime = nullptr);
+    virtual float GetRotationAngle(float *pfTime = nullptr);
 
     virtual float GetCurrentSpeed();
 
@@ -225,9 +216,9 @@ class SHIP : public SHIP_BASE
 
     virtual const char *GetCollideMaterialName()
     {
-        return 0;
+        return nullptr;
     };
-    virtual bool GetCollideTriangle(Triangle &triangle)
+    virtual bool GetCollideTriangle(TRIANGLE &triangle)
     {
         return false;
     };
@@ -240,23 +231,38 @@ class SHIP : public SHIP_BASE
 
     CMatrix *GetMatrix();
     void SetMatrix(CMatrix &mtx);
-    MODEL *GetModel();
-    ENTITY_ID GetModelEID();
-    CVECTOR GetPos();
-    CVECTOR GetAng();
-    CVECTOR GetBoxSize();
+    MODEL *GetModel() const;
+    entid_t GetModelEID() const;
+    CVECTOR GetPos() const;
+    CVECTOR GetAng() const;
+    CVECTOR GetBoxsize() const;
 
-    void SetPos(CVECTOR &vNewPos);
+    void SetPos(const CVECTOR &vNewPos) override;
 
     bool Mount(ATTRIBUTES *);
 
-    // inherit functions ENTITY
+    // inherit functions Entity
     bool Init();
-    void Realize(dword Delta_Time);
-    void Execute(dword Delta_Time);
-    dword _cdecl ProcessMessage(MESSAGE &message);
-    dword AttributeChanged(ATTRIBUTES *pAttribute);
-
+    void Realize(uint32_t Delta_Time);
+    void Execute(uint32_t Delta_Time);
+    uint64_t ProcessMessage(MESSAGE &message);
+    uint32_t AttributeChanged(ATTRIBUTES *pAttribute);
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+                LostRender(delta); break;
+            case Stage::restore_render:
+                RestoreRender(delta); break;*/
+        }
+    }
     void Save(CSaveLoad *pSL);
     void Load(CSaveLoad *pSL);
 };

@@ -1,6 +1,6 @@
 project(weather)
 
-add_library(${PROJECT_NAME} MODULE
+add_library(${PROJECT_NAME} STATIC
 	Astronomy.cpp
 	Astronomy.h
 	Lightning.cpp

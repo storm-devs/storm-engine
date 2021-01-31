@@ -11,9 +11,9 @@
 #ifndef _NoiseCloud_H_
 #define _NoiseCloud_H_
 
+#include "Matrix.h"
 #include "Pillar.h"
-#include "dx8render.h"
-#include "matrix.h"
+#include "dx9render.h"
 
 class NoiseCloud
 {
@@ -31,7 +31,7 @@ class NoiseCloud
     struct Vertex
     {
         CVECTOR pos;
-        dword color;
+        uint32_t color;
         float u, v;
     };
 
@@ -43,7 +43,7 @@ class NoiseCloud
     virtual ~NoiseCloud();
 
     void Update(float dltTime);
-    void Draw(VDX8RENDER *rs);
+    void Draw(VDX9RENDER *rs);
 
     void SetGlobalAlpha(float a);
 

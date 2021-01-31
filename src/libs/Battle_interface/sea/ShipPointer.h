@@ -1,25 +1,40 @@
 #ifndef _SHIPPOINTER_H_
 #define _SHIPPOINTER_H_
 
-#include "common_defines.h"
-#include "dx8render.h"
-#include "sd2_h\VAI_ObjBase.h"
+#include "Sd2_h/VAI_ObjBase.h"
 
-class SHIPPOINTER : public ENTITY
+class SHIPPOINTER : public Entity
 {
-    VDX8RENDER *rs;
+    VDX9RENDER *rs;
 
   public:
     SHIPPOINTER();
     ~SHIPPOINTER();
-    bool Init();
-    void Execute(dword delta_time);
-    void Realize(dword delta_time);
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    bool Init() override;
+    void Execute(uint32_t delta_time);
+    void Realize(uint32_t delta_time) const;
+    uint64_t ProcessMessage(MESSAGE &message) override;
+
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
 
   protected:
-    void UpdateShipPointer();
-    VAI_OBJBASE *FindShipByChrIndex(long chrIdx);
+    void UpdateShipPointer() const;
+    VAI_OBJBASE *FindShipByChrIndex(long chrIdx) const;
 
     bool m_bVisible;
     bool m_bFriend;

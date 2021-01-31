@@ -9,7 +9,9 @@
 //============================================================================================
 
 #include "Fader.h"
-#include "messages.h"
+#include "../../Shared/messages.h"
+#include "Entity.h"
+#include "core.h"
 
 //============================================================================================
 //Конструирование, деструктурирование
@@ -20,13 +22,13 @@ long Fader::currentTips = -1;
 
 Fader::Fader()
 {
-    rs = null;
+    rs = nullptr;
     isWork = false;
     haveFrame = false;
     endFade = false;
     alpha = 0.0f;
-    surface = null;
-    renderTarget = null;
+    surface = nullptr;
+    renderTarget = nullptr;
     textureID = -1;
     textureBackID = -1;
     tipsID = -1;
@@ -41,8 +43,8 @@ Fader::~Fader()
         rs->Release(surface);
     if (renderTarget)
         renderTarget->Release();
-    surface = null;
-    renderTarget = null;
+    surface = nullptr;
+    renderTarget = nullptr;
     if (rs)
     {
         if (textureID >= 0)
@@ -57,37 +59,35 @@ Fader::~Fader()
 //Инициализация
 bool Fader::Init()
 {
-    GUARD(Fader::Init())
     //Проверим что единственные
-    ENTITY_ID eid;
-    if (_CORE_API->FindClass(&eid, "Fader", 0))
+
+    const auto &entities = EntityManager::GetEntityIdVector("Fader");
+    for (auto eid : entities)
     {
-        if (_CORE_API->GetEntityPointer(&eid) != this || _CORE_API->FindClassNext(&eid))
+        if (eid != GetId())
+            continue;
+
+        if (fadeIn == static_cast<Fader *>(EntityManager::GetEntityPointer(eid))->fadeIn)
         {
-            if (fadeIn == ((Fader *)_CORE_API->GetEntityPointer(&eid))->fadeIn)
-            {
-                _CORE_API->Trace("Fader::Init() -> Fader already created, %s",
-                                 fadeIn ? "fade in phase" : "fade out phase");
-            }
-            //!!!
-            // return false;
+            core.Trace("Fader::Init() -> Fader already created, %s", fadeIn ? "fade in phase" : "fade out phase");
         }
+        //!!!
+        // return false;
     }
     // Layers
-    _CORE_API->LayerCreate("fader_realize", true, false);
-    _CORE_API->LayerSetRealize("fader_realize", true);
-    _CORE_API->LayerAdd("fader_realize", GetID(), -256);
-    _CORE_API->LayerCreate("fader_execute", true, false);
-    _CORE_API->LayerSetExecute("fader_execute", true);
-    _CORE_API->LayerAdd("fader_execute", GetID(), -256);
-    // DX8 render
-    rs = (VDX8RENDER *)_CORE_API->CreateService("dx8render");
+    EntityManager::SetLayerType(FADER_REALIZE, EntityManager::Layer::Type::realize);
+    EntityManager::AddToLayer(FADER_REALIZE, GetId(), -256);
+    EntityManager::SetLayerType(FADER_EXECUTE, EntityManager::Layer::Type::execute);
+    EntityManager::AddToLayer(FADER_EXECUTE, GetId(), -256);
+
+    // DX9 render
+    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!rs)
-        SE_THROW_MSG("No service: dx8render");
+        throw std::exception("No service: dx9render");
     D3DVIEWPORT9 vp;
     rs->GetViewport(&vp);
-    w = float(vp.Width);
-    h = float(vp.Height);
+    w = static_cast<float>(vp.Width);
+    h = static_cast<float>(vp.Height);
     if (w <= 0 || h <= 0)
         return false;
     if (rs->GetRenderTarget(&renderTarget) != D3D_OK)
@@ -95,25 +95,24 @@ bool Fader::Init()
     //Зачитаем количество типсов, если надо
     if (!numberOfTips)
     {
-        INIFILE *ini = api->fio->OpenIniFile(api->EngineIniFileName());
+        auto *ini = fio->OpenIniFile(core.EngineIniFileName());
         if (ini)
         {
-            numberOfTips = ini->GetLong(null, "ProgressFrame", 1);
+            numberOfTips = ini->GetLong(nullptr, "ProgressFrame", 1);
             delete ini;
         }
         else
-            numberOfTips = 1;
+            numberOfTips = -1;
         if (numberOfTips > 1)
             numberOfTips = 1;
         if (numberOfTips < 0)
             numberOfTips = 0;
     }
     return true;
-    UNGUARD
 }
 
 //Сообщения
-dword _cdecl Fader::ProcessMessage(MESSAGE &message)
+uint64_t Fader::ProcessMessage(MESSAGE &message)
 {
     char _name[MAX_PATH];
     switch (message.Long())
@@ -149,7 +148,7 @@ dword _cdecl Fader::ProcessMessage(MESSAGE &message)
         haveFrame = false;
         if (surface)
             surface->Release();
-        surface = null;
+        surface = nullptr;
         eventStart = false;
         eventEnd = false;
         break;
@@ -167,7 +166,7 @@ dword _cdecl Fader::ProcessMessage(MESSAGE &message)
             //Текстура подсказки
             if (numberOfTips > 0)
             {
-                sprintf(_name, "interfaces\\int_border.tga");
+                sprintf_s(_name, "interfaces\\int_border.tga");
                 tipsID = rs->TextureCreate(_name);
                 rs->SetTipsImage(_name);
             }
@@ -184,10 +183,12 @@ dword _cdecl Fader::ProcessMessage(MESSAGE &message)
             //Текстура подсказки
             if (numberOfTips > 0)
             {
-                char *pTipsName = rs->GetTipsImage();
+                // sprintf_s(_name, "tips\\tips_%.4u.tga", rand() % numberOfTips);
+                auto *const pTipsName = rs->GetTipsImage();
                 if (pTipsName)
                 {
                     tipsID = rs->TextureCreate(pTipsName);
+                    // rs->SetTipsImage(_name);
                 }
             }
         }
@@ -197,27 +198,27 @@ dword _cdecl Fader::ProcessMessage(MESSAGE &message)
 }
 
 //Работа
-void Fader::Execute(dword delta_time)
+void Fader::Execute(uint32_t delta_time)
 {
-    // api->Trace("fader frame");
+    // core.Trace("fader frame");
     if (deleteMe)
     {
         deleteMe++;
         if (deleteMe >= 3)
-            _CORE_API->DeleteEntity(GetID());
+            EntityManager::EraseEntity(GetId());
     }
     if (eventStart)
     {
         eventStart = false;
         if (!fadeIn)
         {
-            _CORE_API->PostEvent("FaderEvent_StartFade", 0, "li", fadeIn, GetID());
-            //_CORE_API->Trace("FaderEvent_StartFade");
+            core.PostEvent("FaderEvent_StartFade", 0, "li", fadeIn, GetId());
+            // core.Trace("FaderEvent_StartFade");
         }
         else
         {
-            _CORE_API->PostEvent("FaderEvent_StartFadeIn", 0, "li", fadeIn, GetID());
-            //	_CORE_API->Trace("FaderEvent_StartFadeIn");
+            core.PostEvent("FaderEvent_StartFadeIn", 0, "li", fadeIn, GetId());
+            //	core.Trace("FaderEvent_StartFadeIn");
         }
     }
     if (eventEnd)
@@ -226,18 +227,18 @@ void Fader::Execute(dword delta_time)
         deleteMe = isAutodelete;
         if (!fadeIn)
         {
-            _CORE_API->PostEvent("FaderEvent_EndFade", 0, "li", fadeIn, GetID());
-            //_CORE_API->Trace("FaderEvent_EndFade");
+            core.PostEvent("FaderEvent_EndFade", 0, "li", fadeIn, GetId());
+            // core.Trace("FaderEvent_EndFade");
         }
         else
         {
-            _CORE_API->PostEvent("FaderEvent_EndFadeIn", 0, "li", fadeIn, GetID());
-            //	_CORE_API->Trace("FaderEvent_EndFadeIn");
+            core.PostEvent("FaderEvent_EndFadeIn", 0, "li", fadeIn, GetId());
+            //	core.Trace("FaderEvent_EndFadeIn");
         }
     }
 }
 
-void Fader::Realize(dword delta_time)
+void Fader::Realize(uint32_t delta_time)
 {
     if (!isWork)
         return;
@@ -251,11 +252,11 @@ void Fader::Realize(dword delta_time)
             if (isStart)
             {
                 //Надо снять шот
-                bool isOk = false;
+                auto isOk = false;
                 D3DSURFACE_DESC desc;
                 if (renderTarget->GetDesc(&desc) == D3D_OK)
                 {
-                    if (rs->CreateImageSurface(desc.Width, desc.Height, desc.Format, &surface) == D3D_OK)
+                    if (rs->CreateOffscreenPlainSurface(desc.Width, desc.Height, desc.Format, &surface) == D3D_OK)
                     {
                         if (rs->GetRenderTargetData(renderTarget, surface) == D3D_OK)
                         {
@@ -264,14 +265,14 @@ void Fader::Realize(dword delta_time)
                     }
                 }
                 if (!isOk)
-                    _CORE_API->Trace("Fader : Screen shot for fader not created!");
+                    core.Trace("Screen shot for fader not created!");
             }
             else
             {
                 //Копируем шот
-                if (rs->UpdateSurface(surface, null, renderTarget, null) != D3D_OK)
+                if (rs->UpdateSurface(surface, nullptr, 0, renderTarget, nullptr) != D3D_OK)
                 {
-                    _CORE_API->Trace("Fader : Can't copy fader screen shot to render target!");
+                    core.Trace("Can't copy fader screen shot to render target!");
                 }
             }
         }
@@ -280,10 +281,9 @@ void Fader::Realize(dword delta_time)
     static struct
     {
         float x, y, z, rhw;
-        dword color;
+        uint32_t color;
         float u, v;
     } drawbuf[6];
-
     if (alpha >= 1.0f)
     {
         alpha = 1.0f;
@@ -293,10 +293,9 @@ void Fader::Realize(dword delta_time)
             eventEnd = true;
         }
     }
-    dword color = (dword((fadeIn ? (1.0f - alpha) : alpha) * 255.0f) << 24);
+    auto color = (static_cast<uint32_t>((fadeIn ? (1.0f - alpha) : alpha) * 255.0f) << 24);
     if (textureBackID >= 0)
         color |= 0x00ffffff;
-
     drawbuf[0].x = 0.0f;
     drawbuf[0].y = 0.0f;
     drawbuf[0].z = 0.5f;

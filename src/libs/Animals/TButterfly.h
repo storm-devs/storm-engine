@@ -1,13 +1,11 @@
 #ifndef _TBUTTERFLY_H_
 #define _TBUTTERFLY_H_
 
-//#include <windows.h>
-#include "TIVBufferManager.h"
+#include "Cvector.h"
+#include "EntityManager.h"
+#include "IVBufferManager.h"
 #include "collide.h"
-#include "cvector.h"
-#include "dx8render.h"
 #include "model.h"
-#include "rands.h"
 
 ///////////////////////////////////////////////////////////////////
 // DEFINES & TYPES
@@ -46,7 +44,7 @@ class TButterfly
     virtual ~TButterfly();
 
     void Initialize(const CVECTOR &_center, float _radius, long _bufferIndex, int _tI, int _tJ);
-    void Calculate(long _dTime, COLLIDE *_collide, VIDWALKER *_walker);
+    void Calculate(long _dTime, COLLIDE *_collide, EntityManager::LayerIterators its);
     void Effect(const CVECTOR &_position);
     static void SetCenter(const CVECTOR &_center)
     {
@@ -68,8 +66,8 @@ class TButterfly
     }
 
     void Draw(HDC _dc);
-    void Draw(TIVBufferManager *_ivManager);
-    void Draw(VDX8RENDER *_renderer, MODEL *_model);
+    void Draw(IVBufferManager *_ivManager);
+    void Draw(VDX9RENDER *_renderer, MODEL *_model);
 
   private:
     CVECTOR centerPosition, centerVelocity, oldPos;

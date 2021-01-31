@@ -1,5 +1,4 @@
 #include "KeyBuffer.h"
-#include "..\\common_h\\common_defines.h"
 
 ControlKeyBuffer::ControlKeyBuffer() : m_pcBuffer{}
 {

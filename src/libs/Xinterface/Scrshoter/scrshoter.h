@@ -1,11 +1,11 @@
 #ifndef _SCRSHOTER_H_
 #define _SCRSHOTER_H_
 
-#include "..\\..\\common_h\\dx8render.h"
+#include "dx9render.h"
 
-class SCRSHOTER : public ENTITY
+class SCRSHOTER : public Entity
 {
-    VDX8RENDER *rs;
+    VDX9RENDER *rs;
 
     struct SAVETEXTURES
     {
@@ -19,21 +19,35 @@ class SCRSHOTER : public ENTITY
     SCRSHOTER();
     ~SCRSHOTER();
     void SetDevice();
-    bool Init();
-    void Execute(dword Delta_Time);
-    void Realize(dword Delta_Time);
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    bool Init() override;
+    void Execute(uint32_t Delta_Time);
+    void Realize(uint32_t Delta_Time);
+    uint64_t ProcessMessage(MESSAGE &message) override;
 
-    void LostRender();
-    void RestoreRender();
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
 
   private:
     bool MakeScreenShot();
-    IDirect3DTexture9 *FindSaveTexture(char *fileName);
-    char *FindSaveData(char *fileName);
+    IDirect3DTexture9 *FindSaveTexture(char *fileName) const;
+    char *FindSaveData(char *fileName) const;
     IDirect3DTexture9 *AddSaveTexture(char *dirName, char *fileName);
     void DelSaveTexture(char *fileName);
-    IDirect3DTexture9 *GetTexFromSave(char *fileName, char **pDatStr);
+    IDirect3DTexture9 *GetTexFromSave(char *fileName, char **pDatStr) const;
 
     IDirect3DTexture9 *m_pScrShotTex;
     SAVETEXTURES *m_list;

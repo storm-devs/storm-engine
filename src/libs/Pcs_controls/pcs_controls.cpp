@@ -1,7 +1,9 @@
-#include "PCS_CONTROLS.h"
+#include "pcs_controls.h"
 
-INTERFACE_FUNCTION
-CREATE_SERVICE(PCS_CONTROLS)
+#include "core.h"
+
+#include "../Animation/ActionInfo.h"
+#include "vfile_service.h"
 
 PCS_CONTROLS::PCS_CONTROLS()
 {
@@ -12,16 +14,14 @@ PCS_CONTROLS::PCS_CONTROLS()
     fMouseSensivityY = 1.0f;
 
     nFrameCounter = 0;
-    api = _CORE_API;
 
     nSystemControlsNum = 0;
 
-    pUserControls = 0;
     nControlsNum = 0;
 
     // nMouseXPrev = nMouseYPrev = 0;
     RECT r;
-    GetWindowRect(_CORE_API->GetAppHWND(), &r);
+    GetWindowRect(core.GetAppHWND(), &r);
     nMouseXPrev = r.left + (r.right - r.left) / 2;
     nMouseYPrev = r.top + (r.bottom - r.top) / 2;
 
@@ -30,7 +30,7 @@ PCS_CONTROLS::PCS_CONTROLS()
     nMouseWheel = 0;
     memset(&ControlsTab[0], 0, sizeof(ControlsTab));
 
-    INIFILE *pIni = api->fio->OpenIniFile(api->EngineIniFileName());
+    auto *pIni = fio->OpenIniFile(core.EngineIniFileName());
     if (pIni)
     {
         m_bIsOffDebugKeys = pIni->GetLong("controls", "ondebugkeys", 0) == 0;
@@ -38,7 +38,7 @@ PCS_CONTROLS::PCS_CONTROLS()
     }
 
     // RECT r;
-    // GetWindowRect(_CORE_API->GetAppHWND(),&r);
+    // GetWindowRect(core.GetAppHWND(),&r);
     // ClipCursor(&r);
 }
 
@@ -53,7 +53,7 @@ void PCS_CONTROLS::AppState(bool state)
     if (state)
     {
         // RECT r;
-        // GetWindowRect(_CORE_API->GetAppHWND(),&r);
+        // GetWindowRect(core.GetAppHWND(),&r);
         // ClipCursor(&r);
     }
     else
@@ -65,17 +65,11 @@ void PCS_CONTROLS::AppState(bool state)
 void PCS_CONTROLS::Release()
 {
     long n;
-    if (pUserControls)
+    for (n = 0; n < nControlsNum; n++)
     {
-        for (n = 0; n < nControlsNum; n++)
-        {
-            if (pUserControls[n].name)
-                delete pUserControls[n].name;
-        }
-        delete pUserControls;
+        delete pUserControls[n].name;
     }
 
-    pUserControls = 0;
     nControlsNum = 0;
 
     nSystemControlsNum = 0;
@@ -124,21 +118,22 @@ bool PCS_CONTROLS::GetSystemControlDesc(long code, SYSTEM_CONTROL_DESC &_control
     return true;
 }
 
-long PCS_CONTROLS::CreateControl(char *control_name)
+long PCS_CONTROLS::CreateControl(const char *control_name)
 {
     long n;
-    if (control_name == 0)
+    if (control_name == nullptr)
         return INVALID_CONTROL_CODE;
     for (n = 0; n < nControlsNum; n++)
     {
-        if (stricmp(control_name, pUserControls[n].name) == 0)
+        if (_stricmp(control_name, pUserControls[n].name) == 0)
             return n;
     }
     n = nControlsNum;
     nControlsNum++;
-    pUserControls = (USER_CONTROL *)RESIZE(pUserControls, nControlsNum * sizeof(USER_CONTROL));
-    pUserControls[n].name = NEW char[strlen(control_name) + 1];
-    strcpy(pUserControls[n].name, control_name);
+    pUserControls.resize(nControlsNum);
+    const auto len = strlen(control_name) + 1;
+    pUserControls[n].name = new char[len];
+    memcpy(pUserControls[n].name, control_name, len);
     pUserControls[n].system_code = UNASSIGNED_CONTROL;
     pUserControls[n].flags = 0;
     pUserControls[n].state = CST_INACTIVE;
@@ -178,10 +173,10 @@ bool PCS_CONTROLS::GetDeviceDesc(long code, DEVICE_DESC &_device_desc)
 
 long PCS_CONTROLS::AddControlTreeNode(long nParent, const char *pcBaseControl, const char *pcOutControl, float fTimeOut)
 {
-    long ntree = m_ControlTree.AddControlChild(nParent, pcBaseControl, pcOutControl, fTimeOut);
+    const auto ntree = m_ControlTree.AddControlChild(nParent, pcBaseControl, pcOutControl, fTimeOut);
     if (ntree >= 0 && pcOutControl)
     {
-        long nc = CreateControl((char *)pcOutControl);
+        const auto nc = CreateControl((char *)pcOutControl);
         if (nc >= 0)
         {
             pUserControls[nc].control_type = UCT_ControlTree;
@@ -201,24 +196,24 @@ void PCS_CONTROLS::MapControl(long control_code, long system_control_code)
     pUserControls[control_code].system_code = system_control_code;
 }
 
-bool PCS_CONTROLS::GetControlState(char *control_name, CONTROL_STATE &_state_struct)
-{ /*
-     long n;
-     _state_struct.state = CST_INACTIVE;
-     _state_struct.lValue = 0;
-     _state_struct.fValue = 0.0f;
+bool PCS_CONTROLS::GetControlState(const char *control_name, CONTROL_STATE &_state_struct)
+{
+    /*
+      long n;
+      _state_struct.state = CST_INACTIVE;
+      _state_struct.lValue = 0;
+      _state_struct.fValue = 0.0f;
 
-     if(control_name == 0) return false;
-     for(n=0;n<nControlsNum;n++)
-     {
-         if(stricmp(control_name,pUserControls[n].name)==0) return GetControlState(n,_state_struct);
-     }
-     return false;
-     //*/
+      if(control_name == 0) return false;
+      for(n=0;n<nControlsNum;n++)
+      {
+        if(_stricmp(control_name,pUserControls[n].name)==0) return GetControlState(n,_state_struct);
+      }
+      return false;
+      //*/
 
     long n;
-    bool bControlFound = false;
-    CONTROL_STATE local_state_struct;
+    const auto bControlFound = false;
 
     _state_struct.state = CST_INACTIVE;
     _state_struct.lValue = 0;
@@ -226,13 +221,12 @@ bool PCS_CONTROLS::GetControlState(char *control_name, CONTROL_STATE &_state_str
 
     if (m_bLockAll)
         return true;
-    if (control_name == 0)
+    if (control_name == nullptr)
         return false;
     for (n = 0; n < nControlsNum; n++)
     {
-        if (stricmp(control_name, pUserControls[n].name) == 0)
+        if (_stricmp(control_name, pUserControls[n].name) == 0)
         {
-
             if (pUserControls[n].bLocked)
             {
                 _state_struct.state = CST_INACTIVE;
@@ -243,23 +237,23 @@ bool PCS_CONTROLS::GetControlState(char *control_name, CONTROL_STATE &_state_str
 
             /*if(GetControlState(n,local_state_struct))
             {
-                bControlFound = true;
+              bControlFound = true;
 
-                if(_state_struct.state == CST_INACTIVE)	// if control inactive just copy what we have on new control
+              if(_state_struct.state == CST_INACTIVE)	// if control inactive just copy what we have on new control
+              {
+                _state_struct = local_state_struct;
+              }
+              else
+              {
+                if(_state_struct.state == CST_ACTIVE)	// if control already active, check for activated state
                 {
-                    _state_struct = local_state_struct;
+                  if(local_state_struct.state == CST_ACTIVATED) _state_struct = local_state_struct;
                 }
-                else
-                {
-                    if(_state_struct.state == CST_ACTIVE)	// if control already active, check for activated state
-                    {
-                        if(local_state_struct.state == CST_ACTIVATED) _state_struct = local_state_struct;
-                    }
-                    else return true;
-                }
+                else return true;
+              }
 
 
-            }  */ // boal ПКМ обратно
+            }  */ // boal ѕ ћ обратно
             return GetControlState(n, _state_struct);
         }
     }
@@ -268,7 +262,7 @@ bool PCS_CONTROLS::GetControlState(char *control_name, CONTROL_STATE &_state_str
 
 bool PCS_CONTROLS::GetControlState(long control_code, CONTROL_STATE &_state_struct)
 {
-    DWORD system_code;
+    uint32_t system_code;
     long lRes;
 
     if (control_code >= nControlsNum)
@@ -287,7 +281,7 @@ bool PCS_CONTROLS::GetControlState(long control_code, CONTROL_STATE &_state_stru
         return true;
     }
 
-    // обработка контрола являющимся деоевом контролов
+    // обработка контрола €вл€ющимс€ деоевом контролов
     if (pUserControls[control_code].control_type == UCT_ControlTree)
     {
         if (pUserControls[control_code].nframe != nFrameCounter)
@@ -349,7 +343,7 @@ bool PCS_CONTROLS::GetControlState(long control_code, CONTROL_STATE &_state_stru
             if (lRes < 0)
             {
                 ControlsTab[system_code].state.lValue = 1;
-                ControlsTab[system_code].state.fValue = (float)ControlsTab[system_code].state.lValue;
+                ControlsTab[system_code].state.fValue = static_cast<float>(ControlsTab[system_code].state.lValue);
 
                 if (ControlsTab[system_code].state.state == CST_INACTIVE ||
                     ControlsTab[system_code].state.state == CST_INACTIVATED)
@@ -435,7 +429,7 @@ bool PCS_CONTROLS::GetControlState(long control_code, CONTROL_STATE &_state_stru
     return true;
 }
 
-void PCS_CONTROLS::Update(DWORD DeltaTime)
+void PCS_CONTROLS::Update(uint32_t DeltaTime)
 {
     m_ControlTree.Process();
     m_KeyBuffer.Reset();
@@ -443,14 +437,16 @@ void PCS_CONTROLS::Update(DWORD DeltaTime)
     nFrameCounter++;
     POINT point;
     GetCursorPos(&point);
-    DWORD system_code = CE_MOUSE_X_AXIS;
+    uint32_t system_code = CE_MOUSE_X_AXIS;
     ControlsTab[system_code].state.lValue = point.x - nMouseXPrev;
-    ControlsTab[system_code].state.fValue = (float)ControlsTab[system_code].state.lValue * fMouseSensivityX;
+    ControlsTab[system_code].state.fValue =
+        static_cast<float>(ControlsTab[system_code].state.lValue) * fMouseSensivityX;
     ControlsTab[system_code].update_frame = nFrameCounter;
 
     system_code = CE_MOUSE_Y_AXIS;
     ControlsTab[system_code].state.lValue = point.y - nMouseYPrev;
-    ControlsTab[system_code].state.fValue = (float)ControlsTab[system_code].state.lValue * fMouseSensivityY;
+    ControlsTab[system_code].state.fValue =
+        static_cast<float>(ControlsTab[system_code].state.lValue) * fMouseSensivityY;
     ControlsTab[system_code].update_frame = nFrameCounter;
 
     system_code = CE_MOUSE_WHEEL_UP;
@@ -500,14 +496,14 @@ void PCS_CONTROLS::Update(DWORD DeltaTime)
     nMouseWheel = 0;
 
     RECT r;
-    GetWindowRect(_CORE_API->GetAppHWND(), &r);
+    GetWindowRect(core.GetAppHWND(), &r);
     nMouseXPrev = r.left + (r.right - r.left) / 2;
     nMouseYPrev = r.top + (r.bottom - r.top) / 2;
     SetCursorPos(nMouseXPrev, nMouseYPrev);
     nLastControlTime += DeltaTime;
 }
 
-bool PCS_CONTROLS::SetControlFlags(long code, DWORD _flags)
+bool PCS_CONTROLS::SetControlFlags(long code, uint32_t _flags)
 {
     if (code < 0 || code >= nControlsNum)
         return false;
@@ -515,14 +511,14 @@ bool PCS_CONTROLS::SetControlFlags(long code, DWORD _flags)
     return true;
 }
 
-bool PCS_CONTROLS::SetControlState(char *control_name, CONTROL_STATE &_state_struct)
+bool PCS_CONTROLS::SetControlState(const char *control_name, CONTROL_STATE &_state_struct)
 {
     long n;
-    if (control_name == 0)
+    if (control_name == nullptr)
         return false;
     for (n = 0; n < nControlsNum; n++)
     {
-        if (stricmp(control_name, pUserControls[n].name) == 0)
+        if (_stricmp(control_name, pUserControls[n].name) == 0)
             return SetControlState(n, _state_struct);
     }
     return false;
@@ -541,17 +537,22 @@ long PCS_CONTROLS::LastControlTime()
     return nLastControlTime;
 }
 
-void PCS_CONTROLS::LockControl(char *control_name, bool mode)
+void PCS_CONTROLS::SetControlTreshold(long control_code, float thval)
+{
+    // ~!~
+}
+
+void PCS_CONTROLS::LockControl(const char *control_name, bool mode)
 {
     long n;
-    if (control_name == 0 || control_name[0] == 0)
+    if (control_name == nullptr || control_name[0] == 0)
     {
         m_bLockAll = mode;
         return;
     }
     for (n = 0; n < nControlsNum; n++)
     {
-        if (stricmp(control_name, pUserControls[n].name) == 0)
+        if (_stricmp(control_name, pUserControls[n].name) == 0)
         {
             pUserControls[n].bLocked = mode;
             pUserControls[n].state = FORCE_DWORD;
@@ -601,7 +602,7 @@ long PCS_CONTROLS::GetKeyBufferLength()
 
 const KeyDescr *PCS_CONTROLS::GetKeyBuffer()
 {
-    return m_KeyBuffer.GetBuffer();
+    return m_KeyBuffer.c_str();
 }
 
 void PCS_CONTROLS::ClearKeyBuffer()

@@ -2,8 +2,8 @@
 #define __STRSERVICE_H__
 
 #include "vmodule_api.h"
-//#include "defines.h"
 
+#include "script_libriary.h"
 #include "stringService.h"
 
 //-----------SDEVICE-----------
@@ -25,23 +25,23 @@ class STRSERVICE : public VSTRSERVICE
     STRSERVICE();
     ~STRSERVICE();
 
-    bool Init();
-    bool LoadState(ENTITY_STATE *state);
-    bool CreateState(ENTITY_STATE_GEN *state_gen);
-    void RunStart();
-    void RunEnd();
+    bool Init() override;
+    bool LoadState(ENTITY_STATE *state) override;
+    bool CreateState(ENTITY_STATE_GEN *state_gen) override;
+    void RunStart() override;
+    void RunEnd() override;
 
-    void SetLanguage(const char *sLanguage);
-    char *GetLanguage();
+    void SetLanguage(const char *sLanguage) override;
+    char *GetLanguage() override;
 
-    char *GetString(const char *stringName, char *sBuffer = 0, size_t bufferSize = 0);
-    long GetStringNum(const char *stringName);
-    char *GetString(long strNum);
-    char *GetStringName(long strNum);
+    char *GetString(const char *stringName, char *sBuffer = nullptr, size_t bufferSize = 0) override;
+    long GetStringNum(const char *stringName) override;
+    char *GetString(long strNum) override;
+    char *GetStringName(long strNum) override;
 
-    long OpenUsersStringFile(char *fileName);
-    void CloseUsersStringFile(long id);
-    char *TranslateFromUsers(long id, char *inStr);
+    long OpenUsersStringFile(const char *fileName) override;
+    void CloseUsersStringFile(long id) override;
+    char *TranslateFromUsers(long id, const char *inStr) override;
 
     void SetDialogSourceFile(const char *fileName);
     char *TranslateForDialog(const char *str)
@@ -51,8 +51,8 @@ class STRSERVICE : public VSTRSERVICE
 
   protected:
     void LoadIni();
-    long GetFreeUsersID();
-    bool GetNextUsersString(char *src, long &idx, char **strName, char **strData);
+    long GetFreeUsersID() const;
+    bool GetNextUsersString(char *src, long &idx, char **strName, char **strData) const;
 
   protected:
     char *m_sLanguage;
@@ -72,8 +72,9 @@ class SCRIPT_INTERFACE_FUNCTIONS : public SCRIPT_LIBRIARY
 {
   public:
     SCRIPT_INTERFACE_FUNCTIONS(){};
+
     ~SCRIPT_INTERFACE_FUNCTIONS(){};
-    virtual bool Init();
+    bool Init() override;
 };
 
 #endif

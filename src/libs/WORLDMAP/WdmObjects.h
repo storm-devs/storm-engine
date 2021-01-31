@@ -11,12 +11,13 @@
 #ifndef _WdmObjects_H_
 #define _WdmObjects_H_
 
-#include "dx8render.h"
-#include "matrix.h"
-#include "templates\array.h"
-#include "templates\string.h"
+#include "Matrix.h"
+#include "dx9render.h"
 
 #include "WdmObjectsWind.h"
+
+#include <string>
+#include <vector>
 
 class WdmIslands;
 class WdmShip;
@@ -46,8 +47,8 @@ class WdmObjects
     struct Model
     {
         GEOS *geo;
-        string path;
-        dword hash;
+        std::string path;
+        uint32_t hash;
         long next;
     };
 
@@ -73,7 +74,7 @@ class WdmObjects
     //Энжиновский орбъект, заведующий всем
     WorldMap *wm;
     //Сервис рендера
-    VDX8RENDER *rs;
+    VDX9RENDER *rs;
     //Сервис геометриии
     VGEOMETRY *gs;
     //Камера
@@ -85,17 +86,13 @@ class WdmObjects
     //Корабль игрока
     WdmShip *playerShip;
     //Все существующие корабли
-    WdmShip **ships;
-    long numShips;
-    long maxShips;
+    std::vector<WdmShip *> ships;
 
     WdmEnemyShip *enemyShip;
     bool enableSkipEnemy;
 
     //Шторма
-    WdmStorm **storms;
-    long numStorms; //Количество штормов
-    long maxStorms;
+    std::vector<WdmStorm *> storms;
     bool playarInStorm;
 
     const char *curIsland;
@@ -103,12 +100,12 @@ class WdmObjects
     bool isPause;
     bool isDebug;
 
-    void DrawCircle(const CVECTOR &pos, float radius, dword color);
-    void DrawCircle(CMatrix &mtx, float radius, dword color);
-    void DrawVector(const CVECTOR &start, const CVECTOR &end, dword color);
-    void DrawLine(const CVECTOR &start, const CVECTOR &end, dword color);
-    void DrawBox2D(CMatrix &mtx, float l, float w, dword color);
-    void GetVPSize(float &w, float &h);
+    void DrawCircle(const CVECTOR &pos, float radius, uint32_t color) const;
+    void DrawCircle(CMatrix &mtx, float radius, uint32_t color) const;
+    void DrawVector(const CVECTOR &start, const CVECTOR &end, uint32_t color) const;
+    void DrawLine(const CVECTOR &start, const CVECTOR &end, uint32_t color) const;
+    void DrawBox2D(CMatrix &mtx, float l, float w, uint32_t color) const;
+    void GetVPSize(float &w, float &h) const;
 
     float shipSpeedOppositeWind; //Относительная скорость корабля против ветра
     float shipSpeedOverWind;     //Относительная скорость корабля по ветру
@@ -140,27 +137,23 @@ class WdmObjects
     char stCoordinate[128];
 
     float resizeRatio; // для ресайза интерфейсов
+    float worldSizeX;  //Размер мира по X
+    float worldSizeZ;  //Размер мира по Z
 
-    float worldSizeX; //Размер мира по X
-    float worldSizeZ; //Размер мира по Z
-
-    array<Model> models;    //Модельки
-    long entryModels[1024]; //Таблица быстрого поиска геометрии
-    string modelPath;
-
-    //Найти хэщь-значение строки
-    static dword CalcHash(const char *str);
+    std::vector<Model> models; //Модельки
+    long entryModels[1024];    //Таблица быстрого поиска геометрии
+    std::string modelPath;
 
     //Получить направление и силу ветра
     float GetWind(float x, float z, CVECTOR &dir);
     //Обновить состояние ветра
     void UpdateWind(float dltTime);
     //Получить строку сохранение
-    const char *GetWindSaveString(string &windData);
+    const char *GetWindSaveString(std::string &windData);
     //Установить строку сохранение
     void SetWindSaveString(const char *str);
     //Добавить float в cтроку
-    void AddDataToString(string &str, byte d);
+    void AddDataToString(std::string &str, uint8_t d);
     //Получить float из строки
     long GetDataFromString(const char *&cur);
 
@@ -170,34 +163,12 @@ class WdmObjects
     struct Vertex
     {
         CVECTOR v;
-        dword c;
+        uint32_t c;
     };
 
     static Vertex vertex[1024];
 };
 
 extern WdmObjects *wdmObjects;
-
-//Найти хэщь-значение строки
-inline dword WdmObjects::CalcHash(const char *str)
-{
-    if (!str)
-        return 0;
-    unsigned long hval = 0;
-    while (*str != '\0')
-    {
-        char c = *str++;
-        if (c >= 'A' && c <= 'Z')
-            c += 'a' - 'A';
-        hval = (hval << 4) + (unsigned long int)c;
-        unsigned long g = hval & ((unsigned long int)0xf << (32 - 4));
-        if (g != 0)
-        {
-            hval ^= g >> (32 - 8);
-            hval ^= g;
-        }
-    }
-    return hval;
-}
 
 #endif

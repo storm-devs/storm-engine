@@ -11,15 +11,20 @@ Import library main header
 #ifndef _GEOLIB_I_H_
 #define _GEOLIB_I_H_
 
+#include <cstdint>
+
+using HANDLE = void *;
+
 class GEOS
 {
   public:
-    typedef unsigned long ID; // this used w/o any checking
+    typedef long ID; // this used w/o any checking
 
     struct VERTEX
     {
         float x, y, z;
     };
+
     // vertex
     struct VERTEX0
     {
@@ -27,6 +32,7 @@ class GEOS
         long color;
         float tu, tv;
     };
+
     struct VERTEX1
     {
         VERTEX pos, nrm;
@@ -34,6 +40,7 @@ class GEOS
         float tu, tv;
         float tu1, tv1;
     };
+
     struct VERTEX2
     {
         VERTEX pos, nrm;
@@ -42,6 +49,7 @@ class GEOS
         float tu1, tv1;
         float tu2, tv2;
     };
+
     struct VERTEX3
     {
         VERTEX pos, nrm;
@@ -51,6 +59,7 @@ class GEOS
         float tu2, tv2;
         float tu3, tv3;
     };
+
     // animated vertex
     struct AVERTEX0
     {
@@ -79,6 +88,7 @@ class GEOS
         VERTEX boxcenter, boxsize;
         float radius;
     };
+
     virtual void GetInfo(INFO &i) const = 0;
 
     //-----------------------------------------
@@ -88,6 +98,7 @@ class GEOS
     {
         LABLE_FORCEDWORD = 0x7FFFFFFF
     };
+
     struct LABEL
     {
         long flags; // combination of LABEL_FLAG
@@ -97,6 +108,7 @@ class GEOS
         long bones[4];
         float weight[4];
     };
+
     virtual long FindLabelN(long start_index, long name_id) = 0;
     virtual long FindLabelG(long start_index, long group_name_id) = 0;
     virtual void GetLabel(long l, LABEL &lb) const = 0;
@@ -113,6 +125,7 @@ class GEOS
         TEXTURE_LIGHTMAP,
         TEXTURE_FORCEDWORD = 0x7FFFFFFF
     };
+
     struct MATERIAL
     {
         float diffuse;                // 0 - no diffuse material
@@ -123,6 +136,7 @@ class GEOS
         char *group_name;
         char *name;
     };
+
     virtual long FindMaterialN(long start_index, long name_id) = 0;
     virtual long FindMaterialG(long start_index, long group_name_id) = 0;
     virtual void GetMaterial(long m, MATERIAL &mt) const = 0;
@@ -135,15 +149,23 @@ class GEOS
     enum OBJECT_FLAGS
     {
         VISIBLE = (1 << 0),
-        STATIC_LIGHT_ENABLE = (1 << 1),  // if no - object will not be lited
-        DINAMIC_LIGHT_ENABLE = (1 << 2), // if no - no dynamic lighting perfomed
-        CAST_SHADOWS_ENABLE = (1 << 3),  // if material makes shadows
-        COLLISION_ENABLE = (1 << 4),     // if yes - object will be stored to BSP
-        VERTEX_WEIGHT = (1 << 5),        // animation
-        MERGE = (1 << 6),                // object is "merged"-type
-        CULLENABLE = (1 << 7),           // single-sided object
+        STATIC_LIGHT_ENABLE = (1 << 1),
+        // if no - object will not be lited
+        DINAMIC_LIGHT_ENABLE = (1 << 2),
+        // if no - no dynamic lighting perfomed
+        CAST_SHADOWS_ENABLE = (1 << 3),
+        // if material makes shadows
+        COLLISION_ENABLE = (1 << 4),
+        // if yes - object will be stored to BSP
+        VERTEX_WEIGHT = (1 << 5),
+        // animation
+        MERGE = (1 << 6),
+        // object is "merged"-type
+        CULLENABLE = (1 << 7),
+        // single-sided object
         OBJECT_FORCEDWORD = 0x7FFFFFFF
     };
+
     struct OBJECT
     {
         long flags; // combination of OBJECT_FLAGSS
@@ -158,6 +180,7 @@ class GEOS
         long start_vertex, num_vertices;
         long bones[4];
     };
+
     virtual long FindObjN(long start_index, long name_id) = 0;
     virtual long FindObjG(long start_index, long group_name_id) = 0;
     virtual void GetObj(long o, OBJECT &ob) const = 0;
@@ -173,11 +196,13 @@ class GEOS
         LIGHT_DIRECTIONAL,
         LIGHT_FORCE_DWORD = 0x7FFFFFFF
     };
+
     enum LIGHT_FLAGS
     {
         LIGHT_SHADOW = 1,
         LIGHT_FORCEDWORD = 0x7FFFFFFF
     };
+
     struct LIGHT
     {
         long flags; // combination of LIGHT_FLAGS
@@ -192,6 +217,7 @@ class GEOS
         float inner, outer, falloff;
         VERTEX dir;
     };
+
     virtual long FindLightN(long start_index, long name_id) = 0;
     virtual long FindLightG(long start_index, long group_name_id) = 0;
     virtual void GetLight(long l, LIGHT &lt) const = 0;
@@ -205,6 +231,7 @@ class GEOS
         VERTEX nrm;
         float d;
     };
+
     virtual void Draw(const PLANE *pl, long np, MATERIAL_FUNC mtf) const = 0;
 
     //-----------------------------------------
@@ -217,6 +244,7 @@ class GEOS
         PLANE plane;
         VERTEX vrt[3];
     };
+
     // Trace a ray in local coord-system
     virtual float Trace(VERTEX &src, VERTEX &dst) = 0;
 
@@ -253,11 +281,10 @@ class GEOM_SERVICE
 {
   public:
     virtual ~GEOM_SERVICE(){};
-    virtual GEOS::ID OpenFile(const char *fname) = 0;
-    virtual void ReadFile(GEOS::ID file, void *data, long bytes) = 0;
-    virtual long GetFilePointer(GEOS::ID file) = 0;
-    virtual int FileSize(GEOS::ID file) = 0;
-    virtual void CloseFile(GEOS::ID file) = 0;
+    virtual HANDLE OpenFile(const char *fname) = 0;
+    virtual void ReadFile(HANDLE file, void *data, long bytes) = 0;
+    virtual int FileSize(HANDLE file) = 0;
+    virtual void CloseFile(HANDLE file) = 0;
     virtual void *malloc(long bytes) = 0;
     virtual void free(void *ptr) = 0;
 
@@ -279,7 +306,7 @@ class GEOM_SERVICE
     virtual void SetVertexBuffer(long vsize, GEOS::ID vbuff) = 0;
     virtual void DrawIndexedPrimitive(long minv, long numv, long vrtsize, long startidx, long numtrg) = 0;
 
-    virtual GEOS::ID CreateLight(const GEOS::LIGHT) = 0;
+    virtual GEOS::ID CreateLight(GEOS::LIGHT) = 0;
     virtual void ActivateLight(GEOS::ID n) = 0;
 
     virtual void SetCausticMode(bool bSet = false) = 0;
@@ -293,6 +320,6 @@ enum GEOS_LOADING_FLAGS
     LOAD_FORCEDWORD = 0x7FFFFFFF
 };
 
-GEOS *_cdecl CreateGeometry(const char *fname, const char *lightname, GEOM_SERVICE &srv, long flags);
+GEOS *CreateGeometry(const char *fname, const char *lightname, GEOM_SERVICE &srv, long flags);
 
 #endif

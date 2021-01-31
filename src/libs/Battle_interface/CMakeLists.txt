@@ -1,12 +1,12 @@
 project(battleinterface)
 
-add_library(${PROJECT_NAME} MODULE
+add_library(${PROJECT_NAME} STATIC
 	EnemyStatShower/enemystatshower.cpp
 	EnemyStatShower/enemystatshower.h
 
-	image/bi_image_defines.h
 	image/image.cpp
 	image/image.h
+	image/image_defines.h
 	image/imgrender.cpp
 	image/imgrender.h
 	image/material.cpp
@@ -60,15 +60,6 @@ add_library(${PROJECT_NAME} MODULE
 	sea/ships_list.cpp
 	sea/ships_list.h
 	
-	seainterface/seadatabase.cpp
-	seainterface/seadatabase.h
-	seainterface/shipcommand.cpp
-	seainterface/shipcommand.h
-	seainterface/shipliga.cpp
-	seainterface/shipliga.h
-	seainterface/shipsign.cpp
-	seainterface/shipsign.h
-	
 	spyglass/spyglass.cpp
 	spyglass/spyglass.h
 	
@@ -93,13 +84,13 @@ add_library(${PROJECT_NAME} MODULE
 	LogAndAction.h
 	MessageIcons.cpp
 	MessageIcons.h
-	messages.h
 	Utils.cpp
 	Utils.h
 
 	#copied from scripts
-	log_msg.h
-	msg_control.h
+	# log_msg.h
+	# msg_control.h
+	# messages.h
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

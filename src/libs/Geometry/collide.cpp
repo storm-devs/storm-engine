@@ -8,11 +8,13 @@ Comments:
 trace and clip functions
 ******************************************************************************/
 #include "geom.h"
+#include <cstring>
 
 //---------------------------------------------------------------------------
 // Trace main procedure
 //---------------------------------------------------------------------------
 SAVAGE GEOM::_stack[256];
+
 float GEOM::Trace(VERTEX &start, VERTEX &finish)
 {
     if (!(rhead.flags & FLAGS_BSP_PRESENT))
@@ -40,17 +42,18 @@ rec_loop:;
     sdst = (dst | node->norm) - node->pd;
 
     // dist = ssrc/(ssrc - sdst);
-    double d = ssrc - sdst;
+    const auto d = ssrc - sdst;
     dist = ssrc / d;
 
     if ((diss > EPSILON && dist <= diss - EPSILON) || d == 0.0 || dist <= 0.0)
     // if(dist<=diss)
     {
         if (sdst < 0.0)
+        {
             if (node->left == 0)
                 goto rec_avoid;
-            else
-                node = &sroot[node->node];
+            node = &sroot[node->node];
+        }
         else if (node->right == 0)
             goto rec_avoid;
         else
@@ -62,10 +65,11 @@ rec_loop:;
     // if(dist>=dise)
     {
         if (ssrc < 0.0) // left
+        {
             if (node->left == 0)
                 goto rec_avoid;
-            else
-                node = &sroot[node->node];
+            node = &sroot[node->node];
+        }
         else // right
             if (node->right == 0)
             goto rec_avoid;
@@ -75,6 +79,7 @@ rec_loop:;
     }
     //----------first test----------
     if (ssrc < 0.0f)
+    {
         if (node->left != 0)
         {
             stack++;
@@ -82,17 +87,18 @@ rec_loop:;
             stack->dise = dise;
             stack->dist = dist;
             if (node->right == 0)
-                stack->second = 0;
+                stack->second = nullptr;
             else
                 stack->second = &sroot[node->node + node->right];
             dise = dist;
             node = &sroot[node->node];
             goto rec_loop;
         }
-        else if (node->right == 0)
-            second = 0;
+        if (node->right == 0)
+            second = nullptr;
         else
             second = &sroot[node->node + node->right];
+    }
     else if (node->right != 0)
     {
         stack++;
@@ -100,7 +106,7 @@ rec_loop:;
         stack->dise = dise;
         stack->dist = dist;
         if (node->left == 0)
-            stack->second = 0;
+            stack->second = nullptr;
         else
             stack->second = &sroot[node->node];
         dise = dist;
@@ -108,7 +114,7 @@ rec_loop:;
         goto rec_loop;
     }
     else if (node->left == 0)
-        second = 0;
+        second = nullptr;
     else
         second = &sroot[node->node];
 
@@ -120,7 +126,8 @@ rec_return:;
         pface = (unsigned char *)&node->face;
 
     loop0:
-        long face = (long(*(pface + 2)) << 16) | (long(*(pface + 1)) << 8) | (long(*(pface + 0)) << 0);
+        const auto face = (static_cast<long>(*(pface + 2)) << 16) | (static_cast<long>(*(pface + 1)) << 8) |
+                          (static_cast<long>(*(pface + 0)) << 0);
         long vindex[3];
         vindex[0] = (btrg[face].vindex[0][0] << 0) | (btrg[face].vindex[0][1] << 8) | (btrg[face].vindex[0][2] << 16);
         vindex[1] = (btrg[face].vindex[1][0] << 0) | (btrg[face].vindex[1][1] << 8) | (btrg[face].vindex[1][2] << 16);
@@ -130,25 +137,25 @@ rec_return:;
 
         DVECTOR a = vrt[vindex[1]] - vrt[vindex[0]];
         DVECTOR b = vrt[vindex[2]] - vrt[vindex[0]];
-        DVECTOR pvec = dirvec ^ b;
-        double det = a | pvec;
+        auto pvec = dirvec ^ b;
+        const auto det = a | pvec;
 
-        DVECTOR c = src - vrt[vindex[0]];
-        double U = c | pvec;
-        double V = dirvec | (c ^ a);
+        auto c = src - vrt[vindex[0]];
+        const double U = c | pvec;
+        const double V = dirvec | (c ^ a);
 
         if (det < 0.0)
         {
             if (U < 0.0f && U > det && V < 0.0f && U + V > det)
             {
-                res_dist = float(dist);
+                res_dist = static_cast<float>(dist);
                 traceid = face;
                 return res_dist;
             }
         }
         else if (U >= 0.0f && U <= det && V >= 0.0f && U + V <= det)
         {
-            res_dist = float(dist);
+            res_dist = static_cast<float>(dist);
             traceid = face;
             return res_dist;
         }
@@ -161,7 +168,7 @@ rec_return:;
     }
 
     //----------last test----------
-    if (second == 0)
+    if (second == nullptr)
     {
     rec_avoid:;
         if (stack < _stack)
@@ -187,12 +194,13 @@ rec_return:;
 //
 //--------------------------------------------------------------------------------------------
 static CVECTOR poly[256];
+
 long ClipByPlane(const GEOS::PLANE &plane, long n)
 {
     long inside = 0;
     CVECTOR cr0, cr1;
-
-    for (long i = 0; i < n; i++)
+    long i;
+    for (i = 0; i < n; i++)
         if (plane.nrm.x * poly[i].x + plane.nrm.y * poly[i].y + plane.nrm.z * poly[i].z - plane.d < 0.0)
             inside++;
     if (inside == n || inside == 0)
@@ -201,7 +209,7 @@ long ClipByPlane(const GEOS::PLANE &plane, long n)
     // needs to be clipped
     float sign[4];
     long ii, i3, i4;
-    for (long i = 0; i < n; i++)
+    for (i = 0; i < n; i++)
     {
         sign[0] = plane.nrm.x * poly[i].x + plane.nrm.y * poly[i].y + plane.nrm.z * poly[i].z - plane.d;
         if (sign[0] > 0.0) // outside!
@@ -213,15 +221,15 @@ long ClipByPlane(const GEOS::PLANE &plane, long n)
             if (sign[1] > 0.0)
                 continue; // outside!
             double k = sign[0] / (sign[0] - sign[1]);
-            cr0.x = float(poly[i].x + k * (poly[i3].x - poly[i].x));
-            cr0.y = float(poly[i].y + k * (poly[i3].y - poly[i].y));
-            cr0.z = float(poly[i].z + k * (poly[i3].z - poly[i].z));
+            cr0.x = static_cast<float>(poly[i].x + k * (poly[i3].x - poly[i].x));
+            cr0.y = static_cast<float>(poly[i].y + k * (poly[i3].y - poly[i].y));
+            cr0.z = static_cast<float>(poly[i].z + k * (poly[i3].z - poly[i].z));
 
             ii = i + 1;
             if (ii >= n)
                 ii = 0;
-            if (plane.nrm.x * poly[ii].x + plane.nrm.y * poly[ii].y + plane.nrm.z * poly[ii].z - plane.d <=
-                0.0) // inside!
+            if (plane.nrm.x * poly[ii].x + plane.nrm.y * poly[ii].y + plane.nrm.z * poly[ii].z - plane.d <= 0.0)
+            // inside!
             {
                 for (i3 = n; i3 > ii; i3--)
                     poly[i3] = poly[i3 - 1];
@@ -253,9 +261,9 @@ long ClipByPlane(const GEOS::PLANE &plane, long n)
             sign[0] = plane.nrm.x * poly[ii].x + plane.nrm.y * poly[ii].y + plane.nrm.z * poly[ii].z - plane.d;
             sign[1] = plane.nrm.x * poly[i3].x + plane.nrm.y * poly[i3].y + plane.nrm.z * poly[i3].z - plane.d;
             k = sign[0] / (sign[0] - sign[1]);
-            cr1.x = float(poly[ii].x + k * (poly[i3].x - poly[ii].x));
-            cr1.y = float(poly[ii].y + k * (poly[i3].y - poly[ii].y));
-            cr1.z = float(poly[ii].z + k * (poly[i3].z - poly[ii].z));
+            cr1.x = static_cast<float>(poly[ii].x + k * (poly[i3].x - poly[ii].x));
+            cr1.y = static_cast<float>(poly[ii].y + k * (poly[i3].y - poly[ii].y));
+            cr1.z = static_cast<float>(poly[ii].z + k * (poly[i3].z - poly[ii].z));
 
             poly[i] = cr0;
             i3 = i + 1;
@@ -267,6 +275,7 @@ long ClipByPlane(const GEOS::PLANE &plane, long n)
     }
     return n;
 }
+
 //--------------------------------------------------------------------------------------------
 //
 //--------------------------------------------------------------------------------------------
@@ -278,7 +287,7 @@ bool GEOM::Clip(const PLANE *planes, long nplanes, const VERTEX &center, float r
 {
     if (!(rhead.flags & FLAGS_BSP_PRESENT))
         return false;
-    DVECTOR src(center.x, center.y, center.z);
+    const DVECTOR src(center.x, center.y, center.z);
 
     attempt++;
     if (attempt == 0)
@@ -292,15 +301,16 @@ bool GEOM::Clip(const PLANE *planes, long nplanes, const VERTEX &center, float r
 
 rec_loop:;
 
-    double ssrc = (src | node->norm) - node->pd;
+    const double ssrc = (src | node->norm) - node->pd;
 
     // trace all faces
     if (ssrc * ssrc < radius * radius)
     {
-        unsigned char *pface = (unsigned char *)&node->face;
+        auto *pface = (unsigned char *)&node->face;
         for (unsigned long f = 0; f < node->nfaces; f++)
         {
-            long face = (long(*(pface + 2)) << 16) | (long(*(pface + 1)) << 8) | (long(*(pface + 0)) << 0);
+            const long face = (static_cast<long>(*(pface + 2)) << 16) | (static_cast<long>(*(pface + 1)) << 8) |
+                              (static_cast<long>(*(pface + 0)) << 0);
 
             // this triangle was added before
             if (trgclip[face] != attempt)
@@ -311,8 +321,8 @@ rec_loop:;
                 // copy vertices to poly container
                 for (long v = 0; v < 3; v++)
                 {
-                    long vindex = (btrg[face].vindex[v][0] << 0) | (btrg[face].vindex[v][1] << 8) |
-                                  (btrg[face].vindex[v][2] << 16);
+                    const long vindex = (btrg[face].vindex[v][0] << 0) | (btrg[face].vindex[v][1] << 8) |
+                                        (btrg[face].vindex[v][2] << 16);
                     memcpy(&poly[v], &vrt[vindex], sizeof(CVECTOR));
                 }
 
@@ -330,10 +340,10 @@ rec_loop:;
                 {
                     traceid = face;
                     // if test only
-                    if (addpoly == 0)
+                    if (addpoly == nullptr)
                         return true;
                     // if clipping
-                    if (addpoly((GEOS::VERTEX *)&poly[0], nverts) == false)
+                    if (addpoly((VERTEX *)&poly[0], nverts) == false)
                         return true;
                 }
             }
@@ -351,10 +361,11 @@ rec_loop:;
     else
     {
         if (ssrc < 0.0f)
+        {
             if (node->left == 0)
                 goto rec_continue;
-            else
-                node = &sroot[node->node];
+            node = &sroot[node->node];
+        }
         else if (node->right == 0)
             goto rec_continue;
         else

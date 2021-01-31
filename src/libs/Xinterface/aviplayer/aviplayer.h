@@ -1,11 +1,12 @@
 #ifndef _AVIPLAYER_HPP_
 #define _AVIPLAYER_HPP_
 
-#include "..\base_video.h"
+#include "../base_video.h"
 #include <amstream.h>
 #include <ddraw.h>
 
 #define XI_AVIVIDEO_FVF (D3DFVF_XYZRHW | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2)
+
 struct XI_AVIVIDEO_VERTEX
 {
     CVECTOR pos;
@@ -15,22 +16,39 @@ struct XI_AVIVIDEO_VERTEX
 
 class CAviPlayer : public xiBaseVideo
 {
-    VDX8RENDER *rs;
+    VDX9RENDER *rs;
     bool m_bShowVideo;
 
   public:
     CAviPlayer();
     ~CAviPlayer();
-    bool Init();
-    void Execute(dword delta_time);
-    void Realize(dword delta_time);
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    bool Init() override;
+    void Execute(uint32_t delta_time);
+    void Realize(uint32_t delta_time);
+    uint64_t ProcessMessage(MESSAGE &message) override;
 
-    void SetShowVideo(bool bShowVideo)
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
+
+    void SetShowVideo(bool bShowVideo) override
     {
         m_bShowVideo = bShowVideo;
     }
-    IDirect3DTexture9 *GetCurrentVideoTexture()
+    IDirect3DTexture9 *GetCurrentVideoTexture() override
     {
         return pTex;
     }

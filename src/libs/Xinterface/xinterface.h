@@ -1,13 +1,12 @@
 #ifndef _XINTERFACE_H_
 #define _XINTERFACE_H_
 
-#include "QuestFileReader\\QuestFileReader.h"
-#include "dx8render.h"
-#include "editor\editor.h"
+#include "Matrix.h"
+#include "Nodes/xi_util.h"
+#include "QuestFileReader//QuestFileReader.h"
+#include "dx9render.h"
+#include "editor/editor.h"
 #include "inode.h"
-#include "matrix.h"
-#include "nodes\xi_util.h"
-#include "templates\string.h"
 #include "vmodule_api.h"
 
 class CXI_WINDOW;
@@ -21,7 +20,7 @@ class XINTERFACE : public XINTERFACE_BASE
     QUEST_FILE_READER *pQuestService;
     VXSERVICE *pPictureService;
     VSTRSERVICE *pStringService;
-    VDX8RENDER *pRenderService;
+    VDX9RENDER *pRenderService;
 
     CXI_UTILS m_UtilContainer;
 
@@ -30,7 +29,7 @@ class XINTERFACE : public XINTERFACE_BASE
 
     // context help
     long m_nInterfaceMode;
-    DWORD m_dwContHelpColor;
+    uint32_t m_dwContHelpColor;
     long m_idHelpTexture;
     FXYRECT m_frectHelpTextureUV;
     char *m_strDefHelpTextureFile;
@@ -40,8 +39,8 @@ class XINTERFACE : public XINTERFACE_BASE
     //-------------------------------------
     float fScale;
     XYRECT GlobalScreenRect;
-    DWORD dwScreenWidth;
-    DWORD dwScreenHeight;
+    uint32_t dwScreenWidth;
+    uint32_t dwScreenHeight;
     int m_nColumnQuantity; // Column quantity for grid of the previouse texture
     float m_fWaveAmplitude;
     float m_fWavePhase;
@@ -68,30 +67,49 @@ class XINTERFACE : public XINTERFACE_BASE
     VDATA *m_pMouseWeel;
 
     // save render state parameters
-    DWORD m_dwStoreFlag_Fog;
+    uint32_t m_dwStoreFlag_Fog;
 
   public:
+    XINTERFACE(XINTERFACE &&) = delete;
+    XINTERFACE(const XINTERFACE &) = delete;
     XINTERFACE();
     ~XINTERFACE();
 
     void SetDevice();
-    bool Init();
-    void Execute(dword Delta_Time);
-    void Realize(dword Delta_Time);
+    bool Init() override;
+    void Execute(uint32_t Delta_Time);
+    void Realize(uint32_t Delta_Time);
     bool CreateState(ENTITY_STATE_GEN *state_gen);
     bool LoadState(ENTITY_STATE *state);
-    dword _cdecl ProcessMessage(MESSAGE &message);
-    dword AttributeChanged(ATTRIBUTES *patr);
+    uint64_t ProcessMessage(MESSAGE &message) override;
+    uint32_t AttributeChanged(ATTRIBUTES *patr) override;
 
-    void CreateNode(char *sFileName, char *sNodeType, char *sNodeName, long priority = 80);
-    void __declspec(dllexport) __cdecl SFLB_CreateNode(INIFILE *pOwnerIni, INIFILE *pUserIni, char *sNodeType,
-                                                       char *sNodeName, long priority);
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+        case Stage::realize:
+            Realize(delta);
+            break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
+
+    void CreateNode(const char *sFileName, const char *sNodeType, const char *sNodeName, long priority = 80);
+    void SFLB_CreateNode(INIFILE *pOwnerIni, INIFILE *pUserIni, const char *sNodeType, const char *sNodeName,
+                         long priority);
     void DeleteNode(const char *pcNodeName);
     CINODE *NewNode(const char *pcNodType);
 
-    void SetTooltip(const char *pcHeader, const char *pcText1, dword dwTextColor1, const char *pcText2,
-                    dword dwTextColor2, const char *pcText3, dword dwTextColor3, const char *pcText4,
-                    dword dwTextColor4, const char *pcPicTextureName, const char *pcPicGroupName,
+    void SetTooltip(const char *pcHeader, const char *pcText1, uint32_t dwTextColor1, const char *pcText2,
+                    uint32_t dwTextColor2, const char *pcText3, uint32_t dwTextColor3, const char *pcText4,
+                    uint32_t dwTextColor4, const char *pcPicTextureName, const char *pcPicGroupName,
                     const char *pcPicImageName, long nPicWidth, long nPicHeight);
 
     static QUEST_FILE_READER *GetQuestFileReader()
@@ -106,77 +124,79 @@ class XINTERFACE : public XINTERFACE_BASE
     {
         return pThis->pStringService;
     }
-    static VDX8RENDER *GetRenderService()
+    static VDX9RENDER *GetRenderService()
     {
         return pThis->pRenderService;
     }
 
-    virtual QUEST_FILE_READER *QuestFileReader()
+    QUEST_FILE_READER *QuestFileReader() override
     {
         return pQuestService;
     }
-    virtual VXSERVICE *PictureService()
+    VXSERVICE *PictureService() override
     {
         return pPictureService;
     }
-    virtual VSTRSERVICE *StringService()
+    VSTRSERVICE *StringService() override
     {
         return pStringService;
     }
-    virtual VDX8RENDER *RenderService()
+    VDX9RENDER *RenderService() override
     {
         return pRenderService;
     }
 
-    void *GetCurrentNode()
+    void *GetCurrentNode() override
     {
         return m_pCurNode;
     }
-    FXYPOINT GetMousePoint()
+    FXYPOINT GetMousePoint() override
     {
         return FXYPOINT(fXMousePos + m_lXMouse, fYMousePos + m_lYMouse);
     }
-    long PrintIntoWindow(long wl, long wr, long idFont, DWORD dwFCol, DWORD dwBCol, long align, bool shadow,
+    long PrintIntoWindow(long wl, long wr, long idFont, uint32_t dwFCol, uint32_t dwBCol, long align, bool shadow,
                          float scale, long sxs, long sys, long left, long top, char *str,
-                         int nWidthForScaleCorrecting = -1, int nSplit = 0);
+                         int nWidthForScaleCorrecting = -1, int nSplit = 0) override;
 
-    virtual CINODE *FindNode(const char *sNodeName, CINODE *findRoot)
+    CINODE *FindNode(const char *sNodeName, CINODE *findRoot) override
     {
         if (!findRoot)
             findRoot = m_pNodes;
         if (findRoot)
             return findRoot->FindNode(sNodeName);
-        return 0;
+        return nullptr;
     }
-    virtual void ShowWindow(const char *pcWindowName, bool bShow);
-    virtual void DisableWindow(const char *pcWindowName, bool bDisable);
-    virtual void AddNodeToWindow(const char *pcNodeName, const char *pcWindowName);
+
+    void ShowWindow(const char *pcWindowName, bool bShow) override;
+    void DisableWindow(const char *pcWindowName, bool bDisable) override;
+    void AddNodeToWindow(const char *pcNodeName, const char *pcWindowName) override;
     virtual CXI_WINDOW *FindWindow(const char *pcWindowName);
     virtual bool IsWindowActive(const char *pcWindowName);
 
-    virtual void RegistryExitKey(const char *pcKeyName);
+    void RegistryExitKey(const char *pcKeyName) override;
 
-    array<string> m_asExitKey;
+    std::vector<std::string> m_asExitKey;
 
     struct LocksInfo
     {
         long nSaveCode;
-        array<CINODE *> aNode;
-        LocksInfo() : aNode(_FL)
+        std::vector<CINODE *> aNode;
+        LocksInfo()
         {
             nSaveCode = -1;
         }
     };
-    array<LocksInfo> m_aLocksArray;
+
+    std::vector<LocksInfo> m_aLocksArray;
 
     long StoreNodeLocksWithOff();
     void RestoreNodeLocks(long nStoreIdx);
 
-    long GetScreenWidth()
+    long GetScreenWidth() const
     {
         return dwScreenWidth;
     }
-    long GetScreenHeight()
+    long GetScreenHeight() const
     {
         return dwScreenHeight;
     }
@@ -205,7 +225,7 @@ class XINTERFACE : public XINTERFACE_BASE
     void ShowContextHelp();
 
     // draw function
-    void DrawNode(CINODE *nod, dword Delta_Time, long startPrior = 0, long endPrior = 32000);
+    void DrawNode(CINODE *nod, uint32_t Delta_Time, long startPrior = 0, long endPrior = 32000) const;
     void ShowPrevTexture();
     // initialisation function
     void LoadIni();
@@ -218,15 +238,15 @@ class XINTERFACE : public XINTERFACE_BASE
     void MouseMove();
     void MouseClick(bool bFirstClick);
     void MouseDeClick();
-    CINODE *GetClickNode(CINODE *searchNod, long xPos, long yPos);
+    CINODE *GetClickNode(CINODE *searchNod, long xPos, long yPos) const;
     // release function
     void ReleaseOld();
     void ReleaseDinamicPic(char *sPicName);
     // save load functions
-    bool __declspec(dllexport) __cdecl SFLB_DoSaveFileData(char *saveName, char *saveData);
-    bool __declspec(dllexport) __cdecl SFLB_GetSaveFileData(char *saveName, long bufSize, char *buf);
+    bool SFLB_DoSaveFileData(char *saveName, char *saveData) const;
+    bool SFLB_GetSaveFileData(char *saveName, long bufSize, char *buf);
     char *SaveFileFind(long saveNum, char *buffer, size_t bufSize, long &fileSize);
-    bool NewSaveFileName(char *fileName);
+    bool NewSaveFileName(char *fileName) const;
     void DeleteSaveFile(char *fileName);
     // node control
     void AddNodeToList(CINODE *nod, long priority = 80);
@@ -234,9 +254,8 @@ class XINTERFACE : public XINTERFACE_BASE
     void SetExclusiveNode(CINODE *nod);
     void AddExclusiveNode(CINODE *nod);
     void ExitFromExclusive();
-
     // Game time function
-    void IncrementGameTime(DWORD dwDeltaTime);
+    void IncrementGameTime(uint32_t dwDeltaTime);
     // Options functions
     void SaveOptionsFile(char *fileName, ATTRIBUTES *pAttr);
     void LoadOptionsFile(char *fileName, ATTRIBUTES *pAttr);
@@ -245,13 +264,14 @@ class XINTERFACE : public XINTERFACE_BASE
     //
     void PrecreateDirForFile(const char *pcFullFileName);
 
-    DWORD m_dwCurDeltaTime;
+    uint32_t m_dwCurDeltaTime;
     int m_dwGameTimeSec;
     int m_dwGameTimeMin;
     int m_dwGameTimeHour;
 
     union KEYSTATE {
         int dwKeyCode;
+
         struct
         {
             unsigned rightButton : 1;
@@ -263,6 +283,7 @@ class XINTERFACE : public XINTERFACE_BASE
             unsigned shiftButton : 1;
         };
     };
+
     KEYSTATE oldKeyState;
 
     // save find data
@@ -274,28 +295,30 @@ class XINTERFACE : public XINTERFACE_BASE
 
         SAVE_FIND_DATA *next;
     };
+
     SAVE_FIND_DATA *m_pSaveFindRoot;
     void ReleaseSaveFindList();
     void AddFindData(const char *sSaveFileName, long file_size, FILETIME create_time);
     void Sorting_FindData();
-    SAVE_FIND_DATA *GetSaveDataByIndex(int n);
+    SAVE_FIND_DATA *GetSaveDataByIndex(int n) const;
 
     // dinamic strings data
-    struct STRING_ENTITY
+    struct STRING_Entity
     {
         bool bUsed;
         int fontNum;
-        DWORD dwColor;
+        uint32_t dwColor;
         char *sStringName;
         int x, y;
         int eAlignment;
         float fScale;
     };
-    STRING_ENTITY *m_stringes;
+
+    std::vector<STRING_Entity> m_stringes;
     int m_nStringQuantity;
 
     // dinamic images data
-    struct IMAGE_ENTITY
+    struct IMAGE_Entity
     {
         XYRECT position;
         char *sImageListName;
@@ -305,34 +328,37 @@ class XINTERFACE : public XINTERFACE_BASE
         long idTexture;
         long imageID;
         bool doBlind;
-        DWORD argbBlindMin;
-        DWORD argbBlindMax;
-        IMAGE_ENTITY *next;
+        uint32_t argbBlindMin;
+        uint32_t argbBlindMax;
+        IMAGE_Entity *next;
     };
-    IMAGE_ENTITY *m_imgLists;
+
+    IMAGE_Entity *m_imgLists;
 
     // send events data
-    struct EVENT_ENTITY
+    struct EVENT_Entity
     {
         char *sEventName;
         char *sNodeName;
         long nCommandIndex;
-        EVENT_ENTITY *next;
+        EVENT_Entity *next;
 
-        EVENT_ENTITY()
+        EVENT_Entity()
         {
-            sEventName = 0;
-            sNodeName = 0;
+            sEventName = nullptr;
+            sNodeName = nullptr;
             nCommandIndex = 0;
         }
-        ~EVENT_ENTITY()
+
+        ~EVENT_Entity()
         {
-            PTR_DELETE(sEventName);
-            PTR_DELETE(sNodeName);
+            STORM_DELETE(sEventName);
+            STORM_DELETE(sNodeName);
             nCommandIndex = 0;
         }
     };
-    EVENT_ENTITY *m_pEvents;
+
+    EVENT_Entity *m_pEvents;
 
     // previouse texture & draw to texturer data
     bool m_bShowPrevTexture; // exchange one interface to other
@@ -344,7 +370,7 @@ class XINTERFACE : public XINTERFACE_BASE
 
     // vertex & index data
     long vBuf, iBuf;
-    DWORD nVert, nIndx;
+    uint32_t nVert, nIndx;
 
     // blind parameters
     float m_fBlindFactor;
@@ -356,7 +382,7 @@ class XINTERFACE : public XINTERFACE_BASE
     CINODE *m_pCurToolTipNode;
 };
 
-class CONTROLS_CONTAINER : public ENTITY
+class CONTROLS_CONTAINER : public Entity
 {
     struct CONTEINER_DESCR
     {
@@ -373,29 +399,39 @@ class CONTROLS_CONTAINER : public ENTITY
 
         CONTEINER_DESCR *next;
 
-        CONTROL_DESCR *FindControl(char *cntrlName);
+        CONTROL_DESCR *FindControl(const char *cntrlName);
     } * pContainers;
 
   public:
     CONTROLS_CONTAINER();
     ~CONTROLS_CONTAINER();
-    bool Init();
-    void Execute(dword delta_time);
-    dword _cdecl ProcessMessage(MESSAGE &message);
+    bool Init() override;
+    void Execute(uint32_t delta_time);
+    uint64_t ProcessMessage(MESSAGE &message) override;
+
+    void ProcessStage(Stage stage, uint32_t delta) override
+    {
+        switch (stage)
+        {
+        case Stage::execute:
+            Execute(delta);
+            break;
+            // case Stage::realize:
+            //	Realize(delta); break;
+            /*case Stage::lost_render:
+              LostRender(delta); break;
+            case Stage::restore_render:
+              RestoreRender(delta); break;*/
+        }
+    }
 
   protected:
     bool CreateConteinerList(ATTRIBUTES *pA);
-    void AddContainer(char *container);
-    void SetContainerLimitVal(char *container, float fLimitVal);
-    void AddControlsToContainer(char *container, char *controlName, float fValLimit);
+    void AddContainer(const char *container);
+    void SetContainerLimitVal(const char *container, float fLimitVal);
+    void AddControlsToContainer(const char *container, const char *controlName, float fValLimit);
 
-    CONTEINER_DESCR *FindContainer(char *sContainer);
+    CONTEINER_DESCR *FindContainer(const char *sContainer);
 };
-
-/*#ifndef _XBOX
-API_MODULE_START("xinterface")
-    CREATE_CLASS(0,XINTERFACE)
-API_MODULE_END
-#endif*/
 
 #endif

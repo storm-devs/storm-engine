@@ -1,7 +1,6 @@
 #include "xi_lrchanger.h"
-#include <stdio.h>
 
-void SetOneTextureCoordinate(XI_ONETEX_VERTEX v[4], FXYRECT &tr)
+void SetOneTextureCoordinate(XI_ONETEX_VERTEX v[4], const FXYRECT &tr)
 {
     v[0].tu = tr.left;
     v[0].tv = tr.top;
@@ -13,22 +12,22 @@ void SetOneTextureCoordinate(XI_ONETEX_VERTEX v[4], FXYRECT &tr)
     v[3].tv = tr.bottom;
 }
 
-void SetRectanglePosition(XI_ONETEX_VERTEX v[4], FXYRECT &pr)
+void SetRectanglePosition(XI_ONETEX_VERTEX v[4], const FXYRECT &pr)
 {
-    v[0].pos.x = (float)pr.left;
-    v[0].pos.y = (float)pr.top;
-    v[1].pos.x = (float)pr.right;
-    v[1].pos.y = (float)pr.top;
-    v[2].pos.x = (float)pr.left;
-    v[2].pos.y = (float)pr.bottom;
-    v[3].pos.x = (float)pr.right;
-    v[3].pos.y = (float)pr.bottom;
+    v[0].pos.x = static_cast<float>(pr.left);
+    v[0].pos.y = static_cast<float>(pr.top);
+    v[1].pos.x = static_cast<float>(pr.right);
+    v[1].pos.y = static_cast<float>(pr.top);
+    v[2].pos.x = static_cast<float>(pr.left);
+    v[2].pos.y = static_cast<float>(pr.bottom);
+    v[3].pos.x = static_cast<float>(pr.right);
+    v[3].pos.y = static_cast<float>(pr.bottom);
 }
 
 CXI_LRCHANGER::CXI_LRCHANGER()
 {
     m_idTex = -1;
-    m_rs = NULL;
+    m_rs = nullptr;
 
     m_ShadowShift.x = m_ShadowShift.y = 0.f;
     m_PressShadowShift.x = m_PressShadowShift.y = 0.f;
@@ -45,7 +44,7 @@ CXI_LRCHANGER::~CXI_LRCHANGER()
     ReleaseAll();
 }
 
-void CXI_LRCHANGER::Draw(bool bSelected, dword Delta_Time)
+void CXI_LRCHANGER::Draw(bool bSelected, uint32_t Delta_Time)
 {
     if (m_bUse)
     {
@@ -57,7 +56,7 @@ void CXI_LRCHANGER::Draw(bool bSelected, dword Delta_Time)
         XI_ONETEX_VERTEX vShadow[4];
 
         // calculate face color
-        DWORD curCol;
+        uint32_t curCol;
         if (m_bBlindIncrement)
             m_dwCurBlindState += Delta_Time;
         else
@@ -73,11 +72,12 @@ void CXI_LRCHANGER::Draw(bool bSelected, dword Delta_Time)
             m_bBlindIncrement = false;
         }
         if (bSelected)
-            curCol = ColorInterpolate(m_dwDarkSelCol, m_dwLightSelCol, (float)m_dwCurBlindState / m_dwBlindDelay);
+            curCol = ColorInterpolate(m_dwDarkSelCol, m_dwLightSelCol,
+                                      static_cast<float>(m_dwCurBlindState) / m_dwBlindDelay);
         else
             curCol = m_dwFaceColor;
 
-        for (int i = 0; i < 4; i++)
+        for (auto i = 0; i < 4; i++)
         {
             vFace[i].color = curCol;
             vFace[i].pos.z = 1.f;
@@ -120,28 +120,28 @@ void CXI_LRCHANGER::Draw(bool bSelected, dword Delta_Time)
     }
 }
 
-bool CXI_LRCHANGER::Init(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2, VDX8RENDER *rs, XYRECT &hostRect,
-                         XYPOINT &ScreenSize)
+bool CXI_LRCHANGER::Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs,
+                         XYRECT &hostRect, XYPOINT &ScreenSize)
 {
     if (!CINODE::Init(ini1, name1, ini2, name2, rs, hostRect, ScreenSize))
         return false;
     return true;
 }
 
-void CXI_LRCHANGER::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *name2)
+void CXI_LRCHANGER::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2)
 {
     char param[255];
 
     // set buttons position
-    long nSpaceWidth = GetIniLong(ini1, name1, ini2, name2, "spaceWidth", 0);
-    m_posLRect.left = (float)m_rect.left;
-    m_posLRect.top = (float)m_rect.top;
-    m_posLRect.right = (float)m_rect.left + (m_rect.right - m_rect.left - nSpaceWidth) / 2.f;
-    m_posLRect.bottom = (float)m_rect.bottom;
-    m_posRRect.left = (float)m_rect.left + (m_rect.right - m_rect.left + nSpaceWidth) / 2.f;
-    m_posRRect.top = (float)m_rect.top;
-    m_posRRect.right = (float)m_rect.right;
-    m_posRRect.bottom = (float)m_rect.bottom;
+    const auto nSpaceWidth = GetIniLong(ini1, name1, ini2, name2, "spaceWidth", 0);
+    m_posLRect.left = static_cast<float>(m_rect.left);
+    m_posLRect.top = static_cast<float>(m_rect.top);
+    m_posLRect.right = static_cast<float>(m_rect.left) + (m_rect.right - m_rect.left - nSpaceWidth) / 2.f;
+    m_posLRect.bottom = static_cast<float>(m_rect.bottom);
+    m_posRRect.left = static_cast<float>(m_rect.left) + (m_rect.right - m_rect.left + nSpaceWidth) / 2.f;
+    m_posRRect.top = static_cast<float>(m_rect.top);
+    m_posRRect.right = static_cast<float>(m_rect.right);
+    m_posRRect.bottom = static_cast<float>(m_rect.bottom);
 
     // get face color
     m_dwFaceColor = GetIniARGB(ini1, name1, ini2, name2, "faceColor", 0xFFFFFFFF);
@@ -160,13 +160,14 @@ void CXI_LRCHANGER::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *nam
 
     // get group name and get texture for this
     m_idTex = -1;
-    m_sGroupName = null;
+    m_sGroupName = nullptr;
     if (ReadIniString(ini1, name1, ini2, name2, "group", param, sizeof(param), ""))
     {
-        m_sGroupName = NEW char[strlen(param) + 1];
-        if (m_sGroupName == null)
-            SE_THROW_MSG("allocate memory error")
-        strcpy(m_sGroupName, param);
+        const auto len = strlen(param) + 1;
+        m_sGroupName = new char[len];
+        if (m_sGroupName == nullptr)
+            throw std::exception("allocate memory error");
+        memcpy(m_sGroupName, param, len);
         m_idTex = pPictureService->GetTextureID(param);
     }
 
@@ -192,7 +193,7 @@ void CXI_LRCHANGER::LoadIni(INIFILE *ini1, char *name1, INIFILE *ini2, char *nam
 void CXI_LRCHANGER::ReleaseAll()
 {
     PICTURE_TEXTURE_RELEASE(pPictureService, m_sGroupName, m_idTex);
-    PTR_DELETE(m_sGroupName);
+    STORM_DELETE(m_sGroupName);
 }
 
 int CXI_LRCHANGER::CommandExecute(int wActCode)
@@ -204,7 +205,7 @@ int CXI_LRCHANGER::CommandExecute(int wActCode)
         case ACTION_ACTIVATE:
         case ACTION_MOUSECLICK:
             nPressedDelay = nMaxDelay;
-            api->Event("IEvnt_MouseClick", "sl", m_nodeName, m_bLeftPress ? 0 : 1);
+            core.Event("IEvnt_MouseClick", "sl", m_nodeName, m_bLeftPress ? 0 : 1);
             break;
         case ACTION_LEFTSTEP:
         case ACTION_SPEEDLEFT:
@@ -243,35 +244,35 @@ bool CXI_LRCHANGER::IsClick(int buttonID, long xPos, long yPos)
 
 void CXI_LRCHANGER::ChangePosition(XYRECT &rNewPos)
 {
-    long nSpaceWidth = (long)((m_rect.right - m_rect.left) - (m_posLRect.right - m_posLRect.left) -
-                              (m_posRRect.right - m_posRRect.left));
+    const auto nSpaceWidth = static_cast<long>((m_rect.right - m_rect.left) - (m_posLRect.right - m_posLRect.left) -
+                                               (m_posRRect.right - m_posRRect.left));
 
     m_rect = rNewPos;
 
     // set buttons position
-    m_posLRect.left = (float)m_rect.left;
-    m_posLRect.top = (float)m_rect.top;
-    m_posLRect.right = (float)m_rect.left + (m_rect.right - m_rect.left - nSpaceWidth) / 2.f;
-    m_posLRect.bottom = (float)m_rect.bottom;
-    m_posRRect.left = (float)m_rect.left + (m_rect.right - m_rect.left + nSpaceWidth) / 2.f;
-    m_posRRect.top = (float)m_rect.top;
-    m_posRRect.right = (float)m_rect.right;
-    m_posRRect.bottom = (float)m_rect.bottom;
+    m_posLRect.left = static_cast<float>(m_rect.left);
+    m_posLRect.top = static_cast<float>(m_rect.top);
+    m_posLRect.right = static_cast<float>(m_rect.left) + (m_rect.right - m_rect.left - nSpaceWidth) / 2.f;
+    m_posLRect.bottom = static_cast<float>(m_rect.bottom);
+    m_posRRect.left = static_cast<float>(m_rect.left) + (m_rect.right - m_rect.left + nSpaceWidth) / 2.f;
+    m_posRRect.top = static_cast<float>(m_rect.top);
+    m_posRRect.right = static_cast<float>(m_rect.right);
+    m_posRRect.bottom = static_cast<float>(m_rect.bottom);
 }
 
 void CXI_LRCHANGER::SaveParametersToIni()
 {
     char pcWriteParam[2048];
 
-    INIFILE *pIni = api->fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.GetBuffer());
+    auto *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
-        api->Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.GetBuffer());
+        core.Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
         return;
     }
 
     // save position
-    _snprintf(pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rect.left, m_rect.top, m_rect.right, m_rect.bottom);
+    sprintf_s(pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rect.left, m_rect.top, m_rect.right, m_rect.bottom);
     pIni->WriteString(m_nodeName, "position", pcWriteParam);
 
     delete pIni;
@@ -281,6 +282,5 @@ long CXI_LRCHANGER::GetClickState()
 {
     if (m_bLeftPress)
         return 1;
-    else
-        return 2;
+    return 2;
 }

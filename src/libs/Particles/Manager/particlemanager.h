@@ -8,15 +8,12 @@
 #ifndef PARTICLES_MANAGER_IMPLEMENTATION
 #define PARTICLES_MANAGER_IMPLEMENTATION
 
-#include "exs.h"
-#include "particles\iparticlemanager.h"
-#include "templates.h"
-#include <stdarg.h>
-#include <stdio.h>
-#include <string.h>
+#include "particles/iparticlemanager.h"
 
-#include "..\system\ParticleProcessor\bb_processor.h"
-#include "..\system\ParticleProcessor\mdl_processor.h"
+#include "../System/ParticleProcessor/bb_processor.h"
+#include "../System/ParticleProcessor/mdl_processor.h"
+#include <string>
+#include <vector>
 
 class ParticleService;
 class DataCache;
@@ -29,9 +26,9 @@ class ParticleManager : public IParticleManager
 {
     struct CacheReloadedInfo
     {
-        string Name;
+        std::string Name;
         bool AutoDeleted;
-        CMatrix matWorld;
+        Matrix matWorld;
     };
 
     bool ShowStat;
@@ -42,7 +39,7 @@ class ParticleManager : public IParticleManager
         ParticleSystem *pSystem;
     };
 
-    array<SystemDesc> Systems;
+    std::vector<SystemDesc> Systems;
 
     //Процессор для партиклов моделей
     ModelProcessor *MDL_Processor;
@@ -55,99 +52,99 @@ class ParticleManager : public IParticleManager
     DataCache *pDataCache;
     GeomCache *pGeomCache;
 
-    string ShortProjectName;
-    string TextureName;
+    std::string ShortProjectName;
+    std::string TextureName;
 
     //Сервис который родил систему
     ParticleService *pService;
 
-    VDX8RENDER *pRS;
+    VDX9RENDER *pRS;
 
     void DeleteAllSystems();
 
     float TimeFromLastStatUpdate;
-    DWORD nowTickTime;
-    DWORD nowUpdateTime;
-    DWORD ActiveSystems;
-    DWORD ActiveEmitters;
-    DWORD ActiveBillboardParticles;
-    DWORD ActiveModelParticles;
+    uint64_t nowTickTime;
+    uint64_t nowUpdateTime;
+    uint32_t ActiveSystems;
+    uint32_t ActiveEmitters;
+    uint32_t ActiveBillboardParticles;
+    uint32_t ActiveModelParticles;
 
-    array<ParticleSystem *> DeleteQuery;
+    std::vector<ParticleSystem *> DeleteQuery;
 
   protected:
     virtual ~ParticleManager();
 
     ParticleSystem *CreateParticleSystemFromDataSource(DataSource *pDataSource);
 
-    DWORD IteratorIndex;
-    array<string> EnumUsedGeom;
+    uint32_t IteratorIndex;
+    std::vector<std::string> EnumUsedGeom;
 
     bool FindInEnumUsedGeom(const char *GeomName);
 
   public:
     //Создание/удаление
     ParticleManager(ParticleService *service);
-    virtual bool Release();
+    bool Release() override;
 
     //Получить указатель на Render/FileService
-    virtual VDX8RENDER *Render();
+    VDX9RENDER *Render() override;
 
     //Открыть проект
-    virtual bool OpenProject(const char *FileName);
+    bool OpenProject(const char *FileName) override;
     //Закрыть проект
-    virtual void CloseProject();
+    void CloseProject() override;
 
     //Удалить из списка ресурсов (системная)
-    virtual void RemoveResource(IParticleSystem *pResource);
+    void RemoveResource(IParticleSystem *pResource) override;
 
     //Исполнить партиклы
-    virtual void Execute(float DeltaTime);
+    void Execute(float DeltaTime) override;
 
     //Узнать доступна система или нет
-    virtual bool IsSystemAvailable(const char *FileName);
+    bool IsSystemAvailable(const char *FileName) override;
 
     //Получить глобальную текстуру проекта
-    virtual long GetProjectTexture();
+    long GetProjectTexture() override;
     //Установить текстуру проекта
-    virtual void SetProjectTexture(const char *FileName = NULL);
+    void SetProjectTexture(const char *FileName = nullptr) override;
 
     //Получить имя проекта
-    virtual const char *GetProjectFileName();
+    const char *GetProjectFileName() override;
 
     //Создать партикловую систему из файла (файл должен быть в проекте!!!!!)
-    virtual IParticleSystem *CreateParticleSystemEx(const char *FileName, const char *File, int Line);
+    IParticleSystem *CreateParticleSystemEx(const char *FileName, const char *File, int Line) override;
 
     //Создать пустую партикловую систему, для редактора...
-    virtual IParticleSystem *CreateEmptyParticleSystemEx(const char *FileName, int Line);
+    IParticleSystem *CreateEmptyParticleSystemEx(const char *FileName, int Line) override;
 
-    BillBoardProcessor *GetBBProcessor();
-    ModelProcessor *GetMDLProcessor();
+    BillBoardProcessor *GetBBProcessor() const;
+    ModelProcessor *GetMDLProcessor() const;
 
-    virtual bool ValidateSystem(IParticleSystem *pSystem);
+    bool ValidateSystem(IParticleSystem *pSystem) override;
 
-    GEOS *GetModel(const char *FileName);
+    GEOS *GetModel(const char *FileName) const;
 
-    DWORD GetCreatedSystemCount();
-    ParticleSystem *GetCreatedSystemByIndex(DWORD Index);
+    uint32_t GetCreatedSystemCount() const;
+    ParticleSystem *GetCreatedSystemByIndex(uint32_t Index);
 
-    bool ReadyForUse();
+    bool ReadyForUse() override;
 
     void DefferedDelete(ParticleSystem *pSys);
 
-    virtual const char *GetProjectTextureName();
+    const char *GetProjectTextureName() override;
 
-    virtual void Editor_UpdateCachedData();
+    void Editor_UpdateCachedData() override;
 
-    virtual DWORD GetProjectSystemCount();
-    virtual const char *GetProjectSystemName(DWORD Index);
+    virtual uint32_t GetProjectSystemCount();
+    virtual const char *GetProjectSystemName(uint32_t Index);
 
-    virtual const char *GetFirstGeomName(const char *FileName);
-    virtual const char *GetNextGeomName();
+    const char *GetFirstGeomName(const char *FileName) override;
+    const char *GetNextGeomName() override;
 
     virtual void CreateGeomCache();
 
-    virtual void WriteSystemCache(const char *FileName);
+    void WriteSystemCache(const char *FileName) override;
     virtual void WriteSystemCache(const char *FileName, MemFile *pMemFile);
     virtual void WriteSystemCacheAs(const char *FileName, const char *NewName);
 
@@ -164,7 +161,7 @@ class ParticleManager : public IParticleManager
     virtual void DeleteBillboard(const char *SystemName, IEmitter *pEmitter, FieldList *pParticles);
     virtual void DeleteModel(const char *SystemName, IEmitter *pEmitter, FieldList *pParticles);
 
-    virtual void OpenDefaultProject();
+    void OpenDefaultProject() override;
 };
 
 #endif

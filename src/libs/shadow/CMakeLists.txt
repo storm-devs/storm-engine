@@ -1,6 +1,6 @@
 project(shadow)
 
-add_library(${PROJECT_NAME} MODULE
+add_library(${PROJECT_NAME} STATIC
 	shadow.cpp
 	shadow.h
 )

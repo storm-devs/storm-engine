@@ -1,9 +1,10 @@
 #include "AISeaGoods.h"
+#include "../../Shared/sea_ai/Script_defines.h"
 
-AISeaGoods::AISeaGoods() : aGoods(_FL_, 12), aShips(_FL_)
+AISeaGoods::AISeaGoods()
 {
-    pSea = null;
-    pGeoService = null;
+    pSea = nullptr;
+    pGeoService = nullptr;
 
     bDeleteGoodAnyway = false;
 
@@ -12,15 +13,15 @@ AISeaGoods::AISeaGoods() : aGoods(_FL_, 12), aShips(_FL_)
 
 AISeaGoods::~AISeaGoods()
 {
-    for (dword i = 0; i < aGoods.Size(); i++)
+    for (uint32_t i = 0; i < aGoods.size(); i++)
     {
         if (aGoods[i]->pGeo)
             pGeoService->DeleteGeometry(aGoods[i]->pGeo);
-        aGoods[i]->sModel.DelAll();
-        aGoods[i]->aItems.DelAll();
-        SE_DELETE(aGoods[i]);
+        aGoods[i]->sModel.clear();
+        aGoods[i]->aItems.clear();
+        STORM_DELETE(aGoods[i]);
     }
-    aGoods.DelAll();
+    aGoods.clear();
 }
 
 bool AISeaGoods::Init()
@@ -31,26 +32,24 @@ bool AISeaGoods::Init()
 
 void AISeaGoods::SetDevice()
 {
-    pGeoService = (VGEOMETRY *)api->CreateService("geometry");
+    pGeoService = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
     Assert(pGeoService);
 }
 
-void AISeaGoods::Execute(dword dwDeltaTime)
+void AISeaGoods::Execute(uint32_t dwDeltaTime)
 {
-    ENTITY_ID EID;
+    const auto fDeltaTime = static_cast<float>(dwDeltaTime) * 0.001f;
 
-    float fDeltaTime = float(dwDeltaTime) * 0.001f;
-
-    if (!pSea && api->FindClass(&EID, "sea", 0))
-        pSea = (SEA_BASE *)api->GetEntityPointer(&EID);
+    if (!pSea)
+        pSea = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(EntityManager::GetEntityId("sea")));
 
     if (!pSea)
         return;
 
-    for (dword i = 0; i < aGoods.Size(); i++)
-        for (dword j = 0; j < aGoods[i]->aItems.Size(); j++)
+    for (uint32_t i = 0; i < aGoods.size(); i++)
+        for (uint32_t j = 0; j < aGoods[i]->aItems.size(); j++)
         {
-            item_t *pI = &aGoods[i]->aItems[j];
+            auto *pI = &aGoods[i]->aItems[j];
             pI->fTime -= fDeltaTime;
 
             pI->vPos.y = pSea->WaveXZ(pI->vPos.x, pI->vPos.z, &pI->vNormal);
@@ -60,7 +59,9 @@ void AISeaGoods::Execute(dword dwDeltaTime)
                 pI->vPos.y -= fabsf(pI->fTime) * 0.05f;
                 if (pI->fTime < -20.0f)
                 {
-                    aGoods[i]->aItems.ExtractNoShift(j);
+                    // aGoods[i]->aItems.ExtractNoShift(j);
+                    aGoods[i]->aItems[j] = aGoods[i]->aItems.back();
+                    aGoods[i]->aItems.pop_back();
                     j--;
                     continue;
                 }
@@ -68,29 +69,31 @@ void AISeaGoods::Execute(dword dwDeltaTime)
 
             if (dtCheckShips.Update(dwDeltaTime))
             {
-                aShips.Empty();
+                aShips.clear();
 
                 // enumerate ships
-                if (api->FindClass(&EID, "ship", 0))
-                    do
-                    {
-                        aShips.Add((SHIP_BASE *)api->GetEntityPointer(&EID));
-                    } while (api->FindClassNext(&EID));
+                const auto &entities = EntityManager::GetEntityIdVector("ship");
+                for (auto ent : entities)
+                {
+                    aShips.push_back(static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(ent)));
+                }
 
                 // check ships
-                for (dword k = 0; k < aShips.Size(); k++)
+                for (uint32_t k = 0; k < aShips.size(); k++)
                 {
-                    SHIP_BASE *pS = aShips[k];
-                    ATTRIBUTES *pACharacter = pS->GetACharacter();
-                    int iCharacterIndex = GetIndex(pS->GetACharacter());
-                    float fDistance = sqrtf(~(pS->State.vPos - pI->vPos));
+                    auto pS = aShips[k];
+                    auto *pACharacter = pS->GetACharacter();
+                    const int iCharacterIndex = GetIndex(pS->GetACharacter());
+                    const auto fDistance = sqrtf(~(pS->State.vPos - pI->vPos));
                     if (fDistance <= pS->State.vBoxSize.z * fDistanceMultiply)
                     {
-                        VDATA *pVData = api->Event(SHIP_EAT_SWIM_GOOD, "llsl", iCharacterIndex, pI->iCharIndex,
-                                                   pI->sGoodName, pI->iQuantity);
+                        auto *pVData = core.Event(SHIP_EAT_SWIM_GOOD, "llsl", iCharacterIndex, pI->iCharIndex,
+                                                  pI->sGoodName, pI->iQuantity);
                         if (pVData->GetLong() || bDeleteGoodAnyway)
                         {
-                            aGoods[i]->aItems.ExtractNoShift(j);
+                            // aGoods[i]->aItems.ExtractNoShift(j);
+                            aGoods[i]->aItems[j] = aGoods[i]->aItems.back();
+                            aGoods[i]->aItems.pop_back();
                             j--;
                             break;
                         }
@@ -100,49 +103,47 @@ void AISeaGoods::Execute(dword dwDeltaTime)
         }
 }
 
-void AISeaGoods::Realize(dword dwDeltaTime)
+void AISeaGoods::Realize(uint32_t dwDeltaTime)
 {
     if (!pSea)
         return;
 
     AIHelper::pRS->SetRenderState(D3DRS_LIGHTING, true);
 
-    for (dword i = 0; i < aGoods.Size(); i++)
+    for (uint32_t i = 0; i < aGoods.size(); i++)
         if (aGoods[i]->pGeo)
-            for (dword j = 0; j < aGoods[i]->aItems.Size(); j++)
+            for (uint32_t j = 0; j < aGoods[i]->aItems.size(); j++)
             {
-                item_t *pI = &aGoods[i]->aItems[j];
+                auto *const pI = &aGoods[i]->aItems[j];
 
                 // set world matrix for item
                 CMatrix m;
                 m.BuildPosition(pI->vPos.x, pI->vPos.y, pI->vPos.z);
 
                 AIHelper::pRS->SetTransform(D3DTS_WORLD, m);
-                aGoods[i]->pGeo->Draw((GEOS::PLANE *)AIHelper::pRS->GetPlanes(), 0, null);
+                aGoods[i]->pGeo->Draw((GEOS::PLANE *)AIHelper::pRS->GetPlanes(), 0, nullptr);
             }
 
     AIHelper::pRS->SetRenderState(D3DRS_LIGHTING, false);
 }
 
-dword AISeaGoods::AttributeChanged(ATTRIBUTES *pAttribute)
+uint32_t AISeaGoods::AttributeChanged(ATTRIBUTES *pAttribute)
 {
-    ATTRIBUTES *pParent = pAttribute->GetParent();
+    auto *const pParent = pAttribute->GetParent();
 
     if (*pAttribute == "Add")
     {
-        for (dword i = 0; i < aGoods.Size(); i++)
+        for (uint32_t i = 0; i < aGoods.size(); i++)
             if (aGoods[i]->sModel == sTmpModel)
             {
-                aGoods[i]->aItems.Add(TmpItem);
+                aGoods[i]->aItems.push_back(TmpItem);
                 return 0;
             }
-        string sName;
-        goods_t *pG = NEW goods_t;
-        aGoods[aGoods.Add()] = pG;
+        auto *pG = new goods_t;
+        aGoods.push_back(pG);
         pG->sModel = sTmpModel;
-        pG->aItems.Add(TmpItem);
-        sName.Format("%s\\%s", (const char *)sModelPath, (const char *)sTmpModel);
-        pG->pGeo = pGeoService->CreateGeometry(sName, 0, 0);
+        pG->aItems.push_back(TmpItem);
+        pG->pGeo = pGeoService->CreateGeometry((sModelPath + "\\" + sTmpModel).c_str(), nullptr, 0);
         return 0;
     }
 
@@ -168,7 +169,7 @@ dword AISeaGoods::AttributeChanged(ATTRIBUTES *pAttribute)
     }
     if (*pAttribute == "Good")
     {
-        strcpy(TmpItem.sGoodName, pAttribute->GetThisAttr());
+        strcpy_s(TmpItem.sGoodName, pAttribute->GetThisAttr());
         return 0;
     }
 

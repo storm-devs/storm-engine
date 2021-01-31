@@ -19,24 +19,26 @@ class WdmCloud;
 
 class WdmClouds : public WdmRenderObject
 {
+    static IDirect3DVertexDeclaration9 *vertexDecl_;
+    void CreateVertexDeclaration(VDX9RENDER *rs);
+
     struct Cloud
     {
         struct Cld
         {
-            CVECTOR pos; //Позиция
-            float angle; //Угол поворота
-            float size;  //Размер
-            float alpha; //Прозрачность
-            dword color; //Цвет
-            word pict;   //Индекс картинки
-            word index;  //Индекс подтягиваемого партикла
-            float aspd;  //Скорость поворота
-            CVECTOR dir; //Текущий вектор корректировки движения
-            CVECTOR rdr; //Добавочный вектор рандомного тяготения
+            CVECTOR pos;    //Позиция
+            float angle;    //Угол поворота
+            float size;     //Размер
+            float alpha;    //Прозрачность
+            uint32_t color; //Цвет
+            uint16_t pict;  //Индекс картинки
+            uint16_t index; //Индекс подтягиваемого партикла
+            float aspd;     //Скорость поворота
+            CVECTOR dir;    //Текущий вектор корректировки движения
+            CVECTOR rdr;    //Добавочный вектор рандомного тяготения
         };
 
         Cloud();
-        ~Cloud();
 
         //Если облако переродилось то возвращает true
         bool Reset(bool isFirstTime = false);
@@ -45,7 +47,7 @@ class WdmClouds : public WdmRenderObject
         //Заполнить массив прямоугольников
         long FillRects(RS_RECT *rects, long cnt, float galpha);
         //Получить центр сферы и радиус
-        float GetBound(CVECTOR &_center);
+        float GetBound(CVECTOR &_center) const;
         //Запустить механизм удаления облака если есть пересечение
         void Kill(const Cloud &cld);
 
@@ -66,9 +68,9 @@ class WdmClouds : public WdmRenderObject
     virtual ~WdmClouds();
 
     //Расчёты
-    virtual void Update(float dltTime);
+    void Update(float dltTime) override;
     //Рисование
-    virtual void LRender(VDX8RENDER *rs);
+    void LRender(VDX9RENDER *rs) override;
 
     long texture, light;
     Cloud clouds[16];

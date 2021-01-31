@@ -41,15 +41,15 @@ char WdmStorm::rotSpdName[16];
 WdmStorm::WdmStorm()
 {
     isTornado = false;
-    strcpy(cloudPosName, "cloudPos  ");
-    strcpy(rotSpdName, "rotSpd ");
-    saveAttribute = null;
+    strcpy_s(cloudPosName, "cloudPos  ");
+    strcpy_s(rotSpdName, "rotSpd ");
+    saveAttribute = nullptr;
     //Позиция шторма, направление перемещения время жизни
     isActiveTime = 2.0f;
     //Угл относительно корабля
-    float ang = rand() * 2.0f * 3.141592653589793f / (RAND_MAX + 1);
+    auto ang = rand() * 2.0f * 3.141592653589793f / (RAND_MAX + 1);
     //Радиус до корабля
-    float r =
+    auto r =
         wdmObjects->stormBrnDistMin + rand() * (wdmObjects->stormBrnDistMax - wdmObjects->stormBrnDistMin) / RAND_MAX;
     //Позиция
     pos = CVECTOR(((WdmRenderModel *)wdmObjects->playerShip)->mtx.Pos().x + r * sinf(ang), 30.0f,
@@ -86,15 +86,15 @@ WdmStorm::WdmStorm()
     // num = 3 + (rand() & 3);
     num = 6;
     //Битовое поле расположения облаков
-    byte w[8];
+    uint8_t w[8];
     for (long i = 0; i < 8; i++)
         w[i] = 0;
     //Раскидываем облака
     long x, z;
-    bool globSign = (rand() & 1) != 0;
+    const auto globSign = (rand() & 1) != 0;
     for (long i = 0; i < num; i++)
     {
-        cloud[i] = (WdmCloud *)wdmObjects->wm->AddObject(NEW WdmCloud(), 101);
+        cloud[i] = static_cast<WdmCloud *>(wdmObjects->wm->AddObject(new WdmCloud(), 101));
         if (cloud[i])
         {
             wdmObjects->wm->AddLObject(cloud[i], 900);
@@ -145,9 +145,9 @@ bool WdmStorm::CheckIntersection(float x, float z, float r)
     for (long i = 0; i < num; i++)
         if (cloud[i])
         {
-            float cx = pos.x + cloudPos[i].x;
-            float cz = pos.z + cloudPos[i].z;
-            float d = (cx - x) * (cx - x) + (cz - z) * (cz - z);
+            const auto cx = pos.x + cloudPos[i].x;
+            const auto cz = pos.z + cloudPos[i].z;
+            const auto d = (cx - x) * (cx - x) + (cz - z) * (cz - z);
             if (d < r)
                 return true;
         }
@@ -242,7 +242,7 @@ void WdmStorm::Update(float dltTime)
         if (cloud[i])
         {
             //Повернём облако вокруг центра
-            float rotAng = rotSpd[i] * dltTime;
+            const float rotAng = rotSpd[i] * dltTime;
             CMatrix m(0.0f, rotAng, 0.0f);
             cloudPos[i] = m * CVECTOR(cloudPos[i]);
             //Установим альфу
@@ -253,7 +253,7 @@ void WdmStorm::Update(float dltTime)
     UpdateSaveData();
 }
 
-void WdmStorm::LRender(VDX8RENDER *rs)
+void WdmStorm::LRender(VDX9RENDER *rs)
 {
     if (wdmObjects->isDebug)
     {
@@ -269,8 +269,9 @@ void WdmStorm::LRender(VDX8RENDER *rs)
                 wdmObjects->DrawCircle(mtr, WDM_STORM_CLOUDRAD, 0x4f000000);
             }
     }
-    long i = 0, count = 0;
-    for (i = 0, count = 0; i < num; i++)
+
+    long count = 0;
+    for (long i = 0; i < num; i++)
     {
         if (cloud[i])
         {
@@ -375,7 +376,7 @@ void WdmStorm::UpdateSaveData()
     saveAttribute->SetAttribute("year", wdmObjects->attrYear);
 }
 
-const char *WdmStorm::GetID()
+const char *WdmStorm::GetId() const
 {
     if (saveAttribute)
     {

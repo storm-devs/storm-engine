@@ -9,37 +9,31 @@
 //============================================================================================
 
 #include "WdmObjects.h"
+#include "defines.h"
 #include "geometry.h"
-#include "vmodule_api.h"
 
 //============================================================================================
 
-WdmObjects *wdmObjects = null;
+WdmObjects *wdmObjects = nullptr;
 
 //============================================================================================
 //Конструирование, деструктурирование
 //============================================================================================
 
-WdmObjects::WdmObjects() : models(_FL_)
+WdmObjects::WdmObjects()
 {
     Assert(!wdmObjects);
     srand(GetTickCount());
     wdmObjects = this;
-    wm = null;
-    rs = null;
-    gs = null;
-    camera = null;
-    islands = null;
-    playerShip = null;
-    ships = null;
-    numShips = 0;
-    maxShips = 0;
-    storms = null;
-    numStorms = 0;
-    maxStorms = 0;
+    wm = nullptr;
+    rs = nullptr;
+    gs = nullptr;
+    camera = nullptr;
+    islands = nullptr;
+    playerShip = nullptr;
     isDebug = false;
     Clear();
-    enemyShip = null;
+    enemyShip = nullptr;
     enableSkipEnemy = false;
     playarInStorm = false;
     worldSizeX = 2000.0f;
@@ -55,12 +49,8 @@ WdmObjects::WdmObjects() : models(_FL_)
 
 WdmObjects::~WdmObjects()
 {
-    if (ships)
-        delete ships;
-    if (storms)
-        delete storms;
-    wdmObjects = null;
-    for (long i = 0; i < models; i++)
+    wdmObjects = nullptr;
+    for (long i = 0; i < models.size(); i++)
     {
         delete models[i].geo;
     }
@@ -77,20 +67,10 @@ void WdmObjects::SetWorldSize(float x, float z)
 
 void WdmObjects::Clear()
 {
-    if (ships)
-        delete ships;
-    if (storms)
-        delete storms;
-    wm = null;
-    rs = null;
-    gs = null;
-    islands = null;
-    ships = null;
-    numShips = 0;
-    maxShips = 0;
-    storms = null;
-    numStorms = 0;
-    maxStorms = 0;
+    wm = nullptr;
+    rs = nullptr;
+    gs = nullptr;
+    islands = nullptr;
     isDebug = false;
     isPause = false;
     shipSpeedOppositeWind = 0.8f;
@@ -116,62 +96,55 @@ void WdmObjects::Clear()
 void WdmObjects::AddShip(WdmShip *ship)
 {
     Assert(ship);
-    if (numShips >= maxShips)
-    {
-        maxShips += 16;
-        ships = (WdmShip **)RESIZE(ships, maxShips * 4);
-    }
-    ships[numShips++] = ship;
+    ships.push_back(ship);
 }
 
 void WdmObjects::DelShip(WdmShip *ship)
 {
     Assert(ship);
-    for (long i = 0; i < numShips; i++)
-        if (ships[i] == ship)
+    for (auto &it : ships)
+    {
+        if (it == ship)
         {
-            ships[i] = ships[--numShips];
-            return;
+            it = ships.back();
+            ships.pop_back();
+            break;
         }
-    _asm int 3;
+    }
 }
 
 void WdmObjects::AddStorm(WdmStorm *storm)
 {
     Assert(storm);
-    if (numStorms >= maxStorms)
-    {
-        maxStorms += 16;
-        storms = (WdmStorm **)RESIZE(storms, maxStorms * 4);
-    }
-    storms[numStorms++] = storm;
+    storms.push_back(storm);
 }
 
 void WdmObjects::DelStorm(WdmStorm *storm)
 {
-    Assert(storm);
-    for (long i = 0; i < numStorms; i++)
-        if (storms[i] == storm)
+    for (auto &it : storms)
+    {
+        if (it == storm)
         {
-            storms[i] = storms[--numStorms];
-            return;
+            it = storms.back();
+            storms.pop_back();
+            break;
         }
-    _asm int 3;
+    }
 }
 
 //Создать геометрию
 GEOS *WdmObjects::CreateGeometry(const char *path)
 {
     if (!path || !path[0] || !gs)
-        return null;
+        return nullptr;
     //Ищим среди добавленных
-    dword hash = CalcHash(path);
+    const uint32_t hash = TOREMOVE::HashNoCase(path);
     long i = hash & (sizeof(entryModels) / sizeof(entryModels[0]) - 1);
     for (i = entryModels[i]; i >= 0; i = models[i].next)
     {
         if (models[i].hash == hash)
         {
-            if (stricmp(models[i].path, path) == 0)
+            if (_stricmp(models[i].path.c_str(), path) == 0)
             {
                 return models[i].geo;
             }
@@ -181,14 +154,15 @@ GEOS *WdmObjects::CreateGeometry(const char *path)
     modelPath = "WorldMap\\";
     modelPath += path;
     gs->SetTexturePath("WorldMap\\Geometry\\");
-    GEOS *geo = gs->CreateGeometry(modelPath, "", 0);
+    auto *const geo = gs->CreateGeometry(modelPath.c_str(), "", 0);
     gs->SetTexturePath("");
     //Добавляем в таблицу
-    Model &m = models[models.Add()];
-    m.path = path;
-    m.hash = hash;
-    m.next = -1;
-    m.geo = geo;
+    // Model & m = models[models.Add()];
+    // m.path = path;
+    // m.hash = hash;
+    // m.next = -1;
+    // m.geo = geo;
+    models.push_back(Model{geo, path, hash, -1});
     long index = hash & (sizeof(entryModels) / sizeof(entryModels[0]) - 1);
     if (entryModels[index] < 0)
     {
@@ -211,14 +185,14 @@ GEOS *WdmObjects::CreateGeometry(const char *path)
 
 WdmObjects::Vertex WdmObjects::vertex[1024];
 
-void WdmObjects::DrawCircle(const CVECTOR &pos, float radius, dword color)
+void WdmObjects::DrawCircle(const CVECTOR &pos, float radius, uint32_t color) const
 {
     static CMatrix mtx;
     mtx.SetPosition(pos.x, pos.y, pos.z);
     DrawCircle(mtx, radius, color);
 }
 
-void WdmObjects::DrawCircle(CMatrix &mtx, float radius, dword color)
+void WdmObjects::DrawCircle(CMatrix &mtx, float radius, uint32_t color) const
 {
     for (long i = 0; i < 64; i++)
     {
@@ -233,24 +207,24 @@ void WdmObjects::DrawCircle(CMatrix &mtx, float radius, dword color)
     rs->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, D3DFVF_XYZ | D3DFVF_DIFFUSE, 62, vertex, sizeof(vertex[0]), "WdmDebugDraw");
 }
 
-void WdmObjects::DrawVector(const CVECTOR &start, const CVECTOR &end, dword color)
+void WdmObjects::DrawVector(const CVECTOR &start, const CVECTOR &end, uint32_t color) const
 {
-    CVECTOR dir = end - start;
-    float len = ~dir;
+    auto dir = end - start;
+    auto len = ~dir;
     if (len == 0.0f)
         return;
     len = sqrtf(len);
     dir *= 1.0f / len;
-    float p = 0.9f * len;
-    float r = 0.03f * len;
+    const auto p = 0.9f * len;
+    const auto r = 0.03f * len;
 
-    long i = 0, imax = 0, t = 0;
-    for (i = 0, imax = 8, t = 0; i < imax; i++)
+    long t = 0;
+    for (long i = 0, imax = 8; i < imax; i++)
     {
-        float y1 = r * sinf(2.0f * WdmObjects_myPI * i / float(imax));
-        float x1 = r * cosf(2.0f * WdmObjects_myPI * i / float(imax));
-        float y2 = r * sinf(2.0f * WdmObjects_myPI * (i + 1) / float(imax));
-        float x2 = r * cosf(2.0f * WdmObjects_myPI * (i + 1) / float(imax));
+        const auto y1 = r * sinf(2.0f * WdmObjects_myPI * i / static_cast<float>(imax));
+        const auto x1 = r * cosf(2.0f * WdmObjects_myPI * i / static_cast<float>(imax));
+        const auto y2 = r * sinf(2.0f * WdmObjects_myPI * (i + 1) / static_cast<float>(imax));
+        const auto x2 = r * cosf(2.0f * WdmObjects_myPI * (i + 1) / static_cast<float>(imax));
         //Добавляем треугольники 1 линии
         // 0,0,0
         vertex[t * 3 + 0].v.x = 0.0f;
@@ -318,7 +292,7 @@ void WdmObjects::DrawVector(const CVECTOR &start, const CVECTOR &end, dword colo
     Assert(t * 3 * 6 < sizeof(vertex) / sizeof(Vertex));
     rs->TextureSet(0, -1);
     rs->TextureSet(1, -1);
-    CVECTOR yBs = dir ^ CVECTOR(0.0f, 1.0f, 0.0f);
+    auto yBs = dir ^ CVECTOR(0.0f, 1.0f, 0.0f);
     if (~yBs == 0.0f)
     {
         yBs = dir ^ CVECTOR(1.0f, 0.0f, 0.0f);
@@ -336,18 +310,18 @@ void WdmObjects::DrawVector(const CVECTOR &start, const CVECTOR &end, dword colo
     rs->DrawPrimitiveUP(D3DPT_TRIANGLELIST, D3DFVF_XYZ | D3DFVF_DIFFUSE, t, vertex, sizeof(vertex[0]), "WdmDebugDraw");
 }
 
-void WdmObjects::DrawLine(const CVECTOR &start, const CVECTOR &end, dword color)
+void WdmObjects::DrawLine(const CVECTOR &start, const CVECTOR &end, uint32_t color) const
 {
     vertex[0].v = start;
     vertex[0].c = color;
     vertex[1].v = end;
     vertex[1].c = color;
-    CMatrix mtx;
+    const CMatrix mtx;
     rs->SetTransform(D3DTS_WORLD, mtx);
     rs->DrawPrimitiveUP(D3DPT_LINELIST, D3DFVF_XYZ | D3DFVF_DIFFUSE, 1, vertex, sizeof(vertex[0]), "WdmDebugDraw");
 }
 
-void WdmObjects::DrawBox2D(CMatrix &mtx, float l, float w, dword color)
+void WdmObjects::DrawBox2D(CMatrix &mtx, float l, float w, uint32_t color) const
 {
     vertex[0].v = CVECTOR(-w, 0.2f, l);
     vertex[0].c = color;
@@ -370,13 +344,13 @@ void WdmObjects::DrawBox2D(CMatrix &mtx, float l, float w, dword color)
 }
 
 //Получить размеры vp
-void WdmObjects::GetVPSize(float &w, float &h)
+void WdmObjects::GetVPSize(float &w, float &h) const
 {
     //Получим текущие размеры vp
     D3DVIEWPORT9 vp;
     rs->GetViewport(&vp);
-    w = float(vp.Width);
-    h = float(vp.Height);
+    w = static_cast<float>(vp.Width);
+    h = static_cast<float>(vp.Height);
 }
 
 //Получить направление и силу ветра
@@ -384,7 +358,7 @@ float WdmObjects::GetWind(float x, float z, CVECTOR &dir)
 {
     windField.GetWind(x, z, dir.x, dir.z);
     dir.y = 0.0f;
-    float len = sqrtf(dir.x * dir.x + dir.z * dir.z);
+    auto len = sqrtf(dir.x * dir.x + dir.z * dir.z);
     if (len > 1e-20f)
     {
         dir.x /= len;
@@ -405,40 +379,40 @@ float WdmObjects::GetWind(float x, float z, CVECTOR &dir)
 //Обновить состояние ветра
 void WdmObjects::UpdateWind(float dltTime)
 {
-    dltTime = dltTime / 2.0;
+    dltTime = dltTime / 2.0f;
     windField.Step(dltTime);
 
     /*
     const long size = 64;
     for(long z = 0; z < size; z++)
     {
-        for(long x = 0; x < size; x++)
-        {
-            float px = worldSizeX*(x/(float)size - 0.5f);
-            float pz = worldSizeZ*(z/(float)size - 0.5f);
-            float wx, wz;
-            windField.GetWind(px, pz, wx, wz);
-            DrawLine(CVECTOR(px, 1.0f, pz), CVECTOR(px, 1.0f, pz) + CVECTOR(wx, 0.0f, wz)*30.0f, 0xff00ff00);
-        }
+      for(long x = 0; x < size; x++)
+      {
+        float px = worldSizeX*(x/(float)size - 0.5f);
+        float pz = worldSizeZ*(z/(float)size - 0.5f);
+        float wx, wz;
+        windField.GetWind(px, pz, wx, wz);
+        DrawLine(CVECTOR(px, 1.0f, pz), CVECTOR(px, 1.0f, pz) + CVECTOR(wx, 0.0f, wz)*30.0f, 0xff00ff00);
+      }
     }
     */
 }
 
 //Получить строку сохранение
-const char *WdmObjects::GetWindSaveString(string &windData)
+const char *WdmObjects::GetWindSaveString(std::string &windData)
 {
     windData = "v02_";
-    long size = sizeof(windField);
-    AddDataToString(windData, byte(size >> 0));
-    AddDataToString(windData, byte(size >> 8));
-    AddDataToString(windData, byte(size >> 16));
-    AddDataToString(windData, byte(size >> 24));
-    const byte *buf = (const byte *)&windField;
+    const long size = sizeof(windField);
+    AddDataToString(windData, static_cast<uint8_t>(size >> 0));
+    AddDataToString(windData, static_cast<uint8_t>(size >> 8));
+    AddDataToString(windData, static_cast<uint8_t>(size >> 16));
+    AddDataToString(windData, static_cast<uint8_t>(size >> 24));
+    const auto *buf = (const uint8_t *)&windField;
     for (long i = 0; i < size; i++)
     {
         AddDataToString(windData, buf[i]);
     }
-    return windData;
+    return windData.c_str();
 }
 
 //Установить строку сохранение
@@ -455,32 +429,32 @@ void WdmObjects::SetWindSaveString(const char *str)
         return;
     }
     str += 4;
-    long size = sizeof(windField);
+    const long size = sizeof(windField);
     long testSize = 0;
-    testSize |= (dword)GetDataFromString(str) << 0;
-    testSize |= (dword)GetDataFromString(str) << 8;
-    testSize |= (dword)GetDataFromString(str) << 16;
-    testSize |= (dword)GetDataFromString(str) << 24;
+    testSize |= static_cast<uint32_t>(GetDataFromString(str)) << 0;
+    testSize |= static_cast<uint32_t>(GetDataFromString(str)) << 8;
+    testSize |= static_cast<uint32_t>(GetDataFromString(str)) << 16;
+    testSize |= static_cast<uint32_t>(GetDataFromString(str)) << 24;
     if (size != testSize)
     {
         windField.Reinit();
         return;
     }
-    byte *buf = (byte *)&windField;
+    auto *buf = (uint8_t *)&windField;
     for (long i = 0; i < size; i++)
     {
-        long data = GetDataFromString(str);
+        const auto data = GetDataFromString(str);
         if (data < 0)
         {
             windField.Reinit();
             return;
         }
-        buf[i] = (byte)data;
+        buf[i] = static_cast<uint8_t>(data);
     }
 }
 
 //Добавить float в cтроку
-void WdmObjects::AddDataToString(string &str, byte d)
+void WdmObjects::AddDataToString(std::string &str, uint8_t d)
 {
     char hex[] = "0123456789ABCDEF";
     str += hex[(d >> 4) & 0xf];
@@ -490,12 +464,12 @@ void WdmObjects::AddDataToString(string &str, byte d)
 //Получить float из строки
 long WdmObjects::GetDataFromString(const char *&cur)
 {
-    dword tmp = 0;
+    uint32_t tmp = 0;
     for (long cnt = 0; cnt < 2; cnt++)
     {
         if (!*cur)
             return -1;
-        dword v;
+        uint32_t v;
         switch (*cur++)
         {
         case '0':

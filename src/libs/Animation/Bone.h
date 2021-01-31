@@ -14,16 +14,10 @@
 //============================================================================================
 
 #include "Matrix.h"
-#include "d_types.h"
-#include "exs.h"
-#include "memop.h"
+#include "defines.h"
 
 #include <d3dx9.h>
 //============================================================================================
-
-#ifndef PI
-#define PI 3.141592653589793238f
-#endif
 
 #define ANI_COMPRESS_ENABLE
 

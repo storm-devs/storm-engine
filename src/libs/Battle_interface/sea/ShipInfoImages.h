@@ -1,7 +1,6 @@
 #ifndef _SHIPINFOIMAGES_H_
 #define _SHIPINFOIMAGES_H_
 
-#include "..\utils.h"
 #include "ships_list.h"
 
 struct SII_VERTEX
@@ -13,7 +12,7 @@ struct SII_VERTEX
 class ShipInfoImages
 {
   public:
-    ShipInfoImages(VDX8RENDER *rs, ATTRIBUTES *pAttr);
+    ShipInfoImages(VDX9RENDER *rs, ATTRIBUTES *pAttr);
     ~ShipInfoImages();
 
     void Draw();
@@ -28,19 +27,19 @@ class ShipInfoImages
     void CheckAndRecreateBuffers(long nShipQ);
     void UpdateShipList();
     void UpdateShipData(long nShipNum, SHIP_DESCRIBE_LIST::SHIP_DESCR *pSD);
-    bool IsEnableShowShipInfo(SHIP_DESCRIBE_LIST::SHIP_DESCR *pSD);
+    bool IsEnableShowShipInfo(SHIP_DESCRIBE_LIST::SHIP_DESCR *pSD) const;
 
-    const FRECT &GetUVForRelation(long nRelation);
+    const FRECT &GetUVForRelation(long nRelation) const;
     float GetProgressHull(SHIP_DESCRIBE_LIST::SHIP_DESCR *pSD);
     float GetProgressSail(SHIP_DESCRIBE_LIST::SHIP_DESCR *pSD);
     float GetProgressCrew(SHIP_DESCRIBE_LIST::SHIP_DESCR *pSD);
 
     void CalculateDirectingVectors(const CVECTOR &pos);
     void WriteSquareVertex(SII_VERTEX *pV, const CVECTOR &center, const CVECTOR &offset, const FPOINT &size,
-                           const FRECT &uv, float fProgress);
+                           const FRECT &uv, float fProgress) const;
 
   protected:
-    VDX8RENDER *pRS;
+    VDX9RENDER *pRS;
     bool m_bVisible;
 
     long m_idRelationTexture;

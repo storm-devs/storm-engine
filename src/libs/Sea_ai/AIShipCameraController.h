@@ -2,23 +2,24 @@
 #define AISHIPCAMERACONTROLLER_HPP
 
 class AIShip;
+
 class AIShipCameraController
 {
   private:
     ATTRIBUTES *pTargetAPointer;
-    dword dwTarget;
+    uint32_t dwTarget;
     float fDelta;
     long iCrosshairTex;
     bool bCameraOutside;
 
-    dword Colors[4];
+    uint32_t Colors[4];
 
-    dword dwSubTexturesX, dwSubTexturesY;
+    uint32_t dwSubTexturesX, dwSubTexturesY;
 
     AIShip *pOurAIShip;
     ATTRIBUTES *pACrosshair;
 
-    bool isCameraOutside()
+    bool isCameraOutside() const
     {
         return bCameraOutside;
     };
@@ -37,12 +38,12 @@ class AIShipCameraController
     {
         pOurAIShip = pShip;
     }
-    AIShip *GetAIShip()
+    AIShip *GetAIShip() const
     {
         return pOurAIShip;
     }
 
-    void Save(CSaveLoad *pSL);
+    void Save(CSaveLoad *pSL) const;
     void Load(CSaveLoad *pSL);
 };
 
