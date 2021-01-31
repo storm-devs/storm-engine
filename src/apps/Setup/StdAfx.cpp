@@ -4,7 +4,7 @@
 
 #include "stdafx.h"
 
-char *GetTokenWhile(char *src, char *dst, char *skip)
+char *GetTokenWhile(char *src, char *dst, const char *skip)
 {
     if (!src || !dst || !skip)
         return 0;
