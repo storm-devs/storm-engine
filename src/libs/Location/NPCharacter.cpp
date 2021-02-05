@@ -733,7 +733,7 @@ void NPCharacter::UpdateFightCharacter(float dltTime)
                             const float _ay = ay;
                             ay = ang;
                             float kdst;
-                            Character *target = FindGunTarget(kdst);
+                            Character *target = FindGunTarget(kdst, false, true);
                             // Character * target = FindGunTarget(kdst, true);
                             ay = _ay;
                             // if((target == c) || (target && bTryAnyTarget))
@@ -899,6 +899,8 @@ void NPCharacter::DoFightActionAnalysisNone(float dltTime, NPCharacter *enemy)
         //		if(!chr->isFight) continue;
         //Группа воюющего
         const long grp = chrGroup->FindGroupIndex(chr->group);
+        if (grp < 0 || grpIndex < 0)
+            return;
         //Отношение его группы к нашей
         if (chrGroup->FindRelation(grpIndex, grp).curState != CharactersGroups::rs_enemy)
             continue;

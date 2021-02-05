@@ -172,6 +172,9 @@ class CharactersGroups : public Entity
     //Исключить персонажа из всех групп
     void RemoveCharacterFromAllGroups(entid_t chr);
 
+    // Удалить все пустые группы
+    void DeleteEmptyGroups();
+
   public:
     //Получить группу из сообщения
     Group *GetGroup(MESSAGE &message, bool isRegistry = true);

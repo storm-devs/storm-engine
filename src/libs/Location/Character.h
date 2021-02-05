@@ -428,7 +428,7 @@ class Character : public Entity
 
   protected:
     //Найти персонажа в которого попали из пистолета kDist = 1..0
-    Character *FindGunTarget(float &kDist, bool bOnlyEnemyTest = false);
+    Character *FindGunTarget(float &kDist, bool bOnlyEnemyTest = false, bool bAbortIfFriend = false);
     //Найти персонажей "eeffffll"
     void FindNearCharacters(MESSAGE &message);
     //Проверить видимость

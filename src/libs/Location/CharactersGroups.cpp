@@ -38,10 +38,14 @@ CharactersGroups::CharactersGroups()
 
 CharactersGroups::~CharactersGroups()
 {
-    for (long i = 0; i < numGroups; i++)
+    for (long i = 0; i < maxGroups; i++)
     {
-        delete groups[i]->relations;
-        delete groups[i];
+        if (groups[i])
+        {
+            if (groups[i]->relations)
+                delete groups[i]->relations;
+            delete groups[i];
+        }
     }
 }
 
@@ -64,6 +68,7 @@ CharactersGroups::String::String(const char *str)
 
 CharactersGroups::String::~String()
 {
+    if (name)
     delete name;
 }
 
@@ -80,6 +85,7 @@ void CharactersGroups::String::operator=(const char *str)
         len = strlen(str);
         if (len + 1 > max)
         {
+            if (name)
             delete name;
             max = (len + 16) & ~15;
             name = new char[max];
@@ -510,6 +516,16 @@ uint64_t CharactersGroups::ProcessMessage(MESSAGE &message)
         RestoreStates();
         return 1;
     }
+    if (_stricmp(cmd, "DeleteEmptyGroups") == 0)
+    {
+        DeleteEmptyGroups();
+        return 1;
+    }
+    if (_stricmp(cmd, "DumpRelations") == 0)
+    {
+        DumpRelations();
+        return 1;
+    }
     return 0;
 }
 
@@ -742,6 +758,10 @@ long CharactersGroups::RegistryGroup(const char *groupName)
     {
         maxGroups += 16;
         groups.resize(maxGroups);
+        for (int i = numGroups; i < maxGroups; ++i) // >:-(
+        {
+            groups[i] = nullptr;
+        }
     }
     auto *grp = new Group();
     grp->index = numGroups;
@@ -789,11 +809,21 @@ void CharactersGroups::ReleaseGroup(const char *groupName)
     const auto idxgrp = FindGroupIndex(groupName);
     if (idxgrp < 0)
         return; // нет группы нечего удалять
-    if (numGroups > 1)
-    {
-        groups[idxgrp] = groups[numGroups - 1];
-        groups[numGroups - 1] = nullptr;
-    }
+
+    Group* oldGroup = groups[idxgrp];
+    groups[idxgrp] = groups[numGroups - 1];
+    groups[numGroups - 1] = nullptr;
+
+    if (oldGroup->relations)
+        delete oldGroup->relations;
+    delete oldGroup;
+
+    for (long othergrp = idxgrp + 1; othergrp < numGroups - 1; ++othergrp) // восстановить отношения других групп с учетом сдвига
+        groups[othergrp]->relations[idxgrp] = groups[idxgrp]->relations[othergrp];
+
+    if (idxgrp < numGroups - 1)
+        groups[idxgrp]->relations[idxgrp] = groups[idxgrp]->relations[numGroups - 1];
+
     numGroups--;
 }
 
@@ -1038,6 +1068,19 @@ void CharactersGroups::RemoveCharacterFromAllGroups(entid_t chr)
     }
 }
 
+// Удалить все пустые группы
+void CharactersGroups::DeleteEmptyGroups()
+{
+    for (long i = 0; i < numGroups; i++) {
+        Group* g = groups[i];
+
+        if (g->numChr == 0)
+        {
+            ReleaseGroup(g->name.name);
+            --i; // на эту позицию переместилась последняя группа
+        }
+    }
+}
 //Выгрузка персонажа
 void CharactersGroups::UnloadCharacter(MESSAGE &message)
 {

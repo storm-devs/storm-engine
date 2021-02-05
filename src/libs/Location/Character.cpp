@@ -120,6 +120,7 @@ Character::ActionCharacter::ActionCharacter()
 
 void Character::ActionCharacter::SetName(const char *_name)
 {
+    if (name)
     delete name;
     name = nullptr;
     if (_name && _name[0])
@@ -139,6 +140,7 @@ void Character::ActionCharacter::ChangeName(const char *_name)
 
 Character::ActionCharacter::~ActionCharacter()
 {
+    if (name)
     delete name;
     name = nullptr;
 }
@@ -1619,7 +1621,7 @@ void Character::StrafeLeft()
     // impulse += 15.0f*CVECTOR(-cosf(ay), 0.0f, sinf(ay));
 }
 
-//Пыжёк вправо
+//Прыжок вправо
 void Character::StrafeRight()
 {
     if (priorityAction.name)
@@ -4869,15 +4871,17 @@ inline void Character::CheckAttackHit()
 }
 
 //Найти персонажа в которого попали из пистолета
-Character *Character::FindGunTarget(float &kDist, bool bOnlyEnemyTest)
+Character *Character::FindGunTarget(float &kDist, bool bOnlyEnemyTest, bool bAbortIfFriend)
 {
     CharactersGroups *chrGroup;
     long grp;
-    if (bOnlyEnemyTest)
+    if (bOnlyEnemyTest || bAbortIfFriend)
     {
         chrGroup = static_cast<CharactersGroups *>(
             EntityManager::GetEntityPointer(EntityManager::GetEntityId("CharactersGroups")));
         grp = chrGroup->FindGroupIndex(group);
+       if (grp < 0)
+            return nullptr;
     }
 
     //Найдём окружающих персонажей
@@ -4900,6 +4904,8 @@ Character *Character::FindGunTarget(float &kDist, bool bOnlyEnemyTest)
         if (bOnlyEnemyTest)
         {
             const long enemygrpIndex = chrGroup->FindGroupIndex(fc.c->group);
+            if (enemygrpIndex < 0)
+                continue;
             if (chrGroup->FindRelation(enemygrpIndex, grp).curState != CharactersGroups::rs_enemy)
                 continue;
         }
@@ -4924,8 +4930,17 @@ Character *Character::FindGunTarget(float &kDist, bool bOnlyEnemyTest)
             j = i;
         }
     }
+    
     if (j >= 0)
     {
+        if (bAbortIfFriend)
+        {
+            long enemygrpIndex = chrGroup->FindGroupIndex(fndCharacter[j].c->group);
+            if (enemygrpIndex < 0)
+                return nullptr;
+            if (chrGroup->FindRelation(enemygrpIndex, grp).curState != CharactersGroups::rs_enemy)
+                return nullptr;
+        }
         kDist = 1.0f - fndCharacter[j].d2 / CHARACTER_FIGHT_FIREDIST;
         if (kDist < 0.0f)
             kDist = 0.0f;
