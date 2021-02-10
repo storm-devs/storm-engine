@@ -155,7 +155,10 @@ bool CXI_QUESTTEXTS::GetLineNext(int fontNum, char *&pInStr, char *buf, int bufS
     if (lineSize == 0)
         return false;
     if (lineSize > bufSize - 1)
-        lineSize = bufSize - 1;
+    {
+        // rewind back to the last utf8 char that fits in the buffer
+        lineSize = bufSize - 1 - utf8::u8_dec(pStart + bufSize - 1);
+    }
 
     strncpy_s(buf, bufSize, pStart, lineSize);
     buf[lineSize] = 0;
