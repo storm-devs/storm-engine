@@ -419,13 +419,18 @@ IDirect3DTexture9 *SCRSHOTER::GetTexFromSave(char *fileName, char **pDatStr) con
         }
         if (pDatStr)
         {
-            const int strLen = startIdx - sizeof(SAVE_DATA_HANDLE);
+            char *stringData = &pdat[sizeof(SAVE_DATA_HANDLE)];
+            if (!utf8::IsValidUtf8(stringData))
+            {
+                utf8::FixInvalidUtf8(stringData);
+            }
+            const int strLen = ((SAVE_DATA_HANDLE *)pdat)->StringDataSize;
             *pDatStr = new char[strLen + 1];
             if (!*pDatStr)
             {
                 throw std::exception("allocate memory error");
             }
-            strncpy_s(*pDatStr, strLen + 1, &pdat[sizeof(SAVE_DATA_HANDLE)], strLen);
+            strncpy_s(*pDatStr, strLen + 1, stringData, strLen);
             (*pDatStr)[strLen] = 0;
         }
     }

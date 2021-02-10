@@ -15,6 +15,7 @@
 #define DEF_COMPILE_EXPRESSIONS
 
 #include "zlib.h"
+#include <storm_assert.h>
 
 extern FILE_SERVICE File_Service;
 // extern char * FuncNameTable[];
@@ -6304,6 +6305,7 @@ bool COMPILER::ReadVariable(char *name, /* DWORD code,*/ bool bDim, uint32_t a_i
     {
         // trace("Read[%d]: %s",code,vi.name);
         ReadData(&eType, sizeof(eType));
+        Assert(eType < S_TOKEN_TYPE::TOKEN_TYPES_COUNT);
         if (!bSkipVariable)
             if (vi.type != eType)
             {
@@ -6443,7 +6445,10 @@ bool COMPILER::ReadVariable(char *name, /* DWORD code,*/ bool bDim, uint32_t a_i
         pV->SetAReference(pA);
 
         break;
+    default:
+        SetError("Unknown token type: %i", eType);
     }
+
     return true;
 }
 
@@ -6712,6 +6717,7 @@ bool COMPILER::LoadState(HANDLE fh)
         pString = ReadString();
         if (pString)
         {
+            Assert(utf8::IsValidUtf8(pString));
             SCodec.Convert(pString);
             delete[] pString;
         }
@@ -6728,6 +6734,7 @@ bool COMPILER::LoadState(HANDLE fh)
     for (n = 0; n < nSegments2Load; n++)
     {
         char *pSegmentName = ReadString();
+        Assert(utf8::IsValidUtf8(pSegmentName));
         if (!BC_LoadSegment(pSegmentName))
             return false;
         delete pSegmentName;
@@ -6738,12 +6745,14 @@ bool COMPILER::LoadState(HANDLE fh)
     for (n = 0; n < nVarNum; n++)
     {
         pString = ReadString();
-        if (pString == nullptr)
+        if (pString == nullptr || strcmp(pString, "") == 0)
         {
             SetError("missing variable name");
             return false;
         }
+        Assert(utf8::IsValidUtf8(pString));
         ReadVariable(pString /*,n*/);
+
         delete[] pString;
     }
 

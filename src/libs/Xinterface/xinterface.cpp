@@ -2787,6 +2787,12 @@ bool XINTERFACE::SFLB_GetSaveFileData(char *saveName, long bufSize, char *buf)
     if (pdat == nullptr)
         return false;
 
+    char *stringData = &pdat[sizeof(SAVE_DATA_HANDLE)];
+    if (!utf8::IsValidUtf8(stringData))
+    {
+        utf8::FixInvalidUtf8(stringData);
+    }
+
     long strSize = ((SAVE_DATA_HANDLE *)pdat)->StringDataSize;
     if (strSize >= bufSize)
     {
@@ -2794,7 +2800,7 @@ bool XINTERFACE::SFLB_GetSaveFileData(char *saveName, long bufSize, char *buf)
         strSize = bufSize - 1;
     }
     if (strSize > 0)
-        memcpy(buf, &pdat[sizeof(SAVE_DATA_HANDLE)], strSize);
+        memcpy(buf, stringData, strSize);
 
     delete pdat;
     return strSize > 0;
