@@ -206,7 +206,16 @@ void AIShipCannonController::Execute(float fDeltaTime)
                 if (!(pC->isFired() || pC->isRecharged() || pC->isDamaged() || pC->isEmpty()))
                     dwReadyCannonsAfter++;
             }
-            pBort->fChargePercent /= GetBortIntactCannonsNum(i);
+            // prevent division by zero (mitrocosta)
+            auto intactCannons = GetBortIntactCannonsNum(i);
+            if (intactCannons > 0)
+            {
+                pBort->fChargePercent /= intactCannons;
+            }
+            else
+            {
+                pBort->fChargePercent = .0f;
+            }
 
             if (dwReadyCannonsBefore != dwReadyCannonsAfter && dwReadyCannonsAfter == GetBortIntactCannonsNum(i))
             // pBort->fChargePercent >= 0.999f)
