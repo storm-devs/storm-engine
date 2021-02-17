@@ -89,7 +89,6 @@ set(PROJECT_SOURCES
     VideoTexture.h
     vmodule_api.h
     vparticle_system.h
-    vstring_codec.h
     Weather_Base.h
 )
 

@@ -6,6 +6,8 @@
 #include <cstdio>
 #include <vector>
 
+#include "storm_assert.h"
+
 class VSTRING_CODEC
 {
   public:
@@ -120,6 +122,7 @@ class ATTRIBUTES
 
     auto GetThisName() const
     {
+        Assert(pVStringCodec != nullptr);
         return pVStringCodec->Convert(nNameCode);
     }
 
