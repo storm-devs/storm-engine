@@ -432,7 +432,7 @@ void IFS::Format(char *file_data, long file_size)
         if (file_data[n] == INI_LINEFEED[0] || file_data[n] == INI_LINEFEED[1] || file_data[n] == INI_LINEFEED[2])
         {
             file_data[n] = 0;
-            if (file_data[n - 1] != 0)
+            if (n > 0 && file_data[n - 1] != 0)
                 lines++;
         }
     }
