@@ -59,7 +59,7 @@ enum EAchievements
     ACH_53 = 52,
     ACH_54 = 53,
     ACH_55 = 54,
-    //	ACH_56 = 55,
+    //    ACH_56 = 55,
     ACH_57 = 56,
     ACH_58 = 57,
     ACH_59 = 58,
@@ -75,8 +75,8 @@ enum EAchievements
     ACH_69 = 68,
     ACH_70 = 69,
     ACH_71 = 70,
-    //	ACH_72 = 71,
-    //	ACH_73 = 72,
+    //    ACH_72 = 71,
+    //    ACH_73 = 72,
     ACH_79 = 79,
 };
 

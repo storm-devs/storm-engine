@@ -392,7 +392,7 @@ uint32_t COMPILER::GetIntFunctionCode(const char *func_name)
 
 DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t arguments)
 {
-    //	char Format_string[MAX_PATH];
+    //    char Format_string[MAX_PATH];
     char Message_string[2 * MAX_PATH];
     entid_t ent;
     uint32_t functions_num;
@@ -687,8 +687,8 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             core.Controls->LockControl(pChar, TempLong1 != 0);
         break;
         /*case FUNC_SAVEVARIABLE:
-            pV = SStack.Pop(); if(!pV){SetError(INVALID_FA); break;};	// var ref
-            pV2 = SStack.Pop(); if(!pV2){SetError(INVALID_FA); break;};	// file name
+            pV = SStack.Pop(); if(!pV){SetError(INVALID_FA); break;};    // var ref
+            pV2 = SStack.Pop(); if(!pV2){SetError(INVALID_FA); break;};    // file name
 
             pV2->Get(pChar);
 
@@ -733,8 +733,8 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         return pV;
 
         case FUNC_LOADVARIABLE:
-            pV = SStack.Pop(); if(!pV){SetError(INVALID_FA); break;};	// var name
-            pV2 = SStack.Pop(); if(!pV2){SetError(INVALID_FA); break;};	// file name
+            pV = SStack.Pop(); if(!pV){SetError(INVALID_FA); break;};    // var name
+            pV2 = SStack.Pop(); if(!pV2){SetError(INVALID_FA); break;};    // file name
 
             pV2->Get(pChar);
 
@@ -1148,7 +1148,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             pV2->Get(pChar2);
             SetSaveData(pChar2,pChar);
 
-            pV = SStack.Push();	pV->Set((long)1);	pVResult = pV;
+            pV = SStack.Push();    pV->Set((long)1);    pVResult = pV;
         return pV;
 
         case FUNC_GETSAVEDATA:
@@ -1158,7 +1158,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             pV = SStack.Push();
             Access.Get(pChar);
 
-            pV->Set(pChar);	pVResult = pV;
+            pV->Set(pChar);    pVResult = pV;
         return pV;*/
 
     case FUNC_STRLEN:
@@ -1672,7 +1672,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
     case FUNC_FRAND:
         TempFloat1 = static_cast<float>(rand()) / RAND_MAX;
         pV = SStack.Push();
-        // TempFloat1 = 1.0f;	// ***
+        // TempFloat1 = 1.0f;    // ***
         pV->Set(TempFloat1);
         pVResult = pV;
         return pV;
@@ -1703,7 +1703,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             SetError(MISSING_PARAMETER);
             break;
         }
-        // pV = SStack.Pop();	// object reference
+        // pV = SStack.Pop();    // object reference
         pV = SStack.Read(); // object reference
         if (!pV)
         {

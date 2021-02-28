@@ -643,7 +643,7 @@ void SAIL::Realize(uint32_t Delta_Time)
                 RenderService->SetRenderState(D3DRS_TEXTUREFACTOR, dwOldTextureFactor);
             }
 
-            //_asm rdtsc	_asm sub eax,tm_draw _asm mov tm_draw,eax
+            //_asm rdtsc    _asm sub eax,tm_draw _asm mov tm_draw,eax
         }
         while (RenderService->TechniqueExecuteNext())
         {
@@ -2014,8 +2014,8 @@ void SAIL::DoNoRopeSailToNewHost(entid_t newModel, entid_t newHost, entid_t oldH
         {
             GEOS::LABEL gl;
             tgeo->GetLabel(i, gl);
-            if (!strncmp(gl.group_name, "sail", 4))                 // this is a group of sails
-                if (atoi(&gl.group_name[5]) == slist[sn]->groupNum) // with the correct group number
+            if (!strncmp(gl.group_name, "sail", 4))                                  // this is a group of sails
+                if (atoi(&gl.group_name[5]) == slist[sn]->groupNum)                  // with the correct group number
                     if (!strncmp(gl.name, "rope", 4) || !strncmp(gl.name, "fal", 3)) // and the sail is tied with a rope
                     {
                         long nRopeNum;

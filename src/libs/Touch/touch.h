@@ -19,7 +19,7 @@ struct TOUCH_SHIP
 {
     entid_t eID;                  // ship id
     CVECTOR vContourTemp[2][128]; // temporary storage / must be deleted
-    TOUCH_PARAMS TP[2];           // touch params	for collision
+    TOUCH_PARAMS TP[2];           // touch params    for collision
     SHIP_BASE *pShip;             // ship pointer
     CVECTOR vKickPoint;           // temp
     CVECTOR vKickAngle;           // temp

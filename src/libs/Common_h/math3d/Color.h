@@ -1214,7 +1214,7 @@ inline Color &Color::SwapRB()
 // Get packed color as uint32_t
 inline uint32_t Color::GetDword() const
 {
-    /*	long l;*/
+    /*    long l;*/
     DColor color;
     const auto k = 255.0f;
 
@@ -1227,31 +1227,31 @@ inline uint32_t Color::GetDword() const
 
     /*_asm
     {
-      mov		eax, this
-      fld		[eax]this.r
-      fld		k
+      mov        eax, this
+      fld        [eax]this.r
+      fld        k
       fmul
-      fistp	l
-      mov		ebx, l
-      mov		color.r, bl
-      fld		[eax]this.g
-      fld		k
+      fistp    l
+      mov        ebx, l
+      mov        color.r, bl
+      fld        [eax]this.g
+      fld        k
       fmul
-      fistp	l
-      mov		ebx, l
-      mov		color.g, bl
-      fld		[eax]this.b
-      fld		k
+      fistp    l
+      mov        ebx, l
+      mov        color.g, bl
+      fld        [eax]this.b
+      fld        k
       fmul
-      fistp	l
-      mov		ebx, l
-      mov		color.b, bl
-      fld		[eax]this.a
-      fld		k
+      fistp    l
+      mov        ebx, l
+      mov        color.b, bl
+      fld        [eax]this.a
+      fld        k
       fmul
-      fistp	l
-      mov		ebx, l
-      mov		color.a, bl
+      fistp    l
+      mov        ebx, l
+      mov        color.a, bl
     };*/
 }
 

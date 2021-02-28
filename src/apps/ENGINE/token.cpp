@@ -178,7 +178,7 @@ S_KEYWORD Keywords[] = {
     ";",
     FUNCTION_RETURN,
     "return",
-    //	FUNCTION_RETURN_VOID,"return",
+    //    FUNCTION_RETURN_VOID,"return",
     FOR_BLOCK,
     "for",
     IF_BLOCK,
@@ -976,7 +976,7 @@ bool TOKEN::IsOperator(char * pointer)
             {
                 if(pointer[i] >= 0x30 && pointer[i] <= 0x39)
                 {
-                    return false;	// this is float number
+                    return false;    // this is float number
                 }
             }
             return true;
@@ -1008,7 +1008,7 @@ bool TOKEN::IsOperator(char * pointer, long & syms)
             {
                 if(pointer[i] >= 0x30 && pointer[i] <= 0x39)
                 {
-                    return false;	// this is float number
+                    return false;    // this is float number
                 }
             }
             syms = i;
@@ -1082,15 +1082,15 @@ S_TOKEN_TYPE TOKEN::ProcessToken(char *&pointer, bool bKeepData)
     switch (eTokenType)
     {
     case INCLUDE_LIBRIARY:
-        Get(); //	file name (string)
+        Get(); //    file name (string)
         eTokenType = INCLUDE_LIBRIARY;
         break;
     case INCLIDE_FILE:
-        Get(); //	file name (string)
+        Get(); //    file name (string)
         eTokenType = INCLIDE_FILE;
         break;
     case DEBUG_FILE_NAME:
-        Get(); //	file name (string)
+        Get(); //    file name (string)
         eTokenType = DEBUG_FILE_NAME;
         break;
     case BLOCK_IN:
@@ -1203,7 +1203,7 @@ long TOKEN::TokenLines()
 
 S_TOKEN_TYPE TOKEN::Keyword2TokenType(const char *pString)
 {
-    /*	DWORD n;
+    /*    DWORD n;
       for(n=0;n<dwKeywordsNum;n++)
       {
         if(_stricmp(pString,Keywords[n].name) == 0)
@@ -1259,8 +1259,8 @@ bool TOKEN::InitializeHashTable()
     dwKeywordsNum = sizeof(Keywords) / sizeof(S_KEYWORD);
     // if(dwKeywordsNum > 255)
     //{
-    //	trace("keywords num more then 256 - change index type");
-    //	return false;
+    //    trace("keywords num more then 256 - change index type");
+    //    return false;
     //}
 
     for (uint32_t n = 0; n < dwKeywordsNum; n++)

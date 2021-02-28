@@ -123,7 +123,7 @@ struct Points
 class SailorsPoints
 {
   private:
-    bool PointsPassed[MAX_POINTS]; // tmp mark of passed points (for finding a path)
+    bool PointsPassed[MAX_POINTS];        // tmp mark of passed points (for finding a path)
     float matrix[MAX_POINTS][MAX_POINTS]; // Matrix for fast path finding
 
     Path getPath(int src, int dst, int l); // Finding a way

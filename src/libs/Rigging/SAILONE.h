@@ -188,12 +188,12 @@ class SAILONE : public SAILONE_BASE
     void FillIndex(uint16_t *pt); // filling an array of triangles
     void ClearVertex(SAILVERTEX *pv, uint32_t maxIdx);
     void goWave(SAILVERTEX *pv, uint32_t Delta_Time);
-    void FillVertex(SAILVERTEX *pv);       // filling an array of vertices
-    void SetTexGrid(SAILVERTEX *pv) const; // setting coordinates in texture
-    void SetGeometry(); // setting parameters for creating sail geometry
-    void SetRolling(bool bRoll); // set roll-up sail
+    void FillVertex(SAILVERTEX *pv);         // filling an array of vertices
+    void SetTexGrid(SAILVERTEX *pv) const;   // setting coordinates in texture
+    void SetGeometry();                      // setting parameters for creating sail geometry
+    void SetRolling(bool bRoll);             // set roll-up sail
     void DoRollingStep(uint32_t Delta_Time); // perform the step of folding-unfolding the sail
-    void TurnSail(float fTurnStep); // turn the sail around the OY axis
+    void TurnSail(float fTurnStep);          // turn the sail around the OY axis
     void CalculateMirrorSailIndex() override;
     bool GetGrid(CVECTOR &pos, float perspect);
     float Trace(const CVECTOR &src, const CVECTOR &dst, bool bCannonTrace);
@@ -246,7 +246,7 @@ class SAILONE : public SAILONE_BASE
     // Unfolding the sail
     int rollType;       // sail folding type
     SAILROLLING *sroll; // structure at the time of folding / unfolding of the sail
-    bool bRolling; // the sail is rolled on the yard
+    bool bRolling;      // the sail is rolled on the yard
 
     SAIL *pp;
     // ------------------------------------

@@ -13,12 +13,12 @@ class BaseEmitter : public IEmitter
 {
     struct structParticleType
     {
-        bool Visible;         // visible or not
-        ParticleType Type;    // Particle type
-        float Remain;         // How many not emitted from the last frame are left
-        uint32_t ActiveCount; // The number of active particles of this type
+        bool Visible;               // visible or not
+        ParticleType Type;          // Particle type
+        float Remain;               // How many not emitted from the last frame are left
+        uint32_t ActiveCount;       // The number of active particles of this type
         uint32_t MaxParticlesCount; // Maximum number of particles of this type
-        DataGraph *EmissionRate; // Graph defining the rate of emission of particles
+        DataGraph *EmissionRate;    // Graph defining the rate of emission of particles
 
         FieldList *pFields;
 

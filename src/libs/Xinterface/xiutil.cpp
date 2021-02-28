@@ -58,7 +58,7 @@ uint32_t ColorInterpolate(uint32_t sCol, uint32_t dCol, float m)
     r += static_cast<int>((rd - r) * m);
     g += static_cast<int>((gd - g) * m);
     b += static_cast<int>((bd - b) * m);
-    /*	a = a>ad ? int(a-(a-ad)*m) : int(ad-(ad-a)*m);
+    /*    a = a>ad ? int(a-(a-ad)*m) : int(ad-(ad-a)*m);
       r = r>rd ? int(r-(r-rd)*m) : int(rd-(rd-r)*m);
       g = g>gd ? int(g-(g-gd)*m) : int(gd-(gd-g)*m);
       b = b>bd ? int(b-(b-bd)*m) : int(bd-(bd-b)*m);*/

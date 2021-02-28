@@ -186,11 +186,11 @@ void DataGraph::Load(MemFile *File)
 
     // HACK! For backward compatibility
     // convert after loading the graphs into the desired format
-    // if (_stricmp (AttribueName, EMISSION_DIR_X) == 0)	ConvertDegToRad ();
-    // if (_stricmp (AttribueName, EMISSION_DIR_Y) == 0)	ConvertDegToRad ();
-    // if (_stricmp (AttribueName, EMISSION_DIR_Z) == 0)	ConvertDegToRad ();
-    // if (_stricmp (AttribueName, PARTICLE_DRAG) == 0)	NormalToPercent();
-    // if (_stricmp (AttribueName, PARTICLE_TRANSPARENCY) == 0)	NormalToAlpha();
+    // if (_stricmp (AttribueName, EMISSION_DIR_X) == 0)    ConvertDegToRad ();
+    // if (_stricmp (AttribueName, EMISSION_DIR_Y) == 0)    ConvertDegToRad ();
+    // if (_stricmp (AttribueName, EMISSION_DIR_Z) == 0)    ConvertDegToRad ();
+    // if (_stricmp (AttribueName, PARTICLE_DRAG) == 0)    NormalToPercent();
+    // if (_stricmp (AttribueName, PARTICLE_TRANSPARENCY) == 0)    NormalToAlpha();
 }
 
 // Set / get can be negative values in the graph or not

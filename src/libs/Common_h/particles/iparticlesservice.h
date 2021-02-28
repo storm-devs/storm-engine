@@ -25,7 +25,7 @@ class IParticleService : public SERVICE
 
     // As a file name, you need to pass the name of the project
     // in which we want to work at the moment
-    // 
+    //
     // If filename = NULL, there will be no systems available to load
     virtual IParticleManager *CreateManagerEx(const char *ProjectName, const char *File, int Line) = 0;
 

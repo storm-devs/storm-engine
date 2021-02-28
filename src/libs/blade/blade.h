@@ -29,7 +29,7 @@ class BLADE : public Entity
     struct BLADE_INFO
     {
         entid_t eid;
-        long color[2];               //	color of the blade
+        long color[2];               //    color of the blade
         float defLifeTime, lifeTime; //
         float time;                  // current time
 
@@ -93,17 +93,17 @@ class BLADE : public Entity
         switch (stage)
         {
         // case Stage::execute:
-        //	Execute(delta);
-        //	break;
+        //    Execute(delta);
+        //    break;
         case Stage::realize:
             Realize(delta);
             break;
             // case Stage::lost_render:
-            //	LostRender();
-            //	break;
+            //    LostRender();
+            //    break;
             // case Stage::restore_render:
-            //	RestoreRender();
-            //	break;
+            //    RestoreRender();
+            //    break;
         }
     }
     void Realize(uint32_t Delta_Time);

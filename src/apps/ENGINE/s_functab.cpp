@@ -142,7 +142,7 @@ uint32_t S_FUNCTAB::AddFunc(const FUNCINFO &fi)
 
     UpdateHashTable(Func_num, hash, true);
 
-    /*	DWORD a;
+    /*    DWORD a;
       pTable[Func_num].pImportedFunc = testfunc;
       a = pTable[Func_num].pImportedFunc(0);
     */
@@ -236,7 +236,7 @@ uint32_t S_FUNCTAB::FindFunc(const char *func_name)
                 return ni;
     }
 
-    /*	for(n=0;n<Func_num;n++)
+    /*    for(n=0;n<Func_num;n++)
       {
         if(pTable[n].hash == hash)
         if(_stricmp(pTable[n].name,func_name)== 0) return n;

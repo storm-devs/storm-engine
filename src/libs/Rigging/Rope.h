@@ -25,16 +25,17 @@ class ROPE : public ROPE_BASE
     float ROPE_SEG_LENGTH; // length of one rope segment
     float ROPE_WIDTH;      // rope thickness
     float STAY_WIDTH;      // rope (head) thickness
-    float ROPE_END_LENGTH; // the length of the rope (triangle) at the point of connection with the sail in relation to the total length
-    float ROPE_WAVE; // amplitude of rope vibration in absolute values
-    float MaxCh; // maximum coordinate change at which the entire rope is recalculated
-    float ROPE_TEX_LEN; // the length of the rope on which the texture applies
-    float fMaxRopeDist; // maximum distance from which the ropes are visible
+    float ROPE_END_LENGTH; // the length of the rope (triangle) at the point of connection with the sail in relation to
+                           // the total length
+    float ROPE_WAVE;       // amplitude of rope vibration in absolute values
+    float MaxCh;           // maximum coordinate change at which the entire rope is recalculated
+    float ROPE_TEX_LEN;    // the length of the rope on which the texture applies
+    float fMaxRopeDist;    // maximum distance from which the ropes are visible
     float DEEP_CHANGE_SPEED; // the rate of change in the depth of rope deflection
     float ROTATE_SPEED;      // rope swing speed
-    float MIN_DEEP_MUL; // the minimum value of the coefficient of use of the deflection of the rope
-    float VAR_DEEP_MUL; // limit of variation of the coefficient of use of rope deflection
-    float VAR_ROTATE_ANGL; // rope swing angle
+    float MIN_DEEP_MUL;      // the minimum value of the coefficient of use of the deflection of the rope
+    float VAR_DEEP_MUL;      // limit of variation of the coefficient of use of rope deflection
+    float VAR_ROTATE_ANGL;   // rope swing angle
     // -------------------------------------
 
     D3DMATERIAL9 mat;

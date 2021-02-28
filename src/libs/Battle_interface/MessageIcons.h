@@ -44,11 +44,11 @@ class MESSAGE_ICONS
 
     float m_fNormalStateTime; // Icon highlighting time, sec
     float m_fBlendTime;       // Icon disappearance time, sec
-    float m_fFallSpeed;     // Icon falling-to-free-space speed, pix / sec
-    float m_fBlindTimeUp;   // Time to increase color when blinking, sec
-    float m_fBlindTimeDown; // Time to decrease color when blinking, sec
-    float m_fCurBlindTime;  // Current time to blink
-    bool m_bBlindDirectUp;  // Color modification stage for blinking
+    float m_fFallSpeed;       // Icon falling-to-free-space speed, pix / sec
+    float m_fBlindTimeUp;     // Time to increase color when blinking, sec
+    float m_fBlindTimeDown;   // Time to decrease color when blinking, sec
+    float m_fCurBlindTime;    // Current time to blink
+    bool m_bBlindDirectUp;    // Color modification stage for blinking
 
     uint32_t m_dwHighBlindColor; // Blinking color maximum
     uint32_t m_dwLowBlindColor;  // Blinking color minimum

@@ -69,7 +69,7 @@ class CoastFoam : public Entity
         SubPart p[8];
         CVECTOR v[2];
         float tu;
-        // FOAMMODE	Mode;
+        // FOAMMODE    Mode;
     };
 
     struct Foam

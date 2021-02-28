@@ -192,7 +192,7 @@ HANDLE GEOM_SERVICE_R::OpenFile(const char *fname)
     auto *const fl = fio->_CreateFile(fname, GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING);
     if (fl == INVALID_HANDLE_VALUE)
         if (_strcmpi(&fname[strlen(fname) - 4], ".col") == 0)
-            ; //	core.Trace("geometry::can't open file %s", fname);
+            ; //    core.Trace("geometry::can't open file %s", fname);
         else
             throw "can't open geometry file";
     return fl;
@@ -554,7 +554,7 @@ void GEOM_SERVICE_R::DrawIndexedPrimitive(long minv, long numv, long vrtsize, lo
 
     // if (bCaustic)
     //{
-    //	RenderService->SetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, oldZBias);
+    //    RenderService->SetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, oldZBias);
     //}
 }
 

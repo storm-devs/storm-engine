@@ -1,9 +1,9 @@
 //============================================================================================
-//	Spirenkov Maxim aka Sp-Max Shaman, 2001
+//    Spirenkov Maxim aka Sp-Max Shaman, 2001
 //--------------------------------------------------------------------------------------------
 //
 //--------------------------------------------------------------------------------------------
-//	CharactersGroups
+//    CharactersGroups
 //--------------------------------------------------------------------------------------------
 //
 //============================================================================================
@@ -66,13 +66,13 @@ class CharactersGroups : public Entity
 
     struct Group
     {
-        long index;  // Group index
-        String name; // Group name
-        float look;  // Enemy sight radius
-        float hear; // The radius at which the character always determines the enemy
-        float say; // The radius at which the character can inform neighbors about the danger
-        long priority; // Protection priority
-        Relation *relations; // Relationship list - the size corresponds to the group index in the list
+        long index;                // Group index
+        String name;               // Group name
+        float look;                // Enemy sight radius
+        float hear;                // The radius at which the character always determines the enemy
+        float say;                 // The radius at which the character can inform neighbors about the danger
+        long priority;             // Protection priority
+        Relation *relations;       // Relationship list - the size corresponds to the group index in the list
         entid_t c[MAX_CHARACTERS]; // List of characters in the group
         long numChr;               // Number of characters in the group
     };
@@ -101,7 +101,7 @@ class CharactersGroups : public Entity
             Execute(delta);
             break;
             // case Stage::realize:
-            //	Realize(delta); break;
+            //    Realize(delta); break;
             /*case Stage::lost_render:
               LostRender(delta); break;
             case Stage::restore_render:

@@ -254,7 +254,7 @@ void InterfaceBackScene::Execute(uint32_t Delta_Time)
     if (nOldMenuIndex != m_nSelectMenuIndex)
         core.Event(ISOUND_EVENT, "l", 2); // choosing a new node
 
-    /*	for( long n=0; n<m_apAniModel; n++ )
+    /*    for( long n=0; n<m_apAniModel; n++ )
       {
         if( m_apAniModel[n]->pModel )
           m_apAniModel[n]->pModel->Execute( Delta_Time );
@@ -794,7 +794,7 @@ void InterfaceBackScene::FlareShow(long idx)
     float dy = m_vFlarePos.y - pos.y;
     float dz = m_vFlarePos.z - pos.z;
 
-    /*	float d = dx*dx + dy*dy + dz*dz;
+    /*    float d = dx*dx + dy*dy + dz*dz;
 
     // Distance
     float dist = sqrtf(d);

@@ -8,10 +8,10 @@
 //============================================================================================
 
 /*
-    0  4  8 12	   [0][0] [1][0] [2][0] [3][0]
-    1  5  9 13	   [0][1] [1][1] [2][1] [3][1]
-    2  6 10 14	   [0][2] [1][2] [2][2] [3][2]
-    3  7 11 15	   [0][3] [1][3] [2][3] [3][3]
+    0  4  8 12       [0][0] [1][0] [2][0] [3][0]
+    1  5  9 13       [0][1] [1][1] [2][1] [3][1]
+    2  6 10 14       [0][2] [1][2] [2][2] [3][2]
+    3  7 11 15       [0][3] [1][3] [2][3] [3][3]
 */
 
 //============================================================================================
@@ -234,8 +234,8 @@ inline void CMatrix::SetIdentity()
 
     /*_asm
     {
-      mov		eax, this
-      mov		ecx, 0x3f800000
+      mov        eax, this
+      mov        ecx, 0x3f800000
       xor ebx, ebx
       mov[eax + 0 * 4], ecx
       mov[eax + 1 * 4], ebx
@@ -393,10 +393,10 @@ inline void CMatrix::operator=(const CMatrix &matrix)
     /*_asm
     {
       cld
-      mov		edi, this
-      mov		esi, uint32_t ptr matrix
-      mov		ecx, 16
-      rep		movsd
+      mov        edi, this
+      mov        esi, uint32_t ptr matrix
+      mov        ecx, 16
+      rep        movsd
     }*/
 }
 
@@ -527,19 +527,19 @@ inline void CMatrix::Transposition3X3()
 
     /*_asm
     {
-      mov		eax, this
-      mov		ebx, [eax + 4*4]
-      mov		ecx, [eax + 8*4]
-      mov		esi, [eax + 1*4]
-      mov		edi, [eax + 2*4]
-      mov		[eax + 4*4], esi
-      mov		[eax + 8*4], edi
-      mov		[eax + 1*4], ebx
-      mov		[eax + 2*4], ecx
-      mov		ebx, [eax + 6*4]
-      mov		esi, [eax + 9*4]
-      mov		[eax + 6*4], esi
-      mov		[eax + 9*4], ebx
+      mov        eax, this
+      mov        ebx, [eax + 4*4]
+      mov        ecx, [eax + 8*4]
+      mov        esi, [eax + 1*4]
+      mov        edi, [eax + 2*4]
+      mov        [eax + 4*4], esi
+      mov        [eax + 8*4], edi
+      mov        [eax + 1*4], ebx
+      mov        [eax + 2*4], ecx
+      mov        ebx, [eax + 6*4]
+      mov        esi, [eax + 9*4]
+      mov        [eax + 6*4], esi
+      mov        [eax + 9*4], ebx
     }*/
 }
 
@@ -567,31 +567,31 @@ inline CMatrix &CMatrix::Transposition4x4()
 
     /*_asm
     {
-      mov		eax, this
-      mov		ebx, [eax + 1*4]
-      mov		ecx, [eax + 2*4]
-      mov		esi, [eax + 4*4]
-      mov		edi, [eax + 8*4]
-      mov		[eax + 4*4], ebx
-      mov		[eax + 8*4], ecx
-      mov		[eax + 1*4], esi
-      mov		[eax + 2*4], edi
-      mov		ebx, [eax + 3*4]
-      mov		ecx, [eax + 6*4]
-      mov		esi, [eax + 12*4]
-      mov		edi, [eax + 9*4]
-      mov		[eax + 12*4], ebx
-      mov		[eax + 9*4], ecx
-      mov		[eax + 3*4], esi
-      mov		[eax + 6*4], edi
-      mov		ebx, [eax + 7*4]
-      mov		ecx, [eax + 11*4]
-      mov		esi, [eax + 13*4]
-      mov		edi, [eax + 14*4]
-      mov		[eax + 13*4], ebx
-      mov		[eax + 14*4], ecx
-      mov		[eax + 7*4], esi
-      mov		[eax + 11*4], edi
+      mov        eax, this
+      mov        ebx, [eax + 1*4]
+      mov        ecx, [eax + 2*4]
+      mov        esi, [eax + 4*4]
+      mov        edi, [eax + 8*4]
+      mov        [eax + 4*4], ebx
+      mov        [eax + 8*4], ecx
+      mov        [eax + 1*4], esi
+      mov        [eax + 2*4], edi
+      mov        ebx, [eax + 3*4]
+      mov        ecx, [eax + 6*4]
+      mov        esi, [eax + 12*4]
+      mov        edi, [eax + 9*4]
+      mov        [eax + 12*4], ebx
+      mov        [eax + 9*4], ecx
+      mov        [eax + 3*4], esi
+      mov        [eax + 6*4], edi
+      mov        ebx, [eax + 7*4]
+      mov        ecx, [eax + 11*4]
+      mov        esi, [eax + 13*4]
+      mov        edi, [eax + 14*4]
+      mov        [eax + 13*4], ebx
+      mov        [eax + 14*4], ecx
+      mov        [eax + 7*4], esi
+      mov        [eax + 11*4], edi
     }*/
     return *this;
 }
@@ -703,26 +703,26 @@ inline void CMatrix::Get3X3(CMatrix &mtr)
 
     /*_asm
     {
-      mov		esi, this
-      mov		edi, uint32_t ptr mtr
-      mov		ebx, [esi + 0*4]
-      mov		ecx, [esi + 1*4]
-      mov		edx, [esi + 2*4]
-      mov		[edi + 0*4], ebx
-      mov		[edi + 1*4], ecx
-      mov		[edi + 2*4], edx
-      mov		ebx, [esi + 4*4]
-      mov		ecx, [esi + 5*4]
-      mov		edx, [esi + 6*4]
-      mov		[edi + 4*4], ebx
-      mov		[edi + 5*4], ecx
-      mov		[edi + 6*4], edx
-      mov		ebx, [esi + 8*4]
-      mov		ecx, [esi + 9*4]
-      mov		edx, [esi + 10*4]
-      mov		[edi + 8*4], ebx
-      mov		[edi + 9*4], ecx
-      mov		[edi + 10*4], edx
+      mov        esi, this
+      mov        edi, uint32_t ptr mtr
+      mov        ebx, [esi + 0*4]
+      mov        ecx, [esi + 1*4]
+      mov        edx, [esi + 2*4]
+      mov        [edi + 0*4], ebx
+      mov        [edi + 1*4], ecx
+      mov        [edi + 2*4], edx
+      mov        ebx, [esi + 4*4]
+      mov        ecx, [esi + 5*4]
+      mov        edx, [esi + 6*4]
+      mov        [edi + 4*4], ebx
+      mov        [edi + 5*4], ecx
+      mov        [edi + 6*4], edx
+      mov        ebx, [esi + 8*4]
+      mov        ecx, [esi + 9*4]
+      mov        edx, [esi + 10*4]
+      mov        [edi + 8*4], ebx
+      mov        [edi + 9*4], ecx
+      mov        [edi + 10*4], edx
     }*/
 }
 
@@ -754,10 +754,10 @@ inline CMatrix &CMatrix::BuildProjectionMatrix(float viewAngle, float vpWidth, f
     /*_asm
     {
       cld
-      xor		eax, eax
-      mov		edi, this
-      mov		ecx, 16
-      rep		stosd
+      xor        eax, eax
+      mov        edi, this
+      mov        ecx, 16
+      rep        stosd
     }*/
     // auto cs = cosf(viewAngle * 0.5f);
     // auto sn = sinf(viewAngle * 0.5f);

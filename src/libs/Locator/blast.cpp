@@ -30,7 +30,7 @@ bool BLAST::Init()
     if (!rs)
         return false;
 
-    //	long n;
+    //    long n;
     INIFILE *ini;
     ini = fio->OpenIniFile("resource\\ini\\particles\\particles.ini");
     if (!ini)

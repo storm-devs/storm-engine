@@ -206,7 +206,7 @@ void BillBoardProcessor::Process(float DeltaTime)
         const auto Time = Particles[n]->ElapsedTime;
         const auto LifeTime = Particles[n]->LifeTime;
 
-        //		_mm_prefetch ((const char *)Particles[n+1], _MM_HINT_T0);
+        //        _mm_prefetch ((const char *)Particles[n+1], _MM_HINT_T0);
 
         // immediately kill the dead
         if (Time > LifeTime)
@@ -264,7 +264,7 @@ void BillBoardProcessor::Process(float DeltaTime)
         Particles[n]->RenderPos.Lerp(TrackPos, Particles[n]->PhysPos, BlendPhys);
         Particles[n]->PhysPos = Particles[n]->RenderPos;
 
-        // Particles[n]->RenderPos	= Particles[n]->PhysPos;
+        // Particles[n]->RenderPos    = Particles[n]->PhysPos;
         Particles[n]->RenderAngle = Particles[n]->Angle;
     }
 
@@ -274,13 +274,13 @@ void BillBoardProcessor::Process(float DeltaTime)
     {
         if (Particles[n]->AttachedEmitter)
         {
-            //			core.Trace("%d, %3.2f, %3.2f, %3.2f", n, Particles[n]->RenderPos.x, Particles[n]->RenderPos.y,
-            // Particles[n]->RenderPos.z); 			Particles[n]->AttachedEmitter->SaveTime();
+            //            core.Trace("%d, %3.2f, %3.2f, %3.2f", n, Particles[n]->RenderPos.x, Particles[n]->RenderPos.y,
+            // Particles[n]->RenderPos.z);             Particles[n]->AttachedEmitter->SaveTime();
             Particles[n]->AttachedEmitter->Teleport(Matrix(Particles[n]->OldRenderAngle, Particles[n]->OldRenderPos));
             Particles[n]->AttachedEmitter->SetTransform(Matrix(Particles[n]->RenderAngle, Particles[n]->RenderPos));
             Particles[n]->AttachedEmitter->BornParticles(DeltaTime);
 
-            // if (n < Particles.size()-1)	Particles[n]->AttachedEmitter->RestoreTime();
+            // if (n < Particles.size()-1)    Particles[n]->AttachedEmitter->RestoreTime();
         }
     }
 
@@ -298,7 +298,7 @@ uint32_t BillBoardProcessor::CalcDistanceToCamera()
     {
         Particles[j]->CamDistance = Vector(Particles[j]->RenderPos * mView).z;
 
-        //		_mm_prefetch ((const char *)Particles[j+1], _MM_HINT_T0);
+        //        _mm_prefetch ((const char *)Particles[j+1], _MM_HINT_T0);
 
         if (Particles[j]->CamDistance > 0)
         {
@@ -346,7 +346,7 @@ void BillBoardProcessor::Draw()
         if (fSize <= 0.000001f)
             continue;
 
-        //		_mm_prefetch ((const char *)Particles[j+1], _MM_HINT_T0);
+        //        _mm_prefetch ((const char *)Particles[j+1], _MM_HINT_T0);
 
         auto fAngle = pR->RenderAngle;
         auto vPos = pR->RenderPos;
@@ -414,7 +414,7 @@ void BillBoardProcessor::Draw()
         dwColor = dwColor & 0x00FFFFFF;
         dwColor = dwColor | dwAlpha;
 
-        // if (j == 0)	core.Trace("fAngle[0]: %3.2f", fAngle);
+        // if (j == 0)    core.Trace("fAngle[0]: %3.2f", fAngle);
 
         pV[0].vRelativePos = Vector(-fSize, -fSize, 0.0f);
         pV[0].dwColor = dwColor;

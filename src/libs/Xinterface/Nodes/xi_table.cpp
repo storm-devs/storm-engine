@@ -1007,7 +1007,7 @@ void CXI_TABLE::UpdateBorders()
     if (m_nHLineHeight > 0 && m_nRowQuantity > 2) // horizontal lines
         q += m_nRowQuantity - 2;
     if (m_bHLineIsBreakable)
-        q *= m_nColQuantity; // the break line is split by the number of columns
+        q *= m_nColQuantity;                     // the break line is split by the number of columns
     if (m_nVLineWidth > 0 && m_nColQuantity > 1) // vertical lines
         q += m_nColQuantity - 1;
     q += 4 + 4; // 4 corners and lines on the sides

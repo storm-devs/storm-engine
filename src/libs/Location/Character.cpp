@@ -1,9 +1,9 @@
 //============================================================================================
-//	Spirenkov Maxim aka Sp-Max Shaman, 2001
+//    Spirenkov Maxim aka Sp-Max Shaman, 2001
 //--------------------------------------------------------------------------------------------
 //
 //--------------------------------------------------------------------------------------------
-//	Character
+//    Character
 //--------------------------------------------------------------------------------------------
 //
 //============================================================================================
@@ -39,8 +39,8 @@
 #define CHARACTER_DIALOG_ANG 30.0f // Maximum angle of dialogue
 
 #define CHARACTER_SEA_NOTRUN 0.2f // The relative height at which the character cannot run
-#define CHARACTER_SEA_MOVE 0.6f // The relative height at which the character starts to move
-#define CHARACTER_SEA_SWIM 0.8f // The relative height at which the character begins to swim
+#define CHARACTER_SEA_MOVE 0.6f   // The relative height at which the character starts to move
+#define CHARACTER_SEA_SWIM 0.8f   // The relative height at which the character begins to swim
 
 #define CHARACTER_HIDE_DIST 0.5f // Distance to the camera at which to hide the character
 
@@ -71,7 +71,8 @@ uint8_t Character::fightTbl[fgt_max][fgt_max] = {
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // fgt_fire Pistol Shot
     {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     // fgt_hit_attack The reaction of hitting a character putting him into stall
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // fgt_hit_feint Reaction from a feint that puts him into stall
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+     0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // fgt_hit_feint Reaction from a feint that puts him into stall
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     // fgt_hit_parry Reaction from a parry putting him into stall
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // fgt_hit_round Reaction Knock Back with Round Hit
@@ -96,18 +97,18 @@ const char *Character::fightNamesTbl[fgt_max] = {
     "fgt_attack_feint",  // Feint - special trick
     "fgt_attack_feintc", // Continuation of the feint in case of a counterattack
     "fgt_fire",          // Pistol shot
-    "fgt_hit_attack", // The reaction of hitting a character putting him into the stall
-    "fgt_hit_feint",  // The reaction from the feint putting him into the stall
-    "fgt_hit_parry",  // Parry reaction putting him into stall
-    "fgt_hit_round",  // Knockback reaction from a circular hit
-    "fgt_hit_fire",   // The reaction from the shot putting him into stall
-    "fgt_block",      // Saber protection
-    "fgt_blockhit",   // Saber protection
-    "fgt_blockbreak", // Punching the block
-    "fgt_parry", // Parry, a defensive move putting the opponent into a stall
-    "fgt_recoil",   // Bounce back
-    "fgt_strafe_l", // Bounce to the left
-    "fgt_strafe_r", // Bounce right
+    "fgt_hit_attack",    // The reaction of hitting a character putting him into the stall
+    "fgt_hit_feint",     // The reaction from the feint putting him into the stall
+    "fgt_hit_parry",     // Parry reaction putting him into stall
+    "fgt_hit_round",     // Knockback reaction from a circular hit
+    "fgt_hit_fire",      // The reaction from the shot putting him into stall
+    "fgt_block",         // Saber protection
+    "fgt_blockhit",      // Saber protection
+    "fgt_blockbreak",    // Punching the block
+    "fgt_parry",         // Parry, a defensive move putting the opponent into a stall
+    "fgt_recoil",        // Bounce back
+    "fgt_strafe_l",      // Bounce to the left
+    "fgt_strafe_r",      // Bounce right
 };
 
 //============================================================================================
@@ -121,7 +122,7 @@ Character::ActionCharacter::ActionCharacter()
 void Character::ActionCharacter::SetName(const char *_name)
 {
     if (name)
-    delete name;
+        delete name;
     name = nullptr;
     if (_name && _name[0])
     {
@@ -141,7 +142,7 @@ void Character::ActionCharacter::ChangeName(const char *_name)
 Character::ActionCharacter::~ActionCharacter()
 {
     if (name)
-    delete name;
+        delete name;
     name = nullptr;
 }
 
@@ -1374,7 +1375,7 @@ bool Character::IsFightEnable() const
     }
     else
     {
-        //!!!		core.Trace("Event \"Location_CharacterIsFight\" -> return type is not int");
+        //!!!        core.Trace("Event \"Location_CharacterIsFight\" -> return type is not int");
         return true;
     }
     return true;
@@ -4151,7 +4152,8 @@ void Character::UpdateAnimation()
                     {
                         core.Send_Message(blade, "ll", MSG_BLADE_TRACE_ON, 0);
                         core.Event("Event_ChrSnd_Attack", "is", GetId(), "fast");
-                        // boal transfer at the moment of hit core.Event ("ChrFgtActApply", "is", GetId (), FGT_ATTACK_FAST);
+                        // boal transfer at the moment of hit core.Event ("ChrFgtActApply", "is", GetId (),
+                        // FGT_ATTACK_FAST);
                         camRotWait = camRotMax = 0.3f;
                         impulse += 5.0f * GetEnemyDirForImpulse();
                     }
@@ -4172,7 +4174,8 @@ void Character::UpdateAnimation()
                     {
                         core.Send_Message(blade, "ll", MSG_BLADE_TRACE_ON, 0);
                         core.Event("Event_ChrSnd_Attack", "is", GetId(), "force");
-                        // boal transfer at the moment of hit core.Event ("ChrFgtActApply", "is", GetId (), FGT_ATTACK_FORCE);
+                        // boal transfer at the moment of hit core.Event ("ChrFgtActApply", "is", GetId (),
+                        // FGT_ATTACK_FORCE);
                         camRotWait = camRotMax = 0.3f;
                         impulse += 2.5f * GetEnemyDirForImpulse();
                     }
@@ -4188,7 +4191,8 @@ void Character::UpdateAnimation()
                     {
                         core.Send_Message(blade, "ll", MSG_BLADE_TRACE_ON, 0);
                         core.Event("Event_ChrSnd_Attack", "is", GetId(), "round");
-                        // boal transfer at the moment of hit core.Event ("ChrFgtActApply", "is", GetId (), FGT_ATTACK_ROUND);
+                        // boal transfer at the moment of hit core.Event ("ChrFgtActApply", "is", GetId (),
+                        // FGT_ATTACK_ROUND);
                         camRotWait = camRotMax = 0.8f;
                     }
                     break;
@@ -4203,7 +4207,8 @@ void Character::UpdateAnimation()
                     {
                         core.Send_Message(blade, "ll", MSG_BLADE_TRACE_ON, 0);
                         core.Event("Event_ChrSnd_Attack", "is", GetId(), "break");
-                        // boal transfer at the moment of hit core.Event ("ChrFgtActApply", "is", GetId (), FGT_ATTACK_BREAK);
+                        // boal transfer at the moment of hit core.Event ("ChrFgtActApply", "is", GetId (),
+                        // FGT_ATTACK_BREAK);
                         camRotWait = camRotMax = 0.3f;
                         impulse += 1.0f * GetEnemyDirForImpulse();
                     }
@@ -4857,7 +4862,8 @@ inline void Character::CheckAttackHit()
             // boal 09/12/06 energy consumption after impact -->
             if (isUseEnergy && fgtCurType != fgt_attack_feintc)
             {
-                // for fgt_attack_feintc there is an overexertion in the animation, and here will be a "feint", and it costs 0
+                // for fgt_attack_feintc there is an overexertion in the animation, and here will be a "feint", and it
+                // costs 0
                 core.Event("ChrFgtActApply", "is", GetId(), aname);
                 isUseEnergy = false;
             }
@@ -4880,7 +4886,7 @@ Character *Character::FindGunTarget(float &kDist, bool bOnlyEnemyTest, bool bAbo
         chrGroup = static_cast<CharactersGroups *>(
             EntityManager::GetEntityPointer(EntityManager::GetEntityId("CharactersGroups")));
         grp = chrGroup->FindGroupIndex(group);
-       if (grp < 0)
+        if (grp < 0)
             return nullptr;
     }
 
@@ -4930,7 +4936,7 @@ Character *Character::FindGunTarget(float &kDist, bool bOnlyEnemyTest, bool bAbo
             j = i;
         }
     }
-    
+
     if (j >= 0)
     {
         if (bAbortIfFriend)

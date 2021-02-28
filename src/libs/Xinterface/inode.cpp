@@ -215,7 +215,7 @@ CINODE *CINODE::FindNode(CINODE *pNod, float x, float y)
     return pNod;
 }
 
-/*CINODE*	CINODE::FindNode(const char* sNodName)
+/*CINODE*    CINODE::FindNode(const char* sNodName)
 {
     if( sNodName!=null && _stricmp(sNodName,m_nodeName)==0 )
         return this;

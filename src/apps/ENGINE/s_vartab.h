@@ -69,7 +69,7 @@ class S_VARTAB
     bool GetVar(VARINFO &vi, uint32_t var_code);  // return true if var registred and loaded
     bool GetVarX(VARINFO &vi, uint32_t var_code); // return true if var registred
     uint32_t MakeHashValue(const char *string);
-    //	void  KeepNameMode(bool on){bKeepName = on;};
+    //    void  KeepNameMode(bool on){bKeepName = on;};
     void Release();
     void InvalidateBySegmentID(uint32_t segment_id);
     uint32_t FindVar(const char *var_name);

@@ -70,7 +70,7 @@ void TM_LIST::Initialize(HWND hwnd, HINSTANCE hinst, uint32_t style, uint32_t st
 {
     Initialize(hwnd, hinst, style, style_ex);
 
-    /*	HICON hiconItem;        // icon for list view items
+    /*    HICON hiconItem;        // icon for list view items
 
         HIMAGELIST himlSmall;   // image list for other views
 

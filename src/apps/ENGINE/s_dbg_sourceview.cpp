@@ -763,7 +763,7 @@ void SOURCE_VIEW::OnPaint()
 
 void SOURCE_VIEW::LineUpDown(bool down, uint32_t _nlines)
 {
-    //	RECT ClientRect;
+    //    RECT ClientRect;
     if (down)
     {
         if ((nTopLine + nClientLinesSize) < (nLinesNum))
@@ -934,7 +934,7 @@ void SOURCE_VIEW::MoveSelection(uint32_t x_pos)
 void SOURCE_VIEW::InvalidateLineSection(uint32_t line, uint32_t r1, uint32_t r2)
 {
     uint32_t from, to;
-    //	long x_diff;
+    //    long x_diff;
 
     if (line >= nLinesNum)
         return;
@@ -979,7 +979,7 @@ void SOURCE_VIEW::InvalidateLineSection(uint32_t line, uint32_t r1, uint32_t r2)
 // work only for active line yet
 void SOURCE_VIEW::DetCursorPos(uint32_t x_pos, uint32_t y_pos)
 {
-    //	long x_diff;
+    //    long x_diff;
 
     if (nActiveLine >= nLinesNum)
         return;

@@ -239,13 +239,13 @@ bool PCS_CONTROLS::GetControlState(const char *control_name, CONTROL_STATE &_sta
             {
               bControlFound = true;
 
-              if(_state_struct.state == CST_INACTIVE)	// if control inactive just copy what we have on new control
+              if(_state_struct.state == CST_INACTIVE)    // if control inactive just copy what we have on new control
               {
                 _state_struct = local_state_struct;
               }
               else
               {
-                if(_state_struct.state == CST_ACTIVE)	// if control already active, check for activated state
+                if(_state_struct.state == CST_ACTIVE)    // if control already active, check for activated state
                 {
                   if(local_state_struct.state == CST_ACTIVATED) _state_struct = local_state_struct;
                 }

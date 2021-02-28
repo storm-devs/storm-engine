@@ -1479,7 +1479,7 @@ int CXI_SCROLLIMAGE::FindClickedImageNum() const
         return 10000;
     for (n = 0; n < m_nSlotsQnt; n++)
     {
-        /*		if( m_Image[pscroll->imageNum].img[n]!=-1 ||
+        /*        if( m_Image[pscroll->imageNum].img[n]!=-1 ||
               m_Image[pscroll->imageNum].saveName!=null ) break;*/
         if (m_Image[pscroll->imageNum].tex[n] != -1 || m_Image[pscroll->imageNum].ptex[n] != nullptr ||
             m_Image[pscroll->imageNum].saveName[n] != nullptr)

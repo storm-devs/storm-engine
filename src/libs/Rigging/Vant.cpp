@@ -237,7 +237,7 @@ uint64_t VANT_BASE::ProcessMessage(MESSAGE &message)
         SetAdd(oldvantQuantity);
 
         nIndx *= 3;
-        //			if(gdata[groupQuantity-1].vantIdx) delete gdata[groupQuantity-1].vantIdx;
+        //            if(gdata[groupQuantity-1].vantIdx) delete gdata[groupQuantity-1].vantIdx;
         gdata[groupQuantity - 1].sIndx = nIndx;
         gdata[groupQuantity - 1].nIndx = 0;
         gdata[groupQuantity - 1].sVert = nVert;

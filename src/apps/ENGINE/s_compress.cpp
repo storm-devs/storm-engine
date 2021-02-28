@@ -219,7 +219,7 @@ bool COMPRESS::AAppendCode(char *&pDest, uint32_t &dwDestinationBufferSize, uint
     dwBitsCoded += dwBitsOnCode;
 
     return true;
-    /*	DWORD nBSize;
+    /*    DWORD nBSize;
       char * pB;
       nBSize = 3;
       if(pDestination == 0) pDestination = (char *)malloc(nBSize);

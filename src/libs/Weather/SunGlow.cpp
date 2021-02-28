@@ -730,10 +730,10 @@ void SUNGLOW::DrawRect(uint32_t dwColor, const CVECTOR &pos, float fSize, float 
     // debug info - a rectangle of lines showing the boundaries of the output rectangle
     RS_LINE lines[8];
     for(n=0; n<8; n++) lines[n].dwColor = 0xFFFFFFFF;
-    lines[0].vPos = vp1;	lines[1].vPos = vp2;
-    lines[2].vPos = vp2;	lines[3].vPos = vp3;
-    lines[4].vPos = vp3;	lines[5].vPos = vp4;
-    lines[6].vPos = vp4;	lines[7].vPos = vp1;
+    lines[0].vPos = vp1;    lines[1].vPos = vp2;
+    lines[2].vPos = vp2;    lines[3].vPos = vp3;
+    lines[4].vPos = vp3;    lines[5].vPos = vp4;
+    lines[6].vPos = vp4;    lines[7].vPos = vp1;
     pRS->DrawLines( lines, 4, "Line" );*/
 }
 

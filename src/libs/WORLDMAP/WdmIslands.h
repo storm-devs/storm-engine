@@ -1,9 +1,9 @@
 //============================================================================================
-//	Spirenkov Maxim, 2001
+//    Spirenkov Maxim, 2001
 //--------------------------------------------------------------------------------------------
-//	Sea Dogs II
+//    Sea Dogs II
 //--------------------------------------------------------------------------------------------
-//	WdmIslands
+//    WdmIslands
 //--------------------------------------------------------------------------------------------
 //
 //============================================================================================
@@ -43,20 +43,20 @@ class WdmIslands : public WdmRenderObject
 
     struct Label
     {
-        std::string text; // Label text
-        CVECTOR pos;      // Label position
-        float l, t, r, b; // Rectangle describing the label in screen coordinates
-        float dl, dt, dr, db; // Offsets to get a rectangle at a known point on the screen
-        float textX, textY;   // Relative text position
-        float iconX, iconY;   // The relative position of the picture
-        float alpha;          // The current state of the rectangle
-        float heightView;     // Height from which the label goes out
-        long font;            // Font index in font array
-        long icon;            // Image index
-        uint32_t weight;      // Offset weight
-        std::string id;       // Label ID
-        uint32_t idHash;      // Hash value of identifier
-        long next;            // Next label on the list
+        std::string text;        // Label text
+        CVECTOR pos;             // Label position
+        float l, t, r, b;        // Rectangle describing the label in screen coordinates
+        float dl, dt, dr, db;    // Offsets to get a rectangle at a known point on the screen
+        float textX, textY;      // Relative text position
+        float iconX, iconY;      // The relative position of the picture
+        float alpha;             // The current state of the rectangle
+        float heightView;        // Height from which the label goes out
+        long font;               // Font index in font array
+        long icon;               // Image index
+        uint32_t weight;         // Offset weight
+        std::string id;          // Label ID
+        uint32_t idHash;         // Hash value of identifier
+        long next;               // Next label on the list
         std::string locatorName; // The name of the locator in which it is located
     };
 

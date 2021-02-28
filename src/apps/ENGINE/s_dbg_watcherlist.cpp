@@ -86,7 +86,7 @@ void WATCHER_LIST::ItemChanged(long Item_index, long Subitem_index)
     char buffer[MAX_PATH];
     char buffer2[MAX_PATH];
     char keyname[32];
-    //	char name[MAX_PATH];
+    //    char name[MAX_PATH];
     // GetItemText(Item_index,0,name,sizeof(name));
     GetItemText(Item_index, Subitem_index, buffer, sizeof(buffer));
     switch (Subitem_index)

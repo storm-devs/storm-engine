@@ -18,12 +18,12 @@ struct Light
     };
 
     CVECTOR color; // Source color
-    CVECTOR p; // Point source position or direction of directional source
-    float att0;  // Attenuation D^0
-    float att1;  // Attenuation D^1
-    float att2;  // Attenuation D^2
-    float range; // Radius of action
-    char *group; // The group the source belongs to
+    CVECTOR p;     // Point source position or direction of directional source
+    float att0;    // Attenuation D^0
+    float att1;    // Attenuation D^1
+    float att2;    // Attenuation D^2
+    float range;   // Radius of action
+    char *group;   // The group the source belongs to
     // Lighting options
     float cosine; // Coefficient of cosine
     float shadow; // shadow Coefficient
@@ -32,7 +32,7 @@ struct Light
     float gamma;  // shadow Gamma
     float curgm;  // Current source gamma
     float curct;  // current Contrast for the source
-    // 
+    //
     Type type;   // Source type
     bool isOn;   // Does the source work
     bool isMark; // To build a list

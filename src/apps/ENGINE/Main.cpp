@@ -26,7 +26,7 @@ bool _loopMain()
     {
         runResult = core.Run();
     }
-    __except( CreateMiniDump( GetExceptionInformation() ), EXCEPTION_EXECUTE_HANDLER )
+    __except (CreateMiniDump(GetExceptionInformation()), EXCEPTION_EXECUTE_HANDLER)
     {
     }
 
@@ -151,7 +151,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
 
                 bool runResult = _loopMain();
 
-                //				if (!isHold && !core.Run())
+                //                if (!isHold && !core.Run())
                 if (!isHold && !runResult)
                 {
                     core.CleanUp();

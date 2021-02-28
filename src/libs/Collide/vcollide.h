@@ -39,7 +39,7 @@ class COLL : public COLLIDE
 #pragma pack(pop)
 
 // API_SERVICE_START("collide service")
-//	DECLARE_MAIN_SERVICE(COLL)
+//    DECLARE_MAIN_SERVICE(COLL)
 // API_SERVICE_END(COLL)
 
 #endif

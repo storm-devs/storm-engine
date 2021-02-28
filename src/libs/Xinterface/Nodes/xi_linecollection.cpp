@@ -92,7 +92,7 @@ void CXI_LINECOLLECTION::ChangePosition(XYRECT &rNewPos)
 
 void CXI_LINECOLLECTION::SaveParametersToIni()
 {
-    //	char pcWriteParam[2048];
+    //    char pcWriteParam[2048];
 
     auto *const pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
@@ -102,8 +102,8 @@ void CXI_LINECOLLECTION::SaveParametersToIni()
     }
 
     // save position
-    //	sprintf_s( pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rect.left, m_rect.top, m_rect.right,
-    // m_rect.bottom ); 	pIni->WriteString( m_nodeName, "position", pcWriteParam );
+    //    sprintf_s( pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rect.left, m_rect.top, m_rect.right,
+    // m_rect.bottom );     pIni->WriteString( m_nodeName, "position", pcWriteParam );
 
     delete pIni;
 }

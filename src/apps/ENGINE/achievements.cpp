@@ -67,7 +67,7 @@ Achievement_t g_Achievements[] = {
     _ACH_ID(ACH_53, "ach_53"),
     _ACH_ID(ACH_54, "ach_54"),
     _ACH_ID(ACH_55, "ach_55"),
-    //	_ACH_ID( ACH_56, "ach_56" ),
+    //    _ACH_ID( ACH_56, "ach_56" ),
     _ACH_ID(ACH_57, "ach_57"),
     _ACH_ID(ACH_58, "ach_58"),
     _ACH_ID(ACH_59, "ach_59"),
@@ -83,8 +83,8 @@ Achievement_t g_Achievements[] = {
     _ACH_ID(ACH_69, "ach_69"),
     _ACH_ID(ACH_70, "ach_70"),
     _ACH_ID(ACH_71, "ach_71"),
-    //	_ACH_ID( ACH_72, "ach_72" ),
-    //	_ACH_ID( ACH_73, "ach_73" ),
+    //    _ACH_ID( ACH_72, "ach_72" ),
+    //    _ACH_ID( ACH_73, "ach_73" ),
     _ACH_ID(ACH_79, "ach_79"),
 };
 
@@ -144,7 +144,7 @@ Stat_t g_Stats[] = {
     _STAT_ID(53, STAT_INT, "stat_53"),
     _STAT_ID(54, STAT_INT, "stat_54"),
     _STAT_ID(55, STAT_INT, "stat_55"),
-    //	_STAT_ID(56, STAT_INT, "stat_56"),
+    //    _STAT_ID(56, STAT_INT, "stat_56"),
     _STAT_ID(57, STAT_INT, "stat_57"),
     _STAT_ID(58, STAT_INT, "stat_58"),
     _STAT_ID(59, STAT_INT, "stat_59"),
@@ -160,8 +160,8 @@ Stat_t g_Stats[] = {
     _STAT_ID(69, STAT_INT, "stat_69"),
     _STAT_ID(70, STAT_INT, "stat_70"),
     _STAT_ID(71, STAT_INT, "stat_71"),
-    //	_STAT_ID(72, STAT_INT, "stat_72"),
-    //	_STAT_ID(73, STAT_INT, "stat_73"),
+    //    _STAT_ID(72, STAT_INT, "stat_72"),
+    //    _STAT_ID(73, STAT_INT, "stat_73"),
     _STAT_ID(79, STAT_INT, "stat_79"),
 };
 
@@ -384,16 +384,16 @@ void CSteamStatsAchievements::OnAchievementStored(UserAchievementStored_t *pCall
     {
         if (pCallback->m_nMaxProgress == 0)
         {
-            //			char buffer[128];
-            //			_snprintf( buffer, 128, "Achievement '%s' unlocked!", pCallback->m_rgchAchievementName );
-            //			trace( buffer );
+            //            char buffer[128];
+            //            _snprintf( buffer, 128, "Achievement '%s' unlocked!", pCallback->m_rgchAchievementName );
+            //            trace( buffer );
         }
         else
         {
-            //			char buffer[128];
-            //			_snprintf( buffer, 128, "Achievement '%s' progress callback, (%d,%d)\n",
-            //			pCallback->m_rgchAchievementName, pCallback->m_nCurProgress, pCallback->m_nMaxProgress );
-            //			trace( buffer );
+            //            char buffer[128];
+            //            _snprintf( buffer, 128, "Achievement '%s' progress callback, (%d,%d)\n",
+            //            pCallback->m_rgchAchievementName, pCallback->m_nCurProgress, pCallback->m_nMaxProgress );
+            //            trace( buffer );
         }
     }
 }

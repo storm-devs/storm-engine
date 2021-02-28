@@ -145,7 +145,7 @@ void TButterflies::Realize(uint32_t dTime)
     renderService->SetTransform(D3DTS_WORLD, static_cast<D3DMATRIX *>(wMatrix));
     renderService->TextureSet(0, texture);
     // for (int i = 0; i<butterfliesCount; i++)
-    //	butterflies[i].Draw(renderService, butterfly);
+    //    butterflies[i].Draw(renderService, butterfly);
     ivManager->DrawBuffers("Butterfly");
 }
 

@@ -24,7 +24,7 @@ DATA::DATA()
     bEntity = false;
     pVCompiler = nullptr;
     Segment_id = 0;
-    //	bRef = false;
+    //    bRef = false;
     pReference = nullptr;
     AttributesClass = nullptr;
     nGlobalVarTableIndex = 0xffffffff;
@@ -62,7 +62,7 @@ DATA::DATA(S_TOKEN_TYPE _element_type)
     bEntity = false;
     pVCompiler = nullptr;
     Segment_id = 0;
-    //	bRef = false;
+    //    bRef = false;
     pReference = nullptr;
     AttributesClass = nullptr;
     nGlobalVarTableIndex = 0xffffffff;
@@ -80,7 +80,7 @@ DATA::DATA(uint32_t _num_of_elements, S_TOKEN_TYPE _element_type)
     Data_type = _element_type;
     pVCompiler = nullptr;
     Segment_id = 0;
-    //	bRef = false;
+    //    bRef = false;
     pReference = nullptr;
     AttributesClass = nullptr;
 
@@ -90,9 +90,9 @@ DATA::DATA(uint32_t _num_of_elements, S_TOKEN_TYPE _element_type)
         ArrayPTR.emplace_back(_element_type);
         // ArrayPTR[n] =
         // new(&ArrayPTR[n])DATA(_element_type);
-        // ArrayPTR[n]->SetVCompiler((VIRTUAL_COMPILER *)0);	// ???! compiler pointer isnt set for this constructor
+        // ArrayPTR[n]->SetVCompiler((VIRTUAL_COMPILER *)0);    // ???! compiler pointer isnt set for this constructor
     }
-    /*	switch(Data_type)
+    /*    switch(Data_type)
       {
         case VAR_INTEGER:
         case VAR_FLOAT:
@@ -557,7 +557,7 @@ bool DATA::Get(long &value, uint32_t index)
       long * pL;
       pL = (long *)ArrayPointer;
       value = pL[index];
-      return true;	*/
+      return true;    */
 }
 
 bool DATA::Get(float &value, uint32_t index)
@@ -585,7 +585,7 @@ bool DATA::Get(float &value, uint32_t index)
     if (index >= Number_of_elements)
     {
         BadIndex(index, Number_of_elements);
-        // Error(INCORRECT_INDEX	);
+        // Error(INCORRECT_INDEX    );
         return false;
     }
     return ArrayPTR[index].Get(value);
@@ -620,18 +620,18 @@ bool DATA::Get(const char *&value, uint32_t index)
     }
     if (index >= Number_of_elements)
     {
-        // Error(INCORRECT_INDEX	);
+        // Error(INCORRECT_INDEX    );
         BadIndex(index, Number_of_elements);
         return false;
     }
     // if(value == null){ Error(INVALID_STRING); return false;}
     return ArrayPTR[index].Get(value);
 
-    /*	char * * ppChar;
+    /*    char * * ppChar;
       ppChar = (char **)ArrayPointer;
       if(ppChar[index] == null) value[0] = 0;
       else strcpy_s(value,ppChar[index]);
-      return true;	*/
+      return true;    */
 }
 
 bool DATA::Set(long value, uint32_t index)
@@ -659,7 +659,7 @@ bool DATA::Set(long value, uint32_t index)
     if (index >= Number_of_elements)
     {
         BadIndex(index, Number_of_elements);
-        // Error(INCORRECT_INDEX	);
+        // Error(INCORRECT_INDEX    );
         return false;
     }
     ArrayPTR[index].Set(value);
@@ -667,7 +667,7 @@ bool DATA::Set(long value, uint32_t index)
     /*long * pL;
     pL = (long *)ArrayPointer;
     pL[index] = value;
-    return true;	*/
+    return true;    */
 }
 
 bool DATA::Set(float value, uint32_t index)
@@ -695,7 +695,7 @@ bool DATA::Set(float value, uint32_t index)
     if (index >= Number_of_elements)
     {
         BadIndex(index, Number_of_elements);
-        // Error(INCORRECT_INDEX	);
+        // Error(INCORRECT_INDEX    );
         return false;
     }
     ArrayPTR[index].Set(value);
@@ -704,7 +704,7 @@ bool DATA::Set(float value, uint32_t index)
     /*float * pF;
     pF = (float *)ArrayPointer;
     pF[index] = value;
-    return true;	*/
+    return true;    */
 }
 
 bool DATA::Set(const char *value, uint32_t index)
@@ -732,7 +732,7 @@ bool DATA::Set(const char *value, uint32_t index)
     if (index >= Number_of_elements)
     {
         BadIndex(index, Number_of_elements);
-        // Error(INCORRECT_INDEX	);
+        // Error(INCORRECT_INDEX    );
         return false;
     }
     if (value == nullptr)
@@ -743,13 +743,13 @@ bool DATA::Set(const char *value, uint32_t index)
     ArrayPTR[index].Set(value);
     return true;
 
-    /*	char * * ppChar;
+    /*    char * * ppChar;
       ppChar = (char **)ArrayPointer;
       if(ppChar[index] != null) delete ppChar[index];
       ppChar[index] = null;
       ppChar[index] = new char[strlen(value) + 1];
       strcpy_s(ppChar[index],value);
-      return true;	*/
+      return true;    */
 }
 
 bool DATA::Set(const char *attribute_name, const char *attribute_value, uint32_t index)
@@ -777,7 +777,7 @@ bool DATA::Set(const char *attribute_name, const char *attribute_value, uint32_t
     if (index >= Number_of_elements)
     {
         BadIndex(index, Number_of_elements);
-        // Error(INCORRECT_INDEX	);
+        // Error(INCORRECT_INDEX    );
         return false;
     }
     ArrayPTR[index].Set(attribute_name, attribute_value);
@@ -815,7 +815,7 @@ bool DATA::Get(const char *attribute_name, const char *&value, uint32_t index)
     if (index >= Number_of_elements)
     {
         BadIndex(index, Number_of_elements);
-        // Error(INCORRECT_INDEX	);
+        // Error(INCORRECT_INDEX    );
         return false;
     }
     return ArrayPTR[index].Get(attribute_name, value);
@@ -853,7 +853,7 @@ bool DATA::Set(entid_t eid, uint32_t index)
     if (index >= Number_of_elements)
     {
         BadIndex(index, Number_of_elements);
-        // Error(INCORRECT_INDEX	);
+        // Error(INCORRECT_INDEX    );
         return false;
     }
     ArrayPTR[index].Set(eid);
@@ -2079,9 +2079,9 @@ bool DATA::Copy(DATA *pV)
         Error(UNINIT_REF);
         return false;
     }
-    //	DWORD n;
-    //	char * * ppChar;
-    //	char * * ppCharpV;
+    //    DWORD n;
+    //    char * * ppChar;
+    //    char * * ppCharpV;
 
     if (pV == nullptr)
     {
@@ -2241,10 +2241,10 @@ bool DATA::Copy(DATA *pV, uint32_t index)
         return false;
     }
 
-    //	char * * ppChar;
-    //	long *   pLong;
-    //	float *  pFloat;
-    //	OBJECT_DESC * pOD;
+    //    char * * ppChar;
+    //    long *   pLong;
+    //    float *  pFloat;
+    //    OBJECT_DESC * pOD;
 
     if (pV == nullptr)
     {
@@ -2278,7 +2278,7 @@ bool DATA::Copy(DATA *pV, uint32_t index)
         return false;
     }
 
-    /*	if(Data_type == VAR_STRING)
+    /*    if(Data_type == VAR_STRING)
       {
         if(sValue) delete sValue; sValue = 0;
       }
@@ -2466,7 +2466,7 @@ DATA *DATA::GetArrayElement(uint32_t index)
     if (index >= Number_of_elements)
     {
         BadIndex(index, Number_of_elements);
-        // Error(INCORRECT_INDEX	);
+        // Error(INCORRECT_INDEX    );
         return nullptr;
     }
     return &ArrayPTR[index];

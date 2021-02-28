@@ -266,7 +266,7 @@ void GEOM::Draw(const PLANE *pl, long np, MATERIAL_FUNC mtf) const
                               object[o].center.z * pl[cp].nrm.z - pl[cp].d;
             if (dist > object[o].radius)
                 break;
-            // if(dist<-object[o].radius)	break;
+            // if(dist<-object[o].radius)    break;
         }
         if (cp < np)
             continue;

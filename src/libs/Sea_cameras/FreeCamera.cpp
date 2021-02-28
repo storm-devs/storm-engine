@@ -127,10 +127,10 @@ void FREE_CAMERA::Move(uint32_t DeltaTime)
     if (cs.state == CST_ACTIVE)
         vPos -= speed * CVECTOR(s0 * c1, -s1, c0 * c1);
 
-    /*if (GetAsyncKeyState(VK_LBUTTON))	vPos += speed*CVECTOR(s0*c1, -s1, c0*c1);
-    if (GetAsyncKeyState(VK_RBUTTON))	vPos -= speed*CVECTOR(s0*c1, -s1, c0*c1);
-    if(GetAsyncKeyState('I'))	vPos += speed*CVECTOR(0.0f, 0.1f , 0.0f);
-    if(GetAsyncKeyState('K'))	vPos += speed*CVECTOR(0.0f, -0.1f, 0.0f);*/
+    /*if (GetAsyncKeyState(VK_LBUTTON))    vPos += speed*CVECTOR(s0*c1, -s1, c0*c1);
+    if (GetAsyncKeyState(VK_RBUTTON))    vPos -= speed*CVECTOR(s0*c1, -s1, c0*c1);
+    if(GetAsyncKeyState('I'))    vPos += speed*CVECTOR(0.0f, 0.1f , 0.0f);
+    if(GetAsyncKeyState('K'))    vPos += speed*CVECTOR(0.0f, -0.1f, 0.0f);*/
 
     // vPos = CVECTOR(0.0f, 20.0f, 0.0f);
 

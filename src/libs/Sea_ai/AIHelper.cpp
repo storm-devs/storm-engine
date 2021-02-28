@@ -66,8 +66,8 @@ void AIHelper::AddCharacter(ATTRIBUTES *pACharacter, ATTRIBUTES *pAMainCharacter
     // uint32_t dwIdx = aCharacters.Find(pACharacter);
     // if (dwIdx != INVALID_ARRAY_INDEX)
     //{
-    //	aMainCharacters[dwIdx] = pAMainCharacter;
-    //	return;
+    //    aMainCharacters[dwIdx] = pAMainCharacter;
+    //    return;
     //}
     const auto it = std::find(aCharacters.begin(), aCharacters.end(), pACharacter); //~!~
     if (it != aCharacters.end())

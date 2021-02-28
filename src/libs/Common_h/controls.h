@@ -141,7 +141,7 @@ class CONTROLS
 
     virtual void AppState(bool state){};
 
-    /*	virtual CONTROL_STATE_TYPE GetControlState(char * control_name, float * pvalue = 0){return CST_INACTIVE;};
+    /*    virtual CONTROL_STATE_TYPE GetControlState(char * control_name, float * pvalue = 0){return CST_INACTIVE;};
       virtual CONTROL_STATE_TYPE GetControlState(long control_code, float * pvalue = 0){return CST_INACTIVE;};
       virtual float GetControlValue(char * control_name, CONTROL_STATE_TYPE * pstate = 0){return 0;};
       virtual float GetControlValue(long control_code, CONTROL_STATE_TYPE * pstate = 0){return 0;};

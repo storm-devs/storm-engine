@@ -1,9 +1,9 @@
 //============================================================================================
-//	Spirenkov Maxim aka Sp-Max Shaman, 2001
+//    Spirenkov Maxim aka Sp-Max Shaman, 2001
 //--------------------------------------------------------------------------------------------
 //
 //--------------------------------------------------------------------------------------------
-//	WideScreen
+//    WideScreen
 //--------------------------------------------------------------------------------------------
 //
 //============================================================================================
@@ -35,7 +35,7 @@ class WideScreen : public Entity
         switch (stage)
         {
             // case Stage::execute:
-            //	Execute(delta); break;
+            //    Execute(delta); break;
         case Stage::realize:
             Realize(delta);
             break;
@@ -50,7 +50,7 @@ class WideScreen : public Entity
     // Encapsulation
     // --------------------------------------------------------------------------------------------
   private:
-    VDX9RENDER *rs; // 
+    VDX9RENDER *rs; //
     float w, h;     // Screen dimensions
     float state;    // Screen state
     float dlt;      // Screen change direction

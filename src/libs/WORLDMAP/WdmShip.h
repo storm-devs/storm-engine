@@ -1,9 +1,9 @@
 //============================================================================================
-//	Spirenkov Maxim, 2001
+//    Spirenkov Maxim, 2001
 //--------------------------------------------------------------------------------------------
-//	Sea Dogs II
+//    Sea Dogs II
 //--------------------------------------------------------------------------------------------
-//	WdmShip
+//    WdmShip
 //--------------------------------------------------------------------------------------------
 //
 //============================================================================================
@@ -15,7 +15,7 @@
 
 // #define WDM_SHIP_MODELL 6.0f // Half the length of the ship
 // #define WDM_SHIP_MODELW 1.9f // Half Ship Width
-// #define WDM_SHIP_RADIUS2		(WDM_SHIP_MODELL*WDM_SHIP_MODELL + WDM_SHIP_MODELW*WDM_SHIP_MODELW)
+// #define WDM_SHIP_RADIUS2        (WDM_SHIP_MODELL*WDM_SHIP_MODELL + WDM_SHIP_MODELW*WDM_SHIP_MODELW)
 
 #define WDM_SHIP_SPEED 7.5f    // Ship speed
 #define WDM_SHIP_TSPEED 1.0f   // Swing speed

@@ -28,7 +28,7 @@ void TSinkSplash::Initialize(INIFILE *_ini, SEA_BASE *_sea)
 void TSinkSplash::Release()
 {
     // if (ps)
-    //	delete ps;
+    //    delete ps;
 }
 
 //--------------------------------------------------------------------
@@ -41,7 +41,7 @@ void TSinkSplash::Start(const CVECTOR &_pos, uint16_t *_indexes, SINK_VERTEX *_v
 
     const auto midY = sea->WaveXZ(center.x, center.z) + sink_effect::SPLASH_MOVE_Y;
     distortDivider = rand(sink_effect::SPLASH_DISTORT_DIVIDER) + 10.0f;
-    //	_VSYSTEM_API->Trace("i=%X, v=%X", _indexes, _vertexes);
+    //    _VSYSTEM_API->Trace("i=%X, v=%X", _indexes, _vertexes);
     const auto stepSize = sink_effect::GRID_LENGTH / sink_effect::GRID_STEPS;
     const auto halfSize = sink_effect::GRID_LENGTH / 2.0f;
     for (uint16_t z = 0; z < sink_effect::GRID_STEPS; ++z)

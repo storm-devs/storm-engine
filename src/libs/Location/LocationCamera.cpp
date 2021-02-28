@@ -1,9 +1,9 @@
 //============================================================================================
-//	Spirenkov Maxim
+//    Spirenkov Maxim
 //--------------------------------------------------------------------------------------------
 //
 //--------------------------------------------------------------------------------------------
-//	LocationCamera
+//    LocationCamera
 //--------------------------------------------------------------------------------------------
 //
 //============================================================================================
@@ -788,18 +788,18 @@ float LocationCamera::TrackPauseProcess()
     auto fOldTime = m_fTrackCurTime;
     m_fTrackCurTime += core.GetDeltaTime() * 0.001f;
 
-    //	for( long nPause=m_nCurPauseIndex+1; nPause<m_aTrackPauses; nPause++ )
-    //		if( m_aTrackPauses[nPause].trackTime <= m_fTrackCurTime ) {
-    //		}
+    //    for( long nPause=m_nCurPauseIndex+1; nPause<m_aTrackPauses; nPause++ )
+    //        if( m_aTrackPauses[nPause].trackTime <= m_fTrackCurTime ) {
+    //        }
 
-      /*if(m_nCurPauseIndex >= 0) // in pause now
-      {
-        if( m_fTrackCurTime >= m_aTrackPauses[m_nCurPauseIndex].pauseTime )
-      }*/
+    /*if(m_nCurPauseIndex >= 0) // in pause now
+    {
+      if( m_fTrackCurTime >= m_aTrackPauses[m_nCurPauseIndex].pauseTime )
+    }*/
 
     return m_fTrackCurTime;
 
-    /*	float fCurTime = m_fTrackCurTime + core.GetDeltaTime() * 0.001f;
+    /*    float fCurTime = m_fTrackCurTime + core.GetDeltaTime() * 0.001f;
 
       if( m_nCurPauseIndex < 0 ) {
         m_nCurPauseIndex = FindPauseIndex(m_fTrackCurTime,fCurTime);

@@ -76,8 +76,8 @@ void DIALOG::DlgTextDescribe::ChangeText(const char *pcText)
         }
     }
     AddToStringArrayLimitedByWidth(&pcText[i], nFontID, fScale, nWindowWidth, asText, &anPageEndIndex, nShowQuantity);
-    //	if( anPageEndIndex.size()!=0 && anPageEndIndex[anPageEndIndex.size()-1]!=asText.size() )
-    //		anPageEndIndex.Add( asText.size() );
+    //    if( anPageEndIndex.size()!=0 && anPageEndIndex[anPageEndIndex.size()-1]!=asText.size() )
+    //        anPageEndIndex.Add( asText.size() );
     nStartIndex = 0;
     nSelectLine = -1;
 }

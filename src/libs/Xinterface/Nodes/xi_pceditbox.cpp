@@ -356,8 +356,8 @@ void CXI_PCEDITBOX::UpdateString(std::string &str)
                   str.STORM_DELETE(m_nEditPos,1);
                 }
                 break;
-              case SpecSymbol_end:	m_nEditPos = str.size(); break;
-              case SpecSymbol_home:	m_nEditPos = 0; break;
+              case SpecSymbol_end:    m_nEditPos = str.size(); break;
+              case SpecSymbol_home:    m_nEditPos = 0; break;
               case SpecSymbol_delete:
                 if( m_nEditPos < (long)str.size() )
                   str.STORM_DELETE( m_nEditPos, 1 );

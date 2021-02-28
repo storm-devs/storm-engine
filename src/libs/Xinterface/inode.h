@@ -120,7 +120,7 @@ class CINODE
     struct COMMAND_REDIRECT
     {
         char *sControlName;
-        // CINODE *			pControl;
+        // CINODE *            pControl;
         int command;
         COMMAND_REDIRECT *next;
 
@@ -141,7 +141,7 @@ class CINODE
         bool bUse;
         int nSound;
         char *sRetControl;
-        // CINODE *		 pRetControl;
+        // CINODE *         pRetControl;
         COMMAND_REDIRECT *pNextControl;
         char *sEventName;
         long nActionDelay;

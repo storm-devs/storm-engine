@@ -1,9 +1,9 @@
 //============================================================================================
-//	Spirenkov Maxim aka Sp-Max Shaman, 2001
+//    Spirenkov Maxim aka Sp-Max Shaman, 2001
 //--------------------------------------------------------------------------------------------
 //
 //--------------------------------------------------------------------------------------------
-//	CameraFollow
+//    CameraFollow
 //--------------------------------------------------------------------------------------------
 //
 //============================================================================================
@@ -68,12 +68,12 @@ class CameraFollow
 
     CVECTOR camPos, lookTo;
     // Camera following the character
-    float camay;     // Current camera direction
-    float camradius; // Current radius
-    bool isBrn;      // If set, then need to respawn the camera
-    float rotSpd;    // Camera movement speed at the time of stop
-    float rotAcc;    // Stop acceleration
-    float kRadInert; // Dependence of the inertia of the radius change on the turning speed
+    float camay;        // Current camera direction
+    float camradius;    // Current radius
+    bool isBrn;         // If set, then need to respawn the camera
+    float rotSpd;       // Camera movement speed at the time of stop
+    float rotAcc;       // Stop acceleration
+    float kRadInert;    // Dependence of the inertia of the radius change on the turning speed
     float kRadInertCur; // Current dependence of inertia
 
     static float fndRadius;     // Current radius when searching

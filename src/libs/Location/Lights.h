@@ -1,9 +1,9 @@
 //============================================================================================
-//	Spirenkov Maxim aka Sp-Max Shaman, 2001
+//    Spirenkov Maxim aka Sp-Max Shaman, 2001
 //--------------------------------------------------------------------------------------------
 //
 //--------------------------------------------------------------------------------------------
-//	Lights
+//    Lights
 //--------------------------------------------------------------------------------------------
 //
 //============================================================================================
@@ -42,14 +42,14 @@ class Lights : public Entity
     {
         D3DCOLORVALUE color; // Current source color
         D3DVECTOR pos;       // Source position
-        float time; // Time since last change of flickering intensity
-        float timeSlow; // Time since the last change in the interpolated intensity
-        float itens;    // Shimmering intensity
-        float itensSlow; // Necessary interpolated intensity
-        float itensDlt;  // Interpolated intensity difference
-        float i;         // Resulting intensity
-        long type;       // Source type index
-        float corona;    // Crown transparency
+        float time;          // Time since last change of flickering intensity
+        float timeSlow;      // Time since the last change in the interpolated intensity
+        float itens;         // Shimmering intensity
+        float itensSlow;     // Necessary interpolated intensity
+        float itensDlt;      // Interpolated intensity difference
+        float i;             // Resulting intensity
+        long type;           // Source type index
+        float corona;        // Crown transparency
     };
 
     // Controllable (moving) source

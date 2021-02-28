@@ -74,7 +74,8 @@ class Triangle
     // Get the next vertex index of a triangle
     static long NextIndex(long index);
 
-    // Find the nearest point in a triangle to a given one, lying in the plane of the triangle, true - inside the triangle
+    // Find the nearest point in a triangle to a given one, lying in the plane of the triangle, true - inside the
+    // triangle
     bool FindClosestPoint(const Vector &trgNormal, Vector &pointOnPlane) const;
 
     // Convert vertex coordinates

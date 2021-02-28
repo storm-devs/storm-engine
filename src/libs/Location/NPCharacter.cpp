@@ -1,9 +1,9 @@
 //============================================================================================
-//	Spirenkov Maxim aka Sp-Max Shaman, 2001
+//    Spirenkov Maxim aka Sp-Max Shaman, 2001
 //--------------------------------------------------------------------------------------------
 //
 //--------------------------------------------------------------------------------------------
-//	NPCaracter
+//    NPCaracter
 //--------------------------------------------------------------------------------------------
 //
 //============================================================================================
@@ -19,19 +19,19 @@
 #define NPC_STOP_GOTODIST 0.3f // Distance in meters at which it is considered that the character has reached the point
 
 // Follow
-#define NPC_STOP_DIST_NPC 1.5f // Distance to the character, at which it is necessary to stop and stand
+#define NPC_STOP_DIST_NPC 1.5f  // Distance to the character, at which it is necessary to stop and stand
 #define NPC_START_DIST_NPC 2.5f // Distance to the character at which to start moving
-#define NPC_RUN_DIST_NPC 10.0f // Distance to the character, at which to run
-#define NPC_WALK_DIST_NPC 4.0f // Distance to the character, at which running turns into walking
+#define NPC_RUN_DIST_NPC 10.0f  // Distance to the character, at which to run
+#define NPC_WALK_DIST_NPC 4.0f  // Distance to the character, at which running turns into walking
 
 // Escape
 #define NPC_STOP_ESCAPE 20.0f // Distance at which to stop the escape
 
 // Fight
-#define NPC_FIGHT_STOP_DIST 2.0f // Distance to the character at which to stop
-#define NPC_FIGHT_GO_DIST 2.4f // Distance to the character, at which to start moving towards the goal
-#define NPC_FIGHT_RUN_DIST 4.0f // Distance to the character, at which to switch to running mode
-#define NPC_FIGHT_WALK_DIST 2.5f // Distance to the character, at which to switch to walking mode
+#define NPC_FIGHT_STOP_DIST 2.0f  // Distance to the character at which to stop
+#define NPC_FIGHT_GO_DIST 2.4f    // Distance to the character, at which to start moving towards the goal
+#define NPC_FIGHT_RUN_DIST 4.0f   // Distance to the character, at which to switch to running mode
+#define NPC_FIGHT_WALK_DIST 2.5f  // Distance to the character, at which to switch to walking mode
 #define NPC_FIGHT_FIRE_DIST 25.0f // Distance to the character, at which you can shoot
 
 // ============================================================================================

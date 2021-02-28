@@ -16,7 +16,7 @@ const char INI_LINEFEED[3] = {0xd, 0xa, 0};
 const char INI_VOIDSYMS[VOIDSYMS_NUM] = {0x20, 0x9};
 char sDriveLetter[8] = "d:\\";
 
-//#define sDriveLetter	"d:\\"
+//#define sDriveLetter    "d:\\"
 
 extern FILE_SERVICE File_Service;
 
@@ -77,7 +77,8 @@ BOOL FILE_SERVICE::_WriteFile(HANDLE hFile, const void *lpBuffer, uint32_t nNumb
     const auto bRes = WriteFile(hFile, lpBuffer, nNumberOfBytesToWrite, (LPDWORD)&dwR, nullptr);
     if (lpNumberOfBytesWritten != nullptr)
         *lpNumberOfBytesWritten = dwR;
-    //	if(dwR != nNumberOfBytesToWrite) if(Exceptions_Mask & _X_NO_FILE_WRITE) throw std::exception(_X_NO_FILE_WRITE);
+    //    if(dwR != nNumberOfBytesToWrite) if(Exceptions_Mask & _X_NO_FILE_WRITE) throw
+    //    std::exception(_X_NO_FILE_WRITE);
     return bRes;
 }
 
@@ -87,7 +88,7 @@ BOOL FILE_SERVICE::_ReadFile(HANDLE hFile, void *lpBuffer, uint32_t nNumberOfByt
     const auto bRes = ReadFile(hFile, lpBuffer, nNumberOfBytesToRead, (LPDWORD)&dwR, nullptr);
     if (lpNumberOfBytesRead != nullptr)
         *lpNumberOfBytesRead = dwR;
-    //	if(dwR != nNumberOfBytesToRead) if(Exceptions_Mask & _X_NO_FILE_READ) throw std::exception(_X_NO_FILE_READ);
+    //    if(dwR != nNumberOfBytesToRead) if(Exceptions_Mask & _X_NO_FILE_READ) throw std::exception(_X_NO_FILE_READ);
     return bRes;
 }
 
@@ -235,7 +236,7 @@ INIFILE *FILE_SERVICE::OpenIniFile(const char *file_name)
     ////GUARD(FILE_SERVICE::OpenIniFile)
     INIFILE_T *inifile_T;
     uint32_t n;
-    //	PUSH_CONTROL(0,0,0)	// core control
+    //    PUSH_CONTROL(0,0,0)    // core control
 
     for (n = 0; n <= Max_File_Index; n++)
     {
@@ -248,7 +249,7 @@ INIFILE *FILE_SERVICE::OpenIniFile(const char *file_name)
             inifile_T = new INIFILE_T(OpenFiles[n]);
             if (inifile_T == nullptr)
                 throw std::exception();
-            //			POP_CONTROL(0)
+            //            POP_CONTROL(0)
             return inifile_T;
         }
     }
@@ -270,7 +271,7 @@ INIFILE *FILE_SERVICE::OpenIniFile(const char *file_name)
         if (Max_File_Index < n)
             Max_File_Index = n;
         OpenFiles[n]->IncReference();
-        //		POP_CONTROL(0)
+        //        POP_CONTROL(0)
         // INIFILE_T object belonged to entity and must be deleted by entity
         // OpenFiles[n]->inifile_T = new INIFILE_T(OpenFiles[n]);
         // if(OpenFiles[n]->inifile_T == null) throw std::exception();
@@ -281,7 +282,7 @@ INIFILE *FILE_SERVICE::OpenIniFile(const char *file_name)
             throw std::exception();
         return inifile_T;
     }
-    //	POP_CONTROL(0)
+    //    POP_CONTROL(0)
     ////UNGUARD
     return nullptr;
 }

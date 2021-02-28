@@ -25,7 +25,7 @@ SAILONE::SAILONE()
     ZERO(sailtrope);
     ZERO(SailPnt);
     WindUp = false;
-    wind_incr = 1; // increment in the array after each sail calculation 
+    wind_incr = 1; // increment in the array after each sail calculation
     wind_add = 1;  // winds by 1
     VertIdx = 0;
     SumWind = 0;
@@ -449,7 +449,7 @@ void SAILONE::FillIndex(uint16_t *pt)
         ss.nnormIndx = (noholeStart - ss.sIndx) / 3;
     }
 
-    //_asm rdtsc	_asm sub eax,rtm	_asm mov rtm,eax
+    //_asm rdtsc    _asm sub eax,rtm    _asm mov rtm,eax
     RDTSC_E(rtm);
     tm.idx = rtm;
 }
@@ -1147,7 +1147,7 @@ void SAILONE::DoRollingStep(uint32_t Delta_Time)
         delta -= static_cast<float>(Delta_Time) * pp->gdata[HostNum].fRollingSpeed;
         if (delta < 0.f)
         {
-            bRolling = true; // now the sail is considered to be folded to the end
+            bRolling = true;                                     // now the sail is considered to be folded to the end
             memcpy(&sgeo, &sroll->oldgeo, sizeof(SAILGEOMETRY)); // return normal geometry parameters
             delete sroll;
             sroll = nullptr;

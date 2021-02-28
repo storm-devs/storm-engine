@@ -1,9 +1,9 @@
 //============================================================================================
-//	Spirenkov Maxim aka Sp-Max Shaman, 2001
+//    Spirenkov Maxim aka Sp-Max Shaman, 2001
 //--------------------------------------------------------------------------------------------
 //
 //--------------------------------------------------------------------------------------------
-//	Sharks
+//    Sharks
 //--------------------------------------------------------------------------------------------
 //
 //============================================================================================
@@ -21,18 +21,18 @@
 #define SHARK_PI 3.14159265f
 #define SHARK_REPULSION 80.0f      // Coefficient of shark repulsion
 #define SHARK_REPULSION_DIST 90.0f // Distance of shark repulsion
-#define SHARK_MAX_RSPEED 8.1f // Maximum speed of movement of the follow point
-#define SHARK_PULL_DIST 100.0f  // Pull distance
-#define SHARK_REPPUL_DIST 10.0f // Repulsion distance
-#define SHARK_MAX_Y 0.01f       // Upper swimming limit
-#define SHARK_MIN_Y -20.0f      // Lower swimming limit
-#define SHARK_MAX_TURN 0.2f     // Maximum turn speed
-#define SHARK_KROW_TURN 2.0f    // Tilt factor when turning max = turn * SHARK_MAX_TURN
-#define SHARK_IMSPD_ACC 0.1f    // Dive acceleration
-#define SHARK_MAX_IMSPD 1.0f    // Maximum dive speed
-#define SHARK_KAX_IMSPD 0.3f    // Angle versus dive speed
-#define SHARK_MAX_SPEED 8.0f    // Shark top speed
-#define SHARK_MIN_SPEED 5.0f    // Minimum shark speed
+#define SHARK_MAX_RSPEED 8.1f      // Maximum speed of movement of the follow point
+#define SHARK_PULL_DIST 100.0f     // Pull distance
+#define SHARK_REPPUL_DIST 10.0f    // Repulsion distance
+#define SHARK_MAX_Y 0.01f          // Upper swimming limit
+#define SHARK_MIN_Y -20.0f         // Lower swimming limit
+#define SHARK_MAX_TURN 0.2f        // Maximum turn speed
+#define SHARK_KROW_TURN 2.0f       // Tilt factor when turning max = turn * SHARK_MAX_TURN
+#define SHARK_IMSPD_ACC 0.1f       // Dive acceleration
+#define SHARK_MAX_IMSPD 1.0f       // Maximum dive speed
+#define SHARK_KAX_IMSPD 0.3f       // Angle versus dive speed
+#define SHARK_MAX_SPEED 8.0f       // Shark top speed
+#define SHARK_MIN_SPEED 5.0f       // Minimum shark speed
 
 //============================================================================================
 // Shark

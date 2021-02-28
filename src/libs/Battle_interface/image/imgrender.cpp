@@ -87,7 +87,7 @@ void BIImageRender::DeleteMaterial(BIImageMaterial *pMat)
 {
     // long n = m_apMaterial.Find( pMat );
     // if( n >= 0 )
-    //	m_apMaterial.DelIndex( n );
+    //    m_apMaterial.DelIndex( n );
     const auto it = std::find(m_apMaterial.begin(), m_apMaterial.end(), pMat);
     if (it != m_apMaterial.end())
         m_apMaterial.erase(it);
@@ -159,7 +159,7 @@ void BIImageRender::DeleteString(IBIString *str)
 {
     // long n = m_apStrings.Find( str );
     // if( n >= 0 )
-    //	m_apStrings.DelIndex( n );
+    //    m_apStrings.DelIndex( n );
     const auto it = std::find(m_apStrings.begin(), m_apStrings.end(), str);
     if (it != m_apStrings.end())
         m_apStrings.erase(it);

@@ -498,7 +498,7 @@ void SEPS_PS::UpdateVertexBuffer()
 
 void SEPS_PS::Execute(uint32_t DeltaTime)
 {
-    /*if(Delay > 0) {	Delay = Delay - DeltaTime;	return;	}
+    /*if(Delay > 0) {    Delay = Delay - DeltaTime;    return;    }
 
     if(bLinkEmitter)
     {
@@ -707,7 +707,7 @@ void SEPS_PS::ProcessParticles(uint32_t DeltaTime)
         {
           Particle[n].pos += (DeltaTime*fWindEffect*fWindPower)*vWindDirection;
         }*/
-        // bComplete = false;	// still have particles to run
+        // bComplete = false;    // still have particles to run
     }
 
     // core.Trace("Delta: %d",DeltaTime);

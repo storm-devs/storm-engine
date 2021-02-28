@@ -162,7 +162,7 @@ void AIShipCameraController::Realize(float fDeltaTime)
     CMatrix m;
     RS_RECT rCam;
 
-    // AIHelper::pRS->GetTransform(D3DTS_VIEW, m); m.Transposition();	CVECTOR vZ = m.Vz();
+    // AIHelper::pRS->GetTransform(D3DTS_VIEW, m); m.Transposition();    CVECTOR vZ = m.Vz();
     const auto mOldView = m;
     AIHelper::pRS->GetTransform(D3DTS_VIEW, mOldView);
     m = mOldView;

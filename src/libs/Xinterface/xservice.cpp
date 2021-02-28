@@ -26,7 +26,7 @@ void XSERVICE::Init(VDX9RENDER *pRS, long lWidth, long lHeight)
     m_pRS = pRS;
 
     // get the size of the output window
-    /*	D3DVIEWPORT9 vp;
+    /*    D3DVIEWPORT9 vp;
       m_pRS->GetViewport(&vp);
       m_fWAdd = m_fWScale = (float)vp.Width/lWidth;
       m_fHAdd = m_fHScale = (float)vp.Height/lHeight;
@@ -36,9 +36,9 @@ void XSERVICE::Init(VDX9RENDER *pRS, long lWidth, long lHeight)
       while(m_fHAdd>1.f) m_fHAdd-=1.f;
       while(m_fHAdd<0.f) m_fHAdd+=1.f;
       if(m_fWAdd>0.5f) m_fWAdd = 2.f-m_fWAdd*2.f;
-      else	m_fWAdd *= 2.f;
+      else    m_fWAdd *= 2.f;
       if(m_fHAdd>0.5f) m_fHAdd = 2.f-m_fHAdd*2.f;
-      else	m_fHAdd *= 2.f;
+      else    m_fHAdd *= 2.f;
       m_fWAdd *= ERROR_MUL;
       m_fHAdd *= ERROR_MUL;
     */
@@ -383,7 +383,7 @@ long XSERVICE::GetImageNum(const char *sImageListName, const char *sImageName)
 }
 
 //============================================================================
-//	COMBINE STRINGS CLASS
+//    COMBINE STRINGS CLASS
 //============================================================================
 
 ComboString::ComboString()

@@ -14,10 +14,10 @@
 #pragma pack(push, 1)
 
 // ============================================================================================
-// 
+//
 // Ptc file structure:
-// 
-// 
+//
+//
 // PtcHeader - File Header
 // PtcTriangle[PtcHeader.numTriangles]
 // PtcVertex[PtcHeader.numVerteces]
@@ -26,7 +26,7 @@
 // unsigned short [numIndeces]
 // path lines
 // PtcMaterials
-// 
+//
 // ============================================================================================
 
 #define PTC_ID ' CTP'          // File ID

@@ -435,7 +435,7 @@ void SEAFOAM_PS::UpdateVertexBuffer()
 
 void SEAFOAM_PS::Execute(uint32_t DeltaTime)
 {
-    /*if(Delay > 0) {	Delay = Delay - DeltaTime;	return;	}
+    /*if(Delay > 0) {    Delay = Delay - DeltaTime;    return;    }
 
     if(bLinkEmitter)
     {
@@ -642,7 +642,7 @@ void SEAFOAM_PS::ProcessParticles(uint32_t DeltaTime)
         {
           Particle[n].pos += (DeltaTime*fWindEffect*fWindPower)*vWindDirection;
         }*/
-        // bComplete = false;	// still have particles to run
+        // bComplete = false;    // still have particles to run
     }
 
     // core.Trace("Delta: %d",DeltaTime);

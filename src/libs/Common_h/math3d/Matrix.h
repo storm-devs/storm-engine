@@ -143,7 +143,8 @@ class Matrix
     bool BuildView(Vector lookFrom, Vector lookTo, Vector upVector);
     // Calculate the orientation matrix of an object having a z direction and an up direction
     bool BuildOrient(Vector zAxisDirection, Vector upVector);
-    // Calculate the matrix of the object having the position of the point where the object is directed and the direction up
+    // Calculate the matrix of the object having the position of the point where the object is directed and the
+    // direction up
     bool BuildOriented(Vector position, Vector lookTo, Vector upVector);
     // Calculate matrix for mirroring geometry
     Matrix &BuildMirror(float Nx, float Ny, float Nz, float D);
@@ -392,25 +393,25 @@ inline Matrix &Matrix::SetIdentity()
 
     /*_asm
     {
-      mov		eax, this
-      mov		ecx, 0x3f800000
-      xor		ebx, ebx
-      mov		[eax + 0*4], ecx
-      mov		[eax + 1*4], ebx
-      mov		[eax + 2*4], ebx
-      mov		[eax + 3*4], ebx
-      mov		[eax + 4*4], ebx
-      mov		[eax + 5*4], ecx
-      mov		[eax + 6*4], ebx
-      mov		[eax + 7*4], ebx
-      mov		[eax + 8*4], ebx
-      mov		[eax + 9*4], ebx
-      mov		[eax + 10*4], ecx
-      mov		[eax + 11*4], ebx
-      mov		[eax + 12*4], ebx
-      mov		[eax + 13*4], ebx
-      mov		[eax + 14*4], ebx
-      mov		[eax + 15*4], ecx
+      mov        eax, this
+      mov        ecx, 0x3f800000
+      xor        ebx, ebx
+      mov        [eax + 0*4], ecx
+      mov        [eax + 1*4], ebx
+      mov        [eax + 2*4], ebx
+      mov        [eax + 3*4], ebx
+      mov        [eax + 4*4], ebx
+      mov        [eax + 5*4], ecx
+      mov        [eax + 6*4], ebx
+      mov        [eax + 7*4], ebx
+      mov        [eax + 8*4], ebx
+      mov        [eax + 9*4], ebx
+      mov        [eax + 10*4], ecx
+      mov        [eax + 11*4], ebx
+      mov        [eax + 12*4], ebx
+      mov        [eax + 13*4], ebx
+      mov        [eax + 14*4], ebx
+      mov        [eax + 15*4], ecx
     }*/
     return *this;
 }
@@ -435,42 +436,42 @@ inline Matrix &Matrix::Set(const Matrix &matrix)
     this->matrix[14] = matrix.matrix[14];
     this->matrix[15] = matrix.matrix[15];
 
-    /*	_asm
+    /*    _asm
       {
-        mov		esi, matrix
-        mov		edi, this
-        mov		eax, [esi + 0*4]
-        mov		ebx, [esi + 1*4]
-        mov		ecx, [esi + 2*4]
-        mov		edx, [esi + 3*4]
-        mov		[edi + 0*4], eax
-        mov		[edi + 1*4], ebx
-        mov		[edi + 2*4], ecx
-        mov		[edi + 3*4], edx
-        mov		eax, [esi + 4*4]
-        mov		ebx, [esi + 5*4]
-        mov		ecx, [esi + 6*4]
-        mov		edx, [esi + 7*4]
-        mov		[edi + 4*4], eax
-        mov		[edi + 5*4], ebx
-        mov		[edi + 6*4], ecx
-        mov		[edi + 7*4], edx
-        mov		eax, [esi + 8*4]
-        mov		ebx, [esi + 9*4]
-        mov		ecx, [esi + 10*4]
-        mov		edx, [esi + 11*4]
-        mov		[edi + 8*4], eax
-        mov		[edi + 9*4], ebx
-        mov		[edi + 10*4], ecx
-        mov		[edi + 11*4], edx
-        mov		eax, [esi + 12*4]
-        mov		ebx, [esi + 13*4]
-        mov		ecx, [esi + 14*4]
-        mov		edx, [esi + 15*4]
-        mov		[edi + 12*4], eax
-        mov		[edi + 13*4], ebx
-        mov		[edi + 14*4], ecx
-        mov		[edi + 15*4], edx
+        mov        esi, matrix
+        mov        edi, this
+        mov        eax, [esi + 0*4]
+        mov        ebx, [esi + 1*4]
+        mov        ecx, [esi + 2*4]
+        mov        edx, [esi + 3*4]
+        mov        [edi + 0*4], eax
+        mov        [edi + 1*4], ebx
+        mov        [edi + 2*4], ecx
+        mov        [edi + 3*4], edx
+        mov        eax, [esi + 4*4]
+        mov        ebx, [esi + 5*4]
+        mov        ecx, [esi + 6*4]
+        mov        edx, [esi + 7*4]
+        mov        [edi + 4*4], eax
+        mov        [edi + 5*4], ebx
+        mov        [edi + 6*4], ecx
+        mov        [edi + 7*4], edx
+        mov        eax, [esi + 8*4]
+        mov        ebx, [esi + 9*4]
+        mov        ecx, [esi + 10*4]
+        mov        edx, [esi + 11*4]
+        mov        [edi + 8*4], eax
+        mov        [edi + 9*4], ebx
+        mov        [edi + 10*4], ecx
+        mov        [edi + 11*4], edx
+        mov        eax, [esi + 12*4]
+        mov        ebx, [esi + 13*4]
+        mov        ecx, [esi + 14*4]
+        mov        edx, [esi + 15*4]
+        mov        [edi + 12*4], eax
+        mov        [edi + 13*4], ebx
+        mov        [edi + 14*4], ecx
+        mov        [edi + 15*4], edx
       }*/
     return *this;
 }
@@ -654,27 +655,27 @@ inline Matrix &Matrix::BuildProjection(float viewAngle, float vpWidth, float vpH
     matrix[14] = 0;
     matrix[15] = 0;
 
-    /*	_asm
+    /*    _asm
       {
-        mov		eax, this
-        xor		ebx, ebx
-        xor		edx, edx
-        mov		[eax + 0*4], ebx
-        mov		[eax + 1*4], edx
-        mov		[eax + 2*4], ebx
-        mov		[eax + 3*4], edx
-        mov		[eax + 4*4], ebx
-        mov		[eax + 5*4], edx
-        mov		[eax + 6*4], ebx
-        mov		[eax + 7*4], edx
-        mov		[eax + 8*4], ebx
-        mov		[eax + 9*4], edx
-        mov		[eax + 10*4], ebx
-        mov		[eax + 11*4], edx
-        mov		[eax + 12*4], ebx
-        mov		[eax + 13*4], edx
-        mov		[eax + 14*4], ebx
-        mov		[eax + 15*4], edx
+        mov        eax, this
+        xor        ebx, ebx
+        xor        edx, edx
+        mov        [eax + 0*4], ebx
+        mov        [eax + 1*4], edx
+        mov        [eax + 2*4], ebx
+        mov        [eax + 3*4], edx
+        mov        [eax + 4*4], ebx
+        mov        [eax + 5*4], edx
+        mov        [eax + 6*4], ebx
+        mov        [eax + 7*4], edx
+        mov        [eax + 8*4], ebx
+        mov        [eax + 9*4], edx
+        mov        [eax + 10*4], ebx
+        mov        [eax + 11*4], edx
+        mov        [eax + 12*4], ebx
+        mov        [eax + 13*4], edx
+        mov        [eax + 14*4], ebx
+        mov        [eax + 15*4], edx
       }*/
     // Filling in the matrix
     const auto Q = static_cast<double>(zFar) / static_cast<double>(zFar - zNear);
@@ -706,27 +707,27 @@ inline Matrix &Matrix::BuildOrtoProjection(float vpWidth, float vpHeight, float 
     matrix[13] = 0;
     matrix[14] = 0;
     matrix[15] = 0;
-    /*	_asm
+    /*    _asm
       {
-        mov		eax, this
-          xor		ebx, ebx
-          xor		edx, edx
-          mov		[eax + 0*4], ebx
-          mov		[eax + 1*4], edx
-          mov		[eax + 2*4], ebx
-          mov		[eax + 3*4], edx
-          mov		[eax + 4*4], ebx
-          mov		[eax + 5*4], edx
-          mov		[eax + 6*4], ebx
-          mov		[eax + 7*4], edx
-          mov		[eax + 8*4], ebx
-          mov		[eax + 9*4], edx
-          mov		[eax + 10*4], ebx
-          mov		[eax + 11*4], edx
-          mov		[eax + 12*4], ebx
-          mov		[eax + 13*4], edx
-          mov		[eax + 14*4], ebx
-          mov		[eax + 15*4], edx
+        mov        eax, this
+          xor        ebx, ebx
+          xor        edx, edx
+          mov        [eax + 0*4], ebx
+          mov        [eax + 1*4], edx
+          mov        [eax + 2*4], ebx
+          mov        [eax + 3*4], edx
+          mov        [eax + 4*4], ebx
+          mov        [eax + 5*4], edx
+          mov        [eax + 6*4], ebx
+          mov        [eax + 7*4], edx
+          mov        [eax + 8*4], ebx
+          mov        [eax + 9*4], edx
+          mov        [eax + 10*4], ebx
+          mov        [eax + 11*4], edx
+          mov        [eax + 12*4], ebx
+          mov        [eax + 13*4], edx
+          mov        [eax + 14*4], ebx
+          mov        [eax + 15*4], edx
       }*/
     // Filling in the matrix
     const auto Q = 1.0 / static_cast<double>(zFar - zNear);
@@ -759,27 +760,27 @@ inline Matrix &Matrix::BuildShadowProjection(float viewAngle, float vpWidth, flo
     matrix[13] = 0;
     matrix[14] = 0;
     matrix[15] = 0;
-    /*	_asm
+    /*    _asm
       {
-        mov		eax, this
-          xor		ebx, ebx
-          xor		edx, edx
-          mov		[eax + 0*4], ebx
-          mov		[eax + 1*4], edx
-          mov		[eax + 2*4], ebx
-          mov		[eax + 3*4], edx
-          mov		[eax + 4*4], ebx
-          mov		[eax + 5*4], edx
-          mov		[eax + 6*4], ebx
-          mov		[eax + 7*4], edx
-          mov		[eax + 8*4], ebx
-          mov		[eax + 9*4], edx
-          mov		[eax + 10*4], ebx
-          mov		[eax + 11*4], edx
-          mov		[eax + 12*4], ebx
-          mov		[eax + 13*4], edx
-          mov		[eax + 14*4], ebx
-          mov		[eax + 15*4], edx
+        mov        eax, this
+          xor        ebx, ebx
+          xor        edx, edx
+          mov        [eax + 0*4], ebx
+          mov        [eax + 1*4], edx
+          mov        [eax + 2*4], ebx
+          mov        [eax + 3*4], edx
+          mov        [eax + 4*4], ebx
+          mov        [eax + 5*4], edx
+          mov        [eax + 6*4], ebx
+          mov        [eax + 7*4], edx
+          mov        [eax + 8*4], ebx
+          mov        [eax + 9*4], edx
+          mov        [eax + 10*4], ebx
+          mov        [eax + 11*4], edx
+          mov        [eax + 12*4], ebx
+          mov        [eax + 13*4], edx
+          mov        [eax + 14*4], ebx
+          mov        [eax + 15*4], edx
       }*/
     // Filling in the matrix
     const auto Q = 1.0 / static_cast<double>(zFar - zNear);
@@ -1074,28 +1075,28 @@ inline Matrix &Matrix::Inverse(const Matrix &mtx)
     matrix[9] = mtx.matrix[6];
     matrix[10] = mtx.matrix[10];
 
-    /*	_asm
+    /*    _asm
       {
-        mov		eax, mtx
-        mov		ebx, this
-        mov		edx, [eax + 0*4]
-        mov		ecx, [eax + 1*4]
-        mov		esi, [eax + 2*4]
-        mov		[ebx + 0*4], edx
-        mov		[ebx + 4*4], ecx
-        mov		[ebx + 8*4], esi
-        mov		edx, [eax + 4*4]
-        mov		ecx, [eax + 5*4]
-        mov		esi, [eax + 6*4]
-        mov		[ebx + 1*4], edx
-        mov		[ebx + 5*4], ecx
-        mov		[ebx + 9*4], esi
-        mov		edx, [eax + 8*4]
-        mov		ecx, [eax + 9*4]
-        mov		esi, [eax + 10*4]
-        mov		[ebx + 2*4], edx
-        mov		[ebx + 6*4], ecx
-        mov		[ebx + 10*4], esi
+        mov        eax, mtx
+        mov        ebx, this
+        mov        edx, [eax + 0*4]
+        mov        ecx, [eax + 1*4]
+        mov        esi, [eax + 2*4]
+        mov        [ebx + 0*4], edx
+        mov        [ebx + 4*4], ecx
+        mov        [ebx + 8*4], esi
+        mov        edx, [eax + 4*4]
+        mov        ecx, [eax + 5*4]
+        mov        esi, [eax + 6*4]
+        mov        [ebx + 1*4], edx
+        mov        [ebx + 5*4], ecx
+        mov        [ebx + 9*4], esi
+        mov        edx, [eax + 8*4]
+        mov        ecx, [eax + 9*4]
+        mov        esi, [eax + 10*4]
+        mov        [ebx + 2*4], edx
+        mov        [ebx + 6*4], ecx
+        mov        [ebx + 10*4], esi
       }*/
     return *this;
 }
@@ -1161,33 +1162,33 @@ inline Matrix &Matrix::Transposition()
     matrix[11] = matrix[14];
     matrix[14] = tmp;
 
-    /*	_asm
+    /*    _asm
       {
-        mov		eax, this
-        mov		ebx, [eax + 1*4]
-        mov		ecx, [eax + 2*4]
-        mov		esi, [eax + 4*4]
-        mov		edi, [eax + 8*4]
-        mov		[eax + 4*4], ebx
-        mov		[eax + 8*4], ecx
-        mov		[eax + 1*4], esi
-        mov		[eax + 2*4], edi
-        mov		ebx, [eax + 3*4]
-        mov		ecx, [eax + 6*4]
-        mov		esi, [eax + 12*4]
-        mov		edi, [eax + 9*4]
-        mov		[eax + 12*4], ebx
-        mov		[eax + 9*4], ecx
-        mov		[eax + 3*4], esi
-        mov		[eax + 6*4], edi
-        mov		ebx, [eax + 7*4]
-        mov		ecx, [eax + 11*4]
-        mov		esi, [eax + 13*4]
-        mov		edi, [eax + 14*4]
-        mov		[eax + 13*4], ebx
-        mov		[eax + 14*4], ecx
-        mov		[eax + 7*4], esi
-        mov		[eax + 11*4], edi
+        mov        eax, this
+        mov        ebx, [eax + 1*4]
+        mov        ecx, [eax + 2*4]
+        mov        esi, [eax + 4*4]
+        mov        edi, [eax + 8*4]
+        mov        [eax + 4*4], ebx
+        mov        [eax + 8*4], ecx
+        mov        [eax + 1*4], esi
+        mov        [eax + 2*4], edi
+        mov        ebx, [eax + 3*4]
+        mov        ecx, [eax + 6*4]
+        mov        esi, [eax + 12*4]
+        mov        edi, [eax + 9*4]
+        mov        [eax + 12*4], ebx
+        mov        [eax + 9*4], ecx
+        mov        [eax + 3*4], esi
+        mov        [eax + 6*4], edi
+        mov        ebx, [eax + 7*4]
+        mov        ecx, [eax + 11*4]
+        mov        esi, [eax + 13*4]
+        mov        edi, [eax + 14*4]
+        mov        [eax + 13*4], ebx
+        mov        [eax + 14*4], ecx
+        mov        [eax + 7*4], esi
+        mov        [eax + 11*4], edi
       }*/
     return *this;
 }
@@ -1206,21 +1207,21 @@ inline Matrix &Matrix::Transposition3X3()
     matrix[6] = matrix[9];
     matrix[9] = tmp;
 
-    /*	_asm
+    /*    _asm
       {
-        mov		eax, this
-        mov		ebx, [eax + 4*4]
-        mov		ecx, [eax + 8*4]
-        mov		esi, [eax + 1*4]
-        mov		edi, [eax + 2*4]
-        mov		[eax + 1*4], ebx
-        mov		[eax + 2*4], ecx
-        mov		[eax + 4*4], esi
-        mov		[eax + 8*4], edi
-        mov		ebx, [eax + 6*4]
-        mov		esi, [eax + 9*4]
-        mov		[eax + 9*4], ebx
-        mov		[eax + 6*4], esi
+        mov        eax, this
+        mov        ebx, [eax + 4*4]
+        mov        ecx, [eax + 8*4]
+        mov        esi, [eax + 1*4]
+        mov        edi, [eax + 2*4]
+        mov        [eax + 1*4], ebx
+        mov        [eax + 2*4], ecx
+        mov        [eax + 4*4], esi
+        mov        [eax + 8*4], edi
+        mov        ebx, [eax + 6*4]
+        mov        esi, [eax + 9*4]
+        mov        [eax + 9*4], ebx
+        mov        [eax + 6*4], esi
       }*/
     return *this;
 }
@@ -1242,28 +1243,28 @@ inline Matrix &Matrix::SetRotate(const Matrix &mtx)
     matrix[9] = mtx.matrix[9];
     matrix[10] = mtx.matrix[10];
 
-    /*	_asm
+    /*    _asm
       {
-        mov		esi, mtx
-        mov		edi, this
-        mov		ebx, [esi + 0*4]
-        mov		ecx, [esi + 1*4]
-        mov		edx, [esi + 2*4]
-        mov		[edi + 0*4], ebx
-        mov		[edi + 1*4], ecx
-        mov		[edi + 2*4], edx
-        mov		ebx, [esi + 4*4]
-        mov		ecx, [esi + 5*4]
-        mov		edx, [esi + 6*4]
-        mov		[edi + 4*4], ebx
-        mov		[edi + 5*4], ecx
-        mov		[edi + 6*4], edx
-        mov		ebx, [esi + 8*4]
-        mov		ecx, [esi + 9*4]
-        mov		edx, [esi + 10*4]
-        mov		[edi + 8*4], ebx
-        mov		[edi + 9*4], ecx
-        mov		[edi + 10*4], edx
+        mov        esi, mtx
+        mov        edi, this
+        mov        ebx, [esi + 0*4]
+        mov        ecx, [esi + 1*4]
+        mov        edx, [esi + 2*4]
+        mov        [edi + 0*4], ebx
+        mov        [edi + 1*4], ecx
+        mov        [edi + 2*4], edx
+        mov        ebx, [esi + 4*4]
+        mov        ecx, [esi + 5*4]
+        mov        edx, [esi + 6*4]
+        mov        [edi + 4*4], ebx
+        mov        [edi + 5*4], ecx
+        mov        [edi + 6*4], edx
+        mov        ebx, [esi + 8*4]
+        mov        ecx, [esi + 9*4]
+        mov        edx, [esi + 10*4]
+        mov        [edi + 8*4], ebx
+        mov        [edi + 9*4], ecx
+        mov        [edi + 10*4], edx
       }*/
     return *this;
 }

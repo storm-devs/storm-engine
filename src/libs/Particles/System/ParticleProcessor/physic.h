@@ -1,7 +1,7 @@
 #ifndef SIMPLE_PHYSIC_MATH
 #define SIMPLE_PHYSIC_MATH
 
-// 
+//
 // ================================================================
 // Poisition - The position in which the particle is located
 // Velocity - Current speed

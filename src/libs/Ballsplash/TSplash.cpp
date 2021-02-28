@@ -7,9 +7,9 @@ float dU = 1.f / SPLASH_FRAMES_COUNT;
 
 int TSplash::buffersUsage = 0;
 /*
-WORD		*TSplash::iBuffer       = 0;
+WORD        *TSplash::iBuffer       = 0;
 GRID_VERTEX *TSplash::vBuffer       = 0;
-WORD		*TSplash::iBuffer2      = 0;
+WORD        *TSplash::iBuffer2      = 0;
 GRID_VERTEX *TSplash::vBuffer2      = 0;
 */
 long TSplash::iBuffer = 0;

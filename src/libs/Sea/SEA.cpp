@@ -634,8 +634,8 @@ bool SEA::isVisibleBBox(const CVECTOR &vCenter, const CVECTOR &v1, const CVECTOR
     float fR2 = sqrtf(Sqr((vp1.x - vp2.x) * 0.5f) + Sqr((vp1.z - vp2.z)) * 0.5f);*/
 
     // if sphere not visible - return
-    //	for (uint32_t i=0; i<dwNumFrustumPlanes; i++)
-    //		if ((pFrustumPlanes[i].n | vc) - pFrustumPlanes[i].d < -fR2) return false;
+    //    for (uint32_t i=0; i<dwNumFrustumPlanes; i++)
+    //        if ((pFrustumPlanes[i].n | vc) - pFrustumPlanes[i].d < -fR2) return false;
 
     // check box visible
     long vc = 0xFF;
@@ -763,7 +763,7 @@ inline void PrefetchNTA(uint32_t dwAddress)
 {
     /*_asm
     {
-      mov	eax, dwAddress
+      mov    eax, dwAddress
       and esi, ~15d
       //add esi, 128d
       prefetchnta [esi]
@@ -1860,7 +1860,7 @@ void SEA::Realize(uint32_t dwDeltaTime)
         aTrashRects.clear();
         for (long i = 0; i < aSeaTrash.size(); i++)
         {
-            //	RS_RECT & r = aTrashRects[aTrashRects.Add()];
+            //    RS_RECT & r = aTrashRects[aTrashRects.Add()];
             aTrashRects.push_back(RS_RECT{});
             RS_RECT &r = aTrashRects.back();
 

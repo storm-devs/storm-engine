@@ -134,7 +134,7 @@ class CXI_FORMATEDTEXT : public CINODE
 
     bool m_bFrized;
 
-    // void	SetCurLine(long nNewCurLine);
+    // void    SetCurLine(long nNewCurLine);
     void SetCurLine(STRING_DESCRIBER *pNewCurLine);
     void ScrollerUpdate();
 };

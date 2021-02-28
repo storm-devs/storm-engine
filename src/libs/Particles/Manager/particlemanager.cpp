@@ -235,8 +235,8 @@ void ParticleManager::Execute(float DeltaTime)
     pRS->TextureSet(0, pProjectTexture);
     pRS->TextureSet(1, pProjectTexture);
     pRS->TextureSet(3, pProjectTextureNormalMap);
-    //	pRS->SetTexture(0, pProjectTexture);
-    //	pRS->SetTexture(1, pProjectTexture);
+    //    pRS->SetTexture(0, pProjectTexture);
+    //    pRS->SetTexture(1, pProjectTexture);
     BB_Processor->Draw();
     MDL_Processor->Draw();
 
@@ -284,7 +284,7 @@ void ParticleManager::Execute(float DeltaTime)
         if (GraphRead != 0)
         {
             float AverageReadTime = static_cast<float>(nowUpdateTime) / static_cast<float>(GraphRead);
-            //			pRS->Print(0, 128, 0xFFFFFFFF, "Average read time - %3.2f", AverageReadTime);
+            //            pRS->Print(0, 128, 0xFFFFFFFF, "Average read time - %3.2f", AverageReadTime);
         }
     }
 
@@ -326,7 +326,7 @@ IParticleSystem *ParticleManager::CreateParticleSystemEx(const char *FileName, c
         return nullptr;
     }
 
-    //	core.Trace("Create system '%s'", FileName);
+    //    core.Trace("Create system '%s'", FileName);
     ParticleSystem *pSys = CreateParticleSystemFromDataSource(pDataSource);
     pSys->SetName(FileName);
     return pSys;

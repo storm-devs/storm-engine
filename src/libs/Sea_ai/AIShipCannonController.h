@@ -39,7 +39,7 @@ class AIShipCannonController
         // each frame parameters
         float fSpeedV0;         // current fire speed
         float fMaxFireDistance; // maximum fire distance
-        // CVECTOR				vAngleVectors[2];		// fire cone (2d(x,z))
+        // CVECTOR                vAngleVectors[2];        // fire cone (2d(x,z))
         CVECTOR vDirection;
 
         std::vector<AICannon> aCannons; // cannons container for this bort

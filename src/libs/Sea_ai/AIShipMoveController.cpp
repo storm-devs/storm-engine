@@ -26,7 +26,7 @@ bool AIShipMoveController::Init()
 void AIShipMoveController::Execute(float fDeltaTime)
 {
     // return;
-    // entid_t	eid;
+    // entid_t    eid;
     // core.FindClass(&eid,"sea",0);
     // SEA_BASE * pSea = (SEA_BASE*)EntityManager::GetEntityPointer(eid);
     // MODEL* pModel = (MODEL*)EntityManager::GetEntityPointer(eidSphere);
@@ -109,7 +109,7 @@ void AIShipMoveController::Realize(float fDeltaTime)
 
     if (!GetAIShip()->isMainCharacter())
     {
-      std::vector<RS_LINE>	aLines(_FL_);
+      std::vector<RS_LINE>    aLines(_FL_);
       {
         RS_LINE * pRL = &aLines[aLines.Add()];
         pRL->dwColor = 0xFFFFFF;

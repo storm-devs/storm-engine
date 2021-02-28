@@ -145,7 +145,7 @@ void DataSource::Load(MemFile *pMemFile)
         switch (emType)
         {
         case POINT_EMITTER: {
-            //				core.Trace ("Particles info: Point emitter");
+            //                core.Trace ("Particles info: Point emitter");
             CreatePointEmitter(pMemFile);
             break;
         }

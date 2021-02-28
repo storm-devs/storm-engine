@@ -380,7 +380,7 @@ VDATA *CORE::Event(const char *Event_name, const char *Format, ...)
     }
     MESSAGE message;
     va_start(message.args, Format); // 1
-    message.Reset(Format);          // reset message class	// 2
+    message.Reset(Format);          // reset message class    // 2
     // ....
     pVD = Compiler->ProcessEvent(Event_name, message);
 
@@ -878,7 +878,7 @@ uint32_t CORE::Process()
             thrQueue.pop();
             LeaveCriticalSection(&lock);
         }
-        //		if(Reset_flag) return 0;
+        //        if(Reset_flag) return 0;
     }
     return 0;
 }

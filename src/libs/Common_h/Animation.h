@@ -80,7 +80,7 @@ enum AnimationEvent
 // ============================================================================================
 // Action or action animation - a fragment of a complete animation (walking, running, jumping, ...)
 // containing all the animation of the character.
-// 
+//
 // Autostop is on by default and always on when a new action is set
 // ============================================================================================
 

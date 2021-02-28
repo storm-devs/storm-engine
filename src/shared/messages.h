@@ -12,8 +12,8 @@
 #define MSG_MODEL_RELEASE 20504
 #define MSG_MODEL_RESTORE 20505
 #define MSG_MODEL_SET_POSITION 20506
-//	SendMessage(ref _model, "lffffffffffff", MSG_MODEL_SET_POSITION, float _x, float _y, float _z,
-//		float _vxx, float _vxy, float _vxz, float _vyx, float _vyy, float _vyz, float _vzx, float _vzy, float _vzz);
+//    SendMessage(ref _model, "lffffffffffff", MSG_MODEL_SET_POSITION, float _x, float _y, float _z,
+//        float _vxx, float _vxy, float _vxz, float _vyx, float _vyy, float _vyz, float _vzx, float _vzy, float _vzz);
 
 #define MSG_MODEL_BLEND 20507
 #define MSG_MODEL_SET_LIGHT_LMPATH 20508
@@ -108,18 +108,19 @@
 // Register locators
 #define MSG_LOCATION_UPDATELOCATORS 30130 // "l" copy all locators to location attributes
 // File paths
-#define MSG_LOCATION_MODELSPATH 30140 // "ls" set relative path to location models
+#define MSG_LOCATION_MODELSPATH 30140   // "ls" set relative path to location models
 #define MSG_LOCATION_TEXTURESPATH 30141 // "ls" set relative path to location textures
-#define MSG_LOCATION_LIGHTPATH 30142 // "ls" set relative path to location lighting
-#define MSG_LOCATION_SHADOWPATH 30143 // "ls" set relative path to the texture on the floor
+#define MSG_LOCATION_LIGHTPATH 30142    // "ls" set relative path to location lighting
+#define MSG_LOCATION_SHADOWPATH 30143   // "ls" set relative path to the texture on the floor
 // Utilities
-#define MSG_LOCATION_CHECKENTRY 30150 // "lss" check the entrance to the location for the possibility of coming to it (is it free)
-#define MSG_LOCATION_PAUSE 30151      // "ll" pause the location
+#define MSG_LOCATION_CHECKENTRY                                                                                        \
+    30150 // "lss" check the entrance to the location for the possibility of coming to it (is it free)
+#define MSG_LOCATION_PAUSE 30151           // "ll" pause the location
 #define MSG_LOCATION_SETCHRPOSITIONS 30152 // "l" save positions to restore
 #define MSG_LOCATION_TLPCHRPOSITIONS 30153 // "l" move and delete positions to restore
 #define MSG_LOCATION_CLRCHRPOSITIONS 30154 // "l" delete positions to restore
 #define MSG_LOCATION_EX_MSG 30155          // "ls" extended s command, ...
-#define MSG_LOCATION_VIEWSTATEBARS 30156 // "ll" display of enemy state (HP, energy) <-- ugeen 05.24.12
+#define MSG_LOCATION_VIEWSTATEBARS 30156   // "ll" display of enemy state (HP, energy) <-- ugeen 05.24.12
 // Debug
 // "lsffl" show a group of locators in the form of spheres with a scaling factor of the radius,
 // distance of visibility of marks, with colors
@@ -135,7 +136,7 @@
 #define MSG_CHARACTER_DIST2D 30204   // "lie" get the distance to the character
 #define MSG_CHARACTER_DIST3D 30205   // "lie" get the distance to the character
 // Teleportation
-#define MSG_CHARACTER_TELEPORT 30210 // "lfff" move character to point x, y, z
+#define MSG_CHARACTER_TELEPORT 30210    // "lfff" move character to point x, y, z
 #define MSG_CHARACTER_TELEPORT_AY 30211 // "lffff" move character to point x, y, z and point along ay
 // "lss" move character to locator specified as group name, locator name
 #define MSG_CHARACTER_TELEPORT_TO_LOCATOR 30212
@@ -143,7 +144,7 @@
 #define MSG_CHARACTER_ADD_DETECTOR 30220 // "ls" add locator group for analysis
 #define MSG_CHARACTER_DEL_DETECTOR 30221 // "ls" remove locator group for analysis
 // Dynamic character movement
-#define MSG_CHARACTER_ENTRY_TO_LOCATION 30330 // "lss" dynamically place the character in the location
+#define MSG_CHARACTER_ENTRY_TO_LOCATION 30330  // "lss" dynamically place the character in the location
 #define MSG_CHARACTER_EXIT_FROM_LOCATION 30331 // "l" remove character from location
 // Character rotation
 #define MSG_CHARACTER_TURNBYLOC 30340   // "lss" point towards locator
@@ -191,9 +192,9 @@
 
 // Camera
 #define MSG_CAMERA_SETTARGET 30500 // "li" set the model to follow
-#define MSG_CAMERA_FOLLOW 30510 // "l" set camera mode - chase character
-#define MSG_CAMERA_LOOK 30511  // "l" set camera mode - eye view
-#define MSG_CAMERA_TOPOS 30512 // "lfffl" set the camera mode - be at the point and observe the character
+#define MSG_CAMERA_FOLLOW 30510    // "l" set camera mode - chase character
+#define MSG_CAMERA_LOOK 30511      // "l" set camera mode - eye view
+#define MSG_CAMERA_TOPOS 30512     // "lfffl" set the camera mode - be at the point and observe the character
 // "lffff" set the camera mode - move to a point with a given speed and follow the character
 #define MSG_CAMERA_MOVE 30513
 #define MSG_CAMERA_FREE 30514 // "l" free flight of the camera
@@ -208,11 +209,11 @@
 // World map messages
 //============================================================================================
 // Storm
-#define MSG_WORLDMAP_CREATESTORM 31000 // "l" Create storm
+#define MSG_WORLDMAP_CREATESTORM 31000      // "l" Create storm
 #define MSG_WORLDMAP_CREATESTORM_TIME 31001 // "lf" Create storm and specify lifetime in seconds
 // Encounter ships
-// Speed coefficient kSpeed determines the speed of the encounter relative to the player, 1.0 are the same, 1.2 is 20% higher, 1.0 / 1.2
-// 20% lower Merchant - event ship with merchant behavior (following to the island)
+// Speed coefficient kSpeed determines the speed of the encounter relative to the player, 1.0 are the same, 1.2 is 20%
+// higher, 1.0 / 1.2 20% lower Merchant - event ship with merchant behavior (following to the island)
 #define MSG_WORLDMAP_CREATEENC_MER 31100 // "lsssff" type, nation, kSpeed (1.0f - player speed), island name  time
 // boal 04/10/06 new method
 #define MSG_WORLDMAP_CREATEENC_MER_XZ 31102 // "lsffffff"  sName, fx1, fz1, fx2, fz2, kSpeed, timeOut
@@ -278,7 +279,7 @@
 // Sound Service messages
 //============================================================================================
 // Control functions
-#define MSG_SOUND_SET_ENABLED 77016         //"l"		  enabled
+#define MSG_SOUND_SET_ENABLED 77016         //"l"          enabled
 #define MSG_SOUND_SET_CAMERA_POSITION 77001 //"fff"       vector_x, vector_ym, vector_z
 //"ffffff"    nose_vector_x, nose_vector_ym, nose_vector_z, head_vector_x, head_vector_y, head_vector_z
 #define MSG_SOUND_SET_CAMERA_ORIENTATION 77002
@@ -300,9 +301,9 @@
 // Sound schemes
 #define MSG_SOUND_SCHEME_RESET 77013 //""
 #define MSG_SOUND_SCHEME_SET 77014   //"s"         scheme_name
-#define MSG_SOUND_SCHEME_ADD 77015   //"s"		  scheme_name
+#define MSG_SOUND_SCHEME_ADD 77015   //"s"          scheme_name
 // Aliases
-#define MSG_SOUND_ALIAS_ADD 77017 //"s"		  alias_name
+#define MSG_SOUND_ALIAS_ADD 77017 //"s"          alias_name
 //============================================================================================
 
 //============================================================================================
@@ -337,22 +338,22 @@
 //============================================================================================
 // Sea operator messages
 //============================================================================================
-#define MSG_SEA_OPERATOR_FIRE 77400        //"isfff"		shipID, bortName, x,y,z
+#define MSG_SEA_OPERATOR_FIRE 77400        //"isfff"        shipID, bortName, x,y,z
 #define MSG_SEA_OPERATOR_BALL_UPDATE 77401 //...fff...
-#define MSG_SEA_OPERATOR_SHIP_HIT 77402    // fffi		ballX,ballY,ballZ, hitShipCharacter
+#define MSG_SEA_OPERATOR_SHIP_HIT 77402    // fffi        ballX,ballY,ballZ, hitShipCharacter
 //============================================================================================
 
 //============================================================================================
 // Peoples on ship
 //============================================================================================
-#define MSG_PEOPLES_ON_SHIP_MASTFALL 77500 //"ll"		characterIndex, mastNumber
+#define MSG_PEOPLES_ON_SHIP_MASTFALL 77500 //"ll"        characterIndex, mastNumber
 #define MSG_PEOPLES_ON_SHIP_HULLHIT 77600  //"lafff"
 //============================================================================================
 
 //============================================================================================
 // Camera on ship
 //============================================================================================
-#define MSG_DECK_CAMERA_SET_VIEWPOINT 41800 //"fff"		point.x, point.y, point.z
+#define MSG_DECK_CAMERA_SET_VIEWPOINT 41800 //"fff"        point.x, point.y, point.z
 //============================================================================================
 
 #endif

@@ -1,9 +1,9 @@
 //============================================================================================
-//	Spirenkov Maxim, 2001
+//    Spirenkov Maxim, 2001
 //--------------------------------------------------------------------------------------------
-//	Sea Dogs II
+//    Sea Dogs II
 //--------------------------------------------------------------------------------------------
-//	WdmSea
+//    WdmSea
 //--------------------------------------------------------------------------------------------
 //
 //============================================================================================
@@ -26,8 +26,8 @@
 
 #define WDM_SEA_MBR 0x20 // Brightness of reflections in the sea
 
-#define WDM_SEA_ANIALPHA 0x80 // Animated texture mixing coefficient
-#define WDM_SEA_ANIFPS 8      // Animated texture frame rate
+#define WDM_SEA_ANIALPHA 0x80   // Animated texture mixing coefficient
+#define WDM_SEA_ANIFPS 8        // Animated texture frame rate
 #define WDM_SEA_ANITILING 90.0f // Number of tiled textures per side with a world size of 2000
 
 //============================================================================================

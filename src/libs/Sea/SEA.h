@@ -227,7 +227,7 @@ class SEA : public SEA_BASE
         switch (stage)
         {
         // case Stage::execute:
-        //	Execute(delta); break;
+        //    Execute(delta); break;
         case Stage::realize:
             Realize(delta);
             break;
@@ -242,10 +242,10 @@ class SEA : public SEA_BASE
     void LostRender();
     void RestoreRender();
 
-    // bool			Init();
-    // void			Realize(uint32_t Delta_Time);
-    // void			Execute(uint32_t Delta_Time);
-    // uint32_t cdecl	ProcessMessage(MESSAGE & message);
+    // bool            Init();
+    // void            Realize(uint32_t Delta_Time);
+    // void            Execute(uint32_t Delta_Time);
+    // uint32_t cdecl    ProcessMessage(MESSAGE & message);
 };
 
 #endif

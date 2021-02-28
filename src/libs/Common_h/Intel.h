@@ -4,7 +4,7 @@
 // espkk # remove inline asm # 30/Dec/2017
 #include <intrin.h>
 
-//#define inline		inline
+//#define inline        inline
 
 #define HWD_MT_BIT 0x10000000       // EDX[28]  Bit 28 is set if HT or multi-core is supported
 #define NUM_LOGICAL_BITS 0x00FF0000 // EBX[23:16] Bit 16-23 in ebx contains the number of logical
@@ -146,14 +146,14 @@ inline bool Intel::IsIntelCPU()
     __cpuid(cpuInfo, 0);
     return ((cpuInfo[1] == 'uneG') && (cpuInfo[3] == 'Ieni') && (cpuInfo[2] == 'letn'));
 
-    /*	uint32_t VendorID[3] = {0, 0, 0};
+    /*    uint32_t VendorID[3] = {0, 0, 0};
 
       __try    // If CPUID instruction is supported
       {
         __asm
         {
-          xor eax, eax			// call cpuid with eax = 0
-              cpuid					// Get vendor id string
+          xor eax, eax            // call cpuid with eax = 0
+              cpuid                    // Get vendor id string
           mov VendorID, ebx
           mov VendorID + 4, edx
           mov VendorID + 8, ecx
@@ -182,7 +182,7 @@ inline uint32_t Intel::CpuIDSupported(void)
     {
       __asm
       {
-        xor eax, eax			// call cpuid with eax = 0
+        xor eax, eax            // call cpuid with eax = 0
             cpuid
         mov MaxInputValue, eax
       }
@@ -247,7 +247,7 @@ inline uint32_t Intel::MaxCorePerPhysicalProc(void)
 
     return ((cpuInfo[0] & NUM_CORE_BITS) >> 26) + 1;
 
-    /*	uint32_t Regeax = 0;
+    /*    uint32_t Regeax = 0;
 
       if (!HWD_MTSupported()) return (uint32_t) 1;  // Single core
 
@@ -255,10 +255,10 @@ inline uint32_t Intel::MaxCorePerPhysicalProc(void)
         {
           xor eax, eax
           cpuid
-          cmp eax, 4			// check if cpuid supports leaf 4
-          jl single_core		// Single core
+          cmp eax, 4            // check if cpuid supports leaf 4
+          jl single_core        // Single core
           mov eax, 4
-          mov ecx, 0			// start with 1st or 2nd cache level using index = 0 or 1
+          mov ecx, 0            // start with 1st or 2nd cache level using index = 0 or 1
           cpuid
           mov Regeax, eax
           jmp multi_core

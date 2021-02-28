@@ -98,7 +98,7 @@ bool COMPILER::BC_ProcessExpression(DATA *value)
 
     BC_ProcessExpression_L0(value);
     //--------------------------------------------------------------------------
-    /*	BC_ProcessExpression_L2(value);
+    /*    BC_ProcessExpression_L2(value);
       S_TOKEN_TYPE op;
       op = TokenType();
       switch(op)
@@ -1406,7 +1406,7 @@ bool COMPILER::CompileExpression_L7(SEGMENT_DESC &Segment)
 
             /*
             // off for debug needs
-            if(sttFuncCallType != CALL)	// skip argument checking for dynamic function call
+            if(sttFuncCallType != CALL)    // skip argument checking for dynamic function call
             {
               if(func_args != fi.arguments)
               {

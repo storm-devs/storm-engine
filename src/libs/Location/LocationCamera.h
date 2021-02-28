@@ -1,9 +1,9 @@
 //============================================================================================
-//	Spirenkov Maxim
+//    Spirenkov Maxim
 //--------------------------------------------------------------------------------------------
 //
 //--------------------------------------------------------------------------------------------
-//	LocationCamera
+//    LocationCamera
 //--------------------------------------------------------------------------------------------
 //
 //============================================================================================
@@ -108,13 +108,13 @@ class LocationCamera : public Entity
     // Camera parameters
     float ax; // Camera tilt angle
     float lAx;
-    float vAx;          // Current speed of change
-    float axmin, axmax; // Camera tilt angle
+    float vAx;           // Current speed of change
+    float axmin, axmax;  // Camera tilt angle
     float teleport_dist; // Maximum distance at which the camera teleports
-    float lookHeight; // The value of where to look in height (relative)
-    float radius;     // Radius of distance from the character
-    float rotInertia; // Rotational inertia
-    float radInertia; // Inertia of approaching
+    float lookHeight;    // The value of where to look in height (relative)
+    float radius;        // Radius of distance from the character
+    float rotInertia;    // Rotational inertia
+    float radInertia;    // Inertia of approaching
 
     bool isSpecialMode;
     bool isLockFPMode;

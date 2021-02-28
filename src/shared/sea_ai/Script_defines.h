@@ -93,7 +93,7 @@
 #define RELATION_FRIEND 0
 #define RELATION_NEUTRAL 1
 #define RELATION_ENEMY 2
-//#define RELATION_ALLIANCE		3
+//#define RELATION_ALLIANCE        3
 
 #define AI_ALL 10000
 #define AI_SELECT 10010

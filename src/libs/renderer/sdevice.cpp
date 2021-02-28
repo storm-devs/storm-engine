@@ -10,8 +10,8 @@
 #include "texture.h"
 #include "v_s_stack.h"
 
-#include <corecrt_io.h>
 #include <DxErr.h>
+#include <corecrt_io.h>
 
 #define POST_PROCESS_FVF (D3DFVF_XYZRHW | D3DFVF_TEX4)
 
@@ -644,7 +644,7 @@ bool DX9RENDER::InitDevice(bool windowed, HWND _hwnd, long width, long height)
     if (d3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd, D3DCREATE_MIXED_VERTEXPROCESSING, &d3dpp, &d3d9) !=
         D3D_OK)
     {
-        // if(CHECKD3DERR(E_FAIL)==true)	return false;
+        // if(CHECKD3DERR(E_FAIL)==true)    return false;
         if (CHECKD3DERR(d3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd, D3DCREATE_SOFTWARE_VERTEXPROCESSING,
                                           &d3dpp, &d3d9)) == true)
             return false;
@@ -704,7 +704,7 @@ bool DX9RENDER::InitDevice(bool windowed, HWND _hwnd, long width, long height)
     OriginalViewPort.MinZ = 0.0f;
     OriginalViewPort.MaxZ = 1.0f;
 
-    // if(CHECKD3DERR(SetViewport(&vprt))==true)	return false;
+    // if(CHECKD3DERR(SetViewport(&vprt))==true)    return false;
 
     // set it as a render target
     // FIX
@@ -814,7 +814,7 @@ bool DX9RENDER::DX9Clear(long type)
 {
     if (CHECKD3DERR(d3d9->Clear(0L, NULL, type, dwBackColor, 1.0f, 0L)) == true)
         return false;
-    // if(CHECKD3DERR(d3d9->Clear(0L, NULL, type, 0x0, 1.0f, 0L))==true)	return false;
+    // if(CHECKD3DERR(d3d9->Clear(0L, NULL, type, 0x0, 1.0f, 0L))==true)    return false;
     return true;
 }
 
@@ -1042,9 +1042,9 @@ void DX9RENDER::MakePostProcess()
 
     SetScreenAsRenderTarget();
     /*
-    Print (0, 0, "Blur = %3.2f",	fBlurSize);
-    Print (0, 16, "Intensity = %d",	GlowIntensity);
-    Print (0, 32, "BlurPasses = %d",	iBlurPasses);
+    Print (0, 0, "Blur = %3.2f",    fBlurSize);
+    Print (0, 16, "Intensity = %d",    GlowIntensity);
+    Print (0, 32, "BlurPasses = %d",    iBlurPasses);
     */
 }
 
@@ -1618,7 +1618,7 @@ bool DX9RENDER::TextureSet(long stage, long texid)
     int tex2load[MAX_STEXTURES];
     int t2l=0;
     for(long t=0; t<MAX_STEXTURES; t++)
-    if(Textures[t].ref>0 && Textures[t].loaded==false)	tex2load[t2l++] = t;
+    if(Textures[t].ref>0 && Textures[t].loaded==false)    tex2load[t2l++] = t;
     */
     /*/sort textures
     for(t=0; t<t2l; t++)
@@ -1635,7 +1635,7 @@ bool DX9RENDER::TextureSet(long stage, long texid)
     Textures[tex2load[t]].loaded = true;
     TextureLoad(tex2load[t]);
     }
-    //Textures[texid].loaded = true;	TextureLoad(texid);
+    //Textures[texid].loaded = true;    TextureLoad(texid);
     }
     */
 
@@ -1757,7 +1757,7 @@ bool DX9RENDER::SetCamera(const CVECTOR &pos, const CVECTOR &ang)
         Ang = ang;
         vWordRelationPos = -Pos;
     }
-    // if(CHECKD3DERR(SetTransform(D3DTS_VIEW, mtx))==true)	return false;
+    // if(CHECKD3DERR(SetTransform(D3DTS_VIEW, mtx))==true)    return false;
 
     d3d9->SetTransform(D3DTS_VIEW, mtx);
     vViewRelationPos = -(mtx * vWordRelationPos);
@@ -1775,7 +1775,7 @@ bool DX9RENDER::SetCamera(CVECTOR lookFrom, CVECTOR lookTo, CVECTOR up)
     CMatrix mtx;
     if (!mtx.BuildViewMatrix(lookFrom, lookTo, up))
         return false;
-    // if(CHECKD3DERR(SetTransform(D3DTS_VIEW, mtx))==true)	return false;
+    // if(CHECKD3DERR(SetTransform(D3DTS_VIEW, mtx))==true)    return false;
     SetTransform(D3DTS_VIEW, mtx);
     Pos = lookFrom;
 
@@ -2233,7 +2233,7 @@ bool DX9RENDER::CreateState(ENTITY_STATE_GEN *state_gen)
 bool DX9RENDER::LoadState(ENTITY_STATE *state)
 {
     // GUARD(DX9RENDER::Init)
-    // for(long t=0; t<MAX_STEXTURES; t++)	Textures[t].d3dtex = NULL;
+    // for(long t=0; t<MAX_STEXTURES; t++)    Textures[t].d3dtex = NULL;
     // d3d = NULL;
     // d3d9 = NULL;
     // state->Struct(sizeof(screen_size),(char *)&screen_size);

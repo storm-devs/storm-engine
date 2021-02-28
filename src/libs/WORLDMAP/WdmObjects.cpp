@@ -1,9 +1,9 @@
 //============================================================================================
-//	Spirenkov Maxim, 2001
+//    Spirenkov Maxim, 2001
 //--------------------------------------------------------------------------------------------
-//	Sea Dogs II
+//    Sea Dogs II
 //--------------------------------------------------------------------------------------------
-//	WdmObjects
+//    WdmObjects
 //--------------------------------------------------------------------------------------------
 //
 //============================================================================================
@@ -77,15 +77,15 @@ void WdmObjects::Clear()
     shipSpeedOverWind = 1.2f;
     enemyshipViewDistMin = 20.0f; // The distance at which the ship begins to disappear
     enemyshipViewDistMax = 50.0f; // The distance at which the ship disappears completely
-    enemyshipDistKill = 100.0f; // The distance at which the ship is killed
-    enemyshipBrnDistMin = 40.0f; // The minimum distance at which a ship is spawned
-    enemyshipBrnDistMax = 70.0f; // The maximum distance at which a ship is spawned
-    stormViewDistMin = 120.0f; // The distance at which the storm begins to fade
-    stormViewDistMax = 160.0f; // The distance at which the storm disappears completely
-    stormDistKill = 200.0f;    // The distance at which the storm is killed
-    stormBrnDistMin = 70.0f; // The minimum distance at which a storm is spawned
-    stormBrnDistMax = 160.0f; // The maximum distance at which a storm is spawned
-    stormZone = 50.0f;        // Total storm radius
+    enemyshipDistKill = 100.0f;   // The distance at which the ship is killed
+    enemyshipBrnDistMin = 40.0f;  // The minimum distance at which a ship is spawned
+    enemyshipBrnDistMax = 70.0f;  // The maximum distance at which a ship is spawned
+    stormViewDistMin = 120.0f;    // The distance at which the storm begins to fade
+    stormViewDistMax = 160.0f;    // The distance at which the storm disappears completely
+    stormDistKill = 200.0f;       // The distance at which the storm is killed
+    stormBrnDistMin = 70.0f;      // The minimum distance at which a storm is spawned
+    stormBrnDistMax = 160.0f;     // The maximum distance at which a storm is spawned
+    stormZone = 50.0f;            // Total storm radius
     enableSkipEnemy = false;
     playarInStorm = false;
     isNextDayUpdate = true;

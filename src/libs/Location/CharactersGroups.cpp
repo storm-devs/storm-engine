@@ -1,9 +1,9 @@
 //============================================================================================
-//	Spirenkov Maxim aka Sp-Max Shaman, 2001
+//    Spirenkov Maxim aka Sp-Max Shaman, 2001
 //--------------------------------------------------------------------------------------------
 //
 //--------------------------------------------------------------------------------------------
-//	CharactersGroups
+//    CharactersGroups
 //--------------------------------------------------------------------------------------------
 //
 //============================================================================================
@@ -69,7 +69,7 @@ CharactersGroups::String::String(const char *str)
 CharactersGroups::String::~String()
 {
     if (name)
-    delete name;
+        delete name;
 }
 
 void CharactersGroups::String::operator=(const char *str)
@@ -86,7 +86,7 @@ void CharactersGroups::String::operator=(const char *str)
         if (len + 1 > max)
         {
             if (name)
-            delete name;
+                delete name;
             max = (len + 16) & ~15;
             name = new char[max];
         }
@@ -599,7 +599,7 @@ bool CharactersGroups::MsgGetOptimalTarget(MESSAGE &message) const
             // calculate the heuristic value
             v *= 0.5f + n * n * 0.5f;
             // take into account the presence of his weapon
-             // if(!nc->IsSetBlade()) v *= v*100.0f;
+            // if(!nc->IsSetBlade()) v *= v*100.0f;
             // take into account the choice of goal
             if (s >= 0)
             {
@@ -810,7 +810,7 @@ void CharactersGroups::ReleaseGroup(const char *groupName)
     if (idxgrp < 0)
         return; // no group nothing to delete
 
-    Group* oldGroup = groups[idxgrp];
+    Group *oldGroup = groups[idxgrp];
     groups[idxgrp] = groups[numGroups - 1];
     groups[numGroups - 1] = nullptr;
 
@@ -818,7 +818,8 @@ void CharactersGroups::ReleaseGroup(const char *groupName)
         delete oldGroup->relations;
     delete oldGroup;
 
-    for (long othergrp = idxgrp + 1; othergrp < numGroups - 1; ++othergrp) // restore relations of other groups taking into account the shift
+    for (long othergrp = idxgrp + 1; othergrp < numGroups - 1;
+         ++othergrp) // restore relations of other groups taking into account the shift
         groups[othergrp]->relations[idxgrp] = groups[idxgrp]->relations[othergrp];
 
     if (idxgrp < numGroups - 1)
@@ -1071,8 +1072,9 @@ void CharactersGroups::RemoveCharacterFromAllGroups(entid_t chr)
 // Delete all empty groups
 void CharactersGroups::DeleteEmptyGroups()
 {
-    for (long i = 0; i < numGroups; i++) {
-        Group* g = groups[i];
+    for (long i = 0; i < numGroups; i++)
+    {
+        Group *g = groups[i];
 
         if (g->numChr == 0)
         {

@@ -74,7 +74,7 @@ void ParticleSystem::CreateFromDataSource(DataSource *pDataSource)
 
 IEmitter *ParticleSystem::CreatePointEmitter(DataSource::EmitterDesc *pEmitter)
 {
-    //	core.Trace("Create 'Point' emitter\n");
+    //    core.Trace("Create 'Point' emitter\n");
     auto *pNewEmitter = new PointEmitter(this);
     pNewEmitter->AttachToDataSource(pEmitter);
     pNewEmitter->SetGUID(EmitterID);

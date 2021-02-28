@@ -145,7 +145,7 @@ void AIFort::Realize(uint32_t Delta_Time)
       long iNumCannons = 0;
       for (uint32_t k=0; k<aForts.size(); k++)
       {
-        AI_FORT	* pF = aForts[k];
+        AI_FORT    * pF = aForts[k];
         for (uint32_t i=0; i<pF->GetAllCannonsNum(); i++)
         {
           AICannon * pC = pF->GetCannon(i);
@@ -329,7 +329,7 @@ bool AIFort::ScanFortForCannons(AI_FORT *pFort, char *pModelsDir, char *pLocator
     GEOS::LABEL label;
     GEOS::INFO info;
     NODE *pNode;
-    // std::string		sLocatorsName;
+    // std::string        sLocatorsName;
 
     const auto path = fs::path() / pModelsDir / pLocatorsName;
     const auto pathStr = path.string();

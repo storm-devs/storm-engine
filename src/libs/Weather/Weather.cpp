@@ -61,9 +61,9 @@ void WEATHER::Realize(uint32_t Delta_Time)
 
 void WEATHER::Execute(uint32_t Delta_Time)
 {
-    /*	if (dwFrames) SetLong(whi_weather_update,0);
+    /*    if (dwFrames) SetLong(whi_weather_update,0);
 
-      WIN32_FIND_DATA	wfd;
+      WIN32_FIND_DATA    wfd;
       HANDLE h = fio->_FindFirstFile(WHT_INI_FILE,&wfd);
       if (INVALID_HANDLE_VALUE != h)
       {
@@ -174,14 +174,14 @@ void WEATHER::CleanUP()
 
 /*void WEATHER::LoadWeatherIni()
 {
-    char	section[256],param[256],str[256];
-    long	i;
-    uint32_t	r,g,b;
+    char    section[256],param[256],str[256];
+    long    i;
+    uint32_t    r,g,b;
 
     CleanUP();
 
     INIFILE * ini;
-    WIN32_FIND_DATA	wfd;
+    WIN32_FIND_DATA    wfd;
     HANDLE h = fio->_FindFirstFile(WHT_INI_FILE,&wfd);
     if (INVALID_HANDLE_VALUE != h)
     {

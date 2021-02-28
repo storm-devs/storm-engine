@@ -60,19 +60,19 @@ class VANT_BASE : public Entity
     float upWidth;         // upper triangle width
     float upHeight;        // the height of the upper triangle
     float treangXl;        // triangle texture coordinates
-    float treangXr;        // 
-    float treangYu;        // 
-    float treangYd;        // 
+    float treangXr;        //
+    float treangYu;        //
+    float treangYd;        //
     float balkYu;          // beam texture coordinates
-    float balkYd;          // 
+    float balkYd;          //
     float ropeXl;          // vertical rope texture coordinates
-    float ropeXr;          // 
+    float ropeXr;          //
     float vRopeXl;         // xBeg horizontal rope texture coordinates
-    float vRopeXr;         // 
+    float vRopeXr;         //
     float vRopeHeight;     // vertical rope height
     float hRopeHeight;     // horizontal rope height
     float fBalkHeight;     // beam height relative to triangle height
-    float fBalkWidth;      // 
+    float fBalkWidth;      //
     float fVantMaxDist;    // the square of the distance from which the guys are not visible
     float ZERO_CMP_VAL;    // Guy motion sampling step
     float MAXFALL_CMP_VAL; // the maximum change in the guy position at which the guy stops being displayed

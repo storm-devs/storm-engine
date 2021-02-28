@@ -101,7 +101,7 @@ class MESSAGE_SCRIPT : public MESSAGE
     {
         throw "Invalid MESSAGE_SCRIPT data type";
     }
-    // char * Pointer()	{ throw "Invalid MESSAGE_SCRIPT data type"; }
+    // char * Pointer()    { throw "Invalid MESSAGE_SCRIPT data type"; }
     CVECTOR CVector()
     {
         throw "Invalid MESSAGE_SCRIPT data type";

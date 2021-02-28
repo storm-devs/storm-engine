@@ -349,7 +349,7 @@ bool ISLAND::GetDepthFast(float x, float z, float *fRes)
 
 bool ISLAND::GetDepth(float x, float z, float *fRes)
 {
-    // if (!mzDepth.isLoaded()) {if (fRes) *fRes = -50.0f;	return false; }
+    // if (!mzDepth.isLoaded()) {if (fRes) *fRes = -50.0f;    return false; }
     x -= vBoxCenter.x;
     z -= vBoxCenter.z;
     if (fabsf(x) >= vRealBoxSize.x || fabsf(z) >= vRealBoxSize.z)
@@ -782,7 +782,7 @@ bool ISLAND::SaveTga8(char *fname, uint8_t *pBuffer, uint32_t dwSizeX, uint32_t 
 
 bool ISLAND::Mount(char *fname, char *fdir, entid_t *eID)
 {
-    // std::string		sRealFileName;
+    // std::string        sRealFileName;
     // std::string sModelPath, sLightPath;
 
     Uninit();
@@ -927,9 +927,9 @@ bool ISLAND::GetMovePoint(CVECTOR &vSrc, CVECTOR &vDst, CVECTOR &vRes)
     return true;
 }
 
-/*AIFlowGraph::VectorPath	* ISLAND::FindPath(CVECTOR & vSrc, CVECTOR & vDst)
+/*AIFlowGraph::VectorPath    * ISLAND::FindPath(CVECTOR & vSrc, CVECTOR & vDst)
 {
-    AIFlowGraph::VectorPath		* pVPath;
+    AIFlowGraph::VectorPath        * pVPath;
 
     // check for free path
 

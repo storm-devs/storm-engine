@@ -27,12 +27,12 @@ class FLAG : public Entity
     float FLAGVECTORLEN; // flag segment length
     float ALFA_DEPEND;   // the rate of change of the swing angle
     float BETA_DEPEND;   // rotation rate
-    float ALFA_RAND; // the maximum value of the random change in the angle Alpha
-    float BETA_RAND; // the maximum value of the random change in the angle Beta
-    float fWindAm;   // Flag swing amplitude
-    float fRotAm;    // Flag rotation amplitude
-    float DOWNVAL;   // the value of the decrement on Y
-    float fAlfaMax;  // maximum angle (for the end of the flag)
+    float ALFA_RAND;     // the maximum value of the random change in the angle Alpha
+    float BETA_RAND;     // the maximum value of the random change in the angle Beta
+    float fWindAm;       // Flag swing amplitude
+    float fRotAm;        // Flag rotation amplitude
+    float DOWNVAL;       // the value of the decrement on Y
+    float fAlfaMax;      // maximum angle (for the end of the flag)
     float fAlfaStep;
     float fBetaMax; // maximum angle (for the end of the flag)
     float fBetaStep;

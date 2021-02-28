@@ -404,12 +404,12 @@ void FLAG::DoMove(FLAGDATA *pr, float delta_time) const
         vertBuf[sIdx].pos = cPos + dopVect - dhVect;
         sIdx++;
 
-// calculate the new angle (sines \ cosines)
+        // calculate the new angle (sines \ cosines)
         tmp = sAlfa;
         sAlfa = sAlfa * ca + sa * cAlfa;
         cAlfa = cAlfa * ca - tmp * sa;
 
-// calculate the new angle (sines \ cosines)
+        // calculate the new angle (sines \ cosines)
         tmp = sBeta;
         sBeta = sBeta * cb + sb * cBeta;
         cBeta = cBeta * cb - tmp * sb;

@@ -9,21 +9,21 @@
 //
 //  File structure:
 //
-//		TEXTURE_FILE  info header
+//        TEXTURE_FILE  info header
 //
-//		pallette      if(TEXTURE_FILE.flags & TX_FLAGS_PALLETTE != 0)
+//        pallette      if(TEXTURE_FILE.flags & TX_FLAGS_PALLETTE != 0)
 //
-//		mip levels			\
-//		width x heigth		 | TEXTURE_FILE.nmips
-//		width/2 x heigth/2	 |
-//		...					/
+//        mip levels            \
+//        width x heigth         | TEXTURE_FILE.nmips
+//        width/2 x heigth/2     |
+//        ...                    /
 //
 //   Remarks:
-//		TEXTURE_FORMAT equal of a DX9 D3DFORMAT
-//		pallette color TX_PALETTE_COLOR equal of a PALETTEENTRY (std. windows structure)
-//	CubeMap:
-//		always is quads
-//		sequence order: front, right, back, left, top, bottom
+//        TEXTURE_FORMAT equal of a DX9 D3DFORMAT
+//        pallette color TX_PALETTE_COLOR equal of a PALETTEENTRY (std. windows structure)
+//    CubeMap:
+//        always is quads
+//        sequence order: front, right, back, left, top, bottom
 //
 //================================================================
 

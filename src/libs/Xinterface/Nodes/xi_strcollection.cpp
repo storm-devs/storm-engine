@@ -201,7 +201,7 @@ void CXI_STRCOLLECTION::ChangePosition(XYRECT &rNewPos)
 
 void CXI_STRCOLLECTION::SaveParametersToIni()
 {
-    //	char pcWriteParam[2048];
+    //    char pcWriteParam[2048];
 
     auto *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)

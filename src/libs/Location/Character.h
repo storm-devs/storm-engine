@@ -1,9 +1,9 @@
 //============================================================================================
-//	Spirenkov Maxim aka Sp-Max Shaman, 2001
+//    Spirenkov Maxim aka Sp-Max Shaman, 2001
 //--------------------------------------------------------------------------------------------
 //
 //--------------------------------------------------------------------------------------------
-//	Character
+//    Character
 //--------------------------------------------------------------------------------------------
 //
 //============================================================================================
@@ -25,7 +25,7 @@ class VSoundService;
 
 #define CHARACTER_ATTACK_DIST 2.4f // Maximum attack distance (m)
 #define CHARACTER_ATTACK_ANG 60.0f // Maximum angle of attack (degrees)
-#define CHARACTER_BLOCK_ANG 50.0f // Maximum angle of block (degrees)
+#define CHARACTER_BLOCK_ANG 50.0f  // Maximum angle of block (degrees)
 #define CHARACTER_MAX_JMP_STEPS 50
 
 class Character : public Entity
@@ -441,7 +441,7 @@ class Character : public Entity
     static const char *GetValueByPrefix(const char *str, const char *pref);
 
   protected:
-    // 
+    //
     VSoundService *soundService;
     // Character sizes
     float radius, radiusNrm, radiusFgt;
@@ -587,7 +587,7 @@ class Character : public Entity
     bool isParryState;        // Parry condition
     bool isFeintState;        // Parry condition
     bool isFired;             // Is a shot fired
-    bool isLockIdleForCamera; // 
+    bool isLockIdleForCamera; //
     float recoilWait;         // Delay after jump
     float strafeWait;         // Delay after strafe
     float camRotWait;         // Current turn delay ratio

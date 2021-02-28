@@ -34,7 +34,7 @@ class Shadow : public Entity
         switch (stage)
         {
         // case Stage::execute:
-        //	Execute(delta); break;
+        //    Execute(delta); break;
         case Stage::realize:
             Realize(delta);
             break;

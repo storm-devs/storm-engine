@@ -1,9 +1,9 @@
 //============================================================================================
-//	Spirenkov Maxim, 2001
+//    Spirenkov Maxim, 2001
 //--------------------------------------------------------------------------------------------
-//	Sea Dogs II
+//    Sea Dogs II
 //--------------------------------------------------------------------------------------------
-//	WdmClouds
+//    WdmClouds
 //--------------------------------------------------------------------------------------------
 //
 //============================================================================================
@@ -146,7 +146,7 @@ void WdmClouds::Cloud::Update(float dltTime)
                 cld.alpha = 0.0f;
         }
         cld.dir += (dir - cld.dir + cld.rdr) * (0.5f / count); // blend regardless of the time
-        cld.index++; // On the next frame, the next one will act
+        cld.index++;                                           // On the next frame, the next one will act
         // Direction of the wind
         wdmObjects->GetWind(cld.pos.x, cld.pos.z, dir);
         // Rotation

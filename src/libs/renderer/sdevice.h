@@ -325,12 +325,12 @@ class DX9RENDER : public VDX9RENDER
     long StringWidth(const char *string, long nFontNum = 0, float fScale = 1.f, long scrWidth = 0) override;
     long CharWidth(utf8::u8_char, long nFontNum = 0, float fScale = 1.f, long scrWidth = 0) override;
     long CharHeight(long fontID) override;
-    long LoadFont(const char *fontName) override; // returns the number \ font id, or -1 on error
+    long LoadFont(const char *fontName) override;   // returns the number \ font id, or -1 on error
     bool UnloadFont(const char *fontName) override; // returns true if the font is still in use
-    bool UnloadFont(long fontID) override; // returns true if the font is still in use
-    bool IncRefCounter(long fontID) override; // increase reference counter if object is being copied
+    bool UnloadFont(long fontID) override;          // returns true if the font is still in use
+    bool IncRefCounter(long fontID) override;       // increase reference counter if object is being copied
     bool SetCurFont(const char *fontName) override; // returns true if the given font is installed
-    bool SetCurFont(long fontID) override; // returns true if the given font is installed
+    bool SetCurFont(long fontID) override;          // returns true if the given font is installed
     long GetCurFont() override;
     char *GetFontIniFileName() override;
     bool SetFontIniFileName(const char *iniName) override;
@@ -500,7 +500,7 @@ class DX9RENDER : public VDX9RENDER
     /*bool InitDevice(bool windowed, HWND hwnd, long width, long height);
     bool ReleaseDevice();
 
-    bool DX9Clear(long type);	//D3DCLEAR_STENCIL | D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER
+    bool DX9Clear(long type);    //D3DCLEAR_STENCIL | D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER
     bool DX9BeginScene();
     bool DX9EndScene();
 
@@ -641,7 +641,7 @@ bool SetCurFont (long fontID); // returns true if the given font is installed
     pHandle);
 
     // PLAY VIDEO TO TEXTURE
-    void	PlayToTexture();
+    void    PlayToTexture();
     IDirect3DTexture9* GetVideoTexture(char* sVideoName);
     void ReleaseVideoTexture(IDirect3DTexture9* pTexture);
 

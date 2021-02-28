@@ -1,9 +1,9 @@
 //============================================================================================
-//	Spirenkov Maxim aka Sp-Max Shaman, 2001
+//    Spirenkov Maxim aka Sp-Max Shaman, 2001
 //--------------------------------------------------------------------------------------------
 //
 //--------------------------------------------------------------------------------------------
-//	Grass
+//    Grass
 //--------------------------------------------------------------------------------------------
 //
 //============================================================================================
@@ -18,7 +18,7 @@
 
 // ============================================================================================
 
-#define GRASS_BLK_LOD 0.8f // Degree at kLod - the less, the closer LODs switch
+#define GRASS_BLK_LOD 0.8f   // Degree at kLod - the less, the closer LODs switch
 #define GRASS_MAX_DIST 50.0f // Maximum visibility distance
 #define GRASS_MIN_DIST 10.0f // Minimum Lod Switching Distance
 #define GRASS_MAX_W 1.0f     // Greatest width

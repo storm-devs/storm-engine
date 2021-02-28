@@ -202,7 +202,7 @@ void BATTLE_INTERFACE::LoadIniFile()
     if(m_pMessageIcons==NULL) {
       throw std::exception("allocate memory error");
     }
-    if(m_pMessageIcons)	m_pMessageIcons->InitData(GetId(),rs,pA);*/
+    if(m_pMessageIcons)    m_pMessageIcons->InitData(GetId(),rs,pA);*/
 
     STORM_DELETE(m_pShipIcon);
     m_pShipIcon = new BIShipIcon(GetId(), rs);
@@ -388,7 +388,7 @@ void BATTLE_INTERFACE::EnableMessageIcons(VDATA *pvdat)
     for(int i=0; i<4; i++)
     {
       pAttr[i] = null;
-      if(i<nCommandos)	pAttr[i] = pvdat->GetAClass(i);
+      if(i<nCommandos)    pAttr[i] = pvdat->GetAClass(i);
     }
 
     m_pMessageIcons->StartData( pAttr, pLeft );*/

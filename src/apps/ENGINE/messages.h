@@ -22,7 +22,7 @@
 #define CMS_REASON_ALREADY_IN_LIST "Reason - already in list"
 #define CMS_CLASS_SKIPPED "Class [ %s ] skipped"
 #define CMS_TOTAL_CLASSES "Total classes: %d"
-//#define CMS_MLEAK_CLASSES			"Checking classes for memory leak(s)..."
+//#define CMS_MLEAK_CLASSES            "Checking classes for memory leak(s)..."
 #define CMS_MEMLEAK "Memory Leak"
 
 #endif

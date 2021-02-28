@@ -22,11 +22,11 @@ inline long fftol(float f)
     static const float cnt[2] = {-0.4999999f, 0.4999999f};
     _asm
     {
-      mov		eax, f
-      fld		f
-      shr		eax, 31
-      fadd	uint32_t ptr [cnt + eax*4]
-      fistp	l
+      mov        eax, f
+      fld        f
+      shr        eax, 31
+      fadd    uint32_t ptr [cnt + eax*4]
+      fistp    l
     }
     return l;*/
 }
@@ -39,8 +39,8 @@ inline long fftoi(float f)
     /*long l;
     _asm
     {
-      fld		f
-      fistp	l
+      fld        f
+      fistp    l
     }
     return l;*/
 }
@@ -54,9 +54,9 @@ inline long ffloor(float f)
     static const float c = -0.5f;
     _asm
     {
-      fld		f
-      fadd	c
-      fistp	l
+      fld        f
+      fadd    c
+      fistp    l
     }
     return l;*/
 }
@@ -70,9 +70,9 @@ inline long fceil(float f)
     static const float c = 0.5f;
     _asm
     {
-      fld		f
-      fadd	c
-      fistp	l
+      fld        f
+      fadd    c
+      fistp    l
     }
     return l;*/
 }

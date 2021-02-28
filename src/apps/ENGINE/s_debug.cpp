@@ -7,7 +7,7 @@
 
 LRESULT CALLBACK DebugWndProc(HWND, UINT, WPARAM, LPARAM);
 
-//#define PROJECT_NAME	"project.df"
+//#define PROJECT_NAME    "project.df"
 int FONT_HEIGHT = 15;
 const wchar_t *DClass = L"SEDebug";
 
@@ -49,8 +49,8 @@ DWORD WINAPI BackgroundThreadProc(LPVOID lpParameter)
 
 LRESULT CALLBACK DebugWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
-    //	WORD wActive;
-    //	bool bActive;
+    //    WORD wActive;
+    //    bool bActive;
     INIFILE *ini;
     wchar_t BufferW[MAX_PATH];
     wchar_t WinTextW[MAX_PATH];
@@ -187,13 +187,13 @@ LRESULT CALLBACK DebugWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam
         bActive = (wActive == WA_CLICKACTIVE || wActive == WA_ACTIVE);
         if(bActive)
         {
-    //				ShowCursor(true);
-    //				ShowCursor(true);
+    //                ShowCursor(true);
+    //                ShowCursor(true);
         }
         else
         {
-    //				ShowCursor(false);
-    //				ShowCursor(false);
+    //                ShowCursor(false);
+    //                ShowCursor(false);
         }*/
         break;
     case WM_CLOSE:
@@ -269,7 +269,7 @@ LRESULT CALLBACK DebugWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam
         case WM_CHAR:
         case WM_MOUSEMOVE:
         case 0x20A:
-          if(bActive)	core.ProcessSystemMessage(iMsg,wParam,lParam);
+          if(bActive)    core.ProcessSystemMessage(iMsg,wParam,lParam);
         break;
         /*case WM_CLOSE:
           DestroyWindow(hwnd);
@@ -369,7 +369,7 @@ bool S_DEBUG::OpenDebugWindow_NT(HINSTANCE hInstance)
 {
     if (hMain != nullptr)
         return true;
-    // hInst =	hInstance;
+    // hInst =    hInstance;
 
     WNDCLASSEX wndclass;
 
@@ -406,7 +406,7 @@ bool S_DEBUG::OpenDebugWindow_NT(HINSTANCE hInstance)
 
     ProcessRegistry_Open();
 
-    /*	char sb[MAX_PATH];
+    /*    char sb[MAX_PATH];
       HMENU hMenu;
       hMenu = GetMenu(hMain);
       if(hMenu)
@@ -511,7 +511,7 @@ bool S_DEBUG::IsDebug()
 bool S_DEBUG::SetOnDebugExpression(const char *pLValue, const char *pRValue)
 {
     DATA Result;
-    //	char * pC;
+    //    char * pC;
     Result.SetVCompiler(core.Compiler);
     if (core.Compiler->SetOnDebugExpression(pLValue, pRValue, Result))
         return true;
@@ -648,9 +648,9 @@ uint32_t S_DEBUG::GetTraceMode()
 
 void S_DEBUG::SetTraceMode(uint32_t tmode)
 {
-    //	DWORD dwExitCode;
+    //    DWORD dwExitCode;
     nTraceMode = tmode;
-    //	DWORD nRes;
+    //    DWORD nRes;
     switch (nTraceMode)
     {
     case TMODE_WAIT:
@@ -819,7 +819,7 @@ bool S_DEBUG::ProcessRegistry_Open()
     else
         nRecentFilesIndex = 0;
 
-    /*	dwSize = sizeof(DWORD);
+    /*    dwSize = sizeof(DWORD);
       nRes = RegQueryValueEx(hKey,"Recent Files Index",0,0,(unsigned char *)&nRecentFilesIndex,&dwSize);
       if(nRes != ERROR_SUCCESS)
       {

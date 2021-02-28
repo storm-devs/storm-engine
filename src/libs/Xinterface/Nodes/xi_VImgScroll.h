@@ -26,7 +26,7 @@ class CXI_VIMAGESCROLL : public CINODE
         char **saveName;
         long *img;
 
-        // long    str1,str2;		// string identificators into string service
+        // long    str1,str2;        // string identificators into string service
         // char    *string1,*string2;
         long *strNum;
         char **strSelf;
@@ -133,19 +133,19 @@ class CXI_VIMAGESCROLL : public CINODE
     StringParams *m_pStrParam;
 
     // one string parameters
-    /*float	 m_nOneStrScale;
-    int		 m_nOneStrFont;
-    int		 m_nOneStrAlign;	  // alignment string
-    long	 m_lOneStrX;		  // Offset from rectangle center for X coordinate
+    /*float     m_nOneStrScale;
+    int         m_nOneStrFont;
+    int         m_nOneStrAlign;      // alignment string
+    long     m_lOneStrX;          // Offset from rectangle center for X coordinate
     bool     m_bUseOneString;     // out to screen the one text string
     long     m_lOneStrOffset;     // Offset from top rectangle of list for Y coordinate of string1
     DWORD    m_dwOneStrForeColor; // Font foreground color for first string
     DWORD    m_dwOneStrBackColor; // Font background color for first string
     // two string parameters
-    float	 m_nTwoStrScale;
-    int		 m_nTwoStrFont;
-    int		 m_nTwoStrAlign;	  // alignment string
-    long	 m_lTwoStrX;		  // Offset from rectangle center for X coordinate
+    float     m_nTwoStrScale;
+    int         m_nTwoStrFont;
+    int         m_nTwoStrAlign;      // alignment string
+    long     m_lTwoStrX;          // Offset from rectangle center for X coordinate
     bool     m_bUseTwoString;     // out to screen the two text string
     long     m_lTwoStrOffset;     // Offset from top rectangle of list for Y coordinate of string2
     DWORD    m_dwTwoStrForeColor; // Font foreground color for second string

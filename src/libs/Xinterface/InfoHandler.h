@@ -40,21 +40,21 @@ class InfoHandler : public Entity
     IDirect3DSurface9 *m_pSurface;
     IDirect3DSurface9 *m_pRenderTarget;
 
-    /*long	m_idVBuf;
+    /*long    m_idVBuf;
 
-    int		m_dwOutputWidth;
-    int		m_nOutCenterX, m_nOutCenterY;
+    int        m_dwOutputWidth;
+    int        m_nOutCenterX, m_nOutCenterY;
 
-    DWORD	m_dwBackFillColor;
-    DWORD	m_dwFrontFillColor;
+    DWORD    m_dwBackFillColor;
+    DWORD    m_dwFrontFillColor;
 
-    long	m_idFont;
+    long    m_idFont;
 
-    struct	STRING_LIST
+    struct    STRING_LIST
     {
       int x,y;
       char * strData;
-      STRING_LIST	* next;
+      STRING_LIST    * next;
     } * m_strList;*/
 };
 

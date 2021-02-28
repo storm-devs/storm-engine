@@ -46,7 +46,7 @@ class S_EVENTTAB
     bool DelEventHandler(uint8_t ti, uint32_t event_code, uint32_t func_code, bool bDelStatic = false);
     bool GetEvent(EVENTINFO &ei, uint32_t event_code); // return true if var registred and loaded
     uint32_t MakeHashValue(const char *string);
-    //	void  KeepNameMode(bool on){bKeepName = on;};
+    //    void  KeepNameMode(bool on){bKeepName = on;};
     void Release();
     void Clear();
     void InvalidateBySegmentID(uint32_t segment_id);

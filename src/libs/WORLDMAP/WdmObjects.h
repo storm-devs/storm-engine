@@ -1,9 +1,9 @@
 //============================================================================================
-//	Spirenkov Maxim, 2001
+//    Spirenkov Maxim, 2001
 //--------------------------------------------------------------------------------------------
-//	Sea Dogs II
+//    Sea Dogs II
 //--------------------------------------------------------------------------------------------
-//	WdmObjects
+//    WdmObjects
 //--------------------------------------------------------------------------------------------
 //
 //============================================================================================
@@ -28,8 +28,8 @@ class WdmLocations;
 class WdmStorm;
 class WdmEnemyShip;
 
-//#define WDM_WORLD_SIZE_X	2000.0f
-//#define WDM_WORLD_SIZE_Z	2000.0f
+//#define WDM_WORLD_SIZE_X    2000.0f
+//#define WDM_WORLD_SIZE_Z    2000.0f
 
 enum EnemyShipType
 {
@@ -113,15 +113,15 @@ class WdmObjects
     float enemyshipViewDistMin; // The distance at which the ship begins to disappear
     float enemyshipViewDistMax; // The distance at which the ship disappears completely
     float enemyshipDistKill;    // The distance at which the ship is killed
-    float enemyshipBrnDistMin; // The minimum distance at which a ship is spawned
-    float enemyshipBrnDistMax; // The maximum distance at which the ship is spawned
+    float enemyshipBrnDistMin;  // The minimum distance at which a ship is spawned
+    float enemyshipBrnDistMax;  // The maximum distance at which the ship is spawned
 
     float stormViewDistMin; // The distance at which the storm begins to fade
     float stormViewDistMax; // The distance at which the storm disappears completely
     float stormDistKill;    // The distance at which the storm is killed
     float stormBrnDistMin;  // The minimum distance at which a storm is spawned
-    float stormBrnDistMax; // The maximum distance at which a storm is spawned
-    float stormZone;       // Total storm radius
+    float stormBrnDistMax;  // The maximum distance at which a storm is spawned
+    float stormZone;        // Total storm radius
 
     char attrSec[256];    // Seconds at the current frame
     char attrMin[256];    // Minutes at the current frame

@@ -434,7 +434,7 @@ IDirect3DTexture9 *SCRSHOTER::GetTexFromSave(char *fileName, char **pDatStr) con
             (*pDatStr)[strLen] = 0;
         }
     }
-    /*	else
+    /*    else
       {
         int idx=0;
         for(int i=0; i<SS_TEXTURE_HEIGHT; i++)

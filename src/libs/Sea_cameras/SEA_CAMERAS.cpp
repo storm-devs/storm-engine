@@ -6,17 +6,17 @@
 SEA_CAMERAS::SEA_CAMERAS()
 {
     bActive = true;
-    //	ShowCursor(false);
+    //    ShowCursor(false);
 }
 
 SEA_CAMERAS::~SEA_CAMERAS()
 {
-    //	ShowCursor(true);
+    //    ShowCursor(true);
 }
 
 void SEA_CAMERAS::ProcessMessage(uint32_t iMsg, uint32_t wParam, uint32_t lParam)
 {
-    /*	//GUARD(SEA_CAMERAS::ProcessMessage(uint32_t,uint32_t,uint32_t))
+    /*    //GUARD(SEA_CAMERAS::ProcessMessage(uint32_t,uint32_t,uint32_t))
       switch(iMsg)
       {
         case WM_ACTIVATE:

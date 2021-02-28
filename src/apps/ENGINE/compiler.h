@@ -188,7 +188,7 @@ class COMPILER : public VIRTUAL_COMPILER
     }
 
     char *LoadFile(const char *file_name, uint32_t &file_size, bool bFullPath = false);
-    // char *	AppendProgram(char * base_program, long base_program_size, char * append_program, long
+    // char *    AppendProgram(char * base_program, long base_program_size, char * append_program, long
     // append_program_size, long& new_program_size);
     bool AppendProgram(char *&pBase_program, uint32_t &Base_program_size, const char *pAppend_program,
                        uint32_t &Append_program_size, bool bAddLinefeed);
@@ -259,7 +259,7 @@ class COMPILER : public VIRTUAL_COMPILER
     void BC_ProcessExpression_L6(DATA *value, bool bSkip = false);
     void BC_ProcessExpression_L7(DATA *value, bool bSkip = false);
 
-    /*	void SkipExpression_L1();
+    /*    void SkipExpression_L1();
         void SkipExpression_L2();
         void SkipExpression_L3();
         void SkipExpression_L4();

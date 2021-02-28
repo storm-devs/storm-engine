@@ -322,9 +322,9 @@ void AnimationImp::BuildAnimationMatrices()
             core.Trace("AnimationImp::BuildAnimationMatrices -> Not support mode");
             __debugbreak();
             /*_asm int 3;*/
-            //	float frame = 0.0f;
-            //	for(long j = 0; j < nbones; j++)
-            //		aniInfo->GetBone(j).BlendFrame(frame);
+            //    float frame = 0.0f;
+            //    for(long j = 0; j < nbones; j++)
+            //        aniInfo->GetBone(j).BlendFrame(frame);
         }
     for (long j = 0; j < nbones; j++)
     {

@@ -167,7 +167,7 @@ void ModelProcessor::Process(float DeltaTime)
         const auto Time = Particles[n]->ElapsedTime;
         const auto LifeTime = Particles[n]->LifeTime;
 
-        //		_mm_prefetch ((const char *)Particles[n+1], _MM_HINT_T0);
+        //        _mm_prefetch ((const char *)Particles[n+1], _MM_HINT_T0);
 
         // kill the dead ones ...
         if (Time > LifeTime)
@@ -241,7 +241,7 @@ void ModelProcessor::Process(float DeltaTime)
         Particles[n]->RenderPos.Lerp(TrackPos, Particles[n]->PhysPos, BlendPhys);
         Particles[n]->PhysPos = Particles[n]->RenderPos;
 
-        // Particles[n]->RenderPos	= Particles[n]->PhysPos;
+        // Particles[n]->RenderPos    = Particles[n]->PhysPos;
         Particles[n]->RenderAngle = Particles[n]->Angle;
     }
 

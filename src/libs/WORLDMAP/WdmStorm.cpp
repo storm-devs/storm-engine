@@ -1,9 +1,9 @@
 //============================================================================================
-//	Spirenkov Maxim, 2001
+//    Spirenkov Maxim, 2001
 //--------------------------------------------------------------------------------------------
-//	Sea Dogs II
+//    Sea Dogs II
 //--------------------------------------------------------------------------------------------
-//	WdmStorm
+//    WdmStorm
 //--------------------------------------------------------------------------------------------
 //
 //============================================================================================
@@ -22,10 +22,11 @@
 #define WDM_STORM_ALPHA_BRN 0.1f // Spawn rate per second (0 to 1)
 #define WDM_STORM_ALPHA_KL 0.3f  // Die rate per second (from 1 to 0)
 
-#define WDM_STORM_DIR_DIS 0.6f // Directional spread (Orthogonal vectors addition, 1.0f = pi / 2)
+#define WDM_STORM_DIR_DIS 0.6f     // Directional spread (Orthogonal vectors addition, 1.0f = pi / 2)
 #define WDM_STORM_DIR_SPD_MIN 5.0f // Minimum travel speed
 #define WDM_STORM_DIR_SPD_MAX 8.0f // Maximum travel speed
-#define WDM_STORM_DIR_CHTIME 0.03f // 1 / time_in_sec time of changing the direction of the cloud from the current one to the ship
+#define WDM_STORM_DIR_CHTIME                                                                                           \
+    0.03f // 1 / time_in_sec time of changing the direction of the cloud from the current one to the ship
 
 #define WDM_STORM_CLDRADIUS 30.0f // The radius of the spread of clouds in a storm
 
@@ -160,7 +161,7 @@ void WdmStorm::Update(float dltTime)
     if (isActiveTime >= 0.0f)
         isActiveTime -= dltTime;
     // Direction vector to the ship
-     CVECTOR v; // = ((WdmRenderModel *)wdmObjects->playerShip)->mtx.Pos() - pos; v.y = 0.0f;
+    CVECTOR v; // = ((WdmRenderModel *)wdmObjects->playerShip)->mtx.Pos() - pos; v.y = 0.0f;
     wdmObjects->GetWind(pos.x, pos.z, v);
     float r = sqrtf(~v);
     // Change the direction slightly towards the direction of the ship

@@ -324,10 +324,10 @@ bool CXI_FORMATEDTEXT::IsClick(int buttonID, long xPos, long yPos)
     bool retVal = false;
     if (xPos >= m_rect.left && xPos <= m_rect.right && yPos >= m_rect.top && yPos <= m_rect.bottom)
     {
-        // if(buttonID==MOUSE_RBUTTON)	return true;
+        // if(buttonID==MOUSE_RBUTTON)    return true;
         retVal = true;
     }
-    // if(buttonID!=MOUSE_LBUTTON)	return false;
+    // if(buttonID!=MOUSE_LBUTTON)    return false;
 
     if (m_bUpEnable && m_idUpEnableTexture)
         if (xPos >= m_frUpPos.left && xPos <= m_frUpPos.right && yPos >= m_frUpPos.top && yPos <= m_frUpPos.bottom)

@@ -24,7 +24,7 @@ class SKY : public Entity
         switch (stage)
         {
             // case Stage::execute:
-            //	Execute(delta); break;
+            //    Execute(delta); break;
         case Stage::realize:
             Realize(delta);
             break;
@@ -62,7 +62,7 @@ class SKY : public Entity
         uint32_t diffuse;
     };
 
-    // string		sSkyDir;
+    // string        sSkyDir;
     std::vector<std::string> aSkyDirArray;
     uint32_t dwSkyColor;
     float fSkySpeedRotate, fSkySize, fAngleY, fSkyAngle;

@@ -1,9 +1,9 @@
 //============================================================================================
-//	Spirenkov Maxim aka Sp-Max Shaman, 2001
+//    Spirenkov Maxim aka Sp-Max Shaman, 2001
 //--------------------------------------------------------------------------------------------
 //
 //--------------------------------------------------------------------------------------------
-//	CameraFollow
+//    CameraFollow
 //--------------------------------------------------------------------------------------------
 //
 //============================================================================================
@@ -597,7 +597,7 @@ void CameraFollow::ChangeRadius(float dltTime, float radius)
     if (k > 1.0f)
         k = 1.0f;
     camradius += (radius - camradius) * k;
-    //	lc->location->GetRS()->Print(10, 70, "fndRadius = %f, camradius = %f", fndRadius, camradius);
+    //    lc->location->GetRS()->Print(10, 70, "fndRadius = %f, camradius = %f", fndRadius, camradius);
 }
 
 // Find the acceleration of the camera stopping at an angular collision with the patch, dir +-1

@@ -5,7 +5,7 @@
 // ===========================================================================================================================
 //
 // File structure:
-// 
+//
 //     AntFileHeader
 //     char[AntFileHeader.stringsTableSize]
 //     AntFileBone[AntFileHeader.bonesCount]

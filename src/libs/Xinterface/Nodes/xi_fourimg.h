@@ -51,8 +51,8 @@ class CXI_FOURIMAGE : public CINODE
     long m_twoImgID[4];       // image id for two image
     long m_oneTexID[4];       // texture id for one image
     long m_twoTexID[4];       // texture id for two image
-    long m_oneBadTexture; // texture for the picture replacing the first "bad" one
-    long m_twoBadTexture; // texture for the picture replacing the second "bad" one
+    long m_oneBadTexture;     // texture for the picture replacing the first "bad" one
+    long m_twoBadTexture;     // texture for the picture replacing the second "bad" one
 
     // select parameters
     bool m_bShowBorder;            // do show border

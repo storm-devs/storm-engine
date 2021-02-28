@@ -125,7 +125,7 @@ void SailorsPoints::Draw(VDX9RENDER *rs, bool pointmode)
 
         rs->DrawRects(&pRSR, 1, "EditorFront");
 
-        //		rs->DrawSphere(CVECTOR(points.point[points.selected].x,points.point[points.selected].y,points.point[points.selected].z),0.5f,0xFFFFFFFF);
+        //        rs->DrawSphere(CVECTOR(points.point[points.selected].x,points.point[points.selected].y,points.point[points.selected].z),0.5f,0xFFFFFFFF);
     }
 
     if (!pointmode)

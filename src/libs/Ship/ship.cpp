@@ -662,9 +662,9 @@ void SHIP::Execute(uint32_t DeltaTime)
         vCurDeadDir.y += vDeadDir.y * fDeltaTime;
         vCurDeadDir.z += vDeadDir.z * fDeltaTime;
 
-        /*State.vPos.y *= fScale;		State.vPos.y -= vCurDeadDir.y;
-        State.vAng.x *= fScale;		State.vAng.x += vCurDeadDir.x;
-        State.vAng.z *= fScale;		State.vAng.z += vCurDeadDir.z;*/
+        /*State.vPos.y *= fScale;        State.vPos.y -= vCurDeadDir.y;
+        State.vAng.x *= fScale;        State.vAng.x += vCurDeadDir.x;
+        State.vAng.z *= fScale;        State.vAng.z += vCurDeadDir.z;*/
 
         State.vPos.y -= vCurDeadDir.y;
         // State.vAng.x += vCurDeadDir.x;
@@ -914,7 +914,7 @@ void SHIP::MastFall(mast_t *pM)
         sprintf_s(cMastNodeName, "%s", pM->pNode->GetName());
         sscanf((char *)&cMastNodeName[_countof(MAST_IDENTIFY) - 1], "%d", &iNum);
         iBase = iNum / TOPMAST_BEGIN;
-        //		core.Trace("SHIP::MastFall : nodeName %s  iNum = %d base = %d iNumMasts = %d", cMastNodeName, iNum,
+        //        core.Trace("SHIP::MastFall : nodeName %s  iNum = %d base = %d iNumMasts = %d", cMastNodeName, iNum,
         // iBase, iNumMasts );
         for (long i = 0; i < iNumMasts; i++)
         {
@@ -937,7 +937,7 @@ void SHIP::MastFall(mast_t *pM)
                     if (((iMastNum > iNum) && iMastNum < ((iBase + 1) * TOPMAST_BEGIN)) || iMastNum == iNum)
                         bOk = true;
                 }
-                //				core.Trace("SHIP::MastFall : i = %d nodeName %s  iMastNum = %d bOk = %d", i, str,
+                //                core.Trace("SHIP::MastFall : i = %d nodeName %s  iMastNum = %d bOk = %d", i, str,
                 // iMastNum, bOk );
                 if (bOk)
                 {
@@ -1045,7 +1045,7 @@ void SHIP::Realize(uint32_t dtime)
         return;
 
     // if (dtime)
-    //	ShipRocking2(float(dtime) * 0.001f);
+    //    ShipRocking2(float(dtime) * 0.001f);
 
     auto *pM = GetModel();
     Assert(pM);
@@ -1263,8 +1263,8 @@ uint64_t SHIP::ProcessMessage(MESSAGE &message)
         char sTech[256];
         message.String(sizeof(sTech), sTech);
         core.Send_Message(GetModelEID(), "ls", MSG_MODEL_SET_TECHNIQUE, sTech);
-        //	   MODEL * pModel = GetModel();
-        //	   NODE* pNode = pModel->GetNode(0);
+        //       MODEL * pModel = GetModel();
+        //       NODE* pNode = pModel->GetNode(0);
     }
     break;
     }

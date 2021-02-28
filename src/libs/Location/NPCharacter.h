@@ -1,9 +1,9 @@
 //============================================================================================
-//	Spirenkov Maxim, 2001
+//    Spirenkov Maxim, 2001
 //--------------------------------------------------------------------------------------------
 //
 //--------------------------------------------------------------------------------------------
-//	NPCaracter
+//    NPCaracter
 //--------------------------------------------------------------------------------------------
 //
 //============================================================================================
@@ -178,14 +178,14 @@ class NPCharacter : public AICharacter
     float attackPrbFeint; // fgt_attack_feint probability
 
     // Defence
-    float defenceCur; // Rate of rise of block probability, in parrots
-    float blockTime;  // Block time
+    float defenceCur;      // Rate of rise of block probability, in parrots
+    float blockTime;       // Block time
     float defencePrbBlock; // fgt_block probability
     float defencePrbParry; // fgt_parry probability
     bool isRecoilEnable;   // Is a rebound allowed?
 
     // Shooting
-    float fireCur; // The rate of rise of the probability of a shot, in parrots
+    float fireCur;     // The rate of rise of the probability of a shot, in parrots
     bool isFireEnable; // Is the shot allowed
 
     float fightTick;    // Time until the next decision tick

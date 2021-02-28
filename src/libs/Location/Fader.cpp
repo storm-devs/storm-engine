@@ -1,9 +1,9 @@
 //============================================================================================
-//	Spirenkov Maxim aka Sp-Max Shaman, 2001
+//    Spirenkov Maxim aka Sp-Max Shaman, 2001
 //--------------------------------------------------------------------------------------------
 //
 //--------------------------------------------------------------------------------------------
-//	Fader
+//    Fader
 //--------------------------------------------------------------------------------------------
 //
 //============================================================================================
@@ -218,7 +218,7 @@ void Fader::Execute(uint32_t delta_time)
         else
         {
             core.PostEvent("FaderEvent_StartFadeIn", 0, "li", fadeIn, GetId());
-            //	core.Trace("FaderEvent_StartFadeIn");
+            //    core.Trace("FaderEvent_StartFadeIn");
         }
     }
     if (eventEnd)
@@ -233,7 +233,7 @@ void Fader::Execute(uint32_t delta_time)
         else
         {
             core.PostEvent("FaderEvent_EndFadeIn", 0, "li", fadeIn, GetId());
-            //	core.Trace("FaderEvent_EndFadeIn");
+            //    core.Trace("FaderEvent_EndFadeIn");
         }
     }
 }

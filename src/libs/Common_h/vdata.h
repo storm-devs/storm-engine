@@ -63,7 +63,7 @@ class VDATA
     virtual bool Minus(DATA *pV) = 0;
     virtual bool Compare(DATA *pV, char opA, char opB) = 0;
     virtual bool Neg() = 0;
-    //	virtual bool CompareAndSetResult(DATA * pV,S_TOKEN_TYPE op)=0;
+    //    virtual bool CompareAndSetResult(DATA * pV,S_TOKEN_TYPE op)=0;
 
     virtual void SetElementsNum(uint32_t asize) = 0;
 

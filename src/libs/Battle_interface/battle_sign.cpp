@@ -225,7 +225,8 @@ void BISignIcon::Init(ATTRIBUTES *pRoot, ATTRIBUTES *pA)
             m_nSignFaceTextureID = m_pRS->TextureCreate(pcTmp);
         m_dwSignFaceColor = pA->GetAttributeAsDword("shipcolor", m_dwSignFaceColor);
         /*pcTmp = pA->GetAttribute( "shipuv" );
-        if( pcTmp ) sscanf( pcTmp, "%f,%f,%f,%f", &m_rSignStarUV.left,&m_rSignStarUV.top,
+        if( pcTmp ) sscanf( pcTmp, "%f,%f,%f,%f",
+         * &m_rSignStarUV.left,&m_rSignStarUV.top,
         &m_rSignStarUV.right,&m_rSignStarUV.bottom );*/
         pcTmp = pA->GetAttribute("shipoffset");
         if (pcTmp)

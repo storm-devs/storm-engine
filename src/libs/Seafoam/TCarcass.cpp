@@ -129,7 +129,7 @@ void TCarcass::RebuildLevels(tCarcassVertex *_vBuffer, bool _firstDraw, uint32_t
             if (!measurePoint)
                 measureK = 1.f;
             // if (measurePoint == (measure.pointsCount-1))
-            //	measureK = 1.f;
+            //    measureK = 1.f;
 
             auto levelA = 1.f;
             if (level <= FRONT_FADE_LEVEL)

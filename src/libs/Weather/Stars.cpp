@@ -114,9 +114,9 @@ void Astronomy::STARS::Init(ATTRIBUTES *pAP)
 
     Star & s = aStars[aStars.Add()];
 
-    strncpy_s(str2, &str[0], 10);		str2[10] = 0; sscanf(str2, "%f", &s.fRA);
-    strncpy_s(str2, &str[16], 10);	str2[10] = 0; sscanf(str2, "%f", &s.fDec);
-    strncpy_s(str2, &str[56], 6);		str2[6] = 0; sscanf(str2, "%f", &s.fMag);
+    strncpy_s(str2, &str[0], 10);        str2[10] = 0; sscanf(str2, "%f", &s.fRA);
+    strncpy_s(str2, &str[16], 10);    str2[10] = 0; sscanf(str2, "%f", &s.fDec);
+    strncpy_s(str2, &str[56], 6);        str2[6] = 0; sscanf(str2, "%f", &s.fMag);
     strncpy_s(s.cSpectr, &str[63], 2);
 
     s.dwSubTexture = rand()%4;

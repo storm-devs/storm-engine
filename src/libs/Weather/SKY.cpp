@@ -440,7 +440,7 @@ void SKY::Realize(uint32_t Delta_Time)
 
 uint32_t SKY::AttributeChanged(ATTRIBUTES *pAttribute)
 {
-    // if (*pAttribute == "dir")			{ sSkyDir = pAttribute->GetThisAttr(); return 0; }
+    // if (*pAttribute == "dir")            { sSkyDir = pAttribute->GetThisAttr(); return 0; }
     if (*pAttribute == "dir")
     {
         FillSkyDirArray(pAttribute);

@@ -167,7 +167,7 @@ class AIFlowGraph
 
     std::vector<edge_t> aEdges;
     std::vector<point_t> aPoints;
-    // std::vector<npoint_t>		aNearestPoints;
+    // std::vector<npoint_t>        aNearestPoints;
     std::string sSectionName;
 
     struct table_t

@@ -159,7 +159,7 @@ long BI_InterfaceManager::MsgLoadSheet(MESSAGE &message)
 
 long BI_InterfaceManager::MsgCreateImage(MESSAGE &message)
 {
-    /*char texture[MAX_PATH];	message.String( sizeof(texture), texture );
+    /*char texture[MAX_PATH];    message.String( sizeof(texture), texture );
     FRECT uv;
     RECT pos;
     uint32_t color;
@@ -182,7 +182,7 @@ long BI_InterfaceManager::MsgDeleteNode(MESSAGE &message)
         return 0;
 
     // if( m_aNodes.Find(pNod) != INVALID_ARRAY_INDEX ) {
-    //	STORM_DELETE(pNod);
+    //    STORM_DELETE(pNod);
     //}
     //~!~ DeleteNode?
     const auto it = std::find(m_aNodes.begin(), m_aNodes.end(), pNod);

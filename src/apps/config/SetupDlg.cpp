@@ -92,7 +92,7 @@ CSetupDlg::CSetupDlg(CWnd *pParent /*=NULL*/) : CDialog(CSetupDlg::IDD, pParent)
     m_Fullscreen = false;
     m_PostProcess = false;
     m_TexQualityInfo = _T("");
-    //	m_bArcadeMode = FALSE;
+    //    m_bArcadeMode = FALSE;
     m_bSafeRender = FALSE;
     m_bSndMusOn = FALSE;
     m_iTexQuality = 2;
@@ -278,8 +278,8 @@ HCURSOR CSetupDlg::OnQueryDragIcon()
 BOOL CSetupDlg::LoadSettings()
 {
     DWORD i, j;
-    // HKEY	hKy;
-    // DWORD	pData;
+    // HKEY    hKy;
+    // DWORD    pData;
     int aTexQuality[3] = {IDS_TEXQUALITY_LOW, IDS_TEXQUALITY_MEDIUM, IDS_TEXQUALITY_HIGH};
 
     Trace("LoadSettings::Start");
@@ -401,7 +401,7 @@ BOOL CSetupDlg::LoadSettings()
         }
 
         // if (stricmp(Strings[i].pName, "arcademode.arcade_on") == 0)
-        //	sscanf(pS->pValue, "%d", &m_bArcadeMode);
+        //    sscanf(pS->pValue, "%d", &m_bArcadeMode);
 
         if (stricmp(Strings[i].pName, "safe_render") == 0)
             sscanf(pS->pValue, "%d", &m_bSafeRender);
@@ -501,8 +501,8 @@ BOOL CSetupDlg::EnumerateDevicesAndResolutions()
         dm.dmSize = sizeof(dm);
         for (int iModeNum = 0; EnumDisplaySettings(dd.DeviceName, iModeNum, &dm) != 0; iModeNum++)
         {
-            if (dm.dmBitsPerPel >= 32 && dm.dmPelsWidth >= 800 && dm.dmPelsHeight >= 600 && dm.dmDisplayFrequency == 60 &&
-                dm.dmDisplayFixedOutput == DMDFO_DEFAULT)
+            if (dm.dmBitsPerPel >= 32 && dm.dmPelsWidth >= 800 && dm.dmPelsHeight >= 600 &&
+                dm.dmDisplayFrequency == 60 && dm.dmDisplayFixedOutput == DMDFO_DEFAULT)
             {
                 res_t *pR = &Devices[numdevices].Resolutions[Devices[numdevices].numresolutions];
                 pR->bpp = dm.dmBitsPerPel;
@@ -524,7 +524,7 @@ void CSetupDlg::OnDefaultsettings()
     m_Fullscreen = false;
     m_PostProcess = false;
 
-    //	m_bArcadeMode = true;
+    //    m_bArcadeMode = true;
     m_bSafeRender = false;
     m_bSndMusOn = false;
 
@@ -605,7 +605,7 @@ void CSetupDlg::SaveParameters()
             sprintf(str, "%s%s%d", Strings[i].pName, sFmtEStr, 2 - m_iTexQuality);
 
         // if (stricmp(Strings[i].pName,"arcademode.arcade_on") == 0)
-        //	sprintf(str,"%s%s%d", Strings[i].pName, sFmtEStr, m_bArcadeMode);
+        //    sprintf(str,"%s%s%d", Strings[i].pName, sFmtEStr, m_bArcadeMode);
 
         if (stricmp(Strings[i].pName, "safe_render") == 0)
             sprintf(str, "%s%s%d", Strings[i].pName, sFmtEStr, m_bSafeRender);

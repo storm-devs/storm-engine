@@ -79,7 +79,7 @@ class CSetupDlg : public CDialog
     BOOL m_Fullscreen;
     BOOL m_PostProcess;
     CString m_TexQualityInfo;
-    // BOOL	m_bArcadeMode;
+    // BOOL    m_bArcadeMode;
     BOOL m_bSafeRender;
     BOOL m_bSndMusOn;
     int m_iTexQuality;

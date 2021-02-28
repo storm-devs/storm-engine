@@ -65,7 +65,7 @@ void TSeagulls::Init()
     if (!renderService)
         throw std::exception("!Seagulls: No service: dx9render");
     // if(!soundService)
-    //	throw std::exception("!Seagulls: No service: sound");
+    //    throw std::exception("!Seagulls: No service: sound");
 
     seagullModel = EntityManager::CreateEntity("MODELR");
     core.Send_Message(seagullModel, "ls", MSG_MODEL_LOAD_GEO, ANIMALS_SEAGULL_FILENAME);

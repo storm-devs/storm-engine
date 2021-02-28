@@ -7,7 +7,7 @@ S_VARTAB::S_VARTAB()
 {
     Buffer_size = 0;
     Var_num = 0;
-    //	bKeepName = false;
+    //    bKeepName = false;
     Global_var_num = 0;
     for (uint32_t n = 0; n < VTHASHT_SIZE; n++)
     {
