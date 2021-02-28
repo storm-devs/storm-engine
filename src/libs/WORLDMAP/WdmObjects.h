@@ -52,9 +52,9 @@ class WdmObjects
         long next;
     };
 
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     WdmObjects();
     virtual ~WdmObjects();
@@ -68,30 +68,30 @@ class WdmObjects
     void AddStorm(WdmStorm *storm);
     void DelStorm(WdmStorm *storm);
 
-    //Создать геометрию
+    // Create geometry
     GEOS *CreateGeometry(const char *path);
 
-    //Энжиновский орбъект, заведующий всем
+    // Engine object, which is in charge of everything
     WorldMap *wm;
-    //Сервис рендера
+    // Render service
     VDX9RENDER *rs;
-    //Сервис геометриии
+    // Geometry service
     VGEOMETRY *gs;
-    //Камера
+    // Camera
     WdmCamera *camera;
-    //Острова
+    // Islands
     WdmIslands *islands;
 
-    //Корабли
-    //Корабль игрока
+    // The ships
+    // Player ship
     WdmShip *playerShip;
-    //Все существующие корабли
+    // All existing ships
     std::vector<WdmShip *> ships;
 
     WdmEnemyShip *enemyShip;
     bool enableSkipEnemy;
 
-    //Шторма
+    // Storm
     std::vector<WdmStorm *> storms;
     bool playarInStorm;
 
@@ -107,54 +107,54 @@ class WdmObjects
     void DrawBox2D(CMatrix &mtx, float l, float w, uint32_t color) const;
     void GetVPSize(float &w, float &h) const;
 
-    float shipSpeedOppositeWind; //Относительная скорость корабля против ветра
-    float shipSpeedOverWind;     //Относительная скорость корабля по ветру
+    float shipSpeedOppositeWind; // Relative speed of the ship against the wind
+    float shipSpeedOverWind;     // Relative speed of the ship downwind
 
-    float enemyshipViewDistMin; //Растояние на котором корабль начинает исчезать
-    float enemyshipViewDistMax; //Растояние на котором корабль исчезает полностью
-    float enemyshipDistKill;    //Расстояние на котором убиваем корабль
-    float enemyshipBrnDistMin; //Минимальное растояние на котором рожается корабль
-    float enemyshipBrnDistMax; //Максимальное растояние на котором рожается корабль
+    float enemyshipViewDistMin; // The distance at which the ship begins to disappear
+    float enemyshipViewDistMax; // The distance at which the ship disappears completely
+    float enemyshipDistKill;    // The distance at which the ship is killed
+    float enemyshipBrnDistMin; // The minimum distance at which a ship is spawned
+    float enemyshipBrnDistMax; // The maximum distance at which the ship is spawned
 
-    float stormViewDistMin; //Растояние на котором шторм начинает исчезать
-    float stormViewDistMax; //Растояние на котором шторм исчезает полностью
-    float stormDistKill;    //Расстояние на котором убиваем шторм
-    float stormBrnDistMin;  //Минимальное растояние на котором рожается шторм
-    float stormBrnDistMax; //Максимальное растояние на котором рожается шторм
-    float stormZone;       //Общий радиус действия шторма
+    float stormViewDistMin; // The distance at which the storm begins to fade
+    float stormViewDistMax; // The distance at which the storm disappears completely
+    float stormDistKill;    // The distance at which the storm is killed
+    float stormBrnDistMin;  // The minimum distance at which a storm is spawned
+    float stormBrnDistMax; // The maximum distance at which a storm is spawned
+    float stormZone;       // Total storm radius
 
-    char attrSec[256];    //Секунды на текущем кадре
-    char attrMin[256];    //Минуты на текущем кадре
-    char attrHour[256];   //Часы на текущем кадре
-    char attrDay[256];    //День на текущем кадре
-    char attrMonth[256];  //Месяц на текущем кадре
-    char attrYear[256];   //Год на текущем кадре
-    bool isNextDayUpdate; //Пора обновить данные следующего дня
+    char attrSec[256];    // Seconds at the current frame
+    char attrMin[256];    // Minutes at the current frame
+    char attrHour[256];   // Clock at the current frame
+    char attrDay[256];    // Day at the current frame
+    char attrMonth[256];  // Month at the current frame
+    char attrYear[256];   // Year at the current frame
+    bool isNextDayUpdate; // Time to update next day data
 
-    long nationFlagIndex; //индекс национального флага
+    long nationFlagIndex; // national flag index
 
-    char coordinate[128]; // для вывода строки координат
+    char coordinate[128]; // to output the coordinate string
     char stCoordinate[128];
 
-    float resizeRatio; // для ресайза интерфейсов
-    float worldSizeX;  //Размер мира по X
-    float worldSizeZ;  //Размер мира по Z
+    float resizeRatio; // for resizing interfaces
+    float worldSizeX;  // The size of the world by X
+    float worldSizeZ;  // The size of the world by Z
 
-    std::vector<Model> models; //Модельки
-    long entryModels[1024];    //Таблица быстрого поиска геометрии
+    std::vector<Model> models; // Models
+    long entryModels[1024];    // Geometry Quick Find Table
     std::string modelPath;
 
-    //Получить направление и силу ветра
+    // Get wind direction and strength
     float GetWind(float x, float z, CVECTOR &dir);
-    //Обновить состояние ветра
+    // Update wind state
     void UpdateWind(float dltTime);
-    //Получить строку сохранение
+    // Get save string
     const char *GetWindSaveString(std::string &windData);
-    //Установить строку сохранение
+    // Set save string
     void SetWindSaveString(const char *str);
-    //Добавить float в cтроку
+    // Add float to string
     void AddDataToString(std::string &str, uint8_t d);
-    //Получить float из строки
+    // Get float from string
     long GetDataFromString(const char *&cur);
 
     WindField windField;

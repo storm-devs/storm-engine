@@ -17,9 +17,9 @@
 #define WDM_CAMERA_HEIGHT_MAX 300.0f
 #define WdmCamera_myPI 3.1415926535897932384626433832795f
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 WdmCamera::WdmCamera()
 {
@@ -106,11 +106,11 @@ void WdmCamera::Move(float dltTime, VDX9RENDER *rs)
     const auto moveudspd = 50.0f * MoveUpDown(dltTime);
     const auto rotspd = 1.0f * RotLeftRight(dltTime);
     const auto zoomspd = 30.0f * ZoomInOut(dltTime);
-    //Точка на высоте 0 в которую смотрим относительно текущий позиции камеры
+    // The point at height 0 at which we are looking relative to the current camera position
     const auto cx = sn * pos.y * csX / snX;
     const auto cz = cs * pos.y * csX / snX;
     auto r = sqrtf(cx * cx + cz * cz);
-    //Перемещение свободной камеры
+    // Moving free camera
     if (CurrentFreeMode() && isInit)
     {
         pos.x += moveudspd * sn - movelrspd * cs;
@@ -130,11 +130,11 @@ void WdmCamera::Move(float dltTime, VDX9RENDER *rs)
         pos.z = wdmObjects->playerShip->mtx.Pos().z - cz;
         isInit = true;
     }
-    //Вращение камеры
+    // Camera rotation
     this->ang.y += rotspd;
     pos.x = pos.x + cx - r * sinf(ang.y);
     pos.z = pos.z + cz - r * cosf(ang.y);
-    //Масштабирование
+    // Scaling
     pos.x += zoomspd * sn * csX;
     pos.y -= zoomspd * snX;
     pos.z += zoomspd * cs * csX;
@@ -152,9 +152,9 @@ void WdmCamera::Move(float dltTime, VDX9RENDER *rs)
         pos.x -= r * sn;
         pos.z -= r * cs;
     }
-    //Ограничем перемещение камеры
+    // Limiting camera movement
     CheckRange();
-    //Устанавливаем новою позицию камеры
+    // Set the new camera position
     float height;
     k = dltTime * 2000.0f;
     if (!GetHightHeight(height))
@@ -192,16 +192,16 @@ void WdmCamera::CheckRange()
     const auto sn = sinf(ang.y);
     const auto csX = cosf(ang.x);
     const auto snX = sinf(ang.x);
-    //Точка, в которую смотрим
+    // The point we're looking at
     const auto cx = pos.x + sn * pos.y * csX / snX;
     const auto cz = pos.z + cs * pos.y * csX / snX;
     const auto ccx = cx, ccz = cz;
-    //Ограничиваем координату
+    // Limit the coordinates
     // if(cx < -0.5f*WDM_WORLD_SIZE_X) cx = -0.5f*WDM_WORLD_SIZE_X;
     // if(cx > 0.5f*WDM_WORLD_SIZE_X) cx = 0.5f*WDM_WORLD_SIZE_X;
     // if(cz < -0.5f*WDM_WORLD_SIZE_Z) cz = -0.5f*WDM_WORLD_SIZE_Z;
     // if(cz > 0.5f*WDM_WORLD_SIZE_Z) cz = 0.5f*WDM_WORLD_SIZE_Z;
-    //Просчитываем смещение
+    // Calculating the offset
     pos.x += cx - ccx;
     pos.z += cz - ccz;
 }

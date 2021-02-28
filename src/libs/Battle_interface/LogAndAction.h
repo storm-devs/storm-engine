@@ -53,9 +53,9 @@ class ILogAndActions : public Entity
 
   protected:
     // log stings parameters
-    //-----------------------
-    long m_nWindowWidth;  // размер окна по X
-    long m_nWindowHeight; // размер окна по Y
+    // -----------------------
+    long m_nWindowWidth;  // X window size
+    long m_nWindowHeight; // Y window size
     long m_nWindowLeft;
     long m_nWindowRight;
     long m_nWindowUp;
@@ -71,8 +71,8 @@ class ILogAndActions : public Entity
     // Action parameters
     //-------------------
     bool m_bThatRealAction;
-    long m_nIconWidth;  // размер иконки по X
-    long m_nIconHeight; // размер иконки по Y
+    long m_nIconWidth;  // X icon size
+    long m_nIconHeight; // Y icon size
     long m_nIconLeft;
     long m_nIconUp;
     long m_idIconTexture;

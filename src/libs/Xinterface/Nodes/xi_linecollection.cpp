@@ -112,7 +112,7 @@ uint32_t CXI_LINECOLLECTION::MessageProc(long msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
-    case 0: // сменить цвет для линии с номером или всех строк (если номер = -1)
+    case 0: // change color for line with number or all lines (if number = -1)
     {
         const uint32_t dwColor = message.Long();
         const auto nLineNum = message.Long();
@@ -127,7 +127,7 @@ uint32_t CXI_LINECOLLECTION::MessageProc(long msgcode, MESSAGE &message)
         }
     }
     break;
-    case 1: // добавить динию и вернуть ее номер
+    case 1: // add line and return its number
     {
         const uint32_t dwColor = message.Long();
         const auto nLeft = message.Long();

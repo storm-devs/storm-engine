@@ -33,81 +33,81 @@
 #define CHARACTER_FIGHT_GUNHAND "To hand"
 #define CHARACTER_FIGHT_GUNFIRE "Fire"
 
-#define CHARACTER_FIGHT_FIREDIST 25.0f //метров
-#define CHARACTER_FIGHT_FIREANG 10.0f  //градусов
+#define CHARACTER_FIGHT_FIREDIST 25.0f // meters
+#define CHARACTER_FIGHT_FIREANG 10.0f  // degrees
 
-#define CHARACTER_DIALOG_ANG 30.0f //Максимальный угл срабатывания диалога
+#define CHARACTER_DIALOG_ANG 30.0f // Maximum angle of dialogue
 
-#define CHARACTER_SEA_NOTRUN 0.2f //Относительная высота при которой персонаж не может бежать
-#define CHARACTER_SEA_MOVE 0.6f //Относительная высота при которой начинает сносить персонажа
-#define CHARACTER_SEA_SWIM 0.8f //Относительная высота при которой персонаж начинает плыть
+#define CHARACTER_SEA_NOTRUN 0.2f // The relative height at which the character cannot run
+#define CHARACTER_SEA_MOVE 0.6f // The relative height at which the character starts to move
+#define CHARACTER_SEA_SWIM 0.8f // The relative height at which the character begins to swim
 
-#define CHARACTER_HIDE_DIST 0.5f //Растояние до камеры при котором гасить персонажа
+#define CHARACTER_HIDE_DIST 0.5f // Distance to the camera at which to hide the character
 
-#define CHARACTER_JUMPMAXTIME 5.0f //Максимально допустимое время падения при прыжке
+#define CHARACTER_JUMPMAXTIME 5.0f // Maximum allowed fall time when jumping
 #define CHARACTER_MAXJUMPPOINTS (sizeof(jumpTrack) / sizeof(CVECTOR))
 #define CHARACTER_JUMP_TIMESTEP (CHARACTER_JUMPMAXTIME / CHARACTER_MAXJUMPPOINTS)
 
-//Виды атак
+// Types of attacks
 #define FGT_ATTACK_FAST "fast"
 #define FGT_ATTACK_FORCE "force"
 #define FGT_ATTACK_ROUND "round"
 #define FGT_ATTACK_BREAK "break"
 #define FGT_ATTACK_FEINT "feint"
-#define FGT_ATTACK_PARRY "parry" // для пробоя "hit_parry"  boal
+#define FGT_ATTACK_PARRY "parry" // for breakout "hit_parry" boal
 
-//Таблица возможности смены одного действия другим
+// Table of the possibility of changing one action by another
 uint8_t Character::fightTbl[fgt_max][fgt_max] = {
     // Set type
     // nn afs afr ard abk aft aftc fr hatk hft hpr hrd hfr bk bkh bbr pry rcl stl str  //Current type
-    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, // fgt_none Нет никакого боевого действия
-    {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0}, // fgt_attack_fast Быстрый удар
-    {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0}, // fgt_attack_force Сильный удар
-    {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0}, // fgt_attack_round Круговой удар
-    {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0}, // fgt_attack_break Пробивающий удар
-    {0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // fgt_attack_feint Финт - спрециальный обманный удар
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, // fgt_none There is no fighting
+    {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0}, // fgt_attack_fast Fast strike
+    {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0}, // fgt_attack_force Bounce
+    {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0}, // fgt_attack_round Circle Kick
+    {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0}, // fgt_attack_break Trample
+    {0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // fgt_attack_feint Feint - Special trick
     {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0},
-    // fgt_attack_feintc Продолжение финта в случае контратаки
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // fgt_fire Выстрел из пистолета
+    // fgt_attack_feintc Continue feint in case of counterattack
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // fgt_fire Pistol Shot
     {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    // fgt_hit_attack Реакция попадания удара по персонажу вводящая его в stall
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // fgt_hit_feint Реакция от финта вводящая его в stall
+    // fgt_hit_attack The reaction of hitting a character putting him into stall
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // fgt_hit_feint Reaction from a feint that puts him into stall
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    // fgt_hit_parry Реакция от парирования вводящая его в stall
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // fgt_hit_round Реакция отталкивание круговым ударом
+    // fgt_hit_parry Reaction from a parry putting him into stall
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // fgt_hit_round Reaction Knock Back with Round Hit
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    // fgt_hit_fire Реакция от выстрела вводящая его в stall
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0}, // fgt_block Защита саблей
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0}, // fgt_blockhit Защита саблей
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // fgt_blockbreak Пробивка блока
+    // fgt_hit_fire Reaction from a shot that puts him into stall
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0}, // fgt_block Saber Defense
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0}, // fgt_blockhit Saber protection
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // fgt_blockbreak Punch block
     {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0},
-    // fgt_parry Парирование, защитное движение вводящее противника в stall
-    {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0}, // fgt_recoil Отскок назад
-    {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0}, // fgt_strafe_l Отскок влево
-    {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0}, // fgt_strafe_r Отскок право
+    // fgt_parry Parry, a defensive move that brings the enemy into a stall
+    {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0}, // fgt_recoil Bounce back
+    {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0}, // fgt_strafe_l Bounce left
+    {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0}, // fgt_strafe_r Bounce right
 };
 
 const char *Character::fightNamesTbl[fgt_max] = {
-    "fgt_none",          //Нет никакого боевого действия
-    "fgt_attack_fast",   //Быстрый удар
-    "fgt_attack_force",  //Сильный удар
-    "fgt_attack_round",  //Круговой удар
-    "fgt_attack_break",  //Пробивающий удар
-    "fgt_attack_feint",  //Финт - спрециальный обманный удар
-    "fgt_attack_feintc", //Продолжение финта в случае контратаки
-    "fgt_fire",          //Выстрел из пистолета
-    "fgt_hit_attack", //Реакция попадания удара по персонажу вводящая его в stall
-    "fgt_hit_feint",  //Реакция от финта вводящая его в stall
-    "fgt_hit_parry",  //Реакция от парирования вводящая его в stall
-    "fgt_hit_round",  //Реакция отталкивание круговым ударом
-    "fgt_hit_fire",   //Реакция от выстрела вводящая его в stall
-    "fgt_block",      //Защита саблей
-    "fgt_blockhit",   //Защита саблей
-    "fgt_blockbreak", //Пробивка блока
-    "fgt_parry", //Парирование, защитное движение вводящее противника в stall
-    "fgt_recoil",   //Отскок назад
-    "fgt_strafe_l", //Отскок влево
-    "fgt_strafe_r", //Отскок право
+    "fgt_none",          // There is no fighting
+    "fgt_attack_fast",   // Quick hit
+    "fgt_attack_force",  // Swipe
+    "fgt_attack_round",  // Circular hit
+    "fgt_attack_break",  // Piercing hit
+    "fgt_attack_feint",  // Feint - special trick
+    "fgt_attack_feintc", // Continuation of the feint in case of a counterattack
+    "fgt_fire",          // Pistol shot
+    "fgt_hit_attack", // The reaction of hitting a character putting him into the stall
+    "fgt_hit_feint",  // The reaction from the feint putting him into the stall
+    "fgt_hit_parry",  // Parry reaction putting him into stall
+    "fgt_hit_round",  // Knockback reaction from a circular hit
+    "fgt_hit_fire",   // The reaction from the shot putting him into stall
+    "fgt_block",      // Saber protection
+    "fgt_blockhit",   // Saber protection
+    "fgt_blockbreak", // Punching the block
+    "fgt_parry", // Parry, a defensive move putting the opponent into a stall
+    "fgt_recoil",   // Bounce back
+    "fgt_strafe_l", // Bounce to the left
+    "fgt_strafe_r", // Bounce right
 };
 
 //============================================================================================
@@ -369,7 +369,7 @@ float Character::RTuner::GetAlpha() const
     return a;
 }
 
-//Принять событие
+// Accept event
 void Character::EventListener::Event(Animation *animation, long index, long eventID, AnimationEvent event)
 {
     if (!animation || index != 0)
@@ -380,7 +380,7 @@ void Character::EventListener::Event(Animation *animation, long index, long even
     character->ActionEvent(c, animation, index, eventID, event);
 }
 
-//Принять событие
+// Accept event
 void Character::EventListener::Event(Animation *animation, long playerIndex, const char *eventName)
 {
     if (!animation || !eventName || playerIndex != 0)
@@ -388,9 +388,9 @@ void Character::EventListener::Event(Animation *animation, long playerIndex, con
     character->ActionEvent(animation, playerIndex, eventName);
 }
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 Character::Character()
 {
@@ -401,7 +401,7 @@ Character::Character()
     currentNode = -1;
     tuner.character = this;
     loc_id = {};
-    //Размеры персонажа
+    // Character sizes
     radiusNrm = 0.7f;
     radiusFgt = 1.5f;
     radius = radiusNrm;
@@ -413,46 +413,46 @@ Character::Character()
     turnDir = 0.0f;
     isTurnLock = false;
     height = 1.8f;
-    //Действия
+    // Actions
     turnSpeed = 1.0f;
-    //Ходьба вперёд
+    // Walking forward
     walk.SetName("walk");
-    //Ходьба назад
+    // Walking back
     backwalk.SetName("back walk");
-    //Бег вперёд
+    // Running forward
     run.SetName("run");
-    //Бег назад
+    // Running back
     backrun.SetName("back run");
-    //Идти вверх по лестнице
+    // Go up the stairs
     stsUp.SetName("stairs up");
-    //Идти вниз по лестнице
+    // Go down the stairs
     stsDown.SetName("stairs down");
-    //Идти вверх по лестнице назад
+    // Go up the stairs back
     stsUpBack.SetName("back stairs up");
-    //Идти вниз по лестнице назад
+    // Go down the stairs back
     stsDownBack.SetName("back stairs down");
-    //Бежать вверх по лестнице
+    // Run up the stairs
     stsUpRun.SetName("run stairs up");
-    //Бежать вниз по лестнице
+    // Run down the stairs
     stsDownRun.SetName("run stairs down");
-    //Бежать вверх по лестнице назад
+    // Run up the stairs back
     stsUpRunBack.SetName("back run stairs up");
-    //Бежать вниз по лестнице назад
+    // Run down the stairs back
     stsDownRunBack.SetName("back run stairs down");
-    //Плыть
+    // Swim
     swim.SetName("swim");
-    //Спрыгивать
+    // Jump off
     jump.SetName("jump");
     fall.SetName("fall");
     fall_land.SetName("fall_land");
     fall_water.SetName("fall_water");
-    //Реакция вне режима боя
+    // Reaction outside combat mode
     nfhit.SetName("HitNoFight");
-    //Действие поворота влево
+    // Left turn action
     actionTurnL.SetName("turn left");
-    //Действие поворота вправо
+    // Right turn action
     actionTurnR.SetName("turn right");
-    //Действие стояния
+    // Standing action
     actionIdle[0].SetName("idle_1");
     actionIdle[1].SetName("idle_2");
     actionIdle[2].SetName("idle_3");
@@ -465,8 +465,8 @@ Character::Character()
     actionIdle[9].SetName("idle_10");
     actionIdle[10].SetName("idle_11");
     numActionIdles = 11;
-    //Режим боя
-    //Действие стояния в режиме боя
+    // Combat mode
+    // Standing action in combat mode
     actionFightIdle[0].SetName("fight stand_1");
     actionFightIdle[1].SetName("fight stand_2");
     actionFightIdle[2].SetName("fight stand_3");
@@ -476,15 +476,15 @@ Character::Character()
     actionFightIdle[6].SetName("fight stand_7");
     // actionFightIdle[7].SetName("fight stand_8");
     numFightActionIdles = 7;
-    //Ходьба вперёд в режиме боя
+    // Walking forward in combat mode
     fightwalk.SetName("fight walk");
-    //Ходьба назад в режиме боя
+    // Walking back in combat mode
     fightbackwalk.SetName("fight back walk");
-    //Бег вперёд в режиме боя
+    // Running forward in combat mode
     fightrun.SetName("fight run");
-    //Бег назад в режиме боя
+    // Running back in combat mode
     fightbackrun.SetName("fight back run");
-    //Смерть
+    // Death
     actionDead[0].SetName("death_citizen_1");
     actionDead[1].SetName("death_citizen_2");
     numActionDead = 2;
@@ -493,7 +493,7 @@ Character::Character()
     actionFightDead[2].SetName("death_2");
     actionFightDead[3].SetName("death_2");
     numActionFightDead = 4;
-    //Атаки блоки финты парирование
+    // Attacks Blocks Feints Parry
     char buf[64];
     for (long i = 0; i < 4; i++)
     {
@@ -626,17 +626,17 @@ Character::~Character()
     }
 
     auto *const location = GetLocation();
-    // удаляем источник в руке
+    // remove the source in hand
     if (m_nHandLightID >= 0 && location && !isDeleted)
         location->GetLights()->DelMovingLight(m_nHandLightID);
     m_nHandLightID = -1;
 
-    //Удаляемся из групп
+    // Removing from groups
     core.Send_Message(EntityManager::GetEntityId("CharactersGroups"), "si", "UnloadCharacter", GetId());
 
-    //Анализируем детекторы
-    //	for(long i = 0; i < numDetectors; i++) detector[i]->Exit(this);
-    //Удаляем детекторы
+    // Analyzing detectors
+    // for(long i = 0; i < numDetectors; i++) detector[i]->Exit(this);
+    // Removing detectors
     for (long i = 0; i < numDetectors; i++)
         delete detector[i];
     //
@@ -650,25 +650,25 @@ Character::~Character()
     delete characterID;
 }
 
-//Инициализация
+// Initialization
 bool Character::Init()
 {
-    //Указатель на локацию
+    // Location Pointer
     auto *const location = GetLocation();
     if (!location)
         return false;
     effects = EntityManager::GetEntityId("LocationEffects");
     soundService = static_cast<VSoundService *>(core.CreateService("SoundService"));
-    //Регестрируем своё попадание в локацию
+    // register our appearance in the location
     if (location->supervisor.numCharacters >= MAX_CHARACTERS)
     {
         core.Trace("Many characters in location");
         return false;
     }
     location->supervisor.AddCharacter(this);
-    //Море
+    // The sea
     sea = EntityManager::GetEntityId("sea");
-    //Сохраним идентификатор
+    // save the identifier
     const char *id = nullptr;
     if (AttributesPointer)
         id = AttributesPointer->GetAttribute("id");
@@ -677,14 +677,14 @@ bool Character::Init()
     const long len = strlen(id) + 1;
     characterID = new char[len];
     strcpy_s(characterID, len, id);
-    //Добавим в группу
+    // Add to the group
     core.Send_Message(EntityManager::GetEntityId("CharactersGroups"), "sis", "MoveCharacter", GetId(), group);
     SetSignModel();
     SetSignTechnique();
     return PostInit();
 }
 
-//Сообщения
+// Messages
 uint64_t Character::ProcessMessage(MESSAGE &message)
 {
     if (message.GetCurrentFormatType() == 's')
@@ -806,7 +806,7 @@ uint64_t Character::ProcessMessage(MESSAGE &message)
     return 0;
 }
 
-//Изменение атрибута
+// Changing an attribute
 uint32_t Character::AttributeChanged(ATTRIBUTES *apnt)
 {
     if (deadName || liveValue < 0)
@@ -833,8 +833,8 @@ uint32_t Character::AttributeChanged(ATTRIBUTES *apnt)
     }
     else if (_stricmp(apnt->GetThisName(), "actions") == 0 && apnt->GetParent() && !apnt->GetParent()->GetParent())
     {
-        //Читаем действия перемещения
-        //Простые
+        // Reading move actions
+        // Simple
         walk.ChangeName(apnt->GetAttribute("walk"));
         backwalk.ChangeName(apnt->GetAttribute("backwalk"));
         run.ChangeName(apnt->GetAttribute("run"));
@@ -849,10 +849,10 @@ uint32_t Character::AttributeChanged(ATTRIBUTES *apnt)
         stsDownRunBack.ChangeName(apnt->GetAttribute("stsDownRunBack"));
         swim.ChangeName(apnt->GetAttribute("swim"));
         nfhit.ChangeName(apnt->GetAttribute("HitNoFight"));
-        //Читаем действия поворота
+        // Reading turn actions
         actionTurnL.ChangeName(apnt->GetAttribute("turnLeft"));
         actionTurnR.ChangeName(apnt->GetAttribute("turnRight"));
-        //Читаем действия смерти
+        // read the actions of death
         ATTRIBUTES *at = apnt->FindAClass(apnt, "dead");
         if (at)
         {
@@ -872,7 +872,7 @@ uint32_t Character::AttributeChanged(ATTRIBUTES *apnt)
                 j = 1;
             numActionDead = j;
         }
-        //Читаем действия простого стояния
+        // Reading simple standing actions
         at = apnt->FindAClass(apnt, "idle");
         if (at)
         {
@@ -893,13 +893,13 @@ uint32_t Character::AttributeChanged(ATTRIBUTES *apnt)
                 j = 1;
             numActionIdles = j;
         }
-        //Читаем действия в режиме боя
-        //Перемещение
+        // Reading actions in battle mode
+        // Moving
         fightwalk.ChangeName(apnt->GetAttribute("fightwalk"));
         fightbackwalk.ChangeName(apnt->GetAttribute("fightbackwalk"));
         fightrun.ChangeName(apnt->GetAttribute("fightrun"));
         fightbackrun.ChangeName(apnt->GetAttribute("fightbackrun"));
-        //Прямые атаки
+        // Direct attacks
         ReadFightActions(apnt->FindAClass(apnt, "attack_fast"), attackFast, numAttackFast);
         ReadFightActions(apnt->FindAClass(apnt, "attack_force"), attackForce, numAttackForce);
         ReadFightActions(apnt->FindAClass(apnt, "attack_round"), attackRound, numAttackRound);
@@ -910,9 +910,9 @@ uint32_t Character::AttributeChanged(ATTRIBUTES *apnt)
         numAttackFeint = std::min(fnt1, fnt2);
         ReadFightActions(apnt->FindAClass(apnt, "hit_attack"), hit, numHits);
         ReadFightActions(apnt->FindAClass(apnt, "parry"), parry, numParry);
-        //Выстрел
+        // Shot
         shot.ChangeName(apnt->GetAttribute("shot"));
-        //Попадания
+        // Hits
         hitFeint.ChangeName(apnt->GetAttribute("hit_feint"));
         hitParry.ChangeName(apnt->GetAttribute("hit_parry"));
         hitRound.ChangeName(apnt->GetAttribute("hit_round"));
@@ -925,7 +925,7 @@ uint32_t Character::AttributeChanged(ATTRIBUTES *apnt)
         recoil.ChangeName(apnt->GetAttribute("recoil"));
         strafe_l.ChangeName(apnt->GetAttribute("strafeleft"));
         strafe_r.ChangeName(apnt->GetAttribute("straferight"));
-        //Читаем действия смерти
+        // read the actions of death
         at = apnt->FindAClass(apnt, "fightdead");
         if (at)
         {
@@ -945,7 +945,7 @@ uint32_t Character::AttributeChanged(ATTRIBUTES *apnt)
                 j = 1;
             numActionFightDead = j;
         }
-        //Стояния
+        // Standing
         at = apnt->FindAClass(apnt, "fightidle");
         if (at)
         {
@@ -965,9 +965,9 @@ uint32_t Character::AttributeChanged(ATTRIBUTES *apnt)
                 j = 1;
             numFightActionIdles = j;
         }
-        //Обновляем параметры
+        // Updating parameters
         UpdateActionsData();
-        //Обновляем проигрываемую анимацию
+        // Updating the animation being played
         UpdateAnimation();
     }
     return 0;
@@ -993,14 +993,14 @@ void Character::SetSignModel()
     {
         return;
     }
-    //Путь до текстур
+    // Path to textures
     VGEOMETRY *gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
     if (gs)
         gs->SetTexturePath("quest_signs\\");
-    //Путь до модельки
+    // Path to the model
     std::string path = "quest_signs\\";
     path += signModelName;
-    //Создаём и загружаем модельку
+    // Create and load the model
     if (!(sign = EntityManager::CreateEntity("modelr")))
     {
         if (gs)
@@ -1083,16 +1083,16 @@ MODEL *Character::Model() const
     return static_cast<MODEL *>(EntityManager::GetEntityPointer(mdl));
 }
 
-//Переместить модельку в точку x, y, z
+// Move model to point x, y, z
 bool Character::Teleport(float x, float y, float z)
 {
     auto *const location = GetLocation();
-    //Модель
+    // Model
     isJump = false;
     MODEL *man = Model();
     if (!man)
         return false;
-    //Новые координаты
+    // New coordinates
     man->mtx.SetPosition(x, y, z);
     curPos = oldPos = grsPos = CVECTOR(x, y, z);
     vy = 0.0f;
@@ -1104,16 +1104,16 @@ bool Character::Teleport(float x, float y, float z)
     return true;
 }
 
-//Переместить модельку в точку x, y, z и направить по ay
+// Move the model to point x, y, z and direct along ay
 bool Character::Teleport(float x, float y, float z, float ay)
 {
     auto *const location = GetLocation();
-    //Модель
+    // Model
     isJump = false;
     MODEL *man = Model();
     if (!man)
         return false;
-    //Новые координаты
+    // New coordinates
     man->mtx.BuildMatrix(0.0f, ay, 0.0f, x, y, z);
     curPos = oldPos = grsPos = CVECTOR(x, y, z);
     vy = 0.0f;
@@ -1127,7 +1127,7 @@ bool Character::Teleport(float x, float y, float z, float ay)
     return true;
 }
 
-//Переместить модельку в локатор
+// Move model to locator
 bool Character::Teleport(const char *group, const char *locator)
 {
     auto *const location = GetLocation();
@@ -1142,13 +1142,13 @@ bool Character::Teleport(const char *group, const char *locator)
     CMatrix mtx;
     if (!la->GetLocatorPos(li, mtx))
         return false;
-    //Ищем угл поворота по Y
+    // looking for the angle of rotation along Y
     double vz = mtx.Vz().z;
     const double vx = mtx.Vz().x;
     const double l = vx * vx + vz * vz;
     if (l > 0.0000001)
     {
-        //Ищем углы
+        // Calculating angles
         vz = acos(vz / sqrt(l));
     }
     else
@@ -1156,12 +1156,12 @@ bool Character::Teleport(const char *group, const char *locator)
     if (vx < 0)
         vz = -vz;
 
-    // смотрим можем ли мы поставить в этот локатор чела
+    // see if we can put the character in this locator
     const CVECTOR pos = mtx.Pos();
     if (location->supervisor.CheckPosition(pos.x, pos.y, pos.z, this))
         return Teleport(pos.x, pos.y, pos.z, static_cast<float>(vz));
 
-    // кто-то стоит рядом, пытаемся найти точку по небольшому радиусу
+    // someone is standing nearby, trying to find a point along a small radius
     const float radius = 1.75f;
     for (long i = 0; i < 10; i++)
     {
@@ -1169,14 +1169,14 @@ bool Character::Teleport(const char *group, const char *locator)
         const float x = radius * sinf(ang);
         const float z = radius * cosf(ang);
 
-        // проверяем есть ли тут патч
+        // check if there is a patch here
         CVECTOR src = CVECTOR(pos.x + x, pos.y + 2.0f, pos.z + z);
         CVECTOR dst = CVECTOR(pos.x + x, pos.y - 2.0f, pos.z + z);
         const float k = location->GetPtcData().Trace(src, dst);
-        // если нету патча - то следующая итерация
+        // if there is no patch, then the next iteration
         if (k > 1.0f)
             continue;
-        // если точка свободна - телепортимся туда
+        // if the point is free - teleport there
         const CVECTOR pnt = src + (dst - src) * k + CVECTOR(0.0f, 0.01f, 0.0f);
         if (location->supervisor.CheckPosition(pnt.x, pnt.y, pnt.z, this))
             return Teleport(pnt.x, pnt.y, pnt.z, static_cast<float>(vz));
@@ -1186,7 +1186,7 @@ bool Character::Teleport(const char *group, const char *locator)
     return Teleport(pos.x, pos.y, pos.z, static_cast<float>(vz));
 }
 
-//Установить позиции для загрузки
+// Set loading positions
 void Character::SetSavePosition()
 {
     if (!AttributesPointer)
@@ -1200,7 +1200,7 @@ void Character::SetSavePosition()
     SetSaveData(at);
 }
 
-//Удалить позиции для загрузки
+// Delete positions for loading
 void Character::DelSavePosition(bool isTeleport)
 {
     if (!AttributesPointer)
@@ -1234,7 +1234,7 @@ void Character::DelSavePosition(bool isTeleport)
 // Character commands
 //============================================================================================
 
-//Пойти
+// To go
 void Character::StartMove(bool isBack)
 {
     if (priorityAction.name)
@@ -1243,7 +1243,7 @@ void Character::StartMove(bool isBack)
     this->isBack = isBack;
 }
 
-//Остановиться
+// Stay
 void Character::StopMove()
 {
     if (priorityAction.name)
@@ -1251,7 +1251,7 @@ void Character::StopMove()
     isMove = false;
 }
 
-//Направить персонажа по вектору
+// Guide the character with the vector
 void Character::Turn(float dx, float dz)
 {
     // if(priorityAction.name) return;
@@ -1266,7 +1266,7 @@ void Character::Turn(float dx, float dz)
     Turn(static_cast<float>(vz));
 }
 
-//Направить персонажа по углу
+// Guide the character with the angle
 void Character::Turn(float _ay)
 {
     if (isTurnLock)
@@ -1287,7 +1287,7 @@ void Character::Turn(float _ay)
     }
 }
 
-//Установить режим бега
+// Set running mode
 void Character::SetRunMode(bool _isRun)
 {
     if (priorityAction.name)
@@ -1295,7 +1295,7 @@ void Character::SetRunMode(bool _isRun)
     isRun = _isRun;
 }
 
-//Устанорвить режим боя
+// Set combat mode
 bool Character::SetFightMode(bool _isFight, bool isPlayAni)
 {
     UpdateWeapons();
@@ -1361,10 +1361,10 @@ bool Character::SetFightMode(bool _isFight, bool isPlayAni)
     return old;
 }
 
-//Проверить, можно ли переходить в режим боя
+// Check if can switch to combat mode
 bool Character::IsFightEnable() const
 {
-    //Спросим у скрипта о возможности стрельбы
+    // Ask the script about the possibility of shooting
     VDATA *vd = core.Event("Location_CharacterIsFight", "i", GetId());
     long res = 0;
     if (vd && vd->Get(res))
@@ -1380,7 +1380,7 @@ bool Character::IsFightEnable() const
     return true;
 }
 
-//В данный момент идёт выбор цели для выстрела (игроком)
+// At the moment, there is a choice of a target for a shot (by the player)
 bool Character::IsFireFindTarget() const
 {
     if (!priorityAction.name || !shot.name)
@@ -1390,7 +1390,7 @@ bool Character::IsFireFindTarget() const
     return false;
 }
 
-//Атаковать
+// to attack
 void Character::Attack(Character *enemy, FightAction type)
 {
     if (priorityAction.name)
@@ -1437,28 +1437,28 @@ void Character::Attack(Character *enemy, FightAction type)
     case fgt_attack_force:
         aname = FGT_ATTACK_FORCE;
         ObstacleZone zone[4];
-        // выпад 1
+        // lunge 1
         zone[0].use = true;
         zone[0].x = 0.f;
         zone[0].z = 1.f;
         zone[0].dw = 0.001f;
-        // выпад 2
+        // lunge 2
         zone[1].use = true;
         zone[1].x = 0.f;
         zone[1].z = 1.f;
         zone[1].dw = 0.001f;
-        // выпад 3
+        // lunge 3
         zone[2].use = true;
         zone[2].x = 0.f;
         zone[2].z = 1.f;
         zone[2].dw = 0.001f;
-        // выпад 4
+        // lunge 4
         zone[3].use = true;
         zone[3].x = 0.f;
         zone[3].z = 1.f;
         zone[3].dw = 0.001f;
         fgtSetIndex = GetRandomIndexByObstacle(zone, 4);
-        //если выпад на заступ за патч, то производим быстрый удар, а не выпад
+        // if the attack on the spade is behind the patch, then we make a quick blow, not a lunge
         if (fgtSetIndex < 0)
         {
             type = fgt_attack_fast;
@@ -1526,10 +1526,10 @@ void Character::Attack(Character *enemy, FightAction type)
     }
 }
 
-//Блок
+// Block
 void Character::Block()
 {
-    // boal прервывние всего блоком if(priorityAction.name) return;
+    // boal interrupt everything with the block if (priorityAction.name) return;
     if (isSwim)
         return;
     if (!isFight)
@@ -1543,7 +1543,7 @@ void Character::Block()
     }
 }
 
-//Парирование
+// Parry
 void Character::Parry()
 {
     if (priorityAction.name)
@@ -1556,35 +1556,35 @@ void Character::Parry()
 
     // fgtSetIndex = rand() % numParry;
     ObstacleZone zone[4];
-    // уход влево
+    // moving to the left
     zone[0].use = true;
     zone[0].x = -1.f;
     zone[0].z = 0.f;
     zone[0].dw = 0.5f;
-    // уход вправо блок сверху
+    // moving to the right block from above
     zone[1].use = true;
     zone[1].x = 1.f;
     zone[1].z = 0.f;
     zone[1].dw = 0.5f;
-    // уход вправо блок снизу
+    // move to the right block from the bottom
     zone[2].use = true;
     zone[2].x = 1.f;
     zone[2].z = 0.f;
     zone[2].dw = 0.5f;
-    // никаких уходов - на месте
+    // no moving - on the spot
     zone[3].use = true;
     zone[3].x = 0.f;
     zone[3].z = 0.f;
     zone[3].dw = 0.5f;
     fgtSetIndex = GetRandomIndexByObstacle(zone, 4);
-    // core.Trace("Результат выбора: \"%i\"", fgtSetIndex);
+    // core.Trace ("Selection result: \"%i\"", fgtSetIndex);
     if (fgtSetIndex < 0)
         fgtSetIndex = 3;
 
     isTurnLock = false;
 }
 
-//Отскок
+// Rebound
 void Character::Recoil()
 {
     if (priorityAction.name)
@@ -1603,7 +1603,7 @@ void Character::Recoil()
     isTurnLock = false;
 }
 
-//Пыжёк влево
+// Jump left
 void Character::StrafeLeft()
 {
     if (priorityAction.name)
@@ -1618,10 +1618,10 @@ void Character::StrafeLeft()
     fgtSetType = fgt_strafe_l;
     fgtSetIndex = 0;
     isTurnLock = false;
-    // impulse += 15.0f*CVECTOR(-cosf(ay), 0.0f, sinf(ay));
+    // impulse += 15.0f*CVECTOR(-cosf(ay), 0.0f, sinf(ay))
 }
 
-//Прыжок вправо
+// Jump right
 void Character::StrafeRight()
 {
     if (priorityAction.name)
@@ -1639,7 +1639,7 @@ void Character::StrafeRight()
     // impulse -= 15.0f*CVECTOR(-cosf(ay), 0.0f, sinf(ay));
 }
 
-//Финт
+// Feint
 void Character::Hit(FightAction type)
 {
     /*
@@ -1749,7 +1749,7 @@ void Character::Hit(FightAction type)
         fgtSetType = fgt_blockbreak;
 }
 
-//Выстрел
+// Shot
 void Character::Fire()
 {
     if (priorityAction.name)
@@ -1760,19 +1760,19 @@ void Character::Fire()
         return;
     if (!GetLocation()->IsSwimming())
         return;
-    //Ставим действие стрельбы
+    // set the action of shooting
     fgtSetType = fgt_fire;
     fgtSetIndex = 0;
 }
 
-//Проверить, заряжен ли пистолет
+// Check if the gun is loaded
 bool Character::IsGunLoad() const
 {
     if (!isGunSet)
         return false;
     if (!isFight || liveValue < 0 || deadName)
         return false;
-    //Спросим у скрипта о возможности стрельбы
+    // Ask the script about the possibility of shooting
     VDATA *vd = core.Event("Location_CharacterIsFire", "i", GetId());
     long res = 0;
     if (vd && vd->Get(res))
@@ -1790,7 +1790,7 @@ bool Character::IsGunLoad() const
     return true;
 }
 
-//Смерть
+// Death
 void Character::Dead()
 {
     if (deadName)
@@ -1805,7 +1805,7 @@ void Character::Dead()
     }
     Assert(num);
     Assert(dead);
-    //Разбрасываем веса в зависимости от направления
+    // spread weights depending on the direction
     const float _ay = ay;
     static Supervisor::FindCharacter fnd[MAX_CHARACTERS];
     static long numChr = 0;
@@ -1846,12 +1846,12 @@ void Character::Dead()
             dead[i].p *= 0.9f;
     }
     ay = _ay;
-    //Сумарный вероятностный отрезок
+    // Summed probability segment
     float sum = 0.0f;
     long i;
     for (i = 0; i < num; i++)
         sum += dead[i].p;
-    //Выбираем действия
+    // Choosing actions
     if (sum > 0.0f)
     {
         const float p = rand() * sum / RAND_MAX;
@@ -1868,19 +1868,19 @@ void Character::Dead()
         i = rand() % num;
     }
     Assert(i < num);
-    //Ставим действие
+    // put the action
     deadName = dead[i].name;
     core.Event("Event_ChrSnd_Dead", "i", GetId());
 }
 
-//Заход в локацию
+// Entering the location
 void Character::EntryToLocation()
 {
     tuner.alpha = 0.0f;
     liveValue = 1.2f;
 }
 
-//Выход из локации
+// Exit the location
 void Character::ExitFromLocation()
 {
     liveValue = -1.2f;
@@ -1901,14 +1901,14 @@ void Character::StartJump()
 // Character
 //============================================================================================
 
-//Сбросить состояние
+// Reset state
 void Character::Reset()
 {
     if (fgtCurType == fgt_block && !IsPlayer())
         fgtCurType = fgt_none;
 }
 
-//Перемещаем персонажа в желаемую позицию
+// Move the character to the desired position
 void Character::Move(float dltTime)
 {
     auto *const location = GetLocation();
@@ -1935,10 +1935,10 @@ void Character::Move(float dltTime)
         }
     }
 
-    //Снимем выделение
+    // Remove selection
     if (tuner.selected > 0.0f)
         tuner.selected -= dltTime * 3.0f;
-    //Коэфициент скорости
+    // Speed factor
     float k = dltTime * 0.5f;
     if (k > 1.0f)
         k = 1.0f;
@@ -1958,17 +1958,17 @@ void Character::Move(float dltTime)
             a->Player(1).SetSpeed(a->Player(1).GetDefSpeed() * k);
         }
     }
-    //Текущая позиция
+    // Current position
     oldPos = curPos;
     if (!isJump)
     {
-        //Скорость перемещения
+        // Travel speed
         if (bspeed.Update(dltTime))
             speed = bspeed.Get();
-        //Скорость вращения
+        // Rotational speed
         if (bturn.Update(dltTime))
             turnspd = bturn.Get();
-        //Перемещение
+        // Moving
         const float spd = dltTime * speed * k;
         CVECTOR moveVec(sinf(ay) * spd, 0.0f, cosf(ay) * spd);
         curPos += moveVec;
@@ -2052,7 +2052,7 @@ void Character::Move(float dltTime)
             }
         }
         curPos += CVECTOR(cosf(ay), 0.0f, -sinf(ay)) * (strafeVel * dltTime * 0.9f);
-        //Вращение
+        // Rotation
         if (turnDir > 0.0f)
         {
             ay += turnspd * dltTime;
@@ -2098,7 +2098,7 @@ void Character::Move(float dltTime)
     }
     else
     {
-        //Движемся по траектории падения
+        // moving along the trajectory of the fall
         curJumpFallTime += dltTime;
         if (isJumpSnd && priorityAction.name)
         {
@@ -2117,7 +2117,7 @@ void Character::Move(float dltTime)
         }
         if (curJumpFallTime < jumpFallTime)
         {
-            //Ищем ключевые позиции
+            // Looking for key positions
             long s = static_cast<long>(curJumpFallTime / CHARACTER_JUMP_TIMESTEP);
             if (s >= jumpPoints)
                 s = jumpPoints - 1;
@@ -2135,7 +2135,7 @@ void Character::Move(float dltTime)
         }
         else
         {
-            //Закончили прыжок
+            // Finished the jump
             if (isJumpSnd)
             {
                 PlaySound("jump");
@@ -2151,7 +2151,7 @@ void Character::Move(float dltTime)
                     Animation *a = m->GetAnimation();
                     if (a)
                     {
-                        //Продолжим проигрывание
+                        // continue playing
                         a->Player(0).Play();
                     }
                     else
@@ -2171,7 +2171,7 @@ void Character::Move(float dltTime)
             jumpSound = SOUND_INVALID_ID;
         }
     }
-    //Ослабим импульс
+    // Weaken the momentum
     k = dltTime * 5.0f;
     if (k > 1.0f)
         k = 1.0f;
@@ -2181,7 +2181,7 @@ void Character::Move(float dltTime)
     // if(core.Controls->GetDebugAsyncKeyState('7') < 0) core.Send_Message(effects, "sffff", "Splashes", curPos.x,
     // curPos.y, curPos.z, 1.0f);
 
-    //Высота волны в данной точке
+    // Wave height at a given point
     if (swimChange <= 0.0f && location->IsSwimming())
     {
         const bool old = isSwim;
@@ -2204,11 +2204,11 @@ void Character::Move(float dltTime)
             }
             if (seaY > curPos.y + CHARACTER_SEA_MOVE * height)
             {
-                //Игрока сносит или он плывёт
+                // The player is blown away or he floats
                 const float dlt = old ? -0.03f : 0.03f;
                 if (seaY > curPos.y + CHARACTER_SEA_SWIM * height + dlt)
                 {
-                    //Игрок плывёт
+                    // The player swims
                     seaY -= CHARACTER_SEA_SWIM * height;
                     isSwim = true;
                 }
@@ -2226,12 +2226,12 @@ void Character::Move(float dltTime)
         swimChange -= dltTime;
 }
 
-//Обновить позицию персонажа
+// Update character position
 void Character::Update(float dltTime)
 {
     auto *const location = GetLocation();
 
-    //Обновление полосок
+    // Updating bars
     if (isPlayerEnemy && isFight && !IsDead())
     {
         enemyBarsAlpha += dltTime * 2.0f;
@@ -2248,7 +2248,7 @@ void Character::Update(float dltTime)
     {
         float hp = 0.5f;
         float energy = 0.5f;
-        //Получим параметры жизни и энергии
+        // get the parameters of life and energy
         VDATA *retVal = core.Event("NpcEvtHP", "i", GetId());
         if (retVal)
         {
@@ -2265,25 +2265,25 @@ void Character::Update(float dltTime)
                 energy = 0.5f;
             }
         }
-        //Добавимся в список рисуемых
+        // add to the list of drawables
         const CVECTOR pos = curPos + CVECTOR(0.0f, 2.0f, 0.0f);
         location->DrawEnemyBars(pos, hp, energy, tuner.GetAlpha() * enemyBarsAlpha);
     }
     //
     if (lockMove)
         dltTime = 0.0f;
-    //Посчитаем время для работы групп
+    // calculate the time for group work
     {
         for (long i = 0; i < numTargets; i++)
         {
             grpTargets[i].time += dltTime;
         }
     }
-    //Время блендинга анимации
+    // Animation blending time
     noBlendTime -= dltTime;
     if (noBlendTime <= 0.0f)
         noBlendTime = 0.0f;
-    //Блендинг оружия и теней
+    // Blending weapons and shadows
     {
         const float alpha = tuner.GetAlpha() * 255.0f;
         const uint32_t blendColor = (static_cast<uint32_t>(alpha) << 24) | 0x00ffffff;
@@ -2305,10 +2305,10 @@ void Character::Update(float dltTime)
         return;
     if (!isJump)
     {
-        //Скорость падения
+        // Falling speed
         vy -= 9.8f * dltTime;
         curPos.y += vy * dltTime;
-        //Сверяемся с патчем
+        // Checking the patch
         currentNode = ptc.Move(currentNode, curPos, oldPos);
         curPos = oldPos;
         if (ptc.isBearing)
@@ -2337,17 +2337,17 @@ void Character::Update(float dltTime)
         vy = 0.0f;
     }
     // SetSoundPosition(recoilSound);
-    //Высота волны в данной точке
+    // Wave height at a given point
     CVECTOR chrPos = curPos;
     if (isSwim && location->IsSwimming())
     {
         vy = 0.0f;
         chrPos.y = seaY;
     }
-    //Ставим матрицу для модельки
+    // put the matrix for the model
     m->mtx.BuildMatrix(CVECTOR(0.0f, ay + strafeAngle * 3.1415f * 0.25f * 0.8f, 0.0f), chrPos);
     // - CVECTOR(0.0f, 0.14f, 0.0f));
-    //Хождение по ступенькам
+    // Walking up the stairs
     float sn = 0.0f;
     CVECTOR nodeNorm;
     ptc.GetNodeNormal(currentNode, nodeNorm);
@@ -2356,7 +2356,7 @@ void Character::Update(float dltTime)
         k = 1.0f;
     movecs += (nodeNorm.y - movecs) * k;
     isUp = nodeNorm.x * m->mtx.Vz().x + nodeNorm.z * m->mtx.Vz().z <= 0;
-    //Анимация
+    // Animation
     /*
     if(_stricmp(characterID, "Blaze") == 0)
     {
@@ -2365,10 +2365,10 @@ void Character::Update(float dltTime)
     }
     */
     UpdateAnimation();
-    //Анализируем детекторы
+    // Analyzing detectors
     for (long i = 0; i < numDetectors; i++)
         detector[i]->Check(dltTime, this);
-    //Если упали - пишем дебажную строчку
+    // If fell, write a debug line
     if (curPos.y < -1000.0f)
     {
         // Assert(false);
@@ -2376,7 +2376,7 @@ void Character::Update(float dltTime)
         curPos.y = -500.0f;
         vy = 0.0f;
     }
-    //Появление, удаление
+    // Appearance, removal
     if (liveValue != 0.0f)
     {
         tuner.alpha += liveValue * dltTime;
@@ -2427,7 +2427,7 @@ void Character::Update(float dltTime)
     if (k > 1.0f)
         k = 1.0f;
     grsPos += (curPos - grsPos) * k;
-    //Звук шагов
+    // Footstep sound
     if (soundStep)
     {
         PlayStep();
@@ -2450,14 +2450,14 @@ void Character::Update(float dltTime)
         signMdl->mtx.Pos() = curPos;
     }
 
-    // источник света у персонажа
+    // character light source
     if (m_nHandLightID >= 0)
     {
         location->GetLights()->UpdateMovingLight(m_nHandLightID, GetHandLightPos());
     }
 }
 
-//Событие окончания проигрывания анимации действия
+// Action animation end event
 void Character::ActionEvent(const char *actionName, Animation *animation, long index, long eventID,
                             AnimationEvent event)
 {
@@ -2498,7 +2498,7 @@ void Character::ActionEvent(const char *actionName, Animation *animation, long i
             core.Send_Message(blade, "l", MSG_BLADE_GUNBELT);
             if (event == ae_end)
             {
-                //Закончился выстрел
+                // The shot ended
                 priorityAction.SetName(nullptr);
                 animation->Player(0).Pause();
                 animation->Player(0).SetPosition(1.0f);
@@ -2511,7 +2511,7 @@ void Character::ActionEvent(const char *actionName, Animation *animation, long i
         else if (recoil.name && _stricmp(priorityAction.name, recoil.name) == 0)
         {
             if (rand() % 10 > 7)
-                recoilLook = true; //в стоянии проиграть дразнилку
+                recoilLook = true; // able to play the teaser
             priorityAction.SetName(nullptr);
         }
         else if (deadName && _stricmp(priorityAction.name, deadName) == 0)
@@ -2526,7 +2526,7 @@ void Character::ActionEvent(const char *actionName, Animation *animation, long i
             animation->Player(0).Pause();
             animation->Player(0).SetPosition(1.0f);
 
-            // проверим куда упали и проиграем анимацию после падения на землю и в воду.
+            // check where we fell and play the animation after falling to the ground and into the water.
             SEA_BASE *sb = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(sea));
             if (sb)
             {
@@ -2776,7 +2776,7 @@ void Character::PlayStep()
     auto *const location = GetLocation();
     if (sb && location->IsSwimming())
     {
-        //Проверим высоту моря
+        // Check the sea height
         seaY = sb->WaveXZ(curPos.x, curPos.z, nullptr);
         if (seaY > curPos.y)
         {
@@ -2784,7 +2784,7 @@ void Character::PlayStep()
             return;
         }
     }
-    //Идём по земле
+    // walk on the ground
 
     if (IsRun() && !isBack)
     {
@@ -2930,9 +2930,9 @@ void Character::ReleaseSound(long id)
         soundService->SoundRelease(id);
 }
 
-//============================================================================================
-//Инкапсуляция
-//============================================================================================
+// ============================================================================================
+// Encapsulation
+// ============================================================================================
 
 bool Character::zLoadModel(MESSAGE &message)
 {
@@ -2946,14 +2946,14 @@ bool Character::zLoadModel(MESSAGE &message)
     name[255] = 0;
     message.String(256, ani);
     ani[255] = 0;
-    //Путь до текстур
+    // Path to textures
     auto *gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
     if (gs)
         gs->SetTexturePath("characters\\");
-    //Путь до модельки
+    // Path to the model
     strcpy_s(mpath, "characters\\");
     strcat_s(mpath, name);
-    //Создаём и загружаем модельку
+    // Create and load the model
     if (!(mdl = EntityManager::CreateEntity("modelr")))
     {
         if (gs)
@@ -3036,13 +3036,13 @@ bool Character::zAddDetector(MESSAGE &message)
     group[255] = 0;
     if (!group[0])
         return false;
-    //Проверяем на созданность
+    // Checking for creation
     for (long i = 0; i < numDetectors; i++)
     {
         if (_stricmp(detector[i]->la->GetGroupName(), group) == 0)
             return false;
     }
-    //Ищем группу
+    // Looking for a group
     auto *const location = GetLocation();
     LocatorArray *la = location->FindLocatorsGroup(group);
     if (!la)
@@ -3132,7 +3132,7 @@ bool Character::zSetBlade(MESSAGE &message)
 bool Character::zSetGun(MESSAGE &message)
 {
     isGunSet = false;
-    // if(!isBladeSet) return false;  //eddy. пистолет пусть виснет, он не мешает
+    // if(!isBladeSet) return false; // eddy. let the gun hang, it does not interfere
     char name[256];
     message.String(sizeof(name) - 1, name);
     name[sizeof(name) - 1] = 0;
@@ -3253,10 +3253,10 @@ uint32_t Character::zExMessage(MESSAGE &message)
     auto *const location = GetLocation();
     if (_stricmp(msg, "HandLightOn") == 0)
     {
-        // удалим старый источник
+        // remove the old source
         if (m_nHandLightID >= 0)
             location->GetLights()->DelMovingLight(m_nHandLightID);
-        // создадим новый
+        // create a new
         message.String(sizeof(msg), msg);
         m_nHandLightID = location->GetLights()->AddMovingLight(msg, GetHandLightPos());
         return 1;
@@ -3307,12 +3307,12 @@ uint32_t Character::zExMessage(MESSAGE &message)
         }
         if (_stricmp(msg, "FindForvardLocator") == 0)
         {
-            //Имя групы
+            // Group name
             message.String(sizeof(grp), grp);
             grp[sizeof(grp) - 1] = 0;
-            //Переменная для имени локатора
+            // Variable for locator name
             v = message.ScriptVariablePointer();
-            //Ищем локатор
+            // Looking for a locator
             la = location->FindLocatorsGroup(grp);
             i = location->supervisor.FindForvardLocator(la, curPos, CVECTOR(sinf(ay), 0.0f, cosf(ay)));
             if (i < 0)
@@ -3325,10 +3325,10 @@ uint32_t Character::zExMessage(MESSAGE &message)
         }
         if (_stricmp(msg, "DistToLocator") == 0)
         {
-            //Имя групы
+            // Group name
             message.String(sizeof(grp), grp);
             grp[sizeof(grp) - 1] = 0;
-            //Имя локатора
+            // Locator name
             message.String(sizeof(msg), msg);
             msg[sizeof(msg) - 1] = 0;
             v = message.ScriptVariablePointer();
@@ -3414,7 +3414,7 @@ bool Character::zPlaySound(MESSAGE &message)
     return PlaySound(name) != SOUND_INVALID_ID;
 }
 
-//Проверка возможности слететь
+// Check the ability to fly
 bool Character::TestJump(CVECTOR pos)
 {
     auto *const location = GetLocation();
@@ -3425,14 +3425,14 @@ bool Character::TestJump(CVECTOR pos)
     const CVECTOR dst(pos.x, pos.y - 1.0f, pos.z);
     if (jpm->Trace(src, dst) >= 1.0f)
         return false;
-    //Проверяем траекторию падения
+    // Checking the trajectory of the fall
     const float speed = 3.3f;
     CVECTOR v(speed * sinf(ay), vy, speed * cosf(ay));
     for (long i = 0; i < CHARACTER_MAXJUMPPOINTS; i++)
     {
-        //Сохраняем позицию в треке
+        // Save position in the track
         jumpTrack[i] = pos;
-        //Проверяем следующий отрезок
+        // Checking the next segment
         CVECTOR dlt = v * CHARACTER_JUMP_TIMESTEP;
         v.y -= 9.8f * CHARACTER_JUMP_TIMESTEP;
         CVECTOR src = pos - dlt * 0.001f;
@@ -3441,14 +3441,14 @@ bool Character::TestJump(CVECTOR pos)
         const float k = location->GetPtcData().Trace(src, dst);
         if (k < 1.0f)
         {
-            //Нашли точку приземления
+            // Found a landing point
             osculationPoint = src + (dst - src) * k + CVECTOR(0.0f, 0.01f, 0.0f);
             jumpFallTime = (i + k) * CHARACTER_JUMP_TIMESTEP;
             curJumpFallTime = 0.0f;
             jumpPoints = i + 1;
             return true;
         }
-        //Сохраним новую позицию
+        // Save the new position
         pos += dlt;
     }
     return false;
@@ -3457,7 +3457,7 @@ bool Character::TestJump(CVECTOR pos)
 bool Character::BuildJump(CVECTOR pos, float fAng)
 {
     auto *const location = GetLocation();
-    // нет патча для прыгания - нет и прыжков
+    // no jumping patch - no jumping
     MODEL *jpm = location->JmpPatch();
     if (!jpm)
         return false;
@@ -3469,31 +3469,31 @@ bool Character::BuildJump(CVECTOR pos, float fAng)
         return false;
     pos.y = src.y + (dst.y - src.y) * (fTrace - 0.1f);
 
-    //Проверяем траекторию прыжка
+    // Checking the trajectory of the jump
     const float speed = 3.3f;
-    CVECTOR v(speed * sinf(fAng), speed, speed * cosf(fAng)); // скорость прыжка
-    //Строим трек для прыжка
+    CVECTOR v(speed * sinf(fAng), speed, speed * cosf(fAng)); // jump speed
+    // Building a jump track
     for (long i = 0; i < CHARACTER_MAXJUMPPOINTS; i++)
     {
-        //Сохраняем позицию в треке
+        // Save position in the track
         jumpTrack[i] = pos;
-        //Проверяем следующий отрезок
+        // Checking the next segment
         CVECTOR dlt = v * CHARACTER_JUMP_TIMESTEP;
         v.y -= 9.8f * CHARACTER_JUMP_TIMESTEP;
         CVECTOR src = pos - dlt * 0.001f;
         CVECTOR dst = pos + dlt * 1.001f;
         // location->DrawLine(src, 0xff00ff00, dst, 0xff00ff00, false);
-        //если врезаемся в какую нить бню, то не можем прыгать
+        // if we bump into any thread, we can't jump
         const float k = location->GetPtcData().Trace(src, dst);
         if (k < 1.0f)
         {
-            //Нашли точку приземления
+            // Found a landing point
             osculationPoint = src + (dst - src) * k + CVECTOR(0.0f, 0.01f, 0.0f);
             jumpFallTime = (i + k) * CHARACTER_JUMP_TIMESTEP;
             curJumpFallTime = 0.0f;
             jumpPoints = i + 1;
 
-            //Проверим приземление на джамп патч
+            // check landing on the jump patch
             if (jpm)
             {
                 //~!~
@@ -3501,11 +3501,11 @@ bool Character::BuildJump(CVECTOR pos, float fAng)
                 src.y += 10.f;
                 dst.y -= 20.f;
                 const float fT = jpm->Trace(src, dst);
-                //да мы приземляемся на прыжковый патч
+                // yes we land on the jump patch
                 if (fT < 1.f)
                 {
                     CVECTOR vdlt = src + (dst - src) * fT - osculationPoint;
-                    //учитываем поправку если она достаточно велика
+                    // take into account the correction if it is large enough
                     if (vdlt.GetLength() > 0.1f)
                     {
                         vdlt *= 1.f / jumpPoints;
@@ -3521,7 +3521,7 @@ bool Character::BuildJump(CVECTOR pos, float fAng)
         }
         if (TraceWithObstacle(src, dst))
             return false;
-        //Сохраним новую позицию
+        // Save the new position
         pos += dlt;
     }
     return false;
@@ -3543,7 +3543,7 @@ void Character::UpdateActionsData()
     Animation *a = m->GetAnimation();
     if (!a)
         return;
-    //Действия перемещения
+    // Move actions
     turnSpeed = 2.0f;
     const char *s = a->GetData("Turn speed");
     if (s && s[0])
@@ -3564,13 +3564,13 @@ void Character::UpdateActionsData()
     UpdateActionMoveData(fall, a);
     UpdateActionMoveData(fall_land, a);
     UpdateActionMoveData(fall_water, a);
-    //Смерти
+    // Of death
     long i;
     for (i = 0; i < numActionDead; i++)
         UpdateActionDeadData(actionDead[i], a);
     for (i = 0; i < numActionFightDead; i++)
         UpdateActionDeadData(actionFightDead[i], a);
-    //Бой
+    // The fight
     UpdateActionMoveData(fightwalk, a);
     UpdateActionMoveData(fightbackwalk, a);
     UpdateActionMoveData(fightrun, a);
@@ -3602,13 +3602,13 @@ void Character::UpdateActionsData()
     UpdateActionCharacterData(blockaxehit, a);
     UpdateActionCharacterData(blockbreak, a);
     UpdateActionCharacterData(recoil, a);
-    //Действия поворота на месте
+    // Turn in place actions
     UpdateActionCharacterData(actionTurnL, a);
     UpdateActionCharacterData(actionTurnR, a);
-    //Действия стояния при стоянии
+    // Standing actions while standing
     for (i = 0; i < numActionIdles; i++)
         UpdateActionIdleData(actionIdle[i], a);
-    //Действия стояния в режиме боя
+    // Standing actions in combat mode
     for (i = 0; i < numFightActionIdles; i++)
         UpdateActionIdleData(actionFightIdle[i], a);
     noBlendTime = 1.0f;
@@ -3678,7 +3678,7 @@ void Character::UpdateActionIdleData(ActionIdle &ai, Animation *a)
         ai.tblend = static_cast<float>(atof(s));
     if (ai.tblend < 0.0f)
         ai.tblend = 0.0f;
-    //Вероятность
+    // Probability
     ai.p = 1.0f;
     s = a->Player(2).GetData("Probability");
     if (s && s[0])
@@ -3706,7 +3706,7 @@ void Character::UpdateActionDeadData(ActionDead &ai, Animation *a)
         ai.tblend = static_cast<float>(atof(s));
     if (ai.tblend < 0.0f)
         ai.tblend = 0.0f;
-    //Вероятность
+    // Probability
     ai.p = 1.0f;
     s = a->Player(2).GetData("Probability");
     if (s && s[0])
@@ -3785,9 +3785,9 @@ bool Character::SetAction(const char *actionName, float tblend, float movespeed,
         }
         return true;
     }
-    //Сбросим привязанные вещи
+    // drop the tied things
     core.Send_Message(blade, "l", 1003);
-    //Индекс текущего плеера
+    // Current player index
     if (a->Player(0).IsPlaying())
         a->CopyPlayerState(0, 1);
     a->Player(0).SetAction(nullptr);
@@ -3816,7 +3816,7 @@ void Character::UpdateAnimation()
     if (priorityAction.name)
     {
         curIdleIndex = -1;
-        //Специяльные действия
+        // Special actions
         if (!isSetPriorityAction)
         {
             isSetPriorityAction = true;
@@ -3880,7 +3880,7 @@ void Character::UpdateAnimation()
                     {
                         if (!isBack)
                         {
-                            //Простая ходьба
+                            // Simple walking
                             if (curMove != &walk)
                             {
                                 curMove = &walk;
@@ -3892,7 +3892,7 @@ void Character::UpdateAnimation()
                         }
                         else
                         {
-                            //Хотьба назад
+                            // Walking back
                             if (curMove != &backwalk)
                             {
                                 curMove = &backwalk;
@@ -3907,7 +3907,7 @@ void Character::UpdateAnimation()
                     {
                         if (!isBack)
                         {
-                            //Бег
+                            // Run
                             if (curMove != &run)
                             {
                                 curMove = &run;
@@ -3919,7 +3919,7 @@ void Character::UpdateAnimation()
                         }
                         else
                         {
-                            //Бег назад
+                            // Running back
                             if (curMove != &backrun)
                             {
                                 curMove = &backrun;
@@ -3937,7 +3937,7 @@ void Character::UpdateAnimation()
                     {
                         if (!isBack)
                         {
-                            //Ходьба по лестнице
+                            // Stair walking
                             if (isUp)
                             {
                                 curMove = &stsUp;
@@ -3957,7 +3957,7 @@ void Character::UpdateAnimation()
                         }
                         else
                         {
-                            //Хотьба назад по лестнице
+                            // Walking back the stairs
                             if (isUp)
                             {
                                 curMove = &stsUpBack;
@@ -3983,7 +3983,7 @@ void Character::UpdateAnimation()
                         Assert(false);
                         if (!isBack)
                         {
-                            //Бег по лестнице вперёд
+                            // Stair run forward
                             if (isUp)
                             {
                                 curMove = &stsUpRun;
@@ -4005,7 +4005,7 @@ void Character::UpdateAnimation()
                         }
                         else
                         {
-                            //Бег по лестнице назад
+                            // Back stairs running
                             if (isUp)
                             {
                                 curMove = &stsUpRunBack;
@@ -4032,12 +4032,12 @@ void Character::UpdateAnimation()
             {
                 float ts;
                 const char *an;
-                //Анимация стояния по умолчанию
+                // Default standing animation
                 if (!curMove)
                 {
                     if (fabsf(strafeVel) < 0.1f)
                     {
-                        //Стояние
+                        // Standing
                         an = FindIdleAnimation(ts);
                         if (an)
                         {
@@ -4057,7 +4057,7 @@ void Character::UpdateAnimation()
                     }
                     else
                     {
-                        //Шагаем в сторну
+                        // step aside
                         if (strafeVel < 0.0f)
                         {
                             curIdleIndex = -1;
@@ -4080,7 +4080,7 @@ void Character::UpdateAnimation()
                 }
                 else
                 {
-                    //Остановиться
+                    // Stay
                     an = FindIdleAnimation(ts);
                     if (an)
                     {
@@ -4104,7 +4104,7 @@ void Character::UpdateAnimation()
         }
         else
         {
-            //Режим боя
+            // Combat mode
 
             if (fgtSetType == fgt_blockbreak)
             {
@@ -4141,7 +4141,7 @@ void Character::UpdateAnimation()
 
                 switch (fgtSetType)
                 {
-                case fgt_attack_fast: //Быстрый удар
+                case fgt_attack_fast: // Quick hit
                     if (!(isSet = SetAction(attackFast[fgtSetIndex].name, attackFast[fgtSetIndex].tblend, 0.0f, 4.0f)))
                     {
                         core.Trace("Character animation: not set fast attack action: \"%s\"",
@@ -4151,15 +4151,15 @@ void Character::UpdateAnimation()
                     {
                         core.Send_Message(blade, "ll", MSG_BLADE_TRACE_ON, 0);
                         core.Event("Event_ChrSnd_Attack", "is", GetId(), "fast");
-                        // boal перенос в момент удара core.Event("ChrFgtActApply", "is", GetId(), FGT_ATTACK_FAST);
+                        // boal transfer at the moment of hit core.Event ("ChrFgtActApply", "is", GetId (), FGT_ATTACK_FAST);
                         camRotWait = camRotMax = 0.3f;
                         impulse += 5.0f * GetEnemyDirForImpulse();
                     }
                     break;
-                case fgt_attack_force: //Выпад и выпад с рубящим ударом
+                case fgt_attack_force: // Slash and lunge with a slashing blow
                     if (_stricmp(pWeaponID, "topor") == 0 && fgtSetIndex == 3)
                     {
-                        //если с топором, то выпад меняем на рубящий удар
+                        // if with an ax, then the lunge is changed to a chopping blow
                         fgtSetIndex = rand() % 2;
                     }
                     if (!(isSet =
@@ -4172,12 +4172,12 @@ void Character::UpdateAnimation()
                     {
                         core.Send_Message(blade, "ll", MSG_BLADE_TRACE_ON, 0);
                         core.Event("Event_ChrSnd_Attack", "is", GetId(), "force");
-                        // boal перенос в момент удара core.Event("ChrFgtActApply", "is", GetId(), FGT_ATTACK_FORCE);
+                        // boal transfer at the moment of hit core.Event ("ChrFgtActApply", "is", GetId (), FGT_ATTACK_FORCE);
                         camRotWait = camRotMax = 0.3f;
                         impulse += 2.5f * GetEnemyDirForImpulse();
                     }
                     break;
-                case fgt_attack_round: //Круговой удар
+                case fgt_attack_round: // Circular blow
                     if (!(isSet =
                               SetAction(attackRound[fgtSetIndex].name, attackRound[fgtSetIndex].tblend, 0.0f, 4.0f)))
                     {
@@ -4188,11 +4188,11 @@ void Character::UpdateAnimation()
                     {
                         core.Send_Message(blade, "ll", MSG_BLADE_TRACE_ON, 0);
                         core.Event("Event_ChrSnd_Attack", "is", GetId(), "round");
-                        // boal перенос в момент удара core.Event("ChrFgtActApply", "is", GetId(), FGT_ATTACK_ROUND);
+                        // boal transfer at the moment of hit core.Event ("ChrFgtActApply", "is", GetId (), FGT_ATTACK_ROUND);
                         camRotWait = camRotMax = 0.8f;
                     }
                     break;
-                case fgt_attack_break: //Пробивающий удар
+                case fgt_attack_break: // Piercing blow
                     if (!(isSet =
                               SetAction(attackBreak[fgtSetIndex].name, attackBreak[fgtSetIndex].tblend, 0.0f, 4.0f)))
                     {
@@ -4203,12 +4203,12 @@ void Character::UpdateAnimation()
                     {
                         core.Send_Message(blade, "ll", MSG_BLADE_TRACE_ON, 0);
                         core.Event("Event_ChrSnd_Attack", "is", GetId(), "break");
-                        // boal перенос в момент удара core.Event("ChrFgtActApply", "is", GetId(), FGT_ATTACK_BREAK);
+                        // boal transfer at the moment of hit core.Event ("ChrFgtActApply", "is", GetId (), FGT_ATTACK_BREAK);
                         camRotWait = camRotMax = 0.3f;
                         impulse += 1.0f * GetEnemyDirForImpulse();
                     }
                     break;
-                case fgt_attack_feint: //Финт - спрециальный обманный удар
+                case fgt_attack_feint: // Feint - special trick
                     if (!(isSet =
                               SetAction(attackFeint[fgtSetIndex].name, attackFeint[fgtSetIndex].tblend, 0.0f, 4.0f)))
                     {
@@ -4222,7 +4222,7 @@ void Character::UpdateAnimation()
                         camRotWait = camRotMax = 0.3f;
                     }
                     break;
-                case fgt_attack_feintc: //Атакующие продолжение финта
+                case fgt_attack_feintc: // Attacking continuation of the feint
                     if (!(isSet =
                               SetAction(attackFeintC[fgtSetIndex].name, attackFeintC[fgtSetIndex].tblend, 0.0f, 4.0f)))
                     {
@@ -4232,11 +4232,11 @@ void Character::UpdateAnimation()
                     {
                         core.Send_Message(blade, "ll", MSG_BLADE_TRACE_ON, 0);
                         core.Event("Event_ChrSnd_Attack", "is", GetId(), "feintc");
-                        core.Event("ChrFgtActApply", "is", GetId(), "feintc"); // boal жрем энергию за успех
+                        core.Event("ChrFgtActApply", "is", GetId(), "feintc"); // boal eating energy for success
                         camRotWait = camRotMax = 0.3f;
                     }
                     break;
-                case fgt_fire: //Выстрел из пистолета
+                case fgt_fire: // Pistol shot
                     core.Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF, 0);
                     priorityAction.SetName(shot.name);
                     priorityAction.tblend = shot.tblend;
@@ -4246,12 +4246,12 @@ void Character::UpdateAnimation()
                     fgtSetIndex = -1;
                     isFired = false;
                     break;
-                case fgt_hit_attack: //Реакция попадания удара по персонажу вводящая его в stall
+                case fgt_hit_attack: // The reaction of hitting a character putting him into the stall
                     if (IsPlayer() && !isStunEnable)
-                    // boal не нашел лучшего, но у нас ГГ всегда имеет это ИД, работать будет
+                    // boal did not find a better one, but ours always has this ID, it will work
                     {
                         if (rand() % 100 >= 50)
-                            break; // boal не всегда пробиваться в анимацию
+                            break; // boal doesn't always break into animation
                     }
                     if (isStunEnable)
                     {
@@ -4263,30 +4263,30 @@ void Character::UpdateAnimation()
                         }
                     }
                     break;
-                case fgt_blockbreak: //Реакция попадания удара по персонажу вводящая его в stall
+                case fgt_blockbreak: // The reaction of hitting a character putting him into the stall
                     core.Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF, 0);
                     if (!(isSet = SetAction(blockbreak.name, blockbreak.tblend, 0.0f, 1.0f, true)))
                     {
                         core.Trace("Character animation: not set fight blockbreak action: \"%s\"", blockbreak.name);
                     }
                     break;
-                case fgt_hit_feint: //Реакция от финта вводящая его в stall
+                case fgt_hit_feint: // The reaction from the feint putting him into the stall
                     core.Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF, 0);
                     if (!(isSet = SetAction(hitFeint.name, hitFeint.tblend, 0.0f, 0.0f, true)))
                     {
                         core.Trace("Character animation: not set fight feint hit action: \"%s\"", hitFeint.name);
                     }
                     break;
-                case fgt_hit_parry: //Реакция от парирования вводящая его в stall
+                case fgt_hit_parry: // Parry reaction putting him into stall
                     core.Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF, 0);
                     if (!(isSet = SetAction(hitParry.name, hitParry.tblend, 0.0f, 0.0f, true)))
                     {
                         core.Trace("Character animation: not set fight parry hit action: \"%s\"", hitParry.name);
                     }
                     core.Event("ChrFgtActApply", "is", GetId(), "hit_parry");
-                    // boal баг фикс FGT_ATTACK_PARRY);
+                    // boal bug fix FGT_ATTACK_PARRY);
                     break;
-                case fgt_hit_round: //Реакция отталкивание круговым ударом
+                case fgt_hit_round: // Knockback reaction with a circular hit
                     core.Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF, 0);
                     impulse.x -= 3.0f * sinf(ay);
                     impulse.z -= 3.0f * cosf(ay);
@@ -4295,11 +4295,11 @@ void Character::UpdateAnimation()
                         core.Trace("Character animation: not set fight round hit action: \"%s\"", hitRound.name);
                     }
                     break;
-                case fgt_hit_fire: //Реакция от выстрела вводящая его в stall
+                case fgt_hit_fire: // The reaction from the shot, putting him into stall
                     if (IsPlayer() && !isStunEnable)
                     {
                         if (rand() % 100 >= 50)
-                            break; // boal не всегда пробиваться в анимацию
+                            break; // boal doesn't always break into animation
                     }
                     if (isStunEnable)
                     {
@@ -4310,7 +4310,7 @@ void Character::UpdateAnimation()
                         }
                     }
                     break;
-                case fgt_block: //Защита саблей
+                case fgt_block: // Saber protection
                     core.Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF, 0);
                     if (_stricmp(pWeaponID, "topor") == 0)
                     {
@@ -4327,12 +4327,12 @@ void Character::UpdateAnimation()
                         }
                     }
                     break;
-                case fgt_blockhit: //Защита саблей
+                case fgt_blockhit: // Saber protection
                     if (_stricmp(characterID, "Blaze") == 0)
-                    // boal не нашел лучшего, но у нас ГГ всегда имеет это ИД, работать будет
+                    // boal did not find a better one, but ours always has this ID, it will work
                     {
                         if (rand() % 100 >= 65)
-                            break; // boal не всегда пробиваться в анимацию
+                            break; // boal doesn't always break into animation
                     }
                     core.Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF, 0);
                     if (_stricmp(pWeaponID, "topor") == 0)
@@ -4350,25 +4350,25 @@ void Character::UpdateAnimation()
                         }
                     }
                     break;
-                case fgt_parry: //Парирование, защитное движение вводящее противника в stall
+                case fgt_parry: // Parry, a defensive move putting the opponent into a stall
                     core.Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF, 0);
                     if (!(isSet = SetAction(parry[fgtSetIndex].name, parry[fgtSetIndex].tblend, 0.0f, 5.0f)))
                     {
                         core.Trace("Character animation: not set block(parry) action: \"%s\"", parry[fgtSetIndex].name);
                     }
                     break;
-                case fgt_recoil: //Отскок назад
+                case fgt_recoil: // Bounce back
                     core.Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF, 0);
                     PlaySound("recoil", true);
                     impulse.x -= 2.0f * sinf(ay);
                     impulse.z -= 2.0f * cosf(ay);
-                    priorityAction.SetName(recoil.name); //для проверки окончания анимации
+                    priorityAction.SetName(recoil.name); // to check the end of the animation
                     if (!(isSet = SetAction(recoil.name, recoil.tblend, -3.0f, 0.0f)))
                     {
                         core.Trace("Character animation: not set recoil action: \"%s\"", recoil.name);
                     }
                     break;
-                case fgt_strafe_l: //Отскок влево
+                case fgt_strafe_l: // Bounce to the left
                     core.Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF, 0);
                     recoilSound = SOUND_INVALID_ID; // PlaySound("recoil", true);
                     impulse += 15.0f * CVECTOR(-cosf(ay), 0.0f, sinf(ay));
@@ -4377,7 +4377,7 @@ void Character::UpdateAnimation()
                         core.Trace("Character animation: not set recoil action: \"%s\"", strafe_l.name);
                     }
                     break;
-                case fgt_strafe_r: //Отскок влево
+                case fgt_strafe_r: // Bounce to the left
                     core.Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF, 0);
                     recoilSound = SOUND_INVALID_ID; // PlaySound("recoil", true);
                     impulse -= 15.0f * CVECTOR(-cosf(ay), 0.0f, sinf(ay));
@@ -4407,7 +4407,7 @@ void Character::UpdateAnimation()
                     {
                         if (!isBack)
                         {
-                            //Хотьба вперёд
+                            // Striving forward
                             if (curMove != &fightwalk)
                             {
                                 curMove = &fightwalk;
@@ -4419,7 +4419,7 @@ void Character::UpdateAnimation()
                         }
                         else
                         {
-                            //Хотьба назад
+                            // Walking back
                             if (curMove != &fightbackwalk)
                             {
                                 curMove = &fightbackwalk;
@@ -4435,7 +4435,7 @@ void Character::UpdateAnimation()
                     {
                         if (!isBack)
                         {
-                            //Бег вперёд
+                            // Running forward
                             if (curMove != &fightrun)
                             {
                                 curMove = &fightrun;
@@ -4447,7 +4447,7 @@ void Character::UpdateAnimation()
                         }
                         else
                         {
-                            //Бег назад
+                            // Running back
                             if (curMove != &fightbackrun)
                             {
                                 curMove = &fightbackrun;
@@ -4464,10 +4464,10 @@ void Character::UpdateAnimation()
                 {
                     float ts;
                     const char *an;
-                    //Анимация стояния по умолчанию
+                    // Default standing animation
                     if (!curMove)
                     {
-                        //Стояние
+                        // Standing
                         an = FindFightIdleAnimation(ts);
                         if (an)
                         {
@@ -4488,7 +4488,7 @@ void Character::UpdateAnimation()
                     }
                     else
                     {
-                        //Остановиться
+                        // Stay
                         an = FindFightIdleAnimation(ts);
                         if (an)
                         {
@@ -4516,14 +4516,14 @@ void Character::UpdateAnimation()
 
 const char *Character::FindIdleAnimation(float &tblend)
 {
-    //Пользовательская анимация
+    // Custom animation
     if (userIdle.name)
     {
         curIdleIndex = -1;
         tblend = userIdle.tblend;
         return userIdle.name;
     }
-    //Стандартная анимация
+    // Standard animation
     if (fabsf(isTurn) <= (curIdleIndex >= 0 ? 0.8f : 0.1f))
     {
         if (numActionIdles <= 0)
@@ -4535,14 +4535,14 @@ const char *Character::FindIdleAnimation(float &tblend)
         {
             if (curIdleIndex < 0)
             {
-                //Расчитываем текущии вероятности и сумарную вероятность
+                // calculate the current probabilities and the total probability
                 float allp = 0.0f;
                 long i;
                 for (i = 0; i < numActionIdles; i++)
                     allp += actionIdle[i].p;
-                //Текущее действие
+                // Current action
                 const float rnd = rand() * allp / RAND_MAX;
-                //Выбираем из списка то которое будем проигрывать
+                // Choose from the list the one that we will play
                 allp = 0.0f;
                 for (i = 0; i < numActionIdles; i++)
                 {
@@ -4562,7 +4562,7 @@ const char *Character::FindIdleAnimation(float &tblend)
         return actionIdle[curIdleIndex].name;
     }
     curIdleIndex = -1;
-    //Поворот
+    // Turn
     if (isTurn < 0)
     {
         tblend = actionTurnL.tblend;
@@ -4575,7 +4575,7 @@ const char *Character::FindIdleAnimation(float &tblend)
 
 const char *Character::FindFightIdleAnimation(float &tblend)
 {
-    //Пользовательская анимация
+    // Custom animation
     if (userIdle.name)
     {
         curIdleIndex = -1;
@@ -4584,14 +4584,14 @@ const char *Character::FindFightIdleAnimation(float &tblend)
     }
     if (curIdleIndex < 0 || curIdleIndex >= numFightActionIdles)
     {
-        //Расчитываем текущии вероятности и сумарную вероятность
+        // calculate the current probabilities and the total probability
         float allp = 0.0f;
         long i;
         for (i = 0; i < numFightActionIdles; i++)
             allp += actionFightIdle[i].p;
-        //Текущее действие
+        // Current action
         const float rnd = rand() * allp / RAND_MAX;
-        //Выбираем из списка то которое будем проигрывать
+        // Choose from the list the one that we will play
         allp = 0.0f;
         for (i = 0; i < numFightActionIdles; i++)
         {
@@ -4603,7 +4603,7 @@ const char *Character::FindFightIdleAnimation(float &tblend)
             i = numFightActionIdles - 1;
         if (recoilLook)
         {
-            curIdleIndex = 7; //проиграть дразнилку после отскока
+            curIdleIndex = 7; // play the teaser after bouncing
             recoilLook = false;
         }
         else
@@ -4614,13 +4614,13 @@ const char *Character::FindFightIdleAnimation(float &tblend)
     tblend = actionFightIdle[curIdleIndex].tblend;
     return actionFightIdle[curIdleIndex].name;
     /*
-    //Стандартная анимация
+    // Standard animation
     if(fabsf(isTurn) <= 0.0001f)
     {
       tblend = actionFightIdle[curIdleIndex].tblend;
       return actionFightIdle[curIdleIndex].name;
     }else{
-      //Поворот
+      // Turn
       if(isTurn < 0)
       {
         tblend = actionFightIdle[curIdleIndex].tblend;
@@ -4669,33 +4669,33 @@ Character *Character::FindDialogCharacter()
     auto *const location = GetLocation();
     if (IsFight() || liveValue < 0 || deadName)
         return nullptr;
-    //Найдём окружающих персонажей
+    // Find the surrounding characters
     static Supervisor::FindCharacter fndCharacter[MAX_CHARACTERS];
     static long num = 0;
     if (!location->supervisor.FindCharacters(fndCharacter, num, this, 3.0f))
         return nullptr;
-    //Выбираем лутшего
+    // Choosing the best
     float minDst;
     long j = -1;
     for (long i = 0; i < num; i++)
     {
-        //Персонаж
+        // Character
         Supervisor::FindCharacter &fc = fndCharacter[i];
-        //Если воюем, то не говорим с ним
+        // If we are at war, then we do not talk to him
         if (fc.c->IsFight() || fc.c->liveValue < 0 || fc.c->deadName)
             continue;
-        //Дистанция
+        // Distance
         if (fabsf(fc.dy) > 2.0f)
             continue;
         float d = sqrtf(fc.d2);
-        //Углы
+        // Angles
         static const float testAng = cosf(0.5f * CHARACTER_DIALOG_ANG * (3.1415926535f / 180.0f));
         float cs = -1.0f;
         if (fc.d2 > 0.0f)
             cs = (fc.dx * sinf(ay) + fc.dz * cosf(ay)) / d;
         if (cs < testAng)
             continue;
-        //Дистанция с учётом угла
+        // Distance based on angle
         d /= cs;
         if (j >= 0)
         {
@@ -4745,7 +4745,7 @@ bool Character::SetPriorityAction(const char *action)
 
 inline void Character::CheckAttackHit()
 {
-    //Получим название атаки и реакцию
+    // Get the name of the attack and the reaction
     bool isBlockBreak = false;
     const char *aname;
     FightAction hitReaction;
@@ -4772,7 +4772,7 @@ inline void Character::CheckAttackHit()
         aname = FGT_ATTACK_FEINT;
         hitReaction = fgt_hit_feint;
         break;
-        /*case fgt_attack_feint: //boal для теста добавил и убрал
+        /*case fgt_attack_feint: // boal added and removed for the test
           aname = FGT_ATTACK_FEINT;
           hitReaction = fgt_hit_feint;
           break;*/
@@ -4794,19 +4794,19 @@ inline void Character::CheckAttackHit()
                 attackAng = static_cast<float>(atof(s));
         }
     }
-    //Найдём окружающих персонажей
+    // Find the surrounding characters
     static Supervisor::FindCharacter fndCharacter[MAX_CHARACTERS];
     long num = 0;
     auto *const location = GetLocation();
     if (!location->supervisor.FindCharacters(fndCharacter, num, this, attackDist, attackAng, 0.1f, 0.0f, false, true))
         return;
-    //Перебираем всех врагов
+    // go through all the enemies
     bool isParry = false;
     bool isHrrrSound = true;
-    bool isUseEnergy = true; // снять энергию один раз boal
+    bool isUseEnergy = true; // remove energy once boal
     for (long i = 0; i < num; i++)
     {
-        //Персонаж
+        // Character
         Supervisor::FindCharacter &fc = fndCharacter[i];
         if (fc.c->liveValue < 0 || fc.c->deadName || fc.d2 <= 0.0f)
             continue;
@@ -4818,9 +4818,9 @@ inline void Character::CheckAttackHit()
         }
         else if (fc.c->fgtCurType == fgt_attack_feint && fc.c->isFeintState)
         {
-            // boal был баг, нет сброса анимации, соотв нельзя проиграть ролик атаки  -->
+            // boal was a bug, there is no reset animation, so you cannot play the attack clip -->
             // fc.c->StopFightAnimation();
-            // StopFightAnimation(); //стопим самого НПС
+            // StopFightAnimation (); // stop the NPC itself
             // boal <--
             fc.c->Attack(this, fgt_attack_feintc);
             fc.c->UpdateAnimation(); // boal
@@ -4854,10 +4854,10 @@ inline void Character::CheckAttackHit()
             }
             fc.c->Hit(hitReaction);
             core.Event("Location_CharacterAttack", "iisl", GetId(), fc.c->GetId(), aname, static_cast<long>(isBlocked));
-            // boal 12.09.06 отжор энергии по факту удара -->
+            // boal 09/12/06 energy consumption after impact -->
             if (isUseEnergy && fgtCurType != fgt_attack_feintc)
             {
-                // для fgt_attack_feintc идет отжор в анимации, а тут будет "финт", а он стоит 0
+                // for fgt_attack_feintc there is an overexertion in the animation, and here will be a "feint", and it costs 0
                 core.Event("ChrFgtActApply", "is", GetId(), aname);
                 isUseEnergy = false;
             }
@@ -4870,7 +4870,7 @@ inline void Character::CheckAttackHit()
     }
 }
 
-//Найти персонажа в которого попали из пистолета
+// Find a character who was hit by a pistol
 Character *Character::FindGunTarget(float &kDist, bool bOnlyEnemyTest, bool bAbortIfFriend)
 {
     CharactersGroups *chrGroup;
@@ -4884,7 +4884,7 @@ Character *Character::FindGunTarget(float &kDist, bool bOnlyEnemyTest, bool bAbo
             return nullptr;
     }
 
-    //Найдём окружающих персонажей
+    // Find the surrounding characters
     static Supervisor::FindCharacter fndCharacter[MAX_CHARACTERS];
     static long num = 0;
     auto *const location = GetLocation();
@@ -4898,7 +4898,7 @@ Character *Character::FindGunTarget(float &kDist, bool bOnlyEnemyTest, bool bAbo
         Supervisor::FindCharacter &fc = fndCharacter[i];
         if (fc.d2 <= 0.0f || fc.c->radius <= 0.0f)
             continue;
-        //Определяем видимость
+        // Determine visibility
         if (!VisibleTest(fc.c))
             continue;
         if (bOnlyEnemyTest)
@@ -4909,7 +4909,7 @@ Character *Character::FindGunTarget(float &kDist, bool bOnlyEnemyTest, bool bAbo
             if (chrGroup->FindRelation(enemygrpIndex, grp).curState != CharactersGroups::rs_enemy)
                 continue;
         }
-        //Ищем дистанцию с поправками
+        // looking for a distance with amendments
         fc.d2 = sqrtf(fc.d2);
         float cs = (fc.dx * sinf(ay) + fc.dz * cosf(ay)) / fc.d2;
         cs *= cs * cs;
@@ -4961,8 +4961,8 @@ void Character::FindNearCharacters(MESSAGE &message)
     const float planeDist = message.Float();
     const bool visTest = message.Long() != 0;
     const bool isSort = message.Long() != 0;
-    //Ищем персонажей
-    //Найдём окружающих персонажей
+    // Looking for characters
+    // Find the surrounding characters
     static Supervisor::FindCharacter fndCharacter[MAX_CHARACTERS];
     static long n = 0;
     auto *const location = GetLocation();
@@ -4980,19 +4980,19 @@ void Character::FindNearCharacters(MESSAGE &message)
     long nn = 0;
     for (long i = 0; i < n; i++)
     {
-        //Информация
+        // Information
         Supervisor::FindCharacter &fc = fndCharacter[i];
         Assert(fc.c);
         if (!fc.c->AttributesPointer)
             continue;
-        //Определяем видимость
+        // Determine visibility
         if (visTest && !VisibleTest(fc.c))
             continue;
-        //Обновим колшичество
+        // update the quantity
         nn++;
-        //Элемент массива
+        // Array element
         auto *e = (VDATA *)array->GetArrayElement(i);
-        //Устанавливаем поля
+        // Setting fields
         e->Set("index", fc.c->AttributesPointer->GetAttribute("index"));
         sprintf_s(buf, "%f", sqrtf(fc.d2));
         e->Set("dist", buf);
@@ -5006,7 +5006,7 @@ void Character::FindNearCharacters(MESSAGE &message)
     num->Set(nn);
 }
 
-//Проверить видимость
+// Check visibility
 bool Character::CharactersVisibleTest(MESSAGE &message)
 {
     auto *chr = static_cast<Character *>(EntityManager::GetEntityPointer(message.EntityID()));
@@ -5015,13 +5015,13 @@ bool Character::CharactersVisibleTest(MESSAGE &message)
     return VisibleTest(chr);
 }
 
-//Проверка видимости двух персонажей
+// Checking the visibility of two characters
 bool Character::VisibleTest(Character *chr)
 {
     if (!chr)
         return false;
     auto *const location = GetLocation();
-    //Тест по оси персонажа
+    // Character axis test
     if (location->VisibleTest(curPos + CVECTOR(0.0f, height * 0.9f, 0.0f),
                               chr->curPos + CVECTOR(0.0f, chr->height * 0.97f, 0.0f)))
         return true;
@@ -5031,18 +5031,18 @@ bool Character::VisibleTest(Character *chr)
     if (location->VisibleTest(curPos + CVECTOR(0.0f, height * 0.9f, 0.0f),
                               chr->curPos + CVECTOR(0.0f, chr->height * 0.37f, 0.0f)))
         return true;
-    //Трейсим лучи смещённые от центра
+    // Trace rays off-center
     if (location->VisibleTest(curPos + CVECTOR(0.0f, height * 0.9f, 0.0f),
                               chr->curPos + CVECTOR(0.3f * cosf(chr->ay), chr->height * 0.8f, -0.3f * sinf(chr->ay))))
         return true;
     if (location->VisibleTest(curPos + CVECTOR(0.0f, height * 0.9f, 0.0f),
                               chr->curPos + CVECTOR(-0.3f * cosf(chr->ay), chr->height * 0.8f, 0.3f * sinf(chr->ay))))
         return true;
-    //Спрятался...
+    // Hid ...
     return false;
 }
 
-//Обновить состояние оружия
+// Update weapon state
 void Character::UpdateWeapons()
 {
     if (isFightWOWps)
@@ -5055,7 +5055,7 @@ void Character::UpdateWeapons()
     }
 }
 
-//Получить направление на противника для подскока при ударе
+// Get direction towards the enemy to bounce on hit
 CVECTOR Character::GetEnemyDirForImpulse()
 {
     auto *chr = static_cast<Character *>(EntityManager::GetEntityPointer(enemyAttack));
@@ -5076,7 +5076,7 @@ CVECTOR Character::GetEnemyDirForImpulse()
     return CVECTOR(0.0f);
 }
 
-//Получить постфикс
+// Get postfix
 const char *Character::GetValueByPrefix(const char *str, const char *pref)
 {
     if (!str || !str[0])
@@ -5176,7 +5176,7 @@ bool Character::CheckObstacle(float fx, float fz, float fzlen)
 
     auto *const location = GetLocation();
 
-    // проверим среднюю точку
+    // check the midpoint
     vsrc = CVECTOR(xmed, 50.f, zmed);
     vdst = CVECTOR(xmed, -50.f, zmed);
     fTrace = location->GetPtcData().Trace(vsrc, vdst);
@@ -5186,7 +5186,7 @@ bool Character::CheckObstacle(float fx, float fz, float fzlen)
     if (fHDist * fHDist > 0.25f)
         return true;
 
-    // проверим начальную точку
+    // check the starting point
     vsrc = CVECTOR(xbeg, 50.f, zbeg);
     vdst = CVECTOR(xbeg, -50.f, zbeg);
     fTrace = location->GetPtcData().Trace(vsrc, vdst);
@@ -5196,7 +5196,7 @@ bool Character::CheckObstacle(float fx, float fz, float fzlen)
     if (fHDist * fHDist > 0.25f)
         return true;
 
-    // проверим конечную точку
+    // check the end point
     vsrc = CVECTOR(xend, 50.f, zend);
     vdst = CVECTOR(xend, -50.f, zend);
     fTrace = location->GetPtcData().Trace(vsrc, vdst);
@@ -5213,7 +5213,7 @@ long Character::GetRandomIndexByObstacle(ObstacleZone *pZone, long num)
 {
     long n, m, i, q;
 
-    // найдем количество используемых зон
+    // find the number of zones used
     q = 0;
     for (i = 0; i < num; i++)
         if (pZone[i].use)
@@ -5221,7 +5221,7 @@ long Character::GetRandomIndexByObstacle(ObstacleZone *pZone, long num)
 
     while (q > 0)
     {
-        // найдем рандомный номер из еще используемых зон
+        // find a random number from still used zones
         n = rand() % q;
         m = 0;
         for (i = 0; i < num; i++)
@@ -5233,17 +5233,17 @@ long Character::GetRandomIndexByObstacle(ObstacleZone *pZone, long num)
             m++;
         }
 
-        // ничего тут нет
+        // there is nothing here
         if (i == num)
             break;
 
-        // проверим зону на наличие препятсвий в ней
+        // check the area for obstacles in it
         if (pZone[i].x == 0 && pZone[i].z == 0)
             return i;
         if (!CheckObstacle(pZone[i].x, pZone[i].z, pZone[i].dw))
             return i;
 
-        // отметим зону как неиспользуемую
+        // mark the zone as unused
         pZone[i].use = false;
         q--;
     }

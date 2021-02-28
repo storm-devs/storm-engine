@@ -39,29 +39,29 @@ class Window
             t_glight,
         };
 
-        char *name; //Имя
-        Type type;  //Тип
-        CVECTOR c;  //Текущий выбранный цвет
-        float st;   //Насыщенность цвета
-        //Данные для модификации
-        CVECTOR *color; //Цвет
-        float *cosine;  //Коэфициент косинуса
-        float *shadow;  //Коэфициент тени
-        float *bright;  //Яркость тени
-        float *contr;   //Контрастность тени
-        float *gamma;   //Гамма тени
-        float *att0;    //Затухание D^0
-        float *att1;    //Затухание D^1
-        float *att2;    //Затухание D^2
-        float *range;   //Радиус действия
-        bool *isOn;     //Включён
-        long litIndex;  //Индекс источника
-        float h;        //Дополнительная высота окна
+        char *name; // Name
+        Type type;  // A type
+        CVECTOR c;  // Current selected color
+        float st;   // Color saturation
+        // Modification data
+        CVECTOR *color; // Colour
+        float *cosine;  // Coefficient of cosine
+        float *shadow;  // shadow Coefficient
+        float *bright;  // Shadow brightness
+        float *contr;   // Shadow contrast
+        float *gamma;   // shadow Gamma
+        float *att0;    // Attenuation D^0
+        float *att1;    // Attenuation D^1
+        float *att2;    // Attenuation D^2
+        float *range;   // Radius of action
+        bool *isOn;     // Included
+        long litIndex;  // Source index
+        float h;        // Additional window height
     };
 
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     Window(Window &&) = delete;
     Window(const Window &) = delete;
@@ -73,7 +73,7 @@ class Window
     void Draw(float dltTime);
     void Reset(bool isVis);
 
-    //Флажки управляющие действиями
+    // Checkboxes controlling actions
     bool isNeedInit;
     bool isNoPrepared;
     bool isVisible;
@@ -101,9 +101,9 @@ class Window
     bool isFailedInit;
     bool isSmallSlider;
 
-    //--------------------------------------------------------------------------------------------
-    //Инкапсуляция
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Encapsulation
+    // --------------------------------------------------------------------------------------------
   private:
     void DrawRect(float x1, float y1, float x2, float y2, uint32_t color);
     void DrawLine(float x1, float y1, float x2, float y2, uint32_t color);
@@ -129,9 +129,9 @@ class Window
   private:
     //
     VDX9RENDER *rs;
-    //Размер экранна
+    // Screen size
     float sw, sh;
-    //Параметры окон
+    // Window options
     float winx, winy, winw, winh;
     uint32_t bkgColor, frmColor, textColor, selColor;
     float sldLen;
@@ -160,7 +160,7 @@ class Window
     // Presets
     long lastPreset;
     char prsComment[64];
-    //Буффер для строк
+    // String buffer
     char ver[256];
     char stringBuffer[1024];
 };

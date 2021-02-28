@@ -43,14 +43,14 @@ void ShipMan::Free() const
 
     // UN//GUARD_SAILORS
 };
-//-----Построение матрицы с учетом текущего состояния---------------------------------
+// ----- Building a matrix taking into account the current state ---------------------------------
 void ShipMan::SetPos(MODEL *ship, SHIP_BASE *ship_base, uint32_t &dltTime, ShipState &shipState)
 {
     // GUARD_SAILORS(ShipMan::SetPos())
 
     if (ship_base && (shipState.dead || jumpSpeedY))
     {
-        //Если попал в воду - отвязать от корабля и плыть
+        // If got in the water - detach from the ship and swim
         if (!inWater && model->mtx.Pos().y < shipState.sea->WaveXZ(model->mtx.Pos().x, model->mtx.Pos().z) - 1.4f)
         {
             inWater = true;
@@ -133,13 +133,13 @@ bool ShipMan::RotateToAngle(uint32_t &dltTime, SailorsPoints &sailorsPoints)
     // UN//GUARD_SAILORS
     return true;
 };
-//-----Найти новую точку-цель---------------------------------------------------------
+// ----- Find New Target ---------------------------------------- -----------------
 int ShipMan::FindRandomPoint(SailorsPoints &sailorsPoints, ShipState &shipState)
 {
     // GUARD_SAILORS(ShipMan::FindRandomPoint())
 
     int ran;
-    //Если боевой режим или перезарядка то ищем свободные пушки
+    // If combat mode or reload, then look for free guns
     for (auto m = 0; m < sailorsPoints.points.count; m++)
         for (auto i = 0; i < sailorsPoints.points.count; i++)
         {
@@ -156,7 +156,7 @@ int ShipMan::FindRandomPoint(SailorsPoints &sailorsPoints, ShipState &shipState)
                 }
         }
 
-    //Ищем свободные мачты
+    // Looking for free masts
     if (shipState.dead || rand() * 30 / static_cast<float>(RAND_MAX) <= 1)
 
         for (auto m = 0; m < sailorsPoints.points.count; m++)
@@ -176,7 +176,7 @@ int ShipMan::FindRandomPoint(SailorsPoints &sailorsPoints, ShipState &shipState)
                         }
             }
 
-    //Ищем простые незанятые точки
+    // Looking for simple unoccupied points
     for (auto m = 0; m < sailorsPoints.points.count; m++)
         for (auto i = 0; i < sailorsPoints.points.count; i++)
         {
@@ -192,9 +192,9 @@ int ShipMan::FindRandomPoint(SailorsPoints &sailorsPoints, ShipState &shipState)
     // UN//GUARD_SAILORS
     return newWayPoint;
 };
-//-----Найти новую точку-цель без типа------------------------------------------------
+// ----- Find new target point without type -------------------------------------- ----------
 int ShipMan::FindRandomPointWithoutType(SailorsPoints &sailorsPoints) const
-//Найти любую простую точку
+// Find any simple point
 {
     // GUARD_SAILORS(ShipMan::FindRandomPointWithoutType())
 
@@ -210,12 +210,12 @@ int ShipMan::FindRandomPointWithoutType(SailorsPoints &sailorsPoints) const
 
     // UN//GUARD_SAILORS
 };
-//-----Найти след. точку в пути / новый путь------------------------------------------
+// ----- Find the next waypoint / new route ------------------------------------------
 void ShipMan::FindNextPoint(SailorsPoints &sailorsPoints, ShipState &shipState)
 {
     // GUARD_SAILORS(ShipMan::FindNextPoint())
 
-    //Найти ближайшую незаряженную пушку
+    // Find the nearest unloaded cannon
     if (moveTo != MOVE_TO_CANNON)
     {
         const auto cannon = GetNearestEmptyCannon(sailorsPoints);
@@ -240,7 +240,7 @@ void ShipMan::FindNextPoint(SailorsPoints &sailorsPoints, ShipState &shipState)
         }
     }
 
-    //Если путь пройден или его нет- найти новый
+    // If the path has been passed or if no path, then find a new one
     if (!path.length || path.currentPointPosition == path.length - 1 || path.min == -1)
     {
         path.length = 0;
@@ -268,7 +268,7 @@ void ShipMan::FindNextPoint(SailorsPoints &sailorsPoints, ShipState &shipState)
                              (sailorsPoints.points.point[newWayPoint].pointType == PT_TYPE_NORMAL));
         }
 
-        //Выбрать след. точку в пути
+        // Select the next waypoint
     }
     else if (mode == MAN_RUN || mode == MAN_WALK || mode == MAN_CLIMB_UP || mode == MAN_CLIMB_DOWN)
     {
@@ -284,7 +284,7 @@ void ShipMan::FindNextPoint(SailorsPoints &sailorsPoints, ShipState &shipState)
             return;
         }
 
-        //Если начался бой/перезарядка то перейти на бег
+        // If a fight / reload has started, then start running
         if ((shipState.mode == SHIP_WAR || moveTo == MOVE_TO_CANNON) && mode == MAN_WALK)
             mode = MAN_RUN;
 
@@ -301,7 +301,7 @@ void ShipMan::ApplyTargetPoint(CVECTOR pt, bool randomWalk)
 
     if (randomWalk)
     {
-        //разброс - 0.50
+        // spread - 0.50
 
         ptTo.x = pt.x + (rand() / static_cast<float>(RAND_MAX) - rand() / static_cast<float>(RAND_MAX)) * 0.50f;
         ptTo.y = pt.y;
@@ -358,7 +358,7 @@ bool ShipMan::MoveToPosition(uint32_t &dltTime, SailorsPoints &sailorsPoints, Sh
 
     // UN//GUARD_SAILORS
 };
-//-----Найти ближайшую пушку----------------------------------------------------------
+// ----- Find the nearest cannon ------------------------------------------ ----------------
 int ShipMan::GetNearestEmptyCannon(SailorsPoints &sailorsPoints) const
 {
     // GUARD_SAILORS(ShipMan::GetNearestEmptyCannon())
@@ -399,7 +399,7 @@ bool ShipMan::Swim(uint32_t &dltTime, SailorsPoints &sailorsPoints, ShipState &s
 
         RotateToAngle(dltTime, sailorsPoints);
     }
-    else //Силы на исходе - утопить
+    else // The strength is running out - drown
         pos.y -= dltTime / 1000.0f;
 
     dieTime += 1.5f / static_cast<float>(dltTime);
@@ -440,14 +440,14 @@ bool ShipMan::Jump(uint32_t &dltTime, SailorsPoints &sailorsPoints, ShipState &s
     jumpSpeedY += static_cast<float>(dltTime) / 10.0f;
     jumpSpeedX -= jumpSpeedX * static_cast<float>(dltTime) / 750.0f;
 
-    if (shipState.sea && pos.y <= shipState.sea->WaveXZ(pos.x, pos.z) - 1.4f) //Утопить поглубже
+    if (shipState.sea && pos.y <= shipState.sea->WaveXZ(pos.x, pos.z) - 1.4f) // Drown deeper
         pos.y -= jumpSpeedY * static_cast<float>(dltTime) / 1000.0f;
 
     return false;
 
     // UN//GUARD_SAILORS
 };
-//-----Обновить анимацию и скорость---------------------------------------------------
+// ----- Update animation and speed ----------------------------------------- ----------
 void ShipMan::SetAnimation(uint32_t dltTime, ShipState &shipState)
 {
     // GUARD_SAILORS(ShipMan::SetAnimation())
@@ -545,20 +545,20 @@ void ShipMan::SetAnimation(uint32_t dltTime, ShipState &shipState)
 
     // UN//GUARD_SAILORS
 };
-//-----Выбрать новое действие---------------------------------------------------------
+// ----- Select a new action ------------------------------------------ ---------------
 void ShipMan::NewAction(SailorsPoints &sailorsPoints, ShipState &shipState, uint32_t &dltTime)
 {
     // GUARD_SAILORS(ShipMan::NewAction())
     if (!sailorsPoints.links.count)
         return;
 
-    //Если путь пройден  выбрать новое действие
+    // If the path is completed, choose a new action
     if (mode != MAN_CLIMB_UP && path.currentPointPosition == path.length - 1 || mode == MAN_STAY)
     {
         if (mode == MAN_CANNONRELOAD &&
             (shipState.mode == SHIP_SAIL || shipState.mode == SHIP_STORM || shipState.mode == SHIP_WAR))
         {
-            //Уйти от пушки
+            // Get away from the cannon
 
             sailorsPoints.points.point[targetWayPoint].buisy = false;
             sailorsPoints.points.point[targetWayPoint].cannonReloaded = true;
@@ -573,7 +573,7 @@ void ShipMan::NewAction(SailorsPoints &sailorsPoints, ShipState &shipState, uint
 
         if (targetWayPoint == newWayPoint && moveTo == MOVE_TO_CANNON)
         {
-            //Работать у пушки
+            // Work at the cannon
 
             mode = MAN_CANNONRELOAD;
 
@@ -588,7 +588,7 @@ void ShipMan::NewAction(SailorsPoints &sailorsPoints, ShipState &shipState, uint
 
         if (mode == MAN_CLIMB_DOWN)
         {
-            //Слезть и освободить точку
+            // Get off and free the point
 
             mode = MAN_WALK;
             sailorsPoints.points.point[lastTargetPoint].buisy = false;
@@ -615,7 +615,7 @@ void ShipMan::NewAction(SailorsPoints &sailorsPoints, ShipState &shipState, uint
         }
     }
 
-    //найти/продолжить путь
+    // find / continue the path
     FindNextPoint(sailorsPoints, shipState);
 
     if (sailorsPoints.points.point[newWayPoint].IsMast())
@@ -636,7 +636,7 @@ void ShipMan::NewAction(SailorsPoints &sailorsPoints, ShipState &shipState, uint
 
     // UN//GUARD_SAILORS
 };
-//-----Основная ф-ия-----------------------------------------------------
+// ----- Main function -----------------------------------------------------
 void ShipMan::UpdatePos(uint32_t &dltTime, SailorsPoints &sailorsPoints, ShipState &shipState)
 {
     // GUARD_SAILORS(ShipMan::UpdatePos())
@@ -690,7 +690,7 @@ void ShipWalk::Free()
 
     // UN//GUARD_SAILORS
 };
-//-----Обнулить флаги зарядки пушек---------------------------------------------------
+// ----- Reset cannon charging flags ---------------------------------------------------
 void ShipWalk::ReloadCannons(int bort)
 {
     // GUARD_SAILORS(ShipWalk::ReloadCannons())
@@ -789,12 +789,12 @@ void ShipWalk::Init(entid_t _shipID, int editorMode, char *shipType)
 
     if (!editorMode)
     {
-        //Режим игры - создан корабль
+        // Game mode - ship created
 
         ship = static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(_shipID));
         shipModel = ship->GetModel();
 
-        //Загрузить точки
+        // Load points
         std::string fileName = "RESOURCE\\MODELS\\Ships\\SAILORSPOINTS\\";
         fileName += shipType;
         fileName += ".ini";
@@ -806,7 +806,7 @@ void ShipWalk::Init(entid_t _shipID, int editorMode, char *shipType)
         if (sailorsPoints.points.count <= 0 || sailorsPoints.links.count <= 0)
             return;
 
-        //Найти сломанные мачты
+        // Find broken masts
         auto *attr = ship->GetACharacter();
         auto *mastsAttr = attr->FindAClass(attr, "Ship.Masts");
 
@@ -815,7 +815,7 @@ void ShipWalk::Init(entid_t _shipID, int editorMode, char *shipType)
         for (auto i = 0; i < iNumMasts; i++)
         {
             if (mastsAttr->GetAttributeClass(i)->GetAttributeAsFloat())
-                SetMastBroken(((iNumMasts - 1) - i) + 1); //??? Мачты расположены наоборот???
+                SetMastBroken(((iNumMasts - 1) - i) + 1); // ??? The masts are opposite ???
         }
 
         // people count
@@ -837,14 +837,14 @@ void ShipWalk::Init(entid_t _shipID, int editorMode, char *shipType)
         for (auto i = 0; i < peopleCount; i++)
             CreateNewMan(sailorsPoints);
     }
-    else //Режим редактора
+    else // Editor mode
     {
         ship = nullptr;
     }
 
     // UN//GUARD_SAILORS
 };
-//-----Выключение точек сломанной мачты-----------------------------------------------
+// ----- Turn off points of broken mast ----------------------------------------- ------
 void ShipWalk::SetMastBroken(int iMastIndex)
 {
     // GUARD_SAILORS(ShipWalk::SetMastBroken())
@@ -876,7 +876,7 @@ void ShipWalk::SetMastBroken(int iMastIndex)
         }
     // UN//GUARD_SAILORS
 };
-//-----Попадание ядер в корабль-------------------------------------------------------
+// ----- Cannonball hitting the ship ----------------------------------------- --------------
 void ShipWalk::OnHullHit(const CVECTOR &v)
 {
     // GUARD_SAILORS(ShipWalk::OnHullHit())
@@ -891,7 +891,7 @@ void ShipWalk::OnHullHit(const CVECTOR &v)
 
             if (sqrt((pos.x - v.x) * (pos.x - v.x) + (pos.z - v.z) * (pos.z - v.z)) < 1)
             {
-                //Освободить точки
+                // Free the points
                 if (shipMan[i].mode == MAN_CLIMB_DOWN)
                 {
                     sailorsPoints.points.point[shipMan[i].lastTargetPoint].buisy = false;
@@ -911,7 +911,7 @@ void ShipWalk::OnHullHit(const CVECTOR &v)
 
     // UN//GUARD_SAILORS
 };
-//-----Обход друг друга---------------------------------------------------------------
+// ----- Bypassing Each Other ------------------------------------------ ---------------------
 void ShipWalk::CheckPosition(uint32_t &dltTime)
 {
     // GUARD_SAILORS(ShipWalk::CheckPosition())
@@ -938,7 +938,7 @@ void ShipWalk::CheckPosition(uint32_t &dltTime)
 
                 if (d < 1.0f)
                 {
-                    //если Идут в разные стороны
+                    // if go in different directions
                     if (shipMan[m].path.point[shipMan[m].path.currentPointPosition] !=
                         shipMan[i].path.point[shipMan[i].path.currentPointPosition])
                     {
@@ -1081,7 +1081,7 @@ void Sailors::Realize(uint32_t dltTime)
 
     for (auto m = 0; m < shipsCount; m++)
     {
-        //Если корабль и все люди умерли то удалить обьект
+        // If the ship and all people are dead then delete the object
         if (shipWalk[m].shipState.dead && shipWalk[m].crewCount <= 0)
         {
             DeleteShip(m);
@@ -1089,7 +1089,7 @@ void Sailors::Realize(uint32_t dltTime)
             return;
         }
 
-        //Обновление и рисование
+        // Updating and drawing
         for (auto i = 0; i < shipWalk[m].shipMan.size(); i++)
         {
             shipWalk[m].shipMan[i].UpdatePos(dltTime, shipWalk[m].sailorsPoints, shipWalk[m].shipState);
@@ -1101,7 +1101,7 @@ void Sailors::Realize(uint32_t dltTime)
 
         for (auto i = 0; i < shipWalk[m].shipMan.size(); i++)
         {
-            //Если умер то удалить
+            // If died then delete
             if (shipWalk[m].shipMan[i].dieTime > 10 || shipWalk[m].shipMan[i].pos.y < -100)
             {
                 shipWalk[m].DeleteMan(i);
@@ -1110,7 +1110,7 @@ void Sailors::Realize(uint32_t dltTime)
             }
         }
 
-        //Установка состояния корабля
+        // Setting ship state
         if (!shipWalk[m].shipState.dead)
         {
             shipWalk[m].CheckPosition(dltTime);
@@ -1157,7 +1157,7 @@ uint64_t Sailors::ProcessMessage(MESSAGE &message)
 
     switch (code)
     {
-        // Добавить людей на корабль
+        // Add people to the ship
     case AI_MESSAGE_ADD_SHIP:
 
         shipID = message.EntityID();
@@ -1177,7 +1177,7 @@ uint64_t Sailors::ProcessMessage(MESSAGE &message)
             }
         break;
 
-        // Перезарядка бортов
+        // Reloading the cannons
     case AI_MESSAGE_CANNON_RELOAD:
 
         shipID = message.EntityID();
@@ -1217,7 +1217,7 @@ uint64_t Sailors::ProcessMessage(MESSAGE &message)
 
         break;
 
-        // Падение мачты
+        // Fall of the mast
     case MSG_PEOPLES_ON_SHIP_MASTFALL: {
         auto *const attrs = message.AttributePointer();
         if (!attrs)
@@ -1233,7 +1233,7 @@ uint64_t Sailors::ProcessMessage(MESSAGE &message)
         break;
     }
 
-        // Попадание ядра в корабль
+        // Cannonball hit the ship
     case MSG_PEOPLES_ON_SHIP_HULLHIT: {
         auto *const attrs = message.AttributePointer();
         if (!attrs)
@@ -1253,7 +1253,7 @@ uint64_t Sailors::ProcessMessage(MESSAGE &message)
         break;
     }
 
-        // Удаление корабля
+        // Removing a ship
     case MSG_SHIP_DELETE: {
         auto *const attrs = message.AttributePointer();
         if (attrs)
@@ -1279,7 +1279,7 @@ uint32_t Sailors::AttributeChanged(ATTRIBUTES *_newAttr)
 {
     // GUARD_SAILORS(Sailors::AttributeChanged())
 
-    // Убрать людей с палубы
+    // Remove people from deck
     if (*_newAttr == "IsOnDeck")
     {
         IsOnDeck = this->AttributesPointer->GetAttributeAsDword("IsOnDeck") != 0;

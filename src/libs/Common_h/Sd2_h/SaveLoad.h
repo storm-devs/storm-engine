@@ -219,7 +219,7 @@ class CSaveLoad
 
     template <typename T> constexpr void Load2Buffer(T *pBuffer)
     {
-        // защита от долбоеба
+        // protection against fools
         static_assert(std::is_trivial_v<T>, "Load2Buffer is only available for trivial types.");
         uint32_t dwSize;
         Read(&dwSize, sizeof(dwSize));

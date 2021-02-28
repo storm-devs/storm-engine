@@ -1,12 +1,12 @@
-//============================================================================================
-//	Spirenkov Maxim aka Sp-Max Shaman, 2001
-//--------------------------------------------------------------------------------------------
-//	Storm engine v2.00
-//--------------------------------------------------------------------------------------------
-//	AnimationImp
-//--------------------------------------------------------------------------------------------
-//	Реализация интерфейса Animation
-//============================================================================================
+// ============================================================================================
+// Spirenkov Maxim aka Sp-Max Shaman, 2001
+// --------------------------------------------------------------------------------------------
+// Storm engine v2.00
+// --------------------------------------------------------------------------------------------
+// AnimationImp
+// --------------------------------------------------------------------------------------------
+// Implementing the Animation interface
+// ============================================================================================
 
 #ifndef _AnimationManagerImp_H_
 #define _AnimationManagerImp_H_
@@ -22,48 +22,48 @@ class AnimationServiceImp;
 
 class AnimationImp final : public Animation
 {
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     AnimationImp(long id, AnimationInfo *animationInfo);
     ~AnimationImp();
 
-    //Установить указатель на сервис анимации
+    // Set pointer to animation service
     static void SetAnimationService(AnimationServiceImp *animationService);
 
     //--------------------------------------------------------------------------------------------
     // Animation
     //--------------------------------------------------------------------------------------------
   public:
-    //Доступиться к проигрывателю действий
+    // Access the action player
     virtual ActionPlayer &Player(long index);
-    //Доступиться к таймеру анимации
+    // Access the animation timer
     virtual AnimationTimer &Timer(long index);
-    //События
-    //Установить внутренние событие
+    // Events
+    // Set internal event
     virtual long SetEvent(AnimationEvent event, long index, AnimationEventListener *ael);
-    //Удалить внутренние событие
+    // Delete internal event
     virtual void DelEvent(long eventID);
-    //Установить обработчик внешнего события
+    // Set an external event handler
     virtual void SetEventListener(AnimationEventListener *ael);
-    //Доступ к костям
-    //Получить количество костей в скелете
+    // Access to bones
+    // Get the number of bones in a skeleton
     virtual long GetNumBones() const;
-    //Получить матрицу анимации для кости
+    // Get animation matrix for bone
     virtual CMatrix &GetAnimationMatrix(long iBone) const;
-    //Разное
-    //Получить пользовательские данные для анимации
+    // misc
+    // Get custom data for animation
     virtual const char *GetData(const char *dataName) const;
-    //Копировать состояние одного плеера в другой
+    // Copy the state of one player to another
     virtual void CopyPlayerState(long indexSrc, long indexDst, bool copyTimerState = false);
-    //Получить скорость исполнения анимации
+    // Get animation speed
     virtual float GetFPS();
-    //Установить режимы блендинга
-    //Автоматическая нормализация коэфициентов блендинга
+    // Set blending modes
+    // Automatic normalization of blending coefficients
     virtual bool SetAutoNormalize(bool isNormalize = true);
     virtual bool GetAutoNormalize();
-    //Разрешить использование пользовательских коэфициентов блендинга в ActionPlayer
+    // Allow custom blending coefficients in ActionPlayer
     virtual bool UserBlend(bool isBlend = true);
     virtual bool IsUserBlend();
 
@@ -71,70 +71,70 @@ class AnimationImp final : public Animation
     // AnimationImp
     //--------------------------------------------------------------------------------------------
   public:
-    //Получить thisID
+    // Get thisID
     long GetThisID();
-    //Получить указатель на AnimationInfo
+    // Get pointer to AnimationInfo
     AnimationInfo *GetAnimationInfo();
-    //Найти действие по имени
+    // Find action by name
     ActionInfo *GetActionInfo(const char *actionName);
-    //Сделать шаг по времени
+    // Take a step in time
     void Execute(long dltTime);
-    //Расчитать матрицы анимации
+    // Calculate animation matrices
     void BuildAnimationMatrices();
-    //Получить указатель на срвис анимации
+    // Get a pointer to the animation srvis
     static AnimationServiceImp *GetAniService();
-    //События AnimationPlayer
-    //Плееру установили новое действие
+    // AnimationPlayer events
+    // A new action has been set for the player
     void ApeSetnewaction(long index);
-    //Включено проигрывание действия
+    // Action playback enabled
     void ApePlay(long index);
-    //Приостановленно проигрывание действия
+    // Paused playing an action
     void ApePauseOn(long index);
-    //Продолжено проигрывание действия
+    // Continued playing action
     void ApePauseOff(long index);
-    //Остановить проигрывание действия
+    // Stop playing an action
     void ApeStop(long index);
-    // Cобытие генерить на каждом кадре
+    // Generate event on every frame
     void ApeAlways(long index);
-    //При начале действия
+    // On the action starts
     void ApeStart(long index);
-    //При окончнии действия
+    // On the action ends
     void ApeEnd(long index);
-    //При изменении направления проигрывания (pingpong)
+    // On changing the direction of playback (pingpong)
     void ApeChange(long index);
-    //Таймер закончил работу или был остановлен
+    // Timer has ended or has been stopped
     void AteTimerstop(long index);
 
-    //Внешние событие
+    // External event
     void AteExtern(long plIndex, const char *evt);
 
   private:
-    //Разослать события
+    // Send events
     void SendEvent(AnimationEvent event, long index);
 
-    //--------------------------------------------------------------------------------------------
-    //Инкапсуляция
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Encapsulation
+    // --------------------------------------------------------------------------------------------
   private:
-    //Собственный идентификатор
+    // identifier
     long thisID;
-    //Указатель на анимацию
+    // Animation pointer
     AnimationInfo *aniInfo;
-    //Анимации
+    // Animations
     ActionPlayerImp action[ANI_MAX_ACTIONS];
-    //Таймеры
+    // Timers
     AnimationTimerImp timer[ANI_MAX_ACTIONS];
-    //Автонормализация
+    // Auto normalization
     bool isAutoNormalize;
-    //Пользовательский блендинг
+    // Custom blending
     bool isUserBlend;
-    //Матрицы скелета
+    // Skeleton matrices
     CMatrix *matrix;
-    //Подписчики на внутреннии события
+    // Internal event subscribers
     AnimationEventListener *ae_listeners[ae_numevents][ANIIMP_MAXLISTENERS];
-    //Подписчики на внешние события
+    // Subscribers to external events
     AnimationEventListener *ae_listenersExt;
-    //Указатель на сервис анимации
+    // Animation Service Pointer
     static AnimationServiceImp *aniService;
 };
 
@@ -142,7 +142,7 @@ class AnimationImp final : public Animation
 // inline
 //============================================================================================
 
-//Установить указатель на сервис анимации
+// Set pointer to animation service
 inline void AnimationImp::SetAnimationService(AnimationServiceImp *animationService)
 {
     Assert(aniService == nullptr);
@@ -153,86 +153,86 @@ inline void AnimationImp::SetAnimationService(AnimationServiceImp *animationServ
 // AnimationImp
 //--------------------------------------------------------------------------------------------
 
-//Получить thisID
+// Get thisID
 inline long AnimationImp::GetThisID()
 {
     return thisID;
 }
 
-//Получить указатель на AnimationInfo
+// Get pointer to AnimationInfo
 inline AnimationInfo *AnimationImp::GetAnimationInfo()
 {
     return aniInfo;
 }
 
-//Найти действие по имени
+// Find action by name
 inline ActionInfo *AnimationImp::GetActionInfo(const char *actionName)
 {
     return aniInfo->FindAction(actionName);
 }
 
-//Получить указатель на срвис анимации
+// Get a pointer to the animation service
 inline AnimationServiceImp *AnimationImp::GetAniService()
 {
     return aniService;
 }
 
-//События AnimationPlayer
-//Плееру установили новое действие
+// AnimationPlayer events
+// A new action has been set for the player
 inline void AnimationImp::ApeSetnewaction(long index)
 {
     SendEvent(ae_setnewaction, index);
 }
 
-//Включено проигрывание действия
+// Action playback enabled
 inline void AnimationImp::ApePlay(long index)
 {
     SendEvent(ae_play, index);
 }
 
-//Приостановленно проигрывание действия
+// Paused playing an action
 inline void AnimationImp::ApePauseOn(long index)
 {
     SendEvent(ae_pauseon, index);
 }
 
-//Продолжено проигрывание действия
+// Continued playing an action
 inline void AnimationImp::ApePauseOff(long index)
 {
     SendEvent(ae_pauseoff, index);
 }
 
-//Остановить проигрывание действия
+// Stop playing an action
 inline void AnimationImp::ApeStop(long index)
 {
     SendEvent(ae_stop, index);
 }
 
-//При начале действия
+// When the action starts
 inline void AnimationImp::ApeStart(long index)
 {
     SendEvent(ae_start, index);
 }
 
-//При окончнии действия
+// When the action ends
 inline void AnimationImp::ApeEnd(long index)
 {
     SendEvent(ae_end, index);
 }
 
-//При изменении направления проигрывания (pingpong)
+// When changing the direction of playback (pingpong)
 inline void AnimationImp::ApeChange(long index)
 {
     SendEvent(ae_change, index);
 }
 
-//Таймер закончил работу или был остановлен
+// Timer has ended or has been stopped
 inline void AnimationImp::AteTimerstop(long index)
 {
     SendEvent(ae_timerstop, index);
 }
 
-//Внешние событие
+// External event
 inline void AnimationImp::AteExtern(long plIndex, const char *evt)
 {
     if (ae_listenersExt)

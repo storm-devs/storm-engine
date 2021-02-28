@@ -63,7 +63,7 @@ void ILogAndActions::Execute(uint32_t delta_time)
     if (cs.state == CST_ACTIVATED)
         core.Event("BI_FastCommand", "s", m_sActionName);
 
-    // погасим строки
+    // fade out lines
     const auto colDelta = delta_time * m_fBlendSpeed;
     STRING_DESCR *prev_sd = nullptr;
     STRING_DESCR *sd;
@@ -85,7 +85,7 @@ void ILogAndActions::Execute(uint32_t delta_time)
         sd = sd->next;
     }
 
-    // пододвинуть строки на свободные позиции
+    // move lines to free positions
     const auto delta = delta_time * m_fShiftSpeed;
     auto top = 0.f;
     for (sd = m_sRoot; sd != nullptr; sd = sd->next)
@@ -110,7 +110,7 @@ uint64_t ILogAndActions::ProcessMessage(MESSAGE &message)
         message.String(sizeof(param) - 1, param);
         if (stringImmortal)
         {
-            // найдем последний элемент списка
+            // find the last element of the list
             STRING_DESCR *last;
             for (last = m_sRoot; last != nullptr; last = last->next)
                 if (last->alpha > 255.f)
@@ -285,7 +285,7 @@ void ILogAndActions::Create(bool bFastComShow, bool bLogStringShow)
     m_bShowActiveCommand = bFastComShow;
     m_bShowLogStrings = bLogStringShow;
 
-    // ”становить параметры дл€ иконки активного действи€
+    // Set parameters for the active action icon
     auto *pA = core.Entity_GetAttributeClass(g_ILogAndActions, "ActiveActions");
     if (pA != nullptr)
     {
@@ -310,7 +310,7 @@ void ILogAndActions::Create(bool bFastComShow, bool bLogStringShow)
         m_nIconLeft = 0;
         m_nIconUp = 0;
     }
-    // построить пр€моугольник дл€ отрисовки активного действи€
+    // build a rectangle for drawing the active action
     m_IconVertex[0].w = m_IconVertex[1].w = m_IconVertex[2].w = m_IconVertex[3].w = .5f;
     m_IconVertex[0].pos.z = m_IconVertex[1].pos.z = m_IconVertex[2].pos.z = m_IconVertex[3].pos.z = 1.f;
     m_IconVertex[0].pos.x = m_IconVertex[1].pos.x = static_cast<float>(m_nIconLeft);
@@ -322,7 +322,7 @@ void ILogAndActions::Create(bool bFastComShow, bool bLogStringShow)
     m_IconVertex[0].tv = m_IconVertex[2].tv = 0.f;
     m_IconVertex[1].tv = m_IconVertex[3].tv = 1.f / static_cast<float>(m_vertDiv);
 
-    // установить параметры дл€ строк прошедших действий
+    // set parameters for the previous action lines
     pA = core.Entity_GetAttributeClass(g_ILogAndActions, "Log");
     if (pA != nullptr)
     {
@@ -361,10 +361,10 @@ void ILogAndActions::ActionChange(bool bFastComShow, bool bLogStringShow)
 
     m_bThatRealAction = false;
 
-    // ”далим старые параметры
+    // Delete the old parameters
     TEXTURE_RELEASE(rs, m_idIconTexture);
 
-    // ”становить параметры дл€ иконки активного действи€
+    // Set parameters for the active action icon
     ATTRIBUTES *pA = core.Entity_GetAttributeClass(g_ILogAndActions, "ActiveActions");
     if (pA != nullptr)
     {
@@ -389,7 +389,7 @@ void ILogAndActions::ActionChange(bool bFastComShow, bool bLogStringShow)
         m_nIconLeft = 0;
         m_nIconUp = 0;
     }
-    // построить пр€моугольник дл€ отрисовки активного действи€
+    // build a rectangle for drawing the active action
     m_IconVertex[0].w = m_IconVertex[1].w = m_IconVertex[2].w = m_IconVertex[3].w = .5f;
     m_IconVertex[0].pos.z = m_IconVertex[1].pos.z = m_IconVertex[2].pos.z = m_IconVertex[3].pos.z = 1.f;
     m_IconVertex[0].pos.x = m_IconVertex[1].pos.x = static_cast<float>(m_nIconLeft);
@@ -424,44 +424,44 @@ void ILogAndActions::SetString(char *str, bool immortal)
     if (str == nullptr)
         return;
 
-    // найдем последний элемент списка
+    // find the last element of the list
     STRING_DESCR *last = m_sRoot;
     if (last != nullptr)
         while (last->next != nullptr)
             last = last->next;
 
-    // ¬озхврат если така€ строка уже есть и она последн€€
+    // Return if such a line already exists and it is last
     if (last != nullptr && last->str != nullptr && _stricmp(last->str, str) == 0)
         return;
 
-    // создать новый дескриптор строки
+    // create a new line descriptor
     auto *newDescr = new STRING_DESCR;
     if (newDescr == nullptr)
     {
         throw std::exception("Allocate memory error");
     }
-    // он будет последним в списке
+    // it will be the last on the list
     newDescr->next = nullptr;
-    // занесем в него заданную строку
+    // add the specified string to it
     const auto len = strlen(str) + 1;
     if ((newDescr->str = new char[len]) == nullptr)
     {
         throw std::exception("Allocate memory error");
     }
     strcpy_s(newDescr->str, len, str);
-    // ѕоставим максимальную видимость
+    // set the maximum visibility
     if (immortal)
         newDescr->alpha = 10000.f;
     else
         newDescr->alpha = 255.f;
 
-    // если список пустой, то ставим нашу строку как корневую
+    // if the list is empty, put the string as the root
     if (last == nullptr)
     {
         newDescr->offset = static_cast<float>(m_nStringBegin);
         m_sRoot = newDescr;
     }
-    // иначе дописываем ее в конец списка
+    // otherwise add it to the end of the list
     else
     {
         newDescr->offset = last->offset + m_nStringOffset;

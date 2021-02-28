@@ -15,9 +15,9 @@
 #include "LocationCamera.h"
 #include "collide.h"
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 Player::Player()
 {
@@ -56,7 +56,7 @@ void Player::Reset()
     NPCharacter::Reset();
 }
 
-//Перемещаем персонажа в желаемую позицию
+// Move the character to the desired position
 void Player::Move(float dltTime)
 {
 
@@ -305,7 +305,7 @@ void Player::Update(float dltTime)
     NPCharacter::Update(dltTime);
     activatedDialog = aDialog;
     core.Send_Message(baterfl, "lff", MSG_ANIMALS_BUTTERFLIES_XYZ, curPos.x, curPos.z);
-    //Перебираем персонажей в поисках врагов к игроку
+    // go through characters in search of enemies to the player
     if (const auto eid = EntityManager::GetEntityId("CharactersGroups"))
     {
         auto *const location = GetLocation();
@@ -320,7 +320,7 @@ void Player::Update(float dltTime)
     }
 }
 
-//Сохранить параметры
+// Save parameters
 void Player::SetSaveData(ATTRIBUTES *sdata)
 {
     if (!sdata)
@@ -328,7 +328,7 @@ void Player::SetSaveData(ATTRIBUTES *sdata)
     sdata->SetAttributeUseDword("isFight", isFight);
 }
 
-//Востанавить параметры
+// Restore parameters
 void Player::GetSaveData(ATTRIBUTES *sdata)
 {
     if (!sdata)
@@ -364,7 +364,7 @@ void Player::Rotate(float dltTime)
                 dz += cs.fValue * 0.067f;
             if (dx * dx + dz * dz > 0.1f)
             {
-                //Повернём вектор относительно камеры
+                // Rotate the vector relative to the camera
                 CMatrix mtx;
                 auto *const location = GetLocation();
                 location->GetRS()->GetTransform(D3DTS_VIEW, mtx);
@@ -455,10 +455,10 @@ void Player::StrafeWhenMove(float dltTime)
 {
     strafeMove = 0.0f;
 
-    //----------------------------------------------------------------------------------------
-    //Если надо выключить стрейфы - раскомментарь return
+    // ----------------------------------------------------------------------------------------
+    // If you need to turn off strafe - uncomment return
     // stopstrafe
-    //----------------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------------
 
     // return;
 
@@ -627,16 +627,16 @@ bool Player::IsChangeFightMode()
     return (cs.state == CST_ACTIVATED);
 }
 
-//Найти атакующего противника
+// Find an attacking enemy
 Player *Player::FindAttackCharacter()
 {
     auto *const location = GetLocation();
-    //Найдём окружающих персонажей
+    // Find the surrounding characters
     static Supervisor::FindCharacter fndCharacter[MAX_CHARACTERS];
     static long num = 0;
     if (!location->supervisor.FindCharacters(fndCharacter, num, this, CHARACTER_ATTACK_DIST * 1.1f))
         return nullptr;
-    //Выбираем лутшего
+    // Choosing the best
     float minDst;
     long task = -1;
     auto isFgt = false;
@@ -647,18 +647,18 @@ Player *Player::FindAttackCharacter()
     long j = -1;
     for (long i = 0; i < num; i++)
     {
-        //Персонаж
+        // Character
         auto &fc = fndCharacter[i];
-        //Невоюющих не смотрим
+        // do not look at non-combatants
         // if(!fc.c->IsFight()) continue;
         auto *chr = static_cast<Player *>(fc.c);
         if (chr == this)
             continue;
-        //Мёртвых пропускаем
+        // skip the dead
         if (chr->liveValue < 0 || chr->deadName)
             continue;
-        //Отсеиваем неинтересных
-        if (isEnemy) //~!~
+        // filter out uninteresting
+        if (isEnemy) // ~!~
         {
             if (chr->task.task != npct_fight || EntityManager::GetEntityPointer(chr->task.target) != this)
                 continue;
@@ -684,8 +684,8 @@ Player *Player::FindAttackCharacter()
                     isEnemy = true;
                 }
                 */
-        //Невражеских пропускаем
-        if constexpr (!isEnemy) //~!~
+        // skip non-enemies
+        if constexpr (!isEnemy) // ~!~
         {
             if (const auto eid = EntityManager::GetEntityId("CharactersGroups"))
             {
@@ -693,7 +693,7 @@ Player *Player::FindAttackCharacter()
                     continue;
             }
         }
-        //Этот гад на нас лезет
+        // This bastard climbs on us
         if (j >= 0)
         {
             auto cs = -1.0f;
@@ -728,7 +728,7 @@ void Player::FireFromShootgun()
     {
         core.Send_Message(peid, "lsllll", MSG_SOUND_PLAY, "OBJECTS\\sgboom.wav", 4, false, false, false);
     }
-    //Получим позицию откуда стрелять
+    // Get the position from where to shoot
     auto dx = sinf(ay);
     auto dz = cosf(ay);
     CMatrix mtx;
@@ -755,7 +755,7 @@ void Player::FireFromShootgun()
     const auto ids = EntityManager::GetEntityIdIterators(SUN_TRACE);
     for (long i = 0; i < 6; i++)
     {
-        //Получим позицию куда попадёт картечина
+        // Get the position where the buckshot will fall
         const auto r = rand() * 3.0f / RAND_MAX;
         const auto a = rand() * 6.283185307f / (RAND_MAX + 1);
         auto dst = mtx * CVECTOR(r * sinf(a), r * cosf(a), 25.0f);
@@ -767,7 +767,7 @@ void Player::FireFromShootgun()
             {
                 auto dir = !(src - dst);
                 dst = src + (dst - src) * dist;
-                //Куда то попали
+                // Got somewhere
                 auto *const e = EntityManager::GetEntityPointer(collide->GetObjectID());
                 if (e && e != this)
                 {

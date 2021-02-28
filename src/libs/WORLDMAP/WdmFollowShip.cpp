@@ -11,9 +11,9 @@
 #include "WdmFollowShip.h"
 #include "WdmIslands.h"
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 WdmFollowShip::WdmFollowShip()
 {
@@ -27,17 +27,17 @@ WdmFollowShip::~WdmFollowShip()
 {
 }
 
-//Установка параметров
+// Setting parameters
 bool WdmFollowShip::Load(const char *modelName)
 {
     if (!WdmShip::Load(modelName))
         return false;
-    //Ищем позицию
+    // Looking for a position
     float x, z, ay = 0.0f;
     killMe = !GeneratePosition(1.2f * modelRadius, 6.28f, x, z);
     if (wdmObjects->playerShip)
     {
-        //Определяем угл
+        // Determine the angle
         const double sn = wdmObjects->playerShip->mtx.Pos().x - mtx.Pos().x;
         double cs = wdmObjects->playerShip->mtx.Pos().z - mtx.Pos().z;
         const auto l = sn * sn + cs * cs;
@@ -52,12 +52,12 @@ bool WdmFollowShip::Load(const char *modelName)
             cs = -cs;
         ay = static_cast<float>(cs);
     }
-    //Ставим кораблик
+    // put the boat
     Teleport(x, z, ay);
     return true;
 }
 
-//Найти силу притягивающую в нужном направлении
+// Find the pulling force in the desired direction
 void WdmFollowShip::FindMoveForce()
 {
     CVECTOR dir;
@@ -67,10 +67,10 @@ void WdmFollowShip::FindMoveForce()
     }
     else
     {
-        //Позиция игрока
+        // Player position
         dir.x = static_cast<WdmShip *>(wdmObjects->playerShip)->mtx.Pos().x;
         dir.z = static_cast<WdmShip *>(wdmObjects->playerShip)->mtx.Pos().z;
-        //Направление на игрока
+        // Direction to player
         dir.x -= mtx.Pos().x;
         dir.z -= mtx.Pos().z;
         auto dl = dir.x * dir.x + dir.z * dir.z;

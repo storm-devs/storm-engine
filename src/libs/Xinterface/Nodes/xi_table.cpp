@@ -158,7 +158,7 @@ void XI_TableCellDescribe::Draw(float fLeft, float fTop)
             fY = m_aStrings[n].offset.y;
         const auto fNewY = fY + m_pTable->m_rs->CharHeight(m_nFontID) * m_fScale;
         if (fNewY >= m_pLine->GetLineHeight())
-            break; // больше не влазит в таблицу
+            break; // no longer fits into the table
 
         CXI_UTILS::PrintTextIntoWindow(
             m_pTable->m_rs, m_nFontIndex < 0 ? m_nFontID : m_pTable->m_anFontList[m_nFontIndex], m_dwColor,
@@ -174,7 +174,7 @@ void XI_TableCellDescribe::SetData(long nColIndex, ATTRIBUTES *pAttr, bool bHead
 {
     if (!pAttr)
     {
-        // пустая ячейка
+        // empty cell
         m_aStrings.clear();
         m_aImage.clear();
         return;
@@ -187,7 +187,7 @@ void XI_TableCellDescribe::SetData(long nColIndex, ATTRIBUTES *pAttr, bool bHead
     m_nLeftLineWidth = nColIndex == 0 ? m_pTable->m_nBorderWidth : m_pTable->m_nVLineWidth;
     m_nTopLineHeight = bHeader ? m_pTable->m_nHeaderLineHeight : m_pTable->m_nHLineHeight;
 
-    // читаем картинку
+    // read the picture
     long nIconQuantity = 0;
     pA = pAttr->GetAttributeClass("icon");
     if (pA)
@@ -212,11 +212,11 @@ void XI_TableCellDescribe::SetData(long nColIndex, ATTRIBUTES *pAttr, bool bHead
             nIconQuantity++;
         }
     }
-    // удалить лишние картинки
+    // delete unnecessary pictures
     while (static_cast<long>(m_aImage.size()) > nIconQuantity)
         m_aImage.erase(m_aImage.begin() + nIconQuantity);
 
-    // читаем строку
+    // read the line
     m_dwColor =
         pAttr->GetAttributeAsDword("color", bHeader ? m_pTable->m_dwFontTitleColor : m_pTable->m_dwFontCellColor);
     m_fScale = pAttr->GetAttributeAsFloat("scale", bHeader ? m_pTable->m_fFontTitleScale : m_pTable->m_fFontCellScale);
@@ -394,13 +394,13 @@ void CXI_TABLE::Draw(bool bSelected, uint32_t Delta_Time)
 {
     m_bFirstFrame = false;
 
-    // Прорисовка задника
+    // Drawing the background
     if (m_bBackPresent)
     {
         m_BackImg.Draw();
     }
 
-    // отрисовка спец цвета
+    // rendering special colors
     auto fY = static_cast<float>(m_rect.top);
     if (m_pHeader)
     {
@@ -413,10 +413,10 @@ void CXI_TABLE::Draw(bool bSelected, uint32_t Delta_Time)
         fY += m_anRowsHeights[n + (m_pHeader ? 1 : 0)];
     }
 
-    // отрисовка выделения выбранной строки
+    // drawing selection of the selected row
     m_SelectImg.Draw();
 
-    // Прорисовка рамки
+    // Drawing the frame
     if (m_idBorderTexture != -1 && m_idBorderVBuf != -1 && m_idBorderIBuf != -1)
     {
         m_rs->TextureSet(0, m_idBorderTexture);
@@ -424,7 +424,7 @@ void CXI_TABLE::Draw(bool bSelected, uint32_t Delta_Time)
                          m_nBorderSubQ * 2, "iIcon");
     }
 
-    // Вывод линий
+    // Line output
     fY = static_cast<float>(m_rect.top);
     if (m_pHeader)
     {
@@ -551,7 +551,7 @@ int CXI_TABLE::CommandExecute(int wActCode)
             }
             break;
             // boal -->
-        case ACTION_MOUSERCLICK: // просто спозиционировать курсор
+        case ACTION_MOUSERCLICK: // just position the cursor
         {
             const auto n = GetLineByPoint(ptrOwner->GetMousePoint());
             if (n >= 0 && n <= m_nLineQuantity - m_nTopIndex - (m_pHeader ? 0 : 1))
@@ -715,10 +715,10 @@ uint32_t CXI_TABLE::MessageProc(long msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
-    case 0: // обновить строки в таблице
+    case 0: // update rows in a table
         UpdateTableCells();
         break;
-    case 1: // получить номер строки на которой находится указатель мыши (-1 - указатель за пределами)
+    case 1: // get the line number on which the mouse pointer is located (-1 - the pointer is out of bounds)
         return GetLineByPoint(ptrOwner->GetMousePoint());
         break;
     }
@@ -756,7 +756,7 @@ void CXI_TABLE::SetInternalName(std::string &sName)
 void CXI_TABLE::ScrollerChanged(float fRelativeScrollPos)
 {
     if (m_nLineQuantity <= 1)
-        return; // все одно
+        return; // the only one
     const long n = static_cast<long>(fRelativeScrollPos * (m_nLineQuantity - 1));
     if (n != m_nSelectIndex)
     {
@@ -904,8 +904,8 @@ void CXI_TABLE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const c
     m_bVariableLineHeight = GetIniBool(ini1, name1, ini2, name2, "IsVariableLineHeight", false);
     m_nNormalLineHeight = GetIniLong(ini1, name1, ini2, name2, "NormalLineHeight", 32);
 
-    nUsedQ = 0;       // жестко заданных строк
-    nCommonWidth = 0; // общая высота этих строк
+    nUsedQ = 0;       // hard-coded strings
+    nCommonWidth = 0; // the total height of these lines
     m_anRowsHeights.clear();
     if (ReadIniString(ini1, name1, ini2, name2, "rowsheight", param, sizeof(param), ""))
     {
@@ -932,18 +932,18 @@ void CXI_TABLE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const c
             if (m_anRowsHeights[n] == 0)
                 m_anRowsHeights[n] = nH;
     }
-    // приведем высоту таблицы к общему значению
+    // bring the height of the table to the total value
     m_rect.bottom = m_rect.top + m_nBorderWidth;
     for (n = 0; n < m_anRowsHeights.size(); n++)
     {
         m_rect.bottom += m_anRowsHeights[n];
     }
 
-    // заполнение колонок
-    nUsedQ = 0;       // жестко заданных колонок
-    nCommonWidth = 0; // общая ширина этих колонок
+    // filling columns
+    nUsedQ = 0;       // hard-coded columns
+    nCommonWidth = 0; // the total width of these columns
     m_anColsWidth.clear();
-    // зачитаем из ИНИ
+    // read from INI
     if (ReadIniString(ini1, name1, ini2, name2, "colswidth", param, sizeof(param), ""))
     {
         const char *pcTmp = param;
@@ -953,9 +953,9 @@ void CXI_TABLE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const c
             pcTmp = GetSubStr(pcTmp, pcTmpBuf, sizeof(pcTmpBuf));
             long nTmp = atol(pcTmpBuf);
             if (nTmp <= 0)
-                nTmp = 0; // ширина 0 - по умолчанию
+                nTmp = 0; // width 0 - default
             else
-                nUsedQ++; // в другом случае это значение жестко задано
+                nUsedQ++; // otherwise this value is hardcoded
             nCommonWidth += nTmp;
             m_anColsWidth.push_back(nTmp);
         }
@@ -969,7 +969,7 @@ void CXI_TABLE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const c
             if (m_anColsWidth[n] == 0)
                 m_anColsWidth[n] = nW;
     }
-    // приведем ширину таблицы к общему значению
+    // change the width of the table to the total value
     m_rect.right = m_rect.left + m_nBorderWidth;
     for (n = 0; n < m_anColsWidth.size(); n++)
     {
@@ -991,7 +991,7 @@ void CXI_TABLE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const c
 
     UpdateBorders();
 
-    // читаем строки таблицы
+    // read table rows
     UpdateTableCells();
     SelectLine(0);
 }
@@ -1000,28 +1000,28 @@ void CXI_TABLE::UpdateBorders()
 {
     long n, q, r, c, nTop, nLeft;
 
-    // подсчет количества линий в рамке
+    // counting the number of lines in a frame
     q = 0;
-    if (m_nHeaderLineHeight > 0 && m_nRowQuantity > 0) // горизонтальная линия под заголовком
+    if (m_nHeaderLineHeight > 0 && m_nRowQuantity > 0) // horizontal line under the heading
         q += 1;
-    if (m_nHLineHeight > 0 && m_nRowQuantity > 2) // горизонтальные линии
+    if (m_nHLineHeight > 0 && m_nRowQuantity > 2) // horizontal lines
         q += m_nRowQuantity - 2;
     if (m_bHLineIsBreakable)
-        q *= m_nColQuantity; // разрывная линия дробится по количеству колонок
-    if (m_nVLineWidth > 0 && m_nColQuantity > 1) // вертикальные линии
+        q *= m_nColQuantity; // the break line is split by the number of columns
+    if (m_nVLineWidth > 0 && m_nColQuantity > 1) // vertical lines
         q += m_nColQuantity - 1;
-    q += 4 + 4; // 4 угла и линии по сторонам
+    q += 4 + 4; // 4 corners and lines on the sides
 
-    if (m_nBorderSubQ != q) // перестраиваем буферы
+    if (m_nBorderSubQ != q) // rearranging buffers
     {
         m_nBorderSubQ = q;
         VERTEX_BUFFER_RELEASE(m_rs, m_idBorderVBuf);
         INDEX_BUFFER_RELEASE(m_rs, m_idBorderIBuf);
 
-        // индекс буфер
+        // index buffer
         m_idBorderIBuf = m_rs->CreateIndexBuffer(q * 6 * sizeof(uint16_t));
         Assert(m_idBorderIBuf != -1);
-        // заполняем
+        // fill in
         auto *pT = static_cast<uint16_t *>(m_rs->LockIndexBuffer(m_idBorderIBuf));
         for (n = 0; n < q; n++)
         {
@@ -1034,12 +1034,12 @@ void CXI_TABLE::UpdateBorders()
         }
         m_rs->UnLockIndexBuffer(m_idBorderIBuf);
 
-        // вертекс буфер
+        // vertex buffer
         m_idBorderVBuf = m_rs->CreateVertexBuffer(XI_ONETEX_FVF, q * 4 * sizeof(XI_ONETEX_VERTEX), D3DUSAGE_WRITEONLY);
         Assert(m_idBorderVBuf != -1);
     }
 
-    // заполняем вертекс буфер
+    // fill the vertex buffer
     auto *pV = static_cast<XI_ONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_idBorderVBuf));
     // horizontal lines
     nTop = m_rect.top;
@@ -1052,14 +1052,14 @@ void CXI_TABLE::UpdateBorders()
         {
             if (m_bHLineIsBreakable)
             {
-                // отдельные линии для каждой колонки
+                // separate lines for each column
                 for (c = 0; c < m_nColQuantity; c++)
                 {
                     WriteSquare(&pV[n], m_nBorderIcon_HLine, m_dwBorderColor, nLeft, nTop, m_anColsWidth[c], q);
                     nLeft += m_anColsWidth[c];
                     n += 4;
                 }
-            } // одна линия на все колонки
+            } // one line for all columns
             else
             {
                 WriteSquare(&pV[n], m_nBorderIcon_HLine, m_dwBorderColor, m_rect.left + m_nBorderWidth, nTop,
@@ -1165,9 +1165,9 @@ void CXI_TABLE::UpdateTableCells()
 
     long nNewSel = pARoot->GetAttributeAsDword("select", m_nSelectIndex + 1) - 1;
 
-    // зачитываем строки из атрибутов
-    m_nTopIndex = pARoot->GetAttributeAsDword("top", 0); // первый индекс зачитываемого аттрибута
-    // сначала проверим наличие заголовка
+    // read lines from attributes
+    m_nTopIndex = pARoot->GetAttributeAsDword("top", 0); // first index of the attribute being read
+    // first check for header
     ATTRIBUTES *pAttr = pARoot->GetAttributeClass("hr");
     if (pAttr)
     {
@@ -1181,7 +1181,7 @@ void CXI_TABLE::UpdateTableCells()
     {
         STORM_DELETE(m_pHeader);
     }
-    // потом
+    // then
     q = m_bVariableLineHeight ? 1000 : (m_nRowQuantity - (m_pHeader ? 1 : 0));
     for (r = 0; (nY < m_rect.bottom) && (r < q); r++)
     {
@@ -1201,14 +1201,14 @@ void CXI_TABLE::UpdateTableCells()
         pTL->SetData(r + (m_pHeader ? 1 : 0), pAttr, false);
         nY += pTL->GetLineHeight();
     }
-    // удаляем лишние строки
+    // delete extra lines
     while (static_cast<long>(m_aLine.size()) > r)
     {
         STORM_DELETE(m_aLine[r]);
         m_aLine.erase(m_aLine.begin() + r);
     }
 
-    // если высота строк переменная, то пересчитаем ее
+    // if the height of the lines is variable, then recalculate it
     if (m_bVariableLineHeight)
     {
         RecalculateLineHeights();
@@ -1342,7 +1342,7 @@ void CXI_TABLE::UpdateSelectImage()
 long CXI_TABLE::GetRowTop(long nRow)
 {
     if (nRow < 0 || nRow >= m_anRowsHeights.size())
-        return m_rect.top; // ошибочная ситуация
+        return m_rect.top; // error situation
     long nTop = m_rect.top;
     for (long n = 0; n < nRow; n++)
     {
@@ -1354,7 +1354,7 @@ long CXI_TABLE::GetRowTop(long nRow)
 long CXI_TABLE::GetColLeft(long nCol)
 {
     if (nCol < 0 || nCol >= m_anColsWidth.size())
-        return m_rect.left; // ошибочная ситуация
+        return m_rect.left; // error situation
     long nLeft = m_rect.left;
     for (long n = 0; n < nCol; n++)
     {
@@ -1366,15 +1366,15 @@ long CXI_TABLE::GetColLeft(long nCol)
 void CXI_TABLE::SetTopIndexForSelect(long nSelIndex)
 {
     if (nSelIndex < 0)
-        return; // ошибочная ситуация
+        return; // error situation
 
-    if (nSelIndex < m_nTopIndex) // до вершины - значит ставим выделение наверх
+    if (nSelIndex < m_nTopIndex) // to the top - then put the selection on top
     {
         SetTopIndex(nSelIndex);
         UpdateTableCells();
     }
     else if (nSelIndex >= m_nTopIndex + static_cast<long>(m_anRowsHeights.size()) - (m_pHeader ? 1 : 0))
-    // после последней строки - значит ставим выделение вниз
+    // after the last line - then put the selection down
     {
         nSelIndex = nSelIndex - m_anRowsHeights.size() + (m_pHeader ? 1 : 0) + 1;
         if (nSelIndex < 0)
@@ -1392,22 +1392,22 @@ void CXI_TABLE::UpdateLineQuantity()
         return;
 
     if (!pARoot->GetAttributeClass("tr1"))
-        return; // нет ни одного
+        return; // no one
 
     long nmin = 1;
     char pcAttrName[64];
 
-    // поиск минимального элемента
+    // find the minimum element
     while (true)
     {
         sprintf_s(pcAttrName, "tr%d", nmin * 2);
         if (pARoot->GetAttributeClass(pcAttrName))
             nmin *= 2;
         else
-            break; // следующий элемент бинарного дерева несуществует
+            break; // the next element of the binary tree does not exist
     }
 
-    // бинарный поиск между мин и макс индексами
+    // binary search between min and max indices
     long nmax = nmin * 2;
     while (true)
     {
@@ -1415,11 +1415,11 @@ void CXI_TABLE::UpdateLineQuantity()
         if (n == nmin)
             break;
         sprintf_s(pcAttrName, "tr%d", n);
-        if (pARoot->GetAttributeClass(pcAttrName)) // элемент есть - значит старшая половина может иметь конец
+        if (pARoot->GetAttributeClass(pcAttrName)) // there is an element - it means that the older half can have an end
         {
             nmin = n;
         }
-        else // иначе конец где то в первой половине
+        else // otherwise the end is somewhere in the first half
         {
             nmax = n;
         }
@@ -1453,14 +1453,14 @@ void CXI_TABLE::UpdateScroller() const
 
 void CXI_TABLE::RecalculateLineHeights()
 {
-    long nY = m_rect.top; // текущая вершина строки
-    long n = 0;           // индекс в массиве высот
+    long nY = m_rect.top; // current top of line
+    long n = 0;           // index in the array of heights
 
-    // учет заголовка
+    // header accounting
     if (m_pHeader)
         nY += m_anRowsHeights[n++];
 
-    // берем реальные размеры строк
+    // take the actual sizes of the lines
     for (long i = 0; i < m_aLine.size(); i++, n++)
     {
         if (n < m_anRowsHeights.size())
@@ -1470,7 +1470,7 @@ void CXI_TABLE::RecalculateLineHeights()
         nY += m_aLine[i]->GetLineHeight();
     }
 
-    // если последняя строка выходит за размеры, то укорачиваем ее по высоте
+    // if the last line goes beyond the dimensions, then shorten it in height
     if (nY > m_rect.bottom && m_aLine.size() > 0)
     {
         // long nLine = m_aLine.Last();
@@ -1478,7 +1478,7 @@ void CXI_TABLE::RecalculateLineHeights()
         nY = m_rect.bottom;
     }
 
-    // недостающие строки ставим в стандартную высоту
+    // the missing lines are set to the standard height
     for (; nY < m_rect.bottom; n++)
     {
         long nH = m_nNormalLineHeight;
@@ -1491,7 +1491,7 @@ void CXI_TABLE::RecalculateLineHeights()
         nY += nH;
     }
 
-    // оставшиеся строки удаляем
+    // delete the remaining lines
     while (n < m_anRowsHeights.size())
         m_anRowsHeights.erase(m_anRowsHeights.begin() + n);
 }

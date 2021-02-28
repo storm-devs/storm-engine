@@ -857,7 +857,7 @@ void AIShipCannonController::CheckCannonsBoom(float fTmpCannonDamage, const CVEC
     }
 }
 
-// boal 08.08.06 метод пересчета орудий на корабле -->
+// boal 08.08.06 method of recalculating guns on the ship -->
 void AIShipCannonController::ResearchCannons()
 {
     char str[512];
@@ -876,7 +876,7 @@ void AIShipCannonController::ResearchCannons()
         Assert(pADamages);
         ATTRIBUTES *pACurBort = pABorts->FindAClass(pABorts, (char *)pBort->sName.c_str());
         Assert(pACurBort);
-        pBort->dwNumDamagedCannons = 0; // нигде не используется, может рудимент?
+        pBort->dwNumDamagedCannons = 0; // not used anywhere, maybe a rudiment?
 
         for (j = 0; j < pBort->aCannons.size(); j++)
         {
@@ -895,7 +895,7 @@ void AIShipCannonController::ResearchCannons()
     }
 }
 
-// boal 08.08.06 метод пересчета орудий на корабле <--
+// boal 08.08.06 method of recalculation of guns on the ship <--
 
 void AIShipCannonController::Save(CSaveLoad *pSL)
 {

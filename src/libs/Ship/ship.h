@@ -29,7 +29,7 @@
 
 #define MAST_IDENTIFY "mast"
 #define MAST_FIRST 1
-#define TOPMAST_BEGIN 100 // начало нумерации стеньг (если есть)
+#define TOPMAST_BEGIN 100 // start of topmast numbering (if any)
 #define HULL_IDENTIFY "shatter"
 
 class SHIP : public SHIP_BASE

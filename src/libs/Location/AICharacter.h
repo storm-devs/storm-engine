@@ -20,46 +20,46 @@ class AICharacter : public Character
     {
         aicmd_unknow = 0,
         aicmd_none,
-        //Нет команды, персонаж контролируется извне
+        // No command, the character is controlled from the outside
         aicmd_stay,
-        //Стоять на месте
+        // Stand still
         aicmd_gotopoint,
-        //Идти в точку
+        // Go to the point
         aicmd_escape,
-        //Уходить от точки
+        // Move away from the point
         aicmd_max
     };
 
     struct PathNode
     {
-        CVECTOR pos; //Точка прибытия
-        CVECTOR nrm; //Направление пути
-        float dst;   //Дистанция до плоскости
-        long node;   //Нод, которого должны достигнуть
+        CVECTOR pos; // Point of arrival
+        CVECTOR nrm; // Path direction
+        float dst;   // Distance to the plane
+        long node;   // Node to be reached
     };
 
     struct Command
     {
-        AICommand cmd;     //Команда
-        CVECTOR pnt;       //Точка для команды
-        long node;         //Нод, в который идти
-        CVECTOR tpnt;      //Точка в которую идём в данный момент
-        long tnode;        //Нод, на котором идём
-        float radius;      //Радиус для завершения задачи
-        float waitTime;    //Время ожидания (постоять)
-        AICharacter *exch; //С этим чарактером нерасталкиваемся
-        //Флаги
+        AICommand cmd;     // Command
+        CVECTOR pnt;       // Point for the command
+        long node;         // Node to go to
+        CVECTOR tpnt;      // The point we are going at the moment
+        long tnode;        // The node we're on
+        float radius;      // Radius to complete the task
+        float waitTime;    // Waiting time (stand)
+        AICharacter *exch; // don't collide with this character
+        // Flags
         struct
         {
-            uint32_t cnt : 8;    //Счётчик повторений
-            uint32_t isWait : 1; //Находимся в ожидании
-            uint32_t isBusy : 1; //Проверять на занятость точку
+            uint32_t cnt : 8;    // Repetition counter
+            uint32_t isWait : 1; // waiting
+            uint32_t isBusy : 1; // Check if a point is busy
         };
     };
 
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     AICharacter();
     virtual ~AICharacter();
@@ -68,81 +68,81 @@ class AICharacter : public Character
     // Character
     //--------------------------------------------------------------------------------------------
   public:
-    //Перемещаем персонажа в желаемую позицию
+    // Move the character to the desired position
     void Move(float dltTime) override;
-    //Провести дополнительные расчёты
+    // Carry out additional calculations
     void Calculate(float dltTime) override;
-    //Обновить позицию персонажа
+    // Update character position
     void Update(float dltTime) override;
-    //Отметить перемещение персонажа
+    // Mark the movement of the character
     void CharacterTeleport() override;
 
     //--------------------------------------------------------------------------------------------
     // AICharacter
     //--------------------------------------------------------------------------------------------
   public:
-    //Ничего не делать
+    // Nothing to do
     bool CmdNone();
-    //Стоять
+    // To stand
     bool CmdStay();
-    //Идти в точку
+    // Go to the point
     bool CmdGotoPoint(float x, float y, float z, float rad, long node = -1, bool isCheckBusyPos = true);
-    //Уходить от точки
+    // Move away from the point
     bool CmdEscape(float x, float y, float z, float rad);
-    //Установить персонажа с которым нерасталкиваемся
+    // Set the character we don't collide with
     void SetExCharacter(AICharacter *chr);
 
-    //События
+    // Events
 
-    //Невозможно дальнейшее выполнение команды
+    // Cannot further execute the command
     virtual void FailureCommand(){};
-    //Персонаж прибыл в точку
+    // The character arrived at the point
     virtual void EndGotoCommand(){};
-    //Персонаж удалился от точки на необходимый радиус
+    // The character moved away from the point to the required radius
     virtual void EndEscapeCommand(){};
-    //С персонажем слишком часто коллизяться
+    // if colliding with a character too often
     virtual void CollisionThreshold(){};
 
     static const char *GetCommandName(AICommand cmd);
 
-    //--------------------------------------------------------------------------------------------
-    //Инкапсуляция
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Encapsulation
+    // --------------------------------------------------------------------------------------------
     // private:
   protected:
-    //Идти в точку
+    // Go to the point
     void CmdProcessGotoPoint(float dltTime);
     void CmdUpdateGotoPoint(float dltTime);
-    //Уходить от точки
+    // Move away from the point
     void CmdProcessEscape(float dltTime);
     void CmdUpdateEscape(float dltTime);
 
-    //Найти индекс нода для данной координаты
+    // Find the node index for a given coordinate
     long FindNodeIndex(const CVECTOR &pos, float *hy = nullptr);
-    //Найти направление куда идти (ориентация на местности)
+    // Find direction where to go (orientation on the terrain)
     bool FindDirectional();
-    //Найти расталкивающие силы
+    // Find the pushing forces
     void CalcRepulsionForces();
-    //Вычислить точку опразуемую пересечением и лежащую на ребре
+    // Calculate the point defined by the intersection and lying on the edge
     static bool FindIntersection(const CVECTOR &s, const CVECTOR &e, const CVECTOR &cur, const CVECTOR &to,
                                  CVECTOR &res);
-    //Вычислить угол из вектора направления
+    // Calculate angle from direction vector
     static float Angle(double vx, double vz, float defAy);
 
   protected:
-    //Текущая команда
+    // Current command
     Command command;
     PathNode path[2];
-    //Предпочтительный коэфициент скорости
+    // Preferred speed factor
     float likeKSpd;
     float collisionValue;
 
-    //Управляющие силы
-    CVECTOR force;      //Сила расталкивания
-    CVECTOR goForce;    //Сила определяющая направление перемещения
-    CVECTOR separation; //Сила оталкккивания
-    CVECTOR alignment;  //Сила выравнивания направлений
-    CVECTOR around;     //Сила обхода персонажей
+    // Control forces
+    CVECTOR force;      // The power of pushing
+    CVECTOR goForce;    // Force determining the direction of movement
+    CVECTOR separation; // Pushback force
+    CVECTOR alignment;  // Force of directions alignment
+    CVECTOR around;     // Character Traversal Strength
 
     bool bMusketer;
     bool bMusketerNoMove;

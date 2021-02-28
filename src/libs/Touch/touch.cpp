@@ -111,7 +111,7 @@ void TOUCH::Execute(uint32_t dwCoreDeltaTime)
             Touch(i, INVALID_SHIP_IDX, nullptr, nullptr, 0.0f, 0.0f);
     }
 
-    FakeTouch(); // просто выталкиваем корабли которые все таки находятся в друг друге
+    FakeTouch(); // just push out the ships that are still in each other
 
     // if (GetAsyncKeyState('5')) fScale -= 0.1f;
     // if (GetAsyncKeyState('6')) fScale += 0.1f;

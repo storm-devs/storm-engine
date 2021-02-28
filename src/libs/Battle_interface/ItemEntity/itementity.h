@@ -66,7 +66,7 @@ class ItemEntity : public Entity
     class EventListener : public AnimationEventListener
     {
       public:
-        //Принять событие
+        // Accept event
         void Event(Animation *animation, long playerIndex, const char *eventName) override;
 
         ItemEntity *item;

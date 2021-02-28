@@ -4,7 +4,7 @@
 
 #include "storm_assert.h"
 
-//Конструктор/деструктор
+// Constructor / destructor
 GeomCache::GeomCache()
 {
     pGS = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
@@ -16,7 +16,7 @@ GeomCache::~GeomCache()
     ResetCache();
 }
 
-//Положить модель в кэш
+// Put model into cache
 void GeomCache::CacheModel(const char *FileName)
 {
     if (GetModel(FileName))
@@ -32,7 +32,7 @@ void GeomCache::CacheModel(const char *FileName)
     Cache.push_back(CacheEntry);
 }
 
-//Сбросить кэш
+// Reset cache
 void GeomCache::ResetCache()
 {
     for (auto n = 0; n < Cache.size(); n++)
@@ -43,7 +43,7 @@ void GeomCache::ResetCache()
     Cache.clear();
 }
 
-//Взять модель из кэша
+// Get model from cache
 GEOS *GeomCache::GetModel(const char *FileName)
 {
     for (auto n = 0; n < Cache.size(); n++)
@@ -55,7 +55,7 @@ GEOS *GeomCache::GetModel(const char *FileName)
     return nullptr;
 }
 
-//Проверить существует ли такая модель в кэше
+// Check if such a model exists in the cache
 bool GeomCache::ValidatePointer(GEOS *pModel)
 {
     for (auto n = 0; n < Cache.size(); n++)

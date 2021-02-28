@@ -609,7 +609,7 @@ long SEA::VisCode(const CVECTOR &vP)
 
     */
 
-    // Max - так точность значительно выше, блоки не должны пропадать иногда в далеке
+    // Max - so the accuracy is much higher, blocks should not disappear sometimes in the distance
     PLANE *p = &pFrustumPlanes[0];
     if (p->Nx * vP.x + p->Ny * vP.y + p->Nz * vP.z < p->D)
         vc |= 0x01;
@@ -1045,7 +1045,7 @@ void SEA::PrepareIndicesForBlock(uint32_t dwBlockIndex)
     pB->iY1 = fftoi(y1 / fGridStep);
     pB->iY2 = fftoi(y2 / fGridStep);
 
-    // analyse
+    // analysis
     long i, j;
     for (i = 0; i < static_cast<long>(dwBlockIndex); i++) // if (i == 6)
     {
@@ -1798,7 +1798,7 @@ void SEA::Realize(uint32_t dwDeltaTime)
         CVECTOR d2(54.0f, 10.0f, 54.0f);
         if (!bUnderSeaStarted)
         {
-            // делаем кучку планктона первый раз
+            // doing a bunch of sea trash for the first time
             aSeaTrash.clear();
             for (long i = 0; i < 1000; i++)
             {
@@ -1812,7 +1812,7 @@ void SEA::Realize(uint32_t dwDeltaTime)
                 st.fTime = static_cast<float>(i) * 0.02f;
             }
 
-            // делаем кучку световых столбов первый раз
+            // making a bunch of light poles for the first time
             aSeaLights.clear();
             for (long i = 0; i < 50; i++)
             {
@@ -1826,7 +1826,7 @@ void SEA::Realize(uint32_t dwDeltaTime)
             }
         }
 
-        // добавл€ем 1 плактонинку каждую секунду
+        // add 1 item of sea trash every second
         fLastTrashTime += fDeltaTime;
         while (fLastTrashTime >= 0.03f)
         {
@@ -1842,7 +1842,7 @@ void SEA::Realize(uint32_t dwDeltaTime)
             st.fSize = RRnd(0.01f, 0.05f);
         }
 
-        // ”ничтожаем старые плактонинки
+        // Remove the old sea trash
         for (long i = 0; i < aSeaTrash.size(); i++)
         {
             aSeaTrash[i].fTime -= fDeltaTime;
@@ -1856,7 +1856,7 @@ void SEA::Realize(uint32_t dwDeltaTime)
             }
             aSeaTrash[i].vPos += aSeaTrash[i].vSpeed * fDeltaTime;
         }
-        // –исуем планктон
+        // Render sea trash
         aTrashRects.clear();
         for (long i = 0; i < aSeaTrash.size(); i++)
         {
@@ -1883,10 +1883,10 @@ void SEA::Realize(uint32_t dwDeltaTime)
             rs->DrawRects(&aTrashRects[0], aTrashRects.size(), "seatrash", 2, 2);
         }
 
-        // –исуем стаи рыб
+        // Render schools of fish
 
-        // –исуем световые столбы
-        // добавл€ем 1 световой столб каждую секунду
+        // draw light poles
+        // add 1 light pole every second
         fLastLightTime += fDeltaTime;
         while (fLastLightTime >= 1.0f)
         {
@@ -1901,7 +1901,7 @@ void SEA::Realize(uint32_t dwDeltaTime)
             sl.fTime = 50.0f;
         }
 
-        // ”ничтожаем старые световые столбики
+        // Remove the old light poles
         for (long i = 0; i < aSeaLights.size(); i++)
         {
             aSeaLights[i].fTime -= fDeltaTime;
@@ -1917,7 +1917,7 @@ void SEA::Realize(uint32_t dwDeltaTime)
 
         float fAlphaK = (vCamPos.y < 0.0f) ? Max(0.0f, 1.0f + vCamPos.y / 30.0f) : 1.0f;
 
-        // –исуем световые столбики
+        // draw light poles
         aLightsRects.clear();
         for (long i = 0; i < aSeaLights.size(); i++)
         {

@@ -36,9 +36,9 @@
 
 long WorldMap::month[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 WorldMap::WorldMap()
 {
@@ -74,7 +74,7 @@ WorldMap::~WorldMap()
     {
         AttributesPointer->SetAttribute("WindData", wdmObjects->GetWindSaveString(bufForSave));
     }
-    //Оставим параметры энкоунтеров невредимыми
+    // leave the encounter parameters intact
     for (long i = 0; i < wdmObjects->ships.size(); i++)
     {
         if (wdmObjects->ships[i] == wdmObjects->playerShip)
@@ -85,7 +85,7 @@ WorldMap::~WorldMap()
     {
         wdmObjects->storms[i]->SetSaveAttribute(nullptr);
     }
-    //Карабль игрока
+    // Player's ship
     if (wdmObjects->playerShip)
     {
         float x, z, ay;
@@ -97,7 +97,7 @@ WorldMap::~WorldMap()
         AttributesPointer->SetAttributeUseFloat("playerShipZ", z);
         AttributesPointer->SetAttributeUseFloat("playerShipAY", ay);
     }
-    //Камера
+    // Camera
     if (wdmObjects->camera)
     {
         AttributesPointer->CreateSubAClass(AttributesPointer, "wdmCameraY");
@@ -121,7 +121,7 @@ WorldMap::~WorldMap()
 // Entity
 //============================================================================================
 
-//Инициализация
+// Initialization
 bool WorldMap::Init()
 {
     // GUARD(LocationCamera::Init())
@@ -141,23 +141,23 @@ bool WorldMap::Init()
     wdmObjects->rs = rs;
     // GS
     wdmObjects->gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
-    //Создаём объекты карты
+    // Create map objects
     WdmRenderObject *ro;
-    //Создаём острова
+    // Create islands
     ro = AddObject(new WdmIslands());
     AddObject(ro, -100000);
     AddLObject(ro, 500);
     //
     rs->ProgressView();
-    //Создаём море
+    // Create the sea
     auto *sea = new WdmSea();
     AddObject(sea);
     AddPObject(sea, 10);
     AddLObject(sea, -1);
-    //Создаём облака
+    // create clouds
     AddLObject(AddObject(new WdmClouds()), 10000);
     rs->ProgressView();
-    //Создаём камеру
+    // Create a camera
     camera = new WdmCameraStdCtrl();
     auto camAy = 0.0f;
     auto camH = -1.0f;
@@ -179,7 +179,7 @@ bool WorldMap::Init()
     }
     camera->Init(camAy, camH);
     camera->lock = camLock;
-    //Создаём корабль игрока
+    // create the player's ship
     ro = CreateModel(new WdmPlayerShip(), "Ship");
     Assert(ro);
     AddLObject(ro, 100);
@@ -221,9 +221,9 @@ bool WorldMap::Init()
     static_cast<WdmShip *>(ro)->Teleport(psX, psZ, psAy);
     static_cast<WdmPlayerShip *>(ro)->SetActionRadius(psRad);
     rs->ProgressView();
-    //Создаём описатель локаций
+    // Create a location descriptor
     wdmObjects->islands->SetIslandsData(AttributesPointer, false);
-    //Атрибуты интерфейса со скриптом
+    // Script interface attributes
     if (AttributesPointer)
     {
         // Storms interface
@@ -249,7 +249,7 @@ bool WorldMap::Init()
         AttributesPointer->CreateSubAClass(AttributesPointer, "info.playerInStorm");
         AttributesPointer->CreateSubAClass(AttributesPointer, "info.updateinfo");
         aInfo = AttributesPointer->FindAClass(AttributesPointer, "info");
-        //Дата
+        // Date
         AttributesPointer->CreateSubAClass(AttributesPointer, "date.sec");
         AttributesPointer->CreateSubAClass(AttributesPointer, "date.min");
         AttributesPointer->CreateSubAClass(AttributesPointer, "date.hour");
@@ -271,25 +271,25 @@ bool WorldMap::Init()
     }
     ResetScriptInterfaces();
     rs->ProgressView();
-    //Создаём элементы интерфейса
+    // Creating interface elements
 
-    //Дата
+    // Date
     auto *windUI = new WdmWindUI();
     windUI->SetAttributes(AttributesPointer);
     AddLObject(AddObject(windUI, 1001), 10100);
 
-    //Компас
+    // Compass
     // ro = CreateModel(new WdmWindRose(), "WindRose");
     // AddLObject(ro, 10099);
-    //Календарь
+    // The calendar
     // WdmCounter * cnt = new WdmCounter();
     // if(!cnt->Init()) core.Trace("Counter not created");
 
     // AddLObject(cnt, 10099);
-    //Иконка
+    // Icon
     AddLObject(AddObject(new WdmIcon(), 1000), 10099);
 
-    //Загружаем энкоунтеры, если таковы были
+    // load encounters, if any
     if (saveData)
     {
         const auto num = saveData->GetAttributesNum();
@@ -366,7 +366,7 @@ bool WorldMap::Init()
 
     rs->ProgressView();
 
-    //Корректируем корабль игрока
+    // Adjusting the player's ship
     auto *playerShip = static_cast<WdmPlayerShip *>(wdmObjects->playerShip);
     playerShip->PushOutFromIsland();
     auto *const atrData = AttributesPointer->FindAClass(AttributesPointer, "island");
@@ -384,7 +384,7 @@ bool WorldMap::Init()
     // UNGUARD
 }
 
-//Исполнение
+// Execution
 void WorldMap::Execute(uint32_t delta_time)
 {
 }
@@ -418,7 +418,7 @@ void WorldMap::Realize(uint32_t delta_time)
     }
     //---------------------------------------------------------
     const auto dltTime = 0.001f * delta_time;
-    //Обновляем дату
+    // Updating the date
     if (hour < 0.0f)
         hour = 0.0f;
     hour += dltTime * timeScale;
@@ -484,14 +484,14 @@ void WorldMap::Realize(uint32_t delta_time)
     if (camera && !wdmObjects->isPause)
         camera->Move(dltTime, rs);
     auto isKill = false;
-    //Исполним все объекты
+    // execute all objects
     for (auto i = firstObject; i >= 0; i = object[i].next)
     {
         if (!object[i].ro->killMe)
             object[i].ro->Update(object[i].ro->isEnablePause && wdmObjects->isPause ? 0.0f : dltTime);
         isKill |= object[i].ro->killMe;
     }
-    //Удалим объекты если надо
+    // Remove objects if necessary
     if (isKill)
     {
         for (auto i = firstObject; i >= 0;)
@@ -503,12 +503,12 @@ void WorldMap::Realize(uint32_t delta_time)
             else
                 i = object[i].next;
     }
-    //Текущее количество событий
+    // Current number of events
     if (aStorm)
         aStorm->SetAttributeUseDword("num", wdmObjects->storms.size());
     if (aEncounter)
         aEncounter->SetAttributeUseDword("num", wdmObjects->ships.size() - (wdmObjects->playerShip != nullptr));
-    //События
+    // Events
     encTime += dltTime;
     if (encTime >= 1.0f && wdmObjects->playerShip && !wdmObjects->isPause)
     {
@@ -536,10 +536,10 @@ void WorldMap::Realize(uint32_t delta_time)
         if (!object[i].ro->killMe)
             object[i].ro->LRender(rs);
     }
-    //Обновим ветер
+    // renew the wind
     wdmObjects->UpdateWind(dltTime);
     wdmObjects->isNextDayUpdate = false;
-    //Проверим атрибут обновления энкоунтера
+    // Checking the update attribute of the encounter
     if (AttributesPointer)
     {
         const char *upd = AttributesPointer->GetAttribute("addQuestEncounters");
@@ -550,7 +550,7 @@ void WorldMap::Realize(uint32_t delta_time)
     }
 }
 
-//Сообщения
+// Messages
 uint64_t WorldMap::ProcessMessage(MESSAGE &message)
 {
     char buf[256];
@@ -621,7 +621,7 @@ uint64_t WorldMap::ProcessMessage(MESSAGE &message)
     return 0;
 }
 
-//Изменение атрибута
+// Changing an attribute
 uint32_t WorldMap::AttributeChanged(ATTRIBUTES *apnt)
 {
     float x, z, ay;
@@ -673,7 +673,7 @@ uint32_t WorldMap::AttributeChanged(ATTRIBUTES *apnt)
         else if (pa == aEncounter)
         {
             const auto cur = static_cast<long>(pa->GetAttributeAsDword("cur"));
-            //Определим индекс энкоунтера
+            // Determine the encounter index
             long i = 0;
             for (long enc = 0; i < wdmObjects->ships.size(); i++)
             {
@@ -697,7 +697,7 @@ uint32_t WorldMap::AttributeChanged(ATTRIBUTES *apnt)
                 pa->SetAttribute("type", buf);
                 pa->SetAttributeUseDword("select", es->isSelect);
                 pa->SetAttribute("id", (char *)static_cast<WdmEnemyShip *>(wdmObjects->ships[i])->GetAttributeName());
-                //Если есть атакующий, определим его индекс
+                // If there is an attacker, get his index
                 if (es->attack)
                 {
                     Assert(es->attack != es);
@@ -747,11 +747,11 @@ uint32_t WorldMap::AttributeChanged(ATTRIBUTES *apnt)
     return 0;
 }
 
-//============================================================================================
-//Управление объектами
-//============================================================================================
+// ============================================================================================
+// Objects management
+// ============================================================================================
 
-//Добавить объект
+// Add object
 WdmRenderObject *WorldMap::AddObject(WdmRenderObject *obj, long level)
 {
     if (!obj)
@@ -761,7 +761,7 @@ WdmRenderObject *WorldMap::AddObject(WdmRenderObject *obj, long level)
     return obj;
 }
 
-//Добавить объект в список отрисовки до отражения
+// Add object to render list before reflection
 void WorldMap::AddPObject(WdmRenderObject *obj, long level)
 {
     if (!obj)
@@ -770,7 +770,7 @@ void WorldMap::AddPObject(WdmRenderObject *obj, long level)
     object[i].ro = obj;
 }
 
-//Добавить объект в список отрисовки отражения
+// Add object to reflection render list
 void WorldMap::AddMObject(WdmRenderObject *obj, long level)
 {
     if (!obj)
@@ -779,7 +779,7 @@ void WorldMap::AddMObject(WdmRenderObject *obj, long level)
     object[i].ro = obj;
 }
 
-//Добавить объект в список отрисовки после отражения
+// Add object to render list after reflection
 void WorldMap::AddLObject(WdmRenderObject *obj, long level)
 {
     if (!obj)
@@ -788,12 +788,12 @@ void WorldMap::AddLObject(WdmRenderObject *obj, long level)
     object[i].ro = obj;
 }
 
-//Удалить объект
+// Delete object
 void WorldMap::DeleteObject(WdmRenderObject *obj)
 {
     if (!obj)
         return;
-    //Проходимся по всем спискам, удаляя запись об объекте
+    // go through all the lists, deleting the entry about the object
     for (long i = firstObject, j; i >= 0;)
     {
         j = i;
@@ -826,13 +826,13 @@ void WorldMap::DeleteObject(WdmRenderObject *obj)
     delete obj;
 }
 
-//============================================================================================
-//Инкапсуляция
-//============================================================================================
+// ============================================================================================
+// Encapsulation
+// ============================================================================================
 
-//Управление объектами
+// Objects management
 
-//Включить запись об объекте в список с необходимым уровнем
+// Include a record about an object in the list with the required level
 long WorldMap::GetObject(long &first, long level)
 {
     Assert(firstFreeObject >= 0);
@@ -866,7 +866,7 @@ long WorldMap::GetObject(long &first, long level)
     return i;
 }
 
-//Исключить запись из списка
+// Exclude entry from the list
 void WorldMap::FreeObject(long &first, long i)
 {
     Assert(i >= 0.0f && i < WDMAP_MAXOBJECTS);
@@ -883,15 +883,15 @@ void WorldMap::FreeObject(long &first, long i)
     firstFreeObject = i;
 }
 
-//Утилитные
+// Utilities
 
-//Проинициализировать модельку и занести в нужные списки рендера
+// Initialize the model and add it to the required render lists
 WdmRenderObject *WorldMap::CreateModel(WdmRenderModel *rm, const char *modelName, bool pr, bool mr, bool lr,
                                        long objectLevel, long drawLevel)
 {
     if (!modelName || !modelName[0])
     {
-        delete rm; // boal fix нужно тереть
+        delete rm; // boal fix needs to be deleted
         return nullptr;
     }
     if (!rm->Load(modelName))
@@ -909,7 +909,7 @@ WdmRenderObject *WorldMap::CreateModel(WdmRenderModel *rm, const char *modelName
     return rm;
 }
 
-//Создать шторм, если это возможно, и установить время жизни
+// Create a storm if possible and set a lifetime
 bool WorldMap::CreateStorm(bool isTornado, float time, ATTRIBUTES *save)
 {
     if (wdmObjects->storms.size() >= WDM_MAX_STORMS)
@@ -931,7 +931,7 @@ bool WorldMap::CreateStorm(bool isTornado, float time, ATTRIBUTES *save)
     return true;
 }
 
-//Создать кораблик купца
+// Create a merchant's ship
 bool WorldMap::CreateMerchantShip(const char *modelName, const char *locNameStart, const char *locNameEnd, float kSpeed,
                                   float time, ATTRIBUTES *save)
 {
@@ -946,7 +946,7 @@ bool WorldMap::CreateMerchantShip(const char *modelName, const char *locNameStar
     if (!CreateModel(ship, modelName))
         return false;
     AddLObject(ship, 100);
-    //Ищем место куда плыть
+    // Looking for a place to sail
     if (!wdmObjects->islands)
     {
         core.Trace("World map: Islands not found");
@@ -973,7 +973,7 @@ bool WorldMap::CreateMerchantShip(const char *modelName, const char *locNameStar
         }
     }
     static_cast<WdmMerchantShip *>(ship)->Goto(gpos.x, gpos.z, 2.0f);
-    //Если надо, изменяем текущую позицию
+    // If necessary, change the current position
     if (locNameStart && locNameStart[0])
     {
         if (wdmObjects->islands)
@@ -988,9 +988,9 @@ bool WorldMap::CreateMerchantShip(const char *modelName, const char *locNameStar
             }
         }
     }
-    //Скорость
+    // Speed
     ship->SetMaxSpeed(kSpeed);
-    //Время жизни
+    // Lifetime
     if (time >= 0.0f)
     {
         if (time < 3.0f)
@@ -1007,7 +1007,7 @@ bool WorldMap::CreateMerchantShip(const char *modelName, const char *locNameStar
     return true;
 }
 
-// boal Создать кораблик купца в координатах
+// boal Create a merchant's ship in coordinates
 bool WorldMap::CreateMerchantShipXZ(const char *modelName, float x1, float z1, float x2, float z2, float kSpeed,
                                     float time, ATTRIBUTES *save)
 {
@@ -1022,18 +1022,18 @@ bool WorldMap::CreateMerchantShipXZ(const char *modelName, float x1, float z1, f
     if (!CreateModel(ship, modelName))
         return false;
     AddLObject(ship, 100);
-    //Ищем место куда плыть
+    // Looking for a place to sail
     if (!wdmObjects->islands)
     {
         core.Trace("World map: Islands not found");
     }
 
-    static_cast<WdmMerchantShip *>(ship)->Goto(x2, z2, 2.0f); // куда
-    //Если надо, изменяем текущую позицию
-    ship->Teleport(x1, z1, rand() * (PI * 2.0f / RAND_MAX)); // откуда
-    //Скорость
+    static_cast<WdmMerchantShip *>(ship)->Goto(x2, z2, 2.0f); // where
+    // If necessary, change the current position
+    ship->Teleport(x1, z1, rand() * (PI * 2.0f / RAND_MAX)); // from where
+    // Speed
     ship->SetMaxSpeed(kSpeed);
-    //Время жизни
+    // Lifetime
     if (time >= 0.0f)
     {
         if (time < 3.0f)
@@ -1050,7 +1050,7 @@ bool WorldMap::CreateMerchantShipXZ(const char *modelName, float x1, float z1, f
     return true;
 }
 
-//Создать кораблик преследующий нас
+// Create a ship that follows us
 bool WorldMap::CreateFollowShip(const char *modelName, float kSpeed, float time, ATTRIBUTES *save)
 {
     if (kSpeed < 0.1f)
@@ -1064,9 +1064,9 @@ bool WorldMap::CreateFollowShip(const char *modelName, float kSpeed, float time,
     if (!CreateModel(ship, modelName))
         return false;
     AddLObject(ship, 100);
-    //Скорость
+    // Speed
     ship->SetMaxSpeed(kSpeed);
-    //Время жизни
+    // Lifetime
     if (time >= 0.0f)
     {
         if (time < 1.0f)
@@ -1096,7 +1096,7 @@ bool WorldMap::CreateWarringShips(const char *modelName1, const char *modelName2
                                   ATTRIBUTES *save2)
 {
     static const float pi = 3.14159265359f;
-    //Создаём кораблики
+    // Create ships
     auto *ship1 = new WdmWarringShip();
     if (ship1->killMe)
     {
@@ -1115,13 +1115,13 @@ bool WorldMap::CreateWarringShips(const char *modelName1, const char *modelName2
         return false;
     const float moveRadius = (ship1->modelRadius + ship2->modelRadius) * (0.4f + (rand() & 3) * (0.1f / 3.0f));
     const float fullRadius = 0.6f * (moveRadius + 2.0f * std::max(ship1->modelRadius, ship2->modelRadius));
-    //Общая позиция
+    // General position
     float x, z;
     if (!WdmEnemyShip::GeneratePosition(fullRadius, 1.5f, x, z))
         return false;
-    //Общий угол
+    // General angle
     const float angl = rand() * 2.0f * pi / (RAND_MAX + 1);
-    //Смещение относительно центра
+    // Center offset
     const float dx = moveRadius * cosf(angl);
     const float dz = -moveRadius * sinf(angl);
     AddLObject(ship1, 100);
@@ -1129,10 +1129,10 @@ bool WorldMap::CreateWarringShips(const char *modelName1, const char *modelName2
     AddLObject(ship2, 100);
     ship2->Teleport(x - dx, z - dz, angl + pi * (rand() & 1));
     ship2->SetLiveTime(ship1->GetLiveTime());
-    //Устанавливаем характеристики
+    // Setting characteristics
     ship1->attack = ship2;
     ship2->attack = ship1;
-    //Время жизни
+    // Lifetime
     if (time >= 0.0f)
     {
         if (time < 1.0f)
@@ -1161,7 +1161,7 @@ bool WorldMap::CreateWarringShips(const char *modelName1, const char *modelName2
     return true;
 }
 
-//Найти координаты и радиус по месту назначения
+// Find coordinates and radius by destination
 bool WorldMap::FindIslandPosition(const char *name, float &x, float &z, float &r)
 {
     return false;
@@ -1196,10 +1196,10 @@ void WorldMap::ResetScriptInterfaces() const
     }
 }
 
-//Удалить все энкоунтеры
+// Delete all encounters
 void WorldMap::ReleaseEncounters()
 {
-    //Оставим параметры энкоунтеров невредимыми
+    // leave the encounter parameters intact
     for (long i = 0; i < wdmObjects->ships.size(); i++)
     {
         if (wdmObjects->ships[i] == wdmObjects->playerShip)
@@ -1214,12 +1214,12 @@ void WorldMap::ReleaseEncounters()
     }
 }
 
-//Создать атрибут для сохранения параметров энкоунтера
+// Create an attribute to save the encounter parameters
 ATTRIBUTES *WorldMap::GetEncSaveData(const char *type, const char *retName)
 {
     if (!saveData)
         return nullptr;
-    //Генерим имя атрибута
+    // Generating the name of the attribute
     encCounter++;
     char atrName[64];
     long i;
@@ -1237,13 +1237,13 @@ ATTRIBUTES *WorldMap::GetEncSaveData(const char *type, const char *retName)
     }
     if (i == 1000000)
         return nullptr;
-    //Создаём ветку
+    // Create a branch
     ATTRIBUTES *a = saveData->CreateSubAClass(saveData, atrName);
     if (!a)
         return nullptr;
-    //Устанавливаем тип
+    // Set the type
     a->SetAttribute("type", (char *)type);
-    //Сохраняем имя
+    // Save the name
     if (AttributesPointer)
     {
         AttributesPointer->SetAttribute((char *)retName, atrName);

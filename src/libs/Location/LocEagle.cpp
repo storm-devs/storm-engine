@@ -33,23 +33,23 @@ LocEagle::~LocEagle()
     EntityManager::EraseEntity(mdl);
 }
 
-//Инициализация
+// Initialization
 bool LocEagle::Init()
 {
-    //Точка, вокруг которой летаем
+    // The point we fly around
     const auto loc = EntityManager::GetEntityId("location");
     auto *location = static_cast<Location *>(EntityManager::GetEntityPointer(loc));
     if (!location)
         return false;
     cnt = location->GetPtcData().middle + CVECTOR(0.0f, 30.0f, 0.0f);
-    //Путь для текстур
+    // Path for textures
     auto *gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
     if (!gs)
     {
         core.Trace("Can't create geometry service!");
         return false;
     }
-    //Моделька
+    // Model
     if (!(mdl = EntityManager::CreateEntity("modelr")))
         return false;
     EntityManager::AddToLayer(REALIZE, mdl, 20);
@@ -60,10 +60,10 @@ bool LocEagle::Init()
         return false;
     }
     gs->SetTexturePath("");
-    //Анимация
+    // Animation
     if (!core.Send_Message(mdl, "ls", MSG_MODEL_LOAD_ANI, "eagle"))
         return false;
-    //Запускаем проигрывание анимации
+    // Start playing the animation
     auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(mdl));
     if (!m)
         return false;
@@ -74,21 +74,21 @@ bool LocEagle::Init()
         return false;
     if (!ani->Player(0).Play())
         return false;
-    //Включаем в список исполнения
+    // include in the execution list
     // core.LayerCreate("execute", true, false);
     EntityManager::SetLayerType(EXECUTE, EntityManager::Layer::Type::execute);
     EntityManager::AddToLayer(EXECUTE, GetId(), 10);
     return true;
 }
 
-//Исполнение
+// Execution
 void LocEagle::Execute(uint32_t delta_time)
 {
-    //Моделька
+    // Model
     auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(mdl));
     if (!m)
         return;
-    //Обновляем позицию
+    // Updating position
     const auto dltTime = delta_time * 0.001f;
     time += kTime * dltTime;
     if (time >= 1.0f)
@@ -103,13 +103,13 @@ void LocEagle::Execute(uint32_t delta_time)
     {
         if (rand() & 3)
         {
-            //Быстро
+            // Fast
             timeAy = 10.0f + rand() * (10.0f / RAND_MAX);
             kAy = 1.0f;
         }
         else
         {
-            //Медленно
+            // Slow
             timeAy = 1.0f + rand() * (2.0f / RAND_MAX);
             kAy = 0.4f;
             time = 0.0f;
@@ -119,7 +119,7 @@ void LocEagle::Execute(uint32_t delta_time)
     }
     ay += dltTime * kAy * 0.1f / kRad;
     y += dltY * kTime * dltTime;
-    //Устанавливаем позицию
+    // Set position
     m->mtx.BuildMatrix(0.0f, ay + 1.57f, 0.0f);
     m->mtx.Pos().x = cnt.x + kRad * 20.0f * sinf(ay);
     m->mtx.Pos().y = cnt.y + y;

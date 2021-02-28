@@ -13,7 +13,7 @@ class SHIP_DESCRIBE_LIST
         bool isDead;
         long relation;
         long characterIndex;
-        ATTRIBUTES *pAttr; // атрибуты корабля
+        ATTRIBUTES *pAttr; // ship attributes
         long maxHP;
         long maxSP;
         long maxCrew;

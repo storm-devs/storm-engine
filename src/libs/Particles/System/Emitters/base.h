@@ -13,12 +13,12 @@ class BaseEmitter : public IEmitter
 {
     struct structParticleType
     {
-        bool Visible;         //Видим или нет
-        ParticleType Type;    // Тип партикла
-        float Remain;         // Сколько осталось незапущенных с прошлого кадра
-        uint32_t ActiveCount; // Количество активных партиклов данного типа
-        uint32_t MaxParticlesCount; // Максимальное кол-во партиклов этого типа
-        DataGraph *EmissionRate; // График задающий скорость испускания партиклов
+        bool Visible;         // visible or not
+        ParticleType Type;    // Particle type
+        float Remain;         // How many not emitted from the last frame are left
+        uint32_t ActiveCount; // The number of active particles of this type
+        uint32_t MaxParticlesCount; // Maximum number of particles of this type
+        DataGraph *EmissionRate; // Graph defining the rate of emission of particles
 
         FieldList *pFields;
 
@@ -66,19 +66,19 @@ class BaseEmitter : public IEmitter
     ParticleSystem *pMaster;
 
   public:
-    // Конструктор / деструктор
+    // Constructor / destructor
     BaseEmitter(ParticleSystem *pSystem);
     virtual ~BaseEmitter();
 
-    //Получить позицию для рождения новых партиклов
+    // Get a position for the emission of new particles
     virtual Vector GetNewParticlePosition(float DeltaTime) = 0;
 
-    //Родить новые партиклы
+    // Emit new particles
     void BornParticles(float DeltaTime) override;
-    //Исполнить
+    // Execute
     void Execute(float DeltaTime) override;
 
-    //Присоединиться к источнику данных
+    // Join data source
     virtual void AttachToDataSource(DataSource::EmitterDesc *pEmitter);
 
     virtual void CreateBillBoardParticle(FieldList &Fields);
@@ -108,8 +108,8 @@ class BaseEmitter : public IEmitter
 
     const char *GetName() override;
 
-    //Если флаг в true емиттер не будет самостоятельно испускать партиклы
-    //так, как он привязан
+    // If the flag is set to true, the emitter will not emit particles by itself
+    // because it is attached
     void SetAttachedFlag(bool Flag) override;
     bool IsAttached() override;
 
@@ -125,7 +125,7 @@ class BaseEmitter : public IEmitter
     bool SetEnable(bool bVisible) override;
     bool GetEnable() override;
 
-    //-1 если не нашли, иначе индекс
+    // -1 if not found, otherwise index
     int GetParticleTypeIndex(FieldList *pFields) override;
     bool SetParticleTypeEnable(bool bVisible, uint32_t Index) override;
     bool GetParticleTypeEnable(uint32_t Index) override;

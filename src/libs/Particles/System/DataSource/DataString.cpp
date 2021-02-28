@@ -1,7 +1,7 @@
 #include "DataString.h"
 #include "vmodule_api.h"
 
-//конструктор/деструктор
+// constructor / destructor
 DataString::DataString()
 {
 }
@@ -10,13 +10,13 @@ DataString::~DataString()
 {
 }
 
-//Получить значение
+// Get value
 const char *DataString::GetValue() const
 {
     return Value.c_str();
 }
 
-//Установить значение
+// Set value
 void DataString::SetValue(const char *val)
 {
     Value = val;

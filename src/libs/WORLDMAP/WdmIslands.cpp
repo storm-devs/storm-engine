@@ -17,9 +17,9 @@
 #include "WorldMap.h"
 #include "defines.h"
 
-//============================================================================================
-//Данные для коллижена
-//============================================================================================
+// ============================================================================================
+// Collision data
+// ============================================================================================
 
 CVECTOR WdmIslands::centPos;
 long WdmIslands::numEdges;
@@ -27,9 +27,9 @@ CVECTOR WdmIslands::curPos;
 bool WdmIslands::checkMode;
 CMatrix WdmIslands::curMatrix;
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 WdmIslands::WdmIslands()
 {
@@ -37,16 +37,16 @@ WdmIslands::WdmIslands()
     icons.texture = -1;
     LabelsRelease();
     wdmObjects->islands = this;
-    //Грузим базовую модель
+    // Loading the base model
     baseModel = static_cast<WdmRenderModel *>(
         wdmObjects->wm->CreateModel(new WdmRenderModel(), "islands\\islands", false, false, false, 1));
     if (!baseModel || !baseModel->geo)
         return;
-    //Информация о геометрии
+    // Geometry information
     GEOS::INFO ginfo;
     GEOS::LABEL label;
     baseModel->geo->GetInfo(ginfo);
-    //Находим размеры мира и перебираем локаторы
+    // Finding the size of the world and iterating over the locators
     CVECTOR vmin, vmax, center = 0.0f, vmn, vmx;
     auto isMin = false, isMax = false;
     for (long i = 0; i < ginfo.nlabels; i++)
@@ -92,11 +92,11 @@ WdmIslands::WdmIslands()
         vmax += center;
         wdmObjects->SetWorldSize(vmax.x * 2.0f, vmax.z * 2.0f);
     }
-    //Зачитываем острова
+    // Reading the islands
     std::string name;
     for (long i = 0; i < ginfo.nlabels; i++)
     {
-        //Получаем информацию
+        // receive information
         baseModel->geo->GetLabel(i, label);
         if (!label.group_name || !label.group_name[0])
             continue;
@@ -104,7 +104,7 @@ WdmIslands::WdmIslands()
             continue;
         if (_stricmp(label.group_name, "islands") != 0)
             continue;
-        //Пропускаем, если добавленна
+        // Skip if added
         long j;
         for (j = 0; j < islands.size(); j++)
         {
@@ -115,12 +115,12 @@ WdmIslands::WdmIslands()
             continue;
         name = "islands\\";
         name += label.name;
-        //Загружаем
+        // Loading
         auto *model = static_cast<WdmRenderModel *>(
             wdmObjects->wm->CreateModel(new WdmRenderModel(), name.c_str(), false, false, true, 2));
         if (model)
         {
-            //Общее
+            // General
             islands.push_back(Islands{});
             // Islands & isl = islands[islands.Add()];
             auto &isl = islands.back();
@@ -131,7 +131,7 @@ WdmIslands::WdmIslands()
             isl.toLocal.Transposition();
             isl.modelName = label.name;
             isl.worldPosition = model->mtx.Pos();
-            //Моделька, описывающая область острова
+            // Model describing the area of the island
             name += "_area";
             isl.area = static_cast<WdmRenderModel *>(
                 wdmObjects->wm->CreateModel(new WdmRenderModel(), name.c_str(), false, false, false, 3));
@@ -139,7 +139,7 @@ WdmIslands::WdmIslands()
             {
                 core.Trace("World map: can't load model of island's area: %s", name.c_str());
             }
-            //Пальмы
+            // Palm trees
             name = "islands\\";
             name += label.name;
             name += "_palms";
@@ -150,7 +150,7 @@ WdmIslands::WdmIslands()
                 static const auto *techName = "WdmModelDrawStdAlphaTest";
                 isl.palms->SetTech(techName, techName);
             }
-            //Пена
+            // Foam
             name = "islands\\";
             name += label.name;
             name += "_waves";
@@ -162,7 +162,7 @@ WdmIslands::WdmIslands()
             core.Trace("World map: can't load model of island: %s", name.c_str());
         }
     }
-    //Загрузка патча
+    // Loading the patch
     patch = new PtcData();
     if (!patch->Load("RESOURCE\\MODELS\\WorldMap\\islands\\islands_patch.ptc"))
     {
@@ -190,50 +190,50 @@ WdmIslands::~WdmIslands()
     LabelsRelease();
 }
 
-//Проверить на возможное столкновение
+// Check for possible collision
 bool WdmIslands::CollisionTest(CMatrix &objMtx, float length, float width, bool heighTest)
 {
     const auto maxHeightInTest = 0.5f;
-    //Радиус прямоугольника на плоскости
+    // Radius of a rectangle on a plane
     const auto boxRadius = sqrtf(length * length + width * width);
     if (boxRadius < 0.0000001f)
         return false;
-    //Радиус ящика
+    // Box radius
     float checkRadius = boxRadius + maxHeightInTest;
     if (!heighTest)
         checkRadius += 1000000.0f;
-    //Параметры тестирования
+    // Test parameters
     numEdges = 0;
     centPos = 0.0f;
     checkMode = !heighTest;
-    //Проходимся по всем островам
+    // walk through all the islands
     for (long i = 0; i < islands.size(); i++)
     {
-        //Остров с которым работаем
+        // The island we work with
         Islands &island = islands[i];
-        //Матрица преобразования в локальную систему
+        // Transform to the local coordinates system
         CMatrix locMtx(objMtx, island.toLocal);
 
-        //Проверяем поподание в круг острова
+        // Check hitting the island sphere
         const float dist2 = ~(locMtx.Pos() - island.model->center);
         const float maxDist = boxRadius + island.model->radius;
         if (dist2 >= maxDist * maxDist)
             continue;
-        //Будем тестировать на уровне треугольников
+        // test triangles
         GEOS::PLANE p[5];
-        //Вектор направления
+        // Direction vector
         p[0].nrm.x = locMtx.Vz().x;
         p[0].nrm.y = 0.0f;
         p[0].nrm.z = locMtx.Vz().z;
         float radius = p[0].nrm.x * p[0].nrm.x + p[0].nrm.z * p[0].nrm.z;
-        //Проскочим кривую модель
+        // Skip broken model
         if (radius < 0.000001f)
             continue;
-        //Нормаль направления
+        // Direction normal
         radius = 1.0f / sqrtf(radius);
         p[0].nrm.x *= radius;
         p[0].nrm.z *= radius;
-        //Остальные нормали
+        // Remaining normals
         p[1].nrm.x = -p[0].nrm.x;
         p[1].nrm.y = 0.0f;
         p[1].nrm.z = -p[0].nrm.z;
@@ -246,7 +246,7 @@ bool WdmIslands::CollisionTest(CMatrix &objMtx, float length, float width, bool 
         p[4].nrm.x = 0.0f;
         p[4].nrm.y = 1.0f;
         p[4].nrm.z = 0.0f;
-        //Дистанции до плоскостей
+        // Distances to planes
         p[0].d =
             (p[0].nrm.x * length + locMtx.Pos().x) * p[0].nrm.x + (p[0].nrm.z * length + locMtx.Pos().z) * p[0].nrm.z;
         p[1].d =
@@ -256,15 +256,15 @@ bool WdmIslands::CollisionTest(CMatrix &objMtx, float length, float width, bool 
         p[3].d =
             (p[3].nrm.x * width + locMtx.Pos().x) * p[3].nrm.x + (p[3].nrm.z * width + locMtx.Pos().z) * p[3].nrm.z;
         p[4].d = maxHeightInTest;
-        //Позиция сферы
+        // Sphere position
         GEOS::VERTEX v;
         v.x = locMtx.Pos().x;
         v.y = locMtx.Pos().y;
         v.z = locMtx.Pos().z;
         curPos = locMtx.Pos();
-        //Матрица преобразования в мировые координаты
+        // Conversion matrix to world coordinates
         curMatrix = island.model->mtx;
-        //Ищем попадание полигонов
+        // looking for hitting polygons
         island.model->geo->Clip(p, heighTest ? 5 : 4, v, checkRadius, AddEdges);
     }
     if (numEdges)
@@ -277,7 +277,7 @@ bool WdmIslands::CollisionTest(CMatrix &objMtx, float length, float width, bool 
 
 bool WdmIslands::AddEdges(const GEOS::VERTEX *vrt, long numVrt)
 {
-    //Пропустим кривые данные
+    // Skip broken Data
     if (numVrt < 3)
         return true;
     if (checkMode)
@@ -286,35 +286,35 @@ bool WdmIslands::AddEdges(const GEOS::VERTEX *vrt, long numVrt)
         numEdges = 1;
         return false;
     }
-    //Попытаемся определить место положение точки относительно плоскости
+    // try to determine the location of the point relative to the plane
     const CVECTOR v1(vrt[1].x - vrt[0].x, vrt[1].y - vrt[0].y, vrt[1].z - vrt[0].z);
     const CVECTOR v2(vrt[2].x - vrt[1].x, vrt[2].y - vrt[1].y, vrt[2].z - vrt[1].z);
     const CVECTOR v = v1 ^ v2;
     const float d = (v | curPos) - (v | CVECTOR(vrt[0].x, vrt[0].y, vrt[0].z));
     if (d < 0)
         return true;
-    //Добавляем рёбра
+    // Adding edges
     numEdges += numVrt;
     for (long i = 0; i < numVrt; i++)
     {
         centPos += curMatrix * CVECTOR(vrt[i].x, 0.0f, vrt[i].z);
     }
-    //Продолжим
+    // continue
     return true;
 }
 
-//Проверить наличие в данном месте треугольников
+// Check for the presence of triangles in this place
 bool WdmIslands::ObstacleTest(float x, float z, float radius)
 {
     if (radius <= 0.0f)
         return false;
     const CVECTOR wPos(x, 0.0f, z);
-    //Проходимся по всем островам
+    // walk through all the islands
     for (long i = 0; i < islands.size(); i++)
     {
-        //Остров с которым работаем
+        // The island we work with
         Islands &island = islands[i];
-        //Преобразуем в локальную систему острова
+        // Converting to the local island system
         const CVECTOR pos = island.toLocal * wPos;
         GEOS::PLANE p[4];
         p[0].nrm.x = 0.0f;
@@ -343,32 +343,32 @@ bool WdmIslands::ObstacleTest(float x, float z, float radius)
     return false;
 }
 
-//Зачитать данные об островах
+// Read Island Data
 void WdmIslands::SetIslandsData(ATTRIBUTES *apnt, bool isChange)
 {
     CVECTOR pos;
     if (!isChange)
     {
         LabelsRelease();
-        //Зачитываем параметры картинок
+        // Reading the parameters of the pictures
         LabelsReadIconParams(apnt);
     }
     if (!apnt)
         return;
-    //Получаем описание меток
+    // Get the description of the labels
     apnt = apnt->FindAClass(apnt, "labels");
     if (!apnt)
         return;
-    //Количество меток
+    // Number of labels
     const uint32_t numAttr = apnt->GetAttributesNum();
-    //Перебираем все метки
+    // Looping through all labels
     for (uint32_t i = 0; i < numAttr; i++)
     {
-        //Получаем доступ к описанию метки
+        // get access to the description of the label
         ATTRIBUTES *a = apnt->GetAttributeClass(i);
         if (!a)
             continue;
-        //Получаем параметры метки
+        // Get the parameters of the label
         char *id = a->GetAttribute("id");
         char *locator = a->GetAttribute("locator");
         char *text = a->GetAttribute("text");
@@ -378,13 +378,13 @@ void WdmIslands::SetIslandsData(ATTRIBUTES *apnt, bool isChange)
         const float pivotY = -0.5f;
         const float heightView = a->GetAttributeAsFloat("heightView", 250.0);
         const uint32_t weight = a->GetAttributeAsDword("weight", 0);
-        //Проверяем на достаточность
+        // Check for sufficiency
         if (!id || !text || !locator || !locator[0])
         {
             core.Trace("World map: label \"%s\" will be skipping...", apnt->GetAttributeName(i));
             continue;
         }
-        //Ищим метку среди существующих
+        // looking for a label among existing
         const uint32_t hash = TOREMOVE::HashNoCase(id);
         long index = LabelsFind(id, hash);
         if (index < 0)
@@ -395,7 +395,7 @@ void WdmIslands::SetIslandsData(ATTRIBUTES *apnt, bool isChange)
                            apnt->GetAttributeName(i));
                 continue;
             }
-            //Добавляем новую метку
+            // Adding a new label
             const long iEntry = hash & (sizeof(labelsEntry) / sizeof(labelsEntry[0]) - 1);
             // index = labels.Add();
             labels.push_back(Label{});
@@ -417,47 +417,47 @@ void WdmIslands::SetIslandsData(ATTRIBUTES *apnt, bool isChange)
                 }
             }
         }
-        //Текст
-        labels[index].text = text ? text : ""; //~!~
-        //Шрифт
+        // Text
+        labels[index].text = text ? text : ""; // ~!~
+        // Font
         labels[index].font = LabelsAddFont(font);
-        //Картинка
+        // Picture
         labels[index].icon = icon < static_cast<long>(icons.num) ? icon : icons.num - 1;
-        //Позиция
+        // Position
         labels[index].pos = pos;
-        //Высота гашения
+        // Blanking height
         labels[index].heightView = heightView;
         labels[index].weight = weight;
-        //Размеры строки
+        // Line Sizes
         const float textWidth =
             static_cast<float>(wdmObjects->rs->StringWidth((char *)labels[index].text.c_str(), labels[index].font));
         float textHeight = static_cast<float>(wdmObjects->rs->CharHeight(labels[index].font));
-        //Размеры метки
+        // Label dimensions
         const float labelWidth = textWidth + (labels[index].icon >= 0 ? icons.w + 4.0f : 0.0f);
         const float labelHeight = labels[index].icon >= 0 ? std::max(textHeight, icons.h) : textHeight;
-        //Позиция метки с учётом смещения
+        // Position of the label taking into account the offset
         const float labelX = pivotX * labelWidth;
         const float labelY = pivotY * labelHeight;
-        //Смещённый прямоугольник
+        // Offset rectangle
         labels[index].dl = labelX;
         labels[index].dt = labelY;
         labels[index].dr = labelX + labelWidth;
         labels[index].db = labelY + labelHeight;
         if (labels[index].icon >= 0)
         {
-            //Позиция картинки
+            // Picture position
             labels[index].iconX = 0.0f;
             labels[index].iconY = (labelHeight - icons.h) * 0.5f;
-            //Позиция текста
+            // Text position
             labels[index].textX = icons.h + 4.0f;
             labels[index].textY = (labelHeight - textHeight) * 0.5f;
         }
         else
         {
-            //Позиция картинки
+            // Picture position
             labels[index].iconX = 0.0f;
             labels[index].iconY = 0.0f;
-            //Позиция текста
+            // Text position
             labels[index].textX = 0.0f;
             labels[index].textY = 0.0f;
         }
@@ -486,7 +486,7 @@ void WdmIslands::LabelsReadIconParams(ATTRIBUTES *apnt)
     std::string name = "WorldMap\\Interfaces\\";
     name += texName;
     icons.texture = wdmObjects->rs->TextureCreate(name.c_str());
-    //Размеры uv
+    // Dimensions uv
     const float tw = icons.w * icons.frames;
     const float th = icons.h * icons.num;
     if (tw)
@@ -527,7 +527,7 @@ bool WdmIslands::LabelsFindLocator(const char *name, CVECTOR &pos) const
 {
     if (!baseModel || !name || !name[0])
         return false;
-    //Информация о геометрии
+    // Geometry information
     GEOS::INFO ginfo;
     GEOS::LABEL label;
     baseModel->geo->GetInfo(ginfo);
@@ -571,13 +571,13 @@ long WdmIslands::LabelsAddFont(const char *name)
 
 void WdmIslands::LabelsRelease()
 {
-    //Удаляем все метки
+    // Remove all labels
     labels.clear();
     for (long i = 0; i < sizeof(labelsEntry) / sizeof(labelsEntry[0]); i++)
     {
         labelsEntry[i] = -1;
     }
-    //Удаляем все шрифты
+    // Remove all fonts
     for (long i = 0; i < fonts.size(); i++)
     {
         if (fonts[i].id != FONT_DEFAULT)
@@ -585,7 +585,7 @@ void WdmIslands::LabelsRelease()
             wdmObjects->rs->UnloadFont(fonts[i].id);
         }
     }
-    //Удаляем все картинки
+    // Delete all pictures
     if (icons.texture >= 0)
     {
         wdmObjects->rs->TextureRelease(icons.texture);
@@ -633,7 +633,7 @@ void WdmIslands::Update(float dltTime)
 
 void WdmIslands::LRender(VDX9RENDER *rs)
 {
-    //Рисуем патч если надо
+    // Draw a patch if needed
     if (wdmObjects->isDebug)
     {
         if (patch && core.Controls->GetDebugAsyncKeyState('1') < 0)
@@ -641,7 +641,7 @@ void WdmIslands::LRender(VDX9RENDER *rs)
             patch->DebugDraw(rs, core.GetDeltaTime() * 0.001f);
         }
     }
-    //Обновим состояние картинок
+    // Update the state of the pictures
     icons.frame += core.GetDeltaTime() * 0.001f * icons.fps;
     icons.frame = (icons.frame / icons.frames - static_cast<long>(icons.frame / icons.frames)) * icons.frames;
     if (icons.frame < 0.0f)
@@ -666,27 +666,27 @@ void WdmIslands::LRender(VDX9RENDER *rs)
         icons.f[1] = 0.0f;
     icons.f[0] *= icons.u;
     icons.f[1] *= icons.u;
-    //Получим текущую матрицу преобразования
+    // get the current transformation matrix
     static CMatrix mtx, view, prj;
     rs->GetTransform(D3DTS_VIEW, view);
     rs->GetTransform(D3DTS_PROJECTION, prj);
     mtx.EqMultiply(view, prj);
-    //Получим текущие размеры vp
+    // Get the current vp sizes
     static D3DVIEWPORT9 vp;
     rs->GetViewport(&vp);
     const auto w = static_cast<float>(vp.Width);
     const auto h = static_cast<float>(vp.Height);
-    //Получим высоту камеры
+    // Get the height of the camera
     const float cameraHeight = wdmObjects->camera->realHeight;
     const float dAlpha = core.GetDeltaTime() * (0.001f * 1.5f * 255.0f);
-    //Проецируем на экран
+    // Projecting to the screen
     labelSort.clear();
     MTX_PRJ_VECTOR prjVertex;
     for (long i = 0; i < labels.size(); i++)
     {
-        //Метка
+        // Label
         Label &label = labels[i];
-        //Прозрачность метки
+        // Label transparency
         if (label.heightView > cameraHeight)
         {
             label.alpha += dAlpha;
@@ -699,42 +699,42 @@ void WdmIslands::LRender(VDX9RENDER *rs)
             if (label.alpha < 0.0f)
                 label.alpha = 0.0f;
         }
-        //Если метку не видно, то ничего не делаем
+        // If the label is not visible, then do nothing
         if (label.alpha < 1.0f)
             continue;
-        //Считаем точку проекции
+        // calculate the projection point
         // rs->DrawSphere(label.pos, 1.0f, 0xff00ff00);
         mtx.Projection(&label.pos, &prjVertex, 1, w * 0.5f, h * 0.5f, 0, 0);
-        //Прямоугольник на экране
+        // Rectangle on screen
         label.l = prjVertex.x + label.dl; // label.dl;
         label.t = prjVertex.y + 0;        // label.dt;
         label.r = prjVertex.x + label.dr - label.dl;
         label.b = prjVertex.y + label.db - label.dt;
-        //Если метку не видно, то удаляем запись
+        // If the label is not visible, then delete the entry
         if (label.l >= w || label.t >= h || label.r < 0.0f || label.b < 0.0f)
         {
             continue;
         }
         labelSort.push_back(i);
     }
-    //Размещаем метки, чтобы не пересекались по порядку
-    //!!!
-    //Рисуем иконоки и пишем текст
+    // place the labels so that they do not overlap in order
+    // !!!
+    // Draw icons and write text
     for (long i = 0; i < labelSort.size(); i++)
     {
-        //Метка
+        // Label
         Label &label = labels[labelSort[i]];
-        //Пишем текст
+        // writing a text
         const uint32_t color = (static_cast<long>(label.alpha) << 24) | 0xffffff;
         rs->Print(label.font, color, static_cast<long>(label.l + label.textX), static_cast<long>(label.t + label.textY),
                   (char *)label.text.c_str());
-        //Рисуем картинку
+        // Draw a picture
         if (label.icon < 0)
             continue;
         rs->TextureSet(0, icons.texture);
         rs->TextureSet(1, icons.texture);
         rs->SetRenderState(D3DRS_TEXTUREFACTOR, static_cast<uint32_t>(icons.blend));
-        //Заполняем вершины
+        // Filling the vertices
         static struct
         {
             float x, y, z, rhw;
@@ -782,22 +782,22 @@ void WdmIslands::LRender(VDX9RENDER *rs)
         drawbuf[3].tv1 = drawbuf[0].tv1 + icons.v;
         drawbuf[3].tu2 = drawbuf[2].tu2;
         drawbuf[3].tv2 = drawbuf[3].tv1;
-        //Рисуем полученое
+        // draw the result
         rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX2, 2, drawbuf,
                             sizeof(drawbuf[0]), "WdmDrawLabelIcon");
     }
 }
 
-//Найти направление для прибытия в заданную точку назначения из текущей
+// Find the direction to arrive at a given destination from the current
 void WdmIslands::FindDirection(const CVECTOR &position, const CVECTOR &destination, CVECTOR &direction) const
 {
-    //Если нет патча то едем по прямой
+    // If there is no patch, then go in a straight line
     if (!patch)
     {
         direction = Norm2D(destination - position);
         return;
     }
-    //Пытаемся определить нод на котором стоим и нод к которому надо плыть
+    // trying to determine the node on which we are standing and the node to which we need to sail
     float y = 0.0f;
     const long from = patch->FindNode(position, y);
     y = 0.0f;
@@ -807,7 +807,7 @@ void WdmIslands::FindDirection(const CVECTOR &position, const CVECTOR &destinati
         direction = Norm2D(destination - position);
         return;
     }
-    //Получаем направление
+    // Getting directions
     if (!patch->FindPathDir(from, position, to, destination, to, direction))
     {
         direction = Norm2D(destination - position);
@@ -816,7 +816,7 @@ void WdmIslands::FindDirection(const CVECTOR &position, const CVECTOR &destinati
     direction = Norm2D(direction - position);
 }
 
-//Найти силу отталкивания
+// Find the repulsive force
 void WdmIslands::FindReaction(const CVECTOR &position, CVECTOR &reaction) const
 {
     if (patch)
@@ -838,7 +838,7 @@ void WdmIslands::FindReaction(const CVECTOR &position, CVECTOR &reaction) const
     }
 }
 
-//Найти случайную точку для мерчанта
+// Find a random point for a merchant
 bool WdmIslands::GetRandomMerchantPoint(CVECTOR &p)
 {
     if (merchants.size() <= 0)
@@ -850,7 +850,7 @@ bool WdmIslands::GetRandomMerchantPoint(CVECTOR &p)
     return true;
 }
 
-//Получить координаты квестового локатора
+// Get the coordinates of the quest locator
 bool WdmIslands::GetQuestLocator(const char *locName, CVECTOR &p)
 {
     if (!locName || !locName[0])
@@ -870,7 +870,7 @@ bool WdmIslands::GetQuestLocator(const char *locName, CVECTOR &p)
     return false;
 }
 
-//Проверить попадание кораблика в зону острова
+// Check if the ship is in the island zone
 bool WdmIslands::CheckIslandArea(const char *islandName, float x, float z)
 {
     for (long i = 0; i < islands.size(); i++)
@@ -885,10 +885,10 @@ bool WdmIslands::CheckIslandArea(const char *islandName, float x, float z)
     return false;
 }
 
-//Получить ближайшую точку к зоне острова
+// Get the closest point to the island zone
 void WdmIslands::GetNearPointToArea(const char *islandName, float &x, float &z)
 {
-    //Ищим область
+    // Looking for an area
     long i;
     for (i = 0; i < islands.size(); i++)
     {
@@ -903,7 +903,7 @@ void WdmIslands::GetNearPointToArea(const char *islandName, float &x, float &z)
     {
         return;
     }
-    //Перебираем рёбра выбирая ближайшую точку
+    // iterate over the edges choosing the nearest point
     curPos.x = x;
     curPos.y = 0.0f;
     curPos.z = z;
@@ -925,7 +925,7 @@ void WdmIslands::GetNearPointToArea(const char *islandName, float &x, float &z)
 
 bool WdmIslands::FindNearPoint(const GEOS::VERTEX *vrt, long numVrt)
 {
-    //Пропустим кривые данные
+    // Skip broken Data
     for (long i = 0; i < numVrt; i++)
     {
         const float dx = vrt[i].x - curPos.x;
@@ -945,15 +945,15 @@ bool WdmIslands::FindNearPoint(const GEOS::VERTEX *vrt, long numVrt)
 bool WdmIslands::IsShipInArea(long islIndex, const CVECTOR &pos)
 {
     static const float testRadius = 0.01f;
-    //Нет ареи нет пересечения
+    // No area, no intersection
     if (!islands[islIndex].area)
         return false;
-    //Проверяем соприкасаемость радиусов
+    // Checking the contact of the radii
     const float dist2 = ~(pos - islands[islIndex].area->center);
     const float rad = testRadius + islands[islIndex].area->radius;
     if (dist2 > rad * rad)
         return false;
-    //Вертикальные плоскости
+    // Vertical planes
     GEOS::PLANE p[4];
     p[0].nrm.x = 0.0f;
     p[0].nrm.y = 0.0f;
@@ -1015,15 +1015,15 @@ void WdmIslandWaves::LRender(VDX9RENDER *rs)
 
 void WdmIslandWaves::Render(VDX9RENDER *rs, float k)
 {
-    //Ставим матрицу для текстуры
-    // k = 0.5f + 0.5f*sinf(k*2.0f*PI);
+    // Setting the matrix for the texture
+    // k = 0.5f + 0.5f * sinf (k * 2.0f * PI);
     CMatrix mtx;
     mtx.m[1][1] = 0.3f + 1.0f * sinf(k * PI);
     mtx.m[2][1] = 0.0f; // 0.2f*sinf((k - 0.25f)*2.0f*PI) - 0.5f;
     rs->SetTransform(D3DTS_TEXTURE0, mtx);
-    //Ставим общую прозрачность
+    // set the overall transparency
     const float a = sinf(k * PI) * (1.0f - k * 0.5f) * 1.25f;
-    //Рисуем модель
+    // Draw the model
     SetTech("WdmIslandWaves", nullptr);
     rs->SetRenderState(D3DRS_TEXTUREFACTOR, (static_cast<long>(a * a * a * a * 255.0f) << 24) | 0xffffff);
     WdmRenderModel::LRender(rs);

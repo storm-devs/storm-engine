@@ -24,63 +24,63 @@ class LocatorArray
         float radius;
     };
 
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     LocatorArray(const char *groupName);
     virtual ~LocatorArray();
 
-    //--------------------------------------------------------------------------------------------
-    //Работа с массивом
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Working with an array
+    // --------------------------------------------------------------------------------------------
   public:
-    //Добавить локатор
+    // Add locator
     void AddLocator(CMatrix &mtx, const char *name = nullptr);
-    //Изменить матрицу локатора
+    // Change locator matrix
     void SetNewMatrix(long locIndex, CMatrix &mtx);
-    //Найти ближайший локатор по шарику
+    // Find the nearest locator by ball
     float FindNearesLocator(float x, float y, float z, long *locIndex = nullptr);
-    //Найти ближайший локатор по цилиндру
+    // Find the nearest locator by cylinder
     long FindNearesLocatorCl(float x, float y, float z, float height2, float &dist);
-    //Найти локатор по имени
+    // Find locator by name
     long FindByName(const char *locName);
-    //Получить имя локатора
+    // Get locator name
     const char *LocatorName(long locIndex);
-    //Получить координаты локатора
+    // Get locator coordinates
     bool GetLocatorPos(long locIndex, float &x, float &y, float &z);
-    //Получить матрицу локатора
+    // Get locator matrix
     bool GetLocatorPos(long locIndex, CMatrix &mtx);
-    //Проверить индекс на правильность
+    // Check the index for correctness
     bool IsValidateIndex(long locIndex) const;
-    //Количество локаторов
+    // Number of locators
     long Num() const;
-    //Имя локатора
+    // Locator name
     char *Name(long locIndex);
-    //Сравнить имена груп
+    // Compare group names
     bool CompareGroup(const char *groupName, long ghash) const;
-    //Получить имя группы
+    // Get group name
     char *GetGroupName() const;
 
-    //Установить локатору радиус
+    // Set radius of the locator
     void SetLocatorRadius(long locIndex, float radius);
-    //Получить радиус локатора
+    // Get the radius of the locator
     float GetLocatorRadius(long locIndex);
 
-    //--------------------------------------------------------------------------------------------
-    //Инкапсуляция
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Encapsulation
+    // --------------------------------------------------------------------------------------------
   public:
     static long CalcHashString(const char *str);
 
   private:
-    //Имя группы
+    // Group name
     char *group;
     long hash;
-    //Локаторы
+    // Locators
     std::vector<LocatorInfro> locator;
     long numLocators;
-    //Имена локаторов
+    // Locator names
     char *locatorNames;
     long bytesInLNArray;
 
@@ -92,7 +92,7 @@ class LocatorArray
     float viewDist;
 };
 
-//Получить имя локатора
+// Get locator name
 inline const char *LocatorArray::LocatorName(long locIndex)
 {
     if (locIndex < 0 || locIndex >= numLocators)
@@ -102,7 +102,7 @@ inline const char *LocatorArray::LocatorName(long locIndex)
     return locatorNames + locator[locIndex].name;
 }
 
-//Получить координаты локатора
+// Get locator coordinates
 inline bool LocatorArray::GetLocatorPos(long locIndex, float &x, float &y, float &z)
 {
     if (locIndex < 0 || locIndex >= numLocators)
@@ -113,7 +113,7 @@ inline bool LocatorArray::GetLocatorPos(long locIndex, float &x, float &y, float
     return true;
 }
 
-//Получить матрицу локатора
+// Get locator matrix
 inline bool LocatorArray::GetLocatorPos(long locIndex, CMatrix &mtx)
 {
     if (locIndex < 0 || locIndex >= numLocators)
@@ -122,39 +122,39 @@ inline bool LocatorArray::GetLocatorPos(long locIndex, CMatrix &mtx)
     return true;
 }
 
-//Проверить индекс на правильность
+// Check the index for correctness
 inline bool LocatorArray::IsValidateIndex(long locIndex) const
 {
     return (locIndex < 0 || locIndex >= numLocators);
 }
 
-//Количество локаторов
+// Number of locators
 inline long LocatorArray::Num() const
 {
     return numLocators;
 }
 
-//Имя локатора
+// Locator name
 inline char *LocatorArray::Name(long locIndex)
 {
     Assert(locIndex >= 0 && locIndex < numLocators);
     return locatorNames + locator[locIndex].name;
 }
 
-//Получить имя группы
+// Get group name
 inline char *LocatorArray::GetGroupName() const
 {
     return group;
 }
 
-//Установить локатору радиус
+// Set radius of the locator
 inline void LocatorArray::SetLocatorRadius(long locIndex, float radius)
 {
     Assert(locIndex >= 0 && locIndex < numLocators);
     locator[locIndex].radius = radius;
 }
 
-//Получить радиус локатора
+// Get the radius of the locator
 inline float LocatorArray::GetLocatorRadius(long locIndex)
 {
     Assert(locIndex >= 0 && locIndex < numLocators);

@@ -18,9 +18,9 @@ const char *WdmCounter::skytex[WMD_NUM_SKYS] = {
     "WorldMap\\Sky\\d3.tga", "WorldMap\\Sky\\n3.tga", "WorldMap\\Sky\\d4.tga", "WorldMap\\Sky\\n4.tga",
 };
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 WdmCounter::WdmCounter()
 {
@@ -115,14 +115,14 @@ bool WdmCounter::Init()
     return true;
 }
 
-//Расчёты
+// Calculations
 void WdmCounter::Update(float dltTime)
 {
 }
 
 void WdmCounter::LRender(VDX9RENDER *rs)
 {
-    //Матрица камеры
+    // Camera matrix
     static CMatrix view, prj, oldPrj;
     rs->GetTransform(D3DTS_VIEW, view);
     rs->GetTransform(D3DTS_PROJECTION, oldPrj);
@@ -132,7 +132,7 @@ void WdmCounter::LRender(VDX9RENDER *rs)
     prj.BuildProjectionMatrix(0.1f, 4.0f, 3.0f, 10.0f, 100.0f);
     rs->SetTransform(D3DTS_PROJECTION, prj);
     rs->SetTransform(D3DTS_VIEW, CMatrix());
-    //Небо
+    // Sky
     const long numSkys = sizeof(skyseq) / sizeof(long);
     if (dayCounter < 0)
         dayCounter = wdmObjects->wm->day;
@@ -166,10 +166,10 @@ void WdmCounter::LRender(VDX9RENDER *rs)
     rs->TextureSet(1, skyseq[two]);
     rs->SetRenderState(D3DRS_TEXTUREFACTOR, (static_cast<long>(hr * 255.0f) << 24) | 0x00ffffff);
     sky->LRender(rs);
-    //Корпус
+    // Housing
     WdmRenderModel::LRender(rs);
-    //Цифры
-    //День
+    // Numbers
+    // Day
     const auto day = wdmObjects->wm->day - 1;
     const auto mon = wdmObjects->wm->mon - 1;
     const auto days = wdmObjects->wm->month[mon + 1];
@@ -236,7 +236,7 @@ void WdmCounter::LRender(VDX9RENDER *rs)
         dlt = day < 20 ? 0.0f : 0.25f;
         DrawNum(rs, d[1], dlt, (low + 1.0f) * 0.1f);
     }
-    //Месяц
+    // Month
     kMove = 0.0f;
     if (kNext > 1.0f)
         kNext = 1.0f;
@@ -248,7 +248,7 @@ void WdmCounter::LRender(VDX9RENDER *rs)
         kMove = kNext;
     DrawNum(rs, m[0], 0.75f, ((mon + 1) / 10 + kMove + 7.0f) * 0.1f);
     DrawNum(rs, m[1], dlt, (low + 1.0f) * 0.1f);
-    //Год
+    // Year
     kMove = 0.0f;
     if (mon == 11 && day == 30)
         kMove = kNext;

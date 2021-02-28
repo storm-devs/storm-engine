@@ -35,7 +35,7 @@ class WM_INTERFACE : public Entity
     }
 
   protected:
-    WMShipIcon *m_pShipIcon; // иконки команд и целеуказаний в боевом меню
+    WMShipIcon *m_pShipIcon; // icons for commands and targeting in the combat menu
     WMShipCommandList *m_pCommandList;
     bool m_bVisible;
     long m_nCommandListVerticalOffset;

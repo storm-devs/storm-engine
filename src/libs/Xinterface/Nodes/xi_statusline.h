@@ -36,7 +36,7 @@ class CXI_STATUSLINE : public CINODE
     long m_iBuf;         // index buffer identificator
     long m_nVert;        // vertex quantity
     long m_nIndx;        // index quantity
-    float m_fLineOffset; // смещение от края для рамки
+    float m_fLineOffset; // edge offset for frame
     FXYRECT m_texRect1;
     FXYRECT m_texRect2;
 };

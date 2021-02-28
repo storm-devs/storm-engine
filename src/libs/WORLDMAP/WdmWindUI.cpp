@@ -15,9 +15,9 @@
 #include "WdmPlayerShip.h"
 #include "WorldMap.h"
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 WdmWindUI::WdmWindUI()
 {
@@ -81,7 +81,7 @@ WdmWindUI::~WdmWindUI()
 
 //============================================================================================
 
-//Считать имя фонта
+// Read font name
 void WdmWindUI::SetAttributes(ATTRIBUTES *apnt)
 {
     if (!apnt)
@@ -121,7 +121,7 @@ void WdmWindUI::SetAttributes(ATTRIBUTES *apnt)
     }
 }
 
-//Отрисовка
+// Rendering
 void WdmWindUI::LRender(VDX9RENDER *rs)
 {
     if (wdmObjects->isNextDayUpdate)
@@ -150,25 +150,25 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
         if (rum < 0)
             rum = 0;
     }
-    //Параметры ветра у игрока
+    // Player's wind parameters
     float x, y, ay;
     wdmObjects->playerShip->GetPosition(x, y, ay);
     CVECTOR windDir;
     resizeRatio = wdmObjects->resizeRatio;
     const auto widForce = wdmObjects->GetWind(x, y, windDir);
     const auto ang = static_cast<float>(atan2(windDir.x, windDir.z));
-    //Параметры экрана
+    // Screen parameters
     float w, h;
     wdmObjects->GetVPSize(w, h);
     auto kDef = rs->GetHeightDeformator();
-    //Центр штуки
+    // Center of the thing
     // float cx = (w - 128.0f - 16.0f) + 64.0f;
     float cx = w - (128.0f) * resizeRatio - 16.0f + 64.0f;
     // float cy = (-40.0f) + 128.0f;
     float cy = -40.0f + 128.0f * resizeRatio;
-    //Буфер для рисования плашек
+    // Buffer for drawing
     Vertex buf[(3 * 2) * 2];
-    //Небо
+    // Sky
     rs->TextureSet(0, txSky);
     rs->TextureSet(1, txSkyMask);
 
@@ -180,7 +180,7 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     FillRectUV1(buf, 0.0f, 0.0f, 1.0f, 1.0f);
     FillRectColor(buf, 0x80ffffff);
     DrawRects(buf, 1, "WdmInterfaceDrawSky");
-    //Направление ветра
+    // Direction of the wind
     rs->TextureSet(0, txWindPointer);
 
     // FillRectCoord(buf, cx - 16.0f, cy - 64.0f, 32.0f, 128.0f, ang);
@@ -190,7 +190,7 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     FillRectUV(buf, 0.0f, 0.0f, 1.0f, 1.0f);
     FillRectColor(buf, 0xffffffff);
     DrawRects(buf, 1, "WdmDrawMapBlend");
-    //Сила ветра
+    // Wind force
     rs->TextureSet(0, txBar);
     rs->TextureSet(1, txBarMask);
 
@@ -209,7 +209,7 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     }
     FillRectColor(buf, 0xffffffff);
     DrawRects(buf, 1, "WdmInterfaceDrawSky");
-    //Рамка
+    // Frame
     rs->TextureSet(0, txBack);
 
     // FillRectCoord(buf, cx - 64.0f, cy - 128.0f, 128.0f, 256.0f);
@@ -218,7 +218,7 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     FillRectUV(buf, 0.0f, 0.0f, 1.0f, 1.0f);
     FillRectColor(buf, 0xffffffff);
     DrawRects(buf, 1, "WdmDrawMapBlend");
-    //Пишем дату
+    // writing a date
     char tbuf[128];
     sprintf_s(tbuf, sizeof(tbuf) - 1, "%i %s %i", wdmObjects->wm->day, month[wdmObjects->wm->mon - 1],
               wdmObjects->wm->year);
@@ -231,9 +231,9 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, 0, resizeRatio, 0, 0, long(cx),
                  long(cy + (98.0f - fh * 0.5f) * resizeRatio), tbuf);
 
-    //Центр
+    // Center
     cy += 128.0f + 32.0f;
-    //Рисуем моральную бару
+    // Draw a moral bar
     rs->TextureSet(0, txMoraleBar);
     rs->TextureSet(1, txMoraleMask);
 
@@ -244,7 +244,7 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     FillRectUV1(buf, 0.0f, 0.0f, 1.0f, 1.0f);
     FillRectColor(buf, 0xffffffff);
     DrawRects(buf, 1, "WdmInterfaceDrawSky");
-    //Рисуем моральную плашку
+    // Drawing a moral block
     rs->TextureSet(0, txMorale);
 
     // FillRectCoord(buf, cx - 64.0f, cy - 32.0f, 128.0f, 64.0f);
@@ -253,7 +253,7 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     FillRectUV(buf, 0.0f, 0.0f, 1.0f, 1.0f);
     FillRectColor(buf, 0xffffffff);
     DrawRects(buf, 1, "WdmDrawMapBlend");
-    //Пишем количество припасов
+    // write the number of supplies
     sprintf_s(tbuf, sizeof(tbuf) - 1, "%i%s", food > 99999 ? 99999 : food, food > 99999 ? "+" : "");
     tbuf[sizeof(tbuf) - 1] = 0;
     fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<long>(w));
@@ -262,7 +262,7 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, 0, resizeRatio, 0, 0, long(cx - 24.0f * resizeRatio),
                  long(cy + 30.0f * resizeRatio), tbuf);
 
-    //Пишем количество рома --> ugeen 29.10.10
+    // write the amount of rum --> ugeen 10.29.10
     _snprintf(tbuf, sizeof(tbuf) - 1, "%i", rum);
     tbuf[sizeof(tbuf) - 1] = 0;
     fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<long>(w));
@@ -271,7 +271,7 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, 0, resizeRatio, 0, 0, long(cx + 24.0f * resizeRatio),
                  long(cy + 30.0f * resizeRatio), tbuf);
 
-    //Рамка с координатами
+    // Coordinate frame
     rs->TextureSet(0, txCoord);
 
     // FillRectCoord(buf, cx - 64.0f, cy + 64.0f, 128.0f, 64.0f);
@@ -281,7 +281,7 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     FillRectColor(buf, 0xffffffff);
     DrawRects(buf, 1, "WdmDrawMapBlend");
 
-    // выводим строку с координатами
+    // display a line with coordinates
     _snprintf(tbuf, sizeof(tbuf) - 1, "%s", wdmObjects->coordinate);
     tbuf[sizeof(tbuf) - 1] = 0;
     fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<long>(w));
@@ -300,7 +300,7 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, 0, resizeRatio, 0, 0, long(cx),
                  long(cy + (64.0f + 13.0f) * resizeRatio), tbuf);
 
-    // национальный флаг
+    // National flag
     float addtu = 0.125;
     rs->TextureSet(0, txNationFlag);
 

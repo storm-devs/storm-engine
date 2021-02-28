@@ -16,29 +16,29 @@
 
 class WdmEnemyShip : public WdmShip
 {
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     WdmEnemyShip();
     virtual ~WdmEnemyShip();
 
-    //Расчёты
+    // Calculations
     void Update(float dltTime) override;
 
-    //Отрисовка дебажной информации
+    // Rendering debug information
     void LRender(VDX9RENDER *rs) override;
 
-    //Найти позицию для корабля относительно игрока
+    // Find the position for the ship relative to the player
     static bool GeneratePosition(float objRadius, float brnDltAng, float &x, float &z);
 
-    //Установить время жизни
+    // Set life time
     void SetLiveTime(float time);
-    //Получить время жизни
+    // Get life time
     float GetLiveTime() const;
 
     bool isEnableKill;
-    bool isEnemy; //Если установлен, то атакует нас
+    bool isEnemy; // If set, then attacks us
     bool isEntryPlayer;
 
     uint32_t type;
@@ -48,39 +48,39 @@ class WdmEnemyShip : public WdmShip
 
     bool canSkip;
 
-    //Получить имя атрибута
+    // Get attribute name
     const char *GetAttributeName() const;
 
   protected:
-    //Найти силу притягивающую в нужном направлении
+    // Find the pulling force in the desired direction
     virtual void FindMoveForce();
-    //Найти силу отталкивающую от островов
+    // Find the force that repels from the islands
     virtual void FindIslandForce();
-    //Найти силу отталкивающую от кораблей
+    // Find the force that repels from the ships
     virtual void FindShipsForce();
-    //Все расчёты то перемещению вместе
+    // All move calculations together
     virtual void Move(float dltTime);
-    //Проверка на завершение
+    // Completion check
     virtual bool KillTest();
-    //Обновление сохраняемых данных
+    // Updating stored data
     virtual void UpdateSaveData();
 
   public:
-    //Установка параметров
+    // Setting parameters
     virtual void SetSaveAttribute(ATTRIBUTES *save);
     void DeleteUpdate();
 
-    //--------------------------------------------------------------------------------------------
-    //Инкапсуляция
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Encapsulation
+    // --------------------------------------------------------------------------------------------
 
   protected:
-    float mx, mz; //Вектор направления куда перемещаться
-    float ix, iz; //Вектор отталкивания от островов
-    float sx, sz; //Вектор отталкивания от кораблей
-    float dx, dz; //Вектор результирующего направления
+    float mx, mz; // Direction vector where to travel
+    float ix, iz; // Vector of repulsion from islands
+    float sx, sz; // Vector of repulsion from ships
+    float dx, dz; // Vector of the resulting direction
 
-    //Обращать ли внимание при расталкивание на плеера
+    // Whether should pay attention when pushing to the player
     bool isLookOnPlayer;
 
     ATTRIBUTES *saveAttribute;
@@ -92,7 +92,7 @@ class WdmEnemyShip : public WdmShip
     float slowingAlfa;
 };
 
-//Получить время жизни
+// Get life time
 inline float WdmEnemyShip::GetLiveTime() const
 {
     if (!isEnableKill)

@@ -27,9 +27,9 @@ float fCausticFrame = 0.0f;
 long iCausticTex[32];
 float fCausticSpeed = 0.0f;
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 Location::Location()
 {
@@ -77,7 +77,7 @@ Location::~Location()
     delete sphereVertex;
 }
 
-//Инициализация
+// Initialization
 bool Location::Init()
 {
     // DX9 render
@@ -104,15 +104,15 @@ bool Location::Init()
     return true;
 }
 
-//Исполнение
+// Execution
 void Location::Execute(uint32_t delta_time)
 {
     bSwimming = AttributesPointer->GetAttributeAsDword("swimming", 1) != 0;
 
-    //Обсчёт персонажей
+    // Updating characters
     if (!isDebugView)
         Update(delta_time);
-    //Обсчёт сообщений
+    // Updating messages
     const auto dltTime = delta_time * 0.001f;
     for (long i = 0; i < sizeof(message) / sizeof(DmgMessage); i++)
     {
@@ -121,7 +121,7 @@ void Location::Execute(uint32_t delta_time)
         message[i].p.y += dltTime * 0.2f;
         message[i].alpha -= dltTime * 0.4f;
     }
-    //Обновление данных для травы
+    // Updating data for grass
     auto *grs = static_cast<Grass *>(EntityManager::GetEntityPointer(grass));
     if (grs)
     {
@@ -133,7 +133,7 @@ void Location::Execute(uint32_t delta_time)
         }
         grs->numCharacters = supervisor.numCharacters;
     }
-    //Обновление в локации
+    // Location update
     locationTimeUpdate += dltTime;
     if (locationTimeUpdate > 1.0f)
     {
@@ -151,15 +151,15 @@ void Location::Realize(uint32_t delta_time)
     while (fCausticFrame >= 32.0f)
         fCausticFrame -= 32.0f;
 
-    //Отрисовка локаторов
+    // Rendering locators
     for (long i = 0; i < numLocators; i++)
         if (locators[i]->isVisible)
             DrawLocators(locators[i]);
     if (IsDebugView())
     {
-        //Отрисовка патча
+        // Patch rendering
         ptc.DebugDraw(rs, delta_time * 0.001f);
-        //Информация о локации
+        // Location information
         const char *c = nullptr;
         if (AttributesPointer)
         {
@@ -176,10 +176,10 @@ void Location::Realize(uint32_t delta_time)
             }
         }
     }
-    //Обсчёт персонажей
+    // Updating characters
     if (isDebugView)
         Update(delta_time);
-    //Отрисовка сообщений
+    // Rendering messages
     auto i = curMessage;
     for (long c = 0; c < sizeof(message) / sizeof(DmgMessage); c++, i--)
     {
@@ -191,7 +191,7 @@ void Location::Realize(uint32_t delta_time)
         // message[i].hp);
         Print(message[i].p, 10.0f, 0, message[i].alpha, message[i].c, 0.8f, "%.0f", message[i].hit);
     }
-    //Отрисовка полосок над персонажами
+    // Drawing bars over characters
     DrawEnemyBars();
     enemyBarsCount = 0;
 }
@@ -205,9 +205,9 @@ void Location::Update(uint32_t delta_time)
     if (delta_time > max_delta_time)
         delta_time = max_delta_time;
     auto dltTime = delta_time * 0.001f;
-    //Эффекты моделей
+    // Model effects
     model.Update(dltTime);
-    //Персонажи
+    // Characters
     if (!isPause)
     {
         supervisor.PreUpdate(dltTime);
@@ -221,7 +221,7 @@ void Location::Update(uint32_t delta_time)
         supervisor.Update(0.0f);
 }
 
-//Сообщения
+// Messages
 uint64_t Location::ProcessMessage(MESSAGE &message)
 {
     long i;
@@ -258,13 +258,13 @@ uint64_t Location::ProcessMessage(MESSAGE &message)
             return 0;
         if (!model[lastLoadStaticModel])
             return 0;
-        //Ищим группу
+        // Looking for a group
         message.String(sizeof(name), name);
         name[sizeof(name) - 1] = 0;
         la = FindLocatorsGroup(name);
         if (!la)
             return 0;
-        //Ищем локатор
+        // Looking for a locator
         message.String(sizeof(name), name);
         name[sizeof(name) - 1] = 0;
         i = la->FindByName(name);
@@ -436,7 +436,7 @@ uint64_t Location::ProcessMessage(MESSAGE &message)
     return 0;
 }
 
-//Найти группу локаторов
+// Find locator group
 LocatorArray *Location::FindLocatorsGroup(const char *gName)
 {
     if (!gName || !gName[0])
@@ -456,7 +456,7 @@ long Location::LoadStaticModel(const char *modelName, const char *tech, long lev
     const auto im = model.CreateModel(modelName, tech, level, true, useDynamicLights ? GetLights() : nullptr);
     if (im < 0)
         return -1;
-    //Указатель на геометрию
+    // Pointer to geometry
     auto *mdl = model[im];
     if (!mdl)
     {
@@ -475,12 +475,12 @@ long Location::LoadStaticModel(const char *modelName, const char *tech, long lev
         model.DeleteModel(im);
         return -1;
     }
-    //Добавим модельку в специальные слои
+    // Add the model to special layers
     EntityManager::AddToLayer(SHADOW, mdl->GetId(), 10);
     EntityManager::AddToLayer(SUN_TRACE, mdl->GetId(), 10);
     EntityManager::AddToLayer(BLOOD, mdl->GetId(), 100);
     EntityManager::AddToLayer(RAIN_DROPS, mdl->GetId(), 100);
-    //Зачитываем все локаторы
+    // Reading out all locators
     GEOS::INFO ginfo;
     GEOS::LABEL label;
     g->GetInfo(ginfo);
@@ -533,13 +533,13 @@ long Location::LoadStaticModel(const char *modelName, const char *tech, long lev
 
 bool Location::LoadCharacterPatch(const char *ptcName)
 {
-    //Формируем путь до файла
+    // Form the path to the file
     char path[512];
     strcpy_s(path, "resource\\models\\");
     strcat_s(path, model.modelspath);
     strcat_s(path, ptcName);
     strcat_s(path, ".ptc");
-    //Загружаем патч
+    // load the patch
     const auto result = ptc.Load(path);
     if (!result)
         core.Trace("Can't loaded patch data file %s.ptc for npc.", ptcName);
@@ -731,7 +731,7 @@ void Location::UpdateLocators()
     atr = AttributesPointer->FindAClass(AttributesPointer, "locators");
     if (atr)
     {
-        //Создаём новые атрибуты
+        // Creating new attributes
         for (long i = 0; i < numLocators; i++)
         {
             char *groupName = locators[i]->GetGroupName();
@@ -820,20 +820,20 @@ void Location::DrawLocators(LocatorArray *la)
 {
     if (la->kViewRadius > 0.0f)
     {
-        //Стейты
+        // States
         if (!sphereNumTrgs)
             CreateSphere();
         CMatrix mPos;
-        //Уберём текстуры
+        // Remove textures
         rs->TextureSet(0, -1);
         rs->TextureSet(1, -1);
-        //Стартуем технику
+        // start the technique
         const bool isSet = rs->TechniqueExecuteStart("DbgDrawLocators");
         rs->SetRenderState(D3DRS_TEXTUREFACTOR, la->color);
-        //Рисуем
+        // Draw
         for (long i = 0; i < la->Num(); i++)
         {
-            //Рисуем шарик
+            // Draw a ball
             la->GetLocatorPos(i, mPos);
             const float rad = la->GetLocatorRadius(i) * la->kViewRadius;
             if (rad <= 0.0f)
@@ -856,12 +856,12 @@ void Location::DrawLocators(LocatorArray *la)
             {
             }
     }
-    //Подписываем
+    // sign
     static CMatrix mtx, view, prj;
     rs->GetTransform(D3DTS_VIEW, view);
     rs->GetTransform(D3DTS_PROJECTION, prj);
     mtx.EqMultiply(view, prj);
-    //Получим текущие размеры vp
+    // Get the current vp sizes
     static D3DVIEWPORT9 vp;
     rs->GetViewport(&vp);
     const float w = vp.Width * 0.5f;
@@ -873,7 +873,7 @@ void Location::DrawLocators(LocatorArray *la)
     view.Transposition();
     const float d = view.Vz() | view.Pos();
     const float viewDst = la->viewDist * la->viewDist;
-    //Рисуем
+    // Draw
     for (long i = 0; i < la->Num(); i++)
     {
         float lbh = la->GetLocatorRadius(i) * la->kViewRadius;
@@ -881,7 +881,7 @@ void Location::DrawLocators(LocatorArray *la)
             continue;
         if (lbh > 1.5f)
             lbh = 1.5f;
-        //Пишем текст
+        // writing a text
         la->GetLocatorPos(i, lvrt.x, lvrt.y, lvrt.z);
         if ((lvrt | view.Vz()) < d)
             continue;
@@ -904,17 +904,17 @@ void Location::DrawLine(const CVECTOR &s, uint32_t cs, const CVECTOR &d, uint32_
     lineVertex[1].v = d;
     lineVertex[1].c = cd;
     rs->SetTransform(D3DTS_WORLD, CMatrix());
-    //Уберём текстуры
+    // Remove textures
     rs->TextureSet(0, -1);
     rs->TextureSet(1, -1);
-    //Установим Z
+    // set Z
     uint32_t oldZState = 1;
     rs->GetRenderState(D3DRS_ZENABLE, &oldZState);
     rs->SetRenderState(D3DRS_ZENABLE, useZ);
-    //Рисуем
+    // Draw
     rs->DrawPrimitiveUP(D3DPT_LINELIST, D3DFVF_XYZ | D3DFVF_DIFFUSE, 1, lineVertex, sizeof(SphVertex),
                         "DbgLocationDrawLine");
-    //Востанавливаем
+    // restore
     rs->SetRenderState(D3DRS_ZENABLE, oldZState);
 }
 
@@ -944,7 +944,7 @@ void Location::CreateSphere()
 
     const CVECTOR light = !CVECTOR(0.0f, 0.0f, 1.0f);
     float kColor;
-    //Заполняем вершины
+    // Filling the vertices
     long t = 0;
     for (long i = 0; i < a2; i++)
     {
@@ -986,7 +986,7 @@ void Location::CreateSphere()
             sphereVertex[t * 3 + 5].v.z = r2 * z2;
             CalcKColor(5);
             sphereVertex[t * 3 + 5].c = Color;
-            //Добавили 2 треугольника
+            // Added 2 triangles
             t += 2;
         }
     }
@@ -1003,16 +1003,16 @@ bool Location::IsDebugView()
     return core.Controls->GetDebugAsyncKeyState('G') < 0 || core.Controls->GetDebugAsyncKeyState('O') < 0;
 }
 
-//Написать текст
+// Write text
 void Location::Print(const CVECTOR &pos3D, float rad, long line, float alpha, uint32_t color, float scale,
                      const char *format, ...) const
 {
     static char buf[256];
     scale *= 2.0f;
-    //Печатаем в буфер
+    // print to the buffer
     long len = _vsnprintf_s(buf, sizeof(buf) - 1, format, (char *)(&format + 1));
     buf[sizeof(buf) - 1] = 0;
-    //Ищем позицию точки на экране
+    // Find a position of a point on the screen
     static CMatrix mtx, view, prj;
     static D3DVIEWPORT9 vp;
     MTX_PRJ_VECTOR vrt;
@@ -1029,10 +1029,10 @@ void Location::Print(const CVECTOR &pos3D, float rad, long line, float alpha, ui
     rs->GetViewport(&vp);
     mtx.Projection((CVECTOR *)&pos3D, &vrt, 1, vp.Width * 0.5f, vp.Height * 0.5f, sizeof(CVECTOR),
                    sizeof(MTX_PRJ_VECTOR));
-    //Ищем позицию
+    // Find a position
     const float fh = rs->CharHeight(FONT_DEFAULT) * 0.8f;
     vrt.y -= (line + 0.5f) * fh * scale;
-    //Прозрачность
+    // Transparency
     const float kDist = 0.75f;
     if (alpha < 0.0f)
         alpha = 0.0f;
@@ -1046,12 +1046,12 @@ void Location::Print(const CVECTOR &pos3D, float rad, long line, float alpha, ui
     if (alpha <= 0.0f)
         return;
     color = (static_cast<uint32_t>(alpha * 255.0f) << 24) | (color & 0xffffff);
-    //Печатаем текст
+    // print the text
     rs->ExtPrint(FONT_DEFAULT, color, 0x00000000, PR_ALIGN_CENTER, false, scale, 0, 0, static_cast<long>(vrt.x),
                  static_cast<long>(vrt.y), buf);
 }
 
-//Добавить сообщение о повреждении
+// Add a damage message
 void Location::AddDamageMessage(const CVECTOR &pos3D, float hit, float curhp, float maxhp)
 {
     curMessage++;
@@ -1077,7 +1077,7 @@ void Location::AddDamageMessage(const CVECTOR &pos3D, float hit, float curhp, fl
         (static_cast<long>(r * 255.0f) << 16) | (static_cast<long>(g * 255.0f) << 8) | static_cast<long>(b * 255.0f);
 }
 
-//Нарисовать на данном кадре полоски над врагом
+// Draw bars above the enemy in this frame
 void Location::DrawEnemyBars(const CVECTOR &pos, float hp, float energy, float alpha)
 {
     if (enemyBarsCount >= sizeof(enemyBar) / sizeof(enemyBar[0]))
@@ -1144,12 +1144,12 @@ void Location::TestLocatorsInPatch(MESSAGE &message)
     }
 }
 
-//Отрисовка полосок над персонажами
+// Drawing bars over characters
 void Location::DrawEnemyBars()
 {
     const float maxViewDist = 12.0f;
     const float alphaThresholdRelativeDist = 0.8f;
-    //Текущии параметры сцены
+    // Current scene parameters
     static CMatrix mtx, view, prj;
     static D3DVIEWPORT9 vp;
     struct SortElement
@@ -1166,10 +1166,10 @@ void Location::DrawEnemyBars()
     mtx.EqMultiply(view, prj);
     view.Transposition();
     rs->GetViewport(&vp);
-    //Перебираем все записи
+    // Looping through all entries
     for (long i = 0; i < enemyBarsCount; i++)
     {
-        //Ищем позицию точки на экране
+        // Find a position of a point on the screen
         CVECTOR &pos3D = enemyBar[i].p;
         const float dist = ~(pos3D - view.Pos());
         if (dist >= maxViewDist * maxViewDist)
@@ -1180,7 +1180,7 @@ void Location::DrawEnemyBars()
         MTX_PRJ_VECTOR vrt;
         mtx.Projection(static_cast<CVECTOR *>(&pos3D), &vrt, 1, vp.Width * 0.5f, vp.Height * 0.5f, sizeof(CVECTOR),
                        sizeof(MTX_PRJ_VECTOR));
-        //Определяем прозрачность
+        // Calculating transparency
         float k = sqrtf(dist) / maxViewDist;
         if (k > alphaThresholdRelativeDist)
         {
@@ -1194,7 +1194,7 @@ void Location::DrawEnemyBars()
         if (!color)
             continue;
         color = (color << 24) | 0x007f7f7f;
-        //Добавим в список отрисовка
+        // Add to the rendering list
         sort[sortCount].vrt = vrt;
         sort[sortCount].color = color;
         sort[sortCount].hp = enemyBar[i].hp;
@@ -1202,7 +1202,7 @@ void Location::DrawEnemyBars()
         selements[sortCount] = &sort[sortCount];
         sortCount++;
     }
-    // Cортировка по дистанции
+    // Sort by distance
     for (long i = 0; i < sortCount - 1; i++)
     {
         for (long j = i + 1; j < sortCount; j++)
@@ -1215,7 +1215,7 @@ void Location::DrawEnemyBars()
             }
         }
     }
-    //Отрисовка
+    // Rendering
     for (long i = 0; i < sortCount; i++)
     {
         MTX_PRJ_VECTOR &vrt = selements[i]->vrt;
@@ -1229,7 +1229,7 @@ void Location::DrawEnemyBars()
             width *= k;
             height *= k;
         }
-        //Подложка
+        // Background
         bar[0].p.x = vrt.x - width;
         bar[0].p.y = vrt.y - height;
         bar[0].u = 0.0f;
@@ -1248,7 +1248,7 @@ void Location::DrawEnemyBars()
         bar[5].p.y = vrt.y + height;
         bar[5].u = 1.0f;
         bar[5].v = 0.5f;
-        //Жизнь
+        // A life
         bar[6].p.x = vrt.x - width;
         bar[6].p.y = vrt.y - height;
         bar[6].u = 0.0f;
@@ -1267,7 +1267,7 @@ void Location::DrawEnemyBars()
         bar[11].p.y = vrt.y;
         bar[11].u = 1.0f;
         bar[11].v = 0.75f;
-        //Энергия
+        // Energy
         bar[12].p.x = vrt.x - width;
         bar[12].p.y = vrt.y;
         bar[12].u = 0.0f;
@@ -1286,17 +1286,17 @@ void Location::DrawEnemyBars()
         bar[17].p.y = vrt.y + height;
         bar[17].u = 1.0f;
         bar[17].v = 1.0f;
-        //Общие поля
+        // Common fields
         for (long n = 0; n < sizeof(bar) / sizeof(bar[0]); n++)
         {
             bar[n].p.z = vrt.z;
             bar[n].rhw = vrt.rhw;
             bar[n].c = color;
         }
-        //Корректируем полоски
+        // Adjusting the bars
         CorrectBar(selements[i]->hp, 0.03f, 0.97f, bar + 6);
         CorrectBar(selements[i]->energy, 0.03f, 0.97f, bar + 12);
-        //Рисуем
+        // Draw
         rs->TextureSet(0, enemyBarsTexture);
         rs->DrawPrimitiveUP(D3DPT_TRIANGLELIST, D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1, 6, bar, sizeof(bar[0]),
                             "LocationModelBlend");

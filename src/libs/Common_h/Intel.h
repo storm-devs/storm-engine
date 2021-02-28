@@ -121,13 +121,13 @@ inline bool Intel::IsSSE()
 
     if (dwEdx & (1<<25))
     {
-      // SSE может быть запрещено OS, либо отсутствовать расширенная поддержка
-      // контекста (24 бит edx CPUID(1)) !
+      // SSE may be disabled by the OS, or extended support may be missing
+      // context (24 bit edx CPUID (1))!
       if (dwEdx & (1<<24))
       {
         __try
         {
-          // попытаемся исполнить комманду...
+          // try to execute the command ...
           __asm xorps xmm0, xmm0
 
           bSSE = true;

@@ -164,7 +164,7 @@ void CXI_BUTTON::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const 
     // (dark)
     m_dwDarkColor = GetIniARGB(ini1, name1, ini2, name2, "darkColor", 0xFFFFFFFF);
 
-    // скорость мигани€
+    // blinking speed
     m_fBlindSpeed = GetIniFloat(ini1, name1, ini2, name2, "blindTimeSec", -1.f);
     if (m_fBlindSpeed <= 0.f)
         m_fBlindSpeed = 1.f;
@@ -300,7 +300,7 @@ uint32_t CXI_BUTTON::MessageProc(long msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
-    case 0: // —менить позицию кнопки
+    case 0: // change the position of the button
         m_rect.left = message.Long();
         m_rect.top = message.Long();
         m_rect.right = message.Long();
@@ -308,14 +308,14 @@ uint32_t CXI_BUTTON::MessageProc(long msgcode, MESSAGE &message)
         GetAbsoluteRect(m_rect, message.Long());
         break;
 
-    case 1: // —менить текстурные координаты
+    case 1: // change texture coordinates
         m_tRect.left = message.Float();
         m_tRect.top = message.Float();
         m_tRect.right = message.Float();
         m_tRect.bottom = message.Float();
         break;
 
-    case 2: // —менить картинку
+    case 2: // change picture
     {
         char param[256];
         message.String(sizeof(param), param);

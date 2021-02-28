@@ -2,7 +2,7 @@
 #include "../Utils.h"
 #include "ship_base.h"
 
-// определим вертексы
+// define the vertices
 #define SPV_FORMAT (D3DFVF_XYZ | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2)
 #define MAX_SHIPINFO_DIST_IN_POW2 1000000.f
 

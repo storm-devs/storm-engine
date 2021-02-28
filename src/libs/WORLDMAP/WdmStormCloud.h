@@ -21,28 +21,28 @@ class WdmStormCloud : public WdmCloud
         float tu, tv;
     };
 
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     WdmStormCloud();
     virtual ~WdmStormCloud();
 
-    //Расчёты
+    // Calculations
     virtual void Update(float dltTime);
 
-    //Отрисовка
+    // Rendering
     virtual void PRender(VDX9RENDER *rs);
     virtual void LRender(VDX9RENDER *rs);
 
-    //--------------------------------------------------------------------------------------------
-    //Инкапсуляция
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Encapsulation
+    // --------------------------------------------------------------------------------------------
   private:
     virtual void BuildCloud(long n);
     void FillRects();
 
-    //Параметры молнии
+    // Lightning parameters
     long curLightning;
     float lightningWaitTime;
     float lightningTime;
@@ -50,11 +50,11 @@ class WdmStormCloud : public WdmCloud
     long lastColor;
     long lightningColor;
 
-    //Дождик
+    // Rain
     long rainTexture;
     float curU, curV;
-    CVECTOR rainpos[2048];        //Позиция на партикле
-    static RainVertex rain[4096]; //Текущий массив для отрисовки
+    CVECTOR rainpos[2048];        // Particle position
+    static RainVertex rain[4096]; // The current array to draw
 };
 
 #endif

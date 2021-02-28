@@ -82,158 +82,158 @@
 // Location messages
 //============================================================================================
 
-//Локация
-//Добавить модельку в локацию
-//"lssl" загрузить статическую модельку, считать её локаторы, установить технику рендера и уровень рисования
+// Location
+// Add a model to a location
+// "lssl" load static model, read its locators, set rendering technique and drawing level
 #define MSG_LOCATION_ADD_MODEL 30100
-#define MSG_LOCATION_GET_MODEL 30101 //"le" получить идентификатор модельки
-//Установить последней добавленной модельке свойства
-#define MSG_LOCATION_MODEL_SET_POS 30110 //"lss" поместить в локатор последнюю загруженную модельку
-#define MSG_LOCATION_MODEL_SET_ROT 30111 //"lfff" установть скорость вращения последней загруженной модельке
-//установить эффект скольжения текстуры на последнюю загруженную модельку (ffff - скорости u0, v0, u1, v1)
+#define MSG_LOCATION_GET_MODEL 30101 // "le" get model identifier
+// Set the last added model properties
+#define MSG_LOCATION_MODEL_SET_POS 30110 // "lss" put the last loaded model into the locator
+#define MSG_LOCATION_MODEL_SET_ROT 30111 // "lfff" set the rotation speed of the last loaded model
+// set the texture sliding effect to the last loaded model (ffff - velocities u0, v0, u1, v1)
 #define MSG_LOCATION_MODEL_SET_UVS 30112
-#define MSG_LOCATION_MODEL_LAMPS 30113 //"l" добавить текущую модельку с вписок игнорирования при трейсе лучей от ламп
-//"lf" установить эффект генерации матрицы для отражения, f - коэфициент масштабирования
+#define MSG_LOCATION_MODEL_LAMPS 30113 // "l" add the current model to the ignore list for tracing rays from lamps
+// "lf" set the effect of generating the matrix for reflection, f is the scaling factor
 #define MSG_LOCATION_MODEL_REFLECTION 30114
-//Установить патчи
-#define MSG_LOCATION_SET_CHRS_PATCH 30120 //"ls" загрузить патч для персонажей
-#define MSG_LOCATION_SET_CAM_PATCH 30121  //"ls" загрузить патч для камеры
-#define MSG_LOCATION_SET_JMP_PATCH 30122  //"ls" загрузить патч для прыжков
-#define MSG_LOCATION_SET_GRS_PATCH 30123  //"ls" загрузить траву
-//Радиусы локаторов
-#define MSG_LOCATION_GRP_RADIUS 30125 //"lsf" установить радиус группе локаторов
-#define MSG_LOCATION_LOC_RADIUS 30126 //"lssf" установить радиус локатору
-//Добавить источник освещения
-#define MSG_LOCATION_ADD_LIGHT 30128 //"lsfff" имя источника, позиция источника
-//Прописать локаторы
-#define MSG_LOCATION_UPDATELOCATORS 30130 //"l" скопировать все локаторы в аттрибуты локации
-//Пути до файлов
-#define MSG_LOCATION_MODELSPATH 30140 //"ls" относительный установить путь до моделей локации
-#define MSG_LOCATION_TEXTURESPATH 30141 //"ls" относительный установить путь до текстур локации
-#define MSG_LOCATION_LIGHTPATH 30142 //"ls" относительный установить путь до освещения локации
-#define MSG_LOCATION_SHADOWPATH 30143 //"ls" относительный установить путь для текстуры на полу
-//Утилитные
-#define MSG_LOCATION_CHECKENTRY 30150 //"lss" проверить вход в локацию на возможность прихода в неё (свободен ли он)
-#define MSG_LOCATION_PAUSE 30151      //"ll" установить паузу в локации
-#define MSG_LOCATION_SETCHRPOSITIONS 30152 //"l" сохранить позиции для востонавления
-#define MSG_LOCATION_TLPCHRPOSITIONS 30153 //"l" переместить и удалить позиции для востонавления
-#define MSG_LOCATION_CLRCHRPOSITIONS 30154 //"l" удалить позиции для востонавления
-#define MSG_LOCATION_EX_MSG 30155          //"ls" расширенная команда s, ...
-#define MSG_LOCATION_VIEWSTATEBARS 30156 // "ll" отображение состояния противника (HP, энергия)  <-- ugeen 24.05.12
-//Отладочные
-//"lsffl" показать группу локаторов в виде шариков с коэфициентом скалирования радиуса,
-// дистанции видимости меток, цветом
+// Install patches
+#define MSG_LOCATION_SET_CHRS_PATCH 30120 // "ls" load the character patch
+#define MSG_LOCATION_SET_CAM_PATCH 30121  // "ls" load camera patch
+#define MSG_LOCATION_SET_JMP_PATCH 30122  // "ls" load the jump patch
+#define MSG_LOCATION_SET_GRS_PATCH 30123  // "ls" load grass
+// Radius of locators
+#define MSG_LOCATION_GRP_RADIUS 30125 // "lsf" set the radius to the locator group
+#define MSG_LOCATION_LOC_RADIUS 30126 // "lssf" set the radius to the locator
+// Add light source
+#define MSG_LOCATION_ADD_LIGHT 30128 // "lsfff" source name, source position
+// Register locators
+#define MSG_LOCATION_UPDATELOCATORS 30130 // "l" copy all locators to location attributes
+// File paths
+#define MSG_LOCATION_MODELSPATH 30140 // "ls" set relative path to location models
+#define MSG_LOCATION_TEXTURESPATH 30141 // "ls" set relative path to location textures
+#define MSG_LOCATION_LIGHTPATH 30142 // "ls" set relative path to location lighting
+#define MSG_LOCATION_SHADOWPATH 30143 // "ls" set relative path to the texture on the floor
+// Utilities
+#define MSG_LOCATION_CHECKENTRY 30150 // "lss" check the entrance to the location for the possibility of coming to it (is it free)
+#define MSG_LOCATION_PAUSE 30151      // "ll" pause the location
+#define MSG_LOCATION_SETCHRPOSITIONS 30152 // "l" save positions to restore
+#define MSG_LOCATION_TLPCHRPOSITIONS 30153 // "l" move and delete positions to restore
+#define MSG_LOCATION_CLRCHRPOSITIONS 30154 // "l" delete positions to restore
+#define MSG_LOCATION_EX_MSG 30155          // "ls" extended s command, ...
+#define MSG_LOCATION_VIEWSTATEBARS 30156 // "ll" display of enemy state (HP, energy) <-- ugeen 05.24.12
+// Debug
+// "lsffl" show a group of locators in the form of spheres with a scaling factor of the radius,
+// distance of visibility of marks, with colors
 #define MSG_LOCATION_VIEWLGROUP 30180
-#define MSG_LOCATION_HIDELGROUP 30181 //"ls" скрыть группу локаторов
+#define MSG_LOCATION_HIDELGROUP 30181 // "ls" hide locator group
 
-//Персонажи
-//Моделька персонажа
-#define MSG_CHARACTER_SETMODEL 30200 //"lss" загрузить модель с анимацией
-#define MSG_CHARACTER_GETMODEL 30201 //"le" получить модельку персонажа
-#define MSG_CHARACTER_GETPOS 30202   //"leee" получить позицию персонажа
-#define MSG_CHARACTER_GETAY 30203    //"le" получить позицию персонажа
-#define MSG_CHARACTER_DIST2D 30204   //"lie" получить дистанцию до персонажа
-#define MSG_CHARACTER_DIST3D 30205   //"lie" получить дистанцию до персонажа
-//Телепортация
-#define MSG_CHARACTER_TELEPORT 30210 //"lfff" переместить персонажа в точку x, y, z
-#define MSG_CHARACTER_TELEPORT_AY 30211 //"lffff" переместить персонажа в точку x, y, z и направить по ay
-//"lss" переместить персонажа в локатор указанный как имя группы, имя локатора
+// Characters
+// Character model
+#define MSG_CHARACTER_SETMODEL 30200 // "lss" load model with animation
+#define MSG_CHARACTER_GETMODEL 30201 // "le" get character model
+#define MSG_CHARACTER_GETPOS 30202   // "leee" get character position
+#define MSG_CHARACTER_GETAY 30203    // "le" get character position
+#define MSG_CHARACTER_DIST2D 30204   // "lie" get the distance to the character
+#define MSG_CHARACTER_DIST3D 30205   // "lie" get the distance to the character
+// Teleportation
+#define MSG_CHARACTER_TELEPORT 30210 // "lfff" move character to point x, y, z
+#define MSG_CHARACTER_TELEPORT_AY 30211 // "lffff" move character to point x, y, z and point along ay
+// "lss" move character to locator specified as group name, locator name
 #define MSG_CHARACTER_TELEPORT_TO_LOCATOR 30212
-//Анализ локаторов
-#define MSG_CHARACTER_ADD_DETECTOR 30220 //"ls" добавить группу локаторов для анализа
-#define MSG_CHARACTER_DEL_DETECTOR 30221 //"ls" удалить группу локаторов для анализа
-//Динамическое перемещение персонажа
-#define MSG_CHARACTER_ENTRY_TO_LOCATION 30330 //"lss" динамически разместить персонажа в локации
-#define MSG_CHARACTER_EXIT_FROM_LOCATION 30331 //"l" удалить персонажа из локации
-//Поворот персонажа
-#define MSG_CHARACTER_TURNBYLOC 30340   //"lss" направить в направлении локатора
-#define MSG_CHARACTER_TURNBYCHR 30341   //"le" направить на другого персонажа
-#define MSG_CHARACTER_TURNBYPOINT 30342 //"lfff" направить в направлении точки
-#define MSG_CHARACTER_TURNAY 30343      //"lf" направить по углу
-#define MSG_CHARACTER_TURNPUSH 30344    //"l" сохранить в стеке поворот персонажа
-#define MSG_CHARACTER_TURNPOP 30345     //"l" сохранить в стеке поворот персонажа
-//Проигрывание анимации
-#define MSG_CHARACTER_ACTIONPLAY 30350 //"ls" проиграть действие, если "" - перейти в режим idle анимации
-//Установить персонажу саблю
-#define MSG_CHARACTER_SETBLADE 30360    //"lsfll" установить саблю
-#define MSG_CHARACTER_SETGUN 30361      //"ls" установить саблю
-#define MSG_CHARACTER_SETFTGLEVEL 30362 //"lf" установить уровень fighting'a
+// Locator analysis
+#define MSG_CHARACTER_ADD_DETECTOR 30220 // "ls" add locator group for analysis
+#define MSG_CHARACTER_DEL_DETECTOR 30221 // "ls" remove locator group for analysis
+// Dynamic character movement
+#define MSG_CHARACTER_ENTRY_TO_LOCATION 30330 // "lss" dynamically place the character in the location
+#define MSG_CHARACTER_EXIT_FROM_LOCATION 30331 // "l" remove character from location
+// Character rotation
+#define MSG_CHARACTER_TURNBYLOC 30340   // "lss" point towards locator
+#define MSG_CHARACTER_TURNBYCHR 30341   // "le" point to another character
+#define MSG_CHARACTER_TURNBYPOINT 30342 // "lfff" point towards point
+#define MSG_CHARACTER_TURNAY 30343      // "lf" point by an angle
+#define MSG_CHARACTER_TURNPUSH 30344    // "l" save the rotation of the character on the stack
+#define MSG_CHARACTER_TURNPOP 30345     // "l" save the rotation of the character on the stack
+// Animation playback
+#define MSG_CHARACTER_ACTIONPLAY 30350 // "ls" play action. if "" - switch to idle animation mode
+// Set a saber to a character
+#define MSG_CHARACTER_SETBLADE 30360    // "lsfll" install saber
+#define MSG_CHARACTER_SETGUN 30361      // "ls" install saber
+#define MSG_CHARACTER_SETFTGLEVEL 30362 // "lf" set the fighting level
 
-//Поиск персонажей
-//"leeffffll" установить саблю
+// Search for characters
+// "leeffffll" install saber
 // l - MSG_CHARACTER_FINDNEAR
-// e - ссылка на массив из object который будет заполняться:
-//    index - индекс персонажа
-//    dist - дистанция между персонажами
-//    dx, dy, dz - дельты в направлении персонажа
-//    если понадобиться размеры массива будут увеличены
-// e - ссылка на переменную int - количество найденных персонажей
-//Условия поиска:
-// f - радиус поиска
-// f - угол теста по высоте -> sin(ax)*dist 0 на протяжении всего растояния пол персонажа
-// f - угол анализа в горизонтальной плоскости, 0 не анализировать
-// f - дистанция переднего режущего плана, если работает предыдущий тест
-// l - 1 тестировать видимость, 0 нет
-// l - 1 сортировать по дальности, 0 нет
+// e - a reference to an array of objects that will be filled:
+// index - character index
+// dist - distance between characters
+// dx, dy, dz - deltas in the direction of the character
+// if necessary, the array size will be increased
+// e - reference to the int variable - the number of characters found
+// Search terms:
+// f - search radius
+// f - test angle in height -> sin(ax) * dist 0 throughout the entire distance to the character
+// f - analysis angle in the horizontal plane, 0 do not analyze
+// f - distance of the near clipping plane, if the previous test works
+// l - 1 test visibility, 0 no
+// l - 1 sort by range, 0 no
 #define MSG_CHARACTER_FINDNEAR 30370
 
-//Проверка видимости нами его
-#define MSG_CHARACTER_VISIBLE 30371 //"i"
-//"lfff"	вывести о повреждении нанесёному персонажу f - нанес. повр, f - текущее hp, f - всего hp
+// Checking his visibility by us
+#define MSG_CHARACTER_VISIBLE 30371 // "i"
+// "lfff" output about the damage inflicted on the character f - inflicted, f - current hp, f - total hp
 #define MSG_CHARACTER_VIEWDAMAGE 30372
 #define MSG_CHARACTER_EX_MSG 30373
 
-//Установка задач персонажу
+// Setting tasks for the character
 #define MSG_NPCHARACTER_SETTASK 30400
 #define MSG_NPCHARACTER_PUSHTASK 30401
 #define MSG_NPCHARACTER_POPTASK 30402
 #define MSG_NPCHARACTER_GETTASK 30403
 
-//Камера
-#define MSG_CAMERA_SETTARGET 30500 //"li" установить модельку за которой следить
-#define MSG_CAMERA_FOLLOW 30510 //"l" установить режим камеры - преследование персонажа
-#define MSG_CAMERA_LOOK 30511  //"l" установить режим камеры - вид из глаз
-#define MSG_CAMERA_TOPOS 30512 //"lfffl" установить режим камеры - находиться в точке и наблюдать за персонажем
-//"lffff" установить режим камеры - перемещаться в точку с заданной скоростью и следить за персонажем
+// Camera
+#define MSG_CAMERA_SETTARGET 30500 // "li" set the model to follow
+#define MSG_CAMERA_FOLLOW 30510 // "l" set camera mode - chase character
+#define MSG_CAMERA_LOOK 30511  // "l" set camera mode - eye view
+#define MSG_CAMERA_TOPOS 30512 // "lfffl" set the camera mode - be at the point and observe the character
+// "lffff" set the camera mode - move to a point with a given speed and follow the character
 #define MSG_CAMERA_MOVE 30513
-#define MSG_CAMERA_FREE 30514 //"l" свободный полёт камеры
+#define MSG_CAMERA_FREE 30514 // "l" free flight of the camera
 
-#define MSG_CAMERA_SLEEP 30520 //"ll" остановить работу камеры (1) или возобновить (0)
+#define MSG_CAMERA_SLEEP 30520 // "ll" stop the camera (1) or resume (0)
 
-//Пятна на корабле
-#define MSG_BLOTS_SETMODEL 30600 //"li" установить модельку, model_id
-#define MSG_BLOTS_HIT 30601      //"lffffff" установить точку x, y, z, nx, ny, nz
+// Blots on the ship
+#define MSG_BLOTS_SETMODEL 30600 // "li" set the model, model_id
+#define MSG_BLOTS_HIT 30601      // "lffffff" set point x, y, z, nx, ny, nz
 
 //============================================================================================
 // World map messages
 //============================================================================================
 // Storm
-#define MSG_WORLDMAP_CREATESTORM 31000 //"l" Создать шторм
-#define MSG_WORLDMAP_CREATESTORM_TIME 31001 //"lf" Создать шторм и указать время жизни в секундах
+#define MSG_WORLDMAP_CREATESTORM 31000 // "l" Create storm
+#define MSG_WORLDMAP_CREATESTORM_TIME 31001 // "lf" Create storm and specify lifetime in seconds
 // Encounter ships
-//Коэфициент скорости kSpeed определяет скорость энкоунтера относительно игрока, 1.0 одинаковы, 1.2 на 20% выше, 1.0/1.2
-//на 20% ниже Merchant - событийный корабль с поведением купца (следование к острову)
-#define MSG_WORLDMAP_CREATEENC_MER 31100 //"lsssff" type, nation, kSpeed (1.0f - player speed), island name  time
-// boal 04/10/06 новый метод
-#define MSG_WORLDMAP_CREATEENC_MER_XZ 31102 //"lsffffff"  sName, fx1, fz1, fx2, fz2, kSpeed, timeOut
-// бутафория, не юзается //"lllsff" type, nation, kSpeed (1.0f - player speed), island name, live time in sec
+// Speed coefficient kSpeed determines the speed of the encounter relative to the player, 1.0 are the same, 1.2 is 20% higher, 1.0 / 1.2
+// 20% lower Merchant - event ship with merchant behavior (following to the island)
+#define MSG_WORLDMAP_CREATEENC_MER 31100 // "lsssff" type, nation, kSpeed (1.0f - player speed), island name  time
+// boal 04/10/06 new method
+#define MSG_WORLDMAP_CREATEENC_MER_XZ 31102 // "lsffffff"  sName, fx1, fz1, fx2, fz2, kSpeed, timeOut
+// бутафория, не юзается // "lllsff" type, nation, kSpeed (1.0f - player speed), island name, live time in sec
 #define MSG_WORLDMAP_CREATEENC_MER_TIME 31101
-// Follow - событийный корабль преследующий нас
-#define MSG_WORLDMAP_CREATEENC_FLW 31110      //"lllf" type, nation, kSpeed
-#define MSG_WORLDMAP_CREATEENC_FLW_TIME 31111 //"lllff" type, nation, kSpeed, live time in sec
-// Warring - пара воюющих корабликов
-#define MSG_WORLDMAP_CREATEENC_WAR 31120      //"lllll" type1, nation1, type2, nation2
-#define MSG_WORLDMAP_CREATEENC_WAR_TIME 31121 //"lllllf" type1, nation1, type2, nation2, live time in sec
-//Удалить все энкоунтеры
-#define MSG_WORLDMAP_CREATEENC_RELEASE 31200 //""
-//Запустить выход в море из скрипта
-#define MSG_WORLDMAP_LAUNCH_EXIT_TO_SEA 31130 //""
-//Установка флага на карте
-#define MSG_WORLDMAP_SET_NATION_FLAG 31150 //"ll" nation
-//Напечатать строку с координатами
-#define MSG_WORLDMAP_SET_COORDINATES 31151 //"ls" coordinates string
+// Follow - event ship following us
+#define MSG_WORLDMAP_CREATEENC_FLW 31110      // "lllf" type, nation, kSpeed
+#define MSG_WORLDMAP_CREATEENC_FLW_TIME 31111 // "lllff" type, nation, kSpeed, live time in sec
+// Warring - a pair of warring ships
+#define MSG_WORLDMAP_CREATEENC_WAR 31120      // "lllll" type1, nation1, type2, nation2
+#define MSG_WORLDMAP_CREATEENC_WAR_TIME 31121 // "lllllf" type1, nation1, type2, nation2, live time in sec
+// Delete all encounters
+#define MSG_WORLDMAP_CREATEENC_RELEASE 31200 // ""
+// Launch going out to sea from script
+#define MSG_WORLDMAP_LAUNCH_EXIT_TO_SEA 31130 // ""
+// Setting a flag on the map
+#define MSG_WORLDMAP_SET_NATION_FLAG 31150 // "ll" nation
+// Print line with coordinates
+#define MSG_WORLDMAP_SET_COORDINATES 31151 // "ls" coordinates string
 
-//============================================================================================
+// ============================================================================================
 // Effects
 //============================================================================================
 

@@ -1,12 +1,12 @@
-//============================================================================================
-//	Spirenkov Maxim aka Sp-Max Shaman, 2001
-//--------------------------------------------------------------------------------------------
-//	Sea Dogs II
-//--------------------------------------------------------------------------------------------
-//	Supervisor
-//--------------------------------------------------------------------------------------------
-//	Объект контролирующий перемещение персонажей
-//============================================================================================
+// ============================================================================================
+// Spirenkov Maxim aka Sp-Max Shaman, 2001
+// --------------------------------------------------------------------------------------------
+// Sea Dogs II
+// --------------------------------------------------------------------------------------------
+// Supervisor
+// --------------------------------------------------------------------------------------------
+// Object controlling the movement of characters
+// ============================================================================================
 
 #ifndef _Supervisor_H_
 #define _Supervisor_H_
@@ -24,18 +24,18 @@ class Supervisor
   public:
     struct CharacterInfo
     {
-        Character *c; //Персонаж с которым взаимодействуем
-        float d;      //Расстояние до персонажа
-        float maxD;   //Наибольшее анализируемое растояние
+        Character *c; // The character we interact with
+        float d;      // Character distance
+        float maxD;   // The largest analyzed distance
     };
 
     struct FindCharacter
     {
-        Character *c;     //Персонаж, которого искали
-        float dx, dy, dz; //Вектор от парсонажа до нас
-        float d2;         //Квадрат растояния до персонажа в xz
-        float l, r, n;    //Дистанция до плоскостей отсечения (опционально)
-        float sectDist;   //Растояние до сектора
+        Character *c;     // The character we were looking for
+        float dx, dy, dz; // Vector from the character to us
+        float d2;         // The square of the distance to the character in xz
+        float l, r, n;    // Distance to clipping planes (optional)
+        float sectDist;   // Distance to the sector
     };
 
     struct CharacterEx
@@ -44,16 +44,16 @@ class Supervisor
         float lastTime;
     };
 
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     Supervisor();
     virtual ~Supervisor();
 
-    //Проверить на свободность позицию
+    // Check for free position
     bool CheckPosition(float x, float y, float z, Character *c) const;
-    //Найти по радиусу персонажей
+    // Find characters by radius
     bool FindCharacters(FindCharacter fndCharacter[MAX_CHARACTERS], long &numFndCharacters, Character *chr,
                         float radius, float angTest = 0.0f, float nearPlane = 0.4f, float ax = 0.0f,
                         bool isSort = false, bool lookCenter = false) const;
@@ -62,21 +62,21 @@ class Supervisor
     void PreUpdate(float dltTime) const;
     void PostUpdate(float dltTime);
 
-    //Установить позиции для загрузки
+    // Set loading positions
     void SetSavePositions() const;
-    //Удалить позиции для загрузки
+    // Delete positions for loading
     void DelSavePositions(bool isTeleport) const;
 
-    //Найти оптимальный локатор для продолжения прогулки персонажа
+    // Find the best locator to continue walking the character
     long FindForvardLocator(LocatorArray *la, const CVECTOR &pos, const CVECTOR &norm, bool lookChr = false) const;
 
-    //--------------------------------------------------------------------------------------------
-    //Инкапсуляция
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Encapsulation
+    // --------------------------------------------------------------------------------------------
   private:
-    //Добавить персонажа в локацию
+    // Add character to location
     void AddCharacter(Character *ch);
-    //Удалить персонажа из локации
+    // Remove character from location
     void DelCharacter(Character *ch);
 
     float time, waveTime;

@@ -24,41 +24,41 @@ class WdmInterfaceObject : public WdmRenderObject
         float tu1, tv1;
     };
 
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     WdmInterfaceObject();
     virtual ~WdmInterfaceObject();
 
-    //--------------------------------------------------------------------------------------------
-    //Интерфейс для наследующихся классов
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Interface for Inherited Classes
+    // --------------------------------------------------------------------------------------------
   protected:
-    //Заполнить 6 вершин координатами прямоугольника
+    // Fill 6 vertices with rectangle coordinates
     static void FillRectCoord(Vertex *vrt, float x, float y, float w, float h, float ang = 0.0f);
-    //Заполнить 6 вершин текстурными координатами прямоугольника
+    // Fill 6 vertices with rectangle texture coordinates
     static void FillRectUV(Vertex *vrt, float tu, float tv, float tw, float th, float ang = 0.0f);
-    //Заполнить 6 вершин текстурными координатами прямоугольника
+    // Fill 6 vertices with rectangle texture coordinates
     static void FillRectUV1(Vertex *vrt, float tu, float tv, float tw, float th, float ang = 0.0f);
-    //Заполнить 6 вершин цветом
+    // Fill 6 vertices with color
     static void FillRectColor(Vertex *vrt, uint32_t color = 0xffffffff);
-    //Нарисовать буффер прямоугольников
+    // Draw buffer of rectangles
     static void DrawRects(Vertex *vrt, long numRects, const char *techName = nullptr);
 
-    //Заполнить 18 вершин скалирующегося прямоугольника
+    // Fill 18 vertices of the scaling rectangle
     static void FillSRectCoord(Vertex *vrt, float x, float y, float w, float h, float ws);
-    //Заполнить 18 вершин текстурными координатами скалирующегося прямоугольника
+    // Fill 18 vertices with the texture coordinates of the scaling rectangle
     static void FillSRectUV(Vertex *vrt, float tu, float tv, float tw, float th, float ts);
-    //Заполнить 18 вершин цветом скалирующегося прямоугольника
+    // Fill 18 vertices with a scaled rectangle color
     static void FillSRectColor(Vertex *vrt, uint32_t color = 0xffffffff);
 
-    //Вывести текст в заданную полоску по горизонтали и в заданной высоте
+    // Display text in a given strip horizontally and at a given height
     static void Print(long font, long color, float xleft, float xright, float y, const char *format, ...);
 
-    //--------------------------------------------------------------------------------------------
-    //Инкапсуляция
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Encapsulation
+    // --------------------------------------------------------------------------------------------
   protected:
     static char stringBuffer[1024];
 

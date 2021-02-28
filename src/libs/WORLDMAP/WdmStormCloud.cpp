@@ -20,9 +20,9 @@
 
 WdmStormCloud::RainVertex WdmStormCloud::rain[4096];
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 WdmStormCloud::WdmStormCloud()
 {
@@ -44,9 +44,9 @@ WdmStormCloud::~WdmStormCloud()
 
 void WdmStormCloud::BuildCloud(long n)
 {
-    //Создаём облако
+    // Create a cloud
     WdmCloud::BuildCloud(n);
-    //Заполняем цвета
+    // Filling in the colors
     FillRects();
 }
 
@@ -54,7 +54,7 @@ void WdmStormCloud::FillRects()
 {
     for (long i = 0; i < numRects; i++)
     {
-        //Цвет
+        // Colour
         float r = (WDM_STORMCLOUD_COLOR >> 16) & 0xff;
         float g = (WDM_STORMCLOUD_COLOR >> 8) & 0xff;
         float b = (WDM_STORMCLOUD_COLOR >> 0) & 0xff;
@@ -74,7 +74,7 @@ void WdmStormCloud::FillRects()
         if (b > 255.0f)
             b = 255.0f;
         rect[i].dwColor = 0xff000000 | (long(r) << 16) | (long(g) << 8) | (long(b) << 0);
-        //Координаты дождя
+        // Rain coordinates
         for (long j = 0; j < 256; j++)
         {
             float ang = rand() * 2.0f * 3.141592653f / RAND_MAX;
@@ -86,17 +86,17 @@ void WdmStormCloud::FillRects()
     }
 }
 
-//Расчёты
+// Calculations
 void WdmStormCloud::Update(float dltTime)
 {
     WdmCloud::Update(dltTime);
-    //Погенерим молнии
+    // generate lightning
     if (curLightning < 0)
     {
         lightningWaitTime += dltTime * 0.001f;
         if (lightningWaitTime > 0.001f + rand() * 1.0f / RAND_MAX)
         {
-            //Пора рожать новую молнию
+            // time to emit a new lightning
             curLightning = rand() % numRects;
             lightningTime = 0.3f;
             lastColor = rect[curLightning].dwColor;
@@ -121,7 +121,7 @@ void WdmStormCloud::Update(float dltTime)
             curLightning = -1;
         }
     }
-    //Дождик
+    // Rain
     curU += 1.0f * dltTime;
     curV += 0.1f * dltTime;
     if (curU > 1.0f)
@@ -130,7 +130,7 @@ void WdmStormCloud::Update(float dltTime)
         curV -= 1.0f;
 }
 
-//Отрисовка
+// Rendering
 void WdmStormCloud::PRender(VDX9RENDER *rs)
 {
     LRender(rs);
@@ -139,12 +139,12 @@ void WdmStormCloud::PRender(VDX9RENDER *rs)
 void WdmStormCloud::LRender(VDX9RENDER *rs)
 {
 
-    //Рисуем подложку на море
+    // draw a background of the sea
 
-    //Рисуем молнию
+    // draw lightning
 
     /*
-    //Рисуем дождик
+    // Draw rain
     for(long i = 0; i < numRects; i++)
     {
         for(long j = 0; j < 256; j++)
@@ -182,6 +182,6 @@ void WdmStormCloud::LRender(VDX9RENDER *rs)
     rs->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
     rs->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
     //*/
-    //Рисуем облако
+    // Draw a cloud
     WdmCloud::LRender(rs);
 }

@@ -21,19 +21,19 @@ class FieldList
   public:
     struct FieldDesc
     {
-        //При конвертации используеться этот флажок
+        // This flag is used when converting
         bool MarkForDelete;
 
-        //Хэш имени
+        // Name hash
         uint32_t HashValue;
 
-        //Тип
+        // A type
         FieldType Type;
 
-        //Имя
+        // Name
         std::string Name;
 
-        //Указатель
+        // Pointer
         void *pPointer;
     };
 
@@ -42,7 +42,7 @@ class FieldList
 
     void DeleteFieldData(const FieldDesc &pData);
 
-    //=================== создание пустых аттрибутов
+    // =================== creating empty attributes
     void CreateEmptyBoolField(const char *Name, bool def_value);
     void CreateEmptyFloatField(const char *Name, float def_value);
     void CreateEmptyGraphField(const char *Name, float def_value_min, float def_value_max);
@@ -51,7 +51,7 @@ class FieldList
     void CreateEmptyUVField(const char *Name);
     void CreateEmptyColorField(const char *Name, uint32_t def_value);
 
-    //=================== Прогрузка аттрибутов из файла
+    // ==================== Loading attributes from a file
     void CreateBoolField(MemFile *pMemFile);
     void CreateFloatField(MemFile *pMemFile);
     void CreateGraphField(MemFile *pMemFile);
@@ -68,7 +68,7 @@ class FieldList
 
     void DelAll();
 
-    //Сохранить/загрузить...
+    // Save / Load ...
     void Load(MemFile *File);
     void Write(MemFile *File);
 
@@ -93,8 +93,8 @@ class FieldList
     uint32_t GetFieldCount() const;
     const FieldDesc &GetFieldByIndex(uint32_t Index);
 
-    //Конвертация ГАРАНТИРУЕТ, что в данном DataSource будут нужные поля
-    //и не будет лишнего мусора...
+    // The conversion GUARANTEES that this DataSource will have the required fields
+    // and there will be no unnecessary garbage ...
     void Convert(DataDescripion *pDataDescriptor);
 };
 

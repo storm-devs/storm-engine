@@ -140,7 +140,7 @@ InterfaceBackScene::InterfaceBackScene()
 
     m_nFlareTexture = -1;
 
-    //Мухи
+    // Flies
     numFlys = 0;
     maxFlys = 0;
     numFly = 0;
@@ -252,7 +252,7 @@ void InterfaceBackScene::Execute(uint32_t Delta_Time)
     m_pRS->SetCamera(m_vCamPos, m_vCamAng, m_fCamPerspective);
 
     if (nOldMenuIndex != m_nSelectMenuIndex)
-        core.Event(ISOUND_EVENT, "l", 2); // выбор нового нода
+        core.Event(ISOUND_EVENT, "l", 2); // choosing a new node
 
     /*	for( long n=0; n<m_apAniModel; n++ )
       {
@@ -267,13 +267,13 @@ void InterfaceBackScene::Realize(uint32_t Delta_Time)
 
     ProcessedFlys(Delta_Time * .001f);
 
-    // отрисовка модели
+    // model rendering
     if (m_pModel)
     {
         SetLight();
         m_pRS->SetRenderState(D3DRS_LIGHTING, true);
         m_pModel->ProcessStage(Stage::realize, Delta_Time);
-        for (n = 0; n < m_aLights.size(); n++) // показать все фонари
+        for (n = 0; n < m_aLights.size(); n++) // show all lights
             if (m_aLights[n]->pModel)
             {
                 m_aLights[n]->pModel->ProcessStage(Stage::realize, Delta_Time);
@@ -295,7 +295,7 @@ void InterfaceBackScene::Realize(uint32_t Delta_Time)
         RestoreLight();
     }
 
-    // отрисовка пунктов меню
+    // rendering of menu items
     for (n = 0; n < m_aMenuDescr.size(); n++)
     {
         if (n == m_nSelectMenuIndex && m_aMenuDescr[n]->pActive)
@@ -754,7 +754,7 @@ void InterfaceBackScene::SetLight()
                     break;
             if (nFreeLightIndex < static_cast<long>(d3dcaps.MaxActiveLights))
             {
-                // нашли свободный источник
+                // found a free source
                 m_aLights[n]->indexLight = nFreeLightIndex;
                 m_pRS->GetLight(nFreeLightIndex, &m_aLights[n]->lightOldSource);
                 m_pRS->LightEnable(nFreeLightIndex, true);
@@ -796,30 +796,30 @@ void InterfaceBackScene::FlareShow(long idx)
 
     /*	float d = dx*dx + dy*dy + dz*dz;
 
-    //Дистанция
+    // Distance
     float dist = sqrtf(d);
     d = dist / m_fFlareRange;
     if(d > 1.0f) d = 1.0f;
     float alpha = 1.0f;
     if(d < 0.3f) alpha *= 0.2f + 0.8f*d/0.3f;
     if(d > 0.4f){ alpha *= 1.0f - (d - 0.4f)/0.6f; alpha *= alpha; }
-    alpha *= 255.f;//ls.corona*255.0f;
-    //Коэфициент отклонения
-    d = 0.f;//ls.i*0.4f;
+    alpha * = 255.f; // ls.corona * 255.0f;
+    // Deviation coefficient
+    d = 0.f;// ls.i*0.4f;
     if(d < -0.1f) d = -0.1f;
     if(d > 0.1f) d = 0.1f;
     d += 1.0f;
-    //Текущий размер
+    // Current size
     float size = d*m_fFlareSize;
-    //Прозрачность
-    alpha *= d;
+    // Transparency
+    alpha * = d;
     if(alpha < 0.0f) alpha = 0.0f;
     if(alpha > 255.0f) alpha = 255.0f;
-    //Позиция
+    // Position
     pos = camMtx * m_vFlarePos;
-    //Цвет
+    // Colour
     uint32_t c = uint32_t(alpha); c |= (c << 24) | (c << 16) | (c << 8);*/
-    //Угол поворота
+    // Angle of rotation
     float cs, sn;
     float _cs = (dx * camMtx.Vx().z + dz * camMtx.Vz().z);
     float _sn = (dx * camMtx.Vz().z - dz * camMtx.Vx().z);
@@ -838,7 +838,7 @@ void InterfaceBackScene::FlareShow(long idx)
         sn = 0.0f;
     }
 
-    //Позиция
+    // Position
     pos = m_vFlarePos;
 
     uint32_t c = m_aLights[idx]->dwFlareColor;
@@ -979,26 +979,26 @@ void InterfaceBackScene::InitStaticModel(ATTRIBUTES *pAParam)
     m_apAniModel.push_back(pObj);
 }
 
-//---------------------------------------------------
-//Мухи у фанарей
-//---------------------------------------------------
+// ---------------------------------------------------
+// Flies at the lamps
+// ---------------------------------------------------
 void InterfaceBackScene::AddLampFlys(CVECTOR &pos)
 {
-    //Занимаем массив
+    // resize the array
     if (numFlys >= maxFlys)
     {
         maxFlys += 8;
         flys.resize(maxFlys);
     }
-    //Заполняем параметры
-    //Общие
+    // Fill in the parameters
+    // common
     flys[numFlys].pos = pos;
     flys[numFlys].radius = 0.2f; // 0.6f;
     flys[numFlys].start = numFly;
     flys[numFlys].num = 4 + (rand() & 4); // 1 + (rand() & 7);
     numFly += flys[numFlys].num;
     fly.resize(numFly);
-    //Каждой мухи
+    // of each fly
     for (long i = 0; i < flys[numFlys].num; i++)
     {
         ParticleFly &f = fly[flys[numFlys].start + i];
@@ -1031,10 +1031,10 @@ void InterfaceBackScene::ProcessedFlys(float dltTime)
     const float dax = dltTime * 1.3f;
     const float day = dltTime * 1.4f;
     const float da = dltTime * 5.6f;
-    //Расчитываем
+    // calculate
     for (long i = 0; i < numFlys; i++)
     {
-        //Коэфициент видимости
+        // Coefficient of visibility
         CVECTOR dir = cam - flys[i].pos;
         float k = ~dir;
         if (k > 400.0f)
@@ -1046,25 +1046,25 @@ void InterfaceBackScene::ProcessedFlys(float dltTime)
         k = 3.0f * (1.0f - k);
         if (k > 1.0f)
             k = 1.0f;
-        //Обновляем мух
+        // Updating flies
         ParticleFly *fl = &fly[flys[i].start];
         for (long j = 0; j < flys[i].num; j++)
         {
             ParticleFly &f = fl[j];
-            //Углы
+            // Angles
             f.ax += dax * f.kx;
             f.ay += day * f.ky;
             f.a += da * f.k;
-            //Радиус
+            // Radius
             float r = 1.0f + 0.5f * sinf(f.a) + 0.2f * cosf(f.a * f.k * 2.1f);
             r *= flys[i].radius;
-            //Позиция
+            // Position
             f.pos.x = flys[i].pos.x + r * sinf(f.ax) * sinf(f.ay);
             f.pos.y = flys[i].pos.y + r * cosf(f.ax) * cosf(f.ay);
             f.pos.z = flys[i].pos.z + r * sinf(f.ax) * cosf(f.ay);
-            //Прозрачность
+            // Transparency
             f.alpha = k * 255.0f;
-            //Цвет
+            // Colour
             CVECTOR tmp = f.pos - flys[i].pos;
             float dst = sqrtf(~tmp);
             if (dst > 0.0f)
@@ -1083,15 +1083,15 @@ void InterfaceBackScene::ProcessedFlys(float dltTime)
                 cs = 1.0f;
             f.color = static_cast<long>(cs * 255.0f);
             f.color |= (f.color << 16) | (f.color << 8);
-            //Кадр
+            // Frame
             f.frame += dltTime * f.k * 25.0f;
             if (f.frame >= 4.0f)
                 f.frame -= 4.0f;
-            //Угл
+            // Angle
             f.angle += dltTime * f.k * 3.0f;
         }
     }
-    //Рисуем
+    // Draw
     DrawParticles(fly.data(), numFly, sizeof(ParticleFly), flyTex, "LocFly", true, 4);
 }
 

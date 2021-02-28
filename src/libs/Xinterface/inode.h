@@ -16,7 +16,7 @@ class CXI_ToolTip;
 #define MOUSE_RBUTTON 1
 #define MOUSE_MBUTTON 2
 
-// определяет по каким координатам идет приведение к абсолютным значениям (можно складывать по или)
+// determines which coordinates are used to convert to absolute values (can be added using or)
 #define ABSOLUTE_LEFT 1
 #define ABSOLUTE_TOP 2
 #define ABSOLUTE_RIGHT 4

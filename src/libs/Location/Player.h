@@ -17,9 +17,9 @@ class LocationCamera;
 
 class Player : public NPCharacter
 {
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     Player();
     virtual ~Player();
@@ -28,13 +28,13 @@ class Player : public NPCharacter
 
     void Reset() override;
 
-    //Перемещаем персонажа в желаемую позицию
+    // Move the character to the desired position
     void Move(float dltTime) override;
     void Update(float dltTime) override;
 
-    //Сохранить параметры
+    // Save parameters
     void SetSaveData(ATTRIBUTES *sdata) override;
-    //Востанавить параметры
+    // Restore parameters
     void GetSaveData(ATTRIBUTES *sdata) override;
 
     bool IsPlayer() override
@@ -59,12 +59,12 @@ class Player : public NPCharacter
     bool IsFire();
     bool IsChangeFightMode();
 
-    //Найти атакующего противника
+    // Find an attacking enemy
     Player *FindAttackCharacter();
 
-    //--------------------------------------------------------------------------------------------
-    //Инкапсуляция
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Encapsulation
+    // --------------------------------------------------------------------------------------------
   private:
     void FireFromShootgun();
     void ShootParticles(const CVECTOR &pos, const CVECTOR &ndir, float size, uint32_t color, long num);

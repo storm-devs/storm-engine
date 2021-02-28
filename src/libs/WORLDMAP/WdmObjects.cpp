@@ -16,9 +16,9 @@
 
 WdmObjects *wdmObjects = nullptr;
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 WdmObjects::WdmObjects()
 {
@@ -75,17 +75,17 @@ void WdmObjects::Clear()
     isPause = false;
     shipSpeedOppositeWind = 0.8f;
     shipSpeedOverWind = 1.2f;
-    enemyshipViewDistMin = 20.0f; //Растояние на котором корабль начинает исчезать
-    enemyshipViewDistMax = 50.0f; //Растояние на котором исчезает полностью корабль
-    enemyshipDistKill = 100.0f; //Расстояние на котором убиваем корабль
-    enemyshipBrnDistMin = 40.0f; //Минимальное растояние при котором рожается корабль
-    enemyshipBrnDistMax = 70.0f; //Максимальное растояние при котором рожается корабль
-    stormViewDistMin = 120.0f; //Растояние на котором шторм начинает исчезать
-    stormViewDistMax = 160.0f; //Растояние на котором шторм исчезает полностью
-    stormDistKill = 200.0f;    //Расстояние на котором убиваем шторм
-    stormBrnDistMin = 70.0f; //Минимальное растояние на котором рожается шторм
-    stormBrnDistMax = 160.0f; //Максимальное растояние на котором рожается шторм
-    stormZone = 50.0f;        //Общий радиус действия шторма
+    enemyshipViewDistMin = 20.0f; // The distance at which the ship begins to disappear
+    enemyshipViewDistMax = 50.0f; // The distance at which the ship disappears completely
+    enemyshipDistKill = 100.0f; // The distance at which the ship is killed
+    enemyshipBrnDistMin = 40.0f; // The minimum distance at which a ship is spawned
+    enemyshipBrnDistMax = 70.0f; // The maximum distance at which a ship is spawned
+    stormViewDistMin = 120.0f; // The distance at which the storm begins to fade
+    stormViewDistMax = 160.0f; // The distance at which the storm disappears completely
+    stormDistKill = 200.0f;    // The distance at which the storm is killed
+    stormBrnDistMin = 70.0f; // The minimum distance at which a storm is spawned
+    stormBrnDistMax = 160.0f; // The maximum distance at which a storm is spawned
+    stormZone = 50.0f;        // Total storm radius
     enableSkipEnemy = false;
     playarInStorm = false;
     isNextDayUpdate = true;
@@ -132,12 +132,12 @@ void WdmObjects::DelStorm(WdmStorm *storm)
     }
 }
 
-//Создать геометрию
+// Create geometry
 GEOS *WdmObjects::CreateGeometry(const char *path)
 {
     if (!path || !path[0] || !gs)
         return nullptr;
-    //Ищим среди добавленных
+    // Looking among added
     const uint32_t hash = TOREMOVE::HashNoCase(path);
     long i = hash & (sizeof(entryModels) / sizeof(entryModels[0]) - 1);
     for (i = entryModels[i]; i >= 0; i = models[i].next)
@@ -150,13 +150,13 @@ GEOS *WdmObjects::CreateGeometry(const char *path)
             }
         }
     }
-    //Загружаем геометрию
+    // Loading geometry
     modelPath = "WorldMap\\";
     modelPath += path;
     gs->SetTexturePath("WorldMap\\Geometry\\");
     auto *const geo = gs->CreateGeometry(modelPath.c_str(), "", 0);
     gs->SetTexturePath("");
-    //Добавляем в таблицу
+    // Add to the table
     // Model & m = models[models.Add()];
     // m.path = path;
     // m.hash = hash;
@@ -225,7 +225,7 @@ void WdmObjects::DrawVector(const CVECTOR &start, const CVECTOR &end, uint32_t c
         const auto x1 = r * cosf(2.0f * WdmObjects_myPI * i / static_cast<float>(imax));
         const auto y2 = r * sinf(2.0f * WdmObjects_myPI * (i + 1) / static_cast<float>(imax));
         const auto x2 = r * cosf(2.0f * WdmObjects_myPI * (i + 1) / static_cast<float>(imax));
-        //Добавляем треугольники 1 линии
+        // Add triangles of the 1st line
         // 0,0,0
         vertex[t * 3 + 0].v.x = 0.0f;
         vertex[t * 3 + 0].v.y = 0.0f;
@@ -343,17 +343,17 @@ void WdmObjects::DrawBox2D(CMatrix &mtx, float l, float w, uint32_t color) const
     rs->DrawPrimitiveUP(D3DPT_LINELIST, D3DFVF_XYZ | D3DFVF_DIFFUSE, 4, vertex, sizeof(vertex[0]), "WdmDebugDraw");
 }
 
-//Получить размеры vp
+// Get vp dimensions
 void WdmObjects::GetVPSize(float &w, float &h) const
 {
-    //Получим текущие размеры vp
+    // Get the current vp sizes
     D3DVIEWPORT9 vp;
     rs->GetViewport(&vp);
     w = static_cast<float>(vp.Width);
     h = static_cast<float>(vp.Height);
 }
 
-//Получить направление и силу ветра
+// Get wind direction and strength
 float WdmObjects::GetWind(float x, float z, CVECTOR &dir)
 {
     windField.GetWind(x, z, dir.x, dir.z);
@@ -376,7 +376,7 @@ float WdmObjects::GetWind(float x, float z, CVECTOR &dir)
     return len;
 }
 
-//Обновить состояние ветра
+// Update wind state
 void WdmObjects::UpdateWind(float dltTime)
 {
     dltTime = dltTime / 2.0f;
@@ -398,7 +398,7 @@ void WdmObjects::UpdateWind(float dltTime)
     */
 }
 
-//Получить строку сохранение
+// Get save string
 const char *WdmObjects::GetWindSaveString(std::string &windData)
 {
     windData = "v02_";
@@ -415,7 +415,7 @@ const char *WdmObjects::GetWindSaveString(std::string &windData)
     return windData.c_str();
 }
 
-//Установить строку сохранение
+// Set save string
 void WdmObjects::SetWindSaveString(const char *str)
 {
     if (!str)
@@ -453,7 +453,7 @@ void WdmObjects::SetWindSaveString(const char *str)
     }
 }
 
-//Добавить float в cтроку
+// Add float to string
 void WdmObjects::AddDataToString(std::string &str, uint8_t d)
 {
     char hex[] = "0123456789ABCDEF";
@@ -461,7 +461,7 @@ void WdmObjects::AddDataToString(std::string &str, uint8_t d)
     str += hex[(d >> 0) & 0xf];
 }
 
-//Получить float из строки
+// Get float from string
 long WdmObjects::GetDataFromString(const char *&cur)
 {
     uint32_t tmp = 0;

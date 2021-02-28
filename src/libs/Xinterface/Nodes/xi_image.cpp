@@ -156,7 +156,7 @@ void CXI_IMAGE::LoadAccordingToString(const char *pcImageParam)
         }
     }
 
-    // если небыло установки цвета и картинок, то не считаем это как цветной прямоугольник
+    // if there was no setting of color and pictures, then do not consider it as a colored rectangle
     if (m_bThisIsColorRectangle && !bSetColor)
         m_bThisIsColorRectangle = false;
 }

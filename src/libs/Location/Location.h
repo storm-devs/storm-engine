@@ -55,19 +55,19 @@ class Location : public Entity
         float alpha;
     };
 
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     Location();
     virtual ~Location();
 
-    //Инициализация
+    // Initialization
     bool Init() override;
-    //Исполнение
+    // Execution
     void Execute(uint32_t delta_time);
     void Realize(uint32_t delta_time);
-    //Сообщения
+    // Messages
     uint64_t ProcessMessage(MESSAGE &message) override;
 
     void ProcessStage(Stage stage, uint32_t delta) override
@@ -91,18 +91,18 @@ class Location : public Entity
     // Location
     //--------------------------------------------------------------------------------------------
   public:
-    //Найти группу локаторов
+    // Find locator group
     LocatorArray *FindLocatorsGroup(const char *gName);
 
-    //Получить патч для персонажа
+    // Get a character patch
     PtcData &GetPtcData();
-    //Получить модельку патча для прыжков
+    // Get the model of the jump patch
     MODEL *JmpPatch();
 
-    //Проверить видимость 2-х точек
+    // Check the visibility of 2 points
     bool VisibleTest(const CVECTOR &p1, const CVECTOR &p2);
 
-    //Протрейсит луч через локацию
+    // Trace the ray through the location
     float Trace(const CVECTOR &src, const CVECTOR &dst);
     bool GetCollideTriangle(TRIANGLE &trg) const;
     void Clip(PLANE *p, long numPlanes, CVECTOR &cnt, float rad, bool (*fnc)(const CVECTOR *vtx, long num));
@@ -111,7 +111,7 @@ class Location : public Entity
 
     VDX9RENDER *GetRS() const;
     void DrawLine(const CVECTOR &s, uint32_t cs, const CVECTOR &d, uint32_t cd, bool useZ = true) const;
-    //Написать текст
+    // Write text
     void Print(const CVECTOR &pos3D, float rad, long line, float alpha, uint32_t color, float scale, const char *format,
                ...) const;
 
@@ -122,18 +122,18 @@ class Location : public Entity
 
     bool IsSwimming() const;
 
-    //Добавить сообщение о повреждении
+    // Add a damage message
     void AddDamageMessage(const CVECTOR &pos3D, float hit, float curhp, float maxhp);
-    //Нарисовать на данном кадре полоски над врагом
+    // Draw bars above the enemy in this frame
     void DrawEnemyBars(const CVECTOR &pos, float hp, float energy, float alpha);
 
   public:
-    //Объект управляющий расталкиванием персонажей
+    // The object that controls the repulsion of characters
     Supervisor supervisor;
 
-    //--------------------------------------------------------------------------------------------
-    //Инкапсуляция
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Encapsulation
+    // --------------------------------------------------------------------------------------------
   private:
     void Update(uint32_t delta_time);
     long LoadStaticModel(const char *modelName, const char *tech, long level, bool useDynamicLights);
@@ -146,7 +146,7 @@ class Location : public Entity
     void DrawLocators(LocatorArray *la);
     void CreateSphere();
     void TestLocatorsInPatch(MESSAGE &message);
-    //Отрисовка полосок над персонажами
+    // Drawing bars over characters
     void DrawEnemyBars();
     void DrawBar(const MTX_PRJ_VECTOR &vrt, uint32_t color, float hp, float energy);
     void CorrectBar(float v, float start, float end, BarVertex *vrt);
@@ -157,7 +157,7 @@ class Location : public Entity
 
     long lastLoadStaticModel;
 
-    //Все локаторы
+    // All locators
     std::vector<LocatorArray *> locators;
     long numLocators;
     long maxLocators;
@@ -167,24 +167,24 @@ class Location : public Entity
 
     VDX9RENDER *rs;
 
-    //Все модельки
+    // All models
     ModelArray model;
 
-    //Трава
+    // Grass
     entid_t grass;
-    //Орёл
+    // Eagle
     entid_t eagle;
-    //Ящерецы
+    // Lizards
     entid_t lizards;
-    //Крысы
+    // Rats
     entid_t rats;
-    //Крабы
+    // Crabs
     entid_t crabs;
-    //Кровь
+    // Blood
     entid_t blood;
 
     entid_t lightsid;
-    Lights *lights; //Указатель для текущего кадра
+    Lights *lights; // Pointer for the current frame
 
     entid_t loceffectsid;
 
@@ -207,13 +207,13 @@ class Location : public Entity
     bool bSwimming;
 };
 
-//Получить патч для персонажа
+// Get a character patch
 inline PtcData &Location::GetPtcData()
 {
     return ptc;
 }
 
-//Получить модельку патча для прыжков
+// Get the model of the jump patch
 inline MODEL *Location::JmpPatch()
 {
     if (patchJump < 0)
@@ -226,7 +226,7 @@ inline VDX9RENDER *Location::GetRS() const
     return rs;
 }
 
-//Проверить видимость 2-х точек
+// Check the visibility of 2 points
 inline bool Location::VisibleTest(const CVECTOR &p1, const CVECTOR &p2)
 {
     return model.VisibleTest(p1, p2);
@@ -237,7 +237,7 @@ inline Lights *Location::GetLights() const
     return lights;
 }
 
-//Протрейсит луч через локацию
+// Trace the ray through the location
 inline float Location::Trace(const CVECTOR &src, const CVECTOR &dst)
 {
     return model.Trace(src, dst);

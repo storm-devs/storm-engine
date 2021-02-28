@@ -253,7 +253,7 @@ bool PCS_CONTROLS::GetControlState(const char *control_name, CONTROL_STATE &_sta
               }
 
 
-            }  */ // boal ѕ ћ обратно
+            }  */
             return GetControlState(n, _state_struct);
         }
     }
@@ -281,7 +281,7 @@ bool PCS_CONTROLS::GetControlState(long control_code, CONTROL_STATE &_state_stru
         return true;
     }
 
-    // обработка контрола €вл€ющимс€ деоевом контролов
+    // processing of controls which is a tree of controls
     if (pUserControls[control_code].control_type == UCT_ControlTree)
     {
         if (pUserControls[control_code].nframe != nFrameCounter)

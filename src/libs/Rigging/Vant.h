@@ -8,7 +8,7 @@
 
 class NODE;
 
-#define VANT_EDGE 5 // число граней в сечении веревки
+#define VANT_EDGE 5 // number of edges in the rope section
 
 #define VANTVERTEX_FORMAT (D3DFVF_XYZ | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2)
 
@@ -53,30 +53,30 @@ class VANT_BASE : public Entity
     VDX9RENDER *RenderService;
 
   protected:
-    // параметры получаемые из INI-файла //
-    //-------------------------------------
-    int ROPE_QUANT;        // количество веревок
-    float ROPE_WIDTH;      // толщина веревки
-    float upWidth;         // ширина верхнего треугольника
-    float upHeight;        // высота верхнего треугольника
-    float treangXl;        // координаты текстуры треугольника
-    float treangXr;        //
-    float treangYu;        //
-    float treangYd;        //
-    float balkYu;          // координаты текстуры балки
-    float balkYd;          //
-    float ropeXl;          // координаты текстуры вертикальной веревки
-    float ropeXr;          //
-    float vRopeXl;         // координаты текстуры горизонтальной веревки xBeg
-    float vRopeXr;         //
-    float vRopeHeight;     // высота вертикальной веревки
-    float hRopeHeight;     // высота горизонтальной веревки
-    float fBalkHeight;     // высота балки относительно высоты треугольника
-    float fBalkWidth;      //
-    float fVantMaxDist;    // квадрат расстояния с которого не видны ванты
-    float ZERO_CMP_VAL;    // шаг дискретизации движения ванта
-    float MAXFALL_CMP_VAL; // максимальное изменение положения ванта при котором вант перестает отображаться
-    //-------------------------------------
+    // parameters obtained from INI file //
+    // -------------------------------------
+    int ROPE_QUANT;        // number of ropes
+    float ROPE_WIDTH;      // rope thickness
+    float upWidth;         // upper triangle width
+    float upHeight;        // the height of the upper triangle
+    float treangXl;        // triangle texture coordinates
+    float treangXr;        // 
+    float treangYu;        // 
+    float treangYd;        // 
+    float balkYu;          // beam texture coordinates
+    float balkYd;          // 
+    float ropeXl;          // vertical rope texture coordinates
+    float ropeXr;          // 
+    float vRopeXl;         // xBeg horizontal rope texture coordinates
+    float vRopeXr;         // 
+    float vRopeHeight;     // vertical rope height
+    float hRopeHeight;     // horizontal rope height
+    float fBalkHeight;     // beam height relative to triangle height
+    float fBalkWidth;      // 
+    float fVantMaxDist;    // the square of the distance from which the guys are not visible
+    float ZERO_CMP_VAL;    // Guy motion sampling step
+    float MAXFALL_CMP_VAL; // the maximum change in the guy position at which the guy stops being displayed
+    // -------------------------------------
     FILETIME ft_old;
 
     bool bUse;

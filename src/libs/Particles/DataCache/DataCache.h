@@ -27,20 +27,20 @@ class DataCache
     void CreateDataSource(void *pBuffer, uint32_t BufferSize, const char *SourceFileName);
 
   public:
-    //Конструктор/деструктор
+    // Constructor / destructor
     DataCache(IParticleManager *pManager);
     ~DataCache();
 
-    //Положить в кэш данные для системы
+    // Put data for the system in the cache
     void CacheSystem(const char *FileName);
 
-    //Сбросить кэш
+    // Reset cache
     void ResetCache();
 
-    //Получить указатель на данные для системы партиклов
+    // Get a pointer to data for a particle system
     DataSource *GetParticleSystemDataSource(const char *FileName);
 
-    //Проверить указатель на валидность
+    // Check pointer for validity
     bool ValidatePointer(DataSource *pData);
 
     uint32_t GetCachedCount() const;

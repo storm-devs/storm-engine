@@ -128,12 +128,12 @@ class VDX9RENDER : public SERVICE
     virtual long StringWidth(const char *string, long nFontNum = 0, float fScale = 1.f, long scrWidth = 0) = 0;
     virtual long CharWidth(utf8::u8_char ucVKey, long nFontNum = 0, float fScale = 1.f, long scrWidth = 0) = 0;
     virtual long CharHeight(long fontID) = 0;
-    virtual long LoadFont(const char *fontName) = 0; // возвращает номер\идентификатор шрифта или -1 в случае ошибки
-    virtual bool UnloadFont(const char *fontName) = 0; // возвращает истину если шрифт остался в использовании
-    virtual bool UnloadFont(long fontID) = 0; // возвращает истину если шрифт остался в использовании
+    virtual long LoadFont(const char *fontName) = 0; // returns the number \ font id, or -1 on error
+    virtual bool UnloadFont(const char *fontName) = 0; // returns true if the font is still in use
+    virtual bool UnloadFont(long fontID) = 0; // returns true if the font is still in use
     virtual bool IncRefCounter(long fontID) = 0; // increase reference counter if object is being copied
-    virtual bool SetCurFont(const char *fontName) = 0; // возвращает истину если установили данный шрифт
-    virtual bool SetCurFont(long fontID) = 0; // возвращает истину если установили данный шрифт
+    virtual bool SetCurFont(const char *fontName) = 0; // returns true if the given font is installed
+    virtual bool SetCurFont(long fontID) = 0; // returns true if the given font is installed
     virtual long GetCurFont() = 0;
     virtual char *GetFontIniFileName() = 0;
     virtual bool SetFontIniFileName(const char *iniName) = 0;

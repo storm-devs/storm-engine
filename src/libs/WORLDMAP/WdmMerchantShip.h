@@ -15,9 +15,9 @@
 
 class WdmMerchantShip : public WdmEnemyShip
 {
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     WdmMerchantShip();
     virtual ~WdmMerchantShip();
@@ -25,22 +25,22 @@ class WdmMerchantShip : public WdmEnemyShip
     void Goto(float x, float z, float rad);
 
   protected:
-    //Найти силу притягивающую в нужном направлении
+    // Find the pulling force in the desired direction
     void FindMoveForce() override;
-    //Проверка на завершение
+    // Completion check
     bool KillTest() override;
 
-    //Обновление сохраняемых данных
+    // Updating stored data
     void UpdateSaveData() override;
-    //Установка параметров
+    // Setting parameters
     void SetSaveAttribute(ATTRIBUTES *save) override;
 
-    //Установка параметров
+    // Setting parameters
     bool Load(const char *modelName) override;
 
-    //--------------------------------------------------------------------------------------------
-    //Инкапсуляция
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Encapsulation
+    // --------------------------------------------------------------------------------------------
   private:
     CVECTOR gotoPos;
     float gotoRad;

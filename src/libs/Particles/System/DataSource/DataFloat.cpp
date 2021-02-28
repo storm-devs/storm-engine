@@ -1,7 +1,7 @@
 #include "DataFloat.h"
 #include "vmodule_api.h"
 
-//конструктор/деструктор
+// constructor / destructor
 DataFloat::DataFloat()
 {
     Value = 0.0f;
@@ -11,13 +11,13 @@ DataFloat::~DataFloat()
 {
 }
 
-//Получить значение
+// Get value
 float DataFloat::GetValue() const
 {
     return Value;
 }
 
-//Установить значение
+// Set value
 void DataFloat::SetValue(float val)
 {
     Value = val;

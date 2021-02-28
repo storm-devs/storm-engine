@@ -926,13 +926,13 @@ void SHIP::MastFall(mast_t *pM)
                 sprintf_s(str, "%s", pMast->pNode->GetName());
                 sscanf((char *)&str[_countof(MAST_IDENTIFY) - 1], "%d", &iMastNum);
                 bool bOk = false;
-                if (iNum < TOPMAST_BEGIN) // мачта, валим все стеньги
+                if (iNum < TOPMAST_BEGIN) // mast, bring down all the topmills
                 {
                     if ((iMastNum > iNum * TOPMAST_BEGIN && iMastNum < ((iNum + 1) * TOPMAST_BEGIN)) ||
                         iMastNum == iNum)
                         bOk = true;
                 }
-                else // стеньга, валим все что выше
+                else // topmast, bring down everything above
                 {
                     if (((iMastNum > iNum) && iMastNum < ((iBase + 1) * TOPMAST_BEGIN)) || iMastNum == iNum)
                         bOk = true;
@@ -1242,13 +1242,13 @@ uint64_t SHIP::ProcessMessage(MESSAGE &message)
         // all system which have particles - must be deleted here
         aFirePlaces.clear();
         break;
-        // boal 20.08.06 перерисовка флага -->
+        // boal 20.08.06 redrawing the flag -->
     case MSG_SHIP_FLAG_REFRESH:
         core.Send_Message(flag_id, "li", MSG_FLAG_DEL_GROUP, GetModelEID());
         if (flag_id = EntityManager::GetEntityId("flag"))
             core.Send_Message(flag_id, "lili", MSG_FLAG_INIT, GetModelEID(), GetNation(GetACharacter()), GetId());
         break;
-        // boal 20.08.06 перерисовка флага <--
+        // boal 20.08.06 redrawing the flag <--
     case MSG_SHIP_LIGHTSRESET:
         UnSetLights();
         break;

@@ -58,7 +58,7 @@ bool SCRSHOTER::Init()
 
 void SCRSHOTER::SetDevice()
 {
-    // получить сервис рендера
+    // get render service
     rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!rs)
         throw std::exception("No service: dx9render");
@@ -87,7 +87,7 @@ bool SCRSHOTER::MakeScreenShot()
 
     auto hr = D3D_OK;
 
-    // Заставим видео карту отрисовать все незакоченные задания
+    // make the video card draw all unfinished tasks
     hr = rs->EndScene();
     if (hr != D3D_OK)
     {
@@ -101,12 +101,12 @@ bool SCRSHOTER::MakeScreenShot()
         return false;
     }
 
-    // удалим старый скрин шот
+    // delete the old screen shot
     if (m_pScrShotTex != nullptr && rs != nullptr)
         rs->Release(m_pScrShotTex);
     m_pScrShotTex = nullptr;
 
-    // получим данные о старой поверхности рендера
+    // get data of the old render surface
     D3DSURFACE_DESC desc;
     IDirect3DSurface9 *pOldRenderTarg = nullptr;
     if (hr == D3D_OK)
@@ -114,7 +114,7 @@ bool SCRSHOTER::MakeScreenShot()
     if (hr == D3D_OK)
         hr = pOldRenderTarg->GetDesc(&desc);
 
-    // получим копию рендер буфера
+    // get a copy of the render buffer
     IDirect3DSurface9 *pRenderTarg = nullptr;
     if (hr == D3D_OK)
         hr = rs->CreateOffscreenPlainSurface(desc.Width, desc.Height, desc.Format, &pRenderTarg);
@@ -123,28 +123,28 @@ bool SCRSHOTER::MakeScreenShot()
     if (pOldRenderTarg != nullptr)
         pOldRenderTarg->Release();
 
-    // создадим новый скрин шот
+    // create a new screen shot
     if (hr == D3D_OK)
         hr = rs->CreateTexture(SS_TEXTURE_WIDTH, SS_TEXTURE_HEIGHT, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED,
                                &m_pScrShotTex); //~!~
 
-    // получим буфер для копии поверхности рендеринга
+    // get a buffer for a copy of the rendering surface
     void *pIn = nullptr;
     if (hr == D3D_OK)
         hr = pRenderTarg->LockRect(&inRect, nullptr, 0);
     if (hr == D3D_OK)
         pIn = inRect.pBits;
-    // получим буфер для текстуры
+    // get a buffer for the texture
     void *pOut = nullptr;
     if (hr == D3D_OK)
         hr = m_pScrShotTex->LockRect(0, &outRect, nullptr, 0);
     if (hr == D3D_OK)
         pOut = outRect.pBits;
 
-    // заполним эту текстуру из копии нашего рендер буфера
+    // fill this texture from a copy of our render buffer
     if (hr == D3D_OK)
     {
-        // Создать набор отступов по ординатам
+        // Create a set of ordinate indents
         auto *const pHorzOff = new int[SS_TEXTURE_WIDTH];
         auto *const pVertOff = new int[SS_TEXTURE_HEIGHT];
         if (!pHorzOff || !pVertOff)
@@ -162,10 +162,10 @@ bool SCRSHOTER::MakeScreenShot()
             nHorzSize = desc.Height * SS_TEXTURE_WIDTH / SS_TEXTURE_HEIGHT;
             nVertSize = desc.Height;
         }
-        // Заполним горизонтальные смещения
+        // Fill in the horizontal offsets
         for (n = 0; n < SS_TEXTURE_WIDTH; n++)
             pHorzOff[n] = (n * desc.Width / SS_TEXTURE_WIDTH) * (inRect.Pitch / desc.Width);
-        // Заполним вертикальные смещения
+        // Fill in the vertical offsets
         for (n = 0; n < SS_TEXTURE_HEIGHT; n++)
             pVertOff[n] = n * desc.Height / SS_TEXTURE_HEIGHT;
 
@@ -184,19 +184,19 @@ bool SCRSHOTER::MakeScreenShot()
         delete[] pVertOff;
     }
 
-    // закрываем открытые буфера
+    // close opened buffers
     if (pIn != nullptr)
         pRenderTarg->UnlockRect();
 
-    // закрываем открытые буфера
+    // close opened buffers
     if (pOut != nullptr)
         m_pScrShotTex->UnlockRect(0);
 
-    // Удалим ненужную уже копию экрана
+    // Delete unnecessary screen copy
     if (pRenderTarg != nullptr)
         pRenderTarg->Release();
 
-    // Наложим на шот текстуру с рамкой
+    // Add a texture with a frame to the shot
     const int nTextureID = rs->TextureCreate("interfaces\\EmptyBorder.tga");
     if (nTextureID >= 0)
     {

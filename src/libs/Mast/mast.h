@@ -65,8 +65,8 @@ class MAST : public Entity
     int GetSlide(entid_t mod, CVECTOR &pbeg, CVECTOR &pend, CVECTOR &dp, CVECTOR &lrey, CVECTOR &rrey, float &angl);
     struct MASTMOVE
     {
-        CVECTOR bp, ep;     // координаты мачты
-        CVECTOR brey, erey; // координаты реи
+        CVECTOR bp, ep;     // mast coordinates
+        CVECTOR brey, erey; // rhea coordinates
 
         CVECTOR ang, dang, sdang;
         CVECTOR mov, dmov, sdmov;

@@ -11,9 +11,9 @@
 #include "WdmWarringShip.h"
 #include "storm_assert.h"
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 WdmWarringShip::WdmWarringShip()
 {
@@ -30,11 +30,11 @@ WdmWarringShip::~WdmWarringShip()
         wdmObjects->rs->TextureRelease(texture);
 }
 
-//Расчёты
+// Calculations
 void WdmWarringShip::Update(float dltTime)
 {
     WdmEnemyShip::Update(dltTime);
-    //Удружим противнику :)
+    // help the opponent :)
     if (attack)
     {
         if (!isLive)
@@ -42,13 +42,13 @@ void WdmWarringShip::Update(float dltTime)
         if (killMe)
             attack->killMe = true;
     }
-    //Дым
-    //Рожаем если надо
+    // Smoke
+    // spawn if necessary
     brnTime += dltTime;
     if (!numRects && rand() * (20.0f / RAND_MAX) < brnTime - 5.0f)
     {
         brnTime = 0.0f;
-        //Половина для левого борта
+        // Half for the left side
         for (long i = 0; i < sizeof(move) / (2 * sizeof(MoveInfo)); i++, numRects++)
         {
             rect[numRects].vPos = mtx.Pos() + CVECTOR(0.0f, 2.0f, 0.0f);
@@ -62,7 +62,7 @@ void WdmWarringShip::Update(float dltTime)
             move[numRects].kTime = 1.0f / (2.0f + rand() * 2.0f / RAND_MAX);
             move[numRects].v = mtx.Vx() * 30.0f * (0.6f + rand() * (0.4f / RAND_MAX));
         }
-        //Половина для правого борта
+        // Half for the right side
         for (long i = 0; i < sizeof(move) / (2 * sizeof(MoveInfo)); i++, numRects++)
         {
             rect[numRects].vPos = mtx.Pos() + CVECTOR(0.0f, 2.0f, 0.0f);
@@ -77,14 +77,14 @@ void WdmWarringShip::Update(float dltTime)
             move[numRects].v = mtx.Vx() * -30.0f * (0.6f + rand() * (0.4f / RAND_MAX));
         }
     }
-    //Двигаем
+    // Moving
     for (long i = 0; i < numRects; i++)
     {
         auto &mi = move[i];
         mi.time += mi.kTime * dltTime;
         if (mi.time >= 1.0f)
         {
-            //Убиваем партикл
+            // Killing the Particle
             numRects--;
             for (auto j = i; j < numRects; j++)
             {
@@ -107,11 +107,11 @@ void WdmWarringShip::Update(float dltTime)
     }
 }
 
-//Отрисовка
+// Rendering
 void WdmWarringShip::LRender(VDX9RENDER *rs)
 {
     WdmEnemyShip::LRender(rs);
-    //Дым
+    // Smoke
     if (isWMRender && numRects > 0)
     {
         rs->TextureSet(0, texture);

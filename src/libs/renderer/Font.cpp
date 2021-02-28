@@ -89,8 +89,8 @@ bool FONT::Init(const char *font_name, const char *iniName, IDirect3DDevice9 *_d
         return false;
 
     m_fAspectRatioH = 1.f;
-    //  m_fAspectRatioV = _render->GetHeightDeformator();
-    m_fAspectRatioV = 1.f; // ugeen - для ККС чтобы шрифты не плющило
+    // m_fAspectRatioV = _render->GetHeightDeformator();
+    m_fAspectRatioV = 1.f; // ugeen - for TEHO so that fonts are not crushed
     if (ini->GetLong(font_name, "AspectHeightConstant", 0) == 1)
     {
         m_fAspectRatioH = 1.f / m_fAspectRatioV;

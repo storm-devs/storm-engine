@@ -1,19 +1,19 @@
-//============================================================================================
-//	Spirenkov Maxim aka Sp-Max Shaman, 2001
-//--------------------------------------------------------------------------------------------
-//	Storm engine v2.00
-//--------------------------------------------------------------------------------------------
-//	ActionInfo
-//--------------------------------------------------------------------------------------------
-//	Информация об одном действие
-//============================================================================================
+// ============================================================================================
+// Spirenkov Maxim aka Sp-Max Shaman, 2001
+// --------------------------------------------------------------------------------------------
+// Storm engine v2.00
+// --------------------------------------------------------------------------------------------
+// ActionInfo
+// --------------------------------------------------------------------------------------------
+// Information about one action
+// ============================================================================================
 
 #include "ActionInfo.h"
 #include "storm_assert.h"
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 ActionInfo::ActionInfo(const char *aname, long startframe, long endframe)
 {
@@ -33,14 +33,14 @@ ActionInfo::ActionInfo(const char *aname, long startframe, long endframe)
     numEvents = 0;
 }
 
-//Добавить событие
+// Add event
 bool ActionInfo::AddEvent(const char *ename, float frame, ExtAnimationEventType eventType)
 {
     Assert(ename);
     Assert(strlen(ename) < 64);
     if (numEvents >= ANI_MAX_EVENTS || ename[0] == 0)
         return false;
-    //Расчитаем относительное время
+    // calculate the relative time
     if (frame > static_cast<float>(endFrame))
         frame = static_cast<float>(endFrame);
     auto t = static_cast<float>(frame - startFrame);
@@ -50,7 +50,7 @@ bool ActionInfo::AddEvent(const char *ename, float frame, ExtAnimationEventType 
         t /= endFrame - startFrame;
     if (t > 1.0f)
         t = 1.0f;
-    //Заполним структуру
+    // fill in the structure
     strcpy_s(event[numEvents].name, ename);
     event[numEvents].time = t;
     event[numEvents].event = eventType;
@@ -58,16 +58,16 @@ bool ActionInfo::AddEvent(const char *ename, float frame, ExtAnimationEventType 
     return true;
 }
 
-//--------------------------------------------------------------------------------------------
-//Работа с действием
-//--------------------------------------------------------------------------------------------
-//Сравнить с текущим именем
+// --------------------------------------------------------------------------------------------
+// Working with action
+// --------------------------------------------------------------------------------------------
+// Compare with current name
 bool ActionInfo::operator==(const char *actionName) const
 {
     return _stricmp(actionName, name) == 0;
 }
 
-//Проверим на выполнимость условия генерации события
+// check if the event generation condition is satisfied
 bool ActionInfo::CheckEvent(long index, float time, bool direction)
 {
     Assert(index >= 0 && index < numEvents);
@@ -91,7 +91,7 @@ bool ActionInfo::CheckEvent(long index, float time, bool direction)
     return false;
 }
 
-//Получить имя сообщения
+// Get message name
 const char *ActionInfo::EventName(long index)
 {
     Assert(index >= 0 && index < numEvents);

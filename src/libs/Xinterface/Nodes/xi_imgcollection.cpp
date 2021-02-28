@@ -67,7 +67,7 @@ void CXI_IMGCOLLECTION::AddImage(const char *pcPicName, uint32_t dwColor, XYRECT
     info.bNative = false;
     m_aEditInfo.push_back(info);
 
-    // перекраиваем индекс и вертекс буферы
+    // redrawing the index and vertex buffers
     VERTEX_BUFFER_RELEASE(m_rs, vBuf);
     INDEX_BUFFER_RELEASE(m_rs, iBuf);
 
@@ -293,7 +293,7 @@ bool CXI_IMGCOLLECTION::IsClick(int buttonID, long xPos, long yPos)
 
 void CXI_IMGCOLLECTION::ChangePosition(XYRECT &rNewPos)
 {
-    // if( m_aSections.size() == 0 ) return; // пустая коллекция - создана из скрипта
+    // if (m_aSections.size () == 0) return; // empty collection - created from script
     long n = 0;
     long q = m_aEditInfo.size();
 
@@ -382,14 +382,14 @@ uint32_t CXI_IMGCOLLECTION::MessageProc(long msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
-    case 0: // добавить иконку
+    case 0: // add icon
     {
         char param[256];
-        // имя картинки
+        // picture name
         message.String(sizeof(param) - 1, param);
-        // цвет картинки
+        // picture color
         const auto dwColor = message.Long();
-        // позиция картинки
+        // picture position
         XYRECT pos;
         pos.left = message.Long();
         pos.top = message.Long();
@@ -403,7 +403,7 @@ uint32_t CXI_IMGCOLLECTION::MessageProc(long msgcode, MESSAGE &message)
     }
     break;
 
-    case 1: // установить текстуру
+    case 1: // set texture
     {
         char param[256];
         message.String(sizeof(param) - 1, param);
@@ -413,7 +413,7 @@ uint32_t CXI_IMGCOLLECTION::MessageProc(long msgcode, MESSAGE &message)
             STORM_DELETE(sGroupName);
             PICTURE_TEXTURE_RELEASE(pPictureService, sGroupName, texl);
 
-            // имя группы
+            // group name
             const auto len = strlen(param) + 1;
             sGroupName = new char[len];
             memcpy(sGroupName, param, len);
@@ -422,7 +422,7 @@ uint32_t CXI_IMGCOLLECTION::MessageProc(long msgcode, MESSAGE &message)
     }
     break;
 
-    case 2: // удалить все картинки (текстуру оставить)
+    case 2: // delete all pictures (leave texture)
     {
         m_aSections.clear();
         m_aEditInfo.clear();
@@ -431,7 +431,7 @@ uint32_t CXI_IMGCOLLECTION::MessageProc(long msgcode, MESSAGE &message)
     }
     break;
 
-    case 3: // установить цвет картинки
+    case 3: // set picture color
     {
         const auto nImgNum = message.Long();
         const uint32_t dwColor = message.Long();
@@ -443,7 +443,7 @@ uint32_t CXI_IMGCOLLECTION::MessageProc(long msgcode, MESSAGE &message)
     }
     break;
 
-    case 4: // изменить картинку
+    case 4: // change picture
     {
         const auto nImgNum = message.Long();
         char param[256];

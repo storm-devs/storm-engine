@@ -252,7 +252,7 @@ void ActivePerkShower::AddIconToList(ATTRIBUTES *pAItemDescr)
         for (auto i = 0; i < m_nIShowQ; i++)
         {
             if (texNum == m_pIconsList[i].m_nPicTexIdx && picNum == m_pIconsList[i].m_nPicNum)
-                return; // уже есть такая абилити
+                return; // there is already such an ability
         }
     }
 

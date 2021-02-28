@@ -34,11 +34,11 @@ class TornadoParticles
 
     struct GroundParticle : public Particle
     {
-        float a;  //Угл в радиальной сисеме координат
-        float r;  //Радиус начала движения
-        float t;  //Относительное время движения
-        float dt; //Относительное время движения
-        float p;  //Степень искривлённости траектории
+        float a;  // Angle in radial coordinate system
+        float r;  // Start radius
+        float t;  // Relative travel time
+        float dt; // Relative travel time
+        float p;  // The degree of curvature of the trajectory
     };
 
     struct Vertex
@@ -48,9 +48,9 @@ class TornadoParticles
         float u, v;
     };
 
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     TornadoParticles(Pillar &_pillar);
     virtual ~TornadoParticles();
@@ -65,9 +65,9 @@ class TornadoParticles
 
     void SetGlobalAlpha(float a);
 
-    //--------------------------------------------------------------------------------------------
-    //Инкапсуляция
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Encapsulation
+    // --------------------------------------------------------------------------------------------
   private:
     void DrawParticles(VDX9RENDER *rs, void *prts, long num, long size, long texture, const char *tech);
     static float GetRand(float r, float dev = 0.5f); // dev = 0..1, return 0..r

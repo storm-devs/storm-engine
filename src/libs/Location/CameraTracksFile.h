@@ -1,18 +1,18 @@
-//===========================================================================================================================
+// ===========================================================================================================================
 //  Animation temporary file
 //  ANT file
 //  Ver 1.0
-//===========================================================================================================================
+// ===========================================================================================================================
 //
-//  Структура файла:
-//
+// File structure:
+// 
 //     AntFileHeader
 //     char[AntFileHeader.stringsTableSize]
-//	   AntFileBone[AntFileHeader.bonesCount]
+//     AntFileBone[AntFileHeader.bonesCount]
 //     AntFileTrackElement[AntFileHeader.framesCount]
 //
 //
-//===========================================================================================================================
+// ===========================================================================================================================
 
 #ifndef _ANTFILE_H_
 
@@ -22,30 +22,30 @@
 
 #pragma pack(push, 1)
 
-//Заголовок файла
+// File header
 struct AntFileHeader
 {
-    unsigned long id;               //Идентификатор файла
-    unsigned long ver;              //Версия файла
-    unsigned long bonesCount;       //Количество костей в файле >= 1
-    unsigned long framesCount;      //Количество кадров анимации >= 1
-    unsigned long stringsTableSize; //Размер таблицы строк имён костей
-    float defaultFPS;               //Скорость проигрывания анимации
+    unsigned long id;               // File ID
+    unsigned long ver;              // File version
+    unsigned long bonesCount;       // Number of bones in file >= 1
+    unsigned long framesCount;      // Number of animation frames >= 1
+    unsigned long stringsTableSize; // Size of the Bone names table
+    float defaultFPS;               // Animation speed
 };
 
-//Описание кости
+// Bone description
 struct AntFileBone
 {
-    long parentIndex;        //Индекс родительской кости, меньший текущего
-    unsigned long nameIndex; //Индекс строки в таблице строк
+    long parentIndex;        // Parent bone index, less than current
+    unsigned long nameIndex; // The index of the row in the string table
 };
 
-//Описание элемента трека
+// Track item description
 struct AntFileTrackElement
 {
-    float qx, qy, qz, qw; //Кватернион
-    float px, py, pz;     //Позиция
-    float sx, sy, sz;     //Коэфициенты масштабирования
+    float qx, qy, qz, qw; // Quaternion
+    float px, py, pz;     // Position
+    float sx, sy, sz;     // Scaling factors
 };
 
 #pragma pack(pop)

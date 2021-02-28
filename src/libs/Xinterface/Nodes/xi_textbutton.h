@@ -52,19 +52,19 @@ class CXI_TEXTBUTTON : public CINODE
     CVideoTexture *m_pTex;
     XI_ONETEX_VERTEX m_v[8];
 
-    uint32_t m_dwShadowColor;      // цвет тени
-    uint32_t m_dwFaceColor;        // цвет ненажатой клавиши
-    uint32_t m_dwPressedFaceColor; // цвет активной клавиши
-    uint32_t m_dwFontColor;        // цвет шрифта
-    uint32_t m_dwUnselFontColor;   // цвет шрифта для недоступной клавиши
+    uint32_t m_dwShadowColor;      // shadow color
+    uint32_t m_dwFaceColor;        // unpressed key color
+    uint32_t m_dwPressedFaceColor; // active key color
+    uint32_t m_dwFontColor;        // font color
+    uint32_t m_dwUnselFontColor;   // font color for unavailable key
     float m_fFontScale;
 
-    float m_fXShadow;      // смещение по X для тени нормальной клавиши
-    float m_fYShadow;      // смещение по Y для тени нормальной клавиши
-    float m_fXShadowPress; // смещение по X для тени нажатой клавиши
-    float m_fYShadowPress; // смещение по Y для тени нажатой клавиши
-    float m_fXDeltaPress;  // смещение по X при нажатии кнопки
-    float m_fYDeltaPress;  // смещение по Y при нажатии кнопки
+    float m_fXShadow;      // X offset for normal key shadow
+    float m_fYShadow;      // Y offset for normal key shadow
+    float m_fXShadowPress; // X offset for the shadow of the pressed key
+    float m_fYShadowPress; // Y offset for the shadow of the pressed key
+    float m_fXDeltaPress;  // X offset on button click
+    float m_fYDeltaPress;  // Y offset when button is pressed
 
     int m_nPressedDelay;
     int m_nMaxDelay;

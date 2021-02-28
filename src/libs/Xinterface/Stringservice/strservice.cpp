@@ -190,7 +190,7 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
         return;
     }
 
-    // Уже установлен этот язык
+    // This language is already set
     if (m_sLanguage != nullptr && _stricmp(sLanguage, m_sLanguage) == 0)
         return;
 
@@ -202,7 +202,7 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
         return;
     }
 
-    // установим новое имя для языка
+    // set a new name for the language
     STORM_DELETE(m_sLanguage);
     const auto len = strlen(sLanguage) + 1;
     if ((m_sLanguage = new char[len]) == nullptr)
@@ -213,11 +213,11 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
 
     while (true)
     {
-        // удалим старые данные
+        // delete old data
         STORM_DELETE(m_sIniFileName);
         STORM_DELETE(m_sLanguageDir);
 
-        // получим директорию для текстовых файлов данного языка
+        // get a directory for text files of a given language
         if (ini->ReadString("DIRECTORY", m_sLanguage, param, sizeof(param) - 1, ""))
         {
             const auto len = strlen(param) + 1;
@@ -230,7 +230,7 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
         else
             core.Trace("WARNING! Not found directory record for language %s", sLanguage);
 
-        // получим имя ини файла со строками общего использования для этого языка
+        // get the name of the ini file with common strings for this language
         if (ini->ReadString("COMMON", "strings", param, sizeof(param) - 1, ""))
         {
             const auto len = strlen(param) + 1;
@@ -246,7 +246,7 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
         if (m_sLanguageDir != nullptr && m_sIniFileName != nullptr)
             break;
 
-        // сравним текущий язык с дефолтовым
+        // compare the current language with the default
         if (ini->ReadString("COMMON", "defaultLanguage", param, sizeof(param) - 1, ""))
         {
             if (_stricmp(m_sLanguage, param) == 0)
@@ -380,9 +380,9 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
     // end of search
     delete ini;
 
-    //=======================================================================
-    // Перечитаем пользовательские файлы
-    //=======================================================================
+    // =======================================================================
+    // Re-reading user files
+    // =======================================================================
     auto *const pOldURoot = m_pUsersBlocks;
     m_pUsersBlocks = nullptr;
     for (auto *pUSB = pOldURoot; pUSB != nullptr; pUSB = pUSB->next)
@@ -438,7 +438,7 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
             }
         }
     }
-    // Удалим старые пользовательские файлы
+    // Delete old user files
     UsersStringBlock *pNewURoot = m_pUsersBlocks;
     m_pUsersBlocks = pOldURoot;
     while (m_pUsersBlocks)
@@ -784,7 +784,7 @@ bool STRSERVICE::GetNextUsersString(char *src, long &idx, char **strName, char *
         } while ((tmpStr = strchr(nameEnd + 2, '\n')) < dataBeg);
     idx = dataEnd - src + 2;
 
-    // избавимся от пробелов слева
+    // get rid of the spaces on the left
     while (nameBeg <= nameEnd)
     {
         if (*nameBeg == 0x0A)
@@ -811,7 +811,7 @@ bool STRSERVICE::GetNextUsersString(char *src, long &idx, char **strName, char *
     }
     if (nameEnd - nameBeg <= 1)
         nameEnd = dataBeg - 2;
-    // избавимся от пробелов справа
+    // get rid of the spaces on the right
     while (nameBeg < nameEnd)
     {
         if (*nameBeg == 0x0A)
@@ -856,7 +856,7 @@ bool STRSERVICE::GetNextUsersString(char *src, long &idx, char **strName, char *
         }
         break;
     }
-    // избавимся от пробелов слева и справа в данных
+    // get rid of spaces on the left and right in the data
     while (dataBeg < dataEnd)
     {
         if (*dataEnd == '\t')
@@ -909,11 +909,11 @@ bool STRSERVICE::GetNextUsersString(char *src, long &idx, char **strName, char *
 
 //===============================================================
 // SCRIPT LIBS SECTION
-//===============================================================
-// ОПИСАНИЕ ФУНКЦИЙ :
-//==============================================================
+// ===============================================================
+// DESCRIPTION OF FUNCTIONS:
+// ==============================================================
 
-// Получить текущий язык
+// Get the current language
 uint32_t _Language_GetLanguage(VS_STACK *pS)
 {
     char *strLangName = g_StringServicePointer->GetLanguage();
@@ -926,7 +926,7 @@ uint32_t _Language_GetLanguage(VS_STACK *pS)
     return IFUNCRESULT_OK;
 }
 
-// Открыть языковый файл
+// Open language file
 uint32_t _Language_OpenFile(VS_STACK *pS)
 {
     VDATA *pLngFileName = (VDATA *)pS->Pop();
@@ -935,7 +935,7 @@ uint32_t _Language_OpenFile(VS_STACK *pS)
     const char *strLngFileName = nullptr;
     pLngFileName->Get(strLngFileName);
 
-    // получим ID для заданного файла
+    // get the ID for the given file
     const long nLngFileID = g_StringServicePointer->OpenUsersStringFile(strLngFileName);
 
     auto *pVR = (VDATA *)pS->Push();
@@ -946,7 +946,7 @@ uint32_t _Language_OpenFile(VS_STACK *pS)
     return IFUNCRESULT_OK;
 }
 
-// Закрыть языковый файл
+// Close language file
 uint32_t _Language_CloseFile(VS_STACK *pS)
 {
     VDATA *pLngFileID = (VDATA *)pS->Pop();
@@ -960,7 +960,7 @@ uint32_t _Language_CloseFile(VS_STACK *pS)
     return IFUNCRESULT_OK;
 }
 
-// Интерпретировать строку используя языковый файл
+// Interpret a string using a language file
 uint32_t _Language_ConvertString(VS_STACK *pS)
 {
     VDATA *pInStr = (VDATA *)pS->Pop();
@@ -988,7 +988,7 @@ uint32_t _Language_ConvertString(VS_STACK *pS)
     return IFUNCRESULT_OK;
 }
 
-// Интерпретировать строку используя общий языковый файл
+// Interpret a string using a common language file
 uint32_t _XI_ConvertString(VS_STACK *pS)
 {
     auto *pInStr = (VDATA *)pS->Pop();
@@ -1010,7 +1010,7 @@ uint32_t _XI_ConvertString(VS_STACK *pS)
     return IFUNCRESULT_OK;
 }
 
-// Установить язык
+// Set language
 uint32_t _Language_SetLanguage(VS_STACK *pS)
 {
     VDATA *pLngName = (VDATA *)pS->Pop();
@@ -1024,7 +1024,7 @@ uint32_t _Language_SetLanguage(VS_STACK *pS)
     return IFUNCRESULT_OK;
 }
 
-// Получить ID Глобального языкового файла
+// Get the ID of the Global Language File
 uint32_t _GlobalLngFileID(VS_STACK *pS)
 {
     auto *pVR = (VDATA *)pS->Push();
@@ -1035,7 +1035,7 @@ uint32_t _GlobalLngFileID(VS_STACK *pS)
     return IFUNCRESULT_OK;
 }
 
-// Получить ID Глобального языкового файла
+// Get the ID of the Global Language File
 uint32_t _LanguageGetFaderPic(VS_STACK *pS)
 {
     VDATA *pPicName = (VDATA *)pS->Pop();
@@ -1080,7 +1080,7 @@ uint32_t _LanguageGetFaderPic(VS_STACK *pS)
     return IFUNCRESULT_OK;
 }
 
-// Установить цветокоррекцию для игры
+// Set color grading for the game
 uint32_t _SetColorCorrection(VS_STACK *pS)
 {
     VDATA *pBright = (VDATA *)pS->Pop();
@@ -1109,7 +1109,7 @@ uint32_t _SetColorCorrection(VS_STACK *pS)
     return IFUNCRESULT_OK;
 }
 
-// Установить чувствительность мыши
+// Set mouse sensitivity
 uint32_t _SetMouseSensitivity(VS_STACK *pS)
 {
     auto *pYSens = (VDATA *)pS->Pop();
@@ -1134,7 +1134,7 @@ uint32_t _SetMouseSensitivity(VS_STACK *pS)
     return IFUNCRESULT_OK;
 }
 
-// Установить инвертность на клавишу
+// Set invert to key
 uint32_t _ControlMakeInvert(VS_STACK *pS)
 {
     auto *pControlFlag = (VDATA *)pS->Pop();

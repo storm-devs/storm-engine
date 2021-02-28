@@ -76,24 +76,24 @@ class BATTLE_NAVIGATOR
   protected:
     uint32_t m_dwBackGradColor1;
     uint32_t m_dwBackGradColor2;
-    // параметры видимого горизонта
-    float m_fMapRadius;    // радиус миникарты на экране
-    float m_fTextureRad;   // радиус миникарты в текстуре
-    float m_fWorldRad;     // радиус миникарты в мировых координатах
-    float m_fCurScale;     // масштаб миникарты
-    float m_fDefaultScale; // масштаб карты по умолчанию
-    float m_fMinScale;     // минимальный масштаб карты
-    float m_fMaxScale;     // максимальный масштаб карты
-    float m_fScaleStep;    // шаг изменения масштаба
-    float m_fShipShowRad;  // радиус показываемого корабля
+    // visible horizon parameters
+    float m_fMapRadius;    // radius of the minimap on screen
+    float m_fTextureRad;   // radius of the minimap in texture
+    float m_fWorldRad;     // radius of the minimap in world coordinates
+    float m_fCurScale;     // minimap scale
+    float m_fDefaultScale; // default map scale
+    float m_fMinScale;     // minimum map scale
+    float m_fMaxScale;     // maximum map scale
+    float m_fScaleStep;    // zoom step
+    float m_fShipShowRad;  // radius of the displayed ship
 
-    // параметры навигационного окна
+    // navigation window options
     long m_NavigationWidth;
     long m_NavigationHeight;
     long m_XNavigator;
     long m_YNavigator;
 
-    // координаты нашего корабля
+    // coordinates of our ship
     float m_fXPos;
     float m_fYPos;
     float m_fAngle;
@@ -102,7 +102,7 @@ class BATTLE_NAVIGATOR
     float m_fShipSpeedScale;
     float m_fShipWindAgainst;
 
-    // координаты острова
+    // island coordinates
     bool m_bYesIsland;
     float m_fXIsland;
     float m_fYIsland;
@@ -110,14 +110,14 @@ class BATTLE_NAVIGATOR
     float m_fIslandHeight;
     float m_fIslandRadius;
 
-    // ветер
+    // wind
     float m_fWindAngle;
     float m_fWindStrength;
     float m_fWindMaxStrength;
     long m_windWidth;
     long m_windHeight;
 
-    // параметры заряда пушек
+    // cannon charge parameters
     uint32_t m_dwChargeCannon;
     uint32_t m_dwReadyCannon;
     uint32_t m_dwDamagedCannon;
@@ -142,7 +142,7 @@ class BATTLE_NAVIGATOR
     float m_fCurAnglBackDamage;
     float m_fEndAnglBackCharge;
 
-    // параметры скорости корабля и ветра
+    // ship speed and wind parameters
     float m_fBegAnglShipSpeed;
     float m_fEndAnglShipSpeed;
     float m_fCurAnglShipSpeed;
@@ -150,34 +150,34 @@ class BATTLE_NAVIGATOR
     float m_fEndAnglWindSpeed;
     float m_fCurAnglWindSpeed;
 
-    // текстуры
-    long m_idCompasTex;     // компас
-    long m_idSpeedTex;      // скорость корабля и ветер
-    long m_idCannonTex;     // заряд пушек
-    long m_idEmptyTex;      // пустое место для скорости и заряда
-    long m_idIslandTexture; // остров
-    long m_idWindTex;       // ветер
-    long m_idBestCourseTex; // указатели наилучшего курса
-    long m_idChargeTexture; // текущий тип заряда пушек
-    long m_idPowderTexture; // текущий порох
-    long m_idWindTexture;   // скорость ветра
-    long m_idSailTexture;   // положение парусов/скорость корабля
+    // textures
+    long m_idCompasTex;     // compass
+    long m_idSpeedTex;      // ship speed and wind
+    long m_idCannonTex;     // cannon charge
+    long m_idEmptyTex;      // empty space for speed and charge
+    long m_idIslandTexture; // Isle
+    long m_idWindTex;       // wind
+    long m_idBestCourseTex; // best direction pointers
+    long m_idChargeTexture; // current cannon charge type
+    long m_idPowderTexture; // current gunpowder
+    long m_idWindTexture;   // wind speed
+    long m_idSailTexture;   // sail position / ship speed
     IDirect3DTexture9 *m_pIslandTexture;
 
-    uint32_t m_dwSeaColor;         // цвет моря на миникарте
-    uint32_t m_dwFireZoneColor;    // цвет зоны огня на миникарте
-    uint32_t m_dwEnemyShipColor;   // цвет вражеских кораблей
-    uint32_t m_dwFrendShipColor;   // цвет своих кораблей
-    uint32_t m_dwNeutralShipColor; // цвет своих кораблей
-    uint32_t m_dwDeadShipColor;    // цвет тонущего корабля
+    uint32_t m_dwSeaColor;         // color of the sea on the minimap
+    uint32_t m_dwFireZoneColor;    // color of the fire zone on the minimap
+    uint32_t m_dwEnemyShipColor;   // color of enemy ships
+    uint32_t m_dwFrendShipColor;   // color of friend ships
+    uint32_t m_dwNeutralShipColor; // color of neutral ships
+    uint32_t m_dwDeadShipColor;    // color of a sinking ship
 
-    // буфера
+    // buffers
     long m_idEmptyVBuf;
     long m_idCourseVBuf;
     long m_idMapVBuf;
-    //--------------------
-    long m_idFireZoneVBuf; // бабочка линии огня пушек
-    //--------------------
+    // --------------------
+    long m_idFireZoneVBuf; // cannons fire zone
+    // --------------------
     long m_idCannonVBuf;
     long m_nvCannonCharge;
     long m_nvCannonReady;
@@ -193,7 +193,7 @@ class BATTLE_NAVIGATOR
     //--------------------
     long m_idCurChargeVBuf;
 
-    // шрифты и надписи
+    // fonts and labels
     long m_speedFont;
     long m_ySpeedShow;
     long m_xShipSpeed;
@@ -202,23 +202,23 @@ class BATTLE_NAVIGATOR
     WEATHER_BASE *m_wb;
     ATTRIBUTES *m_pAWeather;
 
-    // иконка текущего типа заряда пушек
+    // icon of the current cannon charge type
     POINT m_ChargeGreed;
     POINT m_ChargePos;
     POINT m_ChargeSize;
     long m_curCharge;
-    // иконка пороха
+    // gunpowder icon
     POINT m_PowderGreed;
     POINT m_PowderPos;
     POINT m_PowderSize;
     long m_curPowder;
-    bool m_bPowderRunOut; // для мигания
-    // иконка ветра
+    bool m_bPowderRunOut; // for blinking
+    // wind icon
     long m_curWindPic;
     POINT m_WindGreed;
     POINT m_WindPos;
     POINT m_WindSize;
-    // иконка положения парусов
+    // sail position icon
     long m_curSailState;
     POINT m_SailGreed;
     POINT m_SailPos;

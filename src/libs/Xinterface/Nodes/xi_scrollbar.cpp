@@ -393,13 +393,13 @@ uint32_t CXI_SCROLLBAR::MessageProc(long msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
-    case 0: // установить минимальное значение
+    case 0: // set minimum value
         m_fMinValue = message.Float();
         break;
-    case 1: // установить максимальное значение
+    case 1: // set maximum value
         m_fMaxValue = message.Float();
         break;
-    case 2: // изменить значение
+    case 2: // change value
         m_fCurValue = message.Float();
         WriteDataToAttribute();
         break;

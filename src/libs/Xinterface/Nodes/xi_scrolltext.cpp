@@ -86,7 +86,7 @@ void CXI_SCROLLTEXT::SetText(const char *newText)
             throw std::exception("allocate memory error");
         memcpy(m_pText, newText, len);
 
-        // получить все части из текста
+        // get all parts from text
         auto *pCh = m_pText;
         m_idFont = FONT_DEFAULT;
         m_dwFontColor = ARGB(255, 255, 255, 255);
@@ -98,7 +98,7 @@ void CXI_SCROLLTEXT::SetText(const char *newText)
         {
             if (*pCh == '^')
             {
-                // поместить уже заполненный текст в отдельный кусок
+                // place already filled text in a separate piece
                 if (nBeg != nEnd)
                     startWidth = FillPices(m_pText, nBeg, nEnd - nBeg, idx, spl, startWidth);
 
@@ -186,7 +186,7 @@ long CXI_SCROLLTEXT::FillPices(char *pt, size_t beg, size_t size, long &idx, STR
     if (showWidth < 0)
         showWidth = m_rect.right - m_rect.left;
 
-    pt[size] = 0; // обозначим конец строки
+    pt[size] = 0; // denote the end of the line
     while (true)
     {
         auto *const pstr = &pt[beg];

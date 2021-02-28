@@ -11,9 +11,9 @@
 #include "WdmIcon.h"
 #include "WdmEnemyShip.h"
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 WdmIcon::WdmIcon()
 {
@@ -32,7 +32,7 @@ WdmIcon::~WdmIcon()
         wdmObjects->rs->TextureRelease(texture);
 }
 
-//Расчёты
+// Calculations
 void WdmIcon::Update(float dltTime)
 {
     if (lastShip != wdmObjects->enemyShip)
@@ -94,7 +94,7 @@ void WdmIcon::Update(float dltTime)
         if (skipAlpha < 0.0f)
             skipAlpha = 0.0f;
     }
-    //Определяем попадание в шторм
+    // Determine being in a storm
     if (wdmObjects->playarInStorm)
     {
         stormAlpha += 2.0f * dltTime;
@@ -109,7 +109,7 @@ void WdmIcon::Update(float dltTime)
     }
 }
 
-//Отрисовка
+// Rendering
 void WdmIcon::LRender(VDX9RENDER *rs)
 {
     return; //~!~
@@ -117,7 +117,7 @@ void WdmIcon::LRender(VDX9RENDER *rs)
     rs->TextureSet(0, texture);
     float w, h;
     wdmObjects->GetVPSize(w, h);
-    //Иконка в верхнем углу
+    // Icon in the upper corner
     auto kDef = rs->GetHeightDeformator();
     FillRectCoord(vrt, 8.0f, 8.0f, 64.0f, 64.0f * kDef);
     FillRectUV1(vrt, 0.0f, 0.0f, 1.0f, 1.0f);
@@ -136,7 +136,7 @@ void WdmIcon::LRender(VDX9RENDER *rs)
         FillRectColor(vrt, (alpha << 24) | 0xffffff);
         DrawRects(vrt, 1, "WdmDrawIcon");
     }
-    //Иконка в нижнем углу
+    // Icon in the bottom corner
     if (islandAlpha > 0.0f)
     {
         FillRectCoord(vrt, 8.0f + 8.0f, h - 64.0f * kDef - 8.0f, 64.0f, 64.0f * kDef);
@@ -145,7 +145,7 @@ void WdmIcon::LRender(VDX9RENDER *rs)
         FillRectColor(vrt, (static_cast<long>(islandAlpha * 255.0f) << 24) | 0xffffff);
         DrawRects(vrt, 1, "WdmDrawIcon");
     }
-    //Иконка скипанья энкоунтера
+    // Encounter skip icon
     if (skipAlpha > 0.0f)
     {
         FillRectCoord(vrt, 8.0f + 64.0f + 8.0f, 8.0f, 64.0f, 64.0f * kDef);
@@ -154,7 +154,7 @@ void WdmIcon::LRender(VDX9RENDER *rs)
         FillRectColor(vrt, (static_cast<long>(skipAlpha * 255.0f) << 24) | 0xffffff);
         DrawRects(vrt, 1, "WdmDrawIcon");
     }
-    //Иконка шторма
+    // Storm icon
     if (stormAlpha > 0.0f)
     {
         float move = 0.0f, m;

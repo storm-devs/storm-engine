@@ -1,7 +1,7 @@
 #ifndef __BATTLE_INTERFACE_MSG_CONTROL_
 #define __BATTLE_INTERFACE_MSG_CONTROL_
 
-// список активных действий
+// list of active actions
 #define BI_ACTIVE_MOOR 0
 #define BI_ACTIVE_SAIL_TO 1
 #define BI_ACTIVE_BOARD 2
@@ -12,7 +12,7 @@
 #define BI_ACTIVE_SAIL_AWAY 12
 #define BI_ACTIVE_HEAVE_TO_DRIFT 13
 
-// режим выбора
+// selection mode
 #define BI_COMMODE_MY_SHIP_SELECT 1
 #define BI_COMMODE_ENEMY_SHIP_SELECT 2
 #define BI_COMMODE_NEUTRAL_FORT_SELECT 4
@@ -51,16 +51,16 @@
 #define BI_EVENT_CHECK_SHIPSTATE_SHOW "BI_CheckSSShow"
 #define BI_EVENT_GET_FORT_RELATION "BI_GetFortRelation"
 
-// типы отношений
+// relationship types
 #define BI_RELATION_ENEMY 0
 #define BI_RELATION_FRIEND 1
 #define BI_RELATION_NEUTRAL 2
 
-// типы получаемых данных
+// types of data received
 #define BIDT_SHIPPICTURE 0 // "l" (characterIdx)
 #define BIDT_GERALD_DATA 1 // "l" (characterIdx)
 
-// команды "земного" интерфейса
+// land interface commands
 #define MSG_BATTLE_LAND_START 46100        // ""
 #define MSG_BATTLE_LAND_END 46101          // ""
 #define MSG_BATTLE_LAND_SET_SHOW 46102     // "l" commandos show
@@ -68,19 +68,19 @@
 #define MSG_BATTLE_LAND_SET_ICONTEX 46104  // "ls" texIdx, texName
 #define MSG_BATTLE_LAND_MAKE_COMMAND 46105 // "s" command_name
 
-// команды интерфейса подзорной трубы
+// spyglass interface commands
 #define MSG_ISG_VISIBLE 46201      // "l" (set visible interface)
 #define MSG_ISG_UPDATE 46202       // "sslllfll" (ship name, ship type, hull, sail, crew, speed, cannons, charge)
 #define MSG_ISG_SET_SHIPICON 46203 // "sffff" ( texture name, uv_rect{left,top,right,bottom} )
 #define MSG_ISG_SET_CHARICON 46204 // "sffff" ( texture name, uv_rect{left,top,right,bottom} )
 
-// команды интерфейса подзорной трубы
+// spyglass interface commands
 #define MSG_SP_CHANGESHIP 46301 // "l" (new character - ship owner)
 
-// обращение к парусам
+// sailing
 #define MSG_SAIL_SCRIPT_PROCESSING 40099 // "s..."
 
-// обновить список активированных способностей
+// update the list of activated abilities
 #define MSG_ACTIVE_PERK_LIST_REFRESH 47000
 #define MSG_ACTIVE_PERK_ICON_REFRESH 47001
 

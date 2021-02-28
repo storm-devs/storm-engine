@@ -24,35 +24,35 @@ class MESSAGE_ICONS
     bool InitData(entid_t host_eid, VDX9RENDER *_rs, ATTRIBUTES *pARoot);
 
   protected:
-    // иконки сообщений
+    // message icons
     bool m_bShowMsgIcon;
     long m_vMsgIconBufID;
     long m_iMsgIconBufID;
     long m_nMsgIconWidth;
     long m_nMsgIconHeight;
-    long m_nMsgIconDist; // Дистанция между иконками
-    long m_nBottomY;     // Координаты нижнего края иконок
+    long m_nMsgIconDist; // The distance between the icons
+    long m_nBottomY;     // The coordinates of the bottom edge of the icons
     long m_nMsgIconQnt;
     long m_nMsgIconRowQnt;
 
-    // текстура
+    // texture
     long m_idMsgIconsTexture;
-    long m_nHorzTextureSize; // размер в иконках
-    long m_nVertTextureSize; // размер в иконках
+    long m_nHorzTextureSize; // size in icons
+    long m_nVertTextureSize; // size in icons
 
     ATTRIBUTES *m_pIconsAttr[MESSAGE_ICONS_COLUMN_QUANTITY];
 
-    float m_fNormalStateTime; // Время высвечивания иконки, sec
-    float m_fBlendTime;       // Время исчезания иконки, sec
-    float m_fFallSpeed;     // Скорость падения иконки на свободное место, pix/sec
-    float m_fBlindTimeUp;   // Время на повышение цвета при мигании, sec
-    float m_fBlindTimeDown; // Время на понижение цвета при мигании, sec
-    float m_fCurBlindTime;  // Текущее время для мигания
-    bool m_bBlindDirectUp;  // Этап повышения цвета для мигания
+    float m_fNormalStateTime; // Icon highlighting time, sec
+    float m_fBlendTime;       // Icon disappearance time, sec
+    float m_fFallSpeed;     // Icon falling-to-free-space speed, pix / sec
+    float m_fBlindTimeUp;   // Time to increase color when blinking, sec
+    float m_fBlindTimeDown; // Time to decrease color when blinking, sec
+    float m_fCurBlindTime;  // Current time to blink
+    bool m_bBlindDirectUp;  // Color modification stage for blinking
 
-    uint32_t m_dwHighBlindColor; // Цвет мигания максимальный
-    uint32_t m_dwLowBlindColor;  // Цвет мигания минимальный
-    uint32_t m_dwNormalColor;    // Нормальный цвет
+    uint32_t m_dwHighBlindColor; // Blinking color maximum
+    uint32_t m_dwLowBlindColor;  // Blinking color minimum
+    uint32_t m_dwNormalColor;    // Normal color
 
     struct COLUMN_DESCRIBER
     {

@@ -15,16 +15,16 @@ class LocModelRealizer : public Entity
     VGEOMETRY *gs;
     bool bShow;
 
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     LocModelRealizer();
     ~LocModelRealizer();
 
-    //Инициализация
+    // Initialization
     bool Init() override;
-    //Исполнение
+    // Execution
     void Execute(uint32_t delta_time);
     void Realize(uint32_t delta_time) const;
 
@@ -45,7 +45,7 @@ class LocModelRealizer : public Entity
         }
     }
 
-    //Сообщения
+    // Messages
     uint64_t ProcessMessage(MESSAGE &message) override;
 };
 

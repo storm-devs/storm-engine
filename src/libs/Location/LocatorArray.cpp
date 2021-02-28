@@ -10,9 +10,9 @@
 
 #include "LocatorArray.h"
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 LocatorArray::LocatorArray(const char *groupName)
 {
@@ -42,11 +42,11 @@ LocatorArray::~LocatorArray()
     free(locatorNames);
 }
 
-//============================================================================================
-//Работа с массивом
-//============================================================================================
+// ============================================================================================
+// Working with an array
+// ============================================================================================
 
-//Добавить локатор
+// Add locator
 void LocatorArray::AddLocator(CMatrix &mtx, const char *name)
 {
     locator.resize(numLocators + 1);
@@ -67,7 +67,7 @@ void LocatorArray::AddLocator(CMatrix &mtx, const char *name)
     numLocators++;
 }
 
-//Изменить матрицу локатора
+// Change locator matrix
 void LocatorArray::SetNewMatrix(long locIndex, CMatrix &mtx)
 {
     if (locIndex < 0 || locIndex >= numLocators)
@@ -75,7 +75,7 @@ void LocatorArray::SetNewMatrix(long locIndex, CMatrix &mtx)
     locator[locIndex].mtx = mtx;
 }
 
-//Найти ближайший локатор
+// Find nearest locator
 float LocatorArray::FindNearesLocator(float x, float y, float z, long *locIndex)
 {
     if (locIndex)
@@ -95,7 +95,7 @@ float LocatorArray::FindNearesLocator(float x, float y, float z, long *locIndex)
     return dist;
 }
 
-//Найти ближайший локатор по цилиндру
+// Find the nearest locator by cylinder
 long LocatorArray::FindNearesLocatorCl(float x, float y, float z, float height2, float &dist)
 {
     long locIndex = -1;
@@ -131,7 +131,7 @@ long LocatorArray::FindNearesLocatorCl(float x, float y, float z, float height2,
     return locIndex;
 }
 
-//Найти локатор по имени
+// Find locator by name
 long LocatorArray::FindByName(const char *locName)
 {
     if (!locName)
@@ -170,7 +170,7 @@ long LocatorArray::CalcHashString(const char *str)
     return static_cast<long>(hval);
 }
 
-//Сравнить имена групп
+// Compare group names
 bool LocatorArray::CompareGroup(const char *groupName, long ghash) const
 {
     if (hash != ghash)

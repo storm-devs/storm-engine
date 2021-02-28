@@ -24,19 +24,19 @@
 
 //============================================================================================
 
-#define WDM_SEA_MBR 0x20 //Яркость отражений в море
+#define WDM_SEA_MBR 0x20 // Brightness of reflections in the sea
 
-#define WDM_SEA_ANIALPHA 0x80 //Коэфициент подмешивания анимированной текстуры
-#define WDM_SEA_ANIFPS 8      //Частота кадров анимированной текстуры
-#define WDM_SEA_ANITILING 90.0f //Количество тайленых текстур на сторну при размере мира 2000
+#define WDM_SEA_ANIALPHA 0x80 // Animated texture mixing coefficient
+#define WDM_SEA_ANIFPS 8      // Animated texture frame rate
+#define WDM_SEA_ANITILING 90.0f // Number of tiled textures per side with a world size of 2000
 
 //============================================================================================
 
 #define WDM_SEA_CLR(a, c) (((uint32_t(a)) << 24) | ((uint32_t(c)) << 16) | ((uint32_t(c)) << 8) | ((uint32_t(c)) << 0))
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 WdmSea::WdmSea()
 {
@@ -56,13 +56,13 @@ WdmSea::WdmSea()
     for (long i = 0; i < sizeof(whiteHorses) / sizeof(long); i++)
         whiteHorses[i] = -1;
     // Init
-    //Создаём буфер для индексов
+    // Create a buffer for indexes
     ib = wdmObjects->rs->CreateIndexBuffer(WDM_SEA_NT * 3 * 2);
-    //Создаём буфер для вершин
+    // Create a vertex buffer
     vb = wdmObjects->rs->CreateVertexBuffer(D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1,
                                             (WDM_SEA_NV + 4) * sizeof(Vertex), D3DUSAGE_WRITEONLY);
     Assert(ib >= 0 && vb >= 0);
-    //Индексы
+    // Indexes
     auto *triangle = static_cast<Triangle *>(wdmObjects->rs->LockIndexBuffer(ib));
     Assert(triangle);
     for (long j = 0, p = 0; j < WDM_SEA_SECTIONS_Z; j++)
@@ -80,10 +80,10 @@ WdmSea::WdmSea()
         }
     }
     wdmObjects->rs->UnLockIndexBuffer(ib);
-    //Вершины
+    // Vertices
     auto *vertex = static_cast<Vertex *>(wdmObjects->rs->LockVertexBuffer(vb));
     Assert(vertex);
-    //Море
+    // The sea
     for (long z = 0, p = 0; z <= WDM_SEA_SECTIONS_Z; z++)
     {
         for (long x = 0; x <= WDM_SEA_SECTIONS_X; x++, p++)
@@ -97,7 +97,7 @@ WdmSea::WdmSea()
             v.tv = z / static_cast<float>(WDM_SEA_SECTIONS_Z);
         }
     }
-    //Для барашков
+    // For waves
     vertex[WDM_SEA_NV + 0].x = -0.5f;
     vertex[WDM_SEA_NV + 0].y = 0.0f;
     vertex[WDM_SEA_NV + 0].z = 0.5f;
@@ -123,7 +123,7 @@ WdmSea::WdmSea()
     vertex[WDM_SEA_NV + 2].tu = 1.0f;
     vertex[WDM_SEA_NV + 2].tv = 1.0f;
     wdmObjects->rs->UnLockVertexBuffer(vb);
-    //Загружаем текстуры
+    // Loading textures
     char buf[256];
     baseTexture = wdmObjects->rs->TextureCreate("\\WorldMap\\Sea\\sea.tga");
     for (long i = 0; i < sizeof(aniTextures) / sizeof(long); i++)
@@ -172,19 +172,19 @@ WdmSea::~WdmSea()
 
 void WdmSea::Update(float dltTime)
 {
-    dltTime = 1.0f / 80.0f; //~!~
-    //Анимированная текстура
+    dltTime = 1.0f / 80.0f; // ~!~
+    // Animated texture
     aniFrame += dltTime * WDM_SEA_ANIFPS;
     const float maxAni = sizeof(aniTextures) / sizeof(long);
     aniFrame /= maxAni;
     aniFrame = (aniFrame - static_cast<long>(aniFrame)) * maxAni;
     Assert(aniFrame < maxAni);
-    //Барашки
+    // waves
     for (long i = 0; i < sizeof(wh) / sizeof(WhiteHorses); i++)
     {
         if (wh[i].textureIndex >= 0)
         {
-            // 1 Перемещаем рождённые
+            // 1 Move spawned
             wh[i].curTime += wh[i].kTime * dltTime;
             if (wh[i].curTime >= 1.0f)
             {
@@ -196,26 +196,26 @@ void WdmSea::Update(float dltTime)
         }
         else
         {
-            // 2 Рождаем новых баранов
+            // 2 spawn new waves
             if (rand() & 255)
                 continue;
-            //Текстура
+            // Texture
             wh[i].textureIndex = rand() % (sizeof(whiteHorses) / sizeof(long));
-            //Позиция
+            // Position
             wh[i].x = seaSizeX * (0.5f - rand() * (1.0f / RAND_MAX));
             wh[i].z = seaSizeZ * (0.5f - rand() * (1.0f / RAND_MAX));
-            //Направление
+            // Direction
             wh[i].angle = 3.1415f * 2.0f * rand() * (1.0f / RAND_MAX);
-            //Скорость
+            // Speed
             wh[i].speed = 0.01f * (seaSizeX + seaSizeZ) * 0.5f * (0.001f + rand() * (0.01f / RAND_MAX));
-            //Размер
+            // The size
             wh[i].size = (seaSizeX + seaSizeZ) * 0.5f * (0.1f + rand() * (0.3f / RAND_MAX));
-            //Время жизни
+            // Lifetime
             wh[i].curTime = 0.0f;
             wh[i].kTime = 1.0f / (10.0f + rand() * (30.0f / RAND_MAX));
         }
     }
-    //Блёстки
+    // Flares
     long i;
     for (i = 0; i < sizeof(flare) / sizeof(flare[0]); i++)
     {
@@ -225,7 +225,7 @@ void WdmSea::Update(float dltTime)
         f.time += dltTime * f.k;
         if (f.time >= 1.0f)
         {
-            //Отжил своё, удаляем
+            // delete
             flareCount--;
             for (auto j = f.index; j < flareCount; j++)
             {
@@ -235,7 +235,7 @@ void WdmSea::Update(float dltTime)
             f.index = -1;
             continue;
         }
-        //Обновляем параметры
+        // Updating parameters
         auto &r = flareRect[f.index];
         const auto k = 1.0f - (f.time - 0.5f) * (f.time - 0.5f) * 4.0f;
         r.fSize = k * 0.3f;
@@ -250,7 +250,7 @@ void WdmSea::Update(float dltTime)
     {
         if (rand() & 1)
         {
-            //Добавляем новый
+            // Add new
             unsigned int i;
             for (i = 0; i < sizeof(flare) / sizeof(flare[0]); i++)
             {
@@ -260,7 +260,7 @@ void WdmSea::Update(float dltTime)
             if (i >= sizeof(flare) / sizeof(flare[0]))
                 break;
             Assert(flareCount < sizeof(flareRect) / sizeof(flareRect[0]));
-            //Заполняем новыми параметрами
+            // Fill in with new parameters
             auto &f = flare[i];
             f.index = flareCount++;
             f.time = 0.0f;
@@ -274,7 +274,7 @@ void WdmSea::Update(float dltTime)
             r.vPos.z = playerZ + prad * cosf(pang);
             r.fSize = 0.0f;
             r.fAngle = rand() * (6.28f / RAND_MAX);
-            r.dwColor = i; //Используется только альфа, в колоре индекс управляющей структуры
+            r.dwColor = i; // Only alpha is used, in color the index of the control structure
             r.dwSubTexture = 0;
         }
     }
@@ -282,7 +282,7 @@ void WdmSea::Update(float dltTime)
 
 void WdmSea::PRender(VDX9RENDER *rs)
 {
-    //Предворительная отрисовка подложки
+    // Preliminary background rendering
     // Textures
     rs->TextureSet(0, baseTexture);
     PresetMain(rs);
@@ -292,7 +292,7 @@ void WdmSea::PRender(VDX9RENDER *rs)
 
 void WdmSea::LRender(VDX9RENDER *rs)
 {
-    //Дорисовка подложки
+    // Further background rendering
     // Textures
     rs->TextureSet(0, baseTexture);
     PresetMain(rs);
@@ -300,8 +300,8 @@ void WdmSea::LRender(VDX9RENDER *rs)
     rs->SetRenderState(D3DRS_TEXTUREFACTOR, WDM_SEA_CLR(0xff - WDM_SEA_MBR, 0xff));
     // Render
     Render(rs, "WdmSeaDraw2");
-    //Рисование анимированной текстуры
-    //Определяем пару кадров и коэфициент блендинга между ними
+    // Drawing an animated texture
+    // Determine a pair of frames and the blending coefficient between them
     const auto curFrame = static_cast<long>(aniFrame);
     auto nextFrame = curFrame + 1;
     if (nextFrame >= sizeof(aniTextures) / sizeof(long))
@@ -314,7 +314,7 @@ void WdmSea::LRender(VDX9RENDER *rs)
     // Textures
     rs->TextureSet(0, aniTextures[curFrame]);
     rs->TextureSet(1, aniTextures[nextFrame]);
-    //Матрица для текстур
+    // Matrix for textures
     CMatrix mtx;
     mtx.m[0][0] = aniTiling;
     mtx.m[1][1] = aniTiling;
@@ -324,7 +324,7 @@ void WdmSea::LRender(VDX9RENDER *rs)
     rs->SetTransform(D3DTS_TEXTURE1, mtx);
     rs->SetRenderState(D3DRS_TEXTUREFACTOR, WDM_SEA_CLR(WDM_SEA_ANIALPHA, k));
     Render(rs, "WdmSeaDraw3");
-    //Рисуем блёстки
+    // draw flares
     if (flareCount > 0)
     {
         CMatrix view;
@@ -356,10 +356,10 @@ void WdmSea::Render(VDX9RENDER *rs, const char *tech) const
     rs->DrawBuffer(vb, sizeof(Vertex), ib, 0, WDM_SEA_NV, 0, WDM_SEA_NT, (char *)tech);
 }
 
-//Настроить преобразования текстурных координат
+// Adjust texture coordinate transformations
 void WdmSea::PresetMain(VDX9RENDER *rs) const
 {
-    //Матрица для текстур
+    // Matrix for textures
     CMatrix mtx;
     mtx.m[0][0] = seaSizeX / wdmObjects->worldSizeX;
     mtx.m[1][1] = mtx.m[0][0];

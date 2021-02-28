@@ -17,16 +17,16 @@
 
 class WdmCounter : public WdmRenderModel
 {
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     WdmCounter();
     virtual ~WdmCounter();
 
     bool Init();
 
-    //Расчёты
+    // Calculations
     void Update(float dltTime) override;
 
     void PRender(VDX9RENDER *rs) override{};
@@ -34,9 +34,9 @@ class WdmCounter : public WdmRenderModel
     void MRender(VDX9RENDER *rs) override{};
     void LRender(VDX9RENDER *rs) override;
 
-    //--------------------------------------------------------------------------------------------
-    //Инкапсуляция
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Encapsulation
+    // --------------------------------------------------------------------------------------------
   private:
     bool LoadModel(WdmRenderModel *&pnt, const char *name, const char *tech) const;
     void DrawNum(VDX9RENDER *rs, WdmRenderModel *m, float u, float v);

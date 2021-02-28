@@ -579,7 +579,7 @@ void SKY::UpdateTimeFactor()
     const auto nNext = static_cast<long>(fTimeFactor);
     if (nPrev != nNext)
     {
-        // перечитываем текстуры
+        // re-read textures
 
         char str[256];
         const char *names[SKY_NUM_TEXTURES] = {"sky_fr.tga", "sky_lf.tga", "sky_bk.tga", "sky_rt.tga", "sky_up.tga"};
@@ -616,13 +616,13 @@ float SKY::CalculateAlphaForSun(const CVECTOR &vSunPos, float fSunSize)
     if (vLocalSunPos.y < 0.f)
         vLocalSunPos.y = 0.f;
 
-    // считаем куда мы попадаем
+    // calculate where we end up
     if (fSkySize > 0.f)
     {
         long nTexNum = -1;
         float fu, fv, fk;
 
-        // проверим попадание в верхнюю сторону
+        // check the hit to the top side
         if (vLocalSunPos.y > 0.f)
         {
             fk = fSkySize / vLocalSunPos.y;
@@ -637,7 +637,7 @@ float SKY::CalculateAlphaForSun(const CVECTOR &vSunPos, float fSunSize)
             }
         }
 
-        // проверим попадание в переднюю сторону
+        // check for hitting the front side
         if (nTexNum == -1)
         {
             if (vLocalSunPos.z < 0.f)
@@ -655,7 +655,7 @@ float SKY::CalculateAlphaForSun(const CVECTOR &vSunPos, float fSunSize)
             }
         }
 
-        // проверим попадание в заднюю сторону
+        // check the hit to the back side
         if (nTexNum == -1)
         {
             if (vLocalSunPos.z > 0.f)
@@ -673,7 +673,7 @@ float SKY::CalculateAlphaForSun(const CVECTOR &vSunPos, float fSunSize)
             }
         }
 
-        // проверим попадание в левую сторону
+        // check the hit to the left side
         if (nTexNum == -1)
         {
             if (vLocalSunPos.x > 0.f)
@@ -691,7 +691,7 @@ float SKY::CalculateAlphaForSun(const CVECTOR &vSunPos, float fSunSize)
             }
         }
 
-        // проверим попадание в правую сторону
+        // check the hit to the right side
         if (nTexNum == -1)
         {
             if (vLocalSunPos.x < 0.f)
@@ -709,7 +709,7 @@ float SKY::CalculateAlphaForSun(const CVECTOR &vSunPos, float fSunSize)
             }
         }
 
-        // ищем альфу в текстуре
+        // looking for alpha in texture
         if (nTexNum != -1)
         {
             const auto dwCol1 =

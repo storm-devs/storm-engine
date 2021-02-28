@@ -25,35 +25,35 @@ class LGeometry
             m = nullptr;
             lBufSize = 0;
         };
-        char *name;     //Путь то col файла
-        char *nameReal; //Имя модельки
-        MODEL *m;       //Указатель на модельку
-        entid_t model;  //Моделька
-        long lBufSize;  //Размер буфера цветов для этой модельки
+        char *name;     // The path of the .col file
+        char *nameReal; // Model name
+        MODEL *m;       // Pointer to the model
+        entid_t model;  // Model
+        long lBufSize;  // Color buffer size for this model
     };
 
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     LGeometry();
     virtual ~LGeometry();
 
-    //Установить путь до моделек
+    // Set path to models
     void SetModelsPath(const char *mPath);
-    //Установить путь для текущей погоды
+    // Set path for current weather
     void SetLightPath(const char *lPath);
-    //Добавить объект
+    // Add object
     void AddObject(const char *name, entid_t model);
-    //Обработать данные
+    // Process data
     bool Process(VDX9RENDER *rs, long numLights);
-    //Нарисовать нормали
+    // Draw normals
     void DrawNormals(VDX9RENDER *rs);
-    //Обновить цвета в буферах
+    // Update colors in buffers
     void UpdateColors(VDX9RENDER *rs);
-    //Протрейсить луч через все модели
+    // Trace the ray through all models
     float Trace(const CVECTOR &src, const CVECTOR &dst);
-    //Сохранить освещение
+    // Save lighting
     bool Save();
 
     std::vector<Object> object;

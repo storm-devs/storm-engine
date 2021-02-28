@@ -12,198 +12,198 @@
 
 #pragma pack(push, 1)
 
-///Класс представления вектора в 3D пространстве
+// Class for representing a vector in 3D space
 class Vector
 {
   public:
     union {
         struct
         {
-            ///Компонента по X
+            // The X component
             float x;
-            ///Компонента по Y
+            // The Y component
             float y;
-            ///Компонента по Z
+            // The Z component
             float z;
         };
 
-        ///Представление в виде массива
+        // Array representation
         float v[3];
     };
 
-    //-----------------------------------------------------------
-    //Конструкторы
-    //-----------------------------------------------------------
+    // -----------------------------------------------------------
+    // Constructors
+    // -----------------------------------------------------------
   public:
-    ///Пустой конструктор
+    // Empty constructor
     Vector();
-    ///Заполнить числом
+    // Fill with number
     Vector(float f);
-    ///Заполнить числом
+    // Fill with number
     Vector(double d);
-    ///Заполнить все компоненты
+    // Fill all components
     Vector(float x, float y, float z);
-    ///Заполнить все компоненты
+    // Fill all components
     Vector(const float f[3]);
-    ///Заполнить все компоненты
+    // Fill all components
     Vector(const double d[3]);
-    ///Конструктор копирования
+    // Copy constructor
     Vector(const Vector &v);
 
-    //-----------------------------------------------------------
-    //Операторы
-    //-----------------------------------------------------------
+    // -----------------------------------------------------------
+    // Operators
+    // -----------------------------------------------------------
   public:
-    ///Найти квадрат длинны вектора
+    // Find the square of the length of a vector
     float operator~() const;
-    ///Вернуть нормализованный вектор
+    // Return normalized vector
     Vector operator!() const;
 
-    ///Получить отрицательный вектор
+    // Get negative vector
     Vector operator-() const;
 
-    ///Присвоить
+    // Assign
     Vector &operator=(float f);
-    ///Присвоить
+    // Assign
     Vector &operator=(double d);
-    ///Присвоить
+    // Assign
     Vector &operator=(const Vector &v);
-    ///Покомпонентное сложение с присваиванием
+    // per Component addition with assignment
     Vector &operator+=(float f);
-    ///Покомпонентное сложение с присваиванием
+    // per Component addition with assignment
     Vector &operator+=(double d);
-    ///Покомпонентное сложение с присваиванием
+    // per Component addition with assignment
     Vector &operator+=(const Vector &v);
-    ///Покомпонентное вычитание с присваиванием
+    // per Component Subtraction with Assignment
     Vector &operator-=(float f);
-    ///Покомпонентное вычитание с присваиванием
+    // per Component Subtraction with Assignment
     Vector &operator-=(double d);
-    ///Покомпонентное вычитание с присваиванием
+    // per Component Subtraction with Assignment
     Vector &operator-=(const Vector &v);
-    ///Покомпонентное умножение с присваиванием
+    // per Component multiplication with assignment
     Vector &operator*=(float f);
-    ///Покомпонентное умножение с присваиванием
+    // per Component multiplication with assignment
     Vector &operator*=(double d);
-    ///Покомпонентное умножение с присваиванием
+    // per Component multiplication with assignment
     Vector &operator*=(const Vector &v);
-    ///Покомпонентное деление с присваиванием
+    // per Component division with assignment
     Vector &operator/=(float f);
-    ///Покомпонентное деление с присваиванием
+    // per Component division with assignment
     Vector &operator/=(double d);
-    ///Покомпонентное деление с присваиванием
+    // per Component division with assignment
     Vector &operator/=(const Vector &v);
 
-    ///Скалярное перемножение, результат копируется во все компоненты
+    // Scalar multiplication, the result is copied to all components
     Vector &operator|=(const Vector &v);
-    ///Векторное перемножение
+    // Vector multiplication
     Vector &operator^=(const Vector &v);
 
-    //-----------------------------------------------------------
-    //Преобразование
-    //-----------------------------------------------------------
+    // -----------------------------------------------------------
+    // Transformation
+    // -----------------------------------------------------------
   public:
-    ///Нормализовать вектор, и вернуть его бывшую длинну
+    // Normalize the vector, and return it to its former length
     float Normalize();
-    ///Спроецировать на плоскость XZ и нормализовать
+    // Project to XZ Plane and Normalize
     float Normalize2D();
 
-    ///Ограничить длинну вектора, и вернуть текущую длинну
+    // Limit the length of the vector, and return the current length
     float ClampLength(float clampValue);
 
-    ///Ограничить компоненту X диапазоном
+    // Limit X component to range
     Vector &ClampX(float min, float max);
-    ///Ограничить компоненту Y диапазоном
+    // Constrain Y component to range
     Vector &ClampY(float min, float max);
-    ///Ограничить компоненту Z диапазоном
+    // Constrain Z component to range
     Vector &ClampZ(float min, float max);
-    ///Ограничить компоненты диапазоном
+    // Limit components to a range
     Vector &Clamp(float min, float max);
 
-    ///Сохранить в векторе минимальные компаненты
+    // Keep vector minimal components
     Vector &Min(const Vector &v);
-    ///Сохранить в векторе максимальные компаненты
+    // Keep vector maximum components
     Vector &Max(const Vector &v);
 
-    //-----------------------------------------------------------
-    //Утилитные
-    //-----------------------------------------------------------
+    // -----------------------------------------------------------
+    // Utilities
+    // -----------------------------------------------------------
   public:
-    ///Установить новые значения
+    // Set new values
     Vector &Set(float x, float y, float z);
-    ///Установить новые значения
+    // Set new values
     Vector &Set(const Vector &v);
 
-    ///Получить угол между векторами
+    // Get the angle between vectors
     float GetAngle(const Vector &v) const;
-    ///Получить знаковый угол между векторами в плоскости XZ
+    // Get the sign angle between vectors in the XZ plane
     float GetAngle2D(const Vector &v) const;
-    ///Получить угол поворота вектора вокруг оси Y
+    // Get the angle of rotation of a vector around the Y axis
     float GetAY(float defAngle = 0.0f) const;
 
-    ///Получить синус между 2D векторами в плоскости XZ
+    // Get sine between 2D vectors in XZ plane
     float Sin2D(const Vector &v) const;
-    ///Получить косинус между 2D векторами в плоскости XZ
+    // Get cosine between 2D vectors in XZ plane
     float Cos2D(const Vector &v) const;
-    ///Получить векторное произведение векторов в плоскости XZ
+    // Get the cross product of vectors in the XZ plane
     float Cross2D(const Vector &v) const;
 
-    ///Получить вектор в плоскости XZ
+    // Get a vector in the XZ plane
     Vector Get2D() const;
-    ///Получить вектор в плоскости XZ
+    // Get a vector in the XZ plane
     Vector Get2D(float y) const;
-    ///Сформировать вектор в плоскости XZ по углу
+    // Generate vector in XZ plane by angle
     Vector &Make2D(float ay);
 
-    ///Получить длинну вектора
+    // Get vector length
     float GetLength() const;
-    ///Получить длинну вектора в 2D
+    // Get vector length in 2D
     float GetLength2D() const;
-    ///Получить квадрат длинны вектора в 2D
+    // Get the squared length of a vector in 2D
     float GetLength2D2() const;
 
-    ///Повернуть вектор в плоскости XZ на угол
+    // Rotate a vector in the XZ plane by an angle
     Vector &Rotate(float angle);
-    ///Повернуть вектор в плоскости XZ на угол заданный cos, sin
+    // Rotate the vector in the XZ plane by an angle specified by cos, sin
     Vector &Rotate(float vcos, float vsin);
-    ///Повернуть вектор по часовой стрелке в плоскости XZ на угол PI/2
+    // Rotate the vector clockwise in the XZ plane by an angle PI/2
     Vector &Rotate_PI2_CW();
-    ///Повернуть вектор против часовой стрелке в плоскости XZ на угол PI/2
+    // Rotate the vector counterclockwise in the XZ plane by an angle PI/2
     Vector &Rotate_PI2_CCW();
 
-    ///Расчитать линейно интерполированное значение
+    // Calculate linearly interpolated value
     Vector &Lerp(const Vector &v1, const Vector &v2, float kBlend);
 
-    ///Расчитать отражённый вектор
+    // Calculate the reflected vector
     Vector &Reflection(const Vector &normal);
 
-    ///Заполнить единичным вектором со случайным направлением
+    // Fill with a unit vector with a random direction
     Vector &Rand();
-    ///Заполнить единичным вектором со случайным направлением в XZ
+    // Fill with unit vector with random direction in XZ
     Vector &Rand2D();
-    ///Заполнить случайными значениями в заданном ABB
+    // Fill with random values in a given ABB
     Vector &Rand(const Vector &min, const Vector &max);
-    ///Заполнить случайными значениями в заданной сфере
+    // Fill with random values in a given sphere
     Vector &Rand(const Vector &pos, float radius);
 
-    //Переместить текущий вектор к заданной точке на заданный шаг
+    // Move the current vector to the specified point by the specified step
     bool MoveByStep(const Vector &to, float step);
-    //Переместить текущий вектор к заданной точке на заданный шаг в 2D
+    // Move the current vector to a given point by a given step in 2D
     bool MoveByStep2D(const Vector &to, float step);
 
-    //Точка находиться в ящике
+    // The point is in the box
     bool InBox(const Vector &min, const Vector &max) const;
-    //Точка находиться в шаре
+    // The point is in the sphere
     bool InSphere(const Vector &pos, float rad) const;
 };
 
-//===========================================================
-//Конструкторы
-//===========================================================
+// ===========================================================
+// Constructors
+// ===========================================================
 
-//Пустой конструктор
+// Empty constructor
 inline Vector::Vector() = default;
 
-//Заполнить числом
+// Fill with number
 inline Vector::Vector(float f)
 {
     x = f;
@@ -211,7 +211,7 @@ inline Vector::Vector(float f)
     z = f;
 }
 
-//Заполнить числом
+// Fill with number
 inline Vector::Vector(double d)
 {
     x = static_cast<float>(d);
@@ -219,7 +219,7 @@ inline Vector::Vector(double d)
     z = static_cast<float>(d);
 }
 
-//Заполнить все компоненты
+// Fill all components
 inline Vector::Vector(float x, float y, float z)
 {
     this->x = x;
@@ -227,7 +227,7 @@ inline Vector::Vector(float x, float y, float z)
     this->z = z;
 }
 
-//Заполнить все компоненты
+// Fill all components
 inline Vector::Vector(const float f[3])
 {
     x = f[0];
@@ -235,7 +235,7 @@ inline Vector::Vector(const float f[3])
     z = f[2];
 }
 
-//Заполнить все компоненты
+// Fill all components
 inline Vector::Vector(const double d[3])
 {
     x = static_cast<float>(d[0]);
@@ -243,7 +243,7 @@ inline Vector::Vector(const double d[3])
     z = static_cast<float>(d[2]);
 }
 
-//Конструктор копирования
+// Copy constructor
 inline Vector::Vector(const Vector &v)
 {
     x = v.x;
@@ -251,17 +251,17 @@ inline Vector::Vector(const Vector &v)
     z = v.z;
 }
 
-//===========================================================
-//Операторы
-//===========================================================
+// ===========================================================
+// Operators
+// ===========================================================
 
-//Найти квадрат длинны вектора
+// Find the square of the length of a vector
 inline float Vector::operator~() const
 {
     return x * x + y * y + z * z;
 }
 
-//Вернуть нормализованный вектор
+// Return normalized vector
 inline Vector Vector::operator!() const
 {
     auto v(*this);
@@ -279,7 +279,7 @@ inline Vector Vector::operator-() const
     return v;
 }
 
-//Присвоить
+// Assign
 inline Vector &Vector::operator=(float f)
 {
     x = f;
@@ -288,7 +288,7 @@ inline Vector &Vector::operator=(float f)
     return *this;
 }
 
-//Присвоить
+// Assign
 inline Vector &Vector::operator=(double d)
 {
     x = static_cast<float>(d);
@@ -297,7 +297,7 @@ inline Vector &Vector::operator=(double d)
     return *this;
 }
 
-//Присвоить
+// Assign
 inline Vector &Vector::operator=(const Vector &v)
 {
     x = v.x;
@@ -306,7 +306,7 @@ inline Vector &Vector::operator=(const Vector &v)
     return *this;
 }
 
-//Покомпонентное сложение с присваиванием
+// per Component addition with assignment
 inline Vector &Vector::operator+=(float f)
 {
     x += f;
@@ -315,7 +315,7 @@ inline Vector &Vector::operator+=(float f)
     return *this;
 }
 
-//Покомпонентное сложение с присваиванием
+// per Component addition with assignment
 inline Vector &Vector::operator+=(double d)
 {
     x += static_cast<float>(d);
@@ -324,7 +324,7 @@ inline Vector &Vector::operator+=(double d)
     return *this;
 }
 
-//Покомпонентное сложение с присваиванием
+// per Component addition with assignment
 inline Vector &Vector::operator+=(const Vector &v)
 {
     x += v.x;
@@ -333,7 +333,7 @@ inline Vector &Vector::operator+=(const Vector &v)
     return *this;
 }
 
-//Покомпонентное вычитание с присваиванием
+// per Component Subtraction with Assignment
 inline Vector &Vector::operator-=(float f)
 {
     x -= f;
@@ -342,7 +342,7 @@ inline Vector &Vector::operator-=(float f)
     return *this;
 }
 
-//Покомпонентное вычитание с присваиванием
+// per Component Subtraction with Assignment
 inline Vector &Vector::operator-=(double d)
 {
     x -= static_cast<float>(d);
@@ -351,7 +351,7 @@ inline Vector &Vector::operator-=(double d)
     return *this;
 }
 
-//Покомпонентное вычитание с присваиванием
+// per Component Subtraction with Assignment
 inline Vector &Vector::operator-=(const Vector &v)
 {
     x -= v.x;
@@ -360,7 +360,7 @@ inline Vector &Vector::operator-=(const Vector &v)
     return *this;
 }
 
-//Покомпонентное умножение с присваиванием
+// per Component multiplication with assignment
 inline Vector &Vector::operator*=(float f)
 {
     x *= f;
@@ -369,7 +369,7 @@ inline Vector &Vector::operator*=(float f)
     return *this;
 }
 
-//Покомпонентное умножение с присваиванием
+// per Component multiplication with assignment
 inline Vector &Vector::operator*=(double d)
 {
     x *= static_cast<float>(d);
@@ -378,7 +378,7 @@ inline Vector &Vector::operator*=(double d)
     return *this;
 }
 
-//Покомпонентное умножение с присваиванием
+// per Component multiplication with assignment
 inline Vector &Vector::operator*=(const Vector &v)
 {
     x *= v.x;
@@ -387,7 +387,7 @@ inline Vector &Vector::operator*=(const Vector &v)
     return *this;
 }
 
-//Покомпонентное деление с присваиванием
+// per Component division with assignment
 inline Vector &Vector::operator/=(float f)
 {
     const auto d = 1.0 / f;
@@ -397,7 +397,7 @@ inline Vector &Vector::operator/=(float f)
     return *this;
 }
 
-//Покомпонентное деление с присваиванием
+// per Component division with assignment
 inline Vector &Vector::operator/=(double d)
 {
     d = 1.0 / d;
@@ -407,7 +407,7 @@ inline Vector &Vector::operator/=(double d)
     return *this;
 }
 
-//Покомпонентное деление с присваиванием
+// per Component division with assignment
 inline Vector &Vector::operator/=(const Vector &v)
 {
     x /= v.x;
@@ -416,14 +416,14 @@ inline Vector &Vector::operator/=(const Vector &v)
     return *this;
 }
 
-//Скалярное перемножение, результат копируется во все компоненты
+// Scalar multiplication, the result is copied to all components
 inline Vector &Vector::operator|=(const Vector &v)
 {
     x = y = z = v.x * x + v.y * y + v.z * z;
     return *this;
 }
 
-//Векторное перемножение
+// Vector multiplication
 inline Vector &Vector::operator^=(const Vector &v)
 {
     const auto tx = y * v.z - z * v.y;
@@ -436,7 +436,7 @@ inline Vector &Vector::operator^=(const Vector &v)
 }
 
 /*!\relates Vector
-Сложить
+Addition
 */
 inline Vector operator+(const Vector &v, float f)
 {
@@ -446,7 +446,7 @@ inline Vector operator+(const Vector &v, float f)
 }
 
 /*!\relates Vector
-Сложить
+Addition
 */
 inline Vector operator+(float f, const Vector &v)
 {
@@ -456,7 +456,7 @@ inline Vector operator+(float f, const Vector &v)
 }
 
 /*!\relates Vector
-Сложить
+Addition
 */
 inline Vector operator+(const Vector &v, double d)
 {
@@ -466,7 +466,7 @@ inline Vector operator+(const Vector &v, double d)
 }
 
 /*!\relates Vector
-Сложить
+Addition
 */
 inline Vector operator+(double d, const Vector &v)
 {
@@ -476,7 +476,7 @@ inline Vector operator+(double d, const Vector &v)
 }
 
 /*!\relates Vector
-Сложить
+Addition
 */
 inline Vector operator+(const Vector &v1, const Vector &v2)
 {
@@ -486,7 +486,7 @@ inline Vector operator+(const Vector &v1, const Vector &v2)
 }
 
 /*!\relates Vector
-Вычесть
+Subtract
 */
 inline Vector operator-(const Vector &v, float f)
 {
@@ -496,7 +496,7 @@ inline Vector operator-(const Vector &v, float f)
 }
 
 /*!\relates Vector
-Вычесть
+Subtract
 */
 inline Vector operator-(float f, const Vector &v)
 {
@@ -506,7 +506,7 @@ inline Vector operator-(float f, const Vector &v)
 }
 
 /*!\relates Vector
-Вычесть
+Subtract
 */
 inline Vector operator-(const Vector &v, double d)
 {
@@ -516,7 +516,7 @@ inline Vector operator-(const Vector &v, double d)
 }
 
 /*!\relates Vector
-Вычесть
+Subtract
 */
 inline Vector operator-(double d, const Vector &v)
 {
@@ -526,7 +526,7 @@ inline Vector operator-(double d, const Vector &v)
 }
 
 /*!\relates Vector
-Вычесть
+Subtract
 */
 inline Vector operator-(const Vector &v1, const Vector &v2)
 {
@@ -536,7 +536,7 @@ inline Vector operator-(const Vector &v1, const Vector &v2)
 }
 
 /*!\relates Vector
-Умножить
+Multiply
 */
 inline Vector operator*(const Vector &v, float f)
 {
@@ -546,7 +546,7 @@ inline Vector operator*(const Vector &v, float f)
 }
 
 /*!\relates Vector
-Умножить
+Multiply
 */
 inline Vector operator*(float f, const Vector &v)
 {
@@ -556,7 +556,7 @@ inline Vector operator*(float f, const Vector &v)
 }
 
 /*!\relates Vector
-Умножить
+Multiply
 */
 inline Vector operator*(const Vector &v, double d)
 {
@@ -566,7 +566,7 @@ inline Vector operator*(const Vector &v, double d)
 }
 
 /*!\relates Vector
-Умножить
+Multiply
 */
 inline Vector operator*(double d, const Vector &v)
 {
@@ -576,7 +576,7 @@ inline Vector operator*(double d, const Vector &v)
 }
 
 /*!\relates Vector
-Умножить
+Multiply
 */
 inline Vector operator*(const Vector &v1, const Vector &v2)
 {
@@ -586,7 +586,7 @@ inline Vector operator*(const Vector &v1, const Vector &v2)
 }
 
 /*!\relates Vector
-Разделить
+Divide
 */
 inline Vector operator/(const Vector &v, float f)
 {
@@ -596,7 +596,7 @@ inline Vector operator/(const Vector &v, float f)
 }
 
 /*!\relates Vector
-Разделить
+Divide
 */
 inline Vector operator/(float f, const Vector &v)
 {
@@ -606,7 +606,7 @@ inline Vector operator/(float f, const Vector &v)
 }
 
 /*!\relates Vector
-Разделить
+Divide
 */
 inline Vector operator/(const Vector &v, double d)
 {
@@ -616,7 +616,7 @@ inline Vector operator/(const Vector &v, double d)
 }
 
 /*!\relates Vector
-Разделить
+Divide
 */
 inline Vector operator/(double d, const Vector &v)
 {
@@ -626,7 +626,7 @@ inline Vector operator/(double d, const Vector &v)
 }
 
 /*!\relates Vector
-Разделить
+Divide
 */
 inline Vector operator/(const Vector &v1, const Vector &v2)
 {
@@ -636,7 +636,7 @@ inline Vector operator/(const Vector &v1, const Vector &v2)
 }
 
 /*!\relates Vector
-Скалярное перемножение
+Scalar multiplication
 */
 inline float operator|(const Vector &v1, const Vector &v2)
 {
@@ -644,7 +644,7 @@ inline float operator|(const Vector &v1, const Vector &v2)
 }
 
 /*!\relates Vector
-Векторное перемножение
+Vector multiplication
 */
 inline Vector operator^(const Vector &v1, const Vector &v2)
 {
@@ -656,7 +656,7 @@ inline Vector operator^(const Vector &v1, const Vector &v2)
 }
 
 /*!\relates Vector
-Сравнить покомпонентно
+Compare component by component
 */
 inline bool operator>(const Vector &v1, const Vector &v2)
 {
@@ -666,7 +666,7 @@ inline bool operator>(const Vector &v1, const Vector &v2)
 }
 
 /*!\relates Vector
-Сравнить покомпонентно
+Compare component by component
 */
 inline bool operator>=(const Vector &v1, const Vector &v2)
 {
@@ -676,7 +676,7 @@ inline bool operator>=(const Vector &v1, const Vector &v2)
 }
 
 /*!\relates Vector
-Сравнить покомпонентно
+Compare component by component
 */
 inline bool operator<(const Vector &v1, const Vector &v2)
 {
@@ -686,7 +686,7 @@ inline bool operator<(const Vector &v1, const Vector &v2)
 }
 
 /*!\relates Vector
-Сравнить покомпонентно
+Compare component by component
 */
 inline bool operator<=(const Vector &v1, const Vector &v2)
 {
@@ -696,7 +696,7 @@ inline bool operator<=(const Vector &v1, const Vector &v2)
 }
 
 /*!\relates Vector
-Сравнить покомпонентно
+Compare component by component
 */
 inline bool operator==(const Vector &v1, const Vector &v2)
 {
@@ -706,18 +706,18 @@ inline bool operator==(const Vector &v1, const Vector &v2)
 }
 
 /*!\relates Vector
-Сравнить покомпонентно
+Compare component by component
 */
 inline bool operator!=(const Vector &v1, const Vector &v2)
 {
     return !(v1 == v2);
 }
 
-//===========================================================
-//Преобразование
-//===========================================================
+// ===========================================================
+// Transformation
+// ===========================================================
 
-//Нормализовать вектор, и вернуть его бывшую длинну
+// Normalize the vector, and return it to its former length
 inline float Vector::Normalize()
 {
     const auto len =
@@ -733,7 +733,7 @@ inline float Vector::Normalize()
     return static_cast<float>(len);
 }
 
-//Спроецировать на плоскость XZ и нормализовать
+// Project to XZ Plane and Normalize
 inline float Vector::Normalize2D()
 {
     y = 0.0f;
@@ -748,7 +748,7 @@ inline float Vector::Normalize2D()
     return static_cast<float>(len);
 }
 
-//Ограничить длинну вектора, и вернуть текущую длинну
+// Limit the length of the vector, and return the current length
 inline float Vector::ClampLength(float clampValue)
 {
     if (clampValue <= 0.0f)
@@ -768,7 +768,7 @@ inline float Vector::ClampLength(float clampValue)
     return static_cast<float>(len);
 }
 
-//Ограничить компоненту X диапазоном
+// Limit X component to range
 inline Vector &Vector::ClampX(float min, float max)
 {
     if (x < min)
@@ -778,7 +778,7 @@ inline Vector &Vector::ClampX(float min, float max)
     return *this;
 }
 
-//Ограничить компоненту Y диапазоном
+// Constrain Y component to range
 inline Vector &Vector::ClampY(float min, float max)
 {
     if (y < min)
@@ -788,7 +788,7 @@ inline Vector &Vector::ClampY(float min, float max)
     return *this;
 }
 
-//Ограничить компоненту Z диапазоном
+// Constrain Z component to range
 inline Vector &Vector::ClampZ(float min, float max)
 {
     if (z < min)
@@ -798,7 +798,7 @@ inline Vector &Vector::ClampZ(float min, float max)
     return *this;
 }
 
-//Ограничить компоненты диапазоном
+// Limit components to a range
 inline Vector &Vector::Clamp(float min, float max)
 {
     if (x < min)
@@ -816,7 +816,7 @@ inline Vector &Vector::Clamp(float min, float max)
     return *this;
 }
 
-//Сохранить в векторе минимальные компаненты
+// Keep vector minimal components
 inline Vector &Vector::Min(const Vector &v)
 {
     if (x > v.x)
@@ -828,7 +828,7 @@ inline Vector &Vector::Min(const Vector &v)
     return *this;
 }
 
-//Сохранить в векторе максимальные компаненты
+// Keep vector maximum components
 inline Vector &Vector::Max(const Vector &v)
 {
     if (x < v.x)
@@ -840,11 +840,11 @@ inline Vector &Vector::Max(const Vector &v)
     return *this;
 }
 
-//===========================================================
-//Утилитные
-//===========================================================
+// ===========================================================
+// Utilities
+// ===========================================================
 
-//Установить новые значения
+// Set new values
 inline Vector &Vector::Set(float x, float y, float z)
 {
     this->x = x;
@@ -853,7 +853,7 @@ inline Vector &Vector::Set(float x, float y, float z)
     return *this;
 }
 
-//Установить новые значения
+// Set new values
 inline Vector &Vector::Set(const Vector &v)
 {
     x = v.x;
@@ -862,7 +862,7 @@ inline Vector &Vector::Set(const Vector &v)
     return *this;
 }
 
-//Получить угол между векторами
+// Get the angle between vectors
 inline float Vector::GetAngle(const Vector &v) const
 {
     auto len = static_cast<double>(x) * static_cast<double>(x) + static_cast<double>(y) * static_cast<double>(y) +
@@ -879,7 +879,7 @@ inline float Vector::GetAngle(const Vector &v) const
     return static_cast<float>(acos(cs));
 }
 
-///Получить знаковый угол между векторами в плоскости XZ
+// Get the sign angle between vectors in the XZ plane
 inline float Vector::GetAngle2D(const Vector &v) const
 {
     auto len = static_cast<double>(x) * static_cast<double>(x) + static_cast<double>(z) * static_cast<double>(z);
@@ -897,7 +897,7 @@ inline float Vector::GetAngle2D(const Vector &v) const
     return static_cast<float>(len);
 }
 
-//Получить угол поворота вектора вокруг оси Y
+// Get the angle of rotation of a vector around the Y axis
 inline float Vector::GetAY(float defAngle) const
 {
     auto len = static_cast<double>(x) * static_cast<double>(x) + static_cast<double>(z) * static_cast<double>(z);
@@ -917,7 +917,7 @@ inline float Vector::GetAY(float defAngle) const
     return static_cast<float>(len);
 }
 
-//Получить синус между 2D векторами в плоскости XZ
+// Get sine between 2D vectors in XZ plane
 inline float Vector::Sin2D(const Vector &v) const
 {
     auto len = static_cast<double>(x) * static_cast<double>(x) + static_cast<double>(z) * static_cast<double>(z);
@@ -928,7 +928,7 @@ inline float Vector::Sin2D(const Vector &v) const
     return static_cast<float>(len);
 }
 
-//Получить косинус между 2D векторами в плоскости XZ
+// Get cosine between 2D vectors in XZ plane
 inline float Vector::Cos2D(const Vector &v) const
 {
     auto len = static_cast<double>(x) * static_cast<double>(x) + static_cast<double>(z) * static_cast<double>(z);
@@ -939,25 +939,25 @@ inline float Vector::Cos2D(const Vector &v) const
     return static_cast<float>(len);
 }
 
-//Получить векторное произведение векторов в плоскости XZ
+// Get the cross product of vectors in the XZ plane
 inline float Vector::Cross2D(const Vector &v) const
 {
     return z * v.x - x * v.z;
 }
 
-//Получить вектор в плоскости XZ
+// Get a vector in the XZ plane
 inline Vector Vector::Get2D() const
 {
     return Vector(x, 0.0f, z);
 }
 
-///Получить вектор в плоскости XZ
+// Get a vector in the XZ plane
 inline Vector Vector::Get2D(float y) const
 {
     return Vector(x, y, z);
 }
 
-//Сформировать вектор в плоскости XZ по угло
+// Generate vector in XZ plane by angle
 inline Vector &Vector::Make2D(float ay)
 {
     x = sinf(ay);
@@ -966,7 +966,7 @@ inline Vector &Vector::Make2D(float ay)
     return *this;
 }
 
-//Получить длинну вектора
+// Get vector length
 inline float Vector::GetLength() const
 {
     return static_cast<float>(sqrt(static_cast<double>(x) * static_cast<double>(x) +
@@ -974,26 +974,26 @@ inline float Vector::GetLength() const
                                    static_cast<double>(z) * static_cast<double>(z)));
 }
 
-//Получить длинну вектора в 2D
+// Get vector length in 2D
 inline float Vector::GetLength2D() const
 {
     return static_cast<float>(
         sqrt(static_cast<double>(x) * static_cast<double>(x) + static_cast<double>(z) * static_cast<double>(z)));
 }
 
-///Получить квадрат длинны вектора в 2D
+// Get the squared length of a vector in 2D
 inline float Vector::GetLength2D2() const
 {
     return x * x + z * z;
 }
 
-//Повернуть вектор в плоскости XZ на угол
+// Rotate a vector in the XZ plane by an angle
 inline Vector &Vector::Rotate(float angle)
 {
     return Rotate(cosf(angle), sinf(angle));
 }
 
-//Повернуть вектор в плоскости XZ на угол заданный cos, sin
+// Rotate the vector in the XZ plane by an angle specified by cos, sin
 inline Vector &Vector::Rotate(float vcos, float vsin)
 {
     const auto tx = x * vcos + z * vsin;
@@ -1003,7 +1003,7 @@ inline Vector &Vector::Rotate(float vcos, float vsin)
     return *this;
 }
 
-//Повернуть вектор по часовой стрелке в плоскости XZ на угол PI/2
+// Rotate the vector clockwise in the XZ plane by an angle PI / 2
 inline Vector &Vector::Rotate_PI2_CW()
 {
     const auto t = x;
@@ -1012,7 +1012,7 @@ inline Vector &Vector::Rotate_PI2_CW()
     return *this;
 }
 
-//Повернуть вектор против часовой стрелке в плоскости XZ на угол PI/2
+// Rotate the vector counterclockwise in the XZ plane by an angle PI / 2
 inline Vector &Vector::Rotate_PI2_CCW()
 {
     const auto t = x;
@@ -1021,7 +1021,7 @@ inline Vector &Vector::Rotate_PI2_CCW()
     return *this;
 }
 
-//Расчитать линейноинтерпалированное значение
+// Calculate linearly interpolated value
 inline Vector &Vector::Lerp(const Vector &v1, const Vector &v2, float kBlend)
 {
     x = v1.x + (v2.x - v1.x) * kBlend;
@@ -1030,7 +1030,7 @@ inline Vector &Vector::Lerp(const Vector &v1, const Vector &v2, float kBlend)
     return *this;
 }
 
-//Расчитать отражённый вектор
+// Calculate the reflected vector
 inline Vector &Vector::Reflection(const Vector &normal)
 {
     const auto k = -2.0f * (x * normal.x + y * normal.y + z * normal.z);
@@ -1040,7 +1040,7 @@ inline Vector &Vector::Reflection(const Vector &normal)
     return *this;
 }
 
-//Заполнить единичным вектором со случайным направлением
+// Fill with a unit vector with a random direction
 inline Vector &Vector::Rand()
 {
     Make2D(rand() * ((2.0f * 3.141592654f) / RAND_MAX));
@@ -1049,13 +1049,13 @@ inline Vector &Vector::Rand()
     return Rotate(rand() * ((2.0f * 3.141592654f) / RAND_MAX));
 }
 
-//Заполнить единичным вектором со случайным направлением в XZ
+// Fill with unit vector with random direction in XZ
 inline Vector &Vector::Rand2D()
 {
     return Make2D(rand() * ((2.0f * 3.141592654f) / RAND_MAX));
 }
 
-///Заполнить случайными значениями в заданном ABB
+// Fill with random values in a given ABB
 inline Vector &Vector::Rand(const Vector &min, const Vector &max)
 {
     x = min.x + rand() * ((max.x - min.x) * (1.0f / RAND_MAX));
@@ -1064,7 +1064,7 @@ inline Vector &Vector::Rand(const Vector &min, const Vector &max)
     return *this;
 }
 
-///Заполнить случайными значениями в заданной сфере
+// Fill with random values in a given sphere
 inline Vector &Vector::Rand(const Vector &pos, float radius)
 {
     Rand();
@@ -1072,12 +1072,12 @@ inline Vector &Vector::Rand(const Vector &pos, float radius)
     return *this;
 }
 
-//Переместить текущий вектор к заданной точке на заданный шаг
+// Move the current vector to the specified point by the specified step
 inline bool Vector::MoveByStep(const Vector &to, float step)
 {
     if (step <= 0.0f)
         return false;
-    //Дистанция до точки
+    // Distance to point
     const auto dx = to.x - x;
     const auto dy = to.y - y;
     const auto dz = to.z - z;
@@ -1090,7 +1090,7 @@ inline bool Vector::MoveByStep(const Vector &to, float step)
         return false;
     }
     dist = sqrtf(dist);
-    //Движение к точке
+    // Moving to a point
     if (step >= dist)
     {
         x = to.x;
@@ -1105,12 +1105,12 @@ inline bool Vector::MoveByStep(const Vector &to, float step)
     return true;
 }
 
-//Переместить текущий вектор к заданной точке на заданный шаг в 2D
+// Move the current vector to a given point by a given step in 2D
 inline bool Vector::MoveByStep2D(const Vector &to, float step)
 {
     if (step <= 0.0f)
         return false;
-    //Дистанция до точки
+    // Distance to point
     const auto dx = to.x - x;
     const auto dz = to.z - z;
     auto dist = dx * dx + dz * dz;
@@ -1121,7 +1121,7 @@ inline bool Vector::MoveByStep2D(const Vector &to, float step)
         return false;
     }
     dist = sqrtf(dist);
-    //Движение к точке
+    // Moving to a point
     if (step >= dist)
     {
         x = to.x;
@@ -1134,7 +1134,7 @@ inline bool Vector::MoveByStep2D(const Vector &to, float step)
     return true;
 }
 
-//Точка находиться в ящике
+// The point is in the box
 inline bool Vector::InBox(const Vector &min, const Vector &max) const
 {
     if (y < min.y || y > max.y)
@@ -1146,7 +1146,7 @@ inline bool Vector::InBox(const Vector &min, const Vector &max) const
     return true;
 }
 
-//Точка находиться в шаре
+// The point is in the sphere
 inline bool Vector::InSphere(const Vector &pos, float rad) const
 {
     double d = (x - pos.x) * (x - pos.x);

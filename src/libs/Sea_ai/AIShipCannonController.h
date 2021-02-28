@@ -120,7 +120,7 @@ class AIShipCannonController
 
     // Cannon boom check
     void CheckCannonsBoom(float fTmpCannonDamage, const CVECTOR &vPnt);
-    void ResearchCannons(); // boal 08.08.06 метод пересчета орудий на корабле
+    void ResearchCannons(); // boal 08.08.06 method of recalculating guns on a ship
 
     // execute/realize section
     void Execute(float fDeltaTime);

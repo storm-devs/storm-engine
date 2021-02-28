@@ -20,320 +20,320 @@ struct D3DXMATRIX;
 /*!
 <PRE>
 
-Линейное представление        В виде двухмерного массива
+Linear representation         2D array
                                 vx     vy     vz    pos
     0  4  8 12                [0][0] [1][0] [2][0] [3][0]    x
     1  5  9 13                [0][1] [1][1] [2][1] [3][1]    y
     2  6 10 14                [0][2] [1][2] [2][2] [3][2]    z
     3  7 11 15                [0][3] [1][3] [2][3] [3][3]    w
 */
-///Класс матрицы для преобразований в 3D.
-//============================================================================================
+// Matrix class for 3D transformations.
+// ============================================================================================
 
 class Matrix
 {
   public:
     union {
-        ///Линейный массив
+        // Linear array
         alignas(16) float matrix[16]; // espkk # remove inline asm # 30/Dec/2017
-        ///Двумерный массив
+        // Two-dimensional array
         float m[4][4];
 
         struct
         {
-            ///Направление по X
+            // X direction
             Vector vx;
-            ///Весовое значение по X
+            // Weight value of X
             float wx;
-            ///Направление по Y
+            // Y direction
             Vector vy;
-            ///Весовое значение по Y
+            // Weight value of Y
             float wy;
-            ///Направление по Z
+            // Z direction
             Vector vz;
-            ///Весовое значение по Z
+            // Weight value of Z
             float wz;
-            ///Позиция
+            // Position
             Vector pos;
-            //Добавляемое весовое значение
+            // Added weight value
             float w;
         };
     };
 
-    //-----------------------------------------------------------
-    //Конструкторы
-    //-----------------------------------------------------------
+    // -----------------------------------------------------------
+    // Constructors
+    // -----------------------------------------------------------
   public:
-    ///Сконструировать единичную матрицу
+    // Construct the identity matrix
     Matrix();
-    ///Сконструировать матрицу без заполнения
+    // Construct matrix without filling
     Matrix(bool empty);
-    ///Сконструировать матрицу по углам с позицией
+    // Construct matrix using angles with position
     Matrix(float angX, float angY, float angZ, float x, float y, float z);
-    ///Сконструировать матрицу по углам
+    // Construct matrix using angles
     Matrix(float angX, float angY, float angZ);
-    ///Сконструировать матрицу по углам с позицией
+    // Construct matrix using angles with position
     Matrix(const Vector &ang, const Vector &pos);
-    ///Сконструировать матрицу по углам
+    // Construct matrix using angles
     Matrix(const Vector &ang);
-    ///Сконструировать копию матрицы
+    // Construct a copy of the matrix
     Matrix(const Matrix &matrix);
-    ///Сконструировать результат перемножения матриц this = m1*m2
+    // Construct the result of matrix multiplication: this = m1 * m2
     Matrix(const Matrix &m1, const Matrix &m2);
 
-    //-----------------------------------------------------------
-    //Операторы
-    //-----------------------------------------------------------
+    // -----------------------------------------------------------
+    // Operators
+    // -----------------------------------------------------------
   public:
-    //Присвоить матрице другую матрицу
+    // Assign another matrix to a matrix
     Matrix &operator=(const Matrix &mtx);
-    //Присвоить позиции матрицы число
+    // Assign a number to matrix values
     Matrix &operator=(float f);
-    //Присвоить позиции матрицы число
+    // Assign a number to matrix values
     Matrix &operator=(double d);
-    //Присвоить позиции матрицы вектор
+    // Assign a vector to matrix values
     Matrix &operator=(const Vector &v);
 
-    //Перемножить матрицы
+    // Multiply matrices
     Matrix &operator*=(const Matrix &mtx);
 
-    //-----------------------------------------------------------
-    //Заполнение матрицы
-    //-----------------------------------------------------------
+    // -----------------------------------------------------------
+    // Matrix filling
+    // -----------------------------------------------------------
   public:
-    ///Установить единичную матрицу
+    // Set identity matrix
     Matrix &SetIdentity();
 
-    ///Установить матрицу
+    // Set Matrix
     Matrix &Set(const Matrix &matrix);
 
-    ///Посчитать матрицу M = rotZ*rotX*rotY*Pos
+    // Calculate matrix M = rotZ * rotX * rotY * Pos
     Matrix &Build(float angX, float angY, float angZ, float x, float y, float z);
-    ///Посчитать матрицу M = rotZ*rotX*rotY
+    // Calculate matrix M = rotZ * rotX * rotY
     Matrix &Build(float angX, float angY, float angZ);
-    ///Посчитать матрицу M = rotZ*rotX*rotY*Pos
+    // Calculate matrix M = rotZ * rotX * rotY * Pos
     Matrix &Build(const Vector &ang, const Vector &pos);
-    ///Посчитать матрицу M = rotZ*rotX*rotY
+    // Calculate matrix M = rotZ * rotX * rotY
     Matrix &Build(const Vector &ang);
 
-    ///Посчитать матрицу M = rotX*rotY*rotZ*Pos
+    // Calculate matrix M = rotX * rotY * rotZ * Pos
     Matrix &BuildXYZ(float angX, float angY, float angZ, float x, float y, float z);
 
-    ///Посчитать матрицу поворота вокруг X
+    // Calculate rotation matrix around X
     Matrix &BuildRotateX(float ang);
-    ///Посчитать матрицу поворота вокруг Y
+    // Calculate rotation matrix around Y
     Matrix &BuildRotateY(float ang);
-    ///Посчитать матрицу поворота вокруг Z
+    // Calculate the rotation matrix around Z
     Matrix &BuildRotateZ(float ang);
-    ///Посчитать матрицу позиции
+    // Calculate position matrix
     Matrix &BuildPosition(float x, float y, float z);
-    ///Посчитать матрицу позиции
+    // Calculate position matrix
     Matrix &BuildPosition(const Vector &pos);
 
-    ///Посчитать матрицу масштабирования
+    // Calculate scaling matrix
     Matrix &BuildScale(float scale);
-    ///Посчитать матрицу масштабирования
+    // Calculate scaling matrix
     Matrix &BuildScale(float scaleX, float scaleY, float scaleZ);
-    ///Посчитать матрицу масштабирования
+    // Calculate scaling matrix
     Matrix &BuildScale(const Vector &scale);
 
-    ///Посчитать матрицу проекции
+    // Calculate projection matrix
     Matrix &BuildProjection(float viewAngle, float vpWidth, float vpHeight, float zNear, float zFar);
-    ///Посчитать матрицу камеры
+    // Calculate camera matrix
     bool BuildView(Vector lookFrom, Vector lookTo, Vector upVector);
-    ///Посчитать матрицу ориентации объекта имея направление по z и направление вверх
+    // Calculate the orientation matrix of an object having a z direction and an up direction
     bool BuildOrient(Vector zAxisDirection, Vector upVector);
-    ///Посчитать матрицу объекта имея позицию точку куда направлен объект и направление вверх
+    // Calculate the matrix of the object having the position of the point where the object is directed and the direction up
     bool BuildOriented(Vector position, Vector lookTo, Vector upVector);
-    ///Посчитать матрицу для отзеркаливания геометрии
+    // Calculate matrix for mirroring geometry
     Matrix &BuildMirror(float Nx, float Ny, float Nz, float D);
-    ///Посчитать ортоганальную матрицу проекции
+    // Calculate Orthogonal Projection Matrix
     Matrix &BuildOrtoProjection(float vpWidth, float vpHeight, float zNear, float zFar);
-    //Посчитать матрицу проекции для тени
+    // Calculate projection matrix for shadow
     Matrix &BuildShadowProjection(float viewAngle, float vpWidth, float vpHeight, float zNear, float zFar);
 
-    //-----------------------------------------------------------
-    //Преобразование матрицы
-    //-----------------------------------------------------------
+    // -----------------------------------------------------------
+    // Matrix transformation
+    // -----------------------------------------------------------
   public:
-    ///Повернуть вокруг X
+    // Rotate X
     Matrix &RotateX(float ang);
-    ///Повернуть вокруг Y
+    // Rotate around Y
     Matrix &RotateY(float ang);
-    ///Повернуть вокруг Z
+    // Rotate around Z
     Matrix &RotateZ(float ang);
-    ///Повернуть вокруг ZXY
+    // Rotate around ZXY
     Matrix &Rotate(float angX, float angY, float angZ);
-    ///Повернуть вокруг ZXY
+    // Rotate around ZXY
     Matrix &Rotate(const Vector &ang);
 
-    ///Переместить
+    // Move
     Matrix &Move(float dX, float dY, float dZ);
-    ///Переместить
+    // Move
     Matrix &Move(const Vector &pos);
 
-    ///Отмасштабировать
+    // Scale
     Matrix &Scale(float scale);
-    ///Отмасштабировать матрицу поворота
+    // Scale rotation matrix
     Matrix &Scale3x3(float scale);
-    ///Отмасштабировать
+    // Scale
     Matrix &Scale(float scaleX, float scaleY, float scaleZ);
-    ///Отмасштабировать матрицу поворота
+    // Scale rotation matrix
     Matrix &Scale3x3(float scaleX, float scaleY, float scaleZ);
-    ///Отмасштабировать
+    // Scale
     Matrix &Scale(const Vector &scale);
-    ///Отмасштабировать матрицу поворота
+    // Scale rotation matrix
     Matrix &Scale3x3(const Vector &scale);
 
-    ///Расчёт обратной матрицы
+    // Calculating the inverse matrix
     Matrix &Inverse();
-    ///Расчёт обратной матрицы из другой
+    // Calculating an inverse matrix from another
     Matrix &Inverse(const Matrix &mtx);
-    ///Расчёт масштабированной обратной матрицы
+    // Calculating the scaled inverse matrix
     Matrix &InverseWhithScale();
-    ///Транспанирование матрицы
+    // Matrix Transposition
     Matrix &Transposition();
-    ///Транспанирование элементов поворота
+    // Rotation Matrix Transposition
     Matrix &Transposition3X3();
 
-    //-----------------------------------------------------------
-    //Утилитные
-    //-----------------------------------------------------------
+    // -----------------------------------------------------------
+    // Utilities
+    // -----------------------------------------------------------
   public:
-    ///Считать только вращение
+    // Count rotation only
     Matrix &SetRotate(const Matrix &mtr);
-    ///Перемножить матрицы и результат поместить в текущую
+    // Multiply matrices and place the result into the current one
     Matrix &EqMultiply(const Matrix &m1, const Matrix &m2);
-    ///Перемножить матрицы и результат поместить в текущую m1 != this && m2 != this
+    // Multiply matrices and place the result in the current m1 != this && m2 != this
     Matrix &EqMultiplyFast(const Matrix &m1, const Matrix &m2);
 
-    ///Умножить вершину на матрицу
+    // Multiply vertex by matrix
     Vector MulVertex(const Vector &v) const;
-    ///Умножить нормаль на матрицу
+    // Multiply normal by matrix
     Vector MulNormal(const Vector &v) const;
-    ///Умножить вершину на инверстую матрицу
+    // Multiply vertex by inverse matrix
     Vector MulVertexByInverse(const Vector &v) const;
-    ///Умножить нормаль на инверстую матрицу
+    // Multiply normal by inverse matrix
     Vector MulNormalByInverse(const Vector &v) const;
 
-    ///Получить позицию камеры из матрицы камеры
+    // Get camera position from camera matrix
     Vector GetCamPos() const;
-    ///Единичная матрица или нет
+    // Identity matrix or not
     bool IsIdentity() const;
-    ///Скалирования матрица или нет
+    // Scaling matrix or not
     bool IsScale() const;
 
-    ///Споецировать вершину (для матрицы проекции)
+    // Project Vertex (for projection matrix)
     Vector4 Projection(Vector vertex, float vphWidth05 = 1.0f, float vphHeight05 = 1.0f) const;
-    ///Споецировать массив вершин (для матрицы проекции)
+    // Project vertex array (for projection matrix)
     void Projection(Vector4 *dstArray, Vector *srcArray, long num, float vphWidth05 = 1.0f, float vphHeight05 = 1.0f,
                     long srcSize = sizeof(Vector), long dstSize = sizeof(Vector4)) const;
 
-    //Получить углы из нескалированной матрицы поворота
+    // Get angles from unscaled rotation matrix
     void GetAngles(float &ax, float &ay, float &az) const;
-    //Получить углы из нескалированной матрицы поворота
+    // Get angles from unscaled rotation matrix
     void GetAngles(Vector &ang) const;
 
-    ///Доступиться до элементов матрицы через скобки
+    // Access matrix elements with brackets
     float &operator()(long i, long j);
 
-    ///Получить указатель на матрицу D3D
+    // Get a pointer to a D3D matrix
     operator D3DXMATRIX *() const;
 
-    ///Получить вектор для расчёта X компоненты
+    // Get a vector for calculating the X component
     Vector4 GetVectorX() const;
-    ///Получить вектор для расчёта Y компоненты
+    // Get a vector for calculating the Y component
     Vector4 GetVectorY() const;
-    ///Получить вектор для расчёта Z компоненты
+    // Get a vector for calculating the Z component
     Vector4 GetVectorZ() const;
-    ///Получить вектор для расчёта W компоненты
+    // Get a vector for calculating the W component
     Vector4 GetVectorW() const;
 };
 
-//===========================================================
-//Конструкторы
-//===========================================================
+// ===========================================================
+// Constructors
+// ===========================================================
 
-//Сконструировать единичную матрицу
+// Construct the identity matrix
 inline Matrix::Matrix()
 {
     SetIdentity();
 }
 
-///Сконструировать матрицу без заполнения
+// Construct matrix without filling
 inline Matrix::Matrix(bool empty)
 {
 }
 
-//Сконструировать матрицу по углам с позицией
+// Construct matrix using angles and position
 inline Matrix::Matrix(float angX, float angY, float angZ, float x, float y, float z)
 {
     Build(angX, angY, angZ, x, y, z);
 }
 
-//Сконструировать матрицу по углам
+// Construct matrix using angles
 inline Matrix::Matrix(float angX, float angY, float angZ)
 {
     Build(angX, angY, angZ);
 }
 
-//Сконструировать матрицу по углам с позицией
+// Construct matrix using angles and position
 inline Matrix::Matrix(const Vector &ang, const Vector &pos)
 {
     Build(ang, pos);
 }
 
-//Сконструировать матрицу по углам
+// Construct matrix using angles
 inline Matrix::Matrix(const Vector &ang)
 {
     Build(ang);
 }
 
-//Сконструировать копию матрицы
+// Construct a copy of the matrix
 inline Matrix::Matrix(const Matrix &matrix)
 {
     Set(matrix);
 }
 
-//Сконструировать результат перемножения матриц this = m1*m2
+// Construct the result of matrix multiplication this = m1 * m2
 inline Matrix::Matrix(const Matrix &m1, const Matrix &m2)
 {
     EqMultiply(m1, m2);
 }
 
-//===========================================================
-//Операторы
-//===========================================================
+// ===========================================================
+// Operators
+// ===========================================================
 
-//Присвоить матрице другую матрицу
+// Assign another matrix to a matrix
 inline Matrix &Matrix::operator=(const Matrix &mtx)
 {
     Set(mtx);
     return *this;
 }
 
-//Присвоить позиции матрицы число
+// Assign a number to the position
 inline Matrix &Matrix::operator=(float f)
 {
     pos = f;
     return *this;
 }
 
-//Присвоить позиции матрицы число
+// Assign a number to the position
 inline Matrix &Matrix::operator=(double d)
 {
     pos = d;
     return *this;
 }
 
-//Присвоить позиции матрицы вектор
+// Assign a vector to the position
 inline Matrix &Matrix::operator=(const Vector &v)
 {
     pos = v;
     return *this;
 }
 
-//Перемножить матрицы
+// Multiply matrices
 inline Matrix &Matrix::operator*=(const Matrix &mtx)
 {
     EqMultiply(*this, mtx);
@@ -341,7 +341,7 @@ inline Matrix &Matrix::operator*=(const Matrix &mtx)
 }
 
 /*!\relates Matrix
-Перемножить матрицы
+Multiply matrices
 */
 inline Matrix operator*(const Matrix &m1, const Matrix &m2)
 {
@@ -351,7 +351,7 @@ inline Matrix operator*(const Matrix &m1, const Matrix &m2)
 }
 
 /*!\relates Matrix
-Умножить вектор на матрицу
+Multiply vector by matrix
 */
 inline Vector operator*(const Matrix &mtx, const Vector &v)
 {
@@ -359,18 +359,18 @@ inline Vector operator*(const Matrix &mtx, const Vector &v)
 }
 
 /*!\relates Matrix
-Умножить вектор на матрицу
+Multiply vector by matrix
 */
 inline Vector operator*(const Vector &v, const Matrix &mtx)
 {
     return mtx.MulVertex(v);
 }
 
-//===========================================================
-//Заполнение матрицы
-//===========================================================
+// ===========================================================
+// Matrix filling
+// ===========================================================
 
-//Установить единичную матрицу
+// Set identity matrix
 inline Matrix &Matrix::SetIdentity()
 {
     matrix[0] = 1.f;
@@ -415,7 +415,7 @@ inline Matrix &Matrix::SetIdentity()
     return *this;
 }
 
-//Установить матрицу
+// Set Matrix
 inline Matrix &Matrix::Set(const Matrix &matrix)
 {
     this->matrix[0] = matrix.matrix[0];
@@ -475,17 +475,17 @@ inline Matrix &Matrix::Set(const Matrix &matrix)
     return *this;
 }
 
-//Посчитать матрицу M = rotZ*rotX*rotY*Pos
+// Calculate matrix M = rotZ * rotX * rotY * Pos
 inline Matrix &Matrix::Build(float angX, float angY, float angZ, float x, float y, float z)
 {
-    //Синусы и косинусы углов поворота
+    // Sines and cosines of rotation angles
     const auto sinAx = sinf(angX);
     const auto cosAx = cosf(angX);
     const auto sinAy = sinf(angY);
     const auto cosAy = cosf(angY);
     const auto sinAz = sinf(angZ);
     const auto cosAz = cosf(angZ);
-    //Создаём матрицу с порядком вращений rz*rx*ry
+    // Create a matrix with rotation order rz * rx * ry
     m[0][0] = cosAz * cosAy + sinAz * sinAx * sinAy;  // vx.x
     m[0][1] = sinAz * cosAx;                          // vx.y
     m[0][2] = cosAz * -sinAy + sinAz * sinAx * cosAy; // vx.z
@@ -505,38 +505,38 @@ inline Matrix &Matrix::Build(float angX, float angY, float angZ, float x, float 
     return *this;
 }
 
-//Посчитать матрицу M = rotZ*rotX*rotY
+// Calculate matrix M = rotZ * rotX * rotY
 inline Matrix &Matrix::Build(float angX, float angY, float angZ)
 {
     Build(angX, angY, angZ, 0.0f, 0.0f, 0.0f);
     return *this;
 }
 
-//Посчитать матрицу M = rotZ*rotX*rotY*Pos
+// Calculate matrix M = rotZ * rotX * rotY * Pos
 inline Matrix &Matrix::Build(const Vector &ang, const Vector &pos)
 {
     Build(ang.x, ang.y, ang.z, pos.x, pos.y, pos.z);
     return *this;
 }
 
-//Посчитать матрицу M = rotZ*rotX*rotY
+// Calculate matrix M = rotZ * rotX * rotY
 inline Matrix &Matrix::Build(const Vector &ang)
 {
     Build(ang.x, ang.y, ang.z, 0.0f, 0.0f, 0.0f);
     return *this;
 }
 
-//Посчитать матрицу M = rotX*rotY*rotZ*Pos
+// Calculate matrix M = rotX * rotY * rotZ * Pos
 inline Matrix &Matrix::BuildXYZ(float angX, float angY, float angZ, float x, float y, float z)
 {
-    //Синусы и косинусы углов поворота
+    // Sines and cosines of rotation angles
     const auto sinAx = sinf(angX);
     const auto cosAx = cosf(angX);
     const auto sinAy = sinf(angY);
     const auto cosAy = cosf(angY);
     const auto sinAz = sinf(angZ);
     const auto cosAz = cosf(angZ);
-    //Создаём матрицу с порядком вращений rx*ry*rz
+    // Create a matrix with rotation order rx * ry * rz
     m[0][0] = cosAy * cosAz;
     m[0][1] = cosAy * sinAz;
     m[0][2] = -sinAy;
@@ -556,7 +556,7 @@ inline Matrix &Matrix::BuildXYZ(float angX, float angY, float angZ, float x, flo
     return *this;
 }
 
-//Посчитать матрицу поворота вокруг X
+// Calculate rotation matrix around X
 inline Matrix &Matrix::BuildRotateX(float ang)
 {
     SetIdentity();
@@ -567,7 +567,7 @@ inline Matrix &Matrix::BuildRotateX(float ang)
     return *this;
 }
 
-//Посчитать матрицу поворота вокруг Y
+// Calculate rotation matrix around Y
 inline Matrix &Matrix::BuildRotateY(float ang)
 {
     SetIdentity();
@@ -578,7 +578,7 @@ inline Matrix &Matrix::BuildRotateY(float ang)
     return *this;
 }
 
-//Посчитать матрицу поворота вокруг Z
+// Calculate the rotation matrix around Z
 inline Matrix &Matrix::BuildRotateZ(float ang)
 {
     SetIdentity();
@@ -589,7 +589,7 @@ inline Matrix &Matrix::BuildRotateZ(float ang)
     return *this;
 }
 
-//Посчитать матрицу позиции
+// Calculate position matrix
 inline Matrix &Matrix::BuildPosition(float x, float y, float z)
 {
     SetIdentity();
@@ -599,14 +599,14 @@ inline Matrix &Matrix::BuildPosition(float x, float y, float z)
     return *this;
 }
 
-//Посчитать матрицу позиции
+// Calculate position matrix
 inline Matrix &Matrix::BuildPosition(const Vector &pos)
 {
     BuildPosition(pos.x, pos.y, pos.z);
     return *this;
 }
 
-//Посчитать матрицу масштабирования
+// Calculate scaling matrix
 inline Matrix &Matrix::BuildScale(float scale)
 {
     SetIdentity();
@@ -616,7 +616,7 @@ inline Matrix &Matrix::BuildScale(float scale)
     return *this;
 }
 
-//Посчитать матрицу масштабирования
+// Calculate scaling matrix
 inline Matrix &Matrix::BuildScale(float scaleX, float scaleY, float scaleZ)
 {
     SetIdentity();
@@ -626,17 +626,17 @@ inline Matrix &Matrix::BuildScale(float scaleX, float scaleY, float scaleZ)
     return *this;
 }
 
-//Посчитать матрицу масштабирования
+// Calculate scaling matrix
 inline Matrix &Matrix::BuildScale(const Vector &scale)
 {
     BuildScale(scale.x, scale.y, scale.z);
     return *this;
 }
 
-//Посчитать матрицу проекции
+// Calculate projection matrix
 inline Matrix &Matrix::BuildProjection(float viewAngle, float vpWidth, float vpHeight, float zNear, float zFar)
 {
-    //Обнулим массив
+    // zero down the array
     matrix[0] = 0;
     matrix[1] = 0;
     matrix[2] = 0;
@@ -676,7 +676,7 @@ inline Matrix &Matrix::BuildProjection(float viewAngle, float vpWidth, float vpH
         mov		[eax + 14*4], ebx
         mov		[eax + 15*4], edx
       }*/
-    //Заполняем матрицу
+    // Filling in the matrix
     const auto Q = static_cast<double>(zFar) / static_cast<double>(zFar - zNear);
     m[0][0] = static_cast<float>(1.0 / tan(viewAngle * 0.5));
     m[1][1] = static_cast<float>(1.0 / tan((vpHeight / vpWidth) * viewAngle * 0.5));
@@ -686,10 +686,10 @@ inline Matrix &Matrix::BuildProjection(float viewAngle, float vpWidth, float vpH
     return *this;
 }
 
-///Посчитать ортоганальную матрицу проекции
+// Calculate Orthogonal Projection Matrix
 inline Matrix &Matrix::BuildOrtoProjection(float vpWidth, float vpHeight, float zNear, float zFar)
 {
-    //Обнулим массив
+    // zero down the array
     matrix[0] = 0;
     matrix[1] = 0;
     matrix[2] = 0;
@@ -728,7 +728,7 @@ inline Matrix &Matrix::BuildOrtoProjection(float vpWidth, float vpHeight, float 
           mov		[eax + 14*4], ebx
           mov		[eax + 15*4], edx
       }*/
-    //Заполняем матрицу
+    // Filling in the matrix
     const auto Q = 1.0 / static_cast<double>(zFar - zNear);
     m[0][0] = 2.0f / vpWidth;
     m[1][1] = 2.0f / vpHeight;
@@ -739,10 +739,10 @@ inline Matrix &Matrix::BuildOrtoProjection(float vpWidth, float vpHeight, float 
     return *this;
 }
 
-//Посчитать матрицу проекции для тени
+// Calculate projection matrix for shadow
 inline Matrix &Matrix::BuildShadowProjection(float viewAngle, float vpWidth, float vpHeight, float zNear, float zFar)
 {
-    //Обнулим массив
+    // zero down the array
     matrix[0] = 0;
     matrix[1] = 0;
     matrix[2] = 0;
@@ -781,7 +781,7 @@ inline Matrix &Matrix::BuildShadowProjection(float viewAngle, float vpWidth, flo
           mov		[eax + 14*4], ebx
           mov		[eax + 15*4], edx
       }*/
-    //Заполняем матрицу
+    // Filling in the matrix
     const auto Q = 1.0 / static_cast<double>(zFar - zNear);
     m[0][0] = static_cast<float>(1.0 / tan(viewAngle * 0.5));
     m[1][1] = static_cast<float>(1.0 / tan((vpHeight / vpWidth) * viewAngle * 0.5));
@@ -791,28 +791,28 @@ inline Matrix &Matrix::BuildShadowProjection(float viewAngle, float vpWidth, flo
     return *this;
 }
 
-//Посчитать матрицу камеры
+// Calculate camera matrix
 inline bool Matrix::BuildView(Vector lookFrom, Vector lookTo, Vector upVector)
 {
     SetIdentity();
-    //Нормализуем вектор смотрения
+    // Normalize the look-at vector
     lookTo -= lookFrom;
     if (lookTo.Normalize() == 0.0f)
     {
-        //Ставим позицию для неповёрнутой матрици
+        // Putting a position for a non-rotated matrix
         pos = -lookFrom;
         return false;
     }
-    //Направляем вектор вверх в нужном направлении
+    // Directing the vector up in the desired direction
     upVector -= lookTo * (lookTo | upVector);
-    //Нормализуем вертор направленный вверх
+    // Normalize the upward vector
     if (upVector.Normalize() == 0.0f)
         upVector.y = 1.0f;
-    //Ищем третий вектор базиса
+    // looking for the third vector of the basis
     auto v = upVector ^ lookTo;
     if (v.Normalize() != 0.0f)
     {
-        //Ставим матрицу поворота
+        // set the rotation matrix
         m[0][0] = v.x;
         m[1][0] = v.y;
         m[2][0] = v.z;
@@ -825,20 +825,20 @@ inline bool Matrix::BuildView(Vector lookFrom, Vector lookTo, Vector upVector)
     }
     else
     {
-        //Ставим позицию для неповёрнутой матрици
+        // Setting a position for a non-rotated matrix
         pos = -lookFrom;
         return false;
     }
-    //Ставим позицию
-    // pos = -MulNormalByInverse(lookFrom);
+    // set the position
+    // pos = -MulNormalByInverse (lookFrom);
     pos = -MulNormal(lookFrom);
     return true;
 }
 
-//Посчитать матрицу ориентации объекта имея направление по z и направление вверх
+// Calculate the orientation matrix of an object having a z direction and an up direction
 inline bool Matrix::BuildOrient(Vector zAxisDirection, Vector upVector)
 {
-    //Нормализуем вектор направления z
+    // Normalize the direction vector z
     if (zAxisDirection.Normalize() < 1e-37f || upVector.Normalize() < 1e-37f)
     {
         vx = Vector(1.0f, 0.0f, 0.0f);
@@ -846,7 +846,7 @@ inline bool Matrix::BuildOrient(Vector zAxisDirection, Vector upVector)
         vz = Vector(0.0f, 0.0f, 1.0f);
         return false;
     }
-    //Считаем
+    // calculate
     vx = zAxisDirection ^ upVector;
     if (vx.Normalize() == 0.0f)
     {
@@ -860,12 +860,12 @@ inline bool Matrix::BuildOrient(Vector zAxisDirection, Vector upVector)
     return true;
 }
 
-//Посчитать матрицу объекта имея позицию точку куда направлен объект и направление вверх
+// Calculate the matrix of the object having the position of the point where the object is directed and the direction up
 inline bool Matrix::BuildOriented(Vector position, Vector lookTo, Vector upVector)
 {
-    //Направление
+    // Direction
     lookTo -= position;
-    //Нормализуем вектор направления z
+    // Normalize the direction vector z
     if (lookTo.Normalize() == 0.0f || upVector.Normalize() == 0.0f)
     {
         vx = Vector(1.0f, 0.0f, 0.0f);
@@ -878,7 +878,7 @@ inline bool Matrix::BuildOriented(Vector position, Vector lookTo, Vector upVecto
         w = 1.0f;
         return false;
     }
-    //Считаем
+    // calculate
     vx = lookTo ^ upVector;
     wx = 0.0f;
     if (vx.Normalize() == 0.0f)
@@ -902,7 +902,7 @@ inline bool Matrix::BuildOriented(Vector position, Vector lookTo, Vector upVecto
     return true;
 }
 
-//Посчитать матрицу для отзеркаливания геометрии
+// Calculate matrix for mirroring geometry
 inline Matrix &Matrix::BuildMirror(float Nx, float Ny, float Nz, float D)
 {
     m[0][0] = -Nx * 2.0f * Nx + 1.0f;
@@ -924,11 +924,11 @@ inline Matrix &Matrix::BuildMirror(float Nx, float Ny, float Nz, float D)
     return *this;
 }
 
-//-----------------------------------------------------------
-//Преобразование матрицы
-//-----------------------------------------------------------
+// -----------------------------------------------------------
+// Matrix transformation
+// -----------------------------------------------------------
 
-//Повернуть вокруг X
+// Rotate around X
 inline Matrix &Matrix::RotateX(float ang)
 {
     Matrix m;
@@ -937,7 +937,7 @@ inline Matrix &Matrix::RotateX(float ang)
     return *this;
 }
 
-//Повернуть вокруг Y
+// Rotate around Y
 inline Matrix &Matrix::RotateY(float ang)
 {
     Matrix m;
@@ -946,7 +946,7 @@ inline Matrix &Matrix::RotateY(float ang)
     return *this;
 }
 
-//Повернуть вокруг Z
+// Rotate around Z
 inline Matrix &Matrix::RotateZ(float ang)
 {
     Matrix m;
@@ -955,7 +955,7 @@ inline Matrix &Matrix::RotateZ(float ang)
     return *this;
 }
 
-//Повернуть вокруг ZXY
+// Rotate around ZXY
 inline Matrix &Matrix::Rotate(float angX, float angY, float angZ)
 {
     Matrix m;
@@ -964,7 +964,7 @@ inline Matrix &Matrix::Rotate(float angX, float angY, float angZ)
     return *this;
 }
 
-//Повернуть вокруг ZXY
+// Rotate around ZXY
 inline Matrix &Matrix::Rotate(const Vector &ang)
 {
     Matrix m;
@@ -973,7 +973,7 @@ inline Matrix &Matrix::Rotate(const Vector &ang)
     return *this;
 }
 
-//Переместить
+// Move
 inline Matrix &Matrix::Move(float dX, float dY, float dZ)
 {
     pos.x += dX;
@@ -982,7 +982,7 @@ inline Matrix &Matrix::Move(float dX, float dY, float dZ)
     return *this;
 }
 
-//Переместить
+// Move
 inline Matrix &Matrix::Move(const Vector &pos)
 {
     this->pos.x += pos.x;
@@ -991,21 +991,21 @@ inline Matrix &Matrix::Move(const Vector &pos)
     return *this;
 }
 
-//Отмасштабировать
+// Scale
 inline Matrix &Matrix::Scale(float scale)
 {
     Scale(scale, scale, scale);
     return *this;
 }
 
-//Отмасштабировать матрицу поворота
+// Scale rotation matrix
 inline Matrix &Matrix::Scale3x3(float scale)
 {
     Scale3x3(scale, scale, scale);
     return *this;
 }
 
-//Отмасштабировать
+// Scale
 inline Matrix &Matrix::Scale(float scaleX, float scaleY, float scaleZ)
 {
     m[0][0] *= scaleX;
@@ -1023,7 +1023,7 @@ inline Matrix &Matrix::Scale(float scaleX, float scaleY, float scaleZ)
     return *this;
 }
 
-//Отмасштабировать матрицу поворота
+// Scale rotation matrix
 inline Matrix &Matrix::Scale3x3(float scaleX, float scaleY, float scaleZ)
 {
     m[0][0] *= scaleX;
@@ -1038,21 +1038,21 @@ inline Matrix &Matrix::Scale3x3(float scaleX, float scaleY, float scaleZ)
     return *this;
 }
 
-//Отмасштабировать
+// Scale
 inline Matrix &Matrix::Scale(const Vector &scale)
 {
     Scale(scale.x, scale.y, scale.z);
     return *this;
 }
 
-//Отмасштабировать поворота
+// Scale Rotation
 inline Matrix &Matrix::Scale3x3(const Vector &scale)
 {
     Scale3x3(scale.x, scale.y, scale.z);
     return *this;
 }
 
-//Расчёт обратной матрицы
+// Calculating the inverse matrix
 inline Matrix &Matrix::Inverse()
 {
     pos = Vector(-(pos | vx), -(pos | vy), -(pos | vz));
@@ -1060,7 +1060,7 @@ inline Matrix &Matrix::Inverse()
     return *this;
 }
 
-///Расчёт обратной матрицы из другой
+// Calculating an inverse matrix from another
 inline Matrix &Matrix::Inverse(const Matrix &mtx)
 {
     pos = Vector(-(mtx.pos | mtx.vx), -(mtx.pos | mtx.vy), -(mtx.pos | mtx.vz));
@@ -1100,10 +1100,10 @@ inline Matrix &Matrix::Inverse(const Matrix &mtx)
     return *this;
 }
 
-///Расчёт масштабированной обратной матрицы
+// Calculating the scaled inverse matrix
 inline Matrix &Matrix::InverseWhithScale()
 {
-    //Матрица поворота
+    // Rotation matrix
     double mtmp[3][3];
     mtmp[0][0] = m[1][1] * m[2][2] - m[1][2] * m[2][1];
     mtmp[0][1] = m[0][2] * m[2][1] - m[0][1] * m[2][2];
@@ -1133,12 +1133,12 @@ inline Matrix &Matrix::InverseWhithScale()
         for (long i = 0; i < 16; i++)
             matrix[i] = 0.0f;
     }
-    //Позиция
+    // Position
     pos = -(MulNormal(pos));
     return *this;
 }
 
-//Транспанирование матрицы
+// Matrix Transposition
 inline Matrix &Matrix::Transposition()
 {
     float tmp;
@@ -1192,7 +1192,7 @@ inline Matrix &Matrix::Transposition()
     return *this;
 }
 
-//Транспанирование элементов поворота
+// Rotation Matrix Transposition
 inline Matrix &Matrix::Transposition3X3()
 {
     float tmp;
@@ -1225,11 +1225,11 @@ inline Matrix &Matrix::Transposition3X3()
     return *this;
 }
 
-//-----------------------------------------------------------
-//Утилитные
-//-----------------------------------------------------------
+// -----------------------------------------------------------
+// Utilities
+// -----------------------------------------------------------
 
-//Считать только вращение
+// Set rotation only
 inline Matrix &Matrix::SetRotate(const Matrix &mtx)
 {
     matrix[0] = mtx.matrix[0];
@@ -1268,7 +1268,7 @@ inline Matrix &Matrix::SetRotate(const Matrix &mtx)
     return *this;
 }
 
-//Перемножить матрицы и результат поместить в текущую
+// Multiply matrices and place the result into the current one
 inline Matrix &Matrix::EqMultiply(const Matrix &m1, const Matrix &m2)
 {
     Matrix m;
@@ -1277,7 +1277,7 @@ inline Matrix &Matrix::EqMultiply(const Matrix &m1, const Matrix &m2)
     return *this;
 }
 
-//Перемножить матрицы и результат поместить в текущую m1 != this && m2 != this
+// Multiply matrices and place the result in the current m1 != this && m2 != this
 inline Matrix &Matrix::EqMultiplyFast(const Matrix &m1, const Matrix &m2)
 {
     m[0][0] = m2.m[0][0] * m1.m[0][0] + m2.m[1][0] * m1.m[0][1] + m2.m[2][0] * m1.m[0][2] + m2.m[3][0] * m1.m[0][3];
@@ -1299,7 +1299,7 @@ inline Matrix &Matrix::EqMultiplyFast(const Matrix &m1, const Matrix &m2)
     return *this;
 }
 
-//Умножить вершину на матрицу
+// Multiply vertex by matrix
 inline Vector Matrix::MulVertex(const Vector &v) const
 {
     Vector tv;
@@ -1309,7 +1309,7 @@ inline Vector Matrix::MulVertex(const Vector &v) const
     return tv;
 }
 
-//Умножить нормаль на матрицу
+// Multiply normal by matrix
 inline Vector Matrix::MulNormal(const Vector &v) const
 {
     Vector tv;
@@ -1319,7 +1319,7 @@ inline Vector Matrix::MulNormal(const Vector &v) const
     return tv;
 }
 
-//Умножить вершину на инверстую матрицу
+// Multiply vertex by inverse matrix
 inline Vector Matrix::MulVertexByInverse(const Vector &v) const
 {
     Vector tv;
@@ -1329,7 +1329,7 @@ inline Vector Matrix::MulVertexByInverse(const Vector &v) const
     return tv;
 }
 
-//Умножить нормаль на инверстую матрицу
+// Multiply normal by inverse matrix
 inline Vector Matrix::MulNormalByInverse(const Vector &v) const
 {
     Vector tv;
@@ -1339,13 +1339,13 @@ inline Vector Matrix::MulNormalByInverse(const Vector &v) const
     return tv;
 }
 
-///Получить позицию камеры из матрицы камеры
+// Get camera position from camera matrix
 inline Vector Matrix::GetCamPos() const
 {
     return -MulNormalByInverse(pos);
 }
 
-//Единичная матрица или нет
+// Identity matrix or not
 inline bool Matrix::IsIdentity() const
 {
     const auto eps = 1e-4f;
@@ -1384,7 +1384,7 @@ inline bool Matrix::IsIdentity() const
     return true;
 }
 
-//Скалирования матрица или нет
+// Scaling matrix or not
 inline bool Matrix::IsScale() const
 {
     const auto eps = 1e-4f;
@@ -1399,18 +1399,18 @@ inline bool Matrix::IsScale() const
     return false;
 }
 
-//Споецировать вершину (для матрицы проекции)
+// Project Vertex (for projection matrix)
 inline Vector4 Matrix::Projection(Vector vertex, float vphWidth05, float vphHeight05) const
 {
     Vector4 res;
-    //Преобразуем вершину
+    // Transforming the vertex
     res.x = m[0][0] * vertex.x + m[1][0] * vertex.y + m[2][0] * vertex.z + m[3][0];
     res.y = m[0][1] * vertex.x + m[1][1] * vertex.y + m[2][1] * vertex.z + m[3][1];
     res.z = m[0][2] * vertex.x + m[1][2] * vertex.y + m[2][2] * vertex.z + m[3][2];
     res.w = m[0][3] * vertex.x + m[1][3] * vertex.y + m[2][3] * vertex.z + m[3][3];
-    //Коэфициент нормализации
+    // Normalization factor
     const auto w = 1.0f / res.w;
-    //Нормализуем
+    // Normalize
     res.x = (1.0f + res.x * w) * vphWidth05;
     res.y = (1.0f - res.y * w) * vphHeight05;
     res.z *= w;
@@ -1418,31 +1418,31 @@ inline Vector4 Matrix::Projection(Vector vertex, float vphWidth05, float vphHeig
     return res;
 }
 
-//Споецировать массив вершин (для матрицы проекции)
+// Project vertex array (for projection matrix)
 inline void Matrix::Projection(Vector4 *dstArray, Vector *srcArray, long num, float vphWidth05, float vphHeight05,
                                long srcSize, long dstSize) const
 {
     for (; num > 0; num--)
     {
-        //Преобразуем вершину
+        // Transforming the vertex
         dstArray->x = m[0][0] * srcArray->x + m[1][0] * srcArray->y + m[2][0] * srcArray->z + m[3][0];
         dstArray->y = m[0][1] * srcArray->x + m[1][1] * srcArray->y + m[2][1] * srcArray->z + m[3][1];
         dstArray->z = m[0][2] * srcArray->x + m[1][2] * srcArray->y + m[2][2] * srcArray->z + m[3][2];
         dstArray->w = m[0][3] * srcArray->x + m[1][3] * srcArray->y + m[2][3] * srcArray->z + m[3][3];
-        //Коэфициент нормализации
+        // Normalization factor
         const auto w = 1.0f / dstArray->w;
-        //Нормализуем
+        // Normalize
         dstArray->x = (1.0f + dstArray->x * w) * vphWidth05;
         dstArray->y = (1.0f - dstArray->y * w) * vphHeight05;
         dstArray->z *= w;
         dstArray->w = w;
-        //Указатели на следующие вершины
+        // Pointers to the next vertices
         srcArray = (Vector *)((char *)srcArray + srcSize);
         dstArray = (Vector4 *)((char *)dstArray + dstSize);
     }
 }
 
-//Получить углы из нескалированной матрицы поворота
+// Get angles from unscaled rotation matrix
 inline void Matrix::GetAngles(float &ax, float &ay, float &az) const
 {
     if (vz.y < 1.0f)
@@ -1466,43 +1466,43 @@ inline void Matrix::GetAngles(float &ax, float &ay, float &az) const
     }
 }
 
-//Получить углы из нескалированной матрицы поворота
+// Get angles from unscaled rotation matrix
 inline void Matrix::GetAngles(Vector &ang) const
 {
     GetAngles(ang.x, ang.y, ang.z);
 }
 
-//Доступиться до элементов матрицы через скобки
+// Access matrix elements with brackets
 inline float &Matrix::operator()(long i, long j)
 {
     return m[i][j];
 }
 
-//Получить указатель на матрицу D3D
+// Get a pointer to a D3D matrix
 inline Matrix::operator D3DXMATRIX *() const
 {
     return ((D3DXMATRIX *)matrix);
 }
 
-//Получить вектор для расчёта X компоненты
+// Get a vector for calculating the X component
 inline Vector4 Matrix::GetVectorX() const
 {
     return Vector4(m[0][0], m[1][0], m[2][0], m[3][0]);
 }
 
-//Получить вектор для расчёта Y компоненты
+// Get a vector for calculating the Y component
 inline Vector4 Matrix::GetVectorY() const
 {
     return Vector4(m[0][1], m[1][1], m[2][1], m[3][1]);
 }
 
-//Получить вектор для расчёта Z компоненты
+// Get a vector for calculating the Z component
 inline Vector4 Matrix::GetVectorZ() const
 {
     return Vector4(m[0][2], m[1][2], m[2][2], m[3][2]);
 }
 
-//Получить вектор для расчёта W компоненты
+// Get a vector for calculating the W component
 inline Vector4 Matrix::GetVectorW() const
 {
     return Vector4(m[0][3], m[1][3], m[2][3], m[3][3]);

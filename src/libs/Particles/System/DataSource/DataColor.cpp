@@ -4,7 +4,7 @@
 #include "storm_assert.h"
 #include "vmodule_api.h"
 
-//конструктор/деструктор
+// constructor / destructor
 DataColor::DataColor() : ZeroColor(0xFFFFFFFF)
 {
 }
@@ -13,10 +13,10 @@ DataColor::~DataColor()
 {
 }
 
-//Получить значение (Текущее время, Общее время жизни, Коэфицент рандома[0..1])
+// Get the value (Current time, Total lifetime, Random factor [0..1])
 Color DataColor::GetValue(float Time, float LifeTime, float K_rand)
 {
-    //Время у графика цвета всегда относительное...
+    // The time for a color chart is always relative ...
     Time = (Time / LifeTime);
 
     uint32_t Count = ColorGraph.size();
@@ -26,7 +26,7 @@ Color DataColor::GetValue(float Time, float LifeTime, float K_rand)
         auto FromTime = ColorGraph[n].Time;
         auto ToTime = ColorGraph[n + 1].Time;
 
-        //Если время в нужном диапазоне...
+        // If the time is in the correct range ...
         if ((Time >= FromTime) && (Time <= ToTime))
         {
             auto SegmentDeltaTime = ColorGraph[n + 1].Time - ColorGraph[n].Time;
@@ -55,8 +55,8 @@ Color DataColor::GetValue(float Time, float LifeTime, float K_rand)
     return ZeroColor;
 }
 
-//Устанавливает "значение по умолчанию"
-//два индекса, Min=Max=Value
+// Sets the "default"
+// two indices, Min = Max = Value
 void DataColor::SetDefaultValue(const Color &Value)
 {
     ColorGraph.clear();
@@ -74,7 +74,7 @@ void DataColor::SetDefaultValue(const Color &Value)
     ColorGraph.push_back(pMinVertex);
 }
 
-//Установить значения
+// Set values
 void DataColor::SetValues(const ColorVertex *Values, uint32_t Count)
 {
     ColorGraph.clear();
@@ -84,19 +84,19 @@ void DataColor::SetValues(const ColorVertex *Values, uint32_t Count)
     }
 }
 
-//Получить кол-во значений
+// Get count of values
 uint32_t DataColor::GetValuesCount() const
 {
     return ColorGraph.size();
 }
 
-//Получить мин. значение (по индексу)
+// Get min. value (by index)
 const Color &DataColor::GetMinValue(uint32_t Index)
 {
     return ColorGraph[Index].MinValue;
 }
 
-//Получить макс. значение (по индексу)
+// Get max. value (by index)
 const Color &DataColor::GetMaxValue(uint32_t Index)
 {
     return ColorGraph[Index].MaxValue;

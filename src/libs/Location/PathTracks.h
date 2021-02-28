@@ -23,11 +23,11 @@ class PathTracks
 
     //--------------------------------------------------------------------------------------------
   public:
-    //Загрузить трек в PathTracks
+    // Upload track to PathTracks
     bool Load(const char *fileName);
-    //Нарисовать трек
+    // Draw track
     void Draw(VDX9RENDER *render);
-    //Получить точку трека
+    // Get track point
     bool GetPoint(float index, Vector &cp, Quaternion &cq) const;
 
     //--------------------------------------------------------------------------------------------

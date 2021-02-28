@@ -176,7 +176,7 @@ void Menu::ChangeControl1(int key, SailorsPoints &sailorsPoints) // Change peopl
             Update(sailorsPoints);
             return;
         }
-        //ќсвободить зан€тые точки
+        // free occupied points
         if (sailrs->shipWalk[0].shipMan[0].mode == MAN_CLIMB_UP)
             sailrs->shipWalk[0].sailorsPoints.points.point[sailrs->shipWalk[0].shipMan[0].targetWayPoint].buisy = false;
 

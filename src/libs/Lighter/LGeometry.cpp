@@ -14,9 +14,9 @@
 
 #include <corecrt_io.h>
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 LGeometry::LGeometry()
 {
@@ -46,19 +46,19 @@ LGeometry::~LGeometry()
     delete drawbuf;
 }
 
-//Установить путь до моделек
+// Set path to models
 void LGeometry::SetModelsPath(const char *mPath)
 {
     strcpy_s(modelsPath, mPath);
 }
 
-//Установить путь для текущей погоды
+// Set path for current weather
 void LGeometry::SetLightPath(const char *lPath)
 {
     strcpy_s(lightPath, lPath);
 }
 
-//Добавить объект
+// Add object
 void LGeometry::AddObject(const char *name, entid_t model)
 {
     if (numObjects >= maxObjects)
@@ -101,16 +101,16 @@ void LGeometry::AddObject(const char *name, entid_t model)
         numObjects++;
 }
 
-//Обработать данные
+// Process data
 bool LGeometry::Process(VDX9RENDER *rs, long numLights)
 {
-    //Подготовка данных для освещения
+    // Preparing data for lighting
     for (long i = 0; i < numObjects; i++)
     {
-        //Вершины--------------------------------------------------------------------------------
-        //Индекс в конечном файле
+        // Vertices ------------------------------------------------- -------------------------------
+        // Index in the final file
         long cindex = 0;
-        //Проверочка
+        // Check
         if (object[i].m != static_cast<MODEL *>(EntityManager::GetEntityPointer(object[i].model)))
         {
             core.Trace("Location lighter: lost model!!!");
@@ -121,9 +121,9 @@ bool LGeometry::Process(VDX9RENDER *rs, long numLights)
             core.Trace("Location lighter: incorrent model %s (nodes above 1)", object[i].nameReal);
             return false;
         }
-        //Пересчитать матрицы
+        // Recalculate matrices
         object[i].m->Update();
-        //Получаем геометрию
+        // get geometry
         auto *node = object[i].m->GetNode(0);
         auto *g = node->geo;
         if (!g)
@@ -131,7 +131,7 @@ bool LGeometry::Process(VDX9RENDER *rs, long numLights)
             core.Trace("Location lighter: incorrent model %s (node not include geos)", object[i].nameReal);
             return false;
         }
-        //Информация о геометрии
+        // Geometry information
         GEOS::INFO info;
         g->GetInfo(info);
         if (info.nvrtbuffs <= 0)
@@ -152,7 +152,7 @@ bool LGeometry::Process(VDX9RENDER *rs, long numLights)
                 continue;
             vbuffer[numVBuffers].vbID = vbID;
             vbuffer[numVBuffers++].start = numVrt;
-            //Получаем вершины
+            // get the vertices
             auto *vbuf = rs->GetVertexBuffer(vbID);
             D3DVERTEXBUFFER_DESC desc;
             if (!vbuf || vbuf->GetDesc(&desc) != D3D_OK)
@@ -160,7 +160,7 @@ bool LGeometry::Process(VDX9RENDER *rs, long numLights)
                 core.Trace("Location lighter: vertex buffer error, model %s, vbID %i", object[i].nameReal, vbID);
                 return false;
             }
-            //Анализируем тип
+            // Analyzing the type
             auto isEnabledType = true;
             isEnabledType &= ((desc.FVF & D3DFVF_POSITION_MASK) == D3DFVF_XYZ);
             isEnabledType &= ((desc.FVF & D3DFVF_NORMAL) != 0);
@@ -172,12 +172,12 @@ bool LGeometry::Process(VDX9RENDER *rs, long numLights)
                            vbID);
                 return false;
             }
-            //Размер вершины
+            // Vertex size
             long stride = 6 * sizeof(float) + sizeof(uint32_t);
             stride += ((desc.FVF & D3DFVF_TEXCOUNT_MASK) >> D3DFVF_TEXCOUNT_SHIFT) * 2 * sizeof(float);
             if (desc.FVF & D3DFVF_SPECULAR)
                 stride += sizeof(uint32_t);
-            //Количество вершин
+            // Number of vertices
             auto num = desc.Size / stride;
             if (num <= 0)
             {
@@ -185,13 +185,13 @@ bool LGeometry::Process(VDX9RENDER *rs, long numLights)
                            object[i].nameReal, vbID);
                 return false;
             }
-            //Резервируем место
+            // reserve a place
             if (numVrt + num > maxVrt)
             {
                 maxVrt = numVrt + num + 64;
                 vrt.resize(maxVrt);
             }
-            //Копируем
+            // Copy
             uint8_t *pnt = nullptr;
             if (vbuf->Lock(0, desc.Size, (VOID **)&pnt, 0) != D3D_OK)
             {
@@ -238,7 +238,7 @@ bool LGeometry::Process(VDX9RENDER *rs, long numLights)
             vbuf->Unlock();
         }
         object[i].lBufSize = cindex;
-        //Треугольники--------------------------------------------------------------------------------
+        // Triangles ------------------------------------------------- -------------------------------
         auto ibID = g->GetIndexBuffer();
         auto *idx = static_cast<uint16_t *>(rs->LockIndexBuffer(ibID));
         if (!idx)
@@ -250,7 +250,7 @@ bool LGeometry::Process(VDX9RENDER *rs, long numLights)
         for (long n = 0; n < info.nobjects; n++)
         {
             g->GetObj(n, obj);
-            //Ищем вертексбуфер
+            // looking for a vertex buffer
             long vb;
             for (vb = 0; vb < numVBuffers; vb++)
                 if (vbuffer[vb].vbID == static_cast<long>(obj.vertex_buff))
@@ -262,11 +262,11 @@ bool LGeometry::Process(VDX9RENDER *rs, long numLights)
                 return false;
             }
             vb = vbuffer[vb].start + obj.start_vertex;
-            //Читаем треугольники
+            // Reading triangles
             auto *triangles = idx + obj.striangle * 3;
             for (long t = 0; t < obj.ntriangles; t++)
             {
-                //Относительные индексы
+                // Relative indices
                 long i1 = triangles[t * 3 + 0];
                 long i2 = triangles[t * 3 + 1];
                 long i3 = triangles[t * 3 + 2];
@@ -276,24 +276,24 @@ bool LGeometry::Process(VDX9RENDER *rs, long numLights)
                                object[i].nameReal, n, t);
                     return false;
                 }
-                //Абсолютные индексы
+                // Absolute indices
                 i1 += vb;
                 i2 += vb;
                 i3 += vb;
-                //Нормаль к треугольнику
+                // Normal to triangle
                 Assert(i1 >= 0 && i1 < numVrt);
                 Assert(i2 >= 0 && i2 < numVrt);
                 Assert(i3 >= 0 && i3 < numVrt);
                 auto nrm = ((vrt[i2].p - vrt[i1].p) ^ (vrt[i3].p - vrt[i1].p));
                 float sq = sqrtf(~nrm);
-                //Пропустим пустой треугольник
+                // skip the empty triangle
                 if (sq <= 0.0f)
                 {
                     core.Trace("Location lighter: model %s have zero triangle, (obj: %i, trg: %i)", object[i].nameReal,
                                n, t);
                     continue;
                 }
-                //Добавим треугольник
+                // Add a triangle
                 if (numTrg >= maxTrg)
                 {
                     maxTrg += 256;
@@ -365,7 +365,7 @@ bool LGeometry::Process(VDX9RENDER *rs, long numLights)
     return true;
 }
 
-//Нарисовать нормали
+// Draw normals
 void LGeometry::DrawNormals(VDX9RENDER *rs)
 {
     if (!drawbuf)
@@ -389,7 +389,7 @@ void LGeometry::DrawNormals(VDX9RENDER *rs)
     }
 }
 
-//Обновить цвета в буферах
+// Update colors in buffers
 void LGeometry::UpdateColors(VDX9RENDER *rs)
 {
     long lockedVB = -1;
@@ -430,7 +430,7 @@ void LGeometry::UpdateColors(VDX9RENDER *rs)
         rs->UnLockVertexBuffer(lockedVB);
 }
 
-//Протрейсить луч
+// Trace the ray
 float LGeometry::Trace(const CVECTOR &src, const CVECTOR &dst)
 {
     for (long i = 0; i < numObjects; i++)
@@ -442,14 +442,14 @@ float LGeometry::Trace(const CVECTOR &src, const CVECTOR &dst)
     return 2.0f;
 }
 
-//Сохранить освещение
+// Save lighting
 bool LGeometry::Save()
 {
-    //Сохраняем текущий путь
+    // Save the current path
     char *oldPath = new char[4096];
     fio->_GetCurrentDirectory(4096, oldPath);
     char *dir = new char[4096];
-    //Сохраняем объекты
+    // Saving objects
     bool result = true;
     const long bufSize = 16384;
     auto *buf = new uint32_t[bufSize];
@@ -457,7 +457,7 @@ bool LGeometry::Save()
     {
         if (object[i].lBufSize <= 0)
             continue;
-        //Создаём путь
+        // Create a path
         fio->_SetCurrentDirectory(oldPath);
         bool isCont = false;
         for (long c = 0, p = 0; true; c++, p++)

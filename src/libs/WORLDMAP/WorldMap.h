@@ -36,9 +36,9 @@ class WorldMap : public Entity
         long prev;
     };
 
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     WorldMap();
     virtual ~WorldMap();
@@ -47,14 +47,14 @@ class WorldMap : public Entity
     // Entity
     //--------------------------------------------------------------------------------------------
   public:
-    //Инициализация
+    // Initialization
     bool Init() override;
-    //Исполнение
+    // Execution
     void Execute(uint32_t delta_time);
     void Realize(uint32_t delta_time);
-    //Сообщения
+    // Messages
     uint64_t ProcessMessage(MESSAGE &message) override;
-    //Изменение атрибута
+    // Changing an attribute
     uint32_t AttributeChanged(ATTRIBUTES *apnt) override;
 
     void ProcessStage(Stage stage, uint32_t delta) override
@@ -74,22 +74,22 @@ class WorldMap : public Entity
         }
     }
 
-    //--------------------------------------------------------------------------------------------
-    //Управление объектами
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Objects management
+    // --------------------------------------------------------------------------------------------
   public:
-    //Добавить объект
+    // Add object
     WdmRenderObject *AddObject(WdmRenderObject *obj, long level = 0);
-    //Добавить объект в список отрисовки до отражения
+    // Add object to render list before reflection
     void AddPObject(WdmRenderObject *obj, long level = 0);
-    //Добавить объект в список отрисовки отражения
+    // Add object to reflection render list
     void AddMObject(WdmRenderObject *obj, long level = 0);
-    //Добавить объект в список отрисовки после отражения
+    // Add object to render list after reflection
     void AddLObject(WdmRenderObject *obj, long level = 0);
-    //Удалить объект
+    // Delete object
     void DeleteObject(WdmRenderObject *obj);
 
-    //Проинициализировать модельку и занести в нужные списки рендера
+    // Initialize the model and add it to the required render lists
     WdmRenderObject *CreateModel(WdmRenderModel *rm, const char *modelName, bool pr = false, bool mr = true,
                                  bool lr = true, long objectLevel = 0, long drawLevel = 0);
 
@@ -97,42 +97,42 @@ class WorldMap : public Entity
 
     VDX9RENDER *GetRS() const;
 
-    //--------------------------------------------------------------------------------------------
-    //Инкапсуляция
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Encapsulation
+    // --------------------------------------------------------------------------------------------
   private:
-    //Управление объектами
-    //Включить запись об объекте в список с необходимым уровнем
+    // Objects management
+    // Include a record about an object in the list with the required level
     long GetObject(long &first, long level);
-    //Исключить запись из списка
+    // Exclude entry from the list
     void FreeObject(long &first, long i);
 
-    //Утилитные
-    //Создать шторм, если это возможно
+    // Utilities
+    // Create a storm if possible
     bool CreateStorm(bool isTornado, float time = -1.0f, ATTRIBUTES *save = nullptr);
-    //Создать кораблик купца
+    // Create a merchant's ship
     bool CreateMerchantShip(const char *modelName, const char *locNameStart, const char *locNameEnd, float kSpeed,
                             float time = -1.0f, ATTRIBUTES *save = nullptr);
-    // boal Создать кораблик купца в координатах
+    // boal Create a merchant's ship in coordinates
     bool CreateMerchantShipXZ(const char *modelName, float x1, float z1, float x2, float z2, float kSpeed,
                               float time = -1.0f, ATTRIBUTES *save = nullptr);
-    //Создать кораблик преследующий нас
+    // Create a ship that follows us
     bool CreateFollowShip(const char *modelName, float kSpeed, float time = -1.0f, ATTRIBUTES *save = nullptr);
-    //Создать пару воюющих кораблики
+    // Create a pair of warring ships
     bool CreateWarringShips(const char *modelName1, const char *modelName2, float time = -1.0f,
                             ATTRIBUTES *save1 = nullptr, ATTRIBUTES *save2 = nullptr);
-    //Удалить все энкоунтеры
+    // Delete all encounters
     void ReleaseEncounters();
-    //Создать атрибут для сохранения параметров энкоунтера
+    // Create an attribute to save the encounter parameters
     ATTRIBUTES *GetEncSaveData(const char *type, const char *retName);
 
-    //Найти координаты и радиус по месту назначения
+    // Find coordinates and radius by destination
     bool FindIslandPosition(const char *name, float &x, float &z, float &r);
 
     void ResetScriptInterfaces() const;
 
   private:
-    //Сервис рендера
+    // Render service
     VDX9RENDER *rs;
     WdmCamera *camera;
 
@@ -143,15 +143,15 @@ class WorldMap : public Entity
 
     WdmWaitMenu *waitMenu;
 
-    //Событие
+    // Event
     float encTime;
 
-    //Объекты
+    // Objects
     long firstFreeObject;
-    long firstObject;   //Все существующие объекты
-    long firstPrObject; //Объекты, рендерящиеся до зеркала
-    long firstMrObject; //Объекты рендерящиеся в зеркало
-    long firstLrObject; //Объекты рендерящиеся после зеркала
+    long firstObject;   // All existing objects
+    long firstPrObject; // Objects rendering before the mirror
+    long firstMrObject; // Objects rendered into the mirror
+    long firstLrObject; // Objects rendered after the mirror
 
     RObject object[WDMAP_MAXOBJECTS];
 

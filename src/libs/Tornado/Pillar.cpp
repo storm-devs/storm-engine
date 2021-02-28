@@ -25,14 +25,14 @@
 #define TRND_MAXRAD 150.0f
 #define TRND_KSHAPE 5.0f
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 Pillar::Pillar()
 {
     srand(time(nullptr));
-    //Секции
+    // Sections
     long i;
     for (i = 0; i < TRND_NUMSEC; i++)
     {
@@ -45,7 +45,7 @@ Pillar::Pillar()
         kHeight = 1.0f - (kHeight - 0.5f) * (kHeight - 0.5f) * 4.0f;
         section[i].alpha *= kHeight * kHeight;
     }
-    //Вектора сегментов
+    // Segment vectors
     for (i = 0; i < TRND_SEGMENTS; i++)
     {
         const auto ang = i * 2.0f * TRND_PI / TRND_SEGMENTS;
@@ -126,12 +126,12 @@ void Pillar::FillVertexBuffer(Vertex *buffer)
 
 void Pillar::FillIndexBuffer(uint16_t *buffer)
 {
-    //По секциям
+    // By sections
     for (long i = 0; i < TRND_NUMSEC - 1; i++)
     {
         const auto base = static_cast<uint16_t>(i * TRND_SEGMENTS);
         auto *const buf = buffer + base * 2 * 3;
-        //По сегментам
+        // By segments
         for (uint16_t j = 0; j < TRND_SEGMENTS; j++)
         {
             const uint16_t j1 = j < (TRND_SEGMENTS - 1) ? j + 1 : 0;

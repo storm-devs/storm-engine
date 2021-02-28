@@ -18,11 +18,11 @@ class MemFile;
 
 class IParticleManager;
 
-//Источник данных для партиклов...
+// Data source for particles ...
 class DataSource
 {
   public:
-    //Описание партикла (используеться при создании системы)
+    // Particle description (used when creating a system)
     struct ParticleDesc
     {
         ParticleType Type;
@@ -34,7 +34,7 @@ class DataSource
         }
     };
 
-    //Описание эмиттера (используеться при создании системы)
+    // Description of the emitter (used when creating the system)
     struct EmitterDesc
     {
         EmitterType Type;
@@ -50,13 +50,13 @@ class DataSource
   private:
     std::vector<EmitterDesc> Emitters;
 
-    //Загрузить точечный эмиттер
+    // Load point emitter
     void CreatePointEmitter(MemFile *pMemFile);
 
-    //Загрузить BillBoard партикл
+    // Download BillBoard Particle
     void CreateBillBoardParticle(std::vector<ParticleDesc> &Particles, MemFile *pMemFile);
 
-    //Загрузить Model партикл
+    // Download Model Particle
     void CreateModelParticle(std::vector<ParticleDesc> &Particles, MemFile *pMemFile);
 
     int FindEmitter(const char *Name);
@@ -75,12 +75,12 @@ class DataSource
 
     void Destroy();
 
-    //---------- Создание/удаление --------------------
+    // ---------- Create / Delete --------------------
     DataSource(IParticleManager *Master);
     bool Release() const;
 
     // ========================= Load & Save =======================================
-    //Сохранить/восстановить из файла
+    // Save / restore from file
     virtual void Write(MemFile *pMemFile);
     virtual void Load(MemFile *pMemFile);
 

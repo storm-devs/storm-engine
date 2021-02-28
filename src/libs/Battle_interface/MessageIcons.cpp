@@ -29,7 +29,7 @@ void MESSAGE_ICONS::Update(uint32_t deltaTime)
         if (!pVBuf)
             return;
 
-        // –асчет цвета мигани€
+        // Calculating the blinking color
         auto blindColor = m_dwNormalColor;
         if (m_bBlindDirectUp)
             blindColor =
@@ -44,10 +44,10 @@ void MESSAGE_ICONS::Update(uint32_t deltaTime)
 
         for (i = 0; i < MESSAGE_ICONS_COLUMN_QUANTITY; i++)
         {
-            // действи€ над иконками
+            // act on icons
             for (j = 0; j < m_pMsgColumns[i].rowQ; j++)
             {
-                // ѕроведем проверку на удаление иконок
+                // check if icons are removed
                 if (m_pMsgColumns[i].pRow[j].bDoBlend)
                 {
                     if ((m_pMsgColumns[i].pRow[j].curTime -= deltaTime * .001f) <= 0.f)
@@ -63,7 +63,7 @@ void MESSAGE_ICONS::Update(uint32_t deltaTime)
                         BIUtils::GetIntervalColor(ARGB(0, 128, 128, 128), ARGB(255, 128, 128, 128),
                                                   m_pMsgColumns[i].pRow[j].curTime / m_fBlendTime);
                 }
-                // осадка иконок вниз
+                // move icons down
                 auto fBottonLimit = static_cast<float>(m_nBottomY);
                 if (j > 0)
                     fBottonLimit = m_pMsgColumns[i].pRow[j - 1].bottom - m_nMsgIconHeight - m_nMsgIconDist;
@@ -75,10 +75,10 @@ void MESSAGE_ICONS::Update(uint32_t deltaTime)
                 }
             }
 
-            // пометим иконки
+            // mark icons
             if (m_pIconsAttr[i])
             {
-                // пометим все иконки как удал€емые
+                // mark all icons as removable
                 for (n = 0; n < m_pMsgColumns[i].rowQ; n++)
                 {
                     if (!m_pMsgColumns[i].pRow[n].bDoBlend)
@@ -87,7 +87,7 @@ void MESSAGE_ICONS::Update(uint32_t deltaTime)
                         m_pMsgColumns[i].pRow[n].curTime = m_fBlendTime;
                     }
                 }
-                // пройдемс€ по иконкам
+                // loop through icons
                 size_t q = m_pIconsAttr[i]->GetAttributesNum();
                 for (n = 0; n < q; n++)
                 {
@@ -113,7 +113,7 @@ void MESSAGE_ICONS::Update(uint32_t deltaTime)
                 }
             }
 
-            // выведем иконки в буфер
+            // output the icons in the buffer
             FRECT frectTmp;
             for (j = 0; j < m_pMsgColumns[i].rowQ; j++)
             {
@@ -135,7 +135,7 @@ void MESSAGE_ICONS::Update(uint32_t deltaTime)
 
 void MESSAGE_ICONS::Draw() const
 {
-    // показать сообщени€
+    // show messages
     if (m_bShowMsgIcon && m_nMsgIconQnt > 0 && m_idMsgIconsTexture >= 0)
     {
         rs->TextureSet(0, m_idMsgIconsTexture);

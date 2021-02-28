@@ -19,54 +19,54 @@ class IParticleSystem;
 
 #define CreateParticleSystem(name) CreateParticleSystemEx(name, __FILE__, __LINE__)
 
-//Менеджер партикловых систем
+// Particle Systems Manager
 class IParticleManager
 {
   protected:
     virtual ~IParticleManager(){};
 
   public:
-    //Создание/удаление
+    // Create / delete
     IParticleManager(ParticleService *service){};
     virtual bool Release() = 0;
 
-    //Получить указатель на Render/FileService
+    // Get a pointer to Render / FileService
     virtual VDX9RENDER *Render() = 0;
 
-    //Открыть проект
+    // Open project
     virtual bool OpenProject(const char *FileName) = 0;
-    //Закрыть проект
+    // Close project
     virtual void CloseProject() = 0;
 
-    //Удалить из списка ресурсов (системная)
+    // Remove from resource list (system)
     virtual void RemoveResource(IParticleSystem *pResource) = 0;
 
-    //Исполнить партиклы
+    // Execute Particles
     virtual void Execute(float DeltaTime) = 0;
 
-    //Узнать доступна система или нет
+    // Find out whether the system is available or not
     virtual bool IsSystemAvailable(const char *FileName) = 0;
 
-    //Получить глобальную текстуру проекта
+    // Get the global texture of the project
     virtual long GetProjectTexture() = 0;
 
-    //Установить текстуру проекта
+    // Set project texture
     virtual void SetProjectTexture(const char *FileName = nullptr) = 0;
 
-    //Получить имя проекта
+    // Get project name
     virtual const char *GetProjectFileName() = 0;
 
-    //Создать пустую партикловую систему, для редактора...
+    // Create an empty particle system, for the editor ...
     virtual IParticleSystem *CreateEmptyParticleSystemEx(const char *FileName, int Line) = 0;
 
-    //Создать партикловую систему из файла (файл должен быть в проекте!!!!!)
+    // Create a particle system from a file (the file must be in the project !!!!!)
     virtual IParticleSystem *CreateParticleSystemEx(const char *FileName, const char *File, int Line) = 0;
 
-    //Проверить "валиден" ли указатель на систему партиклов, вдруг она уже удалилась
+    // Check whether the pointer to the particle system is valid, it might has already been deleted
     virtual bool ValidateSystem(IParticleSystem *pSystem) = 0;
 
-    //Проверить ли загрузились асинхронно все партиклы и готов ли менеджер
-    //к созданию сисстем
+    // Check if all particles have loaded asynchronously and if the manager is ready
+    // to the creation of systems
     virtual bool ReadyForUse() = 0;
 
     virtual const char *GetProjectTextureName() = 0;

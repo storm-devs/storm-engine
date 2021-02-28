@@ -24,7 +24,7 @@ void BIImage::FillBuffers(BI_IMAGE_VERTEX *pV, uint16_t *pT, size_t &nV, size_t 
     // index buffer
     if (m_eType == BIType_square)
     {
-        for (n = 2; n < m_aRelPos.size(); n++) // квадратик делается по принципу Triangle Strip
+        for (n = 2; n < m_aRelPos.size(); n++) // the square is made according to the Triangle Strip principle
         {
             pT[ni++] = static_cast<uint16_t>(nv + n - 2);
             pT[ni++] = static_cast<uint16_t>(nv + n - 1);
@@ -34,7 +34,7 @@ void BIImage::FillBuffers(BI_IMAGE_VERTEX *pV, uint16_t *pT, size_t &nV, size_t 
     }
     else if (m_eType == BIType_clocksquare)
     {
-        // квадратные "часы" делаются по принципу Triangle Fan
+        // square "clocks" are made according to the Triangle Fan principle
         for (n = 2; n < m_aRelPos.size(); n++)
         {
             pT[ni++] = static_cast<uint16_t>(nv);
@@ -135,16 +135,16 @@ void BIImage::CutClock(float fBegin, float fEnd, float fFactor)
     fp.y = 0.5f;
     m_aRelPos.push_back(fp);
     const auto fEndAng = fBegin + (fEnd - fBegin) * fFactor;
-    // первая/начальная точка на часах
+    // first / starting point on the clocks
     m_aRelPos.push_back(GetClockPoint(fBegin, fp));
-    // следующие углы
+    // next angles
     if (fBegin < fEndAng)
         for (auto fAng = GetNextClockCorner(fBegin); fAng < fEndAng; fAng = GetNextClockCorner(fAng))
             m_aRelPos.push_back(GetClockPoint(fAng, fp));
     else if (fBegin > fEndAng)
         for (auto fAng = GetPrevClockCorner(fBegin); fAng > fEndAng; fAng = GetPrevClockCorner(fAng))
             m_aRelPos.push_back(GetClockPoint(fAng, fp));
-    // последняя/конечная точка на часах
+    // last / ending point on the clocks
     m_aRelPos.push_back(GetClockPoint(fEndAng, fp));
     m_nVertexQuantity = m_aRelPos.size();
     m_nTriangleQuantity = m_nVertexQuantity - 2;

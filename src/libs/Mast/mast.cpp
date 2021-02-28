@@ -25,7 +25,7 @@ float DESTRUCT_MAST_DEEP = 20.f;
 float DEEP_FALL_STEP = 3.f;
 int MAX_MOVE_CICLES = 50;
 int MIN_MOV_COUNTER = 5;
-// углы вращения(падения) мачты
+// angles of rotation (fall) of the mast
 float MIN_X_DANG = -0.01f;
 float VAR_X_DANG = 0.02f;
 float MIN_Z_DANG = 0.07f;
@@ -98,8 +98,8 @@ void MAST::Execute(uint32_t Delta_Time)
 
     if (bUse)
     {
-        //====================================================
-        // Если был изменен ини-файл, то считать инфо из него
+        // ====================================================
+        // If the ini-file has been changed, read the info from it
         WIN32_FIND_DATA wfd;
         auto *const h = fio->_FindFirstFile(MAST_INI_FILE, &wfd);
         if (INVALID_HANDLE_VALUE != h)
@@ -198,7 +198,7 @@ void MAST::Mount(entid_t modelEI, entid_t shipEI, NODE *mastNodePointer)
         return;
     auto *oldmdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(modelEI));
     if (oldmdl == nullptr)
-        return; // ничего не валим, если нет старой модели
+        return; // do not bring down anything if there is no old model
     oldmodel_id = modelEI;
     ship_id = shipEI;
 
@@ -207,7 +207,7 @@ void MAST::Mount(entid_t modelEI, entid_t shipEI, NODE *mastNodePointer)
     const auto flagEI = EntityManager::GetEntityId("flag");
     const auto vantEI = EntityManager::GetEntityId("vant");
 
-    // найдем аттрибуты
+    // find the attributes
     VAI_OBJBASE *pVAI = nullptr;
     pVAI = static_cast<VAI_OBJBASE *>(EntityManager::GetEntityPointer(shipEI));
     ATTRIBUTES *pA = nullptr;
@@ -234,11 +234,11 @@ void MAST::Mount(entid_t modelEI, entid_t shipEI, NODE *mastNodePointer)
     {
         int i, j;
 
-        // создадим новую модель
+        // create a new model
         bModel = true;
         model_id = mastNodePointer->Unlink2Model();
 
-        // пройдем по всем веревкам данной мачты и отключим их
+        // go through all the ropes of this mast and turn them off
         if (vantEI)
             core.Send_Message(vantEI, "lip", MSG_VANT_DEL_MAST, modelEI, mastNodePointer);
         MODEL *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(model_id));
@@ -277,7 +277,7 @@ void MAST::Mount(entid_t modelEI, entid_t shipEI, NODE *mastNodePointer)
                                               model_id);
                     }
                 }
-                // валим также паруса связанные с данной мачтой
+                // also bring down the sails associated with this mast
                 if (sailEI)
                 {
                     core.Send_Message(sailEI, "liii", MSG_SAIL_CHECK, shipEI, GetId(), model_id);
@@ -287,7 +287,7 @@ void MAST::Mount(entid_t modelEI, entid_t shipEI, NODE *mastNodePointer)
         if (sailEI)
             core.Send_Message(sailEI, "ll", MSG_SAIL_MAST_PROCESSING, -1);
 
-        // установим первоначальные параметры движения мачты
+        // set the initial parameters of the mast movement
         SHIP_BASE *sb;
         sb = static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(shipEI));
         if (sb)
@@ -312,7 +312,7 @@ void MAST::Mount(entid_t modelEI, entid_t shipEI, NODE *mastNodePointer)
         mm.mov = mastNodePointer->glob_mtx.Pos();
         mm.dang = CVECTOR(MIN_X_DANG + VAR_X_DANG * static_cast<float>(rand()) / static_cast<float>(RAND_MAX), 0.f,
                           MIN_Z_DANG + VAR_Z_DANG * static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
-        // найдем ближайший корабль
+        // find the nearest ship
         float minDist = 10000.f;
         SHIP_BASE *minDstShip;
 
@@ -330,7 +330,7 @@ void MAST::Mount(entid_t modelEI, entid_t shipEI, NODE *mastNodePointer)
                 minDstShip = sb;
             }
         }
-        if (minDist < 4000.f) // если ближайший корабль близко к нам, то валим мачту в противоположную сторону
+        if (minDist < 4000.f) // if the nearest ship is close to us, then bring down the mast in the opposite direction
         {
             CVECTOR vect;
             mastNodePointer->glob_mtx.MulToInvNorm(minDstShip->State.vPos - mm.mov, vect);
@@ -356,7 +356,7 @@ void MAST::Mount(entid_t modelEI, entid_t shipEI, NODE *mastNodePointer)
         mm.sdang = mm.dang;
 
         GEOS::INFO gi;
-        // установим верхнюю и нижнюю точки мачты
+        // set the top and bottom points of the mast
         mastNodePointer->geo->GetInfo(gi);
         mm.ep = mm.bp = *(CVECTOR *)&gi.boxcenter;
         mm.bp.y -= gi.boxsize.y * .5f;
@@ -366,11 +366,11 @@ void MAST::Mount(entid_t modelEI, entid_t shipEI, NODE *mastNodePointer)
             mm.bp.z -= gi.boxsize.z * .5f;
             mm.ep.z += gi.boxsize.z * .5f;
         }
-        // проверим начальную точку мачты, и если она посажена в корабль, то
-        // подравнять ее до точки соприкосновения с кораблем
+        // check the starting point of the mast, and if it is planted in the ship, then
+        // trim it to the point of contact with the ship
         CVECTOR bv = mastNodePointer->glob_mtx * mm.bp;
         const CVECTOR ev = mastNodePointer->glob_mtx * mm.ep;
-        // обнулим локальную матрицу
+        // zero the local matrix
         mastNodePointer->loc_mtx.SetIdentity();
         const float tmpTrace = oldmdl->Trace(ev, bv);
         if (tmpTrace <= 1.f)
@@ -379,7 +379,7 @@ void MAST::Mount(entid_t modelEI, entid_t shipEI, NODE *mastNodePointer)
             mastNodePointer->glob_mtx.MulToInv(bv, mm.bp);
         }
 
-        // установим левую и правую точки реи
+        // set the left and right points of the yard
         for (i = 0; i < mastNodePointer->nnext; i++)
             if (!strncmp(mastNodePointer->next[i]->GetName(), "rey", 3))
             {
@@ -428,49 +428,49 @@ void MAST::LoadIni()
 
     /*=========================================================================
      =============================================================================
-    =======   ЗАГРУЗКА ПАРАМЕТРОВ   ===============================================
+    ======= LOADING PARAMETERS ======================================== ======
     ==============================================================================*/
-    // шаг движения мачты при опускании одного конца в воду
+    // step of movement of the mast when lowering one end into the water
     MAST_MOVE_STEP = ini->GetFloat(section, "water_slide_step", MAST_MOVE_STEP);
-    // ускорение шага свободного падения всей мачты вниз
+    // acceleration of the step of free fall of the entire mast down
     MAST_FALL_STEP = ini->GetFloat(section, "downfall_acceleration", MAST_FALL_STEP);
-    // максимальный шаг падения мачты вниз
+    // maximum step of the mast falling down
     MAST_MAX_FALL_SPEED = ini->GetFloat(section, "downfall_maxspeed", MAST_MAX_FALL_SPEED);
-    // максимальный угол поворота мачты
+    // maximum mast swing angle
     MAX_FALL_ANGLE = ini->GetFloat(section, "fMaxAngle", MAX_FALL_ANGLE);
-    // шаг поворота мачты вокруг оси Y (при столкновении реи с объектом)
+    // step of rotation of the mast around the Y-axis (when the yard collides with an object)
     YROTATE_STEP = ini->GetFloat(section, "fYRotateStep", YROTATE_STEP);
-    // высота луча трассировки при коллизии
+    // the height of the tracing ray on collision
     TRACE_HEIGHT = ini->GetFloat(section, "fTraceHeight", TRACE_HEIGHT);
-    // дополнительная добавка по высоте к точке коллизии для исключения повторной коллизии
+    // extra addition in height to the point of collision to avoid repeated collisions
     TRACE_ADDING = ini->GetFloat(section, "fTraceHeightAdding", TRACE_ADDING);
-    // шаг сдвига мачты по горизонтали
+    // horizontal mast shift
     TRACE_SLIDING = ini->GetFloat(section, "fTraceSliding", TRACE_SLIDING);
-    // максимальное изменение координат для смены алгоритма сдвига позиции мачты
+    // maximum coordinate change to switch the mast position shift algorithm
     MAX_CHANGE_LENGTH = ini->GetFloat(section, "fMaxPosChange", MAX_CHANGE_LENGTH);
-    // максимальное изменение координат при скольжении мачты
+    // maximum coordinate change when the mast slides
     MAX_SLIDING_LENGHT = ini->GetFloat(section, "fMaxSlideLenght", MAX_SLIDING_LENGHT);
-    // линия коллизии проходит ниже на толщину мачты
+    // the collision line goes below the thickness of the mast
     MAST_WIDTH = ini->GetFloat(section, "fMastWidth", MAST_WIDTH);
-    // минимальное значение Z в размере NODE для учета его в конечных точках линий трассировки
+    // the minimum Z-value in the NODE size to account for at the endpoints of the tracing lines
     MINZ_COMPARE = ini->GetFloat(section, "fMinZCompare", MINZ_COMPARE);
-    // глубина с которой мачта отключается
+    // the depth at which the mast turns off
     DESTRUCT_MAST_DEEP = ini->GetFloat(section, "fMaxDeep", DESTRUCT_MAST_DEEP);
-    // шаг опускания мачты в глубину
+    // the step of lowering the mast in depth
     DEEP_FALL_STEP = ini->GetFloat(section, "fDeepStep", DEEP_FALL_STEP);
-    // число кадров движения после которого отключается коллизия с объектами
+    // number of motion frames after which collision with objects is disabled
     MAX_MOVE_CICLES = ini->GetLong(section, "maxMoveCicles", MAX_MOVE_CICLES);
-    // число кадров движения после которого включается падение мачты
+    // the number of motion frames after which the fall of the mast is switched on
     MIN_MOV_COUNTER = ini->GetLong(section, "minMoveCicles", MIN_MOV_COUNTER);
-    // минимальный угол вращения мачты по X
+    // minimum angle of rotation of the mast in X
     MIN_X_DANG = ini->GetFloat(section, "fMinXdang", MIN_X_DANG);
-    // предел изменения угла вращения мачты по X
+    // limit of change of the angle of rotation of the mast in X
     VAR_X_DANG = ini->GetFloat(section, "fVarXdang", VAR_X_DANG);
-    // минимальный угол вращения мачты по Z
+    // minimum angle of rotation of the mast in Z
     MIN_Z_DANG = ini->GetFloat(section, "fMinZdang", MIN_Z_DANG);
-    // предел изменения угла вращения мачты по Z
+    // limit of variation of the angle of rotation of the mast in Z
     VAR_Z_DANG = ini->GetFloat(section, "fVarZdang", VAR_Z_DANG);
-    // угол положения корабля начиная с которого мачта падает по этому углу
+    // the angle of the ship position starting from which the mast falls along this angle
     MIN_SIGNIFICANT = ini->GetFloat(section, "fAngSignificant", MIN_SIGNIFICANT);
 
     delete ini;
@@ -485,51 +485,51 @@ void MAST::doMove(uint32_t DeltaTime)
     float dtime = DELTA_TIME(static_cast<float>(DeltaTime));
     float rtime = DELTA_TIME_ROTATE(static_cast<float>(DeltaTime));
 
-    auto *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(model_id)); // это модель геометрии мачты
+    auto *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(model_id)); // geometry model of the mast
     if (mdl != nullptr)
     {
-        if (bFallUnderWater) // если мачта уже тонет
+        if (bFallUnderWater) // if the mast is already sinking
         {
-            // Дошли до глубины, где уничтожаем мачту
+            // reached the depth where we destroy the mast
             if (mdl->mtx.Pos().y < -DESTRUCT_MAST_DEEP)
                 bUse = false;
-            // Опускаем мачту ниже в пучину моря
+            // move the mast lower into the depths of the sea
             else
                 mdl->mtx.Move(0.f, -DEEP_FALL_STEP * dtime, 0.f);
         }
-        else // мачта не тонет... пока падает
+        else // the mast does not sink ... until it falls
         {
             mm.mov += mm.dmov * dtime;
-            // Если еще не наклонили мачту горизонтально, то продолжаем наклонять
+            // If the mast has not tilted horizontally yet, then continue tilting
             if (mm.ang.z < MAX_FALL_ANGLE && mm.ang.z > -MAX_FALL_ANGLE && mm.ang.x < MAX_FALL_ANGLE &&
                 mm.ang.x > -MAX_FALL_ANGLE)
                 mm.ang += mm.dang * rtime;
 
-            // расчитаем глобальную матрицу для нового положения мачты
+            // calculate the global matrix for the new mast position
             CMatrix mtx;
             mtx.BuildMatrix(mm.ang);
             mtx.SetPosition(mm.mov);
             mtx = mdl->GetNode(0)->loc_mtx * mtx;
 
-            CVECTOR bp; // координата верхнего конца мачты
-            CVECTOR ep; // координата нижнего конца мачты
-            CVECTOR lp; // координата левой точки реи (суммарная)
-            CVECTOR rp; // координата правой точки реи (суммарная)
-            bool bNextClass = (wMoveCounter <= MAX_MOVE_CICLES); // продожаем коллизию, определенное число раз
-            bool bStopRotate = false; // по умалчанию не останавливаем вращение мачты при падении
+            CVECTOR bp; // mast top end coordinate
+            CVECTOR ep; // coordinate of the lower end of the mast
+            CVECTOR lp; // coordinate of the left point of the yard (total)
+            CVECTOR rp; // coordinate of the right point of the yard (total)
+            bool bNextClass = (wMoveCounter <= MAX_MOVE_CICLES); // continue the collision a certain number of times
+            bool bStopRotate = false; // by default do not stop the rotation of the mast when it falls
 
             bp = mtx * mm.bp;
             ep = mtx * mm.ep;
             lp = mtx * mm.brey;
             rp = mtx * mm.erey;
-            // изменить скорость падения мачты
+            // change mast fall speed
             if (bp.y > 0.f && ep.y > 0.f && wMoveCounter > MIN_MOV_COUNTER)
                 mm.dmov.y -= MAST_FALL_STEP;
-            // падаем быстрее
+            // falling faster
             if (mm.dmov.y < -MAST_MAX_FALL_SPEED)
                 mm.dmov.y = -MAST_MAX_FALL_SPEED;
-            // ограничение по максимальной скорости падения
-            // трассировать будем с приблизительным учетом диаметра мачты
+            // maximum fall rate limitation
+            // trace with an approximate consideration of the diameter of the mast
             bp.y -= MAST_WIDTH;
             ep.y -= MAST_WIDTH;
             lp.y -= MAST_WIDTH;
@@ -537,7 +537,7 @@ void MAST::doMove(uint32_t DeltaTime)
             while (bNextClass)
             {
                 bNextClass = false;
-                // коллизим с островом
+                // collision with the island
                 entid_t findEI = EntityManager::GetEntityId("ISLAND");
                 if (findEI && EntityManager::GetEntityPointer(findEI) != nullptr)
                 {
@@ -566,7 +566,7 @@ void MAST::doMove(uint32_t DeltaTime)
                         }
                     }
                 }
-                // коллизим с кораблем
+                // collision with the ship
                 const auto &ships = EntityManager::GetEntityIdVector("ship");
                 for (auto ship : ships)
                 {
@@ -626,7 +626,7 @@ int MAST::GetSlide(entid_t mod, CVECTOR &pbeg, CVECTOR &pend, CVECTOR &dp, CVECT
 {
     int retVal = 0;
 
-    // коллизия реи
+    // rhea collision
     const CVECTOR vl = lrey;
     const CVECTOR vr = rrey;
     const CVECTOR vcentr = (vl + vr) * .5f;
@@ -643,7 +643,7 @@ int MAST::GetSlide(entid_t mod, CVECTOR &pbeg, CVECTOR &pend, CVECTOR &dp, CVECT
         retVal |= SR_YROTATE;
     }
 
-    // коллизия мачты
+    // mast collision
     float tmp;
     float hVal = 0.f;
     float sVal = 0.f;
@@ -712,16 +712,16 @@ void MAST::AllRelease()
         m_mount_param.pNode = nullptr;
     }
 
-    // удалить группу парусов
+    // delete sail group
     core.Send_Message(EntityManager::GetEntityId("sail"), "li", MSG_SAIL_DEL_GROUP, GetId());
 
-    // удалить группу флагов
+    // remove flag group
     core.Send_Message(EntityManager::GetEntityId("flag"), "li", MSG_FLAG_DEL_GROUP, model_id);
 
-    // объявим фларикам что мы сваливаем...
+    // announce deleting
     core.Send_Message(ship_id, "lp", MSG_MAST_DELGEOMETRY, m_pMastNode);
 
-    // удалить модель
+    // delete model
     EntityManager::EraseEntity(model_id);
     m_pMastNode = nullptr;
 }

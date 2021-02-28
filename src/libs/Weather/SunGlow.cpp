@@ -612,7 +612,7 @@ void SUNGLOW::DrawRect(uint32_t dwColor, const CVECTOR &pos, float fSize, float 
     auto *pV = static_cast<SUNGLOWVERTEX *>(pRS->LockVertexBuffer(idRectBuf));
     if (pV)
     {
-        // добавляем первую точку (левый верхний угол)
+        // add the first point (upper left corner)
         if (vp1.y >= fBClip)
         {
             pV[nv].vPos = vp1;
@@ -621,7 +621,7 @@ void SUNGLOW::DrawRect(uint32_t dwColor, const CVECTOR &pos, float fSize, float 
             nv++;
         }
 
-        // добавляем точку пересечения с плоскостью отсечения между 1й и 2й точкой
+        // add a point of intersection with the clipping plane between the 1st and 2nd points
         if ((vp1.y >= fBClip) != (vp2.y >= fBClip))
         {
             auto fK = vp2.y - vp1.y;
@@ -638,7 +638,7 @@ void SUNGLOW::DrawRect(uint32_t dwColor, const CVECTOR &pos, float fSize, float 
             }
         }
 
-        // вторая точка (левый нижний угол)
+        // second point (lower left corner)
         if (vp2.y >= fBClip)
         {
             pV[nv].vPos = vp2;
@@ -647,7 +647,7 @@ void SUNGLOW::DrawRect(uint32_t dwColor, const CVECTOR &pos, float fSize, float 
             nv++;
         }
 
-        // добавляем точку пересечения с плоскостью отсечения между 2й и 3й точкой
+        // add a point of intersection with the clipping plane between the 2nd and 3rd points
         if ((vp2.y >= fBClip) != (vp3.y >= fBClip))
         {
             auto fK = vp3.y - vp2.y;
@@ -664,7 +664,7 @@ void SUNGLOW::DrawRect(uint32_t dwColor, const CVECTOR &pos, float fSize, float 
             }
         }
 
-        // третья точка (правый нижний угол)
+        // third point (bottom right corner)
         if (vp3.y >= fBClip)
         {
             pV[nv].vPos = vp3;
@@ -673,7 +673,7 @@ void SUNGLOW::DrawRect(uint32_t dwColor, const CVECTOR &pos, float fSize, float 
             nv++;
         }
 
-        // добавляем точку пересечения с плоскостью отсечения между 3й и 4й точкой
+        // add a point of intersection with the clipping plane between the 3rd and 4th point
         if ((vp3.y >= fBClip) != (vp4.y >= fBClip))
         {
             auto fK = vp4.y - vp3.y;
@@ -690,7 +690,7 @@ void SUNGLOW::DrawRect(uint32_t dwColor, const CVECTOR &pos, float fSize, float 
             }
         }
 
-        // четвертая точка (правый верхний угол)
+        // fourth point (upper right corner)
         if (vp4.y >= fBClip)
         {
             pV[nv].vPos = vp4;
@@ -699,7 +699,7 @@ void SUNGLOW::DrawRect(uint32_t dwColor, const CVECTOR &pos, float fSize, float 
             nv++;
         }
 
-        // добавляем точку пересечения с плоскостью отсечения между 4й и 1й точкой
+        // add a point of intersection with the clipping plane between the 4th and 1st points
         if ((vp3.y >= fBClip) != (vp4.y >= fBClip))
         {
             auto fK = vp1.y - vp4.y;
@@ -727,7 +727,7 @@ void SUNGLOW::DrawRect(uint32_t dwColor, const CVECTOR &pos, float fSize, float 
     }
 
     /*
-    // отладочная информация - прямоугольник из линий показывающий границы выводимого прямоугольника
+    // debug info - a rectangle of lines showing the boundaries of the output rectangle
     RS_LINE lines[8];
     for(n=0; n<8; n++) lines[n].dwColor = 0xFFFFFFFF;
     lines[0].vPos = vp1;	lines[1].vPos = vp2;
@@ -739,7 +739,7 @@ void SUNGLOW::DrawRect(uint32_t dwColor, const CVECTOR &pos, float fSize, float 
 
 float SUNGLOW::GetSunFadeoutFactor(const CVECTOR &vSunPos, float fSunSize)
 {
-    // получим указатель на небо
+    // get a pointer to the sky
     if (!pSky)
     {
         pSky = static_cast<SKY *>(EntityManager::GetEntityPointer(EntityManager::GetEntityId("sky")));

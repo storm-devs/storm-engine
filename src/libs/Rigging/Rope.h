@@ -16,26 +16,26 @@ struct ROPEVERTEX
     float tu, tv;
 };
 
-#define ROPE_EDGE 5 // число граней в сечении веревки
+#define ROPE_EDGE 5 // number of edges in the rope section
 
 class ROPE : public ROPE_BASE
 {
-    // параметры получаемые из INI-файла //
-    //-------------------------------------
-    float ROPE_SEG_LENGTH; // длина одного сегмента веревки
-    float ROPE_WIDTH;      // толщина веревки
-    float STAY_WIDTH;      // толщина веревки (штага)
-    float ROPE_END_LENGTH; // длина веревки (треугольника) в точке соединения с парусом относительно общей длинны
-    float ROPE_WAVE; // амплитуда колебания веревки в абсолютных значениях
-    float MaxCh; // максимальное изменение координаты при котором происходит перерасчет всей веревки
-    float ROPE_TEX_LEN; // длина веревки на которую ложится текстура
-    float fMaxRopeDist; // максимальное растояние с кототрого видны веревки
-    float DEEP_CHANGE_SPEED; // скорость изменения глубины прогиба веревки
-    float ROTATE_SPEED;      // скорость качания веревки
-    float MIN_DEEP_MUL; // минимальное значение коэффициента использования прогиба веревки
-    float VAR_DEEP_MUL; // предел изменения коэффициента использования прогиба веревки
-    float VAR_ROTATE_ANGL; // амплитуда угла качания веревки
-    //-------------------------------------
+    // parameters obtained from INI file //
+    // -------------------------------------
+    float ROPE_SEG_LENGTH; // length of one rope segment
+    float ROPE_WIDTH;      // rope thickness
+    float STAY_WIDTH;      // rope (head) thickness
+    float ROPE_END_LENGTH; // the length of the rope (triangle) at the point of connection with the sail in relation to the total length
+    float ROPE_WAVE; // amplitude of rope vibration in absolute values
+    float MaxCh; // maximum coordinate change at which the entire rope is recalculated
+    float ROPE_TEX_LEN; // the length of the rope on which the texture applies
+    float fMaxRopeDist; // maximum distance from which the ropes are visible
+    float DEEP_CHANGE_SPEED; // the rate of change in the depth of rope deflection
+    float ROTATE_SPEED;      // rope swing speed
+    float MIN_DEEP_MUL; // the minimum value of the coefficient of use of the deflection of the rope
+    float VAR_DEEP_MUL; // limit of variation of the coefficient of use of rope deflection
+    float VAR_ROTATE_ANGL; // rope swing angle
+    // -------------------------------------
 
     D3DMATERIAL9 mat;
 
@@ -86,7 +86,7 @@ class ROPE : public ROPE_BASE
   private:
     ROPEVERTEX *vertBuf;
 
-    // список веревок
+    // ropes list
     struct ROPEDATA
     {
         bool bUse;
@@ -111,14 +111,14 @@ class ROPE : public ROPE_BASE
         uint16_t segnum;
         uint16_t segquant;
 
-        float ropeWave; // амплитуда колебания веревки
+        float ropeWave; // rope swing
         bool bMakeWave;
     };
 
     int ropeQuantity;
     ROPEDATA **rlist;
 
-    // список групп (кораблей) веревок
+    // list of groups (ships) of ropes
     struct GROUPDATA
     {
         bool bDeleted;

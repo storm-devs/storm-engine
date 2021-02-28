@@ -19,10 +19,10 @@ class ParticleSystem : public IParticleSystem
 
     std::vector<EmitterDesc> Emitters;
 
-    //Автоудаляемая система или обычная
+    // Auto-delete system or regular
     bool AutoDeleted;
 
-    // Не рождать новые партиклы !!!
+    // Do not emit new particles !!!
     bool EmissionPause;
 
     bool DeleteIfNeed();
@@ -41,28 +41,28 @@ class ParticleSystem : public IParticleSystem
     Matrix matWorld;
 
   public:
-    //Создание/удаление
+    // Create / delete
     ParticleSystem(ParticleManager *serv);
     bool Release() override;
 
-    //Отработать всем партиклам
+    // Execute all particles
     uint32_t Execute(float DeltaTime) override;
 
-    //Перезапустить партикловую систему
+    // Restart particle system
     void Restart(uint32_t RandomSeed) override;
 
-    //Запаузить испускание партиклов
+    // Pause particle emission
     void PauseEmission(bool bPause) override;
 
     void Stop() override;
-    //Узнать на паузе эмиссия или нет
+    // Find out whether emission is paused or not
     bool IsEmissionPaused() override;
 
-    //Установить автоудаляемая система или обычная...
+    // Set whether auto-delete system or regular ...
     void AutoDelete(bool Enabled) override;
-    //Узнаять автоудаляемая система или нет
+    // Find out if auto-delete system or not
     bool IsAutoDeleted() override;
-    //Установить матрицу трансформации для системы
+    // Set transformation matrix for system
     void SetTransform(const Matrix &transform) override;
     void GetTransform(Matrix &_matWorld) override;
 

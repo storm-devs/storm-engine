@@ -9,15 +9,15 @@ class IParticleSystem;
 class IEmitter
 {
   public:
-    // Конструктор / деструктор
+    // Constructor / destructor
     IEmitter(){};
 
     virtual ~IEmitter(){};
 
-    //Родить партиклы, используеться при движении привязанного эмиттера
+    // Spawn particles, used when the attached emitter moves
     virtual void BornParticles(float DeltaTime) = 0;
 
-    //Исполнить
+    // Execute
     virtual void Execute(float DeltaTime) = 0;
 
     virtual void Restart() = 0;
@@ -31,12 +31,12 @@ class IEmitter
 
     virtual const char *GetName() = 0;
 
-    //Если флаг в true емиттер не будет самостоятельно испускать партиклы
-    //так, как он привязан
+    // If the flag is set to true, the emitter will not emit particles by itself
+    // because it is attached
     virtual void SetAttachedFlag(bool Flag) = 0;
     virtual bool IsAttached() = 0;
 
-    //Запомнить/восстановить тек.время эмиттера
+    // Remember / restore current emitter time
     virtual float GetTime() = 0;
     virtual void SetTime(float Time) = 0;
 
@@ -49,7 +49,7 @@ class IEmitter
     virtual bool SetEnable(bool bVisible) = 0;
     virtual bool GetEnable() = 0;
 
-    //-1 если не нашли, иначе индекс
+    // -1 if not found, otherwise index
     virtual int GetParticleTypeIndex(FieldList *pFields) = 0;
     virtual bool SetParticleTypeEnable(bool bVisible, uint32_t Index) = 0;
     virtual bool GetParticleTypeEnable(uint32_t Index) = 0;

@@ -84,19 +84,19 @@ class LocationEffects : public Entity
         float ktime;
     };
 
-    //--------------------------------------------------------------------------------------------
-    // онструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     LocationEffects();
     virtual ~LocationEffects();
 
-    //»нициализаци€
+    // Initialization
     bool Init() override;
-    //»сполнение
+    // Execution
     void Execute(uint32_t delta_time);
     void Realize(uint32_t delta_time);
-    //—ообщени€
+    // Messages
     uint64_t ProcessMessage(MESSAGE &message) override;
 
     void ProcessStage(Stage stage, uint32_t delta) override
@@ -116,9 +116,9 @@ class LocationEffects : public Entity
         }
     }
 
-    //--------------------------------------------------------------------------------------------
-    //»нкапсул€ци€
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Encapsulation
+    // --------------------------------------------------------------------------------------------
   private:
     void DrawParticles(void *prts, long num, long size, long texture, const char *tech, bool isEx = false,
                        long numU = 0);
@@ -126,9 +126,9 @@ class LocationEffects : public Entity
   private:
     VDX9RENDER *rs;
 
-    //---------------------------------------------------
-    //Ѕрызги от персонажа
-    //---------------------------------------------------
+    // ---------------------------------------------------
+    // Ѕplashes from the character
+    // ---------------------------------------------------
     void CreateSplash(const CVECTOR &pos, float power);
     void ProcessedChrSplash(float dltTime);
 
@@ -136,9 +136,9 @@ class LocationEffects : public Entity
     long chrSplashRefCounter;
     long splashesTxt;
 
-    //---------------------------------------------------
-    //ћухи у фанарей
-    //---------------------------------------------------
+    // ---------------------------------------------------
+    // Flies near laterns
+    // ---------------------------------------------------
 
     void AddLampFlys(CVECTOR &pos);
     void ProcessedFlys(float dltTime);
@@ -150,9 +150,9 @@ class LocationEffects : public Entity
     long numFly;
     long flyTex;
 
-    //---------------------------------------------------
-    //ѕартиклы шотгана
-    //---------------------------------------------------
+    // ---------------------------------------------------
+    // Shotgun particles
+    // ---------------------------------------------------
     void SGInited();
     void SGRelease();
     void SGEnvPrt(const CVECTOR &pos, const CVECTOR &ndir);

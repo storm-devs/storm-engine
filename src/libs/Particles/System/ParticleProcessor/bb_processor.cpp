@@ -11,7 +11,7 @@
 #include "defines.h"
 #include "physic.h"
 
-//Сколько всего может быть плашек
+// How many billboards can there be
 #define MAX_BILLBOARDS 4096
 
 #define UV_TX1 0
@@ -20,9 +20,9 @@
 #define UV_TY2 1
 
 /*
-     Коэфицент лодирования партиклов, чем выше тем меньше нагрузка на Filrate
-   Должен быть > 0 !!!!!!
-     0.001 нет лодов .. 10000000 супер лоды (все партиклы в 1 пиксель)
+The coefficient of LOD-ing of particles, the higher the lower the load on Fillrate
+Must be > 0
+0.001 no lods .. 10000000 super lods (all particles in 1 pixel)
 */
 //=============================================================
 #define PLOD 5.0f
@@ -78,7 +78,7 @@ BillBoardProcessor::~BillBoardProcessor()
     pIBuffer = -1;
 }
 
-//"Выделить" память для хранения партикла
+// Allocate memory for particle storage
 BB_ParticleData *BillBoardProcessor::AllocParticle() const
 {
     for (uint32_t n = 0; n < MAX_BILLBOARDS; n++)
@@ -93,7 +93,7 @@ BB_ParticleData *BillBoardProcessor::AllocParticle() const
     return nullptr;
 }
 
-//"Убить" партикл
+// "Kill" the particle
 void BillBoardProcessor::FreeParticle(BB_ParticleData *pItem) const
 {
     for (uint32_t n = 0; n < MAX_BILLBOARDS; n++)
@@ -112,7 +112,7 @@ void BillBoardProcessor::AddParticle(ParticleSystem *pSystem, const Vector &velo
 {
     auto *pData = AllocParticle();
 
-    //Сработает если партиклов будет > MAX_BILLBOARDS, столько их быть не должно :))))
+    // It will work if there are particles > MAX_BILLBOARDS, there should not be so many of them
     if (!pData)
     {
         *(pActiveCount) = (*(pActiveCount)-1);
@@ -193,7 +193,7 @@ void BillBoardProcessor::AddParticle(ParticleSystem *pSystem, const Vector &velo
     Particles.push_back(pData);
 }
 
-//Считает физику, треки  и т.д.
+// Calculate physics, tracks, etc.
 void BillBoardProcessor::Process(float DeltaTime)
 {
     // DWORD t;
@@ -208,7 +208,7 @@ void BillBoardProcessor::Process(float DeltaTime)
 
         //		_mm_prefetch ((const char *)Particles[n+1], _MM_HINT_T0);
 
-        //Сразу убиваем дохлые...
+        // immediately kill the dead
         if (Time > LifeTime)
         {
             *(Particles[n]->ActiveCount) = (*(Particles[n]->ActiveCount) - 1);
@@ -268,7 +268,7 @@ void BillBoardProcessor::Process(float DeltaTime)
         Particles[n]->RenderAngle = Particles[n]->Angle;
     }
 
-    //Рождаем партиклы, которые привязанны к нашему партиклу...
+    // emit particles that are attached to our particle
 
     for (uint32_t n = 0; n < Particles.size(); n++)
     {
@@ -288,7 +288,7 @@ void BillBoardProcessor::Process(float DeltaTime)
     // core.Trace("Time - %d", t);
 }
 
-//Считает расстояние до билбоардов
+// Calculate distance to billboards
 uint32_t BillBoardProcessor::CalcDistanceToCamera()
 {
     uint32_t VisParticles = 0;
@@ -313,7 +313,7 @@ uint32_t BillBoardProcessor::CalcDistanceToCamera()
     return VisParticles;
 }
 
-//Функция сравнения при сортировке
+// Compare function when sorting
 BOOL BillBoardProcessor::CompareFunction(BB_ParticleData *e1, BB_ParticleData *e2)
 {
     if (e1->CamDistance > e2->CamDistance)
@@ -321,7 +321,7 @@ BOOL BillBoardProcessor::CompareFunction(BB_ParticleData *e1, BB_ParticleData *e
     return false;
 }
 
-//Рисует все плашки...
+// Draws all the billboards
 void BillBoardProcessor::Draw()
 {
     if (CalcDistanceToCamera() == 0)
@@ -377,8 +377,8 @@ void BillBoardProcessor::Draw()
         const auto &UV_WH1 = pR->Graph_UV->GetValue(FrameIndexLong);
         const auto &UV_WH2 = pR->Graph_UV->GetValue(FrameIndexLong + 1);
 
-        //Ограничитель максимального размера партиклов...
-        //=============================================================
+        // Maximum particle size limiter
+        // =============================================================
         auto SizeK = pR->CamDistance / fSize;
         if (SizeK < PLOD)
             fSize = pR->CamDistance / PLOD;

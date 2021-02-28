@@ -32,7 +32,7 @@ void ISLAND_DESCRIBER::SetIsland(ATTRIBUTES *pAIsland)
         return;
     m_bYesIsland = true;
     m_pIslandAttributes = pAIsland;
-    // создать список локаторов
+    // create a list of locators
     auto *pA = pAIsland->GetAttributeClass("reload");
     if (pA == nullptr)
         return;
@@ -42,7 +42,7 @@ void ISLAND_DESCRIBER::SetIsland(ATTRIBUTES *pAIsland)
     {
         throw std::exception("Can`t allocate memory");
     }
-    // пройтись по всем локаторам
+    // go through all locators
     ATTRIBUTES *pATmp;
     for (auto i = 0; i < m_nLocators; i++)
     {
@@ -211,7 +211,7 @@ ISLAND_DESCRIBER::LOCATOR_DESCR *ISLAND_DESCRIBER::FindLocator(LOCATOR_DESCR *p,
                 }
         break;
     }
-    // ничего не нашли
+    // found nothing
     m_lastFindIdx += nMax;
     return nullptr;
 }

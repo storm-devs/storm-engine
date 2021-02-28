@@ -257,7 +257,7 @@ void BICommandList::Init()
         if (pAList->GetAttribute("CommandNoteOffset"))
             sscanf(pAList->GetAttribute("CommandNoteOffset"), "%d,%d", &m_NoteOffset.x, &m_NoteOffset.y);
 
-        // Устанавливаем значения для стрелок (вверх/вниз)
+        // Setting values for arrows (up / down)
         if (attr = pAList->GetAttribute("UDArrow_Texture"))
             m_sUpDownArrowTexture = attr;
         BIUtils::ReadRectFromAttr(pAList, "UDArrow_UV_Up", m_frUpArrowUV, m_frUpArrowUV);
@@ -269,7 +269,7 @@ void BICommandList::Init()
         BIUtils::ReadPosFromAttr(pAList, "UDArrow_Offset_Down", m_pntDownArrowOffset.x, m_pntDownArrowOffset.y,
                                  m_pntDownArrowOffset.x, m_pntDownArrowOffset.y);
 
-        // устанавливаем значения для иконки активности меню
+        // set values for the menu activity icon
         if (attr = pAList->GetAttribute("ActiveIcon_Texture"))
             m_sActiveIconTexture = attr;
         BIUtils::ReadPosFromAttr(pAList, "ActiveIcon_Offset", m_pntActiveIconOffset.x, m_pntActiveIconOffset.y,
@@ -319,7 +319,7 @@ long BICommandList::AddToIconList(long nTextureNum, long nNormPictureNum, long n
                                   const char *pcLocName, const char *pcNoteName)
 {
     long n;
-    // отсев уже подключенных объектов
+    // filtering out already used objects
     for (n = 0; n < m_aUsedCommand.size(); n++)
     {
         if (nCharacterIndex != -1 && m_aUsedCommand[n].nCharIndex == nCharacterIndex)
@@ -517,7 +517,7 @@ void BICommandList::UpdateShowIcon()
         }
     }
 
-    // добавляем нижние/верхние стрелки для списка команд
+    // add bottom / top arrows for the command list
     if (m_bUpArrow)
     {
         rPos.left = m_LeftTopPoint.x + m_pntUpArrowOffset.x;

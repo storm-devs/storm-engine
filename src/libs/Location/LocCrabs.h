@@ -17,11 +17,11 @@ class LocCrabs : public Entity
     virtual ~LocCrabs();
     //--------------------------------------------------------------------------------------------
   public:
-    //Инициализация
+    // Initialization
     bool Init() override;
-    //Исполнение
+    // Execution
     void Execute(uint32_t delta_time);
-    //Рисование
+    // Drawing
     void Realize(uint32_t delta_time);
 
     void ProcessStage(Stage stage, uint32_t delta) override
@@ -41,7 +41,7 @@ class LocCrabs : public Entity
         }
     }
 
-    //Сообщения
+    // Messages
     uint64_t ProcessMessage(MESSAGE &message) override;
 
     //--------------------------------------------------------------------------------------------

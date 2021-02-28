@@ -22,21 +22,21 @@ class NPCharacter : public AICharacter
     {
         npct_unknow = 0,
         npct_none,
-        //Нет задачи, персонаж контролируется извне
+        // No task, the character is controlled from the outside
         npct_stay,
-        //Стоять на месте
+        // Stand still
         npct_gotopoint,
-        //Идти в точку
+        // Go to the point
         npct_runtopoint,
-        //Бежать в точку
+        // Run to the point
         npct_followcharacter,
-        //Идти за перcонажем
+        // Follow the character
         npct_fight,
-        //Сражаться с другим персонажем
+        // Fight another character
         npct_escape,
-        //Уходить от персонажа
+        // Leave the character
         npct_dead,
-        //Смерть персонажа
+        // Death of a character
         npct_max
     };
 
@@ -60,15 +60,15 @@ class NPCharacter : public AICharacter
 
     struct EnemyState
     {
-        NPCharacter *chr; //Указатель на врага
-        float look;       //Направление врага к нам (cos)
-        float dir;        //Расположение врага относительно нас (cos)
-        float state;      //Коэфициент состояния врага
+        NPCharacter *chr; // Pointer to the enemy
+        float look;       // Enemy direction towards us (cos)
+        float dir;        // The location of the enemy relative to us (cos)
+        float state;      // Enemy Condition Coefficient
     };
 
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     NPCharacter();
     virtual ~NPCharacter();
@@ -83,117 +83,117 @@ class NPCharacter : public AICharacter
     //
     //--------------------------------------------------------------------------------------------
   public:
-    //Получить атакуещего персонажа
+    // Get attacking character
     Character *GetAttackedCharacter() const;
 
-    //--------------------------------------------------------------------------------------------
-    //Задачи
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Tasks
+    // --------------------------------------------------------------------------------------------
 
-    //Установить новую задачу
+    // Set a new task
     bool SetNewTask(NPCTask tsk, MESSAGE &message);
 
     bool InitFollowChartacter(entid_t eid);
     bool InitFightChartacter(entid_t eid);
 
-    //--------------------------------------------------------------------------------------------
-    //Исполнение задач
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Executing tasks
+    // --------------------------------------------------------------------------------------------
   protected:
-    //Выполнение задачи следования за персонажем
+    // Completing the task of following a character
     void UpdateFollowCharacter(float dltTime);
-    //Выполнение задачи убегания
+    // Execution of the escape task
     void UpdateEscapeCharacter(float dltTime);
-    //Выполнение задачи следования за персонажем
+    // Completing the task of fighting a character
     void UpdateFightCharacter(float dltTime);
 
-    //Бой
-    //Поведение в бою
+    // The fight
+    // Combat behavior
     void DoFightAction(float dltTime, NPCharacter *enemy);
-    //Поведение в бою - idle
+    // Combat behavior - idle
     void DoFightActionAnalysisNone(float dltTime, NPCharacter *enemy);
-    //Поведение в бою - attack
+    // Combat behavior - attack
     void DoFightAttack(Character *enemy, long enemyCounter, bool wishDefence);
-    //Поведение в бою - block, parry
+    // Combat behavior - block, parry
     void DoFightBlock(bool needParry = false);
 
-    //Получить энергию
+    // Get energy
     float GetEnergy() const;
-    //Получить энергию для действия
+    // Get energy for action
     float GetActEnergy(const char *act) const;
 
-    //События
+    // Events
 
-    //Невозможно дальнейшее выполнение команды
+    // Cannot further execute the command
     void FailureCommand() override;
-    //Персонаж прибыл в точку
+    // The character arrived at the point
     void EndGotoCommand() override;
-    //Персонаж удалился от точки на необходимый радиус
+    // The character moved away from the point to the required radius
     void EndEscapeCommand() override;
-    //С персонажем слишком часто коллизяться
+    // colliding with a character too often
     void CollisionThreshold() override;
 
     void HitChild(bool isInBlock) override;
 
-    //Сохранить задачу в стеке
+    // Save task on stack
     bool PushTask();
-    //Востоновить задачу из стека
+    // Retrieve a task from the stack
     bool PopTask();
 
-    //--------------------------------------------------------------------------------------------
-    //Инкапсуляция
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Encapsulation
+    // --------------------------------------------------------------------------------------------
   private:
-    //Невозможно дальнейшее выполнение команды
+    // Cannot further execute the command
     void FailureCommand(NPCTask task) const;
-    //Принятие решений
+    // Making decisions
     void FightTick();
-    //Получить тип задачи по имени
+    // Get task type by name
     static NPCTask GetTaskID(const char *taskName);
-    //Получить имя задачи по типу
+    // Get task name by type
     static const char *GetTaskName(NPCTask t);
-    //Проверить событие
+    // Check event
     static bool PrTest(float probability, float &testTime);
     static bool PrTest(float probability);
 
   protected:
-    Task task;           //Задача, которую надо исполнять
-    NPCTask lastSetTask; //Последняя установленная задача
+    Task task;           // The task to be performed
+    NPCTask lastSetTask; // Last task set
   private:
-    Task taskstack[16]; //Стек задач
-    long stackPointer;  //Указатель стека
+    Task taskstack[16]; // Task stack
+    long stackPointer;  // Stack pointer
 
-    //Объект групп
+    // Groups object
     entid_t charactersGroups;
 
-    //Система боя
-    float fightLevel; //Уровень поведения в бою 0..1
+    // Fight system
+    float fightLevel; // Behavior level in combat 0..1
 
-    //Атаки
-    float attackCur;      //Скорость нарастания вероятности атаки, в попугаях
-    float attackPrbFast;  //Вероятность fgt_attack_fast
-    float attackPrbForce; //Вероятность fgt_attack_force
-    float attackPrbRound; //Вероятность fgt_attack_round
-    float attackPrbBreak; //Вероятность fgt_attack_break
-    float attackPrbFeint; //Вероятность fgt_attack_feint
+    // Attacks
+    float attackCur;      // The rate of increase in the probability of attack, in parrots
+    float attackPrbFast;  // fgt_attack_fast probability
+    float attackPrbForce; // fgt_attack_force probability
+    float attackPrbRound; // fgt_attack_round probability
+    float attackPrbBreak; // fgt_attack_break probability
+    float attackPrbFeint; // fgt_attack_feint probability
 
-    //Защита
-    float defenceCur; //Скорость нарастания вероятности блока, в попугаях
-    float blockTime;  //Время блока
-    float defencePrbBlock; //Вероятность fgt_block
-    float defencePrbParry; //Вероятность fgt_parry
-    bool isRecoilEnable;   //Разрешён ли отскок
+    // Defence
+    float defenceCur; // Rate of rise of block probability, in parrots
+    float blockTime;  // Block time
+    float defencePrbBlock; // fgt_block probability
+    float defencePrbParry; // fgt_parry probability
+    bool isRecoilEnable;   // Is a rebound allowed?
 
-    //Стрельба
-    float fireCur; //Скорость нарастания вероятности выстрела, в попугаях
-    bool isFireEnable; //Разрешён ли выстрел
+    // Shooting
+    float fireCur; // The rate of rise of the probability of a shot, in parrots
+    bool isFireEnable; // Is the shot allowed
 
-    float fightTick;    //Время до следующего тика принятия решений
-    bool wantToAttack;  //Желание атаковать
-    bool wantToDefence; //Желание защитится
-    bool wantToFire;    //Желание выстрелить
+    float fightTick;    // Time until the next decision tick
+    bool wantToAttack;  // Desire to attack
+    bool wantToDefence; // Desire to defend
+    bool wantToFire;    // Desire to shoot
 
-    //Текущее состояние противника
+    // The current state of the enemy
     bool isFgtChanged;
     FightAction enemyFgtType;
 
@@ -206,7 +206,7 @@ class NPCharacter : public AICharacter
     void SetEscapeTask(Character *c);
 };
 
-//Получить атакуещего персонажа
+// Get attacking character
 inline Character *NPCharacter::GetAttackedCharacter() const
 {
     if (task.task != npct_fight)
@@ -214,7 +214,7 @@ inline Character *NPCharacter::GetAttackedCharacter() const
     return static_cast<Character *>(EntityManager::GetEntityPointer(task.target));
 }
 
-//Проверить событие
+// Check event
 inline bool NPCharacter::PrTest(float probability, float &testTime)
 {
     if (testTime < 1.0f / 5.0f)
@@ -226,7 +226,7 @@ inline bool NPCharacter::PrTest(float probability, float &testTime)
     return r < probability;
 }
 
-//Проверить событие
+// Check event
 inline bool NPCharacter::PrTest(float probability)
 {
     const auto r = rand() * (1.0f / RAND_MAX);

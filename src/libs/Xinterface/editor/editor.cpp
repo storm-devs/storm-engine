@@ -134,10 +134,10 @@ bool GIEditor::ProcessControl()
 
     auto bMove = false;
     auto bSize = false;
-    if (core.Controls->GetDebugAsyncKeyState(VK_CONTROL) < 0) // двигаем
+    if (core.Controls->GetDebugAsyncKeyState(VK_CONTROL) < 0) // moving
     {
         bMove = true;
-        if (core.Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0) // меняем размер
+        if (core.Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0) // change the size
         {
             bMove = false;
             bSize = true;
@@ -262,7 +262,7 @@ void GIEditor::DrawSizeBox() const
 {
     if (!m_pEditableNode)
         return;
-    if (core.Controls->GetDebugAsyncKeyState(VK_CONTROL) < 0) // показываем
+    if (core.Controls->GetDebugAsyncKeyState(VK_CONTROL) < 0) // showing
     {
         RS_LINE rsl[8];
         for (long n = 0; n < 8; n++)

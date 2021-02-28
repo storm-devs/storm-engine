@@ -6,7 +6,7 @@
 
 #define GUIDSTEP 256
 
-//“ипы дл€ эмитеров
+// Types for emitters
 enum EmitterType
 {
     POINT_EMITTER = 0,
@@ -14,7 +14,7 @@ enum EmitterType
     UNKNOWN_EMITTER = 0x7fffffff
 };
 
-//“ипы дл€ партиклов
+// Types for particles
 enum ParticleType
 {
     BILLBOARD_PARTICLE = 1,
@@ -23,7 +23,7 @@ enum ParticleType
     UNKNOWN_PARTICLE = 0x7fffffff
 };
 
-//“ипы полей
+// Field types
 enum FieldType
 {
     FIELD_UNKNOWN = 0,

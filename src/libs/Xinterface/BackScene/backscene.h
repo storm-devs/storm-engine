@@ -165,7 +165,7 @@ class InterfaceBackScene : public Entity
 
     std::vector<AniModelDescr *> m_apAniModel;
 
-    // муха - перелетная птица!
+    // a fly is a migratory bird!
     struct Particle
     {
         CVECTOR pos;

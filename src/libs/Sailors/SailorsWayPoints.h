@@ -31,10 +31,10 @@ enum PointType
 //-----------------------------------------------------------------------------------------------
 struct Path
 {
-    uint8_t length;            // Длина цепочки (кол-во элементов)
-    float min;                 // Значение пути
-    uint8_t point[MAX_POINTS]; // Последовательность обхода
-    int currentPointPosition;  // Текущее положение в пути
+    uint8_t length;            // path length (number of elements)
+    float min;                 // Path value
+    uint8_t point[MAX_POINTS]; // Walking sequence
+    int currentPointPosition;  // Current position on the way
 
     Path()
     {
@@ -80,7 +80,7 @@ struct Point
     bool disabled;
     bool cannonReloaded;
 
-    int climbPosition; //Если на мачте более одного человека
+    int climbPosition; // If there is more than one person on the mast
 
     Point()
     {
@@ -123,10 +123,10 @@ struct Points
 class SailorsPoints
 {
   private:
-    bool PointsPassed[MAX_POINTS]; // tmp отметка пройденных точек(для поиска пути)
-    float matrix[MAX_POINTS][MAX_POINTS]; // Матрица для быстрого поиска пути
+    bool PointsPassed[MAX_POINTS]; // tmp mark of passed points (for finding a path)
+    float matrix[MAX_POINTS][MAX_POINTS]; // Matrix for fast path finding
 
-    Path getPath(int src, int dst, int l); // Поиск пути
+    Path getPath(int src, int dst, int l); // Finding a way
 
   public:
     Points points;
@@ -136,9 +136,9 @@ class SailorsPoints
     void Draw_(VDX9RENDER *rs, bool pointmode);
     void DrawLinks(VDX9RENDER *rs);
 
-    Path findPath(Path &path, int from, int to); // Посчитать путь
+    Path findPath(Path &path, int from, int to); // Calculate the path
 
-    void UpdateLinks(); //Обновить матрицу поиска пути
+    void UpdateLinks(); // Refresh pathfinder matrix
 
     int WriteToFile(std::string fileName);
     int ReadFromFile(std::string fileName);

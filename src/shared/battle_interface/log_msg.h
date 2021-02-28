@@ -7,5 +7,5 @@
 #define LOG_AND_ACTIONS_CHANGE 45026 // "l"
 #define LI_SET_VISIBLE 45027         // "l"
 #define LI_CLEAR_STRINGS 45028       // ""
-// "s..." для разных сообщений "SetTimeScale", float fScale
+// "s..." for different messages "SetTimeScale", float fScale
 #define LI_OTHER_MSG 45029

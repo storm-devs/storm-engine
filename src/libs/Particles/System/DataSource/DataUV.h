@@ -14,17 +14,17 @@ class DataUV
     std::vector<Vector4> Frames;
 
   public:
-    //конструктор/деструктор
+    // constructor / destructor
     DataUV();
     virtual ~DataUV();
 
-    //Получить значение   [ x,y = UV1; z,w = UV2 ]
+    // Get the value [x, y = UV1; z, w = UV2]
     const Vector4 &GetValue(uint32_t FrameNum);
 
-    //Установить значения
+    // Set values
     void SetValues(const Vector4 *_Frames, uint32_t FramesCount);
 
-    //Получить кол-во кадров
+    // Get the number of frames
     uint32_t GetFrameCount() const;
 
     void Load(MemFile *File);

@@ -15,10 +15,10 @@
 #include "model.h"
 #include "vmodule_api.h"
 
-#define BLOTS_NTRGS 32    //Треугольников в 1 пятне
-#define BLOTS_MAX 256     //Всего пятен
-#define BLOTS_TIME 120.0f //Время жизни пятна
-#define BLOTS_DIST 150.0f //Дистанция видимости в метрах
+#define BLOTS_NTRGS 32    // Triangles in 1 blot
+#define BLOTS_MAX 256     // Total blots
+#define BLOTS_TIME 120.0f // Blot lifetime
+#define BLOTS_DIST 150.0f // Distance of visibility in meters
 
 class Blots : public Entity
 {
@@ -27,11 +27,11 @@ class Blots : public Entity
 
     struct Blot
     {
-        uint8_t isUsed;    //Используеться ли это
-        uint8_t lastAlpha; //Последние значение альфы
-        uint16_t numTrgs;  //Количество треугольников
-        float liveTime;    //Время жизни
-        long startIndex;   //Начальный индекс в массиве
+        uint8_t isUsed;    // Is it used
+        uint8_t lastAlpha; // Latest alpha value
+        uint16_t numTrgs;  // Number of triangles
+        float liveTime;    // Lifetime
+        long startIndex;   // Starting index in the array
         long rnd;
         CVECTOR pos, dir;
     };
@@ -45,16 +45,16 @@ class Blots : public Entity
 
 #pragma pack(pop)
 
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     Blots();
     virtual ~Blots();
 
-    //Инициализация
+    // Initialization
     bool Init();
-    //Сообщения
+    // Messages
     uint64_t ProcessMessage(MESSAGE &message);
 
     void ProcessStage(Stage stage, uint32_t delta) override
@@ -73,22 +73,22 @@ class Blots : public Entity
         }
     }
 
-    //Работа
+    // Work
     void Realize(uint32_t delta_time);
 
-    //--------------------------------------------------------------------------------------------
-    //Инкапсуляция
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Encapsulation
+    // --------------------------------------------------------------------------------------------
   private:
-    //Отметить поподиние
+    // Register a hit
     void Hit(MESSAGE &message);
-    //Добавить пятно
+    // Add a blot
     void AddBlot(long i, long rnd, const CVECTOR &pos, const CVECTOR &dir, float time);
     //
     void SetNodesCollision(NODE *n, bool isSet);
-    //Сохранить параметры пятна
+    // Save blot parameters
     void SaveBlot(long i);
-    //Загрузить параметры пятна
+    // Load blot parameters
     void LoadBlot(long i);
 
   private:

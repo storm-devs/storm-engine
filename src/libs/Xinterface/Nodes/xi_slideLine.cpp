@@ -199,7 +199,7 @@ uint32_t CXI_SLIDELINE::MessageProc(long msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
-    case 0: // ”становить слайд на новое значение
+    case 0: // Set slide to new value
     {
         SetNewValue(static_cast<long>(message.Float() * m_nGrateQuantity));
     }
@@ -219,7 +219,7 @@ uint32_t CXI_SLIDELINE::MessageProc(long msgcode, MESSAGE &message)
         }
     }
     break;
-    case 2: // ”становить слайд на конкретное значение
+    case 2: // Set the slide to a specific value
     {
         SetNewValue(message.Long());
     }

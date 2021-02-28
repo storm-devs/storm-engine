@@ -39,7 +39,7 @@ void CXI_ToolTip::Draw()
     if (m_bDisableDraw)
         return;
     if (m_sText.empty())
-        return; // нет ни ... чего
+        return; // there is nothing
 
     if (m_nSquareQ > 0)
     {
@@ -270,7 +270,7 @@ void CXI_ToolTip::ReplaceRectangle(long x, long y)
     if (bottom < m_rActiveZone.bottom)
         bottom = m_rActiveZone.bottom;
 
-    // можем ли мы вывести инфу ниже контролки
+    // can we display info below the control?
     if (m_pntScreenSize.y - bottom >= m_nUseHeight)
     {
         m_rPos.top = bottom;
@@ -278,20 +278,20 @@ void CXI_ToolTip::ReplaceRectangle(long x, long y)
     }
     else
     {
-        if (top >= m_nUseHeight) // умещается вверху
+        if (top >= m_nUseHeight) // fits at the top
         {
             m_rPos.bottom = top;
             m_rPos.top = m_rPos.bottom - m_nUseHeight;
         }
         else
         {
-            // все равно внизу
+            // put below anyway
             m_rPos.top = bottom;
             m_rPos.bottom = m_rPos.top + m_nUseHeight;
         }
     }
 
-    // горизонтальные координаты
+    // horizontal coordinates
     m_rPos.right = x + m_nUseWidth + m_nXRectangleOffset;
     if (m_rPos.right > m_pntScreenSize.x)
         m_rPos.right = m_pntScreenSize.x;

@@ -45,14 +45,14 @@ uint64_t PARTICLES::ProcessMessage(MESSAGE &message)
 
     switch (code)
     {
-        //Поставить все партиклы на паузу
-        // новые не пауженные рождаются...
+        // Pause all particles
+        // new not paused ones are emitted ...
     case PS_PAUSEALL: {
         PauseAllActive(message.Long() != 0);
         break;
     }
 
-        //Удалить конкретную систему
+        // Delete a specific system
     case PS_DELETE: {
         DeleteSystem(message.Long());
         break;
@@ -71,12 +71,12 @@ uint64_t PARTICLES::ProcessMessage(MESSAGE &message)
         break;
     }
 
-        //Удалить все
+        // delete everything
     case PS_CLEARALL: {
         DeleteAll();
         break;
     }
-        //создать систему (string имя, float x,y,z позиция, float rx, ry, rz вращение, float life_time время жизни)
+        // create system (string name, float x, y, z position, float rx, ry, rz rotation, float life_time lifetime)
     case PS_CREATE_RIC: {
         message.String(sizeof(ps_name), ps_name);
         pos.x = message.Float();
@@ -103,7 +103,7 @@ uint64_t PARTICLES::ProcessMessage(MESSAGE &message)
         throw std::exception("Unsupported particle manager command !!!");
     }
 
-        //создать систему
+        // create a system
     case PS_CREATE: {
         message.String(sizeof(ps_name), ps_name);
         pos.x = message.Float();
@@ -126,7 +126,7 @@ uint64_t PARTICLES::ProcessMessage(MESSAGE &message)
 
         break;
     }
-        //создать систему
+        // create a system
     case PS_CREATEX: {
         message.String(sizeof(ps_name), ps_name);
         pos.x = message.Float();
@@ -285,8 +285,8 @@ void PARTICLES::Realize(uint32_t Delta_Time)
     const float fDeltaTime = static_cast<float>(Delta_Time) * 0.001f;
     pManager->Execute(fDeltaTime);
 
-    //Если время, ставим эмитирование на паузу
-    // когда все партиклы умрут система удалиться сама...
+    // If it's time, pause emission
+    // when all particles die, the system will retire by itself ...
     for (uint32_t n = 0; n < CreatedSystems.size(); n++)
     {
         CreatedSystems[n].PassedTime += Delta_Time;
@@ -301,7 +301,7 @@ void PARTICLES::Realize(uint32_t Delta_Time)
         }
     }
 
-    //Удаляем умершие системы...
+    // Removing dead systems ...
     for (uint32_t n = 0; n < CreatedSystems.size(); n++)
     {
         if (!CreatedSystems[n].pSystem->GetSystem()->IsAlive())

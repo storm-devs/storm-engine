@@ -13,9 +13,9 @@
 #include "core.h"
 
 #include "Entity.h"
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 Lighter::Lighter()
 {
@@ -29,10 +29,10 @@ Lighter::~Lighter()
 {
 }
 
-//Инициализация
+// Initialization
 bool Lighter::Init()
 {
-    //Проверяем, будем ли работать
+    // Checking if ini file exists
     auto *ini = fio->OpenIniFile("resource\\ini\\loclighter.ini");
     if (!ini)
         return false;
@@ -55,14 +55,14 @@ bool Lighter::Init()
     EntityManager::AddToLayer(LIGHTER_REALIZE, GetId(), 1000);
     //
     lightProcessor.SetParams(&geometry, &window, &lights, &octTree, rs);
-    //оконная система
+    // window system
     if (!window.Init(rs))
         return false;
 
     return true;
 }
 
-//Исполнение
+// Execution
 void Lighter::Execute(uint32_t delta_time)
 {
     const auto dltTime = delta_time * 0.001f;
@@ -107,8 +107,8 @@ void Lighter::Execute(uint32_t delta_time)
 
 void Lighter::PreparingData()
 {
-    //Освещение
-    //Рассеяное
+    // Lighting
+    // Scattered
     auto amb = 0xff404040;
     rs->GetRenderState(D3DRS_AMBIENT, &amb);
     CVECTOR clr;
@@ -122,7 +122,7 @@ void Lighter::PreparingData()
     else
         clr = 1.0f;
     lights.AddAmbient(clr);
-    //Солнце
+    // The sun
     if (rs)
     {
         auto isLight = FALSE;
@@ -150,16 +150,16 @@ void Lighter::PreparingData()
         }
     }
     lights.PostInit();
-    //Геометрия
+    // Geometry
     if (!geometry.Process(rs, lights.Num()))
     {
         window.isFailedInit = true;
         return;
     }
     octTree.Init(&geometry);
-    //Освещалка
+    // Lighting
     lightProcessor.UpdateLightsParam();
-    //Интерфейс
+    // Interface
     window.InitList(lights);
     window.isTraceShadows = autoTrace;
     window.isSmoothShadows = autoSmooth;
@@ -177,7 +177,7 @@ void Lighter::Realize(uint32_t delta_time)
     window.Draw(delta_time * 0.001f);
 }
 
-//Сообщения
+// Messages
 uint64_t Lighter::ProcessMessage(MESSAGE &message)
 {
     char command[32];
@@ -185,25 +185,25 @@ uint64_t Lighter::ProcessMessage(MESSAGE &message)
     command[31] = 0;
     if (_stricmp(command, "AddModel") == 0)
     {
-        //Добавляем модельку
+        // Adding the model
         MsgAddModel(message);
         return true;
     }
     if (_stricmp(command, "ModelsPath") == 0)
     {
-        //Добавляем модельку
+        // Adding the model
         MsgModelsPath(message);
         return true;
     }
     if (_stricmp(command, "LightPath") == 0)
     {
-        //Добавляем модельку
+        // Adding the model
         MsgLightPath(message);
         return true;
     }
     if (_stricmp(command, "AddLight") == 0)
     {
-        //Добавляем модельку
+        // Adding the model
         MsgAddLight(message);
         return true;
     }
@@ -243,24 +243,24 @@ void Lighter::MsgLightPath(MESSAGE &message)
 void Lighter::MsgAddLight(MESSAGE &message)
 {
     CVECTOR pos, clr;
-    //Позиция
+    // Position
     pos.x = message.Float();
     pos.y = message.Float();
     pos.z = message.Float();
-    //Цвет
+    // Colour
     clr.x = message.Float();
     clr.y = message.Float();
     clr.z = message.Float();
-    //Затухание
+    // Attenuation
     const auto att0 = message.Float();
     const auto att1 = message.Float();
     const auto att2 = message.Float();
-    //Дистанция
+    // Distance
     const auto range = message.Float();
-    //Имя группы
+    // Group name
     char group[512];
     message.String(511, group);
     group[511] = 0;
-    //Добавляем источник
+    // Add source
     lights.AddPointLight(clr, pos, att0, att1, att2, range, group);
 }

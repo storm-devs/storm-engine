@@ -14,9 +14,9 @@
 #define LIGHTPRC_SMOOTH_NUM 1000
 #define LIGHTPRC_BLUR_NUM 500
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 LightProcessor::LightProcessor()
 {
@@ -53,7 +53,7 @@ void LightProcessor::Process()
             shadowTriangle = -1;
         if (shadowTriangle == -1)
         {
-            //Нормализуем результат
+            // Normalizing the result
             auto *const vrt = geometry->vrt.data();
             const auto numVrt = geometry->numVrt;
             const auto numLights = lights->Num();
@@ -72,7 +72,7 @@ void LightProcessor::Process()
                     vrt[i].shadow[j].sm = vrt[i].shadow[j].v;
                 }
             }
-            //Указываем что закончили
+            // indicate that finished
             window->isLockCtrl = false;
             window->tracePrc = 1.0f;
             CalcLights();
@@ -84,7 +84,7 @@ void LightProcessor::Process()
         SmoothShadows();
         if (smoothVertex == -1)
         {
-            //Указываем что закончили
+            // indicate that finished
             window->isLockCtrl = false;
             window->smoothPrc = 1.0f;
             CalcLights();
@@ -100,7 +100,7 @@ void LightProcessor::Process()
         BlurLight();
         if (blurVertex == -1)
         {
-            //Указываем что закончили
+            // indicate that finished
             window->isLockCtrl = false;
             window->blurPrc = 1.0f;
             CalcLights();
@@ -113,12 +113,12 @@ void LightProcessor::Process()
     }
     if (window->isTraceShadows)
     {
-        //Подготавливаем
+        // prepare
         shadowTriangle = 0;
         window->isTraceShadows = false;
         window->isLockCtrl = true;
         window->tracePrc = 0.0f;
-        //Сбрасываем состояние цветов
+        // Resetting the color state
         auto *const vrt = geometry->vrt.data();
         const auto numVrt = geometry->numVrt;
         const auto numLights = lights->Num();
@@ -204,7 +204,7 @@ void LightProcessor::UpdateLightsParam()
                 swh.att = 1.0f;
                 break;
             case Light::t_point:
-                //Косинус угла
+                // Cosine of an angle
                 nrm = lt.p - v.p;
                 dst = sqrtf(~nrm);
                 if (dst > 0.0f)
@@ -217,7 +217,7 @@ void LightProcessor::UpdateLightsParam()
                 if (cs < 0.0f)
                     cs = 0.0f;
                 swh.cs = cs;
-                //Коэфициент затухания
+                // Attenuation coefficient
                 if (dst < lt.range)
                 {
                     att = lt.att0 + dst * lt.att1 + dst * dst * lt.att2;
@@ -239,17 +239,17 @@ void LightProcessor::UpdateLightsParam()
     }
 }
 
-//Расчитать затенения
+// Calculate shading
 void LightProcessor::CalcShadows()
 {
-    //Вычисляем затенения
+    // Calculating shading
     for (long i = 0; i < LIGHTPRC_TRACE_NUM && shadowTriangle < geometry->numTrg; i++, shadowTriangle++)
         ApplyTriangleShadows(geometry->trg[shadowTriangle]);
     if (shadowTriangle == geometry->numTrg)
         shadowTriangle = -1;
 }
 
-//Распределить затенение с треугольника на вершины
+// Distribute shading from triangle to vertices
 void LightProcessor::ApplyTriangleShadows(Triangle &t)
 {
     auto &ls = *lights;
@@ -257,21 +257,21 @@ void LightProcessor::ApplyTriangleShadows(Triangle &t)
     auto *const vrt = geometry->vrt.data();
     for (long i = 0; i < num; i++)
     {
-        //Нужно ли трейсить
+        // need to trace?
         if (ls[i].type == Light::t_none || ls[i].type == Light::t_amb)
             continue;
-        //Коэфициент нормирования
+        // Standardization coefficient
         vrt[t.i[0]].shadow[i].nrm += t.sq;
         vrt[t.i[1]].shadow[i].nrm += t.sq;
         vrt[t.i[2]].shadow[i].nrm += t.sq;
-        //Точка откуда трейсить
+        // Point from where to trace
         auto pnt = (vrt[t.i[0]].p + vrt[t.i[1]].p + vrt[t.i[2]].p) / 3.0f;
         pnt += t.n * 0.001f;
-        //Определяем затенённость
+        // Determining shading
         switch (ls[i].type)
         {
         case Light::t_sun:
-            //Освещение от солнца
+            // Sun lighting
             if ((ls[i].p | t.n) >= 0.0f)
             {
                 if (geometry->Trace(pnt, pnt + ls[i].p * geometry->radius) > 1.0f)
@@ -283,7 +283,7 @@ void LightProcessor::ApplyTriangleShadows(Triangle &t)
             }
             break;
         case Light::t_sky:
-            //Освещение от неба
+            // Lighting from the sky
             if (t.n.y >= 0.0f)
             {
                 float sky = 0.0;
@@ -306,7 +306,7 @@ void LightProcessor::ApplyTriangleShadows(Triangle &t)
             }
             break;
         case Light::t_point:
-            //Освещение от солнца
+            // Sun lighting
             if (((ls[i].p - pnt) | t.n) >= 0.0f)
             {
                 if (geometry->Trace(pnt, ls[i].p) > 1.0f)
@@ -325,7 +325,7 @@ void LightProcessor::ApplyTriangleShadows(Triangle &t)
     }
 }
 
-//Сгладить затенённость
+// Smooth shading
 void LightProcessor::SmoothShadows()
 {
     const auto lookNorm = window->smoothNorm;
@@ -338,7 +338,7 @@ void LightProcessor::SmoothShadows()
     for (long i = 0; i < LIGHTPRC_SMOOTH_NUM && smoothVertex < geometry->numVrt; i++, smoothVertex++)
     {
         auto &v = vrt[smoothVertex];
-        //Ищем окружающие вершины
+        // Looking for surrounding vertices
         octtree->FindVerts(v.p, smoothRad);
         auto *const verts = octtree->verts.data();
         const auto numVerts = octtree->numVerts;
@@ -368,14 +368,14 @@ void LightProcessor::SmoothShadows()
             if (k >= numV) core.Trace("k >= numV");
           }
         }*/
-        //		Assert(numVerts > 0);
-        //Проходимся по всем источникам
+        // Assert(numVerts > 0);
+        // go through all the sources
         for (long n = 0; n < num; n++)
         {
-            //Обнуляем
+            // Set to zero
             auto sm = 0.0;
             double kNorm = 0.0f;
-            //По всем вершинам
+            // All the vertices
             for (long j = 0; j < numVerts; j++)
             {
                 if (lookNorm && (v.n | verts[j].v->n) <= 0.6f)
@@ -400,7 +400,7 @@ void LightProcessor::SmoothShadows()
         smoothVertex = -1;
 }
 
-//Сгладить освещение
+// Smooth lighting
 void LightProcessor::BlurLight()
 {
     auto isTrace = window->isTraceBlur;
@@ -415,7 +415,7 @@ void LightProcessor::BlurLight()
     for (long i = 0; i < LIGHTPRC_BLUR_NUM && blurVertex < numVrt; i++, blurVertex++)
     {
         auto &v = vrt[blurVertex];
-        //Ищем окружающие вершины
+        // Looking for surrounding vertices
         octtree->FindVerts(v.p, blurRad);
         auto *verts = octtree->verts.data();
         auto numVerts = octtree->numVerts;
@@ -427,7 +427,7 @@ void LightProcessor::BlurLight()
             step = 1;
         step = 1;
         auto r = 0.0, g = 0.0, b = 0.0, sum = 0.0;
-        //По всем вершинам
+        // All the vertices
         for (long j = 0; j < numVerts; j += step)
         {
             auto &vs = *verts[j].v;
@@ -490,7 +490,7 @@ void LightProcessor::BlurLight()
         blurVertex = -1;
 }
 
-//Расчитать освещение
+// Calculate lighting
 void LightProcessor::CalcLights(long lit, bool isCos, bool isAtt, bool isSdw)
 {
     lights->UpdateLights(lit);
@@ -535,12 +535,12 @@ void LightProcessor::CalcLights(long lit, bool isCos, bool isAtt, bool isSdw)
                 c += shw.c;
                 break;
             case Light::t_sun:
-                //Косинус угла
+                // Cosine of an angle
                 if (isCos)
                 {
                     shw.csatt = lt.cosine * shw.cs + (1.0f - lt.cosine);
                 }
-                //Коэфициент затенения
+                // Shading coefficient
                 if (isSdw)
                 {
                     vl = (v.shadow[i].sm - 0.5) * lt.curct + 0.5;
@@ -555,17 +555,17 @@ void LightProcessor::CalcLights(long lit, bool isCos, bool isAtt, bool isSdw)
                         sw = 1.0f;
                     shw.shw = lt.shadow * sw + (1.0f - lt.shadow);
                 }
-                //Результирующий цвет
+                // Resulting color
                 shw.c = lt.color * (shw.csatt * shw.shw);
                 c += shw.c;
                 break;
             case Light::t_sky:
-                //Косинус угла
+                // Cosine of an angle
                 if (isCos)
                 {
                     shw.csatt = lt.cosine * shw.cs + (1.0f - lt.cosine);
                 }
-                //Коэфициент затенения
+                // Shading coefficient
                 if (isSdw)
                 {
                     vl = (v.shadow[i].sm - 0.5) * lt.curct + 0.5;
@@ -580,12 +580,12 @@ void LightProcessor::CalcLights(long lit, bool isCos, bool isAtt, bool isSdw)
                         sw = 1.0f;
                     shw.shw = lt.shadow * sw + (1.0f - lt.shadow);
                 }
-                //Результирующий цвет
+                // Resulting color
                 shw.c = lt.color * (shw.csatt * shw.shw);
                 c += shw.c;
                 break;
             case Light::t_point:
-                //Коэфициент затухания
+                // Attenuation coefficient
                 if (isAtt)
                 {
                     if (shw.dst < lt.range)
@@ -599,12 +599,12 @@ void LightProcessor::CalcLights(long lit, bool isCos, bool isAtt, bool isSdw)
                     else
                         shw.att = 0.0f;
                 }
-                //Косинус угла
+                // Cosine of an angle
                 if (isCos || isAtt)
                 {
                     shw.csatt = (lt.cosine * shw.cs + (1.0f - lt.cosine)) * shw.att;
                 }
-                //Коэфициент затенения
+                // Shading coefficient
                 if (isSdw)
                 {
                     vl = (v.shadow[i].sm - 0.5) * lt.curct + 0.5;
@@ -619,7 +619,7 @@ void LightProcessor::CalcLights(long lit, bool isCos, bool isAtt, bool isSdw)
                         sw = 1.0f;
                     shw.shw = lt.shadow * sw + (1.0f - lt.shadow);
                 }
-                //Результирующий цвет
+                // Resulting color
                 shw.c = lt.color * (shw.csatt * shw.shw);
                 c += shw.c;
                 break;

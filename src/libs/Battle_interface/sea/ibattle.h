@@ -51,9 +51,9 @@ class BATTLE_INTERFACE : public Entity
     };
 
   protected:
-    BATTLE_NAVIGATOR BattleNavigator; // навигационные иконки
+    BATTLE_NAVIGATOR BattleNavigator; // navigation icons
     // MESSAGE_ICONS *		m_pMessageIcons;
-    BIShipIcon *m_pShipIcon; // иконки команд и целеуказаний в боевом меню
+    BIShipIcon *m_pShipIcon; // icons of commands and target pointers in the combat menu
     bool m_bShowCommandMenu;
     bool m_bShowBattleNavigator;
     bool m_bYesShowAll;

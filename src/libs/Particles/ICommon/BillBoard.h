@@ -3,7 +3,7 @@
 
 #include "../math3D.h"
 
-//Партикл
+// Particle
 struct ParticleBillboard
 {
     Vector vPos;
@@ -13,28 +13,28 @@ struct ParticleBillboard
     float DistanceToCamera;
     bool Visible;
 
-    //Для первого кадра------------------------------------
-    //Верхний левый угол в UV
+    // For the first frame ------------------------------------
+    // Top left corner in UV
     float U11;
     float V11;
 
-    //Нижний правый угол в UV
+    // Bottom right corner in UV
     float U12;
     float V12;
 
-    //Для второго кадра------------------------------------
-    //Верхний левый угол в UV
+    // For the second frame ------------------------------------
+    // Top left corner in UV
     float U21;
     float V21;
 
-    //Нижний правый угол в UV
+    // Bottom right corner in UV
     float U22;
     float V22;
 
-    //Коэфицент блендинга между первым и вторым кадром
+    // Blending ratio between the first and second frames
     float BlendK;
 
-    //Конструктор-------------------------------------------
+    // Constructor-------------------------------------------
     ParticleBillboard()
     {
         DistanceToCamera = 0.0f;

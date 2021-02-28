@@ -19,58 +19,58 @@ class AnimationImp;
 
 class AnimationTimerImp : public AnimationTimer
 {
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     AnimationTimerImp();
     virtual ~AnimationTimerImp();
 
-    //Установить анимацию
+    // Set animation
     void SetAnimation(AnimationImp *animation);
 
     //--------------------------------------------------------------------------------------------
     // AnimationTimer
     //--------------------------------------------------------------------------------------------
   public:
-    //Запустить таймер (время в миллисекундах)
+    // Start timer (time in milliseconds)
     virtual void Start(float time, float startTime = 0.0f);
-    //Остановить таймер
+    // Stop timer
     virtual void Stop();
-    //Сбросить состояние таймера
+    // Reset timer state
     virtual void ResetTimer();
-    //Узнать, работает ли таймер
+    // Find out if the timer is running
     virtual bool IsWork();
-    //Получить текущее значение
+    // Get the current value
     virtual float GetCurrent() const;
-    //Получить заданное время работы таймера
+    // Get the specified timer running time
     virtual float GetTime() const;
-    //Назначить ActionPlayer для блендинга (isInverse == false -> kBlend = [0..1])
+    // Assign ActionPlayer for blending (isInverse == false -> kBlend = [0..1])
     virtual void SetPlayer(long playerIndex, bool isInverse = false);
     virtual void ResetPlayer(long playerIndex);
-    //Узнать, используется ли ActionPlayer
+    // Find out if ActionPlayer is being used
     virtual bool IsUsedPlayer(long playerIndex, bool *isInverse = nullptr);
-    //Получить велечину блендинга для плеера (если не используется то 1.0f)
+    // Get the blending value for the player (if not used then 1.0f)
     virtual float GetPlayerValue(long playerIndex);
 
     //--------------------------------------------------------------------------------------------
     // AnimationTimerImp
     //--------------------------------------------------------------------------------------------
   public:
-    //Исполнить
+    // Execute
     void Execute(long dltTime);
 
-    //--------------------------------------------------------------------------------------------
-    //Инкапсуляция
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Encapsulation
+    // --------------------------------------------------------------------------------------------
   private:
-    //Анимация
+    // Animation
     AnimationImp *ani;
-    //Параметры таймера
+    // Timer options
     float curTime;
     float kTime;
     float value;
-    //Биты, показывающие кому чего устанавливать
+    // Bitmask showing what to set for whom
     uint32_t playersMask[ANITM_PLAYERSMAX];
     uint32_t inverseMask[ANITM_PLAYERSMAX];
 };

@@ -35,7 +35,7 @@ class BillBoardProcessor
     };
 
     VDX9RENDER *pRS;
-    //Буферы для рендера билбордов
+    // Buffers for rendering billboards
     long pVBuffer;
     long pIBuffer;
 
@@ -56,10 +56,10 @@ class BillBoardProcessor
 
     GMXQSort<BB_ParticleData *> ParticleSorter;
 
-    //Считает расстояние до билбоардов
+    // Counts distance to billboards
     uint32_t CalcDistanceToCamera();
 
-    //Функция сравнения при сортировке
+    // Compare function when sorting
     static BOOL CompareFunction(BB_ParticleData *e1, BB_ParticleData *e2);
 
     BB_ParticleData *AllocParticle() const;

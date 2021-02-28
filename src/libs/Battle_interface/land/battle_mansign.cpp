@@ -63,11 +63,11 @@ void BIManSign::Draw()
     }
     else
     {
-        // проверка измеенения каках либо данных
+        // checking for changes in the data
         CheckDataChange();
     }
 
-    // перезаполнение буфера
+    // buffer overflow
     if (m_bMakeVertexFill)
     {
         FillVertexBuffer();
@@ -416,7 +416,7 @@ long BIManSign::CalculateManQuantity()
 {
     long n;
 
-    // сброс всех
+    // reset all
     m_nManQuantity = 0;
     for (n = 0; n < MAX_MAN_QUANTITY; n++)
     {

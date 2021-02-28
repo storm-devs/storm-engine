@@ -14,27 +14,27 @@ class DataColor
     std::vector<ColorVertex> ColorGraph;
 
   public:
-    //конструктор/деструктор
+    // constructor / destructor
     DataColor();
     virtual ~DataColor();
 
-    //Получить значение (Текущее время, Общее время жизни, Коэфицент рандома[0..1])
+    // Get the value (Current time, Total lifetime, Random factor [0..1])
     Color GetValue(float Time, float LifeTime, float K_rand);
 
-    //Устанавливает "значение по умолчанию"
-    //два индекса, Min=Max=Value
+    // Sets the "default"
+    // two indices, Min = Max = Value
     void SetDefaultValue(const Color &Value);
 
-    //Установить значения
+    // Set values
     void SetValues(const ColorVertex *Values, uint32_t Count);
 
-    //Получить кол-во значений
+    // Get count of values
     uint32_t GetValuesCount() const;
 
-    //Получить мин. значение (по индексу)
+    // Get min. value (by index)
     const Color &GetMinValue(uint32_t Index);
 
-    //Получить макс. значение (по индексу)
+    // Get max. value (by index)
     const Color &GetMaxValue(uint32_t Index);
 
     void Load(MemFile *File);

@@ -20,7 +20,7 @@ InfoHandler::~InfoHandler()
 
 bool InfoHandler::Init()
 {
-    // получить сервис рендера
+    // get render service
     m_rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!m_rs)
     {
@@ -81,7 +81,7 @@ void InfoHandler::Realize(uint32_t delta_time) const
     if (m_pSurface == nullptr || m_pRenderTarget == nullptr)
         return;
     m_rs->MakePostProcess();
-    // ѕоддерживаем посто€нный экран
+    // keep the screen constant
     if (m_rs->UpdateSurface(m_pSurface, nullptr, 0, m_pRenderTarget, nullptr) != D3D_OK)
     {
         core.Trace("Can't copy fader screen shot to render target!");
@@ -152,7 +152,7 @@ bool InfoHandler::DoPreOut()
     {
         ntmp = m_rs->StringWidth(inStrStart, 0, fScale);
         nOutWidth = static_cast<int>(sqrtf(4.f * ntmp * nOutOffset) + .9f);
-        // ширина записи приблизительно больше высоты в четыре раза
+        // record width is approximately four times the height
         if (nOutWidth > static_cast<int>(desc.Width))
             nOutWidth = desc.Width;
         nInsideRectWidth = nOutWidth + nBorderWidth * 2;
@@ -315,7 +315,7 @@ char *InfoHandler::GetCutString(char *pstr, int nOutWidth, float fScale) const
     auto spaceWait = false;
     char param[1024];
 
-    // удал€ем первые переходы на новую строку
+    // remove first line breaks
     while (pstr && (*pstr == 0x0A || *pstr == 0x0D || *pstr == 32))
         pstr++;
 

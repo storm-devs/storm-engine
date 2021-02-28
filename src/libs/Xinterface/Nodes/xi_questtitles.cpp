@@ -44,7 +44,7 @@ bool CXI_QUESTTITLE::GetLineNext(int fontNum, char *&pInStr, char *buf, int bufS
     SubRightWord(buf, fontNum, needWidth, m_rs);
     pInStr = pStart + strlen(buf);
 
-    // удалим начальные пробелы
+    // remove leading spaces
     while (*pInStr != 0 && static_cast<unsigned>(*pInStr) <= ' ')
         pInStr++;
 
@@ -88,7 +88,7 @@ void CXI_QUESTTITLE::Draw(bool bSelected, uint32_t Delta_Time)
     auto lineNum = 0;
     for (i = 0; i < m_stringQuantity && lineNum < m_allStrings; i++)
     {
-        // отобразить выделение
+        // display selection
         if (bSelected && i == m_curIdx)
         {
             XI_NOTEX_VERTEX selV[4];
@@ -104,7 +104,7 @@ void CXI_QUESTTITLE::Draw(bool bSelected, uint32_t Delta_Time)
             m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_NOTEX_FVF, 2, selV, sizeof(XI_NOTEX_VERTEX), "iRectangle");
         }
 
-        // отобразить иконку выполнения
+        // display progress icon
         XI_ONLYONETEX_VERTEX v[4];
         v[0].pos.z = v[1].pos.z = v[2].pos.z = v[3].pos.z = 1.f;
         v[0].pos.x = v[1].pos.x = static_cast<float>(m_rect.right) - m_iconWidth;
@@ -129,7 +129,7 @@ void CXI_QUESTTITLE::Draw(bool bSelected, uint32_t Delta_Time)
         m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONLYONETEX_FVF, 2, v, sizeof(XI_ONLYONETEX_VERTEX),
                               "iDinamicPictures");
 
-        // отобразить строки
+        // display lines
         auto curColor = m_strList[i].complete ? m_dwCompleteColor : m_dwNonCompleteColor;
         if (m_strList[i].dwSpecColor != 0)
             curColor = m_strList[i].dwSpecColor;
@@ -257,7 +257,7 @@ void CXI_QUESTTITLE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, co
     if (m_vertOffset == 0)
         m_vertOffset = 10;
 
-    // подсчет количества выводимых строк на экране
+    // counting the number of lines displayed on the screen
     m_allStrings = (m_rect.bottom - m_rect.top) / m_vertOffset;
 
     // get golors
@@ -314,7 +314,7 @@ void CXI_QUESTTITLE::SetNewTopQuest(ATTRIBUTES *pA, int topNum)
 {
     int i;
     m_nCommonQuantity = 0;
-    // удалим старые строки
+    // delete old lines
     if (m_strList != nullptr)
     {
         for (i = 0; i < m_stringQuantity; i++)
@@ -322,7 +322,7 @@ void CXI_QUESTTITLE::SetNewTopQuest(ATTRIBUTES *pA, int topNum)
                 STORM_DELETE(m_strList[i].name[j]);
         STORM_DELETE(m_strList);
         m_stringQuantity = 0;
-    } // boal перенес наверх, иначе не трется, если квестов нет, а были уже
+    } // boal moved up, otherwise it does not delete if there are no quests, but there were already
 
     if (pA == nullptr)
         return;
@@ -339,21 +339,21 @@ void CXI_QUESTTITLE::SetNewTopQuest(ATTRIBUTES *pA, int topNum)
     {
         // ptrOwner->QuestFileReader()->InitQuestsQuery();
 
-        // расчет количества выводимых строк
+        // calculating the number of lines to display
         m_stringQuantity = aq - topNum;
         if (m_stringQuantity > m_allStrings)
             m_stringQuantity = m_allStrings;
         if (m_curIdx >= m_stringQuantity)
             m_curIdx = m_stringQuantity - 1;
 
-        // создание массива строк
+        // creating an array of strings
         if (m_stringQuantity <= 0)
             return;
         if ((m_strList = new STRING_DESCRIBER[m_stringQuantity]) == nullptr)
         {
             throw std::exception("allocate memory error");
         }
-        // и заполнение этих строк
+        // and filling these strings
         auto lineNum = 0;
         for (i = 0; i < m_stringQuantity; i++)
         {

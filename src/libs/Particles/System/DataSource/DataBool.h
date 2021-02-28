@@ -11,17 +11,17 @@ class DataBool
     bool Value;
 
   public:
-    //конструктор/деструктор
+    // constructor / destructor
     DataBool();
     virtual ~DataBool();
 
-    //Получить значение
+    // Get value
     bool GetValue() const;
 
-    //Установить значение
+    // Set value
     void SetValue(bool val);
 
-    //Сохранить/загрузить...
+    // Save / Load ...
     void Load(MemFile *File);
     void Write(MemFile *File) const;
 

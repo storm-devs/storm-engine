@@ -895,8 +895,7 @@ bool IFS::ReadString(SEARCH_DATA *sd, const char *section_name, const char *key_
     }
 
     uint32_t write_size = strlen(char_PTR) + 1;
-    // if(write_size > buffer_size) throw std::exception(buffer size too small); // boal закоменчено по наводке Ёдди, не
-    // давало грузить новую ани
+    // if(write_size > buffer_size) throw std::exception(buffer size too small); // commented out because it didn't let to load new ani
 
     strcpy_s(buffer, buffer_size, node->GetValue());
     return true;

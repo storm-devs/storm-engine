@@ -32,20 +32,20 @@ bool WdmClouds::Cloud::Reset(bool isFirstTime)
 {
     if (count > 0)
         return false;
-    //Определяем количество
+    // Determine the quantity
     count = static_cast<long>((rand() * (0.5f / RAND_MAX) + 0.5f) * WDMCLOUDSMAX);
     if (count < 1)
         count = 1;
-    //Базовая позиция
+    // Base position
     const auto baseX = (rand() * (1.0f / RAND_MAX) - 0.5f) * wdmObjects->worldSizeX;
     const auto baseZ = (rand() * (1.0f / RAND_MAX) - 0.5f) * wdmObjects->worldSizeZ;
-    //Скалирующий фактор
+    // Scaling factor
     auto scaleX = (rand() * (0.8f / RAND_MAX) + 0.2f);
     auto scaleZ = (rand() * (0.8f / RAND_MAX) + 0.2f);
     const auto nrm = 1.0f / sqrtf(scaleX * scaleX + scaleZ * scaleZ);
     scaleX *= nrm;
     scaleZ *= nrm;
-    //Определяем стартовые позиции
+    // Determining starting positions
     for (long i = 0; i < count; i++)
     {
         auto ang = rand() * (2.0f * PI / RAND_MAX);
@@ -82,7 +82,7 @@ bool WdmClouds::Cloud::Reset(bool isFirstTime)
     return true;
 }
 
-//Расчёты
+// Calculations
 void WdmClouds::Cloud::Update(float dltTime)
 {
     if (count <= 0)
@@ -94,20 +94,20 @@ void WdmClouds::Cloud::Update(float dltTime)
     const auto maxWorldX = 0.5f * wdmObjects->worldSizeX;
     const auto minWorldZ = -0.5f * wdmObjects->worldSizeZ;
     const auto maxWorldZ = 0.5f * wdmObjects->worldSizeZ;
-    //Двигаем облака
+    // Moving the clouds
     long outsideCount = 0;
     for (long i = 0; i < count; i++)
     {
-        //Партикл
+        // Particle
         auto &cld = cloud[i];
-        //Модифицируем направление
+        // Modifying the direction
         if (cld.index >= count)
             cld.index = 0;
-        auto dir = cloud[cld.index].pos - cld.pos;        //Направление
-        auto dist = sqrtf(dir.x * dir.x + dir.z * dir.z); //Получаем дистанцию
+        auto dir = cloud[cld.index].pos - cld.pos;        // Direction
+        auto dist = sqrtf(dir.x * dir.x + dir.z * dir.z); // get the distance
         if (dist > minDist)
         {
-            //Модифицируем альфаканал
+            // Modifying the alpha channel
             if (dist < midDist)
             {
                 cld.alpha += dltTime * 0.06f;
@@ -120,7 +120,7 @@ void WdmClouds::Cloud::Update(float dltTime)
                 if (cld.alpha < 0.0f)
                     cld.alpha = 0.0f;
             }
-            //Притягиваемся
+            // getting closer
             if (dist > midDist)
             {
                 const auto nrm = 1.0f / dist;
@@ -136,7 +136,7 @@ void WdmClouds::Cloud::Update(float dltTime)
         }
         else
         {
-            //Отталкиваемся
+            // getting further
             dist = (dist - minDist) / minDist;
             if (dist < -1.0f)
                 dist = -1.0f;
@@ -145,11 +145,11 @@ void WdmClouds::Cloud::Update(float dltTime)
             if (cld.alpha < 0.0f)
                 cld.alpha = 0.0f;
         }
-        cld.dir += (dir - cld.dir + cld.rdr) * (0.5f / count); //Подбленжеваем независимо от времени
-        cld.index++; //На следующем кадре следующий будет действовать
-        //Направление ветра
+        cld.dir += (dir - cld.dir + cld.rdr) * (0.5f / count); // blend regardless of the time
+        cld.index++; // On the next frame, the next one will act
+        // Direction of the wind
         wdmObjects->GetWind(cld.pos.x, cld.pos.z, dir);
-        //Вращение
+        // Rotation
         auto arot = cld.dir.z * dir.x - cld.dir.x * dir.z;
         if (arot < -1.0f)
             arot = -1.0f;
@@ -161,14 +161,14 @@ void WdmClouds::Cloud::Update(float dltTime)
         if (cld.aspd > 1.0f)
             cld.aspd = 1.0f;
         cld.angle += cld.aspd * dltTime * 0.2f;
-        //Позиция
+        // Position
         dir += cld.dir * 0.5f;
         cld.pos += dir * (dltTime * 10.0f);
         if (cld.pos.x < minWorldX || cld.pos.x > maxWorldX || cld.pos.z < minWorldZ || cld.pos.z > maxWorldZ)
         {
             outsideCount++;
         }
-        //Учитываем партикл в боундсфере
+        // Taking into account the particle in the bounding sphere
         const auto cldr = cld.size * 1.5f;
         if (i)
         {
@@ -193,7 +193,7 @@ void WdmClouds::Cloud::Update(float dltTime)
             radius = cldr;
         }
     }
-    //Время жизни
+    // Lifetime
     if (outsideCount >= count)
         lifeTime = 0.0f;
     lifeTime -= dltTime;
@@ -219,7 +219,7 @@ long WdmClouds::Cloud::FillRects(RS_RECT *rects, long cnt, float galpha)
     for (long i = 0; i < count; i++)
     {
         auto &c = cloud[i];
-        //Вычисляем альфу
+        // Calculating the alpha
         auto a = static_cast<float>(static_cast<uint8_t>(c.color >> 24));
         a *= alpha;
         a *= 0.1f + c.alpha * 0.9f;
@@ -228,7 +228,7 @@ long WdmClouds::Cloud::FillRects(RS_RECT *rects, long cnt, float galpha)
             la = 0xff;
         if (la <= 0)
             continue;
-        //Заполняем
+        // fill in
         auto &r = rects[cnt++];
         r.vPos = c.pos;
         r.fAngle = c.angle;
@@ -239,7 +239,7 @@ long WdmClouds::Cloud::FillRects(RS_RECT *rects, long cnt, float galpha)
     return cnt;
 }
 
-//Получить центр сферы и радиус
+// Get sphere center and radius
 float WdmClouds::Cloud::GetBound(CVECTOR &_center) const
 {
     if (!count)
@@ -251,7 +251,7 @@ float WdmClouds::Cloud::GetBound(CVECTOR &_center) const
     return radius;
 }
 
-//Запустить механизм удаления облака если есть пересечение
+// Run the cloud removal mechanism if there is an intersection
 void WdmClouds::Cloud::Kill(const Cloud &cld)
 {
     if (count && cld.count)
@@ -267,13 +267,13 @@ void WdmClouds::Cloud::Kill(const Cloud &cld)
     }
 }
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 WdmClouds::WdmClouds()
 {
-    //Выставим позиции и направления группам
+    // set positions and directions to groups
     for (long i = 0; i < sizeof(clouds) / sizeof(Cloud); i++)
     {
         clouds[i].Reset(true);
@@ -290,21 +290,21 @@ WdmClouds::~WdmClouds()
         wdmObjects->rs->TextureRelease(light);
 }
 
-//Расчёты
+// Calculations
 void WdmClouds::Update(float dltTime)
 {
-    //Перезаводим убитые
+    // Restart killed ones
     for (long i = 0; i < sizeof(clouds) / sizeof(Cloud); i++)
     {
         if (clouds[i].Reset())
             break;
     }
-    //Обновляем позиции
+    // Updating positions
     for (long i = 0; i < sizeof(clouds) / sizeof(Cloud); i++)
     {
         clouds[i].Update(dltTime);
     }
-    //Удаляем сильно пересекающиеся
+    // Remove strongly intersecting
     for (long i = 0; i < sizeof(clouds) / sizeof(Cloud) - 1; i++)
     {
         for (auto j = i + 1; j < sizeof(clouds) / sizeof(Cloud); j++)
@@ -314,13 +314,13 @@ void WdmClouds::Update(float dltTime)
     }
 }
 
-//Рисование
+// Drawing
 void WdmClouds::LRender(VDX9RENDER *rs)
 {
     long cnt = 0;
-    //Получаем фрустум камеры
+    // Getting camera frustum
     auto *plane = rs->GetPlanes();
-    //Определяем глобальную альфу в зависимости от дистанции до камеры
+    // Determine the global alpha depending on the distance to the camera
     CMatrix view;
     rs->GetTransform(D3DTS_VIEW, view);
     CVECTOR camPos;
@@ -331,14 +331,14 @@ void WdmClouds::LRender(VDX9RENDER *rs)
     if (alpha > 1.0f)
         alpha = 1.0f;
     alpha *= alpha;
-    //Рисуем видимые
+    // Draw visible
     long count = 0;
     for (long i = 0; i < sizeof(clouds) / sizeof(Cloud); i++)
     {
-        //Получаем сферу
+        // get the sphere
         CVECTOR c;
         auto r = clouds[i].GetBound(c);
-        //Тестируем на видимость
+        // test for visibility
         long j;
         for (j = 0; j < 4; j++)
         {
@@ -349,7 +349,7 @@ void WdmClouds::LRender(VDX9RENDER *rs)
         }
         if (j < 4)
             continue;
-        //Добавляем в буфер
+        // Add to buffer
         count = clouds[i].FillRects(rects, count, alpha);
 
         cnt++;

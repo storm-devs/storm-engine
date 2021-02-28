@@ -15,9 +15,9 @@
 #define WDM_MODEL_TECH "WdmModelDrawStd"
 #define WDM_MODEL_TECHA "WdmModelDrawStdA"
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 WdmRenderModel::WdmRenderModel()
 {
@@ -120,7 +120,7 @@ void WdmRenderModel::Render(VDX9RENDER *rs) const
         a = 80.0f;
     if (a < 1.0f)
         return;
-    //Риссуем
+    // draw
     if (a >= 255.0f)
     {
         a = 255.0f;
@@ -131,7 +131,7 @@ void WdmRenderModel::Render(VDX9RENDER *rs) const
         wdmObjects->gs->SetTechnique(techa);
         rs->SetRenderState(D3DRS_TEXTUREFACTOR, (static_cast<long>(a) << 24) | 0xffffff);
     }
-    //Проверим на видимость
+    // Check for visibility
     auto *const plane = rs->GetPlanes();
     static CMatrix mtx;
     rs->GetTransform(D3DTS_WORLD, mtx);

@@ -17,9 +17,9 @@
 
 char WdmInterfaceObject::stringBuffer[1024];
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 WdmInterfaceObject::WdmInterfaceObject()
 {
@@ -29,14 +29,14 @@ WdmInterfaceObject::~WdmInterfaceObject()
 {
 }
 
-//Заполнить 6 вершин координатами прямоугольника
+// Fill 6 vertices with rectangle coordinates
 void WdmInterfaceObject::FillRectCoord(Vertex *vrt, float x, float y, float w, float h, float ang)
 {
     if (!vrt)
         return;
     if (ang == 0.0f)
     {
-        //Без поворота
+        // No turning
         vrt[0].x = x;
         vrt[0].y = y;
         vrt[0].z = 0.0f;
@@ -64,7 +64,7 @@ void WdmInterfaceObject::FillRectCoord(Vertex *vrt, float x, float y, float w, f
     }
     else
     {
-        //С поворотом
+        // With a turn
         const auto sn = -0.5f * sinf(ang);
         const auto cs = -0.5f * cosf(ang);
         const auto dwx = cs * w;
@@ -100,7 +100,7 @@ void WdmInterfaceObject::FillRectCoord(Vertex *vrt, float x, float y, float w, f
     }
 }
 
-//Заполнить 6 вершин текстурными координатами прямоугольника
+// Fill 6 vertices with rectangle texture coordinates
 void WdmInterfaceObject::FillRectUV(Vertex *vrt, float tu, float tv, float tw, float th, float ang)
 {
     if (!vrt)
@@ -122,7 +122,7 @@ void WdmInterfaceObject::FillRectUV(Vertex *vrt, float tu, float tv, float tw, f
     }
     else
     {
-        //С поворотом
+        // With a turn
         const auto sn = 0.5f * sinf(ang);
         const auto cs = 0.5f * cosf(ang);
         const auto dwu = cs * tw;
@@ -146,7 +146,7 @@ void WdmInterfaceObject::FillRectUV(Vertex *vrt, float tu, float tv, float tw, f
     }
 }
 
-//Заполнить 6 вершин текстурными координатами прямоугольника
+// Fill 6 vertices with rectangle texture coordinates
 void WdmInterfaceObject::FillRectUV1(Vertex *vrt, float tu, float tv, float tw, float th, float ang)
 {
     if (!vrt)
@@ -168,7 +168,7 @@ void WdmInterfaceObject::FillRectUV1(Vertex *vrt, float tu, float tv, float tw, 
     }
     else
     {
-        //С поворотом
+        // With a turn
         const auto sn = 0.5f * sinf(ang);
         const auto cs = 0.5f * cosf(ang);
         const auto dwu = cs * tw;
@@ -192,7 +192,7 @@ void WdmInterfaceObject::FillRectUV1(Vertex *vrt, float tu, float tv, float tw, 
     }
 }
 
-//Заполнить 6 вершин цветом
+// Fill 6 vertices with color
 void WdmInterfaceObject::FillRectColor(Vertex *vrt, uint32_t color)
 {
     if (!vrt)
@@ -205,14 +205,14 @@ void WdmInterfaceObject::FillRectColor(Vertex *vrt, uint32_t color)
     vrt[5].color = color;
 }
 
-//Нарисовать буффер прямоугольников
+// Draw buffer of rectangles
 void WdmInterfaceObject::DrawRects(Vertex *vrt, long numRects, const char *techName)
 {
     wdmObjects->rs->DrawPrimitiveUP(D3DPT_TRIANGLELIST, D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX2, numRects * 2, vrt,
                                     sizeof(Vertex), techName);
 }
 
-//Заполнить 18 вершин скалирующегося прямоугольника
+// Fill 18 vertices of the scaling rectangle
 void WdmInterfaceObject::FillSRectCoord(Vertex *vrt, float x, float y, float w, float h, float ws)
 {
     FillRectCoord(vrt, x, y, ws, h);
@@ -220,7 +220,7 @@ void WdmInterfaceObject::FillSRectCoord(Vertex *vrt, float x, float y, float w, 
     FillRectCoord(vrt + 12, x + w - ws, y, ws, h);
 }
 
-//Заполнить 18 вершин текстурными координатами скалирующегося прямоугольника
+// Fill 18 vertices with the texture coordinates of the scaling rectangle
 void WdmInterfaceObject::FillSRectUV(Vertex *vrt, float tu, float tv, float tw, float th, float ts)
 {
     FillRectUV(vrt, tu, tv, ts, th);
@@ -228,7 +228,7 @@ void WdmInterfaceObject::FillSRectUV(Vertex *vrt, float tu, float tv, float tw, 
     FillRectUV(vrt + 12, tu + tw - ts, tv, ts, th);
 }
 
-//Заполнить 18 вершин цветом скалирующегося прямоугольника
+// Fill 18 vertices with a scaled rectangle color
 void WdmInterfaceObject::FillSRectColor(Vertex *vrt, uint32_t color)
 {
     FillRectColor(vrt, color);
@@ -236,7 +236,7 @@ void WdmInterfaceObject::FillSRectColor(Vertex *vrt, uint32_t color)
     FillRectColor(vrt + 12, color);
 }
 
-//Вывести текст в заданную полоску по горизонтали и в заданной высоте
+// Display text in a given strip horizontally and at a given height
 void WdmInterfaceObject::Print(long font, long color, float xleft, float xright, float y, const char *format, ...)
 {
     _vsnprintf_s(stringBuffer, sizeof(stringBuffer), format, ((char *)&format + sizeof(char *)));

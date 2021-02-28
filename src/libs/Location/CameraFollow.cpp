@@ -18,7 +18,7 @@
 
 #define LCF_RADIUS 0.25f
 
-//Параметры поиска радиуса
+// Radius search options
 float CameraFollow::fndRadius;
 float CameraFollow::fndMaxRadius;
 CVECTOR CameraFollow::fndCamDir;
@@ -30,9 +30,9 @@ float CameraFollow::fndkAx;
 float CameraFollow::fndcsAy;
 float CameraFollow::fndkAy;
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 CameraFollow::CameraFollow()
 {
@@ -55,14 +55,14 @@ void CameraFollow::SetLocationCamera(LocationCamera *locCamera)
 
 //============================================================================================
 
-//Произвести расчёты
+// Make calculations
 void CameraFollow::Update(float dltTime)
 {
     auto oldPos(camPos);
-    //Если дальше допустимого рождаемся заново
+    // If beyond the permitted area, reborn
     if (~(lc->pos - oldPos) >= lc->teleport_dist * lc->teleport_dist)
         isBrn = true;
-    //Расчитываем новую позицию
+    // Calculating a new position
     if (!isBrn)
     {
         MoveCamera(dltTime);
@@ -73,26 +73,26 @@ void CameraFollow::Update(float dltTime)
         isBrn = false;
         oldPos = camPos;
     }
-    //Пересчитаем угол
+    // recalculate the angle
     /*
     double vz = lookTo.z - camPos.z;
     double vx = lookTo.x - camPos.x;
     double lv = vx*vx + vz*vz;
     if(lv > 0.0000001)
     {
-      //Ищем углы
+      // Calculating angles
       vz = acos(vz/sqrt(lv));
       if(vx < 0) vz = -vz;
       camay = float(vz);
     }*/
     lc->camPos = camPos;
     lc->lookTo = lookTo;
-    //Ограничим по высоте
+    // Limit in height
     if (lc->camPos.y < lc->pos.y + lc->lheight * 0.5f)
         lc->camPos.y = lc->pos.y + lc->lheight * 0.5f;
 
     /*
-    //Проверим ситуацию застревания камеры
+    // Check if the camera is stuck
     float k1 = Trace(lookTo, camPos);
     if(k1 < 1.0f)
     {
@@ -125,12 +125,12 @@ void CameraFollow::Update(float dltTime)
     }*/
 }
 
-//Найти текущую позицию камеры
+// Find current camera position
 void CameraFollow::MoveCamera(float dltTime)
 {
     if (dltTime <= 0.0f)
         return;
-    //Куда смотрим
+    // Where are we looking
     auto likeCamay = lc->chay;
     if (lc->isSpecialMode)
     {
@@ -138,7 +138,7 @@ void CameraFollow::MoveCamera(float dltTime)
     }
     lookTo = lc->pos;
     lookTo.y += lc->lheight;
-    //Решим, что делать
+    // decide what to do
     const auto pi = 3.14159265359f;
     auto chay = likeCamay - static_cast<long>(likeCamay / pi) * 2.0f * pi;
     const auto cay = camay - static_cast<long>(camay / pi) * 2.0f * pi;
@@ -147,14 +147,14 @@ void CameraFollow::MoveCamera(float dltTime)
     if (cay - chay < -pi)
         chay -= 2 * pi;
     const auto dAng = chay - cay;
-    //Расчитываем текущий радиус
+    // Calculate the current radius
     kRadInert = fabsf(dAng) / 0.05f;
     if (kRadInert > 1.0f)
         kRadInert = 1.0f;
     kRadInert = powf(kRadInert, 5.0f);
     if (fabsf(dAng) > 0.001f)
     {
-        //Камера вращается вокруг персонажа
+        // The camera rotates around the character
         auto k = dltTime * lc->rotInertia;
         if (k > 1.0f)
             k = 1.0f;
@@ -165,18 +165,18 @@ void CameraFollow::MoveCamera(float dltTime)
     CalcPosition(camay, camradius, 0.0f, camPos);
 }
 
-//Переинициализировать позицию камеры
+// Reinitialize camera position
 void CameraFollow::BornCamera()
 {
-    //Новые параметры камеры
+    // New camera options
     camay = lc->chay;
     camradius = lc->radius;
-    //Куда смотрим
+    // Where are we looking
     lookTo = lc->pos;
     lookTo.y += lc->lheight;
-    //Откуда смотрим
+    // Where are we looking from
     CalcPosition(camay, camradius, 0.0f, camPos);
-    //Проверяем на пересечение луч
+    // Checking the ray intersection
     constexpr auto kp = 2.0f;
     // ~!~
     lc->Trace(lookTo, camPos);
@@ -184,10 +184,10 @@ void CameraFollow::BornCamera()
         camPos = lookTo + (camPos - lookTo) * (kp * 0.9f);
 }
 
-//Вычислить позицию камеры для данного угла
+// Calculate camera position for a given angle
 void CameraFollow::CalcPosition(float ang, float radius, float dax, CVECTOR &pos) const
 {
-    //Откуда смотрим
+    // Where are we looking from
     const auto ax = -lc->ax + dax;
     pos.x = lc->pos.x - radius * cosf(ax) * sinf(ang);
     pos.y = lc->pos.y + lc->lheight - radius * sinf(ax);
@@ -246,8 +246,8 @@ void CameraFollow::DrawDebug()
 float CameraFollow::FindRadius(float curAng) const
 {
     static const auto pi = 3.14159265359f;
-    static const auto day = pi * 0.25f; //Отклонение по вертикали
-    static const auto dax = pi * 0.16f; //Отклонение по вертикали
+    static const auto day = pi * 0.25f; // Vertical deviation
+    static const auto dax = pi * 0.16f; // Vertical deviation
 
 #ifdef LFC_DEBUG
     struct Vrt
@@ -307,10 +307,10 @@ float CameraFollow::FindRadius(float curAng) const
 
 #endif
 
-    //Точка на которую смотрим
+    // The point we are looking at
     CVECTOR pos(lc->pos.x, lc->pos.y + lc->lheight, lc->pos.z);
     const auto ax = -lc->ax;
-    //Начальные значения поиска
+    // Search initial values
     fndRadius = lc->radius + LCF_RADIUS;
     fndMaxRadius = lc->radius + LCF_RADIUS;
     fndCamDir = CVECTOR(-cosf(ax) * sinf(curAng), -sinf(ax), -cosf(ax) * cosf(curAng));
@@ -330,29 +330,29 @@ float CameraFollow::FindRadius(float curAng) const
     fndkAx = 1.0f / (1.0f - fndcsAx);
     fndcsAy = cosf(day);
     fndkAy = 1.0f / (1.0f - fndcsAy);
-    //Строим ограничивающий объём
+    // Building a bounding volume
     static PLANE p[5];
-    //Левая плоскость
+    // Left plane
     p[0].Nx = -cosf(curAng + day);
     p[0].Ny = 0.0f;
     p[0].Nz = sinf(curAng + day);
     p[0].D = pos.x * p[0].Nx + pos.z * p[0].Nz;
-    //Правая плоскость
+    // Right plane
     p[1].Nx = cosf(curAng - day);
     p[1].Ny = 0.0f;
     p[1].Nz = -sinf(curAng - day);
     p[1].D = pos.x * p[1].Nx + pos.z * p[1].Nz;
-    //Нижняя плоскость
+    // Bottom plane
     p[2].Nx = sinf(ax + dax) * sinf(curAng);
     p[2].Ny = -cosf(ax + dax);
     p[2].Nz = sinf(ax + dax) * cosf(curAng);
     p[2].D = pos.x * p[2].Nx + pos.y * p[2].Ny + pos.z * p[2].Nz;
-    //Верхняя плоскость
+    // Top plane
     p[3].Nx = -sinf(ax - dax) * sinf(curAng);
     p[3].Ny = cosf(ax - dax);
     p[3].Nz = -sinf(ax - dax) * cosf(curAng);
     p[3].D = pos.x * p[3].Nx + pos.y * p[3].Ny + pos.z * p[3].Nz;
-    //Задняя стенка
+    // Back side
     p[4].Nx = fndCamDir.x;
     p[4].Ny = fndCamDir.y;
     p[4].Nz = fndCamDir.z;
@@ -375,7 +375,7 @@ float CameraFollow::FindRadius(float curAng) const
     }
 #endif
 
-    //Ишем радиус
+    // looking for a radius
     lc->Clip(p, 5, pos, lc->radius, ApplyPoly);
 
 #ifdef LFC_DEBUG
@@ -421,7 +421,7 @@ float CameraFollow::FindRadius(float curAng) const
     return fndRadius;
 }
 
-//Учесть полигон в поиске радиуса
+// Consider polygon in radius search
 bool CameraFollow::ApplyPoly(const CVECTOR *v, long n)
 {
 #ifdef LFC_DEBUG
@@ -429,43 +429,43 @@ bool CameraFollow::ApplyPoly(const CVECTOR *v, long n)
 #endif
     if (n < 3)
         return true;
-    //Нормаль плоскости
+    // Plane normal
     auto norm = (v[0] - v[1]) ^ (v[0] - v[2]);
     auto dist = ~norm;
     if (dist <= 1e-10f)
         return true;
     norm *= 1.0f / sqrtf(dist);
-    //Дистанция
+    // Distance
     dist = v[0] | norm;
-    //Дистанция до плоскости полигона
+    // Distance to the plane of the polygon
     auto d = (fndCamPos | norm) - dist;
-    //Если плоскость дальше чем текущий радиус, пропустим её
+    // If the plane is farther than the current radius, skip it
     if (fabs(d) >= fndRadius)
         return true;
-    //Заполняем параметры плоскостей, проходящих через рёбра
+    // Filling in the parameters of the planes passing through the edges
     static EdgeInfo edge[32];
     if (n > 32)
         n = 32;
     for (long i = 0; i < n; i++)
     {
-        //Ребро
+        // Edge
         auto j = i + 1;
         if (j >= n)
             j = 0;
-        //Нормаль плоскости проходящей через ребро
+        // Normal of a plane passing through an edge
         edge[i].n = (v[i] - v[j]) ^ norm;
         const auto d = ~edge[i].n;
         if (d == 0.0f)
             continue;
         edge[i].n *= 1.0f / sqrtf(d);
-        //Дистанция
+        // Distance
         edge[i].d = v[i] | edge[i].n;
         edge[i].s = v[i];
         edge[i].e = v[j];
     }
-    //Ищем ближайшию точку к позиции куда смотрит камера
+    // looking for the closest point to the position where the camera is looking
     const auto pos1 = fndCamPos - norm * d;
-    //Ищем ближайшию точку к точке пересечения луча направления на камеру
+    // looking for the closest point to the point of intersection of the ray direction to the camera
     const auto cs = norm | fndCamDir;
     if (cs != 0.0f)
     {
@@ -505,23 +505,23 @@ bool CameraFollow::ApplyPoly(const CVECTOR *v, long n)
 
 void CameraFollow::ApplyPolyFindNearest(EdgeInfo *e, long ne, const CVECTOR &pos)
 {
-    //Тестируем с рёбрами, определяя близжайшее растояние
+    // Testing with edges, determining the closest distance
     CVECTOR pnt;
     auto minDist = -1.0f;
     for (long i = 0; i < ne; i++)
     {
-        //Дистанция до плоскости от точки
+        // Distance to planes from points
         auto d = (pos | e[i].n) - e[i].d;
         if (d >= 0.0f)
             continue;
-        //Точка на прямой
+        // Point on a straight line
         auto p = pos - e[i].n * d;
-        //Точка на ребре
+        // Point on the edge
         if (((e[i].s - e[i].e) | (e[i].s - p)) < 0.0f)
             p = e[i].s;
         else if (((e[i].s - e[i].e) | (p - e[i].e)) < 0.0f)
             p = e[i].e;
-        //Дистанция
+        // Distance
         d = ~(p - pos);
         if (minDist >= 0.0f)
         {
@@ -537,16 +537,16 @@ void CameraFollow::ApplyPolyFindNearest(EdgeInfo *e, long ne, const CVECTOR &pos
             pnt = p;
         }
     }
-    //Вектор направления на ближайшую точку
+    // Direction vector to the nearest point
     if (minDist < 0.0f)
         pnt = pos - fndCamPos;
     else
         pnt = pnt - fndCamPos;
-    //Длинна
+    // Length
     auto dist = ~pnt;
     if (dist >= fndRadius * fndRadius)
         return;
-    //Коэфициент ослабления
+    // Attenuation coefficient
     // XZ
     auto d = sqrtf(pnt.x * pnt.x + pnt.z * pnt.z);
     auto kxz = 1.0f;
@@ -570,7 +570,7 @@ void CameraFollow::ApplyPolyFindNearest(EdgeInfo *e, long ne, const CVECTOR &pos
         if (ky <= 0.0f)
             return;
     }
-    //Дистанция с учётом коэфициентов поправки
+    // Distance taking into account correction coefficients
     auto oldDist = dist;
     dist = fndMaxRadius + (sqrtf(dist) - fndMaxRadius) * static_cast<float>(1.0 - powf(fabsf(1.0f - kxz * ky), 1.5f));
     Assert(dist >= 0.0f);
@@ -578,7 +578,7 @@ void CameraFollow::ApplyPolyFindNearest(EdgeInfo *e, long ne, const CVECTOR &pos
         fndRadius = dist;
 }
 
-//Изменить радиус
+// Change radius
 void CameraFollow::ChangeRadius(float dltTime, float radius)
 {
     if (radius < 0.0f)
@@ -600,7 +600,7 @@ void CameraFollow::ChangeRadius(float dltTime, float radius)
     //	lc->location->GetRS()->Print(10, 70, "fndRadius = %f, camradius = %f", fndRadius, camradius);
 }
 
-//Найти ускорение остановки камеры при угловом столкновении с патчем, dir +-1
+// Find the acceleration of the camera stopping at an angular collision with the patch, dir +-1
 void CameraFollow::FindRotAccelCam()
 {
     rotAcc = 0.0f;
@@ -610,27 +610,27 @@ void CameraFollow::FindRotAccelCam()
         rotAcc = 3.0f;
 }
 
-//Протянуть луч с учётом cull и размера камеры
+// Stretch the ray taking into account cull and camera size
 float CameraFollow::Trace(const CVECTOR &src, const CVECTOR &dst)
 {
-    //Направление на камеру
+    // Direction to camera
     auto dir = dst - src;
     auto dist = ~dir;
     if (dist <= 0.0f)
         return 2.0f;
     dist = sqrtf(dist);
     dir *= (dist + LCF_RADIUS) / dist;
-    //Проверка центрального луча
+    // Center ray check
     float k[5];
     k[0] = SubTrace(src, src + dir);
-    //Строим базис
+    // Building a basis
     auto left = dir ^ CVECTOR(0.0f, 1.0f, 0.0f);
     const auto l = ~left;
     if (l <= 0.0f)
         return k[0];
     left *= 1.0f / sqrtf(l);
     const auto up = dir ^ left;
-    //Ищем ближайшию дистанцию
+    // Looking for the nearest distance
     CVECTOR s;
     s = src + left * LCF_RADIUS;
     k[1] = SubTrace(s, s + dir);
@@ -647,19 +647,19 @@ float CameraFollow::Trace(const CVECTOR &src, const CVECTOR &dst)
     return kRes;
 }
 
-//Протянуть луч с учётом cull
+// Stretch a ray with cull
 inline float CameraFollow::SubTrace(const CVECTOR &src, const CVECTOR &dst) const
 {
     TRIANGLE trg;
     const auto k = lc->Trace(src, dst);
     if (k > 1.0f || !lc->GetCollideTriangle(trg))
         return 2.0f;
-    //Определяем нормаль
+    // Determine the normal
     auto n = (trg.vrt[0] - trg.vrt[1]) ^ (trg.vrt[1] - trg.vrt[2]);
     const auto l = ~n;
     if (l > 0.0f)
     {
-        //Оперделим с какой стороны проходим через треугольник
+        // Determine which side we pass through the triangle
         n *= 1.0f / sqrtf(l);
         if ((n | src) > (n | trg.vrt[0]))
             return k;

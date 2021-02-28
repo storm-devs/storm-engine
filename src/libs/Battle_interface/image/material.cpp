@@ -79,7 +79,7 @@ void BIImageMaterial::DeleteImage(const BIImage *pImg)
 void BIImageMaterial::SetTexture(const char *pcTextureName)
 {
     if (pcTextureName == m_sTextureName)
-        return; // уже стоит эта текстура
+        return; // this texture is already there
     m_sTextureName = pcTextureName;
     m_pRS->TextureRelease(m_nTextureID);
     m_nTextureID = m_pRS->TextureCreate(pcTextureName);

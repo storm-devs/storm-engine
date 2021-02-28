@@ -14,9 +14,9 @@
 
 #define TRND_CLDRADIUS 2000.0f
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 NoiseCloud::NoiseCloud(Pillar &_pillar) : pillar(_pillar)
 {
@@ -101,9 +101,9 @@ void NoiseCloud::Draw(VDX9RENDER *rs)
     rs->TextureSet(0, texture);
     for (long i = 0; i < sizeof(rect) / sizeof(Rect); i++)
     {
-        //Размер
+        // The size
         const auto size = rect[i].size;
-        //Позиция
+        // Position
         const auto sn = sinf(rect[i].angle);
         const auto cs = cosf(rect[i].angle);
         CVECTOR pos(pillar.X() + rect[i].r * sinf(rect[i].a), pillar.GetHeight(),
@@ -126,7 +126,7 @@ void NoiseCloud::Draw(VDX9RENDER *rs)
         buf[i * 6 + 5].pos = pos + CVECTOR(size * (cs - sn), 0.0f, size * (-sn - cs));
         buf[i * 6 + 5].u = 1.0f;
         buf[i * 6 + 5].v = 1.0f;
-        //Цвет
+        // Colour
         const auto clr = rect[i].light * 200.0f;
         const auto color = (static_cast<long>(clr * 1.0f) << 16) | (static_cast<long>(clr * 0.95f) << 8) |
                            static_cast<long>(clr * 0.9f) | (static_cast<long>(rect[i].alpha * galpha * 0.4f) << 24);

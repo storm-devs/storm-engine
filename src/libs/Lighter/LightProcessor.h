@@ -20,31 +20,31 @@ class VDX9RENDER;
 
 class LightProcessor
 {
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     LightProcessor();
     virtual ~LightProcessor();
     void SetParams(LGeometry *g, Window *win, LighterLights *lit, OctTree *ot, VDX9RENDER *_rs);
     void UpdateLightsParam();
 
-    //Выполнить шаг вычислений
+    // Perform Calculation Step
     void Process();
 
-    //--------------------------------------------------------------------------------------------
-    //Инкапсуляция
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Encapsulation
+    // --------------------------------------------------------------------------------------------
   private:
-    //Расчитать затенения
+    // Calculate shading
     void CalcShadows();
-    //Сгладить затенённость
+    // Smooth shading
     void SmoothShadows();
-    //Сгладить освещение
+    // Smooth lighting
     void BlurLight();
-    //Расчитать освещение
+    // Calculate lighting
     void CalcLights(long lit = -1, bool isCos = true, bool isAtt = true, bool isSdw = true);
-    //Распределить затенение с треугольника на вершины
+    // Distribute shading from triangle to vertices
     void ApplyTriangleShadows(Triangle &t);
 
   private:

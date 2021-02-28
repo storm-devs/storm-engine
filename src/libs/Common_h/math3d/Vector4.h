@@ -11,7 +11,7 @@
 
 #pragma pack(push, 1)
 
-///Класс представления вектора c весовым коэфициентом в 3D пространстве
+// Class for representing a vector with a weighting coefficient in 3D space
 struct Vector4
 {
   public:
@@ -21,135 +21,135 @@ struct Vector4
             union {
                 struct
                 {
-                    ///Компонента по X
+                    // The X component
                     float x;
-                    ///Компонента по Y
+                    // The Y component
                     float y;
-                    ///Компонента по Z
+                    // The Z component
                     float z;
                 };
 
                 struct
                 {
-                    ///Представление в виде вектора
+                    // Vector representation
                     Vector v;
                 };
             };
 
-            ///Весовая компонента
+            // Weight component
             float w;
         };
 
         struct
         {
-            ///Представление в виде массива
+            // Array representation
             float v4[4];
         };
     };
 
-    //-----------------------------------------------------------
-    //Конструкторы
-    //-----------------------------------------------------------
+    // -----------------------------------------------------------
+    // Constructors
+    // -----------------------------------------------------------
   public:
-    ///Пустой конструктор
+    // Empty constructor
     Vector4();
-    ///Заполнить числом
+    // Fill with number
     Vector4(float f);
-    ///Заполнить числом
+    // Fill with number
     Vector4(double d);
-    ///Заполнить 3 компоненты, 1
+    // Fill 3 components, 1
     Vector4(float x, float y, float z);
-    ///Заполнить все компоненты
+    // Fill all components
     Vector4(float x, float y, float z, float w);
-    ///Заполнить 3 компоненты, 1
+    // Fill 3 components, 1
     Vector4(const float f[3]);
-    ///Заполнить 3 компоненты, 1
+    // Fill 3 components, 1
     Vector4(const double d[3]);
-    ///Заполнить 3 компоненты, 1
+    // Fill 3 components, 1
     Vector4(const Vector &v);
-    ///Конструктор копирования
+    // Copy constructor
     Vector4(const Vector4 &v);
 
-    //-----------------------------------------------------------
-    //Операторы
-    //-----------------------------------------------------------
+    // -----------------------------------------------------------
+    // Operators
+    // -----------------------------------------------------------
   public:
-    ///Найти квадрат длинны вектора
+    // Find the square of the length of a vector
     float operator~() const;
 
-    ///Получить отрицательный вектор
+    // Get negative vector
     Vector4 operator-() const;
 
-    ///Присвоить
+    // Assign
     Vector4 &operator=(float f);
-    ///Присвоить
+    // Assign
     Vector4 &operator=(double d);
-    ///Присвоить
+    // Assign
     Vector4 &operator=(const Vector &v);
-    ///Присвоить
+    // Assign
     Vector4 &operator=(const Vector4 &v);
 
-    //-----------------------------------------------------------
-    //Преобразование
-    //-----------------------------------------------------------
+    // -----------------------------------------------------------
+    // Transformation
+    // -----------------------------------------------------------
   public:
-    ///Нормализовать w компаненту
+    // Normalize w component
     void Normalize();
 };
 
-//===========================================================
-//Конструкторы
-//===========================================================
+// ===========================================================
+// Constructors
+// ===========================================================
 
-//Пустой конструктор
+// Empty constructor
 inline Vector4::Vector4()
 {
 }
 
-//Заполнить числом
+// Fill with number
 inline Vector4::Vector4(float f) : v(f)
 {
     w = f;
 }
 
-//Заполнить числом
+// Fill with number
 inline Vector4::Vector4(double d)
 {
     w = static_cast<float>(d);
 }
 
-//Заполнить 3 компоненты, 1
+// Fill 3 components, 1
 inline Vector4::Vector4(float x, float y, float z) : v(x, y, z)
 {
     w = 1.0f;
 }
 
-//Заполнить все компоненты
+// Fill all components
 inline Vector4::Vector4(float x, float y, float z, float w) : v(x, y, z)
 {
     this->w = w;
 }
 
-//Заполнить 3 компоненты, 1
+// Fill 3 components, 1
 inline Vector4::Vector4(const float f[3]) : v(f[0], f[1], f[2])
 {
     w = 1.0f;
 }
 
-//Заполнить 3 компоненты, 1
+// Fill 3 components, 1
 inline Vector4::Vector4(const double d[3])
     : v(static_cast<float>(d[0]), static_cast<float>(d[1]), static_cast<float>(d[2]))
 {
     w = 1.0f;
 }
 
-//Заполнить 3 компоненты, 1
+// Fill 3 components, 1
 inline Vector4::Vector4(const Vector &vc) : v(vc)
 {
     w = 1.0f;
 }
 
-//Конструктор копирования
+// Copy constructor
 inline Vector4::Vector4(const Vector4 &v)
 {
     x = v.x;
@@ -158,17 +158,17 @@ inline Vector4::Vector4(const Vector4 &v)
     w = v.w;
 }
 
-//===========================================================
-//Операторы
-//===========================================================
+// ===========================================================
+// Operators
+// ===========================================================
 
-///Найти квадрат длинны вектора
+// Find the square of the length of a vector
 inline float Vector4::operator~() const
 {
     return x * x + y * y + z * z + w * w;
 }
 
-///Получить отрицательный вектор
+// Get negative vector
 inline Vector4 Vector4::operator-() const
 {
     auto v(*this);
@@ -179,7 +179,7 @@ inline Vector4 Vector4::operator-() const
     return v;
 }
 
-///Присвоить
+// Assign
 inline Vector4 &Vector4::operator=(float f)
 {
     v = f;
@@ -187,7 +187,7 @@ inline Vector4 &Vector4::operator=(float f)
     return *this;
 }
 
-///Присвоить
+// Assign
 inline Vector4 &Vector4::operator=(double d)
 {
     v = d;
@@ -195,7 +195,7 @@ inline Vector4 &Vector4::operator=(double d)
     return *this;
 }
 
-///Присвоить
+// Assign
 inline Vector4 &Vector4::operator=(const Vector &v)
 {
     this->v = v;
@@ -203,7 +203,7 @@ inline Vector4 &Vector4::operator=(const Vector &v)
     return *this;
 }
 
-///Присвоить
+// Assign
 inline Vector4 &Vector4::operator=(const Vector4 &v)
 {
     x = v.x;
@@ -213,11 +213,11 @@ inline Vector4 &Vector4::operator=(const Vector4 &v)
     return *this;
 }
 
-//===========================================================
-//Преобразование
-//===========================================================
+// ===========================================================
+// Transformation
+// ===========================================================
 
-//Нормализовать w компаненту
+// Normalize w component
 inline void Vector4::Normalize()
 {
     const auto k = 1.0 / w;

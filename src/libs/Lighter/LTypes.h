@@ -17,40 +17,40 @@ struct Light
         t_group,
     };
 
-    CVECTOR color; //Цвет источника
-    CVECTOR p; //Позиция точечного источника или направление направленного источника
-    float att0;  //Затухание D^0
-    float att1;  //Затухание D^1
-    float att2;  //Затухание D^2
-    float range; //Радиус действия
-    char *group; //Группа к которой принадлежит источник
-    //Параметры освещения
-    float cosine; //Коэфициент косинуса
-    float shadow; //Коэфициент тени
-    float bright; //Яркость тени
-    float contr;  //Контрастность тени
-    float gamma;  //Гамма тени
-    float curgm;  //Текущая для источника гамма
-    float curct;  //Текущий для источника контраст
-    //
-    Type type;   //Тип источника
-    bool isOn;   //Работает ли источник
-    bool isMark; //Для построения списка
+    CVECTOR color; // Source color
+    CVECTOR p; // Point source position or direction of directional source
+    float att0;  // Attenuation D^0
+    float att1;  // Attenuation D^1
+    float att2;  // Attenuation D^2
+    float range; // Radius of action
+    char *group; // The group the source belongs to
+    // Lighting options
+    float cosine; // Coefficient of cosine
+    float shadow; // shadow Coefficient
+    float bright; // Shadow brightness
+    float contr;  // Shadow contrast
+    float gamma;  // shadow Gamma
+    float curgm;  // Current source gamma
+    float curct;  // current Contrast for the source
+    // 
+    Type type;   // Source type
+    bool isOn;   // Does the source work
+    bool isMark; // To build a list
 };
 
 namespace lighter
 {
 struct Shadow
 {
-    double v;    //Расчитанное значение
-    double nrm;  //Коэфициент нормализации
-    double sm;   //Сглаженное значение
-    float cs;    //Косинус угла нормали и направления на источник
-    float att;   //Коэфициент затухания
-    float dst;   //Дистанция до источника
-    float csatt; //Коэфициент затухания
-    float shw;   //Коэфициент затухания тени
-    CVECTOR c;   //Текущий цвет источника
+    double v;    // Calculated value
+    double nrm;  // Normalization factor
+    double sm;   // Smoothed value
+    float cs;    // Cosine of the angle of the normal and direction to the source
+    float att;   // Attenuation coefficient
+    float dst;   // Distance to source
+    float csatt; // Attenuation coefficient
+    float shw;   // Shadow attenuation coefficient
+    CVECTOR c;   // Current source color
 };
 } // namespace lighter
 
@@ -58,43 +58,43 @@ struct Vertex
 {
     enum Flag
     {
-        f_zero = 0, //Инициализация
-        f_inv = 1,  //Инвертирована ли нормаль
-        f_set = 2,  //Была ли внесена поправка нормали
-        f_bug = 4,  //Была ошибка
+        f_zero = 0, // Initialization
+        f_inv = 1,  // Is the normal inverted
+        f_set = 2,  // Has the normal been amended
+        f_bug = 4,  // There was a mistake
     };
 
-    CVECTOR p;               //Позиция
-    CVECTOR n;               //Нормаль
-    CVECTOR c;               //Цвет
-    CVECTOR bc;              //Цвет для сглаживания
-    CVECTOR mc;              //Цветовая маска
-    uint32_t alpha;          //Альфа вертекса
-    lighter::Shadow *shadow; //Значения затенения от каждого источника
-    long flags;              //Флаги
-    long vbid;               //Буфер вершин
-    long addr;               //Относительный адрес цвета в буфере
-    long obj;                //Объект которому принадлежим
-    long cindex;             //Индекс в конечном буфере цветов объекта
+    CVECTOR p;               // Position
+    CVECTOR n;               // Normal
+    CVECTOR c;               // Colour
+    CVECTOR bc;              // Anti-aliasing color
+    CVECTOR mc;              // Color mask
+    uint32_t alpha;          // vertex Alpha
+    lighter::Shadow *shadow; // Shading values from each source
+    long flags;              // Flags
+    long vbid;               // Vertex buffer
+    long addr;               // The relative address of the color in the buffer
+    long obj;                // The object it belongs to
+    long cindex;             // Index in final buffer of object colors
 };
 
 struct Triangle
 {
-    CVECTOR n; //Нормаль
-    float sq;  //Площадь
-    long i[3]; //Индексы вершин
+    CVECTOR n; // Normal
+    float sq;  // Area
+    long i[3]; // Vertex indices
 };
 
 struct VertexBuffer
 {
-    long vbID;  //Идентификатор вертекс буфера
-    long start; //Индекс буфера в глобальном массиве
+    long vbID;  // vertex Buffer identifier
+    long start; // Buffer index in the global array
 };
 
 struct OctFndVerts
 {
-    Vertex *v; //Вершина
-    float r2;  //Квадрат растояния
+    Vertex *v; // Vertex
+    float r2;  // Squared distance
 };
 
 #endif

@@ -20,119 +20,119 @@ class ActionInfo;
 
 class ActionPlayerImp : public ActionPlayer
 {
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     ActionPlayerImp();
     virtual ~ActionPlayerImp();
 
-    //Установить указатель на анимацию
+    // Set pointer to animation
     void SetAnimation(AnimationImp *animation, long index);
 
     //--------------------------------------------------------------------------------------------
     // ActionPlayer
     //--------------------------------------------------------------------------------------------
   public:
-    //Установить текущие действие
+    // Set current action
     virtual bool SetAction(const char *actionName);
     virtual const char *GetAction() const;
-    //Управление проигрыванием
+    // Play control
     virtual bool Play();
     virtual void Pause();
     virtual void Stop();
     virtual bool IsPlaying() const;
     virtual bool IsPause() const;
-    //Автоостановка при завершении работы таймера
+    // Auto stop when timer expires
     virtual bool SetAutoStop(bool isStop);
     virtual bool IsAutoStop() const;
-    //Текущая позиция проигрывания
+    // Current playing position
     virtual float SetPosition(float position);
     virtual float GetPosition() const;
-    //Тип проигрования
+    // Play type
     virtual void SetType(AnimationType atype);
     virtual AnimationType GetType() const;
-    //Коэфициент скорости проигрывания
+    // Playback speed coefficient
     virtual float SetSpeed(float kSpeed = 1.0f);
     virtual float GetSpeed() const;
     virtual float GetDefSpeed() const;
-    //Получить длительность действия в кадрах
+    // Get duration of action in frames
     virtual long GetFrames() const;
-    //Установить коэфициент блендинга 0..1
+    // Set blending coefficient 0..1
     virtual void SetBlend(float k);
-    //Получить коэфициент блендинга 0..1
+    // Get a blending coefficient 0..1
     virtual float GetBlend();
-    //Получить пользовательские данные для этого действия
+    // Get user data for this action
     virtual const char *GetData(const char *dataName) const;
 
     //--------------------------------------------------------------------------------------------
     // ActionPlayerImp
     //--------------------------------------------------------------------------------------------
   public:
-    //Сделать шаг по времени
+    // Take a step in time
     void Execute(long dltTime);
-    //Установить позицию в самое начало
+    // Set position to the very beginning
     void ResetPosition();
-    //Получить текущее время
+    // Get the current time
     float GetCurrentFrame();
-    //Быстрый доступ до коэфициентов блендинга
+    // Quick access to blending ratios
     float &Blend();
     float &TimerBlend();
-    //Копировать состояние другого плеера
+    // Copy the state of another player
     void CopyState(ActionPlayerImp &from);
 
   public:
-    //Текущий коэфициент блендинга
+    // Current blending ratio
     float kBlendCurrent;
 
-    //--------------------------------------------------------------------------------------------
-    //Инкапсуляция
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Encapsulation
+    // --------------------------------------------------------------------------------------------
   private:
-    //Передвижение позиции
+    // Position movement
     void MoveNormal(float dlt);
     void MoveReverse(float dlt);
     void MovePingpong(float dlt);
     void MoveRPingpong(float dlt);
-    //Проверить события и если надо инициировать
+    // Check events and initiate if necessary
     void CheckEvents();
-    //Сброс флажков произошедших событий
+    // Clearing the flags of the events that have occurred
     void ResetEventsMask();
-    //Системная остановка
+    // System stop
     void SysStop();
 
   private:
-    //Анимация для этого действия
+    // Animation for this action
     AnimationImp *ani;
-    //Индекс этого плеера
+    // Index of this player
     long playerIndex;
-    //Информация о текущем действие
+    // Information about the current action
     ActionInfo *action;
-    //Тип проигрывания анимации
+    // Animation playback type
     AnimationType anitype;
-    //Проигрывание
+    // Playing
     bool isPlay, isPause;
-    //Автостоп
+    // Automatic stop
     bool isAutostop;
-    //Позиция проигрывания
+    // Play position
     float position;
-    //Направление движения true - нормальноеб иначе обратное
+    // Direction of movement: true - normal, otherwise - reverse
     bool dir;
-    //Скорость проигрывания
+    // Play speed
     float speed;
-    //Коэфициент скорости проигрывания
+    // Playback speed coefficient
     float kspeed;
-    //Проигрывать зацикленно
+    // loop
     bool isLoop;
-    //Маска для свершившихся событий
+    // A mask for past events
     uint32_t eventsMask[ACTIONPLAYEREVENTFLAGS];
-    //Коэфициент блендинга
+    // Coefficient of blending
     float kBlend;
-    //Скалирующий коэфициент блендинга для таймера
+    // Timer blending scaling factor
     float kBlendTimer;
 };
 
-//Быстрый доступ до коэфициента блендинга
+// Quick access to the blending factor
 inline float &ActionPlayerImp::Blend()
 {
     return kBlend;

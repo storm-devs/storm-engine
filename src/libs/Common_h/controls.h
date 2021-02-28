@@ -192,12 +192,12 @@ class CONTROLS
         return GetKeyState(vk);
     }
 
-    // Команда управления от ENGINE
+    // control command from ENGINE
     virtual void EngineMessage(UINT iMsg, WPARAM wParam, LPARAM lParam)
     {
     }
 
-    // Получить буфер нажатык клавиш за кадр (с учетом языка)
+    // Get the keystroke buffer per frame (taking into account the language)
     virtual long GetKeyBufferLength()
     {
         return 0;

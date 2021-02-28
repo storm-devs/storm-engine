@@ -22,11 +22,11 @@ class Lizards : public Entity
     Lizards();
     virtual ~Lizards();
 
-    //»нициализаци€
+    // Initialization
     bool Init() override;
-    //»сполнение
+    // Update
     void Execute(uint32_t delta_time);
-    //–исование
+    // Rendering
     void Realize(uint32_t delta_time);
 
     void ProcessStage(Stage stage, uint32_t delta) override

@@ -40,7 +40,7 @@ bool LocLife::Init(Location *loc)
     if (!(model = EntityManager::CreateEntity("modelr")))
         return false;
     EntityManager::AddToLayer(REALIZE, model, 20);
-    //Путь для текстур
+    // Path to textures
     auto *gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
     if (!gs)
     {
@@ -54,10 +54,10 @@ bool LocLife::Init(Location *loc)
         return false;
     }
     gs->SetTexturePath("");
-    //Анимация
+    // Animation
     if (!core.Send_Message(model, "ls", MSG_MODEL_LOAD_ANI, GetAniName()))
         return false;
-    //Определям место положения
+    // determine the position
     location = loc;
     if (FindRandomPos(pos) < 0)
     {
@@ -66,7 +66,7 @@ bool LocLife::Init(Location *loc)
     }
     FindPos();
     ay = rand() * (6.28f / RAND_MAX);
-    //Анимация
+    // Animation
     auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
     if (!m)
     {
@@ -99,7 +99,7 @@ void LocLife::Update(float dltTime)
         location->DrawLine(pos, 0xff00ffff, pos + CVECTOR(0.0f, 1.0f, 0.0f), 0xff00ffff);
         location->DrawLine(pos, 0xff00ff00, pos + CVECTOR(sinf(ay), 0.0f, cosf(ay)) * 0.5f, 0xff00ff00);
     }
-    //Информация о модели и локации
+    // Model and location information
     auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
     if (!m)
         return;
@@ -113,7 +113,7 @@ void LocLife::Update(float dltTime)
     }
     else
     {
-        //Перемещиемся
+        // Move
         auto cnode = FindPos();
         if (cnode < 0)
         {
@@ -126,7 +126,7 @@ void LocLife::Update(float dltTime)
             StopMove();
             return;
         }
-        //Ищим направление
+        // Looking for a direction
         auto dir = pos;
         if (!ptc.FindPathDir(cnode, pos, node, npos, cnode, dir))
         {
@@ -149,10 +149,10 @@ void LocLife::Update(float dltTime)
         if (vx < 0)
             vz = -vz;
         ay = static_cast<float>(vz);
-        //Двигаем
+        // Moving
         pos.x += sinf(ay) * dltTime * speed * kSpeed;
         pos.z += cosf(ay) * dltTime * speed * kSpeed;
-        //Логика движения
+        // The logic of movement
         MoveProcess(ani, dltTime);
     }
 }
@@ -163,9 +163,9 @@ long LocLife::FindPos()
     if (!m)
         return -1;
     auto &ptc = location->GetPtcData();
-    //Направление
+    // Direction
     const CVECTOR dir(sinf(ay), 0.0f, cosf(ay));
-    //Высоты
+    // Heights
     float yf, yc, yb;
     const auto curnode = ptc.FindNode(pos, yc);
     if (curnode < 0)
@@ -197,11 +197,11 @@ long LocLife::FindPos()
 
 void LocLife::StartMove()
 {
-    //Модель
+    // Model
     auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
     if (!m)
         return;
-    //Запускаем проигрывание анимации
+    // Start playing the animation
     auto *const ani = m->GetAnimation();
     if (!ani)
         return;
@@ -215,7 +215,7 @@ void LocLife::StopMove()
     auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
     if (!m)
         return;
-    //Запускаем проигрывание анимации
+    // Start playing the animation
     auto *const ani = m->GetAnimation();
     if (!ani)
         return;

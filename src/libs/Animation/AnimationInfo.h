@@ -1,12 +1,12 @@
-//============================================================================================
-//	Spirenkov Maxim aka Sp-Max Shaman, 2001
-//--------------------------------------------------------------------------------------------
-//	Storm engine v2.00
-//--------------------------------------------------------------------------------------------
-//	AnimationInfo
-//--------------------------------------------------------------------------------------------
-//	Здесь хранится информация об анимации, загружаемая 1 раз
-//============================================================================================
+// ============================================================================================
+// Spirenkov Maxim aka Sp-Max Shaman, 2001
+// --------------------------------------------------------------------------------------------
+// Storm engine v2.00
+// --------------------------------------------------------------------------------------------
+// AnimationInfo
+// --------------------------------------------------------------------------------------------
+// This is where animation information is stored, loaded 1 time
+// ============================================================================================
 
 #ifndef _AnimationInfo_H_
 #define _AnimationInfo_H_
@@ -19,75 +19,75 @@
 
 class AnimationInfo final
 {
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     AnimationInfo(const char *animationName);
     ~AnimationInfo();
-    //Установить количество кадров в анимации
+    // Set the number of frames in the animation
     void SetNumFrames(long _numFrames);
-    //Создать кости
+    // Create bones
     void CreateBones(long numbones);
-    //Создать действие
+    // Create action
     ActionInfo *AddAction(const char *anctionName, long startframe, long endframe);
-    //Установить скорость исполнения
+    // Set execution speed
     void SetFPS(float _fps);
 
-    //--------------------------------------------------------------------------------------------
-    //Работа с анимацией
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Working with animation
+    // --------------------------------------------------------------------------------------------
   public:
-    //Количество костей
+    // Number of bones
     long NumBones();
-    //Доступиться до кости
+    // Access to the bone
     Bone &GetBone(long iBone);
-    //Сравнить с текущим именем
+    // Compare with current name
     bool operator==(const char *animationName);
-    //Повысить счётчик ссылок
+    // Increment reference count
     void AddRef();
-    //Понизить счётчик ссылок
+    // Decrement reference count
     void RelRef();
-    //Добавить время простоя
+    // Add downtime
     void AddDowntime(long dltTime);
-    //Получить время простоя
+    // Get downtime
     long GetDowntime();
-    //Получить имя анимации
+    // Get animation name
     const char *GetName();
-    //Найти действие по имени
+    // Find action by name
     ActionInfo *FindAction(const char *actionName);
-    //Получить время анимации
+    // Get animation time
     long GetAniNumFrames();
-    //Доступ к пользовательским данным
+    // Access to user data
     std::unordered_map<std::string, std::string> &GetUserData();
-    //Получить скорость исполнения анимации
+    // Get animation speed
     float GetFPS();
 
-    //--------------------------------------------------------------------------------------------
-    //Инкапсуляция
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Encapsulation
+    // --------------------------------------------------------------------------------------------
   private:
-    char name[64]; //Название анимации
+    char name[64]; // Animation name
 
-    long numFrames; //Количество кадров во всей анимации
-    float fps;      //Количество кадров в секунду
+    long numFrames; // The number of frames in the entire animation
+    float fps;      // Frames per second
 
-    Bone *bone;    //Кости с ключами анимации
-    long numBones; //Количество костей в скелете
+    Bone *bone;    // Bones with animation keys
+    long numBones; // The number of bones in the skeleton
 
-    std::vector<ActionInfo> actions; //Действия
+    std::vector<ActionInfo> actions; // Actions
 
-    long refCounter; //Счётчик ссылок на эту анимацию
-    long downtime;   //Время простоя
+    long refCounter; // Reference counter for this animation
+    long downtime;   // Downtime
 
-    std::unordered_map<std::string, std::string> userData; //Пользовательские данные
+    std::unordered_map<std::string, std::string> userData; // User data
 };
 
 //============================================================================================
 // inline
 //============================================================================================
 
-//Установить количество кадров в анимации
+// Set the number of frames in the animation
 inline void AnimationInfo::SetNumFrames(long _numFrames)
 {
     if (_numFrames < 0)
@@ -95,7 +95,7 @@ inline void AnimationInfo::SetNumFrames(long _numFrames)
     numFrames = _numFrames;
 }
 
-//Установить скорость исполнения
+// Set execution speed
 inline void AnimationInfo::SetFPS(float _fps)
 {
     if (_fps < 0.0f)
@@ -105,33 +105,33 @@ inline void AnimationInfo::SetFPS(float _fps)
     fps = _fps;
 }
 
-//Количество костей
+// Number of bones
 inline long AnimationInfo::NumBones()
 {
     return numBones;
 }
 
-//Доступиться до кости
+// Access to the bone
 inline Bone &AnimationInfo::GetBone(long iBone)
 {
     Assert(iBone >= 0 && iBone < numBones);
     return bone[iBone];
 }
 
-//Повысить счётчик ссылок
+// Increment reference count
 inline void AnimationInfo::AddRef()
 {
     refCounter++;
 }
 
-//Понизить счётчик ссылок
+// Decrement reference count
 inline void AnimationInfo::RelRef()
 {
     refCounter--;
     Assert(refCounter >= 0);
 }
 
-//Добавить время простоя
+// Add downtime
 inline void AnimationInfo::AddDowntime(long dltTime)
 {
     if (refCounter == 0)
@@ -146,31 +146,31 @@ inline void AnimationInfo::AddDowntime(long dltTime)
         downtime = 0;
 }
 
-//Получить время простоя
+// Get downtime
 inline long AnimationInfo::GetDowntime()
 {
     return downtime;
 }
 
-//Получить имя анимации
+// Get animation name
 inline const char *AnimationInfo::GetName()
 {
     return name;
 }
 
-//Получить время анимации
+// Get animation time
 inline long AnimationInfo::GetAniNumFrames()
 {
     return numFrames;
 }
 
-//Доступ к пользовательским данным
+// Access to user data
 inline std::unordered_map<std::string, std::string> &AnimationInfo::GetUserData()
 {
     return userData;
 }
 
-//Получить скорость исполнения анимации
+// Get animation speed
 inline float AnimationInfo::GetFPS()
 {
     return fps;

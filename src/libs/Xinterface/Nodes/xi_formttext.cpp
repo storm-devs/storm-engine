@@ -149,7 +149,7 @@ void CXI_FORMATEDTEXT::Draw(bool bSelected, uint32_t Delta_Time)
     auto i = 0;
     for (auto *sd = m_listCur; sd != nullptr && i < m_allStrings; sd = sd->next, i++)
     {
-        // отобразить строки
+        // display lines
         if (sd->lineStr != nullptr && sd->lineStr[0] != 0)
         {
             if (sd->m_tags.size() == 0)
@@ -234,7 +234,7 @@ int CXI_FORMATEDTEXT::CommandExecute(int wActCode)
         }
         if (!m_bSelectableCursor)
         {
-            // для передвижения по одиночным строкам
+            // to move through single lines
             switch (wActCode)
             {
             case ACTION_UPSTEP:
@@ -273,7 +273,7 @@ int CXI_FORMATEDTEXT::CommandExecute(int wActCode)
         }
         else
         {
-            // Для передвижения по блокам строк
+            // To move through blocks of lines
             switch (wActCode)
             {
             case ACTION_UPSTEP:
@@ -599,7 +599,7 @@ void CXI_FORMATEDTEXT::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
     if (m_vertOffset == 0)
         m_vertOffset = 10;
 
-    // подсчет количества выводимых строк на экране
+    // counting the number of lines displayed on the screen
     m_allStrings = static_cast<long>(static_cast<float>(m_rect.bottom - m_rect.top) / m_vertOffset);
 
     // get golors
@@ -674,7 +674,7 @@ bool CXI_FORMATEDTEXT::GetLineNext(int fontNum, char *&pInStr, char *buf, int bu
     const size_t lineSize = pInStr - pStart;
     if (lineSize > 0)
     {
-        // заполним буфер без тагов
+        // fill the buffer without tags
         long i, j;
         for (i = 0, j = 0; i < lineSize && i < bufSize - 1; i++)
         {
@@ -697,16 +697,16 @@ bool CXI_FORMATEDTEXT::GetLineNext(int fontNum, char *&pInStr, char *buf, int bu
 
         if (j == bufSize - 1) // exclude truncated utf8 chars
             j -= utf8::u8_dec(buf + j);
-        buf[j] = 0; // нолем обозначим конец строки
+        buf[j] = 0; // zero denotes the end of the line
 
-        // если строка большая, то режем ее
+        // if the string is large, then cut it
         const long strWidth = m_rs->StringWidth(buf, fontNum);
         if (strWidth > m_nCompareWidth)
         {
             SubRightWord(buf, fontNum, m_nCompareWidth, m_rs);
         }
 
-        const long q = strlen(buf); // это длина строки без тагов
+        const long q = strlen(buf); // this is the length of the line without tags
         for (i = 0, j = 0; j < q; i++)
         {
             if (pStart[i] == '<')
@@ -735,10 +735,10 @@ bool CXI_FORMATEDTEXT::GetLineNext(int fontNum, char *&pInStr, char *buf, int bu
         buf[1] = 0;
     }
 
-    // удалим знак переноса строки
+    // remove the line break
     if (pInStr[0] == '\\' && (pInStr[1] == 'n' || pInStr[1] == 'N'))
         pInStr += 2;
-    // удалим пробелы (начальные)
+    // remove spaces (leading)
     while (pInStr[0])
     {
         if (static_cast<unsigned>(*pInStr) <= ' ')
@@ -790,7 +790,7 @@ void CXI_FORMATEDTEXT::GetOneLine(int fontNum, char *pStr, char *buf, int bufSiz
 
 void CXI_FORMATEDTEXT::SetFormatedText(char *str)
 {
-    // удалим старые строки
+    // delete old lines
     while (m_listRoot != nullptr)
     {
         m_listCur = m_listRoot;
@@ -887,7 +887,7 @@ long CXI_FORMATEDTEXT::AddFormatedText(const char *str)
     long textQ = 0;
     bool tagState = false;
     uint32_t tagColor = m_dwColor;
-    // разложим полученную строку на строки влезающие в область вывода
+    // decompose the resulting string into lines that fit into the output area
     if (m_bUseOneStringAdding)
     {
         GetOneLine(m_idFont, pstr, newStr, sizeof(newStr));
@@ -954,7 +954,7 @@ void CXI_FORMATEDTEXT::MakeTagChecking(bool &tagState, uint32_t &tagColor, uint3
 {
     const char *str = pStrDescr->lineStr;
     const char *tagBegin = str;
-    size_t q = 0; // размер готового тэга
+    size_t q = 0; // ready tag size
     while (str && str[0])
     {
         q = 0;
@@ -1030,7 +1030,7 @@ uint32_t CXI_FORMATEDTEXT::MessageProc(long msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
-    case 0: // добавить текст к форматированному списку и вернуть количество занимаемых строк
+    case 0: // add text to the formatted list and return the number of occupied lines
     {
         VDATA *pvdat = message.ScriptVariablePointer();
         if (pvdat != nullptr)
@@ -1042,7 +1042,7 @@ uint32_t CXI_FORMATEDTEXT::MessageProc(long msgcode, MESSAGE &message)
     }
     break;
 
-    case 1: // установить указатель на указанный текст в списке (по его номеру)
+    case 1: // set the pointer to the specified text in the list (by its number)
     {
         const long nGrNum = message.Long();
         if (m_bSelectableCursor)
@@ -1051,11 +1051,11 @@ uint32_t CXI_FORMATEDTEXT::MessageProc(long msgcode, MESSAGE &message)
     }
     break;
 
-    case 2: // установить указатель на текст (по дробному значению от 0 до 1 - от начала к концу)
+    case 2: // set the pointer to the text (by a fractional value from 0 to 1 - from the beginning to the end)
         SetPointer(message.Float());
         break;
 
-    case 3: // заполнить атрибуты размерами текстов
+    case 3: // fill attributes with text sizes
     {
         ATTRIBUTES *pAttr = message.AttributePointer();
         if (pAttr == nullptr)
@@ -1067,7 +1067,7 @@ uint32_t CXI_FORMATEDTEXT::MessageProc(long msgcode, MESSAGE &message)
             oldgroup = m_listCur->prev->strGroup;
         for (STRING_DESCRIBER *sd = m_listCur; sd != nullptr && i < m_allStrings; sd = sd->next, i++)
         {
-            // отобразить строки
+            // display lines
             if (sd->lineStr != nullptr && sd->lineStr[0] != 0 && sd->strGroup != oldgroup)
             {
                 oldgroup = sd->strGroup;
@@ -1085,7 +1085,7 @@ uint32_t CXI_FORMATEDTEXT::MessageProc(long msgcode, MESSAGE &message)
     }
     break;
 
-    case 4: // заполнить аттрибуты Y координатами вершины текста
+    case 4: // fill attributes with Y coordinates of the top of the text
     {
         ATTRIBUTES *pAttr = message.AttributePointer();
         if (pAttr == nullptr)
@@ -1098,7 +1098,7 @@ uint32_t CXI_FORMATEDTEXT::MessageProc(long msgcode, MESSAGE &message)
             oldgroup = m_listCur->prev->strGroup;
         for (STRING_DESCRIBER *sd = m_listCur; sd != nullptr && i < m_allStrings; sd = sd->next, i++)
         {
-            // отобразить строки
+            // display lines
             if (sd->lineStr != nullptr && sd->lineStr[0] != 0 && sd->strGroup != oldgroup)
             {
                 oldgroup = sd->strGroup;
@@ -1116,11 +1116,11 @@ uint32_t CXI_FORMATEDTEXT::MessageProc(long msgcode, MESSAGE &message)
     }
     break;
 
-    case 5: // Центрировать текст вертикально
+    case 5: // Center text vertically
         VAlignment(1);
         break;
 
-    case 6: // Получить состояние возможности продвижения текста вверх/вниз
+    case 6: // Get the state of the ability to move text up / down
     {
         if (message.Long())
             return m_bUpEnable;
@@ -1128,7 +1128,7 @@ uint32_t CXI_FORMATEDTEXT::MessageProc(long msgcode, MESSAGE &message)
     }
     break;
 
-    case 7: // установить строки на заданные позиции
+    case 7: // set strings to given positions
     {
         ATTRIBUTES *pA = message.AttributePointer();
         if (pA != nullptr)
@@ -1136,7 +1136,7 @@ uint32_t CXI_FORMATEDTEXT::MessageProc(long msgcode, MESSAGE &message)
     }
     break;
 
-    case 8: // Установить цвет для группы
+    case 8: // Set color for group
     {
         int grNum = message.Long();
         const uint32_t newColor = message.Long();
@@ -1150,7 +1150,7 @@ uint32_t CXI_FORMATEDTEXT::MessageProc(long msgcode, MESSAGE &message)
     }
     break;
 
-    case 9: // Узнать количество строк которое займет строка
+    case 9: // Find out the number of lines that a line will take
     {
         VDATA *pvdat = message.ScriptVariablePointer();
         if (pvdat != nullptr)
@@ -1173,11 +1173,11 @@ uint32_t CXI_FORMATEDTEXT::MessageProc(long msgcode, MESSAGE &message)
     }
     break;
 
-    case 11: // получить номер текущей выделенной строки
+    case 11: // get the number of the currently selected line
         return m_nCurGroupNum;
         break;
 
-    case 12: // узнать вертикальную координату требуемой строки
+    case 12: // find out the vertical coordinate of the required line
     {
         const long n = message.Long();
         long curY = m_rect.top + m_nVAlignmentOffset;
@@ -1421,7 +1421,7 @@ void CXI_FORMATEDTEXT::SetSpecialStrings(ATTRIBUTES *pARoot)
     if (pARoot == nullptr)
         return;
 
-    // удалим старые строки
+    // delete old lines
     while (m_listRoot != nullptr)
     {
         m_listCur = m_listRoot;
@@ -1446,7 +1446,7 @@ void CXI_FORMATEDTEXT::SetSpecialStrings(ATTRIBUTES *pARoot)
             AddFormatedText("\n");
         if (pos >= 0)
         {
-            const int oldCompareWidth = m_nCompareWidth; // что бы не было переносов
+            const int oldCompareWidth = m_nCompareWidth; // to avoid hyphenation
             m_nCompareWidth = 1000;
             AddFormatedText(tmpstr);
             m_nCompareWidth = oldCompareWidth;
@@ -1534,7 +1534,7 @@ void CXI_FORMATEDTEXT::ReplaceString(long nGrpNum, const char *pSrcStr)
         return;
     }
 
-    // вставляем новые
+    // insert new
     InsertStringBefore(dscrCur, pSrcStr, nGrpNum, dwOldColor);
     if (!m_listCur)
     {
@@ -1553,7 +1553,7 @@ void CXI_FORMATEDTEXT::InsertStringBefore(STRING_DESCRIBER *pNextDescr, const ch
     char *pstr = (char *)pSrcStr;
     long textQ = 0;
 
-    // разложим полученную строку на строки влезающие в область вывода
+    // decompose the resulting string into lines that fit into the output area
     while (GetLineNext(m_idFont, pstr, newStr, sizeof(newStr)))
     {
         auto *pNewDescr = new STRING_DESCRIBER(newStr);

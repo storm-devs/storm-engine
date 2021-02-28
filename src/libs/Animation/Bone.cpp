@@ -1,12 +1,12 @@
-//============================================================================================
-//	Spirenkov Maxim aka Sp-Max Shaman, 2001
-//--------------------------------------------------------------------------------------------
-//	Storm engine v2.00
-//--------------------------------------------------------------------------------------------
-//	Bone
-//--------------------------------------------------------------------------------------------
-//	Кость модели, содержищая свою анимацию
-//============================================================================================
+// ============================================================================================
+// Spirenkov Maxim aka Sp-Max Shaman, 2001
+// --------------------------------------------------------------------------------------------
+// Storm engine v2.00
+// --------------------------------------------------------------------------------------------
+// Bone
+// --------------------------------------------------------------------------------------------
+// Model bone containing its animation
+// ============================================================================================
 
 #include "Bone.h"
 
@@ -14,9 +14,9 @@
 #include "storm_assert.h"
 #include "vmodule_api.h"
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 Bone::Bone()
 {
@@ -32,7 +32,7 @@ Bone::~Bone()
     delete pos;
 }
 
-//Сказать сколько будет кадров анимации
+// how many frames of animation there will be
 void Bone::SetNumFrames(long num, CVECTOR &sPos, bool isRoot)
 {
     delete ang;
@@ -61,7 +61,7 @@ void Bone::SetNumFrames(long num, CVECTOR &sPos, bool isRoot)
     pos0 = sPos;
 }
 
-//Установить позиции анимации
+// Set animation positions
 void Bone::SetPositions(const CVECTOR *pArray, long numPos)
 {
     Assert(numPos == numFrames);
@@ -78,7 +78,7 @@ void Bone::SetPositions(const CVECTOR *pArray, long numPos)
 // Compressed animation
 //-------------------------------------
 
-//Установить углы анимации
+// Set animation angles
 void Bone::SetAngles(const D3DXQUATERNION *aArray, long numAng)
 {
     Assert(numAng == numFrames);
@@ -115,7 +115,7 @@ inline void Bone::GetFrame(long f, D3DXQUATERNION &qt)
 // Uncompressed animation
 //-------------------------------------
 
-//Установить углы анимации
+// Set animation angles
 void Bone::SetAngles(const D3DXQUATERNION *aArray, long numAng)
 {
     Assert(numAng == numFrames);
@@ -151,7 +151,7 @@ inline float Bone::Clamp(float v, const char *str)
 
 //=====================================================================================
 
-//Инициализировать стартовую матрицу
+// Initialize start matrix
 void Bone::BuildStartMatrix()
 {
     if (numFrames == 0 || !ang)
@@ -167,11 +167,11 @@ void Bone::BuildStartMatrix()
         start = inmtx;
 }
 
-//--------------------------------------------------------------------------------------------
-//Работа с костью
-//--------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
+// Working with a bone
+// --------------------------------------------------------------------------------------------
 
-//Добавить кадры анимации
+// Add animation frames
 void Bone::BlendFrame(long frame, float kBlend, D3DXQUATERNION &res)
 {
     if (numFrames <= 0)
@@ -193,14 +193,14 @@ void Bone::BlendFrame(long frame, float kBlend, D3DXQUATERNION &res)
     D3DXQuaternionSlerp(&res, &q0, &q1, kBlend);
 }
 
-//Создать матрицу для полученного положения
+// Create a matrix for the resulting position
 void Bone::BuildMatrix()
 {
-    //Повороты
+    // Turns
     // matrix = a.BuildMatrix();
     D3DXMatrixRotationQuaternion(matrix, &a);
     matrix.Pos() = p;
-    //Домножим на родительскую матрицу
+    // Multiply by the parent matrix
     if (parent)
         matrix.EqMultiply(CMatrix(matrix), parent->matrix);
 }

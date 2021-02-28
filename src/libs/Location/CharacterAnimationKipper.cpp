@@ -13,9 +13,9 @@
 #include "core.h"
 #include "dx9render.h"
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 CharacterAnimationKipper::CharacterAnimationKipper()
 {
@@ -40,10 +40,10 @@ CharacterAnimationKipper::~CharacterAnimationKipper()
     }
 }
 
-//Инициализация
+// Initialization
 bool CharacterAnimationKipper::Init()
 {
-    //Проверим что единственные
+    // check that the it's the only one
     const auto &entities = EntityManager::GetEntityIdVector("CharacterAnimationKipper");
     for (auto eid : entities)
     {

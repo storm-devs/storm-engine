@@ -210,7 +210,7 @@ void Astronomy::STARS::Init(ATTRIBUTES *pAP)
             }
             // core.Trace("Stars: min = %.3f, max = %.3f", fMinMag, fMaxMag);
 
-            // запишем все буферы в файл для того что бы в след раз не пересчитывать
+            // write all the buffers to a file in order not to recalculate the next time
             hOutFile = fio->_CreateFile("resource\\star.dat", GENERIC_WRITE, 0, CREATE_ALWAYS);
             if (INVALID_HANDLE_VALUE != hOutFile)
             {

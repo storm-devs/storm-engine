@@ -25,22 +25,22 @@ LocRats::~LocRats()
 
 //============================================================================================
 
-//Инициализация
+// Initialization
 bool LocRats::Init()
 {
-    //Указатель на локацию
+    // Location Pointer
     const auto loc = EntityManager::GetEntityId("location");
     auto *location = (Location *)EntityManager::GetEntityPointer(loc);
     if (!location)
         return false;
-    //Исполнение
+    // Execution
     // core.LayerCreate("realize", true, false);
     EntityManager::SetLayerType(REALIZE, EntityManager::Layer::Type::realize);
     EntityManager::AddToLayer(REALIZE, GetId(), 100000);
     return true;
 }
 
-//Сообщения
+// Messages
 uint64_t LocRats::ProcessMessage(MESSAGE &message)
 {
     auto num = message.Long();
@@ -48,23 +48,23 @@ uint64_t LocRats::ProcessMessage(MESSAGE &message)
         num = 1;
     if (num > sizeof(rat) / sizeof(LocRat))
         num = sizeof(rat) / sizeof(LocRat);
-    //Указатель на локацию
+    // Location Pointer
     const auto loc = EntityManager::GetEntityId("location");
     auto *location = (Location *)EntityManager::GetEntityPointer(loc);
     if (!location)
         return 0;
-    //Заводим крыс
+    // Init rats
     for (long i = 0; i < num; i++)
         rat[i].Init(location);
     return 1;
 }
 
-//Исполнение
+// Execution
 void LocRats::Execute(uint32_t delta_time)
 {
 }
 
-//Рисование
+// Drawing
 void LocRats::Realize(uint32_t delta_time)
 {
     const auto dltTime = delta_time * 0.001f;

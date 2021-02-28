@@ -77,7 +77,7 @@ void slAddToCache(LocationFindCacheElement *element, long size, const char *name
 {
     Assert(name);
     Assert(name[0]);
-    //Ищем ячейку для записи
+    // looking for a cell for recording
     long j = 0;
     for (long i = 0, min = element[i].use; i < size; i++)
     {
@@ -99,7 +99,7 @@ void slAddToCache(LocationFindCacheElement *element, long size, const char *name
 
 uint32_t slNativeFastFind(VS_STACK *pS, LocationFindCacheElement *cache, long cacheSize)
 {
-    //Получить строки
+    // Get strings
     auto *pStr = (VDATA *)pS->Pop();
     const char *nm = nullptr;
     if (!pStr->Get(nm))
@@ -108,14 +108,14 @@ uint32_t slNativeFastFind(VS_STACK *pS, LocationFindCacheElement *cache, long ca
         charactersFindBuf.Set(nm);
     else
         charactersFindBuf.Set("");
-    //Массив персонажей
+    // Array of characters
     auto *pArray = (VDATA *)pS->Pop();
     if (!pArray)
         return IFUNCRESULT_FAILED;
     pArray = (VDATA *)pArray->GetReference();
     if (!pArray)
         return IFUNCRESULT_FAILED;
-    //Возвращаемое значение
+    // Return value
     auto *pReturn = (VDATA *)pS->Push();
     if (!pReturn)
         return IFUNCRESULT_FAILED;
@@ -124,14 +124,14 @@ uint32_t slNativeFastFind(VS_STACK *pS, LocationFindCacheElement *cache, long ca
         pReturn->Set(-1L);
         return IFUNCRESULT_OK;
     }
-    //Снижаем значения использования в кеше
+    // Lowering the cache usage values
     for (long i = 0; i < cacheSize; i++)
     {
         cache[i].use--;
         if (cache[i].use < 0)
             cache[i].use = 0;
     }
-    //Смотрим в кеше
+    // look in the cache
     bool res;
     for (long i = 0; i < cacheSize; i++)
     {
@@ -139,7 +139,7 @@ uint32_t slNativeFastFind(VS_STACK *pS, LocationFindCacheElement *cache, long ca
             continue;
         if (!cache[i].Cmp(charactersFindBuf))
             continue;
-        //Проверяем на правильность кешь-значения
+        // Checking for the correctness of the cache value
         if (static_cast<uint32_t>(cache[i].index) >= pArray->GetElementsNum())
         {
             cache[i].index = -1;
@@ -153,13 +153,13 @@ uint32_t slNativeFastFind(VS_STACK *pS, LocationFindCacheElement *cache, long ca
         }
         if (res)
         {
-            //Нашли в кеше, возвращаем
+            // Found in cache, return
             cache[i].use++;
             pReturn->Set(cache[i].index);
             return IFUNCRESULT_OK;
         }
     }
-    //Придётся искать по массиву
+    // Have to search through the array
     const long num = pArray->GetElementsNum();
     for (long i = 0; i < num; i++)
     {
@@ -191,11 +191,11 @@ uint32_t slNativeFindLocation(VS_STACK *pS)
 
 uint32_t slNativeFindLaodLocation(VS_STACK *pS)
 {
-    //Возвращаемое значение
+    // Return value
     VDATA *pReturn = (VDATA *)pS->Push();
     if (!pReturn)
         return IFUNCRESULT_FAILED;
-    //Ищим локацию
+    // Looking for a location
     const auto loc = EntityManager::GetEntityId("location");
     if (!loc)
     {
@@ -215,12 +215,12 @@ uint32_t slNativeFindLaodLocation(VS_STACK *pS)
 
 uint32_t slNativeSetReloadBackImage(VS_STACK *pS)
 {
-    //Получить строки
+    // Get strings
     VDATA *pStr = (VDATA *)pS->Pop();
     const char *nm = nullptr;
     if (!pStr->Get(nm))
         return IFUNCRESULT_FAILED;
-    //Устанавливаем картинку
+    // Setting the picture
     VDX9RENDER *rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (rs)
     {
@@ -255,7 +255,7 @@ uint32_t slNativeReloadProgressEnd(VS_STACK *pS)
 
 uint32_t slNativeSleep(VS_STACK *pS)
 {
-    //Получить строки
+    // Get strings
     auto *pInt = (VDATA *)pS->Pop();
     long delay = 1;
     if (!pInt || !pInt->Get(delay))
@@ -268,12 +268,12 @@ uint32_t slNativeSleep(VS_STACK *pS)
 
 uint32_t slNativeExecuteTechnique(VS_STACK *pS)
 {
-    //Получить строку
+    // Get string
     VDATA *pStr = (VDATA *)pS->Pop();
     const char *nm = nullptr;
     if (!pStr->Get(nm))
         return IFUNCRESULT_FAILED;
-    //Исполить технику
+    // Execute technique
     if (nm && nm[0])
     {
         auto *rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
@@ -286,7 +286,7 @@ uint32_t slNativeExecuteTechnique(VS_STACK *pS)
 
 uint32_t slGetNextLineString(VS_STACK *pS)
 {
-    //Возвращаемое значение
+    // Return value
     auto *pReturn = (VDATA *)pS->Push();
     if (!pReturn)
         return IFUNCRESULT_FAILED;

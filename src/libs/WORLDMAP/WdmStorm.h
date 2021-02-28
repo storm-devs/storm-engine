@@ -18,9 +18,9 @@ class WdmCloud;
 
 class WdmStorm : public WdmRenderObject
 {
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     WdmStorm();
     virtual ~WdmStorm();
@@ -32,24 +32,24 @@ class WdmStorm : public WdmRenderObject
 
     bool CheckIntersection(float x, float z, float r);
 
-    //Расчёты
+    // Calculations
     void Update(float dltTime) override;
     void LRender(VDX9RENDER *rs) override;
 
     const char *GetId() const;
 
   public:
-    //Установка параметров
+    // Setting parameters
     void SetSaveAttribute(ATTRIBUTES *save);
     void DeleteUpdate();
 
     bool isTornado;
 
-    //--------------------------------------------------------------------------------------------
-    //Инкапсуляция
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Encapsulation
+    // --------------------------------------------------------------------------------------------
   private:
-    //Обновление сохраняемых данных
+    // Updating stored data
     void UpdateSaveData();
 
   private:
@@ -62,13 +62,13 @@ class WdmStorm : public WdmRenderObject
     bool isBrn, isKl;
 
     long num;
-    WdmCloud *cloud[8];  //Указатели на облака
-    CVECTOR cloudPos[8]; //Позиции
-    float rotSpd[8];     //Скорости вращения вокруг центра
+    WdmCloud *cloud[8];  // Pointers to the clouds
+    CVECTOR cloudPos[8]; // Positions
+    float rotSpd[8];     // Rotational speeds around the center
 
     ATTRIBUTES *saveAttribute;
 
-    //Дождик
+    // Rain
     long rainTexture;
     RS_RECT rainRect[48 * 8];
 

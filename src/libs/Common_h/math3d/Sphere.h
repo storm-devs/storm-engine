@@ -12,7 +12,7 @@
 #include "Vector.h"
 #include "Vector4.h"
 
-///Класс представления шара в 3D пространстве
+// Class for representing a sphere in 3D space
 class Sphere
 {
   public:
@@ -22,101 +22,101 @@ class Sphere
             union {
                 struct
                 {
-                    ///Позиция по X
+                    // X Position
                     float x;
-                    ///Позиция по Y
+                    // Y position
                     float y;
-                    ///Позиция по Z
+                    // Z Position
                     float z;
                 };
 
                 union {
                     struct
                     {
-                        ///Позиция
+                        // Position
                         Vector p;
                     };
 
                     struct
                     {
-                        ///Позиция
+                        // Position
                         Vector pos;
                     };
                 };
             };
 
             union {
-                ///Радиус
+                // Radius
                 float r;
-                ///Радиус
+                // Radius
                 float radius;
             };
         };
 
         struct
         {
-            ///Представление в виде Vector4
+            // Vector4 representation
             Vector4 v4;
         };
     };
 
-    //-----------------------------------------------------------
-    //Конструкторы
-    //-----------------------------------------------------------
+    // -----------------------------------------------------------
+    // Constructors
+    // -----------------------------------------------------------
   public:
-    //Пустой конструктор
+    // Empty constructor
     Sphere();
-    //Конструктор копирования
+    // Copy constructor
     Sphere(const Sphere &s);
-    //-----------------------------------------------------------
-    //Утилитные
-    //-----------------------------------------------------------
+    // -----------------------------------------------------------
+    // Utilities
+    // -----------------------------------------------------------
   public:
-    //Точка в сфере
+    // Point in sphere
     bool Intersection(const Vector &p);
-    //Проверить пересечение отрезка и сферы
+    // Check intersection of line and sphere
     bool Intersection(const Vector &src, const Vector &dst);
-    //Проверить пересечение луча и сферы
+    // Check ray and sphere intersection
     bool Intersection(const Vector &orig, const Vector &normdir, float *res);
-    //Проверить пересечение сферы и сферы
+    // Check sphere and sphere intersection
     bool Intersection(const Sphere &sph);
 
-    //Установить сферу в точку с 0 радиусом
+    // Set sphere in a point with 0 radius
     void Reset(const Vector &p);
-    //Включить в описывающую сферу точку
+    // Include a point in the enclosing sphere
     void AddPoint(const Vector &p);
 
-    //Проверить пересечение луча и сферы
+    // Check ray and sphere intersection
     static bool Intersection(const Vector &orig, const Vector &normdir, const Vector &pos, float r, float *res);
 };
 
-//-----------------------------------------------------------
-//Конструкторы
-//-----------------------------------------------------------
+// -----------------------------------------------------------
+// Constructors
+// -----------------------------------------------------------
 
-//Пустой конструктор
+// Empty constructor
 inline Sphere::Sphere()
 {
     v4 = Vector4();
 };
 
-//Конструктор копирования
+// Copy constructor
 inline Sphere::Sphere(const Sphere &s)
 {
     v4 = s.v4;
 };
 
-//===========================================================
-//Утилитные
-//===========================================================
+// ===========================================================
+// Utilities
+// ===========================================================
 
-//Точка в сфере
+// Point in sphere
 inline bool Sphere::Intersection(const Vector &p)
 {
     return ~(pos - p) <= radius * radius;
 }
 
-//Проверить пересечение отрезка и сферы
+// Check intersection of line and sphere
 inline bool Sphere::Intersection(const Vector &src, const Vector &dst)
 {
     Vector dir = dst - src;
@@ -142,29 +142,29 @@ inline bool Sphere::Intersection(const Vector &src, const Vector &dst)
     return ~(pos - src) <= radius * radius;
 }
 
-//Проверить пересечение луча и сферы
+// Check ray and sphere intersection
 inline bool Sphere::Intersection(const Vector &orig, const Vector &normdir, float *res)
 {
     return Intersection(orig, normdir, pos, r, res);
 }
 
-//Проверить пересечение сферы и сферы
+// Check sphere and sphere intersection
 inline bool Sphere::Intersection(const Sphere &sph)
 {
     return (~(p - sph.p) <= (r + sph.r) * (r + sph.r));
 }
 
-//Установить сферу в точку с 0 радиусом
+// Set sphere in a point with 0 radius
 inline void Sphere::Reset(const Vector &p)
 {
     pos = p;
     r = 0.0f;
 }
 
-//Включить в описывающую сферу точку
+// Include a point in the enclosing sphere
 inline void Sphere::AddPoint(const Vector &p)
 {
-    //Вектор из точки к центру
+    // Vector from point to center
     const float dx = pos.x - p.x;
     const float dy = pos.y - p.y;
     const float dz = pos.z - p.z;
@@ -172,16 +172,16 @@ inline void Sphere::AddPoint(const Vector &p)
     if (len <= r * r)
         return;
     len = sqrtf(len);
-    //Новый радиус
+    // New radius
     r = (len + r) * 0.5f;
-    //Новая позиция
+    // New position
     len = r / len;
     pos.x = p.x + dx * len;
     pos.y = p.y + dy * len;
     pos.z = p.z + dz * len;
 }
 
-//Проверить пересечение луча и сферы
+// Check ray and sphere intersection
 inline bool Sphere::Intersection(const Vector &orig, const Vector &normdir, const Vector &pos, float r, float *res)
 {
     const Vector toCenter = pos - orig;

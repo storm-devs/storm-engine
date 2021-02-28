@@ -325,12 +325,12 @@ class DX9RENDER : public VDX9RENDER
     long StringWidth(const char *string, long nFontNum = 0, float fScale = 1.f, long scrWidth = 0) override;
     long CharWidth(utf8::u8_char, long nFontNum = 0, float fScale = 1.f, long scrWidth = 0) override;
     long CharHeight(long fontID) override;
-    long LoadFont(const char *fontName) override; // возвращает номер\идентификатор шрифта или -1 в случае ошибки
-    bool UnloadFont(const char *fontName) override; // возвращает истину если шрифт остался в использовании
-    bool UnloadFont(long fontID) override; // возвращает истину если шрифт остался в использовании
+    long LoadFont(const char *fontName) override; // returns the number \ font id, or -1 on error
+    bool UnloadFont(const char *fontName) override; // returns true if the font is still in use
+    bool UnloadFont(long fontID) override; // returns true if the font is still in use
     bool IncRefCounter(long fontID) override; // increase reference counter if object is being copied
-    bool SetCurFont(const char *fontName) override; // возвращает истину если установили данный шрифт
-    bool SetCurFont(long fontID) override; // возвращает истину если установили данный шрифт
+    bool SetCurFont(const char *fontName) override; // returns true if the given font is installed
+    bool SetCurFont(long fontID) override; // returns true if the given font is installed
     long GetCurFont() override;
     char *GetFontIniFileName() override;
     bool SetFontIniFileName(const char *iniName) override;
@@ -559,12 +559,12 @@ class DX9RENDER : public VDX9RENDER
                          long x, long y,char * format,...);
     long StringWidth(char * string, long nFontNum=0, float fScale=1.f, long scrWidth=0);
     long CharWidth(char ch, long nFontNum=0, float fScale=1.f, long scrWidth=0);
-    long CharHeight(long fontID); // возвращает высоту шрифта
-    long LoadFont(char * fontName); // возвращает номер\идентификатор шрифта или -1 в случае ошибки
-    bool UnloadFont(char * fontName); // возвращает истину если шрифт остался в использовании
-    bool UnloadFont(long fontID); // возвращает истину если шрифт остался в использовании
-    bool SetCurFont(char * fontName); // возвращает истину если установили данный шрифт
-    bool SetCurFont(long fontID); // возвращает истину если установили данный шрифт
+long CharHeight (long fontID); // returns the font height
+long LoadFont (char * fontName); // returns number \ font identifier or -1 in case of error
+bool UnloadFont (char * fontName); // returns true if the font is still in use
+bool UnloadFont (long fontID); // returns true if the font is still in use
+bool SetCurFont (char * fontName); // returns true if the given font is installed
+bool SetCurFont (long fontID); // returns true if the given font is installed
     long GetCurFont();
     char *GetFontIniFileName();
     bool SetFontIniFileName(char * iniName);

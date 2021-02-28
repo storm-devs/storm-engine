@@ -72,7 +72,7 @@ void BIShipCommandList::Init()
 
     m_nChargeTextureNum = -1;
     m_nCommandTextureNum = -1;
-    m_nIconShowMaxQuantity = 8; // boal
+    m_nIconShowMaxQuantity = 8;
 
     auto *pA = m_pARoot;
     if (pA)
@@ -101,12 +101,12 @@ long BIShipCommandList::ShipAdding(bool allLabel, bool bMyShip, bool bEnemy, boo
     long n;
     long retVal = 0;
 
-    // список кораблей
+    // list of ships
     auto *sd = g_ShipList.GetShipRoot();
     if (sd == nullptr)
         return 0;
 
-    // дистанция отсечения корабля из списка
+    // distance for removing the ship from the list
     auto *pA = GetCurrentCommandAttribute();
     auto sqrRadius = -1.f;
     if (pA)
@@ -149,14 +149,14 @@ long BIShipCommandList::ShipAdding(bool allLabel, bool bMyShip, bool bEnemy, boo
                 !bMyShip && bFriend && !sd->isMyShip && sd->relation == BI_RELATION_FRIEND ||
                 !bMyShip && bNeutral && !sd->isMyShip && sd->relation == BI_RELATION_NEUTRAL)
             {
-                // подходит под расстояние ?
+                // fits the distance?
                 if (!allLabel)
                 {
                     const auto cv = sd->pShip->GetPos();
                     if (SQR(selX - cv.x) + SQR(selZ - cv.z) > sqrRadius)
                         continue;
                 }
-                // проверка на допустимость корабля из скрипта
+                // check for validity of the ship from the script
                 if (!m_sCurrentCommandName.empty())
                 {
                     auto *pvdat =
@@ -193,7 +193,7 @@ long BIShipCommandList::FortAdding(bool allLabel, bool bFriend, bool bNeutral, b
         allLabel = true;
     sqrRadius *= sqrRadius;
 
-    // Определим координаты принимающего команды корабля
+    // Determine the coordinates of the ship receiving the commands
     const auto selectedCharacter = m_nCurrentCommandCharacterIndex;
     auto *selShip = g_ShipList.FindShip(selectedCharacter);
     float selX, selZ;
@@ -248,7 +248,7 @@ long BIShipCommandList::LandAdding(bool allLabel)
         allLabel = true;
     sqrRadius *= sqrRadius;
 
-    // Определим координаты принимающего команды корабля
+    // Determine the coordinates of the ship receiving the commands
     const auto selectedCharacter = m_nCurrentCommandCharacterIndex;
     auto *selShip = g_ShipList.FindShip(selectedCharacter);
     float selX, selZ;
@@ -294,9 +294,9 @@ long BIShipCommandList::CommandAdding()
     {
         auto *pA = pAttr->GetAttributeClass(i);
         if (pA == nullptr)
-            continue; // нет такого атрибута
+            continue; // no such attribute
         if (pA->GetAttributeAsDword("enable", 0) == 0)
-            continue; // команда недоступна
+            continue; // command not available
         const long pictureNum = pA->GetAttributeAsDword("picNum", 0);
         const long selPictureNum = pA->GetAttributeAsDword("selPicNum", 0);
         const long cooldownPictureNum = pA->GetAttributeAsDword("cooldownPicNum", -1);
@@ -311,11 +311,11 @@ long BIShipCommandList::CommandAdding()
 
 long BIShipCommandList::ChargeAdding()
 {
-    // Определим количество каждого заряда на борту
+    // Determine the amount of each charge on board
     auto *tmpDat = core.Event("BI_GetChargeQuantity", "l", m_nCurrentCommandCharacterIndex);
     if (tmpDat == nullptr)
         return 0;
-    long lIdx = 0; // количество типов заряда
+    long lIdx = 0; // number of charge types
     tmpDat->Get(lIdx, 0);
     if (lIdx <= 0)
         return 0;
@@ -351,9 +351,9 @@ long BIShipCommandList::UserIconsAdding()
     {
         auto *pA = pAttr->GetAttributeClass(i);
         if (pA == nullptr)
-            continue; // нет такого атрибута
+            continue; // no such attribute
         if (pA->GetAttributeAsDword("enable", 0) == 0)
-            continue; // команда недоступна
+            continue; // command not available
         const long pictureNum = pA->GetAttributeAsDword("pic", 0);
         const long selPictureNum = pA->GetAttributeAsDword("selpic", 0);
         const long textureNum = pA->GetAttributeAsDword("tex", -1);
@@ -377,9 +377,9 @@ long BIShipCommandList::AbilityAdding()
     {
         auto *pA = pAttr->GetAttributeClass(i);
         if (pA == nullptr)
-            continue; // нет такого атрибута
+            continue; // no such attribute
         if (pA->GetAttributeAsDword("enable", 0) == 0)
-            continue; // команда недоступна
+            continue; // command not available
         const long pictureNum = pA->GetAttributeAsDword("picNum", 0);
         const long selPictureNum = pA->GetAttributeAsDword("selPicNum", 0);
         const long textureNum = pA->GetAttributeAsDword("texNum", -1);
@@ -416,7 +416,7 @@ long BIShipCommandList::TownAdding(bool allLabel, bool bDiseased, bool bNotDisea
         return 0;
     long retVal = 0;
 
-    // определяем радиус действия команды (все что не входит в него - не показывается)
+    // determine the radius of the command (everything that is not included in it is not shown)
     auto *pA = GetCurrentCommandAttribute();
     auto sqrRadius = pL->r;
     if (pA)
@@ -425,7 +425,7 @@ long BIShipCommandList::TownAdding(bool allLabel, bool bDiseased, bool bNotDisea
         allLabel = true;
     sqrRadius *= sqrRadius;
 
-    // Определим координаты принимающего команды корабля
+    // Determine the coordinates of the ship receiving the commands
     const auto selectedCharacter = m_nCurrentCommandCharacterIndex;
     auto *selShip = g_ShipList.FindShip(selectedCharacter);
     float selX, selZ;
@@ -444,8 +444,8 @@ long BIShipCommandList::TownAdding(bool allLabel, bool bDiseased, bool bNotDisea
     do
     {
         if (pL->locatorType != ISLAND_LOCATOR_TOWN)
-            continue; // проверка по типу - должен быть городом
-        // проверка по отношению (враг,нейтрал,друг)
+            continue; // check by type - must be city
+        // check against (enemy, neutral, friend)
         if (pL->relation == BI_RELATION_ENEMY && !bEnemy)
             continue;
         if (pL->relation == BI_RELATION_NEUTRAL && !bNeutral)

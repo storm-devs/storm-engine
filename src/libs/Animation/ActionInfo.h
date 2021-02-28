@@ -1,12 +1,12 @@
-//============================================================================================
-//	Spirenkov Maxim aka Sp-Max Shaman, 2001
-//--------------------------------------------------------------------------------------------
-//	Storm engine v2.00
-//--------------------------------------------------------------------------------------------
-//	ActionInfo
-//--------------------------------------------------------------------------------------------
-//	Информация об одном действие
-//============================================================================================
+// ============================================================================================
+// Spirenkov Maxim aka Sp-Max Shaman, 2001
+// --------------------------------------------------------------------------------------------
+// Storm engine v2.00
+// --------------------------------------------------------------------------------------------
+// ActionInfo
+// --------------------------------------------------------------------------------------------
+// Information about one action
+// ============================================================================================
 
 #ifndef _ActionInfo_H_
 #define _ActionInfo_H_
@@ -18,9 +18,9 @@
 
 enum ExtAnimationEventType
 {
-    eae_always, //Всегда
-    eae_normal, //При прямом проигрывании
-    eae_reverse //При обратном проигрывании
+    eae_always, // Always
+    eae_normal, // When playing forward
+    eae_reverse // Reverse playback
 };
 
 class ActionPlayerImp;
@@ -31,71 +31,71 @@ class ActionInfo final
 
     struct Event
     {
-        char name[64];               //Название события
-        float time;                  //Относительное время события
-        ExtAnimationEventType event; //Тип события
+        char name[64];               // Event name
+        float time;                  // Relative time of the event
+        ExtAnimationEventType event; // Event type
     };
 
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     ActionInfo(const char *aname, long startframe, long endframe);
-    //Установить коэфициент скорости воспроизведения
+    // Set playback speed ratio
     void SetRate(float rate);
-    //Установить тип анимации
+    // Set animation type
     void SetAnimationType(AnimationType t);
-    //Зацикленность воспроизведения анимации
+    // Looped animation playback
     void SetLoop(bool isloop);
-    //Добавить событие
+    // Add event
     bool AddEvent(const char *ename, float frame, ExtAnimationEventType event);
 
-    //--------------------------------------------------------------------------------------------
-    //Работа с действием
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Working with action
+    // --------------------------------------------------------------------------------------------
   public:
-    //Сравнить с текущим именем
+    // Compare with current name
     bool operator==(const char *actionName) const;
-    //Получить имя действия
+    // Get action name
     const char *GetName();
-    //Получить количество событий
+    // Get the number of events
     long GetNumEvents();
-    //Проверим на выполнимость условия генерации события,
-    // direction == true для нормального направления
+    // check if the event generation condition is satisfied,
+    // direction == true for normal direction
     bool CheckEvent(long index, float time, bool direction);
-    //Получить имя сообщения
+    // Get message name
     const char *EventName(long index);
-    //Получить длительность в кадрах
+    // Get duration in frames
     long GetFrames();
-    //Доступ к пользовательским данным
+    // Access to user data
     std::unordered_map<std::string, std::string> &GetUserData();
 
-    //--------------------------------------------------------------------------------------------
-    //Инкапсуляция
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Encapsulation
+    // --------------------------------------------------------------------------------------------
   private:
-    char name[64]; //Название действия
+    char name[64]; // Action name
 
-    long startFrame; //Начальная позиция в общей анимации
-    long endFrame;   //Конечная позиция в общей анимации
+    long startFrame; // Starting position in the whole animation
+    long endFrame;   // End position in the whole animation
 
-    float kRate;        //Коэфициент скорости воспроизведения
-    AnimationType type; //Тип анимации
-    bool isLoop;        //Зацикленность воспроизведения анимации
+    float kRate;        // Playback speed ratio
+    AnimationType type; // Animation type
+    bool isLoop;        // Looped animation playback
 
-    uint32_t bonesMask[8]; //Маска используемых костей в анимации
+    uint32_t bonesMask[8]; // Bones used in animation
 
-    Event event[ANI_MAX_EVENTS]; //События
-    long numEvents;              //Количество событий
+    Event event[ANI_MAX_EVENTS]; // Events
+    long numEvents;              // Number of events
 
-    std::unordered_map<std::string, std::string> userData; //Пользовательские данные
+    std::unordered_map<std::string, std::string> userData; // User data
 };
 
 //============================================================================================
 // inline
 //============================================================================================
 
-//Установить коэфициент скорости воспроизведения
+// Set playback speed ratio
 inline void ActionInfo::SetRate(float rate)
 {
     if (rate < 0.0f)
@@ -105,41 +105,41 @@ inline void ActionInfo::SetRate(float rate)
     kRate = rate;
 }
 
-//Установить тип анимации
+// Set animation type
 inline void ActionInfo::SetAnimationType(AnimationType t)
 {
     type = t;
 }
 
-//Зацикленность воспроизведения анимации
+// Looped animation playback
 inline void ActionInfo::SetLoop(bool isloop)
 {
     isLoop = isloop;
 }
 
-//--------------------------------------------------------------------------------------------
-//Работа с действием
-//--------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
+// Working with action
+// --------------------------------------------------------------------------------------------
 
-//Получить имя действия
+// Get action name
 inline const char *ActionInfo::GetName()
 {
     return name;
 }
 
-//Получить количество событий
+// Get the number of events
 inline long ActionInfo::GetNumEvents()
 {
     return numEvents;
 }
 
-//Получить длительность в кадрах
+// Get duration in frames
 inline long ActionInfo::GetFrames()
 {
     return endFrame - startFrame;
 }
 
-//Доступ к пользовательским данным
+// Access to user data
 inline std::unordered_map<std::string, std::string> &ActionInfo::GetUserData()
 {
     return userData;

@@ -13,14 +13,14 @@ class DataPosition
     Vector Value;
 
   public:
-    //конструктор/деструктор
+    // constructor / destructor
     DataPosition();
     virtual ~DataPosition();
 
-    //Получить значение (Текущее время, Коэфицент рандома[0..1])
+    // Get value (Current time, Random factor [0..1])
     const Vector &GetValue() const;
 
-    //Установить значение
+    // Set value
     void SetValue(const Vector &val);
 
     void Load(MemFile *File);

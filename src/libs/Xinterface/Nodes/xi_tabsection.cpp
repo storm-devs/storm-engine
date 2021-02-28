@@ -20,14 +20,14 @@ CXI_TABSECTION::~CXI_TABSECTION()
 
 void CXI_TABSECTION::Draw(bool bSelected, uint32_t Delta_Time)
 {
-    // Прорисовка
+    // Drawing
     if (m_idIconTexture != -1 && m_idVBuf != -1 && m_idIBuf != -1)
     {
         m_rs->TextureSet(0, m_idIconTexture);
         m_rs->DrawBuffer(m_idVBuf, sizeof(XI_ONETEX_VERTEX), m_idIBuf, 0, m_nSubQ * 4, 0, m_nSubQ * 2, "iIcon");
     }
 
-    // Вывод заголовков
+    // Output headers
 }
 
 bool CXI_TABSECTION::Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs,

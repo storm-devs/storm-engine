@@ -26,50 +26,50 @@ class WdmClouds : public WdmRenderObject
     {
         struct Cld
         {
-            CVECTOR pos;    //Позиция
-            float angle;    //Угол поворота
-            float size;     //Размер
-            float alpha;    //Прозрачность
-            uint32_t color; //Цвет
-            uint16_t pict;  //Индекс картинки
-            uint16_t index; //Индекс подтягиваемого партикла
-            float aspd;     //Скорость поворота
-            CVECTOR dir;    //Текущий вектор корректировки движения
-            CVECTOR rdr;    //Добавочный вектор рандомного тяготения
+            CVECTOR pos;    // Position
+            float angle;    // Angle of rotation
+            float size;     // The size
+            float alpha;    // Transparency
+            uint32_t color; // Colour
+            uint16_t pict;  // Image index
+            uint16_t index; // Pulled-up particle index
+            float aspd;     // Swing speed
+            CVECTOR dir;    // Current Motion Adjustment Vector
+            CVECTOR rdr;    // Additional vector of random gravitation
         };
 
         Cloud();
 
-        //Если облако переродилось то возвращает true
+        // If the cloud is reborn, returns true
         bool Reset(bool isFirstTime = false);
-        //Обновить состояние облака
+        // Update cloud state
         void Update(float dltTime);
-        //Заполнить массив прямоугольников
+        // Fill an array of rectangles
         long FillRects(RS_RECT *rects, long cnt, float galpha);
-        //Получить центр сферы и радиус
+        // Get sphere center and radius
         float GetBound(CVECTOR &_center) const;
-        //Запустить механизм удаления облака если есть пересечение
+        // Run the cloud removal mechanism if there is an intersection
         void Kill(const Cloud &cld);
 
       private:
-        Cld cloud[WDMCLOUDSMAX]; //Позиции
-        long count;              //Количество
-        float alpha;             //Общая прозрачность
-        float lifeTime;          //Время жизни
-        CVECTOR center;          //Центр облака
-        float radius;            //Радиус облака
+        Cld cloud[WDMCLOUDSMAX]; // Positions
+        long count;              // amount
+        float alpha;             // Overall transparency
+        float lifeTime;          // Lifetime
+        CVECTOR center;          // Cloud center
+        float radius;            // Cloud radius
     };
 
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     WdmClouds();
     virtual ~WdmClouds();
 
-    //Расчёты
+    // Calculations
     void Update(float dltTime) override;
-    //Рисование
+    // Drawing
     void LRender(VDX9RENDER *rs) override;
 
     long texture, light;

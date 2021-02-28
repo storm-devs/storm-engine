@@ -45,28 +45,28 @@ class Sharks : public Entity
         void Event(Animation *animation, long index, long eventID, AnimationEvent event) override;
         long GenerateTrack(uint16_t *inds, Vertex *vrt, uint16_t base, SEA_BASE *sb);
 
-        //Точка следования
-        CVECTOR pos;    //Позиция точки следования
-        CVECTOR vel;    //Натравление перемещение
-        CVECTOR force;  //Сила направления движения
-        float yDir;     //Тенденция к всплытию или погружению
-        float dirTime;  //Время до следующей смены
-        float accs;     //Ускорение акулы
-        CVECTOR rForce; //Случайная сторонния сила
+        // Waypoint
+        CVECTOR pos;    // Waypoint position
+        CVECTOR vel;    // Move direction
+        CVECTOR force;  // Directional force
+        float yDir;     // The tendency to ascend or sink
+        float dirTime;  // Time until next change
+        float accs;     // Shark acceleration
+        CVECTOR rForce; // Accidental external force
         float rTime;
-        //Акула
-        CVECTOR fforce; //Сила направления движения
-        CVECTOR spos;   //Позиция модельки
-        CVECTOR angs;   //Углы модельки
-        float turn;     //Скорость изменения угла
-        float imspd;    //Скорость погружения
-        float speed;    //Скорость перемещения
-        float shipY;    //Ограничение кораблём
-        float vBase;    //Смещение трека акулы
-        entid_t model;  //Моделька акулы
-        //Анимация
-        float aniTime;  //Время проигрывания текущей анимации
-        float jumpTime; //Время до следующего выпрыгивания
+        // Shark
+        CVECTOR fforce; // Directional force
+        CVECTOR spos;   // Model position
+        CVECTOR angs;   // Model angles
+        float turn;     // Angle change rate
+        float imspd;    // Dive speed
+        float speed;    // Move speed
+        float shipY;    // Limit by ship
+        float vBase;    // Shark track offset
+        entid_t model;  // Shark model
+        // Animation
+        float aniTime;  // Playing time of the current animation
+        float jumpTime; // Time until the next jump
         bool speedUp;
     };
 
@@ -80,16 +80,16 @@ class Sharks : public Entity
         entid_t model;
     };
 
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     Sharks();
     virtual ~Sharks();
 
-    //Инициализация
+    // Initialization
     bool Init();
-    //Исполнение
+    // Execution
     void Execute(uint32_t delta_time);
     void Realize(uint32_t delta_time);
     void ProcessStage(Stage stage, uint32_t delta) override
@@ -109,9 +109,9 @@ class Sharks : public Entity
         }
     }
 
-    //--------------------------------------------------------------------------------------------
-    //Инкапсуляция
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Encapsulation
+    // --------------------------------------------------------------------------------------------
   private:
     bool LoadPeriscopeModel();
 

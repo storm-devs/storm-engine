@@ -1,10 +1,10 @@
 #include "particlesystem.h"
 #include "../Emitters/point.h"
 
-//Глобальный GUID для присваивания эмиттерам
+// Global GUID to assign to emitters
 uint32_t EmitterID = 0;
 
-//Создание/удаление
+// Create / delete
 ParticleSystem::ParticleSystem(ParticleManager *serv)
 {
     AutoDeleted = false;
@@ -24,7 +24,7 @@ bool ParticleSystem::Release()
     return false;
 }
 
-//Отработать всем партиклам
+// Execute all particles
 uint32_t ParticleSystem::Execute(float DeltaTime)
 {
     if (AutoDeleted)
@@ -104,7 +104,7 @@ ParticleManager *ParticleSystem::GetMaster() const
     return pMaster;
 }
 
-//Перезапустить партикловую систему
+// Restart particle system
 void ParticleSystem::Restart(uint32_t RandomSeed)
 {
     srand(RandomSeed);
@@ -116,13 +116,13 @@ void ParticleSystem::Restart(uint32_t RandomSeed)
     PauseEmission(false);
 }
 
-//Запаузить испускание партиклов
+// Pause particle emission
 void ParticleSystem::PauseEmission(bool bPause)
 {
     EmissionPause = bPause;
 }
 
-//Узнать на паузе эмиссия или нет
+// Find out whether emission is paused or not
 bool ParticleSystem::IsEmissionPaused()
 {
     return EmissionPause;
@@ -138,19 +138,19 @@ bool ParticleSystem::DeleteIfNeed()
     return false;
 }
 
-//Установить автоудаляемая система или обычная...
+// Set whether auto-delete system or regular ...
 void ParticleSystem::AutoDelete(bool Enabled)
 {
     AutoDeleted = Enabled;
 }
 
-//Узнаять автоудаляемая система или нет
+// Find out if auto-delete system or not
 bool ParticleSystem::IsAutoDeleted()
 {
     return AutoDeleted;
 }
 
-//Установить матрицу трансформации для системы
+// Set transformation matrix for system
 void ParticleSystem::SetTransform(const Matrix &transform)
 {
     matWorld = transform;

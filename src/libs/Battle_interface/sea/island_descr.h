@@ -3,11 +3,11 @@
 
 #include "../bi_defines.h"
 
-// тип локации - места высадки
+// location type - drop-off points
 #define ISLAND_LOCATOR_LAND 1
 #define ISLAND_LOCATOR_FORT 2
 #define ISLAND_LOCATOR_TOWN 3
-// тип поиска локаторов
+// locator search type
 #define ISLAND_FIND_LOCATOR 1
 #define ISLAND_FIND_LAND 2
 #define ISLAND_FIND_FORT 3

@@ -11,87 +11,87 @@
 
 #include "Vector.h"
 
-///Класс представления плоскости в 3D пространстве
+// Class for representing a plane in 3D space
 class Plane
 {
   public:
     union {
         struct
         {
-            ///Нормаль
+            // Normal
             Vector n;
         };
 
         struct
         {
-            ///Нормаль
+            // Normal
             Vector normal;
         };
 
         struct
         {
-            ///Нормаль
+            // Normal
             Vector N;
         };
     };
 
     union {
-        ///Дистанция от центра
+        // Distance from center
         float d;
-        ///Дистанция от центра
+        // Distance from center
         float dist;
-        ///Дистанция от центра
+        // Distance from center
         float D;
     };
 
-    //-----------------------------------------------------------
-    //Конструкторы
-    //-----------------------------------------------------------
+    // -----------------------------------------------------------
+    // Constructors
+    // -----------------------------------------------------------
   public:
-    ///Пустой конструктор
+    // Empty constructor
     Plane();
-    ///Задать направление
+    // Set direction
     Plane(float Nx, float Ny, float Nz);
-    ///Задать направление
+    // Set direction
     Plane(const Vector &normal);
-    ///Создать плоскость
+    // Create plane
     Plane(const Vector &normal, const Vector &point);
-    ///Конструктор копирования
+    // Copy constructor
     Plane(const Plane &plane);
 
-    //-----------------------------------------------------------
-    //Преобразование
-    //-----------------------------------------------------------
+    // -----------------------------------------------------------
+    // Transformation
+    // -----------------------------------------------------------
   public:
-    ///Нормализовать
+    // Normalize
     Plane &Normalize();
-    ///Переместить плоскость в заданную точку
+    // Move plane to specified point
     Plane &Move(const Vector &point);
 
-    //-----------------------------------------------------------
-    //Утилитные
-    //-----------------------------------------------------------
+    // -----------------------------------------------------------
+    // Utilities
+    // -----------------------------------------------------------
   public:
-    //Найти дистанцию до плоскости (*)
+    // Find distance to plane (*)
     float Dist(const Vector &point) const;
-    //Проверить на пересечение отрезка и плоскости
+    // Check for intersection of line and plane
     bool Intersection(const Vector &src, const Vector &dst) const;
-    //Найти точку пересечения отрезка и плоскости
+    // Find the intersection point of a line and a plane
     bool Intersection(const Vector &src, const Vector &dst, Vector &res) const;
-    //Проверить на пересечение линии и плоскости
+    // Check for line and plane intersection
     bool IntersectionLine(const Vector &src, const Vector &dst, float &k) const;
 };
 
-//===========================================================
-//Конструкторы
-//===========================================================
+// ===========================================================
+// Constructors
+// ===========================================================
 
-///Пустой конструктор
+// Empty constructor
 inline Plane::Plane()
 {
 }
 
-///Задать направление
+// Set direction
 inline Plane::Plane(float Nx, float Ny, float Nz)
 {
     N.x = Nx;
@@ -100,32 +100,32 @@ inline Plane::Plane(float Nx, float Ny, float Nz)
     D = 0.0f;
 }
 
-///Задать направление
+// Set direction
 inline Plane::Plane(const Vector &normal)
 {
     N = normal;
 }
 
-///Создать плоскость
+// Create plane
 inline Plane::Plane(const Vector &normal, const Vector &point)
 {
     N = normal;
     D = normal | point;
 }
 
-///Конструктор копирования
+// Copy constructor
 inline Plane::Plane(const Plane &plane)
 {
     N = plane.N;
     D = plane.D;
 }
 
-//===========================================================
-//Операторы
-//===========================================================
+// ===========================================================
+// Operators
+// ===========================================================
 
 /*!\relates Plane
-Дистанция от точки до плоскости
+Distance from point to plane
 */
 inline float operator*(const Vector &point, const Plane &plane)
 {
@@ -133,18 +133,18 @@ inline float operator*(const Vector &point, const Plane &plane)
 }
 
 /*!\relates Plane
-Дистанция от точки до плоскости
+Distance from point to plane
 */
 inline float operator*(const Plane &plane, const Vector &point)
 {
     return (plane.N | point) - plane.D;
 }
 
-//===========================================================
-//Преобразование
-//===========================================================
+// ===========================================================
+// Transformation
+// ===========================================================
 
-///Нормализовать
+// Normalize
 inline Plane &Plane::Normalize()
 {
     const auto d = normal.Normalize();
@@ -155,24 +155,24 @@ inline Plane &Plane::Normalize()
     return *this;
 }
 
-///Переместить плоскость в заданную точку
+// Move plane to specified point
 inline Plane &Plane::Move(const Vector &point)
 {
     D = (N | point);
     return *this;
 }
 
-//===========================================================
-//Утилитные
-//===========================================================
+// ===========================================================
+// Utilities
+// ===========================================================
 
-//Найти дистанцию до плоскости (*)
+// Find distance to plane (*)
 inline float Plane::Dist(const Vector &point) const
 {
     return *this * point;
 }
 
-//Проверить на пересечение отрезка и плоскости
+// Check for intersection of line and plane
 inline bool Plane::Intersection(const Vector &src, const Vector &dst) const
 {
     const auto dsrc = *this * src;
@@ -180,7 +180,7 @@ inline bool Plane::Intersection(const Vector &src, const Vector &dst) const
     return (dsrc * ddst <= 0.0f);
 }
 
-//Найти точку пересечения отрезка и плоскости
+// Find the intersection point of a line and a plane
 inline bool Plane::Intersection(const Vector &src, const Vector &dst, Vector &res) const
 {
     const auto dsrc = *this * src;
@@ -194,7 +194,7 @@ inline bool Plane::Intersection(const Vector &src, const Vector &dst, Vector &re
     return true;
 }
 
-//Проверить на пересечение линии и плоскости
+// Check for line and plane intersection
 inline bool Plane::IntersectionLine(const Vector &src, const Vector &dst, float &k) const
 {
     const auto dsrc = *this * src;

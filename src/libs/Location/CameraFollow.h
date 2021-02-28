@@ -20,15 +20,15 @@ class CameraFollow
 {
     struct EdgeInfo
     {
-        CVECTOR n; //Нормаль к плоскости
-        float d;   //Дистанция до плоскости
-        CVECTOR s; //Начало ребра
-        CVECTOR e; //Конец ребра
+        CVECTOR n; // Normal to plane
+        float d;   // Distance to the plane
+        CVECTOR s; // Start of the edge
+        CVECTOR e; // End of the edge
     };
 
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     CameraFollow();
     virtual ~CameraFollow();
@@ -36,28 +36,28 @@ class CameraFollow
 
     //--------------------------------------------------------------------------------------------
   public:
-    //Произвести расчёты
+    // Make calculations
     void Update(float dltTime);
 
-    //Найти текущую позицию камеры
+    // Find current camera position
     void MoveCamera(float dltTime);
-    //Переинициализировать позицию камеры
+    // Reinitialize camera position
     void BornCamera();
-    //Вычислить позицию камеры для данного угла
+    // Calculate camera position for a given angle
     void CalcPosition(float ang, float radius, float dax, CVECTOR &pos) const;
-    //Оценить радиус в искомом направлении на 1сек
+    // Estimate the radius in the desired direction for 1 sec
     float FindRadius(float curAng) const;
-    //Учесть полигон в поиске радиуса
+    // Consider polygon in radius search
     static bool ApplyPoly(const CVECTOR *v, long n);
     static void ApplyPolyFindNearest(EdgeInfo *e, long ne, const CVECTOR &pos);
-    //Изменить радиус
+    // Change radius
     void ChangeRadius(float dltTime, float radius);
-    //Найти ускорение остановки камеры при угловом столкновении с патчем
+    // Find the acceleration of camera stop when corner collision with patch
     void FindRotAccelCam();
 
-    //Протянуть луч с учётом cull и размера камеры
+    // Trace the ray taking into account cull and camera size
     float Trace(const CVECTOR &src, const CVECTOR &dst);
-    //Протянуть луч с учётом cull
+    // Trace a ray with cull
     float SubTrace(const CVECTOR &src, const CVECTOR &dst) const;
 
     void DrawDebug();
@@ -67,26 +67,26 @@ class CameraFollow
     LocationCamera *lc;
 
     CVECTOR camPos, lookTo;
-    //Камера следующая за персонажем
-    float camay;     //Текущее направление камеры
-    float camradius; //Текущий радиус
-    bool isBrn;      //Если установленно то надо заново родить камеру
-    float rotSpd;    //Скорость движения камеры на момент остановки
-    float rotAcc;    //Ускорение остановки
-    float kRadInert; //Зависимость инерции изменения радиуса от скорости поворота
-    float kRadInertCur; //Текущая зависимость инерции
+    // Camera following the character
+    float camay;     // Current camera direction
+    float camradius; // Current radius
+    bool isBrn;      // If set, then need to respawn the camera
+    float rotSpd;    // Camera movement speed at the time of stop
+    float rotAcc;    // Stop acceleration
+    float kRadInert; // Dependence of the inertia of the radius change on the turning speed
+    float kRadInertCur; // Current dependence of inertia
 
-    static float fndRadius;     //Текущий радиус при поиске
-    static float fndMaxRadius;  //Максимальный радиус при поиске
-    static CVECTOR fndCamDir;   //Нормализованное напровление на камеру
-    static CVECTOR fndCamDirXZ; //Нормализованное напровление на камеру в XZ
-    static CVECTOR fndCamDirY;  //Нормализованное напровление на камеру в Y
-    static CVECTOR fndCamPos;   //Точка наблюдения
-    static float fndcsAx;       //Косинус ограничивающего угла по x
+    static float fndRadius;     // Current radius when searching
+    static float fndMaxRadius;  // Maximum search radius
+    static CVECTOR fndCamDir;   // Normalized camera heading
+    static CVECTOR fndCamDirXZ; // Normalized heading to camera in XZ
+    static CVECTOR fndCamDirY;  // Normalized camera direction in Y
+    static CVECTOR fndCamPos;   // Observation point
+    static float fndcsAx;       // Cosine of the bounding angle in x
     static float fndkAx;        // 1/(1 - cos(ax))
-    static float fndcsAy;       //Косинус ограничивающего угла по y
+    static float fndcsAy;       // Cosine of the y bounding angle
     static float fndkAy;        // 1/(1 - cos(ay))
-    static PLANE fndPlanes[32]; //Временно используемые плоскости граней
+    static PLANE fndPlanes[32]; // Temporarily used face planes
 };
 
 #endif

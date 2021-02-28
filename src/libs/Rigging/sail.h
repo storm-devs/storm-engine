@@ -18,8 +18,8 @@ struct SAILGROUP
 
 class SAIL : public SAIL_BASE
 {
-    // параметры загружаемые из INI-файла //
-    //--------------------------------------
+    // parameters loaded from INI file //
+    // --------------------------------------
     // float sailDownStep;
     float SsailWindDepend;
     float TsailWindDepend;
@@ -67,9 +67,9 @@ class SAIL : public SAIL_BASE
     uint16_t SailQuantity;
     uint16_t SailCurNum;
 
-    float m_fMinSpeedVal; // минимальная скорость даваемая парусами
+    float m_fMinSpeedVal; // minimum sail speed
 
-    // описание ветра
+    // wind description
     WIND globalWind;
     float *WindVect;
     //------------------------------------------
@@ -136,10 +136,10 @@ class SAIL : public SAIL_BASE
 
   private:
     SAILTIME tm;
-    // список всех парусов
+    // list of all sails
     int sailQuantity;
     SAILONE **slist;
-    // список всех групп парусов
+    // list of all sail groups
     int groupQuantity;
 
     struct GROUPDATA
@@ -150,23 +150,23 @@ class SAIL : public SAIL_BASE
         entid_t modelEI;
         int sailQuantity;
         int *sailIdx;
-        // ограничительный гробик
+        // restrictive box
         CVECTOR boxCenter, boxSize;
         float boxRadius;
-        // Влияние на скорость корабля
+        // Effect on ship speed
         float shipSpeed;
         float maxSpeed;
-        float speed_c, speed_m; // реальная и максимальная скорость даваемая парусами
+        float speed_c, speed_m; // real and maximum speed given by sails
         int maxHole, curHole;
         int maxSP;
-        // спуск\подъем парусов
+        // lowering \ raising sails
         int curSailSet;
         bool bFinalSailUp;
         bool bFinalSailDo;
         bool bFinalSailDoOld;
         float fSpeedMul;
         float fRollingSpeed;
-        // цвет парусов
+        // sail color
         uint32_t dwSailsColor;
     };
 
@@ -189,7 +189,7 @@ class SAIL : public SAIL_BASE
     void DoRandomsSailsDmg(int chrIdx, int gn, float fDmg);
     void GetSailStatus(int chrIdx, int gn);
 
-    // обработка скриптовых запросов
+    // processing script requests
     uint32_t ScriptProcessing(const char *name, MESSAGE &message);
 
     bool bFirstRun;

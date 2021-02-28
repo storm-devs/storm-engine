@@ -12,102 +12,102 @@
 #include "Plane.h"
 #include "Vector.h"
 
-///Класс представления треугольника в 3D пространстве
+// Class for representing a triangle in 3D space
 class Triangle
 {
   public:
     union {
         struct
         {
-            ///Первая вершина
+            // First vertex
             Vector p1;
-            ///Вторая вершина
+            // Second vertex
             Vector p2;
-            ///Третья вершина
+            // Third vertex
             Vector p3;
         };
 
         struct
         {
-            ///Вершины в виде массива
+            // Array of vertices
             Vector p[3];
         };
     };
 
-    //-----------------------------------------------------------
-    //Конструкторы
-    //-----------------------------------------------------------
+    // -----------------------------------------------------------
+    // Constructors
+    // -----------------------------------------------------------
   public:
-    ///Пустой конструктор
+    // Empty constructor
     Triangle(){};
-    ///Конструктор копирования
+    // Copy constructor
     Triangle(const Triangle &t);
     Triangle(const Vector *v);
 
-    //-----------------------------------------------------------
-    //Операторы
-    //-----------------------------------------------------------
+    // -----------------------------------------------------------
+    // Operators
+    // -----------------------------------------------------------
   public:
-    ///Покомпонентное умножение вершин с присваиванием
+    // per component multiplication with assignment
     Triangle &operator*=(const Vector &v);
 
-    //-----------------------------------------------------------
-    //Утилитные
-    //-----------------------------------------------------------
+    // -----------------------------------------------------------
+    // Utilities
+    // -----------------------------------------------------------
   public:
-    //Получить нормаль
+    // Get normal
     Vector GetNormal() const;
-    //Получить среднюю точку
+    // Get midpoint
     Vector GetCenter() const;
-    //Получить треугольник
+    // Get triangle
     Plane GetPlane() const;
-    //Плоскость проходящая через грань (p[start], p[NextIndex(start)])
+    // The plane passing through the face (p [start], p [NextIndex (start)])
     Plane OrtoPlane(long start) const;
-    //Плоскость проходящая через грань (p[0], p[1])
+    // The plane passing through the face (p [0], p [1])
     Plane OrtoPlane01() const;
-    //Плоскость проходящая через грань (p[1], p[2])
+    // The plane passing through the face (p [1], p [2])
     Plane OrtoPlane12() const;
-    //Плоскость проходящая через грань (p[2], p[0])
+    // The plane passing through the face (p [2], p [0])
     Plane OrtoPlane20() const;
-    //Получить предыдущий индекс вершины треугольника
+    // Get previous index of triangle vertex
     static long PrevIndex(long index);
-    //Получить следующий индекс вершины треугольника
+    // Get the next vertex index of a triangle
     static long NextIndex(long index);
 
-    //Найти ближнюю точку в треугольнике к данной, лежащей в плоскости треугольника, true - внутри треугольника
+    // Find the nearest point in a triangle to a given one, lying in the plane of the triangle, true - inside the triangle
     bool FindClosestPoint(const Vector &trgNormal, Vector &pointOnPlane) const;
 
-    //Преобразовать координаты вершин
+    // Convert vertex coordinates
     Triangle &Transform(const Matrix &mtx);
 
     enum CoIntersectionResult
     {
         cir_none = 0,
-        //Не пересекаются
+        // Do not intersect
         cir_deg_cur,
-        //Текущий треугольник вырожденный
+        // The current triangle is degenerate
         cir_deg_t,
-        //Данный треугольник вырожденный
+        // This triangle is degenerate
         cir_coplanar,
-        //Не пересекаються но лежат в одной плоскости
+        // Do not intersect but lie in the same plane
         cir_intersection,
-        //Лежат в одной плоскости, пересекаються, но не совпадают
+        // They lie in the same plane, intersect, but do not coincide
         cir_equal,
-        //Треугольники совпадают
+        // The triangles match
     };
 
-    //Проверка треугольников на пересечение в одной плоскости
+    // Checking triangles for intersections in one plane
     CoIntersectionResult IsCoplanarIntersection(const Triangle &t, float intsEps = 0.0000001f) const;
 
   private:
     static long z_sysClipTriangleEdgePlane(Plane plane, Vector src[8], Vector dst[8], long count);
 };
 
-//===========================================================
-//Конструкторы
-//===========================================================
+// ===========================================================
+// Constructors
+// ===========================================================
 
-//Пустой конструктор
+// Empty constructor
 inline Triangle::Triangle(const Triangle &t)
 {
     p1 = t.p1;
@@ -115,7 +115,7 @@ inline Triangle::Triangle(const Triangle &t)
     p3 = t.p3;
 }
 
-///Заполнить все компоненты
+// Fill all components
 inline Triangle::Triangle(const Vector *v)
 {
     p[0] = v[0];
@@ -123,11 +123,11 @@ inline Triangle::Triangle(const Vector *v)
     p[2] = v[2];
 }
 
-//===========================================================
-//Операторы
-//===========================================================
+// ===========================================================
+// Operators
+// ===========================================================
 
-//Покомпонентное умножение вершин с присваиванием
+// per component multiplication with assignment
 inline Triangle &Triangle::operator*=(const Vector &v)
 {
     p1 *= v;
@@ -137,7 +137,7 @@ inline Triangle &Triangle::operator*=(const Vector &v)
 }
 
 /*!\relates Triangle
-Умножить треугольник на матрицу
+Multiply triangle by matrix
 */
 inline Triangle operator*(const Matrix &mtx, const Triangle &t)
 {
@@ -149,7 +149,7 @@ inline Triangle operator*(const Matrix &mtx, const Triangle &t)
 }
 
 /*!\relates Triangle
-Умножить треугольник на матрицу
+Multiply triangle by matrix
 */
 inline Triangle operator*(const Triangle &t, const Matrix &mtx)
 {
@@ -160,61 +160,61 @@ inline Triangle operator*(const Triangle &t, const Matrix &mtx)
     return trg;
 }
 
-//===========================================================
-//Утилитные
-//===========================================================
+// ===========================================================
+// Utilities
+// ===========================================================
 
-//Получить нормаль
+// Get normal
 inline Vector Triangle::GetNormal() const
 {
     return !((p1 - p2) ^ (p1 - p3));
 }
 
-//Получить среднюю точку
+// Get midpoint
 inline Vector Triangle::GetCenter() const
 {
     return (p1 + p2 + p3) * 0.33333333333333f;
 }
 
-//Получить треугольник
+// Get triangle
 inline Plane Triangle::GetPlane() const
 {
     return Plane(GetNormal(), p1);
 }
 
-//Плоскость проходящая через грань (p[start % 2], p[(start + 1) % 2])
+// Plane passing through the face (p [start% 2], p [(start + 1)% 2])
 inline Plane Triangle::OrtoPlane(long start) const
 {
     Plane plane;
-    //Вершины
+    // Vertices
     const auto &ps = p[start % 3];
     const auto &pe = p[NextIndex(start)];
-    //Нормаль
+    // Normal
     plane.n = !(((p3 - p1) ^ (p1 - p2)) ^ (ps - pe));
-    //Дистанция
+    // Distance
     plane.Move(ps);
     return plane;
 }
 
-//Плоскость проходящая через грань (p[0], p[1])
+// The plane passing through the face (p [0], p [1])
 inline Plane Triangle::OrtoPlane01() const
 {
     return OrtoPlane(0);
 }
 
-//Плоскость проходящая через грань (p[1], p[2])
+// The plane passing through the face (p [1], p [2])
 inline Plane Triangle::OrtoPlane12() const
 {
     return OrtoPlane(1);
 }
 
-//Плоскость проходящая через грань (p[2], p[0])
+// The plane passing through the face (p [2], p [0])
 inline Plane Triangle::OrtoPlane20() const
 {
     return OrtoPlane(2);
 }
 
-//Получить предыдущий индекс вершины треугольника
+// Get previous index of triangle vertex
 inline long Triangle::PrevIndex(long index)
 {
     index--;
@@ -225,7 +225,7 @@ inline long Triangle::PrevIndex(long index)
     return index;
 }
 
-//Получить следующий индекс вершины треугольника
+// Get the next vertex index of a triangle
 inline long Triangle::NextIndex(long index)
 {
     index++;
@@ -236,27 +236,27 @@ inline long Triangle::NextIndex(long index)
     return index;
 }
 
-//Найти ближнюю точку в треугольнике к данной, лежащей в плоскости треугольника, true - внутри треугольника
+// Find the nearest point in a triangle to a given one, lying in the plane of the triangle, true - inside the triangle
 inline bool Triangle::FindClosestPoint(const Vector &trgNormal, Vector &pointOnPlane) const
 {
     const Vector *cPoint = nullptr;
     for (long i = 0; i < 3; i++)
     {
-        //Ребро
+        // Edge
         const auto &ps = p[i];
         const auto &pe = p[i + 1 < 3 ? i + 1 : 0];
         auto edge = pe - ps;
-        //Если треугольник имеет недопустимый размер ребра, не тестим больше его
+        // If a triangle has an invalid edge size, don't test it any more
         const auto edgeLen = edge.Normalize();
         if (edgeLen < 1e-37f)
             return false;
-        //Ортоганальная плоскость
+        // Orthogonal plane
         Plane orto(edge ^ trgNormal, ps);
-        //Определяем положение точки
+        // Determine the position of the point
         const auto distToEdge = orto.Dist(pointOnPlane);
         if (distToEdge > 0.0f)
         {
-            //Определяем длинну проекции (pointOnPlane - ps) на ребре
+            // Determine the length of the projection (pointOnPlane - ps) on the edge
             const auto prjLength = edge | (pointOnPlane - ps);
             if (prjLength < 0.0f)
             {
@@ -281,7 +281,7 @@ inline bool Triangle::FindClosestPoint(const Vector &trgNormal, Vector &pointOnP
     return true;
 }
 
-//Преобразовать координаты вершин
+// Convert vertex coordinates
 inline Triangle &Triangle::Transform(const Matrix &mtx)
 {
     p1 = mtx.MulVertex(p1);
@@ -290,39 +290,39 @@ inline Triangle &Triangle::Transform(const Matrix &mtx)
     return *this;
 }
 
-//Проверка треугольников на пересечение в одной плоскости
+// Checking triangles for intersections in one plane
 inline Triangle::CoIntersectionResult Triangle::IsCoplanarIntersection(const Triangle &t, float intsEps) const
 {
-    //Проверим размеры треугольников
+    // Checking the dimensions of the triangles
     if (~(p1 - p2) < intsEps * intsEps || ~(p2 - p3) < intsEps * intsEps || ~(p3 - p1) < intsEps * intsEps)
         return cir_deg_cur;
     if (~(t.p1 - t.p2) < intsEps * intsEps || ~(t.p2 - t.p3) < intsEps * intsEps || ~(t.p3 - t.p1) < intsEps * intsEps)
         return cir_deg_t;
-    //Получим нормали
+    // get the normals
     auto n = (p1 - p2) ^ (p1 - p3);
     if (n.Normalize() < 0.0000001f)
         return cir_deg_cur;
     auto nt = (t.p1 - t.p2) ^ (t.p1 - t.p3);
     if (nt.Normalize() < 0.0000001f)
         return cir_deg_t;
-    //Проверим копланарность
+    // Checking coplanarity
     const auto cs = n | nt;
     static const auto cosMin = cosf(0.5f * 3.141592654f / 180.0f);
     if (cs < cosMin)
         return cir_none;
-    //Дистанция плоскостей
+    // Distance between planes
     const auto d = n | p1;
     const auto dt = n | t.p1;
     if (fabs(d - dt) > intsEps)
         return cir_none;
-    //Проверим на совпадение
+    // Check for a match
     if (~(p1 - t.p1) + ~(p2 - t.p2) + ~(p3 - t.p3) < intsEps * intsEps)
         return cir_equal;
     if (~(p2 - t.p1) + ~(p3 - t.p2) + ~(p1 - t.p3) < intsEps * intsEps)
         return cir_equal;
     if (~(p3 - t.p1) + ~(p1 - t.p2) + ~(p2 - t.p3) < intsEps * intsEps)
         return cir_equal;
-    //Проверим на пересечение клипированием
+    // Check for intersection by clipping
     static Vector poly1[8], poly2[8];
     poly1[0] = t.p1;
     poly1[1] = t.p2;
@@ -353,17 +353,17 @@ inline long Triangle::z_sysClipTriangleEdgePlane(Plane plane, Vector src[8], Vec
     long c = 0;
     for (long s = 0; s < count; s++, ds = de)
     {
-        //Если в области, добавляем вершину
+        // If in the area, add a vertex
         if (ds <= 0.0f)
             dst[c++] = src[s];
-        //Индекс следующего
+        // Index of next
         const auto e = s + 1 < count ? s + 1 : 0;
-        //Дистанции до плоскости
+        // Distance to plane
         de = plane * src[e];
-        //Если с одной стороны, то продолжаем
+        // If on the one side, then continue
         if (ds * de >= 0.0f)
             continue;
-        //Есть пересечение
+        // There is an intersection
         dst[c++] = src[s] + (src[e] - src[s]) * (ds / (ds - de));
     }
     if (c < 3)

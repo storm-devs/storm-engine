@@ -21,20 +21,20 @@ class GeomCache
     std::vector<CachedGeometry> Cache;
 
   public:
-    //Конструктор/деструктор
+    // Constructor / destructor
     GeomCache();
     ~GeomCache();
 
-    //Положить модель в кэш
+    // Put model into cache
     void CacheModel(const char *FileName);
 
-    //Сбросить кэш
+    // Reset cache
     void ResetCache();
 
-    //Взять модель из кэша
+    // Get model from cache
     GEOS *GetModel(const char *FileName);
 
-    //Проверить существует ли такая модель в кэше
+    // Check if such a model exists in the cache
     bool ValidatePointer(GEOS *pModel);
 };
 

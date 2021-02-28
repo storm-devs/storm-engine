@@ -216,7 +216,7 @@ void CXI_STRCOLLECTION::SaveParametersToIni()
     for (long n = 0; n < m_nStr; n++)
     {
         if (m_pStrDescr[n].strID)
-            continue; // динамически добавленныя строка
+            continue; // dynamically added string
 
         char pcState[3];
         switch (m_pStrDescr[n].wAlignment)
@@ -298,7 +298,7 @@ uint32_t CXI_STRCOLLECTION::MessageProc(long msgcode, MESSAGE &message)
         }
         pstr->bShadow = message.Long() != 0; // msg
         pstr->fScale = message.Float();      // msg
-        // обязательная ширина
+        // required width
         const int nWidth = message.Long(); // msg
         if (nWidth > 0)
         {
@@ -308,7 +308,7 @@ uint32_t CXI_STRCOLLECTION::MessageProc(long msgcode, MESSAGE &message)
         }
     }
     break;
-    case 1: // изменить строку по номеру
+    case 1: // change line by number
     {
         const auto n = message.Long() - 1;
         char param[512];
@@ -316,7 +316,7 @@ uint32_t CXI_STRCOLLECTION::MessageProc(long msgcode, MESSAGE &message)
         ChangeString(n, param);
     }
     break;
-    case 2: // скопировать строку с одного места на другое (первая строка имеет номер 1)
+    case 2: // copy a line from one place to another (the first line is number 1)
     {
         const auto nDst = message.Long() - 1;
         const auto nSrc = message.Long() - 1;
@@ -331,7 +331,7 @@ uint32_t CXI_STRCOLLECTION::MessageProc(long msgcode, MESSAGE &message)
         }
     }
     break;
-    case 3: // поменять цвет строки
+    case 3: // change line color
     {
         const long nStr = message.Long() - 1;
         const uint32_t nColor = message.Long();

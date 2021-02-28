@@ -260,7 +260,7 @@ uint32_t CXI_PICTURE::MessageProc(long msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
-    case 0: // ”становить картинку на новую позицию
+    case 0: // Move the picture to a new position
     {
         m_rect.left = message.Long();
         m_rect.top = message.Long();
@@ -270,7 +270,7 @@ uint32_t CXI_PICTURE::MessageProc(long msgcode, MESSAGE &message)
     }
     break;
 
-    case 1: // ”становить текстурные координаты картинки
+    case 1: // Set the texture coordinates of the image
     {
         FXYRECT texRect;
         texRect.left = message.Float();
@@ -281,7 +281,7 @@ uint32_t CXI_PICTURE::MessageProc(long msgcode, MESSAGE &message)
     }
     break;
 
-    case 2: // ”становить новую картинку или видео картинку
+    case 2: // Set a new picture or video picture
     {
         const auto bVideo = message.Long() != 0;
         char param[256];
@@ -290,7 +290,7 @@ uint32_t CXI_PICTURE::MessageProc(long msgcode, MESSAGE &message)
     }
     break;
 
-    case 3: // ”становить случайную картинку из директории
+    case 3: // Get a random picture from the directory
     {
         char param[256];
         message.String(sizeof(param) - 1, param);
@@ -298,7 +298,7 @@ uint32_t CXI_PICTURE::MessageProc(long msgcode, MESSAGE &message)
     }
     break;
 
-    case 4: // ”становить новый цвет
+    case 4: // Set a new color
     {
         const uint32_t color = message.Long();
         for (auto i = 0; i < 4; i++)
@@ -306,7 +306,7 @@ uint32_t CXI_PICTURE::MessageProc(long msgcode, MESSAGE &message)
     }
     break;
 
-    case 5: // установить/сн€ть мигание
+    case 5: // set / remove blinking
     {
         const bool bBlind = message.Long() != 0;
         if (m_bMakeBlind != bBlind)
@@ -409,12 +409,12 @@ void CXI_PICTURE::SetPictureSize(long &nWidth, long &nHeight)
 
     if (nWidth <= 0)
     {
-        // найдем реальную ширину
+        // find the real width
         nWidth = 128;
     }
     if (nHeight <= 0)
     {
-        // найдем реальную высоту
+        // find the real height
         nHeight = 128;
     }
 

@@ -13,7 +13,7 @@
 
 #include "Math3D/Vector.h"
 
-///Быстрое приведение числа с плавающей точкой к целому с отбрасыванием дробной части
+// Fast conversion of a floating point number to an integer with discarding of the fractional part
 inline long fftol(float f)
 {
     return _mm_cvttss_si32(_mm_load_ss(&f));
@@ -31,7 +31,7 @@ inline long fftol(float f)
     return l;*/
 }
 
-///Быстрое приведение числа с плавающей точкой к целому с округлением к ближайшему
+// Fast conversion of a floating point number to an integer with rounding to the nearest
 inline long fftoi(float f)
 {
     return _mm_cvtss_si32(_mm_load_ss(&f));
@@ -45,7 +45,7 @@ inline long fftoi(float f)
     return l;*/
 }
 
-/// Fast floor
+// Fast floor
 inline long ffloor(float f)
 {
     return _mm_cvtss_si32(_mm_add_ss(_mm_load_ss(&f), _mm_set_ss(-0.5f)));
@@ -61,7 +61,7 @@ inline long ffloor(float f)
     return l;*/
 }
 
-/// Fast ceil
+// Fast ceil
 inline long fceil(float f)
 {
     return _mm_cvtss_si32(_mm_add_ss(_mm_load_ss(&f), _mm_set_ss(0.5f)));
@@ -77,32 +77,32 @@ inline long fceil(float f)
     return l;*/
 }
 
-/// Fast fasb in memory
+// Fast fasb in memory
 inline float &ffabs(float &f)
 {
     *(unsigned long *)&f &= 0x7fffffff;
     return f;
 }
 
-//Возвести в квадрат
+// Square
 inline float sqrf(float f)
 {
     return f * f;
 }
 
-//Случайное число
+// Random number
 inline float Rnd(float max = 1.0f)
 {
     return rand() * (max * (1.0f / RAND_MAX));
 }
 
-//Случайное число
+// Random number
 inline float RRnd(float min, float max)
 {
     return min + rand() * ((max - min) * (1.0f / RAND_MAX));
 }
 
-//Ограничить float
+// Limit float
 inline float Clampf(float v, float min = 0.0f, float max = 1.0f)
 {
     if (v < min)
@@ -112,7 +112,7 @@ inline float Clampf(float v, float min = 0.0f, float max = 1.0f)
     return v;
 }
 
-//Ограничить float
+// Limit float
 inline float Clampfr(float &v, float min = 0.0f, float max = 1.0f)
 {
     if (v < min)
@@ -122,7 +122,7 @@ inline float Clampfr(float &v, float min = 0.0f, float max = 1.0f)
     return v;
 }
 
-//Привести угол к диапазону 0..2PI
+// Bring the angle to the range 0..2PI
 inline float NormAngle2PI(float angle)
 {
     static const auto pi = 3.14159265358979323846f;
@@ -131,7 +131,7 @@ inline float NormAngle2PI(float angle)
     return (angle / (2.0f * pi) - static_cast<long>(angle / (2.0f * pi))) * 2.0f * pi;
 }
 
-//Привести угол к диапазону -PI..PI
+// Bring the angle to the range -PI..PI
 inline float NormAnglePI(float angle)
 {
     static const auto pi = 3.14159265358979323846f;
@@ -140,7 +140,7 @@ inline float NormAnglePI(float angle)
     return (angle / (2.0f * pi) - static_cast<long>(angle / (2.0f * pi))) * 2.0f * pi - pi;
 }
 
-//Посчитать acos с ограничением диапазона
+// Calculate acos with limited range
 inline float safeACos(float ang)
 {
     auto d = static_cast<double>(ang);
@@ -152,7 +152,7 @@ inline float safeACos(float ang)
     return static_cast<float>(d);
 }
 
-//Посчитать asin с ограничением диапазона
+// Calculate asin with limited range
 inline float safeASin(float ang)
 {
     auto d = static_cast<double>(ang);

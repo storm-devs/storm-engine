@@ -16,9 +16,9 @@
 
 #define FALURE_GOTO 2.0f
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 AICharacter::AICharacter()
 {
@@ -38,16 +38,16 @@ AICharacter::~AICharacter()
 // Character
 //============================================================================================
 
-//Перемещаем персонажа в желаемую позицию
+// Move the character to the desired position
 void AICharacter::Move(float dltTime)
 {
-    //Обнулим силы
+    // zero the forces
     force = 0.0f;
     goForce = 0.0f;
     separation = 0.0f;
     alignment = 0.0f;
     around = 0.0f;
-    //Процесируем команду
+    // process the command
     switch (command.cmd)
     {
     case aicmd_none:
@@ -64,14 +64,14 @@ void AICharacter::Move(float dltTime)
     Character::Move(dltTime);
 }
 
-//Провести дополнительные расчёты
+// Carry out additional calculations
 void AICharacter::Calculate(float dltTime)
 {
     auto *const location = GetLocation();
     CalcRepulsionForces();
     CVECTOR slideForce;
     location->GetPtcData().FindForce(currentNode, slideForce);
-    //Ограничим вектора
+    // restrict the vector
     auto l = ~separation;
     if (l > 1.0f)
         separation *= 1.0f / sqrtf(l);
@@ -86,14 +86,14 @@ void AICharacter::Calculate(float dltTime)
     around *= 0.1f;
     goForce *= 1.2f;
     slideForce *= 0.2f;
-    //Суммируем силы
+    // Summing up the forces
     force += separation;
     force += alignment;
     force += around;
     force += goForce;
     force += slideForce;
     // if(isSlide) force += slideDir*0.3f;
-    //Внесём шумность для помощи принятия решений
+    // Bringing in noise to aid decision making
     force.x += rand() * 0.0000001f / RAND_MAX;
     force.z += rand() * 0.0000001f / RAND_MAX;
 
@@ -116,7 +116,7 @@ void AICharacter::Calculate(float dltTime)
     Character::Calculate(dltTime);
 }
 
-//Обновить позицию персонажа
+// Update character position
 void AICharacter::Update(float dltTime)
 {
     switch (command.cmd)
@@ -151,7 +151,7 @@ void AICharacter::Update(float dltTime)
     }
 }
 
-//Отметить перемещение персонажа
+// Mark the movement of the character
 void AICharacter::CharacterTeleport()
 {
     currentNode = FindNodeIndex(curPos);
@@ -163,7 +163,7 @@ void AICharacter::CharacterTeleport()
 // AICharacter
 //============================================================================================
 
-//Ничего не делать
+// Nothing to do
 bool AICharacter::CmdNone()
 {
     command.cmd = aicmd_none;
@@ -171,7 +171,7 @@ bool AICharacter::CmdNone()
     return true;
 }
 
-//Стоять
+// stay
 bool AICharacter::CmdStay()
 {
     command.cmd = aicmd_stay;
@@ -180,7 +180,7 @@ bool AICharacter::CmdStay()
     return true;
 }
 
-//Идти в точку
+// Go to the point
 bool AICharacter::CmdGotoPoint(float x, float y, float z, float rad, long node, bool isCheckBusyPos)
 {
     if (bMusketer && bMusketerNoMove)
@@ -206,7 +206,7 @@ bool AICharacter::CmdGotoPoint(float x, float y, float z, float rad, long node, 
     return true;
 }
 
-//Уходить от точки
+// Move away from the point
 bool AICharacter::CmdEscape(float x, float y, float z, float rad)
 {
     if (bMusketer && bMusketerNoMove)
@@ -222,22 +222,22 @@ bool AICharacter::CmdEscape(float x, float y, float z, float rad)
     return true;
 }
 
-//Установить персонажа с которым нерасталкиваемся
+// Set the character we don't collide with
 void AICharacter::SetExCharacter(AICharacter *chr)
 {
     command.exch = chr;
 }
 
-//============================================================================================
-//Инкапсуляция
-//============================================================================================
+// ============================================================================================
+// Encapsulation
+// ============================================================================================
 
-//Идти в точку
+// Go to the point
 void AICharacter::CmdProcessGotoPoint(float dltTime)
 {
     if (command.isWait)
         return;
-    //Найдём направление пути
+    // Find the direction of the path
     command.tpnt = curPos;
     command.tnode = currentNode;
     if (!FindDirectional())
@@ -289,7 +289,7 @@ void AICharacter::CmdProcessGotoPoint(float dltTime)
         }
         StopMove();
     }
-    //Если дошли, то надо остановиться
+    // If reached destination, then stop
     const auto dx = command.pnt.x - curPos.x;
     const auto dz = command.pnt.z - curPos.z;
     auto d = dx * dx + dz * dz;
@@ -304,7 +304,7 @@ void AICharacter::CmdProcessGotoPoint(float dltTime)
         color |= 0xff00ff00;
         location->DrawLine(command.pnt + CVECTOR(0, 0.01f, 0), color, command.pnt + CVECTOR(0, 3.01f, 0), color, false);
     }
-    //Притормазим перед локатором
+    // Slow down in front of the locator
     if (d < 1.5f * 1.5f)
         SetRunMode(false);
     if (d < command.radius * command.radius)
@@ -320,7 +320,7 @@ void AICharacter::CmdProcessGotoPoint(float dltTime)
     else if (command.isBusy && d < FALURE_GOTO * FALURE_GOTO)
     {
         Assert(d > 0.0f);
-        // if(sinf(ay)*dx + cosf(ay)*dz < 0)
+        // if(sinf(ay)*dx + cosf(ay)*dz < 0
         {
             if (!location->supervisor.CheckPosition(command.pnt.x, command.pnt.y, command.pnt.z, this))
             {
@@ -360,7 +360,7 @@ void AICharacter::CmdUpdateGotoPoint(float dltTime)
             kSpd = likeKSpd * l / 0.7f;
         else
             kSpd = likeKSpd;
-        //Если скользим по краю - остановимся и подождём
+        // If slide along the edge, stop and wait
         if (command.waitTime <= 0.0f)
         {
             /*
@@ -383,7 +383,7 @@ void AICharacter::CmdUpdateGotoPoint(float dltTime)
             auto *const location = GetLocation();
             if (location->supervisor.CheckPosition(command.pnt.x, command.pnt.y, command.pnt.z, this))
             {
-                //Продолжаем путь
+                // continue our way
                 StartMove();
                 command.isWait = false;
                 command.waitTime = 1.0f + rand() * 1.0f / (rand() + 1.0f);
@@ -406,17 +406,17 @@ void AICharacter::CmdUpdateGotoPoint(float dltTime)
         }
         else
         {
-            //Ожидаем
+            // Expect
             command.waitTime -= dltTime;
             StopMove();
         }
     }
 }
 
-//Уходить от точки
+// Move away from the point
 void AICharacter::CmdProcessEscape(float dltTime)
 {
-    //Направление удаления
+    // Removal direction
     goForce.x = curPos.x - command.pnt.x;
     goForce.y = 0.0f;
     goForce.z = curPos.z - command.pnt.z;
@@ -458,7 +458,7 @@ void AICharacter::CmdUpdateEscape(float dltTime)
 
 //--------------------------------------------------------------------------------------------
 
-//Найти индекс нода для данной координаты
+// Find the node index for a given coordinate
 long AICharacter::FindNodeIndex(const CVECTOR &pos, float *hy)
 {
     auto *const location = GetLocation();
@@ -469,7 +469,7 @@ long AICharacter::FindNodeIndex(const CVECTOR &pos, float *hy)
     return node;
 }
 
-//Найти направление куда идти (ориентация на местности)
+// Find direction where to go (orientation on the terrain)
 bool AICharacter::FindDirectional()
 {
     if (command.tnode < 0 || command.node < 0)
@@ -489,7 +489,7 @@ bool AICharacter::FindDirectional()
     return true;
 }
 
-//Найти расталкивающие силы
+// Find the pushing forces
 void AICharacter::CalcRepulsionForces()
 {
     if (numColCharacter <= 0)
@@ -509,14 +509,14 @@ void AICharacter::CalcRepulsionForces()
         const auto dz = c->curPos.z - curPos.z;
         const auto kd = 1.0f / ci.d;
         const auto kr = kn * (ci.maxD - ci.d) / ci.maxD;
-        //Сила расталкивания
+        // The power of pushing
         const auto sx = dx * kr * kd * kd;
         const auto sz = dz * kr * kd * kd;
         separation.x -= sx;
         separation.z -= sz;
         c->separation.x += sx;
         c->separation.z += sz;
-        //Сила выравнивания направлений
+        // Strength of directions alignment
         k = 1.0f - fabsf(goForce.x * c->goForce.x + goForce.z * c->goForce.z);
         const auto af = (goForce + c->goForce) * (kn * kr * kd * k);
         if (af.x * dx + af.z * dz < 0.0f)
@@ -529,7 +529,7 @@ void AICharacter::CalcRepulsionForces()
             alignment -= af;
             c->alignment += af;
         }
-        //Сила для обхода
+        // Force to bypass
         const auto kcs = goForce.x * dx + goForce.z * dz;
         if (kcs > 0.0f)
         {
@@ -544,7 +544,7 @@ void AICharacter::CalcRepulsionForces()
     }
 }
 
-//Вычислить точку образуемую пересечением и лежащую на ребре
+// Calculate the point formed by the intersection and lying on the edge
 bool AICharacter::FindIntersection(const CVECTOR &s, const CVECTOR &e, const CVECTOR &cur, const CVECTOR &to,
                                    CVECTOR &res)
 {
@@ -552,7 +552,7 @@ bool AICharacter::FindIntersection(const CVECTOR &s, const CVECTOR &e, const CVE
     const auto deZ = e.z - s.z;
     const auto dX = to.x - cur.x;
     const auto dZ = to.z - cur.z;
-    //Плоскасть проходящая через отрезок перемещения
+    // Plane passing through the move segment
     auto nx = dZ;
     auto nz = -dX;
     auto nl = nx * nx + nz * nz;
@@ -565,23 +565,23 @@ bool AICharacter::FindIntersection(const CVECTOR &s, const CVECTOR &e, const CVE
     nx /= nl;
     nz /= nl;
     const auto d = cur.x * nx + cur.z * nz;
-    //Расстояния вершин ребра до плоскости
+    // Distances of edge vertices to plane
     const auto ds = nx * s.x + nz * s.z - d;
     const auto de = nx * e.x + nz * e.z - d;
-    //Решим что делать
+    // decide what to do
     if (ds != de)
     {
-        //Пересекаем плоскость
+        // Crossing the plane
         auto k = ds / (ds - de);
         if (k < 0.0f)
             k = 0.0f;
         if (k > 1.0f)
             k = 1.0f;
         res = s + (e - s) * k;
-        //Проверим сторну пересечения
+        // Check the side of the intersection
         if (dX * (res.x - cur.x) + dZ * (res.z - cur.z) < 0.0f)
         {
-            //Находимся не стой стороны, надо двигаться к краю
+            // not standing by the side, must move to the edge
             if ((deZ) * (dZ) - (-deX) * (dX) < 0.0f)
                 res = s;
             else
@@ -590,7 +590,7 @@ bool AICharacter::FindIntersection(const CVECTOR &s, const CVECTOR &e, const CVE
     }
     else
     {
-        //Путь паралелен ребру
+        // The path is parallel to the edge
         if ((deZ) * (dZ) - (-deX) * (dX) < 0.0f)
             res = s;
         else
@@ -600,10 +600,10 @@ bool AICharacter::FindIntersection(const CVECTOR &s, const CVECTOR &e, const CVE
     return true;
 }
 
-//Вычислить угол из вектора направления
+// Calculate angle from direction vector
 float AICharacter::Angle(double vx, double vz, float defAy)
 {
-    //Вычисляем угол
+    // Calculate the angle
     const auto l = vx * vx + vz * vz;
     if (l <= 0.0)
         return defAy;

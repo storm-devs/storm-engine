@@ -63,7 +63,7 @@ bool GetNextIdFromList(char *&sptr, char *bufQuestID, size_t nSizeBufQuestID, ch
         int n;
         if (sstart[0] < '0' || sstart[0] > '9')
         {
-            // не дата
+            // not a date
             n = 0;
             while (sstart[0] && sstart[0] != '@')
             {
@@ -81,7 +81,7 @@ bool GetNextIdFromList(char *&sptr, char *bufQuestID, size_t nSizeBufQuestID, ch
             bufQuestID[0] = '\0';
         }
 
-        // дата
+        // date
         n = 0;
         while (sstart[0] && sstart[0] != '@')
         {
@@ -169,7 +169,7 @@ bool CXI_QUESTTEXTS::GetLineNext(int fontNum, char *&pInStr, char *buf, int bufS
     SubRightWord(buf, fontNum, m_rect.right - m_rect.left, m_rs);
     pInStr = pStart + strlen(buf);
 
-    // удалим начальные пробелы
+    // remove leading spaces
     while (*pInStr != 0 && static_cast<unsigned>(*pInStr) <= ' ')
         pInStr++;
 
@@ -204,7 +204,7 @@ void CXI_QUESTTEXTS::Draw(bool bSelected, uint32_t Delta_Time)
     auto i = 0;
     for (auto *sd = m_listCur; sd != nullptr && i < m_allStrings; sd = sd->next, i++)
     {
-        // отобразить строки
+        // display lines
         const auto curColor = sd->complete ? m_dwCompleteColor : m_dwNonCompleteColor;
         if (sd->lineStr != nullptr && sd->lineStr[0] != 0)
             m_rs->ExtPrint(m_idFont, curColor, 0, PR_ALIGN_LEFT, true, 1.f, m_screenSize.x, m_screenSize.y, m_rect.left,
@@ -306,7 +306,7 @@ void CXI_QUESTTEXTS::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, co
     if (m_vertOffset == 0)
         m_vertOffset = 10;
 
-    // подсчет количества выводимых строк на экране
+    // counting the number of lines displayed on the screen
     m_allStrings = (m_rect.bottom - m_rect.top) / m_vertOffset;
 
     // get colors
@@ -329,7 +329,7 @@ void CXI_QUESTTEXTS::StartQuestShow(ATTRIBUTES *pA, int qn)
     if (qn >= aq)
         qn = aq - 1;
 
-    // удалим старые строки
+    // delete old lines
     while (m_listRoot != nullptr)
     {
         m_listCur = m_listRoot;
@@ -362,12 +362,12 @@ void CXI_QUESTTEXTS::StartQuestShow(ATTRIBUTES *pA, int qn)
             if (m_listCur != nullptr)
                 m_listCur = m_listCur->Add("", cFlag);
 
-            // весь набор строк для одной записи
+            // whole string list for one record
             asStringList.clear();
             GetStringListForQuestRecord(asStringList, pAttr->GetThisAttr(), pAttr->GetAttribute("UserData"));
             for (long i = 0; i < asStringList.size(); i++)
             {
-                // разложим полученную строку на строки влезающие в область вывода
+                // decompose the resulting string into lines that fit into the output area
                 char *pcStrPtr = (char *)asStringList[i].c_str();
                 char newStr[512];
                 while (GetLineNext(m_idFont, pcStrPtr, newStr, sizeof(newStr)))
@@ -417,7 +417,7 @@ uint32_t CXI_QUESTTEXTS::MessageProc(long msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
-    case 0: // установить верхнюю строку показа в определенный номер
+    case 0: // set the top display line to a specific number
     {
         long topStrNum = message.Long();
         if (m_listRoot == nullptr || m_nAllTextStrings <= 0)
@@ -434,7 +434,7 @@ uint32_t CXI_QUESTTEXTS::MessageProc(long msgcode, MESSAGE &message)
     }
     break;
 
-    case 1: // установить верхнюю строку показа на относительный номер
+    case 1: // set the top display line to a relative number
     {
         ScrollerChanged(message.Float());
         return 0;

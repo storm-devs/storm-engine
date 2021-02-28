@@ -70,13 +70,13 @@ void *VBTransform(void *vb, long startVrt, long nVerts, long totVerts)
     CMatrix mtx;
     for (long v = 0; v < totVerts; v++)
     {
-        //Вершина
+        // Vertex
         auto &vrt = src[v];
         auto &dstVrt = dst[v];
-        //Метрицы
+        // Matrices
         auto &m1 = bones[vrt.boneid & 0xff];
         auto &m2 = bones[(vrt.boneid >> 8) & 0xff];
-        //Инверсный коэфициент блендинга
+        // Inverse blending coefficient
         const auto wNeg = 1.0f - vrt.weight;
         mtx.matrix[0] = -(m1.matrix[0] * vrt.weight + m2.matrix[0] * wNeg);
         mtx.matrix[1] = m1.matrix[1] * vrt.weight + m2.matrix[1] * wNeg;
@@ -90,11 +90,11 @@ void *VBTransform(void *vb, long startVrt, long nVerts, long totVerts)
         mtx.matrix[12] = -(m1.matrix[12] * vrt.weight + m2.matrix[12] * wNeg);
         mtx.matrix[13] = m1.matrix[13] * vrt.weight + m2.matrix[13] * wNeg;
         mtx.matrix[14] = m1.matrix[14] * vrt.weight + m2.matrix[14] * wNeg;
-        //Позиция
+        // Position
         ((CVECTOR &)dstVrt.pos) = mtx * (CVECTOR &)vrt.pos;
-        //Нормаль
+        // Normal
         ((CVECTOR &)dstVrt.nrm) = mtx * (CVECTOR &)vrt.nrm;
-        //Остальное
+        // Rest
         dstVrt.color = vrt.color;
         dstVrt.tu = vrt.tu0;
         dstVrt.tv = vrt.tv0;

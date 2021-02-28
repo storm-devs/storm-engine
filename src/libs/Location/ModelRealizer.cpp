@@ -2,9 +2,9 @@
 #include "CVector4.h"
 #include "Lights.h"
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 extern float fCausticScale, fCausticDelta, fFogDensity, fCausticDistance;
 extern CVECTOR4 v4CausticColor;
@@ -22,7 +22,7 @@ LocModelRealizer::~LocModelRealizer()
 {
 }
 
-//Инициализация
+// Initialization
 bool LocModelRealizer::Init()
 {
     rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
@@ -30,7 +30,7 @@ bool LocModelRealizer::Init()
     return true;
 }
 
-//Исполнение
+// Execution
 void LocModelRealizer::Execute(uint32_t delta_time)
 {
 }
@@ -63,7 +63,7 @@ void LocModelRealizer::Realize(uint32_t delta_time) const
 
         if (bCausticEnable)
         {
-            // константы
+            // constants
             // 10 - (caustic scale, caustic frame, 0, 0)
             // 11 - diffuse
             // 12 - (fog density, fog_start, 0, 0)
@@ -85,7 +85,7 @@ void LocModelRealizer::Realize(uint32_t delta_time) const
             rs->TextureSet(1, iCausticTex[static_cast<long>(fCausticFrame) % 32]);
             rs->TextureSet(2, iCausticTex[(static_cast<long>(fCausticFrame) + 1) % 32]);
 
-            // рисуем каустики
+            // draw caustics
             gs->SetCausticMode(true);
             pE->ProcessStage(Stage::realize, 0);
             gs->SetCausticMode(false);
@@ -93,7 +93,7 @@ void LocModelRealizer::Realize(uint32_t delta_time) const
     }
 }
 
-//Сообщения
+// Messages
 uint64_t LocModelRealizer::ProcessMessage(MESSAGE &message)
 {
     switch (message.Long())

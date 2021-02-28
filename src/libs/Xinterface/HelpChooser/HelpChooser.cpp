@@ -35,7 +35,7 @@ HELPCHOOSER::~HELPCHOOSER()
 
 void HELPCHOOSER::SetDevice()
 {
-    // получить сервис рендера
+    // get render service
     rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!rs)
         throw std::exception("No service: dx9render");
@@ -224,11 +224,11 @@ bool HELPCHOOSER::RunChooser(char *ChooserGroup)
         return false;
     }
 
-    // получим размер текстур
+    // get the size of the textures
     texWidth = ini->GetFloat(ChooserGroup, "TextureWidth", 512.f);
     texHeight = ini->GetFloat(ChooserGroup, "TextureHeight", 512.f);
 
-    // ѕолучим размер поверхности вывода (размер окна)
+    // Get the size of the output surface (window size)
     IDirect3DSurface9 *pRenderTarget;
     rs->GetRenderTarget(&pRenderTarget);
     D3DSURFACE_DESC dscrSurface;
@@ -237,21 +237,21 @@ bool HELPCHOOSER::RunChooser(char *ChooserGroup)
     m_fScreenHeight = static_cast<float>(dscrSurface.Height);
     pRenderTarget->Release();
 
-    // текстура выбранной картинки
+    // texture of the selected image
     if (ini->ReadString(ChooserGroup, "FrontTexture", param, sizeof(param) - 1, ""))
         m_idPicTexture = rs->TextureCreate(param);
 
-    // текстура невыбранной(фоновой) картинки
+    // texture of unselected (background) image
     if (ini->ReadString(ChooserGroup, "BackTexture", param, sizeof(param) - 1, ""))
         m_idBackTexture = rs->TextureCreate(param);
 
-    // подсчет числа пр€моугольников дл€ выбора помощи
+    // counting the number of rectangles for choosing help
     m_nRectQ = 0;
     if (ini->ReadString(ChooserGroup, "rect", param, sizeof(param) - 1, ""))
         do
             m_nRectQ++;
         while (ini->ReadStringNext(ChooserGroup, "rect", param, sizeof(param) - 1));
-    // создаем массив координат пр€моугольников выбора
+    // create an array of coordinates of the selection rectangles
     if (m_nRectQ > 0)
     {
         m_pRectList = new FRECT[m_nRectQ];
@@ -261,7 +261,7 @@ bool HELPCHOOSER::RunChooser(char *ChooserGroup)
             throw std::exception("Allocate memory error");
         }
     }
-    // заполн€ем все пр€моугольники
+    // fill in all the rectangles
     ini->ReadString(ChooserGroup, "rect", param, sizeof(param) - 1, "");
     for (i = 0; i < m_nRectQ; i++)
     {
@@ -296,7 +296,7 @@ bool HELPCHOOSER::RunChooser(char *ChooserGroup)
         ini->ReadStringNext(ChooserGroup, "rect", param, sizeof(param) - 1);
     }
 
-    // установим мышь
+    // set the mouse
     m_fCurMouseX = 0.f;
     m_fCurMouseY = 0.f;
     m_nMouseWidth = ini->GetLong("COMMON", "mouseWidth", 32);
@@ -307,7 +307,7 @@ bool HELPCHOOSER::RunChooser(char *ChooserGroup)
         if (ini->ReadString("COMMON", "mouseTexture", param, sizeof(param) - 1, ""))
             m_idMouseTexture = rs->TextureCreate(param);
 
-    // —оздаем буфер вертексов
+    // create a vertex buffer
     m_idVBuf = rs->CreateVertexBuffer(HCHOOSER_FVF, 18 * sizeof(HCHOOSER_VERTEX), D3DUSAGE_WRITEONLY);
     if (m_idVBuf == -1)
         core.Trace("WARNING! Can`t create vertex buffer for help chooser");

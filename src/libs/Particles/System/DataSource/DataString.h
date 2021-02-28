@@ -12,14 +12,14 @@ class DataString
     std::string Value;
 
   public:
-    //конструктор/деструктор
+    // constructor / destructor
     DataString();
     virtual ~DataString();
 
-    //Получить значение
+    // Get value
     const char *GetValue() const;
 
-    //Установить значение
+    // Set value
     void SetValue(const char *val);
 
     void Load(MemFile *File);

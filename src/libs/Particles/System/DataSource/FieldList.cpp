@@ -533,13 +533,13 @@ void FieldList::Convert(DataDescripion *pDataDescriptor)
         {
             if (pDesc->Type == NeedFieldType)
             {
-                //Если нашли поле и оно нужного типа, убираем пометку об удалении
+                // If found a field and it is of the required type, remove the deletion mark
                 pDesc->MarkForDelete = false;
                 FieldExist = true;
             }
         }
 
-        //Если поле не существует, надо его создать...
+        // If the field does not exist, need to create it ...
         if (!FieldExist)
         {
             switch (NeedFieldType)

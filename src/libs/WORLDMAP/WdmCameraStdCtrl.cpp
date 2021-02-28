@@ -17,9 +17,9 @@
 
 #define WDM_CAMERASTDCTRL_MAXDLT 400
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 WdmCameraStdCtrl::WdmCameraStdCtrl()
 {
@@ -36,15 +36,15 @@ WdmCameraStdCtrl::~WdmCameraStdCtrl()
 
 void WdmCameraStdCtrl::CtrlProcess(float dltTime)
 {
-    //Свободна ли камера
+    // Is the camera free?
     isFree = GetCurFreeMode();
-    //Ориентация
+    // Orientation
     CONTROL_STATE cs;
     core.Controls->GetControlState("WMapTurnH", cs);
     auto dx = cs.lValue * 4.0f;
     core.Controls->GetControlState("WMapTurnV", cs);
     auto dy = cs.lValue * 4.0f;
-    //Расчёты
+    // Calculations
     auto k = (isFree ? 10.0f : 5.0f) * dltTime;
     if (k > 1.0f)
         k = 1.0f;

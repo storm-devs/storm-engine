@@ -33,21 +33,21 @@ class CMatrix
 
         struct
         {
-            ///Направление по X
+            // X direction
             CVECTOR vx;
-            ///Весовое значение по X
+            // Weight value on X
             float wx;
-            ///Направление по Y
+            // Y direction
             CVECTOR vy;
-            ///Весовое значение по Y
+            // Weight value on Y
             float wy;
-            ///Направление по Z
+            // Z direction
             CVECTOR vz;
-            ///Весовое значение по Z
+            // Weight value on Z
             float wz;
-            ///Позиция
+            // Position
             CVECTOR pos;
-            //Добавляемое весовое значение
+            // Added weight value
             float w;
         };
     };
@@ -87,11 +87,11 @@ class CMatrix
     // Build position matrix
     void BuildPosition(float x, float y, float z);
 
-    ///Посчитать матрицу масштабирования
+    // Calculate scaling matrix
     CMatrix &BuildScale(float scale);
-    //Посчитать матрицу масштабирования
+    // Calculate scaling matrix
     CMatrix &BuildScale(float scaleX, float scaleY, float scaleZ);
-    ///Посчитать матрицу масштабирования
+    // Calculate scaling matrix
     CMatrix &BuildScale(const CVECTOR &scale);
 
     // Equal
@@ -134,10 +134,10 @@ class CMatrix
     //-----------------------------------------------------------
 
     // Access to axis vectors
-    CVECTOR &Vx() const;  //Вектор по X (ссылка)
-    CVECTOR &Vy() const;  //Вектор по Y (ссылка)
-    CVECTOR &Vz() const;  //Вектор по Z (ссылка)
-    CVECTOR &Pos() const; //Позиция (ссылка)
+    CVECTOR &Vx() const;  // X vector (reference)
+    CVECTOR &Vy() const;  // Y Vector (reference)
+    CVECTOR &Vz() const;  // Z Vector (reference)
+    CVECTOR &Pos() const; // Position (reference)
 
     // Access to matrix element
     float &operator()(long i, long j);
@@ -266,7 +266,7 @@ inline void CMatrix::BuildMatrix(float angX, float angY, float angZ, float x, fl
     const auto sinAz = sinf(angZ);
     const auto cosAz = cosf(angZ);
 
-    //Создаём матрицу с порядком вращений rz*rx*ry
+    // Create a matrix with rotation order rz * rx * ry
     m[0][0] = cosAz * cosAy + sinAz * sinAx * sinAy;
     m[1][0] = -sinAz * cosAy + cosAz * sinAx * sinAy;
     m[2][0] = cosAx * sinAy;
@@ -800,31 +800,31 @@ inline void CMatrix::Projection(CVECTOR *srcArray, MTX_PRJ_VECTOR *dstArray, lon
 inline bool CMatrix::BuildViewMatrix(CVECTOR lookFrom, CVECTOR lookTo, CVECTOR upVector)
 {
     SetIdentity();
-    //Нормализуем вектор смотрения
+    // Normalize the look-at vector
     lookTo -= lookFrom;
     auto l = ~lookTo;
     if (l == 0.0f)
     {
-        //Ставим позицию для неповёрнутой матрици
+        // Putting a position for a non-rotated matrix
         Pos() = -lookFrom;
         return false;
     }
     lookTo *= 1.0f / sqrtf(l);
-    //Направляем вектор вверх в нужном направлении
+    // Directing the vector up in the desired direction
     upVector -= lookTo * (lookTo | upVector);
-    //Нормализуем вертор направленный вверх
+    // Normalize the upward vertor
     l = ~upVector;
     if (l == 0.0f)
         upVector.y = 1.0f;
     else
         upVector *= 1.0f / sqrtf(l);
-    //Ищем третий вектор базиса
+    // looking for the third vector of the basis
     CVECTOR v = upVector ^ lookTo;
     l = ~v;
     if (l != 0.0f)
     {
         v *= (1.0f / sqrtf(l));
-        //Ставим матрицу поворота
+        // set the rotation matrix
         Vx() = upVector;
         Vy() = lookTo;
         Vz() = v;
@@ -839,13 +839,13 @@ inline bool CMatrix::BuildViewMatrix(CVECTOR lookFrom, CVECTOR lookTo, CVECTOR u
         m[1][2] = lookTo.y;
         m[2][2] = lookTo.z;
     }
-    //Ставим позицию
+    // set the position
     SetInversePosition(lookFrom.x, lookFrom.y, lookFrom.z);
     return true;
 }
 
 // Mirror
-//Формирование матрицы отражение по плану
+// Formation of the reflection matrix according to the plane
 inline void CMatrix::BuildMirrorMatrix(float Nx, float Ny, float Nz, float D)
 {
     m[0][0] = -Nx * 2.0f * Nx + 1.0f;
@@ -896,7 +896,7 @@ inline CMatrix &CMatrix::BuildScale(float scale)
     return *this;
 }
 
-//Посчитать матрицу масштабирования
+// Calculate scaling matrix
 inline CMatrix &CMatrix::BuildScale(float scaleX, float scaleY, float scaleZ)
 {
     SetIdentity();
@@ -906,7 +906,7 @@ inline CMatrix &CMatrix::BuildScale(float scaleX, float scaleY, float scaleZ)
     return *this;
 }
 
-//Посчитать матрицу масштабирования
+// Calculate scaling matrix
 inline CMatrix &CMatrix::BuildScale(const CVECTOR &scale)
 {
     BuildScale(scale.x, scale.y, scale.z);

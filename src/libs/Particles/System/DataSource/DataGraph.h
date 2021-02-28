@@ -11,10 +11,10 @@ class DataGraph
 {
     std::string Name;
 
-    //С какого времени последний раз забирали значение
+    // when was the last time the value was read
     float MaxCachedTime;
     float MinCachedTime;
-    //Какой был индекс у этого времени
+    // What was the index of this time
     uint32_t MaxCachedIndex;
     uint32_t MinCachedIndex;
 
@@ -30,39 +30,39 @@ class DataGraph
     bool bNegative;
 
   public:
-    //конструктор/деструктор
+    // constructor / destructor
     DataGraph();
     virtual ~DataGraph();
 
-    //Установить/получить могут быть отрицательные значения в графике или нет...
+    // Set / get can be negative values in the graph or not
     void SetNegative(bool _bNegative);
     bool GetNegative() const;
 
-    //Установить/получить относительный график или нет...
+    // Set / get relative schedule or not
     void SetRelative(bool _bRelative);
     bool GetRelative() const;
 
-    //Получить значение (Текущее время, Коэфицент рандома[0..1])
+    // Get value (Current time, Random factor [0..1])
     float GetValue(float Time, float LifeTime, float K_rand);
     float GetRandomValue(float Time, float LifeTime);
 
-    //Установить значения...
+    // Set values
     void SetValues(const GraphVertex *MinValues, uint32_t MinValuesSize, const GraphVertex *MaxValues,
                    uint32_t MaxValuesSize);
 
-    //Устанавливает "значение по умолчанию"
+    // Set the "default"
     void SetDefaultValue(float MaxValue, float MinValue);
 
-    //Получить кол-во в графике минимума
+    // Get the count in the minimum graph
     uint32_t GetMinCount() const;
 
-    //Получить кол-во в графике максимума
+    // Get the count in the maximum graph
     uint32_t GetMaxCount() const;
 
-    //Получить значение по индексу из графика минимума
+    // Get the value by index from the minimum graph
     const GraphVertex &GetMinVertex(uint32_t Index);
 
-    //Получить значение по индексу из графика максимума
+    // Get the value by index from the maximum graph
     const GraphVertex &GetMaxVertex(uint32_t Index);
 
     void Load(MemFile *File);

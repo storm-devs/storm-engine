@@ -79,7 +79,7 @@ void WEATHER::Execute(uint32_t Delta_Time)
     {
         const auto fOldTimer = fFloats[whf_time_counter];
         fFloats[whf_time_counter] += core.GetDeltaTime() * fFloats[whf_time_speed];
-        // смена дня
+        // change of day
         if (fFloats[whf_time_counter] > 24.f)
             fFloats[whf_time_counter] -= 24.f;
 
@@ -90,7 +90,7 @@ void WEATHER::Execute(uint32_t Delta_Time)
         {
             core.Event("WeatherTimeUpdate", "f", fFloats[whf_time_counter]);
         }
-        // обновление даты в скриптах
+        // updating date in scripts
         // if( fFloats[whf_time_counter] fOldTimer
     }
 }

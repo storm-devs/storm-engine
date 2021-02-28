@@ -170,21 +170,21 @@ bool BLADE::BLADE_INFO::LoadBladeModel(MESSAGE &message)
 {
     EntityManager::EraseEntity(eid);
 
-    //»м€ модельки
+    // model name
     char mdlName[200];
     message.String(sizeof(mdlName), mdlName);
     mdlName[sizeof(mdlName) - 1] = 0;
     if (mdlName[0] != '\0')
     {
-        //ѕуть до модельки
+        // path of the model
         char path[256];
         strcpy_s(path, "Ammo\\");
         strcat_s(path, mdlName);
-        //ѕуть до текстур
+        // path of the textures
         auto *gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
         if (gs)
             gs->SetTexturePath("Ammo\\");
-        //—оздаЄм модельку
+        // Create a model
         eid = EntityManager::CreateEntity("modelr");
         if (!core.Send_Message(eid, "ls", MSG_MODEL_LOAD_GEO, path))
         {
@@ -195,7 +195,7 @@ bool BLADE::BLADE_INFO::LoadBladeModel(MESSAGE &message)
         }
         if (gs)
             gs->SetTexturePath("");
-        //ѕараметры следа
+        // trace parameters
         defLifeTime = message.Float();
         color[0] = message.Long();
         color[1] = message.Long();
@@ -347,21 +347,21 @@ bool BLADE::LoadGunModel(MESSAGE &message)
 {
     EntityManager::EraseEntity(gun);
     man = message.EntityID();
-    //»м€ модельки
+    // model name
     char mdlName[200];
     message.String(sizeof(mdlName), mdlName);
     mdlName[sizeof(mdlName) - 1] = 0;
     if (mdlName[0] != '\0')
     {
-        //ѕуть до модельки
+        // path of the model
         char path[256];
         strcpy_s(path, "Ammo\\");
         strcat_s(path, mdlName);
-        //ѕуть до текстур
+        // path of the textures
         auto *gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
         if (gs)
             gs->SetTexturePath("Ammo\\");
-        //—оздаЄм модельку
+        // Create a model
         gun = EntityManager::CreateEntity("modelr");
         if (!core.Send_Message(gun, "ls", MSG_MODEL_LOAD_GEO, path))
         {
@@ -389,7 +389,7 @@ void BLADE::GunFire()
     long sti;
 
     auto *obj = static_cast<MODEL *>(EntityManager::GetEntityPointer(gun));
-    if (obj == nullptr) // нет пистолета - посмотрим на саблю-пистолет
+    if (obj == nullptr) // no pistol - look for saber pistol
         obj = static_cast<MODEL *>(EntityManager::GetEntityPointer(blade[1].eid));
 
     if (obj != nullptr)
@@ -667,15 +667,15 @@ bool BLADE::TIEITEM_INFO::LoadItemModel(const char *mdlName, const char *locName
     Assert(locatorName);
     memcpy(locatorName, locName, len);
 
-    //ѕуть до модельки
+    // path of the model
     char path[256];
     strcpy_s(path, "Ammo\\");
     strcat_s(path, mdlName);
-    //ѕуть до текстур
+    // path of the textures
     auto *gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
     if (gs)
         gs->SetTexturePath("Ammo\\");
-    //—оздаЄм модельку
+    // Create a model
     eid = EntityManager::CreateEntity("modelr");
     if (!core.Send_Message(eid, "ls", MSG_MODEL_LOAD_GEO, path))
     {

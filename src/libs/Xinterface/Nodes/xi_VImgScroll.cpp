@@ -190,12 +190,12 @@ void CXI_VIMAGESCROLL::Draw(bool bSelected, uint32_t Delta_Time)
                 else
                 {
                     if (m_idBadPic[n] != -1 && m_idBadTexture[n] != -1)
-                    // частичное использование текстуры дл€ "плохой" картинки
+                    // partial use of texture for a "bad" picture
                     {
                         m_rs->TextureSet(0, m_nGroupTex[m_idBadTexture[n]]);
                         pPictureService->GetTexturePos(m_idBadPic[n], rectTex);
                     }
-                    else // "плоха€" картинка на всю текстуру
+                    else // "bad" picture for the whole texture
                     {
                         if (m_idBadTexture[n] != -1)
                         {
@@ -205,7 +205,7 @@ void CXI_VIMAGESCROLL::Draw(bool bSelected, uint32_t Delta_Time)
                             rectTex.right = 1.f;
                             rectTex.bottom = 1.f;
                         }
-                        else // не показывать несуществующую картинку
+                        else // do not show non-existent picture
                         {
                             pScroll = pScroll->next;
                             continue;
@@ -258,7 +258,7 @@ void CXI_VIMAGESCROLL::Draw(bool bSelected, uint32_t Delta_Time)
                 pScroll = pScroll->next;
             }
 
-            if (n == m_nSlotsQnt - 1) // последними показать строки
+            if (n == m_nSlotsQnt - 1) // show strings last
             {
                 // out to screen the strings if that needed
                 for (l = 0; l < m_nStringQuantity; l++)
@@ -718,7 +718,7 @@ float CXI_VIMAGESCROLL::ChangeDinamicParameters(float fYDelta)
                 memcpy(&m_Image[curImage], &m_Image[curImage + 1],
                        sizeof(IMAGEDESCRIBE) * (m_nListSize - 1 - curImage));
             m_nListSize--;
-            // ѕередвинем все уже используемые картинки
+            // move all already used pictures
             for (auto *pSTmp = m_pScroll; pSTmp != nullptr && pSTmp != pScroll; pSTmp = pSTmp->next)
                 if (pSTmp->imageNum > curImage)
                     pSTmp->imageNum--;
@@ -767,7 +767,7 @@ float CXI_VIMAGESCROLL::ChangeDinamicParameters(float fYDelta)
 
         if (bIncrement && bpos > m_rect.bottom - m_nVDelta) // end pass to right
         {
-            // удалим следующую (неиспользуемую текстуру)
+            // remove the next (unused texture)
             curImage++;
             if (curImage >= m_nListSize)
                 curImage = 0;
@@ -779,7 +779,7 @@ float CXI_VIMAGESCROLL::ChangeDinamicParameters(float fYDelta)
                     m_Image[curImage].ptex[n] = nullptr;
                 }
             }
-            // продолжим вывод следующей иконки с центра
+            // continue displaying the next icon from the center
             curImage = m_nCurImage;
             curYCenter = m_pCenter.y + fYDelta;
             if (curYCenter >= m_pCenter.y)
@@ -795,7 +795,7 @@ float CXI_VIMAGESCROLL::ChangeDinamicParameters(float fYDelta)
         }
         else if (!bIncrement && tpos < m_rect.top + m_nVDelta) // end pass to left is all end
         {
-            // удалим предыдущую (неиспользуемую текстуру)
+            // remove the previous (unused texture)
             curImage--;
             if (curImage < 0)
                 curImage = m_nListSize - 1;
@@ -1044,7 +1044,7 @@ void CXI_VIMAGESCROLL::ChangeScroll(int nScrollItemNum)
     ATTRIBUTES *pAttr = core.Entity_GetAttributeClass(g_idInterface, m_nodeName);
     if (pAttr != nullptr)
     {
-        // проверим может весь список надо мен€ть
+        // check maybe the whole list needs to be changed
         if (nScrollItemNum == -1 || m_nListSize != static_cast<long>(pAttr->GetAttributeAsDword("NotUsed", 0) +
                                                                      pAttr->GetAttributeAsDword("ListSize", 0)))
         {
@@ -1695,7 +1695,7 @@ uint32_t CXI_VIMAGESCROLL::MessageProc(long msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
-    case 0: // разрешить/запретить показ рамки
+    case 0: // enable / disable display of the frame
         m_bShowBorder = message.Long() != 0;
         break;
     case 2:
@@ -1718,7 +1718,7 @@ long CXI_VIMAGESCROLL::GetMousePointedPictureNum()
     long n = 0;
     if (mp.y < curYCenter)
     {
-        // счет на уменьшение номера
+        // number reduction
         float fTop = curYCenter - m_ImageSize.y * 0.5f;
         for (n = 0; mp.y < fTop; n--)
         {
@@ -1727,7 +1727,7 @@ long CXI_VIMAGESCROLL::GetMousePointedPictureNum()
     }
     else
     {
-        // счет на увеличение номера
+        // increase the number
         float fBottom = curYCenter + m_ImageSize.y * 0.5f;
         for (n = 0; mp.y > fBottom; n++)
         {

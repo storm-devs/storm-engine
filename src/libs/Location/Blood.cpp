@@ -2,10 +2,10 @@
 #include "Character.h"
 #include "defines.h"
 
-#define BLOOD_RADIUS 1.f        // размер пятна крови
-#define BLOOD_LIVE_TIME 5.5f    // сек
-#define BLOOD_BLENDOUT_TIME 5.f // сек
-#define BLOOD_RANDOM_DIST 0.8f  // разброс крови вокруг в метрах
+#define BLOOD_RADIUS 1.f        // blood stain size
+#define BLOOD_LIVE_TIME 5.5f    // sec
+#define BLOOD_BLENDOUT_TIME 5.f // sec
+#define BLOOD_RANDOM_DIST 0.8f  // spread of blood around in meters
 
 Blood::ClipTriangle Blood::clipT[MAX_CLIPPING_TRIANGLES];
 long Blood::nClipTQ;
@@ -25,7 +25,7 @@ Blood::~Blood()
     texID = -1;
 }
 
-//Инициализация
+// Initialization
 bool Blood::Init()
 {
     pRS = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
@@ -39,7 +39,7 @@ bool Blood::Init()
     return true;
 }
 
-//Работа
+// Work
 void Blood::Execute(uint32_t delta_time)
 {
     if (nUsedTQ < ON_LIVETIME_BLOOD_TRIANGLES)
@@ -53,7 +53,7 @@ void Blood::Execute(uint32_t delta_time)
         {
             if (aBlood[n].nStartIdx == nStartT)
             {
-                // удаляем кровь
+                // remove blood
                 nStartT += aBlood[n].nIdxQ;
                 nUsedTQ -= aBlood[n].nIdxQ;
                 if (nStartT >= MAX_BLOOD_TRIANGLES)
@@ -178,12 +178,12 @@ void Blood::AddBlood(const CVECTOR &pos)
     const auto nThisBloodQ = CheckBloodQuantityInRadius(cpos, BLOOD_RADIUS, 4);
     if (nThisBloodQ >= 4)
     {
-        // уже много крови в этом месте
+        // there is already a lot of blood in this place
         return;
     }
     if (nThisBloodQ > 0)
     {
-        // разброс крови случайно, если уже есть тут кровь
+        // the spread of blood is accidental, if there is already blood here
         cpos.x += FRAND(BLOOD_RANDOM_DIST * 2.f) - BLOOD_RANDOM_DIST;
         cpos.z += FRAND(BLOOD_RANDOM_DIST * 2.f) - BLOOD_RANDOM_DIST;
 
@@ -196,7 +196,7 @@ void Blood::AddBlood(const CVECTOR &pos)
             cpos.y = src.y + (dst.y - src.y) * fTrace;
     }
 
-    //Описываюищй ящик
+    // Bounding box
     static PLANE p[6];
     p[0].Nx = 0.0f;
     p[0].Ny = 1.0f;
@@ -223,7 +223,7 @@ void Blood::AddBlood(const CVECTOR &pos)
     p[5].Nz = 0.0f;
     p[5].D = -(cpos.x - BLOOD_RADIUS);
 
-    // бегаем по лееру
+    // loop through the layer
     for (auto it = its.first; it != its.second; ++it)
     {
         auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(it->second));
@@ -233,7 +233,7 @@ void Blood::AddBlood(const CVECTOR &pos)
         m->Clip(p, 6, cpos, BLOOD_RADIUS, AddClipPoligon);
     }
 
-    // бегаем по массиву моделек
+    // loop through the array of models
     for (long n = 0; n < aModels.size(); n++)
     {
         auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(aModels[n]));
@@ -259,7 +259,7 @@ void Blood::BuildBloodDataByCollision(const CVECTOR &cpos)
     curBlood.nIdxQ = nClipTQ;
     curBlood.cpos = cpos;
 
-    // ищем свободное место для треугольников
+    // looking for a free space for triangles
     if (nClipTQ + nUsedTQ <= MAX_BLOOD_TRIANGLES)
     {
         curBlood.nStartIdx = nStartT + nUsedTQ;
@@ -274,7 +274,7 @@ void Blood::BuildBloodDataByCollision(const CVECTOR &cpos)
     nUsedTQ += nClipTQ;
     aBlood.push_back(curBlood);
 
-    // заполняем буффер
+    // fill the buffer
     float fU0, fV0;
     switch (rand() % 8)
     {

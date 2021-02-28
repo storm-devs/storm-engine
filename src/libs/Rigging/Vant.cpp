@@ -55,7 +55,7 @@ bool VANT_BASE::Init()
 
 void VANT_BASE::SetDevice()
 {
-    // получить сервис рендера
+    // get render service
     RenderService = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!RenderService)
     {
@@ -87,8 +87,8 @@ void VANT_BASE::Execute(uint32_t Delta_Time)
 
     if (bUse)
     {
-        //====================================================
-        // Если был изменен ини-файл, то считать инфо из него
+        // ====================================================
+        // If the ini-file has been changed, read the info from it
         WIN32_FIND_DATA wfd;
         auto *const h = fio->_FindFirstFile("resource\\ini\\rigging.ini", &wfd);
         if (INVALID_HANDLE_VALUE != h)
@@ -209,7 +209,7 @@ uint64_t VANT_BASE::ProcessMessage(MESSAGE &message)
             }
         }
 
-        if (vantQuantity == oldvantQuantity) // не было вантов - удаляем всю группу
+        if (vantQuantity == oldvantQuantity) // there were no shrouds - delete the whole group
         {
             if (groupQuantity == 1)
             {
@@ -435,7 +435,7 @@ void VANT_BASE::SetVertexes() const
             pv[iv + 6].tv = ftmp;
             iv += 7;
 
-            // установить точки балки
+            // set beam points
             CVECTOR tvec = uPos - horzDirect * (upWidth * .5f) + vertDirect * upHeight;
             pv[iv].pos = tvec - vertDirect * upHeight * fBalkHeight;
             pv[iv + 1].pos = tvec + vlist[vn]->pos[0] * fBalkWidth;
@@ -513,7 +513,7 @@ void VANT_BASE::AddLabel(GEOS::LABEL &lbl, NODE *nod)
         }
     if (vn == vantQuantity)
     {
-        //создаем новый вант
+        // create a new guy
         vd = new VANTDATA;
         if (vd == nullptr)
             throw std::exception("Not memory allocate");
@@ -644,7 +644,7 @@ void VANT::LoadIni()
 
     sprintf_s(section, "VANTS");
 
-    // имя текстуры
+    // texture name
     ini->ReadString(section, "TextureName", param, sizeof(param) - 1, "vant.tga");
     if (texl != -1)
     {
@@ -665,42 +665,42 @@ void VANT::LoadIni()
         TextureName = new char[len];
         memcpy(TextureName, param, len);
     }
-    // толщина веревки
+    // rope thickness
     ROPE_WIDTH = ini->GetFloat(section, "fWidth", 0.1f);
-    // количество веревок
+    // number of ropes
     ROPE_QUANT = static_cast<int>(ini->GetLong(section, "fRopeQuant", 5));
     if (ROPE_QUANT < 2)
         ROPE_QUANT = 2;
-    // координаты текстуры горизонтальной веревки xBeg
+    // xBeg horizontal rope texture coordinates
     ropeXl = ini->GetFloat(section, "fHRopeXbeg", 0.5f);
     ropeXr = ini->GetFloat(section, "fHRopeXend", 1.f);
-    // координаты текстуры треугольника
+    // triangle texture coordinates
     treangXl = ini->GetFloat(section, "fTreangXbeg", 0.f);
     treangXr = ini->GetFloat(section, "fTreangXend", 0.5f);
     treangYu = ini->GetFloat(section, "fTreangYbeg", 0.f);
     treangYd = ini->GetFloat(section, "fTreangYend", 1.f);
-    // координаты текстуры балки
+    // beam texture coordinates
     balkYu = ini->GetFloat(section, "fBalkYbeg", 0.6f);
     balkYd = ini->GetFloat(section, "fBalkYend", 1.f);
-    // координаты текстуры вертикальной веревки
+    // vertical rope texture coordinates
     vRopeXl = ini->GetFloat(section, "fVRopeXbeg", 0.f);
     vRopeXr = ini->GetFloat(section, "fVRopeXend", 0.1f);
-    // ширина верхнего треугольника
+    // upper triangle width
     upWidth = ini->GetFloat(section, "fTreangWidth", 1.f);
-    // высота верхнего треугольника
+    // the height of the upper triangle
     upHeight = ini->GetFloat(section, "fTreangHeight", 1.f);
-    // высота вертикальной веревки
+    // vertical rope height
     vRopeHeight = ini->GetFloat(section, "fVRopeHeight", 1.f);
-    // высота горизонтальной веревки
+    // horizontal rope height
     hRopeHeight = ini->GetFloat(section, "fHRopeHeight", 1.f);
-    // высота балки относительно высоты треугольника
+    // beam height relative to triangle height
     fBalkHeight = ini->GetFloat(section, "fBalkHeight", 0.1f);
     fBalkWidth = ini->GetFloat(section, "fBalkWidth", 1.2f);
-    // квадрат расстояния с которого не видны ванты
+    // the square of the distance from which the cables are not visible
     fVantMaxDist = ini->GetFloat(section, "fVantMaxDist", 10000.f);
-    // шаг дискретизации движения ванта
+    // Guy motion sampling step
     ZERO_CMP_VAL = ini->GetFloat(section, "fDiscrValue", 0.01f);
-    // максимальное изменение положения ванта при котором вант перестает отображаться
+    // the maximum change in the guy position at which the guy stops being displayed
     MAXFALL_CMP_VAL = ini->GetFloat(section, "fDisapearValue", 5.f);
 
     VantId = 0;
@@ -728,7 +728,7 @@ void VANTL::LoadIni()
 
     sprintf_s(section, "VANTS_L");
 
-    // имя текстуры
+    // texture name
     ini->ReadString(section, "TextureName", param, sizeof(param) - 1, "vant.tga");
     if (texl != -1)
     {
@@ -749,42 +749,42 @@ void VANTL::LoadIni()
         TextureName = new char[len];
         memcpy(TextureName, param, len);
     }
-    // толщина веревки
+    // rope thickness
     ROPE_WIDTH = ini->GetFloat(section, "fWidth", 0.1f);
-    // количество веревок
+    // number of ropes
     ROPE_QUANT = (int)ini->GetLong(section, "fRopeQuant", 5);
     if (ROPE_QUANT < 2)
         ROPE_QUANT = 2;
-    // координаты текстуры горизонтальной веревки xBeg
+    // xBeg horizontal rope texture coordinates
     ropeXl = ini->GetFloat(section, "fHRopeXbeg", 0.5f);
     ropeXr = ini->GetFloat(section, "fHRopeXend", 1.f);
-    // координаты текстуры треугольника
+    // triangle texture coordinates
     treangXl = ini->GetFloat(section, "fTreangXbeg", 0.f);
     treangXr = ini->GetFloat(section, "fTreangXend", 0.5f);
     treangYu = ini->GetFloat(section, "fTreangYbeg", 0.f);
     treangYd = ini->GetFloat(section, "fTreangYend", 1.f);
-    // координаты текстуры балки
+    // beam texture coordinates
     balkYu = ini->GetFloat(section, "fBalkYbeg", 0.6f);
     balkYd = ini->GetFloat(section, "fBalkYend", 1.f);
-    // координаты текстуры вертикальной веревки
+    // vertical rope texture coordinates
     vRopeXl = ini->GetFloat(section, "fVRopeXbeg", 0.f);
     vRopeXr = ini->GetFloat(section, "fVRopeXend", 0.1f);
-    // ширина верхнего треугольника
+    // upper triangle width
     upWidth = ini->GetFloat(section, "fTreangWidth", 1.f);
-    // высота верхнего треугольника
+    // the height of the upper triangle
     upHeight = ini->GetFloat(section, "fTreangHeight", 1.f);
-    // высота вертикальной веревки
+    // vertical rope height
     vRopeHeight = ini->GetFloat(section, "fVRopeHeight", 1.f);
-    // высота горизонтальной веревки
+    // horizontal rope height
     hRopeHeight = ini->GetFloat(section, "fHRopeHeight", 1.f);
-    // высота балки относительно высоты треугольника
+    // beam height relative to triangle height
     fBalkHeight = ini->GetFloat(section, "fBalkHeight", 0.1f);
     fBalkWidth = ini->GetFloat(section, "fBalkWidth", 1.2f);
-    // квадрат расстояния с которого не видны ванты
+    // the square of the distance from which the cables are not visible
     fVantMaxDist = ini->GetFloat(section, "fVantMaxDist", 10000.f);
-    // шаг дискретизации движения ванта
+    // Guy motion sampling step
     ZERO_CMP_VAL = ini->GetFloat(section, "fDiscrValue", 0.01f);
-    // максимальное изменение положения ванта при котором вант перестает отображаться
+    // the maximum change in the guy position at which the guy stops being displayed
     MAXFALL_CMP_VAL = ini->GetFloat(section, "fDisapearValue", 5.f);
 
     VantId = 1;
@@ -812,7 +812,7 @@ void VANTZ::LoadIni()
 
     sprintf_s(section, "VANTS_Z");
 
-    // имя текстуры
+    // texture name
     ini->ReadString(section, "TextureName", param, sizeof(param) - 1, "vant.tga");
     if (texl != -1)
     {
@@ -833,42 +833,42 @@ void VANTZ::LoadIni()
         TextureName = new char[len];
         memcpy(TextureName, param, len);
     }
-    // толщина веревки
+    // rope thickness
     ROPE_WIDTH = ini->GetFloat(section, "fWidth", 0.1f);
-    // количество веревок
+    // number of ropes
     ROPE_QUANT = (int)ini->GetLong(section, "fRopeQuant", 5);
     if (ROPE_QUANT < 2)
         ROPE_QUANT = 2;
-    // координаты текстуры горизонтальной веревки xBeg
+    // xBeg horizontal rope texture coordinates
     ropeXl = ini->GetFloat(section, "fHRopeXbeg", 0.5f);
     ropeXr = ini->GetFloat(section, "fHRopeXend", 1.f);
-    // координаты текстуры треугольника
+    // triangle texture coordinates
     treangXl = ini->GetFloat(section, "fTreangXbeg", 0.f);
     treangXr = ini->GetFloat(section, "fTreangXend", 0.5f);
     treangYu = ini->GetFloat(section, "fTreangYbeg", 0.f);
     treangYd = ini->GetFloat(section, "fTreangYend", 1.f);
-    // координаты текстуры балки
+    // beam texture coordinates
     balkYu = ini->GetFloat(section, "fBalkYbeg", 0.6f);
     balkYd = ini->GetFloat(section, "fBalkYend", 1.f);
-    // координаты текстуры вертикальной веревки
+    // vertical rope texture coordinates
     vRopeXl = ini->GetFloat(section, "fVRopeXbeg", 0.f);
     vRopeXr = ini->GetFloat(section, "fVRopeXend", 0.1f);
-    // ширина верхнего треугольника
+    // upper triangle width
     upWidth = ini->GetFloat(section, "fTreangWidth", 1.f);
-    // высота верхнего треугольника
+    // the height of the upper triangle
     upHeight = ini->GetFloat(section, "fTreangHeight", 1.f);
-    // высота вертикальной веревки
+    // vertical rope height
     vRopeHeight = ini->GetFloat(section, "fVRopeHeight", 1.f);
-    // высота горизонтальной веревки
+    // horizontal rope height
     hRopeHeight = ini->GetFloat(section, "fHRopeHeight", 1.f);
-    // высота балки относительно высоты треугольника
+    // beam height relative to triangle height
     fBalkHeight = ini->GetFloat(section, "fBalkHeight", 0.1f);
     fBalkWidth = ini->GetFloat(section, "fBalkWidth", 1.2f);
-    // квадрат расстояния с которого не видны ванты
+    // the square of the distance from which the cables are not visible
     fVantMaxDist = ini->GetFloat(section, "fVantMaxDist", 10000.f);
-    // шаг дискретизации движения ванта
+    // Guy motion sampling step
     ZERO_CMP_VAL = ini->GetFloat(section, "fDiscrValue", 0.01f);
-    // максимальное изменение положения ванта при котором вант перестает отображаться
+    // the maximum change in the guy position at which the guy stops being displayed
     MAXFALL_CMP_VAL = ini->GetFloat(section, "fDisapearValue", 5.f);
 
     VantId = 2;
@@ -900,7 +900,7 @@ void VANT_BASE::doMove()
             if (!VectCmp(lPos, vlist[vn]->pLeftStart, MAXFALL_CMP_VAL) ||
                 !VectCmp(uPos, vlist[vn]->pUpStart, MAXFALL_CMP_VAL))
             {
-                vlist[vn]->bDeleted = true; // установим признак удаления ванта
+                vlist[vn]->bDeleted = true; // set the sign of guy removal
                 bYesDeleted = true;
             }
 
@@ -925,7 +925,7 @@ void VANT_BASE::doMove()
                 pv[iv + 6].pos = rPos;
                 iv += 7;
 
-                // установить точки балки
+                // set beam points
                 CVECTOR tvec = uPos - htmp + vertDirect * upHeight;
                 pv[iv].pos = uPos - htmp + vtmp;
                 pv[iv + 1].pos = tvec + vlist[vn]->pos[0] * fBalkWidth;
@@ -1053,14 +1053,14 @@ void VANT_BASE::SetAdd(int firstNum)
 
 void VANT_BASE::DoSTORM_DELETE()
 {
-    // для всех удаленных групп удалим принадлежащие им ванты
+    // for all deleted groups, delete the guys that belong them
     int ngn = 0;
     int nvn = 0;
     nVert = 0;
     nIndx = 0;
     for (int gn = 0; gn < groupQuantity; gn++)
     {
-        int gs = 0; // размер группы
+        int gs = 0; // group size
         gdata[gn].sVert = nVert;
         gdata[gn].sIndx = nIndx;
         gdata[gn].nVert = 0;
@@ -1084,11 +1084,11 @@ void VANT_BASE::DoSTORM_DELETE()
 
             gdata[gn].vantIdx[gs++] = nvn;
 
-            // поставим вант на нужное местов списке
+            // put the guy on the right places in the list
             vlist[nvn++] = vlist[vn];
         }
 
-        // если группа пустая, то удалим ее
+        // if the group is empty, then delete it
         if (gs == 0)
         {
             delete gdata[gn].vantIdx;
@@ -1096,14 +1096,14 @@ void VANT_BASE::DoSTORM_DELETE()
         }
 
         gdata[gn].vantQuantity = gs;
-        // поставим группу на нужное место в списке
+        // put the group in the right place in the list
         if (ngn < gn)
             memcpy(&gdata[ngn], &gdata[gn], sizeof(GROUPDATA));
         ngn++;
     }
 
     nIndx /= 3;
-    // если нет больше вант, то уберем их все
+    // if there are no more guys, then remove them all
     if (ngn == 0 || nvn == 0)
     {
         vantQuantity = groupQuantity = 0;

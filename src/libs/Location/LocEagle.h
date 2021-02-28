@@ -19,9 +19,9 @@ class LocEagle : public Entity
     LocEagle();
     virtual ~LocEagle();
 
-    //Инициализация
+    // Initialization
     bool Init() override;
-    //Исполнение
+    // Execution
     void Execute(uint32_t delta_time);
 
     void ProcessStage(Stage stage, uint32_t delta) override

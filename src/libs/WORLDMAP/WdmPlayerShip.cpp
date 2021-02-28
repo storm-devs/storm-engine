@@ -18,9 +18,9 @@
 #include "WorldMap.h"
 #include "defines.h"
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 WdmPlayerShip::WdmPlayerShip()
 {
@@ -39,12 +39,12 @@ WdmPlayerShip::~WdmPlayerShip()
 
 void WdmPlayerShip::PushOutFromIsland()
 {
-    //Если не в острове то и не выталкиваемся
+    // If not in the island, then don't push out
     if (!wdmObjects->islands->CollisionTest(mtx, modelL05, modelW05, false))
     {
         return;
     }
-    //Крутим по спирали вокруг точки
+    // spiral around the point
     auto ang = 0.0f, angStep = PI * 0.1f;
     const auto areaRad =
         0.1f * 0.707f *
@@ -64,7 +64,7 @@ void WdmPlayerShip::PushOutFromIsland()
             return;
         }
     }
-    //Неполучилось, попробуем случайно подвигать
+    // Didn't work out, try to randomly move
     for (long i = 0; i < 256; i++)
     {
         const auto _x = x + areaRad * rand() * 1.0f / RAND_MAX;
@@ -85,17 +85,17 @@ void WdmPlayerShip::SetActionRadius(float radius)
     actionRadius = radius;
 }
 
-//Расчёты
+// Calculations
 void WdmPlayerShip::Update(float dltTime)
 {
     WdmShip::Update(dltTime);
     Move(dltTime);
-    //Тестируем попадание в нашу область энкоунтеров
+    // Test getting into our encounter area
     if (stormEventTime > 0.0f)
         stormEventTime -= dltTime;
     if (wdmObjects->isPause)
         return;
-    //Шторм
+    // Storm
     auto i = TestInStorm();
     if (i >= 0)
     {
@@ -106,11 +106,11 @@ void WdmPlayerShip::Update(float dltTime)
         }
     }
     wdmObjects->playarInStorm = (i == -2);
-    //Корабли
+    // The ships
     wdmObjects->enableSkipEnemy = false;
     for (i = 0; i < wdmObjects->ships.size(); i++)
     {
-        //Пропустим ненужных
+        // skip unnecessary
         auto *const es = static_cast<WdmEnemyShip *>(wdmObjects->ships[i]);
         if (static_cast<WdmShip *>(es) == this || !es->isLive || es->killMe)
         {
@@ -121,17 +121,17 @@ void WdmPlayerShip::Update(float dltTime)
             }
             continue;
         }
-        //Дистанция до кораблика
+        // Distance to the ship
         const auto r = ~(es->mtx.Pos() - mtx.Pos());
-        //Определим радиус тестирования
+        // Determine the testing radius
         if (es->isEnemy)
         {
             if (r < actionRadius * actionRadius * 6.0f)
             {
                 if (r < actionRadius * actionRadius)
                 {
-                    //Догнали
-                    //((WdmEnemyShip *)wdmObjects->ships[i])->isLive = false;
+                    // Caught up
+                    // ((WdmEnemyShip *)wdmObjects->ships[i])->isLive = false;
                     wdmObjects->ships[i]->isSelect = true;
                     if (es->attack)
                         es->attack->isSelect = true;
@@ -193,7 +193,7 @@ void WdmPlayerShip::Update(float dltTime)
 
     const long nOldIslandVal = wdmObjects->wm->AttributesPointer->GetAttributeAsDword("encounter_island", 0);
     const long nOldEncounterType = wdmObjects->wm->AttributesPointer->GetAttributeAsDword("encounter_type", 0);
-    // отметим попадание в остров
+    // note hitting the island
     if (wdmObjects->curIsland)
     {
         wdmObjects->wm->AttributesPointer->SetAttributeUseDword("encounter_island", 1);
@@ -202,7 +202,7 @@ void WdmPlayerShip::Update(float dltTime)
     {
         wdmObjects->wm->AttributesPointer->SetAttributeUseDword("encounter_island", 0);
     }
-    // отметим попадание в енкаунтер
+    // mark hitting the encounter
     if (wdmObjects->enemyShip)
     {
         switch (wdmObjects->enemyShip->shipType)
@@ -225,7 +225,7 @@ void WdmPlayerShip::Update(float dltTime)
     }
     else
     {
-        // отметим попадание в шторм
+        // mark hitting the storm
         if (wdmObjects->playarInStorm)
         {
             wdmObjects->wm->AttributesPointer->SetAttributeUseDword("encounter_type", 4);
@@ -252,7 +252,7 @@ void WdmPlayerShip::LRender(VDX9RENDER *rs)
 
 bool WdmPlayerShip::ExitFromMap()
 {
-    //Ищем селектированные
+    // looking for selected
     long found = -1;
     for (long i = 0; i < wdmObjects->ships.size(); i++)
     {
@@ -335,11 +335,11 @@ long WdmPlayerShip::TestInStorm() const
     return -1;
 }
 
-//Переместить кораблик
+// Move the ship
 void WdmPlayerShip::Move(float dltTime)
 {
     CONTROL_STATE cs;
-    //Вперёд
+    // Forward
     core.Controls->GetControlState("WMapShipSailUp", cs);
     if (cs.state == CST_ACTIVE || cs.state == CST_ACTIVATED)
         goForward = true;
@@ -348,7 +348,7 @@ void WdmPlayerShip::Move(float dltTime)
         goForward = true;
     if (goForward)
         speed += WDM_SHIP_INER_ST * WDM_SHIP_MAX_SPEED * dltTime * 0.5f;
-    //Назад
+    // Back
     auto isBack = false;
     core.Controls->GetControlState("WMapShipSailDown", cs);
     if (cs.state == CST_ACTIVE)
@@ -366,7 +366,7 @@ void WdmPlayerShip::Move(float dltTime)
         }
     }
     core.Controls->GetControlState("WMapShipSailDown", cs);
-    //Повороты
+    // Turns
     auto isTurn = false;
     core.Controls->GetControlState("WMapShipTurnLeft", cs);
     if (cs.state == CST_ACTIVE)

@@ -49,7 +49,7 @@ class CXI_PCEDITBOX : public CINODE
     long m_nMaxSize;  // max character quantity
     long m_nMaxWidth; // max string width
 
-    long m_nFirstShowCharacterIndex; // первый символ для вывода строки
+    long m_nFirstShowCharacterIndex; // the first character to output the line
 
     CXI_IMAGE *m_pLeftImage;
     CXI_IMAGE *m_pRightImage;

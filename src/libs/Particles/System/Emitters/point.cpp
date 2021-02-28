@@ -1,6 +1,6 @@
 #include "point.h"
 
-// Конструктор / деструктор
+// Constructor / destructor
 PointEmitter::PointEmitter(ParticleSystem *pSystem) : BaseEmitter(pSystem)
 {
 }
@@ -9,9 +9,9 @@ PointEmitter::~PointEmitter()
 {
 }
 
-//Получить позицию для рождения новых партиклов
+// Get a position for the emission of new particles
 Vector PointEmitter::GetNewParticlePosition(float DeltaTime)
 {
-    // TODO : Надо рождать на начальной позиции трэка...
+    // TODO: should emit at the starting position of the track ...
     return Vector(0.0f);
 }

@@ -23,9 +23,9 @@ CVECTOR Blots::clipTriangles[3 * 32];
 long Blots::numClipTriangles;
 CVECTOR Blots::dir, Blots::normal;
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 Blots::Blots()
 {
@@ -45,7 +45,7 @@ Blots::~Blots()
         rs->TextureRelease(textureID);
 }
 
-//Инициализация
+// Initialization
 bool Blots::Init()
 {
     // GUARD(Blots::Init())
@@ -62,7 +62,7 @@ bool Blots::Init()
     // UNGUARD
 }
 
-//Сообщения
+// Messages
 uint64_t Blots::ProcessMessage(MESSAGE &message)
 {
     switch (message.Long())
@@ -89,16 +89,16 @@ uint64_t Blots::ProcessMessage(MESSAGE &message)
 
 void Blots::Hit(MESSAGE &message)
 {
-    //Моделька коробля
+    // Model of a ship
     auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
     if (!m)
         return;
-    //Позиция
+    // Position
     CVECTOR pos;
     pos.x = message.Float();
     pos.y = message.Float();
     pos.z = message.Float();
-    //Ищем наличие свободного пятна и близость от других
+    // Looking for a free blot and proximity to others
     CVECTOR lpos;
     m->mtx.MulToInv(pos, lpos);
     long i, j = -1;
@@ -118,7 +118,7 @@ void Blots::Hit(MESSAGE &message)
     if (j < 0)
         return;
     i = j;
-    //Направление падения ядра
+    // Fall direction of the cannonball
     dir.x = message.Float();
     dir.y = message.Float();
     dir.z = message.Float();
@@ -127,17 +127,17 @@ void Blots::Hit(MESSAGE &message)
     AddBlot(i, rand(), lpos, ldir, 0.0f);
 }
 
-//Добавить пятно
+// Add blot
 void Blots::AddBlot(long i, long rnd, const CVECTOR &lpos, const CVECTOR &dir, float time)
 {
-    //Моделька коробля
+    // Model of a ship
     auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
     if (!m)
         return;
     blot[i].isUsed = false;
     auto pos = m->mtx * CVECTOR(lpos);
     this->dir = m->mtx * CVECTOR(dir) - m->mtx.Pos();
-    //Описываюищй ящик
+    // bounding box
     static PLANE p[6];
     p[0].Nx = 0.0f;
     p[0].Ny = 1.0f;
@@ -163,17 +163,17 @@ void Blots::AddBlot(long i, long rnd, const CVECTOR &lpos, const CVECTOR &dir, f
     p[5].Ny = 0.0f;
     p[5].Nz = 0.0f;
     p[5].D = -(pos.x - BLOTS_RADIUS);
-    //Вырезаем треугольники лежащии в ящике
+    // Cut out the triangles in the box
     numClipTriangles = 0;
     normal = -0.1f * dir;
-    //Неколизимся с патчём и мачтами
+    // don't collide with the patch and masts
     auto *root = m->GetNode(0);
     SetNodesCollision(root, true);
     m->Clip(p, 6, pos, BLOTS_RADIUS, AddPolygon);
     SetNodesCollision(root, false);
     if (numClipTriangles <= 0)
         return;
-    //Матрица преобразования в локальную систему координат дырки
+    // transformation matrix to the local coordinate system of the hole
     CMatrix uvmtx;
     if (!uvmtx.BuildViewMatrix(pos, pos + normal * 1.0f, CVECTOR(0.0f, 1.0f, 0.0f)))
     {
@@ -183,7 +183,7 @@ void Blots::AddBlot(long i, long rnd, const CVECTOR &lpos, const CVECTOR &dir, f
                 return;
         }
     }
-    //Информация о пятне
+    // Blot information
     blot[i].isUsed = true;
     blot[i].lastAlpha = 0xff;
     blot[i].numTrgs = static_cast<uint16_t>(numClipTriangles);
@@ -194,7 +194,7 @@ void Blots::AddBlot(long i, long rnd, const CVECTOR &lpos, const CVECTOR &dir, f
     blot[i].startIndex = useVrt;
     useVrt += numClipTriangles * 3;
     Assert(useVrt < sizeof(vrt) / sizeof(Vertex));
-    //Преобразуем треугольники в локальную систему координат корабля
+    // Convert triangles to the local coordinate system of the ship
     auto mtx(m->mtx);
     mtx.Transposition();
     auto *v = vrt + blot[i].startIndex;
@@ -227,7 +227,7 @@ void Blots::AddBlot(long i, long rnd, const CVECTOR &lpos, const CVECTOR &dir, f
         v[n].u = baseU + uv.x * 0.5f;
         v[n].v = baseV + uv.y * 0.5f;
     }
-    //Записываем состояние
+    // Writing the state
     SaveBlot(i);
 }
 
@@ -284,12 +284,12 @@ void Blots::SetNodesCollision(NODE *n, bool isSet)
         SetNodesCollision(n->next[i], isSet);
 }
 
-//Сохранить параметры дыр
+// Save blot parameters
 void Blots::SaveBlot(long i)
 {
     if (!blotsInfo)
         return;
-    //Имя атрибута
+    // Attribute name
     char name[16];
     sprintf_s(name, "b%.3i", i);
     if (blot[i].isUsed)
@@ -310,12 +310,12 @@ void Blots::SaveBlot(long i)
     }
 }
 
-//Загрузить параметры пятна
+// Load blot parameters
 void Blots::LoadBlot(long i)
 {
     if (!blotsInfo)
         return;
-    //Имя атрибута
+    // Attribute name
     char name[16];
     sprintf_s(name, "b%.3i", i);
     auto *blt = blotsInfo->FindAClass(blotsInfo, name);
@@ -349,44 +349,44 @@ void Blots::LoadBlot(long i)
     }
 }
 
-//Работа
+// Update
 void Blots::Realize(uint32_t delta_time)
 {
-    //Обновляем состояние
+    // Updating the state
     blotsInfo = pCharAttributeRoot->FindAClass(pCharAttributeRoot, "ship.blots");
     updateBlot++;
     if (updateBlot >= BLOTS_MAX)
         updateBlot = 0;
     SaveBlot(updateBlot);
-    //Моделька коробля
+    // Model of a ship
     auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
     if (!m)
         return;
-    //Расстояние от камеры
+    // Distance from camera
     CVECTOR pos, ang;
     rs->GetCamera(pos, ang, ang.x);
     auto dist = ~(pos - m->mtx.Pos());
     if (dist >= BLOTS_DIST * BLOTS_DIST)
         return;
-    //Прозрачность от расстояния до корабля
+    // Transparency according to the distance to the ship
     dist = (sqrtf(dist / (BLOTS_DIST * BLOTS_DIST)) - 0.5f) / 0.5f;
     if (dist <= 0.0f)
         dist = 0.0f;
     dist = (1.0f - dist) * 255.0f;
     auto color = static_cast<long>(dist);
     rs->SetRenderState(D3DRS_TEXTUREFACTOR, (color << 24) | (color << 16) | (color << 8) | color);
-    //Настройки
+    // Settings
     rs->SetTransform(D3DTS_WORLD, m->mtx);
     rs->TextureSet(0, textureID);
-    //Рисуем все добавленные пятна
+    // Draw all the added blots
     for (long i = 0; i < BLOTS_MAX; i++)
     {
-        //Пропустим неиспользуемых
+        // Skip unused
         if (!blot[i].isUsed)
             continue;
-        //Время жизни
+        // Lifetime
 
-        //!!!
+        // !!!
         // blot[i].liveTime += delta_time*0.001f;
 
         if (blot[i].liveTime >= BLOTS_TIME)
@@ -395,8 +395,8 @@ void Blots::Realize(uint32_t delta_time)
             const auto startIndex = blot[i].startIndex;
             const long numDelVerts = blot[i].numTrgs * 3;
 
-            //-----------------------------------------------
-            //!!! begin Проверки
+            // -----------------------------------------------
+            // !!! begin Checks
             blot[i].startIndex = -10000;
             blot[i].numTrgs = 0;
             static Vertex vr[3 * BLOTS_NTRGS * BLOTS_MAX];
@@ -409,10 +409,10 @@ void Blots::Realize(uint32_t delta_time)
                 for (long v = 0; v < blot[n].numTrgs * 3; v++)
                     v1[v] = v2[v];
             }
-            //!!! end Проверки
-            //-----------------------------------------------
+            // !!! end Checks
+            // -----------------------------------------------
 
-            //Удаляем из массива треугольники
+            // Remove triangles from the array
             long j;
             for (j = 0; j < BLOTS_MAX; j++)
             {
@@ -427,8 +427,8 @@ void Blots::Realize(uint32_t delta_time)
             useVrt -= numDelVerts;
             Assert(useVrt >= 0);
 
-            //-----------------------------------------------
-            //!!! begin Проверки
+            // -----------------------------------------------
+            // !!! begin Checks
             Assert(j % 3 == 0);
             long nnn = 0;
             for (j = 0; j < BLOTS_MAX; j++)
@@ -455,12 +455,12 @@ void Blots::Realize(uint32_t delta_time)
                     Assert(v1[v].v == v2[v].v);
                 }
             }
-            //!!! end Проверки
-            //-----------------------------------------------
+            // !!! end Checks
+            // -----------------------------------------------
 
             continue;
         }
-        //Прозрачность от времени
+        // Transparency over time
         auto k = blot[i].liveTime / BLOTS_TIME;
         k = (k - 0.5f) / 0.5f;
         if (k < 0.0f)
@@ -470,18 +470,18 @@ void Blots::Realize(uint32_t delta_time)
         color = static_cast<long>((1.0f - k) * 255.0f);
         if (color != blot[i].lastAlpha)
         {
-            //Обновим вершины
-            //Цвет
+            // Update the vertices
+            // Colour
             color = 0xff000000 | (color << 16) | (color << 8) | color;
-            //Количество
+            // amount
             const long numVrt = blot[i].numTrgs * 3;
-            //Массив
+            // Array
             auto *const v = vrt + blot[i].startIndex;
             for (long j = 0; j < numVrt; j++)
                 v[j].c = color;
         }
     }
-    //Рисуем
+    // Draw
     if (useVrt > 3)
         rs->DrawPrimitiveUP(D3DPT_TRIANGLELIST, D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1, useVrt / 3, vrt,
                             sizeof(Vertex), "Blot");
@@ -493,12 +493,12 @@ bool Blots::AddPolygon(const CVECTOR *v, long nv)
         return false;
     if (nv < 3)
         return true;
-    //Нормаль
+    // Normal
     const auto norm = (v[0] - v[1]) ^ (v[0] - v[2]);
     if ((norm | dir) >= 0.0f)
         return true;
     normal += 100.0f * norm;
-    //Добавляем
+    // Add
     for (long i = 2; i < nv; i++)
     {
         clipTriangles[numClipTriangles * 3 + 0] = v[0];

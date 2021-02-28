@@ -11,14 +11,14 @@ class DataFloat
     float Value;
 
   public:
-    //конструктор/деструктор
+    // constructor / destructor
     DataFloat();
     virtual ~DataFloat();
 
-    //Получить значение
+    // Get value
     float GetValue() const;
 
-    //Установить значение
+    // Set value
     void SetValue(float val);
 
     void Load(MemFile *File);

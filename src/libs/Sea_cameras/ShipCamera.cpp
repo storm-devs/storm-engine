@@ -144,23 +144,23 @@ void SHIP_CAMERA::Move(float fDeltaTime)
     boxSize.x += boxSize.y;
     boxSize.z += boxSize.y;
     const auto maxRad = boxSize.z * 2.0f;
-    //Полуоси эллипсоида по которому движеться камера
+    // Semi-axes of the ellipsoid along which the camera moves
     const auto a = boxSize.x * 1.2f + fDistance * (maxRad - boxSize.x * 1.2f); // x
     const auto b = boxSize.y * 1.5f + fDistance * (70.0f - boxSize.y * 1.5f);  // y
     const auto c = boxSize.z * 1.2f + fDistance * (maxRad - boxSize.z * 1.2f); // z
-    //Найдём позицию камеры на эллипсоиде
+    // Find the position of the camera on the ellipsoid
     vCenter.y += 0.5f * boxSize.y;
     CVECTOR vPos;
     if (vAng.x <= 0.0f)
     {
-        //Выше 0 ездием по эллипсоиду
+        // Above 0 driving on an ellipsoid
         vPos.x = a * cosf(-vAng.x) * sinf(vAng.y);
         vPos.y = b * sinf(-vAng.x);
         vPos.z = c * cosf(-vAng.x) * cosf(vAng.y);
     }
     else
     {
-        //Ниже 0 ездием по эллиптическому цилиндру
+        // Below 0 driving on an elliptical cylinder
         vPos.x = a * sinf(vAng.y);
         vPos.y = 0.0f; // b*sinf(-vAng.x);
         vPos.z = c * cosf(vAng.y);
@@ -168,7 +168,7 @@ void SHIP_CAMERA::Move(float fDeltaTime)
     vPos = CMatrix(CVECTOR(0.0f, fModelAy, 0.0f), vCenter) * vPos;
     if (vAng.x > 0.0f)
         vCenter.y += boxSize.z * vAng.x * 6.0f;
-    //Ограничим высоту с низу
+    // Limit the height from the bottom
     const auto fWaveY = pSea->WaveXZ(vPos.x, vPos.z);
     if (vPos.y - fWaveY < fMinHeightOnSea)
         vPos.y = fWaveY + fMinHeightOnSea;
@@ -238,26 +238,26 @@ void SHIP_CAMERA::ShipsCollision(CVECTOR &pos)
     const auto &entities = EntityManager::GetEntityIdVector("ship");
     for (auto ent : entities)
     {
-        //Указатель на объект
+        // Object pointer
         auto *ship = static_cast<VAI_OBJBASE *>(EntityManager::GetEntityPointer(ent));
         if (!ship)
             break;
         if (ship == GetAIObj())
             continue;
-        //Позиция камеры в системе корабля
+        // Camera position in the ship system
         Assert(ship->GetMatrix());
         ship->GetMatrix()->MulToInv(pos, p);
-        //Проверим попадание в бокс
+        // Check if hitting the box
         auto s = ship->GetBoxsize() * CVECTOR(SCMR_BOXSCALE_X * 0.5f, SCMR_BOXSCALE_Y * 0.5f, SCMR_BOXSCALE_Z * 0.5f);
         if (s.x <= 0.0f || s.y <= 0.0f || s.z <= 0.0f)
             continue;
-        //Строим эллипсоид
+        // Building an ellipsoid
         const auto a = s.z + s.y; // z
         const auto b = s.x + s.y; // x
         auto k1 = s.z / a;
         auto k2 = s.x / b;
         const auto c = s.y / sqrtf(1.0f - k1 * k1 - k2 * k2); // y
-        //Ишем высоту
+        // Calculate height
         k1 = p.z / a;
         k2 = p.x / b;
         auto h = (1.0f - k1 * k1 - k2 * k2);

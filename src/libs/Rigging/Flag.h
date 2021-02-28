@@ -16,25 +16,25 @@ struct FLAGLXVERTEX
 
 class FLAG : public Entity
 {
-    // параметры получаемые из INI-файла //
-    //-------------------------------------
-    // номера текстур
+    // parameters obtained from INI file //
+    // -------------------------------------
+    // texture numbers
     int ENGLISH_FLAG_TEX;
     int SPANISH_FLAG_TEX;
     int FRENCH_FLAG_TEX;
     int PIRATE_FLAG_TEX;
 
-    float FLAGVECTORLEN; // длина сегмента флага
-    float ALFA_DEPEND;   // скорость изменения угла колебания
-    float BETA_DEPEND;   // скорость изменения угла вращения
-    float ALFA_RAND; // максимальное значение случайного изменения угла Alpha
-    float BETA_RAND; // максимальное значение случайного изменения угла Beta
-    float fWindAm;   // Амплитуда колебания флага
-    float fRotAm;    // Амплитуда вращения флага
-    float DOWNVAL;   // значение декремента по Y
-    float fAlfaMax;  // максимальный угол (для конца флага)
+    float FLAGVECTORLEN; // flag segment length
+    float ALFA_DEPEND;   // the rate of change of the swing angle
+    float BETA_DEPEND;   // rotation rate
+    float ALFA_RAND; // the maximum value of the random change in the angle Alpha
+    float BETA_RAND; // the maximum value of the random change in the angle Beta
+    float fWindAm;   // Flag swing amplitude
+    float fRotAm;    // Flag rotation amplitude
+    float DOWNVAL;   // the value of the decrement on Y
+    float fAlfaMax;  // maximum angle (for the end of the flag)
     float fAlfaStep;
-    float fBetaMax; // максимальный угол (для конца флага)
+    float fBetaMax; // maximum angle (for the end of the flag)
     float fBetaStep;
     int FlagTextureQuantity;
     int FlagTextureQuantityRow;
@@ -50,7 +50,7 @@ class FLAG : public Entity
 
     struct WIND
     {
-        float base; // амплитуда колебаний ветра от 0 до 1.0
+        float base; // amplitude of wind fluctuations from 0 to 1.0
         struct
         {
             float x, y, z;

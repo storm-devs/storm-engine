@@ -15,9 +15,9 @@
 
 class WdmPlayerShip : public WdmShip
 {
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     WdmPlayerShip();
     virtual ~WdmPlayerShip();
@@ -26,13 +26,13 @@ class WdmPlayerShip : public WdmShip
 
     void SetActionRadius(float radius);
 
-    //Расчёты
+    // Calculations
     void Update(float dltTime) override;
     void LRender(VDX9RENDER *rs) override;
 
-    //Проверка при выходе из карты
+    // Check when exiting the map
     bool ExitFromMap();
-    //Проверка на нахождении кораблика в шторме
+    // Checking for a ship in a storm
     long TestInStorm() const;
 
     float GetAy() const;
@@ -40,14 +40,14 @@ class WdmPlayerShip : public WdmShip
     bool canSkip;
 
   protected:
-    //Переместить кораблик
+    // Move the ship
     virtual void Move(float dltTime);
 
     void Collide() override;
 
-    //--------------------------------------------------------------------------------------------
-    //Инкапсуляция
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Encapsulation
+    // --------------------------------------------------------------------------------------------
   private:
     bool goForward;
     float actionRadius;

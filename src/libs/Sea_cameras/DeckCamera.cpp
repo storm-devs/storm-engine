@@ -104,7 +104,7 @@ void DECK_CAMERA::Move(uint32_t DeltaTime)
     else if (camera_ang.y > PIm2)
         camera_ang.y -= PIm2;
 
-    // определить реальный угол поворота камеры
+    // determine the real angle of rotation of the camera
     CMatrix glbRotMtx;
     glbRotMtx.BuildMatrix(camera_ang);
     CMatrix rotMtx;
@@ -128,7 +128,7 @@ void DECK_CAMERA::Move(uint32_t DeltaTime)
     s_ang.y = yAng;
     s_ang.z = zAng * fRockingZ;
 
-    // узнать новую позицию камеры
+    // find out new camera position
     auto prev_pos = camera_pos;
     auto speed0 = DeltaTime * fSensivityDistance;
     auto speed = 0.f;
@@ -180,7 +180,7 @@ void DECK_CAMERA::Move(uint32_t DeltaTime)
         long trgNum = -1;
         while (true)
         {
-            // определяем треугольник на котором мы находимся
+            // define the triangle we are on
             src.x = dst.x = vRes.x;
             src.z = dst.z = vRes.z;
             float htmp;
@@ -190,14 +190,14 @@ void DECK_CAMERA::Move(uint32_t DeltaTime)
                 if (!GetCrossXZ(vRes, vShift, (p1 = g_gv0), (p2 = g_gv1), vRes))
                     if (!GetCrossXZ(vRes, vShift, (p1 = g_gv1), (p2 = g_gv2), vRes))
                         if (!GetCrossXZ(vRes, vShift, (p1 = g_gv2), (p2 = g_gv0), vRes))
-                            // нет пересечения со сторонами треугольника
+                            // no intersection with the sides of the triangle
                             break;
 
                 len = sqrtf(~(vRes - prev_res));
                 if (len > speed)
                 {
                     vRes = prev_res + vShift * speed;
-                    // определить высоту камеры
+                    // determine camera height
                     src.x = dst.x = vRes.x;
                     src.z = dst.z = vRes.z;
                     auto tmp = MultiTrace(src, dst, camera_pos.y); // pathNode->geo->Trace(src,dst);
@@ -227,9 +227,9 @@ void DECK_CAMERA::Move(uint32_t DeltaTime)
             }
             else
             {
-                // скольжение по треугольнику
+                // sliding on a triangle
                 if (bNoFinded)
-                    break; // стоим там, где нет пола
+                    break; // standing where there is no floor
 
                 CVECTOR ep;
                 CVECTOR dp;
@@ -277,7 +277,7 @@ void DECK_CAMERA::Move(uint32_t DeltaTime)
 
         if (!bNoFinded)
         {
-            // проверим на попадание камеры в приемлимое место
+            // check if the camera is in a suitable place
             src.x = dst.x = vRes.x;
             src.z = dst.z = vRes.z;
             auto fTmp = MultiTrace(src, dst, camera_pos.y);
@@ -295,11 +295,11 @@ void DECK_CAMERA::Move(uint32_t DeltaTime)
         }
     }
 
-    // расчитать позицию камеры
+    // calculate camera position
     CVECTOR s_pos;
     s_pos = pathNode->glob_mtx * (camera_pos + CVECTOR(0.f, h_eye, 0.f));
 
-    // установить камеру
+    // set camera
     RenderService->SetCamera(s_pos, s_ang, GetPerspective());
 }
 
@@ -311,7 +311,7 @@ void DECK_CAMERA::SetCharacter(ATTRIBUTES *_pACharacter)
 bool DECK_CAMERA::FindPath()
 {
     pModel = GetModelPointer();
-    Assert(pModel); // если есть адрес у объекта
+    Assert(pModel); // if the object is not null
 
     auto *const pNewPathNode = pModel->FindNode("path");
     Assert(pNewPathNode);
@@ -422,7 +422,7 @@ bool DECK_CAMERA::GetCrossXZ(CVECTOR &spos, CVECTOR &dv, CVECTOR &p1, CVECTOR &p
     auto xRes = 0.f;
     auto zRes = 0.f;
 
-    // проверка на dx=0 для направляющего вектора
+    // check for dx = 0 for the direction vector
     if (!bNoCross)
         if (EQU_FLOAT(dv.x, 0.f))
             if (bXset)
@@ -435,7 +435,7 @@ bool DECK_CAMERA::GetCrossXZ(CVECTOR &spos, CVECTOR &dv, CVECTOR &p1, CVECTOR &p
                 bXset = true;
                 xRes = spos.x;
             }
-    // проверка на dz=0 для направляющего вектора
+    // check for dz = 0 for the direction vector
     if (!bNoCross)
         if (EQU_FLOAT(dv.z, 0.f))
             if (bZset)
@@ -449,8 +449,8 @@ bool DECK_CAMERA::GetCrossXZ(CVECTOR &spos, CVECTOR &dv, CVECTOR &p1, CVECTOR &p
                 zRes = spos.z;
             }
 
-    // проверка на dx=0 для отрезка
-    if (!bNoCross) //~!~
+    // check for dx = 0 for a segment
+    if (!bNoCross) // ~!~
         if (EQU_FLOAT(p1.x, p2.x))
             if (bXset)
             {
@@ -462,7 +462,7 @@ bool DECK_CAMERA::GetCrossXZ(CVECTOR &spos, CVECTOR &dv, CVECTOR &p1, CVECTOR &p
                 bXset = true;
                 xRes = p1.x;
             }
-    // проверка на dz=0 для отрезка
+    // check for dz = 0 for a segment
     if (!bNoCross)
         if (EQU_FLOAT(p1.z, p2.z))
             if (bZset)
@@ -477,10 +477,10 @@ bool DECK_CAMERA::GetCrossXZ(CVECTOR &spos, CVECTOR &dv, CVECTOR &p1, CVECTOR &p
             }
 
     if (bNoCross)
-        return false; // нет пересечения
+        return false; // no intersection
     if (bXset && bZset)
         if ((spos.x - p1.x) * (p2.z - p1.z) != (p2.x - p1.x) * (spos.z - p1.z))
-            return false; // нет пересечения
+            return false; // no intersection
 
     if (bXset)
         if (!bZset)
@@ -525,16 +525,16 @@ bool DECK_CAMERA::GetCrossXZ(CVECTOR &spos, CVECTOR &dv, CVECTOR &p1, CVECTOR &p
         zRes = spos.z + (xRes - spos.x) * dv.z / dv.x;
     }
 
-    // проверка на нахождение точки пересечения на заданном отрезке
-    // по X
+    // check for finding the intersection point on a given segment
+    // on X
     if (p1.x < p2.x)
     {
         if (xRes < p1.x || xRes > p2.x)
             return false;
-    } // нет пересечения на отрезке
+    } // no intersection on the segment
     else if (xRes < p2.x || xRes > p1.x)
         return false;
-    // по Z
+    // on Z
     if (p1.z < p2.z)
     {
         if (zRes < p1.z || zRes > p2.z)
@@ -543,7 +543,7 @@ bool DECK_CAMERA::GetCrossXZ(CVECTOR &spos, CVECTOR &dv, CVECTOR &p1, CVECTOR &p
     else if (zRes < p2.z || zRes > p1.z)
         return false;
 
-    // вычислим координату Y из отрезка [P1,P2]
+    // calculate the Y coordinate from the segment [P1, P2]
     float yRes;
     if (p1.x == p2.x)
         if (p1.z == p2.z)
@@ -599,7 +599,7 @@ void DECK_CAMERA::SetViewPoint(CVECTOR &cViewPoint)
     if (pathNode == nullptr)
         return;
 
-    /*// расчитать позицию камеры
+    /*calculate camera position
     CVECTOR s_pos;
     s_pos = pathNode->glob_mtx*(camera_pos+CVECTOR(0.f,h_eye,0.f));
 
@@ -620,7 +620,7 @@ void DECK_CAMERA::SetViewPoint(CVECTOR &cViewPoint)
     v = glbRotMtx*CVECTOR(0,0,1.f);
     float xAng = atan2f(-v.y,v.z);*/
 
-    // Точка взгляда в локальные координаты
+    // Viewpoint in local coordinates
     CVECTOR e_pos;
     pathNode->glob_mtx.MulToInv(cViewPoint, e_pos);
 

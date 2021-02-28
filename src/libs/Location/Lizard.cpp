@@ -43,7 +43,7 @@ bool Lizard::PostInit(Animation *ani)
 
 void Lizard::IdleProcess(Animation *ani, float dltTime)
 {
-    //Анализ на необходимость начала перемещения
+    // Check if need to start moving
     lastMove -= dltTime;
     if (lastMove < 0.0f)
     {
@@ -53,7 +53,7 @@ void Lizard::IdleProcess(Animation *ani, float dltTime)
     }
     else
     {
-        //Смотрим в близи игрока
+        // check if close to the player
         if (IsNearPlayer(1.0f))
         {
             kSpeed = 2.4f;

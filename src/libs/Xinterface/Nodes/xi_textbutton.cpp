@@ -592,7 +592,7 @@ uint32_t CXI_TEXTBUTTON::MessageProc(long msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
-    case 0: // поменять текст на кнопке
+    case 0: // change the text on the button
     {
         char param[256];
         message.String(sizeof(param) - 1, param);
@@ -616,7 +616,7 @@ uint32_t CXI_TEXTBUTTON::MessageProc(long msgcode, MESSAGE &message)
         }
     }
     break;
-    case 1: // поменять позицию кнопки
+    case 1: // change button position
         XYRECT newPos;
         newPos.left = message.Long();
         newPos.top = message.Long();

@@ -21,9 +21,9 @@ class VGEOMETRY;
 
 class WdmRenderModel : public WdmRenderObject
 {
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     WdmRenderModel();
     virtual ~WdmRenderModel();
@@ -48,7 +48,7 @@ class WdmRenderModel : public WdmRenderObject
     const char *tech;
     const char *techa;
 
-    //Позиционированный круг
+    // Positioned circle
     CVECTOR center;
     float radius;
 

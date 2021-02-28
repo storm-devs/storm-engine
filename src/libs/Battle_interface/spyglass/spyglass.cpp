@@ -139,7 +139,7 @@ bool ISPYGLASS::Init()
 
     // captain text data
     m_TextCaptainName.LoadFromAttr(rs, GetAttr("captext.capname"), "?", 210, 640);
-    m_TextCaptainFencing.LoadFromAttr(rs, GetAttr("captext.fencing"), "", 210, 640); // boal заменил ? на пусто
+    m_TextCaptainFencing.LoadFromAttr(rs, GetAttr("captext.fencing"), "", 210, 640); // replaced "?" with empty
     m_TextCaptainCannon.LoadFromAttr(rs, GetAttr("captext.cannon"), "", 210, 640);
     m_TextCaptainAccuracy.LoadFromAttr(rs, GetAttr("captext.accuracy"), "", 210, 640);
     m_TextCaptainNavigation.LoadFromAttr(rs, GetAttr("captext.navigation"), "", 210, 640);
@@ -538,10 +538,10 @@ void ISPYGLASS::UpdateCamera()
         m_Camera.fCurActivateTime += fTime;
         if (m_Camera.fCurActivateTime >= m_Camera.fActivateTime)
         {
-            m_Camera.fCurActivateTime = 0.f; // счетчик на ноль
+            m_Camera.fCurActivateTime = 0.f; // counter to zero
             if (m_Camera.bIsGrow)
-                m_Camera.bIsActive = true;        // теперь мы работаем по полной
-            m_Camera.bIsGrow = !m_Camera.bIsGrow; // сразу готовы
+                m_Camera.bIsActive = true;        // now working fully
+            m_Camera.bIsGrow = !m_Camera.bIsGrow; // ready immediately
         }
     }
 
@@ -575,7 +575,7 @@ void ISPYGLASS::ChangeTargetData(const char *pcShipName, const char *pcShipType,
     m_txtShipName.sText = pcShipName;
     m_txtShipType.sText = pcShipType;
 
-    // boal дистанция до -->
+    // distance to -->
     if (fSailTo >= 0.f)
     {
         sprintf_s(param, sizeof(param), "%.1f", fSailTo);
@@ -601,13 +601,13 @@ void ISPYGLASS::ChangeTargetData(const char *pcShipName, const char *pcShipType,
         sprintf_s(param, sizeof(param), "%d/%d", nCurCannons, nMaxCannons);
         m_txtCannons.sText = param;
         if (m_Cannon.pImage)
-            m_Cannon.pImage->CutSide(0.f, 0.f, 0.f, 0.f); // покажем boal
+            m_Cannon.pImage->CutSide(0.f, 0.f, 0.f, 0.f); // show
     }
     else
     {
         m_txtCannons.sText = "";
         if (m_Cannon.pImage)
-            m_Cannon.pImage->CutSide(0.f, 1.f, 0.f, 0.f); // прячем boal
+            m_Cannon.pImage->CutSide(0.f, 1.f, 0.f, 0.f); // hide
     }
 
     if (nShipClass > 0)
@@ -675,14 +675,14 @@ void ISPYGLASS::ChangeTargetData(const char *pcShipName, const char *pcShipType,
     {
         if (m_Charge.pImage)
         {
-            m_Charge.pImage->CutSide(0.f, 0.f, 0.f, 0.f); // покажем boal
+            m_Charge.pImage->CutSide(0.f, 0.f, 0.f, 0.f); // show
             m_Charge.pImage->SetUV(m_aChargeUV[nCharge]);
         }
     }
     else
     {
         if (m_Charge.pImage)
-            m_Charge.pImage->CutSide(0.f, 1.f, 0.f, 0.f); // прячем boal
+            m_Charge.pImage->CutSide(0.f, 1.f, 0.f, 0.f); // hide
     }
 
     if (nSailState >= 0 && nSailState < m_aSailUV.size())
@@ -712,7 +712,7 @@ void ISPYGLASS::ChangeTargetData(const char *pcShipName, const char *pcShipType,
         frUV.bottom = 1.f;
         m_CaptainFace.ChangeIcon(m_pImgRender, param, frUV);
     }
-    // boal далее правлю иконки скилов, чтоб скрывались/показывались
+    // further edit the skill icons to hide / show
     if (nFencing >= 0)
     {
         sprintf_s(param, sizeof(param), "%d", nFencing);

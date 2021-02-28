@@ -15,9 +15,9 @@
 #include "geometry.h"
 #include "ship_base.h"
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 Debris::Debris(Pillar &_pillar) : pillar(_pillar)
 {
@@ -58,16 +58,16 @@ void Debris::Update(float dltTime)
         return;
     if (lastPlayTime > 0.0f)
         lastPlayTime -= dltTime;
-    //Позиция на воде
-    //Заведение
+    // Position on the water
+    // Initialization
     if (flyCounter < sizeof(fly) / sizeof(ModelInfo))
     {
         if ((rand() & 1) == 1)
         {
-            //Проверим ближние корабли
+            // check nearby ships
             if (IsShip())
             {
-                //Надо добавить новую модельку
+                // need to add a new model
                 fly[flyCounter].mdl = SelectModel(fly[flyCounter].maxSpeed);
                 fly[flyCounter].r = rand() * 10.0f / RAND_MAX;
                 fly[flyCounter].y = 0.0f + (rand() & 7);
@@ -88,11 +88,11 @@ void Debris::Update(float dltTime)
             }
         }
     }
-    //Полёт
+    // Flight
     const auto h = pillar.GetHeight();
     for (long i = 0; i < flyCounter; i++)
     {
-        //Обновляем позицию по высоте
+        // Updating the height position
         fly[i].ay += dltTime * fly[i].maxSpeed;
         if (fly[i].ay > 20.0f * fly[i].maxSpeed)
             fly[i].ay = 20.0f * fly[i].maxSpeed;
@@ -102,12 +102,12 @@ void Debris::Update(float dltTime)
             fly[i] = fly[--flyCounter];
             continue;
         }
-        //Обновляем радиус
+        // Updating the radius
         auto k = dltTime * 1.0f;
         if (k > 1.0f)
             k = 1.0f;
         fly[i].r += (pillar.GetRaduis(fly[i].y) - fly[i].r) * k;
-        //Обновляем угл
+        // Updating angle
         k = pillar.GetKHeight(fly[i].y) - 0.5f;
         k = 1.0f - k * k * 4.0f;
         k = dltTime * (3.0f + 5.0f * k);
@@ -123,7 +123,7 @@ void Debris::Update(float dltTime)
         fly[i].ang.z += dltTime * 3.37f;
         if (fly[i].ang.z > 2.0f * TRND_PI)
             fly[i].ang.z -= 2.0f * TRND_PI;
-        //Прозрачность
+        // Transparency
         fly[i].alpha = 1.0f;
         if (fly[i].y < 3.0f)
             fly[i].alpha *= fly[i].y / 3.0f;
@@ -138,7 +138,7 @@ void Debris::Draw(VDX9RENDER *rs)
 {
     for (long i = 0; i < flyCounter; i++)
     {
-        //Позиция модельки
+        // Model position
         CVECTOR pos;
         pos.x = pillar.GetX(fly[i].y) + fly[i].r * sinf(fly[i].a);
         pos.y = fly[i].y;
@@ -156,19 +156,19 @@ void Debris::AddModel(const char *modelName, float prt, float spd)
 {
     if (numModels > _countof(mdl))
         return;
-    //Создаём модельку
+    // Create a model
     entid_t id;
     if (!(id = EntityManager::CreateEntity("modelr")))
         return;
     auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(id));
     if (!m)
         return;
-    //Путь для текстур
+    // Path to textures
     auto *gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
     if (!gs)
         return;
     gs->SetTexturePath("Tornado\\");
-    //Загружаем
+    // Loading
     try
     {
         core.Send_Message(id, "ls", MSG_MODEL_LOAD_GEO, modelName);
@@ -180,11 +180,11 @@ void Debris::AddModel(const char *modelName, float prt, float spd)
         return;
     }
     gs->SetTexturePath("");
-    //Настраиваем
+    // Configuring
     auto *node = m->GetNode(0);
     if (node)
         node->SetTechnique("TornadoDebris");
-    //Сохраняем
+    // save
     mdl[numModels].mdl = m;
     mdl[numModels].prt = prt;
     mdl[numModels++].maxSpeed = spd;
@@ -224,14 +224,14 @@ bool Debris::IsShip()
     const auto &entities = EntityManager::GetEntityIdVector("ship");
     for (auto id : entities)
     {
-        //Указатель на объект
+        // Object pointer
         auto *ship = static_cast<VAI_OBJBASE *>(EntityManager::GetEntityPointer(id));
         if (!ship)
             break;
-        //Позиция торнадо в системе корабля
+        // Tornado position in the ship system
         Assert(ship->GetMatrix());
         ship->GetMatrix()->MulToInv(p, pos);
-        //Проверим попадание в бокс
+        // Check the box
         const auto s = ship->GetBoxsize();
         if (pos.x < -s.x - 6.0f || pos.x > s.x + 6.0f)
             continue;

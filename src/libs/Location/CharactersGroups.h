@@ -54,43 +54,43 @@ class CharactersGroups : public Entity
 
     struct Relation
     {
-        float alarm;       //Текущее состояние тревоги
-        float alarmdown;   //Скорость убывания тревоги
-        float alarmmin;    //Порог деактивации
-        float alarmmax;    //Порог активации
-        bool isActive;     //Активна ли тревога
-        RelState curState; //Текущие отношение между группами
-        RelState actState; //Отношение между группами, которое будет установлено в случае активации тревоги
-        RelState relState; //Отношение между группами, которое будет установлено в случае деактивации тревоги
+        float alarm;       // Current alarm state
+        float alarmdown;   // Alarm fading speed
+        float alarmmin;    // Deactivation threshold
+        float alarmmax;    // Activation threshold
+        bool isActive;     // Is the alarm active
+        RelState curState; // Current relationship between groups
+        RelState actState; // Relationship between groups to be established in case of alarm activation
+        RelState relState; // Relationship between groups that will be established in case of alarm deactivation
     };
 
     struct Group
     {
-        long index;  //Индекс группы
-        String name; //Имя группы
-        float look;  //Радиус видимости противников
-        float hear; //Радиус на котором персонаж абсолютно определяет противника
-        float say; //Радиус на котором персонаж может сообщить соседним об опасности
-        long priority; //Преоритет защиты
-        Relation *relations; //Список отношений - размер соответствует индексу группы в списке
-        entid_t c[MAX_CHARACTERS]; //Список персонажей находящихся в группе
-        long numChr;               //Количество персонажей в группе
+        long index;  // Group index
+        String name; // Group name
+        float look;  // Enemy sight radius
+        float hear; // The radius at which the character always determines the enemy
+        float say; // The radius at which the character can inform neighbors about the danger
+        long priority; // Protection priority
+        Relation *relations; // Relationship list - the size corresponds to the group index in the list
+        entid_t c[MAX_CHARACTERS]; // List of characters in the group
+        long numChr;               // Number of characters in the group
     };
 
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     CharactersGroups();
     virtual ~CharactersGroups();
 
-    //Инициализация
+    // Initialization
     bool Init() override;
-    //Исполнение
+    // Execution
     void Execute(uint32_t delta_time);
-    //Сообщения
+    // Messages
     uint64_t ProcessMessage(MESSAGE &message) override;
-    //Изменение атрибута
+    // Changing an attribute
     uint32_t AttributeChanged(ATTRIBUTES *apnt) override;
 
     void ProcessStage(Stage stage, uint32_t delta) override
@@ -109,111 +109,111 @@ class CharactersGroups : public Entity
         }
     }
 
-    //--------------------------------------------------------------------------------------------
-    //Инкапсуляция
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Encapsulation
+    // --------------------------------------------------------------------------------------------
   private:
-    //Проверка обнаружения персонажем остальных
+    // Checking the character detects others
     void CharacterVisibleCheck(Character *chr);
-    //Проверить найденных персонажей на врагов
+    // Check found characters for enemies
     void FindEnemyFromFindList(Character *chr, Group *grp, long num, bool visCheck);
-    //Добавить или обновить врага
+    // Add or update an enemy
     bool AddEnemyTarget(Character *chr, Character *enemy, float maxtime = -1.0);
-    //Удалить все неактивные или неправильные цели
+    // Remove all inactive or invalid targets
     void RemoveAllInvalidTargets();
-    //Удалить неактивные или неправильные цели
+    // Remove inactive or invalid targets
     bool RemoveInvalidTargets(Character *chr, Character *check = nullptr);
 
   private:
-    //Проверить на действительность цель
+    // Check target for validity
     bool MsgIsValidateTarget(MESSAGE &message);
-    //Найти оптимальную цель
+    // Find the optimal goal
     bool MsgGetOptimalTarget(MESSAGE &message) const;
-    //Враг ли данный персонаж
+    // Is this character an enemy
     bool MsgIsEnemy(MESSAGE &message);
-    //Реакция групп на атаку
+    // Group reaction to attack
     void MsgAttack(MESSAGE &message);
-    //Добавить цель
+    // Add target
     void MsgAddTarget(MESSAGE &message);
-    //Обновить цели у данного персонажа
+    // Refresh goals for this character
     void MsgUpdChrTrg(MESSAGE &message);
 
-    //Зарегистрировать группу
+    // Register a group
     void MsgRegistryGroup(MESSAGE &message);
-    //Удалить группу
+    // Delete group
     void MsgReleaseGroup(MESSAGE &message);
-    //Зарегистрировать группу
+    // Register a group
     long RegistryGroup(const char *groupName);
-    //Удалить группу
+    // Delete group
     void ReleaseGroup(const char *groupName);
 
-    //Установить для группы радиус видимости
+    // Set the visibility radius for the group
     bool MsgSetGroupLook(MESSAGE &message);
-    //Установить для группы радиус слышимости
+    // Set the radius of hearing for the group
     bool MsgSetGroupHear(MESSAGE &message);
-    //Установить для группы радиус сообщения
+    // Set message radius for the group
     bool MsgSetGroupSay(MESSAGE &message);
-    //Установить для группы приоритет
+    // Set group priority
     bool MsgSetGroupPriority(MESSAGE &message);
-    //Установить скорость уровень тревоги
+    // Set speed alarm level
     bool MsgSetAlarm(MESSAGE &message);
-    //Установить скорость убывания тревоги
+    // Set alarm fading speed
     bool MsgSetAlarmDown(MESSAGE &message);
-    //Добавить в группу персонажа
+    // Add character to group
     bool MoveCharacterToGroup(MESSAGE &message);
-    //Установить отношения между группами
+    // Establish relationships between groups
     void MsgSetRelation(MESSAGE &message);
-    //Установить реакцию на тревогу для пары групп
+    // Set alarm response for a pair of groups
     void MsgSetAlarmReaction(MESSAGE &message);
 
-    //Выгрузка персонажа
+    // Unloading a character
     void UnloadCharacter(MESSAGE &message);
 
-    //Исключить персонажа из всех групп
+    // Remove character from all groups
     void RemoveCharacterFromAllGroups(entid_t chr);
 
-    // Удалить все пустые группы
+    // Remove all empty groups
     void DeleteEmptyGroups();
 
   public:
-    //Получить группу из сообщения
+    // Get group from message
     Group *GetGroup(MESSAGE &message, bool isRegistry = true);
-    //Найти группу по имени
+    // Find a group by name
     Group *FindGroup(const char *name);
-    //Найти группу по имени
+    // Find a group by name
     long FindGroupIndex(const char *name);
-    //Найти отношение групп
+    // Find group relationship
     Relation &FindRelation(MESSAGE &message, bool *selfgroup = nullptr);
-    //Найти отношение групп
+    // Find group relationship
     Relation &FindRelation(const char *name1, const char *name2, bool *selfgroup = nullptr);
-    //Найти отношение групп
+    // Find group relationship
     Relation &FindRelation(long g1, long g2, bool *selfgroup = nullptr);
-    //Получить индекс группы персонажа
+    // Get character group index
     long GetCharacterGroup(Character *c);
 
-    //Удалить все цели
+    // Delete all targets
     void ClearAllTargets() const;
-    //Сохранить даные в объект
+    // Save data to object
     void SaveData();
-    //Прочитать даные отношений из объекта
+    // Read relationship data from object
     void LoadDataRelations();
-    //Установить отношения для активных групп
+    // Establish relationships for active groups
     void RestoreStates();
 
-    //Вывести информацию об отношениях
+    // Display information about relationships
     void DumpRelations();
-    //Получить состояние в виде строки
+    // Get the state as a string
     const char *GetTextState(RelState state);
 
   private:
-    std::vector<Group *> groups; //Группы
-    long numGroups;              //Количество групп
-    long maxGroups;              //Количество групп
-    Location *location;          //Текущая локация
-    long curExecuteChr;          //Индекс текущего исполняемого персонажа
-    float waveTime;              //Время с прошлого запуска волны
+    std::vector<Group *> groups; // Groups
+    long numGroups;              // Number of groups
+    long maxGroups;              // Number of groups
+    Location *location;          // Current location
+    long curExecuteChr;          // The index of the currently executing character
+    float waveTime;              // Time since last wave launch
 
-    //Массив для поиска персонажей
+    // Character search array
     Supervisor::FindCharacter fnd[MAX_CHARACTERS];
 };
 

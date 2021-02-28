@@ -1,7 +1,7 @@
 #include "DataPosition.h"
 #include "vmodule_api.h"
 
-//конструктор/деструктор
+// constructor / destructor
 DataPosition::DataPosition()
 {
     Value = Vector(0, 0, 0);
@@ -11,13 +11,13 @@ DataPosition::~DataPosition()
 {
 }
 
-//Получить значение (Текущее время, Коэфицент рандома[0..1])
+// Get value (Current time, Random factor [0..1])
 const Vector &DataPosition::GetValue() const
 {
     return Value;
 }
 
-//Установить значение
+// Set value
 void DataPosition::SetValue(const Vector &val)
 {
     Value = val;

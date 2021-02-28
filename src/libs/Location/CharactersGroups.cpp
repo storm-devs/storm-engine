@@ -23,9 +23,9 @@
 #define CGS_DEFMAXTIME 20.0f
 #define CGS_VIEWANGLE 100.0f
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 CharactersGroups::CharactersGroups()
 {
@@ -124,10 +124,10 @@ long CharactersGroups::String::GetLen(const char *str)
     return strlen(str);
 }
 
-//Инициализация
+// Initialization
 bool CharactersGroups::Init()
 {
-    //Указатель на локацию
+    // Location Pointer
     const auto loc = EntityManager::GetEntityId("location");
     location = static_cast<Location *>(EntityManager::GetEntityPointer(loc));
     if (!location)
@@ -139,12 +139,12 @@ bool CharactersGroups::Init()
     return true;
 }
 
-//Исполнение
+// Execution
 void CharactersGroups::Execute(uint32_t delta_time)
 {
-    //Время
+    // Time
     const auto dltTime = delta_time * 0.001f;
-    //Исполняем группы
+    // perform groups
     const auto playerGroup = FindGroupIndex("Player");
     auto playerAlarm = 0.0f;
     auto playerActive = false;
@@ -195,12 +195,12 @@ void CharactersGroups::Execute(uint32_t delta_time)
                 playerActive = true;
         }
     }
-    //Удалим все неправильные цели
+    // Remove all wrong targets
     if (isDeactivate)
         RemoveAllInvalidTargets();
-    //Сообщим о текущем положении дел у игрока
+    // inform about the player's current state of affairs
     core.Event("CharacterGroup_UpdateAlarm", "fl", playerAlarm, playerActive);
-    //Исполняем персонажей
+    // Executing the characters
     waveTime += dltTime;
     if (curExecuteChr >= 0)
     {
@@ -223,70 +223,70 @@ void CharactersGroups::Execute(uint32_t delta_time)
     }
 }
 
-//Проверка обнаружения персонажем остальных
+// Checking the character detects others
 void CharactersGroups::CharacterVisibleCheck(Character *chr)
 {
     if (!chr)
         return;
-    //Удалим отработавшие цели
+    // remove the fulfilled targets
     RemoveInvalidTargets(chr);
-    //Группа персонажа
+    // Character group
     const auto gi = GetCharacterGroup(chr);
     if (gi < 0)
         return;
     auto *const grp = groups[gi];
-    //Видимая область
+    // Visible area
     long num;
     if (location->supervisor.FindCharacters(fnd, num, chr, grp->look, CGS_VIEWANGLE, 0.05f))
     {
         FindEnemyFromFindList(chr, grp, num, true);
     }
-    //Слышимая область
+    // Audible area
     if (location->supervisor.FindCharacters(fnd, num, chr, grp->hear))
     {
         FindEnemyFromFindList(chr, grp, num, false);
     }
 }
 
-//Проверить найденных персонажей на врагов
+// Check found characters for enemies
 void CharactersGroups::FindEnemyFromFindList(Character *chr, Group *grp, long num, bool visCheck)
 {
     Character *targets[MAX_CHARACTERS];
     long numTrg = 0;
-    //По всем найденным персонажем
+    // For all found characters
     for (long i = 0; i < num; i++)
     {
-        //Группа найденного персонажа
+        // Found character group
         const auto gi = GetCharacterGroup(fnd[i].c);
         if (gi < 0)
             continue;
         auto &r = FindRelation(grp->index, gi);
         if (r.curState != rs_enemy)
             continue;
-        //Обнаружен враг, если невидим, то пропустим его
+        // Enemy detected, if invisible, then let him pass
         if (visCheck && !chr->VisibleTest(fnd[i].c))
             continue;
-        //Обнаружили врага, добавим
+        // Found an enemy, add
         if (AddEnemyTarget(chr, fnd[i].c))
         {
             if (numTrg < MAX_CHARACTERS)
                 targets[numTrg++] = fnd[i].c;
         }
     }
-    //Сообщим окружающим об обнаруженных целях
+    // Inform others about the detected targets
     if (numTrg > 0 && location->supervisor.FindCharacters(fnd, num, chr, grp->say))
     {
         for (long i = 0; i < num; i++)
         {
             auto *const c = fnd[i].c;
-            //Если невидим, то пропустим его
+            // If invisible, then skip it
             if (!chr->VisibleTest(c))
                 continue;
-            //Получим группу персонажа
+            // Get the character group
             const auto cgrp = GetCharacterGroup(c);
             if (cgrp < 0)
                 continue;
-            //Группа найденного персонажа
+            // Found character group
             auto &r = FindRelation(grp->index, cgrp);
             if (r.curState != rs_friend)
                 continue;
@@ -300,7 +300,7 @@ void CharactersGroups::FindEnemyFromFindList(Character *chr, Group *grp, long nu
                         auto &tr = FindRelation(cgrp, tgrp);
                         if (tr.curState == rs_friend)
                         {
-                            //Обе группы дружественны к текущей, смотрим на приоритеты
+                            // Both groups are friendly to the current one, look at the priorities
                             if (groups[tgrp]->priority >= groups[grp->index]->priority)
                                 continue;
                         }
@@ -312,12 +312,12 @@ void CharactersGroups::FindEnemyFromFindList(Character *chr, Group *grp, long nu
     }
 }
 
-//Добавить или обновить врага
+// Add or update an enemy
 bool CharactersGroups::AddEnemyTarget(Character *chr, Character *enemy, float maxtime)
 {
     if (!chr || !enemy)
         return false;
-    //Обновим аларм
+    // restore the alarm
     const auto isSelf = false;
     auto &r = FindRelation(GetCharacterGroup(chr), GetCharacterGroup(enemy));
     Assert(!isSelf);
@@ -328,7 +328,7 @@ bool CharactersGroups::AddEnemyTarget(Character *chr, Character *enemy, float ma
         r.curState = r.actState;
     if (r.actState != rs_enemy)
         return false;
-    //Ищим среди добавленных
+    // Looking among added
     for (long i = 0; i < chr->numTargets; i++)
     {
         if (enemy == EntityManager::GetEntityPointer(chr->grpTargets[i].chr))
@@ -339,7 +339,7 @@ bool CharactersGroups::AddEnemyTarget(Character *chr, Character *enemy, float ma
     }
     if (chr->numTargets >= sizeof(chr->grpTargets) / sizeof(Character::GrpTarget))
         return false;
-    //Добавим новую цель
+    // Add a new target
     Assert(_stricmp(chr->group, enemy->group) != 0);
     auto &trg = chr->grpTargets[chr->numTargets++];
     trg.chr = enemy->GetId();
@@ -351,17 +351,17 @@ bool CharactersGroups::AddEnemyTarget(Character *chr, Character *enemy, float ma
     return true;
 }
 
-//Удалить все неактивные или неправильные цели
+// Remove all inactive or invalid targets
 void CharactersGroups::RemoveAllInvalidTargets()
 {
-    //Обновим списки целей
+    // Update goal lists
     for (long i = 0; i < location->supervisor.numCharacters; i++)
     {
         RemoveInvalidTargets(location->supervisor.character[i].c);
     }
 }
 
-//Удалить неактивные или неправильные цели
+// Remove inactive or invalid targets
 bool CharactersGroups::RemoveInvalidTargets(Character *chr, Character *check)
 {
     if (!chr)
@@ -382,7 +382,7 @@ bool CharactersGroups::RemoveInvalidTargets(Character *chr, Character *check)
         {
             if (!c->IsDead())
             {
-                //Персонаж существует и о нём помнят
+                // The character exists and is remembered
                 const auto gc = GetCharacterGroup(c);
                 auto &r = FindRelation(gi, gc);
                 if (r.curState == rs_enemy)
@@ -403,7 +403,7 @@ bool CharactersGroups::RemoveInvalidTargets(Character *chr, Character *check)
     return isValidate;
 }
 
-//Сообщения
+// Messages
 uint64_t CharactersGroups::ProcessMessage(MESSAGE &message)
 {
     char cmd[64];
@@ -529,13 +529,13 @@ uint64_t CharactersGroups::ProcessMessage(MESSAGE &message)
     return 0;
 }
 
-//Изменение атрибута
+// Changing an attribute
 uint32_t CharactersGroups::AttributeChanged(ATTRIBUTES *apnt)
 {
     return 0;
 }
 
-//Проверить на действительность цель
+// Check target for validity
 bool CharactersGroups::MsgIsValidateTarget(MESSAGE &message)
 {
     const auto chr = message.EntityID();
@@ -554,7 +554,7 @@ bool CharactersGroups::MsgIsValidateTarget(MESSAGE &message)
     return RemoveInvalidTargets(c, en);
 }
 
-//Найти оптимальную цель
+// Find the optimal goal
 bool CharactersGroups::MsgGetOptimalTarget(MESSAGE &message) const
 {
     const auto chr = message.EntityID();
@@ -573,18 +573,18 @@ bool CharactersGroups::MsgGetOptimalTarget(MESSAGE &message) const
         c->GetPosition(pos);
         const auto numChr = location->supervisor.numCharacters;
         auto *const cEx = location->supervisor.character;
-        //Выберем оптимальную цель
+        // choose the optimal goal
         float value;
         s = -1;
         for (long i = 0; i < c->numTargets; i++)
         {
-            //Указатель на персонажа
+            // Character pointer
             auto *nc = static_cast<NPCharacter *>(EntityManager::GetEntityPointer(c->grpTargets[i].chr));
             if (!nc)
                 continue;
             if (!nc->IsSetBlade())
                 continue;
-            //Соберём количество персонажей воюющих с этим хмырём
+            // collect the number of characters fighting with this guy
             long n = 0;
             for (long j = 0; j < numChr; j++)
             {
@@ -593,14 +593,14 @@ bool CharactersGroups::MsgGetOptimalTarget(MESSAGE &message) const
                 if (static_cast<NPCharacter *>(cEx[j].c)->GetAttackedCharacter() == nc)
                     n++;
             }
-            //Найдём дистанцию
+            // Find the distance
             nc->GetPosition(p);
             auto v = ~(pos - p);
-            //Посчитаем эврестическое значение
+            // calculate the heuristic value
             v *= 0.5f + n * n * 0.5f;
-            //Учтём наличие у него оружия
-            // if(!nc->IsSetBlade()) v *= v*100.0f;
-            //Учитываем выбор цели
+            // take into account the presence of his weapon
+             // if(!nc->IsSetBlade()) v *= v*100.0f;
+            // take into account the choice of goal
             if (s >= 0)
             {
                 if (v < value)
@@ -631,7 +631,7 @@ bool CharactersGroups::MsgGetOptimalTarget(MESSAGE &message) const
     return true;
 }
 
-//Враг ли данный персонаж
+// Is this character an enemy
 bool CharactersGroups::MsgIsEnemy(MESSAGE &message)
 {
     const auto g1 = GetCharacterGroup(static_cast<Character *>(EntityManager::GetEntityPointer(message.EntityID())));
@@ -645,10 +645,10 @@ bool CharactersGroups::MsgIsEnemy(MESSAGE &message)
     return r.curState == rs_enemy;
 }
 
-//Реакция групп на атаку
+// Group reaction to attack
 void CharactersGroups::MsgAttack(MESSAGE &message)
 {
-    //Получим группы
+    // Get the groups
     auto *const gAttack = GetGroup(message);
     auto *const gHit = GetGroup(message);
     Assert(gAttack);
@@ -659,7 +659,7 @@ void CharactersGroups::MsgAttack(MESSAGE &message)
         r.isActive = true;
     if (r.isActive)
         r.curState = r.actState;
-    //Установим враждебные отношения у всех дружественных к пострадавшей групп
+    // Establish a hostile relationship among all victim-friendly groups
     for (long i = 0; i < numGroups; i++)
     {
         if (gHit == groups[i])
@@ -669,7 +669,7 @@ void CharactersGroups::MsgAttack(MESSAGE &message)
         auto &r = FindRelation(gHit->index, i);
         if (r.curState != rs_friend)
             continue;
-        //Посорим с нападающими
+        // fight with the attackers
         auto &ra = FindRelation(gAttack->index, i);
         ra.alarm = 1.0f;
         if (ra.alarm >= ra.alarmmax)
@@ -681,14 +681,14 @@ void CharactersGroups::MsgAttack(MESSAGE &message)
 
 void CharactersGroups::MsgAddTarget(MESSAGE &message)
 {
-    //Получаем персонажей
+    // get characters
     auto eid = message.EntityID();
     auto *chr = static_cast<Character *>(EntityManager::GetEntityPointer(eid));
     eid = message.EntityID();
     auto *enemy = static_cast<Character *>(EntityManager::GetEntityPointer(eid));
     if (!chr || !enemy)
         return;
-    //Проверяем на враждебность
+    // Checking for hostility
     const auto g1 = GetCharacterGroup(chr);
     const auto g2 = GetCharacterGroup(enemy);
     if (g1 < 0 || g2 < 0)
@@ -699,19 +699,19 @@ void CharactersGroups::MsgAddTarget(MESSAGE &message)
         return;
     if (r.curState != rs_enemy)
         return;
-    //Добавляем врага
+    // Adding the enemy
     AddEnemyTarget(chr, enemy, message.Float());
-    //Сообщаем окружающим о новой цели
+    // Informing others about the new goal
     long num = 0;
     if (location->supervisor.FindCharacters(fnd, num, chr, groups[g1]->say))
     {
         for (long i = 0; i < num; i++)
         {
             auto *const c = fnd[i].c;
-            //Если невидим, то пропустим его
+            // If invisible, then skip it
             if (!chr->VisibleTest(c))
                 continue;
-            //Группа найденного персонажа
+            // Found character group
             auto &r = FindRelation(g1, GetCharacterGroup(c));
             if (r.curState != rs_friend)
                 continue;
@@ -720,7 +720,7 @@ void CharactersGroups::MsgAddTarget(MESSAGE &message)
     }
 }
 
-//Обновить цели у данного персонажа
+// Refresh goals for this character
 void CharactersGroups::MsgUpdChrTrg(MESSAGE &message)
 {
     const auto eid = message.EntityID();
@@ -729,7 +729,7 @@ void CharactersGroups::MsgUpdChrTrg(MESSAGE &message)
         CharacterVisibleCheck(chr);
 }
 
-//Зарегистрировать группу
+// Register a group
 void CharactersGroups::MsgRegistryGroup(MESSAGE &message)
 {
     char grpName[128];
@@ -738,7 +738,7 @@ void CharactersGroups::MsgRegistryGroup(MESSAGE &message)
     RegistryGroup(grpName);
 }
 
-//Удалить группу
+// Delete group
 void CharactersGroups::MsgReleaseGroup(MESSAGE &message)
 {
     char grpName[128];
@@ -747,13 +747,13 @@ void CharactersGroups::MsgReleaseGroup(MESSAGE &message)
     ReleaseGroup(grpName);
 }
 
-//Зарегистрировать группу
+// Register a group
 long CharactersGroups::RegistryGroup(const char *groupName)
 {
     const auto idxgrp = FindGroupIndex(groupName);
     if (idxgrp >= 0)
         return idxgrp;
-    //Регестрируем
+    // register
     if (numGroups >= maxGroups)
     {
         maxGroups += 16;
@@ -773,7 +773,7 @@ long CharactersGroups::RegistryGroup(const char *groupName)
     groups[numGroups++] = grp;
     if (numGroups)
     {
-        //Таблица отношений
+        // Relationship table
         grp->relations = new Relation[numGroups];
         for (long i = 0; i < numGroups - 1; i++)
         {
@@ -788,7 +788,7 @@ long CharactersGroups::RegistryGroup(const char *groupName)
             grp->relations[i].actState = rs_enemy;
             grp->relations[i].relState = rs_neitral;
         }
-        //Сами с собой всегда дружим
+        // always friends with ourselves
         grp->relations[numGroups - 1].alarm = 0.0f;
         grp->relations[numGroups - 1].alarmdown = 0.0f;
         grp->relations[numGroups - 1].alarmmin = 0.0f;
@@ -808,7 +808,7 @@ void CharactersGroups::ReleaseGroup(const char *groupName)
 {
     const auto idxgrp = FindGroupIndex(groupName);
     if (idxgrp < 0)
-        return; // нет группы нечего удалять
+        return; // no group nothing to delete
 
     Group* oldGroup = groups[idxgrp];
     groups[idxgrp] = groups[numGroups - 1];
@@ -818,7 +818,7 @@ void CharactersGroups::ReleaseGroup(const char *groupName)
         delete oldGroup->relations;
     delete oldGroup;
 
-    for (long othergrp = idxgrp + 1; othergrp < numGroups - 1; ++othergrp) // восстановить отношения других групп с учетом сдвига
+    for (long othergrp = idxgrp + 1; othergrp < numGroups - 1; ++othergrp) // restore relations of other groups taking into account the shift
         groups[othergrp]->relations[idxgrp] = groups[idxgrp]->relations[othergrp];
 
     if (idxgrp < numGroups - 1)
@@ -827,64 +827,64 @@ void CharactersGroups::ReleaseGroup(const char *groupName)
     numGroups--;
 }
 
-//Установить для группы радиус видимости
+// Set the visibility radius for the group
 bool CharactersGroups::MsgSetGroupLook(MESSAGE &message)
 {
-    //Текущая группа
+    // Current group
     auto *const grp = GetGroup(message, false);
     if (!grp)
         return false;
-    //Радиус
+    // Radius
     grp->look = message.Float();
     if (grp->look < 0.0f)
         grp->look = 0.0f;
     return true;
 }
 
-//Установить для группы радиус слышимости
+// Set the radius of hearing for the group
 bool CharactersGroups::MsgSetGroupHear(MESSAGE &message)
 {
-    //Текущая группа
+    // Current group
     auto *const grp = GetGroup(message, false);
     if (!grp)
         return false;
-    //Радиус
+    // Radius
     grp->hear = message.Float();
     if (grp->hear < 0.0f)
         grp->hear = 0.0f;
     return true;
 }
 
-//Установить для группы радиус сообщения
+// Set message radius for the group
 bool CharactersGroups::MsgSetGroupSay(MESSAGE &message)
 {
-    //Текущая группа
+    // Current group
     auto *const grp = GetGroup(message, false);
     if (!grp)
         return false;
-    //Радиус
+    // Radius
     grp->say = message.Float();
     if (grp->say < 0.0f)
         grp->say = 0.0f;
     return true;
 }
 
-//Установить для группы приоритет
+// Set group priority
 bool CharactersGroups::MsgSetGroupPriority(MESSAGE &message)
 {
-    //Текущая группа
+    // Current group
     auto *const grp = GetGroup(message, false);
     if (!grp)
         return false;
-    //Приоритет
+    // Priority
     grp->priority = message.Long();
     return true;
 }
 
-//Установить скорость уровень тревоги
+// Set speed alarm level
 bool CharactersGroups::MsgSetAlarm(MESSAGE &message)
 {
-    //Текущая группа
+    // Current group
     auto *const g1 = GetGroup(message, false);
     if (!g1)
         return false;
@@ -895,7 +895,7 @@ bool CharactersGroups::MsgSetAlarm(MESSAGE &message)
     auto &r = FindRelation(g1->index, g2->index, &isSelf);
     if (isSelf)
         return false;
-    //Уровень тревоги
+    // Alarm level
     r.alarm = message.Float();
     if (r.alarm < 0.0f)
         r.alarm = 0.0f;
@@ -909,10 +909,10 @@ bool CharactersGroups::MsgSetAlarm(MESSAGE &message)
     return true;
 }
 
-//Установить скорость убывания тревоги
+// Set alarm fading speed
 bool CharactersGroups::MsgSetAlarmDown(MESSAGE &message)
 {
-    //Текущая группа
+    // Current group
     auto *const g1 = GetGroup(message, false);
     if (!g1)
         return false;
@@ -923,21 +923,21 @@ bool CharactersGroups::MsgSetAlarmDown(MESSAGE &message)
     auto &r = FindRelation(g1->index, g2->index, &isSelf);
     if (isSelf)
         return false;
-    //Скорость убывания
+    // Decrease rate
     r.alarmdown = message.Float();
     if (r.alarmdown < 0.0f)
         r.alarmdown = CGS_ALARMDOWN;
     return true;
 }
 
-//Добавить в группу персонажа
+// Add character to group
 bool CharactersGroups::MoveCharacterToGroup(MESSAGE &message)
 {
     const auto eid = message.EntityID();
     auto *chr = static_cast<Character *>(EntityManager::GetEntityPointer(eid));
     if (!chr)
         return false;
-    //Создадим группу
+    // create a group
     char grpName[128];
     message.String(sizeof(grpName), grpName);
     grpName[sizeof(grpName) - 1] = 0;
@@ -946,20 +946,20 @@ bool CharactersGroups::MoveCharacterToGroup(MESSAGE &message)
         RegistryGroup(grpName);
     grp = FindGroup(grpName);
     Assert(grp);
-    //Удалим персонажа из предыдущей группы
+    // Remove the character from the previous group
     RemoveCharacterFromAllGroups(eid);
-    //Проверим на свободное место в группе
+    // Check for free space in the group
     // boal fix for intel cpp if(grp->numChr >= sizeof(CharactersGroups::Group::c)/sizeof(Character *)) return false;
     if (grp->numChr >= MAX_CHARACTERS)
         return false; // fix
-    //Разместим в новой
+    // Place in the new
     grp->c[grp->numChr++] = eid;
     strcpy_s(chr->group, grpName);
     RemoveInvalidTargets(chr);
     return true;
 }
 
-//Установить отношения между группами
+// Establish relationships between groups
 void CharactersGroups::MsgSetRelation(MESSAGE &message)
 {
     auto isSelf = false;
@@ -1009,7 +1009,7 @@ void CharactersGroups::MsgSetRelation(MESSAGE &message)
         r.curState = r.actState;
 }
 
-//Установить реакцию на тревогу для пары групп
+// Set alarm response for a pair of groups
 void CharactersGroups::MsgSetAlarmReaction(MESSAGE &message)
 {
     auto isSelf = false;
@@ -1046,11 +1046,11 @@ void CharactersGroups::MsgSetAlarmReaction(MESSAGE &message)
         r.curState = r.actState;
 }
 
-//Исключить персонажа из всех групп
+// Remove character from all groups
 void CharactersGroups::RemoveCharacterFromAllGroups(entid_t chr)
 {
     auto *const ch = chr ? static_cast<Character *>(EntityManager::GetEntityPointer(chr)) : nullptr;
-    //Удалим персонажа из предыдущей группы
+    // Remove the character from the previous group
     for (long i = 0; i < numGroups; i++)
     {
         auto *g = groups[i];
@@ -1068,7 +1068,7 @@ void CharactersGroups::RemoveCharacterFromAllGroups(entid_t chr)
     }
 }
 
-// Удалить все пустые группы
+// Delete all empty groups
 void CharactersGroups::DeleteEmptyGroups()
 {
     for (long i = 0; i < numGroups; i++) {
@@ -1077,18 +1077,19 @@ void CharactersGroups::DeleteEmptyGroups()
         if (g->numChr == 0)
         {
             ReleaseGroup(g->name.name);
-            --i; // на эту позицию переместилась последняя группа
+            --i; // the last group moved to this position
         }
     }
 }
-//Выгрузка персонажа
+
+// Unloading a character
 void CharactersGroups::UnloadCharacter(MESSAGE &message)
 {
     const auto eid = message.EntityID();
     RemoveCharacterFromAllGroups(eid);
 }
 
-//Получить группу из сообщения
+// Get group from message
 CharactersGroups::Group *CharactersGroups::GetGroup(MESSAGE &message, bool isRegistry)
 {
     char grpName[128];
@@ -1104,7 +1105,7 @@ CharactersGroups::Group *CharactersGroups::GetGroup(MESSAGE &message, bool isReg
     return grp;
 }
 
-//Найти группу по имени
+// Find a group by name
 CharactersGroups::Group *CharactersGroups::FindGroup(const char *name)
 {
     const auto gi = FindGroupIndex(name);
@@ -1113,7 +1114,7 @@ CharactersGroups::Group *CharactersGroups::FindGroup(const char *name)
     return groups[gi];
 }
 
-//Найти группу по имени
+// Find a group by name
 long CharactersGroups::FindGroupIndex(const char *name)
 {
     if (!name)
@@ -1121,7 +1122,7 @@ long CharactersGroups::FindGroupIndex(const char *name)
     const auto l = String::GetLen(name);
     const auto h = String::GetHash(name);
 
-    //Ищем среди зарегистрированных
+    // looking among registered
     for (long i = 0; i < numGroups; i++)
     {
         if (groups[i]->name.Cmp(name, l, h))
@@ -1130,7 +1131,7 @@ long CharactersGroups::FindGroupIndex(const char *name)
     return -1;
 }
 
-//Найти отношение групп
+// Find group relationship
 CharactersGroups::Relation &CharactersGroups::FindRelation(MESSAGE &message, bool *selfgroup)
 {
     char grpName1[128];
@@ -1142,7 +1143,7 @@ CharactersGroups::Relation &CharactersGroups::FindRelation(MESSAGE &message, boo
     return FindRelation(grpName1, grpName2, selfgroup);
 }
 
-//Найти отношение групп
+// Find group relationship
 CharactersGroups::Relation &CharactersGroups::FindRelation(const char *name1, const char *name2, bool *selfgroup)
 {
     auto g1 = FindGroupIndex(name1);
@@ -1162,7 +1163,7 @@ CharactersGroups::Relation &CharactersGroups::FindRelation(const char *name1, co
     return FindRelation(g1, g2, selfgroup);
 }
 
-//Найти отношение групп
+// Find group relationship
 CharactersGroups::Relation &CharactersGroups::FindRelation(long g1, long g2, bool *selfgroup)
 {
     Assert(g1 >= 0 && g1 < numGroups);
@@ -1176,7 +1177,7 @@ CharactersGroups::Relation &CharactersGroups::FindRelation(long g1, long g2, boo
     return groups[g1]->relations[g2];
 }
 
-//Получить индекс группы персонажа
+// Get character group index
 long CharactersGroups::GetCharacterGroup(Character *c)
 {
     if (!c)
@@ -1192,20 +1193,20 @@ long CharactersGroups::GetCharacterGroup(Character *c)
     return c->groupID;
 }
 
-//Удалить все цели
+// Delete all targets
 void CharactersGroups::ClearAllTargets() const
 {
-    //Обновим списки целей
+    // Update goal lists
     for (long i = 0; i < location->supervisor.numCharacters; i++)
     {
         location->supervisor.character[i].c->numTargets = 0;
     }
 }
 
-//Сохранить даные в объект
+// Save data to object
 void CharactersGroups::SaveData()
 {
-    //Корневой атрибут для сохранения данных
+    // Root attribute for saving data
     if (!AttributesPointer)
     {
         core.Trace("CharactersGroups::SaveData -> no attributes");
@@ -1215,16 +1216,16 @@ void CharactersGroups::SaveData()
     if (saveData)
         AttributesPointer->DeleteAttributeClassX(saveData);
     saveData = AttributesPointer->CreateSubAClass(AttributesPointer, "savedata");
-    //Сохраняем отношения групп
+    // Maintaining group relationships
     for (long i = 0, cnt = 0; i < numGroups; i++)
     {
         for (long j = 0; j < i; j++)
         {
-            //Раздел отношений
+            // Relationship section
             char buf[16];
             sprintf_s(buf, "r%.4i", cnt++);
             auto *grp = saveData->CreateSubAClass(saveData, buf);
-            //Сохраним параметры групп
+            // Save group parameters
             grp->SetAttribute("name1", groups[i]->name.name);
             grp->SetAttributeUseFloat("look1", groups[i]->look);
             grp->SetAttributeUseFloat("hear1", groups[i]->hear);
@@ -1235,7 +1236,7 @@ void CharactersGroups::SaveData()
             grp->SetAttributeUseFloat("hear2", groups[j]->hear);
             grp->SetAttributeUseFloat("say2", groups[j]->say);
             grp->SetAttributeUseDword("prt2", groups[j]->priority);
-            //Сохраним отношения
+            // keep the relationship
             auto &r = FindRelation(i, j);
             grp->SetAttributeUseFloat("alarm", r.alarm);
             grp->SetAttributeUseFloat("alarmdown", r.alarmdown);
@@ -1247,7 +1248,7 @@ void CharactersGroups::SaveData()
             grp->SetAttributeUseDword("relState", r.relState);
         }
     }
-    //Сохраняем параметры персонажей
+    // Save character parameters
     /*
     saveData = AttributesPointer->FindAClass(AttributesPointer, "characters");
     if(saveData) AttributesPointer->DeleteAttributeClassX(saveData);
@@ -1255,10 +1256,10 @@ void CharactersGroups::SaveData()
     */
 }
 
-//Прочитать даные из объект
+// Read data from object
 void CharactersGroups::LoadDataRelations()
 {
-    //Корневой атрибут для сохранения данных
+    // Root attribute for saving data
     if (!AttributesPointer)
     {
         core.Trace("CharactersGroups::LoadDataRelations -> no attributes");
@@ -1271,7 +1272,7 @@ void CharactersGroups::LoadDataRelations()
     for (long i = 0; i < numG; i++)
     {
         auto *grp = saveData->GetAttributeClass(i);
-        //Регестрируем первую группу
+        // Registering the first group
         const char *gname = grp->GetAttribute("name1");
         if (!gname)
             gname = "";
@@ -1280,7 +1281,7 @@ void CharactersGroups::LoadDataRelations()
         groups[g1]->hear = grp->GetAttributeAsFloat("hear1", groups[g1]->hear);
         groups[g1]->say = grp->GetAttributeAsFloat("say1", groups[g1]->say);
         groups[g1]->priority = grp->GetAttributeAsDword("prt1", groups[g1]->priority);
-        //Регестрируем вторую группу
+        // Registering the second group
         gname = grp->GetAttribute("name2");
         if (!gname)
             gname = "";
@@ -1289,7 +1290,7 @@ void CharactersGroups::LoadDataRelations()
         groups[g2]->hear = grp->GetAttributeAsFloat("hear2", groups[g2]->hear);
         groups[g2]->say = grp->GetAttributeAsFloat("say2", groups[g2]->say);
         groups[g2]->priority = grp->GetAttributeAsDword("prt2", groups[g2]->priority);
-        //Востановим отношения
+        // restore relations
         Assert(g1 != g2);
         auto &r = FindRelation(g1, g2);
         r.alarm = grp->GetAttributeAsFloat("alarm", r.alarm);
@@ -1323,7 +1324,7 @@ void CharactersGroups::LoadDataRelations()
     }
 }
 
-//Установить отношения для активных групп
+// Establish relationships for active groups
 void CharactersGroups::RestoreStates()
 {
     for (long i = 0, cnt = 0; i < numGroups; i++)
@@ -1350,16 +1351,16 @@ void CharactersGroups::RestoreStates()
     RemoveAllInvalidTargets();
 }
 
-//Вывести информацию об отношениях
+// Display information about relationships
 void CharactersGroups::DumpRelations()
 {
-    //Сохраняем отношения групп
+    // Maintaining group relationships
     for (long i = 0; i < numGroups; i++)
     {
         for (long j = 0; j < i; j++)
         {
             core.Trace("\"%s\" <-> \"%s\"", groups[i]->name.name, groups[j]->name.name);
-            //Сохраним отношения
+            // keep the relationship
             auto &r = FindRelation(i, j);
             core.Trace("alarm: %f", r.alarm);
             core.Trace("alarmdown: %f", r.alarmdown);
@@ -1384,7 +1385,7 @@ void CharactersGroups::DumpRelations()
     }
 }
 
-//Получить состояние в виде строки
+// Get the state as a string
 const char *CharactersGroups::GetTextState(RelState state)
 {
     switch (state)

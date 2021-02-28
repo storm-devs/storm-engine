@@ -26,21 +26,21 @@
 
 //#define LOCATIONCAMERA_DEBUG
 
-#define LOCATIONCAMERA_RADIUS 0.5f      //Размер камеры
-#define LOCATIONCAMERA_DISTQUANTUM 0.1f //Шаг с которым можно перемещать камеру
+#define LOCATIONCAMERA_RADIUS 0.5f      // Camera size
+#define LOCATIONCAMERA_DISTQUANTUM 0.1f // Step with which you can move the camera
 
-#define LOCATIONCAMERA_DISTALPHA_MAX 1.6f //Дистанция от персонажа при которой надо гасить альфу
-#define LOCATIONCAMERA_DISTALPHA_MIN 0.8f //Дистанция от персонажа при которой надо гасить альфу
+#define LOCATIONCAMERA_DISTALPHA_MAX 1.6f // Distance from the character at which it is necessary to fade out alpha
+#define LOCATIONCAMERA_DISTALPHA_MIN 0.8f // Distance from the character at which it is necessary to fade out alpha
 
 #define LOCATIONCAMERA_PERSPECTIVE (1.57f + 1.0f) * 0.5f
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 LocationCamera::LocationCamera()
 {
-    //Параметры камеры
+    // Camera parameters
     ax = 0.4f;
     vAx = 0.0f;
     axmin = -1.0f;
@@ -50,7 +50,7 @@ LocationCamera::LocationCamera()
     radius = 3.0f;
     rotInertia = 5.0f;
     radInertia = 7.0f;
-    //Значения камеры
+    // Camera values
     isSleep = false;
     kMorph = 1.0f;
     wmode = cwm_follow;
@@ -78,7 +78,7 @@ LocationCamera::~LocationCamera()
     StoreRestoreDynamicFov(true);
 }
 
-//Инициализация
+// Initialization
 bool LocationCamera::Init()
 {
     // DX9 render
@@ -94,10 +94,10 @@ bool LocationCamera::Init()
     EntityManager::SetLayerType(REALIZE, EntityManager::Layer::Type::realize);
     EntityManager::AddToLayer(REALIZE, GetId(), 100000);
 
-    //Море
+    // The sea
     sea = EntityManager::GetEntityId("sea");
 
-    //Попробуем получить локацию
+    // try to get the location
     loc = EntityManager::GetEntityId("location");
 
     rs->SetPerspective(LOCATIONCAMERA_PERSPECTIVE);
@@ -108,7 +108,7 @@ bool LocationCamera::Init()
     return true;
 }
 
-//Исполнение
+// Execution
 #ifndef LOCATIONCAMERA_DEBUG
 void LocationCamera::Execute(uint32_t delta_time)
 #else
@@ -122,17 +122,17 @@ void LocationCamera::Realize(uint32_t delta_time)
             return;
     }
 
-    //Режим камеры
+    // Camera mode
     CONTROL_STATE cs;
     core.Controls->GetControlState("ChrCamSpecMode", cs);
     isSpecialMode = cs.state == CST_ACTIVE;
-    //Временной отрезок
+    // Time period
     const auto dltTime = delta_time * 0.001f;
     if (isSleep)
         return;
     if (!Set())
         return;
-    //Управление
+    // Controls
     const auto oldAx = ax;
     core.Controls->GetControlState("ChrCamTurnV", cs);
     dAx = -cs.lValue * 0.05f; //*0.005f;
@@ -181,14 +181,14 @@ void LocationCamera::Realize(uint32_t delta_time)
     character->LockIdle(false);
     character->LockMove(false);
     character->LookFromEyes(false);
-    //Исполняем текущий режим
+    // Execute the current mode
     auto isELook = false;
 
     if (!isLockFPMode)
     {
         switch (wmode)
         {
-        case cwm_follow: //Следуем за персонажем
+        case cwm_follow: // Follow The Character
 
             //*
             if (!character->IsFight() && !character->IsDialog() && !character->IsDead())
@@ -244,7 +244,7 @@ void LocationCamera::Realize(uint32_t delta_time)
             {
                 if (isSpecialMode)
                 {
-                    //Пересчитаем для специального режима велечину изменения угла
+                    // recalculate the angle change for the special mode
                     core.Controls->GetControlState("ChrCamTurnH", cs);
                     dAy = cs.lValue * 0.05f;
                     if (dAy > 1.0f)
@@ -279,12 +279,12 @@ void LocationCamera::Realize(uint32_t delta_time)
             }
 #endif
             break;
-        case cwm_topos: //Вид из локатора
+        case cwm_topos: // Locator view
             ExecuteTopos(dltTime);
             ax = oldAx;
             vAx = 0.0f;
             break;
-        case cwm_free: //Свободно летающая камера
+        case cwm_free: // Free flying camera
             character->LockMove(true);
             ExecuteFree(dltTime);
             break;
@@ -298,7 +298,7 @@ void LocationCamera::Realize(uint32_t delta_time)
 
     cf.DrawDebug();
 
-    //Морфинг позиций
+    // Position morphing
     if (kMorph < 1.0f)
     {
         if (!isTeleport)
@@ -330,7 +330,7 @@ void LocationCamera::Realize(uint32_t delta_time)
     rs->SetCamera(realPos, lookTo, vUp);
 
 #ifdef CAMERA_VIEW_TEST_ENABLE
-    //Устанавливаем новою позицию камеры
+    // Set the new camera position
     rs->SetCamera(camPos, lookTo, vUp);
 #endif
 }
@@ -351,7 +351,7 @@ void LocationCamera::Execute(uint32_t delta_time)
     */
 }
 
-//Сообщения
+// Messages
 uint64_t LocationCamera::ProcessMessage(MESSAGE &message)
 {
     switch (message.Long())
@@ -431,24 +431,24 @@ uint64_t LocationCamera::ProcessMessage(MESSAGE &message)
     return 0;
 }
 
-//Изменение атрибута
+// Changing an attribute
 uint32_t LocationCamera::AttributeChanged(ATTRIBUTES *apnt)
 {
-    //Зачитывание атрибутов
+    // Reading out attributes
     if (!AttributesPointer)
         return 0;
 
     return 0;
 }
 
-//Подготовить данные
+// Prepare data
 bool LocationCamera::Set()
 {
-    //Указатель на персонажа
+    // Character pointer
     auto *c = static_cast<Character *>(EntityManager::GetEntityPointer(chr));
     if (!c)
         return false;
-    //Характеристики персонажа
+    // Character characteristics
     c->GetPosition(pos);
     chay = c->GetAY();
     height = c->GetHeight();
@@ -459,7 +459,7 @@ bool LocationCamera::Set()
     return location != nullptr;
 }
 
-//Изменить режим работы камеры
+// Change camera mode
 void LocationCamera::SetMode(CameraWorkMode wm)
 {
     if (wmode == wm)
@@ -473,10 +473,10 @@ void LocationCamera::SetMode(CameraWorkMode wm)
 
 //============================================================================================
 
-//Исполнение камеры вида из глаз
+// First-person View Camera
 void LocationCamera::ExecuteLook(float dltTime)
 {
-    //Определим точку размещения камеры
+    // Determine the camera placement point
     auto *mdl = character->Model();
     if (!mdl)
         return;
@@ -489,14 +489,14 @@ void LocationCamera::ExecuteLook(float dltTime)
     if (ani && (strIndex = node->geo->FindLabelN(strIndex + 1, idCamera)) > -1)
     {
         GEOS::LABEL lb;
-        //Матрица локатора
+        // Locator matrix
         node->geo->GetLabel(strIndex, lb);
         CMatrix mtl;
         mtl.Vx() = CVECTOR(lb.m[0][0], lb.m[0][1], lb.m[0][2]);
         mtl.Vy() = CVECTOR(lb.m[1][0], lb.m[1][1], lb.m[1][2]);
         mtl.Vz() = CVECTOR(lb.m[2][0], lb.m[2][1], lb.m[2][2]);
         mtl.Pos() = CVECTOR(lb.m[3][0], lb.m[3][1], lb.m[3][2]);
-        //Матрица кости
+        // Bone matrix
         auto ml = mtl * ani->GetAnimationMatrix(lb.bones[0]);
         ml.Pos().x *= -1.0f;
         ml.Vx().x *= -1.0f;
@@ -509,22 +509,22 @@ void LocationCamera::ExecuteLook(float dltTime)
     {
         camPos = pos + CVECTOR(0.0f, height, 0.0f);
     }
-    //Определим куда смотрим
+    // Determine where we are looking at
     lookTo.x = camPos.x + cosf(ax) * sinf(chay);
     lookTo.y = camPos.y - sinf(ax);
     lookTo.z = camPos.z + cosf(ax) * cosf(chay);
 }
 
-//Исполнение камеры наблюдающей из точки
+// Execution of a camera observing from a point
 void LocationCamera::ExecuteTopos(float dltTime)
 {
-    //Куда смотрим
+    // Where are we looking at
     lookTo = pos + CVECTOR(0.0f, lheight, 0.0f);
-    //Откуда смотрим
+    // Where are we looking from
     camPos = fromLook;
 }
 
-//Исполнение свободно летающей камеры
+// Free flying camera execution
 void LocationCamera::ExecuteFree(float dltTime)
 {
     if (LOWORD(GetKeyState(VK_NUMLOCK)) != 0)
@@ -555,7 +555,7 @@ void LocationCamera::ExecuteFree(float dltTime)
     lookTo += camPos;
 }
 
-//Протрейсит луч через локацию
+// Trace the ray through the location
 float LocationCamera::Trace(const CVECTOR &src, const CVECTOR &dst) const
 {
     if (!location)
@@ -722,7 +722,7 @@ bool LocationCamera::LoadCameraTrack(const char *pcTrackFile, float fTrackTime)
     m_bTrackMode = true;
     m_sCurTrackName = pcTrackFile;
 
-    // установка камеры на начало трека
+    // setting the camera to the beginning of the track
     Vector pos;
     Quaternion ang;
     Matrix view;
@@ -792,7 +792,7 @@ float LocationCamera::TrackPauseProcess()
     //		if( m_aTrackPauses[nPause].trackTime <= m_fTrackCurTime ) {
     //		}
 
-    /*	if( m_nCurPauseIndex >= 0 ) // счас в паузе
+      /*if(m_nCurPauseIndex >= 0) // in pause now
       {
         if( m_fTrackCurTime >= m_aTrackPauses[m_nCurPauseIndex].pauseTime )
       }*/

@@ -57,7 +57,7 @@ void IBoardingStatus::Realize(uint32_t delta_time)
 
 void IBoardingStatus::Create()
 {
-    // Установить параметры для иконки активного действия
+    // Set parameters for active action icon
     auto *pA = core.Entity_GetAttributePointer(GetId());
     if (pA != nullptr)
     {

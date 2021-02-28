@@ -395,7 +395,7 @@ DIALOG::DIALOG()
     m_idVBufButton = -1;
     m_idIBufButton = -1;
 
-    m_dwButtonState = 0; // нет ни одной кнопки
+    m_dwButtonState = 0; // no buttons
 
     m_nCharNameTextFont = -1;
     m_dwCharNameTextColor = 0xFFFFFFFF;
@@ -438,8 +438,8 @@ DIALOG::~DIALOG()
 void DIALOG::CreateBack()
 {
     const long nSquareQuantity = 9 + 3 + 1; // 9-for back, 3-for name & 1-for divider
-    m_nIQntBack = 6 * nSquareQuantity;      // 6 индексов в одном прямоугольнике
-    m_nVQntBack = 4 * nSquareQuantity;      // 4 вертекса в одном прямоуголькнике
+    m_nIQntBack = 6 * nSquareQuantity;      // 6 indices in one rectangle
+    m_nVQntBack = 4 * nSquareQuantity;      // 4 vertices in one rectangle
 
     if (m_idVBufBack == -1)
         m_idVBufBack =
@@ -462,7 +462,7 @@ void DIALOG::CreateBack()
         RenderService->UnLockIndexBuffer(m_idIBufBack);
     }
 
-    // создаем размеры
+    // create dimensions
     m_BackParams.m_frBorderInt.left = m_BackParams.m_frBorderExt.left + m_BackParams.frBorderRect.left;
     m_BackParams.m_frBorderInt.right = m_BackParams.m_frBorderExt.right - m_BackParams.frBorderRect.right;
     m_BackParams.m_frBorderInt.top = m_BackParams.m_frBorderExt.top + m_BackParams.frBorderRect.top;
@@ -562,8 +562,8 @@ void DIALOG::DrawBack()
 
 void DIALOG::CreateButtons()
 {
-    m_nIQntButton = 6 * 2; // 6 индексов в одном прямоугольнике
-    m_nVQntButton = 4 * 2; // 4 вертекса на один прямоугольник
+    m_nIQntButton = 6 * 2; // 6 indices in one rectangle
+    m_nVQntButton = 4 * 2; // 4 vertices per rectangle
 
     if (m_idVBufButton == -1)
         m_idVBufButton =
@@ -795,12 +795,12 @@ void DIALOG::AddToStringArrayLimitedByWidth(const char *pcSrcText, long nFontID,
     {
         if ((pcSrcText[nCur] == 0x20 && pcSrcText[nCur + 1] != 0) || pcSrcText[nCur] == 0) // space
         {
-            // boal fix пробел в конце строки
+            // boal fix space at the end of the line
             param[n] = 0;
             const long nW = RenderService->StringWidth(param, nFontID, fScale);
             if (nW < nLimitWidth && pcSrcText[nCur] != 0)
             {
-                // пока еще не перешли предел по ширине
+                // have not yet exceeded the width limit
                 param[n++] = 0x20;
             }
             else
@@ -811,9 +811,9 @@ void DIALOG::AddToStringArrayLimitedByWidth(const char *pcSrcText, long nFontID,
                     long nPrev = nCur;
                     while (nPrev > 0 && pcSrcText[nPrev - 1] != 0x20)
                         nPrev--;
-                    if (nPrev <= 0) // нет пробелов
+                    if (nPrev <= 0) // no spaces
                     {
-                        // ищем первый попавший в диапазон набор символов
+                        // looking for the first character set in the range
                         while (n > 0 && RenderService->StringWidth(param, nFontID, fScale) > nLimitWidth)
                         {
                             int dec = utf8::u8_dec(param + n);
@@ -894,7 +894,7 @@ bool DIALOG::Init()
 void DIALOG::Realize(uint32_t Delta_Time)
 {
     RenderService->MakePostProcess();
-    // замедленный выход из паузы
+    // delayed exit from pause
     if (unfadeTime <= UNFADE_TIME)
     {
         unfadeTime += static_cast<int>(core.GetRDeltaTime());
@@ -904,14 +904,14 @@ void DIALOG::Realize(uint32_t Delta_Time)
         core.SetTimeScale(timeK);
     }
 
-    // играем спич
+    // play speech
     if (play == 0 && soundName[0] && snd)
     {
         curSnd = snd->SoundPlay(soundName, PCM_STEREO, VOLUME_SPEECH);
         play = 1;
     }
 
-    // нет аттрибутов диалога - нет дальнейшего разговора
+    // no dialogue attributes - no further conversation
     if (!AttributesPointer)
         return;
 
@@ -927,7 +927,7 @@ void DIALOG::Realize(uint32_t Delta_Time)
     CONTROL_STATE cs1; // boal
     CONTROL_STATE cs2;
 
-    // прерывание диалога
+    // interruption of dialogue
     core.Controls->GetControlState("DlgCancel", cs);
     if (cs.state == CST_ACTIVATED)
         core.Event("DialogCancel");
@@ -961,10 +961,10 @@ void DIALOG::Realize(uint32_t Delta_Time)
             bDoDown = true;
     }
 
-    // переходим вверх (к предыдущей строке)
+    // go up (to the previous line)
     if (bDoUp)
     {
-        // игрем щелчок нажатой клавиши
+        // play click of the pressed key
         if (snd)
             snd->SoundPlay(TICK_SOUND, PCM_STEREO, VOLUME_FX);
 
@@ -980,10 +980,10 @@ void DIALOG::Realize(uint32_t Delta_Time)
             }
         }
     }
-    // переход вниз - к следующей строке
+    // go down - to the next line
     if (bDoDown)
     {
-        // игрем щелчок нажатой клавиши
+        // play click of the pressed key
         if (snd)
             snd->SoundPlay(TICK_SOUND, PCM_STEREO, VOLUME_FX);
 
@@ -998,7 +998,7 @@ void DIALOG::Realize(uint32_t Delta_Time)
             }
         }
     }
-    // страница вверх
+    // page up
     core.Controls->GetControlState("DlgScrollUp", cs);
     if (cs.state == CST_ACTIVATED)
     {
@@ -1012,7 +1012,7 @@ void DIALOG::Realize(uint32_t Delta_Time)
             FillButtons();
         }
     }
-    // страница вниз
+    // page down
     core.Controls->GetControlState("DlgScrollDown", cs);
     if (cs.state == CST_ACTIVATED)
     {
@@ -1026,7 +1026,7 @@ void DIALOG::Realize(uint32_t Delta_Time)
             FillButtons();
         }
     }
-    // действие
+    // action
     core.Controls->GetControlState("DlgAction", cs);
     core.Controls->GetControlState("DlgAction2", cs2);
     core.Controls->GetControlState("DlgAction1", cs1); // boal
@@ -1036,13 +1036,13 @@ void DIALOG::Realize(uint32_t Delta_Time)
     }
     if (cs.state == CST_ACTIVATED || cs2.state == CST_ACTIVATED || cs1.state == CST_ACTIVATED) // boal
     {
-        // игрем щелчок нажатой клавиши
+        // play click of the pressed key
         if (snd)
             snd->SoundPlay(TICK_SOUND, PCM_STEREO, VOLUME_FX);
 
         if (m_DlgText.IsLastPage())
         {
-            // показываем варианты ответа
+            // showing answer options
             ATTRIBUTES *pA = AttributesPointer->GetAttributeClass("links");
             if (pA)
                 pA = pA->GetAttributeClass(m_DlgLinks.nSelectLine);
@@ -1064,7 +1064,7 @@ void DIALOG::Realize(uint32_t Delta_Time)
         }
         else
         {
-            // пока еще показываем текст
+            // still showing the text
             m_DlgText.NextPage();
             UpdateDlgViewport();
             FillDivider();

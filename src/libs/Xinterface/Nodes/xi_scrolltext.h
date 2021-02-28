@@ -3,11 +3,11 @@
 
 #include "../inode.h"
 
-#define PICE_TYPE_STRING 0      // описатель строки
-#define PICE_TYPE_FONTCHANGE 1  // описатель нового фонта
-#define PICE_TYPE_COLORCHANGE 2 // описатель нового цвета
-#define PICE_TYPE_NEXTLINE 3    // описатель перевода строки
-#define PICE_TYPE_NEXTTABLINE 4 // описатель перевода строки с красной строки
+#define PICE_TYPE_STRING 0      // string descriptor
+#define PICE_TYPE_FONTCHANGE 1  // new font descriptor
+#define PICE_TYPE_COLORCHANGE 2 // new color descriptor
+#define PICE_TYPE_NEXTLINE 3    // linefeed specifier
+#define PICE_TYPE_NEXTTABLINE 4 // linefeed specifier of the new paragraph
 
 struct STRING_PICE
 {
@@ -57,11 +57,11 @@ class CXI_SCROLLTEXT : public CINODE
     void TextUpShift();
 
   protected:
-    CINODE *m_pScroller; // ссылка на скроллер (!!! обязан быть прописан перед этим)
-    long m_nMaxStringes; // число строк в выводимом окне
+    CINODE *m_pScroller; // link to the scroller (!!! must be registered beforehand)
+    long m_nMaxStringes; // the number of lines in the displayed window
 
-    uint32_t m_dwFontColor; // текущий цвет
-    long m_idFont;          // текущий шрифт
+    uint32_t m_dwFontColor; // current color
+    long m_idFont;          // current font
 
     char *m_pText;
     long m_nPiceQuantity;

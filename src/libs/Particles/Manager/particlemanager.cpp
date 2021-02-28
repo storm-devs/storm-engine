@@ -67,7 +67,7 @@ VDX9RENDER *ParticleManager::Render()
     return pRS;
 }
 
-//Установить текстуру проекта
+// Set project texture
 void ParticleManager::SetProjectTexture(const char *FileName)
 {
     if (pProjectTexture)
@@ -95,7 +95,7 @@ const char *ParticleManager::GetProjectTextureName()
     return TextureName.c_str();
 }
 
-//Открыть проект
+// Open project
 bool ParticleManager::OpenProject(const char *FileName)
 {
     CloseProject();
@@ -120,13 +120,13 @@ bool ParticleManager::OpenProject(const char *FileName)
 
     static char IniStringBuffer[8192];
 
-    //Устанавливаем текстуру проекта...
+    // Setting the texture of the project
     IniFile->ReadString("Textures", "MainTexture", IniStringBuffer, 8192, "none");
     // core.Trace("Manager use texture: %s", IniStringBuffer);
     SetProjectTexture(IniStringBuffer);
 
     /*
-      //Загружаем модельки в кэш
+      // Load the models into the cache
       for (int n = 0; n < 9999; n++)
       {
         string Section;
@@ -140,7 +140,7 @@ bool ParticleManager::OpenProject(const char *FileName)
       }
     */
 
-    //Загружаем данные
+    // Loading data
     for (auto n = 0; n < 9999; n++)
     {
         char buf[64];
@@ -155,19 +155,19 @@ bool ParticleManager::OpenProject(const char *FileName)
     delete IniFile;
 
     // FIX ME !
-    //Если будет асинхронная загрузка это неверно...
+    // If there will be asynchronous loading it is wrong
     CreateGeomCache();
 
     return true;
 }
 
-//Получить имя проекта
+// Get project name
 const char *ParticleManager::GetProjectFileName()
 {
     return ShortProjectName.c_str();
 }
 
-//Закрыть проект
+// Close project
 void ParticleManager::CloseProject()
 {
     BB_Processor->Clear();
@@ -189,7 +189,7 @@ void ParticleManager::CloseProject()
     pGeomCache->ResetCache();
 }
 
-//Удалить из списка ресурсов (системная)
+// Remove from resource list (system)
 void ParticleManager::RemoveResource(IParticleSystem *pResource)
 {
     if (GlobalDelete)
@@ -206,7 +206,7 @@ void ParticleManager::RemoveResource(IParticleSystem *pResource)
     }
 }
 
-//Исполнить партиклы
+// Execute Particles
 void ParticleManager::Execute(float DeltaTime)
 {
     GraphRead = 0;
@@ -302,7 +302,7 @@ void ParticleManager::Execute(float DeltaTime)
     DeleteQuery.clear();
 }
 
-//Узнать доступна система или нет
+// Find out whether the system is available or not
 bool ParticleManager::IsSystemAvailable(const char *FileName)
 {
     if (pDataCache->GetParticleSystemDataSource(FileName))
@@ -310,13 +310,13 @@ bool ParticleManager::IsSystemAvailable(const char *FileName)
     return false;
 }
 
-//Получить глобальную текстуру проекта
+// Get the global texture of the project
 long ParticleManager::GetProjectTexture()
 {
     return pProjectTexture;
 }
 
-//Создать партикловую систему из файла (файл должен быть в проекте!!!!!)
+// Create a particle system from a file (the file must be in the project)
 IParticleSystem *ParticleManager::CreateParticleSystemEx(const char *FileName, const char *File, int Line)
 {
     DataSource *pDataSource = pDataCache->GetParticleSystemDataSource(FileName);
@@ -366,7 +366,7 @@ ModelProcessor *ParticleManager::GetMDLProcessor() const
     return MDL_Processor;
 }
 
-//Создать пустую партикловую систему, для редактора...
+// Create an empty particle system, for the editor
 IParticleSystem *ParticleManager::CreateEmptyParticleSystemEx(const char *FileName, int Line)
 {
     // NEED WRITE !!!

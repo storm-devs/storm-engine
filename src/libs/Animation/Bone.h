@@ -1,12 +1,12 @@
-//============================================================================================
-//	Spirenkov Maxim aka Sp-Max Shaman, 2001
-//--------------------------------------------------------------------------------------------
-//	Storm engine v2.00
-//--------------------------------------------------------------------------------------------
-//	Bone
-//--------------------------------------------------------------------------------------------
-//	Кость модели, содержищая свою анимацию
-//============================================================================================
+// ============================================================================================
+// Spirenkov Maxim aka Sp-Max Shaman, 2001
+// --------------------------------------------------------------------------------------------
+// Storm engine v2.00
+// --------------------------------------------------------------------------------------------
+// Bone
+// --------------------------------------------------------------------------------------------
+// Model bone containing its animation
+// ============================================================================================
 
 #ifndef _Bone_H_
 #define _Bone_H_
@@ -36,98 +36,98 @@ class Bone
 
 #pragma pack(pop)
 
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     Bone();
     virtual ~Bone();
-    //Установить родителя
+    // Set parent
     void SetParent(Bone *parentBone);
-    //Сказать сколько будет кадров анимации
+    // how many frames of animation there will be
     void SetNumFrames(long num, CVECTOR &sPos, bool isRoot = false);
-    //Установить позиции анимации
+    // Set animation positions
     void SetPositions(const CVECTOR *pArray, long numPos);
-    //Установить углы анимации
+    // Set animation angles
     void SetAngles(const D3DXQUATERNION *aArray, long numAng);
-    //Инициализировать стартовую матрицу
+    // Initialize start matrix
     void BuildStartMatrix();
 
-    //--------------------------------------------------------------------------------------------
-    //Работа с костью
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Working with a bone
+    // --------------------------------------------------------------------------------------------
   public:
-    //Добавить кадры анимации
+    // Add animation frames
     void BlendFrame(long frame, float kBlend, D3DXQUATERNION &res);
     // void BlendFrame(float frame);
-    //Создать матрицу для полученного положения
+    // Create a matrix for the resulting position
     void BuildMatrix();
-    //Создать матрицу для 0 кадра
+    // Create matrix for frame 0
     // void BuildMatrixZero();
-    //Получить матрицу положения
+    // Get position matrix
     CMatrix &Matrix();
-    //Получить стартовуцю матрицу положения
+    // Get the starting position matrix
     CMatrix &StartMatrix();
 
-    //--------------------------------------------------------------------------------------------
-    //Инкапсуляция
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Encapsulation
+    // --------------------------------------------------------------------------------------------
   private:
     void GetFrame(long f, D3DXQUATERNION &qt);
     float Clamp(float v, const char *str);
-    //Линейная интерполяция позиции
+    // Linear position interpolation
     float LerpPos(float a, float b, float k);
-    //Линейная интерполяция угла
+    // Linear Angle Interpolation
     float LerpAng(float a, float b, float k);
 
   public:
-    Bone *parent; //Родительская кость
+    Bone *parent; // Parent bone
 
 #ifdef ANI_COMPRESS_ENABLE
-    COMP_QUATERNION *ang; //Компрессированые углы кадров анимации
+    COMP_QUATERNION *ang; // Compressed angles of animation frames
 #else
-    D3DXQUATERNION *ang; //Углы кадров анимации
+    D3DXQUATERNION *ang; // Animation frame angles
 #endif
 
-    CVECTOR *pos;   //Позиции кадров анимации
-    long numFrames; //Количество кадров анимации
-    CVECTOR pos0;   //Позиция кости, если нет позиций кадров анимации
+    CVECTOR *pos;   // Animation frame positions
+    long numFrames; // Number of animation frames
+    CVECTOR pos0;   // Bone position if there are no animation frame positions
 
-    CVECTOR p;        //Позиция кости в локальных координатах
-    D3DXQUATERNION a; //Углы поворота кости в локальных координатах
-    CMatrix matrix;   //Матрица положения кости
-    CMatrix start;    //Матрица 0 кадра
+    CVECTOR p;        // Bone position in local coordinates
+    D3DXQUATERNION a; // Bone rotation angles in local coordinates
+    CMatrix matrix;   // Bone position matrix
+    CMatrix start;    // Frame 0 matrix
 };
 
 //============================================================================================
 // inline
 //============================================================================================
 
-//Установить родителя
+// Set parent
 inline void Bone::SetParent(Bone *parentBone)
 {
     parent = parentBone;
 }
 
-//Получить матрицу положения
+// Get position matrix
 inline CMatrix &Bone::Matrix()
 {
     return matrix;
 }
 
-//Получить стартовуцю матрицу положения
+// Get the starting position matrix
 inline CMatrix &Bone::StartMatrix()
 {
     return start;
 }
 
-//Линейная интерполяция позиции
+// Linear position interpolation
 inline float Bone::LerpPos(float a, float b, float k)
 {
     return a + k * (b - a);
 }
 
-//Линейная интерполяция угла
+// Linear Angle Interpolation
 inline float Bone::LerpAng(float a, float b, float k)
 {
     float delta = b - a;

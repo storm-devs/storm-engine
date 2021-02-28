@@ -64,10 +64,10 @@ class XSERVICE : public VXSERVICE
     IMAGELISTDESCR *m_pList;
     PICTUREDESCR *m_pImage;
 
-    // Масштабные коэффициенты
+    // Scale factors
     float m_fWScale;
     float m_fHScale;
-    // параметры ошибки при масштабировании
+    // scaling error parameters
     float m_fWAdd;
     float m_fHAdd;
 };

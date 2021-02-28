@@ -8,7 +8,7 @@
 
 bool ReadingAlreadyComplete;
 
-//Конструктор/деструктор
+// Constructor / destructor
 DataCache::DataCache(IParticleManager *pManager)
 {
     Master = pManager;
@@ -19,7 +19,7 @@ DataCache::~DataCache()
     ResetCache();
 }
 
-//Положить в кэш данные для системы
+// Put data for the system in the cache
 void DataCache::CacheSystem(const char *FileName)
 {
     // NameWithExt.AddExtention(".xps");
@@ -49,7 +49,7 @@ void DataCache::CacheSystem(const char *FileName)
     auto *pMemBuffer = new uint8_t[FileSize];
     fio->_ReadFile(pSysFile, pMemBuffer, FileSize, nullptr);
 
-    //Создаем данные из файла...
+    // Create data from file ...
     CreateDataSource(pMemBuffer, FileSize, pathStr.c_str());
 
     delete[] pMemBuffer;
@@ -57,7 +57,7 @@ void DataCache::CacheSystem(const char *FileName)
     fio->_CloseHandle(pSysFile);
 }
 
-//Сбросить кэш
+// Reset cache
 void DataCache::ResetCache()
 {
     for (auto n = 0; n < Cache.size(); n++)
@@ -69,7 +69,7 @@ void DataCache::ResetCache()
     Cache.clear();
 }
 
-//Получить указатель на данные для системы партиклов
+// Get a pointer to data for a particle system
 DataSource *DataCache::GetParticleSystemDataSource(const char *FileName)
 {
     // std::string NameWithExt = FileName;
@@ -91,7 +91,7 @@ DataSource *DataCache::GetParticleSystemDataSource(const char *FileName)
     return nullptr;
 }
 
-//Проверить указатель на валидность
+// Check pointer for validity
 bool DataCache::ValidatePointer(DataSource *pData)
 {
     for (auto n = 0; n < Cache.size(); n++)

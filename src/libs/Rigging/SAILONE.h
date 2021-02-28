@@ -31,7 +31,7 @@ struct SAILVERTEX
     float tu3, tv3;
 };
 
-// параметры для триангуляции паруса
+// parameters for sail triangulation
 #define SAIL_FAR_IDX 7
 
 const struct
@@ -48,7 +48,7 @@ const struct
 
 struct WIND
 {
-    float base; // амплитуда колебаний ветра от 0 до 1.0
+    float base; // amplitude of wind fluctuations from 0 to 1.0
     struct
     {
         float x, y, z;
@@ -58,13 +58,13 @@ struct WIND
 struct SPHERE
 {
     CVECTOR c;
-    CVECTOR rc; // центр в мировых координатах
+    CVECTOR rc; // center in world coordinates
     float r;
 };
 
 #define TEXTUREMAXCOUNTER 3
 
-// таблица текстур
+// texture table
 struct TEXTURESLIST
 {
     int texCount;
@@ -100,14 +100,14 @@ struct SAILROLLING
 {
     SAILGEOMETRY oldgeo; // final value of geometry parameters
     float delta;
-    bool rollup; // парус сворачивается (ложь-разворачивается)
+    bool rollup; // the sail folds (false-unfolds)
 };
 
 struct ROTATEROPEDSAIL
 {
     int ropenum;
-    float r1, r2; // радиус до конца веревки и начала другой точки
-    CVECTOR b;    // координата x,y,z для расчета натяжения веревкой по Z
+    float r1, r2; // radius to the end of the rope and the beginning of another point
+    CVECTOR b;    // x, y, z coordinate for calculating rope tension in Z
     int tiePoint;
 };
 
@@ -131,30 +131,30 @@ struct SAILSTATE
 {
     uint32_t holeCount;
     bool hole[12];
-    uint16_t shi, sni, Nh, Nn; // Стартовый индекс и число индексов в дырявом\нормальном отражении паруса
+    uint16_t shi, sni, Nh, Nn; // Start index and number of indexes in punched / normal sail reflection
 
     SAIL_TYPE eSailType;
 
-    // точки привязки паруса
+    // sail anchor points
     CVECTOR hardPoints[4];
 
     bool bYesLimitPoint;
     CVECTOR LimitPoint;
 
-    // номер текстуры
+    // texture number
     uint16_t texNum;
 
-    //----Параметры составляющие форму паруса----
-    float fDeepZ;  // абсолютная выпуклость паруса по вертикали
-    float fDeepH;  // абсолютная выпуклость паруса по горизонтали
-    float fDeepVz; // прогиб нижнего края паруса по нормали
-    float fDeepVh; // прогиб нижнего края паруса по высоте
+    // ---- Parameters that make up the sail shape ----
+    float fDeepZ;  // absolute vertical sail bulge
+    float fDeepH;  // absolute horizontal sail bulge
+    float fDeepVz; // deflection of the lower edge of the sail along the normal
+    float fDeepVh; // deflection of the lower edge of the sail in height
 
     uint32_t sVert, nVert;
     uint32_t sIndx, nIndx;
     uint32_t sholeIndx, nnormIndx, nholeIndx;
 
-    // шар ограничивающий парус
+    // sail bounding sphere
     SPHERE boundSphere;
     CVECTOR boxCenter;
     CVECTOR boxSize;
@@ -185,15 +185,15 @@ class SAILONE : public SAILONE_BASE
     SAILSTATE ss;
     SAILTIME tm;
 
-    void FillIndex(uint16_t *pt); // заполнение массива треугольников
+    void FillIndex(uint16_t *pt); // filling an array of triangles
     void ClearVertex(SAILVERTEX *pv, uint32_t maxIdx);
     void goWave(SAILVERTEX *pv, uint32_t Delta_Time);
-    void FillVertex(SAILVERTEX *pv);       // заполнение массива вертексов
-    void SetTexGrid(SAILVERTEX *pv) const; // установка координат в текстуре
-    void SetGeometry(); // установка параметров для создания геометрии паруса
-    void SetRolling(bool bRoll); // установить сворачивание-разворачивание паруса
-    void DoRollingStep(uint32_t Delta_Time); // выполняем шаг сворачивания-разворачивания паруса
-    void TurnSail(float fTurnStep); // повернуть парус вокруг оси OY
+    void FillVertex(SAILVERTEX *pv);       // filling an array of vertices
+    void SetTexGrid(SAILVERTEX *pv) const; // setting coordinates in texture
+    void SetGeometry(); // setting parameters for creating sail geometry
+    void SetRolling(bool bRoll); // set roll-up sail
+    void DoRollingStep(uint32_t Delta_Time); // perform the step of folding-unfolding the sail
+    void TurnSail(float fTurnStep); // turn the sail around the OY axis
     void CalculateMirrorSailIndex() override;
     bool GetGrid(CVECTOR &pos, float perspect);
     float Trace(const CVECTOR &src, const CVECTOR &dst, bool bCannonTrace);
@@ -201,7 +201,7 @@ class SAILONE : public SAILONE_BASE
     float TSailTrace(CVECTOR &src, CVECTOR &dst, bool bCannonTrace);
     float CheckSailSquar(int i, CVECTOR &va, CVECTOR &vb, CVECTOR &vc, CVECTOR &vsrc, CVECTOR &vdst, bool bCannonTrace);
     void SetAllHole(uint32_t holeData) override;
-    // число вертексов по вертикали и горизонтали
+    // number of vertices vertically and horizontally
     uint32_t m_dwRow, m_dwCol;
     float sailWidth, sailHeight;
 
@@ -232,47 +232,47 @@ class SAILONE : public SAILONE_BASE
 
     float GetDistanceFromPointTo3Point(const CVECTOR &v, const CVECTOR &vB1, const CVECTOR &vB2, const CVECTOR &vB3);
 
-    // Параметры воздействия ветра
-    //------------------------------
-    int VertIdx; // индекс в массиве векторов ветра
+    // Wind exposure parameters
+    // ------------------------------
+    int VertIdx; // index in array of wind vectors
     int HorzIdx;
-    bool WindUp; // подъем паруса вверх от ветра
+    bool WindUp; // raising the sail up from the wind
     float SumWind, MaxSumWind;
-    bool bFreeSail; // свободно развивающиеся паруса - при падении или отрыве
+    bool bFreeSail; // free sails - when falling or flying
 
     CVECTOR SailPnt[20];
 
-    //------------------------------------
-    // Сворачивание.разворачивание паруса
-    int rollType;       // тип сворачивания паруса
-    SAILROLLING *sroll; // структура на момент свертывания/развертывания паруса
-    bool bRolling; // парус свернут в рулет на рее
+    // ------------------------------------
+    // Unfolding the sail
+    int rollType;       // sail folding type
+    SAILROLLING *sroll; // structure at the time of folding / unfolding of the sail
+    bool bRolling; // the sail is rolled on the yard
 
     SAIL *pp;
-    //------------------------------------
-    // параметры определения положения в списке парусов
-    int groupNum;       // номер группы парусов в данном узле
-    int mastNum;        // номер мачты
-    NODE *hostNode;     // хозяин узла
-    CMatrix *pMatWorld; // матрица этого узла
+    // ------------------------------------
+    // parameters for determining the position in the sail list
+    int groupNum;       // sail group number in the node
+    int mastNum;        // mast number
+    NODE *hostNode;     // host
+    CMatrix *pMatWorld; // the matrix of this node
 
     SAILTIEROPE sailtrope;
     float oldWindAngl;
 
-    // физика влияния на скорость корабля
-    float maxSpeed; // Максимальная скорость даваемая парусом
-    float curSpeed; // Текущая скорость
+    // physics of influence on ship speed
+    float maxSpeed; // Maximum sail speed
+    float curSpeed; // Current speed
 
-    // ветер
+    // wind
     CVECTOR sailWind;
     void CalculateSailWind();
 
     int wind_incr, wind_add;
 
-    int HostNum; // номер группы парусов (корабля)
+    int HostNum; // sail group number of the ship
     bool bDeleted;
 
-    // Параметры ограничивающие поворот паруса
+    // Parameters limiting sail turn
     CVECTOR m_vMastTrace[2];
     float m_fMaxAngle;
     float m_fMinAngle;

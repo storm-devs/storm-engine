@@ -10,7 +10,7 @@
 #include "geos.h"
 #include "physic.h"
 
-//—колько всего может быть моделей
+// how many models there can be
 #define MAX_MODELS 8192
 
 ModelProcessor::ModelProcessor(ParticleManager *pManager)
@@ -65,7 +65,7 @@ void ModelProcessor::AddParticle(ParticleSystem *pSystem, const Vector &velocity
 {
     auto *pData = AllocParticle();
 
-    //—работает если партиклов будет > MAX_BILLBOARDS, столько их быть не должно :))))
+    // works if the number of particles > MAX_BILLBOARDS, there shouldn't be that many :))))
     if (!pData)
     {
         *(pActiveCount) = (*(pActiveCount)-1);
@@ -154,7 +154,7 @@ void ModelProcessor::AddParticle(ParticleSystem *pSystem, const Vector &velocity
     Particles.push_back(pData);
 }
 
-//—читает физику, треки  и т.д.
+// Calculates physics, tracks, etc.
 void ModelProcessor::Process(float DeltaTime)
 {
     // DWORD t;
@@ -169,7 +169,7 @@ void ModelProcessor::Process(float DeltaTime)
 
         //		_mm_prefetch ((const char *)Particles[n+1], _MM_HINT_T0);
 
-        //—разу убиваем дохлые...
+        // kill the dead ones ...
         if (Time > LifeTime)
         {
             *(Particles[n]->ActiveCount) = (*(Particles[n]->ActiveCount) - 1);
@@ -245,7 +245,7 @@ void ModelProcessor::Process(float DeltaTime)
         Particles[n]->RenderAngle = Particles[n]->Angle;
     }
 
-    //–ождаем партиклы, которые прив€занны к нашему партиклу...
+    // waiting for the particles that are attached to our particle ...
 
     for (uint32_t n = 0; n < Particles.size(); n++)
     {
@@ -286,7 +286,7 @@ void ModelProcessor::DeleteWithGUID(uint32_t dwGUID, uint32_t GUIDRange)
     }
 }
 
-//–исует все плашки...
+// Draws all the particles ...
 void ModelProcessor::Draw()
 {
     for (uint32_t j = 0; j < Particles.size(); j++)

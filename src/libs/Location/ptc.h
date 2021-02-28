@@ -1,93 +1,93 @@
-//============================================================================================
-//	Spirenkov Maxim, 2001
-//--------------------------------------------------------------------------------------------
-//	Patch
-//--------------------------------------------------------------------------------------------
-//	ptc
-//--------------------------------------------------------------------------------------------
-//	Файл данных, необходимых для поиска пути и коллизии персонажей с землёй
-//============================================================================================
+// ============================================================================================
+// Spirenkov Maxim, 2001
+// --------------------------------------------------------------------------------------------
+// Patch
+// --------------------------------------------------------------------------------------------
+// ptc
+// --------------------------------------------------------------------------------------------
+// Data file required to find the path and collision of characters with the ground
+// ============================================================================================
 
 #ifndef _PTC_H_
 #define _PTC_H_
 
 #pragma pack(push, 1)
 
-//============================================================================================
-//
-//  Структура файла ptc:
-//
-//
-//  PtcHeader											Заголовок файла
-//	PtcTriangle[PtcHeader.numTriangles]
-//	PtcVertex[PtcHeader.numVerteces]
-//	PtcNormal[PtcHeader.numNormals]
-//	PtcMap[PtcHeader.mapL*PtcHeader.mapW]
-//	unsigned short[numIndeces]
-//	path lines
-//	PtcMaterials
-//
-//============================================================================================
+// ============================================================================================
+// 
+// Ptc file structure:
+// 
+// 
+// PtcHeader - File Header
+// PtcTriangle[PtcHeader.numTriangles]
+// PtcVertex[PtcHeader.numVerteces]
+// PtcNormal[PtcHeader.numNormals]
+// PtcMap[PtcHeader.mapL*PtcHeader.mapW]
+// unsigned short [numIndeces]
+// path lines
+// PtcMaterials
+// 
+// ============================================================================================
 
-#define PTC_ID ' CTP'          //Идентификатор файла
-#define PTC_VERSION '10.1'     //Версия файла
-#define PTC_PREVERSION1 '00.1' //Предыдущая версия файла
-#define PTC_SPACEFLD '    '    //Пробелы для удобного чтения
-#define PTC_WITHSEA ' AES'     //Патч для морской локации
-#define PTC_NOSEA ' HTE'       //Патч для локации без моря
+#define PTC_ID ' CTP'          // File ID
+#define PTC_VERSION '10.1'     // File version
+#define PTC_PREVERSION1 '00.1' // Previous version of the file
+#define PTC_SPACEFLD '    '    // Spaces for easy reading
+#define PTC_WITHSEA ' AES'     // Marine location patch
+#define PTC_NOSEA ' HTE'       // Patch for a location without the sea
 
-//Заголовок файла
+// File header
 struct PtcHeader
 {
-    long id;                //Идентификатор файла
-    long space0;            //Неиспользуеться '    '
-    long ver;               //Версия файла
-    long space1;            //Неиспользуеться '    '
-    long isSea;             //Пишет, патч для морской локации или нет
-    long space2;            //Неиспользуеться '    '
-    long numTriangles;      //Количество треугольников
-    long numVerteces;       //Количество индексированных вершин
-    long numNormals;        //Количество нормалей
-    long mapL, mapW;        //Размеры карты коллизии
-    long numIndeces;        //Размер таблицы индексов
-    long lineSize;          //Размер строки в таблице поиска пути
-    float minX, minY, minZ; //Минимальная граница ящика
-    float maxX, maxY, maxZ; //Максимальная граница ящика
+    long id;                // File ID
+    long space0;            // Unused
+    long ver;               // File version
+    long space1;            // Unused
+    long isSea;             // Writes whether the patch is for a marine location or not
+    long space2;            // Unused
+    long numTriangles;      // Number of triangles
+    long numVerteces;       // Number of indexed vertices
+    long numNormals;        // Number of normals
+    long mapL, mapW;        // Collision map dimensions
+    long numIndeces;        // Index table size
+    long lineSize;          // The size of the row in the path lookup table
+    float minX, minY, minZ; // Minimum box border
+    float maxX, maxY, maxZ; // Maximum box border
 };
 
 struct PtcTriangle
 {
-    unsigned short i[3]; //Индексы вершин
-    unsigned short n;    //Нормаль к треугольнику
-    short nb[3];         //Индексы соседей
-    char mtl;            //Индекс материала
+    unsigned short i[3]; // Vertex indices
+    unsigned short n;    // Normal to triangle
+    short nb[3];         // Neighbor indices
+    char mtl;            // Material index
     char flags;
 };
 
 struct PtcVertex
 {
-    float x; //Позиция по X
-    float y; //Позиция по Y
-    float z; //Позиция по Z
+    float x; // X Position
+    float y; // Y position
+    float z; // Z Position
 };
 
 struct PtcNormal
 {
-    float x; //Направление по X
-    float y; //Направление по Y
-    float z; //Направление по Z
+    float x; // X direction
+    float y; // Y direction
+    float z; // Z direction
 };
 
 struct PtcMap
 {
-    long start; //Начало таблицы полигонов, входящих в ячейку карты
-    long size;  //Размер таблицы полигонов, входящих в ячейку карты
+    long start; // The beginning of the table of polygons included in the map cell
+    long size;  // Size of the table of polygons included in the map cell
 };
 
 struct PtcMaterials
 {
-    long numMaterials;     //Количество материалов
-    char material[16][16]; //Таблица материалов
+    long numMaterials;     // Number of materials
+    char material[16][16]; // Material table
 };
 
 //============================================================================================

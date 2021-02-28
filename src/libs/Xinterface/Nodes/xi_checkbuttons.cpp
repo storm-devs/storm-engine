@@ -28,14 +28,14 @@ void CXI_CHECKBUTTONS::Draw(bool bSelected, uint32_t Delta_Time)
     float fX, fY;
     float fX1, fY1;
 
-    // Напечатать строки
+    // Print lines
     fX = static_cast<float>(m_rect.left);
     fY = static_cast<float>(m_rect.top);
     fX1 = fX;
     fY1 = fY; // ugeen fix 2020
     for (long n = 0; n < m_aButton.size(); n++)
     {
-        // определяем цвет строки
+        // define the line color
         auto dwColor = m_dwNormalFontColor;
         if (m_aButton[n]->bChoose)
             dwColor = m_dwSelectFontColor;
@@ -58,7 +58,7 @@ void CXI_CHECKBUTTONS::Draw(bool bSelected, uint32_t Delta_Time)
             m_aButton[n]->pImg->Draw();
         }
 
-        // выведем все строки
+        // display all lines
         for (long i = 0; i < m_aButton[n]->aStr.size(); i++)
         {
             m_rs->ExtPrint(m_nFontNum, dwColor, 0, PR_ALIGN_LEFT, true, m_fFontScale, m_screenSize.x, m_screenSize.y,
@@ -67,7 +67,7 @@ void CXI_CHECKBUTTONS::Draw(bool bSelected, uint32_t Delta_Time)
             fY += m_fTextLineHeight;
         }
 
-        // отступ между секциями (одной кнопки от другой)
+        // indent between sections (one button from another)
         fY += m_fTextSectionInterval;
     }
 }
@@ -85,10 +85,10 @@ void CXI_CHECKBUTTONS::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
     char param[2048];
     XYPOINT tmpLPnt;
 
-    // Выбор только одного элемента или нет
+    // Selecting only one item or not
     m_bExclusiveChoose = GetIniBool(ini1, name1, ini2, name2, "exclusiveChoose", true);
 
-    // Выбор активности текста на клик мыши
+    // Selecting text activity on mouse click
     m_bClickIntoTextActive = GetIniBool(ini1, name1, ini2, name2, "textClickable", false);
 
     // get font number
@@ -139,7 +139,7 @@ void CXI_CHECKBUTTONS::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
 
     m_bIndividualPos = GetIniBool(ini1, name1, ini2, name2, "individualpos", false);
 
-    // зачитаем по очереди все секции
+    // read out all the sections in turn
     char pcKeyName[128];
     for (long n = 0; n < 100; n++)
     {
@@ -183,8 +183,8 @@ void CXI_CHECKBUTTONS::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
         for (n = 0; n < m_aButton.size(); n++)
             if (m_aButton[n]->bChoose)
                 break;
-        if (n == m_aButton.size()) // ни ондного не установлено
-            SetButtonOn(0);        // по умолчанию первый вариант
+        if (n == m_aButton.size()) // none have been installed
+            SetButtonOn(0);        // first option by default
     }
     for (long n = 0; n < m_aButton.size(); n++)
         WriteToAttributeButtonState(n);
@@ -277,7 +277,7 @@ uint32_t CXI_CHECKBUTTONS::MessageProc(long msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
-    case 0: // добавить кнопку
+    case 0: // add button
     {
         char param[1024];
         message.String(sizeof(param), param);
@@ -288,7 +288,7 @@ uint32_t CXI_CHECKBUTTONS::MessageProc(long msgcode, MESSAGE &message)
     }
     break;
 
-    case 1: // установить новый текст на кнопку
+    case 1: // set new text to button
     {
         const auto nButtonNum = message.Long() - 1;
         char param[1024];
@@ -298,7 +298,7 @@ uint32_t CXI_CHECKBUTTONS::MessageProc(long msgcode, MESSAGE &message)
     }
     break;
 
-    case 2: // установить выбор на кнопку
+    case 2: // set selection to button
     {
         const auto nButtonNum = message.Long() - 1;
         const bool bChoose = (message.Long() != 0);
@@ -306,7 +306,7 @@ uint32_t CXI_CHECKBUTTONS::MessageProc(long msgcode, MESSAGE &message)
     }
     break;
 
-    case 3: // получить сосотояние кнопки
+    case 3: // get the state of the button
     {
         const long nButtonNum = message.Long() - 1;
         if (nButtonNum < 0 || nButtonNum >= m_aButton.size())
@@ -315,7 +315,7 @@ uint32_t CXI_CHECKBUTTONS::MessageProc(long msgcode, MESSAGE &message)
     }
     break;
 
-    case 4: // получить выбранную кнопку (для не эксклюзивного выбора выдает номер первой выбранной)
+    case 4: // get the selected button (for non-exclusive selection, it gives the number of the first selected)
     {
         for (long n = 0; n < m_aButton.size(); n++)
             if (m_aButton[n]->bChoose)
@@ -323,7 +323,7 @@ uint32_t CXI_CHECKBUTTONS::MessageProc(long msgcode, MESSAGE &message)
     }
     break;
 
-    case 5: // запретить/разрешить кнопку
+    case 5: // disable / enable button
     {
         const long nButtonNum = message.Long() - 1;
         const bool bDisable = (message.Long() != 0);
@@ -495,16 +495,16 @@ void CXI_CHECKBUTTONS::SetAllButtonsToOff()
 void CXI_CHECKBUTTONS::SetCheckToButton(long nButtonNum, bool bCheck)
 {
     if (nButtonNum < 0 || nButtonNum >= m_aButton.size())
-        return; // нет такой кнопки
+        return; // there is no such button
     if (m_aButton[nButtonNum]->bChoose == bCheck)
-        return; // уже установлено это состояние
+        return; // already set this state
 
     if (m_bExclusiveChoose)
     {
         if (bCheck)
             SetAllButtonsToOff();
         else
-            return; // не можем снять флаг со всех кнопок
+            return; // cannot remove the flag from all buttons
     }
 
     if (bCheck)
@@ -523,7 +523,7 @@ void CXI_CHECKBUTTONS::UpdateAllTextInfo()
 
 void CXI_CHECKBUTTONS::UpdateTextInfo(long nButtonNum)
 {
-    // получим полный текст
+    // get the full text
     std::string sAllText;
     for (long n = 0; n < m_aButton[nButtonNum]->aStr.size(); n++)
         sAllText += m_aButton[nButtonNum]->aStr[n].str;

@@ -12,9 +12,9 @@
 #include "Entity.h"
 #include "core.h"
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 TornadoParticles::TornadoParticles(Pillar &_pillar) : pillar(_pillar)
 {
@@ -55,7 +55,7 @@ void TornadoParticles::SetSea()
 
 void TornadoParticles::Update(float dltTime)
 {
-    //Получим точку уровня моря
+    // Get the sea level
     auto seaLevel = 0.0f;
     if (txtGroundPrts >= 0 || txtPillarPrts >= 0)
     {
@@ -66,11 +66,11 @@ void TornadoParticles::Update(float dltTime)
         }
     }
     // seaLevel -= 0.5f;
-    //Партиклы у земли
+    // Particles near the ground
     for (long i = 0; i < sizeof(groundPrt) / sizeof(GroundParticle); i++)
     {
         auto k = pillarPrt[i].k;
-        //Время жизни частицы
+        // Particle lifetime
         groundPrt[i].dt += dltTime * 0.3f;
         groundPrt[i].t += k * dltTime * groundPrt[i].dt;
         if (groundPrt[i].t > 1.0f)
@@ -80,22 +80,22 @@ void TornadoParticles::Update(float dltTime)
         }
         const auto t = groundPrt[i].t;
         if (t == 0)
-            continue; // eddy. вылет по assert нам не нужен
+            continue; // eddy. don't need an assert crash
         // Assert(t);
-        //Вражение вокруг оси столба
+        // Rotation around the axis of the pillar
         groundPrt[i].a += k * dltTime * (0.5f + 5.0f * t);
         if (groundPrt[i].a > TRND_PI * 2.0f)
             groundPrt[i].a -= TRND_PI * 2.0f;
-        //Позиция
+        // Position
         const auto r = groundPrt[i].r * ((1.0f - t) * (1.0f - t) * 0.7f + 0.3f);
         groundPrt[i].pos.y = seaLevel + 30.0f * powf(t, groundPrt[i].p);
         groundPrt[i].pos.x = pillar.GetX(groundPrt[i].pos.y) + r * sinf(groundPrt[i].a);
         groundPrt[i].pos.z = pillar.GetZ(groundPrt[i].pos.y) + r * cosf(groundPrt[i].a);
-        //Вращение вокруг себя
+        // Spinning around itself
         groundPrt[i].angle += k * dltTime * (0.1f + 5.0f * t * t);
         if (groundPrt[i].angle > TRND_PI * 2.0f)
             groundPrt[i].angle -= TRND_PI * 2.0f;
-        //Прозрачность
+        // Transparency
         groundPrt[i].alpha = 1.0f;
         if (t < 0.2f)
             groundPrt[i].alpha = t / 0.2f;
@@ -107,7 +107,7 @@ void TornadoParticles::Update(float dltTime)
         groundPrt[i].alpha *= k;
         // if(groundPrt[i].pos.y > 3.0f) groundPrt[i].alpha *= 1.0f - (groundPrt[i].pos.y - 3.0f)/(30.0f - 3.0f);
     }
-    //Партиклы столба
+    // Pillar Particles
     for (long i = 0; i < sizeof(pillarPrt) / sizeof(PillarParticle); i++)
     {
         auto kh = pillar.GetKHeight(pillarPrt[i].pos.y);

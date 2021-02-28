@@ -107,7 +107,7 @@ void BIShipIcon::Draw()
         if (m_Ship[n].pASailorQuantity)
         {
             m_pRS->ExtPrint(m_idSailorFont, m_dwSailorFontColor, 0, PR_ALIGN_CENTER, true, m_fSailorFontScale, 0, 0,
-                            // boal тень
+                            // shadow
                             static_cast<long>(m_Ship[n].pntPos.x) + m_SailorFontOffset.x,
                             static_cast<long>(m_Ship[n].pntPos.y) + m_SailorFontOffset.y, "%d",
                             static_cast<long>(atof(m_Ship[n].pASailorQuantity->GetThisAttr())));
@@ -115,7 +115,7 @@ void BIShipIcon::Draw()
         if (!m_Ship[n].sShipName.empty())
         {
             m_pRS->ExtPrint(m_idShipNameFont, m_dwShipNameFontColor, 0, PR_ALIGN_CENTER, true, m_fShipNameFontScale, 0,
-                            0, // boal тень шрифта
+                            0, // font shadow
                             static_cast<long>(m_Ship[n].pntPos.x) + m_ShipNameFontOffset.x,
                             static_cast<long>(m_Ship[n].pntPos.y) + m_ShipNameFontOffset.y, "%s",
                             m_Ship[n].sShipName.c_str());
@@ -417,7 +417,7 @@ void BIShipIcon::ExecuteCommand(CommandType command)
 
 void BIShipIcon::Release()
 {
-    SetActive(false); // отключить контрол
+    SetActive(false); // disable control
 
     STORM_DELETE(m_pCommandList);
     TEXTURE_RELEASE(m_pRS, m_nBackTextureID);
@@ -440,7 +440,7 @@ long BIShipIcon::CalculateShipQuantity()
     long n;
     SHIP_DESCRIBE_LIST::SHIP_DESCR *pSD;
 
-    // сброс всех кораблей
+    // resetting all ships
     m_nShipQuantity = 0;
     for (n = 0; n < MAX_SHIP_QUANTITY; n++)
     {
@@ -452,7 +452,7 @@ long BIShipIcon::CalculateShipQuantity()
         m_Ship[n].sShipName.clear();
     }
 
-    // взять корабль главного перса
+    // take the ship of the main character
     pSD = g_ShipList.GetMainCharacterShip();
     if (pSD)
     {
@@ -467,11 +467,11 @@ long BIShipIcon::CalculateShipQuantity()
         m_nShipQuantity++;
     }
 
-    // берем следующие "свои" корабли
+    // take the following "our" ships
     for (pSD = g_ShipList.GetShipRoot(); pSD; pSD = pSD->next)
     {
         if (m_Ship[0].nCharacterIndex == pSD->characterIndex)
-            continue; // главный перс уже занесен в список
+            continue; // the main character is already on the list
         if (pSD->isMyShip)
         {
             m_Ship[m_nShipQuantity].nCharacterIndex = pSD->characterIndex;

@@ -36,7 +36,7 @@ void CXI_UTILS::FrameUpdate()
 {
     if (m_bIsKeyPressed && m_bFrameKeyPressedFlag)
     {
-        // опроса на этом кадре не было - значит можно все клавиши сбросить (мы вышли из цикла опроса)
+        // there was no polling on this frame, which means all the keys can be reset (we left the polling cycle)
         for (long n = 0; n < UTILS_KEYS_QUANTITY; n++)
         {
             if (keys[n].nAsyncKeyCode < 0)
@@ -50,7 +50,7 @@ void CXI_UTILS::FrameUpdate()
 
 char CXI_UTILS::GetKeyInput()
 {
-    pThis->m_bFrameKeyPressedFlag = false; // не сбрасывать состояния клавиш пока на каждом кадре происходит опрос
+    pThis->m_bFrameKeyPressedFlag = false; // do not reset key states while polling occurs on each frame
     char cRetVal = 0;
 
     pThis->m_bIsKeyPressed = false;
@@ -105,7 +105,7 @@ char CXI_UTILS::GetKeyInput()
                 }
 
                 uint8_t pKBState[256];
-                uint16_t pcTmp[16]; // вообще то нужно только 2 символа (остальные на всякий случай)
+                uint16_t pcTmp[16]; // in general, need 2 characters (the rest just in case)
                 GetKeyboardState(pKBState);
                 if (ToAscii(n, MapVirtualKey(n, 0), pKBState, pcTmp, 0) == 1)
                 {
@@ -162,15 +162,15 @@ const char *CXI_UTILS::StringGetTokenID(char *&pcString, char *pcBuffer, long nB
             continue;
         }
         if (cCur < 0x20)
-            continue; // пропустим неиспользуемые символы
+            continue; // skip unused characters
         pcBuffer[n++] = cCur;
     }
-    // уберем последние пробелы
+    // remove the last spaces
     while (n > 0 && pcBuffer[n - 1] <= 0x20)
         n--;
     pcBuffer[n] = 0;
 
-    // избавимся от знака '='
+    // get rid of the '=' sign
     while (pcString[0] == '=')
         pcString++;
 
@@ -199,15 +199,15 @@ const char *CXI_UTILS::StringGetTokenString(char *&pcString, char *pcBuffer, lon
         if (cCur == ')' || cCur == '}' || cCur == ']')
             nQuote--;
         if (cCur < 0x20)
-            continue; // пропустим неиспользуемые символы
+            continue; // skip unused characters
         pcBuffer[n++] = cCur;
     }
-    // уберем последние пробелы
+    // remove the last spaces
     while (n > 0 && pcBuffer[n - 1] <= 0x20)
         n--;
     pcBuffer[n] = 0;
 
-    // избавимся от знака ','
+    // get rid of the ',' sign
     while (pcString[0] == ',')
         pcString++;
 
@@ -372,7 +372,7 @@ long CXI_UTILS::SplitStringByWidth(const char *pcText, long nFontID, float fFont
 
         param[nDst] = 0;
         auto nW = rs->StringWidth(param, nFontID, fFontScale);
-        if (nW < nWidth && nToken == StrTokenType_Space) // пробел но может не последний
+        if (nW < nWidth && nToken == StrTokenType_Space) // space but maybe not the last
         {
             nSrcPrev = nSrc;
             nDstPrev = nDst;
@@ -382,7 +382,7 @@ long CXI_UTILS::SplitStringByWidth(const char *pcText, long nFontID, float fFont
             continue;
         }
 
-        if (nW > nWidth && nDstPrev > 0) // либо последний пробел, либо просто конец строки
+        if (nW > nWidth && nDstPrev > 0) // either the last space or just the end of the line
         {
             nSrc = nSrcPrev;
             nDst = nDstPrev;
@@ -390,12 +390,12 @@ long CXI_UTILS::SplitStringByWidth(const char *pcText, long nFontID, float fFont
         }
 
         param[nDst] = 0;
-        while (pcSrcStr[nSrc] == 0x20) // убираем пробелы из строки
+        while (pcSrcStr[nSrc] == 0x20) // remove spaces from the string
             nSrc++;
-        if (GetCurrentTokenIntoString(&pcSrcStr[nSrc]) == StrTokenType_NextLine) // при переводе строки считаем его
+        if (GetCurrentTokenIntoString(&pcSrcStr[nSrc]) == StrTokenType_NextLine) // when a line breaks, count it
         {
             nSrc += 2;
-            while (nDst > 0 && param[nDst - 1] == 0x20) // результат строка не должна заканчиваться пробелом
+            while (nDst > 0 && param[nDst - 1] == 0x20) // result line must not end with a space
                 param[--nDst] = 0;
         }
 
@@ -502,7 +502,7 @@ void CXI_UTILS::PrintTextIntoWindow(VDX9RENDER *pRender, long nFont, uint32_t dw
         nL = x;
     nR = nL + nStrWidth;
 
-    // влезаем в окно -> выводим как обычно
+    // fit into the window -> display as usual
     if (nL >= left && nR <= right)
     {
         pRender->ExtPrint(nFont, dwColor, 0, wAlignment, bShadow, fScale, scrWidth, scrHeight, x, y, "%s", pcString);
@@ -513,14 +513,14 @@ void CXI_UTILS::PrintTextIntoWindow(VDX9RENDER *pRender, long nFont, uint32_t dw
     sprintf_s(tmpstr, sizeof(tmpstr), "%s", pcString);
     char *pc = tmpstr;
 
-    // режем левый край
+    // cut the left edge
     while (pc[0] && nL < left)
     {
         pc += utf8::u8_inc(pc);
         nL = nR - pRender->StringWidth(pc, nFont, fScale, 0);
     }
 
-    // режем правый край
+    // cut the right edge
     if (nR > right)
     {
         long n = strlen(pc);

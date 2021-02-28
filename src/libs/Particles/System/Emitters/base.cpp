@@ -6,7 +6,7 @@
 
 #define INTERPOLATION_STEPS 32.0f
 
-// Конструктор / деструктор
+// Constructor / destructor
 BaseEmitter::BaseEmitter(ParticleSystem *pSystem)
 {
     pEmitter = nullptr;
@@ -31,7 +31,7 @@ BaseEmitter::~BaseEmitter()
     Stoped = true;
 }
 
-//Родить новые партиклы
+// Emit new particles
 void BaseEmitter::BornParticles(float DeltaTime)
 {
     const auto SavedTime = ElapsedTime;
@@ -53,7 +53,7 @@ void BaseEmitter::BornParticles(float DeltaTime)
         const auto DeltaTimeDiv = DeltaTime / INTERPOLATION_STEPS;
         IncreaseTime(DeltaTimeDiv);
 
-        // Если запаузился эмиттер досрочный выход
+        // If the emitter gets stuck early exit
         if (Stoped)
         {
             ElapsedTime = SavedTime;
@@ -111,7 +111,7 @@ void BaseEmitter::BornParticles(float DeltaTime)
     ElapsedTime = SavedTime;
 }
 
-//Исполнить
+// Execute
 void BaseEmitter::Execute(float DeltaTime)
 {
     if (!Stoped && !IsAttachedFlag)
@@ -133,7 +133,7 @@ void BaseEmitter::Execute(float DeltaTime)
     */
 }
 
-//Присоединиться к источнику данных
+// Attach to data source
 void BaseEmitter::AttachToDataSource(DataSource::EmitterDesc *pEmitter)
 {
     this->pEmitter = pEmitter;
@@ -232,7 +232,7 @@ void BaseEmitter::GetEmissionDirection(Matrix &matWorld) const
 
 void BaseEmitter::Restart()
 {
-    //Удаляем свои партиклы...
+    // Removing particles ...
     GetManager()->GetBBProcessor()->DeleteWithGUID(Unique_GUID);
     GetManager()->GetMDLProcessor()->DeleteWithGUID(Unique_GUID);
     Stoped = false;

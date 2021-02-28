@@ -12,9 +12,9 @@
 #include "Entity.h"
 #include "core.h"
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 Tornado::Tornado() : particles(pillar), noiseCloud(pillar), debris(pillar)
 {
@@ -49,7 +49,7 @@ Tornado::~Tornado()
 
 //============================================================================================
 
-//Инициализация
+// Initialization
 bool Tornado::Init()
 {
     // core.LayerCreate("execute", true, false);
@@ -64,7 +64,7 @@ bool Tornado::Init()
     if (!rs)
         throw std::exception("No service: dx9render");
 
-    //Создаём буфера для столба
+    // Create buffers for the pillar
     ib = rs->CreateIndexBuffer(pillar.GetNumTriangles() * 3 * sizeof(uint16_t));
     if (ib < 0)
         return false;
@@ -83,7 +83,7 @@ bool Tornado::Init()
     particles.SetSea();
     particles.Update(0.0f);
     debris.Init();
-    //Создаём звук
+    // Create sound
     soundService = static_cast<VSoundService *>(core.CreateService("SoundService"));
     if (soundService)
     {
@@ -93,7 +93,7 @@ bool Tornado::Init()
     return true;
 }
 
-//Исполнение
+// Execution
 void Tornado::Execute(uint32_t delta_time)
 {
     const auto dltTime = delta_time * 0.001f * 1.0f;
@@ -127,13 +127,13 @@ void Tornado::Execute(uint32_t delta_time)
 void Tornado::Realize(uint32_t delta_time)
 {
     liveTime = 1000.0f;
-    //Обломки
+    // Wreckage
     debris.Draw(rs);
-    //Единичная мировая матрица
+    // World identity matrix
     rs->SetTransform(D3DTS_WORLD, CMatrix());
-    //Облака
+    // The clouds
     noiseCloud.Draw(rs);
-    //Столб
+    // Pillar
     auto *vrt = static_cast<Pillar::Vertex *>(rs->LockVertexBuffer(vb));
     if (!vrt)
         return;
@@ -143,7 +143,7 @@ void Tornado::Realize(uint32_t delta_time)
     rs->SetFVF(D3DFVF_XYZ | D3DFVF_DIFFUSE);
     rs->DrawIndexedPrimitiveNoVShader(D3DPT_TRIANGLELIST, vb, sizeof(Pillar::Vertex), ib, 0, pillar.GetNumVerteces(), 0,
                                       pillar.GetNumTriangles(), "TornadoPillar");
-    //Системы частиц
+    // Particle systems
     particles.Draw(rs);
 }
 

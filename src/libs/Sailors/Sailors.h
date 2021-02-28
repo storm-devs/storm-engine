@@ -63,22 +63,22 @@ class ShipMan
     entid_t modelID;
     MODEL *model;
 
-    CVECTOR pos, ang; //Текущее положение
+    CVECTOR pos, ang; // current position
     CVECTOR ptTo, angTo, dir;
 
-    CVECTOR spos; //Обход друг друга
-    //	float sang;   //Обход друг друга
+    CVECTOR spos; // Bypassing each other
+    // float sang; // Bypass each other
 
     float dieTime;
     bool inWater;
     float jumpSpeedX, jumpSpeedY;
 
-    Path path; //Текущий путь
+    Path path; // Current path
 
-    ManMode mode, lastMode; //Режим
+    ManMode mode, lastMode; // Mode
     int newWayPoint, lastWayPoint, targetWayPoint, lastTargetPoint;
 
-    ManMoveTo moveTo; //Тип текущей точки
+    ManMoveTo moveTo; // Current point type
 
     float manSpeed;
     float rotSpeed;
@@ -114,16 +114,16 @@ class ShipWalk
 
     SHIP_BASE *ship;
     MODEL *shipModel;
-    int crewCount; //Количество человек
+    int crewCount; // Number of people
 
     bool bHide;
 
     entid_t shipID;
 
-    SailorsPoints sailorsPoints; //Точки
+    SailorsPoints sailorsPoints; // Points
 
     void ReloadCannons(int bort);
-    ShipState shipState; //Состояние корабля
+    ShipState shipState; // Ship state
 
     std::vector<ShipMan> shipMan;
     void CreateNewMan(SailorsPoints &sailorsPoints);

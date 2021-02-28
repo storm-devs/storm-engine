@@ -34,9 +34,9 @@ OctTree::OTNode::~OTNode()
             delete node[i];
 }
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 OctTree::OctTree()
 {
@@ -52,7 +52,7 @@ OctTree::~OctTree()
     delete root;
 }
 
-//Инициализировать дерево
+// Initialize tree
 void OctTree::Init(LGeometry *g)
 {
     vrt = g->vrt.data();
@@ -101,11 +101,11 @@ bool OctTree::AddVertex(OTNode *node, Vertex *v)
     {
         if (node->num < LLOT_MAX)
         {
-            //Добавляем в текущий нод
+            // Add to the current node
             node->vrt[node->num++] = v;
             return true;
         }
-        //Переполнение, надо распределять по детям
+        // Overflow, must be distributed among children
         const auto cnt = (node->min + node->max) * 0.5f;
         node->node[0] = new OTNode(CVECTOR(min.x, min.y, min.z), CVECTOR(cnt.x, cnt.y, cnt.z));
         node->node[1] = new OTNode(CVECTOR(min.x, min.y, cnt.z), CVECTOR(cnt.x, cnt.y, max.z));
@@ -129,7 +129,7 @@ bool OctTree::AddVertex(OTNode *node, Vertex *v)
         node->vrt = nullptr;
         node->num = 0;
     }
-    //Добавляем детям
+    // Adding children
     long c;
     for (c = 0; c < 8; c++)
     {
@@ -140,7 +140,7 @@ bool OctTree::AddVertex(OTNode *node, Vertex *v)
     return true;
 }
 
-//Оптимизация дерева
+// Optimizing the tree
 void OctTree::Optimize(OTNode *node)
 {
     if (!node->vrt)
@@ -163,7 +163,7 @@ void OctTree::Optimize(OTNode *node)
     }
 }
 
-//Найти вершины в заданном радиусе
+// Find vertices in a given radius
 void OctTree::FindVerts(const CVECTOR &pos, float r)
 {
     numVerts = 0;
@@ -176,12 +176,12 @@ void OctTree::FindVerts(const CVECTOR &pos, float r)
         FindVerts(root);
 }
 
-//Поиск
+// Search
 void OctTree::FindVerts(OTNode *node)
 {
     auto &min = node->min;
     auto &max = node->max;
-    //Предворительная проверка
+    // Preliminary check
     if (vertsPosMin.x > max.x)
         return;
     if (vertsPosMax.x < min.x)
@@ -194,9 +194,9 @@ void OctTree::FindVerts(OTNode *node)
         return;
     if (vertsPosMax.z < min.z)
         return;
-    //Уточнёная проверка
+    // Refined check
 
-    //Если нет своего масива отправим к детям
+    // If do not have our own array, send it to the children
     if (node->vrt == nullptr)
     {
         for (long i = 0; i < 8; i++)

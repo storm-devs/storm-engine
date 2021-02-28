@@ -21,7 +21,7 @@ class GeomCache;
 class ParticleSystem;
 class DataSource;
 
-//Менеджер партикловых систем
+// Particle Systems Manager
 class ParticleManager : public IParticleManager
 {
     struct CacheReloadedInfo
@@ -41,10 +41,10 @@ class ParticleManager : public IParticleManager
 
     std::vector<SystemDesc> Systems;
 
-    //Процессор для партиклов моделей
+    // Particle Model Processor
     ModelProcessor *MDL_Processor;
 
-    //Процессор для партиклов плашек
+    // Billboard Particle Processor
     BillBoardProcessor *BB_Processor;
 
     long pProjectTexture;
@@ -55,7 +55,7 @@ class ParticleManager : public IParticleManager
     std::string ShortProjectName;
     std::string TextureName;
 
-    //Сервис который родил систему
+    // The service that created the system
     ParticleService *pService;
 
     VDX9RENDER *pRS;
@@ -83,39 +83,39 @@ class ParticleManager : public IParticleManager
     bool FindInEnumUsedGeom(const char *GeomName);
 
   public:
-    //Создание/удаление
+    // Create / delete
     ParticleManager(ParticleService *service);
     bool Release() override;
 
-    //Получить указатель на Render/FileService
+    // Get a pointer to Render / FileService
     VDX9RENDER *Render() override;
 
-    //Открыть проект
+    // Open project
     bool OpenProject(const char *FileName) override;
-    //Закрыть проект
+    // Close project
     void CloseProject() override;
 
-    //Удалить из списка ресурсов (системная)
+    // Remove from resource list (system)
     void RemoveResource(IParticleSystem *pResource) override;
 
-    //Исполнить партиклы
+    // Execute Particles
     void Execute(float DeltaTime) override;
 
-    //Узнать доступна система или нет
+    // Find out whether the system is available or not
     bool IsSystemAvailable(const char *FileName) override;
 
-    //Получить глобальную текстуру проекта
+    // Get the global texture of the project
     long GetProjectTexture() override;
-    //Установить текстуру проекта
+    // Set project texture
     void SetProjectTexture(const char *FileName = nullptr) override;
 
-    //Получить имя проекта
+    // Get project name
     const char *GetProjectFileName() override;
 
-    //Создать партикловую систему из файла (файл должен быть в проекте!!!!!)
+    // Create a particle system from a file (the file must be in the project)
     IParticleSystem *CreateParticleSystemEx(const char *FileName, const char *File, int Line) override;
 
-    //Создать пустую партикловую систему, для редактора...
+    // Create an empty particle system, for the editor
     IParticleSystem *CreateEmptyParticleSystemEx(const char *FileName, int Line) override;
 
     BillBoardProcessor *GetBBProcessor() const;

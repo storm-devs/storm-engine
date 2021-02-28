@@ -1,7 +1,7 @@
 #include "DataUV.h"
 #include "vmodule_api.h"
 
-//конструктор/деструктор
+// constructor / destructor
 DataUV::DataUV()
 {
 }
@@ -10,7 +10,7 @@ DataUV::~DataUV()
 {
 }
 
-//Получить значение   [ x,y = UV1; z,w = UV2 ]
+// Get the value [x, y = UV1; z, w = UV2]
 const Vector4 &DataUV::GetValue(uint32_t FrameNum)
 {
     const uint32_t TotalFrames = Frames.size();
@@ -18,7 +18,7 @@ const Vector4 &DataUV::GetValue(uint32_t FrameNum)
     return Frames[FrameNum];
 }
 
-//Установить значения
+// Set values
 void DataUV::SetValues(const Vector4 *_Frames, uint32_t FramesCount)
 {
     Frames.clear();
@@ -29,7 +29,7 @@ void DataUV::SetValues(const Vector4 *_Frames, uint32_t FramesCount)
     }
 }
 
-//Получить кол-во кадров
+// Get the number of frames
 uint32_t DataUV::GetFrameCount() const
 {
     return Frames.size();

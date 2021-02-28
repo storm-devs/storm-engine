@@ -12,9 +12,9 @@
 
 #define LIGHTS_DEBUG
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 Lights::Lights()
 {
@@ -46,7 +46,7 @@ Lights::~Lights()
             rs->LightEnable(i, false);
 }
 
-//Инициализация
+// Initialization
 bool Lights::Init()
 {
     // DX9 render
@@ -54,7 +54,7 @@ bool Lights::Init()
     if (!rs)
         throw std::exception("No service: dx9render");
     collide = static_cast<COLLIDE *>(core.CreateService("COLL"));
-    //Зачитаем параметры
+    // read the parameters
     auto *ini = fio->OpenIniFile("RESOURCE\\Ini\\lights.ini");
     if (!ini)
     {
@@ -77,19 +77,19 @@ bool Lights::Init()
         }
         if (i == numTypes)
         {
-            //Добавляем новый источник
+            // Add a new source
             if (numTypes >= maxTypes)
             {
                 maxTypes += 16;
                 types.resize(maxTypes);
             }
-            //Обнулим
+            // Zero down
             memset(&types[numTypes], 0, sizeof(types[numTypes]));
-            //Сохраняем имя
+            // Save the name
             const auto len = strlen(lName) + 1;
             types[numTypes].name = new char[len];
             memcpy(types[numTypes].name, lName, len);
-            //Зачитываем параметры
+            // Reading parameters
             types[numTypes].color.b = ini->GetFloat(lName, "b", 1.0f);
             types[numTypes].color.g = ini->GetFloat(lName, "g", 1.0f);
             types[numTypes].color.r = ini->GetFloat(lName, "r", 1.0f);
@@ -146,7 +146,7 @@ bool Lights::Init()
         core.Trace("Location lights not inited -> 0 light types");
         return false;
     }
-    //Начнём исполняться
+    // start executing
     EntityManager::SetLayerType(EXECUTE, EntityManager::Layer::Type::execute);
     EntityManager::AddToLayer(EXECUTE, GetId(), 10);
     EntityManager::SetLayerType(REALIZE, EntityManager::Layer::Type::realize);
@@ -154,7 +154,7 @@ bool Lights::Init()
     return true;
 }
 
-//Исполнение
+// Execution
 void Lights::Execute(uint32_t delta_time)
 {
 #ifdef LIGHTS_DEBUG
@@ -166,20 +166,20 @@ void Lights::Execute(uint32_t delta_time)
 #endif
     for (long i = 0; i < numLights; i++)
     {
-        //Смотрим что есть
+        // See what is there
         auto &l = types[lights[i].type];
         if (l.flicker == 0.0f && l.flickerSlow == 0.0f)
             continue;
-        //Обновляем состояние
+        // Updating the state
         auto &ls = lights[i];
-        //Частые мерцания
+        // Frequent flickering
         ls.time += delta_time * 0.001f;
         if (ls.time > l.p)
         {
             ls.time -= l.p;
             ls.itens = (1.0f - rand() * 2.0f / RAND_MAX) * l.flicker;
         }
-        //Плавные мерцания
+        // Smooth flickering
         ls.timeSlow += delta_time * 0.001f;
         auto k = ls.timeSlow * l.freqSlow;
         if (k < 0.0f)
@@ -202,10 +202,10 @@ void Lights::Execute(uint32_t delta_time)
     }
 }
 
-//Рисование корон
+// Drawing crowns
 void Lights::Realize(uint32_t delta_time)
 {
-    //Позиция камеры
+    // Camera position
     CVECTOR pos, ang;
     rs->GetCamera(pos, ang, ang.x);
     CMatrix camMtx;
@@ -215,16 +215,16 @@ void Lights::Realize(uint32_t delta_time)
     const auto camPDist = -(pos.x * camMtx.Vx().z + pos.y * camMtx.Vy().z + pos.z * camMtx.Vz().z);
     for (long i = 0, n = 0; i < numLights; i++)
     {
-        //Источник
+        // Source
         auto &ls = lights[i];
         auto &l = types[ls.type];
         if (l.corona < 0)
             continue;
-        //Попадание в передний план
+        // in the foreground
         auto dist = ls.pos.x * camMtx.Vx().z + ls.pos.y * camMtx.Vy().z + ls.pos.z * camMtx.Vz().z + camPDist;
         if (dist < -2.0f * l.coronaSize)
             continue;
-        //Дистанция
+        // Distance
         const auto dx = ls.pos.x - pos.x;
         const auto dy = ls.pos.y - pos.y;
         const auto dz = ls.pos.z - pos.z;
@@ -232,7 +232,7 @@ void Lights::Realize(uint32_t delta_time)
         auto isVisible = d < l.coronaRange2;
         if (!isVisible)
             continue;
-        //Видимость
+        // Visibility
         if (collide)
         {
             const auto dist = collide->Trace(EntityManager::GetEntityIdIterators(SUN_TRACE), pos,
@@ -247,7 +247,7 @@ void Lights::Realize(uint32_t delta_time)
         }
         if (ls.corona > 1.0f)
             ls.corona = 1.0f;
-        //Дистанция
+        // Distance
         dist = sqrtf(d);
         d = dist * l.invCoronaRange;
         if (d > 1.0f)
@@ -261,27 +261,27 @@ void Lights::Realize(uint32_t delta_time)
             alpha *= alpha;
         }
         alpha *= ls.corona * 255.0f;
-        //Коэфициент отклонения
+        // Deviation coefficient
         d = ls.i * 0.4f;
         if (d < -0.1f)
             d = -0.1f;
         if (d > 0.1f)
             d = 0.1f;
         d += 1.0f;
-        //Текущий размер
+        // Current size
         const auto size = d * l.coronaSize;
-        //Прозрачность
+        // Transparency
         alpha *= d;
         if (alpha < 0.0f)
             alpha = 0.0f;
         if (alpha > 255.0f)
             alpha = 255.0f;
-        //Позиция
+        // Position
         auto pos = camMtx * CVECTOR(ls.pos.x, ls.pos.y, ls.pos.z);
-        //Цвет
+        // Colour
         auto c = static_cast<uint32_t>(alpha);
         c |= (c << 24) | (c << 16) | (c << 8);
-        //Угол поворота
+        // Angle of rotation
         float cs, sn;
         if (dist > 0.0f)
         {
@@ -307,7 +307,7 @@ void Lights::Realize(uint32_t delta_time)
             cs = 1.0f;
             sn = 0.0f;
         }
-        //Заполняем
+        // fill in
         buf[n * 6 + 0].pos = pos + CVECTOR(size * (-cs + sn), size * (sn + cs), 0.0f);
         buf[n * 6 + 0].color = c;
         buf[n * 6 + 0].u = 0.0f;
@@ -341,7 +341,7 @@ void Lights::Realize(uint32_t delta_time)
     rs->SetTransform(D3DTS_VIEW, camMtx);
 }
 
-//Найти индекс источника
+// Find source index
 long Lights::FindLight(const char *name)
 {
     if (!name || !name[0])
@@ -352,7 +352,7 @@ long Lights::FindLight(const char *name)
     return -1;
 }
 
-//Добавить источник в локацию
+// Add source to location
 void Lights::AddLight(long index, const CVECTOR &pos)
 {
     if (index == -1)
@@ -374,7 +374,7 @@ void Lights::AddLight(long index, const CVECTOR &pos)
     lights[numLights].timeSlow = 0.0f;
     lights[numLights].type = index;
 
-    //Отправим сообщение лайтеру
+    // Send a message to the lighter
     if (const auto eid = EntityManager::GetEntityId("Lighter"))
     {
         core.Send_Message(eid, "sffffffffffs", "AddLight", pos.x, pos.y, pos.z, types[index].color.r,
@@ -386,7 +386,7 @@ void Lights::AddLight(long index, const CVECTOR &pos)
     numLights++;
 }
 
-//Добавить модельку фонарей
+// Add lantern model
 bool Lights::AddLampModel(const entid_t lampModel)
 {
     if (numLampModels >= sizeof(lampModels) / sizeof(entid_t))
@@ -401,7 +401,7 @@ void Lights::DelAllLights()
     numLights = 0;
 }
 
-//Добавить переносной источник
+// Add portable source
 long Lights::AddMovingLight(const char *type, const CVECTOR &pos)
 {
     long idx;
@@ -432,7 +432,7 @@ long Lights::AddMovingLight(const char *type, const CVECTOR &pos)
     return idx;
 }
 
-//Поставить переносной источник в новую позицию
+// Put portable source in new position
 void Lights::UpdateMovingLight(long id, const CVECTOR &pos)
 {
     for (long n = 0; n < aMovingLight.size(); n++)
@@ -445,7 +445,7 @@ void Lights::UpdateMovingLight(long id, const CVECTOR &pos)
         }
 }
 
-//Удалить переносной источник
+// Remove portable source
 void Lights::DelMovingLight(long id)
 {
     for (long n = 0; n < aMovingLight.size(); n++)
@@ -459,10 +459,10 @@ void Lights::DelMovingLight(long id)
         }
 }
 
-//Установить для персонажа источники освещения
+// Set light sources for the character
 void Lights::SetCharacterLights(const CVECTOR *const pos)
 {
-    //Заполняем исходный массив
+    // Filling the source array
     long i;
     long n;
     if (pos)
@@ -478,13 +478,13 @@ void Lights::SetCharacterLights(const CVECTOR *const pos)
             aLightsSort.insert(aLightsSort.begin(), aMovingLight[i].light);
         }
 
-        //Сортируем по дистанции
+        // Sort by distance
         aLightsDstSort.clear();
         for (n = 0; n < aLightsSort.size(); n++)
         {
             i = aLightsSort[n];
 
-            //Смотрим дистанцию
+            // Checking the distance
             const auto dx = (pos->x - lights[i].pos.x);
             const auto dy = (pos->y - lights[i].pos.y);
             const auto dz = (pos->z - lights[i].pos.z);
@@ -516,7 +516,7 @@ void Lights::SetCharacterLights(const CVECTOR *const pos)
     {
         i = aLightsDstSort[n].idx;
 
-        //Устанавливаем источник
+        // Setting the source
         LightType &l = types[lights[i].type];
         l.dxLight.Diffuse = lights[i].color;
         l.dxLight.Position = lights[i].pos;
@@ -526,7 +526,7 @@ void Lights::SetCharacterLights(const CVECTOR *const pos)
         lt[n + 1].set = true;
     }
 
-    //Выключаем остальное
+    // Turn off the rest
     while (++n < 8)
     {
         lt[n].light = -1;
@@ -534,7 +534,7 @@ void Lights::SetCharacterLights(const CVECTOR *const pos)
     }
 }
 
-//Запретить установленные для персонажа источники освещения
+// Disable light sources set for the character
 void Lights::DelCharacterLights()
 {
     for (long i = 1; i < 8; i++)
@@ -546,15 +546,15 @@ void Lights::DelCharacterLights()
     }
 }
 
-//Обновить типы источников
+// Update source types
 void Lights::UpdateLightTypes(long i)
 {
     INIFILE *ini = fio->OpenIniFile("RESOURCE\\Ini\\lights.ini");
     if (!ini)
         return;
-    //Имя источника
+    // Source name
     char *lName = types[i].name;
-    //Зачитываем параметры
+    // Reading parameters
     types[i].color.b = ini->GetFloat(lName, "b", 1.0f);
     types[i].color.g = ini->GetFloat(lName, "g", 1.0f);
     types[i].color.r = ini->GetFloat(lName, "r", 1.0f);

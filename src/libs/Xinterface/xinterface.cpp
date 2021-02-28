@@ -183,7 +183,7 @@ void XINTERFACE::SetDevice()
     g_idInterface = GetId();
     m_UtilContainer.Init();
 
-    // получить сервис рендера
+    // get render service
     pRenderService = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!pRenderService)
     {
@@ -355,7 +355,7 @@ void XINTERFACE::Realize(uint32_t Delta_Time)
     MouseMove();
     if (pOldNode != m_pCurNode)
     {
-        core.Event(ISOUND_EVENT, "l", 2); // выбор нового нода
+        core.Event(ISOUND_EVENT, "l", 2); // choosing a new node
     }
 
     // show dinamic pictures
@@ -1119,7 +1119,7 @@ void XINTERFACE::LoadIni()
 
     sprintf_s(section, "COMMON");
     /*
-        // установить параметры экрана
+        // set screen parameters
         if (ini->GetLong(platform, "bDynamicScaling", 0) != 0)
         {
             POINT screen_size = pRenderService->GetScreenSize();
@@ -1363,7 +1363,7 @@ void XINTERFACE::CreateNode(const char *sFileName, const char *sNodeType, const 
 {
     INIFILE *ini, *ownerIni;
 
-    // уже есть такой нод
+    // there is already such a node
     if (m_pNodes && m_pNodes->FindNode(sNodeName))
         return;
 
@@ -1601,7 +1601,7 @@ void XINTERFACE::DeleteNode(const char *pcNodeName)
 {
     if (!pcNodeName)
         return;
-    // ищем нод по имени
+    // looking for a node by name
     CINODE *pPrevNod = nullptr;
     CINODE *pNod;
     for (pNod = m_pNodes; pNod; pNod = pNod->m_next)
@@ -1610,24 +1610,24 @@ void XINTERFACE::DeleteNode(const char *pcNodeName)
             break;
         pPrevNod = pNod;
     }
-    // нашли?
+    // found?
     if (pNod)
     {
-        // проверка указателей на ссылку к удаляемому ноду
+        // checking pointers to a reference to a deleted node
         if (m_pCurNode == pNod)
             m_pCurNode = nullptr;
         if (m_pContHelp == pNod)
             m_pContHelp = nullptr;
         if (m_pGlowCursorNode == pNod)
             m_pGlowCursorNode = nullptr;
-        // "вырезаем" найденный нод из списка
+        // remove the found node from the list
         if (pPrevNod)
             pPrevNod->m_next = pNod->m_next;
         else
             m_pNodes = pNod->m_next;
         if (m_pEditor)
             m_pEditor->DelNode(pNod);
-        // удаляем нод
+        // delete the node
         delete pNod;
     }
 }
@@ -3096,13 +3096,13 @@ long XINTERFACE::PrintIntoWindow(long wl, long wr, long idFont, uint32_t dwFCol,
     {
         if (nSplit == 0)
         {
-            // Строку не разбивать, а уменьшить масштаб шрифта
+            // Do not split the line, but reduce the font scale
             scale *= static_cast<float>(nWidthForScaleCorrecting) / strWidth;
             strWidth = pRenderService->StringWidth(str, idFont, scale);
         }
         else
         {
-            // Строку разбить с выдвижением на заданное число
+            // Split the line with advancement by a given number
             int maxWidth = 0;
             const int nPrev = -1;
             char strLocTmp[1024];
@@ -3138,14 +3138,14 @@ long XINTERFACE::PrintIntoWindow(long wl, long wr, long idFont, uint32_t dwFCol,
     }
 
     char *newStr = str;
-    // режем слева
+    // cut on the left
     while (strLeft < wl && newStr != nullptr && newStr[0] != 0)
     {
         newStr += utf8::u8_inc(newStr);
         strWidth = pRenderService->StringWidth(newStr, idFont, scale);
         strLeft = strRight - strWidth;
     }
-    // режем справа
+    // cut on the right
     if (newStr != nullptr)
     {
         strRight = strLeft + strWidth;
@@ -3493,7 +3493,7 @@ void XINTERFACE::PrecreateDirForFile(const char *pcFullFileName)
         fio->_CreateDirectory(path, nullptr);
 }
 
-// Контейнер контролек
+// controls Container
 CONTROLS_CONTAINER::CONTROLS_CONTAINER()
 {
     pContainers = nullptr;

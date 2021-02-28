@@ -34,12 +34,12 @@ void CXI_CONTEXTHELP::Draw(bool bSelected, uint32_t Delta_Time)
 {
     if (m_bUse)
     {
-        // вывод прямоугольника контекстной помощи
+        // outputting the context help rectangle
         m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_NOTEX_FVF, 2, m_pVert, sizeof(XI_NOTEX_VERTEX), "iRectangle");
         if (m_bBorder)
             m_rs->DrawLines(m_pLines, 4, "iRectangle");
 
-        // вывод строки помощи
+        // help line output
         m_rs->ExtPrint(m_idFont, m_dwFontColor, m_dwColor, PR_ALIGN_CENTER, true, m_fCurScale, m_screenSize.x,
                        m_screenSize.y, (m_rect.left + m_rect.right) / 2, m_rect.top + m_offset, "%s",
                        GetCurrentHelpString(Delta_Time));
@@ -246,7 +246,7 @@ void CXI_CONTEXTHELP::SetTempHelp(const char *pStr)
     if (pStr == nullptr)
         return;
 
-    // удалим старую временную строку
+    // remove the old temporary line
 
     delete m_sTempString;
     m_sTempString = nullptr;
@@ -254,14 +254,14 @@ void CXI_CONTEXTHELP::SetTempHelp(const char *pStr)
     long nCurStrWidth = 0;
     if (pStr[0] == '#')
     {
-        // получим непосредственно строку помощи
+        // get the help line directly
         const auto len = strlen(pStr);
         if ((m_sTempString = new char[len]) == nullptr)
             throw std::exception("allocate memory error");
         memcpy(m_sTempString, &pStr[1], len);
         nCurStrWidth = m_rs->StringWidth(m_sTempString, m_idFont, m_fMaxScale, m_screenSize.x);
     }
-    else // или же имя строки в списке локализации
+    else // or the name of the string in the localization list
     {
         m_idTempString = pStringService->GetStringNum(pStr);
         if (m_idTempString != -1)
@@ -274,7 +274,7 @@ void CXI_CONTEXTHELP::SetTempHelp(const char *pStr)
     else
         m_fCurScale = m_fMaxScale;
 
-    m_nCurDelayCounter = m_nMaxDelayCounter; // установим счетчик задержки
+    m_nCurDelayCounter = m_nMaxDelayCounter; // set the delay counter
 }
 
 char *CXI_CONTEXTHELP::GetCurrentHelpString(uint32_t deltaTime)
@@ -302,7 +302,7 @@ uint32_t CXI_CONTEXTHELP::MessageProc(long msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
-    case 0: // удалим старую временную строку
+    case 0: // remove the old temporary line
     {
         delete m_sTempString;
         m_sTempString = nullptr;
@@ -310,7 +310,7 @@ uint32_t CXI_CONTEXTHELP::MessageProc(long msgcode, MESSAGE &message)
     }
     break;
 
-    case 1: // получить временную строку
+    case 1: // get temporary string
     {
         auto *pvdat = message.ScriptVariablePointer();
         if (pvdat == nullptr)

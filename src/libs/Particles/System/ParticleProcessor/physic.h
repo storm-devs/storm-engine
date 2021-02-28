@@ -1,14 +1,14 @@
 #ifndef SIMPLE_PHYSIC_MATH
 #define SIMPLE_PHYSIC_MATH
 
-///
-/// ================================================================
-/// Poisition - Позиция в которой находиться партикл
-/// Velocity - Текущая скорость
-/// Forces - силы действующие на партикл
-/// UMass - fabsf(Массы)
-/// Drag - сопротивление среды (0 нет сопротивления .. 1 полная остановка)
-/// TimeScale - скалирование времени...
+// 
+// ================================================================
+// Poisition - The position in which the particle is located
+// Velocity - Current speed
+// Forces - forces acting on a particle
+// UMass - fabsf (masses)
+// Drag - medium resistance (0 no resistance .. 1 full stop)
+// TimeScale - time scaling ...
 inline void SolvePhysic(Vector &Position, Vector &Velocity, const Vector &Forces, float UMass, float Drag,
                         float TimeScale)
 {
@@ -26,7 +26,7 @@ inline void SolvePhysic(Vector &Position, Vector &Velocity, const Vector &Forces
     Position += ((Velocity * Drag) * TimeScale);
 }
 
-/// Добавить к текущим силам силу гравитации...
+// Add the force of gravity to the current forces ...
 inline void AddGravityForce(Vector &Forces, float Mass, float GravK)
 {
     GravK *= 0.01f;

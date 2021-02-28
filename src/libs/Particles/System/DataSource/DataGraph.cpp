@@ -7,13 +7,13 @@
 
 extern uint32_t GraphRead;
 
-//Линейная интерполяция
+// Linear interpolation
 float Lerp(float val1, float val2, float lerp_k)
 {
     return (val1 + (val2 - val1) * lerp_k);
 }
 
-//Взять случайное число из диапазона
+// Take a random number from a range
 float RandomRange(float Min, float Max)
 {
     float Temp;
@@ -28,7 +28,7 @@ float RandomRange(float Min, float Max)
     return Rand + Min;
 }
 
-//конструктор/деструктор
+// constructor / destructor
 DataGraph::DataGraph()
 {
     bRelative = false;
@@ -41,7 +41,7 @@ DataGraph::~DataGraph()
 {
 }
 
-//Установить значения...
+// Set values
 void DataGraph::SetValues(const GraphVertex *MinValues, uint32_t MinValuesSize, const GraphVertex *MaxValues,
                           uint32_t MaxValuesSize)
 {
@@ -62,7 +62,7 @@ void DataGraph::SetValues(const GraphVertex *MinValues, uint32_t MinValuesSize, 
     ResetCachedTime();
 }
 
-//Устанавливает "значение по умолчанию"
+// Set the "default"
 void DataGraph::SetDefaultValue(float MaxValue, float MinValue)
 {
     //~!~
@@ -86,25 +86,25 @@ void DataGraph::SetDefaultValue(float MaxValue, float MinValue)
     ResetCachedTime();
 }
 
-//Получить кол-во в графике минимума
+// Get the count in the minimum graph
 uint32_t DataGraph::GetMinCount() const
 {
     return MinGraph.size();
 }
 
-//Получить кол-во в графике максимума
+// Get the count in the maximum graph
 uint32_t DataGraph::GetMaxCount() const
 {
     return MaxGraph.size();
 }
 
-//Получить значение по индексу из графика минимума
+// Get the value by index from the minimum graph
 const GraphVertex &DataGraph::GetMinVertex(uint32_t Index)
 {
     return MinGraph[Index];
 }
 
-//Получить значение по индексу из графика максимума
+// Get the value by index from the maximum graph
 const GraphVertex &DataGraph::GetMaxVertex(uint32_t Index)
 {
     return MaxGraph[Index];
@@ -184,8 +184,8 @@ void DataGraph::Load(MemFile *File)
 
     SetName(AttribueName);
 
-    // HACK ! Для совместимости со старой версией...
-    //Конвертим после загрузки графики в нужный формат...
+    // HACK! For backward compatibility
+    // convert after loading the graphs into the desired format
     // if (_stricmp (AttribueName, EMISSION_DIR_X) == 0)	ConvertDegToRad ();
     // if (_stricmp (AttribueName, EMISSION_DIR_Y) == 0)	ConvertDegToRad ();
     // if (_stricmp (AttribueName, EMISSION_DIR_Z) == 0)	ConvertDegToRad ();
@@ -193,7 +193,7 @@ void DataGraph::Load(MemFile *File)
     // if (_stricmp (AttribueName, PARTICLE_TRANSPARENCY) == 0)	NormalToAlpha();
 }
 
-//Установить/получить могут быть отрицательные значения в графике или нет...
+// Set / get can be negative values in the graph or not
 void DataGraph::SetNegative(bool _bNegative)
 {
     bNegative = _bNegative;
@@ -204,7 +204,7 @@ bool DataGraph::GetNegative() const
     return bNegative;
 }
 
-//Установить/получить относительный график или нет...
+// Set / get relative schedule or not
 void DataGraph::SetRelative(bool _bRelative)
 {
     bRelative = _bRelative;
@@ -262,7 +262,7 @@ float DataGraph::GetMinAtTime(float Time, float LifeTime)
     {
         const auto ToTime = MinGraph[Index + 1].Time;
 
-        //Если время в нужном диапазоне...
+        // If the time is in the correct range
         // if ((Time >= FromTime) && (Time <= ToTime))
         if (Time <= ToTime)
         {
@@ -306,7 +306,7 @@ float DataGraph::GetMaxAtTime(float Time, float LifeTime)
     {
         const auto ToTime = MaxGraph[Index + 1].Time;
 
-        //Если время в нужном диапазоне...
+        // If the time is in the correct range
         // if ((Time >= FromTime) && (Time <= ToTime))
         if (Time <= ToTime)
         {

@@ -29,7 +29,7 @@ void CXI_WINDOW::ChangePosition(XYRECT &rNewPos)
     if (m_rect.bottom - m_rect.top != rNewPos.bottom - rNewPos.top)
         rNewPos.bottom += rNewPos.top + m_rect.bottom - m_rect.top;
     if (rNewPos.top == m_rect.top && rNewPos.left == m_rect.left)
-        return; // нечего менять - та же позиция
+        return; // nothing to change - the same position
     const auto nXAdd = rNewPos.left - m_rect.left;
     const auto nYAdd = rNewPos.top - m_rect.top;
     m_rect = rNewPos;
@@ -82,7 +82,7 @@ void CXI_WINDOW::SetShow(bool bShow)
         SetActive(false);
     m_bShow = bShow;
 
-    // проход по всем нодам и включить/выключить их
+    // walk through all nodes and turn them on / off
     for (long n = 0; n < m_aNodeNameList.size(); n++)
     {
         auto *const pNod = ptrOwner->FindNode(m_aNodeNameList[n].c_str(), nullptr);
@@ -101,7 +101,7 @@ void CXI_WINDOW::SetActive(bool bActive)
         return;
     m_bActive = bActive;
 
-    // проход по всем нодам и залочить/разлочить их
+    // pass through all nodes and lock / unlock them
     for (long n = 0; n < m_aNodeNameList.size(); n++)
     {
         auto *const pNod = ptrOwner->FindNode(m_aNodeNameList[n].c_str(), nullptr);

@@ -19,20 +19,20 @@
 //============================================================================================
 
 #define SHARK_PI 3.14159265f
-#define SHARK_REPULSION 80.0f      //Коэфициент расталкивыния акул
-#define SHARK_REPULSION_DIST 90.0f //Дистанция расталкивыния акул
-#define SHARK_MAX_RSPEED 8.1f //Максимальная скорость перемещения точки следования
-#define SHARK_PULL_DIST 100.0f  //Дистанция притягивания
-#define SHARK_REPPUL_DIST 10.0f //Дистанция отталкивания
-#define SHARK_MAX_Y 0.01f       //Верхний потолок плаванья
-#define SHARK_MIN_Y -20.0f      //Нижний потолок плаванья
-#define SHARK_MAX_TURN 0.2f     //Максимальная скорость поворота
-#define SHARK_KROW_TURN 2.0f    //Коэфициент наклона при повороте max = turn*SHARK_MAX_TURN
-#define SHARK_IMSPD_ACC 0.1f    //Ускорение погружения
-#define SHARK_MAX_IMSPD 1.0f    //Максимальная скорость погружения
-#define SHARK_KAX_IMSPD 0.3f    //Зависимость угла от скорости погружения
-#define SHARK_MAX_SPEED 8.0f    //Максимальная скорость акулы
-#define SHARK_MIN_SPEED 5.0f    //Минимальная скорость акулы
+#define SHARK_REPULSION 80.0f      // Coefficient of shark repulsion
+#define SHARK_REPULSION_DIST 90.0f // Distance of shark repulsion
+#define SHARK_MAX_RSPEED 8.1f // Maximum speed of movement of the follow point
+#define SHARK_PULL_DIST 100.0f  // Pull distance
+#define SHARK_REPPUL_DIST 10.0f // Repulsion distance
+#define SHARK_MAX_Y 0.01f       // Upper swimming limit
+#define SHARK_MIN_Y -20.0f      // Lower swimming limit
+#define SHARK_MAX_TURN 0.2f     // Maximum turn speed
+#define SHARK_KROW_TURN 2.0f    // Tilt factor when turning max = turn * SHARK_MAX_TURN
+#define SHARK_IMSPD_ACC 0.1f    // Dive acceleration
+#define SHARK_MAX_IMSPD 1.0f    // Maximum dive speed
+#define SHARK_KAX_IMSPD 0.3f    // Angle versus dive speed
+#define SHARK_MAX_SPEED 8.0f    // Shark top speed
+#define SHARK_MIN_SPEED 5.0f    // Minimum shark speed
 
 //============================================================================================
 // Shark
@@ -68,7 +68,7 @@ Sharks::Shark::~Shark()
 
 bool Sharks::Shark::Init(float vp_x, float vp_z, bool isLoadModel)
 {
-    //Позиция
+    // Position
     const auto radius = SHARK_PULL_DIST * (0.4f + rand() * 1.6f / RAND_MAX);
     const auto ang = SHARK_PI * rand() * (2.0f / RAND_MAX);
     pos.x = vp_x + radius * cosf(ang);
@@ -78,10 +78,10 @@ bool Sharks::Shark::Init(float vp_x, float vp_z, bool isLoadModel)
     angs.y = SHARK_PI * rand() * (2.0f / RAND_MAX);
     if (!isLoadModel)
         return true;
-    //Загружаем модельку
+    // Loading the model
     if (!(model = EntityManager::CreateEntity("modelr")))
         return false;
-    //Путь для текстур
+    // Path to textures
     auto *gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
     if (!gs)
     {
@@ -103,7 +103,7 @@ bool Sharks::Shark::Init(float vp_x, float vp_z, bool isLoadModel)
         EntityManager::EraseEntity(model);
         return false;
     }
-    //Ставим анимацию по умолчанию
+    // Set the default animation
     auto *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
     if (!mdl || !mdl->GetAnimation())
         return false;
@@ -121,7 +121,7 @@ inline void Sharks::Shark::Reset(float cam_x, float cam_z)
 {
     force = 0.0f;
     fforce = 0.0f;
-    //Если дальше от камеры чем можно, то телепортируемся
+    // If further away from the camera than allowed, then teleport
     const auto dx = cam_x - pos.x;
     const auto dz = cam_z - pos.z;
     const auto max = SHARK_PULL_DIST * 4.0f;
@@ -173,15 +173,15 @@ inline void Sharks::Shark::ShipApply(float x, float z, float r2)
 
 inline void Sharks::Shark::Coordination(float cam_x, float cam_z, float dltTime, SEA_BASE *sb, ISLAND_BASE *ib)
 {
-    //Получим модельку
+    // get a model
     auto *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
     if (!mdl)
         return;
-    //Сила расталкивания
+    // Repulsion force
     auto l = ~force;
     if (l > 1600.0f)
         force *= 40.0f / sqrtf(l);
-    //Случайная сила
+    // Random force
     rTime -= dltTime;
     if (rTime < 0.0f)
     {
@@ -192,11 +192,11 @@ inline void Sharks::Shark::Coordination(float cam_x, float cam_z, float dltTime,
         rTime = 1.0f + rand() * 10.0f;
     }
     force += rForce;
-    //Направление на камеру
+    // Direction to camera
     auto vx = cam_x - pos.x;
     auto vz = cam_z - pos.z;
     const auto k = vx * vx + vz * vz;
-    //Если ближе чем, то разгоняем точку
+    // If closer than, then repulse the point
     if (k < SHARK_REPPUL_DIST * SHARK_REPPUL_DIST)
     {
         force.x -= vx * 1.0f / SHARK_REPPUL_DIST;
@@ -204,7 +204,7 @@ inline void Sharks::Shark::Coordination(float cam_x, float cam_z, float dltTime,
     }
     else
     {
-        //Притягивание к камере
+        // Pulling towards the camera
         vx *= 0.1f;
         vz *= 0.1f;
         l = sqrtf(k) * 0.1f;
@@ -217,24 +217,24 @@ inline void Sharks::Shark::Coordination(float cam_x, float cam_z, float dltTime,
         force.x += vx;
         force.z += vz;
     }
-    //Перемещение по высоте
+    // Moving vertically
     force.y += 0.4f * (yDir - pos.y);
-    //Шум
+    // Noise
     force.x += (0.5f - (rand() & 15) * 1.0f / 15.0f) * 0.001f;
     force.y += (0.5f - (rand() & 15) * 1.0f / 15.0f) * 0.001f;
     force.z += (0.5f - (rand() & 15) * 1.0f / 15.0f) * 0.001f;
-    //Скорость перемещения
+    // Move speed
     vel += accs * force * dltTime;
     l = ~vel;
     if (l > SHARK_MAX_RSPEED * SHARK_MAX_RSPEED)
         vel *= SHARK_MAX_RSPEED / sqrtf(l);
-    //Позиция
+    // Position
     pos += vel * dltTime;
     if (pos.y > 0.1f)
         pos.y = 0.1f;
     if (pos.y < -20.0f)
         pos.y = -20.0f;
-    //Тенденция к высоте плаванья
+    // Swimming altitude trend
     dirTime -= dltTime;
     if (dirTime <= 0.0f)
     {
@@ -242,25 +242,25 @@ inline void Sharks::Shark::Coordination(float cam_x, float cam_z, float dltTime,
         yDir = SHARK_MIN_Y + (SHARK_MAX_Y - SHARK_MIN_Y) * (1.0f - p * p);
         dirTime = 5.0f + 10.0f * rand() * 1.0f / RAND_MAX;
     }
-    //Рыба
-    //Сила притяжения
+    // Fish
+    // Force of gravity
     auto fff = pos - spos;
     l = ~fff;
     if (l > 1.0f)
         fff *= 1.0f / sqrtf(l);
-    //Сила расталкивания
+    // The power of repulsion
     l = ~fforce;
     if (l > 100.0f)
         fforce *= 10.0f / sqrtf(l);
     fforce += fff;
-    //Определим коллижен относительно острова
+    // Determine the collision relative to the island
     if (ib)
     {
         IslandCollision(ib, 32, 5.0f, 100.0f);
         IslandCollision(ib, 16, 30.0f, 50.0f);
         IslandCollision(ib, 8, 50.0f, 20.0f);
     }
-    //Определим направление рыбы относительно точки следования
+    // Determine the direction of the fish relative to the follow point
     const auto sx = sinf(angs.y);
     const auto sz = cosf(angs.y);
     vx = fforce.x;
@@ -285,16 +285,16 @@ inline void Sharks::Shark::Coordination(float cam_x, float cam_z, float dltTime,
     if (turn < -SHARK_MAX_TURN)
         turn = -SHARK_MAX_TURN;
     angs.y += turn * dltTime;
-    //Угол наклона при повороте
+    // Tilt angle when turning
     angs.z = -turn * SHARK_KROW_TURN;
-    //Скорость
+    // Speed
     speed += 0.3f * cs * dltTime;
     speedUp = cs > 0.0f;
     if (speed > SHARK_MAX_SPEED)
         speed = SHARK_MAX_SPEED;
     if (speed < SHARK_MIN_SPEED)
         speed = SHARK_MIN_SPEED;
-    //Изменение глубины
+    // Depth change
     if (fforce.y < 0.0f)
     {
         if (spos.y > SHARK_MIN_Y)
@@ -314,9 +314,9 @@ inline void Sharks::Shark::Coordination(float cam_x, float cam_z, float dltTime,
         if (imspd > SHARK_MAX_IMSPD)
             imspd = SHARK_MAX_IMSPD;
     }
-    //Угол наклона при погружении
+    // Dive angle
     angs.x = -imspd * SHARK_KAX_IMSPD;
-    //Новая позиция
+    // New position
     Assert(speed >= SHARK_MIN_SPEED);
     spos.x += speed * sinf(angs.y) * dltTime;
     spos.y += imspd * dltTime;
@@ -331,7 +331,7 @@ inline void Sharks::Shark::Coordination(float cam_x, float cam_z, float dltTime,
     }
     if (rpos.y > shipY)
         rpos.y = shipY;
-    //Ограничение наклона от глубины
+    // Tilt limit by depth
     if (rpos.y > -3.0f)
     {
         l = rpos.y;
@@ -340,14 +340,14 @@ inline void Sharks::Shark::Coordination(float cam_x, float cam_z, float dltTime,
         l = 1.0f - (3.0f + l) / 3.0f;
         angs.x *= l * l;
     }
-    //Анимация
+    // Animation
     aniTime -= dltTime;
     jumpTime -= dltTime;
-    //Трек
+    // Track
     vBase += 0.2f * speed * dltTime;
     if (vBase > 1.0f)
         vBase -= 1.0f;
-    //Обновление матрицы
+    // Matrix update
     mdl->mtx.BuildMatrix(angs, rpos);
     /*
     if(GetAsyncKeyState('Z') >= 0)
@@ -424,7 +424,7 @@ void Sharks::Shark::Event(Animation *animation, long index, long eventID, Animat
     {
         if (jumpTime <= 0.0f && spos.y > -0.1f && ~(rnd & 0xf0)) //~!~
         {
-            //Выпрыгиваем из воды
+            // jump out of the water
             animation->Player(0).SetAction(actJump);
             jumpTime = 60.0f + rand() * 100.0f / RAND_MAX;
             aniTime = -0.1f;
@@ -440,7 +440,7 @@ void Sharks::Shark::Event(Animation *animation, long index, long eventID, Animat
 
 long Sharks::Shark::GenerateTrack(uint16_t *inds, Vertex *vrt, uint16_t base, SEA_BASE *sb)
 {
-    //Получим модельку
+    // get a model
     auto *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
     if (!mdl)
         return 0;
@@ -450,14 +450,14 @@ long Sharks::Shark::GenerateTrack(uint16_t *inds, Vertex *vrt, uint16_t base, SE
     if (k > 0.0f)
         k = 0.0f;
     k = (1.2f + k) / 1.2f;
-    //Параметры плавника
+    // Fin parameters
     const auto length = 2.0f * 3.0f * k;
     const auto width = 1.0f * 1.5f * k;
-    //Индексы
+    // Indexes
     Assert(sizeof(indeces) / sizeof(uint16_t) == 30);
     for (long i = 0; i < 30; i++)
         inds[i] = indeces[i] + base;
-    //Вершины
+    // Vertices
     const CVECTOR s(0.0f, 0.0f, 0.75f);
     vrt[0].pos = s;
     vrt[7].pos = s + CVECTOR(-width, 0.0f, -length);
@@ -502,9 +502,9 @@ long Sharks::Shark::GenerateTrack(uint16_t *inds, Vertex *vrt, uint16_t base, SE
     return 10;
 }
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 Sharks::Sharks() : sea(0), island(0), indeces{}, vrt{}
 {
@@ -523,7 +523,7 @@ Sharks::~Sharks()
         rs->TextureRelease(trackTx);
 }
 
-//Инициализация
+// Initialization
 bool Sharks::Init()
 {
     rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
@@ -532,7 +532,7 @@ bool Sharks::Init()
     for (long i = 0; i < numShakes; i++)
         if (!shark[i].Init(0.0f, 0.0f))
             return false;
-    //Лаера исполнения
+    // Execution layer
     char execute[64];
     char realize[64];
     const char *attr = AttributesPointer->GetAttribute("execute");
@@ -545,12 +545,12 @@ bool Sharks::Init()
         strcpy_s(realize, attr);
     else
         strcpy_s(realize, "realize");
-    //Уровни исполнения
+    // Execution layers
     const long emdl = AttributesPointer->GetAttributeAsDword("executeModels", 77);
     const long rmdl = AttributesPointer->GetAttributeAsDword("realizeModels", 77);
     const long eprt = AttributesPointer->GetAttributeAsDword("executeParticles", 77);
     const long rprt = AttributesPointer->GetAttributeAsDword("realizeParticles", 100000);
-    //Установим уровни исполнения
+    // Set the execution layers
     EntityManager::AddToLayer(EXECUTE, GetId(), eprt);
     EntityManager::AddToLayer(REALIZE, GetId(), rprt);
     for (long i = 0; i < numShakes; i++)
@@ -558,9 +558,9 @@ bool Sharks::Init()
         EntityManager::AddToLayer(EXECUTE, shark[i].model, emdl);
         EntityManager::AddToLayer(REALIZE, shark[i].model, rmdl);
     }
-    //Загрузим текстуру
+    // Load the texture
     trackTx = rs->TextureCreate("Animals\\SharkTrack.tga");
-    //Анализируем возможность создания перископа
+    // Analyzing the possibility of creating a periscope
     auto *v = static_cast<VDATA *>(core.GetScriptVariable("Environment"));
     if (v)
     {
@@ -596,7 +596,7 @@ bool Sharks::Init()
     return true;
 }
 
-//Исполнение
+// Execution
 void Sharks::Execute(uint32_t delta_time)
 {
     CVECTOR a;
@@ -605,32 +605,32 @@ void Sharks::Execute(uint32_t delta_time)
     rs->GetCamera(camPos, a, a.x);
     const auto dltTime = delta_time * 0.001f;
     const auto num = numShakes;
-    //Сбросим состояния
+    // Reset the states
     for (long i = 0; i < num; i++)
         shark[i].Reset(camPos.x, camPos.z);
-    //Разчитаем силы
+    // calculate the forces
     for (long i = 0; i < num - 1; i++)
         for (auto j = i + 1; j < num; j++)
             shark[i].Repulsion(shark[j]);
-    //Учитываем корабли
+    // take into account ships
 
     const auto &entities = EntityManager::GetEntityIdVector("ship");
     for (auto ent : entities)
     {
-        //Указатель на объект
+        // Object pointer
         auto *ship = static_cast<VAI_OBJBASE *>(EntityManager::GetEntityPointer(ent));
         if (!ship)
             break;
-        //Позиция корабля
+        // Ship position
         const auto shipPos = ship->GetMatrix()->Pos();
-        //Размер корабля
+        // Ship size
         const auto s = ship->GetBoxsize();
         const auto rd2 = (s.x * s.x + s.z * s.z) * 3.0f;
-        //Говорим акулам о короблях
+        // Tell sharks about ships
         for (long i = 0; i < num; i++)
             shark[i].ShipApply(shipPos.x, shipPos.z, rd2);
     }
-    //Море
+    // The sea
     auto *sb = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(sea));
     if (!sb)
     {
@@ -647,10 +647,10 @@ void Sharks::Execute(uint32_t delta_time)
         if (!ib)
             return;
     }
-    //Расчитываем новые позиции
+    // Calculating new positions
     for (long i = 0; i < num; i++)
         shark[i].Coordination(camPos.x, camPos.z, dltTime, sb, ib);
-    //Обрабатываем перископ
+    // Processing the periscope
     if (!ib)
     {
         if (periscope.time >= 0.0f)

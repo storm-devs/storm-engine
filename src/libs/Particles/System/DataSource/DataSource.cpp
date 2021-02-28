@@ -71,7 +71,7 @@ DATA_GRAPH(PARTICLE_GRAVITATION_K);
 DATA_STRING(PARTICLE_GEOM_NAMES);
 END_DATA_DESC(ModelParticleDesc)
 
-//---------- Создание/удаление --------------------
+// ---------- Create / Delete --------------------
 DataSource::DataSource(IParticleManager *Master)
 {
 }
@@ -88,7 +88,7 @@ bool DataSource::Release() const
 }
 
 // ========================= Load & Save =======================================
-//Сохранить/восстановить из файла
+// Save / restore from file
 void DataSource::Write(MemFile *pMemFile)
 {
     pMemFile->Write(HEADER, 4);
@@ -113,7 +113,7 @@ void DataSource::Write(MemFile *pMemFile)
 
 void DataSource::Load(MemFile *pMemFile)
 {
-    //Проверяем ID
+    // Checking ID
     char Id[5];
     Id[4] = 0;
     pMemFile->Read(Id, 4);
@@ -123,7 +123,7 @@ void DataSource::Load(MemFile *pMemFile)
         return;
     }
 
-    //Проверяем Версию
+    // Checking the Version
     char Ver[5];
     Ver[4] = 0;
     pMemFile->Read(Ver, 4);
@@ -133,7 +133,7 @@ void DataSource::Load(MemFile *pMemFile)
               core.Trace ("Particles: Warning !!! Incorrect file version %s, must be %s", Ver, VERSION);
     */
 
-    //Кол-во эмиттеров...
+    // Number of emitters ...
     uint32_t EmiterCount = 0;
     pMemFile->ReadType(EmiterCount);
 
@@ -195,7 +195,7 @@ void DataSource::CreatePointEmitter(MemFile *pMemFile)
     }     // For all particles
 }
 
-//Создает BillBoard парикл
+// Creates a BillBoard particle
 void DataSource::CreateBillBoardParticle(std::vector<ParticleDesc> &Particles, MemFile *pMemFile)
 {
     // ParticleDesc *pDesc = &Particles[Particles.Add()];
@@ -206,7 +206,7 @@ void DataSource::CreateBillBoardParticle(std::vector<ParticleDesc> &Particles, M
     Particles.push_back(desc);
 }
 
-//Создает Model парикл
+// Creates Model particle
 void DataSource::CreateModelParticle(std::vector<ParticleDesc> &Particles, MemFile *pMemFile)
 {
     // ParticleDesc *pDesc = &Particles[Particles.Add()];

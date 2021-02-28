@@ -1,12 +1,12 @@
-//============================================================================================
-//	Spirenkov Maxim aka Sp-Max Shaman, 2001
-//--------------------------------------------------------------------------------------------
-//	Storm engine v2.00
-//--------------------------------------------------------------------------------------------
-//	AnimationImp
-//--------------------------------------------------------------------------------------------
-//	Реализация интерфейса Animation
-//============================================================================================
+// ============================================================================================
+// Spirenkov Maxim aka Sp-Max Shaman, 2001
+// --------------------------------------------------------------------------------------------
+// Storm engine v2.00
+// --------------------------------------------------------------------------------------------
+// AnimationImp
+// --------------------------------------------------------------------------------------------
+// Implementing the Animation interface
+// ============================================================================================
 
 #include "AnimationImp.h"
 #include "AnimationServiceImp.h"
@@ -14,12 +14,12 @@
 
 //============================================================================================
 
-//Указатель на сервис анимации
+// Animation Service Pointer
 AnimationServiceImp *AnimationImp::aniService = nullptr;
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 AnimationImp::AnimationImp(long id, AnimationInfo *animationInfo)
 {
@@ -35,9 +35,9 @@ AnimationImp::AnimationImp(long id, AnimationInfo *animationInfo)
     matrix = new CMatrix[aniInfo->NumBones()];
     memset(ae_listeners, 0, sizeof(ae_listeners));
     ae_listenersExt = nullptr;
-    //Автонормализация
+    // Auto normalization
     isAutoNormalize = true;
-    //Пользовательский блендинг
+    // Custom blending
     isUserBlend = true;
 }
 
@@ -52,22 +52,22 @@ AnimationImp::~AnimationImp()
 // Animation
 //--------------------------------------------------------------------------------------------
 
-//Доступиться к проигрывателю действий
+// Access the action player
 ActionPlayer &AnimationImp::Player(long index)
 {
     Assert(index >= 0 && index < ANI_MAX_ACTIONS);
     return action[index];
 }
 
-//Доступиться к таймеру анимации
+// Access the animation timer
 AnimationTimer &AnimationImp::Timer(long index)
 {
     Assert(index >= 0 && index < ANI_MAX_ACTIONS);
     return timer[index];
 }
 
-//События
-//Установить внутренние событие
+// Events
+// Set internal event
 long AnimationImp::SetEvent(AnimationEvent event, long index, AnimationEventListener *ael)
 {
     Assert(event < ae_numevents);
@@ -82,7 +82,7 @@ long AnimationImp::SetEvent(AnimationEvent event, long index, AnimationEventList
     return -1;
 }
 
-//Удалить внутренние событие
+// Delete internal event
 void AnimationImp::DelEvent(long eventID)
 {
     if (eventID < 0)
@@ -95,26 +95,26 @@ void AnimationImp::DelEvent(long eventID)
     ae_listeners[event][lindex] = nullptr;
 }
 
-//Установить обработчик внешнего события
+// Set an external event handler
 void AnimationImp::SetEventListener(AnimationEventListener *ael)
 {
     ae_listenersExt = ael;
 }
 
-//Получить количество костей в скелете
+// Get the number of bones in a skeleton
 long AnimationImp::GetNumBones() const
 {
     return aniInfo->NumBones();
 }
 
-//Получить матрицу анимации для кости
+// Get animation matrix for bone
 CMatrix &AnimationImp::GetAnimationMatrix(long iBone) const
 {
     Assert(iBone >= 0 && iBone < aniInfo->NumBones());
     return matrix[iBone];
 }
 
-//Получить пользовательские данные для анимации
+// Get custom data for animation
 const char *AnimationImp::GetData(const char *dataName) const
 {
     const auto &userData = aniInfo->GetUserData();
@@ -122,7 +122,7 @@ const char *AnimationImp::GetData(const char *dataName) const
     return it != userData.end() ? it->second.c_str() : nullptr;
 }
 
-//Копировать состояние одного плеера в другой
+// Copy the state of one player to another
 void AnimationImp::CopyPlayerState(long indexSrc, long indexDst, bool copyTimerState)
 {
     Assert(indexSrc >= 0 && indexSrc < ANI_MAX_ACTIONS);
@@ -140,14 +140,14 @@ void AnimationImp::CopyPlayerState(long indexSrc, long indexDst, bool copyTimerS
     }
 }
 
-//Получить скорость исполнения анимации
+// Get animation speed
 float AnimationImp::GetFPS()
 {
     return aniInfo->GetFPS();
 }
 
-//Установить режимы блендинга
-//Автоматическая нормализация коэфициентов блендинга
+// Set blending modes
+// Automatic normalization of blending coefficients
 bool AnimationImp::SetAutoNormalize(bool isNormalize)
 {
     const auto b = isAutoNormalize;
@@ -160,7 +160,7 @@ bool AnimationImp::GetAutoNormalize()
     return isAutoNormalize;
 }
 
-//Разрешить использование пользовательских коэфициентов блендинга в ActionPlayer
+// Allow custom blending coefficients in ActionPlayer
 bool AnimationImp::UserBlend(bool isBlend)
 {
     const auto b = isUserBlend;
@@ -177,25 +177,25 @@ bool AnimationImp::IsUserBlend()
 // AnimationImp
 //--------------------------------------------------------------------------------------------
 
-//Сделать шаг по времени
+// Take a step in time
 void AnimationImp::Execute(long dltTime)
 {
-    //Исполним animation
+    // execute animation
     for (long i = 0; i < ANI_MAX_ACTIONS; i++)
         action[i].Execute(dltTime);
-    //Исполним таймеры
+    // execute the timers
     for (long i = 0; i < ANI_MAX_ACTIONS; i++)
         timer[i].Execute(dltTime);
-    //Расчитаем матрицы анимации
+    // Calculate animation matrices
     BuildAnimationMatrices();
 }
 
-//Расчитать матрицы анимации
+// Calculate animation matrices
 void AnimationImp::BuildAnimationMatrices()
 {
     auto nFrames = aniInfo->GetAniNumFrames();
     auto nbones = aniInfo->NumBones();
-    //Посмотрим сколько плееров играет, считаем текущии коэфициенты блендинга
+    // see how many players are playing, calculate the current blending coefficients
     long plCnt = 0;
     auto normBlend = 0.0f;
     for (long i = 0; i < ANI_MAX_ACTIONS; i++)
@@ -210,7 +210,7 @@ void AnimationImp::BuildAnimationMatrices()
     if (!plCnt)
         return;
 
-    //Автонормализация
+    // Auto normalization
     if (normBlend != 0.0f)
         if (plCnt > 1)
         {
@@ -333,8 +333,8 @@ void AnimationImp::BuildAnimationMatrices()
     }
 }
 
-//События
-//Разослать события
+// Events
+// Send events
 void AnimationImp::SendEvent(AnimationEvent event, long index)
 {
     for (long i = 0; i < ANIIMP_MAXLISTENERS; i++)

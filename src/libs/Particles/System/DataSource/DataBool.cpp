@@ -5,7 +5,7 @@
 
 #pragma warning(disable : 4800)
 
-//конструктор/деструктор
+// constructor / destructor
 DataBool::DataBool()
 {
     Value = false;
@@ -15,13 +15,13 @@ DataBool::~DataBool()
 {
 }
 
-//Получить значение
+// Get value
 bool DataBool::GetValue() const
 {
     return Value;
 }
 
-//Установить значение
+// Set value
 void DataBool::SetValue(bool val)
 {
     Value = val;

@@ -1,19 +1,19 @@
-//============================================================================================
-//	Spirenkov Maxim aka Sp-Max Shaman, 2001
-//--------------------------------------------------------------------------------------------
-//	Storm engine v2.00
-//--------------------------------------------------------------------------------------------
-//	AnimationTimerImp
-//--------------------------------------------------------------------------------------------
-//	Реализация таймера анимации
-//============================================================================================
+// ============================================================================================
+// Spirenkov Maxim aka Sp-Max Shaman, 2001
+// --------------------------------------------------------------------------------------------
+// Storm engine v2.00
+// --------------------------------------------------------------------------------------------
+// AnimationTimerImp
+// --------------------------------------------------------------------------------------------
+// Animation timer implementation
+// ============================================================================================
 
 #include "AnimationTimerImp.h"
 #include "AnimationImp.h"
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 AnimationTimerImp::AnimationTimerImp()
 {
@@ -32,7 +32,7 @@ AnimationTimerImp::~AnimationTimerImp()
 {
 }
 
-//Установить анимацию
+// Set animation
 void AnimationTimerImp::SetAnimation(AnimationImp *animation)
 {
     Assert(!ani && animation);
@@ -43,7 +43,7 @@ void AnimationTimerImp::SetAnimation(AnimationImp *animation)
 // AnimationTimer
 //--------------------------------------------------------------------------------------------
 
-//Запустить таймер (время в миллисекундах)
+// Start timer (time in milliseconds)
 void AnimationTimerImp::Start(float time, float startTime)
 {
     if (startTime < 0)
@@ -61,13 +61,13 @@ void AnimationTimerImp::Start(float time, float startTime)
     Execute(0);
 }
 
-//Остановить таймер
+// Stop timer
 void AnimationTimerImp::Stop()
 {
     curTime = 0.0f;
     kTime = 0.0f;
     value = 1.0f;
-    //Устанавливаем конечные значения и останавливаем анимацию, где просят
+    // Set end values and stop animation where asked
     long i;
     for (i = 0; i < ANI_MAX_ACTIONS; i++)
     {
@@ -85,7 +85,7 @@ void AnimationTimerImp::Stop()
             }
         }
     }
-    //Отправим событие
+    // send an event
     for (i = 0; i < ANI_MAX_ACTIONS; i++)
     {
         if (&ani->Timer(i) == this)
@@ -95,7 +95,7 @@ void AnimationTimerImp::Stop()
     ani->AteTimerstop(i);
 }
 
-//Сбросить состояние таймера
+// Reset timer state
 void AnimationTimerImp::ResetTimer()
 {
     curTime = 0.0f;
@@ -108,31 +108,31 @@ void AnimationTimerImp::ResetTimer()
     }
 }
 
-//Узнать, работает ли таймер
+// Find out if the timer is running
 bool AnimationTimerImp::IsWork()
 {
     return kTime != 0.0f;
 }
 
-//Получить текущее значение
+// Get the current value
 float AnimationTimerImp::GetCurrent() const
 {
     return value;
 }
 
-//Получить заданное время работы таймера
+// Get the specified timer running time
 float AnimationTimerImp::GetTime() const
 {
     return (kTime > 0.0f) ? 1.0f / kTime : 0.0f;
 }
 
-//Назначить ActionPlayer для блендинга (isInverse == false -> kBlend = [0..1])
+// Assign ActionPlayer for blending (isInverse == false -> kBlend = [0..1])
 void AnimationTimerImp::SetPlayer(long playerIndex, bool isInverse)
 {
     Assert(playerIndex >= 0 && playerIndex < ANI_MAX_ACTIONS);
-    //Устанавливаем себе
+    // set ourselves
     playersMask[playerIndex >> 5] |= 1 << (playerIndex & 31);
-    //Установим чего использовать
+    // Determine what to use
     if (isInverse)
     {
         inverseMask[playerIndex >> 5] |= 1 << (playerIndex & 31);
@@ -147,12 +147,12 @@ void AnimationTimerImp::SetPlayer(long playerIndex, bool isInverse)
 void AnimationTimerImp::ResetPlayer(long playerIndex)
 {
     Assert(playerIndex >= 0 && playerIndex < ANI_MAX_ACTIONS);
-    //Сбросим флажёк использования
+    // Uncheck the use box
     playersMask[playerIndex >> 5] &= ~(1 << (playerIndex & 31));
     static_cast<ActionPlayerImp *>(&ani->Player(playerIndex))->TimerBlend() = 1.0f;
 }
 
-//Узнать, используется ли ActionPlayer
+// Find out if ActionPlayer is being used
 bool AnimationTimerImp::IsUsedPlayer(long playerIndex, bool *isInverse)
 {
     Assert(playerIndex >= 0 && playerIndex < ANI_MAX_ACTIONS);
@@ -165,7 +165,7 @@ bool AnimationTimerImp::IsUsedPlayer(long playerIndex, bool *isInverse)
     return false;
 }
 
-//Получить велечину блендинга для плеера (если не используется то 1.0f)
+// Get the blending value for the player (if not used then 1.0f)
 float AnimationTimerImp::GetPlayerValue(long playerIndex)
 {
     Assert(playerIndex >= 0 && playerIndex < ANI_MAX_ACTIONS);
@@ -184,17 +184,17 @@ float AnimationTimerImp::GetPlayerValue(long playerIndex)
 // AnimationTimerImp
 //--------------------------------------------------------------------------------------------
 
-//Исполнить
+// Execute
 void AnimationTimerImp::Execute(long dltTime)
 {
     if (kTime != 0.0f)
     {
-        //Вычисляем
+        // calculate
         curTime += dltTime * 0.001f;
         value = curTime * kTime;
         if (value > 1.0f)
             value = 1.0f;
-        //Расставляем коэфициенты блендинга
+        // Arranging blending coefficients
         for (long i = 0; i < ANI_MAX_ACTIONS; i++)
         {
             if (playersMask[i >> 5] & (1 << (i & 31)))
@@ -209,7 +209,7 @@ void AnimationTimerImp::Execute(long dltTime)
                 }
             }
         }
-        //Может пора остановиться
+        // Maybe it's time to stop
         if (value == 1.0f)
             Stop();
     }

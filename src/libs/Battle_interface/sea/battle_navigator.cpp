@@ -49,7 +49,7 @@ BATTLE_NAVIGATOR::BATTLE_NAVIGATOR()
     m_fCurScale = m_fDefaultScale = 1.f;
     m_bYesIsland = false;
 
-    // текстуры
+    // textures
     m_idCompasTex = -1;
     m_idSpeedTex = -1;
     m_idCannonTex = -1;
@@ -62,7 +62,7 @@ BATTLE_NAVIGATOR::BATTLE_NAVIGATOR()
     m_idWindTexture = -1;
     m_idSailTexture = -1;
 
-    // буферы
+    // buffers
     m_idEmptyVBuf = -1;
     m_idCourseVBuf = -1;
     m_idMapVBuf = -1;
@@ -97,10 +97,10 @@ void BATTLE_NAVIGATOR::Draw() const
     const CMatrix matw;
     rs->SetTransform(D3DTS_WORLD, matw);
 
-    // градиентная подложка
+    // gradient background
     // rs->DrawPrimitive(D3DPT_TRIANGLEFAN,m_idGradBackVBuf,sizeof(BI_COLORONLY_VERTEX),0,1,"battle_only_color");
 
-    // остров
+    // Isle
     rs->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_CLAMP);
     rs->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_CLAMP);
 
@@ -121,12 +121,12 @@ void BATTLE_NAVIGATOR::Draw() const
     rs->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);
     rs->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);
 
-    // корабли
+    // ships
     if (m_nvShips > 0)
         rs->DrawPrimitive(D3DPT_TRIANGLELIST, m_idShipsVBuf, sizeof(BI_COLORONLY_VERTEX), 0, m_nvShips / 3,
                           "battle_only_color");
 
-    // бабочка зоны поражения пушек
+    // cannons fire range
     if (m_idFireZoneVBuf != -1L)
     {
         rs->SetRenderState(D3DRS_TEXTUREFACTOR, m_dwFireZoneColor);
@@ -134,18 +134,18 @@ void BATTLE_NAVIGATOR::Draw() const
                           "battle_only_tfactor");
     }
 
-    // компас и подложка
+    // compass and the background
     if (m_idEmptyVBuf != -1L)
     {
-        // подложка под миникарту
+        // background of the minimap
         rs->TextureSet(0, m_idEmptyTex);
         rs->DrawPrimitive(D3DPT_TRIANGLESTRIP, m_idEmptyVBuf, sizeof(BI_ONETEXTURE_VERTEX), 0, 2, "battle_rectangle");
-        // компас
+        // compass
         rs->TextureSet(0, m_idCompasTex);
         rs->DrawPrimitive(D3DPT_TRIANGLESTRIP, m_idEmptyVBuf, sizeof(BI_ONETEXTURE_VERTEX), 4, 2, "battle_rectangle");
     }
 
-    // показатель заряда пушек
+    // cannons charge indicator
     rs->TextureSet(0, m_idCannonTex);
     n = 0;
     if (m_nvCannonCharge > 0)
@@ -169,19 +169,19 @@ void BATTLE_NAVIGATOR::Draw() const
                           "battle_tf_rectangle");
     }
 
-    // показатель скорости
+    // speed indicator
     /*rs->TextureSet(0,m_idSpeedTex);
     if(m_nvSpeed>0)
       rs->DrawPrimitive(D3DPT_TRIANGLEFAN,m_idSpeedVBuf,sizeof(BI_ONETEXTURE_VERTEX),0,m_nvSpeed,"battle_rectangle");*/
 
-    // показать стрелку направления ветра
+    // show wind direction arrow
     if (m_idEmptyVBuf != -1L)
     {
         rs->TextureSet(0, m_idWindTex);
         rs->DrawPrimitive(D3DPT_TRIANGLESTRIP, m_idEmptyVBuf, sizeof(BI_ONETEXTURE_VERTEX), 8, 2, "battle_rectangle");
     }
 
-    // показать курсовые углы
+    // show heading angles
     if (m_idCourseVBuf != -1L)
     {
         rs->TextureSet(0, m_idBestCourseTex);
@@ -189,13 +189,13 @@ void BATTLE_NAVIGATOR::Draw() const
         rs->DrawPrimitive(D3DPT_TRIANGLESTRIP, m_idCourseVBuf, sizeof(BI_ONETEXTURE_VERTEX), 4, 2, "battle_rectangle");
     }
 
-    // отпечатать скорость ветра и корабля
+    // print wind and ship speed
     rs->ExtPrint(m_speedFont, 0xFFFFFFFF, 0, PR_ALIGN_CENTER, true, m_fFontScale, 0, 0, m_xWindSpeed, m_ySpeedShow,
                  "%.1f", m_fWindStrength);
     rs->ExtPrint(m_speedFont, 0xFFFFFFFF, 0, PR_ALIGN_CENTER, true, m_fFontScale, 0, 0, m_xShipSpeed, m_ySpeedShow,
                  "%.1f", m_fShipSpeed);
 
-    // показать текущий заряд
+    // show current charge
     if (m_curCharge >= 0)
     {
         rs->TextureSet(0, m_idChargeTexture);
@@ -210,10 +210,10 @@ void BATTLE_NAVIGATOR::Draw() const
         rs->DrawPrimitive(D3DPT_TRIANGLESTRIP, m_idCurChargeVBuf, sizeof(BI_ONETEXTURE_VERTEX), 12, 2,
                           m_bPowderRunOut ? "battle_texure_blend_tf" : "battle_rectangle");
     }
-    // показать иконку ветра
+    // show wind icon
     rs->TextureSet(0, m_idWindTexture);
     rs->DrawPrimitive(D3DPT_TRIANGLESTRIP, m_idCurChargeVBuf, sizeof(BI_ONETEXTURE_VERTEX), 4, 2, "battle_rectangle");
-    // показать иконку положения парусов
+    // show sails position icon
     rs->TextureSet(0, m_idSailTexture);
     rs->DrawPrimitive(D3DPT_TRIANGLESTRIP, m_idCurChargeVBuf, sizeof(BI_ONETEXTURE_VERTEX), 8, 2, "battle_rectangle");
 }
@@ -227,7 +227,7 @@ void BATTLE_NAVIGATOR::Update()
     SetMainCharacterData();
     UpdateCurrentCharge();
 
-    // change compas buffer
+    // change compass buffer
     auto *pV = static_cast<BI_ONETEXTURE_VERTEX *>(rs->LockVertexBuffer(m_idEmptyVBuf));
     if (pV != nullptr)
     {
@@ -455,9 +455,9 @@ void BATTLE_NAVIGATOR::Init(VDX9RENDER *RenderService, Entity *pOwnerEI)
     m_dwReadyCannon = ARGB(255, 0, 255, 0);
     m_dwDamagedCannon = ARGB(255, 64, 64, 64);
 
-    // максимальная скорость ветра
+    // maximum wind speed
     m_fWindMaxStrength = core.Entity_GetAttributeAsFloat(BIUtils::idBattleInterface, "MaxWind", 30.f);
-    // и корабля
+    // maximum ship speed
     m_fMaxShipSpeed = core.Entity_GetAttributeAsFloat(BIUtils::idBattleInterface, "MaxShipSpeed", 20.f);
     //
     m_fShipSpeedScale = core.Entity_GetAttributeAsFloat(BIUtils::idBattleInterface, "ShipSpeedScaler", 1.f);
@@ -472,7 +472,7 @@ void BATTLE_NAVIGATOR::Init(VDX9RENDER *RenderService, Entity *pOwnerEI)
     m_XNavigator = BIUtils::GetLongFromAttr(pARoot, "rightPos", 640) - m_NavigationWidth / 2;
     m_YNavigator = BIUtils::GetLongFromAttr(pARoot, "topPos", 0) + m_NavigationHeight / 2;
 
-    // радиус видимости на миникарте
+    // visibility radius on the minimap
     m_fWorldRad = BIUtils::GetFloatFromAttr(pARoot, "horizontRadius", 400.f);
     m_fMinScale = BIUtils::GetFloatFromAttr(pARoot, "minScale", .01f);
     m_fMaxScale = BIUtils::GetFloatFromAttr(pARoot, "maxScale", 2.f);
@@ -483,25 +483,25 @@ void BATTLE_NAVIGATOR::Init(VDX9RENDER *RenderService, Entity *pOwnerEI)
     m_windWidth = BIUtils::GetLongFromAttr(pARoot, "windWidth", 20);
     m_windHeight = BIUtils::GetLongFromAttr(pARoot, "windHeight", 158);
 
-    // цвет заряженных пушек
+    // color of loaded cannons
     m_dwReadyCannon = BIUtils::GetLongFromAttr(pARoot, "argbReadyCannonColor", m_dwReadyCannon);
-    // цвет заряжающихся пушек
+    // color of loading cannons
     m_dwChargeCannon = BIUtils::GetLongFromAttr(pARoot, "argbChargeCannonColor", m_dwChargeCannon);
-    // цвет поврежденных пушек
+    // color of damaged cannons
     m_dwDamagedCannon = BIUtils::GetLongFromAttr(pARoot, "argbDamageCannonColor", m_dwDamagedCannon);
-    // цвет моря
+    // color of the sea
     m_dwSeaColor = BIUtils::GetLongFromAttr(pARoot, "argbSeaColor", ARGB(255, 255, 255, 255));
-    // цвет зоны обстрела пушек
+    // color of the cannon fire zone
     m_dwFireZoneColor = BIUtils::GetLongFromAttr(pARoot, "argbFireZoneColor", ARGB(255, 255, 255, 255));
-    // цвет вражеского корабля
+    // enemy ship color
     m_dwEnemyShipColor = BIUtils::GetLongFromAttr(pARoot, "argbEnemyShipColor", ARGB(255, 255, 255, 255));
-    // цвет своего корабля
+    // color of your ship
     m_dwFrendShipColor = BIUtils::GetLongFromAttr(pARoot, "argbFrendShipColor", ARGB(255, 255, 255, 255));
-    // цвет нейтрального корабля
+    // neutral ship color
     m_dwNeutralShipColor = BIUtils::GetLongFromAttr(pARoot, "argbNeutralShipColor", ARGB(255, 255, 255, 255));
-    // цвет тонущего корабля
+    // color of a sinking ship
     m_dwDeadShipColor = BIUtils::GetLongFromAttr(pARoot, "argbDeadShipColor", ARGB(255, 255, 255, 255));
-    // цвет градиента бэка
+    // background gradient color
     m_dwBackGradColor1 = BIUtils::GetLongFromAttr(pARoot, "argbBackMaxColor", ARGB(255, 0, 0, 128));
     m_dwBackGradColor2 = BIUtils::GetLongFromAttr(pARoot, "argbBackMinColor", ARGB(55, 0, 0, 128));
 
@@ -601,7 +601,7 @@ void BATTLE_NAVIGATOR::Init(VDX9RENDER *RenderService, Entity *pOwnerEI)
     m_fCurAnglWindSpeed = m_fEndAnglWindSpeed =
         static_cast<float>(BIUtils::GetLongFromAttr(pARoot, "windSpeedEndAngle", 0)) / 180.f * PI;
 
-    // текущий тип заряда
+    // current charge type
     m_ChargeGreed.x = 1;
     m_ChargeGreed.y = 1;
     if ((tmpstr = BIUtils::GetStringFromAttr(pARoot, "chargeTextureGreed", nullptr)) != nullptr)
@@ -621,7 +621,7 @@ void BATTLE_NAVIGATOR::Init(VDX9RENDER *RenderService, Entity *pOwnerEI)
     if ((tmpstr = BIUtils::GetStringFromAttr(pARoot, "chargePictureSize", nullptr)) != nullptr)
         sscanf(tmpstr, "%d,%d", &m_ChargeSize.x, &m_ChargeSize.y);
 
-    // порох
+    // powder
     m_PowderGreed.x = 1;
     m_PowderGreed.y = 1;
     if ((tmpstr = BIUtils::GetStringFromAttr(pARoot, "powderTextureGreed", nullptr)) != nullptr)
@@ -641,7 +641,7 @@ void BATTLE_NAVIGATOR::Init(VDX9RENDER *RenderService, Entity *pOwnerEI)
     if ((tmpstr = BIUtils::GetStringFromAttr(pARoot, "powderPictureSize", nullptr)) != nullptr)
         sscanf(tmpstr, "%d,%d", &m_PowderSize.x, &m_PowderSize.y);
 
-    // иконка ветра
+    // wind icon
     m_curSailState = 0;
     m_WindGreed.x = 1;
     m_WindGreed.y = 1;
@@ -662,7 +662,7 @@ void BATTLE_NAVIGATOR::Init(VDX9RENDER *RenderService, Entity *pOwnerEI)
     if ((tmpstr = BIUtils::GetStringFromAttr(pARoot, "windPictureSize", nullptr)) != nullptr)
         sscanf(tmpstr, "%d,%d", &m_WindSize.x, &m_WindSize.y);
 
-    // иконка положения парусов
+    // sail position icon
     m_curSailState = 0;
     m_SailGreed.x = 1;
     m_SailGreed.y = 1;
@@ -777,7 +777,7 @@ void BATTLE_NAVIGATOR::Init(VDX9RENDER *RenderService, Entity *pOwnerEI)
         SetCircleVertexTex(pV);
         rs->UnLockVertexBuffer(m_idMapVBuf);
     }
-    // зона поражения пушками
+    // cannon fire zone
     auto *pv = static_cast<BI_NOTEXTURE_VERTEX *>(rs->LockVertexBuffer(m_idFireZoneVBuf));
     if (pv != nullptr)
     {
@@ -789,7 +789,7 @@ void BATTLE_NAVIGATOR::Init(VDX9RENDER *RenderService, Entity *pOwnerEI)
         }
         rs->UnLockVertexBuffer(m_idFireZoneVBuf);
     }
-    // корабли на карте
+    // ships on the map
     auto *pcv = static_cast<BI_COLORONLY_VERTEX *>(rs->LockVertexBuffer(m_idShipsVBuf));
     if (pcv != nullptr)
     {
@@ -801,7 +801,7 @@ void BATTLE_NAVIGATOR::Init(VDX9RENDER *RenderService, Entity *pOwnerEI)
         rs->UnLockVertexBuffer(m_idShipsVBuf);
     }
 
-    // треугольный градиент для подложки
+    // triangular gradient for the background
     pcv = static_cast<BI_COLORONLY_VERTEX *>(rs->LockVertexBuffer(m_idGradBackVBuf));
     if (pcv != nullptr)
     {
@@ -818,7 +818,7 @@ void BATTLE_NAVIGATOR::Init(VDX9RENDER *RenderService, Entity *pOwnerEI)
         rs->UnLockVertexBuffer(m_idGradBackVBuf);
     }
 
-    // Текущий тип заряда
+    // Current charge type
     pV = static_cast<BI_ONETEXTURE_VERTEX *>(rs->LockVertexBuffer(m_idCurChargeVBuf));
     if (pV != nullptr)
     {
@@ -982,7 +982,7 @@ void BATTLE_NAVIGATOR::SetMainCharacterData()
     const auto cAng = psd->pShip->GetAng();
     m_fAngle = cAng.y;
     m_fShipSpeed = static_cast<SHIP_BASE *>(psd->pShip)->State.vSpeed.z;
-    m_fShipSpeed *= m_fShipSpeedScale; // boal приведение скорости тут нужнее
+    m_fShipSpeed *= m_fShipSpeedScale; // speed reduction is more necessary here
     if (m_fShipSpeed > m_fMaxShipSpeed)
         m_fCurAnglShipSpeed = m_fEndAnglShipSpeed;
     else
@@ -990,7 +990,7 @@ void BATTLE_NAVIGATOR::SetMainCharacterData()
     m_fShipWindAgainst = ((SHIP_BASE *)psd->pShip)->GetWindAgainst() / 180.f * PI;
     // m_fShipSpeed *= m_fShipSpeedScale;
 
-    // получим значение ветра
+    // get the wind value
     UpdateWindParam();
     if (m_fWindStrength > m_fWindMaxStrength)
         m_fCurAnglWindSpeed = m_fEndAnglWindSpeed;
@@ -1055,10 +1055,10 @@ void BATTLE_NAVIGATOR::SetAnotherShip()
     // Fill ships buffer
     for (auto *psd = g_ShipList.GetShipRoot(); psd != nullptr; psd = psd->next)
     {
-        // не рисовать корабль основного героя
+        // do not draw the main character's ship
         if (psd == pMainCharacter)
             continue;
-        // определить координаты корабля и если они за пределами карты, то не рисовать корабль
+        // determine the coordinates of the ship and if they are outside the map, then do not draw the ship
         auto fX = (psd->pShip->GetPos().x - m_fXPos) * m_fMapRadius / (m_fWorldRad * m_fCurScale);
         auto fY = (psd->pShip->GetPos().z - m_fYPos) * m_fMapRadius / (m_fWorldRad * m_fCurScale);
         if (fX * fX + fY * fY > fSqrMapRad)
@@ -1066,7 +1066,7 @@ void BATTLE_NAVIGATOR::SetAnotherShip()
         const auto tmp = fX * cosf(m_fAngle) - fY * sinf(m_fAngle);
         fY = m_YNavigator - (fY * cosf(m_fAngle) + fX * sinf(m_fAngle)) * m_fAspectRatio;
         fX = tmp + m_XNavigator;
-        // определить цвет отображаемого корабля
+        // determine the color of the displayed ship
         auto dwColor = 0xFFFFFFFF;
         if (psd->dwShipColor == 0)
         {
@@ -1087,9 +1087,9 @@ void BATTLE_NAVIGATOR::SetAnotherShip()
             dwColor = psd->dwShipColor;
         if (psd->isDead)
             dwColor = m_dwDeadShipColor;
-        // определить угол корабля
+        // determine the angle of the ship
         const auto fAngle = psd->pShip->GetAng().y - m_fAngle;
-        // заполнить буфер
+        // fill buffer
         pv[idx].col = pv[idx + 1].col = pv[idx + 2].col = dwColor;
         pv[idx + 0].pos.x = fX + m_fShipShowRad * sinf(fAngle);
         pv[idx + 0].pos.y = fY - m_fShipShowRad * cosf(fAngle) * m_fAspectRatio;
@@ -1110,7 +1110,7 @@ void BATTLE_NAVIGATOR::ReleaseAll()
     m_pAWeather = nullptr;
     m_bYesIsland = false;
 
-    // текстуры
+    // textures
     TEXTURE_RELEASE(rs, m_idCompasTex);
     TEXTURE_RELEASE(rs, m_idSpeedTex);
     TEXTURE_RELEASE(rs, m_idCannonTex);

@@ -163,7 +163,7 @@ uint32_t CXI_RECTANGLE::MessageProc(long msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
-    case 0: // Сменить позицию прямоугольника
+    case 0: // Change the position of the rectangle
     {
         XYRECT newRect;
         newRect.left = message.Long();
@@ -173,7 +173,7 @@ uint32_t CXI_RECTANGLE::MessageProc(long msgcode, MESSAGE &message)
         ChangePosition(newRect);
     }
     break;
-    case 1: // Сменить цвет прямоугольника и границы
+    case 1: // Change rectangle and border color
     {
         m_dwTopColor = m_dwBottomColor = ARGB(255, 255, 255, 255);
         m_dwLeftColor = m_dwRightColor = message.Long();

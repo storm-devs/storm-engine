@@ -230,7 +230,7 @@ void CORE::ProcessEngineIniFile()
             throw std::exception("fail to create program");
         if (!Compiler->Run())
             throw std::exception("fail to run program");
-        // Тест версии скрипта
+        // Script version test
         long iScriptVersion = 0xFFFFFFFF;
         auto *pVScriptVersion = static_cast<VDATA *>(core.GetScriptVariable("iScriptVersion"));
         if (pVScriptVersion)

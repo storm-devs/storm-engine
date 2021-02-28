@@ -65,9 +65,9 @@ long BIManCommandList::CommandAdding()
     {
         auto *pA = pAttr->GetAttributeClass(i);
         if (pA == nullptr)
-            continue; // нет такого атрибута
+            continue; // no such attribute
         if (pA->GetAttributeAsDword("enable", 0) == 0)
-            continue; // команда недоступна
+            continue; // command not available
         const long pictureNum = pA->GetAttributeAsDword("picNum", 0);
         const long selPictureNum = pA->GetAttributeAsDword("selPicNum", 0);
         const long texNum = pA->GetAttributeAsDword("texNum", -1);
@@ -91,9 +91,9 @@ long BIManCommandList::UserIconsAdding()
     {
         auto *pA = pAttr->GetAttributeClass(i);
         if (pA == nullptr)
-            continue; // нет такого атрибута
+            continue; // no such attribute
         if (pA->GetAttributeAsDword("enable", 0) == 0)
-            continue; // команда недоступна
+            continue; // command not available
         const long pictureNum = pA->GetAttributeAsDword("pic", 0);
         const long selPictureNum = pA->GetAttributeAsDword("selpic", 0);
         const long textureNum = pA->GetAttributeAsDword("tex", -1);
@@ -118,9 +118,9 @@ long BIManCommandList::AbilityAdding()
     {
         auto *pA = pAttr->GetAttributeClass(i);
         if (pA == nullptr)
-            continue; // нет такого атрибута
+            continue; // no such attribute
         if (pA->GetAttributeAsDword("enable", 0) == 0)
-            continue; // команда недоступна
+            continue; // command not available
         const long pictureNum = pA->GetAttributeAsDword("picNum", 0);
         const long selPictureNum = pA->GetAttributeAsDword("selPicNum", 0);
         const long textureNum = pA->GetAttributeAsDword("texNum", -1);

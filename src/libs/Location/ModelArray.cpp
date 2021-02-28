@@ -1,12 +1,12 @@
-//============================================================================================
-//	Spirenkov Maxim, 2001
-//--------------------------------------------------------------------------------------------
-//	Sea dogs II
-//--------------------------------------------------------------------------------------------
-//	ModelArray
-//--------------------------------------------------------------------------------------------
-//	Хранение информации о моделях
-//============================================================================================
+// ============================================================================================
+// Spirenkov Maxim, 2001
+// --------------------------------------------------------------------------------------------
+// Sea dogs II
+// --------------------------------------------------------------------------------------------
+// ModelArray
+// --------------------------------------------------------------------------------------------
+// Storing model information
+// ============================================================================================
 
 #include "geometry.h"
 
@@ -15,9 +15,9 @@
 #include "ModelArray.h"
 #include "core.h"
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 ModelArray::ModelArray()
 {
@@ -35,15 +35,15 @@ ModelArray::~ModelArray()
         DeleteModel(numModels - 1);
 }
 
-//Создать модель
+// Create model
 long ModelArray::CreateModel(const char *modelName, const char *technique, long level, bool isVisible, void *pLights)
 {
     if (!modelName || !modelName[0])
         return -1;
-    //Путь для модельки
+    // Path to the model
     strcpy_s(resPath, modelspath);
     strcat_s(resPath, modelName);
-    //Путь для текстур
+    // Path to textures
     auto *gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
     if (!gs)
     {
@@ -51,13 +51,13 @@ long ModelArray::CreateModel(const char *modelName, const char *technique, long 
         return -1;
     }
     gs->SetTexturePath(texturespath);
-    //Расширяем массивчик
+    // Expanding the array
     if (numModels == maxModels)
     {
         maxModels += 4;
         model.resize(maxModels);
     }
-    //Создаём модельку
+    // Create a model
     entid_t id, idModelRealizer;
     if (!(id = EntityManager::CreateEntity("modelr")))
         return -1;
@@ -78,7 +78,7 @@ long ModelArray::CreateModel(const char *modelName, const char *technique, long 
         EntityManager::EraseEntity(idModelRealizer);
         return -1;
     }
-    //Загружаем
+    // Loading
     core.Send_Message(id, "ls", MSG_MODEL_SET_LIGHT_PATH, lightpath);
     core.Send_Message(id, "ls", MSG_MODEL_SET_LIGHT_LMPATH, shadowpath);
     if (!core.Send_Message(id, "ls", MSG_MODEL_LOAD_GEO, resPath))
@@ -90,10 +90,10 @@ long ModelArray::CreateModel(const char *modelName, const char *technique, long 
     }
     gs->SetTexturePath("");
 
-    //Запоминаем
+    // remember
     model[numModels].id = id;
     model[numModels].modelrealizer = idModelRealizer;
-    //Сохраняем имя модельки
+    // Save the model name
     if (strlen(modelName) < MA_MAX_NAME_LENGTH)
     {
         strcpy_s(model[numModels].name, modelName);
@@ -110,7 +110,7 @@ long ModelArray::CreateModel(const char *modelName, const char *technique, long 
     model[numModels].reflection = nullptr;
     model[numModels].flags = 0;
     model[numModels].isVisible = isVisible;
-    //Устанавливаем технику модельки
+    // Setting the model technique
     /*if(!technique || !technique[0])
     {
       technique = "DLightModel";
@@ -125,22 +125,22 @@ long ModelArray::CreateModel(const char *modelName, const char *technique, long 
             nd->SetTechnique(technique);
         }
     }
-    //Возвращаем индекс
+    // Returning the index
     return numModels++;
 }
 
-//Удалить модель
+// Delete model
 void ModelArray::DeleteModel(long modelIndex)
 {
     Assert(modelIndex >= 0 && modelIndex < numModels);
-    //Удаляем эфекты
+    // Removing effects
     delete model[modelIndex].slider;
     model[modelIndex].slider = nullptr;
     delete model[modelIndex].rotator;
     model[modelIndex].rotator = nullptr;
     delete model[modelIndex].reflection;
     model[modelIndex].reflection = nullptr;
-    //Удаляем модельку
+    // Delete the model
     EntityManager::EraseEntity(model[modelIndex].modelrealizer);
     EntityManager::EraseEntity(model[modelIndex].id);
     numModels--;
@@ -148,19 +148,19 @@ void ModelArray::DeleteModel(long modelIndex)
         model[modelIndex] = model[numModels];
 }
 
-//Установить модели анимацию
+// Set animation to the model
 bool ModelArray::SetAnimation(long modelIndex, const char *modelAni)
 {
     Assert(modelIndex >= 0 && modelIndex < numModels);
     return core.Send_Message(model[modelIndex].id, "ls", MSG_MODEL_LOAD_ANI, modelAni) != 0;
 }
 
-//Найти индекс модели по имени
+// Find model index by name
 long ModelArray::FindModel(const char *modelName)
 {
     if (!modelName)
         return -1;
-    //Конвертим во внутренние имя
+    // Convert to internal names
     char buf[MA_MAX_NAME_LENGTH];
     if (strlen(modelName) < MA_MAX_NAME_LENGTH)
     {
@@ -171,9 +171,9 @@ long ModelArray::FindModel(const char *modelName)
         memcpy(buf, modelName, MA_MAX_NAME_LENGTH);
         buf[MA_MAX_NAME_LENGTH - 1] = 0;
     }
-    //Ищем хэшь значение
+    // Looking for hash value
     const auto hash = CalcHashString(buf);
-    //Ищем модельку
+    // looking for a model
     for (long i = 0; i < numModels; i++)
     {
         if (model[i].hash == hash)
@@ -187,13 +187,13 @@ long ModelArray::FindModel(const char *modelName)
     return -1;
 }
 
-//Количество моделий
+// Number of models
 long ModelArray::Models() const
 {
     return numModels;
 }
 
-//Получение ID модели по индексу
+// Getting model ID by index
 entid_t ModelArray::ID(long modelIndex)
 {
     Assert(modelIndex >= 0 && modelIndex < numModels);
@@ -206,14 +206,14 @@ entid_t ModelArray::RealizerID(long modelIndex)
     return model[modelIndex].modelrealizer;
 }
 
-//Получение модели по индексу
+// Getting a model by index
 MODEL *ModelArray::operator[](long modelIndex)
 {
     Assert(modelIndex >= 0 && modelIndex < numModels);
     return static_cast<MODEL *>(EntityManager::GetEntityPointer(model[modelIndex].id));
 }
 
-//Получение анимации по индексу
+// Getting animation by index
 Animation *ModelArray::GetAnimation(long modelIndex)
 {
     Assert(modelIndex >= 0 && modelIndex < numModels);
@@ -223,7 +223,7 @@ Animation *ModelArray::GetAnimation(long modelIndex)
     return m->GetAnimation();
 }
 
-//Установить модельке анимацию скольжения uv
+// Set slide uv animation to the model
 void ModelArray::SetUVSlide(long modelIndex, float u0, float v0, float u1, float v1)
 {
     Assert(modelIndex >= 0 && modelIndex < numModels);
@@ -243,7 +243,7 @@ void ModelArray::SetUVSlide(long modelIndex, float u0, float v0, float u1, float
         core.Trace("Location: Can't get model pointer for set RenderTuner");
 }
 
-//Установить модельке анимацию вращения
+// Set a rotation animation to the model
 void ModelArray::SetRotation(long modelIndex, float rx, float ry, float rz)
 {
     Assert(modelIndex >= 0 && modelIndex < numModels);
@@ -254,7 +254,7 @@ void ModelArray::SetRotation(long modelIndex, float rx, float ry, float rz)
     model[modelIndex].rotator->rz = rz;
 }
 
-//Установить модельке режим генерации матрицы для отражения
+// Set the reflection matrix generation mode to the model
 void ModelArray::SetReflection(long modelIndex, float scale)
 {
     Assert(modelIndex >= 0 && modelIndex < numModels);
@@ -273,7 +273,7 @@ void ModelArray::SetReflection(long modelIndex, float scale)
         core.Trace("Location: Can't get model pointer for set RenderTuner");
 }
 
-//Анимировать текстурные координаты
+// Animate texture coordinates
 void ModelArray::Update(float dltTime)
 {
     for (long i = 0; i < numModels; i++)
@@ -411,7 +411,7 @@ void ModelArray::UpdatePath(char *path)
         path[j] = 0;
 }
 
-//Проверить видимость 2-х точек
+// Check the visibility of two points
 bool ModelArray::VisibleTest(const CVECTOR &p1, const CVECTOR &p2)
 {
     for (long i = 0; i < numModels; i++)
@@ -426,7 +426,7 @@ bool ModelArray::VisibleTest(const CVECTOR &p1, const CVECTOR &p2)
     return true;
 }
 
-//Протрейсит луч через локацию
+// Trace the ray through the location
 float ModelArray::Trace(const CVECTOR &src, const CVECTOR &dst)
 {
     isHavecTrg = false;

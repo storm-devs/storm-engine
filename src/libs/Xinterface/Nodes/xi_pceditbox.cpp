@@ -310,7 +310,7 @@ void CXI_PCEDITBOX::UpdateString(std::string &str)
                 {
                     switch (pKeys[n].ucVKey.c)
                     {
-                        // символы управления
+                        // control symbols
                     case VK_BACK:
                         if (m_nEditPos > 0)
                         {
@@ -349,7 +349,7 @@ void CXI_PCEDITBOX::UpdateString(std::string &str)
             {
               switch( chr )
               {
-                // символы управления
+              // control characters
               case SpecSymbol_back:
                 if( m_nEditPos>0 ) {
                   m_nEditPos--;
@@ -365,7 +365,7 @@ void CXI_PCEDITBOX::UpdateString(std::string &str)
               case SpecSymbol_left: if( m_nEditPos > 0 ) m_nEditPos--; break;
               case SpecSymbol_right: if( m_nEditPos < (long)str.size() ) m_nEditPos++; break;
 
-                // пропускаем ненужные символы
+              // skip unnecessary characters
               case SpecSymbol_up:
               case SpecSymbol_down:
               case SpecSymbol_tab:
@@ -373,7 +373,7 @@ void CXI_PCEDITBOX::UpdateString(std::string &str)
               case SpecSymbol_escape:
                 break;
 
-                // а это то что мы вводим
+              // and this is what we enter
               default:
                 InsertSymbol( str, chr );
               }
@@ -383,7 +383,7 @@ void CXI_PCEDITBOX::UpdateString(std::string &str)
             if (m_bDisguiseString)
                 DisguiseString(str);
 
-            // определение первого выводимого символа
+            // defining the first character to display
             char param[2048];
             param[sizeof(param) - 1] = 0;
             sprintf_s(param, sizeof(param) - 1, "%s", str.c_str());
@@ -455,12 +455,12 @@ void CXI_PCEDITBOX::InsertSymbol(std::string &str, utf8::u8_char chr)
 
     std::string chrInsert(chr.b, chr.l);
     int strLength = utf8::Utf8StringLength(str.c_str());
-    // проверка на максимальное число символов
+    // check for maximum number of characters
     if (m_nMaxSize >= 0 && strLength >= m_nMaxSize)
         return;
 
     int offset = utf8::u8_offset(str.c_str(), m_nEditPos);
-    // проверка на максимальную ширину строки
+    // checking for maximum line width
     if (m_nMaxWidth >= 0)
     {
         std::string strResult = str;

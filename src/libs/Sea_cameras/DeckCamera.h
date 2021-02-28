@@ -24,8 +24,8 @@ class DECK_CAMERA : public COMMON_CAMERA
 
     VERTEX tri[4];
 
-    // параметры загружаемые из INI-файла //
-    //--------------------------------------
+    // parameters loaded from INI file //
+    // --------------------------------------
     float fSensivityDistance, fSensivityHeightAngle, fSensivityAzimuthAngle;
     float fRockingX, fRockingZ;
 

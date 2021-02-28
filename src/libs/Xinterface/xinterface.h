@@ -35,8 +35,8 @@ class XINTERFACE : public XINTERFACE_BASE
     char *m_strDefHelpTextureFile;
     FXYRECT m_frectDefHelpTextureUV;
 
-    // параметры получаемые из INI-файла //
-    //-------------------------------------
+    // parameters obtained from INI file //
+    // -------------------------------------
     float fScale;
     XYRECT GlobalScreenRect;
     uint32_t dwScreenWidth;
@@ -317,7 +317,7 @@ class XINTERFACE : public XINTERFACE_BASE
     std::vector<STRING_Entity> m_stringes;
     int m_nStringQuantity;
 
-    // dinamic images data
+    // dynamic images data
     struct IMAGE_Entity
     {
         XYRECT position;

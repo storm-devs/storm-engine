@@ -137,7 +137,7 @@ void CXI_SLIDEPICTURE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
     pSlideSpeedList = nullptr;
 
     auto bUse1Ini = true;
-    // Расчет размера таблицы скоростей
+    // Calculating the size of the speed table
     if (ini1->ReadString(name1, "speed", param, sizeof(param) - 1, ""))
     {
         do
@@ -164,7 +164,7 @@ void CXI_SLIDEPICTURE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
         }
     }
 
-    // заполняем таблицу скоростей
+    // fill in the speed table
     if (bUse1Ini)
     {
         ini1->ReadString(name1, "speed", param, sizeof(param) - 1, "");
@@ -254,7 +254,7 @@ void CXI_SLIDEPICTURE::Update(uint32_t Delta_Time)
     nLifeTime -= Delta_Time;
     if (nLifeTime < 0)
     {
-        // переход на другую скорость
+        // changing speed
         nCurSlide++;
         if (nCurSlide >= nSlideListSize)
             nCurSlide = 0;

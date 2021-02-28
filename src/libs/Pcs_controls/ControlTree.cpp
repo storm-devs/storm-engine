@@ -25,8 +25,8 @@ void ControlTree::ControlChild::Process(float fDeltaTime, ControlTree *pControlT
 {
     long n;
 
-    // нет базовой контролки - всегда считаем активной
-    // сразу переходим к дочерним веткам
+    // no basic control - always considered active
+    // go directly to the child branches
     if (sControlName.empty())
     {
         bActive = true;
@@ -38,7 +38,7 @@ void ControlTree::ControlChild::Process(float fDeltaTime, ControlTree *pControlT
     CONTROL_STATE cs;
     core.Controls->GetControlState((char *)sControlName.c_str(), cs);
 
-    // если узел уже активизирован, то считаем таймаут
+    // if the node is already activated, then calculate the timeout
     if (bActive)
     {
         if (fCurTime <= fTimeOut)
@@ -47,18 +47,18 @@ void ControlTree::ControlChild::Process(float fDeltaTime, ControlTree *pControlT
         }
         /*else
         {
-            bActive = false;    // boal чтоб снималось
+            bActive = false; // boal to allow deactivation
         } */
     }
     else
-    // if (!bActive)   // boal если уже нет
-    // если контролка не активизировалась, то проверяем ее на активизацию
+    // if (! bActive) // boal if not already
+    // if the control has not been activated, then check it for activation
     {
-        // ничего не нажато - уходим
+        // nothing is pressed - leave
         if (cs.state == CST_INACTIVATED || cs.state == CST_INACTIVE)
             return;
 
-        // было первое нажатие нажатие - активизируем и ставим таймаут на начало
+        // there was the first click - activate and set the timeout to the beginning
         bActive = true;
         bWaitReleaseControl = false;
         fCurTime = 0.f;
@@ -72,7 +72,7 @@ void ControlTree::ControlChild::Process(float fDeltaTime, ControlTree *pControlT
         pControlTree->ControlInAction(sControlName.c_str(), nLayer);
     }
 
-    // таймаут прошел - включаем выходную контролку
+    // timeout passed - turn on the output control
     if ((!bWaitReleaseControl) && fCurTime >= fTimeOut)
     {
         bActive =
@@ -80,7 +80,7 @@ void ControlTree::ControlChild::Process(float fDeltaTime, ControlTree *pControlT
         return;
     }
 
-    // переходим к дочерним веткам
+    // go to child branches
     auto bChildActive = false;
     for (n = 0; n < aChild.size(); n++)
     {
@@ -88,7 +88,7 @@ void ControlTree::ControlChild::Process(float fDeltaTime, ControlTree *pControlT
         if (aChild[n].bActive)
             bChildActive = true;
     }
-    // как только активизируется потомок, то текущая ветка не может выдавать контрол по таймауту
+    // as soon as the child is activated, then the current branch cannot issue control by timeout
     if (bChildActive)
         bWaitReleaseControl = true;
 
@@ -138,8 +138,8 @@ void ControlTree::Process()
 {
     long n;
 
-    // все контролы которые деактивировались становятся неактивными
-    // а все акивированные активными
+    // all controls that have been deactivated become inactive
+    // and all activated become active
     for (n = 0; n < m_aOutControlList.size(); n++)
     {
         if (m_aOutControlList[n].state == CST_INACTIVATED)
@@ -148,10 +148,10 @@ void ControlTree::Process()
             m_aOutControlList[n].state = CST_ACTIVE;
     }
 
-    // работаем с деревом
+    // process the tree
     m_RootControl.Process(core.GetDeltaTime() * 0.001f, this);
 
-    // удалим деактивированные контролы
+    // remove deactivated controls
     for (n = 0; n < m_aOutControlList.size(); n++)
     {
         if (m_aOutControlList[n].state == CST_INACTIVE)
@@ -231,13 +231,13 @@ bool ControlTree::AddOutControl(const char *pcOutControlName, bool isActive)
     if (!pcOutControlName || !pcOutControlName[0])
         return false;
 
-    // ищем контролку в списке
+    // looking for a control in the list
     long n;
     for (n = 0; n < m_aOutControlList.size(); n++)
         if (m_aOutControlList[n].sControlName == pcOutControlName)
             break;
 
-    // не было такой контролки - добавляем с предыдущим состоянием = ненажата
+    // there was no such control - add with the previous state = unpressed
     if (n >= m_aOutControlList.size())
     {
         OutControlInfo info;
@@ -247,7 +247,7 @@ bool ControlTree::AddOutControl(const char *pcOutControlName, bool isActive)
         isActive = true;
     }
 
-    // нажата контролка
+    // control pressed
     const auto cs_prev = m_aOutControlList[n].state;
     if (isActive)
     {

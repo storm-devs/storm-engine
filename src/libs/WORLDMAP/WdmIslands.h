@@ -32,38 +32,38 @@ class WdmIslands : public WdmRenderObject
 {
     struct Islands
     {
-        WdmRenderModel *model; //Моделька острова
-        WdmRenderModel *area;  //Моделька области острова
-        WdmRenderModel *palms; //Моделька с пальмами
-        WdmIslandWaves *waves; //Моделька с пеной
-        CMatrix toLocal;       //Преобразование в локальную систему острова
-        std::string modelName; //Имя модельки острова
-        CVECTOR worldPosition; //Позиция острова в мире
+        WdmRenderModel *model; // Island model
+        WdmRenderModel *area;  // Island area model
+        WdmRenderModel *palms; // Model with palm trees
+        WdmIslandWaves *waves; // Model with foam
+        CMatrix toLocal;       // Conversion to the local island system
+        std::string modelName; // Island Model Name
+        CVECTOR worldPosition; // The position of the island in the world
     };
 
     struct Label
     {
-        std::string text; //Текст метки
-        CVECTOR pos;      //Позиция метки
-        float l, t, r, b; //Прямоугольник, описывающий метку в экранных координатах
-        float dl, dt, dr, db; //Смещения, чтобы получить прямоугольник, при известной точке на экране
-        float textX, textY;   //Относительная позиция текста
-        float iconX, iconY;   //Относительная позиция картинки
-        float alpha;          //Текущее состояние прямоугольника
-        float heightView;     //Высота начиная с которой метка гаснет
-        long font;            //Индекс шкифта в массиве шрифтов
-        long icon;            //Индекс картинки
-        uint32_t weight;      //Вес смещения
-        std::string id;       //Идентификатор метки
-        uint32_t idHash;      //Хэшь значение идентификатора
-        long next;            //Следующая в списке метка
-        std::string locatorName; //Имя локатора на котором размещаемся
+        std::string text; // Label text
+        CVECTOR pos;      // Label position
+        float l, t, r, b; // Rectangle describing the label in screen coordinates
+        float dl, dt, dr, db; // Offsets to get a rectangle at a known point on the screen
+        float textX, textY;   // Relative text position
+        float iconX, iconY;   // The relative position of the picture
+        float alpha;          // The current state of the rectangle
+        float heightView;     // Height from which the label goes out
+        long font;            // Font index in font array
+        long icon;            // Image index
+        uint32_t weight;      // Offset weight
+        std::string id;       // Label ID
+        uint32_t idHash;      // Hash value of identifier
+        long next;            // Next label on the list
+        std::string locatorName; // The name of the locator in which it is located
     };
 
     struct Font
     {
-        std::string name; //Имя шрифта
-        long id;          //Его идентификатор
+        std::string name; // Font name
+        long id;          // Its identifier
     };
 
     struct Icons
@@ -85,43 +85,43 @@ class WdmIslands : public WdmRenderObject
         std::string name;
     };
 
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     WdmIslands(WdmIslands &&) = delete;
     WdmIslands(const WdmIslands &) = delete;
     WdmIslands();
     virtual ~WdmIslands();
 
-    //Проверить на возможное столкновение
+    // Check for possible collision
     bool CollisionTest(CMatrix &objMtx, float length, float width, bool heighTest = true);
-    //Проверить наличие в данном месте треугольников
+    // Check for the presence of triangles in this place
     bool ObstacleTest(float x, float z, float radius);
 
-    //Зачитать данные об островах
+    // Read Island Data
     void SetIslandsData(ATTRIBUTES *apnt, bool isChange);
 
-    //Найти направление для прибытия в заданную точку назначения из текущей
+    // Find the direction to arrive at a given destination from the current
     void FindDirection(const CVECTOR &position, const CVECTOR &destination, CVECTOR &direction) const;
-    //Найти силу отталкивания
+    // Find the repulsive force
     void FindReaction(const CVECTOR &position, CVECTOR &reaction) const;
-    //Найти случайную точку для мерчанта
+    // Find a random point for a merchant
     bool GetRandomMerchantPoint(CVECTOR &p);
-    //Получить координаты квестового локатора
+    // Get the coordinates of the quest locator
     bool GetQuestLocator(const char *locName, CVECTOR &p);
 
-    //Проверить попадание кораблика в зону острова
+    // Check if the boat is in the island zone
     bool CheckIslandArea(const char *islandName, float x, float z);
-    //Получить ближайшую точку к зоне острова
+    // Get the closest point to the island zone
     void GetNearPointToArea(const char *islandName, float &x, float &z);
 
     void Update(float dltTime) override;
     void LRender(VDX9RENDER *rs) override;
 
-    //--------------------------------------------------------------------------------------------
-    //Инкапсуляция
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Encapsulation
+    // --------------------------------------------------------------------------------------------
   private:
     bool IsShipInArea(long islIndex, const CVECTOR &pos);
     static bool AddEdges(const GEOS::VERTEX *vrt, long numVrt);
@@ -134,26 +134,26 @@ class WdmIslands : public WdmRenderObject
     static CVECTOR Norm2D(const CVECTOR &ret);
 
   private:
-    //Модель, содержащая все локаторы
+    // Model containing all locators
     WdmRenderModel *baseModel;
-    //Патч для поиска пути
+    // Pathfinder patch
     PtcData *patch;
-    //Модели островов
+    // Island models
     std::vector<Islands> islands;
-    //Метки
+    // Labels
     std::vector<Label> labels;
-    //Шрифты используемые метками
+    // Fonts used by labels
     std::vector<Font> fonts;
-    //Картинки
+    // Images
     Icons icons;
-    //Зарегистрированные на отрисовку метки
+    // Labels registered for rendering
     std::vector<long> labelSort;
-    //Точки места назначения мерчантов
+    // Merchant destinations
     std::vector<CVECTOR> merchants;
-    //Точки места назначения квестовых энкоунтеров
+    // Destination Points of Quest Encounters
     std::vector<Quest> quests;
 
-    //Входная таблица для поиска меток
+    // Input table for finding labels
     long labelsEntry[1024];
 
     static CMatrix curMatrix, locMatrix;

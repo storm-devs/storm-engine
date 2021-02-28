@@ -108,7 +108,7 @@ uint32_t CXI_VIDEORECT::MessageProc(long msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
-    case 0: // запустить ролик
+    case 0: // start video
     {
         char param[256];
         message.String(sizeof(param), param);

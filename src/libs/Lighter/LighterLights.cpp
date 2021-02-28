@@ -10,9 +10,9 @@
 
 #include "LighterLights.h"
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 LighterLights::LighterLights()
 {
@@ -99,7 +99,7 @@ void LighterLights::SetDefLightParam(long i)
 
 void LighterLights::PostInit()
 {
-    //Соберём все существующие группы
+    // collect all existing groups
     auto *const grp = new char *[numLights + 1];
     long numGrp = 0;
     for (long i = 0; i < numLights; i++)
@@ -113,7 +113,7 @@ void LighterLights::PostInit()
         if (j == numGrp)
             grp[numGrp++] = light[i].group;
     }
-    //Добавляем груповые источники освещения
+    // Adding group lights
     if (numLights + numGrp > maxLights)
     {
         maxLights += numGrp + 4;
@@ -129,7 +129,7 @@ void LighterLights::PostInit()
         std::copy(grp[i], grp[i] + len, light[numLights].group);
         light[numLights].type = Light::t_group;
         light[numLights].isOn = true;
-        //Собираем параметры
+        // Collecting parameters
         auto nrm = 0.0f;
         for (long j = 0; j < numLights; j++)
         {

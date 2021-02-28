@@ -5,7 +5,7 @@
 #include "rands.h"
 #include <fmod_errors.h>
 
-//для debug
+// for debugging
 #include "core.h"
 
 #include "DebugEntity.h"
@@ -92,7 +92,7 @@ bool SoundService::Init()
 void SoundService::RunEnd()
 {
     CreateEntityIfNeed();
-    //Внутреннее обновление FMOD
+    // Internal FMOD update
     CHECKFMODERR(system->update());
 }
 
@@ -164,13 +164,13 @@ void SoundService::RunStart()
     ProcessFader(0);
     ProcessFader(1);
 
-    //Освобождаем звуки которые проигрались...
+    // release the sounds that have played ...
     for (auto i = 0; i < MAX_SOUNDS_SLOTS; i++)
     {
         if (PlayingSounds[i].bFree)
             continue;
 
-        //Если просто на паузе стоит, трогать его не надо...
+        // If it's just paused, don't need to touch it ...
         bool paused = true;
 
         status = PlayingSounds[i].channel->getPaused(&paused);
@@ -273,11 +273,11 @@ TSD_ID SoundService::SoundPlay(const char *_name, eSoundType _type, eVolumeType 
     // aliases don`t contain `\`
     if (!strchr(_name, '\\'))
     {
-        //Пробуем найти в алиасах
+        // Trying to find in aliases
         const auto AliasIdx = GetAliasIndexByName(_name);
         if (AliasIdx >= 0 && Aliases[AliasIdx].SoundFiles.size() > 0)
         {
-            //Играем из алиаса звук...
+            // play sound from the alias ...
             FileName = GetRandomName(&Aliases[AliasIdx]);
             if (TRACE_INFORMATION)
                 core.Trace("Play sound from alias %s", FileName.c_str());
@@ -301,7 +301,7 @@ TSD_ID SoundService::SoundPlay(const char *_name, eSoundType _type, eVolumeType 
 
     if (_type == MP3_STEREO)
     {
-        //Стримленые играем сразу, без кеширования и всегда в 0 слоте....
+        // play streamed immediately, without caching and always in 0 slot ...
         try
         {
             uint32_t dwMode = FMOD_LOOP_OFF;
@@ -343,7 +343,7 @@ TSD_ID SoundService::SoundPlay(const char *_name, eSoundType _type, eVolumeType 
     }
     else
     {
-        //Для всех остальных звуков берем из кеша
+        // For all other sounds, take from the cache
         const auto CacheIdx = GetFromCache(SoundName.c_str(), _type);
         if (CacheIdx < 0)
         {
@@ -365,7 +365,7 @@ TSD_ID SoundService::SoundPlay(const char *_name, eSoundType _type, eVolumeType 
     PlayingSounds[SoundIdx].type = _volumeType;
     PlayingSounds[SoundIdx].fSoundVolume = _volume;
 
-    //Начинаем проигрывать звук, правда запауженный...
+    // start to play the sound, but paused ...
     const auto status = CHECKFMODERR(system->playSound(sound, nullptr, true, &PlayingSounds[SoundIdx].channel));
     if (status != FMOD_OK)
     {
@@ -385,13 +385,13 @@ TSD_ID SoundService::SoundPlay(const char *_name, eSoundType _type, eVolumeType 
     if (_prior > 255)
         _prior = 255;
 
-    //Приоритетность ставим....
+    // put priority ...
     PlayingSounds[SoundIdx].channel->setPriority(_prior);
 
-    // 3D каналу параметры настраиваем...
+    // Adjust parameters for 3D channel ...
     if (_type == PCM_3D)
     {
-        //Если надо ставим параметры по дефолту...
+        // If necessary, set the parameters by default ...
         if (_minDistance < 0.0f)
             _minDistance = 0.0f;
         if (_maxDistance < 0.0f)
@@ -436,7 +436,7 @@ TSD_ID SoundService::SoundPlay(const char *_name, eSoundType _type, eVolumeType 
     PlayingSounds[SoundIdx].Name = std::move(SoundName);
     PlayingSounds[SoundIdx].sound_type = _type;
 
-    //Если не просто кеширование.... то снимаем с паузы...
+    // If not just caching ... then unpause ...
     if (!_simpleCache)
     {
         CHECKFMODERR(PlayingSounds[SoundIdx].channel->setPaused(false));
@@ -448,7 +448,7 @@ TSD_ID SoundService::SoundPlay(const char *_name, eSoundType _type, eVolumeType 
 
     PlayingSounds[SoundIdx].bFree = false;
 
-    //Лупинг задаем..
+    // set the looping ..
     if (_looped)
     {
         CHECKFMODERR(PlayingSounds[SoundIdx].channel->setMode(FMOD_LOOP_NORMAL));
@@ -458,7 +458,7 @@ TSD_ID SoundService::SoundPlay(const char *_name, eSoundType _type, eVolumeType 
         CHECKFMODERR(PlayingSounds[SoundIdx].channel->setMode(FMOD_LOOP_OFF));
     }
 
-    //---------- пробегаем по всем звукам ищем с таким же channel --------------
+    // ---------- loop through all sounds looking for the one with the same channel --------------
     for (uint32_t j = 0; j < MAX_SOUNDS_SLOTS; j++)
     {
         if (j == SoundIdx)
@@ -466,12 +466,12 @@ TSD_ID SoundService::SoundPlay(const char *_name, eSoundType _type, eVolumeType 
 
         if (PlayingSounds[j].channel == PlayingSounds[SoundIdx].channel)
         {
-            //Помечаем, что выкинулся звук....
-            //что бы его не стопить....
+            // note that the sound is thrown out ...
+            // so as not to stop him ...
             PlayingSounds[j].bFree = true;
         }
     }
-    //Возвращаем ID звука...
+    // Returning the sound ID ...
     return SoundID;
 }
 
@@ -757,7 +757,7 @@ void SoundService::SoundStop(TSD_ID _id, long _time)
 
     if (_id == 0)
     {
-        //--------- удаляем все звуки нах. -----------------------------------------
+        // --------- remove all sounds -----------------------------------------
         int start = 0;
         if (_time > 0)
         {
@@ -837,13 +837,13 @@ void SoundService::SoundStop(TSD_ID _id, long _time)
                 OGG_sound[1] = nullptr;
             }
         }
-        //--------- удаляем все звуки нах. -----------------------------------------
+        // --------- remove all sounds -----------------------------------------
         return;
     }
 
     _id--;
 
-    //Удаляем выбранный
+    // Delete the selected
     if (PlayingSounds[_id].bFree)
         return;
 
@@ -1098,15 +1098,15 @@ void SoundService::DebugDraw()
 
         if (PlayingSounds[i].sound_type == PCM_3D)
         {
-            // 0xFFFFFF00 играет но не слышно
-            // 0xFFFF0000 не играет, отклипировался
-            // 0xFF00FF00 играет
+            // 0xFFFFFF00 plays but cannot be heard
+            // 0xFFFF0000 not playing
+            // 0xFF00FF00 is playing
 
             Color drawColor = Color(0xFFFF0000);
 
             if (!bVirtual)
             {
-                // морфируем между желтым audib 0 и зеленыи audib 1 цветами
+                // morph between yellow audib 0 and green audib 1 colors
                 auto Zero = Color(0xFFFFFF00);
                 auto Full = Color(0xFF00FF00);
                 drawColor.Lerp(Zero, Full, audib);
@@ -1204,15 +1204,15 @@ int SoundService::GetFromCache(const char *szName, eSoundType _type)
     return (SoundCache.size() - 1);
 }
 
-//Написать текст
+// Write text
 void SoundService::DebugPrint3D(const CVECTOR &pos3D, float rad, long line, float alpha, uint32_t color, float scale,
                                 const char *format, ...) const
 {
     static char buf[256];
-    //Печатаем в буфер
+    // print to the buffer
     long len = _vsnprintf_s(buf, sizeof(buf) - 1, format, (char *)(&format + 1));
     buf[sizeof(buf) - 1] = 0;
-    //Ищем позицию точки на экране
+    // Looking for a point position on the screen
     static CMatrix mtx, view, prj;
     static D3DVIEWPORT9 vp;
     MTX_PRJ_VECTOR vrt;
@@ -1229,10 +1229,10 @@ void SoundService::DebugPrint3D(const CVECTOR &pos3D, float rad, long line, floa
     rs->GetViewport(&vp);
     mtx.Projection((CVECTOR *)&pos3D, &vrt, 1, vp.Width * 0.5f, vp.Height * 0.5f, sizeof(CVECTOR),
                    sizeof(MTX_PRJ_VECTOR));
-    //Ищем позицию
+    // Looking for a position
     const long fh = rs->CharHeight(FONT_DEFAULT) / 2;
     vrt.y -= (line + 0.5f) * fh;
-    //Прозрачность
+    // Transparency
     const float kDist = 0.75f;
     if (alpha < 0.0f)
         alpha = 0.0f;
@@ -1246,7 +1246,7 @@ void SoundService::DebugPrint3D(const CVECTOR &pos3D, float rad, long line, floa
     if (alpha <= 0.0f)
         return;
     color = (static_cast<uint32_t>(alpha * 255.0f) << 24) | (color & 0xffffff);
-    //Печатаем текст
+    // print the text
     rs->ExtPrint(FONT_DEFAULT, color, 0x00000000, PR_ALIGN_CENTER, false, scale, 0, 0, static_cast<long>(vrt.x),
                  static_cast<long>(vrt.y), buf);
 }

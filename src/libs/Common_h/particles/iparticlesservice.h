@@ -14,19 +14,19 @@ class IParticleManager;
 
 #define CreateManager(FileName) CreateManagerEx(FileName, __FILE__, __LINE__)
 
-//Сервис партиклов, создает менеджеры партиклов
+// Particle service, creates particle managers
 class IParticleService : public SERVICE
 {
   public:
-    //Конструктор / деструктор
+    // Constructor / destructor
     IParticleService(){};
 
     virtual ~IParticleService(){};
 
-    //В качестве имени файла, нужно передать имя проекта
-    //в котором мы хотим работать в данный момент
-    //
-    //Если имя файла = NULL, не будет доступных систем для загрузки
+    // As a file name, you need to pass the name of the project
+    // in which we want to work at the moment
+    // 
+    // If filename = NULL, there will be no systems available to load
     virtual IParticleManager *CreateManagerEx(const char *ProjectName, const char *File, int Line) = 0;
 
     virtual uint32_t GetManagersCount() = 0;

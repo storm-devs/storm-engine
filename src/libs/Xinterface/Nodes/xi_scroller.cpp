@@ -104,17 +104,17 @@ int CXI_SCROLLER::CommandExecute(int wActCode)
             {
                 if (m_upButtonPos.bottom >= m_curMousePos.y)
                 {
-                    // верхн€€ кнопка
+                    // top button
                     UpPress();
                     break;
                 }
                 if (m_downButtonPos.top <= m_curMousePos.y)
                 {
-                    // нижн€€ кнопка
+                    // lower button
                     DownPress();
                     break;
                 }
-                // середина
+                // middle
                 CONTROL_STATE cs;
                 core.Controls->GetControlState("ILClick", cs);
                 if (cs.state == CST_ACTIVATED)

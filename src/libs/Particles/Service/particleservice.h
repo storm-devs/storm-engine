@@ -29,13 +29,13 @@ class ParticleService : public IParticleService
     std::vector<CreatedManager> CreatedManagers;
 
   public:
-    //Конструктор / деструктор
+    // Constructor / destructor
     ParticleService();
     virtual ~ParticleService();
 
     bool Init() override;
 
-    //Создать менеджер партиклов
+    // Create a particle manager
     IParticleManager *CreateManagerEx(const char *ProjectName, const char *File, int Line) override;
 
     virtual void RemoveManagerFromList(IParticleManager *pManager);

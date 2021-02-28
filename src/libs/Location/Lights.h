@@ -18,7 +18,7 @@
 
 class Lights : public Entity
 {
-    //Описание источника освещения
+    // Light source description
     struct LightType
     {
         char *name;
@@ -37,22 +37,22 @@ class Lights : public Entity
         long corona;
     };
 
-    //Источник
+    // Source
     struct Light
     {
-        D3DCOLORVALUE color; //Текущий цвет источника
-        D3DVECTOR pos;       //Позиция источника
-        float time; //Время с момента последнего изменения мерцающей интенсивности
-        float timeSlow; //Время с момента последнего изменения интерполируемой интенсивности
-        float itens;    //Мерцающая интенсивность
-        float itensSlow; //Необхадимая интерполируемая интенсивность
-        float itensDlt;  //Разность интерполируемой интенсивности
-        float i;         //Результирующая интенсивность
-        long type;       //Индекс типа источника
-        float corona;    //Прозрачность короны
+        D3DCOLORVALUE color; // Current source color
+        D3DVECTOR pos;       // Source position
+        float time; // Time since last change of flickering intensity
+        float timeSlow; // Time since the last change in the interpolated intensity
+        float itens;    // Shimmering intensity
+        float itensSlow; // Necessary interpolated intensity
+        float itensDlt;  // Interpolated intensity difference
+        float i;         // Resulting intensity
+        long type;       // Source type index
+        float corona;    // Crown transparency
     };
 
-    //Управляемый(перемещающийся) источник
+    // Controllable (moving) source
     struct MovingLight
     {
         long id;
@@ -66,25 +66,25 @@ class Lights : public Entity
         float u, v;
     };
 
-    //Для сортировки для по дистанции
+    // To sort by distance
     struct lt_elem
     {
         long idx;
         float dst;
     };
 
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     Lights();
     virtual ~Lights();
 
-    //Инициализация
+    // Initialization
     bool Init() override;
-    //Исполнение
+    // Execution
     void Execute(uint32_t delta_time);
-    //Рисование корон
+    // Drawing crowns
     void Realize(uint32_t delta_time);
 
     void ProcessStage(Stage stage, uint32_t delta) override
@@ -104,64 +104,64 @@ class Lights : public Entity
         }
     }
 
-    //Найти индекс источника
+    // Find source index
     long FindLight(const char *name);
-    //Добавить источник в локацию
+    // Add source to location
     void AddLight(long index, const CVECTOR &pos);
-    //Добавить модельку фонарей
+    // Add lantern model
     bool AddLampModel(entid_t lampModel);
     //
     void DelAllLights();
 
-    //Добавить переносной источник
+    // Add portable source
     long AddMovingLight(const char *type, const CVECTOR &pos);
-    //Поставить переносной источник в новую позицию
+    // Put portable source in new position
     void UpdateMovingLight(long id, const CVECTOR &pos);
-    //Удалить переносной источник
+    // Remove portable source
     void DelMovingLight(long id);
 
-    //Установить для персонажа источники освещения
+    // Set light sources for the character
     void SetCharacterLights(const CVECTOR *pos = nullptr);
 
-    //Запретить установленные для персонажа источники освещения
+    // Disable light sources set for the character
     void DelCharacterLights();
 
-    //Обновить типы источников
+    // Update source types
     void UpdateLightTypes(long i);
 
-    //--------------------------------------------------------------------------------------------
-    //Инкапсуляция
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Encapsulation
+    // --------------------------------------------------------------------------------------------
   private:
     VDX9RENDER *rs;
     COLLIDE *collide;
 
-    //Установленные источники освещения
+    // Installed light sources
     struct
     {
         bool set;
         long light;
     } lt[8];
 
-    //Виды источников освещения
+    // Types of light sources
     std::vector<LightType> types;
     long numTypes;
     long maxTypes;
-    //Существующие источники освещения
+    // Existing lighting sources
     std::vector<Light> lights;
     long numLights;
     long maxLights;
     long lighter_code;
 
-    //переносные источники света
+    // portable light sources
     std::vector<MovingLight> aMovingLight;
 
-    //Модельки фонарей
+    // Lantern models
     entid_t lampModels[16];
     long numLampModels;
 
     Vertex buf[6 * 1];
 
-    //Отсортированный массив источников для последнего расчета
+    // Sorted array of sources for the last calculation
     std::vector<lt_elem> aLightsDstSort;
 };

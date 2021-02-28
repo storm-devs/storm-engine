@@ -108,8 +108,8 @@ class CXI_SCROLLIMAGE : public CINODE
     char *m_sBorderGroupName; //
     long m_texBorder;         // select border texture identificator
     long m_nBorderPicture;    // select border picture identificator
-    long *m_idBadTexture;     // текстура картинки для замены несуществующих
-    long *m_idBadPic;         // картинка для замены несуществующих
+    long *m_idBadTexture;     // image texture to replace nonexistent
+    long *m_idBadPic;         // picture to replace nonexistent
 
     char *m_sSpecTechniqueName;
     uint32_t m_dwSpecTechniqueARGB;

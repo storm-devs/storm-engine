@@ -12,9 +12,9 @@
 #include "Entity.h"
 #include "core.h"
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 WideScreen::WideScreen()
 {
@@ -26,7 +26,7 @@ WideScreen::~WideScreen()
 {
 }
 
-//Инициализация
+// Initialization
 bool WideScreen::Init()
 {
     // Layers
@@ -45,17 +45,17 @@ bool WideScreen::Init()
     return true;
 }
 
-//Сообщения
+// Messages
 uint64_t WideScreen::ProcessMessage(MESSAGE &message)
 {
     dlt = -1.0f;
     return 0;
 }
 
-//Работа
+// Work
 void WideScreen::Realize(uint32_t delta_time)
 {
-    //Текущее состояние
+    // Current state
     state += dlt * delta_time * 0.001f;
     if (state < 0.0f)
     {
@@ -67,7 +67,7 @@ void WideScreen::Realize(uint32_t delta_time)
         state = 1.0f;
         dlt = 0.0f;
     }
-    //Рисуем
+    // Draw
     static struct
     {
         float x, y, z, rhw;

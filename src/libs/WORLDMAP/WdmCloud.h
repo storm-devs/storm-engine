@@ -47,16 +47,16 @@ class WdmCloud : public WdmRenderObject
         float u, v;
     };
 
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     WdmCloud();
     virtual ~WdmCloud();
 
-    //Расчёты
+    // Calculations
     void Update(float dltTime) override;
-    //Отрисовка
+    // Rendering
     void PRender(VDX9RENDER *rs) override;
     void LRender(VDX9RENDER *rs) override;
 
@@ -64,14 +64,14 @@ class WdmCloud : public WdmRenderObject
 
     long FillRain(RS_RECT *rainRect, long rcnt);
 
-    CVECTOR pos;       //Позиция облака
-    CVECTOR dir;       //Направление перемещения облака
-    float globalAlpha; //Текущая прозрачность
-    float constAlpha;  //Текущая прозрачность
+    CVECTOR pos;       // Cloud position
+    CVECTOR dir;       // Direction of cloud movement
+    float globalAlpha; // Current transparency
+    float constAlpha;  // Current transparency
 
-    //--------------------------------------------------------------------------------------------
-    //Инкапсуляция
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Encapsulation
+    // --------------------------------------------------------------------------------------------
   protected:
     virtual void BuildCloud(long n);
     RS_RECT rect[8];
@@ -82,7 +82,7 @@ class WdmCloud : public WdmRenderObject
     long numRects;
     MoveInfo move[8];
 
-    //Параметры молнии
+    // Lightning parameters
     long curLightning;
     float lightningWaitTime;
     float lightningTime;
@@ -90,7 +90,7 @@ class WdmCloud : public WdmRenderObject
     long lastColor;
     long lightningColor;
 
-    //Дождик
+    // Rain
     Rain rain[48];
     float rainBurnTime;
 

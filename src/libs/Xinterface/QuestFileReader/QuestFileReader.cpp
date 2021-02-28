@@ -41,11 +41,11 @@ long GetToken(const char *&ps)
     if (ps == nullptr)
         return TOKEN_INVALID;
 
-    // удаляем предшествующие пробелы и символы табуляции
+    // remove leading spaces and tabs
     while (*ps == 32 || *ps == 9)
         ps++;
 
-    // получаем размер лексемы
+    // get the size of the token
     const auto *const ptoken = ps;
     while (*ps != 0 && static_cast<unsigned>(*ps) > 0x20 && *ps != 0x0D && *ps != 0x0A)
         ps++;
@@ -57,11 +57,11 @@ long GetToken(const char *&ps)
         if (strncmp(TokenTable[i].token, ptoken, tokensize) == 0)
             return TokenTable[i].cod;
 
-    // проверим лексему на соответсвие определенным значениям
+    // check the lexeme for compliance with certain values
     return TOKEN_UNKNOWN;
 }
 
-// Функции работы с символами
+// Functions for working with symbols
 bool IS_SPACE(char ch)
 {
     if (static_cast<unsigned>(ch) <= ' ')
@@ -83,13 +83,13 @@ long GET_DIGIT(char ch)
     return static_cast<long>(ch - '0');
 }
 
-// Функции работы со строками
+// Functions for working with strings
 static long GetLongFromString(char *&pInStr)
 {
     if (pInStr == nullptr)
         return INVALID_LONG;
 
-    // удалим лишние пробелы
+    // remove extra spaces
     while (*pInStr <= ' ')
         pInStr++;
     if (!IS_DIGIT(*pInStr))
@@ -108,10 +108,10 @@ void GetSubStringFromString(const char *&pInStr, char *pOutBuf, int bufSize)
 {
     if (bufSize <= 0)
         return;
-    // удаляем предшествующие пробелы
+    // remove leading spaces
     while (IS_SPACE(*pInStr))
         pInStr++;
-    // перепишем строку в буфер
+    // rewrite a line in the buffer
     int i;
     for (i = 0; i < bufSize - 1; i++, pInStr++)
     {
@@ -162,19 +162,19 @@ static const char *GetTitleString(char *buf, const char *&ptr, size_t &slen)
     const auto *startp = ptr;
     while (ptr != nullptr)
     {
-        // Возмем очередную строку
+        // take another line
         const auto *const cstr = GetNextString(ptr);
         if (ptr != cstr && cstr != nullptr)
         {
-            // если полученная строка является заголовком квеста
+            // if the resulting string is the title of the quest
             const auto *tmpstr = cstr;
             int tokType = GetToken(tmpstr);
             if (tokType == TOKEN_QUEST)
             {
-                // получим id этого квеста
+                // get the id of this quest
                 GetSubStringFromString(tmpstr, buf, 256);
                 const auto *const retVal = ptr;
-                // найдем конец заголовка квеста
+                // find the end of the quest title
                 while (ptr != nullptr)
                 {
                     tmpstr = ptr;
@@ -329,10 +329,10 @@ bool QUEST_FILE_READER::AssembleStringToBuffer(const char *pSrc, long nSrcSize, 
             break;
         if (bMakeID)
         {
-            // создание ID для текстовой вставки
+            // creating an ID for the text insertion
             if (pSrc[nSrc] == '>')
             {
-                // завершение ID
+                // end of ID
                 insertID[nIns] = 0;
                 nDst += AddToBuff(&pBuf[nDst], nBufSize - nDst, GetInsertStringByID(insertID, aUserData));
                 bMakeID = false;
@@ -345,7 +345,7 @@ bool QUEST_FILE_READER::AssembleStringToBuffer(const char *pSrc, long nSrcSize, 
         }
         else
         {
-            // копирование
+            // copying
             if (pSrc[nSrc] == '@' && pSrc[nSrc + 1] == '<')
             {
                 nSrc++;
@@ -390,7 +390,7 @@ long QUEST_FILE_READER::AddToBuff(const char *pDst, long nDstSize, const char *p
 void QUEST_FILE_READER::ReadUserData(const char *sQuestName, long nRecordIndex)
 {
     if (m_sCurQuestTitle == sQuestName)
-        return; // уже установлено для этого
+        return; // already set for this quest
 
     m_sCurQuestTitle = sQuestName;
     m_aQuestData.clear();
@@ -475,14 +475,14 @@ void QUEST_FILE_READER::SetQuestTextFileName(const char *pcFileName)
 
     m_aQuestFileName.push_back(std::string(pcFileName));
 
-    // открываем этот файл
+    // open this file
     const HANDLE hfile = fio->_CreateFile(pcFileName, GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING);
     if (hfile == INVALID_HANDLE_VALUE)
     {
         core.Trace("WARNING! Can`t open quest log file %s", pcFileName);
         return;
     }
-    // его размер
+    // its size
     const uint32_t filesize = fio->_GetFileSize(hfile, nullptr);
     if (filesize == 0)
     {
@@ -490,10 +490,10 @@ void QUEST_FILE_READER::SetQuestTextFileName(const char *pcFileName)
         fio->_CloseHandle(hfile);
         return;
     }
-    // создаем буфер для него
+    // create a buffer for it
     char *pBuf = new char[filesize + 1];
     Assert(pBuf);
-    // читаем в этот буфер из файла
+    // read into this buffer from a file
     uint32_t readsize;
     if (fio->_ReadFile(hfile, pBuf, filesize, &readsize) == FALSE || readsize != filesize)
     {
@@ -524,7 +524,7 @@ void QUEST_FILE_READER::AddQuestFromBuffer(const char *pcSrcBuffer)
     {
         if (!pcStr[0])
         {
-            // проверка на завершение
+            // check for completion
             if (nCurToken == TOKEN_QTEXT)
             {
                 WriteToString(sTextText, pcPrev, pcStr);
@@ -585,7 +585,7 @@ void QUEST_FILE_READER::WriteToString(std::string &sDst, const char *pcStart, co
     /*while( pcStart[0]!=0 && (*(UCHAR*)pcStart<=0x20) )
       pcStart++;
     while( pcEnd>pcStart && (*(UCHAR*)(pcEnd-1)<=0x20) )
-      pcEnd--;   */ // boal нефиг удалать пробелы в начале строки!!!
+      pcEnd--;   */ // boal do not remove spaces at the beginning of a line !!!
 
     const char chTmp = *pcEnd;
     *(char *)pcEnd = 0;

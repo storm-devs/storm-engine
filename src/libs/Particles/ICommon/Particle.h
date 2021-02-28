@@ -11,55 +11,55 @@ class GEOS;
 
 struct BB_ParticleData
 {
-    bool SpeedOriented; //Поворачиваються по вектору скорости...
+    bool SpeedOriented; // Turn along the velocity vector ...
 
-    //Указатель на кол-во партиклов данного типа, при удалении партикла нужно уменьшать !!!
+    // Pointer to the number of particles of this type, when removing a particle, you need to decrease it !!!
     uint32_t *ActiveCount;
 
-    //Физическая позиция
+    // Physical position
     Vector PhysPos;
 
-    //Угол поворота
+    // Angle of rotation
     float Angle;
 
-    //Скорость закручивания, радиан в сек.
+    // Twisting speed, radians per second.
     float Spin;
 
-    //Направление и "сила" скорости (НЕ Нормализованная)
+    // Direction and "strength" of speed (NOT Normalized)
     Vector Velocity;
 
-    //Внешняя сила (для прикладывания ее к партиклу)
+    // External force (for applying it to a particle)
     Vector ExternalForce;
 
-    //Время жизни
+    // Lifetime
     float LifeTime;
 
-    //Сколько прожил времени
+    // How long did it live
     float ElapsedTime;
 
-    //Матрица трансформации, при рождении партикла (для трека)
+    // Transformation matrix, at emission of a particle (for a track)
     Matrix matWorld;
 
-    //Масса
+    // Weight
     float Mass;
 
-    // fabsf(Масса)
+    // fabsf(Mass)
     float UMass;
 
-    //===========================================================================
-    //Финальная позиция/угол для рендера
+    // ===========================================================================
+    // Final position / angle for rendering
     Vector RenderPos;
     float RenderAngle;
     Vector OldRenderPos;
     float OldRenderAngle;
 
-    //===========================================================================
-    //Дистанция до камеры
+    // ===========================================================================
+    // Distance to camera
     float CamDistance;
     bool Visible;
 
-    //===========================================================================
-    //Графики.........
+    // ===========================================================================
+    // Graphs
 
     DataGraph *Graph_SpinDrag;
     DataGraph *Graph_Drag;
@@ -75,8 +75,8 @@ struct BB_ParticleData
     DataGraph *graph_GravK;
     DataGraph *graph_AddPower;
 
-    //===========================================================================
-    //Коэфиценты рандомайзинга
+    // ===========================================================================
+    // Coefficients for randomization
     float DragK;
     float SpinDragK;
     float SizeK;
@@ -90,59 +90,59 @@ struct BB_ParticleData
     float KTrackZ;
     float KPhysBlend;
 
-    //===========================================================================
-    //Указатель на эмиттер который прицеплен к партиклу
+    // ===========================================================================
+    // Pointer to the emitter that is attached to the particle
     IEmitter *AttachedEmitter;
 
-    //===============================================
-    // ID эмиттера которому принадлежит партикл
+    // ===============================================
+    // ID of the emitter to which the particle belongs
     uint32_t EmitterGUID;
 };
 
 struct MDL_ParticleData
 {
-    //Указатель на кол-во партиклов данного типа, при удалении партикла нужно уменьшать !!!
+    // Pointer to the number of particles of this type, when removing a particle, you need to decrease it !!!
     uint32_t *ActiveCount;
 
-    //Физическая позиция
+    // Physical position
     Vector PhysPos;
 
-    //Угол поворота
+    // Angle of rotation
     Vector Angle;
 
-    //Скорость закручивания, радиан в сек.
+    // Twisting speed, radians per second.
     Vector Spin;
 
-    //Направление и "сила" скорости (НЕ Нормализованная)
+    // Direction and "strength" of speed (NOT Normalized)
     Vector Velocity;
 
-    //Внешняя сила (для прикладывания ее к партиклу)
+    // External force (for applying it to a particle)
     Vector ExternalForce;
 
-    //Время жизни
+    // Lifetime
     float LifeTime;
 
-    //Сколько прожил времени
+    // How long did it live
     float ElapsedTime;
 
-    //Матрица трансформации, при рождении партикла (для трека)
+    // Transformation matrix, at emission of a particle (for a track)
     Matrix matWorld;
 
-    //Масса
+    // Weight
     float Mass;
 
-    // fabsf(Масса)
+    // fabsf(Mass)
     float UMass;
 
-    //===========================================================================
-    //Финальная позиция/угол для рендера
+    // ===========================================================================
+    // Final position / angle for rendering
     Vector RenderPos;
     Vector RenderAngle;
     Vector OldRenderPos;
     Vector OldRenderAngle;
 
-    //===========================================================================
-    //Графики.........
+    // ===========================================================================
+    // Graphs
 
     DataGraph *Graph_SpinDragX;
     DataGraph *Graph_SpinDragY;
@@ -154,8 +154,8 @@ struct MDL_ParticleData
     DataGraph *Graph_PhysBlend;
     DataGraph *graph_GravK;
 
-    //===========================================================================
-    //Коэфиценты рандомайзинга
+    // ===========================================================================
+    // Coefficients for randomization
     float DragK;
     float SpinDragK_X;
     float SpinDragK_Y;
@@ -166,16 +166,16 @@ struct MDL_ParticleData
     float KTrackZ;
     float KPhysBlend;
 
-    //===========================================================================
-    //Указатель на модель для рендера
+    // ===========================================================================
+    // Pointer to the model to render
     GEOS *pScene;
 
-    //===========================================================================
-    //Указатель на эмиттер который прицеплен к партиклу
+    // ===========================================================================
+    // Pointer to the emitter that is attached to the particle
     IEmitter *AttachedEmitter;
 
-    //===============================================
-    // ID эмиттера которому принадлежит партикл
+    // ===============================================
+    // ID of the emitter to which the particle belongs
     uint32_t EmitterGUID;
 };
 

@@ -410,8 +410,8 @@ const char *GEOM::GetTextureName(long tx) const
 }
 
 // ~!~
-// пока оставлю так
-// потом будем думать
+// leave it like that for now
+// will think later
 auto unbelievable_workaround(void *ptr)
 {
     return reinterpret_cast<unsigned long long>(ptr) & 0x7FFFFFFF;

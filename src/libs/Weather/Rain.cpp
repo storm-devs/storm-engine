@@ -282,7 +282,7 @@ void RAIN::RealizeDrops(uint32_t Delta_Time)
             {
                 fTest = fTest1;
 
-                //проверим - если это корабль
+                // check - if it's a ship
                 entid_t eid = cs->GetObjectID();
                 if (EntityManager::GetClassCode(eid) == dwShipName)
                 {
@@ -300,7 +300,7 @@ void RAIN::RealizeDrops(uint32_t Delta_Time)
 
             if (fTest <= 1.0f)
             {
-                // Добавляем каплю
+                // Add a drop
                 aDrops.push_back(drop_t{});
                 // drop_t & drop = aDrops[aDrops.Add()];
                 drop_t &drop = aDrops.back();
@@ -376,7 +376,7 @@ void RAIN::RealizeDrops(uint32_t Delta_Time)
     // rs->SetTexture(0, null);
     rs->DrawRects(aRects.data(), aRects.size(), "rain_drops", 8, 1);
 
-    // рисуем круги на воде
+    // draw circles on the water
     CMatrix IMatrix;
     IMatrix.SetIdentity();
     rs->SetWorld(IMatrix);

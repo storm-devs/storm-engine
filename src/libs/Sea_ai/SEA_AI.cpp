@@ -321,7 +321,7 @@ uint64_t SEA_AI::ProcessMessage(MESSAGE &message)
         pAIShip->GetCannonController()->CheckCannonsBoom(fTmpCannonDamage, CVECTOR(x, y, z));
     }
     break;
-        // boal 08.08.06 метод пересчета орудий на корабле -->
+        // boal 08.08.06 method of recounting guns on the ship -->
     case AI_MESSAGE_RESEARCH_CANNONS: {
         auto *pACharacter = message.AttributePointer();
 
@@ -330,8 +330,8 @@ uint64_t SEA_AI::ProcessMessage(MESSAGE &message)
         pAIShip->GetCannonController()->ResearchCannons();
     }
     break;
-        // boal 08.08.06 метод пересчета орудий на корабле <--
-    case AI_MESSAGE_SEASAVE: //~!~
+        // boal 08.08.06 method of recounting guns on the ship <--
+    case AI_MESSAGE_SEASAVE: // ~!~
     {
         char str[256];
         Save(str);

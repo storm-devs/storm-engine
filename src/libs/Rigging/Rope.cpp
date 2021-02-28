@@ -36,7 +36,7 @@ ROPE::ROPE()
 
 ROPE::~ROPE()
 {
-    // очистка и удаление списка веревок
+    // clearing and deleting the rope list
     if (rlist)
     {
         for (auto i = 0; i < ropeQuantity; i++)
@@ -44,7 +44,7 @@ ROPE::~ROPE()
         STORM_DELETE(rlist);
         ropeQuantity = 0;
     }
-    // очистка и удаление списка групп
+    // clearing and deleting the group list
     if (gdata)
     {
         for (auto i = 0; i < groupQuantity; i++)
@@ -52,7 +52,7 @@ ROPE::~ROPE()
         STORM_DELETE(gdata);
         groupQuantity = 0;
     }
-    // удаление текстур
+    // removing textures
     TEXTURE_RELEASE(RenderService, texl);
     STORM_DELETE(TextureName);
 
@@ -71,7 +71,7 @@ bool ROPE::Init()
 
 void ROPE::SetDevice()
 {
-    // получить сервис рендера
+    // get render service
     RenderService = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!RenderService)
     {
@@ -158,7 +158,7 @@ void ROPE::Realize(uint32_t Delta_Time)
                 for (auto i = 0; i < groupQuantity; i++)
                     if (!gdata[i].bDeleted && gdata[i].nt != 0 && nVert != 0)
                         if ((~(gdata[i].pMatWorld->Pos() - cp)) * pr < fMaxRopeDist)
-                        // если расстояние до корабля не больше максимального
+                        // if the distance to the ship is not more than the maximum
                         {
                             static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(gdata[i].shipEI))
                                 ->SetLightAndFog(true);
@@ -259,7 +259,7 @@ uint64_t ROPE::ProcessMessage(MESSAGE &message)
             }
         }
 
-        // небыло никаких новых веревок
+        // there were no new ropes
         if (wFirstRope == ropeQuantity)
         {
             groupQuantity--;
@@ -305,7 +305,7 @@ uint64_t ROPE::ProcessMessage(MESSAGE &message)
     }
     break;
 
-        // удаление веревки из отображения и расчета
+        // removing rope from display and calculation
     case MSG_ROPE_DELETE: {
         tmp_id = message.EntityID();
         int rope_number;
@@ -319,7 +319,7 @@ uint64_t ROPE::ProcessMessage(MESSAGE &message)
                 // rlist[i]->bUse=false;
                 /*entid_t sailEI;
                 if(core.FindClass(&sailEI,"sail",0))
-                    if(rlist[i]->btie || rlist[i]->etie) // отвяжем парус от веревки
+                    if(rlist[i]->btie || rlist[i]->etie) // untie the sail from the rope
                         core.Send_Message(sailEI,"ll",MSG_SAIL_ROPE_UNTIE,rope_number);*/
                 break;
             }
@@ -426,7 +426,7 @@ void ROPE::SetVertexes()
 
 void ROPE::SetVertexes(ROPEDATA *pr, float dtime) const
 {
-    // установить параметры формы веревки
+    // set rope shape parameters
     float deepVal;
     pr->segnum = 0;
     deepVal = pr->ropeWave * (MIN_DEEP_MUL + VAR_DEEP_MUL * sinf(pr->angDeep));
@@ -448,7 +448,7 @@ void ROPE::SetVertexes(ROPEDATA *pr, float dtime) const
     // Get end point into Ship coordinate
     gdata[pr->HostGroup].pMatWorld->MulToInv(*pr->eMatWorld * pr->pEnd, cve);
 
-    // Установить первую и последнюю точки веревки
+    // Set the first and last points of the rope
     vertBuf[vertnum].pos = cvb;
     vertBuf[vertnum + pr->nv - 1].pos = cve;
 
@@ -464,7 +464,7 @@ void ROPE::SetVertexes(ROPEDATA *pr, float dtime) const
         if (pr->bMakeWave)
             cv += deepV * static_cast<float>(segn * (pr->segquant - segn));
 
-        // установить новые координаты в текущем сечении
+        // set new coordinates in the current section
         for (int i = 0; i < ROPE_EDGE; i++)
             vertBuf[vertnum + i].pos = cv + pr->pos[i];
 
@@ -485,7 +485,7 @@ void ROPE::DoMove(ROPEDATA *pr)
         // Get end point into Ship coordinate
         gdata[pr->HostGroup].pMatWorld->MulToInv(*pr->eMatWorld*pr->pEnd,cve);
 
-        // Установить первую и последнюю точки веревки
+        // Set the first and last points of the rope
         vertBuf[vertnum].pos=cvb;
         vertBuf[vertnum+pr->nv-1].pos=cve;
 
@@ -500,7 +500,7 @@ void ROPE::DoMove(ROPEDATA *pr)
             CVECTOR dc = (cve - cvb - pr->cv)/(float)pr->segquant;
             for(int j=0; j<=pr->segquant; j++)
             {
-                // установить новые координаты в текущем сечении
+                // set new coordinates in the current section
                 for( int i=0; i<ROPE_EDGE; i++ )
                     vertBuf[vertnum++].pos=cvb+pr->pos[i];
                 cvb+=dc;
@@ -511,13 +511,13 @@ void ROPE::DoMove(ROPEDATA *pr)
         }
         else
         {
-            // базовый номер вертексов текущего сечения
+            // base number of vertices of the current section
             vertnum+=pr->segnum*ROPE_EDGE+1;
 
             cvb += (cve - cvb - pr->cv)*((float)pr->segnum/(float)pr->segquant);
             cvb += pr->vDeep*((float)(pr->segnum*(pr->segquant - pr->segnum))*4.f/(float)(pr->segquant*pr->segquant));
 
-            // установить новые координаты в текущем сечении
+            // set new coordinates in the current section
             for( int i=0; i<ROPE_EDGE; i++ )
                 vertBuf[vertnum+i].pos=cvb+pr->pos[i];
 
@@ -576,9 +576,9 @@ void ROPE::AddLabel(GEOS::LABEL &lbl, NODE *nod, bool bDontSage)
     for (rn = 0; rn < ropeQuantity; rn++)
         if (rlist[rn]->ropeNum == ropeNum && rlist[rn]->HostGroup == groupQuantity - 1)
             break;
-    if (rn == ropeQuantity) // добавляем новую веревку
+    if (rn == ropeQuantity) // add a new rope
     {
-        // изменим список веревок
+        // change the list of ropes
         if (rlist == nullptr)
         {
             rlist = new ROPEDATA *[1];
@@ -615,7 +615,7 @@ void ROPE::AddLabel(GEOS::LABEL &lbl, NODE *nod, bool bDontSage)
         rd->pBeg.z = lbl.m[3][2];
         rd->bMatWorld = &nod->glob_mtx; // get host matrix
         rd->bgnum = grNum;
-        // привязка к парусу
+        // binding to sail
         if (grNum >= 0) // begin tip of rope - tie with sail
         {
             rd->pBeg.x += nod->glob_mtx.matrix[3];
@@ -630,7 +630,7 @@ void ROPE::AddLabel(GEOS::LABEL &lbl, NODE *nod, bool bDontSage)
         rd->pEnd.z = lbl.m[3][2];
         rd->eMatWorld = &nod->glob_mtx; // get host matrix
         rd->egnum = grNum;
-        // привязка к парусу
+        // binding to sail
         if (grNum >= 0) // begin tip of rope - tie with sail
         {
             rd->pEnd.x += nod->glob_mtx.matrix[3];
@@ -759,27 +759,27 @@ void ROPE::AddLabel(GEOS::LABEL &lbl, NODE *nod, bool bDontSage)
     }
 }
 
-// получить конечную точку веревки в координатах начальной точки
+// get the end point of the rope in the coordinates of the start point
 void ROPE::GetEndPoint(CVECTOR *cv, int ropenum, entid_t mdl_id)
 {
     int rn;
 
-    if (cv == nullptr) // плохой указатель на вектор
+    if (cv == nullptr) // bad pointer to vector
         return;
 
-    // выяснить какой конец веревки нам надо получить
+    // find out which end of the rope we need to get
     bool bGetEnd = false;
     if (ropenum < 0)
         ropenum = -ropenum;
     else
         bGetEnd = true;
 
-    // найти веревку с данным номером
+    // find a rope with a given number
     for (rn = 0; rn < ropeQuantity; rn++)
         if (rlist[rn]->ropeNum == ropenum && gdata[rlist[rn]->HostGroup].modelEI == mdl_id)
             break;
 
-    if (rn == ropeQuantity) // нет такой веревки
+    if (rn == ropeQuantity) // there is no such rope
         return;
 
     if (bGetEnd)
@@ -801,7 +801,7 @@ void ROPE::LoadIni()
 
     sprintf_s(section, "ROPES");
 
-    // имя текстуры
+    // texture name
     ini->ReadString(section, "TextureName", param, sizeof(param) - 1, "sail_rope.tga");
     if (texl != -1)
     {
@@ -822,31 +822,31 @@ void ROPE::LoadIni()
         TextureName = new char[len];
         memcpy(TextureName, param, len);
     }
-    // длина одного сегмента веревки
+    // length of one rope segment
     ROPE_SEG_LENGTH = ini->GetFloat(section, "fSEG_LENGTH", 2.f);
-    // толщина веревки
+    // rope thickness
     ROPE_WIDTH = ini->GetFloat(section, "fWIDTH", 0.025f);
-    // толщина веревки (штага)
+    // rope (head) thickness
     STAY_WIDTH = ini->GetFloat(section, "fSTAY_WIDTH", 0.12f);
-    // длина веревки (треугольника) в точке соединения с парусом относительно общей длинны
+    // the length of the rope (triangle) at the point of connection with the sail in relation to the total length
     ROPE_END_LENGTH = ini->GetFloat(section, "fEND_LENGTH", 0.05f);
-    // амплитуда колебания веревки в абсолютных значениях
+    // amplitude of rope vibration in absolute values
     ROPE_WAVE = ini->GetFloat(section, "fWAVE", 0.1f);
-    // максимальное изменение координаты при котором происходит перерасчет всей веревки
+    // maximum coordinate change at which the entire rope is recalculated
     MaxCh = ini->GetFloat(section, "fMaxCh", .1f);
-    // длина веревки на которую ложится текстура
+    // the length of the rope on which the texture applies
     ROPE_TEX_LEN = ini->GetFloat(section, "fTexHeight", .5f);
-    // максимальное растояние с кототрого видны веревки
+    // maximum distance from which the ropes are visible
     fMaxRopeDist = ini->GetFloat(section, "fMaxDist", 5000.f);
-    // скорость изменения глубины прогиба веревки
+    // the rate of change in the depth of the rope deflection
     DEEP_CHANGE_SPEED = ini->GetFloat(section, "fDeepChangeSpeed", 0.15f);
-    // скорость качания веревки
+    // rope swing speed
     ROTATE_SPEED = ini->GetFloat(section, "fRotateSpeed", 0.08f);
-    // минимальное значение коэффициента использования прогиба веревки
+    // the minimum value of the coefficient of use of the deflection of the rope
     MIN_DEEP_MUL = ini->GetFloat(section, "fMinDeepMul", 1.f);
-    // предел изменения коэффициента использования прогиба веревки
+    // limit of variation of the coefficient of use of rope deflection
     VAR_DEEP_MUL = ini->GetFloat(section, "fVarDeepMul", .7f);
-    // амплитуда угла качания веревки
+    // rope swing angle
     VAR_ROTATE_ANGL = ini->GetFloat(section, "fRotateAng", .1f);
 
     delete ini;
@@ -961,7 +961,7 @@ void ROPE::SetAdd(int firstNum)
     // set vertex and index buffers
     for (int rn = firstNum; rn < ropeQuantity; rn++)
     {
-        // удалить плохие веревки
+        // remove bad ropes
         while (rlist[rn]->bMatWorld == nullptr || rlist[rn]->eMatWorld == nullptr)
         {
             const long gn = rlist[rn]->HostGroup;
@@ -1027,19 +1027,19 @@ void ROPE::DoSTORM_DELETE()
 {
     const uint32_t oldnVert = nVert;
 
-    // пройтись по удаленным группам и пометить на удаление все принадлежащие им веревки
+    // walk through deleted groups and mark all ropes belonging to them for deletion
     for (int gn = 0; gn < groupQuantity; gn++)
         if (gdata[gn].bDeleted)
             for (int idx = 0; idx < gdata[gn].ropeQuantity; idx++)
                 rlist[gdata[gn].ropeIdx[idx]]->bDeleted = true;
 
-    // удалить удаленные веревки в списке веревок
+    // remove deleted ropes in the ropes list
     int nrn = 0, rn;
     for (rn = 0; rn < ropeQuantity; rn++)
     {
         if (rlist[rn]->bDeleted)
         {
-            // удалить веревку
+            // remove rope
             delete rlist[rn];
             continue;
         }
@@ -1050,26 +1050,26 @@ void ROPE::DoSTORM_DELETE()
     }
     ropeQuantity = nrn;
 
-    // переделаем список групп
+    // redo the list of groups
     int ngn = 0, gn;
     nIndx = 0;
     nVert = 0;
     for (gn = 0; gn < groupQuantity; gn++)
     {
-        // если группа удалена, то пропускаем ее
+        // if the group is deleted, then skip it
         if (gdata[gn].bDeleted)
         {
             delete gdata[gn].ropeIdx;
             continue;
         }
 
-        // подправим индексы на вертекс и индекс буферы
+        // correct indexes for vertex and index buffers
         gdata[gn].st = nIndx;
         gdata[gn].sv = nVert;
         gdata[gn].nt = 0;
         gdata[gn].nv = 0;
 
-        // для всех веревок принадлежащих этой группе исправим номер хозяина
+        // for all ropes belonging to this group, correct the owner's number
         int rq = 0;
         for (rn = 0; rn < ropeQuantity; rn++)
             if (rlist[rn]->HostGroup == gn)
@@ -1084,14 +1084,14 @@ void ROPE::DoSTORM_DELETE()
                 nIndx += rlist[rn]->nt * 3;
             }
 
-        // если группа стала пустой, то удаляем ее физически
+        // if the group has become empty, then delete it physically
         if (rq == 0)
         {
             delete gdata[gn].ropeIdx;
             continue;
         }
 
-        // если изменился список веревок в хозяине, то изменим его
+        // if the list of ropes in the owner has changed, then change it
         if (rq < gdata[gn].ropeQuantity)
         {
             int *oldropeIdx = gdata[gn].ropeIdx;
@@ -1111,7 +1111,7 @@ void ROPE::DoSTORM_DELETE()
     }
     groupQuantity = ngn;
 
-    // изменим размер вертекс и индекс буферов
+    // change the vertex size and buffer index
     nIndx /= 3;
     if (oldnVert != nVert)
     {
@@ -1139,13 +1139,13 @@ bool ROPE::IsAbsentRope(entid_t mdl_id, int ropenum)
 {
     bool retVal = true;
 
-    // найдем нужную группу
+    // find the required group
     int gn;
     for (gn = 0; gn < groupQuantity; gn++)
         if (gdata[gn].modelEI == mdl_id)
             break;
 
-    // пройдемся по всем веревкам и найдем нужную нам веревку
+    // go through all the ropes and find the rope we need
     int rn = ropeQuantity;
     if (gn < groupQuantity)
         for (rn = 0; rn < ropeQuantity; rn++)

@@ -13,9 +13,9 @@
 #include "Entity.h"
 #include "core.h"
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 long Fader::numberOfTips = 0;
 long Fader::currentTips = -1;
@@ -56,10 +56,10 @@ Fader::~Fader()
     }
 }
 
-//Инициализация
+// Initialization
 bool Fader::Init()
 {
-    //Проверим что единственные
+    // check that it's the only one
 
     const auto &entities = EntityManager::GetEntityIdVector("Fader");
     for (auto eid : entities)
@@ -92,7 +92,7 @@ bool Fader::Init()
         return false;
     if (rs->GetRenderTarget(&renderTarget) != D3D_OK)
         return false;
-    //Зачитаем количество типсов, если надо
+    // read the number of tips, if necessary
     if (!numberOfTips)
     {
         auto *ini = fio->OpenIniFile(core.EngineIniFileName());
@@ -111,13 +111,13 @@ bool Fader::Init()
     return true;
 }
 
-//Сообщения
+// Messages
 uint64_t Fader::ProcessMessage(MESSAGE &message)
 {
     char _name[MAX_PATH];
     switch (message.Long())
     {
-    case FADER_OUT: //Запустить затемнение экрана
+    case FADER_OUT: // Start screen dimming
         alpha = 0.0f;
         fadeSpeed = message.Float();
         if (fadeSpeed > 0.0f)
@@ -133,7 +133,7 @@ uint64_t Fader::ProcessMessage(MESSAGE &message)
         eventStart = false;
         eventEnd = false;
         break;
-    case FADER_IN: //Запустить проявление экрана
+    case FADER_IN: // Start screen appearance
         alpha = 0.0f;
         fadeSpeed = message.Float();
         if (fadeSpeed < 0.00001f)
@@ -163,7 +163,7 @@ uint64_t Fader::ProcessMessage(MESSAGE &message)
         if (rs)
         {
             rs->SetProgressImage(_name);
-            //Текстура подсказки
+            // Hint texture
             if (numberOfTips > 0)
             {
                 sprintf_s(_name, "interfaces\\int_border.tga");
@@ -180,7 +180,7 @@ uint64_t Fader::ProcessMessage(MESSAGE &message)
         if (rs)
         {
             rs->SetProgressBackImage(_name);
-            //Текстура подсказки
+            // Hint texture
             if (numberOfTips > 0)
             {
                 // sprintf_s(_name, "tips\\tips_%.4u.tga", rand() % numberOfTips);
@@ -197,7 +197,7 @@ uint64_t Fader::ProcessMessage(MESSAGE &message)
     return 0;
 }
 
-//Работа
+// Work
 void Fader::Execute(uint32_t delta_time)
 {
     // core.Trace("fader frame");
@@ -244,14 +244,14 @@ void Fader::Realize(uint32_t delta_time)
         return;
     if (isStart)
         eventStart = true;
-    //Снятие и рисование стартового кадра
+    // Capturing and drawing a start frame
     if (!endFade)
     {
         if (haveFrame)
         {
             if (isStart)
             {
-                //Надо снять шот
+                // need to take a shot
                 auto isOk = false;
                 D3DSURFACE_DESC desc;
                 if (renderTarget->GetDesc(&desc) == D3D_OK)
@@ -269,7 +269,7 @@ void Fader::Realize(uint32_t delta_time)
             }
             else
             {
-                //Копируем шот
+                // Copying the shot
                 if (rs->UpdateSurface(surface, nullptr, 0, renderTarget, nullptr) != D3D_OK)
                 {
                     core.Trace("Can't copy fader screen shot to render target!");
@@ -277,7 +277,7 @@ void Fader::Realize(uint32_t delta_time)
             }
         }
     }
-    //Рисование затеняющего прямоугольника
+    // Draw a shading rectangle
     static struct
     {
         float x, y, z, rhw;
@@ -380,7 +380,7 @@ void Fader::Realize(uint32_t delta_time)
         rs->DrawPrimitiveUP(D3DPT_TRIANGLELIST, D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2, 2,
                             drawbuf, sizeof(drawbuf[0]), "Fader");
     }
-    //Увеличение alpha
+    // Increase alpha
     if (!endFade)
     {
         if (fadeSpeed > 0.0f)

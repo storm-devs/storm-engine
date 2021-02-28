@@ -43,17 +43,17 @@ class WdmSea : public WdmRenderObject
 
     struct Flare
     {
-        long index;  //Индекс используемого ректа
-        float time;  //Время жизни от 0 до 1
-        float k;     //Скорость течения времени
-        float phase; //Фаза, задающая направление вращения
+        long index;  // index of a used rectangle
+        float time;  // Lifetime 0 to 1
+        float k;     // The speed of time
+        float phase; // Phase defining the direction of rotation
     };
 
 #pragma pack(pop)
 
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     WdmSea();
     virtual ~WdmSea();
@@ -63,19 +63,19 @@ class WdmSea : public WdmRenderObject
     void PRender(VDX9RENDER *rs) override;
     void LRender(VDX9RENDER *rs) override;
 
-    //--------------------------------------------------------------------------------------------
-    //Инкапсуляция
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Encapsulation
+    // --------------------------------------------------------------------------------------------
   private:
-    //Нарисовать
+    // Draw
     void Render(VDX9RENDER *rs, const char *tech = nullptr) const;
-    //Настроить преобразования текстурных координат
+    // Adjust texture coordinate transformations
     void PresetMain(VDX9RENDER *rs) const;
 
   private:
-    //Буфера для геометрии
+    // Geometry buffers
     long vb, ib;
-    //Барашки
+    // Waves
     WhiteHorses wh[16];
     // Textures
     long baseTexture;
@@ -85,7 +85,7 @@ class WdmSea : public WdmRenderObject
     float seaSizeX;
     float seaSizeZ;
     float aniTiling;
-    //Вспышки
+    // Flares
     Flare flare[1024];
     RS_RECT flareRect[1024];
     long flareCount;

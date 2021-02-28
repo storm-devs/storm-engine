@@ -11,9 +11,9 @@
 #include "WdmMerchantShip.h"
 #include "WdmIslands.h"
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 WdmMerchantShip::WdmMerchantShip()
 {
@@ -27,12 +27,12 @@ WdmMerchantShip::~WdmMerchantShip()
 {
 }
 
-//Установка параметров
+// Setting parameters
 bool WdmMerchantShip::Load(const char *modelName)
 {
     if (!WdmShip::Load(modelName))
         return false;
-    //Позиция
+    // Position
     float x, z;
     killMe = !GeneratePosition(1.2f * modelRadius, 2.0f, x, z);
     Teleport(x, z, 0.0f);
@@ -56,7 +56,7 @@ void WdmMerchantShip::Goto(float x, float z, float rad)
     gotoPos.y = 0.0f;
     gotoPos.z = z;
     gotoRad = rad;
-    //Определим направление
+    // Determine the direction
     if (isEnableSetDir)
     {
         const double sn = x - mtx.Pos().x;
@@ -75,7 +75,7 @@ void WdmMerchantShip::Goto(float x, float z, float rad)
     }
 }
 
-//Найти силу притягивающую в нужном направлении
+// Find the pulling force in the desired direction
 void WdmMerchantShip::FindMoveForce()
 {
     isEnableSetDir = false;
@@ -102,7 +102,7 @@ void WdmMerchantShip::FindMoveForce()
     mz = dir.z;
 }
 
-//Проверка на завершение
+// Completion check
 bool WdmMerchantShip::KillTest()
 {
     const auto dx = gotoPos.x - mtx.Pos().x;
@@ -111,7 +111,7 @@ bool WdmMerchantShip::KillTest()
     return dl <= gotoRad * gotoRad;
 }
 
-//Обновление сохраняемых данных
+// Updating stored data
 void WdmMerchantShip::UpdateSaveData()
 {
     if (!saveAttribute)
@@ -123,7 +123,7 @@ void WdmMerchantShip::UpdateSaveData()
     saveAttribute->SetAttributeUseDword("isEnableSetDir", isEnableSetDir);
 }
 
-//Установка параметров
+// Setting parameters
 void WdmMerchantShip::SetSaveAttribute(ATTRIBUTES *save)
 {
     if (save)

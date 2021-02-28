@@ -66,9 +66,9 @@ void AIShipTaskController::FindRunAwayPoint()
     CVECTOR vRAPoint = 0.0f;
     uint32_t iNumPoints = 0;
 
-    const auto fShipK = 1.0f;  // коэффициент воздействия от кораблей
-    const auto fFortK = 1.0f;  // коэффициент воздействия от форта
-    const auto fWindK = 10.0f; // коэффициент воздействия для ветра
+    const auto fShipK = 1.0f;  // impact factor from ships
+    const auto fFortK = 1.0f;  // fort impact factor
+    const auto fWindK = 10.0f; // impact factor for wind
 
     // check ships
     for (uint32_t i = 0; i < AIShip::AIShips.size(); i++)
@@ -101,13 +101,13 @@ void AIShipTaskController::FindRunAwayPoint()
             iNumPoints++;
         }
     }
-    // нормализуем направление - получаем вектор там где основная угроза
+    // normalize the direction - get a vector where the main threat is
     if (iNumPoints)
         vRAPoint = vRAPoint / static_cast<float>(iNumPoints);
 
     if ((~vRAPoint) && iNumPoints)
     {
-        // Получаем направление ветра
+        // Get wind direction
         auto fWindAngle = -PI;
         auto *pAWind = GetAIShip()->GetACharacter()->FindAClass(GetAIShip()->GetACharacter(), "SeaAI.WindAngle");
         if (pAWind)
@@ -121,7 +121,7 @@ void AIShipTaskController::FindRunAwayPoint()
     }
     else
     {
-        // Если из скрипта возвращается 1 - то используем скриптовую точку
+        // If 1 is returned from the script, then use the script point
         auto *pV = core.Event(SHIP_GET_RUNAWAY_POINT, "aff", GetAIShip()->GetACharacter(), vRAPoint.x, vRAPoint.z);
         auto *pARAP = GetAIShip()->GetACharacter()->FindAClass(GetAIShip()->GetACharacter(), "SeaAI.RunAwayPnt");
         vRAPoint.y = 0.0f;

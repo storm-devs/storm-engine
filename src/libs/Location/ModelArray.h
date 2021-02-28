@@ -1,12 +1,12 @@
-//============================================================================================
-//	Spirenkov Maxim, 2001
-//--------------------------------------------------------------------------------------------
-//	Sea dogs II
-//--------------------------------------------------------------------------------------------
-//	ModelArray
-//--------------------------------------------------------------------------------------------
-//	Хранение информации о моделях
-//============================================================================================
+// ============================================================================================
+// Spirenkov Maxim, 2001
+// --------------------------------------------------------------------------------------------
+// Sea dogs II
+// --------------------------------------------------------------------------------------------
+// ModelArray
+// --------------------------------------------------------------------------------------------
+// Storing model information
+// ============================================================================================
 
 #ifndef _ModelArray_H_
 #define _ModelArray_H_
@@ -49,9 +49,9 @@ class ModelArray
 
     struct LocationModel
     {
-        entid_t modelrealizer; //Отрисовщик модели
-        entid_t id;            //Модель
-        uint32_t hash;         //Хэшь значение для быстрого поиска
+        entid_t modelrealizer; // Model renderer
+        entid_t id;            // Model
+        uint32_t hash;         // Hash value for quick search
         union {
             uint32_t flags;
 
@@ -64,50 +64,50 @@ class ModelArray
         UVSlider *slider;
         Rotator *rotator;
         Relection *reflection;
-        char name[MA_MAX_NAME_LENGTH]; //Имя модели
+        char name[MA_MAX_NAME_LENGTH]; // Model name
     };
 
-    //--------------------------------------------------------------------------------------------
-    //Конструирование, деструктурирование
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Construction, destruction
+    // --------------------------------------------------------------------------------------------
   public:
     ModelArray();
     virtual ~ModelArray();
 
-    //Создать модель
+    // Create model
     long CreateModel(const char *modelName, const char *technique, long level, bool isVisible = true,
                      void *pLights = nullptr);
-    //Удалить модель
+    // Delete model
     void DeleteModel(long modelIndex);
-    //Установить модели анимацию
+    // Set animation to the model
     bool SetAnimation(long modelIndex, const char *modelAni);
-    //Найти индекс модели по имени
+    // Find model index by name
     long FindModel(const char *modelName);
 
-    //Проверить на правильность индекс
+    // Check if the index is correct
     bool IsValidateIndex(long index) const;
-    //Получить название модели
+    // Get model name
     const char *GetModelName(long index);
 
-    //Количество моделий
+    // Number of models
     long Models() const;
-    //Получение ID модели по индексу
+    // Getting model ID by index
     entid_t ID(long modelIndex);
-    //Получение модели по индексу
+    // Getting a model by index
     MODEL *operator[](long modelIndex);
-    //Получение анимации по индексу
+    // Getting animation by index
     Animation *GetAnimation(long modelIndex);
-    //Получение ID отрисовщика по индексу
+    // Getting the renderer ID by index
     entid_t RealizerID(long modelIndex);
 
-    //Установить модельке анимацию скольжения uv
+    // Set slide uv animation to the model
     void SetUVSlide(long modelIndex, float u0, float v0, float u1, float v1);
-    //Установить модельке анимацию вращения
+    // Set a rotation animation to the model
     void SetRotation(long modelIndex, float rx, float ry, float rz);
-    //Установить модельке режим генерации матрицы для отражения
+    // Set the reflection matrix generation mode to the model
     void SetReflection(long modelIndex, float scale);
 
-    //Анимировать
+    // Animate
     void Update(float dltTime);
 
     void UpdateModelsPath();
@@ -115,22 +115,22 @@ class ModelArray
     void UpdateLightPath();
     void UpdateShadowPath();
 
-    //Проверить видимость 2-х точек
+    // Check the visibility of two points
     bool VisibleTest(const CVECTOR &p1, const CVECTOR &p2);
-    //Протрейсит луч через локацию
+    // Trace the ray through the location
     float Trace(const CVECTOR &src, const CVECTOR &dst);
     bool GetCollideTriangle(TRIANGLE &trg) const;
     void Clip(PLANE *p, long numPlanes, CVECTOR &cnt, float rad, bool (*fnc)(const CVECTOR *vtx, long num));
 
-    //--------------------------------------------------------------------------------------------
-    //Инкапсуляция
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
+    // Encapsulation
+    // --------------------------------------------------------------------------------------------
   private:
     uint32_t CalcHashString(const char *str);
     static void UpdatePath(char *path);
 
   private:
-    //Модели локации
+    // Location models
     std::vector<LocationModel> model;
     long numModels;
     long maxModels;
@@ -145,13 +145,13 @@ class ModelArray
     char resPath[512];
 };
 
-//Проверить на правильность индекс
+// Check if the index is correct
 inline bool ModelArray::IsValidateIndex(long index) const
 {
     return index >= 0 && index < numModels;
 }
 
-//Получить название модели
+// Get model name
 inline const char *ModelArray::GetModelName(long index)
 {
     if (index >= 0 && index < numModels)

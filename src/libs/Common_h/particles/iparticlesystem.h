@@ -12,26 +12,26 @@ class IParticleSystem
     virtual ~IParticleSystem(){};
 
   public:
-    //Создание/удаление
+    // Create / delete
     IParticleSystem(){};
     virtual bool Release() = 0;
 
-    //Отработать всем партиклам
+    // Update all particles
     virtual uint32_t Execute(float DeltaTime) = 0;
 
-    //Перезапустить партикловую систему
+    // Restart particle system
     virtual void Restart(uint32_t RandomSeed) = 0;
 
-    //Запаузить испускание партиклов
+    // Pause particle emission
     virtual void PauseEmission(bool bPause) = 0;
 
-    //Узнать на паузе эмиссия или нет
+    // Find out whether emission is paused or not
     virtual bool IsEmissionPaused() = 0;
-    //Установить автоудаляемая система или обычная...
+    // Set whether it's an auto-delete system or regular ...
     virtual void AutoDelete(bool Enabled) = 0;
-    //Узнаять автоудаляемая система или нет
+    // Find out whether it's an auto-delete system or not
     virtual bool IsAutoDeleted() = 0;
-    //Установить матрицу трансформации для системы
+    // Set transformation matrix for the system
     virtual void SetTransform(const Matrix &transform) = 0;
     virtual void GetTransform(Matrix &_matWorld) = 0;
 

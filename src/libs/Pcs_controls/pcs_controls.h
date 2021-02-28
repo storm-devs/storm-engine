@@ -85,10 +85,10 @@ class PCS_CONTROLS : public CONTROLS
     }
     bool m_bIsOffDebugKeys;
 
-    // Команда управления от ENGINE
+    // Control command from ENGINE
     void EngineMessage(UINT iMsg, WPARAM wParam, LPARAM lParam);
 
-    // Получить буфер нажатык клавиш за кадр (с учетом языка)
+    // Get the keystroke buffer per frame (taking into account the language)
     virtual long GetKeyBufferLength();
     virtual const KeyDescr *GetKeyBuffer();
     virtual void ClearKeyBuffer();

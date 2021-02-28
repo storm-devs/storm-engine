@@ -1,12 +1,12 @@
-//============================================================================================
-//	Spirenkov Maxim aka Sp-Max Shaman, 2001
-//--------------------------------------------------------------------------------------------
-//	Storm engine v2.00
-//--------------------------------------------------------------------------------------------
-//	AnimationServiceImp
-//--------------------------------------------------------------------------------------------
-//	Сервис анимации, позволяющий создавать объекты AnimationManager
-//============================================================================================
+// ============================================================================================
+// Spirenkov Maxim aka Sp-Max Shaman, 2001
+// --------------------------------------------------------------------------------------------
+// Storm engine v2.00
+// --------------------------------------------------------------------------------------------
+// AnimationServiceImp
+// --------------------------------------------------------------------------------------------
+// Animation service for creating AnimationManager objects
+// ============================================================================================
 
 #include "AnimationServiceImp.h"
 
@@ -18,46 +18,46 @@
 
 //============================================================================================
 
-//Время выгрузки неиспользуемой анимации
+// Unused animation unload time
 #define ASRV_DOWNTIME 1
-//Наибольший временной отрезок, подаваемый в AnimationManager
+// Longest time span supplied by the AnimationManager
 #define ASRV_MAXDLTTIME 50
 
-//Пути
+// Paths
 #define ASKW_PATH_ANI "resource\\animation\\"
 #define ASKW_PATH_JFA "resource\\animation\\"
 
-//Ключевые слова
-#define ASKW_JFA_FILE "animation" //Файл со скелетом и анимацией
-#define ASKW_STIME "start_time"   //Начальное время действия
-#define ASKW_ETIME "end_time"     //Конечное время действия
-#define ASKW_RATE "speed"         //Коэфициент скорости воспроизведения
-#define ASKW_TYPE "type"          //Тип анимации
-#define ASKW_LOOP "loop"          //Повторять анимацию
-#define ASKW_EVENT "event"        //Событие
-#define ASKW_DATA "data"          //Пользовательские данные
-#define ASKW_BONE "bone"          //Индексы костей используемые при анимации
+// Keywords
+#define ASKW_JFA_FILE "animation" // Skeleton and Animation File
+#define ASKW_STIME "start_time"   // Action start time
+#define ASKW_ETIME "end_time"     // End time of action
+#define ASKW_RATE "speed"         // Playback speed ratio
+#define ASKW_TYPE "type"          // Animation type
+#define ASKW_LOOP "loop"          // Repeat animation
+#define ASKW_EVENT "event"        // Event
+#define ASKW_DATA "data"          // User data
+#define ASKW_BONE "bone"          // Bone indices used in animation
 
-//Тип анимации:
-#define ASKWAT_NORMAL "normal"       //От старта до конца и остановиться
-#define ASKWAT_REVERSE "reverse"     //От конца до старта и остановиться
-#define ASKWAT_PINGPONG "pingpong"   //От старта до конца, обратно и остановиться
-#define ASKWAT_RPINGPONG "rpingpong" //От конца до старта, обратно и остановиться
-//Зацикленность анимации
-#define ASKWAL_TRUE "true"   //Разрешенна зацикленность анимации
-#define ASKWAL_FALSE "false" //Запрещенна зацикленность анимации
-//Тип события
-#define ASKWAE_ALWAYS "always"   //Всегда генерить
-#define ASKWAE_NORMAL "normal"   //При прямом прокручивании анимации
-#define ASKWAE_REVERSE "reverse" //При обратном прокручивании анимации
+// Animation type:
+#define ASKWAT_NORMAL "normal"       // From start to the end and stop
+#define ASKWAT_REVERSE "reverse"     // From end to start and stop
+#define ASKWAT_PINGPONG "pingpong"   // From start to end, back and stop
+#define ASKWAT_RPINGPONG "rpingpong" // From end to start, back and stop
+// Looped animation
+#define ASKWAL_TRUE "true"   // Animation looping allowed
+#define ASKWAL_FALSE "false" // Animation looping is forbidden
+// Event type
+#define ASKWAE_ALWAYS "always"   // Always generate
+#define ASKWAE_NORMAL "normal"   // On playing the animation forward
+#define ASKWAE_REVERSE "reverse" // On playing the animation backward
 
 //============================================================================================
 
 char AnimationServiceImp::key[1024];
 
-//============================================================================================
-//Конструирование, деструктурирование
-//============================================================================================
+// ============================================================================================
+// Construction, destruction
+// ============================================================================================
 
 AnimationServiceImp::AnimationServiceImp()
 {
@@ -81,13 +81,13 @@ AnimationServiceImp::~AnimationServiceImp()
 
 //============================================================================================
 
-//Место исполнения
+// Phase for running the animation
 uint32_t AnimationServiceImp::RunSection()
 {
     return SECTION_REALIZE;
 };
 
-//Функции исполнения
+// Execution functions
 void AnimationServiceImp::RunStart()
 {
     if (core.Controls->GetDebugAsyncKeyState(VK_F4))
@@ -95,20 +95,20 @@ void AnimationServiceImp::RunStart()
     auto dltTime = core.GetDeltaTime();
     if (dltTime > 1000)
         dltTime = 1000;
-    //Просмотрим все анимации
+    // Check all animations
     for (long i = 0; i < ainfo.size(); i++)
         if (ainfo[i])
         {
             ainfo[i]->AddDowntime(dltTime);
             if (ainfo[i]->GetDowntime() >= ASRV_DOWNTIME)
             {
-                //Выгружаем никем не используемую анимацию
+                // Unloading unused animation
                 // core.Trace("Download animation %s", ainfo[i]->GetName());
                 delete ainfo[i];
                 ainfo[i] = nullptr;
             }
         }
-    //Исполним все анимации
+    // execute all animations
     for (auto i = 0; i < animations.size(); i++)
         if (animations[i])
         {
@@ -125,10 +125,10 @@ void AnimationServiceImp::RunEnd()
 {
 }
 
-//Создать анимацию для модели, удалять через delete
+// Create animation for the model, delete using "delete"
 Animation *AnimationServiceImp::CreateAnimation(const char *animationName)
 {
-    //Ищем анимацию, если нет, то загружаем
+    // looking for animation, load if not found
     long i;
     for (i = 0; i < ainfo.size(); i++)
         if (ainfo[i])
@@ -143,7 +143,7 @@ Animation *AnimationServiceImp::CreateAnimation(const char *animationName)
             return nullptr;
     }
     const auto aniIndex = i;
-    //Анимация загружена, создаём менеджер анимации
+    // The animation is loaded, creating an animation manager
     for (i = 0; i < animations.size(); i++)
         if (!animations[i])
             break;
@@ -155,7 +155,7 @@ Animation *AnimationServiceImp::CreateAnimation(const char *animationName)
     return animations[i];
 }
 
-//Удалить анимацию (вызывается из деструктора)
+// Remove animation (called from destructor)
 void AnimationServiceImp::DeleteAnimation(AnimationImp *ani)
 {
     Assert(ani);
@@ -164,29 +164,29 @@ void AnimationServiceImp::DeleteAnimation(AnimationImp *ani)
     animations[ani->GetThisID()] = nullptr;
 }
 
-//Событие
+// Event
 void AnimationServiceImp::Event(const char *eventName)
 {
-    //Отправка сообщения системе
+    // Sending a message to the system
     core.Trace("Called function <void AnimationServiceImp::Event(%s)>, please make it.", eventName);
 }
 
-//Загрузить анимацию
+// load animation
 long AnimationServiceImp::LoadAnimation(const char *animationName)
 {
-    //Формируем имя файла
+    // Form the file name
     static char path[MAX_PATH];
     strcpy_s(path, ASKW_PATH_ANI);
     strcat_s(path, animationName);
     strcat_s(path, ".ani");
-    //Открываем ini файл, описывающий анимацию
+    // Open the ini file describing the animation
     auto *ani = fio->OpenIniFile(path);
     if (!ani)
     {
         core.Trace("Cannot open animation file %s", path);
         return -1;
     }
-    //Получаем имя jfa файла со скелетом
+    // Get the name of the jfa file with the skeleton
     strcpy_s(path, ASKW_PATH_JFA);
     const size_t l = strlen(path);
     if (!ani->ReadString(nullptr, ASKW_JFA_FILE, path + l, MAX_PATH - l - 1, nullptr))
@@ -195,9 +195,9 @@ long AnimationServiceImp::LoadAnimation(const char *animationName)
         delete ani;
         return -1;
     }
-    //Описатель онимации
+    // Animation descriptor
     auto *info = new AnimationInfo(animationName);
-    //Зачитаем кости
+    // read the bones
     if (!LoadAN(path, info))
     {
         delete ani;
@@ -205,19 +205,19 @@ long AnimationServiceImp::LoadAnimation(const char *animationName)
         core.Trace("Animation file %s is damaged!", path);
         return -1;
     }
-    //Глобальные пользовательские данные
+    // Global user data
     LoadUserData(ani, nullptr, info->GetUserData(), animationName);
-    //Зачитаем действия
+    // read actions
     for (auto isHaveSection = ani->GetSectionName(path, 63); isHaveSection;
          isHaveSection = ani->GetSectionNameNext(path, 63))
     {
-        //Обработка действия
+        // Action handling
         if (path[0] == 0 || strlen(path) >= 64)
         {
             core.Trace("Incorrect name action [%s] of animation file %s.ani", path, animationName);
             continue;
         }
-        //Зачитываем времена
+        // Reading the times
         const auto stime = ani->GetLong(path, ASKW_STIME, -1);
         if (stime < 0)
         {
@@ -230,17 +230,17 @@ long AnimationServiceImp::LoadAnimation(const char *animationName)
             core.Trace("Incorrect %s in action [%s] of animation file %s.ani", ASKW_ETIME, path, animationName);
             continue;
         }
-        //Добавляем действие
+        // Add an action
         auto *aci = info->AddAction(path, stime, etime);
         if (aci == nullptr)
         {
             core.Trace("Warning! Action [%s] of animation file %s.ani is repeated, skip it", path, animationName);
             continue;
         }
-        //Коэфициент скорости воспроизведения
+        // Playback speed ratio
         const auto rate = ani->GetFloat(path, ASKW_RATE, 1.0f);
         aci->SetRate(rate);
-        //Тип анимации
+        // Animation type
         auto type = at_normal;
         if (ani->ReadString(path, ASKW_TYPE, key, 256, ASKWAT_NORMAL))
         {
@@ -259,7 +259,7 @@ long AnimationServiceImp::LoadAnimation(const char *animationName)
             }
         }
         aci->SetAnimationType(type);
-        //Зацикленность анимации
+        // Looped animation
         auto isLoop = true;
         if (ani->ReadString(path, ASKW_LOOP, key, 256, "false"))
         {
@@ -275,21 +275,21 @@ long AnimationServiceImp::LoadAnimation(const char *animationName)
             }
         }
         aci->SetLoop(isLoop);
-        //События
+        // Events
         if (ani->ReadString(path, ASKW_EVENT, key, 256, ""))
         {
             do
             {
                 key[256] = 0;
                 memcpy(key + 257, key, 257);
-                //Начало имени
+                // The beginning of the name
                 if (key[0] != '"')
                 {
                     core.Trace("Incorrect %s <%s> in action [%s] of animation file %s.ani\nFirst symbol is not '\"'\n",
                                ASKW_EVENT, key + 257, path, animationName);
                     continue;
                 }
-                //Конец имени
+                // End of name
                 long p;
                 for (p = 1; key[p] && key[p] != '"'; p++)
                     ;
@@ -314,8 +314,8 @@ long AnimationServiceImp::LoadAnimation(const char *animationName)
                     continue;
                 }
                 key[p++] = 0;
-                //Определяем время
-                //Первая цифра
+                // determine the time
+                // First digit
                 for (; key[p] && (key[p] < '0' || key[p] > '9'); p++)
                     ;
                 if (!key[p])
@@ -325,20 +325,20 @@ long AnimationServiceImp::LoadAnimation(const char *animationName)
                     continue;
                 }
                 auto *em = key + p;
-                //Ищем окончание числа
+                // Looking for the end of the number
                 for (; key[p] >= '0' && key[p] <= '9'; p++)
                     ;
                 float tm = 0;
                 if (key[p] != '%')
                 {
-                    //Абслютное значение времени
+                    // The absolute time value
                     if (key[p])
                         key[p++] = 0;
                     tm = static_cast<float>(atof(em));
                 }
                 else
                 {
-                    //Относительное значение времени
+                    // Relative time value
                     key[p++] = 0;
                     tm = static_cast<float>(atof(em));
                     if (tm < 0)
@@ -351,16 +351,16 @@ long AnimationServiceImp::LoadAnimation(const char *animationName)
                     tm = static_cast<float>(stime);
                 if (tm > etime)
                     tm = static_cast<float>(etime);
-                //Зачитываем тип события
+                // Reading the event type
                 auto ev = eae_normal;
                 if (key[p])
                 {
-                    //Ищем начало
+                    // Looking for a start
                     for (p++; key[p]; p++)
                         if ((key[p] >= 'A' && key[p] <= 'Z') || (key[p] >= 'a' && key[p] <= 'z'))
                             break;
                     em = key + p;
-                    //Ищем окончание
+                    // Looking for an ending
                     for (p++; key[p]; p++)
                         if (!(key[p] >= 'A' && key[p] <= 'Z') && !(key[p] >= 'a' && key[p] <= 'z'))
                             break;
@@ -388,7 +388,7 @@ long AnimationServiceImp::LoadAnimation(const char *animationName)
                     }
                 }
                 // core.Trace("Add event %s, time = %f to action %s", key + 1, (tm - stime)/float(etime - stime), path);
-                //Добавляем событие
+                // Add an event
                 if (!aci->AddEvent(key + 1, tm, ev))
                 {
                     core.Trace("Warning: Incorrect %s <%s> in action [%s] of animation file %s.ani,\nvery many events "
@@ -397,19 +397,19 @@ long AnimationServiceImp::LoadAnimation(const char *animationName)
                 }
             } while (ani->ReadStringNext(path, ASKW_EVENT, key, 256));
         }
-        //Кости
+        // Bones
 
-        //Пользовательские данные
+        // User data
         LoadUserData(ani, path, aci->GetUserData(), animationName);
     }
-    //Закроем ini файл
+    // Close the ini file
     delete ani;
-    //Ищем свободный указатель
+    // Looking for a free pointer
     long i;
     for (i = 0; i < ainfo.size(); i++)
         if (!ainfo[i])
             break;
-    //Если нет такого, расширем массив
+    // expand the array if not found
     if (i == ainfo.size())
         ainfo.emplace_back(nullptr);
 
@@ -417,7 +417,7 @@ long AnimationServiceImp::LoadAnimation(const char *animationName)
     return i;
 }
 
-//Загрузить из текущей секции пользовательские данные
+// Load user data from the current section
 void AnimationServiceImp::LoadUserData(INIFILE *ani, const char *sectionName,
                                        std::unordered_map<std::string, std::string> &data, const char *animationName)
 {
@@ -426,8 +426,8 @@ void AnimationServiceImp::LoadUserData(INIFILE *ani, const char *sectionName,
         do
         {
             key[1023] = 0;
-            //Ищем имя данных
-            //Начало имени
+            // Looking for data name
+            // The beginning of the name
             if (key[0] != '"')
             {
                 if (sectionName)
@@ -438,7 +438,7 @@ void AnimationServiceImp::LoadUserData(INIFILE *ani, const char *sectionName,
                                ASKW_DATA, animationName);
                 continue;
             }
-            //Конец имени
+            // End of name
             long p;
             for (p = 1; key[p] && key[p] != '"'; p++)
                 ;
@@ -465,7 +465,7 @@ void AnimationServiceImp::LoadUserData(INIFILE *ani, const char *sectionName,
                 continue;
             }
             key[p++] = 0;
-            //Проверяем наличие данных
+            // Checking for data availability
             if (data.count(key + 1))
             {
                 if (sectionName)
@@ -477,7 +477,7 @@ void AnimationServiceImp::LoadUserData(INIFILE *ani, const char *sectionName,
 
                 continue;
             }
-            //Ищем строку с данными
+            // looking for a string with data
             for (; key[p] && key[p] != '"'; p++)
                 ;
             if (!key[p])
@@ -490,19 +490,19 @@ void AnimationServiceImp::LoadUserData(INIFILE *ani, const char *sectionName,
                                animationName);
                 continue;
             }
-            //Ищем окончание строки данных
+            // Looking for the end of the data string
             auto *const uds = key + ++p;
             for (; key[p] && key[p] != '"'; p++)
                 ;
             key[p] = 0;
-            //Добавляем данные
+            // Add data
             // core.Trace("Add user data \"%s\", \"%s\" of \"%s\"", key + 1, uds, sectionName);
             data[key + 1] = uds;
         } while (ani->ReadStringNext((char *)sectionName, ASKW_DATA, key, 1023));
     }
 }
 
-//Загрузить AN
+// load AN
 bool AnimationServiceImp::LoadAN(const char *fname, AnimationInfo *info)
 {
     auto *fl = INVALID_HANDLE_VALUE;
@@ -514,7 +514,7 @@ bool AnimationServiceImp::LoadAN(const char *fname, AnimationInfo *info)
             core.Trace("Cannot open file: %s", fname);
             return false;
         }
-        //Читаем заголовок файла
+        // Reading the file header
         ANFILE::HEADER header;
         if (!fio->_ReadFile(fl, &header, sizeof(ANFILE::HEADER), nullptr) || header.nFrames <= 0 ||
             header.nJoints <= 0 || header.framesPerSec < 0.0f || header.framesPerSec > 1000.0f)
@@ -523,13 +523,13 @@ bool AnimationServiceImp::LoadAN(const char *fname, AnimationInfo *info)
             fio->_CloseHandle(fl);
             return false;
         }
-        //Установим время анимации
+        // Set animation time
         info->SetNumFrames(header.nFrames);
-        //Установим скорость анимации
+        // Set the animation speed
         info->SetFPS(header.framesPerSec);
-        //Заводим нужное число костей
+        // Create the required number of bones
         info->CreateBones(header.nJoints);
-        //Устанавливаем родителей
+        // Setting parents
         auto *const prntIndeces = new long[header.nJoints];
         if (!fio->_ReadFile(fl, prntIndeces, header.nJoints * sizeof(long), nullptr))
         {
@@ -545,7 +545,7 @@ bool AnimationServiceImp::LoadAN(const char *fname, AnimationInfo *info)
             info->GetBone(i).SetParent(&info->GetBone(prntIndeces[i]));
         }
         delete[] prntIndeces;
-        //Стартовые позиции костей
+        // Starting positions of bones
         auto *vrt = new CVECTOR[header.nJoints];
         if (!fio->_ReadFile(fl, vrt, header.nJoints * sizeof(CVECTOR), nullptr))
         {
@@ -560,7 +560,7 @@ bool AnimationServiceImp::LoadAN(const char *fname, AnimationInfo *info)
         }
         delete[] vrt;
 
-        //Позиции рутовой кости
+        // Root bone positions
         vrt = new CVECTOR[header.nFrames];
         if (!fio->_ReadFile(fl, vrt, header.nFrames * sizeof(CVECTOR), nullptr))
         {
@@ -572,7 +572,7 @@ bool AnimationServiceImp::LoadAN(const char *fname, AnimationInfo *info)
         info->GetBone(0).SetPositions(vrt, header.nFrames);
         delete[] vrt;
 
-        //Углы
+        // Angles
         auto *ang = new D3DXQUATERNION[header.nFrames];
         for (long i = 0; i < header.nJoints; i++)
         {
@@ -597,7 +597,7 @@ bool AnimationServiceImp::LoadAN(const char *fname, AnimationInfo *info)
         }
         //-----------------------------------------------
 
-        //Закроем файл
+        // Close the file
         fio->_CloseHandle(fl);
         return true;
     }

@@ -15,7 +15,7 @@
 #include "Vector.h"
 #include "Vector4.h"
 
-///Класс представления цвета (float)
+// Color representation class (float)
 class Color
 {
   public:
@@ -25,244 +25,241 @@ class Color
             union {
                 struct
                 {
-                    ///Красный
+                    // Red
                     float r;
-                    ///Зелёный
+                    // Green
                     float g;
-                    ///Синий
+                    // Blue
                     float b;
                 };
 
                 union {
                     struct
                     {
-                        /// rgb в векторе
+                        // rgb in vector
                         Vector c;
                     };
 
                     struct
                     {
-                        /// rgb в векторе
+                        // rgb in vector
                         Vector color;
                     };
                 };
             };
 
             union {
-                ///Прозрачность
+                // Transparency
                 float a;
-                ///Прозрачность
+                // Transparency
                 float alpha;
             };
         };
 
         struct
         {
-            ///Представление в виде Vector4
+            // Vector4 representation
             Vector4 v4;
         };
     };
 
-    //-----------------------------------------------------------
-    //Конструкторы
-    //-----------------------------------------------------------
+    // -----------------------------------------------------------
+    // Constructors
+    // -----------------------------------------------------------
   public:
-    ///Пустой конструктор
+    // Empty constructor
     Color();
-    ///Заполнить числом rgb
+    // Fill with rgb number
     Color(float rgb, float a = 1.0f);
-    ///Заполнить все компоненты
+    // Fill all components
     Color(float r, float g, float b, float a = 1.0f);
-    ///Заполнить все компоненты
+    // Fill all components
     Color(const float f[3], float a = 1.0f);
-    ///Заполнить все компоненты
+    // Fill all components
     Color(const Vector &v, float a = 1.0f);
-    ///Заполнить все компоненты
+    // Fill all components
     Color(const Vector4 &v);
-    ///Распоковать
+    // Unpack
     Color(uint32_t c);
-    ///Распоковать
+    // Unpack
     Color(int32_t c);
-    ///Конструктор копирования
+    // Copy constructor
     Color(const Color &c);
 
-    //-----------------------------------------------------------
-    //Операторы
-    //-----------------------------------------------------------
+    // -----------------------------------------------------------
+    // Operators
+    // -----------------------------------------------------------
   public:
-    ///Получить интенсивность rgb
+    // Get rgb intensity
     float operator~() const;
-    ///Вернуть цвет с ограниченными компанентами 0..1
+    // Return color with constrained components 0..1
     Color operator!() const;
 
-    ///Получить отрицательный цвет
+    // Get negative color
     Color operator-() const;
 
-    ///Присвоить rgb
+    // Assign rgb
     Color &operator=(float f);
-    ///Распаковать и присвоить
+    // Unpack and assign
     Color &operator=(uint32_t c);
-    ///Присвоить rgb
+    // Assign rgb
     Color &operator=(const Vector &v);
-    ///Присвоить
+    // Assign
     Color &operator=(const Vector4 &v);
-    ///Присвоить
+    // Assign
     Color &operator=(const Color &c);
-    ///Покомпонентное сложение с присваиванием rgb
+    // per component addition with rgb assignment
     Color &operator+=(float f);
-    ///Распаковать и сложить
+    // Unpack and add
     Color &operator+=(uint32_t c);
-    ///Покомпонентное сложение с присваиванием rgb
+    // per component addition with rgb assignment
     Color &operator+=(const Vector &v);
-    ///Покомпонентное сложение с присваиванием
+    // per component addition with assignment
     Color &operator+=(const Vector4 &v);
-    ///Покомпонентное сложение с присваиванием
+    // per component addition with assignment
     Color &operator+=(const Color &c);
-    ///Покомпонентное вычитание с присваиванием rgb
+    // per component subtraction with rgb assignment
     Color &operator-=(float f);
-    ///Распаковать и вычесть
+    // Unpack and subtract
     Color &operator-=(uint32_t c);
-    ///Покомпонентное вычитание с присваиванием rgb
+    // per component subtraction with rgb assignment
     Color &operator-=(const Vector &v);
-    ///Покомпонентное вычитание с присваиванием
+    // per component subtraction with assignment
     Color &operator-=(const Vector4 &v);
-    ///Покомпонентное вычитание с присваиванием
+    // per component subtraction with assignment
     Color &operator-=(const Color &c);
-    ///Покомпонентное умножение с присваиванием rgb
+    // per component multiplication with rgb assignment
     Color &operator*=(float f);
-    ///Распаковать и умножить
+    // Unpack and multiply
     Color &operator*=(uint32_t c);
-    ///Покомпонентное умножение с присваиванием rgb
+    // per component multiplication with rgb assignment
     Color &operator*=(const Vector &v);
-    ///Покомпонентное умножение с присваиванием
+    // per component multiplication with assignment
     Color &operator*=(const Vector4 &v);
-    ///Покомпонентное умножение с присваиванием
+    // per component multiplication with assignment
     Color &operator*=(const Color &c);
-    ///Покомпонентное деление с присваиванием rgb
+    // per component division with rgb assignment
     Color &operator/=(float f);
-    ///Распаковать и разделить
+    // Unpack and divide
     Color &operator/=(uint32_t c);
-    ///Покомпонентное деление с присваиванием rgb
+    // per component division with rgb assignment
     Color &operator/=(const Vector &v);
-    ///Покомпонентное деление с присваиванием
+    // per component division with assignment
     Color &operator/=(const Vector4 &v);
-    ///Покомпонентное деление с присваиванием
+    // per component division with assignment
     Color &operator/=(const Color &c);
 
-    ///Скалярное перемножение rgb, результат копируется во все компоненты
+    // Scalar rgb multiplication, the result is copied to all components
     Color &operator|=(const Color &c);
 
-    ///Получить упакованный цвет в long
+    // Get packed color as long
     operator uint32_t() const;
 
-    //-----------------------------------------------------------
-    //Преобразование
-    //-----------------------------------------------------------
+    // -----------------------------------------------------------
+    // Transformation
+    // -----------------------------------------------------------
   public:
-    ///Ограничить диапазоном 0..1
+    // Limit to range 0..1
     void Clamp();
-    ///Ограничить диапазоном
+    // Limit to range
     void Clamp(float min, float max);
 
-    ///Сохранить минимальные компаненты
+    // Save minimal components
     void Min(const Color &c);
-    ///Сохранить максимальные компаненты
+    // Save maximum components
     void Max(const Color &c);
 
-    ///Яркость -1..1
+    // Brightness -1..1
     void Brightness(float br);
-    ///Гамма -1..1
+    // Gamma -1..1
     void Gamma(float gm);
-    ///Контраст -1..1
+    // Contrast -1..1
     void Contrast(float cn);
-    //Изменить сумарно яркость, гамму и контраст
+    // Change brightness, gamma and contrast
     void Processed(float br, float gm, float cn);
 
-    ///Изменить насыщенность
-    //...когда понадобиться - сделаю
-
-    //-----------------------------------------------------------
-    //Утилитные
-    //-----------------------------------------------------------
+    // -----------------------------------------------------------
+    // Utilities
+    // -----------------------------------------------------------
   public:
-    //Получить интенсивность
+    // Get intensity
     float GetIntensity() const;
-    //Нормализовать rgb
+    // Normalize rgb
     Color &Normalize();
 
-    ///Получить цветовую дистанцию между цветами
+    // Get color distance between colors
     float GetDistance(const Color &c) const;
-    ///Получить цветовую дистанцию между цветами в квадрате
+    // Get the color distance between colors squared
     float GetDistanceSqr(const Color &c) const;
 
-    ///Расчитать линейно интерполированное значение
+    // Calculate linearly interpolated value
     Color &Lerp(const Color &c1, const Color &c2, float kBlend);
-    ///Расчитать линейно интерполированное значение
+    // Calculate linearly interpolated value
     Color &LerpA(const Color &c1, const Color &c2, float kBlend);
-    //Умножить цвет на число
+    // Multiply color by number
     Color &MulColor(float k);
-    //Умножить альфу на число
+    // Multiply alpha by number
     Color &MulAlpha(float k);
 
-    ///Поменять местами r,b
+    // Swap r, b
     Color &SwapRB();
 
-    //Получить запакованный цвет в uint32_t
+    // Get packed color as uint32_t
     uint32_t GetDword() const;
 
-    //Преобразование A8R8G8B8 в R5G6B5
+    // Converting A8R8G8B8 to R5G6B5
     static unsigned short Make565(uint32_t color);
-    //Преобразование A8R8G8B8 в X1R5G5B5
+    // Converting A8R8G8B8 to X1R5G5B5
     static unsigned short Make555(uint32_t color);
-    //Преобразование A8R8G8B8 в A1R5G5B5
+    // Converting A8R8G8B8 to A1R5G5B5
     static unsigned short Make1555(uint32_t color);
-    //Преобразование A8R8G8B8 в A1R5G5B5
+    // Converting A8R8G8B8 to A1R5G5B5
     static unsigned short Make4444(uint32_t color);
 };
 
-///Целочисленное представление цвета
+// Integer color representation
 class DColor
 {
   public:
     union {
         struct
         {
-            ///Синий
+            // Blue
             unsigned char b;
-            ///Зелённый
+            // Green
             unsigned char g;
-            ///Красный
+            // Red
             unsigned char r;
-            ///Прозрачность
+            // Transparency
             unsigned char a;
         };
 
         union {
-            ///Упакованный цвет
+            // Packed color
             uint32_t c;
-            ///Упакованный цвет
+            // Packed color
             uint32_t color;
         };
     };
 
-    //-----------------------------------------------------------
-    //Операторы
-    //-----------------------------------------------------------
+    // -----------------------------------------------------------
+    // Operators
+    // -----------------------------------------------------------
   public:
-    ///Присвоить
+    // Assign
     DColor &operator=(uint32_t color);
-    ///Присвоить
+    // Assign
     DColor &operator=(long color);
 
-    //Получить long
+    // Get long
     operator uint32_t() const;
 };
 
-//===========================================================
-//Конструкторы
-//===========================================================
+// ===========================================================
+// Constructors
+// ===========================================================
 
-//Пустой конструктор
+// Empty constructor
 inline Color::Color()
 {
     r = 0.0f;
@@ -271,7 +268,7 @@ inline Color::Color()
     a = 1.0f;
 }
 
-//Заполнить числом rgb
+// Fill with rgb number
 inline Color::Color(float rgb, float a)
 {
     r = rgb;
@@ -280,7 +277,7 @@ inline Color::Color(float rgb, float a)
     this->a = a;
 }
 
-//Заполнить все компоненты
+// Fill all components
 inline Color::Color(float r, float g, float b, float a)
 {
     this->r = r;
@@ -289,7 +286,7 @@ inline Color::Color(float r, float g, float b, float a)
     this->a = a;
 }
 
-//Заполнить все компоненты
+// Fill all components
 inline Color::Color(const float f[3], float a)
 {
     r = f[0];
@@ -298,7 +295,7 @@ inline Color::Color(const float f[3], float a)
     this->a = a;
 }
 
-//Заполнить все компоненты
+// Fill all components
 inline Color::Color(const Vector &v, float a)
 {
     r = v.x;
@@ -307,7 +304,7 @@ inline Color::Color(const Vector &v, float a)
     this->a = a;
 }
 
-//Заполнить все компоненты
+// Fill all components
 inline Color::Color(const Vector4 &v)
 {
     r = v.x;
@@ -316,19 +313,19 @@ inline Color::Color(const Vector4 &v)
     a = v.w;
 }
 
-//Распоковать
+// Unpack
 inline Color::Color(uint32_t c)
 {
     *this = c;
 }
 
-///Распоковать
+// Unpack
 inline Color::Color(int32_t c)
 {
     *this = static_cast<uint32_t>(c);
 }
 
-//Конструктор копирования
+// Copy constructor
 inline Color::Color(const Color &c)
 {
     r = c.r;
@@ -337,17 +334,17 @@ inline Color::Color(const Color &c)
     a = c.a;
 }
 
-//===========================================================
-//Операторы
-//===========================================================
+// ===========================================================
+// Operators
+// ===========================================================
 
-//Получить интенсивность rgb
+// Get rgb intensity
 inline float Color::operator~() const
 {
     return GetIntensity();
 }
 
-//Вернуть цвет с ограниченными компанентами 0..1
+// Return color with constrained components 0..1
 inline Color Color::operator!() const
 {
     auto c(*this);
@@ -355,7 +352,7 @@ inline Color Color::operator!() const
     return c;
 }
 
-//Получить отрицательный цвет
+// Get negative color
 inline Color Color::operator-() const
 {
     auto c(*this);
@@ -366,7 +363,7 @@ inline Color Color::operator-() const
     return c;
 }
 
-//Присвоить rgb
+// Assign rgb
 inline Color &Color::operator=(float f)
 {
     r = f;
@@ -376,7 +373,7 @@ inline Color &Color::operator=(float f)
     return *this;
 }
 
-//Присвоить rgb
+// Assign rgb
 inline Color &Color::operator=(const Vector &v)
 {
     r = v.x;
@@ -386,7 +383,7 @@ inline Color &Color::operator=(const Vector &v)
     return *this;
 }
 
-//Присвоить
+// Assign
 inline Color &Color::operator=(const Vector4 &v)
 {
     r = v.x;
@@ -396,7 +393,7 @@ inline Color &Color::operator=(const Vector4 &v)
     return *this;
 }
 
-//Распаковать и присвоить
+// Unpack and assign
 inline Color &Color::operator=(uint32_t c)
 {
     r = static_cast<unsigned char>(c >> 16) * (1.0f / 255.0f);
@@ -406,7 +403,7 @@ inline Color &Color::operator=(uint32_t c)
     return *this;
 }
 
-//Присвоить
+// Assign
 inline Color &Color::operator=(const Color &c)
 {
     r = c.r;
@@ -416,7 +413,7 @@ inline Color &Color::operator=(const Color &c)
     return *this;
 }
 
-//Покомпонентное сложение с присваиванием rgb
+// per component addition with rgb assignment
 inline Color &Color::operator+=(float f)
 {
     r += f;
@@ -425,7 +422,7 @@ inline Color &Color::operator+=(float f)
     return *this;
 }
 
-//Распаковать и сложить
+// Unpack and add
 inline Color &Color::operator+=(uint32_t c)
 {
     const Color clr(c);
@@ -433,7 +430,7 @@ inline Color &Color::operator+=(uint32_t c)
     return *this;
 }
 
-//Покомпонентное сложение с присваиванием rgb
+// per component addition with rgb assignment
 inline Color &Color::operator+=(const Vector &v)
 {
     r += v.x;
@@ -442,7 +439,7 @@ inline Color &Color::operator+=(const Vector &v)
     return *this;
 }
 
-//Покомпонентное сложение с присваиванием
+// per component addition with assignment
 inline Color &Color::operator+=(const Vector4 &v)
 {
     r += v.x;
@@ -452,7 +449,7 @@ inline Color &Color::operator+=(const Vector4 &v)
     return *this;
 }
 
-//Покомпонентное сложение с присваиванием
+// per component addition with assignment
 inline Color &Color::operator+=(const Color &c)
 {
     r += c.r;
@@ -462,7 +459,7 @@ inline Color &Color::operator+=(const Color &c)
     return *this;
 }
 
-//Покомпонентное вычитание с присваиванием rgb
+// per component subtraction with rgb assignment
 inline Color &Color::operator-=(float f)
 {
     r -= f;
@@ -471,7 +468,7 @@ inline Color &Color::operator-=(float f)
     return *this;
 }
 
-///Распаковать и вычесть
+// Unpack and subtract
 inline Color &Color::operator-=(uint32_t c)
 {
     const Color clr(c);
@@ -479,7 +476,7 @@ inline Color &Color::operator-=(uint32_t c)
     return *this;
 }
 
-//Покомпонентное вычитание с присваиванием rgb
+// per component subtraction with rgb assignment
 inline Color &Color::operator-=(const Vector &v)
 {
     r -= v.x;
@@ -488,7 +485,7 @@ inline Color &Color::operator-=(const Vector &v)
     return *this;
 }
 
-//Покомпонентное вычитание с присваиванием
+// per component subtraction with assignment
 inline Color &Color::operator-=(const Vector4 &v)
 {
     r -= v.x;
@@ -498,7 +495,7 @@ inline Color &Color::operator-=(const Vector4 &v)
     return *this;
 }
 
-//Покомпонентное вычитание с присваиванием
+// per component subtraction with assignment
 inline Color &Color::operator-=(const Color &c)
 {
     r -= c.r;
@@ -508,7 +505,7 @@ inline Color &Color::operator-=(const Color &c)
     return *this;
 }
 
-//Покомпонентное умножение с присваиванием rgb
+// per component multiplication with rgb assignment
 inline Color &Color::operator*=(float f)
 {
     r *= f;
@@ -517,7 +514,7 @@ inline Color &Color::operator*=(float f)
     return *this;
 }
 
-///Распаковать и умножить
+// Unpack and multiply
 inline Color &Color::operator*=(uint32_t c)
 {
     const Color clr(c);
@@ -525,7 +522,7 @@ inline Color &Color::operator*=(uint32_t c)
     return *this;
 }
 
-//Покомпонентное умножение с присваиванием rgb
+// per component multiplication with rgb assignment
 inline Color &Color::operator*=(const Vector &v)
 {
     r *= v.x;
@@ -534,7 +531,7 @@ inline Color &Color::operator*=(const Vector &v)
     return *this;
 }
 
-//Покомпонентное умножение с присваиванием
+// per component multiplication with assignment
 inline Color &Color::operator*=(const Vector4 &v)
 {
     r *= v.x;
@@ -544,7 +541,7 @@ inline Color &Color::operator*=(const Vector4 &v)
     return *this;
 }
 
-//Покомпонентное умножение с присваиванием
+// per component multiplication with assignment
 inline Color &Color::operator*=(const Color &c)
 {
     r *= c.r;
@@ -554,7 +551,7 @@ inline Color &Color::operator*=(const Color &c)
     return *this;
 }
 
-//Покомпонентное деление с присваиванием rgb
+// per component division with rgb assignment
 inline Color &Color::operator/=(float f)
 {
     f = 1.0f / f;
@@ -564,7 +561,7 @@ inline Color &Color::operator/=(float f)
     return *this;
 }
 
-//Распаковать и разделить
+// Unpack and divide
 inline Color &Color::operator/=(uint32_t c)
 {
     const Color clr(c);
@@ -572,7 +569,7 @@ inline Color &Color::operator/=(uint32_t c)
     return *this;
 }
 
-//Покомпонентное деление с присваиванием rgb
+// per component division with rgb assignment
 inline Color &Color::operator/=(const Vector &v)
 {
     r /= v.x;
@@ -581,7 +578,7 @@ inline Color &Color::operator/=(const Vector &v)
     return *this;
 }
 
-//Покомпонентное деление с присваиванием
+// per component division with assignment
 inline Color &Color::operator/=(const Vector4 &v)
 {
     r /= v.x;
@@ -591,7 +588,7 @@ inline Color &Color::operator/=(const Vector4 &v)
     return *this;
 }
 
-//Покомпонентное деление с присваиванием
+// per component division with assignment
 inline Color &Color::operator/=(const Color &c)
 {
     r /= c.r;
@@ -601,14 +598,14 @@ inline Color &Color::operator/=(const Color &c)
     return *this;
 }
 
-//Скалярное перемножение rgb, результат копируется во все компоненты
+// Scalar rgb multiplication, the result is copied to all components
 inline Color &Color::operator|=(const Color &c)
 {
     r = g = b = a = r * c.r + g * c.g + b * c.b;
     return *this;
 }
 
-//Получить упакованный цвет в long
+// Get packed color as long
 inline Color::operator uint32_t() const
 {
     auto c(*this);
@@ -617,7 +614,7 @@ inline Color::operator uint32_t() const
 }
 
 /*!\relates Color
-Покомпонентное сложение с присваиванием rgb
+per component addition with rgb assignment
 */
 inline Color operator+(const Color &c, float f)
 {
@@ -627,7 +624,7 @@ inline Color operator+(const Color &c, float f)
 }
 
 /*!\relates Color
-Покомпонентное сложение с присваиванием rgb
+per component addition with rgb assignment
 */
 inline Color operator+(float f, const Color &c)
 {
@@ -637,7 +634,7 @@ inline Color operator+(float f, const Color &c)
 }
 
 /*!\relates Color
-Распаковать и сложить
+Unpack and add
 */
 inline Color operator+(const Color &c, uint32_t cl)
 {
@@ -647,7 +644,7 @@ inline Color operator+(const Color &c, uint32_t cl)
 }
 
 /*!\relates Color
-Распаковать и сложить
+Unpack and add
 */
 inline Color operator+(uint32_t cl, const Color &c)
 {
@@ -657,7 +654,7 @@ inline Color operator+(uint32_t cl, const Color &c)
 }
 
 /*!\relates Color
-Покомпонентное сложение с присваиванием rgb
+per component addition with rgb assignment
 */
 inline Color operator+(const Color &c, const Vector &v)
 {
@@ -667,7 +664,7 @@ inline Color operator+(const Color &c, const Vector &v)
 }
 
 /*!\relates Color
-Покомпонентное сложение с присваиванием rgb
+per component addition with rgb assignment
 */
 inline Color operator+(const Vector &v, const Color &c)
 {
@@ -677,7 +674,7 @@ inline Color operator+(const Vector &v, const Color &c)
 }
 
 /*!\relates Color
-Покомпонентное сложение с присваиванием
+per component addition with assignment
 */
 inline Color operator+(const Color &c, const Vector4 &v)
 {
@@ -687,7 +684,7 @@ inline Color operator+(const Color &c, const Vector4 &v)
 }
 
 /*!\relates Color
-Покомпонентное сложение с присваиванием
+per component addition with assignment
 */
 inline Color operator+(const Vector4 &v, const Color &c)
 {
@@ -697,7 +694,7 @@ inline Color operator+(const Vector4 &v, const Color &c)
 }
 
 /*!\relates Color
-Покомпонентное сложение с присваиванием
+per component addition with assignment
 */
 inline Color operator+(const Color &c1, const Color &c2)
 {
@@ -707,7 +704,7 @@ inline Color operator+(const Color &c1, const Color &c2)
 }
 
 /*!\relates Color
-Покомпонентное вычитание с присваиванием rgb
+per component subtraction with rgb assignment
 */
 inline Color operator-(const Color &c, float f)
 {
@@ -717,7 +714,7 @@ inline Color operator-(const Color &c, float f)
 }
 
 /*!\relates Color
-Покомпонентное вычитание с присваиванием rgb
+per component subtraction with rgb assignment
 */
 inline Color operator-(float f, const Color &c)
 {
@@ -727,7 +724,7 @@ inline Color operator-(float f, const Color &c)
 }
 
 /*!\relates Color
-Распаковать и вычесть
+Unpack and subtract
 */
 inline Color operator-(const Color &c, uint32_t cl)
 {
@@ -737,7 +734,7 @@ inline Color operator-(const Color &c, uint32_t cl)
 }
 
 /*!\relates Color
-Распаковать и вычесть
+Unpack and subtract
 */
 inline Color operator-(uint32_t cl, const Color &c)
 {
@@ -747,7 +744,7 @@ inline Color operator-(uint32_t cl, const Color &c)
 }
 
 /*!\relates Color
-Покомпонентное вычитание с присваиванием rgb
+per component subtraction with rgb assignment
 */
 inline Color operator-(const Color &c, const Vector &v)
 {
@@ -757,7 +754,7 @@ inline Color operator-(const Color &c, const Vector &v)
 }
 
 /*!\relates Color
-Покомпонентное вычитание с присваиванием rgb
+per component subtraction with rgb assignment
 */
 inline Color operator-(const Vector &v, const Color &c)
 {
@@ -767,7 +764,7 @@ inline Color operator-(const Vector &v, const Color &c)
 }
 
 /*!\relates Color
-Покомпонентное вычитание с присваиванием
+per component subtraction with assignment
 */
 inline Color operator-(const Color &c, const Vector4 &v)
 {
@@ -777,7 +774,7 @@ inline Color operator-(const Color &c, const Vector4 &v)
 }
 
 /*!\relates Color
-Покомпонентное вычитание с присваиванием
+per component subtraction with assignment
 */
 inline Color operator-(const Vector4 &v, const Color &c)
 {
@@ -787,7 +784,7 @@ inline Color operator-(const Vector4 &v, const Color &c)
 }
 
 /*!\relates Color
-Покомпонентное вычитание с присваиванием
+per component subtraction with assignment
 */
 inline Color operator-(const Color &c1, const Color &c2)
 {
@@ -797,7 +794,7 @@ inline Color operator-(const Color &c1, const Color &c2)
 }
 
 /*!\relates Color
-Покомпонентное умножение с присваиванием rgb
+per component multiplication with rgb assignment
 */
 inline Color operator*(const Color &c, float f)
 {
@@ -807,7 +804,7 @@ inline Color operator*(const Color &c, float f)
 }
 
 /*!\relates Color
-Покомпонентное умножение с присваиванием rgb
+per component multiplication with rgb assignment
 */
 inline Color operator*(float f, const Color &c)
 {
@@ -817,7 +814,7 @@ inline Color operator*(float f, const Color &c)
 }
 
 /*!\relates Color
-Распаковать и умножить
+Unpack and multiply
 */
 inline Color operator*(const Color &c, uint32_t cl)
 {
@@ -827,7 +824,7 @@ inline Color operator*(const Color &c, uint32_t cl)
 }
 
 /*!\relates Color
-Распаковать и умножить
+Unpack and multiply
 */
 inline Color operator*(uint32_t cl, const Color &c)
 {
@@ -837,7 +834,7 @@ inline Color operator*(uint32_t cl, const Color &c)
 }
 
 /*!\relates Color
-Покомпонентное умножение с присваиванием rgb
+per component multiplication with rgb assignment
 */
 inline Color operator*(const Color &c, const Vector &v)
 {
@@ -847,7 +844,7 @@ inline Color operator*(const Color &c, const Vector &v)
 }
 
 /*!\relates Color
-Покомпонентное умножение с присваиванием rgb
+per component multiplication with rgb assignment
 */
 inline Color operator*(const Vector &v, const Color &c)
 {
@@ -857,7 +854,7 @@ inline Color operator*(const Vector &v, const Color &c)
 }
 
 /*!\relates Color
-Покомпонентное умножение с присваиванием
+per component multiplication with assignment
 */
 inline Color operator*(const Color &c, const Vector4 &v)
 {
@@ -867,7 +864,7 @@ inline Color operator*(const Color &c, const Vector4 &v)
 }
 
 /*!\relates Color
-Покомпонентное умножение с присваиванием
+per component multiplication with assignment
 */
 inline Color operator*(const Vector4 &v, const Color &c)
 {
@@ -877,7 +874,7 @@ inline Color operator*(const Vector4 &v, const Color &c)
 }
 
 /*!\relates Color
-Покомпонентное умножение с присваиванием
+per component multiplication with assignment
 */
 inline Color operator*(const Color &c1, const Color &c2)
 {
@@ -887,7 +884,7 @@ inline Color operator*(const Color &c1, const Color &c2)
 }
 
 /*!\relates Color
-Покомпонентное деление с присваиванием rgb
+per component division with rgb assignment
 */
 inline Color operator/(const Color &c, float f)
 {
@@ -897,7 +894,7 @@ inline Color operator/(const Color &c, float f)
 }
 
 /*!\relates Color
-Покомпонентное деление с присваиванием rgb
+per component division with rgb assignment
 */
 inline Color operator/(float f, const Color &c)
 {
@@ -907,7 +904,7 @@ inline Color operator/(float f, const Color &c)
 }
 
 /*!\relates Color
-Распаковать и разделить
+Unpack and divide
 */
 inline Color operator/(const Color &c, uint32_t cl)
 {
@@ -917,7 +914,7 @@ inline Color operator/(const Color &c, uint32_t cl)
 }
 
 /*!\relates Color
-Распаковать и разделить
+Unpack and divide
 */
 inline Color operator/(uint32_t cl, const Color &c)
 {
@@ -927,7 +924,7 @@ inline Color operator/(uint32_t cl, const Color &c)
 }
 
 /*!\relates Color
-Покомпонентное деление с присваиванием rgb
+per component division with rgb assignment
 */
 inline Color operator/(const Color &c, const Vector &v)
 {
@@ -937,7 +934,7 @@ inline Color operator/(const Color &c, const Vector &v)
 }
 
 /*!\relates Color
-Покомпонентное деление с присваиванием rgb
+per component division with rgb assignment
 */
 inline Color operator/(const Vector &v, const Color &c)
 {
@@ -947,7 +944,7 @@ inline Color operator/(const Vector &v, const Color &c)
 }
 
 /*!\relates Color
-Покомпонентное деление с присваиванием
+per component division with assignment
 */
 inline Color operator/(const Color &c, const Vector4 &v)
 {
@@ -957,7 +954,7 @@ inline Color operator/(const Color &c, const Vector4 &v)
 }
 
 /*!\relates Color
-Покомпонентное деление с присваиванием
+per component division with assignment
 */
 inline Color operator/(const Vector4 &v, const Color &c)
 {
@@ -967,7 +964,7 @@ inline Color operator/(const Vector4 &v, const Color &c)
 }
 
 /*!\relates Color
-Покомпонентное деление с присваиванием
+per component division with assignment
 */
 inline Color operator/(const Color &c1, const Color &c2)
 {
@@ -977,7 +974,7 @@ inline Color operator/(const Color &c1, const Color &c2)
 }
 
 /*!\relates Color
-Скалярное перемножение rgb, результат копируется во все компоненты
+Scalar rgb multiplication, the result is copied to all components
 */
 inline Color operator|(const Color &c1, const Color &c2)
 {
@@ -986,11 +983,11 @@ inline Color operator|(const Color &c1, const Color &c2)
     return clr;
 }
 
-//===========================================================
-//Преобразование
-//===========================================================
+// ===========================================================
+// Transformation
+// ===========================================================
 
-//Ограничить диапазоном 0..1
+// Limit to range 0..1
 inline void Color::Clamp()
 {
     if (r < 0.0f)
@@ -1011,7 +1008,7 @@ inline void Color::Clamp()
         a = 1.0f;
 }
 
-//Ограничить диапазоном
+// Limit to range
 inline void Color::Clamp(float min, float max)
 {
     if (r < min)
@@ -1032,7 +1029,7 @@ inline void Color::Clamp(float min, float max)
         a = max;
 }
 
-//Сохранить минимальные компаненты
+// Save minimal components
 inline void Color::Min(const Color &c)
 {
     if (r > c.r)
@@ -1045,7 +1042,7 @@ inline void Color::Min(const Color &c)
         a = c.a;
 }
 
-//Сохранить максимальные компаненты
+// Save maximum components
 inline void Color::Max(const Color &c)
 {
     if (r < c.r)
@@ -1058,7 +1055,7 @@ inline void Color::Max(const Color &c)
         a = c.a;
 }
 
-//Яркость -1..1
+// Brightness -1..1
 inline void Color::Brightness(float br)
 {
     if (br > 1.0f)
@@ -1069,7 +1066,7 @@ inline void Color::Brightness(float br)
     Clamp();
 }
 
-//Гамма -1..1
+// Gamma -1..1
 inline void Color::Gamma(float gm)
 {
     Clamp();
@@ -1093,7 +1090,7 @@ inline void Color::Gamma(float gm)
     }
 }
 
-//Контраст -1..1
+// Contrast -1..1
 inline void Color::Contrast(float cn)
 {
     if (cn > 1.0f)
@@ -1107,7 +1104,7 @@ inline void Color::Contrast(float cn)
     Clamp();
 }
 
-//Изменить сумарно яркость, гамму и контраст
+// Change brightness, gamma and contrast
 inline void Color::Processed(float br, float gm, float cn)
 {
     Contrast(cn);
@@ -1115,17 +1112,17 @@ inline void Color::Processed(float br, float gm, float cn)
     Brightness(br);
 }
 
-//===========================================================
-//Утилитные
-//===========================================================
+// ===========================================================
+// Utilities
+// ===========================================================
 
-//Получить интенсивность
+// Get intensity
 inline float Color::GetIntensity() const
 {
     return r * 0.299f + g * 0.587f + b * 0.114f;
 }
 
-//Нормализовать rgb
+// Normalize rgb
 inline Color &Color::Normalize()
 {
     auto min = r;
@@ -1155,13 +1152,13 @@ inline Color &Color::Normalize()
     return *this;
 }
 
-//Получить цветовую дистанцию между цветами
+// Get color distance between colors
 inline float Color::GetDistance(const Color &c) const
 {
     return sqrtf(GetDistanceSqr(c));
 }
 
-//Получить цветовую дистанцию между цветами в квадрате
+// Get the color distance between colors squared
 inline float Color::GetDistanceSqr(const Color &c) const
 {
     const auto dr = (r - c.r) * 0.299f;
@@ -1170,7 +1167,7 @@ inline float Color::GetDistanceSqr(const Color &c) const
     return dr * dr + dg * dg + db * db;
 }
 
-//Расчитать линейно интерполированное значение
+// Calculate linearly interpolated value
 inline Color &Color::Lerp(const Color &c1, const Color &c2, float kBlend)
 {
     r = c1.r + (c2.r - c1.r) * kBlend;
@@ -1179,7 +1176,7 @@ inline Color &Color::Lerp(const Color &c1, const Color &c2, float kBlend)
     return *this;
 }
 
-//Расчитать линейно интерполированное значение
+// Calculate linearly interpolated value
 inline Color &Color::LerpA(const Color &c1, const Color &c2, float kBlend)
 {
     r = c1.r + (c2.r - c1.r) * kBlend;
@@ -1189,7 +1186,7 @@ inline Color &Color::LerpA(const Color &c1, const Color &c2, float kBlend)
     return *this;
 }
 
-//Умножить цвет на число
+// Multiply color by number
 inline Color &Color::MulColor(float k)
 {
     r *= k;
@@ -1198,14 +1195,14 @@ inline Color &Color::MulColor(float k)
     return *this;
 }
 
-//Умножить альфу на число
+// Multiply alpha by number
 inline Color &Color::MulAlpha(float k)
 {
     a *= k;
     return *this;
 }
 
-//Поменять местами r,b
+// Swap r, b
 inline Color &Color::SwapRB()
 {
     const auto t = r;
@@ -1214,7 +1211,7 @@ inline Color &Color::SwapRB()
     return *this;
 }
 
-//Получить запакованный цвет в uint32_t
+// Get packed color as uint32_t
 inline uint32_t Color::GetDword() const
 {
     /*	long l;*/
@@ -1258,7 +1255,7 @@ inline uint32_t Color::GetDword() const
     };*/
 }
 
-//Преобразование A8R8G8B8 в R5G6B5
+// Converting A8R8G8B8 to R5G6B5
 inline unsigned short Color::Make565(uint32_t color)
 {
     //   11111000 11111100 11111000
@@ -1269,7 +1266,7 @@ inline unsigned short Color::Make565(uint32_t color)
     return static_cast<unsigned short>(r | g | b);
 }
 
-//Преобразование A8R8G8B8 в X1R5G5B5
+// Converting A8R8G8B8 to X1R5G5B5
 inline unsigned short Color::Make555(uint32_t color)
 {
     //   11111000 11111000 11111000
@@ -1280,7 +1277,7 @@ inline unsigned short Color::Make555(uint32_t color)
     return static_cast<unsigned short>(r | g | b);
 }
 
-//Преобразование A8R8G8B8 в A1R5G5B5
+// Converting A8R8G8B8 to A1R5G5B5
 inline unsigned short Color::Make1555(uint32_t color)
 {
     //   11111000 11111000 11111000
@@ -1292,7 +1289,7 @@ inline unsigned short Color::Make1555(uint32_t color)
     return static_cast<unsigned short>(r | g | b | a);
 }
 
-//Преобразование A8R8G8B8 в A1R5G5B5
+// Converting A8R8G8B8 to A1R5G5B5
 inline unsigned short Color::Make4444(uint32_t color)
 {
     //  11110000 11111000 11111000 11111000
@@ -1304,25 +1301,25 @@ inline unsigned short Color::Make4444(uint32_t color)
     return static_cast<unsigned short>(r | g | b | a);
 }
 
-//===========================================================
+// ===========================================================
 // DColor
-//===========================================================
+// ===========================================================
 
-//Присвоить
+// Assign
 inline DColor &DColor::operator=(uint32_t color)
 {
     c = color;
     return *this;
 }
 
-//Присвоить
+// Assign
 inline DColor &DColor::operator=(long color)
 {
     c = static_cast<uint32_t>(color);
     return *this;
 }
 
-//Получить long
+// Get long
 inline DColor::operator uint32_t() const
 {
     return static_cast<long>(c);

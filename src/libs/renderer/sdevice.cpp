@@ -155,7 +155,7 @@ void CreateSphere()
 
     const CVECTOR light = !CVECTOR(0.0f, 0.0f, 1.0f);
     float kColor;
-    //заполняем вершины
+    // fill in the vertices
     for (long i = 0, t = 0; i < a2; i++)
     {
         const float r1 = sinf(myPI * i / static_cast<float>(a2));
@@ -196,7 +196,7 @@ void CreateSphere()
             DX9sphereVertex[t * 3 + 5].v.z = r2 * z2;
             CalcKColor(5);
             DX9sphereVertex[t * 3 + 5].c = Color1;
-            //добавили 2 треугольника
+            // added 2 triangles
             t += 2;
         }
     }
@@ -402,7 +402,7 @@ bool DX9RENDER::Init()
 
         RecompileEffects();
 
-        // получить стартовый ини файл для шрифтов
+        // get start ini file for fonts
         if (!ini->ReadString(nullptr, "startFontIniFile", str, sizeof(str) - 1, ""))
         {
             core.Trace("Not finded 'startFontIniFile' parameter into ENGINE.INI file");
@@ -651,7 +651,7 @@ bool DX9RENDER::InitDevice(bool windowed, HWND _hwnd, long width, long height)
     }
     effects_.setDevice(d3d9);
 
-    //Создаем рендерtargetы для POST PROCESS эффектов...
+    // Create render targets for POST PROCESS effects
     d3d9->GetRenderTarget(0, &pOriginalScreenSurface);
     d3d9->GetDepthStencilSurface(&pOriginalDepthSurface);
 
@@ -706,10 +706,10 @@ bool DX9RENDER::InitDevice(bool windowed, HWND _hwnd, long width, long height)
 
     // if(CHECKD3DERR(SetViewport(&vprt))==true)	return false;
 
-    //Ставим ее как рендер таргет...
+    // set it as a render target
     // FIX
     // SetPostProcessTextureAsRenderTarget();
-    //Ставим ее как рендер таргет...
+    // set it as a render target
 
     for (long b = 0; b < MAX_BUFFERS; b++)
     {
@@ -879,7 +879,7 @@ void DX9RENDER::CreateRenderQuad(float fWidth, float fHeight, float fSrcWidth, f
 
 void DX9RENDER::BlurGlowTexture()
 {
-    //Рендерим все в маленькую текстуру...
+    // Render everything to a small texture
     CreateRenderQuad(fSmallWidth * 2.0f, fSmallHeight * 2.0f, 1024.0f, 1024.0f);
     SetTexture(0, pPostProcessTexture);
     SetTexture(1, pPostProcessTexture);
@@ -888,7 +888,7 @@ void DX9RENDER::BlurGlowTexture()
     SetRenderTarget(pSmallPostProcessSurface2, nullptr);
     DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, POST_PROCESS_FVF, 2, PostProcessQuad, sizeof(QuadVertex), "PostProcessBlur");
 
-    //предварительное размытие iBlurPasses раз :))))
+    // pre-blur iBlurPasses times
     for (int i = 0; i < iBlurPasses; i++)
     {
         CreateRenderQuad(fSmallWidth, fSmallHeight, fSmallWidth * 2.0f, fSmallHeight * 2.0f);
@@ -925,7 +925,7 @@ void DX9RENDER::CopyGlowToScreen()
 {
     const FLOAT sx = static_cast<FLOAT>(screen_size.x);
     const auto sy = static_cast<FLOAT>(screen_size.y);
-    //Рендерим на экран
+    // Render to screen
     PostProcessQuad[0].vPos = Vector4(0, sy, 0.0f, 1.0f);
     PostProcessQuad[1].vPos = Vector4(0, 0, 0.0f, 1.0f);
     PostProcessQuad[2].vPos = Vector4(sx, sy, 0.0f, 1.0f);
@@ -949,7 +949,7 @@ void DX9RENDER::CopyGlowToScreen()
     const uint8_t bGLOW = static_cast<uint8_t>(GlowIntensity);
     const uint32_t dwTFactor = (bGLOW << 24) | (bGLOW << 16) | (bGLOW << 8) | bGLOW;
 
-    // GLOW экран рисуем....
+    // Draw the GLOW screen
     SetRenderState(D3DRS_TEXTUREFACTOR, dwTFactor);
 
     SetTexture(0, pSmallPostProcessTexture);
@@ -980,7 +980,7 @@ void DX9RENDER::CopyPostProcessToScreen()
 
     SetRenderTarget(pOriginalScreenSurface, pOriginalDepthSurface);
 
-    //Оригинальный экран рисуем....
+    // Draw the original screen
     SetTexture(0, pPostProcessTexture);
     SetTexture(1, pPostProcessTexture);
     SetTexture(2, pPostProcessTexture);
@@ -1261,7 +1261,7 @@ long DX9RENDER::TextureCreate(const char *fname)
 bool DX9RENDER::TextureLoad(long t)
 {
     ProgressView();
-    //Формируем путь до текстуры
+    // Form the path to the texture
     char fn[_MAX_FNAME];
     Textures[t].dwSize = 0;
     // sprintf_s(fn,"resource\\textures\\%s.tx",fname);
@@ -1274,7 +1274,7 @@ bool DX9RENDER::TextureLoad(long t)
             continue;
         fn[d++] = fn[s];
     }
-    //Открываем файл
+    // Opening the file
     // fio->SetDrive(XBOXDRIVE_CACHE);
     HANDLE file = fio->_CreateFile(fn);
     // fio->SetDrive();
@@ -1288,7 +1288,7 @@ bool DX9RENDER::TextureLoad(long t)
         Textures[t].name = nullptr;
         return false;
     }
-    //Читаем заголовок
+    // Reading the header
     TX_FILE_HEADER head;
     uint32_t readingBytes = 0;
     if (!fio->_ReadFile(file, &head, sizeof(head), &readingBytes) || readingBytes != sizeof(head))
@@ -1302,7 +1302,7 @@ bool DX9RENDER::TextureLoad(long t)
         fio->_CloseHandle(file);
         return false;
     }
-    //Анализируем формат
+    // Analyzing the format
     D3DFORMAT d3dFormat = D3DFMT_UNKNOWN;
     long textureFI;
     for (textureFI = 0; textureFI < sizeof(textureFormats) / sizeof(SD_TEXTURE_FORMAT); textureFI++)
@@ -1320,7 +1320,7 @@ bool DX9RENDER::TextureLoad(long t)
     d3dFormat = textureFormats[textureFI].d3dFormat;
     bool isSwizzled = textureFormats[textureFI].isSwizzled;
     const char *formatTxt = textureFormats[textureFI].format;
-    //Пропускаем мипы
+    // Skipping mips
     uint32_t seekposition = 0;
     for (long nTD = nTextureDegradation; nTD > 0; nTD--)
     {
@@ -1332,14 +1332,14 @@ bool DX9RENDER::TextureLoad(long t)
         head.height /= 2;
         head.mip_size /= 4;
     }
-    //Загружаем текстуру
+    // Loading the texture
     if (!(head.flags & TX_FLAGS_CUBEMAP))
     {
-        //Загрузка обычной текстуры
-        //Позиция в файле
+        // Loading a regular texture
+        // Position in file
         if (seekposition)
             fio->_SetFilePointer(file, seekposition, nullptr, FILE_CURRENT);
-        //Создаём текстуру
+        // create the texture
         IDirect3DTexture9 *tex = nullptr;
         if (CHECKD3DERR(d3d9->CreateTexture(head.width, head.height, head.nmips, 0, d3dFormat, D3DPOOL_MANAGED, &tex,
                                             NULL)) == true ||
@@ -1354,12 +1354,12 @@ bool DX9RENDER::TextureLoad(long t)
             fio->_CloseHandle(file);
             return false;
         }
-        //Заполняем уровни
+        // Filling the levels
         for (long m = 0; m < head.nmips; m++)
         {
-            //Учитываем размер мипа
+            // take into account the size of the mip
             Textures[t].dwSize += head.mip_size;
-            //Получаем поверхность мипа
+            // Getting the mip surface
             bool isError = false;
             IDirect3DSurface9 *surface = nullptr;
             if (CHECKD3DERR(tex->GetSurfaceLevel(m, &surface)) == true || !surface)
@@ -1368,13 +1368,13 @@ bool DX9RENDER::TextureLoad(long t)
             }
             else
             {
-                //Зачитываем мип
+                // read the mip
                 isError = !LoadTextureSurface(file, surface, head.mip_size, head.width, head.height, isSwizzled);
             }
-            //Освобождаем поверхность
+            // Freeing the surface
             if (surface)
                 surface->Release();
-            //Если была ошибка, то прерываем загрузку
+            // If there was an error, then interrupt the download
             if (isError)
             {
                 if (bTrace)
@@ -1387,7 +1387,7 @@ bool DX9RENDER::TextureLoad(long t)
                 tex->Release();
                 return false;
             }
-            //Пересчитываем размеры для следующего мипа
+            // recalculate the dimensions for the next mip
             head.width /= 2;
             head.height /= 2;
             head.mip_size /= 4;
@@ -1397,7 +1397,7 @@ bool DX9RENDER::TextureLoad(long t)
     }
     else
     {
-        //Загрузка cubemap
+        // Download cubemap
         if (head.width != head.height)
         {
             if (bTrace)
@@ -1407,7 +1407,7 @@ bool DX9RENDER::TextureLoad(long t)
             fio->_CloseHandle(file);
             return false;
         }
-        //Количество мипов
+        // Number of mips
         D3DCAPS9 devcaps;
         if (CHECKD3DERR(d3d9->GetDeviceCaps(&devcaps)))
         {
@@ -1421,7 +1421,7 @@ bool DX9RENDER::TextureLoad(long t)
         }
         if (!(devcaps.TextureCaps & D3DPTEXTURECAPS_MIPCUBEMAP))
             head.nmips = 1;
-        //Создаём текстуру
+        // create the texture
         IDirect3DCubeTexture9 *tex = nullptr;
         if (CHECKD3DERR(d3d9->CreateCubeTexture(head.width, head.nmips, 0, d3dFormat, D3DPOOL_MANAGED, &tex, NULL)) ==
                 true ||
@@ -1435,7 +1435,7 @@ bool DX9RENDER::TextureLoad(long t)
             fio->_CloseHandle(file);
             return false;
         }
-        //Загружаем сторны
+        // Loading the sides
         bool isError = false;
         if (seekposition)
             fio->_SetFilePointer(file, seekposition, nullptr, FILE_CURRENT);
@@ -1529,7 +1529,7 @@ bool DX9RENDER::TextureLoad(long t)
     dwTotalSize += Textures[t].dwSize;
     //---------------------------------------------------------------
     Textures[t].loaded = true;
-    //Закрываем файл
+    // Close the file
     fio->_CloseHandle(file);
     return true;
 }
@@ -1543,12 +1543,12 @@ uint32_t DX9RENDER::LoadCubmapSide(HANDLE file, IDirect3DCubeTexture9 *tex, D3DC
                                    uint32_t mipSize, uint32_t size, bool isSwizzled)
 {
     uint32_t texsize = 0;
-    //Заполняем уровни
+    // Filling the levels
     for (uint32_t m = 0; m < numMips; m++)
     {
-        //Учитываем размер мипа
+        // take into account the size of the mip
         texsize += mipSize;
-        //Получаем поверхность мипа
+        // Getting the mip surface
         bool isError = false;
         IDirect3DSurface9 *surface = nullptr;
         if (CHECKD3DERR(tex->GetCubeMapSurface(face, m, &surface)) == true || !surface)
@@ -1557,20 +1557,20 @@ uint32_t DX9RENDER::LoadCubmapSide(HANDLE file, IDirect3DCubeTexture9 *tex, D3DC
         }
         else
         {
-            //Зачитываем мип
+            // read the mip
             isError = !LoadTextureSurface(file, surface, mipSize, size, size, isSwizzled);
         }
-        //Освобождаем поверхность
+        // Freeing the surface
         if (surface)
             surface->Release();
-        //Если была ошибка, то прерываем загрузку
+        // If there was an error, then interrupt the download
         if (isError)
         {
             if (bTrace)
                 core.Trace("Can't loading cubemap mip %i (side: %i), not loading it.", m, face);
             return 0;
         }
-        //Пересчитываем размеры для следующего мипа
+        // recalculate the dimensions for the next mip
         size /= 2;
         mipSize /= 4;
     }
@@ -1582,12 +1582,12 @@ bool DX9RENDER::LoadTextureSurface(HANDLE file, IDirect3DSurface9 *suface, uint3
 {
     //------------------------------------------------------------------------------------------
     // PC version
-    //------------------------------------------------------------------------------------------
-    //Указатель на поверхность
+    // ------------------------------------------------------------------------------------------
+    // Surface pointer
     D3DLOCKED_RECT lock;
     if (CHECKD3DERR(suface->LockRect(&lock, NULL, 0L)) == true)
         return false;
-    //Зачитывание
+    // Reading out
     uint32_t readingBytes = 0;
     if (!fio->_ReadFile(file, lock.pBits, mipSize, &readingBytes) || readingBytes != mipSize)
     {
@@ -1595,7 +1595,7 @@ bool DX9RENDER::LoadTextureSurface(HANDLE file, IDirect3DSurface9 *suface, uint3
             return false;
         return false;
     }
-    //Освобождение поверхности
+    // Surface release
     if (CHECKD3DERR(suface->UnlockRect()) == true)
         return false;
     return true;
@@ -1779,7 +1779,7 @@ bool DX9RENDER::SetCamera(CVECTOR lookFrom, CVECTOR lookTo, CVECTOR up)
     SetTransform(D3DTS_VIEW, mtx);
     Pos = lookFrom;
 
-    // Вычислим угол камеры
+    // calculate the angle of the camera
     // Ang = 0.0f;
     const CVECTOR vNorm = !(lookTo - lookFrom);
     Ang.y = atan2f(vNorm.x, vNorm.z);
@@ -2988,7 +2988,7 @@ void DX9RENDER::MakeScreenShot()
     renderTarget = nullptr;
     surface = nullptr;
 
-    //Получаем картинку
+    // get the picture
     if (FAILED(GetRenderTarget(&renderTarget)))
     {
         core.Trace("Falure get render target for make screenshot");
@@ -3012,14 +3012,14 @@ void DX9RENDER::MakeScreenShot()
     }
     renderTarget->Release();
     renderTarget = nullptr;
-    //Получаем имя файла
+    // Get the file name
     for (i = 0; i < 10000; i++)
     {
         sprintf_s(file_name, "CCS_%04d.tga", i);
         if (_access(file_name, 0) == -1)
             break;
     }
-    //Сохраняем картинку
+    // Save the picture
     Dhdr.width = static_cast<unsigned short>(screen_size.x);
     Dhdr.height = static_cast<unsigned short>(screen_size.y);
     fh = fio->_CreateFile(file_name, GENERIC_WRITE, FILE_SHARE_READ, CREATE_ALWAYS);
@@ -3160,20 +3160,20 @@ void DX9RENDER::DrawRects(RS_RECT *pRSR, uint32_t dwRectsNum, const char *cBlock
 
     for (uint32_t cnt = 0; cnt < dwRectsNum;)
     {
-        //Количество рисуемых прямоугольников за раз
+        // Number of rectangles to draw at a time
         uint32_t drawCount = dwRectsNum;
         if (drawCount > rectsVBuffer_SizeInRects)
             drawCount = rectsVBuffer_SizeInRects;
-        //Буфер
+        // Buffer
         RECT_VERTEX *data = nullptr;
         if (rectsVBuffer->Lock(0, drawCount * 6 * sizeof(RECT_VERTEX), (VOID **)&data, D3DLOCK_DISCARD) != D3D_OK)
             return;
         if (!data)
             return;
-        //Заполняем буфер
+        // Filling the buffer
         for (uint32_t i = 0; i < drawCount && cnt < dwRectsNum; i++)
         {
-            //Локальный массив партикла
+            // Local array of a particle
             RECT_VERTEX *buffer = &data[i * 6];
             RS_RECT &rect = pRSR[cnt++];
             CVECTOR pos = camMtx * (rect.vPos + vWordRelationPos);
@@ -3195,7 +3195,7 @@ void DX9RENDER::DrawRects(RS_RECT *pRSR, uint32_t dwRectsNum, const char *cBlock
                 u2 = u1 + du;
                 v2 = v1 + dv;
             }
-            //Заполняем буфер для партикла
+            // Filling the particle buffer
             buffer[0].pos = pos + CVECTOR(sizex * (-cs - sn), sizey * (sn - cs), 0.0f);
             buffer[0].color = color;
             buffer[0].u = u1;
@@ -3221,7 +3221,7 @@ void DX9RENDER::DrawRects(RS_RECT *pRSR, uint32_t dwRectsNum, const char *cBlock
             buffer[5].u = u2;
             buffer[5].v = v2;
         }
-        //Рисуем буфер
+        // Draw a buffer
         rectsVBuffer->Unlock();
         CHECKD3DERR(SetFVF(RS_RECT_VERTEX_FORMAT));
         if (cBlockName && cBlockName[0])
@@ -3820,7 +3820,7 @@ void DX9RENDER::StartProgressView()
     progressSafeCounter = 0;
     if (progressTexture < 0)
     {
-        //Загружаем текстуру
+        // Loading the texture
         loadFrame = 0;
         isInPViewProcess = true;
         const long t = TextureCreate("Loading\\progress.tga");
@@ -3834,7 +3834,7 @@ void DX9RENDER::StartProgressView()
     }
     else
         return;
-    //Загружаем немасштабируемую фоновую картинку
+    // Loading an unscaled background image
     if (progressBackImage && progressBackImage[0])
     {
         isInPViewProcess = true;
@@ -3848,7 +3848,7 @@ void DX9RENDER::StartProgressView()
     {
         back0Texture = -1;
     }
-    //Загружаем масштабируемую фоновую картинку
+    // Loading a scalable background image
     if (progressImage && progressImage[0])
     {
         isInPViewProcess = true;
@@ -3862,7 +3862,7 @@ void DX9RENDER::StartProgressView()
     {
         backTexture = -1;
     }
-    //Загружаем типсы
+    // Loading tips
     if (progressTipsImage && progressTipsImage[0])
     {
         isInPViewProcess = true;
@@ -3877,21 +3877,21 @@ void DX9RENDER::StartProgressView()
 
 void DX9RENDER::ProgressView()
 {
-    //Получаем текстуру
+    // get the texture
     if (progressTexture < 0)
         return;
     if (isInPViewProcess)
         return;
-    //Анализируем время
+    // Analyzing time
     const uint32_t time = GetTickCount();
     if (abs(static_cast<long>(progressUpdateTime - time)) < 50)
         return;
     progressUpdateTime = time;
     isInPViewProcess = true;
     progressSafeCounter = 0;
-    //Режим рисования
+    // Drawing mode
     BeginScene();
-    //Заполняем вершины текстуры
+    // Filling the vertices of the texture
     struct LoadVertex
     {
         float x, y, z, rhw;
@@ -3905,7 +3905,7 @@ void DX9RENDER::ProgressView()
         v[i].rhw = 2.0;
         v[i].color = 0xffffffff;
     }
-    //Вычисляем прямоугольник в котором будем рисовать
+    // Calculate the rectangle in which to draw
     D3DVIEWPORT9 vp;
     GetViewport(&vp);
 
@@ -3980,7 +3980,7 @@ void DX9RENDER::ProgressView()
     if (backTexture < 0)
         for (i = 0; i < 4; i++)
             v[i].color = 0xffffffff;
-    //Анимированный объект
+    // Animated object
     m_fHeightDeformator = ((float)vp.Height * 4.0f) / ((float)vp.Width * 3.0f);
     // core.Trace(" size_x %f", (vp.Width - dx * 2.0f)*progressFramesWidth);
     CVECTOR pos((vp.Width - dx * 2.0f) * progressFramesPosX + dx, (vp.Height - dy * 2.0f) * progressFramesPosY + dy,
@@ -3996,10 +3996,10 @@ void DX9RENDER::ProgressView()
     v[3].x = pos.x + size.x + 0.5f;
     v[3].y = pos.y + size.y + 0.5f;
     v[3].y = pos.y + size.y + 0.5f;
-    //Размер сетки кадров
+    // Frame grid size
     long sizeX = progressFramesCountX;
     long sizeY = progressFramesCountY;
-    //Позиция текущего кадра
+    // Position of the current frame
     long fx = loadFrame % sizeX;
     long fy = loadFrame / sizeY;
     v[0].u = fx / float(sizeX);
@@ -4010,18 +4010,18 @@ void DX9RENDER::ProgressView()
     v[2].v = (fy + 1.0f) / float(sizeY);
     v[3].u = (fx + 1.0f) / float(sizeX);
     v[3].v = (fy + 1.0f) / float(sizeY);
-    //Рисуем
+    // Draw
     TextureSet(0, progressTexture);
     DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1, 2, v, sizeof(v[0]),
                     "ProgressTech");
     EndScene();
     d3d9->Present(nullptr, nullptr, nullptr, nullptr);
     BeginScene();
-    //Следующий кадр
+    // Next frame
     loadFrame++;
     if (loadFrame >= sizeX * sizeY)
         loadFrame = 0;
-    //Выходим
+    // leave
     isInPViewProcess = false;
 }
 
@@ -4073,7 +4073,7 @@ void DX9RENDER::MakeDrawVector(RS_LINE *pLines, uint32_t dwNumSubLines, const CM
     uint32_t k;
 
     // for (i=0; i<dwNumSubLines * 2 + 2; i++) pLines[i].dwColor = dwColor;
-    k = dwNumSubLines * 2 + 2; // boal оптимизация, если фор крутит вычисления каждый проход.
+    k = dwNumSubLines * 2 + 2; // boal optimization if the for loop runs the calculations every iteration
     for (i = 0; i < k; i++)
     {
         pLines[i].dwColor = dwColor;

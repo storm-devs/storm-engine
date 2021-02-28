@@ -297,7 +297,7 @@ void BISignIcon::MakeControl()
 
 void BISignIcon::Release()
 {
-    SetActive(false); // отключить контрол
+    SetActive(false); // disable control
 
     TEXTURE_RELEASE(m_pRS, m_nBackTextureID);
     TEXTURE_RELEASE(m_pRS, m_nSignFaceTextureID);

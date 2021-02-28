@@ -25,7 +25,7 @@ void XSERVICE::Init(VDX9RENDER *pRS, long lWidth, long lHeight)
 {
     m_pRS = pRS;
 
-    // получим размер окна вывода
+    // get the size of the output window
     /*	D3DVIEWPORT9 vp;
       m_pRS->GetViewport(&vp);
       m_fWAdd = m_fWScale = (float)vp.Width/lWidth;

@@ -9,21 +9,21 @@
 #define MSG_SAIL_CHECK 40023           // "liii" (msg_code, ship_id, newHost_id, newModel_id)
 #define MSG_SAIL_GET_PARAMS 40024      // "lip" (msg_code, ship_id, &maxSpeed)
 #define MSG_SAIL_MAST_PROCESSING 40025 // "ll" (msg_code, charIdx)
-// получить коэффициент максимальной скорости для корабля
+// get the maximum speed factor for the ship
 // format "lipf" (msg_code, ship_id,&speed, maxSpeed) //speed<-[0.f,1.f], maxSpeed=[0.f,1.f];
 #define MSG_SAIL_GET_SPEED 40002
-// поднять/убрать паруса
-//#define     MSG_SAIL_ROLL       40010 // format "lil" (msg_code, ship_id, sailSet) // sailSet=номер или
+// raise / remove sails
+// #define     MSG_SAIL_ROLL       40010 // format "lil" (msg_code, ship_id, sailSet) // sailSet=number or
 // ROLLTYPE_NEXT,ROLLTYPE_PREV
-// типы парусов по группам сворачивания
+// sail types by rolling group
 #define ROLLTYPE_NONE 0
 #define ROLLTYPE_NORMAL 1
 #define ROLLTYPE_FAST 2
-//#define ROLLTYPE_NEXT       100
-//#define ROLLTYPE_PREV       101
-// удалить все паруса одного корабля
+// #define ROLLTYPE_NEXT       100
+// #define ROLLTYPE_PREV       101
+// remove all sails of one ship
 #define MSG_SAIL_DEL_GROUP 40030 // format "li" (msg_code, ship_id)
-// все паруса объекта освободить от стандартного надувания
+// release all sails of the object from the standard inflation
 #define MSG_SAIL_FREE_GROUP 40032 // format "li" (msg_code, ship_id)
 
 //=\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\=
