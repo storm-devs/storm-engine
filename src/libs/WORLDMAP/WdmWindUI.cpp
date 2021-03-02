@@ -231,9 +231,10 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, 0, resizeRatio, 0, 0, long(cx),
                  long(cy + (98.0f - fh * 0.5f) * resizeRatio), tbuf);
 
-    // Center
-    cy += 128.0f + 32.0f;
-    // Draw a moral bar
+    // Centre
+    // cy += 128.0f + 32.0f;
+    cy += 128.0f * resizeRatio + 32.0f;
+    // Drawing a moral bar
     rs->TextureSet(0, txMoraleBar);
     rs->TextureSet(1, txMoraleMask);
 
