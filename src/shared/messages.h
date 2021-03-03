@@ -113,8 +113,8 @@
 #define MSG_LOCATION_LIGHTPATH 30142    // "ls" set relative path to location lighting
 #define MSG_LOCATION_SHADOWPATH 30143   // "ls" set relative path to the texture on the floor
 // Utilities
-#define MSG_LOCATION_CHECKENTRY                                                                                        \
-    30150 // "lss" check the entrance to the location for the possibility of coming to it (is it free)
+// "lss" check the entrance to the location for the possibility of coming to it (is it free)
+#define MSG_LOCATION_CHECKENTRY 30150
 #define MSG_LOCATION_PAUSE 30151           // "ll" pause the location
 #define MSG_LOCATION_SETCHRPOSITIONS 30152 // "l" save positions to restore
 #define MSG_LOCATION_TLPCHRPOSITIONS 30153 // "l" move and delete positions to restore
