@@ -6166,6 +6166,8 @@ ATTRIBUTES *COMPILER::TraceARoot(ATTRIBUTES *pA, const char *&pAccess)
         return nullptr; // error or invalid argument
     if (pA->GetParent() == nullptr)
         return pA; // root found
+	if (pA->GetThisNameCode() == 0) 
+		return nullptr;	// fix crash at NewGame start
 
     const long slen = strlen(pA->GetThisName()) + 1;
 
