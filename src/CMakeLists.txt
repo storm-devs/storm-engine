@@ -25,6 +25,16 @@ if (MSVC)
     add_link_options("$<$<CONFIG:Release>:/OPT:REF>") # Eliminate functions and data that are never referenced, needs to be explicitly specified with /DEBUG
     add_link_options("$<$<CONFIG:Release>:/OPT:ICF>") # Perform identical COMDAT folding, needs to be explicitly specified with /DEBUG
     add_link_options("$<$<CONFIG:Release>:/LTCG>") # Enable link-time code generation
+else()
+    add_compile_options(-std=c++20)
+
+    # Verbose output
+    add_compile_options(-v)
+    add_link_options(-v)
+
+    # Always generate debug information
+    add_compile_options(-g)
+    add_link_options(-g)
 endif()
 
 add_subdirectory(apps)

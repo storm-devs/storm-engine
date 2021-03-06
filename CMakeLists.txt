@@ -9,6 +9,10 @@ include(conan)
 conan_cmake_run(CONANFILE conanfile.txt
     BASIC_SETUP CMAKE_TARGETS
     BUILD missing
+    ENV CONAN_CMAKE_GENERATOR="${CMAKE_GENERATOR}"
+    ENV CONAN_MAKE_PROGRAM="${CMAKE_MAKE_PROGRAM}"
+    ENV CC="${CMAKE_C_COMPILER}"
+    ENV CXX="${CMAKE_CXX_COMPILER}"
 )
 
 option(STORM_ENABLE_STEAM "Enable Steam integration" ON)

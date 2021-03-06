@@ -2,12 +2,13 @@
 Game engine behind the [Sea Dogs](https://en.wikipedia.org/wiki/Sea_Dogs_(video_game)) game series.
 
 ## Building the project
-You need to have a fairly recent version of [Conan](https://conan.io/downloads.html) package manager installed and added to the `%PATH%` environment variable.
+You need to install [Conan](https://conan.io/downloads.html) and add it to the `%PATH%` environment variable.
 
-We use Visual Studio CMake integration, so make sure you selected the following components in the Visual Studio 2019 installer:
+Also, make sure you have the following Visual Studio components installed:
 - C++ CMake Tools for Windows
+- C++ Clang Compiler for Windows
 
-Open the repo root as a CMake project in Visual Studio.
+Open the repo root as a CMake project in Visual Studio 2019 and select `engine.exe` as a startup item.
 
 ## Contributing
 If you'd like to join our team, don't hesitate to contact one of the project maintainers (you can find email addresses in our profiles).
