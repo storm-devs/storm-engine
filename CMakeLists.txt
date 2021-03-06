@@ -2,14 +2,14 @@ cmake_minimum_required(VERSION 3.17)
 
 project(storm-engine)
 
-# Use only Debug and Release configurations
-set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
-
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-# Setup conan
-include(${CMAKE_BINARY_DIR}/conanbuildinfo_multi.cmake)
-conan_basic_setup(TARGETS)
+# Setup third-party dependencies
+include(conan)
+conan_cmake_run(CONANFILE conanfile.txt
+    BASIC_SETUP CMAKE_TARGETS
+    BUILD missing
+)
 
 option(STORM_ENABLE_STEAM "Enable Steam integration" ON)
 
