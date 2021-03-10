@@ -1975,8 +1975,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             SStack.Pop();
         }
         break;
-    case FUNC_SEND_MESSAGE:
-
+    case FUNC_SEND_MESSAGE: {
         s_off = SStack.GetDataNum() - arguments; // set stack offset
 
         pV = SStack.Read(s_off, 0);
@@ -1989,7 +1988,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
 
         CreateMessage(&ms, s_off, 1);
 
-        uint64_t mresult;
+        uint64_t mresult = -1;
         pE = EntityManager::GetEntityPointer(ent);
         if (pE)
         {
@@ -2008,6 +2007,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
 
         return pV;
         // break;
+    }
     case FUNC_TRACE:
         pV = SStack.Pop();
         if (!pV)
