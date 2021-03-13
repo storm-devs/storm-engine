@@ -15,4 +15,6 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${STORM_RESOURCE_DIR}/setup)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE _AFXDLL)
 
-target_link_options(${PROJECT_NAME} PRIVATE /ENTRY:wWinMainCRTStartup)
+if (MSVC)
+    target_link_options(${PROJECT_NAME} PRIVATE /ENTRY:wWinMainCRTStartup)
+endif()
