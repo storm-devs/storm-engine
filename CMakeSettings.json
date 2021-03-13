@@ -8,8 +8,7 @@
       "buildRoot": "${projectDir}\\build\\${name}",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
-      "addressSanitizerEnabled": true,
-      "addressSanitizerRuntimeFlags": "windows_hook_legacy_allocators=true",
+      "enableClangTidyCodeAnalysis": true,
       "variables": []
     },
     {
@@ -20,6 +19,7 @@
       "buildRoot": "${projectDir}\\build\\${name}",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
+      "enableClangTidyCodeAnalysis": true,
       "variables": []
     },
     {
@@ -28,7 +28,7 @@
       "configurationType": "Debug",
       "buildRoot": "${projectDir}\\build\\${name}",
       "cmakeCommandArgs": "-DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++", // Override compiler
-      "buildCommandArgs": "-v",
+      "buildCommandArgs": "",
       "inheritEnvironments": [ "clang_cl_x64_x64" ],
       "variables": []
     }
