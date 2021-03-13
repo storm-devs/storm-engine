@@ -11,9 +11,10 @@ add_executable(${PROJECT_NAME} WIN32
     ${STORM_RESOURCE_DIR}/setup/setup.rc
 )
 
-target_include_directories(${PROJECT_NAME}
-    PRIVATE
-    ${STORM_RESOURCE_DIR}/setup
-    )
+target_include_directories(${PROJECT_NAME} PRIVATE ${STORM_RESOURCE_DIR}/setup)
 
-target_link_options(${PROJECT_NAME} PRIVATE /ENTRY:"wWinMainCRTStartup")
+target_compile_definitions(${PROJECT_NAME} PRIVATE _AFXDLL)
+
+if (MSVC)
+    target_link_options(${PROJECT_NAME} PRIVATE /ENTRY:wWinMainCRTStartup)
+endif()

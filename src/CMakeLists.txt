@@ -2,9 +2,6 @@ add_definitions(-DUNICODE -D_UNICODE) # Use Unicode
 add_definitions(-DNOMINMAX) # Use std::max()/std::min()
 add_definitions(-D_CRT_SECURE_NO_WARNINGS) # Disable deprecation of unsafe functions
 
-# Select a multi-threaded statically-linked runtime library
-set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-
 if (STORM_ENABLE_STEAM)
     add_definitions(-DSTORM_ENABLE_STEAM=1)
 endif()
@@ -28,6 +25,16 @@ if (MSVC)
     add_link_options("$<$<CONFIG:Release>:/OPT:REF>") # Eliminate functions and data that are never referenced, needs to be explicitly specified with /DEBUG
     add_link_options("$<$<CONFIG:Release>:/OPT:ICF>") # Perform identical COMDAT folding, needs to be explicitly specified with /DEBUG
     add_link_options("$<$<CONFIG:Release>:/LTCG>") # Enable link-time code generation
+else()
+    add_compile_options(-std=c++20)
+
+    # Verbose output
+    add_compile_options(-v)
+    add_link_options(-v)
+
+    # Always generate debug information
+    add_compile_options(-g)
+    add_link_options(-g)
 endif()
 
 add_subdirectory(apps)

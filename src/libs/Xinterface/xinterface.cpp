@@ -3319,6 +3319,7 @@ void XINTERFACE::LoadOptionsFile(char *fileName, ATTRIBUTES *pAttr)
     }
 
     char *pOutBuffer = new char[dwSaveSize + 1];
+    pOutBuffer[dwSaveSize] = '\0';
     if (pOutBuffer)
     {
         fio->_ReadFile(fh, pOutBuffer, dwSaveSize, &dwRealSize);

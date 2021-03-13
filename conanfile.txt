@@ -3,4 +3,4 @@ zlib/1.2.11
 spdlog/1.8.2
 
 [generators]
-cmake_multi
+cmake
