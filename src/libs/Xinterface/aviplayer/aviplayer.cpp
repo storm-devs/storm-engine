@@ -325,12 +325,12 @@ bool CAviPlayer::GetInterfaces()
         core.Trace("Video Error!!! Can`t add video stream");
         return false;
     }
-    //hr = pAMStream->AddMediaStream(NULL, &MSPID_PrimaryAudio, AMMSF_ADDDEFAULTRENDERER, NULL);
-    //if (FAILED(hr))
-    //{
-    //    core.Trace("Video Error!!! Can`t add audio stream");
-    //    return false;
-    //}
+    hr = pAMStream->AddMediaStream(nullptr, &MSPID_PrimaryAudio, AMMSF_ADDDEFAULTRENDERER, nullptr);
+    if (FAILED(hr))
+    {
+        core.Trace("Video Error!!! Can`t add audio stream");
+        return false;
+    }
 
     return true;
 }
