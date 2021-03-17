@@ -1,7 +1,8 @@
 # Storm-Engine
 Game engine behind the [Sea Dogs](https://en.wikipedia.org/wiki/Sea_Dogs_(video_game)) game series.
 
-[![Join the chat at https://discord.gg/jmwETPGFRe](https://img.shields.io/discord/353218868896071692?color=%237289DA&label=storm-devs&logo=discord&logoColor=white)](https://discord.gg/jmwETPGFRe) [![GitHub Actions Build Status](https://github.com/storm-devs/storm-engine/actions/workflows/cibuild.yml/badge.svg)](https://github.com/storm-devs/storm-engine/actions/workflows/cibuild.yml)
+[![Join the chat at https://discord.gg/jmwETPGFRe](https://img.shields.io/discord/353218868896071692?color=%237289DA&label=storm-devs&logo=discord&logoColor=white)](https://discord.gg/jmwETPGFRe) 
+[![GitHub Actions Build Status](https://github.com/storm-devs/storm-engine/actions/workflows/cibuild.yml/badge.svg)](https://github.com/storm-devs/storm-engine/actions/workflows/cibuild.yml)
 
  * [GitHub Discussions](https://github.com/storm-devs/storm-engine/discussions)
  * [Discord Chat](https://discord.gg/jmwETPGFRe)
@@ -14,6 +15,7 @@ Game engine behind the [Sea Dogs](https://en.wikipedia.org/wiki/Sea_Dogs_(video_
 You need to install [Conan](https://conan.io/downloads.html) and add it to the `%PATH%` environment variable. Also, make sure you have the following Visual Studio components installed:
 - C++ CMake Tools for Windows
 - C++ Clang Compiler for Windows
+- C++ MFC for latest v142 build tools (x86 & x64)
 
 Open the repo root as a CMake project in Visual Studio 2019 and select `engine.exe` as a startup item.
 
