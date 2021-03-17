@@ -510,9 +510,7 @@ bool CORE::SaveState(const char *file_name)
     if (!file_name)
         return false;
 
-    fio->SetDrive(XBOXDRIVE_NONE);
     auto *const fh = fio->_CreateFile(file_name, GENERIC_WRITE | GENERIC_READ, 0, CREATE_ALWAYS);
-    fio->SetDrive();
 
     if (fh == INVALID_HANDLE_VALUE)
         return false;
@@ -526,9 +524,7 @@ bool CORE::SaveState(const char *file_name)
 // force core to load state file at the start of next game loop, return false if no state file
 bool CORE::InitiateStateLoading(const char *file_name)
 {
-    fio->SetDrive(XBOXDRIVE_NONE);
     const HANDLE fh = fio->_CreateFile(file_name, GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING);
-    fio->SetDrive();
     if (fh == INVALID_HANDLE_VALUE)
         return false;
     fio->_CloseHandle(fh);
@@ -550,9 +546,7 @@ void CORE::ProcessStateLoading()
     State_loading = true;
     EraseEntities();
 
-    fio->SetDrive(XBOXDRIVE_NONE);
     const HANDLE fh = fio->_CreateFile(State_file_name, GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING);
-    fio->SetDrive();
     if (fh == INVALID_HANDLE_VALUE)
         return;
     Compiler->LoadState(fh);

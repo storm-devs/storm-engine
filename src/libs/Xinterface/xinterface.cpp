@@ -3273,10 +3273,8 @@ void XINTERFACE::SaveOptionsFile(char *fileName, ATTRIBUTES *pAttr)
         return;
     strcpy_s(FullPath, fileName);
 
-    fio->SetDrive(XBOXDRIVE_NONE);
     PrecreateDirForFile(FullPath);
     fh = fio->_CreateFile(FullPath, GENERIC_WRITE, 0, CREATE_ALWAYS);
-    fio->SetDrive();
     if (fh == INVALID_HANDLE_VALUE)
         return;
 
@@ -3303,9 +3301,7 @@ void XINTERFACE::LoadOptionsFile(char *fileName, ATTRIBUTES *pAttr)
         return;
     strcpy_s(FullPath, fileName);
 
-    fio->SetDrive(XBOXDRIVE_NONE);
     fh = fio->_CreateFile(FullPath, GENERIC_READ, 0, OPEN_EXISTING);
-    fio->SetDrive();
     if (fh == INVALID_HANDLE_VALUE)
         return;
 

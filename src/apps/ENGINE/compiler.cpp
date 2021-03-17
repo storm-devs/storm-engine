@@ -6795,9 +6795,7 @@ bool COMPILER::SetSaveData(const char *file_name, void *save_data, long data_siz
 {
     EXTDATA_HEADER exdh;
 
-    fio->SetDrive(XBOXDRIVE_NONE);
     const HANDLE fh = fio->_CreateFile(file_name, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, OPEN_EXISTING);
-    fio->SetDrive();
     if (fh == INVALID_HANDLE_VALUE)
         return false;
 
@@ -6914,9 +6912,7 @@ bool COMPILER::SetSaveData(const char *file_name, void *save_data, long data_siz
 
 void *COMPILER::GetSaveData(const char *file_name, long &data_size)
 {
-    fio->SetDrive(XBOXDRIVE_NONE);
     const HANDLE fh = fio->_CreateFile(file_name, GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING);
-    fio->SetDrive();
     if (fh == INVALID_HANDLE_VALUE)
     {
         SetError("cant open save file: %s", file_name);

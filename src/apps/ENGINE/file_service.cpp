@@ -14,9 +14,6 @@
 #define INI_SIGNATURE ";[SE2IF]"
 const char INI_LINEFEED[3] = {0xd, 0xa, 0};
 const char INI_VOIDSYMS[VOIDSYMS_NUM] = {0x20, 0x9};
-char sDriveLetter[8] = "d:\\";
-
-//#define sDriveLetter    "d:\\"
 
 extern FILE_SERVICE File_Service;
 
@@ -138,37 +135,9 @@ std::string FILE_SERVICE::_GetExecutableDirectory()
     return "";
 }
 
-BOOL FILE_SERVICE::_GetDiskFreeSpaceEx(const char *lpDirectoryName, PULARGE_INTEGER lpFreeBytesAvailableToCaller,
-                                       PULARGE_INTEGER lpTotalNumberOfBytes, PULARGE_INTEGER lpTotalNumberOfFreeBytes)
-{
-    std::wstring DirectoryNameW = utf8::ConvertUtf8ToWide(lpDirectoryName);
-    return GetDiskFreeSpaceEx(DirectoryNameW.c_str(), lpFreeBytesAvailableToCaller, lpTotalNumberOfBytes,
-                              lpTotalNumberOfFreeBytes);
-}
-
-UINT FILE_SERVICE::_GetDriveType(const char *lpRootPathName)
-{
-    std::wstring RootPathNameW = utf8::ConvertUtf8ToWide(lpRootPathName);
-    return GetDriveType(RootPathNameW.c_str());
-}
-
 uint32_t FILE_SERVICE::_GetFileSize(HANDLE hFile, uint32_t *lpFileSizeHigh)
 {
     return GetFileSize(hFile, (LPDWORD)lpFileSizeHigh);
-}
-
-uint32_t FILE_SERVICE::_GetLogicalDrives()
-{
-    return GetLogicalDrives();
-}
-
-uint32_t FILE_SERVICE::_GetLogicalDriveStrings(uint32_t nBufferLength, char *lpBuffer)
-{
-    wchar_t BufferW[MAX_PATH];
-    uint32_t Res = GetLogicalDriveStrings(nBufferLength, BufferW);
-    std::string LogicalDrive = utf8::ConvertWideToUtf8(BufferW);
-    strcpy_s(lpBuffer, nBufferLength, LogicalDrive.c_str());
-    return Res;
 }
 
 BOOL FILE_SERVICE::_SetCurrentDirectory(const char *lpPathName)
@@ -189,26 +158,10 @@ BOOL FILE_SERVICE::_RemoveDirectory(const char *lpPathName)
     return RemoveDirectory(PathNameW.c_str());
 }
 
-BOOL FILE_SERVICE::_CopyFile(const char *lpExistingFileName, const char *lpNewFileName, bool bFailIfExists)
-{
-    std::wstring ExistingFileNameW = utf8::ConvertUtf8ToWide(lpExistingFileName);
-    std::wstring NewFileNameW = utf8::ConvertUtf8ToWide(lpNewFileName);
-    return CopyFile(ExistingFileNameW.c_str(), NewFileNameW.c_str(), bFailIfExists);
-}
-
 BOOL FILE_SERVICE::_SetFileAttributes(const char *lpFileName, uint32_t dwFileAttributes)
 {
     std::wstring FileNameW = utf8::ConvertUtf8ToWide(lpFileName);
     return SetFileAttributes(FileNameW.c_str(), dwFileAttributes);
-}
-
-BOOL FILE_SERVICE::FileExist(const char *file_name)
-{
-    auto *const fh = _CreateFile(file_name);
-    if (fh == INVALID_HANDLE_VALUE)
-        return false;
-    CloseHandle(fh);
-    return true;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -340,49 +293,6 @@ BOOL FILE_SERVICE::LoadFile(const char *file_name, char **ppBuffer, uint32_t *dw
     _ReadFile(hFile, *ppBuffer, dwLowSize, nullptr);
     _CloseHandle(hFile);
     return true;
-}
-
-BOOL FILE_SERVICE::SetDrive(const char *pDriveName)
-{
-    return false;
-}
-
-uint32_t FILE_SERVICE::MakeHashValue(const char *string)
-{
-    uint32_t hval = 0;
-    while (*string != 0)
-    {
-        char v = *string++;
-        if ('A' <= v && v <= 'Z')
-            v += 'a' - 'A'; // case independent
-        hval = (hval << 4) + static_cast<unsigned long>(v);
-        const uint32_t g = hval & (static_cast<unsigned long>(0xf) << (32 - 4));
-        if (g != 0)
-        {
-            hval ^= g >> (32 - 8);
-            hval ^= g;
-        }
-    }
-    return hval;
-}
-
-BOOL FILE_SERVICE::CacheDirectory(const char *pDirName)
-{
-    return false;
-}
-
-void FILE_SERVICE::MarkDirectoryCached(const char *pDirName)
-{
-}
-
-BOOL FILE_SERVICE::UnCacheDirectory(const char *pDirName)
-{
-    return false;
-}
-
-BOOL FILE_SERVICE::IsCached(const char *pFileName)
-{
-    return false;
 }
 
 //=================================================================================================
