@@ -1,7 +1,7 @@
 # Storm-Engine
 Game engine behind the [Sea Dogs](https://en.wikipedia.org/wiki/Sea_Dogs_(video_game)) game series.
 
-[![Join the chat at https://discord.gg/jmwETPGFRe](https://img.shields.io/discord/353218868896071692?color=%237289DA&label=storm-devs&logo=discord&logoColor=white)](https://discord.gg/jmwETPGFRe)
+[![Join the chat at https://discord.gg/jmwETPGFRe](https://img.shields.io/discord/353218868896071692?color=%237289DA&label=storm-devs&logo=discord&logoColor=white)](https://discord.gg/jmwETPGFRe) [![GitHub Actions Build Status](https://github.com/storm-devs/storm-engine/actions/workflows/cibuild.yml/badge.svg)](https://github.com/storm-devs/storm-engine/actions/workflows/cibuild.yml)
 
  * [GitHub Discussions](https://github.com/storm-devs/storm-engine/discussions)
  * [Discord Chat](https://discord.gg/jmwETPGFRe)
