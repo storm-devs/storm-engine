@@ -15,7 +15,7 @@ conan_cmake_run(CONANFILE conanfile.txt
     ENV CXX="${CMAKE_CXX_COMPILER}"
 )
 
-option(STORM_ENABLE_STEAM "Enable Steam integration" ON)
+option(Config_STORM_ENABLE_STEAM "Enable Steam integration" OFF)
 
 set(STORM_RESOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/res")
 set(STORM_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")

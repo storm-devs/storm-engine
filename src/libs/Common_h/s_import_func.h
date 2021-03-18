@@ -1,10 +1,15 @@
 #ifndef _S_IMPORT_FUNC_H_
 #define _S_IMPORT_FUNC_H_
 
-#define IFUNCRESULT_OK 0
-#define IFUNCRESULT_FAILED 0xffffffff
+#include <cstdint>
 
-#define INVALID_FUNCHANDLE 0xffffffff
+enum FuncResult : uint32_t
+{
+    IFUNCRESULT_OK = 0U,
+    IFUNCRESULT_FAILED = 0xffffffffU
+};
+
+#define INVALID_FUNCHANDLE 0xffffffffU
 
 #include <cstdint>
 

@@ -3,11 +3,9 @@
 #include "externs.h"
 #include "fs.h"
 #include "s_debug.h"
-#include "steam_api.h"
-#include <crtdbg.h>
+#include "SteamApi.hpp"
 #include <dbghelp.h>
 #include <spdlog/sinks/basic_file_sink.h>
-#include <stdio.h>
 #include <tchar.h>
 
 S_DEBUG CDebug;
@@ -59,6 +57,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     /* Read config */
     uint32_t dwMaxFPS = 0;
     auto *ini = File_Service.OpenIniFile(ENGINE_INI_FILE_NAME);
+    bool bSteam = false;
+
     if (ini)
     {
         dwMaxFPS = static_cast<uint32_t>(ini->GetLong(nullptr, "max_fps", 0));
@@ -80,24 +80,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
         delete ini;
     }
 
-    if (bSteam)
-    {
-        if (SteamAPI_RestartAppIfNecessary(223330))
-        {
-            return EXIT_FAILURE;
-        }
-
-        if (!SteamAPI_Init())
-        {
-            Alert("Fatal Error", "Steam must be running to play this game - SteamAPI_Init() failed!\n");
-            return EXIT_FAILURE;
-        }
-        else
-        {
-            core.InitAchievements();
-            core.InitSteamDLC();
-        }
-    }
+    // evaluate SteamApi singleton
+    steamapi::SteamApi::getInstance(!bSteam);
 
     /* Register and show window */
     const auto *const windowName = L"Sea Dogs";
@@ -167,14 +151,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     }
 
     /* Release */
-    if (bSteam)
-    {
-        // Shutdown the SteamAPI
-        SteamAPI_Shutdown();
-        core.DeleteAchievements();
-        core.DeleteSteamDLC();
-    }
-
     core.ReleaseBase();
     ClipCursor(nullptr);
 

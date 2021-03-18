@@ -1,10 +1,9 @@
 #include "core.h"
 #include "VmaInit.h"
-#include "achievements.h"
 #include "compiler.h"
 #include "controls.h"
-#include "dx9render.h"
 #include "externs.h"
+#include "SteamApi.hpp"
 
 uint32_t dwNumberScriptCommandsExecuted = 0;
 
@@ -66,7 +65,9 @@ void CORE::CleanUp()
     Services_List.Release();
     Services_List.Release();
     delete State_file_name;
-    ReleaseThread();
+
+    // TODO: !~! this crashes
+    //ReleaseThread();
 }
 
 void CORE::InitBase()
@@ -137,8 +138,7 @@ bool CORE::Run()
     ProcessExecute(); // transfer control to objects via Execute() function
     ProcessRealize(); // transfer control to objects via Realize() function
 
-    if (bSteam)
-        SteamAPI_RunCallbacks();
+    steamapi::SteamApi::getInstance().RunCallbacks();
 
     if (Controls && bActive)
         Controls->Update(Timer.rDelta_Time);
@@ -908,117 +908,4 @@ void CORE::ReleaseThread()
 {
     WaitForSingleObject(MyThread.Handle, 0);
     CloseHandle(MyThread.Handle);
-}
-
-bool CORE::isSteamEnabled()
-{
-    return bSteam;
-}
-
-void CORE::InitAchievements()
-{
-    if (bSteam)
-        g_SteamAchievements = new CSteamStatsAchievements(ACHIEVEMENTS_NUM);
-}
-
-void CORE::DeleteAchievements()
-{
-    if (bSteam && g_SteamAchievements)
-        delete g_SteamAchievements;
-}
-
-uint32_t CORE::SetAchievementState(const char *ID)
-{
-    if (bSteam)
-        return g_SteamAchievements->SetAchievement(ID);
-    return 0;
-}
-
-uint32_t CORE::GetAchievementState(const char *ID)
-{
-    if (bSteam)
-        return g_SteamAchievements->GetAchievement(ID);
-    return 0;
-}
-
-uint32_t CORE::SetStatValue(const char *ID, uint32_t Value)
-{
-    if (bSteam)
-        return g_SteamAchievements->SetStat(ID, Value);
-    return 0;
-}
-
-uint32_t CORE::GetStatValue(const char *ID)
-{
-    if (bSteam)
-        return g_SteamAchievements->GetStat(ID);
-    return 0;
-}
-
-uint32_t CORE::StoreStats()
-{
-    if (bSteam)
-        return g_SteamAchievements->StoreStats();
-    return 0;
-}
-
-bool CORE::ResetStats(bool bAchievementsToo)
-{
-    if (bSteam)
-        return g_SteamAchievements->ResetStats(bAchievementsToo);
-    return 0;
-}
-
-bool CORE::ClearAchievement(const char *ID)
-{
-    if (bSteam)
-        return g_SteamAchievements->ClearAchievement(ID);
-    return 0;
-}
-
-bool CORE::isSteamConnected()
-{
-    if (bSteam)
-        return g_SteamAchievements->GetConnected();
-    return 0;
-}
-
-void CORE::InitSteamDLC()
-{
-    if (bSteam)
-        g_SteamDLC = new CSteamDLC();
-}
-
-void CORE::DeleteSteamDLC()
-{
-    if (bSteam && g_SteamDLC)
-        delete g_SteamDLC;
-}
-
-bool CORE::isDLCActive(uint32_t nDLC)
-{
-    if (bSteam)
-        return g_SteamDLC->isDLCInstalled(nDLC);
-    return 1;
-}
-
-uint32_t CORE::getDLCCount()
-{
-    if (bSteam)
-        return g_SteamDLC->getDLCCount();
-    return 0;
-}
-
-uint32_t CORE::getDLCDataByIndex(uint32_t iDLC)
-{
-    if (bSteam)
-        return g_SteamDLC->bGetDLCDataByIndex(iDLC);
-    return 0;
-}
-
-bool CORE::activateGameOverlayDLC(uint32_t nAppId)
-{
-    if (bSteam)
-        return g_SteamDLC->activateGameOverlay(nAppId);
-    return 0;
 }

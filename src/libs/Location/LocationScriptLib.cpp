@@ -4,6 +4,7 @@
 #include "core.h"
 #include "s_import_func.h"
 #include "v_s_stack.h"
+#include "SteamApi.hpp"
 
 //============================================================================================
 
@@ -320,11 +321,7 @@ uint32_t slSetAchievement(VS_STACK *pS)
         if (!pReturn)
             return IFUNCRESULT_FAILED;
 
-        if (core.isSteamEnabled())
-            ret = core.SetAchievementState(nm);
-
-        else
-            ret = 0;
+        ret = steamapi::SteamApi::getInstance().SetAchievementState(nm);
 
         pReturn->Set(ret);
         return IFUNCRESULT_OK;
@@ -346,11 +343,7 @@ uint32_t slGetAchievement(VS_STACK *pS)
         if (!pReturn)
             return IFUNCRESULT_FAILED;
 
-        if (core.isSteamEnabled())
-            ret = core.GetAchievementState(nm);
-
-        else
-            ret = 0;
+         ret = steamapi::SteamApi::getInstance().SetAchievementState(nm);
 
         pReturn->Set(ret);
         return IFUNCRESULT_OK;
@@ -377,11 +370,7 @@ uint32_t slSetStat(VS_STACK *pS)
         if (!pReturn)
             return IFUNCRESULT_FAILED;
 
-        if (core.isSteamEnabled())
-            ret = core.SetStatValue(nm, val);
-
-        else
-            ret = 0;
+        ret = steamapi::SteamApi::getInstance().SetStatValue(nm, val);
 
         pReturn->Set(ret);
         return IFUNCRESULT_OK;
@@ -402,11 +391,7 @@ uint32_t slGetStat(VS_STACK *pS)
         if (!pReturn)
             return IFUNCRESULT_FAILED;
 
-        if (core.isSteamEnabled())
-            ret = core.GetStatValue(nm);
-
-        else
-            ret = 0;
+        ret = steamapi::SteamApi::getInstance().GetStatValue(nm);
 
         pReturn->Set(ret);
         return IFUNCRESULT_OK;
@@ -421,11 +406,7 @@ uint32_t slStoreStats(VS_STACK *pS)
     if (!pReturn)
         return IFUNCRESULT_FAILED;
 
-    if (core.isSteamEnabled())
-        ret = core.StoreStats();
-
-    else
-        ret = 0;
+    ret = steamapi::SteamApi::getInstance().StoreStats();
 
     pReturn->Set(ret);
     return IFUNCRESULT_OK;
@@ -445,11 +426,8 @@ uint32_t slClearAchievement(VS_STACK *pS)
         if (!pReturn)
             return IFUNCRESULT_FAILED;
 
-        if (core.isSteamEnabled())
-            ret = core.ClearAchievement(nm);
-
-        else
-            ret = 0;
+        
+        ret = steamapi::SteamApi::getInstance().ClearAchievement(nm);
 
         pReturn->Set(ret);
         return IFUNCRESULT_OK;
@@ -469,11 +447,7 @@ uint32_t slResetStats(VS_STACK *pS)
     if (!pReturn)
         return IFUNCRESULT_FAILED;
 
-    if (core.isSteamEnabled())
-        ret = core.ResetStats(val);
-
-    else
-        ret = 0;
+    ret = steamapi::SteamApi::getInstance().ResetStats(val);
 
     pReturn->Set(ret);
 

@@ -7,4 +7,3 @@ FILE_SERVICE File_Service;
 VFILE_SERVICE *fio = nullptr;
 
 bool bActive = true;
-bool bSteam = true;
