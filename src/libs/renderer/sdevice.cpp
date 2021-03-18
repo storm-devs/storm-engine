@@ -245,7 +245,7 @@ inline bool DX9RENDER::ErrorHandler(HRESULT hr, const char *file, unsigned line,
 {
     if (hr != D3D_OK)
     {
-        core.Trace("[%s:%s:%d] %s: %s (%s)", file, func, line, DXGetErrorString(hr), DXGetErrorDescription(hr), expr);
+        core.Trace("[%s:%s:%d] %s: %s (%s)", file, func, line, DXGetErrorStringA(hr), DXGetErrorDescriptionA(hr), expr);
         return true;
     }
 
