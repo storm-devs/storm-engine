@@ -93,6 +93,152 @@ uint32_t activateGameOverlayDlc(VS_STACK *pS)
     return IFUNCRESULT_OK;
 }
 
+
+uint32_t slSetAchievement(VS_STACK *pS)
+{
+    VDATA *pStr = (VDATA *)pS->Pop();
+    const char *nm = nullptr;
+    long ret = 0;
+    if (!pStr->Get(nm))
+        return IFUNCRESULT_FAILED;
+    if (nm && nm[0])
+    {
+        VDATA *pReturn = (VDATA *)pS->Push();
+        if (!pReturn)
+            return IFUNCRESULT_FAILED;
+
+        ret = steamapi::SteamApi::getInstance().SetAchievementState(nm);
+
+        pReturn->Set(ret);
+        return IFUNCRESULT_OK;
+    }
+    return IFUNCRESULT_OK;
+}
+
+uint32_t slGetAchievement(VS_STACK *pS)
+{
+    VDATA *pStr = (VDATA *)pS->Pop();
+    const char *nm = nullptr;
+    long ret = 0;
+    if (!pStr->Get(nm))
+        return IFUNCRESULT_FAILED;
+
+    if (nm && nm[0])
+    {
+        VDATA *pReturn = (VDATA *)pS->Push();
+        if (!pReturn)
+            return IFUNCRESULT_FAILED;
+
+        ret = steamapi::SteamApi::getInstance().SetAchievementState(nm);
+
+        pReturn->Set(ret);
+        return IFUNCRESULT_OK;
+    }
+    return IFUNCRESULT_OK;
+}
+
+uint32_t slSetStat(VS_STACK *pS)
+{
+    VDATA *pInt = (VDATA *)pS->Pop();
+    long val = 0;
+    long ret = 0;
+    if (!pInt->Get(val))
+        return IFUNCRESULT_FAILED;
+
+    VDATA *pStr = (VDATA *)pS->Pop();
+    const char *nm = nullptr;
+    if (!pStr->Get(nm))
+        return IFUNCRESULT_FAILED;
+
+    if (nm && nm[0])
+    {
+        VDATA *pReturn = (VDATA *)pS->Push();
+        if (!pReturn)
+            return IFUNCRESULT_FAILED;
+
+        ret = steamapi::SteamApi::getInstance().SetStatValue(nm, val);
+
+        pReturn->Set(ret);
+        return IFUNCRESULT_OK;
+    }
+    return IFUNCRESULT_OK;
+}
+
+uint32_t slGetStat(VS_STACK *pS)
+{
+    VDATA *pStr = (VDATA *)pS->Pop();
+    const char *nm = nullptr;
+    long ret = 0;
+    if (!pStr->Get(nm))
+        return IFUNCRESULT_FAILED;
+    if (nm && nm[0])
+    {
+        VDATA *pReturn = (VDATA *)pS->Push();
+        if (!pReturn)
+            return IFUNCRESULT_FAILED;
+
+        ret = steamapi::SteamApi::getInstance().GetStatValue(nm);
+
+        pReturn->Set(ret);
+        return IFUNCRESULT_OK;
+    }
+    return IFUNCRESULT_OK;
+}
+
+uint32_t slStoreStats(VS_STACK *pS)
+{
+    long ret = 0;
+    VDATA *pReturn = (VDATA *)pS->Push();
+    if (!pReturn)
+        return IFUNCRESULT_FAILED;
+
+    ret = steamapi::SteamApi::getInstance().StoreStats();
+
+    pReturn->Set(ret);
+    return IFUNCRESULT_OK;
+}
+
+uint32_t slClearAchievement(VS_STACK *pS)
+{
+    VDATA *pStr = (VDATA *)pS->Pop();
+    const char *nm = nullptr;
+    long ret = 0;
+    if (!pStr->Get(nm))
+        return IFUNCRESULT_FAILED;
+
+    if (nm && nm[0])
+    {
+        VDATA *pReturn = (VDATA *)pS->Push();
+        if (!pReturn)
+            return IFUNCRESULT_FAILED;
+
+        ret = steamapi::SteamApi::getInstance().ClearAchievement(nm);
+
+        pReturn->Set(ret);
+        return IFUNCRESULT_OK;
+    }
+    return IFUNCRESULT_OK;
+}
+
+uint32_t slResetStats(VS_STACK *pS)
+{
+    VDATA *pInt = (VDATA *)pS->Pop();
+    long val = 0;
+    long ret = 0;
+    if (!pInt->Get(val))
+        return IFUNCRESULT_FAILED;
+
+    VDATA *pReturn = (VDATA *)pS->Push();
+    if (!pReturn)
+        return IFUNCRESULT_FAILED;
+
+    ret = steamapi::SteamApi::getInstance().ResetStats(val);
+
+    pReturn->Set(ret);
+
+    return IFUNCRESULT_OK;
+}
+
 class SteamApiScriptLib : public SCRIPT_LIBRIARY
 {
   public:
@@ -131,6 +277,50 @@ bool SteamApiScriptLib::Init()
     sIFuncInfo.pFuncName = "DLCStartOverlay";
     sIFuncInfo.pReturnValueName = "int";
     sIFuncInfo.pFuncAddress = activateGameOverlayDlc;
+    core.SetScriptFunction(&sIFuncInfo);
+
+    ///////
+
+    sIFuncInfo.nArguments = 1;
+    sIFuncInfo.pFuncName = "SetAchievement";
+    sIFuncInfo.pReturnValueName = "int";
+    sIFuncInfo.pFuncAddress = slSetAchievement;
+    core.SetScriptFunction(&sIFuncInfo);
+
+    sIFuncInfo.nArguments = 1;
+    sIFuncInfo.pFuncName = "GetAchievement";
+    sIFuncInfo.pReturnValueName = "int";
+    sIFuncInfo.pFuncAddress = slGetAchievement;
+    core.SetScriptFunction(&sIFuncInfo);
+
+    sIFuncInfo.nArguments = 2;
+    sIFuncInfo.pFuncName = "SetStat";
+    sIFuncInfo.pReturnValueName = "int";
+    sIFuncInfo.pFuncAddress = slSetStat;
+    core.SetScriptFunction(&sIFuncInfo);
+
+    sIFuncInfo.nArguments = 1;
+    sIFuncInfo.pFuncName = "GetStat";
+    sIFuncInfo.pReturnValueName = "int";
+    sIFuncInfo.pFuncAddress = slGetStat;
+    core.SetScriptFunction(&sIFuncInfo);
+
+    sIFuncInfo.nArguments = 0;
+    sIFuncInfo.pFuncName = "StoreStats";
+    sIFuncInfo.pReturnValueName = "int";
+    sIFuncInfo.pFuncAddress = slStoreStats;
+    core.SetScriptFunction(&sIFuncInfo);
+
+    sIFuncInfo.nArguments = 1;
+    sIFuncInfo.pFuncName = "ClearAchievement";
+    sIFuncInfo.pReturnValueName = "int";
+    sIFuncInfo.pFuncAddress = slClearAchievement;
+    core.SetScriptFunction(&sIFuncInfo);
+
+    sIFuncInfo.nArguments = 1;
+    sIFuncInfo.pFuncName = "ResetStats";
+    sIFuncInfo.pReturnValueName = "int";
+    sIFuncInfo.pFuncAddress = slResetStats;
     core.SetScriptFunction(&sIFuncInfo);
 
     return true;
