@@ -662,7 +662,7 @@ bool CXI_FORMATEDTEXT::GetLineNext(int fontNum, char *&pInStr, char *buf, int bu
     {
         if (pInStr[0] == '\\' && (pInStr[1] == 'n' || pInStr[1] == 'N'))
             break;
-        if (pInStr[0] == 0x0D || pInStr[0] == 0x0A)
+        if (pInStr[0] == '\r' || pInStr[0] == '\n')
             if (bYesEOL < 2)
                 bYesEOL++;
             else
@@ -761,7 +761,7 @@ void CXI_FORMATEDTEXT::GetOneLine(int fontNum, char *pStr, char *buf, int bufSiz
     int bYesEOL = 0;
     while (*pStr != 0)
     {
-        if (*pStr == 0x0D || *pStr == 0x0A)
+        if (*pStr == '\r' || *pStr == '\n')
             if (bYesEOL < 2)
                 bYesEOL++;
             else

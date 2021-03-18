@@ -787,12 +787,12 @@ bool STRSERVICE::GetNextUsersString(char *src, long &idx, char **strName, char *
     // get rid of the spaces on the left
     while (nameBeg <= nameEnd)
     {
-        if (*nameBeg == 0x0A)
+        if (*nameBeg == '\n')
         {
             nameBeg++;
             continue;
         }
-        if (*nameBeg == 0x0D)
+        if (*nameBeg == '\r')
         {
             nameBeg++;
             continue;
@@ -814,12 +814,12 @@ bool STRSERVICE::GetNextUsersString(char *src, long &idx, char **strName, char *
     // get rid of the spaces on the right
     while (nameBeg < nameEnd)
     {
-        if (*nameBeg == 0x0A)
+        if (*nameBeg == '\n')
         {
             nameBeg++;
             continue;
         }
-        if (*nameBeg == 0x0D)
+        if (*nameBeg == '\r')
         {
             nameBeg++;
             continue;
@@ -834,12 +834,12 @@ bool STRSERVICE::GetNextUsersString(char *src, long &idx, char **strName, char *
             nameBeg++;
             continue;
         }
-        if (*nameEnd == 0x0A)
+        if (*nameEnd == '\n')
         {
             nameEnd--;
             continue;
         }
-        if (*nameEnd == 0x0D)
+        if (*nameEnd == '\r')
         {
             nameEnd--;
             continue;
