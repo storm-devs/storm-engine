@@ -66,7 +66,6 @@ void CORE::CleanUp()
     Services_List.Release();
     Services_List.Release();
     delete State_file_name;
-    ReleaseThread();
 }
 
 void CORE::InitBase()
@@ -185,7 +184,6 @@ bool CORE::Initialize()
     ResetCore();
 
     InitializeCriticalSection(&lock);
-    StartThread();
 
     Initialized = true;
 
@@ -859,45 +857,6 @@ void CORE::Leave_CriticalSection()
 {
     LeaveCriticalSection(&lock);
 };
-
-uint32_t CORE::Process(const std::stop_token& stop_token)
-{
-    using namespace std::chrono_literals;
-
-    while (!stop_token.stop_requested())
-    {
-        if (thrQueue.empty())
-        {
-            std::this_thread::sleep_for(1ms);
-        }
-        else
-        {
-            EnterCriticalSection(&lock);
-            uint32_t &function_code = thrQueue.front();
-            DATA* pResult = nullptr;
-            Compiler->BC_Execute(function_code, pResult);
-            thrQueue.pop();
-            LeaveCriticalSection(&lock);
-        }
-    }
-    return 0;
-}
-
-void CORE::StartEvent(uint32_t function_code)
-{
-    thrQueue.push(function_code);
-}
-
-void CORE::StartThread()
-{
-    MyThread = std::jthread([this](const std::stop_token& stop_token){ Process(stop_token);});
-}
-
-void CORE::ReleaseThread()
-{
-    MyThread.request_stop();
-    MyThread.join();
-}
 
 bool CORE::isSteamEnabled()
 {

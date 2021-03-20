@@ -150,11 +150,6 @@ class CORE
 
     void *GetScriptVariable(const char *pVariableName, uint32_t *pdwVarIndex = nullptr);
 
-    uint32_t Process(const std::stop_token& stop_token);
-    void StartEvent(uint32_t function_code);
-    void StartThread();
-    void ReleaseThread();
-
     // steam section
     CSteamStatsAchievements *g_SteamAchievements;
 
@@ -178,10 +173,6 @@ class CORE
     uint32_t getDLCCount();
     uint32_t getDLCDataByIndex(uint32_t iDLC);
     bool activateGameOverlayDLC(uint32_t nAppId);
-
-  private:
-    std::queue<uint32_t> thrQueue;
-    std::jthread MyThread;
 };
 // core instance
 inline CORE core;
