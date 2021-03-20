@@ -10,8 +10,6 @@ add_library(${PROJECT_NAME} STATIC
     SoundService.h
     VSoundService.cpp
     VSoundService.h
-
-    ${STORM_SOURCE_DIR}/libs/common_h/rands.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${Fmod_INCLUDE_DIR})

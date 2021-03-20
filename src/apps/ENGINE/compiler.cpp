@@ -41,7 +41,7 @@ COMPILER::COMPILER()
     InitInternalFunctions();
     bWriteCodeFile = false;
     bDebugInfo = false;
-    strcpy_s(DebugSourceFileName, "no debug information");
+    strcpy_s(DebugSourceFileName, "<no debug information>");
     DebugSourceLine = 0;
     InstructionPointer = 0;
     pCompileTokenTempBuffer = nullptr;
@@ -273,22 +273,14 @@ void COMPILER::Trace(const char *data_PTR, ...)
 #ifdef TRACE_OFF
     return;
 #endif
-    // char LogBuffer[MAX_PATH + MAX_PATH];
-    char LogBuffer[4096];
     if (data_PTR == nullptr)
         return;
-    auto *file_h = CreateFile(TEXT(COMPILER_LOG_FILENAME), GENERIC_WRITE, FILE_SHARE_READ, nullptr, OPEN_ALWAYS,
-                              FILE_ATTRIBUTE_NORMAL, nullptr);
-    SetFilePointer(file_h, 0, nullptr, FILE_END);
+    char LogBuffer[4096];
     va_list args;
     va_start(args, data_PTR);
     _vsnprintf_s(LogBuffer, sizeof(LogBuffer) - 4, data_PTR, args);
-    strcat_s(LogBuffer, "\x0d\x0a");
-    uint32_t bytes;
-    WriteFile(file_h, LogBuffer, strlen(LogBuffer), (LPDWORD)&bytes, nullptr);
     va_end(args);
-    CloseHandle(file_h);
-    _flushall();
+    tracelog->info(LogBuffer);
 }
 
 // write to compilation log file
@@ -297,22 +289,14 @@ void COMPILER::DTrace(const char *data_PTR, ...)
 #ifdef DTRACEOFF
     return;
 #endif
-
-    // char LogBuffer[MAX_PATH + MAX_PATH];
-    char LogBuffer[4096];
     if (data_PTR == nullptr)
         return;
-    auto *const file_h = fio->_CreateFile(COMPILER_LOG_FILENAME, GENERIC_WRITE, FILE_SHARE_READ, OPEN_ALWAYS);
-    fio->_SetFilePointer(file_h, 0, nullptr, FILE_END);
+    char LogBuffer[4096];
     va_list args;
     va_start(args, data_PTR);
     _vsnprintf_s(LogBuffer, sizeof(LogBuffer) - 4, data_PTR, args);
-    strcat_s(LogBuffer, "\x0d\x0a");
-    uint32_t bytes;
-    fio->_WriteFile(file_h, LogBuffer, strlen(LogBuffer), &bytes);
     va_end(args);
-    fio->_CloseHandle(file_h);
-    _flushall();
+    tracelog->info(LogBuffer);
 }
 
 // append one block of code to another
@@ -377,39 +361,31 @@ void COMPILER::SetError(const char *data_PTR, ...)
 {
     if (bDebugExpressionRun)
         return;
-    char LogBuffer[MAX_PATH + MAX_PATH];
-    char ErrorBuffer[MAX_PATH + MAX_PATH];
     if (data_PTR == nullptr)
         return;
-    auto *const file_h = fio->_CreateFile(COMPILER_ERRORLOG_FILENAME, GENERIC_WRITE, FILE_SHARE_READ, OPEN_ALWAYS);
-    fio->_SetFilePointer(file_h, 0, nullptr, FILE_END);
+    char LogBuffer[BUFSIZ];
+    char ErrorBuffer[MAX_PATH + BUFSIZ];
     va_list args;
     va_start(args, data_PTR);
     _vsnprintf_s(LogBuffer, sizeof(LogBuffer) - 4, data_PTR, args);
-    strcat_s(LogBuffer, "\x0d\x0a");
     uint32_t bytes;
     FindErrorSource();
 
     switch (CompilerStage)
     {
     case CS_SYSTEM:
-        sprintf_s(ErrorBuffer, "ERROR - file: %s; line: %d", DebugSourceFileName, DebugSourceLine + 1);
+        sprintf_s(ErrorBuffer, "ERROR in %s(%d): %s", DebugSourceFileName, DebugSourceLine + 1, LogBuffer);
         break;
     case CS_COMPILATION:
-        sprintf_s(ErrorBuffer, "COMPILE ERROR - file: %s; line: %d", DebugSourceFileName, DebugSourceLine + 1);
+        sprintf_s(ErrorBuffer, "COMPILE ERROR in %s(%d): %s", DebugSourceFileName, DebugSourceLine + 1, LogBuffer);
         break;
     case CS_RUNTIME:
-        sprintf_s(ErrorBuffer, "RUNTIME ERROR - file: %s; line: %d", DebugSourceFileName, DebugSourceLine + 1);
+        sprintf_s(ErrorBuffer, "RUNTIME ERROR in %s(%d): %s", DebugSourceFileName, DebugSourceLine + 1, LogBuffer);
         break;
     }
-    // sprintf_s(ErrorBuffer,"ERROR - file: %s; line: %d",DebugSourceFileName,DebugSourceLine + 1);
-    strcat_s(ErrorBuffer, "\x0d\x0a");
-    fio->_WriteFile(file_h, ErrorBuffer, strlen(ErrorBuffer), &bytes);
-    fio->_WriteFile(file_h, LogBuffer, strlen(LogBuffer), &bytes);
     va_end(args);
-    fio->_FlushFileBuffers(file_h);
-    fio->_CloseHandle(file_h);
-    //_flushall();
+
+    errorlog->error(ErrorBuffer);
 
     if (bBreakOnError)
         CDebug.SetTraceMode(TMODE_MAKESTEP);
@@ -422,44 +398,20 @@ void COMPILER::SetWarning(const char *data_PTR, ...)
 #endif
     if (bDebugExpressionRun)
         return;
-    char LogBuffer[MAX_PATH + MAX_PATH];
-    char ErrorBuffer[MAX_PATH + MAX_PATH];
+    char LogBuffer[BUFSIZ];
+    char ErrorBuffer[MAX_PATH + BUFSIZ];
     if (data_PTR == nullptr)
         return;
-    auto *const file_h = fio->_CreateFile(COMPILER_LOG_FILENAME, GENERIC_WRITE, FILE_SHARE_READ, OPEN_ALWAYS);
-    fio->_SetFilePointer(file_h, 0, nullptr, FILE_END);
     va_list args;
     va_start(args, data_PTR);
     _vsnprintf_s(LogBuffer, sizeof(LogBuffer) - 4, data_PTR, args);
-    strcat_s(LogBuffer, "\x0d\x0a");
     uint32_t bytes;
     FindErrorSource();
 
-    sprintf_s(ErrorBuffer, "WARNING - file: %s; line: %d", DebugSourceFileName, DebugSourceLine + 1);
-    strcat_s(ErrorBuffer, "\x0d\x0a");
-    fio->_WriteFile(file_h, ErrorBuffer, strlen(ErrorBuffer), &bytes);
-    fio->_WriteFile(file_h, LogBuffer, strlen(LogBuffer), &bytes);
+    sprintf_s(ErrorBuffer, "WARNING in %s(%d): %s", DebugSourceFileName, DebugSourceLine + 1, LogBuffer);
     va_end(args);
-    fio->_FlushFileBuffers(file_h);
-    fio->_CloseHandle(file_h);
-    //_flushall();
 
-    /*    if(bDebugExpressionRun) return;
-      char LogBuffer[MAX_PATH + MAX_PATH];
-      if(data_PTR == 0) return;
-      HANDLE file_h =
-      CreateFile(COMPILER_LOG_FILENAME,GENERIC_WRITE,FILE_SHARE_WRITE,0,OPEN_ALWAYS,FILE_ATTRIBUTE_NORMAL,0);
-      SetFilePointer(file_h,0,0,FILE_END);
-      va_list args;
-      va_start(args,data_PTR);
-      _vsnprintf_s(LogBuffer,sizeof(LogBuffer) - 4,data_PTR,args);
-      strcat_s(LogBuffer,"\x0d\x0a");
-      DWORD bytes;
-      WriteFile(file_h,"WARNING: ",strlen("WARNING: "),&bytes,0);
-      WriteFile(file_h,LogBuffer,strlen(LogBuffer),&bytes,0);
-      va_end(args);
-      CloseHandle(file_h);
-      _flushall();*/
+    warninglog->warn(ErrorBuffer);
 }
 
 void COMPILER::LoadPreprocess()
