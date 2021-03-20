@@ -860,25 +860,25 @@ void CORE::Leave_CriticalSection()
     LeaveCriticalSection(&lock);
 };
 
-uint32_t CORE::Process()
+uint32_t CORE::Process(const std::stop_token& stop_token)
 {
-    DWORD dwWaitResult;
-    DATA *pResult;
+    using namespace std::chrono_literals;
 
-    while (1)
+    while (!stop_token.stop_requested())
     {
-        if (!thrQueue.empty())
-            SetEvent(hEvent);
-        dwWaitResult = WaitForSingleObject(hEvent, 1);
-        if (dwWaitResult == WAIT_OBJECT_0)
+        if (thrQueue.empty())
+        {
+            std::this_thread::sleep_for(1ms);
+        }
+        else
         {
             EnterCriticalSection(&lock);
             uint32_t &function_code = thrQueue.front();
+            DATA* pResult = nullptr;
             Compiler->BC_Execute(function_code, pResult);
             thrQueue.pop();
             LeaveCriticalSection(&lock);
         }
-        //        if(Reset_flag) return 0;
     }
     return 0;
 }
@@ -890,24 +890,13 @@ void CORE::StartEvent(uint32_t function_code)
 
 void CORE::StartThread()
 {
-    hEvent = CreateEvent(nullptr, false, false, TEXT("thrEvent"));
-    if (hEvent == nullptr)
-    {
-        Trace("Error create event!!");
-        return;
-    }
-    MyThread.pThis = this;
-    MyThread.pMethod = &CORE::Process;
-    MyThread.Handle = CreateThread(nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(MyThread.Function), &MyThread,
-                                   CREATE_SUSPENDED, nullptr);
-    SetThreadPriority(MyThread.Handle, THREAD_PRIORITY_NORMAL);
-    ResumeThread(MyThread.Handle);
+    MyThread = std::jthread([this](const std::stop_token& stop_token){ Process(stop_token);});
 }
 
 void CORE::ReleaseThread()
 {
-    WaitForSingleObject(MyThread.Handle, 0);
-    CloseHandle(MyThread.Handle);
+    MyThread.request_stop();
+    MyThread.join();
 }
 
 bool CORE::isSteamEnabled()
