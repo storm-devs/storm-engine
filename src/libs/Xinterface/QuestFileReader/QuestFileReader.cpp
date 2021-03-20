@@ -47,7 +47,7 @@ long GetToken(const char *&ps)
 
     // get the size of the token
     const auto *const ptoken = ps;
-    while (*ps != 0 && static_cast<unsigned>(*ps) > 0x20 && *ps != 0x0D && *ps != 0x0A)
+    while (*ps != 0 && static_cast<unsigned>(*ps) > 0x20 && *ps != '\r' && *ps != '\n')
         ps++;
     const size_t tokensize = ps - ptoken;
     if (tokensize == 0)
@@ -66,7 +66,7 @@ bool IS_SPACE(char ch)
 {
     if (static_cast<unsigned>(ch) <= ' ')
         return true;
-    if (ch == 0x0D || ch == 0x0A)
+    if (ch == '\r' || ch == '\n')
         return true;
     return false;
 }
@@ -136,9 +136,9 @@ static const char *GetNextString(const char *&pInStr)
         {
             if (IS_SPACE(*pInStr))
                 bEmptyString = false;
-            if (*pInStr == 0x0D)
+            if (*pInStr == '\r')
                 bYesCurierReturn = true;
-            else if (*pInStr == 0x0A)
+            else if (*pInStr == '\n')
                 bYesCurierReturn = true;
             else if (bYesCurierReturn)
                 break;

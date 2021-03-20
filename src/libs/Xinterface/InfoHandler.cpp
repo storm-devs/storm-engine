@@ -316,14 +316,14 @@ char *InfoHandler::GetCutString(char *pstr, int nOutWidth, float fScale) const
     char param[1024];
 
     // remove first line breaks
-    while (pstr && (*pstr == 0x0A || *pstr == 0x0D || *pstr == 32))
+    while (pstr && (*pstr == '\n' || *pstr == '\r' || *pstr == 32))
         pstr++;
 
     char *oldps = nullptr;
     char *ps;
     for (ps = pstr; ps && *ps; ps++)
     {
-        if (*ps == 0x0a || *ps == 0x0d)
+        if (*ps == '\n' || *ps == '\r')
             break;
 
         if (*ps == 32)
@@ -381,7 +381,7 @@ void InfoHandler::StringToBufer(char *outStr, int sizeBuf, char *inStr, int copy
     outStr[0] = 0;
     if (inStr == nullptr)
         return;
-    while (*inStr && (*inStr == 0x0A || *inStr == 0x0D || *inStr == 32))
+    while (*inStr && (*inStr == '\n' || *inStr == '\r' || *inStr == 32))
         inStr++;
 
     int n = strlen(inStr);

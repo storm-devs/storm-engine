@@ -787,12 +787,12 @@ bool STRSERVICE::GetNextUsersString(char *src, long &idx, char **strName, char *
     // get rid of the spaces on the left
     while (nameBeg <= nameEnd)
     {
-        if (*nameBeg == 0x0A)
+        if (*nameBeg == '\n')
         {
             nameBeg++;
             continue;
         }
-        if (*nameBeg == 0x0D)
+        if (*nameBeg == '\r')
         {
             nameBeg++;
             continue;
@@ -814,12 +814,12 @@ bool STRSERVICE::GetNextUsersString(char *src, long &idx, char **strName, char *
     // get rid of the spaces on the right
     while (nameBeg < nameEnd)
     {
-        if (*nameBeg == 0x0A)
+        if (*nameBeg == '\n')
         {
             nameBeg++;
             continue;
         }
-        if (*nameBeg == 0x0D)
+        if (*nameBeg == '\r')
         {
             nameBeg++;
             continue;
@@ -834,12 +834,12 @@ bool STRSERVICE::GetNextUsersString(char *src, long &idx, char **strName, char *
             nameBeg++;
             continue;
         }
-        if (*nameEnd == 0x0A)
+        if (*nameEnd == '\n')
         {
             nameEnd--;
             continue;
         }
-        if (*nameEnd == 0x0D)
+        if (*nameEnd == '\r')
         {
             nameEnd--;
             continue;
@@ -859,32 +859,18 @@ bool STRSERVICE::GetNextUsersString(char *src, long &idx, char **strName, char *
     // get rid of spaces on the left and right in the data
     while (dataBeg < dataEnd)
     {
-        if (*dataEnd == '\t')
+        if (*dataEnd == ' ' || *dataEnd == '\t' || *dataEnd == '\r' || *dataEnd == '\n')
         {
             dataEnd--;
             continue;
         }
-        if (*dataEnd == ' ')
-        {
-            dataEnd--;
-            continue;
-        }
-        if (*dataBeg == '\t')
-        {
-            dataBeg++;
-            continue;
-        }
-        if (*dataBeg == ' ')
+        if (*dataBeg == ' ' || *dataBeg == '\t' || *dataBeg == '\r' || *dataBeg == '\n')
         {
             dataBeg++;
             continue;
         }
         break;
     }
-    if (*dataEnd == 0x0A || *dataEnd == 0x0D)
-        dataEnd -= 1;
-    if (*dataBeg == 0x0A || *dataBeg == 0x0D)
-        dataBeg += 2;
 
     if (strName != nullptr && nameBeg <= nameEnd)
     {
@@ -902,6 +888,7 @@ bool STRSERVICE::GetNextUsersString(char *src, long &idx, char **strName, char *
             throw std::exception("Allocate memory error");
         strncpy_s(*strData, dataEnd - dataBeg + 2, dataBeg, dataEnd - dataBeg + 1);
         strData[0][dataEnd - dataBeg + 1] = 0;
+        Assert(utf8::IsValidUtf8(*strData));
     }
 
     return true;
