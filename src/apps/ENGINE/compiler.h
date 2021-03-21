@@ -178,7 +178,9 @@ class COMPILER : public VIRTUAL_COMPILER
 
   public:
     std::shared_ptr<spdlog::sinks::basic_file_sink_mt> error_warning_sink;
-    std::shared_ptr<spdlog::logger> tracelog, errorlog, warninglog;
+    std::shared_ptr<spdlog::logger> tracelog;
+    std::shared_ptr<spdlog::logger> errorlog;
+    std::shared_ptr<spdlog::logger> warninglog;
 
     bool bBreakOnError;
     COMPRESS Compress;

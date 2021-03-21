@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <tchar.h>
 
-#define DUMP_FILENAME "engine_dump.dmp"
+constexpr auto DUMP_FILENAME = "engine_dump.dmp";
 
 S_DEBUG CDebug;
 bool isHold = false;
