@@ -4,6 +4,7 @@
 #include <Windows.h>
 #include <cstdint>
 #include <string>
+#include <fstream>
 
 class INIFILE;
 
@@ -15,24 +16,19 @@ class VFILE_SERVICE
     {
     }
 
-    virtual HANDLE _CreateFile(const char *lpFileName, uint32_t dwDesiriedAccess = GENERIC_READ,
-                               uint32_t dwShareMode = FILE_SHARE_READ,
-                               uint32_t dwCreationDisposition = OPEN_EXISTING) = 0;
-    virtual void _CloseHandle(HANDLE hFile) = 0;
-    virtual uint32_t _SetFilePointer(HANDLE hFile, long DistanceToMove, long *lpDistanceToMoveHigh,
-                                     uint32_t dwMoveMethod) = 0;
-    virtual BOOL _DeleteFile(const char *lpFileName) = 0;
-    virtual BOOL _WriteFile(HANDLE hFile, const void *lpBuffer, uint32_t nNumberOfBytesToWrite,
-                            uint32_t *lpNumberOfBytesWritten) = 0;
-    virtual BOOL _ReadFile(HANDLE hFile, void *lpBuffer, uint32_t nNumberOfBytesToRead,
-                           uint32_t *lpNumberOfBytesRead) = 0;
+    virtual std::fstream _CreateFile(const char *filename, std::ios::openmode mode) = 0;
+    virtual void _CloseFile(std::fstream &fileS) = 0;
+    virtual void _SetFilePointer(std::fstream &fileS, std::streamoff off, std::ios::seekdir dir) = 0;
+    virtual int _DeleteFile(const char *filename) = 0;
+    virtual bool _WriteFile(std::fstream &fileS, const char *s, std::streamsize count) = 0;
+    virtual bool _ReadFile(std::fstream &fileS, char *s, std::streamsize count) = 0;
     virtual HANDLE _FindFirstFile(const char *lpFileName, LPWIN32_FIND_DATA lpFindFileData) = 0;
     virtual BOOL _FindNextFile(HANDLE hFindFile, LPWIN32_FIND_DATA lpFindFileData) = 0;
     virtual BOOL _FindClose(HANDLE hFindFile) = 0;
-    virtual BOOL _FlushFileBuffers(HANDLE hFile) = 0;
+    virtual void _FlushFileBuffers(std::fstream &fileS) = 0;
     virtual uint32_t _GetCurrentDirectory(uint32_t nBufferLength, char *lpBuffer) = 0;
     virtual std::string _GetExecutableDirectory() = 0;
-    virtual uint32_t _GetFileSize(HANDLE hFile, uint32_t *lpFileSizeHigh) = 0;
+    virtual std::uintmax_t _GetFileSize(const char *p) = 0;
     virtual BOOL _SetCurrentDirectory(const char *lpPathName) = 0;
     virtual BOOL _CreateDirectory(const char *lpPathName, LPSECURITY_ATTRIBUTES lpSecurityAttributes) = 0;
     virtual BOOL _RemoveDirectory(const char *lpPathName) = 0;

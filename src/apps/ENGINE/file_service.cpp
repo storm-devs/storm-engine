@@ -5,6 +5,7 @@
 #include "utf8.h"
 #include <exception>
 #include <string>
+#include <filesystem>
 
 #define COMMENT ';'
 #define SECTION_A '['
@@ -40,53 +41,54 @@ FILE_SERVICE::~FILE_SERVICE()
     Close();
 }
 
-HANDLE FILE_SERVICE::_CreateFile(const char *lpFileName, uint32_t dwDesiriedAccess, uint32_t dwShareMode,
-                                 uint32_t dwCreationDisposition)
+std::fstream FILE_SERVICE::_CreateFile(const char *filename, std::ios::openmode mode)
 {
-    HANDLE fh;
-    std::wstring filePathW = utf8::ConvertUtf8ToWide(lpFileName);
-    fh = CreateFile(filePathW.c_str(), dwDesiriedAccess, dwShareMode, nullptr, dwCreationDisposition,
-                    FILE_ATTRIBUTE_NORMAL, nullptr);
-    return fh;
+    std::fstream fileS(filename, mode);
+    return fileS;
 }
 
-void FILE_SERVICE::_CloseHandle(HANDLE hFile)
+void FILE_SERVICE::_CloseFile(std::fstream &fileS)
 {
-    CloseHandle(hFile);
+    fileS.close();
 }
 
-uint32_t FILE_SERVICE::_SetFilePointer(HANDLE hFile, long DistanceToMove, long *lpDistanceToMoveHigh,
-                                       uint32_t dwMoveMethod)
+void FILE_SERVICE::_SetFilePointer(std::fstream &fileS, std::streamoff off, std::ios::seekdir dir)
 {
-    return SetFilePointer(hFile, DistanceToMove, lpDistanceToMoveHigh, dwMoveMethod);
+    fileS.seekp(off, dir);
 }
 
-BOOL FILE_SERVICE::_DeleteFile(const char *lpFileName)
+int FILE_SERVICE::_DeleteFile(const char *filename)
 {
-    std::wstring filePathW = utf8::ConvertUtf8ToWide(lpFileName);
-    return DeleteFile(filePathW.c_str());
+    std::filesystem::path path = std::filesystem::u8path(filename);
+    return std::remove(filename);
 }
 
-BOOL FILE_SERVICE::_WriteFile(HANDLE hFile, const void *lpBuffer, uint32_t nNumberOfBytesToWrite,
-                              uint32_t *lpNumberOfBytesWritten)
+bool FILE_SERVICE::_WriteFile(std::fstream &fileS, const char *s, std::streamsize count)
 {
-    uint32_t dwR;
-    const auto bRes = WriteFile(hFile, lpBuffer, nNumberOfBytesToWrite, (LPDWORD)&dwR, nullptr);
-    if (lpNumberOfBytesWritten != nullptr)
-        *lpNumberOfBytesWritten = dwR;
-    //    if(dwR != nNumberOfBytesToWrite) if(Exceptions_Mask & _X_NO_FILE_WRITE) throw
-    //    std::exception(_X_NO_FILE_WRITE);
-    return bRes;
+    fileS.exceptions(std::fstream::failbit | std::fstream::badbit);
+    try
+    {
+        fileS.write(s, count);
+        return true;
+    }
+    catch (std::fstream::failure e)
+    {
+        return false;
+    }
 }
 
-BOOL FILE_SERVICE::_ReadFile(HANDLE hFile, void *lpBuffer, uint32_t nNumberOfBytesToRead, uint32_t *lpNumberOfBytesRead)
+bool FILE_SERVICE::_ReadFile(std::fstream &fileS, char *s, std::streamsize count)
 {
-    uint32_t dwR;
-    const auto bRes = ReadFile(hFile, lpBuffer, nNumberOfBytesToRead, (LPDWORD)&dwR, nullptr);
-    if (lpNumberOfBytesRead != nullptr)
-        *lpNumberOfBytesRead = dwR;
-    //    if(dwR != nNumberOfBytesToRead) if(Exceptions_Mask & _X_NO_FILE_READ) throw std::exception(_X_NO_FILE_READ);
-    return bRes;
+    fileS.exceptions(std::fstream::failbit | std::fstream::badbit);
+    try
+    {
+        fileS.read(s, count);
+        return true;
+    }
+    catch (std::fstream::failure e)
+    {
+        return false;
+    }
 }
 
 HANDLE FILE_SERVICE::_FindFirstFile(const char *lpFileName, LPWIN32_FIND_DATA lpFindFileData)
@@ -107,9 +109,9 @@ BOOL FILE_SERVICE::_FindClose(HANDLE hFindFile)
     return FindClose(hFindFile);
 }
 
-BOOL FILE_SERVICE::_FlushFileBuffers(HANDLE hFile)
+void FILE_SERVICE::_FlushFileBuffers(std::fstream &fileS)
 {
-    return FlushFileBuffers(hFile);
+    fileS.flush();
 }
 
 uint32_t FILE_SERVICE::_GetCurrentDirectory(uint32_t nBufferLength, char *lpBuffer)
@@ -135,9 +137,9 @@ std::string FILE_SERVICE::_GetExecutableDirectory()
     return "";
 }
 
-uint32_t FILE_SERVICE::_GetFileSize(HANDLE hFile, uint32_t *lpFileSizeHigh)
+std::uintmax_t FILE_SERVICE::_GetFileSize(const char *p)
 {
-    return GetFileSize(hFile, (LPDWORD)lpFileSizeHigh);
+    return std::filesystem::file_size(p);
 }
 
 BOOL FILE_SERVICE::_SetCurrentDirectory(const char *lpPathName)
@@ -170,17 +172,19 @@ BOOL FILE_SERVICE::_SetFileAttributes(const char *lpFileName, uint32_t dwFileAtt
 
 INIFILE *FILE_SERVICE::CreateIniFile(const char *file_name, bool fail_if_exist)
 {
-    auto *fh = _CreateFile(file_name, GENERIC_READ, 0, OPEN_EXISTING);
-    if (fh != INVALID_HANDLE_VALUE && fail_if_exist)
+    auto fileS = _CreateFile(file_name, std::ios::binary | std::ios::in);
+    if (fileS.is_open() && fail_if_exist)
     {
-        _CloseHandle(fh);
+        _CloseFile(fileS);
         return nullptr;
     }
-    _CloseHandle(fh);
-    fh = _CreateFile(file_name, GENERIC_WRITE, 0, CREATE_NEW);
-    if (fh == INVALID_HANDLE_VALUE)
+    _CloseFile(fileS);
+    fileS = _CreateFile(file_name, std::ios::binary | std::ios::out);
+    if (!fileS.is_open())
+    {
         return nullptr;
-    _CloseHandle(fh);
+    }
+    _CloseFile(fileS);
     return OpenIniFile(file_name);
 }
 
@@ -277,12 +281,16 @@ BOOL FILE_SERVICE::LoadFile(const char *file_name, char **ppBuffer, uint32_t *dw
     if (ppBuffer == nullptr)
         return false;
 
-    auto *const hFile = _CreateFile(file_name);
-    if (INVALID_HANDLE_VALUE == hFile)
+    auto fileS = fio->_CreateFile(file_name, std::ios::binary | std::ios::in);
+    if (!fileS.is_open())
+    {
         return false;
-    const auto dwLowSize = _GetFileSize(hFile, nullptr);
+    }
+    const auto dwLowSize = _GetFileSize(file_name);
     if (dwSize)
+    {
         *dwSize = dwLowSize;
+    }
     if (dwLowSize == 0)
     {
         *ppBuffer = nullptr;
@@ -290,8 +298,8 @@ BOOL FILE_SERVICE::LoadFile(const char *file_name, char **ppBuffer, uint32_t *dw
     }
 
     *ppBuffer = new char[dwLowSize];
-    _ReadFile(hFile, *ppBuffer, dwLowSize, nullptr);
-    _CloseHandle(hFile);
+    _ReadFile(fileS, *ppBuffer, dwLowSize);
+    _CloseFile(fileS);
     return true;
 }
 

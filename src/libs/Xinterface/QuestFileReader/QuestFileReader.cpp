@@ -221,19 +221,18 @@ bool QUEST_FILE_READER::InitQuestsQuery()
     {
         for (long n = 0; n < m_aQuestFileName.size(); n++)
         {
-            auto *const hfile =
-                fio->_CreateFile(m_aQuestFileName[n].c_str(), GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING);
-            if (hfile == INVALID_HANDLE_VALUE)
+            auto fileS = fio->_CreateFile(m_aQuestFileName[n].c_str(), std::ios::binary | std::ios::in);
+            if (!fileS.is_open())
             {
                 core.Trace("WARNING! Can`t open quest log file %s", m_aQuestFileName[n].c_str());
                 continue;
             }
 
-            const auto filesize = fio->_GetFileSize(hfile, nullptr);
+            const auto filesize = fio->_GetFileSize(m_aQuestFileName[n].c_str());
             if (filesize == 0)
             {
                 core.Trace("Empty quest log file %s", m_aQuestFileName[n].c_str());
-                fio->_CloseHandle(hfile);
+                fio->_CloseFile(fileS);
                 continue;
             }
 
@@ -253,18 +252,19 @@ bool QUEST_FILE_READER::InitQuestsQuery()
                 throw std::exception("allocate memory error");
             }
 
-            uint32_t readsize;
-            if (fio->_ReadFile(hfile, &m_pFileBuf[foffset], filesize, &readsize) == FALSE || readsize != filesize)
+            if (!fio->_ReadFile(fileS, &m_pFileBuf[foffset], filesize))
             {
                 core.Trace("Can`t read quest log file: %s", m_aQuestFileName[n].c_str());
             }
-            fio->_CloseHandle(hfile);
-            m_pFileBuf[foffset + readsize] = 0;
+            fio->_CloseFile(fileS);
+            m_pFileBuf[foffset + filesize] = 0;
         }
     }
 
     if (m_pFileBuf == nullptr || m_pFileBuf[0] == 0)
+    {
         return false;
+    }
     return true;
 }
 
@@ -466,41 +466,46 @@ void QUEST_FILE_READER::FillUserDataList(char *sStrData, std::vector<UserData> &
 void QUEST_FILE_READER::SetQuestTextFileName(const char *pcFileName)
 {
     if (pcFileName == nullptr || pcFileName[0] == 0)
+    {
         return;
+    }
 
     // check for already included:
     for (long n = 0; n < m_aQuestFileName.size(); n++)
+    {
         if (m_aQuestFileName[n] == pcFileName)
+        {
             return;
+        }
+    }
 
     m_aQuestFileName.push_back(std::string(pcFileName));
 
     // open this file
-    const HANDLE hfile = fio->_CreateFile(pcFileName, GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING);
-    if (hfile == INVALID_HANDLE_VALUE)
+    auto fileS = fio->_CreateFile(pcFileName, std::ios::binary | std::ios::in);
+    if (!fileS.is_open())
     {
         core.Trace("WARNING! Can`t open quest log file %s", pcFileName);
         return;
     }
     // its size
-    const uint32_t filesize = fio->_GetFileSize(hfile, nullptr);
+    const uint32_t filesize = fio->_GetFileSize(pcFileName);
     if (filesize == 0)
     {
         core.Trace("Empty quest log file %s", pcFileName);
-        fio->_CloseHandle(hfile);
+        fio->_CloseFile(fileS);
         return;
     }
     // create a buffer for it
     char *pBuf = new char[filesize + 1];
     Assert(pBuf);
     // read into this buffer from a file
-    uint32_t readsize;
-    if (fio->_ReadFile(hfile, pBuf, filesize, &readsize) == FALSE || readsize != filesize)
+    if (!fio->_ReadFile(fileS, pBuf, filesize))
     {
         core.Trace("Can`t read quest log file: %s", pcFileName);
     }
-    fio->_CloseHandle(hfile);
-    pBuf[readsize] = 0;
+    fio->_CloseFile(fileS);
+    pBuf[filesize] = 0;
 
     AddQuestFromBuffer(pBuf);
     delete[] pBuf;

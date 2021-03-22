@@ -199,8 +199,7 @@ void COMPILER::SetProgramDirectory(const char *dir_name)
 // load file into memory
 char *COMPILER::LoadFile(const char *file_name, uint32_t &file_size, bool bFullPath)
 {
-    HANDLE fh;
-    uint32_t dwR;
+    const char *fName;
     char buffer[MAX_PATH];
 
     if (!bFullPath)
@@ -218,7 +217,9 @@ char *COMPILER::LoadFile(const char *file_name, uint32_t &file_size, bool bFullP
             strcat_s(buffer, file_name);
         }
         else
+        {
             strcpy_s(buffer, file_name);
+        }
     }
 
     file_size = 0;
@@ -239,29 +240,28 @@ char *COMPILER::LoadFile(const char *file_name, uint32_t &file_size, bool bFullP
         }
         buffer[m] = 0;*/
 
-        fh = fio->_CreateFile(file_name, GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING);
+        fName = file_name;
     }
     else
-        fh = fio->_CreateFile(buffer, GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING);
-
-    if (fh == INVALID_HANDLE_VALUE)
-        return nullptr;
-    const auto fsize = fio->_GetFileSize(fh, nullptr);
-    if (fsize == INVALID_FILE_SIZE)
     {
-        fio->_CloseHandle(fh);
+        fName = &buffer[0];
+    }
+
+    auto fileS = fio->_CreateFile(fName, std::ios::binary | std::ios::in);
+    if (!fileS.is_open())
+    {
         return nullptr;
     }
+    const auto fsize = fio->_GetFileSize(fName);
 
     auto *const pData = static_cast<char *>(new char[fsize + 1]);
-    fio->_ReadFile(fh, pData, fsize, &dwR);
-    if (fsize != dwR)
+    if (!fio->_ReadFile(fileS, pData, fsize))
     {
         delete[] pData;
-        fio->_CloseHandle(fh);
+        fio->_CloseFile(fileS);
         return nullptr;
     }
-    fio->_CloseHandle(fh);
+    fio->_CloseFile(fileS);
     file_size = fsize;
     pData[fsize] = 0;
     return pData;
@@ -5969,13 +5969,13 @@ void COMPILER::SaveDataDebug(char *data_PTR, ...)
 {
     char LogBuffer[MAX_PATH + MAX_PATH];
     if (data_PTR == nullptr)
+    {
         return;
-    // fio->_SetFilePointer(hSaveFileFileHandle,0,0,FILE_END);
+    }
     va_list args;
     va_start(args, data_PTR);
     _vsnprintf_s(LogBuffer, sizeof(LogBuffer) - 4, data_PTR, args);
     strcat_s(LogBuffer, "\x0d\x0a");
-    // fio->_WriteFile(hSaveFileFileHandle,LogBuffer,strlen(LogBuffer),&bytes);
     va_end(args);
 }
 
@@ -6186,17 +6186,16 @@ uint32_t COMPILER::ReadVDword()
     uint16_t nwv;
     uint32_t v;
     ReadData(&nbv, 1);
-    // fio->_ReadFile(hSaveFileFileHandle,&nbv,1,&bytes);
     if (nbv < 0xfe)
+    {
         return nbv;
+    }
     if (nbv == 0xfe)
     {
         ReadData(&nwv, sizeof(nwv));
-        // fio->_ReadFile(hSaveFileFileHandle,&nwv,sizeof(nwv),&bytes);
         return nwv;
     }
     ReadData(&v, sizeof(uint32_t));
-    // fio->_ReadFile(hSaveFileFileHandle,&v,sizeof(DWORD),&bytes);
     return v;
 }
 
@@ -6537,7 +6536,7 @@ bool COMPILER::OnLoad()
     return true;
 }
 
-bool COMPILER::SaveState(HANDLE fh)
+bool COMPILER::SaveState(std::fstream &fileS)
 {
     uint32_t n;
     VARINFO vi;
@@ -6562,7 +6561,7 @@ bool COMPILER::SaveState(HANDLE fh)
     edh.dwExtDataOffset = 0;
     edh.dwExtDataSize = 0;
 
-    fio->_WriteFile(fh, &edh, sizeof(edh), nullptr);
+    fio->_WriteFile(fileS,  reinterpret_cast<char *>(&edh), sizeof(edh));
 
     // 1. Program Directory
     SaveString(ProgramDirectory);
@@ -6610,9 +6609,9 @@ bool COMPILER::SaveState(HANDLE fh)
         compress2((Bytef *)pDst, (uLongf *)&dwPackLen, (Bytef *)pBuffer, dwCurPointer, Z_BEST_COMPRESSION);
         RDTSC_E(dw2);
 
-        fio->_WriteFile(fh, &dwCurPointer, sizeof(dwCurPointer), nullptr);
-        fio->_WriteFile(fh, &dwPackLen, sizeof(dwPackLen), nullptr);
-        fio->_WriteFile(fh, pDst, dwPackLen, nullptr);
+        fio->_WriteFile(fileS, reinterpret_cast<char *>(&dwCurPointer), sizeof(dwCurPointer));
+        fio->_WriteFile(fileS, reinterpret_cast<char *>(&dwPackLen), sizeof(dwPackLen));
+        fio->_WriteFile(fileS, pDst, dwPackLen);
 
         delete[] pDst;
     }
@@ -6623,29 +6622,27 @@ bool COMPILER::SaveState(HANDLE fh)
     return true;
 }
 
-bool COMPILER::LoadState(HANDLE fh)
+bool COMPILER::LoadState(std::fstream &fileS)
 {
     uint32_t n;
     char *pString;
-
-    if (fh == INVALID_HANDLE_VALUE)
-        return false;
-    // hSaveFileFileHandle = fh;
 
     delete pBuffer;
     pBuffer = nullptr;
 
     EXTDATA_HEADER exdh;
-    fio->_ReadFile(fh, &exdh, sizeof(exdh), nullptr);
+    fio->_ReadFile(fileS, reinterpret_cast<char *>(&exdh), sizeof(exdh));
 
     uint32_t dwPackLen;
-    fio->_ReadFile(fh, &dwMaxSize, sizeof(dwMaxSize), nullptr);
-    fio->_ReadFile(fh, &dwPackLen, sizeof(dwPackLen), nullptr);
+    fio->_ReadFile(fileS, reinterpret_cast<char *>(&dwMaxSize), sizeof(dwMaxSize));
+    fio->_ReadFile(fileS, reinterpret_cast<char *>(&dwPackLen), sizeof(dwPackLen));
     if (dwPackLen == 0 || dwPackLen > 0x8000000 || dwMaxSize == 0 || dwMaxSize > 0x8000000)
+    {
         return false;
+    }
     char *pCBuffer = new char[dwPackLen];
     pBuffer = new char[dwMaxSize];
-    fio->_ReadFile(fh, static_cast<void *>(pCBuffer), dwPackLen, nullptr);
+    fio->_ReadFile(fileS, pCBuffer, dwPackLen);
     uncompress((Bytef *)pBuffer, (uLongf *)&dwMaxSize, (Bytef *)pCBuffer, dwPackLen);
     delete[] pCBuffer;
     dwCurPointer = 0;
@@ -6795,11 +6792,13 @@ bool COMPILER::SetSaveData(const char *file_name, void *save_data, long data_siz
 {
     EXTDATA_HEADER exdh;
 
-    const HANDLE fh = fio->_CreateFile(file_name, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, OPEN_EXISTING);
-    if (fh == INVALID_HANDLE_VALUE)
+    auto fileS = fio->_CreateFile(file_name, std::ios::binary | std::ios::in | std::ios::out);
+    if (!fileS.is_open())
+    {
         return false;
+    }
 
-    const uint32_t dwFileSize = fio->_GetFileSize(fh, nullptr);
+    const uint32_t dwFileSize = fio->_GetFileSize(file_name);
     auto *pVDat = static_cast<VDATA *>(core.GetScriptVariable("savefile_info"));
     if (pVDat && pVDat->GetString())
         sprintf_s(exdh.sFileInfo, sizeof(exdh.sFileInfo), "%s", pVDat->GetString());
@@ -6808,16 +6807,16 @@ bool COMPILER::SetSaveData(const char *file_name, void *save_data, long data_siz
     exdh.dwExtDataOffset = dwFileSize;
     exdh.dwExtDataSize = data_size;
 
-    fio->_WriteFile(fh, &exdh, sizeof(exdh), nullptr);
-    fio->_SetFilePointer(fh, dwFileSize, nullptr, FILE_BEGIN);
+    fio->_WriteFile(fileS, reinterpret_cast<char *>(&exdh), sizeof(exdh));
+    fio->_SetFilePointer(fileS, dwFileSize, std::ios::beg);
 
     char *pDst = new char[data_size * 2];
     uint32_t dwPackLen = data_size * 2;
     compress2((Bytef *)pDst, (uLongf *)&dwPackLen, static_cast<Bytef *>(save_data), data_size, Z_BEST_COMPRESSION);
 
-    fio->_WriteFile(fh, &dwPackLen, sizeof(dwPackLen), nullptr);
-    fio->_WriteFile(fh, pDst, dwPackLen, nullptr);
-    fio->_CloseHandle(fh);
+    fio->_WriteFile(fileS, reinterpret_cast<char *>(&dwPackLen), sizeof(dwPackLen));
+    fio->_WriteFile(fileS, pDst, dwPackLen);
+    fio->_CloseFile(fileS);
 
     delete[] pDst;
 
@@ -6912,48 +6911,46 @@ bool COMPILER::SetSaveData(const char *file_name, void *save_data, long data_siz
 
 void *COMPILER::GetSaveData(const char *file_name, long &data_size)
 {
-    const HANDLE fh = fio->_CreateFile(file_name, GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING);
-    if (fh == INVALID_HANDLE_VALUE)
+    auto fileS = fio->_CreateFile(file_name, std::ios::binary | std::ios::in);
+    if (!fileS.is_open())
     {
         SetError("cant open save file: %s", file_name);
         return nullptr;
     }
 
-    uint32_t dwHWFileSize;
-    if (fio->_GetFileSize(fh, &dwHWFileSize) < sizeof(EXTDATA_HEADER) + sizeof(uint32_t))
+    if (fio->_GetFileSize(file_name) < sizeof(EXTDATA_HEADER) + sizeof(uint32_t))
     {
         data_size = 0;
-        fio->_CloseHandle(fh);
+        fio->_CloseFile(fileS);
         return nullptr;
     }
 
     uint64_t dw2;
     RDTSC_B(dw2);
     EXTDATA_HEADER exdh;
-    fio->_SetFilePointer(fh, 0, nullptr, FILE_BEGIN);
-    fio->_ReadFile(fh, &exdh, sizeof(exdh), nullptr);
+    fio->_ReadFile(fileS, reinterpret_cast<char *>(&exdh), sizeof(exdh));
     if (exdh.dwExtDataSize <= 0)
     {
         data_size = 0;
-        fio->_CloseHandle(fh);
+        fio->_CloseFile(fileS);
         return nullptr;
     }
 
     uint32_t dwPackLen;
-    fio->_SetFilePointer(fh, exdh.dwExtDataOffset, nullptr, FILE_BEGIN);
-    fio->_ReadFile(fh, &dwPackLen, sizeof(dwPackLen), nullptr);
+    fio->_SetFilePointer(fileS, exdh.dwExtDataOffset, std::ios::beg);
+    fio->_ReadFile(fileS, reinterpret_cast<char *>(&dwPackLen), sizeof(dwPackLen));
     if (dwPackLen == 0 || dwPackLen > 0x8000000)
     {
         data_size = 0;
-        fio->_CloseHandle(fh);
+        fio->_CloseFile(fileS);
         return nullptr;
     }
     char *pCBuffer = new char[dwPackLen];
-    fio->_ReadFile(fh, pCBuffer, dwPackLen, nullptr);
+    fio->_ReadFile(fileS, pCBuffer, dwPackLen);
     char *pBuffer = new char[exdh.dwExtDataSize];
     uint32_t dwDestLen = exdh.dwExtDataSize;
     uncompress((Bytef *)pBuffer, (uLongf *)&dwDestLen, (Bytef *)pCBuffer, dwPackLen);
-    fio->_CloseHandle(fh);
+    fio->_CloseFile(fileS);
     delete[] pCBuffer;
     RDTSC_E(dw2);
     // core.Trace("GetSaveData = %d", dw2);
@@ -7199,11 +7196,12 @@ void COMPILER::FormatDialog(char *file_name)
     char sFileName[MAX_PATH];
     char buffer[MAX_PATH];
     char sNewLine[] = {0xd, 0xa, 0};
-    uint32_t dwR;
     bool bExportString;
 
     if (file_name == nullptr)
+    {
         return;
+    }
 
     uint32_t nTxt = 0;
     uint32_t nLnk = 0;
@@ -7217,18 +7215,20 @@ void COMPILER::FormatDialog(char *file_name)
         return;
     }
 
-    const HANDLE fh = fio->_CreateFile(sFileName, GENERIC_WRITE, FILE_SHARE_READ, CREATE_ALWAYS);
-    if (fh == INVALID_HANDLE_VALUE)
+    auto fileS = fio->_CreateFile(sFileName, std::ios::binary | std::ios_base::out);
+    if (!fileS.is_open())
+    {
         return;
+    }
 
     // sprintf_s(sFileName,"PROGRAM\\%s",file_name);
     strcpy_s(sFileName, file_name);
     sFileName[strlen(sFileName) - 1] = 0;
     strcat_s(sFileName, "h");
-    const HANDLE fhH = fio->_CreateFile(sFileName, GENERIC_WRITE, FILE_SHARE_READ, CREATE_ALWAYS);
-    if (fhH == INVALID_HANDLE_VALUE)
+    auto fileS2 = fio->_CreateFile(sFileName, std::ios::binary | std::ios_base::out);
+    if (!fileS2.is_open())
     {
-        fio->_CloseHandle(fh);
+        fio->_CloseFile(fileS);
         delete pFileData;
         return;
     }
@@ -7247,12 +7247,12 @@ void COMPILER::FormatDialog(char *file_name)
     sFileName[strlen(sFileName) - 1] = 0;
     strcat_s(sFileName, "h");
 
-    fio->_WriteFile(fh, buffer, strlen(buffer), &dwR);
-    fio->_WriteFile(fh, sNewLine, strlen(sNewLine), &dwR);
+    fio->_WriteFile(fileS, buffer, strlen(buffer));
+    fio->_WriteFile(fileS, sNewLine, strlen(sNewLine));
 
     sprintf_s(buffer, "string DLG_TEXT[0] = {        ");
-    fio->_WriteFile(fhH, buffer, strlen(buffer), &dwR);
-    fio->_WriteFile(fhH, sNewLine, strlen(sNewLine), &dwR);
+    fio->_WriteFile(fileS2, buffer, strlen(buffer));
+    fio->_WriteFile(fileS2, sNewLine, strlen(sNewLine));
 
     Token.SetProgram(pFileData, pFileData);
 
@@ -7262,7 +7262,7 @@ void COMPILER::FormatDialog(char *file_name)
         switch (Token_type)
         {
         case DOT:
-            fio->_WriteFile(fh, Token.GetData(), strlen(Token.GetData()), &dwR);
+            fio->_WriteFile(fileS, Token.GetData(), strlen(Token.GetData()));
             Token_type = Token.FormatGet();
             if (Token_type != OPEN_BRACKET)
             {
@@ -7271,7 +7271,7 @@ void COMPILER::FormatDialog(char *file_name)
                     // node text --------------------------------------------
                     if (_stricmp(Token.GetData(), "text") == 0)
                     {
-                        fio->_WriteFile(fh, Token.GetData(), strlen(Token.GetData()), &dwR);
+                        fio->_WriteFile(fileS, Token.GetData(), strlen(Token.GetData()));
 
                         // fio->_WriteFile(fhH,sNewLine,strlen(sNewLine),&dwR);
                         // sprintf_s(sFileName,"// [NODE START] ",nTxt);
@@ -7306,24 +7306,26 @@ void COMPILER::FormatDialog(char *file_name)
                                 // if(strlen(Token.GetData()) == 3 && Token.GetData()[1] <= 0x39)
                                 if (!bExportString)
                                 {
-                                    fio->_WriteFile(fh, Token.GetData(), strlen(Token.GetData()), &dwR);
+                                    fio->_WriteFile(fileS, Token.GetData(), strlen(Token.GetData()));
                                 }
                                 else
                                 {
-                                    fio->_WriteFile(fhH, Token.GetData(), strlen(Token.GetData()), &dwR);
-                                    fio->_WriteFile(fhH, ",", _countof(",") - 1, &dwR);
-                                    fio->_WriteFile(fhH, sNewLine, newline_len, &dwR);
+                                    fio->_WriteFile(fileS2, Token.GetData(), strlen(Token.GetData()));
+                                    fio->_WriteFile(fileS2, ",", _countof(",") - 1);
+                                    fio->_WriteFile(fileS2, sNewLine, newline_len);
                                     sprintf_s(sFileName, "DLG_TEXT[%d]", nTxt);
-                                    fio->_WriteFile(fh, sFileName, strlen(sFileName), &dwR);
+                                    fio->_WriteFile(fileS, sFileName, strlen(sFileName));
                                     nTxt++;
                                 }
                             }
                             else
                             {
-                                fio->_WriteFile(fh, Token.GetData(), strlen(Token.GetData()), &dwR);
+                                fio->_WriteFile(fileS, Token.GetData(), strlen(Token.GetData()));
                             }
                             if (Token_type == END_OF_PROGRAMM)
+                            {
                                 break;
+                            }
                         } while (Token_type != SEPARATOR);
                         break;
                     }
@@ -7331,30 +7333,30 @@ void COMPILER::FormatDialog(char *file_name)
             }
             if (Token.GetData())
             {
-                fio->_WriteFile(fh, Token.GetData(), strlen(Token.GetData()), &dwR);
+                fio->_WriteFile(fileS, Token.GetData(), strlen(Token.GetData()));
             }
             break;
         case UNKNOWN:
             if (Token.GetData())
             {
-                fio->_WriteFile(fh, Token.GetData(), strlen(Token.GetData()), &dwR);
+                fio->_WriteFile(fileS, Token.GetData(), strlen(Token.GetData()));
                 if (_stricmp(Token.GetData(), "link") == 0)
                 {
                     Token_type = Token.FormatGet();
-                    fio->_WriteFile(fh, Token.GetData(), strlen(Token.GetData()), &dwR);
+                    fio->_WriteFile(fileS, Token.GetData(), strlen(Token.GetData()));
                     if (Token_type == DOT)
                     {
                         Token_type = Token.FormatGet();
                         if (Token.GetData())
                         {
-                            fio->_WriteFile(fh, Token.GetData(), strlen(Token.GetData()), &dwR);
+                            fio->_WriteFile(fileS, Token.GetData(), strlen(Token.GetData()));
                         }
                         if (Token_type == UNKNOWN)
                         {
                             Token_type = Token.FormatGet();
                             if (Token.GetData())
                             {
-                                fio->_WriteFile(fh, Token.GetData(), strlen(Token.GetData()), &dwR);
+                                fio->_WriteFile(fileS, Token.GetData(), strlen(Token.GetData()));
                             }
                             if (Token_type != DOT)
                             {
@@ -7386,24 +7388,26 @@ void COMPILER::FormatDialog(char *file_name)
                                         // if(strlen(Token.GetData()) == 3 && Token.GetData()[1] <= 0x39)
                                         if (!bExportString)
                                         {
-                                            fio->_WriteFile(fh, Token.GetData(), strlen(Token.GetData()), &dwR);
+                                            fio->_WriteFile(fileS, Token.GetData(), strlen(Token.GetData()));
                                         }
                                         else
                                         {
-                                            fio->_WriteFile(fhH, Token.GetData(), strlen(Token.GetData()), &dwR);
-                                            fio->_WriteFile(fhH, ",", _countof(",") - 1, &dwR);
-                                            fio->_WriteFile(fhH, sNewLine, newline_len, &dwR);
+                                            fio->_WriteFile(fileS2, Token.GetData(), strlen(Token.GetData()));
+                                            fio->_WriteFile(fileS2, ",", _countof(",") - 1);
+                                            fio->_WriteFile(fileS2, sNewLine, newline_len);
                                             sprintf_s(sFileName, "DLG_TEXT[%d]", nTxt);
-                                            fio->_WriteFile(fh, sFileName, strlen(sFileName), &dwR);
+                                            fio->_WriteFile(fileS, sFileName, strlen(sFileName));
                                             nTxt++;
                                         }
                                     }
                                     else
                                     {
-                                        fio->_WriteFile(fh, Token.GetData(), strlen(Token.GetData()), &dwR);
+                                        fio->_WriteFile(fileS, Token.GetData(), strlen(Token.GetData()));
                                     }
                                     if (Token_type == END_OF_PROGRAMM)
+                                    {
                                         break;
+                                    }
                                 } while (Token_type != SEPARATOR);
                                 break;
                             }
@@ -7415,7 +7419,7 @@ void COMPILER::FormatDialog(char *file_name)
         default:
             if (Token.GetData())
             {
-                fio->_WriteFile(fh, Token.GetData(), strlen(Token.GetData()), &dwR);
+                fio->_WriteFile(fileS, Token.GetData(), strlen(Token.GetData()));
             }
             break;
         }
@@ -7424,14 +7428,14 @@ void COMPILER::FormatDialog(char *file_name)
     delete pFileData;
 
     sprintf_s(buffer, "};");
-    fio->_WriteFile(fhH, sNewLine, strlen(sNewLine), &dwR);
-    fio->_WriteFile(fhH, buffer, strlen(buffer), &dwR);
-    fio->_SetFilePointer(fhH, 0, nullptr, FILE_BEGIN);
+    fio->_WriteFile(fileS2, sNewLine, strlen(sNewLine));
+    fio->_WriteFile(fileS2, buffer, strlen(buffer));
+    fio->_SetFilePointer(fileS2, 0, std::ios::beg);
     sprintf_s(buffer, "string DLG_TEXT[%d] = {", nTxt);
-    fio->_WriteFile(fhH, buffer, strlen(buffer), &dwR);
+    fio->_WriteFile(fileS2, buffer, strlen(buffer));
 
-    fio->_CloseHandle(fhH);
-    fio->_CloseHandle(fh);
+    fio->_CloseFile(fileS2);
+    fio->_CloseFile(fileS);
 }
 
 void STRING_CODEC::VariableChanged()

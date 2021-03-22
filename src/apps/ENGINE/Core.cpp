@@ -4,6 +4,7 @@
 #include "controls.h"
 #include "externs.h"
 #include "SteamApi.hpp"
+#include <fstream>
 
 uint32_t dwNumberScriptCommandsExecuted = 0;
 
@@ -508,15 +509,19 @@ void CORE::ProcessRealize()
 bool CORE::SaveState(const char *file_name)
 {
     if (!file_name)
+    {
         return false;
+    }
 
-    auto *const fh = fio->_CreateFile(file_name, GENERIC_WRITE | GENERIC_READ, 0, CREATE_ALWAYS);
+    auto fileS = fio->_CreateFile(file_name, std::ios::binary | std::ios::out);
 
-    if (fh == INVALID_HANDLE_VALUE)
+    if (!fileS.is_open())
+    {
         return false;
+    }
 
-    Compiler->SaveState(fh);
-    fio->_CloseHandle(fh);
+    Compiler->SaveState(fileS);
+    fio->_CloseFile(fileS);
 
     return true;
 }
@@ -524,16 +529,20 @@ bool CORE::SaveState(const char *file_name)
 // force core to load state file at the start of next game loop, return false if no state file
 bool CORE::InitiateStateLoading(const char *file_name)
 {
-    const HANDLE fh = fio->_CreateFile(file_name, GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING);
-    if (fh == INVALID_HANDLE_VALUE)
+    auto fileS = fio->_CreateFile(file_name, std::ios::binary | std::ios::in);
+    if (!fileS.is_open())
+    {
         return false;
-    fio->_CloseHandle(fh);
+    }
+    fio->_CloseFile(fileS);
     delete State_file_name;
 
     const auto len = strlen(file_name) + 1;
     State_file_name = static_cast<char *>(new char[len]);
     if (State_file_name == nullptr)
+    {
         throw std::exception();
+    }
     strcpy_s(State_file_name, len, file_name);
     return true;
 }
@@ -541,16 +550,20 @@ bool CORE::InitiateStateLoading(const char *file_name)
 void CORE::ProcessStateLoading()
 {
     if (!State_file_name)
+    {
         return;
+    }
 
     State_loading = true;
     EraseEntities();
 
-    const HANDLE fh = fio->_CreateFile(State_file_name, GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING);
-    if (fh == INVALID_HANDLE_VALUE)
+    auto fileS = fio->_CreateFile(State_file_name, std::ios::binary | std::ios::in);
+    if (!fileS.is_open())
+    {
         return;
-    Compiler->LoadState(fh);
-    fio->_CloseHandle(fh);
+    }
+    Compiler->LoadState(fileS);
+    fio->_CloseFile(fileS);
 
     delete State_file_name;
     State_file_name = nullptr;

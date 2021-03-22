@@ -23,8 +23,8 @@ GEOM::GEOM(const char *fname, const char *lightname, GEOM_SERVICE &_srv, long fl
     auto flsz = 0;
     if (lightname != nullptr)
     {
-        auto *ltfl = srv.OpenFile(lightname);
-        flsz = srv.FileSize(ltfl);
+        auto ltfl = srv.OpenFile(lightname);
+        flsz = srv.FileSize(lightname);
         if (flsz > 0)
         {
             colData = static_cast<unsigned *>(srv.malloc(flsz));
@@ -35,7 +35,7 @@ GEOM::GEOM(const char *fname, const char *lightname, GEOM_SERVICE &_srv, long fl
         srv.CloseFile(ltfl);
     }
 
-    auto *file = srv.OpenFile(fname);
+    auto file = srv.OpenFile(fname);
     // read header
     srv.ReadFile(file, &rhead, sizeof(RDF_HEAD));
     if (rhead.version != RDF_VERSION)

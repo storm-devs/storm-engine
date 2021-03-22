@@ -524,12 +524,12 @@ void SOURCE_VIEW::ProcessMessage(uint32_t iMsg, uint32_t wParam, uint32_t lParam
 
 bool SOURCE_VIEW::OpenSourceFile(const char *_filename)
 {
-    uint32_t dwR;
-
     ShowWindow(hMain, SW_NORMAL);
 
     if (_stricmp(SourceFileName, _filename) == 0)
+    {
         return true;
+    }
 
     if (SourceFileName[0] != 0)
     {
@@ -544,10 +544,12 @@ bool SOURCE_VIEW::OpenSourceFile(const char *_filename)
     strcat_s(DirectoryName, "\\");
     strcat_s(DirectoryName, _filename);
 
-    const HANDLE fh = fio->_CreateFile(DirectoryName);
-    if (fh == INVALID_HANDLE_VALUE)
+    auto fileS = fio->_CreateFile(DirectoryName, std::ios::binary | std::ios::in);
+    if (!fileS.is_open())
+    {
         return false;
-    const uint32_t nDataSize = fio->_GetFileSize(fh, nullptr);
+    }
+    const uint32_t nDataSize = fio->_GetFileSize(DirectoryName);
 
     nTopLine = 0;
     delete pSourceFile;
@@ -556,9 +558,9 @@ bool SOURCE_VIEW::OpenSourceFile(const char *_filename)
     nActiveLine = 0xffffffff;
 
     pSourceFile = new char[nDataSize + 1];
-    fio->_ReadFile(fh, pSourceFile, nDataSize, &dwR);
-    fio->_CloseHandle(fh);
-    if (dwR != nDataSize)
+    const auto readSuccess = fio->_ReadFile(fileS, pSourceFile, nDataSize);
+    fio->_CloseFile(fileS);
+    if (!readSuccess)
     {
         delete pSourceFile;
         pSourceFile = nullptr;

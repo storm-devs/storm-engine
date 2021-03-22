@@ -569,14 +569,18 @@ long STRSERVICE::OpenUsersStringFile(const char *fileName)
 {
     int i;
     if (fileName == nullptr)
+    {
         return -1;
+    }
 
     UsersStringBlock *pPrev = nullptr;
     UsersStringBlock *pUSB;
     for (pUSB = m_pUsersBlocks; pUSB != nullptr; pUSB = pUSB->next)
     {
         if (pUSB->fileName != nullptr && _stricmp(pUSB->fileName, fileName) == 0)
+        {
             break;
+        }
         pPrev = pUSB;
     }
     if (pUSB != nullptr)
@@ -587,41 +591,46 @@ long STRSERVICE::OpenUsersStringFile(const char *fileName)
 
     pUSB = new UsersStringBlock;
     if (pUSB == nullptr)
+    {
         throw std::exception("Allocate memory error");
+    }
 
     // strings reading
     char param[512];
     sprintf_s(param, "resource\\ini\\TEXTS\\%s\\%s", m_sLanguageDir, fileName);
-    const HANDLE hfile = fio->_CreateFile(param, GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING);
-    const long filesize = fio->_GetFileSize(hfile, nullptr);
+    auto fileS = fio->_CreateFile(param, std::ios::binary | std::ios::in);
+    const long filesize = fio->_GetFileSize(param);
     if (filesize <= 0)
     {
         core.Trace("WARNING! Strings file \"%s\" not exist/or zero size", fileName);
-        fio->_CloseHandle(hfile);
+        fio->_CloseFile(fileS);
         delete pUSB;
         return -1;
     }
 
     char *fileBuf = new char[filesize + 1];
     if (fileBuf == nullptr)
+    {
         throw std::exception("Allocate memory error");
+    }
 
-    long readsize;
-    if (fio->_ReadFile(hfile, fileBuf, filesize, (uint32_t *)&readsize) == FALSE || readsize != filesize)
+    if (!fio->_ReadFile(fileS, fileBuf, filesize))
     {
         core.Trace("Can`t read strings file: %s", fileName);
-        fio->_CloseHandle(hfile);
+        fio->_CloseFile(fileS);
         STORM_DELETE(fileBuf);
         return -1;
     }
-    fio->_CloseHandle(hfile);
-    fileBuf[readsize] = 0;
+    fio->_CloseFile(fileS);
+    fileBuf[filesize] = 0;
 
     pUSB->nref = 1;
     const auto len = strlen(fileName) + 1;
     pUSB->fileName = new char[len];
     if (pUSB->fileName == nullptr)
+    {
         throw std::exception("Allocate memory error");
+    }
     memcpy(pUSB->fileName, fileName, len);
     pUSB->blockID = GetFreeUsersID();
 
@@ -631,7 +640,9 @@ long STRSERVICE::OpenUsersStringFile(const char *fileName)
     for (pUSB->nStringsQuantity = 0;; pUSB->nStringsQuantity++)
     {
         if (!GetNextUsersString(fileBuf, stridx, nullptr, nullptr))
+        {
             break;
+        }
     }
     if (pUSB->nStringsQuantity == 0)
     {
@@ -642,19 +653,27 @@ long STRSERVICE::OpenUsersStringFile(const char *fileName)
         pUSB->psStrName = new char *[pUSB->nStringsQuantity];
         pUSB->psString = new char *[pUSB->nStringsQuantity];
         if (pUSB->psStrName == nullptr || pUSB->psString == nullptr)
+        {
             throw std::exception("Allocate memory error");
+        }
         stridx = 0;
         for (i = 0; i < pUSB->nStringsQuantity; i++)
+        {
             GetNextUsersString(fileBuf, stridx, &pUSB->psStrName[i], &pUSB->psString[i]);
+        }
     }
 
     STORM_DELETE(fileBuf);
 
     pUSB->next = nullptr;
     if (pPrev == nullptr)
+    {
         m_pUsersBlocks = pUSB;
+    }
     else
+    {
         pPrev->next = pUSB;
+    }
     return pUSB->blockID;
 }
 
