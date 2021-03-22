@@ -176,7 +176,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
                 //                if (!isHold && !core.Run())
                 if (!isHold && !runResult)
                 {
-                    core.CleanUp();
                     isHold = true;
                     SendMessage(hwnd, WM_CLOSE, 0, 0L);
                 }

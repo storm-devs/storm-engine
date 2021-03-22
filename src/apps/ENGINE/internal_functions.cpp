@@ -114,7 +114,6 @@ enum FUNCTION_CODE
     FUNC_GET_DLC_DATA,
     FUNC_DLC_START_OVERLAY,
     FUNC_GET_STEAM_ENABLED,
-    FUNC_STARTBACKPROC
 };
 
 INTFUNCDESC IntFuncTable[] = {
@@ -148,7 +147,7 @@ INTFUNCDESC IntFuncTable[] = {
     "SaveVariable", VAR_INTEGER, 2, "LoadVariable", VAR_INTEGER, 2, "SetControlTreshold", TVOID, 2, "LockControl",
     TVOID, 1, "TestRef", VAR_INTEGER, 1, "SetTimeScale", TVOID, 1, "CheckFunction", VAR_INTEGER, 0, "GetEngineVersion",
     VAR_INTEGER, 1, "GetDLCenabled", VAR_INTEGER, 0, "GetDLCCount", VAR_INTEGER, 1, "GetDLCData", VAR_INTEGER, 1,
-    "DLCStartOverlay", VAR_INTEGER, 0, "GetSteamEnabled", VAR_INTEGER, 1, "StartBackProcess", TVOID};
+    "DLCStartOverlay", VAR_INTEGER, 0, "GetSteamEnabled", VAR_INTEGER};
 
 /*
 char * FuncNameTable[]=
@@ -549,34 +548,6 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         }
         pVResult = pV;
         return pV;
-        break;
-
-    case FUNC_STARTBACKPROC:
-        pV = SStack.Pop();
-        if (!pV)
-        {
-            SetError(INVALID_FA);
-            break;
-        }
-        if (pV->GetType() == VAR_STRING)
-        {
-            pV->Get(pChar);
-            if (pChar == 0)
-            {
-                SetError("invalid string argument");
-                return 0;
-            }
-            if ((function_code = FuncTab.FindFunc(pChar)) == INVALID_FUNC_CODE)
-            {
-                SetError("invalid function");
-                return 0;
-            }
-            core.StartEvent(function_code);
-        }
-        else
-        {
-            SetError("unexpected thread parameter");
-        }
         break;
 
     case FUNC_GETENGINEVERSION:
