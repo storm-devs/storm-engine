@@ -28,6 +28,8 @@ class CORE
   public:
     CONTROLS *Controls;
 
+    std::shared_ptr<spdlog::logger> tracelog;
+ 
     CORE();
     ~CORE() = default;
 

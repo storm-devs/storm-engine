@@ -463,7 +463,7 @@ void CORE::Trace(const char *format, ...)
     va_start(args, format);
     _vsnprintf_s(buffer_4k, sizeof(buffer_4k) - 4, format, args);
     va_end(args);
-    spdlog::trace(buffer_4k);
+    tracelog->info(buffer_4k);
 }
 
 //------------------------------------------------------------------------------------------------
