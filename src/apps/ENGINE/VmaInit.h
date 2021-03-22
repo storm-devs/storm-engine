@@ -138,6 +138,8 @@
 #include "../../libs/xinterface/aviplayer/aviplayer.h"
 #include "../../libs/xinterface/xinterface.h"
 
+#include "SteamApiScriptLib.hpp"
+
 // animals
 CREATE_CLASS(ANIMALS)
 
@@ -320,3 +322,7 @@ CREATE_CLASS(InfoHandler)
 CREATE_CLASS(CONTROLS_CONTAINER)
 CREATE_CLASS(InterfaceBackScene)
 CREATE_CLASS(CAviPlayer)
+
+// steam
+using steamapi::SteamApiScriptLib;
+CREATE_SCRIPTLIBRIARY(SteamApiScriptLib)

@@ -1,9 +1,10 @@
+#include "SteamApiScriptLib.hpp"
+
+#include "SteamApi.hpp"
 #include "core.h"
 #include "defines.h"
 #include "s_import_func.h"
 #include "v_s_stack.h"
-#include "SteamApi.hpp"
-#include "script_libriary.h"
 
 namespace steamapi
 {
@@ -93,7 +94,6 @@ uint32_t activateGameOverlayDlc(VS_STACK *pS)
     return IFUNCRESULT_OK;
 }
 
-
 uint32_t slSetAchievement(VS_STACK *pS)
 {
     VDATA *pStr = (VDATA *)pS->Pop();
@@ -107,7 +107,7 @@ uint32_t slSetAchievement(VS_STACK *pS)
         if (!pReturn)
             return IFUNCRESULT_FAILED;
 
-        ret = steamapi::SteamApi::getInstance().SetAchievementState(nm);
+        ret = SteamApi::getInstance().SetAchievementState(nm);
 
         pReturn->Set(ret);
         return IFUNCRESULT_OK;
@@ -129,7 +129,7 @@ uint32_t slGetAchievement(VS_STACK *pS)
         if (!pReturn)
             return IFUNCRESULT_FAILED;
 
-        ret = steamapi::SteamApi::getInstance().SetAchievementState(nm);
+        ret = SteamApi::getInstance().SetAchievementState(nm);
 
         pReturn->Set(ret);
         return IFUNCRESULT_OK;
@@ -156,7 +156,7 @@ uint32_t slSetStat(VS_STACK *pS)
         if (!pReturn)
             return IFUNCRESULT_FAILED;
 
-        ret = steamapi::SteamApi::getInstance().SetStatValue(nm, val);
+        ret = SteamApi::getInstance().SetStatValue(nm, val);
 
         pReturn->Set(ret);
         return IFUNCRESULT_OK;
@@ -177,7 +177,7 @@ uint32_t slGetStat(VS_STACK *pS)
         if (!pReturn)
             return IFUNCRESULT_FAILED;
 
-        ret = steamapi::SteamApi::getInstance().GetStatValue(nm);
+        ret = SteamApi::getInstance().GetStatValue(nm);
 
         pReturn->Set(ret);
         return IFUNCRESULT_OK;
@@ -192,7 +192,7 @@ uint32_t slStoreStats(VS_STACK *pS)
     if (!pReturn)
         return IFUNCRESULT_FAILED;
 
-    ret = steamapi::SteamApi::getInstance().StoreStats();
+    ret = SteamApi::getInstance().StoreStats();
 
     pReturn->Set(ret);
     return IFUNCRESULT_OK;
@@ -212,7 +212,7 @@ uint32_t slClearAchievement(VS_STACK *pS)
         if (!pReturn)
             return IFUNCRESULT_FAILED;
 
-        ret = steamapi::SteamApi::getInstance().ClearAchievement(nm);
+        ret = SteamApi::getInstance().ClearAchievement(nm);
 
         pReturn->Set(ret);
         return IFUNCRESULT_OK;
@@ -232,18 +232,13 @@ uint32_t slResetStats(VS_STACK *pS)
     if (!pReturn)
         return IFUNCRESULT_FAILED;
 
-    ret = steamapi::SteamApi::getInstance().ResetStats(val);
+    ret = SteamApi::getInstance().ResetStats(val);
 
     pReturn->Set(ret);
 
     return IFUNCRESULT_OK;
 }
-
-class SteamApiScriptLib : public SCRIPT_LIBRIARY
-{
-  public:
-    bool Init() override;
-};
+} // namespace
 
 bool SteamApiScriptLib::Init()
 {
@@ -325,5 +320,5 @@ bool SteamApiScriptLib::Init()
 
     return true;
 }
-} // namespace
+
 } // namespace steamapi
