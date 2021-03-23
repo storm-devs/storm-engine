@@ -109,7 +109,6 @@ enum FUNCTION_CODE
     FUNC_SETTIMESCALE,
     FUNC_CHECKFUNCTION,
     FUNC_GETENGINEVERSION,
-    FUNC_STARTBACKPROC
 };
 
 INTFUNCDESC IntFuncTable[] = {
@@ -141,8 +140,7 @@ INTFUNCDESC IntFuncTable[] = {
     "GetArraySize", VAR_INTEGER, 0, "GetTargetPlatform", VAR_STRING, 2, "GetEntity", VAR_INTEGER, 2, "FindEntity",
     VAR_INTEGER, 1, "FindEntityNext", VAR_INTEGER, 2, "GetSymbol", VAR_STRING, 2, "IsDigit", VAR_INTEGER, 2,
     "SaveVariable", VAR_INTEGER, 2, "LoadVariable", VAR_INTEGER, 2, "SetControlTreshold", TVOID, 2, "LockControl",
-    TVOID, 1, "TestRef", VAR_INTEGER, 1, "SetTimeScale", TVOID, 1, "CheckFunction", VAR_INTEGER, 0, "GetEngineVersion",
-    VAR_INTEGER, 1, "StartBackProcess", TVOID};
+    TVOID, 1, "TestRef", VAR_INTEGER, 1, "SetTimeScale", TVOID, 1, "CheckFunction", VAR_INTEGER, 0, "GetEngineVersion"};
 
 /*
 char * FuncNameTable[]=
@@ -438,34 +436,6 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
 
     switch (func_code)
     {
-    case FUNC_STARTBACKPROC:
-        pV = SStack.Pop();
-        if (!pV)
-        {
-            SetError(INVALID_FA);
-            break;
-        }
-        if (pV->GetType() == VAR_STRING)
-        {
-            pV->Get(pChar);
-            if (pChar == 0)
-            {
-                SetError("invalid string argument");
-                return 0;
-            }
-            if ((function_code = FuncTab.FindFunc(pChar)) == INVALID_FUNC_CODE)
-            {
-                SetError("invalid function");
-                return 0;
-            }
-            core.StartEvent(function_code);
-        }
-        else
-        {
-            SetError("unexpected thread parameter");
-        }
-        break;
-
     case FUNC_GETENGINEVERSION:
         pV = SStack.Push();
         pV->Set(static_cast<long>(ENGINE_SCRIPT_VERSION));

@@ -1,12 +1,17 @@
-#include <spdlog/spdlog.h>
-
 #include "externs.h"
 #include "fs.h"
 #include "s_debug.h"
 #include "SteamApi.hpp"
+#include "compiler.h"
+
+#include <crtdbg.h>
 #include <dbghelp.h>
-#include <spdlog/sinks/basic_file_sink.h>
 #include <tchar.h>
+
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/basic_file_sink.h>
+
+constexpr auto DUMP_FILENAME = "engine_dump.dmp";
 
 S_DEBUG CDebug;
 bool isHold = false;
@@ -41,18 +46,37 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
         return 0;
     }
 
+
+    fio = &File_Service;
+    //_VSYSTEM_API = &System_Api;
+
     /* Init stash */
     create_directories(fs::GetLogsPath());
     create_directories(fs::GetSaveDataPath());
 
-    /* Init system log */
-    const auto log_path = fs::GetLogsPath() / "system.log";
-    const auto system_log = spdlog::basic_logger_mt("system", log_path.string(), true);
-    set_default_logger(system_log);
-    system_log->set_level(spdlog::level::trace);
+     /* Delete old dump file */
+    std::filesystem::path log_path = fs::GetStashPath() / std::filesystem::u8path(DUMP_FILENAME);
+    fio->_DeleteFile(log_path.string().c_str());
 
-    fio = &File_Service;
-    //_VSYSTEM_API = &System_Api;
+    /* Init system log */
+    log_path = fs::GetLogsPath() / std::filesystem::u8path("system.log");
+    fio->_DeleteFile(log_path.string().c_str());
+    core.tracelog = spdlog::basic_logger_mt("system", log_path.string(), true);
+    spdlog::set_default_logger(core.tracelog);
+    core.tracelog->set_level(spdlog::level::trace);
+
+    /* Init compile and error/warning logs */
+    log_path = fs::GetLogsPath() / std::filesystem::u8path(COMPILER_LOG_FILENAME);
+    fio->_DeleteFile(log_path.string().c_str());
+    core.Compiler->tracelog = spdlog::basic_logger_mt("compile", log_path.string(), true);
+    core.Compiler->tracelog->set_level(spdlog::level::trace);
+    log_path = fs::GetLogsPath() / std::filesystem::u8path(COMPILER_ERRORLOG_FILENAME);
+    fio->_DeleteFile(log_path.string().c_str());
+    core.Compiler->error_warning_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(log_path.string());
+    core.Compiler->errorlog = std::make_shared<spdlog::logger>("error", core.Compiler->error_warning_sink);
+    core.Compiler->errorlog->set_level(spdlog::level::trace);
+    core.Compiler->warninglog = std::make_shared<spdlog::logger>("warning", core.Compiler->error_warning_sink);
+    core.Compiler->warninglog->set_level(spdlog::level::trace);
 
     /* Read config */
     uint32_t dwMaxFPS = 0;
@@ -66,7 +90,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
         auto bAcceleration = ini->GetLong(nullptr, "Acceleration", 0) == 1;
         if (!ini->GetLong(nullptr, "logs", 0))
         {
-            system_log->set_level(spdlog::level::off);
+            core.tracelog->set_level(spdlog::level::off);
         }
         if (ini->GetLong(nullptr, "Steam", 1) != 0)
         {
@@ -138,7 +162,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
                 //                if (!isHold && !core.Run())
                 if (!isHold && !runResult)
                 {
-                    core.CleanUp();
                     isHold = true;
                     SendMessage(hwnd, WM_CLOSE, 0, 0L);
                 }
@@ -226,9 +249,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 void CreateMiniDump(EXCEPTION_POINTERS *pep)
 {
+    std::filesystem::path dmpfile = fs::GetStashPath() / std::filesystem::u8path(DUMP_FILENAME);
     // Open the file
-    HANDLE hFile = CreateFile(_T("engine_dump.dmp"), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS,
-                              FILE_ATTRIBUTE_NORMAL, NULL);
+    HANDLE hFile =
+        CreateFile(dmpfile.c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
     if ((hFile != NULL) && (hFile != INVALID_HANDLE_VALUE))
     {

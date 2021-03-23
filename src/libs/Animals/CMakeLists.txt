@@ -17,7 +17,6 @@ add_library(${PROJECT_NAME} STATIC
     TFishSchools.h
     TSeagulls.cpp
     TSeagulls.h
-    ${STORM_SOURCE_DIR}/libs/Common_h/rands.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

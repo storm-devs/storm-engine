@@ -145,7 +145,7 @@ bool CXI_QUESTTEXTS::GetLineNext(int fontNum, char *&pInStr, char *buf, int bufS
     auto bYesEOL = false;
     while (*pInStr != 0)
     {
-        if (*pInStr == 0x0D || *pInStr == 0x0A)
+        if (*pInStr == '\r' || *pInStr == '\n')
             bYesEOL = true;
         else if (bYesEOL)
             break;

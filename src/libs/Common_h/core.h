@@ -17,18 +17,6 @@
 
 #define ENGINE_SCRIPT_VERSION 54128
 
-template <typename T> struct tThrd
-{
-    typedef uint32_t (__thiscall T::*PMethod)();
-    static uint32_t WINAPI Function(PVOID pParam)
-    {
-        return (((tThrd *)pParam)->pThis->*((tThrd *)pParam)->pMethod)();
-    };
-    T *pThis;
-    PMethod pMethod;
-    HANDLE Handle;
-};
-
 class COMPILER;
 struct IFUNCINFO;
 class VDATA;
@@ -40,6 +28,8 @@ class CORE
   public:
     CONTROLS *Controls;
 
+    std::shared_ptr<spdlog::logger> tracelog;
+ 
     CORE();
     ~CORE() = default;
 
@@ -161,16 +151,6 @@ class CORE
     char *EngineIniFileName();
 
     void *GetScriptVariable(const char *pVariableName, uint32_t *pdwVarIndex = nullptr);
-
-    uint32_t Process();
-    void StartEvent(uint32_t function_code);
-    void StartThread();
-    void ReleaseThread();
-
-  private:
-    std::queue<uint32_t> thrQueue;
-    tThrd<CORE> MyThread;
-    HANDLE hEvent;
 };
 // core instance
 inline CORE core;
