@@ -109,11 +109,6 @@ enum FUNCTION_CODE
     FUNC_SETTIMESCALE,
     FUNC_CHECKFUNCTION,
     FUNC_GETENGINEVERSION,
-    FUNC_GET_DLC_ENABLED,
-    FUNC_GET_DLC_COUNT,
-    FUNC_GET_DLC_DATA,
-    FUNC_DLC_START_OVERLAY,
-    FUNC_GET_STEAM_ENABLED,
 };
 
 INTFUNCDESC IntFuncTable[] = {
@@ -145,9 +140,7 @@ INTFUNCDESC IntFuncTable[] = {
     "GetArraySize", VAR_INTEGER, 0, "GetTargetPlatform", VAR_STRING, 2, "GetEntity", VAR_INTEGER, 2, "FindEntity",
     VAR_INTEGER, 1, "FindEntityNext", VAR_INTEGER, 2, "GetSymbol", VAR_STRING, 2, "IsDigit", VAR_INTEGER, 2,
     "SaveVariable", VAR_INTEGER, 2, "LoadVariable", VAR_INTEGER, 2, "SetControlTreshold", TVOID, 2, "LockControl",
-    TVOID, 1, "TestRef", VAR_INTEGER, 1, "SetTimeScale", TVOID, 1, "CheckFunction", VAR_INTEGER, 0, "GetEngineVersion",
-    VAR_INTEGER, 1, "GetDLCenabled", VAR_INTEGER, 0, "GetDLCCount", VAR_INTEGER, 1, "GetDLCData", VAR_INTEGER, 1,
-    "DLCStartOverlay", VAR_INTEGER, 0, "GetSteamEnabled", VAR_INTEGER};
+    TVOID, 1, "TestRef", VAR_INTEGER, 1, "SetTimeScale", TVOID, 1, "CheckFunction", VAR_INTEGER, 0, "GetEngineVersion"};
 
 /*
 char * FuncNameTable[]=
@@ -443,113 +436,6 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
 
     switch (func_code)
     {
-    case FUNC_GET_STEAM_ENABLED:
-        pV = SStack.Push();
-        pV->Set((long)core.isSteamEnabled());
-        pVResult = pV;
-        return pV;
-        break;
-
-    case FUNC_GET_DLC_ENABLED:
-        if (bSteam)
-        {
-            pV = SStack.Pop();
-            if (pV->GetType() == VAR_INTEGER)
-            {
-                pV->Get(TempLong1);
-            }
-            else
-            {
-                SetError("incorrect argument type");
-                break;
-            }
-            TempBool = core.isDLCActive(TempLong1);
-            pV = SStack.Push();
-            if (TempBool)
-                pV->Set((long)1);
-            else
-                pV->Set((long)0);
-        }
-        else
-        {
-            pV = SStack.Pop();
-            pV = SStack.Push();
-            pV->Set((long)1);
-        }
-        pVResult = pV;
-        return pV;
-        break;
-
-    case FUNC_GET_DLC_COUNT:
-        pV = SStack.Push();
-        if (bSteam)
-        {
-            TempLong = core.getDLCCount();
-            pV->Set(TempLong);
-        }
-        else
-        {
-            pV->Set((long)0);
-        }
-        pVResult = pV;
-        return pV;
-        break;
-
-    case FUNC_GET_DLC_DATA:
-        if (bSteam)
-        {
-            pV = SStack.Pop();
-            if (pV->GetType() == VAR_INTEGER)
-            {
-                pV->Get(TempLong1);
-            }
-            else
-            {
-                SetError("incorrect argument type");
-                break;
-            }
-            TempLong = core.getDLCDataByIndex(TempLong1);
-            pV = SStack.Push();
-            pV->Set(TempLong);
-        }
-        else
-        {
-            pV = SStack.Push();
-            pV->Set((long)0);
-        }
-        pVResult = pV;
-        return pV;
-        break;
-
-    case FUNC_DLC_START_OVERLAY:
-        if (bSteam)
-        {
-            pV = SStack.Pop();
-            if (pV->GetType() == VAR_INTEGER)
-            {
-                pV->Get(TempLong1);
-            }
-            else
-            {
-                SetError("incorrect argument type");
-                break;
-            }
-            TempBool = core.activateGameOverlayDLC(TempLong1);
-            pV = SStack.Push();
-            if (TempBool)
-                pV->Set((long)1);
-            else
-                pV->Set((long)0);
-        }
-        else
-        {
-            pV = SStack.Push();
-            pV->Set((long)0);
-        }
-        pVResult = pV;
-        return pV;
-        break;
-
     case FUNC_GETENGINEVERSION:
         pV = SStack.Push();
         pV->Set(static_cast<long>(ENGINE_SCRIPT_VERSION));

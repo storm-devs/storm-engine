@@ -37,7 +37,6 @@ set(PROJECT_SOURCES
     Sd2_h/SaveLoad.h
     Sd2_h/VAI_ObjBase.h
 
-    achievements.h
     Animation.h
     attributes.h
     Character.h

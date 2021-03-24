@@ -65,4 +65,4 @@ add_library(${PROJECT_NAME} STATIC
     WideScreen.h
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE common_h)
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h steamapi)
