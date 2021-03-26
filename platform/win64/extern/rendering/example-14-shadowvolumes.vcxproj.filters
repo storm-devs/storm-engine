@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\14-shadowvolumes\shadowvolumes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\14-shadowvolumes\fs_shadowvolume_color_lighting.sc">
+      <Filter>Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\14-shadowvolumes\fs_shadowvolume_color_texture.sc">
+      <Filter>Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\14-shadowvolumes\fs_shadowvolume_svbackblank.sc">
+      <Filter>Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\14-shadowvolumes\fs_shadowvolume_svbackcolor.sc">
+      <Filter>Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\14-shadowvolumes\fs_shadowvolume_svbacktex1.sc">
+      <Filter>Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\14-shadowvolumes\fs_shadowvolume_svbacktex2.sc">
+      <Filter>Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\14-shadowvolumes\fs_shadowvolume_svfrontblank.sc">
+      <Filter>Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\14-shadowvolumes\fs_shadowvolume_svfrontcolor.sc">
+      <Filter>Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\14-shadowvolumes\fs_shadowvolume_svfronttex1.sc">
+      <Filter>Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\14-shadowvolumes\fs_shadowvolume_svfronttex2.sc">
+      <Filter>Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\14-shadowvolumes\fs_shadowvolume_svside.sc">
+      <Filter>Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\14-shadowvolumes\fs_shadowvolume_svsideblank.sc">
+      <Filter>Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\14-shadowvolumes\fs_shadowvolume_svsidecolor.sc">
+      <Filter>Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\14-shadowvolumes\fs_shadowvolume_svsidetex.sc">
+      <Filter>Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\14-shadowvolumes\fs_shadowvolume_texture.sc">
+      <Filter>Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\14-shadowvolumes\fs_shadowvolume_texture_lighting.sc">
+      <Filter>Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\14-shadowvolumes\vs_shadowvolume_color_lighting.sc">
+      <Filter>Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\14-shadowvolumes\vs_shadowvolume_color_texture.sc">
+      <Filter>Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\14-shadowvolumes\vs_shadowvolume_svback.sc">
+      <Filter>Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\14-shadowvolumes\vs_shadowvolume_svfront.sc">
+      <Filter>Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\14-shadowvolumes\vs_shadowvolume_svside.sc">
+      <Filter>Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\14-shadowvolumes\vs_shadowvolume_texture.sc">
+      <Filter>Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\14-shadowvolumes\vs_shadowvolume_texture_lighting.sc">
+      <Filter>Shader Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Source\storm-engine\extern\rendering\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\14-shadowvolumes\varying.def.sc">
+      <Filter>Shader Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Shader Files">
+      <UniqueIdentifier>{5716D21B-23AB-31AC-9FBA-9A845C1B550F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{D270B47B-1C4E-327F-AD9D-6B10CA9C257F}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

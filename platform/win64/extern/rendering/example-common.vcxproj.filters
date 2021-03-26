@@ -1,0 +1,324 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\debugdraw\debugdraw.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\entry\cmd.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\entry\dialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\entry\entry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\entry\entry_android.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\entry\entry_glfw.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\entry\entry_html5.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\entry\entry_noop.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\entry\entry_sdl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\entry\entry_windows.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\entry\entry_x11.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\entry\input.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\font\font_manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\font\text_buffer_manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\font\text_metrics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\font\utf8.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\imgui\imgui.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\nanovg\nanovg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\nanovg\nanovg_bgfx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\ps\particle_system.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\bgfx_utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\bounds.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\cube_atlas.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\example-glue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\debugdraw\debugdraw.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\debugdraw\fs_debugdraw_fill.bin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\debugdraw\fs_debugdraw_fill_lit.bin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\debugdraw\fs_debugdraw_fill_texture.bin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\debugdraw\fs_debugdraw_lines.bin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\debugdraw\fs_debugdraw_lines_stipple.bin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\debugdraw\vs_debugdraw_fill.bin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\debugdraw\vs_debugdraw_fill_lit.bin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\debugdraw\vs_debugdraw_fill_lit_mesh.bin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\debugdraw\vs_debugdraw_fill_mesh.bin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\debugdraw\vs_debugdraw_fill_texture.bin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\debugdraw\vs_debugdraw_lines.bin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\debugdraw\vs_debugdraw_lines_stipple.bin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\entry\cmd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\entry\dbg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\entry\dialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\entry\entry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\entry\entry_p.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\entry\input.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\font\font_manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\font\fs_font_basic.bin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\font\fs_font_distance_field.bin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\font\fs_font_distance_field_subpixel.bin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\font\text_buffer_manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\font\text_metrics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\font\utf8.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\font\vs_font_basic.bin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\font\vs_font_distance_field.bin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\font\vs_font_distance_field_subpixel.bin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\imgui\droidsans.ttf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\imgui\fs_imgui_color.bin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\imgui\fs_imgui_cubemap.bin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\imgui\fs_imgui_image.bin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\imgui\fs_imgui_image_swizz.bin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\imgui\fs_imgui_latlong.bin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\imgui\fs_imgui_texture.bin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\imgui\fs_ocornut_imgui.bin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\imgui\icons_font_awesome.ttf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\imgui\icons_kenney.ttf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\imgui\imgui.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\imgui\roboto_regular.ttf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\imgui\robotomono_regular.ttf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\imgui\vs_imgui_color.bin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\imgui\vs_imgui_cubemap.bin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\imgui\vs_imgui_image.bin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\imgui\vs_imgui_latlong.bin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\imgui\vs_imgui_texture.bin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\imgui\vs_ocornut_imgui.bin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\nanovg\fontstash.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\nanovg\fs_nanovg_fill.bin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\nanovg\nanovg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\nanovg\nanovg_bgfx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\nanovg\vs_nanovg_fill.bin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\ps\fs_particle.bin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\ps\particle_system.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\ps\vs_particle.bin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\aviwriter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\bgfx_utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\bounds.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\cube_atlas.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\packrect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Source\storm-engine\extern\rendering\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\debugdraw\fs_debugdraw_fill.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\debugdraw\fs_debugdraw_fill_lit.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\debugdraw\fs_debugdraw_fill_texture.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\debugdraw\fs_debugdraw_lines.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\debugdraw\fs_debugdraw_lines_stipple.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\debugdraw\varying.def.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\debugdraw\vs_debugdraw_fill.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\debugdraw\vs_debugdraw_fill_lit.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\debugdraw\vs_debugdraw_fill_lit_mesh.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\debugdraw\vs_debugdraw_fill_mesh.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\debugdraw\vs_debugdraw_fill_texture.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\debugdraw\vs_debugdraw_lines.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\debugdraw\vs_debugdraw_lines_stipple.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\font\fs_font_basic.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\font\fs_font_distance_field.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\font\fs_font_distance_field_subpixel.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\font\varying.def.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\font\vs_font_basic.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\font\vs_font_distance_field.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\font\vs_font_distance_field_subpixel.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\imgui\fs_imgui_color.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\imgui\fs_imgui_cubemap.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\imgui\fs_imgui_image.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\imgui\fs_imgui_image_swizz.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\imgui\fs_imgui_latlong.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\imgui\fs_imgui_texture.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\imgui\fs_ocornut_imgui.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\imgui\varying.def.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\imgui\vs_imgui_color.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\imgui\vs_imgui_cubemap.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\imgui\vs_imgui_image.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\imgui\vs_imgui_latlong.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\imgui\vs_imgui_texture.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\imgui\vs_ocornut_imgui.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\nanovg\fs_nanovg_fill.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\nanovg\varying.def.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\nanovg\vs_nanovg_fill.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\ps\fs_particle.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\ps\varying.def.sc" />
+    <None Include="C:\Source\storm-engine\extern\rendering\bgfx\examples\common\ps\vs_particle.sc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{CDD6755F-4D0F-3B12-B32A-D47DAF79F630}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{D270B47B-1C4E-327F-AD9D-6B10CA9C257F}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

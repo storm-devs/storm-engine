@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\spirv-cross\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\spirv-cross\spirv_cfg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\spirv-cross\spirv_cpp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\spirv-cross\spirv_cross.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\spirv-cross\spirv_cross_c.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\spirv-cross\spirv_cross_parsed_ir.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\spirv-cross\spirv_cross_util.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\spirv-cross\spirv_glsl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\spirv-cross\spirv_hlsl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\spirv-cross\spirv_msl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\spirv-cross\spirv_parser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\spirv-cross\spirv_reflect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\spirv-cross\GLSL.std.450.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\spirv-cross\spirv.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\spirv-cross\spirv_cross_c.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Source\storm-engine\extern\rendering\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{CDD6755F-4D0F-3B12-B32A-D47DAF79F630}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{D270B47B-1C4E-327F-AD9D-6B10CA9C257F}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

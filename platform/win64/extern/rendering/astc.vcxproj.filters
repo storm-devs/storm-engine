@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bimg\3rdparty\astc\astc_averages_and_directions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bimg\3rdparty\astc\astc_block_sizes2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bimg\3rdparty\astc\astc_color_quantize.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bimg\3rdparty\astc\astc_color_unquantize.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bimg\3rdparty\astc\astc_compress_symbolic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bimg\3rdparty\astc\astc_compute_variance.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bimg\3rdparty\astc\astc_decompress_symbolic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bimg\3rdparty\astc\astc_encoding_choice_error.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bimg\3rdparty\astc\astc_find_best_partitioning.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bimg\3rdparty\astc\astc_ideal_endpoints_and_weights.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bimg\3rdparty\astc\astc_imageblock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bimg\3rdparty\astc\astc_integer_sequence.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bimg\3rdparty\astc\astc_kmeans_partitioning.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bimg\3rdparty\astc\astc_lib.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bimg\3rdparty\astc\astc_partition_tables.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bimg\3rdparty\astc\astc_percentile_tables.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bimg\3rdparty\astc\astc_pick_best_endpoint_format.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bimg\3rdparty\astc\astc_quantization.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bimg\3rdparty\astc\astc_symbolic_physical.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bimg\3rdparty\astc\astc_weight_align.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bimg\3rdparty\astc\astc_weight_quant_xfer_tables.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bimg\3rdparty\astc\mathlib.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bimg\3rdparty\astc\softfloat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bimg\3rdparty\astc\astc_codec_internals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bimg\3rdparty\astc\astc_lib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bimg\3rdparty\astc\mathlib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bimg\3rdparty\astc\softfloat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Source\storm-engine\extern\rendering\bimg\3rdparty\astc\vectypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Source\storm-engine\extern\rendering\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{CDD6755F-4D0F-3B12-B32A-D47DAF79F630}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{D270B47B-1C4E-327F-AD9D-6B10CA9C257F}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

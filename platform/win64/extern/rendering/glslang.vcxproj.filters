@@ -1,0 +1,163 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\OGLCompilersDLL\InitializeDll.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\SPIRV\GlslangToSpv.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\SPIRV\InReadableOrder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\SPIRV\Logger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\SPIRV\SPVRemapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\SPIRV\SpvBuilder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\SPIRV\SpvPostProcess.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\SPIRV\SpvTools.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\SPIRV\disassemble.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\SPIRV\doc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\GenericCodeGen\CodeGen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\GenericCodeGen\Link.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\HLSL\hlslAttributes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\HLSL\hlslGrammar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\HLSL\hlslOpMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\HLSL\hlslParseHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\HLSL\hlslParseables.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\HLSL\hlslScanContext.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\HLSL\hlslTokenStream.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\HLSL\pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\MachineIndependent\Constant.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\MachineIndependent\InfoSink.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\MachineIndependent\Initialize.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\MachineIndependent\IntermTraverse.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\MachineIndependent\Intermediate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\MachineIndependent\ParseContextBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\MachineIndependent\ParseHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\MachineIndependent\PoolAlloc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\MachineIndependent\RemoveTree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\MachineIndependent\Scan.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\MachineIndependent\ShaderLang.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\MachineIndependent\SymbolTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\MachineIndependent\Versions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\MachineIndependent\attribute.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\MachineIndependent\glslang_tab.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\MachineIndependent\intermOut.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\MachineIndependent\iomapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\MachineIndependent\limits.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\MachineIndependent\linkValidate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\MachineIndependent\parseConst.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\MachineIndependent\pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\MachineIndependent\preprocessor\Pp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\MachineIndependent\preprocessor\PpAtom.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\MachineIndependent\preprocessor\PpContext.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\MachineIndependent\preprocessor\PpScanner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\MachineIndependent\preprocessor\PpTokens.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\MachineIndependent\propagateNoContraction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\MachineIndependent\reflection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\hlsl\stub.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Source\storm-engine\extern\rendering\bgfx\3rdparty\glslang\glslang\OSDependent\Windows\ossource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Source\storm-engine\extern\rendering\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{D270B47B-1C4E-327F-AD9D-6B10CA9C257F}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

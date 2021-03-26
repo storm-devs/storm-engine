@@ -1,0 +1,329 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{B4DFA11A-A4A2-358C-B3D7-FD60403FA965}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>x64</Platform>
+    <ProjectName>examples</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Source\storm-engine\extern\rendering\CMakeLists.txt">
+      <StdOutEncoding>UTF-8</StdOutEncoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Source/storm-engine/extern/rendering/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Source/storm-engine -BC:/Source/storm-engine/platform/win64 --check-stamp-file C:/Source/storm-engine/platform/win64/extern/rendering/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files\CMake\share\cmake-3.19\Modules\BasicConfigVersion-SameMinorVersion.cmake.in;C:\Program Files\CMake\share\cmake-3.19\Modules\CMakePackageConfigHelpers.cmake;C:\Program Files\CMake\share\cmake-3.19\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.19\Modules\FindGit.cmake;C:\Program Files\CMake\share\cmake-3.19\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.19\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.19\Modules\GNUInstallDirs.cmake;C:\Program Files\CMake\share\cmake-3.19\Modules\WriteBasicConfigVersionFile.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\astc-codec.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\astc.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\dear-imgui.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\edtaa3.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\etc1.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\etc2.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\fcpp.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\glsl-optimizer.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\glslang.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\iqa.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\libsquish.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\meshoptimizer.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\nvtt.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\pvrtc.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\spirv-cross.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\spirv-tools.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\webgpu.cmake;C:\Source\storm-engine\extern\rendering\cmake\Config.cmake.in;C:\Source\storm-engine\extern\rendering\cmake\bgfx.cmake;C:\Source\storm-engine\extern\rendering\cmake\bimg.cmake;C:\Source\storm-engine\extern\rendering\cmake\bx.cmake;C:\Source\storm-engine\extern\rendering\cmake\examples.cmake;C:\Source\storm-engine\extern\rendering\cmake\shared.cmake;C:\Source\storm-engine\extern\rendering\cmake\tools.cmake;C:\Source\storm-engine\extern\rendering\cmake\tools\geometryc.cmake;C:\Source\storm-engine\extern\rendering\cmake\tools\geometryv.cmake;C:\Source\storm-engine\extern\rendering\cmake\tools\shaderc.cmake;C:\Source\storm-engine\extern\rendering\cmake\tools\texturec.cmake;C:\Source\storm-engine\extern\rendering\cmake\tools\texturev.cmake;C:\Source\storm-engine\extern\rendering\cmake\util\ConfigureDebugging.cmake;C:\Source\storm-engine\extern\rendering\cmake\version.cmake;C:\Source\storm-engine\extern\rendering\generated\bounds.cpp.in;C:\Source\storm-engine\extern\rendering\generated\shader_spirv.cpp.in;C:\Source\storm-engine\extern\rendering\generated\vertexlayout.cpp.in;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Source\storm-engine\platform\win64\extern\rendering\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Source/storm-engine/extern/rendering/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Source/storm-engine -BC:/Source/storm-engine/platform/win64 --check-stamp-file C:/Source/storm-engine/platform/win64/extern/rendering/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Program Files\CMake\share\cmake-3.19\Modules\BasicConfigVersion-SameMinorVersion.cmake.in;C:\Program Files\CMake\share\cmake-3.19\Modules\CMakePackageConfigHelpers.cmake;C:\Program Files\CMake\share\cmake-3.19\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.19\Modules\FindGit.cmake;C:\Program Files\CMake\share\cmake-3.19\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.19\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.19\Modules\GNUInstallDirs.cmake;C:\Program Files\CMake\share\cmake-3.19\Modules\WriteBasicConfigVersionFile.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\astc-codec.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\astc.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\dear-imgui.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\edtaa3.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\etc1.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\etc2.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\fcpp.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\glsl-optimizer.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\glslang.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\iqa.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\libsquish.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\meshoptimizer.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\nvtt.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\pvrtc.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\spirv-cross.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\spirv-tools.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\webgpu.cmake;C:\Source\storm-engine\extern\rendering\cmake\Config.cmake.in;C:\Source\storm-engine\extern\rendering\cmake\bgfx.cmake;C:\Source\storm-engine\extern\rendering\cmake\bimg.cmake;C:\Source\storm-engine\extern\rendering\cmake\bx.cmake;C:\Source\storm-engine\extern\rendering\cmake\examples.cmake;C:\Source\storm-engine\extern\rendering\cmake\shared.cmake;C:\Source\storm-engine\extern\rendering\cmake\tools.cmake;C:\Source\storm-engine\extern\rendering\cmake\tools\geometryc.cmake;C:\Source\storm-engine\extern\rendering\cmake\tools\geometryv.cmake;C:\Source\storm-engine\extern\rendering\cmake\tools\shaderc.cmake;C:\Source\storm-engine\extern\rendering\cmake\tools\texturec.cmake;C:\Source\storm-engine\extern\rendering\cmake\tools\texturev.cmake;C:\Source\storm-engine\extern\rendering\cmake\util\ConfigureDebugging.cmake;C:\Source\storm-engine\extern\rendering\cmake\version.cmake;C:\Source\storm-engine\extern\rendering\generated\bounds.cpp.in;C:\Source\storm-engine\extern\rendering\generated\shader_spirv.cpp.in;C:\Source\storm-engine\extern\rendering\generated\vertexlayout.cpp.in;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Source\storm-engine\platform\win64\extern\rendering\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule C:/Source/storm-engine/extern/rendering/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Source/storm-engine -BC:/Source/storm-engine/platform/win64 --check-stamp-file C:/Source/storm-engine/platform/win64/extern/rendering/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Program Files\CMake\share\cmake-3.19\Modules\BasicConfigVersion-SameMinorVersion.cmake.in;C:\Program Files\CMake\share\cmake-3.19\Modules\CMakePackageConfigHelpers.cmake;C:\Program Files\CMake\share\cmake-3.19\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.19\Modules\FindGit.cmake;C:\Program Files\CMake\share\cmake-3.19\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.19\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.19\Modules\GNUInstallDirs.cmake;C:\Program Files\CMake\share\cmake-3.19\Modules\WriteBasicConfigVersionFile.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\astc-codec.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\astc.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\dear-imgui.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\edtaa3.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\etc1.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\etc2.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\fcpp.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\glsl-optimizer.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\glslang.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\iqa.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\libsquish.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\meshoptimizer.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\nvtt.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\pvrtc.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\spirv-cross.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\spirv-tools.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\webgpu.cmake;C:\Source\storm-engine\extern\rendering\cmake\Config.cmake.in;C:\Source\storm-engine\extern\rendering\cmake\bgfx.cmake;C:\Source\storm-engine\extern\rendering\cmake\bimg.cmake;C:\Source\storm-engine\extern\rendering\cmake\bx.cmake;C:\Source\storm-engine\extern\rendering\cmake\examples.cmake;C:\Source\storm-engine\extern\rendering\cmake\shared.cmake;C:\Source\storm-engine\extern\rendering\cmake\tools.cmake;C:\Source\storm-engine\extern\rendering\cmake\tools\geometryc.cmake;C:\Source\storm-engine\extern\rendering\cmake\tools\geometryv.cmake;C:\Source\storm-engine\extern\rendering\cmake\tools\shaderc.cmake;C:\Source\storm-engine\extern\rendering\cmake\tools\texturec.cmake;C:\Source\storm-engine\extern\rendering\cmake\tools\texturev.cmake;C:\Source\storm-engine\extern\rendering\cmake\util\ConfigureDebugging.cmake;C:\Source\storm-engine\extern\rendering\cmake\version.cmake;C:\Source\storm-engine\extern\rendering\generated\bounds.cpp.in;C:\Source\storm-engine\extern\rendering\generated\shader_spirv.cpp.in;C:\Source\storm-engine\extern\rendering\generated\vertexlayout.cpp.in;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Source\storm-engine\platform\win64\extern\rendering\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule C:/Source/storm-engine/extern/rendering/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Source/storm-engine -BC:/Source/storm-engine/platform/win64 --check-stamp-file C:/Source/storm-engine/platform/win64/extern/rendering/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Program Files\CMake\share\cmake-3.19\Modules\BasicConfigVersion-SameMinorVersion.cmake.in;C:\Program Files\CMake\share\cmake-3.19\Modules\CMakePackageConfigHelpers.cmake;C:\Program Files\CMake\share\cmake-3.19\Modules\CMakeParseArguments.cmake;C:\Program Files\CMake\share\cmake-3.19\Modules\FindGit.cmake;C:\Program Files\CMake\share\cmake-3.19\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.19\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.19\Modules\GNUInstallDirs.cmake;C:\Program Files\CMake\share\cmake-3.19\Modules\WriteBasicConfigVersionFile.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\astc-codec.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\astc.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\dear-imgui.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\edtaa3.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\etc1.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\etc2.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\fcpp.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\glsl-optimizer.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\glslang.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\iqa.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\libsquish.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\meshoptimizer.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\nvtt.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\pvrtc.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\spirv-cross.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\spirv-tools.cmake;C:\Source\storm-engine\extern\rendering\cmake\3rdparty\webgpu.cmake;C:\Source\storm-engine\extern\rendering\cmake\Config.cmake.in;C:\Source\storm-engine\extern\rendering\cmake\bgfx.cmake;C:\Source\storm-engine\extern\rendering\cmake\bimg.cmake;C:\Source\storm-engine\extern\rendering\cmake\bx.cmake;C:\Source\storm-engine\extern\rendering\cmake\examples.cmake;C:\Source\storm-engine\extern\rendering\cmake\shared.cmake;C:\Source\storm-engine\extern\rendering\cmake\tools.cmake;C:\Source\storm-engine\extern\rendering\cmake\tools\geometryc.cmake;C:\Source\storm-engine\extern\rendering\cmake\tools\geometryv.cmake;C:\Source\storm-engine\extern\rendering\cmake\tools\shaderc.cmake;C:\Source\storm-engine\extern\rendering\cmake\tools\texturec.cmake;C:\Source\storm-engine\extern\rendering\cmake\tools\texturev.cmake;C:\Source\storm-engine\extern\rendering\cmake\util\ConfigureDebugging.cmake;C:\Source\storm-engine\extern\rendering\cmake\version.cmake;C:\Source\storm-engine\extern\rendering\generated\bounds.cpp.in;C:\Source\storm-engine\extern\rendering\generated\shader_spirv.cpp.in;C:\Source\storm-engine\extern\rendering\generated\vertexlayout.cpp.in;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Source\storm-engine\platform\win64\extern\rendering\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\ZERO_CHECK.vcxproj">
+      <Project>{61DAB0E7-5D7C-3C0E-AAF2-568B1951580E}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-00-helloworld.vcxproj">
+      <Project>{12DA21DA-C628-3D01-B9FE-251CE298FCE8}</Project>
+      <Name>example-00-helloworld</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-01-cubes.vcxproj">
+      <Project>{872C34F5-1D20-32CB-8F1B-E9FD2B310524}</Project>
+      <Name>example-01-cubes</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-02-metaballs.vcxproj">
+      <Project>{D815C34D-8BFD-3C80-B461-67EAF2A2AB07}</Project>
+      <Name>example-02-metaballs</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-03-raymarch.vcxproj">
+      <Project>{8E994C89-CA52-3A35-9957-F142BA005F00}</Project>
+      <Name>example-03-raymarch</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-04-mesh.vcxproj">
+      <Project>{7F8311D3-4EAB-3E8B-BD61-4C1014906E8C}</Project>
+      <Name>example-04-mesh</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-05-instancing.vcxproj">
+      <Project>{6565A21C-D09B-35BD-AAFF-6A57A6296965}</Project>
+      <Name>example-05-instancing</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-06-bump.vcxproj">
+      <Project>{F4B63378-EACC-3D6A-9C69-60FE48BFA9C0}</Project>
+      <Name>example-06-bump</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-07-callback.vcxproj">
+      <Project>{75E2E29A-1FF5-38C0-BAD7-1752FB19DC7D}</Project>
+      <Name>example-07-callback</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-08-update.vcxproj">
+      <Project>{D46B7290-EA0A-32D6-B067-65C010672482}</Project>
+      <Name>example-08-update</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-09-hdr.vcxproj">
+      <Project>{B08ED2BE-84C9-3CFF-8D05-E8A95FCFD00C}</Project>
+      <Name>example-09-hdr</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-10-font.vcxproj">
+      <Project>{DF966733-E34F-39B1-ABE0-AC0D83A83762}</Project>
+      <Name>example-10-font</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-11-fontsdf.vcxproj">
+      <Project>{24E85C35-6B44-3E88-9BE6-C21F5D3CF986}</Project>
+      <Name>example-11-fontsdf</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-12-lod.vcxproj">
+      <Project>{08846F7F-97E1-3A3E-BA95-AF6180B87BB9}</Project>
+      <Name>example-12-lod</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-13-stencil.vcxproj">
+      <Project>{29B7C532-2BA1-3C09-928D-1C6EF9B8ED87}</Project>
+      <Name>example-13-stencil</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-14-shadowvolumes.vcxproj">
+      <Project>{EDEEA70E-E95A-3E87-A6C7-367876B83669}</Project>
+      <Name>example-14-shadowvolumes</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-15-shadowmaps-simple.vcxproj">
+      <Project>{EC2F753A-2CD6-3A72-830F-3B469D10E6C0}</Project>
+      <Name>example-15-shadowmaps-simple</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-16-shadowmaps.vcxproj">
+      <Project>{1F02431F-BD8C-3C8F-B50B-B57ABB64F3DE}</Project>
+      <Name>example-16-shadowmaps</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-17-drawstress.vcxproj">
+      <Project>{81051A12-431B-3429-8CA6-88C32733CA0A}</Project>
+      <Name>example-17-drawstress</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-18-ibl.vcxproj">
+      <Project>{275C7B7F-7374-3994-A1D0-1B1896CC578D}</Project>
+      <Name>example-18-ibl</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-19-oit.vcxproj">
+      <Project>{33BC946B-04B2-321B-9EA8-CC34B123F22A}</Project>
+      <Name>example-19-oit</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-20-nanovg.vcxproj">
+      <Project>{94807CAC-445D-3125-89C3-0688731D2DCC}</Project>
+      <Name>example-20-nanovg</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-22-windows.vcxproj">
+      <Project>{EB3CCA56-1E1B-3581-B3E8-F096FBDB13D1}</Project>
+      <Name>example-22-windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-23-vectordisplay.vcxproj">
+      <Project>{8714AC53-C476-3F83-8F46-5F13881F0153}</Project>
+      <Name>example-23-vectordisplay</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-24-nbody.vcxproj">
+      <Project>{704F26CC-84AE-32D8-8A3B-AC313797EB08}</Project>
+      <Name>example-24-nbody</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-25-c99.vcxproj">
+      <Project>{595C224D-D58C-32C1-B0FC-0214BABA0D34}</Project>
+      <Name>example-25-c99</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-26-occlusion.vcxproj">
+      <Project>{9721AC69-2504-35C9-992B-0922350425F6}</Project>
+      <Name>example-26-occlusion</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-27-terrain.vcxproj">
+      <Project>{68EBCAA8-4E2C-3FF7-AB50-E845F1446556}</Project>
+      <Name>example-27-terrain</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-28-wireframe.vcxproj">
+      <Project>{AFF730BD-BDD9-312D-9CAC-7986CA27113D}</Project>
+      <Name>example-28-wireframe</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-29-debugdraw.vcxproj">
+      <Project>{A4ECE782-ECEC-3695-845F-C16505D58187}</Project>
+      <Name>example-29-debugdraw</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-30-picking.vcxproj">
+      <Project>{B9E409F8-A45F-306F-85DE-DC921D700357}</Project>
+      <Name>example-30-picking</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-31-rsm.vcxproj">
+      <Project>{B4212B82-2D6D-331A-92E9-B916341BEE42}</Project>
+      <Name>example-31-rsm</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-32-particles.vcxproj">
+      <Project>{08349EDC-2E56-34E7-9D18-C7BE93B0B742}</Project>
+      <Name>example-32-particles</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-33-pom.vcxproj">
+      <Project>{36AE55B2-92FD-383D-9DD1-A1B5FF43CEA6}</Project>
+      <Name>example-33-pom</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-34-mvs.vcxproj">
+      <Project>{7930F5BA-9ACE-377A-B718-A36501639B4F}</Project>
+      <Name>example-34-mvs</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-35-dynamic.vcxproj">
+      <Project>{F396460E-97F6-303D-94CD-8318EF60EBB5}</Project>
+      <Name>example-35-dynamic</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-36-sky.vcxproj">
+      <Project>{D5BF12CB-0798-3100-8D73-10D95BD29B36}</Project>
+      <Name>example-36-sky</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-38-bloom.vcxproj">
+      <Project>{43DAD99B-A21A-38C1-BC98-35E9130FD552}</Project>
+      <Name>example-38-bloom</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Source\storm-engine\platform\win64\extern\rendering\example-39-assao.vcxproj">
+      <Project>{49688666-88FA-39C7-9035-6821E9FA5E38}</Project>
+      <Name>example-39-assao</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

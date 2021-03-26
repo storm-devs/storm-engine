@@ -1,3 +1,7 @@
+[submodule "extern/rendering"]
+	path = extern/rendering
+	url = https://github.com/widberg/bgfx.cmake
+
 [submodule "extern/rendering/bgfx"]
 	path = extern/rendering/bgfx
 	url = https://github.com/bkaradzic/bgfx
