@@ -118,7 +118,8 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <PostBuildEvent>
-      <Message></Message>
+      <Message>
+      </Message>
       <Command>setlocal
 "C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different C:/Source/storm-engine/extern/fmod/lib/fmod.dll C:/Source/storm-engine/platform/win64/bin
 if %errorlevel% neq 0 goto :cmEnd
@@ -184,7 +185,8 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <PostBuildEvent>
-      <Message></Message>
+      <Message>
+      </Message>
       <Command>setlocal
 "C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different C:/Source/storm-engine/extern/fmod/lib/fmod.dll C:/Source/storm-engine/platform/win64/bin
 if %errorlevel% neq 0 goto :cmEnd
@@ -249,7 +251,8 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <PostBuildEvent>
-      <Message></Message>
+      <Message>
+      </Message>
       <Command>setlocal
 "C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different C:/Source/storm-engine/extern/fmod/lib/fmod.dll C:/Source/storm-engine/platform/win64/bin
 if %errorlevel% neq 0 goto :cmEnd
@@ -311,7 +314,8 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <PostBuildEvent>
-      <Message></Message>
+      <Message>
+      </Message>
       <Command>setlocal
 "C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different C:/Source/storm-engine/extern/fmod/lib/fmod.dll C:/Source/storm-engine/platform/win64/bin
 if %errorlevel% neq 0 goto :cmEnd
@@ -463,6 +467,9 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ResourceCompile Include="C:\Source\storm-engine\res\engine\resource.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\extern\rendering\bgfx\.build\projects\vs2019\bgfx.vcxproj">
+      <Project>{6c90947c-58c7-950d-01b4-7b10edc9110f}</Project>
+    </ProjectReference>
     <ProjectReference Include="C:\Source\storm-engine\platform\win64\ZERO_CHECK.vcxproj">
       <Project>{61DAB0E7-5D7C-3C0E-AAF2-568B1951580E}</Project>
       <Name>ZERO_CHECK</Name>
