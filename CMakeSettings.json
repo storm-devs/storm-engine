@@ -8,8 +8,7 @@
       "buildRoot": "${projectDir}\\build\\${name}",
       "cmakeCommandArgs": "-DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl",
       "buildCommandArgs": "",
-      "enableClangTidyCodeAnalysis": true,
-      "variables": []
+      "enableClangTidyCodeAnalysis": true
     },
     {
       "name": "msvc-release",

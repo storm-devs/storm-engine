@@ -1,0 +1,50 @@
+{
+ "options": [
+  [
+   "fmt:header_only",
+   "False"
+  ],
+  [
+   "fmt:shared",
+   "False"
+  ],
+  [
+   "fmt:with_fmt_alias",
+   "False"
+  ],
+  [
+   "spdlog:header_only",
+   "False"
+  ],
+  [
+   "spdlog:no_exceptions",
+   "False"
+  ],
+  [
+   "spdlog:shared",
+   "False"
+  ],
+  [
+   "spdlog:wchar_filenames",
+   "False"
+  ],
+  [
+   "spdlog:wchar_support",
+   "False"
+  ],
+  [
+   "zlib:minizip",
+   "deprecated"
+  ],
+  [
+   "zlib:shared",
+   "False"
+  ]
+ ],
+ "root": {
+  "name": null,
+  "version": null,
+  "user": null,
+  "channel": null
+ }
+}

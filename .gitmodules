@@ -1,0 +1,9 @@
+[submodule "extern/rendering/bgfx"]
+	path = extern/rendering/bgfx
+	url = https://github.com/bkaradzic/bgfx
+[submodule "extern/rendering/bimg"]
+	path = extern/rendering/bimg
+	url = https://github.com/bkaradzic/bimg
+[submodule "extern/rendering/bx"]
+	path = extern/rendering/bx
+	url = https://github.com/bkaradzic/bx

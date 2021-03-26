@@ -1,0 +1,42 @@
+{
+ "graph_lock": {
+  "nodes": {
+   "0": {
+    "options": "fmt:header_only=False\nfmt:shared=False\nfmt:with_fmt_alias=False\nspdlog:header_only=False\nspdlog:no_exceptions=False\nspdlog:shared=False\nspdlog:wchar_filenames=False\nspdlog:wchar_support=False\nzlib:minizip=deprecated\nzlib:shared=False",
+    "requires": [
+     "1",
+     "2"
+    ],
+    "path": "..\\..\\conanfile.txt",
+    "context": "host"
+   },
+   "1": {
+    "ref": "zlib/1.2.11",
+    "options": "minizip=deprecated\nshared=False",
+    "package_id": "d057732059ea44a47760900cb5e4855d2bea8714",
+    "prev": "0",
+    "context": "host"
+   },
+   "2": {
+    "ref": "spdlog/1.8.2",
+    "options": "header_only=False\nno_exceptions=False\nshared=False\nwchar_filenames=False\nwchar_support=False\nfmt:header_only=False\nfmt:shared=False\nfmt:with_fmt_alias=False",
+    "package_id": "55db45024bed1a2d40f24c02c050b7ca72eeccf4",
+    "prev": "0",
+    "requires": [
+     "3"
+    ],
+    "context": "host"
+   },
+   "3": {
+    "ref": "fmt/7.1.2",
+    "options": "header_only=False\nshared=False\nwith_fmt_alias=False",
+    "package_id": "d057732059ea44a47760900cb5e4855d2bea8714",
+    "prev": "0",
+    "context": "host"
+   }
+  },
+  "revisions_enabled": false
+ },
+ "version": "0.4",
+ "profile_host": "[settings]\narch=x86_64\narch_build=x86_64\nbuild_type=Debug\ncompiler=Visual Studio\ncompiler.runtime=MDd\ncompiler.version=16\nos=Windows\nos_build=Windows\n[options]\n[build_requires]\n[env]\nCC=\"C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.28.29910/bin/Hostx64/x64/cl.exe\"\nCONAN_CMAKE_GENERATOR=\"Visual Studio 16 2019\"\nCONAN_MAKE_PROGRAM=\"C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/MSBuild/Current/Bin/MSBuild.exe\"\nCXX=\"C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.28.29910/bin/Hostx64/x64/cl.exe\""
+}

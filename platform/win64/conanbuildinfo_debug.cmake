@@ -1,0 +1,151 @@
+
+#################
+###  ZLIB
+#################
+set(CONAN_ZLIB_ROOT_DEBUG "C:/Users/Greentwip/.conan/data/zlib/1.2.11/_/_/package/d057732059ea44a47760900cb5e4855d2bea8714")
+set(CONAN_INCLUDE_DIRS_ZLIB_DEBUG "C:/Users/Greentwip/.conan/data/zlib/1.2.11/_/_/package/d057732059ea44a47760900cb5e4855d2bea8714/include")
+set(CONAN_LIB_DIRS_ZLIB_DEBUG "C:/Users/Greentwip/.conan/data/zlib/1.2.11/_/_/package/d057732059ea44a47760900cb5e4855d2bea8714/lib")
+set(CONAN_BIN_DIRS_ZLIB_DEBUG )
+set(CONAN_RES_DIRS_ZLIB_DEBUG )
+set(CONAN_SRC_DIRS_ZLIB_DEBUG )
+set(CONAN_BUILD_DIRS_ZLIB_DEBUG "C:/Users/Greentwip/.conan/data/zlib/1.2.11/_/_/package/d057732059ea44a47760900cb5e4855d2bea8714/")
+set(CONAN_FRAMEWORK_DIRS_ZLIB_DEBUG )
+set(CONAN_LIBS_ZLIB_DEBUG zlib)
+set(CONAN_PKG_LIBS_ZLIB_DEBUG zlib)
+set(CONAN_SYSTEM_LIBS_ZLIB_DEBUG )
+set(CONAN_FRAMEWORKS_ZLIB_DEBUG )
+set(CONAN_FRAMEWORKS_FOUND_ZLIB_DEBUG "")  # Will be filled later
+set(CONAN_DEFINES_ZLIB_DEBUG )
+set(CONAN_BUILD_MODULES_PATHS_ZLIB_DEBUG )
+# COMPILE_DEFINITIONS are equal to CONAN_DEFINES without -D, for targets
+set(CONAN_COMPILE_DEFINITIONS_ZLIB_DEBUG )
+
+set(CONAN_C_FLAGS_ZLIB_DEBUG "")
+set(CONAN_CXX_FLAGS_ZLIB_DEBUG "")
+set(CONAN_SHARED_LINKER_FLAGS_ZLIB_DEBUG "")
+set(CONAN_EXE_LINKER_FLAGS_ZLIB_DEBUG "")
+
+# For modern cmake targets we use the list variables (separated with ;)
+set(CONAN_C_FLAGS_ZLIB_DEBUG_LIST "")
+set(CONAN_CXX_FLAGS_ZLIB_DEBUG_LIST "")
+set(CONAN_SHARED_LINKER_FLAGS_ZLIB_DEBUG_LIST "")
+set(CONAN_EXE_LINKER_FLAGS_ZLIB_DEBUG_LIST "")
+
+# Apple Frameworks
+conan_find_apple_frameworks(CONAN_FRAMEWORKS_FOUND_ZLIB_DEBUG "${CONAN_FRAMEWORKS_ZLIB_DEBUG}" "_ZLIB" "_DEBUG")
+# Append to aggregated values variable
+set(CONAN_LIBS_ZLIB_DEBUG ${CONAN_PKG_LIBS_ZLIB_DEBUG} ${CONAN_SYSTEM_LIBS_ZLIB_DEBUG} ${CONAN_FRAMEWORKS_FOUND_ZLIB_DEBUG})
+
+
+#################
+###  SPDLOG
+#################
+set(CONAN_SPDLOG_ROOT_DEBUG "C:/Users/Greentwip/.conan/data/spdlog/1.8.2/_/_/package/55db45024bed1a2d40f24c02c050b7ca72eeccf4")
+set(CONAN_INCLUDE_DIRS_SPDLOG_DEBUG "C:/Users/Greentwip/.conan/data/spdlog/1.8.2/_/_/package/55db45024bed1a2d40f24c02c050b7ca72eeccf4/include")
+set(CONAN_LIB_DIRS_SPDLOG_DEBUG "C:/Users/Greentwip/.conan/data/spdlog/1.8.2/_/_/package/55db45024bed1a2d40f24c02c050b7ca72eeccf4/lib")
+set(CONAN_BIN_DIRS_SPDLOG_DEBUG )
+set(CONAN_RES_DIRS_SPDLOG_DEBUG )
+set(CONAN_SRC_DIRS_SPDLOG_DEBUG )
+set(CONAN_BUILD_DIRS_SPDLOG_DEBUG "C:/Users/Greentwip/.conan/data/spdlog/1.8.2/_/_/package/55db45024bed1a2d40f24c02c050b7ca72eeccf4/")
+set(CONAN_FRAMEWORK_DIRS_SPDLOG_DEBUG )
+set(CONAN_LIBS_SPDLOG_DEBUG spdlogd)
+set(CONAN_PKG_LIBS_SPDLOG_DEBUG spdlogd)
+set(CONAN_SYSTEM_LIBS_SPDLOG_DEBUG )
+set(CONAN_FRAMEWORKS_SPDLOG_DEBUG )
+set(CONAN_FRAMEWORKS_FOUND_SPDLOG_DEBUG "")  # Will be filled later
+set(CONAN_DEFINES_SPDLOG_DEBUG "-DSPDLOG_COMPILED_LIB"
+			"-DSPDLOG_FMT_EXTERNAL")
+set(CONAN_BUILD_MODULES_PATHS_SPDLOG_DEBUG )
+# COMPILE_DEFINITIONS are equal to CONAN_DEFINES without -D, for targets
+set(CONAN_COMPILE_DEFINITIONS_SPDLOG_DEBUG "SPDLOG_COMPILED_LIB"
+			"SPDLOG_FMT_EXTERNAL")
+
+set(CONAN_C_FLAGS_SPDLOG_DEBUG "")
+set(CONAN_CXX_FLAGS_SPDLOG_DEBUG "")
+set(CONAN_SHARED_LINKER_FLAGS_SPDLOG_DEBUG "")
+set(CONAN_EXE_LINKER_FLAGS_SPDLOG_DEBUG "")
+
+# For modern cmake targets we use the list variables (separated with ;)
+set(CONAN_C_FLAGS_SPDLOG_DEBUG_LIST "")
+set(CONAN_CXX_FLAGS_SPDLOG_DEBUG_LIST "")
+set(CONAN_SHARED_LINKER_FLAGS_SPDLOG_DEBUG_LIST "")
+set(CONAN_EXE_LINKER_FLAGS_SPDLOG_DEBUG_LIST "")
+
+# Apple Frameworks
+conan_find_apple_frameworks(CONAN_FRAMEWORKS_FOUND_SPDLOG_DEBUG "${CONAN_FRAMEWORKS_SPDLOG_DEBUG}" "_SPDLOG" "_DEBUG")
+# Append to aggregated values variable
+set(CONAN_LIBS_SPDLOG_DEBUG ${CONAN_PKG_LIBS_SPDLOG_DEBUG} ${CONAN_SYSTEM_LIBS_SPDLOG_DEBUG} ${CONAN_FRAMEWORKS_FOUND_SPDLOG_DEBUG})
+
+
+#################
+###  FMT
+#################
+set(CONAN_FMT_ROOT_DEBUG "C:/Users/Greentwip/.conan/data/fmt/7.1.2/_/_/package/d057732059ea44a47760900cb5e4855d2bea8714")
+set(CONAN_INCLUDE_DIRS_FMT_DEBUG "C:/Users/Greentwip/.conan/data/fmt/7.1.2/_/_/package/d057732059ea44a47760900cb5e4855d2bea8714/include")
+set(CONAN_LIB_DIRS_FMT_DEBUG "C:/Users/Greentwip/.conan/data/fmt/7.1.2/_/_/package/d057732059ea44a47760900cb5e4855d2bea8714/lib")
+set(CONAN_BIN_DIRS_FMT_DEBUG )
+set(CONAN_RES_DIRS_FMT_DEBUG )
+set(CONAN_SRC_DIRS_FMT_DEBUG )
+set(CONAN_BUILD_DIRS_FMT_DEBUG "C:/Users/Greentwip/.conan/data/fmt/7.1.2/_/_/package/d057732059ea44a47760900cb5e4855d2bea8714/")
+set(CONAN_FRAMEWORK_DIRS_FMT_DEBUG )
+set(CONAN_LIBS_FMT_DEBUG fmtd)
+set(CONAN_PKG_LIBS_FMT_DEBUG fmtd)
+set(CONAN_SYSTEM_LIBS_FMT_DEBUG )
+set(CONAN_FRAMEWORKS_FMT_DEBUG )
+set(CONAN_FRAMEWORKS_FOUND_FMT_DEBUG "")  # Will be filled later
+set(CONAN_DEFINES_FMT_DEBUG )
+set(CONAN_BUILD_MODULES_PATHS_FMT_DEBUG )
+# COMPILE_DEFINITIONS are equal to CONAN_DEFINES without -D, for targets
+set(CONAN_COMPILE_DEFINITIONS_FMT_DEBUG )
+
+set(CONAN_C_FLAGS_FMT_DEBUG "")
+set(CONAN_CXX_FLAGS_FMT_DEBUG "")
+set(CONAN_SHARED_LINKER_FLAGS_FMT_DEBUG "")
+set(CONAN_EXE_LINKER_FLAGS_FMT_DEBUG "")
+
+# For modern cmake targets we use the list variables (separated with ;)
+set(CONAN_C_FLAGS_FMT_DEBUG_LIST "")
+set(CONAN_CXX_FLAGS_FMT_DEBUG_LIST "")
+set(CONAN_SHARED_LINKER_FLAGS_FMT_DEBUG_LIST "")
+set(CONAN_EXE_LINKER_FLAGS_FMT_DEBUG_LIST "")
+
+# Apple Frameworks
+conan_find_apple_frameworks(CONAN_FRAMEWORKS_FOUND_FMT_DEBUG "${CONAN_FRAMEWORKS_FMT_DEBUG}" "_FMT" "_DEBUG")
+# Append to aggregated values variable
+set(CONAN_LIBS_FMT_DEBUG ${CONAN_PKG_LIBS_FMT_DEBUG} ${CONAN_SYSTEM_LIBS_FMT_DEBUG} ${CONAN_FRAMEWORKS_FOUND_FMT_DEBUG})
+
+
+### Definition of global aggregated variables ###
+
+set(CONAN_DEPENDENCIES_DEBUG zlib spdlog fmt)
+
+set(CONAN_INCLUDE_DIRS_DEBUG "C:/Users/Greentwip/.conan/data/zlib/1.2.11/_/_/package/d057732059ea44a47760900cb5e4855d2bea8714/include"
+			"C:/Users/Greentwip/.conan/data/spdlog/1.8.2/_/_/package/55db45024bed1a2d40f24c02c050b7ca72eeccf4/include"
+			"C:/Users/Greentwip/.conan/data/fmt/7.1.2/_/_/package/d057732059ea44a47760900cb5e4855d2bea8714/include" ${CONAN_INCLUDE_DIRS_DEBUG})
+set(CONAN_LIB_DIRS_DEBUG "C:/Users/Greentwip/.conan/data/zlib/1.2.11/_/_/package/d057732059ea44a47760900cb5e4855d2bea8714/lib"
+			"C:/Users/Greentwip/.conan/data/spdlog/1.8.2/_/_/package/55db45024bed1a2d40f24c02c050b7ca72eeccf4/lib"
+			"C:/Users/Greentwip/.conan/data/fmt/7.1.2/_/_/package/d057732059ea44a47760900cb5e4855d2bea8714/lib" ${CONAN_LIB_DIRS_DEBUG})
+set(CONAN_BIN_DIRS_DEBUG  ${CONAN_BIN_DIRS_DEBUG})
+set(CONAN_RES_DIRS_DEBUG  ${CONAN_RES_DIRS_DEBUG})
+set(CONAN_FRAMEWORK_DIRS_DEBUG  ${CONAN_FRAMEWORK_DIRS_DEBUG})
+set(CONAN_LIBS_DEBUG zlib spdlogd fmtd ${CONAN_LIBS_DEBUG})
+set(CONAN_PKG_LIBS_DEBUG zlib spdlogd fmtd ${CONAN_PKG_LIBS_DEBUG})
+set(CONAN_SYSTEM_LIBS_DEBUG  ${CONAN_SYSTEM_LIBS_DEBUG})
+set(CONAN_FRAMEWORKS_DEBUG  ${CONAN_FRAMEWORKS_DEBUG})
+set(CONAN_FRAMEWORKS_FOUND_DEBUG "")  # Will be filled later
+set(CONAN_DEFINES_DEBUG "-DSPDLOG_COMPILED_LIB"
+			"-DSPDLOG_FMT_EXTERNAL" ${CONAN_DEFINES_DEBUG})
+set(CONAN_BUILD_MODULES_PATHS_DEBUG  ${CONAN_BUILD_MODULES_PATHS_DEBUG})
+set(CONAN_CMAKE_MODULE_PATH_DEBUG "C:/Users/Greentwip/.conan/data/zlib/1.2.11/_/_/package/d057732059ea44a47760900cb5e4855d2bea8714/"
+			"C:/Users/Greentwip/.conan/data/spdlog/1.8.2/_/_/package/55db45024bed1a2d40f24c02c050b7ca72eeccf4/"
+			"C:/Users/Greentwip/.conan/data/fmt/7.1.2/_/_/package/d057732059ea44a47760900cb5e4855d2bea8714/" ${CONAN_CMAKE_MODULE_PATH_DEBUG})
+
+set(CONAN_CXX_FLAGS_DEBUG " ${CONAN_CXX_FLAGS_DEBUG}")
+set(CONAN_SHARED_LINKER_FLAGS_DEBUG " ${CONAN_SHARED_LINKER_FLAGS_DEBUG}")
+set(CONAN_EXE_LINKER_FLAGS_DEBUG " ${CONAN_EXE_LINKER_FLAGS_DEBUG}")
+set(CONAN_C_FLAGS_DEBUG " ${CONAN_C_FLAGS_DEBUG}")
+
+# Apple Frameworks
+conan_find_apple_frameworks(CONAN_FRAMEWORKS_FOUND_DEBUG "${CONAN_FRAMEWORKS_DEBUG}" "" "_DEBUG")
+# Append to aggregated values variable: Use CONAN_LIBS instead of CONAN_PKG_LIBS to include user appended vars
+set(CONAN_LIBS_DEBUG ${CONAN_LIBS_DEBUG} ${CONAN_SYSTEM_LIBS_DEBUG} ${CONAN_FRAMEWORKS_FOUND_DEBUG})
