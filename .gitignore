@@ -376,3 +376,6 @@ install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
 _deps
+
+platform/win64
+!platform/win64/.keepme
