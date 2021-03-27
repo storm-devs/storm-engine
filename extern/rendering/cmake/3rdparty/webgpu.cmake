@@ -12,6 +12,13 @@ if( TARGET webgpu )
 	return()
 endif()
 
+
+set( WEBGPU_INCLUDES
+	${BGFX_DIR}/3rdparty/webgpu/include/webgpu/
+	${BGFX_DIR}/3rdparty/webgpu/include
+)
+
+
 file(
 	GLOB
     WEBGPU_SOURCES

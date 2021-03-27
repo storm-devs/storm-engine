@@ -12,6 +12,15 @@ if( TARGET spirv-tools )
 	return()
 endif()
 
+set( SPIRV_TOOLS_INCLUDES
+	${BGFX_DIR}/3rdparty/spirv-headers/include
+	${BGFX_DIR}/3rdparty/spirv-tools
+	${BGFX_DIR}/3rdparty/spirv-tools/include
+	${BGFX_DIR}/3rdparty/spirv-tools/include/generated
+	${BGFX_DIR}/3rdparty/spirv-tools/source
+)
+
+
 file(
 	GLOB
 	SPIRV_TOOLS_SOURCES

@@ -487,7 +487,7 @@ class ExampleWindows : public entry::AppI
             // process submitted rendering primitives.
             //
 
-            //bgfx::frame();
+            bgfx::frame();
 
             
 

@@ -4,7 +4,7 @@
 
 [submodule "extern/rendering/bgfx"]
 	path = extern/rendering/bgfx
-	url = https://github.com/bkaradzic/bgfx
+	url = https://github.com/greentwip/bgfx
 [submodule "extern/rendering/bimg"]
 	path = extern/rendering/bimg
 	url = https://github.com/bkaradzic/bimg

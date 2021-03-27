@@ -41,11 +41,34 @@ ${BGFX_DIR}/3rdparty
 ${BGFX_DIR}/3rdparty/dxsdk/include 
 ${BGFX_DIR}/3rdparty/khronos
 $<BUILD_INTERFACE:${BGFX_DIR}/include>
+$<BUILD_INTERFACE:${BGFX_DIR}/tools/brtshaderc>
 $<BUILD_INTERFACE:${BIMG_DIR}/include>
 $<BUILD_INTERFACE:${BX_DIR}/include>
 $<BUILD_INTERFACE:${BX_DIR}/3rdparty>)
 
-link_libraries(bgfx dear-imgui meshoptimizer )
+include_directories(
+${GLSL-OPTIMIZER_INCLUDES}
+${GLSLLANG_INCLUDES}
+${SPIRV_CROSS_INCLUDES}
+${SPIRV_TOOLS_INCLUDES}
+${WEBGPU_INCLUDES})
+
+# Build system specific configurations
+if( MSVC )
+	include_directories($<BUILD_INTERFACE:${BX_DIR}/include/compat/msvc>
+						$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/compat/msvc> )
+elseif( MINGW )
+	include_directories($<BUILD_INTERFACE:${BX_DIR}/include/compat/mingw>
+		    			$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/compat/mingw> )
+elseif( APPLE )
+	include_directories($<BUILD_INTERFACE:${BX_DIR}/include/compat/osx>
+		    			$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/compat/osx> )
+endif()
+
+
+link_libraries(bgfx dear-imgui meshoptimizer brtshaderc fcpp)
+link_libraries(bx bimg bgfx-vertexlayout bgfx-shader-spirv fcpp glsl-optimizer glslang spirv-cross spirv-tools webgpu)
+
 link_libraries(example-common )
 
 add_definitions("-D_CRT_SECURE_NO_WARNINGS" "-D__STDC_FORMAT_MACROS" "-DENTRY_CONFIG_IMPLEMENT_MAIN=1")

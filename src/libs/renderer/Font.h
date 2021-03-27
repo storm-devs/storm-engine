@@ -2,6 +2,7 @@
 
 #include "bgfx/bgfx.h"
 #include "bgfx_utils.h"
+#include "brtshaderc.h"
 
 #include "dx9render.h"
 #include "matrix.h"
@@ -106,7 +107,11 @@ static RenderState s_renderStates[RenderState::Count] =
 };
 
 
+static bgfx::DynamicVertexBufferHandle m_vbh;
+static bgfx::DynamicIndexBufferHandle m_ibh;
+
 static bgfx::UniformHandle s_texColor;
+static bgfx::ProgramHandle m_progFont;
 
 struct BGFX_FONT_SHADER
 {
@@ -117,8 +122,24 @@ struct BGFX_FONT_SHADER
         constructor()
         {
             m_progFont = BGFX_INVALID_HANDLE;
-            m_progFont = loadProgram("shaders/vs_font.sc", "shaders/fs_font.sc");
+            const bgfx::Memory *memVsh = shaderc::compileShader(shaderc::ST_VERTEX, "vs_cubes.sc");
+            const bgfx::Memory *memFsh = shaderc::compileShader(shaderc::ST_FRAGMENT, "fs_font.sc");
+
+            bgfx::ShaderHandle vsh = bgfx::createShader(memVsh);
+            bgfx::ShaderHandle fsh = bgfx::createShader(memFsh);
+
+            m_progFont = bgfx::createProgram(vsh, fsh, true);
+
             s_texColor = bgfx::createUniform("s_texColor", bgfx::UniformType::Sampler);
+        }
+
+        ~constructor()
+        {
+            bgfx::destroy(s_texColor);
+
+            bgfx::destroy(m_ibh);
+            bgfx::destroy(m_vbh);
+            bgfx::destroy(m_progFont);
         }
     };
 
@@ -138,10 +159,30 @@ struct BGFX_FONT_SHADER
         bgfx::setViewRect(0, 0, 0, uint16_t(1920), uint16_t(1080));
     }
 
+    static void UpdateVertexBuffer()
+    {
+        const bgfx::Memory *mem = bgfx::copy(s_fontVertices, sizeof(s_fontVertices));
+        BGFX_FONT_VERTEX *vertex = (BGFX_FONT_VERTEX *)mem->data;
+        for (uint32_t ii = 0; ii < BX_COUNTOF(s_fontVertices); ++ii)
+        {
+            vertex[ii].color = encodeNormalRgba8(0.0f, 0.0f, 1.0f);
+            vertex[ii].tu = 0.5f;
+            vertex[ii].tv = 0.5f;
+        }
+        bgfx::update(m_vbh, 0, mem);
+    }
+
+    static void Submit()
+    {
+    
+    	bgfx::setState(0 | BGFX_STATE_DEFAULT);
+
+        // Submit primitive for rendering to view 0.
+        bgfx::submit(0, m_progFont);
+    }
     
 
     static constructor shadercons;
-    static bgfx::ProgramHandle m_progFont;
 };
 
 #endif

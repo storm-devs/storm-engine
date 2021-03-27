@@ -12,6 +12,11 @@ if( TARGET spirv-cross )
 	return()
 endif()
 
+set( SPIRV_CROSS_INCLUDES
+	${BGFX_DIR}/3rdparty/spirv-cross
+)
+
+
 file(
 	GLOB
 	SPIRV_CROSS_SOURCES
