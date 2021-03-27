@@ -1,6 +1,6 @@
 [submodule "extern/rendering"]
 	path = extern/rendering
-	url = https://github.com/widberg/bgfx.cmake
+	url = https://github.com/greentwip/bgfx.cmake
 
 [submodule "extern/rendering/bgfx"]
 	path = extern/rendering/bgfx
