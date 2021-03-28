@@ -92,8 +92,8 @@ class FILE_SERVICE : public VFILE_SERVICE
     void _CloseFile(std::fstream &fileS) override;
     void _SetFilePointer(std::fstream &fileS, std::streamoff off, std::ios::seekdir dir) override;
     int _DeleteFile(const char *filename) override;
-    bool _WriteFile(std::fstream &fileS, const char *s, std::streamsize count) override;
-    bool _ReadFile(std::fstream &fileS, char *s, std::streamsize count) override;
+    bool _WriteFile(std::fstream &fileS, const void *s, std::streamsize count) override;
+    bool _ReadFile(std::fstream &fileS, void *s, std::streamsize count) override;
     HANDLE _FindFirstFile(const char *lpFileName, LPWIN32_FIND_DATA lpFindFileData) override;
     BOOL _FindNextFile(HANDLE hFindFile, LPWIN32_FIND_DATA lpFindFileData) override;
     BOOL _FindClose(HANDLE hFindFile) override;

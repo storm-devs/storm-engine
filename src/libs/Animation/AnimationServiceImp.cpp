@@ -516,7 +516,7 @@ bool AnimationServiceImp::LoadAN(const char *fname, AnimationInfo *info)
         }
         // Reading the file header
         ANFILE::HEADER header;
-        if (!fio->_ReadFile(fileS, reinterpret_cast<char *>(&header), sizeof(ANFILE::HEADER)) || header.nFrames <= 0 ||
+        if (!fio->_ReadFile(fileS, &header, sizeof(ANFILE::HEADER)) || header.nFrames <= 0 ||
             header.nJoints <= 0 || header.framesPerSec < 0.0f || header.framesPerSec > 1000.0f)
         {
             core.Trace("Incorrect file header in animation file: %s", fname);
@@ -531,7 +531,7 @@ bool AnimationServiceImp::LoadAN(const char *fname, AnimationInfo *info)
         info->CreateBones(header.nJoints);
         // Setting parents
         auto *const prntIndeces = new long[header.nJoints];
-        if (!fio->_ReadFile(fileS, reinterpret_cast<char *>(prntIndeces), header.nJoints * sizeof(long)))
+        if (!fio->_ReadFile(fileS, prntIndeces, header.nJoints * sizeof(long)))
         {
             core.Trace("Incorrect parent indeces block in animation file: %s", fname);
             delete[] prntIndeces;
@@ -547,7 +547,7 @@ bool AnimationServiceImp::LoadAN(const char *fname, AnimationInfo *info)
         delete[] prntIndeces;
         // Starting positions of bones
         auto *vrt = new CVECTOR[header.nJoints];
-        if (!fio->_ReadFile(fileS, reinterpret_cast<char *>(vrt), header.nJoints * sizeof(CVECTOR)))
+        if (!fio->_ReadFile(fileS, vrt, header.nJoints * sizeof(CVECTOR)))
         {
             core.Trace("Incorrect start joints position block block in animation file: %s", fname);
             delete[] vrt;
@@ -562,7 +562,7 @@ bool AnimationServiceImp::LoadAN(const char *fname, AnimationInfo *info)
 
         // Root bone positions
         vrt = new CVECTOR[header.nFrames];
-        if (!fio->_ReadFile(fileS, reinterpret_cast<char *>(vrt), header.nFrames * sizeof(CVECTOR)))
+        if (!fio->_ReadFile(fileS, vrt, header.nFrames * sizeof(CVECTOR)))
         {
             core.Trace("Incorrect root joint position block block in animation file: %s", fname);
             delete[] vrt;
@@ -576,7 +576,7 @@ bool AnimationServiceImp::LoadAN(const char *fname, AnimationInfo *info)
         auto *ang = new D3DXQUATERNION[header.nFrames];
         for (long i = 0; i < header.nJoints; i++)
         {
-            if (!fio->_ReadFile(fileS, reinterpret_cast<char *>(ang), header.nFrames * sizeof(*ang)))
+            if (!fio->_ReadFile(fileS, ang, header.nFrames * sizeof(*ang)))
             {
                 core.Trace("Incorrect joint angle block (%i) block in animation file: %s", i, fname);
                 fio->_CloseFile(fileS);

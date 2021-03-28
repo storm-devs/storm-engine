@@ -510,7 +510,7 @@ bool CORE::SaveState(const char *file_name)
 {
     if (!file_name)
     {
-        return false;
+        throw std::logic_error("Bad file name of save");
     }
 
     auto fileS = fio->_CreateFile(file_name, std::ios::binary | std::ios::out);
@@ -539,10 +539,6 @@ bool CORE::InitiateStateLoading(const char *file_name)
 
     const auto len = strlen(file_name) + 1;
     State_file_name = static_cast<char *>(new char[len]);
-    if (State_file_name == nullptr)
-    {
-        throw std::exception();
-    }
     strcpy_s(State_file_name, len, file_name);
     return true;
 }

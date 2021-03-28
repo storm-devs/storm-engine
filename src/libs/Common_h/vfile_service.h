@@ -20,8 +20,8 @@ class VFILE_SERVICE
     virtual void _CloseFile(std::fstream &fileS) = 0;
     virtual void _SetFilePointer(std::fstream &fileS, std::streamoff off, std::ios::seekdir dir) = 0;
     virtual int _DeleteFile(const char *filename) = 0;
-    virtual bool _WriteFile(std::fstream &fileS, const char *s, std::streamsize count) = 0;
-    virtual bool _ReadFile(std::fstream &fileS, char *s, std::streamsize count) = 0;
+    virtual bool _WriteFile(std::fstream &fileS, const void *s, std::streamsize count) = 0;
+    virtual bool _ReadFile(std::fstream &fileS, void *s, std::streamsize count) = 0;
     virtual HANDLE _FindFirstFile(const char *lpFileName, LPWIN32_FIND_DATA lpFindFileData) = 0;
     virtual BOOL _FindNextFile(HANDLE hFindFile, LPWIN32_FIND_DATA lpFindFileData) = 0;
     virtual BOOL _FindClose(HANDLE hFindFile) = 0;

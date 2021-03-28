@@ -495,10 +495,10 @@ bool ISLAND::CreateShadowMap(char *pDir, char *pName)
     {
         TGA_H tga_head;
 
-        fio->_ReadFile(fileS, reinterpret_cast<char *>(&tga_head), sizeof(tga_head));
+        fio->_ReadFile(fileS, &tga_head, sizeof(tga_head));
         const uint32_t dwSize = tga_head.width;
         pShadowMap = new uint8_t[dwSize * dwSize];
-        fio->_ReadFile(fileS, reinterpret_cast<char *>(pShadowMap), dwSize * dwSize);
+        fio->_ReadFile(fileS, pShadowMap, dwSize * dwSize);
         fio->_CloseFile(fileS);
 
         mzShadow.DoZip(pShadowMap, dwSize);
@@ -614,10 +614,10 @@ bool ISLAND::CreateHeightMap(char *pDir, char *pName)
         auto fileS = fio->_CreateFile(fileName.c_str(), std::ios::binary | std::ios::in);
         if (fileS.is_open())
         {
-            fio->_ReadFile(fileS, reinterpret_cast<char *>(&tga_head), sizeof(tga_head));
+            fio->_ReadFile(fileS, &tga_head, sizeof(tga_head));
             iDMapSize = tga_head.width;
             pDepthMap = new uint8_t[iDMapSize * iDMapSize];
-            fio->_ReadFile(fileS, reinterpret_cast<char *>(pDepthMap), iDMapSize * iDMapSize);
+            fio->_ReadFile(fileS, pDepthMap, iDMapSize * iDMapSize);
             fio->_CloseFile(fileS);
 
             mzDepth.DoZip(pDepthMap, iDMapSize);
@@ -778,8 +778,8 @@ bool ISLAND::SaveTga8(char *fname, uint8_t *pBuffer, uint32_t dwSizeX, uint32_t 
         core.Trace("Island: Can't create island file! %s", fname);
         return false;
     }
-    fio->_WriteFile(fileS, reinterpret_cast<char *>(&tga_head), sizeof(tga_head));
-    fio->_WriteFile(fileS, reinterpret_cast<char *>(pBuffer), dwSizeX * dwSizeY);
+    fio->_WriteFile(fileS, &tga_head, sizeof(tga_head));
+    fio->_WriteFile(fileS, pBuffer, dwSizeX * dwSizeY);
     fio->_CloseFile(fileS);
 
     return true;

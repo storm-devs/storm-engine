@@ -6561,7 +6561,7 @@ bool COMPILER::SaveState(std::fstream &fileS)
     edh.dwExtDataOffset = 0;
     edh.dwExtDataSize = 0;
 
-    fio->_WriteFile(fileS,  reinterpret_cast<char *>(&edh), sizeof(edh));
+    fio->_WriteFile(fileS,  &edh, sizeof(edh));
 
     // 1. Program Directory
     SaveString(ProgramDirectory);
@@ -6609,8 +6609,8 @@ bool COMPILER::SaveState(std::fstream &fileS)
         compress2((Bytef *)pDst, (uLongf *)&dwPackLen, (Bytef *)pBuffer, dwCurPointer, Z_BEST_COMPRESSION);
         RDTSC_E(dw2);
 
-        fio->_WriteFile(fileS, reinterpret_cast<char *>(&dwCurPointer), sizeof(dwCurPointer));
-        fio->_WriteFile(fileS, reinterpret_cast<char *>(&dwPackLen), sizeof(dwPackLen));
+        fio->_WriteFile(fileS, &dwCurPointer, sizeof(dwCurPointer));
+        fio->_WriteFile(fileS, &dwPackLen, sizeof(dwPackLen));
         fio->_WriteFile(fileS, pDst, dwPackLen);
 
         delete[] pDst;
@@ -6631,11 +6631,11 @@ bool COMPILER::LoadState(std::fstream &fileS)
     pBuffer = nullptr;
 
     EXTDATA_HEADER exdh;
-    fio->_ReadFile(fileS, reinterpret_cast<char *>(&exdh), sizeof(exdh));
+    fio->_ReadFile(fileS, &exdh, sizeof(exdh));
 
     uint32_t dwPackLen;
-    fio->_ReadFile(fileS, reinterpret_cast<char *>(&dwMaxSize), sizeof(dwMaxSize));
-    fio->_ReadFile(fileS, reinterpret_cast<char *>(&dwPackLen), sizeof(dwPackLen));
+    fio->_ReadFile(fileS, &dwMaxSize, sizeof(dwMaxSize));
+    fio->_ReadFile(fileS, &dwPackLen, sizeof(dwPackLen));
     if (dwPackLen == 0 || dwPackLen > 0x8000000 || dwMaxSize == 0 || dwMaxSize > 0x8000000)
     {
         return false;
@@ -6807,14 +6807,14 @@ bool COMPILER::SetSaveData(const char *file_name, void *save_data, long data_siz
     exdh.dwExtDataOffset = dwFileSize;
     exdh.dwExtDataSize = data_size;
 
-    fio->_WriteFile(fileS, reinterpret_cast<char *>(&exdh), sizeof(exdh));
+    fio->_WriteFile(fileS, &exdh, sizeof(exdh));
     fio->_SetFilePointer(fileS, dwFileSize, std::ios::beg);
 
     char *pDst = new char[data_size * 2];
     uint32_t dwPackLen = data_size * 2;
     compress2((Bytef *)pDst, (uLongf *)&dwPackLen, static_cast<Bytef *>(save_data), data_size, Z_BEST_COMPRESSION);
 
-    fio->_WriteFile(fileS, reinterpret_cast<char *>(&dwPackLen), sizeof(dwPackLen));
+    fio->_WriteFile(fileS, &dwPackLen, sizeof(dwPackLen));
     fio->_WriteFile(fileS, pDst, dwPackLen);
     fio->_CloseFile(fileS);
 
@@ -6928,7 +6928,7 @@ void *COMPILER::GetSaveData(const char *file_name, long &data_size)
     uint64_t dw2;
     RDTSC_B(dw2);
     EXTDATA_HEADER exdh;
-    fio->_ReadFile(fileS, reinterpret_cast<char *>(&exdh), sizeof(exdh));
+    fio->_ReadFile(fileS, &exdh, sizeof(exdh));
     if (exdh.dwExtDataSize <= 0)
     {
         data_size = 0;
@@ -6938,7 +6938,7 @@ void *COMPILER::GetSaveData(const char *file_name, long &data_size)
 
     uint32_t dwPackLen;
     fio->_SetFilePointer(fileS, exdh.dwExtDataOffset, std::ios::beg);
-    fio->_ReadFile(fileS, reinterpret_cast<char *>(&dwPackLen), sizeof(dwPackLen));
+    fio->_ReadFile(fileS, &dwPackLen, sizeof(dwPackLen));
     if (dwPackLen == 0 || dwPackLen > 0x8000000)
     {
         data_size = 0;

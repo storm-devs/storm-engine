@@ -47,7 +47,7 @@ void DataCache::CacheSystem(const char *FileName)
     const auto FileSize = fio->_GetFileSize(pathStr.c_str());
 
     auto *pMemBuffer = new uint8_t[FileSize];
-    fio->_ReadFile(sysFile, reinterpret_cast<char *>(pMemBuffer), FileSize);
+    fio->_ReadFile(sysFile, pMemBuffer, FileSize);
 
     // Create data from file ...
     CreateDataSource(pMemBuffer, FileSize, pathStr.c_str());

@@ -9,10 +9,10 @@ bool ISLAND::DoZapSuperGeneratorDecodeFile(const char *sname)
     {
         TGA_H tga_head;
 
-        fio->_ReadFile(fileS, reinterpret_cast<char *>(&tga_head), sizeof(tga_head));
+        fio->_ReadFile(fileS, &tga_head, sizeof(tga_head));
         const uint32_t dwSize = tga_head.width;
         auto *pTempMap = new uint8_t[dwSize * dwSize];
-        fio->_ReadFile(fileS, reinterpret_cast<char *>(pTempMap), dwSize * dwSize);
+        fio->_ReadFile(fileS, pTempMap, dwSize * dwSize);
         fio->_CloseFile(fileS);
 
         mzShadow.DoZip(pTempMap, dwSize);

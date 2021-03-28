@@ -1,8 +1,8 @@
 #include "file_service.h"
-
 #include "storm_assert.h"
-
 #include "utf8.h"
+#include "core.h"
+
 #include <exception>
 #include <string>
 #include <filesystem>
@@ -60,33 +60,35 @@ void FILE_SERVICE::_SetFilePointer(std::fstream &fileS, std::streamoff off, std:
 int FILE_SERVICE::_DeleteFile(const char *filename)
 {
     std::filesystem::path path = std::filesystem::u8path(filename);
-    return std::remove(filename);
+    return std::filesystem::remove(path);
 }
 
-bool FILE_SERVICE::_WriteFile(std::fstream &fileS, const char *s, std::streamsize count)
+bool FILE_SERVICE::_WriteFile(std::fstream &fileS, const void *s, std::streamsize count)
 {
     fileS.exceptions(std::fstream::failbit | std::fstream::badbit);
     try
     {
-        fileS.write(s, count);
+        fileS.write(reinterpret_cast<const char *>(s), count);
         return true;
     }
-    catch (std::fstream::failure e)
+    catch (const std::fstream::failure &e)
     {
+        core.tracelog->error("Failed to WriteFile: {}", e.what());
         return false;
     }
 }
 
-bool FILE_SERVICE::_ReadFile(std::fstream &fileS, char *s, std::streamsize count)
+bool FILE_SERVICE::_ReadFile(std::fstream &fileS, void *s, std::streamsize count)
 {
     fileS.exceptions(std::fstream::failbit | std::fstream::badbit);
     try
     {
-        fileS.read(s, count);
+        fileS.read(reinterpret_cast<char *>(s), count);
         return true;
     }
-    catch (std::fstream::failure e)
+    catch (const std::fstream::failure &e)
     {
+        core.tracelog->error("Failed to ReadFile: {}", e.what());
         return false;
     }
 }
@@ -182,6 +184,7 @@ INIFILE *FILE_SERVICE::CreateIniFile(const char *file_name, bool fail_if_exist)
     fileS = _CreateFile(file_name, std::ios::binary | std::ios::out);
     if (!fileS.is_open())
     {
+        core.tracelog->error("Can't create ini file: {}", file_name);
         return nullptr;
     }
     _CloseFile(fileS);
@@ -284,6 +287,7 @@ BOOL FILE_SERVICE::LoadFile(const char *file_name, char **ppBuffer, uint32_t *dw
     auto fileS = fio->_CreateFile(file_name, std::ios::binary | std::ios::in);
     if (!fileS.is_open())
     {
+        core.tracelog->trace("Can't load file: {}", file_name);
         return false;
     }
     const auto dwLowSize = _GetFileSize(file_name);

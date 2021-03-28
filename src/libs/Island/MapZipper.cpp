@@ -105,17 +105,16 @@ bool MapZipper::Load(std::string sFileName)
     {
         return false;
     }
-    fio->_ReadFile(fileS, reinterpret_cast<char *>(&dwSizeX), sizeof(dwSizeX));
-    fio->_ReadFile(fileS, reinterpret_cast<char *>(&dwDX), sizeof(dwDX));
-    fio->_ReadFile(fileS, reinterpret_cast<char *>(&dwBlockSize), sizeof(dwBlockSize));
-    fio->_ReadFile(fileS, reinterpret_cast<char *>(&dwBlockShift), sizeof(dwBlockShift));
-    fio->_ReadFile(fileS, reinterpret_cast<char *>(&dwShiftNumBlocksX), sizeof(dwShiftNumBlocksX));
-    fio->_ReadFile(fileS, reinterpret_cast<char *>(&dwNumRealBlocks), sizeof(dwNumRealBlocks));
+    fio->_ReadFile(fileS, &dwSizeX, sizeof(dwSizeX));
+    fio->_ReadFile(fileS, &dwDX, sizeof(dwDX));
+    fio->_ReadFile(fileS, &dwBlockSize, sizeof(dwBlockSize));
+    fio->_ReadFile(fileS, &dwBlockShift, sizeof(dwBlockShift));
+    fio->_ReadFile(fileS, &dwShiftNumBlocksX, sizeof(dwShiftNumBlocksX));
+    fio->_ReadFile(fileS, &dwNumRealBlocks, sizeof(dwNumRealBlocks));
     pWordTable = new uint16_t[dwDX * dwDX];
-    fio->_ReadFile(fileS, reinterpret_cast<char *>(pWordTable), sizeof(uint16_t) * dwDX * dwDX);
+    fio->_ReadFile(fileS, pWordTable, sizeof(uint16_t) * dwDX * dwDX);
     pRealData = static_cast<uint8_t *>(malloc(dwNumRealBlocks * dwBlockSize * dwBlockSize));
-    fio->_ReadFile(fileS, reinterpret_cast<char *>(pRealData),
-                   sizeof(uint8_t) * dwNumRealBlocks * dwBlockSize * dwBlockSize);
+    fio->_ReadFile(fileS, pRealData, sizeof(uint8_t) * dwNumRealBlocks * dwBlockSize * dwBlockSize);
     fio->_CloseFile(fileS);
     return true;
 }
@@ -127,15 +126,14 @@ bool MapZipper::Save(std::string sFileName)
     {
         return false;
     }
-    fio->_WriteFile(fileS, reinterpret_cast<char *>(&dwSizeX), sizeof(dwSizeX));
-    fio->_WriteFile(fileS, reinterpret_cast<char *>(&dwDX), sizeof(dwDX));
-    fio->_WriteFile(fileS, reinterpret_cast<char *>(&dwBlockSize), sizeof(dwBlockSize));
-    fio->_WriteFile(fileS, reinterpret_cast<char *>(&dwBlockShift), sizeof(dwBlockShift));
-    fio->_WriteFile(fileS, reinterpret_cast<char *>(&dwShiftNumBlocksX), sizeof(dwShiftNumBlocksX));
-    fio->_WriteFile(fileS, reinterpret_cast<char *>(&dwNumRealBlocks), sizeof(dwNumRealBlocks));
-    fio->_WriteFile(fileS, reinterpret_cast<char *>(pWordTable), sizeof(uint16_t) * dwDX * dwDX);
-    fio->_WriteFile(fileS, reinterpret_cast<char *>(pRealData),
-                    sizeof(uint8_t) * dwNumRealBlocks * dwBlockSize * dwBlockSize);
+    fio->_WriteFile(fileS, &dwSizeX, sizeof(dwSizeX));
+    fio->_WriteFile(fileS, &dwDX, sizeof(dwDX));
+    fio->_WriteFile(fileS, &dwBlockSize, sizeof(dwBlockSize));
+    fio->_WriteFile(fileS, &dwBlockShift, sizeof(dwBlockShift));
+    fio->_WriteFile(fileS, &dwShiftNumBlocksX, sizeof(dwShiftNumBlocksX));
+    fio->_WriteFile(fileS, &dwNumRealBlocks, sizeof(dwNumRealBlocks));
+    fio->_WriteFile(fileS, pWordTable, sizeof(uint16_t) * dwDX * dwDX);
+    fio->_WriteFile(fileS, pRealData, sizeof(uint8_t) * dwNumRealBlocks * dwBlockSize * dwBlockSize);
     fio->_CloseFile(fileS);
     return true;
 }

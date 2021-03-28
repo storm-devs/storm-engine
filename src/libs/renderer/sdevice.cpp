@@ -1292,7 +1292,7 @@ bool DX9RENDER::TextureLoad(long t)
     }
     // Reading the header
     TX_FILE_HEADER head;
-    if (!fio->_ReadFile(fileS, reinterpret_cast<char *>(&head), sizeof(head)))
+    if (!fio->_ReadFile(fileS, &head, sizeof(head)))
     {
         if (bTrace)
         {
@@ -1647,7 +1647,7 @@ bool DX9RENDER::LoadTextureSurface(std::fstream &fileS, IDirect3DSurface9 *sufac
         return false;
     }
     // Reading out
-    if (!fio->_ReadFile(fileS, reinterpret_cast<char *>(lock.pBits), mipSize))
+    if (!fio->_ReadFile(fileS, lock.pBits, mipSize))
     {
         if (CHECKD3DERR(suface->UnlockRect()) == true)
         {
@@ -3103,14 +3103,14 @@ void DX9RENDER::MakeScreenShot()
         core.Trace("Can't create screenshot file");
         return;
     }
-    fio->_WriteFile(fileS, reinterpret_cast<char *>(&Dhdr), sizeof(TGA_H));
+    fio->_WriteFile(fileS, &Dhdr, sizeof(TGA_H));
 
     Surface = static_cast<uint32_t *>(lr.pBits);
     Surface += lr.Pitch * screen_size.y >> 2;
     for (i = 0; i < screen_size.y; i++)
     {
         Surface -= lr.Pitch >> 2;
-        fio->_WriteFile(fileS, reinterpret_cast<char *>(Surface), screen_size.x * 4);
+        fio->_WriteFile(fileS, Surface, screen_size.x * 4);
     }
     surface->UnlockRect();
     surface->Release();

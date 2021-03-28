@@ -146,7 +146,7 @@ void Astronomy::STARS::Init(ATTRIBUTES *pAP)
     if (!fileS.is_open())
     {
         uint32_t dwSize;
-        fio->_ReadFile(fileS, reinterpret_cast<char *>(&dwSize), sizeof(dwSize));
+        fio->_ReadFile(fileS, &dwSize, sizeof(dwSize));
 
         static D3DVERTEXELEMENT9 VertexElem[] = {
             {0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
@@ -172,10 +172,10 @@ void Astronomy::STARS::Init(ATTRIBUTES *pAP)
                 // aStars.AddElements(dwSize);
                 aStars.resize(aStars.size() + dwSize);
                 fio->_SetFilePointer(outfileS, 0, std::ios::beg);
-                fio->_ReadFile(outfileS, reinterpret_cast<char *>(aStars.data()), sizeof(Star) * dwSize);
-                fio->_ReadFile(outfileS, reinterpret_cast<char *>(aStars.data()), sizeof(Star) * dwSize);
-                fio->_ReadFile(outfileS, reinterpret_cast<char *>(pVPos), sizeof(CVECTOR) * dwSize);
-                fio->_ReadFile(outfileS, reinterpret_cast<char *>(pVColors), sizeof(uint32_t) * dwSize);
+                fio->_ReadFile(outfileS, aStars.data(), sizeof(Star) * dwSize);
+                fio->_ReadFile(outfileS, aStars.data(), sizeof(Star) * dwSize);
+                fio->_ReadFile(outfileS, pVPos, sizeof(CVECTOR) * dwSize);
+                fio->_ReadFile(outfileS, pVColors, sizeof(uint32_t) * dwSize);
                 bRecalculateData = false;
             }
             fio->_CloseFile(outfileS);
@@ -190,10 +190,10 @@ void Astronomy::STARS::Init(ATTRIBUTES *pAP)
                 aStars.push_back(Star{});
                 auto &s = aStars.back();
 
-                fio->_ReadFile(fileS, reinterpret_cast<char *>(&s.fRA), sizeof(s.fRA));
-                fio->_ReadFile(fileS, reinterpret_cast<char *>(&s.fDec), sizeof(s.fDec));
-                fio->_ReadFile(fileS, reinterpret_cast<char *>(&s.fMag), sizeof(s.fMag));
-                fio->_ReadFile(fileS, reinterpret_cast<char *>(&s.cSpectr[0]), sizeof(s.cSpectr));
+                fio->_ReadFile(fileS, &s.fRA, sizeof(s.fRA));
+                fio->_ReadFile(fileS, &s.fDec, sizeof(s.fDec));
+                fio->_ReadFile(fileS, &s.fMag, sizeof(s.fMag));
+                fio->_ReadFile(fileS, &s.cSpectr[0], sizeof(s.cSpectr));
                 s.dwColor = Spectr[s.cSpectr[0]];
 
                 if (s.fMag < fMaxMag)
@@ -214,9 +214,9 @@ void Astronomy::STARS::Init(ATTRIBUTES *pAP)
             outfileS = fio->_CreateFile("resource\\star.dat", std::ios::binary | std::ios::out);
             if (!outfileS.is_open())
             {
-                fio->_WriteFile(outfileS, reinterpret_cast<char *>(aStars.data()), sizeof(Star) * dwSize);
-                fio->_WriteFile(outfileS, reinterpret_cast<char *>(pVPos), sizeof(CVECTOR) * dwSize);
-                fio->_WriteFile(outfileS, reinterpret_cast<char *>(pVColors), sizeof(uint32_t) * dwSize);
+                fio->_WriteFile(outfileS, aStars.data(), sizeof(Star) * dwSize);
+                fio->_WriteFile(outfileS, pVPos, sizeof(CVECTOR) * dwSize);
+                fio->_WriteFile(outfileS, pVColors, sizeof(uint32_t) * dwSize);
                 fio->_CloseFile(outfileS);
             }
         }

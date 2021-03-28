@@ -126,7 +126,7 @@ void PROGRAM::ClearEvents()
 
 bool PROGRAM::SaveState(std::fstream &fileS)
 {
-    fio->_WriteFile(fileS, reinterpret_cast<char *>(&ProgramNum), sizeof(ProgramNum));
+    fio->_WriteFile(fileS, &ProgramNum, sizeof(ProgramNum));
     for (uint32_t n = 0; n < ProgramNum; n++)
     {
         ProgramBlock[n]->SaveState(fileS);
@@ -137,7 +137,7 @@ bool PROGRAM::SaveState(std::fstream &fileS)
 bool PROGRAM::LoadState(std::fstream &fileS)
 {
     Release();
-    fio->_ReadFile(fileS, reinterpret_cast<char *>(&ProgramNum), sizeof(ProgramNum));
+    fio->_ReadFile(fileS, &ProgramNum, sizeof(ProgramNum));
     ProgramBlock = static_cast<COMPILER **>(realloc(ProgramBlock, ProgramNum * sizeof(COMPILER *)));
     for (uint32_t n = 0; n < ProgramNum; n++)
     {

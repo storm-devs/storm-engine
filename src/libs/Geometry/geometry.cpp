@@ -214,7 +214,7 @@ int GEOM_SERVICE_R::FileSize(const char *fname)
 
 bool GEOM_SERVICE_R::ReadFile(std::fstream &fileS, void *data, long bytes)
 {
-    return fio->_ReadFile(fileS, reinterpret_cast<char *>(data), bytes);
+    return fio->_ReadFile(fileS, data, bytes);
 }
 
 void GEOM_SERVICE_R::CloseFile(std::fstream &fileS)
