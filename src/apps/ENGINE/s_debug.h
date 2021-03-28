@@ -62,12 +62,15 @@ class S_DEBUG
     SOURCE_VIEW *SourceView;
     WATCHER_LIST *WatcherList;
 
-    S_DEBUG();
+    S_DEBUG() = default;
     ~S_DEBUG();
     HWND GetWindowHandle()
     {
         return hMain;
     };
+
+    void Init();
+
     bool OpenDebugWindow(HINSTANCE hInstance);
     bool OpenDebugWindow_NT(HINSTANCE hInstance);
     void OpenNewFile();

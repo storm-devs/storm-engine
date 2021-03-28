@@ -304,30 +304,6 @@ void S_DEBUG::BreakOn(const char *filename, uint32_t line)
     }
 }
 
-S_DEBUG::S_DEBUG()
-{
-    nDisplayMode = MODE_SOURCE_VIEW;
-    MainThreadID = GetCurrentThreadId();
-    BreakFileName[0] = 0;
-    BreakLineCode = 0;
-    hDebugThread = nullptr;
-    DebugThreadID = 0;
-    ProgramDirectory[0] = 0;
-    sLastFileName[0] = 0;
-    hInst = nullptr;
-    hMain = nullptr;
-    WatcherList = nullptr;
-    SourceView = nullptr;
-    hFont = CreateFont(FONT_HEIGHT, 0, 0, 0,
-                       // FW_BOLD,
-                       FW_MEDIUM, false, false, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
-                       ANTIALIASED_QUALITY, VARIABLE_PITCH, TEXT("Courier New"));
-    //"arial");
-    pExpResBuffer = nullptr;
-    bTrace = false;
-    Breaks.ReadProject(PROJECT_NAME);
-}
-
 S_DEBUG::~S_DEBUG()
 {
     CloseDebugWindow();
@@ -355,6 +331,30 @@ void S_DEBUG::Release()
     SourceView = nullptr;
     delete pExpResBuffer;
     pExpResBuffer = nullptr;
+}
+
+void S_DEBUG::Init()
+{
+    nDisplayMode = MODE_SOURCE_VIEW;
+    MainThreadID = GetCurrentThreadId();
+    BreakFileName[0] = 0;
+    BreakLineCode = 0;
+    hDebugThread = nullptr;
+    DebugThreadID = 0;
+    ProgramDirectory[0] = 0;
+    sLastFileName[0] = 0;
+    hInst = nullptr;
+    hMain = nullptr;
+    WatcherList = nullptr;
+    SourceView = nullptr;
+    hFont = CreateFont(FONT_HEIGHT, 0, 0, 0,
+                       // FW_BOLD,
+                       FW_MEDIUM, false, false, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+                       ANTIALIASED_QUALITY, VARIABLE_PITCH, TEXT("Courier New"));
+    //"arial");
+    pExpResBuffer = nullptr;
+    bTrace = false;
+    Breaks.ReadProject(PROJECT_NAME);
 }
 
 bool S_DEBUG::OpenDebugWindow(HINSTANCE hInstance)

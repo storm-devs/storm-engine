@@ -14,6 +14,7 @@
 constexpr auto DUMP_FILENAME = "engine_dump.dmp";
 
 S_DEBUG CDebug;
+
 bool isHold = false;
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
@@ -88,6 +89,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     core.Compiler->errorlog->set_level(spdlog::level::trace);
     core.Compiler->warninglog = std::make_shared<spdlog::logger>("warning", core.Compiler->error_warning_sink);
     core.Compiler->warninglog->set_level(spdlog::level::trace);
+
+    // Init script debugger
+    CDebug.Init();
 
     /* Read config */
     uint32_t dwMaxFPS = 0;
