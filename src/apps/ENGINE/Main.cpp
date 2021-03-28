@@ -19,21 +19,30 @@ bool isHold = false;
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 int Alert(const char *lpCaption, const char *lpText);
 void CreateMiniDump(EXCEPTION_POINTERS *pep);
-bool _loopMain();
 
-bool _loopMain()
+bool runExceptionWrapped()
 {
-    bool runResult = false;
+    try
+    {
+        return core.Run();
+    }
+    catch (const std::exception &e)
+    {
+        spdlog::critical(e.what());
+        throw;
+    }
+}
 
+bool runSehWrapped()
+{
     __try
     {
-        runResult = core.Run();
+        return runExceptionWrapped();
     }
     __except (CreateMiniDump(GetExceptionInformation()), EXCEPTION_EXECUTE_HANDLER)
     {
+        std::terminate();
     }
-
-    return runResult;
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
@@ -61,14 +70,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     /* Init system log */
     log_path = fs::GetLogsPath() / std::filesystem::u8path("system.log");
     fio->_DeleteFile(log_path.string().c_str());
-    core.tracelog = spdlog::basic_logger_mt("system", log_path.string(), true);
-    spdlog::set_default_logger(core.tracelog);
+    core.tracelog = spdlog::basic_logger_st("system", log_path.string(), true);
     core.tracelog->set_level(spdlog::level::trace);
+    core.tracelog->flush_on(spdlog::level::critical);
+    set_default_logger(core.tracelog);
+
 
     /* Init compile and error/warning logs */
     log_path = fs::GetLogsPath() / std::filesystem::u8path(COMPILER_LOG_FILENAME);
     fio->_DeleteFile(log_path.string().c_str());
-    core.Compiler->tracelog = spdlog::basic_logger_mt("compile", log_path.string(), true);
+    core.Compiler->tracelog = spdlog::basic_logger_st("compile", log_path.string(), true);
     core.Compiler->tracelog->set_level(spdlog::level::trace);
     log_path = fs::GetLogsPath() / std::filesystem::u8path(COMPILER_ERRORLOG_FILENAME);
     fio->_DeleteFile(log_path.string().c_str());
@@ -156,10 +167,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
                         continue;
                     dwOldTime = dwNewTime;
                 }
-
-                bool runResult = _loopMain();
-
-                //                if (!isHold && !core.Run())
+                const auto runResult = runSehWrapped();
                 if (!isHold && !runResult)
                 {
                     isHold = true;
@@ -249,6 +257,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 void CreateMiniDump(EXCEPTION_POINTERS *pep)
 {
+    // flush logs
+    if (core.tracelog)
+    {
+        core.tracelog->flush();
+    }
+
     std::filesystem::path dmpfile = fs::GetStashPath() / std::filesystem::u8path(DUMP_FILENAME);
     // Open the file
     HANDLE hFile =
