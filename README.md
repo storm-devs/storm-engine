@@ -24,15 +24,20 @@ You need to install [Conan](https://conan.io/downloads.html) and add it to the `
 
 Open the repo root as a CMake project in Visual Studio 2019 and select `engine.exe` as a startup item.
 
+For running `engine.exe` you need to have [DirectX 9 runtime libraries](https://www.microsoft.com/en-us/download/details.aspx?id=8109) installed. 
+
 ## Roadmap
 Since our development team is small, we want to reduce the amount of code we have to maintain.
 For this reason, we decided to rely on the C++ standard library or third-party libraries if possible.
 
 Some things that we are going to do:
-- Replace a custom math library by a third-party one, e.g. [glm](https://github.com/g-truc/glm).
+- Replace a custom math library with a third-party one, e.g. [glm](https://github.com/g-truc/glm).
 - Replace custom rendering code with a [bgfx](https://github.com/bkaradzic/bgfx) library.
 - Replace custom input handling code with a third-party library, e.g. [gainput](https://github.com/jkuhlmann/gainput).
-- Replace custom data structures by C++ standard types.
+- Replace custom data structures with C++ standard types.
+- Replace a custom scripting language with Lua.
+- Replace ini config files with JSON.
+- Replace custom binary asset formats with standard ones.
 
 ## Contributing
 If you'd like to get involved, don't hesitate to contact us. Pull requests and any other kind of help are more than welcome as well.
