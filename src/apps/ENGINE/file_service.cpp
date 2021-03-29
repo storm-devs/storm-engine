@@ -16,8 +16,6 @@
 const char INI_LINEFEED[3] = {0xd, 0xa, 0};
 const char INI_VOIDSYMS[VOIDSYMS_NUM] = {0x20, 0x9};
 
-extern FILE_SERVICE File_Service;
-
 void FILE_SERVICE::FlushIniFiles()
 {
     for (uint32_t n = 0; n <= Max_File_Index; n++)
@@ -308,10 +306,6 @@ BOOL FILE_SERVICE::LoadFile(const char *file_name, char **ppBuffer, uint32_t *dw
 }
 
 //=================================================================================================
-INIFILE_T::~INIFILE_T()
-{
-    File_Service.RefDec(ifs_PTR);
-}
 
 void INIFILE_T::AddString(const char *section_name, const char *key_name, const char *string)
 {

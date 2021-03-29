@@ -1,8 +1,8 @@
-#include "externs.h"
 #include "fs.h"
 #include "s_debug.h"
 #include "SteamApi.hpp"
 #include "compiler.h"
+#include "file_service.h"
 
 #include <crtdbg.h>
 #include <dbghelp.h>
@@ -11,11 +11,18 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
 
-constexpr auto DUMP_FILENAME = "engine_dump.dmp";
-
+VFILE_SERVICE *fio = nullptr;
+CORE core;
 S_DEBUG CDebug;
 
+namespace
+{
+constexpr auto DUMP_FILENAME = "engine_dump.dmp";
+
 bool isHold = false;
+bool bActive = false;
+
+} // namespace
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 int Alert(const char *lpCaption, const char *lpText);
@@ -57,8 +64,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     }
 
 
+    // Init FS
+    FILE_SERVICE File_Service;
     fio = &File_Service;
-    //_VSYSTEM_API = &System_Api;
+
+    // Init core
+    core.Init();
 
     /* Init stash */
     create_directories(fs::GetLogsPath());
@@ -95,7 +106,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
 
     /* Read config */
     uint32_t dwMaxFPS = 0;
-    auto *ini = File_Service.OpenIniFile(ENGINE_INI_FILE_NAME);
+    auto *ini = fio->OpenIniFile(fs::ENGINE_INI_FILE_NAME);
     bool bSteam = false;
 
     if (ini)
@@ -209,7 +220,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
         core.Event("ExitApplication", nullptr);
         CDebug.Release();
         core.CleanUp();
-        File_Service.Close();
         CDebug.CloseDebugWindow();
 
         InvalidateRect(nullptr, nullptr, 0);

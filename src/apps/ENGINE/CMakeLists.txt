@@ -10,8 +10,6 @@ add_executable(${PROJECT_NAME} WIN32
     data.h
     dstring_codec.h
     expression.cpp
-    externs.cpp
-    externs.h
     file_service.cpp
     file_service.h
     fs.cpp

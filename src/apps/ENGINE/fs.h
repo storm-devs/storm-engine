@@ -9,4 +9,6 @@ using namespace std::filesystem;
 path GetStashPath();
 path GetLogsPath();
 path GetSaveDataPath();
+
+constexpr char ENGINE_INI_FILE_NAME[] = "engine.ini";
 } // namespace fs

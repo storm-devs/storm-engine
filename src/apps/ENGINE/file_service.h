@@ -14,8 +14,7 @@ class INIFILE_T : public INIFILE
         ifs_PTR = iR;
         Search.Section = nullptr;
         Search.Key = nullptr;
-    };
-    ~INIFILE_T();
+    }
 
     SEARCH_DATA Search;
 

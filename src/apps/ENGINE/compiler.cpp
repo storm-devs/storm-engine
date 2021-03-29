@@ -1,5 +1,4 @@
 #include "compiler.h"
-#include "externs.h"
 #include "s_debug.h"
 #include <cstdio>
 
@@ -17,7 +16,6 @@
 #include "zlib.h"
 #include <storm_assert.h>
 
-extern FILE_SERVICE File_Service;
 // extern char * FuncNameTable[];
 extern INTFUNCDESC IntFuncTable[];
 extern S_DEBUG CDebug;
@@ -26,8 +24,8 @@ extern uint32_t dwNumberScriptCommandsExecuted;
 COMPILER::COMPILER()
 {
     CompilerStage = CS_SYSTEM;
-    File_Service._DeleteFile(COMPILER_LOG_FILENAME);
-    File_Service._DeleteFile(COMPILER_ERRORLOG_FILENAME);
+    fio->_DeleteFile(COMPILER_LOG_FILENAME);
+    fio->_DeleteFile(COMPILER_ERRORLOG_FILENAME);
     LabelTable.SetStringDataSize(sizeof(uint32_t));
     LabelUpdateTable.SetStringDataSize(sizeof(DOUBLE_DWORD));
     ProgramDirectory = nullptr;
