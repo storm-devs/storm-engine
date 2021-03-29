@@ -309,7 +309,6 @@ uint64_t MODELR::ProcessMessage(MESSAGE &message)
             delete root;
             root = nullptr;
             EntityManager::EraseEntity(GetId());
-            fio->SetDrive();
             return 0;
         }
         // CVECTOR tmp;

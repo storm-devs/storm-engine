@@ -124,25 +124,25 @@ void PROGRAM::ClearEvents()
     }
 }
 
-bool PROGRAM::SaveState(HANDLE fh)
+bool PROGRAM::SaveState(std::fstream &fileS)
 {
-    fio->_WriteFile(fh, &ProgramNum, sizeof(ProgramNum), nullptr);
+    fio->_WriteFile(fileS, &ProgramNum, sizeof(ProgramNum));
     for (uint32_t n = 0; n < ProgramNum; n++)
     {
-        ProgramBlock[n]->SaveState(fh);
+        ProgramBlock[n]->SaveState(fileS);
     }
     return true;
 }
 
-bool PROGRAM::LoadState(HANDLE fh)
+bool PROGRAM::LoadState(std::fstream &fileS)
 {
     Release();
-    fio->_ReadFile(fh, &ProgramNum, sizeof(ProgramNum), nullptr);
+    fio->_ReadFile(fileS, &ProgramNum, sizeof(ProgramNum));
     ProgramBlock = static_cast<COMPILER **>(realloc(ProgramBlock, ProgramNum * sizeof(COMPILER *)));
     for (uint32_t n = 0; n < ProgramNum; n++)
     {
         ProgramBlock[n] = new COMPILER;
-        if (!ProgramBlock[n]->LoadState(fh))
+        if (!ProgramBlock[n]->LoadState(fileS))
             return false;
     }
     return true;

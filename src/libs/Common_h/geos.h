@@ -12,8 +12,7 @@ Import library main header
 #define _GEOLIB_I_H_
 
 #include <cstdint>
-
-using HANDLE = void *;
+#include <fstream>
 
 class GEOS
 {
@@ -281,10 +280,10 @@ class GEOM_SERVICE
 {
   public:
     virtual ~GEOM_SERVICE(){};
-    virtual HANDLE OpenFile(const char *fname) = 0;
-    virtual void ReadFile(HANDLE file, void *data, long bytes) = 0;
-    virtual int FileSize(HANDLE file) = 0;
-    virtual void CloseFile(HANDLE file) = 0;
+    virtual std::fstream OpenFile(const char *fname) = 0;
+    virtual bool ReadFile(std::fstream &fileS, void *data, long bytes) = 0;
+    virtual int FileSize(const char *fname) = 0;
+    virtual void CloseFile(std::fstream &fileS) = 0;
     virtual void *malloc(long bytes) = 0;
     virtual void free(void *ptr) = 0;
 

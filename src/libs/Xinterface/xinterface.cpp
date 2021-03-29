@@ -3266,55 +3266,57 @@ char *AddAttributesStringsToBuffer(char *inBuffer, char *prevStr, ATTRIBUTES *pA
 
 void XINTERFACE::SaveOptionsFile(char *fileName, ATTRIBUTES *pAttr)
 {
-    HANDLE fh;
     char FullPath[MAX_PATH];
 
     if (fileName == nullptr || pAttr == nullptr)
+    {
         return;
+    }
     strcpy_s(FullPath, fileName);
 
-    fio->SetDrive(XBOXDRIVE_NONE);
     PrecreateDirForFile(FullPath);
-    fh = fio->_CreateFile(FullPath, GENERIC_WRITE, 0, CREATE_ALWAYS);
-    fio->SetDrive();
-    if (fh == INVALID_HANDLE_VALUE)
+    auto fileS = fio->_CreateFile(FullPath, std::ios::binary | std::ios::out);
+    if (!fileS.is_open())
+    {
         return;
+    }
 
     char *pOutBuffer = nullptr;
-    uint32_t dwSaveSize = 0, dwRealSaved = 0;
 
     if (pAttr)
+    {
         pOutBuffer = AddAttributesStringsToBuffer(nullptr, nullptr, pAttr);
+    }
 
     if (pOutBuffer)
     {
-        fio->_WriteFile(fh, pOutBuffer, strlen(pOutBuffer), &dwRealSaved);
+        fio->_WriteFile(fileS, pOutBuffer, strlen(pOutBuffer));
         delete pOutBuffer;
     }
-    fio->_CloseHandle(fh);
+    fio->_CloseFile(fileS);
 }
 
 void XINTERFACE::LoadOptionsFile(char *fileName, ATTRIBUTES *pAttr)
 {
-    HANDLE fh;
     char FullPath[MAX_PATH];
 
     if (fileName == nullptr || pAttr == nullptr)
+    {
         return;
+    }
     strcpy_s(FullPath, fileName);
 
-    fio->SetDrive(XBOXDRIVE_NONE);
-    fh = fio->_CreateFile(FullPath, GENERIC_READ, 0, OPEN_EXISTING);
-    fio->SetDrive();
-    if (fh == INVALID_HANDLE_VALUE)
+    auto fileS = fio->_CreateFile(FullPath, std::ios::binary | std::ios::in);
+    if (!fileS.is_open())
+    {
         return;
+    }
 
-    uint32_t dwRealSize;
-    const uint32_t dwSaveSize = fio->_GetFileSize(fh, nullptr);
+    const uint32_t dwSaveSize = fio->_GetFileSize(FullPath);
     if (dwSaveSize == 0)
     {
         core.Event("evntOptionsBreak");
-        fio->_CloseHandle(fh);
+        fio->_CloseFile(fileS);
         return;
     }
 
@@ -3322,10 +3324,11 @@ void XINTERFACE::LoadOptionsFile(char *fileName, ATTRIBUTES *pAttr)
     pOutBuffer[dwSaveSize] = '\0';
     if (pOutBuffer)
     {
-        fio->_ReadFile(fh, pOutBuffer, dwSaveSize, &dwRealSize);
+        fio->_ReadFile(fileS, pOutBuffer, dwSaveSize);
         if (pAttr) //~!~
         {
             char *pBuf = pOutBuffer;
+            auto msvsHasNodiscardReturnValue = std::remove(pBuf, pBuf + std::strlen(pBuf) + 1, '\r'); // + 1 for '\0'
             while (pBuf && *pBuf != 0)
             {
                 char param1[512], param2[512];
@@ -3338,15 +3341,19 @@ void XINTERFACE::LoadOptionsFile(char *fileName, ATTRIBUTES *pAttr)
                 }
                 // pBuf += strlen(param1)+strlen(param2);
                 while (*pBuf && *pBuf != 13 && *pBuf != 10)
+                {
                     pBuf++;
+                }
                 while (*pBuf && (*pBuf == 13 || *pBuf == 10))
+                {
                     pBuf++;
+                }
             }
         }
         delete[] pOutBuffer;
     }
 
-    fio->_CloseHandle(fh);
+    fio->_CloseFile(fileS);
 }
 
 void XINTERFACE::GetContextHelpData()

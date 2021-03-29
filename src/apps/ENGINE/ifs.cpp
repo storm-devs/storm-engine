@@ -1,7 +1,5 @@
 #include "ifs.h"
-
 #include "core.h"
-
 #include "vmodule_api.h"
 
 #define COMMENT ';'
@@ -362,38 +360,35 @@ bool IFS::VoidSym(char symbol)
 
 bool IFS::LoadFile(const char *_file_name)
 {
-    uint32_t dwR;
-
     if (_file_name == nullptr)
-        return false;
-    auto *const fh = fs->_CreateFile(_file_name, GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING);
-    if (fh == INVALID_HANDLE_VALUE)
-        return false;
-
-    const auto file_size = fs->_GetFileSize(fh, nullptr);
-    if (file_size == INVALID_FILE_SIZE)
     {
-        fs->_CloseHandle(fh);
         return false;
     }
+    auto fileS = fs->_CreateFile(_file_name, std::ios::binary | std::ios::in);
+    if (!fileS.is_open())
+    {
+        core.tracelog->trace("Unable to load file: {}", _file_name);
+        return false;
+    }
+
+    const auto file_size = fs->_GetFileSize(_file_name);
 
     auto *const file_data = new char[file_size + 1]; // +1 for zero at the end
     if (file_data == nullptr)
     {
-        fs->_CloseHandle(fh);
+        fs->_CloseFile(fileS);
         return false;
     }
     file_data[file_size] = 0;
 
-    fs->_ReadFile(fh, file_data, file_size, &dwR);
-    if (file_size != dwR)
+    if (!fs->_ReadFile(fileS, file_data, file_size))
     {
         delete[] file_data;
-        fs->_CloseHandle(fh);
+        fs->_CloseFile(fileS);
         return false;
     }
 
-    fs->_CloseHandle(fh);
+    fs->_CloseFile(fileS);
 
     const uint32_t name_size = strlen(_file_name) + 1;
 
@@ -402,7 +397,7 @@ bool IFS::LoadFile(const char *_file_name)
     if (FileName == nullptr)
     {
         delete[] file_data;
-        fs->_CloseHandle(fh);
+        fs->_CloseFile(fileS);
         return false;
     }
     strcpy_s(FileName, name_size, _file_name);
@@ -557,7 +552,6 @@ void IFS::Format(char *file_data, long file_size)
 bool IFS::FlushFile()
 {
     // GUARD(bool IFS::FlushFile())
-    uint32_t dwR;
     uint32_t write_size;
     char buff[2];
 
@@ -566,8 +560,8 @@ bool IFS::FlushFile()
 
     fs->_SetFileAttributes(FileName, FILE_ATTRIBUTE_NORMAL);
     fs->_DeleteFile(FileName);
-    auto *const fh = fs->_CreateFile(FileName, GENERIC_WRITE, FILE_SHARE_READ, CREATE_ALWAYS);
-    if (fh == INVALID_HANDLE_VALUE)
+    auto fileS = fio->_CreateFile(FileName, std::ios::binary | std::ios::out);
+    if (!fileS.is_open())
     {
         /*trace("file: (%s)",FileName);*/
         throw std::exception("cant create file");
@@ -582,30 +576,26 @@ bool IFS::FlushFile()
         {
             // write section name -----------------------------------------------------------------
             buff[0] = SECTION_A;
-            fs->_WriteFile(fh, buff, 1, &dwR);
-            if (dwR != 1)
+            if (!fs->_WriteFile(fileS, buff, 1))
             {
                 throw std::exception();
             }
 
             write_size = strlen(section_node->GetName());
-            fs->_WriteFile(fh, section_node->GetName(), write_size, &dwR);
-            if (dwR != write_size)
+            if (!fs->_WriteFile(fileS, section_node->GetName(), write_size))
             {
                 throw std::exception();
             }
 
             buff[0] = SECTION_B;
-            fs->_WriteFile(fh, buff, 1, &dwR);
-            if (dwR != 1)
+            if (!fs->_WriteFile(fileS, buff, 1))
             {
                 throw std::exception();
             }
 
             buff[0] = INI_LINEFEED[0];
             buff[1] = INI_LINEFEED[1];
-            fs->_WriteFile(fh, buff, 2, &dwR);
-            if (dwR != 2)
+            if (!fs->_WriteFile(fileS, buff, 2))
             {
                 throw std::exception();
             }
@@ -619,15 +609,13 @@ bool IFS::FlushFile()
             {
                 // write commented line ---------------------------------------------------------------
                 write_size = strlen(node->GetName());
-                fs->_WriteFile(fh, node->GetName(), write_size, &dwR);
-                if (dwR != write_size)
+                if (!fs->_WriteFile(fileS, node->GetName(), write_size))
                 {
                     throw std::exception();
                 }
                 buff[0] = INI_LINEFEED[0];
                 buff[1] = INI_LINEFEED[1];
-                fs->_WriteFile(fh, buff, 2, &dwR);
-                if (dwR != 2)
+                if (fs->_WriteFile(fileS, buff, 2))
                 {
                     throw std::exception();
                 }
@@ -636,40 +624,34 @@ bool IFS::FlushFile()
             {
                 // write key -------------------------------------------------------------------------
                 write_size = strlen(node->GetName());
-                fs->_WriteFile(fh, node->GetName(), write_size, &dwR);
-                if (dwR != write_size)
+                if (!fs->_WriteFile(fileS, node->GetName(), write_size))
                 {
                     throw std::exception();
                 }
                 if (node->GetValue() != nullptr)
                 {
-                    fs->_WriteFile(fh, &INI_VOIDSYMS[0], 1, &dwR);
-                    if (dwR != 1)
+                    if (!fs->_WriteFile(fileS, &INI_VOIDSYMS[0], 1))
                     {
                         throw std::exception();
                     }
                     buff[0] = INI_EQUAL;
-                    fs->_WriteFile(fh, buff, 1, &dwR);
-                    if (dwR != 1)
+                    if (!fs->_WriteFile(fileS, buff, 1))
                     {
                         throw std::exception();
                     }
-                    fs->_WriteFile(fh, &INI_VOIDSYMS[0], 1, &dwR);
-                    if (dwR != 1)
+                    if (!fs->_WriteFile(fileS, &INI_VOIDSYMS[0], 1))
                     {
                         throw std::exception();
                     }
                     write_size = strlen(node->GetValue());
-                    fs->_WriteFile(fh, node->GetValue(), write_size, &dwR);
-                    if (dwR != write_size)
+                    if (!fs->_WriteFile(fileS, node->GetValue(), write_size))
                     {
                         throw std::exception();
                     }
                 }
                 buff[0] = INI_LINEFEED[0];
                 buff[1] = INI_LINEFEED[1];
-                fs->_WriteFile(fh, buff, 2, &dwR);
-                if (dwR != 2)
+                if (!fs->_WriteFile(fileS, buff, 2))
                 {
                     throw std::exception();
                 }
@@ -682,14 +664,13 @@ bool IFS::FlushFile()
 
         buff[0] = INI_LINEFEED[0];
         buff[1] = INI_LINEFEED[1];
-        fs->_WriteFile(fh, buff, 2, &dwR);
-        if (dwR != 2)
+        if (!fs->_WriteFile(fileS, buff, 2))
         {
             throw std::exception();
         }
     }
 
-    fs->_CloseHandle(fh);
+    fs->_CloseFile(fileS);
 
     // UNGUARD
     return false;

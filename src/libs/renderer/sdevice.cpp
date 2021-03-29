@@ -1266,19 +1266,21 @@ bool DX9RENDER::TextureLoad(long t)
     Textures[t].dwSize = 0;
     // sprintf_s(fn,"resource\\textures\\%s.tx",fname);
     if (Textures[t].name == nullptr)
+    {
         return false;
+    }
     sprintf_s(fn, TEXTURESDIR, Textures[t].name);
     for (long s = 0, d = 0; fn[d]; s++)
     {
         if (d > 0 && fn[d - 1] == '\\' && fn[s] == '\\')
+        {
             continue;
+        }
         fn[d++] = fn[s];
     }
     // Opening the file
-    // fio->SetDrive(XBOXDRIVE_CACHE);
-    HANDLE file = fio->_CreateFile(fn);
-    // fio->SetDrive();
-    if (file == INVALID_HANDLE_VALUE)
+    auto fileS = fio->_CreateFile(fn, std::ios::binary | std::ios::in);
+    if (!fileS.is_open())
     {
         if (bTrace)
         {
@@ -1290,8 +1292,7 @@ bool DX9RENDER::TextureLoad(long t)
     }
     // Reading the header
     TX_FILE_HEADER head;
-    uint32_t readingBytes = 0;
-    if (!fio->_ReadFile(file, &head, sizeof(head), &readingBytes) || readingBytes != sizeof(head))
+    if (!fio->_ReadFile(fileS, &head, sizeof(head)))
     {
         if (bTrace)
         {
@@ -1299,22 +1300,28 @@ bool DX9RENDER::TextureLoad(long t)
         }
         delete Textures[t].name;
         Textures[t].name = nullptr;
-        fio->_CloseHandle(file);
+        fio->_CloseFile(fileS);
         return false;
     }
     // Analyzing the format
     D3DFORMAT d3dFormat = D3DFMT_UNKNOWN;
     long textureFI;
     for (textureFI = 0; textureFI < sizeof(textureFormats) / sizeof(SD_TEXTURE_FORMAT); textureFI++)
+    {
         if (textureFormats[textureFI].txFormat == head.format)
+        {
             break;
+        }
+    }
     if (textureFI == sizeof(textureFormats) / sizeof(SD_TEXTURE_FORMAT) || head.flags & TX_FLAGS_PALLETTE)
     {
         if (bTrace)
+        {
             core.Trace("Invalidate texture format %s, not loading it.", fn);
+        }
         delete Textures[t].name;
         Textures[t].name = nullptr;
-        fio->_CloseHandle(file);
+        fio->_CloseFile(fileS);
         return false;
     }
     d3dFormat = textureFormats[textureFI].d3dFormat;
@@ -1325,7 +1332,9 @@ bool DX9RENDER::TextureLoad(long t)
     for (long nTD = nTextureDegradation; nTD > 0; nTD--)
     {
         if (head.nmips <= 1 || head.width <= 32 || head.height <= 32)
+        {
             break; // degradation limit
+        }
         seekposition += head.mip_size;
         head.nmips--;
         head.width /= 2;
@@ -1338,7 +1347,9 @@ bool DX9RENDER::TextureLoad(long t)
         // Loading a regular texture
         // Position in file
         if (seekposition)
-            fio->_SetFilePointer(file, seekposition, nullptr, FILE_CURRENT);
+        {
+            fio->_SetFilePointer(fileS, seekposition, std::ios::cur);
+        }
         // create the texture
         IDirect3DTexture9 *tex = nullptr;
         if (CHECKD3DERR(d3d9->CreateTexture(head.width, head.height, head.nmips, 0, d3dFormat, D3DPOOL_MANAGED, &tex,
@@ -1346,12 +1357,14 @@ bool DX9RENDER::TextureLoad(long t)
             !tex)
         {
             if (bTrace)
+            {
                 core.Trace(
                     "Texture %s is not created (width: %i, height: %i, num mips: %i, format: %s), not loading it.", fn,
                     head.width, head.height, head.nmips, formatTxt);
+            }
             delete Textures[t].name;
             Textures[t].name = nullptr;
-            fio->_CloseHandle(file);
+            fio->_CloseFile(fileS);
             return false;
         }
         // Filling the levels
@@ -1369,21 +1382,25 @@ bool DX9RENDER::TextureLoad(long t)
             else
             {
                 // read the mip
-                isError = !LoadTextureSurface(file, surface, head.mip_size, head.width, head.height, isSwizzled);
+                isError = !LoadTextureSurface(fileS, surface, head.mip_size, head.width, head.height, isSwizzled);
             }
             // Freeing the surface
             if (surface)
+            {
                 surface->Release();
+            }
             // If there was an error, then interrupt the download
             if (isError)
             {
                 if (bTrace)
+                {
                     core.Trace("Can't loading mip %i, texture %s is not created (width: %i, height: %i, num mips: %i, "
                                "format: %s), not loading it.",
                                m, fn, head.width, head.height, head.nmips, formatTxt);
+                }
                 delete Textures[t].name;
                 Textures[t].name = nullptr;
-                fio->_CloseHandle(file);
+                fio->_CloseFile(fileS);
                 tex->Release();
                 return false;
             }
@@ -1401,10 +1418,12 @@ bool DX9RENDER::TextureLoad(long t)
         if (head.width != head.height)
         {
             if (bTrace)
+            {
                 core.Trace("Cube map texture can't has not squared sides %s, not loading it.", fn);
+            }
             delete Textures[t].name;
             Textures[t].name = nullptr;
-            fio->_CloseHandle(file);
+            fio->_CloseFile(fileS);
             return false;
         }
         // Number of mips
@@ -1412,15 +1431,19 @@ bool DX9RENDER::TextureLoad(long t)
         if (CHECKD3DERR(d3d9->GetDeviceCaps(&devcaps)))
         {
             if (bTrace)
+            {
                 core.Trace("Cube map texture %s is not created (size: %i, num mips: %i, format: %s), not loading it.",
                            fn, head.width, head.nmips, formatTxt);
+            }
             delete Textures[t].name;
             Textures[t].name = nullptr;
-            fio->_CloseHandle(file);
+            fio->_CloseFile(fileS);
             return false;
         }
         if (!(devcaps.TextureCaps & D3DPTEXTURECAPS_MIPCUBEMAP))
+        {
             head.nmips = 1;
+        }
         // create the texture
         IDirect3DCubeTexture9 *tex = nullptr;
         if (CHECKD3DERR(d3d9->CreateCubeTexture(head.width, head.nmips, 0, d3dFormat, D3DPOOL_MANAGED, &tex, NULL)) ==
@@ -1428,80 +1451,109 @@ bool DX9RENDER::TextureLoad(long t)
             !tex)
         {
             if (bTrace)
+            {
                 core.Trace("Cube map texture %s is not created (size: %i, num mips: %i, format: %s), not loading it.",
                            fn, head.width, head.nmips, formatTxt);
+            }
             delete Textures[t].name;
             Textures[t].name = nullptr;
-            fio->_CloseHandle(file);
+            fio->_CloseFile(fileS);
             return false;
         }
         // Loading the sides
         bool isError = false;
         if (seekposition)
-            fio->_SetFilePointer(file, seekposition, nullptr, FILE_CURRENT);
+        {
+            fio->_SetFilePointer(fileS, seekposition, std::ios::cur);
+        }
         uint32_t sz =
-            LoadCubmapSide(file, tex, D3DCUBEMAP_FACE_POSITIVE_Z, head.nmips, head.mip_size, head.width, isSwizzled);
+            LoadCubmapSide(fileS, tex, D3DCUBEMAP_FACE_POSITIVE_Z, head.nmips, head.mip_size, head.width, isSwizzled);
         if (sz)
         {
             Textures[t].dwSize += sz;
             if (seekposition)
-                fio->_SetFilePointer(file, seekposition, nullptr, FILE_CURRENT);
-            sz = LoadCubmapSide(file, tex, D3DCUBEMAP_FACE_POSITIVE_X, head.nmips, head.mip_size, head.width,
+            {
+                fio->_SetFilePointer(fileS, seekposition, std::ios::cur);
+            }
+            sz = LoadCubmapSide(fileS, tex, D3DCUBEMAP_FACE_POSITIVE_X, head.nmips, head.mip_size, head.width,
                                 isSwizzled);
             if (sz)
             {
                 Textures[t].dwSize += sz;
                 if (seekposition)
-                    fio->_SetFilePointer(file, seekposition, nullptr, FILE_CURRENT);
-                sz = LoadCubmapSide(file, tex, D3DCUBEMAP_FACE_NEGATIVE_Z, head.nmips, head.mip_size, head.width,
+                {
+                    fio->_SetFilePointer(fileS, seekposition, std::ios::cur);
+                }
+                sz = LoadCubmapSide(fileS, tex, D3DCUBEMAP_FACE_NEGATIVE_Z, head.nmips, head.mip_size, head.width,
                                     isSwizzled);
                 if (sz)
                 {
                     Textures[t].dwSize += sz;
                     if (seekposition)
-                        fio->_SetFilePointer(file, seekposition, nullptr, FILE_CURRENT);
-                    sz = LoadCubmapSide(file, tex, D3DCUBEMAP_FACE_NEGATIVE_X, head.nmips, head.mip_size, head.width,
+                    {
+                        fio->_SetFilePointer(fileS, seekposition, std::ios::cur);
+                    }
+                    sz = LoadCubmapSide(fileS, tex, D3DCUBEMAP_FACE_NEGATIVE_X, head.nmips, head.mip_size, head.width,
                                         isSwizzled);
                     if (sz)
                     {
                         Textures[t].dwSize += sz;
                         if (seekposition)
-                            fio->_SetFilePointer(file, seekposition, nullptr, FILE_CURRENT);
-                        sz = LoadCubmapSide(file, tex, D3DCUBEMAP_FACE_POSITIVE_Y, head.nmips, head.mip_size,
+                        {
+                            fio->_SetFilePointer(fileS, seekposition, std::ios::cur);
+                        }
+                        sz = LoadCubmapSide(fileS, tex, D3DCUBEMAP_FACE_POSITIVE_Y, head.nmips, head.mip_size,
                                             head.width, isSwizzled);
                         if (sz)
                         {
                             Textures[t].dwSize += sz;
                             if (seekposition)
-                                fio->_SetFilePointer(file, seekposition, nullptr, FILE_CURRENT);
-                            sz = LoadCubmapSide(file, tex, D3DCUBEMAP_FACE_NEGATIVE_Y, head.nmips, head.mip_size,
+                            {
+                                fio->_SetFilePointer(fileS, seekposition, std::ios::cur);
+                            }
+                            sz = LoadCubmapSide(fileS, tex, D3DCUBEMAP_FACE_NEGATIVE_Y, head.nmips, head.mip_size,
                                                 head.width, isSwizzled);
                             if (!sz)
+                            {
                                 isError = true;
+                            }
                             Textures[t].dwSize += sz;
                         }
                         else
+                        {
                             isError = true;
+                        }
                     }
                     else
+                    {
                         isError = true;
+                    }
                 }
                 else
+                {
                     isError = true;
+                }
             }
             else
+            {
                 isError = true;
+            }
         }
         else
+        {
             isError = true;
+        }
+
         if (isError)
         {
             if (bTrace)
+            {
                 core.Trace("Cube map texture %s can't loading (size: %i, num mips: %i, format: %s), not loading it.",
                            fn, head.width, head.nmips, formatTxt);
+            }
             delete Textures[t].name;
             Textures[t].name = nullptr;
-            fio->_CloseHandle(file);
+            fio->_CloseFile(fileS);
             tex->Release();
             return false;
         }
@@ -1516,21 +1568,22 @@ bool DX9RENDER::TextureLoad(long t)
     {
         char s[256];
         if (totSize == 0)
+        {
             fio->_DeleteFile("texLoad.txt");
-        HANDLE fh = fio->_CreateFile("texLoad.txt", GENERIC_WRITE, FILE_SHARE_WRITE, OPEN_ALWAYS);
-        fio->_SetFilePointer(fh, 0, nullptr, FILE_END);
+        }
+        auto fileS2 = fio->_CreateFile("texLoad.txt", std::ios::binary | std::ios::out | std::ios::app);
         totSize += Textures[t].dwSize;
         sprintf_s(s, "%.2f, size: %d, %d * %d, %s\n", totSize / 1024.0f / 1024.0f, Textures[t].dwSize, head.width,
                   head.height, Textures[t].name);
-        fio->_WriteFile(fh, s, strlen(s), nullptr);
-        fio->_FlushFileBuffers(fh);
-        fio->_CloseHandle(fh);
+        fio->_WriteFile(fileS2, s, strlen(s));
+        fio->_FlushFileBuffers(fileS2);
+        fio->_CloseFile(fileS2);
     }
     dwTotalSize += Textures[t].dwSize;
     //---------------------------------------------------------------
     Textures[t].loaded = true;
     // Close the file
-    fio->_CloseHandle(file);
+    fio->_CloseFile(fileS);
     return true;
 }
 
@@ -1539,8 +1592,8 @@ IDirect3DBaseTexture9 *DX9RENDER::GetBaseTexture(long iTexture)
     return (iTexture >= 0) ? Textures[iTexture].d3dtex : nullptr;
 }
 
-uint32_t DX9RENDER::LoadCubmapSide(HANDLE file, IDirect3DCubeTexture9 *tex, D3DCUBEMAP_FACES face, uint32_t numMips,
-                                   uint32_t mipSize, uint32_t size, bool isSwizzled)
+uint32_t DX9RENDER::LoadCubmapSide(std::fstream &fileS, IDirect3DCubeTexture9 *tex, D3DCUBEMAP_FACES face,
+                                   uint32_t numMips, uint32_t mipSize, uint32_t size, bool isSwizzled)
 {
     uint32_t texsize = 0;
     // Filling the levels
@@ -1558,16 +1611,20 @@ uint32_t DX9RENDER::LoadCubmapSide(HANDLE file, IDirect3DCubeTexture9 *tex, D3DC
         else
         {
             // read the mip
-            isError = !LoadTextureSurface(file, surface, mipSize, size, size, isSwizzled);
+            isError = !LoadTextureSurface(fileS, surface, mipSize, size, size, isSwizzled);
         }
         // Freeing the surface
         if (surface)
+        {
             surface->Release();
+        }
         // If there was an error, then interrupt the download
         if (isError)
         {
             if (bTrace)
+            {
                 core.Trace("Can't loading cubemap mip %i (side: %i), not loading it.", m, face);
+            }
             return 0;
         }
         // recalculate the dimensions for the next mip
@@ -1577,7 +1634,7 @@ uint32_t DX9RENDER::LoadCubmapSide(HANDLE file, IDirect3DCubeTexture9 *tex, D3DC
     return texsize;
 }
 
-bool DX9RENDER::LoadTextureSurface(HANDLE file, IDirect3DSurface9 *suface, uint32_t mipSize, uint32_t width,
+bool DX9RENDER::LoadTextureSurface(std::fstream &fileS, IDirect3DSurface9 *suface, uint32_t mipSize, uint32_t width,
                                    uint32_t height, bool isSwizzled)
 {
     //------------------------------------------------------------------------------------------
@@ -1586,18 +1643,23 @@ bool DX9RENDER::LoadTextureSurface(HANDLE file, IDirect3DSurface9 *suface, uint3
     // Surface pointer
     D3DLOCKED_RECT lock;
     if (CHECKD3DERR(suface->LockRect(&lock, NULL, 0L)) == true)
+    {
         return false;
+    }
     // Reading out
-    uint32_t readingBytes = 0;
-    if (!fio->_ReadFile(file, lock.pBits, mipSize, &readingBytes) || readingBytes != mipSize)
+    if (!fio->_ReadFile(fileS, lock.pBits, mipSize))
     {
         if (CHECKD3DERR(suface->UnlockRect()) == true)
+        {
             return false;
+        }
         return false;
     }
     // Surface release
     if (CHECKD3DERR(suface->UnlockRect()) == true)
+    {
         return false;
+    }
     return true;
     //------------------------------------------------------------------------------------------
 }
@@ -1608,7 +1670,9 @@ bool DX9RENDER::TextureSet(long stage, long texid)
     if (texid == -1)
     {
         if (CHECKD3DERR(d3d9->SetTexture(stage, NULL)) == true)
+        {
             return false;
+        }
         return true;
     }
 
@@ -1640,7 +1704,9 @@ bool DX9RENDER::TextureSet(long stage, long texid)
     */
 
     if (CHECKD3DERR(d3d9->SetTexture(stage, Textures[texid].d3dtex)) == true)
+    {
         return false;
+    }
     return true;
 }
 
@@ -1648,33 +1714,34 @@ bool DX9RENDER::TextureSet(long stage, long texid)
 bool DX9RENDER::TextureRelease(long texid)
 {
     if (texid == -1)
+    {
         return true;
+    }
     Textures[texid].ref--;
     if (Textures[texid].ref != 0)
+    {
         return false;
+    }
     if (Textures[texid].name != nullptr)
     {
         if (texLog)
         {
-            const HANDLE fh =
-                fio->_CreateFile("texLoad.txt", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, OPEN_ALWAYS);
-
-            totSize -= Textures[texid].dwSize;
-            const int bytes = fio->_GetFileSize(fh, nullptr);
+            auto fileS = fio->_CreateFile("texLoad.txt", std::ios::binary | std::ios::in | std::ios::out);
+            const int bytes = fio->_GetFileSize("texLoad.txt");
             char *buf = new char[bytes + 1];
-            fio->_ReadFile(fh, buf, bytes, nullptr);
+            fio->_ReadFile(fileS, buf, bytes);
             buf[bytes] = 0;
 
             char *str = strstr(buf, Textures[texid].name);
             if (str != nullptr)
             {
-                fio->_SetFilePointer(fh, str - buf, nullptr, FILE_BEGIN);
+                fio->_SetFilePointer(fileS, str - buf, std::ios::beg);
                 const char *s = "*";
-                fio->_WriteFile(fh, s, 1, nullptr);
+                fio->_WriteFile(fileS, s, 1);
             }
             delete[] buf;
-            fio->_FlushFileBuffers(fh);
-            fio->_CloseHandle(fh);
+            fio->_FlushFileBuffers(fileS);
+            fio->_CloseFile(fileS);
 
             /*FILE *flstat = fopen("texLoad.txt", "r+b");
             totSize -= Textures[texid].dwSize;
@@ -1700,11 +1767,17 @@ bool DX9RENDER::TextureRelease(long texid)
         Textures[texid].name = nullptr;
     }
     if (Textures[texid].loaded == false)
+    {
         return false;
+    }
 
     if (Textures[texid].d3dtex)
+    {
         if (CHECKD3DERR(Textures[texid].d3dtex->Release()) == true)
+        {
             return false;
+        }
+    }
     Textures[texid].d3dtex = nullptr;
     dwTotalSize -= Textures[texid].dwSize;
 
@@ -3022,26 +3095,26 @@ void DX9RENDER::MakeScreenShot()
     // Save the picture
     Dhdr.width = static_cast<unsigned short>(screen_size.x);
     Dhdr.height = static_cast<unsigned short>(screen_size.y);
-    fh = fio->_CreateFile(file_name, GENERIC_WRITE, FILE_SHARE_READ, CREATE_ALWAYS);
-    if (fh == INVALID_HANDLE_VALUE)
+    auto fileS = fio->_CreateFile(file_name, std::ios::binary | std::ios::out);
+    if (!fileS.is_open())
     {
         surface->UnlockRect();
         surface->Release();
         core.Trace("Can't create screenshot file");
         return;
     }
-    fio->_WriteFile(fh, &Dhdr, sizeof(TGA_H), nullptr);
+    fio->_WriteFile(fileS, &Dhdr, sizeof(TGA_H));
 
     Surface = static_cast<uint32_t *>(lr.pBits);
     Surface += lr.Pitch * screen_size.y >> 2;
     for (i = 0; i < screen_size.y; i++)
     {
         Surface -= lr.Pitch >> 2;
-        fio->_WriteFile(fh, Surface, screen_size.x * 4, nullptr);
+        fio->_WriteFile(fileS, Surface, screen_size.x * 4);
     }
     surface->UnlockRect();
     surface->Release();
-    fio->_CloseHandle(fh);
+    fio->_CloseFile(fileS);
 
     // UNGUARD
 }

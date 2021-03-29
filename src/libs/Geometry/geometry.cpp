@@ -185,35 +185,41 @@ void GEOM_SERVICE_R::SetRenderService(VDX9RENDER *render_service)
         RenderService->CreateVertexDeclaration(VertexElements, &vertexDecl_);
 }
 
-HANDLE GEOM_SERVICE_R::OpenFile(const char *fname)
+std::fstream GEOM_SERVICE_R::OpenFile(const char *fname)
 {
     if (RenderService)
+    {
         RenderService->ProgressView();
-    auto *const fl = fio->_CreateFile(fname, GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING);
-    if (fl == INVALID_HANDLE_VALUE)
+    }
+    auto fileS = fio->_CreateFile(fname, std::ios::binary | std::ios::in);
+    if (!fileS.is_open())
+    {
         if (_strcmpi(&fname[strlen(fname) - 4], ".col") == 0)
-            ; //    core.Trace("geometry::can't open file %s", fname);
+        {
+            //    core.Trace("geometry::can't open file %s", fname);
+        }
         else
+        {
             throw "can't open geometry file";
-    return fl;
+        }
+    }
+
+    return fileS;
 }
 
-int GEOM_SERVICE_R::FileSize(HANDLE file)
+int GEOM_SERVICE_R::FileSize(const char *fname)
 {
-    if (file == INVALID_HANDLE_VALUE)
-        return 0;
-    uint32_t sh;
-    return fio->_GetFileSize(file, &sh);
+    return fio->_GetFileSize(fname);
 }
 
-void GEOM_SERVICE_R::ReadFile(HANDLE file, void *data, long bytes)
+bool GEOM_SERVICE_R::ReadFile(std::fstream &fileS, void *data, long bytes)
 {
-    fio->_ReadFile(file, data, bytes, nullptr);
+    return fio->_ReadFile(fileS, data, bytes);
 }
 
-void GEOM_SERVICE_R::CloseFile(HANDLE file)
+void GEOM_SERVICE_R::CloseFile(std::fstream &fileS)
 {
-    fio->_CloseHandle(file);
+    fio->_CloseFile(fileS);
 }
 
 void *GEOM_SERVICE_R::malloc(long bytes)

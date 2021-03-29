@@ -6,7 +6,7 @@
 #include "filesystem.h"
 #include "inlines.h"
 #include "tga.h"
-#include <stdio.h>
+#include <cstdio>
 
 #define TGA_DATA_CHUNK 0xC001F00D
 
@@ -469,7 +469,9 @@ bool ISLAND::CreateShadowMap(char *pDir, char *pName)
     auto *const pWeather =
         static_cast<WEATHER_BASE *>(EntityManager::GetEntityPointer(EntityManager::GetEntityId("Weather")));
     if (pWeather == nullptr)
+    {
         throw std::exception("No found WEATHER entity!");
+    }
 
     const fs::path path = fs::path() / "resource" / "foam" / pDir / AttributesPointer->GetAttribute("LightingPath");
     // MessageBoxA(NULL, (LPCSTR)path.c_str(), "", MB_OK); //~!~
@@ -483,19 +485,21 @@ bool ISLAND::CreateShadowMap(char *pDir, char *pName)
     fShadowMapStep = fShadowMapSize / DMAP_SIZE;
 
     if (mzShadow.Load(fileName + ".zap"))
+    {
         return true;
+    }
 
     // try to load tga file
-    const HANDLE hFile = fio->_CreateFile(fileName.c_str(), GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING);
-    if (hFile != INVALID_HANDLE_VALUE)
+    auto fileS = fio->_CreateFile(fileName.c_str(), std::ios::binary | std::ios::in);
+    if (fileS.is_open())
     {
         TGA_H tga_head;
 
-        fio->_ReadFile(hFile, &tga_head, sizeof(tga_head), nullptr);
+        fio->_ReadFile(fileS, &tga_head, sizeof(tga_head));
         const uint32_t dwSize = tga_head.width;
         pShadowMap = new uint8_t[dwSize * dwSize];
-        fio->_ReadFile(hFile, pShadowMap, dwSize * dwSize, nullptr);
-        fio->_CloseHandle(hFile);
+        fio->_ReadFile(fileS, pShadowMap, dwSize * dwSize);
+        fio->_CloseFile(fileS);
 
         mzShadow.DoZip(pShadowMap, dwSize);
         mzShadow.Save(fileName + ".zap");
@@ -530,7 +534,9 @@ bool ISLAND::CreateShadowMap(char *pDir, char *pName)
             if (GetDepthFast(vSrc.x, vSrc.z, &fRes))
             {
                 if (fRes >= -0.001f)
+                {
                     pShadowMap[x + z * DMAP_SIZE] = 0;
+                }
             }
         }
 
@@ -581,7 +587,6 @@ bool ISLAND::CreateHeightMap(char *pDir, char *pName)
     TGA_H tga_head;
     std::string sDir;
     char str_tmp[256];
-    HANDLE hFile;
 
     fs::path path = fs::path() / "resource" / "foam" / pDir / pName;
     // MessageBoxA(NULL, (LPCSTR)path.c_str(), "", MB_OK); //~!~
@@ -606,14 +611,14 @@ bool ISLAND::CreateHeightMap(char *pDir, char *pName)
 
     if (!bLoad)
     {
-        hFile = fio->_CreateFile(fileName.c_str(), GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING);
-        if (hFile != INVALID_HANDLE_VALUE)
+        auto fileS = fio->_CreateFile(fileName.c_str(), std::ios::binary | std::ios::in);
+        if (fileS.is_open())
         {
-            fio->_ReadFile(hFile, &tga_head, sizeof(tga_head), nullptr);
+            fio->_ReadFile(fileS, &tga_head, sizeof(tga_head));
             iDMapSize = tga_head.width;
             pDepthMap = new uint8_t[iDMapSize * iDMapSize];
-            fio->_ReadFile(hFile, pDepthMap, iDMapSize * iDMapSize, nullptr);
-            fio->_CloseHandle(hFile);
+            fio->_ReadFile(fileS, pDepthMap, iDMapSize * iDMapSize);
+            fio->_CloseFile(fileS);
 
             mzDepth.DoZip(pDepthMap, iDMapSize);
             mzDepth.Save(fileName + ".zap");
@@ -767,15 +772,15 @@ bool ISLAND::SaveTga8(char *fname, uint8_t *pBuffer, uint32_t dwSizeX, uint32_t 
     tga_head.bpp = 8;
     tga_head.attr8 = 8;
 
-    const HANDLE hFile = fio->_CreateFile(fname, GENERIC_WRITE, FILE_SHARE_READ, OPEN_ALWAYS);
-    if (INVALID_HANDLE_VALUE == hFile)
+    auto fileS = fio->_CreateFile(fname, std::ios::binary | std::ios::out);
+    if (!fileS.is_open())
     {
         core.Trace("Island: Can't create island file! %s", fname);
         return false;
     }
-    fio->_WriteFile(hFile, &tga_head, sizeof(tga_head), nullptr);
-    fio->_WriteFile(hFile, pBuffer, dwSizeX * dwSizeY, nullptr);
-    fio->_CloseHandle(hFile);
+    fio->_WriteFile(fileS, &tga_head, sizeof(tga_head));
+    fio->_WriteFile(fileS, pBuffer, dwSizeX * dwSizeY);
+    fio->_CloseFile(fileS);
 
     return true;
 }

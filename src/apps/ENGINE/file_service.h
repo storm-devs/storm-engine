@@ -88,33 +88,23 @@ class FILE_SERVICE : public VFILE_SERVICE
   public:
     FILE_SERVICE();
     ~FILE_SERVICE();
-    HANDLE _CreateFile(const char *lpFileName, uint32_t dwDesiriedAccess = GENERIC_READ,
-                       uint32_t dwShareMode = FILE_SHARE_READ, uint32_t dwCreationDisposition = OPEN_EXISTING) override;
-    void _CloseHandle(HANDLE hFile) override;
-    uint32_t _SetFilePointer(HANDLE hFile, long DistanceToMove, long *lpDistanceToMoveHigh,
-                             uint32_t dwMoveMethod) override;
-    BOOL _DeleteFile(const char *lpFileName) override;
-    BOOL _WriteFile(HANDLE hFile, const void *lpBuffer, uint32_t nNumberOfBytesToWrite,
-                    uint32_t *lpNumberOfBytesWritten) override;
-    BOOL _ReadFile(HANDLE hFile, void *lpBuffer, uint32_t nNumberOfBytesToRead, uint32_t *lpNumberOfBytesRead) override;
+    std::fstream _CreateFile(const char *filename, std::ios::openmode mode) override;
+    void _CloseFile(std::fstream &fileS) override;
+    void _SetFilePointer(std::fstream &fileS, std::streamoff off, std::ios::seekdir dir) override;
+    int _DeleteFile(const char *filename) override;
+    bool _WriteFile(std::fstream &fileS, const void *s, std::streamsize count) override;
+    bool _ReadFile(std::fstream &fileS, void *s, std::streamsize count) override;
     HANDLE _FindFirstFile(const char *lpFileName, LPWIN32_FIND_DATA lpFindFileData) override;
     BOOL _FindNextFile(HANDLE hFindFile, LPWIN32_FIND_DATA lpFindFileData) override;
     BOOL _FindClose(HANDLE hFindFile) override;
-    BOOL _FlushFileBuffers(HANDLE hFile) override;
+    void _FlushFileBuffers(std::fstream &fileS) override;
     uint32_t _GetCurrentDirectory(uint32_t nBufferLength, char *lpBuffer) override;
     std::string _GetExecutableDirectory() override;
-    BOOL _GetDiskFreeSpaceEx(const char *lpDirectoryName, PULARGE_INTEGER lpFreeBytesAvailableToCaller,
-                             PULARGE_INTEGER lpTotalNumberOfBytes, PULARGE_INTEGER lpTotalNumberOfFreeBytes) override;
-    UINT _GetDriveType(const char *lpRootPathName) override;
-    uint32_t _GetFileSize(HANDLE hFile, uint32_t *lpFileSizeHigh) override;
-    uint32_t _GetLogicalDrives(VOID) override;
-    uint32_t _GetLogicalDriveStrings(uint32_t nBufferLength, char *lpBuffer) override;
+    std::uintmax_t _GetFileSize(const char *p) override;
     BOOL _SetCurrentDirectory(const char *lpPathName) override;
     BOOL _CreateDirectory(const char *lpPathName, LPSECURITY_ATTRIBUTES lpSecurityAttributes) override;
     BOOL _RemoveDirectory(const char *lpPathName) override;
-    BOOL _CopyFile(const char *lpExistingFileName, const char *lpNewFileName, bool bFailIfExists) override;
     BOOL _SetFileAttributes(const char *lpFileName, uint32_t dwFileAttributes) override;
-    BOOL FileExist(const char *file_name) override;
     BOOL LoadFile(const char *file_name, char **ppBuffer, uint32_t *dwSize) override;
     // ini files section
     void Close();
@@ -122,13 +112,6 @@ class FILE_SERVICE : public VFILE_SERVICE
     INIFILE *OpenIniFile(const char *file_name) override;
     void RefDec(INIFILE *ini_obj);
     void FlushIniFiles();
-    BOOL SetDrive(const char *pDriveName) override;
-
-    BOOL CacheDirectory(const char *pDirName) override;
-    BOOL UnCacheDirectory(const char *pDirName) override;
-    uint32_t MakeHashValue(const char *string);
-    BOOL IsCached(const char *pFileName);
-    void MarkDirectoryCached(const char *pFileName);
 };
 
 #endif

@@ -36,25 +36,25 @@ void DataCache::CacheSystem(const char *FileName)
     std::transform(pathStr.begin(), pathStr.end(), pathStr.begin(), tolower);
     // MessageBoxA(NULL, (LPCSTR)path.c_str(), "", MB_OK); //~!~
 
-    auto *const pSysFile = fio->_CreateFile(pathStr.c_str());
+    auto sysFile = fio->_CreateFile(pathStr.c_str(), std::ios::binary | std::ios::in);
 
-    if (pSysFile == INVALID_HANDLE_VALUE)
+    if (!sysFile.is_open())
     {
         core.Trace("Particles: '%s' File not found !!!", pathStr.c_str());
         return;
     }
 
-    const auto FileSize = fio->_GetFileSize(pSysFile, nullptr);
+    const auto FileSize = fio->_GetFileSize(pathStr.c_str());
 
     auto *pMemBuffer = new uint8_t[FileSize];
-    fio->_ReadFile(pSysFile, pMemBuffer, FileSize, nullptr);
+    fio->_ReadFile(sysFile, pMemBuffer, FileSize);
 
     // Create data from file ...
     CreateDataSource(pMemBuffer, FileSize, pathStr.c_str());
 
     delete[] pMemBuffer;
 
-    fio->_CloseHandle(pSysFile);
+    fio->_CloseFile(sysFile);
 }
 
 // Reset cache

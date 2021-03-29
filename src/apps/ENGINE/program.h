@@ -21,8 +21,8 @@ class PROGRAM
     void ProcessFrame(uint32_t DeltaTime);
     bool Running(char *program_name);
     void ClearEvents();
-    bool SaveState(HANDLE fh);
-    bool LoadState(HANDLE fh);
+    bool SaveState(std::fstream &fileS);
+    bool LoadState(std::fstream &fileS);
     bool OnLoad();
     void AddPostEvent(S_EVENTMSG *pEM);
 };

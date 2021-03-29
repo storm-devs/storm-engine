@@ -100,36 +100,40 @@ bool MapZipper::Load(std::string sFileName)
 {
     UnInit();
 
-    auto *const hFile = fio->_CreateFile(sFileName.c_str(), GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING);
-    if (hFile == INVALID_HANDLE_VALUE)
+    auto fileS = fio->_CreateFile(sFileName.c_str(), std::ios::binary | std::ios::in);
+    if (!fileS.is_open())
+    {
         return false;
-    fio->_ReadFile(hFile, &dwSizeX, sizeof(dwSizeX), nullptr);
-    fio->_ReadFile(hFile, &dwDX, sizeof(dwDX), nullptr);
-    fio->_ReadFile(hFile, &dwBlockSize, sizeof(dwBlockSize), nullptr);
-    fio->_ReadFile(hFile, &dwBlockShift, sizeof(dwBlockShift), nullptr);
-    fio->_ReadFile(hFile, &dwShiftNumBlocksX, sizeof(dwShiftNumBlocksX), nullptr);
-    fio->_ReadFile(hFile, &dwNumRealBlocks, sizeof(dwNumRealBlocks), nullptr);
+    }
+    fio->_ReadFile(fileS, &dwSizeX, sizeof(dwSizeX));
+    fio->_ReadFile(fileS, &dwDX, sizeof(dwDX));
+    fio->_ReadFile(fileS, &dwBlockSize, sizeof(dwBlockSize));
+    fio->_ReadFile(fileS, &dwBlockShift, sizeof(dwBlockShift));
+    fio->_ReadFile(fileS, &dwShiftNumBlocksX, sizeof(dwShiftNumBlocksX));
+    fio->_ReadFile(fileS, &dwNumRealBlocks, sizeof(dwNumRealBlocks));
     pWordTable = new uint16_t[dwDX * dwDX];
-    fio->_ReadFile(hFile, pWordTable, sizeof(uint16_t) * dwDX * dwDX, nullptr);
+    fio->_ReadFile(fileS, pWordTable, sizeof(uint16_t) * dwDX * dwDX);
     pRealData = static_cast<uint8_t *>(malloc(dwNumRealBlocks * dwBlockSize * dwBlockSize));
-    fio->_ReadFile(hFile, pRealData, sizeof(uint8_t) * dwNumRealBlocks * dwBlockSize * dwBlockSize, nullptr);
-    fio->_CloseHandle(hFile);
+    fio->_ReadFile(fileS, pRealData, sizeof(uint8_t) * dwNumRealBlocks * dwBlockSize * dwBlockSize);
+    fio->_CloseFile(fileS);
     return true;
 }
 
 bool MapZipper::Save(std::string sFileName)
 {
-    auto *const hFile = fio->_CreateFile(sFileName.c_str(), GENERIC_WRITE, FILE_SHARE_READ, OPEN_ALWAYS);
-    if (hFile == INVALID_HANDLE_VALUE)
+    auto fileS = fio->_CreateFile(sFileName.c_str(), std::ios::binary | std::ios::out);
+    if (!fileS.is_open())
+    {
         return false;
-    fio->_WriteFile(hFile, &dwSizeX, sizeof(dwSizeX), nullptr);
-    fio->_WriteFile(hFile, &dwDX, sizeof(dwDX), nullptr);
-    fio->_WriteFile(hFile, &dwBlockSize, sizeof(dwBlockSize), nullptr);
-    fio->_WriteFile(hFile, &dwBlockShift, sizeof(dwBlockShift), nullptr);
-    fio->_WriteFile(hFile, &dwShiftNumBlocksX, sizeof(dwShiftNumBlocksX), nullptr);
-    fio->_WriteFile(hFile, &dwNumRealBlocks, sizeof(dwNumRealBlocks), nullptr);
-    fio->_WriteFile(hFile, pWordTable, sizeof(uint16_t) * dwDX * dwDX, nullptr);
-    fio->_WriteFile(hFile, pRealData, sizeof(uint8_t) * dwNumRealBlocks * dwBlockSize * dwBlockSize, nullptr);
-    fio->_CloseHandle(hFile);
+    }
+    fio->_WriteFile(fileS, &dwSizeX, sizeof(dwSizeX));
+    fio->_WriteFile(fileS, &dwDX, sizeof(dwDX));
+    fio->_WriteFile(fileS, &dwBlockSize, sizeof(dwBlockSize));
+    fio->_WriteFile(fileS, &dwBlockShift, sizeof(dwBlockShift));
+    fio->_WriteFile(fileS, &dwShiftNumBlocksX, sizeof(dwShiftNumBlocksX));
+    fio->_WriteFile(fileS, &dwNumRealBlocks, sizeof(dwNumRealBlocks));
+    fio->_WriteFile(fileS, pWordTable, sizeof(uint16_t) * dwDX * dwDX);
+    fio->_WriteFile(fileS, pRealData, sizeof(uint8_t) * dwNumRealBlocks * dwBlockSize * dwBlockSize);
+    fio->_CloseFile(fileS);
     return true;
 }

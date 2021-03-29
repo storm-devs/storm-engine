@@ -142,11 +142,11 @@ void Astronomy::STARS::Init(ATTRIBUTES *pAP)
     fio->_CloseHandle(hFile);
     }*/
 
-    auto *const hFile = fio->_CreateFile("resource\\hic.dat");
-    if (INVALID_HANDLE_VALUE != hFile)
+    auto fileS = fio->_CreateFile("resource\\hic.dat", std::ios::binary | std::ios::in);
+    if (!fileS.is_open())
     {
         uint32_t dwSize;
-        fio->_ReadFile(hFile, &dwSize, sizeof(dwSize), nullptr);
+        fio->_ReadFile(fileS, &dwSize, sizeof(dwSize));
 
         static D3DVERTEXELEMENT9 VertexElem[] = {
             {0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
@@ -163,22 +163,22 @@ void Astronomy::STARS::Init(ATTRIBUTES *pAP)
         auto *pVColors = static_cast<uint32_t *>(pRS->LockVertexBuffer(iVertexBufferColors));
 
         auto bRecalculateData = true;
-        auto *hOutFile = fio->_CreateFile("resource\\star.dat");
-        if (INVALID_HANDLE_VALUE != hOutFile)
+        auto outfileS = fio->_CreateFile("resource\\star.dat", std::ios::binary | std::ios::in);
+        if (outfileS.is_open())
         {
-            uint32_t dwFileLen;
-            dwFileLen = fio->_GetFileSize(hOutFile, nullptr);
+            uint32_t dwFileLen = fio->_GetFileSize("resource\\star.dat");
             if (dwFileLen == dwSize * (sizeof(Star) + sizeof(CVECTOR) + sizeof(uint32_t)))
             {
                 // aStars.AddElements(dwSize);
                 aStars.resize(aStars.size() + dwSize);
-                fio->_SetFilePointer(hOutFile, 0, nullptr, FILE_BEGIN);
-                fio->_ReadFile(hOutFile, aStars.data(), sizeof(Star) * dwSize, nullptr);
-                fio->_ReadFile(hOutFile, pVPos, sizeof(CVECTOR) * dwSize, nullptr);
-                fio->_ReadFile(hOutFile, pVColors, sizeof(uint32_t) * dwSize, nullptr);
+                fio->_SetFilePointer(outfileS, 0, std::ios::beg);
+                fio->_ReadFile(outfileS, aStars.data(), sizeof(Star) * dwSize);
+                fio->_ReadFile(outfileS, aStars.data(), sizeof(Star) * dwSize);
+                fio->_ReadFile(outfileS, pVPos, sizeof(CVECTOR) * dwSize);
+                fio->_ReadFile(outfileS, pVColors, sizeof(uint32_t) * dwSize);
                 bRecalculateData = false;
             }
-            fio->_CloseHandle(hOutFile);
+            fio->_CloseFile(outfileS);
         }
 
         if (bRecalculateData)
@@ -190,10 +190,10 @@ void Astronomy::STARS::Init(ATTRIBUTES *pAP)
                 aStars.push_back(Star{});
                 auto &s = aStars.back();
 
-                fio->_ReadFile(hFile, &s.fRA, sizeof(s.fRA), nullptr);
-                fio->_ReadFile(hFile, &s.fDec, sizeof(s.fDec), nullptr);
-                fio->_ReadFile(hFile, &s.fMag, sizeof(s.fMag), nullptr);
-                fio->_ReadFile(hFile, &s.cSpectr[0], sizeof(s.cSpectr), nullptr);
+                fio->_ReadFile(fileS, &s.fRA, sizeof(s.fRA));
+                fio->_ReadFile(fileS, &s.fDec, sizeof(s.fDec));
+                fio->_ReadFile(fileS, &s.fMag, sizeof(s.fMag));
+                fio->_ReadFile(fileS, &s.cSpectr[0], sizeof(s.cSpectr));
                 s.dwColor = Spectr[s.cSpectr[0]];
 
                 if (s.fMag < fMaxMag)
@@ -211,19 +211,19 @@ void Astronomy::STARS::Init(ATTRIBUTES *pAP)
             // core.Trace("Stars: min = %.3f, max = %.3f", fMinMag, fMaxMag);
 
             // write all the buffers to a file in order not to recalculate the next time
-            hOutFile = fio->_CreateFile("resource\\star.dat", GENERIC_WRITE, 0, CREATE_ALWAYS);
-            if (INVALID_HANDLE_VALUE != hOutFile)
+            outfileS = fio->_CreateFile("resource\\star.dat", std::ios::binary | std::ios::out);
+            if (!outfileS.is_open())
             {
-                fio->_WriteFile(hOutFile, aStars.data(), sizeof(Star) * dwSize, nullptr);
-                fio->_WriteFile(hOutFile, pVPos, sizeof(CVECTOR) * dwSize, nullptr);
-                fio->_WriteFile(hOutFile, pVColors, sizeof(uint32_t) * dwSize, nullptr);
-                fio->_CloseHandle(hOutFile);
+                fio->_WriteFile(outfileS, aStars.data(), sizeof(Star) * dwSize);
+                fio->_WriteFile(outfileS, pVPos, sizeof(CVECTOR) * dwSize);
+                fio->_WriteFile(outfileS, pVColors, sizeof(uint32_t) * dwSize);
+                fio->_CloseFile(outfileS);
             }
         }
 
         pRS->UnLockVertexBuffer(iVertexBuffer);
         pRS->UnLockVertexBuffer(iVertexBufferColors);
-        fio->_CloseHandle(hFile);
+        fio->_CloseFile(fileS);
     }
 }
 

@@ -505,22 +505,22 @@ void AnimationServiceImp::LoadUserData(INIFILE *ani, const char *sectionName,
 // load AN
 bool AnimationServiceImp::LoadAN(const char *fname, AnimationInfo *info)
 {
-    auto *fl = INVALID_HANDLE_VALUE;
+    std::fstream fileS;
     try
     {
-        fl = fio->_CreateFile(fname, GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING);
-        if (fl == INVALID_HANDLE_VALUE)
+        fileS = fio->_CreateFile(fname, std::ios::binary | std::ios::in);
+        if (!fileS.is_open())
         {
             core.Trace("Cannot open file: %s", fname);
             return false;
         }
         // Reading the file header
         ANFILE::HEADER header;
-        if (!fio->_ReadFile(fl, &header, sizeof(ANFILE::HEADER), nullptr) || header.nFrames <= 0 ||
+        if (!fio->_ReadFile(fileS, &header, sizeof(ANFILE::HEADER)) || header.nFrames <= 0 ||
             header.nJoints <= 0 || header.framesPerSec < 0.0f || header.framesPerSec > 1000.0f)
         {
             core.Trace("Incorrect file header in animation file: %s", fname);
-            fio->_CloseHandle(fl);
+            fio->_CloseFile(fileS);
             return false;
         }
         // Set animation time
@@ -531,11 +531,11 @@ bool AnimationServiceImp::LoadAN(const char *fname, AnimationInfo *info)
         info->CreateBones(header.nJoints);
         // Setting parents
         auto *const prntIndeces = new long[header.nJoints];
-        if (!fio->_ReadFile(fl, prntIndeces, header.nJoints * sizeof(long), nullptr))
+        if (!fio->_ReadFile(fileS, prntIndeces, header.nJoints * sizeof(long)))
         {
             core.Trace("Incorrect parent indeces block in animation file: %s", fname);
             delete[] prntIndeces;
-            fio->_CloseHandle(fl);
+            fio->_CloseFile(fileS);
             return false;
         }
         for (long i = 1; i < header.nJoints; i++)
@@ -547,11 +547,11 @@ bool AnimationServiceImp::LoadAN(const char *fname, AnimationInfo *info)
         delete[] prntIndeces;
         // Starting positions of bones
         auto *vrt = new CVECTOR[header.nJoints];
-        if (!fio->_ReadFile(fl, vrt, header.nJoints * sizeof(CVECTOR), nullptr))
+        if (!fio->_ReadFile(fileS, vrt, header.nJoints * sizeof(CVECTOR)))
         {
             core.Trace("Incorrect start joints position block block in animation file: %s", fname);
             delete[] vrt;
-            fio->_CloseHandle(fl);
+            fio->_CloseFile(fileS);
             return false;
         }
         for (long i = 0; i < header.nJoints; i++)
@@ -562,11 +562,11 @@ bool AnimationServiceImp::LoadAN(const char *fname, AnimationInfo *info)
 
         // Root bone positions
         vrt = new CVECTOR[header.nFrames];
-        if (!fio->_ReadFile(fl, vrt, header.nFrames * sizeof(CVECTOR), nullptr))
+        if (!fio->_ReadFile(fileS, vrt, header.nFrames * sizeof(CVECTOR)))
         {
             core.Trace("Incorrect root joint position block block in animation file: %s", fname);
             delete[] vrt;
-            fio->_CloseHandle(fl);
+            fio->_CloseFile(fileS);
             return false;
         }
         info->GetBone(0).SetPositions(vrt, header.nFrames);
@@ -576,10 +576,10 @@ bool AnimationServiceImp::LoadAN(const char *fname, AnimationInfo *info)
         auto *ang = new D3DXQUATERNION[header.nFrames];
         for (long i = 0; i < header.nJoints; i++)
         {
-            if (!fio->_ReadFile(fl, ang, header.nFrames * sizeof(*ang), nullptr))
+            if (!fio->_ReadFile(fileS, ang, header.nFrames * sizeof(*ang)))
             {
                 core.Trace("Incorrect joint angle block (%i) block in animation file: %s", i, fname);
-                fio->_CloseHandle(fl);
+                fio->_CloseFile(fileS);
                 return false;
             }
             info->GetBone(i).SetAngles(ang, header.nFrames);
@@ -598,13 +598,15 @@ bool AnimationServiceImp::LoadAN(const char *fname, AnimationInfo *info)
         //-----------------------------------------------
 
         // Close the file
-        fio->_CloseHandle(fl);
+        fio->_CloseFile(fileS);
         return true;
     }
     catch (...)
     {
-        if (fl != INVALID_HANDLE_VALUE)
-            fio->_CloseHandle(fl);
+        if (fileS.is_open())
+        {
+            fio->_CloseFile(fileS);
+        }
         core.Trace("Error reading animation file: %s", fname);
         return false;
     }
