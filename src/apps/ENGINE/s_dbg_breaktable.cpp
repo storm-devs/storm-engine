@@ -1,13 +1,10 @@
 #include "s_dbg_breaktable.h"
 #include "file_service.h"
 
-extern FILE_SERVICE File_Service;
-
 #define SECTION_NAME "breakpoints"
 
 BREAKPOINTS_TABLE::BREAKPOINTS_TABLE()
 {
-    fio = &File_Service;
     nPoints = 0;
     ProjectName[0] = 0;
     // bReleased = false;

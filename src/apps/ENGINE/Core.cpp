@@ -2,7 +2,7 @@
 #include "VmaInit.h"
 #include "compiler.h"
 #include "controls.h"
-#include "externs.h"
+#include "fs.h"
 #include "SteamApi.hpp"
 #include <fstream>
 
@@ -14,7 +14,31 @@ typedef struct
     void *pointer;
 } CODE_AND_POINTER;
 
-CORE::CORE()
+
+void CORE::ResetCore()
+{
+    Initialized = false;
+    bEngineIniProcessed = false;
+
+    ReleaseServices();
+
+    Services_List.Release();
+
+    STORM_DELETE(State_file_name);
+}
+
+void CORE::CleanUp()
+{
+    Initialized = false;
+    bEngineIniProcessed = false;
+    ReleaseServices();
+    Compiler->Release();
+    Services_List.Release();
+    Services_List.Release();
+    delete State_file_name;
+}
+
+void CORE::Init()
 {
     Initialized = false;
     bEngineIniProcessed = false;
@@ -43,29 +67,6 @@ CORE::CORE()
     EntityManager::SetLayerType(EDITOR_REALIZE, EntityManager::Layer::Type::realize);
     EntityManager::SetLayerType(INFO_REALIZE, EntityManager::Layer::Type::realize);
     EntityManager::SetLayerType(SOUND_DEBUG_REALIZE, EntityManager::Layer::Type::realize);
-}
-
-void CORE::ResetCore()
-{
-    Initialized = false;
-    bEngineIniProcessed = false;
-
-    ReleaseServices();
-
-    Services_List.Release();
-
-    STORM_DELETE(State_file_name);
-}
-
-void CORE::CleanUp()
-{
-    Initialized = false;
-    bEngineIniProcessed = false;
-    ReleaseServices();
-    Compiler->Release();
-    Services_List.Release();
-    Services_List.Release();
-    delete State_file_name;
 }
 
 void CORE::InitBase()
@@ -138,10 +139,10 @@ bool CORE::Run()
 
     steamapi::SteamApi::getInstance().RunCallbacks();
 
-    if (Controls && bActive)
+    if (Controls)
         Controls->Update(Timer.rDelta_Time);
 
-    if (Controls && bActive)
+    if (Controls)
         ProcessControls();
 
     EntityManager::NewLifecycle();
@@ -195,7 +196,7 @@ void CORE::ProcessEngineIniFile()
 
     bEngineIniProcessed = true;
 
-    auto *engine_ini = File_Service.OpenIniFile(ENGINE_INI_FILE_NAME);
+    auto *engine_ini = fio->OpenIniFile(fs::ENGINE_INI_FILE_NAME);
     if (engine_ini == nullptr)
         throw std::exception("no 'engine.ini' file");
 
@@ -831,9 +832,9 @@ uint32_t CORE::SetScriptFunction(IFUNCINFO *pFuncInfo)
     return Compiler->SetScriptFunction(pFuncInfo);
 }
 
-char *CORE::EngineIniFileName()
+const char *CORE::EngineIniFileName()
 {
-    return ENGINE_INI_FILE_NAME;
+    return fs::ENGINE_INI_FILE_NAME;
 }
 
 void *CORE::GetScriptVariable(const char *pVariableName, uint32_t *pdwVarIndex)
