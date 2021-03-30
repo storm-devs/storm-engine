@@ -574,26 +574,22 @@ long STRSERVICE::OpenUsersStringFile(const char *fileName)
     }
 
     UsersStringBlock *pPrev = nullptr;
-    UsersStringBlock *pUSB;
-    for (pUSB = m_pUsersBlocks; pUSB != nullptr; pUSB = pUSB->next)
+    UsersStringBlock *itUSB;
+    for (itUSB = m_pUsersBlocks; itUSB != nullptr; itUSB = itUSB->next)
     {
-        if (pUSB->fileName != nullptr && _stricmp(pUSB->fileName, fileName) == 0)
+        if (itUSB->fileName != nullptr && _stricmp(itUSB->fileName, fileName) == 0)
         {
             break;
         }
-        pPrev = pUSB;
+        pPrev = itUSB;
     }
-    if (pUSB != nullptr)
+    if (itUSB != nullptr)
     {
-        pUSB->nref++;
-        return pUSB->blockID;
+        itUSB->nref++;
+        return itUSB->blockID;
     }
 
-    pUSB = new UsersStringBlock;
-    if (pUSB == nullptr)
-    {
-        throw std::exception("Allocate memory error");
-    }
+    auto pUSB = std::make_unique<UsersStringBlock>();
 
     // strings reading
     char param[512];
@@ -601,7 +597,6 @@ long STRSERVICE::OpenUsersStringFile(const char *fileName)
     auto fileS = fio->_CreateFile(param, std::ios::binary | std::ios::in);
     if (!fileS.is_open()) {
         core.tracelog->warn("WARNING! Strings file \"{}\" does not exist", fileName);
-        delete pUSB;
         return -1;
     }
 
@@ -610,7 +605,6 @@ long STRSERVICE::OpenUsersStringFile(const char *fileName)
     if (filesize <= 0)
     {
         core.tracelog->warn("WARNING! Strings file \"{}\" has zero size", fileName);
-        delete pUSB;
         return -1;
     }
 
@@ -671,16 +665,17 @@ long STRSERVICE::OpenUsersStringFile(const char *fileName)
 
     STORM_DELETE(fileBuf);
 
+    const long block_id = pUSB->blockID;
     pUSB->next = nullptr;
     if (pPrev == nullptr)
     {
-        m_pUsersBlocks = pUSB;
+        m_pUsersBlocks = pUSB.release();
     }
     else
     {
-        pPrev->next = pUSB;
+        pPrev->next = pUSB.release();
     }
-    return pUSB->blockID;
+    return block_id;
 }
 
 void STRSERVICE::CloseUsersStringFile(long id)
