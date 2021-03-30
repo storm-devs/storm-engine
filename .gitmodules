@@ -2,6 +2,10 @@
 	path = extern/rendering
 	url = https://github.com/greentwip/bgfx.cmake
 
+[submodule "extern/math/glm"]
+	path = extern/math/glm
+	url = https://github.com/g-truc/glm
+
 [submodule "extern/rendering/bgfx"]
 	path = extern/rendering/bgfx
 	url = https://github.com/greentwip/bgfx

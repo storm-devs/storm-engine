@@ -29,10 +29,14 @@ set(STORM_RESOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/res")
 set(STORM_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set(STORM_EXTERN_DIR "${CMAKE_CURRENT_SOURCE_DIR}/extern")
 set(STORM_EXTERN_RENDERING_DIR "${CMAKE_CURRENT_SOURCE_DIR}/extern/rendering")
+set(STORM_EXTERN_MATH_DIR "${CMAKE_CURRENT_SOURCE_DIR}/extern/math")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
 add_subdirectory(${STORM_EXTERN_RENDERING_DIR})
+
+add_subdirectory(${STORM_EXTERN_MATH_DIR}/glm)
+
 
 
 include_directories(
@@ -64,6 +68,9 @@ elseif( APPLE )
 	include_directories($<BUILD_INTERFACE:${BX_DIR}/include/compat/osx>
 		    			$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/compat/osx> )
 endif()
+
+include_directories(${STORM_EXTERN_MATH_DIR}/glm/glm)
+
 
 link_libraries(bgfx dear-imgui meshoptimizer brtshaderc fcpp)
 link_libraries(bx bimg bgfx-vertexlayout bgfx-shader-spirv fcpp glsl-optimizer glslang spirv-cross spirv-tools webgpu)
