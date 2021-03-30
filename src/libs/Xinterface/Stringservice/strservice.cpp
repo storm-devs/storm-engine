@@ -599,11 +599,17 @@ long STRSERVICE::OpenUsersStringFile(const char *fileName)
     char param[512];
     sprintf_s(param, "resource\\ini\\TEXTS\\%s\\%s", m_sLanguageDir, fileName);
     auto fileS = fio->_CreateFile(param, std::ios::binary | std::ios::in);
+    if (!fileS.is_open()) {
+        core.tracelog->warn("WARNING! Strings file \"{}\" does not exist", fileName);
+        delete pUSB;
+        return -1;
+    }
+
     const long filesize = fio->_GetFileSize(param);
+
     if (filesize <= 0)
     {
-        core.Trace("WARNING! Strings file \"%s\" not exist/or zero size", fileName);
-        fio->_CloseFile(fileS);
+        core.tracelog->warn("WARNING! Strings file \"{}\" has zero size", fileName);
         delete pUSB;
         return -1;
     }
