@@ -45,7 +45,7 @@ target_include_directories( bx
 		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}> )
 
 # Build system specific configurations
-if( MSVC )
+if( MSVC OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang" )
 	target_include_directories( bx
 		PUBLIC
 			$<BUILD_INTERFACE:${BX_DIR}/include/compat/msvc>

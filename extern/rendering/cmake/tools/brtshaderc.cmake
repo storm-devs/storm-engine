@@ -53,7 +53,7 @@ ${SPIRV_TOOLS_INCLUDES}
 ${WEBGPU_INCLUDES})
 
 # Build system specific configurations
-if( MSVC )
+if( MSVC OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang" )
 	include_directories($<BUILD_INTERFACE:${BX_DIR}/include/compat/msvc>
 						$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/compat/msvc> )
 elseif( MINGW )
