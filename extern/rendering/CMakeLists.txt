@@ -24,7 +24,7 @@ if( APPLE AND NOT XCODE )
 	set( CMAKE_CXX_FLAGS "-ObjC++" )
 endif()
 
-option( BGFX_BUILD_TOOLS      "Build bgfx tools."                             ON  )
+option( BGFX_BUILD_TOOLS      "Build bgfx tools."                             OFF )
 option( BGFX_BUILD_ADDONS      "Build bgfx addons."                           ON  )
 option( BGFX_BUILD_EXAMPLES   "Build bgfx examples."                          ON  )
 option( BGFX_INSTALL          "Create installation target."                   ON  )
