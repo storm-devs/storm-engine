@@ -9,20 +9,21 @@ Import library main file
 ******************************************************************************/
 #include "geom.h"
 
+#include <cstdint>
 #include <cstring>
 #include <vector>
 
 namespace {
 
-std::vector<unsigned int> getColData (GEOM_SERVICE &srv, const std::string_view& file_name) {
-    std::vector<unsigned int> result;
+std::vector<uint32_t> getColData (GEOM_SERVICE &srv, const std::string_view& file_name) {
+    std::vector<uint32_t> result;
 
     auto ltfl = srv.OpenFile(file_name.data());
     if (ltfl.is_open()) {
         const auto file_size = srv.FileSize(file_name.data());
         if (file_size > 0)
         {
-            result.resize(file_size / sizeof(int));
+            result.resize(file_size / sizeof(uint32_t));
             srv.ReadFile(ltfl, result.data(), file_size);
         }
     }
@@ -42,7 +43,7 @@ GEOS *CreateGeometry(const char *fname, const char *lightname, GEOM_SERVICE &srv
 // geometry constructor does all init
 GEOM::GEOM(const char *fname, const char *lightname, GEOM_SERVICE &_srv, long flags) : srv(_srv)
 {
-    std::vector<unsigned int> colData;
+    std::vector<uint32_t> colData;
     if (lightname != nullptr) {
         colData = getColData(srv, lightname);
     }
