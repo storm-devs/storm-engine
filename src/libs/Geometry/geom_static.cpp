@@ -162,11 +162,7 @@ GEOM::GEOM(const char *fname, const char *lightname, GEOM_SERVICE &_srv, long fl
     }
     srv.free(rvb);
     // read vertices
-    if (colData.size() != nvertices)
-    {
-        colData.clear();
-    }
-    auto _colData = colData.begin();
+    auto itColData = colData.begin();
     for (v = 0; v < rhead.nvrtbuffs; v++)
     {
         auto *vrt = static_cast<RDF_VERTEX0 *>(srv.LockVertexBuffer(vbuff[v].dev_buff));
@@ -174,9 +170,10 @@ GEOM::GEOM(const char *fname, const char *lightname, GEOM_SERVICE &_srv, long fl
         for (long vr = 0; vr < vbuff[v].nverts; vr++)
         {
             auto *prv = (RDF_VERTEX0 *)((uint8_t *)(vrt) + vbuff[v].stride * vr);
-            if (!colData.empty())
-                prv->color = *(_colData++);
-            // prv->norm.x = 0.0f;
+            if (colData.size() == nvertices) {
+                prv->color = *itColData;
+                ++itColData;
+            }
         }
 
         srv.UnlockVertexBuffer(vbuff[v].dev_buff);
