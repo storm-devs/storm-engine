@@ -1157,6 +1157,77 @@ bool DX9RENDER::DX9EndScene()
     if (bVideoCapture)
         MakeCapture();
 
+    // render to bgfx here
+    IDirect3DSurface9 *renderTarget = NULL;
+    IDirect3DSurface9 *destTarget = NULL;
+    HRESULT hr = d3d9->GetRenderTarget(0, &renderTarget);
+
+    D3DDISPLAYMODE *dispMode = new D3DDISPLAYMODE();
+    d3d->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, dispMode);
+
+    hr = d3d9->CreateOffscreenPlainSurface(dispMode->Width, dispMode->Height, dispMode->Format, D3DPOOL_SYSTEMMEM, &destTarget,
+                                           NULL);
+    if (FAILED(hr))
+    {
+        printf("Failed  CreateOffscreenPlainSurface!");
+    }
+    hr = d3d9->GetRenderTargetData(renderTarget, destTarget);
+    if (FAILED(hr))
+    {
+        printf("Failed  GetRenderTargetData!");
+    }
+
+    D3DLOCKED_RECT lr;
+    ZeroMemory(&lr, sizeof(D3DLOCKED_RECT));
+    hr = destTarget->LockRect(&lr, 0, D3DLOCK_READONLY);
+    if (FAILED(hr))
+    {
+        printf("Cannot lock rect!");
+    }
+
+    std::shared_ptr<TextureResource> backgroundTexture = nullptr;
+
+    if (lr.pBits)
+    {
+        /*auto memory = bgfx::alloc(dispMode->Width * dispMode->Height * 4);
+        memcpy((void *)memory->data, lr.pBits, dispMode->Width * dispMode->Height * 4);
+        bgfx::updateTexture2D(*backgroundTexture->textureHandle, 0, 1, 0, 0, dispMode->Width, dispMode->Height, memory);*/
+
+        auto rttTex = loadMemoryTexture(
+                "Sprite backbuffer", bgfx::TextureFormat::BGRA8, dispMode->Width, dispMode->Height, 1, false, false, 0, (unsigned char*)lr.pBits);
+
+        /*
+        std::vector<unsigned char> data;
+        data.resize(1920 * 1080 * 4);
+
+        memcpy(data.data(), lr.pBits, dispMode->Width * dispMode->Height * 4);
+        */
+        /*void *ptr = bgfx::getDirectAccessPtr(*backgroundTexture->textureHandle);
+        memcpy(ptr, lr.pBits, dispMode->Width * dispMode->Height * 4);*/
+
+        //bgfx::blit(0, *backgroundTexture->textureHandle, 0, 0, *rttTex->textureHandle);
+
+        backgroundTexture = rttTex;
+        m_spriteRenderer->SetBackbufferTexture(rttTex);
+        
+        //bgfx::destroy(*rttTex->textureHandle);
+    }
+
+    hr = destTarget->UnlockRect();
+    if (FAILED(hr))
+    {
+        printf("Cannot unlock rect!");
+    }
+    renderTarget->Release();
+    destTarget->Release();
+
+    if (backgroundTexture != nullptr)
+    {
+        DrawSprite(backgroundTexture, 0, glm::vec2(0, 0), -2.0f);
+    }
+    
+
+
     const HRESULT hRes = d3d9->Present(nullptr, nullptr, nullptr, nullptr);
 
     if (hRes == D3DERR_DEVICELOST)
@@ -4093,9 +4164,9 @@ std::shared_ptr<SpriteRenderer> DX9RENDER::GetSpriteRenderer()
     return m_spriteRenderer;
 }
 
-void DX9RENDER::DrawSprite(std::shared_ptr<TextureResource> texture, uint32_t color, const glm::vec2 &position)
+void DX9RENDER::DrawSprite(std::shared_ptr<TextureResource> texture, uint32_t color, const glm::vec2 &position, float depth)
 {
-    DrawSprite(texture, glm::vec4(0, 0, texture->size.width, texture->size.height), color, position, glm::vec2(0, 0), glm::vec2(1, 1), 0.f, 0.f, false, false);
+    DrawSprite(texture, glm::vec4(0, 0, texture->size.width, texture->size.height), color, position, glm::vec2(0, 0), glm::vec2(1, 1), 0.f, depth, false, false);
 }
 
 void DX9RENDER::DrawSprite(std::shared_ptr<TextureResource> texture, const glm::vec4 &src, uint32_t color,
@@ -4167,8 +4238,7 @@ void DX9RENDER::DrawSprite(std::shared_ptr<TextureResource> texture, const glm::
 
 
     m_spriteRenderer->SetViewProjection();
-    m_spriteRenderer->UpdateVertexBuffer(points, uCoordinates, vCoordinates, colors);
-    m_spriteRenderer->Submit();
+    m_spriteRenderer->UpdateVertexBuffer(points, uCoordinates, vCoordinates, colors, depth);
 
 }
 

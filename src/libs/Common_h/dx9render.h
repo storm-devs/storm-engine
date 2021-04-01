@@ -152,7 +152,7 @@ class VDX9RENDER : public SERVICE
     virtual std::shared_ptr<SpriteRenderer> GetSpriteRenderer() = 0;
 
     virtual void DrawSprite(std::shared_ptr<TextureResource> texture, uint32_t color,
-                    const glm::vec2 &position) = 0;
+                    const glm::vec2 &position, float depth) = 0;
 
     virtual void DrawSprite(std::shared_ptr<TextureResource> texture, const glm::vec4 &src, uint32_t color,
                     const glm::vec2 &position, const glm::vec2 &origin, const glm::vec2 &scale, float angle,

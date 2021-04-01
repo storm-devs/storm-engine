@@ -368,7 +368,7 @@ class DX9RENDER : public VDX9RENDER
     std::shared_ptr<SpriteRenderer> GetSpriteRenderer() override;
 
     void DrawSprite(std::shared_ptr<TextureResource> texture, uint32_t color,
-                               const glm::vec2 &position) override;
+                               const glm::vec2 &position, float depth) override;
 
     void DrawSprite(std::shared_ptr<TextureResource> texture, const glm::vec4 &src, uint32_t color,
                     const glm::vec2 &position, const glm::vec2 &origin, const glm::vec2 &scale, float angle,

@@ -89,6 +89,8 @@ class SpriteRenderer
     uint32_t m_spriteQueueSize;
     uint32_t m_spriteQueueCount;
 
+    std::shared_ptr<TextureResource> m_backbufferTexture;
+
   public:
     std::shared_ptr<TextureResource> Texture;
 
@@ -96,11 +98,13 @@ class SpriteRenderer
     //SpriteRenderer();
 
     ~SpriteRenderer();
+    void SetBackbufferTexture(std::shared_ptr<TextureResource> texture);
+    void ReleaseTexture(std::shared_ptr<TextureResource> texture);
 
     void SetViewProjection();
 
     void UpdateIndexBuffer(std::vector<uint16_t> indices);
-    void UpdateVertexBuffer(std::vector<glm::vec3> &vertices, glm::vec2 &u, glm::vec2 &v, uint32_t &color);
+    void UpdateVertexBuffer(std::vector<glm::vec3> &vertices, glm::vec2 &u, glm::vec2 &v, uint32_t &color, float depth = 0.0f);
 
     void Submit();
 };

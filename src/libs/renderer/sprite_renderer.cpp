@@ -5,11 +5,13 @@
 #include "gtc/type_ptr.hpp"
 
 #include <vector>
+#include <algorithm>
 
 bgfx::VertexLayout SPRITE_VERTEX::ms_layout;
 
 
-SpriteRenderer::SpriteRenderer(long m_fbWidth, long m_fbHeight) : m_spriteQueueSize(0), m_spriteQueueCount(0)
+SpriteRenderer::SpriteRenderer(long m_fbWidth, long m_fbHeight)
+    : m_spriteQueueSize(0), m_spriteQueueCount(0), m_backbufferTexture(nullptr)
 //SpriteRenderer::SpriteRenderer()
 {
     SPRITE_VERTEX::Init();
@@ -54,6 +56,10 @@ SpriteRenderer::SpriteRenderer(long m_fbWidth, long m_fbHeight) : m_spriteQueueS
 
     s_texColor = bgfx::createUniform("s_texColor", bgfx::UniformType::Sampler);
     // u_color = bgfx::createUniform("u_color", bgfx::UniformType::Vec4);
+
+    std::vector<unsigned char> byteOutput;
+
+    byteOutput.resize(m_width * m_height * 4);
 }
 
 SpriteRenderer::~SpriteRenderer()
@@ -63,6 +69,17 @@ SpriteRenderer::~SpriteRenderer()
     bgfx::destroy(m_ibh);
     bgfx::destroy(m_prog);
 }
+
+void SpriteRenderer::SetBackbufferTexture(std::shared_ptr<TextureResource> texture)
+{
+    m_backbufferTexture = texture;
+}
+
+void SpriteRenderer::ReleaseTexture(std::shared_ptr<TextureResource> texture)
+{
+    bgfx::destroy(*texture->textureHandle);
+}
+
 
 void SpriteRenderer::SetViewProjection()
 {
@@ -117,7 +134,7 @@ void SpriteRenderer::UpdateIndexBuffer(std::vector<uint16_t> indices){
     throw std::exception("Does not apply for static index buffers");
 }
 
-void SpriteRenderer::UpdateVertexBuffer(std::vector<glm::vec3> &vertices, glm::vec2 &u, glm::vec2 &v, uint32_t &color)
+void SpriteRenderer::UpdateVertexBuffer(std::vector<glm::vec3> &vertices, glm::vec2 &u, glm::vec2 &v, uint32_t &color, float depth)
 {
     // m_color[0] = m_color[1] = m_color[2] = m_color[3] = 1.0f;
 
@@ -169,12 +186,13 @@ void SpriteRenderer::UpdateVertexBuffer(std::vector<glm::vec3> &vertices, glm::v
 
     sprite->texture = Texture;
     sprite->vertices = storageVertices;
-    sprite->depth = 1;
+    sprite->depth = depth;
     ++m_spriteQueueCount;
 
 
     //bgfx::update(m_fvbh, 0, mem);
 }
+
 
 void SpriteRenderer::Submit()
 {
@@ -189,7 +207,12 @@ void SpriteRenderer::Submit()
         {
             m_sortedSprites[i] = &m_spriteQueue[i];
         }
+
+        std::sort(std::begin(m_sortedSprites), std::begin(m_sortedSprites) + m_spriteQueueCount,
+        [](const SpriteInfo *x, const SpriteInfo *y) { return x->depth < y->depth; });
+
     }
+
 
     bgfx::TransientVertexBuffer vb;
     bgfx::allocTransientVertexBuffer(&vb, 4 * m_spriteQueueCount, SPRITE_VERTEX::ms_layout);
@@ -229,7 +252,6 @@ void SpriteRenderer::Submit()
         }
     }
 
-    // TODO maybe hax
     bgfx::setState(state);
 
     bgfx::setTexture(0, s_texColor, *batchTexture->textureHandle);
@@ -238,6 +260,13 @@ void SpriteRenderer::Submit()
     bgfx::submit(0, m_prog);
 
     m_spriteQueueCount = 0;
+
+    m_sortedSprites.clear();
+
+    if (m_backbufferTexture != nullptr)
+    {
+        ReleaseTexture(m_backbufferTexture);
+    }
 }
 
 void SpriteRenderer::GetVertices(std::shared_ptr<TextureResource> texture, Rect source, SPRITE_VERTEX *vertices)
