@@ -1,6 +1,7 @@
 from ctypes import *
 import os
 # Emulate all c structs and unions
+# The c version can be found under storm-engine/src/libs/Geometry/geom_static.cpp
 
 
 class c_deep(Structure):
@@ -215,7 +216,7 @@ for v in range(0, rhead.nvrtbuffs):
 print("File read succesfully!")
 # Each .obj has the following values
 
-
+# All the properties which a .obj file has. https://en.wikipedia.org/wiki/Wavefront_.obj_file
 class ProperObject:
     def __init__(self, name):
         self.o = "o "+str(name)+"\n"
@@ -223,23 +224,27 @@ class ProperObject:
         self.vn = ""
         self.vt = ""
         self.f = ""
-
+    # List of vertices
     def addV(self, x, y, z):
         self.v += "v %f %f %f\n" % (x, y, z)
 
+    # List of vertices' normals
     def addVN(self, x, y, z):
         self.vn += "vn %f %f %f\n" % (x, y, z)
 
+    # List of the texture coordinates
     def addVT(self, u, v):
         self.vt += "vt %f %f\n" % (u, v)
 
+    # List of the faces
     def addF(self, shift, x, y, z):
         self.f += "f %d %d %d\n" % (x+1+shift, y+1+shift, z+1+shift)
 
-
+# Dictionaries used to store objects' start and end
 triangleObjects = {}
 vertexObjects = {}
 
+# Get instructions from objects
 print("Parsing objects")
 for obj in robjects:
     triangleObjects[getattr(obj, "striangle")] = {
@@ -248,11 +253,12 @@ for obj in robjects:
     }
     vertexObjects[getattr(obj, "svertex")] = getattr(obj, "name")
 
+# Groups are stored in this dictionary
 g = {}
-
 print("Parsing vertices")
 objIndex = vertexObjects[0]
 vLen = len(vertices)
+# Transform vertex to valid .obj structure
 for index, vert in enumerate(vertices):
     print("Vertex %d of %d" % (index, vLen), end="\r")
     if(index in vertexObjects):
@@ -266,6 +272,7 @@ for index, vert in enumerate(vertices):
 print("Parsing triangles              ")
 objIndex = triangleObjects[0]
 tLen = len(rtriangles)
+# Transform figures to valid .obj structure
 for index, tri in enumerate(rtriangles):
     print("Triangle %d of %d" % (index, vLen), end="\r")
     if(index in triangleObjects):
@@ -276,6 +283,9 @@ for index, tri in enumerate(rtriangles):
 
 print("Writing output               ")
 out = open("output.obj", "w")
+
+out.write("# Author: https://github.com/MangioneAndrea")
+# Write everything to file
 for key, value in g.items():
     out.write(value.o)
     out.write(value.v)
