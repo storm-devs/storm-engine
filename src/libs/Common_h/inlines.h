@@ -1,3 +1,5 @@
+#pragma once
+
 #include "dx9render.h"
 
 inline unsigned long hash_string(const char *str)

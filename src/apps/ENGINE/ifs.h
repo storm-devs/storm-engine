@@ -1,3 +1,5 @@
+#pragma once
+
 #include "vfile_service.h"
 #include <stdexcept>
 
