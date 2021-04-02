@@ -1,5 +1,7 @@
+import argparse
 from ctypes import *
 import os
+import ntpath
 # Emulate all c structs and unions
 # The c version can be found under storm-engine/src/libs/Geometry/geom_static.cpp
 
@@ -180,11 +182,21 @@ def getArrayof(struct, size):
     return res
 
 
-user_input = input("Enter path of the .gm file ")
-assert os.path.exists(user_input), "File not found at: "+str(user_input)
+# define args
+parser = argparse.ArgumentParser()
+parser.add_argument("path", help="Where is the .gm file located?", type=str)
+parser.add_argument("--output", "-o", help="Output name", type=str)
+args = parser.parse_args()
+
+argsInput = str(args.path)
+argsOutput = args.output
+if(argsOutput is None):
+    argsOutput = ntpath.basename(argsInput).replace(".gm", ".obj")
+
+print(argsOutput)
 
 # Open the file to read
-f = open(user_input, "rb")
+f = open(argsInput, "rb")
 # Get the header with all the info
 rhead = rdf_head()
 f.readinto(rhead)
@@ -212,11 +224,12 @@ for v in range(0, rhead.nvrtbuffs):
     vertices.extend(getArrayof("rdf_vertex0", nverts))
 
 # Start transforming to obj
-
 print("File read succesfully!")
 # Each .obj has the following values
 
 # All the properties which a .obj file has. https://en.wikipedia.org/wiki/Wavefront_.obj_file
+
+
 class ProperObject:
     def __init__(self, name):
         self.o = "o "+str(name)+"\n"
@@ -225,6 +238,7 @@ class ProperObject:
         self.vt = ""
         self.f = ""
     # List of vertices
+
     def addV(self, x, y, z):
         self.v += "v %f %f %f\n" % (x, y, z)
 
@@ -239,6 +253,7 @@ class ProperObject:
     # List of the faces
     def addF(self, shift, x, y, z):
         self.f += "f %d %d %d\n" % (x+1+shift, y+1+shift, z+1+shift)
+
 
 # Dictionaries used to store objects' start and end
 triangleObjects = {}
@@ -282,9 +297,9 @@ for index, tri in enumerate(rtriangles):
 
 
 print("Writing output               ")
-out = open("output.obj", "w")
+out = open(argsOutput, "w")
 
-out.write("# Author: https://github.com/MangioneAndrea")
+out.write("# Author: https://github.com/MangioneAndrea \n")
 # Write everything to file
 for key, value in g.items():
     out.write(value.o)
