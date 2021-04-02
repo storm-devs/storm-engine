@@ -300,6 +300,8 @@ print("Writing output               ")
 out = open(argsOutput, "w")
 
 out.write("# Author: https://github.com/MangioneAndrea \n")
+# Add smoothing
+out.write("s 1 \n")
 # Write everything to file
 for key, value in g.items():
     out.write(value.o)
