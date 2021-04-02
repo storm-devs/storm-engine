@@ -1,5 +1,4 @@
-#ifndef _TFIFOBUFFER_H_
-#define _TFIFOBUFFER_H_
+#pragma once
 
 #include <string.h>
 
@@ -70,4 +69,3 @@ template <class tEType> class TFIFOBuffer
     tEType elements[FIFO_BUFFER_MAX_ELEMENTS];
 };
 
-#endif

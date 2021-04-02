@@ -1,5 +1,4 @@
-#ifndef AISHIPCANNONCONTROLLER_HPP
-#define AISHIPCANNONCONTROLLER_HPP
+#pragma once
 
 #define INVALID_BORT_INDEX 0xFFFFFFFF
 
@@ -149,4 +148,3 @@ class AIShipCannonController
     void Load(CSaveLoad *pSL);
 };
 
-#endif

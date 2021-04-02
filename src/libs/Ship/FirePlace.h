@@ -1,5 +1,4 @@
-#ifndef _SHIP_FIRE_PLACE_HPP
-#define _SHIP_FIRE_PLACE_HPP
+#pragma once
 
 #include "dx9render.h"
 #include "model.h"
@@ -83,4 +82,3 @@ class FirePlace
     std::string sParticleSmokeName, sParticleFireName, sSoundName;
 };
 
-#endif

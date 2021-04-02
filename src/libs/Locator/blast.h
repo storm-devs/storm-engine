@@ -1,5 +1,4 @@
-#ifndef _BLAST_H_
-#define _BLAST_H_
+#pragma once
 
 #include "Matrix.h"
 #include "Sd2_h/CannonTrace.h"
@@ -58,4 +57,3 @@ class BLAST : public Entity
         }
     }
 };
-#endif

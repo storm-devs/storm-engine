@@ -1,5 +1,4 @@
-#ifndef _S_TSTACK_H_
-#define _S_TSTACK_H_
+#pragma once
 
 #include <vector>
 
@@ -23,4 +22,3 @@ class S_TSTACK
     bool Read(char *pUnit);
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef AI_SEA_GOODS_HPP
-#define AI_SEA_GOODS_HPP
+#pragma once
 
 #include "AIHelper.h"
 #include "dtimer.h"
@@ -68,4 +67,3 @@ class AISeaGoods : public Entity
     uint32_t AttributeChanged(ATTRIBUTES *pAttributeChanged) override;
 };
 
-#endif

@@ -1,6 +1,5 @@
 
-#ifndef _LighterTypes_H_
-#define _LighterTypes_H_
+#pragma once
 
 #include "Matrix.h"
 #include "vmodule_api.h"
@@ -97,4 +96,3 @@ struct OctFndVerts
     float r2;  // Squared distance
 };
 
-#endif

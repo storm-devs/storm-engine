@@ -1,5 +1,4 @@
-#ifndef _XI_PICTURE_H_
-#define _XI_PICTURE_H_
+#pragma once
 
 #include "../inode.h"
 
@@ -55,4 +54,3 @@ class CXI_PICTURE : public CINODE
     uint32_t m_dwBlindMax;
 };
 
-#endif

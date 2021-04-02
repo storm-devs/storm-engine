@@ -1,5 +1,4 @@
-#ifndef _TELEPORT_H_
-#define _TELEPORT_H_
+#pragma once
 
 #include "dx9render.h"
 #include "vmodule_api.h"
@@ -87,4 +86,3 @@ class FINDDIALOGNODES : public Entity
     }
 };
 
-#endif

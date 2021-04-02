@@ -1,5 +1,4 @@
-#ifndef AISHIPTOUCHCONTROLLER_HPP
-#define AISHIPTOUCHCONTROLLER_HPP
+#pragma once
 
 #include "dtimer.h"
 #include "vmodule_api.h"
@@ -53,4 +52,3 @@ class AIShipTouchController
     void Save(CSaveLoad *pSL);
     void Load(CSaveLoad *pSL);
 };
-#endif

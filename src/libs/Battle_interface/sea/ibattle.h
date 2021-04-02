@@ -1,5 +1,4 @@
-#ifndef __BATTLE_INTERFACE_H_
-#define __BATTLE_INTERFACE_H_
+#pragma once
 
 #include "../Utils.h"
 #include "../bi_defines.h"
@@ -80,4 +79,3 @@ class BATTLE_INTERFACE : public Entity
     void EnableMessageIcons(VDATA *pvdat);
 };
 
-#endif

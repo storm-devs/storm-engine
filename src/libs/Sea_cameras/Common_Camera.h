@@ -1,5 +1,4 @@
-#ifndef SEA_COMMON_CAMERA_HPP
-#define SEA_COMMON_CAMERA_HPP
+#pragma once
 
 #include "Entity.h"
 #include "Sd2_h/VAI_ObjBase.h"
@@ -106,4 +105,3 @@ class COMMON_CAMERA : public Entity
     virtual ~COMMON_CAMERA(){};
 };
 
-#endif

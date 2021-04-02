@@ -1,5 +1,4 @@
-#ifndef _STRING_CODEC_H_
-#define _STRING_CODEC_H_
+#pragma once
 
 #include "defines.h"
 #define HASH_TABLE_SIZE 512 // must be power of 2
@@ -187,4 +186,3 @@ class STRING_CODEC : public VSTRING_CODEC
     //*/
 };
 
-#endif

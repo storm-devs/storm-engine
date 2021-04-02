@@ -1,5 +1,4 @@
-#ifndef BIManager_SeaGroup_H
-#define BIManager_SeaGroup_H
+#pragma once
 
 #include "BaseGroup.h"
 
@@ -23,4 +22,3 @@ class BI_SeaGroup : public BI_BaseGroup
   protected:
 };
 
-#endif

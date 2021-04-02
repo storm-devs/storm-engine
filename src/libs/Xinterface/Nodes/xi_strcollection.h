@@ -1,5 +1,4 @@
-#ifndef _XI_STRCOLLECTION_H
-#define _XI_STRCOLLECTION_H
+#pragma once
 
 #include "..//inode.h"
 
@@ -59,4 +58,3 @@ class CXI_STRCOLLECTION : public CINODE
     long m_nEditIndex;
 };
 
-#endif

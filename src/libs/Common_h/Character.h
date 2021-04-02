@@ -1,5 +1,4 @@
-#ifndef CHARACTER_WORK_HPP
-#define CHARACTER_WORK_HPP
+#pragma once
 
 #include "Attributes.h"
 #include "storm_assert.h"
@@ -49,4 +48,3 @@ inline ATTRIBUTES *GetAShip(ATTRIBUTES *pACharacter)
     return pAShip;
 }
 
-#endif

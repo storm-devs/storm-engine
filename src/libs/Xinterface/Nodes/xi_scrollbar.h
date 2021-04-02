@@ -1,5 +1,4 @@
-#ifndef __XI_SCROLLBAR_H__
-#define __XI_SCROLLBAR_H__
+#pragma once
 
 #include "..//inode.h"
 
@@ -93,4 +92,3 @@ class CXI_SCROLLBAR : public CINODE
     } m_MouseClickParam;
 };
 
-#endif

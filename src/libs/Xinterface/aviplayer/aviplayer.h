@@ -1,5 +1,4 @@
-#ifndef _AVIPLAYER_HPP_
-#define _AVIPLAYER_HPP_
+#pragma once
 
 #include "../base_video.h"
 #include <amstream.h>
@@ -82,4 +81,3 @@ class CAviPlayer : public xiBaseVideo
     bool m_bMakeUninitializeDD;
 };
 
-#endif

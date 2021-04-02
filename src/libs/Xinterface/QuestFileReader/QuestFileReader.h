@@ -1,5 +1,4 @@
-#ifndef _QUEST_FILE_READER_H_
-#define _QUEST_FILE_READER_H_
+#pragma once
 
 #include "vmodule_api.h"
 #include <string>
@@ -74,4 +73,3 @@ class QUEST_FILE_READER
     long FindTextByID(long nQuest, const char *pcTextID);
 };
 
-#endif

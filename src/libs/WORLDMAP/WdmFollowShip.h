@@ -8,8 +8,7 @@
 //
 //============================================================================================
 
-#ifndef _WdmFollowShip_H_
-#define _WdmFollowShip_H_
+#pragma once
 
 #include "WdmEnemyShip.h"
 
@@ -34,4 +33,3 @@ class WdmFollowShip : public WdmEnemyShip
   private:
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef _TSPLASH_H_
-#define _TSPLASH_H_
+#pragma once
 
 #include "Cvector.h"
 #include "defines.h"
@@ -68,4 +67,3 @@ class TSplash
     float height, midY;
 };
 
-#endif

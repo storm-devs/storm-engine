@@ -1,5 +1,4 @@
-#ifndef _FORMTTEXT_H_
-#define _FORMTTEXT_H_
+#pragma once
 
 #include "../inode.h"
 
@@ -139,4 +138,3 @@ class CXI_FORMATEDTEXT : public CINODE
     void ScrollerUpdate();
 };
 
-#endif

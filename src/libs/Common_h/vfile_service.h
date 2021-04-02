@@ -1,5 +1,4 @@
-#ifndef _VFILE_SERVICE_H_
-#define _VFILE_SERVICE_H_
+#pragma once
 
 #include <Windows.h>
 #include <cstdint>
@@ -124,4 +123,3 @@ class INIFILE
 //
 extern VFILE_SERVICE *fio;
 
-#endif

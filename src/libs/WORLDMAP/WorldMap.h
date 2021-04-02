@@ -8,8 +8,7 @@
 //
 //============================================================================================
 
-#ifndef _WorldMap_H_
-#define _WorldMap_H_
+#pragma once
 
 #include "Entity.h"
 #include "vmodule_api.h"
@@ -176,4 +175,3 @@ inline VDX9RENDER *WorldMap::GetRS() const
     return rs;
 }
 
-#endif

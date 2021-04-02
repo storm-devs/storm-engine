@@ -1,5 +1,4 @@
-#ifndef AI_FLOW_GRAPH_HPP
-#define AI_FLOW_GRAPH_HPP
+#pragma once
 
 #include "Cvector.h"
 #include "defines.h"
@@ -490,4 +489,3 @@ inline std::vector<AIFlowGraph::npoint_t> *AIFlowGraph::GetNearestPoints(CVECTOR
     return aNearestPoints;
 }
 
-#endif

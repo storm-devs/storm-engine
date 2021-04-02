@@ -7,8 +7,7 @@ Copyright (C) 2000-2002 Nick Chirkov
 Comments:
 Import library class
 ******************************************************************************/
-#ifndef _GEOM_H_
-#define _GEOM_H_
+#pragma once
 
 #include "Rdf.h"
 #include "geos.h"
@@ -100,4 +99,3 @@ class GEOM : public GEOS
     virtual long GetIndexBuffer() const;
 };
 
-#endif

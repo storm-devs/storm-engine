@@ -8,8 +8,7 @@
 //
 //============================================================================================
 
-#ifndef _TornadoParticles_H_
-#define _TornadoParticles_H_
+#pragma once
 
 #include "Matrix.h"
 #include "Pillar.h"
@@ -88,4 +87,3 @@ inline float TornadoParticles::GetRand(float r, float dev)
     return r * (1.0f - dev + rand() * dev / RAND_MAX);
 }
 
-#endif

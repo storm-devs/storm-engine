@@ -1,5 +1,4 @@
-#ifndef WATERFLARE_HPP
-#define WATERFLARE_HPP
+#pragma once
 
 #include "Typedef.h"
 #include "Weather_base.h"
@@ -44,4 +43,3 @@ class WATERFLARE : public Entity
     }
 };
 
-#endif

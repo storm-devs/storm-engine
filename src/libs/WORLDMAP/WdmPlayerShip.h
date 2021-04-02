@@ -8,8 +8,7 @@
 //
 //============================================================================================
 
-#ifndef _WdmPlayerShip_H_
-#define _WdmPlayerShip_H_
+#pragma once
 
 #include "WdmShip.h"
 
@@ -59,4 +58,3 @@ inline float WdmPlayerShip::GetAy() const
     return ay;
 }
 
-#endif

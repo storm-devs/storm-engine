@@ -8,8 +8,7 @@
 //
 //============================================================================================
 
-#ifndef _CharactersGroups_H_
-#define _CharactersGroups_H_
+#pragma once
 
 #include "Matrix.h"
 #include "vmodule_api.h"
@@ -217,4 +216,3 @@ class CharactersGroups : public Entity
     Supervisor::FindCharacter fnd[MAX_CHARACTERS];
 };
 
-#endif

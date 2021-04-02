@@ -1,5 +1,4 @@
-#ifndef _WM_SHIPCOMMAND_H_
-#define _WM_SHIPCOMMAND_H_
+#pragma once
 
 #include "../battle_command.h"
 
@@ -18,4 +17,3 @@ class WMShipCommandList : public BICommandList
     long CommandAdding();
 };
 
-#endif

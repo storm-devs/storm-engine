@@ -1,5 +1,4 @@
-#ifndef _DATA_CACHE_
-#define _DATA_CACHE_
+#pragma once
 
 #include "../system/datasource/datasource.h"
 //#include "..\file.h"
@@ -47,4 +46,3 @@ class DataCache
     const char *GetCachedNameByIndex(uint32_t Index);
 };
 
-#endif

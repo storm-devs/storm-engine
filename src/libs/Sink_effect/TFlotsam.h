@@ -1,5 +1,4 @@
-#ifndef _TFLOTSAM_H_
-#define _TFLOTSAM_H_
+#pragma once
 
 #include "SinkSplashDefines.h"
 #include "geometry.h"
@@ -44,4 +43,3 @@ class TFlotsam
     static entid_t modelIDs[sink_effect::FLOTSAM_MODELS_COUNT];
 };
 
-#endif

@@ -5,8 +5,7 @@
 //*  description: Template Quick Sort class
 //*
 //****************************************************************
-#ifndef QUICK_SORT_TEMPLATE_CLASS
-#define QUICK_SORT_TEMPLATE_CLASS
+#pragma once
 
 template <class TYPE> class GMXQSort
 {
@@ -65,4 +64,3 @@ template <class TYPE> class GMXQSort
     }
 };
 
-#endif

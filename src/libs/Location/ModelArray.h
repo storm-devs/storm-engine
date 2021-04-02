@@ -8,8 +8,7 @@
 // Storing model information
 // ============================================================================================
 
-#ifndef _ModelArray_H_
-#define _ModelArray_H_
+#pragma once
 
 #include "model.h"
 #include "vmodule_api.h"
@@ -159,4 +158,3 @@ inline const char *ModelArray::GetModelName(long index)
     return nullptr;
 }
 
-#endif

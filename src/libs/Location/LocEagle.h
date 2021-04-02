@@ -8,8 +8,7 @@
 //
 //============================================================================================
 
-#ifndef _LocEagle_H_
-#define _LocEagle_H_
+#pragma once
 
 #include "model.h"
 
@@ -49,4 +48,3 @@ class LocEagle : public Entity
     float kAy, timeAy;
 };
 
-#endif

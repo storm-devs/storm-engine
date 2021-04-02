@@ -1,5 +1,4 @@
-#ifndef _BI_MESSAGE_ICONS_H_
-#define _BI_MESSAGE_ICONS_H_
+#pragma once
 
 #include "bi_defines.h"
 
@@ -87,4 +86,3 @@ class MESSAGE_ICONS
     COLUMN_DESCRIBER m_pMsgColumns[MESSAGE_ICONS_COLUMN_QUANTITY];
 };
 
-#endif

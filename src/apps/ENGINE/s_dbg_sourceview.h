@@ -1,5 +1,4 @@
-#ifndef _SOURCE_VIEW_H_
-#define _SOURCE_VIEW_H_
+#pragma once
 
 #include "core.h"
 #include <CommCtrl.h>
@@ -82,4 +81,3 @@ class SOURCE_VIEW
     bool SetVariableOnChange(const char *pStr, bool bSet);
     const char *GetToken(const char *pStr, std::string &sResult);
 };
-#endif

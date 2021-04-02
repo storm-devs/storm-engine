@@ -1,5 +1,4 @@
-#ifndef _OBJECT_H_
-#define _OBJECT_H_
+#pragma once
 
 #include "Matrix.h"
 #include "dx9render.h"
@@ -25,4 +24,3 @@ class COLLISION_OBJECT : public Entity
     virtual const char *GetCollideMaterialName() = 0;
     virtual bool GetCollideTriangle(TRIANGLE &triangle) = 0;
 };
-#endif

@@ -1,5 +1,4 @@
-#ifndef _CONTROLS_H_
-#define _CONTROLS_H_
+#pragma once
 
 #include "utf8.h"
 #include <cstdint>
@@ -212,4 +211,3 @@ class CONTROLS
     }
 };
 
-#endif

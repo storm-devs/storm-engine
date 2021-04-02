@@ -1,5 +1,4 @@
-#ifndef BI_IMAGEMATERIAL_H
-#define BI_IMAGEMATERIAL_H
+#pragma once
 
 #include "image_defines.h"
 #include <string>
@@ -90,4 +89,3 @@ class BIImageMaterial
     bool m_bDeleteEverything;
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef _SEAFOAM_PS_H_
-#define _SEAFOAM_PS_H_
+#pragma once
 
 #include "Matrix.h"
 #include "dx9render.h"
@@ -234,4 +233,3 @@ class SEAFOAM_PS : VPARTICLE_SYSTEM
     }
 };
 
-#endif

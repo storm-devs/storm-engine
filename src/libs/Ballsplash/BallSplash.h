@@ -1,5 +1,4 @@
-#ifndef _BALLSPLASH_H_
-#define _BALLSPLASH_H_
+#pragma once
 
 #include "BallSplashDefines.h"
 #include "CVECTOR.h"
@@ -48,4 +47,3 @@ class BALLSPLASH : public Entity
     SEA_BASE *sea;
 };
 
-#endif

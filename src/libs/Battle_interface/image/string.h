@@ -1,5 +1,4 @@
-#ifndef BI_STRING_H
-#define BI_STRING_H
+#pragma once
 
 #include "image_defines.h"
 #include <string>
@@ -63,4 +62,3 @@ class BIString : public IBIString
     bool m_bUpdateString;
 };
 
-#endif

@@ -8,8 +8,7 @@
 //
 //============================================================================================
 
-#ifndef _WdmClouds_H_
-#define _WdmClouds_H_
+#pragma once
 
 #include "WdmRenderObject.h"
 
@@ -77,4 +76,3 @@ class WdmClouds : public WdmRenderObject
     RS_RECT rects[WDMCLOUDSMAX * 16];
 };
 
-#endif

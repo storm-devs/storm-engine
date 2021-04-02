@@ -1,5 +1,4 @@
-#ifndef __SHIP_TRACKS_HPP
-#define __SHIP_TRACKS_HPP
+#pragma once
 
 #include "dx9render.h"
 #include "sea_base.h"
@@ -103,4 +102,3 @@ class ShipTracks : public Entity
     std::vector<ShipTrack *> aShips;
 };
 
-#endif

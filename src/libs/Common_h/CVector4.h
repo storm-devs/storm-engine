@@ -1,5 +1,4 @@
-#ifndef __CVECTOR4_HPP__
-#define __CVECTOR4_HPP__
+#pragma once
 
 struct CVECTOR4
 {
@@ -40,4 +39,3 @@ struct CVECTOR4
     };
 };
 
-#endif

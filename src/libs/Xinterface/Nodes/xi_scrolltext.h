@@ -1,5 +1,4 @@
-#ifndef __XI_SCROLLTEXT_H_
-#define __XI_SCROLLTEXT_H_
+#pragma once
 
 #include "../inode.h"
 
@@ -70,4 +69,3 @@ class CXI_SCROLLTEXT : public CINODE
     long GetStringWord(char *pstr, char *buff, size_t size);
 };
 
-#endif

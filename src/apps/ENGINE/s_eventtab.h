@@ -1,5 +1,4 @@
-#ifndef _S_EVENTTAB_H_
-#define _S_EVENTTAB_H_
+#pragma once
 
 #include "data.h"
 
@@ -54,4 +53,3 @@ class S_EVENTTAB
     void ProcessFrame();
 };
 
-#endif

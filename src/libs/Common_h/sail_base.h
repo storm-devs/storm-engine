@@ -1,5 +1,4 @@
-#ifndef SAIL_BASE_H
-#define SAIL_BASE_H
+#pragma once
 #include "Sd2_h/CannonTrace.h"
 
 class NODE;
@@ -32,4 +31,3 @@ class ROPE_BASE : public Entity
     virtual void DoDeleteUntie(entid_t mdl_id, NODE *rnod, int gNum) = 0;
 };
 
-#endif

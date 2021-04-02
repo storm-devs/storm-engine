@@ -1,5 +1,4 @@
-#ifndef AISHIPROTATECONTROLLER_HPP
-#define AISHIPROTATECONTROLLER_HPP
+#pragma once
 
 #include "Sd2_h/VAI_ObjBase.h"
 #include "vmodule_api.h"
@@ -45,4 +44,3 @@ class AIShipRotateController
     void Load(CSaveLoad *pSL);
 };
 
-#endif
