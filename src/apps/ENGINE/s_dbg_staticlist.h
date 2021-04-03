@@ -1,5 +1,4 @@
-#ifndef _SDBG_STATICLIST_H_
-#define _SDBG_STATICLIST_H_
+#pragma once
 
 #include <Windows.h>
 #include <vector>
@@ -51,4 +50,3 @@ class SDBG_STATICLIST
     }
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef _ANIMALS_H_
-#define _ANIMALS_H_
+#pragma once
 
 #include "TSeagulls.h"
 #include "geometry.h"
@@ -50,4 +49,3 @@ class ANIMALS : public Entity
     TButterflies *butterflies;
 };
 
-#endif

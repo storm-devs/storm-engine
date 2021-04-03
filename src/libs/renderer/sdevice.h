@@ -1,5 +1,4 @@
-#ifndef __SDEVICE_H__
-#define __SDEVICE_H__
+#pragma once
 
 #include "Effects.h"
 #include "Font.h"
@@ -745,4 +744,3 @@ bool SetCurFont (long fontID); // returns true if the given font is installed
     void RecompileEffects();
 };
 
-#endif

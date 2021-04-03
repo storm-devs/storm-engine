@@ -1,5 +1,4 @@
-#ifndef _S_TOKEN_H_
-#define _S_TOKEN_H_
+#pragma once
 
 #include <Windows.h>
 #include <cstdint>
@@ -211,4 +210,3 @@ class TOKEN
     bool InitializeHashTable();
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef _HELPCHOOSER_H_
-#define _HELPCHOOSER_H_
+#pragma once
 
 #include "dx9render.h"
 #include <defines.h>
@@ -67,4 +66,3 @@ class HELPCHOOSER : public Entity
     int m_nMouseHeight;
 };
 
-#endif

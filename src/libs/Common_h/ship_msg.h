@@ -1,5 +1,4 @@
-#ifndef MSG_SHIP_HPP
-#define MSG_SHIP_HPP
+#pragma once
 
 #define MAX_CANNON_NAME_LENGTH 100
 
@@ -21,4 +20,3 @@ typedef struct
 /// for avigrabber
 #define MSG_SHIP_SET_POS 5002
 
-#endif

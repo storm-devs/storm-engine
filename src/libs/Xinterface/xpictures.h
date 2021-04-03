@@ -1,5 +1,4 @@
-#ifndef __XPICTURES_H__
-#define __XPICTURES_H__
+#pragma once
 
 #include "..\\common_h\\attributes.h"
 
@@ -14,4 +13,3 @@ class CXPICTURES
     void ReleaseAllPictures();
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef _FONT_H_
-#define _FONT_H_
+#pragma once
 
 #include "dx9render.h"
 #include "matrix.h"
@@ -108,4 +107,3 @@ class FONT
     };
 };
 
-#endif

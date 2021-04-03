@@ -13,8 +13,7 @@
 //
 //
 // ===========================================================================================================================
-
-#ifndef _ANTFILE_H_
+#pragma once
 
 #define ANTFILE_ID (unsigned long)(('A' << 0) | ('N' << 8) | ('T' << 16) | (' ' << 24))
 #define ANTFILE_VER (unsigned long)(('1' << 0) | ('.' << 8) | ('0' << 16) | (' ' << 24))
@@ -49,5 +48,3 @@ struct AntFileTrackElement
 };
 
 #pragma pack(pop)
-
-#endif

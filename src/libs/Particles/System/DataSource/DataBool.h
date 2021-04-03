@@ -1,5 +1,4 @@
-#ifndef _PARTICLE_DATA_BOOLEAN_H_
-#define _PARTICLE_DATA_BOOLEAN_H_
+#pragma once
 
 #include "../../ICommon/MemFile.h"
 #include <string>
@@ -29,4 +28,3 @@ class DataBool
     const char *GetName() const;
 };
 
-#endif

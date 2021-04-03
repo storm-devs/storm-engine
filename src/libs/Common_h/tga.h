@@ -1,5 +1,4 @@
-#ifndef TGA_HPP
-#define TGA_HPP
+#pragma once
 
 typedef struct tagTGA_H
 {
@@ -23,4 +22,3 @@ typedef struct tagTGA_H
     };
 } TGA_H;
 
-#endif

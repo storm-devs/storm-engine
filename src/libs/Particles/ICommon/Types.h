@@ -1,5 +1,4 @@
-#ifndef _PARTICLE_TYPES_DEFINITION_
-#define _PARTICLE_TYPES_DEFINITION_
+#pragma once
 
 #define MUL_DEGTORAD 0.01745329251994329547f  // Degrees to Radians
 #define MUL_RADTODEG 57.29577951308232286465f // Radians to Degrees
@@ -38,4 +37,3 @@ enum FieldType
     FIELD_FORCE_DWORD = 0x7fffffff
 };
 
-#endif

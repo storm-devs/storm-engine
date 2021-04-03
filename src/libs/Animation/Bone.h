@@ -8,8 +8,7 @@
 // Model bone containing its animation
 // ============================================================================================
 
-#ifndef _Bone_H_
-#define _Bone_H_
+#pragma once
 
 //============================================================================================
 
@@ -138,4 +137,3 @@ inline float Bone::LerpAng(float a, float b, float k)
     return a + k * delta;
 }
 
-#endif

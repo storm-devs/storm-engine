@@ -1,5 +1,4 @@
-#ifndef _SEA_OPERATOR_H_
-#define _SEA_OPERATOR_H_
+#pragma once
 
 #include "dx9render.h"
 #include "sea_base.h"
@@ -96,4 +95,3 @@ class SEA_OPERATOR : public Entity
 };
 
 //--------------------------------------------------------------------
-#endif

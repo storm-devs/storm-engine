@@ -1,5 +1,4 @@
-#ifndef ISHIPLIGHTS_HPP
-#define ISHIPLIGHTS_HPP
+#pragma once
 
 #include "ship_base.h"
 
@@ -21,4 +20,3 @@ class IShipLights : public Entity
     virtual void SetDead(VAI_OBJBASE *pObject) = 0;
 };
 
-#endif

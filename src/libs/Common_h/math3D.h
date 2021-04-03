@@ -4,8 +4,7 @@
 // Math3D
 //============================================================================================
 
-#ifndef _Math3D_h_
-#define _Math3D_h_
+#pragma once
 
 #include <xmmintrin.h> // espkk # remove inline asm # 30/Dec/2017
 
@@ -168,4 +167,3 @@ inline float safeASin(float ang)
 
 #include "Math3D/Vector4.h"
 
-#endif

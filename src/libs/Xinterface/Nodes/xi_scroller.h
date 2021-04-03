@@ -1,5 +1,4 @@
-#ifndef _XI_SCROLLER_H
-#define _XI_SCROLLER_H
+#pragma once
 
 #include "..//inode.h"
 
@@ -64,4 +63,3 @@ class CXI_SCROLLER : public CINODE
     FXYRECT m_RollTexRect;
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef _ROPE_H_
-#define _ROPE_H_
+#pragma once
 
 #include "dx9render.h"
 #include "geos.h"
@@ -152,4 +151,3 @@ class ROPE : public ROPE_BASE
     uint64_t realize_tm;
 };
 
-#endif

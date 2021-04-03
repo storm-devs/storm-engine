@@ -1,5 +1,4 @@
-#ifndef WEATHER_RAIN_HPP
-#define WEATHER_RAIN_HPP
+#pragma once
 
 #include "Weather_Base.h"
 #include "sea_base.h"
@@ -137,4 +136,3 @@ class RAIN : public Entity
     }
 };
 
-#endif

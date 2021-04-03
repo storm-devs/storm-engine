@@ -1,5 +1,4 @@
-#ifndef SEA_STRUCT_HPP
-#define SEA_STRUCT_HPP
+#pragma once
 
 #include "..\common_h\cvector.h"
 #include "..\common_h\templates\array.h"
@@ -45,4 +44,3 @@ struct sea_dat
     seaspecific_t GF2MX, GF3;
 };
 
-#endif

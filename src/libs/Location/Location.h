@@ -8,8 +8,7 @@
 //
 //============================================================================================
 
-#ifndef _Location_H_
-#define _Location_H_
+#pragma once
 
 #include "Matrix.h"
 #include "vmodule_api.h"
@@ -258,4 +257,3 @@ inline bool Location::IsPaused() const
     return isPause;
 }
 
-#endif

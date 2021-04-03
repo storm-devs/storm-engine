@@ -1,6 +1,4 @@
-#ifndef SCRIPT_VANO_FILES_HPP
-#define SCRIPT_VANO_FILES_HPP
+#pragma once
 
 void Vano_Init();
 
-#endif

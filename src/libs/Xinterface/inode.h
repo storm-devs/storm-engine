@@ -1,5 +1,4 @@
-#ifndef _INODE_H
-#define _INODE_H
+#pragma once
 
 #include "Nodes/xi_tooltips.h"
 #include "VideoTexture.h"
@@ -359,4 +358,3 @@ class CINODE
     bool m_bMakeActionInDeclick;
 };
 
-#endif

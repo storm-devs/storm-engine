@@ -8,8 +8,7 @@
 //
 //============================================================================================
 
-#ifndef _Lizards_h_
-#define _Lizards_h_
+#pragma once
 
 #include "dx9render.h"
 #include "vmodule_api.h"
@@ -50,4 +49,3 @@ class Lizards : public Entity
     long num;
 };
 
-#endif

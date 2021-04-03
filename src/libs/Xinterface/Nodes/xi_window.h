@@ -1,5 +1,4 @@
-#ifndef __XI_TITLE_H__
-#define __XI_TITLR_H__
+#pragma once
 
 #include "../inode.h"
 
@@ -52,5 +51,3 @@ class CXI_WINDOW : public CINODE
     bool m_bShow;
     bool m_bActive;
 };
-
-#endif

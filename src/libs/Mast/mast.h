@@ -1,5 +1,4 @@
-#ifndef _MAST_H_
-#define _MAST_H_
+#pragma once
 
 #include "collide.h"
 #include "dx9render.h"
@@ -74,4 +73,3 @@ class MAST : public Entity
     MASTMOVE mm;
 };
 
-#endif

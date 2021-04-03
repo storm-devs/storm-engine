@@ -3,8 +3,7 @@
 //      are changed infrequently
 //
 
-#if !defined(AFX_STDAFX_H__3D514228_C46A_11D4_9921_0080AD1BED0F__INCLUDED_)
-#define AFX_STDAFX_H__3D514228_C46A_11D4_9921_0080AD1BED0F__INCLUDED_
+#pragma once
 
 #if _MSC_VER > 1000
 #pragma once
@@ -24,4 +23,3 @@ char *GetTokenWhile(char *src, char *dst, const char *skip);
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_STDAFX_H__3D514228_C46A_11D4_9921_0080AD1BED0F__INCLUDED_)

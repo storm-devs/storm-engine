@@ -1,5 +1,4 @@
-#ifndef _XI_BACK_SCENE_H
-#define _XI_BACK_SCENE_H
+#pragma once
 
 #include "../xdefines.h"
 #include "Entity.h"
@@ -220,4 +219,3 @@ class InterfaceBackScene : public Entity
                        long numU = 0);
 };
 
-#endif

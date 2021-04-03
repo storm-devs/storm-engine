@@ -8,8 +8,7 @@
 //
 //============================================================================================
 
-#ifndef _WdmSea_H_
-#define _WdmSea_H_
+#pragma once
 
 #include "WdmRenderObject.h"
 
@@ -93,4 +92,3 @@ class WdmSea : public WdmRenderObject
     float flareCerateCounter;
 };
 
-#endif

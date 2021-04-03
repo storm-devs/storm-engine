@@ -1,6 +1,5 @@
 
-#ifndef _AN_FILE_H_
-#define _AN_FILE_H_
+#pragma once
 
 // ANIMATION_HEADER
 // long parentIndex[nJoints]
@@ -25,4 +24,3 @@ struct HEADER
 
 #pragma pack(pop)
 
-#endif

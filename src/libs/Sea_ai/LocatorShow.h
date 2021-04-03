@@ -1,5 +1,4 @@
-#ifndef SEA_LOCATOR_SHOW_HPP
-#define SEA_LOCATOR_SHOW_HPP
+#pragma once
 
 #include "AIHelper.h"
 
@@ -70,4 +69,3 @@ class SeaLocatorShow : public Entity
     uint32_t AttributeChanged(ATTRIBUTES *pAttribute) override;
 };
 
-#endif

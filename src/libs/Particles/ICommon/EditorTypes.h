@@ -1,5 +1,4 @@
-#ifndef _PARTICLE_TYPES_DEFINITION_FOR_EDITOR
-#define _PARTICLE_TYPES_DEFINITION_FOR_EDITOR
+#pragma once
 
 // Unique identifiers for the particle editor
 enum EditorUniqueTypes
@@ -22,4 +21,3 @@ enum EditorUniqueTypes
     ET_FORCE_DWORD = 0x7fffffff
 };
 
-#endif

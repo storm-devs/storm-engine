@@ -1,5 +1,4 @@
-#ifndef _XI_SCROLLEDPICTURE_H_
-#define _XI_SCROLLEDPICTURE_H_
+#pragma once
 
 #include "xi_image.h"
 #include "xi_picture.h"
@@ -54,4 +53,3 @@ class CXI_SCROLLEDPICTURE : public CXI_PICTURE
     std::vector<BuildinImage> m_aImg;
 };
 
-#endif

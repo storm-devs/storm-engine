@@ -2,8 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_SAILONE_H__CC023C85_54DA_11D5_BCC5_00002121783F__INCLUDED_)
-#define AFX_SAILONE_H__CC023C85_54DA_11D5_BCC5_00002121783F__INCLUDED_
+#pragma once
 
 #if _MSC_VER > 1000
 #pragma once
@@ -286,4 +285,3 @@ class SAILONE : public SAILONE_BASE
     float m_fVertGeraldScale;
 };
 
-#endif // !defined(AFX_SAILONE_H__CC023C85_54DA_11D5_BCC5_00002121783F__INCLUDED_)

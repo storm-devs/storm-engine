@@ -1,5 +1,4 @@
-#ifndef SEA_CANNON_AI_HPP
-#define SEA_CANNON_AI_HPP
+#pragma once
 
 #include "AIHelper.h"
 #include "Sd2_h/VAI_ObjBase.h"
@@ -133,4 +132,3 @@ class AICannon
     CANNONTYPE CannonType;
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef __XI_TITLE_H__
-#define __XI_TITLR_H__
+#pragma once
 
 #include "../inode.h"
 
@@ -48,5 +47,3 @@ class CXI_TITLE : public CINODE
     XYRECT m_mRect, m_tRect;
     long m_nTiledQuantity;
 };
-
-#endif

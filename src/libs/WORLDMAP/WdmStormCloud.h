@@ -8,8 +8,7 @@
 //
 //============================================================================================
 
-#ifndef _WdmStormCloud_H_
-#define _WdmStormCloud_H_
+#pragma once
 
 #include "WdmCloud.h"
 
@@ -57,4 +56,3 @@ class WdmStormCloud : public WdmCloud
     static RainVertex rain[4096]; // The current array to draw
 };
 
-#endif

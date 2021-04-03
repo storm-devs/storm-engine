@@ -1,5 +1,4 @@
-#ifndef DTIMER_HPP
-#define DTIMER_HPP
+#pragma once
 
 class DTimer
 {
@@ -49,4 +48,3 @@ class DTimer
     }
 };
 
-#endif

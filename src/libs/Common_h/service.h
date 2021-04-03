@@ -1,5 +1,4 @@
-#ifndef _SERVICE_H_
-#define _SERVICE_H_
+#pragma once
 
 //-------------------------------------------------------------------------------------------------
 // Base class for SERVICE is a nothing more than base entity class with three new functions:
@@ -52,4 +51,3 @@ class SERVICE // : public Entity
     }
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef _S_COMPRESS_H_
-#define _S_COMPRESS_H_
+#pragma once
 
 #include "dstring_codec.h"
 #include <cstdint>
@@ -49,4 +48,3 @@ class COMPRESS
     bool AppendData(char *&pDestination, uint32_t &nUnpackedSize, char *pData, uint32_t nSize);
 };
 
-#endif

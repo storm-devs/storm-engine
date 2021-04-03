@@ -1,5 +1,4 @@
-#ifndef _XINTERFACE_H_
-#define _XINTERFACE_H_
+#pragma once
 
 #include "Matrix.h"
 #include "Nodes/xi_util.h"
@@ -434,4 +433,3 @@ class CONTROLS_CONTAINER : public Entity
     CONTEINER_DESCR *FindContainer(const char *sContainer);
 };
 
-#endif

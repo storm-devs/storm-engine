@@ -1,5 +1,4 @@
-#ifndef _XINTERFACE_DEFAULT_H_
-#define _XINTERFACE_DEFAULT_H_
+#pragma once
 
 #include "../../Shared/interface/messages.h"
 #include "Cvector.h"
@@ -244,4 +243,3 @@ extern entid_t g_idInterface;
 extern uint32_t ColorInterpolate(uint32_t sCol, uint32_t dCol, float m);
 extern void DublicateString(char *&pDstStr, const char *pSrcStr);
 
-#endif

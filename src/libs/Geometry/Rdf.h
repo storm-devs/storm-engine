@@ -8,8 +8,7 @@ Comments:
 geometry file format
 ******************************************************************************/
 
-#ifndef __RDF_H__
-#define __RDF_H__
+#pragma once
 
 #pragma pack(push, 1)
 
@@ -272,4 +271,3 @@ struct BSP_NODE
 };
 
 #pragma pack(pop)
-#endif

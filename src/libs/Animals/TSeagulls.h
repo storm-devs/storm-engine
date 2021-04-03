@@ -1,5 +1,4 @@
-#ifndef _TSEAGULLS_H_
-#define _TSEAGULLS_H_
+#pragma once
 
 #include "../SoundService/VSoundService.h"
 #include "AnimalsDefines.h"
@@ -71,4 +70,3 @@ class TSeagulls
     float startY;
 };
 
-#endif // !defined

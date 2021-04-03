@@ -1,5 +1,4 @@
-#ifndef _DSTRING_CODEC_H_
-#define _DSTRING_CODEC_H_
+#pragma once
 
 #include <cstring>
 #include <malloc.h>
@@ -197,4 +196,3 @@ class DSTRING_CODEC
     }*/
 };
 
-#endif

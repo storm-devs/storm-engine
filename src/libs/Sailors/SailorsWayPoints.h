@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Matrix.h"
 #include "defines.h"
 #include "dx9render.h"

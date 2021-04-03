@@ -1,5 +1,4 @@
-#ifndef _XI_CONTEXTHELP_H_
-#define _XI_CONTEXTHELP_H_
+#pragma once
 
 #include "../inode.h"
 
@@ -66,4 +65,3 @@ class CXI_CONTEXTHELP : public CINODE
     RS_LINE m_pLines[8];
 };
 
-#endif

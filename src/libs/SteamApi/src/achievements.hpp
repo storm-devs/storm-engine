@@ -1,3 +1,5 @@
+#pragma once
+
 #include <steam_api.h>
 
 #define ACHIEVEMENTS_NUM 71

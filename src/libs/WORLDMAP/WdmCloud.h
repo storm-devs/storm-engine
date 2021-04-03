@@ -8,8 +8,7 @@
 //
 //============================================================================================
 
-#ifndef _WdmCloud_H_
-#define _WdmCloud_H_
+#pragma once
 
 #include "Matrix.h"
 #include "WdmRenderObject.h"
@@ -100,4 +99,3 @@ class WdmCloud : public WdmRenderObject
     float Rnd();
 };
 
-#endif

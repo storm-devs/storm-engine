@@ -1,5 +1,4 @@
-#ifndef _PARTICLE_SYSTEM_H_
-#define _PARTICLE_SYSTEM_H_
+#pragma once
 
 #include "../../ICommon/Types.h"
 #include "../../Manager/particlemanager.h"
@@ -88,4 +87,3 @@ class ParticleSystem : public IParticleSystem
     void Editor_UpdateCachedData();
 };
 
-#endif

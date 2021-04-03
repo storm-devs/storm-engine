@@ -8,8 +8,7 @@
 //
 //============================================================================================
 
-#ifndef _Lizard_h_
-#define _Lizard_h_
+#pragma once
 
 #include "LocLife.h"
 
@@ -33,4 +32,3 @@ class Lizard : public LocLife
     float lastMove;
 };
 
-#endif

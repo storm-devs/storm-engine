@@ -4,8 +4,7 @@
 // Color
 //============================================================================================
 
-#ifndef _Color_h_
-#define _Color_h_
+#pragma once
 
 #pragma pack(push, 1)
 
@@ -1327,4 +1326,3 @@ inline DColor::operator uint32_t() const
 
 #pragma pack(pop)
 
-#endif

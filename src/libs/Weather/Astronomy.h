@@ -1,5 +1,4 @@
-#ifndef ASTRONOMY_HPP
-#define ASTRONOMY_HPP
+#pragma once
 
 #include "typedef.h"
 #include <vector>
@@ -124,4 +123,3 @@ class Astronomy : public Entity
     PLANETS Planets;
 };
 
-#endif

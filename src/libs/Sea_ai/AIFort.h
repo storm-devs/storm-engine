@@ -1,5 +1,4 @@
-#ifndef SEA_FORT_AI_HPP
-#define SEA_FORT_AI_HPP
+#pragma once
 
 #include "AICannon.h"
 #include "AIShip.h"
@@ -365,4 +364,3 @@ class AIFort : public VAI_OBJBASE
     }
 };
 
-#endif

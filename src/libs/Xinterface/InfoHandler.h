@@ -1,5 +1,4 @@
-#ifndef _INFO_HANDLER_H_
-#define _INFO_HANDLER_H_
+#pragma once
 
 #include "dx9render.h"
 
@@ -58,4 +57,3 @@ class InfoHandler : public Entity
     } * m_strList;*/
 };
 
-#endif

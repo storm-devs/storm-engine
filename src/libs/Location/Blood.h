@@ -1,5 +1,4 @@
-#ifndef _Blood_H_
-#define _Blood_H_
+#pragma once
 
 #include "collide.h"
 #include "dx9render.h"
@@ -94,4 +93,3 @@ class Blood : public Entity
     long CheckBloodQuantityInRadius(const CVECTOR &cpos, float fDist, long nLimitQ);
 };
 
-#endif

@@ -8,8 +8,7 @@
 //
 //============================================================================================
 
-#ifndef _Grass_H_
-#define _Grass_H_
+#pragma once
 
 #include "Supervisor.h"
 #include "dx9render.h"
@@ -224,4 +223,3 @@ class Grass : public Entity
     long isGrassLightsOn;
 };
 
-#endif

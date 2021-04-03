@@ -1,5 +1,4 @@
-#ifndef _S_DEBUG_H_
-#define _S_DEBUG_H_
+#pragma once
 
 #define PROJECT_NAME "project.df"
 
@@ -99,4 +98,3 @@ class S_DEBUG
     long GetRecentFileALine(const char *pFileName);
     void SaveRecentFileALine(const char *pFileName, long nLine);
 };
-#endif

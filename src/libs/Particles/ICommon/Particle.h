@@ -1,5 +1,4 @@
-#ifndef PARTICLE_STRUCT
-#define PARTICLE_STRUCT
+#pragma once
 
 #include "math3d.h"
 
@@ -179,4 +178,3 @@ struct MDL_ParticleData
     uint32_t EmitterGUID;
 };
 
-#endif

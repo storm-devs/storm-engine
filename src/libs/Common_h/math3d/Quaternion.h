@@ -4,8 +4,7 @@
 // Quaternion
 //============================================================================================
 
-#ifndef _Quaternion_h_
-#define _Quaternion_h_
+#pragma once
 
 #include "Matrix.h"
 #include "Vector.h"
@@ -562,4 +561,3 @@ inline float Quaternion::GetLengthSqr() const
 
 #pragma pack(pop)
 
-#endif

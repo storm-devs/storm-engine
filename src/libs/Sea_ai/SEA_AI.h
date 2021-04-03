@@ -1,5 +1,4 @@
-#ifndef SEA_AI_HPP
-#define SEA_AI_HPP
+#pragma once
 
 #include "AIBalls.h"
 #include "AIFort.h"
@@ -49,4 +48,3 @@ class SEA_AI : public Entity
     uint32_t AttributeChanged(ATTRIBUTES *pAttribute);
 };
 
-#endif

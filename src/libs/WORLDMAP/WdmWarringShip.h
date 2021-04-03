@@ -8,8 +8,7 @@
 //
 //============================================================================================
 
-#ifndef _WdmWarringShip_H_
-#define _WdmWarringShip_H_
+#pragma once
 
 #include "WdmEnemyShip.h"
 
@@ -52,4 +51,3 @@ class WdmWarringShip : public WdmEnemyShip
     long texture;
 };
 
-#endif

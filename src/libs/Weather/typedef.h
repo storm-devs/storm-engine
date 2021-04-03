@@ -1,5 +1,4 @@
-#ifndef WEATHER_TYPEDEF_HPP
-#define WEATHER_TYPEDEF_HPP
+#pragma once
 
 #include "../../Shared/messages.h"
 #include "../../Shared/sea_ai/Script_defines.h"
@@ -13,4 +12,3 @@
 #include "vmodule_api.h"
 #include <stdio.h>
 
-#endif
