@@ -1,5 +1,4 @@
-#ifndef __GEOMETRY_R__H__
-#define __GEOMETRY_R__H__
+#pragma once
 
 #include "dx9render.h"
 #include "vmodule_api.h"
@@ -77,4 +76,3 @@ class GEOM_SERVICE_R final : public GEOM_SERVICE
 //    DECLARE_MAIN_SERVICE(GEOMETRY)
 // API_SERVICE_END(GEOMETRY)
 
-#endif

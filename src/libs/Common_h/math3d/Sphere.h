@@ -4,8 +4,7 @@
 // Sphere
 //============================================================================================
 
-#ifndef _Sphere_h_
-#define _Sphere_h_
+#pragma once
 
 #pragma pack(push, 1)
 
@@ -198,4 +197,3 @@ inline bool Sphere::Intersection(const Vector &orig, const Vector &normdir, cons
 
 #pragma pack(pop)
 
-#endif

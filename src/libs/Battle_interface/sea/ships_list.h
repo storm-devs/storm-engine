@@ -1,5 +1,4 @@
-#ifndef __SHIPS_LIST_
-#define __SHIPS_LIST_
+#pragma once
 
 #include "../bi_defines.h"
 #include "Sd2_h/VAI_ObjBase.h"
@@ -58,4 +57,3 @@ class SHIP_DESCRIBE_LIST
 
 extern SHIP_DESCRIBE_LIST g_ShipList;
 
-#endif

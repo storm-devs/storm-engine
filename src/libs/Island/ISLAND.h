@@ -1,5 +1,4 @@
-#ifndef _ISLAND_H_
-#define _ISLAND_H_
+#pragma once
 
 #include "../Sea_ai/AIFlowGraph.h"
 #include "Island_Base.h"
@@ -185,4 +184,3 @@ class ISLAND : public ISLAND_BASE
     };
 };
 
-#endif

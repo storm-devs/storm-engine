@@ -1,5 +1,4 @@
-#ifndef _SEAFOAM_H_
-#define _SEAFOAM_H_
+#pragma once
 
 #include "../SoundService/VSoundService.h"
 #include "SeafoamDefines.h"
@@ -87,4 +86,3 @@ class SEAFOAM : public Entity
     VSoundService *soundService;
 };
 
-#endif

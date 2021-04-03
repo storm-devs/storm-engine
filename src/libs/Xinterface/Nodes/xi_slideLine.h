@@ -1,5 +1,4 @@
-#ifndef _XI_SLIDELINE_H_
-#define _XI_SLIDELINE_H_
+#pragma once
 
 #include "..//inode.h"
 
@@ -48,4 +47,3 @@ class CXI_SLIDELINE : public CINODE
     long m_nMinValue;
 };
 
-#endif

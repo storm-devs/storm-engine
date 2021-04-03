@@ -1,5 +1,4 @@
-#ifndef WEATHER_HPP
-#define WEATHER_HPP
+#pragma once
 
 #include "Rain.h"
 #include "SKY.h"
@@ -79,4 +78,3 @@ class WEATHER : public WEATHER_BASE
     }
 };
 
-#endif

@@ -8,8 +8,7 @@
 //
 //============================================================================================
 
-#ifndef _LocationEffects_H_
-#define _LocationEffects_H_
+#pragma once
 
 #include "Entity.h"
 #include "Matrix.h"
@@ -175,4 +174,3 @@ class LocationEffects : public Entity
     Vertex buffer[256 * 6];
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef NAMES_HEADER
-#define NAMES_HEADER
+#pragma once
 
 #define EMISSION_RATE "Emission rate"
 #define MAX_PARTICLES_COUNT "Max Particles count"
@@ -40,4 +39,3 @@
 #define PARTICLE_DIR_ORIENT "Direction Orient"
 #define PARTICLE_ADDPOWER "Add Technique Power"
 
-#endif

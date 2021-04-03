@@ -1,5 +1,4 @@
-#ifndef _LOCATOR_H_
-#define _LOCATOR_H_
+#pragma once
 
 #include "blast.h"
 #include "geometry.h"
@@ -42,4 +41,3 @@ class LOCATOR : public Entity
     bool VerifyParticles();
 };
 
-#endif

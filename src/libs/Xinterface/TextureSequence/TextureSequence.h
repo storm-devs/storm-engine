@@ -1,5 +1,4 @@
-#ifndef _TextureSequence_H
-#define _TextureSequence_H
+#pragma once
 
 #include "VideoTexture.h"
 
@@ -56,4 +55,3 @@ class TextureSequence : public CVideoTexture
     }
 };
 
-#endif

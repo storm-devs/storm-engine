@@ -1,5 +1,4 @@
-#ifndef INTEL_HPP
-#define INTEL_HPP
+#pragma once
 
 // espkk # remove inline asm # 30/Dec/2017
 #include <intrin.h>
@@ -415,4 +414,3 @@ inline uint8_t Intel::CPUCount(uint32_t *TotAvailLogical, uint32_t *TotAvailCore
     return StatusFlag;
 }
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef ISLAND_BASE_HPP
-#define ISLAND_BASE_HPP
+#pragma once
 
 #include "defines.h"
 #include "sd2_h/CannonTrace.h"
@@ -23,4 +22,3 @@ class ISLAND_BASE : public CANNON_TRACE_BASE
     virtual float GetCurrentImmersion() = 0;
 };
 
-#endif

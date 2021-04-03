@@ -4,8 +4,7 @@
 // Matrix
 //============================================================================================
 
-#ifndef _Matrix_h_
-#define _Matrix_h_
+#pragma once
 
 #include "Plane.h"
 #include "Vector4.h"
@@ -1511,4 +1510,3 @@ inline Vector4 Matrix::GetVectorW() const
 
 #pragma pack(pop)
 
-#endif

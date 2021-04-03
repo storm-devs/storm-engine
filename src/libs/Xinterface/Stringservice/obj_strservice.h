@@ -1,5 +1,4 @@
-#ifndef _OBJ_STRSERVICE_H_
-#define _OBJ_STRSERVICE_H_
+#pragma once
 
 #include "Entity.h"
 #include "stringService.h"
@@ -19,4 +18,3 @@ class OBJ_STRSERVICE : public Entity
     }
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef _BREAKPOINTS_TABLE_H_
-#define _BREAKPOINTS_TABLE_H_
+#pragma once
 
 #include "core.h"
 #include <vector>
@@ -35,4 +34,3 @@ class BREAKPOINTS_TABLE
     void UpdateProjectFile();
 };
 
-#endif

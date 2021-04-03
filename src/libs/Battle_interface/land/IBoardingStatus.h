@@ -1,5 +1,4 @@
-#ifndef _IBOARDINGSTATUS_H_
-#define _IBOARDINGSTATUS_H_
+#pragma once
 
 #include "../bi_defines.h"
 
@@ -48,4 +47,3 @@ class IBoardingStatus : public Entity
     BI_COLORONLY_VERTEX m_EnemyChar[4];
 };
 
-#endif

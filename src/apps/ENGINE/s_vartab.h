@@ -1,5 +1,4 @@
-#ifndef _S_VARTAB_H_
-#define _S_VARTAB_H_
+#pragma once
 
 #include "data.h"
 #include <vector>
@@ -83,4 +82,3 @@ class S_VARTAB
     void UpdateHashTable(uint32_t code, uint32_t hash, bool in);
 };
 
-#endif

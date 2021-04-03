@@ -1,5 +1,4 @@
-#ifndef __XI_GLOWER_H_
-#define __XI_GLOWER_H_
+#pragma once
 
 #include "../inode.h"
 
@@ -60,4 +59,3 @@ class CXI_GLOWER : public CINODE
     uint32_t m_dwMaxColor;
 };
 
-#endif

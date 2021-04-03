@@ -1,5 +1,4 @@
-#ifndef _ACTIVEPERKSHOWER_H_
-#define _ACTIVEPERKSHOWER_H_
+#pragma once
 
 #include "defines.h"
 #include "dx9render.h"
@@ -83,4 +82,3 @@ class ActivePerkShower : public Entity
     bool InitCommonBuffers();
 };
 
-#endif

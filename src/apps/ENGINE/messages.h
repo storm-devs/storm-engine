@@ -1,5 +1,4 @@
-#ifndef _MESSAGES_H_
-#define _MESSAGES_H_
+#pragma once
 
 #define CMS_MODULES_PATH "Modules path:"
 #define CMS_MODULES_SEARCH "Searching for modules..."
@@ -25,4 +24,3 @@
 //#define CMS_MLEAK_CLASSES            "Checking classes for memory leak(s)..."
 #define CMS_MEMLEAK "Memory Leak"
 
-#endif

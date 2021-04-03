@@ -1,5 +1,4 @@
-#ifndef _PROGRAM_H_
-#define _PROGRAM_H_
+#pragma once
 
 #include "compiler.h"
 
@@ -26,4 +25,3 @@ class PROGRAM
     bool OnLoad();
     void AddPostEvent(S_EVENTMSG *pEM);
 };
-#endif

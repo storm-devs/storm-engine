@@ -1,5 +1,4 @@
-#ifndef __VCOLLIDE_H__
-#define __VCOLLIDE_H__
+#pragma once
 
 #include "collide.h"
 
@@ -42,4 +41,3 @@ class COLL : public COLLIDE
 //    DECLARE_MAIN_SERVICE(COLL)
 // API_SERVICE_END(COLL)
 
-#endif

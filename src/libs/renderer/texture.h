@@ -2,8 +2,7 @@
 // Texture file .tx
 //================================================================
 
-#ifndef __TEXTURE_H__
-#define __TEXTURE_H__
+#pragma once
 
 //================================================================
 //
@@ -91,4 +90,3 @@ struct TX_PALETTE
 // with pallette
 #define TX_PNT_FMIP_W_PAL (TX_PNT_PALETTE + TX_PALETTE_SIZE)
 
-#endif

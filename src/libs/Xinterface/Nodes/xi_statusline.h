@@ -1,5 +1,4 @@
-#ifndef _XI_STATUSLINE_H
-#define _XI_STATUSLINE_H
+#pragma once
 
 #include "..//inode.h"
 
@@ -41,4 +40,3 @@ class CXI_STATUSLINE : public CINODE
     FXYRECT m_texRect2;
 };
 
-#endif

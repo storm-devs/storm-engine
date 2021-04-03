@@ -1,5 +1,4 @@
-#ifndef _SHIP_H_
-#define _SHIP_H_
+#pragma once
 
 #include "Character.h"
 #include "Island_Base.h"
@@ -267,4 +266,3 @@ class SHIP : public SHIP_BASE
     void Load(CSaveLoad *pSL);
 };
 
-#endif

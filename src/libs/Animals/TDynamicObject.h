@@ -1,5 +1,4 @@
-#ifndef _TDYNAMICOBJECT_H_
-#define _TDYNAMICOBJECT_H_
+#pragma once
 
 //#include <windows.h>
 #include "Cvector.h"
@@ -37,4 +36,3 @@ class TDynamicObject
 };
 //--------------------------------------------------------------------
 
-#endif

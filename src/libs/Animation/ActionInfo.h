@@ -8,8 +8,7 @@
 // Information about one action
 // ============================================================================================
 
-#ifndef _ActionInfo_H_
-#define _ActionInfo_H_
+#pragma once
 
 #include "Animation.h"
 #include "Bone.h"
@@ -145,4 +144,3 @@ inline std::unordered_map<std::string, std::string> &ActionInfo::GetUserData()
     return userData;
 }
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef _SHIP_BASE_H_
-#define _SHIP_BASE_H_
+#pragma once
 
 #include "cvector.h"
 #include "sd2_h/VAI_ObjBase.h"
@@ -87,4 +86,3 @@ class SHIP_BASE : public VAI_OBJBASE
     virtual void SetFixedSpeed(bool bSetFixed, float fFixedSpeed) = 0;
 };
 
-#endif

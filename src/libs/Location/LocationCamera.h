@@ -8,8 +8,7 @@
 //
 //============================================================================================
 
-#ifndef _LocationCamera_H_
-#define _LocationCamera_H_
+#pragma once
 
 #include "Matrix.h"
 #include "PathTracks.h"
@@ -216,4 +215,3 @@ inline float LocationCamera::GetAx() const
     return ax;
 }
 
-#endif

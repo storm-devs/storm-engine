@@ -1,5 +1,4 @@
-#ifndef _BATTLE_SHIPSIGN_H
-#define _BATTLE_SHIPSIGN_H
+#pragma once
 
 #include "../bi_defines.h"
 #include "ships_list.h"
@@ -145,4 +144,3 @@ class BIShipIcon
     long m_nCommandMode;
 };
 
-#endif

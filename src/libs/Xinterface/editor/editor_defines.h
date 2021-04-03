@@ -1,5 +1,4 @@
-#ifndef _GI_EDITOR_DEFINES_H_
-#define _GI_EDITOR_DEFINES_H_
+#pragma once
 #include <vector>
 
 enum GIEditorStates
@@ -47,4 +46,3 @@ class GIEditorEventHandler
     std::vector<FuncDescr> m_aEventFuncs;
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef _ATTRIBUTES_H_
-#define _ATTRIBUTES_H_
+#pragma once
 
 #include <Windows.h>
 #include <cstdint>
@@ -545,4 +544,3 @@ class ATTRIBUTES
     }
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef __BATTLE_NAVIGATOR_H_
-#define __BATTLE_NAVIGATOR_H_
+#pragma once
 
 #include "../bi_defines.h"
 #include "Weather_Base.h"
@@ -231,4 +230,3 @@ class BATTLE_NAVIGATOR
     float m_fAspectRatio;
 };
 
-#endif

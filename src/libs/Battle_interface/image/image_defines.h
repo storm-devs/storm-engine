@@ -1,5 +1,4 @@
-#ifndef BI_IMAGE_DEFINES_H
-#define BI_IMAGE_DEFINES_H
+#pragma once
 
 #include "defines.h"
 #include "dx9render.h"
@@ -64,4 +63,3 @@ class IBIString
 #define ImagePrioritet_MaxValue 100000
 #define ImagePrioritet_DefaultValue 10000
 
-#endif

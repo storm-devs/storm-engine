@@ -1,5 +1,4 @@
-#ifndef _GRAPH_VERTEX_H_
-#define _GRAPH_VERTEX_H_
+#pragma once
 
 struct GraphVertex
 {
@@ -18,4 +17,3 @@ struct GraphVertex
     };
 };
 
-#endif

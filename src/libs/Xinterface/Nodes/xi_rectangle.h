@@ -1,5 +1,4 @@
-#ifndef _XI_RECTANGLE_H_
-#define _XI_RECTANGLE_H_
+#pragma once
 
 #include "../inode.h"
 
@@ -42,4 +41,3 @@ class CXI_RECTANGLE : public CINODE
     XI_NOTEX_VERTEX m_pVert[4];
 };
 
-#endif

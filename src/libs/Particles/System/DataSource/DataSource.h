@@ -1,5 +1,4 @@
-#ifndef _PARTICLE_DATA_SOURCE_H_
-#define _PARTICLE_DATA_SOURCE_H_
+#pragma once
 
 #include "../../icommon/types.h"
 #include "fieldlist.h"
@@ -88,4 +87,3 @@ class DataSource
     EmitterDesc *GetEmitterDesc(int Index);
 };
 
-#endif

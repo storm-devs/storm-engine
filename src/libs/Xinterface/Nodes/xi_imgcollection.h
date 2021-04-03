@@ -1,5 +1,4 @@
-#ifndef _XI_IMAGECOLLECTION_H
-#define _XI_IMAGECOLLECTION_H
+#pragma once
 
 #include "../inode.h"
 #include "vmodule_api.h"
@@ -69,4 +68,3 @@ class CXI_IMGCOLLECTION : public CINODE
     XYPOINT m_xyCommonOffset;
 };
 
-#endif

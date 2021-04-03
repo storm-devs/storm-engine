@@ -1,5 +1,4 @@
-#ifndef _XI_FOURIMAGE_
-#define _XI_FOURIMAGE_
+#pragma once
 
 #include "../inode.h"
 
@@ -92,4 +91,3 @@ class CXI_FOURIMAGE : public CINODE
     uint32_t m_dwCurSelectColor; // current color for select item show
 };
 
-#endif

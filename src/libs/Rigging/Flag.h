@@ -1,5 +1,4 @@
-#ifndef _FLAG_H_
-#define _FLAG_H_
+#pragma once
 
 #include "dx9render.h"
 #include "geos.h"
@@ -165,4 +164,3 @@ class FLAG : public Entity
     int wFlagLast;
 };
 
-#endif

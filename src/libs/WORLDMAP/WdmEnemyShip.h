@@ -8,8 +8,7 @@
 //
 //============================================================================================
 
-#ifndef _WdmEnemyShip_H_
-#define _WdmEnemyShip_H_
+#pragma once
 
 #include "WdmShip.h"
 #include "attributes.h"
@@ -100,4 +99,3 @@ inline float WdmEnemyShip::GetLiveTime() const
     return liveTime >= 0.0f ? liveTime : 0.0f;
 }
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef _S_IMPORT_FUNC_H_
-#define _S_IMPORT_FUNC_H_
+#pragma once
 
 #include <cstdint>
 
@@ -34,4 +33,3 @@ struct IFUNCINFO
     uint32_t nDeclLine;
 };
 
-#endif

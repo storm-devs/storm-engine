@@ -1,5 +1,4 @@
-#ifndef __LOG_AND_ACTION_H_
-#define __LOG_AND_ACTION_H_
+#pragma once
 
 #include "Utils.h"
 #include "defines.h"
@@ -92,4 +91,3 @@ class ILogAndActions : public Entity
     BITextInfo m_ActionHint2;
 };
 
-#endif

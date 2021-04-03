@@ -1,5 +1,4 @@
-#ifndef SIMPLE_GEOM_NAME_PARSER
-#define SIMPLE_GEOM_NAME_PARSER
+#pragma once
 
 #include <string.h>
 
@@ -60,4 +59,3 @@ class GeomNameParser
     }
 };
 
-#endif

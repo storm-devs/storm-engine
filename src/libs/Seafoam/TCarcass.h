@@ -1,5 +1,4 @@
-#ifndef _TCARCASS_H_
-#define _TCARCASS_H_
+#pragma once
 
 #include "Cvector.h"
 #include "Matrix.h"
@@ -63,4 +62,3 @@ class TCarcass
     int iBuffer, vBuffer;
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef SEA_SHIP_CAMERA_HPP
-#define SEA_SHIP_CAMERA_HPP
+#pragma once
 
 #include "Common_Camera.h"
 #include "Island_Base.h"
@@ -77,4 +76,3 @@ class SHIP_CAMERA : public COMMON_CAMERA
     void Load(CSaveLoad *pSL) override;
 };
 
-#endif

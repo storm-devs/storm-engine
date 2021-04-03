@@ -1,5 +1,4 @@
-#ifndef _COAST_FOAM_HPP_
-#define _COAST_FOAM_HPP_
+#pragma once
 
 #include "../Sea_ai/AIFlowGraph.h"
 #include "Island_Base.h"
@@ -128,4 +127,3 @@ class CoastFoam : public Entity
     void ExecuteFoamType1(Foam *pF, float fDeltaTime);
 };
 
-#endif

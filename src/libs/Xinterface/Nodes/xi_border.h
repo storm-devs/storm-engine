@@ -1,5 +1,4 @@
-#ifndef _XI_BORDER_H_
-#define _XI_BORDER_H_
+#pragma once
 
 #include "../inode.h"
 
@@ -86,4 +85,3 @@ class CXI_BORDER : public CINODE
     long m_nRightLineWidth;
 };
 
-#endif

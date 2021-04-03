@@ -1,5 +1,4 @@
-#ifndef __XI_BUTTON_H__
-#define __XI_BUTTON_H__
+#pragma once
 
 #include "../inode.h"
 
@@ -68,4 +67,3 @@ class CXI_BUTTON : public CINODE
     int m_dwStrOffset;
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef AISHIPCAMERACONTROLLER_HPP
-#define AISHIPCAMERACONTROLLER_HPP
+#pragma once
 
 class AIShip;
 
@@ -47,4 +46,3 @@ class AIShipCameraController
     void Load(CSaveLoad *pSL);
 };
 
-#endif

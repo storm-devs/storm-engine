@@ -1,5 +1,4 @@
-#ifndef _TFISHSCHOOLS_H_
-#define _TFISHSCHOOLS_H_
+#pragma once
 
 #include "AnimalsDefines.h"
 #include "Matrix.h"
@@ -54,4 +53,3 @@ class TFishSchools : public TDynamicSystem
     SEA_BASE *sea;
 };
 
-#endif // !defined

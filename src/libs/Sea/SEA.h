@@ -1,8 +1,7 @@
 // ************************************************************************
 // *  Author : Vano, 1861; Description : Sea/Ocean/Water/Lake/River/pool  *
 // ************************************************************************
-#ifndef NEW_SEA_HPP
-#define NEW_SEA_HPP
+#pragma once
 
 #include "Sea_Base.h"
 #include "cvector4.h"
@@ -248,4 +247,3 @@ class SEA : public SEA_BASE
     // uint32_t cdecl    ProcessMessage(MESSAGE & message);
 };
 
-#endif

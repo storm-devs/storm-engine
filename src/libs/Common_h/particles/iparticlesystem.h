@@ -1,5 +1,4 @@
-#ifndef PARTICLE_SYSTEM_INTERFACE
-#define PARTICLE_SYSTEM_INTERFACE
+#pragma once
 
 #include <cstdint>
 
@@ -44,4 +43,3 @@ class IParticleSystem
     virtual void Stop() = 0;
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef _SOUNDSERVICE_H_
-#define _SOUNDSERVICE_H_
+#pragma once
 
 #include "Cvector.h"
 #include "SoundDefines.h"
@@ -213,4 +212,3 @@ class SoundService : public VSoundService
 
     void ProcessFader(int idx);
 };
-#endif // !defined

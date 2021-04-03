@@ -1,5 +1,4 @@
-#ifndef _K2_PSYSTEM_H
-#define _K2_PSYSTEM_H
+#pragma once
 
 #include "Cvector.h"
 #include "Matrix.h"
@@ -30,4 +29,3 @@ class PARTICLE_SYSTEM : public VPARTICLE_SYSTEM
     IParticleSystem *GetSystem() const;
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef SHIPLIGHTS_HPP
-#define SHIPLIGHTS_HPP
+#pragma once
 
 #include "collide.h"
 #include "defines.h"
@@ -155,4 +154,3 @@ class ShipLights : public IShipLights
     }
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef _TOUCH_H_
-#define _TOUCH_H_
+#pragma once
 
 #include "Island_Base.h"
 #include "dx9render.h"
@@ -94,4 +93,3 @@ class TOUCH : public Entity
     }
 };
 
-#endif
