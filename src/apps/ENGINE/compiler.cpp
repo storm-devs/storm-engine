@@ -24,8 +24,6 @@ extern uint32_t dwNumberScriptCommandsExecuted;
 COMPILER::COMPILER()
 {
     CompilerStage = CS_SYSTEM;
-    fio->_DeleteFile(COMPILER_LOG_FILENAME);
-    fio->_DeleteFile(COMPILER_ERRORLOG_FILENAME);
     LabelTable.SetStringDataSize(sizeof(uint32_t));
     LabelUpdateTable.SetStringDataSize(sizeof(DOUBLE_DWORD));
     ProgramDirectory = nullptr;
@@ -7164,22 +7162,12 @@ DATA *COMPILER::GetOperand(const char *pCodeBase, uint32_t &ip, S_TOKEN_TYPE *pT
 
 void COMPILER::FormatAllDialog(const char *directory_name)
 {
-    WIN32_FIND_DATA ffd;
+    const auto vPaths = fio->_GetPathsOrFilenamesByMask(directory_name, "*.c", true);
     char sFileName[MAX_PATH];
-    sprintf_s(sFileName, "%s\\*.c", directory_name);
-    const HANDLE fh = fio->_FindFirstFile(sFileName, &ffd);
-    if (fh != INVALID_HANDLE_VALUE)
+    for (std::string curPath : vPaths)
     {
-        std::string Utf8FileName = utf8::ConvertWideToUtf8(ffd.cFileName);
-        sprintf_s(sFileName, "%s\\%s", directory_name, Utf8FileName.c_str());
+        sprintf(sFileName, curPath.c_str());
         FormatDialog(sFileName);
-        while (fio->_FindNextFile(fh, &ffd))
-        {
-            Utf8FileName = utf8::ConvertWideToUtf8(ffd.cFileName);
-            sprintf_s(sFileName, "%s\\%s", directory_name, Utf8FileName.c_str());
-            FormatDialog(sFileName);
-        }
-        fio->_FindClose(fh);
     }
 }
 

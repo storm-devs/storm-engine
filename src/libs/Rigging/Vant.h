@@ -5,6 +5,8 @@
 #include "geos.h"
 #include "vmodule_api.h"
 
+#include <filesystem>
+
 class NODE;
 
 #define VANT_EDGE 5 // number of edges in the rope section
@@ -76,7 +78,7 @@ class VANT_BASE : public Entity
     float ZERO_CMP_VAL;    // Guy motion sampling step
     float MAXFALL_CMP_VAL; // the maximum change in the guy position at which the guy stops being displayed
     // -------------------------------------
-    FILETIME ft_old;
+    std::filesystem::file_time_type ft_old;
 
     bool bUse;
     bool bRunFirstTime;

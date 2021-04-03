@@ -7,6 +7,8 @@
 #include "sail_base.h"
 #include "vmodule_api.h"
 
+#include <filesystem>
+
 class VDATA;
 
 struct SAILGROUP
@@ -77,7 +79,7 @@ class SAIL : public SAIL_BASE
     bool bUse;
     VDX9RENDER *RenderService;
     D3DMATERIAL9 mat;
-    FILETIME ft_old;
+    std::filesystem::file_time_type ft_old;
     long texl;
     long m_nEmptyGerbTex;
 

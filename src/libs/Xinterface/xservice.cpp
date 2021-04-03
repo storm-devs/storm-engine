@@ -227,32 +227,36 @@ void XSERVICE::LoadAllPicturesInfo()
     char param[255];
 
     // initialize ini file
-    WIN32_FIND_DATA wfd;
-    auto *const h = fio->_FindFirstFile(LISTS_INIFILE, &wfd);
-    if (INVALID_HANDLE_VALUE != h)
-        fio->_FindClose(h);
     auto ini = fio->OpenIniFile(LISTS_INIFILE);
     if (!ini)
+    {
         throw std::exception("ini file not found!");
+    }
 
     m_dwListQuantity = 0;
     m_dwImageQuantity = 0;
 
     // calculate lists quantity
     if (ini->GetSectionName(section, sizeof(section) - 1))
+    {
         do
+        {
             m_dwListQuantity++;
-        while (ini->GetSectionNameNext(section, sizeof(section) - 1));
+        } while (ini->GetSectionNameNext(section, sizeof(section) - 1));
+    }
     // create list pointers array
     if (m_dwListQuantity > 0)
     {
         m_pList = new IMAGELISTDESCR[m_dwListQuantity];
         if (m_pList == nullptr)
+        {
             throw std::exception("memory allocate error");
+        }
     }
 
     // fill lists
     if (ini->GetSectionName(section, sizeof(section) - 1))
+    {
         for (auto i = 0; true; i++)
         {
             m_pList[i].textureQuantity = 0;
@@ -314,6 +318,7 @@ void XSERVICE::LoadAllPicturesInfo()
             if (!ini->GetSectionNameNext(section, sizeof(section) - 1))
                 break;
         }
+    }
 }
 
 void XSERVICE::ReleaseAll()

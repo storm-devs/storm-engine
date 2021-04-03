@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <fstream>
 #include <string>
+#include <vector>
+#include <filesystem>
 
 class INIFILE;
 
@@ -21,16 +23,21 @@ class VFILE_SERVICE
     virtual int _DeleteFile(const char *filename) = 0;
     virtual bool _WriteFile(std::fstream &fileS, const void *s, std::streamsize count) = 0;
     virtual bool _ReadFile(std::fstream &fileS, void *s, std::streamsize count) = 0;
-    virtual HANDLE _FindFirstFile(const char *lpFileName, LPWIN32_FIND_DATA lpFindFileData) = 0;
-    virtual BOOL _FindNextFile(HANDLE hFindFile, LPWIN32_FIND_DATA lpFindFileData) = 0;
-    virtual BOOL _FindClose(HANDLE hFindFile) = 0;
+    virtual bool _FileOrDirectoryExists(const char *p) = 0;
+    virtual std::vector<std::string> _GetPathsOrFilenamesByMask(const char *sourcePath, const char *mask, bool getPaths,
+                                                                bool onlyDirs = false, bool onlyFiles = true) = 0;
+    virtual std::vector<std::filesystem::path> _GetFsPathsByMask(const char *sourcePath, const char *mask,
+                                                                 bool getPaths, bool onlyDirs = false,
+                                                                 bool onlyFiles = true) = 0;
+    virtual std::time_t _ToTimeT(std::filesystem::file_time_type tp) = 0;
+    virtual std::filesystem::file_time_type _GetLastWriteTime(const char *filename) = 0;
     virtual void _FlushFileBuffers(std::fstream &fileS) = 0;
     virtual uint32_t _GetCurrentDirectory(uint32_t nBufferLength, char *lpBuffer) = 0;
     virtual std::string _GetExecutableDirectory() = 0;
     virtual std::uintmax_t _GetFileSize(const char *filename) = 0;
     virtual BOOL _SetCurrentDirectory(const char *lpPathName) = 0;
     virtual BOOL _CreateDirectory(const char *lpPathName, LPSECURITY_ATTRIBUTES lpSecurityAttributes) = 0;
-    virtual BOOL _RemoveDirectory(const char *lpPathName) = 0;
+    virtual std::uintmax_t _RemoveDirectory(const char *p) = 0;
     virtual BOOL _SetFileAttributes(const char *lpFileName, uint32_t dwFileAttributes) = 0;
     virtual BOOL LoadFile(const char *file_name, char **ppBuffer, uint32_t *dwSize = nullptr) = 0;
 

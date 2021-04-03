@@ -93,16 +93,20 @@ class FILE_SERVICE : public VFILE_SERVICE
     int _DeleteFile(const char *filename) override;
     bool _WriteFile(std::fstream &fileS, const void *s, std::streamsize count) override;
     bool _ReadFile(std::fstream &fileS, void *s, std::streamsize count) override;
-    HANDLE _FindFirstFile(const char *lpFileName, LPWIN32_FIND_DATA lpFindFileData) override;
-    BOOL _FindNextFile(HANDLE hFindFile, LPWIN32_FIND_DATA lpFindFileData) override;
-    BOOL _FindClose(HANDLE hFindFile) override;
+    bool _FileOrDirectoryExists(const char *p) override;
+    std::vector<std::string> _GetPathsOrFilenamesByMask(const char *sourcePath, const char *mask, bool getPaths,
+                                                  bool onlyDirs = false, bool onlyFiles = true) override;
+    std::vector<std::filesystem::path> _GetFsPathsByMask(const char *sourcePath, const char *mask, bool getPaths,
+                                                         bool onlyDirs = false, bool onlyFiles = true) override;
+    std::time_t _ToTimeT(std::filesystem::file_time_type tp) override;
+    std::filesystem::file_time_type _GetLastWriteTime(const char *filename) override;
     void _FlushFileBuffers(std::fstream &fileS) override;
     uint32_t _GetCurrentDirectory(uint32_t nBufferLength, char *lpBuffer) override;
     std::string _GetExecutableDirectory() override;
     std::uintmax_t _GetFileSize(const char *filename) override;
     BOOL _SetCurrentDirectory(const char *lpPathName) override;
     BOOL _CreateDirectory(const char *lpPathName, LPSECURITY_ATTRIBUTES lpSecurityAttributes) override;
-    BOOL _RemoveDirectory(const char *lpPathName) override;
+    std::uintmax_t _RemoveDirectory(const char *p) override;
     BOOL _SetFileAttributes(const char *lpFileName, uint32_t dwFileAttributes) override;
     BOOL LoadFile(const char *file_name, char **ppBuffer, uint32_t *dwSize) override;
     // ini files section
