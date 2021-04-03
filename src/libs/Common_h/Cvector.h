@@ -1,5 +1,4 @@
-#ifndef __CVECTOR_H__
-#define __CVECTOR_H__
+#pragma once
 
 #include <math.h>
 
@@ -311,4 +310,3 @@ struct DVECTOR
     }
 };
 
-#endif

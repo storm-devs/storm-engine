@@ -8,8 +8,7 @@
 // Animation service for creating AnimationManager objects
 // ============================================================================================
 
-#ifndef _AnimationServiceImp_H_
-#define _AnimationServiceImp_H_
+#pragma once
 
 #include "Animation.h"
 #include "AnimationInfo.h"
@@ -65,4 +64,3 @@ class AnimationServiceImp final : public AnimationService
 
 //============================================================================================
 
-#endif

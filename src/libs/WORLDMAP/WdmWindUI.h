@@ -8,8 +8,7 @@
 //
 //============================================================================================
 
-#ifndef _WdmWindUI_H_
-#define _WdmWindUI_H_
+#pragma once
 
 #include "WdmInterfaceObject.h"
 
@@ -45,4 +44,3 @@ class WdmWindUI : public WdmInterfaceObject
     float resizeRatio;
 };
 
-#endif

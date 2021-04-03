@@ -1,5 +1,4 @@
-#ifndef _SOUND_H_
-#define _SOUND_H_
+#pragma once
 
 #include "dx9render.h"
 #include "entity.h"
@@ -52,4 +51,3 @@ class SOUND : public Entity
     VDX9RENDER *renderer;
 };
 
-#endif

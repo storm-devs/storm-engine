@@ -5,8 +5,7 @@
 //*
 //****************************************************************
 
-#ifndef PARTICLES_SERVICE_INTERFACE
-#define PARTICLES_SERVICE_INTERFACE
+#pragma once
 
 #include "../service.h"
 
@@ -35,4 +34,3 @@ class IParticleService : public SERVICE
     virtual IParticleManager *DefManager() = 0;
 };
 
-#endif

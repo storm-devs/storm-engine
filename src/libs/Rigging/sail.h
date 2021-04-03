@@ -1,5 +1,4 @@
-#ifndef _SAIL_H_
-#define _SAIL_H_
+#pragma once
 
 #include "SAILONE.h"
 #include "dx9render.h"
@@ -203,4 +202,3 @@ class SAIL : public SAIL_BASE
     long m_nLastUpdate;
 };
 
-#endif

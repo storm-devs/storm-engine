@@ -1,5 +1,4 @@
-#ifndef WEATHER_BASE_HPP
-#define WEATHER_BASE_HPP
+#pragma once
 
 #include "Cvector.h"
 #include "entity.h"
@@ -96,4 +95,3 @@ class WEATHER_BASE : public Entity
     virtual void GetVector(uint32_t, CVECTOR *) = 0;
 };
 
-#endif

@@ -1,8 +1,7 @@
 // Setup.h : main header file for the SETUP application
 //
 
-#if !defined(AFX_SETUP_H__3D514224_C46A_11D4_9921_0080AD1BED0F__INCLUDED_)
-#define AFX_SETUP_H__3D514224_C46A_11D4_9921_0080AD1BED0F__INCLUDED_
+#pragma once
 
 #if _MSC_VER > 1000
 #pragma once
@@ -47,4 +46,3 @@ class CSetupApp : public CWinApp
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_SETUP_H__3D514224_C46A_11D4_9921_0080AD1BED0F__INCLUDED_)

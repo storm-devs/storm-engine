@@ -1,5 +1,4 @@
-#ifndef _SOUNDDEFINES_H_
-#define _SOUNDDEFINES_H_
+#pragma once
 
 ///////////////////////////////////////////////////////////////////
 // CONSTANTS
@@ -82,4 +81,3 @@ enum eSoundMessage
 class SoundService;
 extern SoundService *soundService;
 
-#endif

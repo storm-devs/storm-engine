@@ -1,5 +1,4 @@
-#ifndef LIGHTNING_HPP
-#define LIGHTNING_HPP
+#pragma once
 
 #include "Typedef.h"
 #include "Weather_base.h"
@@ -80,4 +79,3 @@ class LIGHTNING : public Entity
     }
 };
 
-#endif

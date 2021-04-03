@@ -1,5 +1,4 @@
-#ifndef _SINKSPLASHDEFINES_
-#define _SINKSPLASHDEFINES_
+#pragma once
 
 #include "Windows.h"
 #include "d3d9types.h"
@@ -48,4 +47,3 @@ constexpr float FLOTSAM_DY = 0.3f;
 #define SINKSPLASH_TRACE2(a, b) _VSYSTEM_core.Trace(a, b);
 #endif
 
-#endif

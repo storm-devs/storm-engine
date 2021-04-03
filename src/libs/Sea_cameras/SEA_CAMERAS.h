@@ -1,5 +1,4 @@
-#ifndef SEA_CAMERAS_HPP
-#define SEA_CAMERAS_HPP
+#pragma once
 
 #include "ShipCamera.h"
 #include <vector>
@@ -26,4 +25,3 @@ class SEA_CAMERAS : public Entity
     }
 };
 
-#endif

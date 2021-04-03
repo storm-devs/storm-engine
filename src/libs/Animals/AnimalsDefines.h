@@ -1,5 +1,4 @@
-#ifndef _ANIMALSDEFINES_
-#define _ANIMALSDEFINES_
+#pragma once
 
 extern char ANIMALS_INI_FILENAME[];
 extern const char ANIMALS_SEAGULL_FILENAME[];
@@ -58,4 +57,3 @@ extern char ANIMALS_BUTTERFLIES_SECTION[];
 #define BUTTERFLY_DISTANCE 100.0f
 #define BUTTERFLY_MAX_RADIUS 60
 
-#endif

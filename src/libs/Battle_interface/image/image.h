@@ -1,5 +1,4 @@
-#ifndef BI_IMAGE_H
-#define BI_IMAGE_H
+#pragma once
 
 #include "image_defines.h"
 #include <vector>
@@ -66,4 +65,3 @@ class BIImage : public IBIImage
     long m_nPrioritet;
 };
 
-#endif

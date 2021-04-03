@@ -8,8 +8,7 @@
 // Implementing the Animation interface
 // ============================================================================================
 
-#ifndef _AnimationManagerImp_H_
-#define _AnimationManagerImp_H_
+#pragma once
 
 #include "ActionPlayerImp.h"
 #include "Animation.h"
@@ -239,4 +238,3 @@ inline void AnimationImp::AteExtern(long plIndex, const char *evt)
         ae_listenersExt->Event(this, plIndex, evt);
 }
 
-#endif

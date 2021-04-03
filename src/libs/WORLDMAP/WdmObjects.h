@@ -8,8 +8,7 @@
 //
 //============================================================================================
 
-#ifndef _WdmObjects_H_
-#define _WdmObjects_H_
+#pragma once
 
 #include "Matrix.h"
 #include "dx9render.h"
@@ -171,4 +170,3 @@ class WdmObjects
 
 extern WdmObjects *wdmObjects;
 
-#endif

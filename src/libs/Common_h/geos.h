@@ -8,8 +8,7 @@ Comments:
 Import library main header
 ******************************************************************************/
 
-#ifndef _GEOLIB_I_H_
-#define _GEOLIB_I_H_
+#pragma once
 
 #include <cstdint>
 #include <fstream>
@@ -321,4 +320,3 @@ enum GEOS_LOADING_FLAGS
 
 GEOS *CreateGeometry(const char *fname, const char *lightname, GEOM_SERVICE &srv, long flags);
 
-#endif

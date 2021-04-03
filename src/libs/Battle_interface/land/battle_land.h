@@ -1,5 +1,4 @@
-#ifndef _BATTLE_LAND_H_
-#define _BATTLE_LAND_H_
+#pragma once
 
 #include "../Utils.h"
 #include "../bi_defines.h"
@@ -57,4 +56,3 @@ class BATTLE_LAND_INTERFACE : public Entity
     BIImagesInfo m_Images;
 };
 
-#endif

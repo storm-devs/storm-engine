@@ -1,5 +1,4 @@
-#ifndef _BATTLE_SHIPCOMMAND_H_
-#define _BATTLE_SHIPCOMMAND_H_
+#pragma once
 
 #include "../battle_command.h"
 
@@ -33,4 +32,3 @@ class BIShipCommandList : public BICommandList
     std::vector<long> m_aChargeQuantity;
 };
 
-#endif

@@ -8,8 +8,7 @@
 //
 //============================================================================================
 
-#ifndef _LocatorArray_H_
-#define _LocatorArray_H_
+#pragma once
 
 #include "Matrix.h"
 #include "storm_assert.h"
@@ -163,4 +162,3 @@ inline float LocatorArray::GetLocatorRadius(long locIndex)
     return locator[locIndex].radius;
 }
 
-#endif

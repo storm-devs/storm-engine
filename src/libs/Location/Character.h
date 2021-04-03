@@ -8,8 +8,7 @@
 //
 //============================================================================================
 
-#ifndef _Character_H_
-#define _Character_H_
+#pragma once
 
 #include "Matrix.h"
 #include "model.h"
@@ -837,4 +836,3 @@ inline bool Character::PriorityActionIsJump() const
             (_stricmp(priorityAction.name, jump.name) == 0 || _stricmp(priorityAction.name, fall.name) == 0));
 }
 
-#endif

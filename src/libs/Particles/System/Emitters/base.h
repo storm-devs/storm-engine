@@ -1,5 +1,4 @@
-#ifndef BASE_EMITTER
-#define BASE_EMITTER
+#pragma once
 
 #include "../../ICommon/IEmitter.h"
 #include "../../ICommon/Types.h"
@@ -137,4 +136,3 @@ class BaseEmitter : public IEmitter
     void Stop() override;
 };
 
-#endif

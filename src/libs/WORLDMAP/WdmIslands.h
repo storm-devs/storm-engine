@@ -8,8 +8,7 @@
 //
 //============================================================================================
 
-#ifndef _WdmIslands_H_
-#define _WdmIslands_H_
+#pragma once
 
 #include "PtcData.h"
 #include "WdmRenderModel.h"
@@ -183,4 +182,3 @@ inline CVECTOR WdmIslands::Norm2D(const CVECTOR &v)
     return ret;
 }
 
-#endif

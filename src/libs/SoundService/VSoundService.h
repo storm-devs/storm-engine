@@ -1,5 +1,4 @@
-#ifndef _VSOUND_H_
-#define _VSOUND_H_
+#pragma once
 
 #include "Cvector.h"
 #include "SoundDefines.h"
@@ -85,4 +84,3 @@ API_SERVICE_START("sound service")
     DECLARE_MAIN_SERVICE(SoundService)
 API_SERVICE_END(SoundService)
 */
-#endif // !defined

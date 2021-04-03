@@ -1,5 +1,4 @@
-#ifndef SEA_BALLS_AI_HPP
-#define SEA_BALLS_AI_HPP
+#pragma once
 
 #include "AIHelper.h"
 #include "Character.h"
@@ -109,4 +108,3 @@ class AIBalls : public Entity
     void Load(CSaveLoad *pSL);
 };
 
-#endif

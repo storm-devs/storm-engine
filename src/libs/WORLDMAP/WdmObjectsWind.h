@@ -1,3 +1,5 @@
+#pragma once
+
 #define WindFieldSize 64
 #define WindFieldSteps 64
 #define WindFieldUpdateTime 0.1f

@@ -1,5 +1,4 @@
-#ifndef BI_IMAGERENDER_H
-#define BI_IMAGERENDER_H
+#pragma once
 
 #include "material.h"
 
@@ -63,4 +62,3 @@ inline void BIImageRender::TranslateBasePosToRealPos(float fXBase, float fYBase,
     fYReal = (m_fVOffset + fYBase) * m_fVScale;
 }
 
-#endif

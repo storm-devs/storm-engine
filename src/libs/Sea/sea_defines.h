@@ -1,5 +1,4 @@
-#ifndef SEA_DEFINES_HPP
-#define SEA_DEFINES_HPP
+#pragma once
 
 #define G2MX_SEA 0
 #define G3_SEA 1
@@ -14,4 +13,3 @@
 extern void GetLineABC(CVECTOR &v1, CVECTOR &v2, float &A, float &B, float &C);
 extern void RotateAroundY(float &x, float &y, float cos, float sin);
 
-#endif

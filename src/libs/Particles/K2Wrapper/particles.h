@@ -1,5 +1,4 @@
-#ifndef _K2_PARTICLES_H_
-#define _K2_PARTICLES_H_
+#pragma once
 
 #include "Entity.h"
 #include <string>
@@ -77,4 +76,3 @@ class PARTICLES : public Entity
     }
 };
 
-#endif

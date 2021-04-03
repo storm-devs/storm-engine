@@ -1,5 +1,4 @@
-#ifndef _SPYGLASS_H_
-#define _SPYGLASS_H_
+#pragma once
 
 #include "../bi_defines.h"
 #include <string>
@@ -189,4 +188,3 @@ class ISPYGLASS : public Entity
     VAI_OBJBASE *GetFort();
 };
 
-#endif

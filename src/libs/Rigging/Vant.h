@@ -1,5 +1,4 @@
-#ifndef _VANT_H_
-#define _VANT_H_
+#pragma once
 
 #include "Matrix.h"
 #include "dx9render.h"
@@ -163,4 +162,3 @@ class VANTZ : public VANT_BASE
     virtual void LoadIni();
 };
 
-#endif

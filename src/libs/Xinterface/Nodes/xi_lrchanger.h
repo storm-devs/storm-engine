@@ -1,5 +1,4 @@
-#ifndef __XI_LRCHANGER_H__
-#define __XI_LRCHANGER_H__
+#pragma once
 
 #include "..//inode.h"
 
@@ -56,4 +55,3 @@ class CXI_LRCHANGER : public CINODE
     bool m_bLeftPress;
 };
 
-#endif

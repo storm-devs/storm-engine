@@ -1,5 +1,4 @@
-#ifndef _MESSAGE_SCRIPT_H_
-#define _MESSAGE_SCRIPT_H_
+#pragma once
 
 #include "core.h"
 
@@ -231,4 +230,3 @@ class MESSAGE_SCRIPT : public MESSAGE
     };
 };
 
-#endif

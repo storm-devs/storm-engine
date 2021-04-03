@@ -1,5 +1,4 @@
-#ifndef _PARTICLE_DATA_GRAPH_H_
-#define _PARTICLE_DATA_GRAPH_H_
+#pragma once
 
 #include "../../ICommon/MemFile.h"
 
@@ -84,4 +83,3 @@ class DataGraph
     void AlphaToNormal();
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef _XI_V_IMAGE_SCROLL_H
-#define _XI_V_IMAGE_SCROLL_H
+#pragma once
 
 #include "..//inode.h"
 
@@ -163,4 +162,3 @@ class CXI_VIMAGESCROLL : public CINODE
     long m_rightTextLimit;
 };
 
-#endif

@@ -8,8 +8,7 @@
 //
 //============================================================================================
 
-#ifndef _Tornado_H_
-#define _Tornado_H_
+#pragma once
 
 #include "Debris.h"
 #include "NoiseCloud.h"
@@ -71,4 +70,3 @@ class Tornado : public Entity
     long ib, vb;
 };
 
-#endif

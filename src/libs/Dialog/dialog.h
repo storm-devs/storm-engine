@@ -1,5 +1,4 @@
-#ifndef _DIALOG_H_
-#define _DIALOG_H_
+#pragma once
 
 #include "dx9render.h"
 #include "matrix.h"
@@ -292,4 +291,3 @@ class DIALOG final : public Entity
     bool bEditMode;
 };
 
-#endif

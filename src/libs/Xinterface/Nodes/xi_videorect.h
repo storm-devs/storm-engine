@@ -1,5 +1,4 @@
-#ifndef _XI_VIDEORECT_H
-#define _XI_VIDEORECT_H
+#pragma once
 
 #include "..//inode.h"
 
@@ -36,4 +35,3 @@ class CXI_VIDEORECT : public CINODE
     entid_t m_eiVideo;
 };
 
-#endif

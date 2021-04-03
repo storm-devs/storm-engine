@@ -1,5 +1,4 @@
-#ifndef _FILE_SERVICE_H_
-#define _FILE_SERVICE_H_
+#pragma once
 
 #include "ifs.h"
 #include "vfile_service.h"
@@ -113,4 +112,3 @@ class FILE_SERVICE : public VFILE_SERVICE
     void FlushIniFiles();
 };
 
-#endif

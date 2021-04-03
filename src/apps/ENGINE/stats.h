@@ -1,5 +1,4 @@
-#ifndef _STATS_H_
-#define _STATS_H_
+#pragma once
 
 class STATS
 {
@@ -9,4 +8,3 @@ class STATS
     void DumpMemState();
 };
 
-#endif

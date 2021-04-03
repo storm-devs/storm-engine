@@ -1,5 +1,4 @@
-#ifndef _ENTITY_STATE_H_
-#define _ENTITY_STATE_H_
+#pragma once
 
 #include <Windows.h>
 #include <cstdint>
@@ -33,4 +32,3 @@ class ENTITY_STATE
     virtual void Struct(uint32_t sizeofstruct, char *s) = 0;
 };
 
-#endif

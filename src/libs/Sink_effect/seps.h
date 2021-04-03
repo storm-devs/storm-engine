@@ -1,5 +1,4 @@
-#ifndef _SEPS_H_
-#define _SEPS_H_
+#pragma once
 
 #include "Matrix.h"
 #include "dx9render.h"
@@ -229,4 +228,3 @@ class SEPS_PS
     }
 };
 
-#endif

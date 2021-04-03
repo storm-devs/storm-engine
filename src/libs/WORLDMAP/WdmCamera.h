@@ -8,8 +8,7 @@
 //
 //============================================================================================
 
-#ifndef _WdmCamera_H_
-#define _WdmCamera_H_
+#pragma once
 
 #include "dx9render.h"
 
@@ -71,4 +70,3 @@ class WdmCamera
     bool isInit;
 };
 
-#endif

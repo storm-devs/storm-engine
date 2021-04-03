@@ -1,5 +1,4 @@
-#ifndef CANNON_TRACE_BASE_HPP
-#define CANNON_TRACE_BASE_HPP
+#pragma once
 
 #include "../object.h"
 
@@ -11,4 +10,3 @@ class CANNON_TRACE_BASE : public COLLISION_OBJECT
     virtual float Cannon_Trace(long iBallOwner, const CVECTOR &src, const CVECTOR &dst) = 0;
 };
 
-#endif

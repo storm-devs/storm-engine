@@ -8,8 +8,7 @@
 // This is where animation information is stored, loaded 1 time
 // ============================================================================================
 
-#ifndef _AnimationInfo_H_
-#define _AnimationInfo_H_
+#pragma once
 
 #include "ActionInfo.h"
 #include "Bone.h"
@@ -176,4 +175,3 @@ inline float AnimationInfo::GetFPS()
     return fps;
 }
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef _BI_COMMANDLIST_H_
-#define _BI_COMMANDLIST_H_
+#pragma once
 
 #include "bi_defines.h"
 #include <string>
@@ -158,4 +157,3 @@ class BICommandList
     ATTRIBUTES *GetCurrentCommandAttribute() const;
 };
 
-#endif

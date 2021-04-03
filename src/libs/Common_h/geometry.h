@@ -1,5 +1,4 @@
-#ifndef __GEOMETRY_H__
-#define __GEOMETRY_H__
+#pragma once
 
 #include "geos.h"
 #include "service.h"
@@ -42,4 +41,3 @@ class VGEOMETRY : public SERVICE
     virtual void SetCausticMode(bool bSet = false) = 0;
 };
 
-#endif

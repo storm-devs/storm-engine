@@ -1,5 +1,4 @@
-#ifndef _SHADOW_H_
-#define _SHADOW_H_
+#pragma once
 
 #include "collide.h"
 #include "dx9render.h"
@@ -50,4 +49,3 @@ class Shadow : public Entity
     void RestoreRender();
 };
 
-#endif

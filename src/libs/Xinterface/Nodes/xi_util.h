@@ -1,5 +1,4 @@
-#ifndef _XI_UTILS_CONTAINER_H
-#define _XI_UTILS_CONTAINER_H
+#pragma once
 
 #define UTILS_KEYS_QUANTITY 256
 
@@ -119,4 +118,3 @@ class CXI_UTILS
     KeyDescribe keys[UTILS_KEYS_QUANTITY];
 };
 
-#endif

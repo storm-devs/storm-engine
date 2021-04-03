@@ -8,8 +8,7 @@
 //
 //============================================================================================
 
-#ifndef _NPCharacter_H_
-#define _NPCharacter_H_
+#pragma once
 
 #include "AICharacter.h"
 #include "Entity.h"
@@ -233,4 +232,3 @@ inline bool NPCharacter::PrTest(float probability)
     return r < probability;
 }
 
-#endif

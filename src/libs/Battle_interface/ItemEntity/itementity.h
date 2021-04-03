@@ -1,5 +1,4 @@
-#ifndef _BI_ITEM_Entity_H_
-#define _BI_ITEM_Entity_H_
+#pragma once
 
 #include "../bi_defines.h"
 #include "Animation.h"
@@ -86,4 +85,3 @@ class ItemEntity : public Entity
     void DeleteParticle();
 };
 
-#endif

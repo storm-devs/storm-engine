@@ -1,5 +1,4 @@
-#ifndef _S_FUNCTAB_H_
-#define _S_FUNCTAB_H_
+#pragma once
 
 #include "s_import_func.h"
 #include "s_vartab.h"
@@ -93,4 +92,3 @@ class S_FUNCTAB
     bool GetVar(LVARINFO &lvi, uint32_t func_code, uint32_t var_code);
 };
 
-#endif

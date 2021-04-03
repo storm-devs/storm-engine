@@ -1,5 +1,4 @@
-#ifndef _ModelWraper_H_
-#define _ModelWraper_H_
+#pragma once
 
 #include "dx9render.h"
 #include "geometry.h"
@@ -49,4 +48,3 @@ class LocModelRealizer : public Entity
     uint64_t ProcessMessage(MESSAGE &message) override;
 };
 
-#endif

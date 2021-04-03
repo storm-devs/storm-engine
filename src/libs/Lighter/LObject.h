@@ -8,8 +8,7 @@
 //
 //============================================================================================
 
-#ifndef _LObject_H_
-#define _LObject_H_
+#pragma once
 
 class LObject
 {
@@ -25,4 +24,3 @@ class LObject
   private:
 };
 
-#endif

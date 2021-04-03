@@ -1,5 +1,4 @@
-#ifndef VAI_BASE_HPP
-#define VAI_BASE_HPP
+#pragma once
 
 #include "../Cvector.h"
 #include "../Matrix.h"
@@ -44,4 +43,3 @@ class VAI_OBJBASE : public CANNON_TRACE_BASE
     virtual void Fire(const CVECTOR &vPos) = 0;
 };
 
-#endif

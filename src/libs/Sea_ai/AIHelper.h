@@ -1,5 +1,4 @@
-#ifndef AIHELPER_HPP
-#define AIHELPER_HPP
+#pragma once
 
 #include "Character.h"
 #include "Island_Base.h"
@@ -72,4 +71,3 @@ class AIHelper
 
 extern AIHelper Helper;
 
-#endif

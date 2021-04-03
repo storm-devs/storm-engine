@@ -1,5 +1,4 @@
-#ifndef _MODEL_H_
-#define _MODEL_H_
+#pragma once
 
 #include "Animation.h"
 #include "Matrix.h"
@@ -113,4 +112,3 @@ class MODEL : public COLLISION_OBJECT
     virtual NODE *GetCollideNode() = 0;
 };
 
-#endif

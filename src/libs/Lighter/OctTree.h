@@ -8,8 +8,7 @@
 //
 //============================================================================================
 
-#ifndef _OctTree_H_
-#define _OctTree_H_
+#pragma once
 
 #include "LGeometry.h"
 
@@ -64,4 +63,3 @@ class OctTree
     float vertsR;
 };
 
-#endif

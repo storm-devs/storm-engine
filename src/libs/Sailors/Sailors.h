@@ -1,5 +1,4 @@
-#ifndef _Sailors_h_
-#define _Sailors_h_
+#pragma once
 
 #include "collide.h"
 #include "dx9render.h"
@@ -178,4 +177,3 @@ class Sailors : public Entity
     void DeleteShip(int i);
 };
 
-#endif

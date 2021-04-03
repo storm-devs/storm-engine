@@ -8,8 +8,7 @@
 //
 //============================================================================================
 
-#ifndef _CharacterAnimationKipper_H_
-#define _CharacterAnimationKipper_H_
+#pragma once
 
 #include "Animation.h"
 #include "Entity.h"
@@ -48,4 +47,3 @@ class CharacterAnimationKipper : public Entity
     long numLTextures;
 };
 
-#endif

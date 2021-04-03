@@ -1,5 +1,4 @@
-#ifndef _XI_EDITBOX_H_
-#define _XI_EDITBOX_H_
+#pragma once
 
 #include "..//inode.h"
 
@@ -64,4 +63,3 @@ class CXI_EDITBOX : public CINODE
     float m_fHAdd;
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef InterfaceManager_h
-#define InterfaceManager_h
+#pragma once
 
 #include "../bi_defines.h"
 #include "BaseManager.h"
@@ -53,4 +52,3 @@ class BI_InterfaceManager : public BI_ManagerBase
     BI_BaseGroup *m_pInterfaceSheet;
 };
 
-#endif

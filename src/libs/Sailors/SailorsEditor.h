@@ -1,3 +1,5 @@
+#pragma once
+
 #include "dx9render.h"
 #include "model.h"
 #include "ship_base.h"

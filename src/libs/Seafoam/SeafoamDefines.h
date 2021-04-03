@@ -1,5 +1,4 @@
-#ifndef _SEAFOAMDEFINES_
-#define _SEAFOAMDEFINES_
+#pragma once
 
 //#define SEAFOAM_TRACE_INFORMATION
 
@@ -31,4 +30,3 @@ float randUpper(float r);
 float randCentered(float r);
 //--------------------------------------------------------------------
 */
-#endif

@@ -8,8 +8,7 @@
 // Data file required to find the path and collision of characters with the ground
 // ============================================================================================
 
-#ifndef _PTC_H_
-#define _PTC_H_
+#pragma once
 
 #pragma pack(push, 1)
 
@@ -94,4 +93,3 @@ struct PtcMaterials
 
 #pragma pack(pop)
 
-#endif
