@@ -6495,11 +6495,11 @@ void COMPILER::SaveVariable(DATA *pV, bool bdim)
         break;
     case VAR_AREFERENCE:
         pString = nullptr;
-        try
+        __try
         {
             pA = TraceARoot(pV->AttributesClass, pString);
         }
-        catch (...)
+        __except (EXCEPTION_EXECUTE_HANDLER)
         {
             SetError("Save - ARef to non existing attributes branch");
             WriteVDword(0xffffffff);
