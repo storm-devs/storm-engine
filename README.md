@@ -10,7 +10,7 @@ Game engine behind [Sea Dogs](https://en.wikipedia.org/wiki/Sea_Dogs_(video_game
 ## Supported games
 - [Sea Dogs: To Each His Own](https://github.com/storm-devs/sd-teho-public)
 - [Sea Dogs: City of Abandoned Ships](https://store.steampowered.com/app/937940/Sea_Dogs_City_of_Abandoned_Ships/) (work in progress)
-- [Pirates of the Caribbean: New Horizons](http://www.piratesahoy.net/wiki/new-horizons/) (work in progress)
+- [Pirates of the Caribbean: New Horizons](https://www.piratesahoy.net/wiki/new-horizons/) (work in progress)
 
 <p align="center">
 <img src="https://steamuserimages-a.akamaihd.net/ugc/879748394074455443/FD04CEA2434D8DACAD4886AF6A5ADAA54CDE42AA/">
