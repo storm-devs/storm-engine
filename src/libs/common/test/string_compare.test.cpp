@@ -62,8 +62,8 @@ TEST_CASE("Case-insensitive string comparison", "[utils]")
 
         SECTION("Characters that appear earlier in the alphabet should be cosidered less than character after it")
         {
-            CHECK(iLess("A"s, "b"s));
-            CHECK_FALSE(iLess("c"s, "B"s));
+            CHECK(iLess("A", "b"));
+            CHECK_FALSE(iLess("c", "B"));
         }
 
         SECTION("Shorter string should be considered before longer string, when they have the same starting sequence")
