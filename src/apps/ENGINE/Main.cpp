@@ -1,15 +1,15 @@
-#include "fs.h"
-#include "s_debug.h"
 #include "SteamApi.hpp"
 #include "compiler.h"
 #include "file_service.h"
+#include "fs.h"
+#include "s_debug.h"
 
 #include <crtdbg.h>
 #include <dbghelp.h>
 #include <tchar.h>
 
-#include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/spdlog.h>
 
 VFILE_SERVICE *fio = nullptr;
 CORE core;
@@ -63,7 +63,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
         return 0;
     }
 
-
     // Init FS
     FILE_SERVICE File_Service;
     fio = &File_Service;
@@ -75,7 +74,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     create_directories(fs::GetLogsPath());
     create_directories(fs::GetSaveDataPath());
 
-     /* Delete old dump file */
+    /* Delete old dump file */
     std::filesystem::path log_path = fs::GetStashPath() / std::filesystem::u8path(DUMP_FILENAME);
     fio->_DeleteFile(log_path.string().c_str());
 
@@ -86,7 +85,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     core.tracelog->set_level(spdlog::level::trace);
     core.tracelog->flush_on(spdlog::level::critical);
     set_default_logger(core.tracelog);
-
 
     /* Init compile and error/warning logs */
     log_path = fs::GetLogsPath() / std::filesystem::u8path(COMPILER_LOG_FILENAME);
@@ -106,7 +104,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
 
     /* Read config */
     uint32_t dwMaxFPS = 0;
-    auto *ini = fio->OpenIniFile(fs::ENGINE_INI_FILE_NAME);
+    auto ini = fio->OpenIniFile(fs::ENGINE_INI_FILE_NAME);
     bool bSteam = false;
 
     if (ini)
@@ -126,8 +124,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
         {
             bSteam = false;
         }
-
-        delete ini;
     }
 
     // evaluate SteamApi singleton

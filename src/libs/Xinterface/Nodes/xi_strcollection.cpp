@@ -203,7 +203,7 @@ void CXI_STRCOLLECTION::SaveParametersToIni()
 {
     //    char pcWriteParam[2048];
 
-    auto *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
+    auto pIni = fio->OpenIniFile(ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
         core.Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
@@ -258,8 +258,6 @@ void CXI_STRCOLLECTION::SaveParametersToIni()
                       GREEN(m_pStrDescr[n].backColor), BLUE(m_pStrDescr[n].backColor), m_pStrDescr[n].fScale, pcState);
         pIni->AddString(m_nodeName, "string", param);
     }
-
-    delete pIni;
 }
 
 uint32_t CXI_STRCOLLECTION::MessageProc(long msgcode, MESSAGE &message)

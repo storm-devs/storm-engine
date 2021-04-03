@@ -55,7 +55,7 @@ bool Lights::Init()
         throw std::exception("No service: dx9render");
     collide = static_cast<COLLIDE *>(core.CreateService("COLL"));
     // read the parameters
-    auto *ini = fio->OpenIniFile("RESOURCE\\Ini\\lights.ini");
+    auto ini = fio->OpenIniFile("RESOURCE\\Ini\\lights.ini");
     if (!ini)
     {
         core.Trace("Location lights not inited -> RESOURCES\\Ini\\lights.ini not found");
@@ -140,7 +140,6 @@ bool Lights::Init()
         }
         res = ini->GetSectionNameNext(lName, sizeof(lName) - 1);
     }
-    delete ini;
     if (numTypes == 0)
     {
         core.Trace("Location lights not inited -> 0 light types");
@@ -549,7 +548,7 @@ void Lights::DelCharacterLights()
 // Update source types
 void Lights::UpdateLightTypes(long i)
 {
-    INIFILE *ini = fio->OpenIniFile("RESOURCE\\Ini\\lights.ini");
+    auto ini = fio->OpenIniFile("RESOURCE\\Ini\\lights.ini");
     if (!ini)
         return;
     // Source name
@@ -601,7 +600,6 @@ void Lights::UpdateLightTypes(long i)
         types[i].flickerSlow = 0.0f;
     if (types[i].freqSlow > 0.0f)
         types[i].pSlow = 1.0f / types[i].freqSlow;
-    delete ini;
     for (long c = 0; c < numLights; c++)
     {
         if (lights[c].type != i)

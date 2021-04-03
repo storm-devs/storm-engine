@@ -412,7 +412,6 @@ void MAST::LoadIni()
     // GUARD(MAST::LoadIni());
     char section[256];
 
-    INIFILE *ini;
     WIN32_FIND_DATA wfd;
     const HANDLE h = fio->_FindFirstFile(MAST_INI_FILE, &wfd);
     if (INVALID_HANDLE_VALUE != h)
@@ -420,7 +419,7 @@ void MAST::LoadIni()
         ft_old = wfd.ftLastWriteTime;
         fio->_FindClose(h);
     }
-    ini = fio->OpenIniFile((char *)MAST_INI_FILE);
+    auto ini = fio->OpenIniFile(MAST_INI_FILE);
     if (!ini)
         throw std::exception("mast.ini file not found!");
 
@@ -472,8 +471,6 @@ void MAST::LoadIni()
     VAR_Z_DANG = ini->GetFloat(section, "fVarZdang", VAR_Z_DANG);
     // the angle of the ship position starting from which the mast falls along this angle
     MIN_SIGNIFICANT = ini->GetFloat(section, "fAngSignificant", MIN_SIGNIFICANT);
-
-    delete ini;
     // UNGUARD
 }
 

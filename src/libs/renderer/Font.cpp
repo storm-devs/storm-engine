@@ -77,14 +77,13 @@ bool FONT::MakeLong(char **pDataPointer, long *result)
 
 bool FONT::Init(const char *font_name, const char *iniName, IDirect3DDevice9 *_device, VDX9RENDER *_render)
 {
-    INIFILE *ini;
     char key_name[MAX_PATH];
     char buffer[MAX_PATH];
     long codepoint;
     long ltmp;
     char *pData;
 
-    ini = fio->OpenIniFile(iniName);
+    auto ini = fio->OpenIniFile(iniName);
     if (ini == nullptr)
         return false;
 
@@ -172,8 +171,6 @@ bool FONT::Init(const char *font_name, const char *iniName, IDirect3DDevice9 *_d
             CharT[codepoint].Tuv.y1 + static_cast<float>(ltmp - 1.f) / static_cast<float>(Texture_YSize);
     }
     ini->CaseSensitive(false);
-
-    delete ini;
 
     RenderService = _render;
     Device = _device;
