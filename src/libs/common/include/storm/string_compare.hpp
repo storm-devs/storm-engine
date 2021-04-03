@@ -1,5 +1,3 @@
-#ifndef STORM_ENGINE_STRING_COMPARE_HPP
-#define STORM_ENGINE_STRING_COMPARE_HPP
 #pragma once
 
 #include <algorithm>
@@ -60,5 +58,3 @@ inline bool iLess(const Range1T &first, const Range2T &second)
 }
 
 } // namespace storm
-
-#endif // STORM_ENGINE_STRING_COMPARE_HPP
