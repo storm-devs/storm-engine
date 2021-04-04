@@ -16,7 +16,7 @@ static const float nearBlend = 8.0f;
 static const float farBlend = 16.0f;
 
 static const long vbuff_size = 1024;
-static long ref = 0;
+static long refcount = 0;
 #define TEXTURE_SIZE 128
 IDirect3DTexture9 *shTex = nullptr, *blurTex = nullptr;
 IDirect3DVertexBuffer9 *vbuff;
@@ -29,8 +29,8 @@ Shadow::Shadow()
 
 Shadow::~Shadow()
 {
-    ref--;
-    if (ref == 0)
+    refcount--;
+    if (refcount == 0)
     {
         rs->Release(vbuff);
         rs->Release(shTex);
@@ -52,7 +52,7 @@ bool Shadow::Init()
     if (!rs)
         throw std::exception("No service: dx9render");
 
-    if (ref == 0)
+    if (refcount == 0)
     {
         rs->CreateTexture(TEXTURE_SIZE, TEXTURE_SIZE, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &shTex);
         if (shTex == nullptr)
@@ -68,7 +68,7 @@ bool Shadow::Init()
         rs->CreateVertexBuffer(sizeof(SHADOW_VERTEX) * (vbuff_size + 128), D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC,
                                SHADOW_FVF, D3DPOOL_DEFAULT, &vbuff);
     }
-    ref++;
+    refcount++;
 
     // UNGUARD
     return true;
@@ -520,7 +520,7 @@ uint64_t Shadow::ProcessMessage(MESSAGE &message)
 
 void Shadow::LostRender()
 {
-    if (--ref == 0)
+    if (--refcount == 0)
     {
         rs->Release(shTex);
         rs->Release(blurTex);
@@ -530,7 +530,7 @@ void Shadow::LostRender()
 
 void Shadow::RestoreRender()
 {
-    if (ref++ == 0)
+    if (refcount++ == 0)
     {
         rs->CreateTexture(TEXTURE_SIZE, TEXTURE_SIZE, 1, D3DUSAGE_RENDERTARGET, D3DFMT_R5G6B5, D3DPOOL_DEFAULT, &shTex);
         if (shTex == nullptr)
