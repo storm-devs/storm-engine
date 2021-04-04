@@ -98,7 +98,7 @@ class FILE_SERVICE : public VFILE_SERVICE
     void _FlushFileBuffers(std::fstream &fileS) override;
     uint32_t _GetCurrentDirectory(uint32_t nBufferLength, char *lpBuffer) override;
     std::string _GetExecutableDirectory() override;
-    std::uintmax_t _GetFileSize(const char *p) override;
+    std::uintmax_t _GetFileSize(const char *filename) override;
     BOOL _SetCurrentDirectory(const char *lpPathName) override;
     BOOL _CreateDirectory(const char *lpPathName, LPSECURITY_ATTRIBUTES lpSecurityAttributes) override;
     BOOL _RemoveDirectory(const char *lpPathName) override;

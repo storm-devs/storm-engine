@@ -41,7 +41,8 @@ FILE_SERVICE::~FILE_SERVICE()
 
 std::fstream FILE_SERVICE::_CreateFile(const char *filename, std::ios::openmode mode)
 {
-    std::fstream fileS(filename, mode);
+    std::filesystem::path path = std::filesystem::u8path(filename);
+    std::fstream fileS(path, mode);
     return fileS;
 }
 
@@ -137,9 +138,10 @@ std::string FILE_SERVICE::_GetExecutableDirectory()
     return "";
 }
 
-std::uintmax_t FILE_SERVICE::_GetFileSize(const char *p)
+std::uintmax_t FILE_SERVICE::_GetFileSize(const char *filename)
 {
-    return std::filesystem::file_size(p);
+    std::filesystem::path path = std::filesystem::u8path(filename);
+    return std::filesystem::file_size(path);
 }
 
 BOOL FILE_SERVICE::_SetCurrentDirectory(const char *lpPathName)
