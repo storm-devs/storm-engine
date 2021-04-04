@@ -6,8 +6,6 @@
 
 #include "vfile_service.h"
 
-#include <memory>
-
 #define FILE_PATH "TextureSequence\\%s.tga"
 static const char *INI_FILENAME = "resource\\ini\\TextureSequence.ini";
 

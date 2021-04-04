@@ -9,7 +9,6 @@
 #include "sea_base.h"
 #include "seafoam_ps.h"
 #include "ship_base.h"
-#include <memory>
 
 ///////////////////////////////////////////////////////////////////
 // CLASS DEFINITION
