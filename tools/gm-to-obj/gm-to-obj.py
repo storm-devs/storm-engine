@@ -172,144 +172,140 @@ def printArray(arr):
             print(field_name, getattr(o, field_name))
 
 
-def getArrayof(struct, size):
-    # Read an array of the struct type with the fiven size
-    res = []
-    for _ in range(0, size):
-        m = eval(struct)()
-        f.readinto(m)
-        res.append(m)
-    return res
+def gm_to_obj(input_name, output_name):
+    # Open the file to read
+    f = open(input_name, "rb")
+    def getArrayof(struct, size):
+        # Read an array of the struct type with the fiven size
+        res = []
+        for _ in range(0, size):
+            m = eval(struct)()
+            f.readinto(m)
+            res.append(m)
+        return res
 
 
-# define args
-parser = argparse.ArgumentParser()
-parser.add_argument("path", help="Where is the .gm file located?", type=str)
-parser.add_argument("--output", "-o", help="Output name", type=str)
-args = parser.parse_args()
+    # Get the header with all the info
+    rhead = rdf_head()
+    f.readinto(rhead)
 
-argsInput = str(args.path)
-argsOutput = args.output
-if(argsOutput is None):
-    argsOutput = ntpath.basename(argsInput).replace(".gm", ".obj")
+    # Read all the following lines till the buffer
+    globname = f.read(getattr(rhead, "name_size"))
+    names = f.read(getattr(rhead, "names") * sizeof(c_long))
+    tname = f.read(getattr(rhead, "ntextures") * sizeof(c_long))
+    rmaterials = getArrayof("rdf_material", rhead.nmaterials)
+    rlights = getArrayof("rdf_light", rhead.nlights)
+    rlabels = getArrayof("rdf_label", rhead.nlabels)
+    robjects = getArrayof("rdf_object", rhead.nobjects)
+    rtriangles = getArrayof("rdf_triangle", rhead.ntriangles)
+    rvb = getArrayof("rdf_vertexbuff", rhead.nvrtbuffs)
 
-print(argsOutput)
+    # Find all the vertices
+    vertices = []
+    for v in range(0, rhead.nvrtbuffs):
+        size = getattr(rvb[v], "size")
+        stride = sizeof(rdf_vertex0) + \
+            (rvb[v].type & 3) * 8 + (rvb[v].type >> 2) * 8
+        nverts = int(size/stride)
+        vertices.extend(getArrayof("rdf_vertex0", nverts))
 
-# Open the file to read
-f = open(argsInput, "rb")
-# Get the header with all the info
-rhead = rdf_head()
-f.readinto(rhead)
+    # Start transforming to obj
+    print("File read succesfully!")
+    # Each .obj has the following values
 
+    # All the properties which a .obj file has. https://en.wikipedia.org/wiki/Wavefront_.obj_file
+    class ProperObj:
+        def __init__(self, name):
+            self.o = "o "+str(name)+"\n"
+            self.v = ""
+            self.vn = ""
+            self.vt = ""
+            self.f = ""
+        # List of vertices
 
-# Read all the following lines till the buffer
-globname = f.read(getattr(rhead, "name_size"))
-names = f.read(getattr(rhead, "names") * sizeof(c_long))
-tname = f.read(getattr(rhead, "ntextures") * sizeof(c_long))
-rmaterials = getArrayof("rdf_material", rhead.nmaterials)
-rlights = getArrayof("rdf_light", rhead.nlights)
-rlabels = getArrayof("rdf_label", rhead.nlabels)
-robjects = getArrayof("rdf_object", rhead.nobjects)
-rtriangles = getArrayof("rdf_triangle", rhead.ntriangles)
-rvb = getArrayof("rdf_vertexbuff", rhead.nvrtbuffs)
+        def addV(self, x, y, z):
+            self.v += "v %f %f %f\n" % (x, y, z)
 
+        # List of vertices' normals
+        def addVN(self, x, y, z):
+            self.vn += "vn %f %f %f\n" % (x, y, z)
 
-# Find all the vertices
-vertices = []
-for v in range(0, rhead.nvrtbuffs):
-    size = getattr(rvb[v], "size")
-    stride = sizeof(rdf_vertex0) + \
-        (rvb[v].type & 3) * 8 + (rvb[v].type >> 2) * 8
-    nverts = int(size/stride)
-    vertices.extend(getArrayof("rdf_vertex0", nverts))
+        # List of the texture coordinates
+        def addVT(self, u, v):
+            self.vt += "vt %f %f\n" % (u, v)
 
-# Start transforming to obj
-print("File read succesfully!")
-# Each .obj has the following values
+        # List of the faces
+        def addF(self, shift, x, y, z):
+            self.f += "f %d %d %d\n" % (x+1+shift, y+1+shift, z+1+shift)
 
-# All the properties which a .obj file has. https://en.wikipedia.org/wiki/Wavefront_.obj_file
+    # Dictionaries used to store objects' start and end
+    triangleObjects = {}
+    vertexObjects = {}
 
+    # Get instructions from objects
+    print("Parsing objects")
+    for obj in robjects:
+        triangleObjects[getattr(obj, "striangle")] = {
+            "name": getattr(obj, "name"),
+            "shift": getattr(obj, "svertex")
+        }
+        vertexObjects[getattr(obj, "svertex")] = getattr(obj, "name")
 
-class ProperObject:
-    def __init__(self, name):
-        self.o = "o "+str(name)+"\n"
-        self.v = ""
-        self.vn = ""
-        self.vt = ""
-        self.f = ""
-    # List of vertices
+    # Groups are stored in this dictionary
+    g = {}
+    print("Parsing vertices")
+    objIndex = vertexObjects[0]
+    vLen = len(vertices)
+    # Transform vertex to valid .obj structure
+    for index, vert in enumerate(vertices):
+        print("Vertex %d of %d" % (index, vLen), end="\r")
+        if(index in vertexObjects):
+            objIndex = vertexObjects[index]
+            g[objIndex] = ProperObj(objIndex)
 
-    def addV(self, x, y, z):
-        self.v += "v %f %f %f\n" % (x, y, z)
+        g[objIndex].addV(*getattr(getattr(vert, "pos"), "v"))
+        g[objIndex].addVN(* getattr(getattr(vert, "norm"), "v"))
+        g[objIndex].addVT(getattr(vert, "tu0"),  getattr(vert, "tv0"))
 
-    # List of vertices' normals
-    def addVN(self, x, y, z):
-        self.vn += "vn %f %f %f\n" % (x, y, z)
+    print("Parsing triangles              ")
+    objIndex = triangleObjects[0]
+    tLen = len(rtriangles)
+    # Transform figures to valid .obj structure
+    for index, tri in enumerate(rtriangles):
+        print("Triangle %d of %d" % (index, vLen), end="\r")
+        if(index in triangleObjects):
+            objIndex = triangleObjects[index]
+        g[objIndex.get("name")].addF(
+            objIndex.get("shift"), *getattr(tri, "vindex"))
 
-    # List of the texture coordinates
-    def addVT(self, u, v):
-        self.vt += "vt %f %f\n" % (u, v)
+    print("Writing output               ")
+    out = open(output_name, "w")
 
-    # List of the faces
-    def addF(self, shift, x, y, z):
-        self.f += "f %d %d %d\n" % (x+1+shift, y+1+shift, z+1+shift)
+    out.write("# Author: https://github.com/MangioneAndrea \n")
+    # Add smoothing
+    out.write("s 1 \n")
+    # Write everything to file
+    for key, value in g.items():
+        out.write(value.o)
+        out.write(value.v)
+        out.write(value.vt)
+        out.write(value.vn)
+        out.write(value.f)
 
+    out.close()
 
-# Dictionaries used to store objects' start and end
-triangleObjects = {}
-vertexObjects = {}
-
-# Get instructions from objects
-print("Parsing objects")
-for obj in robjects:
-    triangleObjects[getattr(obj, "striangle")] = {
-        "name": getattr(obj, "name"),
-        "shift": getattr(obj, "svertex")
-    }
-    vertexObjects[getattr(obj, "svertex")] = getattr(obj, "name")
-
-# Groups are stored in this dictionary
-g = {}
-print("Parsing vertices")
-objIndex = vertexObjects[0]
-vLen = len(vertices)
-# Transform vertex to valid .obj structure
-for index, vert in enumerate(vertices):
-    print("Vertex %d of %d" % (index, vLen), end="\r")
-    if(index in vertexObjects):
-        objIndex = vertexObjects[index]
-        g[objIndex] = ProperObject(objIndex)
-
-    g[objIndex].addV(*getattr(getattr(vert, "pos"), "v"))
-    g[objIndex].addVN(* getattr(getattr(vert, "norm"), "v"))
-    g[objIndex].addVT(getattr(vert, "tu0"),  getattr(vert, "tv0"))
-
-print("Parsing triangles              ")
-objIndex = triangleObjects[0]
-tLen = len(rtriangles)
-# Transform figures to valid .obj structure
-for index, tri in enumerate(rtriangles):
-    print("Triangle %d of %d" % (index, vLen), end="\r")
-    if(index in triangleObjects):
-        objIndex = triangleObjects[index]
-    g[objIndex.get("name")].addF(
-        objIndex.get("shift"), *getattr(tri, "vindex"))
+    print("Done")
 
 
-print("Writing output               ")
-out = open(argsOutput, "w")
-
-out.write("# Author: https://github.com/MangioneAndrea \n")
-# Add smoothing
-out.write("s 1 \n")
-# Write everything to file
-for key, value in g.items():
-    out.write(value.o)
-    out.write(value.v)
-    out.write(value.vt)
-    out.write(value.vn)
-    out.write(value.f)
-
-out.close()
-
-print("Done")
+if (__name__ == "__main__"):
+    # define args
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "path", help="Where is the .gm file located?", type=str)
+    parser.add_argument("--output", "-o", help="Output name", type=str)
+    args = parser.parse_args()
+    argsInput = str(args.path)
+    argsOutput = args.output
+    if(argsOutput is None):
+        argsOutput = ntpath.basename(argsInput).replace(".gm", ".obj")
+    gm_to_obj(argsInput, argsOutput)
