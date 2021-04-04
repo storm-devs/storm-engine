@@ -164,7 +164,7 @@ class vertex_buffer(Structure):
     ]
 
 
-def printArray(arr):
+def print_array(arr):
     # Print all properties of an arr/obj
     for o in arr:
         print("___________________")
@@ -175,6 +175,7 @@ def printArray(arr):
 def gm_to_obj(input_name, output_name):
     # Open the file to read
     f = open(input_name, "rb")
+
     def getArrayof(struct, size):
         # Read an array of the struct type with the fiven size
         res = []
@@ -183,7 +184,6 @@ def gm_to_obj(input_name, output_name):
             f.readinto(m)
             res.append(m)
         return res
-
 
     # Get the header with all the info
     rhead = rdf_head()
@@ -223,60 +223,60 @@ def gm_to_obj(input_name, output_name):
             self.f = ""
         # List of vertices
 
-        def addV(self, x, y, z):
+        def add_v(self, x, y, z):
             self.v += "v %f %f %f\n" % (x, y, z)
 
         # List of vertices' normals
-        def addVN(self, x, y, z):
+        def add_vn(self, x, y, z):
             self.vn += "vn %f %f %f\n" % (x, y, z)
 
         # List of the texture coordinates
-        def addVT(self, u, v):
+        def add_vt(self, u, v):
             self.vt += "vt %f %f\n" % (u, v)
 
         # List of the faces
-        def addF(self, shift, x, y, z):
+        def add_f(self, shift, x, y, z):
             self.f += "f %d %d %d\n" % (x+1+shift, y+1+shift, z+1+shift)
 
     # Dictionaries used to store objects' start and end
-    triangleObjects = {}
-    vertexObjects = {}
+    triangle_objects = {}
+    vertex_objects = {}
 
     # Get instructions from objects
     print("Parsing objects")
     for obj in robjects:
-        triangleObjects[getattr(obj, "striangle")] = {
+        triangle_objects[getattr(obj, "striangle")] = {
             "name": getattr(obj, "name"),
             "shift": getattr(obj, "svertex")
         }
-        vertexObjects[getattr(obj, "svertex")] = getattr(obj, "name")
+        vertex_objects[getattr(obj, "svertex")] = getattr(obj, "name")
 
     # Groups are stored in this dictionary
     g = {}
     print("Parsing vertices")
-    objIndex = vertexObjects[0]
-    vLen = len(vertices)
+    obj_index = vertex_objects[0]
+    v_len = len(vertices)
     # Transform vertex to valid .obj structure
     for index, vert in enumerate(vertices):
-        print("Vertex %d of %d" % (index, vLen), end="\r")
-        if(index in vertexObjects):
-            objIndex = vertexObjects[index]
-            g[objIndex] = ProperObj(objIndex)
+        print("Vertex %d of %d" % (index, v_len), end="\r")
+        if(index in vertex_objects):
+            obj_index = vertex_objects[index]
+            g[obj_index] = ProperObj(obj_index)
 
-        g[objIndex].addV(*getattr(getattr(vert, "pos"), "v"))
-        g[objIndex].addVN(* getattr(getattr(vert, "norm"), "v"))
-        g[objIndex].addVT(getattr(vert, "tu0"),  getattr(vert, "tv0"))
+        g[obj_index].addV(*getattr(getattr(vert, "pos"), "v"))
+        g[obj_index].addVN(* getattr(getattr(vert, "norm"), "v"))
+        g[obj_index].addVT(getattr(vert, "tu0"),  getattr(vert, "tv0"))
 
     print("Parsing triangles              ")
-    objIndex = triangleObjects[0]
-    tLen = len(rtriangles)
+    obj_index = triangle_objects[0]
+    t_len = len(rtriangles)
     # Transform figures to valid .obj structure
     for index, tri in enumerate(rtriangles):
-        print("Triangle %d of %d" % (index, vLen), end="\r")
-        if(index in triangleObjects):
-            objIndex = triangleObjects[index]
-        g[objIndex.get("name")].addF(
-            objIndex.get("shift"), *getattr(tri, "vindex"))
+        print("Triangle %d of %d" % (index, v_len), end="\r")
+        if(index in triangle_objects):
+            obj_index = triangle_objects[index]
+        g[obj_index.get("name")].addF(
+            obj_index.get("shift"), *getattr(tri, "vindex"))
 
     print("Writing output               ")
     out = open(output_name, "w")
@@ -304,8 +304,8 @@ if (__name__ == "__main__"):
         "path", help="Where is the .gm file located?", type=str)
     parser.add_argument("--output", "-o", help="Output name", type=str)
     args = parser.parse_args()
-    argsInput = str(args.path)
-    argsOutput = args.output
-    if(argsOutput is None):
-        argsOutput = ntpath.basename(argsInput).replace(".gm", ".obj")
-    gm_to_obj(argsInput, argsOutput)
+    args_input = str(args.path)
+    args_output = args.output
+    if(args_output is None):
+        args_output = ntpath.basename(args_input).replace(".gm", ".obj")
+    gm_to_obj(args_input, args_output)
