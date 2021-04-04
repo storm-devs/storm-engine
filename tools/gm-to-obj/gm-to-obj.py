@@ -176,7 +176,7 @@ def gm_to_obj(input_name, output_name):
     # Open the file to read
     f = open(input_name, "rb")
 
-    def getArrayof(struct, size):
+    def get_array_of(struct, size):
         # Read an array of the struct type with the fiven size
         res = []
         for _ in range(0, size):
@@ -193,12 +193,12 @@ def gm_to_obj(input_name, output_name):
     globname = f.read(getattr(rhead, "name_size"))
     names = f.read(getattr(rhead, "names") * sizeof(c_long))
     tname = f.read(getattr(rhead, "ntextures") * sizeof(c_long))
-    rmaterials = getArrayof("rdf_material", rhead.nmaterials)
-    rlights = getArrayof("rdf_light", rhead.nlights)
-    rlabels = getArrayof("rdf_label", rhead.nlabels)
-    robjects = getArrayof("rdf_object", rhead.nobjects)
-    rtriangles = getArrayof("rdf_triangle", rhead.ntriangles)
-    rvb = getArrayof("rdf_vertexbuff", rhead.nvrtbuffs)
+    rmaterials = get_array_of("rdf_material", rhead.nmaterials)
+    rlights = get_array_of("rdf_light", rhead.nlights)
+    rlabels = get_array_of("rdf_label", rhead.nlabels)
+    robjects = get_array_of("rdf_object", rhead.nobjects)
+    rtriangles = get_array_of("rdf_triangle", rhead.ntriangles)
+    rvb = get_array_of("rdf_vertexbuff", rhead.nvrtbuffs)
 
     # Find all the vertices
     vertices = []
@@ -207,7 +207,9 @@ def gm_to_obj(input_name, output_name):
         stride = sizeof(rdf_vertex0) + \
             (rvb[v].type & 3) * 8 + (rvb[v].type >> 2) * 8
         nverts = int(size/stride)
-        vertices.extend(getArrayof("rdf_vertex0", nverts))
+        vertices.extend(get_array_of("rdf_vertex0", nverts))
+    v_len = len(vertices)
+    t_len = len(rtriangles)
 
     # Start transforming to obj
     print("File read succesfully!")
@@ -215,7 +217,10 @@ def gm_to_obj(input_name, output_name):
 
     # All the properties which a .obj file has. https://en.wikipedia.org/wiki/Wavefront_.obj_file
     class ProperObj:
-        def __init__(self, name):
+        def __init__(self, name, vertex_shift, triangle_shift):
+            self.name = name
+            self.vertex_shift = vertex_shift
+            self.triangle_shift = triangle_shift
             self.o = "o "+str(name)+"\n"
             self.v = ""
             self.vn = ""
@@ -239,45 +244,44 @@ def gm_to_obj(input_name, output_name):
             self.f += "f %d %d %d\n" % (x+1+shift, y+1+shift, z+1+shift)
 
     # Dictionaries used to store objects' start and end
-    triangle_objects = {}
-    vertex_objects = {}
+    list_objects = []
 
     # Get instructions from objects
     print("Parsing objects")
     for obj in robjects:
-        triangle_objects[getattr(obj, "striangle")] = {
-            "name": getattr(obj, "name"),
-            "shift": getattr(obj, "svertex")
-        }
-        vertex_objects[getattr(obj, "svertex")] = getattr(obj, "name")
+        list_objects.append(ProperObj(getattr(obj, "name"), getattr(
+            obj, "svertex"), getattr(obj, "striangle")))
 
     # Groups are stored in this dictionary
-    g = {}
     print("Parsing vertices")
-    obj_index = vertex_objects[0]
-    v_len = len(vertices)
+    objects_iterator = iter(list_objects)
+    selected_object = next(objects_iterator)
+    past_index = 0
     # Transform vertex to valid .obj structure
     for index, vert in enumerate(vertices):
         print("Vertex %d of %d" % (index, v_len), end="\r")
-        if(index in vertex_objects):
-            obj_index = vertex_objects[index]
-            g[obj_index] = ProperObj(obj_index)
+        if(index > selected_object.vertex_shift+past_index):
+            past_index += selected_object.vertex_shift
+            selected_object = next(objects_iterator)
 
-        g[obj_index].addV(*getattr(getattr(vert, "pos"), "v"))
-        g[obj_index].addVN(* getattr(getattr(vert, "norm"), "v"))
-        g[obj_index].addVT(getattr(vert, "tu0"),  getattr(vert, "tv0"))
+        selected_object.add_v(*getattr(getattr(vert, "pos"), "v"))
+        selected_object.add_vn(* getattr(getattr(vert, "norm"), "v"))
+        selected_object.add_vt(getattr(vert, "tu0"),  getattr(vert, "tv0"))
 
+    # Transform triangles to valid .obj structure
     print("Parsing triangles              ")
-    obj_index = triangle_objects[0]
-    t_len = len(rtriangles)
-    # Transform figures to valid .obj structure
+    objects_iterator = iter(list_objects)
+    selected_object = next(objects_iterator)
+    past_index = 0
     for index, tri in enumerate(rtriangles):
-        print("Triangle %d of %d" % (index, v_len), end="\r")
-        if(index in triangle_objects):
-            obj_index = triangle_objects[index]
-        g[obj_index.get("name")].addF(
-            obj_index.get("shift"), *getattr(tri, "vindex"))
+        print("Triangle %d of %d" % (index, t_len), end="\r")
+        if(index > selected_object.triangle_shift+past_index):
+            past_index += selected_object.triangle_shift
+            selected_object = next(objects_iterator)
+        selected_object.add_f(
+            selected_object.triangle_shift, *getattr(tri, "vindex"))
 
+    # start crating obj file
     print("Writing output               ")
     out = open(output_name, "w")
 
@@ -285,12 +289,12 @@ def gm_to_obj(input_name, output_name):
     # Add smoothing
     out.write("s 1 \n")
     # Write everything to file
-    for key, value in g.items():
-        out.write(value.o)
-        out.write(value.v)
-        out.write(value.vt)
-        out.write(value.vn)
-        out.write(value.f)
+    for obj in list_objects:
+        out.write(obj.o)
+        out.write(obj.v)
+        out.write(obj.vt)
+        out.write(obj.vn)
+        out.write(obj.f)
 
     out.close()
 
