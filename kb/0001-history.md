@@ -101,6 +101,8 @@ Storm Engine 2.9 was released in 2016 with an update to _Sea Dogs: To Each His O
 * Newest version of fmod sound engine implemented;
 * Many other tweaks
 
+![Sea Dogs: To Each His Own](../media/0001/teho_sea.jpg)
+
 ---
 
 Sources: 
