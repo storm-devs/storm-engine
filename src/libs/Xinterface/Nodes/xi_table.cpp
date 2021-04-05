@@ -677,7 +677,7 @@ void CXI_TABLE::SaveParametersToIni()
 {
     char pcWriteParam[2048];
 
-    INIFILE *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
+    auto pIni = fio->OpenIniFile(ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
         core.Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
@@ -707,8 +707,6 @@ void CXI_TABLE::SaveParametersToIni()
         sTmp += m_anRowsHeights[n];
     }
     pIni->WriteString(m_nodeName, "rowsheight", (char *)sTmp.c_str());
-
-    delete pIni;
 }
 
 uint32_t CXI_TABLE::MessageProc(long msgcode, MESSAGE &message)

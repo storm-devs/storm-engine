@@ -30,11 +30,10 @@ PCS_CONTROLS::PCS_CONTROLS()
     nMouseWheel = 0;
     memset(&ControlsTab[0], 0, sizeof(ControlsTab));
 
-    auto *pIni = fio->OpenIniFile(core.EngineIniFileName());
+    auto pIni = fio->OpenIniFile(core.EngineIniFileName());
     if (pIni)
     {
         m_bIsOffDebugKeys = pIni->GetLong("controls", "ondebugkeys", 0) == 0;
-        delete pIni;
     }
 
     // RECT r;

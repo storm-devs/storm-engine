@@ -630,7 +630,6 @@ void VANT::LoadIni()
     char section[256];
     char param[256];
 
-    INIFILE *ini;
     WIN32_FIND_DATA wfd;
     const HANDLE h = fio->_FindFirstFile("resource\\ini\\rigging.ini", &wfd);
     if (INVALID_HANDLE_VALUE != h)
@@ -638,7 +637,7 @@ void VANT::LoadIni()
         ft_old = wfd.ftLastWriteTime;
         fio->_FindClose(h);
     }
-    ini = fio->OpenIniFile("resource\\ini\\rigging.ini");
+    auto ini = fio->OpenIniFile("resource\\ini\\rigging.ini");
     if (!ini)
         throw std::exception("rigging.ini file not found!");
 
@@ -704,7 +703,6 @@ void VANT::LoadIni()
     MAXFALL_CMP_VAL = ini->GetFloat(section, "fDisapearValue", 5.f);
 
     VantId = 0;
-    delete ini;
     // UNGUARD
 }
 
@@ -714,7 +712,6 @@ void VANTL::LoadIni()
     char section[256];
     char param[256];
 
-    INIFILE *ini;
     WIN32_FIND_DATA wfd;
     HANDLE h = fio->_FindFirstFile("resource\\ini\\rigging.ini", &wfd);
     if (INVALID_HANDLE_VALUE != h)
@@ -722,7 +719,7 @@ void VANTL::LoadIni()
         ft_old = wfd.ftLastWriteTime;
         fio->_FindClose(h);
     }
-    ini = fio->OpenIniFile("resource\\ini\\rigging.ini");
+    auto ini = fio->OpenIniFile("resource\\ini\\rigging.ini");
     if (!ini)
         throw std::exception("rigging.ini file not found!");
 
@@ -788,7 +785,6 @@ void VANTL::LoadIni()
     MAXFALL_CMP_VAL = ini->GetFloat(section, "fDisapearValue", 5.f);
 
     VantId = 1;
-    delete ini;
     // UNGUARD
 }
 
@@ -798,7 +794,6 @@ void VANTZ::LoadIni()
     char section[256];
     char param[256];
 
-    INIFILE *ini;
     WIN32_FIND_DATA wfd;
     HANDLE h = fio->_FindFirstFile("resource\\ini\\rigging.ini", &wfd);
     if (INVALID_HANDLE_VALUE != h)
@@ -806,7 +801,7 @@ void VANTZ::LoadIni()
         ft_old = wfd.ftLastWriteTime;
         fio->_FindClose(h);
     }
-    ini = fio->OpenIniFile("resource\\ini\\rigging.ini");
+    auto ini = fio->OpenIniFile("resource\\ini\\rigging.ini");
     if (!ini)
         throw std::exception("rigging.ini file not found!");
 
@@ -872,7 +867,6 @@ void VANTZ::LoadIni()
     MAXFALL_CMP_VAL = ini->GetFloat(section, "fDisapearValue", 5.f);
 
     VantId = 2;
-    delete ini;
     // UNGUARD
 }
 

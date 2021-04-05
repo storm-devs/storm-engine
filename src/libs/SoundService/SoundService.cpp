@@ -929,10 +929,10 @@ void SoundService::AnalyseNameStringAndAddToAlias(tAlias *_alias, const char *in
     _alias->SoundFiles.push_back(snd);
 }
 
-void SoundService::AddAlias(INIFILE *_iniFile, char *_sectionName)
+void SoundService::AddAlias(INIFILE &_iniFile, char *_sectionName)
 {
     static char tempString[COMMON_STRING_LENGTH];
-    if (!_iniFile || !_sectionName)
+    if (!_sectionName)
         return;
 
     if (TRACE_INFORMATION)
@@ -941,16 +941,16 @@ void SoundService::AddAlias(INIFILE *_iniFile, char *_sectionName)
     tAlias &alias = Aliases.back();
     alias.Name = _sectionName;
     alias.dwNameHash = TOREMOVE::HashNoCase(alias.Name.c_str());
-    alias.fMaxDistance = _iniFile->GetFloat(_sectionName, "maxDistance", -1.0f);
-    alias.fMinDistance = _iniFile->GetFloat(_sectionName, "minDistance", -1.0f);
-    alias.fVolume = _iniFile->GetFloat(_sectionName, "volume", -1.0f);
-    alias.iPrior = _iniFile->GetLong(_sectionName, "prior", 128);
+    alias.fMaxDistance = _iniFile.GetFloat(_sectionName, "maxDistance", -1.0f);
+    alias.fMinDistance = _iniFile.GetFloat(_sectionName, "minDistance", -1.0f);
+    alias.fVolume = _iniFile.GetFloat(_sectionName, "volume", -1.0f);
+    alias.iPrior = _iniFile.GetLong(_sectionName, "prior", 128);
     alias.fMaxProbabilityValue = 0.0f;
 
-    if (_iniFile->ReadString(_sectionName, "name", tempString, COMMON_STRING_LENGTH, ""))
+    if (_iniFile.ReadString(_sectionName, "name", tempString, COMMON_STRING_LENGTH, ""))
     {
         AnalyseNameStringAndAddToAlias(&alias, tempString);
-        while (_iniFile->ReadStringNext(_sectionName, "name", tempString, COMMON_STRING_LENGTH))
+        while (_iniFile.ReadStringNext(_sectionName, "name", tempString, COMMON_STRING_LENGTH))
             AnalyseNameStringAndAddToAlias(&alias, tempString);
     }
 }
@@ -965,20 +965,18 @@ void SoundService::LoadAliasFile(const char *_filename)
 
     if (TRACE_INFORMATION)
         core.Trace("Find sound alias file %s", iniName.c_str());
-    INIFILE *aliasIni;
-    aliasIni = fio->OpenIniFile(iniName.c_str());
+    auto aliasIni = fio->OpenIniFile(iniName.c_str());
     if (!aliasIni)
         return;
 
     if (aliasIni->GetSectionName(sectionName, SECTION_NAME_LENGTH))
     {
-        AddAlias(aliasIni, sectionName);
+        AddAlias(*aliasIni, sectionName);
         while (aliasIni->GetSectionNameNext(sectionName, SECTION_NAME_LENGTH))
         {
-            AddAlias(aliasIni, sectionName);
+            AddAlias(*aliasIni, sectionName);
         }
     }
-    STORM_DELETE(aliasIni);
 }
 
 void SoundService::InitAliases()
@@ -1366,9 +1364,8 @@ void SoundService::ResetScheme()
 //--------------------------------------------------------------------
 bool SoundService::AddScheme(const char *_schemeName)
 {
-    INIFILE *ini;
     static char tempString[COMMON_STRING_LENGTH];
-    ini = fio->OpenIniFile(SCHEME_INI_NAME);
+    auto ini = fio->OpenIniFile(SCHEME_INI_NAME);
 
     if (!ini)
         return false;
@@ -1388,7 +1385,6 @@ bool SoundService::AddScheme(const char *_schemeName)
             AddSoundSchemeChannel(tempString, true);
     }
 
-    STORM_DELETE(ini);
     return true;
 }
 

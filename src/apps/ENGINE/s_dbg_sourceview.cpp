@@ -462,7 +462,7 @@ SOURCE_VIEW::SOURCE_VIEW(HWND _hMain, HINSTANCE _hInst)
     // OpenSourceFile("program\\ps.c");
     // OpenSourceFile("program\\seadogs.c");
 
-    auto *pI = fio->OpenIniFile(PROJECT_NAME);
+    auto pI = fio->OpenIniFile(PROJECT_NAME);
     if (pI)
     {
         char buffer[1024];
@@ -471,8 +471,6 @@ SOURCE_VIEW::SOURCE_VIEW(HWND _hMain, HINSTANCE _hInst)
             {
                 htBookmarks[buffer] = static_cast<uint32_t>(0);
             } while (pI->ReadStringNext("bookmarks", "BM", buffer, sizeof(buffer)));
-
-        delete pI;
     }
 }
 
@@ -480,7 +478,7 @@ SOURCE_VIEW::~SOURCE_VIEW()
 {
     delete pSourceFile;
 
-    INIFILE *pI = fio->OpenIniFile(PROJECT_NAME);
+    auto pI = fio->OpenIniFile(PROJECT_NAME);
     if (pI)
     {
         pI->DeleteSection("bookmarks");
@@ -494,8 +492,6 @@ SOURCE_VIEW::~SOURCE_VIEW()
         }*/
         for (const auto &bookmark : htBookmarks)
             pI->AddString("bookmarks", "BM", (char *)bookmark.first.c_str());
-
-        delete pI;
     }
 }
 

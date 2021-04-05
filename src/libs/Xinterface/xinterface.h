@@ -432,4 +432,3 @@ class CONTROLS_CONTAINER : public Entity
 
     CONTEINER_DESCR *FindContainer(const char *sContainer);
 };
-

@@ -51,7 +51,6 @@ LRESULT CALLBACK DebugWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam
 {
     //    WORD wActive;
     //    bool bActive;
-    INIFILE *ini;
     wchar_t BufferW[MAX_PATH];
     wchar_t WinTextW[MAX_PATH];
     BROWSEINFO bi;
@@ -126,8 +125,8 @@ LRESULT CALLBACK DebugWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam
         case ID_VIEW_ATTRIBUTEVIEWER:
             CDebug.SetDbgDisplayMode(MODE_ATTRIBUTES_VIEW);
             break;
-        case ID_OPTIONS_BREAKONERROR:
-            ini = fio->OpenIniFile(PROJECT_NAME);
+        case ID_OPTIONS_BREAKONERROR: {
+            auto ini = fio->OpenIniFile(PROJECT_NAME);
             if (!ini)
                 break;
             if (ini->GetLong("options", "break_on_error", 0) == 1)
@@ -142,8 +141,8 @@ LRESULT CALLBACK DebugWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam
                 ini->WriteLong("options", "break_on_error", 1);
                 core.Compiler->bBreakOnError = true;
             }
-            delete ini;
             break;
+        }
         case ID_FORMAT_DIALOG: {
             char Buffer[MAX_PATH];
             if (CDebug.BrowseFileWP(Buffer, filefilter))
@@ -202,7 +201,7 @@ LRESULT CALLBACK DebugWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam
     case WM_DESTROY:
         // CursorONOFF(false);
         break;
-    case WM_CREATE:
+    case WM_CREATE: {
         // CursorONOFF(true);
 
         if (CDebug.WatcherList)
@@ -221,7 +220,7 @@ LRESULT CALLBACK DebugWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam
             CDebug.SourceView->SetPosition(CDebug.SourceViewRect);
         }
 
-        ini = fio->OpenIniFile(PROJECT_NAME);
+        auto ini = fio->OpenIniFile(PROJECT_NAME);
         if (ini)
         {
             if (ini->GetLong("options", "break_on_error", 0) == 1)
@@ -234,11 +233,10 @@ LRESULT CALLBACK DebugWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam
                 CheckMenuItem(static_cast<HMENU>(GetMenu(hwnd)), ID_OPTIONS_BREAKONERROR, MF_UNCHECKED);
                 core.Compiler->bBreakOnError = false;
             }
-            delete ini;
         }
 
         break;
-
+    }
     case WM_SYSKEYDOWN:
         return 1;
     case WM_SYSKEYUP:

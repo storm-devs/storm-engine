@@ -111,7 +111,7 @@ bool ParticleManager::OpenProject(const char *FileName)
     // LongFileName += FileName;
     // LongFileName.AddExtention(".prj");
 
-    auto *IniFile = fio->OpenIniFile((char *)pathStr.c_str());
+    auto IniFile = fio->OpenIniFile(pathStr.c_str());
     if (!IniFile)
     {
         core.Trace("Can't find project '%s'", pathStr.c_str());
@@ -151,8 +151,6 @@ bool ParticleManager::OpenProject(const char *FileName)
             break;
         pDataCache->CacheSystem(IniStringBuffer);
     }
-
-    delete IniFile;
 
     // FIX ME !
     // If there will be asynchronous loading it is wrong

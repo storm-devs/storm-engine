@@ -2,8 +2,8 @@
 
 #include <Windows.h>
 #include <cstdint>
-#include <string>
 #include <fstream>
+#include <string>
 
 class INIFILE;
 
@@ -35,8 +35,8 @@ class VFILE_SERVICE
     virtual BOOL LoadFile(const char *file_name, char **ppBuffer, uint32_t *dwSize = nullptr) = 0;
 
     // ini files section
-    virtual INIFILE *CreateIniFile(const char *file_name, bool fail_if_exist) = 0;
-    virtual INIFILE *OpenIniFile(const char *file_name) = 0;
+    virtual std::unique_ptr<INIFILE> CreateIniFile(const char *file_name, bool fail_if_exist) = 0;
+    virtual std::unique_ptr<INIFILE> OpenIniFile(const char *file_name) = 0;
 };
 
 //------------------------------------------------------------------------------------------------
@@ -122,4 +122,3 @@ class INIFILE
 
 //
 extern VFILE_SERVICE *fio;
-

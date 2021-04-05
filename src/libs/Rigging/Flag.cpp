@@ -568,7 +568,6 @@ void FLAG::LoadIni()
     char section[256];
     char param[256];
 
-    INIFILE *ini;
     WIN32_FIND_DATA wfd;
     auto *const h = fio->_FindFirstFile("resource\\ini\\rigging.ini", &wfd);
     if (INVALID_HANDLE_VALUE != h)
@@ -576,7 +575,7 @@ void FLAG::LoadIni()
         ft_old = wfd.ftLastWriteTime;
         fio->_FindClose(h);
     }
-    ini = fio->OpenIniFile("resource\\ini\\rigging.ini");
+    auto ini = fio->OpenIniFile("resource\\ini\\rigging.ini");
     if (!ini)
         throw std::exception("rigging.ini file not found!");
 
@@ -639,8 +638,6 @@ void FLAG::LoadIni()
     fWindMaxValue = ini->GetFloat(section, "fWindMaxValue", 12.f);
     // minimum number of segments in the flag
     MinSegmentQuantity = ini->GetLong(section, "MinSegQuantity", 4);
-
-    delete ini;
     // UNGUARD
 }
 

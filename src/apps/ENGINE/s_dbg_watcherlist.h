@@ -7,7 +7,7 @@ class WATCHER_LIST : public TM_LIST
 {
     uint32_t ShowMask;
     HMENU hMenu;
-    INIFILE *ini;
+    std::unique_ptr<INIFILE> ini;
 
   public:
     WATCHER_LIST(HWND hwnd, HINSTANCE hinst);

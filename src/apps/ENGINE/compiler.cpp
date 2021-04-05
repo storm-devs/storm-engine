@@ -414,8 +414,8 @@ void COMPILER::SetWarning(const char *data_PTR, ...)
 
 void COMPILER::LoadPreprocess()
 {
-    INIFILE *engine_ini = fio->OpenIniFile(core.EngineIniFileName());
-    if (engine_ini != nullptr)
+    auto engine_ini = fio->OpenIniFile(core.EngineIniFileName());
+    if (engine_ini)
     {
         if (engine_ini->GetLong("script", "debuginfo", 0) == 0)
         {
@@ -445,15 +445,12 @@ void COMPILER::LoadPreprocess()
 
         // if(engine_ini->GetLong("script","tracefiles",0) == 0) bScriptTrace = false;
         // else bScriptTrace = true;
-
-        delete engine_ini;
     }
 
-    INIFILE *ini = fio->OpenIniFile(PROJECT_NAME);
+    auto ini = fio->OpenIniFile(PROJECT_NAME);
     if (ini)
     {
         bBreakOnError = (ini->GetLong("options", "break_on_error", 0) == 1);
-        delete ini;
     }
 }
 
@@ -6116,8 +6113,8 @@ ATTRIBUTES *COMPILER::TraceARoot(ATTRIBUTES *pA, const char *&pAccess)
         return nullptr; // error or invalid argument
     if (pA->GetParent() == nullptr)
         return pA; // root found
-	if (pA->GetThisNameCode() == 0) 
-		return nullptr;	// fix crash at NewGame start
+    if (pA->GetThisNameCode() == 0)
+        return nullptr; // fix crash at NewGame start
 
     const long slen = strlen(pA->GetThisName()) + 1;
 
@@ -6559,7 +6556,7 @@ bool COMPILER::SaveState(std::fstream &fileS)
     edh.dwExtDataOffset = 0;
     edh.dwExtDataSize = 0;
 
-    fio->_WriteFile(fileS,  &edh, sizeof(edh));
+    fio->_WriteFile(fileS, &edh, sizeof(edh));
 
     // 1. Program Directory
     SaveString(ProgramDirectory);
