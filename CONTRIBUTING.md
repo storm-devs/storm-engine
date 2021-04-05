@@ -6,19 +6,19 @@ but you will probably start a [discussion](https://github.com/storm-devs/storm-e
 
 ## Styleguides
 
-### Git commit messages
+### Git Commit Messages
 
 * Use the present tense and imperative mood
 * Limit the first line to 72 characters
 
-### Code style
+### Code Style
 
 To keep the source consistent and easy to merge, we are using ClangFormat to format code.
 You can find ``.clang-format`` config in the root.
 
 ## Pull Request Process
 
-To make approve process easier, pull request, if applicable, should follow this:
+To make the approval process easier and faster, your pull request should include the following (if applicable):
 
 * A link to issue or project card
 * Reasoning of changes
@@ -30,4 +30,4 @@ There are also some tips:
 * Prefer to rebase over merge when pulling changes from master
 * Avoid mixing tasks in a single Pull Request
 * Give understandable names for commits
-* Be sure that all your change is clear to understand, add have comments for complicated code
+* Be sure that all your changes are clear to understand
