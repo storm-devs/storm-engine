@@ -27,7 +27,7 @@ class VFILE_SERVICE
     virtual void _FlushFileBuffers(std::fstream &fileS) = 0;
     virtual uint32_t _GetCurrentDirectory(uint32_t nBufferLength, char *lpBuffer) = 0;
     virtual std::string _GetExecutableDirectory() = 0;
-    virtual std::uintmax_t _GetFileSize(const char *p) = 0;
+    virtual std::uintmax_t _GetFileSize(const char *filename) = 0;
     virtual BOOL _SetCurrentDirectory(const char *lpPathName) = 0;
     virtual BOOL _CreateDirectory(const char *lpPathName, LPSECURITY_ATTRIBUTES lpSecurityAttributes) = 0;
     virtual BOOL _RemoveDirectory(const char *lpPathName) = 0;
