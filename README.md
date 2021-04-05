@@ -24,7 +24,8 @@ You need to install [Conan](https://conan.io/downloads.html) and add it to the `
 
 Open the repo root as a CMake project in Visual Studio 2019 and select `engine.exe` as a startup item.
 
-For running `engine.exe` you need to have [DirectX 9 runtime libraries](https://www.microsoft.com/en-us/download/details.aspx?id=8109) installed. 
+For running `engine.exe` you need to have [DirectX 9 runtime libraries](https://www.microsoft.com/en-us/download/details.aspx?id=8109) installed.
+You will also need assets from one of the supported games. 
 
 ## Roadmap
 Since our development team is small, we want to reduce the amount of code we have to maintain.
@@ -33,16 +34,16 @@ For this reason, we decided to rely on the C++ standard library or third-party l
 Some things that we are going to do:
 - Replace a custom math library with a third-party one, e.g. [glm](https://github.com/g-truc/glm).
 - Replace custom rendering code with a [bgfx](https://github.com/bkaradzic/bgfx) library.
-- Replace custom input handling code with a third-party library, e.g. [gainput](https://github.com/jkuhlmann/gainput).
+- Replace custom input handling code with a third-party library (see the [discussion](https://github.com/storm-devs/storm-engine/discussions/19)).
 - Replace custom data structures with C++ standard types.
 - Replace a custom scripting language with Lua.
-- Replace ini config files with JSON.
+- Replace ini config files with a standard format (see the [discussion](https://github.com/storm-devs/storm-engine/discussions/26)).
 - Replace custom binary asset formats with standard ones.
 
 ## Contributing
 If you'd like to get involved, don't hesitate to contact us. Pull requests and any other kind of help are more than welcome as well.
 
-If you want to start with small contributions, updating the code to the modern C++ and fixing compiler warnings are very much appeciated.
+If you want to start with small contributions, updating the code to the modern C++ is very much appeciated. Also, take a look at our [backlog](https://github.com/storm-devs/storm-engine/projects).
 
 ## License
 [GPL-3.0 License](https://choosealicense.com/licenses/gpl-3.0/)
