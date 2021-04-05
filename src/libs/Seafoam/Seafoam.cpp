@@ -24,7 +24,6 @@ SEAFOAM::~SEAFOAM()
     // GUARD(SEAFOAM::~SEAFOAM)
 
     ReleaseShipFoam();
-    delete psIni;
     if (renderer && (carcassTexture >= 0))
         renderer->TextureRelease(carcassTexture);
     // UNGUARD
@@ -80,11 +79,11 @@ void SEAFOAM::AddShip(entid_t pShipEID)
     foamInfo->shipModel->GetNode(0)->geo->GetInfo(foamInfo->hullInfo);
     foamInfo->enabled = true;
     foamInfo->frontEmitter[0] = new SEAFOAM_PS();
-    foamInfo->frontEmitter[0]->Init(psIni, "seafoam");
+    foamInfo->frontEmitter[0]->Init(psIni.get(), "seafoam");
     foamInfo->frontEmitter[1] = new SEAFOAM_PS();
-    foamInfo->frontEmitter[1]->Init(psIni, "seafoam2");
+    foamInfo->frontEmitter[1]->Init(psIni.get(), "seafoam2");
     foamInfo->frontEmitter[2] = new SEAFOAM_PS();
-    foamInfo->frontEmitter[2]->Init(psIni, "seafoam_front");
+    foamInfo->frontEmitter[2]->Init(psIni.get(), "seafoam_front");
 
     CreateTracePoints(foamInfo);
     const auto wideK = sqrtf(foamInfo->hullInfo.boxsize.y / 17.f);

@@ -225,14 +225,13 @@ void XSERVICE::LoadAllPicturesInfo()
 {
     char section[255];
     char param[255];
-    INIFILE *ini;
 
     // initialize ini file
     WIN32_FIND_DATA wfd;
     auto *const h = fio->_FindFirstFile(LISTS_INIFILE, &wfd);
     if (INVALID_HANDLE_VALUE != h)
         fio->_FindClose(h);
-    ini = fio->OpenIniFile((char *)LISTS_INIFILE);
+    auto ini = fio->OpenIniFile(LISTS_INIFILE);
     if (!ini)
         throw std::exception("ini file not found!");
 
@@ -315,8 +314,6 @@ void XSERVICE::LoadAllPicturesInfo()
             if (!ini->GetSectionNameNext(section, sizeof(section) - 1))
                 break;
         }
-
-    delete ini;
 }
 
 void XSERVICE::ReleaseAll()

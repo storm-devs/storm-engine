@@ -794,8 +794,7 @@ void ROPE::LoadIni()
     char section[256];
     char param[256];
 
-    INIFILE *ini;
-    ini = fio->OpenIniFile("resource\\ini\\rigging.ini");
+    auto ini = fio->OpenIniFile("resource\\ini\\rigging.ini");
     if (!ini)
         throw std::exception("rigging.ini file not found!");
 
@@ -849,7 +848,6 @@ void ROPE::LoadIni()
     // rope swing angle
     VAR_ROTATE_ANGL = ini->GetFloat(section, "fRotateAng", .1f);
 
-    delete ini;
     // UNGUARD
 }
 

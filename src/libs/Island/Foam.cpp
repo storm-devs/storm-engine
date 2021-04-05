@@ -768,7 +768,7 @@ void CoastFoam::Save()
     const auto sID = std::string("resource\\foam\\locations\\") + AttributesPointer->GetAttribute("id") + ".ini";
     fio->_DeleteFile(sID.c_str());
 
-    auto *pI = fio->CreateIniFile(sID.c_str(), false);
+    auto pI = fio->CreateIniFile(sID.c_str(), false);
     if (!pI)
         return;
 
@@ -811,7 +811,6 @@ void CoastFoam::Save()
             pI->WriteString(cSection, cKey, cTemp);
         }
     }
-    STORM_DELETE(pI);
     _flushall();
 }
 
@@ -830,7 +829,7 @@ void CoastFoam::Load()
     char cSection[256], cKey[256], cTemp[1024];
 
     const auto sID = std::string("resource\\foam\\locations\\") + AttributesPointer->GetAttribute("id") + ".ini";
-    auto *pI = fio->OpenIniFile(sID.c_str());
+    auto pI = fio->OpenIniFile(sID.c_str());
     if (!pI)
         return;
 
@@ -906,7 +905,6 @@ void CoastFoam::Load()
 
         RecalculateFoam(i);
     }
-    STORM_DELETE(pI);
 }
 
 uint32_t CoastFoam::AttributeChanged(ATTRIBUTES *pA)

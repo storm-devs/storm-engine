@@ -1135,7 +1135,7 @@ long Window::SelPreset()
         if (lastPreset != ins)
         {
             // Load the name
-            INIFILE *ini = fio->OpenIniFile("resource\\ini\\loclighter.ini");
+            auto ini = fio->OpenIniFile("resource\\ini\\loclighter.ini");
             if (ini)
             {
                 char sect[32];
@@ -1144,7 +1144,6 @@ long Window::SelPreset()
                 if (!ini->ReadString(sect, "comment", prsComment, 64, ""))
                     prsComment[0] = 0;
                 prsComment[63] = 0;
-                delete ini;
             }
             else
                 prsComment[0] = 0;
@@ -1163,7 +1162,7 @@ void Window::SavePreset(long prs)
     if (prs < 0)
         return;
     // Checking if able to work
-    INIFILE *ini = fio->OpenIniFile("resource\\ini\\loclighter.ini");
+    auto ini = fio->OpenIniFile("resource\\ini\\loclighter.ini");
     if (!ini)
         return;
     char sect[32];
@@ -1219,7 +1218,6 @@ void Window::SavePreset(long prs)
             break;
         }
     }
-    delete ini;
 }
 
 void Window::LoadPreset(long prs)
@@ -1227,7 +1225,7 @@ void Window::LoadPreset(long prs)
     if (prs < 0)
         return;
     // Checking if able to work
-    INIFILE *ini = fio->OpenIniFile("resource\\ini\\loclighter.ini");
+    auto ini = fio->OpenIniFile("resource\\ini\\loclighter.ini");
     if (!ini)
         return;
     char sect[32];
@@ -1299,7 +1297,6 @@ void Window::LoadPreset(long prs)
             break;
         }
     }
-    delete ini;
     UpdateColors();
     UpdateLight(-1, true, true, true);
 }

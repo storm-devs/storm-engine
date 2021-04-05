@@ -62,7 +62,7 @@ IDirect3DTexture9 *TextureSequence::Initialize(VDX9RENDER *pRS, const char *cTSf
     m_pRS = pRS;
 
     // open ini file
-    auto *ini = fio->OpenIniFile((char *)INI_FILENAME);
+    auto ini = fio->OpenIniFile(INI_FILENAME);
     if (!ini)
     {
         core.Trace("ini file %s not found!", INI_FILENAME);
@@ -71,7 +71,6 @@ IDirect3DTexture9 *TextureSequence::Initialize(VDX9RENDER *pRS, const char *cTSf
     m_dwDeltaTime = ini->GetLong((char *)cTSfileName, "timeDelay", 128);
     if (m_dwDeltaTime == 0)
     {
-        delete ini;
         return nullptr;
     }
     m_texWidth = ini->GetLong((char *)cTSfileName, "width", 128);
@@ -81,7 +80,6 @@ IDirect3DTexture9 *TextureSequence::Initialize(VDX9RENDER *pRS, const char *cTSf
     m_maxCurNum = m_xQuantity * m_yQuantity;
     if (m_maxCurNum == 0)
     {
-        delete ini;
         return nullptr;
     }
 
@@ -92,7 +90,6 @@ IDirect3DTexture9 *TextureSequence::Initialize(VDX9RENDER *pRS, const char *cTSf
     m_AllTex = m_pRS->TextureCreate(fullName);
     if (m_AllTex == -1)
     {
-        delete ini;
         return nullptr;
     }
 
@@ -106,7 +103,6 @@ IDirect3DTexture9 *TextureSequence::Initialize(VDX9RENDER *pRS, const char *cTSf
     {
         m_pTexture = nullptr;
         core.Trace("Can`t create texture");
-        delete ini;
         return nullptr;
     }
 
@@ -115,7 +111,6 @@ IDirect3DTexture9 *TextureSequence::Initialize(VDX9RENDER *pRS, const char *cTSf
     m_dwCurDeltaTime = 0;
     // ToTextureRender(0.f);
 
-    delete ini;
     return m_pTexture;
 }
 

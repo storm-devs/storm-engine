@@ -42,4 +42,3 @@ class TSinkSplash
     CVECTOR center, dir;
     float growK;
 };
-

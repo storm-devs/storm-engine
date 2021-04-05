@@ -663,7 +663,7 @@ void DIALOG::DrawButtons()
 
 void DIALOG::LoadFromIni()
 {
-    INIFILE *pIni = fio->OpenIniFile("resource\\ini\\dialog.ini");
+    auto pIni = fio->OpenIniFile("resource\\ini\\dialog.ini");
     if (!pIni)
     {
         core.Trace("Warning! DIALOG: Can`t open ini file %s", "resource\\ini\\dialog.ini");
@@ -675,8 +675,8 @@ void DIALOG::LoadFromIni()
     m_BackParams.m_idBackTex = RenderService->TextureCreate(param);
 
     FPOINT fpScrSize, fpScrOffset;
-    GetPointFromIni(pIni, "BACKPARAM", "baseScreenSize", fpScrSize);
-    GetPointFromIni(pIni, "BACKPARAM", "baseScreenOffset", fpScrOffset);
+    GetPointFromIni(pIni.get(), "BACKPARAM", "baseScreenSize", fpScrSize);
+    GetPointFromIni(pIni.get(), "BACKPARAM", "baseScreenOffset", fpScrOffset);
     if (fpScrSize.x <= 0)
         fpScrSize.x = 800.f;
     if (fpScrSize.y <= 0)
@@ -690,21 +690,21 @@ void DIALOG::LoadFromIni()
     m_frScreenData.left = fpScrOffset.x / (fpScrSize.x + fpScrOffset.x);
     m_frScreenData.top = fpScrOffset.y / (fpScrSize.y + fpScrOffset.y);
 
-    GetRectFromIni(pIni, "BACKPARAM", "uvLeftTop", m_BackParams.m_frLeftTopUV);
-    GetRectFromIni(pIni, "BACKPARAM", "uvRightTop", m_BackParams.m_frRightTopUV);
-    GetRectFromIni(pIni, "BACKPARAM", "uvLeftBottom", m_BackParams.m_frLeftBottomUV);
-    GetRectFromIni(pIni, "BACKPARAM", "uvRightBottom", m_BackParams.m_frRightBottomUV);
-    GetRectFromIni(pIni, "BACKPARAM", "uvLeft", m_BackParams.m_frLeftUV);
-    GetRectFromIni(pIni, "BACKPARAM", "uvRight", m_BackParams.m_frRightUV);
-    GetRectFromIni(pIni, "BACKPARAM", "uvTop", m_BackParams.m_frTopUV);
-    GetRectFromIni(pIni, "BACKPARAM", "uvBottom", m_BackParams.m_frBottomUV);
-    GetRectFromIni(pIni, "BACKPARAM", "uvCenter", m_BackParams.m_frCenterUV);
-    GetRectFromIni(pIni, "BACKPARAM", "uvDivider", m_BackParams.m_frDividerUV);
+    GetRectFromIni(pIni.get(), "BACKPARAM", "uvLeftTop", m_BackParams.m_frLeftTopUV);
+    GetRectFromIni(pIni.get(), "BACKPARAM", "uvRightTop", m_BackParams.m_frRightTopUV);
+    GetRectFromIni(pIni.get(), "BACKPARAM", "uvLeftBottom", m_BackParams.m_frLeftBottomUV);
+    GetRectFromIni(pIni.get(), "BACKPARAM", "uvRightBottom", m_BackParams.m_frRightBottomUV);
+    GetRectFromIni(pIni.get(), "BACKPARAM", "uvLeft", m_BackParams.m_frLeftUV);
+    GetRectFromIni(pIni.get(), "BACKPARAM", "uvRight", m_BackParams.m_frRightUV);
+    GetRectFromIni(pIni.get(), "BACKPARAM", "uvTop", m_BackParams.m_frTopUV);
+    GetRectFromIni(pIni.get(), "BACKPARAM", "uvBottom", m_BackParams.m_frBottomUV);
+    GetRectFromIni(pIni.get(), "BACKPARAM", "uvCenter", m_BackParams.m_frCenterUV);
+    GetRectFromIni(pIni.get(), "BACKPARAM", "uvDivider", m_BackParams.m_frDividerUV);
 
-    GetRectFromIni(pIni, "BACKPARAM", "uvChrNameLeft", m_BackParams.frCharacterNameRectLeftUV);
-    GetRectFromIni(pIni, "BACKPARAM", "uvChrNameRight", m_BackParams.frCharacterNameRectRightUV);
-    GetRectFromIni(pIni, "BACKPARAM", "uvChrNameCenter", m_BackParams.frCharacterNameRectCenterUV);
-    GetPointFromIni(pIni, "BACKPARAM", "chrNameOffset", m_BackParams.fpCharacterNameOffset);
+    GetRectFromIni(pIni.get(), "BACKPARAM", "uvChrNameLeft", m_BackParams.frCharacterNameRectLeftUV);
+    GetRectFromIni(pIni.get(), "BACKPARAM", "uvChrNameRight", m_BackParams.frCharacterNameRectRightUV);
+    GetRectFromIni(pIni.get(), "BACKPARAM", "uvChrNameCenter", m_BackParams.frCharacterNameRectCenterUV);
+    GetPointFromIni(pIni.get(), "BACKPARAM", "chrNameOffset", m_BackParams.fpCharacterNameOffset);
     m_BackParams.fpCharacterNameOffset.x = GetScrWidth(m_BackParams.fpCharacterNameOffset.x);
     m_BackParams.fpCharacterNameOffset.y = GetScrHeight(m_BackParams.fpCharacterNameOffset.y);
     m_BackParams.fCharacterNameRectHeight = GetScrHeight(pIni->GetFloat("BACKPARAM", "ChrNameHeight", 32.f));
@@ -717,24 +717,24 @@ void DIALOG::LoadFromIni()
     m_BackParams.nDividerOffsetX = GetScrWidth(static_cast<float>(pIni->GetLong("BACKPARAM", "dividerOffsetX", 8)));
     m_BackParams.nDividerOffsetY = 0;
 
-    GetRectFromIni(pIni, "BACKPARAM", "backBorderOffset", m_BackParams.frBorderRect);
+    GetRectFromIni(pIni.get(), "BACKPARAM", "backBorderOffset", m_BackParams.frBorderRect);
     m_BackParams.frBorderRect.left = GetScrWidth(m_BackParams.frBorderRect.left);
     m_BackParams.frBorderRect.right = GetScrWidth(m_BackParams.frBorderRect.right);
     m_BackParams.frBorderRect.top = GetScrHeight(m_BackParams.frBorderRect.top);
     m_BackParams.frBorderRect.bottom = GetScrHeight(m_BackParams.frBorderRect.bottom);
 
-    GetRectFromIni(pIni, "BACKPARAM", "backPosition", m_BackParams.m_frBorderExt);
+    GetRectFromIni(pIni.get(), "BACKPARAM", "backPosition", m_BackParams.m_frBorderExt);
     m_BackParams.m_frBorderExt.left = GetScrX(m_BackParams.m_frBorderExt.left);
     m_BackParams.m_frBorderExt.right = GetScrX(m_BackParams.m_frBorderExt.right);
     m_BackParams.m_frBorderExt.top = GetScrY(m_BackParams.m_frBorderExt.top);
     m_BackParams.m_frBorderExt.bottom = GetScrY(m_BackParams.m_frBorderExt.bottom);
 
     m_ButtonParams.m_idTexture = m_BackParams.m_idBackTex;
-    GetRectFromIni(pIni, "BUTTON", "uvUpNormal", m_ButtonParams.frUpNormalButtonUV);
-    GetRectFromIni(pIni, "BUTTON", "uvDownNormal", m_ButtonParams.frDownNormalButtonUV);
-    GetRectFromIni(pIni, "BUTTON", "uvUpLight", m_ButtonParams.frUpLightButtonUV);
-    GetRectFromIni(pIni, "BUTTON", "uvDownLight", m_ButtonParams.frDownLightButtonUV);
-    GetPointFromIni(pIni, "BUTTON", "buttonSize", m_ButtonParams.fpButtonSize);
+    GetRectFromIni(pIni.get(), "BUTTON", "uvUpNormal", m_ButtonParams.frUpNormalButtonUV);
+    GetRectFromIni(pIni.get(), "BUTTON", "uvDownNormal", m_ButtonParams.frDownNormalButtonUV);
+    GetRectFromIni(pIni.get(), "BUTTON", "uvUpLight", m_ButtonParams.frUpLightButtonUV);
+    GetRectFromIni(pIni.get(), "BUTTON", "uvDownLight", m_ButtonParams.frDownLightButtonUV);
+    GetPointFromIni(pIni.get(), "BUTTON", "buttonSize", m_ButtonParams.fpButtonSize);
     m_ButtonParams.fRightOffset = GetScrWidth(pIni->GetFloat("BUTTON", "rightoffset", 0.f));
     m_ButtonParams.fTopOffset = GetScrHeight(pIni->GetFloat("BUTTON", "topoffset", 0.f));
     m_ButtonParams.fBottomOffset = GetScrHeight(pIni->GetFloat("BUTTON", "bottomoffset", 0.f));
@@ -744,11 +744,9 @@ void DIALOG::LoadFromIni()
     m_nCharNameTextFont = RenderService->LoadFont(FName);
     m_dwCharNameTextColor = pIni->GetLong("DIALOG", "charnamecolor", 0xFFFFFFFF);
     m_fCharNameTextScale = pIni->GetFloat("DIALOG", "charnamescale", 1.f);
-    GetPointFromIni(pIni, "DIALOG", "charnameoffset", m_fpCharNameTextOffset);
+    GetPointFromIni(pIni.get(), "DIALOG", "charnameoffset", m_fpCharNameTextOffset);
     m_fpCharNameTextOffset.x = GetScrWidth(m_fpCharNameTextOffset.x);
     m_fpCharNameTextOffset.y = GetScrHeight(m_fpCharNameTextOffset.y);
-
-    delete pIni;
 }
 
 void DIALOG::GetRectFromIni(INIFILE *ini, const char *pcSection, const char *pcKey, FRECT &frect)
@@ -879,10 +877,9 @@ bool DIALOG::Init()
     textViewport.MinZ = 0.0f;
     textViewport.MaxZ = 1.0f;
 
-    INIFILE *ini = fio->OpenIniFile("Resource\\Ini\\dialog.ini");
-    m_DlgText.Init(RenderService, textViewport, ini);
-    m_DlgLinks.Init(RenderService, textViewport, ini);
-    STORM_DELETE(ini);
+    auto ini = fio->OpenIniFile("Resource\\Ini\\dialog.ini");
+    m_DlgText.Init(RenderService, textViewport, ini.get());
+    m_DlgLinks.Init(RenderService, textViewport, ini.get());
 
     CreateButtons();
     FillButtons();

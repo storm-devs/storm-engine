@@ -141,15 +141,13 @@ void BALLSPLASH::Execute(uint32_t dTime)
 //--------------------------------------------------------------------
 void BALLSPLASH::InitializeSplashes()
 {
-    auto *const psIni = fio->OpenIniFile("resource\\ini\\particles.ini");
+    auto psIni = fio->OpenIniFile("resource\\ini\\particles.ini");
 
     for (auto i = 0; i < MAX_SPLASHES; ++i)
     {
         splashes[i].Release();
-        splashes[i].Initialize(psIni, nullptr, sea, renderer);
+        splashes[i].Initialize(psIni.get(), nullptr, sea, renderer);
     }
-
-    delete psIni;
 }
 
 //--------------------------------------------------------------------

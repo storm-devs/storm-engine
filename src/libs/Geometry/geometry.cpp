@@ -59,12 +59,10 @@ bool GEOMETRY::Init()
     }
     GSR.SetRenderService(RenderService);
 
-    INIFILE *ini;
-    ini = fio->OpenIniFile(core.EngineIniFileName());
+    auto ini = fio->OpenIniFile(core.EngineIniFileName());
     if (ini)
     {
         geoLog = ini->GetLong(nullptr, "geometry_log", 0) == 1;
-        delete ini;
     }
 
     return true;

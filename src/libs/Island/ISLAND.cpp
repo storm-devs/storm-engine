@@ -642,8 +642,8 @@ bool ISLAND::CreateHeightMap(char *pDir, char *pName)
         vBoxSize /= 2.0f;
         vRealBoxSize /= 2.0f;
 
-        INIFILE *pI = fio->OpenIniFile(iniName.c_str());
-        Assert(pI);
+        auto pI = fio->OpenIniFile(iniName.c_str());
+        Assert(pI.get());
 
         CVECTOR vTmpBoxCenter, vTmpBoxSize;
         pI->ReadString("Main", "vBoxCenter", str_tmp, sizeof(str_tmp) - 1, "1.0,1.0,1.0");
@@ -662,9 +662,8 @@ bool ISLAND::CreateHeightMap(char *pDir, char *pName)
             core.Trace("vBoxSize = %f,%f,%f", vBoxSize.x, vBoxSize.y, vBoxSize.z);
         }
 
-        AIPath.Load(pI);
+        AIPath.Load(*pI);
         AIPath.BuildTable();
-        delete pI;
 
         return true;
     }
@@ -743,11 +742,11 @@ bool ISLAND::CreateHeightMap(char *pDir, char *pName)
     mzDepth.Save(fileName + ".zap");
     STORM_DELETE(pDepthMap);
 
-    INIFILE *pI = fio->OpenIniFile(iniName.c_str());
+    auto pI = fio->OpenIniFile(iniName.c_str());
     if (!pI)
     {
         pI = fio->CreateIniFile(iniName.c_str(), false);
-        Assert(pI);
+        Assert(pI.get());
     }
     char str[512];
     pI->WriteString("Main", "DepthFile", (char *)fileName.c_str());
@@ -755,7 +754,6 @@ bool ISLAND::CreateHeightMap(char *pDir, char *pName)
     pI->WriteString("Main", "vBoxCenter", str);
     sprintf_s(str, "%f,%f,%f", vBoxSize.x, vBoxSize.y, vBoxSize.z);
     pI->WriteString("Main", "vBoxSize", str);
-    delete pI;
 
     return true;
 }

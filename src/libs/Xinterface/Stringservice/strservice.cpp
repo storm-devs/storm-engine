@@ -181,7 +181,6 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
     // GUARD(void STRSERVICE::SetLanguage(const char* sLanguage))
 
     int i;
-    INIFILE *ini;
     char param[2048];
 
     if (sLanguage == nullptr)
@@ -195,8 +194,8 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
         return;
 
     // initialize ini file
-    ini = fio->OpenIniFile((char *)sLanguageFile);
-    if (!ini)
+    auto langIni = fio->OpenIniFile(sLanguageFile);
+    if (!langIni)
     {
         core.Trace("ini file %s not found!", sLanguageFile);
         return;
@@ -218,7 +217,7 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
         STORM_DELETE(m_sLanguageDir);
 
         // get a directory for text files of a given language
-        if (ini->ReadString("DIRECTORY", m_sLanguage, param, sizeof(param) - 1, ""))
+        if (langIni->ReadString("DIRECTORY", m_sLanguage, param, sizeof(param) - 1, ""))
         {
             const auto len = strlen(param) + 1;
             if ((m_sLanguageDir = new char[len]) == nullptr)
@@ -231,7 +230,7 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
             core.Trace("WARNING! Not found directory record for language %s", sLanguage);
 
         // get the name of the ini file with common strings for this language
-        if (ini->ReadString("COMMON", "strings", param, sizeof(param) - 1, ""))
+        if (langIni->ReadString("COMMON", "strings", param, sizeof(param) - 1, ""))
         {
             const auto len = strlen(param) + 1;
             if ((m_sIniFileName = new char[len]) == nullptr)
@@ -247,7 +246,7 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
             break;
 
         // compare the current language with the default
-        if (ini->ReadString("COMMON", "defaultLanguage", param, sizeof(param) - 1, ""))
+        if (langIni->ReadString("COMMON", "defaultLanguage", param, sizeof(param) - 1, ""))
         {
             if (_stricmp(m_sLanguage, param) == 0)
                 break;
@@ -272,7 +271,7 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
     if (RenderService)
     {
         char fullIniPath[512];
-        if (ini->ReadString("FONTS", m_sLanguage, param, sizeof(param) - 1, ""))
+        if (langIni->ReadString("FONTS", m_sLanguage, param, sizeof(param) - 1, ""))
         {
             sprintf_s(fullIniPath, "resource\\ini\\%s", param);
         }
@@ -284,7 +283,6 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
         RenderService->SetFontIniFileName(fullIniPath);
     }
     //==========================================================================
-    delete ini;
 
     //====================================================================
     // Set language data
@@ -308,7 +306,7 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
 
     // initialize ini file
     sprintf_s(param, "resource\\ini\\texts\\%s\\%s", m_sLanguageDir, m_sIniFileName);
-    ini = fio->OpenIniFile(param);
+    auto ini = fio->OpenIniFile(param);
     if (!ini)
     {
         core.Trace("WARNING! ini file \"%s\" not found!", param);
@@ -378,7 +376,6 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
     }
 
     // end of search
-    delete ini;
 
     // =======================================================================
     // Re-reading user files
@@ -493,11 +490,10 @@ void STRSERVICE::LoadIni()
 {
     // GUARD(void STRSERVICE::LoadIni())
 
-    INIFILE *ini;
     char param[256];
 
     // initialize ini file
-    ini = fio->OpenIniFile((char *)sLanguageFile);
+    auto ini = fio->OpenIniFile(sLanguageFile);
     if (!ini)
     {
         core.Trace("Error: Language ini file not found!");
@@ -517,7 +513,6 @@ void STRSERVICE::LoadIni()
         core.Trace("WARNING! Language ini file have not default language.");
         strcpy_s(param, "English");
     }
-    delete ini;
 
     if (param[0] != 0)
         SetLanguage(param);
@@ -595,7 +590,8 @@ long STRSERVICE::OpenUsersStringFile(const char *fileName)
     char param[512];
     sprintf_s(param, "resource\\ini\\TEXTS\\%s\\%s", m_sLanguageDir, fileName);
     auto fileS = fio->_CreateFile(param, std::ios::binary | std::ios::in);
-    if (!fileS.is_open()) {
+    if (!fileS.is_open())
+    {
         core.tracelog->warn("WARNING! Strings file \"{}\" does not exist", fileName);
         return -1;
     }

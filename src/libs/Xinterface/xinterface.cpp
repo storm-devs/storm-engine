@@ -1099,8 +1099,7 @@ void XINTERFACE::LoadIni()
     char section[256];
 
     const char *platform = "PC_SCREEN";
-    INIFILE *ini;
-    ini = fio->OpenIniFile((char *)RESOURCE_FILENAME);
+    auto ini = fio->OpenIniFile(RESOURCE_FILENAME);
     if (!ini)
         throw std::exception("ini file not found!");
 
@@ -1207,18 +1206,14 @@ void XINTERFACE::LoadIni()
 
     oldKeyState.dwKeyCode = -1;
     DoControl();
-
-    delete ini;
     // UNGUARD
 }
 
 void XINTERFACE::LoadDialog(char *sFileName)
 {
-    // GUARD(void XINTERFACE::LoadDialog(char *sFileName));
     char section[255];
     char skey[255];
     char param[255];
-    INIFILE *ini, *ownerIni;
     int i;
 
     if (m_pEditor)
@@ -1226,14 +1221,14 @@ void XINTERFACE::LoadDialog(char *sFileName)
 
     // initialize ini file
     m_sDialogFileName = sFileName;
-    ini = fio->OpenIniFile(sFileName);
+    auto ini = fio->OpenIniFile(sFileName);
     if (!ini)
     {
         core.Trace("ini file %s not found!", sFileName);
         core.PostEvent("exitCancel", 1, nullptr);
         return;
     }
-    ownerIni = fio->OpenIniFile("RESOURCE\\INI\\INTERFACES\\defaultnode.ini");
+    auto ownerIni = fio->OpenIniFile("RESOURCE\\INI\\INTERFACES\\defaultnode.ini");
 
     sprintf_s(section, "MAIN");
 
@@ -1281,7 +1276,7 @@ void XINTERFACE::LoadDialog(char *sFileName)
             }
             tmpStr = XI_ParseStr(tmpStr, nodeName, sizeof(nodeName));
             if (param[0])
-                SFLB_CreateNode(ownerIni, ini, param, nodeName, priority);
+                SFLB_CreateNode(ownerIni.get(), ini.get(), param, nodeName, priority);
 
             i = 0;
             if (findName && _stricmp(findName, "item") == 0)
@@ -1353,21 +1348,15 @@ void XINTERFACE::LoadDialog(char *sFileName)
         CINODE::GetDataStr(param, "ffff", &m_frectDefHelpTextureUV.left, &m_frectDefHelpTextureUV.top,
                            &m_frectDefHelpTextureUV.right, &m_frectDefHelpTextureUV.bottom);
     }
-
-    delete ini;
-    delete ownerIni;
-    // UNGUARD
 }
 
 void XINTERFACE::CreateNode(const char *sFileName, const char *sNodeType, const char *sNodeName, long priority)
 {
-    INIFILE *ini, *ownerIni;
-
     // there is already such a node
     if (m_pNodes && m_pNodes->FindNode(sNodeName))
         return;
 
-    ini = nullptr;
+    std::unique_ptr<INIFILE> ini;
     if (sFileName && sFileName[0])
     {
         ini = fio->OpenIniFile(sFileName);
@@ -1377,12 +1366,9 @@ void XINTERFACE::CreateNode(const char *sFileName, const char *sNodeType, const 
             return;
         }
     }
-    ownerIni = fio->OpenIniFile("RESOURCE\\INI\\INTERFACES\\defaultnode.ini");
+    auto ownerIni = fio->OpenIniFile("RESOURCE\\INI\\INTERFACES\\defaultnode.ini");
 
-    SFLB_CreateNode(ownerIni, ini, sNodeType, sNodeName, priority);
-
-    delete ini;
-    delete ownerIni;
+    SFLB_CreateNode(ownerIni.get(), ini.get(), sNodeType, sNodeName, priority);
 }
 
 void XINTERFACE::SFLB_CreateNode(INIFILE *pOwnerIni, INIFILE *pUserIni, const char *sNodeType, const char *sNodeName,

@@ -33,7 +33,7 @@ Lighter::~Lighter()
 bool Lighter::Init()
 {
     // Checking if ini file exists
-    auto *ini = fio->OpenIniFile("resource\\ini\\loclighter.ini");
+    auto ini = fio->OpenIniFile("resource\\ini\\loclighter.ini");
     if (!ini)
         return false;
     const auto isLoading = ini->GetLong(nullptr, "loading", 0);
@@ -41,7 +41,6 @@ bool Lighter::Init()
     autoSmooth = ini->GetLong(nullptr, "autosmooth", 0) != 0;
     window.isSmallSlider = ini->GetLong(nullptr, "smallslider", 0) != 0;
     geometry.useColor = ini->GetLong(nullptr, "usecolor", 0) != 0;
-    delete ini;
     if (!isLoading)
         return false;
     // DX9 render

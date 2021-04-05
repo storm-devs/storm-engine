@@ -684,7 +684,7 @@ void CXI_FOURIMAGE::SaveParametersToIni()
 {
     char pcWriteParam[2048];
 
-    auto *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
+    auto pIni = fio->OpenIniFile(ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
         core.Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
@@ -700,8 +700,6 @@ void CXI_FOURIMAGE::SaveParametersToIni()
         sprintf_s(pcWriteKeyName, sizeof(pcWriteKeyName), "position%d", n);
         pIni->WriteString(m_nodeName, pcWriteKeyName, pcWriteParam);
     }
-
-    delete pIni;
 }
 
 void CXI_FOURIMAGE::ChangeItem(int nItemNum)

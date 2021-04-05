@@ -1024,7 +1024,7 @@ void CXI_VIMAGESCROLL::SaveParametersToIni()
 {
     char pcWriteParam[2048];
 
-    INIFILE *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
+    auto pIni = fio->OpenIniFile(ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
         core.Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
@@ -1035,8 +1035,6 @@ void CXI_VIMAGESCROLL::SaveParametersToIni()
     sprintf_s(pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rAbsolutePosition.left, m_rAbsolutePosition.top,
               m_rAbsolutePosition.right, m_rAbsolutePosition.bottom);
     pIni->WriteString(m_nodeName, "position", pcWriteParam);
-
-    delete pIni;
 }
 
 void CXI_VIMAGESCROLL::ChangeScroll(int nScrollItemNum)

@@ -78,7 +78,6 @@ WATCHER_LIST::~WATCHER_LIST()
     if (hMenu)
         DestroyMenu(hMenu);
     hMenu = nullptr;
-    delete ini;
 }
 
 void WATCHER_LIST::ItemChanged(long Item_index, long Subitem_index)
