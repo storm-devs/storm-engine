@@ -2,11 +2,11 @@
 
 #include <catch2/catch.hpp>
 
-using namespace storm;
-using namespace std::string_literals;
-
 TEST_CASE("Case-insensitive string comparison", "[utils]")
 {
+    using namespace storm;
+    using namespace std::string_literals;
+
     const auto str_lowercase = "mystring"s;
     const auto str_uppercase = "MYSTRING"s;
     const auto str_mixedcase = "mYsTrInG"s;
