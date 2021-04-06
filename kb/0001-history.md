@@ -96,7 +96,6 @@ Storm Engine 2.9 was released in 2016 with an update to _Sea Dogs: To Each His O
 * DirectX 9
 * Better save file handling
 * Better combat AI
-* Better combat AI
 * Engine rebuilt with MSVS 2019
 * Newest version of fmod sound engine implemented;
 * Many other tweaks
