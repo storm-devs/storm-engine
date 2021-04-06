@@ -1,8 +1,10 @@
 # Contributing
 
 When contributing to this repository, please check [Issues](https://github.com/storm-devs/storm-engine/issues) and
-[Projects](https://github.com/storm-devs/storm-engine/projects),
-but you will probably start a [discussion](https://github.com/storm-devs/storm-engine/discussions) first.
+[Projects](https://github.com/storm-devs/storm-engine/projects).
+Also, it's a good idea to drop a message on our [Discord channel](https://discord.gg/jmwETPGFRe)
+or start a [discussion](https://github.com/storm-devs/storm-engine/discussions) first to let others know what you're
+planning to work on.
 
 ## Styleguides
 
