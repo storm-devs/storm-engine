@@ -39,11 +39,10 @@ Some things that we are going to do:
 - Replace a custom scripting language with Lua.
 - Replace ini config files with a standard format (see the [discussion](https://github.com/storm-devs/storm-engine/discussions/26)).
 - Replace custom binary asset formats with standard ones.
+- Update code using the latest C++ standard
 
 ## Contributing
-If you'd like to get involved, don't hesitate to contact us. Pull requests and any other kind of help are more than welcome as well.
-
-If you want to start with small contributions, updating the code to the modern C++ is very much appeciated. Also, take a look at our [backlog](https://github.com/storm-devs/storm-engine/projects).
+If you'd like to get involved, please check [CONTRIBUTING.md](https://github.com/storm-devs/storm-engine/blob/develop/CONTRIBUTING.md).
 
 ## License
 [GPL-3.0 License](https://choosealicense.com/licenses/gpl-3.0/)
