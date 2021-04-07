@@ -1,6 +1,7 @@
 import argparse
 from ctypes import *
 import os
+import struct
 import ntpath
 # Emulate all c structs and unions
 # The c version can be found under storm-engine/src/libs/Geometry/geom_static.cpp
@@ -190,8 +191,10 @@ def gm_to_obj(input_name, output_name):
     f.readinto(rhead)
 
     # Read all the following lines till the buffer
-    globname = f.read(getattr(rhead, "name_size"))
-    names = f.read(getattr(rhead, "names") * sizeof(c_long))
+    globname = f.read(getattr(rhead, "name_size")
+                      ).decode("utf-8").split(u'\x00')
+    names = struct.unpack('<'+str(getattr(rhead, "names"))+'l',
+                          (f.read(getattr(rhead, "names") * sizeof(c_long))))
     tname = f.read(getattr(rhead, "ntextures") * sizeof(c_long))
     rmaterials = get_array_of("rdf_material", rhead.nmaterials)
     rlights = get_array_of("rdf_light", rhead.nlights)
@@ -199,6 +202,13 @@ def gm_to_obj(input_name, output_name):
     robjects = get_array_of("rdf_object", rhead.nobjects)
     rtriangles = get_array_of("rdf_triangle", rhead.ntriangles)
     rvb = get_array_of("rdf_vertexbuff", rhead.nvrtbuffs)
+
+    names_dict = {}
+    words = iter(globname)
+    next(words)
+    for n in names:
+        if(n != 0):
+            names_dict[n] = next(words)
 
     # Find all the vertices
     vertices = []
@@ -223,7 +233,7 @@ def gm_to_obj(input_name, output_name):
             self.striangle = striangle
             self.nvertices = nvertices
             self.ntriangles = ntriangles
-            self.o = "o "+str(name)+"\n"
+            self.o = "o "+names_dict[name]+"\n"
             self.v = ""
             self.vn = ""
             self.vt = ""
@@ -249,19 +259,17 @@ def gm_to_obj(input_name, output_name):
     list_objects = []
 
     # Get instructions from objects
-    print("Parsing objects")
+    print("Parsing objects (", len(robjects), ")")
     for obj in robjects:
         list_objects.append(ProperObj(getattr(obj, "name"), getattr(
             obj, "svertex"), getattr(obj, "striangle"), getattr(
             obj, "nvertices"), getattr(obj, "ntriangles")))
 
     # Groups are stored in this dictionary
-    print("Parsing vertices")
+    print("Parsing vertices (", v_len, ")")
     objects_iterator = iter(list_objects)
     selected_object = None
     object_index = 0
-    print("Objects:", len(list_objects))
-    print("Vertices:", len(vertices))
     # Transform vertex to valid .obj structure
     for index, vert in enumerate(vertices):
         #print("Vertex %d of %d" % (index, v_len), end="\r")
@@ -274,7 +282,7 @@ def gm_to_obj(input_name, output_name):
         selected_object.add_vt(getattr(vert, "tu0"),  getattr(vert, "tv0"))
 
     # Transform triangles to valid .obj structure
-    print("Parsing triangles              ")
+    print("Parsing triangles (", t_len, ")              ")
     objects_iterator = iter(list_objects)
     object_index = 0
     for index, tri in enumerate(rtriangles):
