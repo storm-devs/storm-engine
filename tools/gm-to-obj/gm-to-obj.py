@@ -217,10 +217,12 @@ def gm_to_obj(input_name, output_name):
 
     # All the properties which a .obj file has. https://en.wikipedia.org/wiki/Wavefront_.obj_file
     class ProperObj:
-        def __init__(self, name, vertex_shift, triangle_shift):
+        def __init__(self, name, svertex, striangle, nvertices, ntriangles):
             self.name = name
-            self.vertex_shift = vertex_shift
-            self.triangle_shift = triangle_shift
+            self.svertex = svertex
+            self.striangle = striangle
+            self.nvertices = nvertices
+            self.ntriangles = ntriangles
             self.o = "o "+str(name)+"\n"
             self.v = ""
             self.vn = ""
@@ -250,19 +252,22 @@ def gm_to_obj(input_name, output_name):
     print("Parsing objects")
     for obj in robjects:
         list_objects.append(ProperObj(getattr(obj, "name"), getattr(
-            obj, "svertex"), getattr(obj, "striangle")))
+            obj, "svertex"), getattr(obj, "striangle"), getattr(
+            obj, "nvertices"), getattr(obj, "ntriangles")))
 
     # Groups are stored in this dictionary
     print("Parsing vertices")
     objects_iterator = iter(list_objects)
-    selected_object = next(objects_iterator)
-    past_index = 0
+    selected_object = None
+    object_index = 0
+    print("Objects:", len(list_objects))
+    print("Vertices:", len(vertices))
     # Transform vertex to valid .obj structure
     for index, vert in enumerate(vertices):
-        print("Vertex %d of %d" % (index, v_len), end="\r")
-        if(index > selected_object.vertex_shift+past_index):
-            past_index += selected_object.vertex_shift
+        #print("Vertex %d of %d" % (index, v_len), end="\r")
+        if(index+1 > object_index):
             selected_object = next(objects_iterator)
+            object_index += selected_object.nvertices
 
         selected_object.add_v(*getattr(getattr(vert, "pos"), "v"))
         selected_object.add_vn(* getattr(getattr(vert, "norm"), "v"))
@@ -271,15 +276,14 @@ def gm_to_obj(input_name, output_name):
     # Transform triangles to valid .obj structure
     print("Parsing triangles              ")
     objects_iterator = iter(list_objects)
-    selected_object = next(objects_iterator)
-    past_index = 0
+    object_index = 0
     for index, tri in enumerate(rtriangles):
         print("Triangle %d of %d" % (index, t_len), end="\r")
-        if(index > selected_object.triangle_shift+past_index):
-            past_index += selected_object.triangle_shift
+        if(index+1 > object_index):
             selected_object = next(objects_iterator)
+            object_index += selected_object.ntriangles
         selected_object.add_f(
-            selected_object.triangle_shift, *getattr(tri, "vindex"))
+            selected_object.svertex, *getattr(tri, "vindex"))
 
     # start crating obj file
     print("Writing output               ")
