@@ -208,7 +208,6 @@ void HELPCHOOSER::AllRelease()
 bool HELPCHOOSER::RunChooser(char *ChooserGroup)
 {
     int i, j;
-    INIFILE *ini;
     char param[512];
     char param2[256];
     float texWidth, texHeight;
@@ -217,8 +216,8 @@ bool HELPCHOOSER::RunChooser(char *ChooserGroup)
 
     if (ChooserGroup == nullptr)
         return false;
-    ini = fio->OpenIniFile("resource\\ini\\helpchooser.ini");
-    if (ini == nullptr)
+    auto ini = fio->OpenIniFile("resource\\ini\\helpchooser.ini");
+    if (!ini)
     {
         core.Trace("Can`t open INI file \"resource\\ini\\helpchooser.ini\"");
         return false;
@@ -360,7 +359,6 @@ bool HELPCHOOSER::RunChooser(char *ChooserGroup)
     m_nCurRect = -1;
     SetRectangle(0);
 
-    delete ini;
     return true;
 }
 

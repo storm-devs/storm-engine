@@ -1346,7 +1346,6 @@ void SAIL::LoadSailIni()
     // GUARD(SAIL::LoadSailIni());
     char section[256], param[256];
 
-    INIFILE *ini;
     WIN32_FIND_DATA wfd;
     const HANDLE h = fio->_FindFirstFile("resource\\ini\\rigging.ini", &wfd);
     if (INVALID_HANDLE_VALUE != h)
@@ -1354,7 +1353,7 @@ void SAIL::LoadSailIni()
         ft_old = wfd.ftLastWriteTime;
         fio->_FindClose(h);
     }
-    ini = fio->OpenIniFile("resource\\ini\\rigging.ini");
+    auto ini = fio->OpenIniFile("resource\\ini\\rigging.ini");
     if (!ini)
         throw std::exception("rigging.ini file not found!");
 
@@ -1442,8 +1441,6 @@ void SAIL::LoadSailIni()
     FALL_TSAIL_ADD_RAND = ini->GetFloat(section, "fFallTSailAddRand", 0.2f);
 
     GROUP_UPDATE_TIME = ini->GetLong(section, "msecSailUpdateTime", GROUP_UPDATE_TIME);
-
-    delete ini;
 
     // UNGUARD
 }

@@ -1,11 +1,11 @@
 #include "file_service.h"
+#include "core.h"
 #include "storm_assert.h"
 #include "utf8.h"
-#include "core.h"
 
 #include <exception>
-#include <string>
 #include <filesystem>
+#include <string>
 
 #define COMMENT ';'
 #define SECTION_A '['
@@ -41,7 +41,8 @@ FILE_SERVICE::~FILE_SERVICE()
 
 std::fstream FILE_SERVICE::_CreateFile(const char *filename, std::ios::openmode mode)
 {
-    std::fstream fileS(filename, mode);
+    std::filesystem::path path = std::filesystem::u8path(filename);
+    std::fstream fileS(path, mode);
     return fileS;
 }
 
@@ -137,9 +138,10 @@ std::string FILE_SERVICE::_GetExecutableDirectory()
     return "";
 }
 
-std::uintmax_t FILE_SERVICE::_GetFileSize(const char *p)
+std::uintmax_t FILE_SERVICE::_GetFileSize(const char *filename)
 {
-    return std::filesystem::file_size(p);
+    std::filesystem::path path = std::filesystem::u8path(filename);
+    return std::filesystem::file_size(path);
 }
 
 BOOL FILE_SERVICE::_SetCurrentDirectory(const char *lpPathName)
@@ -170,7 +172,7 @@ BOOL FILE_SERVICE::_SetFileAttributes(const char *lpFileName, uint32_t dwFileAtt
 // inifile objects managment
 //
 
-INIFILE *FILE_SERVICE::CreateIniFile(const char *file_name, bool fail_if_exist)
+std::unique_ptr<INIFILE> FILE_SERVICE::CreateIniFile(const char *file_name, bool fail_if_exist)
 {
     auto fileS = _CreateFile(file_name, std::ios::binary | std::ios::in);
     if (fileS.is_open() && fail_if_exist)
@@ -189,14 +191,9 @@ INIFILE *FILE_SERVICE::CreateIniFile(const char *file_name, bool fail_if_exist)
     return OpenIniFile(file_name);
 }
 
-INIFILE *FILE_SERVICE::OpenIniFile(const char *file_name)
+std::unique_ptr<INIFILE> FILE_SERVICE::OpenIniFile(const char *file_name)
 {
-    ////GUARD(FILE_SERVICE::OpenIniFile)
-    INIFILE_T *inifile_T;
-    uint32_t n;
-    //    PUSH_CONTROL(0,0,0)    // core control
-
-    for (n = 0; n <= Max_File_Index; n++)
+    for (auto n = 0; n <= Max_File_Index; n++)
     {
         if (OpenFiles[n] == nullptr || OpenFiles[n]->GetFileName() == nullptr)
             continue;
@@ -204,15 +201,14 @@ INIFILE *FILE_SERVICE::OpenIniFile(const char *file_name)
         {
             OpenFiles[n]->IncReference();
 
-            inifile_T = new INIFILE_T(OpenFiles[n]);
-            if (inifile_T == nullptr)
+            std::unique_ptr<INIFILE> v(new INIFILE_T(OpenFiles[n]));
+            if (!v)
                 throw std::exception();
-            //            POP_CONTROL(0)
-            return inifile_T;
+            return v;
         }
     }
 
-    for (n = 0; n < _MAX_OPEN_INI_FILES; n++)
+    for (auto n = 0; n < _MAX_OPEN_INI_FILES; n++)
     {
         if (OpenFiles[n] != nullptr)
             continue;
@@ -235,10 +231,10 @@ INIFILE *FILE_SERVICE::OpenIniFile(const char *file_name)
         // if(OpenFiles[n]->inifile_T == null) throw std::exception();
         // return OpenFiles[n]->inifile_T;
 
-        inifile_T = new INIFILE_T(OpenFiles[n]);
-        if (inifile_T == nullptr)
+        std::unique_ptr<INIFILE> v(new INIFILE_T(OpenFiles[n]));
+        if (!v)
             throw std::exception();
-        return inifile_T;
+        return v;
     }
     //    POP_CONTROL(0)
     ////UNGUARD

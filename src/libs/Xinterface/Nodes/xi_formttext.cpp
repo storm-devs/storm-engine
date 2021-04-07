@@ -442,7 +442,7 @@ void CXI_FORMATEDTEXT::SaveParametersToIni()
 {
     char pcWriteParam[2048];
 
-    INIFILE *pIni = fio->OpenIniFile((char *)ptrOwner->m_sDialogFileName.c_str());
+    auto pIni = fio->OpenIniFile(ptrOwner->m_sDialogFileName.c_str());
     if (!pIni)
     {
         core.Trace("Warning! Can`t open ini file name %s", ptrOwner->m_sDialogFileName.c_str());
@@ -452,8 +452,6 @@ void CXI_FORMATEDTEXT::SaveParametersToIni()
     // save position
     sprintf_s(pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rect.left, m_rect.top, m_rect.right, m_rect.bottom);
     pIni->WriteString(m_nodeName, "position", pcWriteParam);
-
-    delete pIni;
 }
 
 void CXI_FORMATEDTEXT::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2)

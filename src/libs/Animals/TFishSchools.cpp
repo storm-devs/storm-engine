@@ -27,14 +27,12 @@ TFishSchools::~TFishSchools()
 //--------------------------------------------------------------------
 void TFishSchools::LoadSettings()
 {
-    auto *ini = fio->OpenIniFile(ANIMALS_INI_FILENAME);
+    auto ini = fio->OpenIniFile(ANIMALS_INI_FILENAME);
     if (!ini)
         return;
 
     fishSchoolsCount = ini->GetLong(ANIMALS_FISHSCHOOLS_SECTION, "count", FISHSCHOOL_COUNT);
     maxDistance = ini->GetFloat(ANIMALS_FISHSCHOOLS_SECTION, "distance", FISHSCHOOL_DISTANCE);
-
-    delete ini;
 }
 
 //--------------------------------------------------------------------

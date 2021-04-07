@@ -207,12 +207,14 @@ bool SEA::Init()
 {
     rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     CreateVertexDeclaration();
-    INIFILE *pEngineIni = fio->OpenIniFile(core.EngineIniFileName());
-    bHyperThreading = (pEngineIni) ? pEngineIni->GetLong(nullptr, "HyperThreading", 1) != 0 : false;
-    bIniFoamEnable = (pEngineIni) ? pEngineIni->GetLong("Sea", "FoamEnable", 1) != 0 : false;
-    bool bEnableSSE = (pEngineIni) ? pEngineIni->GetLong(nullptr, "EnableSSE", 0) != 0 : false; // boal
-    bSeaDebug = (pEngineIni) ? pEngineIni->GetLong("Sea", "SeaDebug", 1) != 0 : false;
-    STORM_DELETE(pEngineIni);
+    auto bEnableSSE = false;
+    {
+        auto pEngineIni = fio->OpenIniFile(core.EngineIniFileName());
+        bHyperThreading = (pEngineIni) ? pEngineIni->GetLong(nullptr, "HyperThreading", 1) != 0 : false;
+        bIniFoamEnable = (pEngineIni) ? pEngineIni->GetLong("Sea", "FoamEnable", 1) != 0 : false;
+        bEnableSSE = (pEngineIni) ? pEngineIni->GetLong(nullptr, "EnableSSE", 0) != 0 : false; // boal
+        bSeaDebug = (pEngineIni) ? pEngineIni->GetLong("Sea", "SeaDebug", 1) != 0 : false;
+    }
     if (bEnableSSE)
     {
         bSSE = true; // boal

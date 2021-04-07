@@ -22,7 +22,7 @@ TSeagulls::~TSeagulls()
 //--------------------------------------------------------------------
 void TSeagulls::LoadSettings()
 {
-    auto *ini = fio->OpenIniFile(ANIMALS_INI_FILENAME);
+    auto ini = fio->OpenIniFile(ANIMALS_INI_FILENAME);
     if (!ini)
     {
         countAdd = SEAGULL_ADD_COUNT;
@@ -49,8 +49,6 @@ void TSeagulls::LoadSettings()
     screamTime = ini->GetLong(ANIMALS_SEAGULLS_SECTION, "scream time", SEAGULL_SCREAM_TIME);
     countAdd = ini->GetLong(ANIMALS_SEAGULLS_SECTION, "add count", SEAGULL_ADD_COUNT);
     ini->ReadString(ANIMALS_SEAGULLS_SECTION, "scream file", screamFilename, 256, ANIMALS_SEAGULLS_SCREAM_FILENAME);
-
-    delete ini;
 }
 
 //--------------------------------------------------------------------

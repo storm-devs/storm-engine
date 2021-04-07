@@ -2,8 +2,8 @@
 
 #include <Windows.h>
 #include <cstdint>
-#include <string>
 #include <fstream>
+#include <string>
 
 class INIFILE;
 
@@ -27,7 +27,7 @@ class VFILE_SERVICE
     virtual void _FlushFileBuffers(std::fstream &fileS) = 0;
     virtual uint32_t _GetCurrentDirectory(uint32_t nBufferLength, char *lpBuffer) = 0;
     virtual std::string _GetExecutableDirectory() = 0;
-    virtual std::uintmax_t _GetFileSize(const char *p) = 0;
+    virtual std::uintmax_t _GetFileSize(const char *filename) = 0;
     virtual BOOL _SetCurrentDirectory(const char *lpPathName) = 0;
     virtual BOOL _CreateDirectory(const char *lpPathName, LPSECURITY_ATTRIBUTES lpSecurityAttributes) = 0;
     virtual BOOL _RemoveDirectory(const char *lpPathName) = 0;
@@ -35,8 +35,8 @@ class VFILE_SERVICE
     virtual BOOL LoadFile(const char *file_name, char **ppBuffer, uint32_t *dwSize = nullptr) = 0;
 
     // ini files section
-    virtual INIFILE *CreateIniFile(const char *file_name, bool fail_if_exist) = 0;
-    virtual INIFILE *OpenIniFile(const char *file_name) = 0;
+    virtual std::unique_ptr<INIFILE> CreateIniFile(const char *file_name, bool fail_if_exist) = 0;
+    virtual std::unique_ptr<INIFILE> OpenIniFile(const char *file_name) = 0;
 };
 
 //------------------------------------------------------------------------------------------------
@@ -122,4 +122,3 @@ class INIFILE
 
 //
 extern VFILE_SERVICE *fio;
-

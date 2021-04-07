@@ -31,8 +31,7 @@ bool BLAST::Init()
         return false;
 
     //    long n;
-    INIFILE *ini;
-    ini = fio->OpenIniFile("resource\\ini\\particles\\particles.ini");
+    auto ini = fio->OpenIniFile("resource\\ini\\particles\\particles.ini");
     if (!ini)
     {
         core.Trace("not found: resource\\ini\\particles\\particles.ini");
@@ -50,8 +49,6 @@ bool BLAST::Init()
     {
         AddGeometry(name, RandomNum * rand() / RAND_MAX + 1);
     }
-
-    delete ini;
 
     Splash = EntityManager::GetEntityId("BallSplash");
 

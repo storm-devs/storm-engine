@@ -2,6 +2,7 @@
 
 #include "ifs.h"
 #include "vfile_service.h"
+#include <memory>
 
 #define _MAX_OPEN_INI_FILES 1024
 
@@ -98,7 +99,7 @@ class FILE_SERVICE : public VFILE_SERVICE
     void _FlushFileBuffers(std::fstream &fileS) override;
     uint32_t _GetCurrentDirectory(uint32_t nBufferLength, char *lpBuffer) override;
     std::string _GetExecutableDirectory() override;
-    std::uintmax_t _GetFileSize(const char *p) override;
+    std::uintmax_t _GetFileSize(const char *filename) override;
     BOOL _SetCurrentDirectory(const char *lpPathName) override;
     BOOL _CreateDirectory(const char *lpPathName, LPSECURITY_ATTRIBUTES lpSecurityAttributes) override;
     BOOL _RemoveDirectory(const char *lpPathName) override;
@@ -106,9 +107,8 @@ class FILE_SERVICE : public VFILE_SERVICE
     BOOL LoadFile(const char *file_name, char **ppBuffer, uint32_t *dwSize) override;
     // ini files section
     void Close();
-    INIFILE *CreateIniFile(const char *file_name, bool fail_if_exist) override;
-    INIFILE *OpenIniFile(const char *file_name) override;
+    std::unique_ptr<INIFILE> CreateIniFile(const char *file_name, bool fail_if_exist) override;
+    std::unique_ptr<INIFILE> OpenIniFile(const char *file_name) override;
     void RefDec(INIFILE *ini_obj);
     void FlushIniFiles();
 };
-

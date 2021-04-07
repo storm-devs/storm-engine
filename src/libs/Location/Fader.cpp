@@ -95,11 +95,10 @@ bool Fader::Init()
     // read the number of tips, if necessary
     if (!numberOfTips)
     {
-        auto *ini = fio->OpenIniFile(core.EngineIniFileName());
+        auto ini = fio->OpenIniFile(core.EngineIniFileName());
         if (ini)
         {
             numberOfTips = ini->GetLong(nullptr, "ProgressFrame", 1);
-            delete ini;
         }
         else
             numberOfTips = -1;

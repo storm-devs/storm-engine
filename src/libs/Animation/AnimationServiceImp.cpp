@@ -180,7 +180,7 @@ long AnimationServiceImp::LoadAnimation(const char *animationName)
     strcat_s(path, animationName);
     strcat_s(path, ".ani");
     // Open the ini file describing the animation
-    auto *ani = fio->OpenIniFile(path);
+    auto ani = fio->OpenIniFile(path);
     if (!ani)
     {
         core.Trace("Cannot open animation file %s", path);
@@ -192,7 +192,6 @@ long AnimationServiceImp::LoadAnimation(const char *animationName)
     if (!ani->ReadString(nullptr, ASKW_JFA_FILE, path + l, MAX_PATH - l - 1, nullptr))
     {
         core.Trace("Incorrect key \"%s\" in animation file %s.ani", ASKW_JFA_FILE, animationName);
-        delete ani;
         return -1;
     }
     // Animation descriptor
@@ -200,13 +199,12 @@ long AnimationServiceImp::LoadAnimation(const char *animationName)
     // read the bones
     if (!LoadAN(path, info))
     {
-        delete ani;
         delete info;
         core.Trace("Animation file %s is damaged!", path);
         return -1;
     }
     // Global user data
-    LoadUserData(ani, nullptr, info->GetUserData(), animationName);
+    LoadUserData(ani.get(), nullptr, info->GetUserData(), animationName);
     // read actions
     for (auto isHaveSection = ani->GetSectionName(path, 63); isHaveSection;
          isHaveSection = ani->GetSectionNameNext(path, 63))
@@ -400,10 +398,8 @@ long AnimationServiceImp::LoadAnimation(const char *animationName)
         // Bones
 
         // User data
-        LoadUserData(ani, path, aci->GetUserData(), animationName);
+        LoadUserData(ani.get(), path, aci->GetUserData(), animationName);
     }
-    // Close the ini file
-    delete ani;
     // Looking for a free pointer
     long i;
     for (i = 0; i < ainfo.size(); i++)
@@ -421,7 +417,7 @@ long AnimationServiceImp::LoadAnimation(const char *animationName)
 void AnimationServiceImp::LoadUserData(INIFILE *ani, const char *sectionName,
                                        std::unordered_map<std::string, std::string> &data, const char *animationName)
 {
-    if (ani->ReadString((char *)sectionName, ASKW_DATA, key, 1023, ""))
+    if (ani->ReadString(sectionName, ASKW_DATA, key, 1023, ""))
     {
         do
         {
@@ -516,8 +512,8 @@ bool AnimationServiceImp::LoadAN(const char *fname, AnimationInfo *info)
         }
         // Reading the file header
         ANFILE::HEADER header;
-        if (!fio->_ReadFile(fileS, &header, sizeof(ANFILE::HEADER)) || header.nFrames <= 0 ||
-            header.nJoints <= 0 || header.framesPerSec < 0.0f || header.framesPerSec > 1000.0f)
+        if (!fio->_ReadFile(fileS, &header, sizeof(ANFILE::HEADER)) || header.nFrames <= 0 || header.nJoints <= 0 ||
+            header.framesPerSec < 0.0f || header.framesPerSec > 1000.0f)
         {
             core.Trace("Incorrect file header in animation file: %s", fname);
             fio->_CloseFile(fileS);

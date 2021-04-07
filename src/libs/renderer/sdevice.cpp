@@ -355,8 +355,7 @@ bool DX9RENDER::Init()
     d3d = nullptr;
     d3d9 = nullptr;
 
-    INIFILE *ini;
-    ini = fio->OpenIniFile(core.EngineIniFileName());
+    auto ini = fio->OpenIniFile(core.EngineIniFileName());
     if (ini)
     {
         // bPostProcessEnabled = ini->GetLong(0, "PostProcess", 0) == 1;
@@ -453,8 +452,6 @@ bool DX9RENDER::Init()
         const long iCapBuffers = ini->GetLong("VideoCapture", "Buffers", 0);
         for (long i = 0; i < iCapBuffers; i++)
             aCaptureBuffers.push_back(new char[sizeof(uint32_t) * screen_size.x * screen_size.y]);
-
-        delete ini;
 
         if (bWindow)
         {
