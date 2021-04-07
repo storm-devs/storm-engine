@@ -1,3 +1,4 @@
+add_subdirectory(util)
 add_subdirectory(animals)
 add_subdirectory(animation)
 add_subdirectory(ballsplash)
