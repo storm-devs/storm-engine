@@ -123,8 +123,60 @@ class rdf_vertex0(Structure):
         ('norm', c_vector),
         ('color', c_long),
         ('tu0', c_float),
-        ('tv0', c_float)
+        ('tv0', c_float),
     ]
+
+
+class rdf_vertex1(Structure):
+    _fields_ = [
+        ('pos', c_vector),
+        ('norm', c_vector),
+        ('color', c_long),
+        ('tu0', c_float),
+        ('tv0', c_float),
+        ('tu1', c_float),
+        ('tv1', c_float),
+    ]
+
+
+class rdf_vertex2(Structure):
+    _fields_ = [
+        ('pos', c_vector),
+        ('norm', c_vector),
+        ('color', c_long),
+        ('tu0', c_float),
+        ('tv0', c_float),
+        ('tu1', c_float),
+        ('tv1', c_float),
+        ('tu2', c_float),
+        ('tv2', c_float),
+    ]
+
+
+class rdf_vertex3(Structure):
+    _fields_ = [
+        ('pos', c_vector),
+        ('norm', c_vector),
+        ('color', c_long),
+        ('tu0', c_float),
+        ('tv0', c_float),
+        ('tu1', c_float),
+        ('tv1', c_float),
+        ('tu2', c_float),
+        ('tv2', c_float),
+        ('tu3', c_float),
+        ('tv3', c_float),
+    ]
+
+
+def get_vertex_from_wasted_bytes(bt):
+    structs = {
+        0: rdf_vertex0,
+        8: rdf_vertex1,
+        16: rdf_vertex2,
+        24: rdf_vertex3
+    }
+    return structs.get(bt)
 
 
 class rdf_bsphead(Structure):
@@ -214,10 +266,11 @@ def gm_to_obj(input_name, output_name):
     vertices = []
     for v in range(0, rhead.nvrtbuffs):
         size = getattr(rvb[v], "size")
-        stride = sizeof(rdf_vertex0) + \
-            (rvb[v].type & 3) * 8 + (rvb[v].type >> 2) * 8
+        wasted_bytes = (rvb[v].type & 3) * 8 + (rvb[v].type >> 2) * 8
+        stride = sizeof(get_vertex_from_wasted_bytes(wasted_bytes))
         nverts = int(size/stride)
-        vertices.extend(get_array_of("rdf_vertex0", nverts))
+        vertices.extend(get_array_of(
+            get_vertex_from_wasted_bytes(wasted_bytes).__name__, nverts))
     v_len = len(vertices)
     t_len = len(rtriangles)
 
