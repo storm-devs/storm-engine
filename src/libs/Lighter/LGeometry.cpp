@@ -447,7 +447,7 @@ bool LGeometry::Save()
 {
     // Save the current path
     char *oldPath = new char[4096];
-    fio->_GetCurrentDirectory(4096, oldPath);
+    fio->_GetCurrentDirectory(oldPath);
     char *dir = new char[4096];
     // Saving objects
     bool result = true;
@@ -468,7 +468,7 @@ bool LGeometry::Save()
                 dir[p] = 0;
                 if (_access(dir, 0) == -1)
                 {
-                    if (!fio->_CreateDirectory(dir, nullptr))
+                    if (!fio->_CreateDirectory(dir))
                     {
                         isCont = true;
                         break;

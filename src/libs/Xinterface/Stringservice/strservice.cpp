@@ -1328,7 +1328,7 @@ uint32_t _InterfaceCreateFolder(VS_STACK *pS)
         pcCurPtr++;
     }
     // create self directory
-    const long nSuccess = fio->_CreateDirectory(sFolderName, nullptr);
+    const long nSuccess = fio->_CreateDirectory(sFolderName);
 
     pDat = (VDATA *)pS->Push();
     if (!pDat)

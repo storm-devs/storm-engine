@@ -533,7 +533,7 @@ bool SOURCE_VIEW::OpenSourceFile(const char *_filename)
     }
 
     char DirectoryName[MAX_PATH];
-    fio->_GetCurrentDirectory(sizeof(DirectoryName), DirectoryName);
+    fio->_GetCurrentDirectory(DirectoryName);
 
     strcat_s(DirectoryName, "\\");
     strcat_s(DirectoryName, ProgramDirectory);

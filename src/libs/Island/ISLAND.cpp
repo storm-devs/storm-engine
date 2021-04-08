@@ -442,9 +442,11 @@ void ISLAND::CreateDirectories(char *pDir)
 {
     char sCurDir[256], sTemp[256];
 
-    fio->_GetCurrentDirectory(sizeof(sCurDir), sCurDir);
+    fio->_GetCurrentDirectory(sCurDir);
     if (strlen(sCurDir) && sCurDir[strlen(sCurDir) - 1] != '\\')
+    {
         strcat_s(sCurDir, "\\");
+    }
 
     char *pLast, *pStr;
 
@@ -453,13 +455,15 @@ void ISLAND::CreateDirectories(char *pDir)
     {
         pStr = strchr(pStr, '\\');
         if (!pStr)
+        {
             break;
+        }
         strncpy_s(sTemp, pLast, pStr - pLast);
         sTemp[pStr - pLast] = '\0';
         pLast = ++pStr;
         strcat_s(sCurDir, sTemp);
         strcat_s(sCurDir, "\\");
-        BOOL bOk = fio->_CreateDirectory(sCurDir, nullptr);
+        fio->_CreateDirectory(sCurDir);
     }
 }
 

@@ -90,7 +90,7 @@ class FILE_SERVICE : public VFILE_SERVICE
     std::fstream _CreateFile(const char *filename, std::ios::openmode mode) override;
     void _CloseFile(std::fstream &fileS) override;
     void _SetFilePointer(std::fstream &fileS, std::streamoff off, std::ios::seekdir dir) override;
-    int _DeleteFile(const char *filename) override;
+    bool _DeleteFile(const char *filename) override;
     bool _WriteFile(std::fstream &fileS, const void *s, std::streamsize count) override;
     bool _ReadFile(std::fstream &fileS, void *s, std::streamsize count) override;
     bool _FileOrDirectoryExists(const char *p) override;
@@ -101,14 +101,13 @@ class FILE_SERVICE : public VFILE_SERVICE
     std::time_t _ToTimeT(std::filesystem::file_time_type tp) override;
     std::filesystem::file_time_type _GetLastWriteTime(const char *filename) override;
     void _FlushFileBuffers(std::fstream &fileS) override;
-    uint32_t _GetCurrentDirectory(uint32_t nBufferLength, char *lpBuffer) override;
+    void _GetCurrentDirectory(char *buffer) override;
     std::string _GetExecutableDirectory() override;
     std::uintmax_t _GetFileSize(const char *filename) override;
-    BOOL _SetCurrentDirectory(const char *lpPathName) override;
-    BOOL _CreateDirectory(const char *lpPathName, LPSECURITY_ATTRIBUTES lpSecurityAttributes) override;
-    std::uintmax_t _RemoveDirectory(const char *p) override;
-    BOOL _SetFileAttributes(const char *lpFileName, uint32_t dwFileAttributes) override;
-    BOOL LoadFile(const char *file_name, char **ppBuffer, uint32_t *dwSize) override;
+    void _SetCurrentDirectory(const char *pathName) override;
+    bool _CreateDirectory(const char *pathName) override;
+    std::uintmax_t _RemoveDirectory(const char *pathName) override;
+    bool LoadFile(const char *file_name, char **ppBuffer, uint32_t *dwSize) override;
     // ini files section
     void Close();
     std::unique_ptr<INIFILE> CreateIniFile(const char *file_name, bool fail_if_exist) override;

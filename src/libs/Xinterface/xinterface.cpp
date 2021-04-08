@@ -2877,7 +2877,7 @@ char *XINTERFACE::SaveFileFind(long saveNum, char *buffer, size_t bufSize, long 
         char *sSavePath = AttributesPointer->GetAttribute("SavePath");
         if (sSavePath != nullptr)
         {
-            fio->_CreateDirectory(sSavePath, nullptr);
+            fio->_CreateDirectory(sSavePath);
         }
 
         // start save file finding
@@ -3421,7 +3421,7 @@ int XINTERFACE::LoadIsExist()
     char *sSavePath = AttributesPointer->GetAttribute("SavePath");
     if (sSavePath != nullptr)
     {
-        fio->_CreateDirectory(sSavePath, nullptr);
+        fio->_CreateDirectory(sSavePath);
     }
 
     bool bFindFile = false;
@@ -3468,7 +3468,7 @@ void XINTERFACE::PrecreateDirForFile(const char *pcFullFileName)
             break;
         }
     if (n > 0)
-        fio->_CreateDirectory(path, nullptr);
+        fio->_CreateDirectory(path);
 }
 
 // controls Container

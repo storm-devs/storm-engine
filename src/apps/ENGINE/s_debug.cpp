@@ -557,7 +557,7 @@ uint32_t S_DEBUG::GetLineStatus(const char *_pFileName, uint32_t _linecode)
 bool S_DEBUG::BrowseFile(char *buffer, const char *filter)
 {
     char DirectoryName[MAX_PATH];
-    fio->_GetCurrentDirectory(sizeof(DirectoryName), DirectoryName);
+    fio->_GetCurrentDirectory(DirectoryName);
     wchar_t FilenameW[MAX_PATH];
     OPENFILENAME ofn;
     FilenameW[0] = 0;
@@ -592,7 +592,7 @@ bool S_DEBUG::BrowseFile(char *buffer, const char *filter)
 bool S_DEBUG::BrowseFileWP(char *buffer, const char *filter)
 {
     char DirectoryName[MAX_PATH];
-    fio->_GetCurrentDirectory(sizeof(DirectoryName), DirectoryName);
+    fio->_GetCurrentDirectory(DirectoryName);
     wchar_t FilenameW[MAX_PATH];
     OPENFILENAME ofn;
     FilenameW[0] = 0;
