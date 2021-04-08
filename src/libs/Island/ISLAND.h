@@ -111,9 +111,10 @@ class ISLAND : public ISLAND_BASE
     void AddLocationModel(entid_t eid, char *pIDStr, char *pStr);
 
     // debug
-    void DoZapSuperGenerator();
+    // dead code
+    /*void DoZapSuperGenerator();
     void DoZapSuperGeneratorInnerDecodeFiles(const char *sub_dir, const char *mask);
-    bool DoZapSuperGeneratorDecodeFile(const char *sname);
+    bool DoZapSuperGeneratorDecodeFile(const char *sname);*/
 
   public:
     ISLAND();

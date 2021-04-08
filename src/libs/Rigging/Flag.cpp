@@ -7,6 +7,8 @@
 #include "ship_base.h"
 #include "vfile_service.h"
 
+static const char *RIGGING_INI_FILE = "resource\\ini\\rigging.ini";
+
 FLAG::FLAG()
 {
     bUse = false;
@@ -84,14 +86,10 @@ void FLAG::Execute(uint32_t Delta_Time)
     {
         // ====================================================
         // If the ini-file has been changed, read the info from it
-        WIN32_FIND_DATA wfd;
-        auto *const h = fio->_FindFirstFile("resource\\ini\\rigging.ini", &wfd);
-        if (INVALID_HANDLE_VALUE != h)
+        if (fio->_FileOrDirectoryExists(RIGGING_INI_FILE))
         {
-            auto ft_new = wfd.ftLastWriteTime;
-            fio->_FindClose(h);
-
-            if (CompareFileTime(&ft_old, &ft_new) != 0)
+            auto ft_new = fio->_GetLastWriteTime(RIGGING_INI_FILE);
+            if (ft_old != ft_new)
             {
                 LoadIni();
             }
@@ -568,18 +566,17 @@ void FLAG::LoadIni()
     char section[256];
     char param[256];
 
-    WIN32_FIND_DATA wfd;
-    auto *const h = fio->_FindFirstFile("resource\\ini\\rigging.ini", &wfd);
-    if (INVALID_HANDLE_VALUE != h)
+    if (fio->_FileOrDirectoryExists(RIGGING_INI_FILE))
     {
-        ft_old = wfd.ftLastWriteTime;
-        fio->_FindClose(h);
+        ft_old = fio->_GetLastWriteTime(RIGGING_INI_FILE);
     }
     auto ini = fio->OpenIniFile("resource\\ini\\rigging.ini");
     if (!ini)
+    {
         throw std::exception("rigging.ini file not found!");
+    }
 
-    sprintf_s(section, "FLAGS");
+    sprintf(section, "FLAGS");
 
     auto texChange = false;
     int tmp;

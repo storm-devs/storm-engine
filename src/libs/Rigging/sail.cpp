@@ -14,6 +14,8 @@
 
 #define WIND_SPEED_MAX 12.f
 
+static const char *RIGGING_INI_FILE = "resource\\ini\\rigging.ini";
+
 void sailPrint(VDX9RENDER *rs, const CVECTOR &pos3D, float rad, long line, const char *format, ...);
 int traceSail = -1;
 long g_iBallOwnerIdx = -1;
@@ -319,14 +321,10 @@ void SAIL::Execute(uint32_t Delta_Time)
     {
         // ====================================================
         // If the ini-file has been changed, read the info from it
-        WIN32_FIND_DATA wfd;
-        auto *h = fio->_FindFirstFile("resource\\ini\\rigging.ini", &wfd);
-        if (INVALID_HANDLE_VALUE != h)
+        if (fio->_FileOrDirectoryExists(RIGGING_INI_FILE))
         {
-            auto ft_new = wfd.ftLastWriteTime;
-            fio->_FindClose(h);
-
-            if (CompareFileTime(&ft_old, &ft_new) != 0)
+            auto ft_new = fio->_GetLastWriteTime(RIGGING_INI_FILE);
+            if (ft_old != ft_new)
             {
                 int oldWindQnt = WINDVECTOR_QUANTITY;
                 LoadSailIni();
@@ -1346,23 +1344,24 @@ void SAIL::LoadSailIni()
     // GUARD(SAIL::LoadSailIni());
     char section[256], param[256];
 
-    WIN32_FIND_DATA wfd;
-    const HANDLE h = fio->_FindFirstFile("resource\\ini\\rigging.ini", &wfd);
-    if (INVALID_HANDLE_VALUE != h)
+    if (fio->_FileOrDirectoryExists(RIGGING_INI_FILE))
     {
-        ft_old = wfd.ftLastWriteTime;
-        fio->_FindClose(h);
+        ft_old = fio->_GetLastWriteTime(RIGGING_INI_FILE);
     }
     auto ini = fio->OpenIniFile("resource\\ini\\rigging.ini");
     if (!ini)
+    {
         throw std::exception("rigging.ini file not found!");
+    }
 
-    sprintf_s(section, "SAILS");
+    sprintf(section, "SAILS");
 
     // load texture names
     texQuantity = static_cast<int>(ini->GetLong(section, "TextureCount", 1));
     if (texQuantity == 0)
+    {
         texQuantity = 1;
+    }
     texNumCommon = static_cast<float>(ini->GetLong(section, "TexNumCommon", 0)) / static_cast<float>(texQuantity);
     texNumEnglish = static_cast<float>(ini->GetLong(section, "TexNumEnglish", 0)) / static_cast<float>(texQuantity);
     texNumTreangle = static_cast<float>(ini->GetLong(section, "TexNumTreangle", 0)) / static_cast<float>(texQuantity);

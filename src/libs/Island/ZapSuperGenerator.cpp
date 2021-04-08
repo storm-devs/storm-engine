@@ -2,7 +2,8 @@
 #include "tga.h"
 #include "vfile_service.h"
 
-bool ISLAND::DoZapSuperGeneratorDecodeFile(const char *sname)
+// dead code
+/*bool ISLAND::DoZapSuperGeneratorDecodeFile(const char *sname)
 {
     auto fileS = fio->_CreateFile(sname, std::ios::binary | std::ios::in);
     if (fileS.is_open())
@@ -66,4 +67,4 @@ void ISLAND::DoZapSuperGeneratorInnerDecodeFiles(const char *sub_dir, const char
 void ISLAND::DoZapSuperGenerator()
 {
     DoZapSuperGeneratorInnerDecodeFiles(nullptr, "*.tga");
-}
+}*/

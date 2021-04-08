@@ -3,8 +3,8 @@
 #include "storm_assert.h"
 #include "utf8.h"
 
+#include <storm/string_compare.hpp>
 #include <exception>
-#include <filesystem>
 #include <string>
 
 #define COMMENT ';'
@@ -92,22 +92,79 @@ bool FILE_SERVICE::_ReadFile(std::fstream &fileS, void *s, std::streamsize count
     }
 }
 
-HANDLE FILE_SERVICE::_FindFirstFile(const char *lpFileName, LPWIN32_FIND_DATA lpFindFileData)
+bool FILE_SERVICE::_FileOrDirectoryExists(const char *p)
 {
-    HANDLE hFile;
-    std::wstring filePathW = utf8::ConvertUtf8ToWide(lpFileName);
-    hFile = FindFirstFile(filePathW.c_str(), lpFindFileData);
-    return hFile;
+    std::filesystem::path path = std::filesystem::u8path(p);
+    return std::filesystem::exists(path);
 }
 
-BOOL FILE_SERVICE::_FindNextFile(HANDLE hFindFile, LPWIN32_FIND_DATA lpFindFileData)
+std::vector<std::string> FILE_SERVICE::_GetPathsOrFilenamesByMask(const char *sourcePath, const char *mask,
+                                                                  bool getPaths, bool onlyDirs, bool onlyFiles)
 {
-    return FindNextFile(hFindFile, lpFindFileData);
+    std::vector<std::string> result;
+
+    const auto fsPaths = _GetFsPathsByMask(sourcePath, mask, getPaths, onlyDirs, onlyFiles);
+    for (std::filesystem::path curPath : fsPaths)
+    {
+        result.push_back(curPath.string());
+    }
+
+    return result;
 }
 
-BOOL FILE_SERVICE::_FindClose(HANDLE hFindFile)
+std::vector<std::filesystem::path> FILE_SERVICE::_GetFsPathsByMask(const char *sourcePath, const char *mask,
+                                                                   bool getPaths, bool onlyDirs, bool onlyFiles)
 {
-    return FindClose(hFindFile);
+    std::vector<std::filesystem::path> result;
+
+    std::filesystem::path srcPath;
+    if (sourcePath == nullptr || sourcePath == "")
+    {
+        srcPath = std::filesystem::current_path();
+    }
+    else
+    {
+        srcPath = std::filesystem::u8path(sourcePath);
+    }
+
+    std::filesystem::path curPath;
+    for (auto &dirEntry : std::filesystem::directory_iterator(srcPath))
+    {
+        bool thisIsDir = dirEntry.is_directory();
+        if ((onlyFiles && thisIsDir) || (onlyDirs && !thisIsDir))
+        {
+            continue;
+        }
+        curPath = dirEntry.path();
+        if (storm::wildicmp(mask, curPath.filename().string().c_str()))
+        {
+            if (getPaths)
+            {
+                result.push_back(curPath);
+            }
+            else
+            {
+                result.push_back(curPath.filename());
+            }
+        }
+    }
+
+    return result;
+}
+
+std::time_t FILE_SERVICE::_ToTimeT(std::filesystem::file_time_type tp)
+{
+    using namespace std::chrono;
+    auto sctp = time_point_cast<system_clock::duration>(tp - std::filesystem::file_time_type::clock::now() +
+                                                        system_clock::now());
+    return system_clock::to_time_t(sctp);
+}
+
+std::filesystem::file_time_type FILE_SERVICE::_GetLastWriteTime(const char *filename)
+{
+    std::filesystem::path path = std::filesystem::u8path(filename);
+    return std::filesystem::last_write_time(path);
+
 }
 
 void FILE_SERVICE::_FlushFileBuffers(std::fstream &fileS)
@@ -156,10 +213,10 @@ BOOL FILE_SERVICE::_CreateDirectory(const char *lpPathName, LPSECURITY_ATTRIBUTE
     return CreateDirectory(PathNameW.c_str(), lpSecurityAttributes);
 }
 
-BOOL FILE_SERVICE::_RemoveDirectory(const char *lpPathName)
+std::uintmax_t FILE_SERVICE::_RemoveDirectory(const char *p)
 {
-    std::wstring PathNameW = utf8::ConvertUtf8ToWide(lpPathName);
-    return RemoveDirectory(PathNameW.c_str());
+    std::filesystem::path path = std::filesystem::u8path(p);
+    return std::filesystem::remove_all(path);
 }
 
 BOOL FILE_SERVICE::_SetFileAttributes(const char *lpFileName, uint32_t dwFileAttributes)

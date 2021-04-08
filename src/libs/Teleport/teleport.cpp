@@ -281,31 +281,25 @@ bool FINDFILESINTODIRECTORY::Init()
     {
         auto *const dirName = AttributesPointer->GetAttribute("dir");
         auto *const maskName = AttributesPointer->GetAttribute("mask");
-        char fullName[512];
-        fullName[0] = 0;
-        if (dirName)
-            sprintf_s(fullName, "%s\\", dirName);
+        const char *curMask;
         if (maskName)
-            strcat_s(fullName, maskName);
+        {
+            curMask = maskName;
+        }
         else
-            strcat_s(fullName, "*.*");
-        WIN32_FIND_DATA finddat;
-        auto *const hdl = fio->_FindFirstFile(fullName, &finddat);
+        {
+            curMask = "*.*";
+        }
+        auto file_idx = 0;
         auto *pA = AttributesPointer->CreateSubAClass(AttributesPointer, "filelist");
-        for (auto file_idx = 0; hdl != INVALID_HANDLE_VALUE; file_idx++)
+        const auto vFilenames = fio->_GetPathsOrFilenamesByMask(dirName, curMask, false);
+        for (std::string filename : vFilenames)
         {
             char sname[32];
-            sprintf_s(sname, "id%d", file_idx);
-            if (finddat.cFileName)
-            {
-                std::string FileName = utf8::ConvertWideToUtf8(finddat.cFileName);
-                pA->SetAttribute(sname, FileName.c_str());
-            }
-            if (!fio->_FindNextFile(hdl, &finddat))
-                break;
+            sprintf(sname, "id%d", file_idx);
+            pA->SetAttribute(sname, filename.c_str());
+            file_idx++;
         }
-        if (hdl != INVALID_HANDLE_VALUE)
-            fio->_FindClose(hdl);
         return true;
     }
     core.Trace("Attributes Pointer into class FINDFILESINTODIRECTORY = NULL");

@@ -5,6 +5,8 @@
 #include "matrix.h"
 #include "model.h"
 
+#include <filesystem>
+
 #define FLAGLXVERTEX_FORMAT (D3DFVF_XYZ | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2)
 
 struct FLAGLXVERTEX
@@ -57,7 +59,7 @@ class FLAG : public Entity
     };
 
     WIND globalWind;
-    FILETIME ft_old;
+    std::filesystem::file_time_type ft_old;
 
   public:
     FLAG();
