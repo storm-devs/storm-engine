@@ -7,26 +7,38 @@ Storm Engine has been initially developed by studio Akella for the game [Sea Dog
 
 This knowledge base will eventually cover most aspects of the engine: engine, currently available tools, and modding. You will also find here some trivia and additional notes.
 
+For the time being, this knowledge base is only maintained in English language.
+
 ---
 
 ## Index
 
+### Repository Guidelines
+
+* Style Guide
+* Contributing
+* Etc.
+
 ### Engine Architecture
 
-* Overview
+* Source Overview
+* [Scripting System Overview](kb/0002-scripting-overview.md)
+
+### Class Reference
+
+* File by file, class by class, method by method
 
 ---
 ### Tools & Plugins
 
 Modding Tool
-Animation View
-Model View
-Particles Editor
-Scripts Hider
-Texture Converter
-Walk Patcher
-
-Maya Exporter
+* Animation View
+* Model View
+* Particles Editor
+* Scripts Hider
+* Texture Converter
+* Walk Patcher
+* Maya Exporter
 
 ---
 ### Modding
@@ -42,5 +54,7 @@ Maya Exporter
 ![Storm Engine Logo](media/SE_logo_ship.jpg)
 
 ---
+
+_Want to contribute to this documentation portal? Feel free to grab the [list of available sources](work/sources_list.md) and start porting them using the [article template](work/0000-kb-template.md)!_
 
 | [Home](index.md) | [Site Map](site-map.md) | 

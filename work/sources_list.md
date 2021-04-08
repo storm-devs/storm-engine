@@ -15,7 +15,7 @@ Articles in Russian should be translated to English.
 
 [Link](https://github.com/storm-devs/sd-teho-public/tree/steamapi-isolate/docs)
 
-* [ ] [Scripting System Overview](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/описание%20скриптов.txt)
+* [ ] [Scripting System Overview](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/описание%20скриптов.txt) (used in [0002](../kb/0002-scripting-overview.md))
 * [ ] [Animation System](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/ani.txt)
 * [ ] [Array Parsing](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/array.txt)
 * [ ] [Foam Editing from In-game](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/coastfoam.txt)
