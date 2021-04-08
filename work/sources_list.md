@@ -1,13 +1,12 @@
 # List of Sources to Work With
 
-Below you will find the list of useful sources I have found in the task and elsewhere. Some of these will require little to no work to bring over to the portal, others will need more effort.
+Below you will find the list of useful sources found in the [task](https://github.com/storm-devs/storm-engine/projects/4#card-58081815) and elsewhere. Some of these will require little to no work to bring over to the portal, others will need more effort.
 
-These are categorized by the portal where the information is contained and NOT by category (although I did try to sort them roughly). Some sources might be agglomerated into one article, others could potentially be used in multiple places.
+These are categorized by the portal where the information is contained and NOT by category (although I did try to sort them roughly). Some sources might be agglomerated into one article, others could potentially be used in multiple places. The sources on GitHub (TEHO repo and Storm repo docs) should be used as much as possible since they will be deleted after the migration.
 
-Once you consider the source extinguished, please mark it with the check `[x]`. Ideally, by the end of the project all these sources should be used (or at the very least consulted).
+Once you consider the source extinguished, please mark it with the check `[x]`. Ideally, by the end of the project all these sources should be used (or at the very least consulted). In case of the `docs` folders, the extinguished source may be deleted from this list.
 
 Articles in Russian should be translated to English.
-
 
 ## Russian
 

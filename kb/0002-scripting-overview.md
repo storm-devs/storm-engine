@@ -5,7 +5,7 @@ _[back to Index](../index.md)_
 
 **Related articles**: TBD
 
-Upon startup, the game (`ENGINE.exe`) will attempt to load any DLLs located in the `/modules/` directory. While these may contain any and all game logic, the game also reads non-compiled code located in `program` directory. These "scripts" are written in C using the game's API, and compiled at runtime using the built-in compiler. 
+Upon startup, the game (`ENGINE.exe`) will attempt to load and compile the game logic located in `program` directory. These "scripts" are written in C using the game's API, and compiled at runtime using the built-in compiler. 
 
 ## `Program/` File Structure
 
@@ -17,6 +17,7 @@ The following list is sorted alphabetically and is based on the latest build of 
 
 * `program\` - shared and startup code.
 * `program\battle_interface\` - UI logic on land and sea, quick travel.
+* `program\BIManager\` - Battle Interface manager.
 * `program\cannons\` - cannon generation and game logic.
 * `program\characters\` - NPC generation and game logic: faces, names, spawn locations, etc.
 * `program\colonies\` - definition of each colony default values.

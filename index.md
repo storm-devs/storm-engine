@@ -7,7 +7,7 @@ Storm Engine has been initially developed by studio Akella for the game [Sea Dog
 
 This knowledge base will eventually cover most aspects of the engine: engine, currently available tools, and modding. You will also find here some trivia and additional notes.
 
-For the time being, this knowledge base is only maintained in English language.
+This knowledge base is maintained in English language.
 
 ---
 
