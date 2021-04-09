@@ -19,7 +19,6 @@ Articles in Russian should be translated to English.
 * [ ] [Array Parsing](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/array.txt)
 * [ ] [Foam Editing from In-game](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/coastfoam.txt)
 * [ ] [Placing Sailors Points](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/sailorpoints.txt)
-* [x] [Evolution of the Storm Engine](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/storm_evolution.txt) (used in [0001](../kb/0001-history.md))
 * [ ] [INI files for the UI](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/subscribe.txt)
 * [ ] [NPC Attributes](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/атрибуты%20НПС.txt)
 * [ ] [Location Generation](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/potc/location_init.txt) ([tavern location insights](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/potc/tavern_locators.txt))
