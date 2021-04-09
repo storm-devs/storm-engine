@@ -48,8 +48,6 @@ class INIFILE_T : public INIFILE
     // return double value of key in pointed section if section and key exist, if not - return def_value
     double GetDouble(const char *section_name, const char *key_name, double def_val) override;
 
-    bool GetLongNext(const char *section_name, const char *key_name, long *val) override;
-
     float GetFloat(const char *section_name, const char *key_name) override;
     float GetFloat(const char *section_name, const char *key_name, float def_val) override;
     bool GetFloatNext(const char *section_name, const char *key_name, float *val) override;

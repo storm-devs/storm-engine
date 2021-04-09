@@ -92,9 +92,6 @@ class INIFILE
     virtual long GetLong(const char *section_name, const char *key_name) = 0;
     // return long value of key in pointed section if section and key exist, if not - return def_value
     virtual long GetLong(const char *section_name, const char *key_name, long def_val) = 0;
-    // continue scanning for key in section, fill val with long value of key if it found and return true
-    // if not - return false
-    virtual bool GetLongNext(const char *section_name, const char *key_name, long *val) = 0;
 
     // return double value of key in pointed section if section and key exist, throw EXS object otherwise
     virtual double GetDouble(const char *section_name, const char *key_name) = 0;
