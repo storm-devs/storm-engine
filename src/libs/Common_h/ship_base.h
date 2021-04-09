@@ -85,4 +85,3 @@ class SHIP_BASE : public VAI_OBJBASE
 
     virtual void SetFixedSpeed(bool bSetFixed, float fFixedSpeed) = 0;
 };
-

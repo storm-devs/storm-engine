@@ -85,4 +85,3 @@ class FINDDIALOGNODES : public Entity
     {
     }
 };
-

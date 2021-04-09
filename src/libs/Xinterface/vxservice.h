@@ -36,4 +36,3 @@ class VXSERVICE
 
     virtual void ReleaseAll() = 0;
 };
-

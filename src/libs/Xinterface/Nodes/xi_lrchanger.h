@@ -54,4 +54,3 @@ class CXI_LRCHANGER : public CINODE
 
     bool m_bLeftPress;
 };
-

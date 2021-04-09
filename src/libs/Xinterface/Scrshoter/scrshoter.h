@@ -51,4 +51,3 @@ class SCRSHOTER : public Entity
     IDirect3DTexture9 *m_pScrShotTex;
     SAVETEXTURES *m_list;
 };
-

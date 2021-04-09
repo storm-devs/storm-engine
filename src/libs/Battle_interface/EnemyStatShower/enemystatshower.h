@@ -43,4 +43,3 @@ class EnemyStatShower : public Entity
     entid_t m_eidChrEID;
     MODEL *m_pModel;
 };
-

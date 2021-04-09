@@ -134,4 +134,3 @@ class SUNGLOW : public Entity
 
     float GetSunFadeoutFactor(const CVECTOR &vSunPos, float fSunSize);
 };
-

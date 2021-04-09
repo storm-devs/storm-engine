@@ -95,7 +95,7 @@ class FILE_SERVICE : public VFILE_SERVICE
     bool _ReadFile(std::fstream &fileS, void *s, std::streamsize count) override;
     bool _FileOrDirectoryExists(const char *p) override;
     std::vector<std::string> _GetPathsOrFilenamesByMask(const char *sourcePath, const char *mask, bool getPaths,
-                                                  bool onlyDirs = false, bool onlyFiles = true) override;
+                                                        bool onlyDirs = false, bool onlyFiles = true) override;
     std::vector<std::filesystem::path> _GetFsPathsByMask(const char *sourcePath, const char *mask, bool getPaths,
                                                          bool onlyDirs = false, bool onlyFiles = true) override;
     std::time_t _ToTimeT(std::filesystem::file_time_type tp) override;

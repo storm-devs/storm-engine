@@ -203,4 +203,3 @@ class SAIL : public SAIL_BASE
 
     long m_nLastUpdate;
 };
-

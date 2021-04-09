@@ -44,4 +44,3 @@ class WdmCameraStdCtrl : public WdmCamera
     float mdx, mdy, mzoom;
     bool lastFreeMode;
 };
-

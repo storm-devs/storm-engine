@@ -357,4 +357,3 @@ class CINODE
 
     bool m_bMakeActionInDeclick;
 };
-

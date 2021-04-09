@@ -196,4 +196,3 @@ inline bool Sphere::Intersection(const Vector &orig, const Vector &normdir, cons
 }
 
 #pragma pack(pop)
-

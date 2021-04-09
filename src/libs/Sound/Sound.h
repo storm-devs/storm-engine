@@ -50,4 +50,3 @@ class SOUND : public Entity
     VSoundService *soundService;
     VDX9RENDER *renderer;
 };
-

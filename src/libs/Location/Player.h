@@ -80,4 +80,3 @@ class Player : public NPCharacter
     float kSMReload;
     LocationCamera *locCam;
 };
-

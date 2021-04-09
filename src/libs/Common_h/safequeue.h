@@ -99,4 +99,3 @@ template <class Type> class SafeQueue
         DeleteCriticalSection(&lock);
     };
 };
-

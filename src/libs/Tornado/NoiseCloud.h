@@ -58,4 +58,3 @@ class NoiseCloud
     Rect rect[64];
     Vertex buf[6 * 64];
 };
-

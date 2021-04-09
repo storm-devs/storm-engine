@@ -162,4 +162,3 @@ class DATA : public VDATA
 
     void Release();
 };
-

@@ -33,4 +33,3 @@ class IVBufferManager
 
     std::vector<bool> used_;
 };
-

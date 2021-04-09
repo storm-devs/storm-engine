@@ -161,4 +161,3 @@ inline float LocatorArray::GetLocatorRadius(long locIndex)
         return radius;
     return locator[locIndex].radius;
 }
-

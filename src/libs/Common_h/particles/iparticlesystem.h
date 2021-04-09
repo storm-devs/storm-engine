@@ -42,4 +42,3 @@ class IParticleSystem
 
     virtual void Stop() = 0;
 };
-

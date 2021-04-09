@@ -19,4 +19,3 @@ class BIManCommandList : public BICommandList
     long AbilityAdding();
     long AddCancelIcon();
 };
-

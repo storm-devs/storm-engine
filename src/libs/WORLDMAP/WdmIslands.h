@@ -181,4 +181,3 @@ inline CVECTOR WdmIslands::Norm2D(const CVECTOR &v)
     }
     return ret;
 }
-

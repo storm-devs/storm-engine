@@ -75,4 +75,3 @@ class SCRIPT_INTERFACE_FUNCTIONS : public SCRIPT_LIBRIARY
     ~SCRIPT_INTERFACE_FUNCTIONS(){};
     bool Init() override;
 };
-

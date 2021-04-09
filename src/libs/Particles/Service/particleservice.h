@@ -44,4 +44,3 @@ class ParticleService : public IParticleService
 
     IParticleManager *DefManager() override;
 };
-

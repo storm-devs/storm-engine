@@ -69,4 +69,3 @@ class TSeagulls
     CVECTOR cameraPos, cameraAng;
     float startY;
 };
-

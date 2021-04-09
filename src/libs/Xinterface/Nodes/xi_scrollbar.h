@@ -91,4 +91,3 @@ class CXI_SCROLLBAR : public CINODE
         FXYPOINT OldMousePoint;
     } m_MouseClickParam;
 };
-

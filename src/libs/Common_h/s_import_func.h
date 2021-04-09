@@ -32,4 +32,3 @@ struct IFUNCINFO
     const char *pDeclFileName;
     uint32_t nDeclLine;
 };
-

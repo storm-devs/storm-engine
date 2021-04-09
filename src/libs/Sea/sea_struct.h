@@ -43,4 +43,3 @@ struct sea_dat
 
     seaspecific_t GF2MX, GF3;
 };
-

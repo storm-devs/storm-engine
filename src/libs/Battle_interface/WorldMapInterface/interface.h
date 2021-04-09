@@ -53,4 +53,3 @@ class WM_INTERFACE : public Entity
 
     bool IsCommandMenuActive() const;
 };
-

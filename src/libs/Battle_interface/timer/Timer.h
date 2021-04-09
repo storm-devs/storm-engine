@@ -50,4 +50,3 @@ class BITimer : public Entity
     IBIImage *m_pBackImage;
     IBIImage *m_pForeImage;
 };
-

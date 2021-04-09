@@ -57,4 +57,3 @@ class CXI_CHANGER : public CINODE
     int m_nClickPlaceNum;
     bool m_bIncreaseChange;
 };
-

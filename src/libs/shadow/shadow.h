@@ -48,4 +48,3 @@ class Shadow : public Entity
     void LostRender();
     void RestoreRender();
 };
-

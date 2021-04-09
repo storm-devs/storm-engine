@@ -65,4 +65,3 @@ class AIShipMoveController
     void Save(CSaveLoad *pSL) const;
     void Load(CSaveLoad *pSL);
 };
-

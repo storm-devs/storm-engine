@@ -77,4 +77,3 @@ class ShipInfoImages
     CVECTOR m_vRightDir;
     float m_fImgScale;
 };
-

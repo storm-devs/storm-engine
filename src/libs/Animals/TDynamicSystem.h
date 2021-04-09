@@ -22,4 +22,3 @@ class TDynamicSystem
     TDynamicObject *deflectors[MAX_DYNAMIC_OBJECTS];
 };
 //--------------------------------------------------------------------
-

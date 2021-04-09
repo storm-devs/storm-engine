@@ -66,4 +66,3 @@ class CXI_BUTTON : public CINODE
     long m_idString;
     int m_dwStrOffset;
 };
-

@@ -23,4 +23,3 @@ struct HEADER
 }; // namespace ANFILE
 
 #pragma pack(pop)
-

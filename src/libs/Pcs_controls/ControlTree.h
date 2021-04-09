@@ -58,4 +58,3 @@ struct ControlTree
 
     std::vector<OutControlInfo> m_aOutControlList;
 };
-

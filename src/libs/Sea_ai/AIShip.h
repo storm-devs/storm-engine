@@ -405,4 +405,3 @@ class AIShipBoat : public AIShip
     AIShipBoat();
     virtual ~AIShipBoat();
 };
-

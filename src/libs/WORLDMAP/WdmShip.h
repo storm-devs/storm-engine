@@ -91,4 +91,3 @@ class WdmShip : public WdmRenderModel
 
     Line lines[8];
 };
-

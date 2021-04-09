@@ -48,4 +48,3 @@ class Lizards : public Entity
     Lizard lizard[8];
     long num;
 };
-

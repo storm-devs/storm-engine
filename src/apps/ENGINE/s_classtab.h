@@ -69,4 +69,3 @@ class S_CLASSTAB
     void InitSystemClasses();
     bool IsClassDataSet(uint32_t class_id);
 };
-

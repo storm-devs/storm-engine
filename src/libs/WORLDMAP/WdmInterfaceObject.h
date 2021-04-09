@@ -63,4 +63,3 @@ class WdmInterfaceObject : public WdmRenderObject
 
   private:
 };
-

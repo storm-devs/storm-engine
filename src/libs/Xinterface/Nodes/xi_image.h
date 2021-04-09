@@ -89,4 +89,3 @@ class CXI_IMAGE
     void UpdateTexture();
     void UpdatePosition();
 };
-

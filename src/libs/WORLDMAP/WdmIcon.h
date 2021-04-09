@@ -45,4 +45,3 @@ class WdmIcon : public WdmInterfaceObject
     float skipAlpha;
     float stormAlpha;
 };
-

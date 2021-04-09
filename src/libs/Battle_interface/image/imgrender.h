@@ -61,4 +61,3 @@ inline void BIImageRender::TranslateBasePosToRealPos(float fXBase, float fYBase,
     fXReal = (m_fHOffset + fXBase) * m_fHScale;
     fYReal = (m_fVOffset + fYBase) * m_fVScale;
 }
-

@@ -34,4 +34,3 @@ class PathTracks
     Point *point;
     long numPoints;
 };
-

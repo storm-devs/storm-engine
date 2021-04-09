@@ -176,4 +176,3 @@ class Sailors : public Entity
 
     void DeleteShip(int i);
 };
-

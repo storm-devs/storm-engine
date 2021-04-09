@@ -165,4 +165,3 @@ class FLAG : public Entity
     bool bYesDeleted;
     int wFlagLast;
 };
-

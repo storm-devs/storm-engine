@@ -81,4 +81,3 @@ class S_VARTAB
     bool ArraySizeChanged(uint32_t nIndex, uint32_t nNewSize);
     void UpdateHashTable(uint32_t code, uint32_t hash, bool in);
 };
-

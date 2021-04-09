@@ -33,4 +33,3 @@ class BREAKPOINTS_TABLE
     };
     void UpdateProjectFile();
 };
-

@@ -52,4 +52,3 @@ class SHIPPOINTER : public Entity
 
     VAI_OBJBASE *m_pShip;
 };
-

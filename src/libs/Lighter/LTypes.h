@@ -95,4 +95,3 @@ struct OctFndVerts
     Vertex *v; // Vertex
     float r2;  // Squared distance
 };
-

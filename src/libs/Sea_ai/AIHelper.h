@@ -70,4 +70,3 @@ class AIHelper
 };
 
 extern AIHelper Helper;
-

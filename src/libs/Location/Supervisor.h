@@ -89,4 +89,3 @@ class Supervisor
     bool isDelete;
     Character *player;
 };
-

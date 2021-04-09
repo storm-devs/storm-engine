@@ -41,4 +41,3 @@ class TButterflies
     long yDefineTime;
     long texture;
 };
-

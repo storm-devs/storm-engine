@@ -150,4 +150,3 @@ class ROPE : public ROPE_BASE
     uint64_t execute_tm;
     uint64_t realize_tm;
 };
-

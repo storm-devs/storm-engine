@@ -59,4 +59,3 @@ class CXI_QUESTTEXTS : public CINODE
     STRING_DESCRIBER *m_listCur;
     int m_nAllTextStrings;
 };
-

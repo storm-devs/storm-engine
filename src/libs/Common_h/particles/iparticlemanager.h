@@ -79,4 +79,3 @@ class IParticleManager
 
     virtual void OpenDefaultProject() = 0;
 };
-

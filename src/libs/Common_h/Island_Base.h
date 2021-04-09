@@ -21,4 +21,3 @@ class ISLAND_BASE : public CANNON_TRACE_BASE
 
     virtual float GetCurrentImmersion() = 0;
 };
-

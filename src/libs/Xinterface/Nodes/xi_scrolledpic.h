@@ -52,4 +52,3 @@ class CXI_SCROLLEDPICTURE : public CXI_PICTURE
     std::vector<FXYPOINT> m_aScale;
     std::vector<BuildinImage> m_aImg;
 };
-

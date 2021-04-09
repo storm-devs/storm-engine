@@ -3,8 +3,8 @@
 #include "storm_assert.h"
 #include "utf8.h"
 
-#include <storm/string_compare.hpp>
 #include <exception>
+#include <storm/string_compare.hpp>
 #include <string>
 
 #define COMMENT ';'
@@ -164,7 +164,6 @@ std::filesystem::file_time_type FILE_SERVICE::_GetLastWriteTime(const char *file
 {
     std::filesystem::path path = std::filesystem::u8path(filename);
     return std::filesystem::last_write_time(path);
-
 }
 
 void FILE_SERVICE::_FlushFileBuffers(std::fstream &fileS)

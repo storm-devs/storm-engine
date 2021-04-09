@@ -222,4 +222,3 @@ class Grass : public Entity
     // boal grass parameters
     long isGrassLightsOn;
 };
-

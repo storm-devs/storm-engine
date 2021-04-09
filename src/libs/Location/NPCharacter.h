@@ -231,4 +231,3 @@ inline bool NPCharacter::PrTest(float probability)
     const auto r = rand() * (1.0f / RAND_MAX);
     return r < probability;
 }
-

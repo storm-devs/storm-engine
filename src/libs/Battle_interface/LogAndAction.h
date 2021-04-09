@@ -90,4 +90,3 @@ class ILogAndActions : public Entity
     BITextInfo m_ActionHint1;
     BITextInfo m_ActionHint2;
 };
-

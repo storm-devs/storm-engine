@@ -104,4 +104,3 @@ class COMMON_CAMERA : public Entity
 
     virtual ~COMMON_CAMERA(){};
 };
-

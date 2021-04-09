@@ -184,4 +184,3 @@ class ISLAND : public ISLAND_BASE
         return fCurrentImmersion;
     };
 };
-

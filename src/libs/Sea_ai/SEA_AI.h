@@ -47,4 +47,3 @@ class SEA_AI : public Entity
 
     uint32_t AttributeChanged(ATTRIBUTES *pAttribute);
 };
-

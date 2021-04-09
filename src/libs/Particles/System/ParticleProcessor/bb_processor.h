@@ -81,4 +81,3 @@ class BillBoardProcessor
 
     void Clear();
 };
-

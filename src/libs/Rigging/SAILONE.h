@@ -284,4 +284,3 @@ class SAILONE : public SAILONE_BASE
     float m_fHorzGeraldScale;
     float m_fVertGeraldScale;
 };
-

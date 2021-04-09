@@ -87,4 +87,3 @@ class CameraFollow
     static float fndkAy;        // 1/(1 - cos(ay))
     static PLANE fndPlanes[32]; // Temporarily used face planes
 };
-

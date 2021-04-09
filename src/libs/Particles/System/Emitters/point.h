@@ -13,4 +13,3 @@ class PointEmitter : public BaseEmitter
     PointEmitter(ParticleSystem *pSystem);
     virtual ~PointEmitter();
 };
-

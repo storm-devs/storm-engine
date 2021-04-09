@@ -42,4 +42,3 @@ class WATERFLARE : public Entity
         }
     }
 };
-

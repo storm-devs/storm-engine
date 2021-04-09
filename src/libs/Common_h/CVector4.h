@@ -38,4 +38,3 @@ struct CVECTOR4
         w = a[3];
     };
 };
-

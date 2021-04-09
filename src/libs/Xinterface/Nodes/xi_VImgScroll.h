@@ -161,4 +161,3 @@ class CXI_VIMAGESCROLL : public CINODE
     long m_leftTextLimit;
     long m_rightTextLimit;
 };
-

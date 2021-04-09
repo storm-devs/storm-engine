@@ -78,4 +78,3 @@ class GIEditorList : public GIEditorObject
     uint32_t m_dwStatus;
     GIEditorEventHandler *m_pChangeSelected;
 };
-

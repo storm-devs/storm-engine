@@ -66,4 +66,3 @@ class TSplash
     float growK;
     float height, midY;
 };
-

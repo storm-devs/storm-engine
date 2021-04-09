@@ -58,4 +58,3 @@ class CXI_GLOWER : public CINODE
     uint32_t m_dwMinColor;
     uint32_t m_dwMaxColor;
 };
-

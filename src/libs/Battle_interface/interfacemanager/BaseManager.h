@@ -70,4 +70,3 @@ class BI_ManagerBase : public Entity
     BIImageRender *m_pImgRender;
     BI_MousePointerBase *m_pMouse;
 };
-

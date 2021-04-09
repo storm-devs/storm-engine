@@ -46,4 +46,3 @@ class BALLSPLASH : public Entity
     VDX9RENDER *renderer;
     SEA_BASE *sea;
 };
-

@@ -53,4 +53,3 @@ class CXI_PICTURE : public CINODE
     uint32_t m_dwBlindMin;
     uint32_t m_dwBlindMax;
 };
-

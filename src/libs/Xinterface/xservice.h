@@ -115,4 +115,3 @@ class ComboString
                        char *fontlist);
     void ComboStringRelease(int comboStrID);
 };
-

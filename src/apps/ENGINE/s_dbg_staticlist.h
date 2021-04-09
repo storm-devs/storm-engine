@@ -49,4 +49,3 @@ class SDBG_STATICLIST
         ShowWindow(hOwn[n], SW_NORMAL);
     }
 };
-

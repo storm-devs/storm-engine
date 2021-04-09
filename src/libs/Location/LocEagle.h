@@ -47,4 +47,3 @@ class LocEagle : public Entity
     float ay;
     float kAy, timeAy;
 };
-

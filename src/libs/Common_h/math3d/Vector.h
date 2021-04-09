@@ -1155,4 +1155,3 @@ inline bool Vector::InSphere(const Vector &pos, float rad) const
 }
 
 #pragma pack(pop)
-

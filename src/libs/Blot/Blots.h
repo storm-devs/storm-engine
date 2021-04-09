@@ -108,4 +108,3 @@ class Blots : public Entity
     static long numClipTriangles;
     static CVECTOR dir, normal;
 };
-

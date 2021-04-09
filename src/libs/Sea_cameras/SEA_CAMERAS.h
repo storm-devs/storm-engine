@@ -24,4 +24,3 @@ class SEA_CAMERAS : public Entity
     {
     }
 };
-

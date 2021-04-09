@@ -174,4 +174,3 @@ inline VDX9RENDER *WorldMap::GetRS() const
 {
     return rs;
 }
-

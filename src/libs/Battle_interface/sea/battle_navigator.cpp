@@ -1197,14 +1197,16 @@ long BATTLE_NAVIGATOR::SetRectangleSegVertexPos(BI_ONETEXTURE_VERTEX *v, float x
 
     const auto alpha = atan2f(width / 2, height / 2);
 
-    const auto begseg =
-        begAngle < alpha
-            ? 0
-            : begAngle < (PI - alpha) ? 1 : begAngle < (PI + alpha) ? 2 : begAngle < (2 * PI - alpha) ? 3 : 0;
-    const auto endseg =
-        endAngle < alpha
-            ? 0
-            : endAngle < (PI - alpha) ? 1 : endAngle < (PI + alpha) ? 2 : endAngle < (2 * PI - alpha) ? 3 : 0;
+    const auto begseg = begAngle < alpha              ? 0
+                        : begAngle < (PI - alpha)     ? 1
+                        : begAngle < (PI + alpha)     ? 2
+                        : begAngle < (2 * PI - alpha) ? 3
+                                                      : 0;
+    const auto endseg = endAngle < alpha              ? 0
+                        : endAngle < (PI - alpha)     ? 1
+                        : endAngle < (PI + alpha)     ? 2
+                        : endAngle < (2 * PI - alpha) ? 3
+                                                      : 0;
 
     v[0].pos.x = x;
     v[0].pos.y = y;
@@ -1275,14 +1277,16 @@ long BATTLE_NAVIGATOR::SetRectangleSegVertexTex(BI_ONETEXTURE_VERTEX *v, float x
 
     const auto alpha = atan2f(width / 2, height / 2);
 
-    const auto begseg =
-        begAngle < alpha
-            ? 0
-            : begAngle < (PI - alpha) ? 1 : begAngle < (PI + alpha) ? 2 : begAngle < (2 * PI - alpha) ? 3 : 0;
-    const auto endseg =
-        endAngle < alpha
-            ? 0
-            : endAngle < (PI - alpha) ? 1 : endAngle < (PI + alpha) ? 2 : endAngle < (2 * PI - alpha) ? 3 : 0;
+    const auto begseg = begAngle < alpha              ? 0
+                        : begAngle < (PI - alpha)     ? 1
+                        : begAngle < (PI + alpha)     ? 2
+                        : begAngle < (2 * PI - alpha) ? 3
+                                                      : 0;
+    const auto endseg = endAngle < alpha              ? 0
+                        : endAngle < (PI - alpha)     ? 1
+                        : endAngle < (PI + alpha)     ? 2
+                        : endAngle < (2 * PI - alpha) ? 3
+                                                      : 0;
 
     v[0].tu = x;
     v[0].tv = y;

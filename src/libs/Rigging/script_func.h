@@ -9,4 +9,3 @@ class SCRIPT_RIGGING_FILES : public SCRIPT_LIBRIARY
     ~SCRIPT_RIGGING_FILES(){};
     bool Init() override;
 };
-

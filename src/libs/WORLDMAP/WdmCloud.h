@@ -98,4 +98,3 @@ class WdmCloud : public WdmRenderObject
     void FindPartPos(CVECTOR &v);
     float Rnd();
 };
-

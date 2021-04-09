@@ -83,4 +83,3 @@ class LGeometry
     char modelsPath[512];
     char lightPath[512];
 };
-

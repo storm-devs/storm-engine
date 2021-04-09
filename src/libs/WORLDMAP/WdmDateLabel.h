@@ -36,4 +36,3 @@ class WdmDateLabel : public WdmInterfaceObject
     long dateFont;
     char month[12][32];
 };
-

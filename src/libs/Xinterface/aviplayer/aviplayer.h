@@ -80,4 +80,3 @@ class CAviPlayer : public xiBaseVideo
     bool m_bFirstDraw;
     bool m_bMakeUninitializeDD;
 };
-

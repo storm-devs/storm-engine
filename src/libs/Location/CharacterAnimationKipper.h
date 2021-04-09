@@ -46,4 +46,3 @@ class CharacterAnimationKipper : public Entity
     long lockTextures[16];
     long numLTextures;
 };
-

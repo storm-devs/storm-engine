@@ -39,4 +39,3 @@ class CXI_STATUSLINE : public CINODE
     FXYRECT m_texRect1;
     FXYRECT m_texRect2;
 };
-

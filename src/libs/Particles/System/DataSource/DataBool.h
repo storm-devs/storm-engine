@@ -27,4 +27,3 @@ class DataBool
     void SetName(const char *szName);
     const char *GetName() const;
 };
-

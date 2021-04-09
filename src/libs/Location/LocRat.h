@@ -38,4 +38,3 @@ class LocRat : public LocLife
     float moveTime;
     bool isPanic;
 };
-

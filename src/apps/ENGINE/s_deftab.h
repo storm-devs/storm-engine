@@ -56,4 +56,3 @@ class S_DEFTAB
     uint32_t FindDef(const char *def_name);
     void UpdateHashTable(uint32_t code, uint32_t hash, bool in);
 };
-

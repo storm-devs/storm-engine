@@ -45,4 +45,3 @@ class CSetupApp : public CWinApp
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
-

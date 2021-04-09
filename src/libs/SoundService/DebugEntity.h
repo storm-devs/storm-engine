@@ -36,4 +36,3 @@ class SoundVisualisationEntity : public Entity
     void SetMasterSoundService(SoundService *pSoundService);
     void Wakeup() const;
 };
-

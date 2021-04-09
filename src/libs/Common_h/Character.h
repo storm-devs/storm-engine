@@ -47,4 +47,3 @@ inline ATTRIBUTES *GetAShip(ATTRIBUTES *pACharacter)
     Assert(pAShip);
     return pAShip;
 }
-

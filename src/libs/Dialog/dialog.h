@@ -290,4 +290,3 @@ class DIALOG final : public Entity
 
     bool bEditMode;
 };
-

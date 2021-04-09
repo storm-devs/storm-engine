@@ -118,4 +118,3 @@ class BIUtils
     static uint32_t g_dwBlinkColor;
     //---------------------------------------
 };
-

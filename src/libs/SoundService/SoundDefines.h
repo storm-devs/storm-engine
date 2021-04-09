@@ -80,4 +80,3 @@ enum eSoundMessage
 
 class SoundService;
 extern SoundService *soundService;
-

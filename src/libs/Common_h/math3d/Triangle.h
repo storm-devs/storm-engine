@@ -372,4 +372,3 @@ inline long Triangle::z_sysClipTriangleEdgePlane(Plane plane, Vector src[8], Vec
 }
 
 #pragma pack(pop)
-

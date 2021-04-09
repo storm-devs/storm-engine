@@ -147,4 +147,3 @@ class AIShipCannonController
     void Save(CSaveLoad *pSL);
     void Load(CSaveLoad *pSL);
 };
-

@@ -162,4 +162,3 @@ class ParticleManager : public IParticleManager
 
     void OpenDefaultProject() override;
 };
-

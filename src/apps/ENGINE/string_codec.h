@@ -185,4 +185,3 @@ class STRING_CODEC : public VSTRING_CODEC
     }
     //*/
 };
-

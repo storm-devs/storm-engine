@@ -40,4 +40,3 @@ class CXI_RECTANGLE : public CINODE
 
     XI_NOTEX_VERTEX m_pVert[4];
 };
-

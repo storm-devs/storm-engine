@@ -84,4 +84,3 @@ class ItemEntity : public Entity
     bool CreateParticle();
     void DeleteParticle();
 };
-

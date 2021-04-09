@@ -166,4 +166,3 @@ inline float safeASin(float ang)
 #define ARRSIZE(ar) (sizeof(ar) / sizeof(ar[0]))
 
 #include "Math3D/Vector4.h"
-

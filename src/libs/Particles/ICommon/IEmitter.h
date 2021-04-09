@@ -59,4 +59,3 @@ class IEmitter
 
     virtual void Stop() = 0;
 };
-

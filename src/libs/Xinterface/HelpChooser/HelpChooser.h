@@ -65,4 +65,3 @@ class HELPCHOOSER : public Entity
     int m_nMouseWidth;
     int m_nMouseHeight;
 };
-

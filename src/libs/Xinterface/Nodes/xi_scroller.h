@@ -62,4 +62,3 @@ class CXI_SCROLLER : public CINODE
     FXYRECT m_ScrollTexRect;
     FXYRECT m_RollTexRect;
 };
-

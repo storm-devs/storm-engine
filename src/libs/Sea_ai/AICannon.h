@@ -131,4 +131,3 @@ class AICannon
   private:
     CANNONTYPE CannonType;
 };
-

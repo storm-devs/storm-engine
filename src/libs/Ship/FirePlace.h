@@ -81,4 +81,3 @@ class FirePlace
     float fRunTime;
     std::string sParticleSmokeName, sParticleFireName, sSoundName;
 };
-

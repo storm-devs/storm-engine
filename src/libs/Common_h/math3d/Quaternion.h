@@ -560,4 +560,3 @@ inline float Quaternion::GetLengthSqr() const
 }
 
 #pragma pack(pop)
-

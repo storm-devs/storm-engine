@@ -45,4 +45,3 @@ class GIEditorEventHandler
 
     std::vector<FuncDescr> m_aEventFuncs;
 };
-

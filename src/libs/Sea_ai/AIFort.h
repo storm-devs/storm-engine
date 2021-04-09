@@ -363,4 +363,3 @@ class AIFort : public VAI_OBJBASE
         return {};
     }
 };
-

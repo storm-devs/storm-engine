@@ -229,4 +229,3 @@ class BATTLE_NAVIGATOR
 
     float m_fAspectRatio;
 };
-

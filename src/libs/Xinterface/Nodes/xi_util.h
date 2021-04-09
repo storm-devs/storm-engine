@@ -117,4 +117,3 @@ class CXI_UTILS
     bool m_bLang2;
     KeyDescribe keys[UTILS_KEYS_QUANTITY];
 };
-

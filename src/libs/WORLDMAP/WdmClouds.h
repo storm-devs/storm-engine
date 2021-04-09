@@ -75,4 +75,3 @@ class WdmClouds : public WdmRenderObject
     Cloud clouds[16];
     RS_RECT rects[WDMCLOUDSMAX * 16];
 };
-

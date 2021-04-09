@@ -72,4 +72,3 @@ class VDATA
     virtual char *GetString() = 0;
     virtual entid_t GetEntityID() = 0;
 };
-

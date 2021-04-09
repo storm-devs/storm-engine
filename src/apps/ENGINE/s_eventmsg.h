@@ -56,4 +56,3 @@ class S_EVENTMSG
         bInvalide = true;
     };
 };
-

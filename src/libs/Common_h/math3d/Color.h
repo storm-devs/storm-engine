@@ -1325,4 +1325,3 @@ inline DColor::operator uint32_t() const
 }
 
 #pragma pack(pop)
-

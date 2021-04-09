@@ -16,4 +16,3 @@ class WMShipCommandList : public BICommandList
 
     long CommandAdding();
 };
-

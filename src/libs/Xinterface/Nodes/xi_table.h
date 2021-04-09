@@ -237,4 +237,3 @@ class CXI_TABLE : public CINODE
 
     std::string m_sScrollerName;
 };
-

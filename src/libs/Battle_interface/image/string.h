@@ -61,4 +61,3 @@ class BIString : public IBIString
 
     bool m_bUpdateString;
 };
-

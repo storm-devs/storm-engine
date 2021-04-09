@@ -215,4 +215,3 @@ class CharactersGroups : public Entity
     // Character search array
     Supervisor::FindCharacter fnd[MAX_CHARACTERS];
 };
-

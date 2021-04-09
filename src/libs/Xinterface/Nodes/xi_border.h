@@ -84,4 +84,3 @@ class CXI_BORDER : public CINODE
     FXYRECT m_frRightLineUV;
     long m_nRightLineWidth;
 };
-

@@ -53,4 +53,3 @@ class WdmRenderModel : public WdmRenderObject
 
     bool drawCircle;
 };
-

@@ -30,4 +30,3 @@ class ROPE_BASE : public Entity
     virtual bool IsAbsentRope(entid_t mdl_id, int ropenum) = 0;
     virtual void DoDeleteUntie(entid_t mdl_id, NODE *rnod, int gNum) = 0;
 };
-

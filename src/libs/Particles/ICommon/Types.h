@@ -36,4 +36,3 @@ enum FieldType
 
     FIELD_FORCE_DWORD = 0x7fffffff
 };
-

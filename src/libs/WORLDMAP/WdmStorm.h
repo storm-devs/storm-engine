@@ -97,4 +97,3 @@ inline bool WdmStorm::IsActive() const
 {
     return isActiveTime <= 0.0f;
 }
-

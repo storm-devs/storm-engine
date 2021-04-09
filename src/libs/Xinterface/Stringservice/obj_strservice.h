@@ -17,4 +17,3 @@ class OBJ_STRSERVICE : public Entity
     {
     }
 };
-

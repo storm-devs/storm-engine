@@ -54,4 +54,3 @@ class TextureSequence : public CVideoTexture
         return true;
     }
 };
-

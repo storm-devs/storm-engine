@@ -77,4 +77,3 @@ class POSTEVENTS_LIST
         }
     }
 };
-

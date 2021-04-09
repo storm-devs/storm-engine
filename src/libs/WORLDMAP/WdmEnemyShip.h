@@ -98,4 +98,3 @@ inline float WdmEnemyShip::GetLiveTime() const
         return -1.0f;
     return liveTime >= 0.0f ? liveTime : 0.0f;
 }
-

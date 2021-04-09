@@ -64,4 +64,3 @@ class CXI_CONTEXTHELP : public CINODE
     XI_NOTEX_VERTEX m_pVert[4];
     RS_LINE m_pLines[8];
 };
-

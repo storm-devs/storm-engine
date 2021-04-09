@@ -111,4 +111,3 @@ class MODEL : public COLLISION_OBJECT
 
     virtual NODE *GetCollideNode() = 0;
 };
-

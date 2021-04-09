@@ -146,4 +146,3 @@ class AICharacter : public Character
     bool bMusketer;
     bool bMusketerNoMove;
 };
-

@@ -227,4 +227,3 @@ class SEPS_PS
         nSystemLifeTime = time;
     }
 };
-

@@ -31,4 +31,3 @@ class Lizard : public LocLife
   private:
     float lastMove;
 };
-

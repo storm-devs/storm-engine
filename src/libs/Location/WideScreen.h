@@ -54,4 +54,3 @@ class WideScreen : public Entity
     float state;    // Screen state
     float dlt;      // Screen change direction
 };
-

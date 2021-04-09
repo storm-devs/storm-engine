@@ -13,13 +13,16 @@ Import library main file
 #include <cstring>
 #include <vector>
 
-namespace {
+namespace
+{
 
-std::vector<uint32_t> getColData (GEOM_SERVICE &srv, const std::string_view& file_name) {
+std::vector<uint32_t> getColData(GEOM_SERVICE &srv, const std::string_view &file_name)
+{
     std::vector<uint32_t> result;
 
     auto ltfl = srv.OpenFile(file_name.data());
-    if (ltfl.is_open()) {
+    if (ltfl.is_open())
+    {
         const auto file_size = srv.FileSize(file_name.data());
         if (file_size > 0)
         {
@@ -44,7 +47,8 @@ GEOS *CreateGeometry(const char *fname, const char *lightname, GEOM_SERVICE &srv
 GEOM::GEOM(const char *fname, const char *lightname, GEOM_SERVICE &_srv, long flags) : srv(_srv)
 {
     std::vector<uint32_t> colData;
-    if (lightname != nullptr) {
+    if (lightname != nullptr)
+    {
         colData = getColData(srv, lightname);
     }
 
@@ -171,7 +175,8 @@ GEOM::GEOM(const char *fname, const char *lightname, GEOM_SERVICE &_srv, long fl
         for (long vr = 0; vr < vbuff[v].nverts; vr++)
         {
             auto *prv = (RDF_VERTEX0 *)((uint8_t *)(vrt) + vbuff[v].stride * vr);
-            if (colData.size() == nvertices) {
+            if (colData.size() == nvertices)
+            {
                 prv->color = *itColData;
                 ++itColData;
             }

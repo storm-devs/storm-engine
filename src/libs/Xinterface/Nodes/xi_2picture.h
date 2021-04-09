@@ -50,4 +50,3 @@ class CXI_TWOPICTURE : public CINODE
     XI_NOTEX_VERTEX m_vSOne[4];
     XI_NOTEX_VERTEX m_vSTwo[4];
 };
-

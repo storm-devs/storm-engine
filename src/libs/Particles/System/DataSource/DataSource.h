@@ -86,4 +86,3 @@ class DataSource
     virtual int GetEmitterCount();
     EmitterDesc *GetEmitterDesc(int Index);
 };
-

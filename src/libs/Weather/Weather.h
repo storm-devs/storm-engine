@@ -77,4 +77,3 @@ class WEATHER : public WEATHER_BASE
         }
     }
 };
-

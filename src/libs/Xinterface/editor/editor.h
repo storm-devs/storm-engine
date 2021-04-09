@@ -50,4 +50,3 @@ class GIEditor : public GIEditorObject
     void ChangeNodeName();
     void ChangeSubNodeName() const;
 };
-

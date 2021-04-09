@@ -163,4 +163,3 @@ class VANTZ : public VANT_BASE
 
     virtual void LoadIni();
 };
-

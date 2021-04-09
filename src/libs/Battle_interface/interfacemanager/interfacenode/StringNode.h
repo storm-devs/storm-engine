@@ -16,4 +16,3 @@ class BI_StringNode : public BI_BaseNode
   protected:
     IBIString *m_pStr;
 };
-

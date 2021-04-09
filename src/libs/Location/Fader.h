@@ -78,4 +78,3 @@ class Fader : public Entity
     static long numberOfTips;
     static long currentTips;
 };
-

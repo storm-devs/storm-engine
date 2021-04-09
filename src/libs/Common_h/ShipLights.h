@@ -19,4 +19,3 @@ class IShipLights : public Entity
 
     virtual void SetDead(VAI_OBJBASE *pObject) = 0;
 };
-

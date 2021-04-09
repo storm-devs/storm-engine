@@ -82,4 +82,3 @@ class DataGraph
     void NormalToAlpha();
     void AlphaToNormal();
 };
-

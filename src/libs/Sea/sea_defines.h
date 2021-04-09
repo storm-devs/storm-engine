@@ -12,4 +12,3 @@
 
 extern void GetLineABC(CVECTOR &v1, CVECTOR &v2, float &A, float &B, float &C);
 extern void RotateAroundY(float &x, float &y, float cos, float sin);
-

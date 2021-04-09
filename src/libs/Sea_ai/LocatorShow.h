@@ -68,4 +68,3 @@ class SeaLocatorShow : public Entity
 
     uint32_t AttributeChanged(ATTRIBUTES *pAttribute) override;
 };
-

@@ -265,4 +265,3 @@ class SHIP : public SHIP_BASE
     void Save(CSaveLoad *pSL);
     void Load(CSaveLoad *pSL);
 };
-
