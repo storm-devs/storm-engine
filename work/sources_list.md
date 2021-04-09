@@ -53,7 +53,7 @@ Duplicates with TEHO repo sources are omitted.
 [Link](https://github.com/storm-devs/sd-teho-public/tree/steamapi-isolate/docs)
 
 * [ ] [Core Engine Details](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/core.txt)
-* [ ] [Script Syntax](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/syntax.txt)
+* [ ] [Script Syntax](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/syntax.txt) (used in [0002](../kb/0002-scripting-overview.md))
 
 ### Storm Repo docs 
 [Link](https://github.com/storm-devs/storm-engine/tree/develop/docs)
