@@ -104,9 +104,16 @@ std::vector<std::string> FILE_SERVICE::_GetPathsOrFilenamesByMask(const char *so
     std::vector<std::string> result;
 
     const auto fsPaths = _GetFsPathsByMask(sourcePath, mask, getPaths, onlyDirs, onlyFiles);
+    int len;
+    char *charPath;
+    std::u8string u8Path;
     for (std::filesystem::path curPath : fsPaths)
     {
-        result.push_back(curPath.string());
+        u8Path = curPath.u8string();
+        len = u8Path.size() + 1;
+        charPath = new char[len];
+        memcpy(charPath, u8Path.c_str(), len);
+        result.push_back(charPath);
     }
 
     return result;

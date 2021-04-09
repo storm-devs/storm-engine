@@ -2815,15 +2815,17 @@ void XINTERFACE::AddFindData(std::filesystem::path filePath)
     auto *p = new SAVE_FIND_DATA;
     if (p)
     {
-        const auto sSaveFileName = filePath.filename().string();
+        const auto sSaveFileName = filePath.filename().u8string();
         p->time = std::filesystem::last_write_time(filePath);
         p->file_size = 0; // original code always passed 0 to file_size
         p->next = m_pSaveFindRoot;
         m_pSaveFindRoot = p;
-        const auto len = strlen(sSaveFileName.c_str()) + 1;
+        const auto len = sSaveFileName.size() + 1;
         p->save_file_name = new char[len];
         if (p->save_file_name)
+        {
             memcpy(p->save_file_name, sSaveFileName.c_str(), len);
+        }
     }
 }
 
