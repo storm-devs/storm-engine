@@ -100,9 +100,6 @@ class INIFILE
     virtual double GetDouble(const char *section_name, const char *key_name) = 0;
     // return double value of key in pointed section if section and key exist, if not - return def_value
     virtual double GetDouble(const char *section_name, const char *key_name, double def_val) = 0;
-    // continue scanning for key in section, fill val with double value of key if it found and return true
-    // if not - return false
-    virtual bool GetDoubleNext(const char *section_name, const char *key_name, double *val) = 0;
 
     virtual float GetFloat(const char *section_name, const char *key_name) = 0;
     virtual float GetFloat(const char *section_name, const char *key_name, float def_val) = 0;

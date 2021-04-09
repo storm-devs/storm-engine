@@ -961,17 +961,6 @@ double IFS::GetDouble(SEARCH_DATA *sd, const char *section_name, const char *key
     return def_val;
 }
 
-bool IFS::GetDoubleNext(SEARCH_DATA *sd, const char *section_name, const char *key_name, double *val)
-{
-    char buffer[256];
-    if (ReadStringNext(sd, section_name, key_name, buffer, sizeof(buffer)))
-    {
-        *val = atof(buffer);
-        return true;
-    }
-    return false;
-}
-
 float IFS::GetFloat(SEARCH_DATA *sd, const char *section_name, const char *key_name)
 {
     char buffer[256];

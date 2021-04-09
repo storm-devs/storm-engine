@@ -432,11 +432,6 @@ bool INIFILE_T::GetLongNext(const char *section_name, const char *key_name, long
     return ifs_PTR->GetLongNext(&Search, section_name, key_name, val);
 }
 
-bool INIFILE_T::GetDoubleNext(const char *section_name, const char *key_name, double *val)
-{
-    return ifs_PTR->GetDoubleNext(&Search, section_name, key_name, val);
-}
-
 // return double value of key in pointed section if section and key exist, throw EXS object otherwise
 float INIFILE_T::GetFloat(const char *section_name, const char *key_name)
 {

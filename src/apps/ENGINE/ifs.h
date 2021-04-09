@@ -121,7 +121,6 @@ class IFS : public INIFILE
     IFS_NOT_IMPLEMENTED(bool GetLongNext(const char *section_name, const char *key_name, long *val))
     IFS_NOT_IMPLEMENTED(double GetDouble(const char *section_name, const char *key_name))
     IFS_NOT_IMPLEMENTED(double GetDouble(const char *section_name, const char *key_name, double def_val))
-    IFS_NOT_IMPLEMENTED(bool GetDoubleNext(const char *section_name, const char *key_name, double *val))
     IFS_NOT_IMPLEMENTED(float GetFloat(const char *section_name, const char *key_name))
     IFS_NOT_IMPLEMENTED(float GetFloat(const char *section_name, const char *key_name, float def_val))
     IFS_NOT_IMPLEMENTED(bool GetFloatNext(const char *section_name, const char *key_name, float *val))
@@ -163,7 +162,6 @@ class IFS : public INIFILE
 
     double GetDouble(SEARCH_DATA *sd, const char *section_name, const char *key_name);
     double GetDouble(SEARCH_DATA *sd, const char *section_name, const char *key_name, double def_val);
-    bool GetDoubleNext(SEARCH_DATA *sd, const char *section_name, const char *key_name, double *val);
 
     float GetFloat(SEARCH_DATA *sd, const char *section_name, const char *key_name);
     float GetFloat(SEARCH_DATA *sd, const char *section_name, const char *key_name, float def_val);

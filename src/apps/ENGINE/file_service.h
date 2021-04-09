@@ -49,7 +49,6 @@ class INIFILE_T : public INIFILE
     double GetDouble(const char *section_name, const char *key_name, double def_val) override;
 
     bool GetLongNext(const char *section_name, const char *key_name, long *val) override;
-    bool GetDoubleNext(const char *section_name, const char *key_name, double *val) override;
 
     float GetFloat(const char *section_name, const char *key_name) override;
     float GetFloat(const char *section_name, const char *key_name, float def_val) override;
