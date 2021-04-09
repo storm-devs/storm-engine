@@ -17,4 +17,3 @@ class BI_ImageNode : public BI_BaseNode
   protected:
     IBIImage *m_pImage;
 };
-

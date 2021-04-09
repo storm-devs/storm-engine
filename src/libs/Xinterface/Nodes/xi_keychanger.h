@@ -44,4 +44,3 @@ class CXI_KEYCHANGER : public CINODE
     long m_keysQuantity;
     bool m_bKeyCheck;
 };
-

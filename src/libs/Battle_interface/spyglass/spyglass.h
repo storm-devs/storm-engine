@@ -187,4 +187,3 @@ class ISPYGLASS : public Entity
     void FillUVArrayFromAttributes(std::vector<FRECT> &m_aUV, ATTRIBUTES *pA) const;
     VAI_OBJBASE *GetFort();
 };
-

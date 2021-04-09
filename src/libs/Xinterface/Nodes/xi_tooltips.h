@@ -75,4 +75,3 @@ class CXI_ToolTip
     VXSERVICE *m_pPicService;
     VSTRSERVICE *m_pStrService;
 };
-

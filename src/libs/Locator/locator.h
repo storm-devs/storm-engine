@@ -40,4 +40,3 @@ class LOCATOR : public Entity
     }
     bool VerifyParticles();
 };
-

@@ -57,4 +57,3 @@ class CXI_STRCOLLECTION : public CINODE
     STRINGDESCR *m_pStrDescr; // pointer to array of the string descriptors
     long m_nEditIndex;
 };
-

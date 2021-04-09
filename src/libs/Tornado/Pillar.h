@@ -90,4 +90,3 @@ inline float Pillar::Z()
 {
     return z;
 }
-

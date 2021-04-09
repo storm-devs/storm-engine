@@ -210,4 +210,3 @@ inline uint32_t BIManSign::GetColorByFactor(uint32_t dwLowColor, uint32_t dwHigh
     //
     return ARGB(asrc, rsrc, gsrc, bsrc);
 }
-

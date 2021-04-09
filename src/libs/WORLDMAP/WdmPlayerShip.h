@@ -57,4 +57,3 @@ inline float WdmPlayerShip::GetAy() const
 {
     return ay;
 }
-

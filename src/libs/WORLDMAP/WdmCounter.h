@@ -54,4 +54,3 @@ class WdmCounter : public WdmRenderModel
 
     static const char *skytex[WMD_NUM_SKYS];
 };
-

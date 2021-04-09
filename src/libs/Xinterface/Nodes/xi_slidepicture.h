@@ -50,4 +50,3 @@ class CXI_SLIDEPICTURE : public CINODE
 
     char *strTechniqueName;
 };
-

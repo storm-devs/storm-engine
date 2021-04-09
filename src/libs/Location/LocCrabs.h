@@ -48,4 +48,3 @@ class LocCrabs : public Entity
     LocCrab crab[32];
     long num;
 };
-

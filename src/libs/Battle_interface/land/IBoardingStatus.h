@@ -46,4 +46,3 @@ class IBoardingStatus : public Entity
     BI_COLORONLY_VERTEX m_MyChar[4];
     BI_COLORONLY_VERTEX m_EnemyChar[4];
 };
-

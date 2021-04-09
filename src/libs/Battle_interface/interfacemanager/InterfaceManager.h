@@ -51,4 +51,3 @@ class BI_InterfaceManager : public BI_ManagerBase
 
     BI_BaseGroup *m_pInterfaceSheet;
 };
-

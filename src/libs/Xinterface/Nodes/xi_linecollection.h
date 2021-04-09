@@ -30,4 +30,3 @@ class CXI_LINECOLLECTION : public CINODE
   protected:
     std::vector<RS_LINE> m_aLines;
 };
-

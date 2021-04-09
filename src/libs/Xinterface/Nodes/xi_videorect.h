@@ -34,4 +34,3 @@ class CXI_VIDEORECT : public CINODE
     FXYRECT m_rectTex;
     entid_t m_eiVideo;
 };
-

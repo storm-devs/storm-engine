@@ -55,4 +55,3 @@ class CXI_GLOWCURSOR : public CINODE
 
     CINODE *m_pPrevNode;
 };
-

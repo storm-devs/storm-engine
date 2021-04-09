@@ -63,4 +63,3 @@ template <class TYPE> class GMXQSort
         }
     }
 };
-

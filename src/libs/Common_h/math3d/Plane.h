@@ -206,4 +206,3 @@ inline bool Plane::IntersectionLine(const Vector &src, const Vector &dst, float 
 }
 
 #pragma pack(pop)
-

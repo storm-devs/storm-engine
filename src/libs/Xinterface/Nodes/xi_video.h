@@ -29,4 +29,3 @@ class CXI_VIDEO : public CINODE
     uint32_t m_dwColor;
     FXYRECT m_rectTex;
 };
-

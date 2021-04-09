@@ -36,4 +36,3 @@ inline void AddGravityForce(Vector &Forces, float Mass, float GravK)
 
     Forces += Vector(0.0f, -9.8f * Mass * GravK, 0.0f);
 }
-

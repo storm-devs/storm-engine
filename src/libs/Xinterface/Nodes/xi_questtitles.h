@@ -62,4 +62,3 @@ class CXI_QUESTTITLE : public CINODE
 
     STRING_DESCRIBER *m_strList;
 };
-

@@ -68,4 +68,3 @@ template <class tEType> class TFIFOBuffer
     int firstElement, elementsCount;
     tEType elements[FIFO_BUFFER_MAX_ELEMENTS];
 };
-

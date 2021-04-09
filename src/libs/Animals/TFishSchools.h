@@ -52,4 +52,3 @@ class TFishSchools : public TDynamicSystem
     bool enabled;
     SEA_BASE *sea;
 };
-

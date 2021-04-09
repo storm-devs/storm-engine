@@ -137,4 +137,3 @@ class CXI_FORMATEDTEXT : public CINODE
     void SetCurLine(STRING_DESCRIBER *pNewCurLine);
     void ScrollerUpdate();
 };
-

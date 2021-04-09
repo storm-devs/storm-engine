@@ -53,4 +53,3 @@ template <class ClassType> class TCLASS_LIST
         return nClassesNum;
     }
 };
-

@@ -122,4 +122,3 @@ class Astronomy : public Entity
     STARS Stars;
     PLANETS Planets;
 };
-

@@ -107,4 +107,3 @@ class AIBalls : public Entity
     void Save(CSaveLoad *pSL);
     void Load(CSaveLoad *pSL);
 };
-

@@ -169,4 +169,3 @@ class WdmObjects
 };
 
 extern WdmObjects *wdmObjects;
-

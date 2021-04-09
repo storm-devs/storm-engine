@@ -85,4 +85,3 @@ class CXI_TEXTBUTTON : public CINODE
 
     float m_fShadowScale;
 };
-

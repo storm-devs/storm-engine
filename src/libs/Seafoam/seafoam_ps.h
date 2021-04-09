@@ -232,4 +232,3 @@ class SEAFOAM_PS : VPARTICLE_SYSTEM
         nSystemLifeTime = time;
     }
 };
-

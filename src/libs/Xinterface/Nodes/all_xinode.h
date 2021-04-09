@@ -36,4 +36,3 @@
 #include "xi_video.h"
 #include "xi_videorect.h"
 #include "xi_window.h"
-

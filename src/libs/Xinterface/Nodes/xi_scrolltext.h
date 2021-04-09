@@ -68,4 +68,3 @@ class CXI_SCROLLTEXT : public CINODE
 
     long GetStringWord(char *pstr, char *buff, size_t size);
 };
-

@@ -101,4 +101,3 @@ class ShipTracks : public Entity
 
     std::vector<ShipTrack *> aShips;
 };
-

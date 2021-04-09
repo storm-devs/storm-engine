@@ -246,4 +246,3 @@ class SEA : public SEA_BASE
     // void            Execute(uint32_t Delta_Time);
     // uint32_t cdecl    ProcessMessage(MESSAGE & message);
 };
-

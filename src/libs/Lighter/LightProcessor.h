@@ -57,4 +57,3 @@ class LightProcessor
     long smoothVertex;
     long blurVertex;
 };
-

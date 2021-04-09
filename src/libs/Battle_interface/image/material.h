@@ -88,4 +88,3 @@ class BIImageMaterial
     bool m_bMakeBufferUpdate;
     bool m_bDeleteEverything;
 };
-

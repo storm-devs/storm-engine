@@ -157,4 +157,3 @@ inline const char *ModelArray::GetModelName(long index)
         return model[index].name;
     return nullptr;
 }
-

@@ -163,4 +163,3 @@ class Window
     char ver[256];
     char stringBuffer[1024];
 };
-

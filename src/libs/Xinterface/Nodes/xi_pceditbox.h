@@ -59,4 +59,3 @@ class CXI_PCEDITBOX : public CINODE
 
     std::string m_sExcludeChars;
 };
-

@@ -20,4 +20,3 @@ enum EditorUniqueTypes
 
     ET_FORCE_DWORD = 0x7fffffff
 };
-

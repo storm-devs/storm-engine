@@ -46,4 +46,3 @@ class FREE_CAMERA : public COMMON_CAMERA
     void Save(CSaveLoad *pSL) override;
     void Load(CSaveLoad *pSL) override;
 };
-

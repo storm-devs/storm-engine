@@ -64,4 +64,3 @@ class BIImage : public IBIImage
 
     long m_nPrioritet;
 };
-

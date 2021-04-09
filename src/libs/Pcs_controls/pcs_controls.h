@@ -92,4 +92,3 @@ class PCS_CONTROLS : public CONTROLS
     virtual const KeyDescr *GetKeyBuffer();
     virtual void ClearKeyBuffer();
 };
-

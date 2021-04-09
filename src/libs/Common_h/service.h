@@ -50,4 +50,3 @@ class SERVICE // : public Entity
         return true;
     }
 };
-

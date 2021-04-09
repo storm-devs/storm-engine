@@ -36,4 +36,3 @@ class GIFont
     float m_fScale;
     float m_fHeight;
 };
-

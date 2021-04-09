@@ -227,4 +227,3 @@ inline long GetVDATALong(VDATA *pvd, long defVal)
         pvd->Get(tmp);
     return tmp;
 }
-

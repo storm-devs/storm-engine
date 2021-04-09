@@ -17,4 +17,3 @@ class VS_STACK
     virtual uint32_t GetDataNum() = 0;
     virtual void InvalidateFrom(uint32_t index) = 0;
 };
-

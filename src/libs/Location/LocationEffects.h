@@ -173,4 +173,3 @@ class LocationEffects : public Entity
 
     Vertex buffer[256 * 6];
 };
-

@@ -156,4 +156,3 @@ class BICommandList
 
     ATTRIBUTES *GetCurrentCommandAttribute() const;
 };
-

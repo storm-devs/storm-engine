@@ -36,4 +36,3 @@ class GeomCache
     // Check if such a model exists in the cache
     bool ValidatePointer(GEOS *pModel);
 };
-

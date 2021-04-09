@@ -21,4 +21,3 @@ typedef struct tagTGA_H
         };
     };
 } TGA_H;
-

@@ -143,4 +143,3 @@ class BIShipIcon
     entid_t m_idHostEntity;
     long m_nCommandMode;
 };
-

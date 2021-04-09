@@ -41,4 +41,3 @@ class COLLIDE : public SERVICE
 
     virtual entid_t GetObjectID() = 0;
 };
-

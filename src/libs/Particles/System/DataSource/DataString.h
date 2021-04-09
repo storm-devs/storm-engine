@@ -27,4 +27,3 @@ class DataString
     void SetName(const char *szName);
     const char *GetName() const;
 };
-

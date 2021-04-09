@@ -126,4 +126,3 @@ class CoastFoam : public Entity
     void ExecuteFoamType2(Foam *pF, float fDeltaTime);
     void ExecuteFoamType1(Foam *pF, float fDeltaTime);
 };
-

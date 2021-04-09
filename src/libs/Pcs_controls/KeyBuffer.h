@@ -25,4 +25,3 @@ struct ControlKeyBuffer
     long m_nBufLen;
     KeyDescr m_pcBuffer[512];
 };
-

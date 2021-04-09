@@ -214,4 +214,3 @@ inline float LocationCamera::GetAx() const
 {
     return ax;
 }
-

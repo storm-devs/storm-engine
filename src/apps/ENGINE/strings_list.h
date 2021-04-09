@@ -41,4 +41,3 @@ class STRINGS_LIST
     void CacheString(uint32_t code);
     uint32_t MakeHashValue(const char *string);
 };
-

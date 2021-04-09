@@ -44,4 +44,3 @@ class WdmRenderObject
     WdmRenderObject *nextObject;
     static WdmRenderObject *firstObject;
 };
-

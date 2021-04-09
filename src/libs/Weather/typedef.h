@@ -11,4 +11,3 @@
 #include "geos.h"
 #include "vmodule_api.h"
 #include <stdio.h>
-

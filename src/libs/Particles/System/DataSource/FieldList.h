@@ -96,4 +96,3 @@ class FieldList
     // and there will be no unnecessary garbage ...
     void Convert(DataDescripion *pDataDescriptor);
 };
-

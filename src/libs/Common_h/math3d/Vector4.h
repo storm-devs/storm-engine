@@ -227,4 +227,3 @@ inline void Vector4::Normalize()
 }
 
 #pragma pack(pop)
-

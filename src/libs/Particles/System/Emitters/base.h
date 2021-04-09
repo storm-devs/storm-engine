@@ -135,4 +135,3 @@ class BaseEmitter : public IEmitter
 
     void Stop() override;
 };
-

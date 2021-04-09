@@ -81,4 +81,3 @@ class ActivePerkShower : public Entity
 
     bool InitCommonBuffers();
 };
-

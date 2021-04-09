@@ -45,4 +45,3 @@ class WdmMerchantShip : public WdmEnemyShip
     float gotoRad;
     bool isEnableSetDir;
 };
-

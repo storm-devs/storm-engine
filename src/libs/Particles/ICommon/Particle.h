@@ -177,4 +177,3 @@ struct MDL_ParticleData
     // ID of the emitter to which the particle belongs
     uint32_t EmitterGUID;
 };
-

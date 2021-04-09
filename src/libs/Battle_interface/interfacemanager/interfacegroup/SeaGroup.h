@@ -21,4 +21,3 @@ class BI_SeaGroup : public BI_BaseGroup
 
   protected:
 };
-

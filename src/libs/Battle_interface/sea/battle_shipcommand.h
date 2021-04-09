@@ -31,4 +31,3 @@ class BIShipCommandList : public BICommandList
 
     std::vector<long> m_aChargeQuantity;
 };
-

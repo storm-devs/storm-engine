@@ -122,4 +122,3 @@ class BISignIcon
     long m_nMaxSquareQ;
     long m_nSignQ;
 };
-

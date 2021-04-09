@@ -40,4 +40,3 @@ constexpr int GRID_FVF2 = (D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX2 | D3DFVF_TE
 #define BALLSPLASH_TRACE(a) _VSYSTEM_core.Trace(a);
 #define BALLSPLASH_TRACE2(a, b) _VSYSTEM_core.Trace(a, b);
 #endif
-

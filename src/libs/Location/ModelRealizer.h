@@ -47,4 +47,3 @@ class LocModelRealizer : public Entity
     // Messages
     uint64_t ProcessMessage(MESSAGE &message) override;
 };
-

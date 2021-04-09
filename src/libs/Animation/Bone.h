@@ -136,4 +136,3 @@ inline float Bone::LerpAng(float a, float b, float k)
         delta = -2 * PI + delta;
     return a + k * delta;
 }
-

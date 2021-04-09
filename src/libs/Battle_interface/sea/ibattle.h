@@ -78,4 +78,3 @@ class BATTLE_INTERFACE : public Entity
     void CheckSeaState();
     void EnableMessageIcons(VDATA *pvdat);
 };
-

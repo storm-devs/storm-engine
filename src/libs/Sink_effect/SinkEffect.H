@@ -46,4 +46,3 @@ class SINKEFFECT : public Entity
     VDX9RENDER *renderer;
     SEA_BASE *sea;
 };
-

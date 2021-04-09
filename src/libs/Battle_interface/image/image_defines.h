@@ -62,4 +62,3 @@ class IBIString
 
 #define ImagePrioritet_MaxValue 100000
 #define ImagePrioritet_DefaultValue 10000
-

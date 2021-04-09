@@ -56,4 +56,3 @@ class SHIP_DESCRIBE_LIST
 };
 
 extern SHIP_DESCRIBE_LIST g_ShipList;
-

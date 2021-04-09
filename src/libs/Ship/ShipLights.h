@@ -153,4 +153,3 @@ class ShipLights : public IShipLights
         }
     }
 };
-

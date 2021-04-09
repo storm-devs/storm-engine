@@ -69,4 +69,3 @@ class Debris
     ModelInfo fly[64]; // Flying models
     long flyCounter;   // Number of flying models
 };
-

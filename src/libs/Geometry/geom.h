@@ -98,4 +98,3 @@ class GEOM : public GEOS
 
     virtual long GetIndexBuffer() const;
 };
-

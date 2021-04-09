@@ -55,4 +55,3 @@ class WdmStormCloud : public WdmCloud
     CVECTOR rainpos[2048];        // Particle position
     static RainVertex rain[4096]; // The current array to draw
 };
-

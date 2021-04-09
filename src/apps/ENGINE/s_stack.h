@@ -31,4 +31,3 @@ class S_STACK : public VS_STACK
     }
     void InvalidateFrom(uint32_t index);
 };
-

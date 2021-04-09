@@ -218,4 +218,3 @@ class InterfaceBackScene : public Entity
     void DrawParticles(void *prts, long num, long size, long texture, const char *tech, bool isEx = false,
                        long numU = 0);
 };
-

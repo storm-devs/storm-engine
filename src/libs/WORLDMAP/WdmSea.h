@@ -91,4 +91,3 @@ class WdmSea : public WdmRenderObject
     long flareTexture;
     float flareCerateCounter;
 };
-

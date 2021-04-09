@@ -105,4 +105,3 @@ class CXI_CHECKBUTTONS : public CINODE
     std::string m_sDisablePicture;
     uint32_t m_dwDisablePicColor;
 };
-

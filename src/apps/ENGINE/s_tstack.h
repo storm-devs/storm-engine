@@ -21,4 +21,3 @@ class S_TSTACK
     bool Pop(char *pUnit);
     bool Read(char *pUnit);
 };
-

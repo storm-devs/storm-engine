@@ -229,4 +229,3 @@ class MESSAGE_SCRIPT : public MESSAGE
         return format[index];
     };
 };
-

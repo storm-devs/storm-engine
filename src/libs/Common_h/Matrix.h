@@ -911,4 +911,3 @@ inline CMatrix &CMatrix::BuildScale(const CVECTOR &scale)
     BuildScale(scale.x, scale.y, scale.z);
     return *this;
 }
-

@@ -68,4 +68,3 @@ class Lighter : public Entity
     float waitChange;
     bool isInited, autoTrace, autoSmooth;
 };
-

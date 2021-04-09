@@ -62,4 +62,3 @@ class CXI_EDITBOX : public CINODE
     float m_fVAdd;
     float m_fHAdd;
 };
-

@@ -1,10 +1,10 @@
 #include "LocationScriptLib.h"
 #include "Entity.h"
 #include "Fader.h"
+#include "SteamApi.hpp"
 #include "core.h"
 #include "s_import_func.h"
 #include "v_s_stack.h"
-#include "SteamApi.hpp"
 
 //============================================================================================
 

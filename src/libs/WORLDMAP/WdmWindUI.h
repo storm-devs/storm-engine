@@ -43,4 +43,3 @@ class WdmWindUI : public WdmInterfaceObject
     long txNationFlag;
     float resizeRatio;
 };
-

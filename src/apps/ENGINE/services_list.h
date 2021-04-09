@@ -42,4 +42,3 @@ class SERVICES_LIST
     uint32_t GetRef(SERVICE *sp);
     void SetRef(SERVICE *sp, uint32_t ref);
 };
-

@@ -106,4 +106,3 @@ class FONT
         bInverse = bOldInverse;
     };
 };
-

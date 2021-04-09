@@ -119,4 +119,3 @@ class AIShipTaskController
     void Save(CSaveLoad *pSL);
     void Load(CSaveLoad *pSL);
 };
-

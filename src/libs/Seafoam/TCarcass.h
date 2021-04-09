@@ -61,4 +61,3 @@ class TCarcass
     VDX9RENDER *renderer;
     int iBuffer, vBuffer;
 };
-

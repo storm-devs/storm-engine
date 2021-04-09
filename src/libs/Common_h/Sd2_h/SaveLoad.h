@@ -235,4 +235,3 @@ class CSaveLoad
         return (pV) ? pV->GetAClass() : nullptr;
     }
 };
-

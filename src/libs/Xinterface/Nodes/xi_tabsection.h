@@ -57,4 +57,3 @@ class CXI_TABSECTION : public CINODE
     uint32_t m_dwArrowColor;
     uint32_t m_dwBookmarkColor;
 };
-

@@ -74,4 +74,3 @@ class MAST : public Entity
     };
     MASTMOVE mm;
 };
-

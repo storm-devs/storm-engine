@@ -46,4 +46,3 @@ class CXI_SLIDELINE : public CINODE
     long m_nMaxValue;
     long m_nMinValue;
 };
-

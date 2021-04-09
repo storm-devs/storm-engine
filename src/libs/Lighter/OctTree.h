@@ -62,4 +62,3 @@ class OctTree
     CVECTOR vertsPos, vertsPosMin, vertsPosMax;
     float vertsR;
 };
-

@@ -127,4 +127,3 @@ class Sharks : public Entity
     uint16_t indeces[7 * 10 * 3];
     Vertex vrt[7 * 10];
 };
-

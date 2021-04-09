@@ -33,4 +33,3 @@ class IParticleService : public SERVICE
 
     virtual IParticleManager *DefManager() = 0;
 };
-

@@ -11,8 +11,7 @@ namespace detail
 
 struct is_iequal
 {
-    template <typename T1, typename T2 = T1>
-    bool operator()(const T1 &first, const T2 &second) const
+    template <typename T1, typename T2 = T1> bool operator()(const T1 &first, const T2 &second) const
     {
         return std::toupper(first) == std::toupper(second);
     }
@@ -20,8 +19,7 @@ struct is_iequal
 
 struct is_iless
 {
-    template <typename T1, typename T2 = T1>
-    bool operator()(const T1 &first, const T2 &second) const
+    template <typename T1, typename T2 = T1> bool operator()(const T1 &first, const T2 &second) const
     {
         return std::toupper(first) < std::toupper(second);
     }
@@ -29,8 +27,7 @@ struct is_iless
 
 } // namespace detail
 
-template <typename Range1T, typename Range2T = Range1T>
-inline bool iEquals(const Range1T &first, const Range2T &second)
+template <typename Range1T, typename Range2T = Range1T> inline bool iEquals(const Range1T &first, const Range2T &second)
 {
     detail::is_iequal comp;
 
@@ -51,10 +48,10 @@ inline bool iEquals(const Range1T &first, const Range2T &second)
     return it_input == end_input && it_test == end_test;
 }
 
-template <typename Range1T, typename Range2T = Range1T>
-inline bool iLess(const Range1T &first, const Range2T &second)
+template <typename Range1T, typename Range2T = Range1T> inline bool iLess(const Range1T &first, const Range2T &second)
 {
-    return std::lexicographical_compare(std::begin(first), std::end(first), std::begin(second), std::end(second), detail::is_iless{});
+    return std::lexicographical_compare(std::begin(first), std::end(first), std::begin(second), std::end(second),
+                                        detail::is_iless{});
 }
 
 // The wildcmp function was taken from http://www.codeproject.com/KB/string/wildcmp.aspx; the

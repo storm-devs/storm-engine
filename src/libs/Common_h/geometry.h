@@ -40,4 +40,3 @@ class VGEOMETRY : public SERVICE
 
     virtual void SetCausticMode(bool bSet = false) = 0;
 };
-

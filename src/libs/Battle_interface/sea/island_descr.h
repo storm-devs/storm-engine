@@ -66,4 +66,3 @@ class ISLAND_DESCRIBER
 };
 
 extern ISLAND_DESCRIBER g_IslandDescr;
-

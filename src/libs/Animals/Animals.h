@@ -48,4 +48,3 @@ class ANIMALS : public Entity
     TFishSchools *fishSchools;
     TButterflies *butterflies;
 };
-

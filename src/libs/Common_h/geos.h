@@ -319,4 +319,3 @@ enum GEOS_LOADING_FLAGS
 };
 
 GEOS *CreateGeometry(const char *fname, const char *lightname, GEOM_SERVICE &srv, long flags);
-

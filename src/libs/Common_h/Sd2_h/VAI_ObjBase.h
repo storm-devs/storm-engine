@@ -42,4 +42,3 @@ class VAI_OBJBASE : public CANNON_TRACE_BASE
 
     virtual void Fire(const CVECTOR &vPos) = 0;
 };
-

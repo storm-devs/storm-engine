@@ -1509,4 +1509,3 @@ inline Vector4 Matrix::GetVectorW() const
 }
 
 #pragma pack(pop)
-

@@ -46,4 +46,3 @@ class CXI_BOUNDER : public CINODE
     long m_nHorzLineQuantity;
     long m_nVertLineQuantity;
 };
-

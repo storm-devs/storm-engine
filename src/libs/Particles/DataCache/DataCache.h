@@ -45,4 +45,3 @@ class DataCache
     uint32_t GetCachedCount() const;
     const char *GetCachedNameByIndex(uint32_t Index);
 };
-

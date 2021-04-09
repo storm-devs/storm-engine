@@ -31,4 +31,3 @@ class ENTITY_STATE
 
     virtual void Struct(uint32_t sizeofstruct, char *s) = 0;
 };
-

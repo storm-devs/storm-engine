@@ -15,4 +15,3 @@ class xiBaseVideo : public Entity
         return nullptr;
     }
 };
-

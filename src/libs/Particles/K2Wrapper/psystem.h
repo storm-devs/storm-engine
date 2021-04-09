@@ -28,4 +28,3 @@ class PARTICLE_SYSTEM : public VPARTICLE_SYSTEM
     void SetManager(PARTICLES *_pManager);
     IParticleSystem *GetSystem() const;
 };
-

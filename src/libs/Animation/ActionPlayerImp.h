@@ -141,4 +141,3 @@ inline float &ActionPlayerImp::TimerBlend()
 {
     return kBlendTimer;
 }
-

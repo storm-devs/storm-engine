@@ -42,4 +42,3 @@ class WdmWindRose : public WdmRenderModel
   private:
     long shadowTexture;
 };
-

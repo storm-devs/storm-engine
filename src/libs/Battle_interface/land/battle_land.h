@@ -55,4 +55,3 @@ class BATTLE_LAND_INTERFACE : public Entity
 
     BIImagesInfo m_Images;
 };
-

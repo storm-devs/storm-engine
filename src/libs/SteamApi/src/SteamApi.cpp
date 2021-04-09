@@ -13,7 +13,7 @@ namespace steamapi
 
 class SteamApiImpl final : public SteamApi
 {
-public:
+  public:
     SteamApiImpl();
     ~SteamApiImpl() override;
 
@@ -37,8 +37,7 @@ public:
     bool activateGameOverlayDLC(uint32_t nAppId) override;
     void RunCallbacks() override;
 
-private:
-
+  private:
     CSteamStatsAchievements *SteamAchievements_;
     CSteamDLC *SteamDLC_;
 };
@@ -58,7 +57,7 @@ SteamApiImpl::SteamApiImpl()
             throw std::runtime_error("SteamAPI: unable to init");
         }
     }
-    catch (const std::exception& e)
+    catch (const std::exception &e)
     {
         core.Trace("%s", e.what());
     }

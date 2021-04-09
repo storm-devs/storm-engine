@@ -127,4 +127,3 @@ class SSTRING
         return *this;
     }
 };
-

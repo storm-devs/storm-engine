@@ -413,4 +413,3 @@ inline uint8_t Intel::CPUCount(uint32_t *TotAvailLogical, uint32_t *TotAvailCore
 
     return StatusFlag;
 }
-

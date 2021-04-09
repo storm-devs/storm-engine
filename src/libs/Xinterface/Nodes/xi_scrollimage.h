@@ -137,4 +137,3 @@ class CXI_SCROLLIMAGE : public CINODE
     int m_nListSize;
     IMAGEDESCRIBE *m_Image;
 };
-

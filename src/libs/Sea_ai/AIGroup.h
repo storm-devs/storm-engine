@@ -86,4 +86,3 @@ class AIGroup
     void Save(CSaveLoad *pSL);
     void Load(CSaveLoad *pSL);
 };
-

@@ -67,4 +67,3 @@ class CXI_IMGCOLLECTION : public CINODE
 
     XYPOINT m_xyCommonOffset;
 };
-

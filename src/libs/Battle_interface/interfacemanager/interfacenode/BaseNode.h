@@ -43,4 +43,3 @@ class BI_BaseNode : public BI_ManagerNodeBase
     BI_ManagerBase *m_pManager;
     VDX9RENDER *m_pRS;
 };
-

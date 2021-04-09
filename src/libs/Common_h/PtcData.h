@@ -134,4 +134,3 @@ class PtcData
     DbgVertex *dbgTriangles;
     DbgVertex *dbgEdges;
 };
-

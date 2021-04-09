@@ -256,4 +256,3 @@ inline bool Location::IsPaused() const
 {
     return isPause;
 }
-

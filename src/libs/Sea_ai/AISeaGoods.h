@@ -66,4 +66,3 @@ class AISeaGoods : public Entity
 
     uint32_t AttributeChanged(ATTRIBUTES *pAttributeChanged) override;
 };
-

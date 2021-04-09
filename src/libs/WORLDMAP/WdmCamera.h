@@ -69,4 +69,3 @@ class WdmCamera
 
     bool isInit;
 };
-

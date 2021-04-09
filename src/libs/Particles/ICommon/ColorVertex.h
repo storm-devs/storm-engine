@@ -8,4 +8,3 @@ struct ColorVertex
     Color MaxValue;
     Color MinValue;
 };
-

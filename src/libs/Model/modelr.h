@@ -138,4 +138,3 @@ class MODELR : public MODEL
     char blendTechnique[128];
     float alpha1, alpha2;
 };
-

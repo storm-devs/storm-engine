@@ -7,4 +7,3 @@ class STATS
     ~STATS(){};
     void DumpMemState();
 };
-

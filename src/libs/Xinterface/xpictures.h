@@ -12,4 +12,3 @@ class CXPICTURES
     void ChangePicture(char *sAttributeName, char *sNewImageName);
     void ReleaseAllPictures();
 };
-

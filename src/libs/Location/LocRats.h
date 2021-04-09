@@ -55,4 +55,3 @@ class LocRats : public Entity
     LocRat rat[32];
     long num;
 };
-

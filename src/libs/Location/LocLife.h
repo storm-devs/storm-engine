@@ -61,4 +61,3 @@ class LocLife : public AnimationEventListener
     CVECTOR pos;
     CVECTOR npos;
 };
-

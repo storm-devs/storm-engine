@@ -743,4 +743,3 @@ bool SetCurFont (long fontID); // returns true if the given font is installed
 
     void RecompileEffects();
 };
-

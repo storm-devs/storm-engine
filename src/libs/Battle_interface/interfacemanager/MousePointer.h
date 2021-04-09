@@ -41,4 +41,3 @@ class MousePointer : public BI_MousePointerBase
     void SetCurrentCursor();
     RECT GetCurrentCursorIconPos() const;
 };
-

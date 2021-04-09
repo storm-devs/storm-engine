@@ -72,4 +72,3 @@ class QUEST_FILE_READER
     long FindQuestByID(const char *pcQuestID);
     long FindTextByID(long nQuest, const char *pcTextID);
 };
-

@@ -174,4 +174,3 @@ inline float AnimationInfo::GetFPS()
 {
     return fps;
 }
-

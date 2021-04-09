@@ -56,4 +56,3 @@ class InfoHandler : public Entity
       STRING_LIST    * next;
     } * m_strList;*/
 };
-

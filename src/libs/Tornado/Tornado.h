@@ -69,4 +69,3 @@ class Tornado : public Entity
 
     long ib, vb;
 };
-

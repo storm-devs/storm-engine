@@ -50,4 +50,3 @@ class WdmWarringShip : public WdmEnemyShip
     float brnTime;
     long texture;
 };
-

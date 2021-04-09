@@ -32,4 +32,3 @@ class LocCrab : public LocLife
     float moveTime;
     bool isPanic;
 };
-

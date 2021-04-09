@@ -94,4 +94,3 @@ class WEATHER_BASE : public Entity
     virtual float GetFloat(uint32_t) = 0;
     virtual void GetVector(uint32_t, CVECTOR *) = 0;
 };
-

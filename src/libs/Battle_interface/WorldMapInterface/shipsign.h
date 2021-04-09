@@ -17,4 +17,3 @@ class WMShipIcon : public BISignIcon
     long CalculateSignQuantity() override;
     void UpdateChildrens() override;
 };
-

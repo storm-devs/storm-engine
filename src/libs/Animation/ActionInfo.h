@@ -143,4 +143,3 @@ inline std::unordered_map<std::string, std::string> &ActionInfo::GetUserData()
 {
     return userData;
 }
-

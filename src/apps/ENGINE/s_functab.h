@@ -91,4 +91,3 @@ class S_FUNCTAB
     void UpdateHashTable(uint32_t code, uint32_t hash, bool in);
     bool GetVar(LVARINFO &lvi, uint32_t func_code, uint32_t var_code);
 };
-

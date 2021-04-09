@@ -86,4 +86,3 @@ class ParticleSystem : public IParticleSystem
 
     void Editor_UpdateCachedData();
 };
-

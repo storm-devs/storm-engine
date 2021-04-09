@@ -237,4 +237,3 @@ inline void AnimationImp::AteExtern(long plIndex, const char *evt)
     if (ae_listenersExt)
         ae_listenersExt->Event(this, plIndex, evt);
 }
-

@@ -86,4 +86,3 @@ inline float TornadoParticles::GetRand(float r, float dev)
 {
     return r * (1.0f - dev + rand() * dev / RAND_MAX);
 }
-
