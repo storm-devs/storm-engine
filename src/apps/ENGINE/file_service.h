@@ -61,7 +61,7 @@ class INIFILE_T : public INIFILE
 
     void DeleteSection(const char *section_name) override;
 
-    bool TestKey(const char *section_name, const char *key_name, const char *key_value) override;
+    bool TestKey(const char *section_name, const char *key_name) override;
 
     bool GetSectionName(char *section_name_buffer, long buffer_size) override;
 

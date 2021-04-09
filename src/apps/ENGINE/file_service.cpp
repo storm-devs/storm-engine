@@ -464,9 +464,9 @@ void INIFILE_T::DeleteKey(const char *section_name, const char *key_name, const 
     ifs_PTR->DeleteKey(section_name, key_name, key_value);
 }
 
-bool INIFILE_T::TestKey(const char *section_name, const char *key_name, const char *key_value)
+bool INIFILE_T::TestKey(const char *section_name, const char *key_name)
 {
-    return ifs_PTR->TestKey(section_name, key_name, key_value);
+    return ifs_PTR->TestKey(section_name, key_name);
 }
 
 void INIFILE_T::DeleteSection(const char *section_name)

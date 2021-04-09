@@ -126,7 +126,7 @@ bool FONT::Init(const char *font_name, const char *iniName, IDirect3DDevice9 *_d
     Symbol_interval = ini->GetLong(font_name, "Symbol_interval", 0);
 
     bShadow = bOldShadow = false;
-    if (ini->TestKey(font_name, "Shadow", nullptr))
+    if (ini->TestKey(font_name, "Shadow"))
         bShadow = bOldShadow = true;
 
     Shadow_offsetx = ini->GetLong(font_name, "Shadow_offsetx", 2);

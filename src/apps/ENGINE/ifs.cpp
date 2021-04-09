@@ -795,12 +795,12 @@ bool IFS::TestSection(const char *section_name)
     return false;
 }
 
-bool IFS::TestKey(const char *section_name, const char *key_name, const char *key_value)
+bool IFS::TestKey(const char *section_name, const char *key_name)
 {
     auto *node = FindSection(section_name);
     if (node == nullptr)
         return false;
-    if (node->FindKey(key_name, key_value) != nullptr)
+    if (node->FindKey(key_name, nullptr) != nullptr)
         return true;
     return false;
 }

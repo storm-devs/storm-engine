@@ -220,22 +220,22 @@ bool SEAFOAM_PS::Init(INIFILE *ini, const char *psname)
     ESpace = ini->GetFloat(psname, PSKEY_EMITRADIUS, 0);
     fTrackPointRadius = ini->GetFloat(psname, PSKEY_TRACKPOINTRADIUS, 1.0f);
 
-    if (ini->TestKey(psname, PSKEY_COLORINVERSE, nullptr))
+    if (ini->TestKey(psname, PSKEY_COLORINVERSE))
         bColorInverse = true;
     else
         bColorInverse = false;
 
-    if (ini->TestKey(psname, PSKEY_UNIFORMEMIT, nullptr))
+    if (ini->TestKey(psname, PSKEY_UNIFORMEMIT))
         bUniformEmit = true;
     else
         bUniformEmit = false;
 
-    if (ini->TestKey(psname, PSKEY_RANDOMDIRECTION, nullptr))
+    if (ini->TestKey(psname, PSKEY_RANDOMDIRECTION))
         bRandomDirection = true;
     else
         bRandomDirection = false;
 
-    if (ini->TestKey(psname, PSKEY_NONSTOPEMIT, nullptr))
+    if (ini->TestKey(psname, PSKEY_NONSTOPEMIT))
         bRepeat = true;
     else
         bRepeat = false;

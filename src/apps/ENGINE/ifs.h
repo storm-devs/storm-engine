@@ -146,7 +146,7 @@ class IFS : public INIFILE
     SECTION *CreateSection(const char *section_name);
     void DeleteSection(const char *section_name) override;
 
-    bool TestKey(const char *section_name, const char *key_name, const char *key_value) override;
+    bool TestKey(const char *section_name, const char *key_name) override;
     void DeleteKey(const char *section_name, const char *key_name) override;
     void DeleteKey(const char *section_name, const char *key_name, const char *key_value) override;
 
