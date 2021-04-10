@@ -169,5 +169,4 @@ class IFS : public INIFILE
     bool GetSectionNameNext(char *section_name_buffer, long buffer_size) override;
     void Flush() override;
     bool Reload() override;
-    bool TestSection(const char *section_name) override;
 };

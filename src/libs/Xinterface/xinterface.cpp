@@ -1386,12 +1386,6 @@ void XINTERFACE::SFLB_CreateNode(INIFILE *pOwnerIni, INIFILE *pUserIni, const ch
         core.Trace("Warning! Interface: Can`t create node with null type.");
         return;
     }
-    /*if( !pOwnerIni->TestSection( sNodeType ) &&
-      !pUserIni->TestSection( sNodeType ) )
-    {
-      core.Trace("Warning! Interface: Node type %s not present into describe.",sNodeType);
-      return;
-    }*/
 
     if (!sNodeName)
         sNodeName = "?";

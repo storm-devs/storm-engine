@@ -478,8 +478,3 @@ bool INIFILE_T::Reload()
 {
     return ifs_PTR->Reload();
 }
-
-bool INIFILE_T::TestSection(const char *section_name)
-{
-    return ifs_PTR->TestSection(section_name);
-};

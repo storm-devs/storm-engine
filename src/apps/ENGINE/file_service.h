@@ -66,8 +66,6 @@ class INIFILE_T : public INIFILE
     void Flush() override;
 
     bool Reload() override;
-
-    bool TestSection(const char *section_name) override;
 };
 
 class FILE_SERVICE : public VFILE_SERVICE

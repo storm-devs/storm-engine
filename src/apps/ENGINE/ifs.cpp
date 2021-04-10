@@ -787,14 +787,6 @@ void IFS::DeleteSection(const char *section_name)
     bDataChanged = true;
 }
 
-bool IFS::TestSection(const char *section_name)
-{
-    auto *const node = FindSection(section_name);
-    if (node)
-        return true;
-    return false;
-}
-
 bool IFS::TestKey(const char *section_name, const char *key_name)
 {
     auto *node = FindSection(section_name);
