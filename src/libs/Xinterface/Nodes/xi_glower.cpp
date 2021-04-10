@@ -126,13 +126,8 @@ void CXI_GLOWER::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const 
         m_texID = m_rs->TextureCreate(param);
 
     // calculate glow blinks quantity
-    m_nQuantity = 0;
-    if (ini1->ReadString(name1, "pos", param, sizeof(param) - 1, ""))
-        do
-            m_nQuantity++;
-        while (ini1->ReadStringNext(name1, "pos", param, sizeof(param) - 1));
-    if (m_nQuantity > MAX_USED_RECTANGLE)
-        m_nQuantity = MAX_USED_RECTANGLE;
+    m_nQuantity =
+        std::min(static_cast<std::size_t>(MAX_USED_RECTANGLE), ini1->ForEachString(name1, "pos", [](auto v) {}));
 
     // set common default value
     for (i = 0; i < m_nQuantity; i++)
@@ -144,14 +139,17 @@ void CXI_GLOWER::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const 
     }
 
     // fill rectangle pos
-    ini1->ReadString(name1, "pos", param, sizeof(param) - 1, "");
-    for (i = 0; i < m_nQuantity; i++)
-    {
-        GetDataStr(param, "ll", &x, &y);
-        m_glows[i].rect.vPos.x = static_cast<float>(x) + m_hostRect.left;
-        m_glows[i].rect.vPos.y = static_cast<float>(y) + m_hostRect.top;
-        ini1->ReadStringNext(name1, "pos", param, sizeof(param) - 1);
-    }
+    ini1->ForEachString(name1, "pos", [&](auto i, auto param) {
+        if (i < m_nQuantity)
+        {
+            GetDataStr(param, "ll", &x, &y);
+            m_glows[i].rect.vPos.x = static_cast<float>(x) + m_hostRect.left;
+            m_glows[i].rect.vPos.y = static_cast<float>(y) + m_hostRect.top;
+
+            return true;
+        }
+        return false;
+    });
 
     // fill rectangles size
     x = GetIniLong(ini1, name1, ini2, name2, "spriteSize", 8);

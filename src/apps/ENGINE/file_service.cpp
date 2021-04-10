@@ -398,9 +398,47 @@ bool INIFILE_T::ReadString(const char *section_name, const char *key_name, char 
 
 // continue search from key founded in previous call this function or to function ReadString
 // fill buffer with key value if section and key exist, otherwise return false
-bool INIFILE_T::ReadStringNext(const char *section_name, const char *key_name, char *buffer, size_t buffer_size)
+std::size_t INIFILE_T::ForEachString(const char *section_name, const char *key_name,
+                                     std::function<bool(std::size_t, char *)> f)
 {
-    return ifs_PTR->ReadStringNext(&Search, section_name, key_name, buffer, buffer_size);
+    SEARCH_DATA s;
+
+    auto n = 0;
+    char buffer[2048];
+    while (true)
+    {
+        bool found;
+        if (n == 0)
+        {
+            found = ifs_PTR->ReadString(&s, section_name, key_name, buffer, 2048, "");
+        }
+        else
+        {
+            found = ifs_PTR->ReadStringNext(&s, section_name, key_name, buffer, 2048);
+        }
+
+        auto cont = false;
+        if (found)
+        {
+            auto cont = f(n, buffer);
+            n += 1;
+            if (cont)
+            {
+                continue;
+            }
+        }
+
+        return n;
+    }
+}
+
+std::size_t INIFILE_T::ForEachString(const char *section_name, const char *key_name, std::function<void(char *buf)> f)
+{
+    return this->ForEachString(section_name, key_name, [&](auto n, auto buf) {
+        f(buf);
+
+        return true;
+    });
 }
 
 // return long value of key in pointed section if section and key exist, throw EXS object otherwise

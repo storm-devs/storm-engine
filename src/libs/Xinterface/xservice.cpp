@@ -276,11 +276,7 @@ void XSERVICE::LoadAllPicturesInfo()
 
             m_pList[i].pictureStart = m_dwImageQuantity;
             // get pictures quantity
-            m_pList[i].pictureQuantity = 0;
-            if (ini->ReadString(section, "picture", param, sizeof(param) - 1, ""))
-                do
-                    m_pList[i].pictureQuantity++;
-                while (ini->ReadStringNext(section, "picture", param, sizeof(param) - 1));
+            m_pList[i].pictureQuantity = ini->ForEachString(section, "picture", [](auto v) {});
 
             // resize image list
             auto *const oldpImage = m_pImage;
@@ -296,24 +292,29 @@ void XSERVICE::LoadAllPicturesInfo()
 
             // set pictures
             char picName[sizeof(param)];
-            ini->ReadString(section, "picture", param, sizeof(param) - 1, "");
-            for (int j = m_pList[i].pictureStart; j < m_dwImageQuantity; j++)
-            {
-                // get texture coordinates
-                int nLeft, nTop, nRight, nBottom;
 
-                sscanf(param, "%[^,],%d,%d,%d,%d", picName, &nLeft, &nTop, &nRight, &nBottom);
-                m_pImage[j].pTextureRect.left = nLeft;
-                m_pImage[j].pTextureRect.top = nTop;
-                m_pImage[j].pTextureRect.right = nRight;
-                m_pImage[j].pTextureRect.bottom = nBottom;
+            ini->ForEachString(section, "picture", [&](auto n, auto param) {
+                auto j = m_pList[i].pictureStart + n;
+                if (j < m_dwImageQuantity)
+                {
+                    // get texture coordinates
+                    int nLeft, nTop, nRight, nBottom;
 
-                const auto len = strlen(picName) + 1;
-                m_pImage[j].sPictureName = new char[len];
-                memcpy(m_pImage[j].sPictureName, picName, len);
+                    sscanf(param, "%[^,],%d,%d,%d,%d", picName, &nLeft, &nTop, &nRight, &nBottom);
+                    m_pImage[j].pTextureRect.left = nLeft;
+                    m_pImage[j].pTextureRect.top = nTop;
+                    m_pImage[j].pTextureRect.right = nRight;
+                    m_pImage[j].pTextureRect.bottom = nBottom;
 
-                ini->ReadStringNext(section, "picture", param, sizeof(param) - 1);
-            }
+                    const auto len = strlen(picName) + 1;
+                    m_pImage[j].sPictureName = new char[len];
+                    memcpy(m_pImage[j].sPictureName, picName, len);
+
+                    return true;
+                }
+
+                return false;
+            });
 
             if (!ini->GetSectionNameNext(section, sizeof(section) - 1))
                 break;

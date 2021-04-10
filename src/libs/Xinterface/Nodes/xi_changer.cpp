@@ -86,11 +86,7 @@ void CXI_CHANGER::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const
     const auto bRelativeRect = !GetIniLong(ini1, name1, ini2, name2, "bAbsoluteRectangle", 0);
 
     // get position quantity
-    m_nPlaceQuantity = 0;
-    if (ini1->ReadString(name1, "place", param, sizeof(param) - 1, ""))
-        do
-            m_nPlaceQuantity++;
-        while (ini1->ReadStringNext(name1, "place", param, sizeof(param) - 1));
+    m_nPlaceQuantity = ini1->ForEachString(name1, "place", [](auto v) {});
 
     // create position array
     if (m_nPlaceQuantity > 0)
@@ -102,14 +98,18 @@ void CXI_CHANGER::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const
     }
 
     // get rectangle positions
-    ini1->ReadString(name1, "place", param, sizeof(param) - 1, "");
-    for (i = 0; i < m_nPlaceQuantity; i++)
-    {
-        GetDataStr(param, "llll", &m_pPlace[i].left, &m_pPlace[i].top, &m_pPlace[i].right, &m_pPlace[i].bottom);
-        if (bRelativeRect)
-            GetRelativeRect(m_pPlace[i]);
-        ini1->ReadStringNext(name1, "place", param, sizeof(param) - 1);
-    }
+    ini1->ForEachString(name1, "place", [&](auto i, auto param) {
+        if (i < m_nPlaceQuantity)
+        {
+            GetDataStr(param, "llll", &m_pPlace[i].left, &m_pPlace[i].top, &m_pPlace[i].right, &m_pPlace[i].bottom);
+            if (bRelativeRect)
+                GetRelativeRect(m_pPlace[i]);
+
+            return true;
+        }
+
+        return false;
+    });
 
     // get fone color
     m_dwFoneColor = GetIniARGB(ini1, name1, ini2, name2, "foneColor", ARGB(255, 255, 255, 255));

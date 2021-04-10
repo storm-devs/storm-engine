@@ -947,12 +947,8 @@ void SoundService::AddAlias(INIFILE &_iniFile, char *_sectionName)
     alias.iPrior = _iniFile.GetLong(_sectionName, "prior", 128);
     alias.fMaxProbabilityValue = 0.0f;
 
-    if (_iniFile.ReadString(_sectionName, "name", tempString, COMMON_STRING_LENGTH, ""))
-    {
-        AnalyseNameStringAndAddToAlias(&alias, tempString);
-        while (_iniFile.ReadStringNext(_sectionName, "name", tempString, COMMON_STRING_LENGTH))
-            AnalyseNameStringAndAddToAlias(&alias, tempString);
-    }
+    _iniFile.ForEachString(_sectionName, "name",
+                           [&](auto tempString) { AnalyseNameStringAndAddToAlias(&alias, tempString); });
 }
 
 void SoundService::LoadAliasFile(const char *_filename)
@@ -1360,20 +1356,10 @@ bool SoundService::AddScheme(const char *_schemeName)
     if (!ini)
         return false;
 
-    if (ini->ReadString(const_cast<char *>(_schemeName), SCHEME_KEY_NAME, tempString, COMMON_STRING_LENGTH, ""))
-    {
-        AddSoundSchemeChannel(tempString);
-        while (ini->ReadStringNext(const_cast<char *>(_schemeName), SCHEME_KEY_NAME, tempString, COMMON_STRING_LENGTH))
-            AddSoundSchemeChannel(tempString);
-    }
+    ini->ForEachString(_schemeName, SCHEME_KEY_NAME, [&](auto tempString) { AddSoundSchemeChannel(tempString); });
 
-    if (ini->ReadString(const_cast<char *>(_schemeName), SCHEME_KEY_NAME_LOOP, tempString, COMMON_STRING_LENGTH, ""))
-    {
-        AddSoundSchemeChannel(tempString, true);
-        while (ini->ReadStringNext(const_cast<char *>(_schemeName), SCHEME_KEY_NAME_LOOP, tempString,
-                                   COMMON_STRING_LENGTH))
-            AddSoundSchemeChannel(tempString, true);
-    }
+    ini->ForEachString(_schemeName, SCHEME_KEY_NAME_LOOP,
+                       [&](auto tempString) { AddSoundSchemeChannel(tempString, true); });
 
     return true;
 }

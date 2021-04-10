@@ -245,11 +245,7 @@ bool HELPCHOOSER::RunChooser(char *ChooserGroup)
         m_idBackTexture = rs->TextureCreate(param);
 
     // counting the number of rectangles for choosing help
-    m_nRectQ = 0;
-    if (ini->ReadString(ChooserGroup, "rect", param, sizeof(param) - 1, ""))
-        do
-            m_nRectQ++;
-        while (ini->ReadStringNext(ChooserGroup, "rect", param, sizeof(param) - 1));
+    m_nRectQ = ini->ForEachString(ChooserGroup, "rect", [](auto v) {});
     // create an array of coordinates of the selection rectangles
     if (m_nRectQ > 0)
     {
@@ -261,39 +257,42 @@ bool HELPCHOOSER::RunChooser(char *ChooserGroup)
         }
     }
     // fill in all the rectangles
-    ini->ReadString(ChooserGroup, "rect", param, sizeof(param) - 1, "");
-    for (i = 0; i < m_nRectQ; i++)
-    {
-        m_psRectName[i] = nullptr;
-        auto *tmpStr = param;
-
-        tmpStr = XI_ParseStr(tmpStr, param2, sizeof(param2));
-        for (j = strlen(param2) - 1; j >= 0; j--)
-            if (param2[j] == ' ')
-                param2[j] = 0;
-            else
-                break;
-        if (j > 0)
+    ini->ForEachString(ChooserGroup, "rect", [&](auto i, auto param) {
+        if (i < m_nRectQ)
         {
-            m_psRectName[i] = new char[j + 2];
-            if (m_psRectName[i] == nullptr)
+            m_psRectName[i] = nullptr;
+            auto *tmpStr = param;
+
+            tmpStr = XI_ParseStr(tmpStr, param2, sizeof(param2));
+            for (j = strlen(param2) - 1; j >= 0; j--)
+                if (param2[j] == ' ')
+                    param2[j] = 0;
+                else
+                    break;
+            if (j > 0)
             {
-                throw std::runtime_error("Allocate memory error");
+                m_psRectName[i] = new char[j + 2];
+                if (m_psRectName[i] == nullptr)
+                {
+                    throw std::runtime_error("Allocate memory error");
+                }
+                strcpy_s(m_psRectName[i], j + 2, param2);
             }
-            strcpy_s(m_psRectName[i], j + 2, param2);
+
+            tmpStr = XI_ParseStr(tmpStr, param2, sizeof(param2));
+            m_pRectList[i].left = static_cast<float>(atof(param2)) / texWidth;
+            tmpStr = XI_ParseStr(tmpStr, param2, sizeof(param2));
+            m_pRectList[i].top = static_cast<float>(atof(param2)) / texHeight;
+            tmpStr = XI_ParseStr(tmpStr, param2, sizeof(param2));
+            m_pRectList[i].right = static_cast<float>(atof(param2)) / texWidth;
+            tmpStr = XI_ParseStr(tmpStr, param2, sizeof(param2));
+            m_pRectList[i].bottom = static_cast<float>(atof(param2)) / texHeight;
+
+            return true;
         }
 
-        tmpStr = XI_ParseStr(tmpStr, param2, sizeof(param2));
-        m_pRectList[i].left = static_cast<float>(atof(param2)) / texWidth;
-        tmpStr = XI_ParseStr(tmpStr, param2, sizeof(param2));
-        m_pRectList[i].top = static_cast<float>(atof(param2)) / texHeight;
-        tmpStr = XI_ParseStr(tmpStr, param2, sizeof(param2));
-        m_pRectList[i].right = static_cast<float>(atof(param2)) / texWidth;
-        tmpStr = XI_ParseStr(tmpStr, param2, sizeof(param2));
-        m_pRectList[i].bottom = static_cast<float>(atof(param2)) / texHeight;
-
-        ini->ReadStringNext(ChooserGroup, "rect", param, sizeof(param) - 1);
-    }
+        return false;
+    });
 
     // set the mouse
     m_fCurMouseX = 0.f;

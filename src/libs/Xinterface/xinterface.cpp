@@ -1285,13 +1285,11 @@ void XINTERFACE::LoadDialog(char *sFileName)
             if (param[0])
                 SFLB_CreateNode(ownerIni.get(), ini.get(), param, nodeName, priority);
 
-            i = 0;
+            auto i = 0;
             if (findName && _stricmp(findName, "item") == 0)
             {
-                ini->ReadString(section, findName, skey, sizeof(skey) - 1);
-                for (; i < keyNum; i++)
-                    if (!ini->ReadStringNext(section, findName, skey, sizeof(skey) - 1))
-                        break;
+                i = ini->ForEachString(section, findName,
+                                       [&](auto param) { strncpy_s(skey, param, sizeof(skey) - 1); });
             }
 
             if (i < keyNum)
@@ -1424,18 +1422,17 @@ void XINTERFACE::SFLB_CreateNode(INIFILE *pOwnerIni, INIFILE *pUserIni, const ch
         pNewNod->m_bBreakPress = pNewNod->GetIniBool(pUserIni, sNodeName, pOwnerIni, sNodeType, "bBreakCommand", false);
         if (pNewNod->GetIniBool(pUserIni, sNodeName, pOwnerIni, sNodeType, "moveMouseDoSelect", false))
             pNewNod->m_bMouseSelect = true;
-        // if( pNewNod->ReadIniString(pUserIni,sNodeName, pOwnerIni,sNodeType, "command", param,sizeof(param)-1, "") )
-        // do
-        if (usedini && usedini->ReadString(pNewNod->m_nodeName, "command", param, sizeof(param) - 1, ""))
-            do
-            {
+
+        if (usedini)
+        {
+            usedini->ForEachString(pNewNod->m_nodeName, "command", [&](auto param) {
                 // get command name
                 char stmp[sizeof(param)];
                 sscanf(param, "%[^,]", stmp);
                 // search command
                 const int nComNum = FindCommand(stmp);
                 if (nComNum == -1)
-                    continue;
+                    return true;
 
                 pNewNod->m_bSelected = true;
                 pNewNod->m_bClickable = true;
@@ -1495,11 +1492,14 @@ void XINTERFACE::SFLB_CreateNode(INIFILE *pOwnerIni, INIFILE *pUserIni, const ch
                         sscanf(stmp, "sound:%d", &pNewNod->m_pCommands[nComNum].nSound);
                     }
                 }
-            } while (usedini->ReadStringNext(pNewNod->m_nodeName, "command", param, sizeof(param) - 1));
-    }
 
-    if (m_pEditor && pNewNod)
-        m_pEditor->AddNode(pNewNod);
+                return true;
+            });
+        }
+
+        if (m_pEditor && pNewNod)
+            m_pEditor->AddNode(pNewNod);
+    }
 }
 
 CINODE *XINTERFACE::NewNode(const char *pcNodType)

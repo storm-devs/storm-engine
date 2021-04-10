@@ -608,9 +608,9 @@ void CXI_FORMATEDTEXT::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
         m_idFont = m_rs->LoadFont(param);
 
     // get strings
-    if (ini1 && ini1->ReadString(name1, "string", param, sizeof(param) - 1, ""))
-        do
-        {
+    if (ini1)
+    {
+        ini1->ForEachString(name1, "string", [&](auto param) {
             if (param[0] == '#')
                 AddFormatedText(&param[1]);
             else
@@ -618,7 +618,8 @@ void CXI_FORMATEDTEXT::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
                 char param2[2048];
                 AddFormatedText(pStringService->GetString(param, param2, sizeof(param2)));
             }
-        } while (ini1->ReadStringNext(name1, "string", param, sizeof(param) - 1));
+        });
+    }
 
     //
     VAlignment(GetIniLong(ini1, name1, ini2, name2, "valignment", 0));

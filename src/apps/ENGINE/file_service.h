@@ -36,7 +36,9 @@ class INIFILE_T : public INIFILE
                     const char *def_string) override;
     // continue search from key founded in previous call this function or to function ReadString
     // fill buffer with key value if section and key exist, otherwise return false
-    bool ReadStringNext(const char *section_name, const char *key_name, char *buffer, size_t buffer_size) override;
+    std::size_t ForEachString(const char *section_name, const char *key_name,
+                              std::function<bool(std::size_t, char *)> f) override;
+    std::size_t ForEachString(const char *section_name, const char *key_name, std::function<void(char *)> f) override;
 
     // return long value of key in pointed section if section and key exist, throw EXS object otherwise
     long GetLong(const char *section_name, const char *key_name) override;

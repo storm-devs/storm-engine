@@ -114,8 +114,10 @@ class IFS : public INIFILE
                                         size_t buffer_size))
     IFS_NOT_IMPLEMENTED(bool ReadString(const char *section_name, const char *key_name, char *buffer,
                                         size_t buffer_size, const char *def_string))
-    IFS_NOT_IMPLEMENTED(bool ReadStringNext(const char *section_name, const char *key_name, char *buffer,
-                                            size_t buffer_size))
+    IFS_NOT_IMPLEMENTED(std::size_t ForEachString(const char *section_name, const char *key_name,
+                                                  std::function<bool(std::size_t, char *)> f))
+    IFS_NOT_IMPLEMENTED(std::size_t ForEachString(const char *section_name, const char *key_name,
+                                                  std::function<void(char *)> f))
     IFS_NOT_IMPLEMENTED(long GetLong(const char *section_name, const char *key_name))
     IFS_NOT_IMPLEMENTED(long GetLong(const char *section_name, const char *key_name, long def_val))
     IFS_NOT_IMPLEMENTED(double GetDouble(const char *section_name, const char *key_name))

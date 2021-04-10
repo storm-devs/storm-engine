@@ -53,8 +53,6 @@
 
 //============================================================================================
 
-char AnimationServiceImp::key[1024];
-
 // ============================================================================================
 // Construction, destruction
 // ============================================================================================
@@ -176,6 +174,7 @@ long AnimationServiceImp::LoadAnimation(const char *animationName)
 {
     // Form the file name
     static char path[MAX_PATH];
+    char key[1024];
     strcpy_s(path, ASKW_PATH_ANI);
     strcat_s(path, animationName);
     strcat_s(path, ".ani");
@@ -274,127 +273,121 @@ long AnimationServiceImp::LoadAnimation(const char *animationName)
         }
         aci->SetLoop(isLoop);
         // Events
-        if (ani->ReadString(path, ASKW_EVENT, key, 256, ""))
-        {
-            do
+        ani->ForEachString(path, ASKW_EVENT, [&](auto key) {
+            key[256] = 0;
+            memcpy(key + 257, key, 257);
+            // The beginning of the name
+            if (key[0] != '"')
             {
-                key[256] = 0;
-                memcpy(key + 257, key, 257);
-                // The beginning of the name
-                if (key[0] != '"')
-                {
-                    core.Trace("Incorrect %s <%s> in action [%s] of animation file %s.ani\nFirst symbol is not '\"'\n",
-                               ASKW_EVENT, key + 257, path, animationName);
-                    continue;
-                }
-                // End of name
-                long p;
-                for (p = 1; key[p] && key[p] != '"'; p++)
-                    ;
-                if (!key[p])
-                {
-                    core.Trace(
-                        "Incorrect %s <%s> in action [%s] of animation file %s.ani\nNot found closed symbol '\"'\n",
-                        ASKW_EVENT, key + 257, path, animationName);
-                    continue;
-                }
-                if (p == 1)
-                {
-                    core.Trace("Incorrect %s <%s> in action [%s] of animation file %s.ani\nName have zero lenght\n",
-                               ASKW_EVENT, key + 257, path, animationName);
-                    continue;
-                }
-                if (p > 65)
-                {
-                    core.Trace(
-                        "Incorrect %s <%s> in action [%s] of animation file %s.ani\nName have big length (max 63)\n",
-                        ASKW_EVENT, key + 257, path, animationName);
-                    continue;
-                }
+                core.Trace("Incorrect %s <%s> in action [%s] of animation file %s.ani\nFirst symbol is not '\"'\n",
+                           ASKW_EVENT, key + 257, path, animationName);
+                return;
+            }
+            // End of name
+            long p;
+            for (p = 1; key[p] && key[p] != '"'; p++)
+                ;
+            if (!key[p])
+            {
+                core.Trace("Incorrect %s <%s> in action [%s] of animation file %s.ani\nNot found closed symbol '\"'\n",
+                           ASKW_EVENT, key + 257, path, animationName);
+                return;
+            }
+            if (p == 1)
+            {
+                core.Trace("Incorrect %s <%s> in action [%s] of animation file %s.ani\nName have zero lenght\n",
+                           ASKW_EVENT, key + 257, path, animationName);
+                return;
+            }
+            if (p > 65)
+            {
+                core.Trace("Incorrect %s <%s> in action [%s] of animation file %s.ani\nName have big length (max 63)\n",
+                           ASKW_EVENT, key + 257, path, animationName);
+                return;
+            }
+            key[p++] = 0;
+            // determine the time
+            // First digit
+            for (; key[p] && (key[p] < '0' || key[p] > '9'); p++)
+                ;
+            if (!key[p])
+            {
+                core.Trace("Incorrect %s <%s> in action [%s] of animation file %s.ani\nNo found time\n", ASKW_EVENT,
+                           key + 257, path, animationName);
+                return;
+            }
+            auto *em = key + p;
+            // Looking for the end of the number
+            for (; key[p] >= '0' && key[p] <= '9'; p++)
+                ;
+            float tm = 0;
+            if (key[p] != '%')
+            {
+                // The absolute time value
+                if (key[p])
+                    key[p++] = 0;
+                tm = static_cast<float>(atof(em));
+            }
+            else
+            {
+                // Relative time value
                 key[p++] = 0;
-                // determine the time
-                // First digit
-                for (; key[p] && (key[p] < '0' || key[p] > '9'); p++)
-                    ;
-                if (!key[p])
+                tm = static_cast<float>(atof(em));
+                if (tm < 0)
+                    tm = 0;
+                if (tm > 100)
+                    tm = 100;
+                tm = stime + 0.01f * tm * (etime - stime);
+            }
+            if (tm < stime)
+                tm = static_cast<float>(stime);
+            if (tm > etime)
+                tm = static_cast<float>(etime);
+            // Reading the event type
+            auto ev = eae_normal;
+            if (key[p])
+            {
+                // Looking for a start
+                for (p++; key[p]; p++)
+                    if ((key[p] >= 'A' && key[p] <= 'Z') || (key[p] >= 'a' && key[p] <= 'z'))
+                        break;
+                em = key + p;
+                // Looking for an ending
+                for (p++; key[p]; p++)
+                    if (!(key[p] >= 'A' && key[p] <= 'Z') && !(key[p] >= 'a' && key[p] <= 'z'))
+                        break;
+                key[p] = 0;
+                if (em[0] == 0)
                 {
-                    core.Trace("Incorrect %s <%s> in action [%s] of animation file %s.ani\nNo found time\n", ASKW_EVENT,
-                               key + 257, path, animationName);
-                    continue;
                 }
-                auto *em = key + p;
-                // Looking for the end of the number
-                for (; key[p] >= '0' && key[p] <= '9'; p++)
-                    ;
-                float tm = 0;
-                if (key[p] != '%')
+                else if (_stricmp(em, ASKWAE_ALWAYS) == 0)
                 {
-                    // The absolute time value
-                    if (key[p])
-                        key[p++] = 0;
-                    tm = static_cast<float>(atof(em));
+                    ev = eae_always;
+                }
+                else if (_stricmp(em, ASKWAE_NORMAL) == 0)
+                {
+                    ev = eae_normal;
+                }
+                else if (_stricmp(em, ASKWAE_REVERSE) == 0)
+                {
+                    ev = eae_reverse;
                 }
                 else
                 {
-                    // Relative time value
-                    key[p++] = 0;
-                    tm = static_cast<float>(atof(em));
-                    if (tm < 0)
-                        tm = 0;
-                    if (tm > 100)
-                        tm = 100;
-                    tm = stime + 0.01f * tm * (etime - stime);
+                    core.Trace("Warning: Incorrect %s <%s> in action [%s] of animation file %s.ani,\nunknow event "
+                               "type <%s> -> set is default value\n",
+                               ASKW_EVENT, key + 257, path, animationName, em);
                 }
-                if (tm < stime)
-                    tm = static_cast<float>(stime);
-                if (tm > etime)
-                    tm = static_cast<float>(etime);
-                // Reading the event type
-                auto ev = eae_normal;
-                if (key[p])
-                {
-                    // Looking for a start
-                    for (p++; key[p]; p++)
-                        if ((key[p] >= 'A' && key[p] <= 'Z') || (key[p] >= 'a' && key[p] <= 'z'))
-                            break;
-                    em = key + p;
-                    // Looking for an ending
-                    for (p++; key[p]; p++)
-                        if (!(key[p] >= 'A' && key[p] <= 'Z') && !(key[p] >= 'a' && key[p] <= 'z'))
-                            break;
-                    key[p] = 0;
-                    if (em[0] == 0)
-                    {
-                    }
-                    else if (_stricmp(em, ASKWAE_ALWAYS) == 0)
-                    {
-                        ev = eae_always;
-                    }
-                    else if (_stricmp(em, ASKWAE_NORMAL) == 0)
-                    {
-                        ev = eae_normal;
-                    }
-                    else if (_stricmp(em, ASKWAE_REVERSE) == 0)
-                    {
-                        ev = eae_reverse;
-                    }
-                    else
-                    {
-                        core.Trace("Warning: Incorrect %s <%s> in action [%s] of animation file %s.ani,\nunknow event "
-                                   "type <%s> -> set is default value\n",
-                                   ASKW_EVENT, key + 257, path, animationName, em);
-                    }
-                }
-                // core.Trace("Add event %s, time = %f to action %s", key + 1, (tm - stime)/float(etime - stime), path);
-                // Add an event
-                if (!aci->AddEvent(key + 1, tm, ev))
-                {
-                    core.Trace("Warning: Incorrect %s <%s> in action [%s] of animation file %s.ani,\nvery many events "
-                               "-> ignory it\n",
-                               ASKW_EVENT, key + 257, path, animationName);
-                }
-            } while (ani->ReadStringNext(path, ASKW_EVENT, key, 256));
-        }
+            }
+            // core.Trace("Add event %s, time = %f to action %s", key + 1, (tm - stime)/float(etime - stime), path);
+            // Add an event
+            if (!aci->AddEvent(key + 1, tm, ev))
+            {
+                core.Trace("Warning: Incorrect %s <%s> in action [%s] of animation file %s.ani,\nvery many events "
+                           "-> ignory it\n",
+                           ASKW_EVENT, key + 257, path, animationName);
+            }
+        });
         // Bones
 
         // User data
@@ -417,85 +410,81 @@ long AnimationServiceImp::LoadAnimation(const char *animationName)
 void AnimationServiceImp::LoadUserData(INIFILE *ani, const char *sectionName,
                                        std::unordered_map<std::string, std::string> &data, const char *animationName)
 {
-    if (ani->ReadString(sectionName, ASKW_DATA, key, 1023, ""))
-    {
-        do
+    ani->ForEachString(sectionName, ASKW_DATA, [&](auto key) {
+        key[1023] = 0;
+        // Looking for data name
+        // The beginning of the name
+        if (key[0] != '"')
         {
-            key[1023] = 0;
-            // Looking for data name
-            // The beginning of the name
-            if (key[0] != '"')
-            {
-                if (sectionName)
-                    core.Trace("Incorrect %s in action [%s] of animation file %s.ani\nFirst symbol is not '\"'",
-                               ASKW_DATA, sectionName, animationName);
-                else
-                    core.Trace("Incorrect %s in global data of animation file %s.ani\nFirst symbol is not '\"'",
-                               ASKW_DATA, animationName);
-                continue;
-            }
-            // End of name
-            long p;
-            for (p = 1; key[p] && key[p] != '"'; p++)
-                ;
-            if (!key[p])
-            {
-                if (sectionName)
-                    core.Trace("Incorrect %s in action [%s] of animation file %s.ani\nNot found closed symbol '\"' for "
-                               "data name",
-                               ASKW_DATA, sectionName, animationName);
-                else
-                    core.Trace("Incorrect %s in global data of animation file %s.ani\nNot found closed symbol '\"' for "
-                               "data name",
-                               ASKW_DATA, animationName);
-                continue;
-            }
-            if (p == 1)
-            {
-                if (sectionName)
-                    core.Trace("Incorrect %s in action [%s] of animation file %s.ani\nName have zero lenght", ASKW_DATA,
-                               sectionName, animationName);
-                else
-                    core.Trace("Incorrect %s in global data of animation file %s.ani\nName have zero lenght", ASKW_DATA,
-                               animationName);
-                continue;
-            }
-            key[p++] = 0;
-            // Checking for data availability
-            if (data.count(key + 1))
-            {
-                if (sectionName)
-                    core.Trace("Incorrect %s in action [%s] of animation file %s.ani\nUser data repeated", ASKW_DATA,
-                               sectionName, animationName);
-                else
-                    core.Trace("Incorrect %s in global data of animation file %s.ani\nUser data repeated", ASKW_DATA,
-                               animationName);
+            if (sectionName)
+                core.Trace("Incorrect %s in action [%s] of animation file %s.ani\nFirst symbol is not '\"'", ASKW_DATA,
+                           sectionName, animationName);
+            else
+                core.Trace("Incorrect %s in global data of animation file %s.ani\nFirst symbol is not '\"'", ASKW_DATA,
+                           animationName);
+            return;
+        }
+        // End of name
+        long p;
+        for (p = 1; key[p] && key[p] != '"'; p++)
+            ;
+        if (!key[p])
+        {
+            if (sectionName)
+                core.Trace("Incorrect %s in action [%s] of animation file %s.ani\nNot found closed symbol '\"' for "
+                           "data name",
+                           ASKW_DATA, sectionName, animationName);
+            else
+                core.Trace("Incorrect %s in global data of animation file %s.ani\nNot found closed symbol '\"' for "
+                           "data name",
+                           ASKW_DATA, animationName);
+            return;
+        }
+        if (p == 1)
+        {
+            if (sectionName)
+                core.Trace("Incorrect %s in action [%s] of animation file %s.ani\nName have zero lenght", ASKW_DATA,
+                           sectionName, animationName);
+            else
+                core.Trace("Incorrect %s in global data of animation file %s.ani\nName have zero lenght", ASKW_DATA,
+                           animationName);
+            return;
+        }
+        key[p++] = 0;
+        // Checking for data availability
+        if (data.count(key + 1))
+        {
+            if (sectionName)
+                core.Trace("Incorrect %s in action [%s] of animation file %s.ani\nUser data repeated", ASKW_DATA,
+                           sectionName, animationName);
+            else
+                core.Trace("Incorrect %s in global data of animation file %s.ani\nUser data repeated", ASKW_DATA,
+                           animationName);
 
-                continue;
-            }
-            // looking for a string with data
-            for (; key[p] && key[p] != '"'; p++)
-                ;
-            if (!key[p])
-            {
-                if (sectionName)
-                    core.Trace("Incorrect %s in action [%s] of animation file %s.ani\nNo data string", ASKW_DATA,
-                               sectionName, animationName);
-                else
-                    core.Trace("Incorrect %s in global data of animation file %s.ani\nNo data string", ASKW_DATA,
-                               animationName);
-                continue;
-            }
-            // Looking for the end of the data string
-            auto *const uds = key + ++p;
-            for (; key[p] && key[p] != '"'; p++)
-                ;
-            key[p] = 0;
-            // Add data
-            // core.Trace("Add user data \"%s\", \"%s\" of \"%s\"", key + 1, uds, sectionName);
-            data[key + 1] = uds;
-        } while (ani->ReadStringNext((char *)sectionName, ASKW_DATA, key, 1023));
-    }
+            return;
+        }
+        // looking for a string with data
+        for (; key[p] && key[p] != '"'; p++)
+            ;
+        if (!key[p])
+        {
+            if (sectionName)
+                core.Trace("Incorrect %s in action [%s] of animation file %s.ani\nNo data string", ASKW_DATA,
+                           sectionName, animationName);
+            else
+                core.Trace("Incorrect %s in global data of animation file %s.ani\nNo data string", ASKW_DATA,
+                           animationName);
+            return;
+        }
+        // Looking for the end of the data string
+        auto *const uds = key + ++p;
+        for (; key[p] && key[p] != '"'; p++)
+            ;
+        key[p] = 0;
+        // Add data
+        // core.Trace("Add user data \"%s\", \"%s\" of \"%s\"", key + 1, uds, sectionName);
+        data[key + 1] = uds;
+    });
 }
 
 // load AN

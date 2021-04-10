@@ -40,22 +40,14 @@ bool BLAST::Init()
 
     const auto RandomNum = ini->GetLong("geo", "randomnum", 0);
 
-    char name[MAX_PATH];
-    if (ini->ReadString("geo", "file", name, sizeof(name), ""))
-    {
-        AddGeometry(name, RandomNum * rand() / RAND_MAX + 1);
-    }
-    while (ini->ReadStringNext("geo", "file", name, sizeof(name)))
-    {
-        AddGeometry(name, RandomNum * rand() / RAND_MAX + 1);
-    }
+    ini->ForEachString("geo", "file", [&](auto name) { AddGeometry(name, RandomNum * rand() / RAND_MAX + 1); });
 
     Splash = EntityManager::GetEntityId("BallSplash");
 
     return true;
 }
 
-void BLAST::AddGeometry(char *name, long num)
+void BLAST::AddGeometry(const char *name, long num)
 {
     // n = ItemsNum;
     // ItemsNum++;

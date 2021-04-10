@@ -231,22 +231,20 @@ bool SEPS_PS::Init(INIFILE *ini, char *psname)
     char string[MAX_PATH];
 
     TexturesNum = 0;
-    for (n = 0; n < MAX_PS_TEXTURES; n++)
-    {
-        if (n == 0)
-            bRes = ini->ReadString(psname, PSKEY_TEXTURE, string, sizeof(string), "");
-        else
-            bRes = ini->ReadStringNext(psname, PSKEY_TEXTURE, string, sizeof(string));
-
-        if (bRes)
+    ini->ForEachString(psname, PSKEY_TEXTURE, [&](auto n, auto string) {
+        if (n < MAX_PS_TEXTURES)
         {
             TextureID[n] = RenderService->TextureCreate(string);
             if (TextureID[n] >= 0)
-                TexturesNum++;
+            {
+                TexturesNum += 1;
+            }
+
+            return true;
         }
-        else
-            break;
-    }
+
+        return false;
+    });
 
     if (!ini->ReadString(psname, PSKEY_TECHNIQUE, string, sizeof(string), ""))
     {
@@ -849,46 +847,28 @@ float SEPS_PS::GetTrackValue(sink_effect::TRACK_EVENT *Track, long Time)
 
 bool SEPS_PS::BuildTrack(INIFILE *ini, sink_effect::TRACK_EVENT *Track, const char *psname, const char *key_name)
 {
-    long n, i;
-    char buffer[MAX_PATH];
-    bool bRes;
-    bool bFound;
-
-    bFound = false;
-
-    for (n = 0; n < TRACK_EVENT_MAX; n++)
-    {
-        Track[n].value = 0;
-        Track[n].time = -1;
-
-        if (n == 0)
+    return ini->ForEachString(psname, key_name, [&](auto n, auto buffer) {
+        if (n < TRACK_EVENT_MAX)
         {
-            bRes = ini->ReadString(psname, key_name, buffer, sizeof(buffer), "0,-1");
-            if (bRes)
-                bFound = true;
-        }
-        else
-        {
-            bRes = ini->ReadStringNext(psname, key_name, buffer, sizeof(buffer));
-        }
-
-        if (!bRes)
-        {
+            Track[n].value = 0;
             Track[n].time = -1;
-            return bFound;
-        }
-        for (i = 0; buffer[i]; i++)
-        {
-            if (buffer[i] == ',')
+
+            for (auto i = 0; buffer[i]; i++)
             {
-                buffer[i] = 0;
-                Track[n].value = static_cast<float>(atof(buffer));
-                Track[n].time = atol(&buffer[i + 1]);
-                break;
+                if (buffer[i] == ',')
+                {
+                    buffer[i] = 0;
+                    Track[n].value = static_cast<float>(atof(buffer));
+                    Track[n].time = atol(&buffer[i + 1]);
+                    break;
+                }
             }
+
+            return true;
         }
-    }
-    return bFound;
+
+        return false;
+    }) > 0;
 }
 
 void SEPS_PS::SetEmitter(CVECTOR p, CVECTOR a)

@@ -100,11 +100,7 @@ void CXI_CONTEXTHELP::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
 
     // Get help strings quantity
     m_helpQuantity = 0;
-    if (ini1->ReadString(name1, "helpstr", param, sizeof(param) - 1, ""))
-        do
-            m_helpQuantity++;
-        while (ini1->ReadStringNext(name1, "helpstr", param, sizeof(param) - 1));
-
+    ini1->ForEachString(name1, "helpstr", [&](auto v) { m_helpQuantity++; });
     // Get default help string
     if (ini1->ReadString(name1, "defhelp", param, sizeof(param) - 1, ""))
         m_defaultString = pStringService->GetStringNum(param);
@@ -116,21 +112,26 @@ void CXI_CONTEXTHELP::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
         if ((m_pHelpList = new HELPEntity[m_helpQuantity]) == nullptr)
             throw std::runtime_error("allocate memory error");
         PZERO(m_pHelpList, sizeof(HELPEntity) * m_helpQuantity);
-        ini1->ReadString(name1, "helpstr", param, sizeof(param) - 1, "");
-        char nodeName[sizeof(param)], stringName[sizeof(param)];
-        for (i = 0; i < m_helpQuantity; i++)
-        {
-            sscanf(param, "%[^,],%[^,]", nodeName, stringName);
-            if (nodeName[0] != 0)
+
+        char nodeName[2048], stringName[2048];
+        ini1->ForEachString(name1, "helpstr", [&](auto i, auto param) {
+            if (i < m_helpQuantity)
             {
-                const auto len = strlen(nodeName) + 1;
-                if ((m_pHelpList[i].nodeName = new char[len]) == nullptr)
-                    throw std::runtime_error("allocate memory error");
-                memcpy(m_pHelpList[i].nodeName, nodeName, len);
-                m_pHelpList[i].idHelpString = pStringService->GetStringNum(stringName);
+                sscanf(param, "%[^,],%[^,]", nodeName, stringName);
+                if (nodeName[0] != 0)
+                {
+                    const auto len = strlen(nodeName) + 1;
+                    if ((m_pHelpList[i].nodeName = new char[len]) == nullptr)
+                        throw std::runtime_error("allocate memory error");
+                    memcpy(m_pHelpList[i].nodeName, nodeName, len);
+                    m_pHelpList[i].idHelpString = pStringService->GetStringNum(stringName);
+                }
+
+                return true;
             }
-            ini1->ReadStringNext(name1, "helpstr", param, sizeof(param) - 1);
-        }
+
+            return false;
+        });
     }
     else
     {

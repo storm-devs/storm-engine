@@ -43,36 +43,31 @@ void CXI_LINECOLLECTION::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2
 
     // fill lines structure array
     const auto bRelativeRect = !GetIniLong(ini1, name1, ini2, name2, "bAbsoluteRectangle", 0);
-    auto nCurLine = 0;
-    if (ini1->ReadString(name1, "line", param, sizeof(param) - 1, ""))
-        do
+    ini1->ForEachString(name1, "line", [&](auto param) {
+        XYRECT scrRect;
+        uint32_t dwCol = 0;
+        if (GetMidStr(param, param1, sizeof(param1), "(", ")-("))
+            GetDataStr(param1, "ll", &scrRect.left, &scrRect.top);
+        if (GetMidStr(param, param1, sizeof(param1), ")-(", ")"))
+            GetDataStr(param1, "ll", &scrRect.right, &scrRect.bottom);
+        if (GetMidStr(param, param1, sizeof(param1), "col:{", "}"))
         {
-            XYRECT scrRect;
-            uint32_t dwCol = 0;
-            if (GetMidStr(param, param1, sizeof(param1), "(", ")-("))
-                GetDataStr(param1, "ll", &scrRect.left, &scrRect.top);
-            if (GetMidStr(param, param1, sizeof(param1), ")-(", ")"))
-                GetDataStr(param1, "ll", &scrRect.right, &scrRect.bottom);
-            if (GetMidStr(param, param1, sizeof(param1), "col:{", "}"))
-            {
-                dwCol = GetColorFromStr(param1, dwCol);
-            }
-            if (bRelativeRect)
-                GetRelativeRect(scrRect);
+            dwCol = GetColorFromStr(param1, dwCol);
+        }
+        if (bRelativeRect)
+            GetRelativeRect(scrRect);
 
-            // long n = m_aLines.Add();
-            // m_aLines.Add();
-            // m_aLines[n].dwColor = m_aLines[n+1].dwColor = dwCol;
-            // m_aLines[n].vPos.z = m_aLines[n+1].vPos.z = 1.f;
-            // m_aLines[n].vPos.x = (float)scrRect.left; m_aLines[n+1].vPos.x = (float)scrRect.right;
-            // m_aLines[n].vPos.y = (float)scrRect.top;  m_aLines[n+1].vPos.y = (float)scrRect.bottom;
-            m_aLines.push_back(
-                RS_LINE{CVECTOR{static_cast<float>(scrRect.left), static_cast<float>(scrRect.top), 1.f}, dwCol});
-            m_aLines.push_back(
-                RS_LINE{CVECTOR{static_cast<float>(scrRect.right), static_cast<float>(scrRect.bottom), 1.f}, dwCol});
-
-            nCurLine++;
-        } while (ini1->ReadStringNext(name1, "line", param, sizeof(param) - 1));
+        // long n = m_aLines.Add();
+        // m_aLines.Add();
+        // m_aLines[n].dwColor = m_aLines[n+1].dwColor = dwCol;
+        // m_aLines[n].vPos.z = m_aLines[n+1].vPos.z = 1.f;
+        // m_aLines[n].vPos.x = (float)scrRect.left; m_aLines[n+1].vPos.x = (float)scrRect.right;
+        // m_aLines[n].vPos.y = (float)scrRect.top;  m_aLines[n+1].vPos.y = (float)scrRect.bottom;
+        m_aLines.push_back(
+            RS_LINE{CVECTOR{static_cast<float>(scrRect.left), static_cast<float>(scrRect.top), 1.f}, dwCol});
+        m_aLines.push_back(
+            RS_LINE{CVECTOR{static_cast<float>(scrRect.right), static_cast<float>(scrRect.bottom), 1.f}, dwCol});
+    });
 }
 
 void CXI_LINECOLLECTION::ReleaseAll()

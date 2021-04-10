@@ -105,17 +105,12 @@ bool BREAKPOINTS_TABLE::ReadProject(const char *filename)
     if (ini)
     {
         strcpy_s(ProjectName, filename);
-        if (ini->ReadString(SECTION_NAME, "B", buffer, sizeof(buffer), ""))
-        {
+        ini->ForEachString(SECTION_NAME, "B", [&](auto buffer) {
             if (MakeLineCode(buffer, nLineNumber))
-                AddBreakPoint(buffer, nLineNumber);
-            while (ini->ReadStringNext(SECTION_NAME, "B", buffer, sizeof(buffer)))
             {
-                if (MakeLineCode(buffer, nLineNumber))
-                    AddBreakPoint(buffer, nLineNumber);
+                AddBreakPoint(buffer, nLineNumber);
             }
-        }
-        // bReleased = false;
+        });
         return true;
     }
     return false;

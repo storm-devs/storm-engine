@@ -104,12 +104,12 @@ void CXI_IMGCOLLECTION::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2,
 
     // Get images quantity
     auto imgQuantity = 0;
-    if (ini1->ReadString(name1, "picture", param, sizeof(param) - 1, ""))
-        do
+    ini1->ForEachString(name1, "picture", [&](auto param) {
+        if (_strnicmp(param, "editsection:", 12) != 0)
         {
-            if (_strnicmp(param, "editsection:", 12) != 0)
-                imgQuantity++;
-        } while (ini1->ReadStringNext(name1, "picture", param, sizeof(param) - 1));
+            imgQuantity++;
+        }
+    });
 
     m_bRelativeRect = !GetIniLong(ini1, name1, ini2, name2, "bAbsoluteRectangle", 0);
 
@@ -132,71 +132,74 @@ void CXI_IMGCOLLECTION::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2,
             FXYRECT texRect;
             XYRECT scrRect;
             // fill vetex and index buffers of image information
-            ini1->ReadString(name1, "picture", param, sizeof(param) - 1, "");
-            for (auto i = 0; i < imgQuantity; i++)
-            {
-                if (_strnicmp(param, "editsection:", 12) != 0)
+            ini1->ForEachString(name1, "picture", [&](auto i, auto param) {
+                if (i < imgQuantity)
                 {
-                    auto dwColor = ARGB(255, 128, 128, 128);
-                    char param2[256];
-                    const char *pStr = param;
-                    n = m_aEditInfo.size();
-                    m_aEditInfo.push_back(PicEditInfo());
-
-                    pStr = GetSubStr(pStr, param2, sizeof(param2));
-                    pPictureService->GetTexturePos(sGroupName, param2, texRect);
-                    m_aEditInfo[n].sName = param2;
-
-                    if (GetMidStr(pStr, param2, sizeof(param2), "col:{", "}"))
+                    if (_strnicmp(param, "editsection:", 12) != 0)
                     {
-                        int a = ALPHA(dwColor);
-                        int r = RED(dwColor);
-                        int g = GREEN(dwColor);
-                        int b = BLUE(dwColor);
-                        GetDataStr(param2, "llll", &a, &r, &g, &b);
-                        dwColor = ARGB(a, r, g, b);
-                    }
-                    m_aEditInfo[n].dwColor = dwColor;
+                        auto dwColor = ARGB(255, 128, 128, 128);
+                        char param2[256];
+                        const char *pStr = param;
+                        n = m_aEditInfo.size();
+                        m_aEditInfo.push_back(PicEditInfo());
 
-                    scrRect.left = scrRect.top = scrRect.right = scrRect.bottom = 0;
-                    if (GetMidStr(pStr, param2, sizeof(param2), "pos:{", "}"))
-                        GetDataStr(param2, "llll", &scrRect.left, &scrRect.top, &scrRect.right, &scrRect.bottom);
-                    m_aEditInfo[n].nLeft = scrRect.left;
-                    m_aEditInfo[n].nTop = scrRect.top;
-                    m_aEditInfo[n].nRight = scrRect.right;
-                    m_aEditInfo[n].nBottom = scrRect.bottom;
-                    if (m_bRelativeRect)
-                        GetRelativeRect(scrRect);
-                    m_aEditInfo[n].bNative = true;
+                        pStr = GetSubStr(pStr, param2, sizeof(param2));
+                        pPictureService->GetTexturePos(sGroupName, param2, texRect);
+                        m_aEditInfo[n].sName = param2;
 
-                    SetBuffers(pVBuf, pIBuf, i, scrRect, texRect, dwColor);
-                }
-                else
-                {
-                    if (_stricmp(&param[12], "end") == 0)
-                    {
-                        n = m_aSections.size() - 1;
-                        if (n >= 0)
-                            m_aSections[n].nQuantity = m_aEditInfo.size() - m_aSections[n].nStartNum;
+                        if (GetMidStr(pStr, param2, sizeof(param2), "col:{", "}"))
+                        {
+                            int a = ALPHA(dwColor);
+                            int r = RED(dwColor);
+                            int g = GREEN(dwColor);
+                            int b = BLUE(dwColor);
+                            GetDataStr(param2, "llll", &a, &r, &g, &b);
+                            dwColor = ARGB(a, r, g, b);
+                        }
+                        m_aEditInfo[n].dwColor = dwColor;
+
+                        scrRect.left = scrRect.top = scrRect.right = scrRect.bottom = 0;
+                        if (GetMidStr(pStr, param2, sizeof(param2), "pos:{", "}"))
+                            GetDataStr(param2, "llll", &scrRect.left, &scrRect.top, &scrRect.right, &scrRect.bottom);
+                        m_aEditInfo[n].nLeft = scrRect.left;
+                        m_aEditInfo[n].nTop = scrRect.top;
+                        m_aEditInfo[n].nRight = scrRect.right;
+                        m_aEditInfo[n].nBottom = scrRect.bottom;
+                        if (m_bRelativeRect)
+                            GetRelativeRect(scrRect);
+                        m_aEditInfo[n].bNative = true;
+
+                        SetBuffers(pVBuf, pIBuf, i, scrRect, texRect, dwColor);
                     }
                     else
                     {
-                        n = m_aSections.size() - 1;
-                        if (n >= 0)
+                        if (_stricmp(&param[12], "end") == 0)
                         {
-                            if (m_aSections[n].nQuantity == 0)
+                            n = m_aSections.size() - 1;
+                            if (n >= 0)
                                 m_aSections[n].nQuantity = m_aEditInfo.size() - m_aSections[n].nStartNum;
                         }
-                        n++;
-                        m_aSections.push_back(PicEditSection());
-                        m_aSections[n].nStartNum = m_aEditInfo.size();
-                        m_aSections[n].sName = &param[12];
-                        m_aSections[n].nQuantity = 0;
+                        else
+                        {
+                            n = m_aSections.size() - 1;
+                            if (n >= 0)
+                            {
+                                if (m_aSections[n].nQuantity == 0)
+                                    m_aSections[n].nQuantity = m_aEditInfo.size() - m_aSections[n].nStartNum;
+                            }
+                            n++;
+                            m_aSections.push_back(PicEditSection());
+                            m_aSections[n].nStartNum = m_aEditInfo.size();
+                            m_aSections[n].sName = &param[12];
+                            m_aSections[n].nQuantity = 0;
+                        }
+                        i--;
                     }
-                    i--;
+                    return true;
                 }
-                ini1->ReadStringNext(name1, "picture", param, sizeof(param) - 1);
-            }
+
+                return false;
+            });
             n = m_aSections.size() - 1;
             if (n >= 0)
             {

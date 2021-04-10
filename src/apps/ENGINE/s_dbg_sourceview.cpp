@@ -465,12 +465,7 @@ SOURCE_VIEW::SOURCE_VIEW(HWND _hMain, HINSTANCE _hInst)
     auto pI = fio->OpenIniFile(PROJECT_NAME);
     if (pI)
     {
-        char buffer[1024];
-        if (pI->ReadString("bookmarks", "BM", buffer, sizeof(buffer), ""))
-            do
-            {
-                htBookmarks[buffer] = static_cast<uint32_t>(0);
-            } while (pI->ReadStringNext("bookmarks", "BM", buffer, sizeof(buffer)));
+        pI->ForEachString("bookmarks", "BM", [&](auto buffer) { htBookmarks[buffer] = static_cast<uint32_t>(0); });
     }
 }
 

@@ -136,23 +136,13 @@ void CXI_SLIDEPICTURE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
     nSlideListSize = 0;
     pSlideSpeedList = nullptr;
 
-    auto bUse1Ini = true;
+    auto bUse1Ini = false;
     // Calculating the size of the speed table
-    if (ini1->ReadString(name1, "speed", param, sizeof(param) - 1, ""))
+    nSlideListSize = ini1->ForEachString(name1, "speed", [&](auto p) { bUse1Ini = true; });
+    if (!bUse1Ini)
     {
-        do
-            nSlideListSize++;
-        while (ini1->ReadStringNext(name1, "speed", param, sizeof(param) - 1));
-    }
-    else
-    {
-        if (ini2->ReadString(name2, "speed", param, sizeof(param) - 1, ""))
-        {
-            bUse1Ini = false;
-            do
-                nSlideListSize++;
-            while (ini2->ReadStringNext(name2, "speed", param, sizeof(param) - 1));
-        }
+        bUse1Ini = true;
+        nSlideListSize = ini2->ForEachString(name2, "speed", [&](auto p) { bUse1Ini = false; });
     }
 
     if (nSlideListSize > 0)
@@ -167,27 +157,37 @@ void CXI_SLIDEPICTURE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
     // fill in the speed table
     if (bUse1Ini)
     {
-        ini1->ReadString(name1, "speed", param, sizeof(param) - 1, "");
-        for (i = 0; i < nSlideListSize; i++)
-        {
-            pSlideSpeedList[i].time = 0;
-            pSlideSpeedList[i].xspeed = 0;
-            pSlideSpeedList[i].yspeed = 0;
-            GetDataStr(param, "lff", &pSlideSpeedList[i].time, &pSlideSpeedList[i].xspeed, &pSlideSpeedList[i].yspeed);
-            ini1->ReadStringNext(name1, "speed", param, sizeof(param) - 1);
-        }
+        ini1->ForEachString(name1, "speed", [&](auto i, auto param) {
+            if (i < nSlideListSize)
+            {
+                pSlideSpeedList[i].time = 0;
+                pSlideSpeedList[i].xspeed = 0;
+                pSlideSpeedList[i].yspeed = 0;
+                GetDataStr(param, "lff", &pSlideSpeedList[i].time, &pSlideSpeedList[i].xspeed,
+                           &pSlideSpeedList[i].yspeed);
+
+                return true;
+            }
+
+            return false;
+        });
     }
     else
     {
-        ini2->ReadString(name2, "speed", param, sizeof(param) - 1, "");
-        for (i = 0; i < nSlideListSize; i++)
-        {
-            pSlideSpeedList[i].time = 0;
-            pSlideSpeedList[i].xspeed = 0;
-            pSlideSpeedList[i].yspeed = 0;
-            GetDataStr(param, "lff", &pSlideSpeedList[i].time, &pSlideSpeedList[i].xspeed, &pSlideSpeedList[i].yspeed);
-            ini2->ReadStringNext(name2, "speed", param, sizeof(param) - 1);
-        }
+        ini2->ForEachString(name2, "speed", [&](auto i, auto param) {
+            if (i < nSlideListSize)
+            {
+                pSlideSpeedList[i].time = 0;
+                pSlideSpeedList[i].xspeed = 0;
+                pSlideSpeedList[i].yspeed = 0;
+                GetDataStr(param, "lff", &pSlideSpeedList[i].time, &pSlideSpeedList[i].xspeed,
+                           &pSlideSpeedList[i].yspeed);
+
+                return true;
+            }
+
+            return false;
+        });
     }
 }
 

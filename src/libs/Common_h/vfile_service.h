@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <filesystem>
 #include <fstream>
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -84,9 +85,11 @@ class INIFILE
     virtual bool ReadString(const char *section_name, const char *key_name, char *buffer, size_t buffer_size,
                             const char *def_string) = 0;
 
-    // continue search from key founded in previous call this function or to function ReadString
-    // fill buffer with key value if section and key exist, otherwise return false
-    virtual bool ReadStringNext(const char *section_name, const char *key_name, char *buffer, size_t buffer_size) = 0;
+    virtual std::size_t ForEachString(const char *section_name, const char *key_name,
+                                      std::function<bool(std::size_t, char *)> f) = 0;
+
+    virtual std::size_t ForEachString(const char *section_name, const char *key_name,
+                                      std::function<void(char *)> f) = 0;
 
     // return long value of key in pointed section if section and key exist, throw EXS object otherwise
     virtual long GetLong(const char *section_name, const char *key_name) = 0;

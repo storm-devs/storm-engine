@@ -68,10 +68,10 @@ void CXI_STRCOLLECTION::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2,
 
     // get string quantity
     m_nStr = 0;
-    if (ini && ini->ReadString(name, "string", param, sizeof(param) - 1, ""))
-        do
-            m_nStr++;
-        while (ini->ReadStringNext(name, "string", param, sizeof(param) - 1));
+    if (ini)
+    {
+        m_nStr = ini->ForEachString(name, "string", [](auto v) {});
+    }
 
     if (m_nStr)
     {
@@ -83,49 +83,52 @@ void CXI_STRCOLLECTION::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2,
         char strName[sizeof(param)];
         char strState[sizeof(param)];
         char fontName[sizeof(param)];
-        ini->ReadString(name, "string", param, sizeof(param) - 1, "");
-        for (i = 0; i < m_nStr; i++)
-        {
-            // set all parameters to zero
-            PZERO(&m_pStrDescr[i], sizeof(STRINGDESCR));
-            m_pStrDescr[i].nFontNum = -1;
-
-            // read same parameters
-            strState[0] = '\0';
-            sscanf(param, "%[^,],font:%[^,],pos:{%d,%d},fc:{%d,%d,%d,%d},bc:{%d,%d,%d,%d},scale:%f,state:{%[^}]}",
-                   strName, fontName, &m_pStrDescr[i].scrPos.x, &m_pStrDescr[i].scrPos.y, &a_fc, &r_fc, &g_fc, &b_fc,
-                   &a_bc, &r_bc, &g_bc, &b_bc, &m_pStrDescr[i].fScale, strState);
-            DublicateString(m_pStrDescr[i].sFontName, fontName);
-            m_pStrDescr[i].nFontNum = m_rs->LoadFont(fontName);
-            if (bRelativeRect)
+        ini->ForEachString(name, "string", [&](auto i, auto param) {
+            if (i < m_nStr)
             {
-                m_pStrDescr[i].scrPos.x += m_hostRect.left;
-                m_pStrDescr[i].scrPos.y += m_hostRect.top;
+                // set all parameters to zero
+                PZERO(&m_pStrDescr[i], sizeof(STRINGDESCR));
+                m_pStrDescr[i].nFontNum = -1;
+
+                // read same parameters
+                strState[0] = '\0';
+                sscanf(param, "%[^,],font:%[^,],pos:{%d,%d},fc:{%d,%d,%d,%d},bc:{%d,%d,%d,%d},scale:%f,state:{%[^}]}",
+                       strName, fontName, &m_pStrDescr[i].scrPos.x, &m_pStrDescr[i].scrPos.y, &a_fc, &r_fc, &g_fc,
+                       &b_fc, &a_bc, &r_bc, &g_bc, &b_bc, &m_pStrDescr[i].fScale, strState);
+                DublicateString(m_pStrDescr[i].sFontName, fontName);
+                m_pStrDescr[i].nFontNum = m_rs->LoadFont(fontName);
+                if (bRelativeRect)
+                {
+                    m_pStrDescr[i].scrPos.x += m_hostRect.left;
+                    m_pStrDescr[i].scrPos.y += m_hostRect.top;
+                }
+
+                // set foreground & background colors
+                m_pStrDescr[i].foreColor = ARGB(a_fc, r_fc, g_fc, b_fc);
+                m_pStrDescr[i].backColor = ARGB(a_bc, r_bc, g_bc, b_bc);
+
+                // set states
+                for (int k = strlen(strState); k >= 0; k--)
+                {
+                    if (strState[k] == 'C' || strState[k] == 'c')
+                        m_pStrDescr[i].wAlignment = PR_ALIGN_CENTER;
+                    if (strState[k] == 'R' || strState[k] == 'r')
+                        m_pStrDescr[i].wAlignment = PR_ALIGN_RIGHT;
+                    if (strState[k] == 'S' || strState[k] == 's')
+                        m_pStrDescr[i].bShadow = true;
+                }
+
+                m_pStrDescr[i].strNum = -1;
+                if (strName[0] == '#')
+                    DublicateString(m_pStrDescr[i].strStr, &strName[1]);
+                else
+                    m_pStrDescr[i].strNum = pStringService->GetStringNum(strName);
+
+                return true;
             }
 
-            // set foreground & background colors
-            m_pStrDescr[i].foreColor = ARGB(a_fc, r_fc, g_fc, b_fc);
-            m_pStrDescr[i].backColor = ARGB(a_bc, r_bc, g_bc, b_bc);
-
-            // set states
-            for (int k = strlen(strState); k >= 0; k--)
-            {
-                if (strState[k] == 'C' || strState[k] == 'c')
-                    m_pStrDescr[i].wAlignment = PR_ALIGN_CENTER;
-                if (strState[k] == 'R' || strState[k] == 'r')
-                    m_pStrDescr[i].wAlignment = PR_ALIGN_RIGHT;
-                if (strState[k] == 'S' || strState[k] == 's')
-                    m_pStrDescr[i].bShadow = true;
-            }
-
-            m_pStrDescr[i].strNum = -1;
-            if (strName[0] == '#')
-                DublicateString(m_pStrDescr[i].strStr, &strName[1]);
-            else
-                m_pStrDescr[i].strNum = pStringService->GetStringNum(strName);
-
-            ini->ReadStringNext(name, "string", param, sizeof(param) - 1);
-        }
+            return false;
+        });
     }
 }
 

@@ -29,39 +29,14 @@ WATCHER_LIST::WATCHER_LIST(HWND hwnd, HINSTANCE hinst)
     n = 0;
     if (ini)
     {
-        sprintf_s(buffer, "E%d", n);
-        if (ini->ReadString(nullptr, buffer, buffer, sizeof(buffer), ""))
+        // try read 11 elements
+        for (auto n = 0; n < 11; n++)
         {
-            if (n < 11) //~!~
+            sprintf_s(buffer, "E%d", n);
+            if (ini->ReadString(nullptr, buffer, buffer, sizeof(buffer), ""))
             {
                 SetItemText(n, 0, buffer);
                 SetItemText(n, 1, CDebug.ProcessExpression(buffer));
-            }
-            n++;
-
-            sprintf_s(buffer, "E%d", n);
-            while (ini->ReadStringNext(nullptr, buffer, buffer, sizeof(buffer)))
-            {
-                if (n < 11)
-                {
-                    SetItemText(n, 0, buffer);
-                    SetItemText(n, 1, CDebug.ProcessExpression(buffer));
-                }
-                n++;
-                sprintf_s(buffer, "E%d", n);
-            }
-        }
-        else
-        {
-            // try read 11 elements
-            for (auto n = 0; n < 11; n++)
-            {
-                sprintf_s(buffer, "E%d", n);
-                if (ini->ReadString(nullptr, buffer, buffer, sizeof(buffer), ""))
-                {
-                    SetItemText(n, 0, buffer);
-                    SetItemText(n, 1, CDebug.ProcessExpression(buffer));
-                }
             }
         }
     }

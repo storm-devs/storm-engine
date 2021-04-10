@@ -135,13 +135,11 @@ void CXI_WINDOW::AddNode(const char *pcNodeName)
 
 void CXI_WINDOW::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2)
 {
-    char param[1024];
-
     // get nodes list
     // if( ReadIniString(ini1,name1, ini2,name2, "nodelist", param, sizeof(param),"") )
-    if (ini1 && ini1->ReadString(name1, "nodelist", param, sizeof(param), ""))
-        do
-        {
+    if (ini1)
+    {
+        ini1->ForEachString(name1, "nodelist", [&](auto param) {
             const char *pcStr = param;
             char subparam[256];
             while (pcStr && pcStr[0])
@@ -149,7 +147,8 @@ void CXI_WINDOW::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const 
                 pcStr = GetSubStr(pcStr, subparam, sizeof(subparam));
                 m_aNodeNameList.push_back(subparam);
             }
-        } while (ini1->ReadStringNext(name1, "nodelist", param, sizeof(param)));
+        });
+    }
 
     // get active value
     SetActive(GetIniBool(ini1, name1, ini2, name2, "active", true));

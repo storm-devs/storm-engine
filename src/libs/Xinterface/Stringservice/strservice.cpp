@@ -316,11 +316,7 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
     }
 
     // get string quantity
-    auto newSize = 0;
-    if (ini->ReadString(nullptr, "string", param, sizeof(param) - 1, ""))
-        do
-            newSize++;
-        while (ini->ReadStringNext(nullptr, "string", param, sizeof(param) - 1));
+    auto newSize = ini->ForEachString(nullptr, "string", [&](auto param) {});
 
     // check to right of ini files
     if (newSize != m_nStringQuantity && m_nStringQuantity != 0)
@@ -344,38 +340,40 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
     // fill stringes
     char strName[sizeof(param)];
     char string[sizeof(param)];
-    ini->ReadString(nullptr, "string", param, sizeof(param) - 1, "");
-    for (i = 0; i < m_nStringQuantity; i++)
-    {
-        if (GetStringDescribe(param, strName, string))
+    ini->ForEachString(nullptr, "string", [&](auto i, auto param) {
+        if (i < m_nStringQuantity)
         {
-            // fill string name
-            auto len = strlen(param) + 1;
-            m_psStrName[i] = new char[len];
-            if (m_psStrName[i] == nullptr)
-                throw std::runtime_error("allocate memory error");
-            strcpy_s(m_psStrName[i], len, strName);
-
-            // fill string self
-            len = strlen(string) + 1;
-            m_psString[i] = new char[len];
-            if (m_psString[i] == nullptr)
+            if (GetStringDescribe(param, strName, string))
             {
-                delete m_psStrName[i];
-                throw std::runtime_error("allocate memory error");
+                // fill string name
+                auto len = strlen(param) + 1;
+                m_psStrName[i] = new char[len];
+                if (m_psStrName[i] == nullptr)
+                    throw std::runtime_error("allocate memory error");
+                strcpy_s(m_psStrName[i], len, strName);
+
+                // fill string self
+                len = strlen(string) + 1;
+                m_psString[i] = new char[len];
+                if (m_psString[i] == nullptr)
+                {
+                    delete m_psStrName[i];
+                    throw std::runtime_error("allocate memory error");
+                }
+                memcpy(m_psString[i], string, len);
             }
-            memcpy(m_psString[i], string, len);
-        }
-        else
-        {
-            // invalid string
-            m_psStrName[i] = nullptr;
-            m_psString[i] = nullptr;
+            else
+            {
+                // invalid string
+                m_psStrName[i] = nullptr;
+                m_psString[i] = nullptr;
+            }
+
+            return true;
         }
 
-        // next string
-        ini->ReadStringNext(nullptr, "string", param, sizeof(param) - 1);
-    }
+        return false;
+    });
 
     // end of search
 
