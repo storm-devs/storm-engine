@@ -100,7 +100,6 @@ class INIFILE
 
     virtual float GetFloat(const char *section_name, const char *key_name) = 0;
     virtual float GetFloat(const char *section_name, const char *key_name, float def_val) = 0;
-    virtual bool GetFloatNext(const char *section_name, const char *key_name, float *val) = 0;
 
     // virtual void    SetSearch(void *)= 0;
 

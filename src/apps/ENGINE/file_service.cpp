@@ -439,11 +439,6 @@ float INIFILE_T::GetFloat(const char *section_name, const char *key_name, float 
     return ifs_PTR->GetFloat(&Search, section_name, key_name, def_val);
 }
 
-bool INIFILE_T::GetFloatNext(const char *section_name, const char *key_name, float *val)
-{
-    return ifs_PTR->GetFloatNext(&Search, section_name, key_name, val);
-}
-
 void INIFILE_T::DeleteKey(const char *section_name, const char *key_name)
 {
     ifs_PTR->DeleteKey(section_name, key_name);

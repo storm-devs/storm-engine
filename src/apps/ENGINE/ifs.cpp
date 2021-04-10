@@ -965,17 +965,6 @@ float IFS::GetFloat(SEARCH_DATA *sd, const char *section_name, const char *key_n
     return def_val;
 }
 
-bool IFS::GetFloatNext(SEARCH_DATA *sd, const char *section_name, const char *key_name, float *val)
-{
-    char buffer[256];
-    if (ReadStringNext(sd, section_name, key_name, buffer, sizeof(buffer)))
-    {
-        *val = static_cast<float>(atof(buffer));
-        return true;
-    }
-    return false;
-}
-
 void IFS::AddString(const char *section_name, const char *key_name, const char *string)
 {
     if (key_name == nullptr)

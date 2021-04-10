@@ -122,7 +122,6 @@ class IFS : public INIFILE
     IFS_NOT_IMPLEMENTED(double GetDouble(const char *section_name, const char *key_name, double def_val))
     IFS_NOT_IMPLEMENTED(float GetFloat(const char *section_name, const char *key_name))
     IFS_NOT_IMPLEMENTED(float GetFloat(const char *section_name, const char *key_name, float def_val))
-    IFS_NOT_IMPLEMENTED(bool GetFloatNext(const char *section_name, const char *key_name, float *val))
     bool CaseSensitive(bool yes)
     {
         return false;
@@ -163,7 +162,6 @@ class IFS : public INIFILE
 
     float GetFloat(SEARCH_DATA *sd, const char *section_name, const char *key_name);
     float GetFloat(SEARCH_DATA *sd, const char *section_name, const char *key_name, float def_val);
-    bool GetFloatNext(SEARCH_DATA *sd, const char *section_name, const char *key_name, float *val);
 
     void AddString(const char *section_name, const char *key_name, const char *string) override;
     void WriteString(const char *section_name, const char *key_name, const char *string) override;

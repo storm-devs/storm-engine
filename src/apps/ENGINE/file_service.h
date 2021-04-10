@@ -50,7 +50,6 @@ class INIFILE_T : public INIFILE
 
     float GetFloat(const char *section_name, const char *key_name) override;
     float GetFloat(const char *section_name, const char *key_name, float def_val) override;
-    bool GetFloatNext(const char *section_name, const char *key_name, float *val) override;
 
     void DeleteKey(const char *section_name, const char *key_name) override;
 
