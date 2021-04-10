@@ -442,7 +442,7 @@ void ISLAND::CreateDirectories(char *pDir)
 {
     char sCurDir[256], sTemp[256];
 
-    fio->_GetCurrentDirectory(sCurDir);
+    strcpy(sCurDir, fio->_GetCurrentDirectory().c_str());
     if (strlen(sCurDir) && sCurDir[strlen(sCurDir) - 1] != '\\')
     {
         strcat_s(sCurDir, "\\");

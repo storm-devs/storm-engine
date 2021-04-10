@@ -3,10 +3,10 @@
 #include "storm_assert.h"
 #include "utf8.h"
 
+#include <SDL.h>
 #include <exception>
 #include <storm/string_compare.hpp>
 #include <string>
-#include <SDL.h>
 
 #define COMMENT ';'
 #define SECTION_A '['
@@ -184,9 +184,12 @@ void FILE_SERVICE::_FlushFileBuffers(std::fstream &fileS)
     fileS.flush();
 }
 
-void FILE_SERVICE::_GetCurrentDirectory(char *buffer)
+std::string FILE_SERVICE::_GetCurrentDirectory()
 {
-    strcpy(buffer, std::filesystem::current_path().string().c_str());
+    const auto curPath = std::filesystem::current_path().u8string();
+    std::string result(curPath.size(), '\0');
+    std::memcpy(result.data(), curPath.data(), curPath.size());
+    return result;
 }
 
 std::string FILE_SERVICE::_GetExecutableDirectory()

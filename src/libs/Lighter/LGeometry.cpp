@@ -447,7 +447,7 @@ bool LGeometry::Save()
 {
     // Save the current path
     char *oldPath = new char[4096];
-    fio->_GetCurrentDirectory(oldPath);
+    strcpy(oldPath, fio->_GetCurrentDirectory().c_str());
     char *dir = new char[4096];
     // Saving objects
     bool result = true;
