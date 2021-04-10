@@ -1082,19 +1082,3 @@ void IFS::Flush()
 {
     FlushFile();
 }
-
-bool IFS::Reload()
-{
-    while (SectionRoot)
-    {
-        auto *const old_root = SectionRoot;
-        SectionRoot->Deattach(&SectionRoot, &SectionTop);
-        delete old_root;
-    }
-    bDataChanged = false;
-    // Reference = 0;
-    SectionRoot = nullptr;
-    SectionTop = nullptr;
-    SectionSNode = nullptr;
-    return LoadFile(FileName);
-}

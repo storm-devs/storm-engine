@@ -115,7 +115,6 @@ class INIFILE
     virtual bool GetSectionNameNext(char *section_name_buffer, long buffer_size) = 0;
 
     virtual void Flush() = 0;
-    virtual bool Reload() = 0;
 };
 
 //

@@ -473,8 +473,3 @@ void INIFILE_T::Flush()
 {
     ifs_PTR->Flush();
 }
-
-bool INIFILE_T::Reload()
-{
-    return ifs_PTR->Reload();
-}
