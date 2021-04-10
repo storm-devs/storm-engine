@@ -116,7 +116,6 @@ class INIFILE
 
     virtual void Flush() = 0;
     virtual bool Reload() = 0;
-    virtual bool CaseSensitive(bool yes) = 0;
     virtual bool TestSection(const char *section_name) = 0;
 };
 

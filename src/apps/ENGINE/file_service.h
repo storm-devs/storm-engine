@@ -67,8 +67,6 @@ class INIFILE_T : public INIFILE
 
     bool Reload() override;
 
-    bool CaseSensitive(bool v) override;
-
     bool TestSection(const char *section_name) override;
 };
 

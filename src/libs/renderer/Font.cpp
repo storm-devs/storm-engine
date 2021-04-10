@@ -133,7 +133,6 @@ bool FONT::Init(const char *font_name, const char *iniName, IDirect3DDevice9 *_d
     Shadow_offsety = ini->GetLong(font_name, "Shadow_offsety", 2);
     Spacebar = static_cast<long>(ini->GetLong(font_name, "Spacebar", 8) * m_fAspectRatioH);
 
-    ini->CaseSensitive(true);
     for (codepoint = 30; codepoint < USED_CODES; codepoint++)
     {
         char utf8[5];
@@ -170,7 +169,6 @@ bool FONT::Init(const char *font_name, const char *iniName, IDirect3DDevice9 *_d
         CharT[codepoint].Tuv.y2 =
             CharT[codepoint].Tuv.y1 + static_cast<float>(ltmp - 1.f) / static_cast<float>(Texture_YSize);
     }
-    ini->CaseSensitive(false);
 
     RenderService = _render;
     Device = _device;

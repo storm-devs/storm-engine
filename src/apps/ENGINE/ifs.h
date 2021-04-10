@@ -122,10 +122,6 @@ class IFS : public INIFILE
     IFS_NOT_IMPLEMENTED(double GetDouble(const char *section_name, const char *key_name, double def_val))
     IFS_NOT_IMPLEMENTED(float GetFloat(const char *section_name, const char *key_name))
     IFS_NOT_IMPLEMENTED(float GetFloat(const char *section_name, const char *key_name, float def_val))
-    bool CaseSensitive(bool yes)
-    {
-        return false;
-    }
 #undef IFS_NOT_IMPLEMENTED
 
     IFS(VFILE_SERVICE *_fs);
