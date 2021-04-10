@@ -1036,17 +1036,13 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
         }
         else
         {
-            std::filesystem::path p = std::filesystem::u8path(param);
-            const auto mask = p.filename().string();
-            const auto vFilenames =
-                fio->_GetPathsOrFilenamesByMask(p.remove_filename().string().c_str(), mask.c_str(), true, false, false);
-            if (vFilenames.empty())
+            if (!fio->_FileOrDirectoryExists(param))
             {
                 systTime = std::time(nullptr);
             }
             else
             {
-                systTime = fio->_ToTimeT(fio->_GetLastWriteTime(vFilenames[0].c_str()));
+                systTime = fio->_ToTimeT(fio->_GetLastWriteTime(param));
             }
         }
         const auto locTime = std::localtime(&systTime);
