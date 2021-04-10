@@ -22,7 +22,6 @@ This knowledge base is maintained in English language.
 ### Engine Architecture
 
 * Source Overview
-* [Scripting System Overview](kb/0002-scripting-overview.md)
 
 ### Class Reference
 
@@ -42,6 +41,9 @@ Modding Tool
 
 ---
 ### Modding
+
+* [Scripting System Overview](kb/0002-scripting-overview.md)
+* [Scripting Functions](kb/0003-scripting-functions.md)
 
 ---
 

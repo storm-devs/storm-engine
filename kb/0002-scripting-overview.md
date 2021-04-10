@@ -3,7 +3,7 @@ _[back to Index](../index.md)_
 
 ![Storm Engine Logo](../media/SE_logo.png)
 
-**Related articles**: TBD
+**Related articles**: [Scripting Functions](0003-scripting-functions.md)
 
 Upon startup, the game (`ENGINE.exe`) will attempt to load and compile the game logic located in `program` directory. These "scripts" are written in C using the game's API, and compiled at runtime using the built-in compiler. 
 
@@ -109,7 +109,63 @@ example:
 	string CharacteristicsNames[array_size]; // Also OK
 ```
 
-// TODO(yakvi): Add info from array.txt
+// TODO(yakvi): Info below is dated 2009. Is this still relevant?
+
+Due to the limitations of the script compiler, a very strict array initialization syntax must be respected.
+
+* **Arrays declared in global scope (outside of a specific function) can only be initialized with constants (as opposed to `#define` variables).**
+
+``` C++
+examples:
+    #define FOOD     0
+    #define WEAPON   5
+    #define MAHOGANY 10
+
+    int ExampleOne[3] = { 0, 5, 10 };               // OK
+    int ExampleTwo[3] = { FOOD, WEAPON, MAHOGANY }; // Init OK, but all values are 0!
+    
+    int ExampleThree[3];
+    ExampleThree[0] = FOOD;                         // Illegal
+    ExampleThree[1] = WEAPON;                       // Illegal
+    ExampleThree[2] = MAHOGANY;                     // Illegal
+
+    int ExampleFour[3];
+    ExampleThree[0] = 0;                            // OK
+    ExampleThree[1] = 5;                            // OK
+    ExampleThree[2] = 10;                           // OK
+
+    void SomeFunction()
+    {
+        ...
+    }
+```
+
+* **Arrays declared in local scope cannot be initialized with constants. They can, however, be initialized with the `#define`d values.** 
+
+That said, inside the local scope arrays can be assigned values from the `#define` variables, contrary to the global scope.
+
+``` C++
+examples:
+    #define LEATHER 0
+    #define TOBACCO 5
+    #define PAPRIKA 10
+
+    void SomeFunction()
+    {
+        int ExampleOne[3] = { 0, 5, 10 };                  // Illegal
+        int ExampleTwo[3] = { LEATHER, TOBACCO, PAPRIKA }; // ??
+        
+        int ExampleThree[3];
+        ExampleThree[0] = LEATHER;                         // OK
+        ExampleThree[1] = TOBACCO;                         // OK
+        ExampleThree[2] = PAPRIKA;                         // OK
+        
+        int ExampleFour[3];
+        ExampleThree[0] = 0;                               // OK
+        ExampleThree[1] = 5;                               // OK
+        ExampleThree[2] = 10;                              // OK
+    }
+```
 
 ### Objects, References and Attributes
 
@@ -180,7 +236,265 @@ example:
     aSky.Dir.attribute = "NNE";   // Error
 ```
 
+## Branching
 
+Script compiler supports the common branching options: `if` and `switch` statements, `while` and `for` loops, `goto` jumps. However, due to some scripting engine properties, there're some caveats in the usage.
+
+### Logical Comparisons
+
+The usual operators can be used to determine a boolean value: 
+
+* `!` - Negates a value (if it was `true` it becomes `false`, and viceversa).
+* `>` - Greater than
+* `<` - Less than
+* `>=` - Greater or equal
+* `<=` - Less or equal
+* `!=` - Not equal
+* `==` - equal
+
+// TODO(yakvi): Info below is dated 2005. Is this bug still relevant?
+
+Multiple comparisons may be chained using logical AND (`&&`) and OR (`||`) operators. Inline cal of the functions returning a `bool` is also supported. However, operator mixing of these is not allowed. 
+
+``` C++
+example:
+    bool a = true;
+    bool b = false;
+    bool c = false;
+
+    if (a && b) // OK
+    {
+        // ...
+    }
+
+    if (a && b && doWork()) // OK
+    {
+        // ... 
+    }
+
+    if (a && (b || c)) // Illegal
+    {
+        // ...
+    }
+```
+
+That said, chaining results of multiple operators is allowed, as well as nesting.
+
+``` C++
+example:
+    bool a = true;
+    bool b = false;
+    bool c = false;
+
+    if (a && (b || c)) // Illegal
+    {
+        // ...
+    }
+
+    bool bc = b || c;
+    if (a && bc) // OK
+    {
+        // ...
+    }
+
+    if (a) // OK
+    {
+        if (b || c) // OK
+        {
+            // ... 
+        }
+    }
+```
+
+Last but not least, the scripting engine supports expression optimization. If an expression's result can be determined earlier (e.g. the first value in an OR chain is true), following values will not be evaluated.
+
+``` C++
+example:
+    bool a = false;
+    bool b = true;
+    bool c = false;
+    
+    if (a ||       // false
+        b ||       // true
+        c ||       // ignored
+        doWork())  // skipped
+        {
+            // doWork will only be executed if a, b, c are false.
+            // ...
+        }
+
+    if (a &&      // false
+        doWork()) // skipped
+        {
+            // ...
+        }
+```
+
+### `if` statement
+
+The code inside the `if` statement block will be executed if the condition is true. Optional `else` block is also supported.
+
+``` C++
+syntax:
+    if(condition)
+    {
+        // code if true
+    }
+    else
+    {
+        // code if false
+    }
+```
+
+### `switch` statement
+
+The code inside the `switch` block is evaluated, and code is executed based on specific constants. `default` case is not supported.
+
+``` C++
+syntax:
+    switch (variable)
+    {
+        case CONSTANT_1:
+            // code
+            break;
+        case CONSTANT_2:
+            // code
+            break;
+        case CONSTANT_3:
+            // code
+            break;
+        // etc.
+    }
+```
+
+### `while` loop
+
+The code inside the while loop will run forever until the condition becomes `false`.
+
+``` C++
+syntax:
+    while(condition)
+    {
+        // code while condition is true
+        // remember to add an exit condition!
+    }
+```
+
+Additionally, `continue` and `break` keywords are implemented and work as expected.
+
+``` C++
+example:
+    int i = 0;
+    bool isRunning = true;
+    while(isRunning)
+    {
+        // do so work
+        if (someEvent)
+        {
+            i++; 
+            continue; // go immediately to the next loop iteration
+        }
+        
+        if (i > 20)
+        {
+            break; // go out, code below won't be executed
+        }
+
+        // more work
+    }
+```
+
+### `for` loop
+
+A `for` loop behaves as expected. It's similar to a while loop in running until a condition is `false` but it also has two other blocks for initializing an iterator and increasing its value.
+
+``` C++
+syntax:
+    for(int_var = init_value; condition; increase/decrease int_var)
+    {
+        // code while condition is true
+    }
+example:
+    for (int i = 0; i < 20; i++)
+    {
+        // do some work 20 times
+    }
+```
+
+### `goto` statement
+
+The `goto` statement allows jumping to a label specified above or below the `goto`. 
+
+``` C++
+syntax: 
+    goto label_name;
+    // ... 
+
+    :label_name; 
+
+example:
+    :label_above;
+
+    // ...
+    if (someEvent)
+    {
+        goto label_above; // OK
+    }
+    else
+    {
+        goto label_below; // OK
+    }
+
+    :label_below;
+    // ...
+```
+
+## Other Considerations
+
+### Functions
+
+Functions are implemented similarly to C. Each function can have several parameters as input and a return type (which can be `void` if there's nothing to return) as output.
+
+``` C++
+syntax: 
+    return_type FunctionName(parameter_type Param, ...) 
+    {
+        // function body
+    }    
+example:
+    void DoWork() 
+    {
+        // ...
+    }
+    
+    bool IsItRaining(float timeOfDay)
+    {
+        // ... 
+    }
+
+```
+You can consult the list of built-in functions [here](0003-scripting-functions.md).
+
+### Comments
+
+Both single line `//` and multi-line comments `/**/` are supported.
+
+``` C++
+syntax: 
+    // single-line comment
+    /* 
+        multi-line comment
+    */
+```
+
+
+--- 
+
+## Original article authors
+
+ALexusB, 22.04.05
+
+Warship, 02.08.09
 
 
 ---
