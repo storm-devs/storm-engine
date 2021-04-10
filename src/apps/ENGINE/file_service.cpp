@@ -468,8 +468,3 @@ bool INIFILE_T::GetSectionNameNext(char *section_name_buffer, long buffer_size)
 {
     return ifs_PTR->GetSectionNameNext(section_name_buffer, buffer_size);
 }
-
-void INIFILE_T::Flush()
-{
-    ifs_PTR->Flush();
-}

@@ -62,8 +62,6 @@ class INIFILE_T : public INIFILE
     bool GetSectionName(char *section_name_buffer, long buffer_size) override;
 
     bool GetSectionNameNext(char *section_name_buffer, long buffer_size) override;
-
-    void Flush() override;
 };
 
 class FILE_SERVICE : public VFILE_SERVICE

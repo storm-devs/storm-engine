@@ -113,8 +113,6 @@ class INIFILE
 
     virtual bool GetSectionName(char *section_name_buffer, long buffer_size) = 0;
     virtual bool GetSectionNameNext(char *section_name_buffer, long buffer_size) = 0;
-
-    virtual void Flush() = 0;
 };
 
 //

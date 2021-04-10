@@ -167,5 +167,4 @@ class IFS : public INIFILE
 
     bool GetSectionName(char *section_name_buffer, long buffer_size) override;
     bool GetSectionNameNext(char *section_name_buffer, long buffer_size) override;
-    void Flush() override;
 };

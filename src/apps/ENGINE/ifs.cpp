@@ -1077,8 +1077,3 @@ bool IFS::GetSectionNameNext(char *section_name_buffer, long buffer_size)
     }
     return false;
 }
-
-void IFS::Flush()
-{
-    FlushFile();
-}
