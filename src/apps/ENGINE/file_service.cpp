@@ -444,11 +444,6 @@ void INIFILE_T::DeleteKey(const char *section_name, const char *key_name)
     ifs_PTR->DeleteKey(section_name, key_name);
 }
 
-void INIFILE_T::DeleteKey(const char *section_name, const char *key_name, const char *key_value)
-{
-    ifs_PTR->DeleteKey(section_name, key_name, key_value);
-}
-
 bool INIFILE_T::TestKey(const char *section_name, const char *key_name)
 {
     return ifs_PTR->TestKey(section_name, key_name);

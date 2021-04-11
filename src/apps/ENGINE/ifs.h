@@ -141,7 +141,6 @@ class IFS : public INIFILE
 
     bool TestKey(const char *section_name, const char *key_name) override;
     void DeleteKey(const char *section_name, const char *key_name) override;
-    void DeleteKey(const char *section_name, const char *key_name, const char *key_value) override;
 
     bool ReadString(SEARCH_DATA *sd, const char *section_name, const char *key_name, char *buffer, uint32_t buffer_size,
                     const char *def_string);

@@ -105,8 +105,6 @@ class INIFILE
 
     virtual void DeleteKey(const char *section_name, const char *key_name) = 0;
 
-    virtual void DeleteKey(const char *section_name, const char *key_name, const char *key_value) = 0;
-
     virtual void DeleteSection(const char *section_name) = 0;
 
     virtual bool TestKey(const char *section_name, const char *key_name) = 0;

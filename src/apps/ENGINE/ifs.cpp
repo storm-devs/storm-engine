@@ -799,15 +799,10 @@ bool IFS::TestKey(const char *section_name, const char *key_name)
 
 void IFS::DeleteKey(const char *section_name, const char *key_name)
 {
-    DeleteKey(section_name, key_name, nullptr);
-}
-
-void IFS::DeleteKey(const char *section_name, const char *key_name, const char *key_value)
-{
     auto *node = FindSection(section_name);
     if (node)
     {
-        auto *const knode = node->FindKey(key_name, key_value);
+        auto *const knode = node->FindKey(key_name, nullptr);
         if (knode)
         {
             node->DelNode(knode);
