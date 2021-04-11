@@ -80,6 +80,24 @@ uint32_t SetGlowParams(VS_STACK *pS)
     return IFUNCRESULT_OK;
 }
 
+uint32_t slGetTexture(VS_STACK *pS)
+{
+    auto filename = ((VDATA *)pS->Pop())->GetString();
+    long texNum = DX9RENDER::pRS->TextureCreate(filename);
+
+    auto *pVR = (VDATA *)pS->Push();
+    pVR->Set(texNum);
+    return IFUNCRESULT_OK;
+}
+
+uint32_t slReleaseTexture(VS_STACK *pS)
+{
+    long texNum = ((VDATA *)pS->Pop())->GetLong();
+
+    DX9RENDER::pRS->TextureRelease(texNum);
+    return IFUNCRESULT_OK;
+}
+
 bool DX9RENDER_SCRIPT_LIBRIARY::Init()
 {
     IFUNCINFO sIFuncInfo;
@@ -100,6 +118,18 @@ bool DX9RENDER_SCRIPT_LIBRIARY::Init()
     sIFuncInfo.pFuncName = "SetGlowParams";
     sIFuncInfo.pReturnValueName = "int";
     sIFuncInfo.pFuncAddress = SetGlowParams;
+    core.SetScriptFunction(&sIFuncInfo);
+
+    sIFuncInfo.nArguments = 1;
+    sIFuncInfo.pFuncName = "GetTexture";
+    sIFuncInfo.pReturnValueName = "int";
+    sIFuncInfo.pFuncAddress = slGetTexture;
+    core.SetScriptFunction(&sIFuncInfo);
+
+    sIFuncInfo.nArguments = 1;
+    sIFuncInfo.pFuncName = "ReleaseTexture";
+    sIFuncInfo.pReturnValueName = "void";
+    sIFuncInfo.pFuncAddress = slReleaseTexture;
     core.SetScriptFunction(&sIFuncInfo);
 
     return true;

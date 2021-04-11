@@ -4,7 +4,7 @@
 
 #define MAXIMAGEQUANTITY 100
 
-IDirect3DTexture9 *GetTexFromEvent(VDATA *vdat);
+long GetTexFromEvent(VDATA *vdat);
 
 CXI_VIMAGESCROLL::CXI_VIMAGESCROLL()
 {
@@ -173,9 +173,9 @@ void CXI_VIMAGESCROLL::Draw(bool bSelected, uint32_t Delta_Time)
             {
                 FXYRECT pos;
 
-                if (m_Image[pScroll->imageNum].ptex[n] != nullptr)
+                if (m_Image[pScroll->imageNum].ptex[n] != -1)
                 {
-                    m_rs->SetTexture(0, m_Image[pScroll->imageNum].ptex[n]);
+                    m_rs->TextureSet(0, m_Image[pScroll->imageNum].ptex[n]);
                     rectTex.left = 0.f;
                     rectTex.top = 0.f;
                     rectTex.right = 1.f;
@@ -556,7 +556,7 @@ void CXI_VIMAGESCROLL::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
             {
                 m_Image[i].bUseSpecTechnique = new bool[m_nSlotsQnt];
                 m_Image[i].img = new long[m_nSlotsQnt];
-                m_Image[i].ptex = new IDirect3DTexture9 *[m_nSlotsQnt];
+                m_Image[i].ptex = new long[m_nSlotsQnt];
                 m_Image[i].saveName = new char *[m_nSlotsQnt];
                 m_Image[i].tex = new long[m_nSlotsQnt];
                 if (!m_Image[i].bUseSpecTechnique || !m_Image[i].img || !m_Image[i].ptex || !m_Image[i].saveName ||
@@ -568,7 +568,7 @@ void CXI_VIMAGESCROLL::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
                 {
                     m_Image[i].bUseSpecTechnique[n] = false;
                     m_Image[i].img[n] = -1;
-                    m_Image[i].ptex[n] = nullptr;
+                    m_Image[i].ptex[n] = -1;
                     m_Image[i].saveName[n] = nullptr;
                     m_Image[i].tex[n] = -1;
                 }
@@ -701,7 +701,7 @@ float CXI_VIMAGESCROLL::ChangeDinamicParameters(float fYDelta)
             {
                 if (m_Image[curImage].saveName[n] != nullptr)
                 {
-                    if (m_Image[curImage].ptex[n] == nullptr)
+                    if (m_Image[curImage].ptex[n] == -1)
                     {
                         m_Image[curImage].ptex[n] = GetTexFromEvent(
                             core.Event("GetInterfaceTexture", "sl", m_Image[curImage].saveName[n], curImage));
@@ -709,7 +709,7 @@ float CXI_VIMAGESCROLL::ChangeDinamicParameters(float fYDelta)
                     }
                 }
             }
-            if (n == m_nSlotsQnt || (uintptr_t)m_Image[curImage].ptex[n] != -1)
+            if (n == m_nSlotsQnt || m_Image[curImage].ptex[n] != -1)
                 break;
 
             // delete current save from list
@@ -773,10 +773,10 @@ float CXI_VIMAGESCROLL::ChangeDinamicParameters(float fYDelta)
                 curImage = 0;
             for (n = 0; n < m_nSlotsQnt; n++)
             {
-                if (m_Image[curImage].saveName[n] != nullptr && m_Image[curImage].ptex[n] != nullptr)
+                if (m_Image[curImage].saveName[n] != nullptr && m_Image[curImage].ptex[n] != -1)
                 {
                     core.Event("DelInterfaceTexture", "s", m_Image[curImage].saveName[n]);
-                    m_Image[curImage].ptex[n] = nullptr;
+                    m_Image[curImage].ptex[n] = -1;
                 }
             }
             // continue displaying the next icon from the center
@@ -801,10 +801,10 @@ float CXI_VIMAGESCROLL::ChangeDinamicParameters(float fYDelta)
                 curImage = m_nListSize - 1;
             for (n = 0; n < m_nSlotsQnt; n++)
             {
-                if (m_Image[curImage].saveName[n] != nullptr && m_Image[curImage].ptex[n] != nullptr)
+                if (m_Image[curImage].saveName[n] != nullptr && m_Image[curImage].ptex[n] != -1)
                 {
                     core.Event("DelInterfaceTexture", "s", m_Image[curImage].saveName[n]);
-                    m_Image[curImage].ptex[n] = nullptr;
+                    m_Image[curImage].ptex[n] = -1;
                 }
             }
             if (m_pScroll->next == nullptr)
@@ -1323,7 +1323,7 @@ void CXI_VIMAGESCROLL::RefreshScroll()
             {
                 m_Image[i].bUseSpecTechnique = new bool[m_nSlotsQnt];
                 m_Image[i].img = new long[m_nSlotsQnt];
-                m_Image[i].ptex = new IDirect3DTexture9 *[m_nSlotsQnt];
+                m_Image[i].ptex = new long[m_nSlotsQnt];
                 m_Image[i].saveName = new char *[m_nSlotsQnt];
                 m_Image[i].tex = new long[m_nSlotsQnt];
                 if (!m_Image[i].bUseSpecTechnique || !m_Image[i].img || !m_Image[i].ptex || !m_Image[i].saveName ||
@@ -1335,7 +1335,7 @@ void CXI_VIMAGESCROLL::RefreshScroll()
                 {
                     m_Image[i].bUseSpecTechnique[n] = false;
                     m_Image[i].img[n] = -1;
-                    m_Image[i].ptex[n] = nullptr;
+                    m_Image[i].ptex[n] = -1;
                     m_Image[i].saveName[n] = nullptr;
                     m_Image[i].tex[n] = -1;
                 }
@@ -1443,7 +1443,7 @@ int CXI_VIMAGESCROLL::FindClickedImageNum() const
         return 10000;
     for (n = 0; n < m_nSlotsQnt; n++)
     {
-        if (m_Image[pscroll->imageNum].tex[n] != -1 || m_Image[pscroll->imageNum].ptex[n] != nullptr ||
+        if (m_Image[pscroll->imageNum].tex[n] != -1 || m_Image[pscroll->imageNum].ptex[n] != -1 ||
             m_Image[pscroll->imageNum].saveName[n] != nullptr)
             break;
     }
@@ -1677,7 +1677,7 @@ void CXI_VIMAGESCROLL::IMAGEDESCRIBE::Clear(int nQnt, int nStr) const
     {
         bUseSpecTechnique[i] = false;
         tex[i] = -1;
-        ptex[i] = nullptr;
+        ptex[i] = -1;
         img[i] = -1;
         STORM_DELETE(saveName[i]);
     }

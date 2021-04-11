@@ -2,12 +2,11 @@
 
 #define MAXIMAGEQUANTITY 100
 
-IDirect3DTexture9 *GetTexFromEvent(VDATA *vdat)
+long GetTexFromEvent(VDATA *vdat)
 {
     if (vdat == nullptr)
-        return nullptr;
-    const uintptr_t dwTmp = vdat->GetLong();
-    return (IDirect3DTexture9 *)dwTmp;
+        return -1;
+    return vdat->GetLong();
 }
 
 CXI_SCROLLIMAGE::CXI_SCROLLIMAGE()
@@ -174,9 +173,9 @@ void CXI_SCROLLIMAGE::Draw(bool bSelected, uint32_t Delta_Time)
             {
                 FXYRECT pos;
 
-                if (m_Image[pScroll->imageNum].ptex[n] != nullptr)
+                if (m_Image[pScroll->imageNum].ptex[n] != -1)
                 {
-                    m_rs->SetTexture(0, m_Image[pScroll->imageNum].ptex[n]);
+                    m_rs->TextureSet(0, m_Image[pScroll->imageNum].ptex[n]);
                     rectTex.left = 0.f;
                     rectTex.top = 0.f;
                     rectTex.right = 1.f;
@@ -550,7 +549,7 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
             {
                 m_Image[i].bUseSpecTechnique = new bool[m_nSlotsQnt];
                 m_Image[i].img = new long[m_nSlotsQnt];
-                m_Image[i].ptex = new IDirect3DTexture9 *[m_nSlotsQnt];
+                m_Image[i].ptex = new long[m_nSlotsQnt];
                 m_Image[i].saveName = new char *[m_nSlotsQnt];
                 m_Image[i].tex = new long[m_nSlotsQnt];
                 if (!m_Image[i].bUseSpecTechnique || !m_Image[i].img || !m_Image[i].ptex || !m_Image[i].saveName ||
@@ -562,7 +561,7 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
                 {
                     m_Image[i].bUseSpecTechnique[n] = false;
                     m_Image[i].img[n] = -1;
-                    m_Image[i].ptex[n] = nullptr;
+                    m_Image[i].ptex[n] = -1;
                     m_Image[i].saveName[n] = nullptr;
                     m_Image[i].tex[n] = -1;
                 }
@@ -709,7 +708,7 @@ float CXI_SCROLLIMAGE::ChangeDinamicParameters(float fXDelta)
             {
                 if (m_Image[curImage].saveName[n] != nullptr)
                 {
-                    if (m_Image[curImage].ptex[n] == nullptr)
+                    if (m_Image[curImage].ptex[n] == -1)
                     {
                         m_Image[curImage].ptex[n] = GetTexFromEvent(core.Event(
                             "GetInterfaceTexture", "sls", m_Image[curImage].saveName[n], curImage, m_nodeName));
@@ -717,7 +716,7 @@ float CXI_SCROLLIMAGE::ChangeDinamicParameters(float fXDelta)
                     }
                 }
             }
-            if (n == m_nSlotsQnt || (uintptr_t)m_Image[curImage].ptex[n] != -1)
+            if (n == m_nSlotsQnt || m_Image[curImage].ptex[n] != -1)
                 break;
 
             // delete current save from list
@@ -851,10 +850,10 @@ float CXI_SCROLLIMAGE::ChangeDinamicParameters(float fXDelta)
             continue;
         for (n = 0; n < m_nSlotsQnt; n++)
         {
-            if (m_Image[curImage].saveName[n] != nullptr && m_Image[curImage].ptex[n] != nullptr)
+            if (m_Image[curImage].saveName[n] != nullptr && m_Image[curImage].ptex[n] != -1)
             {
                 core.Event("DelInterfaceTexture", "ss", m_Image[curImage].saveName[n], m_nodeName);
-                m_Image[curImage].ptex[n] = nullptr;
+                m_Image[curImage].ptex[n] = -1;
             }
         }
     }
@@ -1342,7 +1341,7 @@ void CXI_SCROLLIMAGE::RefreshScroll()
             {
                 m_Image[i].bUseSpecTechnique = new bool[m_nSlotsQnt];
                 m_Image[i].img = new long[m_nSlotsQnt];
-                m_Image[i].ptex = new IDirect3DTexture9 *[m_nSlotsQnt];
+                m_Image[i].ptex = new long[m_nSlotsQnt];
                 m_Image[i].saveName = new char *[m_nSlotsQnt];
                 m_Image[i].tex = new long[m_nSlotsQnt];
                 if (!m_Image[i].bUseSpecTechnique || !m_Image[i].img || !m_Image[i].ptex || !m_Image[i].saveName ||
@@ -1354,7 +1353,7 @@ void CXI_SCROLLIMAGE::RefreshScroll()
                 {
                     m_Image[i].bUseSpecTechnique[n] = false;
                     m_Image[i].img[n] = -1;
-                    m_Image[i].ptex[n] = nullptr;
+                    m_Image[i].ptex[n] = -1;
                     m_Image[i].saveName[n] = nullptr;
                     m_Image[i].tex[n] = -1;
                 }
@@ -1479,7 +1478,7 @@ int CXI_SCROLLIMAGE::FindClickedImageNum() const
     {
         /*        if( m_Image[pscroll->imageNum].img[n]!=-1 ||
               m_Image[pscroll->imageNum].saveName!=null ) break;*/
-        if (m_Image[pscroll->imageNum].tex[n] != -1 || m_Image[pscroll->imageNum].ptex[n] != nullptr ||
+        if (m_Image[pscroll->imageNum].tex[n] != -1 || m_Image[pscroll->imageNum].ptex[n] != -1 ||
             m_Image[pscroll->imageNum].saveName[n] != nullptr)
             break;
     }
@@ -1706,7 +1705,7 @@ void CXI_SCROLLIMAGE::IMAGEDESCRIBE::Clear(int nQnt)
     {
         bUseSpecTechnique[i] = false;
         tex[i] = -1;
-        ptex[i] = nullptr;
+        ptex[i] = -1;
         img[i] = -1;
         STORM_DELETE(saveName[i]);
     }

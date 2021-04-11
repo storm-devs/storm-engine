@@ -20,7 +20,7 @@ class CXI_SCROLLIMAGE : public CINODE
     {
         bool *bUseSpecTechnique;
         long *tex;
-        IDirect3DTexture9 **ptex;
+        long *ptex;
         char **saveName;
         long *img;
 
