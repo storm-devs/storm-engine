@@ -33,14 +33,13 @@ function(auto_setup_library LIBRARY_NAME)
     file(GLOB_RECURSE TARGET_HEADERS ${GLOBBING_EXPRESSION_HEADERS})
 
     if (NOT TARGET_SOURCES)
-        set(LIBRARY_TYPE INTERFACE)
+        add_library(${LIBRARY_NAME} INTERFACE)
+        target_sources(${LIBRARY_NAME} PUBLIC ${TARGET_HEADERS})
         set(LIBRARY_INCLUDE_TYPE INTERFACE)
     else()
-        set(LIBRARY_TYPE ${PARAM_TYPE})
+        add_library(${LIBRARY_NAME} ${PARAM_TYPE} ${TARGET_SOURCES} ${TARGET_HEADERS})
         set(LIBRARY_INCLUDE_TYPE PUBLIC)
     endif()
-
-    add_library(${LIBRARY_NAME} ${LIBRARY_TYPE} ${TARGET_SOURCES} ${TARGET_HEADERS})
 
     target_include_directories(${LIBRARY_NAME} ${LIBRARY_INCLUDE_TYPE}
             $<BUILD_INTERFACE:${LIBRARY_INCLUDE_DIRECTORY}>
