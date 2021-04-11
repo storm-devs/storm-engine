@@ -12,11 +12,7 @@ class INIFILE_T : public INIFILE
     INIFILE_T(IFS *iR)
     {
         ifs_PTR = iR;
-        Search.Section = nullptr;
-        Search.Key = nullptr;
     }
-
-    SEARCH_DATA Search;
 
     IFS *ifs_PTR;
 

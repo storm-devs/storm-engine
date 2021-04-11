@@ -386,6 +386,7 @@ void INIFILE_T::WriteDouble(const char *section_name, const char *key_name, doub
 // fill buffer with key value, throw EXS exception object if failed or if section or key doesnt exist
 void INIFILE_T::ReadString(const char *section_name, const char *key_name, char *buffer, size_t buffer_size)
 {
+    SEARCH_DATA Search;
     ifs_PTR->ReadString(&Search, section_name, key_name, buffer, buffer_size);
 }
 
@@ -393,6 +394,7 @@ void INIFILE_T::ReadString(const char *section_name, const char *key_name, char 
 bool INIFILE_T::ReadString(const char *section_name, const char *key_name, char *buffer, size_t buffer_size,
                            const char *def_string)
 {
+    SEARCH_DATA Search;
     return ifs_PTR->ReadString(&Search, section_name, key_name, buffer, buffer_size, def_string);
 }
 
@@ -444,36 +446,42 @@ std::size_t INIFILE_T::ForEachString(const char *section_name, const char *key_n
 // return long value of key in pointed section if section and key exist, throw EXS object otherwise
 long INIFILE_T::GetLong(const char *section_name, const char *key_name)
 {
+    SEARCH_DATA Search;
     return ifs_PTR->GetLong(&Search, section_name, key_name);
 }
 
 // return long value of key in pointed section if section and key exist, if not - return def_value
 long INIFILE_T::GetLong(const char *section_name, const char *key_name, long def_val)
 {
+    SEARCH_DATA Search;
     return ifs_PTR->GetLong(&Search, section_name, key_name, def_val);
 }
 
 // return double value of key in pointed section if section and key exist, throw EXS object otherwise
 double INIFILE_T::GetDouble(const char *section_name, const char *key_name)
 {
+    SEARCH_DATA Search;
     return ifs_PTR->GetDouble(&Search, section_name, key_name);
 }
 
 // return double value of key in pointed section if section and key exist, if not - return def_value
 double INIFILE_T::GetDouble(const char *section_name, const char *key_name, double def_val)
 {
+    SEARCH_DATA Search;
     return ifs_PTR->GetDouble(&Search, section_name, key_name, def_val);
 }
 
 // return double value of key in pointed section if section and key exist, throw EXS object otherwise
 float INIFILE_T::GetFloat(const char *section_name, const char *key_name)
 {
+    SEARCH_DATA Search;
     return ifs_PTR->GetFloat(&Search, section_name, key_name);
 }
 
 // return float value of key in pointed section if section and key exist, if not - return def_value
 float INIFILE_T::GetFloat(const char *section_name, const char *key_name, float def_val)
 {
+    SEARCH_DATA Search;
     return ifs_PTR->GetFloat(&Search, section_name, key_name, def_val);
 }
 
