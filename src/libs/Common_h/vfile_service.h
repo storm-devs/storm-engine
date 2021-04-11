@@ -112,8 +112,8 @@ class INIFILE
 
     virtual bool TestKey(const char *section_name, const char *key_name) = 0;
 
-    virtual bool GetSectionName(char *section_name_buffer, long buffer_size) = 0;
-    virtual bool GetSectionNameNext(char *section_name_buffer, long buffer_size) = 0;
+    virtual std::size_t ForEachSection(std::function<bool(std::size_t, char *)> f) = 0;
+    virtual std::size_t ForEachSection(std::function<void(char *)> f) = 0;
 };
 
 //

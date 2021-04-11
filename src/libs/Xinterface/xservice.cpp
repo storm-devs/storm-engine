@@ -223,9 +223,6 @@ void XSERVICE::GetTextureCutForSize(const char *pcImageListName, const FXYPOINT 
 
 void XSERVICE::LoadAllPicturesInfo()
 {
-    char section[255];
-    char param[255];
-
     // initialize ini file
     auto ini = fio->OpenIniFile(LISTS_INIFILE);
     if (!ini)
@@ -233,17 +230,10 @@ void XSERVICE::LoadAllPicturesInfo()
         throw std::runtime_error("ini file not found!");
     }
 
-    m_dwListQuantity = 0;
     m_dwImageQuantity = 0;
 
     // calculate lists quantity
-    if (ini->GetSectionName(section, sizeof(section) - 1))
-    {
-        do
-        {
-            m_dwListQuantity++;
-        } while (ini->GetSectionNameNext(section, sizeof(section) - 1));
-    }
+    m_dwListQuantity = ini->ForEachSection([&](auto section) {});
     // create list pointers array
     if (m_dwListQuantity > 0)
     {
@@ -255,71 +245,67 @@ void XSERVICE::LoadAllPicturesInfo()
     }
 
     // fill lists
-    if (ini->GetSectionName(section, sizeof(section) - 1))
-    {
-        for (auto i = 0; true; i++)
+    ini->ForEachSection([&](auto i, auto section) {
+        m_pList[i].textureQuantity = 0;
+        m_pList[i].textureID = -1L;
+
+        // get list name
+        m_pList[i].sImageListName = new char[sizeof section];
+        strcpy_s(m_pList[i].sImageListName, sizeof section, section);
+        // get texture name
+        char param[255];
+        ini->ReadString(section, "sTextureName", param, sizeof(param) - 1, "");
+        m_pList[i].sTextureName = new char[sizeof param];
+        strcpy_s(m_pList[i].sTextureName, sizeof param, param);
+
+        // get texture width & height
+        m_pList[i].textureWidth = ini->GetLong(section, "wTextureWidth", 1024);
+        m_pList[i].textureHeight = ini->GetLong(section, "wTextureHeight", 1024);
+
+        m_pList[i].pictureStart = m_dwImageQuantity;
+        // get pictures quantity
+        m_pList[i].pictureQuantity = ini->ForEachString(section, "picture", [](auto v) {});
+
+        // resize image list
+        auto *const oldpImage = m_pImage;
+        m_pImage = new PICTUREDESCR[m_dwImageQuantity + m_pList[i].pictureQuantity];
+        if (m_pImage == nullptr)
+            throw std::runtime_error("allocate memory error");
+        if (oldpImage != nullptr)
         {
-            m_pList[i].textureQuantity = 0;
-            m_pList[i].textureID = -1L;
-
-            // get list name
-            m_pList[i].sImageListName = new char[sizeof section];
-            strcpy_s(m_pList[i].sImageListName, sizeof section, section);
-            // get texture name
-            ini->ReadString(section, "sTextureName", param, sizeof(param) - 1, "");
-            m_pList[i].sTextureName = new char[sizeof param];
-            strcpy_s(m_pList[i].sTextureName, sizeof param, param);
-
-            // get texture width & height
-            m_pList[i].textureWidth = ini->GetLong(section, "wTextureWidth", 1024);
-            m_pList[i].textureHeight = ini->GetLong(section, "wTextureHeight", 1024);
-
-            m_pList[i].pictureStart = m_dwImageQuantity;
-            // get pictures quantity
-            m_pList[i].pictureQuantity = ini->ForEachString(section, "picture", [](auto v) {});
-
-            // resize image list
-            auto *const oldpImage = m_pImage;
-            m_pImage = new PICTUREDESCR[m_dwImageQuantity + m_pList[i].pictureQuantity];
-            if (m_pImage == nullptr)
-                throw std::runtime_error("allocate memory error");
-            if (oldpImage != nullptr)
-            {
-                memcpy(m_pImage, oldpImage, m_dwImageQuantity * sizeof(PICTUREDESCR));
-                delete oldpImage;
-            }
-            m_dwImageQuantity += m_pList[i].pictureQuantity;
-
-            // set pictures
-            char picName[sizeof(param)];
-
-            ini->ForEachString(section, "picture", [&](auto n, auto param) {
-                auto j = m_pList[i].pictureStart + n;
-                if (j < m_dwImageQuantity)
-                {
-                    // get texture coordinates
-                    int nLeft, nTop, nRight, nBottom;
-
-                    sscanf(param, "%[^,],%d,%d,%d,%d", picName, &nLeft, &nTop, &nRight, &nBottom);
-                    m_pImage[j].pTextureRect.left = nLeft;
-                    m_pImage[j].pTextureRect.top = nTop;
-                    m_pImage[j].pTextureRect.right = nRight;
-                    m_pImage[j].pTextureRect.bottom = nBottom;
-
-                    const auto len = strlen(picName) + 1;
-                    m_pImage[j].sPictureName = new char[len];
-                    memcpy(m_pImage[j].sPictureName, picName, len);
-
-                    return true;
-                }
-
-                return false;
-            });
-
-            if (!ini->GetSectionNameNext(section, sizeof(section) - 1))
-                break;
+            memcpy(m_pImage, oldpImage, m_dwImageQuantity * sizeof(PICTUREDESCR));
+            delete oldpImage;
         }
-    }
+        m_dwImageQuantity += m_pList[i].pictureQuantity;
+
+        // set pictures
+        char picName[sizeof(param)];
+
+        ini->ForEachString(section, "picture", [&](auto n, auto param) {
+            auto j = m_pList[i].pictureStart + n;
+            if (j < m_dwImageQuantity)
+            {
+                // get texture coordinates
+                int nLeft, nTop, nRight, nBottom;
+
+                sscanf(param, "%[^,],%d,%d,%d,%d", picName, &nLeft, &nTop, &nRight, &nBottom);
+                m_pImage[j].pTextureRect.left = nLeft;
+                m_pImage[j].pTextureRect.top = nTop;
+                m_pImage[j].pTextureRect.right = nRight;
+                m_pImage[j].pTextureRect.bottom = nBottom;
+
+                const auto len = strlen(picName) + 1;
+                m_pImage[j].sPictureName = new char[len];
+                memcpy(m_pImage[j].sPictureName, picName, len);
+
+                return true;
+            }
+
+            return false;
+        });
+
+        return true;
+    });
 }
 
 void XSERVICE::ReleaseAll()

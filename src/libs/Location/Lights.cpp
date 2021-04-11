@@ -61,10 +61,7 @@ bool Lights::Init()
         core.Trace("Location lights not inited -> RESOURCES\\Ini\\lights.ini not found");
         return false;
     }
-    char lName[256];
-    auto res = ini->GetSectionName(lName, sizeof(lName) - 1);
-    while (res)
-    {
+    ini->ForEachSection([&](auto lName) {
         lName[sizeof(lName) - 1] = 0;
         long i;
         for (i = 0; i < numTypes; i++)
@@ -138,8 +135,7 @@ bool Lights::Init()
                 types[numTypes].pSlow = 1.0f / types[numTypes].freqSlow;
             numTypes++;
         }
-        res = ini->GetSectionNameNext(lName, sizeof(lName) - 1);
-    }
+    });
     if (numTypes == 0)
     {
         core.Trace("Location lights not inited -> 0 light types");

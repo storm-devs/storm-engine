@@ -59,9 +59,8 @@ class INIFILE_T : public INIFILE
 
     bool TestKey(const char *section_name, const char *key_name) override;
 
-    bool GetSectionName(char *section_name_buffer, long buffer_size) override;
-
-    bool GetSectionNameNext(char *section_name_buffer, long buffer_size) override;
+    std::size_t ForEachSection(std::function<bool(std::size_t, char *)> f) override;
+    std::size_t ForEachSection(std::function<void(char *)> f) override;
 };
 
 class FILE_SERVICE : public VFILE_SERVICE

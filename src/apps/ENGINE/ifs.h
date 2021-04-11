@@ -118,6 +118,8 @@ class IFS : public INIFILE
                                                   std::function<bool(std::size_t, char *)> f))
     IFS_NOT_IMPLEMENTED(std::size_t ForEachString(const char *section_name, const char *key_name,
                                                   std::function<void(char *)> f))
+    IFS_NOT_IMPLEMENTED(std::size_t ForEachSection(std::function<bool(std::size_t, char *)> f))
+    IFS_NOT_IMPLEMENTED(std::size_t ForEachSection(std::function<void(char *)> f))
     IFS_NOT_IMPLEMENTED(long GetLong(const char *section_name, const char *key_name))
     IFS_NOT_IMPLEMENTED(long GetLong(const char *section_name, const char *key_name, long def_val))
     IFS_NOT_IMPLEMENTED(double GetDouble(const char *section_name, const char *key_name))
@@ -166,6 +168,6 @@ class IFS : public INIFILE
     void WriteDouble(const char *section_name, const char *key_name, double value) override;
     void WriteFloat(const char *section_name, const char *key_name, float value);
 
-    bool GetSectionName(char *section_name_buffer, long buffer_size) override;
-    bool GetSectionNameNext(char *section_name_buffer, long buffer_size) override;
+    bool GetSectionName(char *section_name_buffer, long buffer_size);
+    bool GetSectionNameNext(char *section_name_buffer, long buffer_size);
 };

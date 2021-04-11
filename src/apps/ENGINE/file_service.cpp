@@ -492,12 +492,42 @@ void INIFILE_T::DeleteSection(const char *section_name)
     ifs_PTR->DeleteSection(section_name);
 }
 
-bool INIFILE_T::GetSectionName(char *section_name_buffer, long buffer_size)
+std::size_t INIFILE_T::ForEachSection(std::function<bool(std::size_t, char *)> f)
 {
-    return ifs_PTR->GetSectionName(section_name_buffer, buffer_size);
+    auto n = 0;
+    char buffer[2048];
+    while (true)
+    {
+        bool found;
+        if (n == 0)
+        {
+            found = ifs_PTR->GetSectionName(buffer, 2048);
+        }
+        else
+        {
+            found = ifs_PTR->GetSectionNameNext(buffer, 2048);
+        }
+
+        auto cont = false;
+        if (found)
+        {
+            auto cont = f(n, buffer);
+            n += 1;
+            if (cont)
+            {
+                continue;
+            }
+        }
+
+        return n;
+    }
 }
 
-bool INIFILE_T::GetSectionNameNext(char *section_name_buffer, long buffer_size)
+std::size_t INIFILE_T::ForEachSection(std::function<void(char *buf)> f)
 {
-    return ifs_PTR->GetSectionNameNext(section_name_buffer, buffer_size);
+    return this->ForEachSection([&](auto n, auto buf) {
+        f(buf);
+
+        return true;
+    });
 }

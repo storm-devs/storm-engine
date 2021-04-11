@@ -965,14 +965,7 @@ void SoundService::LoadAliasFile(const char *_filename)
     if (!aliasIni)
         return;
 
-    if (aliasIni->GetSectionName(sectionName, SECTION_NAME_LENGTH))
-    {
-        AddAlias(*aliasIni, sectionName);
-        while (aliasIni->GetSectionNameNext(sectionName, SECTION_NAME_LENGTH))
-        {
-            AddAlias(*aliasIni, sectionName);
-        }
-    }
+    aliasIni->ForEachSection([&](auto sectionName) { AddAlias(*aliasIni, sectionName); });
 }
 
 void SoundService::InitAliases()

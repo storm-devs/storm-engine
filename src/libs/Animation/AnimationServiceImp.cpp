@@ -205,34 +205,32 @@ long AnimationServiceImp::LoadAnimation(const char *animationName)
     // Global user data
     LoadUserData(ani.get(), nullptr, info->GetUserData(), animationName);
     // read actions
-    for (auto isHaveSection = ani->GetSectionName(path, 63); isHaveSection;
-         isHaveSection = ani->GetSectionNameNext(path, 63))
-    {
+    ani->ForEachSection([&](auto path) {
         // Action handling
         if (path[0] == 0 || strlen(path) >= 64)
         {
             core.Trace("Incorrect name action [%s] of animation file %s.ani", path, animationName);
-            continue;
+            return;
         }
         // Reading the times
         const auto stime = ani->GetLong(path, ASKW_STIME, -1);
         if (stime < 0)
         {
             core.Trace("Incorrect %s in action [%s] of animation file %s.ani", ASKW_STIME, path, animationName);
-            continue;
+            return;
         }
         const auto etime = ani->GetLong(path, ASKW_ETIME, -1);
         if (etime < 0)
         {
             core.Trace("Incorrect %s in action [%s] of animation file %s.ani", ASKW_ETIME, path, animationName);
-            continue;
+            return;
         }
         // Add an action
         auto *aci = info->AddAction(path, stime, etime);
         if (aci == nullptr)
         {
             core.Trace("Warning! Action [%s] of animation file %s.ani is repeated, skip it", path, animationName);
-            continue;
+            return;
         }
         // Playback speed ratio
         const auto rate = ani->GetFloat(path, ASKW_RATE, 1.0f);
@@ -392,7 +390,7 @@ long AnimationServiceImp::LoadAnimation(const char *animationName)
 
         // User data
         LoadUserData(ani.get(), path, aci->GetUserData(), animationName);
-    }
+    });
     // Looking for a free pointer
     long i;
     for (i = 0; i < ainfo.size(); i++)
