@@ -243,10 +243,8 @@ def gm_to_obj(input_name, output_name):
     f.readinto(rhead)
 
     # Read all the following lines till the buffer
-    globname = f.read(getattr(rhead, "name_size")
-                      ).decode("utf-8").split(u'\x00')
-    names = struct.unpack('<'+str(getattr(rhead, "names"))+'l',
-                          (f.read(getattr(rhead, "names") * sizeof(c_long))))
+    globname = f.read(getattr(rhead, "name_size") ).decode("utf-8").split(u'\x00')
+    names = struct.unpack('<'+str(getattr(rhead, "names")) + 'l', (f.read(getattr(rhead, "names") * sizeof(c_long))))
     tname = f.read(getattr(rhead, "ntextures") * sizeof(c_long))
     rmaterials = get_array_of("rdf_material", rhead.nmaterials)
     rlights = get_array_of("rdf_light", rhead.nlights)
@@ -262,31 +260,17 @@ def gm_to_obj(input_name, output_name):
         if(n != 0):
             names_dict[n] = next(words)
 
-    # Find all the vertices
-    vertices = []
-    for v in range(0, rhead.nvrtbuffs):
-        size = getattr(rvb[v], "size")
-        wasted_bytes = (rvb[v].type & 3) * 8 + (rvb[v].type >> 2) * 8
-        stride = sizeof(get_vertex_from_wasted_bytes(wasted_bytes))
-        nverts = int(size/stride)
-        vertices.extend(get_array_of(
-            get_vertex_from_wasted_bytes(wasted_bytes).__name__, nverts))
-    v_len = len(vertices)
-    t_len = len(rtriangles)
-
-    # Start transforming to obj
-    print("File read succesfully!")
-    # Each .obj has the following values
-
     # All the properties which a .obj file has. https://en.wikipedia.org/wiki/Wavefront_.obj_file
     class ProperObj:
-        def __init__(self, name, svertex, striangle, nvertices, ntriangles):
+        def __init__(self, name, svertex, striangle, nvertices, ntriangles, vertex_buff):
             self.name = name
             self.svertex = svertex
             self.striangle = striangle
             self.nvertices = nvertices
             self.ntriangles = ntriangles
-            self.o = "o "+names_dict[name]+"\n"
+            self.vertex_buff = vertex_buff
+            self.parsed_name = names_dict[name]
+            self.o = "o "+self.parsed_name+"\n"
             self.v = ""
             self.vn = ""
             self.vt = ""
@@ -305,54 +289,61 @@ def gm_to_obj(input_name, output_name):
             self.vt += "vt %f %f\n" % (u, v)
 
         # List of the faces
-        def add_f(self, shift, x, y, z):
-            self.f += "f %d %d %d\n" % (x+1+shift, y+1+shift, z+1+shift)
+        def add_f(self, x, y, z):
+            self.f += "f %d %d %d\n" % (x+1+self.svertex,
+                                        y+1+self.svertex, z+1+self.svertex)
 
     # Dictionaries used to store objects' start and end
     list_objects = []
 
     # Get instructions from objects
-    print("Parsing objects (", len(robjects), ")")
+    print("Found objects:", len(robjects))
     for obj in robjects:
         list_objects.append(ProperObj(getattr(obj, "name"), getattr(
             obj, "svertex"), getattr(obj, "striangle"), getattr(
-            obj, "nvertices"), getattr(obj, "ntriangles")))
+            obj, "nvertices"), getattr(obj, "ntriangles"), getattr(obj, "vertex_buff")))
+        # Start transforming to obj
+    print("\nVertex buffers:")
 
-    # Groups are stored in this dictionary
-    print("Parsing vertices (", v_len, ")")
-    objects_iterator = iter(list_objects)
-    selected_object = None
-    object_index = 0
-    # Transform vertex to valid .obj structure
-    for index, vert in enumerate(vertices):
-        #print("Vertex %d of %d" % (index, v_len), end="\r")
-        if(index+1 > object_index):
-            selected_object = next(objects_iterator)
-            object_index += selected_object.nvertices
+    vertex_in_buffer = []
+    # Find all the vertices
+    for v in range(0, rhead.nvrtbuffs):
+        size = getattr(rvb[v], "size")
+        print("\t-Buffer", v, "has Type:", rvb[v].type)
+        vertex_type = get_vertex_from_wasted_bytes(
+            ((rvb[v].type & 3) + (rvb[v].type >> 2)) * 8)
+        stride = sizeof(vertex_type)
+        nverts = int(size/stride)
+        vertex_in_buffer.append(get_array_of(vertex_type.__name__, nverts))
 
-        selected_object.add_v(*getattr(getattr(vert, "pos"), "v"))
-        selected_object.add_vn(* getattr(getattr(vert, "norm"), "v"))
-        selected_object.add_vt(getattr(vert, "tu0"),  getattr(vert, "tv0"))
+    # The start_vertex is wrong, as workaround it is calculated from scratch
+    workaround_s_vertex = 0
+    print("\nGenerating objects:")
+    for o in list_objects:
+        print("\t-", o.parsed_name)
+        v_buffer = vertex_in_buffer[o.vertex_buff]
+        for index in range(o.svertex, o.svertex+o.nvertices):
+            vert = v_buffer[index]
+            o.add_v(*getattr(getattr(vert, "pos"), "v"))
+            o.add_vn(*getattr(getattr(vert, "norm"), "v"))
+            o.add_vt(getattr(vert, "tu0"), getattr(vert, "tv0"))
 
-    # Transform triangles to valid .obj structure
-    print("Parsing triangles (", t_len, ")              ")
-    objects_iterator = iter(list_objects)
-    object_index = 0
-    for index, tri in enumerate(rtriangles):
-        print("Triangle %d of %d" % (index, t_len), end="\r")
-        if(index+1 > object_index):
-            selected_object = next(objects_iterator)
-            object_index += selected_object.ntriangles
-        selected_object.add_f(
-            selected_object.svertex, *getattr(tri, "vindex"))
+        o.svertex = workaround_s_vertex
+        workaround_s_vertex += o.nvertices
+
+        for index in range(o.striangle, o.striangle+o.ntriangles):
+            tri = rtriangles[index]
+            o.add_f(*getattr(tri, "vindex"))
 
     # start crating obj file
-    print("Writing output               ")
+    print("\nWriting output               ")
     out = open(output_name, "w")
 
+    out.write("# Obj generator for the storm-engine \n")
     out.write("# Author: https://github.com/MangioneAndrea \n")
     # Add smoothing
     out.write("s 1 \n")
+
     # Write everything to file
     for obj in list_objects:
         out.write(obj.o)
@@ -363,7 +354,7 @@ def gm_to_obj(input_name, output_name):
 
     out.close()
 
-    print("Done")
+    print("\nDone")
 
 
 if (__name__ == "__main__"):
