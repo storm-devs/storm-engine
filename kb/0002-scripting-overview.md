@@ -42,7 +42,9 @@ The following list is sorted alphabetically and is based on the latest build of 
 
 ## Typing
 
-In order to be compiled, the scripting files should contain good C-like code. This also means that the variables should be strongly typed. Commonly used are base C types: `int`, `float`, but also `bool` and a simple to use `string`. Any custom structs are supported in the form of `object`s. Last, arrays are supported of the above.
+In order to be compiled, the scripting files should contain good C-like code. This also means that the variables should be strongly typed. Commonly used are base C types: `int`, `float`, but also `bool` and a simple to use `string`. Any custom structs are supported in the form of `object`s. 
+
+All of these types can also be agglomerated inside arrays. The arrays may be declared both in global and local scope, albeit with a few caveats.
 
 ### Base Types
 
@@ -52,30 +54,30 @@ There're three base types in scripting language:
 
 ``` C++
 syntax: 
-	int var_name;
+    int var_name;
 examples:
-	int GameTime = -2053; // OK
-	int FreeSlots = 75;   // OK
+    int GameTime = -2053; // OK
+    int FreeSlots = 75;   // OK
 ```
 
 * `float`: a single-precision floating-point number. Because there're no `double`s, specifying `f` at the end is not required but allowed. 
 
 ``` C++
 syntax: 
-	float var_name;
+    float var_name;
 examples:
-	float WindSpeed = 2.0;         // OK
-	float WindDirection = -0.0057; // OK
-	float ShipDirection = 3.14f;   // OK
+    float WindSpeed = 2.0;         // OK
+    float WindDirection = -0.0057; // OK
+    float ShipDirection = 3.14f;   // OK
 ```
 
 * `bool`: a logical `true`/`false` operator where `true` is any non-zero value and `false` is zero.
 
 ``` C++
 syntax: 
-	bool var_name;
+    bool var_name;
 examples:
-	bool IsSpeaking = true;                  // OK
+    bool IsSpeaking = true;                  // OK
     bool IsDrunk = (AlcoholInBlood > 10.0f); // OK
     bool KilledAtLeastOneEnemy = KillCount;  // OK where KillCount is an int
 ```
@@ -86,9 +88,9 @@ In the scripting code, strings are sequences of characters of arbitrary length. 
 
 ``` C++
 syntax: 
-	string var_name;
+    string var_name;
 example:
-	string Name = "John";                    // OK
+    string Name = "John";                    // OK
     string LastName = GetRandomLastName();   // OK, e.g. "Jameson"
     string FullName = Name + " " + LastName; // OK, "John Jameson"
 ```
@@ -101,15 +103,13 @@ The scripting code allows fixed-size arrays of any type. This means that, after 
 syntax: 
     var_type var_name[int number_of_elements];
 example:
-	int Characteristics[10];                // OK
-	string CharacteristicsNames[10];        // OK
+    int Characteristics[10];                // OK
+    string CharacteristicsNames[10];        // OK
 
-	int array_size;
-	array_size = 10;
-	string CharacteristicsNames[array_size]; // Also OK
+    int array_size;
+    array_size = 10;
+    string CharacteristicsNames[array_size]; // Also OK
 ```
-
-// TODO(yakvi): Info below is dated 2009. Is this still relevant?
 
 Due to the limitations of the script compiler, a very strict array initialization syntax must be respected.
 
@@ -169,7 +169,7 @@ examples:
 
 ### Objects, References and Attributes
 
-An `object` is a treelike text structure of an arbitrary shape. This means that it can store any amount of fields in _text_ form, even if specifying a number without quotes is allowed.
+An `object` is a treelike text structure of an arbitrary shape. This means that it can store any amount of fields in _text_ form, even though specifying a number without quotes is allowed.
 
 The strings may be converted back to `int` or `float` using `sti` and `stf` functions. 
 
