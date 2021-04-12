@@ -16,7 +16,6 @@ Articles in Russian should be translated to English.
 
 * [ ] [Scripting System Overview](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/описание%20скриптов.txt) (used in [0002](../kb/0002-scripting-overview.md), [0003](../kb/0002-scripting-functions.md))
 * [ ] [Animation System](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/ani.txt)
-* [x] [Array Parsing](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/array.txt) (used in [0002](../kb/0002-scripting-overview.md))
 * [ ] [Foam Editing from In-game](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/coastfoam.txt)
 * [ ] [Placing Sailors Points](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/sailorpoints.txt)
 * [ ] [INI files for the UI](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/subscribe.txt)
@@ -53,7 +52,7 @@ Duplicates with TEHO repo sources are omitted.
 [Link](https://github.com/storm-devs/sd-teho-public/tree/steamapi-isolate/docs)
 
 * [ ] [Core Engine Details](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/core.txt)
-* [ ] [Script Syntax](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/syntax.txt) (used in [0002](../kb/0002-scripting-overview.md), [0003](../kb/0002-scripting-functions.md))
+* [ ] [Script Syntax](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/syntax.txt) (used in [0002](../kb/0002-scripting-overview.md), [0003](../kb/0003-scripting-functions.md))
 
 ### Storm Repo docs 
 [Link](https://github.com/storm-devs/storm-engine/tree/develop/docs)
