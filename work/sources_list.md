@@ -14,12 +14,11 @@ Articles in Russian should be translated to English.
 
 [Link](https://github.com/storm-devs/sd-teho-public/tree/steamapi-isolate/docs)
 
-* [ ] [Scripting System Overview](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/описание%20скриптов.txt) (used in [0002](../kb/0002-scripting-overview.md))
+* [ ] [Scripting System Overview](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/описание%20скриптов.txt) (used in [0002](../kb/0002-scripting-overview.md), [0003](../kb/0002-scripting-functions.md))
 * [ ] [Animation System](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/ani.txt)
-* [ ] [Array Parsing](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/array.txt)
+* [x] [Array Parsing](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/array.txt) (used in [0002](../kb/0002-scripting-overview.md))
 * [ ] [Foam Editing from In-game](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/coastfoam.txt)
 * [ ] [Placing Sailors Points](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/sailorpoints.txt)
-* [x] [Evolution of the Storm Engine](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/storm_evolution.txt) (used in [0001](../kb/0001-history.md))
 * [ ] [INI files for the UI](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/subscribe.txt)
 * [ ] [NPC Attributes](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/атрибуты%20НПС.txt)
 * [ ] [Location Generation](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/potc/location_init.txt) ([tavern location insights](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/potc/tavern_locators.txt))
@@ -27,7 +26,7 @@ Articles in Russian should be translated to English.
 * [ ] [Dialogue Generation](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/диалоги%20на%20генераторе.txt)
 * [ ] [AI Interface Methods](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/potc/functions.txt)
 * [ ] [Various scripting methods used for dialogues](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/набор%20методов%20для%20реплик.txt)
-* [ ] [Other useful scripting methods](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/описание%20функций.txt)
+* [ ] [Other useful scripting methods](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/описание%20функций.txt) (used in [0003](../kb/0002-scripting-functions.md))
 * [ ] [Interface States (stub)](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/potc/interface.txt)
 * [ ] [How to make a patch for installer](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/утилита%20инсталла.txt)
 
@@ -54,7 +53,7 @@ Duplicates with TEHO repo sources are omitted.
 [Link](https://github.com/storm-devs/sd-teho-public/tree/steamapi-isolate/docs)
 
 * [ ] [Core Engine Details](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/core.txt)
-* [ ] [Script Syntax](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/syntax.txt)
+* [ ] [Script Syntax](https://github.com/storm-devs/sd-teho-public/blob/steamapi-isolate/docs/syntax.txt) (used in [0002](../kb/0002-scripting-overview.md), [0003](../kb/0002-scripting-functions.md))
 
 ### Storm Repo docs 
 [Link](https://github.com/storm-devs/storm-engine/tree/develop/docs)
