@@ -25,33 +25,6 @@ bool bActive = false;
 } // namespace
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-int Alert(const char *lpCaption, const char *lpText);
-void CreateMiniDump(EXCEPTION_POINTERS *pep);
-
-bool runExceptionWrapped()
-{
-    try
-    {
-        return core.Run();
-    }
-    catch (const std::exception &e)
-    {
-        spdlog::critical(e.what());
-        throw;
-    }
-}
-
-bool runSehWrapped()
-{
-    __try
-    {
-        return runExceptionWrapped();
-    }
-    __except (CreateMiniDump(GetExceptionInformation()), EXCEPTION_EXECUTE_HANDLER)
-    {
-        std::terminate();
-    }
-}
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
 {
@@ -178,7 +151,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
                         continue;
                     dwOldTime = dwNewTime;
                 }
-                const auto runResult = runSehWrapped();
+                std::set_terminate([] {
+                    auto eptr = std::current_exception();
+                    try
+                    {
+                        if (eptr)
+                        {
+                            std::rethrow_exception(eptr);
+                        }
+                    }
+                    catch (const std::exception &e)
+                    {
+                        spdlog::critical(e.what());
+                    }
+
+                    if (core.tracelog)
+                    {
+                        core.tracelog->flush();
+                    }
+                });
+                const auto runResult = core.Run();
                 if (!isHold && !runResult)
                 {
                     isHold = true;
@@ -263,54 +255,4 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     }
 
     return DefWindowProc(hwnd, iMsg, wParam, lParam);
-}
-
-void CreateMiniDump(EXCEPTION_POINTERS *pep)
-{
-    // flush logs
-    if (core.tracelog)
-    {
-        core.tracelog->flush();
-    }
-
-    std::filesystem::path dmpfile = fs::GetStashPath() / std::filesystem::u8path(DUMP_FILENAME);
-    // Open the file
-    HANDLE hFile =
-        CreateFile(dmpfile.c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-
-    if ((hFile != NULL) && (hFile != INVALID_HANDLE_VALUE))
-    {
-        // Create the minidump
-        MINIDUMP_EXCEPTION_INFORMATION mdei;
-
-        mdei.ThreadId = GetCurrentThreadId();
-        mdei.ExceptionPointers = pep;
-        mdei.ClientPointers = FALSE;
-
-        MINIDUMP_TYPE mdt =
-            (MINIDUMP_TYPE)(MiniDumpWithFullMemory | MiniDumpWithFullMemoryInfo | MiniDumpWithHandleData |
-                            MiniDumpWithThreadInfo | MiniDumpWithUnloadedModules);
-
-        BOOL rv =
-            MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, mdt, (pep != 0) ? &mdei : 0, 0, 0);
-
-        if (!rv)
-            _tprintf(_T("MiniDumpWriteDump failed. Error: %u \n"), GetLastError());
-        else
-            _tprintf(_T("Minidump created.\n"));
-
-        // Close the file
-        CloseHandle(hFile);
-    }
-    else
-    {
-        _tprintf(_T("CreateFile failed. Error: %u \n"), GetLastError());
-    }
-}
-
-int Alert(const char *lpCaption, const char *lpText)
-{
-    std::wstring CaptionW = utf8::ConvertUtf8ToWide(lpCaption);
-    std::wstring TextW = utf8::ConvertUtf8ToWide(lpText);
-    return ::MessageBox(NULL, TextW.c_str(), CaptionW.c_str(), MB_OK);
 }
