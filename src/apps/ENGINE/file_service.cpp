@@ -129,7 +129,14 @@ std::vector<std::filesystem::path> FILE_SERVICE::_GetFsPathsByMask(const char *s
     }
 
     std::filesystem::path curPath;
-    for (auto &dirEntry : std::filesystem::directory_iterator(srcPath))
+    std::error_code ec;
+    auto it = std::filesystem::directory_iterator(srcPath, ec);
+    if (ec)
+    {
+        return result;
+    }
+
+    for (auto &dirEntry : it)
     {
         bool thisIsDir = dirEntry.is_directory();
         if ((onlyFiles && thisIsDir) || (onlyDirs && !thisIsDir))
