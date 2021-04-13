@@ -70,7 +70,7 @@ class MESSAGE_SCRIPT : public MESSAGE
             arg_size = sizeof(ATTRIBUTES *);
             break;
         default:
-            throw "Invalid MESSAGE_SCRIPT data type";
+            throw std::runtime_error("Invalid MESSAGE_SCRIPT data type");
         }
         pData = (char *)realloc(pData, Data_size + arg_size);
         if (GetCurrentFormatType() == 's' && data == nullptr)
@@ -86,32 +86,32 @@ class MESSAGE_SCRIPT : public MESSAGE
     };
     uint8_t Byte()
     {
-        throw "Invalid MESSAGE_SCRIPT data type";
+        throw std::runtime_error("Invalid MESSAGE_SCRIPT data type");
     }
     uint16_t Word()
     {
-        throw "Invalid MESSAGE_SCRIPT data type";
+        throw std::runtime_error("Invalid MESSAGE_SCRIPT data type");
     }
     long Dword()
     {
-        throw "Invalid MESSAGE_SCRIPT data type";
+        throw std::runtime_error("Invalid MESSAGE_SCRIPT data type");
     }
     double Double()
     {
-        throw "Invalid MESSAGE_SCRIPT data type";
+        throw std::runtime_error("Invalid MESSAGE_SCRIPT data type");
     }
-    // char * Pointer()    { throw "Invalid MESSAGE_SCRIPT data type"; }
+    // char * Pointer()    { throw std::runtime_error("Invalid MESSAGE_SCRIPT data type"); }
     CVECTOR CVector()
     {
-        throw "Invalid MESSAGE_SCRIPT data type";
+        throw std::runtime_error("Invalid MESSAGE_SCRIPT data type");
     }
     void MemoryBlock(uint32_t memsize, char *buffer)
     {
-        throw "Invalid MESSAGE_SCRIPT data type";
+        throw std::runtime_error("Invalid MESSAGE_SCRIPT data type");
     }
     void Struct(uint32_t sizeofstruct, char *s)
     {
-        throw "Invalid MESSAGE_SCRIPT data type";
+        throw std::runtime_error("Invalid MESSAGE_SCRIPT data type");
     }
     ATTRIBUTES *AttributePointer()
     {
@@ -172,18 +172,18 @@ class MESSAGE_SCRIPT : public MESSAGE
                 buffer[dest_buffer_size - 1] = 0;
             core.Trace("MESSAGE_SCRIPT::String() data clamped to %s ", buffer);
             return;
-            // throw "insufficient string buffer";
+            // throw std::runtime_error("insufficient string buffer");
         }
         memcpy(buffer, ReadPointer, size);
         ReadPointer += size;
 
         /*char * mem_PTR;
         uint32_t size;
-        if(!buffer) throw "zero string buffer";
+        if(!buffer) throw std::runtime_error("zero string buffer");
         ValidateFormat('s');
         mem_PTR = va_arg(args,char*);
         size = strlen(mem_PTR) + 1;
-        if(size >= dest_buffer_size) throw "insufficient string buffer";
+        if(size >= dest_buffer_size) throw std::runtime_error("insufficient string buffer");
         memcpy(buffer,mem_PTR,size);*/
     }
     virtual char *StringPointer()
@@ -196,9 +196,9 @@ class MESSAGE_SCRIPT : public MESSAGE
     void ValidateFormat(char c)
     {
         if (!format)
-            throw "Read from empty MESSAGE_SCRIPT";
+            throw std::runtime_error("Read from empty MESSAGE_SCRIPT");
         if (format[index] != c)
-            throw "Incorrect MESSAGE_SCRIPT data";
+            throw std::runtime_error("Incorrect MESSAGE_SCRIPT data");
         index++;
     }
     void ResetIndex()
@@ -209,7 +209,7 @@ class MESSAGE_SCRIPT : public MESSAGE
     void Reset(const char *_format)
     {
         if (!_format)
-            throw "MESSAGE_SCRIPT: cant reset with empty format string";
+            throw std::runtime_error("MESSAGE_SCRIPT: cant reset with empty format string");
         if (format)
             delete format;
 

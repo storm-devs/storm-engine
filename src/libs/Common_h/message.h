@@ -96,14 +96,14 @@ class MESSAGE
         char *mem_PTR;
         size_t size;
         if (!buffer)
-            throw "zero string buffer";
+            throw std::runtime_error("zero string buffer");
         ValidateFormat('s');
         mem_PTR = va_arg(args, char *);
         if (!mem_PTR)
-            throw "invalid string : MESSAGE.String()";
+            throw std::runtime_error("invalid string : MESSAGE.String()");
         size = strlen(mem_PTR) + 1;
         if (size >= dest_buffer_size)
-            throw "insufficient string buffer";
+            throw std::runtime_error("insufficient string buffer");
         memcpy(buffer, mem_PTR, size);
     }
 
@@ -112,11 +112,11 @@ class MESSAGE
         char *mem_PTR;
         size_t size;
         if (!buffer)
-            throw "zero mem buffer";
+            throw std::runtime_error("zero mem buffer");
         ValidateFormat('m');
         size = va_arg(args, uint32_t);
         if (memsize != size)
-            throw "invalid memory block size";
+            throw std::runtime_error("invalid memory block size");
         mem_PTR = va_arg(args, char *);
         memcpy(buffer, mem_PTR, memsize);
     }
@@ -126,11 +126,11 @@ class MESSAGE
         uint32_t a;
         size_t size;
         if (!s)
-            throw "Invalid s buffer";
+            throw std::runtime_error("Invalid s buffer");
         ValidateFormat('v');
         size = va_arg(args, uint32_t);
         if (sizeofstruct != size)
-            throw "Invalid message structure size";
+            throw std::runtime_error("Invalid message structure size");
         a = ((sizeofstruct + sizeof(int) - 1) & ~(sizeof(int) - 1));
         memcpy(s, static_cast<char *>((args += a) - a), sizeofstruct);
     }
@@ -138,9 +138,9 @@ class MESSAGE
     virtual void ValidateFormat(char c)
     {
         if (!format)
-            throw "Read from empty message";
+            throw std::runtime_error("Read from empty message");
         if (format[index] != c)
-            throw "Incorrect message data";
+            throw std::runtime_error("Incorrect message data");
         index++;
     }
 

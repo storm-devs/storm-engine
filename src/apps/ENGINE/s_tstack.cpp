@@ -29,7 +29,7 @@ bool S_TSTACK::Push(char *pUnit)
     if (pUnit == nullptr)
         return false;
     if (Data_num > TSTACK_BUFFER_LIMIT)
-        throw "stack overflaw";
+        throw std::runtime_error("stack overflaw");
     if (Data_num >= Buffer_size)
     {
         Buffer_size += TSTACK_BUFFER_BLOCK_SIZE;
@@ -43,7 +43,7 @@ bool S_TSTACK::Push(char *pUnit)
 bool S_TSTACK::Pop(char *pUnit)
 {
     if (pUnit == nullptr)
-        throw "invalid 'pUnit'";
+        throw std::runtime_error("invalid 'pUnit'");
     if (Data_num == 0)
         return false;
     Data_num--;
@@ -54,7 +54,7 @@ bool S_TSTACK::Pop(char *pUnit)
 bool S_TSTACK::Read(char *pUnit)
 {
     if (pUnit == nullptr)
-        throw "invalid 'pUnit'";
+        throw std::runtime_error("invalid 'pUnit'");
     if (Data_num == 0)
         return false;
     memcpy(pUnit, pStackData.data() + (Data_num - 1) * Unit_size, Unit_size);

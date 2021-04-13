@@ -198,7 +198,7 @@ std::fstream GEOM_SERVICE_R::OpenFile(const char *fname)
         }
         else
         {
-            throw "can't open geometry file";
+            throw std::runtime_error("can't open geometry file");
         }
     }
 

@@ -56,7 +56,7 @@ template <class Type> class SafeQueue
         if (first == nullptr)
         {
             LeaveCriticalSection(&lock);
-            throw "Queue underflow !";
+            throw std::runtime_error("Queue underflow !");
         }
         else
         {

@@ -237,7 +237,7 @@ uint64_t FLAG::ProcessMessage(MESSAGE &message)
             GROUPDATA *oldgdata = gdata;
             gdata = new GROUPDATA[groupQuantity + 1];
             if (gdata == 0)
-                _THROW("Not memory allocation");
+                throw std::runtime_error("Not memory allocation");
             memcpy(gdata, oldgdata, sizeof(GROUPDATA) * groupQuantity);
             delete oldgdata;
             groupQuantity++;

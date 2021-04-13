@@ -107,7 +107,7 @@ void KEY_NODE::Add(KEY_NODE **Root, KEY_NODE **Top)
 void KEY_NODE::AttachTo(KEY_NODE *node, KEY_NODE **Top)
 {
     if (node == nullptr)
-        throw "invalid node";
+        throw std::runtime_error("invalid node");
     // save right node for object
     auto *RNode = node->GetRightNode();
     // attach this node
@@ -190,7 +190,7 @@ KEY_NODE *SECTION::AddNode()
 {
     auto *node = new KEY_NODE;
     if (node == nullptr)
-        throw "node creation error";
+        throw std::runtime_error("node creation error");
     node->Add(&Root, &Top);
     return node;
 }
@@ -484,7 +484,7 @@ void IFS::Format(char *file_data, long file_size)
 
             auto *node = Current_Section->AddNode();
             // node = new KEY_NODE;
-            // if(node == 0) throw "node creation error";
+            // if(node == 0) throw std::runtime_error("node creation error");
             // node->Add(&Root,&Top);
 
             if (data_PTR[i] == COMMENT)
@@ -657,7 +657,7 @@ bool IFS::FlushFile()
                 }
             }
             else
-                throw "invalid key flag";
+                throw std::runtime_error("invalid key flag");
             node = node->GetRightNode();
         }
         section_node = section_node->GetRightNode();
@@ -777,7 +777,7 @@ SECTION *IFS::CreateSection(const char *section_name)
 
     node = new SECTION;
     if (node == nullptr)
-        throw "section creation error";
+        throw std::runtime_error("section creation error");
     node->Add(&SectionRoot, &SectionTop);
     node->SetName(section_name);
     bDataChanged = true;
@@ -1092,10 +1092,10 @@ bool IFS::GetSectionName(char *section_name_buffer, long buffer_size)
         return false;
 
     if (section_name_buffer == nullptr)
-        throw "zero buffer";
+        throw std::runtime_error("zero buffer");
     const long len = strlen(node->GetName());
     if (len > buffer_size)
-        throw "buffer too small";
+        throw std::runtime_error("buffer too small");
     strcpy_s(section_name_buffer, buffer_size, node->GetName());
     SectionSNode = node;
     return true;
@@ -1106,7 +1106,7 @@ bool IFS::GetSectionNameNext(char *section_name_buffer, long buffer_size)
     if (SectionRoot == nullptr)
         return false;
     if (section_name_buffer == nullptr)
-        throw "zero buffer";
+        throw std::runtime_error("zero buffer");
     auto *node = SectionRoot;
     while (node)
     {
@@ -1120,7 +1120,7 @@ bool IFS::GetSectionNameNext(char *section_name_buffer, long buffer_size)
             }
             const long len = strlen(node->GetName());
             if (len > buffer_size)
-                throw "buffer too small";
+                throw std::runtime_error("buffer too small");
             strcpy_s(section_name_buffer, buffer_size, node->GetName());
             SectionSNode = node;
             return true;

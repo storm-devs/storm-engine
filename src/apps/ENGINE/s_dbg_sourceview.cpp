@@ -456,7 +456,7 @@ SOURCE_VIEW::SOURCE_VIEW(HWND _hMain, HINSTANCE _hInst)
     hOwn = CreateWindowEx(WS_EX_CLIENTEDGE, SVClass, SVClass, WS_CHILD | WS_VISIBLE | WS_VSCROLL, 0, 0,
                           Pos.right - Pos.left, Pos.bottom - Pos.top, hMain, nullptr, hInst, nullptr);
     if (hOwn == nullptr)
-        throw "cant create source view";
+        throw std::runtime_error("cant create source view");
 
     SetFocus(hOwn);
     // OpenSourceFile("program\\ps.c");

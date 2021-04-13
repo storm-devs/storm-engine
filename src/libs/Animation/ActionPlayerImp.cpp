@@ -275,7 +275,7 @@ void ActionPlayerImp::Execute(long dltTime)
         MoveRPingpong(dlt);
         break;
     default:
-        throw "ActionPlayerImp::Execute -> anknow animation type";
+        throw std::runtime_error("ActionPlayerImp::Execute -> anknow animation type");
     }
     if (isPlay)
         CheckEvents();
