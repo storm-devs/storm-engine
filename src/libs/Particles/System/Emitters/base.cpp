@@ -99,7 +99,7 @@ void BaseEmitter::BornParticles(float DeltaTime)
                         // GetMaster()->GetMaster()->GetMDLProcessor()->AddParticle(ParticleTypes[n].pFields);
                         break;
                     default:
-                        throw std::exception("Try to emmit unknown particle type");
+                        throw std::runtime_error("Try to emmit unknown particle type");
                     } // switch
                 }     // Active < Max
             }         // While Remain
@@ -158,7 +158,7 @@ void BaseEmitter::AttachToDataSource(DataSource::EmitterDesc *pEmitter)
             CreateModelParticle(pDesc->Fields);
             break;
         default:
-            throw std::exception("Particles: Unknown particle type !!!!");
+            throw std::runtime_error("Particles: Unknown particle type !!!!");
         }
     }
 }

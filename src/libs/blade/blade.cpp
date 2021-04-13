@@ -225,13 +225,13 @@ bool BLADE::Init()
 
     col = static_cast<COLLIDE *>(core.CreateService("coll"));
     if (col == nullptr)
-        throw std::exception("No service: COLLIDE");
+        throw std::runtime_error("No service: COLLIDE");
 
     EntityManager::AddToLayer(REALIZE, GetId(), 65550);
 
     rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!rs)
-        throw std::exception("No service: dx9render");
+        throw std::runtime_error("No service: dx9render");
 
     // UNGUARD
     return true;

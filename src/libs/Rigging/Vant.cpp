@@ -61,7 +61,7 @@ void VANT_BASE::SetDevice()
     RenderService = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!RenderService)
     {
-        throw std::exception("No service: dx9render");
+        throw std::runtime_error("No service: dx9render");
     }
 
     LoadIni();
@@ -154,14 +154,14 @@ uint64_t VANT_BASE::ProcessMessage(MESSAGE &message)
         if (gdata == nullptr)
         {
             if ((gdata = new GROUPDATA[1]) == nullptr)
-                throw std::exception("Not memory allocation");
+                throw std::runtime_error("Not memory allocation");
             groupQuantity = 1;
         }
         else
         {
             auto *const oldgdata = gdata;
             if ((gdata = new GROUPDATA[groupQuantity + 1]) == nullptr)
-                throw std::exception("Not memory allocation");
+                throw std::runtime_error("Not memory allocation");
             memcpy(gdata, oldgdata, sizeof(GROUPDATA) * groupQuantity);
             delete oldgdata;
             groupQuantity++;
@@ -172,7 +172,7 @@ uint64_t VANT_BASE::ProcessMessage(MESSAGE &message)
         MODEL *mdl;
         mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(gdata[groupQuantity - 1].model_id));
         if (mdl == nullptr)
-            throw std::exception("Bad Vant INIT");
+            throw std::runtime_error("Bad Vant INIT");
 
         gdata[groupQuantity - 1].pMatWorld = &mdl->mtx;
         NODE *nod;
@@ -245,7 +245,7 @@ uint64_t VANT_BASE::ProcessMessage(MESSAGE &message)
         gdata[groupQuantity - 1].vantIdx = new int[vantQuantity - oldvantQuantity];
         if (gdata[groupQuantity - 1].vantIdx == nullptr)
         {
-            throw std::exception("allocate memory error");
+            throw std::runtime_error("allocate memory error");
         }
 
         auto idx = 0;
@@ -514,7 +514,7 @@ void VANT_BASE::AddLabel(GEOS::LABEL &lbl, NODE *nod)
         // create a new guy
         vd = new VANTDATA;
         if (vd == nullptr)
-            throw std::exception("Not memory allocate");
+            throw std::runtime_error("Not memory allocate");
         PZERO(vd, sizeof(VANTDATA));
         vd->bDeleted = false;
         vd->vantNum = vantNum;
@@ -531,7 +531,7 @@ void VANT_BASE::AddLabel(GEOS::LABEL &lbl, NODE *nod)
             VANTDATA **oldvlist = vlist;
             vlist = new VANTDATA *[vantQuantity + 1];
             if (vlist == nullptr)
-                throw std::exception("Not memory allocate");
+                throw std::runtime_error("Not memory allocate");
             memcpy(vlist, oldvlist, sizeof(VANTDATA *) * vantQuantity);
             delete oldvlist;
             vantQuantity++;
@@ -635,7 +635,7 @@ void VANT::LoadIni()
     auto ini = fio->OpenIniFile("resource\\ini\\rigging.ini");
     if (!ini)
     {
-        throw std::exception("rigging.ini file not found!");
+        throw std::runtime_error("rigging.ini file not found!");
     }
 
     sprintf_s(section, "VANTS");
@@ -716,7 +716,7 @@ void VANTL::LoadIni()
     auto ini = fio->OpenIniFile("resource\\ini\\rigging.ini");
     if (!ini)
     {
-        throw std::exception("rigging.ini file not found!");
+        throw std::runtime_error("rigging.ini file not found!");
     }
 
     sprintf(section, "VANTS_L");
@@ -797,7 +797,7 @@ void VANTZ::LoadIni()
     auto ini = fio->OpenIniFile("resource\\ini\\rigging.ini");
     if (!ini)
     {
-        throw std::exception("rigging.ini file not found!");
+        throw std::runtime_error("rigging.ini file not found!");
     }
 
     sprintf(section, "VANTS_Z");

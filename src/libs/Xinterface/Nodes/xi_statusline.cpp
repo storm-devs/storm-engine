@@ -167,7 +167,7 @@ void CXI_STATUSLINE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, co
         pVBuf[7].tv = texRect2.bottom;
     }
     else
-        throw std::exception("Can't vertex or index buffer create");
+        throw std::runtime_error("Can't vertex or index buffer create");
 
     if (pVBuf != nullptr)
         m_rs->UnLockVertexBuffer(m_vBuf);

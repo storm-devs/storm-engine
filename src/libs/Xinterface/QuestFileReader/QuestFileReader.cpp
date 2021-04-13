@@ -249,7 +249,7 @@ bool QUEST_FILE_READER::InitQuestsQuery()
 
             if (m_pFileBuf == nullptr)
             {
-                throw std::exception("allocate memory error");
+                throw std::runtime_error("allocate memory error");
             }
 
             if (!fio->_ReadFile(fileS, &m_pFileBuf[foffset], filesize))

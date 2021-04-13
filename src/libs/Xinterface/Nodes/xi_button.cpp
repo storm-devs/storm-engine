@@ -189,7 +189,7 @@ void CXI_BUTTON::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const 
         const auto len = strlen(param) + 1;
         m_sGroupName = new char[len];
         if (m_sGroupName == nullptr)
-            throw std::exception("allocate memory error");
+            throw std::runtime_error("allocate memory error");
         memcpy(m_sGroupName, param, len);
 
         // get button picture name
@@ -328,7 +328,7 @@ uint32_t CXI_BUTTON::MessageProc(long msgcode, MESSAGE &message)
 
             m_sGroupName = new char[len];
             if (m_sGroupName == nullptr)
-                throw std::exception("allocate memory error");
+                throw std::runtime_error("allocate memory error");
             memcpy(m_sGroupName, param, len);
             m_idTex = pPictureService->GetTextureID(m_sGroupName);
         }

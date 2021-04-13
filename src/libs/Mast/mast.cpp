@@ -63,11 +63,11 @@ void MAST::SetDevice()
 
     RenderService = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!RenderService)
-        throw std::exception("No service: dx9render");
+        throw std::runtime_error("No service: dx9render");
 
     pCollide = static_cast<COLLIDE *>(core.CreateService("COLL"));
     if (!pCollide)
-        throw std::exception("No service: collide");
+        throw std::runtime_error("No service: collide");
 
     LoadIni();
 
@@ -415,7 +415,7 @@ void MAST::LoadIni()
     auto ini = fio->OpenIniFile(MAST_INI_FILE);
     if (!ini)
     {
-        throw std::exception("mast.ini file not found!");
+        throw std::runtime_error("mast.ini file not found!");
     }
 
     sprintf_s(section, "MAST");

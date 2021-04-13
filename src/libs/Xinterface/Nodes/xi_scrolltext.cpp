@@ -83,7 +83,7 @@ void CXI_SCROLLTEXT::SetText(const char *newText)
     {
         const auto len = strlen(newText) + 1;
         if ((m_pText = new char[len]) == nullptr)
-            throw std::exception("allocate memory error");
+            throw std::runtime_error("allocate memory error");
         memcpy(m_pText, newText, len);
 
         // get all parts from text

@@ -5,7 +5,7 @@ LCOLL::LCOLL(EntityManager::layer_index_t idx) : boxRadius(0)
     layerIndex_ = idx;
     col = static_cast<COLLIDE *>(core.CreateService("coll"));
     if (!col)
-        throw std::exception("No service: collide");
+        throw std::runtime_error("No service: collide");
 }
 
 LCOLL::~LCOLL()

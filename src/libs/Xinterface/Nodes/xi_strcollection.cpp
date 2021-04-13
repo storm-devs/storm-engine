@@ -396,7 +396,7 @@ CXI_STRCOLLECTION::STRINGDESCR *CXI_STRCOLLECTION::CreateNewDinamicString(char *
         m_pStrDescr[i].strStr = new char[len];
         if (m_pStrDescr[i].strStr == nullptr)
         {
-            throw std::exception("allocate memory error");
+            throw std::runtime_error("allocate memory error");
         }
         memcpy(m_pStrDescr[i].strStr, strStr, len);
         return &m_pStrDescr[i];
@@ -408,7 +408,7 @@ CXI_STRCOLLECTION::STRINGDESCR *CXI_STRCOLLECTION::CreateNewDinamicString(char *
     m_pStrDescr = new STRINGDESCR[m_nStr];
     if (m_pStrDescr == nullptr)
     {
-        throw std::exception("allocate memory error");
+        throw std::runtime_error("allocate memory error");
     }
     if (pOld && i)
         memcpy(m_pStrDescr, pOld, sizeof(STRINGDESCR) * i);
@@ -421,7 +421,7 @@ CXI_STRCOLLECTION::STRINGDESCR *CXI_STRCOLLECTION::CreateNewDinamicString(char *
     m_pStrDescr[i].strStr = new char[len2];
     if (m_pStrDescr[i].strID == nullptr || m_pStrDescr[i].strStr == nullptr)
     {
-        throw std::exception("allocate memory error");
+        throw std::runtime_error("allocate memory error");
     }
     memcpy(m_pStrDescr[i].strID, strID, len1);
     memcpy(m_pStrDescr[i].strStr, strStr, len2);

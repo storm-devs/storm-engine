@@ -217,7 +217,7 @@ bool MESSAGE_ICONS::InitData(entid_t host_eid, VDX9RENDER *_rs, ATTRIBUTES *pARo
         m_pMsgColumns[i].pRow = new COLUMN_DESCRIBER::ROW_DESCR[m_nMsgIconRowQnt];
         if (m_pMsgColumns[i].pRow == nullptr)
         {
-            throw std::exception("allocate memory error");
+            throw std::runtime_error("allocate memory error");
         }
     }
 

@@ -187,13 +187,13 @@ void XINTERFACE::SetDevice()
     pRenderService = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!pRenderService)
     {
-        throw std::exception("No service: dx9render");
+        throw std::runtime_error("No service: dx9render");
     }
 
     pStringService = static_cast<VSTRSERVICE *>(core.CreateService("STRSERVICE"));
     if (!pStringService)
     {
-        throw std::exception("No service: strservice");
+        throw std::runtime_error("No service: strservice");
     }
 
     // Load common parameters
@@ -203,14 +203,14 @@ void XINTERFACE::SetDevice()
     pPictureService = new XSERVICE;
     if (pPictureService == nullptr)
     {
-        throw std::exception("Not memory allocate");
+        throw std::runtime_error("Not memory allocate");
     }
     pPictureService->Init(pRenderService, dwScreenWidth, dwScreenHeight);
 
     pQuestService = new QUEST_FILE_READER;
     if (pQuestService == nullptr)
     {
-        throw std::exception("Not memory allocate");
+        throw std::runtime_error("Not memory allocate");
     }
     auto *pvd = core.Event("GetQuestTextFileName", "");
     if (pvd != nullptr)
@@ -589,20 +589,20 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
         //
         auto *pEvent = new EVENT_Entity;
         if (pEvent == nullptr)
-            throw std::exception("allocate memory error");
+            throw std::runtime_error("allocate memory error");
         pEvent->next = m_pEvents;
         m_pEvents = pEvent;
         //
         auto len = strlen(param) + 1;
         pEvent->sEventName = new char[len];
         if (pEvent->sEventName == nullptr)
-            throw std::exception("allocate memory error");
+            throw std::runtime_error("allocate memory error");
         memcpy(pEvent->sEventName, param, len);
         //
         len = strlen(nodeName) + 1;
         pEvent->sNodeName = new char[len];
         if (pEvent->sNodeName == nullptr)
-            throw std::exception("allocate memory error");
+            throw std::runtime_error("allocate memory error");
         memcpy(pEvent->sNodeName, nodeName, len);
         //
         if (nCommand >= 0 && nCommand < COMMAND_QUANTITY)
@@ -630,7 +630,7 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
             const auto len = strlen(param) + 1;
             m_stringes[l].sStringName = new char[len];
             if (m_stringes[l].sStringName == nullptr)
-                throw std::exception("allocate memory error");
+                throw std::runtime_error("allocate memory error");
             memcpy(m_stringes[l].sStringName, param, len);
         }
         else
@@ -1108,7 +1108,7 @@ void XINTERFACE::LoadIni()
     const char *platform = "PC_SCREEN";
     auto ini = fio->OpenIniFile(RESOURCE_FILENAME);
     if (!ini)
-        throw std::exception("ini file not found!");
+        throw std::runtime_error("ini file not found!");
 
     RECT Screen_Rect;
     GetWindowRect(core.GetAppHWND(), &Screen_Rect);
@@ -1414,7 +1414,7 @@ void XINTERFACE::SFLB_CreateNode(INIFILE *pOwnerIni, INIFILE *pUserIni, const ch
         const auto len = strlen(sNodeName) + 1;
         pNewNod->m_nodeName = new char[len];
         if (!pNewNod->m_nodeName)
-            throw std::exception("allocate memory error");
+            throw std::runtime_error("allocate memory error");
         memcpy(pNewNod->m_nodeName, sNodeName, len);
         if (!pNewNod->Init(pUserIni, sNodeName, pOwnerIni, sNodeType, pRenderService, GlobalRect, xypScreenSize))
         {
@@ -1473,7 +1473,7 @@ void XINTERFACE::SFLB_CreateNode(INIFILE *pOwnerIni, INIFILE *pUserIni, const ch
                         auto *pHead = new CINODE::COMMAND_REDIRECT;
                         PZERO(pHead, sizeof(CINODE::COMMAND_REDIRECT));
                         if (pHead == nullptr)
-                            throw std::exception("allocate memory error");
+                            throw std::runtime_error("allocate memory error");
                         pHead->next = pNewNod->m_pCommands[nComNum].pNextControl;
                         pNewNod->m_pCommands[nComNum].pNextControl = pHead;
                         DublicateString(pHead->sControlName, sSubNodName);
@@ -2668,13 +2668,13 @@ uint32_t XINTERFACE::AttributeChanged(ATTRIBUTES *patr)
             pImList = new IMAGE_Entity;
             if (pImList == nullptr)
             {
-                throw std::exception("Allocation memory error");
+                throw std::runtime_error("Allocation memory error");
             }
             PZERO(pImList, sizeof(IMAGE_Entity));
             const auto len = strlen(sImageName) + 1;
             if ((pImList->sImageName = new char[len]) == nullptr)
             {
-                throw std::exception("Allocate memory error");
+                throw std::runtime_error("Allocate memory error");
             }
             memcpy(pImList->sImageName, sImageName, len);
             // insert that into images list
@@ -2692,7 +2692,7 @@ uint32_t XINTERFACE::AttributeChanged(ATTRIBUTES *patr)
                 const auto len = strlen(patr->GetThisAttr()) + 1;
                 if ((pImList->sPicture = new char[len]) == nullptr)
                 {
-                    throw std::exception("Allocate memory error");
+                    throw std::runtime_error("Allocate memory error");
                 }
                 memcpy(pImList->sPicture, patr->GetThisAttr(), len);
             }
@@ -2711,7 +2711,7 @@ uint32_t XINTERFACE::AttributeChanged(ATTRIBUTES *patr)
                 const auto len = strlen(patr->GetThisAttr()) + 1;
                 if ((pImList->sImageListName = new char[len]) == nullptr)
                 {
-                    throw std::exception("Allocate memory error");
+                    throw std::runtime_error("Allocate memory error");
                 }
                 memcpy(pImList->sImageListName, patr->GetThisAttr(), len);
             }
@@ -2743,7 +2743,7 @@ bool XINTERFACE::SFLB_DoSaveFileData(char *saveName, char *saveData) const
     char *pdat = static_cast<char *>(malloc(sizeof(SAVE_DATA_HANDLE) + slen));
     if (pdat == nullptr)
     {
-        throw std::exception("allocate memory error");
+        throw std::runtime_error("allocate memory error");
     }
 
     ((SAVE_DATA_HANDLE *)pdat)->StringDataSize = slen;
@@ -3615,7 +3615,7 @@ void CONTROLS_CONTAINER::AddContainer(const char *container)
     pCont = pContainers;
     pContainers = new CONTEINER_DESCR;
     if (!pContainers)
-        throw std::exception("allocate memory error");
+        throw std::runtime_error("allocate memory error");
     pContainers->fMaxVal = 1.f;
     pContainers->pControls = nullptr;
     pContainers->next = pCont;
@@ -3623,7 +3623,7 @@ void CONTROLS_CONTAINER::AddContainer(const char *container)
     const auto len = strlen(container) + 1;
     pContainers->resultName = new char[len];
     if (!pContainers->resultName)
-        throw std::exception("allocate memory error");
+        throw std::runtime_error("allocate memory error");
     memcpy(pContainers->resultName, container, len);
 }
 
@@ -3648,7 +3648,7 @@ void CONTROLS_CONTAINER::AddControlsToContainer(const char *container, const cha
     pCtrl = pCont->pControls;
     pCont->pControls = new CONTEINER_DESCR::CONTROL_DESCR;
     if (!pCont->pControls)
-        throw std::exception("allocate memory error");
+        throw std::runtime_error("allocate memory error");
 
     pCont->pControls->fValLimit = fValLimit;
     pCont->pControls->next = pCtrl;
@@ -3656,7 +3656,7 @@ void CONTROLS_CONTAINER::AddControlsToContainer(const char *container, const cha
     const auto len = strlen(controlName) + 1;
     pCont->pControls->controlName = new char[len];
     if (!pCont->pControls->controlName)
-        throw std::exception("allocate memory error");
+        throw std::runtime_error("allocate memory error");
     memcpy(pCont->pControls->controlName, controlName, len);
 }
 

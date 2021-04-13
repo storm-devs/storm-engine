@@ -258,9 +258,9 @@ std::unique_ptr<INIFILE> FILE_SERVICE::OpenIniFile(const char *file_name)
         {
             OpenFiles[n]->IncReference();
 
-            std::unique_ptr<INIFILE> v(new INIFILE_T(OpenFiles[n]));
+            auto v = std::make_unique<INIFILE_T>(OpenFiles[n]);
             if (!v)
-                throw std::exception();
+                throw std::runtime_error("Failed to create INIFILE_T");
             return v;
         }
     }
@@ -272,7 +272,7 @@ std::unique_ptr<INIFILE> FILE_SERVICE::OpenIniFile(const char *file_name)
 
         OpenFiles[n] = new IFS(this);
         if (OpenFiles[n] == nullptr)
-            throw std::exception(); //(FILE_SERVICE::OpenIniFile : no mem A);
+            throw std::runtime_error("Failed to create IFS");
         if (!OpenFiles[n]->LoadFile(file_name))
         {
             delete OpenFiles[n];
@@ -285,12 +285,12 @@ std::unique_ptr<INIFILE> FILE_SERVICE::OpenIniFile(const char *file_name)
         //        POP_CONTROL(0)
         // INIFILE_T object belonged to entity and must be deleted by entity
         // OpenFiles[n]->inifile_T = new INIFILE_T(OpenFiles[n]);
-        // if(OpenFiles[n]->inifile_T == null) throw std::exception();
+        // if(OpenFiles[n]->inifile_T == null) throw std::runtime_error();
         // return OpenFiles[n]->inifile_T;
 
-        std::unique_ptr<INIFILE> v(new INIFILE_T(OpenFiles[n]));
+        auto v = std::make_unique<INIFILE_T>(OpenFiles[n]);
         if (!v)
-            throw std::exception();
+            throw std::runtime_error("Failed to create INIFILE_T");
         return v;
     }
     //    POP_CONTROL(0)
@@ -306,7 +306,7 @@ void FILE_SERVICE::RefDec(INIFILE *ini_obj)
             continue;
         // OpenFiles[n]->SearchData = &OpenFiles[n]->Search;
         if (OpenFiles[n]->GetReference() == 0)
-            throw std::exception("Reference error");
+            throw std::runtime_error("Reference error");
         OpenFiles[n]->DecReference();
         if (OpenFiles[n]->GetReference() == 0)
         {
@@ -315,7 +315,7 @@ void FILE_SERVICE::RefDec(INIFILE *ini_obj)
         }
         return;
     }
-    throw std::exception("bad inifile object");
+    throw std::runtime_error("bad inifile object");
     // UNGUARD
 }
 

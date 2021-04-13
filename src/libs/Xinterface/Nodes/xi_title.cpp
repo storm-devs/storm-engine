@@ -140,7 +140,7 @@ void CXI_TITLE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const c
         const auto len = strlen(param) + 1;
         m_sGroupName = new char[len];
         if (m_sGroupName == nullptr)
-            throw std::exception("allocate memory error");
+            throw std::runtime_error("allocate memory error");
         memcpy(m_sGroupName, param, len);
         m_idTex = pPictureService->GetTextureID(m_sGroupName);
     }
@@ -195,7 +195,7 @@ void CXI_TITLE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const c
     // fill index buffer
     auto *const pIndex = static_cast<uint16_t *>(m_rs->LockIndexBuffer(m_idIBuf));
     if (pIndex == nullptr)
-        throw std::exception("index buffer not create");
+        throw std::runtime_error("index buffer not create");
     for (i = 0; i < rectangleQuantity; i++)
     {
         pIndex[i * 6 + 0] = i * 4;
@@ -210,7 +210,7 @@ void CXI_TITLE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const c
     // fill vertex buffer
     auto *const pVert = static_cast<XI_ONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_idVBuf));
     if (pVert == nullptr)
-        throw std::exception("vertex buffer not create");
+        throw std::runtime_error("vertex buffer not create");
     for (i = 0; i < m_nVert; i++)
     {
         pVert[i].color = imgColor;

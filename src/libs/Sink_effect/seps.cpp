@@ -222,7 +222,7 @@ bool SEPS_PS::Init(INIFILE *ini, char *psname)
     // load render service -----------------------------------------------------
     RenderService = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!RenderService)
-        throw std::exception("No service: dx9render");
+        throw std::runtime_error("No service: dx9render");
 
     gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
     // if(!gs) return false;
@@ -251,7 +251,7 @@ bool SEPS_PS::Init(INIFILE *ini, char *psname)
     if (!ini->ReadString(psname, PSKEY_TECHNIQUE, string, sizeof(string), ""))
     {
         core.Trace("Particle system: %s", psname);
-        throw std::exception("no technique for particle system");
+        throw std::runtime_error("no technique for particle system");
     }
 
     const auto len = strlen(string) + 1;
@@ -308,7 +308,7 @@ bool SEPS_PS::Init(INIFILE *ini, char *psname)
 
     Particle = (sink_effect::PARTICLE *)new char[ParticlesNum * sizeof(sink_effect::PARTICLE)];
     if (Particle == nullptr)
-        throw std::exception("mem error");
+        throw std::runtime_error("mem error");
 
     memset(Particle, 0, ParticlesNum * sizeof(sink_effect::PARTICLE));
 
@@ -377,7 +377,7 @@ bool SEPS_PS::Init(INIFILE *ini, char *psname)
     RenderService->CreateVertexBuffer(sizeof(sink_effect::PARTICLE_VERTEX) * VERTEXS_ON_PARTICLE * ParticlesNum,
                                       D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY, PARTICLE_FVF, D3DPOOL_SYSTEMMEM, &VBuffer);
     if (VBuffer == nullptr)
-        throw std::exception("vbuffer error");
+        throw std::runtime_error("vbuffer error");
 
     UpdateVertexBuffer();
 

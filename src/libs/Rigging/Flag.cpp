@@ -56,7 +56,7 @@ void FLAG::SetDevice()
     RenderService = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!RenderService)
     {
-        throw std::exception("No service: dx9render");
+        throw std::runtime_error("No service: dx9render");
     }
     globalWind.ang.x = 0.f;
     globalWind.ang.y = 0.f;
@@ -163,7 +163,7 @@ uint64_t FLAG::ProcessMessage(MESSAGE &message)
         {
             gdata = new GROUPDATA[1];
             if (gdata == nullptr)
-                throw std::exception("Not memory allocation");
+                throw std::runtime_error("Not memory allocation");
 
             groupQuantity = 1;
         }
@@ -172,7 +172,7 @@ uint64_t FLAG::ProcessMessage(MESSAGE &message)
             auto *const oldgdata = gdata;
             gdata = new GROUPDATA[groupQuantity + 1];
             if (gdata == nullptr)
-                throw std::exception("Not memory allocation");
+                throw std::runtime_error("Not memory allocation");
             memcpy(gdata, oldgdata, sizeof(GROUPDATA) * groupQuantity);
             delete oldgdata;
             groupQuantity++;
@@ -229,7 +229,7 @@ uint64_t FLAG::ProcessMessage(MESSAGE &message)
         {
             gdata = new GROUPDATA[1];
             if (gdata == nullptr)
-                throw std::exception("Not memory allocation");
+                throw std::runtime_error("Not memory allocation");
             groupQuantity = 1;
         }
         else
@@ -471,7 +471,7 @@ void FLAG::AddLabel(GEOS::LABEL &gl, NODE *nod, bool isSpecialFlag, bool isShip)
         // create new flag
         fd = new FLAGDATA;
         if (fd == nullptr)
-            throw std::exception("Not memory allocation");
+            throw std::runtime_error("Not memory allocation");
         PZERO(fd, sizeof(FLAGDATA));
         fd->triangle = true; // this is Vimpel
         fd->isSpecialFlag = isSpecialFlag;
@@ -488,7 +488,7 @@ void FLAG::AddLabel(GEOS::LABEL &gl, NODE *nod, bool isSpecialFlag, bool isShip)
         {
             flist = new FLAGDATA *[1];
             if (flist == nullptr)
-                throw std::exception("Not memory allocation");
+                throw std::runtime_error("Not memory allocation");
             flagQuantity = 1;
         }
         else
@@ -496,7 +496,7 @@ void FLAG::AddLabel(GEOS::LABEL &gl, NODE *nod, bool isSpecialFlag, bool isShip)
             auto *const oldflist = flist;
             flist = new FLAGDATA *[flagQuantity + 1];
             if (flist == nullptr)
-                throw std::exception("Not memory allocation");
+                throw std::runtime_error("Not memory allocation");
             memcpy(flist, oldflist, sizeof(FLAGDATA *) * flagQuantity);
             delete oldflist;
             flagQuantity++;
@@ -573,7 +573,7 @@ void FLAG::LoadIni()
     auto ini = fio->OpenIniFile("resource\\ini\\rigging.ini");
     if (!ini)
     {
-        throw std::exception("rigging.ini file not found!");
+        throw std::runtime_error("rigging.ini file not found!");
     }
 
     sprintf(section, "FLAGS");
@@ -906,7 +906,7 @@ void FLAG::MoveOtherHost(entid_t newm_id, long flagNum, entid_t oldm_id)
         auto *const oldgdata = gdata;
         gdata = new GROUPDATA[groupQuantity + 1];
         if (gdata == nullptr)
-            throw std::exception("Not memory allocation");
+            throw std::runtime_error("Not memory allocation");
         memcpy(gdata, oldgdata, sizeof(GROUPDATA) * groupQuantity);
         delete oldgdata;
         groupQuantity++;

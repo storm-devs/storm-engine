@@ -197,7 +197,7 @@ void CORE::ProcessEngineIniFile()
 
     auto engine_ini = fio->OpenIniFile(fs::ENGINE_INI_FILE_NAME);
     if (!engine_ini)
-        throw std::exception("no 'engine.ini' file");
+        throw std::runtime_error("no 'engine.ini' file");
 
     auto res = engine_ini->ReadString(nullptr, "program_directory", String, sizeof(String), "");
     if (res)
@@ -224,9 +224,9 @@ void CORE::ProcessEngineIniFile()
     if (res)
     {
         if (!Compiler->CreateProgram(String))
-            throw std::exception("fail to create program");
+            throw std::runtime_error("fail to create program");
         if (!Compiler->Run())
-            throw std::exception("fail to run program");
+            throw std::runtime_error("fail to run program");
         // Script version test
         long iScriptVersion = 0xFFFFFFFF;
         auto *pVScriptVersion = static_cast<VDATA *>(core.GetScriptVariable("iScriptVersion"));
@@ -753,7 +753,7 @@ void CORE::DumpEntitiesInfo()
 {
     /*LARGE_INTEGER li;
     if (!QueryPerformanceFrequency(&li))
-      throw std::exception();
+      throw std::runtime_error();
 
     const auto freq = double(li.QuadPart)/1000.0;
 

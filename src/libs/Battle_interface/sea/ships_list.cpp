@@ -60,7 +60,7 @@ void TMP_LONG_STACK::Push(long data)
         ldat = new long[datsize + sizeIncr];
         if (ldat == nullptr)
         {
-            throw std::exception("allocate memory error");
+            throw std::runtime_error("allocate memory error");
         }
         if (pold != nullptr)
         {
@@ -190,7 +190,7 @@ void SHIP_DESCRIBE_LIST::Add(long mainChrIndex, long chIdx, ATTRIBUTES *pChAttr,
     auto *pr = new SHIP_DESCR;
     if (pr == nullptr)
     {
-        throw std::exception("Can`t allocate memory");
+        throw std::runtime_error("Can`t allocate memory");
     }
     pr->characterIndex = chIdx;
     pr->maxCrew = pShipAttr->GetAttributeAsDword("MaxCrew");

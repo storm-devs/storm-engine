@@ -42,11 +42,11 @@ void WATERFLARE::SetDevice()
 
     RS = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!RS)
-        throw std::exception("No service: dx9render");
+        throw std::runtime_error("No service: dx9render");
 
     entid_t ent;
     if (!(ent = EntityManager::GetEntityId("weather")))
-        throw std::exception("No found WEATHER entity!");
+        throw std::runtime_error("No found WEATHER entity!");
     pWeather = static_cast<WEATHER_BASE *>(EntityManager::GetEntityPointer(ent));
 
     // UNGUARD

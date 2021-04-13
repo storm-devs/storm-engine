@@ -100,7 +100,7 @@ uint64_t PARTICLES::ProcessMessage(MESSAGE &message)
         break;
     }
     case PS_CREATEX_RIC: {
-        throw std::exception("Unsupported particle manager command !!!");
+        throw std::runtime_error("Unsupported particle manager command !!!");
     }
 
         // create a system
@@ -168,10 +168,10 @@ uint64_t PARTICLES::ProcessMessage(MESSAGE &message)
         break;
     }
     case PS_ADDTRACKPOINT: {
-        throw std::exception("Unsupported particle manager command !!!");
+        throw std::runtime_error("Unsupported particle manager command !!!");
     }
     case PS_USESURFACE: {
-        throw std::exception("Unsupported particle manager command !!!");
+        throw std::runtime_error("Unsupported particle manager command !!!");
     }
     case PS_VALIDATE_PARTICLE: {
         auto *const SystemID = message.Pointer();

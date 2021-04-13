@@ -65,7 +65,7 @@ bool BATTLE_INTERFACE::Init()
 
     if ((rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"))) == nullptr)
     {
-        throw std::exception("Can`t create render service");
+        throw std::runtime_error("Can`t create render service");
     }
 
     LoadIniFile();
@@ -200,7 +200,7 @@ void BATTLE_INTERFACE::LoadIniFile()
     /*STORM_DELETE( m_pMessageIcons );
     m_pMessageIcons = new MESSAGE_ICONS;
     if(m_pMessageIcons==NULL) {
-      throw std::exception("allocate memory error");
+      throw std::runtime_error("allocate memory error");
     }
     if(m_pMessageIcons)    m_pMessageIcons->InitData(GetId(),rs,pA);*/
 

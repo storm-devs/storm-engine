@@ -34,7 +34,7 @@ DATA *S_STACK::Push(DATA *pdataclass)
         Data_num = Data_num;
     }
     if (Data_num > STACK_BUFFER_LIMIT)
-        throw std::exception("stack overflaw");
+        throw std::runtime_error("stack overflaw");
     if (Data_num >= Buffer_size)
     {
         const auto offset = Buffer_size;
@@ -64,7 +64,7 @@ DATA *S_STACK::Pop()
 {
     Assert(Data_num);
     if (Data_num == 0)
-        throw std::exception("stack 'pop' error");
+        throw std::runtime_error("stack 'pop' error");
     Data_num--;
     // return &pStackData[Data_num];
 
@@ -81,7 +81,7 @@ DATA *S_STACK::Read(uint32_t offset, uint32_t index)
 {
     if (offset + index >= Data_num)
     {
-        throw std::exception("stack 'read' error");
+        throw std::runtime_error("stack 'read' error");
     }
     // return &pStackData[offset + index];
     return pStackData[offset + index];
@@ -90,7 +90,7 @@ DATA *S_STACK::Read(uint32_t offset, uint32_t index)
 DATA *S_STACK::Read()
 {
     if (Data_num <= 0)
-        throw std::exception("stack 'read' error");
+        throw std::runtime_error("stack 'read' error");
     // return &pStackData[Data_num - 1];
     return pStackData[Data_num - 1];
 }

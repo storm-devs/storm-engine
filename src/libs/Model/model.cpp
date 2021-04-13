@@ -42,11 +42,11 @@ bool MODELR::Init()
 
     rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!rs)
-        throw std::exception("No service: dx9render");
+        throw std::runtime_error("No service: dx9render");
 
     GeometyService = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
     if (!GeometyService)
-        throw std::exception("No service: geometry");
+        throw std::runtime_error("No service: geometry");
 
     // UNGUARD
     return true;

@@ -208,7 +208,7 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
     const auto len = strlen(sLanguage) + 1;
     if ((m_sLanguage = new char[len]) == nullptr)
     {
-        throw std::exception("Allocate memory error");
+        throw std::runtime_error("Allocate memory error");
     }
     memcpy(m_sLanguage, sLanguage, len);
 
@@ -224,7 +224,7 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
             const auto len = strlen(param) + 1;
             if ((m_sLanguageDir = new char[len]) == nullptr)
             {
-                throw std::exception("Allocate memory error");
+                throw std::runtime_error("Allocate memory error");
             }
             memcpy(m_sLanguageDir, param, len);
         }
@@ -237,7 +237,7 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
             const auto len = strlen(param) + 1;
             if ((m_sIniFileName = new char[len]) == nullptr)
             {
-                throw std::exception("Allocate memory error");
+                throw std::runtime_error("Allocate memory error");
             }
             memcpy(m_sIniFileName, param, len);
         }
@@ -259,7 +259,7 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
             m_sLanguage = new char[len];
             if (m_sLanguage == nullptr)
             {
-                throw std::exception("Allocate memory error");
+                throw std::runtime_error("Allocate memory error");
             }
             memcpy(m_sLanguage, param, len);
         }
@@ -333,7 +333,7 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
         m_psString = new char *[newSize];
         m_psStrName = new char *[newSize];
         if (m_psStrName == nullptr || m_psString == nullptr)
-            throw std::exception("Allocate memory error");
+            throw std::runtime_error("Allocate memory error");
     }
     else
     {
@@ -353,7 +353,7 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
             auto len = strlen(param) + 1;
             m_psStrName[i] = new char[len];
             if (m_psStrName[i] == nullptr)
-                throw std::exception("allocate memory error");
+                throw std::runtime_error("allocate memory error");
             strcpy_s(m_psStrName[i], len, strName);
 
             // fill string self
@@ -362,7 +362,7 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
             if (m_psString[i] == nullptr)
             {
                 delete m_psStrName[i];
-                throw std::exception("allocate memory error");
+                throw std::runtime_error("allocate memory error");
             }
             memcpy(m_psString[i], string, len);
         }
@@ -609,7 +609,7 @@ long STRSERVICE::OpenUsersStringFile(const char *fileName)
     char *fileBuf = new char[filesize + 1];
     if (fileBuf == nullptr)
     {
-        throw std::exception("Allocate memory error");
+        throw std::runtime_error("Allocate memory error");
     }
 
     if (!fio->_ReadFile(fileS, fileBuf, filesize))
@@ -627,7 +627,7 @@ long STRSERVICE::OpenUsersStringFile(const char *fileName)
     pUSB->fileName = new char[len];
     if (pUSB->fileName == nullptr)
     {
-        throw std::exception("Allocate memory error");
+        throw std::runtime_error("Allocate memory error");
     }
     memcpy(pUSB->fileName, fileName, len);
     pUSB->blockID = GetFreeUsersID();
@@ -652,7 +652,7 @@ long STRSERVICE::OpenUsersStringFile(const char *fileName)
         pUSB->psString = new char *[pUSB->nStringsQuantity];
         if (pUSB->psStrName == nullptr || pUSB->psString == nullptr)
         {
-            throw std::exception("Allocate memory error");
+            throw std::runtime_error("Allocate memory error");
         }
         stridx = 0;
         for (i = 0; i < pUSB->nStringsQuantity; i++)
@@ -894,7 +894,7 @@ bool STRSERVICE::GetNextUsersString(char *src, long &idx, char **strName, char *
     {
         *strName = new char[nameEnd - nameBeg + 2];
         if (*strName == nullptr)
-            throw std::exception("Allocate memory error");
+            throw std::runtime_error("Allocate memory error");
         strncpy_s(*strName, nameEnd - nameBeg + 2, nameBeg, nameEnd - nameBeg + 1);
         strName[0][nameEnd - nameBeg + 1] = 0;
     }
@@ -903,7 +903,7 @@ bool STRSERVICE::GetNextUsersString(char *src, long &idx, char **strName, char *
     {
         *strData = new char[dataEnd - dataBeg + 2];
         if (*strData == nullptr)
-            throw std::exception("Allocate memory error");
+            throw std::runtime_error("Allocate memory error");
         strncpy_s(*strData, dataEnd - dataBeg + 2, dataBeg, dataEnd - dataBeg + 1);
         strData[0][dataEnd - dataBeg + 1] = 0;
         Assert(utf8::IsValidUtf8(*strData));

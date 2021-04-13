@@ -114,7 +114,7 @@ void CXI_CONTEXTHELP::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
     if (m_helpQuantity > 0)
     {
         if ((m_pHelpList = new HELPEntity[m_helpQuantity]) == nullptr)
-            throw std::exception("allocate memory error");
+            throw std::runtime_error("allocate memory error");
         PZERO(m_pHelpList, sizeof(HELPEntity) * m_helpQuantity);
         ini1->ReadString(name1, "helpstr", param, sizeof(param) - 1, "");
         char nodeName[sizeof(param)], stringName[sizeof(param)];
@@ -125,7 +125,7 @@ void CXI_CONTEXTHELP::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
             {
                 const auto len = strlen(nodeName) + 1;
                 if ((m_pHelpList[i].nodeName = new char[len]) == nullptr)
-                    throw std::exception("allocate memory error");
+                    throw std::runtime_error("allocate memory error");
                 memcpy(m_pHelpList[i].nodeName, nodeName, len);
                 m_pHelpList[i].idHelpString = pStringService->GetStringNum(stringName);
             }
@@ -255,7 +255,7 @@ void CXI_CONTEXTHELP::SetTempHelp(const char *pStr)
         // get the help line directly
         const auto len = strlen(pStr);
         if ((m_sTempString = new char[len]) == nullptr)
-            throw std::exception("allocate memory error");
+            throw std::runtime_error("allocate memory error");
         memcpy(m_sTempString, &pStr[1], len);
         nCurStrWidth = m_rs->StringWidth(m_sTempString, m_idFont, m_fMaxScale, m_screenSize.x);
     }

@@ -10,7 +10,7 @@ CXI_IMAGE::CXI_IMAGE()
     m_rs = XINTERFACE::GetRenderService();
     if (!m_rs)
     {
-        throw std::exception("No service: dx9render");
+        throw std::runtime_error("No service: dx9render");
     }
 
     m_bDisableDraw = false;
@@ -59,7 +59,7 @@ void CXI_IMAGE::LoadFromBase(const char *sListName, const char *sPictureName, bo
         m_pcPictureListName = new char[len];
         if (!m_pcPictureListName)
         {
-            throw std::exception("allocate memory error");
+            throw std::runtime_error("allocate memory error");
         }
         memcpy(m_pcPictureListName, sListName, len);
     }

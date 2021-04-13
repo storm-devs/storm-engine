@@ -75,7 +75,7 @@ void ROPE::SetDevice()
     RenderService = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!RenderService)
     {
-        throw std::exception("No service: dx9render");
+        throw std::runtime_error("No service: dx9render");
     }
 
     LoadIni();
@@ -215,7 +215,7 @@ uint64_t ROPE::ProcessMessage(MESSAGE &message)
             gdata = new GROUPDATA[groupQuantity + 1];
             if (gdata == nullptr)
             {
-                throw std::exception("allocate memory error");
+                throw std::runtime_error("allocate memory error");
             }
             memcpy(gdata, oldgdata, sizeof(GROUPDATA) * groupQuantity);
             delete oldgdata;
@@ -227,7 +227,7 @@ uint64_t ROPE::ProcessMessage(MESSAGE &message)
             groupQuantity = 1;
             if (gdata == nullptr)
             {
-                throw std::exception("allocate memory error");
+                throw std::runtime_error("allocate memory error");
             }
         }
 
@@ -296,7 +296,7 @@ uint64_t ROPE::ProcessMessage(MESSAGE &message)
         gdata[groupQuantity - 1].ropeIdx = new int[gdata[groupQuantity - 1].ropeQuantity];
         if (gdata[groupQuantity - 1].ropeIdx == nullptr)
         {
-            throw std::exception("allocate memory error");
+            throw std::runtime_error("allocate memory error");
         }
         int idx = 0;
         for (int rn = wFirstRope; rn < ropeQuantity; rn++)
@@ -796,7 +796,7 @@ void ROPE::LoadIni()
 
     auto ini = fio->OpenIniFile("resource\\ini\\rigging.ini");
     if (!ini)
-        throw std::exception("rigging.ini file not found!");
+        throw std::runtime_error("rigging.ini file not found!");
 
     sprintf_s(section, "ROPES");
 
@@ -971,7 +971,7 @@ void ROPE::SetAdd(int firstNum)
             core.Trace("Bad rope data for rope: (model=%s) (rope num = %d) (begin group=%d, end group=%d)", pcModlName,
                        rlist[rn]->ropeNum, rlist[rn]->bgnum, rlist[rn]->egnum);
             core.Trace("Begin pointer = %d? end pointer = %d", rlist[rn]->bMatWorld, rlist[rn]->eMatWorld);
-            // throw std::exception("Rope error: Not label");
+            // throw std::runtime_error("Rope error: Not label");
             delete rlist[rn];
             ropeQuantity--;
             if (ropeQuantity)

@@ -119,7 +119,7 @@ void CXI_BOUNDER::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const
     auto *pVert = static_cast<XI_ONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_idVBuf));
     auto *pIndx = static_cast<uint16_t *>(m_rs->LockIndexBuffer(m_idIBuf));
     if (pVert == nullptr || pIndx == nullptr)
-        throw std::exception("can not create the index&vertex buffers");
+        throw std::runtime_error("can not create the index&vertex buffers");
 
     for (i = 0; i < m_nVert; i++)
     {
@@ -328,7 +328,7 @@ void CXI_BOUNDER::ChangePosition(XYRECT &rNewPos)
     auto *pVert = static_cast<XI_ONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_idVBuf));
 
     if (pVert == nullptr)
-        throw std::exception("can not create the index&vertex buffers");
+        throw std::runtime_error("can not create the index&vertex buffers");
 
     long i;
 

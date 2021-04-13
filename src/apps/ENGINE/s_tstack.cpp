@@ -1,6 +1,8 @@
 #include "s_tstack.h"
 #include <memory.h>
 
+#include <stdexcept>
+
 S_TSTACK::S_TSTACK()
 {
     Unit_size = 0;
@@ -29,7 +31,7 @@ bool S_TSTACK::Push(char *pUnit)
     if (pUnit == nullptr)
         return false;
     if (Data_num > TSTACK_BUFFER_LIMIT)
-        throw std::runtime_error("stack overflaw");
+        throw std::runtime_error("stack overflow");
     if (Data_num >= Buffer_size)
     {
         Buffer_size += TSTACK_BUFFER_BLOCK_SIZE;

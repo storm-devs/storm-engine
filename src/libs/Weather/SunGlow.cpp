@@ -59,7 +59,7 @@ void SUNGLOW::SetDevice()
     Assert(pCollide);
 
     if (!(ent = EntityManager::GetEntityId("weather")))
-        throw std::exception("No found WEATHER entity!");
+        throw std::runtime_error("No found WEATHER entity!");
     pWeather = static_cast<WEATHER_BASE *>(EntityManager::GetEntityPointer(ent));
     Assert(pWeather);
 

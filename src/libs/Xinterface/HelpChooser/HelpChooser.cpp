@@ -38,7 +38,7 @@ void HELPCHOOSER::SetDevice()
     // get render service
     rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!rs)
-        throw std::exception("No service: dx9render");
+        throw std::runtime_error("No service: dx9render");
 }
 
 bool HELPCHOOSER::Init()
@@ -257,7 +257,7 @@ bool HELPCHOOSER::RunChooser(char *ChooserGroup)
         m_psRectName = new char *[m_nRectQ];
         if (m_pRectList == nullptr || m_psRectName == nullptr)
         {
-            throw std::exception("Allocate memory error");
+            throw std::runtime_error("Allocate memory error");
         }
     }
     // fill in all the rectangles
@@ -278,7 +278,7 @@ bool HELPCHOOSER::RunChooser(char *ChooserGroup)
             m_psRectName[i] = new char[j + 2];
             if (m_psRectName[i] == nullptr)
             {
-                throw std::exception("Allocate memory error");
+                throw std::runtime_error("Allocate memory error");
             }
             strcpy_s(m_psRectName[i], j + 2, param2);
         }
