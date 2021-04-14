@@ -193,16 +193,19 @@ catch (const storm::except::system_exception &e)
 {
     spdlog::critical(std::string("Caught unhandled system exception: ") + e.what());
     CreateMiniDump(e.get_exception_pointers());
+    storm::except::debug_break();
     return EXIT_FAILURE;
 }
 catch (const std::exception &e)
 {
     spdlog::critical(std::string("Caught unhandled C++ exception: ") + e.what());
+    storm::except::debug_break();
     return EXIT_FAILURE;
 }
 catch (...)
 {
     spdlog::critical("Caught unknown exception!");
+    storm::except::debug_break();
     return EXIT_FAILURE;
 }
 
