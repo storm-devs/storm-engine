@@ -243,8 +243,10 @@ def gm_to_obj(input_name, output_name):
     f.readinto(rhead)
 
     # Read all the following lines till the buffer
-    globname = f.read(getattr(rhead, "name_size") ).decode("utf-8").split(u'\x00')
-    names = struct.unpack('<'+str(getattr(rhead, "names")) + 'l', (f.read(getattr(rhead, "names") * sizeof(c_long))))
+    globname = f.read(getattr(rhead, "name_size")
+                      ).decode("utf-8").split(u'\x00')
+    names = struct.unpack('<'+str(getattr(rhead, "names")) +
+                          'l', (f.read(getattr(rhead, "names") * sizeof(c_long))))
     tname = f.read(getattr(rhead, "ntextures") * sizeof(c_long))
     rmaterials = get_array_of("rdf_material", rhead.nmaterials)
     rlights = get_array_of("rdf_light", rhead.nlights)
@@ -338,7 +340,6 @@ def gm_to_obj(input_name, output_name):
     # start crating obj file
     print("\nWriting output               ")
     out = open(output_name, "w")
-
     out.write("# Obj generator for the storm-engine \n")
     out.write("# Author: https://github.com/MangioneAndrea \n")
     # Add smoothing
@@ -362,10 +363,17 @@ if (__name__ == "__main__"):
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "path", help="Where is the .gm file located?", type=str)
-    parser.add_argument("--output", "-o", help="Output name", type=str)
+    parser.add_argument(
+        "--output", "-o", help="The name of the .obj file to create", type=str)
+    parser.add_argument("--script-folder", "-sf",
+                        help="Put the output file in the same folder as the script", action="store_true")
     args = parser.parse_args()
     args_input = str(args.path)
     args_output = args.output
+    args_script_folder = args.script_folder
     if(args_output is None):
         args_output = ntpath.basename(args_input).replace(".gm", ".obj")
+        if(args_script_folder is False):
+            args_output = os.path.join(
+                os.path.dirname(args_input), (args_output))
     gm_to_obj(args_input, args_output)
