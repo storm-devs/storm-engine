@@ -1,7 +1,7 @@
 #include "s_dbg_watcherlist.h"
 #include "s_debug.h"
 
-extern S_DEBUG CDebug;
+extern S_DEBUG * pCDebug;
 
 WATCHER_LIST::WATCHER_LIST(HWND hwnd, HINSTANCE hinst)
 {
@@ -35,7 +35,7 @@ WATCHER_LIST::WATCHER_LIST(HWND hwnd, HINSTANCE hinst)
             if (n < 11) //~!~
             {
                 SetItemText(n, 0, buffer);
-                SetItemText(n, 1, CDebug.ProcessExpression(buffer));
+                SetItemText(n, 1, pCDebug->ProcessExpression(buffer));
             }
             n++;
 
@@ -45,7 +45,7 @@ WATCHER_LIST::WATCHER_LIST(HWND hwnd, HINSTANCE hinst)
                 if (n < 11)
                 {
                     SetItemText(n, 0, buffer);
-                    SetItemText(n, 1, CDebug.ProcessExpression(buffer));
+                    SetItemText(n, 1, pCDebug->ProcessExpression(buffer));
                 }
                 n++;
                 sprintf_s(buffer, "E%d", n);
@@ -60,7 +60,7 @@ WATCHER_LIST::WATCHER_LIST(HWND hwnd, HINSTANCE hinst)
                 if (ini->ReadString(nullptr, buffer, buffer, sizeof(buffer), ""))
                 {
                     SetItemText(n, 0, buffer);
-                    SetItemText(n, 1, CDebug.ProcessExpression(buffer));
+                    SetItemText(n, 1, pCDebug->ProcessExpression(buffer));
                 }
             }
         }
@@ -91,15 +91,15 @@ void WATCHER_LIST::ItemChanged(long Item_index, long Subitem_index)
     switch (Subitem_index)
     {
     case 0:
-        SetItemText(Item_index, 1, CDebug.ProcessExpression(buffer));
+        SetItemText(Item_index, 1, pCDebug->ProcessExpression(buffer));
         sprintf_s(keyname, "E%d", Item_index);
         ini->WriteString(nullptr, keyname, buffer);
         break;
     case 1:
         GetItemText(Item_index, 0, buffer, sizeof(buffer));
         GetItemText(Item_index, 1, buffer2, sizeof(buffer2));
-        CDebug.SetOnDebugExpression(buffer, buffer2);
-        SetItemText(Item_index, 1, CDebug.ProcessExpression(buffer));
+        pCDebug->SetOnDebugExpression(buffer, buffer2);
+        SetItemText(Item_index, 1, pCDebug->ProcessExpression(buffer));
 
         break;
     }
@@ -111,7 +111,7 @@ void WATCHER_LIST::Refresh()
     for (long n = 0; n < GetItemsCount(); n++)
     {
         GetItemText(n, 0, String, sizeof(String));
-        SetItemText(n, 1, CDebug.ProcessExpression(String));
+        SetItemText(n, 1, pCDebug->ProcessExpression(String));
     }
 }
 

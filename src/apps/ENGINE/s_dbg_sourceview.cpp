@@ -6,7 +6,7 @@
 #include "s_debug.h"
 #include <algorithm>
 
-extern S_DEBUG CDebug;
+extern S_DEBUG * pCDebug;
 
 #define X_OFFSET 0 // 16
 
@@ -47,14 +47,14 @@ LRESULT CALLBACK SourceViewWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM l
     uint32_t aline;
     RECT SelectionRect;
 
-    if (CDebug.SourceView)
+    if (pCDebug->SourceView)
         switch (iMsg)
         {
         case WM_SYSKEYDOWN:
             switch (static_cast<int>(wParam))
             {
             case VK_F10:
-                CDebug.SetTraceMode(TMODE_MAKESTEP_OVER);
+                pCDebug->SetTraceMode(TMODE_MAKESTEP_OVER);
                 break;
             }
             return 0;
@@ -63,106 +63,106 @@ LRESULT CALLBACK SourceViewWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM l
             {
             case VK_HOME:
                 if (GetAsyncKeyState(VK_CONTROL) < 0)
-                    CDebug.SourceView->SetActiveLine(0);
+                    pCDebug->SourceView->SetActiveLine(0);
                 break;
             case VK_END:
                 if (GetAsyncKeyState(VK_CONTROL) < 0)
-                    CDebug.SourceView->SetActiveLine(CDebug.SourceView->nLinesNum - 1);
+                    pCDebug->SourceView->SetActiveLine(pCDebug->SourceView->nLinesNum - 1);
                 break;
             case 'G':
                 break;
             case 'F':
                 if (GetAsyncKeyState(VK_CONTROL) < 0)
-                    CDebug.SourceView->FindModal();
+                    pCDebug->SourceView->FindModal();
                 break;
             case 'O':
                 if (GetAsyncKeyState(VK_CONTROL) < 0)
-                    CDebug.OpenNewFile();
+                    pCDebug->OpenNewFile();
                 break;
             case VK_F2:
                 if (GetAsyncKeyState(VK_CONTROL) < 0 && GetAsyncKeyState(VK_SHIFT) < 0)
                 {
-                    CDebug.SourceView->ClearAllBookmarks();
+                    pCDebug->SourceView->ClearAllBookmarks();
                     break;
                 }
                 if (GetAsyncKeyState(VK_CONTROL) < 0)
                 {
-                    CDebug.SourceView->ToogleBookmark();
+                    pCDebug->SourceView->ToogleBookmark();
                     break;
                 }
-                CDebug.SourceView->GoNextBookmark();
+                pCDebug->SourceView->GoNextBookmark();
                 break;
             case VK_F3:
-                CDebug.SourceView->FindNext();
+                pCDebug->SourceView->FindNext();
                 break;
             case VK_UP:
-                CDebug.SourceView->DoStep(-1);
+                pCDebug->SourceView->DoStep(-1);
                 break;
             case VK_DOWN:
-                CDebug.SourceView->DoStep(1);
+                pCDebug->SourceView->DoStep(1);
                 break;
             case VK_PRIOR:
-                CDebug.SourceView->DoStep(-CDebug.SourceView->nClientLinesSize);
+                pCDebug->SourceView->DoStep(-pCDebug->SourceView->nClientLinesSize);
                 break;
             case VK_NEXT:
-                CDebug.SourceView->DoStep(CDebug.SourceView->nClientLinesSize);
+                pCDebug->SourceView->DoStep(pCDebug->SourceView->nClientLinesSize);
                 break;
             case VK_F4:
-                if (!CDebug.SourceView->bDrag)
-                    CDebug.WatcherList->StartEditSelectedItem();
+                if (!pCDebug->SourceView->bDrag)
+                    pCDebug->WatcherList->StartEditSelectedItem();
                 break;
             case VK_F9:
-                CDebug.Breaks.FlipBreakPoint(CDebug.SourceView->SourceFileName, CDebug.SourceView->nActiveLine);
-                SelectionRect = CDebug.SourceView->Pos;
+                pCDebug->Breaks.FlipBreakPoint(pCDebug->SourceView->SourceFileName, pCDebug->SourceView->nActiveLine);
+                SelectionRect = pCDebug->SourceView->Pos;
                 SelectionRect.top =
-                    (CDebug.SourceView->nActiveLine - CDebug.SourceView->nTopLine) * CDebug.SourceView->nFontHeight;
-                SelectionRect.bottom = SelectionRect.top + CDebug.SourceView->nFontHeight;
+                    (pCDebug->SourceView->nActiveLine - pCDebug->SourceView->nTopLine) * pCDebug->SourceView->nFontHeight;
+                SelectionRect.bottom = SelectionRect.top + pCDebug->SourceView->nFontHeight;
                 InvalidateRect(hwnd, &SelectionRect, true);
                 break;
             case VK_F10:
-                CDebug.SetTraceMode(TMODE_MAKESTEP_OVER);
+                pCDebug->SetTraceMode(TMODE_MAKESTEP_OVER);
                 break;
             case VK_F11:
-                CDebug.SetTraceMode(TMODE_MAKESTEP);
+                pCDebug->SetTraceMode(TMODE_MAKESTEP);
                 break;
             case VK_F5:
-                CDebug.SetTraceMode(TMODE_CONTINUE);
-                ShowWindow(CDebug.hMain, SW_MINIMIZE);
+                pCDebug->SetTraceMode(TMODE_CONTINUE);
+                ShowWindow(pCDebug->hMain, SW_MINIMIZE);
                 // SetFocus(Core.App_Hwnd);
                 break;
             case 'C':
-                if (CDebug.SourceView->nEndSelection == CDebug.SourceView->nStartSelection)
+                if (pCDebug->SourceView->nEndSelection == pCDebug->SourceView->nStartSelection)
                     break;
                 if (OpenClipboard(nullptr)) // hwnd))
                 {
                     EmptyClipboard();
                     long dwBytes;
 
-                    dwBytes = abs(static_cast<long>(CDebug.SourceView->nEndSelection) -
-                                  static_cast<long>(CDebug.SourceView->nStartSelection)) +
+                    dwBytes = abs(static_cast<long>(pCDebug->SourceView->nEndSelection) -
+                                  static_cast<long>(pCDebug->SourceView->nStartSelection)) +
                               1;
 
                     auto *hMem = GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, dwBytes);
 
                     auto *lptstrCopy = static_cast<char *>(GlobalLock(hMem));
-                    if (CDebug.SourceView->nEndSelection > CDebug.SourceView->nStartSelection)
+                    if (pCDebug->SourceView->nEndSelection > pCDebug->SourceView->nStartSelection)
                         memcpy(lptstrCopy,
-                               CDebug.SourceView->pSourceFile +
-                                   CDebug.SourceView->pLineOffset[CDebug.SourceView->nActiveLine] +
-                                   CDebug.SourceView->nStartSelection,
+                               pCDebug->SourceView->pSourceFile +
+                                   pCDebug->SourceView->pLineOffset[pCDebug->SourceView->nActiveLine] +
+                                   pCDebug->SourceView->nStartSelection,
                                dwBytes - 1);
                     else
                         memcpy(lptstrCopy,
-                               CDebug.SourceView->pSourceFile +
-                                   CDebug.SourceView->pLineOffset[CDebug.SourceView->nActiveLine] +
-                                   CDebug.SourceView->nEndSelection,
+                               pCDebug->SourceView->pSourceFile +
+                                   pCDebug->SourceView->pLineOffset[pCDebug->SourceView->nActiveLine] +
+                                   pCDebug->SourceView->nEndSelection,
                                dwBytes - 1);
                     lptstrCopy[dwBytes - 1] = 0;
                     GlobalUnlock(hMem);
 
-                    // memcpy(hMem,CDebug.SourceView->pSourceFile +
-                    // CDebug.SourceView->pLineOffset[CDebug.SourceView->nActiveLine] +
-                    // CDebug.SourceView->nStartSelection,dwBytes-1);
+                    // memcpy(hMem,pCDebug->SourceView->pSourceFile +
+                    // pCDebug->SourceView->pLineOffset[pCDebug->SourceView->nActiveLine] +
+                    // pCDebug->SourceView->nStartSelection,dwBytes-1);
                     //((char *)hMem)[dwBytes-1] = 0;
 
                     SetClipboardData(CF_TEXT, hMem);
@@ -173,28 +173,28 @@ LRESULT CALLBACK SourceViewWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM l
             break;
 
         case WM_MOUSEMOVE:
-            if (CDebug.SourceView->bDrag)
+            if (pCDebug->SourceView->bDrag)
             {
                 POINT pnt;
                 GetCursorPos(&pnt);
 
-                auto bPointerInWatchWindow = WindowFromPoint(pnt) == CDebug.WatcherList->GetWindowHandle();
-                SetCursor(LoadCursor(CDebug.SourceView->hInst, (bPointerInWatchWindow)
+                auto bPointerInWatchWindow = WindowFromPoint(pnt) == pCDebug->WatcherList->GetWindowHandle();
+                SetCursor(LoadCursor(pCDebug->SourceView->hInst, (bPointerInWatchWindow)
                                                                    ? MAKEINTRESOURCE(IDC_DRAGPOINTER)
                                                                    : MAKEINTRESOURCE(IDC_DRAGNODROP)));
 
                 if (bPointerInWatchWindow)
                 {
-                    ListView_SetItemState(CDebug.WatcherList->GetWindowHandle(), -1, 0, LVIS_SELECTED);
-                    long iItemCount = ListView_GetItemCount(CDebug.WatcherList->GetWindowHandle());
-                    ScreenToClient(CDebug.WatcherList->GetWindowHandle(), &pnt);
+                    ListView_SetItemState(pCDebug->WatcherList->GetWindowHandle(), -1, 0, LVIS_SELECTED);
+                    long iItemCount = ListView_GetItemCount(pCDebug->WatcherList->GetWindowHandle());
+                    ScreenToClient(pCDebug->WatcherList->GetWindowHandle(), &pnt);
                     for (long i = 0; i < iItemCount; i++)
                     {
                         RECT rect;
-                        auto bRes = ListView_GetItemRect(CDebug.WatcherList->GetWindowHandle(), i, &rect, LVIR_BOUNDS);
+                        auto bRes = ListView_GetItemRect(pCDebug->WatcherList->GetWindowHandle(), i, &rect, LVIR_BOUNDS);
                         if (PtInRect(&rect, pnt))
                         {
-                            ListView_SetItemState(CDebug.WatcherList->GetWindowHandle(), i, LVIS_SELECTED,
+                            ListView_SetItemState(pCDebug->WatcherList->GetWindowHandle(), i, LVIS_SELECTED,
                                                   LVIS_SELECTED);
                             break;
                         }
@@ -203,23 +203,23 @@ LRESULT CALLBACK SourceViewWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM l
 
                 return 0;
             }
-            // SetFocus(CDebug.SourceView->hOwn);
+            // SetFocus(pCDebug->SourceView->hOwn);
             if (!SelectionInProgress)
                 break;
             xPos = LOWORD(lParam);
             yPos = HIWORD(lParam);
-            CDebug.SourceView->DetCursorPos(xPos, yPos);
+            pCDebug->SourceView->DetCursorPos(xPos, yPos);
 
-            // CDebug.SourceView->InvalidateLineSection(CDebug.SourceView->nActiveLine,CDebug.SourceView->nStartSelection,CDebug.SourceView->nEndSelection);
+            // pCDebug->SourceView->InvalidateLineSection(pCDebug->SourceView->nActiveLine,pCDebug->SourceView->nStartSelection,pCDebug->SourceView->nEndSelection);
 
-            CDebug.SourceView->nEndSelection = CDebug.SourceView->Cursor.collumn;
+            pCDebug->SourceView->nEndSelection = pCDebug->SourceView->Cursor.collumn;
 
-            // CDebug.SourceView->InvalidateLineSection(CDebug.SourceView->nActiveLine,CDebug.SourceView->nStartSelection,CDebug.SourceView->nEndSelection);
+            // pCDebug->SourceView->InvalidateLineSection(pCDebug->SourceView->nActiveLine,pCDebug->SourceView->nStartSelection,pCDebug->SourceView->nEndSelection);
 
-            // CDebug.SourceView->MoveSelection(xPos);
-            /*SelectionRect = CDebug.SourceView->Pos;
-            SelectionRect.top = (CDebug.SourceView->nActiveLine - CDebug.SourceView->nTopLine) *
-            CDebug.SourceView->nFontHeight; SelectionRect.bottom = SelectionRect.top + CDebug.SourceView->nFontHeight;
+            // pCDebug->SourceView->MoveSelection(xPos);
+            /*SelectionRect = pCDebug->SourceView->Pos;
+            SelectionRect.top = (pCDebug->SourceView->nActiveLine - pCDebug->SourceView->nTopLine) *
+            pCDebug->SourceView->nFontHeight; SelectionRect.bottom = SelectionRect.top + pCDebug->SourceView->nFontHeight;
             InvalidateRect(hwnd,&SelectionRect,true);*/
 
             break;
@@ -227,35 +227,35 @@ LRESULT CALLBACK SourceViewWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM l
             xPos = LOWORD(lParam);
             yPos = HIWORD(lParam);
 
-            if (CDebug.SourceView->bDrag)
+            if (pCDebug->SourceView->bDrag)
             {
-                CDebug.SourceView->bDrag = false;
+                pCDebug->SourceView->bDrag = false;
                 ReleaseCapture();
                 SetCursor(LoadCursor(nullptr, IDC_ARROW));
 
-                if (abs(CDebug.SourceView->pntDragPos.x - xPos) < 3 && abs(CDebug.SourceView->pntDragPos.y - yPos) < 3)
+                if (abs(pCDebug->SourceView->pntDragPos.x - xPos) < 3 && abs(pCDebug->SourceView->pntDragPos.y - yPos) < 3)
                 {
-                    CDebug.SourceView->nStartSelection = -1;
-                    CDebug.SourceView->nEndSelection = -1;
+                    pCDebug->SourceView->nStartSelection = -1;
+                    pCDebug->SourceView->nEndSelection = -1;
 
-                    InvalidateRect(hwnd, &CDebug.SourceView->CopyPasteRect, true);
+                    InvalidateRect(hwnd, &pCDebug->SourceView->CopyPasteRect, true);
                 }
 
                 POINT pnt;
                 GetCursorPos(&pnt);
 
-                if (CDebug.SourceView->sCopyPasteBuffer.size() &&
-                    WindowFromPoint(pnt) == CDebug.WatcherList->GetWindowHandle())
+                if (pCDebug->SourceView->sCopyPasteBuffer.size() &&
+                    WindowFromPoint(pnt) == pCDebug->WatcherList->GetWindowHandle())
                 {
-                    long iItemCount = ListView_GetItemCount(CDebug.WatcherList->GetWindowHandle());
+                    long iItemCount = ListView_GetItemCount(pCDebug->WatcherList->GetWindowHandle());
                     for (long i = 0; i < iItemCount; i++)
                     {
-                        if (ListView_GetItemState(CDebug.WatcherList->GetWindowHandle(), i, LVIS_SELECTED) &
+                        if (ListView_GetItemState(pCDebug->WatcherList->GetWindowHandle(), i, LVIS_SELECTED) &
                             LVIS_SELECTED)
                         {
-                            CDebug.WatcherList->SetItemText(i, 0, (char *)CDebug.SourceView->sCopyPasteBuffer.c_str());
-                            CDebug.WatcherList->ItemChanged(i, 0);
-                            CDebug.SourceView->sCopyPasteBuffer.clear();
+                            pCDebug->WatcherList->SetItemText(i, 0, (char *)pCDebug->SourceView->sCopyPasteBuffer.c_str());
+                            pCDebug->WatcherList->ItemChanged(i, 0);
+                            pCDebug->SourceView->sCopyPasteBuffer.clear();
                             break;
                         }
                     }
@@ -264,9 +264,9 @@ LRESULT CALLBACK SourceViewWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM l
                 break;
             }
 
-            // CDebug.SourceView->MoveSelection(xPos);
+            // pCDebug->SourceView->MoveSelection(xPos);
             SelectionInProgress = false;
-            CDebug.SourceView->DetCursorPos(xPos, yPos);
+            pCDebug->SourceView->DetCursorPos(xPos, yPos);
 
             break;
         case WM_LBUTTONDOWN:
@@ -274,68 +274,68 @@ LRESULT CALLBACK SourceViewWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM l
             yPos = HIWORD(lParam);
 
             {
-                auto &r = CDebug.SourceView->CopyPasteRect;
+                auto &r = pCDebug->SourceView->CopyPasteRect;
                 auto bCursorInSelection = r.top < yPos && r.bottom > yPos && r.left < xPos && r.right > xPos;
                 if (bCursorInSelection)
                 {
-                    CDebug.SourceView->pntDragPos.x = xPos;
-                    CDebug.SourceView->pntDragPos.y = yPos;
-                    SetCapture(CDebug.SourceView->hOwn);
-                    SetFocus(CDebug.SourceView->hOwn);
-                    CDebug.SourceView->bDrag = true;
-                    SetCursor(LoadCursor(CDebug.SourceView->hInst, MAKEINTRESOURCE(IDC_DRAGNODROP)));
+                    pCDebug->SourceView->pntDragPos.x = xPos;
+                    pCDebug->SourceView->pntDragPos.y = yPos;
+                    SetCapture(pCDebug->SourceView->hOwn);
+                    SetFocus(pCDebug->SourceView->hOwn);
+                    pCDebug->SourceView->bDrag = true;
+                    SetCursor(LoadCursor(pCDebug->SourceView->hInst, MAKEINTRESOURCE(IDC_DRAGNODROP)));
                     break;
                 }
             }
 
             SelectionInProgress = true;
             SetFocus(hwnd);
-            CDebug.SourceView->Cursor.collumn = 0;
-            CDebug.SourceView->Cursor.x_pos = 0;
+            pCDebug->SourceView->Cursor.collumn = 0;
+            pCDebug->SourceView->Cursor.x_pos = 0;
 
-            if (CDebug.SourceView->Cursor.line >= CDebug.SourceView->nTopLine &&
-                CDebug.SourceView->Cursor.line <= CDebug.SourceView->nTopLine + CDebug.SourceView->nClientLinesSize)
+            if (pCDebug->SourceView->Cursor.line >= pCDebug->SourceView->nTopLine &&
+                pCDebug->SourceView->Cursor.line <= pCDebug->SourceView->nTopLine + pCDebug->SourceView->nClientLinesSize)
             {
-                SelectionRect = CDebug.SourceView->Pos;
+                SelectionRect = pCDebug->SourceView->Pos;
                 SelectionRect.top =
-                    (CDebug.SourceView->Cursor.line - CDebug.SourceView->nTopLine) * CDebug.SourceView->nFontHeight;
-                SelectionRect.bottom = SelectionRect.top + CDebug.SourceView->nFontHeight;
+                    (pCDebug->SourceView->Cursor.line - pCDebug->SourceView->nTopLine) * pCDebug->SourceView->nFontHeight;
+                SelectionRect.bottom = SelectionRect.top + pCDebug->SourceView->nFontHeight;
                 InvalidateRect(hwnd, &SelectionRect, true);
             }
 
-            if (CDebug.SourceView->nLinesNum == 0)
+            if (pCDebug->SourceView->nLinesNum == 0)
             {
-                CDebug.SourceView->nActiveLine = 0xffffffff;
+                pCDebug->SourceView->nActiveLine = 0xffffffff;
                 break;
             }
-            aline = CDebug.SourceView->nTopLine + yPos / CDebug.SourceView->nFontHeight;
-            if (aline >= CDebug.SourceView->nLinesNum)
-                CDebug.SourceView->nActiveLine = CDebug.SourceView->nLinesNum - 1;
-            if (aline != CDebug.SourceView->nActiveLine)
+            aline = pCDebug->SourceView->nTopLine + yPos / pCDebug->SourceView->nFontHeight;
+            if (aline >= pCDebug->SourceView->nLinesNum)
+                pCDebug->SourceView->nActiveLine = pCDebug->SourceView->nLinesNum - 1;
+            if (aline != pCDebug->SourceView->nActiveLine)
             {
-                SelectionRect = CDebug.SourceView->Pos;
+                SelectionRect = pCDebug->SourceView->Pos;
                 SelectionRect.top =
-                    (CDebug.SourceView->nActiveLine - CDebug.SourceView->nTopLine) * CDebug.SourceView->nFontHeight;
-                SelectionRect.bottom = SelectionRect.top + CDebug.SourceView->nFontHeight;
+                    (pCDebug->SourceView->nActiveLine - pCDebug->SourceView->nTopLine) * pCDebug->SourceView->nFontHeight;
+                SelectionRect.bottom = SelectionRect.top + pCDebug->SourceView->nFontHeight;
                 InvalidateRect(hwnd, &SelectionRect, true);
 
-                CDebug.SourceView->nActiveLine = aline;
+                pCDebug->SourceView->nActiveLine = aline;
 
-                SelectionRect = CDebug.SourceView->Pos;
+                SelectionRect = pCDebug->SourceView->Pos;
                 SelectionRect.top =
-                    (CDebug.SourceView->nActiveLine - CDebug.SourceView->nTopLine) * CDebug.SourceView->nFontHeight;
-                SelectionRect.bottom = SelectionRect.top + CDebug.SourceView->nFontHeight;
+                    (pCDebug->SourceView->nActiveLine - pCDebug->SourceView->nTopLine) * pCDebug->SourceView->nFontHeight;
+                SelectionRect.bottom = SelectionRect.top + pCDebug->SourceView->nFontHeight;
                 InvalidateRect(hwnd, &SelectionRect, true);
             }
-            // CDebug.SourceView->StartSelection(xPos);
-            CDebug.SourceView->DetCursorPos(xPos, yPos);
-            CDebug.SourceView->nStartSelection = CDebug.SourceView->Cursor.collumn;
-            CDebug.SourceView->nEndSelection = CDebug.SourceView->Cursor.collumn;
-            CDebug.SourceView->Cursor.line = CDebug.SourceView->nActiveLine;
+            // pCDebug->SourceView->StartSelection(xPos);
+            pCDebug->SourceView->DetCursorPos(xPos, yPos);
+            pCDebug->SourceView->nStartSelection = pCDebug->SourceView->Cursor.collumn;
+            pCDebug->SourceView->nEndSelection = pCDebug->SourceView->Cursor.collumn;
+            pCDebug->SourceView->Cursor.line = pCDebug->SourceView->nActiveLine;
             break;
         case WM_PAINT:
-            CDebug.SourceView->OnPaint();
-            // SetFocus(CDebug.SourceView->hOwn);
+            pCDebug->SourceView->OnPaint();
+            // SetFocus(pCDebug->SourceView->hOwn);
             break;
         case WM_SIZE:
             break;
@@ -346,9 +346,9 @@ LRESULT CALLBACK SourceViewWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM l
             // xPos = (short) LOWORD(lParam);    // horizontal position of pointer
             // yPos = (short) HIWORD(lParam);    // vertical position of pointer
             if (zDelta > 0)
-                CDebug.SourceView->LineUpDown(false, 3);
+                pCDebug->SourceView->LineUpDown(false, 3);
             else
-                CDebug.SourceView->LineUpDown(true, 3);
+                pCDebug->SourceView->LineUpDown(true, 3);
             return 0;
         case WM_VSCROLL:
             auto nScrollCode = static_cast<int>(LOWORD(wParam)); // scroll bar value
@@ -359,31 +359,31 @@ LRESULT CALLBACK SourceViewWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM l
             {
             case SB_PAGEUP:
             case SB_PAGEDOWN:
-                CDebug.SourceView->nTopLine +=
-                    (CDebug.SourceView->nClientLinesSize - 1) * ((nScrollCode == SB_PAGEDOWN) ? 1 : -1);
-                if (static_cast<long>(CDebug.SourceView->nTopLine) < 0)
-                    CDebug.SourceView->nTopLine = 0;
-                if (CDebug.SourceView->nTopLine >= CDebug.SourceView->nLinesNum - CDebug.SourceView->nClientLinesSize)
-                    CDebug.SourceView->nTopLine = CDebug.SourceView->nLinesNum - CDebug.SourceView->nClientLinesSize;
-                CDebug.SourceView->UpdateGDIControls();
+                pCDebug->SourceView->nTopLine +=
+                    (pCDebug->SourceView->nClientLinesSize - 1) * ((nScrollCode == SB_PAGEDOWN) ? 1 : -1);
+                if (static_cast<long>(pCDebug->SourceView->nTopLine) < 0)
+                    pCDebug->SourceView->nTopLine = 0;
+                if (pCDebug->SourceView->nTopLine >= pCDebug->SourceView->nLinesNum - pCDebug->SourceView->nClientLinesSize)
+                    pCDebug->SourceView->nTopLine = pCDebug->SourceView->nLinesNum - pCDebug->SourceView->nClientLinesSize;
+                pCDebug->SourceView->UpdateGDIControls();
                 InvalidateRect(hwnd, nullptr, true);
                 break;
             case SB_LINEDOWN:
-                CDebug.SourceView->LineUpDown(true);
+                pCDebug->SourceView->LineUpDown(true);
                 break;
             case SB_LINEUP:
-                CDebug.SourceView->LineUpDown(false);
+                pCDebug->SourceView->LineUpDown(false);
                 break;
             case SB_THUMBTRACK:
-                if (CDebug.SourceView->nTopLine == static_cast<uint32_t>(nPos))
+                if (pCDebug->SourceView->nTopLine == static_cast<uint32_t>(nPos))
                     break;
             case SB_THUMBPOSITION:
-                CDebug.SourceView->nTopLine = nPos;
-                if (CDebug.SourceView->nTopLine < 0)
-                    CDebug.SourceView->nTopLine = 0; //~!~
-                if (CDebug.SourceView->nTopLine >= CDebug.SourceView->nLinesNum - CDebug.SourceView->nClientLinesSize)
-                    CDebug.SourceView->nTopLine = CDebug.SourceView->nLinesNum - CDebug.SourceView->nClientLinesSize;
-                CDebug.SourceView->UpdateGDIControls();
+                pCDebug->SourceView->nTopLine = nPos;
+                if (pCDebug->SourceView->nTopLine < 0)
+                    pCDebug->SourceView->nTopLine = 0; //~!~
+                if (pCDebug->SourceView->nTopLine >= pCDebug->SourceView->nLinesNum - pCDebug->SourceView->nClientLinesSize)
+                    pCDebug->SourceView->nTopLine = pCDebug->SourceView->nLinesNum - pCDebug->SourceView->nClientLinesSize;
+                pCDebug->SourceView->UpdateGDIControls();
                 InvalidateRect(hwnd, nullptr, true);
                 break;
             }
@@ -529,7 +529,7 @@ bool SOURCE_VIEW::OpenSourceFile(const char *_filename)
 
     if (SourceFileName[0] != 0)
     {
-        CDebug.SaveRecentFileALine(SourceFileName, nActiveLine);
+        pCDebug->SaveRecentFileALine(SourceFileName, nActiveLine);
     }
 
     char DirectoryName[MAX_PATH];
@@ -667,7 +667,7 @@ void SOURCE_VIEW::OnPaint()
             }
 
             {
-                const uint32_t nLineStatus = CDebug.GetLineStatus(SourceFileName, n);
+                const uint32_t nLineStatus = pCDebug->GetLineStatus(SourceFileName, n);
                 RECT SelectionRect;
                 SelectionRect = Pos;
                 SelectionRect.top = y;
@@ -682,7 +682,7 @@ void SOURCE_VIEW::OnPaint()
                         nControlLine = n;
                     }
                 }
-                // else if (htBookmarks.Find(sSourceFileName + "," + n, dwTmpFind)) //;CDebug.SourceView->pBookmarks[n])
+                // else if (htBookmarks.Find(sSourceFileName + "," + n, dwTmpFind)) //;pCDebug->SourceView->pBookmarks[n])
                 else if (htBookmarks.count(sSourceFileName + "," + std::to_string(n)) > 0)
                     FillRect(dc, &SelectionRect, hBookmarkBrush);
 
@@ -1179,7 +1179,7 @@ INT_PTR CALLBACK VarChangeDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
     case WM_DESTROY: {
         HWND hwndList = GetDlgItem(hwndDlg, IDC_XLIST);
         long iNum = ListView_GetItemCount(hwndList);
-        CDebug.SourceView->aStrings.clear();
+        pCDebug->SourceView->aStrings.clear();
         for (long i = 0; i < iNum; i++)
         {
             wchar_t str[1024];
@@ -1187,7 +1187,7 @@ INT_PTR CALLBACK VarChangeDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
             ListView_GetItemText(hwndList, i, 0, str, sizeof(str));
             std::string utf8 = utf8::ConvertWideToUtf8(str);
             std::string sValue = utf8.c_str();
-            CDebug.SourceView->aStrings.push_back(sValue);
+            pCDebug->SourceView->aStrings.push_back(sValue);
         }
     }
     break;
@@ -1206,16 +1206,16 @@ INT_PTR CALLBACK VarChangeDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
         uint32_t dwOld = ListView_GetExtendedListViewStyle(hwndList);
         ListView_SetExtendedListViewStyle(hwndList, dwOld | LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
 
-        for (long i = 0; i < CDebug.SourceView->aStrings.size(); i++)
+        for (long i = 0; i < pCDebug->SourceView->aStrings.size(); i++)
         {
             LVITEM item;
             PZERO(&item, sizeof(item));
             item.mask = LVIF_TEXT;
             item.iItem = 0;
             item.iSubItem = 0;
-            std::wstring StrW = utf8::ConvertUtf8ToWide(CDebug.SourceView->aStrings[i].c_str());
+            std::wstring StrW = utf8::ConvertUtf8ToWide(pCDebug->SourceView->aStrings[i].c_str());
             item.pszText = const_cast<wchar_t *>(StrW.c_str());
-            item.cchTextMax = CDebug.SourceView->aStrings[i].size();
+            item.cchTextMax = pCDebug->SourceView->aStrings[i].size();
             ListView_InsertItem(hwndList, &item);
         }
     }
@@ -1240,7 +1240,7 @@ INT_PTR CALLBACK VarChangeDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
                 return false;
 
             std::string Str = utf8::ConvertWideToUtf8(StrW);
-            if (!CDebug.SourceView->SetVariableOnChange(Str.c_str(), true))
+            if (!pCDebug->SourceView->SetVariableOnChange(Str.c_str(), true))
             {
                 MessageBox(hwndDlg, TEXT("Не найдена переменная"), TEXT("Ошибка"), MB_OK);
                 return false;
@@ -1269,7 +1269,7 @@ INT_PTR CALLBACK VarChangeDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
                 return false;
             ListView_GetItemText(hwndList, iSel, 0, StrW, sizeof(StrW));
             std::string Str = utf8::ConvertWideToUtf8(StrW);
-            CDebug.SourceView->SetVariableOnChange(Str.c_str(), false);
+            pCDebug->SourceView->SetVariableOnChange(Str.c_str(), false);
             ListView_DeleteItem(hwndList, iSel);
             return false;
         }
@@ -1297,7 +1297,7 @@ INT_PTR CALLBACK FindDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM l
             StrW[0] = 0;
             GetWindowText((HWND)lParam, StrW, sizeof(StrW));
             std::string Str = utf8::ConvertWideToUtf8(StrW);
-            CDebug.SourceView->sFindStr = Str.c_str();
+            pCDebug->SourceView->sFindStr = Str.c_str();
         }
         break;
     }
@@ -1308,12 +1308,12 @@ INT_PTR CALLBACK FindDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM l
 
 void SOURCE_VIEW::VarChangeModal()
 {
-    DialogBox(hInst, MAKEINTRESOURCE(IDD_VARCHANGE), CDebug.GetWindowHandle(), VarChangeDialogProc);
+    DialogBox(hInst, MAKEINTRESOURCE(IDD_VARCHANGE), pCDebug->GetWindowHandle(), VarChangeDialogProc);
 }
 
 void SOURCE_VIEW::FindModal()
 {
-    if (DialogBox(hInst, MAKEINTRESOURCE(IDD_DBGCTRL_F), CDebug.GetWindowHandle(), FindDialogProc) == IDOK)
+    if (DialogBox(hInst, MAKEINTRESOURCE(IDD_DBGCTRL_F), pCDebug->GetWindowHandle(), FindDialogProc) == IDOK)
     {
         FindNext();
     }

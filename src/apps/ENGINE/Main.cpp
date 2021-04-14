@@ -3,17 +3,19 @@
 #include "file_service.h"
 #include "fs.h"
 #include "s_debug.h"
+#include "exceptions.hpp"
 
 #include <crtdbg.h>
-#include <dbghelp.h>
+#include <csignal>
+#include <DbgHelp.h>
 #include <tchar.h>
 
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/spdlog.h>
 
 VFILE_SERVICE *fio = nullptr;
+S_DEBUG *pCDebug = nullptr;
 CORE core;
-S_DEBUG CDebug;
 
 namespace
 {
@@ -25,36 +27,20 @@ bool bActive = false;
 } // namespace
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-int Alert(const char *lpCaption, const char *lpText);
-void CreateMiniDump(EXCEPTION_POINTERS *pep);
+void CreateMiniDump(PEXCEPTION_POINTERS ep);
 
-bool runExceptionWrapped()
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow) try
 {
-    try
-    {
-        return core.Run();
-    }
-    catch (const std::exception &e)
-    {
-        spdlog::critical(e.what());
-        throw;
-    }
-}
+    const storm::except::scoped_exception_guard exception_guard;
+    static_cast<void>(exception_guard);
+    std::signal(SIGABRT, [] (int) {
+        // its pointless to log here since no unwinding will happen after _Exit()
+        EXCEPTION_POINTERS ep;
+        storm::except::get_exception_pointers(ep);
+        CreateMiniDump(&ep);
+        std::_Exit(EXIT_FAILURE);
+    });
 
-bool runSehWrapped()
-{
-    __try
-    {
-        return runExceptionWrapped();
-    }
-    __except (CreateMiniDump(GetExceptionInformation()), EXCEPTION_EXECUTE_HANDLER)
-    {
-        std::terminate();
-    }
-}
-
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
-{
     /* Prevent multiple instances */
     if (!CreateEventA(nullptr, false, false, "Global\\FBBD2286-A9F1-4303-B60C-743C3D7AA7BE") ||
         GetLastError() == ERROR_ALREADY_EXISTS)
@@ -66,6 +52,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     // Init FS
     FILE_SERVICE File_Service;
     fio = &File_Service;
+
+    // Init CDebug
+    S_DEBUG SDebug;
+    pCDebug = &SDebug;
 
     // Init core
     core.Init();
@@ -100,7 +90,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     core.Compiler->warninglog->set_level(spdlog::level::trace);
 
     // Init script debugger
-    CDebug.Init();
+    pCDebug->Init();
 
     /* Read config */
     uint32_t dwMaxFPS = 0;
@@ -178,7 +168,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
                         continue;
                     dwOldTime = dwNewTime;
                 }
-                const auto runResult = runSehWrapped();
+                const auto runResult = core.Run();
                 if (!isHold && !runResult)
                 {
                     isHold = true;
@@ -198,6 +188,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
 
     return msg.wParam;
 }
+catch (const storm::except::system_exception &e) {
+    spdlog::critical(std::string("Caught unhandled system exception: ") + e.what());
+    CreateMiniDump(e.get_exception_pointers());
+    return EXIT_FAILURE;
+}
+catch (const std::exception &e) {
+    spdlog::critical(std::string("Caught unhandled C++ exception: ") + e.what());
+    return EXIT_FAILURE;
+}
+catch (...) {
+    spdlog::critical("Caught unknown exception!");
+    return EXIT_FAILURE;
+}
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -214,9 +217,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     case WM_DESTROY:
         core.Event("DestroyWindow", nullptr);
         core.Event("ExitApplication", nullptr);
-        CDebug.Release();
+        pCDebug->Release();
         core.CleanUp();
-        CDebug.CloseDebugWindow();
+        pCDebug->CloseDebugWindow();
 
         InvalidateRect(nullptr, nullptr, 0);
         PostQuitMessage(0);
@@ -230,12 +233,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     case WM_KEYDOWN:
         if (wParam == VK_F5) // && bDebugWindow
         {
-            if (!CDebug.IsDebug())
-                CDebug.OpenDebugWindow(core.hInstance);
+            if (!pCDebug->IsDebug())
+                pCDebug->OpenDebugWindow(core.hInstance);
             else
             {
-                ShowWindow(CDebug.GetWindowHandle(), SW_NORMAL);
-                SetFocus(CDebug.SourceView->hOwn);
+                ShowWindow(pCDebug->GetWindowHandle(), SW_NORMAL);
+                SetFocus(pCDebug->SourceView->hOwn);
             }
         }
     case WM_KEYUP:
@@ -265,7 +268,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     return DefWindowProc(hwnd, iMsg, wParam, lParam);
 }
 
-void CreateMiniDump(EXCEPTION_POINTERS *pep)
+void CreateMiniDump(PEXCEPTION_POINTERS ep)
 {
     // flush logs
     if (core.tracelog)
@@ -276,23 +279,22 @@ void CreateMiniDump(EXCEPTION_POINTERS *pep)
     std::filesystem::path dmpfile = fs::GetStashPath() / std::filesystem::u8path(DUMP_FILENAME);
     // Open the file
     HANDLE hFile =
-        CreateFile(dmpfile.c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+        CreateFile(dmpfile.c_str(), GENERIC_READ | GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 
-    if ((hFile != NULL) && (hFile != INVALID_HANDLE_VALUE))
+    if ((hFile != nullptr) && (hFile != INVALID_HANDLE_VALUE))
     {
         // Create the minidump
         MINIDUMP_EXCEPTION_INFORMATION mdei;
 
         mdei.ThreadId = GetCurrentThreadId();
-        mdei.ExceptionPointers = pep;
+        mdei.ExceptionPointers = ep;
         mdei.ClientPointers = FALSE;
 
         MINIDUMP_TYPE mdt =
             (MINIDUMP_TYPE)(MiniDumpWithFullMemory | MiniDumpWithFullMemoryInfo | MiniDumpWithHandleData |
                             MiniDumpWithThreadInfo | MiniDumpWithUnloadedModules);
 
-        BOOL rv =
-            MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, mdt, (pep != 0) ? &mdei : 0, 0, 0);
+        BOOL rv = MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, mdt, ep ? &mdei : nullptr, nullptr, nullptr);
 
         if (!rv)
             _tprintf(_T("MiniDumpWriteDump failed. Error: %u \n"), GetLastError());
@@ -306,11 +308,4 @@ void CreateMiniDump(EXCEPTION_POINTERS *pep)
     {
         _tprintf(_T("CreateFile failed. Error: %u \n"), GetLastError());
     }
-}
-
-int Alert(const char *lpCaption, const char *lpText)
-{
-    std::wstring CaptionW = utf8::ConvertUtf8ToWide(lpCaption);
-    std::wstring TextW = utf8::ConvertUtf8ToWide(lpText);
-    return ::MessageBox(NULL, TextW.c_str(), CaptionW.c_str(), MB_OK);
 }

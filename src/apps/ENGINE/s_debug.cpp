@@ -14,13 +14,13 @@ const wchar_t *DClass = L"SEDebug";
 #define DBGWIN_WIDTH 900
 #define DBGWIN_HEIGHT 600
 
-extern S_DEBUG CDebug;
+extern S_DEBUG * pCDebug;
 char filefilter[256] = {"Script file\0 *.c\0Any file\0*.*\0\0"};
 
 DWORD WINAPI BackgroundThreadProc(LPVOID lpParameter)
 {
-    if (CDebug.hMain == nullptr)
-        CDebug.OpenDebugWindow_NT(CDebug.hInst);
+    if (pCDebug->hMain == nullptr)
+        pCDebug->OpenDebugWindow_NT(pCDebug->hInst);
 
     MSG msg;
     while (true)
@@ -33,16 +33,16 @@ DWORD WINAPI BackgroundThreadProc(LPVOID lpParameter)
             }
             TranslateMessage(&msg);
             DispatchMessage(&msg);
-            if (CDebug.GetTraceMode() == TMODE_CLOSE)
+            if (pCDebug->GetTraceMode() == TMODE_CLOSE)
                 break;
         }
     }
-    CDebug.CloseDebugWindow();
+    pCDebug->CloseDebugWindow();
     uint32_t dwExitCode;
-    GetExitCodeThread(CDebug.hDebugThread, (LPDWORD)&dwExitCode);
+    GetExitCodeThread(pCDebug->hDebugThread, (LPDWORD)&dwExitCode);
     ExitThread(dwExitCode);
-    CloseHandle(CDebug.hDebugThread);
-    CDebug.hDebugThread = nullptr;
+    CloseHandle(pCDebug->hDebugThread);
+    pCDebug->hDebugThread = nullptr;
 
     return 0;
 }
@@ -55,13 +55,13 @@ LRESULT CALLBACK DebugWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam
     wchar_t WinTextW[MAX_PATH];
     BROWSEINFO bi;
 
-    if (CDebug.WatcherList)
+    if (pCDebug->WatcherList)
     {
-        CDebug.WatcherList->ProcessMessage(iMsg, wParam, lParam);
+        pCDebug->WatcherList->ProcessMessage(iMsg, wParam, lParam);
     }
-    if (CDebug.SourceView)
+    if (pCDebug->SourceView)
     {
-        CDebug.SourceView->ProcessMessage(iMsg, wParam, lParam);
+        pCDebug->SourceView->ProcessMessage(iMsg, wParam, lParam);
     }
 
     switch (iMsg)
@@ -69,7 +69,7 @@ LRESULT CALLBACK DebugWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam
     case WM_COMMAND:
 
         HMENU hMenu;
-        hMenu = GetMenu(CDebug.hMain);
+        hMenu = GetMenu(pCDebug->hMain);
         if (hMenu)
         {
             MENUITEMINFO mii;
@@ -79,7 +79,7 @@ LRESULT CALLBACK DebugWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam
             {
                 if (GetMenuItemID(hFileSubMenu, n) == LOWORD(wParam))
                 {
-                    if (n < CDebug.nRFMOffset || n >= (CDebug.nRFMOffset + CDebug.nRecentFilesNum))
+                    if (n < pCDebug->nRFMOffset || n >= (pCDebug->nRFMOffset + pCDebug->nRecentFilesNum))
                         continue;
 
                     PZERO(&mii, sizeof(mii));
@@ -92,12 +92,12 @@ LRESULT CALLBACK DebugWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam
                     GetMenuItemInfo(hFileSubMenu, n, true, &mii);
 
                     std::string Buffer = utf8::ConvertWideToUtf8(BufferW);
-                    strcpy(CDebug.sLastFileName, Buffer.c_str());
-                    CDebug.SourceView->OpenSourceFile(Buffer.c_str());
+                    strcpy(pCDebug->sLastFileName, Buffer.c_str());
+                    pCDebug->SourceView->OpenSourceFile(Buffer.c_str());
                     wsprintf(WinTextW, L"SDebug - %s", BufferW);
                     SetWindowText(hwnd, WinTextW);
-                    CDebug.Add2RecentFiles(Buffer.c_str());
-                    CDebug.SourceView->SetActiveLine(CDebug.GetRecentFileALine(Buffer.c_str()));
+                    pCDebug->Add2RecentFiles(Buffer.c_str());
+                    pCDebug->SourceView->SetActiveLine(pCDebug->GetRecentFileALine(Buffer.c_str()));
                     break;
                 }
             }
@@ -106,7 +106,7 @@ LRESULT CALLBACK DebugWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam
         switch (LOWORD(wParam))
         {
         case MENU_OPENFILE:
-            CDebug.OpenNewFile();
+            pCDebug->OpenNewFile();
             break;
         case MENU_EXITDEBUG:
             PostMessage(hwnd, WM_CLOSE, 0, 0);
@@ -116,14 +116,14 @@ LRESULT CALLBACK DebugWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam
             PostMessage(hwnd, WM_CLOSE, 0, 0);
             break;
         case ID_OPTIONS_BREAKONVARIABLECHANGE:
-            CDebug.SourceView->VarChangeModal();
+            pCDebug->SourceView->VarChangeModal();
             break;
         case ID_VIEW_SOURCEVIEWER:
-            CDebug.SetDbgDisplayMode(MODE_SOURCE_VIEW);
+            pCDebug->SetDbgDisplayMode(MODE_SOURCE_VIEW);
             // CheckMenuItem(?,
             break;
         case ID_VIEW_ATTRIBUTEVIEWER:
-            CDebug.SetDbgDisplayMode(MODE_ATTRIBUTES_VIEW);
+            pCDebug->SetDbgDisplayMode(MODE_ATTRIBUTES_VIEW);
             break;
         case ID_OPTIONS_BREAKONERROR: {
             auto ini = fio->OpenIniFile(PROJECT_NAME);
@@ -145,7 +145,7 @@ LRESULT CALLBACK DebugWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam
         }
         case ID_FORMAT_DIALOG: {
             char Buffer[MAX_PATH];
-            if (CDebug.BrowseFileWP(Buffer, filefilter))
+            if (pCDebug->BrowseFileWP(Buffer, filefilter))
             {
                 core.Compiler->FormatDialog(Buffer);
             }
@@ -169,16 +169,16 @@ LRESULT CALLBACK DebugWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam
         }
         break;
     case WM_SIZE:
-        if (CDebug.WatcherList)
+        if (pCDebug->WatcherList)
         {
-            CDebug.WatcherListRect.right = LOWORD(lParam);
-            CDebug.WatcherList->SetPosition(CDebug.WatcherListRect);
+            pCDebug->WatcherListRect.right = LOWORD(lParam);
+            pCDebug->WatcherList->SetPosition(pCDebug->WatcherListRect);
         }
-        if (CDebug.SourceView)
+        if (pCDebug->SourceView)
         {
-            CDebug.SourceViewRect.right = LOWORD(lParam);
-            CDebug.SourceViewRect.bottom = HIWORD(lParam);
-            CDebug.SourceView->SetPosition(CDebug.SourceViewRect);
+            pCDebug->SourceViewRect.right = LOWORD(lParam);
+            pCDebug->SourceViewRect.bottom = HIWORD(lParam);
+            pCDebug->SourceView->SetPosition(pCDebug->SourceViewRect);
         }
         break;
     case WM_ACTIVATE:
@@ -196,7 +196,7 @@ LRESULT CALLBACK DebugWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam
         }*/
         break;
     case WM_CLOSE:
-        CDebug.CloseDebugWindow();
+        pCDebug->CloseDebugWindow();
         return 0;
     case WM_DESTROY:
         // CursorONOFF(false);
@@ -204,20 +204,20 @@ LRESULT CALLBACK DebugWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam
     case WM_CREATE: {
         // CursorONOFF(true);
 
-        if (CDebug.WatcherList)
+        if (pCDebug->WatcherList)
         {
-            GetClientRect(hwnd, &CDebug.WatcherListRect);
-            CDebug.WatcherListRect.bottom = 199;
-            // CDebug.WatcherListRect.right = LOWORD(lParam);
-            // CDebug.WatcherListRect.bottom = HIWORD(lParam)/2;
-            CDebug.WatcherList->SetPosition(CDebug.WatcherListRect);
+            GetClientRect(hwnd, &pCDebug->WatcherListRect);
+            pCDebug->WatcherListRect.bottom = 199;
+            // pCDebug->WatcherListRect.right = LOWORD(lParam);
+            // pCDebug->WatcherListRect.bottom = HIWORD(lParam)/2;
+            pCDebug->WatcherList->SetPosition(pCDebug->WatcherListRect);
         }
 
-        if (CDebug.SourceView)
+        if (pCDebug->SourceView)
         {
-            GetClientRect(hwnd, &CDebug.SourceViewRect);
-            CDebug.SourceViewRect.top = 200;
-            CDebug.SourceView->SetPosition(CDebug.SourceViewRect);
+            GetClientRect(hwnd, &pCDebug->SourceViewRect);
+            pCDebug->SourceViewRect.top = 200;
+            pCDebug->SourceView->SetPosition(pCDebug->SourceViewRect);
         }
 
         auto ini = fio->OpenIniFile(PROJECT_NAME);
@@ -309,12 +309,12 @@ S_DEBUG::~S_DEBUG()
         DeleteObject(hFont);
     // if(pExpResBuffer) delete pExpResBuffer;
 
-    if (CDebug.hDebugThread)
+    if (pCDebug->hDebugThread)
     {
         // DWORD dwExitCode;
-        // GetExitCodeThread(CDebug.hDebugThread,&dwExitCode);
+        // GetExitCodeThread(pCDebug->hDebugThread,&dwExitCode);
         // ExitThread(dwExitCode);
-        // CloseHandle(CDebug.hDebugThread);
+        // CloseHandle(pCDebug->hDebugThread);
         // SetTraceMode(TMODE_CLOSE);
     }
     SetTraceMode(TMODE_CLOSE);
@@ -955,13 +955,13 @@ void S_DEBUG::SaveRecentFileALine(const char *pFileName, long nLine)
 void S_DEBUG::OpenNewFile()
 {
     char buffer[1024], wintext[1024];
-    if (CDebug.BrowseFile(buffer, filefilter))
+    if (pCDebug->BrowseFile(buffer, filefilter))
     {
-        strcpy_s(CDebug.sLastFileName, buffer);
-        CDebug.SourceView->OpenSourceFile(buffer);
+        strcpy_s(pCDebug->sLastFileName, buffer);
+        pCDebug->SourceView->OpenSourceFile(buffer);
         sprintf_s(wintext, "SDebug - %s", buffer);
         std::wstring WinTextW = utf8::ConvertUtf8ToWide(wintext);
-        SetWindowText(CDebug.GetWindowHandle(), WinTextW.c_str());
-        CDebug.Add2RecentFiles(buffer);
+        SetWindowText(pCDebug->GetWindowHandle(), WinTextW.c_str());
+        pCDebug->Add2RecentFiles(buffer);
     }
 }
