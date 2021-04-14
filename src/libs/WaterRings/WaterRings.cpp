@@ -29,7 +29,7 @@ bool WaterRings::Init()
 
     renderService = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!renderService)
-        throw std::exception("No service: dx9render");
+        throw std::runtime_error("No service: dx9render");
 
     ivManager =
         new IVBufferManager(renderService, waterrings::RING_FVF, sizeof(RING_VERTEX), waterrings::TRIANGLES_COUNT * 3,

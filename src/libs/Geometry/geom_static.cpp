@@ -56,7 +56,7 @@ GEOM::GEOM(const char *fname, const char *lightname, GEOM_SERVICE &_srv, long fl
     // read header
     srv.ReadFile(file, &rhead, sizeof(RDF_HEAD));
     if (rhead.version != RDF_VERSION)
-        throw "invalid version";
+        throw std::runtime_error("invalid version");
 
     // read names
     globname = static_cast<char *>(srv.malloc(rhead.name_size));

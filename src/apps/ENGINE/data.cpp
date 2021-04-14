@@ -101,7 +101,7 @@ DATA::DATA(uint32_t _num_of_elements, S_TOKEN_TYPE _element_type)
         break;
         default:
           Error(INVALID_TYPE);
-          throw "INVALID_TYPE";
+          throw std::runtime_error("INVALID_TYPE");
         break;
       }*/
 }
@@ -2411,7 +2411,7 @@ ATTRIBUTES *DATA::GetAClass()
         if (Data_type == VAR_AREFERENCE)
         {
             Error("uninitialized aref");
-            // throw "uninitialized aref";
+            // throw std::runtime_error("uninitialized aref");
             return nullptr;
         }
 

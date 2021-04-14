@@ -30,7 +30,7 @@ CXI_FORMATEDTEXT::STRING_DESCRIBER::STRING_DESCRIBER(char *ls) : color(0)
     {
         if ((lineStr = new char[len]) == nullptr)
         {
-            throw std::exception("allocate memory error");
+            throw std::runtime_error("allocate memory error");
         }
         memcpy(lineStr, ls, len);
     }
@@ -47,7 +47,7 @@ CXI_FORMATEDTEXT::STRING_DESCRIBER *CXI_FORMATEDTEXT::STRING_DESCRIBER::Add(char
     auto *newSD = new STRING_DESCRIBER(ls);
     if (newSD == nullptr)
     {
-        throw std::exception("allocate memory error");
+        throw std::runtime_error("allocate memory error");
     }
 
     newSD->prev = this;
@@ -893,7 +893,7 @@ long CXI_FORMATEDTEXT::AddFormatedText(const char *str)
         {
             if ((dscrTmp = m_listRoot = new STRING_DESCRIBER(newStr)) == nullptr)
             {
-                throw std::exception("allocate memory error");
+                throw std::runtime_error("allocate memory error");
             }
             dscrTmp->color = m_dwColor;
         }
@@ -913,7 +913,7 @@ long CXI_FORMATEDTEXT::AddFormatedText(const char *str)
             {
                 if ((dscrTmp = m_listRoot = new STRING_DESCRIBER(newStr)) == nullptr)
                 {
-                    throw std::exception("allocate memory error");
+                    throw std::runtime_error("allocate memory error");
                 }
                 dscrTmp->color = m_dwColor;
             }
@@ -1557,7 +1557,7 @@ void CXI_FORMATEDTEXT::InsertStringBefore(STRING_DESCRIBER *pNextDescr, const ch
         auto *pNewDescr = new STRING_DESCRIBER(newStr);
         if (!pNewDescr)
         {
-            throw std::exception("allocate memory error");
+            throw std::runtime_error("allocate memory error");
         }
 
         pNewDescr->strNum = -1;

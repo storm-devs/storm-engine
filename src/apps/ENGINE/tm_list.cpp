@@ -50,7 +50,7 @@ void TM_LIST::Initialize(HWND hwnd, HINSTANCE hinst, uint32_t style, uint32_t st
     hOwn = CreateWindowEx(WS_EX_CLIENTEDGE, WC_LISTVIEW, TEXT(""), WS_CHILD | LVS_REPORT | LVS_SHOWSELALWAYS, 0, 0,
                           CW_USEDEFAULT, CW_USEDEFAULT, hMain, nullptr, hInst, nullptr);
     if (hOwn == nullptr)
-        throw "cant create list view";
+        throw std::runtime_error("cant create list view");
     // ListView_SetExtendedListViewStyle(hOwn,LVS_EX_FULLROWSELECT|LVS_EX_GRIDLINES|LVS_EX_SUBITEMIMAGES);
     ListView_SetExtendedListViewStyle(hOwn, LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
     ShowWindow(hOwn, SW_SHOWNORMAL);
@@ -123,7 +123,7 @@ void TM_LIST::AddColumn(const char *name, long length)
         wcscpy(string, L"");
     lvc.iSubItem = Columns_Num;
     if (ListView_InsertColumn(hOwn, Columns_Num, &lvc) == -1)
-        throw "cant add column";
+        throw std::runtime_error("cant add column");
     Columns_Num++;
 }
 

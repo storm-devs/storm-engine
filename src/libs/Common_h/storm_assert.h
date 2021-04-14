@@ -18,7 +18,7 @@ inline void __Storm_Assert__(bool expression, const char *file, long line, const
 #ifdef EX_OFF
         __debugbreak();
 #else
-        throw "assert";
+        throw std::runtime_error("assert");
 #endif
     }
 }

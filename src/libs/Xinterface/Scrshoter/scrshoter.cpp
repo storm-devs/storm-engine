@@ -61,7 +61,7 @@ void SCRSHOTER::SetDevice()
     // get render service
     rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!rs)
-        throw std::exception("No service: dx9render");
+        throw std::runtime_error("No service: dx9render");
 }
 
 void SCRSHOTER::Execute(uint32_t Delta_Time)
@@ -149,7 +149,7 @@ bool SCRSHOTER::MakeScreenShot()
         auto *const pVertOff = new int[SS_TEXTURE_HEIGHT];
         if (!pHorzOff || !pVertOff)
         {
-            throw std::exception("allocate memory error");
+            throw std::runtime_error("allocate memory error");
         }
         int nHorzSize, nVertSize;
         if (static_cast<float>(desc.Width) / desc.Height < static_cast<float>(SS_TEXTURE_WIDTH) / SS_TEXTURE_HEIGHT)
@@ -342,7 +342,7 @@ IDirect3DTexture9 *SCRSHOTER::AddSaveTexture(char *dirName, char *fileName)
     auto *ps = new SAVETEXTURES;
     if (ps == nullptr)
     {
-        throw std::exception("Allocate memory error");
+        throw std::runtime_error("Allocate memory error");
     }
     ps->dataString = nullptr;
     ps->next = m_list;
@@ -351,7 +351,7 @@ IDirect3DTexture9 *SCRSHOTER::AddSaveTexture(char *dirName, char *fileName)
     m_list->fileName = new char[len];
     if (m_list->fileName == nullptr)
     {
-        throw std::exception("Allocate memory error");
+        throw std::runtime_error("Allocate memory error");
     }
     memcpy(m_list->fileName, fileName, len);
     char param[1024];
@@ -428,7 +428,7 @@ IDirect3DTexture9 *SCRSHOTER::GetTexFromSave(char *fileName, char **pDatStr) con
             *pDatStr = new char[strLen + 1];
             if (!*pDatStr)
             {
-                throw std::exception("allocate memory error");
+                throw std::runtime_error("allocate memory error");
             }
             strncpy_s(*pDatStr, strLen + 1, stringData, strLen);
             (*pDatStr)[strLen] = 0;

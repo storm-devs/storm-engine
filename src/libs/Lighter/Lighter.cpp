@@ -46,7 +46,7 @@ bool Lighter::Init()
     // DX9 render
     rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!rs)
-        throw std::exception("No service: dx9render");
+        throw std::runtime_error("No service: dx9render");
     //
     EntityManager::SetLayerType(LIGHTER_EXECUTE, EntityManager::Layer::Type::execute);
     EntityManager::AddToLayer(LIGHTER_EXECUTE, GetId(), 1000);

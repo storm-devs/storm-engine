@@ -115,7 +115,7 @@ bool Grass::Init()
     // DX9 render
     rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!rs)
-        throw std::exception("No service: dx9render");
+        throw std::runtime_error("No service: dx9render");
     // Vertex declaration
     CreateVertexDeclaration();
     // Buffer for dynamic data
@@ -173,18 +173,18 @@ bool Grass::LoadData(const char *patchName)
     {
         // Check the data
         if (size < sizeof(GRSHeader))
-            throw "invalide file size";
+            throw std::runtime_error("invalide file size");
         auto &hdr = *(GRSHeader *)load;
         if (hdr.id != GRASS_ID)
-            throw "invalide file id";
+            throw std::runtime_error("invalide file id");
         if (hdr.ver != GRASS_VER)
-            throw "invalide file version";
+            throw std::runtime_error("invalide file version");
         const auto minisize = hdr.miniX * hdr.miniZ;
         const auto elements = hdr.numElements;
         if (size != sizeof(GRSHeader) + minisize * sizeof(GRSMiniMapElement) + elements * sizeof(GRSMapElement))
-            throw "incorrect file data -> file size";
+            throw std::runtime_error("incorrect file data -> file size");
         if (hdr.miniX <= 0 || hdr.miniX > 100000 || hdr.miniZ <= 0 || hdr.miniZ > 100000)
-            throw "incorrect file data -> miniX, miniZ";
+            throw std::runtime_error("incorrect file data -> miniX, miniZ");
         // Create a minimap
         miniMap = new GRSMiniMapElement[minisize];
         memcpy(miniMap, load + sizeof(GRSHeader), minisize * sizeof(GRSMiniMapElement));
@@ -194,7 +194,7 @@ bool Grass::LoadData(const char *patchName)
         for (long i = 0, pnt = 0; i < minisize; i++)
         {
             if (pnt != miniMap[i].start)
-                throw "incorrect file data -> minimap";
+                throw std::runtime_error("incorrect file data -> minimap");
             pnt += miniMap[i].num[0];
         }
         // Create blocks
@@ -238,9 +238,9 @@ bool Grass::LoadData(const char *patchName)
             }
         }
     }
-    catch (const char *error)
+    catch (const std::exception &e)
     {
-        core.Trace("Grass: incorrect grs file %s (%s)", patchName, error);
+        core.Trace("Grass: incorrect grs file %s (%s)", patchName, e.what());
         delete miniMap;
         miniMap = nullptr;
         delete block;

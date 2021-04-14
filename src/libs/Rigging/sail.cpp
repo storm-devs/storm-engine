@@ -220,7 +220,7 @@ void SAIL::SetDevice()
     RenderService = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!RenderService)
     {
-        throw std::exception("No service: dx9render");
+        throw std::runtime_error("No service: dx9render");
     }
 
     LoadSailIni();
@@ -234,7 +234,7 @@ void SAIL::SetDevice()
                 WindVect[i] = sinf(static_cast<float>(i) / static_cast<float>(WINDVECTOR_QUANTITY) * 2.f * PI);
         else
         {
-            throw std::exception("No memory allocation: WindVect");
+            throw std::runtime_error("No memory allocation: WindVect");
         }
     }
 }
@@ -338,7 +338,7 @@ void SAIL::Execute(uint32_t Delta_Time)
                                 sinf(static_cast<float>(i) / static_cast<float>(WINDVECTOR_QUANTITY) * 2.f * PI);
                     else
                     {
-                        throw std::exception("No memory allocation: WindVect");
+                        throw std::runtime_error("No memory allocation: WindVect");
                     }
                 }
                 for (i = 0; i < sailQuantity; i++)
@@ -1001,7 +1001,7 @@ uint64_t SAIL::ProcessMessage(MESSAGE &message)
             {
                 if ((m_sMastName = new char[slen + 1]) == nullptr)
                 {
-                    throw std::exception("allocate memory error");
+                    throw std::runtime_error("allocate memory error");
                 }
                 strcpy_s(m_sMastName, slen + 1, param);
             }
@@ -1166,7 +1166,7 @@ void SAIL::SetAllSails(int groupNum)
             }
             else
             {
-                // throw std::exception("SAIL: Null size");
+                // throw std::runtime_error("SAIL: Null size");
                 core.Trace("SAIL: Can`t init sail");
                 STORM_DELETE(slist[i]);
                 sailQuantity--;
@@ -1351,7 +1351,7 @@ void SAIL::LoadSailIni()
     auto ini = fio->OpenIniFile("resource\\ini\\rigging.ini");
     if (!ini)
     {
-        throw std::exception("rigging.ini file not found!");
+        throw std::runtime_error("rigging.ini file not found!");
     }
 
     sprintf(section, "SAILS");
@@ -1704,7 +1704,7 @@ void SAIL::DoSailToNewHost(entid_t newModelEI, entid_t newHostEI, int grNum, NOD
         GROUPDATA *oldgdata = gdata;
         gdata = new GROUPDATA[groupQuantity + 1];
         if (gdata == nullptr)
-            throw std::exception("Not memory allocation");
+            throw std::runtime_error("Not memory allocation");
         memcpy(gdata, oldgdata, sizeof(GROUPDATA) * groupQuantity);
         gdata[gn].bYesShip = false;
         gdata[gn].bDeleted = false;
@@ -1747,7 +1747,7 @@ void SAIL::DoSailToNewHost(entid_t newModelEI, entid_t newHostEI, int grNum, NOD
             int *oldIdx = gdata[gn].sailIdx;
             if ((gdata[gn].sailIdx = new int[gdata[gn].sailQuantity + 1]) == nullptr)
             {
-                throw std::exception("Not memory allocation");
+                throw std::runtime_error("Not memory allocation");
             }
             memcpy(gdata[gn].sailIdx, oldIdx, sizeof(int) * gdata[gn].sailQuantity);
             delete oldIdx;
@@ -1846,7 +1846,7 @@ void SAIL::DeleteSailGroup()
         gdata = new GROUPDATA[groupQuantity];
         if (slist == nullptr || gdata == nullptr)
         {
-            throw std::exception("allocate memory error");
+            throw std::runtime_error("allocate memory error");
         }
 
         groupQuantity = 0;
@@ -1865,7 +1865,7 @@ void SAIL::DeleteSailGroup()
             memcpy(&gdata[groupQuantity], &oldgdata[gn], sizeof(GROUPDATA));
             if ((gdata[groupQuantity].sailIdx = new int[nsn]) == nullptr)
             {
-                throw std::exception("allocate memory error");
+                throw std::runtime_error("allocate memory error");
             }
             gdata[groupQuantity].sailQuantity = nsn;
             // fill in the list of sails for the group and general
@@ -1955,7 +1955,7 @@ void SAIL::SetAddSails(int firstSail)
         RenderService->UnLockVertexBuffer(sg.vertBuf);
     }
     else
-        throw std::exception("Vertex buffer error");
+        throw std::runtime_error("Vertex buffer error");
 }
 
 void SAIL::DoNoRopeSailToNewHost(entid_t newModel, entid_t newHost, entid_t oldHost)

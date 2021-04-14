@@ -1,6 +1,6 @@
 #include "strings_list.h"
 #include <cstring>
-#include <exception>
+#include <stdexcept>
 
 STRINGS_LIST::STRINGS_LIST()
 {
@@ -42,7 +42,7 @@ bool STRINGS_LIST::AddString(const char *_char_PTR)
 {
     // GUARD(STRINGS_LIST::AddString)
     if (_char_PTR == nullptr)
-        throw std::exception("zero string");
+        throw std::runtime_error("zero string");
     const auto hash = MakeHashValue(_char_PTR);
     if (String_Table_PTR == nullptr) // first time
     {
@@ -97,7 +97,7 @@ uint32_t STRINGS_LIST::GetStringCode(const char *_char_PTR)
     /*for(n=0;n<CACHE_SIZE;n++)
     {
       if(Cache[n] == INVALID_ORDINAL_NUMBER) break;
-      if(Cache[n] >= Strings) throw std::exception(cache error);
+      if(Cache[n] >= Strings) throw std::runtime_error(cache error);
       if(hash == *((DWORD *)String_Table_PTR[Cache[n]]))
       {
         //return Cache[n];
@@ -124,7 +124,7 @@ uint32_t STRINGS_LIST::GetStringCode(const char *_char_PTR)
       for(n=0;n<CACHE_SIZE;n++)
       {
         if(Cache[n] == INVALID_ORDINAL_NUMBER) break;
-        if(Cache[n] >= Strings) throw std::exception(cache error);
+        if(Cache[n] >= Strings) throw std::runtime_error(cache error);
         if(_stricmp(String_Table_PTR[Cache[n]] + used_data_size + sizeof(DWORD),_char_PTR) == 0) return Cache[n];
       }
 

@@ -112,7 +112,7 @@ void CXI_KEYCHANGER::SetChoosingControls(ATTRIBUTES *pA)
     m_pbControlsStick = new bool[m_keysQuantity];
     if (m_pControlsID == nullptr || m_pbControlsStick == nullptr)
     {
-        throw std::exception("Allocate memory error");
+        throw std::runtime_error("Allocate memory error");
     }
 
     char contrlName[128];

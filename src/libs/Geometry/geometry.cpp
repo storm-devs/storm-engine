@@ -124,9 +124,9 @@ GEOS *GEOMETRY::CreateGeometry(const char *file_name, const char *light_file_nam
             gp = ::CreateGeometry(fnt, lfn, GSR, flags);
         }
     }
-    catch (const char *ee)
+    catch (const std::exception &e)
     {
-        core.Trace("%s: %s", fnt, ee);
+        core.Trace("%s: %s", fnt, e.what());
         return nullptr;
     }
     catch (...)
@@ -198,7 +198,7 @@ std::fstream GEOM_SERVICE_R::OpenFile(const char *fname)
         }
         else
         {
-            throw "can't open geometry file";
+            throw std::runtime_error("can't open geometry file");
         }
     }
 

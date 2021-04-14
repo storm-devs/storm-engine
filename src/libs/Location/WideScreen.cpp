@@ -35,7 +35,7 @@ bool WideScreen::Init()
     EntityManager::AddToLayer(REALIZE, GetId(), -257);
     rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!rs)
-        throw std::exception("No service: dx9render");
+        throw std::runtime_error("No service: dx9render");
     D3DVIEWPORT9 vp;
     rs->GetViewport(&vp);
     w = static_cast<float>(vp.Width);

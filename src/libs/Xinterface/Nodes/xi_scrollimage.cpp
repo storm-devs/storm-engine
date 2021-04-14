@@ -390,7 +390,7 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
         m_idBadPic = new long[m_nSlotsQnt];
         if (!m_dwCurColor || !m_dwNormalColor || !m_dwSelectColor || !m_pPicOffset || !m_idBadTexture || !m_idBadPic)
         {
-            throw std::exception("allocate memory error");
+            throw std::runtime_error("allocate memory error");
         }
     }
 
@@ -456,7 +456,7 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
             const auto len = strlen(sTechnique) + 1;
             if ((m_sSpecTechniqueName = new char[len]) == nullptr)
             {
-                throw std::exception("Allocate memory error");
+                throw std::runtime_error("Allocate memory error");
             }
             memcpy(m_sSpecTechniqueName, sTechnique, len);
         }
@@ -488,7 +488,7 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
                 m_sGroupName = new char *[m_nGroupQuantity];
                 if (m_nGroupTex == nullptr || m_sGroupName == nullptr)
                 {
-                    throw std::exception("allocate memory error");
+                    throw std::runtime_error("allocate memory error");
                 }
                 for (i = 0; i < m_nGroupQuantity; i++)
                 {
@@ -499,7 +499,7 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
                     m_sGroupName[i] = new char[len];
                     if (m_sGroupName[i] == nullptr)
                     {
-                        throw std::exception("allocate memory error");
+                        throw std::runtime_error("allocate memory error");
                     }
                     memcpy(m_sGroupName[i], stmp, len);
                     m_nGroupTex[i] = pPictureService->GetTextureID(m_sGroupName[i]);
@@ -556,7 +556,7 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
                 if (!m_Image[i].bUseSpecTechnique || !m_Image[i].img || !m_Image[i].ptex || !m_Image[i].saveName ||
                     !m_Image[i].tex)
                 {
-                    throw std::exception("allocate memory error");
+                    throw std::runtime_error("allocate memory error");
                 }
                 for (n = 0; n < m_nSlotsQnt; n++)
                 {
@@ -587,7 +587,7 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
                         const auto len = strlen(sStringName);
                         m_Image[i].string1 = new char[len];
                         if (m_Image[i].string1 == nullptr)
-                            throw std::exception("allocate memory error");
+                            throw std::runtime_error("allocate memory error");
                         memcpy(m_Image[i].string1, &(sStringName[1]), len);
                     }
                     else
@@ -603,7 +603,7 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
                         const auto len = strlen(sStringName);
                         m_Image[i].string2 = new char[len];
                         if (m_Image[i].string2 == nullptr)
-                            throw std::exception("allocate memory error");
+                            throw std::runtime_error("allocate memory error");
                         memcpy(m_Image[i].string2, &(sStringName[1]), len);
                     }
                     else
@@ -621,7 +621,7 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
                         const auto len = strlen(tmpStr) + 1;
                         if ((m_Image[i].saveName[n] = new char[len]) == nullptr)
                         {
-                            throw std::exception("allocate memory error");
+                            throw std::runtime_error("allocate memory error");
                         }
                         memcpy(m_Image[i].saveName[n], tmpStr, len);
                     }
@@ -647,7 +647,7 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
         tmpstr = GetSubStr(param, param1, sizeof(param1));
         const auto len = strlen(param1) + 1;
         if ((m_sBorderGroupName = new char[len]) == nullptr)
-            throw std::exception("allocate memory error");
+            throw std::runtime_error("allocate memory error");
         memcpy(m_sBorderGroupName, param1, len);
         m_texBorder = pPictureService->GetTextureID(m_sBorderGroupName);
         m_nBorderPicture = pPictureService->GetImageNum(m_sBorderGroupName, tmpstr);
@@ -692,7 +692,7 @@ float CXI_SCROLLIMAGE::ChangeDinamicParameters(float fXDelta)
         {
             pScroll = new SCROLLEntity;
             if (pScroll == nullptr)
-                throw std::exception("allocate memory error");
+                throw std::runtime_error("allocate memory error");
 
             if (pPrevScroll == nullptr)
                 m_pScroll = pScroll;
@@ -1089,7 +1089,7 @@ void CXI_SCROLLIMAGE::ChangeScroll(int nScrollItemNum)
                         const auto len = strlen(sStringName);
                         m_Image[i].string1 = new char[len];
                         if (m_Image[i].string1 == nullptr)
-                            throw std::exception("allocate memory error");
+                            throw std::runtime_error("allocate memory error");
                         memcpy(m_Image[i].string1, &(sStringName[1]), len);
                     }
                     else
@@ -1105,7 +1105,7 @@ void CXI_SCROLLIMAGE::ChangeScroll(int nScrollItemNum)
                         const auto len = strlen(sStringName);
                         m_Image[i].string2 = new char[len];
                         if (m_Image[i].string2 == nullptr)
-                            throw std::exception("allocate memory error");
+                            throw std::runtime_error("allocate memory error");
                         memcpy(m_Image[i].string2, &(sStringName[1]), len);
                     }
                     else
@@ -1123,7 +1123,7 @@ void CXI_SCROLLIMAGE::ChangeScroll(int nScrollItemNum)
                         const auto len = strlen(tmpStr) + 1;
                         if ((m_Image[i].saveName[n] = new char[len]) == nullptr)
                         {
-                            throw std::exception("allocate memory error");
+                            throw std::runtime_error("allocate memory error");
                         }
                         memcpy(m_Image[i].saveName[n], tmpStr, len);
                     }
@@ -1171,7 +1171,7 @@ void CXI_SCROLLIMAGE::DeleteImage(int imgNum)
     IMAGEDESCRIBE *pOldImgs = m_Image;
     m_Image = new IMAGEDESCRIBE[m_nListSize];
     if (m_Image == nullptr)
-        throw std::exception("memory allocate error");
+        throw std::runtime_error("memory allocate error");
     if (imgNum > 0)
         memcpy(m_Image, pOldImgs, imgNum * sizeof(IMAGEDESCRIBE));
     if (imgNum < m_nListSize)
@@ -1246,7 +1246,7 @@ void CXI_SCROLLIMAGE::RefreshScroll()
             const auto len = strlen(sTechnique) + 1;
             if ((m_sSpecTechniqueName = new char[len]) == nullptr)
             {
-                throw std::exception("Allocate memory error");
+                throw std::runtime_error("Allocate memory error");
             }
             memcpy(m_sSpecTechniqueName, sTechnique, len);
         }
@@ -1280,7 +1280,7 @@ void CXI_SCROLLIMAGE::RefreshScroll()
                 m_sGroupName = new char *[m_nGroupQuantity];
                 if (m_nGroupTex == nullptr || m_sGroupName == nullptr)
                 {
-                    throw std::exception("allocate memory error");
+                    throw std::runtime_error("allocate memory error");
                 }
                 for (i = 0; i < m_nGroupQuantity; i++)
                 {
@@ -1291,7 +1291,7 @@ void CXI_SCROLLIMAGE::RefreshScroll()
                     m_sGroupName[i] = new char[len];
                     if (m_sGroupName[i] == nullptr)
                     {
-                        throw std::exception("allocate memory error");
+                        throw std::runtime_error("allocate memory error");
                     }
                     memcpy(m_sGroupName[i], stmp, len);
                     m_nGroupTex[i] = pPictureService->GetTextureID(m_sGroupName[i]);
@@ -1348,7 +1348,7 @@ void CXI_SCROLLIMAGE::RefreshScroll()
                 if (!m_Image[i].bUseSpecTechnique || !m_Image[i].img || !m_Image[i].ptex || !m_Image[i].saveName ||
                     !m_Image[i].tex)
                 {
-                    throw std::exception("allocate memory error");
+                    throw std::runtime_error("allocate memory error");
                 }
                 for (n = 0; n < m_nSlotsQnt; n++)
                 {
@@ -1379,7 +1379,7 @@ void CXI_SCROLLIMAGE::RefreshScroll()
                         const auto len = strlen(sStringName);
                         m_Image[i].string1 = new char[len];
                         if (m_Image[i].string1 == nullptr)
-                            throw std::exception("allocate memory error");
+                            throw std::runtime_error("allocate memory error");
                         memcpy(m_Image[i].string1, &(sStringName[1]), len);
                     }
                     else
@@ -1395,7 +1395,7 @@ void CXI_SCROLLIMAGE::RefreshScroll()
                         const auto len = strlen(sStringName);
                         m_Image[i].string2 = new char[len];
                         if (m_Image[i].string2 == nullptr)
-                            throw std::exception("allocate memory error");
+                            throw std::runtime_error("allocate memory error");
                         memcpy(m_Image[i].string2, &(sStringName[1]), len);
                     }
                     else
@@ -1413,7 +1413,7 @@ void CXI_SCROLLIMAGE::RefreshScroll()
                         const auto len = strlen(tmpStr) + 1;
                         if ((m_Image[i].saveName[n] = new char[len]) == nullptr)
                         {
-                            throw std::exception("allocate memory error");
+                            throw std::runtime_error("allocate memory error");
                         }
                         memcpy(m_Image[i].saveName[n], tmpStr, len);
                     }
@@ -1626,7 +1626,7 @@ void CXI_SCROLLIMAGE::UpdateTexturesGroup()
             m_sGroupName = new char *[m_nGroupQuantity];
             if (m_nGroupTex == nullptr || m_sGroupName == nullptr)
             {
-                throw std::exception("allocate memory error");
+                throw std::runtime_error("allocate memory error");
             }
             for (i = 0; i < m_nGroupQuantity; i++)
             {
@@ -1652,7 +1652,7 @@ void CXI_SCROLLIMAGE::UpdateTexturesGroup()
                     m_sGroupName[i] = new char[len];
                     if (m_sGroupName[i] == nullptr)
                     {
-                        throw std::exception("allocate memory error");
+                        throw std::runtime_error("allocate memory error");
                     }
                     memcpy(m_sGroupName[i], stmp, len);
                     m_nGroupTex[i] = pPictureService->GetTextureID(m_sGroupName[i]);

@@ -56,10 +56,10 @@ bool CharacterAnimationKipper::Init()
 
     rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!rs)
-        throw std::exception("No service: dx9render");
+        throw std::runtime_error("No service: dx9render");
     auto *asr = static_cast<AnimationService *>(core.CreateService("AnimationServiceImp"));
     if (!asr)
-        throw std::exception("Anumation service not created!");
+        throw std::runtime_error("Anumation service not created!");
     aniMan = asr->CreateAnimation("man");
     aniWoman = asr->CreateAnimation("towngirl");
     // LockTexture("dialog\dialog.tga");

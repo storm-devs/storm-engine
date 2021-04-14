@@ -31,7 +31,7 @@ bool ActivePerkShower::Init()
 {
     if ((rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"))) == nullptr)
     {
-        throw std::exception("Can`t create render service");
+        throw std::runtime_error("Can`t create render service");
     }
 
     if (AttributesPointer == nullptr)
@@ -107,7 +107,7 @@ bool ActivePerkShower::CreateTextures(ATTRIBUTES *pATextureRoot)
     m_pTexDescr = new _TEXTURE_DESCR[q];
     if (m_pTexDescr == nullptr)
     {
-        throw std::exception("allocate memory error");
+        throw std::runtime_error("allocate memory error");
     }
 
     for (auto i = 0; i < q; i++)
@@ -194,7 +194,7 @@ void ActivePerkShower::RefreshShowPlaces(ATTRIBUTES *pAPlacesRoot)
     m_pShowPlaces = new _SHOW_PLACE[m_nShowPlaceQ];
     if (m_pShowPlaces == nullptr)
     {
-        throw std::exception("allocate memory error");
+        throw std::runtime_error("allocate memory error");
     }
 
     for (auto ih = 0; ih < nHorzQ; ih++)
@@ -222,7 +222,7 @@ bool ActivePerkShower::InitIconsList(ATTRIBUTES *pAIconsRoot)
     m_pIconsList = new _PICTURE_DESCR[q];
     if (m_pIconsList == nullptr)
     {
-        throw std::exception("allocate memory error");
+        throw std::runtime_error("allocate memory error");
     }
     for (auto i = 0; i < q; i++)
     {
@@ -273,7 +273,7 @@ void ActivePerkShower::AddIconToList(ATTRIBUTES *pAItemDescr)
     }
     if (m_pIconsList == nullptr)
     {
-        throw std::exception("allocate memory error");
+        throw std::runtime_error("allocate memory error");
     }
     m_pIconsList[m_nIShowQ - 1].m_nPicTexIdx = texNum;
     m_pIconsList[m_nIShowQ - 1].m_nPicNum = picNum;

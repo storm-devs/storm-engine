@@ -279,7 +279,7 @@ void CXI_QUESTTITLE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, co
         m_iconGroupName = new char[len];
         if (m_iconGroupName == nullptr)
         {
-            throw std::exception("allocate memory error");
+            throw std::runtime_error("allocate memory error");
         }
         memcpy(m_iconGroupName, param, len);
     }
@@ -349,7 +349,7 @@ void CXI_QUESTTITLE::SetNewTopQuest(ATTRIBUTES *pA, int topNum)
             return;
         if ((m_strList = new STRING_DESCRIBER[m_stringQuantity]) == nullptr)
         {
-            throw std::exception("allocate memory error");
+            throw std::runtime_error("allocate memory error");
         }
         // and filling these strings
         auto lineNum = 0;

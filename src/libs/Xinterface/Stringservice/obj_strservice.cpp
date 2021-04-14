@@ -18,7 +18,7 @@ bool OBJ_STRSERVICE::Init()
 {
     m_pStrService = static_cast<VSTRSERVICE *>(core.CreateService("STRSERVICE"));
     if (!m_pStrService)
-        throw std::exception("No service: strservice");
+        throw std::runtime_error("No service: strservice");
 
     return true;
 }

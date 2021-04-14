@@ -11,7 +11,7 @@ CXI_ToolTip::CXI_ToolTip(VXSERVICE *pPicService, VSTRSERVICE *pStrService, XYPOI
     m_rs = XINTERFACE::GetRenderService();
     if (!m_rs)
     {
-        throw std::exception("No service: dx9render");
+        throw std::runtime_error("No service: dx9render");
     }
 
     m_nTextureID = -1;

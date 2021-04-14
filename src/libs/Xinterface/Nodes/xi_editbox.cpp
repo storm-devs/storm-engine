@@ -441,7 +441,7 @@ void CXI_EDITBOX::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const
                                       D3DUSAGE_WRITEONLY);
     m_idIB = m_rs->CreateIndexBuffer(m_nAlphaQuantity * 6 * sizeof(uint16_t));
     if (m_idVBRect == -1 || m_idVB == -1 || m_idIB == -1)
-        throw std::exception("Can't create buffers");
+        throw std::runtime_error("Can't create buffers");
 
     // fills this buffers
     const auto fBottomOff = static_cast<float>(m_nTopOffset);

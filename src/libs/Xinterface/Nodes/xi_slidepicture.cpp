@@ -89,7 +89,7 @@ void CXI_SLIDEPICTURE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
             strTechniqueName = new char[len];
             if (strTechniqueName == nullptr)
             {
-                throw std::exception("allocate memory error");
+                throw std::runtime_error("allocate memory error");
             }
             memcpy(strTechniqueName, param, len);
         }
@@ -160,7 +160,7 @@ void CXI_SLIDEPICTURE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
         pSlideSpeedList = new SLIDE_SPEED[nSlideListSize];
         if (pSlideSpeedList == nullptr)
         {
-            throw std::exception("allocate memory error");
+            throw std::runtime_error("allocate memory error");
         }
     }
 

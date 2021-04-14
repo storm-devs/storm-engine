@@ -340,7 +340,7 @@ void NODER::RestoreGeometry()
     gs->SetTexturePath(ttPath);
     delete[] ttPath;
     if (!geo)
-        throw "No geometry";
+        throw std::runtime_error("No geometry");
 
     isReleaed = false;
     for (long i = 0; i < nnext; i++)

@@ -332,7 +332,7 @@ void CXI_FOURIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, con
             m_sGroupName = new char *[m_nTexturesQuantity];
             if (m_sGroupName == nullptr || m_nTextureId == nullptr)
             {
-                throw std::exception("Allocate memory error");
+                throw std::runtime_error("Allocate memory error");
             }
             for (i = 0; i < m_nTexturesQuantity; i++)
             {
@@ -344,7 +344,7 @@ void CXI_FOURIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, con
                     const auto len = strlen(stmp) + 1;
                     if ((m_sGroupName[i] = new char[len]) == nullptr)
                     {
-                        throw std::exception("Allocate memory error");
+                        throw std::runtime_error("Allocate memory error");
                     }
                     memcpy(m_sGroupName[i], stmp, len);
                 }
@@ -377,7 +377,7 @@ void CXI_FOURIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, con
                 {
                     const auto len = strlen(tmps);
                     if ((m_pOneStr[i] = new char[len]) == nullptr)
-                        throw std::exception("allocate memory error");
+                        throw std::runtime_error("allocate memory error");
                     memcpy(m_pOneStr[i], &tmps[1], len);
                     m_oneStr[i] = -1L;
                 }
@@ -391,7 +391,7 @@ void CXI_FOURIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, con
                 {
                     const auto len = strlen(tmps);
                     if ((m_pTwoStr[i] = new char[len]) == nullptr)
-                        throw std::exception("allocate memory error");
+                        throw std::runtime_error("allocate memory error");
                     memcpy(m_pTwoStr[i], &tmps[1], len);
                     m_twoStr[i] = -1L;
                 }
@@ -435,7 +435,7 @@ void CXI_FOURIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, con
     {
         tmpstr = GetSubStr(param, param1, sizeof(param1));
         if ((m_sBorderGroupName = new char[sizeof param1]) == nullptr)
-            throw std::exception("allocate memory error");
+            throw std::runtime_error("allocate memory error");
         strcpy_s(m_sBorderGroupName, sizeof param1, param1);
         m_texBorder = pPictureService->GetTextureID(m_sBorderGroupName);
         m_nBorderPicture = pPictureService->GetImageNum(m_sBorderGroupName, tmpstr);
@@ -744,7 +744,7 @@ void CXI_FOURIMAGE::ChangeItem(int nItemNum)
                     const auto len = strlen(sptr);
                     if ((m_pOneStr[i] = new char[len]) == nullptr)
                     {
-                        throw std::exception("allocate memory error");
+                        throw std::runtime_error("allocate memory error");
                     }
                     memcpy(m_pOneStr[i], &sptr[1], len);
                 }
@@ -757,7 +757,7 @@ void CXI_FOURIMAGE::ChangeItem(int nItemNum)
                     const auto len = strlen(sptr);
                     if ((m_pTwoStr[i] = new char[len]) == nullptr)
                     {
-                        throw std::exception("allocate memory error");
+                        throw std::runtime_error("allocate memory error");
                     }
                     memcpy(m_pTwoStr[i], &sptr[1], len);
                 }

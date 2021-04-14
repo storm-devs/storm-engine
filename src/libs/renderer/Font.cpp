@@ -70,7 +70,7 @@ bool FONT::MakeLong(char **pDataPointer, long *result)
         }
         index++;
         if (index > 8)
-            throw std::exception("inf loop");
+            throw std::runtime_error("inf loop");
     }
     return false;
 }
@@ -111,14 +111,14 @@ bool FONT::Init(const char *font_name, const char *iniName, IDirect3DDevice9 *_d
     {
         const auto len = strlen(buffer) + 1;
         if ((textureName = new char[len]) == nullptr)
-            throw std::exception("allocate memory error");
+            throw std::runtime_error("allocate memory error");
         strcpy_s(textureName, len, buffer);
     }
     if (ini->ReadString(font_name, "Techniques", buffer, sizeof(buffer) - 1, ""))
     {
         const auto len = strlen(buffer) + 1;
         if ((techniqueName = new char[len]) == nullptr)
-            throw std::exception("allocate memory error");
+            throw std::runtime_error("allocate memory error");
         strcpy_s(techniqueName, len, buffer);
     }
     Texture_XSize = ini->GetLong(font_name, "Texture_xsize", 1);
@@ -150,21 +150,21 @@ bool FONT::Init(const char *font_name, const char *iniName, IDirect3DDevice9 *_d
             continue;
         pData = buffer;
         if (!MakeLong(&pData, &ltmp))
-            throw std::exception("invalid font record");
+            throw std::runtime_error("invalid font record");
         CharT[codepoint].Pos.x1 = 0;
         CharT[codepoint].Tuv.x1 = static_cast<float>(ltmp + .5f) / static_cast<float>(Texture_XSize);
         if (!MakeLong(&pData, &ltmp))
-            throw std::exception("invalid font record");
+            throw std::runtime_error("invalid font record");
         CharT[codepoint].Pos.y1 = 0.f;
         CharT[codepoint].Tuv.y1 = static_cast<float>(ltmp + .5f) / static_cast<float>(Texture_YSize);
 
         if (!MakeLong(&pData, &ltmp))
-            throw std::exception("invalid font record");
+            throw std::runtime_error("invalid font record");
         CharT[codepoint].Pos.x2 = static_cast<float>(static_cast<long>(ltmp * m_fAspectRatioH));
         CharT[codepoint].Tuv.x2 =
             CharT[codepoint].Tuv.x1 + static_cast<float>(ltmp - 1.f) / static_cast<float>(Texture_XSize);
         if (!MakeLong(&pData, &ltmp))
-            throw std::exception("invalid font record");
+            throw std::runtime_error("invalid font record");
         CharT[codepoint].Pos.y1 = static_cast<float>(Height - static_cast<long>(ltmp * m_fAspectRatioV));
         CharT[codepoint].Pos.y2 = static_cast<float>(Height); //((long)(ltmp*m_fAspectRatioV));
         CharT[codepoint].Tuv.y2 =
@@ -179,7 +179,7 @@ bool FONT::Init(const char *font_name, const char *iniName, IDirect3DDevice9 *_d
     Device->CreateVertexBuffer(sizeof(IMAGE_VERTEX) * MAX_SYMBOLS * SYM_VERTEXS, D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY,
                                IMAGE_FVF, D3DPOOL_SYSTEMMEM, &VBuffer, nullptr);
     if (VBuffer == nullptr)
-        throw std::exception("vbuffer error");
+        throw std::runtime_error("vbuffer error");
     VBuffer->Lock(0, sizeof(IMAGE_VERTEX) * MAX_SYMBOLS * SYM_VERTEXS, (VOID **)&pVertex, 0);
     for (codepoint = 0; codepoint < MAX_SYMBOLS * SYM_VERTEXS; codepoint++)
     {

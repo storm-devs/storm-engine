@@ -42,7 +42,7 @@ void TFishSchools::Init()
 
     renderService = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!renderService)
-        throw std::exception("!FishSchools: No service 'dx9render'");
+        throw std::runtime_error("!FishSchools: No service 'dx9render'");
 
     sea = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(EntityManager::GetEntityId("sea")));
     if (!sea)

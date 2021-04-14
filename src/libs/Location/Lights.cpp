@@ -52,7 +52,7 @@ bool Lights::Init()
     // DX9 render
     rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!rs)
-        throw std::exception("No service: dx9render");
+        throw std::runtime_error("No service: dx9render");
     collide = static_cast<COLLIDE *>(core.CreateService("COLL"));
     // read the parameters
     auto ini = fio->OpenIniFile("RESOURCE\\Ini\\lights.ini");

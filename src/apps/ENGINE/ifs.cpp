@@ -39,7 +39,7 @@ void KEY_NODE::SetName(const char *name)
 
     key_name = new char[name_size];
     if (key_name == nullptr)
-        throw std::exception();
+        throw std::runtime_error("Failed to allocate memory");
     strcpy_s(key_name, name_size, name);
 }
 
@@ -53,7 +53,7 @@ void KEY_NODE::SetValue(const char *value)
 
     key_val = new char[val_size];
     if (key_val == nullptr)
-        throw std::exception();
+        throw std::runtime_error("Failed to allocate memory");
     strcpy_s(key_val, val_size, value);
 }
 
@@ -107,7 +107,7 @@ void KEY_NODE::Add(KEY_NODE **Root, KEY_NODE **Top)
 void KEY_NODE::AttachTo(KEY_NODE *node, KEY_NODE **Top)
 {
     if (node == nullptr)
-        throw "invalid node";
+        throw std::runtime_error("invalid node");
     // save right node for object
     auto *RNode = node->GetRightNode();
     // attach this node
@@ -176,7 +176,7 @@ void SECTION::SetName(const char *name)
         const auto len = strlen(name) + 1;
         Name = new char[len];
         if (Name == nullptr)
-            throw std::exception();
+            throw std::runtime_error("Failed to allocate memory");
         strcpy_s(Name, len, name);
     }
 }
@@ -190,7 +190,7 @@ KEY_NODE *SECTION::AddNode()
 {
     auto *node = new KEY_NODE;
     if (node == nullptr)
-        throw "node creation error";
+        throw std::runtime_error("node creation error");
     node->Add(&Root, &Top);
     return node;
 }
@@ -484,7 +484,7 @@ void IFS::Format(char *file_data, long file_size)
 
             auto *node = Current_Section->AddNode();
             // node = new KEY_NODE;
-            // if(node == 0) throw "node creation error";
+            // if(node == 0) throw std::runtime_error("node creation error");
             // node->Add(&Root,&Top);
 
             if (data_PTR[i] == COMMENT)
@@ -564,7 +564,7 @@ bool IFS::FlushFile()
     if (!fileS.is_open())
     {
         /*trace("file: (%s)",FileName);*/
-        throw std::exception("cant create file");
+        throw std::runtime_error("cant create file");
     }
 
     // node = Root;
@@ -578,26 +578,26 @@ bool IFS::FlushFile()
             buff[0] = SECTION_A;
             if (!fs->_WriteFile(fileS, buff, 1))
             {
-                throw std::exception();
+                throw std::runtime_error("Failed to write to file");
             }
 
             write_size = strlen(section_node->GetName());
             if (!fs->_WriteFile(fileS, section_node->GetName(), write_size))
             {
-                throw std::exception();
+                throw std::runtime_error("Failed to write to file");
             }
 
             buff[0] = SECTION_B;
             if (!fs->_WriteFile(fileS, buff, 1))
             {
-                throw std::exception();
+                throw std::runtime_error("Failed to write to file");
             }
 
             buff[0] = INI_LINEFEED[0];
             buff[1] = INI_LINEFEED[1];
             if (!fs->_WriteFile(fileS, buff, 2))
             {
-                throw std::exception();
+                throw std::runtime_error("Failed to write to file");
             }
         }
 
@@ -611,13 +611,13 @@ bool IFS::FlushFile()
                 write_size = strlen(node->GetName());
                 if (!fs->_WriteFile(fileS, node->GetName(), write_size))
                 {
-                    throw std::exception();
+                    throw std::runtime_error("Failed to write to file");
                 }
                 buff[0] = INI_LINEFEED[0];
                 buff[1] = INI_LINEFEED[1];
                 if (fs->_WriteFile(fileS, buff, 2))
                 {
-                    throw std::exception();
+                    throw std::runtime_error("Failed to write to file");
                 }
             }
             else if (flags & KNF_KEY)
@@ -626,38 +626,38 @@ bool IFS::FlushFile()
                 write_size = strlen(node->GetName());
                 if (!fs->_WriteFile(fileS, node->GetName(), write_size))
                 {
-                    throw std::exception();
+                    throw std::runtime_error("Failed to write to file");
                 }
                 if (node->GetValue() != nullptr)
                 {
                     if (!fs->_WriteFile(fileS, &INI_VOIDSYMS[0], 1))
                     {
-                        throw std::exception();
+                        throw std::runtime_error("Failed to write to file");
                     }
                     buff[0] = INI_EQUAL;
                     if (!fs->_WriteFile(fileS, buff, 1))
                     {
-                        throw std::exception();
+                        throw std::runtime_error("Failed to write to file");
                     }
                     if (!fs->_WriteFile(fileS, &INI_VOIDSYMS[0], 1))
                     {
-                        throw std::exception();
+                        throw std::runtime_error("Failed to write to file");
                     }
                     write_size = strlen(node->GetValue());
                     if (!fs->_WriteFile(fileS, node->GetValue(), write_size))
                     {
-                        throw std::exception();
+                        throw std::runtime_error("Failed to write to file");
                     }
                 }
                 buff[0] = INI_LINEFEED[0];
                 buff[1] = INI_LINEFEED[1];
                 if (!fs->_WriteFile(fileS, buff, 2))
                 {
-                    throw std::exception();
+                    throw std::runtime_error("Failed to write to file");
                 }
             }
             else
-                throw "invalid key flag";
+                throw std::runtime_error("invalid key flag");
             node = node->GetRightNode();
         }
         section_node = section_node->GetRightNode();
@@ -666,7 +666,7 @@ bool IFS::FlushFile()
         buff[1] = INI_LINEFEED[1];
         if (!fs->_WriteFile(fileS, buff, 2))
         {
-            throw std::exception();
+            throw std::runtime_error("Failed to write to file");
         }
     }
 
@@ -777,7 +777,7 @@ SECTION *IFS::CreateSection(const char *section_name)
 
     node = new SECTION;
     if (node == nullptr)
-        throw "section creation error";
+        throw std::runtime_error("section creation error");
     node->Add(&SectionRoot, &SectionTop);
     node->SetName(section_name);
     bDataChanged = true;
@@ -854,7 +854,7 @@ bool IFS::ReadString(SEARCH_DATA *sd, const char *section_name, const char *key_
             core.Trace("Warning! IniFile Read String: section=%s, key=%s", section_name, key_name);
             if (buffer)
                 buffer[0] = 0;
-            // throw std::exception(string not found);
+            // throw std::runtime_error(string not found);
         }
         else if (buffer)
             strcpy_s(buffer, buffer_size, def_string);
@@ -865,19 +865,19 @@ bool IFS::ReadString(SEARCH_DATA *sd, const char *section_name, const char *key_
     sd->Section = FindSection(section_name);
 
     if (buffer == nullptr)
-        throw std::exception("zero buffer");
+        throw std::runtime_error("zero buffer");
     auto *const char_PTR = node->GetValue();
     if (char_PTR == nullptr)
     {
         if (def_string == nullptr)
-            throw std::exception("no key value");
+            throw std::runtime_error("no key value");
         strcpy_s(buffer, buffer_size, def_string);
         return false;
     }
 
     uint32_t write_size = strlen(char_PTR) + 1;
-    // if(write_size > buffer_size) throw std::exception(buffer size too small); // commented out because it didn't let
-    // to load new ani
+    // commented out because it didn't let to load new ani
+    // if(write_size > buffer_size) throw std::runtime_error(buffer size too small);
 
     strcpy_s(buffer, buffer_size, node->GetValue());
     return true;
@@ -902,19 +902,19 @@ bool IFS::ReadStringNext(SEARCH_DATA *sd, const char *section_name, const char *
             if (_stricmp(node->GetName(), key_name) == 0)
             {
                 if (buffer == nullptr)
-                    throw std::exception("zero buffer");
+                    throw std::runtime_error("zero buffer");
 
                 auto *const char_PTR = node->GetValue();
                 if (char_PTR == nullptr)
                 {
                     buffer[0] = 0;
                     return true;
-                    // throw std::exception(no key value);
+                    // throw std::runtime_error(no key value);
                 }
 
                 const uint32_t write_size = strlen(char_PTR) + 1;
                 if (write_size > buffer_size)
-                    throw std::exception("buffer size too small");
+                    throw std::runtime_error("buffer size too small");
 
                 strcpy_s(buffer, buffer_size, node->GetValue());
                 sd->Key = node;
@@ -1012,13 +1012,13 @@ bool IFS::GetFloatNext(SEARCH_DATA *sd, const char *section_name, const char *ke
 void IFS::AddString(const char *section_name, const char *key_name, const char *string)
 {
     if (key_name == nullptr)
-        throw std::exception("zero key");
+        throw std::runtime_error("zero key");
     auto *snode = FindSection(section_name);
     if (snode == nullptr)
         CreateSection(section_name);
     snode = FindSection(section_name);
     if (snode == nullptr)
-        throw std::exception("section create error");
+        throw std::runtime_error("section create error");
 
     auto *node = snode->AddNode();
     node->SetName(key_name);
@@ -1031,11 +1031,11 @@ void IFS::AddString(const char *section_name, const char *key_name, const char *
 void IFS::WriteString(const char *section_name, const char *key_name, const char *string)
 {
     if (string == nullptr)
-        throw std::exception("zero key value");
+        throw std::runtime_error("zero key value");
 
     auto *snode = CreateSection(section_name);
     if (snode == nullptr)
-        throw std::exception("section create error");
+        throw std::runtime_error("section create error");
     auto *node = snode->FindKey(key_name);
     if (node != nullptr)
     {
@@ -1092,10 +1092,10 @@ bool IFS::GetSectionName(char *section_name_buffer, long buffer_size)
         return false;
 
     if (section_name_buffer == nullptr)
-        throw "zero buffer";
+        throw std::runtime_error("zero buffer");
     const long len = strlen(node->GetName());
     if (len > buffer_size)
-        throw "buffer too small";
+        throw std::runtime_error("buffer too small");
     strcpy_s(section_name_buffer, buffer_size, node->GetName());
     SectionSNode = node;
     return true;
@@ -1106,7 +1106,7 @@ bool IFS::GetSectionNameNext(char *section_name_buffer, long buffer_size)
     if (SectionRoot == nullptr)
         return false;
     if (section_name_buffer == nullptr)
-        throw "zero buffer";
+        throw std::runtime_error("zero buffer");
     auto *node = SectionRoot;
     while (node)
     {
@@ -1120,7 +1120,7 @@ bool IFS::GetSectionNameNext(char *section_name_buffer, long buffer_size)
             }
             const long len = strlen(node->GetName());
             if (len > buffer_size)
-                throw "buffer too small";
+                throw std::runtime_error("buffer too small");
             strcpy_s(section_name_buffer, buffer_size, node->GetName());
             SectionSNode = node;
             return true;

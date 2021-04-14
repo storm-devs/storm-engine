@@ -44,7 +44,7 @@ bool ILogAndActions::Init()
 {
     if ((rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"))) == nullptr)
     {
-        throw std::exception("Can`t create render service");
+        throw std::runtime_error("Can`t create render service");
     }
     D3DVIEWPORT9 vp;
     rs->GetViewport(&vp);
@@ -125,7 +125,7 @@ uint64_t ILogAndActions::ProcessMessage(MESSAGE &message)
                     const auto len = strlen(param) + 1;
                     if ((last->str = new char[len]) == nullptr)
                     {
-                        throw std::exception("allocate memory error");
+                        throw std::runtime_error("allocate memory error");
                     }
                     strcpy_s(last->str, len, param);
                 }
@@ -438,7 +438,7 @@ void ILogAndActions::SetString(char *str, bool immortal)
     auto *newDescr = new STRING_DESCR;
     if (newDescr == nullptr)
     {
-        throw std::exception("Allocate memory error");
+        throw std::runtime_error("Allocate memory error");
     }
     // it will be the last on the list
     newDescr->next = nullptr;
@@ -446,7 +446,7 @@ void ILogAndActions::SetString(char *str, bool immortal)
     const auto len = strlen(str) + 1;
     if ((newDescr->str = new char[len]) == nullptr)
     {
-        throw std::exception("Allocate memory error");
+        throw std::runtime_error("Allocate memory error");
     }
     strcpy_s(newDescr->str, len, str);
     // set the maximum visibility
