@@ -57,6 +57,8 @@ Below are the functions which make part of the compiler API. Each function has i
         SetTimeScale(0.0);
     ```
 
+NOTE(yakvi): Below is work-in-progress
+
 * **Rand**
     * **Compiler Token**: `FUNC_RAND`
     ``` C++
