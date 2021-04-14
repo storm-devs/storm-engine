@@ -42,7 +42,7 @@ The following list is sorted alphabetically and is based on the latest build of 
 
 ## Runtime
 
-The goes through the following phases during script execution: 
+The game goes through the following phases: 
 
 * Upon startup, each file is analyzed and compiled into a single translation unit (`COMPILER::Compile`).
 * During the game runtime, compiler will analyze each token and act upon it by introducing new tokens, updating existing, or removing old ones. This way the program will ebb and flow until it reaches its exit code (`COMPILER::BC_Execute`).
