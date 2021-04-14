@@ -37,8 +37,7 @@ try
     std::signal(SIGABRT, [](int) {
         // its pointless to log here since no unwinding will happen after _Exit()
         EXCEPTION_POINTERS ep;
-        storm::except::get_exception_pointers(ep);
-        CreateMiniDump(&ep);
+        CreateMiniDump(storm::except::get_exception_pointers(ep));
         std::_Exit(EXIT_FAILURE);
     });
 
@@ -147,7 +146,6 @@ try
     /* Message loop */
     auto dwOldTime = GetTickCount();
     MSG msg;
-
     while (true)
     {
         if (PeekMessage(&msg, nullptr, 0U, 0U, PM_REMOVE))
@@ -191,19 +189,23 @@ try
 }
 catch (const storm::except::system_exception &e)
 {
-    spdlog::critical(std::string("Caught unhandled system exception: ") + e.what());
     CreateMiniDump(e.get_exception_pointers());
+    spdlog::critical(std::string("Caught unhandled system exception: ") + e.what());
     storm::except::debug_break();
     return EXIT_FAILURE;
 }
 catch (const std::exception &e)
 {
+    EXCEPTION_POINTERS ep;
+    CreateMiniDump(storm::except::get_exception_pointers(ep));
     spdlog::critical(std::string("Caught unhandled C++ exception: ") + e.what());
     storm::except::debug_break();
     return EXIT_FAILURE;
 }
 catch (...)
 {
+    EXCEPTION_POINTERS ep;
+    CreateMiniDump(storm::except::get_exception_pointers(ep));
     spdlog::critical("Caught unknown exception!");
     storm::except::debug_break();
     return EXIT_FAILURE;

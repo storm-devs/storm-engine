@@ -2,6 +2,10 @@ project(engine)
 
 find_package(Fmod REQUIRED) # required to set ${Fmod_LIBRARY_PATHS}
 
+if(WIN32)
+    add_definitions("/EHa")
+endif()
+
 add_executable(${PROJECT_NAME} WIN32
     compiler.cpp
     compiler.h

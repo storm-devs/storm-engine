@@ -150,7 +150,7 @@ class scoped_exception_guard
     const _se_translator_function original_translator_;
 };
 
-inline void get_exception_pointers(EXCEPTION_POINTERS &ep)
+inline auto *get_exception_pointers(EXCEPTION_POINTERS &ep)
 {
     // The following code was taken from VC++ 8.0 CRT (invarg.c: line 104)
     CONTEXT ContextRecord;
@@ -207,6 +207,8 @@ inline void get_exception_pointers(EXCEPTION_POINTERS &ep)
 
     ep.ExceptionRecord = pExceptionRecord;
     ep.ContextRecord = pContextRecord;
+
+    return &ep;
 }
 
 #else
