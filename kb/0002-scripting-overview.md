@@ -40,6 +40,13 @@ The following list is sorted alphabetically and is based on the latest build of 
 * `program\weather\` - weather system definitions and usage.
 * `program\worldMap\` - everything world map related.
 
+## Runtime
+
+The goes through the following phases during script execution: 
+
+* Upon startup, each file is analyzed and compiled into a single translation unit (`COMPILER::Compile`).
+* During the game runtime, compiler will analyze each token and act upon it by introducing new tokens, updating existing, or removing old ones. This way the program will ebb and flow until it reaches its exit code (`COMPILER::BC_Execute`).
+
 ## Typing
 
 In order to be compiled, the scripting files should contain good C-like code. This also means that the variables should be strongly typed. Commonly used are base C types: `int`, `float`, but also `bool` and a simple to use `string`. Any custom structs are supported in the form of `object`s. 
