@@ -6,6 +6,10 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # Setup third-party dependencies
 include(conan)
+conan_add_remote(NAME bincrafters
+    URL https://api.bintray.com/conan/bincrafters/public-conan
+    VERIFY_SSL True
+)
 conan_cmake_run(CONANFILE conanfile.txt
     BASIC_SETUP CMAKE_TARGETS
     BUILD missing

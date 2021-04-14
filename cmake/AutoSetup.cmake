@@ -45,9 +45,11 @@ function(auto_setup_library LIBRARY_NAME)
             $<BUILD_INTERFACE:${LIBRARY_INCLUDE_DIRECTORY}>
             )
 
-    set_target_properties(${LIBRARY_NAME} PROPERTIES OUTPUT_NAME ${PARAM_NAMESPACE}${LIBRARY_NAME})
-    set_target_properties(${LIBRARY_NAME} PROPERTIES DEBUG_POSTFIX d)
-    set_target_properties(${LIBRARY_NAME} PROPERTIES CXX_STANDARD 20)
+    set_target_properties(${LIBRARY_NAME} PROPERTIES 
+        OUTPUT_NAME ${PARAM_NAMESPACE}${LIBRARY_NAME}
+        PROPERTY DEBUG_POSTFIX d
+        PROPERTY CXX_STANDARD 20
+    )
 
 
     install(TARGETS ${LIBRARY_NAME} DESTINATION lib)
