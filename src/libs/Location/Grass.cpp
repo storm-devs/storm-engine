@@ -238,7 +238,7 @@ bool Grass::LoadData(const char *patchName)
             }
         }
     }
-    catch (const std::exception& e)
+    catch (const std::exception &e)
     {
         core.Trace("Grass: incorrect grs file %s (%s)", patchName, e.what());
         delete miniMap;
