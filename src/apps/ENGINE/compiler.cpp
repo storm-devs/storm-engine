@@ -20,7 +20,7 @@
 
 // extern char * FuncNameTable[];
 extern INTFUNCDESC IntFuncTable[];
-extern S_DEBUG * pCDebug;
+extern S_DEBUG *pCDebug;
 extern uint32_t dwNumberScriptCommandsExecuted;
 
 COMPILER::COMPILER()
@@ -6497,7 +6497,7 @@ void COMPILER::SaveVariable(DATA *pV, bool bdim)
             pA = TraceARoot(pV->AttributesClass, pString);
         }
         // TODO: find another solution
-        catch (const storm::except::system_exception&)
+        catch (const storm::except::system_exception &)
         {
             SetError("Save - ARef to non existing attributes branch");
             WriteVDword(0xffffffff);

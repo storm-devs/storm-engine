@@ -14,7 +14,7 @@ const wchar_t *DClass = L"SEDebug";
 #define DBGWIN_WIDTH 900
 #define DBGWIN_HEIGHT 600
 
-extern S_DEBUG * pCDebug;
+extern S_DEBUG *pCDebug;
 char filefilter[256] = {"Script file\0 *.c\0Any file\0*.*\0\0"};
 
 DWORD WINAPI BackgroundThreadProc(LPVOID lpParameter)

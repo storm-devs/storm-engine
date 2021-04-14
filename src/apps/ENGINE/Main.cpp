@@ -1,13 +1,13 @@
 #include "SteamApi.hpp"
 #include "compiler.h"
+#include "exceptions.hpp"
 #include "file_service.h"
 #include "fs.h"
 #include "s_debug.h"
-#include "exceptions.hpp"
 
+#include <DbgHelp.h>
 #include <crtdbg.h>
 #include <csignal>
-#include <DbgHelp.h>
 #include <tchar.h>
 
 #include <spdlog/sinks/basic_file_sink.h>
@@ -29,11 +29,12 @@ bool bActive = false;
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 void CreateMiniDump(PEXCEPTION_POINTERS ep);
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow) try
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
+try
 {
     const storm::except::scoped_exception_guard exception_guard;
     static_cast<void>(exception_guard);
-    std::signal(SIGABRT, [] (int) {
+    std::signal(SIGABRT, [](int) {
         // its pointless to log here since no unwinding will happen after _Exit()
         EXCEPTION_POINTERS ep;
         storm::except::get_exception_pointers(ep);
@@ -188,16 +189,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
 
     return msg.wParam;
 }
-catch (const storm::except::system_exception &e) {
+catch (const storm::except::system_exception &e)
+{
     spdlog::critical(std::string("Caught unhandled system exception: ") + e.what());
     CreateMiniDump(e.get_exception_pointers());
     return EXIT_FAILURE;
 }
-catch (const std::exception &e) {
+catch (const std::exception &e)
+{
     spdlog::critical(std::string("Caught unhandled C++ exception: ") + e.what());
     return EXIT_FAILURE;
 }
-catch (...) {
+catch (...)
+{
     spdlog::critical("Caught unknown exception!");
     return EXIT_FAILURE;
 }
@@ -278,8 +282,8 @@ void CreateMiniDump(PEXCEPTION_POINTERS ep)
 
     std::filesystem::path dmpfile = fs::GetStashPath() / std::filesystem::u8path(DUMP_FILENAME);
     // Open the file
-    HANDLE hFile =
-        CreateFile(dmpfile.c_str(), GENERIC_READ | GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+    HANDLE hFile = CreateFile(dmpfile.c_str(), GENERIC_READ | GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS,
+                              FILE_ATTRIBUTE_NORMAL, nullptr);
 
     if ((hFile != nullptr) && (hFile != INVALID_HANDLE_VALUE))
     {
@@ -294,7 +298,8 @@ void CreateMiniDump(PEXCEPTION_POINTERS ep)
             (MINIDUMP_TYPE)(MiniDumpWithFullMemory | MiniDumpWithFullMemoryInfo | MiniDumpWithHandleData |
                             MiniDumpWithThreadInfo | MiniDumpWithUnloadedModules);
 
-        BOOL rv = MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, mdt, ep ? &mdei : nullptr, nullptr, nullptr);
+        BOOL rv = MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, mdt, ep ? &mdei : nullptr,
+                                    nullptr, nullptr);
 
         if (!rv)
             _tprintf(_T("MiniDumpWriteDump failed. Error: %u \n"), GetLastError());

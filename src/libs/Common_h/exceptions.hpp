@@ -3,17 +3,17 @@
 #include <exception>
 #include <stdexcept>
 #ifdef _WIN32
-# include <tuple>
-# include <array>
-# include <string_view>
-# include <fmt/format.h>
-# include <Windows.h>
-# ifndef _WIN64
-#   include <errhandlingapi.h>
-# endif
-# include <eh.h>
+#include <Windows.h>
+#include <array>
+#include <fmt/format.h>
+#include <string_view>
+#include <tuple>
+#ifndef _WIN64
+#include <errhandlingapi.h>
+#endif
+#include <eh.h>
 #else
-# include <csignal>
+#include <csignal>
 #endif
 
 namespace storm::except
@@ -79,8 +79,8 @@ class system_exception final : public std::exception
 #define STORM_EXCEPTIONS_EXPAND(x) x
 #define STORM_EXCEPTIONS_VA_ARGS_SIZE(...) std::tuple_size<decltype(std::make_tuple(__VA_ARGS__))>::value
 #define STORM_EXCEPTIONS_GET_EXCEPT_ARR(...)                                                                           \
-    detail::get_array<STORM_EXCEPTIONS_VA_ARGS_SIZE(__VA_ARGS__), __VA_ARGS__>(                                                 \
-        detail::split_args<STORM_EXCEPTIONS_VA_ARGS_SIZE(__VA_ARGS__)>(STORM_EXCEPTIONS_EXPAND(#__VA_ARGS__)),                           \
+    detail::get_array<STORM_EXCEPTIONS_VA_ARGS_SIZE(__VA_ARGS__), __VA_ARGS__>(                                        \
+        detail::split_args<STORM_EXCEPTIONS_VA_ARGS_SIZE(__VA_ARGS__)>(STORM_EXCEPTIONS_EXPAND(#__VA_ARGS__)),         \
         std::make_index_sequence<STORM_EXCEPTIONS_VA_ARGS_SIZE(__VA_ARGS__)>{})
 
         const auto exceptions{STORM_EXCEPTIONS_GET_EXCEPT_ARR(
@@ -150,8 +150,7 @@ class scoped_exception_guard
     const _se_translator_function original_translator_;
 };
 
-
-inline void get_exception_pointers(EXCEPTION_POINTERS& ep)
+inline void get_exception_pointers(EXCEPTION_POINTERS &ep)
 {
     // The following code was taken from VC++ 8.0 CRT (invarg.c: line 104)
     CONTEXT ContextRecord;

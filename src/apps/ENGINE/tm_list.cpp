@@ -6,7 +6,7 @@
 #include <Windows.h>
 
 #define MAX_STR_SIZE 1024
-extern S_DEBUG * pCDebug;
+extern S_DEBUG *pCDebug;
 
 static char TM_LIST_Buffer[MAX_STR_SIZE];
 

@@ -1,7 +1,7 @@
 #include "s_dbg_watcherlist.h"
 #include "s_debug.h"
 
-extern S_DEBUG * pCDebug;
+extern S_DEBUG *pCDebug;
 
 WATCHER_LIST::WATCHER_LIST(HWND hwnd, HINSTANCE hinst)
 {

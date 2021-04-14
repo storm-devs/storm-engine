@@ -72,7 +72,7 @@ enum AnimationEvent
 };
 
 #define ANI_MAX_ACTIONS 8 // Number of ActionPlayers and AnimationTimers for one model
-#define ANI_MAX_EVENTS 8  // Number of events per action
+#define ANI_MAX_EVENTS 8 // Number of events per action
 
 // ============================================================================================
 // The class that plays the action

@@ -24,7 +24,7 @@ class VSoundService;
 
 #define CHARACTER_ATTACK_DIST 2.4f // Maximum attack distance (m)
 #define CHARACTER_ATTACK_ANG 60.0f // Maximum angle of attack (degrees)
-#define CHARACTER_BLOCK_ANG 50.0f  // Maximum angle of block (degrees)
+#define CHARACTER_BLOCK_ANG 50.0f // Maximum angle of block (degrees)
 #define CHARACTER_MAX_JMP_STEPS 50
 
 class Character : public Entity
