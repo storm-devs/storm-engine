@@ -50,6 +50,7 @@ set(PROJECT_SOURCES
     dx9render.h
     Entity.h
     entity_state.h
+    exceptions.hpp
     EntityManager.h
     filesystem.h
     geometry.h
