@@ -15,8 +15,7 @@ if (MSVC)
     add_compile_options(/WX) # Treats compiler warnings as errors
     add_compile_options(/std:c++latest) # Language Standard Version
     add_compile_options(/MP) # Build with Multiple Processes
-    add_compile_options(/arch:AVX) # 95% of CPUs support it (https://store.steampowered.com/hwsurvey/Steam-Hardware-Software-Survey-Welcome-to-Steam?platform=pc)
-
+    
     add_compile_options("$<$<CONFIG:Release>:/Gy>") # Enable Function-Level Linking
     add_compile_options("$<$<CONFIG:Release>:/Oi>") # Generate intrinsic functions
     add_compile_options("$<$<CONFIG:Release>:/Ot>") # Favor fast code, should be implied by /O2 though
