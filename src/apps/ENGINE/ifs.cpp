@@ -432,27 +432,17 @@ void IFS::Format(char *file_data, long file_size)
         }
     }
 
-    for (n = 0; n < file_size; n++)
+    long offset = 0;
+    for (data_PTR = file_data; data_PTR < file_data + file_size; data_PTR += offset)
     {
-        if (n == 0)
-        {
-            data_PTR = file_data;
-        }
-        else
-        {
-            if (file_data[n] != 0)
-                continue;
-            if ((n + 1) >= file_size)
-                break; // end of file
-            if (file_data[n + 1] == 0)
-                continue; // separator zero
-            data_PTR = file_data + n + 1;
-        }
+        while (data_PTR < file_data + file_size && *data_PTR == '\0')
+            data_PTR++; // separator zero
 
-        // add new key object ------------------------------------------------------
-        // (file_data + n + 1) - start of the line
+        if (data_PTR >= file_data + file_size)
+            break; // end of file
 
-        long offset = 0;
+        // add new key object
+        offset = 0;
         for (; data_PTR[offset]; offset++)
         {
         }
@@ -545,7 +535,6 @@ void IFS::Format(char *file_data, long file_size)
                 node->SetName(&data_PTR[i]); // key without value
             break;
         }
-        n += offset;
     }
 }
 
