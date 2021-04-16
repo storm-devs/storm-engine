@@ -466,39 +466,7 @@ NOTE(yakvi): Below is work-in-progress
     * **Compiler Token**: `FUNC_VARTYPE`
     ``` C++
     syntax:
-        string Vartype(aref attribute);
-
-    /* TODO(yakvi): actually confirm it's an aref input, from the source looks like it 
-       Unfortunately, I'm not yet well versed in reading this code. Isn't 
-       `pV->IsReference()` can only refer to an aref or any value at all?
-
-        ================
-        pV = SStack.Pop();
-        if (!pV) { ... }
-        pV = pV->GetReference();
-        if (!pV)
-        {
-            SetError(INVALID_FA); // "Invalid function argument"
-            break;
-        }
-        if (pV->IsReference())
-            strcpy_s(sVarName, "ref:");
-        else
-            sVarName[0] = 0;
-        pV = pV->GetVarPointer();
-        switch (pV->GetType())
-        {
-            // print out return type
-        }
-        pV = SStack.Push();
-        pV->Set(sVarName);
-        pVResult = pV;
-        return pV; // return to user
-        ================
-
-        Will need to go in and compare with others that I know are arefs.
-    */
-    ```
+        string Vartype(ref attribute);
 
 * **Breakpoint**
     * **Compiler Token**: `FUNC_BREAKPOINT`
