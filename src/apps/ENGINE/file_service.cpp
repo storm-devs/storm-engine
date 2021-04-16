@@ -133,6 +133,10 @@ std::vector<std::filesystem::path> FILE_SERVICE::_GetFsPathsByMask(const char *s
     auto it = std::filesystem::directory_iterator(srcPath, ec);
     if (ec)
     {
+        if (core.tracelog)
+        {
+            core.tracelog->warn("Failed to open save folder: {}", ec.message());
+        }
         return result;
     }
 
