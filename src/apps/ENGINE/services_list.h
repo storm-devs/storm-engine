@@ -2,15 +2,15 @@
 
 #include "service.h"
 
-typedef struct
+struct SERVICE_NODE
 {
     uint32_t reference;
     uint32_t module_code;
     uint32_t class_code;
     SERVICE *pointer;
-    void *linkL;
-    void *linkR;
-} SERVICE_NODE;
+    SERVICE_NODE *linkL;
+    SERVICE_NODE *linkR;
+};
 
 class SERVICES_LIST
 {

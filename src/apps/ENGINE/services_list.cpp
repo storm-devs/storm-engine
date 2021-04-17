@@ -59,7 +59,7 @@ SERVICE *SERVICES_LIST::Find(uint32_t module_code)
     {
         if (node_PTR->module_code == module_code)
             return node_PTR->pointer;
-        node_PTR = static_cast<SERVICE_NODE *>(node_PTR->linkL);
+        node_PTR = node_PTR->linkL;
     }
     return nullptr;
 }
@@ -74,7 +74,7 @@ SERVICE *SERVICES_LIST::Find(uint32_t module_code, uint32_t class_code)
             if (node_PTR->class_code == class_code)
                 return node_PTR->pointer;
         }
-        node_PTR = static_cast<SERVICE_NODE *>(node_PTR->linkL);
+        node_PTR = node_PTR->linkL;
     }
     return nullptr;
 }
@@ -86,7 +86,7 @@ SERVICE_NODE *SERVICES_LIST::FindNode(uint32_t module_code)
     {
         if (node_PTR->module_code == module_code)
             return node_PTR;
-        node_PTR = static_cast<SERVICE_NODE *>(node_PTR->linkL);
+        node_PTR = node_PTR->linkL;
     }
     return nullptr;
 }
@@ -98,7 +98,7 @@ SERVICE_NODE *SERVICES_LIST::FindNode(SERVICE *sp)
     {
         if (node_PTR->pointer == sp)
             return node_PTR;
-        node_PTR = static_cast<SERVICE_NODE *>(node_PTR->linkL);
+        node_PTR = node_PTR->linkL;
     }
     return nullptr;
 }
@@ -120,8 +120,8 @@ uint32_t SERVICES_LIST::Release(uint32_t module_code, uint32_t class_code)
                 if (node_PTR->reference == 0)
                 {
                     SERVICE *pointer = node_PTR->pointer;
-                    auto *node_L = static_cast<SERVICE_NODE *>(node_PTR->linkL);
-                    auto *node_R = static_cast<SERVICE_NODE *>(node_PTR->linkR);
+                    auto *node_L = node_PTR->linkL;
+                    auto *node_R = node_PTR->linkR;
                     if (node_L)
                         node_L->linkR = node_R;
                     if (node_R)
@@ -135,7 +135,7 @@ uint32_t SERVICES_LIST::Release(uint32_t module_code, uint32_t class_code)
             }
             return ref;
         }
-        node_PTR = static_cast<SERVICE_NODE *>(node_PTR->linkL);
+        node_PTR = node_PTR->linkL;
     }
     return 0;
 }
@@ -145,7 +145,7 @@ void SERVICES_LIST::Release()
     SERVICE_NODE *node_PTR = List;
     while (node_PTR)
     {
-        List = static_cast<SERVICE_NODE *>(node_PTR->linkL);
+        List = node_PTR->linkL;
         delete node_PTR;
         node_PTR = List;
     }
@@ -170,7 +170,7 @@ SERVICE *SERVICES_LIST::GetServiceNext()
     {
         if (node_PTR->module_code == Search_module_code)
         {
-            auto *node_L = static_cast<SERVICE_NODE *>(node_PTR->linkL);
+            auto *node_L = node_PTR->linkL;
             if (node_L)
             {
                 Search_module_code = node_L->module_code;
@@ -178,7 +178,7 @@ SERVICE *SERVICES_LIST::GetServiceNext()
             }
             return nullptr;
         }
-        node_PTR = static_cast<SERVICE_NODE *>(node_PTR->linkL);
+        node_PTR = node_PTR->linkL;
     }
     return nullptr;
 }
@@ -201,7 +201,7 @@ SERVICE *SERVICES_LIST::GetServiceNext(uint32_t &class_code)
     {
         if (node_PTR->module_code == Search_module_code)
         {
-            auto *node_L = static_cast<SERVICE_NODE *>(node_PTR->linkL);
+            auto *node_L = node_PTR->linkL;
             if (node_L)
             {
                 Search_module_code = node_L->module_code;
@@ -210,7 +210,7 @@ SERVICE *SERVICES_LIST::GetServiceNext(uint32_t &class_code)
             }
             return nullptr;
         }
-        node_PTR = static_cast<SERVICE_NODE *>(node_PTR->linkL);
+        node_PTR = node_PTR->linkL;
     }
     return nullptr;
 }
