@@ -479,8 +479,9 @@ NOTE(yakvi): Below is work-in-progress
     **Compiler Token**: `FUNC_POW`
     ``` C++
     syntax:
-        float Pow(float exponent, float base);
-        // TODO(yakvi): base/exponent inverted??? to verify
+        float Pow(float base, float exponent);
+    example:
+        Log_Info("" + pow(10.0, 3.0)); // 10^3, 1000
     ```
 
 * **CopyAttributes**
