@@ -447,7 +447,7 @@ void *CORE::CreateService(const char *service_name)
     if (!service_PTR->Init())
         CheckAutoExceptions(0);
 
-    Services_List.Add(class_code, class_code, service_PTR);
+    Services_List.Add(class_code, service_PTR);
 
     return service_PTR;
 }
@@ -566,32 +566,22 @@ void CORE::ProcessStateLoading()
 
 void CORE::ProcessRunStart(uint32_t section_code)
 {
-    uint32_t class_code;
-    SERVICE *service_PTR = Services_List.GetService(class_code);
-    while (service_PTR)
-    {
-        const uint32_t section = service_PTR->RunSection();
-        if (section == section_code)
+    Services_List.ForEachService([&](auto service_PTR, auto class_code) {
+        if (section_code == service_PTR->RunSection())
         {
             service_PTR->RunStart();
         }
-        service_PTR = Services_List.GetServiceNext(class_code);
-    }
+    });
 }
 
 void CORE::ProcessRunEnd(uint32_t section_code)
 {
-    uint32_t class_code;
-    SERVICE *service_PTR = Services_List.GetService(class_code);
-    while (service_PTR)
-    {
-        const uint32_t section = service_PTR->RunSection();
-        if (section == section_code)
+    Services_List.ForEachService([&](auto service_PTR, auto class_code) {
+        if (section_code == service_PTR->RunSection())
         {
             service_PTR->RunEnd();
         }
-        service_PTR = Services_List.GetServiceNext(class_code);
-    }
+    });
 }
 
 uint32_t CORE::EngineFps()
