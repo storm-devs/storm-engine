@@ -3,7 +3,7 @@ _[back to Index](../index.md)_
 
 ![Storm Engine Logo](../media/SE_logo.png)
 
-**Related articles**: [Scripting Language Overview](0002-scripting-overview.md)
+**Related articles**: [Scripting Language Overview](0002-scripting-overview.md), [Article 0004. Entities](0004-entities.md)
 
 Here you will find the list of the built-in and some game-level useful functions for the game scripting.
 
@@ -57,6 +57,41 @@ Below are the functions which make part of the compiler API. Each function has i
         }
     ```
 
+### Entity Manipulation
+
+* **CreateClass**: Bind an object with an entity.
+    * **Compiler Token**: `FUNC_CREATE_CLASS`
+    * `entityType`: Class name, must [predefined by the engine](0004-entity.md).
+    * Objects bound by `CreateClass` don't expose their attributes to the engine.
+    ``` C++
+    syntax:
+        object CreateClass(string entityType); 
+    example:
+        object obj = CreateClass("CustomType"); // "invalid entity name"
+        object obj = CreateClass("Sky");        // OK
+    ```
+
+* **CreateEntity**: Similar to `CreateClass`, except it allows select attributes to be used directly by the engine. 
+    * `objectReference`: Address of the object to which the new entity will be bound.
+    * `entityType`: Class name, must [predefined by the engine](0004-entity.md).
+    ``` C++
+    syntax:
+        bool CreateEntity(object& objectReference, string entityType); 
+    example: 
+        object torn;
+        if (!isEntity(&torn))
+        {
+            CreateEntity(&torn, "Tornado");
+        }
+    ```
+
+* **DeleteClass**: Unbinds the entity and clears all the data of an object. All the `ref`s and `aref`s will now fail.
+    * **Compiler Token**: `FUNC_DELETE_Entity` (capitalization preserved)
+    ``` C++
+    syntax:
+        void DeleteClass(object obj);
+    ```
+
 ### Utility
 
 * **SetTimeScale**: Set the speed of the game simulation for the whole engine. For your epic slo-mo moments.
@@ -93,27 +128,6 @@ Below are the functions which make part of the compiler API. Each function has i
     usage: 
         float fChecker = frand();
         if (fChecker < 0.8) {...}
-    ```
-
-* **CreateClass**
-    * **Compiler Token**: `FUNC_CREATE_CLASS`
-    ``` C++
-    syntax:
-        object CreateClass(string className); // bind entity to object (object attributes will be   cleared)
-    ```
-
-* **CreateEntity**
-    * **Compiler Token**: `FUNC_CREATE_Entity`
-    ``` C++
-    syntax:
-        int CreateEntity(object& objectReference, string className); // bind entity to object, return 0     if failed
-    ```
-
-* **DeleteClass**
-    * **Compiler Token**: `FUNC_DELETE_Entity`
-    ``` C++
-    syntax:
-        void DeleteClass(object obj);
     ```
 
 * **SetEventHandler**
