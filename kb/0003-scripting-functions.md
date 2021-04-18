@@ -23,6 +23,7 @@ Below are the functions which make part of the compiler API. Each function has i
     usage: 
         GetEngineVersion();
     ```
+
 * **CheckFunction**: verify if a function with specified name exists. 
     * **Compiler Token**: `FUNC_CHECKFUNCTION`
     * `value`: function name.
@@ -35,11 +36,25 @@ Below are the functions which make part of the compiler API. Each function has i
             ControlsTreeInit();
         }
     ```
-* **TestRef**: 
+
+* **TestRef**: Verify the referenced object or attribute is still alive.
     * **Compiler Token**: `FUNC_TEST_REF`
+    * `target`: a reference or an attribute to test.
     ``` C++
     syntax:
-        int TestRef(1); 
+        bool TestRef(ref target); 
+        bool TestRef(aref target); 
+    example:
+        bool LAi_CheckCharacter(aref chr, string out)
+        {
+            if (!TestRef(chr))
+            {
+                Trace("LAi_CheckCharacter -> invalid aref, call from " + out);
+                return false;
+            }
+
+            return true;
+        }
     ```
 
 ### Utility
