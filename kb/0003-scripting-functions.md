@@ -14,7 +14,7 @@ Below are the functions which make part of the compiler API. Each function has i
 
 ### Validation
 
-* **GetEngineVersion**: return `ENGINE_SCRIPT_VERSION` constant (defined in `core.h`). 
+* **GetEngineVersion**: Return `ENGINE_SCRIPT_VERSION` constant (defined in `core.h`). 
     * **Compiler Token**: `FUNC_GETENGINEVERSION`
     * The engine version is pushed back to the compiler, and an error will be produced in case of version mismatch. Therefore, retrieving and using it in the scripting language after the initial call isn't necessary.
     ``` C++
@@ -24,7 +24,7 @@ Below are the functions which make part of the compiler API. Each function has i
         GetEngineVersion();
     ```
 
-* **CheckFunction**: verify if a function with specified name exists. 
+* **CheckFunction**: Verify if a function with specified name exists. 
     * **Compiler Token**: `FUNC_CHECKFUNCTION`
     * `value`: function name.
     ``` C++
