@@ -57,20 +57,27 @@ Below are the functions which make part of the compiler API. Each function has i
         SetTimeScale(0.0);
     ```
 
-NOTE(yakvi): Below is work-in-progress
+### Math
 
-* **Rand**
+* **Rand**: Generate a random positive number from 0 to `range`.
     * **Compiler Token**: `FUNC_RAND`
+    * `range`: Any positive number.
     ``` C++
     syntax:
         int Rand(int range);
+    usage: 
+        ref ch = GetCharacter(NPC_GenerateCharacter(...));
+        ch.Nation = rand(4); // random nation
     ```
 
-* **frnd**
+* **frnd**: Generate a random float from 0.0 to 1.0 (included).
     * **Compiler Token**: `FUNC_FRAND`
     ``` C++
     syntax:
-        float frnd(); // float from [0,..,1.0];
+        float frnd(); 
+    usage: 
+        float fChecker = frand();
+        if (fChecker < 0.8) {...}
     ```
 
 * **CreateClass**
