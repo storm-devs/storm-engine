@@ -25,37 +25,37 @@ Some entity types have specialized execute and realize layers, while others (pur
 
 Currently implemented layers (in order of priority): 
 
-* `EXECUTE`: generic execute, runs first
-* `REALIZE`: generic realize, runs first
-* `SEA_EXECUTE`
-* `SEA_REALIZE`
-* `INTERFACE_EXECUTE`
-* `INTERFACE_REALIZE`
-* `FADER_EXECUTE`
-* `FADER_REALIZE`
-* `LIGHTER_EXECUTE`
-* `LIGHTER_REALIZE`
-* `VIDEO_EXECUTE`
-* `VIDEO_REALIZE`
-* `EDITOR_REALIZE`
-* `INFO_REALIZE`
-* `SOUND_DEBUG_REALIZE`
-* `SEA_REFLECTION`
-* `SEA_REFLECTION2`
-* `SEA_SUNROAD`
-* `SUN_TRACE`
-* `SAILS_TRACE`
-* `HULL_TRACE`
-* `MAST_ISLAND_TRACE`
-* `MAST_SHIP_TRACE`
-* `SHIP_CANNON_TRACE`
-* `FORT_CANNON_TRACE`
-* `ISLAND_TRACE`
-* `SHADOW`
-* `BLOOD`
-* `RAIN_DROPS`
-
-It's important to note that, in the engine, the layers are defined as integers. On the other hand, the scripting API can store and pass the name of the layers as strings.
+| Layer name            | Layer Id | Type    |
+| ---                   | ---      | ---     |
+| EXECUTE               |  0       | Execute |
+| REALIZE               |  1       | Realize |
+| SEA_EXECUTE           |  2       | Execute |
+| SEA_REALIZE           |  3       | Realize |
+| INTERFACE_EXECUTE     |  4       | Execute |
+| INTERFACE_REALIZE     |  5       | Realize |
+| FADER_EXECUTE         |  6       | Execute |
+| FADER_REALIZE         |  7       | Realize |
+| LIGHTER_EXECUTE       |  8       | Execute |
+| LIGHTER_REALIZE       |  9       | Realize |
+| VIDEO_EXECUTE         |  10      | Execute |
+| VIDEO_REALIZE         |  11      | Realize |
+| EDITOR_REALIZE        |  12      | Execute |
+| INFO_REALIZE          |  13      | Realize |
+| SOUND_DEBUG_REALIZE   |  14      | Realize |
+| SEA_REFLECTION        |  15      | Realize |
+| SEA_REFLECTION2       |  16      | Realize |
+| SEA_SUNROAD           |  17      | Realize |
+| SUN_TRACE             |  18      | Realize |
+| SAILS_TRACE           |  19      | Realize |
+| HULL_TRACE            |  20      | Realize |
+| MAST_ISLAND_TRACE     |  21      | Realize |
+| MAST_SHIP_TRACE       |  22      | Realize |
+| SHIP_CANNON_TRACE     |  23      | Realize |
+| FORT_CANNON_TRACE     |  24      | Realize |
+| ISLAND_TRACE          |  25      | Realize |
+| SHADOW                |  26      | Realize |
+| BLOOD                 |  27      | Realize |
+| RAIN_DROPS            |  28      | Realize |
 
 ## Entity Type Index
 

@@ -94,15 +94,19 @@ Below are the functions which make part of the compiler API. Each function has i
 
 ### Layer Manipulation
 
+Please note that, unlike the previous versions, the current version of the Storm Engine requires the layers to be entered as IDs (as opposed to strings in the past). You can find the reference table [here](0005-entities.md).
+
 * **LayerAddObject**: add an entity to the specified layer 
     * **Compiler Token**: `FUNC_LAYER_ADDOBJECT`
-    * `layerName`: name of the desired layer.
+    * `layerID`: id of the desired layer.
     * `obj`: address of the added object.
     * `priority`: Lower priority entities will be processed first, can be negative.
     ``` C++
     syntax:
-        void LayerAddObject(string layerName, object &obj, int priority);
+        void LayerAddObject(int layerID, object &obj, int priority);
     example: 
+        #define SEA_EXECUTE 2
+        #define SEA_REALIZE 3
         object tornado;
         CreateEntity(&tornado, "Tornado");
         LayerAddObject(SEA_EXECUTE, &tornado, 65535); 
@@ -111,43 +115,43 @@ Below are the functions which make part of the compiler API. Each function has i
 
 * **LayerSetExecute**: Mark a layer as an execute layer
     * **Compiler Token**: `FUNC_LAYER_SET_EXECUTE`
-    * `layerName`: name of the desired layer.
+    * `layerID`: id of the desired layer.
     ``` C++
     syntax:
-        void LayerSetExecute(string layerName);
+        void LayerSetExecute(int layerID);
     example:
-        LayerSetExecute("sea_execute");
+        LayerSetExecute(SEA_EXECUTE);
     ```
 
 * **LayerSetRealize**: Mark a layer as a realize layer
     * **Compiler Token**: `FUNC_LAYER_SET_REALIZE`
-    * `layerName`: name of the desired layer.
+    * `layerID`: id of the desired layer.
     ``` C++
     syntax:
-        void LayerSetRealize(string layerName);
+        void LayerSetRealize(int layerID);
     example:
-        LayerSetRealize("sea_realize")        
+        LayerSetRealize(SEA_REALIZE);
     ```
 
 * **LayerFreeze**: Pause/unpause layer execution
     * **Compiler Token**: `FUNC_LAYER_FREEZE`
-    * `layerName`: name of the desired layer.
+    * `layerID`: id of the desired layer.
     * `isEnabled`: whether or not the layer should be enabled.
     ``` C++
     syntax:
-        void LayerFreeze(string name, bool isEnabled); 
+        void LayerFreeze(int layerID, bool isEnabled); 
     ```
 
 * **LayerDelObject**
     * **Compiler Token**: `FUNC_LAYER_DELOBJECT`
-    * `layerName`: name of the desired layer.
+    * `layerID`: id of the desired layer.
     * `obj`: address of the removed object.
     ``` C++
     syntax:
-        void LayerDelObject(string name, object &obj);
+        void LayerDelObject(int layerID, object &obj);
     example:
-        LayerDelObject("execute", &Sky);
-        LayerDelObject("realize", &Sky);
+        LayerDelObject(EXECUTE, &Sky);
+        LayerDelObject(REALIZE, &Sky);
     ```
 
 Currently disabled/not implemented functions: 
@@ -156,28 +160,28 @@ Currently disabled/not implemented functions:
     * **Compiler Token**: `FUNC_LAYER_CREATE`
     ``` C++
     syntax:
-        void LayerCreate(string layerName, bool ordered);
+        void LayerCreate(int layerID, bool ordered);
     ```
 
 * **LayerDelete**: delete a layer with the specified name
     * **Compiler Token**: `FUNC_LAYER_DELETE`
     ``` C++
     syntax:
-        void LayerDeleteLayer(string layerName);
+        void LayerDeleteLayer(int layerID);
     ```
 
 * **LayerDeleteContent**: delete all the objects linked to specified layer.
     * **Compiler Token**: `FUNC_LAYER_DELETE_CONTENT`
     ``` C++
     syntax:
-        void LayerDeleteContent(string layerName);
+        void LayerDeleteContent(int layerID);
     ```
 
 * **LayerSetMessages**: set specific flags on a layer
     * **Compiler Token**: `FUNC_LAYER_SET_MESSAGES`
     ``` C++
     syntax:
-        void LayerSetMessages(string layerName, bool isEnabled); 
+        void LayerSetMessages(int layerID, bool isEnabled); 
     ```
 
 
