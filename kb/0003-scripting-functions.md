@@ -219,6 +219,130 @@ Currently disabled/not implemented functions:
         if (fChecker < 0.8) {...}
     ```
 
+* **abs**: Return the absolute (always positive) of the given value.
+    * **Compiler Token**: `FUNC_ABS`
+    * `value`: can be positive or negative, integer or float
+    ``` C++
+    syntax:
+        int abs(int value);
+        float abs(float value);
+
+    example:
+        int x = 5;
+        int y = -5;
+
+        int absX = abs(x); // 5.0
+        int absY = abs(y); // 5.0
+    ```
+
+* **sqr**: Elevate a number to its square (power of 2).
+    * **Compiler Token**: `FUNC_SQR`
+    * `value`: can be an integer or a float
+    ``` C++
+    syntax:
+        float sqr(int value);
+        float sqr(float value);
+    example: 
+        int x = 5 * 5;  // 25.0
+        int y = sqr(5); // 25.0
+    ```
+
+* **Pow**: Elevate a number to a custom power. 
+    **Compiler Token**: `FUNC_POW`
+    * `base`: number to elevate
+    * `exponent`: desired power
+    ``` C++
+    syntax:
+        float Pow(float base, float exponent);
+    example:
+        Log_Info("" + pow(10.0, 3.0)); // 10^3, 1000
+        Log_Info("" + pow(10.0, -3.0)); // 10^3, 0.001
+    ```
+
+
+* **sqrt**: Extract the square root of the given value.
+    * **Compiler Token**: `FUNC_SQRT`
+    * `value`: can be an integer or a float
+    ``` C++
+    syntax:
+        float sqrt(int value);
+        float sqrt(float value);
+    example: 
+        int x = sqrt(25); // 5.0
+    ```
+
+* **sin**: Calculate the sine of the given angle.
+    * **Compiler Token**: `FUNC_SIN`
+    * `value`: angle in radians.
+    ``` C++
+    syntax:
+        float sin(int value);
+        float sin(float value);
+    example: 
+        Particles.winddirection.x = sin(Whr_GetWindAngle());
+    ```
+
+* **cos**: Calculate the cosine of the given angle.
+    * **Compiler Token**: `FUNC_COS`
+    * `value`: angle in radians.
+    ``` C++
+    syntax:
+        float cos(int value);
+        float cos(float value);
+    example:
+        Particles.winddirection.z = cos(Whr_GetWindAngle());
+    ```
+
+* **tan**: Calculate the tangent of the given angle.
+    * **Compiler Token**: `FUNC_TAN`
+    * `value`: angle in radians.
+    ``` C++
+    syntax:
+        float tan(int value);
+        float tan(float value);
+    ```
+
+* **atan**: Calculate the arctangent (inverse tangent) of a given number.
+    * **Compiler Token**: `FUNC_ATAN`
+    * `value`: tangent of the desired angle.
+    * returns angle in radians, in the range [-π/2, π/2].
+    ``` C++
+    syntax:
+        float atan(int value);
+        float atan(float value);
+    ```
+
+* **atan2**: Calculate the arctangent of a given 2D coordinate point.
+    * **Compiler Token**: `FUNC_TAN2`
+    * `x`: x-coordinate of the point
+    * `y`: y-coordinate of the point
+    * Return value depends on the input
+    ``` C++
+    syntax:
+        float atan2(int/float x, int/float y); // in any combination
+    ```
+
+* **asin**: Calculate the arcsine (inverse sine) of a number.
+    * **Compiler Token**: `FUNC_ASIN`
+    * `value`: sine of the angle to be inverted, -1 to 1.
+    ``` C++
+    syntax:
+        float asin(int value);
+        float asin(float value);
+    ```
+
+* **acos**: Calculate the arccosine (inverse cosine) of a number.
+    * **Compiler Token**: `FUNC_ACOS`
+    * `value`: cosine of the angle to be inverted, -1 to 1.
+    ``` C++
+    syntax:
+        float acos(int value);
+        float acos(float value);
+    ```
+
+
+
+
 * **SetEventHandler**
     * **Compiler Token**: `FUNC_SET_EVENT_HANDLER`
     ``` C++
@@ -295,86 +419,6 @@ Currently disabled/not implemented functions:
     syntax:
         float MakeFloat(string value);
         float MakeFloat(int value);
-    ```
-
-* **abs**
-    * **Compiler Token**: `FUNC_ABS`
-    ``` C++
-    syntax:
-        int abs(int value);
-        float abs(float value);
-    ```
-
-* **sqrt**
-    * **Compiler Token**: `FUNC_SQRT`
-    ``` C++
-    syntax:
-        float sqrt(int value);
-        float sqrt(float value);
-    ```
-
-* **sqr**
-    * **Compiler Token**: `FUNC_SQR`
-    ``` C++
-    syntax:
-        float sqr(int value);
-        float sqr(float value);
-    ```
-
-* **sin**
-    * **Compiler Token**: `FUNC_SIN`
-    ``` C++
-    syntax:
-        float sin(int value);
-        float sin(float value);
-    ```
-
-* **cos**
-    * **Compiler Token**: `FUNC_COS`
-    ``` C++
-    syntax:
-        float cos(int value);
-        float cos(float value);
-    ```
-
-* **tan**
-    * **Compiler Token**: `FUNC_TAN`
-    ``` C++
-    syntax:
-        float tan(int value);
-        float tan(float value);
-    ```
-
-* **atan**
-    * **Compiler Token**: `FUNC_ATAN`
-    ``` C++
-    syntax:
-        float atan(int value);
-        float atan(float value);
-    ```
-
-* **atan2**
-    * **Compiler Token**: `FUNC_TAN2`
-    ``` C++
-    syntax:
-        float atan2(int value);
-        float atan2(float value);
-    ```
-
-* **asin**
-    * **Compiler Token**: `FUNC_ASIN`
-    ``` C++
-    syntax:
-        float asin(int value);
-        float asin(float value);
-    ```
-
-* **acos**
-    * **Compiler Token**: `FUNC_ACOS`
-    ``` C++
-    syntax:
-        float acos(int value);
-        float acos(float value);
     ```
 
 * **DeleteAttribute**
@@ -552,15 +596,6 @@ Currently disabled/not implemented functions:
     ``` C++
     syntax:
         void Breakpoint();
-    ```
-
-* **Pow**
-    **Compiler Token**: `FUNC_POW`
-    ``` C++
-    syntax:
-        float Pow(float base, float exponent);
-    example:
-        Log_Info("" + pow(10.0, 3.0)); // 10^3, 1000
     ```
 
 * **CopyAttributes**
