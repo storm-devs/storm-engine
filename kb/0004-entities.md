@@ -55,6 +55,8 @@ Currently implemented layers (in order of priority):
 * `BLOOD`
 * `RAIN_DROPS`
 
+It's important to note that, in the engine, the layers are defined as integers. On the other hand, the scripting API can store and pass the name of the layers as strings.
+
 ## Entity Type Index
 
 Depending on usage, each entity can be considered a class, a service or a script library.
