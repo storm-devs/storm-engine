@@ -61,7 +61,7 @@ Below are the functions which make part of the compiler API. Each function has i
 
 * **CreateClass**: Bind an object with an entity.
     * **Compiler Token**: `FUNC_CREATE_CLASS`
-    * `entityType`: Class name, must [predefined by the engine](0004-entity.md).
+    * `entityType`: Class name, must be [predefined by the engine](0004-entity.md).
     * Objects bound by `CreateClass` don't expose their attributes to the engine.
     ``` C++
     syntax:
@@ -73,7 +73,7 @@ Below are the functions which make part of the compiler API. Each function has i
 
 * **CreateEntity**: Similar to `CreateClass`, except it allows select attributes to be used directly by the engine. 
     * `objectReference`: Address of the object to which the new entity will be bound.
-    * `entityType`: Class name, must [predefined by the engine](0004-entity.md).
+    * `entityType`: Class name, must be [predefined by the engine](0004-entity.md).
     ``` C++
     syntax:
         bool CreateEntity(object& objectReference, string entityType); 
@@ -91,6 +91,95 @@ Below are the functions which make part of the compiler API. Each function has i
     syntax:
         void DeleteClass(object obj);
     ```
+
+### Layer Manipulation
+
+* **LayerAddObject**: add an entity to the specified layer 
+    * **Compiler Token**: `FUNC_LAYER_ADDOBJECT`
+    * `layerName`: name of the desired layer.
+    * `obj`: address of the added object.
+    * `priority`: Lower priority entities will be processed first, can be negative.
+    ``` C++
+    syntax:
+        void LayerAddObject(string layerName, object &obj, int priority);
+    example: 
+        object tornado;
+        CreateEntity(&tornado, "Tornado");
+        LayerAddObject(SEA_EXECUTE, &tornado, 65535); 
+        LayerAddObject(SEA_REALIZE, &tornado, 65535);
+    ```
+
+* **LayerSetExecute**: Mark a layer as an execute layer
+    * **Compiler Token**: `FUNC_LAYER_SET_EXECUTE`
+    * `layerName`: name of the desired layer.
+    ``` C++
+    syntax:
+        void LayerSetExecute(string layerName);
+    example:
+        LayerSetExecute("sea_execute");
+    ```
+
+* **LayerSetRealize**: Mark a layer as a realize layer
+    * **Compiler Token**: `FUNC_LAYER_SET_REALIZE`
+    * `layerName`: name of the desired layer.
+    ``` C++
+    syntax:
+        void LayerSetRealize(string layerName);
+    example:
+        LayerSetRealize("sea_realize")        
+    ```
+
+* **LayerFreeze**: Pause/unpause layer execution
+    * **Compiler Token**: `FUNC_LAYER_FREEZE`
+    * `layerName`: name of the desired layer.
+    * `isEnabled`: whether or not the layer should be enabled.
+    ``` C++
+    syntax:
+        void LayerFreeze(string name, bool isEnabled); 
+    ```
+
+* **LayerDelObject**
+    * **Compiler Token**: `FUNC_LAYER_DELOBJECT`
+    * `layerName`: name of the desired layer.
+    * `obj`: address of the removed object.
+    ``` C++
+    syntax:
+        void LayerDelObject(string name, object &obj);
+    example:
+        LayerDelObject("execute", &Sky);
+        LayerDelObject("realize", &Sky);
+    ```
+
+Currently disabled/not implemented functions: 
+
+* **LayerCreate**: create a layer with a specified name
+    * **Compiler Token**: `FUNC_LAYER_CREATE`
+    ``` C++
+    syntax:
+        void LayerCreate(string layerName, bool ordered);
+    ```
+
+* **LayerDelete**: delete a layer with the specified name
+    * **Compiler Token**: `FUNC_LAYER_DELETE`
+    ``` C++
+    syntax:
+        void LayerDeleteLayer(string layerName);
+    ```
+
+* **LayerDeleteContent**: delete all the objects linked to specified layer.
+    * **Compiler Token**: `FUNC_LAYER_DELETE_CONTENT`
+    ``` C++
+    syntax:
+        void LayerDeleteContent(string layerName);
+    ```
+
+* **LayerSetMessages**: set specific flags on a layer
+    * **Compiler Token**: `FUNC_LAYER_SET_MESSAGES`
+    ``` C++
+    syntax:
+        void LayerSetMessages(string layerName, bool isEnabled); 
+    ```
+
 
 ### Utility
 
@@ -206,52 +295,6 @@ Below are the functions which make part of the compiler API. Each function has i
     syntax:
         float MakeFloat(string value);
         float MakeFloat(int value);
-    ```
-
-* **LayerDeleteContent**
-    * **Compiler Token**: `FUNC_LAYER_DELETE_CONTENT`
-    ``` C++
-    syntax:
-        void LayerDeleteContent(string layerName);
-    // delete classes linked to this layer
-    ```
-
-* **LayerSetRealize**
-    * **Compiler Token**: `FUNC_LAYER_SET_REALIZE`
-    ``` C++
-    syntax:
-        void LayerSetRealize(string layerName);
-    ```
-
-* **LayerSetExecute**
-    * **Compiler Token**: `FUNC_LAYER_SET_EXECUTE`
-    ``` C++
-    syntax:
-        void LayerSetExecute(string layerName);
-    ```
-* **LayerSetMessages**
-    * **Compiler Token**: `FUNC_LAYER_SET_MESSAGES`
-    ``` C++
-    syntax:
-        void LayerSetMessages(string layerName, bool isEnabled); 
-    ```
-* **LayerAddObject**
-    * **Compiler Token**: `FUNC_LAYER_ADDOBJECT`
-    ``` C++
-    syntax:
-        void LayerAddObject(string name, object obj, int level);
-    ```
-* **LayerDelObject**
-    * **Compiler Token**: `FUNC_LAYER_DELOBJECT`
-    ``` C++
-    syntax:
-        void LayerDelObject(string name, object obj);
-    ```
-* **LayerFreeze**
-    * **Compiler Token**: `FUNC_LAYER_FREEZE`
-    ``` C++
-    syntax:
-        void LayerFreeze(string name, bool isEnabled); 
     ```
 
 * **abs**

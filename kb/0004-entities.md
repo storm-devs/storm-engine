@@ -5,22 +5,72 @@ _[back to Index](../index.md)_
 
 **Related articles**: [Scripting Functions](0003-scripting-functions.md)
 
-Each object in the scripting language is an instance of an entity (predefined during engine compilation), or class archetypes. 
+Each object in the scripting language can be an instance of an entity (predefined during engine compilation), or class archetypes. 
+
+In order to become one, an entity must be registered as such (via `CreateClass` or `CreateEntity` function) and added to the respective layers. 
+
+### Layers
+
+There're two base layer types: `EXECUTE` and `REALIZE`. 
+
+Each frame, the game will go through all its layers and make `execute` and `realize` passes.
+
+During the `execute` pass, game logic for the entity is updated: light flickers, seagulls react to world state, etc. During the `realize` pass, graphics are sent for rendering or sounds for reproduction.
+
+Layer order is important as well as the entity priority inside a given layer. The smaller layer numbers and priority levels are executed first.
+
+At the end of each frame, a cleanup is made, and entities marked for removal are deleted from each layer.
+
+Some entity types have specialized execute and realize layers, while others (purely graphical effects like rain drops or blood splatters) only have realize layers.
+
+Currently implemented layers (in order of priority): 
+
+* `EXECUTE`: generic execute, runs first
+* `REALIZE`: generic realize, runs first
+* `SEA_EXECUTE`
+* `SEA_REALIZE`
+* `INTERFACE_EXECUTE`
+* `INTERFACE_REALIZE`
+* `FADER_EXECUTE`
+* `FADER_REALIZE`
+* `LIGHTER_EXECUTE`
+* `LIGHTER_REALIZE`
+* `VIDEO_EXECUTE`
+* `VIDEO_REALIZE`
+* `EDITOR_REALIZE`
+* `INFO_REALIZE`
+* `SOUND_DEBUG_REALIZE`
+* `SEA_REFLECTION`
+* `SEA_REFLECTION2`
+* `SEA_SUNROAD`
+* `SUN_TRACE`
+* `SAILS_TRACE`
+* `HULL_TRACE`
+* `MAST_ISLAND_TRACE`
+* `MAST_SHIP_TRACE`
+* `SHIP_CANNON_TRACE`
+* `FORT_CANNON_TRACE`
+* `ISLAND_TRACE`
+* `SHADOW`
+* `BLOOD`
+* `RAIN_DROPS`
+
+## Entity Type Index
 
 Depending on usage, each entity can be considered a class, a service or a script library.
 
 These are the following: 
 
-## Animals
+### Animals
 * `ANIMALS`: Class
 
-## Animation
+### Animation
 * `AnimationServiceImp`: Service
 
-## Ball Splash
+### Ball Splash
 * `BALLSPLASH`: Class
 
-## Battle Interface
+### Battle Interface
 * `BATTLE_INTERFACE`: Class
 * `ILogAndActions`: Class
 * `IBoardingStatus`: Class
@@ -33,29 +83,29 @@ These are the following:
 * `WM_INTERFACE`: Class
 * `BI_InterfaceManager`: Class
 
-## Blade
+### Blade
 * `BLADE`: Class
 
-## Blot
+### Blot
 * `Blots`: Class
 
-## Collide
+### Collide
 * `COLL`: Service
 
-## Dialog
+### Dialog
 * `DIALOG`: Class
 
-## Geometry
+### Geometry
 * `GEOMETRY`: Service
 
-## Island
+### Island
 * `ISLAND`: Class
 * `CoastFoam`: Class
 
-## Lighter
+### Lighter
 * `Lighter`: Class
 
-## Location
+### Location
 * `Location`: Class
 * `NPCharacter`: Class
 * `Player`: Class
@@ -75,28 +125,28 @@ These are the following:
 * `Blood`: Class
 * `ScriptLocationLibrary`: Script Library
 
-## Locator
+### Locator
 * `LOCATOR`: Class
 * `BLAST`: Class
 
-## Mast
+### Mast
 * `MAST`: Class
 
-## Model
+### Model
 * `MODELR`: Class
 
-## Particles
+### Particles
 * `ParticleService`: Service
 * `PARTICLES`: Class
 
-## PCS Controls
+### PCS Controls
 * `PCS_CONTROLS`: Service
 
-## Renderer
+### Renderer
 * `DX9RENDER`: Service
 * `DX9RENDER_SCRIPT_LIBRIARY`: Script Library
 
-## Rigging
+### Rigging
 * `SAIL`: Class
 * `FLAG`: Class
 * `ROPE`: Class
@@ -105,71 +155,71 @@ These are the following:
 * `VANTZ`: Class
 * `SCRIPT_RIGGING_FILES`: Script Library
 
-## Sailors
+### Sailors
 * `Sailors`: Class
 * `SailorsEditor`: Class
 
-## Script_library
+### Script_library
 * `SCRIPT_LIBRIARY_TEST`: Script Library
 
-## Sea
+### Sea
 * `SEA`: Class
 
-## Seacreatures
+### Seacreatures
 * `Sharks`: Class
 
-## Seafoam
+### Seafoam
 * `SEAFOAM`: Class
 
-## Sea_ai
+### Sea_ai
 * `SEA_AI`: Class
 * `AIFort`: Class
 * `AIBalls`: Class
 * `AISeaGoods`: Class
 * `SeaLocatorShow`: Class
 
-## Sea_cameras
+### Sea_cameras
 * `SEA_CAMERAS`: Class
 * `FREE_CAMERA`: Class
 * `SHIP_CAMERA`: Class
 * `DECK_CAMERA`: Class
 
-## Sea_operator
+### Sea_operator
 * `SEA_OPERATOR`: Class
 
-## Shadow
+### Shadow
 * `Shadow`: Class
 
-## Ship
+### Ship
 * `SHIP`: Class
 * `ShipLights`: Class
 * `ShipTracks`: Class
 
-## Sink_effect
+### Sink_effect
 * `SINKEFFECT`: Class
 
-## Sound
+### Sound
 * `SOUND`: Class
 
-## Soundservice
+### Soundservice
 * `SoundService`: Service
 * `SoundVisualisationEntity`: Class
 
-## Teleport
+### Teleport
 * `TMPTELEPORT`: Class
 * `FINDFILESINTODIRECTORY`: Class
 * `FINDDIALOGNODES`: Class
 
-## Tornado
+### Tornado
 * `Tornado`: Class
 
-## Touch
+### Touch
 * `TOUCH`: Class
 
-## Waterrings
+### Waterrings
 * `WaterRings`: Class
 
-## Weather
+### Weather
 * `WEATHER`: Class
 * `RAIN`: Class
 * `SUNGLOW`: Class
@@ -178,10 +228,10 @@ These are the following:
 * `WATERFLARE`: Class
 * `Astronomy`: Class
 
-## Worldmap
+### Worldmap
 * `WorldMap`: Class
 
-## Xinterface
+### Xinterface
 * `STRSERVICE`: Service
 * `SCRIPT_INTERFACE_FUNCTIONS`: Script Library
 * `OBJ_STRSERVICE`: Class
@@ -194,7 +244,7 @@ These are the following:
 * `InterfaceBackScene`: Class
 * `CAviPlayer`: Class
 
-## Steam
+### Steam
 * `SteamApiScriptLib`: Script Library
 
 
