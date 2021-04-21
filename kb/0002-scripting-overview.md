@@ -49,7 +49,7 @@ The game goes through the following phases:
 
 ### Entities and Layers
 
-The game logic operates on the concepts of "entities". These are the objects which have a shape the compiler expects. It can be tangible things like sea, weather, grass, characters, but also intangible things like battle interface or sea AI.
+The game logic operates on the concepts of "entities". These are the objects from which compiler can expect some specific attributes. The entities may be tangible like sea, weather, grass, characters, but also intangible like battle interface or sea AI.
 
 For more information on entities, check out [this article](0004-entities.md).
 

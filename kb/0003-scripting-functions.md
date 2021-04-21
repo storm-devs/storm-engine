@@ -71,7 +71,7 @@ Below are the functions which make part of the compiler API. Each function has i
         object obj = CreateClass("Sky");        // OK
     ```
 
-* **CreateEntity**: Similar to `CreateClass`, except it allows select attributes to be used directly by the engine. 
+* **CreateEntity**: Similar to `CreateClass`, except it allows specific attributes to be used directly by the engine. 
     * `objectReference`: Address of the object to which the new entity will be bound.
     * `entityType`: Class name, must be [predefined by the engine](0004-entity.md).
     ``` C++
