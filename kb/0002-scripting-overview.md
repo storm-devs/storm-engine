@@ -3,7 +3,7 @@ _[back to Index](../index.md)_
 
 ![Storm Engine Logo](../media/SE_logo.png)
 
-**Related articles**: [Scripting Functions](0003-scripting-functions.md)
+**Related articles**: [Scripting Functions](0003-scripting-functions.md), [Entities](0004-entities.md)
 
 Upon startup, the game (`ENGINE.exe`) will attempt to load and compile the game logic located in `program` directory. These "scripts" are written in C using the game's API, and compiled at runtime using the built-in compiler. 
 
@@ -46,6 +46,12 @@ The game goes through the following phases:
 
 * Upon startup, each file is analyzed and compiled into a single translation unit (`COMPILER::Compile`).
 * During the game runtime, compiler will analyze each token and act upon it by introducing new tokens, updating existing, or removing old ones. This way the program will ebb and flow until it reaches its exit code (`COMPILER::BC_Execute`).
+
+### Entities and Layers
+
+The game logic operates on the concepts of "entities". These are the objects which have a shape the compiler expects. It can be tangible things like sea, weather, grass, characters, but also intangible things like battle interface or sea AI.
+
+For more information on entities, check out [this article](0004-entities.md).
 
 ## Typing
 
@@ -178,6 +184,10 @@ examples:
 
 An `object` is a treelike text structure of an arbitrary shape. This means that it can store any amount of fields in _text_ form, even though specifying a number without quotes is allowed.
 
+Each object can be promoted to 'entity object' by binding itself to an entity type (using `CreateClass` or `CreateEntity` functions). Entity types are described in detail [here](0004-entities.md). 
+
+Uninitialized objects can still be created and used by the scripts, except they won't be considered engine API.
+
 The strings may be converted back to `int` or `float` using `sti` and `stf` functions. 
 
 ``` C++
@@ -185,8 +195,12 @@ syntax:
     object object_name;
 example:
     object Sky;
+    if (!isEntity(&Sky))
+    {
+        CreateEntity(&Sky, "Sky");
+    }
     Sky.State = "sunset";
-    Sky.Size = "10";
+    Sky.Size = 10;
     Sky.Angle = "25.0f";
 
     int skyAngle = stf(Sky.Angle); // 25.0f
@@ -241,6 +255,22 @@ example:
     aSky.Dir.d20 = "NNE";         // OK
     aSky.Dir.(attribute) = "NNE"; // OK
     aSky.Dir.attribute = "NNE";   // Error
+```
+
+Predefined attributes of the entity objects will be interpreted by the engine at runtime.
+
+``` C++
+example:
+    object sky;
+    if (!isEntity(&sky))
+    {
+        CreateEntity(&sky, "Sky");
+    }
+    sky.State = "sunset";   // Affects game engine directly
+    sky.Size = 10;          // Affects game engine directly
+    sky.Angle = "25.0f";    // Affects game engine directly
+    sky.Coverage = "clear"; // Does not affect the game engine directly, 
+                            // probably used elsewhere in the scripts
 ```
 
 ## Branching

@@ -3,7 +3,7 @@ _[back to Index](../index.md)_
 
 ![Storm Engine Logo](../media/SE_logo.png)
 
-**Related articles**: [Scripting Language Overview](0002-scripting-overview.md)
+**Related articles**: [Scripting Language Overview](0002-scripting-overview.md), [Article 0004. Entities](0004-entities.md)
 
 Here you will find the list of the built-in and some game-level useful functions for the game scripting.
 
@@ -14,7 +14,7 @@ Below are the functions which make part of the compiler API. Each function has i
 
 ### Validation
 
-* **GetEngineVersion**: return `ENGINE_SCRIPT_VERSION` constant (defined in `core.h`). 
+* **GetEngineVersion**: Return `ENGINE_SCRIPT_VERSION` constant (defined in `core.h`). 
     * **Compiler Token**: `FUNC_GETENGINEVERSION`
     * The engine version is pushed back to the compiler, and an error will be produced in case of version mismatch. Therefore, retrieving and using it in the scripting language after the initial call isn't necessary.
     ``` C++
@@ -23,7 +23,8 @@ Below are the functions which make part of the compiler API. Each function has i
     usage: 
         GetEngineVersion();
     ```
-* **CheckFunction**: verify if a function with specified name exists. 
+
+* **CheckFunction**: Verify if a function with specified name exists. 
     * **Compiler Token**: `FUNC_CHECKFUNCTION`
     * `value`: function name.
     ``` C++
@@ -35,12 +36,154 @@ Below are the functions which make part of the compiler API. Each function has i
             ControlsTreeInit();
         }
     ```
-* **TestRef**: 
+
+* **TestRef**: Verify the referenced object or attribute is still alive.
     * **Compiler Token**: `FUNC_TEST_REF`
+    * `target`: a reference or an attribute to test.
     ``` C++
     syntax:
-        int TestRef(1); 
+        bool TestRef(ref target); 
+        bool TestRef(aref target); 
+    example:
+        bool LAi_CheckCharacter(aref chr, string out)
+        {
+            if (!TestRef(chr))
+            {
+                Trace("LAi_CheckCharacter -> invalid aref, call from " + out);
+                return false;
+            }
+
+            return true;
+        }
     ```
+
+### Entity Manipulation
+
+* **CreateClass**: Bind an object with an entity.
+    * **Compiler Token**: `FUNC_CREATE_CLASS`
+    * `entityType`: Class name, must be [predefined by the engine](0004-entity.md).
+    * Objects bound by `CreateClass` don't expose their attributes to the engine.
+    ``` C++
+    syntax:
+        object CreateClass(string entityType); 
+    example:
+        object obj = CreateClass("CustomType"); // "invalid entity name"
+        object obj = CreateClass("Sky");        // OK
+    ```
+
+* **CreateEntity**: Similar to `CreateClass`, except it allows select attributes to be used directly by the engine. 
+    * `objectReference`: Address of the object to which the new entity will be bound.
+    * `entityType`: Class name, must be [predefined by the engine](0004-entity.md).
+    ``` C++
+    syntax:
+        bool CreateEntity(object& objectReference, string entityType); 
+    example: 
+        object torn;
+        if (!isEntity(&torn))
+        {
+            CreateEntity(&torn, "Tornado");
+        }
+    ```
+
+* **DeleteClass**: Unbinds the entity and clears all the data of an object. All the `ref`s and `aref`s will now fail.
+    * **Compiler Token**: `FUNC_DELETE_Entity` (capitalization preserved)
+    ``` C++
+    syntax:
+        void DeleteClass(object obj);
+    ```
+
+### Layer Manipulation
+
+Please note that, unlike the previous versions, the current version of the Storm Engine requires the layers to be entered as IDs (as opposed to strings in the past). You can find the reference table [here](0005-entities.md).
+
+* **LayerAddObject**: add an entity to the specified layer 
+    * **Compiler Token**: `FUNC_LAYER_ADDOBJECT`
+    * `layerID`: id of the desired layer.
+    * `obj`: address of the added object.
+    * `priority`: Lower priority entities will be processed first, can be negative.
+    ``` C++
+    syntax:
+        void LayerAddObject(int layerID, object &obj, int priority);
+    example: 
+        #define SEA_EXECUTE 2
+        #define SEA_REALIZE 3
+        object tornado;
+        CreateEntity(&tornado, "Tornado");
+        LayerAddObject(SEA_EXECUTE, &tornado, 65535); 
+        LayerAddObject(SEA_REALIZE, &tornado, 65535);
+    ```
+
+* **LayerSetExecute**: Mark a layer as an execute layer
+    * **Compiler Token**: `FUNC_LAYER_SET_EXECUTE`
+    * `layerID`: id of the desired layer.
+    ``` C++
+    syntax:
+        void LayerSetExecute(int layerID);
+    example:
+        LayerSetExecute(SEA_EXECUTE);
+    ```
+
+* **LayerSetRealize**: Mark a layer as a realize layer
+    * **Compiler Token**: `FUNC_LAYER_SET_REALIZE`
+    * `layerID`: id of the desired layer.
+    ``` C++
+    syntax:
+        void LayerSetRealize(int layerID);
+    example:
+        LayerSetRealize(SEA_REALIZE);
+    ```
+
+* **LayerFreeze**: Pause/unpause layer execution
+    * **Compiler Token**: `FUNC_LAYER_FREEZE`
+    * `layerID`: id of the desired layer.
+    * `isEnabled`: whether or not the layer should be enabled.
+    ``` C++
+    syntax:
+        void LayerFreeze(int layerID, bool isEnabled); 
+    ```
+
+* **LayerDelObject**
+    * **Compiler Token**: `FUNC_LAYER_DELOBJECT`
+    * `layerID`: id of the desired layer.
+    * `obj`: address of the removed object.
+    ``` C++
+    syntax:
+        void LayerDelObject(int layerID, object &obj);
+    example:
+        LayerDelObject(EXECUTE, &Sky);
+        LayerDelObject(REALIZE, &Sky);
+    ```
+
+Currently disabled/not implemented functions: 
+
+* **LayerCreate**: create a layer with a specified name
+    * **Compiler Token**: `FUNC_LAYER_CREATE`
+    ``` C++
+    syntax:
+        void LayerCreate(int layerID, bool ordered);
+    ```
+
+* **LayerDelete**: delete a layer with the specified name
+    * **Compiler Token**: `FUNC_LAYER_DELETE`
+    ``` C++
+    syntax:
+        void LayerDeleteLayer(int layerID);
+    ```
+
+* **LayerDeleteContent**: delete all the objects linked to specified layer.
+    * **Compiler Token**: `FUNC_LAYER_DELETE_CONTENT`
+    ``` C++
+    syntax:
+        void LayerDeleteContent(int layerID);
+    ```
+
+* **LayerSetMessages**: set specific flags on a layer
+    * **Compiler Token**: `FUNC_LAYER_SET_MESSAGES`
+    ``` C++
+    syntax:
+        void LayerSetMessages(int layerID, bool isEnabled); 
+    ```
+
 
 ### Utility
 
@@ -57,42 +200,152 @@ Below are the functions which make part of the compiler API. Each function has i
         SetTimeScale(0.0);
     ```
 
-NOTE(yakvi): Below is work-in-progress
+### Math
 
-* **Rand**
+* **Rand**: Generate a random positive number from 0 to `range`.
     * **Compiler Token**: `FUNC_RAND`
+    * `range`: Any positive number.
     ``` C++
     syntax:
         int Rand(int range);
+    usage: 
+        ref ch = GetCharacter(NPC_GenerateCharacter(...));
+        ch.Nation = rand(4); // random nation
     ```
 
-* **frnd**
+* **frnd**: Generate a random float from 0.0 to 1.0 (included).
     * **Compiler Token**: `FUNC_FRAND`
     ``` C++
     syntax:
-        float frnd(); // float from [0,..,1.0];
+        float frnd(); 
+    usage: 
+        float fChecker = frand();
+        if (fChecker < 0.8) {...}
     ```
 
-* **CreateClass**
-    * **Compiler Token**: `FUNC_CREATE_CLASS`
+* **abs**: Return the absolute (always positive) of the given value.
+    * **Compiler Token**: `FUNC_ABS`
+    * `value`: can be positive or negative, integer or float
     ``` C++
     syntax:
-        object CreateClass(string className); // bind entity to object (object attributes will be   cleared)
+        int abs(int value);
+        float abs(float value);
+
+    example:
+        int x = 5;
+        int y = -5;
+
+        int absX = abs(x); // 5.0
+        int absY = abs(y); // 5.0
     ```
 
-* **CreateEntity**
-    * **Compiler Token**: `FUNC_CREATE_Entity`
+* **sqr**: Elevate a number to its square (power of 2).
+    * **Compiler Token**: `FUNC_SQR`
+    * `value`: can be an integer or a float
     ``` C++
     syntax:
-        int CreateEntity(object& objectReference, string className); // bind entity to object, return 0     if failed
+        float sqr(int value);
+        float sqr(float value);
+    example: 
+        int x = 5 * 5;  // 25.0
+        int y = sqr(5); // 25.0
     ```
 
-* **DeleteClass**
-    * **Compiler Token**: `FUNC_DELETE_Entity`
+* **Pow**: Elevate a number to a custom power. 
+    **Compiler Token**: `FUNC_POW`
+    * `base`: number to elevate
+    * `exponent`: desired power
     ``` C++
     syntax:
-        void DeleteClass(object obj);
+        float Pow(float base, float exponent);
+    example:
+        Log_Info("" + pow(10.0, 3.0)); // 10^3, 1000
+        Log_Info("" + pow(10.0, -3.0)); // 10^3, 0.001
     ```
+
+
+* **sqrt**: Extract the square root of the given value.
+    * **Compiler Token**: `FUNC_SQRT`
+    * `value`: can be an integer or a float
+    ``` C++
+    syntax:
+        float sqrt(int value);
+        float sqrt(float value);
+    example: 
+        int x = sqrt(25); // 5.0
+    ```
+
+* **sin**: Calculate the sine of the given angle.
+    * **Compiler Token**: `FUNC_SIN`
+    * `value`: angle in radians.
+    ``` C++
+    syntax:
+        float sin(int value);
+        float sin(float value);
+    example: 
+        Particles.winddirection.x = sin(Whr_GetWindAngle());
+    ```
+
+* **cos**: Calculate the cosine of the given angle.
+    * **Compiler Token**: `FUNC_COS`
+    * `value`: angle in radians.
+    ``` C++
+    syntax:
+        float cos(int value);
+        float cos(float value);
+    example:
+        Particles.winddirection.z = cos(Whr_GetWindAngle());
+    ```
+
+* **tan**: Calculate the tangent of the given angle.
+    * **Compiler Token**: `FUNC_TAN`
+    * `value`: angle in radians.
+    ``` C++
+    syntax:
+        float tan(int value);
+        float tan(float value);
+    ```
+
+* **atan**: Calculate the arctangent (inverse tangent) of a given number.
+    * **Compiler Token**: `FUNC_ATAN`
+    * `value`: tangent of the desired angle.
+    * returns angle in radians, in the range [-π/2, π/2].
+    ``` C++
+    syntax:
+        float atan(int value);
+        float atan(float value);
+    ```
+
+* **atan2**: Calculate the arctangent of a given 2D coordinate point.
+    * **Compiler Token**: `FUNC_TAN2`
+    * `x`: x-coordinate of the point
+    * `y`: y-coordinate of the point
+    * Return value depends on the input
+    ``` C++
+    syntax:
+        float atan2(int/float x, int/float y); // in any combination
+    ```
+
+* **asin**: Calculate the arcsine (inverse sine) of a number.
+    * **Compiler Token**: `FUNC_ASIN`
+    * `value`: sine of the angle to be inverted, -1 to 1.
+    ``` C++
+    syntax:
+        float asin(int value);
+        float asin(float value);
+    ```
+
+* **acos**: Calculate the arccosine (inverse cosine) of a number.
+    * **Compiler Token**: `FUNC_ACOS`
+    * `value`: cosine of the angle to be inverted, -1 to 1.
+    ``` C++
+    syntax:
+        float acos(int value);
+        float acos(float value);
+    ```
+
+
+
 
 * **SetEventHandler**
     * **Compiler Token**: `FUNC_SET_EVENT_HANDLER`
@@ -170,132 +423,6 @@ NOTE(yakvi): Below is work-in-progress
     syntax:
         float MakeFloat(string value);
         float MakeFloat(int value);
-    ```
-
-* **LayerDeleteContent**
-    * **Compiler Token**: `FUNC_LAYER_DELETE_CONTENT`
-    ``` C++
-    syntax:
-        void LayerDeleteContent(string layerName);
-    // delete classes linked to this layer
-    ```
-
-* **LayerSetRealize**
-    * **Compiler Token**: `FUNC_LAYER_SET_REALIZE`
-    ``` C++
-    syntax:
-        void LayerSetRealize(string layerName);
-    ```
-
-* **LayerSetExecute**
-    * **Compiler Token**: `FUNC_LAYER_SET_EXECUTE`
-    ``` C++
-    syntax:
-        void LayerSetExecute(string layerName);
-    ```
-* **LayerSetMessages**
-    * **Compiler Token**: `FUNC_LAYER_SET_MESSAGES`
-    ``` C++
-    syntax:
-        void LayerSetMessages(string layerName, bool isEnabled); 
-    ```
-* **LayerAddObject**
-    * **Compiler Token**: `FUNC_LAYER_ADDOBJECT`
-    ``` C++
-    syntax:
-        void LayerAddObject(string name, object obj, int level);
-    ```
-* **LayerDelObject**
-    * **Compiler Token**: `FUNC_LAYER_DELOBJECT`
-    ``` C++
-    syntax:
-        void LayerDelObject(string name, object obj);
-    ```
-* **LayerFreeze**
-    * **Compiler Token**: `FUNC_LAYER_FREEZE`
-    ``` C++
-    syntax:
-        void LayerFreeze(string name, bool isEnabled); 
-    ```
-
-* **abs**
-    * **Compiler Token**: `FUNC_ABS`
-    ``` C++
-    syntax:
-        int abs(int value);
-        float abs(float value);
-    ```
-
-* **sqrt**
-    * **Compiler Token**: `FUNC_SQRT`
-    ``` C++
-    syntax:
-        float sqrt(int value);
-        float sqrt(float value);
-    ```
-
-* **sqr**
-    * **Compiler Token**: `FUNC_SQR`
-    ``` C++
-    syntax:
-        float sqr(int value);
-        float sqr(float value);
-    ```
-
-* **sin**
-    * **Compiler Token**: `FUNC_SIN`
-    ``` C++
-    syntax:
-        float sin(int value);
-        float sin(float value);
-    ```
-
-* **cos**
-    * **Compiler Token**: `FUNC_COS`
-    ``` C++
-    syntax:
-        float cos(int value);
-        float cos(float value);
-    ```
-
-* **tan**
-    * **Compiler Token**: `FUNC_TAN`
-    ``` C++
-    syntax:
-        float tan(int value);
-        float tan(float value);
-    ```
-
-* **atan**
-    * **Compiler Token**: `FUNC_ATAN`
-    ``` C++
-    syntax:
-        float atan(int value);
-        float atan(float value);
-    ```
-
-* **atan2**
-    * **Compiler Token**: `FUNC_TAN2`
-    ``` C++
-    syntax:
-        float atan2(int value);
-        float atan2(float value);
-    ```
-
-* **asin**
-    * **Compiler Token**: `FUNC_ASIN`
-    ``` C++
-    syntax:
-        float asin(int value);
-        float asin(float value);
-    ```
-
-* **acos**
-    * **Compiler Token**: `FUNC_ACOS`
-    ``` C++
-    syntax:
-        float acos(int value);
-        float acos(float value);
     ```
 
 * **DeleteAttribute**
@@ -473,14 +600,6 @@ NOTE(yakvi): Below is work-in-progress
     ``` C++
     syntax:
         void Breakpoint();
-    ```
-
-* **Pow**
-    **Compiler Token**: `FUNC_POW`
-    ``` C++
-    syntax:
-        float Pow(float exponent, float base);
-        // TODO(yakvi): base/exponent inverted??? to verify
     ```
 
 * **CopyAttributes**

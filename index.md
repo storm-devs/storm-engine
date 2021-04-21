@@ -22,6 +22,8 @@ This knowledge base is maintained in English language.
 ### Engine Architecture
 
 * Source Overview
+* [Entities](kb/0004-entities.md)
+
 
 ### Class Reference
 
