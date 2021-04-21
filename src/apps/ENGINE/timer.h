@@ -1,112 +1,102 @@
 #pragma once
 
-#include <Windows.h>
-
-#define USE_HIGH_FREQUENCY
-#define FILTER_SIZE 16
+#include <chrono>
 #include <cstdint>
 
 class TIMER
 {
+    using Clock = std::chrono::high_resolution_clock;
+    using Milliseconds = std::chrono::milliseconds;
+    using time_point = std::chrono::time_point<Clock>;         // Time Point used to get time deltas.
+    using Duration = std::chrono::duration<float, std::milli>; // Time difference between time points.
+
   public:
-    TIMER() : FixedDeltaValue(0), Previous_Time(0), fDeltaTime(0)
+    bool Ring = false;            // If true, COMPILER::ProcessFrame adds a runtime event.
+    bool FixedDelta = false;      // Is the time delta between frames constant
+    uint32_t FixedDeltaValue = 0; // Value of constant time delta between frames
+    uint32_t Delta_Time = 20; // The time difference between current and last frame in milliseconds, as an unsigned int.
+    float fDeltaTime = 0.0f;  // The time difference between current and last frame, as a float
+    uint32_t rDelta_Time = Delta_Time;
+    uint32_t fps = 0;       // Frames per second based on the last second.
+    uint32_t fps_count = 0; // Running total of frames rendered in the last second, which resets to 0 every second.
+    uint32_t fps_time = 0;  // A one-second timer which is used to update the FPS counter on the screen.
+    const Milliseconds kMaxDelta = Milliseconds{100}; // Maximum time delta per frame.
+    time_point Current, Previous; // Timepoints of when each iteration of the timer has started and finished.
+
+    TIMER()
     {
-#ifdef USE_HIGH_FREQUENCY
-        LARGE_INTEGER liFreq;
-        QueryPerformanceFrequency(&liFreq);
-        fSecondsPerTick = 1.0f / liFreq.QuadPart;
-        QueryPerformanceCounter(&liPrevTime);
-#else
-        Previous_Time = GetTickCount();
-#endif
-        Delta_Time = 20;
-        rDelta_Time = Delta_Time;
-        fps = 0;
+        Current = Previous = Clock::now();
+    }
+
+    void RefreshFPS()
+    {
+        // Modulo operator is not necessary as we have limited maximum frame delta, so fps_time above 2000 milliseconds
+        // are not possible.
+        fps_time -= (uint32_t)Milliseconds{1000}.count();
+        // Refresh the fps counter
+        fps = fps_count;
         fps_count = 0;
-        fps_time = 0;
-        Ring = false;
-        FixedDelta = false;
-        ADT = 1;
-        ADT_ON = true;
-        ADT_val = 10;
-    };
-    bool FixedDelta;
-    uint32_t FixedDeltaValue;
-    bool Ring;
-#ifdef USE_HIGH_FREQUENCY
-    float fSecondsPerTick;
-    LARGE_INTEGER liPrevTime;
-#endif
-    uint32_t Previous_Time;
-    uint32_t Delta_Time;
-    float fDeltaTime;
-    uint32_t rDelta_Time;
-    uint32_t fps;
-    uint32_t fps_count;
-    uint32_t fps_time;
-    uint32_t ADT;
-    float ADT_val;
-    bool ADT_ON;
+        Ring = true; // This raises an event which causes the fps display to update
+    }
+
     uint32_t Run()
     {
-#ifdef USE_HIGH_FREQUENCY
-        LARGE_INTEGER liCurTime;
-        QueryPerformanceCounter(&liCurTime);
-        fDeltaTime = 1000.0f * (liCurTime.QuadPart - liPrevTime.QuadPart) * fSecondsPerTick;
-        Delta_Time = long(fDeltaTime);
-#else
-        uint32_t Current_Time;
-        Current_Time = GetTickCount();
-        Delta_Time = Current_Time - Previous_Time;
-        rDelta_Time = Delta_Time;
-#endif
-        rDelta_Time = Delta_Time;
-        if (Delta_Time > 100)
+        Current = Clock::now();
+        Delta_Time = (uint32_t)Duration(Current - Previous).count();
+        if (Delta_Time > (uint32_t)kMaxDelta.count())
         {
-            Delta_Time = 100;
+            rDelta_Time = Delta_Time = (uint32_t)kMaxDelta.count();
         }
 
-        fps_time += rDelta_Time;
+        rDelta_Time = Delta_Time;
+        fDeltaTime = (float)Delta_Time;
         fps_count++;
-        if (fps_time >= 1000)
+        fps_time += Delta_Time;
+        if (fps_time >= Milliseconds{1000}.count())
         {
-            fps_time = fps_time - 1000;
-            fps = fps_count;
-            fps_count = 0;
-            Ring = true;
+            RefreshFPS();
         }
         else
+        {
             Ring = false;
-#ifdef USE_HIGH_FREQUENCY
-        liPrevTime = liCurTime;
-#else
-        Previous_Time = Current_Time;
-#endif
+        }
 
         if (Delta_Time == 0)
+        {
             Delta_Time = 1;
+        }
+
+        Previous = Current;
+
         if (FixedDelta)
+        {
             return FixedDeltaValue;
+        }
         return Delta_Time;
     };
 
     uint32_t GetDeltaTime()
     {
-        if (FixedDelta)
-            return FixedDeltaValue;
-        return Delta_Time;
+        // if (FixedDelta)
+        //{
+        //    return FixedDeltaValue;
+        //}
+        // return Delta_Time;
+
+        // Branchless approach:
+        // If FixedDelta is true, this evaluates to return the FixedDeltaValue.
+        // If not, Delta_Time is returned.
+        return (uint32_t)((FixedDelta * FixedDeltaValue) + (!FixedDelta * Delta_Time));
     }
 
-    void SetDelta(long DeltaTime)
+    void SetDelta(const long DeltaTime)
     {
-        if (DeltaTime < 0)
+        if (DeltaTime <= 0)
         {
             FixedDelta = false;
+            return;
         }
-        else
-        {
-            FixedDeltaValue = DeltaTime;
-            FixedDelta = true;
-        }
+        FixedDeltaValue = DeltaTime;
+        FixedDelta = true;
     }
 };
