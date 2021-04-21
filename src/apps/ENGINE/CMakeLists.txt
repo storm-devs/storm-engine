@@ -1,8 +1,7 @@
 project(engine)
 
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-
-find_package(Fmod REQUIRED) # required to set ${Fmod_LIBRARY_PATHS}
+find_package(CrashpadHandler REQUIRED)
+find_package(Fmod REQUIRED)
  
 add_executable(${PROJECT_NAME} WIN32
     compiler.cpp
@@ -123,13 +122,14 @@ target_link_libraries(${PROJECT_NAME}
     xinterface
 
     CONAN_PKG::zlib
+    CONAN_PKG::sentry-native
     comctl32.lib
     dbghelp.lib
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${CONAN_BIN_DIRS_CRASHPAD_RELEASE}/crashpad_handler.exe"
+        "${CrashpadHandler_PATH}"
         "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
 
     COMMAND ${CMAKE_COMMAND} -E copy_if_different

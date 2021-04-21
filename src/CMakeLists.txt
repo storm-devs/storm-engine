@@ -7,6 +7,10 @@ if (STORM_ENABLE_STEAM)
 endif()
 
 if (MSVC)
+    # Output to the same directory regardless of [CONFIG]
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+
     # Always generate PDBs
     add_compile_options(/Zi)
     add_link_options(/DEBUG)
