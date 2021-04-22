@@ -251,9 +251,9 @@ def convert(input_name, output_name):
     try:
         globname = globname.decode("utf-8").split(u'\x00')
     except UnicodeDecodeError as error:
-        # Some files are still with cp-1251 encoding. 
+        # Some files are still with cp-1251 encoding.
         globname = globname.decode("cp1251").split(u'\x00')
-    
+
     names = struct.unpack('<'+str(getattr(rhead, "names")) +
                           'l', (f.read(getattr(rhead, "names") * sizeof(c_long))))
     tname = f.read(getattr(rhead, "ntextures") * sizeof(c_long))
@@ -280,7 +280,10 @@ def convert(input_name, output_name):
             self.nvertices = nvertices
             self.ntriangles = ntriangles
             self.vertex_buff = vertex_buff
-            self.parsed_name = names_dict[name]
+            try:
+                self.parsed_name = names_dict[name]
+            except KeyError:
+                self.parsed_name = "Name_not_found"
             self.o = "o "+self.parsed_name+"\n"
             self.v = ""
             self.vn = ""
