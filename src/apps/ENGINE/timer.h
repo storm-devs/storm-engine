@@ -76,7 +76,7 @@ class TIMER
             return FixedDeltaValue;
         }
         return Delta_Time;
-    };
+    }
 
     uint32_t GetDeltaTime()
     {
