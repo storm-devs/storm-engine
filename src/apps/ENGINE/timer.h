@@ -7,7 +7,7 @@ class TIMER
 {
     using Clock = std::chrono::high_resolution_clock;
     using Milliseconds = std::chrono::milliseconds;
-    using time_point = std::chrono::time_point<Clock>;         // Time Point used to get time deltas.
+    using TimePoint = std::chrono::time_point<Clock>;          // Time Point used to get time deltas.
     using Duration = std::chrono::duration<float, std::milli>; // Time difference between time points.
 
   public:
@@ -17,11 +17,14 @@ class TIMER
     uint32_t Delta_Time = 20; // The time difference between current and last frame in milliseconds, as an unsigned int.
     float fDeltaTime = 0.0f;  // The time difference between current and last frame, as a float
     uint32_t rDelta_Time = Delta_Time;
-    uint32_t fps = 0;       // Frames per second based on the last second.
-    uint32_t fps_count = 0; // Running total of frames rendered in the last second, which resets to 0 every second.
-    uint32_t fps_time = 0;  // A one-second timer which is used to update the FPS counter on the screen.
-    const Milliseconds kMaxDelta = Milliseconds{100}; // Maximum time delta per frame.
-    time_point Current, Previous; // Timepoints of when each iteration of the timer has started and finished.
+    uint32_t fps = 0;            // Frames per second based on the last second.
+    uint32_t fps_count = 0;      // Running total of frames rendered in the last second, which resets to 0 every second.
+    uint32_t fps_time = 0;       // A one-second timer which is used to update the FPS counter on the screen.
+    TimePoint Current, Previous; // Timepoints of when each iteration of the timer has started and finished.
+    static constexpr Milliseconds kMaxDelta = Milliseconds{100}; // Maximum time delta per frame.
+    static constexpr Milliseconds kFPSUpdateInterval =
+        Milliseconds{1000}; // How often to raise the event to update the FPS counter
+    static_assert(kMaxDelta < kFPSUpdateInterval, "Max delta time should be less than fps update interval");
 
     TIMER()
     {
@@ -30,9 +33,9 @@ class TIMER
 
     void RefreshFPS()
     {
-        // Modulo operator is not necessary as we have limited maximum frame delta, so fps_time above 2000 milliseconds
-        // are not possible.
-        fps_time -= (uint32_t)Milliseconds{1000}.count();
+        // Modulo operator is not necessary as we have limited maximum frame delta, so fps_time values over twice this
+        // value are not possible.
+        fps_time -= (uint32_t)kFPSUpdateInterval.count();
         // Refresh the fps counter
         fps = fps_count;
         fps_count = 0;
@@ -52,7 +55,7 @@ class TIMER
         fDeltaTime = (float)Delta_Time;
         fps_count++;
         fps_time += Delta_Time;
-        if (fps_time >= Milliseconds{1000}.count())
+        if (fps_time >= kFPSUpdateInterval.count())
         {
             RefreshFPS();
         }
@@ -77,16 +80,11 @@ class TIMER
 
     uint32_t GetDeltaTime()
     {
-        // if (FixedDelta)
-        //{
-        //    return FixedDeltaValue;
-        //}
-        // return Delta_Time;
-
-        // Branchless approach:
-        // If FixedDelta is true, this evaluates to return the FixedDeltaValue.
-        // If not, Delta_Time is returned.
-        return (uint32_t)((FixedDelta * FixedDeltaValue) + (!FixedDelta * Delta_Time));
+        if (FixedDelta)
+        {
+            return FixedDeltaValue;
+        }
+        return Delta_Time;
     }
 
     void SetDelta(const long DeltaTime)
