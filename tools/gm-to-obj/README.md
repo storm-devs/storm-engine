@@ -30,6 +30,18 @@ Run ``python .\convert_all.py {folder}``
 
 E.g. ``python .\convert_all.py "E:\SteamLibrary\steamapps\common\Sea Dogs To Each His Own\RESOURCE\MODELS\Ammo"``
 
+## Issues
+
+The following files will not convert, as they cannot be representend as .obj:
+
+TEHO
+
+- `big_sky.gm`
+- `light.gm`
+- `sky.gm`
+- `small_sky.gm`
+- `sphere.gm`
+
 ## Author
 
 [Andrea Mangione]( https://github.com/MangioneAndrea)
