@@ -66,7 +66,8 @@ class TIMER
 
         if (Delta_Time == 0)
         {
-            Delta_Time = 1;
+            rDelta_Time = Delta_Time = 1;
+            fDeltaTime = 1.0f;
         }
 
         Previous = Current;
