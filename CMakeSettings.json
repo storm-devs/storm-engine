@@ -21,16 +21,6 @@
       "buildCommandArgs": "",
       "enableClangTidyCodeAnalysis": true,
       "variables": []
-    },
-    {
-      "name": "clang-debug",
-      "generator": "Ninja",
-      "configurationType": "Debug",
-      "buildRoot": "${projectDir}\\build\\${name}",
-      "cmakeCommandArgs": "-DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++", // Override compiler
-      "buildCommandArgs": "",
-      "inheritEnvironments": [ "clang_cl_x64_x64" ],
-      "variables": []
     }
   ]
 }
