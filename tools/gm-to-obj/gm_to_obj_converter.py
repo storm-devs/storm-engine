@@ -247,8 +247,14 @@ def convert(input_name, output_name):
     f.readinto(rhead)
 
     # Read all the following lines till the buffer
-    globname = f.read(getattr(rhead, "name_size")
-                      ).decode("utf-8").split(u'\x00')
+    globname = f.read(getattr(rhead, "name_size"))
+    try:
+        globname = globname.decode("utf-8").split(u'\x00')
+    except UnicodeDecodeError as error:
+        # Some files are still with cp-1251 encoding. 
+        globname = globname.decode("cp1251").split(u'\x00')
+    
+    print(globname)
     names = struct.unpack('<'+str(getattr(rhead, "names")) +
                           'l', (f.read(getattr(rhead, "names") * sizeof(c_long))))
     tname = f.read(getattr(rhead, "ntextures") * sizeof(c_long))
