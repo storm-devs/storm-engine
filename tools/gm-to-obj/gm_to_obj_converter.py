@@ -254,7 +254,6 @@ def convert(input_name, output_name):
         # Some files are still with cp-1251 encoding. 
         globname = globname.decode("cp1251").split(u'\x00')
     
-    print(globname)
     names = struct.unpack('<'+str(getattr(rhead, "names")) +
                           'l', (f.read(getattr(rhead, "names") * sizeof(c_long))))
     tname = f.read(getattr(rhead, "ntextures") * sizeof(c_long))
