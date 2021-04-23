@@ -48,7 +48,7 @@ class TIMER
         Delta_Time = (uint32_t)Duration(Current - Previous).count();
         if (Delta_Time > (uint32_t)kMaxDelta.count())
         {
-            rDelta_Time = Delta_Time = (uint32_t)kMaxDelta.count();
+            Delta_Time = (uint32_t)kMaxDelta.count();
         }
 
         rDelta_Time = Delta_Time;
