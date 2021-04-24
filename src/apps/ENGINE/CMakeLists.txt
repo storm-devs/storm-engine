@@ -1,10 +1,13 @@
 project(engine)
 
-find_package(Fmod REQUIRED) # required to set ${Fmod_LIBRARY_PATHS}
-
+find_package(CrashpadHandler REQUIRED)
+find_package(Fmod REQUIRED)
+ 
 add_executable(${PROJECT_NAME} WIN32
     compiler.cpp
     compiler.h
+    ExecutableLifecycleService.hpp
+    ExecutableLifecycleService.cpp
     Core.cpp
     data.cpp
     data.h
@@ -119,11 +122,16 @@ target_link_libraries(${PROJECT_NAME}
     xinterface
 
     CONAN_PKG::zlib
+    CONAN_PKG::sentry-native
     comctl32.lib
     dbghelp.lib
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CrashpadHandler_PATH}"
+        "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${Fmod_LIBRARY_PATHS}/fmod.dll"
         "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"

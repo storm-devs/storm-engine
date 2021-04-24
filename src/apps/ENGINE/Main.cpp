@@ -1,12 +1,9 @@
+#include "ExecutableLifecycleService.hpp"
 #include "SteamApi.hpp"
 #include "compiler.h"
 #include "file_service.h"
 #include "fs.h"
 #include "s_debug.h"
-
-#include <crtdbg.h>
-#include <dbghelp.h>
-#include <tchar.h>
 
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/spdlog.h>
@@ -17,7 +14,6 @@ S_DEBUG CDebug;
 
 namespace
 {
-constexpr auto DUMP_FILENAME = "engine_dump.dmp";
 
 bool isHold = false;
 bool bActive = false;
@@ -25,37 +21,10 @@ bool bActive = false;
 } // namespace
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-int Alert(const char *lpCaption, const char *lpText);
-void CreateMiniDump(EXCEPTION_POINTERS *pep);
-
-bool runExceptionWrapped()
-{
-    try
-    {
-        return core.Run();
-    }
-    catch (const std::exception &e)
-    {
-        spdlog::critical(e.what());
-        throw;
-    }
-}
-
-bool runSehWrapped()
-{
-    __try
-    {
-        return runExceptionWrapped();
-    }
-    __except (CreateMiniDump(GetExceptionInformation()), EXCEPTION_EXECUTE_HANDLER)
-    {
-        std::terminate();
-    }
-}
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
 {
-    /* Prevent multiple instances */
+    // Prevent multiple instances
     if (!CreateEventA(nullptr, false, false, "Global\\FBBD2286-A9F1-4303-B60C-743C3D7AA7BE") ||
         GetLastError() == ERROR_ALREADY_EXISTS)
     {
@@ -67,37 +36,41 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     FILE_SERVICE File_Service;
     fio = &File_Service;
 
-    // Init core
-    core.Init();
-
-    /* Init stash */
+    // Init stash
     create_directories(fs::GetLogsPath());
     create_directories(fs::GetSaveDataPath());
 
-    /* Delete old dump file */
-    std::filesystem::path log_path = fs::GetStashPath() / std::filesystem::u8path(DUMP_FILENAME);
-    fio->_DeleteFile(log_path.string().c_str());
+    // Init logging
+    auto systemLogPath = fs::GetLogsPath() / u8"system.log";
+    auto systemLog = spdlog::basic_logger_st("system", systemLogPath.string(), true);
+    systemLog->flush_on(spdlog::level::critical);
+    set_default_logger(systemLog);
 
-    /* Init system log */
-    log_path = fs::GetLogsPath() / std::filesystem::u8path("system.log");
-    fio->_DeleteFile(log_path.string().c_str());
-    core.tracelog = spdlog::basic_logger_st("system", log_path.string(), true);
-    core.tracelog->set_level(spdlog::level::trace);
-    core.tracelog->flush_on(spdlog::level::critical);
-    set_default_logger(core.tracelog);
+    auto compileLogPath = fs::GetLogsPath() / COMPILER_LOG_FILENAME;
+    auto compileLog = spdlog::basic_logger_st("compile", compileLogPath.string(), true);
 
-    /* Init compile and error/warning logs */
-    log_path = fs::GetLogsPath() / std::filesystem::u8path(COMPILER_LOG_FILENAME);
-    fio->_DeleteFile(log_path.string().c_str());
-    core.Compiler->tracelog = spdlog::basic_logger_st("compile", log_path.string(), true);
-    core.Compiler->tracelog->set_level(spdlog::level::trace);
-    log_path = fs::GetLogsPath() / std::filesystem::u8path(COMPILER_ERRORLOG_FILENAME);
-    fio->_DeleteFile(log_path.string().c_str());
-    core.Compiler->error_warning_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(log_path.string());
-    core.Compiler->errorlog = std::make_shared<spdlog::logger>("error", core.Compiler->error_warning_sink);
-    core.Compiler->errorlog->set_level(spdlog::level::trace);
-    core.Compiler->warninglog = std::make_shared<spdlog::logger>("warning", core.Compiler->error_warning_sink);
-    core.Compiler->warninglog->set_level(spdlog::level::trace);
+    auto errorLogPath = fs::GetLogsPath() / COMPILER_ERRORLOG_FILENAME;
+    auto errorLog = spdlog::basic_logger_st("error", errorLogPath.string(), true);
+
+    std::set_terminate(spdlog::shutdown);
+    std::atexit(spdlog::shutdown);
+
+    // Init executable lifecycle manager
+    storm::except::ExecutableLifecycleService lifecycleService;
+    lifecycleService.addAttachment(systemLogPath);
+    lifecycleService.addAttachment(compileLogPath);
+    lifecycleService.addAttachment(errorLogPath);
+    if (!lifecycleService.initialize(true))
+    {
+        spdlog::error("Unable to initialize crash handler");
+    }
+
+    // Init core
+    core.Init();
+    core.tracelog = systemLog;
+    core.Compiler->tracelog = compileLog;
+    core.Compiler->errorlog = errorLog;
+    core.Compiler->warninglog = errorLog;
 
     // Init script debugger
     CDebug.Init();
@@ -178,7 +151,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
                         continue;
                     dwOldTime = dwNewTime;
                 }
-                const auto runResult = runSehWrapped();
+                const auto runResult = core.Run();
                 if (!isHold && !runResult)
                 {
                     isHold = true;
@@ -263,54 +236,4 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     }
 
     return DefWindowProc(hwnd, iMsg, wParam, lParam);
-}
-
-void CreateMiniDump(EXCEPTION_POINTERS *pep)
-{
-    // flush logs
-    if (core.tracelog)
-    {
-        core.tracelog->flush();
-    }
-
-    std::filesystem::path dmpfile = fs::GetStashPath() / std::filesystem::u8path(DUMP_FILENAME);
-    // Open the file
-    HANDLE hFile =
-        CreateFile(dmpfile.c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-
-    if ((hFile != NULL) && (hFile != INVALID_HANDLE_VALUE))
-    {
-        // Create the minidump
-        MINIDUMP_EXCEPTION_INFORMATION mdei;
-
-        mdei.ThreadId = GetCurrentThreadId();
-        mdei.ExceptionPointers = pep;
-        mdei.ClientPointers = FALSE;
-
-        MINIDUMP_TYPE mdt =
-            (MINIDUMP_TYPE)(MiniDumpWithFullMemory | MiniDumpWithFullMemoryInfo | MiniDumpWithHandleData |
-                            MiniDumpWithThreadInfo | MiniDumpWithUnloadedModules);
-
-        BOOL rv =
-            MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, mdt, (pep != 0) ? &mdei : 0, 0, 0);
-
-        if (!rv)
-            _tprintf(_T("MiniDumpWriteDump failed. Error: %u \n"), GetLastError());
-        else
-            _tprintf(_T("Minidump created.\n"));
-
-        // Close the file
-        CloseHandle(hFile);
-    }
-    else
-    {
-        _tprintf(_T("CreateFile failed. Error: %u \n"), GetLastError());
-    }
-}
-
-int Alert(const char *lpCaption, const char *lpText)
-{
-    std::wstring CaptionW = utf8::ConvertUtf8ToWide(lpCaption);
-    std::wstring TextW = utf8::ConvertUtf8ToWide(lpText);
-    return ::MessageBox(NULL, TextW.c_str(), CaptionW.c_str(), MB_OK);
 }

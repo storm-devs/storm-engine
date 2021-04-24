@@ -4,8 +4,6 @@ PROGRAM::PROGRAM() : ProgramBlock(nullptr)
 {
     ProgramDirectory = nullptr;
     ProgramNum = 0;
-    DeleteFile(TEXT(COMPILER_LOG_FILENAME));
-    DeleteFile(TEXT(COMPILER_ERRORLOG_FILENAME));
 }
 
 PROGRAM::~PROGRAM()

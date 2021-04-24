@@ -1,7 +1,5 @@
 #pragma once
 
-#include <spdlog/sinks/basic_file_sink.h>
-
 #include "data.h"
 #include "message.h"
 #include "message_script.h"
@@ -20,8 +18,8 @@
 #include "tclass_list.h"
 #include "token.h"
 
-#define COMPILER_LOG_FILENAME "compile.log"
-#define COMPILER_ERRORLOG_FILENAME "error.log"
+#define COMPILER_LOG_FILENAME u8"compile.log"
+#define COMPILER_ERRORLOG_FILENAME u8"error.log"
 #define BCODE_BUFFER_BLOCKSIZE 4096
 #define IOBUFFER_SIZE 65535
 
@@ -177,7 +175,6 @@ class COMPILER : public VIRTUAL_COMPILER
     ATTRIBUTES *rAP;
 
   public:
-    std::shared_ptr<spdlog::sinks::basic_file_sink_mt> error_warning_sink;
     std::shared_ptr<spdlog::logger> tracelog;
     std::shared_ptr<spdlog::logger> errorlog;
     std::shared_ptr<spdlog::logger> warninglog;

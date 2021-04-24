@@ -1,6 +1,7 @@
 [requires]
 zlib/1.2.11
 spdlog/1.8.2
+sentry-native/0.4.8
 
 # Development dependencies
 catch2/2.13.4

@@ -7,6 +7,15 @@ if (STORM_ENABLE_STEAM)
 endif()
 
 if (MSVC)
+    # Using VS with vcxproj (not CMakeLists.txt) produces redundant output directories
+    if(CMAKE_GENERATOR MATCHES "Visual Studio")
+        # Output runtime files to the same directory regardless of [CONFIG]
+        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+    endif()
+
     # Always generate PDBs
     add_compile_options(/Zi)
     add_link_options(/DEBUG)
@@ -15,7 +24,7 @@ if (MSVC)
     add_compile_options(/WX) # Treats compiler warnings as errors
     add_compile_options(/std:c++latest) # Language Standard Version
     add_compile_options(/MP) # Build with Multiple Processes
-    
+
     add_compile_options("$<$<CONFIG:Release>:/Gy>") # Enable Function-Level Linking
     add_compile_options("$<$<CONFIG:Release>:/Oi>") # Generate intrinsic functions
     add_compile_options("$<$<CONFIG:Release>:/Ot>") # Favor fast code, should be implied by /O2 though
