@@ -3,7 +3,10 @@ _[back to Index](../index.md)_
 
 ![Storm Engine Logo](../media/SE_logo.png)
 
-**Related articles**: [Scripting Functions](0003-scripting-functions.md), [Entities](0004-entities.md)
+**Related articles**: 
+* [Scripting Functions](0003-scripting-functions.md)
+* [Entities](0004-entities.md)
+* [Messages and Events](0005-events.md)
 
 Upon startup, the game (`ENGINE.exe`) will attempt to load and compile the game logic located in `program` directory. These "scripts" are written in C using the game's API, and compiled at runtime using the built-in compiler. 
 
@@ -52,6 +55,14 @@ The game goes through the following phases:
 The game logic operates on the concepts of "entities". These are the objects from which compiler can expect some specific attributes. The entities may be tangible like sea, weather, grass, characters, but also intangible like battle interface or sea AI.
 
 For more information on entities, check out [this article](0004-entities.md).
+
+### Messages and Events
+
+Events are the central communication method among the entities. Similar to many other languages, it's a callback system. It allows to register an event with custom name. When the event fires, one or multiple subscribed event handlers will be called and executed.
+
+Information may be passed to events or independently from one entity to another via message system.
+
+For more information on messages and events, check out [this article](0005-events.md).
 
 ## Typing
 

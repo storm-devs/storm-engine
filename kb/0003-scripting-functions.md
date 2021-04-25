@@ -92,6 +92,121 @@ Below are the functions which make part of the compiler API. Each function has i
         void DeleteClass(object obj);
     ```
 
+### Messages
+
+* **SendMessage**: Send a message to an entity
+    * **Compiler Token**: `FUNC_SEND_MESSAGE`
+    * `obj`: address of the recipient (or its reference)
+    * `stringFormat`: the types of the passed arguments arranged in a string: 
+        * `l`: int/bool
+        * `f`: float
+        * `s`: string
+        * `a`, `i`: object or aref
+        * `e`: ref
+    * `msg`: the arguments passed to the handlers.
+    * An object should be registered as an entity for the message to have an effect.
+    * Each entity has its own way dealing with the messages it receives. 
+    ``` C++
+    syntax:
+        void SendMessage(ref obj, string stringFormat, msg...); 
+    example:
+       SendMessage(&Dialog, "lii", 0, Character, &persRef); // pass an int and two objects to "Dialog" object
+       SendMessage(&AIBalls, "l", MSG_MODEL_RELEASE); // pass a single int to "AIBalls" object
+    ```
+
+### Event Management
+
+* **Event**: Trigger and and call all its event handlers.
+    * **Compiler Token**: `FUNC_EVENT`
+    * Message is optional, see Messages subsection for syntax. 
+    ``` C++
+    syntax:
+        void Event(string eventName, [MSG]); 
+    example: 
+        Event("NextDay");                               // no message
+        Event("ControlActivation", "s", "ChrAction");   // pass trigger type
+    ```
+* **PostEvent**: Trigger event's post phase with given delay.
+    * **Compiler Token**: `FUNC_POSTEVENT`
+    * `eventName`: Name of the event to trigger.
+    * `delay`: Delay, in milliseconds.
+    * Message is optional, see Messages subsection for syntax. 
+    ``` C++
+    syntax:
+        void PostEvent(string eventName, int delay, [MSG]);
+    example:
+        PostEvent("My_eventMoveImg", 100);               // no message
+        int charIndex = sti(CharacterRef.index);
+        PostEvent("eventDialogExit", 1, "l", charIndex); // pass character ID
+    ```
+
+* **SetEventHandler**: Add an event handler to the given event.
+    * **Compiler Token**: `FUNC_SET_EVENT_HANDLER`
+    * `eventName`: name of the event.
+    * `functionName`: name of the function to call when the event triggers.
+    * `post`: `true` for events to be processed with a delay.
+    * If an event with the given name doesn't exist, it will be created.
+    ``` C++
+    syntax:
+        void SetEventHandler(string eventName, string functionName, bool post);
+        #event_handler(string eventName, string functionName, bool post);
+    example: 
+        SetEventHandler("frame", "RefreshTableByFrameEvent", false); // execute when "Event()" is called
+        SetEventHandler("frame", "ProcessFrame", true); // execute when "PostEvent()" is called
+    ```
+
+* **DelEventHandler**: Remove given event handler from the event.
+    * **Compiler Token**: `FUNC_DEL_EVENT_HANDLER`
+    * `eventName`: name of the event.
+    * `functionName`: name of the function to remove.
+    ``` C++
+    syntax:
+        void DelEventHandler(string eventName, string functionName);
+    example:
+        DelEventHandler("frame", "RefreshTableByFrameEvent");
+    ```
+
+* **GetEventData**: Retrieve an argument from the event message.
+    * **Compiler Token**: `FUNC_GET_EVENTDATA`
+    * This function is usually called from the function which was registered as an event handler.
+    * Arguments are provided in order as they were passed to the message.
+    ``` C++
+    syntax:
+        [any type] GetEventData(); 
+    example:
+        SetEventHandler("Control Activation", "InfoShow_Control", 0);
+        Event("Control Activation", "s", "ChrAction");
+        void InfoShow_Control()
+        {
+            string controlName = GetEventData(); // "ChrAction"
+            // ...
+        }
+    ```
+
+* **ClearEvents**: Remove all the normal event handlers from all the events.
+    * **Compiler Token**: `FUNC_CLEAR_EVENTS`
+    * Doesn't affect "post" event handlers.
+    ``` C++
+    syntax:
+        void ClearEvents(); 
+    ```
+
+* **ClearPostEvents**: Remove all the post event handlers from all the events.
+    * **Compiler Token**: `FUNC_CLEAR_POST_EVENTS`
+    * Doesn't affect normal event handlers.
+    ``` C++
+    syntax:
+        void ClearPostEvents();
+    ```
+
+* **EventsBreak**: Stop executing all the events for the remainder of the frame.
+    * NOTE: Currently this function has no effect whatsoever as `bEventsBreak` is always false coming into the event loop.
+    * **Compiler Token**: `FUNC_EVENTSBREAK`
+    ``` C++
+    syntax:
+        void EventsBreak();
+    ```
+
 ### Layer Manipulation
 
 Please note that, unlike the previous versions, the current version of the Storm Engine requires the layers to be entered as IDs (as opposed to strings in the past). You can find the reference table [here](0005-entities.md).
@@ -344,16 +459,6 @@ Currently disabled/not implemented functions:
         float acos(float value);
     ```
 
-
-
-
-* **SetEventHandler**
-    * **Compiler Token**: `FUNC_SET_EVENT_HANDLER`
-    ``` C++
-    syntax:
-        void SetEventHandler(string eventName, string functionName, int post);
-    ```
-    
 * **ExitProgram**
     * **Compiler Token**: `FUNC_EXIT_PROGRAM`
     ``` C++
@@ -361,27 +466,11 @@ Currently disabled/not implemented functions:
         void ExitProgram(); // quit to desktop
     ```
 
-* **GetEventData**
-    * **Compiler Token**: `FUNC_GET_EVENTDATA`
-    ``` C++
-    syntax:
-        0, GetEventData(); UNKNOWN,
-
-    // Code send entity id "i" to script and it comes as aref variable into script (GetEventData())
-    ```
-
 * **Stop**
     * **Compiler Token**: `FUNC_STOP`
     ``` C++
     syntax:
         void Stop(); // stop executing (thread like)
-    ```
-
-* **SendMessage**
-    * **Compiler Token**: `FUNC_SEND_MESSAGE`
-    ``` C++
-    syntax:
-        void SendMessage(object to, string formatStrinf,...); // Send a message to an object
     ```
 
 * **LoadSegment**
@@ -463,12 +552,6 @@ Currently disabled/not implemented functions:
         string GetAttributeName(aref attribute);
     ```
 
-* **DelEventHandler**
-    * **Compiler Token**: `FUNC_DEL_EVENT_HANDLER`
-    ``` C++
-    syntax:
-        void DelEventHandler(string eventName, string functionName);
-    ```
 
 * **EntityUpdate**
     * **Compiler Token**: `FUNC_Entity_UPDATE`
@@ -526,13 +609,6 @@ Currently disabled/not implemented functions:
         void DeleteEntities();
     ```
 
-* **ClearEvents**
-    * **Compiler Token**: `FUNC_CLEAR_EVENTS`
-    ``` C++
-    syntax:
-        void ClearEvents(); 
-    ```
-
 * **SaveEngineState**
     * **Compiler Token**: `FUNC_SAVEENGINESTATE`
     ``` C++
@@ -547,32 +623,11 @@ Currently disabled/not implemented functions:
         void LoadEngineState(); /1/?
     ```
 
-* **Event**
-    * **Compiler Token**: `FUNC_EVENT`
-    ``` C++
-    syntax:
-        void Event(); 
-    ```
-
-* **PostEvent**
-    * **Compiler Token**: `FUNC_POSTEVENT`
-    ``` C++
-    syntax:
-        void PostEvent(); 
-    ```
-
 * **fts**
     * **Compiler Token**: `FUNC_FTS`
     ``` C++
     syntax:
         string fts(float, int); 
-    ```
-
-* **ClearPostEvents**
-    * **Compiler Token**: `FUNC_CLEAR_POST_EVENTS`
-    ``` C++
-    syntax:
-        void ClearPostEvents();
     ```
 
 * **SetArraySize**
@@ -642,13 +697,6 @@ Currently disabled/not implemented functions:
     ``` C++
     syntax:
         int GetDeltaTime(0); 
-    ```
-
-* **EventsBreak**
-    * **Compiler Token**: `FUNC_EVENTSBREAK`
-    ``` C++
-    syntax:
-        void EventsBreak(0);
     ```
 
 * **shl**

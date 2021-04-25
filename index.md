@@ -46,6 +46,7 @@ Modding Tool
 
 * [Scripting System Overview](kb/0002-scripting-overview.md)
 * [Scripting Functions](kb/0003-scripting-functions.md)
+* [Messages and Events](kb/0005-events.md)
 
 ---
 
