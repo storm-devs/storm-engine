@@ -292,7 +292,7 @@ def convert(input_name, output_name):
         # List of vertices
 
         def add_v(self, x, y, z):
-            self.v += "v %f %f %f\n" % (x, y, z)
+            self.v += "v %f %f %f\n" % (-x, y, z)
 
         # List of vertices' normals
         def add_vn(self, x, y, z):
