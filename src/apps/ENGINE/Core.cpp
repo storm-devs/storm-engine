@@ -30,7 +30,7 @@ ENGINE_VERSION getTargetEngineVersion(const std::string_view &version)
     {
         return ENGINE_VERSION::CARIBBEAN_TALES;
     }
-    else if (iEquals(version, "caos"sv))
+    else if (iEquals(version, "coas"sv))
     {
         return ENGINE_VERSION::CITY_OF_ABANDONED_SHIPS;
     }
