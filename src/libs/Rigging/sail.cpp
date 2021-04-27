@@ -1658,7 +1658,7 @@ float SAIL::Cannon_Trace(long iBallOwner, const CVECTOR &src, const CVECTOR &dst
             long charIdx = -1;
             if (pA != nullptr)
                 charIdx = pA->GetAttributeAsDword("index", -1);
-            core.Event(SHIP_SAIL_DAMAGE, "lfff", charIdx, damagePoint.x, damagePoint.y, damagePoint.z);
+            core.Event(SHIP_SAIL_DAMAGE, "lfffl", charIdx, damagePoint.x, damagePoint.y, damagePoint.z, iBallOwner);
         }
     }
 
