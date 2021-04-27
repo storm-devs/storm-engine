@@ -1677,7 +1677,7 @@ float SHIP::Cannon_Trace(long iBallOwner, const CVECTOR &vSrc, const CVECTOR &vD
             if (fRes <= 1.0f)
             {
                 const CVECTOR v1 = vSrc + fRes * (vDst - vSrc);
-                VDATA *pV = core.Event(SHIP_MAST_DAMAGE, "llffffaa", SHIP_MAST_TOUCH_BALL, pM->iMastNum, v1.x, v1.y,
+                VDATA *pV = core.Event(SHIP_MAST_DAMAGE, "llffffal", SHIP_MAST_TOUCH_BALL, pM->iMastNum, v1.x, v1.y,
                                        v1.z, pM->fDamage, GetACharacter(), iBallOwner);
                 pM->fDamage = Clamp(pV->GetFloat());
                 MastFall(pM);
