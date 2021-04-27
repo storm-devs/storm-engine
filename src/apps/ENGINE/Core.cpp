@@ -6,6 +6,50 @@
 #include "fs.h"
 #include <fstream>
 
+#include <storm/string_compare.hpp>
+
+namespace storm
+{
+
+namespace
+{
+
+ENGINE_VERSION getTargetEngineVersion(const std::string_view &version)
+{
+    using namespace std::string_view_literals;
+
+    if (iEquals(version, "sd"sv))
+    {
+        return ENGINE_VERSION::SEA_DOGS;
+    }
+    else if (iEquals(version, "potc"sv))
+    {
+        return ENGINE_VERSION::PIRATES_OF_THE_CARIBBEAN;
+    }
+    else if (iEquals(version, "ct"sv))
+    {
+        return ENGINE_VERSION::CARIBBEAN_TALES;
+    }
+    else if (iEquals(version, "coas"sv))
+    {
+        return ENGINE_VERSION::CITY_OF_ABANDONED_SHIPS;
+    }
+    else if (iEquals(version, "teho"sv))
+    {
+        return ENGINE_VERSION::TO_EACH_HIS_OWN;
+    }
+    else if (iEquals(version, "latest"sv))
+    {
+        return ENGINE_VERSION::LATEST;
+    }
+
+    return ENGINE_VERSION::UNKNOWN;
+}
+
+} // namespace
+
+} // namespace storm
+
 uint32_t dwNumberScriptCommandsExecuted = 0;
 
 typedef struct
@@ -220,6 +264,8 @@ void CORE::ProcessEngineIniFile()
         core.Controls = new CONTROLS;
     }
 
+    loadCompatibilitySettings(*engine_ini);
+
     res = engine_ini->ReadString(nullptr, "run", String, sizeof(String), "");
     if (res)
     {
@@ -227,17 +273,21 @@ void CORE::ProcessEngineIniFile()
             throw std::runtime_error("fail to create program");
         if (!Compiler->Run())
             throw std::runtime_error("fail to run program");
-        // Script version test
-        long iScriptVersion = 0xFFFFFFFF;
-        auto *pVScriptVersion = static_cast<VDATA *>(core.GetScriptVariable("iScriptVersion"));
-        if (pVScriptVersion)
-            pVScriptVersion->Get(iScriptVersion);
 
-        if (iScriptVersion != ENGINE_SCRIPT_VERSION)
+        // Script version test
+        if (m_targetVersion >= storm::ENGINE_VERSION::LATEST)
         {
-            ShowCursor(true);
-            MessageBoxA(nullptr, "Wrong script version", "Error", MB_OK);
-            Compiler->ExitProgram();
+            long iScriptVersion = 0xFFFFFFFF;
+            auto *pVScriptVersion = static_cast<VDATA *>(core.GetScriptVariable("iScriptVersion"));
+            if (pVScriptVersion)
+                pVScriptVersion->Get(iScriptVersion);
+
+            if (iScriptVersion != ENGINE_SCRIPT_VERSION)
+            {
+                ShowCursor(true);
+                MessageBoxA(nullptr, "Wrong script version", "Error", MB_OK);
+                Compiler->ExitProgram();
+            }
         }
     }
 }
@@ -856,3 +906,19 @@ void CORE::Leave_CriticalSection()
 {
     LeaveCriticalSection(&lock);
 };
+
+void CORE::loadCompatibilitySettings(INIFILE &inifile)
+{
+    using namespace storm;
+
+    std::array<char, 128> strBuffer{};
+    inifile.ReadString("compatibility", "target_version", strBuffer.data(), strBuffer.size(), "latest");
+    const std::string_view target_engine_version = strBuffer.data();
+
+    m_targetVersion = getTargetEngineVersion(target_engine_version);
+    if (m_targetVersion == ENGINE_VERSION::UNKNOWN)
+    {
+        tracelog->warn("Unknown target version '{}' in engine compatibility settings", target_engine_version);
+        m_targetVersion = ENGINE_VERSION::LATEST;
+    }
+}

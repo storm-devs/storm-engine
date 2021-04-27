@@ -4,6 +4,7 @@
 // common includes
 #include "EntityManager.h"
 #include "controls.h"
+#include "engine_version.hpp"
 #include "message.h"
 #include "vdata.h"
 #include "vfile_service.h"
@@ -153,6 +154,11 @@ class CORE
     const char *EngineIniFileName();
 
     void *GetScriptVariable(const char *pVariableName, uint32_t *pdwVarIndex = nullptr);
+
+  private:
+    void loadCompatibilitySettings(INIFILE &inifile);
+
+    storm::ENGINE_VERSION m_targetVersion = storm::ENGINE_VERSION::LATEST;
 };
 // core instance
 extern CORE core;

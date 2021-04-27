@@ -57,7 +57,7 @@ template <typename Range1T, typename Range2T = Range1T> inline bool iLess(const 
 // The wildcmp function was taken from http://www.codeproject.com/KB/string/wildcmp.aspx; the
 // wildicmp (case insensitive wildcard comparison) was based on it.
 
-int wildcmp(const char *wild, const char *string)
+inline int wildcmp(const char *wild, const char *string)
 {
     // Written by Jack Handy - jakkhandy@hotmail.com
 
@@ -103,7 +103,7 @@ int wildcmp(const char *wild, const char *string)
     return !*wild;
 }
 
-int wildicmp(const char *wild, const char *string)
+inline int wildicmp(const char *wild, const char *string)
 {
     const char *cp = nullptr, *mp = nullptr;
 
