@@ -123,6 +123,7 @@ target_link_libraries(${PROJECT_NAME}
 
     CONAN_PKG::zlib
     CONAN_PKG::sentry-native
+    CONAN_PKG::sdl2
     comctl32.lib
     dbghelp.lib
 )

@@ -532,20 +532,16 @@ bool SOURCE_VIEW::OpenSourceFile(const char *_filename)
         CDebug.SaveRecentFileALine(SourceFileName, nActiveLine);
     }
 
-    char DirectoryName[MAX_PATH];
-    fio->_GetCurrentDirectory(sizeof(DirectoryName), DirectoryName);
+    auto DirectoryName = fio->_GetCurrentDirectory();
 
-    strcat_s(DirectoryName, "\\");
-    strcat_s(DirectoryName, ProgramDirectory);
-    strcat_s(DirectoryName, "\\");
-    strcat_s(DirectoryName, _filename);
+    DirectoryName = DirectoryName + "\\" + ProgramDirectory + "\\" + _filename;
 
-    auto fileS = fio->_CreateFile(DirectoryName, std::ios::binary | std::ios::in);
+    auto fileS = fio->_CreateFile(DirectoryName.c_str(), std::ios::binary | std::ios::in);
     if (!fileS.is_open())
     {
         return false;
     }
-    const uint32_t nDataSize = fio->_GetFileSize(DirectoryName);
+    const uint32_t nDataSize = fio->_GetFileSize(DirectoryName.c_str());
 
     nTopLine = 0;
     delete pSourceFile;

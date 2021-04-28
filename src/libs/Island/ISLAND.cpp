@@ -438,34 +438,8 @@ void ISLAND::CalcBoxParameters(CVECTOR &_vBoxCenter, CVECTOR &_vBoxSize)
     _vBoxSize = CVECTOR(x2 - x1, 0.0f, z2 - z1);
 }
 
-void ISLAND::CreateDirectories(char *pDir)
-{
-    char sCurDir[256], sTemp[256];
-
-    fio->_GetCurrentDirectory(sizeof(sCurDir), sCurDir);
-    if (strlen(sCurDir) && sCurDir[strlen(sCurDir) - 1] != '\\')
-        strcat_s(sCurDir, "\\");
-
-    char *pLast, *pStr;
-
-    pLast = pStr = pDir;
-    while (true)
-    {
-        pStr = strchr(pStr, '\\');
-        if (!pStr)
-            break;
-        strncpy_s(sTemp, pLast, pStr - pLast);
-        sTemp[pStr - pLast] = '\0';
-        pLast = ++pStr;
-        strcat_s(sCurDir, sTemp);
-        strcat_s(sCurDir, "\\");
-        BOOL bOk = fio->_CreateDirectory(sCurDir, nullptr);
-    }
-}
-
 bool ISLAND::CreateShadowMap(char *pDir, char *pName)
 {
-    const std::string sDir;
     auto *const pWeather =
         static_cast<WEATHER_BASE *>(EntityManager::GetEntityPointer(EntityManager::GetEntityId("Weather")));
     if (pWeather == nullptr)
@@ -474,12 +448,7 @@ bool ISLAND::CreateShadowMap(char *pDir, char *pName)
     }
 
     const fs::path path = fs::path() / "resource" / "foam" / pDir / AttributesPointer->GetAttribute("LightingPath");
-    // MessageBoxA(NULL, (LPCSTR)path.c_str(), "", MB_OK); //~!~
-    // sDir.Format("resource\\foam\\%s\\%s\\", pDir, AttributesPointer->GetAttribute("LightingPath")); sDir.CheckPath();
-    // sprintf_s(fname, "%s%s.tga", (const char*)sDir.c_str(), pName);
     const std::string fileName = path.string() + pName + ".tga";
-
-    CreateDirectories((char *)sDir.c_str());
 
     fShadowMapSize = 2.0f * Max(vRealBoxSize.x, vRealBoxSize.z) + 1024.0f;
     fShadowMapStep = fShadowMapSize / DMAP_SIZE;
@@ -585,18 +554,11 @@ void ISLAND::Blur8(uint8_t **pBuffer, uint32_t dwSize)
 bool ISLAND::CreateHeightMap(char *pDir, char *pName)
 {
     TGA_H tga_head;
-    std::string sDir;
     char str_tmp[256];
 
     fs::path path = fs::path() / "resource" / "foam" / pDir / pName;
-    // MessageBoxA(NULL, (LPCSTR)path.c_str(), "", MB_OK); //~!~
     std::string fileName = path.string() + ".tga";
     std::string iniName = path.string() + ".ini";
-    // sDir.Format("resource\\\\foam\\\\%s\\\\", pDir); sDir.CheckPath();
-    // sprintf_s(fname, "%s%s.tga", (const char*)sDir.c_str(), pName);
-    // sprintf_s(iname, "%s%s.ini", (const char*)sDir.c_str(), pName);
-
-    CreateDirectories((char *)sDir.c_str());
 
     // calc center and size
     CalcBoxParameters(vBoxCenter, vRealBoxSize);

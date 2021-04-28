@@ -2,6 +2,7 @@
 zlib/1.2.11
 spdlog/1.8.2
 sentry-native/0.4.8
+sdl2/2.0.14@bincrafters/stable
 
 # Development dependencies
 catch2/2.13.4

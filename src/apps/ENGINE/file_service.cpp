@@ -3,6 +3,7 @@
 #include "storm_assert.h"
 #include "utf8.h"
 
+#include <SDL.h>
 #include <exception>
 #include <storm/string_compare.hpp>
 #include <string>
@@ -56,7 +57,7 @@ void FILE_SERVICE::_SetFilePointer(std::fstream &fileS, std::streamoff off, std:
     fileS.seekp(off, dir);
 }
 
-int FILE_SERVICE::_DeleteFile(const char *filename)
+bool FILE_SERVICE::_DeleteFile(const char *filename)
 {
     std::filesystem::path path = std::filesystem::u8path(filename);
     return std::filesystem::remove(path);
@@ -183,27 +184,17 @@ void FILE_SERVICE::_FlushFileBuffers(std::fstream &fileS)
     fileS.flush();
 }
 
-uint32_t FILE_SERVICE::_GetCurrentDirectory(uint32_t nBufferLength, char *lpBuffer)
+std::string FILE_SERVICE::_GetCurrentDirectory()
 {
-    wchar_t BufferW[MAX_PATH];
-    uint32_t Res = GetCurrentDirectory(nBufferLength, BufferW);
-    std::string CurrentDirectory = utf8::ConvertWideToUtf8(BufferW);
-    strcpy_s(lpBuffer, nBufferLength, CurrentDirectory.c_str());
-    return Res;
+    const auto curPath = std::filesystem::current_path().u8string();
+    std::string result(curPath.begin(), curPath.end());
+    return result;
 }
 
 std::string FILE_SERVICE::_GetExecutableDirectory()
 {
-    wchar_t BufferW[MAX_PATH];
-    uint32_t Res = GetModuleFileName(NULL, BufferW, MAX_PATH);
-    Assert(Res);
-    std::string ExePath = utf8::ConvertWideToUtf8(BufferW);
-    size_t i = ExePath.rfind('\\', ExePath.length());
-    if (i != std::string::npos)
-    {
-        return ExePath.substr(0, i);
-    }
-    return "";
+    std::string result(SDL_GetBasePath());
+    return result;
 }
 
 std::uintmax_t FILE_SERVICE::_GetFileSize(const char *filename)
@@ -212,28 +203,22 @@ std::uintmax_t FILE_SERVICE::_GetFileSize(const char *filename)
     return std::filesystem::file_size(path);
 }
 
-BOOL FILE_SERVICE::_SetCurrentDirectory(const char *lpPathName)
+void FILE_SERVICE::_SetCurrentDirectory(const char *pathName)
 {
-    std::wstring PathNameW = utf8::ConvertUtf8ToWide(lpPathName);
-    return SetCurrentDirectory(PathNameW.c_str());
+    std::filesystem::path path = std::filesystem::u8path(pathName);
+    std::filesystem::current_path(path);
 }
 
-BOOL FILE_SERVICE::_CreateDirectory(const char *lpPathName, LPSECURITY_ATTRIBUTES lpSecurityAttributes)
+bool FILE_SERVICE::_CreateDirectory(const char *pathName)
 {
-    std::wstring PathNameW = utf8::ConvertUtf8ToWide(lpPathName);
-    return CreateDirectory(PathNameW.c_str(), lpSecurityAttributes);
+    std::filesystem::path path = std::filesystem::u8path(pathName);
+    return std::filesystem::create_directory(path);
 }
 
-std::uintmax_t FILE_SERVICE::_RemoveDirectory(const char *p)
+std::uintmax_t FILE_SERVICE::_RemoveDirectory(const char *pathName)
 {
-    std::filesystem::path path = std::filesystem::u8path(p);
+    std::filesystem::path path = std::filesystem::u8path(pathName);
     return std::filesystem::remove_all(path);
-}
-
-BOOL FILE_SERVICE::_SetFileAttributes(const char *lpFileName, uint32_t dwFileAttributes)
-{
-    std::wstring FileNameW = utf8::ConvertUtf8ToWide(lpFileName);
-    return SetFileAttributes(FileNameW.c_str(), dwFileAttributes);
 }
 
 //------------------------------------------------------------------------------------------------
@@ -341,7 +326,7 @@ void FILE_SERVICE::Close()
     }
 }
 
-BOOL FILE_SERVICE::LoadFile(const char *file_name, char **ppBuffer, uint32_t *dwSize)
+bool FILE_SERVICE::LoadFile(const char *file_name, char **ppBuffer, uint32_t *dwSize)
 {
     if (ppBuffer == nullptr)
         return false;

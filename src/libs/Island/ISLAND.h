@@ -97,8 +97,6 @@ class ISLAND : public ISLAND_BASE
 
     void CalcBoxParameters(CVECTOR &vBoxCenter, CVECTOR &vBoxSize);
 
-    void CreateDirectories(char *pDir);
-
     void SetName(char *pIslandName)
     {
         sIslandName = pIslandName;
