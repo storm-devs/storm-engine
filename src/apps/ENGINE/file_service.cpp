@@ -187,8 +187,7 @@ void FILE_SERVICE::_FlushFileBuffers(std::fstream &fileS)
 std::string FILE_SERVICE::_GetCurrentDirectory()
 {
     const auto curPath = std::filesystem::current_path().u8string();
-    std::string result(curPath.size(), '\0');
-    std::memcpy(result.data(), curPath.data(), curPath.size());
+    std::string result(curPath.begin(), curPath.end());
     return result;
 }
 
