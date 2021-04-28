@@ -556,8 +556,7 @@ uint32_t S_DEBUG::GetLineStatus(const char *_pFileName, uint32_t _linecode)
 
 bool S_DEBUG::BrowseFile(char *buffer, const char *filter)
 {
-    char DirectoryName[MAX_PATH];
-    strcpy(DirectoryName, fio->_GetCurrentDirectory().c_str());
+    auto DirectoryName = fio->_GetCurrentDirectory();
     wchar_t FilenameW[MAX_PATH];
     OPENFILENAME ofn;
     FilenameW[0] = 0;
@@ -574,14 +573,12 @@ bool S_DEBUG::BrowseFile(char *buffer, const char *filter)
     ofn.lpstrDefExt = FilterW.c_str();
     ofn.lpstrTitle = TEXT("Open script source file");
     const auto bRes = GetOpenFileName(&ofn);
-    fio->_SetCurrentDirectory(DirectoryName);
+    fio->_SetCurrentDirectory(DirectoryName.c_str());
     if (bRes)
     {
         std::string Filename = utf8::ConvertWideToUtf8(FilenameW);
-        strcat_s(DirectoryName, "\\");
-        strcat_s(DirectoryName, ProgramDirectory);
-        strcat_s(DirectoryName, "\\");
-        strcpy_s(buffer, MAX_PATH, Filename.c_str() + strlen(DirectoryName));
+        DirectoryName = DirectoryName + "\\" + ProgramDirectory + "\\";
+        strcpy_s(buffer, MAX_PATH, Filename.c_str() + strlen(DirectoryName.c_str()));
         //    strcpy_s(buffer,MAX_PATH, file_name + strlen(DirectoryName));
         // strcpy_s(buffer,file_name);
         return true;
@@ -591,8 +588,7 @@ bool S_DEBUG::BrowseFile(char *buffer, const char *filter)
 
 bool S_DEBUG::BrowseFileWP(char *buffer, const char *filter)
 {
-    char DirectoryName[MAX_PATH];
-    strcpy(DirectoryName, fio->_GetCurrentDirectory().c_str());
+    auto DirectoryName = fio->_GetCurrentDirectory();
     wchar_t FilenameW[MAX_PATH];
     OPENFILENAME ofn;
     FilenameW[0] = 0;
@@ -609,7 +605,7 @@ bool S_DEBUG::BrowseFileWP(char *buffer, const char *filter)
     ofn.lpstrDefExt = FilterW.c_str();
     ofn.lpstrTitle = TEXT("Open script source file");
     const auto bRes = GetOpenFileName(&ofn);
-    fio->_SetCurrentDirectory(DirectoryName);
+    fio->_SetCurrentDirectory(DirectoryName.c_str());
     if (bRes)
     {
         std::string Filename = utf8::ConvertWideToUtf8(FilenameW);

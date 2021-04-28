@@ -446,8 +446,7 @@ float LGeometry::Trace(const CVECTOR &src, const CVECTOR &dst)
 bool LGeometry::Save()
 {
     // Save the current path
-    char *oldPath = new char[4096];
-    strcpy(oldPath, fio->_GetCurrentDirectory().c_str());
+    auto oldPath = fio->_GetCurrentDirectory();
     char *dir = new char[4096];
     // Saving objects
     bool result = true;
@@ -458,7 +457,7 @@ bool LGeometry::Save()
         if (object[i].lBufSize <= 0)
             continue;
         // Create a path
-        fio->_SetCurrentDirectory(oldPath);
+        fio->_SetCurrentDirectory(oldPath.c_str());
         bool isCont = false;
         for (long c = 0, p = 0; true; c++, p++)
         {
@@ -518,8 +517,7 @@ bool LGeometry::Save()
             result &= (fwrite(buf, sv * sizeof(uint32_t), 1, fl) == 1);
         fclose(fl);
     }
-    fio->_SetCurrentDirectory(oldPath);
-    delete[] oldPath;
+    fio->_SetCurrentDirectory(oldPath.c_str());
     delete[] dir;
     delete[] buf;
     return result;
