@@ -57,6 +57,36 @@ Below are the functions which make part of the compiler API. Each function has i
         }
     ```
 
+* **IsEntity**: Check if given object was initialized as an entity.
+    * **Compiler Token**: `FUNC_IS_Entity_LOADED`
+    * `obj`: object to test
+    ``` C++
+    syntax:
+        bool IsEntity(object obj);
+        bool IsEntity(ref obj);
+    example:
+        object torn;
+        if (!isEntity(&torn))
+        {
+            CreateEntity(&torn, "Tornado");
+        }
+    ```
+
+* **CheckAttribute**: Verify if an attribute exists.
+    * **Compiler Token**: `FUNC_CHECK_ATTRIBUTE`
+    * `obj`: address of the target object
+    * `attribute`: attribute to verify
+    ``` C++
+    syntax:
+        bool CheckAttribute(object &obj, string attribute);
+    example: 
+        if (!CheckAttribute(&Weather, "Stars.Enable"))
+        {
+            Weather.Stars.Enable = false;
+        };
+    ```
+
+
 ### Entity Manipulation
 
 * **CreateClass**: Bind an object with an entity.
@@ -90,6 +120,131 @@ Below are the functions which make part of the compiler API. Each function has i
     ``` C++
     syntax:
         void DeleteClass(object obj);
+    ```
+
+* **EntityUpdate**: Toggle entity update on attribute change.
+    * **Compiler Token**: `FUNC_Entity_UPDATE`
+    * `isEnabled`: if set to `false`, entity will not receive attribute updates.
+    ``` C++
+    syntax:
+        void EntityUpdate(bool isEnabled);
+    example:
+        EntityUpdate(false);
+        // ...
+        // Update the object
+        // ...
+        EntityUpdate(true);
+    ```
+
+* **DeleteAttribute**: Remove an attribute (field and data) from given object.
+    * **Compiler Token**: `FUNC_DELETE_ATTRIBUTE`
+    * `obj`: Object to remove attribute from
+    * `attribute`: attribute to remove.
+    * If you pass `""` as `attribute`, all the attributes of the object are cleared.
+    ``` C++
+    syntax:
+        void DeleteAttribute(object obj, string attribute); 
+    example:
+        DeleteAttribute(&Sky, "");        // clear the object
+        DeleteAttribute(pchar, "Items"); // remove all collected items 
+        string sQuest2 = "quest.Deposits." + city + "_Type2";
+        DeleteAttribute(pchar, sQuest2);
+
+    ```
+
+* **GetAttributesNum**: Count how many child attributes an object has (non-recursive).
+    * **Compiler Token**: `FUNC_GET_ATTRIBUTES_NUM`
+    * `obj/attribute`: object to count child attributes of.
+    * This function is often used in conjunction with `GetAttributeN` for iteration on attributes.
+    ``` C++
+    syntax:
+        int GetAttributesNum(object obj);
+        int GetAttributesNum(ref obj);
+        int GetAttributesNum(aref attribute);
+    example: 
+        int count = GetAttributesNum(arRoot);
+        for (i = 0; i < count; i++)
+        {
+            aref attribute = GetAttributeN(arRoot, i);
+            // ... 
+            // Do some work on attribute
+            // ... 
+        }
+    ```
+
+* **GetAttributeN**: Access child attribute by index.
+    * **Compiler Token**: `FUNC_GET_ATTRIBUTE_BYN`
+    * `obj/attribute`: object to count child attributes of.
+    * `index`: Sequential number of the attribute inside the object.
+    * This function is often used in conjunction with `GetAttributeNum` for iteration on attributes.
+    ``` C++
+    syntax:
+        aref GetAttributeN(object obj, int index);
+        aref GetAttributeN(ref obj, int index);
+        aref GetAttributeN(aref attribute, int index);
+    example: 
+        int count = GetAttributesNum(arRoot);
+        for (i = 0; i < count; i++)
+        {
+            aref attribute = GetAttributeN(arRoot, i);
+            // ... 
+            // Do some work on attribute
+            // ... 
+        }
+    ```
+
+* **GetAttributeName**: Retrieve the name of a given attribute or object. 
+    * **Compiler Token**: `FUNC_GET_ATTRIBUTE_NAME`
+    * `obj/attribute`: target object or attribute.
+    ``` C++
+    syntax:
+        string GetAttributeName(object obj);
+        string GetAttributeName(ref obj);
+        string GetAttributeName(aref attribute);
+    example:
+        object Test;
+        Test.value = "hello";
+        string attrName = GetAttributeName(Test.value); // "value"
+    ```
+
+* **GetAttributeValue**: Retrieve the stored value of a given attribute or object.
+    * **Compiler Token**: `FUNC_GET_ATTRIBUTE_VALUE`
+    * `obj/attribute`: target object or attribute.
+    * Every value is stored as a string! Stored `object`s, `float`s and `int`s need to be converted accordingly before use.
+    ``` C++
+    syntax:
+        string GetAttributeValue(object obj);
+        string GetAttributeValue(ref obj);
+        string GetAttributeValue(aref attribute);
+    example:
+        object Test;
+        Test.value = "hello";
+        string attrValue = GetAttributeValue(Test.value); // "hello"
+    ```
+    
+* **CopyAttributes**: Copy all the object's attributes to a new object.
+    * **Compiler Token**: `FUNC_COPYATTRIBUTES`
+    * `destination`: address of the object to receive attributes
+    * `source`: object to copy
+    ``` C++
+    syntax:
+        void CopyAttributes(object &destination, object source);
+    example: 
+        object Tmp;
+        CopyAttributes(&Tmp, CargoOne);
+    ```
+
+* **DumpAttributes**: Trace (log) all the attribute data of a given object.
+    * **Compiler Token**: `FUNC_DUMP_ATTRIBUTES`
+    * `obj/attribute`: target object or attribute.
+    ``` C++
+    syntax:
+        void DumpAttributes(object obj);
+        void DumpAttributes(ref obj);
+        void DumpAttributes(aref attribute);
+    example: 
+        trace("nConditionsNum : " + nConditionsNum);
+        DumpAttributes(conditions);
     ```
 
 ### Messages
@@ -299,7 +454,6 @@ Currently disabled/not implemented functions:
         void LayerSetMessages(int layerID, bool isEnabled); 
     ```
 
-
 ### Utility
 
 * **SetTimeScale**: Set the speed of the game simulation for the whole engine. For your epic slo-mo moments.
@@ -313,6 +467,18 @@ Currently disabled/not implemented functions:
         void SetTimeScale(float value);
     usage: 
         SetTimeScale(0.0);
+    ```
+
+* **Trace**: Send a trace (small log message) to `system.log` file.
+    * **Compiler Token**: `FUNC_TRACE`
+    ``` C++
+    syntax:
+        void Trace(int message);
+        void Trace(float message);
+        void Trace(string message);
+    example:
+        int n = LocationInitAntigua(n);
+        Trace("Antigua locations " + n);
     ```
 
 ### Math
@@ -377,7 +543,6 @@ Currently disabled/not implemented functions:
         Log_Info("" + pow(10.0, 3.0)); // 10^3, 1000
         Log_Info("" + pow(10.0, -3.0)); // 10^3, 0.001
     ```
-
 
 * **sqrt**: Extract the square root of the given value.
     * **Compiler Token**: `FUNC_SQRT`
@@ -459,6 +624,9 @@ Currently disabled/not implemented functions:
         float acos(float value);
     ```
 
+
+
+
 * **ExitProgram**
     * **Compiler Token**: `FUNC_EXIT_PROGRAM`
     ``` C++
@@ -487,16 +655,6 @@ Currently disabled/not implemented functions:
         void UnloadSegment(string fileName); // unload segment (delayed)
     ```
 
-* **Trace**
-    * **Compiler Token**: `FUNC_TRACE`
-    ``` C++
-    syntax:
-        void Trace(int message);
-        void Trace(float message);
-        void Trace(string message);
-        // send a trace to system.log
-    ```
-
 * **MakeInt**
     * **Compiler Token**: `FUNC_MAKE_INT`
     ``` C++
@@ -514,64 +672,11 @@ Currently disabled/not implemented functions:
         float MakeFloat(int value);
     ```
 
-* **DeleteAttribute**
-    * **Compiler Token**: `FUNC_DELETE_ATTRIBUTE`
-    ``` C++
-    syntax:
-        void DeleteAttribute(object obj, string attributeAccessString); 
-    ```
-
 * **SegmentIsLoaded**
     * **Compiler Token**: `FUNC_SEGMENT_IS_LOADED`
     ``` C++
     syntax:
         int SegmentIsLoaded(1); // string segmentName?
-    ```
-
-* **GetAttributesNum**
-    * **Compiler Token**: `FUNC_GET_ATTRIBUTES_NUM`
-    ``` C++
-    syntax:
-        int GetAttributesNum(object obj);
-        int GetAttributesNum(aref attribute);
-    ```
-
-* **GetAttributeN**
-    * **Compiler Token**: `FUNC_GET_ATTRIBUTE_BYN`
-    ``` C++
-    syntax:
-        aref GetAttributeN(object obj, int index);
-        aref GetAttributeN(aref attribute, int index);
-    ```
-
-* **GetAttributeName**
-    * **Compiler Token**: `FUNC_GET_ATTRIBUTE_NAME`
-    ``` C++
-    syntax:
-        string GetAttributeName(object obj);
-        string GetAttributeName(aref attribute);
-    ```
-
-
-* **EntityUpdate**
-    * **Compiler Token**: `FUNC_Entity_UPDATE`
-    ``` C++
-    syntax:
-        void EntityUpdate(bool isEnabled);
-    ```
-
-* **IsEntity**
-    * **Compiler Token**: `FUNC_IS_Entity_LOADED`
-    ``` C++
-    syntax:
-        int IsEntity(object obj);
-    ```
-
-* **DumpAttributes**
-    * **Compiler Token**: `FUNC_DUMP_ATTRIBUTES`
-    ``` C++
-    syntax:
-        void DumpAttributes(ref objRef);
     ```
 
 * **sti**
@@ -586,13 +691,6 @@ Currently disabled/not implemented functions:
     ``` C++
     syntax:
         float stf(string value);
-    ```
-
-* **CheckAttribute**
-    * **Compiler Token**: `FUNC_CHECK_ATTRIBUTE`
-    ``` C++
-    syntax:
-        bool CheckAttribute(object &obj, string attribute);
     ```
 
 * **argb**
@@ -637,13 +735,6 @@ Currently disabled/not implemented functions:
         void SetArraySize(2); 
     ```
 
-* **GetAttributeValue**
-    * **Compiler Token**: `FUNC_GET_ATTRIBUTE_VALUE`
-    ``` C++
-    syntax:
-        string GetAttributeValue(aref attribute);
-    ```
-
 * **Vartype**
     * **Compiler Token**: `FUNC_VARTYPE`
     ``` C++
@@ -655,13 +746,6 @@ Currently disabled/not implemented functions:
     ``` C++
     syntax:
         void Breakpoint();
-    ```
-
-* **CopyAttributes**
-    * **Compiler Token**: `FUNC_COPYATTRIBUTES`
-    ``` C++
-    syntax:
-        void CopyAttributes(2);
     ```
 
 * **strcut**
