@@ -58,20 +58,6 @@ It's short and makes the intent clear.
 ## Use "" for including Local Files and <> for Libraries
 
 ```cpp
-// Bad Idea. Requires extra -I directives to the compiler
-// and goes against standards.
-#include <string>
-#include <storm/OtherLibHeader.hpp>
-#include <MyLib/MyLibHeader.hpp>
-
-// Worse Idea
-// Requires potentially even more specific -I directives and
-// makes code more difficult to package and distribute.
-#include <string>
-#include <storm/OtherLibHeader.hpp>
-#include <MyLibHeader.hpp>
-
-
 // Good Idea
 // Requires no extra params and notifies the user that the file
 // is a local file.
@@ -89,8 +75,6 @@ This project uses `storm` namespace.
 ## Use .hpp and .cpp for Your File Extensions
 
 Ultimately this is a matter of preference, but .hpp and .cpp are widely recognized by various editors and tools. So the choice is pragmatic. Specifically, Visual Studio only automatically recognizes .cpp and .cxx for C++ files, and Vim doesn't necessarily recognize .cc as a C++ file.
-
-One particularly large project ([OpenStudio](https://github.com/NREL/OpenStudio)) uses .hpp and .cpp for user-generated files and .hxx and .cxx for tool-generated files. Both are well recognized and having the distinction is helpful.
 
 ## Always Use Spaces
 
