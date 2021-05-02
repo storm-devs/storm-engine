@@ -9,7 +9,7 @@ technique InterfaceFont
         AlphaBlendEnable = true;
         SrcBlend = srcalpha;
         DestBlend = invsrcalpha;
-        
+
         ColorOp[0] = Modulate;
         ColorArg1[0] = texture;
         ColorArg2[0] = diffuse;
@@ -806,7 +806,7 @@ technique iInfoShowerPicWithTips
         CullMode = none;
         texcoordindex[1] = 0;
         AlphaTestEnable = false;
-        AlphaBlendEnable = true;            
+        AlphaBlendEnable = true;
         SrcBlend = srcalpha;
         DestBlend = invsrcalpha;
         ColorArg1[0] = texture;

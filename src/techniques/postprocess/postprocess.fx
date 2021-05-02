@@ -23,13 +23,13 @@ technique PostProcessGlow
         ZEnable = false;
         AlphaTestEnable = false;
         FogEnable = false;
-  
+
         ColorOp[0] = Modulate;
         ColorArg1[0] = Texture;
         ColorArg2[0] = TFactor;
-  
+
         ColorOp[1] = disable;
-        
+
         AlphaBlendEnable = true;
         SrcBlend = one;
         DestBlend = one;

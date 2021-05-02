@@ -78,12 +78,12 @@ technique AdvancedParticles
     {
         FogEnable = false;
         ZWriteEnable = false;
-      
+
         SrcBlend = one;
         DestBlend = invsrcalpha;
         AlphaTestEnable = false;
         AlphaBlendEnable = true;
-  
+
         PixelShader = PIXEL_SHADER;
         VertexShader = VERTEX_SHADER;
     }

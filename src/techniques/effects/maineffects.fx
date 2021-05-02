@@ -110,7 +110,7 @@ technique WideScreen
         AlphaOp[0] = disable;
     }
 }
-    
+
 technique Blot
 {
     pass p0

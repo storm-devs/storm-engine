@@ -41,11 +41,11 @@ technique AnimationSelected
         Lighting = true;
 
         ColorOp[0] = modulate2x;
-        
+
         ColorOp[1] = add;
         ColorArg1[1] = tfactor;
         ColorArg2[1] = current;
-        
+
         ColorOp[2] = multiplyadd;
         ColorArg0[2] = current;
         ColorArg1[2] = tfactor;
@@ -55,7 +55,7 @@ technique AnimationSelected
         ColorArg0[3] = current;
         ColorArg1[3] = tfactor;
         ColorArg2[3] = current;
-        
+
         ColorOp[4] = disable;
 
         AlphaOp[0] = disable;
@@ -72,11 +72,11 @@ technique AnimationSelectedBlend
         Lighting = true;
 
         ColorOp[0] = modulate2x;
-        
+
         ColorOp[1] = add;
         ColorArg1[1] = tfactor;
         ColorArg2[1] = current;
-        
+
         ColorOp[2] = multiplyadd;
         ColorArg0[2] = current;
         ColorArg1[2] = tfactor;
@@ -86,7 +86,7 @@ technique AnimationSelectedBlend
         ColorArg0[3] = current;
         ColorArg1[3] = tfactor;
         ColorArg2[3] = current;
-        
+
         ColorOp[4] = disable;
 
         AlphaOp[0] = SelectArg1;

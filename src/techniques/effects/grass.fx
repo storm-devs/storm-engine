@@ -21,27 +21,31 @@ uniform extern float2 aSize;
 
 VS_OUTPUT main(float3 pos : POSITION, float4 params : COLOR0, float4 offset : COLOR1, float3 wa : TEXCOORD)
 {
-  VS_OUTPUT Output;
+    VS_OUTPUT Output;
+
     // Orientation
-    float3 ang = aAngles[params.z*15.0f];
+    float3 ang = aAngles[params.z * 15.0f];
+
     // Lighting
-  float kClr = mul(wa.xy, lDir);
+    float kClr = mul(wa.xy, lDir);
     kClr = clamp(kClr, -0.5f, 1.0f);
-    kClr = (kClr*0.9f + ang.z*0.8f)*kLitWF*offset.y;
-    Output.clr.xyz = aColor + lColor*kClr;
+    kClr = (kClr * 0.9f + ang.z * 0.8f) * kLitWF * offset.y;
+    Output.clr.xyz = aColor + lColor * kClr;
     Output.clr.w = wa.z;
+
     // Position
-    float2 size = params.xy*float2(0.3f*aSize.x, 0.4f*aSize.y) + float2(0.7f*aSize.x, 0.6f*aSize.y);
+    float2 size = params.xy * float2(0.3f * aSize.x, 0.4f * aSize.y) + float2(0.7f * aSize.x, 0.6f * aSize.y);
     float4 tmpPos;
-  pos = pos * fDataScale;
-    tmpPos.xz = pos.xz - ang.xy*size.xx*(offset.xx - 0.5f) + wa.xy*offset.yy;
-    tmpPos.y = pos.y + sqrt(size.y - (wa.x*wa.x + wa.y*wa.y))*offset.y;
+    pos = pos * fDataScale;
+    tmpPos.xz = pos.xz - ang.xy * size.xx * (offset.xx - 0.5f) + wa.xy * offset.yy;
+    tmpPos.y = pos.y + sqrt(size.y - (wa.x * wa.x + wa.y * wa.y)) * offset.y;
     tmpPos.w = 1.0f;
     Output.pos = mul(tmpPos, gVP);
-    // Tex coords
-    Output.uv = aUV[params.w*15.0f].xy + offset.xy*float2(0.245f, -0.245f);
 
-  return Output;
+    // Tex coords
+    Output.uv = aUV[params.w * 15.0f].xy + offset.xy * float2(0.245f, -0.245f);
+
+    return Output;
 }
 
 technique Grass
