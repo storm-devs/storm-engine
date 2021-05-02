@@ -114,6 +114,7 @@ class VDX9RENDER : public SERVICE
     virtual void GetTransform(long type, D3DMATRIX *mtx) = 0;
 
     virtual void BGFXSetTransform(long type, D3DMATRIX *mtx) = 0;
+    virtual void BGFXSetTransformUpdateViews(long type, D3DMATRIX *mtx) = 0;
     virtual void BGFXGetTransform(long type, D3DMATRIX *mtx) = 0;
 
 

@@ -206,24 +206,6 @@ void CXI_IMAGE::Draw()
             vertices.push_back({m_vrtx[1].pos.x, m_vrtx[1].pos.y, m_vrtx[1].pos.z}); // bottom left
             vertices.push_back({m_vrtx[3].pos.x, m_vrtx[3].pos.y, m_vrtx[3].pos.z}); // bottom right
 
-
-            
-            /*m_vrtx[1].tu = m_vrtx[0].tu = frTex.left;
-            m_vrtx[2].tu = m_vrtx[3].tu = frTex.right;
-            m_vrtx[2].tv = m_vrtx[0].tv = frTex.top;
-            m_vrtx[3].tv = m_vrtx[1].tv = frTex.bottom;*/
-
-            // x
-            /*auto minu = m_vrtx[0].tu;   // left
-            auto maxu = m_vrtx[2].tu;   // right
-
-            // y
-            auto minv = m_vrtx[0].tv;   // top
-            auto maxv = m_vrtx[1].tv;   // bottom
-
-            auto u = glm::vec2(minu, maxu);
-            auto v = glm::vec2(minv, maxv);*/
-
             std::vector<std::pair<float, float>> uv;
             uv.push_back({m_vrtx[0].tu, m_vrtx[0].tv});
             uv.push_back({m_vrtx[2].tu, m_vrtx[2].tv});

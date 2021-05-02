@@ -4,6 +4,10 @@
 #include <d3d9.h>
 #include <d3dx9.h>
 
+#include "gtc/matrix_transform.hpp"
+#include "gtc/type_ptr.hpp"
+#include "matrix.hpp"
+
 //============================================================================================
 
 /*
@@ -112,6 +116,7 @@ class CMatrix
     // Transposition
     void Transposition();
     void Transposition3X3();
+    CMatrix Transpose();
     CMatrix &Transposition4x4();
 
     // Rotate
@@ -540,6 +545,60 @@ inline void CMatrix::Transposition3X3()
       mov        [eax + 6*4], esi
       mov        [eax + 9*4], ebx
     }*/
+}
+
+inline CMatrix CMatrix::Transpose()
+{
+    CMatrix ret;
+
+    
+    glm::mat4 currentMatrix(0);
+
+    currentMatrix[0][0] = matrix[0];
+    currentMatrix[0][1] = matrix[1];
+    currentMatrix[0][2] = matrix[2];
+    currentMatrix[0][3] = matrix[3];
+
+    currentMatrix[1][0] = matrix[4];
+    currentMatrix[1][1] = matrix[5];
+    currentMatrix[1][2] = matrix[6];
+    currentMatrix[1][3] = matrix[7];
+
+    currentMatrix[2][0] = matrix[8];
+    currentMatrix[2][1] = matrix[9];
+    currentMatrix[2][2] = matrix[10];
+    currentMatrix[2][3] = matrix[11];
+
+    currentMatrix[3][0] = matrix[12];
+    currentMatrix[3][1] = matrix[13];
+    currentMatrix[3][2] = matrix[14];
+    currentMatrix[3][3] = matrix[15];
+    
+    currentMatrix = glm::transpose(currentMatrix);
+
+    matrix[0] = currentMatrix[0][0];
+    matrix[1] = currentMatrix[0][1];
+    matrix[2] = currentMatrix[0][2];
+    matrix[3] = currentMatrix[0][3];
+
+    matrix[4] = currentMatrix[1][0];
+    matrix[5] = currentMatrix[1][1];
+    matrix[6] = currentMatrix[1][2];
+    matrix[7] = currentMatrix[1][3];
+
+    matrix[8] = currentMatrix[2][0];
+    matrix[9] = currentMatrix[2][1];
+    matrix[10] = currentMatrix[2][2];
+    matrix[11] = currentMatrix[2][3];
+
+    matrix[12] = currentMatrix[3][0];
+    matrix[13] = currentMatrix[3][1];
+    matrix[14] = currentMatrix[3][2];
+    matrix[15] = currentMatrix[3][3];
+
+    return ret;
+
+
 }
 
 inline CMatrix &CMatrix::Transposition4x4()

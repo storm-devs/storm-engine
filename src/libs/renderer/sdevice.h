@@ -328,6 +328,7 @@ class DX9RENDER : public VDX9RENDER
     void GetTransform(long type, D3DMATRIX *mtx) override;
 
     void BGFXSetTransform(long type, D3DMATRIX *mtx) override;
+    void BGFXSetTransformUpdateViews(long type, D3DMATRIX *mtx) override;
     void BGFXGetTransform(long type, D3DMATRIX *mtx) override;
 
 
