@@ -7,15 +7,6 @@ if (STORM_ENABLE_STEAM)
 endif()
 
 if (MSVC)
-    # Using VS with vcxproj (not CMakeLists.txt) produces redundant output directories
-    if(CMAKE_GENERATOR MATCHES "Visual Studio")
-        # Output runtime files to the same directory regardless of [CONFIG]
-        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-    endif()
-
     # Always generate PDBs
     add_compile_options(/Zi)
     add_link_options(/DEBUG)

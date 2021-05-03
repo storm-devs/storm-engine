@@ -12,4 +12,4 @@ catch2/2.13.4
 cmake
 
 [imports]
-bin, *.exe -> ./bin
+bin, crashpad_handler.exe -> ./bin
