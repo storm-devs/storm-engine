@@ -40,4 +40,6 @@ add_subdirectory(waterrings)
 add_subdirectory(weather)
 add_subdirectory(worldmap)
 add_subdirectory(xinterface)
+add_subdirectory(Window)
+
 
