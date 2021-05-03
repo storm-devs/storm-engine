@@ -1,11 +1,15 @@
 [requires]
 zlib/1.2.11
 spdlog/1.8.2
-sentry-native/0.4.8
+
 sdl2/2.0.14@bincrafters/stable
+sentry-native/0.4.9@storm/src
 
 # Development dependencies
 catch2/2.13.4
 
 [generators]
 cmake
+
+[imports]
+bin, *.exe -> ./bin
