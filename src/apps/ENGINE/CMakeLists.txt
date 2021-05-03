@@ -130,10 +130,6 @@ target_link_libraries(${PROJECT_NAME}
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${CrashpadHandler_PATH}"
-        "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
-
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${Fmod_LIBRARY_PATHS}/fmod.dll"
         "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
         
