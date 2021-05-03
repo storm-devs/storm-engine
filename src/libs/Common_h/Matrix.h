@@ -97,6 +97,10 @@ class CMatrix
     // Calculate scaling matrix
     CMatrix &BuildScale(const CVECTOR &scale);
 
+
+    // Check equality
+    bool operator==(const CMatrix &other);
+    
     // Equal
     void operator=(const CMatrix &matrix);
 
@@ -404,6 +408,26 @@ inline void CMatrix::operator=(const CMatrix &matrix)
     }*/
 }
 
+inline bool CMatrix::operator==(const CMatrix &matrix)
+{
+    return this->matrix[0] == matrix.matrix[0] &&
+    this->matrix[1] == matrix.matrix[1] &&
+    this->matrix[2] == matrix.matrix[2] &&
+    this->matrix[3] == matrix.matrix[3] &&
+    this->matrix[4] == matrix.matrix[4] &&
+    this->matrix[5] == matrix.matrix[5] &&
+    this->matrix[6] == matrix.matrix[6] &&
+    this->matrix[7] == matrix.matrix[7] &&
+    this->matrix[8] == matrix.matrix[8] &&
+    this->matrix[9] == matrix.matrix[9] &&
+    this->matrix[10] == matrix.matrix[10] &&
+    this->matrix[11] == matrix.matrix[11] &&
+    this->matrix[12] == matrix.matrix[12] &&
+    this->matrix[13] == matrix.matrix[13] &&
+    this->matrix[14] == matrix.matrix[14] &&
+    this->matrix[15] == matrix.matrix[15];
+}
+
 // Multiply
 inline void CMatrix::operator*=(CMatrix &matrix)
 {
@@ -550,9 +574,8 @@ inline void CMatrix::Transposition3X3()
 inline CMatrix CMatrix::Transpose()
 {
     CMatrix ret;
-
-    
-    glm::mat4 currentMatrix(0);
+        
+    /*glm::mat4 currentMatrix(0);
 
     currentMatrix[0][0] = matrix[0];
     currentMatrix[0][1] = matrix[1];
@@ -576,25 +599,32 @@ inline CMatrix CMatrix::Transpose()
     
     currentMatrix = glm::transpose(currentMatrix);
 
-    matrix[0] = currentMatrix[0][0];
-    matrix[1] = currentMatrix[0][1];
-    matrix[2] = currentMatrix[0][2];
-    matrix[3] = currentMatrix[0][3];
+    ret.m[0][0] = currentMatrix[0][0];
+    ret.m[0][1] = currentMatrix[0][1];
+    ret.m[0][2] = currentMatrix[0][2];
+    ret.m[0][3] = currentMatrix[0][3];
 
-    matrix[4] = currentMatrix[1][0];
-    matrix[5] = currentMatrix[1][1];
-    matrix[6] = currentMatrix[1][2];
-    matrix[7] = currentMatrix[1][3];
+    ret.m[1][0] = currentMatrix[1][0];
+    ret.m[1][1] = currentMatrix[1][1];
+    ret.m[1][2] = currentMatrix[1][2];
+    ret.m[1][3] = currentMatrix[1][3];
 
-    matrix[8] = currentMatrix[2][0];
-    matrix[9] = currentMatrix[2][1];
-    matrix[10] = currentMatrix[2][2];
-    matrix[11] = currentMatrix[2][3];
+    ret.m[2][0] = currentMatrix[2][0];
+    ret.m[2][1] = currentMatrix[2][1];
+    ret.m[2][2] = currentMatrix[2][2];
+    ret.m[2][3] = currentMatrix[2][3];
 
-    matrix[12] = currentMatrix[3][0];
-    matrix[13] = currentMatrix[3][1];
-    matrix[14] = currentMatrix[3][2];
-    matrix[15] = currentMatrix[3][3];
+    ret.m[3][0] = currentMatrix[3][0];
+    ret.m[3][1] = currentMatrix[3][1];
+    ret.m[3][2] = currentMatrix[3][2];
+    ret.m[3][3] = currentMatrix[3][3];*/
+
+    for (int n = 0; n < 4 * 4; n++)
+    {
+        int i = n / 4;
+        int j = n % 4;
+        ret.matrix[n] = matrix[4 * j + i];
+    }
 
     return ret;
 

@@ -2,6 +2,10 @@
 #include "glm.hpp"
 #include "gtx/matrix_transform_2d.hpp"
 
+#include "gtc/matrix_transform.hpp"
+#include "gtc/type_ptr.hpp"
+#include "matrix.hpp"
+
 #include "sdevice.h"
 
 #include "core.h"
@@ -3166,86 +3170,17 @@ void DX9RENDER::GetTransform(long type, D3DMATRIX *mtx)
         mtx->_43 -= vWordRelationPos.z;
     }
 }
-#include "gtc/matrix_transform.hpp"
-#include "gtc/type_ptr.hpp"
-#include "matrix.hpp"
 
 void DX9RENDER::BGFXSetTransform(long type, D3DMATRIX *mtx)
 {
     CMatrix m = *(CMatrix *)mtx;
     if (type == D3DTS_VIEW)
     {
-        bgfxvViewRelationPos.x = -mtx->_41;
-        bgfxvViewRelationPos.y = -mtx->_42;
-        bgfxvViewRelationPos.z = -mtx->_43;
+        //m = m.Transpose();
 
-        CVECTOR vDeltaWorld = bgfxvWordRelationPos;
-        m.MulToInvNorm(-bgfxvViewRelationPos, bgfxvWordRelationPos);
-        vDeltaWorld -= bgfxvWordRelationPos;
-        CMatrix mw = bgfxWorld;
-
-        mw.Pos() -= vDeltaWorld;
-
-        CMatrix transposedWorld = mw;
-        auto transp = mw;
-        transp = transp.Transposition4x4();
-
-        m.Pos() += bgfxvViewRelationPos;
-    }
-    else if (type == D3DTS_WORLD)
-    {
-        m.Pos() += bgfxvWordRelationPos;
-    }
-
-    switch (type)
-    {
-    case D3DTS_VIEW: {
-        CMatrix mv = m;
-        mv = mv.Transposition4x4();
-
-        bgfxView = mv;
-    }
-    break;
-        
-    case D3DTS_PROJECTION: {
-        CMatrix mp = m;
-
-        mp = mp.Transposition4x4();
-
-        bgfxProjection = mp;
-        
-    }
-    break;
-
-    case D3DTS_WORLD:
-        CMatrix wMat = m;
-        wMat = wMat.Transposition4x4();
-        bgfxWorld = wMat;
-        break;
-    }
-}
-
-
-void DX9RENDER::BGFXSetTransformUpdateViews(long type, D3DMATRIX *mtx)
-{
-    CMatrix m = *(CMatrix *)mtx;
-    if (type == D3DTS_VIEW)
-    {
-        bgfxvViewRelationPos.x = -mtx->_41;
-        bgfxvViewRelationPos.y = -mtx->_42;
-        bgfxvViewRelationPos.z = -mtx->_43;
-
-        CVECTOR vDeltaWorld = bgfxvWordRelationPos;
-        m.MulToInvNorm(-bgfxvViewRelationPos, bgfxvWordRelationPos);
-        vDeltaWorld -= bgfxvWordRelationPos;
-        CMatrix mw = bgfxWorld;
-
-        mw.Pos() -= vDeltaWorld;
-
-        CMatrix transposedWorld = mw;
-        auto transp = mw;
-        transp = transp.Transpose();
-        bgfx::setTransform(transp.matrix);
+        bgfxvViewRelationPos.x = -((D3DMATRIX*)&m)->_41;
+        bgfxvViewRelationPos.y = -((D3DMATRIX *)&m)->_42;
+        bgfxvViewRelationPos.z = -((D3DMATRIX *)&m)->_43;
 
         m.Pos() += bgfxvViewRelationPos;
     }
@@ -3261,19 +3196,55 @@ void DX9RENDER::BGFXSetTransformUpdateViews(long type, D3DMATRIX *mtx)
         mv = mv.Transpose();
 
         bgfxView = mv;
-        const bx::Vec3 at = {0.0f, 0.0f, 0.0};
-        const bx::Vec3 eye = {0.0f, 0.0f, -3.0};
+    }
+    break;
+        
+    case D3DTS_PROJECTION: {
+        CMatrix mp = m;
 
-        glm::mat4 view(1);
-        bx::mtxLookAt(glm::value_ptr(view), eye, at);
+        mp = mp.Transpose();
 
-        glm::mat4 proj(1);
-        bx::mtxOrtho(glm::value_ptr(proj), 0.0f, float(1066), float(600), 0.0f, 0.0f, 1000.0f, 0.0f,
-                     bgfx::getCaps()->homogeneousDepth);
-        bgfx::setViewTransform(1, glm::value_ptr(view), glm::value_ptr(proj));
-        //bgfx::setViewTransform(1, bgfxView.matrix, glm::value_ptr(proj));
+        bgfxProjection = mp;
+        
+    }
+    break;
 
-        // bgfx::setViewTransform(1, bgfxView.matrix, bgfxProjection.matrix);
+    case D3DTS_WORLD:
+        CMatrix wMat = m;
+        wMat = wMat.Transpose();
+        bgfxWorld = wMat;
+        break;
+    }
+}
+
+
+void DX9RENDER::BGFXSetTransformUpdateViews(long type, D3DMATRIX *mtx)
+{
+    CMatrix m = *(CMatrix *)mtx;
+    if (type == D3DTS_VIEW)
+    {
+        //m = m.Transpose();
+        bgfxvViewRelationPos.x = -((D3DMATRIX *)&m)->_41;
+        bgfxvViewRelationPos.y = -((D3DMATRIX *)&m)->_42;
+        bgfxvViewRelationPos.z = -((D3DMATRIX *)&m)->_43;
+
+        m.Pos() += bgfxvViewRelationPos;
+    }
+    else if (type == D3DTS_WORLD)
+    {
+        m.Pos() += bgfxvWordRelationPos;
+    }
+
+    switch (type)
+    {
+    case D3DTS_VIEW: {
+        CMatrix mv = m;
+        
+        mv = mv.Transpose();
+
+        bgfxView = mv;
+
+        bgfx::setViewTransform(1, bgfxView.matrix, bgfxProjection.matrix);
     }
     break;
 
@@ -3284,17 +3255,7 @@ void DX9RENDER::BGFXSetTransformUpdateViews(long type, D3DMATRIX *mtx)
 
         bgfxProjection = mp;
 
-        const bx::Vec3 at = {0.0f, 0.0f, 0.0};
-        const bx::Vec3 eye = {0.0f, 0.0f, -3.0};
-
-        glm::mat4 view(1);
-        bx::mtxLookAt(glm::value_ptr(view), eye, at);
-        glm::mat4 proj(1);
-        bx::mtxOrtho(glm::value_ptr(proj), 0.0f, float(1066), float(600), 0.0f, 0.0f, 1000.0f, 0.0f,
-                     bgfx::getCaps()->homogeneousDepth);
-        //bgfx::setViewTransform(1, glm::value_ptr(view), glm::value_ptr(proj));
-
-        bgfx::setViewTransform(1, bgfxView.matrix, glm::value_ptr(proj));
+        bgfx::setViewTransform(1, bgfxView.matrix, bgfxProjection.matrix);
 
         // bgfx::setViewTransform(1, bgfxView.matrix, bgfxProjection.matrix);
     }
@@ -3302,7 +3263,7 @@ void DX9RENDER::BGFXSetTransformUpdateViews(long type, D3DMATRIX *mtx)
 
     case D3DTS_WORLD:
         CMatrix wMat = m;
-        //wMat = wMat.Transpose();
+        wMat = wMat.Transpose();
         bgfxWorld = wMat;
         bgfx::setTransform(bgfxWorld.matrix);
         break;
