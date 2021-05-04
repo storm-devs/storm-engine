@@ -1687,7 +1687,7 @@ bool DX9RENDER::BGFXTextureLoad(long t)
                 case TXF_A8R8G8B8: 
                 {
 
-                    /*unsigned char *data = byteOutput.data();
+                    unsigned char *data = byteOutput.data();
 
                     for (int i = 0; i < head.mip_size; i+=4) 
                     {
@@ -1696,11 +1696,11 @@ bool DX9RENDER::BGFXTextureLoad(long t)
                         unsigned char g = data[i + 2];
                         unsigned char b = data[i + 3];
 
-                        data[i + 0] = r;
+                        data[i + 0] = b;
                         data[i + 1] = g;
-                        data[i + 2] = b;
+                        data[i + 2] = r;
                         data[i + 3] = a;
-                    }*/
+                    }
 
                 }
                     break;
@@ -1814,7 +1814,46 @@ bool DX9RENDER::BGFXTextureLoad(long t)
                     
                     break;
 
-                case TXF_R5G6B5:
+                case TXF_R5G6B5: {
+                    /*unsigned char *data = byteOutput.data();
+
+                    for (int i = 0; i < head.mip_size; i += 2)
+                    {
+
+                        std::deque<unsigned char> bits;
+
+                        unsigned char low = data[i + 0];
+                        unsigned char high = data[i + 1];
+
+                        std::bitset<8> bitLow(low);
+                        std::bitset<8> bitHigh(high);
+
+                        std::bitset<8> bitLowBackup(low);
+                        std::bitset<8> bitHighBackup(high);
+
+
+                        bitLow[0] = bitHighBackup[3];
+                        bitLow[1] = bitHighBackup[4];
+                        bitLow[2] = bitHighBackup[5];
+                        bitLow[3] = bitHighBackup[6];
+                        bitLow[4] = bitHighBackup[7];
+
+                        bitHigh[3] = bitLowBackup[0];
+                        bitHigh[4] = bitLowBackup[1];
+                        bitHigh[5] = bitLowBackup[2];
+                        bitHigh[6] = bitLowBackup[3];
+                        bitHigh[7] = bitLowBackup[4];
+
+                        unsigned long bitLowLong= bitLow.to_ulong();
+                        unsigned long bitHighLong = bitHigh.to_ulong();
+
+                        data[i + 0] = static_cast<unsigned char>(bitLowLong); 
+                        data[i + 1] = static_cast<unsigned char>(bitHighLong); 
+
+                    }*/
+                }
+
+
                         break;
 
                 case TXF_X8R8G8B8:
