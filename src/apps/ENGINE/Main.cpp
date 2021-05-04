@@ -8,15 +8,20 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/spdlog.h>
 
+#include <OSWindow.hpp>
+
 VFILE_SERVICE *fio = nullptr;
 CORE core;
 S_DEBUG CDebug;
+
+using namespace storm;
 
 namespace
 {
 
 bool isHold = false;
-bool bActive = false;
+bool isRunning = false;
+bool bActive = true;
 
 } // namespace
 
@@ -79,6 +84,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     uint32_t dwMaxFPS = 0;
     auto ini = fio->OpenIniFile(fs::ENGINE_INI_FILE_NAME);
     bool bSteam = false;
+    int width = 1024, height = 768;
+    bool fullscreen = false;
 
     if (ini)
     {
@@ -97,143 +104,78 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
         {
             bSteam = false;
         }
+        width = ini->GetLong(nullptr, "screen_x", 1024);
+        height = ini->GetLong(nullptr, "screen_y", 768);
+        fullscreen = ini->GetLong(nullptr, "full_screen", false) ? true : false;
     }
 
     // evaluate SteamApi singleton
     steamapi::SteamApi::getInstance(!bSteam);
 
-    /* Register and show window */
-    const auto *const windowName = L"Sea Dogs";
-
-    WNDCLASSEX wndclass;
-    wndclass.cbSize = sizeof(wndclass);
-    wndclass.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
-    wndclass.lpfnWndProc = WndProc;
-    wndclass.cbClsExtra = 0;
-    wndclass.cbWndExtra = sizeof(uint16_t);
-    wndclass.hInstance = hInstance;
-    wndclass.hIcon = LoadIcon(hInstance, TEXT("IDI_ICON1"));
-    wndclass.hCursor = LoadCursor(hInstance, TEXT("NULL_CURSOR")); // LoadCursor(NULL,IDC_ARROW);
-    wndclass.hbrBackground = static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH));
-    wndclass.lpszMenuName = nullptr;
-    wndclass.lpszClassName = windowName;
-    wndclass.hIconSm = LoadIcon(nullptr, IDI_APPLICATION);
-    RegisterClassEx(&wndclass);
-
-    auto *const hwnd = CreateWindow(windowName, windowName, WS_POPUP, 0, 0, 0, 0, NULL, NULL, hInstance, NULL);
-    ShowWindow(hwnd, SW_SHOWNORMAL);
+    std::shared_ptr<storm::OSWindow> window = storm::OSWindow::Create(width, height, fullscreen);
+    window->SetTitle("Sea Dogs");
+    core.Set_Hwnd(static_cast<HWND>(window->OSHandle()));
+    auto windowHandler = [&](const storm::OSWindow::Event &e) {
+        if (e == OSWindow::Closed)
+        {
+            isRunning = false;
+            core.Event("DestroyWindow", nullptr);
+        }
+        else if (e == OSWindow::FocusGained)
+        {
+            bActive = true;
+            core.AppState(bActive);
+        }
+        else if (e == OSWindow::FocusLost)
+        {
+            bActive = false;
+            core.AppState(bActive);
+        }
+    };
+    window->Subscribe(windowHandler);
+    window->Show();
 
     /* Init stuff */
     core.InitBase();
 
     /* Message loop */
     auto dwOldTime = GetTickCount();
-    MSG msg;
 
-    while (true)
+    isRunning = true;
+    while (isRunning)
     {
-        if (PeekMessage(&msg, nullptr, 0U, 0U, PM_REMOVE))
+        storm::OSWindow::ProcessEvents();
+
+        if (bActive)
         {
-            if (msg.message == WM_QUIT)
-                break;
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
+            if (dwMaxFPS)
+            {
+                const auto dwMS = 1000u / dwMaxFPS;
+                const auto dwNewTime = GetTickCount();
+                if (dwNewTime - dwOldTime < dwMS)
+                    continue;
+                dwOldTime = dwNewTime;
+            }
+            const auto runResult = core.Run();
+            if (!isHold && !runResult)
+            {
+                isHold = true;
+                isRunning = false;
+            }
         }
         else
         {
-            if (bActive)
-            {
-                if (dwMaxFPS)
-                {
-                    const auto dwMS = 1000u / dwMaxFPS;
-                    const auto dwNewTime = GetTickCount();
-                    if (dwNewTime - dwOldTime < dwMS)
-                        continue;
-                    dwOldTime = dwNewTime;
-                }
-                const auto runResult = core.Run();
-                if (!isHold && !runResult)
-                {
-                    isHold = true;
-                    SendMessage(hwnd, WM_CLOSE, 0, 0L);
-                }
-            }
-            else
-            {
-                Sleep(50);
-            }
+            Sleep(50);
         }
     }
+    core.Event("ExitApplication", nullptr);
+    CDebug.Release();
+    core.CleanUp();
+    CDebug.CloseDebugWindow();
 
     /* Release */
     core.ReleaseBase();
     ClipCursor(nullptr);
 
-    return msg.wParam;
-}
-
-LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
-{
-    switch (iMsg)
-    {
-    case WM_CREATE:
-        core.Set_Hwnd(hwnd);
-        break;
-
-    case WM_CLOSE:
-        DestroyWindow(hwnd);
-        break;
-
-    case WM_DESTROY:
-        core.Event("DestroyWindow", nullptr);
-        core.Event("ExitApplication", nullptr);
-        CDebug.Release();
-        core.CleanUp();
-        CDebug.CloseDebugWindow();
-
-        InvalidateRect(nullptr, nullptr, 0);
-        PostQuitMessage(0);
-        break;
-
-    case WM_ACTIVATE:
-        bActive = LOWORD(wParam) == WA_CLICKACTIVE || LOWORD(wParam) == WA_ACTIVE;
-        core.AppState(bActive);
-        break;
-
-    case WM_KEYDOWN:
-        if (wParam == VK_F5) // && bDebugWindow
-        {
-            if (!CDebug.IsDebug())
-                CDebug.OpenDebugWindow(core.hInstance);
-            else
-            {
-                ShowWindow(CDebug.GetWindowHandle(), SW_NORMAL);
-                SetFocus(CDebug.SourceView->hOwn);
-            }
-        }
-    case WM_KEYUP:
-    case WM_RBUTTONUP:
-    case WM_RBUTTONDOWN:
-    case WM_LBUTTONUP:
-    case WM_LBUTTONDOWN:
-    case WM_MBUTTONDOWN:
-    case WM_MBUTTONUP:
-        // case MM_MCINOTIFY:
-    case WM_LBUTTONDBLCLK:
-    case WM_CHAR:
-    case WM_MOUSEMOVE:
-        if (core.Controls)
-            core.Controls->EngineMessage(iMsg, wParam, lParam);
-        break;
-
-    case WM_MOUSEWHEEL:
-        core.Event("evMouseWeel", "l", static_cast<short>(HIWORD(wParam)));
-        if (core.Controls)
-            core.Controls->EngineMessage(iMsg, wParam, lParam);
-        break;
-
-    default:;
-    }
-
-    return DefWindowProc(hwnd, iMsg, wParam, lParam);
+    return 0;
 }

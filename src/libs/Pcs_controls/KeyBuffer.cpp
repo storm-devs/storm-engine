@@ -1,8 +1,7 @@
 #include "KeyBuffer.h"
 
-ControlKeyBuffer::ControlKeyBuffer() : m_pcBuffer{}
+ControlKeyBuffer::ControlKeyBuffer()
 {
-    m_nBufLen = 0;
 }
 
 ControlKeyBuffer::~ControlKeyBuffer()
@@ -11,17 +10,23 @@ ControlKeyBuffer::~ControlKeyBuffer()
 
 void ControlKeyBuffer::Reset()
 {
-    m_nBufLen = 0;
+    m_pcBuffer.clear();
 }
 
 void ControlKeyBuffer::AddKey(char *u8_str, int u8_size, bool bSystem)
 {
-    m_pcBuffer[m_nBufLen].ucVKey.c = 0;
+    KeyDescr key;
+    key.ucVKey.c = 0;
     for (int i = 0; i < u8_size; i++)
-    {
-        m_pcBuffer[m_nBufLen].ucVKey.b[i] = u8_str[i];
-    }
-    m_pcBuffer[m_nBufLen].ucVKey.l = u8_size;
-    m_pcBuffer[m_nBufLen].bSystem = bSystem;
-    m_nBufLen++;
+        key.ucVKey.b[i] = u8_str[i];
+
+    key.ucVKey.l = u8_size;
+    key.bSystem = bSystem;
+
+    m_pcBuffer.push_back(key);
+}
+
+void ControlKeyBuffer::AddKey(const KeyDescr &key)
+{
+    m_pcBuffer.push_back(key);
 }

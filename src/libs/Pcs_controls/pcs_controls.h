@@ -5,6 +5,14 @@
 #include "KeyBuffer.h"
 #include "vmodule_api.h"
 
+#include <memory>
+
+namespace storm
+{
+struct InputEvent;
+class Input;
+} // namespace storm
+
 struct SYSTEM_CONTROL_ELEMENT
 {
     uint32_t update_frame;
@@ -31,14 +39,16 @@ class PCS_CONTROLS : public CONTROLS
     long nLastControlTime;
 
     long nMouseWheel;
+    long nMouseDx, nMouseDy;
 
     SYSTEM_CONTROL_ELEMENT ControlsTab[CONTROL_ELEMENTS_NUM];
-
-    long nMouseXPrev, nMouseYPrev;
 
     ControlKeyBuffer m_KeyBuffer;
 
     ControlTree m_ControlTree;
+
+    std::shared_ptr<storm::Input> m_input;
+    int m_inputHandlerID = 0;
 
   public:
     PCS_CONTROLS();
@@ -74,18 +84,11 @@ class PCS_CONTROLS : public CONTROLS
     void SetMouseSensivityX(float);
     void SetMouseSensivityY(float);
 
-    short GetDebugAsyncKeyState(int vk)
-    {
-        return (m_bIsOffDebugKeys ? 0 : GetAsyncKeyState(vk));
-    }
-    short GetDebugKeyState(int vk)
-    {
-        return (m_bIsOffDebugKeys ? 0 : GetKeyState(vk));
-    }
+    short GetDebugAsyncKeyState(int vk);
+    short GetDebugKeyState(int vk);
     bool m_bIsOffDebugKeys;
 
-    // Control command from ENGINE
-    void EngineMessage(UINT iMsg, WPARAM wParam, LPARAM lParam);
+    void HandleEvent(const storm::InputEvent &evt);
 
     // Get the keystroke buffer per frame (taking into account the language)
     virtual long GetKeyBufferLength();
