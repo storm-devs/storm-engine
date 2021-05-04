@@ -4,6 +4,8 @@
 
 #include "vfile_service.h"
 
+#include "primitive_renderer.h"
+
 void SetRectanglePos(XI_ONETEX_VERTEX v[4], const FXYPOINT &center, const FXYPOINT &size)
 {
     v[0].pos.x = v[1].pos.x = center.x - size.x / 2;
@@ -44,10 +46,60 @@ void CXI_TWOPICTURE::Draw(bool bSelected, uint32_t Delta_Time)
 {
     if (m_bUse)
     {
-        m_rs->TextureSet(0, m_idOneTex);
+        /*m_rs->TextureSet(0, m_idOneTex);
         m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, m_vOne, sizeof(XI_ONETEX_VERTEX), "iIcon");
         m_rs->TextureSet(0, m_idTwoTex);
-        m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, m_vTwo, sizeof(XI_ONETEX_VERTEX), "iIcon");
+        m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, m_vTwo, sizeof(XI_ONETEX_VERTEX), "iIcon");*/
+
+
+        std::vector<glm::vec3> vertices;
+        std::vector<std::pair<float, float>> uv;
+        std::vector<uint32_t> colors;
+
+        vertices.push_back({m_vOne[0].pos.x, m_vOne[0].pos.y, m_vOne[0].pos.z}); // top left
+        vertices.push_back({m_vOne[2].pos.x, m_vOne[2].pos.y, m_vOne[2].pos.z}); // top right
+        vertices.push_back({m_vOne[1].pos.x, m_vOne[1].pos.y, m_vOne[1].pos.z}); // bottom left
+        vertices.push_back({m_vOne[3].pos.x, m_vOne[3].pos.y, m_vOne[3].pos.z}); // bottom right
+
+        uv.push_back({m_vOne[0].tu, m_vOne[0].tv});
+        uv.push_back({m_vOne[2].tu, m_vOne[2].tv});
+        uv.push_back({m_vOne[1].tu, m_vOne[1].tv});
+        uv.push_back({m_vOne[3].tu, m_vOne[3].tv});
+
+        colors.push_back(m_vOne[0].color);
+        colors.push_back(m_vOne[1].color);
+        colors.push_back(m_vOne[2].color);
+        colors.push_back(m_vOne[3].color);
+
+        auto texture = m_rs->GetBGFXTextureFromID(m_idOneTex);
+        m_rs->GetPrimitiveRenderer()->Texture = texture;
+        m_rs->GetPrimitiveRenderer()->Submit(vertices, uv, colors);
+
+        vertices.clear();
+        uv.clear();
+        colors.clear();
+
+        
+        vertices.push_back({m_vTwo[0].pos.x, m_vTwo[0].pos.y, m_vTwo[0].pos.z}); // top left
+        vertices.push_back({m_vTwo[2].pos.x, m_vTwo[2].pos.y, m_vTwo[2].pos.z}); // top right
+        vertices.push_back({m_vTwo[1].pos.x, m_vTwo[1].pos.y, m_vTwo[1].pos.z}); // bottom left
+        vertices.push_back({m_vTwo[3].pos.x, m_vTwo[3].pos.y, m_vTwo[3].pos.z}); // bottom right
+
+        uv.push_back({m_vTwo[0].tu, m_vTwo[0].tv});
+        uv.push_back({m_vTwo[2].tu, m_vTwo[2].tv});
+        uv.push_back({m_vTwo[1].tu, m_vTwo[1].tv});
+        uv.push_back({m_vTwo[3].tu, m_vTwo[3].tv});
+
+        colors.push_back(m_vTwo[0].color);
+        colors.push_back(m_vTwo[1].color);
+        colors.push_back(m_vTwo[2].color);
+        colors.push_back(m_vTwo[3].color);
+
+
+        texture = m_rs->GetBGFXTextureFromID(m_idTwoTex);
+        m_rs->GetPrimitiveRenderer()->Texture = texture;
+        m_rs->GetPrimitiveRenderer()->Submit(vertices, uv, colors);
+
     }
 }
 
@@ -80,12 +132,12 @@ void CXI_TWOPICTURE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, co
 
     // textures
     if (ReadIniString(ini1, name1, ini2, name2, "oneTexName", param, sizeof(param), ""))
-        m_idOneTex = m_rs->TextureCreate(param);
+        m_idOneTex = m_rs->BGFXTextureCreate(param);
     else
         m_idOneTex = -1;
 
     if (ReadIniString(ini1, name1, ini2, name2, "twoTexName", param, sizeof(param), ""))
-        m_idTwoTex = m_rs->TextureCreate(param);
+        m_idTwoTex = m_rs->BGFXTextureCreate(param);
     else
         m_idTwoTex = -1;
 
@@ -118,8 +170,8 @@ void CXI_TWOPICTURE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, co
 
 void CXI_TWOPICTURE::ReleaseAll()
 {
-    TEXTURE_RELEASE(m_rs, m_idOneTex);
-    TEXTURE_RELEASE(m_rs, m_idTwoTex);
+    BGFX_TEXTURE_RELEASE(m_rs, m_idOneTex);
+    BGFX_TEXTURE_RELEASE(m_rs, m_idTwoTex);
 }
 
 int CXI_TWOPICTURE::CommandExecute(int wActCode)

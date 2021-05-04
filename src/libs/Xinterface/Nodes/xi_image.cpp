@@ -108,7 +108,7 @@ void CXI_IMAGE::LoadAccordingToString(const char *pcImageParam)
         case InterfaceToken_file:
             if (CXI_UTILS::StringGetTokenString(pcParam, tokenString, sizeof(tokenString)))
             {
-                m_nTextureID = m_rs->TextureCreate(tokenString);
+                m_nTextureID = m_rs->BGFXTextureCreate(tokenString);
                 UpdateTexture();
             }
             break;
@@ -185,7 +185,7 @@ void CXI_IMAGE::Draw()
 
     if (IsImagePresent())
     {
-        /*if (m_pTexture)
+        /*if (m_pTexture) //@BGFX TODO
             m_rs->SetTexture(0, m_pTexture);
         else
             m_rs->TextureSet(0, m_nTextureID);*/
@@ -212,17 +212,14 @@ void CXI_IMAGE::Draw()
             uv.push_back({m_vrtx[1].tu, m_vrtx[1].tv});
             uv.push_back({m_vrtx[3].tu, m_vrtx[3].tv});
 
-            uint32_t color = 0;
+            std::vector<uint32_t> colors;
 
-            /*CMatrix moldv, moldp, moldw;
+            colors.push_back(m_vrtx[0].color);
+            colors.push_back(m_vrtx[1].color);
+            colors.push_back(m_vrtx[2].color);
+            colors.push_back(m_vrtx[3].color);
 
-            m_rs->GetTransform(D3DTS_WORLD, moldw);
-            m_rs->GetTransform(D3DTS_VIEW, moldv);
-            m_rs->GetTransform(D3DTS_PROJECTION, moldp);*/
-
-            // m_rs->GetSpriteRenderer()->SetViewProjection();
-
-            m_rs->GetPrimitiveRenderer()->Submit(vertices, uv, color);
+            m_rs->GetPrimitiveRenderer()->Submit(vertices, uv, colors);
 
         }
 

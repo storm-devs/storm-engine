@@ -89,7 +89,7 @@ class Application : public entry::AppI
         m_reset = BGFX_RESET_VSYNC;
 
         bgfx::Init init;
-        init.type = bgfx::RendererType::Direct3D12;
+        init.type = bgfx::RendererType::Direct3D11;
         init.vendorId = args.m_pciId;
         init.resolution.width = m_width;
         init.resolution.height = m_height;

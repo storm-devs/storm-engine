@@ -349,22 +349,6 @@ void XINTERFACE::Realize(uint32_t Delta_Time)
         while (pRenderService->TechniqueExecuteNext())
             ;
 
-    CMatrix bgfxProj = matp;
-
-    glm::mat4 proj(1);
-    bx::mtxOrtho(glm::value_ptr(proj), 0.0f, float(dwScreenWidth), float(dwScreenHeight), 0.0f, 0.0f, 1000.0f, 0.0f,
-                 bgfx::getCaps()->homogeneousDepth);
-
-    proj = glm::transpose(proj);
-
-    float *glmprojection = glm::value_ptr(proj);
-
-    for (int i = 0; i < 16; ++i)
-        bgfxProj.matrix[i] = glmprojection[i];
-
-    bgfxProj.m[2][2] = 1.0003f;
-
-
     // Get old transformation
     pRenderService->GetTransform(D3DTS_VIEW, moldv);
     pRenderService->GetTransform(D3DTS_PROJECTION, moldp);
@@ -1198,6 +1182,20 @@ void XINTERFACE::LoadIni()
     matp.m[3][2] = 0.f;
     matp.m[3][3] = 0.f;
     matp.m[3][2] = -1.f;
+
+    
+    glm::mat4 proj(1);
+    bx::mtxOrtho(glm::value_ptr(proj), 0.0f, float(dwScreenWidth), float(dwScreenHeight), 0.0f, 0.0f, 1000.0f, 0.0f,
+                 bgfx::getCaps()->homogeneousDepth);
+
+    proj = glm::transpose(proj);
+
+    float *glmprojection = glm::value_ptr(proj);
+
+    for (int i = 0; i < 16; ++i)
+        bgfxProj.matrix[i] = glmprojection[i];
+
+    bgfxProj.m[2][2] = 1.0003f;
 
     matv.m[3][0] = -(GlobalScreenRect.left + GlobalScreenRect.right) / 2.f;
     matv.m[3][1] = -(GlobalScreenRect.top + GlobalScreenRect.bottom) / 2.f;

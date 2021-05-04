@@ -20,8 +20,8 @@ PrimitiveRenderer::PrimitiveRenderer(long m_fbWidth, long m_fbHeight)
     m_height = m_fbHeight;
 
     
-    const bgfx::Memory *memVsh = shaderc::compileShader(shaderc::ST_VERTEX, "shaders/dx9/vs_font.sc");
-    const bgfx::Memory *memFsh = shaderc::compileShader(shaderc::ST_FRAGMENT, "shaders/dx9/fs_font.sc");
+    const bgfx::Memory *memVsh = shaderc::compileShader(shaderc::ST_VERTEX, "shaders/dx9/vs_primitive.sc");
+    const bgfx::Memory *memFsh = shaderc::compileShader(shaderc::ST_FRAGMENT, "shaders/dx9/fs_primitive.sc");
 
     bgfx::ShaderHandle vsh = bgfx::createShader(memVsh);
     bgfx::ShaderHandle fsh = bgfx::createShader(memFsh);
@@ -46,7 +46,7 @@ void PrimitiveRenderer::ReleaseTexture(std::shared_ptr<TextureResource> texture)
 void PrimitiveRenderer::Submit(std::vector<glm::vec3> &vertices, 
                                 glm::vec2 &u, 
                                 glm::vec2 &v, 
-                                uint32_t &color)
+                                std::vector<uint32_t> &colors)
 {
     // m_color[0] = m_color[1] = m_color[2] = m_color[3] = 1.0f;
 
@@ -58,13 +58,13 @@ void PrimitiveRenderer::Submit(std::vector<glm::vec3> &vertices,
     int index = 0;
 
     vertex[index + 0] =
-        PRIMITIVE_SPRITE_VERTEX{vertices[index + 0].x, vertices[index + 0].y, u.x, v.x /*, color*/};       // top left
+        PRIMITIVE_SPRITE_VERTEX{vertices[index + 0].x, vertices[index + 0].y, u.x, v.x, colors[index + 0]}; // top left
     vertex[index + 1] =
-        PRIMITIVE_SPRITE_VERTEX{vertices[index + 1].x, vertices[index + 1].y, u.y, v.x /*, color*/}; // top right
+        PRIMITIVE_SPRITE_VERTEX{vertices[index + 1].x, vertices[index + 1].y, u.y, v.x, colors[index + 1]}; // top right
     vertex[index + 2] =
-        PRIMITIVE_SPRITE_VERTEX{vertices[index + 2].x, vertices[index + 2].y, u.x, v.y /*, color*/}; // bottom left
+        PRIMITIVE_SPRITE_VERTEX{vertices[index + 2].x, vertices[index + 2].y, u.x, v.y, colors[index + 2]}; // bottom left
     vertex[index + 3] =
-        PRIMITIVE_SPRITE_VERTEX{vertices[index + 3].x, vertices[index + 3].y, u.y, v.y /*, color*/}; // bottom right
+        PRIMITIVE_SPRITE_VERTEX{vertices[index + 3].x, vertices[index + 3].y, u.y, v.y, colors[index + 3]}; // bottom right
 
     std::vector<PRIMITIVE_SPRITE_VERTEX> storageVertices = std::vector<PRIMITIVE_SPRITE_VERTEX>{
         vertex[index + 0], vertex[index + 1], vertex[index + 2], vertex[index + 3]};
@@ -74,8 +74,8 @@ void PrimitiveRenderer::Submit(std::vector<glm::vec3> &vertices,
 
 
 void PrimitiveRenderer::Submit(std::vector<glm::vec3> &vertices, 
-                                        std::vector<std::pair<float, float>>& uv, 
-                                        uint32_t &color)
+                               std::vector<std::pair<float, float>>& uv, 
+                               std::vector<uint32_t> &colors)
 {
     const bgfx::Memory *mem = bgfx::alloc(vertices.size() * sizeof(PRIMITIVE_SPRITE_VERTEX));
 
@@ -84,13 +84,13 @@ void PrimitiveRenderer::Submit(std::vector<glm::vec3> &vertices,
     int index = 0;
 
     vertex[index + 0] = PRIMITIVE_SPRITE_VERTEX{vertices[index + 0].x, vertices[index + 0].y, uv[index + 0].first,
-                                                uv[index + 0].second /*, color*/}; // top left
+                                                uv[index + 0].second, colors[index + 0]}; // top left
     vertex[index + 1] = PRIMITIVE_SPRITE_VERTEX{vertices[index + 1].x, vertices[index + 1].y, uv[index + 1].first,
-                                                uv[index + 1].second /*, color*/}; // top right
+                                                uv[index + 1].second, colors[index + 1]}; // top right
     vertex[index + 2] = PRIMITIVE_SPRITE_VERTEX{vertices[index + 2].x, vertices[index + 2].y, uv[index + 2].first,
-                                                uv[index + 2].second /*, color*/}; // bottom left
+                                                uv[index + 2].second, colors[index + 2]}; // bottom left
     vertex[index + 3] = PRIMITIVE_SPRITE_VERTEX{vertices[index + 3].x, vertices[index + 3].y, uv[index + 3].first,
-                                                uv[index + 3].second /*, color*/}; // bottom right
+                                                uv[index + 3].second, colors[index + 3]}; // bottom right
 
     std::vector<PRIMITIVE_SPRITE_VERTEX> storageVertices = std::vector<PRIMITIVE_SPRITE_VERTEX>{
         vertex[index + 0], vertex[index + 1], vertex[index + 2], vertex[index + 3]};
@@ -146,6 +146,6 @@ void PrimitiveRenderer::Submit(std::vector<PRIMITIVE_SPRITE_VERTEX> &vertices)
     bgfx::setTexture(0, s_texColor, *Texture->textureHandle);
     bgfx::setVertexBuffer(0, &vb);
     bgfx::setIndexBuffer(&ib, 0, (vertices.size() / 4) * 6);
-    bgfx::submit(1, m_prog);
+    bgfx::submit(0, m_prog);
 
 }

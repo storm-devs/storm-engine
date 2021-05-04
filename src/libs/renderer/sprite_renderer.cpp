@@ -97,7 +97,7 @@ void SpriteRenderer::SetViewProjection()
     glm::mat4 proj(1);
     bx::mtxOrtho(glm::value_ptr(proj), 0.0f, float(m_width), float(m_height), 0.0f, 0.0f, 1000.0f, 0.0f,
     bgfx::getCaps()->homogeneousDepth);
-    bgfx::setViewTransform(0, glm::value_ptr(view), glm::value_ptr(proj));
+    bgfx::setViewTransform(1, glm::value_ptr(view), glm::value_ptr(proj));
 }
 
 void SpriteRenderer::UpdateIndexBuffer(std::vector<uint16_t> indices){
@@ -233,7 +233,7 @@ void SpriteRenderer::Submit()
 
     const uint32_t indicesCount = m_spriteQueueCount * 6;
 
-    std::vector<uint16_t> indices;
+    std::vector<uint32_t> indices;
     indices.reserve(indicesCount);
 
     for (uint32_t i = 0; i < indicesCount; i += 4)
@@ -249,11 +249,14 @@ void SpriteRenderer::Submit()
 
     bgfx::TransientIndexBuffer ib;
 
-    bgfx::allocTransientIndexBuffer(&ib, indicesCount);
+    bgfx::allocTransientIndexBuffer(&ib, indicesCount, true);
 
-    auto ibPtr = reinterpret_cast<uint16_t *>(ib.data);
+    auto ibPtr = reinterpret_cast<uint32_t *>(ib.data);
 
-    memcpy(ibPtr, indices.data(), indices.size());
+    for (long i = 0; i < indices.size(); ++i)
+    {
+        ibPtr[i] = indices[i];
+    }
 
     std::shared_ptr<TextureResource> batchTexture(nullptr);
     uint32_t batchStart = 0;
@@ -274,7 +277,7 @@ void SpriteRenderer::Submit()
                 bgfx::setVertexBuffer(0, &vb);
                 bgfx::setIndexBuffer(&ib, batchStart * 6, (pos - batchStart) * 6);
                 //bgfx::setIndexBuffer(m_ibh, batchStart * 6, (pos - batchStart) * 6);
-                bgfx::submit(0, m_prog);
+                bgfx::submit(1, m_prog);
             }
             batchTexture = texture;
             batchStart = pos;
@@ -286,7 +289,7 @@ void SpriteRenderer::Submit()
     bgfx::setTexture(0, s_texColor, *batchTexture->textureHandle);
     bgfx::setVertexBuffer(0, &vb);
     bgfx::setIndexBuffer(&ib, batchStart * 6, (m_spriteQueueCount - batchStart) * 6);
-    bgfx::submit(0, m_prog);
+    bgfx::submit(1, m_prog);
 
     m_spriteQueueCount = 0;
 

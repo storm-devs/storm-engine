@@ -205,7 +205,8 @@ class XINTERFACE : public XINTERFACE_BASE
   protected:
     // WORLD,VIEW and PROJECTION matrixes
     CMatrix matw, matv, matp;
-
+    CMatrix bgfxProj;
+    
     CINODE *m_pCurNode;
     CINODE *m_pNodes;
     CINODE *m_pContHelp;

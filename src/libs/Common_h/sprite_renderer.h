@@ -37,7 +37,7 @@ struct SpriteInfo
     std::shared_ptr<TextureResource> texture;
 };
 
-static const uint32_t InitialQueueSize = 256;
+static const uint32_t InitialQueueSize = 1024;
 
 class SpriteRenderer
 {

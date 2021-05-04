@@ -3,6 +3,8 @@
 #include "storm_assert.h"
 #include "vfile_service.h"
 
+#include "primitive_renderer.h"
+
 CXI_PICTURE::CXI_PICTURE()
 {
     m_rs = nullptr;
@@ -27,7 +29,6 @@ CXI_PICTURE::~CXI_PICTURE()
 
 void CXI_PICTURE::Draw(bool bSelected, uint32_t Delta_Time)
 {
-    return;
     if (m_bUse)
     {
         if (m_bMakeBlind)
@@ -55,13 +56,51 @@ void CXI_PICTURE::Draw(bool bSelected, uint32_t Delta_Time)
 
         if (m_idTex != -1 || m_pTex || m_pD3D8Texture)
         {
+            bool textureSet = false;
             if (m_idTex != -1)
-                m_rs->TextureSet(0, m_idTex);
-            else if (m_pD3D8Texture)
-                m_rs->SetTexture(0, m_pD3D8Texture);
+            {
+                auto texture = m_rs->GetBGFXTextureFromID(m_idTex);
+                m_rs->GetPrimitiveRenderer()->Texture = texture;
+
+                textureSet = true;
+            }
+            //else if (m_pD3D8Texture) //@BGFX TODO
+                //m_rs->SetTexture(0, m_pD3D8Texture);
+            //else
             else
-                m_rs->SetTexture(0, m_pTex ? m_pTex->m_pTexture : nullptr);
-            m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, m_v, sizeof(XI_ONETEX_VERTEX), "iVideo");
+            {
+                //if (m_pTex) { // @BGFX TODO
+                    //m_rs->SetTexture(0, m_pTex ? m_pTex->m_pTexture : nullptr);
+                    //textureSet = true;
+                //}
+            }
+                
+            if (textureSet)
+            {
+
+                std::vector<glm::vec3> vertices;
+
+                vertices.push_back({m_v[0].pos.x, m_v[0].pos.y, m_v[0].pos.z});          // top left
+                vertices.push_back({m_v[2].pos.x, m_v[2].pos.y, m_v[2].pos.z});          // top right
+                vertices.push_back({m_v[1].pos.x, m_v[1].pos.y, m_v[1].pos.z});          // bottom left
+                vertices.push_back({m_v[3].pos.x, m_v[3].pos.y, m_v[3].pos.z});          // bottom right
+
+                std::vector<std::pair<float, float>> uv;
+                uv.push_back({m_v[0].tu, m_v[0].tv});
+                uv.push_back({m_v[2].tu, m_v[2].tv});
+                uv.push_back({m_v[1].tu, m_v[1].tv});
+                uv.push_back({m_v[3].tu, m_v[3].tv});
+
+                std::vector<uint32_t> colors;
+
+                colors.push_back(m_v[0].color);
+                colors.push_back(m_v[1].color);
+                colors.push_back(m_v[2].color);
+                colors.push_back(m_v[3].color);
+
+                m_rs->GetPrimitiveRenderer()->Submit(vertices, uv, colors);
+            }
+            
         }
     }
 }
@@ -84,19 +123,19 @@ void CXI_PICTURE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const
 
     if (ReadIniString(ini1, name1, ini2, name2, "groupName", param, sizeof(param), ""))
     {
-        m_idTex = pPictureService->GetTextureID(param);
+        m_idTex = pPictureService->BGFXGetTextureID(param);
         const auto len = strlen(param) + 1;
         m_pcGroupName = new char[len];
         Assert(m_pcGroupName);
         memcpy(m_pcGroupName, param, len);
 
         if (ReadIniString(ini1, name1, ini2, name2, "picName", param, sizeof(param), ""))
-            pPictureService->GetTexturePos(m_pcGroupName, param, texRect);
+            pPictureService->BGFXGetTexturePos(m_pcGroupName, param, texRect);
     }
     else
     {
         if (ReadIniString(ini1, name1, ini2, name2, "textureName", param, sizeof(param), ""))
-            m_idTex = m_rs->TextureCreate(param);
+            m_idTex = m_rs->BGFXTextureCreate(param);
         texRect = GetIniFloatRect(ini1, name1, ini2, name2, "textureRect", texRect);
     }
 
@@ -221,14 +260,14 @@ void CXI_PICTURE::SetNewPictureByGroup(char *groupName, char *picName)
             m_pcGroupName = new char[strlen(groupName) + 1];
             Assert(m_pcGroupName);
             memcpy(m_pcGroupName, groupName, len);
-            m_idTex = pPictureService->GetTextureID(groupName);
+            m_idTex = pPictureService->BGFXGetTextureID(groupName);
         }
     }
 
     if (m_pcGroupName && picName)
     {
         FXYRECT texRect;
-        pPictureService->GetTexturePos(m_pcGroupName, picName, texRect);
+        pPictureService->BGFXGetTexturePos(m_pcGroupName, picName, texRect);
         ChangeUV(texRect);
     }
 }
@@ -436,6 +475,6 @@ void CXI_PICTURE::ReleasePicture()
         m_pD3D8Texture->Release();
     m_pD3D8Texture = nullptr;
     STORM_DELETE(m_pcGroupName);
-    TEXTURE_RELEASE(m_rs, m_idTex);
+    BGFX_TEXTURE_RELEASE(m_rs, m_idTex);
     VIDEOTEXTURE_RELEASE(m_rs, m_pTex);
 }

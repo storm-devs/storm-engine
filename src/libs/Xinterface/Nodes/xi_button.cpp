@@ -1,5 +1,8 @@
 #include "xi_button.h"
 
+#include "primitive_renderer.h"
+
+
 CXI_BUTTON::CXI_BUTTON()
 {
     m_rs = nullptr;
@@ -99,14 +102,24 @@ void CXI_BUTTON::Draw(bool bSelected, uint32_t Delta_Time)
             }
         }
 
-        if (m_idTex != -1)
+        /*if (m_idTex != -1)
             m_rs->TextureSet(0, m_idTex);
         else
-            m_rs->SetTexture(0, m_pTex ? m_pTex->m_pTexture : nullptr);
+            m_rs->SetTexture(0, m_pTex ? m_pTex->m_pTexture : nullptr);*/ //@BGFX TODO implement DirectX textures
+
+        bool textureSet = false;
+        if (m_idTex != -1)
+        {
+            auto texture = m_rs->GetBGFXTextureFromID(m_idTex);
+            m_rs->GetPrimitiveRenderer()->Texture = texture;
+
+            textureSet = true;
+        }
+
 
         if (m_idTex >= 0 || m_pTex != nullptr)
         {
-            m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, vShadow, sizeof(XI_ONETEX_VERTEX), "iShadow");
+            /*m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, vShadow, sizeof(XI_ONETEX_VERTEX), "iShadow");
             if (m_bClickable && m_bSelected)
                 m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, vFace, sizeof(XI_ONETEX_VERTEX),
                                       "iButton");
@@ -115,7 +128,92 @@ void CXI_BUTTON::Draw(bool bSelected, uint32_t Delta_Time)
                 m_rs->SetRenderState(D3DRS_TEXTUREFACTOR, m_argbDisableColor);
                 m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, vFace, sizeof(XI_ONETEX_VERTEX),
                                       "iDisabledNode");
+            }*/
+
+            if (m_bClickable && m_bSelected)
+            {
+                for (long n = 0; n < 4; n += 4)
+                {
+                    auto pV = vShadow;
+
+                    std::vector<glm::vec3> vertices;
+                    std::vector<std::pair<float, float>> uv;
+                    std::vector<uint32_t> colors;
+
+                    vertices.push_back({pV[n + 0].pos.x, pV[n + 0].pos.y, pV[n + 0].pos.z});
+                    vertices.push_back({pV[n + 1].pos.x, pV[n + 1].pos.y, pV[n + 1].pos.z});
+                    vertices.push_back({pV[n + 2].pos.x, pV[n + 2].pos.y, pV[n + 2].pos.z});
+                    vertices.push_back({pV[n + 3].pos.x, pV[n + 3].pos.y, pV[n + 3].pos.z});
+
+                    uv.push_back({pV[n + 0].tu, pV[n + 0].tv});
+                    uv.push_back({pV[n + 1].tu, pV[n + 1].tv});
+                    uv.push_back({pV[n + 2].tu, pV[n + 2].tv});
+                    uv.push_back({pV[n + 3].tu, pV[n + 3].tv});
+
+                    colors.push_back(pV[n + 0].color);
+                    colors.push_back(pV[n + 1].color);
+                    colors.push_back(pV[n + 2].color);
+                    colors.push_back(pV[n + 3].color);
+
+                    m_rs->GetPrimitiveRenderer()->Submit(vertices, uv, colors);
+                }
+
+                for (long n = 0; n < 4; n += 4)
+                {
+                    auto pV = vFace;
+
+                    std::vector<glm::vec3> vertices;
+                    std::vector<std::pair<float, float>> uv;
+                    std::vector<uint32_t> colors;
+
+                    vertices.push_back({pV[n + 0].pos.x, pV[n + 0].pos.y, pV[n + 0].pos.z});
+                    vertices.push_back({pV[n + 1].pos.x, pV[n + 1].pos.y, pV[n + 1].pos.z});
+                    vertices.push_back({pV[n + 2].pos.x, pV[n + 2].pos.y, pV[n + 2].pos.z});
+                    vertices.push_back({pV[n + 3].pos.x, pV[n + 3].pos.y, pV[n + 3].pos.z});
+
+                    uv.push_back({pV[n + 0].tu, pV[n + 0].tv});
+                    uv.push_back({pV[n + 1].tu, pV[n + 1].tv});
+                    uv.push_back({pV[n + 2].tu, pV[n + 2].tv});
+                    uv.push_back({pV[n + 3].tu, pV[n + 3].tv});
+
+                    colors.push_back(pV[n + 0].color);
+                    colors.push_back(pV[n + 1].color);
+                    colors.push_back(pV[n + 2].color);
+                    colors.push_back(pV[n + 3].color);
+
+                    m_rs->GetPrimitiveRenderer()->Submit(vertices, uv, colors);
+                }
             }
+            else
+            {
+                for (long n = 0; n < 4; n += 4)
+                {
+                    auto pV = vFace;
+
+                    std::vector<glm::vec3> vertices;
+                    std::vector<std::pair<float, float>> uv;
+                    std::vector<uint32_t> colors;
+
+                    vertices.push_back({pV[n + 0].pos.x, pV[n + 0].pos.y, pV[n + 0].pos.z});
+                    vertices.push_back({pV[n + 1].pos.x, pV[n + 1].pos.y, pV[n + 1].pos.z});
+                    vertices.push_back({pV[n + 2].pos.x, pV[n + 2].pos.y, pV[n + 2].pos.z});
+                    vertices.push_back({pV[n + 3].pos.x, pV[n + 3].pos.y, pV[n + 3].pos.z});
+
+                    uv.push_back({pV[n + 0].tu, pV[n + 0].tv});
+                    uv.push_back({pV[n + 1].tu, pV[n + 1].tv});
+                    uv.push_back({pV[n + 2].tu, pV[n + 2].tv});
+                    uv.push_back({pV[n + 3].tu, pV[n + 3].tv});
+
+                    colors.push_back(pV[n + 0].color);
+                    colors.push_back(pV[n + 1].color);
+                    colors.push_back(pV[n + 2].color);
+                    colors.push_back(pV[n + 3].color);
+
+                    m_rs->GetPrimitiveRenderer()->Submit(vertices, uv, colors);
+                }
+            }
+            
+
         }
 
         if (m_idString != -1L)
@@ -185,7 +283,7 @@ void CXI_BUTTON::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const 
     // get group name and get texture for this
     if (ReadIniString(ini1, name1, ini2, name2, "group", param, sizeof(param), ""))
     {
-        m_idTex = pPictureService->GetTextureID(param);
+        m_idTex = pPictureService->BGFXGetTextureID(param);
         const auto len = strlen(param) + 1;
         m_sGroupName = new char[len];
         if (m_sGroupName == nullptr)
@@ -194,7 +292,7 @@ void CXI_BUTTON::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const 
 
         // get button picture name
         if (ReadIniString(ini1, name1, ini2, name2, "picture", param, sizeof(param), ""))
-            pPictureService->GetTexturePos(m_sGroupName, param, m_tRect);
+            pPictureService->BGFXGetTexturePos(m_sGroupName, param, m_tRect);
     }
     else
     {
@@ -233,7 +331,7 @@ void CXI_BUTTON::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const 
 
 void CXI_BUTTON::ReleaseAll()
 {
-    PICTURE_TEXTURE_RELEASE(pPictureService, m_sGroupName, m_idTex);
+    BGFX_PICTURE_TEXTURE_RELEASE(pPictureService, m_sGroupName, m_idTex);
     STORM_DELETE(m_sGroupName);
     FONT_RELEASE(m_rs, m_nFontNum);
     VIDEOTEXTURE_RELEASE(m_rs, m_pTex);
@@ -323,7 +421,7 @@ uint32_t CXI_BUTTON::MessageProc(long msgcode, MESSAGE &message)
 
         if (m_sGroupName == nullptr || _stricmp(m_sGroupName, param) != 0)
         {
-            PICTURE_TEXTURE_RELEASE(pPictureService, m_sGroupName, m_idTex);
+            BGFX_PICTURE_TEXTURE_RELEASE(pPictureService, m_sGroupName, m_idTex);
             STORM_DELETE(m_sGroupName);
 
             m_sGroupName = new char[len];

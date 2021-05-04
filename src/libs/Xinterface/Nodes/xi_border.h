@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "../inode.h"
 
 class CXI_IMAGE;
@@ -30,10 +32,14 @@ class CXI_BORDER : public CINODE
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void FillIndexBuffers() const;
     void FillVertexBuffers();
-    void WriteVertexForSquare(XI_ONETEX_VERTEX *pV, FXYRECT &UVRect, uint32_t dwColor, long left, long top, long right,
+    /*void WriteVertexForSquare(XI_ONETEX_VERTEX *pV, FXYRECT &UVRect, uint32_t dwColor, long left, long top, long right,
+                              long bottom);*/
+    void WriteVertexForSquare(uint32_t index, FXYRECT &UVRect, uint32_t dwColor, long left, long top, long right,
                               long bottom);
 
   protected:
+
+    std::vector<XI_ONETEX_VERTEX> pV;
     // back picture
     CXI_IMAGE *m_pBackImage;
 
