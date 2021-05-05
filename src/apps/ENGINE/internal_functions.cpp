@@ -1845,7 +1845,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
 
         CreateMessage(&ms, s_off, 1);
 
-        uint64_t mresult = -1;
+        uint64_t mresult = 0;
         pE = EntityManager::GetEntityPointer(ent);
         if (pE)
         {
