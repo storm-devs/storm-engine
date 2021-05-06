@@ -20,7 +20,7 @@ This project uses `.clang-format` file that specifies the formatting style. Whil
  * Functions and variables start with upper case to respect legacy code: `MyMethod()`.
  * Constants have `k` prefix: `const double kPi=3.14159265358979323;`.
  * Enum values start with upper case (`enum class MyEnum {VariantOne, VariantTwo}`) 
- * Private data must be with a `m_` prefix to distinguish it from public data. `m_` stands for "member" data.
+ * Private data must be with a `_` postfix to distinguish it from public data.
 
 ## Don't Name Anything Starting With `_`
 
@@ -45,7 +45,7 @@ class MyClass
     }
 
   private:
-    int m_data;
+    int data_;
 };
 ```
 
