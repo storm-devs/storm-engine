@@ -9,6 +9,7 @@
 #include <spdlog/spdlog.h>
 
 #include <OSWindow.hpp>
+#include <SDL.h>
 
 VFILE_SERVICE *fio = nullptr;
 CORE core;
@@ -36,6 +37,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
         MessageBoxA(nullptr, "Another instance is already running!", "Error", MB_ICONERROR);
         return 0;
     }
+
+    SDL_InitSubSystem(SDL_INIT_EVENTS | SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
 
     // Init FS
     FILE_SERVICE File_Service;
@@ -176,6 +179,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     /* Release */
     core.ReleaseBase();
     ClipCursor(nullptr);
+
+    SDL_Quit();
 
     return 0;
 }
