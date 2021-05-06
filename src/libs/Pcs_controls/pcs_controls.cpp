@@ -34,8 +34,8 @@ PCS_CONTROLS::PCS_CONTROLS()
         m_bIsOffDebugKeys = pIni->GetLong("controls", "ondebugkeys", 0) == 0;
     }
 
-    m_input = Input::Create();
-    m_inputHandlerID = m_input->Subscribe([this](const InputEvent &evt) { HandleEvent(evt); });
+    input_ = Input::Create();
+    inputHandlerID_ = input_->Subscribe([this](const InputEvent &evt) { HandleEvent(evt); });
 
     // RECT r;
     // GetWindowRect(core.GetAppHWND(),&r);
@@ -44,7 +44,7 @@ PCS_CONTROLS::PCS_CONTROLS()
 
 PCS_CONTROLS::~PCS_CONTROLS()
 {
-    m_input->Unsubscribe(m_inputHandlerID);
+    input_->Unsubscribe(inputHandlerID_);
     Release();
     // ClipCursor(0);
 }
@@ -335,18 +335,18 @@ bool PCS_CONTROLS::GetControlState(long control_code, CONTROL_STATE &_state_stru
             bool pressed = false;
 
             if (system_code == VK_LBUTTON)
-                pressed = m_input->MouseKeyState(MouseKey::Left);
+                pressed = input_->MouseKeyState(MouseKey::Left);
             else if (system_code == VK_RBUTTON)
-                pressed = m_input->MouseKeyState(MouseKey::Right);
+                pressed = input_->MouseKeyState(MouseKey::Right);
             else if (system_code == VK_MBUTTON)
-                pressed = m_input->MouseKeyState(MouseKey::Middle);
+                pressed = input_->MouseKeyState(MouseKey::Middle);
             else if (system_code == VK_TAB)
             {
-                if (!m_input->KeyboardKeyState(VK_MENU))
-                    pressed = m_input->KeyboardKeyState(system_code);
+                if (!input_->KeyboardKeyState(VK_MENU))
+                    pressed = input_->KeyboardKeyState(system_code);
             }
             else
-                pressed = m_input->KeyboardKeyState(system_code);
+                pressed = input_->KeyboardKeyState(system_code);
 
             if (pressed)
             {
@@ -442,7 +442,7 @@ void PCS_CONTROLS::Update(uint32_t DeltaTime)
     m_ControlTree.Process();
     m_KeyBuffer.Reset();
 
-    m_input->ProcessEvents();
+    input_->ProcessEvents();
 
     nFrameCounter++;
     uint32_t system_code = CE_MOUSE_X_AXIS;
@@ -595,13 +595,13 @@ void PCS_CONTROLS::ClearKeyBuffer()
 short PCS_CONTROLS::GetDebugAsyncKeyState(int vk)
 {
     // -1 because WinAPI sets msb when key pressed, so old code expects negative value
-    return (m_bIsOffDebugKeys ? 0 : m_input->KeyboardKeyState(vk) ? -1 : 0);
+    return (m_bIsOffDebugKeys ? 0 : input_->KeyboardKeyState(vk) ? -1 : 0);
 }
 
 short PCS_CONTROLS::GetDebugKeyState(int vk)
 {
     // -1 because WinAPI sets msb when key pressed, so old code expects negative value
-    return (m_bIsOffDebugKeys ? 0 : m_input->KeyboardKeyState(vk) ? -1 : 0);
+    return (m_bIsOffDebugKeys ? 0 : input_->KeyboardKeyState(vk) ? -1 : 0);
 }
 
 void PCS_CONTROLS::HandleEvent(const InputEvent &evt)

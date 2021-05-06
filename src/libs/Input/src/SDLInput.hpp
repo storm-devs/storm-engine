@@ -19,7 +19,7 @@ class SDLInput : public Input
     bool MouseKeyState(const MouseKey &key) const override;
 
   private:
-    std::map<int, EventHandler> m_handlers;
-    const uint8_t *m_keyStates;
+    std::map<int, EventHandler> handlers_;
+    const uint8_t *keyStates_;
 };
 } // namespace storm

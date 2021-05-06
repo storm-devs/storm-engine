@@ -10,7 +10,7 @@ ControlKeyBuffer::~ControlKeyBuffer()
 
 void ControlKeyBuffer::Reset()
 {
-    m_pcBuffer.clear();
+    pcBuffer_.clear();
 }
 
 void ControlKeyBuffer::AddKey(char *u8_str, int u8_size, bool bSystem)
@@ -23,10 +23,10 @@ void ControlKeyBuffer::AddKey(char *u8_str, int u8_size, bool bSystem)
     key.ucVKey.l = u8_size;
     key.bSystem = bSystem;
 
-    m_pcBuffer.push_back(key);
+    pcBuffer_.push_back(key);
 }
 
 void ControlKeyBuffer::AddKey(const KeyDescr &key)
 {
-    m_pcBuffer.push_back(key);
+    pcBuffer_.push_back(key);
 }

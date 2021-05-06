@@ -47,8 +47,8 @@ class PCS_CONTROLS : public CONTROLS
 
     ControlTree m_ControlTree;
 
-    std::shared_ptr<storm::Input> m_input;
-    int m_inputHandlerID = 0;
+    std::shared_ptr<storm::Input> input_;
+    int inputHandlerID_ = 0;
 
   public:
     PCS_CONTROLS();

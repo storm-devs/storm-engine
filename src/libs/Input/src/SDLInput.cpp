@@ -288,26 +288,26 @@ inline unsigned int keyToSDL(KeyboardKey key)
 }
 } // namespace
 
-SDLInput::SDLInput() : m_keyStates(nullptr)
+SDLInput::SDLInput() : keyStates_(nullptr)
 {
-    m_keyStates = SDL_GetKeyboardState(nullptr);
+    keyStates_ = SDL_GetKeyboardState(nullptr);
     SDL_SetRelativeMouseMode(SDL_TRUE);
 }
 
 int SDLInput::Subscribe(const EventHandler &handler)
 {
     int id = 1;
-    if (!m_handlers.empty())
-        id = (--m_handlers.end())->first + 1;
-    m_handlers[id] = handler;
+    if (!handlers_.empty())
+        id = (--handlers_.end())->first + 1;
+    handlers_[id] = handler;
     return id;
 }
 
 void SDLInput::Unsubscribe(int id)
 {
-    auto it = m_handlers.find(id);
-    if (it != m_handlers.end())
-        m_handlers.erase(it);
+    auto it = handlers_.find(id);
+    if (it != handlers_.end())
+        handlers_.erase(it);
 }
 
 void SDLInput::ProcessEvents()
@@ -348,7 +348,7 @@ void SDLInput::ProcessEvents()
 
         if (out.type != InputEvent::Unknown)
         {
-            for (const auto &handler : m_handlers)
+            for (const auto &handler : handlers_)
                 handler.second(out);
         }
     }
@@ -356,7 +356,7 @@ void SDLInput::ProcessEvents()
 
 bool SDLInput::KeyboardKeyState(const KeyboardKey &key) const
 {
-    return m_keyStates[keyToSDL(key)] != 0;
+    return keyStates_[keyToSDL(key)] != 0;
 }
 
 bool SDLInput::MouseKeyState(const MouseKey &key) const

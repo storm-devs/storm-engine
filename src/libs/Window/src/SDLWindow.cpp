@@ -8,9 +8,9 @@ namespace storm
 
 std::map<uint32_t, std::weak_ptr<SDLWindow>> SDLWindow::windows;
 
-SDLWindow::SDLWindow(int width, int height, bool fullscreen) : m_fullscreen(fullscreen)
+SDLWindow::SDLWindow(int width, int height, bool fullscreen) : fullscreen_(fullscreen)
 {
-    m_window = std::unique_ptr<SDL_Window, std::function<void(SDL_Window *)>>(
+    window_ = std::unique_ptr<SDL_Window, std::function<void(SDL_Window *)>>(
         SDL_CreateWindow("", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height,
                          (fullscreen ? SDL_WINDOW_FULLSCREEN : 0) | SDL_WINDOW_HIDDEN),
         [](SDL_Window *w) { SDL_DestroyWindow(w); });
@@ -18,90 +18,90 @@ SDLWindow::SDLWindow(int width, int height, bool fullscreen) : m_fullscreen(full
 
 void SDLWindow::Show()
 {
-    SDL_ShowWindow(m_window.get());
+    SDL_ShowWindow(window_.get());
 }
 
 void SDLWindow::Hide()
 {
-    SDL_HideWindow(m_window.get());
+    SDL_HideWindow(window_.get());
 }
 
 void SDLWindow::Focus()
 {
-    SDL_RaiseWindow(m_window.get());
+    SDL_RaiseWindow(window_.get());
 }
 
 int SDLWindow::Width() const
 {
     int w, h;
-    SDL_GetWindowSize(m_window.get(), &w, &h);
+    SDL_GetWindowSize(window_.get(), &w, &h);
     return w;
 }
 
 int SDLWindow::Height() const
 {
     int w, h;
-    SDL_GetWindowSize(m_window.get(), &w, &h);
+    SDL_GetWindowSize(window_.get(), &w, &h);
     return h;
 }
 
 bool SDLWindow::Fullscreen() const
 {
-    return m_fullscreen;
+    return fullscreen_;
 }
 
 std::string SDLWindow::Title() const
 {
-    return std::string(SDL_GetWindowTitle(m_window.get()));
+    return std::string(SDL_GetWindowTitle(window_.get()));
 }
 
 void SDLWindow::SetFullscreen(bool fullscreen)
 {
-    m_fullscreen = fullscreen;
-    SDL_SetWindowFullscreen(m_window.get(), m_fullscreen ? SDL_WINDOW_FULLSCREEN : 0);
+    fullscreen_ = fullscreen;
+    SDL_SetWindowFullscreen(window_.get(), fullscreen_ ? SDL_WINDOW_FULLSCREEN : 0);
 }
 
 void SDLWindow::Resize(int width, int height)
 {
-    SDL_SetWindowSize(m_window.get(), width, height);
+    SDL_SetWindowSize(window_.get(), width, height);
 }
 
 void SDLWindow::SetTitle(const std::string &title)
 {
-    SDL_SetWindowTitle(m_window.get(), title.c_str());
+    SDL_SetWindowTitle(window_.get(), title.c_str());
 }
 
 int SDLWindow::Subscribe(const EventHandler &handler)
 {
     int id = 1;
-    if (!m_handlers.empty())
-        id = (--m_handlers.end())->first + 1;
-    m_handlers[id] = handler;
+    if (!handlers_.empty())
+        id = (--handlers_.end())->first + 1;
+    handlers_[id] = handler;
     return id;
 }
 
 void SDLWindow::Unsubscribe(int id)
 {
-    auto it = m_handlers.find(id);
-    if (it != m_handlers.end())
-        m_handlers.erase(it);
+    auto it = handlers_.find(id);
+    if (it != handlers_.end())
+        handlers_.erase(it);
 }
 
 // TODO: X/Wayland/MacOS
 void *SDLWindow::OSHandle()
 {
-    if (!m_window)
+    if (!window_)
         return nullptr;
 
     SDL_SysWMinfo info;
     SDL_VERSION(&info.version);
-    SDL_GetWindowWMInfo(m_window.get(), &info);
+    SDL_GetWindowWMInfo(window_.get(), &info);
     return info.info.win.window;
 }
 
 SDL_Window *SDLWindow::SDLHandle()
 {
-    return m_window.get();
+    return window_.get();
 }
 
 void SDLWindow::ProcessEvent(const SDL_WindowEvent &evt)
@@ -125,7 +125,7 @@ void SDLWindow::ProcessEvent(const SDL_WindowEvent &evt)
         return;
     }
 
-    for (auto handler : m_handlers)
+    for (auto handler : handlers_)
         handler.second(winEvent);
 }
 

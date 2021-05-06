@@ -18,14 +18,14 @@ struct ControlKeyBuffer
 
     long GetBufferLength()
     {
-        return m_pcBuffer.size();
+        return pcBuffer_.size();
     }
 
     // FIXME: Not good
     const KeyDescr *c_str()
     {
-        return m_pcBuffer.data();
+        return pcBuffer_.data();
     }
 
-    std::vector<KeyDescr> m_pcBuffer;
+    std::vector<KeyDescr> pcBuffer_;
 };
