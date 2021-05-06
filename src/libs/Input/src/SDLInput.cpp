@@ -292,6 +292,7 @@ SDLInput::SDLInput() : keyStates_(nullptr)
 {
     keyStates_ = SDL_GetKeyboardState(nullptr);
     SDL_SetRelativeMouseMode(SDL_TRUE);
+    OpenController();
 }
 
 int SDLInput::Subscribe(const EventHandler &handler)
@@ -352,11 +353,74 @@ void SDLInput::ProcessEvents()
                 handler.second(out);
         }
     }
+    while (SDL_PeepEvents(&event, 1, SDL_GETEVENT, SDL_CONTROLLERAXISMOTION, SDL_CONTROLLERSENSORUPDATE) > 0)
+    {
+        if (event.type == SDL_CONTROLLERDEVICEADDED)
+        {
+            // Try to open controller if it wasn't open already
+            if (!controller_)
+                OpenController();
+        }
+
+        if (!controller_)
+            continue;
+
+        InputEvent out;
+        out.type = InputEvent::Unknown;
+
+        if ((event.type == SDL_CONTROLLERDEVICEREMOVED) && (joyID_ == event.cdevice.which))
+        {
+            // Close controller if it was removed
+            controller_ = nullptr;
+            joyID_ = -1;
+        }
+        else if ((event.type == SDL_CONTROLLERAXISMOTION) && (joyID_ == event.caxis.which))
+        {
+            ControllerAxisState state;
+            state.axis = static_cast<ControllerAxis>(event.caxis.axis);
+            state.value = event.caxis.value;
+
+            out.type = InputEvent::ControllerAxis;
+            out.data = state;
+        }
+        else if ((event.type == SDL_CONTROLLERBUTTONDOWN) && (joyID_ == event.cbutton.which))
+        {
+            out.type = InputEvent::ControllerButtonDown;
+            out.data = static_cast<ControllerButton>(event.cbutton.button);
+        }
+        else if ((event.type == SDL_CONTROLLERBUTTONUP) && (joyID_ == event.cbutton.which))
+        {
+            out.type = InputEvent::ControllerButtonUp;
+            out.data = static_cast<ControllerButton>(event.cbutton.button);
+        }
+
+        if (out.type != InputEvent::Unknown)
+        {
+            for (const auto &handler : handlers_)
+                handler.second(out);
+        }
+    }
 }
 
 bool SDLInput::KeyboardKeyState(const KeyboardKey &key) const
 {
     return keyStates_[keyToSDL(key)] != 0;
+}
+
+bool SDLInput::ControllerButtonState(const ControllerButton &button) const
+{
+    if (!controller_)
+        return false;
+
+    return SDL_GameControllerGetButton(controller_.get(), static_cast<SDL_GameControllerButton>(button)) == SDL_PRESSED;
+}
+
+int SDLInput::ControllerAxisValue(const ControllerAxis &axis) const
+{
+    if (!controller_)
+        return 0;
+
+    return SDL_GameControllerGetAxis(controller_.get(), static_cast<SDL_GameControllerAxis>(axis));
 }
 
 bool SDLInput::MouseKeyState(const MouseKey &key) const
@@ -372,8 +436,21 @@ bool SDLInput::MouseKeyState(const MouseKey &key) const
     return false;
 }
 
+void SDLInput::OpenController()
+{
+    // TODO: GameController selection, open only first for now
+    controller_ = std::unique_ptr<SDL_GameController, std::function<void(SDL_GameController *)>>(
+        SDL_GameControllerOpen(0), &SDL_GameControllerClose);
+
+    if (controller_)
+        joyID_ = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(controller_.get()));
+    else
+        joyID_ = -1;
+}
+
 std::shared_ptr<Input> Input::Create()
 {
     return std::make_shared<SDLInput>();
 }
+
 } // namespace storm

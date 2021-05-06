@@ -21,10 +21,47 @@ enum class MouseKey
     Middle
 };
 
+//! Controller axes
+enum class ControllerAxis
+{
+    LeftX = 0,   //!< Left stick horizontal axis
+    LeftY,       //!< Left stick vertical axis
+    RightX,      //!< Right stick horizontal axis
+    RightY,      //!< Right stick vertical axis
+    TriggerLeft, //!< Left trigger axis
+    TriggerRight //!< Right trigger axis
+};
+
+//! Controller buttons
+enum class ControllerButton
+{
+    A,
+    B,
+    X,
+    Y,
+    Back,
+    Guide,
+    Start,
+    LeftStick,
+    RightStick,
+    LeftBumper,
+    RightBumper,
+    Up,
+    Down,
+    Left,
+    Right
+};
+
+//! Current state of controller axis
+struct ControllerAxisState
+{
+    ControllerAxis axis; //!< Axis
+    int value;           //!< Current value, from -32768 to 32767 (0 to 32767 for triggers)
+};
+
 //! Input event
 struct InputEvent
 {
-    // TODO: Joystick events
     enum Type
     {
         Unknown, //!< Invalid event
@@ -36,12 +73,16 @@ struct InputEvent
         MouseMove,    //!< Mouse moved, data contains MousePos with relative mouse movement
         MouseKeyDown, //!< Mouse key down, data contains MouseKey
         MouseKeyUp,   //!< Mouse key up, data contains MouseKey
-        MouseWheel    //!< Mouse wheel, data contains MousePos with relative wheel movement
+        MouseWheel,   //!< Mouse wheel, data contains MousePos with relative wheel movement
+
+        ControllerAxis,       //!< Controller axis value changed, data contains ControllerAxisState
+        ControllerButtonDown, //!< Controller button pressed, data contains ControllerButton
+        ControllerButtonUp    //!< Controller button released, data contains ControllerButton
     };
     //! Event type
     Type type;
     //! Data associated with event
-    std::variant<std::string, KeyboardKey, MousePos, MouseKey> data;
+    std::variant<std::string, KeyboardKey, MousePos, MouseKey, ControllerAxisState, ControllerButton> data;
 };
 
 //! Abstract input manager that handles all input events
@@ -69,6 +110,14 @@ class Input
     //! Current mouse key state
     //! \return true if key is pressed
     virtual bool MouseKeyState(const MouseKey &key) const = 0;
+
+    //! Current controller button state
+    //! \return true if button is pressed
+    virtual bool ControllerButtonState(const ControllerButton &button) const = 0;
+
+    //! Current controller axis value
+    //! \return current axis value, from -32768 to 32767 (0 to 32767 for triggers)
+    virtual int ControllerAxisValue(const ControllerAxis &axis) const = 0;
 
     static std::shared_ptr<Input> Create();
 };
