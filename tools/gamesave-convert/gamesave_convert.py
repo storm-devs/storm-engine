@@ -102,7 +102,7 @@ def read_value(var_type, buffer, cur_ptr, str_encoding, obj_id_format):
         v = struct.unpack_from('P', buffer, cur_ptr)[0]
         cur_ptr += 8
     else:
-        raise Error(msg=f'{var_type} was not handled')
+        raise RuntimeError(f'{var_type} was not handled')
 
     return v, cur_ptr
 
@@ -260,7 +260,7 @@ def write_value(var_type, value, buffer, fileinfo_config):
     elif var_type == VarType.Pointer:
         struct.pack_into('P', buffer, value)
     else:
-        raise Error(msg=f'{var_type} was not handled')
+        raise RuntimeError(f'{var_type} was not handled')
 
     return buffer
 
