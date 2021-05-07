@@ -493,18 +493,45 @@ def convert_107_to_173(save_data):
         'sNewExecuteLayer',
         'sNewRealizeLayer'
     ]
+    layers = {
+        'execute': 0,
+        'realize': 1,
+        'sea_execute': 2,
+        'sea_realize': 3,
+        'interface_execute': 4,
+        'interface_realize': 5,
+        'fader_execute': 6,
+        'fader_realize': 7,
+        'lighter_execute': 8,
+        'lighter_realize': 9,
+        'video_execute': 10,
+        'video_realize': 11,
+        'editor_realize': 12,
+        'info_realize': 13,
+        'sound_debug_realize': 14,
+        'sea_reflection': 15,
+        'sea_reflection2': 16,
+        'sea_sunroad': 17,
+        'sun_trace': 18,
+        'sails_trace': 19,
+        'hull_trace': 20,
+        'mast_island_trace': 21,
+        'mast_ship_trace': 22,
+        'ship_cannon_trace': 23,
+        'fort_cannon_trace': 24,
+        'island_trace': 25,
+        'shadow': 26,
+        'blood': 27,
+        'rain_drops': 28
+    }
     for var in save_data['vars']:
         if var['name'] in to_int:
             assert(var['type'] == VarType.String)
             var['type'] = VarType.Integer
 
             assert(len(var['values']) == 1)
-            if var['values'][0] == 'execute':
-                var['values'][0] = 0
-            elif var['values'][0] == 'realize':
-                var['values'][0] = 1
-            else:
-                raise Error(msg=f"Unexpected value: {var['values'][0]}")
+            strval = var['values'][0]
+            var['values'][0] = layers[strval]
 
         if var['type'] == VarType.Object:
             for val in var['values']:
