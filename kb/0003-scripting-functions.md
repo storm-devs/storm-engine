@@ -67,6 +67,16 @@ Below are the functions which make part of the compiler API. Each function has i
     syntax:
         int GetDeltaTime(0); 
     ```
+    
+* **GetTargetPlatform**: Returns the string of the target platform of the engine
+    * **Compiler Token**: `FUNC_GETTARGETPLATFORM`
+    * Currently this function always returns "pc"
+    ``` C++
+    syntax:
+        string GetTargetPlatform(); 
+    example:
+        GetTargetPlatform(); // "pc"
+    ```
 
 * **Stop**: Stop executing current thread.
     * **Compiler Token**: `FUNC_STOP`
@@ -642,6 +652,13 @@ Currently disabled/not implemented functions:
         Trace("Antigua locations " + n);
     ```
 
+* **Breakpoint**: If the engine is compiled in debug mode, trigger a breakpoint in the its execution.
+    * **Compiler Token**: `FUNC_BREAKPOINT`
+    ``` C++
+    syntax:
+        void Breakpoint();
+    ```
+
 ### Math
 
 * **Rand**: Generate a random positive number from 0 to `range`.
@@ -836,6 +853,15 @@ Currently disabled/not implemented functions:
         string pi4 = fts(pi, 5); // 3.1415
     ```
 
+* **argb**: Pack a color into a single value
+    * **Compiler Token**: `FUNC_ARGB`
+    * `a`, `r`, `g`, `b`: alpha and color channels from 0 to 255.
+    * The resulting integer is coded as `0xAARRGGBB`
+    ``` C++
+    syntax:
+        int argb(int a, int r, int g, int b);
+    ```
+
 ### Bitwise Operations
 
 * **shl**: Shift the bits of the integer `value` to `n` bits to the left
@@ -880,18 +906,69 @@ Currently disabled/not implemented functions:
         int or(int value, int mask); 
     ```
 
-* **argb**
-    * **Compiler Token**: `FUNC_ARGB`
+### Controls
+
+* **CreateControl**: Create a new control type.
+    * **Compiler Token**: `FUNC_CREATE_CONTROL`
+    * `controlName`: Unique identifier for the control.
+    * If the function succeeds in creation, it returns control's ID. 
+    * If there already exists a control with the given name, its ID is returned instead.
+    * If the function fails, it returns -1.
     ``` C++
     syntax:
-        int argb(int a, int r, int g, int b);
+        int CreateControl(string controlName); 
     ```
 
-* **SetArraySize**
-    * **Compiler Token**: `FUNC_SET_ARRAY_SIZE`
+* **DeleteControl**: Currently does nothing.
+    * **Compiler Token**: `FUNC_DELETE_CONTROL`
     ``` C++
     syntax:
-        void SetArraySize(2); 
+        void DeleteControl(string controlName);
+    ```
+
+* **MapControl**: Set a specific keybind on a control.
+    * **Compiler Token**: `FUNC_MAP_CONTROL`
+    * `ControlID`: ID of the control to set.
+    * `key`: ID of the key to bind. 
+    ``` C++
+    syntax:
+        void MapControl(int controlID, int key);
+    ```
+
+* **SetControlTreshold**: Currently does nothing.
+    * **Compiler Token**: `FUNC_SET_CONTROL_TRESHOLD`
+    ``` C++
+    syntax:
+        void SetControlTreshold(int controlID, float thresholdValue);
+    ```
+
+* **SetControlFlags**: Set bitwise flags for the control.
+    * **Compiler Token**: `FUNC_SET_CONTROL_FLAGS`
+    * `ControlID`: ID of the control to set.
+    * `flags`: Set of flags to apply to the control
+    * Currently the only flag supported (besides from 0) is `USE_AXIS_AS_BUTTON` or 1
+    * Returns `false` if incorrect control ID has been provided.
+    ``` C++
+    syntax:
+        bool SetControlFlags(int controlID, int flags);
+    ```
+
+* **LockControl**: Toggle a specific control on or off.
+    * **Compiler Token**: `FUNC_LOCK_CONTROL`
+    * `controlName`: Unique identifier for the control.
+    * `isLocked`: `true` to disable the control.
+    ``` C++
+    syntax:
+        void LockControl(string controlName, bool isLocked);
+    ```
+
+
+
+* **ClearEntityAP**
+    * **Compiler Token**: `FUNC_CLEAR_Entity_AP`
+    ``` C++
+    syntax:
+        void ClearEntityAP(1);
     ```
 
 * **Vartype**
@@ -901,12 +978,28 @@ Currently disabled/not implemented functions:
         string Vartype(ref attribute);
     ```
 
-* **Breakpoint**
-    * **Compiler Token**: `FUNC_BREAKPOINT`
+* **ClearRef**
+    * **Compiler Token**: `FUNC_CLEARREF`
     ``` C++
     syntax:
-        void Breakpoint();
+        void ClearRef(1);
     ```
+
+* **GetArraySize**
+    * **Compiler Token**: `FUNC_GET_ARRAY_SIZE`
+    ``` C++
+    syntax:
+        int GetArraySize(1); 
+    ```
+
+* **SetArraySize**
+    * **Compiler Token**: `FUNC_SET_ARRAY_SIZE`
+    ``` C++
+    syntax:
+        void SetArraySize(2); 
+    ```
+
+### String Manipulation
 
 * **strcut**
     * **Compiler Token**: `FUNC_STRCUT`
@@ -922,13 +1015,6 @@ Currently disabled/not implemented functions:
         string findSubStr(3)
     ```
 
-* **ClearRef**
-    * **Compiler Token**: `FUNC_CLEARREF`
-    ``` C++
-    syntax:
-        void ClearRef(1);
-    ```
-
 * **strlen**
     * **Compiler Token**: `FUNC_STRLEN`
     ``` C++
@@ -936,88 +1022,11 @@ Currently disabled/not implemented functions:
         int strlen(1); 
     ```
 
-* **CreateControl**
-    * **Compiler Token**: `FUNC_CREATE_CONTROL`
-    ``` C++
-    syntax:
-        int CreateControl(1); 
-    ```
-
-* **DeleteControl**
-    * **Compiler Token**: `FUNC_DELETE_CONTROL`
-    ``` C++
-    syntax:
-        void DeleteControl(1);
-    ```
-
-* **MapControl**
-    * **Compiler Token**: `FUNC_MAP_CONTROL`
-    ``` C++
-    syntax:
-        void MapControl(2);
-    ```
-
-* **SetControlFlags**
-    * **Compiler Token**: `FUNC_SET_CONTROL_FLAGS`
-    ``` C++
-    syntax:
-        void SetControlFlags(2);
-    ```
-
-* **ClearEntityAP**
-    * **Compiler Token**: `FUNC_CLEAR_Entity_AP`
-    ``` C++
-    syntax:
-        void ClearEntityAP(1);
-    ```
-
-* **GetArraySize**
-    * **Compiler Token**: `FUNC_GET_ARRAY_SIZE`
-    ``` C++
-    syntax:
-        int GetArraySize(1); 
-    ```
-
-* **GetTargetPlatform**
-    * **Compiler Token**: `FUNC_GETTARGETPLATFORM`
-    ``` C++
-    syntax:
-        string GetTargetPlatform(); 
-    ```
-
 * **GetSymbol**
     * **Compiler Token**: `FUNC_GETSYMBOL`
     ``` C++
     syntax:
         string GetSymbol(2); 
-    ```
-
-* **SaveVariable**
-    * **Compiler Token**: `FUNC_SAVEVARIABLE`
-    ``` C++
-    syntax:
-        int SaveVariable(2); 
-    ```
-
-* **LoadVariable**
-    * **Compiler Token**: `FUNC_LOADVARIABLE`
-    ``` C++
-    syntax:
-        int LoadVariable(2); 
-    ```
-
-* **SetControlTreshold**
-    * **Compiler Token**: `FUNC_SET_CONTROL_TRESHOLD`
-    ``` C++
-    syntax:
-        void SetControlTreshold(2);
-    ```
-
-* **LockControl**
-    * **Compiler Token**: `FUNC_LOCK_CONTROL`
-    ``` C++
-    syntax:
-        void LockControl(2);
     ```
 
 ---
