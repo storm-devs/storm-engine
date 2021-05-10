@@ -78,6 +78,38 @@ Below are the functions which make part of the compiler API. Each function has i
         GetTargetPlatform(); // "pc"
     ```
 
+* **SetTimeScale**: Set the speed of the game simulation for the whole engine. For your epic slo-mo moments.
+    * **Compiler Token**: `FUNC_SETTIMESCALE`
+    * `value`: time scale, from 0 to 1.
+    * Internally, time scale is stored as a `float`, so passing both `float` and `int` values is allowed. 
+    * Because the value affects the whole game, make sure you don't forget to return the time scale back to normal! 
+    ``` C++
+    syntax:
+        void SetTimeScale(int value);
+        void SetTimeScale(float value);
+    example: 
+        SetTimeScale(0.0);
+    ```
+
+* **Trace**: Send a trace (small log message) to `system.log` file.
+    * **Compiler Token**: `FUNC_TRACE`
+    ``` C++
+    syntax:
+        void Trace(int message);
+        void Trace(float message);
+        void Trace(string message);
+    example:
+        int n = LocationInitAntigua(n);
+        Trace("Antigua locations " + n);
+    ```
+
+* **Breakpoint**: If the engine is compiled in debug mode, trigger a breakpoint in the its execution.
+    * **Compiler Token**: `FUNC_BREAKPOINT`
+    ``` C++
+    syntax:
+        void Breakpoint();
+    ```
+
 * **Stop**: Stop executing current thread.
     * **Compiler Token**: `FUNC_STOP`
     ``` C++
@@ -623,40 +655,6 @@ Currently disabled/not implemented functions:
     ``` C++
     syntax:
         void LayerSetMessages(int layerID, bool isEnabled); 
-    ```
-
-### Utility
-
-* **SetTimeScale**: Set the speed of the game simulation for the whole engine. For your epic slo-mo moments.
-    * **Compiler Token**: `FUNC_SETTIMESCALE`
-    * `value`: time scale, from 0 to 1.
-    * Internally, time scale is stored as a `float`, so passing both `float` and `int` values is allowed. 
-    * Because the value affects the whole game, make sure you don't forget to return the time scale back to normal! 
-    ``` C++
-    syntax:
-        void SetTimeScale(int value);
-        void SetTimeScale(float value);
-    example: 
-        SetTimeScale(0.0);
-    ```
-
-* **Trace**: Send a trace (small log message) to `system.log` file.
-    * **Compiler Token**: `FUNC_TRACE`
-    ``` C++
-    syntax:
-        void Trace(int message);
-        void Trace(float message);
-        void Trace(string message);
-    example:
-        int n = LocationInitAntigua(n);
-        Trace("Antigua locations " + n);
-    ```
-
-* **Breakpoint**: If the engine is compiled in debug mode, trigger a breakpoint in the its execution.
-    * **Compiler Token**: `FUNC_BREAKPOINT`
-    ``` C++
-    syntax:
-        void Breakpoint();
     ```
 
 ### Math
