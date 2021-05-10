@@ -164,6 +164,20 @@ Below are the functions which make part of the compiler API. Each function has i
         };
     ```
 
+* **IsDigit**: Verify whether a character in a string is a digit
+    **Compiler Token**: `FUNC_ISDIGIT`
+    * `source`: The string containing the character to verify
+    * `position`: Position of the tested character in the string
+    ``` C++
+    syntax:
+        bool IsDigit(string source, int position); 
+    example: 
+        string testString = "1ten20";
+        bool test1 = IsDigit(testString, 0); // true
+        bool test2 = IsDigit(testString, 3); // false
+        bool test1 = IsDigit(testString, 5); // true
+    ```
+
 ### Entity Manipulation
 
 * **CreateClass**: Bind an object with an entity.
@@ -771,35 +785,99 @@ Currently disabled/not implemented functions:
         float acos(float value);
     ```
 
-* **MakeInt**
+### Conversions
+
+* **MakeInt**: Convert value to an `int`.
     * **Compiler Token**: `FUNC_MAKE_INT`
+    * `value` may be a string or an int
+    * Returns the converted integer value
     ``` C++
     syntax:
         int MakeInt(string value);
         int MakeInt(float value);
-        // convert to int
     ```
 
-* **MakeFloat**
+* **MakeFloat**: Convert value to an `float`.
     * **Compiler Token**: `FUNC_MAKE_FLOAT`
+    * `value` may be a string or an int
+    * Returns the converted real value
     ``` C++
     syntax:
         float MakeFloat(string value);
         float MakeFloat(int value);
     ```
 
-* **sti**
+* **sti**: Convert a `string` to `int`
     * **Compiler Token**: `FUNC_STI`
+    * `value` can only be a `string`
     ``` C++
     syntax:
         int sti(string value);
     ```
 
-* **stf**
+* **stf**: Convert a `string` to a `float`
     * **Compiler Token**: `FUNC_STF`
+    * `value` can only be a `string`
     ``` C++
     syntax:
         float stf(string value);
+    ```
+
+* **fts**: Parse a float to string
+    * **Compiler Token**: `FUNC_FTS`
+    `value`: value to be converted.
+    `digits`: Number of significant digits stored.
+    ``` C++
+    syntax:
+        string fts(float value, int digits); 
+    example: 
+        float pi = 3.141526535
+        string pi2 = fts(pi, 3); // 3.14
+        string pi4 = fts(pi, 5); // 3.1415
+    ```
+
+### Bitwise Operations
+
+* **shl**: Shift the bits of the integer `value` to `n` bits to the left
+    * **Compiler Token**: `FUNC_SHL`
+    * `value`: The value containing the bits
+    * `n`: By how many bits to shift
+    * This function is effectively the same as `value << n;`
+    ``` C++
+    syntax:
+        int shl(int value, int n); 
+    ```
+
+* **shr**: Shift the bits of the integer `value` to `n` bits to the right
+    * **Compiler Token**: `FUNC_SHR`
+    * `value`: The value containing the bits
+    * `n`: By how many bits to shift
+    * This function is effectively the same as `value >> n;`
+    ``` C++
+    syntax:
+        int shr(int value, int n); 
+    ```
+
+* **and**: Bitwise AND
+    * **Compiler Token**: `FUNC_AND`
+    * `value`: The value containing the bits
+    * `mask`: Mask containing the bits to compare
+    * The resulting value contains all the bits if they're set in the value AND the mask
+    * This function is effectively the same as `value & mask;`
+    ``` C++
+    syntax:
+        int and(int value, int mask); 
+    ```
+
+* **or**: Bitwise OR
+    * **Compiler Token**: `FUNC_OR`
+    * `value`: The value containing the bits
+    * `mask`: Mask containing the bits to compare
+    * The resulting value contains all the bits if they're set in the value OR the mask
+    * This function is effectively the same as `value | mask;`
+    ``` C++
+    syntax:
+        int or(int value, int mask); 
     ```
 
 * **argb**
@@ -807,13 +885,6 @@ Currently disabled/not implemented functions:
     ``` C++
     syntax:
         int argb(int a, int r, int g, int b);
-    ```
-
-* **fts**
-    * **Compiler Token**: `FUNC_FTS`
-    ``` C++
-    syntax:
-        string fts(float, int); 
     ```
 
 * **SetArraySize**
@@ -863,34 +934,6 @@ Currently disabled/not implemented functions:
     ``` C++
     syntax:
         int strlen(1); 
-    ```
-
-* **shl**
-    * **Compiler Token**: `FUNC_SHL`
-    ``` C++
-    syntax:
-        int shl(2); 
-    ```
-
-* **shr**
-    * **Compiler Token**: `FUNC_SHR`
-    ``` C++
-    syntax:
-        int shr(2); 
-    ```
-
-* **and**
-    * **Compiler Token**: `FUNC_AND`
-    ``` C++
-    syntax:
-        int and(2); 
-    ```
-
-* **or**
-    * **Compiler Token**: `FUNC_OR`
-    ``` C++
-    syntax:
-        int or(2); 
     ```
 
 * **CreateControl**
@@ -947,13 +990,6 @@ Currently disabled/not implemented functions:
     ``` C++
     syntax:
         string GetSymbol(2); 
-    ```
-
-* **IsDigit**
-    **Compiler Token**: `FUNC_ISDIGIT`
-    ``` C++
-    syntax:
-        int IsDigit(2); 
     ```
 
 * **SaveVariable**
