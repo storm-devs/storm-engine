@@ -7,12 +7,90 @@ _[back to Index](../index.md)_
 
 Here you will find the list of the built-in and some game-level useful functions for the game scripting.
 
-
 ## Built-In Functions
 
 Below are the functions which make part of the compiler API. Each function has its own unique identifier token that's also listed below.
 
+### Core Engine Interaction
+
+* **SaveEngineState**: Save game state with a specific name.
+    * **Compiler Token**: `FUNC_SAVEENGINESTATE`
+    * `saveName`: name of the save. 
+    ``` C++
+    syntax:
+        void SaveEngineState(string saveName);
+    ```
+
+* **LoadEngineState**: Load game state from a specific filename.
+    * **Compiler Token**: `FUNC_LOADENGINESTATE`
+    * `saveName`: name of the save. 
+    ``` C++
+    syntax:
+        void LoadEngineState(string saveName);
+    ```
+
+* **LoadSegment**: Load a script file.
+    * **Compiler Token**: `FUNC_LOAD_SEGMENT`
+    * `filename`: relative path to the file to load
+    ``` C++
+    syntax:
+        bool LoadSegment(string filename);
+    example: 
+        if (LoadSegment("interface\alchemy.c"))
+        {
+            // ...
+            // do necessary work
+            // ...
+            UnloadSegment("interface\alchemy.c");
+        }
+    ```
+
+* **UnloadSegment**: Unload a script file if loaded.
+    * **Compiler Token**: `FUNC_UNLOAD_SEGMENT`
+    * `filename`: relative path to the file to unload
+    ``` C++
+    syntax:
+        void UnloadSegment(string fileName); // unload segment (delayed)
+    example: 
+        if (LoadSegment("interface\alchemy.c"))
+        {
+            // ...
+            // do necessary work
+            // ...
+            UnloadSegment("interface\alchemy.c");
+        }
+    ```
+
+* **GetDeltaTime**: Get the expected length of the frame (in seconds?)
+    * **Compiler Token**: `FUNC_GETDELTATIME`
+    ``` C++
+    syntax:
+        int GetDeltaTime(0); 
+    ```
+
+* **Stop**: Stop executing current thread.
+    * **Compiler Token**: `FUNC_STOP`
+    ``` C++
+    syntax:
+        void Stop(); 
+    ```
+
+* **ExitProgram**: Run `ExitMain` function if it's defined in the loaded segments and exit the game.
+    * **Compiler Token**: `FUNC_EXIT_PROGRAM`
+    ``` C++
+    syntax:
+        void ExitProgram();
+    ```
+
 ### Validation
+
+* **SegmentIsLoaded**: Verify whether a specific script file is loaded
+    * **Compiler Token**: `FUNC_SEGMENT_IS_LOADED`
+    * `filename`: relative path of the file to test
+    ``` C++
+    syntax:
+        bool SegmentIsLoaded(string filename);
+    ```
 
 * **GetEngineVersion**: Return `ENGINE_SCRIPT_VERSION` constant (defined in `core.h`). 
     * **Compiler Token**: `FUNC_GETENGINEVERSION`
@@ -20,7 +98,7 @@ Below are the functions which make part of the compiler API. Each function has i
     ``` C++
     syntax:
         int GetEngineVersion();
-    usage: 
+    example: 
         GetEngineVersion();
     ```
 
@@ -30,7 +108,7 @@ Below are the functions which make part of the compiler API. Each function has i
     ``` C++
     syntax:
         bool CheckFunction(string value);
-    usage: 
+    example: 
         if (CheckFunction("ControlsTreeInit"))
         {
             ControlsTreeInit();
@@ -86,7 +164,6 @@ Below are the functions which make part of the compiler API. Each function has i
         };
     ```
 
-
 ### Entity Manipulation
 
 * **CreateClass**: Bind an object with an entity.
@@ -122,6 +199,77 @@ Below are the functions which make part of the compiler API. Each function has i
         void DeleteClass(object obj);
     ```
 
+* **DeleteEntitiesByType**: delete all entities of a specific type.
+    * **Compiler Token**: `FUNC_DELETEENTITIESBYTYPE`
+    * `type`: type of the entities to delete
+    ``` C++
+    syntax:
+        void DeleteEntitiesByType(string type);
+    ```
+
+* **DeleteEntities**: Delete ALL entities.
+    * **Compiler Token**: `FUNC_DELETE_ENTITIES`
+    ``` C++
+    syntax:
+        void DeleteEntities();
+    example: 
+        DeleteEntities();
+    ```
+
+* **GetEntity**: Get an entity of a specific type
+    * **Compiler Token**: `FUNC_FINDENTITY`
+    * `entityPointer`: Address of the ref to contain the entity reference, if found.
+    * `name`: Name of the entity type
+    * Result is `false` if no entities are found
+    * Only the first entity found is returned, the rest are discarded. If you're interested in iterating on the entities of a specific name, please use `FindEntity`.
+    ``` C++
+    syntax:
+        bool GetEntity(ref &entityPointer, string name); 
+    example: 
+        ref location;
+        if (GetEntity(&location, "Location"))
+        {
+            // Do something with the entity
+        }
+    ```
+
+* **FindEntity**: Find an entity of a specific type
+    * **Compiler Token**: `FUNC_FINDENTITY`
+    * `entityPointer`: Address of the ref to contain the entity reference, if found.
+    * `name`: Name of the entity type
+    * Result is `false` if no entities are found
+    * If one or more entities of this type are found, further entities may be accessed by calling `FindEntityNext`.
+    ``` C++
+    syntax:
+        bool FindEntity(ref &entityPointer, string name); 
+    example: 
+        ref location;
+        if (FindEntity(&location, "Location"))
+        {
+            // Do something with the found entity
+        }
+    ```
+
+* **FindEntityNext**: Find the next entity if any
+    * **Compiler Token**: `FUNC_FINDENTITYNEXT`
+    * `entityPointer`: Address of the ref to contain the entity reference, if found.
+    * Result is `false` if no other entities are found
+    * `FindEntity` must be called to initialize the search first.
+    ``` C++
+    syntax:
+        bool FindEntityNext(ref &entityPointer); 
+    example: 
+        ref location;
+        if (FindEntity(&location, "Location"))
+        {
+            // Do something with the found entity
+            while (FindEntityNext(&location))
+            {
+                // Iterate of the rest
+            }
+        }
+    ```
+
 * **EntityUpdate**: Toggle entity update on attribute change.
     * **Compiler Token**: `FUNC_Entity_UPDATE`
     * `isEnabled`: if set to `false`, entity will not receive attribute updates.
@@ -149,7 +297,6 @@ Below are the functions which make part of the compiler API. Each function has i
         DeleteAttribute(pchar, "Items"); // remove all collected items 
         string sQuest2 = "quest.Deposits." + city + "_Type2";
         DeleteAttribute(pchar, sQuest2);
-
     ```
 
 * **GetAttributesNum**: Count how many child attributes an object has (non-recursive).
@@ -465,7 +612,7 @@ Currently disabled/not implemented functions:
     syntax:
         void SetTimeScale(int value);
         void SetTimeScale(float value);
-    usage: 
+    example: 
         SetTimeScale(0.0);
     ```
 
@@ -489,7 +636,7 @@ Currently disabled/not implemented functions:
     ``` C++
     syntax:
         int Rand(int range);
-    usage: 
+    example: 
         ref ch = GetCharacter(NPC_GenerateCharacter(...));
         ch.Nation = rand(4); // random nation
     ```
@@ -499,7 +646,7 @@ Currently disabled/not implemented functions:
     ``` C++
     syntax:
         float frnd(); 
-    usage: 
+    example: 
         float fChecker = frand();
         if (fChecker < 0.8) {...}
     ```
@@ -624,37 +771,6 @@ Currently disabled/not implemented functions:
         float acos(float value);
     ```
 
-
-
-
-* **ExitProgram**
-    * **Compiler Token**: `FUNC_EXIT_PROGRAM`
-    ``` C++
-    syntax:
-        void ExitProgram(); // quit to desktop
-    ```
-
-* **Stop**
-    * **Compiler Token**: `FUNC_STOP`
-    ``` C++
-    syntax:
-        void Stop(); // stop executing (thread like)
-    ```
-
-* **LoadSegment**
-    * **Compiler Token**: `FUNC_LOAD_SEGMENT`
-    ``` C++
-    syntax:
-        int LoadSegment(string fileName); // load program into current space, return zero if failed
-    ```
-
-* **UnloadSegment**
-    * **Compiler Token**: `FUNC_UNLOAD_SEGMENT`
-    ``` C++
-    syntax:
-        void UnloadSegment(string fileName); // unload segment (delayed)
-    ```
-
 * **MakeInt**
     * **Compiler Token**: `FUNC_MAKE_INT`
     ``` C++
@@ -670,13 +786,6 @@ Currently disabled/not implemented functions:
     syntax:
         float MakeFloat(string value);
         float MakeFloat(int value);
-    ```
-
-* **SegmentIsLoaded**
-    * **Compiler Token**: `FUNC_SEGMENT_IS_LOADED`
-    ``` C++
-    syntax:
-        int SegmentIsLoaded(1); // string segmentName?
     ```
 
 * **sti**
@@ -700,27 +809,6 @@ Currently disabled/not implemented functions:
         int argb(int a, int r, int g, int b);
     ```
 
-* **DeleteEntities**
-    * **Compiler Token**: `FUNC_DELETE_ENTITIES`
-    ``` C++
-    syntax:
-        void DeleteEntities();
-    ```
-
-* **SaveEngineState**
-    * **Compiler Token**: `FUNC_SAVEENGINESTATE`
-    ``` C++
-    syntax:
-        void SaveEngineState(1);
-    ```
-
-* **LoadEngineState**
-    * **Compiler Token**: `FUNC_LOADENGINESTATE`
-    ``` C++
-    syntax:
-        void LoadEngineState(); /1/?
-    ```
-
 * **fts**
     * **Compiler Token**: `FUNC_FTS`
     ``` C++
@@ -740,6 +828,7 @@ Currently disabled/not implemented functions:
     ``` C++
     syntax:
         string Vartype(ref attribute);
+    ```
 
 * **Breakpoint**
     * **Compiler Token**: `FUNC_BREAKPOINT`
@@ -776,13 +865,6 @@ Currently disabled/not implemented functions:
         int strlen(1); 
     ```
 
-* **GetDeltaTime**
-    * **Compiler Token**: `FUNC_GETDELTATIME`
-    ``` C++
-    syntax:
-        int GetDeltaTime(0); 
-    ```
-
 * **shl**
     * **Compiler Token**: `FUNC_SHL`
     ``` C++
@@ -809,13 +891,6 @@ Currently disabled/not implemented functions:
     ``` C++
     syntax:
         int or(2); 
-    ```
-
-* **DeleteEntitiesByType**
-    * **Compiler Token**: `FUNC_DELETEENTITIESBYTYPE`
-    ``` C++
-    syntax:
-        void DeleteEntitiesByType(1);
     ```
 
 * **CreateControl**
@@ -865,27 +940,6 @@ Currently disabled/not implemented functions:
     ``` C++
     syntax:
         string GetTargetPlatform(); 
-    ```
-
-* **GetEntity**
-    * **Compiler Token**: `FUNC_GETENTITY`
-    ``` C++
-    syntax:
-        int GetEntity(2); 
-    ```
-
-* **FindEntity**
-    * **Compiler Token**: `FUNC_FINDENTITY`
-    ``` C++
-    syntax:
-        int FindEntity(2); 
-    ```
-
-* **FindEntityNext**
-    * **Compiler Token**: `FUNC_FINDENTITYNEXT`
-    ``` C++
-    syntax:
-        int FindEntityNext(1); 
     ```
 
 * **GetSymbol**
