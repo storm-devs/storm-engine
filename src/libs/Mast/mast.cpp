@@ -272,6 +272,12 @@ void MAST::Mount(entid_t modelEI, entid_t shipEI, NODE *mastNodePointer)
                             core.Send_Message(flagEI, "lili", MSG_FLAG_TO_NEWHOST, modelEI, atoi(&gl.group_name[4]),
                                               model_id);
                     }
+                    else if (!strncmp(gl.group_name, "sflag", 5))
+                    {
+                        if (flagEI)
+                            core.Send_Message(flagEI, "lili", MSG_FLAG_TO_NEWHOST, modelEI, atoi(&gl.group_name[5]),
+                                              model_id);
+                    }
                 }
                 // also bring down the sails associated with this mast
                 if (sailEI)

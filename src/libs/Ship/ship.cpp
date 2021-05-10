@@ -943,7 +943,7 @@ void SHIP::MastFall(mast_t *pM)
                 {
                     entid_t ent;
                     ent = EntityManager::CreateEntity("mast");
-                    core.Send_Message(ent, "lpii", MSG_MAST_SETGEOMETRY, pM->pNode, GetId(), GetModelEID());
+                    core.Send_Message(ent, "lpii", MSG_MAST_SETGEOMETRY, pMast->pNode, GetId(), GetModelEID());
                     EntityManager::AddToLayer(ExecuteLayer, ent, iShipPriorityExecute + 1);
                     EntityManager::AddToLayer(RealizeLayer, ent, iShipPriorityRealize + 1);
                     pShipsLights->KillMast(this, pMast->pNode, false);
