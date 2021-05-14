@@ -15,7 +15,7 @@ This knowledge base is maintained in English language.
 
 ### Repository Guidelines
 
-* [Style Guide](kb/0003-style-guide.md)
+* [Style Guide](kb/0006-style-guide.md)
 * Contributing
 * Etc.
 

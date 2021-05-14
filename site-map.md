@@ -7,6 +7,7 @@
 * [Article 0003. Scripting Functions](/kb/0003-scripting-functions.md)
 * [Article 0004. Entities](/kb/0004-entities.md)
 * [Article 0005. Messages and Events](/kb/0005-events.md)
+* [Article 0006. Style Guideline](/kb/0006-style-guide.md)
 
 
 ## Work
