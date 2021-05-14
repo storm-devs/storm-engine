@@ -25,7 +25,7 @@ bool COMPILER::BC_ProcessExpression(DATA *value)
     //--------------------------------------------------------------------------
     if (TokenIs(AND))
     {
-        VARINFO vi;
+        VarInfo vi;
 
         auto Token_type = BC_TokenGet();
         if (TokenType() != VARIABLE)
@@ -45,7 +45,7 @@ bool COMPILER::BC_ProcessExpression(DATA *value)
                 SetError("Global variable not found");
                 return false;
             }
-            pV = vi.pDClass;
+            pV = vi.value.get();
         }
         else
         {
@@ -422,7 +422,7 @@ void COMPILER::BC_ProcessExpression_L6(DATA *value, bool bSkip)
 
 void COMPILER::BC_ProcessExpression_L7(DATA *value, bool bSkip)
 {
-    VARINFO vi;
+    VarInfo vi;
     uint32_t var_code;
     long index;
     DATA array_index;
@@ -515,7 +515,7 @@ void COMPILER::BC_ProcessExpression_L7(DATA *value, bool bSkip)
                 SetError("Global variable not found");
                 return;
             }
-            pVV = vi.pDClass;
+            pVV = vi.value.get();
         }
         else
         {
@@ -607,7 +607,7 @@ void COMPILER::BC_ProcessExpression_L7(DATA *value, bool bSkip)
                 SetError("Global variable not found");
                 break;
             }
-            pV = vi.pDClass;
+            pV = vi.value.get();
         }
         else
         {
@@ -809,7 +809,7 @@ void COMPILER::BC_ProcessExpression_L7(DATA *value, bool bSkip)
                         SetError("Global variable not found");
                         break;
                     }
-                    pV = vi.pDClass;
+                    pV = vi.value.get();
                 }
                 else
                 {
@@ -860,7 +860,7 @@ void COMPILER::BC_ProcessExpression_L7(DATA *value, bool bSkip)
 bool COMPILER::CompileExpression(SEGMENT_DESC &Segment)
 {
     uint32_t dwVarCode;
-    VARINFO vi;
+    VarInfo vi;
     LVARINFO lvi;
 
     const S_TOKEN_TYPE Token_type = CompileAuxiliaryTokens(Segment);
@@ -900,12 +900,12 @@ bool COMPILER::CompileExpression(SEGMENT_DESC &Segment)
             {
                 VarTab.GetVarX(vi, dwVarCode);
                 // check for possibilities of '[' operator
-                if (!vi.bArray)
+                if (!vi.IsArray())
                 {
                     if (vi.type != VAR_REFERENCE)
                     {
                         SetError("EN: %d", vi.elements);
-                        SetError(" A Invalid '[' operator, %s - isnt array", vi.name);
+                        SetError(" A Invalid '[' operator, %s - isnt array", vi.name.c_str());
                         return false;
                     }
                 }
@@ -1232,7 +1232,7 @@ bool COMPILER::CompileExpression_L7(SEGMENT_DESC &Segment)
     S_TOKEN_TYPE sttFuncCallType;
     uint32_t dwVarCode;
     uint32_t dwAWCode;
-    VARINFO vi;
+    VarInfo vi;
     LVARINFO lvi;
     FUNCINFO fi;
 
@@ -1467,11 +1467,11 @@ bool COMPILER::CompileExpression_L7(SEGMENT_DESC &Segment)
                 {
                     VarTab.GetVarX(vi, dwVarCode);
                     // check for possibilities of '[' operator
-                    if (!vi.bArray)
+                    if (!vi.IsArray())
                     {
                         if (vi.type != VAR_REFERENCE)
                         {
-                            SetError(" C Invalid '[' operator, %s - isnt array", vi.name);
+                            SetError(" C Invalid '[' operator, %s - isnt array", vi.name.c_str());
                             return false;
                         }
                     }

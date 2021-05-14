@@ -886,7 +886,7 @@ const char *CORE::EngineIniFileName()
 
 void *CORE::GetScriptVariable(const char *pVariableName, uint32_t *pdwVarIndex)
 {
-    VARINFO vi;
+    VarInfo vi;
 
     const auto dwVarIndex = Compiler->VarTab.FindVar(pVariableName);
     if (dwVarIndex == INVALID_VAR_CODE || !Compiler->VarTab.GetVar(vi, dwVarIndex))
@@ -895,7 +895,7 @@ void *CORE::GetScriptVariable(const char *pVariableName, uint32_t *pdwVarIndex)
     if (pdwVarIndex)
         *pdwVarIndex = dwVarIndex;
 
-    return vi.pDClass;
+    return vi.value.get();
 }
 
 void CORE::Start_CriticalSection()

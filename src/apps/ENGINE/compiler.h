@@ -128,7 +128,7 @@ class COMPILER : public VIRTUAL_COMPILER
 
     FUNCINFO *pRun_fi; // running function info
     S_FUNCTAB FuncTab;
-    S_VARTAB VarTab;
+    VarTable VarTab;
     S_CLASSTAB ClassTab;
     S_DEFTAB DefTab;
     S_STACK SStack;

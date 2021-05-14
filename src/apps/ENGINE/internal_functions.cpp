@@ -1347,7 +1347,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         pV->SetElementsNum(TempLong1);
 
         if (pV->nGlobalVarTableIndex != 0xffffffff)
-            VarTab.ArraySizeChanged(pV->nGlobalVarTableIndex, TempLong1);
+            VarTab.SetElementsNum(pV->nGlobalVarTableIndex, TempLong1);
 
         break;
 
