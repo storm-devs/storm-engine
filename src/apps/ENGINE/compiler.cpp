@@ -581,7 +581,7 @@ void COMPILER::FindErrorSource()
 
 void COMPILER::SetEventHandler(const char *event_name, const char *func_name, long flag, bool bStatic)
 {
-    FUNCINFO fi;
+    FuncInfo fi;
 
     if (event_name == nullptr)
     {
@@ -696,7 +696,7 @@ VDATA *COMPILER::ProcessEvent(const char *event_name)
         BC_Execute(ei.pFuncInfo[n].func_code, pResult);
         RDTSC_E(nTicks);
 
-        FUNCINFO fi;
+        FuncInfo fi;
         // if(FuncTab.GetFuncX(fi,ei.pFuncInfo[n].func_code))
         if (FuncTab.GetFuncX(fi, func_code))
         {
@@ -964,7 +964,7 @@ bool COMPILER::ProcessDebugExpression0(const char *pExpression, DATA &Result)
 
     if (pRun_fi)
     {
-        CurrentFuncCode = pRun_fi->code;
+        CurrentFuncCode = FuncTab.FindFunc(pRun_fi->name);
     }
 
     try
@@ -988,7 +988,7 @@ bool COMPILER::ProcessDebugExpression0(const char *pExpression, DATA &Result)
     // save current pointers values
     const uint32_t mem_InstructionPointer = InstructionPointer;
     // mem_ip = ip;
-    FUNCINFO *mem_pfi = pRun_fi;
+    FuncInfo *mem_pfi = pRun_fi;
     const char *mem_codebase = pRunCodeBase;
     // mem_CurrentFuncCode = CurrentFuncCode;
 
@@ -1176,7 +1176,7 @@ void COMPILER::CompileToken(SEGMENT_DESC &Segment, S_TOKEN_TYPE Token_type, uint
 
 bool COMPILER::InitInternalFunctions()
 {
-    FUNCINFO fi;
+    FuncInfo fi;
 
     // register internal functions ------------
 
@@ -1198,7 +1198,7 @@ bool COMPILER::InitInternalFunctions()
             func_code = FuncTab.FindFunc(fi.name);
             FuncTab.GetFunc(fi, func_code);
             // SetError("Duplicate function name: %s",fi.name);
-            SetError("Function [%s] already declared in: %s line %d", fi.name, fi.decl_file_name, fi.decl_line);
+            SetError("Function [%s] already declared in: %s line %d", fi.name.c_str(), fi.decl_file_name.c_str(), fi.decl_line);
             return false;
         }
     }
@@ -1214,9 +1214,9 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
     char *pProgram;
     char *pApend_file;
     char *pSegmentSource;
-    FUNCINFO fi;
+    FuncInfo fi;
     VarInfo vi;
-    LVARINFO lvi;
+    LocalVarInfo lvi;
     CLASSINFO ci;
     CLASSINFO cci;
     uint32_t SegmentSize;
@@ -1526,7 +1526,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                         fi.arguments = 0;
                         fi.decl_file_name = DebugSourceFileName;
                         fi.decl_line = DebugSourceLine;
-                        fi.pImportedFunc = nullptr;
+                        fi.imported_func = nullptr;
                         func_code = FuncTab.AddFunc(fi);
 
                         if (func_code == INVALID_FUNC_CODE)
@@ -1534,7 +1534,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                             func_code = FuncTab.FindFunc(fi.name);
                             FuncTab.GetFunc(fi, func_code);
                             // SetError("Duplicate function name: %s",fi.name);
-                            SetError("Function [%s] already declared in: %s line %d", fi.name, fi.decl_file_name,
+                            SetError("Function [%s] already declared in: %s line %d", fi.name.c_str(), fi.decl_file_name.c_str(),
                                      fi.decl_line);
 
                             return false;
@@ -1785,7 +1785,6 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                     strcpy_s(var_name, Token.GetData());
                     lvi.name = var_name;
                     lvi.elements = 1;
-                    lvi.bArray = false;
                     Token.Get();
                     if (Token.GetType() == SQUARE_OPEN_BRACKET)
                     {
@@ -1802,26 +1801,25 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                                 }
                                 else
                                 {
-                                    SetError("Invalid array (%s) size", lvi.name);
+                                    SetError("Invalid array (%s) size", lvi.name.c_str());
                                     return false;
                                 }
                             }
                             else
                             {
-                                SetError("Invalid array (%s) size", lvi.name);
+                                SetError("Invalid array (%s) size", lvi.name.c_str());
                                 return false;
                             }
                         }
                         else
                             lvalue = static_cast<long>(atoll(Token.GetData()));
                         lvi.elements = lvalue;
-                        lvi.bArray = true;
                         Token.Get(); // SQUARE_CLOSE_BRACKET
                         Token.Get();
                     }
                     if (!FuncTab.AddFuncVar(func_code, lvi))
                     {
-                        SetError("Duplicate variable name: %s", lvi.name);
+                        SetError("Duplicate variable name: %s", lvi.name.c_str());
                         return false;
                     }
                 } while (Token.GetType() == COMMA);
@@ -2205,7 +2203,7 @@ bool COMPILER::CompileBlock(SEGMENT_DESC &Segment, bool &bFunctionBlock, uint32_
     uint32_t dwRCode;
 
     VarInfo vi;
-    LVARINFO lvi;
+    LocalVarInfo lvi;
 
     jump_offset = 0xffbadbad;
 
@@ -2945,7 +2943,7 @@ bool COMPILER::CompileBlock(SEGMENT_DESC &Segment, bool &bFunctionBlock, uint32_
         case UNKNOWN: {
             uint32_t func_code;
             uint32_t func_args;
-            FUNCINFO fi;
+            FuncInfo fi;
 
             if (DetectUnknown(func_code) == CALL_FUNCTION)
             {
@@ -2993,7 +2991,7 @@ bool COMPILER::CompileBlock(SEGMENT_DESC &Segment, bool &bFunctionBlock, uint32_
                 if (fi.offset == INVALID_FUNC_OFFSET)
                 {
                     // external function declared but not compiled yet
-                    fi.arguments = fi.ext_args;
+                    fi.arguments = fi.extern_arguments;
                 }
 
                 // off for debug needs
@@ -3005,7 +3003,7 @@ bool COMPILER::CompileBlock(SEGMENT_DESC &Segment, bool &bFunctionBlock, uint32_
                     case INTERNAL_SEGMENT_ID:
                         if (!IsIntFuncVarArgsNum(func_code))
                         {
-                            SetError("function '%s(args:%d)' doesnt accept %d arguments", fi.name, fi.arguments,
+                            SetError("function '%s(args:%d)' doesnt accept %d arguments", fi.name.c_str(), fi.arguments,
                                      func_args);
                             return false;
                         }
@@ -3014,7 +3012,7 @@ bool COMPILER::CompileBlock(SEGMENT_DESC &Segment, bool &bFunctionBlock, uint32_
                         // skip imported funcs checking for now
                         break;
                     default:
-                        SetError("function %s(args:%d) doesnt accept %d arguments", fi.name, fi.arguments, func_args);
+                        SetError("function %s(args:%d) doesnt accept %d arguments", fi.name.c_str(), fi.arguments, func_args);
                         return false;
                     }
 
@@ -3690,10 +3688,10 @@ S_TOKEN_TYPE COMPILER::NextTokenType()
 
 bool COMPILER::BC_CallFunction(uint32_t func_code, uint32_t &ip, DATA *&pVResult)
 {
-    FUNCINFO call_fi;
+    FuncInfo call_fi;
     uint32_t mem_ip;
     uint32_t mem_InstructionPointer;
-    FUNCINFO *mem_pfi;
+    FuncInfo *mem_pfi;
     //    DATA * pV;
     const char *mem_codebase;
     uint32_t arguments;
@@ -3781,7 +3779,7 @@ bool COMPILER::BC_CallFunction(uint32_t func_code, uint32_t &ip, DATA *&pVResult
     {
         pVResult = nullptr;
         RDTSC_B(nTicks);
-        const uint32_t nResult = call_fi.pImportedFunc(&SStack);
+        const uint32_t nResult = call_fi.imported_func(&SStack);
         if (nResult == IFUNCRESULT_OK)
         {
             if (call_fi.return_type != TVOID)
@@ -3811,7 +3809,7 @@ bool COMPILER::BC_CallFunction(uint32_t func_code, uint32_t &ip, DATA *&pVResult
     {
         if (check_sp != (SStack.GetDataNum() - 1))
         {
-            SetError("function '%s' stack error", call_fi.name);
+            SetError("function '%s' stack error", call_fi.name.c_str());
 
             pRun_fi = mem_pfi;
             InstructionPointer = mem_InstructionPointer;
@@ -3827,7 +3825,7 @@ bool COMPILER::BC_CallFunction(uint32_t func_code, uint32_t &ip, DATA *&pVResult
     {
         if (check_sp != SStack.GetDataNum())
         {
-            SetError("function '%s' stack error", call_fi.name);
+            SetError("function '%s' stack error", call_fi.name.c_str());
             pRun_fi = mem_pfi;
             InstructionPointer = mem_InstructionPointer;
             ip = mem_ip;
@@ -3864,7 +3862,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
     uint32_t bLeftOperandType;
     long nLeftOperandIndex;
     S_TOKEN_TYPE Token_type;
-    FUNCINFO fi;
+    FuncInfo fi;
     VarInfo vi;
     DATA *pV;
     DATA *pVResult;
@@ -3899,39 +3897,36 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
     pVReturnResult = nullptr;
     pVResult = nullptr;
 
-    PZERO(&fi, sizeof(fi));
-
     if (pDbgExpSource == nullptr)
     {
-        // PZERO(&fi,sizeof(fi));
         if (!FuncTab.GetFunc(fi, function_code))
         {
-            SetError("Invalid function: %s", fi.name);
+            SetError("Invalid function: %s", fi.name.c_str());
             return false;
         }
 
         if (fi.offset == INVALID_FUNC_OFFSET)
         {
-            SetError("Function (%s) isnt loaded", fi.name);
+            SetError("Function (%s) isnt loaded", fi.name.c_str());
             return false;
         }
 
         if (fi.segment_id == INTERNAL_SEGMENT_ID)
         {
-            SetError("Function (%s) is internal", fi.name);
+            SetError("Function (%s) is internal", fi.name.c_str());
             return false;
         }
 
         if (fi.segment_id == IMPORTED_SEGMENT_ID)
         {
-            SetError("Function (%s) is imported", fi.name);
+            SetError("Function (%s) is imported", fi.name.c_str());
             return false;
         }
 
         segment_index = GetSegmentIndex(fi.segment_id);
         if (segment_index == INVALID_SEGMENT_INDEX)
         {
-            SetError("Function (%s) segment not loaded", fi.name);
+            SetError("Function (%s) segment not loaded", fi.name.c_str());
             return false;
         }
         if (SegmentTable[segment_index].pCode == nullptr)
@@ -3949,10 +3944,10 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
         // check arguments types
         for (n = 0; n < fi.arguments; n++)
         {
-            if (fi.pLocal[n].type == VAR_REFERENCE)
+            if (fi.local_vars[n].type == VAR_REFERENCE)
                 continue;
             pV = SStack.Read(fi.stack_offset, n);
-            if (pV->GetType() != fi.pLocal[n].type)
+            if (pV->GetType() != fi.local_vars[n].type)
             {
                 pV = pV->GetVarPointer();
                 if (!pV)
@@ -3961,22 +3956,22 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
                     return false;
                 }
 
-                if (fi.pLocal[n].type == VAR_AREFERENCE && pV->GetType() == VAR_OBJECT)
+                if (fi.local_vars[n].type == VAR_AREFERENCE && pV->GetType() == VAR_OBJECT)
                     continue;
 
                 // TODO: remove and fix
-                if (false && pV->GetType() != fi.pLocal[n].type)
+                if (false && pV->GetType() != fi.local_vars[n].type)
                 {
-                    SetWarning("wrong type of argument %d  %s(%s) <-- [%s]", n, fi.name,
-                               Token.GetTypeName(fi.pLocal[n].type), Token.GetTypeName(pV->GetType()));
+                    SetWarning("wrong type of argument %d  %s(%s) <-- [%s]", n, fi.name.c_str(),
+                               Token.GetTypeName(fi.local_vars[n].type), Token.GetTypeName(pV->GetType()));
                 }
             }
         }
 
-        for (n = fi.arguments; n < fi.var_num; n++)
+        for (n = fi.arguments; n < fi.local_vars.size(); n++)
         {
             pV = SStack.Push();
-            pV->SetType(fi.pLocal[n].type, fi.pLocal[n].elements);
+            pV->SetType(fi.local_vars[n].type, fi.local_vars[n].elements);
         }
 
         pRun_fi = &fi; // set pointer to 'this' function info
@@ -4358,7 +4353,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
                     ShowWindow(CDebug.GetWindowHandle(), SW_NORMAL);
 
                     CDebug.SetTraceLine(nDebugTraceLineCode);
-                    CDebug.BreakOn(fi.decl_file_name, nDebugTraceLineCode);
+                    CDebug.BreakOn(fi.decl_file_name.c_str(), nDebugTraceLineCode);
                     CDebug.SetTraceMode(TMODE_WAIT);
                     while (CDebug.GetTraceMode() == TMODE_WAIT)
                     {
@@ -4372,7 +4367,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
                 else if (CDebug.Breaks.CanBreak())
                 {
                     // check for breakpoint
-                    if (CDebug.Breaks.Find(fi.decl_file_name, nDebugTraceLineCode))
+                    if (CDebug.Breaks.Find(fi.decl_file_name.c_str(), nDebugTraceLineCode))
                     {
                         if (!CDebug.IsDebug())
                             CDebug.OpenDebugWindow(core.GetAppInstance());
@@ -4380,7 +4375,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
                         ShowWindow(CDebug.GetWindowHandle(), SW_NORMAL);
                         // CDebug.OpenDebugWindow(core.hInstance);
                         CDebug.SetTraceMode(TMODE_WAIT);
-                        CDebug.BreakOn(fi.decl_file_name, nDebugTraceLineCode);
+                        CDebug.BreakOn(fi.decl_file_name.c_str(), nDebugTraceLineCode);
 
                         while (CDebug.GetTraceMode() == TMODE_WAIT)
                         {
@@ -7040,7 +7035,7 @@ void COMPILER::AddRuntimeEvent()
 
 uint32_t COMPILER::SetScriptFunction(IFUNCINFO *pFuncInfo)
 {
-    FUNCINFO fi;
+    FuncInfo fi;
 
     if (pFuncInfo->pFuncName == nullptr)
     {
@@ -7065,13 +7060,8 @@ uint32_t COMPILER::SetScriptFunction(IFUNCINFO *pFuncInfo)
     }
 
     fi.name = pFuncInfo->pFuncName;
-    fi.decl_file_name = pFuncInfo->pDeclFileName;
-    if (fi.decl_file_name == nullptr)
-        fi.decl_file_name = "unknown";
-    fi.decl_line = pFuncInfo->nDeclLine;
-    fi.pImportedFunc = pFuncInfo->pFuncAddress;
+    fi.imported_func = pFuncInfo->pFuncAddress;
     fi.arguments = pFuncInfo->nArguments;
-    fi.var_num = 0;
     fi.segment_id = IMPORTED_SEGMENT_ID;
     fi.offset = INVALID_FUNC_OFFSET;
     fi.stack_offset = 0xffffffff;
@@ -7102,11 +7092,6 @@ uint32_t COMPILER::SetScriptFunction(IFUNCINFO *pFuncInfo)
 
     const uint32_t funch = FuncTab.AddFunc(fi);
     return funch;
-}
-
-void COMPILER::DeleteScriptFunction(uint32_t nFuncHandle)
-{
-    FuncTab.InvalidateFunction(nFuncHandle);
 }
 
 DATA *COMPILER::GetOperand(const char *pCodeBase, uint32_t &ip, S_TOKEN_TYPE *pTokenType)

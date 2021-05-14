@@ -126,8 +126,8 @@ class COMPILER : public VIRTUAL_COMPILER
     char *pDebExpBuffer;
     uint32_t nDebExpBufferSize;
 
-    FUNCINFO *pRun_fi; // running function info
-    S_FUNCTAB FuncTab;
+    FuncInfo *pRun_fi; // running function info
+    FuncTable FuncTab;
     VarTable VarTab;
     S_CLASSTAB ClassTab;
     S_DEFTAB DefTab;
@@ -327,7 +327,6 @@ class COMPILER : public VIRTUAL_COMPILER
     void AddRuntimeEvent();
 
     uint32_t SetScriptFunction(IFUNCINFO *pFuncInfo);
-    void DeleteScriptFunction(uint32_t nFuncHandle);
 
     bool CompileExpression(SEGMENT_DESC &Segment);
     bool CompileExpression_L0(SEGMENT_DESC &Segment);

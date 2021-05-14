@@ -1,387 +1,238 @@
 #include "s_functab.h"
 
-/*DWORD _testfunc(VS_STACK * ps)
+FuncInfo::FuncInfo() : 
+  name(),
+  local_vars(),
+  segment_id(INVALID_SEGMENT_ID),
+  offset(INVALID_FUNC_OFFSET),
+  stack_offset(),
+  arguments(),
+  return_type(TVOID),
+  decl_file_name(),
+  decl_line(),
+  usage_time(),
+  number_of_calls(),
+  imported_func(),
+  extern_arguments()
 {
-    return 7;
-}*/
-
-#define MAKEHASHINDEX(x) (x & 0xff)
-
-S_FUNCTAB::S_FUNCTAB()
-{
-    Buffer_size = 0;
-    Func_num = 0;
-    for (uint32_t n = 0; n < HASHT_SIZE; n++)
-    {
-        HashLine[n].nNumElements = 0;
-    }
 }
 
-S_FUNCTAB::~S_FUNCTAB()
+FuncTable::~FuncTable()
 {
     Release();
 }
 
-void S_FUNCTAB::Release()
+size_t FuncTable::FindFunc(const std::string &func_name) const
 {
-    uint32_t n;
-    for (n = 0; n < Func_num; n++)
+    auto result = hash_table_.find(func_name);
+
+    if (result == hash_table_.end())
     {
-        delete pTable[n].name;
-        for (uint32_t i = 0; i < pTable[n].var_num; i++)
-        {
-            delete pTable[n].pLocal[i].name;
-        }
-        pTable[n].pLocal.clear();
-        delete pTable[n].decl_file_name;
-        pTable[n].decl_file_name = nullptr;
+        return INVALID_FUNC_CODE;
     }
-    Buffer_size = 0;
-    Func_num = 0;
-    for (n = 0; n < HASHT_SIZE; n++)
-    {
-        HashLine[n].nNumElements = 0;
-    }
+
+    return result->second;
 }
 
-bool S_FUNCTAB::GetFunc(FUNCINFO &fi, uint32_t func_code)
+size_t FuncTable::AddFunc(const FuncInfo &fi)
 {
-    if (func_code >= Func_num)
-        return false;
-
-    if (pTable[func_code].segment_id == IMPORTED_SEGMENT_ID)
+    if (fi.name.empty())
     {
-        if (pTable[func_code].pImportedFunc == nullptr)
+        return INVALID_FUNC_CODE;
+    }
+
+    auto result = hash_table_.try_emplace(fi.name, funcs_.size()); // find or create index
+    auto func_index = result.first->second;
+    bool isNew = result.second;
+
+    if (isNew) // newly created function, add to table
+    {
+        funcs_.push_back(fi);
+    }
+
+    auto &func = funcs_[func_index];
+
+    if (!isNew)
+    {
+        if (func.offset != INVALID_FUNC_OFFSET) // function already loaded
+        {
+            return INVALID_FUNC_CODE;
+        }
+
+        func = fi; // function exists, but was unloaded, copy data
+    }
+
+    return func_index;
+}
+
+bool FuncTable::GetFunc(FuncInfo &fi, size_t func_index) const
+{
+    if (func_index >= funcs_.size())
+    {
+        return false;
+    }
+
+    if (funcs_[func_index].segment_id == IMPORTED_SEGMENT_ID)
+    {
+        if (funcs_[func_index].imported_func == nullptr)
         {
             return false;
         }
-        fi = pTable[func_code];
+        
+        fi = funcs_[func_index]; // copy func info
         return true;
     }
-    if (pTable[func_code].offset == INVALID_FUNC_OFFSET)
+
+    if (funcs_[func_index].offset == INVALID_FUNC_OFFSET)
     {
         return false;
     }
-    fi = pTable[func_code];
+
+    fi = funcs_[func_index]; // copy func info
     return true;
 }
 
-bool S_FUNCTAB::GetFuncX(FUNCINFO &fi, uint32_t func_code)
+bool FuncTable::GetFuncX(FuncInfo &fi, size_t func_index) const
 {
-    if (func_code >= Func_num)
+    if (func_index >= funcs_.size())
+    {
         return false;
-    fi = pTable[func_code];
+    }
+
+    fi = funcs_[func_index]; // copy func info
     return true;
 }
 
-uint32_t S_FUNCTAB::AddFunc(const FUNCINFO &fi)
+void FuncTable::InvalidateBySegmentID(uint32_t segment_id)
 {
-    if (fi.name == nullptr)
-        return INVALID_FUNC_CODE;
-    const auto hash = MakeHashValue(fi.name);
-    auto hash_index = MAKEHASHINDEX(hash);
-
-    const auto len = strlen(fi.decl_file_name) + 1;
-    for (uint32_t n = 0; n < Func_num; n++)
+    for (auto &fi : funcs_)
     {
-        if (pTable[n].hash != hash)
-            continue;
-        if (_stricmp(pTable[n].name, fi.name) != 0)
-            continue;
-
-        // function with such name already registred,
-        if (pTable[n].offset == INVALID_FUNC_OFFSET)
+        if (fi.segment_id == segment_id)
         {
-            // but offset isnt set (function segment unloaded)
-            // - set function segment and offset info
-
-            pTable[n].fTimeUsage = 0;
-            pTable[n].nNumberOfCalls = 0;
-            pTable[n].offset = fi.offset;
-            pTable[n].segment_id = fi.segment_id;
-            pTable[n].decl_line = fi.decl_line;
-            pTable[n].pImportedFunc = fi.pImportedFunc;
-
-            delete pTable[n].decl_file_name;
-
-            // pTable[n].decl_file_name = new char[len];
-            // memcpy(pTable[n].decl_file_name, fi.decl_file_name, len);
-            pTable[n].decl_file_name = _strdup(fi.decl_file_name);
-            pTable[n].code = n;
-            UpdateHashTable(n, hash, true);
-            return n;
+            fi.segment_id = INVALID_SEGMENT_ID; // hash is not deleted from table
+            fi.offset = INVALID_FUNC_OFFSET;
+            fi.local_vars.clear(); // delete local vars
+            fi.decl_file_name.clear();
         }
-        // and already exist
-        // this is 'double function name' error
-        // (possible becose hash function error), user must rename function
-        return INVALID_FUNC_CODE;
-    }
-    // function not found, add anew one
-    // adjust buffer size
-    if (Func_num >= Buffer_size)
-    {
-        Buffer_size += FUNC_BUFFER_BLOCK_SIZE;
-        pTable.resize(Buffer_size);
-    }
-    pTable[Func_num] = fi;
-    pTable[Func_num].hash = hash;
-    pTable[Func_num].name = nullptr;
-    pTable[Func_num].arguments = fi.arguments;
-    pTable[Func_num].ext_args = 0;
-    pTable[Func_num].var_num = 0;
-    pTable[Func_num].decl_line = fi.decl_line;
-    pTable[Func_num].fTimeUsage = 0;
-    pTable[Func_num].nNumberOfCalls = 0;
-
-    // pTable[Func_num].decl_file_name = new char[len];
-    // memcpy(pTable[Func_num].decl_file_name, fi.decl_file_name, len);
-    pTable[Func_num].decl_file_name = _strdup(fi.decl_file_name);
-
-    pTable[Func_num].code = Func_num;
-    pTable[Func_num].pImportedFunc = fi.pImportedFunc;
-
-    UpdateHashTable(Func_num, hash, true);
-
-    /*    DWORD a;
-      pTable[Func_num].pImportedFunc = testfunc;
-      a = pTable[Func_num].pImportedFunc(0);
-    */
-    if constexpr (true) // bKeepName)
-    {
-        if (fi.name)
-        {
-            // const auto len = strlen(fi.name) + 1;
-            // pTable[Func_num].name = new char[len];
-            // memcpy(pTable[Func_num].name, fi.name, len);
-            pTable[Func_num].name = _strdup(fi.name);
-        }
-    }
-    Func_num++;
-
-    return (Func_num - 1);
-}
-
-uint32_t S_FUNCTAB::MakeHashValue(const char *string)
-{
-    uint32_t hval = 0;
-    while (*string != 0)
-    {
-        auto v = *string++;
-        if ('A' <= v && v <= 'Z')
-            v += 'a' - 'A'; // case independent
-        hval = (hval << 4) + static_cast<unsigned long>(v);
-        const uint32_t g = hval & (static_cast<unsigned long>(0xf) << (32 - 4));
-        if (g != 0)
-        {
-            hval ^= g >> (32 - 8);
-            hval ^= g;
-        }
-    }
-    return hval;
-}
-
-void S_FUNCTAB::InvalidateBySegmentID(uint32_t segment_id)
-{
-    for (uint32_t n = 0; n < Func_num; n++)
-    {
-        if (pTable[n].segment_id != segment_id)
-            continue;
-        UpdateHashTable(n, pTable[n].hash, false);
-        pTable[n].offset = INVALID_FUNC_OFFSET;
-        for (uint32_t i = 0; i < pTable[n].var_num; i++)
-        {
-            delete pTable[n].pLocal[i].name;
-        }
-        pTable[n].pLocal.clear();
-        pTable[n].var_num = 0;
-        pTable[n].arguments = 0;
-        delete pTable[n].decl_file_name;
-        pTable[n].decl_file_name = nullptr;
     }
 }
 
-void S_FUNCTAB::InvalidateFunction(uint32_t nFuncHandle)
+bool FuncTable::SetFuncOffset(const std::string &func_name, uint32_t offset)
 {
-    if (nFuncHandle < Func_num)
+    const auto func_index = FindFunc(func_name);
+
+    if (func_index == INVALID_FUNC_CODE)
     {
-        const auto n = nFuncHandle;
-        UpdateHashTable(n, pTable[n].hash, false);
-        pTable[n].offset = INVALID_FUNC_OFFSET;
-        for (uint32_t i = 0; i < pTable[n].var_num; i++)
-        {
-            delete pTable[n].pLocal[i].name;
-        }
-        pTable[n].pLocal.clear();
-        // pTable[n].var_num = 0;
-        // pTable[n].arguments = 0;
-        delete pTable[n].decl_file_name;
-        pTable[n].decl_file_name = nullptr;
-        pTable[n].pImportedFunc = nullptr;
-    }
-}
-
-uint32_t S_FUNCTAB::FindFunc(const char *func_name)
-{
-    if (func_name == nullptr)
-        return INVALID_FUNC_CODE;
-    const auto hash = MakeHashValue(func_name);
-
-    const auto hash_index = MAKEHASHINDEX(hash);
-    const auto nNum = HashLine[hash_index].nNumElements;
-    for (uint32_t n = 0; n < nNum; n++)
-    {
-        const auto ni = HashLine[hash_index].pElements[n];
-        if (pTable[ni].hash == hash)
-            if (_stricmp(pTable[ni].name, func_name) == 0)
-                return ni;
-    }
-
-    /*    for(n=0;n<Func_num;n++)
-      {
-        if(pTable[n].hash == hash)
-        if(_stricmp(pTable[n].name,func_name)== 0) return n;
-      }
-    */
-    return INVALID_FUNC_CODE;
-}
-
-bool S_FUNCTAB::SetFuncOffset(const char *func_name, uint32_t offset)
-{
-    const auto n = FindFunc(func_name);
-    if (n == INVALID_FUNC_CODE)
         return false;
-    pTable[n].offset = offset;
-    return true;
-    /*
-      uint32_t n;
-      uint32_t hash;
-      hash = MakeHashValue(func_name);
-      for(n=0;n<Func_num;n++)
-      {
-        if(pTable[n].hash == hash)
-        {
-          pTable[n].offset = offset;
-          return true;
-        }
-      }
-      return false;
-    */
-}
-
-bool S_FUNCTAB::AddFuncVar(uint32_t func_code, LVARINFO &lvi)
-{
-    if (func_code >= Func_num)
-        return false;
-    if (lvi.name == nullptr)
-        return false;
-
-    const auto hash = MakeHashValue(lvi.name);
-    for (uint32_t n = 0; n < pTable[func_code].var_num; n++)
-    {
-        if (hash == pTable[func_code].pLocal[n].hash) // return false;
-            if (_stricmp(pTable[func_code].pLocal[n].name, lvi.name) == 0)
-                return false;
     }
 
-    const auto vindex = pTable[func_code].var_num;
-    pTable[func_code].var_num++;
-    pTable[func_code].pLocal.resize(pTable[func_code].var_num);
-    pTable[func_code].pLocal[vindex].name = nullptr;
-    if constexpr (true) // bKeepName)
-    {
-        // const auto len = strlen(lvi.name) + 1;
-        // pTable[func_code].pLocal[vindex].name = new char[len];
-        // memcpy(pTable[func_code].pLocal[vindex].name, lvi.name, len);
-        pTable[func_code].pLocal[vindex].name = _strdup(lvi.name);
-    }
-    pTable[func_code].pLocal[vindex].bArray = lvi.bArray;
-    pTable[func_code].pLocal[vindex].hash = hash;
-    pTable[func_code].pLocal[vindex].type = lvi.type;
-    pTable[func_code].pLocal[vindex].elements = lvi.elements;
+    funcs_[func_index].offset = offset;
     return true;
 }
 
-bool S_FUNCTAB::AddFuncArg(uint32_t func_code, LVARINFO &lvi, bool bExt)
+bool FuncTable::AddFuncVar(size_t func_index, const LocalVarInfo &lvi)
 {
-    if (func_code >= Func_num)
-        return false;
-    if (bExt)
+    if (func_index >= funcs_.size())
     {
-        pTable[func_code].ext_args++;
+        return false;
+    }
+
+    if (lvi.name.empty())
+    {
+        return false;
+    }
+
+    if (FindVar(func_index, lvi.name) != INVALID_VAR_CODE) // var already exists
+    {
+        return false;
+    }
+
+    auto &var = funcs_[func_index].local_vars.emplace_back(lvi);
+    var.hash = hasher_(var.name);
+
+    return true;
+}
+
+bool FuncTable::AddFuncArg(size_t func_index, const LocalVarInfo &lvi, bool is_extern)
+{
+    if (func_index >= funcs_.size())
+    {
+        return false;
+    }
+
+    if (is_extern)
+    {
+        ++funcs_[func_index].extern_arguments;
         return true;
     }
-    pTable[func_code].arguments++;
-    return AddFuncVar(func_code, lvi);
+
+    ++funcs_[func_index].arguments;
+    return AddFuncVar(func_index, lvi);
 }
 
-uint32_t S_FUNCTAB::FindVar(uint32_t func_code, const char *var_name)
+size_t FuncTable::FindVar(size_t func_index, const std::string &var_name) const
 {
-    if (var_name == nullptr)
-        return INVALID_VAR_CODE;
-    if (func_code >= Func_num)
-        return INVALID_VAR_CODE;
-    const auto hash = MakeHashValue(var_name);
-    for (uint32_t n = 0; n < pTable[func_code].var_num; n++)
+    if (func_index >= funcs_.size())
     {
-        if (hash == pTable[func_code].pLocal[n].hash) // return n;
-            if (_stricmp(var_name, pTable[func_code].pLocal[n].name) == 0)
-                return n;
+        return INVALID_VAR_CODE;
     }
-    return INVALID_VAR_CODE;
+
+    if (var_name.empty())
+    {
+        return INVALID_VAR_CODE;
+    }
+
+    const auto &vars = funcs_[func_index].local_vars;
+    size_t hash = hasher_(var_name);
+    const auto result = std::find_if(vars.begin(), vars.end(), [this, hash, &var_name](const LocalVarInfo &var) {
+        return var.hash == hash && comparator_(var.name, var_name); // fast comparison
+    });
+
+    if (result == vars.end())
+    {
+        return INVALID_VAR_CODE;
+    }
+
+    return result - vars.begin();
 }
 
-bool S_FUNCTAB::GetVar(LVARINFO &lvi, uint32_t func_code, uint32_t var_code)
+bool FuncTable::GetVar(LocalVarInfo &lvi, size_t func_index, size_t var_index) const
 {
-    if (func_code >= Func_num)
+    if (func_index >= funcs_.size())
+    {
         return false;
-    if (var_code >= pTable[func_code].var_num)
+    }
+
+    const auto &vars = funcs_[func_index].local_vars;
+
+    if (var_index >= vars.size())
+    {
         return false;
-    lvi = pTable[func_code].pLocal[var_code];
+    }
+
+    lvi = vars[var_index];
+
     return true;
 }
 
-void S_FUNCTAB::AddTime(uint32_t func_code, uint64_t time)
+void FuncTable::AddTime(size_t func_index, uint64_t time)
 {
-    if (func_code >= Func_num)
-        return;
-    pTable[func_code].fTimeUsage += time;
-}
-
-void S_FUNCTAB::SetTimeUsage(uint32_t func_code, double f)
-{
-    if (func_code >= Func_num)
-        return;
-    pTable[func_code].fTimeUsage = f;
-}
-
-void S_FUNCTAB::AddCall(uint32_t func_code)
-{
-    if (func_code >= Func_num)
-        return;
-    pTable[func_code].nNumberOfCalls++;
-}
-
-void S_FUNCTAB::UpdateHashTable(uint32_t code, uint32_t hash, bool in)
-{
-    const auto hash_index = MAKEHASHINDEX(hash);
-
-    for (uint32_t n = 0; n < HashLine[hash_index].nNumElements; n++)
+    if (func_index < funcs_.size())
     {
-        if (HashLine[hash_index].pElements[n] != code)
-            continue;
-        if (!in)
-        {
-            // take element out of list
-            HashLine[hash_index].pElements[n] = HashLine[hash_index].pElements[HashLine[hash_index].nNumElements - 1];
-            HashLine[hash_index].nNumElements--;
-            HashLine[hash_index].pElements.resize(HashLine[hash_index].nNumElements);
-            return;
-        }
-        return;
-        // ok, already in list (? possible)
+        funcs_[func_index].usage_time += time;
     }
-    // not in list - add
-    HashLine[hash_index].nNumElements++;
-    HashLine[hash_index].pElements.resize(HashLine[hash_index].nNumElements);
-    HashLine[hash_index].pElements[HashLine[hash_index].nNumElements - 1] = code;
+}
+
+void FuncTable::AddCall(size_t func_index)
+{
+    if (func_index < funcs_.size())
+    {
+        ++funcs_[func_index].number_of_calls;
+    }
+}
+
+void FuncTable::Release()
+{
+    funcs_.clear();
+    hash_table_.clear();
 }

@@ -541,8 +541,8 @@ const char *S_DEBUG::ProcessExpression(const char *pExpression)
 uint32_t S_DEBUG::GetLineStatus(const char *_pFileName, uint32_t _linecode)
 {
     // nDebugTraceLineCode
-    if (core.Compiler->pRun_fi && core.Compiler->pRun_fi->decl_file_name)
-        if (_stricmp(core.Compiler->pRun_fi->decl_file_name, _pFileName) == 0)
+    if (core.Compiler->pRun_fi && !core.Compiler->pRun_fi->decl_file_name.empty())
+        if (_stricmp(core.Compiler->pRun_fi->decl_file_name.c_str(), _pFileName) == 0)
         {
             if (_linecode == core.Compiler->nDebugTraceLineCode)
                 return LST_CONTROL;

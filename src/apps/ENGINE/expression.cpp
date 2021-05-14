@@ -861,7 +861,7 @@ bool COMPILER::CompileExpression(SEGMENT_DESC &Segment)
 {
     uint32_t dwVarCode;
     VarInfo vi;
-    LVARINFO lvi;
+    LocalVarInfo lvi;
 
     const S_TOKEN_TYPE Token_type = CompileAuxiliaryTokens(Segment);
     if (Token_type == SEPARATOR)
@@ -914,11 +914,11 @@ bool COMPILER::CompileExpression(SEGMENT_DESC &Segment)
             {
                 FuncTab.GetVar(lvi, CurrentFuncCode, dwVarCode);
                 // check for possibilities of '[' operator
-                if (!lvi.bArray)
+                if (!lvi.IsArray())
                 {
                     if (lvi.type != VAR_REFERENCE)
                     {
-                        SetError(" B Invalid '[' operator, %s - isnt array", lvi.name);
+                        SetError(" B Invalid '[' operator, %s - isnt array", lvi.name.c_str());
                         return false;
                     }
                 }
@@ -1233,8 +1233,8 @@ bool COMPILER::CompileExpression_L7(SEGMENT_DESC &Segment)
     uint32_t dwVarCode;
     uint32_t dwAWCode;
     VarInfo vi;
-    LVARINFO lvi;
-    FUNCINFO fi;
+    LocalVarInfo lvi;
+    FuncInfo fi;
 
     bool bDynamicCall = false;
     switch (Token.GetType())
@@ -1480,11 +1480,11 @@ bool COMPILER::CompileExpression_L7(SEGMENT_DESC &Segment)
                 {
                     FuncTab.GetVar(lvi, CurrentFuncCode, dwVarCode);
                     // check for possibilities of '[' operator
-                    if (!lvi.bArray)
+                    if (!lvi.IsArray())
                     {
                         if (lvi.type != VAR_REFERENCE)
                         {
-                            SetError(" D Invalid '[' operator, %s - isnt array", lvi.name);
+                            SetError(" D Invalid '[' operator, %s - isnt array", lvi.name.c_str());
                             return false;
                         }
                     }
