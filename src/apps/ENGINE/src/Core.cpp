@@ -3,7 +3,8 @@
 #include "SteamApi.hpp"
 #include "compiler.h"
 #include "controls.h"
-#include "fs.h"
+#include "storm/fs.h"
+
 #include <fstream>
 
 #include <storm/string_compare.hpp>
@@ -509,7 +510,7 @@ void CORE::Trace(const char *format, ...)
     va_start(args, format);
     _vsnprintf_s(buffer_4k, sizeof(buffer_4k) - 4, format, args);
     va_end(args);
-    tracelog->info(buffer_4k);
+    spdlog::info(buffer_4k);
 }
 
 //------------------------------------------------------------------------------------------------
@@ -944,7 +945,7 @@ void CORE::loadCompatibilitySettings(INIFILE &inifile)
     targetVersion_ = getTargetEngineVersion(target_engine_version);
     if (targetVersion_ == ENGINE_VERSION::UNKNOWN)
     {
-        tracelog->warn("Unknown target version '{}' in engine compatibility settings", target_engine_version);
+        spdlog::warn("Unknown target version '{}' in engine compatibility settings", target_engine_version);
         targetVersion_ = ENGINE_VERSION::LATEST;
     }
 }

@@ -1,5 +1,4 @@
 #include "AIFort.h"
-#include "filesystem.h"
 #include "shared/messages.h"
 
 AIFort *AIFort::pAIFort = nullptr;
@@ -332,7 +331,7 @@ bool AIFort::ScanFortForCannons(AI_FORT *pFort, char *pModelsDir, char *pLocator
     NODE *pNode;
     // std::string        sLocatorsName;
 
-    const auto path = fs::path() / pModelsDir / pLocatorsName;
+    const auto path = std::filesystem::path() / pModelsDir / pLocatorsName;
     const auto pathStr = path.string();
     // MessageBoxA(NULL, (LPCSTR)path.c_str(), "", MB_OK); //~!~
     // sLocatorsName.Format("%s\\%s", pModelsDir, pLocatorsName);

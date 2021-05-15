@@ -1,9 +1,10 @@
-#include "ExecutableLifecycleService.hpp"
+#include "LifecycleDiagnosticsService.hpp"
 #include "SteamApi.hpp"
 #include "compiler.h"
 #include "file_service.h"
-#include "fs.h"
 #include "s_debug.h"
+#include "storm/fs.h"
+#include "storm/logging.h"
 
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/spdlog.h>
@@ -19,9 +20,14 @@ using namespace storm;
 
 namespace
 {
+
+constexpr char defaultLoggerName[] = "system";
 bool isHold = false;
 bool isRunning = false;
 bool bActive = true;
+
+storm::diag::LifecycleDiagnosticsService lifecycleDiagnostics;
+
 } // namespace
 
 void HandleWindowEvent(const OSWindow::Event &event)
@@ -58,49 +64,30 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     // Init FS
     FILE_SERVICE File_Service;
     fio = &File_Service;
+    
+    // Init diagnostics
+    const auto lifecycleDiagnosticsGuard = lifecycleDiagnostics.initialize(true);
+    if (!lifecycleDiagnosticsGuard)
+    {
+        spdlog::error("Unable to initialize lifecycle service");
+    }
 
     // Init stash
-    create_directories(fs::GetLogsPath());
     create_directories(fs::GetSaveDataPath());
 
     // Init logging
-    auto systemLogPath = fs::GetLogsPath() / u8"system.log";
-    auto systemLog = spdlog::basic_logger_st("system", systemLogPath.string(), true);
-    systemLog->flush_on(spdlog::level::critical);
-    set_default_logger(systemLog);
-
-    auto compileLogPath = fs::GetLogsPath() / COMPILER_LOG_FILENAME;
-    auto compileLog = spdlog::basic_logger_st("compile", compileLogPath.string(), true);
-
-    auto errorLogPath = fs::GetLogsPath() / COMPILER_ERRORLOG_FILENAME;
-    auto errorLog = spdlog::basic_logger_st("error", errorLogPath.string(), true);
-
-    std::set_terminate(spdlog::shutdown);
-    std::atexit(spdlog::shutdown);
-
-    // Init executable lifecycle manager
-    storm::except::ExecutableLifecycleService lifecycleService;
-    lifecycleService.addAttachment(systemLogPath);
-    lifecycleService.addAttachment(compileLogPath);
-    lifecycleService.addAttachment(errorLogPath);
-    if (!lifecycleService.initialize(true))
-    {
-        spdlog::error("Unable to initialize crash handler");
-    }
+    spdlog::set_default_logger(storm::logging::getOrCreateLogger(defaultLoggerName));
 
     // Init core
     core.Init();
-    core.tracelog = systemLog;
-    core.Compiler->tracelog = compileLog;
-    core.Compiler->errorlog = errorLog;
-    core.Compiler->warninglog = errorLog;
 
     // Init script debugger
     CDebug.Init();
 
     /* Read config */
-    uint32_t dwMaxFPS = 0;
     auto ini = fio->OpenIniFile(fs::ENGINE_INI_FILE_NAME);
+
+    uint32_t dwMaxFPS = 0;
     bool bSteam = false;
     int width = 1024, height = 768;
     bool fullscreen = false;
@@ -110,22 +97,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
         dwMaxFPS = static_cast<uint32_t>(ini->GetLong(nullptr, "max_fps", 0));
         auto bDebugWindow = ini->GetLong(nullptr, "DebugWindow", 0) == 1;
         auto bAcceleration = ini->GetLong(nullptr, "Acceleration", 0) == 1;
-        if (!ini->GetLong(nullptr, "logs", 0))
+        if (ini->GetLong(nullptr, "logs", 1) == 0) // disable logging
         {
-            core.tracelog->set_level(spdlog::level::off);
-        }
-        if (ini->GetLong(nullptr, "Steam", 1) != 0)
-        {
-            bSteam = true;
-        }
-        else
-        {
-            bSteam = false;
+            spdlog::set_level(spdlog::level::off);
         }
         width = ini->GetLong(nullptr, "screen_x", 1024);
         height = ini->GetLong(nullptr, "screen_y", 768);
         fullscreen = ini->GetLong(nullptr, "full_screen", false) ? true : false;
-    }
+        bSteam = ini->GetLong(nullptr, "Steam", 1) != 0;
 
     // evaluate SteamApi singleton
     steamapi::SteamApi::getInstance(!bSteam);
@@ -157,6 +136,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
                 if (dwNewTime - dwOldTime < dwMS)
                     continue;
                 dwOldTime = dwNewTime;
+
+                lifecycleDiagnostics.notifyAfterRun();
             }
             const auto runResult = core.Run();
             if (!isHold && !runResult)

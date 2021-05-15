@@ -2,7 +2,6 @@
 
 #include "core.h"
 
-#include "filesystem.h"
 #include "vfile_service.h"
 #include "vmodule_api.h"
 
@@ -28,7 +27,7 @@ void DataCache::CacheSystem(const char *FileName)
     // std::string LongFileName = "resource\\particles\\";
     // LongFileName+=FileName;
     // LongFileName.AddExtention(".xps");
-    auto path = fs::path() / "resource" / "particles" / FileName;
+    auto path = std::filesystem::path() / "resource" / "particles" / FileName;
     auto pathStr = path.extension().string();
     if (_stricmp(pathStr.c_str(), ".xps") != 0)
         path += ".xps";
@@ -75,7 +74,7 @@ DataSource *DataCache::GetParticleSystemDataSource(const char *FileName)
     // std::string NameWithExt = FileName;
     // NameWithExt.AddExtention(".xps");
     // NameWithExt.Lower();
-    fs::path path = FileName;
+    std::filesystem::path path = FileName;
     auto pathStr = path.extension().string();
     if (_stricmp(pathStr.c_str(), ".xps") != 0)
         path += ".xps";

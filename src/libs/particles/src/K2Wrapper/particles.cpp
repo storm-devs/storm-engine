@@ -2,7 +2,6 @@
 #include "core.h"
 #include "defines.h"
 #include "entity.h"
-#include "filesystem.h"
 #include "particles/iparticlemanager.h"
 #include "particles/iparticlesservice.h"
 #include "particles/iparticlesystem.h"
@@ -191,7 +190,7 @@ PARTICLE_SYSTEM *PARTICLES::CreateSystem(const char *pFileName, uint32_t LifeTim
     // pFullFileName += pFileName;
     // pFullFileName.AddExtention(".xps");
     //__debugbreak(); //~!~
-    auto path = fs::path() / "resource" / "particles" / pFileName;
+    auto path = std::filesystem::path() / "resource" / "particles" / pFileName;
     std::string pathStr = path.extension().string();
     if (_stricmp(pathStr.c_str(), ".xps") != 0)
         path += ".xps";
