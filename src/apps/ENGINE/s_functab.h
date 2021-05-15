@@ -3,8 +3,8 @@
 #include "s_import_func.h"
 #include "s_vartab.h"
 #include "strutils.h"
-#include <vector>
 #include <unordered_map>
+#include <vector>
 
 #define INVALID_FUNC_CODE 0xffffffff
 #define INVALID_FUNC_OFFSET 0xffffffff
@@ -18,8 +18,8 @@
 
 struct LocalVarInfo
 {
-    LocalVarInfo() = default;  
-    
+    LocalVarInfo() = default;
+
     bool IsArray()
     {
         return elements > 1;
@@ -34,7 +34,7 @@ struct LocalVarInfo
 struct FuncInfo
 {
     FuncInfo();
-    
+
     std::string name;
 
     std::vector<LocalVarInfo> local_vars;
@@ -66,14 +66,17 @@ class FuncTable
     ~FuncTable();
 
     size_t FindFunc(const std::string &func_name) const; // get func index by name
-    size_t AddFunc(const FuncInfo &fi); // add func to table, returns func index
-    bool GetFunc(FuncInfo &fi, size_t func_index) const; // get func by index, returns true if func is registered and loaded
+    size_t AddFunc(const FuncInfo &fi);                  // add func to table, returns func index
+    bool GetFunc(FuncInfo &fi,
+                 size_t func_index) const; // get func by index, returns true if func is registered and loaded
     bool GetFuncX(FuncInfo &fi, size_t func_index) const; // get func by index, returns true if func is registered
-    void InvalidateBySegmentID(uint32_t segment_id); // invalidate all segment's functions
-    
+    void InvalidateBySegmentID(uint32_t segment_id);      // invalidate all segment's functions
+
     bool SetFuncOffset(const std::string &func_name, uint32_t offset); // set func's compiler offset
     bool AddFuncVar(size_t func_index, const LocalVarInfo &lvi);       // add local var to func
-    bool AddFuncArg(size_t func_index, const LocalVarInfo &lvi, bool is_extern = false); // add arg to func (must precede all regular local vars in order not to break compiler logic)
+    bool AddFuncArg(size_t func_index, const LocalVarInfo &lvi,
+                    bool is_extern = false); // add arg to func (must precede all regular local vars in order not to
+                                             // break compiler logic)
     size_t FindVar(size_t func_index, const std::string &var_name) const; // get func's local var or arg index by name
     bool GetVar(LocalVarInfo &lvi, size_t func_index, size_t var_index) const; // get local var or arg by index
 
@@ -83,7 +86,6 @@ class FuncTable
     void Release(); // clear table
 
   private:
-
     std::vector<FuncInfo> funcs_;
     CaseInsensitiveStringHasher hasher_;
     CaseInsensitiveStringComparator comparator_;

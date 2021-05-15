@@ -1,19 +1,9 @@
 #include "s_functab.h"
 
-FuncInfo::FuncInfo() : 
-  name(),
-  local_vars(),
-  segment_id(INVALID_SEGMENT_ID),
-  offset(INVALID_FUNC_OFFSET),
-  stack_offset(),
-  arguments(),
-  return_type(TVOID),
-  decl_file_name(),
-  decl_line(),
-  usage_time(),
-  number_of_calls(),
-  imported_func(),
-  extern_arguments()
+FuncInfo::FuncInfo()
+    : name(), local_vars(), segment_id(INVALID_SEGMENT_ID), offset(INVALID_FUNC_OFFSET), stack_offset(), arguments(),
+      return_type(TVOID), decl_file_name(), decl_line(), usage_time(), number_of_calls(), imported_func(),
+      extern_arguments()
 {
 }
 
@@ -78,7 +68,7 @@ bool FuncTable::GetFunc(FuncInfo &fi, size_t func_index) const
         {
             return false;
         }
-        
+
         fi = funcs_[func_index]; // copy func info
         return true;
     }

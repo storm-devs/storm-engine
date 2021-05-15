@@ -1198,7 +1198,8 @@ bool COMPILER::InitInternalFunctions()
             func_code = FuncTab.FindFunc(fi.name);
             FuncTab.GetFunc(fi, func_code);
             // SetError("Duplicate function name: %s",fi.name);
-            SetError("Function [%s] already declared in: %s line %d", fi.name.c_str(), fi.decl_file_name.c_str(), fi.decl_line);
+            SetError("Function [%s] already declared in: %s line %d", fi.name.c_str(), fi.decl_file_name.c_str(),
+                     fi.decl_line);
             return false;
         }
     }
@@ -1534,8 +1535,8 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                             func_code = FuncTab.FindFunc(fi.name);
                             FuncTab.GetFunc(fi, func_code);
                             // SetError("Duplicate function name: %s",fi.name);
-                            SetError("Function [%s] already declared in: %s line %d", fi.name.c_str(), fi.decl_file_name.c_str(),
-                                     fi.decl_line);
+                            SetError("Function [%s] already declared in: %s line %d", fi.name.c_str(),
+                                     fi.decl_file_name.c_str(), fi.decl_line);
 
                             return false;
                         }
@@ -3012,7 +3013,8 @@ bool COMPILER::CompileBlock(SEGMENT_DESC &Segment, bool &bFunctionBlock, uint32_
                         // skip imported funcs checking for now
                         break;
                     default:
-                        SetError("function %s(args:%d) doesnt accept %d arguments", fi.name.c_str(), fi.arguments, func_args);
+                        SetError("function %s(args:%d) doesnt accept %d arguments", fi.name.c_str(), fi.arguments,
+                                 func_args);
                         return false;
                     }
 

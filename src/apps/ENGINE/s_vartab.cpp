@@ -1,10 +1,6 @@
 #include "s_vartab.h"
 
-VarInfo::VarInfo() : name(),
-  type(TVOID),
-  value(),
-  elements(0),
-  segment_id(INVALID_SEGMENT_ID)
+VarInfo::VarInfo() : name(), type(TVOID), value(), elements(0), segment_id(INVALID_SEGMENT_ID)
 {
 }
 
@@ -37,7 +33,7 @@ size_t VarTable::AddVar(const VarInfo &vi)
         {
             return INVALID_VAR_CODE;
         }
-        
+
         var = vi; // variable exists, but was unloaded, copy data
     }
 
