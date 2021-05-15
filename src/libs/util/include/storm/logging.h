@@ -10,7 +10,7 @@
 namespace storm::logging
 {
 inline auto getOrCreateLogger(const std::string &name, const spdlog::level::level_enum level = spdlog::level::trace,
-                       const bool truncate = true)
+                              const bool truncate = true)
 {
     auto logger = spdlog::get(name);
     if (logger)

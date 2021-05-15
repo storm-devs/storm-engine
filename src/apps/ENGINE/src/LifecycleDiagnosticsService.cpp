@@ -181,7 +181,8 @@ void LifecycleDiagnosticsService::notifyAfterRun() const
 {
     static auto latestFlushTimePoint = std::chrono::steady_clock::now();
 
-    if (const auto now = std::chrono::steady_clock::now(); std::chrono::duration_cast<std::chrono::seconds>(now - latestFlushTimePoint) >= getLoggingFlushPeriod())
+    if (const auto now = std::chrono::steady_clock::now();
+        std::chrono::duration_cast<std::chrono::seconds>(now - latestFlushTimePoint) >= getLoggingFlushPeriod())
     {
         loggingService_->flushAsync();
         latestFlushTimePoint = now;

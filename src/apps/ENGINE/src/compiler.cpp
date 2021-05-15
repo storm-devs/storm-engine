@@ -1,6 +1,12 @@
 #include "compiler.h"
-#include "s_debug.h"
+
 #include <cstdio>
+
+#include <zlib.h>
+
+#include "s_debug.h"
+#include "storm/logging.h"
+#include "storm_assert.h"
 
 #define SKIP_COMMENT_TRACING
 #define TRACE_OFF
@@ -12,11 +18,6 @@
 #define DSL_INI_VALUE 0
 #define SBUPDATE 4
 #define DEF_COMPILE_EXPRESSIONS
-
-#include <zlib.h>
-#include <storm_assert.h>
-
-#include "storm/logging.h"
 
 // extern char * FuncNameTable[];
 extern INTFUNCDESC IntFuncTable[];

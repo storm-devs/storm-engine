@@ -21,7 +21,7 @@ class LifecycleDiagnosticsService final
 {
     class Guard
     {
-    public:
+      public:
         explicit Guard(LifecycleDiagnosticsService &inst) : inst_(inst)
         {
         }
@@ -36,7 +36,7 @@ class LifecycleDiagnosticsService final
             return inst_.initialized_;
         }
 
-    private:
+      private:
         LifecycleDiagnosticsService &inst_;
     };
 
@@ -44,8 +44,7 @@ class LifecycleDiagnosticsService final
     LifecycleDiagnosticsService();
     ~LifecycleDiagnosticsService();
 
-    [[maybe_unused, nodiscard("This guard shall exist until stack unwind")]]
-    Guard initialize(bool enableCrashReports);
+    [[maybe_unused, nodiscard("This guard shall exist until stack unwind")]] Guard initialize(bool enableCrashReports);
     void terminate() const;
     void notifyAfterRun() const;
 

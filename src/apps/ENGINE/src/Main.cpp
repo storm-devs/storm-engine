@@ -64,7 +64,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     // Init FS
     FILE_SERVICE File_Service;
     fio = &File_Service;
-    
+
     // Init diagnostics
     const auto lifecycleDiagnosticsGuard = lifecycleDiagnostics.initialize(true);
     if (!lifecycleDiagnosticsGuard)
@@ -105,6 +105,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
         height = ini->GetLong(nullptr, "screen_y", 768);
         fullscreen = ini->GetLong(nullptr, "full_screen", false) ? true : false;
         bSteam = ini->GetLong(nullptr, "Steam", 1) != 0;
+    }
 
     // evaluate SteamApi singleton
     steamapi::SteamApi::getInstance(!bSteam);
