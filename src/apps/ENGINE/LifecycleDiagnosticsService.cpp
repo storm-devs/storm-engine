@@ -27,6 +27,7 @@
 
 #ifdef _WIN32
 #include <fileapi.h>
+#include <io.h>
 #endif
 
 namespace storm::diag
