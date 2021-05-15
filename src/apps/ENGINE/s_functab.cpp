@@ -33,16 +33,16 @@ size_t FuncTable::AddFunc(const FuncInfo &fi)
 
     auto result = hash_table_.try_emplace(fi.name, funcs_.size()); // find or create index
     auto func_index = result.first->second;
-    bool isNew = result.second;
+    bool is_new = result.second;
 
-    if (isNew) // newly created function, add to table
+    if (is_new) // newly created function, add to table
     {
         funcs_.push_back(fi);
     }
 
     auto &func = funcs_[func_index];
 
-    if (!isNew)
+    if (!is_new)
     {
         if (func.offset != INVALID_FUNC_OFFSET) // function already loaded
         {

@@ -18,16 +18,16 @@ size_t VarTable::AddVar(const VarInfo &vi)
 
     auto result = hash_table_.try_emplace(vi.name, vars_.size()); // find or create index
     auto var_index = result.first->second;
-    bool isNew = result.second;
+    bool is_new = result.second;
 
-    if (isNew) // newly created var, add to table
+    if (is_new) // newly created var, add to table
     {
         vars_.push_back(vi);
     }
 
     auto &var = vars_[var_index];
 
-    if (!isNew)
+    if (!is_new)
     {
         if (var.segment_id != INVALID_SEGMENT_ID) // variable already loaded
         {
