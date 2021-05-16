@@ -26,7 +26,24 @@ bool bActive = true;
 
 } // namespace
 
-LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+void HandleWindowEvent(const OSWindow::Event &event)
+{
+    if (event == OSWindow::Closed)
+    {
+        isRunning = false;
+        core.Event("DestroyWindow", nullptr);
+    }
+    else if (event == OSWindow::FocusGained)
+    {
+        bActive = true;
+        core.AppState(bActive);
+    }
+    else if (event == OSWindow::FocusLost)
+    {
+        bActive = false;
+        core.AppState(bActive);
+    }
+}
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
 {
@@ -118,24 +135,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     std::shared_ptr<storm::OSWindow> window = storm::OSWindow::Create(width, height, fullscreen);
     window->SetTitle("Sea Dogs");
     core.Set_Hwnd(static_cast<HWND>(window->OSHandle()));
-    auto windowHandler = [&](const storm::OSWindow::Event &e) {
-        if (e == OSWindow::Closed)
-        {
-            isRunning = false;
-            core.Event("DestroyWindow", nullptr);
-        }
-        else if (e == OSWindow::FocusGained)
-        {
-            bActive = true;
-            core.AppState(bActive);
-        }
-        else if (e == OSWindow::FocusLost)
-        {
-            bActive = false;
-            core.AppState(bActive);
-        }
-    };
-    window->Subscribe(windowHandler);
+    window->Subscribe(HandleWindowEvent);
     window->Show();
 
     /* Init stuff */

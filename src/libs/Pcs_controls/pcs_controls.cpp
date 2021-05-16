@@ -619,14 +619,14 @@ void PCS_CONTROLS::HandleEvent(const InputEvent &evt)
     }
     else if (evt.type == InputEvent::MouseMove)
     {
-        std::pair<int, int> dxdy = std::get<std::pair<int, int>>(evt.data);
-        nMouseDx += std::get<0>(dxdy);
-        nMouseDy += std::get<1>(dxdy);
+        MousePos dxdy = std::get<MousePos>(evt.data);
+        nMouseDx += dxdy.x;
+        nMouseDy += dxdy.y;
     }
     else if (evt.type == InputEvent::MouseWheel)
     {
-        std::pair<int, int> dxdy = std::get<std::pair<int, int>>(evt.data);
-        nMouseWheel += std::get<1>(dxdy);
-        core.Event("evMouseWeel", "l", static_cast<short>(std::get<1>(dxdy)));
+        MousePos dxdy = std::get<MousePos>(evt.data);
+        nMouseWheel += dxdy.y;
+        core.Event("evMouseWeel", "l", static_cast<short>(dxdy.y));
     }
 }

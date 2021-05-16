@@ -19,6 +19,8 @@ class OSWindow
     };
     using EventHandler = std::function<void(const Event &)>;
 
+    virtual ~OSWindow(){};
+
     //! Show window
     virtual void Show() = 0;
     //! Hide window

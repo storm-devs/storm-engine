@@ -299,7 +299,7 @@ int SDLInput::Subscribe(const EventHandler &handler)
 {
     int id = 1;
     if (!handlers_.empty())
-        id = (--handlers_.end())->first + 1;
+        id = handlers_.rbegin()->first + 1;
     handlers_[id] = handler;
     return id;
 }
@@ -324,12 +324,12 @@ void SDLInput::ProcessEvents()
         if (event.type == SDL_MOUSEMOTION)
         {
             out.type = InputEvent::MouseMove;
-            out.data = std::make_pair(event.motion.xrel, event.motion.yrel);
+            out.data = MousePos{event.motion.xrel, event.motion.yrel};
         }
         else if (event.type == SDL_MOUSEWHEEL)
         {
             out.type = InputEvent::MouseWheel;
-            out.data = std::make_pair(event.wheel.x, event.wheel.y);
+            out.data = MousePos{event.wheel.x, event.wheel.y};
         }
         else if (event.type == SDL_KEYDOWN)
         {

@@ -6,12 +6,15 @@
 namespace storm
 {
 // TODO: Make own type for keycodes and use it everywhere (reuse SDL scancodes?)
-//! Keyboard key, using virtual key codes (VK_* frim WinUser.h) for now
-using KeyboardKey = unsigned int;
+//! Keyboard key, using virtual key codes (VK_* from WinUser.h) for now
+using KeyboardKey = uint32_t;
 
 //! Mouse relative position
-// FIXME: Better type for that?
-using MousePos = std::pair<int, int>;
+struct MousePos
+{
+    int x = 0;
+    int y = 0;
+};
 
 //! Mouse keys
 enum class MouseKey
@@ -90,6 +93,8 @@ class Input
 {
   public:
     using EventHandler = std::function<void(const InputEvent &)>;
+
+    virtual ~Input(){};
 
     //! Subscribe for events
     //! \param handler event callback
