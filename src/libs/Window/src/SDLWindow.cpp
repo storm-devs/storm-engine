@@ -5,15 +5,20 @@
 
 namespace storm
 {
-
-std::map<uint32_t, std::weak_ptr<SDLWindow>> SDLWindow::windows;
-
 SDLWindow::SDLWindow(int width, int height, bool fullscreen) : fullscreen_(fullscreen)
 {
     window_ = std::unique_ptr<SDL_Window, std::function<void(SDL_Window *)>>(
         SDL_CreateWindow("", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height,
                          (fullscreen ? SDL_WINDOW_FULLSCREEN : 0) | SDL_WINDOW_HIDDEN),
         [](SDL_Window *w) { SDL_DestroyWindow(w); });
+
+    sdlID_ = SDL_GetWindowID(window_.get());
+    SDL_AddEventWatch(&SDLEventHandler, this);
+}
+
+SDLWindow::~SDLWindow()
+{
+    SDL_DelEventWatch(&SDLEventHandler, this);
 }
 
 void SDLWindow::Show()
@@ -131,35 +136,18 @@ void SDLWindow::ProcessEvent(const SDL_WindowEvent &evt)
 
 std::shared_ptr<OSWindow> OSWindow::Create(int width, int height, bool fullscreen)
 {
-    auto remove = [](SDLWindow *w) {
-        auto it = SDLWindow::windows.find(SDL_GetWindowID(w->SDLHandle()));
-        if (it != SDLWindow::windows.end())
-            SDLWindow::windows.erase(it);
-        delete w;
-    };
-    std::shared_ptr<SDLWindow> w = std::shared_ptr<SDLWindow>(new SDLWindow(width, height, fullscreen), remove);
-    SDLWindow::windows[SDL_GetWindowID(w->SDLHandle())] = w;
-    return w;
+    return std::make_shared<SDLWindow>(width, height, fullscreen);
 }
 
-void OSWindow::ProcessEvents()
+int SDLWindow::SDLEventHandler(void *userdata, SDL_Event *evt)
 {
-    SDL_PumpEvents();
+    SDLWindow *w = static_cast<SDLWindow *>(userdata);
 
-    SDL_Event event;
-    while (SDL_PeepEvents(&event, 1, SDL_GETEVENT, SDL_WINDOWEVENT, SDL_WINDOWEVENT) > 0)
-    {
-        auto winIt = SDLWindow::windows.find(event.window.windowID);
+    if ((evt->type != SDL_WINDOWEVENT) || (evt->window.windowID != w->sdlID_))
+        return 0;
 
-        if (winIt == SDLWindow::windows.end())
-            continue;
+    w->ProcessEvent(evt->window);
 
-        std::shared_ptr<SDLWindow> w = winIt->second.lock();
-
-        if (!w)
-            continue;
-
-        w->ProcessEvent(event.window);
-    }
+    return 0;
 }
 } // namespace storm

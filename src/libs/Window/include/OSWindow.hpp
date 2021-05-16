@@ -57,7 +57,5 @@ class OSWindow
 
     //! Create new window
     static std::shared_ptr<OSWindow> Create(int width, int height, bool fullscreen);
-    //! Process all window events
-    static void ProcessEvents();
 };
 } // namespace storm

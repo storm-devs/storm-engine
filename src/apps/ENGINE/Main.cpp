@@ -147,7 +147,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     isRunning = true;
     while (isRunning)
     {
-        storm::OSWindow::ProcessEvents();
+        SDL_PumpEvents();
+        SDL_FlushEvents(0, SDL_LASTEVENT);
 
         if (bActive)
         {

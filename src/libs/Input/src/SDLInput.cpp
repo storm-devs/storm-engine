@@ -292,7 +292,13 @@ SDLInput::SDLInput() : keyStates_(nullptr)
 {
     keyStates_ = SDL_GetKeyboardState(nullptr);
     SDL_SetRelativeMouseMode(SDL_TRUE);
+    SDL_AddEventWatch(&SDLEventHandler, this);
     OpenController();
+}
+
+SDLInput::~SDLInput()
+{
+    SDL_DelEventWatch(&SDLEventHandler, this);
 }
 
 int SDLInput::Subscribe(const EventHandler &handler)
@@ -311,94 +317,73 @@ void SDLInput::Unsubscribe(int id)
         handlers_.erase(it);
 }
 
-void SDLInput::ProcessEvents()
+void SDLInput::ProcessEvent(const SDL_Event &event)
 {
-    SDL_Event event;
+    InputEvent out;
+    out.type = InputEvent::Unknown;
 
-    SDL_PumpEvents();
-    while (SDL_PeepEvents(&event, 1, SDL_GETEVENT, SDL_KEYDOWN, SDL_MOUSEWHEEL) > 0)
+    // Mouse/keyboard
+    if (event.type == SDL_MOUSEMOTION)
     {
-        InputEvent out;
-        out.type = InputEvent::Unknown;
-
-        if (event.type == SDL_MOUSEMOTION)
-        {
-            out.type = InputEvent::MouseMove;
-            out.data = MousePos{event.motion.xrel, event.motion.yrel};
-        }
-        else if (event.type == SDL_MOUSEWHEEL)
-        {
-            out.type = InputEvent::MouseWheel;
-            out.data = MousePos{event.wheel.x, event.wheel.y};
-        }
-        else if (event.type == SDL_KEYDOWN)
-        {
-            out.type = InputEvent::KeyboardKeyDown;
-            out.data = sdlToKey(event.key.keysym.scancode);
-        }
-        else if (event.type == SDL_KEYUP)
-        {
-            out.type = InputEvent::KeyboardKeyUp;
-            out.data = sdlToKey(event.key.keysym.scancode);
-        }
-        else if (event.type == SDL_TEXTINPUT)
-        {
-            out.type = InputEvent::KeyboardText;
-            out.data = std::string(event.text.text);
-        }
-
-        if (out.type != InputEvent::Unknown)
-        {
-            for (const auto &handler : handlers_)
-                handler.second(out);
-        }
+        out.type = InputEvent::MouseMove;
+        out.data = MousePos{event.motion.xrel, event.motion.yrel};
     }
-    while (SDL_PeepEvents(&event, 1, SDL_GETEVENT, SDL_CONTROLLERAXISMOTION, SDL_CONTROLLERSENSORUPDATE) > 0)
+    else if (event.type == SDL_MOUSEWHEEL)
     {
-        if (event.type == SDL_CONTROLLERDEVICEADDED)
-        {
-            // Try to open controller if it wasn't open already
-            if (!controller_)
-                OpenController();
-        }
-
+        out.type = InputEvent::MouseWheel;
+        out.data = MousePos{event.wheel.x, event.wheel.y};
+    }
+    else if (event.type == SDL_KEYDOWN)
+    {
+        out.type = InputEvent::KeyboardKeyDown;
+        out.data = sdlToKey(event.key.keysym.scancode);
+    }
+    else if (event.type == SDL_KEYUP)
+    {
+        out.type = InputEvent::KeyboardKeyUp;
+        out.data = sdlToKey(event.key.keysym.scancode);
+    }
+    else if (event.type == SDL_TEXTINPUT)
+    {
+        out.type = InputEvent::KeyboardText;
+        out.data = std::string(event.text.text);
+    }
+    else if (event.type == SDL_CONTROLLERDEVICEADDED)
+    {
+        // Try to open controller if it wasn't open already
         if (!controller_)
-            continue;
+            OpenController();
+    }
+    else if ((event.type == SDL_CONTROLLERDEVICEREMOVED) && (joyID_ == event.cdevice.which))
+    {
+        // Close controller if it was removed
+        controller_ = nullptr;
+        joyID_ = -1;
+    }
+    else if ((event.type == SDL_CONTROLLERAXISMOTION) && (joyID_ == event.caxis.which))
+    {
+        ControllerAxisState state;
+        state.axis = static_cast<ControllerAxis>(event.caxis.axis);
+        state.value = event.caxis.value;
 
-        InputEvent out;
-        out.type = InputEvent::Unknown;
+        out.type = InputEvent::ControllerAxis;
+        out.data = state;
+    }
+    else if ((event.type == SDL_CONTROLLERBUTTONDOWN) && (joyID_ == event.cbutton.which))
+    {
+        out.type = InputEvent::ControllerButtonDown;
+        out.data = static_cast<ControllerButton>(event.cbutton.button);
+    }
+    else if ((event.type == SDL_CONTROLLERBUTTONUP) && (joyID_ == event.cbutton.which))
+    {
+        out.type = InputEvent::ControllerButtonUp;
+        out.data = static_cast<ControllerButton>(event.cbutton.button);
+    }
 
-        if ((event.type == SDL_CONTROLLERDEVICEREMOVED) && (joyID_ == event.cdevice.which))
-        {
-            // Close controller if it was removed
-            controller_ = nullptr;
-            joyID_ = -1;
-        }
-        else if ((event.type == SDL_CONTROLLERAXISMOTION) && (joyID_ == event.caxis.which))
-        {
-            ControllerAxisState state;
-            state.axis = static_cast<ControllerAxis>(event.caxis.axis);
-            state.value = event.caxis.value;
-
-            out.type = InputEvent::ControllerAxis;
-            out.data = state;
-        }
-        else if ((event.type == SDL_CONTROLLERBUTTONDOWN) && (joyID_ == event.cbutton.which))
-        {
-            out.type = InputEvent::ControllerButtonDown;
-            out.data = static_cast<ControllerButton>(event.cbutton.button);
-        }
-        else if ((event.type == SDL_CONTROLLERBUTTONUP) && (joyID_ == event.cbutton.which))
-        {
-            out.type = InputEvent::ControllerButtonUp;
-            out.data = static_cast<ControllerButton>(event.cbutton.button);
-        }
-
-        if (out.type != InputEvent::Unknown)
-        {
-            for (const auto &handler : handlers_)
-                handler.second(out);
-        }
+    if (out.type != InputEvent::Unknown)
+    {
+        for (const auto &handler : handlers_)
+            handler.second(out);
     }
 }
 
@@ -434,6 +419,13 @@ bool SDLInput::MouseKeyState(const MouseKey &key) const
         return btn & SDL_BUTTON_MMASK ? true : false;
 
     return false;
+}
+
+int SDLInput::SDLEventHandler(void *userdata, SDL_Event *evt)
+{
+    SDLInput *in = static_cast<SDLInput *>(userdata);
+    in->ProcessEvent(*evt);
+    return 0;
 }
 
 void SDLInput::OpenController()

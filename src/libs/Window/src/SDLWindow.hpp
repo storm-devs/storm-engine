@@ -10,6 +10,7 @@ class SDLWindow : public OSWindow
 {
   public:
     SDLWindow(int width, int height, bool fullscreen);
+    ~SDLWindow() override;
 
     void Show() override;
     void Hide() override;
@@ -32,11 +33,11 @@ class SDLWindow : public OSWindow
     SDL_Window *SDLHandle();
     void ProcessEvent(const SDL_WindowEvent &evt);
 
-    // Used to track all SDL windows, for event processing
-    static std::map<uint32_t, std::weak_ptr<SDLWindow>> windows;
-
   private:
+    static int SDLEventHandler(void *userdata, SDL_Event *evt);
+
     std::unique_ptr<SDL_Window, std::function<void(SDL_Window *)>> window_ = nullptr;
+    uint32_t sdlID_;
     bool fullscreen_ = false;
     std::map<int, EventHandler> handlers_;
 };

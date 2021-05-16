@@ -442,8 +442,6 @@ void PCS_CONTROLS::Update(uint32_t DeltaTime)
     m_ControlTree.Process();
     m_KeyBuffer.Reset();
 
-    input_->ProcessEvents();
-
     nFrameCounter++;
     uint32_t system_code = CE_MOUSE_X_AXIS;
     ControlsTab[system_code].state.lValue = nMouseDx;

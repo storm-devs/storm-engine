@@ -105,9 +105,6 @@ class Input
     //! \param id handler returned by Subscribe()
     virtual void Unsubscribe(int id) = 0;
 
-    //! Process events
-    virtual void ProcessEvents() = 0;
-
     //! Current keyboard key state
     //! \return true if key is pressed
     virtual bool KeyboardKeyState(const KeyboardKey &key) const = 0;
