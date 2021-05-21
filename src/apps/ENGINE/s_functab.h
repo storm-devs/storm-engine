@@ -65,20 +65,27 @@ class FuncTable
     FuncTable() = default;
     ~FuncTable();
 
-    size_t FindFunc(const std::string &func_name) const; // get func index by name
-    size_t AddFunc(const FuncInfo &fi);                  // add func to table, returns func index
-    bool GetFunc(FuncInfo &fi,
-                 size_t func_index) const; // get func by index, returns true if func is registered and loaded
-    bool GetFuncX(FuncInfo &fi, size_t func_index) const; // get func by index, returns true if func is registered
-    void InvalidateBySegmentID(uint32_t segment_id);      // invalidate all segment's functions
+    // get func index by name
+    size_t FindFunc(const std::string &func_name) const;
+    // add func to table, returns func index
+    size_t AddFunc(const FuncInfo &fi);
+    // get func by index, returns true if func is registered and loaded
+    bool GetFunc(FuncInfo &fi, size_t func_index) const;
+    // get func by index, returns true if func is registered
+    bool GetFuncX(FuncInfo &fi, size_t func_index) const;
+    // invalidate all segment's functions
+    void InvalidateBySegmentID(uint32_t segment_id);
 
-    bool SetFuncOffset(const std::string &func_name, uint32_t offset); // set func's compiler offset
-    bool AddFuncVar(size_t func_index, const LocalVarInfo &lvi);       // add local var to func
-    bool AddFuncArg(size_t func_index, const LocalVarInfo &lvi,
-                    bool is_extern = false); // add arg to func (must precede all regular local vars in order not to
-                                             // break compiler logic)
-    size_t FindVar(size_t func_index, const std::string &var_name) const; // get func's local var or arg index by name
-    bool GetVar(LocalVarInfo &lvi, size_t func_index, size_t var_index) const; // get local var or arg by index
+    // set func's compiler offset
+    bool SetFuncOffset(const std::string &func_name, uint32_t offset);
+    // add local var to func
+    bool AddFuncVar(size_t func_index, const LocalVarInfo &lvi);
+    // add arg to func (must precede all regular local vars in order not to break compiler logic)
+    bool AddFuncArg(size_t func_index, const LocalVarInfo &lvi, bool is_extern = false);
+    // get func's local var or arg index by name
+    size_t FindVar(size_t func_index, const std::string &var_name) const;
+    // get local var or arg by index
+    bool GetVar(LocalVarInfo &lvi, size_t func_index, size_t var_index) const;
 
     void AddTime(size_t func_index, uint64_t time);
     void AddCall(size_t func_index);
