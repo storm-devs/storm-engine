@@ -710,7 +710,10 @@ VDATA *COMPILER::ProcessEvent(const char *event_name)
         {
             if (n < ei.elements)
             {
-                FuncTab.AddTime(ei.pFuncInfo[n].func_code, nTicks);
+                if (!FuncTab.AddTime(ei.pFuncInfo[n].func_code, nTicks))
+                {
+                    core.Trace("Invalid func_code = %u for AddTime", ei.pFuncInfo[n].func_code);
+                }
             }
         }
 
@@ -3783,12 +3786,22 @@ bool COMPILER::BC_CallFunction(uint32_t func_code, uint32_t &ip, DATA *&pVResult
     if (call_fi.segment_id == INTERNAL_SEGMENT_ID)
     {
         if (bRuntimeLog)
-            FuncTab.AddCall(func_code);
+        {
+            if (!FuncTab.AddCall(func_code))
+            {
+                core.Trace("Invalid func_code = %u for AddCall", func_code);
+            }
+        }
+
         // BC_CallIntFunction(func_code,pVResult,arguments);
         RDTSC_B(nTicks);
         BC_CallIntFunction(func_code, pVResult, arguments);
         RDTSC_E(nTicks);
-        FuncTab.AddTime(func_code, nTicks);
+
+        if (!FuncTab.AddTime(func_code, nTicks))
+        {
+            core.Trace("Invalid func_code = %u for AddTime", func_code);
+        }
     }
     else if (call_fi.segment_id == IMPORTED_SEGMENT_ID)
     {
@@ -3803,7 +3816,10 @@ bool COMPILER::BC_CallFunction(uint32_t func_code, uint32_t &ip, DATA *&pVResult
             }
         }
         RDTSC_E(nTicks);
-        FuncTab.AddTime(func_code, nTicks);
+        if (!FuncTab.AddTime(func_code, nTicks))
+        {
+            core.Trace("Invalid func_code = %u for AddTime", func_code);
+        }
     }
     else
     {
@@ -3812,7 +3828,10 @@ bool COMPILER::BC_CallFunction(uint32_t func_code, uint32_t &ip, DATA *&pVResult
         RDTSC_B(nTicks);
         BC_Execute(func_code, pVResult);
         RDTSC_E(nTicks);
-        FuncTab.AddTime(func_code, nTicks);
+        if (!FuncTab.AddTime(func_code, nTicks))
+        {
+            core.Trace("Invalid func_code = %u for AddTime", func_code);
+        }
         core.Leave_CriticalSection();
     }
     if (nDebugEnterMode == TMODE_MAKESTEP)
@@ -3904,7 +3923,12 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
     CompilerStage = CS_RUNTIME;
 
     if (bRuntimeLog)
-        FuncTab.AddCall(function_code);
+    {
+        if (!FuncTab.AddCall(function_code))
+        {
+            core.Trace("Invalid function_code = %u for AddCall", function_code);
+        }
+    }
 
     bDebugWaitForThisFunc = false;
 

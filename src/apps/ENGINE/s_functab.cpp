@@ -205,20 +205,26 @@ bool FuncTable::GetVar(LocalVarInfo &lvi, size_t func_index, size_t var_index) c
     return true;
 }
 
-void FuncTable::AddTime(size_t func_index, uint64_t time)
+bool FuncTable::AddTime(size_t func_index, uint64_t time)
 {
-    if (func_index < funcs_.size())
+    if (func_index >= funcs_.size())
     {
-        funcs_[func_index].usage_time += time;
+        return false;
     }
+
+    funcs_[func_index].usage_time += time;
+    return true;
 }
 
-void FuncTable::AddCall(size_t func_index)
+bool FuncTable::AddCall(size_t func_index)
 {
-    if (func_index < funcs_.size())
+    if (func_index >= funcs_.size())
     {
-        ++funcs_[func_index].number_of_calls;
+        return false;
     }
+
+    ++funcs_[func_index].number_of_calls;
+    return true;
 }
 
 void FuncTable::Release()

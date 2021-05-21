@@ -87,8 +87,8 @@ class FuncTable
     // get local var or arg by index
     bool GetVar(LocalVarInfo &lvi, size_t func_index, size_t var_index) const;
 
-    void AddTime(size_t func_index, uint64_t time);
-    void AddCall(size_t func_index);
+    bool AddTime(size_t func_index, uint64_t time);
+    bool AddCall(size_t func_index);
 
     void Release(); // clear table
 
