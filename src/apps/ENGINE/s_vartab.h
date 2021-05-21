@@ -51,8 +51,8 @@ class VarTable
     void InvalidateBySegmentID(uint32_t segment_id);
     // get var index by name
     size_t FindVar(const std::string &var_name) const;
-    // set var's array size
-    void SetElementsNum(size_t var_index, size_t elements_num);
+    // set var's array size, returns true if successful
+    bool SetElementsNum(size_t var_index, size_t elements_num);
     // clear table
     void Release();
 

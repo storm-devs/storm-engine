@@ -6330,7 +6330,10 @@ bool COMPILER::ReadVariable(char *name, /* DWORD code,*/ bool bDim, uint32_t a_i
                 // SetError("load size mismatch");
                 // return false;
                 real_var->value->SetElementsNum(nElementsNum);
-                VarTab.SetElementsNum(var_code, nElementsNum);
+                if (!VarTab.SetElementsNum(var_code, nElementsNum))
+                {
+                    core.Trace("Unable to set elements num for %s", real_var->name.c_str());
+                }
             }
     }
     else

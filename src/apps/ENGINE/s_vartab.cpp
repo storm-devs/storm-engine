@@ -112,19 +112,20 @@ size_t VarTable::FindVar(const std::string &var_name) const
     return result->second;
 }
 
-void VarTable::SetElementsNum(size_t var_index, size_t elements_num)
+bool VarTable::SetElementsNum(size_t var_index, size_t elements_num)
 {
     if (var_index >= vars_.size())
     {
-        return;
+        return false;
     }
 
     if (!vars_[var_index].value->IsArray())
     {
-        return;
+        return false;
     }
 
     vars_[var_index].elements = elements_num;
+    return true;
 }
 
 void VarTable::Release()
