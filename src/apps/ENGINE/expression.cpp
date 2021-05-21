@@ -25,7 +25,7 @@ bool COMPILER::BC_ProcessExpression(DATA *value)
     //--------------------------------------------------------------------------
     if (TokenIs(AND))
     {
-        VarInfo vi;
+        const VarInfo *real_var;
 
         auto Token_type = BC_TokenGet();
         if (TokenType() != VARIABLE)
@@ -40,12 +40,13 @@ bool COMPILER::BC_ProcessExpression(DATA *value)
         const auto var_code = *((uint32_t *)&pRunCodeBase[TLR_DataOffset]);
         if (TokenType() == VARIABLE)
         {
-            if (!VarTab.GetVar(vi, var_code))
+            real_var = VarTab.GetVar(var_code);
+            if (real_var == nullptr)
             {
                 SetError("Global variable not found");
                 return false;
             }
-            pV = vi.value.get();
+            pV = real_var->value.get();
         }
         else
         {
@@ -422,7 +423,7 @@ void COMPILER::BC_ProcessExpression_L6(DATA *value, bool bSkip)
 
 void COMPILER::BC_ProcessExpression_L7(DATA *value, bool bSkip)
 {
-    VarInfo vi;
+    const VarInfo *real_var;
     uint32_t var_code;
     long index;
     DATA array_index;
@@ -510,12 +511,14 @@ void COMPILER::BC_ProcessExpression_L7(DATA *value, bool bSkip)
         var_code = *((long *)&pRunCodeBase[TLR_DataOffset]); // var code
         if (vtype == VARIABLE)
         {
-            if (!VarTab.GetVar(vi, var_code))
+            real_var = VarTab.GetVar(var_code);
+            if (real_var == nullptr)
             {
                 SetError("Global variable not found");
                 return;
             }
-            pVV = vi.value.get();
+
+            pVV = real_var->value.get();
         }
         else
         {
@@ -602,12 +605,14 @@ void COMPILER::BC_ProcessExpression_L7(DATA *value, bool bSkip)
         var_code = *((long *)&pRunCodeBase[TLR_DataOffset]);
         if (TokenType() == VARIABLE)
         {
-            if (!VarTab.GetVar(vi, var_code))
+            real_var = VarTab.GetVar(var_code);
+            if (real_var == nullptr)
             {
                 SetError("Global variable not found");
                 break;
             }
-            pV = vi.value.get();
+
+            pV = real_var->value.get();
         }
         else
         {
@@ -804,12 +809,14 @@ void COMPILER::BC_ProcessExpression_L7(DATA *value, bool bSkip)
                 var_code = *((long *)&pRunCodeBase[TLR_DataOffset]);
                 if (TokenType() == VARIABLE)
                 {
-                    if (!VarTab.GetVar(vi, var_code))
+                    real_var = VarTab.GetVar(var_code);
+                    if (real_var == nullptr)
                     {
                         SetError("Global variable not found");
                         break;
                     }
-                    pV = vi.value.get();
+
+                    pV = real_var->value.get();
                 }
                 else
                 {
@@ -860,7 +867,7 @@ void COMPILER::BC_ProcessExpression_L7(DATA *value, bool bSkip)
 bool COMPILER::CompileExpression(SEGMENT_DESC &Segment)
 {
     uint32_t dwVarCode;
-    VarInfo vi;
+    const VarInfo *real_var;
     LocalVarInfo lvi;
 
     const S_TOKEN_TYPE Token_type = CompileAuxiliaryTokens(Segment);
@@ -898,14 +905,20 @@ bool COMPILER::CompileExpression(SEGMENT_DESC &Segment)
         {
             if (sttVariableType == VARIABLE)
             {
-                VarTab.GetVarX(vi, dwVarCode);
-                // check for possibilities of '[' operator
-                if (!vi.IsArray())
+                real_var = VarTab.GetVarX(dwVarCode);
+                if (real_var == nullptr)
                 {
-                    if (vi.type != VAR_REFERENCE)
+                    SetError("Invalid var code");
+                    return false;
+                }
+
+                // check for possibilities of '[' operator
+                if (!real_var->IsArray())
+                {
+                    if (real_var->type != VAR_REFERENCE)
                     {
-                        SetError("EN: %d", vi.elements);
-                        SetError(" A Invalid '[' operator, %s - isnt array", vi.name.c_str());
+                        SetError("EN: %d", real_var->elements);
+                        SetError(" A Invalid '[' operator, %s - isnt array", real_var->name.c_str());
                         return false;
                     }
                 }
@@ -1232,7 +1245,7 @@ bool COMPILER::CompileExpression_L7(SEGMENT_DESC &Segment)
     S_TOKEN_TYPE sttFuncCallType;
     uint32_t dwVarCode;
     uint32_t dwAWCode;
-    VarInfo vi;
+    const VarInfo *real_var;
     LocalVarInfo lvi;
     FuncInfo fi;
 
@@ -1329,8 +1342,14 @@ bool COMPILER::CompileExpression_L7(SEGMENT_DESC &Segment)
 
             if (sttVariableField == VARIABLE)
             {
-                VarTab.GetVarX(vi, dwVarCode);
-                if (vi.type != VAR_STRING)
+                real_var = VarTab.GetVarX(dwVarCode);
+                if (real_var == nullptr)
+                {
+                    SetError("Invalid var code");
+                    return false;
+                }
+
+                if (real_var->type != VAR_STRING)
                 {
                     SetError("'%s' must be string variable", Token.GetData());
                     return false;
@@ -1465,13 +1484,19 @@ bool COMPILER::CompileExpression_L7(SEGMENT_DESC &Segment)
 
                 if (sttVariableField == VARIABLE)
                 {
-                    VarTab.GetVarX(vi, dwVarCode);
-                    // check for possibilities of '[' operator
-                    if (!vi.IsArray())
+                    real_var = VarTab.GetVarX(dwVarCode);
+                    if (real_var == nullptr)
                     {
-                        if (vi.type != VAR_REFERENCE)
+                        SetError("Invalid var code");
+                        return false;
+                    }
+
+                    // check for possibilities of '[' operator
+                    if (!real_var->IsArray())
+                    {
+                        if (real_var->type != VAR_REFERENCE)
                         {
-                            SetError(" C Invalid '[' operator, %s - isnt array", vi.name.c_str());
+                            SetError(" C Invalid '[' operator, %s - isnt array", real_var->name.c_str());
                             return false;
                         }
                     }

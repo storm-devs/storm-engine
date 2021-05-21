@@ -14,15 +14,18 @@
 struct VarInfo
 {
     VarInfo();
+    VarInfo(const VarInfo &other);
+    VarInfo(VarInfo &&other) = default;
+    VarInfo &operator=(const VarInfo &other);
 
-    bool IsArray()
+    bool IsArray() const
     {
         return elements > 1;
     }
 
     std::string name;
     S_TOKEN_TYPE type;
-    std::shared_ptr<DATA> value;
+    std::unique_ptr<DATA> value;
     size_t elements;
     uint32_t segment_id;
 };
@@ -38,13 +41,20 @@ class VarTable
         return vars_.size();
     };
 
-    size_t AddVar(const VarInfo &vi);                  // add var to table, returns var index
-    bool GetVar(VarInfo &vi, size_t var_index) const;  // get var by index, returns true if var registered and loaded
-    bool GetVarX(VarInfo &vi, size_t var_index) const; // get var by index, return true if var registered
-    void InvalidateBySegmentID(uint32_t segment_id);   // invalidate all segment's vars
-    size_t FindVar(const std::string &var_name) const; // get var index by name
-    void SetElementsNum(size_t var_index, size_t elements_num); // set var's array size
-    void Release();                                             // clear table
+    // add var to table, returns var index
+    size_t AddVar(const VarInfo &vi);
+    // get var by index, returns non-null ptr if var is registered and loaded
+    const VarInfo *GetVar(size_t var_index) const;
+    // get var by index, returns non-null ptr if var is registered
+    const VarInfo *GetVarX(size_t var_index) const;
+    // invalidate all segment's vars
+    void InvalidateBySegmentID(uint32_t segment_id);
+    // get var index by name
+    size_t FindVar(const std::string &var_name) const;
+    // set var's array size
+    void SetElementsNum(size_t var_index, size_t elements_num);
+    // clear table
+    void Release();
 
     void SetVCompiler(VIRTUAL_COMPILER *vc)
     {

@@ -4,6 +4,25 @@ VarInfo::VarInfo() : name(), type(TVOID), value(), elements(0), segment_id(INVAL
 {
 }
 
+VarInfo::VarInfo(const VarInfo &other)
+    : name(other.name), type(other.type), value(), elements(other.elements), segment_id(other.segment_id)
+{
+}
+
+VarInfo &VarInfo::operator=(const VarInfo &other)
+{
+    if (this != &other)
+    {
+        name = other.name;
+        type = other.type;
+        value = {};
+        elements = other.elements;
+        segment_id = other.segment_id;
+    }
+
+    return *this;
+}
+
 VarTable::~VarTable()
 {
     Release();
@@ -37,7 +56,7 @@ size_t VarTable::AddVar(const VarInfo &vi)
         var = vi; // variable exists, but was unloaded, copy data
     }
 
-    var.value = std::make_shared<DATA>();
+    var.value = std::make_unique<DATA>();
     var.value->SetVCompiler(vc_);
     var.value->SetType(var.type, var.elements);
     var.value->SetGlobalVarTableIndex(var_index); // todo change to size_t
@@ -45,31 +64,29 @@ size_t VarTable::AddVar(const VarInfo &vi)
     return var_index;
 }
 
-bool VarTable::GetVar(VarInfo &vi, size_t var_index) const
+const VarInfo *VarTable::GetVar(size_t var_index) const
 {
     if (var_index >= vars_.size())
     {
-        return false;
+        return nullptr;
     }
 
     if (vars_[var_index].segment_id == INVALID_SEGMENT_ID)
     {
-        return false;
+        return nullptr;
     }
 
-    vi = vars_[var_index]; // copy var info
-    return true;
+    return &vars_[var_index];
 }
 
-bool VarTable::GetVarX(VarInfo &vi, size_t var_index) const
+const VarInfo *VarTable::GetVarX(size_t var_index) const
 {
     if (var_index >= vars_.size())
     {
-        return false;
+        return nullptr;
     }
 
-    vi = vars_[var_index]; // copy var info
-    return true;
+    return &vars_[var_index];
 }
 
 void VarTable::InvalidateBySegmentID(uint32_t segment_id)
