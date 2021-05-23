@@ -173,9 +173,9 @@ uint64_t PARTICLES::ProcessMessage(MESSAGE &message)
         throw std::runtime_error("Unsupported particle manager command !!!");
     }
     case PS_VALIDATE_PARTICLE: {
-        auto *const SystemID = message.Pointer();
+        auto *const SystemID = reinterpret_cast<PARTICLE_SYSTEM *>(message.Pointer());
         for (uint32_t n = 0; n < CreatedSystems.size(); n++)
-            if (CreatedSystems[n].pSystem == (PARTICLE_SYSTEM *)SystemID)
+            if (CreatedSystems[n].pSystem == SystemID)
                 return 1;
         return 0;
         break;

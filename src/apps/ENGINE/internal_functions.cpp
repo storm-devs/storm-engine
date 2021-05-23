@@ -2666,7 +2666,13 @@ bool COMPILER::CreateMessage(MESSAGE *pMs, uint32_t s_off, uint32_t var_offset, 
                 return false;
             }
             pV->Get(pChar);
-            pMs->Set(pChar);
+            if (pChar != nullptr) {
+                pMs->Set(pChar);
+            }
+            else
+            {
+                pMs->Set("");
+            }
             break;
         case 'a':
             pV = pV->GetVarPointer();

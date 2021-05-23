@@ -18,7 +18,6 @@ using MessageParam = std::variant<
     long,
     float,
     double,
-    char *,
     ATTRIBUTES *,
     entid_t,
     VDATA *,
@@ -72,10 +71,10 @@ class MESSAGE final
         return get<double>(params_[index - 1]);
     }
 
-    char *Pointer()
+    uintptr_t Pointer()
     {
         ValidateFormat('p');
-        return get<char *>(params_[index - 1]);
+        return get<uintptr_t>(params_[index - 1]);
     }
 
     ATTRIBUTES *AttributePointer()
@@ -193,6 +192,10 @@ class MESSAGE final
         return String().c_str();
     }
 
+    [[nodiscard]] std::string_view GetFormat() const {
+        return format_;
+    }
+
   private:
     static storm::MessageParam GetParamValue(const char c, va_list& args) {
         switch (c)
@@ -210,7 +213,7 @@ class MESSAGE final
         case 'd':
             return va_arg(args, double);
         case 'p':
-            return va_arg(args, char *);
+            return va_arg(args, uintptr_t);
         case 'a':
             return va_arg(args, ATTRIBUTES *);
         case 'i':
