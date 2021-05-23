@@ -340,7 +340,6 @@ uint64_t CORE::Send_Message(entid_t Destination, const char *Format, ...)
     if (!ptr)
         return 0;
 
-    PZERO(&message.Sender_ID, sizeof(entid_t));
     va_list args;
     va_start(args, Format);
     message.Reset(Format, args);
@@ -351,14 +350,14 @@ uint64_t CORE::Send_Message(entid_t Destination, const char *Format, ...)
 
 uint32_t CORE::PostEvent(const char *Event_name, uint32_t post_time, const char *Format, ...)
 {
-    MESSAGE_SCRIPT *pMS;
+    MESSAGE *pMS;
     MESSAGE message;
 
     entid_t id;
 
     if (Format != nullptr)
     {
-        pMS = new MESSAGE_SCRIPT;
+        pMS = new MESSAGE();
         va_list args;
         va_start(args, Format);
         message.Reset(Format, args);

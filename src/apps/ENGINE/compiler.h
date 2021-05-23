@@ -2,7 +2,6 @@
 
 #include "data.h"
 #include "message.h"
-#include "message_script.h"
 #include "s_classtab.h"
 #include "s_compress.h"
 #include "s_deftab.h"
@@ -287,7 +286,7 @@ class COMPILER : public VIRTUAL_COMPILER
 
     bool IsIntFuncVarArgsNum(uint32_t code);
     uint32_t GetInternalFunctionArgumentsNum(uint32_t code);
-    bool CreateMessage(MESSAGE_SCRIPT *pMs, uint32_t stack_offset, uint32_t vindex, bool s2s = false);
+    bool CreateMessage(MESSAGE *pMs, uint32_t stack_offset, uint32_t vindex, bool s2s = false);
     void ProcessEvent(const char *event_name, MESSAGE *pMs);
 
     bool SaveState(std::fstream &fileS);

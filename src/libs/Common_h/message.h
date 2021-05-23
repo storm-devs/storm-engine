@@ -28,92 +28,136 @@ using MessageParam = std::variant<
 
 } // namespace storm
 
-class MESSAGE
+class MESSAGE final
 {
-  protected:
-    long index;
-
   public:
-    entid_t Sender_ID;
-
-    virtual void Move2Start()
+    void Move2Start()
     {
         index = 0;
     };
 
-    virtual uint8_t Byte()
+    uint8_t Byte()
     {
         ValidateFormat('b');
         return get<uint8_t>(params_[index - 1]);
     }
 
-    virtual uint16_t Word()
+    uint16_t Word()
     {
         ValidateFormat('w');
         return get<uint16_t>(params_[index - 1]);
     }
 
-    virtual long Long()
+    long Long()
     {
         ValidateFormat('l');
         return get<long>(params_[index - 1]);
     }
 
-    virtual long Dword()
+    long Dword()
     {
         ValidateFormat('u');
         return static_cast<long>(get<uint32_t>(params_[index - 1]));
     }
 
-    virtual float Float()
+    float Float()
     {
         ValidateFormat('f');
         return get<float>(params_[index - 1]);
     }
 
-    virtual double Double()
+    double Double()
     {
         ValidateFormat('d');
         return get<double>(params_[index - 1]);
     }
 
-    virtual char *Pointer()
+    char *Pointer()
     {
         ValidateFormat('p');
         return get<char *>(params_[index - 1]);
     }
 
-    virtual ATTRIBUTES *AttributePointer()
+    ATTRIBUTES *AttributePointer()
     {
         ValidateFormat('a');
         return get<ATTRIBUTES *>(params_[index - 1]);
     }
 
-    virtual entid_t EntityID()
+    entid_t EntityID()
     {
         ValidateFormat('i');
         return get<entid_t>(params_[index - 1]);
     }
 
-    virtual VDATA *ScriptVariablePointer()
+    VDATA *ScriptVariablePointer()
     {
         ValidateFormat('e');
         return get<VDATA *>(params_[index - 1]);
     }
 
-    virtual CVECTOR CVector()
+    CVECTOR CVector()
     {
         ValidateFormat('c');
         return get<CVECTOR>(params_[index - 1]);
     }
 
-    virtual const std::string& String()
+    const std::string& String()
     {
         ValidateFormat('s');
         return get<std::string>(params_[index - 1]);
     }
 
-    virtual void ValidateFormat(char c)
+    bool Set(long value)
+    {
+        ValidateFormat('l');
+        params_[index - 1] = value;
+        return true;
+    }
+
+    bool Set(uintptr_t value)
+    {
+        ValidateFormat('p');
+        params_[index - 1] = value;
+        return true;
+    }
+
+    bool Set(float value)
+    {
+        ValidateFormat('f');
+        params_[index - 1] = value;
+        return true;
+    }
+
+    bool Set(std::string value)
+    {
+        ValidateFormat('s');
+        params_[index - 1] = std::move(value);
+        return true;
+    }
+
+    bool SetEntity(entid_t value)
+    {
+        ValidateFormat('i');
+        params_[index - 1] = value;
+        return true;
+    }
+
+    bool Set(VDATA *value)
+    {
+        ValidateFormat('e');
+        params_[index - 1] = value;
+        return true;
+    }
+
+    bool Set(ATTRIBUTES *value)
+    {
+        ValidateFormat('a');
+        params_[index - 1] = value;
+        return true;
+    }
+
+    void ValidateFormat(char c)
     {
         if (format_.empty())
             throw std::runtime_error("Read from empty message");
@@ -122,7 +166,14 @@ class MESSAGE
         index++;
     }
 
-    virtual void Reset(const char *_format, va_list args)
+    void Reset(const char *_format)
+    {
+        format_ = _format;
+        params_.resize(format_.size());
+        index = 0;
+    }
+
+    void Reset(const char *_format, va_list args)
     {
         index = 0;
         format_ = _format;
@@ -132,17 +183,17 @@ class MESSAGE
         });
     }
 
-    virtual char GetCurrentFormatType()
+    char GetCurrentFormatType()
     {
         return format_[index];
     };
 
-    virtual const char *StringPointer()
+    const char *StringPointer()
     {
         return String().c_str();
     }
 
-  protected:
+  private:
     static storm::MessageParam GetParamValue(const char c, va_list& args) {
         switch (c)
         {
@@ -179,4 +230,5 @@ class MESSAGE
 
     std::string format_;
     std::vector<storm::MessageParam> params_;
+    long index{};
 };

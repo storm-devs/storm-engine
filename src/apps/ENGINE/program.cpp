@@ -1,5 +1,7 @@
 #include "program.h"
 
+#include "vfile_service.h"
+
 PROGRAM::PROGRAM() : ProgramBlock(nullptr)
 {
     ProgramDirectory = nullptr;

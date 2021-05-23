@@ -418,7 +418,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
     ATTRIBUTES *pA;
     ATTRIBUTES *pRoot;
     Entity *pE;
-    MESSAGE_SCRIPT ms;
+    MESSAGE ms;
     uint32_t s_off;
 
     static EntityManager::EntityVector *entVec;
@@ -1785,7 +1785,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         if (arguments > 1)
         {
             CreateMessage(&ms, s_off, 1);
-            ms.ResetIndex();
+            ms.Move2Start();
             ProcessEvent(pChar, &ms);
         }
         else
@@ -1797,7 +1797,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         // set stack pointer to correct position (vars in stack remain valid)
         break;
     case FUNC_POSTEVENT:
-        MESSAGE_SCRIPT *pMS;
+        MESSAGE *pMS;
         S_EVENTMSG *pEM;
         s_off = SStack.GetDataNum() - arguments; // set stack offset
         pV = SStack.Read(s_off, 0);
@@ -1816,9 +1816,9 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         pV->Get(TempLong1);
         if (arguments >= 4) // event w/o message
         {
-            pMS = new MESSAGE_SCRIPT;
+            pMS = new MESSAGE();
             CreateMessage(pMS, s_off, 2);
-            pMS->ResetIndex();
+            pMS->Move2Start();
         }
         else
             pMS = nullptr;
@@ -1847,7 +1847,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         pE = EntityManager::GetEntityPointer(ent);
         if (pE)
         {
-            ms.ResetIndex();
+            ms.Move2Start();
             mresult = pE->ProcessMessage(ms);
         }
         for (n = 0; n < arguments; n++)
@@ -2563,7 +2563,7 @@ void COMPILER::DumpAttributes(ATTRIBUTES *pA, long level)
 }
 
 // assume first param - format string
-bool COMPILER::CreateMessage(MESSAGE_SCRIPT *pMs, uint32_t s_off, uint32_t var_offset, bool s2s)
+bool COMPILER::CreateMessage(MESSAGE *pMs, uint32_t s_off, uint32_t var_offset, bool s2s)
 {
     uintptr_t TempPtr;
     long TempLong1;

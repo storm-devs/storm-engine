@@ -1,6 +1,6 @@
 #pragma once
 
-#include "message_script.h"
+#include "message.h"
 
 class S_EVENTMSG
 {
@@ -9,7 +9,7 @@ class S_EVENTMSG
     uint32_t nPeriod;
 
   public:
-    MESSAGE_SCRIPT *pMessageClass;
+    MESSAGE *pMessageClass;
     char *pEventName;
     bool bProcess;
     bool bInvalide;
@@ -22,7 +22,7 @@ class S_EVENTMSG
         nPeriod = 0;
         pEventName = nullptr;
     };
-    S_EVENTMSG(const char *_name, MESSAGE_SCRIPT *_pc, uint32_t _period)
+    S_EVENTMSG(const char *_name, MESSAGE *_pc, uint32_t _period)
     {
         bInvalide = false;
         bProcess = false;
