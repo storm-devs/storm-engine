@@ -9,11 +9,11 @@
 //============================================================================================
 
 #include "WorldMap.h"
-#include "../../Shared/messages.h"
+#include "../../shared/messages.h"
 
 #include "core.h"
 
-#include "Entity.h"
+#include "entity.h"
 #include "WdmCameraStdCtrl.h"
 #include "WdmClouds.h"
 #include "WdmFollowShip.h"
@@ -553,9 +553,6 @@ void WorldMap::Realize(uint32_t delta_time)
 // Messages
 uint64_t WorldMap::ProcessMessage(MESSAGE &message)
 {
-    char buf[256];
-    char sName[256];
-    char sName2[256];
     switch (message.Long())
     {
     case MSG_WORLDMAP_CREATESTORM: {
@@ -564,39 +561,39 @@ uint64_t WorldMap::ProcessMessage(MESSAGE &message)
     }
     break;
     case MSG_WORLDMAP_CREATEENC_MER: {
-        message.String(sizeof(sName), sName);
-        message.String(sizeof(buf), buf);
-        message.String(sizeof(sName2), sName2);
+        const std::string& sName = message.String();
+        const std::string& buf = message.String();
+        const std::string& sName2 = message.String();
         const auto kSpeed = message.Float();
         const auto timeOut = message.Float();                           // boal
-        return CreateMerchantShip(sName, buf, sName2, kSpeed, timeOut); // boal
+        return CreateMerchantShip(sName.c_str(), buf.c_str(), sName2.c_str(), kSpeed, timeOut); // boal
     }
     break;
         // boal 04/01/06 -->
     case MSG_WORLDMAP_CREATEENC_MER_XZ: {
-        message.String(sizeof(sName), sName);
+        const std::string& sName = message.String();
         const auto fx1 = message.Float();
         const auto fz1 = message.Float();
         const auto fx2 = message.Float();
         const auto fz2 = message.Float();
         const auto kSpeed = message.Float();
         const auto timeOut = message.Float();
-        return CreateMerchantShipXZ(sName, fx1, fz1, fx2, fz2, kSpeed, timeOut);
+        return CreateMerchantShipXZ(sName.c_str(), fx1, fz1, fx2, fz2, kSpeed, timeOut);
     }
     break;
         // boal <--
     case MSG_WORLDMAP_CREATEENC_FLW: {
-        message.String(sizeof(sName), sName);
+        const std::string& sName = message.String();
         const auto kSpeed = message.Float();
         const auto timeOut = message.Float();
-        return CreateFollowShip(sName, kSpeed, timeOut);
+        return CreateFollowShip(sName.c_str(), kSpeed, timeOut);
     }
     break;
     case MSG_WORLDMAP_CREATEENC_WAR: {
-        message.String(sizeof(sName), sName);
-        message.String(sizeof(sName), sName2);
+        const std::string& sName = message.String();
+        const std::string& sName2 = message.String();
         const auto timeOut = message.Float();
-        return CreateWarringShips(sName, sName2, timeOut);
+        return CreateWarringShips(sName.c_str(), sName2.c_str(), timeOut);
     }
     break;
     case MSG_WORLDMAP_CREATEENC_RELEASE:
@@ -615,7 +612,7 @@ uint64_t WorldMap::ProcessMessage(MESSAGE &message)
         wdmObjects->nationFlagIndex = message.Long();
         break;
     case MSG_WORLDMAP_SET_COORDINATES:
-        message.String(sizeof(wdmObjects->coordinate), wdmObjects->coordinate);
+        wdmObjects->coordinate = message.String();
         break;
     }
     return 0;

@@ -5,10 +5,9 @@
 // micuss, 2004
 //------------------------------------------------------------------------------------
 #include "Sailors.h"
-#include <stdio.h>
 
-#include "../../Shared/messages.h"
-#include "../../Shared/sea_ai/Script_defines.h"
+#include "../../shared/messages.h"
+#include "../../shared/sea_ai/Script_defines.h"
 
 //#define //GUARD_SAILORS(block)    { static const TCHAR block_name[] = TEXT(#block); try {
 //#define //UN//GUARD_SAILORS            } catch(...) { core.Trace("ERROR in Sailors.dll : block '%s'",
@@ -776,7 +775,7 @@ void ShipWalk::DeleteMan(int Index)
     // UN//GUARD_SAILORS
 };
 //------------------------------------------------------------------------------------
-void ShipWalk::Init(entid_t _shipID, int editorMode, char *shipType)
+void ShipWalk::Init(entid_t _shipID, int editorMode, const char *shipType)
 {
     // GUARD_SAILORS(ShipWalk::Init())
 
@@ -1153,18 +1152,17 @@ uint64_t Sailors::ProcessMessage(MESSAGE &message)
     const auto code = message.Long();
     const uint32_t outValue = 0;
     entid_t shipID;
-    char c[20];
 
     switch (code)
     {
         // Add people to the ship
-    case AI_MESSAGE_ADD_SHIP:
+    case AI_MESSAGE_ADD_SHIP: {
 
         shipID = message.EntityID();
-        message.String(sizeof(c), c);
+        const std::string& c = message.String();
 
         shipWalk.push_back(ShipWalk{});
-        shipWalk[shipsCount].Init(shipID, editorMode, &c[0]);
+        shipWalk[shipsCount].Init(shipID, editorMode, c.c_str());
         shipsCount++;
 
         if (!editorMode)
@@ -1176,36 +1174,35 @@ uint64_t Sailors::ProcessMessage(MESSAGE &message)
                 return 0;
             }
         break;
+    }
 
         // Reloading the cannons
-    case AI_MESSAGE_CANNON_RELOAD:
-
+    case AI_MESSAGE_CANNON_RELOAD: {
         shipID = message.EntityID();
-        char bortName[256];
-        message.String(256, static_cast<char *>(bortName));
+        const std::string &bortName = message.String();
 
         for (auto i = 0; i < shipsCount; i++)
             if (shipID == shipWalk[i].shipID)
             {
-                if (!strcmp(bortName, "cannonl"))
+                if (!strcmp(bortName.c_str(), "cannonl"))
                 {
                     shipWalk[i].ReloadCannons(1);
                     return outValue;
                 }
 
-                if (!strcmp(bortName, "cannonr"))
+                if (!strcmp(bortName.c_str(), "cannonr"))
                 {
                     shipWalk[i].ReloadCannons(2);
                     return outValue;
                 }
 
-                if (!strcmp(bortName, "cannonf"))
+                if (!strcmp(bortName.c_str(), "cannonf"))
                 {
                     shipWalk[i].ReloadCannons(3);
                     return outValue;
                 }
 
-                if (!strcmp(bortName, "cannonb"))
+                if (!strcmp(bortName.c_str(), "cannonb"))
                 {
                     shipWalk[i].ReloadCannons(4);
                     return outValue;
@@ -1216,7 +1213,7 @@ uint64_t Sailors::ProcessMessage(MESSAGE &message)
             }
 
         break;
-
+    }
         // Fall of the mast
     case MSG_PEOPLES_ON_SHIP_MASTFALL: {
         auto *const attrs = message.AttributePointer();

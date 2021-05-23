@@ -1,7 +1,7 @@
 #include "ship.h"
-#include "../../Shared/messages.h"
-#include "../../Shared/sea_ai/Script_defines.h"
-#include "../../Shared/sound.h"
+#include "../../shared/messages.h"
+#include "../../shared/sea_ai/Script_defines.h"
+#include "../../shared/sound.h"
 #include "../../shared/mast_msg.h"
 #include "../../shared/sail_msg.h"
 #include "../Sea_ai/AIFlowGraph.h"
@@ -1139,7 +1139,6 @@ uint64_t SHIP::ProcessMessage(MESSAGE &message)
     CVECTOR cpos, cang;
     float fov;
     const auto code = message.Long();
-    char str[256], str1[256], str2[256];
 
     switch (code)
     {
@@ -1174,14 +1173,14 @@ uint64_t SHIP::ProcessMessage(MESSAGE &message)
         break;
     case MSG_SHIP_ACTIVATE_FIRE_PLACE: {
         const auto dwFPIndex = static_cast<uint32_t>(message.Long());
-        message.String(sizeof(str), str);
-        message.String(sizeof(str1), str1);
-        message.String(sizeof(str2), str2);
+        const std::string& str = message.String();
+        const std::string& str1 = message.String();
+        const std::string& str2 = message.String();
         // long iSoundID = message.Long();
         const auto fRunTime = message.Float();
         const auto iBallCharacterIndex = message.Long();
         Assert(dwFPIndex != INVALID_ARRAY_INDEX && dwFPIndex < aFirePlaces.size());
-        aFirePlaces[dwFPIndex].Run(str, str1, iBallCharacterIndex, str2, fRunTime);
+        aFirePlaces[dwFPIndex].Run(str.c_str(), str1.c_str(), iBallCharacterIndex, str2.c_str(), fRunTime);
     }
     break;
     case MSG_SHIP_GET_CHARACTER_INDEX: {
@@ -1253,16 +1252,14 @@ uint64_t SHIP::ProcessMessage(MESSAGE &message)
         UnSetLights();
         break;
     case MSG_SHIP_DO_FAKE_FIRE: {
-        char cBort[256];
-        message.String(sizeof(cBort), cBort);
+        const std::string& cBort = message.String();
         float fRandTime = message.Float();
-        FakeFire(cBort, fRandTime);
+        FakeFire(cBort.c_str(), fRandTime);
     }
     break;
     case MSG_MODEL_SET_TECHNIQUE: {
-        char sTech[256];
-        message.String(sizeof(sTech), sTech);
-        core.Send_Message(GetModelEID(), "ls", MSG_MODEL_SET_TECHNIQUE, sTech);
+        const std::string& sTech = message.String();
+        core.Send_Message(GetModelEID(), "ls", MSG_MODEL_SET_TECHNIQUE, sTech.c_str());
         //       MODEL * pModel = GetModel();
         //       NODE* pNode = pModel->GetNode(0);
     }
@@ -1271,7 +1268,7 @@ uint64_t SHIP::ProcessMessage(MESSAGE &message)
     return 0;
 }
 
-void SHIP::FakeFire(char *sBort, float fRandTime)
+void SHIP::FakeFire(const char *sBort, float fRandTime)
 {
     GEOS::LABEL label;
     GEOS::INFO info;

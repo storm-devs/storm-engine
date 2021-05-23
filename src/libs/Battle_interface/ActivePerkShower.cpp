@@ -79,12 +79,11 @@ uint64_t ActivePerkShower::ProcessMessage(MESSAGE &message)
     switch (message.Long())
     {
     case MSG_ACTIVE_PERK_LIST_REFRESH: {
-        char param[256];
-        message.String(sizeof(param), param);
+        const std::string& param = message.String();
         auto *const pA = message.AttributePointer();
-        if (_stricmp(param, "add") == 0)
+        if (_stricmp(param.c_str(), "add") == 0)
             AddIconToList(pA);
-        else if (_stricmp(param, "del") == 0)
+        else if (_stricmp(param.c_str(), "del") == 0)
             DelIconFromList(pA);
     }
     break;

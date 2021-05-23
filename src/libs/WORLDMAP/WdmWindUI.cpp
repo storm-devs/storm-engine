@@ -283,7 +283,7 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     DrawRects(buf, 1, "WdmDrawMapBlend");
 
     // display a line with coordinates
-    _snprintf(tbuf, sizeof(tbuf) - 1, "%s", wdmObjects->coordinate);
+    _snprintf(tbuf, sizeof(tbuf) - 1, "%s", wdmObjects->coordinate.c_str());
     tbuf[sizeof(tbuf) - 1] = 0;
     fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<long>(w));
     fh = rs->CharHeight(font);

@@ -9,8 +9,8 @@
 //============================================================================================
 
 #include "Fader.h"
-#include "../../Shared/messages.h"
-#include "Entity.h"
+#include "../../shared/messages.h"
+#include "entity.h"
 #include "core.h"
 
 // ============================================================================================
@@ -113,7 +113,6 @@ bool Fader::Init()
 // Messages
 uint64_t Fader::ProcessMessage(MESSAGE &message)
 {
-    char _name[MAX_PATH];
     switch (message.Long())
     {
     case FADER_OUT: // Start screen dimming
@@ -154,31 +153,32 @@ uint64_t Fader::ProcessMessage(MESSAGE &message)
     case FADER_STARTFRAME:
         haveFrame = true;
         break;
-    case FADER_PICTURE:
+    case FADER_PICTURE: {
         if (textureID >= 0 && rs)
             rs->TextureRelease(textureID);
-        message.String(sizeof(_name), _name);
-        textureID = rs->TextureCreate(_name);
+        const std::string &_name = message.String();
+        textureID = rs->TextureCreate(_name.c_str());
         if (rs)
         {
-            rs->SetProgressImage(_name);
+            rs->SetProgressImage(_name.c_str());
             // Hint texture
             if (numberOfTips > 0)
             {
-                sprintf_s(_name, "interfaces\\int_border.tga");
-                tipsID = rs->TextureCreate(_name);
-                rs->SetTipsImage(_name);
+                const std::string texturePath = _name + "interfaces\\int_border.tga";
+                tipsID = rs->TextureCreate(texturePath.c_str());
+                rs->SetTipsImage(texturePath.c_str());
             }
         }
         break;
-    case FADER_PICTURE0:
+    }
+    case FADER_PICTURE0: {
         if (textureBackID >= 0 && rs)
             rs->TextureRelease(textureBackID);
-        message.String(sizeof(_name), _name);
-        textureBackID = rs->TextureCreate(_name);
+        const std::string& _name = message.String();
+        textureBackID = rs->TextureCreate(_name.c_str());
         if (rs)
         {
-            rs->SetProgressBackImage(_name);
+            rs->SetProgressBackImage(_name.c_str());
             // Hint texture
             if (numberOfTips > 0)
             {
@@ -192,6 +192,7 @@ uint64_t Fader::ProcessMessage(MESSAGE &message)
             }
         }
         break;
+    }
     }
     return 0;
 }

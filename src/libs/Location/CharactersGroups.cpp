@@ -406,122 +406,120 @@ bool CharactersGroups::RemoveInvalidTargets(Character *chr, Character *check)
 // Messages
 uint64_t CharactersGroups::ProcessMessage(MESSAGE &message)
 {
-    char cmd[64];
-    message.String(sizeof(cmd), cmd);
-    cmd[sizeof(cmd) - 1] = 0;
-    if (!cmd[0])
+    const std::string& cmd = message.String();
+    if (cmd.empty())
         return 0;
-    if (_stricmp(cmd, "VldTrg") == 0)
+    if (_stricmp(cmd.c_str(), "VldTrg") == 0)
     {
         return MsgIsValidateTarget(message);
     }
-    if (_stricmp(cmd, "GetTrg") == 0)
+    if (_stricmp(cmd.c_str(), "GetTrg") == 0)
     {
         return MsgGetOptimalTarget(message);
     }
-    if (_stricmp(cmd, "IsEnemy") == 0)
+    if (_stricmp(cmd.c_str(), "IsEnemy") == 0)
     {
         return MsgIsEnemy(message);
     }
-    if (_stricmp(cmd, "MoveChr") == 0)
+    if (_stricmp(cmd.c_str(), "MoveChr") == 0)
     {
         return MoveCharacterToGroup(message);
     }
-    if (_stricmp(cmd, "Attack") == 0)
+    if (_stricmp(cmd.c_str(), "Attack") == 0)
     {
         MsgAttack(message);
         return 1;
     }
-    if (_stricmp(cmd, "AddTarget") == 0)
+    if (_stricmp(cmd.c_str(), "AddTarget") == 0)
     {
         MsgAddTarget(message);
         return 1;
     }
-    if (_stricmp(cmd, "UpdChrTrg") == 0)
+    if (_stricmp(cmd.c_str(), "UpdChrTrg") == 0)
     {
         MsgUpdChrTrg(message);
         return 1;
     }
-    if (_stricmp(cmd, "RegistryGroup") == 0)
+    if (_stricmp(cmd.c_str(), "RegistryGroup") == 0)
     {
         MsgRegistryGroup(message);
         return 1;
     }
-    if (_stricmp(cmd, "ReleaseGroup") == 0)
+    if (_stricmp(cmd.c_str(), "ReleaseGroup") == 0)
     {
         MsgReleaseGroup(message);
         return 1;
     }
-    if (_stricmp(cmd, "SetRelation") == 0)
+    if (_stricmp(cmd.c_str(), "SetRelation") == 0)
     {
         MsgSetRelation(message);
         return 1;
     }
-    if (_stricmp(cmd, "SetAlarmReaction") == 0)
+    if (_stricmp(cmd.c_str(), "SetAlarmReaction") == 0)
     {
         MsgSetAlarmReaction(message);
         return 1;
     }
-    if (_stricmp(cmd, "SetGroupLook") == 0)
+    if (_stricmp(cmd.c_str(), "SetGroupLook") == 0)
     {
         return MsgSetGroupLook(message);
     }
-    if (_stricmp(cmd, "SetGroupHear") == 0)
+    if (_stricmp(cmd.c_str(), "SetGroupHear") == 0)
     {
         return MsgSetGroupHear(message);
     }
-    if (_stricmp(cmd, "SetGroupSay") == 0)
+    if (_stricmp(cmd.c_str(), "SetGroupSay") == 0)
     {
         return MsgSetGroupSay(message);
     }
-    if (_stricmp(cmd, "SetGroupPriority") == 0)
+    if (_stricmp(cmd.c_str(), "SetGroupPriority") == 0)
     {
         return MsgSetGroupPriority(message);
     }
-    if (_stricmp(cmd, "UnloadCharacter") == 0)
+    if (_stricmp(cmd.c_str(), "UnloadCharacter") == 0)
     {
         UnloadCharacter(message);
         return 1;
     }
-    if (_stricmp(cmd, "ResetWaveTime") == 0)
+    if (_stricmp(cmd.c_str(), "ResetWaveTime") == 0)
     {
         waveTime = 1000.0f;
         return 1;
     }
-    if (_stricmp(cmd, "SetAlarm") == 0)
+    if (_stricmp(cmd.c_str(), "SetAlarm") == 0)
     {
         return MsgSetAlarm(message);
     }
-    if (_stricmp(cmd, "SetAlarmDown") == 0)
+    if (_stricmp(cmd.c_str(), "SetAlarmDown") == 0)
     {
         return MsgSetAlarmDown(message);
     }
-    if (_stricmp(cmd, "ClearAllTargets") == 0)
+    if (_stricmp(cmd.c_str(), "ClearAllTargets") == 0)
     {
         ClearAllTargets();
         return 1;
     }
-    if (_stricmp(cmd, "SaveData") == 0)
+    if (_stricmp(cmd.c_str(), "SaveData") == 0)
     {
         SaveData();
         return 1;
     }
-    if (_stricmp(cmd, "LoadDataRelations") == 0)
+    if (_stricmp(cmd.c_str(), "LoadDataRelations") == 0)
     {
         LoadDataRelations();
         return 1;
     }
-    if (_stricmp(cmd, "RestoreStates") == 0)
+    if (_stricmp(cmd.c_str(), "RestoreStates") == 0)
     {
         RestoreStates();
         return 1;
     }
-    if (_stricmp(cmd, "DeleteEmptyGroups") == 0)
+    if (_stricmp(cmd.c_str(), "DeleteEmptyGroups") == 0)
     {
         DeleteEmptyGroups();
         return 1;
     }
-    if (_stricmp(cmd, "DumpRelations") == 0)
+    if (_stricmp(cmd.c_str(), "DumpRelations") == 0)
     {
         DumpRelations();
         return 1;
@@ -732,19 +730,15 @@ void CharactersGroups::MsgUpdChrTrg(MESSAGE &message)
 // Register a group
 void CharactersGroups::MsgRegistryGroup(MESSAGE &message)
 {
-    char grpName[128];
-    message.String(sizeof(grpName), grpName);
-    grpName[sizeof(grpName) - 1] = 0;
-    RegistryGroup(grpName);
+    const std::string& grpName = message.String();
+    RegistryGroup(grpName.c_str());
 }
 
 // Delete group
 void CharactersGroups::MsgReleaseGroup(MESSAGE &message)
 {
-    char grpName[128];
-    message.String(sizeof(grpName), grpName);
-    grpName[sizeof(grpName) - 1] = 0;
-    ReleaseGroup(grpName);
+    const std::string& grpName = message.String();
+    ReleaseGroup(grpName.c_str());
 }
 
 // Register a group
@@ -939,13 +933,11 @@ bool CharactersGroups::MoveCharacterToGroup(MESSAGE &message)
     if (!chr)
         return false;
     // create a group
-    char grpName[128];
-    message.String(sizeof(grpName), grpName);
-    grpName[sizeof(grpName) - 1] = 0;
-    auto *grp = FindGroup(grpName);
+    const std::string& grpName = message.String();
+    auto *grp = FindGroup(grpName.c_str());
     if (!grp)
-        RegistryGroup(grpName);
-    grp = FindGroup(grpName);
+        RegistryGroup(grpName.c_str());
+    grp = FindGroup(grpName.c_str());
     Assert(grp);
     // Remove the character from the previous group
     RemoveCharacterFromAllGroups(eid);
@@ -955,7 +947,7 @@ bool CharactersGroups::MoveCharacterToGroup(MESSAGE &message)
         return false; // fix
     // Place in the new
     grp->c[grp->numChr++] = eid;
-    strcpy_s(chr->group, grpName);
+    strcpy_s(chr->group, grpName.c_str());
     RemoveInvalidTargets(chr);
     return true;
 }
@@ -967,12 +959,10 @@ void CharactersGroups::MsgSetRelation(MESSAGE &message)
     auto &r = FindRelation(message, &isSelf);
     if (isSelf)
         return;
-    char buf[32];
-    message.String(sizeof(buf), buf);
-    buf[sizeof(buf) - 1] = 0;
+    const std::string& buf = message.String();
     auto actState = rs_enemy;
     auto relState = rs_neitral;
-    if (_stricmp(buf, "friend") == 0)
+    if (_stricmp(buf.c_str(), "friend") == 0)
     {
         r.curState = rs_friend;
         actState = rs_enemy;
@@ -983,7 +973,7 @@ void CharactersGroups::MsgSetRelation(MESSAGE &message)
         r.alarmmax = CGS_ALARMMAX;
         r.isActive = false;
     }
-    else if (_stricmp(buf, "neitral") == 0)
+    else if (_stricmp(buf.c_str(), "neitral") == 0)
     {
         r.curState = rs_neitral;
         actState = rs_enemy;
@@ -993,7 +983,7 @@ void CharactersGroups::MsgSetRelation(MESSAGE &message)
         r.alarmmin = CGS_ALARMMIN;
         r.alarmmax = CGS_ALARMMAX;
     }
-    else if (_stricmp(buf, "enemy") == 0)
+    else if (_stricmp(buf.c_str(), "enemy") == 0)
     {
         r.curState = rs_enemy;
         actState = rs_enemy;
@@ -1017,27 +1007,23 @@ void CharactersGroups::MsgSetAlarmReaction(MESSAGE &message)
     auto &r = FindRelation(message, &isSelf);
     if (isSelf)
         return;
-    char act[32];
-    message.String(sizeof(act), act);
-    act[sizeof(act) - 1] = 0;
-    char rel[32];
-    message.String(sizeof(rel), rel);
-    rel[sizeof(rel) - 1] = 0;
+    const std::string& act = message.String();
+    const std::string& rel = message.String();
     auto actState = rs_enemy;
-    if (_stricmp(act, "neitral") == 0)
+    if (_stricmp(act.c_str(), "neitral") == 0)
     {
         actState = rs_neitral;
     }
-    else if (_stricmp(act, "friend") == 0)
+    else if (_stricmp(act.c_str(), "friend") == 0)
     {
         actState = rs_friend;
     }
     auto relState = rs_neitral;
-    if (_stricmp(rel, "enemy") == 0)
+    if (_stricmp(rel.c_str(), "enemy") == 0)
     {
         relState = rs_enemy;
     }
-    else if (_stricmp(rel, "friend") == 0)
+    else if (_stricmp(rel.c_str(), "friend") == 0)
     {
         relState = rs_friend;
     }
@@ -1094,14 +1080,12 @@ void CharactersGroups::UnloadCharacter(MESSAGE &message)
 // Get group from message
 CharactersGroups::Group *CharactersGroups::GetGroup(MESSAGE &message, bool isRegistry)
 {
-    char grpName[128];
-    message.String(sizeof(grpName), grpName);
-    grpName[sizeof(grpName) - 1] = 0;
-    auto *grp = FindGroup(grpName);
+    const std::string& grpName = message.String();
+    auto *grp = FindGroup(grpName.c_str());
     if (!grp && isRegistry)
     {
-        RegistryGroup(grpName);
-        grp = FindGroup(grpName);
+        RegistryGroup(grpName.c_str());
+        grp = FindGroup(grpName.c_str());
         Assert(grp);
     }
     return grp;
@@ -1136,13 +1120,9 @@ long CharactersGroups::FindGroupIndex(const char *name)
 // Find group relationship
 CharactersGroups::Relation &CharactersGroups::FindRelation(MESSAGE &message, bool *selfgroup)
 {
-    char grpName1[128];
-    message.String(sizeof(grpName1), grpName1);
-    grpName1[sizeof(grpName1) - 1] = 0;
-    char grpName2[128];
-    message.String(sizeof(grpName2), grpName2);
-    grpName2[sizeof(grpName2) - 1] = 0;
-    return FindRelation(grpName1, grpName2, selfgroup);
+    const std::string& grpName1 = message.String();
+    const std::string& grpName2 = message.String();
+    return FindRelation(grpName1.c_str(), grpName2.c_str(), selfgroup);
 }
 
 // Find group relationship

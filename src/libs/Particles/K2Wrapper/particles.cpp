@@ -1,6 +1,6 @@
 #include "particles.h"
 #include "../shared/messages.h"
-#include "Entity.h"
+#include "entity.h"
 #include "core.h"
 #include "defines.h"
 #include "filesystem.h"
@@ -39,7 +39,6 @@ uint64_t PARTICLES::ProcessMessage(MESSAGE &message)
 {
     const auto code = message.Long();
 
-    static char ps_name[MAX_PATH];
     CVECTOR pos, angles;
     long lifetime;
 
@@ -78,7 +77,7 @@ uint64_t PARTICLES::ProcessMessage(MESSAGE &message)
     }
         // create system (string name, float x, y, z position, float rx, ry, rz rotation, float life_time lifetime)
     case PS_CREATE_RIC: {
-        message.String(sizeof(ps_name), ps_name);
+        const std::string& ps_name = message.String();
         pos.x = message.Float();
         pos.y = message.Float();
         pos.z = message.Float();
@@ -88,7 +87,7 @@ uint64_t PARTICLES::ProcessMessage(MESSAGE &message)
         angles.z = message.Float();
         lifetime = message.Long();
 
-        auto *pSystem = CreateSystem(ps_name, lifetime);
+        auto *pSystem = CreateSystem(ps_name.c_str(), lifetime);
         if (!pSystem)
             return 0;
 
@@ -105,7 +104,7 @@ uint64_t PARTICLES::ProcessMessage(MESSAGE &message)
 
         // create a system
     case PS_CREATE: {
-        message.String(sizeof(ps_name), ps_name);
+        const std::string& ps_name = message.String();
         pos.x = message.Float();
         pos.y = message.Float();
         pos.z = message.Float();
@@ -115,7 +114,7 @@ uint64_t PARTICLES::ProcessMessage(MESSAGE &message)
         angles.z = message.Float();
         lifetime = message.Long();
 
-        auto *pSystem = CreateSystem(ps_name, lifetime);
+        auto *pSystem = CreateSystem(ps_name.c_str(), lifetime);
         if (!pSystem)
             return 0;
 
@@ -128,7 +127,7 @@ uint64_t PARTICLES::ProcessMessage(MESSAGE &message)
     }
         // create a system
     case PS_CREATEX: {
-        message.String(sizeof(ps_name), ps_name);
+        const std::string& ps_name = message.String();
         pos.x = message.Float();
         pos.y = message.Float();
         pos.z = message.Float();
@@ -156,7 +155,7 @@ uint64_t PARTICLES::ProcessMessage(MESSAGE &message)
 
         lifetime = message.Long();
 
-        auto *pSystem = CreateSystem(ps_name, lifetime);
+        auto *pSystem = CreateSystem(ps_name.c_str(), lifetime);
         if (!pSystem)
             return 0;
 

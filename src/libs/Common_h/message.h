@@ -2,165 +2,181 @@
 
 #include <cstdarg>
 #include <cstring>
+#include <variant>
 
 #include "Cvector.h"
-#include "Entity.h"
+#include "entity.h"
 
 class VDATA;
+
+namespace storm {
+
+using MessageParam = std::variant<
+    uint8_t,
+    uint16_t,
+    uint32_t,
+    long,
+    float,
+    double,
+    char *,
+    ATTRIBUTES *,
+    entid_t,
+    VDATA *,
+    CVECTOR,
+    std::string
+    >;
+
+} // namespace storm
 
 class MESSAGE
 {
   protected:
-    const char *format;
     long index;
-    va_list args_start;
 
   public:
     entid_t Sender_ID;
-    va_list args;
 
     virtual void Move2Start()
     {
-        args = args_start;
         index = 0;
     };
 
     virtual uint8_t Byte()
     {
         ValidateFormat('b');
-        return va_arg(args, uint8_t);
+        return get<uint8_t>(params_[index - 1]);
     }
 
     virtual uint16_t Word()
     {
         ValidateFormat('w');
-        return va_arg(args, uint16_t);
+        return get<uint16_t>(params_[index - 1]);
     }
 
     virtual long Long()
     {
         ValidateFormat('l');
-        return va_arg(args, long);
+        return get<long>(params_[index - 1]);
     }
 
     virtual long Dword()
     {
         ValidateFormat('u');
-        return va_arg(args, uint32_t);
+        return static_cast<long>(get<uint32_t>(params_[index - 1]));
     }
 
     virtual float Float()
     {
         ValidateFormat('f');
-        return static_cast<float>(va_arg(args, double));
+        return get<float>(params_[index - 1]);
     }
 
     virtual double Double()
     {
         ValidateFormat('d');
-        return va_arg(args, double);
+        return get<double>(params_[index - 1]);
     }
 
     virtual char *Pointer()
     {
         ValidateFormat('p');
-        return va_arg(args, char *);
+        return get<char *>(params_[index - 1]);
     }
 
     virtual ATTRIBUTES *AttributePointer()
     {
         ValidateFormat('a');
-        return va_arg(args, ATTRIBUTES *);
+        return get<ATTRIBUTES *>(params_[index - 1]);
     }
 
     virtual entid_t EntityID()
     {
         ValidateFormat('i');
-        return va_arg(args, entid_t);
+        return get<entid_t>(params_[index - 1]);
     }
 
     virtual VDATA *ScriptVariablePointer()
     {
         ValidateFormat('e');
-        return va_arg(args, VDATA *);
+        return get<VDATA *>(params_[index - 1]);
     }
 
     virtual CVECTOR CVector()
     {
         ValidateFormat('c');
-        return va_arg(args, CVECTOR);
+        return get<CVECTOR>(params_[index - 1]);
     }
 
-    virtual void String(uint32_t dest_buffer_size, char *buffer)
+    virtual const std::string& String()
     {
-        char *mem_PTR;
-        size_t size;
-        if (!buffer)
-            throw std::runtime_error("zero string buffer");
         ValidateFormat('s');
-        mem_PTR = va_arg(args, char *);
-        if (!mem_PTR)
-            throw std::runtime_error("invalid string : MESSAGE.String()");
-        size = strlen(mem_PTR) + 1;
-        if (size >= dest_buffer_size)
-            throw std::runtime_error("insufficient string buffer");
-        memcpy(buffer, mem_PTR, size);
-    }
-
-    virtual void MemoryBlock(uint32_t memsize, char *buffer)
-    {
-        char *mem_PTR;
-        size_t size;
-        if (!buffer)
-            throw std::runtime_error("zero mem buffer");
-        ValidateFormat('m');
-        size = va_arg(args, uint32_t);
-        if (memsize != size)
-            throw std::runtime_error("invalid memory block size");
-        mem_PTR = va_arg(args, char *);
-        memcpy(buffer, mem_PTR, memsize);
-    }
-
-    virtual void Struct(uint32_t sizeofstruct, char *s)
-    {
-        uint32_t a;
-        size_t size;
-        if (!s)
-            throw std::runtime_error("Invalid s buffer");
-        ValidateFormat('v');
-        size = va_arg(args, uint32_t);
-        if (sizeofstruct != size)
-            throw std::runtime_error("Invalid message structure size");
-        a = ((sizeofstruct + sizeof(int) - 1) & ~(sizeof(int) - 1));
-        memcpy(s, static_cast<char *>((args += a) - a), sizeofstruct);
+        return get<std::string>(params_[index - 1]);
     }
 
     virtual void ValidateFormat(char c)
     {
-        if (!format)
+        if (format_.empty())
             throw std::runtime_error("Read from empty message");
-        if (format[index] != c)
+        if (format_[index] != c)
             throw std::runtime_error("Incorrect message data");
         index++;
     }
 
-    virtual void Reset(const char *_format)
+    virtual void Reset(const char *_format, va_list args)
     {
         index = 0;
-        format = _format;
-        args_start = args;
+        format_ = _format;
+        params_.resize(format_.size());
+        std::transform(format_.begin(), format_.end(), params_.begin(), [&] (const char c) {
+            return GetParamValue(c, args);
+        });
     }
 
     virtual char GetCurrentFormatType()
     {
-        return format[index];
+        return format_[index];
     };
 
-    virtual char *StringPointer()
+    virtual const char *StringPointer()
     {
-        char *mem_PTR;
-        ValidateFormat('s');
-        mem_PTR = va_arg(args, char *);
-        return mem_PTR;
+        return String().c_str();
     }
+
+  protected:
+    static storm::MessageParam GetParamValue(const char c, va_list& args) {
+        switch (c)
+        {
+        case 'b':
+            return va_arg(args, uint8_t);
+        case 'w':
+            return va_arg(args, uint16_t);
+        case 'l':
+            return va_arg(args, long);
+        case 'u':
+            return va_arg(args, uint32_t);
+        case 'f':
+            return static_cast<float>(va_arg(args, double));
+        case 'd':
+            return va_arg(args, double);
+        case 'p':
+            return va_arg(args, char *);
+        case 'a':
+            return va_arg(args, ATTRIBUTES *);
+        case 'i':
+            return va_arg(args, entid_t);
+        case 'e':
+            return va_arg(args, VDATA *);
+        case 'c':
+            return va_arg(args, CVECTOR);
+        case 's': {
+            char* ptr = va_arg(args, char *);
+            return std::string(ptr);
+        }
+        default:
+            throw std::runtime_error(fmt::format("Unknown message format: '{}'", c));
+        }
+    }
+
+    std::string format_;
+    std::vector<storm::MessageParam> params_;
 };

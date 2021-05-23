@@ -13,7 +13,7 @@
 #include "core.h"
 
 #include "Character.h"
-#include "Entity.h"
+#include "entity.h"
 #include "defines.h"
 
 // ============================================================================================
@@ -628,17 +628,18 @@ void Grass::Realize(uint32_t delta_time)
 
 uint64_t Grass::ProcessMessage(MESSAGE &message)
 {
-    char ctmp[MAX_PATH];
     switch (message.Long())
     {
-    case MSG_GRASS_LOAD_DATA:
-        message.String(sizeof(ctmp), ctmp);
-        return LoadData(ctmp);
+    case MSG_GRASS_LOAD_DATA: {
+        const std::string &ctmp = message.String();
+        return LoadData(ctmp.c_str());
         break;
-    case MSG_GRASS_SET_TEXTURE:
-        message.String(sizeof(ctmp), ctmp);
-        SetTexture(ctmp);
+    }
+    case MSG_GRASS_SET_TEXTURE: {
+        const std::string &ctmp = message.String();
+        SetTexture(ctmp.c_str());
         break;
+    }
     case MSG_GRASS_SET_PARAM:
         m_fDataScale = message.Float();
 

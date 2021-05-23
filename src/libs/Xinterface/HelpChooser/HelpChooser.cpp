@@ -181,9 +181,8 @@ uint64_t HELPCHOOSER::ProcessMessage(MESSAGE &message)
     switch (message.Long())
     {
     case MSG_HELPCHOOSER_START: {
-        char param[256];
-        message.String(sizeof(param) - 1, param);
-        return RunChooser(param);
+        const std::string& param = message.String();
+        return RunChooser(param.c_str());
     }
     break;
     }
@@ -205,7 +204,7 @@ void HELPCHOOSER::AllRelease()
     STORM_DELETE(m_psRectName);
 }
 
-bool HELPCHOOSER::RunChooser(char *ChooserGroup)
+bool HELPCHOOSER::RunChooser(const char *ChooserGroup)
 {
     int i, j;
     char param[512];

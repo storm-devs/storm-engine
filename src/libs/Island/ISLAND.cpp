@@ -1,6 +1,6 @@
 #include "ISLAND.h"
-#include "../../Shared/messages.h"
-#include "../../Shared/sea_ai/Script_defines.h"
+#include "../../shared/messages.h"
+#include "../../shared/sea_ai/Script_defines.h"
 #include "Foam.h"
 #include "Weather_Base.h"
 #include "filesystem.h"
@@ -230,25 +230,26 @@ bool ISLAND::GetDepth(FRECT *pRect, float *fMinH, float *fMaxH)
 uint64_t ISLAND::ProcessMessage(MESSAGE &message)
 {
     entid_t eID;
-    char str[256], idstr[256];
     switch (message.Long())
     {
     case MSG_ISLAND_ADD_FORT:
         aForts.push_back(message.EntityID());
         break;
-    case MSG_LOCATION_ADD_MODEL:
+    case MSG_LOCATION_ADD_MODEL: {
         eID = message.EntityID();
-        message.String(sizeof(idstr) - 1, idstr);
-        message.String(sizeof(str) - 1, str);
+        const std::string& idstr = message.String();
+        const std::string& str = message.String();
         AddLocationModel(eID, idstr, str);
         break;
-    case MSG_ISLAND_LOAD_GEO: // from sea
-        message.String(sizeof(cFoamDir) - 1, cFoamDir);
-        message.String(sizeof(cModelsDir) - 1, cModelsDir);
-        message.String(sizeof(cModelsID) - 1, cModelsID);
+    }
+    case MSG_ISLAND_LOAD_GEO: { // from sea
+        cFoamDir = message.String();
+        cModelsDir = message.String();
+        cModelsID = message.String();
         Mount(cModelsID, cModelsDir, nullptr);
         CreateHeightMap(cFoamDir, cModelsID);
         // CreateShadowMap(cModelsDir, cModelsID);
+    }
         break;
     case MSG_ISLAND_START: // from location
         CreateHeightMap(cModelsDir, cModelsID);
@@ -283,12 +284,12 @@ bool ISLAND::GetShadow(float x, float z, float *fRes)
     return true;
 }
 
-void ISLAND::AddLocationModel(entid_t eid, char *pIDStr, char *pDir)
+void ISLAND::AddLocationModel(entid_t eid, const std::string_view &pIDStr, const std::string_view &pDir)
 {
-    Assert(pDir && pIDStr);
+    Assert(!pDir.empty() && !pIDStr.empty());
     bForeignModels = true;
-    strcpy_s(cModelsDir, pDir);
-    strcpy_s(cModelsID, pIDStr);
+    cModelsDir = pDir;
+    cModelsID = pIDStr;
     EntityManager::AddToLayer(ISLAND_TRACE, eid, 10);
 }
 
@@ -551,7 +552,7 @@ void ISLAND::Blur8(uint8_t **pBuffer, uint32_t dwSize)
     *pBuffer = pNewBuffer;
 }
 
-bool ISLAND::CreateHeightMap(char *pDir, char *pName)
+bool ISLAND::CreateHeightMap(const std::string_view &pDir, const std::string_view &pName)
 {
     TGA_H tga_head;
     char str_tmp[256];
@@ -745,7 +746,7 @@ bool ISLAND::SaveTga8(char *fname, uint8_t *pBuffer, uint32_t dwSizeX, uint32_t 
     return true;
 }
 
-bool ISLAND::Mount(char *fname, char *fdir, entid_t *eID)
+bool ISLAND::Mount(const std::string_view &fname, const std::string_view &fdir, entid_t *eID)
 {
     // std::string        sRealFileName;
     // std::string sModelPath, sLightPath;

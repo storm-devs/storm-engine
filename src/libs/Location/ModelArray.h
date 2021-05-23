@@ -126,7 +126,7 @@ class ModelArray
     // --------------------------------------------------------------------------------------------
   private:
     uint32_t CalcHashString(const char *str);
-    static void UpdatePath(char *path);
+    static void UpdatePath(std::string& path);
 
   private:
     // Location models
@@ -137,11 +137,11 @@ class ModelArray
     bool isHavecTrg;
 
   public:
-    char modelspath[256];
-    char texturespath[256];
-    char lightpath[256];
-    char shadowpath[256];
-    char resPath[512];
+    std::string modelspath;
+    std::string texturespath;
+    std::string lightpath;
+    std::string shadowpath;
+    std::string resPath;
 };
 
 // Check if the index is correct

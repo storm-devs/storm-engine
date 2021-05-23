@@ -132,7 +132,7 @@ class WdmObjects
 
     long nationFlagIndex; // national flag index
 
-    char coordinate[128]; // to output the coordinate string
+    std::string coordinate; // to output the coordinate string
     char stCoordinate[128];
 
     float resizeRatio; // for resizing interfaces

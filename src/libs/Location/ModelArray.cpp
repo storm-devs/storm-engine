@@ -10,8 +10,8 @@
 
 #include "geometry.h"
 
-#include "../../Shared/messages.h"
-#include "Entity.h"
+#include "../../shared/messages.h"
+#include "entity.h"
 #include "ModelArray.h"
 #include "core.h"
 
@@ -41,8 +41,7 @@ long ModelArray::CreateModel(const char *modelName, const char *technique, long 
     if (!modelName || !modelName[0])
         return -1;
     // Path to the model
-    strcpy_s(resPath, modelspath);
-    strcat_s(resPath, modelName);
+    resPath = modelspath + modelName;
     // Path to textures
     auto *gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
     if (!gs)
@@ -50,7 +49,7 @@ long ModelArray::CreateModel(const char *modelName, const char *technique, long 
         core.Trace("Can't create geometry service!");
         return -1;
     }
-    gs->SetTexturePath(texturespath);
+    gs->SetTexturePath(texturespath.c_str());
     // Expanding the array
     if (numModels == maxModels)
     {
@@ -79,9 +78,9 @@ long ModelArray::CreateModel(const char *modelName, const char *technique, long 
         return -1;
     }
     // Loading
-    core.Send_Message(id, "ls", MSG_MODEL_SET_LIGHT_PATH, lightpath);
-    core.Send_Message(id, "ls", MSG_MODEL_SET_LIGHT_LMPATH, shadowpath);
-    if (!core.Send_Message(id, "ls", MSG_MODEL_LOAD_GEO, resPath))
+    core.Send_Message(id, "ls", MSG_MODEL_SET_LIGHT_PATH, lightpath.c_str());
+    core.Send_Message(id, "ls", MSG_MODEL_SET_LIGHT_LMPATH, shadowpath.c_str());
+    if (!core.Send_Message(id, "ls", MSG_MODEL_LOAD_GEO, resPath.c_str()))
     {
         gs->SetTexturePath("");
         EntityManager::EraseEntity(id);
@@ -315,13 +314,13 @@ void ModelArray::Update(float dltTime)
 void ModelArray::UpdateModelsPath()
 {
     UpdatePath(modelspath);
-    strcat_s(modelspath, "\\");
+    modelspath += "\\";
 }
 
 void ModelArray::UpdateTexturesPath()
 {
     UpdatePath(texturespath);
-    strcat_s(texturespath, "\\");
+    texturespath += "\\";
 }
 
 void ModelArray::UpdateLightPath()
@@ -391,7 +390,7 @@ void ModelArray::Relection::Restore(MODEL *model, VDX9RENDER *rs)
     rs->SetTransform(D3DTS_TEXTURE1, mtx);
 }
 
-void ModelArray::UpdatePath(char *path)
+void ModelArray::UpdatePath(std::string& path)
 {
     long j = 0;
     for (long i = 0; path[i]; i++)
@@ -408,7 +407,7 @@ void ModelArray::UpdatePath(char *path)
             path[i] = path[j++];
     }
     if (--j >= 0 && path[j] == '\\')
-        path[j] = 0;
+        path.erase(j);
 }
 
 // Check the visibility of two points

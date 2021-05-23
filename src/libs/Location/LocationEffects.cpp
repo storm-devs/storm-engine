@@ -9,7 +9,6 @@
 //============================================================================================
 
 #include "LocationEffects.h"
-#include "Entity.h"
 #include "core.h"
 #include "dx9render.h"
 
@@ -103,18 +102,16 @@ void LocationEffects::Realize(uint32_t delta_time)
 // Messages
 uint64_t LocationEffects::ProcessMessage(MESSAGE &message)
 {
-    char buf[32];
-    message.String(32, buf);
-    buf[31] = 0;
+    const std::string& buf = message.String();
     CVECTOR pos, dir;
-    if (_stricmp(buf, "Splashes") == 0)
+    if (_stricmp(buf.c_str(), "Splashes") == 0)
     {
         pos.x = message.Float();
         pos.y = message.Float();
         pos.z = message.Float();
         CreateSplash(pos, message.Float());
     }
-    else if (_stricmp(buf, "SGFireParticles") == 0)
+    else if (_stricmp(buf.c_str(), "SGFireParticles") == 0)
     {
         pos.x = message.Float();
         pos.y = message.Float();
@@ -124,7 +121,7 @@ uint64_t LocationEffects::ProcessMessage(MESSAGE &message)
         dir.z = message.Float();
         SGFirePrt(pos, dir);
     }
-    else if (_stricmp(buf, "SGBloodParticles") == 0)
+    else if (_stricmp(buf.c_str(), "SGBloodParticles") == 0)
     {
         pos.x = message.Float();
         pos.y = message.Float();
@@ -134,7 +131,7 @@ uint64_t LocationEffects::ProcessMessage(MESSAGE &message)
         dir.z = message.Float();
         SGBldPrt(pos, dir);
     }
-    else if (_stricmp(buf, "SGEnvParticles") == 0)
+    else if (_stricmp(buf.c_str(), "SGEnvParticles") == 0)
     {
         pos.x = message.Float();
         pos.y = message.Float();
@@ -144,22 +141,22 @@ uint64_t LocationEffects::ProcessMessage(MESSAGE &message)
         dir.z = message.Float();
         SGEnvPrt(pos, dir);
     }
-    else if (_stricmp(buf, "SGInited") == 0)
+    else if (_stricmp(buf.c_str(), "SGInited") == 0)
     {
         SGInited();
     }
-    else if (_stricmp(buf, "SGRelease") == 0)
+    else if (_stricmp(buf.c_str(), "SGRelease") == 0)
     {
         SGRelease();
     }
-    else if (_stricmp(buf, "AddFly") == 0)
+    else if (_stricmp(buf.c_str(), "AddFly") == 0)
     {
         pos.x = message.Float();
         pos.y = message.Float();
         pos.z = message.Float();
         AddLampFlys(pos);
     }
-    else if (_stricmp(buf, "DelFlys") == 0)
+    else if (_stricmp(buf.c_str(), "DelFlys") == 0)
     {
         numFlys = 0;
         numFly = 0;

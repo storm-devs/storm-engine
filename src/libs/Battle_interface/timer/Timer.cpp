@@ -47,10 +47,9 @@ uint64_t BITimer::ProcessMessage(MESSAGE &message)
     switch (nMsgCod)
     {
     case 0: {
-        char eventName[512];
         const auto fTime = message.Float();
-        message.String(sizeof(eventName) - 1, eventName);
-        OpenTimer(fTime, eventName);
+        const std::string& eventName = message.String();
+        OpenTimer(fTime, eventName.c_str());
     }
     break;
     case 1:

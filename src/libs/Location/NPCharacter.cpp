@@ -9,7 +9,7 @@
 //============================================================================================
 
 #include "NPCharacter.h"
-#include "../../Shared/messages.h"
+#include "../../shared/messages.h"
 #include "CharactersGroups.h"
 #include "defines.h"
 
@@ -180,10 +180,10 @@ uint32_t NPCharacter::ChlProcessMessage(long messageID, MESSAGE &message)
     char buf[128];
     switch (messageID)
     {
-    case MSG_NPCHARACTER_SETTASK:
-        message.String(sizeof(buf) - 1, buf);
-        buf[sizeof(buf) - 1] = 0;
-        return SetNewTask(GetTaskID(buf), message);
+    case MSG_NPCHARACTER_SETTASK: {
+        const std::string &buf = message.String();
+        return SetNewTask(GetTaskID(buf.c_str()), message);
+    }
     case MSG_NPCHARACTER_PUSHTASK:
         return PushTask();
     case MSG_NPCHARACTER_POPTASK:

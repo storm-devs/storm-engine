@@ -1,5 +1,5 @@
 #include "inode.h"
-#include <stdarg.h>
+#include <cstdarg>
 
 #include "core.h"
 
@@ -428,9 +428,8 @@ uint32_t CINODE::MessageProc(long msgcode, MESSAGE &message)
 
     case 3: // Execute node command for command name
     {
-        char param[256];
-        message.String(sizeof(param), param);
-        const auto commIdx = FindCommand(param);
+        const std::string& param = message.String();
+        const auto commIdx = FindCommand(param.c_str());
         if (commIdx >= 0)
             CommandExecute(pCommandsList[commIdx].code);
     }

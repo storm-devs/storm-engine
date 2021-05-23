@@ -1,6 +1,6 @@
 #include "locator.h"
-#include "../../Shared/messages.h"
-#include "Entity.h"
+#include "../../shared/messages.h"
+#include "entity.h"
 #include "core.h"
 
 LOCATOR::LOCATOR()
@@ -242,10 +242,8 @@ void LOCATOR::LocateForI_Locators(ATTRIBUTES *pA, GEOS *geo, long iGroupID, uint
 uint64_t LOCATOR::ProcessMessage(MESSAGE &message)
 {
     long message_code;
-    char name[MAX_PATH];
     GEOS::LABEL label;
     ATTRIBUTES *pA;
-    char buffer[MAX_PATH];
 
     message_code = message.Long();
     switch (message_code)
@@ -253,10 +251,10 @@ uint64_t LOCATOR::ProcessMessage(MESSAGE &message)
     case LM_LOCATE_I:
         LocateForI(message.ScriptVariablePointer());
         break;
-    case LM_LOCATE_FIRST:
-        message.String(sizeof(buffer), buffer);
+    case LM_LOCATE_FIRST: {
+        const std::string &buffer = message.String();
         pA = message.AttributePointer();
-        groupID = geo->FindName(buffer);
+        groupID = geo->FindName(buffer.c_str());
         if (groupID >= 0)
         {
             VerifyParticles();
@@ -279,6 +277,7 @@ uint64_t LOCATOR::ProcessMessage(MESSAGE &message)
             return 1;
         }
         return 0;
+    }
     case LM_LOCATE_NEXT:
         pA = message.AttributePointer();
         if (groupID >= 0)
@@ -303,12 +302,12 @@ uint64_t LOCATOR::ProcessMessage(MESSAGE &message)
         }
         return 0;
 
-    case LM_SET_GEOMETRY:
-        message.String(sizeof(name), name);
+    case LM_SET_GEOMETRY: {
+        const std::string &name = message.String();
         delete geo;
         geo = nullptr;
         rs->SetLoadTextureEnable(false);
-        geo = gs->CreateGeometry(name, "", 0);
+        geo = gs->CreateGeometry(name.c_str(), "", 0);
         rs->SetLoadTextureEnable(true);
         break;
         /*case LM_LOCATE:
@@ -354,7 +353,7 @@ uint64_t LOCATOR::ProcessMessage(MESSAGE &message)
                 PS_CREATEX,"waterfall",label.m[3][0],label.m[3][1],label.m[3][2],label.m[2][0],label.m[2][1],-label.m[2][2],0);
             }
           }
-        break;*/
+        break;*/}
     }
     return 0;
 }

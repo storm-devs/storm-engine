@@ -12,7 +12,7 @@
 
 #include "core.h"
 
-#include "Entity.h"
+#include "entity.h"
 // ============================================================================================
 // Construction, destruction
 // ============================================================================================
@@ -179,28 +179,26 @@ void Lighter::Realize(uint32_t delta_time)
 // Messages
 uint64_t Lighter::ProcessMessage(MESSAGE &message)
 {
-    char command[32];
-    message.String(31, command);
-    command[31] = 0;
-    if (_stricmp(command, "AddModel") == 0)
+    const std::string& command = message.String();
+    if (_stricmp(command.c_str(), "AddModel") == 0)
     {
         // Adding the model
         MsgAddModel(message);
         return true;
     }
-    if (_stricmp(command, "ModelsPath") == 0)
+    if (_stricmp(command.c_str(), "ModelsPath") == 0)
     {
         // Adding the model
         MsgModelsPath(message);
         return true;
     }
-    if (_stricmp(command, "LightPath") == 0)
+    if (_stricmp(command.c_str(), "LightPath") == 0)
     {
         // Adding the model
         MsgLightPath(message);
         return true;
     }
-    if (_stricmp(command, "AddLight") == 0)
+    if (_stricmp(command.c_str(), "AddLight") == 0)
     {
         // Adding the model
         MsgAddLight(message);
@@ -211,32 +209,26 @@ uint64_t Lighter::ProcessMessage(MESSAGE &message)
 
 void Lighter::MsgAddModel(MESSAGE &message)
 {
-    char name[512];
-    message.String(511, name);
-    name[511] = 0;
-    if (!name[0])
+    const std::string& name = message.String();
+    if (name.empty())
     {
         core.Trace("Location lighter: no model name, skip it!");
         return;
     }
     const auto model = message.EntityID();
-    geometry.AddObject(name, model);
+    geometry.AddObject(name.c_str(), model);
 }
 
 void Lighter::MsgModelsPath(MESSAGE &message)
 {
-    char name[512];
-    message.String(511, name);
-    name[511] = 0;
-    geometry.SetModelsPath(name);
+    const std::string& name = message.String();
+    geometry.SetModelsPath(name.c_str());
 }
 
 void Lighter::MsgLightPath(MESSAGE &message)
 {
-    char name[512];
-    message.String(511, name);
-    name[511] = 0;
-    geometry.SetLightPath(name);
+    const std::string& name = message.String();
+    geometry.SetLightPath(name.c_str());
 }
 
 void Lighter::MsgAddLight(MESSAGE &message)
@@ -257,9 +249,7 @@ void Lighter::MsgAddLight(MESSAGE &message)
     // Distance
     const auto range = message.Float();
     // Group name
-    char group[512];
-    message.String(511, group);
-    group[511] = 0;
+    const std::string& group = message.String();
     // Add source
-    lights.AddPointLight(clr, pos, att0, att1, att2, range, group);
+    lights.AddPointLight(clr, pos, att0, att1, att2, range, group.c_str());
 }

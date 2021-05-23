@@ -16,7 +16,7 @@
 #include "Grass.h"
 #include "Lights.h"
 
-#include "../../Shared/messages.h"
+#include "../../shared/messages.h"
 #include "CVector4.h"
 #include "defines.h"
 
@@ -228,18 +228,14 @@ uint64_t Location::ProcessMessage(MESSAGE &message)
     float u0, v0, u1, v1;
     long level;
     LocatorArray *la;
-    char name[256];
-    char tech[256];
     switch (message.Long())
     {
     case MSG_LOCATION_ADD_MODEL: {
-        message.String(sizeof(name), name);
-        name[sizeof(name) - 1] = 0;
-        message.String(sizeof(tech), tech);
-        tech[sizeof(tech) - 1] = 0;
+        const std::string& name = message.String();
+        const std::string& tech = message.String();
         level = message.Long();
         const auto dynamicLightsOn = message.Long();
-        lastLoadStaticModel = LoadStaticModel(name, tech, level, dynamicLightsOn == 1);
+        lastLoadStaticModel = LoadStaticModel(name.c_str(), tech.c_str(), level, dynamicLightsOn == 1);
         return lastLoadStaticModel >= 0;
     }
     case MSG_LOCATION_GET_MODEL:
@@ -251,7 +247,7 @@ uint64_t Location::ProcessMessage(MESSAGE &message)
             return 0;
         message.ScriptVariablePointer()->Set(model.ID(lastLoadStaticModel));
         return 1;
-    case MSG_LOCATION_MODEL_SET_POS:
+    case MSG_LOCATION_MODEL_SET_POS: {
         if (lastLoadStaticModel < 0)
             return 0;
         if (!model.IsValidateIndex(lastLoadStaticModel))
@@ -259,19 +255,18 @@ uint64_t Location::ProcessMessage(MESSAGE &message)
         if (!model[lastLoadStaticModel])
             return 0;
         // Looking for a group
-        message.String(sizeof(name), name);
-        name[sizeof(name) - 1] = 0;
-        la = FindLocatorsGroup(name);
+        const std::string &name = message.String();
+        la = FindLocatorsGroup(name.c_str());
         if (!la)
             return 0;
         // Looking for a locator
-        message.String(sizeof(name), name);
-        name[sizeof(name) - 1] = 0;
-        i = la->FindByName(name);
+        const std::string &name2 = message.String();
+        i = la->FindByName(name2.c_str());
         if (i < 0)
             return 0;
         la->GetLocatorPos(i, model[lastLoadStaticModel]->mtx);
         return 1;
+    }
     case MSG_LOCATION_MODEL_SET_ROT:
         if (lastLoadStaticModel < 0)
             return 0;
@@ -301,55 +296,49 @@ uint64_t Location::ProcessMessage(MESSAGE &message)
             return 0;
         model.SetReflection(lastLoadStaticModel, message.Float());
         return 1;
-    case MSG_LOCATION_SET_CHRS_PATCH:
-        message.String(sizeof(name), name);
-        name[sizeof(name) - 1] = 0;
-        return LoadCharacterPatch(name);
-    case MSG_LOCATION_SET_JMP_PATCH:
-        message.String(sizeof(name), name);
-        name[sizeof(name) - 1] = 0;
-        return LoadJumpPatch(name);
-    case MSG_LOCATION_SET_GRS_PATCH:
-        message.String(sizeof(name), name);
-        name[sizeof(name) - 1] = 0;
-        message.String(sizeof(tech), tech);
-        name[sizeof(tech) - 1] = 0;
-        return LoadGrass(name, tech);
+    case MSG_LOCATION_SET_CHRS_PATCH: {
+        const std::string &name = message.String();
+        return LoadCharacterPatch(name.c_str());
+    }
+    case MSG_LOCATION_SET_JMP_PATCH: {
+        const std::string &name = message.String();
+        return LoadJumpPatch(name.c_str());
+    }
+    case MSG_LOCATION_SET_GRS_PATCH: {
+        const std::string &name = message.String();
+        const std::string &tech = message.String();
+        return LoadGrass(name.c_str(), tech.c_str());
+    }
     case MSG_LOCATION_UPDATELOCATORS:
         UpdateLocators();
         return 1;
     case MSG_LOCATION_MODELSPATH:
-        message.String(sizeof(model.modelspath), model.modelspath);
-        model.modelspath[sizeof(model.modelspath) - 1] = 0;
+        model.modelspath = message.String();
         model.UpdateModelsPath();
 
-        core.Send_Message(lighter, "ss", "ModelsPath", model.modelspath);
+        core.Send_Message(lighter, "ss", "ModelsPath", model.modelspath.c_str());
 
         return 1;
     case MSG_LOCATION_TEXTURESPATH:
-        message.String(sizeof(model.texturespath), model.texturespath);
-        model.texturespath[sizeof(model.texturespath) - 1] = 0;
+        model.texturespath = message.String();
         model.UpdateTexturesPath();
         return 1;
     case MSG_LOCATION_LIGHTPATH:
-        message.String(sizeof(model.lightpath), model.lightpath);
-        model.lightpath[sizeof(model.lightpath) - 1] = 0;
+        model.lightpath = message.String();
         model.UpdateLightPath();
-        core.Send_Message(lighter, "ss", "LightPath", model.lightpath);
+        core.Send_Message(lighter, "ss", "LightPath", model.lightpath.c_str());
 
         return 1;
     case MSG_LOCATION_SHADOWPATH:
-        message.String(sizeof(model.shadowpath), model.shadowpath);
-        model.lightpath[sizeof(model.shadowpath) - 1] = 0;
+        model.shadowpath = message.String();
         model.UpdateShadowPath();
         return 1;
     case MSG_LOCATION_PAUSE:
         isPause = message.Long() != 0;
         return 1;
-    case MSG_LOCATION_VIEWLGROUP:
-        message.String(sizeof(name), name);
-        name[sizeof(name) - 1] = 0;
-        la = FindLocatorsGroup(name);
+    case MSG_LOCATION_VIEWLGROUP: {
+        const std::string &name = message.String();
+        la = FindLocatorsGroup(name.c_str());
         if (!la)
             return 0;
         la->isVisible = true;
@@ -358,10 +347,10 @@ uint64_t Location::ProcessMessage(MESSAGE &message)
         la->color = message.Long();
         isDebugView = true;
         return 1;
-    case MSG_LOCATION_HIDELGROUP:
-        message.String(sizeof(name), name);
-        name[sizeof(name) - 1] = 0;
-        la = FindLocatorsGroup(name);
+    }
+    case MSG_LOCATION_HIDELGROUP: {
+        const std::string &name = message.String();
+        la = FindLocatorsGroup(name.c_str());
         if (!la)
             return 0;
         la->isVisible = false;
@@ -376,27 +365,27 @@ uint64_t Location::ProcessMessage(MESSAGE &message)
             }
         }
         return 1;
-    case MSG_LOCATION_GRP_RADIUS:
-        message.String(sizeof(name), name);
-        name[sizeof(name) - 1] = 0;
-        la = FindLocatorsGroup(name);
+    }
+    case MSG_LOCATION_GRP_RADIUS: {
+        const std::string &name = message.String();
+        la = FindLocatorsGroup(name.c_str());
         if (!la)
             return 0;
         la->radius = message.Float();
         return 1;
-    case MSG_LOCATION_LOC_RADIUS:
-        message.String(sizeof(name), name);
-        name[sizeof(name) - 1] = 0;
-        la = FindLocatorsGroup(name);
+    }
+    case MSG_LOCATION_LOC_RADIUS: {
+        const std::string &name = message.String();
+        la = FindLocatorsGroup(name.c_str());
         if (!la)
             return 0;
-        message.String(sizeof(name), name);
-        name[sizeof(name) - 1] = 0;
-        i = la->FindByName(name);
+        const std::string &name2 = message.String();
+        i = la->FindByName(name2.c_str());
         if (i < 0)
             return 0;
         la->SetLocatorRadius(i, message.Float());
         return 1;
+    }
     case MSG_LOCATION_CHECKENTRY:
         u0 = message.Float(); // x
         v0 = message.Float(); // y
@@ -411,13 +400,12 @@ uint64_t Location::ProcessMessage(MESSAGE &message)
     case MSG_LOCATION_CLRCHRPOSITIONS:
         supervisor.DelSavePositions(false);
         break;
-    case MSG_LOCATION_ADD_LIGHT:
+    case MSG_LOCATION_ADD_LIGHT: {
         lights = static_cast<Lights *>(EntityManager::GetEntityPointer(lightsid));
         if (!lights)
             return false;
-        message.String(sizeof(name), name);
-        name[sizeof(name) - 1] = 0;
-        i = lights->FindLight(name);
+        const std::string &name = message.String();
+        i = lights->FindLight(name.c_str());
         if (i < 0)
             return false;
         u0 = message.Float();
@@ -425,10 +413,11 @@ uint64_t Location::ProcessMessage(MESSAGE &message)
         u1 = message.Float();
         lights->AddLight(i, CVECTOR(u0, v0, u1));
         return true;
-    case MSG_LOCATION_EX_MSG:
-        message.String(sizeof(name), name);
-        name[sizeof(name) - 1] = 0;
-        return MessageEx(name, message);
+    }
+    case MSG_LOCATION_EX_MSG: {
+        const std::string& name = message.String();
+        return MessageEx(name.c_str(), message);
+    }
     case MSG_LOCATION_VIEWSTATEBARS:
         bDrawBars = message.Long() != 0;
         return 1;
@@ -536,7 +525,7 @@ bool Location::LoadCharacterPatch(const char *ptcName)
     // Form the path to the file
     char path[512];
     strcpy_s(path, "resource\\models\\");
-    strcat_s(path, model.modelspath);
+    strcat_s(path, model.modelspath.c_str());
     strcat_s(path, ptcName);
     strcat_s(path, ".ptc");
     // load the patch
@@ -570,7 +559,7 @@ bool Location::LoadGrass(const char *modelName, const char *texture)
         grs->SetTexture(texture);
     char nm[512];
     strcpy_s(nm, "resource\\models\\");
-    strcat_s(nm, model.modelspath);
+    strcat_s(nm, model.modelspath.c_str());
     strcat_s(nm, modelName);
     strcat_s(nm, ".grs");
     long ll = strlen(nm);
@@ -671,28 +660,25 @@ bool Location::MessageEx(const char *name, MESSAGE &message)
     }
     else if (_stricmp(name, "DeleteLocationModel") == 0)
     {
-        char modelname[MAX_PATH];
-        message.String(sizeof(modelname), modelname);
-        const long n = model.FindModel(modelname);
+        const std::string& modelname = message.String();
+        const long n = model.FindModel(modelname.c_str());
         if (n >= 0)
             model.DeleteModel(n);
         return true;
     }
     else if (_stricmp(name, "HideLocationModel") == 0)
     {
-        char modelname[MAX_PATH];
-        message.String(sizeof(modelname), modelname);
-        const long n = model.FindModel(modelname);
+        const std::string& modelname = message.String();
+        const long n = model.FindModel(modelname.c_str());
         if (n >= 0)
             // core.LayerDel("realize", model.RealizerID(n));
             core.Send_Message(model.RealizerID(n), "ll", 2, 0);
     }
     else if (_stricmp(name, "ShowLocationModel") == 0)
     {
-        char modelname[MAX_PATH];
-        message.String(sizeof(modelname), modelname);
+        const std::string& modelname = message.String();
         long layer = message.Long();
-        const long n = model.FindModel(modelname);
+        const long n = model.FindModel(modelname.c_str());
         if (n >= 0)
             // EntityManager::AddToLayer(realize, model.RealizerID(n), layer);
             core.Send_Message(model.RealizerID(n), "ll", 2, 1);
@@ -1100,8 +1086,8 @@ void Location::DrawEnemyBars(const CVECTOR &pos, float hp, float energy, float a
 void Location::TestLocatorsInPatch(MESSAGE &message)
 {
     char buf[4096];
-    message.String(sizeof(buf), buf);
-    buf[sizeof(buf) - 1] = 0;
+    const std::string& bufStr = message.String();
+    strcpy_s(buf, bufStr.c_str());
     LocatorArray *la = FindLocatorsGroup(buf);
     if (!la)
     {

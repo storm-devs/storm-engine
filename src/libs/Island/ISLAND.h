@@ -62,7 +62,7 @@ class ISLAND : public ISLAND_BASE
 
     bool bFirstRealize;
 
-    char cModelsDir[256], cModelsID[256], cFoamDir[256];
+    std::string cModelsDir, cModelsID, cFoamDir;
 
     float fDepthHeight[256];
 
@@ -87,17 +87,17 @@ class ISLAND : public ISLAND_BASE
     float GetShadowTemp(long iX, long iZ);
 
     // depth map section
-    bool CreateHeightMap(char *pDir, char *pName);
+    bool CreateHeightMap(const std::string_view &pDir, const std::string_view &pName);
     bool ActivateCamomileTrace(CVECTOR &vSrc);
     inline float GetDepthCheck(uint32_t iX, uint32_t iZ);
     inline float GetDepthNoCheck(uint32_t iX, uint32_t iZ);
 
-    bool Mount(char *fname, char *fdir, entid_t *eID);
+    bool Mount(const std::string_view &fname, const std::string_view &fdir, entid_t *eID);
     void Uninit();
 
     void CalcBoxParameters(CVECTOR &vBoxCenter, CVECTOR &vBoxSize);
 
-    void SetName(char *pIslandName)
+    void SetName(const std::string_view &pIslandName)
     {
         sIslandName = pIslandName;
     };
@@ -106,7 +106,7 @@ class ISLAND : public ISLAND_BASE
         return (char *)sIslandName.c_str();
     };
 
-    void AddLocationModel(entid_t eid, char *pIDStr, char *pStr);
+    void AddLocationModel(entid_t eid, const std::string_view& pIDStr, const std::string_view& pStr);
 
     // debug
     // dead code

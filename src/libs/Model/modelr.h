@@ -65,7 +65,7 @@ class NODER : public NODE
 
 class MODELR : public MODEL
 {
-    char LightPath[256], lmPath[256];
+    std::string LightPath, lmPath;
     struct ANIBUFFER
     {
         FVF_VERTEX *v;
@@ -135,6 +135,6 @@ class MODELR : public MODEL
   protected:
     bool useBlend;
     uint32_t blendTime, passedTime;
-    char blendTechnique[128];
+    std::string blendTechnique;
     float alpha1, alpha2;
 };

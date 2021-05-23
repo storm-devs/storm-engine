@@ -382,9 +382,8 @@ uint32_t CXI_IMGCOLLECTION::MessageProc(long msgcode, MESSAGE &message)
     {
     case 0: // add icon
     {
-        char param[256];
         // picture name
-        message.String(sizeof(param) - 1, param);
+        const std::string& param = message.String();
         // picture color
         const auto dwColor = message.Long();
         // picture position
@@ -397,24 +396,23 @@ uint32_t CXI_IMGCOLLECTION::MessageProc(long msgcode, MESSAGE &message)
         pos.right += m_xyCommonOffset.x;
         pos.top += m_xyCommonOffset.y;
         pos.bottom += m_xyCommonOffset.y;
-        AddImage(param, dwColor, pos);
+        AddImage(param.c_str(), dwColor, pos);
     }
     break;
 
     case 1: // set texture
     {
-        char param[256];
-        message.String(sizeof(param) - 1, param);
+        const std::string& param = message.String();
 
-        if (!sGroupName || _stricmp(sGroupName, param) != 0)
+        if (!sGroupName || _stricmp(sGroupName, param.c_str()) != 0)
         {
             STORM_DELETE(sGroupName);
             PICTURE_TEXTURE_RELEASE(pPictureService, sGroupName, texl);
 
             // group name
-            const auto len = strlen(param) + 1;
+            const auto len = param.size() + 1;
             sGroupName = new char[len];
-            memcpy(sGroupName, param, len);
+            memcpy(sGroupName, param.c_str(), len);
             texl = pPictureService->GetTextureID(sGroupName);
         }
     }
@@ -444,8 +442,7 @@ uint32_t CXI_IMGCOLLECTION::MessageProc(long msgcode, MESSAGE &message)
     case 4: // change picture
     {
         const auto nImgNum = message.Long();
-        char param[256];
-        message.String(sizeof(param), param);
+        const std::string& param = message.String();
         if (nImgNum >= 0 && nImgNum < m_aEditInfo.size())
         {
             m_aEditInfo[nImgNum].sName = param;

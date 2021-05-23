@@ -275,15 +275,14 @@ uint64_t SCRSHOTER::ProcessMessage(MESSAGE &message)
         return (uintptr_t)m_pScrShotTex;
         break;
     case MSG_SCRSHOT_READ: {
-        char param[512], param2[256];
         VDATA *pvdat;
 
-        message.String(sizeof(param) - 1, param);
-        message.String(sizeof(param2) - 1, param2);
+        const std::string& param = message.String();
+        const std::string& param2 = message.String();
         pvdat = message.ScriptVariablePointer();
 
-        auto *pRetTex = AddSaveTexture(param, param2);
-        auto *const strDat = FindSaveData(param2);
+        auto *pRetTex = AddSaveTexture(param.c_str(), param2.c_str());
+        auto *const strDat = FindSaveData(param2.c_str());
         if (pvdat)
             if (!strDat)
                 pvdat->Set("\0");
@@ -293,16 +292,15 @@ uint64_t SCRSHOTER::ProcessMessage(MESSAGE &message)
     }
     break;
     case MSG_SCRSHOT_RELEASE: {
-        char param[512];
-        message.String(sizeof(param) - 1, param);
-        DelSaveTexture(param);
+        const std::string& param = message.String();
+        DelSaveTexture(param.c_str());
     }
     break;
     }
     return 0;
 }
 
-IDirect3DTexture9 *SCRSHOTER::FindSaveTexture(char *fileName) const
+IDirect3DTexture9 *SCRSHOTER::FindSaveTexture(const char *fileName) const
 {
     if (!fileName)
         return nullptr;
@@ -316,7 +314,7 @@ IDirect3DTexture9 *SCRSHOTER::FindSaveTexture(char *fileName) const
     return nullptr;
 }
 
-char *SCRSHOTER::FindSaveData(char *fileName) const
+char *SCRSHOTER::FindSaveData(const char *fileName) const
 {
     if (!fileName)
         return nullptr;
@@ -330,7 +328,7 @@ char *SCRSHOTER::FindSaveData(char *fileName) const
     return nullptr;
 }
 
-IDirect3DTexture9 *SCRSHOTER::AddSaveTexture(char *dirName, char *fileName)
+IDirect3DTexture9 *SCRSHOTER::AddSaveTexture(const char *dirName, const char *fileName)
 {
     if (fileName == nullptr)
         return nullptr;
@@ -363,7 +361,7 @@ IDirect3DTexture9 *SCRSHOTER::AddSaveTexture(char *dirName, char *fileName)
     return m_list->m_pTex;
 }
 
-void SCRSHOTER::DelSaveTexture(char *fileName)
+void SCRSHOTER::DelSaveTexture(const char *fileName)
 {
     if (!fileName)
         return;

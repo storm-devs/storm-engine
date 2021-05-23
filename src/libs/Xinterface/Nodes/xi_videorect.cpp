@@ -1,6 +1,6 @@
 #include "xi_videorect.h"
 #include "../base_video.h"
-#include "Entity.h"
+#include "entity.h"
 
 CXI_VIDEORECT::CXI_VIDEORECT()
 {
@@ -108,9 +108,8 @@ uint32_t CXI_VIDEORECT::MessageProc(long msgcode, MESSAGE &message)
     {
     case 0: // start video
     {
-        char param[256];
-        message.String(sizeof(param), param);
-        StartVideoPlay(param);
+        const std::string& param = message.String();
+        StartVideoPlay(param.c_str());
     }
     break;
     }
@@ -118,7 +117,7 @@ uint32_t CXI_VIDEORECT::MessageProc(long msgcode, MESSAGE &message)
     return 0;
 }
 
-void CXI_VIDEORECT::StartVideoPlay(char *videoFileName)
+void CXI_VIDEORECT::StartVideoPlay(const char *videoFileName)
 {
     if (EntityManager::GetEntityPointer(m_eiVideo))
     {

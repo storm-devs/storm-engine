@@ -73,7 +73,7 @@ class CAviPlayer : public xiBaseVideo
     IDirect3DTexture9 *pTex;
 
     void ReleaseAll();
-    bool PlayMedia(char *fileName);
+    bool PlayMedia(const char *fileName);
     bool GetInterfaces();
     void CleanupInterfaces();
 

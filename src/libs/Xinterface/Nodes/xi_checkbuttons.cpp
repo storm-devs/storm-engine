@@ -277,11 +277,10 @@ uint32_t CXI_CHECKBUTTONS::MessageProc(long msgcode, MESSAGE &message)
     {
     case 0: // add button
     {
-        char param[1024];
-        message.String(sizeof(param), param);
+        const std::string& param = message.String();
         const auto bSelect = (message.Long() != 0);
         const auto bDisable = (message.Long() != 0);
-        AddButton(param, bDisable, bSelect);
+        AddButton(param.c_str(), bDisable, bSelect);
         UpdateTextInfo(m_aButton.size() - 1);
     }
     break;
@@ -289,9 +288,8 @@ uint32_t CXI_CHECKBUTTONS::MessageProc(long msgcode, MESSAGE &message)
     case 1: // set new text to button
     {
         const auto nButtonNum = message.Long() - 1;
-        char param[1024];
-        message.String(sizeof(param), param);
-        ChangeText(nButtonNum, param);
+        const std::string& param = message.String();
+        ChangeText(nButtonNum, param.c_str());
         UpdateTextInfo(nButtonNum);
     }
     break;

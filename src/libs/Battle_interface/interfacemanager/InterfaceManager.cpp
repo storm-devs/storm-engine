@@ -139,9 +139,8 @@ long BI_InterfaceManager::MsgLoadSheet(MESSAGE &message)
     // remove the old interface
     STORM_DELETE(m_pInterfaceSheet);
 
-    char param[512];
-    message.String(sizeof(param), param);
-    if (_stricmp(param, "sea") == 0)
+    const std::string& param = message.String();
+    if (_stricmp(param.c_str(), "sea") == 0)
     {
         // loading sea interface
         m_pInterfaceSheet = new BI_SeaGroup(this);
@@ -150,7 +149,7 @@ long BI_InterfaceManager::MsgLoadSheet(MESSAGE &message)
             m_pInterfaceSheet->Init();
         }
     }
-    else if (_stricmp(param, "land") == 0)
+    else if (_stricmp(param.c_str(), "land") == 0)
     {
         // loading the land interface
     }

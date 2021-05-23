@@ -142,7 +142,7 @@ class SHIP : public SHIP_BASE
     void CheckShip2Strand(float fDeltaTime);
     void MastFall(mast_t *pM);
     void HullFall(hull_t *pM);
-    void FakeFire(char *sBort, float fRandTime);
+    void FakeFire(const char *sBort, float fRandTime);
 
     CMatrix UpdateModelMatrix();
     void RecalculateWorldOffset();

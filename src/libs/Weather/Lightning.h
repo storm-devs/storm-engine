@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Typedef.h"
-#include "Weather_base.h"
+#include "typedef.h"
+#include "Weather_Base.h"
 #include <vector>
 
 #define MAX_LIGHTNING_TEXTURES 2
@@ -10,7 +10,7 @@ class LIGHTNING : public Entity
 {
     struct flash_t
     {
-        char sTechnique[128];
+        std::string sTechnique;
         float fSize;
         float fTime;
     };
@@ -28,7 +28,7 @@ class LIGHTNING : public Entity
         float fAlpha;
         float fPower;
 
-        char sTechnique[128];
+        std::string sTechnique;
 
         flash_t Flash;
     };

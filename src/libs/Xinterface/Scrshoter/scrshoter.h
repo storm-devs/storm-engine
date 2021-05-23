@@ -42,10 +42,10 @@ class SCRSHOTER : public Entity
 
   private:
     bool MakeScreenShot();
-    IDirect3DTexture9 *FindSaveTexture(char *fileName) const;
-    char *FindSaveData(char *fileName) const;
-    IDirect3DTexture9 *AddSaveTexture(char *dirName, char *fileName);
-    void DelSaveTexture(char *fileName);
+    IDirect3DTexture9 *FindSaveTexture(const char *fileName) const;
+    char *FindSaveData(const char *fileName) const;
+    IDirect3DTexture9 *AddSaveTexture(const char *dirName, const char *fileName);
+    void DelSaveTexture(const char *fileName);
     IDirect3DTexture9 *GetTexFromSave(char *fileName, char **pDatStr) const;
 
     IDirect3DTexture9 *m_pScrShotTex;

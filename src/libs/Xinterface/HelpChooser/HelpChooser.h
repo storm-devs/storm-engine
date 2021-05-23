@@ -35,7 +35,7 @@ class HELPCHOOSER : public Entity
 
   protected:
     void AllRelease();
-    bool RunChooser(char *ChooserGroup);
+    bool RunChooser(const char *ChooserGroup);
     void SetRectangle(long newRectNum);
     long GetRectangleLeft() const;
     long GetRectangleRight() const;

@@ -1,5 +1,5 @@
-#include "../../Shared/messages.h"
-#include "Entity.h"
+#include "../../shared/messages.h"
+#include "entity.h"
 #include "core.h"
 #include "defines.h"
 #include "modelr.h"
@@ -141,7 +141,7 @@ void MODELR::Realize(uint32_t Delta_Time)
     if (useBlend)
     {
         if (!passedTime)
-            SetChildrenTechnique(root, blendTechnique);
+            SetChildrenTechnique(root, blendTechnique.c_str());
 
         passedTime += Delta_Time;
         /*
@@ -249,7 +249,7 @@ void MODELR::AniRender()
 
 uint64_t MODELR::ProcessMessage(MESSAGE &message)
 {
-    char str[256];
+    std::string str;
     const long code = message.Long();
     CVECTOR tmp;
     switch (code)
@@ -293,18 +293,18 @@ uint64_t MODELR::ProcessMessage(MESSAGE &message)
         // blendTechnique, time, a1, a2
         useBlend = true;
         passedTime = 0;
-        message.String(128, blendTechnique);
+        blendTechnique = message.String();
         blendTime = message.Long();
         alpha1 = message.Float();
         alpha2 = message.Float();
         break;
     case MSG_MODEL_LOAD_GEO: // set geometry
         // GUARD(MSG_MODEL_LOAD_GEO)
-        message.String(255, str);
+        str = message.String();
         NODER::gs = GeometyService;
         NODER::rs = rs;
         root = new NODER();
-        if (!root->Init(LightPath, str, "", CMatrix(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), mtx, nullptr, lmPath))
+        if (!root->Init(LightPath.c_str(), str.c_str(), "", CMatrix(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), mtx, nullptr, lmPath.c_str()))
         {
             delete root;
             root = nullptr;
@@ -318,9 +318,9 @@ uint64_t MODELR::ProcessMessage(MESSAGE &message)
         break;
     case MSG_MODEL_LOAD_ANI: // set animation
     {
-        message.String(255, str);
+        str = message.String();
         AnimationService *asr = static_cast<AnimationService *>(core.CreateService("AnimationServiceImp"));
-        ani = asr->CreateAnimation(str);
+        ani = asr->CreateAnimation(str.c_str());
         if (ani)
             return 1;
         return 0;
@@ -333,12 +333,12 @@ uint64_t MODELR::ProcessMessage(MESSAGE &message)
         break;
     case MSG_MODEL_SET_LIGHT_PATH:
         // GUARD(MSG_MODEL_SET_LIGHT_PATH)
-        message.String(255, LightPath);
+        LightPath = message.String();
         // UNGUARD
         break;
     case MSG_MODEL_SET_LIGHT_LMPATH:
         // GUARD(MSG_MODEL_SET_LIGHT_LMPATH)
-        message.String(255, lmPath);
+        lmPath = message.String();
         // UNGUARD
         break;
     case MSG_MODEL_RELEASE:
@@ -354,14 +354,14 @@ uint64_t MODELR::ProcessMessage(MESSAGE &message)
         // UNGUARD
         break;
     case MSG_MODEL_SET_DIRPATH: {
-        message.String(255, str);
-        GeometyService->SetTexturePath(str);
+        str = message.String();
+        GeometyService->SetTexturePath(str.c_str());
     }
     break;
     case MSG_MODEL_SET_TECHNIQUE: {
-        message.String(255, str);
+        str = message.String();
         if (root)
-            SetChildrenTechnique(root, str);
+            SetChildrenTechnique(root, str.c_str());
     }
     break;
     case MSG_MODEL_SET_MAX_VIEW_DIST:

@@ -592,25 +592,23 @@ uint32_t CXI_TEXTBUTTON::MessageProc(long msgcode, MESSAGE &message)
     {
     case 0: // change the text on the button
     {
-        char param[256];
-        message.String(sizeof(param) - 1, param);
-        param[sizeof(param) - 1] = 0;
+        const std::string& param = message.String();
         STORM_DELETE(m_sString);
         m_idString = -1;
         if (param[0] == '#')
         {
             {
-                const auto len = strlen(param);
+                const auto len = param.size();
                 if ((m_sString = new char[len]) == nullptr)
                 {
                     throw std::runtime_error("allocate memory error");
                 }
-                memcpy(m_sString, &param[1], len);
+                memcpy(m_sString, param.c_str() + 1, len);
             }
         }
         else
         {
-            m_idString = pStringService->GetStringNum(param);
+            m_idString = pStringService->GetStringNum(param.c_str());
         }
     }
     break;
