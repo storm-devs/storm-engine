@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <string>
 
 namespace storm
 {
@@ -31,21 +32,13 @@ template <typename Range1T, typename Range2T = Range1T> inline bool iEquals(cons
 {
     detail::is_iequal comp;
 
-    const auto end_input = std::end(first);
-    const auto end_test = std::end(second);
+    const auto first_begin = std::begin(first);
+    const auto second_begin = std::begin(second);
 
-    auto it_input = std::begin(first);
-    auto it_test = std::begin(second);
+    const auto first_end = std::end(first);
+    const auto second_end = std::end(second);
 
-    for (; it_input != end_input && it_test != end_test; ++it_input, ++it_test)
-    {
-        if (!comp(*it_input, *it_test))
-        {
-            return false;
-        }
-    }
-
-    return it_input == end_input && it_test == end_test;
+    return std::equal(first_begin, first_end, second_begin, second_end, comp);
 }
 
 template <typename Range1T, typename Range2T = Range1T> inline bool iLess(const Range1T &first, const Range2T &second)
@@ -146,5 +139,27 @@ inline int wildicmp(const char *wild, const char *string)
     }
     return !*wild;
 }
+
+class iStrHasher
+{
+  public:
+    size_t operator()(const std::string &key) const
+    {
+        std::string lower_copy = key;
+        std::transform(lower_copy.begin(), lower_copy.end(), lower_copy.begin(), ::tolower);
+        return inner_hasher_(lower_copy);
+    }
+
+  private:
+    std::hash<std::string> inner_hasher_;
+};
+
+struct iStrComparator
+{
+    bool operator()(const std::string &left, const std::string &right) const
+    {
+        return iEquals(left, right);
+    }
+};
 
 } // namespace storm

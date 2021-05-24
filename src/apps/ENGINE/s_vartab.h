@@ -1,7 +1,7 @@
 #pragma once
 
 #include "data.h"
-#include "strutils.h"
+#include "storm/string_compare.hpp"
 #include <unordered_map>
 #include <vector>
 
@@ -63,7 +63,7 @@ class VarTable
 
   private:
     std::vector<VarInfo> vars_;
-    std::unordered_map<std::string, size_t, CaseInsensitiveStringHasher, CaseInsensitiveStringComparator>
+    std::unordered_map<std::string, size_t, storm::iStrHasher, storm::iStrComparator>
         hash_table_; // name to index mapping
     VIRTUAL_COMPILER *vc_;
 };

@@ -174,8 +174,8 @@ size_t FuncTable::FindVar(size_t func_index, const std::string &var_name) const
 
     const auto &vars = funcs_[func_index].local_vars;
     size_t hash = hasher_(var_name);
-    const auto result = std::find_if(vars.begin(), vars.end(), [this, hash, &var_name](const LocalVarInfo &var) {
-        return var.hash == hash && comparator_(var.name, var_name); // fast comparison
+    const auto result = std::find_if(vars.begin(), vars.end(), [hash, &var_name](const LocalVarInfo &var) {
+        return var.hash == hash && storm::iEquals(var.name, var_name); // fast comparison
     });
 
     if (result == vars.end())
