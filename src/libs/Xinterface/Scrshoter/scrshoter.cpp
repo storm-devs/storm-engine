@@ -277,8 +277,8 @@ uint64_t SCRSHOTER::ProcessMessage(MESSAGE &message)
     case MSG_SCRSHOT_READ: {
         VDATA *pvdat;
 
-        const std::string& param = message.String();
-        const std::string& param2 = message.String();
+        const std::string &param = message.String();
+        const std::string &param2 = message.String();
         pvdat = message.ScriptVariablePointer();
 
         auto *pRetTex = AddSaveTexture(param.c_str(), param2.c_str());
@@ -292,7 +292,7 @@ uint64_t SCRSHOTER::ProcessMessage(MESSAGE &message)
     }
     break;
     case MSG_SCRSHOT_RELEASE: {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         DelSaveTexture(param.c_str());
     }
     break;

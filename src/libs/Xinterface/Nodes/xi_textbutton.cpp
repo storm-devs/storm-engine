@@ -592,7 +592,7 @@ uint32_t CXI_TEXTBUTTON::MessageProc(long msgcode, MESSAGE &message)
     {
     case 0: // change the text on the button
     {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         STORM_DELETE(m_sString);
         m_idString = -1;
         if (param[0] == '#')

@@ -1,7 +1,7 @@
 #include "locator.h"
 #include "../../shared/messages.h"
-#include "entity.h"
 #include "core.h"
+#include "entity.h"
 
 LOCATOR::LOCATOR()
 {
@@ -354,8 +354,8 @@ uint64_t LOCATOR::ProcessMessage(MESSAGE &message)
             }
           }
         break;*/}
-    }
-    return 0;
+        }
+        return 0;
 }
 
 uint32_t LOCATOR::AttributeChanged(ATTRIBUTES *pA)

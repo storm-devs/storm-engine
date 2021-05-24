@@ -13,8 +13,8 @@
 #include "core.h"
 
 #include "Character.h"
-#include "entity.h"
 #include "defines.h"
+#include "entity.h"
 
 // ============================================================================================
 

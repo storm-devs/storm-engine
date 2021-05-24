@@ -9,21 +9,11 @@
 
 class VDATA;
 
-namespace storm {
+namespace storm
+{
 
-using MessageParam = std::variant<
-    uint8_t,
-    uint16_t,
-    uint32_t,
-    long,
-    float,
-    double,
-    ATTRIBUTES *,
-    entid_t,
-    VDATA *,
-    CVECTOR,
-    std::string
-    >;
+using MessageParam = std::variant<uint8_t, uint16_t, uint32_t, long, float, double, ATTRIBUTES *, entid_t, VDATA *,
+                                  CVECTOR, std::string>;
 
 } // namespace storm
 
@@ -101,7 +91,7 @@ class MESSAGE final
         return get<CVECTOR>(params_[index - 1]);
     }
 
-    const std::string& String()
+    const std::string &String()
     {
         ValidateFormat('s');
         return get<std::string>(params_[index - 1]);
@@ -177,9 +167,8 @@ class MESSAGE final
         index = 0;
         format_ = _format;
         params_.resize(format_.size());
-        std::transform(format_.begin(), format_.end(), params_.begin(), [&] (const char c) {
-            return GetParamValue(c, args);
-        });
+        std::transform(format_.begin(), format_.end(), params_.begin(),
+                       [&](const char c) { return GetParamValue(c, args); });
     }
 
     char GetCurrentFormatType()
@@ -192,12 +181,14 @@ class MESSAGE final
         return String().c_str();
     }
 
-    [[nodiscard]] std::string_view GetFormat() const {
+    [[nodiscard]] std::string_view GetFormat() const
+    {
         return format_;
     }
 
   private:
-    static storm::MessageParam GetParamValue(const char c, va_list& args) {
+    static storm::MessageParam GetParamValue(const char c, va_list &args)
+    {
         switch (c)
         {
         case 'b':
@@ -223,7 +214,7 @@ class MESSAGE final
         case 'c':
             return va_arg(args, CVECTOR);
         case 's': {
-            char* ptr = va_arg(args, char *);
+            char *ptr = va_arg(args, char *);
             return std::string(ptr);
         }
         default:

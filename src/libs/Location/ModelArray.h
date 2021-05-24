@@ -126,7 +126,7 @@ class ModelArray
     // --------------------------------------------------------------------------------------------
   private:
     uint32_t CalcHashString(const char *str);
-    static void UpdatePath(std::string& path);
+    static void UpdatePath(std::string &path);
 
   private:
     // Location models

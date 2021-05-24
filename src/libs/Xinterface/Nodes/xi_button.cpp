@@ -315,7 +315,7 @@ uint32_t CXI_BUTTON::MessageProc(long msgcode, MESSAGE &message)
 
     case 2: // change picture
     {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         const auto len = param.size() + 1;
         if (len == 1)
             break;
@@ -332,7 +332,7 @@ uint32_t CXI_BUTTON::MessageProc(long msgcode, MESSAGE &message)
             m_idTex = pPictureService->GetTextureID(m_sGroupName);
         }
 
-        const std::string& param2 = message.String();
+        const std::string &param2 = message.String();
         pPictureService->GetTexturePos(m_sGroupName, param2.c_str(), m_tRect);
     }
     break;

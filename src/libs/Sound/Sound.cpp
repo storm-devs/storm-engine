@@ -85,7 +85,7 @@ uint64_t SOUND::ProcessMessage(MESSAGE &message)
         soundService->SetCameraOrientation(vector, vector2);
         break;
     case MSG_SOUND_PLAY: {
-        const std::string& tempString = message.String(); // filename
+        const std::string &tempString = message.String(); // filename
 
         temp = message.Long(); // type
         // defaults
@@ -208,7 +208,7 @@ uint64_t SOUND::ProcessMessage(MESSAGE &message)
         soundService->ResetScheme();
         break;
     case MSG_SOUND_SCHEME_SET: {
-        const std::string& tempString = message.String();
+        const std::string &tempString = message.String();
         soundService->SetScheme(tempString.c_str());
         break;
     }

@@ -456,7 +456,7 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     switch (cod)
     {
     case MSG_INTERFACE_MSG_TO_NODE: {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         if (m_pNodes != nullptr)
         {
             auto *pNode = m_pNodes->FindNode(param.c_str());
@@ -474,7 +474,7 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     }
     break;
     case MSG_INTERFACE_SETHELPSTRING: {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         if (m_pContHelp != nullptr)
             static_cast<CXI_CONTEXTHELP *>(m_pContHelp)->SetTempHelp(param.c_str());
     }
@@ -486,7 +486,7 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     }
     break;
     case MSG_INTERFACE_NEW_CURRENT_NODE: {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         auto *pNewCurNode = (m_pNodes != nullptr ? m_pNodes->FindNode(param.c_str()) : nullptr);
         if (pNewCurNode != nullptr)
             SetCurNode(pNewCurNode);
@@ -494,7 +494,7 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     break;
 
     case MSG_INTERFACE_SET_NODE_USING: {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         int nUsingCode = message.Long();
         auto *pTmpNod = (m_pNodes != nullptr ? m_pNodes->FindNode(param.c_str()) : nullptr);
         if (pTmpNod != nullptr)
@@ -503,7 +503,7 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     break;
 
     case MSG_INTERFACE_SCROLL_CHANGE: {
-        const std::string& sNodeName = message.String();
+        const std::string &sNodeName = message.String();
         auto nItemNum = message.Long();
 
         auto *pScrollNode = (m_pNodes != nullptr ? m_pNodes->FindNode(sNodeName.c_str()) : nullptr);
@@ -518,7 +518,7 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     break;
 
     case MSG_INTERFACE_FOURIMAGE_CHANGE: {
-        const std::string& sNodeName = message.String();
+        const std::string &sNodeName = message.String();
         auto nItemNum = message.Long();
 
         CINODE *pNode = (m_pNodes != nullptr ? m_pNodes->FindNode(sNodeName.c_str()) : nullptr);
@@ -530,7 +530,7 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     break;
 
     case MSG_INTERFACE_INIT: {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         ReleaseOld();
         LoadDialog(param.c_str());
         m_bUse = true;
@@ -539,7 +539,7 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     break;
 
     case MSG_INTERFACE_ENABLE_STRING: {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         for (int i = 0; i < m_nStringQuantity; i++)
             if (m_stringes[i].sStringName != nullptr && _stricmp(param.c_str(), m_stringes[i].sStringName) == 0)
             {
@@ -550,7 +550,7 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     break;
 
     case MSG_INTERFACE_DISABLE_STRING: {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         for (int i = 0; i < m_nStringQuantity; i++)
             if (m_stringes[i].sStringName != nullptr && _stricmp(param.c_str(), m_stringes[i].sStringName) == 0)
             {
@@ -568,8 +568,8 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     break;
 
     case MSG_INTERFACE_SET_EVENT: {
-        const std::string& param = message.String();
-        const std::string& nodeName = message.String();
+        const std::string &param = message.String();
+        const std::string &nodeName = message.String();
         long nCommand = message.Long();
         //
         auto *pEvent = new EVENT_Entity;
@@ -598,7 +598,7 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     break;
 
     case MSG_INTERFACE_CREATE_STRING: {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
 
         int l;
         for (l = 0; l < m_nStringQuantity; l++)
@@ -622,7 +622,7 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
             FONT_RELEASE(pRenderService, m_stringes[l].fontNum);
         }
 
-        const std::string& param2 = message.String();
+        const std::string &param2 = message.String();
         m_stringes[l].fontNum = pRenderService->LoadFont(param2.c_str());
         m_stringes[l].dwColor = static_cast<uint32_t>(message.Long());
 
@@ -645,7 +645,7 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     }
     break;
     case MSG_INTERFACE_DELETE_STRING: {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         for (int i = 0; i < m_nStringQuantity; i++)
         {
             if (m_stringes[i].sStringName != nullptr && _stricmp(m_stringes[i].sStringName, param.c_str()) == 0)
@@ -661,7 +661,7 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     }
     break;
     case MSG_INTERFACE_CHANGE_STR_COLOR: {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         for (int i = 0; i < m_nStringQuantity; i++)
         {
             if (m_stringes[i].sStringName != nullptr && _stricmp(m_stringes[i].sStringName, param.c_str()) == 0)
@@ -673,7 +673,7 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     }
     break;
     case MSG_INTERFACE_PLACE_IMAGE: {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         // find image
         IMAGE_Entity *pImg = m_imgLists;
         while (pImg != nullptr)
@@ -703,7 +703,7 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     break;
     case MSG_INTERFACE_SET_SELECTABLE: // "lsl"
     {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         bool bSelectable = message.Long() != 0;
         if (m_pNodes == nullptr)
             break;
@@ -714,7 +714,7 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     break;
     case MSG_INTERFACE_GET_SELECTABLE: // ls
     {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         if (m_pNodes == nullptr)
             break;
         CINODE *pNod = m_pNodes->FindNode(param.c_str());
@@ -723,7 +723,7 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     }
     break;
     case MSG_INTERFACE_DEL_SCROLLIMAGE: {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         long imgNum = message.Long();
         if (m_pNodes == nullptr)
             break;
@@ -747,7 +747,7 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     break;
     case MSG_INTERFACE_REFRESH_SCROLL: // "ls"
     {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         if (m_pNodes == nullptr)
             break;
         CINODE *pNod = m_pNodes->FindNode(param.c_str());
@@ -767,7 +767,7 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     }
     break;
     case MSG_INTERFACE_SET_TITLE_STRINGS: {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         ATTRIBUTES *pA = message.AttributePointer();
         int tn = message.Long();
         if (m_pNodes == nullptr)
@@ -781,7 +781,7 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
         ATTRIBUTES *pA = message.AttributePointer();
         if (pA == nullptr)
             break;
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         char *pText = pA->GetAttribute("Text");
         if (pText == nullptr)
             break;
@@ -803,7 +803,7 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     }
     break;
     case MSG_INTERFACE_INIT_QTEXT_SHOW: {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         ATTRIBUTES *pA = message.AttributePointer();
         int qn = message.Long();
         if (m_pNodes == nullptr)
@@ -814,7 +814,7 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     }
     break;
     case MSG_INTERFACE_SET_SCROLLER: {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         float spos = message.Float();
         if (m_pNodes == nullptr)
             break;
@@ -825,13 +825,13 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     break;
 
     case MSG_INTERFACE_DO_SAVE_DATA: {
-        const std::string& param1 = message.String();
-        const std::string& param2 = message.String();
+        const std::string &param1 = message.String();
+        const std::string &param2 = message.String();
         SFLB_DoSaveFileData(param1.c_str(), param2.c_str());
     }
     break;
     case MSG_INTERFACE_GET_SAVE_DATA: {
-        const std::string& param1 = message.String();
+        const std::string &param1 = message.String();
         char param2[256];
         param2[0] = 0;
         if (SFLB_GetSaveFileData(param1.c_str(), sizeof(param2), param2) && strlen(param2) > 0)
@@ -858,21 +858,21 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     }
     break;
     case MSG_INTERFACE_NEW_SAVE_FILE_NAME: {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         if (NewSaveFileName(param.c_str()))
             return 0;
         return 1;
     }
     break;
     case MSG_INTERFACE_DELETE_SAVE_FILE: {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         DeleteSaveFile(param.c_str());
     }
     break;
     case MSG_INTERFACE_SET_FORMATEDTEXT: {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         CINODE *pNod = m_pNodes ? m_pNodes->FindNode(param.c_str()) : nullptr;
-        const std::string& param2 = message.String();
+        const std::string &param2 = message.String();
         if (pNod && pNod->m_nNodeType == NODETYPE_FORMATEDTEXTS && !pNod->m_bInProcessingMessageForThisNode)
         {
             pNod->m_bInProcessingMessageForThisNode = true;
@@ -882,7 +882,7 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     }
     break;
     case MSG_INTERFACE_SET_BLIND: {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         // find image
         IMAGE_Entity *pImg = m_imgLists;
         while (pImg != nullptr)
@@ -901,8 +901,8 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     }
     break;
     case MSG_INTERFACE_GET_STRWIDTH: {
-        const std::string& param = message.String();
-        const std::string& param2 = message.String();
+        const std::string &param = message.String();
+        const std::string &param2 = message.String();
         float fScale = message.Float();
         int tmpFontID = pRenderService->LoadFont(param2.c_str());
         int retVal = pRenderService->StringWidth(param.c_str(), tmpFontID, fScale);
@@ -911,7 +911,7 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     }
     break;
     case MSG_INTERFACE_CLICK_STATUS: {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         if (m_pNodes == nullptr)
             break;
         CINODE *pNod = m_pNodes->FindNode(param.c_str());
@@ -926,7 +926,7 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
         CINODE *pnod = nullptr;
         if (lockNode > 0)
         {
-            const std::string& param = message.String();
+            const std::string &param = message.String();
             pnod = m_pNodes->FindNode(param.c_str());
         }
         switch (lockNode)
@@ -946,7 +946,7 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     case MSG_INTERFACE_DELETE_PICTURE: {
         if (!m_bUse)
             break;
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         ReleaseDinamicPic(param.c_str());
     }
     break;
@@ -956,14 +956,14 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     break;
 
     case MSG_INTERFACE_SAVEOPTIONS: {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         ATTRIBUTES *pA = message.AttributePointer();
         SaveOptionsFile(param.c_str(), pA);
     }
     break;
 
     case MSG_INTERFACE_LOADOPTIONS: {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         ATTRIBUTES *pA = message.AttributePointer();
         LoadOptionsFile(param.c_str(), pA);
     }
@@ -974,7 +974,7 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     break;
 
     case MSG_INTERFACE_FILENAME2DATASTR: {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         VDATA *pvdat = message.ScriptVariablePointer();
         int i = 0;
         int nStrLen = param.size();
@@ -984,7 +984,7 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     break;
 
     case MSG_INTERFACE_GETTIME: {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         std::time_t systTime;
         if (param[0] == 0)
         {

@@ -106,7 +106,7 @@ uint64_t ILogAndActions::ProcessMessage(MESSAGE &message)
     {
     case LOG_ADD_STRING: {
         const auto stringImmortal = message.Long() != 0;
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         if (stringImmortal)
         {
             // find the last element of the list
@@ -150,7 +150,7 @@ uint64_t ILogAndActions::ProcessMessage(MESSAGE &message)
     }
     break;
     case LOG_SET_ACTIVE_ACTION: {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         SetAction(param.c_str());
     }
     break;
@@ -181,7 +181,7 @@ uint64_t ILogAndActions::ProcessMessage(MESSAGE &message)
         }
         break;
     case LI_OTHER_MSG: {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         if (_stricmp(param.c_str(), "SetTimeScale") == 0)
         {
             core.SetTimeScale(message.Float());

@@ -428,7 +428,7 @@ uint32_t CINODE::MessageProc(long msgcode, MESSAGE &message)
 
     case 3: // Execute node command for command name
     {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         const auto commIdx = FindCommand(param.c_str());
         if (commIdx >= 0)
             CommandExecute(pCommandsList[commIdx].code);

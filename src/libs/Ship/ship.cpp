@@ -1,9 +1,9 @@
 #include "ship.h"
+#include "../../shared/mast_msg.h"
 #include "../../shared/messages.h"
+#include "../../shared/sail_msg.h"
 #include "../../shared/sea_ai/Script_defines.h"
 #include "../../shared/sound.h"
-#include "../../shared/mast_msg.h"
-#include "../../shared/sail_msg.h"
 #include "../Sea_ai/AIFlowGraph.h"
 #include "Track.h"
 #include "inlines.h"
@@ -1173,9 +1173,9 @@ uint64_t SHIP::ProcessMessage(MESSAGE &message)
         break;
     case MSG_SHIP_ACTIVATE_FIRE_PLACE: {
         const auto dwFPIndex = static_cast<uint32_t>(message.Long());
-        const std::string& str = message.String();
-        const std::string& str1 = message.String();
-        const std::string& str2 = message.String();
+        const std::string &str = message.String();
+        const std::string &str1 = message.String();
+        const std::string &str2 = message.String();
         // long iSoundID = message.Long();
         const auto fRunTime = message.Float();
         const auto iBallCharacterIndex = message.Long();
@@ -1252,13 +1252,13 @@ uint64_t SHIP::ProcessMessage(MESSAGE &message)
         UnSetLights();
         break;
     case MSG_SHIP_DO_FAKE_FIRE: {
-        const std::string& cBort = message.String();
+        const std::string &cBort = message.String();
         float fRandTime = message.Float();
         FakeFire(cBort.c_str(), fRandTime);
     }
     break;
     case MSG_MODEL_SET_TECHNIQUE: {
-        const std::string& sTech = message.String();
+        const std::string &sTech = message.String();
         core.Send_Message(GetModelEID(), "ls", MSG_MODEL_SET_TECHNIQUE, sTech.c_str());
         //       MODEL * pModel = GetModel();
         //       NODE* pNode = pModel->GetNode(0);

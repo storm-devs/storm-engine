@@ -231,8 +231,8 @@ uint64_t Location::ProcessMessage(MESSAGE &message)
     switch (message.Long())
     {
     case MSG_LOCATION_ADD_MODEL: {
-        const std::string& name = message.String();
-        const std::string& tech = message.String();
+        const std::string &name = message.String();
+        const std::string &tech = message.String();
         level = message.Long();
         const auto dynamicLightsOn = message.Long();
         lastLoadStaticModel = LoadStaticModel(name.c_str(), tech.c_str(), level, dynamicLightsOn == 1);
@@ -415,7 +415,7 @@ uint64_t Location::ProcessMessage(MESSAGE &message)
         return true;
     }
     case MSG_LOCATION_EX_MSG: {
-        const std::string& name = message.String();
+        const std::string &name = message.String();
         return MessageEx(name.c_str(), message);
     }
     case MSG_LOCATION_VIEWSTATEBARS:
@@ -660,7 +660,7 @@ bool Location::MessageEx(const char *name, MESSAGE &message)
     }
     else if (_stricmp(name, "DeleteLocationModel") == 0)
     {
-        const std::string& modelname = message.String();
+        const std::string &modelname = message.String();
         const long n = model.FindModel(modelname.c_str());
         if (n >= 0)
             model.DeleteModel(n);
@@ -668,7 +668,7 @@ bool Location::MessageEx(const char *name, MESSAGE &message)
     }
     else if (_stricmp(name, "HideLocationModel") == 0)
     {
-        const std::string& modelname = message.String();
+        const std::string &modelname = message.String();
         const long n = model.FindModel(modelname.c_str());
         if (n >= 0)
             // core.LayerDel("realize", model.RealizerID(n));
@@ -676,7 +676,7 @@ bool Location::MessageEx(const char *name, MESSAGE &message)
     }
     else if (_stricmp(name, "ShowLocationModel") == 0)
     {
-        const std::string& modelname = message.String();
+        const std::string &modelname = message.String();
         long layer = message.Long();
         const long n = model.FindModel(modelname.c_str());
         if (n >= 0)
@@ -1086,7 +1086,7 @@ void Location::DrawEnemyBars(const CVECTOR &pos, float hp, float energy, float a
 void Location::TestLocatorsInPatch(MESSAGE &message)
 {
     char buf[4096];
-    const std::string& bufStr = message.String();
+    const std::string &bufStr = message.String();
     strcpy_s(buf, bufStr.c_str());
     LocatorArray *la = FindLocatorsGroup(buf);
     if (!la)

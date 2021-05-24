@@ -2941,8 +2941,8 @@ bool Character::zLoadModel(MESSAGE &message)
     EntityManager::EraseEntity(shadow);
     EntityManager::EraseEntity(waterrings);
     EntityManager::EraseEntity(mdl);
-    const std::string& name = message.String();
-    const std::string& ani = message.String();
+    const std::string &name = message.String();
+    const std::string &ani = message.String();
     // Path to textures
     auto *gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
     if (gs)
@@ -3015,8 +3015,8 @@ bool Character::zTeleport(MESSAGE &message, bool isAy)
 
 bool Character::zTeleportL(MESSAGE &message)
 {
-    const std::string& group = message.String();
-    const std::string& name = message.String();
+    const std::string &group = message.String();
+    const std::string &name = message.String();
     return Teleport(group.c_str(), name.c_str());
 }
 
@@ -3024,7 +3024,7 @@ bool Character::zAddDetector(MESSAGE &message)
 {
     if (numDetectors >= sizeof(detector) / sizeof(Detector *))
         return false;
-    const std::string& group = message.String();
+    const std::string &group = message.String();
     if (group.empty())
         return false;
     // Checking for creation
@@ -3044,7 +3044,7 @@ bool Character::zAddDetector(MESSAGE &message)
 
 bool Character::zDelDetector(MESSAGE &message)
 {
-    const std::string& group = message.String();
+    const std::string &group = message.String();
     for (long i = 0; i < numDetectors; i++)
     {
         if (_stricmp(detector[i]->la->GetGroupName(), group.c_str()) == 0)
@@ -3060,7 +3060,7 @@ bool Character::zDelDetector(MESSAGE &message)
 
 bool Character::zActionPlay(MESSAGE &message)
 {
-    const std::string& buf = message.String();
+    const std::string &buf = message.String();
     if (!buf.empty())
     {
         userIdle.SetName(buf.c_str());
@@ -3080,8 +3080,8 @@ bool Character::zActionPlay(MESSAGE &message)
 bool Character::zEntry(MESSAGE &message)
 {
     EntryToLocation();
-    const std::string& grp = message.String();
-    const std::string& name = message.String();
+    const std::string &grp = message.String();
+    const std::string &name = message.String();
     return Teleport(grp.c_str(), name.c_str());
 }
 
@@ -3090,7 +3090,7 @@ bool Character::zSetBlade(MESSAGE &message)
     const long nBladeIdx = message.Long();
 
     isBladeSet = false;
-    const std::string& name = message.String();
+    const std::string &name = message.String();
     isBladeSet = true;
     if (name.empty())
     {
@@ -3114,7 +3114,7 @@ bool Character::zSetGun(MESSAGE &message)
 {
     isGunSet = false;
     // if(!isBladeSet) return false; // eddy. let the gun hang, it does not interfere
-    const std::string& name = message.String();
+    const std::string &name = message.String();
     isGunSet = true;
     if (name.empty())
         isGunSet = false;
@@ -3130,8 +3130,8 @@ bool Character::zSetGun(MESSAGE &message)
 
 bool Character::zTurnByLoc(MESSAGE &message)
 {
-    const std::string& group = message.String();
-    const std::string& name = message.String();
+    const std::string &group = message.String();
+    const std::string &name = message.String();
     auto *const location = GetLocation();
     LocatorArray *la = location->FindLocatorsGroup(group.c_str());
     if (!la)
@@ -3195,7 +3195,7 @@ bool Character::zDistByCharacter(MESSAGE &message, bool is2D)
 
 uint32_t Character::zExMessage(MESSAGE &message)
 {
-    const std::string& msg = message.String();
+    const std::string &msg = message.String();
     LocatorArray *la;
     long i;
     VDATA *v;
@@ -3203,8 +3203,8 @@ uint32_t Character::zExMessage(MESSAGE &message)
     if (_stricmp(msg.c_str(), "TieItem") == 0)
     {
         i = message.Long();
-        const std::string& modelName = message.String();
-        const std::string& locatorName = message.String();
+        const std::string &modelName = message.String();
+        const std::string &locatorName = message.String();
         if (!EntityManager::GetEntityPointer(blade))
         {
             if (!(blade = EntityManager::CreateEntity("blade")))
@@ -3227,7 +3227,7 @@ uint32_t Character::zExMessage(MESSAGE &message)
         if (m_nHandLightID >= 0)
             location->GetLights()->DelMovingLight(m_nHandLightID);
         // create a new
-        const std::string& secondMsg = message.String();
+        const std::string &secondMsg = message.String();
         m_nHandLightID = location->GetLights()->AddMovingLight(secondMsg.c_str(), GetHandLightPos());
         return 1;
     }
@@ -3240,7 +3240,7 @@ uint32_t Character::zExMessage(MESSAGE &message)
     }
     if (_stricmp(msg.c_str(), "PlaySound") == 0)
     {
-        const std::string& secondMsg = message.String();
+        const std::string &secondMsg = message.String();
         return PlaySound(secondMsg.c_str()) != SOUND_INVALID_ID;
     }
     if (_stricmp(msg.c_str(), "IsFightMode") == 0)
@@ -3294,9 +3294,9 @@ uint32_t Character::zExMessage(MESSAGE &message)
         if (_stricmp(msg.c_str(), "DistToLocator") == 0)
         {
             // Group name
-            const std::string& grp = message.String();
+            const std::string &grp = message.String();
             // Locator name
-            const std::string& msg = message.String();
+            const std::string &msg = message.String();
             v = message.ScriptVariablePointer();
             la = location->FindLocatorsGroup(grp.c_str());
             i = -1;
@@ -3343,7 +3343,7 @@ uint32_t Character::zExMessage(MESSAGE &message)
         if (_stricmp(msg.c_str(), "CheckID") == 0)
         {
 #ifdef _DEBUG
-            const std::string& msg = message.String();
+            const std::string &msg = message.String();
             if (AttributesPointer)
             {
                 const char *id = AttributesPointer->GetAttribute("id");
@@ -3373,7 +3373,7 @@ uint32_t Character::zExMessage(MESSAGE &message)
 
 bool Character::zPlaySound(MESSAGE &message)
 {
-    const std::string& name = message.String();
+    const std::string &name = message.String();
     return PlaySound(name.c_str()) != SOUND_INVALID_ID;
 }
 

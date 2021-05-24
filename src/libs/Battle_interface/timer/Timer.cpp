@@ -48,7 +48,7 @@ uint64_t BITimer::ProcessMessage(MESSAGE &message)
     {
     case 0: {
         const auto fTime = message.Float();
-        const std::string& eventName = message.String();
+        const std::string &eventName = message.String();
         OpenTimer(fTime, eventName.c_str());
     }
     break;

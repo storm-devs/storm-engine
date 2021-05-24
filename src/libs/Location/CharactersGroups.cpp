@@ -406,7 +406,7 @@ bool CharactersGroups::RemoveInvalidTargets(Character *chr, Character *check)
 // Messages
 uint64_t CharactersGroups::ProcessMessage(MESSAGE &message)
 {
-    const std::string& cmd = message.String();
+    const std::string &cmd = message.String();
     if (cmd.empty())
         return 0;
     if (_stricmp(cmd.c_str(), "VldTrg") == 0)
@@ -730,14 +730,14 @@ void CharactersGroups::MsgUpdChrTrg(MESSAGE &message)
 // Register a group
 void CharactersGroups::MsgRegistryGroup(MESSAGE &message)
 {
-    const std::string& grpName = message.String();
+    const std::string &grpName = message.String();
     RegistryGroup(grpName.c_str());
 }
 
 // Delete group
 void CharactersGroups::MsgReleaseGroup(MESSAGE &message)
 {
-    const std::string& grpName = message.String();
+    const std::string &grpName = message.String();
     ReleaseGroup(grpName.c_str());
 }
 
@@ -933,7 +933,7 @@ bool CharactersGroups::MoveCharacterToGroup(MESSAGE &message)
     if (!chr)
         return false;
     // create a group
-    const std::string& grpName = message.String();
+    const std::string &grpName = message.String();
     auto *grp = FindGroup(grpName.c_str());
     if (!grp)
         RegistryGroup(grpName.c_str());
@@ -959,7 +959,7 @@ void CharactersGroups::MsgSetRelation(MESSAGE &message)
     auto &r = FindRelation(message, &isSelf);
     if (isSelf)
         return;
-    const std::string& buf = message.String();
+    const std::string &buf = message.String();
     auto actState = rs_enemy;
     auto relState = rs_neitral;
     if (_stricmp(buf.c_str(), "friend") == 0)
@@ -1007,8 +1007,8 @@ void CharactersGroups::MsgSetAlarmReaction(MESSAGE &message)
     auto &r = FindRelation(message, &isSelf);
     if (isSelf)
         return;
-    const std::string& act = message.String();
-    const std::string& rel = message.String();
+    const std::string &act = message.String();
+    const std::string &rel = message.String();
     auto actState = rs_enemy;
     if (_stricmp(act.c_str(), "neitral") == 0)
     {
@@ -1080,7 +1080,7 @@ void CharactersGroups::UnloadCharacter(MESSAGE &message)
 // Get group from message
 CharactersGroups::Group *CharactersGroups::GetGroup(MESSAGE &message, bool isRegistry)
 {
-    const std::string& grpName = message.String();
+    const std::string &grpName = message.String();
     auto *grp = FindGroup(grpName.c_str());
     if (!grp && isRegistry)
     {
@@ -1120,8 +1120,8 @@ long CharactersGroups::FindGroupIndex(const char *name)
 // Find group relationship
 CharactersGroups::Relation &CharactersGroups::FindRelation(MESSAGE &message, bool *selfgroup)
 {
-    const std::string& grpName1 = message.String();
-    const std::string& grpName2 = message.String();
+    const std::string &grpName1 = message.String();
+    const std::string &grpName2 = message.String();
     return FindRelation(grpName1.c_str(), grpName2.c_str(), selfgroup);
 }
 

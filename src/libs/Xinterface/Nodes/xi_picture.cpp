@@ -260,14 +260,14 @@ uint32_t CXI_PICTURE::MessageProc(long msgcode, MESSAGE &message)
     case 2: // Set a new picture or video picture
     {
         const auto bVideo = message.Long() != 0;
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         SetNewPicture(bVideo, param.c_str());
     }
     break;
 
     case 3: // Get a random picture from the directory
     {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         SetNewPictureFromDir(param.c_str());
     }
     break;
@@ -299,8 +299,8 @@ uint32_t CXI_PICTURE::MessageProc(long msgcode, MESSAGE &message)
 
     case 6: // set new picture by group and picture name
     {
-        const std::string& groupName = message.String();
-        const std::string& picName = message.String();
+        const std::string &groupName = message.String();
+        const std::string &picName = message.String();
         SetNewPictureByGroup(groupName.c_str(), picName.c_str());
     }
     break;
@@ -314,7 +314,7 @@ uint32_t CXI_PICTURE::MessageProc(long msgcode, MESSAGE &message)
 
     case 8: // remove texture from other picture to this
     {
-        const std::string& srcNodeName = message.String();
+        const std::string &srcNodeName = message.String();
         auto *pNod = static_cast<CINODE *>(ptrOwner->FindNode(srcNodeName.c_str(), nullptr));
         if (pNod->m_nNodeType != NODETYPE_PICTURE)
         {

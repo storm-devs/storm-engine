@@ -267,13 +267,13 @@ uint32_t CXI_STRCOLLECTION::MessageProc(long msgcode, MESSAGE &message)
     case 0: // Add dinamic string
     {
         // string ID & data
-        const std::string& paramID = message.String();
-        const std::string& paramStr = message.String();
+        const std::string &paramID = message.String();
+        const std::string &paramStr = message.String();
         auto *pstr = CreateNewDinamicString(paramID.c_str(), paramStr.c_str());
         if (pstr == nullptr)
             return -1;
         // string font
-        const std::string& fontName = message.String();
+        const std::string &fontName = message.String();
         pstr->nFontNum = m_rs->LoadFont(fontName.c_str());
         // string pos.x&y, color front&back, alignment, shadow, scale
         pstr->scrPos.x = message.Long() + m_hostRect.left; // msg
@@ -307,7 +307,7 @@ uint32_t CXI_STRCOLLECTION::MessageProc(long msgcode, MESSAGE &message)
     case 1: // change line by number
     {
         const auto n = message.Long() - 1;
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         ChangeString(n, param.c_str());
     }
     break;

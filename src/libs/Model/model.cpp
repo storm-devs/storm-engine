@@ -1,7 +1,7 @@
 #include "../../shared/messages.h"
-#include "entity.h"
 #include "core.h"
 #include "defines.h"
+#include "entity.h"
 #include "modelr.h"
 
 IDirect3DVertexBuffer9 *dest_vb;
@@ -304,7 +304,8 @@ uint64_t MODELR::ProcessMessage(MESSAGE &message)
         NODER::gs = GeometyService;
         NODER::rs = rs;
         root = new NODER();
-        if (!root->Init(LightPath.c_str(), str.c_str(), "", CMatrix(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), mtx, nullptr, lmPath.c_str()))
+        if (!root->Init(LightPath.c_str(), str.c_str(), "", CMatrix(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), mtx, nullptr,
+                        lmPath.c_str()))
         {
             delete root;
             root = nullptr;

@@ -28,7 +28,7 @@ uint64_t OBJ_STRSERVICE::ProcessMessage(MESSAGE &message)
     switch (message.Long())
     {
     case MSG_STRSERVICE_OPEN_FILE: {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         if (m_pStrService != nullptr)
             return m_pStrService->OpenUsersStringFile(param.c_str());
         return -1;

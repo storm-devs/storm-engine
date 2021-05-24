@@ -13,7 +13,6 @@
 
 #include "core.h"
 
-#include "entity.h"
 #include "WdmCameraStdCtrl.h"
 #include "WdmClouds.h"
 #include "WdmFollowShip.h"
@@ -26,6 +25,7 @@
 #include "WdmWarringShip.h"
 #include "WdmWindUI.h"
 #include "defines.h"
+#include "entity.h"
 
 //============================================================================================
 
@@ -561,17 +561,17 @@ uint64_t WorldMap::ProcessMessage(MESSAGE &message)
     }
     break;
     case MSG_WORLDMAP_CREATEENC_MER: {
-        const std::string& sName = message.String();
-        const std::string& buf = message.String();
-        const std::string& sName2 = message.String();
+        const std::string &sName = message.String();
+        const std::string &buf = message.String();
+        const std::string &sName2 = message.String();
         const auto kSpeed = message.Float();
-        const auto timeOut = message.Float();                           // boal
+        const auto timeOut = message.Float();                                                   // boal
         return CreateMerchantShip(sName.c_str(), buf.c_str(), sName2.c_str(), kSpeed, timeOut); // boal
     }
     break;
         // boal 04/01/06 -->
     case MSG_WORLDMAP_CREATEENC_MER_XZ: {
-        const std::string& sName = message.String();
+        const std::string &sName = message.String();
         const auto fx1 = message.Float();
         const auto fz1 = message.Float();
         const auto fx2 = message.Float();
@@ -583,15 +583,15 @@ uint64_t WorldMap::ProcessMessage(MESSAGE &message)
     break;
         // boal <--
     case MSG_WORLDMAP_CREATEENC_FLW: {
-        const std::string& sName = message.String();
+        const std::string &sName = message.String();
         const auto kSpeed = message.Float();
         const auto timeOut = message.Float();
         return CreateFollowShip(sName.c_str(), kSpeed, timeOut);
     }
     break;
     case MSG_WORLDMAP_CREATEENC_WAR: {
-        const std::string& sName = message.String();
-        const std::string& sName2 = message.String();
+        const std::string &sName = message.String();
+        const std::string &sName2 = message.String();
         const auto timeOut = message.Float();
         return CreateWarringShips(sName.c_str(), sName2.c_str(), timeOut);
     }

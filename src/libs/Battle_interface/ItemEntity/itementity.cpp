@@ -41,7 +41,7 @@ uint64_t ItemEntity::ProcessMessage(MESSAGE &message)
     {
         DeleteParticle();
         const auto mdlEID = GetModelEIDFromCharacterEID(message.EntityID());
-        const std::string& locName = message.String();
+        const std::string &locName = message.String();
         m_bTieToLocator = TieToLocator(mdlEID, locName.c_str());
     }
     break;
@@ -87,9 +87,9 @@ uint64_t ItemEntity::ProcessMessage(MESSAGE &message)
         DeleteParticle();
         const auto mdlID = GetModelEIDFromCharacterEID(message.EntityID());
         const auto mdlToTieID = GetModelEIDFromCharacterEID(message.EntityID());
-        const std::string& sLocName = message.String();
-        const std::string& sStartEvntName = message.String();
-        const std::string& sEndEvntName = message.String();
+        const std::string &sLocName = message.String();
+        const std::string &sStartEvntName = message.String();
+        const std::string &sEndEvntName = message.String();
         SetEventListener(mdlID, mdlToTieID, sLocName.c_str(), sStartEvntName.c_str(), sEndEvntName.c_str());
     }
     break;

@@ -101,25 +101,25 @@ uint64_t SEA_AI::ProcessMessage(MESSAGE &message)
     }
     break;
     case AI_MESSAGE_GROUP_SET_LOCATION_OTHER_GROUP: {
-        const std::string& cGroupName = message.String();
-        const std::string& cOtherGroupName = message.String();
+        const std::string &cGroupName = message.String();
+        const std::string &cOtherGroupName = message.String();
         AIGroup::GroupSetLocationNearOtherGroup(cGroupName.c_str(), cOtherGroupName.c_str());
         break;
     }
     case AI_MESSAGE_GROUP_SET_TYPE: {
-        const std::string& cGroupName = message.String();
-        const std::string& cTemp = message.String();
+        const std::string &cGroupName = message.String();
+        const std::string &cTemp = message.String();
         AIGroup::GroupSetType(cGroupName.c_str(), cTemp.c_str());
         break;
     }
     case AI_MESSAGE_GROUP_SET_COMMANDER: {
-        const std::string& cGroupName = message.String();
+        const std::string &cGroupName = message.String();
         auto *pCharacter = message.AttributePointer();
         AIGroup::GroupSetCommander(cGroupName.c_str(), pCharacter);
     }
     break;
     case AI_MESSAGE_GROUP_GET_ATTACK_HP: {
-        const std::string& cGroupName = message.String();
+        const std::string &cGroupName = message.String();
         auto fDistance = message.Float();
         auto *pVData = message.ScriptVariablePointer();
         pVData->Set(AIGroup::GetAttackHP(cGroupName.c_str(), fDistance));
@@ -127,7 +127,7 @@ uint64_t SEA_AI::ProcessMessage(MESSAGE &message)
     break;
     case AI_MESSAGE_GROUP_SET_XYZ_AY: {
         float x, y, z, ay;
-        const std::string& cGroupName = message.String();
+        const std::string &cGroupName = message.String();
         x = message.Float();
         y = message.Float();
         z = message.Float();
@@ -206,7 +206,7 @@ uint64_t SEA_AI::ProcessMessage(MESSAGE &message)
         switch (dwCommand)
         {
         case AITASK_MOVE: {
-            const std::string& cGroupName = message.String();
+            const std::string &cGroupName = message.String();
             vPnt.x = message.Float();
             vPnt.y = message.Float();
             vPnt.z = message.Float();
@@ -214,13 +214,13 @@ uint64_t SEA_AI::ProcessMessage(MESSAGE &message)
             break;
         }
         case AITASK_ATTACK: {
-            const std::string& cGroupName = message.String();
-            const std::string& cGroupAttackingName = message.String();
+            const std::string &cGroupName = message.String();
+            const std::string &cGroupAttackingName = message.String();
             AIGroup::GroupSetAttack(cGroupName.c_str(), cGroupAttackingName.c_str());
             break;
         }
         case AITASK_RUNAWAY:
-            const std::string& cGroupName = message.String();
+            const std::string &cGroupName = message.String();
             AIGroup::GroupSetRunAway(cGroupName.c_str());
             break;
         }
@@ -238,7 +238,7 @@ uint64_t SEA_AI::ProcessMessage(MESSAGE &message)
     break;
     case AI_MESSAGE_SHIP_CHANGE_GROUP: {
         auto *pACharacter = message.AttributePointer();
-        const std::string& cGroupName = message.String();
+        const std::string &cGroupName = message.String();
         AIGroup::ShipChangeGroup(pACharacter, cGroupName.c_str());
     }
     break;

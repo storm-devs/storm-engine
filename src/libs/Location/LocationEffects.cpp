@@ -102,7 +102,7 @@ void LocationEffects::Realize(uint32_t delta_time)
 // Messages
 uint64_t LocationEffects::ProcessMessage(MESSAGE &message)
 {
-    const std::string& buf = message.String();
+    const std::string &buf = message.String();
     CVECTOR pos, dir;
     if (_stricmp(buf.c_str(), "Splashes") == 0)
     {

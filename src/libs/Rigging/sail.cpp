@@ -3,12 +3,12 @@
 #include "core.h"
 
 #include "../../shared/battle_interface/msg_control.h"
-#include "../../shared/sea_ai/Script_defines.h"
 #include "../../shared/mast_msg.h"
 #include "../../shared/sail_msg.h"
-#include "entity.h"
+#include "../../shared/sea_ai/Script_defines.h"
 #include "Weather_Base.h"
 #include "defines.h"
+#include "entity.h"
 #include "ship_base.h"
 #include "vfile_service.h"
 
@@ -993,7 +993,7 @@ uint64_t SAIL::ProcessMessage(MESSAGE &message)
         m_nMastCreatedCharacter = message.Long();
         if (m_nMastCreatedCharacter != -1)
         {
-            const std::string& param = message.String();
+            const std::string &param = message.String();
             if (!param.empty())
             {
                 if ((m_sMastName = new char[param.size() + 1]) == nullptr)
@@ -1007,7 +1007,7 @@ uint64_t SAIL::ProcessMessage(MESSAGE &message)
 
         // script message
     case MSG_SAIL_SCRIPT_PROCESSING: {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         return ScriptProcessing(param.c_str(), message);
     }
     break;

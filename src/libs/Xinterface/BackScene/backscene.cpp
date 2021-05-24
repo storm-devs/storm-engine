@@ -311,13 +311,13 @@ uint64_t InterfaceBackScene::ProcessMessage(MESSAGE &message)
     switch (nMsgCode)
     {
     case 0: { // load model
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         LoadModel(param.c_str());
         break;
     }
 
     case 1: { // set camera
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         SetCameraPosition(param.c_str());
         break;
     }
@@ -370,21 +370,21 @@ uint64_t InterfaceBackScene::ProcessMessage(MESSAGE &message)
 
     case 8: // set light source
     {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         InitLight(AttributesPointer ? AttributesPointer->GetAttributeClass(param.c_str()) : nullptr);
     }
     break;
 
     case 9: // add animation model
     {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         InitAniModel(AttributesPointer ? AttributesPointer->GetAttributeClass(param.c_str()) : nullptr);
     }
     break;
 
     case 10: // add model
     {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         InitStaticModel(AttributesPointer ? AttributesPointer->GetAttributeClass(param.c_str()) : nullptr);
     }
     break;

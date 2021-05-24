@@ -14,8 +14,8 @@
 
 #include "../../shared/messages.h"
 #include "Character.h"
-#include "entity.h"
 #include "Location.h"
+#include "entity.h"
 #include "sea_base.h"
 
 //#define CAMERA_VIEW_TEST_ENABLE
@@ -416,7 +416,7 @@ uint64_t LocationCamera::ProcessMessage(MESSAGE &message)
     break;
 
     case -2: {
-        const std::string& trackname = message.String();
+        const std::string &trackname = message.String();
         const auto fTrackTime = message.Float();
         LoadCameraTrack(trackname.c_str(), fTrackTime);
         auto *pA = message.AttributePointer();

@@ -383,7 +383,7 @@ uint32_t CXI_IMGCOLLECTION::MessageProc(long msgcode, MESSAGE &message)
     case 0: // add icon
     {
         // picture name
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         // picture color
         const auto dwColor = message.Long();
         // picture position
@@ -402,7 +402,7 @@ uint32_t CXI_IMGCOLLECTION::MessageProc(long msgcode, MESSAGE &message)
 
     case 1: // set texture
     {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
 
         if (!sGroupName || _stricmp(sGroupName, param.c_str()) != 0)
         {
@@ -442,7 +442,7 @@ uint32_t CXI_IMGCOLLECTION::MessageProc(long msgcode, MESSAGE &message)
     case 4: // change picture
     {
         const auto nImgNum = message.Long();
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         if (nImgNum >= 0 && nImgNum < m_aEditInfo.size())
         {
             m_aEditInfo[nImgNum].sName = param;

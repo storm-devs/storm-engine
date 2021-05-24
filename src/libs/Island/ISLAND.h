@@ -106,7 +106,7 @@ class ISLAND : public ISLAND_BASE
         return (char *)sIslandName.c_str();
     };
 
-    void AddLocationModel(entid_t eid, const std::string_view& pIDStr, const std::string_view& pStr);
+    void AddLocationModel(entid_t eid, const std::string_view &pIDStr, const std::string_view &pStr);
 
     // debug
     // dead code

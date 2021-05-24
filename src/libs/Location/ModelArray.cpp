@@ -11,9 +11,9 @@
 #include "geometry.h"
 
 #include "../../shared/messages.h"
-#include "entity.h"
 #include "ModelArray.h"
 #include "core.h"
+#include "entity.h"
 
 // ============================================================================================
 // Construction, destruction
@@ -390,7 +390,7 @@ void ModelArray::Relection::Restore(MODEL *model, VDX9RENDER *rs)
     rs->SetTransform(D3DTS_TEXTURE1, mtx);
 }
 
-void ModelArray::UpdatePath(std::string& path)
+void ModelArray::UpdatePath(std::string &path)
 {
     long j = 0;
     for (long i = 0; path[i]; i++)

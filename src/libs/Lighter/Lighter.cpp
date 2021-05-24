@@ -179,7 +179,7 @@ void Lighter::Realize(uint32_t delta_time)
 // Messages
 uint64_t Lighter::ProcessMessage(MESSAGE &message)
 {
-    const std::string& command = message.String();
+    const std::string &command = message.String();
     if (_stricmp(command.c_str(), "AddModel") == 0)
     {
         // Adding the model
@@ -209,7 +209,7 @@ uint64_t Lighter::ProcessMessage(MESSAGE &message)
 
 void Lighter::MsgAddModel(MESSAGE &message)
 {
-    const std::string& name = message.String();
+    const std::string &name = message.String();
     if (name.empty())
     {
         core.Trace("Location lighter: no model name, skip it!");
@@ -221,13 +221,13 @@ void Lighter::MsgAddModel(MESSAGE &message)
 
 void Lighter::MsgModelsPath(MESSAGE &message)
 {
-    const std::string& name = message.String();
+    const std::string &name = message.String();
     geometry.SetModelsPath(name.c_str());
 }
 
 void Lighter::MsgLightPath(MESSAGE &message)
 {
-    const std::string& name = message.String();
+    const std::string &name = message.String();
     geometry.SetLightPath(name.c_str());
 }
 
@@ -249,7 +249,7 @@ void Lighter::MsgAddLight(MESSAGE &message)
     // Distance
     const auto range = message.Float();
     // Group name
-    const std::string& group = message.String();
+    const std::string &group = message.String();
     // Add source
     lights.AddPointLight(clr, pos, att0, att1, att2, range, group.c_str());
 }

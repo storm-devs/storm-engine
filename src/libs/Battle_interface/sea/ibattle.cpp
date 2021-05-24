@@ -290,7 +290,7 @@ uint64_t BATTLE_INTERFACE::ProcessMessage(MESSAGE &message)
         break;
 
     case BI_MSG_ADD_NEWTEXTURE: {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         const int hQ = message.Long();
         const int vQ = message.Long();
         return m_pShipIcon->AddTexture(param.c_str(), hQ, vQ);
@@ -298,7 +298,7 @@ uint64_t BATTLE_INTERFACE::ProcessMessage(MESSAGE &message)
     break;
 
     case MSG_BATTLE_LAND_MAKE_COMMAND: {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         if (_stricmp(param.c_str(), "cancel") == 0)
         {
             if (m_pShipIcon)

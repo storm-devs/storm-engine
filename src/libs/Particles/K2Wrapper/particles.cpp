@@ -1,8 +1,8 @@
 #include "particles.h"
 #include "../shared/messages.h"
-#include "entity.h"
 #include "core.h"
 #include "defines.h"
+#include "entity.h"
 #include "filesystem.h"
 #include "particles/iparticlemanager.h"
 #include "particles/iparticlesservice.h"
@@ -77,7 +77,7 @@ uint64_t PARTICLES::ProcessMessage(MESSAGE &message)
     }
         // create system (string name, float x, y, z position, float rx, ry, rz rotation, float life_time lifetime)
     case PS_CREATE_RIC: {
-        const std::string& ps_name = message.String();
+        const std::string &ps_name = message.String();
         pos.x = message.Float();
         pos.y = message.Float();
         pos.z = message.Float();
@@ -104,7 +104,7 @@ uint64_t PARTICLES::ProcessMessage(MESSAGE &message)
 
         // create a system
     case PS_CREATE: {
-        const std::string& ps_name = message.String();
+        const std::string &ps_name = message.String();
         pos.x = message.Float();
         pos.y = message.Float();
         pos.z = message.Float();
@@ -127,7 +127,7 @@ uint64_t PARTICLES::ProcessMessage(MESSAGE &message)
     }
         // create a system
     case PS_CREATEX: {
-        const std::string& ps_name = message.String();
+        const std::string &ps_name = message.String();
         pos.x = message.Float();
         pos.y = message.Float();
         pos.z = message.Float();

@@ -10,8 +10,8 @@
 
 #include "Fader.h"
 #include "../../shared/messages.h"
-#include "entity.h"
 #include "core.h"
+#include "entity.h"
 
 // ============================================================================================
 // Construction, destruction
@@ -174,7 +174,7 @@ uint64_t Fader::ProcessMessage(MESSAGE &message)
     case FADER_PICTURE0: {
         if (textureBackID >= 0 && rs)
             rs->TextureRelease(textureBackID);
-        const std::string& _name = message.String();
+        const std::string &_name = message.String();
         textureBackID = rs->TextureCreate(_name.c_str());
         if (rs)
         {

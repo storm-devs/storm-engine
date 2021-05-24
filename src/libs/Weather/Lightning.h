@@ -1,7 +1,7 @@
 #pragma once
 
-#include "typedef.h"
 #include "Weather_Base.h"
+#include "typedef.h"
 #include <vector>
 
 #define MAX_LIGHTNING_TEXTURES 2

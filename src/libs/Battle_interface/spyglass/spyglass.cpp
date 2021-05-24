@@ -6,9 +6,9 @@
 #include "../shared/battle_interface/msg_control.h"
 #include "../shared/events.h"
 #include "../shared/messages.h"
-#include "entity.h"
 #include "controls.h"
 #include "core.h"
+#include "entity.h"
 #include "math3d/Sphere.h"
 #include "message.h"
 
@@ -233,7 +233,7 @@ uint64_t ISPYGLASS::ProcessMessage(MESSAGE &message)
 
     case MSG_TELESCOPE_SET_TYPE: // "lsfll"
     {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         auto fZoomScale = message.Float();
         auto fActivateTime = message.Long() * .001f;
         auto fUpdateTime = message.Long() * .001f;
@@ -244,8 +244,8 @@ uint64_t ISPYGLASS::ProcessMessage(MESSAGE &message)
 
     case MSG_ISG_UPDATE: // "lsslllfflllllllllllss"
     {
-        const std::string& shipname = message.String();
-        const std::string& shiptype = message.String();
+        const std::string &shipname = message.String();
+        const std::string &shiptype = message.String();
         auto fRelativeHP = message.Long() * .01f;
         auto fRelativeSP = message.Long() * .01f;
         auto nShipCrew = message.Long();
@@ -263,19 +263,20 @@ uint64_t ISPYGLASS::ProcessMessage(MESSAGE &message)
         auto nAccuracySkl = message.Long();
         auto nNavigationSkl = message.Long();
         auto nBoardingSkl = message.Long();
-        const std::string& captainname = message.String();
-        const std::string& facetexture = message.String();
+        const std::string &captainname = message.String();
+        const std::string &facetexture = message.String();
         auto nShipClass = message.Long();
-        ChangeTargetData(shipname.c_str(), shiptype.c_str(), fRelativeHP, fRelativeSP, nShipCrew, fShipSpeed, fSailTo, nCurCannons,
-                         nMaxCannons, nCharge, nNation, nSailState, nFace, nFencingSkl, nCannonSkl, nAccuracySkl,
-                         nNavigationSkl, nBoardingSkl, captainname.c_str(), facetexture.c_str(), nShipClass);
+        ChangeTargetData(shipname.c_str(), shiptype.c_str(), fRelativeHP, fRelativeSP, nShipCrew, fShipSpeed, fSailTo,
+                         nCurCannons, nMaxCannons, nCharge, nNation, nSailState, nFace, nFencingSkl, nCannonSkl,
+                         nAccuracySkl, nNavigationSkl, nBoardingSkl, captainname.c_str(), facetexture.c_str(),
+                         nShipClass);
     }
     break;
 
     case MSG_ISG_SET_SHIPICON: // "sffff"
     {
         FRECT frUV;
-        const std::string& texturename = message.String();
+        const std::string &texturename = message.String();
         frUV.left = message.Float();
         frUV.top = message.Float();
         frUV.right = message.Float();
@@ -286,7 +287,7 @@ uint64_t ISPYGLASS::ProcessMessage(MESSAGE &message)
     case MSG_ISG_SET_CHARICON: // "sffff"
     {
         FRECT frUV;
-        const std::string& captexturename = message.String();
+        const std::string &captexturename = message.String();
         frUV.left = message.Float();
         frUV.top = message.Float();
         frUV.right = message.Float();

@@ -139,7 +139,7 @@ long BI_InterfaceManager::MsgLoadSheet(MESSAGE &message)
     // remove the old interface
     STORM_DELETE(m_pInterfaceSheet);
 
-    const std::string& param = message.String();
+    const std::string &param = message.String();
     if (_stricmp(param.c_str(), "sea") == 0)
     {
         // loading sea interface

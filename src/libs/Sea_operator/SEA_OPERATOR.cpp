@@ -3,8 +3,8 @@
 #include "core.h"
 
 #include "../../shared/messages.h"
-#include "entity.h"
 #include "defines.h"
+#include "entity.h"
 #include "rands.h"
 
 char dbgs[1024];
@@ -57,7 +57,7 @@ uint64_t SEA_OPERATOR::ProcessMessage(MESSAGE &message)
         if (myShip != static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(firedShip)))
             break;
 
-        const std::string& bortName = message.String();
+        const std::string &bortName = message.String();
         CVECTOR direction, destination;
         direction.x = message.Float();
         direction.y = message.Float();

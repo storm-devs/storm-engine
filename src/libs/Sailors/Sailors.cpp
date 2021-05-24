@@ -1159,7 +1159,7 @@ uint64_t Sailors::ProcessMessage(MESSAGE &message)
     case AI_MESSAGE_ADD_SHIP: {
 
         shipID = message.EntityID();
-        const std::string& c = message.String();
+        const std::string &c = message.String();
 
         shipWalk.push_back(ShipWalk{});
         shipWalk[shipsCount].Init(shipID, editorMode, c.c_str());

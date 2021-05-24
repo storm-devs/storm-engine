@@ -237,8 +237,8 @@ uint64_t ISLAND::ProcessMessage(MESSAGE &message)
         break;
     case MSG_LOCATION_ADD_MODEL: {
         eID = message.EntityID();
-        const std::string& idstr = message.String();
-        const std::string& str = message.String();
+        const std::string &idstr = message.String();
+        const std::string &str = message.String();
         AddLocationModel(eID, idstr, str);
         break;
     }
@@ -250,7 +250,7 @@ uint64_t ISLAND::ProcessMessage(MESSAGE &message)
         CreateHeightMap(cFoamDir, cModelsID);
         // CreateShadowMap(cModelsDir, cModelsID);
     }
-        break;
+    break;
     case MSG_ISLAND_START: // from location
         CreateHeightMap(cModelsDir, cModelsID);
         // CreateShadowMap(cModelsDir, cModelsID);

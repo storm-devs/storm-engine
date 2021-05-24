@@ -108,7 +108,7 @@ uint32_t CXI_VIDEORECT::MessageProc(long msgcode, MESSAGE &message)
     {
     case 0: // start video
     {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         StartVideoPlay(param.c_str());
     }
     break;

@@ -171,7 +171,7 @@ bool BLADE::BLADE_INFO::LoadBladeModel(MESSAGE &message)
     EntityManager::EraseEntity(eid);
 
     // model name
-    const std::string& mdlName = message.String();
+    const std::string &mdlName = message.String();
     if (!mdlName.empty())
     {
         // path of the model
@@ -346,7 +346,7 @@ bool BLADE::LoadGunModel(MESSAGE &message)
     EntityManager::EraseEntity(gun);
     man = message.EntityID();
     // model name
-    const std::string& mdlName = message.String();
+    const std::string &mdlName = message.String();
     if (!mdlName.empty())
     {
         // path of the model
@@ -534,13 +534,14 @@ void BLADE::AddTieItem(MESSAGE &message)
 {
     const auto nItemIdx = message.Long();
 
-    const std::string& mdlName = message.String();
-    const std::string& locName = message.String();
+    const std::string &mdlName = message.String();
+    const std::string &locName = message.String();
 
     auto n = FindTieItemByIndex(nItemIdx);
     if (n >= 0)
     {
-        core.Trace("Warning! BLADE::AddTieItem(%d,%s,%s) already set that item", nItemIdx, mdlName.c_str(), locName.c_str());
+        core.Trace("Warning! BLADE::AddTieItem(%d,%s,%s) already set that item", nItemIdx, mdlName.c_str(),
+                   locName.c_str());
     }
     else
     {
@@ -554,7 +555,8 @@ void BLADE::AddTieItem(MESSAGE &message)
         }
         else
         {
-            core.Trace("Warning! BLADE::AddTieItem(%d,%s,%s) very mach items already set", nItemIdx, mdlName.c_str(), locName.c_str());
+            core.Trace("Warning! BLADE::AddTieItem(%d,%s,%s) very mach items already set", nItemIdx, mdlName.c_str(),
+                       locName.c_str());
         }
     }
 }

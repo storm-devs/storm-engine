@@ -181,7 +181,7 @@ uint64_t HELPCHOOSER::ProcessMessage(MESSAGE &message)
     switch (message.Long())
     {
     case MSG_HELPCHOOSER_START: {
-        const std::string& param = message.String();
+        const std::string &param = message.String();
         return RunChooser(param.c_str());
     }
     break;
