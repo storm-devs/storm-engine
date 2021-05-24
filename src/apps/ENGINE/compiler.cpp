@@ -327,14 +327,14 @@ bool COMPILER::AppendProgram(char *&pBase_program, uint32_t &Base_program_size, 
         // terminating zero, +1 for 0xd +1 for 0xa
         auto *const newPtr = new char[Base_program_size + Append_program_size + 3];
         memcpy(newPtr, pBase_program, Base_program_size);
-        delete pBase_program;
+        delete[] pBase_program;
         pBase_program = newPtr;
         Base_program_size = Base_program_size + Append_program_size + 2;
         memcpy(&pBase_program[offset], pAppend_program, Append_program_size);
         pBase_program[Base_program_size - 2] = 0xd; // code blocks separator to prevent data merging
         pBase_program[Base_program_size - 1] = 0xa; // code blocks separator to prevent data merging
         pBase_program[Base_program_size] = 0;       // terminating zero
-        delete pAppend_program;
+        delete[] pAppend_program;
         Append_program_size += 2;
         return true;
     }
@@ -342,13 +342,13 @@ bool COMPILER::AppendProgram(char *&pBase_program, uint32_t &Base_program_size, 
     // zero, +1 for ';'
     auto *const newPtr = new char[Base_program_size + Append_program_size + 2];
     memcpy(newPtr, pBase_program, Base_program_size);
-    delete pBase_program;
+    delete[] pBase_program;
     pBase_program = newPtr;
     Base_program_size = Base_program_size + Append_program_size + 1;
     memcpy(&pBase_program[offset], pAppend_program, Append_program_size);
     pBase_program[Base_program_size - 1] = ';'; // code blocks separator to prevent data merging
     pBase_program[Base_program_size] = 0;       // terminating zero
-    delete pAppend_program;
+    delete[] pAppend_program;
     Append_program_size += 1;
     return true;
 }
@@ -1091,7 +1091,7 @@ void COMPILER::ResizeBCodeBuffer(SEGMENT_DESC &Segment, uint32_t add_size)
         // Segment.pCode = (char *)RESIZE(Segment.pCode,Segment.BCode_Buffer_size);
         auto *const newPtr = new char[Segment.BCode_Buffer_size];
         memcpy(newPtr, Segment.pCode, Segment.BCode_Program_size);
-        delete Segment.pCode;
+        delete[] Segment.pCode;
         Segment.pCode = newPtr;
     }
 }
@@ -1896,7 +1896,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                         // sizeof(CLASS_COMPONENT));
                         auto *newPtr = new CLASS_COMPONENT[ci.nComponentsNum];
                         memcpy(newPtr, ci.pComponent, (ci.nComponentsNum - 1) * sizeof(CLASS_COMPONENT));
-                        delete ci.pComponent;
+                        delete[] ci.pComponent;
                         ci.pComponent = newPtr;
 
                         ci.pComponent[ci.nComponentsNum - 1] = cc;
@@ -1942,7 +1942,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                         // sizeof(CLASS_COMPONENT));
                         auto *newPtr = new CLASS_COMPONENT[ci.nComponentsNum];
                         memcpy(newPtr, ci.pComponent, (ci.nComponentsNum - 1) * sizeof(CLASS_COMPONENT));
-                        delete ci.pComponent;
+                        delete[] ci.pComponent;
                         ci.pComponent = newPtr;
 
                         ci.pComponent[ci.nComponentsNum - 1] = cc;
@@ -1957,7 +1957,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                         // sizeof(CLASS_COMPONENT));
                         auto *newPtr = new CLASS_COMPONENT[ci.nComponentsNum];
                         memcpy(newPtr, ci.pComponent, (ci.nComponentsNum - 1) * sizeof(CLASS_COMPONENT));
-                        delete ci.pComponent;
+                        delete[] ci.pComponent;
                         ci.pComponent = newPtr;
 
                         ci.pComponent[ci.nComponentsNum - 1] = cc;
@@ -5983,7 +5983,7 @@ void COMPILER::SaveData(const void *data_PTR, uint32_t data_size)
         // pBuffer = (char*)RESIZE(pBuffer, dwNewAllocate);
         auto *const newPtr = new char[dwNewAllocate];
         memcpy(newPtr, pBuffer, dwMaxSize);
-        delete pBuffer;
+        delete[] pBuffer;
         pBuffer = newPtr;
 
         dwMaxSize = dwNewAllocate;
@@ -6134,7 +6134,7 @@ ATTRIBUTES *COMPILER::TraceARoot(ATTRIBUTES *pA, const char *&pAccess)
         pAS = newPtr;
         strcat_s(pAS, len, ".");
         strcat_s(pAS, len, pAccess);
-        delete pAccess;
+        delete[] pAccess;
         pAccess = pAS;
     }
 
@@ -6371,7 +6371,7 @@ bool COMPILER::ReadVariable(char *name, /* DWORD code,*/ bool bDim, uint32_t a_i
         }
         if (!VarTab.GetVarX(viRef, var_index))
         {
-            delete pString;
+            delete[] pString;
             SetError("State read error");
             return false;
         }
@@ -6503,20 +6503,20 @@ void COMPILER::SaveVariable(DATA *pV, bool bdim)
         if (pA == nullptr)
         {
             WriteVDword(0xffffffff);
-            delete pString;
+            delete[] pString;
             break;
         }
         if (!FindReferencedVariableByRootA(pA, var_index, array_index))
         {
             SetError("Ghost A reference");
             WriteVDword(0xffffffff);
-            delete pString;
+            delete[] pString;
             break;
         }
         WriteVDword(var_index);
         WriteVDword(array_index);
         SaveString(pString);
-        delete pString;
+        delete[] pString;
         break;
     }
 }
@@ -6609,7 +6609,7 @@ bool COMPILER::SaveState(std::fstream &fileS)
         delete[] pDst;
     }
 
-    delete pBuffer;
+    delete[] pBuffer;
     pBuffer = nullptr;
 
     return true;
@@ -6681,7 +6681,7 @@ bool COMPILER::LoadState(std::fstream &fileS)
         Assert(utf8::IsValidUtf8(pSegmentName));
         if (!BC_LoadSegment(pSegmentName))
             return false;
-        delete pSegmentName;
+        delete[] pSegmentName;
     }
 
     // 5. Variables table, all variables created during previous step, just read value
@@ -6726,7 +6726,7 @@ void COMPILER::ReadAttributesData(ATTRIBUTES *pRoot, ATTRIBUTES *pParent)
         pValue = ReadString();
         pParent->SetAttribute(nNameCode, pValue);
         pRoot = pParent->GetAttributeClassByCode(nNameCode);
-        delete pValue;
+        delete[] pValue;
         for (n = 0; n < nSubClassesNum; n++)
         {
             ReadAttributesData(nullptr, pRoot);
@@ -6750,7 +6750,7 @@ void COMPILER::ReadAttributesData(ATTRIBUTES *pRoot, ATTRIBUTES *pParent)
     }
 
     // if(pName) delete pName;
-    delete pValue;
+    delete[] pValue;
 }
 
 void COMPILER::SaveAttributesData(ATTRIBUTES *pRoot)
@@ -7212,7 +7212,7 @@ void COMPILER::FormatDialog(char *file_name)
     if (!fileS2.is_open())
     {
         fio->_CloseFile(fileS);
-        delete pFileData;
+        delete[] pFileData;
         return;
     }
 
@@ -7408,7 +7408,7 @@ void COMPILER::FormatDialog(char *file_name)
         }
     } while (Token_type != END_OF_PROGRAMM);
 
-    delete pFileData;
+    delete[] pFileData;
 
     sprintf_s(buffer, "};");
     fio->_WriteFile(fileS2, sNewLine, strlen(sNewLine));
