@@ -101,7 +101,6 @@ technique DbgDrawLines
     }
 }
 
-
 technique DbgDraw2DTFColor
 {
     pass p0

@@ -272,6 +272,12 @@ void MAST::Mount(entid_t modelEI, entid_t shipEI, NODE *mastNodePointer)
                             core.Send_Message(flagEI, "lili", MSG_FLAG_TO_NEWHOST, modelEI, atoi(&gl.group_name[4]),
                                               model_id);
                     }
+                    else if (!strncmp(gl.group_name, "sflag", 5))
+                    {
+                        if (flagEI)
+                            core.Send_Message(flagEI, "lili", MSG_FLAG_TO_NEWHOST, modelEI, atoi(&gl.group_name[5]),
+                                              model_id);
+                    }
                 }
                 // also bring down the sails associated with this mast
                 if (sailEI)
@@ -716,4 +722,171 @@ void MAST::AllRelease()
     // delete model
     EntityManager::EraseEntity(model_id);
     m_pMastNode = nullptr;
+}
+
+HULL::HULL()
+{
+    RenderService = nullptr;
+    wMoveCounter = 0;
+    bUse = false;
+    m_pHullNode = nullptr;
+
+    m_mount_param.pNode = nullptr;
+}
+
+HULL::~HULL()
+{
+    AllRelease();
+}
+
+bool HULL::Init()
+{
+    SetDevice();
+    return true;
+}
+
+void HULL::SetDevice()
+{
+    RenderService = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    if (!RenderService)
+        throw std::runtime_error("No service: dx9render");
+
+    pCollide = static_cast<COLLIDE *>(core.CreateService("COLL"));
+    if (!pCollide)
+        throw std::runtime_error("No service: collide");
+}
+
+bool HULL::CreateState(ENTITY_STATE_GEN *state_gen)
+{
+    return true;
+}
+
+bool HULL::LoadState(ENTITY_STATE *state)
+{
+    SetDevice();
+    return true;
+}
+
+void HULL::Execute(uint32_t Delta_Time)
+{
+    if (bUse)
+    {
+        // an ini file has to be read here, but there is none
+    }
+    else
+    {
+        EntityManager::EraseEntity(GetId());
+    }
+}
+
+void HULL::Realize(uint32_t Delta_Time)
+{
+    if (m_mount_param.pNode)
+    {
+        Mount(m_mount_param.modelEI, m_mount_param.shipEI, m_mount_param.pNode);
+        m_mount_param.pNode = nullptr;
+    }
+
+    MODEL *mdl;
+    if ((mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(model_id))) != nullptr)
+    {
+        RenderService->SetRenderState(D3DRS_LIGHTING, true);
+        mdl->ProcessStage(Stage::realize, Delta_Time);
+        RenderService->SetRenderState(D3DRS_LIGHTING, false);
+    }
+}
+
+uint64_t HULL::ProcessMessage(MESSAGE &message)
+{
+    switch (message.Long())
+    {
+    case MSG_HULL_SETGEOMETRY: {
+        if (!m_mount_param.pNode)
+        {
+            m_mount_param.pNode = (NODE *)message.Pointer(); // new root node pointer
+            m_mount_param.shipEI = message.EntityID();       // ship entity
+            m_mount_param.modelEI = message.EntityID();      // old model entity
+        }
+    }
+    break;
+    }
+    return 0;
+}
+
+void HULL::Mount(entid_t modelEI, entid_t shipEI, NODE *hullNodePointer)
+{
+    m_pHullNode = hullNodePointer;
+    if (hullNodePointer == nullptr)
+        return;
+
+    auto *oldmdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(modelEI));
+    if (oldmdl == nullptr)
+        return; // do not bring down anything if there is no old model
+    oldmodel_id = modelEI;
+    ship_id = shipEI;
+
+    const auto ropeEI = EntityManager::GetEntityId("rope");
+
+    // find attributes
+    VAI_OBJBASE *pVAI = nullptr;
+    pVAI = static_cast<VAI_OBJBASE *>(EntityManager::GetEntityPointer(shipEI));
+    ATTRIBUTES *pA = nullptr;
+    if (pVAI != nullptr)
+        pA = pVAI->GetACharacter();
+
+    ATTRIBUTES *pAHulls = nullptr;
+    if (pA != nullptr)
+        pAHulls = pA->FindAClass(pA, "Ship.Hulls");
+
+    float fHullDamage = 0.f;
+    if (pAHulls != NULL)
+        fHullDamage = pAHulls->GetAttributeAsFloat((char *)hullNodePointer->GetName(), 0.f);
+
+    if (hullNodePointer != nullptr)
+    {
+        int i, j;
+        // create new model
+        bModel = true;
+        model_id = hullNodePointer->Unlink2Model();
+        MODEL *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(model_id));
+
+        if (mdl != nullptr)
+            for (i = 0; i < 10000; i++)
+            {
+                NODE *nod = mdl->GetNode(i);
+                if (nod == nullptr || nod->geo == nullptr)
+                    break;
+                GEOS::INFO gi;
+                nod->geo->GetInfo(gi);
+                for (j = 0; j < gi.nlabels; j++)
+                {
+                    GEOS::LABEL gl;
+                    nod->geo->GetLabel(j, gl);
+                    if (!strncmp(gl.name, "rope", 4))
+                    {
+                        if (ropeEI)
+                            core.Send_Message(ropeEI, "lil", MSG_ROPE_DELETE, modelEI, atoi(&gl.name[5]));
+                    }
+                    if (!strncmp(gl.name, "fal", 3))
+                    {
+                        if (ropeEI)
+                            core.Send_Message(ropeEI, "lil", MSG_ROPE_DELETE, modelEI, atoi(&gl.name[4]) + 1000);
+                    }
+                }
+            }
+    }
+    // bUse = true;
+}
+
+void HULL::AllRelease()
+{
+    if (m_mount_param.pNode)
+    {
+        Mount(m_mount_param.modelEI, m_mount_param.shipEI, m_mount_param.pNode);
+        m_mount_param.pNode = nullptr;
+    }
+
+    // delete model
+    EntityManager::EraseEntity(model_id);
+    m_pHullNode = nullptr;
 }

@@ -17,7 +17,7 @@ technique SeaLocatorsShow
         AlphaOp[0] = modulate;
         AlphaArg1[0] = tfactor;
         AlphaArg2[0] = diffuse;
-                    
+
         ColorOp[1] = disable;
     }
 }

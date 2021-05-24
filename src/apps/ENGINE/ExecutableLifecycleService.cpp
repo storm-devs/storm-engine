@@ -3,6 +3,7 @@
 #include "fs.h"
 #include "vfile_service.h"
 
+#define SENTRY_BUILD_STATIC 1
 #include <sentry.h>
 
 namespace storm::except

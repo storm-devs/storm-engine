@@ -47,9 +47,9 @@ technique skyblend
         ColorOp[1] = blendfactoralpha;
         ColorArg1[1] = texture;
         ColorArg2[1] = current;
-        
+
         AlphaOp[1] = disable;
-        
+
         ColorOp[2] = disable;
         AlphaOp[2] = disable;
     }
@@ -83,7 +83,7 @@ technique skyblend_alpha
         ColorOp[1] = blendfactoralpha;
         ColorArg1[1] = texture;
         ColorArg2[1] = current;
-        
+
         AlphaOp[1] = blendfactoralpha;
         AlphaArg1[1] = texture;
         AlphaArg2[1] = current;
@@ -166,9 +166,9 @@ technique skyblendland
         ColorOp[1] = blendfactoralpha;
         ColorArg1[1] = texture;
         ColorArg2[1] = current;
-        
+
         AlphaOp[1] = disable;
-        
+
         ColorOp[2] = disable;
         AlphaOp[2] = disable;
     }
@@ -202,7 +202,7 @@ technique skyblend_alphaland
         ColorOp[1] = blendfactoralpha;
         ColorArg1[1] = texture;
         ColorArg2[1] = current;
-        
+
         AlphaOp[1] = blendfactoralpha;
         AlphaArg1[1] = texture;
         AlphaArg2[1] = current;

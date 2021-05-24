@@ -30,7 +30,7 @@ technique InterfaceBackScene_Logo
         AlphaBlendEnable = true;
         SrcBlend = srcalpha;
         DestBlend = invsrcalpha;
-        
+
         ColorOp[0] = SelectArg1;
         ColorArg1[0] = texture;
 

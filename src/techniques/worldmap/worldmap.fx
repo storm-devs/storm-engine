@@ -110,14 +110,14 @@ technique WdmClouds
         FogEnable = false;
 
         ZWriteEnable = false;
-        
+
         SrcBlend = srcalpha;
         DestBlend = invsrcalpha;
         CullMode = none;
-        
+
         AlphaTestEnable = false;
         AlphaBlendEnable = true;
-        
+
         ColorArg1[0] = texture;
         ColorArg2[0] = diffuse;
         ColorOp[0] = modulate;
@@ -132,10 +132,10 @@ technique WdmClouds
         AlphaArg2[0] = diffuse;
         AlphaOp[0] = modulate;
         AlphaOp[1] = disable;
-        
+
         AddressU[1] = clamp;
         AddressV[1] = clamp;
-        
+
         VertexShader = SHADER;
     }
 }
@@ -148,14 +148,14 @@ technique WdmLightning
         FogEnable = false;
 
         ZWriteEnable = false;
-        
+
         SrcBlend = srcalpha;
         DestBlend = one;
         CullMode = none;
-        
+
         AlphaTestEnable = false;
         AlphaBlendEnable = true;
-        
+
         ColorArg1[0] = texture;
         ColorOp[0] = SelectArg1;
         ColorOp[1] = disable;
@@ -173,14 +173,14 @@ technique WdmRain
         FogEnable = false;
 
         ZWriteEnable = false;
-        
+
         SrcBlend = srcalpha;
         DestBlend = invsrcalpha;
         CullMode = none;
-        
+
         AlphaTestEnable = false;
         AlphaBlendEnable = true;
-        
+
         ColorArg1[0] = texture;
         ColorOp[0] = SelectArg1;
         ColorOp[1] = disable;
@@ -199,14 +199,14 @@ technique WdmWarringShipClouds
         FogEnable = false;
 
         ZWriteEnable = false;
-        
+
         SrcBlend = srcalpha;
         DestBlend = invsrcalpha;
         CullMode = none;
-        
+
         AlphaTestEnable = false;
         AlphaBlendEnable = true;
-        
+
         ColorArg1[0] = texture;
         ColorArg2[0] = diffuse;
         ColorOp[0] = modulate;
@@ -218,7 +218,6 @@ technique WdmWarringShipClouds
     }
 }
 
-
 technique WdmShipWaterTrack
 {
     pass p0
@@ -227,14 +226,14 @@ technique WdmShipWaterTrack
         FogEnable = false;
 
         ZWriteEnable = false;
-        
+
         SrcBlend = one;
         DestBlend = one;
         CullMode = none;
-        
+
         AlphaTestEnable = false;
         AlphaBlendEnable = true;
-        
+
         ColorArg1[0] = texture;
         ColorArg2[0] = diffuse;
         ColorOp[0] = modulate;
@@ -252,14 +251,14 @@ technique WdmDebugDraw
 
         ZEnable = false;
         ZWriteEnable = false;
-        
+
         SrcBlend = srcalpha;
         DestBlend = invsrcalpha;
         CullMode = none;
-        
+
         AlphaTestEnable = false;
         AlphaBlendEnable = true;
-        
+
         ColorArg1[0] = texture;
         ColorArg2[0] = diffuse;
         ColorOp[0] = SelectArg2;
@@ -267,7 +266,6 @@ technique WdmDebugDraw
         AlphaOp[0] = disable;
     }
 }
-
 
 technique WdmDrawLabelIcon
 {
@@ -278,14 +276,14 @@ technique WdmDrawLabelIcon
 
         ZEnable = false;
         ZWriteEnable = false;
-        
+
         SrcBlend = srcalpha;
         DestBlend = invsrcalpha;
         CullMode = none;
-        
+
         AlphaTestEnable = false;
         AlphaBlendEnable = true;
-        
+
         ColorArg1[0] = diffuse;
         ColorArg2[0] = texture;
         ColorOp[0] = selectarg2;
@@ -299,7 +297,6 @@ technique WdmDrawLabelIcon
         AlphaArg1[1] = texture;
         AlphaArg2[1] = current;
         AlphaOp[1] = blendfactoralpha;
-
 
         ColorOp[2] = disable;
         AlphaArg1[2] = diffuse;
@@ -319,14 +316,14 @@ technique WdmDrawMapBlend
 
         ZEnable = false;
         ZWriteEnable = false;
-        
+
         SrcBlend = srcalpha;
         DestBlend = invsrcalpha;
         CullMode = none;
-        
+
         AlphaTestEnable = false;
         AlphaBlendEnable = true;
-        
+
         ColorArg1[0] = texture;
         ColorArg2[0] = diffuse;
         ColorOp[0] = modulate;
@@ -401,7 +398,7 @@ technique WdmSeaDraw3
         TextureTransformFlags[0] = count2;
         TextureTransformFlags[1] = count2;
         TexCoordIndex[0] = 0;
-        TexCoordIndex[1] = 0;            
+        TexCoordIndex[1] = 0;
 
         ZEnable = false;
         ZWriteEnable = false;
@@ -454,9 +451,9 @@ technique WdmSeaDraw4
         ColorOp[2] = subtract;
         ColorArg1[3] = current;
         ColorArg2[3] = current;
-        ColorOp[3] = modulate4x;            
+        ColorOp[3] = modulate4x;
         ColorOp[4] = disable;
-        
+
         AlphaArg2[0] = tfactor;
         AlphaOp[0] = SelectArg2;
         AlphaArg2[1] = tfactor;
@@ -504,7 +501,7 @@ technique WdmInterfaceDrawBlend
         ColorArg2[0] = diffuse;
         ColorOp[0] = modulate;
         ColorOp[1] = disable;
-        
+
         AlphaArg1[0] = texture;
         AlphaArg2[0] = diffuse;
         AlphaOp[0] = modulate;
@@ -523,22 +520,22 @@ technique WdmInterfaceDrawSky
     {
         Lighting = false;
         FogEnable = false;
-        
+
         ZEnable = false;
         ZWriteEnable = false;
         CullMode = none;
-        
+
         AlphaTestEnable = false;
         AlphaBlendEnable = true;
         SrcBlend = srcalpha;
         DestBlend = invsrcalpha;
-        
+
         ColorArg1[0] = texture;
         ColorOp[0] = SelectArg1;
         ColorArg1[1] = current;
         ColorOp[1] = SelectArg1;
         ColorOp[2] = disable;
-        
+
         AlphaArg1[0] = texture;
         AlphaOp[0] = SelectArg1;
         AlphaArg1[1] = texture;
@@ -555,15 +552,15 @@ technique WdmIslandWaves
         Lighting = false;
         FogEnable = false;
         ZWriteEnable = false;
-        
+
         AlphaTestEnable = false;
-        AlphaBlendEnable = true;            
+        AlphaBlendEnable = true;
         SrcBlend = srcalpha;
         DestBlend = invsrcalpha;
 
         TextureTransformFlags[0] = count2;
         AddressV[0] = clamp;
-        
+
         ColorOp[0] = SelectArg1;
         ColorArg1[0] = texture;
         ColorOp[1] = disable;

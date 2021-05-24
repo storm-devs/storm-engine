@@ -1,8 +1,7 @@
 project(engine)
 
-find_package(CrashpadHandler REQUIRED)
 find_package(Fmod REQUIRED)
- 
+
 add_executable(${PROJECT_NAME} WIN32
     compiler.cpp
     compiler.h
@@ -79,7 +78,7 @@ target_link_libraries(${PROJECT_NAME}
     PRIVATE
     common_h
     util
-    
+
     animals
     animation
     ballsplash
@@ -125,19 +124,19 @@ target_link_libraries(${PROJECT_NAME}
     CONAN_PKG::zlib
     CONAN_PKG::sentry-native
     CONAN_PKG::sdl2
-    comctl32.lib
-    dbghelp.lib
+
+    comctl32
+    shlwapi
+    version
+    dbghelp
+    winhttp
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${CrashpadHandler_PATH}"
-        "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
-
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${Fmod_LIBRARY_PATHS}/fmod.dll"
         "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
-        
+
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${STORM_SOURCE_DIR}/techniques"
         "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resource/techniques"
