@@ -119,6 +119,7 @@ target_link_libraries(${PROJECT_NAME}
     weather
     worldmap
     xinterface
+    window
 
     CONAN_PKG::zlib
     CONAN_PKG::sentry-native

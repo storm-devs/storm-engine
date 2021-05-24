@@ -9,4 +9,4 @@ add_library(${PROJECT_NAME} STATIC
     pcs_controls.h
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE common_h)
+target_link_libraries(${PROJECT_NAME} PRIVATE common_h input)
