@@ -39,7 +39,7 @@ AIBalls::~AIBalls()
             {
                 STORM_DELETE(pBall->pParticle);
             }
-            pBall->sBallEvent[0] = '\0';
+            pBall->sBallEvent.clear();
         }
         aBallTypes[i].Balls.clear();
     }
@@ -134,31 +134,25 @@ void AIBalls::AddBall(ATTRIBUTES *pABall)
 
     pBall->iBallOwner = pABall->GetAttributeAsDword("CharacterIndex");
 
-#define GetAFloat(x) pABall->GetAttributeAsFloat(x)
-#define GetADword(x) pABall->GetAttributeAsDword(x)
-
     pBall->fTime = 0.0f;
-    pBall->vPos = pBall->vFirstPos = CVECTOR(GetAFloat("x"), GetAFloat("y"), GetAFloat("z"));
-    pBall->fSpeedV0 = GetAFloat("SpdV0");
-    pBall->fHeightMultiply = GetAFloat("HeightMultiply");
-    pBall->fSizeMultiply = GetAFloat("SizeMultiply");
-    pBall->fTimeSpeedMultiply = GetAFloat("TimeSpeedMultiply");
-    pBall->dwCannonType = GetADword("CannonType");
-    pBall->fMaxFireDistance = GetAFloat("MaxFireDistance");
-    const auto fAngle = GetAFloat("Ang");
+    pBall->vPos = pBall->vFirstPos =
+        CVECTOR(pABall->GetAttributeAsFloat("x"), pABall->GetAttributeAsFloat("y"), pABall->GetAttributeAsFloat("z"));
+    pBall->fSpeedV0 = pABall->GetAttributeAsFloat("SpdV0");
+    pBall->fHeightMultiply = pABall->GetAttributeAsFloat("HeightMultiply");
+    pBall->fSizeMultiply = pABall->GetAttributeAsFloat("SizeMultiply");
+    pBall->fTimeSpeedMultiply = pABall->GetAttributeAsFloat("TimeSpeedMultiply");
+    pBall->dwCannonType = pABall->GetAttributeAsDword("CannonType");
+    pBall->fMaxFireDistance = pABall->GetAttributeAsFloat("MaxFireDistance");
+    const auto fAngle = pABall->GetAttributeAsFloat("Ang");
     pBall->fCosAngle = cosf(fAngle);
     pBall->fSinAngle = sinf(fAngle);
-    const auto fDir = GetAFloat("Dir");
+    const auto fDir = pABall->GetAttributeAsFloat("Dir");
     pBall->fDirX = cosf(fDir);
     pBall->fDirZ = sinf(fDir);
     pBall->pParticle = nullptr;
 
-    // pBall->sBallEvent = pABall->GetAttribute("Event");
-    const auto *event_str = pABall->GetAttribute("Event");
-    const auto len = std::min(strlen(event_str), static_cast<size_t>(TSE_MAX_EVENT_LENGTH));
-    std::copy_n(event_str, len, pBall->sBallEvent);
-    pBall->sBallEvent[len] = '\0';
-
+    pBall->sBallEvent = pABall->GetAttribute("Event");
+    
     if (aBallTypes[i].sParticleName.size())
     {
         entid_t eidParticle;
@@ -220,8 +214,8 @@ void AIBalls::Execute(uint32_t Delta_Time)
 
             vDst = pBall->vPos;
 
-            if (pBall->sBallEvent[0] != '\0')
-                core.Event(pBall->sBallEvent, "lllffffffs", pBall->iBallOwner, static_cast<uint32_t>(1),
+            if (!pBall->sBallEvent.empty())
+                core.Event(pBall->sBallEvent.c_str(), "lllffffffs", pBall->iBallOwner, static_cast<uint32_t>(1),
                            pBallsType->dwGoodIndex, pBall->vPos.x, pBall->vPos.y, pBall->vPos.z, vSrc.x, vSrc.y,
                            vSrc.z);
 
@@ -281,12 +275,12 @@ void AIBalls::Execute(uint32_t Delta_Time)
             // delete ball
             if (fRes <= 1.0f)
             {
-                if (pBall->sBallEvent[0] != '\0')
+                if (!pBall->sBallEvent.empty())
                 {
-                    core.Event(pBall->sBallEvent, "lllffffff", pBall->iBallOwner, static_cast<uint32_t>(0),
+                    core.Event(pBall->sBallEvent.c_str(), "lllffffff", pBall->iBallOwner, static_cast<uint32_t>(0),
                                pBallsType->dwGoodIndex, pBall->vPos.x, pBall->vPos.y, pBall->vPos.z, vSrc.x, vSrc.y,
                                vSrc.z);
-                    pBall->sBallEvent[0] = '\0';
+                    pBall->sBallEvent.clear();
                 }
 
                 if (pBall->pParticle)
@@ -302,7 +296,7 @@ void AIBalls::Execute(uint32_t Delta_Time)
                 continue;
             }
 
-            if (pBall->sBallEvent[0] == '\0')
+            if (pBall->sBallEvent.empty())
             {
                 aBallRects.push_back(RS_RECT{});
                 // RS_RECT * pRSR = &aBallRects[aBallRects.Add()];
@@ -351,7 +345,7 @@ uint32_t AIBalls::AttributeChanged(ATTRIBUTES *pAttributeChanged)
             {
                 BALL_PARAMS *pBall = &pBallsType->Balls[j];
 
-                pBall->sBallEvent[0] = '\0';
+                pBall->sBallEvent.clear();
 
                 if (pBall->pParticle)
                 {
@@ -434,6 +428,27 @@ uint64_t AIBalls::ProcessMessage(MESSAGE &message)
     return 0;
 }
 
+void BALL_PARAMS::Save(CSaveLoad *pSL)
+{
+    pSL->SaveVector(vFirstPos);
+    pSL->SaveVector(vPos);
+    // pSL->SaveDword(reinterpret_cast<uint32_t>(pParticle));
+    pSL->SaveQword(reinterpret_cast<uint64_t>(pParticle));
+    pSL->SaveString(sBallEvent);
+    pSL->SaveLong(iBallOwner);
+    pSL->SaveFloat(fTime);
+    pSL->SaveFloat(fSpeedV0);
+    pSL->SaveFloat(fDirX);
+    pSL->SaveFloat(fDirZ);
+    pSL->SaveFloat(fSinAngle);
+    pSL->SaveFloat(fCosAngle);
+    pSL->SaveFloat(fHeightMultiply);
+    pSL->SaveFloat(fSizeMultiply);
+    pSL->SaveFloat(fTimeSpeedMultiply);
+    pSL->SaveFloat(fMaxFireDistance);
+    pSL->SaveDword(dwCannonType);
+}
+
 void AIBalls::Save(CSaveLoad *pSL)
 {
     for (uint32_t i = 0; i < aBallTypes.size(); i++)
@@ -442,9 +457,30 @@ void AIBalls::Save(CSaveLoad *pSL)
 
         for (uint32_t j = 0; j < aBallTypes[i].Balls.size(); j++)
         {
-            pSL->SaveBuffer((const char *)&aBallTypes[i].Balls[j], sizeof(BALL_PARAMS));
+            aBallTypes[i].Balls[j].Save(pSL);
         }
     }
+}
+
+void BALL_PARAMS::Load(CSaveLoad *pSL)
+{
+    vFirstPos = pSL->LoadVector();
+    vPos = pSL->LoadVector();
+    //pParticle = reinterpret_cast<VPARTICLE_SYSTEM *>(pSL->LoadDword());
+    pParticle = reinterpret_cast<VPARTICLE_SYSTEM *>(pSL->LoadQword());
+    sBallEvent = pSL->LoadString();
+    iBallOwner = pSL->LoadLong();
+    fTime = pSL->LoadFloat();
+    fSpeedV0 = pSL->LoadFloat();
+    fDirX = pSL->LoadFloat();
+    fDirZ = pSL->LoadFloat();
+    fSinAngle = pSL->LoadFloat();
+    fCosAngle = pSL->LoadFloat();
+    fHeightMultiply = pSL->LoadFloat();
+    fSizeMultiply = pSL->LoadFloat();
+    fTimeSpeedMultiply = pSL->LoadFloat();
+    fMaxFireDistance = pSL->LoadFloat();
+    dwCannonType = pSL->LoadDword();
 }
 
 void AIBalls::Load(CSaveLoad *pSL)
@@ -459,7 +495,7 @@ void AIBalls::Load(CSaveLoad *pSL)
         {
             // BALL_PARAMS * pB = &aBallTypes[i].Balls[aBallTypes[i].Balls.Add()];
             BALL_PARAMS &pB = aBallTypes[i].Balls[balls_size + j];
-            pSL->Load2Buffer(&pB);
+            pB.Load(pSL);
             if (pB.pParticle)
             {
                 pB.pParticle = nullptr;

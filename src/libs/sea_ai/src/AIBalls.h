@@ -8,9 +8,12 @@
 
 struct BALL_PARAMS
 {
+    void Save(CSaveLoad *pSL);
+    void Load(CSaveLoad *pSL);
+
     CVECTOR vFirstPos, vPos; // first and current ball position
     VPARTICLE_SYSTEM *pParticle;
-    char sBallEvent[TSE_MAX_EVENT_LENGTH + 1];
+    std::string sBallEvent;
     long iBallOwner;    // ball owner(character index)
     float fTime;        // ball time: in seconds
     float fSpeedV0;     // initial speed: in m/s
