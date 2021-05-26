@@ -22,8 +22,6 @@ add_executable(${PROJECT_NAME} WIN32
     Main.cpp
     message_script.h
     messages.h
-    program.cpp
-    program.h
     s_classtab.cpp
     s_classtab.h
     s_compress.cpp
