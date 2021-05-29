@@ -65,7 +65,6 @@ elseif( APPLE )
 		    			$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/compat/osx> )
 endif()
 
-
 link_libraries(bgfx dear-imgui meshoptimizer brtshaderc fcpp)
 link_libraries(bx bimg bgfx-vertexlayout bgfx-shader-spirv fcpp glsl-optimizer glslang spirv-cross spirv-tools webgpu)
 

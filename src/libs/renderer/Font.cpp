@@ -5,11 +5,6 @@
 
 static char Buffer1024[1024];
 
-bgfx::VertexLayout BGFX_FONT_VERTEX::ms_layout;
-BGFX_FONT_VERTEX::constructor BGFX_FONT_VERTEX::vertexcons;
-
-BGFX_FONT_SHADER::constructor BGFX_FONT_SHADER::shadercons;
-
 
 FONT::FONT()
 {
@@ -23,7 +18,7 @@ FONT::FONT()
     bInverse = bOldInverse = false;
     techniqueName = nullptr;
     textureName = nullptr;
-}
+} 
 
 FONT::~FONT()
 {
@@ -363,10 +358,6 @@ long FONT::Print(long x, long y, char *data_PTR)
     Device->SetFVF(IMAGE_FVF);
     Device->SetStreamSource(0, VBuffer, 0, sizeof(IMAGE_VERTEX));
     // Device->SetIndices(0);
-
-    BGFX_FONT_SHADER::SetViewProjectionMatrix();
-    BGFX_FONT_SHADER::UpdateVertexBuffer();
-    BGFX_FONT_SHADER::Submit();
 
     if (bInverse)
     {

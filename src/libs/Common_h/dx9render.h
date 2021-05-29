@@ -1,7 +1,5 @@
 #pragma once
 
-#include "bgfx/bgfx.h"
-
 #include <cstdint>
 #include <d3d9.h>
 #include <d3dx9.h>
@@ -12,6 +10,8 @@
 #include "storm_assert.h"
 #include "types3d.h"
 #include "utf8.h"
+
+#include "bgfx/bgfx.h"
 
 #define FONT_DEFAULT 0
 
@@ -67,6 +67,8 @@ struct RS_LINE2D
 };
 
 class CVideoTexture;
+
+struct TextureResource;
 
 class VDX9RENDER : public SERVICE
 {
@@ -144,6 +146,8 @@ class VDX9RENDER : public SERVICE
     // DX9Render: Techniques Section
     virtual bool TechniqueExecuteStart(const char *cBlockName) = 0;
     virtual bool TechniqueExecuteNext() = 0;
+
+    virtual void DrawSprite(std::shared_ptr<TextureResource> texture) = 0;
 
     // DX9Render: Draw Section
     virtual void DrawRects(RS_RECT *pRSR, uint32_t dwRectsNum, const char *cBlockName = nullptr,

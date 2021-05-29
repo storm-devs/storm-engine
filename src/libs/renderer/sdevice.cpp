@@ -374,8 +374,6 @@ DX9RENDER::DX9RENDER()
     vViewRelationPos = CVECTOR(0.f, 0.f, 0.f);
     vWordRelationPos = -vViewRelationPos;
     bUseLargeBackBuffer = false;
-
-    PosColorTexVertex::init();
 }
 
 static bool texLog = false;
@@ -3845,6 +3843,14 @@ void DX9RENDER::DrawRects(RS_RECT *pRSR, uint32_t dwRectsNum, const char *cBlock
     }
 
     d3d9->SetTransform(D3DTS_VIEW, camMtx);
+}
+
+void DX9RENDER::DrawSprite(std::shared_ptr<TextureResource> texture)
+{
+    m_spriteRenderer.Texture = texture;
+    m_spriteRenderer.SetViewProjection();
+    m_spriteRenderer.UpdateVertexBuffer();
+    m_spriteRenderer.Submit();
 }
 
 void DX9RENDER::DrawSprites(RS_SPRITE *pRSS, uint32_t dwSpritesNum, const char *cBlockName)

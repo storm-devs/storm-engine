@@ -13,6 +13,8 @@
 #include "d3d9types.h"
 #include "script_libriary.h"
 
+#include "sprite_renderer.h"
+
 #include <stack>
 #include <vector>
 #include <filesystem>
@@ -122,6 +124,8 @@ class DX9RENDER : public VDX9RENDER
         IDirect3DSurface9 *pDepthSurface;
         D3DVIEWPORT9 ViewPort;
     };
+
+    SpriteRenderer m_spriteRenderer;
 
     IDirect3DDevice9 *d3d9;
     IDirect3D9 *d3d;
@@ -355,6 +359,8 @@ class DX9RENDER : public VDX9RENDER
     // DX9Render: Techniques Section
     bool TechniqueExecuteStart(const char *cBlockName) override;
     bool TechniqueExecuteNext() override;
+
+    void DrawSprite(std::shared_ptr<TextureResource> texture) override;
 
     // DX9Render: Draw Section
     void DrawRects(RS_RECT *pRSR, uint32_t dwRectsNum, const char *cBlockName = nullptr, uint32_t dwSubTexturesX = 1,
