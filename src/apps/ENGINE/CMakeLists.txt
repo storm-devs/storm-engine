@@ -143,3 +143,5 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         "${STORM_SOURCE_DIR}/shared"
         "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resource/shared"
 )
+
+set_target_properties( ${PROJECT_NAME} PROPERTIES LINK_FLAGS "/ENTRY:\"mainCRTStartup\"" )

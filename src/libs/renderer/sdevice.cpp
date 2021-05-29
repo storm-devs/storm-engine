@@ -1,3 +1,5 @@
+#include "bgfx_utils.h"
+
 #include "sdevice.h"
 
 #include "core.h"
@@ -23,6 +25,9 @@
     }
 
 DX9RENDER *DX9RENDER::pRS = nullptr;
+
+bgfx::VertexLayout DX9RENDER::PosColorTexVertex::ms_layout;
+
 
 uint32_t DX9SetTexturePath(VS_STACK *pS)
 {
@@ -369,6 +374,8 @@ DX9RENDER::DX9RENDER()
     vViewRelationPos = CVECTOR(0.f, 0.f, 0.f);
     vWordRelationPos = -vViewRelationPos;
     bUseLargeBackBuffer = false;
+
+    PosColorTexVertex::init();
 }
 
 static bool texLog = false;
@@ -496,7 +503,8 @@ bool DX9RENDER::Init()
     rectsVBuffer = nullptr;
     d3d9->CreateVertexBuffer(2 * sizeof(CVECTOR), D3DUSAGE_WRITEONLY, D3DFVF_XYZ, D3DPOOL_MANAGED,
                              &pDropConveyorVBuffer, nullptr);
-    d3d9->CreateVertexBuffer(rectsVBuffer_SizeInRects * 6 * sizeof(RECT_VERTEX), D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC,
+    d3d9->CreateVertexBuffer(rectsVBuffer_SizeInRects * 6 * sizeof(PosColorTexVertex),
+                             D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC,
                              RS_RECT_VERTEX_FORMAT, D3DPOOL_DEFAULT, &rectsVBuffer, nullptr); // D3DPOOL_MANAGED
     if (!pDropConveyorVBuffer || !rectsVBuffer)
     {
@@ -1272,6 +1280,12 @@ long DX9RENDER::TextureCreate(const char *fname)
     }
     return -1;
 }
+
+bgfx::TextureHandle DX9RENDER::BGFXTextureCreate(const char *fname)
+{
+    return loadTexture(fname);
+}
+
 
 bool DX9RENDER::TextureLoad(long t)
 {
@@ -2387,7 +2401,8 @@ void DX9RENDER::RestoreRender()
         ClearPostProcessSurface(pSmallPostProcessSurface2);
     }
     ClearPostProcessSurface(pOriginalScreenSurface);
-    d3d9->CreateVertexBuffer(rectsVBuffer_SizeInRects * 6 * sizeof(RECT_VERTEX), D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC,
+    d3d9->CreateVertexBuffer(rectsVBuffer_SizeInRects * 6 * sizeof(PosColorTexVertex),
+                             D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC,
                              RS_RECT_VERTEX_FORMAT, D3DPOOL_DEFAULT, &rectsVBuffer, nullptr);
     for (long b = 0; b < MAX_BUFFERS; b++)
     {
@@ -2485,6 +2500,7 @@ void DX9RENDER::SetGLOWParams(float _fBlurBrushSize, long _GlowIntensity, long _
     iBlurPasses = _GlowPasses;
 }
 
+
 void DX9RENDER::RunStart()
 {
     bDeviceLost = true;
@@ -2551,7 +2567,9 @@ void DX9RENDER::RunStart()
         SetScreenAsRenderTarget();
     }
 
-    DX9Clear(D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | ((stencil_format == D3DFMT_D24S8) ? D3DCLEAR_STENCIL : 0));
+    bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH | ((stencil_format == D3DFMT_D24S8) ? BGFX_CLEAR_STENCIL : 0, 0x303030ff, 1.0f, 0));
+
+    //DX9Clear(D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | ((stencil_format == D3DFMT_D24S8) ? D3DCLEAR_STENCIL : 0));
 
     dwNumDrawPrimitive = 0;
     dwNumLV = 0;
@@ -3243,8 +3261,14 @@ void DX9RENDER::DrawRects(RS_RECT *pRSR, uint32_t dwRectsNum, const char *cBlock
         dv = 1.0f;
     }
 
-    d3d9->SetTransform(D3DTS_VIEW, IMatrix);
-    d3d9->SetTransform(D3DTS_WORLD, IMatrix);
+    float view[16];
+    float proj[16];
+    
+    bgfx::setViewTransform(0, view, proj);
+
+
+    /*d3d9->SetTransform(D3DTS_VIEW, IMatrix);
+    d3d9->SetTransform(D3DTS_WORLD, IMatrix);*/
 
     for (uint32_t cnt = 0; cnt < dwRectsNum;)
     {
@@ -3253,8 +3277,8 @@ void DX9RENDER::DrawRects(RS_RECT *pRSR, uint32_t dwRectsNum, const char *cBlock
         if (drawCount > rectsVBuffer_SizeInRects)
             drawCount = rectsVBuffer_SizeInRects;
         // Buffer
-        RECT_VERTEX *data = nullptr;
-        if (rectsVBuffer->Lock(0, drawCount * 6 * sizeof(RECT_VERTEX), (VOID **)&data, D3DLOCK_DISCARD) != D3D_OK)
+        PosColorTexVertex *data = nullptr;
+        if (rectsVBuffer->Lock(0, drawCount * 6 * sizeof(PosColorTexVertex), (VOID **)&data, D3DLOCK_DISCARD) != D3D_OK)
             return;
         if (!data)
             return;
@@ -3262,7 +3286,7 @@ void DX9RENDER::DrawRects(RS_RECT *pRSR, uint32_t dwRectsNum, const char *cBlock
         for (uint32_t i = 0; i < drawCount && cnt < dwRectsNum; i++)
         {
             // Local array of a particle
-            RECT_VERTEX *buffer = &data[i * 6];
+            PosColorTexVertex *buffer = &data[i * 6];
             RS_RECT &rect = pRSR[cnt++];
             CVECTOR pos = camMtx * (rect.vPos + vWordRelationPos);
             const float sizex = rect.fSize * fScaleX;
@@ -3317,7 +3341,7 @@ void DX9RENDER::DrawRects(RS_RECT *pRSR, uint32_t dwRectsNum, const char *cBlock
         if (bDraw)
             do
             {
-                CHECKD3DERR(SetStreamSource(0, rectsVBuffer, sizeof(RECT_VERTEX)));
+                CHECKD3DERR(SetStreamSource(0, rectsVBuffer, sizeof(PosColorTexVertex)));
                 CHECKD3DERR(DrawPrimitive(D3DPT_TRIANGLELIST, 0, drawCount * 2));
             } while (cBlockName && TechniqueExecuteNext());
     }

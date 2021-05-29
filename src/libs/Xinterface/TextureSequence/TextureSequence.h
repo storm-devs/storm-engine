@@ -1,5 +1,7 @@
 #pragma once
 
+#include <bgfx/bgfx.h>
+
 #include "VideoTexture.h"
 
 //-----------------------------------------------------------------------------
@@ -23,6 +25,8 @@ class TextureSequence : public CVideoTexture
     uint32_t m_dwCurDeltaTime;
 
     long m_AllTex;
+
+    bgfx::TextureHandle m_bgfx_AllTex;
 
     void ToTextureRender(float blendValue) const;
 

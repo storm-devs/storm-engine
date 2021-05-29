@@ -1,5 +1,7 @@
 #pragma once
 
+#include "bgfx/bgfx.h"
+
 #include <cstdint>
 #include <d3d9.h>
 #include <d3dx9.h>
@@ -117,6 +119,7 @@ class VDX9RENDER : public SERVICE
 
     // DX9Render: Textures Section
     virtual long TextureCreate(const char *fname) = 0;
+    virtual bgfx::TextureHandle BGFXTextureCreate(const char *fname) = 0;
     virtual bool TextureSet(long stage, long texid) = 0;
     virtual bool TextureRelease(long texid) = 0;
 

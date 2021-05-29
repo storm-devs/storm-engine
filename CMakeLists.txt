@@ -33,4 +33,23 @@ set(STORM_EXTERN_RENDERING_DIR "${CMAKE_CURRENT_SOURCE_DIR}/extern/rendering")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
 add_subdirectory(${STORM_EXTERN_RENDERING_DIR})
+
+
+include_directories(
+${BGFX_DIR}/examples/common
+${BGFX_DIR}/3rdparty 
+${BGFX_DIR}/3rdparty/dxsdk/include 
+${BGFX_DIR}/3rdparty/khronos
+$<BUILD_INTERFACE:${BGFX_DIR}/include>
+$<BUILD_INTERFACE:${BIMG_DIR}/include>
+$<BUILD_INTERFACE:${BX_DIR}/include>
+$<BUILD_INTERFACE:${BX_DIR}/3rdparty>)
+
+link_libraries(bgfx dear-imgui meshoptimizer )
+link_libraries(example-common )
+
+add_definitions("-D_CRT_SECURE_NO_WARNINGS" "-D__STDC_FORMAT_MACROS" "-DENTRY_CONFIG_IMPLEMENT_MAIN=1")
+
+
+
 add_subdirectory(src)

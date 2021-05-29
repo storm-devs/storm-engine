@@ -34,6 +34,9 @@ else()
     # Always generate debug information
     add_compile_options(-g)
     add_link_options(-g)
+
+    target_include_directories( iqa PUBLIC $<BUILD_INTERFACE:${BIMG_DIR}/3rdparty/iqa/include> )
+
 endif()
 
 add_subdirectory(apps)

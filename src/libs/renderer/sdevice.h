@@ -1,5 +1,8 @@
 #pragma once
 
+#include <bgfx/bgfx.h>
+
+
 #include "Effects.h"
 #include "Font.h"
 #include "VideoTexture.h"
@@ -94,11 +97,22 @@ class DX9RENDER : public VDX9RENDER
 {
 
 #define RS_RECT_VERTEX_FORMAT (D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1)
-    struct RECT_VERTEX
+    struct PosColorTexVertex
     {
         CVECTOR pos;
         uint32_t color;
         float u, v;
+
+        static void init()
+        {
+            ms_layout.begin()
+                .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
+                .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8, true)
+                .add(bgfx::Attrib::TexCoord0, 2, bgfx::AttribType::Float)
+                .end();
+        };
+
+        static bgfx::VertexLayout ms_layout;
     };
 
     struct RenderTarget
@@ -313,6 +327,8 @@ class DX9RENDER : public VDX9RENDER
 
     // DX9Render: Textures Section
     long TextureCreate(const char *fname) override;
+    bgfx::TextureHandle BGFXTextureCreate(const char *fname) override;
+
     bool TextureSet(long stage, long texid) override;
     bool TextureRelease(long texid) override;
 
