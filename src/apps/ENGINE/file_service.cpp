@@ -7,6 +7,9 @@
 #include <exception>
 #include <storm/string_compare.hpp>
 #include <string>
+#include <iostream>
+#include <fstream>
+#include <filesystem>
 
 #define COMMENT ';'
 #define SECTION_A '['
@@ -76,6 +79,24 @@ bool FILE_SERVICE::_WriteFile(std::fstream &fileS, const void *s, std::streamsiz
         core.tracelog->error("Failed to WriteFile: {}", e.what());
         return false;
     }
+}
+
+bool FILE_SERVICE::_STDReadFile(std::filesystem::path path, void *buffer, uint32_t bytes_to_read, uint32_t *bytes_read, uint32_t seek_to)
+{
+    std::basic_ifstream<unsigned char> fh;
+
+    
+    fh.open(path.wstring(), std::fstream::in | std::fstream::binary);
+
+    if (!fh.is_open())
+    {
+        return false;
+    }
+    fh.seekg(seek_to);
+    fh.read((unsigned char *)buffer, bytes_to_read);
+    *bytes_read = fh.gcount();
+
+    return *bytes_read == bytes_to_read;
 }
 
 bool FILE_SERVICE::_ReadFile(std::fstream &fileS, void *s, std::streamsize count)

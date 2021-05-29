@@ -15,6 +15,7 @@
 
 #include <stack>
 #include <vector>
+#include <filesystem>
 
 #define MAX_STEXTURES 1024
 #define MAX_BUFFERS 1024
@@ -263,6 +264,7 @@ class DX9RENDER : public VDX9RENDER
 
     std::stack<RenderTarget> stRenderTarget;
 
+    bool BGFXTextureLoad(long texid);
     bool TextureLoad(long texid);
     bool ErrorHandler(HRESULT hr, const char *file, unsigned line, const char *func, const char *expr);
 
@@ -491,9 +493,21 @@ class DX9RENDER : public VDX9RENDER
     HRESULT ImageBlt(long nTextureId, RECT *pDstRect, RECT *pSrcRect) override;
 
     void MakeScreenShot();
+<<<<<<< HEAD
     bool LoadTextureSurface(std::fstream &fileS, IDirect3DSurface9 *suface, uint32_t mipSize, uint32_t width,
                             uint32_t height, bool isSwizzled);
     uint32_t LoadCubmapSide(std::fstream &fileS, IDirect3DCubeTexture9 *tex, D3DCUBEMAP_FACES face, uint32_t numMips,
+=======
+    bool BGFXLoadTextureSurface(std::filesystem::path file, IDirect3DSurface9 *suface, uint32_t mipSize, uint32_t width,
+                                uint32_t height, bool isSwizzled, uint32_t seek_to = 0);
+    bool LoadTextureSurface(HANDLE file, IDirect3DSurface9 *suface, uint32_t mipSize, uint32_t width, uint32_t height,
+                            bool isSwizzled);
+
+    uint32_t BGFXLoadCubmapSide(std::wstring file, IDirect3DCubeTexture9 *tex, D3DCUBEMAP_FACES face, uint32_t numMips,
+                                uint32_t mipSize, uint32_t size, bool isSwizzled, uint32_t seek_to = 0);
+
+    uint32_t LoadCubmapSide(HANDLE file, IDirect3DCubeTexture9 *tex, D3DCUBEMAP_FACES face, uint32_t numMips,
+>>>>>>> 291fa44 (Custom font texture loading)
                             uint32_t mipSize, uint32_t size, bool isSwizzled);
 
     // core interface
