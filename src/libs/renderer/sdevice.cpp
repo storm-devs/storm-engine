@@ -294,7 +294,7 @@ inline bool DX9RENDER::ErrorHandler(HRESULT hr, const char *file, unsigned line,
 const uint32_t DX9RENDER::rectsVBuffer_SizeInRects = 512;
 
 //################################################################################
-DX9RENDER::DX9RENDER()
+DX9RENDER::DX9RENDER() : m_spriteRenderer(nullptr)
 {
     rectsVBuffer = nullptr;
 
@@ -530,6 +530,8 @@ bool DX9RENDER::Init()
             *pI++ = static_cast<uint16_t>((y + 1) * 32 + x);
         }
     }
+
+    m_spriteRenderer = std::make_shared<SpriteRenderer>(screen_size.x, screen_size.y);
 
     // UNGUARD
     return true;
@@ -826,13 +828,6 @@ bool DX9RENDER::ReleaseDevice()
     
     for (long t = 0; t < BGFXTextures.size(); t++)
     {
-        if (Textures[t].ref && Textures[t].loaded && Textures[t].d3dtex)
-        {
-            if (CHECKD3DERR(Textures[t].d3dtex->Release()) == false)
-                res = false;
-            Textures[t].ref = NULL;
-            delete Textures[t].name;
-        }
         if (BGFXTextures[t].ref && BGFXTextures[t].loaded && BGFXTextures[t].textureHandle->idx)
         {
             bgfx::destroy(*BGFXTextures[t].textureHandle);
@@ -2506,6 +2501,58 @@ bool DX9RENDER::TextureRelease(long texid)
     return true;
 }
 
+bool DX9RENDER::BGFXTextureRelease(long texid)
+{
+    if (texid == -1)
+        return true;
+
+    BGFXTextures[texid].ref--;
+    if (BGFXTextures[texid].ref != 0)
+        return false;
+
+    if (BGFXTextures[texid].name != nullptr)
+    {
+        if (texLog)
+        {
+            const HANDLE fh =
+                fio->_CreateFile("texLoad.txt", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, OPEN_ALWAYS);
+
+            totSize -= BGFXTextures[texid].dwSize;
+            const int bytes = fio->_GetFileSize(fh, nullptr);
+            char *buf = new char[bytes + 1];
+            fio->_ReadFile(fh, buf, bytes, nullptr);
+            buf[bytes] = 0;
+
+            char *str = strstr(buf, BGFXTextures[texid].name);
+            if (str != nullptr)
+            {
+                fio->_SetFilePointer(fh, str - buf, nullptr, FILE_BEGIN);
+                const char *s = "*";
+                fio->_WriteFile(fh, s, 1, nullptr);
+            }
+            delete[] buf;
+            fio->_FlushFileBuffers(fh);
+            fio->_CloseHandle(fh);
+        }
+
+        delete BGFXTextures[texid].name;
+        BGFXTextures[texid].name = nullptr;
+    }
+
+    if (BGFXTextures[texid].loaded == false)
+        return false;
+
+    bgfx::destroy(*BGFXTextures[texid].textureHandle);
+
+
+    dwTotalSize -= BGFXTextures[texid].dwSize;
+    BGFXTextures.erase(BGFXTextures.begin() + texid);
+
+    return true;
+}
+
+
+
 //################################################################################
 bool DX9RENDER::SetCamera(const CVECTOR &pos, const CVECTOR &ang, float fov)
 {
@@ -4042,6 +4089,11 @@ void DX9RENDER::DrawRects(RS_RECT *pRSR, uint32_t dwRectsNum, const char *cBlock
     d3d9->SetTransform(D3DTS_VIEW, camMtx);
 }
 
+std::shared_ptr<SpriteRenderer> DX9RENDER::GetSpriteRenderer()
+{
+    return m_spriteRenderer;
+}
+
 void DX9RENDER::DrawSprite(std::shared_ptr<TextureResource> texture, uint32_t color, const glm::vec2 &position)
 {
     DrawSprite(texture, glm::vec4(0, 0, texture->size.width, texture->size.height), color, position, glm::vec2(0, 0), glm::vec2(1, 1), 0.f, 0.f, false, false);
@@ -4053,12 +4105,16 @@ void DX9RENDER::DrawSprite(std::shared_ptr<TextureResource> texture, const glm::
     float minu, maxu, minv, maxv;
     float width, height;
 
-    minu = 0;
-    maxu = 1.f;
-    minv =  0.f;
-    maxv =  1.f;
-    width = (float)texture->size.width;
-    height = (float)texture->size.height;
+    width = src.z;
+    height = src.w;
+    // x
+    minu = src.x / (float)texture->size.width;
+    maxu = (src.x + width) / (float)texture->size.width;
+
+    // y
+    // TODO OPENGL HOWTO
+    minv = src.y / (float)texture->size.height;
+    maxv = (src.y + height) / (float)texture->size.height;
 
 
     if (flip_y)
@@ -4103,16 +4159,34 @@ void DX9RENDER::DrawSprite(std::shared_ptr<TextureResource> texture, const glm::
     auto u = glm::vec2(minu, maxu);
     auto v = glm::vec2(minv, maxv);
 
-    m_spriteRenderer.Texture = texture;
+    auto uCoordinates = std::vector<glm::vec2>{u, u, u, u};
+    auto vCoordinates = std::vector<glm::vec2>{v, v, v, v};
+
+    auto colors = std::vector<uint32_t>{color, color, color, color};
+
+    m_spriteRenderer->Texture = texture;
 
 
-    m_spriteRenderer.SetViewProjection();
-    m_spriteRenderer.UpdateVertexBuffer(points, u, v, color);
-    m_spriteRenderer.Submit();
+    m_spriteRenderer->SetViewProjection();
+    m_spriteRenderer->UpdateVertexBuffer(points, uCoordinates, vCoordinates, colors);
+    m_spriteRenderer->Submit();
 
 
 
 }
+
+void DX9RENDER::DrawSprites(std::shared_ptr<TextureResource> texture,
+                 std::vector<glm::vec3> &vertices, 
+                 std::vector<glm::vec2> &u,
+                 std::vector<glm::vec2> &v,
+                 std::vector<uint32_t> &color)
+{
+    m_spriteRenderer->Texture = texture;
+    m_spriteRenderer->SetViewProjection();
+    m_spriteRenderer->UpdateVertexBuffer(vertices, u, v, color);
+    m_spriteRenderer->Submit();
+}
+
 
 
 void DX9RENDER::DrawSprites(RS_SPRITE *pRSS, uint32_t dwSpritesNum, const char *cBlockName)

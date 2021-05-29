@@ -9,13 +9,13 @@
 bgfx::VertexLayout SPRITE_VERTEX::ms_layout;
 
 
-//SpriteRenderer::SpriteRenderer(long m_fbWidth, long m_fbHeight)
-SpriteRenderer::SpriteRenderer()
+SpriteRenderer::SpriteRenderer(long m_fbWidth, long m_fbHeight)
+//SpriteRenderer::SpriteRenderer()
 {
     SPRITE_VERTEX::Init();
 
-    //m_width = m_fbWidth;
-    //m_height = m_fbHeight;
+    m_width = m_fbWidth;
+    m_height = m_fbHeight;
 
     m_fvbh = bgfx::createDynamicVertexBuffer(bgfx::makeRef(s_spriteVertices, sizeof(s_spriteVertices)),
                                              SPRITE_VERTEX::ms_layout);
@@ -51,7 +51,7 @@ void SpriteRenderer::SetViewProjection()
 
     // Set view and projection matrix for view 0.
     {
-        glm::vec2 m_position;
+        /*glm::vec2 m_position;
         float m_zoom;
         float m_angle;
         glm::vec2 m_bounds;
@@ -66,43 +66,53 @@ void SpriteRenderer::SetViewProjection()
         auto mtx_view = glm::translate(glm::mat4(1.f), glm::vec3(m_bounds * 0.5f, 0.f)) *
                     glm::scale(glm::mat4(1.f), glm::vec3(m_zoom)) *
                     glm::rotate(glm::mat4(1.f), m_angle, glm::vec3(0, 0, 1.f)) *
-                    glm::translate(glm::mat4(1.f), glm::vec3(-m_position, 0.f));
+                    glm::translate(glm::mat4(1.f), glm::vec3(-m_position, 0.f));*/
 
 
-        float view[16];
-        bx::mtxLookAt(view, eye, at);
+        glm::mat4 view(1);
+        bx::mtxLookAt(glm::value_ptr(view), eye, at);
 
-        float proj[16];
-        bx::mtxProj(proj, 60.0f, float(1920) / float(1080), 0.1f, 100.0f, bgfx::getCaps()->homogeneousDepth);
+        //glm::mat4 proj(1);
+        //bx::mtxProj(glm::value_ptr(proj), 60.0f, float(1920) / float(1080), 0.1f, 100.0f, bgfx::getCaps()->homogeneousDepth);
 
-
-        bx::mtxOrtho(proj, 0.0f, float(m_bounds.x), float(m_bounds.y), 0.0f, 0.0f, 1000.0f, 0.0f,
+        glm::mat4 proj(1);
+        bx::mtxOrtho(glm::value_ptr(proj), 0.0f, float(m_width), float(m_height), 0.0f, 0.0f, 1000.0f, 0.0f,
         bgfx::getCaps()->homogeneousDepth);
 
-        bgfx::setViewTransform(0, glm::value_ptr(mtx_view), proj);
-        bgfx::setViewTransform(0, view, proj);
+        //bgfx::setViewTransform(0, glm::value_ptr(mtx_view), proj);
+        bgfx::setViewTransform(0, glm::value_ptr(view), glm::value_ptr(proj));
 
         // Set view 0 default viewport.
         bgfx::setViewRect(0, 0, 0, uint16_t(1920), uint16_t(1080));
     }
 }
 
-void SpriteRenderer::UpdateVertexBuffer(std::vector<glm::vec3>& vertices, const glm::vec2& u, const glm::vec2& v, const uint32_t& color)
+void SpriteRenderer::UpdateIndexBuffer(std::vector<uint16_t> indices){
+    const bgfx::Memory *mem = bgfx::alloc(indices.size() * sizeof(uint16_t));
+
+    memcpy(mem->data, indices.data(), indices.size() * sizeof(uint16_t));
+
+    bgfx::update(m_fibh, 0, mem);
+}
+
+void SpriteRenderer::UpdateVertexBuffer(std::vector<glm::vec3>& vertices, std::vector<glm::vec2>& u, std::vector<glm::vec2>& v, std::vector<uint32_t>& color)
 {
     // m_color[0] = m_color[1] = m_color[2] = m_color[3] = 1.0f;
 
     // bgfx::setUniform(u_color, &m_color);
+    const bgfx::Memory *mem = bgfx::alloc(vertices.size() * sizeof(SPRITE_VERTEX));
 
-    const bgfx::Memory *mem = bgfx::copy(s_spriteVertices, sizeof(s_spriteVertices));
     SPRITE_VERTEX *vertex = (SPRITE_VERTEX *)mem->data;
     
     int index = 0;
 
-    vertex[index + 0] = SPRITE_VERTEX{vertices[0].x, vertices[0].y, u.x, v.x/*, color*/};
-    vertex[index + 1] = SPRITE_VERTEX{vertices[1].x, vertices[1].y, u.y, v.x/*, color*/};
-    vertex[index + 2] = SPRITE_VERTEX{vertices[2].x, vertices[2].y, u.x, v.y/*, color*/};
-    vertex[index + 3] = SPRITE_VERTEX{vertices[3].x, vertices[3].y, u.y, v.y/*, color*/};
-
+    for (int index = 0; index < vertices.size(); index += 4)
+    {
+        vertex[index + 0] = SPRITE_VERTEX{vertices[index + 0].x, vertices[index + 0].y, u[index + 0].x, v[index + 0].x /*, color*/};
+        vertex[index + 1] = SPRITE_VERTEX{vertices[index + 1].x, vertices[index + 1].y, u[index + 1].y, v[index + 1].x /*, color*/};
+        vertex[index + 2] = SPRITE_VERTEX{vertices[index + 2].x, vertices[index + 2].y, u[index + 2].x, v[index + 2].y /*, color*/};
+        vertex[index + 3] = SPRITE_VERTEX{vertices[index + 3].x, vertices[index + 3].y, u[index + 3].y, v[index + 3].y /*, color*/};
+    }
     /*
         sprite->tl = glm::vec2(points[0].x, points[0].y);
         sprite->tr = glm::vec2(points[1].x, points[1].y);

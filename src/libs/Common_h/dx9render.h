@@ -69,6 +69,7 @@ struct RS_LINE2D
 class CVideoTexture;
 
 struct TextureResource;
+class SpriteRenderer;
 
 class VDX9RENDER : public SERVICE
 {
@@ -124,6 +125,7 @@ class VDX9RENDER : public SERVICE
     virtual long BGFXTextureCreate(const char *fname) = 0;
     virtual bool TextureSet(long stage, long texid) = 0;
     virtual bool TextureRelease(long texid) = 0;
+    virtual bool BGFXTextureRelease(long texid) = 0;
 
     // DX9Render: Fonts Section
     virtual long Print(long x, long y, const char *format, ...) = 0;
@@ -147,12 +149,17 @@ class VDX9RENDER : public SERVICE
     virtual bool TechniqueExecuteStart(const char *cBlockName) = 0;
     virtual bool TechniqueExecuteNext() = 0;
 
+    virtual std::shared_ptr<SpriteRenderer> GetSpriteRenderer() = 0;
+
     virtual void DrawSprite(std::shared_ptr<TextureResource> texture, uint32_t color,
                     const glm::vec2 &position) = 0;
 
     virtual void DrawSprite(std::shared_ptr<TextureResource> texture, const glm::vec4 &src, uint32_t color,
                     const glm::vec2 &position, const glm::vec2 &origin, const glm::vec2 &scale, float angle,
                     float depth, bool flip_x, bool flip_y) = 0;
+
+    virtual void DrawSprites(std::shared_ptr<TextureResource> texture,std::vector<glm::vec3> &vertices,
+                             std::vector<glm::vec2> &u, std::vector<glm::vec2> &v, std::vector<uint32_t> &color) = 0;
 
     // DX9Render: Draw Section
     virtual void DrawRects(RS_RECT *pRSR, uint32_t dwRectsNum, const char *cBlockName = nullptr,

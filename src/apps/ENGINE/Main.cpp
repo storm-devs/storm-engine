@@ -89,7 +89,7 @@ class Application : public entry::AppI
         m_reset = BGFX_RESET_VSYNC;
 
         bgfx::Init init;
-        init.type = bgfx::RendererType::OpenGL;
+        init.type = bgfx::RendererType::Direct3D9;
         init.vendorId = args.m_pciId;
         init.resolution.width = m_width;
         init.resolution.height = m_height;
@@ -108,7 +108,6 @@ class Application : public entry::AppI
         bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x303030ff, 1.0f, 0);
         //bgfx::setViewClear(0, BGFX_CLEAR_NONE, 0x303030ff, 1.0f, 0);
 
-        
         // Init stuff
         core.InitBase();
 
@@ -119,6 +118,7 @@ class Application : public entry::AppI
         m_renderService = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
         if (m_renderService == nullptr)
             throw std::exception("!Butterflies: No service 'dx9render'");
+
 
     }
 
@@ -131,18 +131,10 @@ class Application : public entry::AppI
 
             bgfx::touch(0);
 
-            
-            bgfx::setViewRect(0, 0, 0, uint16_t(1920), uint16_t(1080));
-            bgfx::setViewRect(1, 0, 0, uint16_t(1920), uint16_t(1080));
-            bgfx::setViewRect(2, 0, 0, uint16_t(1920), uint16_t(1080));
-
-            //m_renderService->DrawSprite(m_texture, 1, glm::vec2(0, 0), -1);
-            //m_renderService->DrawSprite(m_texture2, 1, glm::vec2(0, 0));
-            
             _loopMain();
 
             bgfx::frame();
-
+            //bgfx::renderFrame();
             return true;
         }
 

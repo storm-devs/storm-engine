@@ -65,20 +65,21 @@ class SpriteRenderer
     
     void GetVertices(std::shared_ptr<TextureResource> texture, Rect source, SPRITE_VERTEX *vertices);
 
-    //long m_width;
-    //long m_height;
+    long m_width;
+    long m_height;
 
   public:
     std::shared_ptr<TextureResource> Texture;
 
-    //SpriteRenderer(long m_fbWidth, long m_fbHeight);
-    SpriteRenderer();
+    SpriteRenderer(long m_fbWidth, long m_fbHeight);
+    //SpriteRenderer();
 
     ~SpriteRenderer();
 
     void SetViewProjection();
 
-    void UpdateVertexBuffer(std::vector<glm::vec3>& vertices, const glm::vec2 &u, const glm::vec2 &v, const uint32_t &color);
+    void UpdateIndexBuffer(std::vector<uint16_t> indices);
+    void UpdateVertexBuffer(std::vector<glm::vec3>& vertices, std::vector<glm::vec2>& u, std::vector<glm::vec2>& v, std::vector<uint32_t>& color);
 
     void Submit();
 };

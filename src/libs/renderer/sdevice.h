@@ -125,7 +125,7 @@ class DX9RENDER : public VDX9RENDER
         D3DVIEWPORT9 ViewPort;
     };
 
-    SpriteRenderer m_spriteRenderer;
+    std::shared_ptr<SpriteRenderer> m_spriteRenderer;
 
     IDirect3DDevice9 *d3d9;
     IDirect3D9 *d3d;
@@ -340,6 +340,8 @@ class DX9RENDER : public VDX9RENDER
     bool TextureSet(long stage, long texid) override;
     bool TextureRelease(long texid) override;
 
+    bool BGFXTextureRelease(long texid) override;
+
     // DX9Render: Fonts Section
     long Print(long x, long y, const char *format, ...) override;
     long Print(long nFontNum, uint32_t color, long x, long y, const char *format, ...) override;
@@ -362,12 +364,21 @@ class DX9RENDER : public VDX9RENDER
     bool TechniqueExecuteStart(const char *cBlockName) override;
     bool TechniqueExecuteNext() override;
 
+
+    std::shared_ptr<SpriteRenderer> GetSpriteRenderer() override;
+
     void DrawSprite(std::shared_ptr<TextureResource> texture, uint32_t color,
                                const glm::vec2 &position) override;
 
     void DrawSprite(std::shared_ptr<TextureResource> texture, const glm::vec4 &src, uint32_t color,
                     const glm::vec2 &position, const glm::vec2 &origin, const glm::vec2 &scale, float angle,
                     float depth, bool flip_x, bool flip_y) override;
+
+    void DrawSprites(std::shared_ptr<TextureResource> texture,
+                    std::vector<glm::vec3> &vertices,
+                    std::vector<glm::vec2> &u, std::vector<glm::vec2> &v,
+                    std::vector<uint32_t> &color) override;
+
 
     // DX9Render: Draw Section
     void DrawRects(RS_RECT *pRSR, uint32_t dwRectsNum, const char *cBlockName = nullptr, uint32_t dwSubTexturesX = 1,
