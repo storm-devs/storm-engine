@@ -1,5 +1,11 @@
 #include "sprite_renderer.h"
 
+#include "matrix.hpp"
+#include "gtc/matrix_transform.hpp"
+#include "gtc/type_ptr.hpp"
+
+#include <vector>
+
 bgfx::VertexLayout SPRITE_VERTEX::ms_layout;
 
 
@@ -45,16 +51,35 @@ void SpriteRenderer::SetViewProjection()
 
     // Set view and projection matrix for view 0.
     {
+        glm::vec2 m_position;
+        float m_zoom;
+        float m_angle;
+        glm::vec2 m_bounds;
+
+        m_bounds.x = 1920;
+        m_bounds.y = 1080;
+
+        
+        m_zoom = 0.0f;
+        m_angle = 0.0f;
+
+        auto mtx_view = glm::translate(glm::mat4(1.f), glm::vec3(m_bounds * 0.5f, 0.f)) *
+                    glm::scale(glm::mat4(1.f), glm::vec3(m_zoom)) *
+                    glm::rotate(glm::mat4(1.f), m_angle, glm::vec3(0, 0, 1.f)) *
+                    glm::translate(glm::mat4(1.f), glm::vec3(-m_position, 0.f));
+
+
         float view[16];
         bx::mtxLookAt(view, eye, at);
 
         float proj[16];
         bx::mtxProj(proj, 60.0f, float(1920) / float(1080), 0.1f, 100.0f, bgfx::getCaps()->homogeneousDepth);
 
-        /*bx::mtxOrtho(proj, -camera.orthoSize * camera.aspectRatio,
-                     camera.orthoSize * camera.aspectRatio, -camera.orthoSize, camera.orthoSize, camera.cnear,
-                     camera.cfar, 0, bgfx::getCaps()->homogeneousDepth);*/
 
+        bx::mtxOrtho(proj, 0.0f, float(m_bounds.x), float(m_bounds.y), 0.0f, 0.0f, 1000.0f, 0.0f,
+        bgfx::getCaps()->homogeneousDepth);
+
+        bgfx::setViewTransform(0, glm::value_ptr(mtx_view), proj);
         bgfx::setViewTransform(0, view, proj);
 
         // Set view 0 default viewport.
@@ -62,7 +87,7 @@ void SpriteRenderer::SetViewProjection()
     }
 }
 
-void SpriteRenderer::UpdateVertexBuffer()
+void SpriteRenderer::UpdateVertexBuffer(std::vector<glm::vec3>& vertices, const glm::vec2& u, const glm::vec2& v, const uint32_t& color)
 {
     // m_color[0] = m_color[1] = m_color[2] = m_color[3] = 1.0f;
 
@@ -70,6 +95,30 @@ void SpriteRenderer::UpdateVertexBuffer()
 
     const bgfx::Memory *mem = bgfx::copy(s_spriteVertices, sizeof(s_spriteVertices));
     SPRITE_VERTEX *vertex = (SPRITE_VERTEX *)mem->data;
+    
+    int index = 0;
+
+    vertex[index + 0] = SPRITE_VERTEX{vertices[0].x, vertices[0].y, u.x, v.x/*, color*/};
+    vertex[index + 1] = SPRITE_VERTEX{vertices[1].x, vertices[1].y, u.y, v.x/*, color*/};
+    vertex[index + 2] = SPRITE_VERTEX{vertices[2].x, vertices[2].y, u.x, v.y/*, color*/};
+    vertex[index + 3] = SPRITE_VERTEX{vertices[3].x, vertices[3].y, u.y, v.y/*, color*/};
+
+    /*
+        sprite->tl = glm::vec2(points[0].x, points[0].y);
+        sprite->tr = glm::vec2(points[1].x, points[1].y);
+        sprite->bl = glm::vec2(points[2].x, points[2].y);
+        sprite->br = glm::vec2(points[3].x, points[3].y);
+
+    */
+    /*vertex[0].x = vertices[0].x;
+    vertex[0].y = vertices[0].y;
+    vertex[1].x = vertices[2].x;
+    vertex[1].y = vertices[2].y;
+    vertex[2].x = vertices[3].x;
+    vertex[2].y = vertices[3].y;
+    vertex[3].x = vertices[1].x;
+    vertex[3].y = vertices[1].y;*/
+
 
     // auto source = Rect{0, 0, m_width, m_heigt};
 

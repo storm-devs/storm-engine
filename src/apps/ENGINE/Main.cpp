@@ -141,8 +141,6 @@ class Application : public entry::AppI
             
             _loopMain();
 
-            m_renderService->GetSpriteRenderer()->Submit();
-
             bgfx::frame();
 
             return true;

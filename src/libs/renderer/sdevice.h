@@ -362,7 +362,12 @@ class DX9RENDER : public VDX9RENDER
     bool TechniqueExecuteStart(const char *cBlockName) override;
     bool TechniqueExecuteNext() override;
 
-    void DrawSprite(std::shared_ptr<TextureResource> texture) override;
+    void DrawSprite(std::shared_ptr<TextureResource> texture, uint32_t color,
+                               const glm::vec2 &position) override;
+
+    void DrawSprite(std::shared_ptr<TextureResource> texture, const glm::vec4 &src, uint32_t color,
+                    const glm::vec2 &position, const glm::vec2 &origin, const glm::vec2 &scale, float angle,
+                    float depth, bool flip_x, bool flip_y) override;
 
     // DX9Render: Draw Section
     void DrawRects(RS_RECT *pRSR, uint32_t dwRectsNum, const char *cBlockName = nullptr, uint32_t dwSubTexturesX = 1,

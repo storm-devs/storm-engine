@@ -1,4 +1,6 @@
 #include "bgfx_utils.h"
+#include "glm.hpp"
+#include "gtx/matrix_transform_2d.hpp"
 
 #include "sdevice.h"
 
@@ -1749,6 +1751,8 @@ bool DX9RENDER::BGFXTextureLoad(long t)
 
                 auto textureHandle = textureResource->textureHandle;
                 BGFXTextures[t].textureHandle = textureHandle;
+                BGFXTextures[t].size.width = head.width;
+                BGFXTextures[t].size.height = head.height;
 
             }
             // If there was an error, then interrupt the download
@@ -4038,13 +4042,78 @@ void DX9RENDER::DrawRects(RS_RECT *pRSR, uint32_t dwRectsNum, const char *cBlock
     d3d9->SetTransform(D3DTS_VIEW, camMtx);
 }
 
-void DX9RENDER::DrawSprite(std::shared_ptr<TextureResource> texture)
+void DX9RENDER::DrawSprite(std::shared_ptr<TextureResource> texture, uint32_t color, const glm::vec2 &position)
 {
-    m_spriteRenderer.Texture = texture;
-    m_spriteRenderer.SetViewProjection();
-    m_spriteRenderer.UpdateVertexBuffer();
-    m_spriteRenderer.Submit();
+    DrawSprite(texture, glm::vec4(0, 0, texture->size.width, texture->size.height), color, position, glm::vec2(0, 0), glm::vec2(1, 1), 0.f, 0.f, false, false);
 }
+
+void DX9RENDER::DrawSprite(std::shared_ptr<TextureResource> texture, const glm::vec4 &src, uint32_t color,
+                       const glm::vec2 &position, const glm::vec2 &origin, const glm::vec2 &scale, float angle, float depth, bool flip_x, bool flip_y)
+{
+    float minu, maxu, minv, maxv;
+    float width, height;
+
+    minu = 0;
+    maxu = 1.f;
+    minv =  0.f;
+    maxv =  1.f;
+    width = (float)texture->size.width;
+    height = (float)texture->size.height;
+
+
+    if (flip_y)
+    {
+        // bottom right = max
+        // top left = min
+        float temp = maxv;
+        // bottom right y = top left y
+        maxv = minv;
+        minv = temp;
+    }
+
+    if (flip_x)
+    {
+        float temp = maxu;
+        maxu = minu;
+        minu = temp;
+    }
+
+    glm::vec2 pos(position + origin);
+    glm::mat3 transform = glm::translate(glm::mat3(1.f), pos) * glm::rotate(glm::mat3(1.f), angle) *
+                          glm::scale(glm::mat3(1.f), scale) * glm::translate(glm::mat3(1.f), -pos);
+
+    std::vector<glm::vec3> points {
+        transform * glm::vec3(position, 1.f),
+        transform * glm::vec3(position.x + width, position.y, 1.f),
+        transform * glm::vec3(position.x, position.y + height, 1.f),
+        transform * glm::vec3(position.x + width, position.y + height, 1.f),
+    };
+
+
+    /*sprite->abgr = color;
+    sprite->tl = glm::vec2(points[0].x, points[0].y);
+    sprite->tr = glm::vec2(points[1].x, points[1].y);
+    sprite->bl = glm::vec2(points[2].x, points[2].y);
+    sprite->br = glm::vec2(points[3].x, points[3].y);
+    sprite->u = glm::vec2(minu, maxu);
+    sprite->v = glm::vec2(minv, maxv);
+    sprite->depth = depth;*/
+
+
+    auto u = glm::vec2(minu, maxu);
+    auto v = glm::vec2(minv, maxv);
+
+    m_spriteRenderer.Texture = texture;
+
+
+    m_spriteRenderer.SetViewProjection();
+    m_spriteRenderer.UpdateVertexBuffer(points, u, v, color);
+    m_spriteRenderer.Submit();
+
+
+
+}
+
 
 void DX9RENDER::DrawSprites(RS_SPRITE *pRSS, uint32_t dwSpritesNum, const char *cBlockName)
 {

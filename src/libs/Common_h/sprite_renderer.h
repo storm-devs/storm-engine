@@ -1,6 +1,11 @@
 #include "bgfx_utils.h"
 #include "brtshaderc.h"
 
+#include "glm.hpp"
+
+#include <vector>
+
+
 #ifndef SPRITE_RENDERER_DEF
 #define SPRITE_RENDERER_DEF
 
@@ -28,13 +33,13 @@ struct SPRITE_VERTEX
 
 
 static SPRITE_VERTEX s_spriteVertices[] = {
-    {0.5, 0.5, 1, 0}, 
-    {0.5, -0.5, 1, 1}, 
-    {-0.5, -0.5, 0, 1}, 
-    {-0.5, 0.5, 0, 0}
+    {20, 20, 1, 0}, 
+    {20, -20, 1, 1}, 
+    {-20, -20, 0, 1}, 
+    {-20, 20, 0, 0}
 };
 
-static constexpr uint16_t s_spriteIndices[6] = {3, 2, 1, 3, 1, 0};
+static constexpr uint16_t s_spriteIndices[6] = {0, 1, 2, 1, 3, 2};
 
 
 struct Rect
@@ -73,7 +78,7 @@ class SpriteRenderer
 
     void SetViewProjection();
 
-    void UpdateVertexBuffer();
+    void UpdateVertexBuffer(std::vector<glm::vec3>& vertices, const glm::vec2 &u, const glm::vec2 &v, const uint32_t &color);
 
     void Submit();
 };
