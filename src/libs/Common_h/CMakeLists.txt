@@ -15,8 +15,6 @@ target_link_libraries(${PROJECT_NAME}
     ${DirectX_D3DX9_LIBRARY}
     CONAN_PKG::spdlog
 )
-<<<<<<< HEAD
-=======
 
 set(PROJECT_SOURCES
     math3d/Color.h
@@ -96,4 +94,3 @@ set(PROJECT_SOURCES
 )
 
 add_custom_target(${PROJECT_NAME}_ SOURCES ${PROJECT_SOURCES})
->>>>>>> d2daed3a5 (New rendering layout)
