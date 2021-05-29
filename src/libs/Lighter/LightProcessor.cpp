@@ -250,7 +250,7 @@ void LightProcessor::CalcShadows()
 }
 
 // Distribute shading from triangle to vertices
-void LightProcessor::ApplyTriangleShadows(Triangle &t)
+void LightProcessor::ApplyTriangleShadows(StormTriangle &t)
 {
     auto &ls = *lights;
     const auto num = ls.Num();

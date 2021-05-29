@@ -12,7 +12,7 @@
 #include "Vector.h"
 
 // Class for representing a triangle in 3D space
-class Triangle
+class StormTriangle
 {
   public:
     union {
@@ -38,17 +38,17 @@ class Triangle
     // -----------------------------------------------------------
   public:
     // Empty constructor
-    Triangle(){};
+    StormTriangle(){};
     // Copy constructor
-    Triangle(const Triangle &t);
-    Triangle(const Vector *v);
+    StormTriangle(const StormTriangle &t);
+    StormTriangle(const Vector *v);
 
     // -----------------------------------------------------------
     // Operators
     // -----------------------------------------------------------
   public:
     // per component multiplication with assignment
-    Triangle &operator*=(const Vector &v);
+    StormTriangle &operator*=(const Vector &v);
 
     // -----------------------------------------------------------
     // Utilities
@@ -78,7 +78,7 @@ class Triangle
     bool FindClosestPoint(const Vector &trgNormal, Vector &pointOnPlane) const;
 
     // Convert vertex coordinates
-    Triangle &Transform(const Matrix &mtx);
+    StormTriangle &Transform(const Matrix &mtx);
 
     enum CoIntersectionResult
     {
@@ -97,7 +97,7 @@ class Triangle
     };
 
     // Checking triangles for intersections in one plane
-    CoIntersectionResult IsCoplanarIntersection(const Triangle &t, float intsEps = 0.0000001f) const;
+    CoIntersectionResult IsCoplanarIntersection(const StormTriangle &t, float intsEps = 0.0000001f) const;
 
   private:
     static long z_sysClipTriangleEdgePlane(Plane plane, Vector src[8], Vector dst[8], long count);
@@ -108,7 +108,7 @@ class Triangle
 // ===========================================================
 
 // Empty constructor
-inline Triangle::Triangle(const Triangle &t)
+inline StormTriangle::StormTriangle(const StormTriangle &t)
 {
     p1 = t.p1;
     p2 = t.p2;
@@ -116,7 +116,7 @@ inline Triangle::Triangle(const Triangle &t)
 }
 
 // Fill all components
-inline Triangle::Triangle(const Vector *v)
+inline StormTriangle::StormTriangle(const Vector *v)
 {
     p[0] = v[0];
     p[1] = v[1];
@@ -128,7 +128,7 @@ inline Triangle::Triangle(const Vector *v)
 // ===========================================================
 
 // per component multiplication with assignment
-inline Triangle &Triangle::operator*=(const Vector &v)
+inline StormTriangle &StormTriangle::operator*=(const Vector &v)
 {
     p1 *= v;
     p2 *= v;
@@ -139,9 +139,9 @@ inline Triangle &Triangle::operator*=(const Vector &v)
 /*!\relates Triangle
 Multiply triangle by matrix
 */
-inline Triangle operator*(const Matrix &mtx, const Triangle &t)
+inline StormTriangle operator*(const Matrix &mtx, const StormTriangle &t)
 {
-    Triangle trg;
+    StormTriangle trg;
     trg.p1 = mtx * t.p1;
     trg.p2 = mtx * t.p2;
     trg.p3 = mtx * t.p3;
@@ -151,9 +151,9 @@ inline Triangle operator*(const Matrix &mtx, const Triangle &t)
 /*!\relates Triangle
 Multiply triangle by matrix
 */
-inline Triangle operator*(const Triangle &t, const Matrix &mtx)
+inline StormTriangle operator*(const StormTriangle &t, const Matrix &mtx)
 {
-    Triangle trg;
+    StormTriangle trg;
     trg.p1 = mtx * t.p1;
     trg.p2 = mtx * t.p2;
     trg.p3 = mtx * t.p3;
@@ -165,25 +165,25 @@ inline Triangle operator*(const Triangle &t, const Matrix &mtx)
 // ===========================================================
 
 // Get normal
-inline Vector Triangle::GetNormal() const
+inline Vector StormTriangle::GetNormal() const
 {
     return !((p1 - p2) ^ (p1 - p3));
 }
 
 // Get midpoint
-inline Vector Triangle::GetCenter() const
+inline Vector StormTriangle::GetCenter() const
 {
     return (p1 + p2 + p3) * 0.33333333333333f;
 }
 
 // Get triangle
-inline Plane Triangle::GetPlane() const
+inline Plane StormTriangle::GetPlane() const
 {
     return Plane(GetNormal(), p1);
 }
 
 // Plane passing through the face (p [start% 2], p [(start + 1)% 2])
-inline Plane Triangle::OrtoPlane(long start) const
+inline Plane StormTriangle::OrtoPlane(long start) const
 {
     Plane plane;
     // Vertices
@@ -197,25 +197,25 @@ inline Plane Triangle::OrtoPlane(long start) const
 }
 
 // The plane passing through the face (p [0], p [1])
-inline Plane Triangle::OrtoPlane01() const
+inline Plane StormTriangle::OrtoPlane01() const
 {
     return OrtoPlane(0);
 }
 
 // The plane passing through the face (p [1], p [2])
-inline Plane Triangle::OrtoPlane12() const
+inline Plane StormTriangle::OrtoPlane12() const
 {
     return OrtoPlane(1);
 }
 
 // The plane passing through the face (p [2], p [0])
-inline Plane Triangle::OrtoPlane20() const
+inline Plane StormTriangle::OrtoPlane20() const
 {
     return OrtoPlane(2);
 }
 
 // Get previous index of triangle vertex
-inline long Triangle::PrevIndex(long index)
+inline long StormTriangle::PrevIndex(long index)
 {
     index--;
     if (index < 0)
@@ -226,7 +226,7 @@ inline long Triangle::PrevIndex(long index)
 }
 
 // Get the next vertex index of a triangle
-inline long Triangle::NextIndex(long index)
+inline long StormTriangle::NextIndex(long index)
 {
     index++;
     if (index < 0)
@@ -237,7 +237,7 @@ inline long Triangle::NextIndex(long index)
 }
 
 // Find the nearest point in a triangle to a given one, lying in the plane of the triangle, true - inside the triangle
-inline bool Triangle::FindClosestPoint(const Vector &trgNormal, Vector &pointOnPlane) const
+inline bool StormTriangle::FindClosestPoint(const Vector &trgNormal, Vector &pointOnPlane) const
 {
     const Vector *cPoint = nullptr;
     for (long i = 0; i < 3; i++)
@@ -282,7 +282,7 @@ inline bool Triangle::FindClosestPoint(const Vector &trgNormal, Vector &pointOnP
 }
 
 // Convert vertex coordinates
-inline Triangle &Triangle::Transform(const Matrix &mtx)
+inline StormTriangle &StormTriangle::Transform(const Matrix &mtx)
 {
     p1 = mtx.MulVertex(p1);
     p2 = mtx.MulVertex(p2);
@@ -291,7 +291,7 @@ inline Triangle &Triangle::Transform(const Matrix &mtx)
 }
 
 // Checking triangles for intersections in one plane
-inline Triangle::CoIntersectionResult Triangle::IsCoplanarIntersection(const Triangle &t, float intsEps) const
+inline StormTriangle::CoIntersectionResult StormTriangle::IsCoplanarIntersection(const StormTriangle &t, float intsEps) const
 {
     // Checking the dimensions of the triangles
     if (~(p1 - p2) < intsEps * intsEps || ~(p2 - p3) < intsEps * intsEps || ~(p3 - p1) < intsEps * intsEps)
@@ -347,7 +347,7 @@ inline Triangle::CoIntersectionResult Triangle::IsCoplanarIntersection(const Tri
     return cir_intersection;
 }
 
-inline long Triangle::z_sysClipTriangleEdgePlane(Plane plane, Vector src[8], Vector dst[8], long count)
+inline long StormTriangle::z_sysClipTriangleEdgePlane(Plane plane, Vector src[8], Vector dst[8], long count)
 {
     float ds = plane * src[0], de;
     long c = 0;

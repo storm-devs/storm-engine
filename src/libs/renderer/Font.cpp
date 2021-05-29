@@ -5,6 +5,13 @@
 
 static char Buffer1024[1024];
 
+bgfx::VertexLayout BGFX_FONT_VERTEX::ms_layout;
+BGFX_FONT_VERTEX::constructor BGFX_FONT_VERTEX::vertexcons;
+
+bgfx::ProgramHandle BGFX_FONT_SHADER::m_progFont;
+BGFX_FONT_SHADER::constructor BGFX_FONT_SHADER::shadercons;
+
+
 FONT::FONT()
 {
     RenderService = nullptr;
