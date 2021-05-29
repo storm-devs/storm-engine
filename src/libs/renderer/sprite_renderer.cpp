@@ -86,8 +86,7 @@ void SpriteRenderer::Submit()
 
     bgfx::setTexture(0, s_texColor, *Texture->textureHandle);
 
-    uint64_t state = BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_MSAA |
-                     BGFX_STATE_BLEND_FUNC(BGFX_STATE_BLEND_DST_COLOR, BGFX_STATE_BLEND_ZERO);
+    uint64_t state = BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_MSAA | BGFX_STATE_BLEND_ALPHA;
 
     // Set render states.
     bgfx::setState(state);
