@@ -11,8 +11,6 @@
 #include "types3d.h"
 #include "utf8.h"
 
-#include "bgfx/bgfx.h"
-
 #define FONT_DEFAULT 0
 
 // define print text alignments
@@ -121,7 +119,7 @@ class VDX9RENDER : public SERVICE
 
     // DX9Render: Textures Section
     virtual long TextureCreate(const char *fname) = 0;
-    virtual bgfx::TextureHandle BGFXTextureCreate(const char *fname) = 0;
+    virtual long BGFXTextureCreate(const char *fname) = 0;
     virtual bool TextureSet(long stage, long texid) = 0;
     virtual bool TextureRelease(long texid) = 0;
 
@@ -325,4 +323,5 @@ class VDX9RENDER : public SERVICE
     virtual void SetGLOWParams(float _fBlurBrushSize, long _GlowIntensity, long _GlowPasses) = 0;
 
     virtual IDirect3DBaseTexture9 *GetTextureFromID(long nTextureID) = 0;
+    virtual std::shared_ptr<TextureResource> GetBGFXTextureFromID(long nTextureID) = 0;
 };

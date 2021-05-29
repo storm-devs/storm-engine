@@ -157,6 +157,8 @@ class DX9RENDER : public VDX9RENDER
     INDEX_BUFFER IndexBuffers[MAX_BUFFERS];
     VERTEX_BUFFER VertexBuffers[MAX_BUFFERS];
 
+    std::vector<TextureResource> BGFXTextures;
+
     bool MakeAvi;
     IDirect3DSurface9 *ImageBuffer;
 
@@ -333,7 +335,7 @@ class DX9RENDER : public VDX9RENDER
 
     // DX9Render: Textures Section
     long TextureCreate(const char *fname) override;
-    bgfx::TextureHandle BGFXTextureCreate(const char *fname) override;
+    long BGFXTextureCreate(const char *fname) override;
 
     bool TextureSet(long stage, long texid) override;
     bool TextureRelease(long texid) override;
@@ -773,7 +775,7 @@ bool SetCurFont (long fontID); // returns true if the given font is installed
     void SetGLOWParams(float _fBlurBrushSize, long _GlowIntensity, long _GlowPasses) override;
 
     IDirect3DBaseTexture9 *GetTextureFromID(long nTextureID) override;
-
+    std::shared_ptr<TextureResource> GetBGFXTextureFromID(long nTextureID) override;
     void LostRender();
     void RestoreRender();
 

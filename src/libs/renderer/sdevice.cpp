@@ -15,6 +15,8 @@
 #include <DxErr.h>
 #include <corecrt_io.h>
 
+#include <deque>
+
 #define POST_PROCESS_FVF (D3DFVF_XYZRHW | D3DFVF_TEX4)
 
 #define S_RELEASE(a, b)                                                                                                \
@@ -810,6 +812,18 @@ bool DX9RENDER::ReleaseDevice()
 
     bool res = true;
     for (long t = 0; t < MAX_STEXTURES; t++)
+    {
+        if (Textures[t].ref && Textures[t].loaded && Textures[t].d3dtex)
+        {
+            if (CHECKD3DERR(Textures[t].d3dtex->Release()) == false)
+                res = false;
+            Textures[t].ref = NULL;
+            delete Textures[t].name;
+        }        
+    }
+    
+    for (long t = 0; t < BGFXTextures.size(); t++)
+    {
         if (Textures[t].ref && Textures[t].loaded && Textures[t].d3dtex)
         {
             if (CHECKD3DERR(Textures[t].d3dtex->Release()) == false)
@@ -817,6 +831,13 @@ bool DX9RENDER::ReleaseDevice()
             Textures[t].ref = NULL;
             delete Textures[t].name;
         }
+        if (BGFXTextures[t].ref && BGFXTextures[t].loaded && BGFXTextures[t].textureHandle->idx)
+        {
+            bgfx::destroy(*BGFXTextures[t].textureHandle);
+            BGFXTextures[t].ref = NULL;
+            delete BGFXTextures[t].name;
+        }
+    }
 
     if (d3d9)
         d3d9->SetGammaRamp(0, D3DSGR_NO_CALIBRATION, &DefaultRamp);
@@ -1312,16 +1333,13 @@ bool find_file(const std::filesystem::path &dir_path, // in this directory,
     return false;
 }
 
-bgfx::TextureHandle DX9RENDER::BGFXTextureCreate(const char *fname)
+long DX9RENDER::BGFXTextureCreate(const char *fname)
 {
-    bgfx::TextureHandle invalidTextureHandle;
-    invalidTextureHandle.idx = -1;
-
     // start add texture path
     if ((uintptr_t)fname == -1)
     {
         iSetupPath = 1;
-        return invalidTextureHandle;
+        return -1;
     }
 
     // continue add texture path process
@@ -1331,14 +1349,14 @@ bgfx::TextureHandle DX9RENDER::BGFXTextureCreate(const char *fname)
         {
             dwSetupNumber = (uintptr_t)(fname);
             iSetupPath = 2;
-            return invalidTextureHandle;
+            return -1;
         }
 
         TexPaths[dwSetupNumber].str[0] = 0;
         if (fname && fname[0])
             strcpy_s(TexPaths[dwSetupNumber].str, fname);
         iSetupPath = 0;
-        return invalidTextureHandle;
+        return -1;
     }
 
     // delete relative path "resource\textures\"
@@ -1352,7 +1370,7 @@ bgfx::TextureHandle DX9RENDER::BGFXTextureCreate(const char *fname)
     if (fname == nullptr)
     {
         core.Trace("Can't create texture with null name");
-        return invalidTextureHandle;
+        return -1;
     }
 
     fs::path path = fname;
@@ -1363,7 +1381,7 @@ bgfx::TextureHandle DX9RENDER::BGFXTextureCreate(const char *fname)
     fname = pathStr.c_str(); //~!~ msvc still doesn't have working c_str for path
 
     if (!bLoadTextureEnabled)
-        return invalidTextureHandle;
+        return -1;
 
     size_t fname_len = strlen(fname);
 
@@ -1406,35 +1424,31 @@ bgfx::TextureHandle DX9RENDER::BGFXTextureCreate(const char *fname)
         const unsigned long hf = hash_string(_fname);
 
         long t;
-        for (t = 0; t < MAX_STEXTURES; t++)
-            if (Textures[t].ref != 0)
-                if (Textures[t].name)
-                    if (Textures[t].hash == hf && _stricmp(Textures[t].name, _fname) == 0)
-                    {
-                        Textures[t].ref++;
-                        bgfx::TextureHandle validTextureHandle;
-                        validTextureHandle.idx = t;
-                        return validTextureHandle;
-                    }
+        for (t = 0; t < BGFXTextures.size(); t++)
+                if (BGFXTextures[t].ref != 0)
+                    if (BGFXTextures[t].name)
+                        if (BGFXTextures[t].hash == hf && _stricmp(BGFXTextures[t].name, _fname) == 0)
+                        {
+                            BGFXTextures[t].ref++;
+                            return t;
+                        }
 
-        for (t = 0; t < MAX_STEXTURES; t++)
-            if (Textures[t].ref == 0)
-                break;
+        BGFXTextures.push_back(TextureResource(nullptr, nullptr, 0, 0, 0, false, false, RenderSize({0, 0})));
 
-        Textures[t].hash = hf;
+        BGFXTextures[t].hash = hf;
 
         const auto len = strlen(_fname) + 1;
-        if ((Textures[t].name = new char[len]) == nullptr)
+        if ((BGFXTextures[t].name = new char[len]) == nullptr)
             throw std::exception("allocate memory error");
-        strcpy_s(Textures[t].name, len, _fname);
-        Textures[t].isCubeMap = false;
-        Textures[t].loaded = false;
-        Textures[t].ref++;
+        strcpy_s(BGFXTextures[t].name, len, _fname);
+        BGFXTextures[t].isCubeMap = false;
+        BGFXTextures[t].loaded = false;
+        BGFXTextures[t].ref++;
 
 
         char fn[_MAX_FNAME];
-        Textures[t].dwSize = 0;
-        sprintf_s(fn, TEXTURESDIR, Textures[t].name);
+        BGFXTextures[t].dwSize = 0;
+        sprintf_s(fn, TEXTURESDIR, BGFXTextures[t].name);
 
         std::filesystem::path origPath = std::filesystem::path(fn);
         std::filesystem::path filePath;
@@ -1453,17 +1467,16 @@ bgfx::TextureHandle DX9RENDER::BGFXTextureCreate(const char *fname)
 
             if (BGFXTextureLoad(t))
             {
-                bgfx::TextureHandle validTextureHandle;
-                validTextureHandle.idx = t;
-                return validTextureHandle;
+                return t;
                                                                                              
             }
         }
-        Textures[t].ref--;
-        STORM_DELETE(Textures[t].name);
+        BGFXTextures[t].ref--;
+        STORM_DELETE(BGFXTextures[t].name);
+        BGFXTextures.erase(BGFXTextures.begin() + t);
     }
     
-    return invalidTextureHandle;
+    return -1;
 }
 
 bool DX9RENDER::BGFXTextureLoad(long t)
@@ -1471,22 +1484,23 @@ bool DX9RENDER::BGFXTextureLoad(long t)
     ProgressView();
     
     char fn[_MAX_FNAME];
-    Textures[t].dwSize = 0;
-    sprintf_s(fn, TEXTURESDIR, Textures[t].name);
+    BGFXTextures[t].dwSize = 0;
+    sprintf_s(fn, TEXTURESDIR, BGFXTextures[t].name);
 
     std::filesystem::path origPath = std::filesystem::path(fn);
 
     // Reading the header
     TX_FILE_HEADER head;
     uint32_t readingBytes = 0;
+
     if (!fio->_STDReadFile(origPath.wstring(), &head, sizeof(head), &readingBytes) || readingBytes != sizeof(head))
     {
         if (bTrace)
         {
             core.Trace("Can't load texture %s", fn);
         }
-        delete Textures[t].name;
-        Textures[t].name = nullptr;
+        delete BGFXTextures[t].name;
+        BGFXTextures[t].name = nullptr;
         return false;
     }
     // Analyzing the format
@@ -1503,6 +1517,7 @@ bool DX9RENDER::BGFXTextureLoad(long t)
         Textures[t].name = nullptr;
         return false;
     }
+
     d3dFormat = textureFormats[textureFI].d3dFormat;
     bool isSwizzled = textureFormats[textureFI].isSwizzled;
     const char *formatTxt = textureFormats[textureFI].format;
@@ -1518,6 +1533,9 @@ bool DX9RENDER::BGFXTextureLoad(long t)
         head.height /= 2;
         head.mip_size /= 4;
     }
+
+    seekposition += readingBytes;
+
     // Loading the texture
     if (!(head.flags & TX_FLAGS_CUBEMAP))
     {
@@ -1525,40 +1543,214 @@ bool DX9RENDER::BGFXTextureLoad(long t)
         // Position in file
         // 
         // create the texture
-        IDirect3DTexture9 *tex = nullptr;
-        if (CHECKD3DERR(d3d9->CreateTexture(head.width, head.height, head.nmips, 0, d3dFormat, D3DPOOL_MANAGED, &tex,
-                                            NULL)) == true ||
-            !tex)
+
+        auto bgfxFormat = bgfx::TextureFormat::Enum::Unknown;
+
+        // TXF_A8R8G8B8 = 21, TXF_X8R8G8B8 = 22, TXF_R5G6B5 = 23, TXF_A1R5G5B5 = 25, TXF_A4R4G4B4 = 26 // reference, // basic texture formats
+
+        switch (textureFormats[textureFI].txFormat)
         {
-            if (bTrace)
-                core.Trace(
-                    "Texture %s is not created (width: %i, height: %i, num mips: %i, format: %s), not loading it.", fn,
-                    head.width, head.height, head.nmips, formatTxt);
-            delete Textures[t].name;
-            Textures[t].name = nullptr;
-            return false;
+            case TXF_A8R8G8B8:
+                bgfxFormat = bgfx::TextureFormat::Enum::RGBA8;
+                break;
+            case TXF_R5G6B5:
+                bgfxFormat = bgfx::TextureFormat::Enum::R5G6B5;
+                break;
+            case TXF_A1R5G5B5:
+                bgfxFormat = bgfx::TextureFormat::Enum::RGB5A1;
+                break;
+            case TXF_A4R4G4B4:
+                bgfxFormat = bgfx::TextureFormat::Enum::RGBA4;
+                break;
+
+            case TXF_X8R8G8B8:
+            default:
+                throw std::exception("Not implemented yet");
         }
         // Filling the levels
         for (long m = 0; m < head.nmips; m++)
         {
             // take into account the size of the mip
-            Textures[t].dwSize += head.mip_size;
+            BGFXTextures[t].dwSize += head.mip_size;
             // Getting the mip surface
             bool isError = false;
-            IDirect3DSurface9 *surface = nullptr;
-            if (CHECKD3DERR(tex->GetSurfaceLevel(m, &surface)) == true || !surface)
             {
-                isError = true;
+                std::vector<unsigned char> byteOutput;
+
+                byteOutput.resize(head.mip_size);
+
+                isError =
+                    !fio->_STDReadFile(origPath.wstring(), byteOutput.data(), head.mip_size, &readingBytes, seekposition);
+
+                switch (textureFormats[textureFI].txFormat)
+                {
+                case TXF_A8R8G8B8: 
+                {
+
+                    /*unsigned char *data = byteOutput.data();
+
+                    for (int i = 0; i < head.mip_size; i+=4) 
+                    {
+                        unsigned char a = data[i + 0];
+                        unsigned char r = data[i + 1];
+                        unsigned char g = data[i + 2];
+                        unsigned char b = data[i + 3];
+
+                        data[i + 0] = r;
+                        data[i + 1] = g;
+                        data[i + 2] = b;
+                        data[i + 3] = a;
+                    }*/
+
+                }
+                    break;
+                case TXF_A1R5G5B5:
+                {
+                
+                
+                    /*auto bitvalue = [](int8_t num, int bit)
+                    {
+                        if (bit > 0 && bit <= 8)
+                            return ((num >> (bit - 1)) & 1);
+                        else
+                            return 0;
+                    };
+
+                    unsigned char *data = byteOutput.data();
+
+                    for (int i = 0; i < head.mip_size; i += 2)
+                    {
+
+                        std::deque<unsigned char> bits;
+
+                        unsigned char low = data[i + 0];
+                        unsigned char high = data[i + 1];
+
+                        bits.push_back(bitvalue(low, 1));
+                        bits.push_back(bitvalue(low, 2));
+                        bits.push_back(bitvalue(low, 3));
+                        bits.push_back(bitvalue(low, 4));
+                        bits.push_back(bitvalue(low, 5));
+                        bits.push_back(bitvalue(low, 6));
+                        bits.push_back(bitvalue(low, 7));
+                        bits.push_back(bitvalue(low, 8));
+
+                        bits.push_back(bitvalue(high, 1));
+                        bits.push_back(bitvalue(high, 2));
+                        bits.push_back(bitvalue(high, 3));
+                        bits.push_back(bitvalue(high, 4));
+                        bits.push_back(bitvalue(high, 5));
+                        bits.push_back(bitvalue(high, 6));
+                        bits.push_back(bitvalue(high, 7));
+                        bits.push_back(bitvalue(high, 8));
+
+                        unsigned char a = bits.front();
+                        
+                        bits.pop_front();
+
+                        bits.push_back(a);
+
+                        std::vector<unsigned char> new_bits;
+
+                        for (auto& bit : bits)
+                        {
+                            new_bits.push_back(bit);
+                        }
+
+                        memcpy(data + i, new_bits.data(), 2);
+                    }*/
+                }
+                    break;
+                case TXF_A4R4G4B4: 
+                {
+
+                        /*auto bitvalue = [](int8_t num, int bit) {
+                            if (bit > 0 && bit <= 8)
+                                return ((num >> (bit - 1)) & 1);
+                            else
+                                return 0;
+                        };
+
+                        unsigned char *data = byteOutput.data();
+
+                        for (int i = 0; i < head.mip_size; i += 2)
+                        {
+
+                            std::deque<unsigned char> bits;
+
+                            unsigned char low = data[i + 0];
+                            unsigned char high = data[i + 1];
+
+                            // a
+                            bits.push_back(bitvalue(low, 1));
+                            bits.push_back(bitvalue(low, 2));
+                            bits.push_back(bitvalue(low, 3));
+                            bits.push_back(bitvalue(low, 4));
+
+                            // r
+                            bits.push_back(bitvalue(low, 5));
+                            bits.push_back(bitvalue(low, 6));
+                            bits.push_back(bitvalue(low, 7));
+                            bits.push_back(bitvalue(low, 8));
+
+                            // g
+                            bits.push_back(bitvalue(high, 1));
+                            bits.push_back(bitvalue(high, 2));
+                            bits.push_back(bitvalue(high, 3));
+                            bits.push_back(bitvalue(high, 4));
+
+                            // b
+                            bits.push_back(bitvalue(high, 5));
+                            bits.push_back(bitvalue(high, 6));
+                            bits.push_back(bitvalue(high, 7));
+                            bits.push_back(bitvalue(high, 8));
+
+                            std::vector<unsigned char> a_bits;
+
+                            a_bits.push_back(bits.front());
+                            bits.pop_front();
+
+                            a_bits.push_back(bits.front());
+                            bits.pop_front();
+
+                            a_bits.push_back(bits.front());
+                            bits.pop_front();
+
+                            a_bits.push_back(bits.front());
+                            bits.pop_front();
+
+                            std::vector<unsigned char> new_bits;
+
+                            for (auto &bit : bits)
+                            {
+                                new_bits.push_back(bit);
+                            }
+
+                            for (auto &bit : a_bits)
+                            {
+                                new_bits.push_back(bit);
+                            }
+
+                            memcpy(data + i, new_bits.data(), 2);
+                        }*/
+                }
+
+                    
+                    break;
+
+                case TXF_X8R8G8B8:
+                default:
+                    throw std::exception("Not implemented yet");
+                }
+
+
+                auto textureResource = loadMemoryTexture(origPath.string(), bgfxFormat, head.width, head.height, 1,
+                                                         false, false, 0, byteOutput.data());
+
+                auto textureHandle = textureResource->textureHandle;
+                BGFXTextures[t].textureHandle = textureHandle;
+
             }
-            else
-            {
-                // read the mip
-                isError = !BGFXLoadTextureSurface(origPath.wstring(), surface, head.mip_size, head.width, head.height,
-                                                  isSwizzled, seekposition + readingBytes);
-            }
-            // Freeing the surface
-            if (surface)
-                surface->Release();
             // If there was an error, then interrupt the download
             if (isError)
             {
@@ -1566,9 +1758,8 @@ bool DX9RENDER::BGFXTextureLoad(long t)
                     core.Trace("Can't loading mip %i, texture %s is not created (width: %i, height: %i, num mips: %i, "
                                "format: %s), not loading it.",
                                m, fn, head.width, head.height, head.nmips, formatTxt);
-                delete Textures[t].name;
-                Textures[t].name = nullptr;
-                tex->Release();
+                delete BGFXTextures[t].name;
+                BGFXTextures[t].name = nullptr;
                 return false;
             }
             // recalculate the dimensions for the next mip
@@ -1576,11 +1767,11 @@ bool DX9RENDER::BGFXTextureLoad(long t)
             head.height /= 2;
             head.mip_size /= 4;
         }
-        Textures[t].d3dtex = tex;
-        Textures[t].isCubeMap = false;
+        BGFXTextures[t].isCubeMap = false;
     }
     else
     {
+        /*
         // Download cubemap
         if (head.width != head.height)
         {
@@ -1692,7 +1883,9 @@ bool DX9RENDER::BGFXTextureLoad(long t)
             return false;
         }
         Textures[t].d3dtex = tex;
-        Textures[t].isCubeMap = true;
+        Textures[t].isCubeMap = true;*/
+
+        throw std::exception("Not implemented yet");
     }
 
     //---------------------------------------------------------------
@@ -1705,16 +1898,16 @@ bool DX9RENDER::BGFXTextureLoad(long t)
             fio->_DeleteFile("texLoad.txt");
         HANDLE fh = fio->_CreateFile("texLoad.txt", GENERIC_WRITE, FILE_SHARE_WRITE, OPEN_ALWAYS);
         fio->_SetFilePointer(fh, 0, nullptr, FILE_END);
-        totSize += Textures[t].dwSize;
-        sprintf_s(s, "%.2f, size: %d, %d * %d, %s\n", totSize / 1024.0f / 1024.0f, Textures[t].dwSize, head.width,
-                  head.height, Textures[t].name);
+        totSize += BGFXTextures[t].dwSize;
+        sprintf_s(s, "%.2f, size: %d, %d * %d, %s\n", totSize / 1024.0f / 1024.0f, BGFXTextures[t].dwSize, head.width,
+                  head.height, BGFXTextures[t].name);
         fio->_WriteFile(fh, s, strlen(s), nullptr);
         fio->_FlushFileBuffers(fh);
         fio->_CloseHandle(fh);
     }
-    dwTotalSize += Textures[t].dwSize;
+    dwTotalSize += BGFXTextures[t].dwSize;
     //---------------------------------------------------------------
-    Textures[t].loaded = true;
+    BGFXTextures[t].loaded = true;
     // Close the file
     return true;
 }
@@ -4859,4 +5052,18 @@ IDirect3DBaseTexture9 *DX9RENDER::GetTextureFromID(long nTextureID)
     if (nTextureID < 0)
         return nullptr;
     return Textures[nTextureID].d3dtex;
+}
+
+std::shared_ptr<TextureResource> DX9RENDER::GetBGFXTextureFromID(long nTextureID)
+{
+    if (nTextureID < 0)
+        return nullptr;
+
+    auto texture = std::make_shared<TextureResource>(TextureResource(
+        BGFXTextures[nTextureID].textureHandle, BGFXTextures[nTextureID].name, BGFXTextures[nTextureID].hash,
+        BGFXTextures[nTextureID].ref, BGFXTextures[nTextureID].dwSize, BGFXTextures[nTextureID].isCubeMap,
+        BGFXTextures[nTextureID].loaded, BGFXTextures[nTextureID].size
+    ));
+
+    return texture;
 }

@@ -191,8 +191,8 @@ bool FONT::Init(const char *font_name, const char *iniName, IDirect3DDevice9 *_d
     fScale = fOldScale = 1.f;
     Color = oldColor = 0xFFFFFFFF;
 
-    //TextureID = RenderService->TextureCreate(textureName);
-    TextureID = RenderService->BGFXTextureCreate(textureName).idx;
+    TextureID = RenderService->TextureCreate(textureName);
+    //TextureID = RenderService->BGFXTextureCreate(textureName).idx;
     if (TextureID < 0)
     {
         core.Trace("Not Found Texture: %s", textureName);

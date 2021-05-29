@@ -109,12 +109,6 @@ class Application : public entry::AppI
         //bgfx::setViewClear(0, BGFX_CLEAR_NONE, 0x303030ff, 1.0f, 0);
 
         
-        m_texture = loadTexture("textures/pirate_flag.jpg");
-
-        m_texture->size.width = 1920;
-        m_texture->size.height = 1080;
-
-
         // Init stuff
         core.InitBase();
 
@@ -126,21 +120,6 @@ class Application : public entry::AppI
         if (m_renderService == nullptr)
             throw std::exception("!Butterflies: No service 'dx9render'");
 
-        PortraitID = m_renderService->BGFXTextureCreate("BATTLE_INTERFACE/PORTRAITS/face_1.tga");
-        m_texture2 = m_renderService->GetBGFXTextureFromID(PortraitID);
-
-
-        
-        auto &win = m_state;
-
-        if (win.m_width != m_width || win.m_height != m_height)
-        {
-            // win.m_nwh = m_state.m_nwh;
-            win.m_width = m_width;
-            win.m_height = m_height;
-
-            entry::setWindowSize(win.m_handle, m_width, m_height);
-        }
     }
 
 
@@ -197,6 +176,8 @@ class Application : public entry::AppI
 
     std::shared_ptr<TextureResource> m_texture;
     std::shared_ptr<TextureResource> m_texture2;
+
+    long PortraitID;
 
     long PortraitID;
 
