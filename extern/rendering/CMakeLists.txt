@@ -25,6 +25,7 @@ if( APPLE AND NOT XCODE )
 endif()
 
 option( BGFX_BUILD_TOOLS      "Build bgfx tools."                             ON  )
+option( BGFX_BUILD_ADDONS      "Build bgfx addons."                           ON  )
 option( BGFX_BUILD_EXAMPLES   "Build bgfx examples."                          ON  )
 option( BGFX_INSTALL          "Create installation target."                   ON  )
 option( BGFX_INSTALL_EXAMPLES "Install examples and their runtimes."          OFF )
@@ -57,6 +58,11 @@ include( ${STORM_EXTERN_RENDERING_DIR}/cmake/bgfx.cmake )
 if( BGFX_BUILD_TOOLS )
 	include( ${STORM_EXTERN_RENDERING_DIR}/cmake/tools.cmake )
 endif()
+
+if( BGFX_BUILD_ADDONS )
+	include( ${STORM_EXTERN_RENDERING_DIR}/cmake/addons.cmake )
+endif()
+
 
 include( ${STORM_EXTERN_RENDERING_DIR}/cmake/examples.cmake )
 

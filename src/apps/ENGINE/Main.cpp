@@ -106,7 +106,6 @@ class Application : public entry::AppI
 
         // Set view 0 clear state.
         bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x303030ff, 1.0f, 0);
-        //bgfx::setViewClear(0, BGFX_CLEAR_NONE, 0x303030ff, 1.0f, 0);
 
         // Init stuff
         core.InitBase();
@@ -131,10 +130,10 @@ class Application : public entry::AppI
 
             bgfx::touch(0);
 
+            m_renderService->DrawSprite(m_texture, 1, glm::vec2(0, 0));
+            
             _loopMain();
 
-            bgfx::frame();
-            //bgfx::renderFrame();
             return true;
         }
 
