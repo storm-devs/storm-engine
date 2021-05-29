@@ -130,6 +130,11 @@ class Application : public entry::AppI
 
             bgfx::touch(0);
 
+            
+            bgfx::setViewRect(0, 0, 0, uint16_t(1920), uint16_t(1080));
+            bgfx::setViewRect(1, 0, 0, uint16_t(1920), uint16_t(1080));
+            bgfx::setViewRect(2, 0, 0, uint16_t(1920), uint16_t(1080));
+
             //m_renderService->DrawSprite(m_texture, 1, glm::vec2(0, 0), -1);
             //m_renderService->DrawSprite(m_texture2, 1, glm::vec2(0, 0));
             

@@ -32,8 +32,6 @@
 DX9RENDER *DX9RENDER::pRS = nullptr;
 
 bgfx::VertexLayout DX9RENDER::PosColorTexVertex::ms_layout;
-
-
 uint32_t DX9SetTexturePath(VS_STACK *pS)
 {
     auto *pString = (VDATA *)pS->Pop();
@@ -295,7 +293,7 @@ inline bool DX9RENDER::ErrorHandler(HRESULT hr, const char *file, unsigned line,
 const uint32_t DX9RENDER::rectsVBuffer_SizeInRects = 512;
 
 //################################################################################
-DX9RENDER::DX9RENDER() : m_spriteRenderer(nullptr)
+DX9RENDER::DX9RENDER() : m_spriteRenderer(nullptr), m_primitiveRenderer(nullptr)
 {
     rectsVBuffer = nullptr;
 
@@ -378,6 +376,9 @@ DX9RENDER::DX9RENDER() : m_spriteRenderer(nullptr)
 
     vViewRelationPos = CVECTOR(0.f, 0.f, 0.f);
     vWordRelationPos = -vViewRelationPos;
+
+    bgfxvViewRelationPos = CVECTOR(0.f, 0.f, 0.f);
+    bgfxvWordRelationPos = -vViewRelationPos;
     bUseLargeBackBuffer = false;
 }
 
@@ -533,6 +534,7 @@ bool DX9RENDER::Init()
     }
 
     m_spriteRenderer = std::make_shared<SpriteRenderer>(screen_size.x, screen_size.y);
+    m_primitiveRenderer = std::make_shared<PrimitiveRenderer>(screen_size.x, screen_size.y);
 
     // UNGUARD
     return true;
@@ -1193,8 +1195,7 @@ bool DX9RENDER::DX9EndScene()
         memcpy((void *)memory->data, lr.pBits, dispMode->Width * dispMode->Height * 4);
         bgfx::updateTexture2D(*backgroundTexture->textureHandle, 0, 1, 0, 0, dispMode->Width, dispMode->Height, memory);*/
 
-        auto rttTex = loadMemoryTexture(
-                "Sprite backbuffer", bgfx::TextureFormat::BGRA8, dispMode->Width, dispMode->Height, 1, false, false, 0, (unsigned char*)lr.pBits);
+        
 
         /*
         std::vector<unsigned char> data;
@@ -1207,10 +1208,15 @@ bool DX9RENDER::DX9EndScene()
 
         //bgfx::blit(0, *backgroundTexture->textureHandle, 0, 0, *rttTex->textureHandle);
 
+        // bgfx::destroy(*rttTex->textureHandle);
+
+        ////////////////////////////////// WORKING CODE //////////////////
+
+        auto rttTex = loadMemoryTexture("Sprite backbuffer", bgfx::TextureFormat::BGRA8, dispMode->Width,
+                                        dispMode->Height, 1, false, false, 0, (unsigned char *)lr.pBits);
         backgroundTexture = rttTex;
         m_spriteRenderer->SetBackbufferTexture(rttTex);
         
-        //bgfx::destroy(*rttTex->textureHandle);
     }
 
     hr = destTarget->UnlockRect();
@@ -2668,11 +2674,13 @@ bool DX9RENDER::SetCamera(const CVECTOR &pos, const CVECTOR &ang)
         Pos = pos;
         Ang = ang;
         vWordRelationPos = -Pos;
+        bgfxvWordRelationPos = -Pos;
     }
     // if(CHECKD3DERR(SetTransform(D3DTS_VIEW, mtx))==true)    return false;
 
     d3d9->SetTransform(D3DTS_VIEW, mtx);
     vViewRelationPos = -(mtx * vWordRelationPos);
+    bgfxvViewRelationPos = -(mtx * bgfxvWordRelationPos);
     d3d9->GetTransform(D3DTS_WORLD, mtx);
     mtx.Pos() += vWordRelationPos - vOldWordRelationPos;
     d3d9->SetTransform(D3DTS_WORLD, mtx);
@@ -2738,17 +2746,36 @@ bool DX9RENDER::SetPerspective(float perspective, float fAspectRatio)
     const float h = 1.0f / tanf(fov_vert * 0.5f);
     const float Q = far_plane / (far_plane - near_plane);
 
-    D3DXMATRIX mtx;
+    CMatrix mtx;
     PZERO(&mtx, sizeof(mtx));
 
-    mtx._11 = w;
+    mtx.m[0][0] = w;
+    mtx.m[1][1] = h;
+    mtx.m[2][2] = Q;
+    mtx.m[3][2] = -Q * near_plane;
+    mtx.m[2][3] = 1.0f;
+
+    /*mtx._11 = w;
     mtx._22 = h;
     mtx._33 = Q;
     mtx._43 = -Q * near_plane;
-    mtx._34 = 1.0f;
+    mtx._34 = 1.0f;*/
 
-    if (CHECKD3DERR(d3d9->SetTransform(D3DTS_PROJECTION, &mtx)) == true)
+    if (CHECKD3DERR(d3d9->SetTransform(D3DTS_PROJECTION, (D3DXMATRIX *)&mtx)) == true)
         return false;
+    
+    CMatrix viewMtx;
+
+    d3d9->GetTransform(D3DTS_VIEW, (D3DXMATRIX*)&viewMtx);
+
+    CMatrix transposedView = viewMtx;
+    transposedView.Transposition();
+
+    CMatrix transposedProj = mtx;
+    transposedProj.Transposition();
+
+    bgfx::setViewTransform(0, transposedView.matrix, transposedProj.matrix);
+
     Fov = perspective;
     FindPlanes(d3d9);
     return true;
@@ -3105,6 +3132,7 @@ void DX9RENDER::SetTransform(long type, D3DMATRIX *mtx)
         vDeltaWorld -= vWordRelationPos;
         CMatrix mw;
         d3d9->GetTransform(D3DTS_WORLD, (D3DMATRIX *)&mw);
+
         mw.Pos() -= vDeltaWorld;
         d3d9->SetTransform(D3DTS_WORLD, mw);
 
@@ -3116,6 +3144,9 @@ void DX9RENDER::SetTransform(long type, D3DMATRIX *mtx)
     }
 
     CHECKD3DERR(d3d9->SetTransform(static_cast<D3DTRANSFORMSTATETYPE>(type), (D3DMATRIX *)&m));
+
+
+    //BGFXSetTransform(type, mtx);
 }
 
 void DX9RENDER::GetTransform(long type, D3DMATRIX *mtx)
@@ -3133,6 +3164,132 @@ void DX9RENDER::GetTransform(long type, D3DMATRIX *mtx)
         mtx->_41 -= vWordRelationPos.x;
         mtx->_42 -= vWordRelationPos.y;
         mtx->_43 -= vWordRelationPos.z;
+    }
+}
+#include "gtc/matrix_transform.hpp"
+#include "gtc/type_ptr.hpp"
+#include "matrix.hpp"
+
+void DX9RENDER::BGFXSetTransform(long type, D3DMATRIX *mtx)
+{
+    CMatrix m = *(CMatrix *)mtx;
+    if (type == D3DTS_VIEW)
+    {
+        bgfxvViewRelationPos.x = -mtx->_41;
+        bgfxvViewRelationPos.y = -mtx->_42;
+        bgfxvViewRelationPos.z = -mtx->_43;
+
+        CVECTOR vDeltaWorld = bgfxvWordRelationPos;
+        m.MulToInvNorm(-bgfxvViewRelationPos, bgfxvWordRelationPos);
+        vDeltaWorld -= bgfxvWordRelationPos;
+        CMatrix mw = bgfxWorld;
+
+        mw.Pos() -= vDeltaWorld;
+
+        CMatrix transposedWorld = mw;
+        auto transp = mw;
+        transp = transp.Transposition4x4();
+        bgfx::setTransform(transp.matrix);
+
+        m.Pos() += bgfxvViewRelationPos;
+    }
+    else if (type == D3DTS_WORLD)
+    {
+        m.Pos() += bgfxvWordRelationPos;
+    }
+
+    switch (type)
+    {
+    case D3DTS_VIEW: {
+        CMatrix mv = m;
+        mv = mv.Transposition4x4();
+
+        bgfxView = mv;
+        const bx::Vec3 at = {0.0f, 0.0f, 0.0};
+        const bx::Vec3 eye = {0.0f, 0.0f, -3.0};
+
+        glm::mat4 view(1);
+        bx::mtxLookAt(glm::value_ptr(view), eye, at);
+        glm::mat4 proj(1);
+        bx::mtxOrtho(glm::value_ptr(proj), 0.0f, float(1920), float(1080), 0.0f, 0.0f, 1000.0f, 0.0f,
+                     bgfx::getCaps()->homogeneousDepth);
+        bgfx::setViewTransform(1, glm::value_ptr(view), glm::value_ptr(proj));
+
+        //bgfx::setViewTransform(1, bgfxView.matrix, bgfxProjection.matrix);
+
+    }
+    break;
+        
+    case D3DTS_PROJECTION: {
+        CMatrix mp = m;
+
+        mp = mp.Transposition4x4();
+
+        bgfxProjection = mp;
+
+        const bx::Vec3 at = {0.0f, 0.0f, 0.0};
+        const bx::Vec3 eye = {0.0f, 0.0f, -3.0};
+
+        glm::mat4 view(1);
+        bx::mtxLookAt(glm::value_ptr(view), eye, at);
+        glm::mat4 proj(1);
+        bx::mtxOrtho(glm::value_ptr(proj), 0.0f, float(1920), float(1080), 0.0f, 0.0f, 1000.0f, 0.0f,
+                     bgfx::getCaps()->homogeneousDepth);
+        bgfx::setViewTransform(1, glm::value_ptr(view), glm::value_ptr(proj));
+
+        //bgfx::setViewTransform(1, bgfxView.matrix, bgfxProjection.matrix);
+
+        
+    }
+    break;
+
+    case D3DTS_WORLD:
+        CMatrix wMat = m;
+        wMat = wMat.Transposition4x4();
+        bgfxWorld = wMat;
+        bgfx::setTransform(bgfxWorld.matrix);
+        break;
+    }
+}
+
+void DX9RENDER::BGFXGetTransform(long type, D3DMATRIX *mtx)
+{
+    switch (type)
+    {
+    case D3DTS_VIEW: {
+        CMatrix mv = bgfxView;
+        mv.Transposition();
+        *((CMatrix*)mtx) = mv;
+    }
+    break;
+        
+    case D3DTS_PROJECTION: {
+        CMatrix mp = bgfxProjection;
+        mp.Transposition();
+        *((CMatrix *)mtx) = mp;
+    }
+    break;
+
+    case D3DTS_WORLD: {
+        CMatrix wMat = bgfxWorld;
+        wMat.Transposition();
+        *((CMatrix *)mtx) = wMat;
+    }
+        
+        break;
+    }
+
+    if (type == D3DTS_VIEW)
+    {
+        mtx->_41 -= bgfxvViewRelationPos.x;
+        mtx->_42 -= bgfxvViewRelationPos.y;
+        mtx->_43 -= bgfxvViewRelationPos.z;
+    }
+    else if (type == D3DTS_WORLD)
+    {
+        mtx->_41 -= bgfxvWordRelationPos.x;
+        mtx->_42 -= bgfxvWordRelationPos.y;
+        mtx->_43 -= bgfxvWordRelationPos.z;
     }
 }
 
@@ -4164,6 +4321,11 @@ std::shared_ptr<SpriteRenderer> DX9RENDER::GetSpriteRenderer()
     return m_spriteRenderer;
 }
 
+std::shared_ptr<PrimitiveRenderer> DX9RENDER::GetPrimitiveRenderer()
+{
+    return m_primitiveRenderer;
+}
+
 void DX9RENDER::DrawSprite(std::shared_ptr<TextureResource> texture, uint32_t color, const glm::vec2 &position, float depth)
 {
     DrawSprite(texture, glm::vec4(0, 0, texture->size.width, texture->size.height), color, position, glm::vec2(0, 0), glm::vec2(1, 1), 0.f, depth, false, false);
@@ -4178,13 +4340,13 @@ void DX9RENDER::DrawSprite(std::shared_ptr<TextureResource> texture, const glm::
     width = src.z;
     height = src.w;
     // x
-    minu = src.x / (float)texture->size.width;
-    maxu = (src.x + width) / (float)texture->size.width;
+    minu = src.x / (float)texture->size.width;              // left
+    maxu = (src.x + width) / (float)texture->size.width;    // right
 
     // y
     // TODO OPENGL HOWTO
-    minv = src.y / (float)texture->size.height;
-    maxv = (src.y + height) / (float)texture->size.height;
+    minv = src.y / (float)texture->size.height;             // top
+    maxv = (src.y + height) / (float)texture->size.height;  // bottom
 
 
     if (flip_y)

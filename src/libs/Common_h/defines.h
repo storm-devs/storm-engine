@@ -235,6 +235,16 @@ template <class T> T Sqr(T t1)
     return (t1 * t1);
 };
 
+#define BGFX_TEXTURE_RELEASE(rs, idtex)                                                                                     \
+    {                                                                                                                  \
+        if (rs != NULL && idtex != -1)                                                                                 \
+        {                                                                                                              \
+            rs->BGFXTextureRelease(idtex);                                                                                 \
+            idtex = -1;                                                                                                \
+        }                                                                                                              \
+    }
+
+
 #define TEXTURE_RELEASE(rs, idtex)                                                                                     \
     {                                                                                                                  \
         if (rs != NULL && idtex != -1)                                                                                 \

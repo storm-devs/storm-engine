@@ -34,5 +34,25 @@ class VXSERVICE
 
     virtual long GetImageNum(const char *sImageListName, const char *sImageName) = 0;
 
+    // get texture identificator for image group
+    virtual long BGFXGetTextureID(const char *sImageListName) = 0;
+    virtual bool BGFXReleaseTextureID(const char *sImageListName) = 0;
+
+    // get texture positon for select picture
+    virtual bool BGFXGetTexturePos(long pictureNum, FXYRECT &texRect) = 0;
+    virtual bool BGFXGetTexturePos(long pictureNum, XYRECT &texRect) = 0;
+    virtual bool BGFXGetTexturePos(const char *sImageListName, const char *sImageName, FXYRECT &texRect) = 0;
+    virtual bool BGFXGetTexturePos(const char *sImageListName, const char *sImageName, XYRECT &texRect) = 0;
+    virtual bool BGFXGetTexturePos(int nTextureModify, long pictureNum, FXYRECT &texRect) = 0;
+    virtual bool BGFXGetTexturePos(int nTextureModify, const char *sImageListName, const char *sImageName,
+                               FXYRECT &texRect) = 0;
+
+    virtual void BGFXGetTextureCutForSize(const char *pcImageListName, const FXYPOINT &pntLeftTopUV,
+                                          const XYPOINT &pntSize,
+                                      long nSrcWidth, long nSrcHeight, FXYRECT &outUV) = 0;
+
+    virtual long BGFXGetImageNum(const char *sImageListName, const char *sImageName) = 0;
+
+
     virtual void ReleaseAll() = 0;
 };

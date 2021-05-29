@@ -37,6 +37,7 @@ class XSERVICE : public VXSERVICE
     bool ReleaseTextureID(const char *sImageListName) override;
 
     // get texture positon for select picture
+    
     bool GetTexturePos(long pictureNum, FXYRECT &texRect) override;
     bool GetTexturePos(long pictureNum, XYRECT &texRect) override;
     bool GetTexturePos(const char *sImageListName, const char *sImageName, FXYRECT &texRect) override;
@@ -47,8 +48,24 @@ class XSERVICE : public VXSERVICE
 
     void GetTextureCutForSize(const char *pcImageListName, const FXYPOINT &pntLeftTopUV, const XYPOINT &pntSize,
                               long nSrcWidth, long nSrcHeight, FXYRECT &outUV) override;
-
     long GetImageNum(const char *sImageListName, const char *sImageName) override;
+    
+    long BGFXGetTextureID(const char *sImageListName) override;
+    long BGFXFindGroup(const char *sImageListName) const;
+    bool BGFXReleaseTextureID(const char *sImageListName) override;
+
+    bool BGFXGetTexturePos(long pictureNum, FXYRECT &texRect) override;
+    bool BGFXGetTexturePos(long pictureNum, XYRECT &texRect) override;
+    bool BGFXGetTexturePos(const char *sImageListName, const char *sImageName, FXYRECT &texRect) override;
+    bool BGFXGetTexturePos(const char *sImageListName, const char *sImageName, XYRECT &texRect) override;
+    bool BGFXGetTexturePos(int nTextureModify, long pictureNum, FXYRECT &texRect) override;
+    bool BGFXGetTexturePos(int nTextureModify, const char *sImageListName, const char *sImageName,
+                       FXYRECT &texRect) override;
+
+    void BGFXGetTextureCutForSize(const char *pcImageListName, const FXYPOINT &pntLeftTopUV, const XYPOINT &pntSize,
+                            long nSrcWidth, long nSrcHeight, FXYRECT &outUV) override;
+
+    long BGFXGetImageNum(const char *sImageListName, const char *sImageName) override;
 
     void ReleaseAll() override;
 
@@ -62,6 +79,12 @@ class XSERVICE : public VXSERVICE
     long m_dwImageQuantity;
     IMAGELISTDESCR *m_pList;
     PICTUREDESCR *m_pImage;
+
+
+    long m_BGFXdwListQuantity;
+    long m_BGFXdwImageQuantity;
+    IMAGELISTDESCR *m_BGFXpList;
+    PICTUREDESCR *m_BGFXpImage;
 
     // Scale factors
     float m_fWScale;

@@ -27,6 +27,7 @@ CXI_PICTURE::~CXI_PICTURE()
 
 void CXI_PICTURE::Draw(bool bSelected, uint32_t Delta_Time)
 {
+    return;
     if (m_bUse)
     {
         if (m_bMakeBlind)

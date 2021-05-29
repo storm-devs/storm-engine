@@ -333,20 +333,29 @@ void XINTERFACE::Realize(uint32_t Delta_Time)
     Delta_Time = core.GetRDeltaTime();
 
     CMatrix moldv, moldp, moldw;
+    CMatrix bgfxMoldv, bgfxMoldp, bgfxMoldw;
 
     uint32_t dwFogFlag;
     pRenderService->GetRenderState(D3DRS_FOGENABLE, &dwFogFlag);
     if (pRenderService->TechniqueExecuteStart("iStartTechnique"))
         while (pRenderService->TechniqueExecuteNext())
             ;
-
+    
     // Get old transformation
     pRenderService->GetTransform(D3DTS_VIEW, moldv);
     pRenderService->GetTransform(D3DTS_PROJECTION, moldp);
+
+    //pRenderService->BGFXGetTransform(D3DTS_VIEW, bgfxMoldv);
+    //pRenderService->BGFXGetTransform(D3DTS_PROJECTION, bgfxMoldp);
+
     // Set new transformation
     pRenderService->SetTransform(D3DTS_WORLD, matw);
     pRenderService->SetTransform(D3DTS_VIEW, matv);
     pRenderService->SetTransform(D3DTS_PROJECTION, matp);
+
+    pRenderService->BGFXSetTransform(D3DTS_WORLD, matw);
+    pRenderService->BGFXSetTransform(D3DTS_VIEW, matv);
+    pRenderService->BGFXSetTransform(D3DTS_PROJECTION, matp);
 
     DrawNode(m_pNodes, Delta_Time, 0, 80);
 
@@ -449,6 +458,9 @@ void XINTERFACE::Realize(uint32_t Delta_Time)
     // Restore old transformation
     pRenderService->SetTransform(D3DTS_VIEW, moldv);
     pRenderService->SetTransform(D3DTS_PROJECTION, moldp);
+
+    //pRenderService->BGFXSetTransform(D3DTS_VIEW, bgfxMoldv);
+    //pRenderService->BGFXSetTransform(D3DTS_PROJECTION, bgfxMoldp);
 }
 
 long oldCurNum = -1L;

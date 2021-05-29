@@ -14,6 +14,7 @@
 #include "script_libriary.h"
 
 #include "sprite_renderer.h"
+#include "primitive_renderer.h"
 
 #include <stack>
 #include <vector>
@@ -126,6 +127,7 @@ class DX9RENDER : public VDX9RENDER
     };
 
     std::shared_ptr<SpriteRenderer> m_spriteRenderer;
+    std::shared_ptr<PrimitiveRenderer> m_primitiveRenderer;
 
     IDirect3DDevice9 *d3d9;
     IDirect3D9 *d3d;
@@ -325,6 +327,10 @@ class DX9RENDER : public VDX9RENDER
     void SetTransform(long type, D3DMATRIX *mtx) override;
     void GetTransform(long type, D3DMATRIX *mtx) override;
 
+    void BGFXSetTransform(long type, D3DMATRIX *mtx) override;
+    void BGFXGetTransform(long type, D3DMATRIX *mtx) override;
+
+
     bool SetCamera(const CVECTOR &pos, const CVECTOR &ang, float perspective) override;
     bool SetCamera(const CVECTOR &pos, const CVECTOR &ang) override;
     bool SetCamera(CVECTOR lookFrom, CVECTOR lookTo, CVECTOR up) override;
@@ -366,6 +372,7 @@ class DX9RENDER : public VDX9RENDER
 
 
     std::shared_ptr<SpriteRenderer> GetSpriteRenderer() override;
+    std::shared_ptr<PrimitiveRenderer> GetPrimitiveRenderer() override;
 
     void DrawSprite(std::shared_ptr<TextureResource> texture, uint32_t color,
                                const glm::vec2 &position, float depth) override;
@@ -744,8 +751,12 @@ bool SetCurFont (long fontID); // returns true if the given font is installed
 
     CMatrix mView, mWorld, mProjection;
 
+    CMatrix bgfxView, bgfxWorld, bgfxProjection;
+
     CVECTOR vWordRelationPos;
     CVECTOR vViewRelationPos;
+    CVECTOR bgfxvWordRelationPos;
+    CVECTOR bgfxvViewRelationPos;
 
     bool bUseLargeBackBuffer;
 

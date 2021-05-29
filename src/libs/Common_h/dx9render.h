@@ -70,6 +70,7 @@ class CVideoTexture;
 
 struct TextureResource;
 class SpriteRenderer;
+class PrimitiveRenderer;
 
 class VDX9RENDER : public SERVICE
 {
@@ -112,6 +113,10 @@ class VDX9RENDER : public SERVICE
     virtual void SetTransform(long type, D3DMATRIX *mtx) = 0;
     virtual void GetTransform(long type, D3DMATRIX *mtx) = 0;
 
+    virtual void BGFXSetTransform(long type, D3DMATRIX *mtx) = 0;
+    virtual void BGFXGetTransform(long type, D3DMATRIX *mtx) = 0;
+
+
     virtual bool SetCamera(const CVECTOR &pos, const CVECTOR &ang, float perspective) = 0;
     virtual bool SetCamera(const CVECTOR &pos, const CVECTOR &ang) = 0;
     virtual bool SetCamera(CVECTOR lookFrom, CVECTOR lookTo, CVECTOR up) = 0;
@@ -150,6 +155,7 @@ class VDX9RENDER : public SERVICE
     virtual bool TechniqueExecuteNext() = 0;
 
     virtual std::shared_ptr<SpriteRenderer> GetSpriteRenderer() = 0;
+    virtual std::shared_ptr<PrimitiveRenderer> GetPrimitiveRenderer() = 0;
 
     virtual void DrawSprite(std::shared_ptr<TextureResource> texture, uint32_t color,
                     const glm::vec2 &position, float depth) = 0;

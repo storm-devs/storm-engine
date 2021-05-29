@@ -1,6 +1,8 @@
 #include "xi_image.h"
 #include "../xinterface.h"
 
+#include "primitive_renderer.h"
+
 #define DEFAULT_IMAGE_OBJECT_WIDTH 32
 #define DEFAULT_IMAGE_OBJECT_HEIGHT 32
 #define DEFAULT_IMAGE_OBJECT_COLOR 0xFF808080
@@ -44,7 +46,7 @@ CXI_IMAGE::~CXI_IMAGE()
 void CXI_IMAGE::LoadFromFile(const char *sFileName)
 {
     Unload();
-    m_nTextureID = m_rs->TextureCreate(sFileName);
+    m_nTextureID = m_rs->BGFXTextureCreate(sFileName);
     UpdateTexture();
     UpdatePosition();
 }
@@ -63,13 +65,13 @@ void CXI_IMAGE::LoadFromBase(const char *sListName, const char *sPictureName, bo
         }
         memcpy(m_pcPictureListName, sListName, len);
     }
-    m_nTextureID = XINTERFACE::GetPictureService()->GetTextureID(m_pcPictureListName);
-    m_nPictureNum = XINTERFACE::GetPictureService()->GetImageNum(m_pcPictureListName, sPictureName);
+    m_nTextureID = XINTERFACE::GetPictureService()->BGFXGetTextureID(m_pcPictureListName);
+    m_nPictureNum = XINTERFACE::GetPictureService()->BGFXGetImageNum(m_pcPictureListName, sPictureName);
 
     if (bGetSizeFromSource)
     {
         XYRECT rPos;
-        if (XINTERFACE::GetPictureService()->GetTexturePos(m_nPictureNum, rPos))
+        if (XINTERFACE::GetPictureService()->BGFXGetTexturePos(m_nPictureNum, rPos))
         {
             m_pntSize.x = rPos.right - rPos.left;
             m_pntSize.y = rPos.bottom - rPos.top;
@@ -115,14 +117,14 @@ void CXI_IMAGE::LoadAccordingToString(const char *pcImageParam)
             if (CXI_UTILS::StringGetTokenString(pcParam, tokenString, sizeof(tokenString)))
             {
                 CXI_UTILS::StringDoublicate(tokenString, m_pcPictureListName);
-                m_nTextureID = XINTERFACE::GetPictureService()->GetTextureID(m_pcPictureListName);
+                m_nTextureID = XINTERFACE::GetPictureService()->BGFXGetTextureID(m_pcPictureListName);
             }
             break;
         case InterfaceToken_picture_name:
             m_bThisIsColorRectangle = false;
             if (CXI_UTILS::StringGetTokenString(pcParam, tokenString, sizeof(tokenString)))
             {
-                m_nPictureNum = XINTERFACE::GetPictureService()->GetImageNum(m_pcPictureListName, tokenString);
+                m_nPictureNum = XINTERFACE::GetPictureService()->BGFXGetImageNum(m_pcPictureListName, tokenString);
                 UpdateTexture();
             }
             break;
@@ -177,17 +179,72 @@ void CXI_IMAGE::Draw()
 
     if (m_bThisIsColorRectangle)
     {
-        m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, m_vrtx, sizeof(XI_ONETEX_VERTEX), "iRectangle");
+        //m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, m_vrtx, sizeof(XI_ONETEX_VERTEX), "iRectangle");
         return;
     }
 
     if (IsImagePresent())
     {
-        if (m_pTexture)
+        /*if (m_pTexture)
             m_rs->SetTexture(0, m_pTexture);
         else
-            m_rs->TextureSet(0, m_nTextureID);
-        m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, m_vrtx, sizeof(XI_ONETEX_VERTEX), "iVideo");
+            m_rs->TextureSet(0, m_nTextureID);*/
+
+        if (m_pTexture)
+        {
+        
+        }   
+        else
+        {
+            auto texture = m_rs->GetBGFXTextureFromID(m_nTextureID);
+            m_rs->GetPrimitiveRenderer()->Texture = texture;
+
+            std::vector<glm::vec3> vertices;
+
+            vertices.push_back({m_vrtx[0].pos.x, m_vrtx[0].pos.y, m_vrtx[0].pos.z}); // top left
+            vertices.push_back({m_vrtx[2].pos.x, m_vrtx[2].pos.y, m_vrtx[2].pos.z}); // top right
+            vertices.push_back({m_vrtx[1].pos.x, m_vrtx[1].pos.y, m_vrtx[1].pos.z}); // bottom left
+            vertices.push_back({m_vrtx[3].pos.x, m_vrtx[3].pos.y, m_vrtx[3].pos.z}); // bottom right
+
+
+            
+            /*m_vrtx[1].tu = m_vrtx[0].tu = frTex.left;
+            m_vrtx[2].tu = m_vrtx[3].tu = frTex.right;
+            m_vrtx[2].tv = m_vrtx[0].tv = frTex.top;
+            m_vrtx[3].tv = m_vrtx[1].tv = frTex.bottom;*/
+
+            // x
+            /*auto minu = m_vrtx[0].tu;   // left
+            auto maxu = m_vrtx[2].tu;   // right
+
+            // y
+            auto minv = m_vrtx[0].tv;   // top
+            auto maxv = m_vrtx[1].tv;   // bottom
+
+            auto u = glm::vec2(minu, maxu);
+            auto v = glm::vec2(minv, maxv);*/
+
+            std::vector<std::pair<float, float>> uv;
+            uv.push_back({m_vrtx[0].tu, m_vrtx[0].tv});
+            uv.push_back({m_vrtx[2].tu, m_vrtx[2].tv});
+            uv.push_back({m_vrtx[1].tu, m_vrtx[1].tv});
+            uv.push_back({m_vrtx[3].tu, m_vrtx[3].tv});
+
+            uint32_t color = 0;
+
+            /*CMatrix moldv, moldp, moldw;
+
+            m_rs->GetTransform(D3DTS_WORLD, moldw);
+            m_rs->GetTransform(D3DTS_VIEW, moldv);
+            m_rs->GetTransform(D3DTS_PROJECTION, moldp);*/
+
+            // m_rs->GetSpriteRenderer()->SetViewProjection();
+
+            m_rs->GetPrimitiveRenderer()->Submit(vertices, uv, color);
+
+        }
+
+        //m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, m_vrtx, sizeof(XI_ONETEX_VERTEX), "iVideo");
     }
 }
 
@@ -310,11 +367,11 @@ void CXI_IMAGE::Unload()
         m_nPictureNum = -1;
         if (m_pcPictureListName)
         {
-            PICTURE_TEXTURE_RELEASE(XINTERFACE::GetPictureService(), m_pcPictureListName, m_nTextureID);
+            BGFX_PICTURE_TEXTURE_RELEASE(XINTERFACE::GetPictureService(), m_pcPictureListName, m_nTextureID);
         }
         else
         {
-            TEXTURE_RELEASE(m_rs, m_nTextureID);
+            BGFX_TEXTURE_RELEASE(m_rs, m_nTextureID);
         }
     }
     RELEASE(m_pTexture);
@@ -334,13 +391,13 @@ void CXI_IMAGE::UpdateTexture()
     FXYRECT frTex;
     if (m_nPictureNum != -1)
     {
-        XINTERFACE::GetPictureService()->GetTexturePos(m_nPictureNum, frTex);
+        XINTERFACE::GetPictureService()->BGFXGetTexturePos(m_nPictureNum, frTex);
     }
     else
     {
         if (m_pcPictureListName)
         {
-            XINTERFACE::GetPictureService()->GetTextureCutForSize(m_pcPictureListName, m_nLeftTopCutUV, m_pntSize, -1,
+            XINTERFACE::GetPictureService()->BGFXGetTextureCutForSize(m_pcPictureListName, m_nLeftTopCutUV, m_pntSize, -1,
                                                                   -1, frTex);
         }
         else
