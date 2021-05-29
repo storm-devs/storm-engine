@@ -50,10 +50,24 @@ struct Rect
     float height = 0.0f;
 };
 
+struct SpriteInfo
+{
+    std::vector<SPRITE_VERTEX> vertices;
+    float depth;
+    std::shared_ptr<TextureResource> texture;
+};
+
+static const uint32_t InitialQueueSize = 256;
+
 class SpriteRenderer
 {
-    bgfx::DynamicVertexBufferHandle m_fvbh;
-    bgfx::DynamicIndexBufferHandle m_fibh;
+    static const uint32_t MaxBatchSize = 2048;
+
+    //bgfx::DynamicVertexBufferHandle m_fvbh;
+    //bgfx::DynamicIndexBufferHandle m_fibh;
+
+    bgfx::IndexBufferHandle m_ibh;
+
 
     //bgfx::VertexBufferHandle m_sfvbh;
     //bgfx::IndexBufferHandle m_sfibh;
@@ -68,6 +82,13 @@ class SpriteRenderer
     long m_width;
     long m_height;
 
+    std::vector<SpriteInfo> m_spriteQueue;
+
+    std::vector<SpriteInfo const *> m_sortedSprites;
+
+    uint32_t m_spriteQueueSize;
+    uint32_t m_spriteQueueCount;
+
   public:
     std::shared_ptr<TextureResource> Texture;
 
@@ -79,7 +100,7 @@ class SpriteRenderer
     void SetViewProjection();
 
     void UpdateIndexBuffer(std::vector<uint16_t> indices);
-    void UpdateVertexBuffer(std::vector<glm::vec3>& vertices, std::vector<glm::vec2>& u, std::vector<glm::vec2>& v, std::vector<uint32_t>& color);
+    void UpdateVertexBuffer(std::vector<glm::vec3> &vertices, glm::vec2 &u, glm::vec2 &v, uint32_t &color);
 
     void Submit();
 };

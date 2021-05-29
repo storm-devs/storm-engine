@@ -267,23 +267,11 @@ long FONT::UpdateVertexBuffer(long x, long y, char *data_PTR, int utf8length)
     float xoffset;
     uint8_t sym;
 
-
-
     IMAGE_VERTEX *pVertex;
-
-    std::vector<glm::vec3> vertices;
-    std::vector<glm::vec2> uCoordinates;
-    std::vector<glm::vec2> vCoordinates;
-    std::vector<uint32_t> colors;
-    std::vector<float> scales;
 
     s_num = strlen(data_PTR);
 
-    vertices.resize(s_num * 4);
-    uCoordinates.resize(s_num * 4);
-    vCoordinates.resize(s_num * 4);
-    colors.resize(s_num * 4);
-    scales.resize(s_num * 4);
+
 
     //VBuffer->Lock(0, sizeof(IMAGE_VERTEX) * utf8length * SYM_VERTEXS, (VOID **)&pVertex, 0);
 
@@ -296,7 +284,7 @@ long FONT::UpdateVertexBuffer(long x, long y, char *data_PTR, int utf8length)
         int Codepoint = utf8::Utf8ToCodepoint(data_PTR + i);
         Assert(Codepoint < USED_CODES);
 
-        n = curLetter * 6;
+        n = curLetter * 4;
         FLOAT_RECT pos = CharT[Codepoint].Pos;
         if (fScale != 1.f)
         {
@@ -313,8 +301,6 @@ long FONT::UpdateVertexBuffer(long x, long y, char *data_PTR, int utf8length)
             pos.x1 = pos.x2 = pos.y1 = pos.y2 = 0;
             xoffset += Spacebar * fScale;
         }
-
-        //vertices[n + 0].x = pos.x1;
 
         /*pVertex[n + 0].pos.x = pos.x1;
         pVertex[n + 1].pos.x = pos.x1;
@@ -351,20 +337,33 @@ long FONT::UpdateVertexBuffer(long x, long y, char *data_PTR, int utf8length)
 
         pVertex[n + 5].tu = tuv.x2;
         pVertex[n + 5].tv = tuv.y1;*/
-        
+
         /*pVertex[n + 0].color = pVertex[n + 1].color = pVertex[n + 2].color = pVertex[n + 3].color =
             pVertex[n + 4].color = pVertex[n + 5].color = Color;*/
 
+        std::vector<glm::vec3> vertices;
         
-        colors.push_back(Color);
-        colors.push_back(Color);
-        colors.push_back(Color);
-        colors.push_back(Color);
+        vertices.resize(4);
         
+        vertices[0] = glm::vec3(pos.x1, pos.y1, 1);
+        vertices[1] = glm::vec3(pos.x2, pos.y1, 1);
+        vertices[2] = glm::vec3(pos.x1, pos.y2, 1);
+        vertices[3] = glm::vec3(pos.x2, pos.y2, 1);
+
+        auto uCoordinates = glm::vec2(tuv.x1, tuv.x2);
+
+        auto vCoordinates = glm::vec2(tuv.y1, tuv.y2);
+
+        RenderService->GetSpriteRenderer()->UpdateVertexBuffer(vertices, uCoordinates, vCoordinates, Color);
+        RenderService->GetSpriteRenderer()->Submit();
 
         /*pVertex[n + 0].rhw = pVertex[n + 1].rhw = pVertex[n + 2].rhw = pVertex[n + 3].rhw = pVertex[n + 4].rhw =
             pVertex[n + 5].rhw = fScale;*/
     }
+
+    
+
+
     //VBuffer->Unlock();
     return static_cast<long>(xoffset);
 }

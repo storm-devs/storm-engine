@@ -9,7 +9,7 @@
 bgfx::VertexLayout SPRITE_VERTEX::ms_layout;
 
 
-SpriteRenderer::SpriteRenderer(long m_fbWidth, long m_fbHeight)
+SpriteRenderer::SpriteRenderer(long m_fbWidth, long m_fbHeight) : m_spriteQueueSize(0), m_spriteQueueCount(0)
 //SpriteRenderer::SpriteRenderer()
 {
     SPRITE_VERTEX::Init();
@@ -17,9 +17,28 @@ SpriteRenderer::SpriteRenderer(long m_fbWidth, long m_fbHeight)
     m_width = m_fbWidth;
     m_height = m_fbHeight;
 
-    m_fvbh = bgfx::createDynamicVertexBuffer(bgfx::makeRef(s_spriteVertices, sizeof(s_spriteVertices)),
-                                             SPRITE_VERTEX::ms_layout);
-    m_fibh = bgfx::createDynamicIndexBuffer(bgfx::makeRef(s_spriteIndices, sizeof(s_spriteIndices)));
+    /*m_fvbh = bgfx::createDynamicVertexBuffer(bgfx::makeRef(s_spriteVertices, sizeof(s_spriteVertices)),
+                                             SPRITE_VERTEX::ms_layout);*/
+    //m_fibh = bgfx::createDynamicIndexBuffer(bgfx::makeRef(s_spriteIndices, sizeof(s_spriteIndices)));
+
+    const uint32_t indicesCount = MaxBatchSize * 6;
+
+    std::vector<uint16_t> indices;
+    indices.reserve(indicesCount);
+
+    for (uint32_t i = 0; i < indicesCount; i += 4)
+    {
+        indices.push_back(i);
+        indices.push_back(i + 1);
+        indices.push_back(i + 2);
+
+        indices.push_back(i + 1);
+        indices.push_back(i + 3);
+        indices.push_back(i + 2);
+    }
+
+    m_ibh = bgfx::createIndexBuffer(bgfx::copy(indices.data(), indicesCount * sizeof(uint16_t)));
+
 
     /*m_sfvbh = bgfx::createVertexBuffer(bgfx::makeRef(s_fontVertices, sizeof(s_fontVertices)),
                                                BGFX_FONT_VERTEX::ms_layout);
@@ -39,8 +58,9 @@ SpriteRenderer::SpriteRenderer(long m_fbWidth, long m_fbHeight)
 
 SpriteRenderer::~SpriteRenderer()
 {
-    bgfx::destroy(m_fvbh);
-    bgfx::destroy(m_fibh);
+    //bgfx::destroy(m_fvbh);
+    //bgfx::destroy(m_fibh);
+    bgfx::destroy(m_ibh);
     bgfx::destroy(m_prog);
 }
 
@@ -88,14 +108,16 @@ void SpriteRenderer::SetViewProjection()
 }
 
 void SpriteRenderer::UpdateIndexBuffer(std::vector<uint16_t> indices){
-    const bgfx::Memory *mem = bgfx::alloc(indices.size() * sizeof(uint16_t));
+    /*const bgfx::Memory *mem = bgfx::alloc(indices.size() * sizeof(uint16_t));
 
     memcpy(mem->data, indices.data(), indices.size() * sizeof(uint16_t));
 
-    bgfx::update(m_fibh, 0, mem);
+    bgfx::update(m_fibh, 0, mem);*/
+
+    throw std::exception("Does not apply for static index buffers");
 }
 
-void SpriteRenderer::UpdateVertexBuffer(std::vector<glm::vec3>& vertices, std::vector<glm::vec2>& u, std::vector<glm::vec2>& v, std::vector<uint32_t>& color)
+void SpriteRenderer::UpdateVertexBuffer(std::vector<glm::vec3> &vertices, glm::vec2 &u, glm::vec2 &v, uint32_t &color)
 {
     // m_color[0] = m_color[1] = m_color[2] = m_color[3] = 1.0f;
 
@@ -106,13 +128,14 @@ void SpriteRenderer::UpdateVertexBuffer(std::vector<glm::vec3>& vertices, std::v
     
     int index = 0;
 
-    for (int index = 0; index < vertices.size(); index += 4)
-    {
-        vertex[index + 0] = SPRITE_VERTEX{vertices[index + 0].x, vertices[index + 0].y, u[index + 0].x, v[index + 0].x /*, color*/};
-        vertex[index + 1] = SPRITE_VERTEX{vertices[index + 1].x, vertices[index + 1].y, u[index + 1].y, v[index + 1].x /*, color*/};
-        vertex[index + 2] = SPRITE_VERTEX{vertices[index + 2].x, vertices[index + 2].y, u[index + 2].x, v[index + 2].y /*, color*/};
-        vertex[index + 3] = SPRITE_VERTEX{vertices[index + 3].x, vertices[index + 3].y, u[index + 3].y, v[index + 3].y /*, color*/};
-    }
+    vertex[index + 0] = SPRITE_VERTEX{vertices[index + 0].x, vertices[index + 0].y, u.x, v.x /*, color*/};
+    vertex[index + 1] = SPRITE_VERTEX{vertices[index + 1].x, vertices[index + 1].y, u.y, v.x /*, color*/};
+    vertex[index + 2] = SPRITE_VERTEX{vertices[index + 2].x, vertices[index + 2].y, u.x, v.y /*, color*/};
+    vertex[index + 3] = SPRITE_VERTEX{vertices[index + 3].x, vertices[index + 3].y, u.y, v.y /*, color*/};
+
+    std::vector<SPRITE_VERTEX> storageVertices =
+        std::vector<SPRITE_VERTEX>{vertex[index + 0], vertex[index + 1], vertex[index + 2], vertex[index + 3]};
+
     /*
         sprite->tl = glm::vec2(points[0].x, points[0].y);
         sprite->tr = glm::vec2(points[1].x, points[1].y);
@@ -134,24 +157,87 @@ void SpriteRenderer::UpdateVertexBuffer(std::vector<glm::vec3>& vertices, std::v
 
     // GetTextureMappingsHalfIn(tex, source, vertex);
 
-    bgfx::update(m_fvbh, 0, mem);
+    if (m_spriteQueueCount >= m_spriteQueue.size())
+    {
+        uint32_t newSize = std::max(InitialQueueSize, (uint32_t)m_spriteQueue.size() * 2);
+        m_spriteQueue.resize(newSize);
+
+        m_sortedSprites.clear();
+    }
+
+    SpriteInfo *sprite = &m_spriteQueue[m_spriteQueueCount];
+
+    sprite->texture = Texture;
+    sprite->vertices = storageVertices;
+    sprite->depth = 1;
+    ++m_spriteQueueCount;
+
+
+    //bgfx::update(m_fvbh, 0, mem);
 }
 
 void SpriteRenderer::Submit()
 {
     // Set vertex and index buffer.
-    bgfx::setVertexBuffer(0, m_fvbh);
-    bgfx::setIndexBuffer(m_fibh);
+    //bgfx::setVertexBuffer(0, m_fvbh);
+    //bgfx::setIndexBuffer(m_fibh);
+    if (m_sortedSprites.size() < m_spriteQueueCount)
+    {
+        uint32_t previousSize = (uint32_t)m_sortedSprites.size();
+        m_sortedSprites.resize(m_spriteQueueCount);
+        for (size_t i = previousSize; i < m_spriteQueueCount; ++i)
+        {
+            m_sortedSprites[i] = &m_spriteQueue[i];
+        }
+    }
 
-    bgfx::setTexture(0, s_texColor, *Texture->textureHandle);
+    bgfx::TransientVertexBuffer vb;
+    bgfx::allocTransientVertexBuffer(&vb, 4 * m_spriteQueueCount, SPRITE_VERTEX::ms_layout);
+    SPRITE_VERTEX *vertex = (SPRITE_VERTEX *)vb.data;
+
+    for (uint32_t i = 0, v = 0; i < m_spriteQueueCount; ++i, v += 4)
+    {
+        const SpriteInfo *s = m_sortedSprites[i];
+        vertex[v + 0] = s->vertices[0];
+        vertex[v + 1] = s->vertices[1];
+        vertex[v + 2] = s->vertices[2];
+        vertex[v + 3] = s->vertices[3];
+    }
+
+    std::shared_ptr<TextureResource> batchTexture(nullptr);
+    uint32_t batchStart = 0;
 
     uint64_t state = BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_MSAA | BGFX_STATE_BLEND_ALPHA;
 
-    // Set render states.
+    for (uint32_t pos = 0; pos < m_spriteQueueCount; ++pos)
+    {
+        auto texture = m_sortedSprites[pos]->texture;
+
+        if (texture != batchTexture)
+        {
+            if (pos > batchStart)
+            {
+                // TODO maybe hax
+                bgfx::setState(state);
+                bgfx::setTexture(0, s_texColor, *batchTexture->textureHandle);
+                bgfx::setVertexBuffer(0, &vb);
+                bgfx::setIndexBuffer(m_ibh, batchStart * 6, (pos - batchStart) * 6);
+                bgfx::submit(0, m_prog);
+            }
+            batchTexture = texture;
+            batchStart = pos;
+        }
+    }
+
+    // TODO maybe hax
     bgfx::setState(state);
 
-    // Submit primitive for rendering to view 0.
+    bgfx::setTexture(0, s_texColor, *batchTexture->textureHandle);
+    bgfx::setVertexBuffer(0, &vb);
+    bgfx::setIndexBuffer(m_ibh, batchStart * 6, (m_spriteQueueCount - batchStart) * 6);
     bgfx::submit(0, m_prog);
+
+    m_spriteQueueCount = 0;
 }
 
 void SpriteRenderer::GetVertices(std::shared_ptr<TextureResource> texture, Rect source, SPRITE_VERTEX *vertices)

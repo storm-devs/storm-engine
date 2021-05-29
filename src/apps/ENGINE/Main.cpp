@@ -89,7 +89,7 @@ class Application : public entry::AppI
         m_reset = BGFX_RESET_VSYNC;
 
         bgfx::Init init;
-        init.type = bgfx::RendererType::Direct3D9;
+        init.type = bgfx::RendererType::OpenGL;
         init.vendorId = args.m_pciId;
         init.resolution.width = m_width;
         init.resolution.height = m_height;
@@ -118,7 +118,6 @@ class Application : public entry::AppI
         if (m_renderService == nullptr)
             throw std::exception("!Butterflies: No service 'dx9render'");
 
-
     }
 
 
@@ -130,9 +129,12 @@ class Application : public entry::AppI
 
             bgfx::touch(0);
 
-            m_renderService->DrawSprite(m_texture, 1, glm::vec2(0, 0));
+            //m_renderService->DrawSprite(m_texture, 1, glm::vec2(0, 0));
+            //m_renderService->DrawSprite(m_texture2, 1, glm::vec2(0, 0));
             
             _loopMain();
+
+            bgfx::frame();
 
             return true;
         }
@@ -165,8 +167,6 @@ class Application : public entry::AppI
 
     std::shared_ptr<TextureResource> m_texture;
     std::shared_ptr<TextureResource> m_texture2;
-
-    long PortraitID;
 
     long PortraitID;
 

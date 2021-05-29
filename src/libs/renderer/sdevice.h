@@ -376,8 +376,8 @@ class DX9RENDER : public VDX9RENDER
 
     void DrawSprites(std::shared_ptr<TextureResource> texture,
                     std::vector<glm::vec3> &vertices,
-                    std::vector<glm::vec2> &u, std::vector<glm::vec2> &v,
-                    std::vector<uint32_t> &color) override;
+                    glm::vec2 &u, glm::vec2 &v,
+                    uint32_t &color) override;
 
 
     // DX9Render: Draw Section
