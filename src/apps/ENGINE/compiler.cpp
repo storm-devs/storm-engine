@@ -581,7 +581,7 @@ void COMPILER::FindErrorSource()
 
 void COMPILER::SetEventHandler(const char *event_name, const char *func_name, long flag, bool bStatic)
 {
-    FUNCINFO fi;
+    FuncInfo fi;
 
     if (event_name == nullptr)
     {
@@ -696,7 +696,7 @@ VDATA *COMPILER::ProcessEvent(const char *event_name)
         BC_Execute(ei.pFuncInfo[n].func_code, pResult);
         RDTSC_E(nTicks);
 
-        FUNCINFO fi;
+        FuncInfo fi;
         // if(FuncTab.GetFuncX(fi,ei.pFuncInfo[n].func_code))
         if (FuncTab.GetFuncX(fi, func_code))
         {
@@ -710,7 +710,10 @@ VDATA *COMPILER::ProcessEvent(const char *event_name)
         {
             if (n < ei.elements)
             {
-                FuncTab.AddTime(ei.pFuncInfo[n].func_code, nTicks);
+                if (!FuncTab.AddTime(ei.pFuncInfo[n].func_code, nTicks))
+                {
+                    core.Trace("Invalid func_code = %u for AddTime", ei.pFuncInfo[n].func_code);
+                }
             }
         }
 
@@ -964,7 +967,7 @@ bool COMPILER::ProcessDebugExpression0(const char *pExpression, DATA &Result)
 
     if (pRun_fi)
     {
-        CurrentFuncCode = pRun_fi->code;
+        CurrentFuncCode = FuncTab.FindFunc(pRun_fi->name);
     }
 
     try
@@ -988,7 +991,7 @@ bool COMPILER::ProcessDebugExpression0(const char *pExpression, DATA &Result)
     // save current pointers values
     const uint32_t mem_InstructionPointer = InstructionPointer;
     // mem_ip = ip;
-    FUNCINFO *mem_pfi = pRun_fi;
+    FuncInfo *mem_pfi = pRun_fi;
     const char *mem_codebase = pRunCodeBase;
     // mem_CurrentFuncCode = CurrentFuncCode;
 
@@ -1176,7 +1179,7 @@ void COMPILER::CompileToken(SEGMENT_DESC &Segment, S_TOKEN_TYPE Token_type, uint
 
 bool COMPILER::InitInternalFunctions()
 {
-    FUNCINFO fi;
+    FuncInfo fi;
 
     // register internal functions ------------
 
@@ -1198,7 +1201,8 @@ bool COMPILER::InitInternalFunctions()
             func_code = FuncTab.FindFunc(fi.name);
             FuncTab.GetFunc(fi, func_code);
             // SetError("Duplicate function name: %s",fi.name);
-            SetError("Function [%s] already declared in: %s line %d", fi.name, fi.decl_file_name, fi.decl_line);
+            SetError("Function [%s] already declared in: %s line %d", fi.name.c_str(), fi.decl_file_name.c_str(),
+                     fi.decl_line);
             return false;
         }
     }
@@ -1214,9 +1218,10 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
     char *pProgram;
     char *pApend_file;
     char *pSegmentSource;
-    FUNCINFO fi;
-    VARINFO vi;
-    LVARINFO lvi;
+    FuncInfo fi;
+    VarInfo vi = {};
+    const VarInfo *real_var = nullptr;
+    LocalVarInfo lvi;
     CLASSINFO ci;
     CLASSINFO cci;
     uint32_t SegmentSize;
@@ -1526,7 +1531,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                         fi.arguments = 0;
                         fi.decl_file_name = DebugSourceFileName;
                         fi.decl_line = DebugSourceLine;
-                        fi.pImportedFunc = nullptr;
+                        fi.imported_func = nullptr;
                         func_code = FuncTab.AddFunc(fi);
 
                         if (func_code == INVALID_FUNC_CODE)
@@ -1534,8 +1539,8 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                             func_code = FuncTab.FindFunc(fi.name);
                             FuncTab.GetFunc(fi, func_code);
                             // SetError("Duplicate function name: %s",fi.name);
-                            SetError("Function [%s] already declared in: %s line %d", fi.name, fi.decl_file_name,
-                                     fi.decl_line);
+                            SetError("Function [%s] already declared in: %s line %d", fi.name.c_str(),
+                                     fi.decl_file_name.c_str(), fi.decl_line);
 
                             return false;
                         }
@@ -1553,12 +1558,10 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                             SetError("Invalid variable name");
                             return false;
                         }
-                        strcpy_s(var_name, Token.GetData());
-                        vi.name = var_name;
+                        vi.name = Token.GetData();
                         vi.segment_id = Segment.id;
                         vi.elements = 1;
                         vi.type = Token_type;
-                        vi.bArray = false;
                         Token.Get();
                         if (Token.GetType() == SQUARE_OPEN_BRACKET)
                         {
@@ -1575,30 +1578,36 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                                     }
                                     else
                                     {
-                                        SetError("Invalid array (%s) size", vi.name);
+                                        SetError("Invalid array (%s) size", vi.name.c_str());
                                         return false;
                                     }
                                 }
                                 else
                                 {
-                                    SetError("Invalid array (%s) size", vi.name);
+                                    SetError("Invalid array (%s) size", vi.name.c_str());
                                     return false;
                                 }
                             }
                             else
                                 lvalue = static_cast<long>(atoll(Token.GetData()));
                             vi.elements = lvalue;
-                            vi.bArray = true;
                             Token.Get(); // SQUARE_CLOSE_BRACKET
                             Token.Get();
                         }
                         var_code = VarTab.AddVar(vi);
                         if (var_code == INVALID_VAR_CODE)
                         {
-                            SetError("Duplicate variable name: %s", vi.name);
+                            SetError("Duplicate variable name: %s", vi.name.c_str());
                             return false;
                         }
-                        VarTab.GetVarX(vi, var_code);
+
+                        real_var = VarTab.GetVarX(var_code);
+                        if (real_var == nullptr)
+                        {
+                            SetError("Registered variable %s has invalid code", vi.name.c_str());
+                            return false;
+                        }
+
                         bool bNeg;
                         if (Token.GetType() == OP_EQUAL)
                         {
@@ -1608,7 +1617,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                                 // array
                                 if (SkipAuxiliaryTokens() != BLOCK_IN)
                                 {
-                                    SetError("Invalid array '%s' initialization", vi.name);
+                                    SetError("Invalid array '%s' initialization", vi.name.c_str());
                                     return false;
                                 }
                                 uint32_t aindex;
@@ -1635,51 +1644,51 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                                     case TRUE_CONST:
                                         if (vi.type != VAR_INTEGER)
                                         {
-                                            SetError("Invalid array '%s' initialization parameter", vi.name);
+                                            SetError("Invalid array '%s' initialization parameter", vi.name.c_str());
                                             return false;
                                         }
-                                        vi.pDClass->Set(static_cast<long>(1));
+                                        real_var->value->Set(static_cast<long>(1));
                                         break;
                                     case FALSE_CONST:
                                         if (vi.type != VAR_INTEGER)
                                         {
-                                            SetError("Invalid array '%s' initialization parameter", vi.name);
+                                            SetError("Invalid array '%s' initialization parameter", vi.name.c_str());
                                             return false;
                                         }
-                                        vi.pDClass->Set(static_cast<long>(0));
+                                        real_var->value->Set(static_cast<long>(0));
                                         break;
 
                                     case NUMBER:
                                         if (vi.type != VAR_INTEGER)
                                         {
-                                            SetError("Invalid array '%s' initialization parameter", vi.name);
+                                            SetError("Invalid array '%s' initialization parameter", vi.name.c_str());
                                             return false;
                                         }
                                         if (bNeg)
-                                            vi.pDClass->Set(-atol(Token.GetData()), aindex);
+                                            real_var->value->Set(-atol(Token.GetData()), aindex);
                                         else
-                                            vi.pDClass->Set(static_cast<long>(atoll(Token.GetData())));
+                                            real_var->value->Set(static_cast<long>(atoll(Token.GetData())));
                                         aindex++;
                                         break;
                                     case FLOAT_NUMBER:
                                         if (vi.type != VAR_FLOAT)
                                         {
-                                            SetError("Invalid array '%s' initialization parameter", vi.name);
+                                            SetError("Invalid array '%s' initialization parameter", vi.name.c_str());
                                             return false;
                                         }
                                         if (bNeg)
-                                            vi.pDClass->Set(-static_cast<float>(atof(Token.GetData())), aindex);
+                                            real_var->value->Set(-static_cast<float>(atof(Token.GetData())), aindex);
                                         else
-                                            vi.pDClass->Set(static_cast<float>(atof(Token.GetData())), aindex);
+                                            real_var->value->Set(static_cast<float>(atof(Token.GetData())), aindex);
                                         aindex++;
                                         break;
                                     case STRING:
                                         if (vi.type != VAR_STRING)
                                         {
-                                            SetError("Invalid array '%s' initialization parameter", vi.name);
+                                            SetError("Invalid array '%s' initialization parameter", vi.name.c_str());
                                             return false;
                                         }
-                                        vi.pDClass->Set(Token.GetData(), aindex);
+                                        real_var->value->Set(Token.GetData(), aindex);
                                         aindex++;
                                         break;
                                     case UNKNOWN:
@@ -1693,7 +1702,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                                         break;
                                     if (Token.GetType() != COMMA)
                                     {
-                                        SetError("Invalid array '%s' initialization parameters list", vi.name);
+                                        SetError("Invalid array '%s' initialization parameters list", vi.name.c_str());
                                         return false;
                                     }
                                     SkipAuxiliaryTokens();
@@ -1716,33 +1725,33 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                                 case TRUE_CONST:
                                     if (vi.type != VAR_INTEGER)
                                         break;
-                                    vi.pDClass->Set(static_cast<long>(1));
+                                    real_var->value->Set(static_cast<long>(1));
                                     break;
                                 case FALSE_CONST:
                                     if (vi.type != VAR_INTEGER)
                                         break;
-                                    vi.pDClass->Set(static_cast<long>(0));
+                                    real_var->value->Set(static_cast<long>(0));
                                     break;
                                 case NUMBER:
                                     if (vi.type != VAR_INTEGER)
                                         break;
                                     if (bNeg)
-                                        vi.pDClass->Set(-atol(Token.GetData()));
+                                        real_var->value->Set(-atol(Token.GetData()));
                                     else
-                                        vi.pDClass->Set(static_cast<long>(atoll(Token.GetData())));
+                                        real_var->value->Set(static_cast<long>(atoll(Token.GetData())));
                                     break;
                                 case FLOAT_NUMBER:
                                     if (vi.type != VAR_FLOAT)
                                         break;
                                     if (bNeg)
-                                        vi.pDClass->Set(-static_cast<float>(atof(Token.GetData())));
+                                        real_var->value->Set(-static_cast<float>(atof(Token.GetData())));
                                     else
-                                        vi.pDClass->Set(static_cast<float>(atof(Token.GetData())));
+                                        real_var->value->Set(static_cast<float>(atof(Token.GetData())));
                                     break;
                                 case STRING:
                                     if (vi.type != VAR_STRING)
                                         break;
-                                    vi.pDClass->Set(Token.GetData());
+                                    real_var->value->Set(Token.GetData());
                                     break;
                                 case UNKNOWN:
 
@@ -1787,7 +1796,6 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                     strcpy_s(var_name, Token.GetData());
                     lvi.name = var_name;
                     lvi.elements = 1;
-                    lvi.bArray = false;
                     Token.Get();
                     if (Token.GetType() == SQUARE_OPEN_BRACKET)
                     {
@@ -1804,26 +1812,25 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                                 }
                                 else
                                 {
-                                    SetError("Invalid array (%s) size", lvi.name);
+                                    SetError("Invalid array (%s) size", lvi.name.c_str());
                                     return false;
                                 }
                             }
                             else
                             {
-                                SetError("Invalid array (%s) size", lvi.name);
+                                SetError("Invalid array (%s) size", lvi.name.c_str());
                                 return false;
                             }
                         }
                         else
                             lvalue = static_cast<long>(atoll(Token.GetData()));
                         lvi.elements = lvalue;
-                        lvi.bArray = true;
                         Token.Get(); // SQUARE_CLOSE_BRACKET
                         Token.Get();
                     }
                     if (!FuncTab.AddFuncVar(func_code, lvi))
                     {
-                        SetError("Duplicate variable name: %s", lvi.name);
+                        SetError("Duplicate variable name: %s", lvi.name.c_str());
                         return false;
                     }
                 } while (Token.GetType() == COMMA);
@@ -2206,8 +2213,8 @@ bool COMPILER::CompileBlock(SEGMENT_DESC &Segment, bool &bFunctionBlock, uint32_
     DEFINFO di;
     uint32_t dwRCode;
 
-    VARINFO vi;
-    LVARINFO lvi;
+    const VarInfo *real_var;
+    LocalVarInfo lvi;
 
     jump_offset = 0xffbadbad;
 
@@ -2947,7 +2954,7 @@ bool COMPILER::CompileBlock(SEGMENT_DESC &Segment, bool &bFunctionBlock, uint32_
         case UNKNOWN: {
             uint32_t func_code;
             uint32_t func_args;
-            FUNCINFO fi;
+            FuncInfo fi;
 
             if (DetectUnknown(func_code) == CALL_FUNCTION)
             {
@@ -2995,7 +3002,7 @@ bool COMPILER::CompileBlock(SEGMENT_DESC &Segment, bool &bFunctionBlock, uint32_
                 if (fi.offset == INVALID_FUNC_OFFSET)
                 {
                     // external function declared but not compiled yet
-                    fi.arguments = fi.ext_args;
+                    fi.arguments = fi.extern_arguments;
                 }
 
                 // off for debug needs
@@ -3007,7 +3014,7 @@ bool COMPILER::CompileBlock(SEGMENT_DESC &Segment, bool &bFunctionBlock, uint32_
                     case INTERNAL_SEGMENT_ID:
                         if (!IsIntFuncVarArgsNum(func_code))
                         {
-                            SetError("function '%s(args:%d)' doesnt accept %d arguments", fi.name, fi.arguments,
+                            SetError("function '%s(args:%d)' doesnt accept %d arguments", fi.name.c_str(), fi.arguments,
                                      func_args);
                             return false;
                         }
@@ -3016,7 +3023,8 @@ bool COMPILER::CompileBlock(SEGMENT_DESC &Segment, bool &bFunctionBlock, uint32_
                         // skip imported funcs checking for now
                         break;
                     default:
-                        SetError("function %s(args:%d) doesnt accept %d arguments", fi.name, fi.arguments, func_args);
+                        SetError("function %s(args:%d) doesnt accept %d arguments", fi.name.c_str(), fi.arguments,
+                                 func_args);
                         return false;
                     }
 
@@ -3366,8 +3374,14 @@ bool COMPILER::CompileBlock(SEGMENT_DESC &Segment, bool &bFunctionBlock, uint32_
 
             if (Token_type == VARIABLE)
             {
-                VarTab.GetVarX(vi, dwRCode);
-                if (!(vi.type == VAR_AREFERENCE || vi.type == VAR_REFERENCE))
+                real_var = VarTab.GetVarX(dwRCode);
+                if (real_var == nullptr)
+                {
+                    SetError("Invalid var code");
+                    return false;
+                }
+
+                if (!(real_var->type == VAR_AREFERENCE || real_var->type == VAR_REFERENCE))
                 {
                     SetError("not aref or ref");
                     return false;
@@ -3692,10 +3706,10 @@ S_TOKEN_TYPE COMPILER::NextTokenType()
 
 bool COMPILER::BC_CallFunction(uint32_t func_code, uint32_t &ip, DATA *&pVResult)
 {
-    FUNCINFO call_fi;
+    FuncInfo call_fi;
     uint32_t mem_ip;
     uint32_t mem_InstructionPointer;
-    FUNCINFO *mem_pfi;
+    FuncInfo *mem_pfi;
     //    DATA * pV;
     const char *mem_codebase;
     uint32_t arguments;
@@ -3772,18 +3786,28 @@ bool COMPILER::BC_CallFunction(uint32_t func_code, uint32_t &ip, DATA *&pVResult
     if (call_fi.segment_id == INTERNAL_SEGMENT_ID)
     {
         if (bRuntimeLog)
-            FuncTab.AddCall(func_code);
+        {
+            if (!FuncTab.AddCall(func_code))
+            {
+                core.Trace("Invalid func_code = %u for AddCall", func_code);
+            }
+        }
+
         // BC_CallIntFunction(func_code,pVResult,arguments);
         RDTSC_B(nTicks);
         BC_CallIntFunction(func_code, pVResult, arguments);
         RDTSC_E(nTicks);
-        FuncTab.AddTime(func_code, nTicks);
+
+        if (!FuncTab.AddTime(func_code, nTicks))
+        {
+            core.Trace("Invalid func_code = %u for AddTime", func_code);
+        }
     }
     else if (call_fi.segment_id == IMPORTED_SEGMENT_ID)
     {
         pVResult = nullptr;
         RDTSC_B(nTicks);
-        const uint32_t nResult = call_fi.pImportedFunc(&SStack);
+        const uint32_t nResult = call_fi.imported_func(&SStack);
         if (nResult == IFUNCRESULT_OK)
         {
             if (call_fi.return_type != TVOID)
@@ -3792,7 +3816,10 @@ bool COMPILER::BC_CallFunction(uint32_t func_code, uint32_t &ip, DATA *&pVResult
             }
         }
         RDTSC_E(nTicks);
-        FuncTab.AddTime(func_code, nTicks);
+        if (!FuncTab.AddTime(func_code, nTicks))
+        {
+            core.Trace("Invalid func_code = %u for AddTime", func_code);
+        }
     }
     else
     {
@@ -3801,7 +3828,10 @@ bool COMPILER::BC_CallFunction(uint32_t func_code, uint32_t &ip, DATA *&pVResult
         RDTSC_B(nTicks);
         BC_Execute(func_code, pVResult);
         RDTSC_E(nTicks);
-        FuncTab.AddTime(func_code, nTicks);
+        if (!FuncTab.AddTime(func_code, nTicks))
+        {
+            core.Trace("Invalid func_code = %u for AddTime", func_code);
+        }
         core.Leave_CriticalSection();
     }
     if (nDebugEnterMode == TMODE_MAKESTEP)
@@ -3813,7 +3843,7 @@ bool COMPILER::BC_CallFunction(uint32_t func_code, uint32_t &ip, DATA *&pVResult
     {
         if (check_sp != (SStack.GetDataNum() - 1))
         {
-            SetError("function '%s' stack error", call_fi.name);
+            SetError("function '%s' stack error", call_fi.name.c_str());
 
             pRun_fi = mem_pfi;
             InstructionPointer = mem_InstructionPointer;
@@ -3829,7 +3859,7 @@ bool COMPILER::BC_CallFunction(uint32_t func_code, uint32_t &ip, DATA *&pVResult
     {
         if (check_sp != SStack.GetDataNum())
         {
-            SetError("function '%s' stack error", call_fi.name);
+            SetError("function '%s' stack error", call_fi.name.c_str());
             pRun_fi = mem_pfi;
             InstructionPointer = mem_InstructionPointer;
             ip = mem_ip;
@@ -3866,8 +3896,8 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
     uint32_t bLeftOperandType;
     long nLeftOperandIndex;
     S_TOKEN_TYPE Token_type;
-    FUNCINFO fi;
-    VARINFO vi;
+    FuncInfo fi;
+    const VarInfo *real_var;
     DATA *pV;
     DATA *pVResult;
     //    DATA   ExpressionResult;    // while compile expression not ready, each function have its own register
@@ -3893,7 +3923,12 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
     CompilerStage = CS_RUNTIME;
 
     if (bRuntimeLog)
-        FuncTab.AddCall(function_code);
+    {
+        if (!FuncTab.AddCall(function_code))
+        {
+            core.Trace("Invalid function_code = %u for AddCall", function_code);
+        }
+    }
 
     bDebugWaitForThisFunc = false;
 
@@ -3901,39 +3936,36 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
     pVReturnResult = nullptr;
     pVResult = nullptr;
 
-    PZERO(&fi, sizeof(fi));
-
     if (pDbgExpSource == nullptr)
     {
-        // PZERO(&fi,sizeof(fi));
         if (!FuncTab.GetFunc(fi, function_code))
         {
-            SetError("Invalid function: %s", fi.name);
+            SetError("Invalid function: %s", fi.name.c_str());
             return false;
         }
 
         if (fi.offset == INVALID_FUNC_OFFSET)
         {
-            SetError("Function (%s) isnt loaded", fi.name);
+            SetError("Function (%s) isnt loaded", fi.name.c_str());
             return false;
         }
 
         if (fi.segment_id == INTERNAL_SEGMENT_ID)
         {
-            SetError("Function (%s) is internal", fi.name);
+            SetError("Function (%s) is internal", fi.name.c_str());
             return false;
         }
 
         if (fi.segment_id == IMPORTED_SEGMENT_ID)
         {
-            SetError("Function (%s) is imported", fi.name);
+            SetError("Function (%s) is imported", fi.name.c_str());
             return false;
         }
 
         segment_index = GetSegmentIndex(fi.segment_id);
         if (segment_index == INVALID_SEGMENT_INDEX)
         {
-            SetError("Function (%s) segment not loaded", fi.name);
+            SetError("Function (%s) segment not loaded", fi.name.c_str());
             return false;
         }
         if (SegmentTable[segment_index].pCode == nullptr)
@@ -3951,10 +3983,10 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
         // check arguments types
         for (n = 0; n < fi.arguments; n++)
         {
-            if (fi.pLocal[n].type == VAR_REFERENCE)
+            if (fi.local_vars[n].type == VAR_REFERENCE)
                 continue;
             pV = SStack.Read(fi.stack_offset, n);
-            if (pV->GetType() != fi.pLocal[n].type)
+            if (pV->GetType() != fi.local_vars[n].type)
             {
                 pV = pV->GetVarPointer();
                 if (!pV)
@@ -3963,22 +3995,22 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
                     return false;
                 }
 
-                if (fi.pLocal[n].type == VAR_AREFERENCE && pV->GetType() == VAR_OBJECT)
+                if (fi.local_vars[n].type == VAR_AREFERENCE && pV->GetType() == VAR_OBJECT)
                     continue;
 
                 // TODO: remove and fix
-                if (false && pV->GetType() != fi.pLocal[n].type)
+                if (false && pV->GetType() != fi.local_vars[n].type)
                 {
-                    SetWarning("wrong type of argument %d  %s(%s) <-- [%s]", n, fi.name,
-                               Token.GetTypeName(fi.pLocal[n].type), Token.GetTypeName(pV->GetType()));
+                    SetWarning("wrong type of argument %d  %s(%s) <-- [%s]", n, fi.name.c_str(),
+                               Token.GetTypeName(fi.local_vars[n].type), Token.GetTypeName(pV->GetType()));
                 }
             }
         }
 
-        for (n = fi.arguments; n < fi.var_num; n++)
+        for (n = fi.arguments; n < fi.local_vars.size(); n++)
         {
             pV = SStack.Push();
-            pV->SetType(fi.pLocal[n].type, fi.pLocal[n].elements);
+            pV->SetType(fi.local_vars[n].type, fi.local_vars[n].elements);
         }
 
         pRun_fi = &fi; // set pointer to 'this' function info
@@ -4086,12 +4118,14 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
                 {
                     if (bLeftOperandType == VARIABLE)
                     {
-                        if (!VarTab.GetVar(vi, nLeftOperandCode))
+                        real_var = VarTab.GetVar(nLeftOperandCode);
+                        if (real_var == nullptr)
                         {
                             SetError("Global variable not found");
                             return false;
                         }
-                        pV = vi.pDClass;
+
+                        pV = real_var->value.get();
                     }
                     else
                     {
@@ -4117,12 +4151,14 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
             {
                 if (bLeftOperandType == VARIABLE)
                 {
-                    if (!VarTab.GetVar(vi, nLeftOperandCode))
+                    real_var = VarTab.GetVar(nLeftOperandCode);
+                    if (real_var == nullptr)
                     {
                         SetError("Global variable not found");
                         return false;
                     }
-                    pV = vi.pDClass;
+
+                    pV = real_var->value.get();
                 }
                 else
                 {
@@ -4156,12 +4192,14 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
                 {
                     if (bLeftOperandType == VARIABLE)
                     {
-                        if (!VarTab.GetVar(vi, nLeftOperandCode))
+                        real_var = VarTab.GetVar(nLeftOperandCode);
+                        if (real_var == nullptr)
                         {
                             SetError("Global variable not found");
                             return false;
                         }
-                        pV = vi.pDClass;
+
+                        pV = real_var->value.get();
                     }
                     else
                     {
@@ -4186,12 +4224,14 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
             {
                 if (bLeftOperandType == VARIABLE)
                 {
-                    if (!VarTab.GetVar(vi, nLeftOperandCode))
+                    real_var = VarTab.GetVar(nLeftOperandCode);
+                    if (real_var == nullptr)
                     {
                         SetError("Global variable not found");
                         return false;
                     }
-                    pV = vi.pDClass;
+
+                    pV = real_var->value.get();
                 }
                 else
                 {
@@ -4224,12 +4264,14 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
                 {
                     if (bLeftOperandType == VARIABLE)
                     {
-                        if (!VarTab.GetVar(vi, nLeftOperandCode))
+                        real_var = VarTab.GetVar(nLeftOperandCode);
+                        if (real_var == nullptr)
                         {
                             SetError("Global variable not found");
                             return false;
                         }
-                        pV = vi.pDClass;
+
+                        pV = real_var->value.get();
                     }
                     else
                     {
@@ -4257,12 +4299,14 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
                 }
                 if (vtype == VARIABLE)
                 {
-                    if (!VarTab.GetVar(vi, var_code))
+                    real_var = VarTab.GetVar(var_code);
+                    if (real_var == nullptr)
                     {
                         SetError("Global variable not found");
                         return false;
                     }
-                    pVV = vi.pDClass;
+
+                    pVV = real_var->value.get();
                 }
                 else
                 {
@@ -4283,12 +4327,14 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
             {
                 if (bLeftOperandType == VARIABLE)
                 {
-                    if (!VarTab.GetVar(vi, nLeftOperandCode))
+                    real_var = VarTab.GetVar(nLeftOperandCode);
+                    if (real_var == nullptr)
                     {
                         SetError("Global variable not found");
                         return false;
                     }
-                    pV = vi.pDClass;
+
+                    pV = real_var->value.get();
                 }
                 else
                 {
@@ -4316,12 +4362,14 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
             }
             if (vtype == VARIABLE)
             {
-                if (!VarTab.GetVar(vi, var_code))
+                real_var = VarTab.GetVar(var_code);
+                if (real_var == nullptr)
                 {
                     SetError("Global variable not found");
                     return false;
                 }
-                pVV = vi.pDClass;
+
+                pVV = real_var->value.get();
             }
             else
             {
@@ -4360,7 +4408,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
                     ShowWindow(CDebug.GetWindowHandle(), SW_NORMAL);
 
                     CDebug.SetTraceLine(nDebugTraceLineCode);
-                    CDebug.BreakOn(fi.decl_file_name, nDebugTraceLineCode);
+                    CDebug.BreakOn(fi.decl_file_name.c_str(), nDebugTraceLineCode);
                     CDebug.SetTraceMode(TMODE_WAIT);
                     while (CDebug.GetTraceMode() == TMODE_WAIT)
                     {
@@ -4374,7 +4422,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
                 else if (CDebug.Breaks.CanBreak())
                 {
                     // check for breakpoint
-                    if (CDebug.Breaks.Find(fi.decl_file_name, nDebugTraceLineCode))
+                    if (CDebug.Breaks.Find(fi.decl_file_name.c_str(), nDebugTraceLineCode))
                     {
                         if (!CDebug.IsDebug())
                             CDebug.OpenDebugWindow(core.GetAppInstance());
@@ -4382,7 +4430,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
                         ShowWindow(CDebug.GetWindowHandle(), SW_NORMAL);
                         // CDebug.OpenDebugWindow(core.hInstance);
                         CDebug.SetTraceMode(TMODE_WAIT);
-                        CDebug.BreakOn(fi.decl_file_name, nDebugTraceLineCode);
+                        CDebug.BreakOn(fi.decl_file_name.c_str(), nDebugTraceLineCode);
 
                         while (CDebug.GetTraceMode() == TMODE_WAIT)
                         {
@@ -4425,12 +4473,14 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
             var_code = *((long *)&pRunCodeBase[TLR_DataOffset]); // var code
             if (vtype == VARIABLE)
             {
-                if (!VarTab.GetVar(vi, var_code))
+                real_var = VarTab.GetVar(var_code);
+                if (real_var == nullptr)
                 {
                     SetError("Global variable not found");
                     return false;
                 }
-                pVV = vi.pDClass;
+
+                pVV = real_var->value.get();
             }
             else
             {
@@ -4568,12 +4618,14 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
             }
             if (bLeftOperandType == VARIABLE)
             {
-                if (!VarTab.GetVar(vi, nLeftOperandCode))
+                real_var = VarTab.GetVar(nLeftOperandCode);
+                if (real_var == nullptr)
                 {
                     SetError("Global variable not found");
                     return false;
                 }
-                pV = vi.pDClass;
+
+                pV = real_var->value.get();
             }
             else
             {
@@ -4654,12 +4706,14 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
             }
             if (bLeftOperandType == VARIABLE)
             {
-                if (!VarTab.GetVar(vi, nLeftOperandCode))
+                real_var = VarTab.GetVar(nLeftOperandCode);
+                if (real_var == nullptr)
                 {
                     SetError("Global variable not found");
                     return false;
                 }
-                pV = vi.pDClass;
+
+                pV = real_var->value.get();
             }
             else
             {
@@ -4691,12 +4745,14 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
             }
             if (bLeftOperandType == VARIABLE)
             {
-                if (!VarTab.GetVar(vi, nLeftOperandCode))
+                real_var = VarTab.GetVar(nLeftOperandCode);
+                if (real_var == nullptr)
                 {
                     SetError("Global variable not found");
                     return false;
                 }
-                pV = vi.pDClass;
+
+                pV = real_var->value.get();
             }
             else
             {
@@ -5112,18 +5168,20 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
                 pVDst->SetType(VAR_REFERENCE);
                 break;
             case VARIABLE:
-                if (!VarTab.GetVar(vi, *((uint32_t *)&pCodeBase[ip])))
+                real_var = VarTab.GetVar(*((uint32_t *)&pCodeBase[ip]));
+                if (real_var == nullptr)
                 {
                     SetError("Global variable not found");
                     return false;
                 }
-                pVDst = vi.pDClass;
+
+                pVDst = real_var->value.get();
                 // if(bUseIndex) pVDst = pVDst->GetArrayElement(dwBXIndex);
                 if (!pVDst)
                     return false;
                 if (pVDst->GetType() != VAR_REFERENCE)
                 {
-                    SetError("'%s' isnt reference", vi.name);
+                    SetError("'%s' isnt reference", real_var->name.c_str());
                     return false;
                 }
                 break;
@@ -5139,7 +5197,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
                     return false;
                 if (pVDst->GetType() != VAR_REFERENCE)
                 {
-                    SetError("'%s' isnt reference", vi.name);
+                    SetError("'%s' isnt reference", real_var->name.c_str());
                     return false;
                 }
                 break;
@@ -5158,12 +5216,14 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
             switch (Token_type)
             {
             case VARIABLE:
-                if (!VarTab.GetVar(vi, *((uint32_t *)&pCodeBase[ip])))
+                real_var = VarTab.GetVar(*((uint32_t *)&pCodeBase[ip]));
+                if (real_var == nullptr)
                 {
                     SetError("Global variable not found");
                     return false;
                 }
-                pVSrc = vi.pDClass;
+
+                pVSrc = real_var->value.get();
                 if (bUseIndex)
                     pVSrc = pVSrc->GetArrayElement(dwBXIndex);
                 if (!pVSrc)
@@ -5206,12 +5266,14 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
 
                 if (bLeftOperandType == VARIABLE)
                 {
-                    if (!VarTab.GetVar(vi, nLeftOperandCode))
+                    real_var = VarTab.GetVar(nLeftOperandCode);
+                    if (real_var == nullptr)
                     {
                         SetError("Global variable not found");
                         return false;
                     }
-                    pVDst = vi.pDClass;
+
+                    pVDst = real_var->value.get();
                 }
                 else
                 {
@@ -5381,12 +5443,14 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
                 pV->Set((char *)&pRunCodeBase[TLR_DataOffset + 4]); // 4 - string length
                 break;
             case VARIABLE:
-                if (!VarTab.GetVar(vi, *((uint32_t *)&pCodeBase[ip])))
+                real_var = VarTab.GetVar(*((uint32_t *)&pCodeBase[ip]));
+                if (real_var == nullptr)
                 {
                     SetError("Global variable not found");
                     break;
                 }
-                pVV = vi.pDClass;
+
+                pVV = real_var->value.get();
                 // pVV = pVV->GetVarPointer();
                 // if(!pVV) { SetError("invalid ref"); break; }
                 if (pVV->IsReference())
@@ -5512,12 +5576,14 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
             switch (Token_type)
             {
             case VARIABLE:
-                if (!VarTab.GetVar(vi, *((uint32_t *)&pCodeBase[ip])))
+                real_var = VarTab.GetVar(*((uint32_t *)&pCodeBase[ip]));
+                if (real_var == nullptr)
                 {
                     SetError("Global variable not found");
                     break;
                 }
-                vi.pDClass->Copy(pV);
+
+                real_var->value->Copy(pV);
                 break;
             case LOCAL_VARIABLE:
                 pVar = SStack.Read(pRun_fi->stack_offset, *((uint32_t *)&pCodeBase[ip]));
@@ -5712,13 +5778,15 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
                     SetError("missed attribute: %s", SCodec.Convert(*((long *)&pRunCodeBase[TLR_DataOffset])));
                 break;
             case VARIABLE:
-                if (!VarTab.GetVar(vi, *((long *)&pRunCodeBase[TLR_DataOffset])))
+                real_var = VarTab.GetVar(*((long *)&pRunCodeBase[TLR_DataOffset]));
+                if (real_var == nullptr)
                 {
                     SetError("Global variable not found");
                     break;
                 }
+
                 ExpressionResult.ClearType();
-                ExpressionResult.Copy(vi.pDClass);
+                ExpressionResult.Copy(real_var->value.get());
                 if (!ExpressionResult.Convert(VAR_STRING))
                 {
                     SetError("invalid type for attribute var");
@@ -6039,15 +6107,20 @@ bool COMPILER::ReadData(void *data_PTR, uint32_t data_size)
 
 bool COMPILER::FindReferencedVariable(DATA *pRef, uint32_t &var_index, uint32_t &array_index)
 {
-    VARINFO vi;
-
     const uint32_t nVarNum = VarTab.GetVarNum();
     for (uint32_t n = 0; n < nVarNum; n++)
     {
-        VarTab.GetVarX(vi, n);
-        if (!vi.pDClass->IsArray())
+        const auto *real_var = VarTab.GetVarX(n);
+        if (real_var == nullptr)
         {
-            if (pRef == vi.pDClass)
+            SetError("Invalid var code");
+            continue;
+        }
+
+        const auto &vi = *real_var;
+        if (!vi.value->IsArray())
+        {
+            if (pRef == vi.value.get())
             {
                 var_index = n;
                 array_index = 0xffffffff;
@@ -6058,7 +6131,7 @@ bool COMPILER::FindReferencedVariable(DATA *pRef, uint32_t &var_index, uint32_t 
         {
             for (uint32_t i = 0; i < vi.elements; i++)
             {
-                if (pRef == vi.pDClass->GetArrayElement(i))
+                if (pRef == vi.value->GetArrayElement(i))
                 {
                     var_index = n;
                     array_index = i;
@@ -6072,17 +6145,24 @@ bool COMPILER::FindReferencedVariable(DATA *pRef, uint32_t &var_index, uint32_t 
 
 bool COMPILER::FindReferencedVariableByRootA(ATTRIBUTES *pA, uint32_t &var_index, uint32_t &array_index)
 {
-    VARINFO vi;
+    VarInfo vi;
 
     const uint32_t nVarNum = VarTab.GetVarNum();
     for (uint32_t n = 0; n < nVarNum; n++)
     {
-        VarTab.GetVarX(vi, n);
+        const auto *real_var = VarTab.GetVarX(n);
+        if (real_var == nullptr)
+        {
+            SetError("Invalid var code");
+            continue;
+        }
+
+        const auto &vi = *real_var;
         if (vi.type != VAR_OBJECT)
             continue;
-        if (!vi.pDClass->IsArray())
+        if (!vi.value->IsArray())
         {
-            if (pA == vi.pDClass->AttributesClass)
+            if (pA == vi.value->AttributesClass)
             {
                 var_index = n;
                 array_index = 0xffffffff; // ***
@@ -6093,7 +6173,7 @@ bool COMPILER::FindReferencedVariableByRootA(ATTRIBUTES *pA, uint32_t &var_index
         {
             for (uint32_t i = 0; i < vi.elements; i++)
             {
-                if (pA == vi.pDClass->GetArrayElement(i)->AttributesClass)
+                if (pA == vi.value->GetArrayElement(i)->AttributesClass)
                 {
                     var_index = n;
                     array_index = i;
@@ -6226,8 +6306,8 @@ bool COMPILER::ReadVariable(char *name, /* DWORD code,*/ bool bDim, uint32_t a_i
     uint32_t nElementsNum;
     ATTRIBUTES *pA;
     S_TOKEN_TYPE eType;
-    VARINFO vi;
-    VARINFO viRef;
+    const VarInfo *real_var;
+    const VarInfo *real_var_ref;
     DATA *pV;
     DATA *pVRef;
     entid_t eid;
@@ -6243,8 +6323,16 @@ bool COMPILER::ReadVariable(char *name, /* DWORD code,*/ bool bDim, uint32_t a_i
     }
     else
     {
-        VarTab.GetVarX(vi, var_code);
-        pV = vi.pDClass;
+        real_var = VarTab.GetVarX(var_code);
+        if (real_var == nullptr)
+        {
+            SetError("Load warning - variable: '%s' has invalid var code", name);
+            bSkipVariable = true;
+        }
+        else
+        {
+            pV = real_var->value.get();
+        }
     }
 
     if (!bDim) // skip this info for array elements
@@ -6253,20 +6341,23 @@ bool COMPILER::ReadVariable(char *name, /* DWORD code,*/ bool bDim, uint32_t a_i
         ReadData(&eType, sizeof(eType));
         Assert(eType < S_TOKEN_TYPE::TOKEN_TYPES_COUNT);
         if (!bSkipVariable)
-            if (vi.type != eType)
+            if (real_var->type != eType)
             {
                 SetError("load type mismatch");
                 return false;
             }
         ReadData(&nElementsNum, sizeof(nElementsNum));
         if (!bSkipVariable)
-            if (vi.elements != nElementsNum)
+            if (real_var->elements != nElementsNum)
             {
                 // ???
                 // SetError("load size mismatch");
                 // return false;
-                vi.pDClass->SetElementsNum(nElementsNum);
-                vi.elements = nElementsNum;
+                real_var->value->SetElementsNum(nElementsNum);
+                if (!VarTab.SetElementsNum(var_code, nElementsNum))
+                {
+                    core.Trace("Unable to set elements num for %s", real_var->name.c_str());
+                }
             }
     }
     else
@@ -6345,12 +6436,14 @@ bool COMPILER::ReadVariable(char *name, /* DWORD code,*/ bool bDim, uint32_t a_i
         array_index = ReadVDword();
         if (bSkipVariable)
             break;
-        if (!VarTab.GetVarX(viRef, var_index))
+        real_var_ref = VarTab.GetVarX(var_index);
+        if (real_var_ref == nullptr)
         {
             SetError("State read error");
             return false;
         }
-        pVRef = viRef.pDClass;
+
+        pVRef = real_var_ref->value.get();
         if (array_index != 0xffffffff)
         {
             pVRef = pVRef->GetArrayElement(array_index);
@@ -6369,13 +6462,16 @@ bool COMPILER::ReadVariable(char *name, /* DWORD code,*/ bool bDim, uint32_t a_i
             delete pString;
             break;
         }
-        if (!VarTab.GetVarX(viRef, var_index))
+
+        real_var_ref = VarTab.GetVarX(var_index);
+        if (real_var_ref == nullptr)
         {
             delete[] pString;
             SetError("State read error");
             return false;
         }
-        pVRef = viRef.pDClass;
+
+        pVRef = real_var_ref->value.get();
         if (array_index != 0xffffffff)
         {
             pVRef = pVRef->GetArrayElement(array_index);
@@ -6532,7 +6628,8 @@ bool COMPILER::OnLoad()
 bool COMPILER::SaveState(std::fstream &fileS)
 {
     uint32_t n;
-    VARINFO vi;
+    const VarInfo *real_var;
+    const VarInfo *last_var;
 
     delete pBuffer;
     pBuffer = nullptr;
@@ -6588,9 +6685,18 @@ bool COMPILER::SaveState(std::fstream &fileS)
 
     for (n = 0; n < nVarNum; n++)
     {
-        VarTab.GetVar(vi, n);
-        SaveString(vi.name); // ***
-        SaveVariable(vi.pDClass);
+        real_var = VarTab.GetVar(n);
+        if (real_var == nullptr)
+        {
+            real_var = last_var; // preserve old semanthics
+        }
+        else
+        {
+            last_var = real_var;
+        }
+
+        SaveString(real_var->name.c_str()); // ***
+        SaveVariable(real_var->value.get());
     }
 
     uint64_t dw2;
@@ -7042,7 +7148,7 @@ void COMPILER::AddRuntimeEvent()
 
 uint32_t COMPILER::SetScriptFunction(IFUNCINFO *pFuncInfo)
 {
-    FUNCINFO fi;
+    FuncInfo fi;
 
     if (pFuncInfo->pFuncName == nullptr)
     {
@@ -7067,13 +7173,8 @@ uint32_t COMPILER::SetScriptFunction(IFUNCINFO *pFuncInfo)
     }
 
     fi.name = pFuncInfo->pFuncName;
-    fi.decl_file_name = pFuncInfo->pDeclFileName;
-    if (fi.decl_file_name == nullptr)
-        fi.decl_file_name = "unknown";
-    fi.decl_line = pFuncInfo->nDeclLine;
-    fi.pImportedFunc = pFuncInfo->pFuncAddress;
+    fi.imported_func = pFuncInfo->pFuncAddress;
     fi.arguments = pFuncInfo->nArguments;
-    fi.var_num = 0;
     fi.segment_id = IMPORTED_SEGMENT_ID;
     fi.offset = INVALID_FUNC_OFFSET;
     fi.stack_offset = 0xffffffff;
@@ -7106,15 +7207,10 @@ uint32_t COMPILER::SetScriptFunction(IFUNCINFO *pFuncInfo)
     return funch;
 }
 
-void COMPILER::DeleteScriptFunction(uint32_t nFuncHandle)
-{
-    FuncTab.InvalidateFunction(nFuncHandle);
-}
-
 DATA *COMPILER::GetOperand(const char *pCodeBase, uint32_t &ip, S_TOKEN_TYPE *pTokenType)
 {
     uint32_t token_data_size;
-    VARINFO vi;
+    const VarInfo *real_var;
     DATA *pVar;
 
     const S_TOKEN_TYPE sttResult = BC_TokenGet(ip, token_data_size);
@@ -7126,17 +7222,18 @@ DATA *COMPILER::GetOperand(const char *pCodeBase, uint32_t &ip, S_TOKEN_TYPE *pT
         pVar = SStack.Read();
         return pVar;
     case VARIABLE:
-        if (!VarTab.GetVar(vi, *((uint32_t *)&pCodeBase[ip])))
+        real_var = VarTab.GetVar(*((uint32_t *)&pCodeBase[ip]));
+        if (real_var == nullptr)
         {
             SetError("Global variable not found");
             break;
         }
-        if (!vi.pDClass)
+        if (!real_var->value.get())
         {
             SetError("invalid global variable");
             break;
         }
-        return vi.pDClass;
+        return real_var->value.get();
     case LOCAL_VARIABLE:
         pVar = SStack.Read(pRun_fi->stack_offset, *((uint32_t *)&pCodeBase[ip]));
         if (pVar == nullptr)
