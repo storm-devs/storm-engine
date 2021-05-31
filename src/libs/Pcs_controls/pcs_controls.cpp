@@ -5,6 +5,10 @@
 #include "../Animation/ActionInfo.h"
 #include "vfile_service.h"
 
+#include <Input.hpp>
+
+using namespace storm;
+
 PCS_CONTROLS::PCS_CONTROLS()
 {
     m_bLockAll = false;
@@ -19,12 +23,6 @@ PCS_CONTROLS::PCS_CONTROLS()
 
     nControlsNum = 0;
 
-    // nMouseXPrev = nMouseYPrev = 0;
-    RECT r;
-    GetWindowRect(core.GetAppHWND(), &r);
-    nMouseXPrev = r.left + (r.right - r.left) / 2;
-    nMouseYPrev = r.top + (r.bottom - r.top) / 2;
-
     nLastControlTime = 0;
 
     nMouseWheel = 0;
@@ -36,6 +34,9 @@ PCS_CONTROLS::PCS_CONTROLS()
         m_bIsOffDebugKeys = pIni->GetLong("controls", "ondebugkeys", 0) == 0;
     }
 
+    input_ = Input::Create();
+    inputHandlerID_ = input_->Subscribe([this](const InputEvent &evt) { HandleEvent(evt); });
+
     // RECT r;
     // GetWindowRect(core.GetAppHWND(),&r);
     // ClipCursor(&r);
@@ -43,6 +44,7 @@ PCS_CONTROLS::PCS_CONTROLS()
 
 PCS_CONTROLS::~PCS_CONTROLS()
 {
+    input_->Unsubscribe(inputHandlerID_);
     Release();
     // ClipCursor(0);
 }
@@ -330,16 +332,23 @@ bool PCS_CONTROLS::GetControlState(long control_code, CONTROL_STATE &_state_stru
         }
         else
         {
-            if (system_code == VK_TAB)
+            bool pressed = false;
+
+            if (system_code == VK_LBUTTON)
+                pressed = input_->MouseKeyState(MouseKey::Left);
+            else if (system_code == VK_RBUTTON)
+                pressed = input_->MouseKeyState(MouseKey::Right);
+            else if (system_code == VK_MBUTTON)
+                pressed = input_->MouseKeyState(MouseKey::Middle);
+            else if (system_code == VK_TAB)
             {
-                lRes = 0;
-                if (GetAsyncKeyState(VK_MENU) == 0)
-                    lRes = GetAsyncKeyState(system_code);
+                if (!input_->KeyboardKeyState(VK_MENU))
+                    pressed = input_->KeyboardKeyState(system_code);
             }
             else
-                lRes = GetAsyncKeyState(system_code);
+                pressed = input_->KeyboardKeyState(system_code);
 
-            if (lRes < 0)
+            if (pressed)
             {
                 ControlsTab[system_code].state.lValue = 1;
                 ControlsTab[system_code].state.fValue = static_cast<float>(ControlsTab[system_code].state.lValue);
@@ -434,19 +443,20 @@ void PCS_CONTROLS::Update(uint32_t DeltaTime)
     m_KeyBuffer.Reset();
 
     nFrameCounter++;
-    POINT point;
-    GetCursorPos(&point);
     uint32_t system_code = CE_MOUSE_X_AXIS;
-    ControlsTab[system_code].state.lValue = point.x - nMouseXPrev;
+    ControlsTab[system_code].state.lValue = nMouseDx;
     ControlsTab[system_code].state.fValue =
         static_cast<float>(ControlsTab[system_code].state.lValue) * fMouseSensivityX;
     ControlsTab[system_code].update_frame = nFrameCounter;
 
     system_code = CE_MOUSE_Y_AXIS;
-    ControlsTab[system_code].state.lValue = point.y - nMouseYPrev;
+    ControlsTab[system_code].state.lValue = nMouseDy;
     ControlsTab[system_code].state.fValue =
         static_cast<float>(ControlsTab[system_code].state.lValue) * fMouseSensivityY;
     ControlsTab[system_code].update_frame = nFrameCounter;
+
+    nMouseDx = 0;
+    nMouseDy = 0;
 
     system_code = CE_MOUSE_WHEEL_UP;
     if (nMouseWheel > 0)
@@ -494,11 +504,6 @@ void PCS_CONTROLS::Update(uint32_t DeltaTime)
 
     nMouseWheel = 0;
 
-    RECT r;
-    GetWindowRect(core.GetAppHWND(), &r);
-    nMouseXPrev = r.left + (r.right - r.left) / 2;
-    nMouseYPrev = r.top + (r.bottom - r.top) / 2;
-    SetCursorPos(nMouseXPrev, nMouseYPrev);
     nLastControlTime += DeltaTime;
 }
 
@@ -570,30 +575,6 @@ void PCS_CONTROLS::SetMouseSensivityY(float _s)
     fMouseSensivityY = _s;
 }
 
-void PCS_CONTROLS::EngineMessage(UINT iMsg, WPARAM wParam, LPARAM lParam)
-{
-    bool isSystem = false;
-    switch (iMsg)
-    {
-    case WM_KEYDOWN:
-        isSystem = true;
-
-    case WM_CHAR: {
-        char Text[5];
-        int TextSize = utf8::CodepointToUtf8(Text, (UINT32)wParam);
-        m_KeyBuffer.AddKey(Text, TextSize, isSystem); // virtual & scan code
-        break;
-    }
-
-    case WM_KEYUP:
-        break;
-
-    case WM_MOUSEWHEEL:
-        nMouseWheel += (short)HIWORD(wParam);
-        break;
-    }
-}
-
 long PCS_CONTROLS::GetKeyBufferLength()
 {
     return m_KeyBuffer.GetBufferLength();
@@ -607,4 +588,43 @@ const KeyDescr *PCS_CONTROLS::GetKeyBuffer()
 void PCS_CONTROLS::ClearKeyBuffer()
 {
     m_KeyBuffer.Reset();
+}
+
+short PCS_CONTROLS::GetDebugAsyncKeyState(int vk)
+{
+    // -1 because WinAPI sets msb when key pressed, so old code expects negative value
+    return (m_bIsOffDebugKeys ? 0 : input_->KeyboardKeyState(vk) ? -1 : 0);
+}
+
+short PCS_CONTROLS::GetDebugKeyState(int vk)
+{
+    // -1 because WinAPI sets msb when key pressed, so old code expects negative value
+    return (m_bIsOffDebugKeys ? 0 : input_->KeyboardKeyState(vk) ? -1 : 0);
+}
+
+void PCS_CONTROLS::HandleEvent(const InputEvent &evt)
+{
+    if (evt.type == InputEvent::KeyboardKeyDown)
+    {
+        char text[5];
+        int size = utf8::CodepointToUtf8(text, (uint32_t)std::get<KeyboardKey>(evt.data));
+        m_KeyBuffer.AddKey(text, size, true);
+    }
+    else if (evt.type == InputEvent::KeyboardText)
+    {
+        std::string text = std::get<std::string>(evt.data);
+        m_KeyBuffer.AddKey((char *)text.c_str(), text.length(), false);
+    }
+    else if (evt.type == InputEvent::MouseMove)
+    {
+        MousePos dxdy = std::get<MousePos>(evt.data);
+        nMouseDx += dxdy.x;
+        nMouseDy += dxdy.y;
+    }
+    else if (evt.type == InputEvent::MouseWheel)
+    {
+        MousePos dxdy = std::get<MousePos>(evt.data);
+        nMouseWheel += dxdy.y;
+        core.Event("evMouseWeel", "l", static_cast<short>(dxdy.y));
+    }
 }

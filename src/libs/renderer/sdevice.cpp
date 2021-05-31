@@ -483,18 +483,6 @@ bool DX9RENDER::Init()
         for (long i = 0; i < iCapBuffers; i++)
             aCaptureBuffers.push_back(new char[sizeof(uint32_t) * screen_size.x * screen_size.y]);
 
-        if (bWindow)
-        {
-            long xs, ys;
-            xs = GetSystemMetrics(SM_CXSCREEN);
-            ys = GetSystemMetrics(SM_CYSCREEN);
-            if (bUseLargeBackBuffer)
-                MoveWindow(core.GetAppHWND(), 0, 0, xs, ys, true);
-            else
-                MoveWindow(core.GetAppHWND(), (xs - screen_size.x) / 2, (ys - screen_size.y) / 2, screen_size.x,
-                           screen_size.y, true);
-        }
-
         CreateSphere();
         auto *pScriptRender = static_cast<VDATA *>(core.GetScriptVariable("Render"));
         ATTRIBUTES *pARender = pScriptRender->GetAClass();

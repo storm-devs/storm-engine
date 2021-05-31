@@ -21,8 +21,6 @@ add_executable(${PROJECT_NAME} WIN32
     internal_functions.cpp
     Main.cpp
     messages.h
-    program.cpp
-    program.h
     s_classtab.cpp
     s_classtab.h
     s_compress.cpp
@@ -118,6 +116,7 @@ target_link_libraries(${PROJECT_NAME}
     weather
     worldmap
     xinterface
+    window
 
     CONAN_PKG::zlib
     CONAN_PKG::sentry-native
